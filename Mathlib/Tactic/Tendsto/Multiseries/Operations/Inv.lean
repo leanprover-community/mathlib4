@@ -13,25 +13,25 @@ namespace TendstoTactic
 
 namespace PreMS
 
-open LazySeries
+open LazySeries Stream' Seq
 
 -- 1/(1-t), i.e. ones
 def invSeries' : LazySeries :=
-  let g : Unit → CoList.OutType ℝ Unit := fun () => .cons 1 ()
-  CoList.corec g ()
+  let g : Unit → Option (ℝ × Unit) := fun () => some (1, ())
+  Seq.corec g ()
 
 -- 1/(1+t), i.e. [1, -1, 1, -1, ...]
 def invSeries : LazySeries :=
-  let g : Bool → CoList.OutType ℝ Bool := fun b => .cons (b.casesOn 1 (-1)) !b
-  CoList.corec g false
+  let g : Bool → Option (ℝ × Bool) := fun b => some ((b.casesOn 1 (-1)), !b)
+  Seq.corec g false
 
 theorem invSeries'_eq_cons_self : invSeries' = .cons 1 invSeries' := by
   simp [invSeries']
   conv =>
     lhs
-    rw [CoList.corec_cons (by rfl)]
+    rw [Seq.corec_cons (by rfl)]
 
-theorem invSeries'_get_eq_one {n : ℕ} : invSeries'.get n = .some 1 := by
+theorem invSeries'_get_eq_one {n : ℕ} : invSeries'.get? n = .some 1 := by
   induction n with
   | zero =>
     rw [invSeries'_eq_cons_self]
@@ -71,12 +71,10 @@ theorem invSeries'_toFun_eq {x : ℝ} (hx : ‖x‖ < 1) : invSeries'.toFun x = 
 noncomputable def inv' {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   match basis with
   | [] => ms⁻¹
-  | basis_hd :: basis_tl =>
-    ms.casesOn'
-    (nil := .nil) -- 0⁻¹ = 0
-    (cons := fun (deg, coef) tl =>
-      mulMonomial (invSeries'.apply (mulMonomial (neg tl) coef.inv' (-deg))) coef.inv' (-deg)
-    )
+  | List.cons basis_hd basis_tl =>
+    match destruct ms with
+    | none => .nil
+    | some ((deg, coef), tl) => mulMonomial (invSeries'.apply (mulMonomial (neg tl) coef.inv' (-deg))) coef.inv' (-deg)
 
 theorem inv'_wellOrdered {basis : Basis} {ms : PreMS basis}
     (h_wo : ms.wellOrdered) : ms.inv'.wellOrdered := by
@@ -84,7 +82,7 @@ theorem inv'_wellOrdered {basis : Basis} {ms : PreMS basis}
   | nil => constructor
   | cons basis_hd basis_tl =>
     revert h_wo
-    apply ms.casesOn
+    apply ms.recOn
     · intro h_wo
       simp [inv']
       apply wellOrdered.nil
@@ -115,7 +113,7 @@ theorem inv'_isApproximation {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis
     apply EventuallyEq.inv h_approx
   | cons basis_hd basis_tl =>
     revert h_trimmed h_wo h_approx
-    apply ms.casesOn
+    apply ms.recOn
     · intro h_trimmed h_wo h_approx
       replace h_approx := isApproximation_nil h_approx
       simp [inv']

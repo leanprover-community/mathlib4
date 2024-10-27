@@ -16,33 +16,34 @@ namespace TendstoTactic
 
 namespace PreMS
 
+open Stream' Seq
+
 def leadingTerm {basis : Basis} (ms : PreMS basis) : MS.Term :=
   match basis with
   | [] => ⟨ms, []⟩
-  | _ :: _ =>
-    ms.casesOn'
-    (nil := ⟨0, List.range basis.length |>.map fun _ => 0⟩)
-    (cons := fun (deg, coef) _ =>
+  | List.cons _ _ =>
+    match destruct ms with
+    | none => ⟨0, List.range basis.length |>.map fun _ => 0⟩
+    | some ((deg, coef), _) =>
       let pre := coef.leadingTerm
       ⟨pre.coef, deg :: pre.degs⟩
-    )
 
 theorem leadingTerm_length {basis : Basis} (ms : PreMS basis) :
     ms.leadingTerm.degs.length = basis.length :=
   match basis with
   | [] => by simp [leadingTerm]
-  | basis_hd :: basis_tl => by
-    apply ms.casesOn
-    · simp [leadingTerm, CoList.casesOn', CoList.casesOn_nil]
-    · simp [leadingTerm, CoList.casesOn', CoList.casesOn_cons]
+  | List.cons basis_hd basis_tl => by
+    apply ms.recOn
+    · simp [leadingTerm]
+    · simp [leadingTerm]
       exact leadingTerm_length
 
 theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} (x : ℝ) :
-    (leadingTerm (basis := basis_hd :: basis_tl) (CoList.cons (deg, coef) tl)).toFun
+    (leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (deg, coef) tl)).toFun
       (basis_hd :: basis_tl) x =
     (basis_hd x)^deg * (leadingTerm coef).toFun basis_tl x := by
-  simp [leadingTerm, MS.Term.toFun, CoList.casesOn', CoList.casesOn_cons]
+  simp [leadingTerm, MS.Term.toFun]
   conv =>
     congr <;> rw [MS.Term.fun_mul]
     lhs
@@ -85,9 +86,9 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
     absurd h_ne_zero
     constructor
     assumption
-  | basis_hd :: basis_tl => by
+  | List.cons basis_hd basis_tl => by
     revert h_wo h_ne_zero h_trimmed
-    apply ms.casesOn
+    apply ms.recOn
     · intro _ _ h_ne_zero
       absurd h_ne_zero
       constructor
@@ -100,8 +101,7 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
         h_basis.right.left
       apply Eventually.mono <| coef_ih.and (MS.basis_head_eventually_pos h_basis)
       rintro x ⟨coef_ih, h_basis_hd_pos⟩
-      simp only [leadingTerm, MS.Term.toFun, List.zip_cons_cons, List.foldl_cons, CoList.casesOn',
-        CoList.casesOn_cons]
+      simp [leadingTerm, MS.Term.toFun, -ne_eq]
       simp only [MS.Term.toFun] at coef_ih
       conv =>
         rw [MS.Term.fun_mul]
@@ -132,7 +132,7 @@ mutual
     eta_expand
     simp only [Pi.sub_apply]
     revert h_tl h_comp_wo
-    apply tl.casesOn
+    apply tl.recOn
     · intro h_tl h_comp_wo
       replace h_tl := isApproximation_nil h_tl
       apply EventuallyEq.trans_isLittleO h_tl
@@ -196,9 +196,9 @@ mutual
       simp [isApproximation] at h_approx
       simp [leadingTerm]
       apply EventuallyEq.isEquivalent (by assumption)
-    | basis_hd :: basis_tl => by
+    | List.cons basis_hd basis_tl => by
       revert h_wo h_approx h_trimmed
-      apply ms.casesOn
+      apply ms.recOn
       · intro h_wo h_approx h_trimmed
         have hF := isApproximation_nil h_approx
         unfold leadingTerm
@@ -266,10 +266,10 @@ def MS.findLimitTrimmed (ms : MS) (h_basis : MS.wellOrderedBasis ms.basis)
       exact IsEquivalent.tendsto_nhds (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed).symm p
     })
 
-def MS.findLimit (ms : MS) (h_basis : MS.wellOrderedBasis ms.basis) :
-    TendstoM <| FindLimitResult ms.F := do
-  let trimmed ← MS.trim ms
-  let r ← MS.findLimitTrimmed trimmed.result (trimmed.h_eq_basis ▸ h_basis) trimmed.h_trimmed
-  return (trimmed.h_eq_F ▸ r)
+-- def MS.findLimit (ms : MS) (h_basis : MS.wellOrderedBasis ms.basis) :
+--     TendstoM <| FindLimitResult ms.F := do
+--   let trimmed ← MS.trim ms
+--   let r ← MS.findLimitTrimmed trimmed.result (trimmed.h_eq_basis ▸ h_basis) trimmed.h_trimmed
+--   return (trimmed.h_eq_F ▸ r)
 
 end TendstoTactic

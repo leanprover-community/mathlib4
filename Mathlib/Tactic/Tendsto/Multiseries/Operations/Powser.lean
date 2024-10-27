@@ -7,48 +7,46 @@ import Mathlib.Tactic.Tendsto.Multiseries.Trimming
 set_option linter.unusedVariables false
 set_option linter.style.longLine false
 
-open Filter Asymptotics
+open Filter Asymptotics Stream' Seq
 
 namespace TendstoTactic
 
 namespace PreMS
 
-abbrev LazySeries := CoList ℝ
+abbrev LazySeries := Seq ℝ
 
 namespace LazySeries
 
 noncomputable def apply_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (ms : PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) × LazySeries →
-    CoList.OutType (PreMS (basis_hd :: basis_tl)) (PreMS (basis_hd :: basis_tl) × LazySeries) := fun (cur_power, cur_s) =>
-      cur_s.casesOn'
-      (nil := .nil)
-      (cons := fun c cs =>
-        .cons (mulConst cur_power c) (cur_power.mul ms, cs)
-      )
+    Option ((PreMS (basis_hd :: basis_tl)) × (PreMS (basis_hd :: basis_tl) × LazySeries)) := fun (cur_power, cur_s) =>
+      match destruct cur_s with
+      | none => none
+      | some (c, cs) => .some ((mulConst cur_power c), (cur_power.mul ms, cs))
 
 noncomputable def apply (s : LazySeries) {basis : Basis}
     (ms : PreMS basis) : PreMS basis :=
   match basis with
   | [] => default -- We can not substitute constant (and PreMS with nonnegative
                   -- leading exponent) to series
-  | basis_hd :: basis_tl =>
-    let terms := CoList.corec (apply_aux ms) (PreMS.one _, s) -- [c0, c1 * ms, c2, * ms^2, ...]
+  | List.cons basis_hd basis_tl =>
+    let terms := Seq.corec (apply_aux ms) (PreMS.one _, s) -- [c0, c1 * ms, c2, * ms^2, ...]
     merge1 terms
 
 -- theorems
 
 noncomputable def coeff (s : LazySeries) (n : ℕ) :=
-  match s.get n with
+  match s.get? n with
   | .none => 0
   | .some c => c • ContinuousMultilinearMap.mkPiAlgebraFin ℝ n ℝ
 
 noncomputable def toFormalMultilinearSeries (s : LazySeries) : FormalMultilinearSeries ℝ ℝ ℝ :=
   s.coeff
 
-theorem toFormalMultilinearSeries_coeff {s : LazySeries} {n : ℕ} : s.toFormalMultilinearSeries.coeff n = (s.get n).getD 0 := by
+theorem toFormalMultilinearSeries_coeff {s : LazySeries} {n : ℕ} : s.toFormalMultilinearSeries.coeff n = (s.get? n).getD 0 := by
   unfold FormalMultilinearSeries.coeff
   simp only [toFormalMultilinearSeries, coeff]
-  generalize CoList.get n s = t at *
+  generalize Seq.get? s n = t at *
   cases t with
   | none => simp
   | some x =>
@@ -57,7 +55,7 @@ theorem toFormalMultilinearSeries_coeff {s : LazySeries} {n : ℕ} : s.toFormalM
     · simp
     · simp [List.forall_mem_ofFn_iff]
 
-theorem toFormalMultilinearSeries_norm {s : LazySeries} {n : ℕ} : ‖(s.toFormalMultilinearSeries) n‖ = |(s.get n).getD 0| := by
+theorem toFormalMultilinearSeries_norm {s : LazySeries} {n : ℕ} : ‖(s.toFormalMultilinearSeries) n‖ = |(s.get? n).getD 0| := by
   simp only [FormalMultilinearSeries.norm_apply_eq_norm_coef, Real.norm_eq_abs]
   congr
   exact toFormalMultilinearSeries_coeff
@@ -108,7 +106,7 @@ theorem tail_analytic {s_hd : ℝ} {s_tl : LazySeries}
 noncomputable def toFun (s : LazySeries) : ℝ → ℝ :=
   s.toFormalMultilinearSeries.sum
 
-theorem toFun_nil : toFun CoList.nil = 0 := by
+theorem toFun_nil : toFun Seq.nil = 0 := by
   simp [toFun]
   unfold toFormalMultilinearSeries coeff
   simp
@@ -117,8 +115,8 @@ theorem toFun_nil : toFun CoList.nil = 0 := by
   rfl
 
 theorem toFun_cons {s_hd : ℝ} {s_tl : LazySeries} {x : ℝ}
-    (h : analytic (CoList.cons s_hd s_tl))
-    (hx : x ∈ EMetric.ball 0 (toFormalMultilinearSeries (CoList.cons s_hd s_tl)).radius):
+    (h : analytic (Seq.cons s_hd s_tl))
+    (hx : x ∈ EMetric.ball 0 (toFormalMultilinearSeries (Seq.cons s_hd s_tl)).radius):
     toFun (.cons s_hd s_tl) x = s_hd + ((toFun s_tl) x) * x := by
   have h_tl := tail_analytic h
   have h_hsum := FormalMultilinearSeries.hasFPowerSeriesOnBall _ h
@@ -128,7 +126,7 @@ theorem toFun_cons {s_hd : ℝ} {s_tl : LazySeries} {x : ℝ}
   simp at h_hsum h_hsum_tl
   simp_rw [toFormalMultilinearSeries_coeff] at h_hsum h_hsum_tl
   unfold toFun
-  generalize (toFormalMultilinearSeries (CoList.cons s_hd s_tl)).sum x = a at *
+  generalize (toFormalMultilinearSeries (Seq.cons s_hd s_tl)).sum x = a at *
   generalize (toFormalMultilinearSeries s_tl).sum x = b at *
   apply HasSum.unique h_hsum
   replace h_hsum_tl := HasSum.mul_right x h_hsum_tl
@@ -137,8 +135,8 @@ theorem toFun_cons {s_hd : ℝ} {s_tl : LazySeries} {x : ℝ}
     arg 1
     ext i
     rw [← pow_succ']
-    rw [show CoList.get i s_tl = CoList.get (i + 1) (.cons s_hd s_tl) by simp]
-  have := HasSum.zero_add (f := (fun n ↦ x ^ n * (CoList.get n (CoList.cons s_hd s_tl)).getD 0)) h_hsum_tl
+    rw [show Seq.get? s_tl i = Seq.get? (.cons s_hd s_tl) (i + 1) by simp]
+  have := HasSum.zero_add (f := (fun n ↦ x ^ n * (Seq.get? (Seq.cons s_hd s_tl) n).getD 0)) h_hsum_tl
   simpa using this
 
 theorem toFun_tendsto_head {s_hd : ℝ} {s_tl : LazySeries}
@@ -163,7 +161,7 @@ theorem toFun_tendsto_head {s_hd : ℝ} {s_tl : LazySeries}
 theorem toFun_IsBigO_one {s : LazySeries} (h_analytic : s.analytic) {F : ℝ → ℝ}
     (hF : Tendsto F atTop (nhds 0)) : ((toFun s) ∘ F) =O[atTop] (1 : ℝ → ℝ) := by
   revert h_analytic
-  apply s.casesOn
+  apply s.recOn
   · simp [toFun_nil]
     intro
     apply isBigO_zero
@@ -174,8 +172,8 @@ theorem toFun_IsBigO_one {s : LazySeries} (h_analytic : s.analytic) {F : ℝ →
 
 @[simp]
 theorem apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    apply .nil ms = CoList.nil := by
-  simp [apply, apply_aux]
+    apply .nil ms = Seq.nil := by
+  simp [apply, apply_aux, Seq.corec_nil]
 
 @[simp]
 theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
@@ -184,33 +182,34 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
   simp [apply]
   conv =>
     lhs
-    rw [CoList.corec_cons (by rfl)]
+    rw [Seq.corec_cons (by rfl)]
     simp [one]
     arg 1
     arg 1
     unfold const
   rw [merge1_cons_head_cons]
-  simp [one, ← merge1_mul_comm_right]
+  simp [Seq.cons_eq_cons, one, ← merge1_mul_comm_right]
   congr 1
-  let motive : CoList (PreMS (basis_hd :: basis_tl)) → CoList (PreMS (basis_hd :: basis_tl)) → Prop := fun x y =>
+  let motive : Seq (PreMS (basis_hd :: basis_tl)) → Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun x y =>
     ∃ (X : PreMS (basis_hd :: basis_tl)), ∃ s,
-      x = CoList.corec (apply_aux ms) (X.mul ms, s) ∧
-      y = CoList.map (fun x ↦ x.mul ms) (CoList.corec (apply_aux ms) (X, s))
-  apply CoList.Eq.coind motive
+      x = Seq.corec (apply_aux ms) (X.mul ms, s) ∧
+      y = Seq.map (fun x ↦ x.mul ms) (Seq.corec (apply_aux ms) (X, s))
+  apply Seq.Eq.coind motive
   · intro x y ih
     simp [motive] at ih
     obtain ⟨X, s, hx, hy⟩ := ih
     subst hx hy
-    apply s.casesOn
+    apply s.recOn
     · right
-      simp [apply_aux]
+      unfold apply_aux
+      simp [Seq.corec_nil]
     · intro s_hd s_tl
       left
       use ?_, ?_, ?_
       constructor
       · unfold apply_aux
         simp
-        rw [CoList.corec_cons]
+        rw [Seq.corec_cons]
         pick_goal 2
         · simp
           constructor
@@ -221,14 +220,14 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
         · exact Eq.refl _
       constructor
       · unfold apply_aux
-        rw [CoList.corec_cons]
+        rw [Seq.corec_cons]
         pick_goal 2
         · simp
           constructor
           · exact Eq.refl _
           · exact Eq.refl _
         simp
-        constructor
+        congr
         · rw [mul_mulConst]
         · exact Eq.refl _
       simp only [motive]
@@ -250,7 +249,7 @@ theorem apply_cons_leadingExp {s_hd : ℝ} {s_tl : LazySeries} {basis_hd : ℝ �
 
 theorem apply_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     (apply s ms).leadingExp ≤ 0 := by
-  apply s.casesOn <;> simp [leadingExp]
+  apply s.recOn <;> simp [leadingExp]
 
 theorem apply_wellOrdered {s : LazySeries} {basis : Basis}
     {ms : PreMS basis}
@@ -263,7 +262,7 @@ theorem apply_wellOrdered {s : LazySeries} {basis : Basis}
   | cons basis_hd basis_tl =>
     by_cases h_ms_ne_nil : ms = .nil
     · rw [h_ms_ne_nil]
-      apply s.casesOn
+      apply s.recOn
       · simp
         exact wellOrdered.nil
       · intro s_hd s_tl
@@ -272,24 +271,24 @@ theorem apply_wellOrdered {s : LazySeries} {basis : Basis}
         exact const_wellOrdered
     simp [apply]
     apply merge1_wellOrdered
-    · let motive : CoList (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
-        ∃ X s, a = CoList.corec (apply_aux ms) (X, s) ∧ X.wellOrdered
-      apply CoList.all.coind motive
+    · let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
+        ∃ X s, a = Seq.corec (apply_aux ms) (X, s) ∧ X.wellOrdered
+      apply Seq.All.coind motive
       · intro hd tl ih
         simp only [motive] at ih ⊢
         obtain ⟨X, s, h_eq⟩ := ih
         revert h_eq
-        apply s.casesOn
+        apply s.recOn
         · intro h_eq
-          rw [CoList.corec_nil] at h_eq
+          rw [Seq.corec_nil] at h_eq
           · simp at h_eq
           simp [apply_aux]
         intro s_hd s_tl h_eq
-        rw [CoList.corec_cons] at h_eq
+        rw [Seq.corec_cons] at h_eq
         pick_goal 2
-        · simp only [apply_aux, CoList.casesOn_cons]
+        · simp only [apply_aux, Seq.recOn_cons]
           exact Eq.refl _
-        simp at h_eq
+        simp [Seq.cons_eq_cons] at h_eq
         obtain ⟨⟨h_hd, h_tl⟩, hX_wo⟩ := h_eq
         constructor
         · rw [h_hd]
@@ -303,35 +302,35 @@ theorem apply_wellOrdered {s : LazySeries} {basis : Basis}
         simp
         exact const_wellOrdered
     · simp [hasNegativeLeading] at h_neg
-      let motive : CoList (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
-        ∃ X s, a = CoList.corec (apply_aux ms) (X, s) ∧ X ≠ .nil
-      apply CoList.Sorted.coind (r := (fun x1 x2 ↦ x1 > x2)) motive
+      let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
+        ∃ X s, a = Seq.corec (apply_aux ms) (X, s) ∧ X ≠ .nil
+      apply Seq.Sorted.coind (r := (fun x1 x2 ↦ x1 > x2)) motive
       · intro hd tl ih
         simp only [motive] at ih ⊢
         obtain ⟨X, s, h_eq, hX_ne_nil⟩ := ih
         revert h_eq
-        apply s.casesOn
+        apply s.recOn
         · intro h_eq
-          rw [CoList.corec_nil] at h_eq
+          rw [Seq.corec_nil] at h_eq
           · simp at h_eq
           simp [apply_aux]
         intro s_hd s_tl h_eq
-        rw [CoList.corec_cons] at h_eq
+        rw [Seq.corec_cons] at h_eq
         pick_goal 2
-        · simp only [apply_aux, CoList.casesOn_cons]
+        · simp only [apply_aux, Seq.recOn_cons]
           exact Eq.refl _
-        simp at h_eq
+        simp [Seq.cons_eq_cons] at h_eq
         obtain ⟨h_hd, h_tl⟩ := h_eq
         constructor
         · rw [h_tl]
-          apply s_tl.casesOn
-          · rw [CoList.corec_nil]
+          apply s_tl.recOn
+          · rw [Seq.corec_nil]
             · simp
             · simp [apply_aux]
           intro s_tl_hd s_tl_tl
-          rw [CoList.corec_cons]
+          rw [Seq.corec_cons]
           pick_goal 2
-          · simp only [apply_aux, CoList.casesOn_cons]
+          · simp only [apply_aux, Seq.recOn_cons]
             exact Eq.refl _
           simp [h_hd, lt_iff_lt]
           conv => rhs; rw [← add_zero X.leadingExp]
@@ -381,11 +380,11 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
           specialize this r (by simpa [h_rad] using h_analytic)
           simpa using this
       revert h_ms_eq hX_wo hX_approx
-      apply X.casesOn
+      apply X.recOn
       · intro h_ms_eq _ hX_approx
         replace hX_approx := isApproximation_nil hX_approx
         revert h_ms_eq hY_wo hY_approx
-        apply Y.casesOn
+        apply Y.recOn
         · intro _ hY_approx h_ms_eq
           replace hY_approx := isApproximation_nil hY_approx
           left
@@ -408,7 +407,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
           have hY_wo' := wellOrdered_cons hY_wo
           obtain ⟨hY_coef_wo, hY_comp_wo, hY_tl_wo⟩ := hY_wo'
           revert h_ms_eq hf_eq h_analytic hF_in_ball
-          apply s.casesOn
+          apply s.recOn
           · intro h_analytic hf_eq hF_in_ball h_ms_eq
             left
             constructor
@@ -425,7 +424,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
             · exact apply_wellOrdered h_wo h_neg
             use Y_deg
             use (const s_hd basis_tl).mul Y_coef
-            use (mulMonomial Y_tl (const s_hd basis_tl) 0) + ((apply s_tl ms).mul (ms.mul (CoList.cons (Y_deg, Y_coef) Y_tl)))
+            use (mulMonomial Y_tl (const s_hd basis_tl) 0) + ((apply s_tl ms).mul (ms.mul (Seq.cons (Y_deg, Y_coef) Y_tl)))
             use fun x ↦ s_hd * (YC x)
             constructor
             · exact h_ms_eq
@@ -437,7 +436,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                 · exact hY_coef
               · constructor
                 · intro deg h_deg
-                  apply EventuallyEq.trans_isLittleO (f₂ := fY * toFun (CoList.cons s_hd s_tl) ∘ F)
+                  apply EventuallyEq.trans_isLittleO (f₂ := fY * toFun (Seq.cons s_hd s_tl) ∘ F)
                   · trans; exact hf_eq
                     apply eventuallyEq_iff_sub.mpr
                     simpa
@@ -453,7 +452,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                   constructor
                   · apply tail_analytic h_analytic
                   use mulMonomial Y_tl (const s_hd basis_tl) 0
-                  use ms.mul (CoList.cons (Y_deg, Y_coef) Y_tl)
+                  use ms.mul (Seq.cons (Y_deg, Y_coef) Y_tl)
                   use (fun x ↦ s_hd * (fY x - basis_hd x ^ Y_deg * YC x))
                   use F * fY
                   constructor
@@ -484,7 +483,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
         have hX_wo' := wellOrdered_cons hX_wo
         obtain ⟨hX_coef_wo, hX_comp_wo, hX_tl_wo⟩ := hX_wo'
         revert h_ms_eq hY_wo hY_approx
-        apply Y.casesOn
+        apply Y.recOn
         · intro _ hY_approx h_ms_eq
           replace hY_approx := isApproximation_nil hY_approx
           replace hf_eq : f =ᶠ[atTop] fX := by
@@ -542,7 +541,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
           have hY_wo' := wellOrdered_cons hY_wo
           obtain ⟨hY_coef_wo, hY_comp_wo, hY_tl_wo⟩ := hY_wo'
           revert h_ms_eq hf_eq h_analytic hF_in_ball
-          apply s.casesOn
+          apply s.recOn
           · intro h_analytic hf_eq hF_in_ball h_ms_eq
             replace hf_eq : f =ᶠ[atTop] fX := by
               trans
@@ -596,12 +595,9 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                 rfl
           · intro s_hd s_tl h_analytic hf_eq hF_in_ball h_ms_eq
             simp only [apply_cons, zero_add, mul_assoc, mul_cons_cons] at h_ms_eq
-            have h_out : ms'.out = ?_ := by simp only [h_ms_eq]; exact add_out_eq
-            simp [add_out] at h_out
-            split_ifs at h_out with h1 h2
-            · replace h_ms_eq := CoList.out_eq_cons h_out
-              clear h_out
-              use X_deg
+            rw [add_cons_cons] at h_ms_eq
+            split_ifs at h_ms_eq
+            · use X_deg
               use X_coef
               use ?_
               use XC
@@ -625,9 +621,9 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
               constructor
               · exact h_analytic
               focus
-              replace h_ms_eq : ms' = CoList.cons (X_deg, X_coef)
+              replace h_ms_eq : ms' = Seq.cons (X_deg, X_coef)
                   (add X_tl
-                  ((apply (CoList.cons s_hd s_tl) ms).mul (CoList.cons (Y_deg, Y_coef) Y_tl))) := by
+                  ((apply (Seq.cons s_hd s_tl) ms).mul (Seq.cons (Y_deg, Y_coef) Y_tl))) := by
                 rw [h_ms_eq]
                 congr
                 simp [apply_cons]
@@ -641,8 +637,8 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                 simp
                 ring_nf!
                 conv =>
-                  lhs; ext x; rw [show f x + (-fX x - fY x * toFun (CoList.cons s_hd s_tl) (F x)) =
-                    f x - (fX x + fY x * toFun (CoList.cons s_hd s_tl) (F x)) by ring_nf]
+                  lhs; ext x; rw [show f x + (-fX x - fY x * toFun (Seq.cons s_hd s_tl) (F x)) =
+                    f x - (fX x + fY x * toFun (Seq.cons s_hd s_tl) (F x)) by ring_nf]
                 apply eventuallyEq_iff_sub.mp
                 exact hf_eq
               constructor
@@ -654,9 +650,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
               constructor
               · exact hY_wo
               · exact hY_approx
-            · replace h_ms_eq := CoList.out_eq_cons h_out
-              clear h_out
-              simp only [← add_assoc] at h_ms_eq
+            · simp only [← add_assoc] at h_ms_eq
               use Y_deg
               use (const s_hd basis_tl).mul Y_coef
               use ?_
@@ -683,8 +677,8 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
               use s_tl
               constructor
               · apply tail_analytic h_analytic
-              use HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) (mulMonomial Y_tl (const s_hd basis_tl) 0)
-              use ms.mul (CoList.cons (Y_deg, Y_coef) Y_tl)
+              use HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_deg, X_coef) X_tl) (mulMonomial Y_tl (const s_hd basis_tl) 0)
+              use ms.mul (Seq.cons (Y_deg, Y_coef) Y_tl)
               use fun x ↦ fX x + s_hd * (fY x - basis_hd x ^ Y_deg * YC x)
               use F * fY
               constructor
@@ -722,9 +716,6 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                 · exact h_approx
                 · exact hY_approx
             · have h : X_deg = Y_deg := by linarith
-              clear h1 h2
-              replace h_ms_eq := CoList.out_eq_cons h_out
-              clear h_out
               simp only [← add_assoc] at h_ms_eq
               use X_deg
               use X_coef + ((const s_hd basis_tl).mul Y_coef)
@@ -755,7 +746,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
               constructor
               · exact tail_analytic h_analytic
               use HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl (mulMonomial Y_tl (const s_hd basis_tl) 0)
-              use ms.mul (CoList.cons (Y_deg, Y_coef) Y_tl)
+              use ms.mul (Seq.cons (Y_deg, Y_coef) Y_tl)
               use fun x ↦ (fX x - basis_hd x ^ X_deg * XC x) + s_hd * (fY x - basis_hd x ^ Y_deg * YC x)
               use F * fY
               constructor
@@ -810,15 +801,15 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
       · apply const_wellOrdered
       · apply one_isApproximation_one h_basis
 
-theorem analytic_of_all_le_one {s : LazySeries} (h : s.all fun x ↦ |x| ≤ 1) : s.analytic := by
+theorem analytic_of_all_le_one {s : LazySeries} (h : s.All fun x ↦ |x| ≤ 1) : s.analytic := by
   simp [analytic]
   apply lt_of_lt_of_le (b := 1)
   · simp
   apply FormalMultilinearSeries.le_radius_of_bound (C := 1)
   simp only [toFormalMultilinearSeries_norm]
   intro n
-  have := CoList.all_get h (n := n)
-  generalize CoList.get n s = t at *
+  have := Seq.all_get h (n := n)
+  generalize s.get? n = t at *
   cases t with
   | none => simp
   | some x =>

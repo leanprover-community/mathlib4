@@ -8,11 +8,13 @@ namespace TendstoTactic
 
 namespace PreMS
 
+open Stream' Seq
+
 def mulConst {basis : Basis} (ms : PreMS basis) (c : ℝ) : PreMS basis :=
   match basis with
   | [] => ms * c
-  | _ :: _ =>
-    CoList.map (fun (deg, coef) => (deg, mulConst coef c)) ms
+  | List.cons _ _ =>
+    Seq.map (fun (deg, coef) => (deg, mulConst coef c)) ms
 
 def neg {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   ms.mulConst (-1)
@@ -63,21 +65,21 @@ theorem one_isApproximation_one {basis : Basis} (h_wo : MS.wellOrderedBasis basi
 
 @[simp]
 theorem mulConst_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
-    mulConst (basis := basis_hd :: basis_tl) CoList.nil c = CoList.nil := by
+    mulConst (basis := basis_hd :: basis_tl) Seq.nil c = Seq.nil := by
   simp [mulConst]
 
 @[simp]
 theorem mulConst_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c deg : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
-    mulConst (basis := basis_hd :: basis_tl) (CoList.cons (deg, coef) tl) c =
-    CoList.cons (deg, coef.mulConst c) (tl.mulConst c) := by
+    mulConst (basis := basis_hd :: basis_tl) (Seq.cons (deg, coef) tl) c =
+    Seq.cons (deg, coef.mulConst c) (tl.mulConst c) := by
   simp [mulConst]
 
 @[simp]
 theorem mulConst_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : PreMS (basis_hd :: basis_tl)}
     {c : ℝ} :
     (mulConst X c).leadingExp = X.leadingExp := by
-  apply X.casesOn
+  apply X.recOn
   · simp [mulConst]
   · intro (deg, coef) tl
     simp [mulConst, leadingExp]
@@ -88,6 +90,7 @@ theorem const_mulConst {basis : Basis} {x y : ℝ}: (const x basis).mulConst y =
   | nil => simp [mulConst, const]
   | cons =>
     simp [mulConst, const]
+    congr
     apply const_mulConst
 
 theorem mulConst_wellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
@@ -103,7 +106,7 @@ theorem mulConst_wellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
       obtain ⟨X, h_ms_eq, hX_wo⟩ := ih
       subst h_ms_eq
       revert hX_wo
-      apply X.casesOn
+      apply X.recOn
       · intro
         left
         simp [mulConst]
@@ -143,7 +146,7 @@ theorem mulConst_isApproximation {basis : Basis} {ms : PreMS basis} {c : ℝ} {F
       simp only [motive] at ih
       obtain ⟨X, fX, h_ms_eq, hf_eq, hX_approx⟩ := ih
       revert h_ms_eq hX_approx
-      apply X.casesOn
+      apply X.recOn
       · intro h_ms_eq hX_approx
         left
         replace hX_approx := isApproximation_nil hX_approx
@@ -214,14 +217,14 @@ theorem neg_isApproximation {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
 
 @[simp]
 theorem neg_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
-    neg (basis := basis_hd :: basis_tl) CoList.nil = CoList.nil := by
+    neg (basis := basis_hd :: basis_tl) Seq.nil = Seq.nil := by
   simp [neg]
 
 @[simp]
 theorem neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
-    neg (basis := basis_hd :: basis_tl) (CoList.cons (deg, coef) tl) =
-    CoList.cons (deg, coef.neg) tl.neg := by
+    neg (basis := basis_hd :: basis_tl) (Seq.cons (deg, coef) tl) =
+    Seq.cons (deg, coef.neg) tl.neg := by
   simp [neg]
 
 end PreMS

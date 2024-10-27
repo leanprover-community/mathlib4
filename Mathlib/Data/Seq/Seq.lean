@@ -150,8 +150,10 @@ theorem ge_stable (s : Seq α) {aₙ : α} {n m : ℕ} (m_le_n : m ≤ n)
   have : s.get? m ≠ none := mt (s.le_stable m_le_n) this
   Option.ne_none_iff_exists'.mp this
 
+@[simp]
 theorem not_mem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
 
+@[simp]
 theorem mem_cons (a : α) : ∀ s : Seq α, a ∈ cons a s
   | ⟨_, _⟩ => Stream'.mem_cons (some a) _
 
@@ -225,19 +227,20 @@ theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
   apply Subtype.eq
   dsimp [tail, cons]
 
-@[simp]
+-- @[simp]
 theorem get?_tail (s : Seq α) (n) : get? (tail s) n = get? s (n + 1) :=
   rfl
 
 /-- Recursion principle for sequences, compare with `List.recOn`. -/
-def recOn {C : Seq α → Sort v} (s : Seq α) (h1 : C nil) (h2 : ∀ x s, C (cons x s)) :
-    C s := by
+def recOn {motive : Seq α → Sort v} (s : Seq α) (nil : motive nil)
+    (cons : ∀ x s, motive (cons x s)) :
+    motive s := by
   cases' H : destruct s with v
   · rw [destruct_eq_nil H]
-    apply h1
+    apply nil
   · cases' v with a s'
     rw [destruct_eq_cons H]
-    apply h2
+    apply cons
 
 theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by

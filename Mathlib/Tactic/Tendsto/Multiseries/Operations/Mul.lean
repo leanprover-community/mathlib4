@@ -8,11 +8,13 @@ namespace TendstoTactic
 
 namespace PreMS
 
+open Stream' Seq
+
 mutual
   noncomputable def mul {basis : Basis} (a b : PreMS basis) : PreMS basis :=
     match basis with
     | [] => a * b
-    | basis_hd :: basis_tl =>
+    | List.cons basis_hd basis_tl =>
       let ab := a.map fun (deg, coef) => mulMonomial b coef deg
       merge1 ab
 
@@ -27,24 +29,24 @@ open Filter Asymptotics
 
 @[simp]
 theorem nil_mul {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    mul CoList.nil ms = .nil := by
+    mul Seq.nil ms = .nil := by
   simp [mul, merge1_nil]
 
 @[simp]
 theorem mul_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    mul ms CoList.nil = .nil := by
+    mul ms Seq.nil = .nil := by
   simp [mul, mulMonomial]
-  apply ms.casesOn <;> simp
+  apply ms.recOn <;> simp
 
 @[simp]
 theorem mulMonomial_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {m_deg : ℝ} {m_coef : PreMS basis_tl} :
-    mulMonomial (basis_hd := basis_hd) CoList.nil m_coef m_deg = .nil := by
+    mulMonomial (basis_hd := basis_hd) Seq.nil m_coef m_deg = .nil := by
   simp [mulMonomial]
 
 @[simp]
 theorem mulMonomial_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg m_deg : ℝ} {x_coef m_coef : PreMS basis_tl}
     {x_tl : PreMS (basis_hd :: basis_tl)} :
-    mulMonomial (basis_hd := basis_hd) (CoList.cons (x_deg, x_coef) x_tl) m_coef m_deg =
+    mulMonomial (basis_hd := basis_hd) (Seq.cons (x_deg, x_coef) x_tl) m_coef m_deg =
     .cons (m_deg + x_deg, mul m_coef x_coef) (mulMonomial x_tl m_coef m_deg) := by
   simp [mulMonomial]
 
@@ -52,7 +54,7 @@ theorem mulMonomial_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg m_de
 theorem mulMonomial_leadingExp {basis_hd : _} {basis_tl : _} {b : PreMS (basis_hd :: basis_tl)}
     {m_coef : PreMS basis_tl} {m_deg : ℝ} :
     (mulMonomial b m_coef m_deg).leadingExp = m_deg + b.leadingExp := by
-  apply b.casesOn
+  apply b.recOn
   · simp [leadingExp]
   · intro (b_deg, b_coef) b_tl
     simp [leadingExp]
@@ -61,10 +63,10 @@ theorem mul_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {coe
     {tl X Y : PreMS (basis_hd :: basis_tl)} (h : X.mul Y = .cons (deg, coef) tl) :
     ∃ X_deg X_coef X_tl Y_deg Y_coef Y_tl, X = .cons (X_deg, X_coef) X_tl ∧ Y = .cons (Y_deg, Y_coef) Y_tl := by
   revert h
-  apply X.casesOn
+  apply X.recOn
   · simp
   · intro (X_deg, X_coef) X_tl
-    apply Y.casesOn
+    apply Y.recOn
     · simp
     · intro (Y_deg, Y_coef) Y_tl h
       use X_deg
@@ -77,42 +79,42 @@ theorem mul_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {coe
 @[simp]
 theorem mul_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg y_deg : ℝ} {x_coef y_coef : PreMS basis_tl}
     {x_tl y_tl : PreMS (basis_hd :: basis_tl)} :
-    mul (basis := basis_hd :: basis_tl) (CoList.cons (x_deg, x_coef) x_tl) (CoList.cons (y_deg, y_coef) y_tl) =
-    CoList.cons (x_deg + y_deg, x_coef.mul y_coef) ((mulMonomial y_tl x_coef x_deg) +
-      (x_tl.mul (CoList.cons (y_deg, y_coef) y_tl))) := by
+    mul (basis := basis_hd :: basis_tl) (Seq.cons (x_deg, x_coef) x_tl) (Seq.cons (y_deg, y_coef) y_tl) =
+    Seq.cons (x_deg + y_deg, x_coef.mul y_coef) ((mulMonomial y_tl x_coef x_deg) +
+      (x_tl.mul (Seq.cons (y_deg, y_coef) y_tl))) := by
   simp [mul]
 
 -- Note: the condition `x.wellOrdered` is required. Counterexample: `x = [1, 2]`, `y = [1]` (well-ordered).
 -- Then `lhs = [1, 2]` while `rhs = [2, 1]`.
 @[simp]
 theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg : ℝ} {x_coef : PreMS basis_tl}
-    {x_tl y : PreMS (basis_hd :: basis_tl)} (hx_wo : wellOrdered (basis := basis_hd :: basis_tl) (CoList.cons (x_deg, x_coef) x_tl)) :
-    mul (CoList.cons (x_deg, x_coef) x_tl) y = (mulMonomial y x_coef x_deg) + (x_tl.mul y) := by
+    {x_tl y : PreMS (basis_hd :: basis_tl)} (hx_wo : wellOrdered (basis := basis_hd :: basis_tl) (Seq.cons (x_deg, x_coef) x_tl)) :
+    mul (Seq.cons (x_deg, x_coef) x_tl) y = (mulMonomial y x_coef x_deg) + (x_tl.mul y) := by
   by_cases hy : y.leadingExp = ⊥
   · rw [← leadingExp_eq_bot] at hy
     simp [hy]
   simp [mul]
   rw [merge1_cons]
-  rw [← CoList.map_cons (x_deg, x_coef) x_tl (fun x ↦ y.mulMonomial x.2 x.1)]
-  generalize (CoList.cons (x_deg, x_coef) x_tl) = x at hx_wo
-  let motive : CoList (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
-    ∃ (x : PreMS (basis_hd :: basis_tl)), a = (CoList.map (fun x ↦ y.mulMonomial x.2 x.1) x) ∧
+  rw [← Seq.map_cons (x_deg, x_coef) x_tl (f := fun x ↦ y.mulMonomial x.2 x.1)]
+  generalize (Seq.cons (x_deg, x_coef) x_tl) = x at hx_wo
+  let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
+    ∃ (x : PreMS (basis_hd :: basis_tl)), a = (Seq.map (fun x ↦ y.mulMonomial x.2 x.1) x) ∧
     x.wellOrdered
-  apply CoList.Sorted.coind motive (r := fun x1 x2 ↦ x1 > x2)
+  apply Seq.Sorted.coind motive (r := fun x1 x2 ↦ x1 > x2)
   · intro hd tl ih
     simp only [motive] at ih
     obtain ⟨x, ih, hx_wo⟩ := ih
     revert ih hx_wo
-    apply x.casesOn
+    apply x.recOn
     · intro ih hx_wo
       simp at ih
     intro (x_deg, x_coef) x_tl ih hx_wo
     obtain ⟨hx_coef_wo, hx_comp, hx_tail_wo⟩ := wellOrdered_cons hx_wo
-    simp at ih
+    simp [Seq.cons_eq_cons] at ih
     rw [ih.left, ih.right]
     constructor
     · revert hx_comp
-      apply x_tl.casesOn
+      apply x_tl.recOn
       · intro hx_comp
         simp
       · intro (x_tl_deg, x_tl_coef) x_tl_tl hx_comp
@@ -127,28 +129,28 @@ theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg : ℝ} {x_co
 @[simp]
 theorem mul_leadingExp {basis_hd : _} {basis_tl : _} {x y : PreMS (basis_hd :: basis_tl)} :
     (mul x y).leadingExp = x.leadingExp + y.leadingExp := by
-  apply x.casesOn
+  apply x.recOn
   · simp [leadingExp]
   intro (x_deg, x_coef) x_tl
-  apply y.casesOn
+  apply y.recOn
   · simp [leadingExp]
   intro (y_deg, y_coef) y_tl
-  have : CoList.head (mul (basis := basis_hd :: basis_tl) (CoList.cons (x_deg, x_coef) x_tl) (CoList.cons (y_deg, y_coef) y_tl)) = .some ?_ := by
+  have : Seq.head (mul (basis := basis_hd :: basis_tl) (Seq.cons (x_deg, x_coef) x_tl) (Seq.cons (y_deg, y_coef) y_tl)) = .some ?_ := by
     simp
     exact Eq.refl _
   simp [leadingExp_of_head, this]
 
 theorem mul_eq_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {X Y : PreMS (basis_hd :: basis_tl)} (h : X.mul Y = CoList.nil) :
+    {X Y : PreMS (basis_hd :: basis_tl)} (h : X.mul Y = Seq.nil) :
     X = .nil ∨ Y = .nil := by
   revert h
-  apply X.casesOn
+  apply X.recOn
   · simp
   · intro (X_deg, X_coef) X_tl
-    apply Y.casesOn
+    apply Y.recOn
     · simp
     · intro (Y_deg, Y_coef) Y_tl h
-      apply_fun CoList.head at h
+      apply_fun Seq.head at h
       simp at h
 
 -- TODO : can be proven without coinduction?
@@ -159,11 +161,11 @@ theorem mul_one' {basis : Basis} {ms : PreMS basis} : mul ms (one basis) = ms :=
   | cons basis_hd basis_tl =>
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
       x = y.mul (one (basis_hd :: basis_tl))
-    apply CoList.Eq.coind motive
+    apply Seq.Eq.coind motive
     · intro a b ih
       simp only [motive] at ih
       subst ih
-      apply b.casesOn
+      apply b.recOn
       · right
         simp
       · intro (deg, coef) tl
@@ -176,7 +178,7 @@ theorem mul_one' {basis : Basis} {ms : PreMS basis} : mul ms (one basis) = ms :=
         · congr <;> exact Eq.refl _
         simp only [motive]
         · exact Eq.refl _
-        · simp [one, const]
+        · simp [one, const, Seq.cons_eq_cons]
           apply mul_one'
     · simp only [motive]
 
@@ -188,15 +190,15 @@ theorem one_mul' {basis : Basis} {ms : PreMS basis} : mul (one basis) ms = ms :=
     simp [one, const, mul]
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
       x = y.mulMonomial (const 1 basis_tl) 0
-    apply CoList.Eq.coind motive
+    apply Seq.Eq.coind motive
     · intro x y ih
       subst ih
-      apply y.casesOn
+      apply y.recOn
       · simp
       · intro (deg, coef) tl
         left
         use ?_, ?_, ?_
-        simp
+        simp [Seq.cons_eq_cons]
         constructor
         · constructor <;> exact Eq.refl _
         · constructor
@@ -222,21 +224,21 @@ mutual
       ∃ (b : PreMS (basis_hd :: basis_tl)),
         x = b.mulMonomial (m_coef.mulConst c) m_deg ∧
         y = (b.mulMonomial m_coef m_deg).mulConst c
-    apply CoList.Eq.coind motive
+    apply Seq.Eq.coind motive
     · intro x y ih
       simp only [motive] at ih ⊢
       obtain ⟨b, hx, hy⟩ := ih
       subst hx hy
-      apply b.casesOn
+      apply b.recOn
       · simp
       intro (b_deg, b_coef) b_tl
       left
       use ?_, ?_, ?_
       constructor
-      · simp [-CoList.cons_eq_cons]
+      · simp
         exact Eq.refl _
       constructor
-      · simp
+      · simp [Seq.cons_eq_cons]
         constructor
         · rw [mul_mulConst]
         · exact Eq.refl _
@@ -251,25 +253,25 @@ mutual
     | cons basis_hd basis_tl =>
       let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
         ∃ (X Y S : PreMS (basis_hd :: basis_tl)), a = S + (X.mulConst c).mul Y ∧ b = S + (X.mul Y).mulConst c
-      apply CoList.Eq.coind_strong motive
+      apply Seq.Eq.coind_strong motive
       · intro a b ih
         simp only [motive] at ih ⊢
         obtain ⟨X, Y, S, ha, hb⟩ := ih
         subst ha hb
-        apply X.casesOn
+        apply X.recOn
         · simp
         intro (X_deg, X_coef) X_tl
-        apply Y.casesOn
+        apply Y.recOn
         · simp
         intro (Y_deg, Y_coef) Y_tl
         right
-        apply S.casesOn
+        apply S.recOn
         · use ?_, ?_, ?_
           constructor
-          · simp [-CoList.cons_eq_cons]
+          · simp
             exact Eq.refl _
           constructor
-          · simp
+          · simp [Seq.cons_eq_cons]
             constructor
             · rw [mul_mulConst]
             · exact Eq.refl _
@@ -286,7 +288,7 @@ mutual
           · exact Eq.refl _
           constructor
           · exact Eq.refl _
-          use CoList.cons (X_deg, X_coef) X_tl, CoList.cons (Y_deg, Y_coef) Y_tl, S_tl
+          use Seq.cons (X_deg, X_coef) X_tl, Seq.cons (Y_deg, Y_coef) Y_tl, S_tl
           constructor
           · simp
           · simp
@@ -294,7 +296,7 @@ mutual
           constructor
           · exact Eq.refl _
           constructor
-          · simp
+          · simp [Seq.cons_eq_cons]
             constructor
             · rw [mul_mulConst]
             · exact Eq.refl _
@@ -308,7 +310,7 @@ mutual
           constructor
           · exact Eq.refl _
           constructor
-          · simp
+          · simp [Seq.cons_eq_cons]
             constructor
             · rw [mul_mulConst]
             · exact Eq.refl _
@@ -332,24 +334,24 @@ mutual
       ∃ (b : PreMS (basis_hd :: basis_tl)),
       x = b.mulMonomial (m_coef1 + m_coef2) m_deg ∧
       y = b.mulMonomial m_coef1 m_deg + b.mulMonomial m_coef2 m_deg
-    apply CoList.Eq.coind motive
+    apply Seq.Eq.coind motive
     · intro x y ih
       simp only [motive] at ih
       obtain ⟨b, hx, hy⟩ := ih
       subst hx hy
-      apply b.casesOn
+      apply b.recOn
       · right
         simp
       · intro (b_deg, b_coef) b_tl
         left
         use ?_, ?_, ?_
         constructor
-        · simp
+        · simp [Seq.cons_eq_cons]
           constructor
           · exact Eq.refl _
           · exact Eq.refl _
         constructor
-        · simp [add_cons_cons]
+        · simp [add_cons_cons, Seq.cons_eq_cons]
           constructor
           · symm
             apply add_mul_right'
@@ -369,39 +371,39 @@ mutual
     cases basis with
     | nil => simp [mul]; ring
     | cons basis_hd basis_tl =>
-      apply Z.casesOn
+      apply Z.recOn
       · simp
       intro (Z_deg, Z_coef) Z_tl
       let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
         ∃ (S X Y : PreMS (basis_hd :: basis_tl)),
           a = S + ((X + Y).mul (.cons (Z_deg, Z_coef) Z_tl)) ∧
           b = S + ((X.mul (.cons (Z_deg, Z_coef) Z_tl)) + (Y.mul (.cons (Z_deg, Z_coef) Z_tl)))
-      apply CoList.Eq.coind_strong motive
+      apply Seq.Eq.coind_strong motive
       · intro a b ih
         obtain ⟨S, X, Y, ha, hb⟩ := ih
         subst ha hb
-        apply X.casesOn
+        apply X.recOn
         · left
           simp
         intro (X_deg, X_coef) X_tl
-        apply Y.casesOn
+        apply Y.recOn
         · left
           simp
         intro (Y_deg, Y_coef) Y_tl
         right
-        apply S.casesOn
+        apply S.recOn
         · simp
           rw [add_cons_cons, add_cons_cons]
           split_ifs <;> (try exfalso; linarith)
           · use ?_, ?_, ?_
             constructor
-            · simp
+            · simp [Seq.cons_eq_cons]
               constructor
               · constructor <;> exact Eq.refl _
               · exact Eq.refl _
             use ?_
             constructor
-            · simp
+            · simp [Seq.cons_eq_cons]
               exact Eq.refl _
             simp [motive]
             use ?_, ?_, ?_
@@ -411,14 +413,13 @@ mutual
               abel
           · use ?_, ?_, ?_
             constructor
-            · simp
+            · simp [Seq.cons_eq_cons]
               constructor
               · constructor <;> exact Eq.refl _
               · exact Eq.refl _
             use ?_
             constructor
-            · simp
-              exact Eq.refl _
+            · exact Eq.refl _
             simp [motive]
             use ?_, ?_, ?_
             constructor
@@ -429,13 +430,13 @@ mutual
             subst this
             use ?_, ?_, ?_
             constructor
-            · simp
+            · simp [Seq.cons_eq_cons]
               constructor
               · constructor <;> exact Eq.refl _
               · exact Eq.refl _
             use ?_
             constructor
-            · simp
+            · simp [Seq.cons_eq_cons]
               constructor
               · symm
                 apply add_mul_right'
@@ -477,8 +478,7 @@ mutual
               split_ifs
               exact Eq.refl _
             constructor
-            · simp [add_cons_cons]
-              exact Eq.refl _
+            · exact Eq.refl _
             simp [motive]
             use (.cons (S_deg, S_coef) S_tl) + mulMonomial Z_tl X_coef X_deg, X_tl, (.cons (Y_deg, Y_coef) Y_tl)
             constructor
@@ -492,8 +492,7 @@ mutual
               split_ifs
               exact Eq.refl _
             constructor
-            · simp [add_cons_cons]
-              exact Eq.refl _
+            · exact Eq.refl _
             simp [motive]
             use mulMonomial Z_tl X_coef X_deg + S_tl, X_tl, (.cons (Y_deg, Y_coef) Y_tl)
             constructor
@@ -528,8 +527,7 @@ mutual
               split_ifs
               exact Eq.refl _
             constructor
-            · simp [add_cons_cons]
-              exact Eq.refl _
+            · exact Eq.refl _
             simp [motive]
             use (.cons (S_deg, S_coef) S_tl) + mulMonomial Z_tl Y_coef Y_deg, (.cons (X_deg, X_coef) X_tl), Y_tl
             constructor
@@ -543,8 +541,7 @@ mutual
               split_ifs
               exact Eq.refl _
             constructor
-            · simp [add_cons_cons]
-              exact Eq.refl _
+            · exact Eq.refl _
             simp [motive]
             use mulMonomial Z_tl Y_coef Y_deg + S_tl, (.cons (X_deg, X_coef) X_tl), Y_tl
             constructor
@@ -581,8 +578,7 @@ mutual
               split_ifs
               exact Eq.refl _
             constructor
-            · simp [add_cons_cons]
-              constructor
+            · congr
               · symm
                 apply add_mul_right'
               · exact Eq.refl _
@@ -603,10 +599,8 @@ mutual
               split_ifs
               exact Eq.refl _
             constructor
-            · simp [add_cons_cons]
-              constructor
-              · congr
-                symm
+            · congr
+              · symm
                 apply add_mul_right'
               · exact Eq.refl _
             simp [motive]
@@ -630,16 +624,16 @@ mutual
       ∃ (b1 b2 : PreMS (basis_hd :: basis_tl)),
       x = (b1 + b2).mulMonomial m_coef m_deg ∧
       y = b1.mulMonomial m_coef m_deg + b2.mulMonomial m_coef m_deg
-    apply CoList.Eq.coind_strong motive
+    apply Seq.Eq.coind_strong motive
     · intro x y ih
       simp only [motive] at ih
       obtain ⟨b1, b2, hx, hy⟩ := ih
       subst hx hy
-      apply b1.casesOn
+      apply b1.recOn
       · left
         simp
       intro (b1_deg, b1_coef) b1_tl
-      apply b2.casesOn
+      apply b2.recOn
       · left
         simp
       intro (b2_deg, b2_coef) b2_tl
@@ -648,7 +642,7 @@ mutual
       split_ifs with h1 h2
       · use ?_, ?_, ?_
         constructor
-        · simp only [mulMonomial_cons, CoList.cons_eq_cons]
+        · simp only [mulMonomial_cons, Seq.cons_eq_cons]
           constructor
           · exact Eq.refl _
           · exact Eq.refl _
@@ -664,7 +658,7 @@ mutual
         · simp
       · use ?_, ?_, ?_
         constructor
-        · simp only [mulMonomial_cons, CoList.cons_eq_cons]
+        · simp only [mulMonomial_cons, Seq.cons_eq_cons]
           constructor
           · exact Eq.refl _
           · exact Eq.refl _
@@ -682,13 +676,13 @@ mutual
         subst this
         use ?_, ?_, ?_
         constructor
-        · simp only [mulMonomial_cons, CoList.cons_eq_cons]
+        · simp only [mulMonomial_cons, Seq.cons_eq_cons]
           constructor
           · exact Eq.refl _
           · exact Eq.refl _
         constructor
         · simp [add_cons_cons]
-          constructor
+          congr
           · symm
             apply add_mul_left' m_wo
           · exact Eq.refl _
@@ -710,46 +704,44 @@ mutual
     cases basis with
     | nil => simp [mul]; ring
     | cons basis_hd basis_tl =>
-      apply X.casesOn
+      apply X.recOn
       · simp
       intro (X_deg, X_coef) X_tl
-      apply Y.casesOn
+      apply Y.recOn
       · simp
       intro (Y_deg, Y_coef) Y_tl
       let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
         ∃ (Z S : PreMS (basis_hd :: basis_tl)),
-          a = S + Z.mul (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) (CoList.cons (Y_deg, Y_coef) Y_tl)) ∧
-          b = S + (Z.mul (CoList.cons (X_deg, X_coef) X_tl)) + Z.mul (CoList.cons (Y_deg, Y_coef) Y_tl) ∧
+          a = S + Z.mul (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_deg, X_coef) X_tl) (Seq.cons (Y_deg, Y_coef) Y_tl)) ∧
+          b = S + (Z.mul (Seq.cons (X_deg, X_coef) X_tl)) + Z.mul (Seq.cons (Y_deg, Y_coef) Y_tl) ∧
           Z.wellOrdered
-      apply CoList.Eq.coind_strong motive
+      apply Seq.Eq.coind_strong motive
       · intro a b ih
         simp only [motive] at ih
         obtain ⟨Z, S, ha, hb, hZ_wo⟩ := ih
         subst ha hb
         revert hZ_wo
-        apply Z.casesOn
+        apply Z.recOn
         · intro
           left
           simp
         intro (Z_deg, Z_coef) Z_tl hZ_wo
         obtain ⟨hZ_coef_wo, hZ_comp, hZ_tl_wo⟩ := wellOrdered_cons hZ_wo
         right
-        apply S.casesOn
+        apply S.recOn
         · rw [add_cons_cons]
           split_ifs
           · use ?_, ?_, ?_
             constructor
             · simp
-              constructor
-              · exact Eq.refl _
-              · exact Eq.refl _
+              exact Eq.refl _
             constructor
             · simp
               rw [add_cons_cons]
               split_ifs <;> (try exfalso; linarith)
               exact Eq.refl _
             simp only [motive]
-            use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl (CoList.cons (Y_deg, Y_coef) Y_tl)).mulMonomial Z_coef Z_deg
+            use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl (Seq.cons (Y_deg, Y_coef) Y_tl)).mulMonomial Z_coef Z_deg
             constructor
             · rw [add_cons_cons]
               split_ifs
@@ -762,16 +754,14 @@ mutual
           · use ?_, ?_, ?_
             constructor
             · simp
-              constructor
-              · exact Eq.refl _
-              · exact Eq.refl _
+              exact Eq.refl _
             constructor
             · simp
               rw [add_cons_cons]
               split_ifs <;> (try exfalso; linarith)
               exact Eq.refl _
             simp only [motive]
-            use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) Y_tl).mulMonomial Z_coef Z_deg
+            use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_deg, X_coef) X_tl) Y_tl).mulMonomial Z_coef Z_deg
             constructor
             · rw [add_cons_cons]
               split_ifs
@@ -784,9 +774,7 @@ mutual
           · use ?_, ?_, ?_
             constructor
             · simp
-              constructor
-              · exact Eq.refl _
-              · exact Eq.refl _
+              exact Eq.refl _
             constructor
             · simp
               rw [add_cons_cons]
@@ -823,7 +811,7 @@ mutual
               simp only [motive]
             )
           )
-          · use (CoList.cons (Z_deg, Z_coef) Z_tl), S_tl
+          · use (Seq.cons (Z_deg, Z_coef) Z_tl), S_tl
             constructor
             · rw [add_cons_cons]
               split_ifs
@@ -835,7 +823,7 @@ mutual
               split_ifs
               rfl
             · assumption
-          · use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl (CoList.cons (Y_deg, Y_coef) Y_tl)).mulMonomial Z_coef Z_deg + (CoList.cons (S_deg, S_coef) S_tl)
+          · use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl (Seq.cons (Y_deg, Y_coef) Y_tl)).mulMonomial Z_coef Z_deg + (Seq.cons (S_deg, S_coef) S_tl)
             constructor
             · rw [add_cons_cons]
               split_ifs
@@ -847,7 +835,7 @@ mutual
             · assumption
           · have : S_deg = Z_deg + X_deg := by linarith
             subst this
-            use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl (CoList.cons (Y_deg, Y_coef) Y_tl)).mulMonomial Z_coef Z_deg + S_tl
+            use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl (Seq.cons (Y_deg, Y_coef) Y_tl)).mulMonomial Z_coef Z_deg + S_tl
             constructor
             · rw [add_cons_cons]
               split_ifs
@@ -858,7 +846,7 @@ mutual
               abel
             · assumption
 
-          · use (CoList.cons (Z_deg, Z_coef) Z_tl), S_tl
+          · use (Seq.cons (Z_deg, Z_coef) Z_tl), S_tl
             constructor
             · rw [add_cons_cons]
               split_ifs
@@ -870,7 +858,7 @@ mutual
               split_ifs
               rfl
             · assumption
-          · use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) Y_tl).mulMonomial Z_coef Z_deg + (CoList.cons (S_deg, S_coef) S_tl)
+          · use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_deg, X_coef) X_tl) Y_tl).mulMonomial Z_coef Z_deg + (Seq.cons (S_deg, S_coef) S_tl)
             constructor
             · rw [add_cons_cons]
               split_ifs
@@ -882,7 +870,7 @@ mutual
             · assumption
           · have : S_deg = Z_deg + Y_deg := by linarith
             subst this
-            use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (X_deg, X_coef) X_tl) Y_tl).mulMonomial Z_coef Z_deg + S_tl
+            use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_deg, X_coef) X_tl) Y_tl).mulMonomial Z_coef Z_deg + S_tl
             constructor
             · rw [add_cons_cons]
               split_ifs
@@ -893,7 +881,7 @@ mutual
               abel
             · assumption
 
-          · use (CoList.cons (Z_deg, Z_coef) Z_tl), S_tl
+          · use (Seq.cons (Z_deg, Z_coef) Z_tl), S_tl
             constructor
             · rw [add_cons_cons]
               split_ifs
@@ -907,7 +895,7 @@ mutual
             · assumption
           · have : X_deg = Y_deg := by linarith
             subst this
-            use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl Y_tl).mulMonomial Z_coef Z_deg + (CoList.cons (S_deg, S_coef) S_tl)
+            use Z_tl, (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl Y_tl).mulMonomial Z_coef Z_deg + (Seq.cons (S_deg, S_coef) S_tl)
             constructor
             · rw [add_cons_cons]
               split_ifs
@@ -942,7 +930,7 @@ mutual
       (b.mulMonomial m_coef1 m_deg1).mulMonomial m_coef2 m_deg2 =
       b.mulMonomial (m_coef2.mul m_coef1) (m_deg2 + m_deg1) := by
     simp [mulMonomial]
-    rw [CoList.map_comp]
+    rw [← Seq.map_comp]
     congr
     eta_expand
     simp
@@ -962,37 +950,34 @@ mutual
       (hm_wo : m_coef.wellOrdered) :
       (b.mulMonomial m_coef m_deg).mul c =
       (b.mul c).mulMonomial m_coef m_deg := by
-    apply c.casesOn
+    apply c.recOn
     · simp
     intro (c_deg, c_coef) c_tl
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
       ∃ (S b : PreMS (basis_hd :: basis_tl)),
-        x = S + (b.mulMonomial m_coef m_deg).mul (CoList.cons (c_deg, c_coef) c_tl) ∧
-        y = S + (b.mul (CoList.cons (c_deg, c_coef) c_tl)).mulMonomial m_coef m_deg
-    apply CoList.Eq.coind_strong motive
+        x = S + (b.mulMonomial m_coef m_deg).mul (Seq.cons (c_deg, c_coef) c_tl) ∧
+        y = S + (b.mul (Seq.cons (c_deg, c_coef) c_tl)).mulMonomial m_coef m_deg
+    apply Seq.Eq.coind_strong motive
     · intro x y ih
       simp only [motive] at ih
       obtain ⟨S, b, hx, hy⟩ := ih
       subst hx hy
-      apply b.casesOn
+      apply b.recOn
       · left
         simp
       intro (b_deg, b_coef) b_tl
       right
-      apply S.casesOn
+      apply S.recOn
       · use ?_, ?_, ?_
         simp
         constructor
-        · constructor
-          · exact Eq.refl _
-          · exact Eq.refl _
+        · exact Eq.refl _
         constructor
-        · constructor
-          · congr 1
-            · abel
-            · symm
-              apply mul_assoc'
-              exact hm_wo
+        · congr 2
+          · abel
+          · symm
+            apply mul_assoc'
+            exact hm_wo
           · exact Eq.refl _
         simp only [motive]
         use mulMonomial c_tl (m_coef.mul b_coef) (m_deg + b_deg), b_tl
@@ -1070,29 +1055,29 @@ mutual
     cases basis with
     | nil => simp [mul]; ring
     | cons basis_hd basis_tl =>
-      apply Y.casesOn
+      apply Y.recOn
       · simp
       intro (Y_deg, Y_coef) Y_tl
-      apply Z.casesOn
+      apply Z.recOn
       · simp
       intro (Z_deg, Z_coef) Z_tl
       let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
         ∃ (X S : PreMS (basis_hd :: basis_tl)),
-          a = S + (X.mul (CoList.cons (Y_deg, Y_coef) Y_tl)).mul (CoList.cons (Z_deg, Z_coef) Z_tl) ∧
-          b = S + X.mul (mul (CoList.cons (Y_deg, Y_coef) Y_tl) (CoList.cons (Z_deg, Z_coef) Z_tl)) ∧
+          a = S + (X.mul (Seq.cons (Y_deg, Y_coef) Y_tl)).mul (Seq.cons (Z_deg, Z_coef) Z_tl) ∧
+          b = S + X.mul (mul (Seq.cons (Y_deg, Y_coef) Y_tl) (Seq.cons (Z_deg, Z_coef) Z_tl)) ∧
           X.wellOrdered
-      apply CoList.Eq.coind_strong motive
+      apply Seq.Eq.coind_strong motive
       · intro a b ih
         obtain ⟨X, S, ha, hb, hX_wo⟩ := ih
         subst ha hb
         revert hX_wo
-        apply X.casesOn
+        apply X.recOn
         · intro
           simp
         intro (X_deg, X_coef) X_tl hX_wo
         obtain ⟨hX_coef_wo, _, hX_tl_wo⟩ := wellOrdered_cons hX_wo
         right
-        apply S.casesOn
+        apply S.recOn
         · use ?_, ?_, ?_
           simp only [mul_cons_cons, nil_add]
           constructor
@@ -1103,7 +1088,7 @@ mutual
             · rw [mul_assoc' hX_coef_wo]
             · exact Eq.refl _
           simp only [motive]
-          use X_tl, mulMonomial Z_tl (X_coef.mul Y_coef) (X_deg + Y_deg) + (mulMonomial (mul (basis := basis_hd :: basis_tl) Y_tl (CoList.cons (Z_deg, Z_coef) Z_tl)) X_coef X_deg)
+          use X_tl, mulMonomial Z_tl (X_coef.mul Y_coef) (X_deg + Y_deg) + (mulMonomial (mul (basis := basis_hd :: basis_tl) Y_tl (Seq.cons (Z_deg, Z_coef) Z_tl)) X_coef X_deg)
           constructor
           · rw [add_mul_right', mul_mulMonomial hX_coef_wo]
             abel
@@ -1119,7 +1104,7 @@ mutual
             constructor
             · exact Eq.refl _
             simp only [motive]
-            use CoList.cons (X_deg, X_coef) X_tl, S_tl
+            use Seq.cons (X_deg, X_coef) X_tl, S_tl
             constructor
             · simp
             constructor
@@ -1133,7 +1118,7 @@ mutual
               · rw [mul_assoc' hX_coef_wo]
               · exact Eq.refl _
             simp only [motive]
-            use X_tl, mulMonomial Z_tl (X_coef.mul Y_coef) (X_deg + Y_deg) + (mulMonomial (mul (basis := basis_hd :: basis_tl) Y_tl (CoList.cons (Z_deg, Z_coef) Z_tl)) X_coef X_deg) + CoList.cons (S_deg, S_coef) S_tl
+            use X_tl, mulMonomial Z_tl (X_coef.mul Y_coef) (X_deg + Y_deg) + (mulMonomial (mul (basis := basis_hd :: basis_tl) Y_tl (Seq.cons (Z_deg, Z_coef) Z_tl)) X_coef X_deg) + Seq.cons (S_deg, S_coef) S_tl
             constructor
             · rw [add_mul_right', mul_mulMonomial hX_coef_wo]
               abel
@@ -1149,7 +1134,7 @@ mutual
               · rw [mul_assoc' hX_coef_wo]
               · exact Eq.refl _
             simp only [motive]
-            use X_tl, mulMonomial Z_tl (X_coef.mul Y_coef) (X_deg + Y_deg) + (mulMonomial (mul (basis := basis_hd :: basis_tl) Y_tl (CoList.cons (Z_deg, Z_coef) Z_tl)) X_coef X_deg) + S_tl
+            use X_tl, mulMonomial Z_tl (X_coef.mul Y_coef) (X_deg + Y_deg) + (mulMonomial (mul (basis := basis_hd :: basis_tl) Y_tl (Seq.cons (Z_deg, Z_coef) Z_tl)) X_coef X_deg) + S_tl
             constructor
             · rw [add_mul_right', mul_mulMonomial hX_coef_wo]
               abel
@@ -1166,40 +1151,40 @@ end
 -- Is not needed so far
 -- @[simp]
 -- theorem merge1_mul_comm_left {basis_hd : ℝ → ℝ} {basis_tl : Basis}
---     {s : CoList (PreMS (basis_hd :: basis_tl))} {X : PreMS (basis_hd :: basis_tl)} :
+--     {s : Seq (PreMS (basis_hd :: basis_tl))} {X : PreMS (basis_hd :: basis_tl)} :
 --     merge1 (s.map (X.mul ·)) = X.mul (merge1 s) := by
 --   sorry
 
 @[simp]
 theorem merge1_mul_comm_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {s : CoList (PreMS (basis_hd :: basis_tl))} {X : PreMS (basis_hd :: basis_tl)} :
+    {s : Seq (PreMS (basis_hd :: basis_tl))} {X : PreMS (basis_hd :: basis_tl)} :
     merge1 (s.map (·.mul X)) = (merge1 s).mul X := by
-  apply X.casesOn
+  apply X.recOn
   · simp
-    apply s.casesOn
+    apply s.recOn
     · simp
     · simp
   intro (X_deg, X_coef) X_tl
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
     ∃ Y s,
-      a = Y + merge1 (CoList.map (fun x ↦ x.mul (.cons (X_deg, X_coef) X_tl)) s) ∧
+      a = Y + merge1 (Seq.map (fun x ↦ x.mul (.cons (X_deg, X_coef) X_tl)) s) ∧
       b = Y + (merge1 s).mul (.cons (X_deg, X_coef) X_tl)
-  apply CoList.Eq.coind_strong motive
+  apply Seq.Eq.coind_strong motive
   · intro a b ih
     simp only [motive] at ih ⊢
     obtain ⟨Y, s, ha, hb⟩ := ih
     subst ha hb
-    apply s.casesOn
+    apply s.recOn
     · simp
     intro s_hd s_tl
-    apply s_hd.casesOn
+    apply s_hd.recOn
     · simp
     intro (s_hd_deg, s_hd_coef) s_hd_tl
     right
-    apply Y.casesOn
+    apply Y.recOn
     · use ?_, ?_, ?_
       constructor
-      · simp [-CoList.cons_eq_cons]
+      · simp
         exact Eq.refl _
       constructor
       · simp
@@ -1210,7 +1195,7 @@ theorem merge1_mul_comm_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       · rw [add_mul_right']
         abel
     intro (Y_deg, Y_coef) Y_tl
-    simp only [CoList.map_cons, mul_cons_cons, merge1_cons_head_cons]
+    simp only [Seq.map_cons, mul_cons_cons, merge1_cons_head_cons]
     rw [add_cons_cons, add_cons_cons]
     split_ifs
     · use ?_, ?_, ?_
@@ -1218,17 +1203,16 @@ theorem merge1_mul_comm_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       · exact Eq.refl _
       constructor
       · exact Eq.refl _
-      use ?_, CoList.cons (CoList.cons (s_hd_deg, s_hd_coef) s_hd_tl) s_tl
+      use ?_, Seq.cons (Seq.cons (s_hd_deg, s_hd_coef) s_hd_tl) s_tl
       constructor
-      · rw [CoList.map_cons, mul_cons_cons, merge1_cons_head_cons]
+      · rw [Seq.map_cons, mul_cons_cons, merge1_cons_head_cons]
         exact Eq.refl _
       · simp
     · use ?_, ?_, ?_
       constructor
       · exact Eq.refl _
       constructor
-      · simp
-        exact Eq.refl _
+      · exact Eq.refl _
       use ?_, s_tl
       constructor
       · rw [← add_assoc]
@@ -1239,8 +1223,7 @@ theorem merge1_mul_comm_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       constructor
       · exact Eq.refl _
       constructor
-      · simp
-        exact Eq.refl _
+      · exact Eq.refl _
       use ?_, s_tl
       constructor
       · rw [← add_assoc]
@@ -1283,8 +1266,8 @@ theorem longAdd_zeros {basis : Basis} {k : ℕ} : longAdd (fun (i : Fin k) ↦ 0
   | zero => simp [longAdd]
   | succ k ih => simp [longAdd, ih]
 
-theorem longAdd_nils {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ} : longAdd (fun (i : Fin k) ↦ CoList.nil) = (0 : PreMS (basis_hd :: basis_tl)) := by
-  rw [show CoList.nil = (0 : PreMS (basis_hd :: basis_tl)) by rfl, longAdd_zeros]
+theorem longAdd_nils {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ} : longAdd (fun (i : Fin k) ↦ Seq.nil) = (0 : PreMS (basis_hd :: basis_tl)) := by
+  rw [show Seq.nil = (0 : PreMS (basis_hd :: basis_tl)) by rfl, longAdd_zeros]
 
 noncomputable def longAdd' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
     (args : Fin k → PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) :=
@@ -1323,7 +1306,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
       replace h_deg := Finset.sup'_eq_bot.mp h_deg
       simp at h_deg
       have : args = fun _ ↦ .nil := by
-        ext i
+        ext1 i
         specialize h_deg i
         exact leadingExp_eq_bot.mpr h_deg
       rw [this]
@@ -1376,7 +1359,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
             specialize h_deg' i
             exact leadingExp_eq_bot.mpr h_deg'
           simp only [longAdd, ← h_coef_tl_args, this,
-            show leadingExp CoList.nil = ⊥ by simp [leadingExp], WithBot.bot_ne_coe, ↓reduceDIte,
+            show leadingExp Seq.nil = ⊥ by simp [leadingExp], WithBot.bot_ne_coe, ↓reduceDIte,
             longAdd_zeros, Fin.natCast_eq_last, add_zero, Nat.cast_one, zero_add,
             longAdd_nils, add_nil, h_last] at h_coef h_tl
           rw [← h_coef, ← h_tl, nil_add]
@@ -1403,7 +1386,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
               else (0, args i.castSucc)).2) =
             tl' by rw [← h_tl', ← h_coef_tl_args']]
           -- навели
-          have h_left_eq : (longAdd fun i ↦ args i.castSucc) = CoList.cons (deg', coef') tl' := by
+          have h_left_eq : (longAdd fun i ↦ args i.castSucc) = Seq.cons (deg', coef') tl' := by
             rw [ih]
             simp [longAdd']
             have : ∀ i h, h_coefs_tls_ deg' i h = h_coefs_tls' i h := by
@@ -1411,7 +1394,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
               rfl
             generalize_proofs
             simp [h_deg']
-            constructor
+            congr
             · conv in fun h ↦ (h_coefs_tls_ deg' _ h).choose => -- very inconvinient
                 ext h
                 rw [this i h]
@@ -1474,7 +1457,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
             symm at h_tl
             subst h_coef
             subst h_tl
-            apply cons_add h_lt
+            rw [add_cons_left h_lt]
           | inr h =>
           cases h with
           | inl h_eq =>
@@ -1502,24 +1485,23 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
 
             revert h_eq h1
             generalize (args ↑(k + 1)) = a at *
-            apply a.casesOn
+            apply a.recOn
             · intro h_eq h1 h_coef h_tl
               simp [leadingExp] at h_eq
             · intro (a_deg, a_coef) a_tl h_eq h1 h_tl h_coef
               simp [leadingExp] at h_eq
               subst h_eq
-              have h_out : CoList.out (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (CoList.cons (a_deg, coef') tl') (CoList.cons (a_deg, a_coef) a_tl)) =
-                ?_ := by exact add_out_eq
-              simp [add_out] at h_out
-              rw [CoList.out_eq_cons h_out]
+              rw [add_cons_cons]
+              simp
               congr
               · have := h1.choose_spec
+                rw [Seq.cons_eq_cons] at this
                 simp at this
                 simp [← h_coef]
                 congr
                 exact this.left
               · have := h1.choose_spec
-                simp at this
+                rw [Seq.cons_eq_cons] at this
                 simp [← h_tl]
                 congr
                 exact this.right
@@ -1548,7 +1530,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
             rw [← h_coef, ← h_tl]
             revert h_deg h1 h_lt
             generalize (args ↑(k + 1)) = a at *
-            apply a.casesOn
+            apply a.recOn
             · intro h_deg
               simp [leadingExp] at h_deg
             · intro (a_deg, a_coef) a_tl h_deg h_lt h1 h_coef h_tl
@@ -1557,11 +1539,11 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
               rw [add_cons_right]
               · congr
                 · have := h1.choose_spec
-                  replace this := CoList.cons_eq_cons.mp this
+                  replace this := Seq.cons_eq_cons.mp this
                   simp only [Prod.mk.injEq, true_and] at this
                   exact this.left
                 · have := h1.choose_spec
-                  replace this := CoList.cons_eq_cons.mp this
+                  replace this := Seq.cons_eq_cons.mp this
                   simp only [Prod.mk.injEq, true_and] at this
                   exact this.right
               · simpa [leadingExp]
@@ -1628,7 +1610,7 @@ noncomputable def longAdd_mulMonomial_tail_BM {basis_hd : _} {basis_tl : _} {k :
   | l + 1 =>
     have h_BM_cons : ∀ i, ((BM i).1.mulMonomial (BM i).2.1 (BM i).2.2).leadingExp = ↑deg →
         ∃ (a : PreMS basis_tl × PreMS (basis_hd :: basis_tl)),
-        (BM i).1 = CoList.cons (deg - (BM i).2.2, a.1) a.2 := by
+        (BM i).1 = Seq.cons (deg - (BM i).2.2, a.1) a.2 := by
       intro i hi
       simp at hi
       have : (BM i).1.leadingExp = ↑(deg - (BM i).2.2) := by
@@ -1648,7 +1630,7 @@ theorem longAdd_mulMonomial_tail_eq {basis_hd : _} {basis_tl : _} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)}
     {deg : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
     (h_eq_cons : (longAdd <| (fun (B, M_coef, M_deg) => B.mulMonomial M_coef M_deg) ∘ BM) =
-    CoList.cons (deg, coef) tl) :
+    Seq.cons (deg, coef) tl) :
     tl =
     (longAdd <| (fun (B, M_coef, M_deg) => B.mulMonomial M_coef M_deg) ∘ (longAdd_mulMonomial_tail_BM BM deg)) := by
   rw [longAdd_eq] at h_eq_cons
@@ -1662,14 +1644,14 @@ theorem longAdd_mulMonomial_tail_eq {basis_hd : _} {basis_tl : _} {k : ℕ}
     cases deg? with
     | bot => simp at h_eq_cons
     | coe deg' =>
-      simp at h_eq_cons
+      simp [Seq.cons_eq_cons] at h_eq_cons
       obtain ⟨⟨h_deg, _⟩, h_tl_eq⟩ := h_eq_cons
       subst h_deg
 
       rw [← h_tl_eq]
       simp [longAdd_mulMonomial_tail_BM]
       congr 1
-      ext i
+      ext1 i
       simp
       split_ifs with h_if
       · generalize_proofs h1 h2
@@ -1685,7 +1667,7 @@ theorem longAdd_mulMonomial_tail_eq {basis_hd : _} {basis_tl : _} {k : ℕ}
         clear hh
 
         rw [h2] at h1
-        simp at h1
+        simp [Seq.cons_eq_cons] at h1
         exact h1.right.symm
       · simp
 
@@ -1746,7 +1728,7 @@ noncomputable def longAdd_mulMonomial_tail_fB {basis_hd : _} {basis_tl : _} {k :
   | l + 1 =>
     have h_BM_cons : ∀ i, ((BM i).1.mulMonomial (BM i).2.1 (BM i).2.2).leadingExp = ↑deg →
         ∃ (a : PreMS basis_tl × PreMS (basis_hd :: basis_tl)),
-        (BM i).1 = CoList.cons (deg - (BM i).2.2, a.1) a.2 := by
+        (BM i).1 = Seq.cons (deg - (BM i).2.2, a.1) a.2 := by
       intro i hi
       simp at hi
       have : (BM i).1.leadingExp = ↑(deg - (BM i).2.2) := by
@@ -1798,7 +1780,7 @@ noncomputable def longAdd_mulMonomial_fC {basis_hd : _} {basis_tl : _} {k : ℕ}
   | l + 1 =>
     have h_BM_cons : ∀ i, ((BM i).1.mulMonomial (BM i).2.1 (BM i).2.2).leadingExp = ↑deg →
         ∃ (a : PreMS basis_tl × PreMS (basis_hd :: basis_tl)),
-        (BM i).1 = CoList.cons (deg - (BM i).2.2, a.1) a.2 := by
+        (BM i).1 = Seq.cons (deg - (BM i).2.2, a.1) a.2 := by
       intro i hi
       simp at hi
       have : (BM i).1.leadingExp = ↑(deg - (BM i).2.2) := by
@@ -1836,7 +1818,7 @@ mutual
       obtain ⟨b, h_eq, hb_wo⟩ := ih
       subst h_eq
       revert hb_wo
-      apply b.casesOn
+      apply b.recOn
       · intro
         left
         simp
@@ -1893,11 +1875,11 @@ mutual
           · exact (h_BM i).right
         subst h_eq
         revert h_left_eq h_left_wo
-        apply left.casesOn
+        apply left.recOn
         · intro h_left_eq h_left_wo
           simp
           revert h_right_eq
-          apply right.casesOn
+          apply right.recOn
           · simp
           · intro (right_deg, right_coef) right_tl h_right_eq
             simp
@@ -1909,7 +1891,7 @@ mutual
             subst hX_eq hY_eq
             obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := wellOrdered_cons hX_wo
             obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := wellOrdered_cons hY_wo
-            simp only [mul_cons_cons, CoList.cons_eq_cons, Prod.mk.injEq] at h_right_eq
+            simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
             obtain ⟨⟨h_deg, h_coef⟩, h_tl⟩ := h_right_eq
             subst h_deg h_coef h_tl
             constructor
@@ -1954,11 +1936,11 @@ mutual
             cases deg? with
             | bot => simp at h_left_eq'
             | coe deg' =>
-              simp only [CoList.cons_eq_cons, Prod.mk.injEq] at h_left_eq'
+              simp only [Seq.cons_eq_cons, Prod.mk.injEq] at h_left_eq'
               obtain ⟨⟨h_deg', h_left_coef_eq⟩, h_left_tl_eq'⟩ := h_left_eq'
               have h_BM_cons : ∀ i, ((BM i).1.mulMonomial (BM i).2.1 (BM i).2.2).leadingExp = ↑deg' →
                   ∃ (a : PreMS basis_tl × PreMS (basis_hd :: basis_tl)),
-                  (BM i).1 = CoList.cons (deg' - (BM i).2.2, a.1) a.2 := by
+                  (BM i).1 = Seq.cons (deg' - (BM i).2.2, a.1) a.2 := by
                 intro i hi
                 simp at hi
                 have : (BM i).1.leadingExp = ↑(deg' - (BM i).2.2) := by -- there is no `Sub` for `WithBot ℝ` :(
@@ -1970,7 +1952,7 @@ mutual
                     linarith
                 exact leadingExp_eq_coe this
               revert h_right_eq
-              apply right.casesOn
+              apply right.recOn
               · intro h_right_eq
                 use left_deg
                 use left_coef
@@ -2023,7 +2005,7 @@ mutual
                   subst hX_eq hY_eq
                   obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := wellOrdered_cons hX_wo
                   obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := wellOrdered_cons hY_wo
-                  simp only [mul_cons_cons, CoList.cons_eq_cons, Prod.mk.injEq] at h_right_eq
+                  simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
                   use ?_; use ?_; use ?_
                   constructor
                   · congr 2 <;> exact Eq.refl _
@@ -2050,7 +2032,7 @@ mutual
                   | last => exact (Y_tl, X_coef, X_deg)
                   | cast j => exact BM j
                   use X_tl
-                  use CoList.cons (Y_deg, Y_coef) Y_tl
+                  use Seq.cons (Y_deg, Y_coef) Y_tl
                   constructor
                   · congr 1
                     conv => rhs; unfold longAdd
@@ -2076,7 +2058,7 @@ mutual
                   subst hX_eq hY_eq
                   obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := wellOrdered_cons hX_wo
                   obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := wellOrdered_cons hY_wo
-                  simp only [mul_cons_cons, CoList.cons_eq_cons, Prod.mk.injEq] at h_right_eq
+                  simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
                   use ?_; use ?_; use ?_
                   constructor
                   · congr 2 <;> exact Eq.refl _
@@ -2105,7 +2087,7 @@ mutual
                   | last => exact (Y_tl, X_coef, X_deg)
                   | cast j => exact longAdd_mulMonomial_tail_BM BM deg' j
                   use X_tl
-                  use CoList.cons (Y_deg, Y_coef) Y_tl
+                  use Seq.cons (Y_deg, Y_coef) Y_tl
                   constructor
                   · congr 1
                     conv => rhs; unfold longAdd
@@ -2113,7 +2095,7 @@ mutual
                     congr 1
                     · simp
                       congr 1
-                      ext i
+                      ext1 i
                       split_ifs with h1
                       · simp [longAdd_mulMonomial_tail_BM] -- copypaste
                         split_ifs
@@ -2130,7 +2112,7 @@ mutual
                         clear hh
 
                         rw [h3] at h2
-                        simp at h2
+                        simp [Seq.cons_eq_cons] at h2
                         exact h2.right.symm
                       · simp [longAdd_mulMonomial_tail_BM] -- copypaste
                         split_ifs
@@ -2178,7 +2160,7 @@ mutual
       obtain ⟨b, B, M, h_ms_eq, hf_eq, hb_approx, hm_approx⟩ := ih
       subst h_ms_eq
       revert hb_approx
-      apply b.casesOn
+      apply b.recOn
       · intro hb_approx
         replace hb_approx := isApproximation_nil hb_approx
         left
@@ -2241,7 +2223,7 @@ mutual
       (h_basis : MS.wellOrderedBasis (basis_hd :: basis_tl))
       (hB_approx : ∀ j, (BM j).1.isApproximation (fB j) (basis_hd :: basis_tl))
       (hM_approx : ∀ j, (BM j).2.1.isApproximation (fM j) basis_tl)
-      (h_cons : (longAdd ((fun x ↦ x.1.mulMonomial x.2.1 x.2.2) ∘ BM)) = CoList.cons (deg, coef) tl) :
+      (h_cons : (longAdd ((fun x ↦ x.1.mulMonomial x.2.1 x.2.2) ∘ BM)) = Seq.cons (deg, coef) tl) :
       coef.isApproximation (longAdd_mulMonomial_fC deg hB_approx hM_approx) basis_tl := by
     induction k generalizing deg coef with
     | zero =>
@@ -2254,7 +2236,7 @@ mutual
       cases deg? with
       | bot => simp at h_cons
       | coe deg' =>
-        simp at h_cons
+        simp [Seq.cons_eq_cons] at h_cons
         obtain ⟨⟨h_deg, h_coef⟩, h_tl⟩ := h_cons
         subst h_deg
         rw [← h_coef]
@@ -2285,7 +2267,7 @@ mutual
           clear hh
 
           rw [h1] at h3
-          simp at h3
+          simp [Seq.cons_eq_cons] at h3
           rw [← h3.left]
           apply mul_isApproximation (MS.wellOrderedBasis_tail h_basis)
           · apply hM_approx
@@ -2346,7 +2328,7 @@ mutual
           · exact hM_approx i
         subst h_ms_eq
         revert h_left_eq h_left_approx
-        apply left.casesOn
+        apply left.recOn
         · intro h_left_eq h_left_approx
           replace h_left_approx := isApproximation_nil h_left_approx
           replace hf_eq : f =ᶠ[atTop] fX * fY := by
@@ -2356,7 +2338,7 @@ mutual
             apply EventuallyEq.add h_left_approx (by rfl)
           simp
           revert h_right_eq
-          apply right.casesOn
+          apply right.recOn
           · simp
             intro h_right_eq
             trans
@@ -2372,7 +2354,7 @@ mutual
             subst hX_eq hY_eq
             obtain ⟨XC, hX_coef_approx, hX_comp, hX_tl_approx⟩ := isApproximation_cons hX_approx
             obtain ⟨YC, hY_coef_approx, hY_comp, hY_tl_approx⟩ := isApproximation_cons hY_approx
-            simp only [mul_cons_cons, CoList.cons_eq_cons, Prod.mk.injEq] at h_right_eq
+            simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
 
             obtain ⟨⟨h_deg, h_coef⟩, h_tl⟩ := h_right_eq
             subst h_deg h_coef h_tl
@@ -2427,11 +2409,11 @@ mutual
             cases deg? with
             | bot => simp at h_left_eq'
             | coe deg' =>
-              simp only [CoList.cons_eq_cons, Prod.mk.injEq] at h_left_eq'
+              simp only [Seq.cons_eq_cons, Prod.mk.injEq] at h_left_eq'
               obtain ⟨⟨h_deg', h_left_coef_eq⟩, h_left_tl_eq'⟩ := h_left_eq'
               have h_BM_cons : ∀ i, ((BM i).1.mulMonomial (BM i).2.1 (BM i).2.2).leadingExp = ↑deg' →
                   ∃ (a : PreMS basis_tl × PreMS (basis_hd :: basis_tl)),
-                  (BM i).1 = CoList.cons (deg' - (BM i).2.2, a.1) a.2 := by
+                  (BM i).1 = Seq.cons (deg' - (BM i).2.2, a.1) a.2 := by
                 intro i hi
                 simp at hi
                 have : (BM i).1.leadingExp = ↑(deg' - (BM i).2.2) := by -- there is no `Sub` for `WithBot ℝ` :(
@@ -2443,7 +2425,7 @@ mutual
                     linarith
                 exact leadingExp_eq_coe this
               revert h_right_eq
-              apply right.casesOn
+              apply right.recOn
               · intro h_right_eq
                 replace hf_eq : f =ᶠ[atTop] (fun x ↦ ∑ i : Fin (l + 1), fM i x * basis_hd x ^ (BM i).2.2 * fB i x) := by
                   trans
@@ -2519,7 +2501,7 @@ mutual
                 subst hX_eq hY_eq
                 obtain ⟨XC, hX_coef_approx, hX_comp, hX_tl_approx⟩ := isApproximation_cons hX_approx
                 obtain ⟨YC, hY_coef_approx, hY_comp, hY_tl_approx⟩ := isApproximation_cons hY_approx
-                simp only [mul_cons_cons, CoList.cons_eq_cons, Prod.mk.injEq] at h_right_eq
+                simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
 
                 rw [add_cons_cons]
                 split_ifs with h1 h2
@@ -2542,8 +2524,8 @@ mutual
                   use ?_
                   use longAdd_mulMonomial_tail_fB BM left_deg hB_approx
                   use fM
-                  use CoList.cons (X_deg, X_coef) X_tl
-                  use CoList.cons (Y_deg, Y_coef) Y_tl
+                  use Seq.cons (X_deg, X_coef) X_tl
+                  use Seq.cons (Y_deg, Y_coef) Y_tl
                   use fX
                   use fY
                   constructor
@@ -2622,7 +2604,7 @@ mutual
                   | last => exact XC
                   | cast j => exact fM j
                   use X_tl
-                  use CoList.cons (Y_deg, Y_coef) Y_tl
+                  use Seq.cons (Y_deg, Y_coef) Y_tl
                   use fun x ↦ fX x - basis_hd x ^ X_deg * XC x
                   use fY
                   constructor
@@ -2706,7 +2688,7 @@ mutual
                   | last => exact XC
                   | cast j => exact fM j
                   use X_tl
-                  use CoList.cons (Y_deg, Y_coef) Y_tl
+                  use Seq.cons (Y_deg, Y_coef) Y_tl
                   use fun x ↦ fX x - basis_hd x ^ X_deg * XC x
                   use fY
                   constructor
@@ -2716,7 +2698,7 @@ mutual
                     congr 1
                     · simp
                       congr 1
-                      ext i
+                      ext1 i
                       split_ifs with h1
                       · simp [longAdd_mulMonomial_tail_BM] -- copypaste
                         split_ifs
@@ -2733,7 +2715,7 @@ mutual
                         clear hh
 
                         rw [h3] at h2
-                        simp at h2
+                        simp [Seq.cons_eq_cons] at h2
                         exact h2.right.symm
                       · simp [longAdd_mulMonomial_tail_BM] -- copypaste
                         split_ifs
@@ -2766,7 +2748,7 @@ mutual
                       arg 2
                       ring_nf
                     congr
-                    · ext i
+                    · ext1 i
                       split_ifs with h_if
                       · generalize_proofs h1 h2
 

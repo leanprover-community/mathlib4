@@ -142,7 +142,7 @@ theorem PreMS.isApproximation_coef_isLittleO_head {C basis_hd : ℝ → ℝ} {ba
     simpa [MS.wellOrderedBasis] using h_basis
   | cons basis_tl_hd basis_tl_tl =>
     revert h_approx
-    apply ms.casesOn
+    apply ms.recOn
     · intro h_approx
       replace h_approx := isApproximation_nil h_approx
       apply EventuallyEq.trans_isLittleO h_approx
