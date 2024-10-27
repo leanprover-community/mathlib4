@@ -76,29 +76,29 @@ lemma cont_nonzero_ (a x:ℝ) (h: x ≠ 0) : ContinuousAt (OnePoint_div a) x := 
         · linarith
 
 lemma in_onepoint_set
-  {t : Set (OnePoint ℝ)} {a₀ a₁ : ℝ}
-  (ha : ∀ (b : ℝ), b ≤ -(max |a₀| |a₁|) ∨ (max |a₀| |a₁|) ≤ b → some b ∈ t)
-  (hap : max |a₀| |a₁| > 0) (h : ∞ ∈ t)
-  (x : ℝ) (hx : |x| ≤ (max |a₀| |a₁|)⁻¹) :
-  (if x = 0 then ∞ else some x⁻¹) ∈ t := by
-        split_ifs
-        · simp_all
-        · apply ha; apply abs_le_inv; repeat tauto
+    {t : Set (OnePoint ℝ)} {a₀ a₁ : ℝ}
+    (ha : ∀ (b : ℝ), b ≤ -(max |a₀| |a₁|) ∨ (max |a₀| |a₁|) ≤ b → some b ∈ t)
+    (hap : max |a₀| |a₁| > 0) (h : ∞ ∈ t)
+    (x : ℝ) (hx : |x| ≤ (max |a₀| |a₁|)⁻¹) :
+    (if x = 0 then ∞ else some x⁻¹) ∈ t := by
+  split_ifs
+  · simp_all
+  · apply ha; apply abs_le_inv; repeat tauto
 
 lemma suffice
-(t : Set (OnePoint ℝ))
-(x : ℝ)
-(h : ∃ ε > 0, ∀ (y : ℝ), |x - y| ≤ ε → (if y = 0 then ∞ else ↑y⁻¹) ∈ t)
-: ∃ V ∈ uniformity ℝ, {y | (x, y) ∈ V} ⊆ {r | (if r = 0 then ∞ else some r⁻¹) ∈ t} := by
-      obtain ⟨ε,hε⟩ := h
-      use {(x,y) | dist x y ≤ ε}
-      rw [Metric.mem_uniformity_dist]
-      constructor
-      · use ε
-        constructor
-        · tauto
-        · intros;simp;linarith
-      · apply hε.2
+    (t : Set (OnePoint ℝ))
+    (x : ℝ)
+    (h : ∃ ε > 0, ∀ (y : ℝ), |x - y| ≤ ε → (if y = 0 then ∞ else ↑y⁻¹) ∈ t) :
+    ∃ V ∈ uniformity ℝ, {y | (x, y) ∈ V} ⊆ {r | (if r = 0 then ∞ else some r⁻¹) ∈ t} := by
+  obtain ⟨ε,hε⟩ := h
+  use {(x,y) | dist x y ≤ ε}
+  rw [Metric.mem_uniformity_dist]
+  constructor
+  · use ε
+    constructor
+    · tauto
+    · intros;simp;linarith
+  · apply hε.2
 
 noncomputable def div_slope (p : ℙ ℝ (Fin 2 → ℝ)) : OnePoint ℝ :=
   Quotient.lift
@@ -108,21 +108,21 @@ noncomputable def div_slope (p : ℙ ℝ (Fin 2 → ℝ)) : OnePoint ℝ :=
 lemma div_slope_injective : Function.Injective div_slope :=
   Quotient.ind (fun a ↦ Quotient.ind (field_div_slope_inj_lifted a))
 
-lemma continuous_slope_nonzero_case {x : { v : Fin 2 → ℝ // v ≠ 0 }} (hx : ¬x.1 1 = 0)
-: ContinuousAt (fun u ↦ u.1 0 ÷ u.1 1) x := by
-      have : (fun u ↦ u.1 0 ÷ u.1 1) =ᶠ[nhds x] fun v ↦ OnePoint.some (v.1 0 / v.1 1) := by
-          unfold Filter.EventuallyEq OnePoint_div
-          simp only [ne_eq, Fin.isValue, ite_not, ite_eq_right_iff,
-            OnePoint.infty_ne_coe, imp_false];
-          exact eventually_nhds_iff.mpr (open_nonzero hx)
-      rw [continuousAt_congr this]
+lemma continuous_slope_nonzero_case {x : { v : Fin 2 → ℝ // v ≠ 0 }} (hx : ¬x.1 1 = 0) :
+    ContinuousAt (fun u ↦ u.1 0 ÷ u.1 1) x := by
+  have : (fun u ↦ u.1 0 ÷ u.1 1) =ᶠ[nhds x] fun v ↦ OnePoint.some (v.1 0 / v.1 1) := by
+      unfold Filter.EventuallyEq OnePoint_div
+      simp only [ne_eq, Fin.isValue, ite_not, ite_eq_right_iff,
+        OnePoint.infty_ne_coe, imp_false];
+      exact eventually_nhds_iff.mpr (open_nonzero hx)
+  rw [continuousAt_congr this]
 
-      apply ContinuousAt.comp'
-      · exact Continuous.continuousAt OnePoint.continuous_coe
-      refine ContinuousAt.div₀ ?_ ?_ hx
+  apply ContinuousAt.comp'
+  · exact Continuous.continuousAt OnePoint.continuous_coe
+  refine ContinuousAt.div₀ ?_ ?_ hx
 
-      · exact ContinuousAt.comp (continuousAt_apply 0 x.1) continuousAt_subtype_val
-      · exact ContinuousAt.comp (continuousAt_apply 1 x.1) continuousAt_subtype_val
+  · exact ContinuousAt.comp (continuousAt_apply 0 x.1) continuousAt_subtype_val
+  · exact ContinuousAt.comp (continuousAt_apply 1 x.1) continuousAt_subtype_val
 
 lemma slope_open_nonzero
     {t : Set (OnePoint ℝ)}
@@ -137,7 +137,7 @@ lemma slope_open_nonzero
   have Q := continuous_slope_nonzero_case H
   rw [continuousAt_def] at Q
   unfold OnePoint_div at Q
-  simp at Q
+  simp only [ne_eq, Fin.isValue, ite_not] at Q
   apply Q
   rw [if_neg H]
   refine IsOpen.mem_nhds ?_ ha
@@ -171,7 +171,7 @@ lemma slope_uniform_of_compact_pos
     simp at h_x
     have hx : dist a x < δ := h_x
     clear h_x
-    simp
+    simp only [ne_eq, Fin.isValue, Set.mem_preimage]
     by_cases hz : x.1 1 = 0
     · rw [hz];simp;tauto
     · rw [if_neg hz]
@@ -193,38 +193,38 @@ lemma slope_uniform_of_compact_neg {t : Set (OnePoint ℝ)}
     {a : { v : Fin 2 → ℝ // v ≠ 0 }} (H : a.1 1 = 0) (hl : a.1 0 < 0) :
     ∃ V ∈ uniformity { v // ¬v = 0 },
     UniformSpace.ball a V ⊆ (fun u ↦ if u.1 1 = 0 then ∞ else some (u.1 0 / u.1 1)) ⁻¹' t :=  by
-        have W := IsCompact.isBounded (ht₀)
-        rw [Bornology.isBounded_def] at W
-        simp at W
-        obtain ⟨⟨a₀,ha₀⟩,⟨a₁,ha₁⟩⟩ := W
+  have W := IsCompact.isBounded (ht₀)
+  rw [Bornology.isBounded_def] at W
+  simp at W
+  obtain ⟨⟨a₀,ha₀⟩,⟨a₁,ha₁⟩⟩ := W
 
-        let amax := max |a₀| |a₁|
-        have hamax : ∀ b : ℝ, b ≤ -amax ∨ amax ≤ b → some b ∈ t := by
-          apply symmetrize;exact ha₀;exact ha₁
-        let Q := dist_cone_neg H hl (show amax ≥ 0 by positivity)
-        obtain ⟨δ,hδ⟩ := Q
-        use {(u,v) | dist u v < δ}
-        constructor
-        · exact Metric.dist_mem_uniformity hδ.1
-        · intro x h_x
-          have hx : dist a x < δ := h_x
-          clear h_x
-          simp
-          by_cases X : x.1 1 = 0
-          · rw [X];simp;tauto
-          · rw [if_neg X];
-            apply hamax
-            by_cases hpos : x.1 1 > 0
-            · left
-              have : dist a x = dist a.1 x.1 := rfl
-              have hδ' := hδ.2 x.1 (by rw [dist_comm];linarith)
-              tauto
-            · right
-              have hneg: x.1 1 < 0 := lt_of_le_of_ne (le_of_not_lt hpos) X
-              rw [dist_comm] at hx
-              have : dist x.1 a.1 < δ := hx
-              have h₀: dist x.1 a.1 ≤ δ := by linarith
-              exact (hδ.2 x h₀).2 hneg
+  let amax := max |a₀| |a₁|
+  have hamax : ∀ b : ℝ, b ≤ -amax ∨ amax ≤ b → some b ∈ t := by
+    apply symmetrize;exact ha₀;exact ha₁
+  let Q := dist_cone_neg H hl (show amax ≥ 0 by positivity)
+  obtain ⟨δ,hδ⟩ := Q
+  use {(u,v) | dist u v < δ}
+  constructor
+  · exact Metric.dist_mem_uniformity hδ.1
+  · intro x h_x
+    have hx : dist a x < δ := h_x
+    clear h_x
+    simp only [ne_eq, Fin.isValue, Set.mem_preimage]
+    by_cases X : x.1 1 = 0
+    · rw [X];simp;tauto
+    · rw [if_neg X];
+      apply hamax
+      by_cases hpos : x.1 1 > 0
+      · left
+        have : dist a x = dist a.1 x.1 := rfl
+        have hδ' := hδ.2 x.1 (by rw [dist_comm];linarith)
+        tauto
+      · right
+        have hneg: x.1 1 < 0 := lt_of_le_of_ne (le_of_not_lt hpos) X
+        rw [dist_comm] at hx
+        have : dist x.1 a.1 < δ := hx
+        have h₀: dist x.1 a.1 ≤ δ := by linarith
+        exact (hδ.2 x h₀).2 hneg
 
 lemma slope_uniform_of_compact
     {t : Set (OnePoint ℝ)}
@@ -233,8 +233,8 @@ lemma slope_uniform_of_compact
     {a : { v : Fin 2 → ℝ // v ≠ 0 }}
     (H : a.1 1 = 0) :
     ∃ V ∈ uniformity { v // ¬v = 0 },
-    UniformSpace.ball a V ⊆ (fun u ↦ if u.1 1 = 0 then ∞ else some (u.1 0 / u.1 1)) ⁻¹' t
-  := by cases (pos_or_neg H) with
+    UniformSpace.ball a V ⊆ (fun u ↦ if u.1 1 = 0 then ∞ else some (u.1 0 / u.1 1)) ⁻¹' t := by
+  cases (pos_or_neg H) with
   |inl hl => exact slope_uniform_of_compact_pos ht₀ ht₂ H hl
   |inr hr => exact slope_uniform_of_compact_neg ht₀ ht₂ H hr
 
@@ -259,32 +259,31 @@ lemma slope_open
   · exact slope_open_nonzero ht₀ ht₁ ha H
 
 
-lemma continuous_slope_zero_case
-(x : { v : Fin 2 → ℝ // v ≠ 0 }) (H₁ : x.1 1 = 0)
-: ContinuousAt (fun u ↦ u.1 0 ÷ u.1 1) x := by
+lemma continuous_slope_zero_case (x : { v : Fin 2 → ℝ // v ≠ 0 }) (H₁ : x.1 1 = 0) :
+    ContinuousAt (fun u ↦ u.1 0 ÷ u.1 1) x := by
   have : x.1 0 ≠ 0 := by apply not_both_zero;tauto
   unfold OnePoint_div
   rw [continuousAt_def]
-  simp
   intro A hA
   rw [mem_nhds_iff] at *
   obtain ⟨t,ht⟩ := hA
   use (fun u ↦ if u.1 1 = 0 then ∞ else Option.some (u.1 0 / u.1 1)) ⁻¹' t
-  simp
   constructor
   · intro a ha
     simp at ha
     simp
     split_ifs with h₀
-    · simp_all; tauto
+    · simp_all only [ne_eq, not_true_eq_false, div_zero, ite_false, ite_true]
+      tauto
     · rw [if_neg h₀] at *; tauto
-  · simp_all
+  · simp_all only [ne_eq, not_true_eq_false, div_zero, ite_false, Set.mem_preimage, ite_true,
+    and_true]
     apply slope_open
     tauto
 
 
 theorem div_slope_continuous_unlifted :
-  Continuous fun u : { v : Fin 2 → ℝ // v ≠ 0 } ↦ (u.1 0) ÷ (u.1 1) := by
+    Continuous fun u : { v : Fin 2 → ℝ // v ≠ 0 } ↦ (u.1 0) ÷ (u.1 1) := by
   apply continuous_iff_continuousAt.mpr
   intro x
   by_cases H₁ : x.1 1 = 0
@@ -306,16 +305,17 @@ def lift_unit_circle {n:ℕ}  : {v : Fin n → ℝ // dist v 0 = 1} → ℙ ℝ 
   ⟩
 
 lemma surjective_lift_unit_circle {n:ℕ} :
-  Function.Surjective (@lift_unit_circle n) := Quotient.ind (fun x ↦ by
-  have := x.2
-  have : ‖x.1‖ ≠ 0 := by simp_all
-  use ⟨‖x.1‖⁻¹ • x.1, by simp; rw [norm_smul]; field_simp⟩
-  unfold lift_unit_circle; simp
-  show mk ℝ (‖x.1‖⁻¹ • x.1) _ = mk ℝ x.1 _
-  rw [mk_eq_mk_iff]
-  use Units.mk ‖x.1‖⁻¹ ‖x.1‖ (by field_simp) (by field_simp)
-  simp
-)
+    Function.Surjective (@lift_unit_circle n) :=
+  Quotient.ind (fun x ↦ by
+    have := x.2
+    have : ‖x.1‖ ≠ 0 := by simp_all
+    use ⟨‖x.1‖⁻¹ • x.1, by simp; rw [norm_smul]; field_simp⟩
+    unfold lift_unit_circle; simp
+    show mk ℝ (‖x.1‖⁻¹ • x.1) _ = mk ℝ x.1 _
+    rw [mk_eq_mk_iff]
+    use Units.mk ‖x.1‖⁻¹ ‖x.1‖ (by field_simp) (by field_simp)
+    simp
+  )
 
 lemma continuous_lift_unit_circle {n:ℕ} : Continuous (@lift_unit_circle n) := by
   unfold lift_unit_circle
