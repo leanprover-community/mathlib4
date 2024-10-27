@@ -43,7 +43,7 @@ noncomputable def CommRingCat.moduleCatRestrictScalarsPseudofunctor :
 to its category of modules. The functoriality is given by the restriction of scalars. -/
 @[simps! obj map mapId mapComp]
 noncomputable def RingCat.moduleCatRestrictScalarsPseudofunctor :
-    Pseudofunctor (LocallyDiscrete CommRingCat.{u}ᵒᵖ) Cat :=
+    Pseudofunctor (LocallyDiscrete RingCat.{u}ᵒᵖ) Cat :=
   LocallyDiscrete.mkPseudofunctor
     (fun R ↦ Cat.of (ModuleCat.{v} R.unop))
     (fun f ↦ restrictScalars f.unop)
