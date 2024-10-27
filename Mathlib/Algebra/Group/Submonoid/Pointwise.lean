@@ -481,7 +481,7 @@ theorem smul_subset_smul : (↑M : Set R) • (↑N : Set A) ⊆ (↑(M • N) :
 
 theorem addSubmonoid_smul_sup : M • (N ⊔ P) = M • N ⊔ M • P :=
   le_antisymm (smul_le.mpr fun m hm np hnp ↦ by
-    refine closure_induction (p := fun x _ ↦ _ • x ∈ _) ?_ ?_ ?_ (sup_eq_closure N P ▸ hnp)
+    refine closure_induction (p := (fun _ ↦ _ • · ∈ _)) ?_ ?_ ?_ (sup_eq_closure N P ▸ hnp)
     · rintro x (hx | hx)
       exacts [le_sup_left (a := M • N) (smul_mem_smul hm hx),
         le_sup_right (a := M • N) (smul_mem_smul hm hx)]
@@ -493,9 +493,9 @@ variable {ι : Sort*}
 
 theorem smul_iSup (T : AddSubmonoid R) (S : ι → AddSubmonoid A) : (T • ⨆ i, S i) = ⨆ i, T • S i :=
   le_antisymm (smul_le.mpr fun t ht s hs ↦ iSup_induction _ (C := (t • · ∈ _)) hs
-      (fun i s hs ↦ mem_iSup_of_mem i <| smul_mem_smul ht hs)
-      (by simp_rw [smul_zero]; apply zero_mem) fun x y ↦ by simp_rw [smul_add]; apply add_mem) <|
-    iSup_le fun i ↦ smul_le_smul_right (le_iSup _ i)
+    (fun i s hs ↦ mem_iSup_of_mem i <| smul_mem_smul ht hs)
+    (by simp_rw [smul_zero]; apply zero_mem) fun x y ↦ by simp_rw [smul_add]; apply add_mem)
+  (iSup_le fun i ↦ smul_le_smul_right <| le_iSup _ i)
 
 end SMul
 
@@ -508,8 +508,6 @@ smallest R-submodule of `R` containing the elements `s * t` for `s ∈ S` and `t
 protected def mul : Mul (AddSubmonoid R) :=
   ⟨fun M N => ⨆ s : M, N.map (AddMonoidHom.mul s.1)⟩
 scoped[Pointwise] attribute [instance] AddSubmonoid.mul
-
-example {R} [Semiring R] : Mul.toSMul (AddSubmonoid R) = AddSubmonoid.smul := rfl
 
 theorem mul_mem_mul {M N : AddSubmonoid R} {m n : R} (hm : m ∈ M) (hn : n ∈ N) : m * n ∈ M * N :=
   smul_mem_smul hm hn
@@ -640,7 +638,7 @@ variable [NonUnitalSemiring R]
 /-- Semigroup structure on additive submonoids of a (possibly, non-unital) semiring. -/
 protected def semigroup : Semigroup (AddSubmonoid R) where
   mul := (· * ·)
-  mul_assoc M N P :=
+  mul_assoc _M _N _P :=
     le_antisymm
       (mul_le.2 fun _mn hmn p hp => AddSubmonoid.mul_induction_on hmn
         (fun m hm n hn ↦ mul_assoc m n p ▸ mul_mem_mul hm <| mul_mem_mul hn hp)
