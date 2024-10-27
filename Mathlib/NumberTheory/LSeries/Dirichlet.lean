@@ -109,7 +109,7 @@ open ArithmeticFunction in
 /-- The arihmetic function associated to a Dirichlet character is multiplicative. -/
 lemma isMultiplicative_toArithmeticFunction {N : ℕ} {R : Type*} [CommMonoidWithZero R]
     (χ : DirichletCharacter R N) :
-    (toArithmeticFunction (χ .)).IsMultiplicative := by
+    (toArithmeticFunction (χ ·)).IsMultiplicative := by
   refine IsMultiplicative.iff_ne_zero.mpr ⟨?_, fun {m} {n} hm hn _ ↦ ?_⟩
   · simp only [toArithmeticFunction, coe_mk, one_ne_zero, ↓reduceIte, Nat.cast_one, map_one]
   · simp only [toArithmeticFunction, coe_mk, mul_eq_zero, hm, hn, false_or, Nat.cast_mul, map_mul,
