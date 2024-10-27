@@ -211,7 +211,6 @@ protected theorem map_sub (f : α → β) (x y : FreeAbelianGroup α) :
 theorem map_of (f : α → β) (y : α) : f <$> of y = of (f y) :=
   rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem pure_bind (f : α → FreeAbelianGroup β) (x) : pure x >>= f = f x :=
   lift.of _ _
 
@@ -375,7 +374,7 @@ theorem of_mul (x y : α) : of (x * y) = of x * of y :=
 
 instance distrib : Distrib (FreeAbelianGroup α) :=
   { FreeAbelianGroup.mul α, FreeAbelianGroup.addCommGroup α with
-    left_distrib := fun x y z ↦ (lift _).map_add _ _
+    left_distrib := fun _ _ _ ↦ (lift _).map_add _ _
     right_distrib := fun x y z ↦ by simp only [(· * ·), Mul.mul, map_add, ← Pi.add_def, lift.add'] }
 
 instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) :=

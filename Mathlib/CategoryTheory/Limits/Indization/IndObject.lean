@@ -107,10 +107,10 @@ instance : P.toCostructuredArrow.Final :=
 def yoneda (X : C) : IndObjectPresentation (yoneda.obj X) where
   I := Discrete PUnit.{v + 1}
   F := Functor.fromPUnit X
-  ι := { app := fun s => 𝟙 _ }
+  ι := { app := fun _ => 𝟙 _ }
   isColimit :=
     { desc := fun s => s.ι.app ⟨PUnit.unit⟩
-      uniq := fun s m h => h ⟨PUnit.unit⟩ }
+      uniq := fun _ _ h => h ⟨PUnit.unit⟩ }
 
 end IndObjectPresentation
 

@@ -470,7 +470,7 @@ instance lattice : Lattice (Interval α) :=
       match s, t with
       | ⊥, ⊥ => bot_le
       | ⊥, some _ => bot_le
-      | some s, ⊥ => bot_le
+      | some _, ⊥ => bot_le
       | some s, some t => by
         change dite _ _ _ ≤ _
         split_ifs
@@ -479,7 +479,7 @@ instance lattice : Lattice (Interval α) :=
     inf_le_right := fun s t =>
       match s, t with
       | ⊥, ⊥ => bot_le
-      | ⊥, some t => bot_le
+      | ⊥, some _ => bot_le
       | some _, ⊥ => bot_le
       | some s, some t => by
         change dite _ _ _ ≤ _
@@ -488,7 +488,7 @@ instance lattice : Lattice (Interval α) :=
         · exact bot_le
     le_inf := fun s t c =>
       match s, t, c with
-      | ⊥, t, c => fun _ _ => bot_le
+      | ⊥, _, _ => fun _ _ => bot_le
       | (s : NonemptyInterval α), t, c => fun hb hc => by
         lift t to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hb
         lift c to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hc

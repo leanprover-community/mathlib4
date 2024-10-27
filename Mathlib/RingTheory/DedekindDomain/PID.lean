@@ -42,7 +42,6 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
     exact hxP2 (zero_mem _)
   by_cases hP0 : P = ⊥
   · subst hP0
-    -- Porting note: was `simpa using hxP2` but that hypothesis didn't even seem relevant in Lean 3
     rwa [eq_comm, span_singleton_eq_bot, ← mem_bot]
   have hspan0 : span ({x} : Set R) ≠ ⊥ := mt Ideal.span_singleton_eq_bot.mp hx0
   have span_le := (Ideal.span_singleton_le_iff_mem _).mpr x_mem
