@@ -23,7 +23,8 @@ The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
 
-## TODO
+## Future work / TODO
+
 1. Implement more functoriality for the Grothendieck construction (make things into pseudofunctors).
 2. Obtain the results in `CategoryTheory.Grothendieck` as a specialization of these results?
 
@@ -155,38 +156,28 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
     slice_lhs 2 3 => rw [← Functor.comp_map, NatTrans.naturality]
     simp
 
--- maybe some API here...!
+-- TODO: MAKE eqToIso things simp lemmas!!! would simplify things from here on out
+@[simp]
+lemma map_id_map {x y : ∫ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
+  ext
+  · simp
+  · simp [Strict.rightUnitor_eqToIso, Strict.leftUnitor_eqToIso]
 
 theorem map_comp_forget (α : F ⟶ G) : map α ⋙ forget G = forget F := rfl
-
-/-- The underlying homomorphism of `mapIdIso`. This is done so that `mapIdIso` compiles. -/
-abbrev mapIdIso_hom : map (𝟙 F) ⟶ 𝟭 (∫ F) where
-  app a := eqToHom (by aesop_cat)
-  naturality := by
-    intros x y f
-    simp only [id_obj, categoryStruct_Hom, eqToHom_refl, comp_id, Functor.id_map,
-      id_comp] -- why is this not working??
-    sorry
-
-
-abbrev mapIdIso_inv : 𝟭 (∫ F) ⟶ map (𝟙 F) where
-  app a := eqToHom (by aesop_cat)
 
 /-- TODO -/
 -- TODO: explicit arg
 def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) where
-  hom := mapIdIso_hom
-  inv := mapIdIso_inv
+  hom := { app := fun _ ↦ eqToHom (by aesop_cat) }
+  inv := { app := fun _ ↦ eqToHom (by aesop_cat) }
   hom_inv_id := by
-    dsimp
     ext
     · simp
-    simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
+    · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
   inv_hom_id := by
-    dsimp
     ext
     · simp
-    simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
+    · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
 
 lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
   Functor.ext_of_iso (mapIdIso) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
@@ -194,28 +185,33 @@ lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
 abbrev mapCompIso_hom (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ⟶ map α ⋙ map β where
   app a := eqToHom (by aesop_cat)
   naturality := by
+    intro x y f
     simp
-    sorry -- needs new bicategory code to function
+    apply Hom.ext
+    · simp [Strict.associator_eqToIso]
+    · simp
 
 abbrev mapCompIso_inv (α : F ⟶ G) (β : G ⟶ H) : map α ⋙ map β ⟶ map (α ≫ β) where
   app a := eqToHom (by aesop_cat)
+  -- This can be automated!!
   naturality := by
+    intro x y f
     simp
-    sorry -- needs new bicategory code to function
+    apply Hom.ext
+    · simp [Strict.associator_eqToIso]
+    · simp
 
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β where
   hom := mapCompIso_hom α β
   inv := mapCompIso_inv α β
   hom_inv_id := by
-    dsimp
     ext
     · simp
-    simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
+    · simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
   inv_hom_id := by
-    dsimp
     ext
     · simp
-    simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
+    · simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
 
 lemma map_comp_eq (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) = map α ⋙ map β := by
   apply Functor.ext_of_iso (mapCompIso α β)
@@ -223,13 +219,6 @@ lemma map_comp_eq (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) = map α ⋙ m
     simp [mapCompIso]
   · intro x
     simp [map]
-
-/-
-TODO BEFORE PR:
-1. refactor strong nat trans
-3. PR ordinary grothendieck construction
--/
-
 
 end
 
