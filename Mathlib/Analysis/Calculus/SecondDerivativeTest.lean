@@ -141,7 +141,8 @@ theorem isLocalMin_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
         suffices x₀ ∈ interior (Ioo (x₀ - ε) (x₀ + ε)) by
             refine mem_interior.mpr ?_
             use Ioo (x₀ - ε) (x₀ + ε)
-            simp
+            simp only [subset_union_left, mem_Ioo, sub_lt_self_iff, lt_add_iff_pos_right, and_self,
+              true_and]
             constructor
             exact isOpen_Ioo
             tauto
