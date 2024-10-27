@@ -14,6 +14,12 @@ import Mathlib.RingTheory.Noetherian
 A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into finitely
 many primary ideals.
 
+## Main declarations
+
+- `IsLasker`: A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into
+  finitely many primary ideals.
+- `Ideal.isLasker`: Every Noetherian commutative ring is a Lasker ring.
+
 ## Implementation details
 
 There is a generalization for submodules that needs to be implemented.
@@ -37,7 +43,7 @@ section Noetherian
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
-lemma isPrimary_of_infIrred {I : Ideal R} (h : InfIrred I) : I.IsPrimary := by
+lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := by
   refine ⟨h.ne_top, fun {a b} hab ↦ ?_⟩
   let f : ℕ → Ideal R := fun n ↦ (I.colon (span {b ^ n}))
   have hf : Monotone f := by
@@ -78,11 +84,12 @@ lemma isPrimary_of_infIrred {I : Ideal R} (h : InfIrred I) : I.IsPrimary := by
 
 lemma exists_isPrimary_decomposition (I : Ideal R) :
     ∃ s : Finset (Ideal R), s.inf id = I ∧ ∀ ⦃J⦄, J ∈ s → J.IsPrimary :=
-  (exists_infIrred_decomposition I).imp fun _ h ↦ h.imp_right fun h' _ ht ↦
-    isPrimary_of_infIrred (h' ht)
+  (exists_infIrred_decomposition I).imp fun _ h ↦ h.imp_right fun h' _ ht ↦ (h' ht).isPrimary
 
 variable (R)
 
+/-- The Lasker--Noether theorem: every ideal in a Noetherian ring admits a decomposition into
+  primary ideals. -/
 lemma isLasker : IsLasker R := exists_isPrimary_decomposition
 
 end Noetherian
