@@ -382,6 +382,7 @@ end DerivedInstances
 
 As `MonoidAlgebra` is a type synonym, `ext` will not unfold it to find `ext` lemmas.
 We need bundled version of `Finsupp.single` with the right types to state these lemmas.
+It is good practice to have those, regardless of the `ext` issue.
 -/
 
 section ExtLemmas
@@ -1175,6 +1176,7 @@ end DerivedInstances
 
 As `AddMonoidAlgebra` is a type synonym, `ext` will not unfold it to find `ext` lemmas.
 We need bundled version of `Finsupp.single` with the right types to state these lemmas.
+It is good practice to have those, regardless of the `ext` issue.
 -/
 
 section ExtLemmas
