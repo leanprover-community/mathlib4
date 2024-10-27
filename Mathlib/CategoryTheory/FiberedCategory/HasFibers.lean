@@ -147,7 +147,16 @@ noncomputable def LiftIso {S : 𝒮} {a b : Fib p S}
   let b' : Fiber p S := (inducedFunctor p S).obj b
   let Φ' : a' ≅ b' := {
     hom := ⟨Φ.hom, hΦ⟩
-    inv := ⟨Φ.inv, inferInstance⟩ }
+    inv := ⟨Φ.inv, inferInstance⟩
+    hom_inv_id := by
+      ext
+      simp [fiberInclusion.map_comp]
+      simp [fiberInclusion]
+    inv_hom_id := by
+      ext
+      simp [fiberInclusion.map_comp]
+      simp [fiberInclusion]
+    }
   exact ((inducedFunctor p S).preimageIso Φ')
 
 /-- An object in `Fib p S` isomorphic in `𝒳` to a given object `a : 𝒳` such that `p(a) = S`. -/
