@@ -50,17 +50,17 @@ def preservesLimitIso : G.obj (limit F) ≅ limit (F ⋙ G) :=
   (PreservesLimit.preserves (limit.isLimit _)).conePointUniqueUpToIso (limit.isLimit _)
 
 @[reassoc (attr := simp)]
-theorem preservesLimitsIso_hom_π (j) :
+theorem preservesLimitIso_hom_π (j) :
     (preservesLimitIso G F).hom ≫ limit.π _ j = G.map (limit.π F j) :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ j
 
 @[reassoc (attr := simp)]
-theorem preservesLimitsIso_inv_π (j) :
+theorem preservesLimitIso_inv_π (j) :
     (preservesLimitIso G F).inv ≫ G.map (limit.π F j) = limit.π _ j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ j
 
 @[reassoc (attr := simp)]
-theorem lift_comp_preservesLimitsIso_hom (t : Cone F) :
+theorem lift_comp_preservesLimitIso_hom (t : Cone F) :
     G.map (limit.lift _ t) ≫ (preservesLimitIso G F).hom =
     limit.lift (F ⋙ G) (G.mapCone _) := by
   ext
@@ -80,8 +80,8 @@ def preservesLimitNatIso : lim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ lim :
       intro _ _ f
       apply limit.hom_ext; intro j
       dsimp
-      simp only [preservesLimitsIso_hom_π, whiskerRight_app, limMap_π, Category.assoc,
-        preservesLimitsIso_hom_π_assoc, ← G.map_comp])
+      simp only [preservesLimitIso_hom_π, whiskerRight_app, limMap_π, Category.assoc,
+        preservesLimitIso_hom_π_assoc, ← G.map_comp])
 
 end
 
@@ -117,17 +117,17 @@ def preservesColimitIso : G.obj (colimit F) ≅ colimit (F ⋙ G) :=
   (PreservesColimit.preserves (colimit.isColimit _)).coconePointUniqueUpToIso (colimit.isColimit _)
 
 @[reassoc (attr := simp)]
-theorem ι_preservesColimitsIso_inv (j : J) :
+theorem ι_preservesColimitIso_inv (j : J) :
     colimit.ι _ j ≫ (preservesColimitIso G F).inv = G.map (colimit.ι F j) :=
   IsColimit.comp_coconePointUniqueUpToIso_inv _ (colimit.isColimit (F ⋙ G)) j
 
 @[reassoc (attr := simp)]
-theorem ι_preservesColimitsIso_hom (j : J) :
+theorem ι_preservesColimitIso_hom (j : J) :
     G.map (colimit.ι F j) ≫ (preservesColimitIso G F).hom = colimit.ι (F ⋙ G) j :=
   (PreservesColimit.preserves (colimit.isColimit _)).comp_coconePointUniqueUpToIso_hom _ j
 
 @[reassoc (attr := simp)]
-theorem preservesColimitsIso_inv_comp_desc (t : Cocone F) :
+theorem preservesColimitIso_inv_comp_desc (t : Cocone F) :
     (preservesColimitIso G F).inv ≫ G.map (colimit.desc _ t) =
     colimit.desc _ (G.mapCocone t) := by
   ext
@@ -149,8 +149,8 @@ def preservesColimitNatIso : colim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ c
       apply colimit.hom_ext; intro j
       dsimp
       rw [ι_colimMap_assoc]
-      simp only [ι_preservesColimitsIso_inv, whiskerRight_app, Category.assoc,
-        ι_preservesColimitsIso_inv_assoc, ← G.map_comp]
+      simp only [ι_preservesColimitIso_inv, whiskerRight_app, Category.assoc,
+        ι_preservesColimitIso_inv_assoc, ← G.map_comp]
       rw [ι_colimMap])
 
 end
