@@ -284,8 +284,8 @@ theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomain
 @[simps]
 def domCongrAut : MulAut G →* MonoidAlgebra A G ≃ₐ[k] MonoidAlgebra A G where
   toFun := MonoidAlgebra.domCongr k A
-  map_one' := by ext; exact Finsupp.ext fun _ => rfl
-  map_mul' _ _ := by ext; exact Finsupp.ext fun _ => rfl
+  map_one' := by ext; rfl
+  map_mul' _ _ := by ext; rfl
 
 /-- If `f : R →ₐ[k] S` is an algebra homomorphism between two `k`-algebras, then
 `Finsupp.mapRange f` is an algebra homomorphism between their monoid algebras. -/
@@ -303,7 +303,7 @@ lemma mapRangeAlgHom_apply {k R S G} [CommSemiring k] [Semiring R] [Algebra k R]
   ext x
   induction' x using Finsupp.induction with a b f _ _ ih
   · simp
-  · rw [map_add, mapRange_add (map_add _), ih]
+  · rw [map_add, mapRange_add (map_add _), add_apply, ih]
     erw [liftAddHom_apply_single]
     simp [single_mul_single]
 
@@ -335,8 +335,8 @@ def mapRangeAlgEquiv {k R S G} [CommSemiring k] [Semiring R] [Algebra k R] [Semi
 def mapRangeAlgAut {k R G} [CommSemiring k] [Semiring R] [Algebra k R] [Monoid G] :
     (R ≃ₐ[k] R) →* MonoidAlgebra R G ≃ₐ[k] MonoidAlgebra R G where
   toFun f := mapRangeAlgEquiv f
-  map_one' := by ext; exact Finsupp.ext fun a => by simp
-  map_mul' x y := by ext; exact Finsupp.ext fun a => by simp
+  map_one' := by ext; simp
+  map_mul' x y := by ext; simp
 
 end lift
 
@@ -624,8 +624,8 @@ theorem domCongr_toAlgHom (e : G ≃+ H) : (domCongr k A e).toAlgHom = mapDomain
 @[simps]
 def domCongrAut : AddAut G →* A[G] ≃ₐ[k] A[G] where
   toFun := AddMonoidAlgebra.domCongr k A
-  map_one' := by ext; exact Finsupp.ext fun _ => rfl
-  map_mul' _ _ := by ext; exact Finsupp.ext fun _ => rfl
+  map_one' := by ext; rfl
+  map_mul' _ _ := by ext; rfl
 
 /-- If `f : R →ₐ[k] S` is an algebra homomorphism between two `k`-algebras, then
 `Finsupp.mapRange f` is an algebra homomorphism between their additive monoid algebras. -/
@@ -643,7 +643,7 @@ lemma mapRangeAlgHom_apply {k R S G} [CommSemiring k] [Semiring R] [Algebra k R]
   ext x
   induction' x using Finsupp.induction with a b f _ _ ih
   · simp
-  · rw [map_add, mapRange_add (map_add _), ih]
+  · rw [map_add, mapRange_add (map_add _), add_apply, ih]
     erw [liftAddHom_apply_single]
     simp [single_mul_single]
 
@@ -675,8 +675,8 @@ def mapRangeAlgEquiv {k R S G} [CommSemiring k] [Semiring R] [Algebra k R] [Semi
 def mapRangeAlgAut {k R G} [CommSemiring k] [Semiring R] [Algebra k R] [AddMonoid G] :
     (R ≃ₐ[k] R) →* R[G] ≃ₐ[k] R[G] where
   toFun f := mapRangeAlgEquiv f
-  map_one' := by ext; exact Finsupp.ext fun a => by simp
-  map_mul' x y := by ext; exact Finsupp.ext fun a => by simp
+  map_one' := by ext; simp
+  map_mul' x y := by ext; simp
 
 end AddMonoidAlgebra
 
