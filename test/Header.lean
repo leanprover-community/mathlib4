@@ -17,9 +17,6 @@ warning: In the past, importing 'Lake' in mathlib has led to dramatic slow-downs
 If this is fine, feel free to allow this linter.
 note: this linter can be disabled with `set_option linter.style.header false`
 ---
-warning: Duplicate imports: 'Mathlib.Tactic.Linter.Header' already imported
-note: this linter can be disabled with `set_option linter.style.header false`
----
 warning: Files in mathlib cannot import the whole tactic folder.
 note: this linter can be disabled with `set_option linter.style.header false`
 ---
@@ -27,6 +24,9 @@ warning: Mathlib.Tactic.Have defines a deprecated form of the 'have' tactic; ple
 note: this linter can be disabled with `set_option linter.style.header false`
 ---
 warning: Files in the `Deprecated` directory are not supposed to be imported.
+note: this linter can be disabled with `set_option linter.style.header false`
+---
+warning: Duplicate imports: 'Mathlib.Tactic.Linter.Header' already imported
 note: this linter can be disabled with `set_option linter.style.header false`
 ---
 warning: The module doc-string for a file should be the first command after the imports.
