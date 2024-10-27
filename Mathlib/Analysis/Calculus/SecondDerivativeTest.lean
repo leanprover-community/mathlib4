@@ -165,11 +165,8 @@ theorem isLocalMin_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
       · subst G
         simp_all
       · have : x₀ < z := by
-          have := h.2
-          simp only at this
           simp only [not_lt] at H'
           exact lt_of_le_of_ne H' fun a ↦ G (a.symm)
-        simp only [mem_setOf_eq]
         apply differentiableAt_of_deriv_ne_zero
         apply ne_of_gt
         apply hε.2.2
@@ -196,9 +193,9 @@ theorem isLocalMin_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
       apply hε.2.1
       simp_all
     · have : x₀ < z := by
-        have := h.2; simp at this
+        simp at h
         simp only [not_lt] at H'
-        exact lt_of_le_of_ne H' fun a ↦ this (id (Eq.symm a))
+        exact lt_of_le_of_ne H' fun a ↦ h.2 (id (Eq.symm a))
       apply differentiableAt_of_deriv_ne_zero
       apply ne_of_gt
       apply hε.2.2
