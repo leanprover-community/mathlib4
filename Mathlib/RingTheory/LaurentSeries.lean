@@ -279,15 +279,15 @@ open LaurentSeries
 
 variable {R' : Type*} [Semiring R] [Ring R'] (f g : R⟦X⟧) (f' g' : R'⟦X⟧)
 
-@[norm_cast] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem coe_zero : ((0 : R⟦X⟧) : R⸨X⸩) = 0 :=
   (ofPowerSeries ℤ R).map_zero
 
-@[norm_cast] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem coe_one : ((1 : R⟦X⟧) : R⸨X⸩) = 1 :=
   (ofPowerSeries ℤ R).map_one
 
-@[norm_cast] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem coe_add : ((f + g : R⟦X⟧) : R⸨X⸩) = f + g :=
   (ofPowerSeries ℤ R).map_add _ _
 
@@ -299,7 +299,7 @@ theorem coe_sub : ((f' - g' : R'⟦X⟧) : R'⸨X⸩) = f' - g' :=
 theorem coe_neg : ((-f' : R'⟦X⟧) : R'⸨X⸩) = -f' :=
   (ofPowerSeries ℤ R').map_neg _
 
-@[norm_cast] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem coe_mul : ((f * g : R⟦X⟧) : R⸨X⸩) = f * g :=
   (ofPowerSeries ℤ R).map_mul _ _
 
@@ -314,12 +314,9 @@ theorem coeff_coe (i : ℤ) :
       Ne, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
       not_false_iff, reduceCtorEq]
 
--- Porting note (#10618): simp can prove this
--- Porting note: removed norm_cast attribute
 theorem coe_C (r : R) : ((C R r : R⟦X⟧) : R⸨X⸩) = HahnSeries.C r :=
   ofPowerSeries_C _
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem coe_X : ((X : R⟦X⟧) : R⸨X⸩) = single 1 1 :=
   ofPowerSeries_X
 
