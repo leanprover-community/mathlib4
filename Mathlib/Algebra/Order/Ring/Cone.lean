@@ -19,7 +19,7 @@ cones in rings and the corresponding ordered rings.
 -/
 
 /-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/
-class RingConeClass (S R : Type*) [Ring R] [SetLike S R]
+class RingConeClass (S : Type*) (R : outParam Type*) [Ring R] [SetLike S R]
     extends AddGroupConeClass S R, SubsemiringClass S R : Prop
 
 /-- A (positive) cone in a ring is a subsemiring that
@@ -83,4 +83,4 @@ due to non-customisable fields: `lt`, `decidableLT`, `decidableEq`, `compare`. -
   __ := OrderedRing.mkOfCone C
   __ := OrderedRing.toStrictOrderedRing R
   le_total a b := by simpa using mem_or_neg_mem (b - a)
-  decidableLE a b := dec _
+  decidableLE _ _ := dec _

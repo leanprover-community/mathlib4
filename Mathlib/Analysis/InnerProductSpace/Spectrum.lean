@@ -184,7 +184,7 @@ end Version1
 
 section Version2
 
-variable {n : ℕ} (hn : FiniteDimensional.finrank 𝕜 E = n)
+variable {n : ℕ} (hn : Module.finrank 𝕜 E = n)
 
 /-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
 finite-dimensional inner product space `E`.
