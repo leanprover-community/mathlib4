@@ -230,14 +230,9 @@ theorem isLocalMin_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
         simp_all only [gt_iff_lt, mem_Ioo, and_imp, mem_principal]
         constructor
         ·   refine lt_trans ?_ hx.1
+            have : min (x₀ - l) (u - x₀) ≤ (x₀ - l) := by apply min_le_left
+            have : min δ ε ≤ δ := min_le_left δ ε
             show l < x₀ - (1/2) * min δ ε
-            suffices l < x₀ - (1/2) * δ by
-                have : min δ ε ≤ δ := min_le_left δ ε
-                linarith
-            show l < x₀ - (1/2) * min (x₀ - l) (u - x₀)
-            suffices l < x₀ - (1/2) * (x₀ - l) by
-                have : min (x₀ - l) (u - x₀) ≤ (x₀ - l) := by apply min_le_left
-                linarith
             linarith
         · linarith
    · apply hb.1
