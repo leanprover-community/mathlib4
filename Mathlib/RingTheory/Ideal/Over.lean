@@ -540,6 +540,8 @@ instance [P.IsPrime] : NoZeroSMulDivisors (A ⧸ p) (B ⧸ P) :=
 
 variable {P}
 
+/-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
+  isomorphism between `B` and `C`, where `Q = σ P`. -/
 def algEquivOfEqMap {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
     (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) := {
   quotientEquiv P Q σ h with
@@ -548,6 +550,8 @@ def algEquivOfEqMap {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : 
     exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
 }
 
+/-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
+  isomorphism between `B` and `C`, where `P = σ⁻¹ Q`. -/
 def algEquivOfEqComap {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
     (h : P = Q.comap σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) := by
   rw [← show _ = Q.comap σ from map_symm (σ : B ≃+* C)] at h
