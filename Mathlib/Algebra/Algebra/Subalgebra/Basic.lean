@@ -973,7 +973,7 @@ section Actions
 variable {α β : Type*}
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [SMul A α] (S : Subalgebra R A) : SMul S α :=
+instance (priority := 900) [SMul A α] (S : Subalgebra R A) : SMul S α :=
   inferInstanceAs (SMul S.toSubsemiring α)
 
 theorem smul_def [SMul A α] {S : Subalgebra R A} (g : S) (m : α) : g • m = (g : A) • m := rfl
