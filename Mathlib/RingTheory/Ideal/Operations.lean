@@ -895,12 +895,10 @@ theorem radical_bot_of_noZeroDivisors {R : Type u} [CommSemiring R] [NoZeroDivis
 instance : IdemCommSemiring (Ideal R) :=
   inferInstance
 
-variable (R)
-
+variable (R) in
 theorem top_pow (n : ℕ) : (⊤ ^ n : Ideal R) = ⊤ :=
   Nat.recOn n one_eq_top fun n ih => by rw [pow_succ, ih, top_mul]
 
-variable {R}
 variable (I)
 
 lemma radical_pow : ∀ {n}, n ≠ 0 → radical (I ^ n) = radical I
@@ -1250,8 +1248,7 @@ lemma span_smul_eq
 @[simp]
 theorem set_smul_top_eq_span (s : Set R) :
     s • ⊤ = Ideal.span s :=
-  Eq.trans (span_smul_eq s ⊤).symm <|
-    Eq.trans (smul_eq_mul (Ideal R)) (Ideal.mul_top (.span s))
+  (span_smul_eq s ⊤).symm.trans (Ideal.span s).mul_top
 
 end Submodule
 

@@ -130,11 +130,10 @@ protected theorem mul_induction_on' {C : ∀ r, r ∈ M * N → Prop}
     (mem_mul_mem : ∀ m (hm : m ∈ M) n (hn : n ∈ N), C (m * n) (mul_mem_mul hm hn))
     (add : ∀ x hx y hy, C x hx → C y hy → C (x + y) (add_mem hx hy)) {r : A} (hr : r ∈ M * N) :
     C r hr := by
-  refine Exists.elim ?_ fun (hr : r ∈ M * N) (hc : C r hr) => hc
-  exact
-    Submodule.mul_induction_on hr
-      (fun x hx y hy => ⟨_, mem_mul_mem _ hx _ hy⟩)
-      fun x y ⟨_, hx⟩ ⟨_, hy⟩ => ⟨_, add _ _ _ _ hx hy⟩
+  refine Exists.elim ?_ fun (hr : r ∈ M * N) (hc : C r hr) ↦ hc
+  exact Submodule.mul_induction_on hr
+    (fun x hx y hy ↦ ⟨_, mem_mul_mem _ hx _ hy⟩)
+    fun x y ⟨_, hx⟩ ⟨_, hy⟩ ↦ ⟨_, add _ _ _ _ hx hy⟩
 
 variable (M)
 
