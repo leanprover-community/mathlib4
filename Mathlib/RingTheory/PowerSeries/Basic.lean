@@ -763,12 +763,14 @@ variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from polynomials into formal power series. -/
 @[coe]
-def ToPowerSeries : R[X] → (PowerSeries R) := fun φ =>
+def toPowerSeries : R[X] → (PowerSeries R) := fun φ =>
   PowerSeries.mk fun n => coeff φ n
+
+@[deprecated (since := "2024-10-27")] alias ToPowerSeries := toPowerSeries
 
 /-- The natural inclusion from polynomials into formal power series. -/
 instance coeToPowerSeries : Coe R[X] (PowerSeries R) :=
-  ⟨ToPowerSeries⟩
+  ⟨toPowerSeries⟩
 
 theorem coe_def : (φ : PowerSeries R) = PowerSeries.mk (coeff φ) :=
   rfl
