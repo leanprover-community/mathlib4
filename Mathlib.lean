@@ -1987,7 +1987,7 @@ import Mathlib.CategoryTheory.Sites.Types
 import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.SmallObject.Construction
-import Mathlib.CategoryTheory.SmallObject.Iteration
+import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 import Mathlib.CategoryTheory.Square
 import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.Subobject.Comma
