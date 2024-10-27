@@ -245,8 +245,8 @@ protected theorem min_const [LinearOrder ι] {f : Filtration ι m} {τ : Ω → 
     (hτ : IsStoppingTime f τ) (i : ι) : IsStoppingTime f fun ω => min (τ ω) i :=
   hτ.min (isStoppingTime_const f i)
 
-theorem add_const [AddGroup ι] [Preorder ι] [CovariantClass ι ι (Function.swap (· + ·)) (· ≤ ·)]
-    [CovariantClass ι ι (· + ·) (· ≤ ·)] {f : Filtration ι m} {τ : Ω → ι} (hτ : IsStoppingTime f τ)
+theorem add_const [AddGroup ι] [Preorder ι] [AddRightMono ι]
+    [AddLeftMono ι] {f : Filtration ι m} {τ : Ω → ι} (hτ : IsStoppingTime f τ)
     {i : ι} (hi : 0 ≤ i) : IsStoppingTime f fun ω => τ ω + i := by
   intro j
   simp_rw [← le_sub_iff_add_le]

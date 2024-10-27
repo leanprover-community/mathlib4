@@ -183,27 +183,42 @@ theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommGro
   let b : Basis _ R (⨁ i, M i) := DFinsupp.basis fun i => B i
   simp [← b.mk_eq_rank'', fun i => (B i).mk_eq_rank'']
 
-/-- If `m` and `n` are `Fintype`, the rank of `m × n` matrices is `(#m).lift * (#n).lift`. -/
+/-- If `m` and `n` are finite, the rank of `m × n` matrices over a module `M` is
+`(#m).lift * (#n).lift * rank R M`. -/
 @[simp]
+theorem rank_matrix_module (m : Type w) (n : Type w') [Finite m] [Finite n] :
+    Module.rank R (Matrix m n M) =
+      lift.{max v w'} #m * lift.{max v w} #n * lift.{max w w'} (Module.rank R M) := by
+  cases nonempty_fintype m
+  cases nonempty_fintype n
+  obtain ⟨I, b⟩ := Module.Free.exists_basis (R := R) (M := M)
+  rw [← (b.matrix m n).mk_eq_rank'']
+  simp only [mk_prod, lift_mul, lift_lift, ← mul_assoc, b.mk_eq_rank'']
+
+
+/-- If `m` and `n` are finite and lie in the same universe, the rank of `m × n` matrices over a
+module `M` is `(#m * #n).lift * rank R M`. -/
+@[simp high]
+theorem rank_matrix_module' (m n : Type w) [Finite m] [Finite n] :
+    Module.rank R (Matrix m n M) =
+      lift.{max v} (#m * #n) * lift.{w} (Module.rank R M) := by
+  rw [rank_matrix_module, lift_mul, lift_umax.{w, v}]
+
+/-- If `m` and `n` are finite, the rank of `m × n` matrices is `(#m).lift * (#n).lift`. -/
 theorem rank_matrix (m : Type v) (n : Type w) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) =
       Cardinal.lift.{max v w u, v} #m * Cardinal.lift.{max v w u, w} #n := by
-  cases nonempty_fintype m
-  cases nonempty_fintype n
-  have h := (Matrix.stdBasis R m n).mk_eq_rank
-  rw [← lift_lift.{max v w u, max v w}, lift_inj] at h
-  simpa using h.symm
+  rw [rank_matrix_module, rank_self, lift_one, mul_one, ← lift_lift.{v, max u w}, lift_id,
+    ← lift_lift.{w, max u v}, lift_id]
 
-/-- If `m` and `n` are `Fintype` that lie in the same universe, the rank of `m × n` matrices is
+/-- If `m` and `n` are finite and lie in the same universe, the rank of `m × n` matrices is
   `(#n * #m).lift`. -/
-@[simp high]
 theorem rank_matrix' (m n : Type v) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = Cardinal.lift.{u} (#m * #n) := by
   rw [rank_matrix, lift_mul, lift_umax.{v, u}]
 
-/-- If `m` and `n` are `Fintype` that lie in the same universe as `R`, the rank of `m × n` matrices
+/-- If `m` and `n` are finite and lie in the same universe as `R`, the rank of `m × n` matrices
   is `# m * # n`. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem rank_matrix'' (m n : Type u) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = #m * #n := by simp
 
@@ -229,10 +244,10 @@ theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i 
   simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_directSum, ← mk_sigma,
     mk_toNat_eq_card, card_sigma]
 
-/-- If `m` and `n` are `Fintype`, the finrank of `m × n` matrices is
-  `(Fintype.card m) * (Fintype.card n)`. -/
+/-- If `m` and `n` are `Fintype`, the finrank of `m × n` matrices over a module `M` is
+  `(Fintype.card m) * (Fintype.card n) * finrank R M`. -/
 theorem finrank_matrix (m n : Type*) [Fintype m] [Fintype n] :
-    finrank R (Matrix m n R) = card m * card n := by simp [finrank]
+    finrank R (Matrix m n M) = card m * card n * finrank R M := by simp [finrank]
 
 end Module
 
@@ -298,7 +313,6 @@ theorem Module.finrank_fintype_fun_eq_card : finrank R (η → R) = Fintype.card
   finrank_eq_of_rank_eq rank_fun'
 
 /-- The vector space of functions on `Fin n` has finrank equal to `n`. -/
--- @[simp] -- Porting note (#10618): simp already proves this
 theorem Module.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by simp
 
 variable {R}

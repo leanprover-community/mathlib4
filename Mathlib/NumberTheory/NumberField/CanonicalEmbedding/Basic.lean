@@ -137,7 +137,7 @@ theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 
   simp only [latticeBasis, integralBasis_apply, coe_basisOfLinearIndependentOfCardEqFinrank,
     Function.comp_apply, Equiv.apply_symm_apply]
 
-theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
+theorem mem_span_latticeBasis [NumberField K] {x : (K →+* ℂ) → ℂ} :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
       x ∈ ((canonicalEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
   rw [show Set.range (latticeBasis K) =
@@ -208,7 +208,7 @@ instance [NumberField K] : Nontrivial (mixedSpace K) := by
 protected theorem finrank [NumberField K] : finrank ℝ (mixedSpace K) = finrank ℚ K := by
   classical
   rw [finrank_prod, finrank_pi, finrank_pi_fintype, Complex.finrank_real_complex, sum_const,
-    card_univ, ← NrRealPlaces, ← NrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul,
+    card_univ, ← nrRealPlaces, ← nrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul,
     mul_comm, ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ,
     Fintype.card_subtype_compl, Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
@@ -517,7 +517,7 @@ def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
     (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; - I, I]))
 
 theorem det_matrixToStdBasis :
-    (matrixToStdBasis K).det = (2⁻¹ * I) ^ NrComplexPlaces K :=
+    (matrixToStdBasis K).det = (2⁻¹ * I) ^ nrComplexPlaces K :=
   calc
   _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, det ((2 : ℂ)⁻¹ • !![1, 1; -I, I]) := by
       rw [matrixToStdBasis, det_fromBlocks_zero₂₁, det_diagonal, prod_const_one, one_mul,
@@ -590,8 +590,8 @@ def latticeBasis :
     -- and it's a basis since it has the right cardinality
     refine basisOfLinearIndependentOfCardEqFinrank this ?_
     rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_prod, finrank_pi,
-      finrank_pi_fintype, Complex.finrank_real_complex, sum_const, card_univ, ← NrRealPlaces,
-      ← NrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
+      finrank_pi_fintype, Complex.finrank_real_complex, sum_const, card_univ, ← nrRealPlaces,
+      ← nrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
       ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ, Fintype.card_subtype_compl,
       Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
@@ -601,9 +601,9 @@ theorem latticeBasis_apply (i : ChooseBasisIndex ℤ (𝓞 K)) :
   simp only [latticeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, Function.comp_apply,
     canonicalEmbedding.latticeBasis_apply, integralBasis_apply, commMap_canonical_eq_mixed]
 
-theorem mem_span_latticeBasis (x : (mixedSpace K)) :
+theorem mem_span_latticeBasis {x : (mixedSpace K)} :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
-      x ∈ ((mixedEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
+      x ∈ mixedEmbedding.integerLattice K := by
   rw [show Set.range (latticeBasis K) =
       (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
     rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
@@ -614,7 +614,7 @@ theorem mem_span_latticeBasis (x : (mixedSpace K)) :
 
 theorem span_latticeBasis :
     Submodule.span ℤ (Set.range (latticeBasis K)) = mixedEmbedding.integerLattice K :=
-  Submodule.ext_iff.mpr (mem_span_latticeBasis K)
+  Submodule.ext_iff.mpr fun _ ↦ mem_span_latticeBasis K
 
 instance : DiscreteTopology (mixedEmbedding.integerLattice K) := by
   classical
@@ -625,6 +625,13 @@ open Classical in
 instance : IsZLattice ℝ (mixedEmbedding.integerLattice K) := by
   simp_rw [← span_latticeBasis]
   exact ZSpan.isZLattice (latticeBasis K)
+
+open Classical in
+theorem fundamentalDomain_integerLattice :
+    MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.integerLattice K)
+      (ZSpan.fundamentalDomain (latticeBasis K)) := by
+  rw [← span_latticeBasis]
+  exact ZSpan.isAddFundamentalDomain (latticeBasis K) _
 
 theorem mem_rat_span_latticeBasis (x : K) :
     mixedEmbedding K x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by
@@ -651,6 +658,14 @@ theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
   simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, this, Basis.repr_self]
 
 variable (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
+
+/-- The image of the fractional ideal `I` in the mixed space. -/
+abbrev idealLattice : Submodule ℤ (mixedSpace K) := LinearMap.range <|
+  (mixedEmbedding K).toIntAlgHom.toLinearMap ∘ₗ ((I : Submodule (𝓞 K) K).subtype.restrictScalars ℤ)
+
+theorem mem_idealLattice {x : mixedSpace K} :
+    x ∈ idealLattice K I ↔ ∃ y, y ∈ (I : Set K) ∧ mixedEmbedding K y = x := by
+  simp [idealLattice]
 
 /-- The generalized index of the lattice generated by `I` in the lattice generated by
 `𝓞 K` is equal to the norm of the ideal `I`. The result is stated in terms of base change
@@ -694,7 +709,7 @@ theorem fractionalIdealLatticeBasis_apply (i : ChooseBasisIndex ℤ I) :
   simp only [fractionalIdealLatticeBasis, Basis.coe_reindex, Basis.coe_mk, Function.comp_apply,
     Equiv.apply_symm_apply]
 
-theorem mem_span_fractionalIdealLatticeBasis (x : (mixedSpace K)) :
+theorem mem_span_fractionalIdealLatticeBasis {x : (mixedSpace K)} :
     x ∈ Submodule.span ℤ (Set.range (fractionalIdealLatticeBasis K I)) ↔
       x ∈ mixedEmbedding K '' I := by
   rw [show Set.range (fractionalIdealLatticeBasis K I) =
@@ -705,6 +720,29 @@ theorem mem_span_fractionalIdealLatticeBasis (x : (mixedSpace K)) :
   rw [show Submodule.span ℤ (Set.range (basisOfFractionalIdeal K I)) = (I : Set K) by
         ext; erw [mem_span_basisOfFractionalIdeal]]
   rfl
+
+theorem span_idealLatticeBasis :
+    (Submodule.span ℤ (Set.range (fractionalIdealLatticeBasis K I))) =
+      (mixedEmbedding.idealLattice K I) := by
+  ext x
+  simp [mem_span_fractionalIdealLatticeBasis]
+
+instance : DiscreteTopology (mixedEmbedding.idealLattice K I) := by
+  classical
+  rw [← span_idealLatticeBasis]
+  infer_instance
+
+open Classical in
+instance : IsZLattice ℝ (mixedEmbedding.idealLattice K I) := by
+  simp_rw [← span_idealLatticeBasis]
+  exact ZSpan.isZLattice (fractionalIdealLatticeBasis K I)
+
+open Classical in
+theorem fundamentalDomain_idealLattice :
+    MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.idealLattice K I)
+      (ZSpan.fundamentalDomain (fractionalIdealLatticeBasis K I)) := by
+  rw [← span_idealLatticeBasis]
+  exact ZSpan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) _
 
 end integerLattice
 

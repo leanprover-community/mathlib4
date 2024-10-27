@@ -187,7 +187,8 @@ variable {L : C ⥤ D} {R : D ⥤ C} [PreservesMonomorphisms L]
 theorem injective_of_adjoint (adj : L ⊣ R) (J : D) [Injective J] : Injective <| R.obj J :=
   ⟨fun {A} {_} g f im =>
     ⟨adj.homEquiv _ _ (factorThru ((adj.homEquiv A J).symm g) (L.map f)),
-      (adj.homEquiv _ _).symm.injective (by simp)⟩⟩
+      (adj.homEquiv _ _).symm.injective
+        (by simp [Adjunction.homEquiv_unit, Adjunction.homEquiv_counit])⟩⟩
 
 end Adjunction
 

@@ -11,6 +11,7 @@ import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Tactic.NormNum.LegendreSymbol
+import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Tests for `norm_num` extensions

@@ -132,6 +132,8 @@ theorem Specializes.trans : x ⤳ y → y ⤳ z → x ⤳ z :=
 theorem specializes_of_eq (e : x = y) : x ⤳ y :=
   e ▸ specializes_refl x
 
+alias Specializes.of_eq := specializes_of_eq
+
 theorem specializes_of_nhdsWithin (h₁ : 𝓝[s] x ≤ 𝓝[s] y) (h₂ : x ∈ s) : x ⤳ y :=
   specializes_iff_pure.2 <|
     calc
@@ -513,8 +515,11 @@ namespace SeparationQuotient
 /-- The natural map from a topological space to its separation quotient. -/
 def mk : X → SeparationQuotient X := Quotient.mk''
 
-theorem quotientMap_mk : QuotientMap (mk : X → SeparationQuotient X) :=
-  quotientMap_quot_mk
+theorem isQuotientMap_mk : IsQuotientMap (mk : X → SeparationQuotient X) :=
+  isQuotientMap_quot_mk
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_mk := isQuotientMap_mk
 
 @[fun_prop, continuity]
 theorem continuous_mk : Continuous (mk : X → SeparationQuotient X) :=
@@ -550,7 +555,7 @@ theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
   exact ((mk_eq_mk.1 hxy).mem_open_iff hs).1 hys
 
 theorem isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs =>
-  quotientMap_mk.isOpen_preimage.1 <| by rwa [preimage_image_mk_open hs]
+  isQuotientMap_mk.isOpen_preimage.1 <| by rwa [preimage_image_mk_open hs]
 
 theorem isOpenQuotientMap_mk : IsOpenQuotientMap (mk : X → SeparationQuotient X) :=
   ⟨surjective_mk, continuous_mk, isOpenMap_mk⟩
@@ -606,8 +611,11 @@ theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
   rw [nhdsWithin, ← comap_principal, Filter.push_pull, nhdsWithin, map_mk_nhds]
 
 /-- The map `(x, y) ↦ (mk x, mk y)` is a quotient map. -/
-theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) :=
-  (isOpenQuotientMap_mk.prodMap isOpenQuotientMap_mk).quotientMap
+theorem isQuotientMap_prodMap_mk : IsQuotientMap (Prod.map mk mk : X × Y → _) :=
+  (isOpenQuotientMap_mk.prodMap isOpenQuotientMap_mk).isQuotientMap
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_prodMap_mk := isQuotientMap_prodMap_mk
 
 /-- Lift a map `f : X → α` such that `Inseparable x y → f x = f y` to a map
 `SeparationQuotient X → α`. -/

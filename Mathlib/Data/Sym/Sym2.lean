@@ -647,7 +647,7 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
     apply other_eq_other'
 
 theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
-    ((s ×ˢ s).image Sym2.mk).filter IsDiag = s.diag.image Sym2.mk := by
+    {a ∈ (s ×ˢ s).image Sym2.mk | a.IsDiag} = s.diag.image Sym2.mk := by
   ext z
   induction' z
   simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
@@ -660,8 +660,7 @@ theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
     exact ⟨⟨a, a, ⟨ha, ha⟩, rfl⟩, rfl⟩
 
 theorem filter_image_mk_not_isDiag [DecidableEq α] (s : Finset α) :
-    (((s ×ˢ s).image Sym2.mk).filter fun a : Sym2 α => ¬a.IsDiag) =
-      s.offDiag.image Sym2.mk := by
+    {a ∈ (s ×ˢ s).image Sym2.mk | ¬a.IsDiag} = s.offDiag.image Sym2.mk := by
   ext z
   induction z
   simp only [mem_image, mem_offDiag, mem_filter, Prod.exists, mem_product]

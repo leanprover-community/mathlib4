@@ -157,6 +157,13 @@ theorem LinearMap.rTensor_range :
   apply rTensor_surjective
   rw [← range_eq_top, range_rangeRestrict]
 
+lemma LinearMap.rTensor_exact_iff_lTensor_exact :
+    Function.Exact (f.rTensor Q) (g.rTensor Q) ↔
+    Function.Exact (f.lTensor Q) (g.lTensor Q) :=
+  Function.Exact.iff_of_ladder_linearEquiv (e₁ := TensorProduct.comm _ _ _)
+    (e₂ := TensorProduct.comm _ _ _) (e₃ := TensorProduct.comm _ _ _)
+    (by ext; simp) (by ext; simp)
+
 end Semiring
 
 variable {R M N P : Type*} [CommRing R]
@@ -370,12 +377,8 @@ noncomputable def rTensor.equiv :
 include hfg hg in
 /-- Tensoring an exact pair on the right gives an exact pair -/
 theorem rTensor_exact : Exact (rTensor Q f) (rTensor Q g) := by
-  rw [exact_iff, ← Submodule.ker_mkQ (p := range (rTensor Q f)),
-    ← rTensor.inverse_comp_rTensor Q hfg hg]
-  apply symm
-  apply ker_comp_of_ker_eq_bot
-  rw [ker_eq_bot]
-  exact (rTensor.equiv Q hfg hg).symm.injective
+  rw [rTensor_exact_iff_lTensor_exact]
+  exact lTensor_exact Q hfg hg
 
 /-- Right-exactness of tensor product (`rTensor`) -/
 lemma rTensor_mkQ (N : Submodule R M) :
