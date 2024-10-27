@@ -77,6 +77,12 @@ theorem map_tmul (f : A →ₐc[R] B) (g : C →ₐc[R] D) (x : A) (y : C) :
 theorem map_toCoalgHom (f : A →ₐc[R] B) (g : C →ₐc[R] D) :
     map f g = Coalgebra.TensorProduct.map (f : A →ₗc[R] B) (g : C →ₗc[R] D) := rfl
 
+@[simp]
+theorem map_toAlgHom (f : A →ₐc[R] B) (g : C →ₐc[R] D) :
+    (map f g : A ⊗[R] C →ₐ[R] B ⊗[R] D) =
+      Algebra.TensorProduct.map (f : A →ₐ[R] B) (g : C →ₐ[R] D) :=
+  rfl
+
 variable (R A B C) in
 /-- The associator for tensor products of R-bialgebras, as a bialgebra equivalence. -/
 protected noncomputable def assoc :
@@ -98,6 +104,11 @@ theorem assoc_toCoalgEquiv :
     (Bialgebra.TensorProduct.assoc R A B C : _ ≃ₗc[R] _) =
     Coalgebra.TensorProduct.assoc R A B C := rfl
 
+@[simp]
+theorem assoc_toAlgEquiv :
+    (Bialgebra.TensorProduct.assoc R A B C : _ ≃ₐ[R] _) =
+    Algebra.TensorProduct.assoc R A B C := rfl
+
 variable (R A) in
 /-- The base ring is a left identity for the tensor product of bialgebras, up to
 bialgebra equivalence. -/
@@ -107,6 +118,10 @@ protected noncomputable def lid : R ⊗[R] A ≃ₐc[R] A :=
 @[simp]
 theorem lid_toCoalgEquiv :
     (Bialgebra.TensorProduct.lid R A : R ⊗[R] A ≃ₗc[R] A) = Coalgebra.TensorProduct.lid R A := rfl
+
+@[simp]
+theorem lid_toAlgEquiv :
+    (Bialgebra.TensorProduct.lid R A : R ⊗[R] A ≃ₐ[R] A) = Algebra.TensorProduct.lid R A := rfl
 
 @[simp]
 theorem lid_tmul (r : R) (a : A) : Bialgebra.TensorProduct.lid R A (r ⊗ₜ a) = r • a := rfl
@@ -131,6 +146,12 @@ protected noncomputable def rid : A ⊗[R] R ≃ₐc[R] A where
 @[simp]
 theorem rid_toCoalgEquiv :
     (Bialgebra.TensorProduct.rid R A : A ⊗[R] R ≃ₗc[R] A) = Coalgebra.TensorProduct.rid R A := rfl
+
+@[simp]
+theorem rid_toAlgEquiv :
+    (Bialgebra.TensorProduct.rid R A : A ⊗[R] R ≃ₐ[R] A) = Algebra.TensorProduct.rid R R A := by
+  ext x
+  exact coalgebra_rid_eq_algebra_rid_apply x
 
 @[simp]
 theorem rid_tmul (r : R) (a : A) : Bialgebra.TensorProduct.rid R A (a ⊗ₜ r) = r • a := rfl
