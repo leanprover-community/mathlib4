@@ -139,6 +139,7 @@ theorem splits_X_pow (n : ℕ) : (X ^ n).Splits i :=
 theorem splits_id_iff_splits {f : K[X]} : (f.map i).Splits (RingHom.id L) ↔ f.Splits i := by
   rw [splits_map_iff, RingHom.id_comp]
 
+variable {i}
 theorem Splits.comp_of_map_degree_le_one {f : K[X]} {p : K[X]} (hd : (p.map i).degree ≤ 1)
     (h : f.Splits i) : (f.comp p).Splits i := by
   by_cases hzero : map i (f.comp p) = 0
@@ -169,7 +170,7 @@ theorem Splits.comp_of_map_degree_le_one {f : K[X]} {p : K[X]} (hd : (p.map i).d
 theorem splits_iff_comp_splits_of_degree_eq_one {f : K[X]} {p : K[X]} (hd : (p.map i).degree = 1) :
     f.Splits i ↔ (f.comp p).Splits i := by
   rw [← splits_id_iff_splits, ← splits_id_iff_splits (f := f.comp p), map_comp]
-  refine ⟨fun h => Splits.comp_of_map_degree_le_one (RingHom.id L)
+  refine ⟨fun h => Splits.comp_of_map_degree_le_one
     (le_of_eq (map_id (R := L) ▸ hd)) h, fun h => ?_⟩
   let _ := invertibleOfNonzero (leadingCoeff_ne_zero.mpr
       (ne_zero_of_degree_gt (n := ⊥) (by rw [hd]; decide)))
@@ -180,7 +181,7 @@ theorem splits_iff_comp_splits_of_degree_eq_one {f : K[X]} {p : K[X]} (hd : (p.m
     simp only [coeff_map, invOf_eq_inv, mul_sub, ← C_mul, add_comp, mul_comp, C_comp, X_comp,
       ← mul_assoc]
     field_simp
-  refine this ▸ Splits.comp_of_map_degree_le_one _ ?_ h
+  refine this ▸ Splits.comp_of_map_degree_le_one ?_ h
   simp [degree_C (inv_ne_zero (Invertible.ne_zero (a := (map i p).leadingCoeff)))]
 
 /--
@@ -189,18 +190,20 @@ but its conditions are easier to check.
 -/
 theorem Splits.comp_of_degree_le_one {f : K[X]} {p : K[X]} (hd : p.degree ≤ 1)
     (h : f.Splits i) : (f.comp p).Splits i :=
-  Splits.comp_of_map_degree_le_one i ((degree_map_le i _).trans hd) h
+  Splits.comp_of_map_degree_le_one ((degree_map_le i _).trans hd) h
 
 theorem Splits.comp_X_sub_C (a : K) {f : K[X]}
     (h : f.Splits i) : (f.comp (X - C a)).Splits i :=
-  Splits.comp_of_degree_le_one i (degree_X_sub_C_le _) h
+  Splits.comp_of_degree_le_one (degree_X_sub_C_le _) h
 
 theorem Splits.comp_X_add_C (a : K) {f : K[X]}
     (h : f.Splits i) : (f.comp (X + C a)).Splits i :=
-  Splits.comp_of_degree_le_one i (by simpa using degree_X_sub_C_le (-a)) h
+  Splits.comp_of_degree_le_one (by simpa using degree_X_sub_C_le (-a)) h
 
 theorem Splits.comp_neg_X {f : K[X]} (h : f.Splits i) : (f.comp (-X)).Splits i :=
-  Splits.comp_of_degree_le_one i (by simpa using degree_X_sub_C_le (0 : K)) h
+  Splits.comp_of_degree_le_one (by simpa using degree_X_sub_C_le (0 : K)) h
+
+variable (i)
 
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
     ∃ x, eval₂ i x f = 0 :=
