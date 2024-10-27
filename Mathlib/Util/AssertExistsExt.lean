@@ -13,8 +13,7 @@ import Mathlib.Init
 This is used by the `assert_not_exists` and `assert_not_imported` commands.
 -/
 
-section
-open Lean Elab Meta
+open Lean
 
 namespace Mathlib.AssertNotExist
 
