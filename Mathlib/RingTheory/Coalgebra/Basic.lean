@@ -393,8 +393,8 @@ lemma counit_single (x : X) (a : A) :
 
 @[simp]
 lemma comul_single (x : X) (a : A) :
-    Coalgebra.comul (single x a)
-      = TensorProduct.map (lsingle R A x) (lsingle R A x) (Coalgebra.comul a) :=
+    Coalgebra.comul (R := R) (single x a)
+      = TensorProduct.map (lsingle x) (lsingle x) (Coalgebra.comul a) :=
   Finsupp.comul_single _ _ _ _ _
 
 end MonoidAlgebra
@@ -414,8 +414,8 @@ lemma counit_single (x : X) (a : A) :
 
 @[simp]
 lemma comul_single (x : X) (a : A) :
-    Coalgebra.comul (single x a)
-      = TensorProduct.map (lsingle R A x) (lsingle R A x) (Coalgebra.comul a) :=
+    Coalgebra.comul (R := R) (single x a)
+      = TensorProduct.map (lsingle x) (lsingle x) (Coalgebra.comul a) :=
   Finsupp.comul_single _ _ _ _ _
 
 end AddMonoidAlgebra
@@ -435,13 +435,13 @@ variable {R A}
 @[simp]
 theorem comul_C (a : A) :
     Coalgebra.comul (R := R) (C a)
-      = TensorProduct.map (lsingle R A 0) (lsingle R A 0) (Coalgebra.comul (R := R) a) :=
+      = TensorProduct.map (lsingle 0) (lsingle 0) (Coalgebra.comul (R := R) a) :=
   comul_single _ _
 
 @[simp]
 theorem comul_C_mul_T (a : A) (n : ℤ) :
     Coalgebra.comul (R := R) (C a * T n)
-      = TensorProduct.map (lsingle R A n) (lsingle R A n) (Coalgebra.comul (R := R) a) := by
+      = TensorProduct.map (lsingle n) (lsingle n) (Coalgebra.comul (R := R) a) := by
   simp [← single_eq_C_mul_T]
 
 theorem comul_C_mul_T_self (a : R) (n : ℤ) :
