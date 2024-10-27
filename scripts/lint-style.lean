@@ -25,9 +25,6 @@ def checkScriptsDocumented : IO Bool := do
   -- Retrieve all scripts (except for the `bench` directory).
   let allScripts ← (walkDir "scripts" fun p ↦ pure (p.components.getD 1 "" != "bench"))
   let allScripts := (allScripts.erase "bench").erase "README.md"
-  -- TODO: drop some false positives
-  --   nolint.json and noshake.json are data files; as are style-exceptions.txt and nolints-style.txt
-  --   these *could* be explicitly allows, or documented as well (perhaps the latter?)
   -- Check if the README text contains each file enclosed in backticks.
   let readme : String ← IO.FS.readFile (System.mkFilePath ["scripts", "README.md"])
   IO.println s!"found {allScripts.size} scripts: {",".intercalate (allScripts.map (·.toString)).toList}"
@@ -36,10 +33,9 @@ def checkScriptsDocumented : IO Bool := do
   let undocumented := allScripts.filter fun script ↦
     !readme.containsSubstr s!"`{script}`" && !dataFiles.contains script.toString
   if undocumented.size > 0 then
-    IO.println s!"error: found {undocumented.size} undocumented scripts:\
-      please describe the scripts\n\
-      {String.intercalate "," (undocumented.map (·.fileName.get!)).toList}\n\
-     in 'scripts/README.md'"
+    IO.println s!"error: found {undocumented.size} undocumented scripts: \
+      please describe the scripts in 'scripts/README.md'\n\
+      {String.intercalate "," (undocumented.map (·.fileName.get!)).toList}"
   return undocumented.size > 0
 
 /-- Implementation of the `lint-style` command line program. -/
