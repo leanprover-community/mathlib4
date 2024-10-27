@@ -144,7 +144,7 @@ variable {R A}
 
 end Bialgebra
 
-section CommSemiring
+namespace CommSemiring
 variable (R : Type u) [CommSemiring R]
 
 open Bialgebra
