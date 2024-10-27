@@ -304,10 +304,10 @@ lemma IsOpenEmbedding.functor_obj_injective {X Y : TopCat} {f : X ⟶ Y} (hf : I
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.functor_obj_injective := IsOpenEmbedding.functor_obj_injective
 
-set_option linter.unusedVariables false in
 /-- Given an inducing map `X ⟶ Y` and some `U : Opens X`, this is the union of all open sets
 whose preimage is `U`. This is right adjoint to `Opens.map`. -/
-def Inducing.functorObj {X Y : TopCat} {f : X ⟶ Y} (hf : Inducing f) (U : Opens X) : Opens Y :=
+@[nolint unusedArguments]
+def Inducing.functorObj {X Y : TopCat} {f : X ⟶ Y} (_ : Inducing f) (U : Opens X) : Opens Y :=
   sSup { s : Opens Y | (Opens.map f).obj s = U }
 
 lemma Inducing.map_functorObj {X Y : TopCat} {f : X ⟶ Y} (hf : Inducing f) (U : Opens X) :
