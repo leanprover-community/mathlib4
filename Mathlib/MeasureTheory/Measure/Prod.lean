@@ -3,9 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Integral.Lebesgue
+import Mathlib.MeasureTheory.MeasurableSpace.Prod
+import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.MeasureTheory.Measure.OpenPos
 
 /-!
@@ -62,31 +63,10 @@ open Filter hiding prod_eq map
 
 variable {α α' β β' γ E : Type*}
 
-/-- Rectangles formed by π-systems form a π-system. -/
-theorem IsPiSystem.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsPiSystem C)
-    (hD : IsPiSystem D) : IsPiSystem (image2 (· ×ˢ ·) C D) := by
-  rintro _ ⟨s₁, hs₁, t₁, ht₁, rfl⟩ _ ⟨s₂, hs₂, t₂, ht₂, rfl⟩ hst
-  rw [prod_inter_prod] at hst ⊢; rw [prod_nonempty_iff] at hst
-  exact mem_image2_of_mem (hC _ hs₁ _ hs₂ hst.1) (hD _ ht₁ _ ht₂ hst.2)
-
-/-- Rectangles of countably spanning sets are countably spanning. -/
-theorem IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsCountablySpanning C)
-    (hD : IsCountablySpanning D) : IsCountablySpanning (image2 (· ×ˢ ·) C D) := by
-  rcases hC, hD with ⟨⟨s, h1s, h2s⟩, t, h1t, h2t⟩
-  refine ⟨fun n => s n.unpair.1 ×ˢ t n.unpair.2, fun n => mem_image2_of_mem (h1s _) (h1t _), ?_⟩
-  rw [iUnion_unpair_prod, h2s, h2t, univ_prod_univ]
-
 variable [MeasurableSpace α] [MeasurableSpace α'] [MeasurableSpace β] [MeasurableSpace β']
 variable [MeasurableSpace γ]
 variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
 variable [NormedAddCommGroup E]
-
-/-! ### Measurability
-
-Before we define the product measure, we can talk about the measurability of operations on binary
-functions. We show that if `f` is a binary measurable function, then the function that integrates
-along one of the variables (using either the Lebesgue or Bochner integral) is measurable.
--/
 
 /-- If `ν` is a finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }` is
   a measurable function. `measurable_measure_prod_mk_left` is strictly more general. -/
