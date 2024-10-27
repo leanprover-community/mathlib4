@@ -39,6 +39,11 @@ section LargeCategory
 
 variable {C : Type u} [Category.{v} C] [HasFiniteColimits C] (A : Cᵒᵖ ⥤ Type v)
 
+/-- If `C` is a finitely cocomplete category and `A : Cᵒᵖ ⥤ Type u` is a presheaf that preserves
+finite limites, then `CostructuredArrow yoneda A` is filtered.
+
+One direction of Proposition 3.3.13 of [Kashiwara2006].
+-/
 theorem isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits
     [PreservesFiniteLimits A] : IsFiltered (CostructuredArrow yoneda A) := by
   suffices IsFiltered A.Elementsᵒᵖ from
@@ -160,6 +165,11 @@ noncomputable def preservesFiniteLimitsOfIsFilteredCostructuredArrowYoneda
     [IsFiltered (CostructuredArrow yoneda A)] : PreservesFiniteLimits A where
   preservesFiniteLimits _ _ _ := ⟨fun {_} => preservesLimitOfIsIsoPost _ _⟩
 
+/-- If `C` is a small finitely cocomplete category and `A : Cᵒᵖ ⥤ Type u` is a presheaf, then
+`CostructuredArrow yoneda A` is filtered if and only if `A` preserves finite limits.
+
+Proposition 3.3.13 of [Kashiwara2006].
+-/
 theorem isFiltered_costructuredArrow_yoneda_iff_nonempty_preservesFiniteLimits :
     IsFiltered (CostructuredArrow yoneda A) ↔ Nonempty (PreservesFiniteLimits A) :=
   ⟨fun _ => ⟨preservesFiniteLimitsOfIsFilteredCostructuredArrowYoneda A⟩,
