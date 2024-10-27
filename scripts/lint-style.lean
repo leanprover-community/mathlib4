@@ -24,18 +24,20 @@ open System.FilePath
 def checkScriptsDocumented : IO Bool := do
   -- Retrieve all scripts (except for the `bench` directory).
   let allScripts ← (walkDir "scripts" fun p ↦ pure (p.components.getD 1 "" != "bench"))
-  let allScripts := (allScripts.erase "scripts/bench").erase "scripts/README.md"
+  let allScripts := allScripts.erase ("scripts" / "bench")|>.erase ("scripts" / "README.md")
   -- Check if the README text contains each file enclosed in backticks.
-  let readme : String ← IO.FS.readFile (System.mkFilePath ["scripts", "README.md"])
+  let readme : String ← IO.FS.readFile ("scripts" / "README.md")
   IO.println s!"found {allScripts.size} scripts: {",".intercalate (allScripts.map (·.toString)).toList}"
   -- These are data files for linter exceptions: don't complain about these *for now*.
   let dataFiles := #["nolints.json", "noshake.json", "style-exceptions.txt", "nolints-style.txt"]
-  let undocumented := allScripts.filter fun script ↦
-    !readme.containsSubstr s!"`{script}`" && !dataFiles.contains script.toString
+  -- For now, there are no scripts in sub-directories that should be documented.
+  let fileNames := allScripts.map (·.fileName.get!)
+  let undocumented := fileNames.filter fun script ↦
+    !readme.containsSubstr s!"`{script}`" && !dataFiles.contains script
   if undocumented.size > 0 then
     IO.println s!"error: found {undocumented.size} undocumented scripts: \
       please describe the scripts in 'scripts/README.md'\n\
-      {String.intercalate "," (undocumented.map (·.fileName.get!)).toList}"
+      {String.intercalate "," undocumented.toList}"
   return undocumented.size > 0
 
 /-- Implementation of the `lint-style` command line program. -/
