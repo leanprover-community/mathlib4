@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Praneeth Kolichala, Yuyang Zhao
 -/
 import Batteries.Tactic.Alias
+import Mathlib.Init
 
 /-!
 # Binary recursion on `Nat`

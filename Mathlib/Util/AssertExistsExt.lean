@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Environment
+import Mathlib.Init
 
 /-!
 # Environment extension for tracking existence of declarations and imports
