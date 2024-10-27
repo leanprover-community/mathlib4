@@ -351,7 +351,7 @@ instance {n:ℕ} : CompactSpace (ℙ ℝ (Fin n → ℝ)) := by
       isCompact_univ := by rw [← this];exact Q
   }
 
-/- The real projective line ℙ ℝ (Fin 2 → ℝ) and OnePoint ℝ are homeomorphic.-/
+/-- The real projective line ℙ ℝ (Fin 2 → ℝ) and OnePoint ℝ are homeomorphic.-/
 noncomputable def onepointhomeo : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoint ℝ) :=
   @Continuous.homeoOfEquivCompactToT2 (ℙ ℝ (Fin 2 → ℝ)) (OnePoint ℝ) _ _ _ _ field_slope_equiv.symm
   div_slope_continuous
