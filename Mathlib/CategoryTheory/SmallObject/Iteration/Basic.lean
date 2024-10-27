@@ -259,7 +259,7 @@ end
 namespace Hom
 
 variable [PartialOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J]
-  (iter₁ iter₂ : Φ.Iteration ε j)
+  {iter₁ iter₂ : Φ.Iteration ε j}
 
 lemma congr_app (φ φ' : iter₁ ⟶ iter₂) (i : J) (hi : i ≤ j) :
     φ.natTrans.app ⟨i, hi⟩ = φ'.natTrans.app ⟨i, hi⟩ := by
