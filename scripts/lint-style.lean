@@ -8,8 +8,6 @@ import Batteries.Data.String.Basic
 import Mathlib.Tactic.Linter.TextBased
 import Cli.Basic
 
-set_option autoImplicit false
-
 /-!
 # Text-based style linters
 
