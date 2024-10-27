@@ -26,7 +26,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 open Set Filter MeasureTheory MeasurableSpace
 
-open scoped Topology NNReal ENNReal
+open scoped Topology NNReal ENNReal Notation
 
 universe u v w x y
 
@@ -468,14 +468,12 @@ end NNReal
 namespace EReal
 
 lemma lowerSemicontinuous_add : LowerSemicontinuous fun (p : EReal × EReal) ↦ p.1 + p.2 := by
-  intro x
-  by_cases hx1_bot : x.1 = ⊥
-  · intro y
-    simp [hx1_bot]
-  by_cases hx2_bot : x.2 = ⊥
-  · intro y
-    simp [hx2_bot]
-  exact EReal.continuousAt_add (Or.inr hx2_bot) (Or.inl hx1_bot) |>.lowerSemicontinuousAt
+  intro x y
+  by_cases hx₁ : x.1 = ⊥
+  · simp [hx₁]
+  by_cases hx₂ : x.2 = ⊥
+  · simp [hx₂]
+  · exact continuousAt_add (.inr hx₂) (.inl hx₁) |>.lowerSemicontinuousAt _
 
 instance : MeasurableAdd₂ EReal := ⟨EReal.lowerSemicontinuous_add.measurable⟩
 
@@ -483,22 +481,19 @@ section MeasurableMul
 
 variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
 
+@[fun_prop]
 lemma measurable_of_real_prod {f : EReal × β → γ}
     (h_real : Measurable fun p : ℝ × β ↦ f (p.1, p.2))
     (h_bot : Measurable fun x ↦ f (⊥, x)) (h_top : Measurable fun x ↦ f (⊤, x)) :
     Measurable f := by
-  have : (univ : Set (EReal × β)) = ({⊥, ⊤} ×ˢ univ) ∪ ({⊥, ⊤}ᶜ ×ˢ univ) := by
-    ext x
-    simp only [mem_univ, mem_union, mem_prod, mem_insert_iff, mem_singleton_iff, and_true,
-      mem_compl_iff, not_or, true_iff]
-    tauto
-  refine measurable_of_measurable_union_cover ({⊥, ⊤} ×ˢ univ)
-    ({⊥, ⊤}ᶜ ×ˢ univ) ?_ ?_ ?_ ?_ ?_
-  · refine MeasurableSet.prod ?_ MeasurableSet.univ
-    simp only [measurableSet_insert, MeasurableSet.singleton]
-  · exact (measurableSet_insert.mpr (measurableSet_singleton ⊤)).compl.prod MeasurableSet.univ
-  · rw [this]
-  · let e : ({⊥, ⊤} ×ˢ univ : Set (EReal × β)) ≃ᵐ ({⊥, ⊤} : Set EReal) × β :=
+  refine .of_union₃_range_cover (measurableEmbedding_prod_mk_left) _ _ _ h_bot h_top _
+  have : (univ : Set (EReal × β)) = ({⊥, ⊤} ×ˢ univ) ∪ ({⊥, ⊤}ᶜ ×ˢ univ) := by ext; simp; tauto
+  refine measurable_of_restrict_of_restrict_compl (s := {⊥, ⊤} ×ˢ univ) (by measurability) ?_ ?_
+  · refine measurable_of_measurable_union_cover (({⊥, ⊤} ×ˢ univ) ↓∩ ({⊥} ×ˢ univ))
+      (({⊥, ⊤} ×ˢ univ) ↓∩ ({⊤} ×ˢ univ)) sorry sorry (by aesop) ?_ ?_
+    simp [Set.restrict]
+    convert h_bot using 2
+    let e : ({⊥, ⊤} ×ˢ univ : Set (EReal × β)) ≃ᵐ ({⊥, ⊤} : Set EReal) × β :=
       (MeasurableEquiv.Set.prod ({⊥, ⊤} : Set EReal) (univ : Set β)).trans
         ((MeasurableEquiv.refl _).prodCongr (MeasurableEquiv.Set.univ β))
     have : ((fun (a : ({⊥, ⊤} : Set EReal) × β) ↦ f (a.1, a.2)) ∘ e)
