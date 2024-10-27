@@ -900,7 +900,7 @@ lemma homEquiv_extendScalarsId (M : ModuleCat R) :
   simp
 
 lemma extendScalarsId_hom_app_one_tmul (M : ModuleCat R) (m : M) :
-    ((extendScalarsId R).hom.app M) ((1 : R) ⊗ₜ m) = m := by
+    (extendScalarsId R).hom.app M ((1 : R) ⊗ₜ m) = m := by
   rw [← extendRestrictScalarsAdj_homEquiv_apply,
     homEquiv_extendScalarsId]
   dsimp
@@ -932,7 +932,7 @@ lemma homEquiv_extendScalarsComp (M : ModuleCat R₁) :
   rfl
 
 lemma extendScalarsComp_hom_app_one_tmul (M : ModuleCat R₁) (m : M) :
-    ((extendScalarsComp f₁₂ f₂₃).hom.app M) ((1 : R₃) ⊗ₜ m) =
+    (extendScalarsComp f₁₂ f₂₃).hom.app M ((1 : R₃) ⊗ₜ m) =
         by exact (1 : R₃) ⊗ₜ ((1 : R₂) ⊗ₜ m) := by
   rw [← extendRestrictScalarsAdj_homEquiv_apply, homEquiv_extendScalarsComp]
   rfl
