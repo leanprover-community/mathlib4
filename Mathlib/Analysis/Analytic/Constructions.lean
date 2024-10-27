@@ -38,7 +38,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 
 theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
-  refine ⟨by simp, WithTop.zero_lt_top, fun _ => hasSum_single 0 fun n hn => ?_⟩
+  refine ⟨by simp, WithTop.top_pos, fun _ => hasSum_single 0 fun n hn => ?_⟩
   simp [constFormalMultilinearSeries_apply hn]
 
 theorem hasFPowerSeriesAt_const {c : F} {e : E} :
@@ -456,7 +456,7 @@ lemma HasFPowerSeriesWithinOnBall.pi
     apply FormalMultilinearSeries.le_radius_pi (fun i ↦ ?_)
     exact (hf i).r_le
   r_pos := hr
-  hasSum {y} m hy := Pi.hasSum.2 (fun i ↦ (hf i).hasSum m hy)
+  hasSum {_} m hy := Pi.hasSum.2 (fun i ↦ (hf i).hasSum m hy)
 
 lemma hasFPowerSeriesWithinOnBall_pi_iff (hr : 0 < r) :
     HasFPowerSeriesWithinOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e r
@@ -734,7 +734,7 @@ lemma one_le_formalMultilinearSeries_geometric_radius (𝕜 : Type*) [Nontrivial
   apply le_trans ?_ (formalMultilinearSeries_geometric_apply_norm_le 𝕜 A n)
   conv_rhs => rw [← mul_one (‖formalMultilinearSeries_geometric 𝕜 A n‖)]
   gcongr
-  exact pow_le_one _ (coe_nonneg r) hr.le
+  exact pow_le_one₀ (coe_nonneg r) hr.le
 
 lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     (A : Type*) [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
@@ -760,7 +760,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNorme
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul]
     refine isBigO_of_le atTop (fun n ↦ ?_)
     rw [norm_one, Real.norm_of_nonneg (pow_nonneg (coe_nonneg r) _)]
-    exact pow_le_one _ (coe_nonneg r) hr.le
+    exact pow_le_one₀ (coe_nonneg r) hr.le
 
 lemma hasFPowerSeriesOnBall_inverse_one_sub
     (𝕜 : Type*) [NontriviallyNormedField 𝕜]

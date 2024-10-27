@@ -479,6 +479,12 @@ theorem quotientMap_comp_mk {J : Ideal R} {I : Ideal S} {f : R →+* S} (H : J �
     (quotientMap I f H).comp (Quotient.mk J) = (Quotient.mk I).comp f :=
   RingHom.ext fun x => by simp only [Function.comp_apply, RingHom.coe_comp, Ideal.quotientMap_mk]
 
+lemma ker_quotientMap_mk {I J : Ideal R} :
+    RingHom.ker (quotientMap (J.map _) (Quotient.mk I) le_comap_map) = I.map (Quotient.mk J) := by
+  rw [Ideal.quotientMap, Ideal.ker_quotient_lift, ← RingHom.comap_ker, Ideal.mk_ker,
+    Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective,
+    ← RingHom.ker_eq_comap_bot, Ideal.mk_ker, Ideal.map_sup, Ideal.map_quotient_self, bot_sup_eq]
+
 /-- The ring equiv `R/I ≃+* S/J` induced by a ring equiv `f : R ≃+* S`, where `J = f(I)`. -/
 @[simps]
 def quotientEquiv (I : Ideal R) (J : Ideal S) (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S)) :
@@ -932,3 +938,47 @@ theorem quotQuotEquivQuotOfLE_symm_comp_mkₐ (h : I ≤ J) :
 
 end AlgebraQuotient
 end DoubleQuot
+
+namespace Ideal
+
+section PowQuot
+
+variable {R : Type*} [CommRing R] (I : Ideal R) (n : ℕ)
+
+/-- `I ^ n ⧸ I ^ (n + 1)` can be viewed as a quotient module and as ideal of `R ⧸ I ^ (n + 1)`.
+This definition gives the `R`-linear equivalence between the two. -/
+noncomputable
+def powQuotPowSuccLinearEquivMapMkPowSuccPow :
+    ((I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R))) ≃ₗ[R]
+    Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n) := by
+  refine { LinearMap.codRestrict
+    (Submodule.restrictScalars _ (Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n)))
+    (Submodule.mapQ (I • ⊤) (I ^ (n + 1)) (Submodule.subtype (I ^ n)) ?_) ?_,
+    Equiv.ofBijective _ ⟨?_, ?_⟩ with }
+  · intro
+    simp [Submodule.mem_smul_top_iff, pow_succ']
+  · intro x
+    obtain ⟨⟨y, hy⟩, rfl⟩ := Submodule.Quotient.mk_surjective _ x
+    simp [Ideal.mem_sup_left hy]
+  · intro a b
+    obtain ⟨⟨x, hx⟩, rfl⟩ := Submodule.Quotient.mk_surjective _ a
+    obtain ⟨⟨y, hy⟩, rfl⟩ := Submodule.Quotient.mk_surjective _ b
+    simp [Ideal.Quotient.eq, Submodule.Quotient.eq, Submodule.mem_smul_top_iff, pow_succ']
+  · intro ⟨x, hx⟩
+    rw [Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective] at hx
+    obtain ⟨y, hy, rfl⟩ := hx
+    refine ⟨Submodule.Quotient.mk ⟨y, hy⟩, ?_⟩
+    simp
+
+/-- `I ^ n ⧸ I ^ (n + 1)` can be viewed as a quotient module and as ideal of `R ⧸ I ^ (n + 1)`.
+This definition gives the equivalence between the two, instead of the `R`-linear equivalence,
+to bypass typeclass synthesis issues on complex `Module` goals. -/
+noncomputable
+def powQuotPowSuccEquivMapMkPowSuccPow :
+    ((I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R))) ≃
+    Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n) :=
+  powQuotPowSuccLinearEquivMapMkPowSuccPow I n
+
+end PowQuot
+
+end Ideal

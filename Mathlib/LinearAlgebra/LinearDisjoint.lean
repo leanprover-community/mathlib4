@@ -232,12 +232,12 @@ theorem bot_right : M.LinearDisjoint (⊥ : Submodule R S) :=
 
 /-- The image of `R` in `S` is linearly disjoint with any other submodules. -/
 theorem one_left : (1 : Submodule R S).LinearDisjoint N := by
-  rw [linearDisjoint_iff, mulMap_one_left_eq]
+  rw [linearDisjoint_iff, ← Algebra.toSubmodule_bot, mulMap_one_left_eq]
   exact N.injective_subtype.comp N.lTensorOne.injective
 
 /-- The image of `R` in `S` is linearly disjoint with any other submodules. -/
 theorem one_right : M.LinearDisjoint (1 : Submodule R S) := by
-  rw [linearDisjoint_iff, mulMap_one_right_eq]
+  rw [linearDisjoint_iff, ← Algebra.toSubmodule_bot, mulMap_one_right_eq]
   exact M.injective_subtype.comp M.rTensorOne.injective
 
 /-- If for any finitely generated submodules `M'` of `M`, `M'` and `N` are linearly disjoint,
@@ -512,7 +512,7 @@ if any two elements of `↥(M ⊓ N)` are commutative, then the rank of `↥(M �
 theorem rank_inf_le_one_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
     (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 := by
   nontriviality R
-  refine rank_le fun s h ↦ ?_
+  refine _root_.rank_le fun s h ↦ ?_
   by_contra hs
   rw [not_le, ← Fintype.card_coe, Fintype.one_lt_card_iff_nontrivial] at hs
   obtain ⟨a, b, hab⟩ := hs.exists_pair_ne

@@ -22,7 +22,7 @@ right Kan extension along `L`.
 
 namespace CategoryTheory
 
-open Category
+open Category Limits
 
 namespace Functor
 
@@ -55,6 +55,28 @@ noncomputable def isPointwiseLeftKanExtensionLanUnit
     (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] :
     (LeftExtension.mk _ (L.lanUnit.app F)).IsPointwiseLeftKanExtension :=
   isPointwiseLeftKanExtensionOfIsLeftKanExtension (F := F) _ (L.lanUnit.app F)
+
+/-- If a left Kan extension is pointwise, then evaluating it at an object is isomorphic to
+taking a colimit. -/
+noncomputable def lanObjObjIsoColimit (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) :
+    (L.lan.obj F).obj X ≅ Limits.colimit (CostructuredArrow.proj L X ⋙ F) :=
+  LeftExtension.IsPointwiseLeftKanExtensionAt.isoColimit (F := F)
+   (isPointwiseLeftKanExtensionLanUnit L F X)
+
+@[reassoc (attr := simp)]
+lemma ι_lanObjObjIsoColimit_inv
+    (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) (f : CostructuredArrow L X) :
+    Limits.colimit.ι _ f ≫ (L.lanObjObjIsoColimit F X).inv =
+    (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom := by
+  simp [lanObjObjIsoColimit, lanUnit]
+
+@[reassoc (attr := simp)]
+lemma ι_lanObjObjIsoColimit_hom
+    (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) (f : CostructuredArrow L X) :
+    (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom ≫ (L.lanObjObjIsoColimit F X).hom =
+    Limits.colimit.ι (CostructuredArrow.proj L X ⋙ F) f :=
+  LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
+    (isPointwiseLeftKanExtensionLanUnit L F X) f
 
 variable (H) in
 /-- The left Kan extension functor `L.Lan` is left adjoint to the
@@ -99,6 +121,20 @@ lemma lanUnit_app_app_lanAdjunction_counit_app_app (G : D ⥤ H) (X : C) :
 lemma isIso_lanAdjunction_counit_app_iff (G : D ⥤ H) :
     IsIso ((L.lanAdjunction H).counit.app G) ↔ G.IsLeftKanExtension (𝟙 (L ⋙ G)) :=
   (isLeftKanExtension_iff_isIso _ (L.lanUnit.app (L ⋙ G)) _ (by simp)).symm
+
+/-- Composing the left Kan extension of `L : C ⥤ D` with `colim` on shapes `D` is isomorphic
+to `colim` on shapes `C`. -/
+@[simps!]
+noncomputable def lanCompColimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
+    [HasColimitsOfShape C H] [HasColimitsOfShape D H] : L.lan ⋙ colim ≅ colim (C := H) :=
+  Iso.symm <| NatIso.ofComponents
+    (fun G ↦ (colimitIsoOfIsLeftKanExtension _ (L.lanUnit.app G)).symm)
+    (fun f ↦ colimit.hom_ext (fun i ↦ by
+      dsimp
+      rw [ι_colimMap_assoc, ι_colimitIsoOfIsLeftKanExtension_inv,
+        ι_colimitIsoOfIsLeftKanExtension_inv_assoc, ι_colimMap, ← assoc, ← assoc]
+      congr 1
+      exact congr_app (L.lanUnit.naturality f) i))
 
 end
 
@@ -162,13 +198,35 @@ noncomputable def isPointwiseRightKanExtensionRanCounit
     (RightExtension.mk _ (L.ranCounit.app F)).IsPointwiseRightKanExtension :=
   isPointwiseRightKanExtensionOfIsRightKanExtension (F := F) _ (L.ranCounit.app F)
 
+/-- If a right Kan extension is pointwise, then evaluating it at an object is isomorphic to
+taking a limit. -/
+noncomputable def ranObjObjIsoLimit (F : C ⥤ H) [HasPointwiseRightKanExtension L F] (X : D) :
+    (L.ran.obj F).obj X ≅ Limits.limit (StructuredArrow.proj X L ⋙ F) :=
+  RightExtension.IsPointwiseRightKanExtensionAt.isoLimit (F := F)
+    (isPointwiseRightKanExtensionRanCounit L F X)
+
+@[reassoc (attr := simp)]
+lemma ranObjObjIsoLimit_hom_π
+    (F : C ⥤ H) [HasPointwiseRightKanExtension L F] (X : D) (f : StructuredArrow X L) :
+    (L.ranObjObjIsoLimit F X).hom ≫ Limits.limit.π _ f =
+    (L.ran.obj F).map f.hom ≫ (L.ranCounit.app F).app f.right := by
+  simp [ranObjObjIsoLimit, ran, ranCounit]
+
+@[reassoc (attr := simp)]
+lemma ranObjObjIsoLimit_inv_π
+    (F : C ⥤ H) [HasPointwiseRightKanExtension L F] (X : D) (f : StructuredArrow X L) :
+    (L.ranObjObjIsoLimit F X).inv ≫ (L.ran.obj F).map f.hom ≫ (L.ranCounit.app F).app f.right =
+    Limits.limit.π _ f :=
+  RightExtension.IsPointwiseRightKanExtensionAt.isoLimit_inv_π (F := F)
+    (isPointwiseRightKanExtensionRanCounit L F X) f
+
 variable (H) in
 /-- The right Kan extension functor `L.ran` is right adjoint to the
 precomposition by `L`. -/
 noncomputable def ranAdjunction : (whiskeringLeft C D H).obj L ⊣ L.ran :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F G =>
-        (homEquivOfIsRightKanExtension (α := L.ranCounit.app G) F).symm
+        (homEquivOfIsRightKanExtension (α := L.ranCounit.app G) _ F).symm
       homEquiv_naturality_right := fun {F G₁ G₂} β f ↦
         hom_ext_of_isRightKanExtension _ (L.ranCounit.app G₂) _ _ (by
         ext X
@@ -206,6 +264,20 @@ lemma ranCounit_app_app_ranAdjunction_unit_app_app (G : D ⥤ H) (X : C) :
 lemma isIso_ranAdjunction_unit_app_iff (G : D ⥤ H) :
     IsIso ((L.ranAdjunction H).unit.app G) ↔ G.IsRightKanExtension (𝟙 (L ⋙ G)) :=
   (isRightKanExtension_iff_isIso _ (L.ranCounit.app (L ⋙ G)) _ (by simp)).symm
+
+/-- Composing the right Kan extension of `L : C ⥤ D` with `lim` on shapes `D` is isomorphic
+to `lim` on shapes `C`. -/
+@[simps!]
+noncomputable def ranCompLimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasRightKanExtension G]
+    [HasLimitsOfShape C H] [HasLimitsOfShape D H] : L.ran ⋙ lim ≅ lim (C := H) :=
+  NatIso.ofComponents
+    (fun G ↦ limitIsoOfIsRightKanExtension _ (L.ranCounit.app G))
+    (fun f ↦ limit.hom_ext (fun i ↦ by
+      dsimp
+      rw [assoc, assoc, limMap_π, limitIsoOfIsRightKanExtension_hom_π_assoc,
+        limitIsoOfIsRightKanExtension_hom_π, limMap_π_assoc]
+      congr 1
+      exact congr_app (L.ranCounit.naturality f) i))
 
 end
 

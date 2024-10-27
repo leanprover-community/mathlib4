@@ -114,8 +114,6 @@ lemma closure_sUnion (S : Set (Set α)) : closure (⋃₀ S) = ⋃ s ∈ S, clos
 
 end AlexandrovDiscrete
 
-variable {s t : Set α} {a x y : α}
-
 lemma Inducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β → α} (h : Inducing f) :
     AlexandrovDiscrete β where
   isOpen_sInter S hS := by
@@ -141,7 +139,7 @@ lemma alexandrovDiscrete_iSup {t : ι → TopologicalSpace α} (_ : ∀ i, @Alex
 
 section
 variable [TopologicalSpace α] [TopologicalSpace β] [AlexandrovDiscrete α] [AlexandrovDiscrete β]
-  {s t : Set α} {a x y : α}
+  {s t : Set α} {a : α}
 
 @[simp] lemma isOpen_exterior : IsOpen (exterior s) := by
   rw [exterior_def]; exact isOpen_sInter fun _ ↦ And.left

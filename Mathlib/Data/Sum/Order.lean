@@ -25,7 +25,7 @@ type synonym.
 -/
 
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
 namespace Sum
 
@@ -157,7 +157,7 @@ variable [Preorder α] [Preorder β]
 
 instance instPreorderSum : Preorder (α ⊕ β) :=
   { instLESum, instLTSum with
-    le_refl := fun x => LiftRel.refl _ _ _,
+    le_refl := fun _ => LiftRel.refl _ _ _,
     le_trans := fun _ _ _ => LiftRel.trans _ _,
     lt_iff_le_not_le := fun a b => by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
