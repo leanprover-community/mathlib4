@@ -412,7 +412,7 @@ theorem IsLocal.mem_jacobson_or_exists_inv {I : Ideal R} (hi : IsLocal I) (x : R
 end IsLocal
 
 theorem isPrimary_of_isMaximal_radical [CommRing R] {I : Ideal R} (hi : IsMaximal (radical I)) :
-    IsPrimary I :=
+    I.IsPrimary :=
   have : radical I = jacobson I :=
     le_antisymm (le_sInf fun _ ⟨him, hm⟩ => hm.isPrime.radical_le_iff.2 him)
       (sInf_le ⟨le_radical, hi⟩)
