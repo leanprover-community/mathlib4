@@ -14,11 +14,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Small tripling implies small powers
 
-This file shows that a set with small tripling has small powers.
-
-## TODO
-
-Generalise to non-commutative group. This involves generalising Plünnecke-Ruzsa first.
+This file shows that a set with small tripling has small powers, even in non-abelian groups.
 -/
 
 open Fin
@@ -26,11 +22,7 @@ open List hiding tail
 open scoped Pointwise
 
 namespace Finset
-variable {G : Type*} [DecidableEq G] [CommGroup G] {A : Finset G} {k K : ℝ} {m : ℕ}
-
-private lemma pluennecke_ruzsa (U V W : Finset G) : #U * #(V⁻¹ * W) ≤ #(U * V) * #(U * W) := by
-  rw [mul_comm, inv_mul_eq_div, mul_comm _ W, mul_comm #(U * V)]
-  exact ruzsa_triangle_inequality_div_mul_mul ..
+variable {G : Type*} [DecidableEq G] [Group G] {A : Finset G} {k K : ℝ} {m : ℕ}
 
 private lemma inductive_claim (hm : 3 ≤ m)
     (h : ∀ ε : Fin 3 → ℤ, (∀ i, |ε i| = 1) → #((finRange 3).map fun i ↦ A ^ ε i).prod ≤ k * #A)
@@ -54,7 +46,7 @@ private lemma inductive_claim (hm : 3 ≤ m)
     (#A * #(π ε) : ℝ)
       = #A * #(V⁻¹ * W) := by
       simp [π, V, W, List.finRange_succ_eq_map, Fin.tail, Function.comp_def, mul_assoc]
-    _ ≤ #(A * V) * #(A * W) := by norm_cast; exact pluennecke_ruzsa ..
+    _ ≤ #(A * V) * #(A * W) := by norm_cast; exact ruzsa_triangle_inequality_invMul_mul_mul ..
     _ = #(π ![1, -ε 1, -ε 0]) * #(π <| Fin.cons 1 <| tail <| tail ε) := by
       simp [π, V, W, List.finRange_succ_eq_map, Fin.tail, Function.comp_def]
     _ ≤ (k * #A) * (k ^ (m - 1) * #A) := by
@@ -70,7 +62,7 @@ private lemma small_neg_pos_pos (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A ^ 2) �
   refine le_of_mul_le_mul_left ?_ (by positivity : (0 : ℝ) < #A)
   calc
     (#A * #(A⁻¹ * A ^ 2) : ℝ) ≤ #(A * A) * #(A * A ^ 2) := by
-      norm_cast; exact pluennecke_ruzsa A A (A ^ 2)
+      norm_cast; exact ruzsa_triangle_inequality_invMul_mul_mul A A (A ^ 2)
     _ = #(A ^ 2) * #(A ^ 3) := by simp [pow_succ']
     _ ≤ (K * #A) * (K * #A) := by
       gcongr
@@ -91,7 +83,7 @@ private lemma small_pos_neg_neg (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ ^ 2) �
   calc
     (#A * #(A * A⁻¹ ^ 2) : ℝ) ≤ #(A * A) * #(A ^ 2 * A) := by
       norm_cast
-      have := pluennecke_ruzsa A⁻¹ A⁻¹ (A⁻¹ ^ 2)
+      have := ruzsa_triangle_inequality_invMul_mul_mul A⁻¹ A⁻¹ (A⁻¹ ^ 2)
       simpa only [card_inv, inv_inv, inv_pow, ← mul_inv_rev] using this
     _ = #(A ^ 2) * #(A ^ 3) := by simp [pow_succ]
     _ ≤ (K * #A) * (K * #A) := by
@@ -112,7 +104,7 @@ private lemma small_pos_neg_pos (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * A) �
   refine le_of_mul_le_mul_left ?_ (by positivity : (0 : ℝ) < #A)
   calc
     (#A * #(A * A⁻¹ * A) : ℝ) ≤ #(A * (A * A⁻¹)) * #(A * A) := by
-      norm_cast; simpa using pluennecke_ruzsa A (A * A⁻¹) A
+      norm_cast; simpa using ruzsa_triangle_inequality_invMul_mul_mul (A * A⁻¹) A A
     _ = #(A ^ 2 * A⁻¹) * #(A ^ 2) := by simp [pow_succ, mul_assoc]
     _ ≤ (K ^ 2 * #A) * (K * #A) := by
       gcongr
