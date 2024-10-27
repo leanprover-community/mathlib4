@@ -191,15 +191,15 @@ theorem Splits.comp_of_degree_le_one {f : K[X]} {p : K[X]} (hd : p.degree ≤ 1)
     (h : f.Splits i) : (f.comp p).Splits i :=
   Splits.comp_of_map_degree_le_one i ((degree_map_le i _).trans hd) h
 
-theorem Splits.comp_X_sub_C {i : L →+* F} (a : L) {f : L[X]}
+theorem Splits.comp_X_sub_C (a : K) {f : K[X]}
     (h : f.Splits i) : (f.comp (X - C a)).Splits i :=
   Splits.comp_of_degree_le_one i (by simp) h
 
-theorem Splits.comp_X_add_C {i : L →+* F} (a : L) {f : L[X]}
+theorem Splits.comp_X_add_C (a : K) {f : K[X]}
     (h : f.Splits i) : (f.comp (X + C a)).Splits i :=
   Splits.comp_of_degree_le_one i (by simp) h
 
-theorem Splits.comp_neg_X {i : L →+* F} {f : L[X]} (h : f.Splits i) : (f.comp (-X)).Splits i :=
+theorem Splits.comp_neg_X {f : K[X]} (h : f.Splits i) : (f.comp (-X)).Splits i :=
   Splits.comp_of_degree_le_one i (by simp) h
 
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
