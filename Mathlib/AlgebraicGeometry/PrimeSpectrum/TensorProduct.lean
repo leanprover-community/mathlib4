@@ -79,4 +79,5 @@ lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks :
     rwa [J.isPrime.mul_mem_iff_mem_or_mem.not, not_or] at this
 
 @[deprecated (since := "2024-10-26")]
-alias PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks := PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks
+alias PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks :=
+  PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks

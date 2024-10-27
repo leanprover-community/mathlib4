@@ -218,7 +218,7 @@ noncomputable def _root_.IsEmbedding.toHomeomorph_of_surjective (hf : IsEmbeddin
     hf.continuous (hf.isOpenEmbedding_of_surjective hsurj).isOpenMap
 
 @[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.toHomeomeomorph_of_surjective := _root_.IsEmbedding.toHomeomorph_of_surjective
+alias _root_.Embedding.toHomeomeomorph_of_surjective := IsEmbedding.toHomeomorph_of_surjective
 
 /-- A bijective local homeomorphism is a homeomorphism. -/
 noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :

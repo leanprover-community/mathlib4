@@ -1522,7 +1522,7 @@ theorem _root_.IsEmbedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace 
     exact ⟨g ⁻¹' t, hg.isSeparable_preimage ht, h't⟩
 
 @[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.aestronglyMeasurable_comp_iff := _root_.IsEmbedding.aestronglyMeasurable_comp_iff
+alias _root_.Embedding.aestronglyMeasurable_comp_iff := IsEmbedding.aestronglyMeasurable_comp_iff
 
 /-- An almost everywhere sequential limit of almost everywhere strongly measurable functions is
 almost everywhere strongly measurable. -/
