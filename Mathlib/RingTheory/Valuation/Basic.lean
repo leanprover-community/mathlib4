@@ -141,15 +141,12 @@ variable (v : Valuation R Γ₀) {x y z : R}
 @[simp, norm_cast]
 theorem coe_coe : ⇑(v : R →*₀ Γ₀) = v := rfl
 
--- @[simp] Porting note (#10618): simp can prove this
 theorem map_zero : v 0 = 0 :=
   v.map_zero'
 
--- @[simp] Porting note (#10618): simp can prove this
 theorem map_one : v 1 = 1 :=
   v.map_one'
 
--- @[simp] Porting note (#10618): simp can prove this
 theorem map_mul : ∀ x y, v (x * y) = v x * v y :=
   v.map_mul'
 
@@ -189,7 +186,6 @@ theorem map_sum_lt' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg 
     (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g :=
   v.map_sum_lt (ne_of_gt hg) hf
 
--- @[simp] Porting note (#10618): simp can prove this
 theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
 
@@ -200,7 +196,6 @@ def toPreorder : Preorder R :=
   Preorder.lift v
 
 /-- If `v` is a valuation on a division ring then `v(x) = 0` iff `x = 0`. -/
--- @[simp] Porting note (#10618): simp can prove this
 theorem zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x = 0 ↔ x = 0 :=
   map_eq_zero v
 

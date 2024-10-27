@@ -3,7 +3,6 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Separation
 import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -172,7 +171,7 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     simp [hs'.closure_eq, ht'.closure_eq]
     rfl
 
-theorem ClosedEmbedding.quasiSober {f : α → β} (hf : ClosedEmbedding f) [QuasiSober β] :
+theorem IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) [QuasiSober β] :
     QuasiSober α where
   sober hS hS' := by
     have hS'' := hS.image f hf.continuous.continuousOn
@@ -181,6 +180,9 @@ theorem ClosedEmbedding.quasiSober {f : α → β} (hf : ClosedEmbedding f) [Qua
     use y
     apply image_injective.mpr hf.inj
     rw [← hx.def, ← hf.closure_image_eq, image_singleton]
+
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.quasiSober := IsClosedEmbedding.quasiSober
 
 theorem IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbedding f) [QuasiSober β] :
     QuasiSober α where

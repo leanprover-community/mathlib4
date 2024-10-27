@@ -739,11 +739,17 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
       simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false] at H
       exact H.1.prod H.2
 
-theorem quotientMap_fst [Nonempty Y] : QuotientMap (Prod.fst : X × Y → X) :=
-  isOpenMap_fst.to_quotientMap continuous_fst Prod.fst_surjective
+theorem isQuotientMap_fst [Nonempty Y] : IsQuotientMap (Prod.fst : X × Y → X) :=
+  isOpenMap_fst.isQuotientMap continuous_fst Prod.fst_surjective
 
-theorem quotientMap_snd [Nonempty X] : QuotientMap (Prod.snd : X × Y → Y) :=
-  isOpenMap_snd.to_quotientMap continuous_snd Prod.snd_surjective
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_fst := isQuotientMap_fst
+
+theorem isQuotientMap_snd [Nonempty X] : IsQuotientMap (Prod.snd : X × Y → Y) :=
+  isOpenMap_snd.isQuotientMap continuous_snd Prod.snd_surjective
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_snd := isQuotientMap_snd
 
 theorem closure_prod_eq {s : Set X} {t : Set Y} : closure (s ×ˢ t) = closure s ×ˢ closure t :=
   ext fun ⟨a, b⟩ => by
@@ -937,11 +943,17 @@ theorem isClosed_range_inr : IsClosed (range (inr : Y → X ⊕ Y)) := by
   rw [← isOpen_compl_iff, compl_range_inr]
   exact isOpen_range_inl
 
-theorem closedEmbedding_inl : ClosedEmbedding (inl : X → X ⊕ Y) :=
+theorem isClosedEmbedding_inl : IsClosedEmbedding (inl : X → X ⊕ Y) :=
   ⟨embedding_inl, isClosed_range_inl⟩
 
-theorem closedEmbedding_inr : ClosedEmbedding (inr : Y → X ⊕ Y) :=
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_inl := isClosedEmbedding_inl
+
+theorem isClosedEmbedding_inr : IsClosedEmbedding (inr : Y → X ⊕ Y) :=
   ⟨embedding_inr, isClosed_range_inr⟩
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_inr := isClosedEmbedding_inr
 
 theorem nhds_inl (x : X) : 𝓝 (inl x : X ⊕ Y) = map inl (𝓝 x) :=
   (isOpenEmbedding_inl.map_nhds_eq _).symm
@@ -981,7 +993,7 @@ theorem isClosedMap_sum {f : X ⊕ Y → Z} :
     IsClosedMap f ↔ (IsClosedMap fun a => f (.inl a)) ∧ IsClosedMap fun b => f (.inr b) := by
   constructor
   · intro h
-    exact ⟨h.comp closedEmbedding_inl.isClosedMap, h.comp closedEmbedding_inr.isClosedMap⟩
+    exact ⟨h.comp isClosedEmbedding_inl.isClosedMap, h.comp isClosedEmbedding_inr.isClosedMap⟩
   · rintro h Z hZ
     rw [isClosed_sum_iff] at hZ
     convert (h.1 _ hZ.1).union (h.2 _ hZ.2)
@@ -1003,9 +1015,12 @@ theorem Inducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, f x ∈ t
 theorem embedding_subtype_val : Embedding ((↑) : Subtype p → X) :=
   ⟨inducing_subtype_val, Subtype.coe_injective⟩
 
-theorem closedEmbedding_subtype_val (h : IsClosed { a | p a }) :
-    ClosedEmbedding ((↑) : Subtype p → X) :=
+theorem IsClosedEmbedding.subtypeVal (h : IsClosed {a | p a}) :
+    IsClosedEmbedding ((↑) : Subtype p → X) :=
   ⟨embedding_subtype_val, by rwa [Subtype.range_coe_subtype]⟩
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_subtype_val := IsClosedEmbedding.subtypeVal
 
 @[continuity, fun_prop]
 theorem continuous_subtype_val : Continuous (@Subtype.val X p) :=
@@ -1029,13 +1044,15 @@ theorem IsOpenMap.restrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} (hs : Is
     IsOpenMap (s.restrict f) :=
   hf.comp hs.isOpenMap_subtype_val
 
-nonrec theorem IsClosed.closedEmbedding_subtype_val {s : Set X} (hs : IsClosed s) :
-    ClosedEmbedding ((↑) : s → X) :=
-  closedEmbedding_subtype_val hs
+lemma IsClosed.isClosedEmbedding_subtypeVal {s : Set X} (hs : IsClosed s) :
+    IsClosedEmbedding ((↑) : s → X) := .subtypeVal hs
+
+@[deprecated (since := "2024-10-20")]
+alias IsClosed.closedEmbedding_subtype_val := IsClosed.isClosedEmbedding_subtypeVal
 
 theorem IsClosed.isClosedMap_subtype_val {s : Set X} (hs : IsClosed s) :
     IsClosedMap ((↑) : s → X) :=
-  hs.closedEmbedding_subtype_val.isClosedMap
+  hs.isClosedEmbedding_subtypeVal.isClosedMap
 
 @[continuity, fun_prop]
 theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f x)) :
@@ -1132,12 +1149,15 @@ theorem DiscreteTopology.preimage_of_continuous_injective {X Y : Type*} [Topolog
 
 /-- If `f : X → Y` is a quotient map,
 then its restriction to the preimage of an open set is a quotient map too. -/
-theorem QuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : QuotientMap f)
-    {s : Set Y} (hs : IsOpen s) : QuotientMap (s.restrictPreimage f) := by
-  refine quotientMap_iff.2 ⟨hf.surjective.restrictPreimage _, fun U ↦ ?_⟩
+theorem IsQuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : IsQuotientMap f)
+    {s : Set Y} (hs : IsOpen s) : IsQuotientMap (s.restrictPreimage f) := by
+  refine isQuotientMap_iff.2 ⟨hf.surjective.restrictPreimage _, fun U ↦ ?_⟩
   rw [hs.isOpenEmbedding_subtypeVal.open_iff_image_open, ← hf.isOpen_preimage,
     (hs.preimage hf.continuous).isOpenEmbedding_subtypeVal.open_iff_image_open,
     image_val_preimage_restrictPreimage]
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.restrictPreimage_isOpen := IsQuotientMap.restrictPreimage_isOpen
 
 open scoped Set.Notation in
 lemma isClosed_preimage_val {s t : Set X} : IsClosed (s ↓∩ t) ↔ s ∩ closure (s ∩ t) ⊆ t := by
@@ -1160,8 +1180,11 @@ section Quotient
 variable [TopologicalSpace X] [TopologicalSpace Y]
 variable {r : X → X → Prop} {s : Setoid X}
 
-theorem quotientMap_quot_mk : QuotientMap (@Quot.mk X r) :=
+theorem isQuotientMap_quot_mk : IsQuotientMap (@Quot.mk X r) :=
   ⟨Quot.exists_rep, rfl⟩
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_quot_mk := isQuotientMap_quot_mk
 
 @[continuity, fun_prop]
 theorem continuous_quot_mk : Continuous (@Quot.mk X r) :=
@@ -1172,8 +1195,11 @@ theorem continuous_quot_lift {f : X → Y} (hr : ∀ a b, r a b → f a = f b) (
     Continuous (Quot.lift f hr : Quot r → Y) :=
   continuous_coinduced_dom.2 h
 
-theorem quotientMap_quotient_mk' : QuotientMap (@Quotient.mk' X s) :=
-  quotientMap_quot_mk
+theorem isQuotientMap_quotient_mk' : IsQuotientMap (@Quotient.mk' X s) :=
+  isQuotientMap_quot_mk
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_quotient_mk' := isQuotientMap_quotient_mk'
 
 theorem continuous_quotient_mk' : Continuous (@Quotient.mk' X s) :=
   continuous_coinduced_rng
@@ -1547,12 +1573,15 @@ theorem isOpenEmbedding_sigmaMk {i : ι} : IsOpenEmbedding (@Sigma.mk ι σ i) :
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_sigmaMk := isOpenEmbedding_sigmaMk
 
-theorem closedEmbedding_sigmaMk {i : ι} : ClosedEmbedding (@Sigma.mk ι σ i) :=
-  closedEmbedding_of_continuous_injective_closed continuous_sigmaMk sigma_mk_injective
+theorem isClosedEmbedding_sigmaMk {i : ι} : IsClosedEmbedding (@Sigma.mk ι σ i) :=
+  .of_continuous_injective_isClosedMap continuous_sigmaMk sigma_mk_injective
     isClosedMap_sigmaMk
 
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_sigmaMk := isClosedEmbedding_sigmaMk
+
 theorem embedding_sigmaMk {i : ι} : Embedding (@Sigma.mk ι σ i) :=
-  closedEmbedding_sigmaMk.1
+  isClosedEmbedding_sigmaMk.1
 
 theorem Sigma.nhds_mk (i : ι) (x : σ i) : 𝓝 (⟨i, x⟩ : Sigma σ) = Filter.map (Sigma.mk i) (𝓝 x) :=
   (isOpenEmbedding_sigmaMk.map_nhds_eq x).symm
@@ -1657,9 +1686,12 @@ theorem continuous_uLift_up [TopologicalSpace X] : Continuous (ULift.up : X → 
 theorem embedding_uLift_down [TopologicalSpace X] : Embedding (ULift.down : ULift.{v, u} X → X) :=
   ⟨⟨rfl⟩, ULift.down_injective⟩
 
-theorem ULift.closedEmbedding_down [TopologicalSpace X] :
-    ClosedEmbedding (ULift.down : ULift.{v, u} X → X) :=
+theorem ULift.isClosedEmbedding_down [TopologicalSpace X] :
+    IsClosedEmbedding (ULift.down : ULift.{v, u} X → X) :=
   ⟨embedding_uLift_down, by simp only [ULift.down_surjective.range_eq, isClosed_univ]⟩
+
+@[deprecated (since := "2024-10-20")]
+alias ULift.closedEmbedding_down := ULift.isClosedEmbedding_down
 
 instance [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (ULift X) :=
   embedding_uLift_down.discreteTopology

@@ -117,20 +117,13 @@ theorem range_abs : range Complex.abs = Ici 0 :=
 theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
   AbsTheory.abs_conj z
 
--- Porting note (#10618): @[simp] can prove it now
 theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     Complex.abs (s.prod f) = s.prod fun I => Complex.abs (f I) :=
   map_prod Complex.abs _ _
 
--- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
-by `simp only [@map_pow]` -/
 theorem abs_pow (z : ℂ) (n : ℕ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_pow Complex.abs z n
 
--- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
-by `simp only [@map_zpow₀]` -/
 theorem abs_zpow (z : ℂ) (n : ℤ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_zpow₀ Complex.abs z n
 
