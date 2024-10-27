@@ -384,11 +384,9 @@ theorem addVal_def' (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) :
     addVal R ((u : R) * ϖ ^ n) = n :=
   addVal_def _ u hϖ n rfl
 
---@[simp] Porting note (#10618): simp can prove it
 theorem addVal_zero : addVal R 0 = ⊤ :=
   (addVal R).map_zero
 
---@[simp] Porting note (#10618): simp can prove it
 theorem addVal_one : addVal R 1 = 0 :=
   (addVal R).map_one
 
@@ -397,7 +395,6 @@ theorem addVal_uniformizer {ϖ : R} (hϖ : Irreducible ϖ) : addVal R ϖ = 1 := 
   simpa only [one_mul, eq_self_iff_true, Units.val_one, pow_one, forall_true_left, Nat.cast_one]
     using addVal_def ϖ 1 hϖ 1
 
---@[simp] Porting note (#10618): simp can prove it
 theorem addVal_mul {a b : R} :
     addVal R (a * b) = addVal R a + addVal R b :=
   (addVal R).map_mul _ _

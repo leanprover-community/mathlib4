@@ -6,12 +6,10 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Data.List.Join
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.List.Count
-import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.InsertIdx
-import Mathlib.Data.List.Lattice
-import Mathlib.Data.List.Perm
 import Batteries.Data.List.Perm
+import Mathlib.Data.List.Perm.Basic
 
 /-!
 # Permutations of a list
