@@ -49,9 +49,8 @@ variable {i : J} {iter₁ iter₂ : Iteration ε (Order.succ i)}
 
 /-- Auxiliary definition for `mkOfSucc`. -/
 noncomputable def mkOfSuccNatTransApp (k : J) (hk : k ≤ Order.succ i) :
-    iter₁.F.obj ⟨k, hk⟩ ⟶ iter₂.F.obj ⟨k, hk⟩ := by
-  classical
-  exact if hk' : k = Order.succ i then
+    iter₁.F.obj ⟨k, hk⟩ ⟶ iter₂.F.obj ⟨k, hk⟩ :=
+  if hk' : k = Order.succ i then
     eqToHom (by subst hk'; rfl) ≫ (iter₁.isoSucc i (Order.lt_succ_of_not_isMax hi)).hom ≫
       whiskerRight (φ.natTrans.app ⟨i, by simp⟩) _ ≫
       (iter₂.isoSucc i (Order.lt_succ_of_not_isMax hi)).inv ≫
