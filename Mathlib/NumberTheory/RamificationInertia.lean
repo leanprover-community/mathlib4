@@ -124,6 +124,19 @@ theorem le_comap_pow_ramificationIdx : p ≤ comap f (P ^ ramificationIdx f p P)
 theorem le_comap_of_ramificationIdx_ne_zero (h : ramificationIdx f p P ≠ 0) : p ≤ comap f P :=
   Ideal.map_le_iff_le_comap.mp <| le_pow_ramificationIdx.trans <| Ideal.pow_le_self <| h
 
+variable {S₁: Type*} [CommRing S₁] [Algebra R S₁]
+
+lemma ramificationIdx_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
+    ramificationIdx (algebraMap R S) p (P.comap e) = ramificationIdx (algebraMap R S₁) p P := by
+  dsimp only [ramificationIdx]
+  congr
+  ext n
+  simp only [Set.mem_setOf_eq, Ideal.map_le_iff_le_comap]
+  rw [← comap_coe e, ← e.toRingEquiv_toRingHom, comap_coe, ← RingEquiv.symm_symm (e : S ≃+* S₁),
+    ← map_comap_of_equiv, ← Ideal.map_pow, map_comap_of_equiv, ← comap_coe (RingEquiv.symm _),
+    comap_comap, RingEquiv.symm_symm, e.toRingEquiv_toRingHom, ← e.toAlgHom_toRingHom,
+    AlgHom.comp_algebraMap]
+
 namespace IsDedekindDomain
 
 variable [IsDedekindDomain S]
@@ -201,6 +214,30 @@ theorem inertiaDeg_algebraMap [Algebra R S] [Algebra (R ⧸ p) (S ⧸ P)]
   change Ideal.Quotient.lift p _ _ (Ideal.Quotient.mk p x) = algebraMap _ _ (Ideal.Quotient.mk p x)
   rw [Ideal.Quotient.lift_mk, ← Ideal.Quotient.algebraMap_eq P, ← IsScalarTower.algebraMap_eq,
     ← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply]
+
+lemma inertiaDeg_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) [p.IsMaximal] :
+    inertiaDeg (algebraMap R S) p (P.comap e) = inertiaDeg (algebraMap R S₁) p P := by
+  dsimp only [Ideal.inertiaDeg]
+  have : (P.comap e).comap (algebraMap R S) = p ↔ P.comap (algebraMap R S₁) = p := by
+    rw [← comap_coe e, comap_comap, ← e.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
+  split
+  swap
+  · rw [dif_neg]; rwa [← this]
+  rw [dif_pos (this.mp ‹_›)]
+  apply (config := { allowSynthFailures := true }) LinearEquiv.finrank_eq
+  have E := quotientEquivAlg (P.comap e) P e (map_comap_of_surjective _ e.surjective P).symm
+  apply (config := {allowSynthFailures := true }) LinearEquiv.mk
+  case toLinearMap =>
+    apply (config := {allowSynthFailures := true }) LinearMap.mk
+    swap
+    · exact E.toLinearMap.toAddHom
+    · intro r x
+      show E (_ * _) = _ * (E x)
+      obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective r
+      simp only [Quotient.mk_comp_algebraMap, Quotient.lift_mk, _root_.map_mul, AlgEquiv.commutes,
+        RingHomCompTriple.comp_apply]
+  · exact E.left_inv
+  · exact E.right_inv
 
 end DecEq
 

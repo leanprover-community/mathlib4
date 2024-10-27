@@ -171,6 +171,12 @@ lemma max'_one [LinearOrder α] : (1 : Finset α).max' one_nonempty = 1 := rfl
 @[to_additive (attr := simp)]
 lemma min'_one [LinearOrder α] : (1 : Finset α).min' one_nonempty = 1 := rfl
 
+@[to_additive (attr := simp)]
+lemma image_op_one [DecidableEq α] : (1 : Finset α).image op = 1 := rfl
+
+@[to_additive (attr := simp)]
+lemma map_op_one : (1 : Finset α).map opEquiv.toEmbedding = 1 := rfl
+
 end One
 
 /-! ### Finset negation/inversion -/
@@ -256,6 +262,10 @@ lemma inf'_inv [SemilatticeInf β] {s : Finset α} (hs : s⁻¹.Nonempty) (f : �
 
 @[to_additive] lemma image_op_inv (s : Finset α) : s⁻¹.image op = (s.image op)⁻¹ :=
   image_comm op_inv
+
+@[to_additive]
+lemma map_op_inv (s : Finset α) : s⁻¹.map opEquiv.toEmbedding = (s.map opEquiv.toEmbedding)⁻¹ := by
+  simp [map_eq_image, image_op_inv]
 
 end Inv
 
@@ -580,6 +590,15 @@ theorem subset_mul {s t : Set α} :
 @[to_additive]
 theorem image_mul [DecidableEq β] : (s * t).image (f : α → β) = s.image f * t.image f :=
   image_image₂_distrib <| map_mul f
+
+@[to_additive]
+lemma image_op_mul (s t : Finset α) : (s * t).image op = t.image op * s.image op :=
+  image_image₂_antidistrib op_mul
+
+@[to_additive]
+lemma map_op_mul (s t : Finset α) :
+    (s * t).map opEquiv.toEmbedding = t.map opEquiv.toEmbedding * s.map opEquiv.toEmbedding := by
+  simp [map_eq_image, image_op_mul]
 
 /-- The singleton operation as a `MulHom`. -/
 @[to_additive "The singleton operation as an `AddHom`."]
