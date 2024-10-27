@@ -2,6 +2,7 @@ import Mathlib.Tactic.Finiteness
 import Mathlib.Data.ENNReal.Real
 import Mathlib.MeasureTheory.Measure.Typeclasses
 
+open MeasureTheory
 open scoped ENNReal
 
 example : (1 : ℝ≥0∞) < ∞ := by finiteness
