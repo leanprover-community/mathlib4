@@ -49,10 +49,6 @@ abbrev mathlibLeanOptions := #[
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
 package mathlib where
-  leanOptions := mathlibLeanOptions
-  -- Mathlib also enforces these linter options, which are not active by default.
-  moreServerOptions := mathlibOnlyLinters
-  -- Use Batteries' test driver for `lake test`
   testDriver := "MathlibTest"
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
@@ -65,7 +61,11 @@ package mathlib where
 -/
 
 @[default_target]
-lean_lib Mathlib
+lean_lib Mathlib where
+  leanOptions := mathlibLeanOptions
+  -- Mathlib also enforces these linter options, which are not active by default.
+  moreServerOptions := mathlibOnlyLinters
+  -- Use Batteries' test driver for `lake test`
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
