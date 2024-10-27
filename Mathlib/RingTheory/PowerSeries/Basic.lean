@@ -758,7 +758,7 @@ namespace Polynomial
 
 open Finsupp Polynomial
 
-variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : R[X])
+variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from polynomials into formal power series. -/
