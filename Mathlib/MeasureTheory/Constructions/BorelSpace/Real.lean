@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.MeasureTheory.MeasurableSpace.Prod
 
 /-!
 # Borel (measurable) spaces ℝ, ℝ≥0, ℝ≥0∞
@@ -31,6 +32,12 @@ open scoped Topology NNReal ENNReal Notation
 universe u v w x y
 
 variable {α β γ δ : Type*} {ι : Sort y} {s t u : Set α}
+
+namespace EReal
+
+@[simp] lemma «forall» {p : EReal → Prop} : (∀ r, p r) ↔ p ⊥ ∧ p ⊤ ∧ ∀ r : ℝ, p r := sorry
+
+end EReal
 
 namespace Real
 
@@ -467,7 +474,10 @@ end NNReal
 
 namespace EReal
 
-lemma lowerSemicontinuous_add : LowerSemicontinuous fun (p : EReal × EReal) ↦ p.1 + p.2 := by
+lemma measurableEmbedding_coe : MeasurableEmbedding Real.toEReal :=
+  isOpenEmbedding_coe.measurableEmbedding
+
+lemma lowerSemicontinuous_add : LowerSemicontinuous fun p : EReal × EReal ↦ p.1 + p.2 := by
   intro x y
   by_cases hx₁ : x.1 = ⊥
   · simp [hx₁]
@@ -484,31 +494,10 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 @[fun_prop]
 lemma measurable_of_real_prod {f : EReal × β → γ}
     (h_real : Measurable fun p : ℝ × β ↦ f (p.1, p.2))
-    (h_bot : Measurable fun x ↦ f (⊥, x)) (h_top : Measurable fun x ↦ f (⊤, x)) :
-    Measurable f := by
-  refine .of_union₃_range_cover (measurableEmbedding_prod_mk_left) _ _ _ h_bot h_top _
-  have : (univ : Set (EReal × β)) = ({⊥, ⊤} ×ˢ univ) ∪ ({⊥, ⊤}ᶜ ×ˢ univ) := by ext; simp; tauto
-  refine measurable_of_restrict_of_restrict_compl (s := {⊥, ⊤} ×ˢ univ) (by measurability) ?_ ?_
-  · refine measurable_of_measurable_union_cover (({⊥, ⊤} ×ˢ univ) ↓∩ ({⊥} ×ˢ univ))
-      (({⊥, ⊤} ×ˢ univ) ↓∩ ({⊤} ×ˢ univ)) sorry sorry (by aesop) ?_ ?_
-    simp [Set.restrict]
-    convert h_bot using 2
-    let e : ({⊥, ⊤} ×ˢ univ : Set (EReal × β)) ≃ᵐ ({⊥, ⊤} : Set EReal) × β :=
-      (MeasurableEquiv.Set.prod ({⊥, ⊤} : Set EReal) (univ : Set β)).trans
-        ((MeasurableEquiv.refl _).prodCongr (MeasurableEquiv.Set.univ β))
-    have : ((fun (a : ({⊥, ⊤} : Set EReal) × β) ↦ f (a.1, a.2)) ∘ e)
-        = fun (a : ({⊥, ⊤} ×ˢ univ : Set (EReal × β))) ↦ f a := rfl
-    refine this ▸ (measurable_from_prod_countable'' fun y ↦ ?_).comp e.measurable
-    dsimp only
-    have h' := y.2
-    simp only [mem_insert_iff, mem_singleton_iff, bot_ne_top, or_false, top_ne_bot, or_true] at h'
-    cases h' with
-    | inl h => rwa [h]
-    | inr h => rwa [h]
-  · let e : ({⊥, ⊤}ᶜ ×ˢ univ : Set (EReal × β)) ≃ᵐ ℝ × β :=
-      (MeasurableEquiv.Set.prod ({⊥, ⊤}ᶜ : Set EReal) (univ : Set β)).trans
-        (MeasurableEquiv.prodCongr MeasurableEquiv.erealEquivReal (MeasurableEquiv.Set.univ β))
-    rwa [← MeasurableEquiv.measurable_comp_iff e.symm]
+    (h_bot : Measurable fun x ↦ f (⊥, x)) (h_top : Measurable fun x ↦ f (⊤, x)) : Measurable f :=
+  .of_union₃_range_cover (measurableEmbedding_prod_mk_left _) (measurableEmbedding_prod_mk_left _)
+    (measurableEmbedding_coe.prod_mk .id) (by simp [-univ_subset_iff, subset_def])
+    h_bot h_top h_real
 
 lemma measurable_of_real_real {f : EReal × EReal → β}
     (h_real : Measurable fun p : ℝ × ℝ ↦ f (p.1, p.2))
