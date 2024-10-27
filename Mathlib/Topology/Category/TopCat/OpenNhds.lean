@@ -170,7 +170,7 @@ def functorNhds (h : Inducing f) (x : X) :
 An inducing map `f : X ⟶ Y` induces an adjunction between `open_nhds x` and `open_nhds (f x)`.
 -/
 def adjunctionNhds (h : Inducing f) (x : X) :
-  OpenNhds.map f x ⊣ h.functorNhds x where
+    OpenNhds.map f x ⊣ h.functorNhds x where
   unit := { app := fun U => homOfLE (h.adjunction.unit.app U.1).le }
   counit := { app := fun U => homOfLE (h.adjunction.counit.app U.1).le }
 
