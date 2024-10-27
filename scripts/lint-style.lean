@@ -24,7 +24,7 @@ open System.FilePath
 def checkScriptsDocumented : IO Bool := do
   -- Retrieve all scripts (except for the `bench` directory).
   let allScripts ← (walkDir "scripts" fun p ↦ pure (p.components.getD 1 "" != "bench"))
-  let allScripts := (allScripts.erase "bench").erase "README.md"
+  let allScripts := (allScripts.erase "scripts/bench").erase "scripts/README.md"
   -- Check if the README text contains each file enclosed in backticks.
   let readme : String ← IO.FS.readFile (System.mkFilePath ["scripts", "README.md"])
   IO.println s!"found {allScripts.size} scripts: {",".intercalate (allScripts.map (·.toString)).toList}"
