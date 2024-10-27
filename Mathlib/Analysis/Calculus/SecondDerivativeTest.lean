@@ -136,19 +136,14 @@ theorem isLocalMin_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
  have hD' : ∀ᶠ x in 𝓝[≠] x₀, DifferentiableAt ℝ f x := by
     use Ioo (x₀-ε) (x₀+ε) ∪ {x| DifferentiableAt ℝ f x}
     constructor
-    suffices Ioo (x₀-ε) (x₀+ε) ∈ 𝓝 x₀ by
-        refine mem_interior_iff_mem_nhds.mp ?_;
-        suffices x₀ ∈ interior (Ioo (x₀ - ε) (x₀ + ε)) by
-            refine mem_interior.mpr ?_
-            use Ioo (x₀ - ε) (x₀ + ε)
-            simp only [subset_union_left, mem_Ioo, sub_lt_self_iff, lt_add_iff_pos_right, and_self,
-              true_and]
-            constructor
-            exact isOpen_Ioo
-            tauto
-        exact mem_interior_iff_mem_nhds.mpr this
-    refine Ioo_mem_nhds ?h.left.ha ?h.left.hb
-    linarith;linarith
+    ·   refine mem_interior_iff_mem_nhds.mp ?_;
+        refine mem_interior.mpr ?_
+        use Ioo (x₀ - ε) (x₀ + ε)
+        simp only [subset_union_left, mem_Ioo, sub_lt_self_iff, lt_add_iff_pos_right, and_self,
+            true_and]
+        constructor
+        exact isOpen_Ioo
+        tauto
     by_cases H : DifferentiableAt ℝ f x₀
     use Set.univ
     simp only [univ_mem, inter_univ, true_and]
