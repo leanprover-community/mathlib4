@@ -15,16 +15,15 @@ import Mathlib.Topology.Category.CompHaus.Basic
 /-!
 # Useful lemmas about real numbers
 
-We prove the Second-Derivative test from calculus using the First-Derivative test.
-Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_second-derivative_test).
+We prove some useful lemmas toward the homeomorphism in `OnePointHomemorph`.
 
 ## Main results
 
-* `isLocalMin_of_deriv_deriv_pos`: The second-derivative test.
+* `pos_or_neg` : nonzero vector being positive or negative.
 
 ## Tags
 
-derivative test, calculus
+calculus
 -/
 
 open scoped LinearAlgebra.Projectivization OnePoint

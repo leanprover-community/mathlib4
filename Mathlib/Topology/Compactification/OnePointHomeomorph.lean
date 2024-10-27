@@ -10,25 +10,22 @@ import Mathlib.Topology.Compactification.OnePointRealLemmas
 /-!
 # Homeomorphism between one-point compactification and projective space
 
-We prove the Second-Derivative test from calculus using the First-Derivative test.
-Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_second-derivative_test).
+
+We prove that slope, suitably defined, is a homeomorphism from ℙ ℝ (Fin 2 → ℝ) to OnePoint ℝ.
+In particular with our notion of slope, 1 ÷ 0 = ∞.
 
 ## Main results
 
-* `isLocalMin_of_deriv_deriv_pos`: The second-derivative test.
+* `onepointhomeo`: The desired homeomorphism.
 
 ## Tags
 
-derivative test, calculus
+homeomorphism, projective
 -/
 
 open scoped LinearAlgebra.Projectivization OnePoint
 open Projectivization
 
-/-
-We prove that slope, suitably defined, is a homeomorphism from ℙ ℝ (Fin 2 → ℝ) to OnePoint ℝ.
-In particular with our notion of slope, 1 ÷ 0 = ∞.
--/
 
 open Classical
 
@@ -337,6 +334,6 @@ instance {n:ℕ} : CompactSpace (ℙ ℝ (Fin n → ℝ)) := by
   }
 
 /- The real projective line ℙ ℝ (Fin 2 → ℝ) and OnePoint ℝ are homeomorphic.-/
-noncomputable instance : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoint ℝ) :=
+noncomputable def onepointhomeo : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoint ℝ) :=
   @Continuous.homeoOfEquivCompactToT2 (ℙ ℝ (Fin 2 → ℝ)) (OnePoint ℝ) _ _ _ _ field_slope_equiv.symm
   div_slope_continuous

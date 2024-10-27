@@ -11,16 +11,15 @@ import Mathlib.Algebra.Quaternion
 /-!
 # An alternative equivalence between OnePoint K and Projectivization
 
-We prove the Second-Derivative test from calculus using the First-Derivative test.
-Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_second-derivative_test).
+An alternative to `OnePointEquiv` which has other generalizations.
 
 ## Main results
 
-* `isLocalMin_of_deriv_deriv_pos`: The second-derivative test.
+* `field_slope_equiv`: The desired equivalence.
 
 ## Tags
 
-derivative test, calculus
+one-point compactification
 -/
 
 open scoped LinearAlgebra.Projectivization OnePoint
