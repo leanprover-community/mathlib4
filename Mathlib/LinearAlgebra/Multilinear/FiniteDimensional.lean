@@ -6,8 +6,6 @@ Authors: Oliver Nash
 import Mathlib.LinearAlgebra.Multilinear.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
-#align_import linear_algebra.multilinear.finite_dimensional from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
-
 /-! # Multilinear maps over finite dimensional spaces
 
 The main results are that multilinear maps over finitely-generated, free modules are
@@ -62,10 +60,8 @@ private theorem free_and_finite :
 
 instance _root_.Module.Finite.multilinearMap : Module.Finite R (MultilinearMap R M₁ M₂) :=
   free_and_finite.2
-#align module.finite.multilinear_map Module.Finite.multilinearMap
 
 instance _root_.Module.Free.multilinearMap : Module.Free R (MultilinearMap R M₁ M₂) :=
   free_and_finite.1
-#align module.free.multilinear_map Module.Free.multilinearMap
 
 end MultilinearMap

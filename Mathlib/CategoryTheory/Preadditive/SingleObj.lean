@@ -6,8 +6,6 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.SingleObj
 
-#align_import category_theory.preadditive.single_obj from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
-
 /-!
 # `SingleObj α` is preadditive when `α` is a ring.
 

@@ -3,7 +3,7 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.CoalgebraCat.MonEquivalence
+import Mathlib.Algebra.Category.CoalgebraCat.ComonEquivalence
 
 /-!
 # Tensor products of coalgebras
@@ -22,16 +22,23 @@ as a coalgebra morphism.
 We keep the linear maps underlying `Δ, ε` and other definitions in this file syntactically equal
 to the corresponding definitions for tensor products of modules in the hope that this makes
 life easier. However, to fill in prop fields, we use the API in
-`Mathlib.Algebra.Category.CoalgebraCat.MonEquivalence`. That file defines the monoidal category
-structure on coalgebras induced by an equivalence with monoid objects in the opposite
-category of modules, `CoalgebraCat.instMonoidalCategoryAux`, but we do not declare this as an
-instance - we just use it to prove things. Then, we use the definitions in this file to make a
-monoidal category instance on `CoalgebraCat R` in `Mathlib.Algebra.Category.CoalgebraCat.Monoidal`
-that has simpler data.
+`Mathlib.Algebra.Category.CoalgebraCat.ComonEquivalence`. That file defines the monoidal category
+structure on coalgebras induced by an equivalence with comonoid objects in the category of modules,
+`CoalgebraCat.instMonoidalCategoryAux`, but we do not declare this as an instance - we just use it
+to prove things. Then, we use the definitions in this file to make a monoidal category instance on
+`CoalgebraCat R` in `Mathlib.Algebra.Category.CoalgebraCat.Monoidal` that has simpler data.
+
+However, this approach forces our coalgebras to be in the same universe as the base ring `R`,
+since it relies on the monoidal category structure on `ModuleCat R`, which is currently
+universe monomorphic. Any contribution that achieves universe polymorphism would be welcome. For
+instance, the tensor product of coalgebras in the
+[FLT repo](https://github.com/ImperialCollegeLondon/FLT/blob/eef74b4538c8852363936dfaad23e6ffba72eca5/FLT/mathlibExperiments/Coalgebra/TensorProduct.lean)
+is already universe polymorphic since it does not go via category theory.
 
 -/
 
 universe v u
+
 open CategoryTheory
 open scoped TensorProduct
 
@@ -42,21 +49,23 @@ variable {R M N P Q : Type u} [CommRing R]
 
 open MonoidalCategory in
 noncomputable instance TensorProduct.instCoalgebra : Coalgebra R (M ⊗[R] N) :=
-  let I := Monoidal.transport ((CoalgebraCat.monEquivalence R).symm.op.trans (opOpEquivalence _))
+  let I := Monoidal.transport ((CoalgebraCat.comonEquivalence R).symm)
   CoalgEquiv.toCoalgebra
     (A := (CoalgebraCat.of R M ⊗ CoalgebraCat.of R N : CoalgebraCat R))
     { LinearEquiv.refl R _ with
       counit_comp := rfl
       map_comp_comul := by
-        convert LinearMap.id_comp _
-        · exact TensorProduct.map_id
+        rw [CoalgebraCat.ofComonObjCoalgebraStruct_comul]
         simp [-Mon_.monMonoidalStruct_tensorObj_X,
           ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorHom,
-          ModuleCat.comp_def, ModuleCat.of, ModuleCat.ofHom] }
+          ModuleCat.comp_def, ModuleCat.of, ModuleCat.ofHom,
+          ModuleCat.MonoidalCategory.tensor_μ_eq_tensorTensorTensorComm] }
+
 end
 
 namespace Coalgebra
 namespace TensorProduct
+
 open CoalgebraCat.MonoidalCategoryAux MonoidalCategory
 
 variable {R M N P Q : Type u} [CommRing R]
@@ -68,14 +77,14 @@ section
 
 /-- The tensor product of two coalgebra morphisms as a coalgebra morphism. -/
 noncomputable def map (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :
-    M ⊗[R] P →ₗc[R] N ⊗[R] Q :=
-  { _root_.TensorProduct.map f.toLinearMap g.toLinearMap with
-    counit_comp := by
-      simp_rw [← tensorHom_toLinearMap]
-      apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).1.counit_comp
-    map_comp_comul := by
-      simp_rw [← tensorHom_toLinearMap, ← comul_tensorObj]
-      apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).1.map_comp_comul }
+    M ⊗[R] P →ₗc[R] N ⊗[R] Q where
+  toLinearMap := _root_.TensorProduct.map f.toLinearMap g.toLinearMap
+  counit_comp := by
+    simp_rw [← tensorHom_toLinearMap]
+    apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).1.counit_comp
+  map_comp_comul := by
+    simp_rw [← tensorHom_toLinearMap, ← comul_tensorObj]
+    apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).1.map_comp_comul
 
 @[simp]
 theorem map_tmul (f : M →ₗc[R] N) (g : P →ₗc[R] Q) (x : M) (y : P) :

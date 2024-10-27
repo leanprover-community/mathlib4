@@ -7,7 +7,6 @@ import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
 import Batteries.Control.Nondet.Basic
 import Mathlib.Tactic.FailIfNoProgress
-import Mathlib.Mathport.Rename
 
 /-!
 # The `hint` tactic.
@@ -50,7 +49,7 @@ elab (name := registerHintStx) "register_hint" tac:tactic : command => liftTermE
   addHint tac
 
 initialize
-  Std.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
+  Batteries.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
 
 /--
 Construct a suggestion for a tactic.

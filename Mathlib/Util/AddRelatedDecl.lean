@@ -3,6 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Floris van Doorn
 -/
+import Mathlib.Init
 import Lean.Elab.DeclarationRange
 import Lean.Elab.Term
 
@@ -73,3 +74,5 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
     let attrs ← elabAttrs attrs
     Term.applyAttributes src attrs
     Term.applyAttributes tgt attrs
+
+end Mathlib.Tactic

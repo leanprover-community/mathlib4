@@ -10,9 +10,9 @@ import Mathlib.Logic.Equiv.TransferInstance
 # Transfer ring structures from `α` to `Shrink α`.
 -/
 
-set_option autoImplicit true
-
 noncomputable section
+
+variable {α : Type*}
 
 instance [NonUnitalNonAssocSemiring α] [Small α] : NonUnitalNonAssocSemiring (Shrink α) :=
   (equivShrink _).symm.nonUnitalNonAssocSemiring

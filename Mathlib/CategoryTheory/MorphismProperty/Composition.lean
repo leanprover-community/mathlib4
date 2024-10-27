@@ -65,7 +65,6 @@ instance Pi.containsIdentities {J : Type w} {C : J → Type u}
 two such morphisms still falls in the class. -/
 class IsStableUnderComposition (P : MorphismProperty C) : Prop :=
   comp_mem {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) : P f → P g → P (f ≫ g)
-#align category_theory.morphism_property.stable_under_composition CategoryTheory.MorphismProperty.IsStableUnderComposition
 
 lemma comp_mem (W : MorphismProperty C) [W.IsStableUnderComposition]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hg : W g) : W (f ≫ g) :=
@@ -74,33 +73,27 @@ lemma comp_mem (W : MorphismProperty C) [W.IsStableUnderComposition]
 instance IsStableUnderComposition.op {P : MorphismProperty C} [P.IsStableUnderComposition] :
     P.op.IsStableUnderComposition where
   comp_mem f g hf hg := P.comp_mem g.unop f.unop hg hf
-#align category_theory.morphism_property.stable_under_composition.op CategoryTheory.MorphismProperty.IsStableUnderComposition.op
 
 instance IsStableUnderComposition.unop {P : MorphismProperty Cᵒᵖ} [P.IsStableUnderComposition] :
     P.unop.IsStableUnderComposition where
   comp_mem f g hf hg := P.comp_mem g.op f.op hg hf
-#align category_theory.morphism_property.stable_under_composition.unop CategoryTheory.MorphismProperty.IsStableUnderComposition.unop
 
 /-- A morphism property is `StableUnderInverse` if the inverse of a morphism satisfying
 the property still falls in the class. -/
 def StableUnderInverse (P : MorphismProperty C) : Prop :=
   ∀ ⦃X Y⦄ (e : X ≅ Y), P e.hom → P e.inv
-#align category_theory.morphism_property.stable_under_inverse CategoryTheory.MorphismProperty.StableUnderInverse
 
 theorem StableUnderInverse.op {P : MorphismProperty C} (h : StableUnderInverse P) :
     StableUnderInverse P.op := fun _ _ e he => h e.unop he
-#align category_theory.morphism_property.stable_under_inverse.op CategoryTheory.MorphismProperty.StableUnderInverse.op
 
 theorem StableUnderInverse.unop {P : MorphismProperty Cᵒᵖ} (h : StableUnderInverse P) :
     StableUnderInverse P.unop := fun _ _ e he => h e.op he
-#align category_theory.morphism_property.stable_under_inverse.unop CategoryTheory.MorphismProperty.StableUnderInverse.unop
 
 theorem respectsIso_of_isStableUnderComposition {P : MorphismProperty C}
     [P.IsStableUnderComposition] (hP : isomorphisms C ≤ P) :
     RespectsIso P :=
   ⟨fun _ _ hf => P.comp_mem _ _ (hP _ (isomorphisms.infer_property _)) hf,
     fun _ _ hf => P.comp_mem _ _ hf (hP _ (isomorphisms.infer_property _))⟩
-#align category_theory.morphism_property.stable_under_composition.respects_iso CategoryTheory.MorphismProperty.respectsIso_of_isStableUnderComposition
 
 instance IsStableUnderComposition.inverseImage {P : MorphismProperty D} [P.IsStableUnderComposition]
     (F : C ⥤ D) : (P.inverseImage F).IsStableUnderComposition where
@@ -112,7 +105,6 @@ to whom `app` is natural. -/
 @[simp]
 def naturalityProperty {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) : MorphismProperty C :=
   fun X Y f => F₁.map f ≫ app Y = app X ≫ F₂.map f
-#align category_theory.morphism_property.naturality_property CategoryTheory.MorphismProperty.naturalityProperty
 
 namespace naturalityProperty
 
@@ -123,7 +115,6 @@ instance isStableUnderComposition {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X
     simp only [Functor.map_comp, Category.assoc, hg]
     slice_lhs 1 2 => rw [hf]
     rw [Category.assoc]
-#align category_theory.morphism_property.naturality_property.is_stable_under_composition CategoryTheory.MorphismProperty.naturalityProperty.isStableUnderComposition
 
 theorem stableUnderInverse {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) :
     (naturalityProperty app).StableUnderInverse := fun X Y e he => by
@@ -132,7 +123,6 @@ theorem stableUnderInverse {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F�
   slice_rhs 1 2 => rw [he]
   simp only [Category.assoc, ← F₁.map_comp_assoc, ← F₂.map_comp, e.hom_inv_id, Functor.map_id,
     Category.id_comp, Category.comp_id]
-#align category_theory.morphism_property.naturality_property.is_stable_under_inverse CategoryTheory.MorphismProperty.naturalityProperty.stableUnderInverse
 
 end naturalityProperty
 

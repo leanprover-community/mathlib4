@@ -83,7 +83,7 @@ theorem isGalois_iff_pretransitive (X : C) [IsConnected X] :
   rw [isGalois_iff_aux, Equiv.nonempty_congr <| quotientByAutTerminalEquivUniqueQuotient F X]
   exact (MulAction.pretransitive_iff_unique_quotient_of_nonempty (Aut X) (F.obj X)).symm
 
-/-- If `X` is Galois, the quotient `X / Aut X` is terminal.  -/
+/-- If `X` is Galois, the quotient `X / Aut X` is terminal. -/
 noncomputable def isTerminalQuotientOfIsGalois (X : C) [IsGalois X] :
     IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X :=
   Nonempty.some IsGalois.quotientByAutTerminal
@@ -146,8 +146,8 @@ lemma comp_autMap {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut
   (exists_autMap f σ).choose_spec.left
 
 @[simp]
-lemma comp_autMap_apply {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut A)
-    (a : F.obj A) :
+lemma comp_autMap_apply (F : C ⥤ FintypeCat.{w}) {A B : C} [IsConnected A] [IsGalois B]
+    (f : A ⟶ B) (σ : Aut A) (a : F.obj A) :
     F.map (autMap f σ).hom (F.map f a) = F.map f (F.map σ.hom a) := by
   simpa [-comp_autMap] using congrFun (F.congr_map (comp_autMap f σ)) a
 

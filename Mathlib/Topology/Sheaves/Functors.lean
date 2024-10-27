@@ -6,8 +6,6 @@ Authors: Junyan Xu, Andrew Yang
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.CategoryTheory.Sites.Pullback
 
-#align_import topology.sheaves.functors from "leanprover-community/mathlib"@"85d6221d32c37e68f05b2e42cde6cee658dae5e9"
-
 /-!
 # functors between categories of sheaves
 
@@ -50,8 +48,6 @@ open Presheaf
 -/
 theorem pushforward_sheaf_of_sheaf {F : X.Presheaf C} (h : F.IsSheaf) : (f _* F).IsSheaf :=
   (Opens.map f).op_comp_isSheaf _ _ ⟨_, h⟩
-set_option linter.uppercaseLean3 false in
-#align Top.sheaf.pushforward_sheaf_of_sheaf TopCat.Sheaf.pushforward_sheaf_of_sheaf
 
 variable (C)
 
@@ -59,8 +55,6 @@ variable (C)
 -/
 def pushforward (f : X ⟶ Y) : X.Sheaf C ⥤ Y.Sheaf C :=
   (Opens.map f).sheafPushforwardContinuous _ _ _
-set_option linter.uppercaseLean3 false in
-#align Top.sheaf.pushforward TopCat.Sheaf.pushforward
 
 lemma pushforward_forget (f : X ⟶ Y) :
     pushforward C f ⋙ forget C Y = forget C X ⋙ Presheaf.pushforward C f := rfl
