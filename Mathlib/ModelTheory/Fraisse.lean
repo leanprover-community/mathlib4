@@ -501,10 +501,10 @@ noncomputable def init_system : (n : ℕ) →
     let Am1_to_An : Am1 ↪[L] An := (Sn m1).2
     let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
       (countable_self_fgequiv_of_countable (L := L) (M := Am1))).choose m2
-    let ⟨A, An_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse An (f.map Am1_to_An)
-      (PartialEquiv.map_dom Am1_to_An f ▸ FG.map _ f_fg)
-    let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse (n+1))
-    exact ⟨A', fun m ↦ if m ≤ n then ⟨(Sn m).1, A_to_A'.comp (An_to_A.comp ((Sn m).2))⟩
+    let ⟨A, An_to_A⟩ := extend_and_join K_fraisse
+      (A := An) (B := ess_surj_sequence K_fraisse (n+1))
+        (f := f.map Am1_to_An) (PartialEquiv.map_dom Am1_to_An f ▸ FG.map _ f_fg)
+    exact ⟨A, fun m ↦ if m ≤ n then ⟨(Sn m).1, An_to_A.comp ((Sn m).2)⟩
                         else ⟨_, Embedding.eq_embed (rfl)⟩⟩
 
 noncomputable def system : ℕ → K :=
@@ -534,20 +534,33 @@ variable (n m : ℕ)
 noncomputable def maps_system {m n : ℕ} (h : m ≤ n): system K_fraisse m ↪[L] system K_fraisse n :=
   ((init_system K_fraisse n).2 m).2.comp (Embedding.eq_embed (system_eq' K_fraisse h))
 
-theorem if_then_else_right {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
-    (g : B ↪[L] C) (h : P = False) :
-      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).1 = B := by
-  simp only [h, ↓reduceIte]
-
 theorem map_from_eq_dep_pair {C : K} {P Q : (B : K) × (B ↪[L] C)} (h : P = Q) :
     P.2 = Q.2.comp (Embedding.eq_embed (congr_arg _ (congr_arg Sigma.fst h))) := by
   cases h
   rfl
 
-theorem if_then_else_right_map {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
+theorem if_then_else_left_struct {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
+    (g : B ↪[L] C) (h : P = True) :
+      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).1 = A := by
+  simp only [h, ↓reduceIte]
+
+theorem if_then_else_left {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
+    (g : B ↪[L] C) (h : P = True) :
+      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).2 =
+        f.comp (Embedding.eq_embed (congr_arg _ (if_then_else_left_struct f g h))):= by
+  have h' : (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩) = ⟨A, f⟩ := by
+    simp [h]
+  apply map_from_eq_dep_pair h'
+
+theorem if_then_else_right_struct {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
+    (g : B ↪[L] C) (h : P = False) :
+      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).1 = B := by
+  simp only [h, ↓reduceIte]
+
+theorem if_then_else_right {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
     (g : B ↪[L] C) (h : P = False) :
       (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).2 =
-        g.comp (Embedding.eq_embed (congr_arg _ (if_then_else_right f g h))):= by
+        g.comp (Embedding.eq_embed (congr_arg _ (if_then_else_right_struct f g h))):= by
   have h' : (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩) = ⟨B, g⟩ := by
     simp [h]
   apply map_from_eq_dep_pair h'
@@ -563,7 +576,7 @@ theorem maps_system_same_step (m : ℕ) : maps_system K_fraisse (le_refl m)
   conv =>
     lhs
     congr
-    rw [if_then_else_right_map]
+    rw [if_then_else_right]
     simp
     · skip
     · exact u m
@@ -574,10 +587,36 @@ theorem maps_system_same_step (m : ℕ) : maps_system K_fraisse (le_refl m)
 noncomputable def map_step (m : ℕ) : system K_fraisse m ↪[L] system K_fraisse (m+1) :=
   maps_system K_fraisse (by linarith)
 
+theorem factorize_with_map_step {m n : ℕ} (h : m ≤ n) :
+    maps_system K_fraisse (h.trans (Nat.le_add_right n 1)) =
+      (map_step K_fraisse n).comp (maps_system K_fraisse h) := by
+  nth_rw 1 [maps_system]
+  simp only [init_system]
+  simp only [map_step, maps_system]
+  rw [if_then_else_left]
+  let f := ((init_system K_fraisse n).snd m).snd.comp (Embedding.eq_embed (system_eq' K_fraisse h))
+  simp only [Embedding.comp_assoc, Embedding.eq_embed_trans]
+  nth_rw 2 [←Embedding.comp_assoc]
+  show Embedding.comp _ f = Embedding.comp _ f
+  apply congrFun (a := f)
+  apply congr_arg (f := Embedding.comp)
+  conv =>
+    rhs
+    simp only [init_system]
+    skip
+  rw [if_then_else_left]
+  simp only [Embedding.comp_assoc, Embedding.eq_embed_trans]
+  show _ = Embedding.comp _ (maps_system K_fraisse (le_refl n))
+  simp only [maps_system_same_step K_fraisse n, Embedding.comp_refl]
+  exact eq_true (le_refl n)
+  exact eq_true h
+
+
 theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
     (maps_system K_fraisse h').comp (maps_system K_fraisse h) =
       maps_system K_fraisse (h.trans h') := by
   simp [maps_system]
+  sorry
 
 
 

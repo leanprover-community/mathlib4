@@ -206,6 +206,9 @@ def eq_embed (h : M = N) : M ↪[L] N := by
   exact refl L M
 
 @[simp]
+theorem refl_eq_embed : eq_embed (Eq.refl M) = refl L M := rfl
+
+@[simp]
 theorem eq_embed_trans (h : M = N) (h' : N = P) :
     (eq_embed h').comp (eq_embed h) = eq_embed (h.trans h') := by
   cases h
