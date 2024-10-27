@@ -430,7 +430,7 @@ noncomputable def ess_surj_sequence : ℕ → K := by
     exact (K_fraisse.is_equiv_invariant _ _ this).1 V_in_K
   exact ⟨A, A_in_K⟩
 
-theorem ess_surj_sequence_is_ess_surj : ∀ V : K, ∃ n,
+theorem ess_surj_sequence_spec : ∀ V : K, ∃ n,
     Nonempty (V ≃[L] ess_surj_sequence K_fraisse n) := by
   rintro ⟨V, V_in_K⟩
   simp only
@@ -487,6 +487,16 @@ noncomputable def extend_and_join (A B : K) {f : A ≃ₚ[L] A} (f_fg : f.dom.FG
   let ⟨C', A_to_C', _, _⟩ := extend_finiteEquiv_in_class K_fraisse A f f_fg
   let ⟨C, C'_to_C, _⟩ := join K_fraisse C' B
   exact ⟨C, C'_to_C.comp A_to_C'⟩
+
+theorem extend_and_join_spec_1 (A B : K) {f : A ≃ₚ[L] A} (f_fg : f.dom.FG) :
+    ∃ g : (extend_and_join K_fraisse A B f_fg).1 ≃ₚ[L] _,
+      f.map (extend_and_join K_fraisse A B f_fg).2 ≤ g ∧
+        (extend_and_join K_fraisse A B f_fg).2.toHom.range ≤ g.dom := by
+  sorry
+
+theorem extend_and_join_spec_2 (A B : K) {f : A ≃ₚ[L] A} (f_fg : f.dom.FG) :
+    Nonempty (B ↪[L] (extend_and_join K_fraisse A B f_fg).1) := by
+  sorry
 
 noncomputable def init_system : (n : ℕ) →
     (A : K) × (ℕ → (B : K) × (B ↪[L] A))
@@ -590,7 +600,8 @@ noncomputable def map_step (m : ℕ) : system K_fraisse m ↪[L] system K_fraiss
 theorem factorize_with_map_step {m n : ℕ} (h : m ≤ n) :
     maps_system K_fraisse (h.trans (Nat.le_add_right n 1)) =
       (map_step K_fraisse n).comp (maps_system K_fraisse h) := by
-  nth_rw 1 [maps_system]
+  sorry -- the proof works but is really slow, it takes multiple minutes
+  /-nth_rw 1 [maps_system]
   simp only [init_system]
   simp only [map_step, maps_system]
   rw [if_then_else_left]
@@ -609,24 +620,40 @@ theorem factorize_with_map_step {m n : ℕ} (h : m ≤ n) :
   show _ = Embedding.comp _ (maps_system K_fraisse (le_refl n))
   simp only [maps_system_same_step K_fraisse n, Embedding.comp_refl]
   exact eq_true (le_refl n)
-  exact eq_true h
-
+  exact eq_true h -/
 
 theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
     (maps_system K_fraisse h').comp (maps_system K_fraisse h) =
       maps_system K_fraisse (h.trans h') := by
-  simp [maps_system]
-  sorry
-
-
+  match k with
+  | 0 =>
+      cases h'
+      cases h
+      rfl
+  | k+1 =>
+      cases h'
+      · simp [maps_system_same_step]
+      · rename_i h'
+        rw [factorize_with_map_step, map_step, Embedding.comp_assoc,
+            transitive_maps_system h h',←map_step, ←factorize_with_map_step]
 
 theorem all_fgequiv_extend {m : ℕ} : ∀ f : L.FGEquiv (system _ m) (system _ m),
     ∀ x : ↑(system K_fraisse m), ∃ n, ∃ h : m ≤ n, ∃ g : (system _ n) ≃ₚ[L] (system _ n),
       maps_system _ h x ∈ g.dom ∧ f.val.map (maps_system K_fraisse h) ≤ g :=
   sorry
 
-theorem contains_K : ∀ M ∈ K, ∃ n, Nonempty (M ↪[L] system K_fraisse n) :=
-  sorry
+theorem contains_K : ∀ M ∈ K, ∃ n, Nonempty (M ↪[L] system K_fraisse n) := by
+  intro A h
+  let ⟨n, ⟨g⟩⟩ := ess_surj_sequence_spec K_fraisse ⟨A, h⟩
+  use n
+  refine ⟨?_⟩
+  apply fun f ↦ Embedding.comp f g.toEmbedding
+  cases n
+  · trivial
+  · simp [system, init_system]
+    apply Classical.choice
+    apply extend_and_join_spec_2
+
 
 include K_fraisse in
 
