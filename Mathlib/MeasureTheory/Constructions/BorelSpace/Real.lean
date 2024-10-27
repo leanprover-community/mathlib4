@@ -27,7 +27,7 @@ import Mathlib.MeasureTheory.MeasurableSpace.Prod
 
 open Set Filter MeasureTheory MeasurableSpace
 
-open scoped Topology NNReal ENNReal Notation
+open scoped Topology NNReal ENNReal
 
 universe u v w x y
 
