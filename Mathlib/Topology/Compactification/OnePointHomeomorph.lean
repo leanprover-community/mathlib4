@@ -270,8 +270,8 @@ lemma continuous_slope_zero_case (x : { v : Fin 2 → ℝ // v ≠ 0 }) (H₁ : 
   use (fun u ↦ if u.1 1 = 0 then ∞ else Option.some (u.1 0 / u.1 1)) ⁻¹' t
   constructor
   · intro a ha
-    simp at ha
-    simp
+    simp only [ne_eq, Fin.isValue, Set.mem_preimage] at ha
+    simp only [ne_eq, Fin.isValue, ite_not, Set.mem_preimage]
     split_ifs with h₀
     · simp_all only [ne_eq, not_true_eq_false, div_zero, ite_false, ite_true]
       tauto
