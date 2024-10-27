@@ -126,6 +126,7 @@ theorem le_comap_of_ramificationIdx_ne_zero (h : ramificationIdx f p P ≠ 0) : 
 
 variable {S₁: Type*} [CommRing S₁] [Algebra R S₁]
 
+variable (p) in
 lemma ramificationIdx_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
     ramificationIdx (algebraMap R S) p (P.comap e) = ramificationIdx (algebraMap R S₁) p P := by
   dsimp only [ramificationIdx]
@@ -136,6 +137,13 @@ lemma ramificationIdx_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S
     ← map_comap_of_equiv, ← Ideal.map_pow, map_comap_of_equiv, ← comap_coe (RingEquiv.symm _),
     comap_comap, RingEquiv.symm_symm, e.toRingEquiv_toRingHom, ← e.toAlgHom_toRingHom,
     AlgHom.comp_algebraMap]
+
+variable (p) in
+lemma ramificationIdx_map_eq [Algebra R S] {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁]
+    (P : Ideal S) (e : E) :
+    ramificationIdx (algebraMap R S₁) p (P.map e) = ramificationIdx (algebraMap R S) p P := by
+  rw [show P.map e = _ from P.map_comap_of_equiv (e : S ≃+* S₁)]
+  exact p.ramificationIdx_comap_eq (e : S ≃ₐ[R] S₁).symm P
 
 namespace IsDedekindDomain
 
@@ -238,6 +246,12 @@ lemma inertiaDeg_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) 
         RingHomCompTriple.comp_apply]
   · exact E.left_inv
   · exact E.right_inv
+
+lemma inertiaDeg_map_eq [p.IsMaximal] [Algebra R S] (P : Ideal S)
+    {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁] (e : E) :
+    inertiaDeg (algebraMap R S₁) p (P.map e) = inertiaDeg (algebraMap R S) p P := by
+  rw [show P.map e = _ from P.map_comap_of_equiv (e : S ≃+* S₁)]
+  exact p.inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁).symm P
 
 end DecEq
 
