@@ -4,20 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+import Mathlib.CategoryTheory.Limits.Elements
 
 /-!
 # Finite-limit-preserving presheaves
 
 In this file we prove that if `C` is a small finitely cocomplete category and `A : Cᵒᵖ ⥤ Type u`
-is a presheaf such that `CostructuredArrow yoneda A` is filtered (equivalently, the category of
-elements of `A` is cofiltered), then `A` preserves finite limits.
+is a presheaf, then `CostructuredArrow yoneda A` is filtered (equivalently, the category of
+elements of `A` is cofiltered) if and only if `A` preserves finite limits.
 
 This is one of the keys steps of establishing the equivalence `Ind C ≌ (Cᵒᵖ ⥤ₗ Type u)` for a
 *small* finitely cocomplete category `C`.
-
-The converse is also true: if `A` preserves finite limits, then `CostructuredArrow yoneda A` is
-filtered. In `Limits.Elements` we show that `A.Elements` has finite limits, hence is cofiltered,
-from which we can deduce (TODO) that `CostructuredArrow yoneda A` is filtered.
 
 ## Implementation notes
 
@@ -36,7 +33,21 @@ is small, we leave this as a TODO.
 
 open CategoryTheory Limits
 
-universe u
+universe v u
+
+section LargeCategory
+
+variable {C : Type u} [Category.{v} C] [HasFiniteColimits C] (A : Cᵒᵖ ⥤ Type v)
+
+theorem isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits
+    [PreservesFiniteLimits A] : IsFiltered (CostructuredArrow yoneda A) := by
+  suffices IsFiltered A.Elementsᵒᵖ from
+    IsFiltered.of_equivalence (CategoryOfElements.costructuredArrowYonedaEquivalence _)
+  suffices IsCofiltered A.Elements from isFiltered_op_of_isCofiltered A.Elements
+  suffices HasFiniteLimits A.Elements from IsCofiltered.of_hasFiniteLimits A.Elements
+  exact ⟨fun J _ _ => inferInstance⟩
+
+end LargeCategory
 
 variable {C : Type u} [SmallCategory C] [HasFiniteColimits C]
 
@@ -148,5 +159,10 @@ One direction of Proposition 3.3.13 of [Kashiwara2006].
 noncomputable def preservesFiniteLimitsOfIsFilteredCostructuredArrowYoneda
     [IsFiltered (CostructuredArrow yoneda A)] : PreservesFiniteLimits A where
   preservesFiniteLimits _ _ _ := ⟨fun {_} => preservesLimitOfIsIsoPost _ _⟩
+
+theorem isFiltered_costructuredArrow_yoneda_iff_nonempty_preservesFiniteLimits :
+    IsFiltered (CostructuredArrow yoneda A) ↔ Nonempty (PreservesFiniteLimits A) :=
+  ⟨fun _ => ⟨preservesFiniteLimitsOfIsFilteredCostructuredArrowYoneda A⟩,
+   fun ⟨_⟩ => isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits A⟩
 
 end CategoryTheory.Limits
