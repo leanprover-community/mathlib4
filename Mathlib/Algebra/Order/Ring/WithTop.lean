@@ -203,13 +203,11 @@ protected lemma mul_lt_mul (ha : a₁ < a₂) (hb : b₁ < b₂) : a₁ * b₁ <
   lift a₁ to α using ha.lt_top.ne
   lift b₁ to α using hb.lt_top.ne
   obtain rfl | ha₂ := eq_or_ne a₂ ⊤
-  · rw [top_mul]
+  · rw [top_mul (by simpa [bot_eq_zero] using hb.bot_lt.ne')]
     exact coe_lt_top _
-    · simpa [bot_eq_zero] using hb.bot_lt.ne'
   obtain rfl | hb₂ := eq_or_ne b₂ ⊤
-  · rw [mul_top]
+  · rw [mul_top (by simpa [bot_eq_zero] using ha.bot_lt.ne')]
     exact coe_lt_top _
-    · simpa [bot_eq_zero] using ha.bot_lt.ne'
   lift a₂ to α using ha₂
   lift b₂ to α using hb₂
   norm_cast at *
