@@ -109,24 +109,16 @@ lemma deriv_neg_pos_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
         suffices x₀ - u₁ > 2⁻¹ * (x₀ - u₁) by
             exact sub_lt_sub_left this x₀
         show x₀ - u₁ > 2⁻¹ * (x₀ - u₁)
-        suffices  2 * (x₀ - u₁) > 2 * (2⁻¹ * (x₀ - u₁)) by
-            refine (inv_mul_lt_iff₀ ?hc).mpr ?_
-            simp
-            refine lt_two_mul_self ?ha
-            simp
-            tauto
-        simp
-        apply lt_two_mul_self
-        simp
-        tauto
+        refine (inv_mul_lt_iff₀ ?hc).mpr <|lt_two_mul_self <|sub_pos.mpr hu₁.1
+        exact zero_lt_two
       have T₀ : 2⁻¹ * min (u₀ - x₀) (x₀ - u₁) ≤ 2⁻¹ * (x₀ - u₁) := by
         refine (inv_mul_le_iff₀ ?hc).mpr ?_
         simp
       calc _ < _ := this
-      _ ≤ _ := tsub_le_tsub_left T₀ x₀
+           _ ≤ _ := tsub_le_tsub_left T₀ x₀
     · intro b hb
       apply hu₀.2
-      simp_all
+      simp_all only [gt_iff_lt, mem_Ioo, and_imp, one_div, true_and]
       refine lt_trans hb.2 ?_
       calc _ ≤ x₀ + 2⁻¹ * (u₀ - x₀) := by simp
       _ < _ := by
@@ -158,60 +150,59 @@ theorem isLocalMin_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
     linarith;linarith
     by_cases H : DifferentiableAt ℝ f x₀
     use Set.univ
-    simp
+    simp only [univ_mem, inter_univ, true_and]
     ext z
     constructor
     intro h
-    simp
+    simp only [mem_union, mem_Ioo, mem_setOf_eq]
     right
-    simp_all
+    simp_all only [gt_iff_lt, mem_Ioo, and_imp, mem_setOf_eq]
     intro h
     apply h.elim
     intro h
     by_cases H' : z < x₀
-    · simp
-      apply differentiableAt_of_deriv_ne_zero
+    · apply differentiableAt_of_deriv_ne_zero
       apply ne_of_lt
       apply hε.2.1
       simp_all
     · by_cases G : z = x₀
       · subst G
         simp_all
-
-      have : x₀ < z := by
-        have := h.2; simp at this
-        simp at H'
-        exact lt_of_le_of_ne H' fun a ↦ G (id (Eq.symm a))
-      simp
-      apply differentiableAt_of_deriv_ne_zero
-      apply ne_of_gt
-      apply hε.2.2
-      simp_all
-
-
+      · have : x₀ < z := by
+          have := h.2
+          simp only at this
+          simp only [not_lt] at H'
+          exact lt_of_le_of_ne H' fun a ↦ G (a.symm)
+        simp only [mem_setOf_eq]
+        apply differentiableAt_of_deriv_ne_zero
+        apply ne_of_gt
+        apply hε.2.2
+        simp_all
     · tauto
     use {x₀}ᶜ
-    simp
+    simp only [mem_principal, subset_refl, true_and]
     ext z
     constructor
     intro h
     constructor
     · tauto
-    · simp_all;intro hc;subst hc;tauto
+    · simp_all only [gt_iff_lt, mem_Ioo, and_imp, mem_setOf_eq, mem_compl_iff, mem_singleton_iff]
+      intro hc
+      subst hc
+      tauto
     intro h
     apply h.1.elim
     intro h'
     by_cases H' : z < x₀
-    · simp
+    · simp only [mem_setOf_eq]
       apply differentiableAt_of_deriv_ne_zero
       apply ne_of_lt
       apply hε.2.1
       simp_all
     · have : x₀ < z := by
         have := h.2; simp at this
-        simp at H'
+        simp only [not_lt] at H'
         exact lt_of_le_of_ne H' fun a ↦ this (id (Eq.symm a))
-      simp
       apply differentiableAt_of_deriv_ne_zero
       apply ne_of_gt
       apply hε.2.2
@@ -232,16 +223,15 @@ theorem isLocalMin_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
  · exact hc
 
  · obtain ⟨b,hb⟩ := hp.2
-   simp at hb
+   simp only [mem_principal] at hb
    intro x hx
    apply DifferentiableAt.differentiableWithinAt
    suffices x ∈ p ∩ b by
     rw [← hb.2] at this
     exact this
-   simp
    constructor
    ·    apply hlu.2
-        simp_all
+        simp_all only [gt_iff_lt, mem_Ioo, and_imp, mem_principal]
         constructor
         ·   refine lt_trans ?_ hx.1
             show l < x₀ - (1/2) * min δ ε
@@ -254,18 +244,20 @@ theorem isLocalMin_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
                 linarith
             linarith
         · linarith
-   · apply hb.1;simp at hx;simp;linarith
+   · apply hb.1
+     simp only [mem_Ioo] at hx
+     simp only [mem_compl_iff, mem_singleton_iff]
+     linarith
  · obtain ⟨b,hb⟩ := hp.2
-   simp at hb
+   simp only [mem_principal] at hb
    intro x hx
    apply DifferentiableAt.differentiableWithinAt
    suffices x ∈ p ∩ b by
     rw [← hb.2] at this
     exact this
-   simp
    constructor
    ·    apply hlu.2
-        simp_all
+        simp_all only [gt_iff_lt, mem_Ioo, and_imp, mem_principal]
         constructor
         · linarith
         ·   refine lt_trans hx.2 ?_
@@ -278,11 +270,14 @@ theorem isLocalMin_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
                 have : min (x₀ - l) (u - x₀) ≤ (u - x₀) := by apply min_le_right
                 linarith
             linarith
-   · apply hb.1;simp at hx;simp;linarith
+   · apply hb.1
+     simp only [mem_Ioo] at hx
+     simp only [mem_compl_iff, mem_singleton_iff]
+     linarith
  · intro x hx
    apply le_of_lt
    have : x ∈ Ioo (x₀ - ε) x₀ := by
-    simp_all
+    simp_all only [gt_iff_lt, mem_Ioo, and_imp, mem_principal, and_true]
     have : x₀ - ε ≤ x₀ - ζ := by
         show x₀ - ε ≤ x₀ - (1/2) * min δ ε
         suffices x₀ ≤ x₀ + (1/2) * (ε - min δ ε) by
@@ -293,11 +288,11 @@ theorem isLocalMin_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
  · intro x hx
    apply le_of_lt
    have : x ∈ Ioo x₀ (x₀ + ε) := by
-    simp_all
+    simp_all only [gt_iff_lt, mem_Ioo, and_imp, mem_principal, true_and]
     have : x₀ - ε ≤ x₀ - ζ := by
         show x₀ - ε ≤ x₀ - (1/2) * min δ ε
         suffices x₀ ≤ x₀ + (1/2) * (ε - min δ ε) by linarith
         aesop
     linarith
    apply hε.2.2
-   simp_all
+   exact this
