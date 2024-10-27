@@ -96,3 +96,16 @@ theorem star_grading {i : ℕ} {v : ExteriorAlgebra ℝ E} :
 end HodgeStar
 
 end Hodge
+
+noncomputable section ExteriorBilinear
+namespace ExteriorAlgebra
+
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable [Nontrivial E]
+variable {n : ℕ} (e : OrthonormalBasis (Fin n) ℝ E)
+variable (B : LinearMap.BilinForm ℝ E)
+
+
+
+end ExteriorAlgebra
+end ExteriorBilinear
