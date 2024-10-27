@@ -20,8 +20,6 @@ This file defines bundled isomorphisms of `R`-coalgebras. We simply mimic the ea
 * `A ≃ₗc[R] B` : `R`-coalgebra equivalence from `A` to `B`.
 -/
 
-open BigOperators
-
 universe u v w
 
 variable {R A B C : Type*}
@@ -40,7 +38,7 @@ attribute [nolint docBlame] CoalgEquiv.toLinearEquiv
 notation:50 A " ≃ₗc[" R "] " B => CoalgEquiv R A B
 
 /-- `CoalgEquivClass F R A B` asserts `F` is a type of bundled coalgebra equivalences
-from `A` to `B`.  -/
+from `A` to `B`. -/
 class CoalgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]
@@ -159,9 +157,6 @@ variable {e e'}
 theorem ext (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
 
-theorem ext_iff : e = e' ↔ ∀ x, e x = e' x :=
-  DFunLike.ext_iff
-
 protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
 
@@ -205,9 +200,22 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
 theorem symm_toLinearEquiv (e : A ≃ₗc[R] B) :
     e.symm = (e : A ≃ₗ[R] B).symm := rfl
 
+theorem coe_symm_toLinearEquiv (e : A ≃ₗc[R] B) :
+    ⇑(e : A ≃ₗ[R] B).symm = e.symm := rfl
+
 @[simp]
 theorem symm_toCoalgHom (e : A ≃ₗc[R] B) :
     ((e.symm : B →ₗc[R] A) : B →ₗ[R] A) = (e : A ≃ₗ[R] B).symm := rfl
+
+@[simp]
+theorem symm_apply_apply (e : A ≃ₗc[R] B) (x) :
+    e.symm (e x) = x :=
+  LinearEquiv.symm_apply_apply (e : A ≃ₗ[R] B) x
+
+@[simp]
+theorem apply_symm_apply (e : A ≃ₗc[R] B) (x) :
+    e (e.symm x) = x :=
+  LinearEquiv.apply_symm_apply (e : A ≃ₗ[R] B) x
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply {R : Type*} [CommSemiring R]
@@ -245,7 +253,6 @@ theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e
   rfl
 
 end
-
 variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
   [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
 
@@ -258,39 +265,23 @@ structure on `B`. -/
     simp only [← ((f : A ≃ₗ[R] B).comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul,
       ← LinearMap.comp_assoc]
     congr 1
-    simp only [toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, CoalgHomClass.map_comp_comul,
-      LinearMap.lTensor_comp_map]
-    simp only [← toLinearEquiv_toLinearMap, LinearMap.comp_assoc, LinearEquiv.comp_coe,
-      LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap, LinearMap.comp_id,
-      LinearMap.rTensor_comp_map]
-    simp_rw [toLinearEquiv_toLinearMap, ← CoalgHomClass.map_comp_comul (f : A →ₗc[R] B),
-      ← LinearMap.map_comp_lTensor, LinearMap.comp_assoc, ← Coalgebra.coassoc,
-      ← LinearMap.comp_assoc, TensorProduct.map_map_comp_assoc_eq]
-    simp only [LinearMap.comp_assoc, LinearMap.map_comp_rTensor, CoalgHomClass.map_comp_comul]
+    ext x
+    simpa only [toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, LinearMap.coe_comp,
+      LinearEquiv.coe_coe, Function.comp_apply, ← (ℛ R _).eq, map_sum, TensorProduct.map_tmul,
+      LinearMap.coe_coe, CoalgHom.coe_coe, LinearMap.rTensor_tmul, coe_symm_toLinearEquiv,
+      symm_apply_apply, LinearMap.lTensor_comp_map, TensorProduct.sum_tmul,
+      TensorProduct.assoc_tmul, TensorProduct.tmul_sum] using (sum_map_tmul_tmul_eq f f f x).symm
   rTensor_counit_comp_comul := by
-    simp only [(f.toLinearEquiv.eq_comp_toLinearMap_symm _ _).2 f.counit_comp,
-       ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul,
-       ← LinearMap.comp_assoc, LinearMap.rTensor_comp_map]
-    simp only [toLinearEquiv_eq_coe, toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe,
-      ← toLinearEquiv_toLinearMap, LinearMap.comp_assoc, LinearEquiv.comp_coe,
-      LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, LinearMap.comp_id,
-      ← LinearMap.lTensor_comp_rTensor, ← LinearMap.comp_assoc _ Coalgebra.comul,
-      Coalgebra.rTensor_counit_comp_comul]
-    ext
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      TensorProduct.mk_apply, LinearMap.lTensor_tmul, LinearEquiv.apply_symm_apply]
+    simp_rw [(f.toLinearEquiv.eq_comp_toLinearMap_symm _ _).2 f.counit_comp,
+      ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul, ← LinearMap.comp_assoc,
+      f.toLinearEquiv.comp_toLinearMap_symm_eq]
+    ext x
+    simp [← (ℛ R _).eq, coe_symm_toLinearEquiv]
   lTensor_counit_comp_comul := by
-      simp only [(f.toLinearEquiv.eq_comp_toLinearMap_symm _ _).2 f.counit_comp,
-        ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul,
-        ← LinearMap.comp_assoc, LinearMap.lTensor_comp_map]
-      simp only [toLinearEquiv_eq_coe, toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe,
-        ← toLinearEquiv_toLinearMap, LinearMap.comp_assoc, LinearEquiv.comp_coe,
-        LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, LinearMap.comp_id,
-        ← LinearMap.rTensor_comp_lTensor, ← LinearMap.comp_assoc _ Coalgebra.comul,
-        Coalgebra.lTensor_counit_comp_comul]
-      ext
-      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-        LinearMap.flip_apply, TensorProduct.mk_apply, LinearMap.rTensor_tmul,
-        LinearEquiv.apply_symm_apply]
+    simp_rw [(f.toLinearEquiv.eq_comp_toLinearMap_symm _ _).2 f.counit_comp,
+      ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul, ← LinearMap.comp_assoc,
+      f.toLinearEquiv.comp_toLinearMap_symm_eq]
+    ext x
+    simp [← (ℛ R _).eq, coe_symm_toLinearEquiv]
 
 end CoalgEquiv

@@ -79,12 +79,12 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R
       εIso := Iso.refl _
       associator_eq := fun X Y Z => by
         dsimp only [forget₂_module_obj, forget₂_map_associator_hom]
-        simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,
-          Iso.refl_hom, MonoidalCategory.tensor_id]
+        simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom,
+          MonoidalCategory.tensorIso_hom, Iso.refl_hom, MonoidalCategory.tensor_id]
         erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.id_comp]
       leftUnitor_eq := fun X => by
         dsimp only [forget₂_module_obj, forget₂_module_map, Iso.refl_symm, Iso.trans_hom,
-          Iso.refl_hom, tensorIso_hom]
+          Iso.refl_hom, MonoidalCategory.tensorIso_hom]
         erw [Category.id_comp, MonoidalCategory.tensor_id, Category.id_comp]
         rfl
       rightUnitor_eq := fun X => by

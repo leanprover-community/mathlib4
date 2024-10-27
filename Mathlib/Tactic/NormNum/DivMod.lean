@@ -13,8 +13,6 @@ This file adds support for the `%`, `/`, and `∣` (divisibility) operators on `
 to the `norm_num` tactic.
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib
 open Lean hiding Rat mkRat
 open Meta
@@ -34,7 +32,7 @@ lemma isInt_ediv {a b q m a' : ℤ} {b' r : ℕ}
   rw [Int.add_mul_ediv_right _ _ (Int.ofNat_ne_zero.2 ((Nat.zero_le ..).trans_lt h₂).ne')]
   rw [Int.ediv_eq_zero_of_lt, zero_add] <;> [simp; simpa using h₂]⟩
 
-lemma isInt_ediv_neg {a b q : ℤ} (h : IsInt (a / -b) q) (hq : -q = q') : IsInt (a / b) q' :=
+lemma isInt_ediv_neg {a b q q' : ℤ} (h : IsInt (a / -b) q) (hq : -q = q') : IsInt (a / b) q' :=
   ⟨by rw [Int.cast_id, ← hq, ← @Int.cast_id q, ← h.out, ← Int.ediv_neg, Int.neg_neg]⟩
 
 lemma isNat_neg_of_isNegNat {a : ℤ} {b : ℕ} (h : IsInt a (.negOfNat b)) : IsNat (-a) b :=
