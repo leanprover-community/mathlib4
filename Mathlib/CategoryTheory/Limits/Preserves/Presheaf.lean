@@ -61,7 +61,7 @@ def functorToInterchangeIso : functorToInterchange A K ≅
 
 /-- (Implementation) One way to express the flipped version of our functor. -/
 @[simps!]
-def flip_functorToInterchange : (functorToInterchange A K).flip ≅
+def flipFunctorToInterchange : (functorToInterchange A K).flip ≅
     ((CostructuredArrow.proj yoneda A ⋙ yoneda) ⋙ (whiskeringLeft J Cᵒᵖ (Type u)).obj K) :=
   NatIso.ofComponents (fun _ => Iso.refl _)
 
@@ -93,7 +93,7 @@ noncomputable def iso [IsFiltered (CostructuredArrow yoneda A)] :
   _ ≅ limit (colimit (functorToInterchange A K).flip) := colimitLimitIso _
   _ ≅ limit (colimit
         ((CostructuredArrow.proj yoneda A ⋙ yoneda) ⋙ (whiskeringLeft _ _ _).obj K)) :=
-          HasLimit.isoOfNatIso (HasColimit.isoOfNatIso (flip_functorToInterchange A K))
+          HasLimit.isoOfNatIso (HasColimit.isoOfNatIso (flipFunctorToInterchange A K))
   _ ≅ limit (K ⋙ colimit (CostructuredArrow.proj yoneda A ⋙ yoneda)) :=
         HasLimit.isoOfNatIso
           (colimitCompWhiskeringLeftIsoCompColimit (CostructuredArrow.proj yoneda A ⋙ yoneda) K)
