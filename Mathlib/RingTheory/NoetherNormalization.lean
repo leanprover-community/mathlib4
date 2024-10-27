@@ -300,8 +300,8 @@ variable (I : Ideal (MvPolynomial (Fin (n + 1)) k))
 where $\phi$ is the isomorphism from $k[X_0,...X_{n-1}]$ to $k[X_1,...X_n][X]$.
 And it is integral by the lemma above.-/
 private noncomputable abbrev hom1 :=
-  (Quotient.mkₐ k (map (finSuccEquiv k n) (map (T f) I))).comp
-  (IsScalarTower.toAlgHom k (MvPolynomial (Fin n) k) ((MvPolynomial (Fin n) k)[X]))
+  (Quotient.mkₐ (MvPolynomial (Fin n) k) (map (finSuccEquiv k n) (map (T f) I))).comp
+  (Algebra.ofId (MvPolynomial (Fin n) k) ((MvPolynomial (Fin n) k)[X]))
 
 set_option synthInstance.maxHeartbeats 40000
 private lemma hom1_int (fne : f ≠ 0) (fi : f ∈ I): (hom1 f I).IsIntegral := by
@@ -338,7 +338,8 @@ private noncomputable abbrev eqv2 := quotientEquivAlg (R₁ := k) (I.map (T f)) 
 
 /-$hom2$ is the composition of maps above, from $k[X_1,...X_n]$ to $k[X_0,...X_n]/I$,
 and it's integral.-/
-private noncomputable def hom2 := (eqv2 f I).toAlgHom.comp ((eqv1 f I).toAlgHom.comp (hom1 f I))
+private noncomputable def hom2 :=
+  (eqv2 f I).toAlgHom.comp ((eqv1 f I).toAlgHom.comp ((hom1 f I).restrictScalars k))
 
 /-Use induction to prove there is an injective map from $k[X_0,...X_{r-1}]$ to $k[X_0,...X_n]/I$.-/
 theorem exists_integral_inj (I : Ideal (MvPolynomial (Fin n) k))
