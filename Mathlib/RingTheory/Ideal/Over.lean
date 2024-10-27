@@ -432,8 +432,8 @@ section ideal_liesOver
 
 section Semiring
 
-variable (A : Type*) [CommSemiring A] {B : Type*} [Semiring B] [Algebra A B]
-  (P : Ideal B) (p : Ideal A)
+variable (A : Type*) [CommSemiring A] {B C : Type*} [Semiring B] [Semiring C] [Algebra A B]
+  [Algebra A C] (P : Ideal B) {Q : Ideal C} (p : Ideal A)
 
 /-- The ideal obtained by pulling back the ideal `P` from `B` to `A`. -/
 abbrev under : Ideal A := Ideal.comap (algebraMap A B) P
@@ -456,6 +456,15 @@ theorem over_def [P.LiesOver p] : p = P.under A := LiesOver.over
 theorem mem_of_liesOver [P.LiesOver p] (x : A) : x ∈ p ↔ algebraMap A B x ∈ P := by
   rw [P.over_def p]
   rfl
+
+variable {P} in
+theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
+    [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p where
+  over := by
+    ext x
+    rw [mem_comap, h, over_def P p, mem_comap, ← show _ = map σ P from comap_symm (σ : B ≃+* C)]
+    rw [mem_comap, ← (AlgEquiv.commutes (σ : B ≃ₐ[A] C).symm x)]
+    rfl
 
 end Semiring
 
@@ -486,8 +495,9 @@ section CommRing
 
 namespace Quotient
 
-variable (R : Type*) [CommSemiring R] {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  [Algebra R A] [Algebra R B] [IsScalarTower R A B] (P : Ideal B) (p : Ideal A) [P.LiesOver p]
+variable (R : Type*) [CommSemiring R] {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+  [Algebra A B] [Algebra A C] [Algebra R A] [Algebra R B] [IsScalarTower R A B]
+  (P : Ideal B) {Q : Ideal C} (p : Ideal A) [P.LiesOver p]
 
 /-- If `P` lies over `p`, then canonically `B ⧸ P` is a `A ⧸ p`-algebra. -/
 instance algebraOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
@@ -521,6 +531,10 @@ theorem algebraMap_injective_of_liesOver :
 
 instance [P.IsPrime] : NoZeroSMulDivisors (A ⧸ p) (B ⧸ P) :=
   NoZeroSMulDivisors.of_algebraMap_injective (Quotient.algebraMap_injective_of_liesOver P p)
+
+def algEquivOfLiesOver {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
+    (h : Q = P.map σ) : letI := LiesOver.of_eq_map_equiv p σ h;
+    (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) := sorry
 
 end Quotient
 

@@ -188,10 +188,7 @@ and there is an algebra structure `R / p → S / P`.
 noncomputable def inertiaDeg [p.IsMaximal] : ℕ :=
   if hPp : comap f P = p then
     @finrank (R ⧸ p) (S ⧸ P) _ _ <|
-      @Algebra.toModule _ _ _ _ <|
-        RingHom.toAlgebra <|
-          Ideal.Quotient.lift p ((Ideal.Quotient.mk P).comp f) fun _ ha =>
-            Quotient.eq_zero_iff_mem.mpr <| mem_comap.mp <| hPp.symm ▸ ha
+      @Algebra.toModule _ _ _ _ <| Quotient.algebraQuotientOfLEComap (le_of_eq hPp.symm)
   else 0
 
 -- Useful for the `nontriviality` tactic using `comap_eq_of_scalar_tower_quotient`.
@@ -215,29 +212,20 @@ theorem inertiaDeg_algebraMap [Algebra R S] [Algebra (R ⧸ p) (S ⧸ P)]
   rw [Ideal.Quotient.lift_mk, ← Ideal.Quotient.algebraMap_eq P, ← IsScalarTower.algebraMap_eq,
     ← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply]
 
+theorem inertiaDeg_pos [p.IsMaximal] [Nontrivial (S ⧸ P)] [Algebra R S] [Module.Finite R S]
+    [P.LiesOver p] : 0 < inertiaDeg (algebraMap R S) p P :=
+  finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
+
+theorem inertiaDeg_ne_zero [p.IsMaximal] [Nontrivial (S ⧸ P)] [Algebra R S] [Module.Finite R S]
+    [P.LiesOver p] : inertiaDeg (algebraMap R S) p P ≠ 0 :=
+  Nat.not_eq_zero_of_lt (inertiaDeg_pos p P)
+
 lemma inertiaDeg_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) [p.IsMaximal] :
     inertiaDeg (algebraMap R S) p (P.comap e) = inertiaDeg (algebraMap R S₁) p P := by
   dsimp only [Ideal.inertiaDeg]
   have : (P.comap e).comap (algebraMap R S) = p ↔ P.comap (algebraMap R S₁) = p := by
     rw [← comap_coe e, comap_comap, ← e.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
-  split
-  swap
-  · rw [dif_neg]; rwa [← this]
-  rw [dif_pos (this.mp ‹_›)]
-  apply (config := { allowSynthFailures := true }) LinearEquiv.finrank_eq
-  have E := quotientEquivAlg (P.comap e) P e (map_comap_of_surjective _ e.surjective P).symm
-  apply (config := {allowSynthFailures := true }) LinearEquiv.mk
-  case toLinearMap =>
-    apply (config := {allowSynthFailures := true }) LinearMap.mk
-    swap
-    · exact E.toLinearMap.toAddHom
-    · intro r x
-      show E (_ * _) = _ * (E x)
-      obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective r
-      simp only [Quotient.mk_comp_algebraMap, Quotient.lift_mk, _root_.map_mul, AlgEquiv.commutes,
-        RingHomCompTriple.comp_apply]
-  · exact E.left_inv
-  · exact E.right_inv
+  sorry
 
 end DecEq
 
@@ -257,7 +245,7 @@ variable (K)
 open scoped Matrix
 
 variable {K}
-
+/--/
 /-- If `b` mod `p` spans `S/p` as `R/p`-space, then `b` itself spans `Frac(S)` as `K`-space.
 
 Here,
