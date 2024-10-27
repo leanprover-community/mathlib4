@@ -36,8 +36,8 @@ variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 
 /--
 Given a family of indices `κ` and a multilinear map `f p` for each way `p` to select one index from
-each family, map a family of finitely-supported functions `x` into a finitely-supported function
-from each selection.
+each family, `dfinsuppFamily f` maps a family of finitely-supported functions (one for each domain
+`κ i`) into a finitely-supported function from each selection of indices (with domain `Π i, κ i`).
 
 Strictly this doesn't need multilinearity, only the fact that `f p m = 0` whenever `m i = 0` for
 some `i`.

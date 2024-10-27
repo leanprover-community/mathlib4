@@ -33,7 +33,8 @@ variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 
 /--
 Given a family of indices `κ` and a multilinear map `f p` for each way `p` to select one index from
-each family, map a family of functions `x` into a function from each selection.
+each family, `piFamily f` maps a family of functions (one for each domain `κ i`) into a function
+from each selection of indices (with domain `Π i, κ i`).
 -/
 @[simps]
 def piFamily (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
