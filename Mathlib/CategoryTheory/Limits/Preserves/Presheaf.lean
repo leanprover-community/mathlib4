@@ -118,7 +118,7 @@ theorem isIso_post [IsFiltered (CostructuredArrow yoneda A)] : IsIso (limit.post
   rw [HasLimit.isoOfNatIso_hom_π, HasLimit.isoOfNatIso_hom_π_assoc, limit.post_π,
     colimitObjIsoColimitCompEvaluation_ι_inv_assoc (CostructuredArrow.proj yoneda A ⋙ yoneda),
     Iso.app_inv, ← NatTrans.comp_app_assoc, colimit.comp_coconePointUniqueUpToIso_inv,
-    Presheaf.tautologicalCocone_ι_app , HasColimit.isoOfNatIso_ι_hom_assoc,
+    Presheaf.tautologicalCocone_ι_app, HasColimit.isoOfNatIso_ι_hom_assoc,
     HasLimit.isoOfNatIso_hom_π_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     ι_colimitLimitIso_limit_π_assoc, isoAux_hom_app, ← NatTrans.comp_app_assoc,
