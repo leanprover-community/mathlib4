@@ -28,16 +28,25 @@ The "minImports" linter tracks information about minimal imports over several co
 
 namespace Mathlib.Linter
 
-/-- `minImportsRef` keeps track of cumulative imports across multiple commands.
-* The first component stores the `NameSet` of minimal modules required for the file to
-  build up to the current linting position.
-* The second component stores the number of modules that transitively imported by the `NameSet`
-  stored in the first component.
+/--
+`ImportState` is the structure keeping track of the data that the `minImports` linter uses.
+* `ig` is the import graph of the current file.
+* `minImps` is the `NameSet` of minimal imports for the file up to the current command to build.
+* `impsSize` is the number of transitive imports for the file up to the current command to build.
 -/
-initialize minImportsRef : IO.Ref (NameSet × Nat) ← IO.mkRef ({}, 0)
+structure ImportState where
+  ig : Option (NameMap (Array Name)) := none
+  minImps : NameSet := {}
+  impsSize : Nat := 0
+  deriving Inhabited
+
+/--
+`minImportsRef` keeps track of cumulative imports across multiple commands, using `ImportState`.
+-/
+initialize minImportsRef : IO.Ref ImportState ← IO.mkRef {}
 
 /-- `#reset_min_imports` sets to empty the current list of cumulative imports. -/
-elab "#reset_min_imports" : command => minImportsRef.set ({}, 0)
+elab "#reset_min_imports" : command => minImportsRef.set {}
 
 /--
 The `minImports` linter incrementally computes the minimal imports needed for each file to build.
@@ -61,8 +70,8 @@ open Mathlib.Command.MinImports
 /-- `impsBelow env ms` takes as input an `Environment` `env` and a `NameSet` of module names `ms`.
 It returns the modules that are transitively imported by `ms`.
 -/
-def importsBelow (env : Environment) (ms : NameSet) : NameSet :=
-  (env.importGraph.upstreamOf ms).fold (σ := NameSet) (fun _ ↦ ·.insert ·) {}
+def importsBelow (ig : NameMap (Array Name)) (ms : NameSet) : NameSet :=
+  (ig.upstreamOf ms).fold (σ := NameSet) (fun _ ↦ ·.insert ·) {}
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
 def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -72,7 +81,11 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if stx == (← `(command| set_option $(mkIdent `linter.minImports) true)) then return
     let env ← getEnv
-    let (importsSoFar, oldCumulImps) ← minImportsRef.get
+    -- the first time `minImportsRef` is read, it has `ig = none`; in this case, we set it to
+    -- be the `importGraph` for the file.
+    if (← minImportsRef.get).ig.isNone then minImportsRef.modify ({· with ig := env.importGraph})
+    let impState ← minImportsRef.get
+    let (importsSoFar, oldCumulImps) := (impState.minImps, impState.impsSize)
     -- when the linter reaches the end of the file or `#exit`, it gives a report
     if #[``Parser.Command.eoi, ``Lean.Parser.Command.exit].contains stx.getKind then
       let explicitImportsInFile : NameSet :=
@@ -104,8 +117,8 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let currImpArray := currImports.toArray.qsort Name.lt
     if currImpArray != #[] &&
        currImpArray ≠ importsSoFar.toArray.qsort Name.lt then
-      let newCumulImps := (importsBelow env tot).size
-      minImportsRef.set (currImports, newCumulImps)
+      let newCumulImps := (importsBelow env.importGraph tot).size
+      minImportsRef.set {minImps := currImports, impsSize := newCumulImps}
       let new := currImpArray.filter (!importsSoFar.contains ·)
       let redundant := importsSoFar.toArray.filter (!currImports.contains ·)
       Linter.logLint linter.minImports stx
