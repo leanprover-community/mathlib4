@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
 import Mathlib.Data.Setoid.Partition
-import Mathlib.Topology.Separation
 import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
@@ -107,15 +106,18 @@ theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = setOf (S.toSetoid x) :=
 theorem proj_surjective : Function.Surjective S.proj :=
   Quotient.surjective_Quotient_mk''
 
-theorem proj_quotientMap : QuotientMap S.proj :=
-  quotientMap_quot_mk
+theorem proj_isQuotientMap : IsQuotientMap S.proj :=
+  isQuotientMap_quot_mk
+
+@[deprecated (since := "2024-10-22")]
+alias proj_quotientMap := proj_isQuotientMap
 
 theorem proj_continuous : Continuous S.proj :=
-  S.proj_quotientMap.continuous
+  S.proj_isQuotientMap.continuous
 
 instance : DiscreteTopology S :=
   singletons_open_iff_discrete.1 <| S.proj_surjective.forall.2 fun x => by
-    rw [← S.proj_quotientMap.isOpen_preimage, fiber_eq]
+    rw [← S.proj_isQuotientMap.isOpen_preimage, fiber_eq]
     exact S.isOpen_setOf_rel _
 
 theorem proj_isLocallyConstant : IsLocallyConstant S.proj :=

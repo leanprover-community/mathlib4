@@ -135,7 +135,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
       LinearMap.ext fun z => ?_
     dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, LinearMap.compr₂_apply,
-      Function.comp_apply, ModuleCat.MonoidalCategory.hom_apply, AlgebraCat.coe_comp,
+      Function.comp_apply, ModuleCat.MonoidalCategory.tensorHom_tmul, AlgebraCat.coe_comp,
       MonoidalCategory.associator_hom_apply]
     rw [compr₂_apply, compr₂_apply]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
