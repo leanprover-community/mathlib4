@@ -20,8 +20,9 @@ open Cli Mathlib.Linter.TextBased
 
 open System.FilePath
 
-/-- Verifies that every file in the `scripts` directory is documented in `scripts/README.md`. -/
-def checkScriptsDocumented : IO Bool := do
+/-- Verifies that every file in the `scripts` directory is documented in `scripts/README.md`.
+Return `True` if there are undocumented scripts, otherwise `False`. -/
+def allScriptsDocumented : IO Bool := do
   -- Retrieve all scripts (except for the `bench` directory).
   let allScripts ← (walkDir "scripts" fun p ↦ pure (p.components.getD 1 "" != "bench"))
   let allScripts := allScripts.erase ("scripts" / "bench")|>.erase ("scripts" / "README.md")
@@ -37,7 +38,7 @@ def checkScriptsDocumented : IO Bool := do
     IO.println s!"error: found {undocumented.size} undocumented scripts: \
       please describe the scripts in 'scripts/README.md'\n\
       {String.intercalate "," undocumented.toList}"
-  return undocumented.size > 0
+  return undocumented.size == 0
 
 /-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
@@ -52,7 +53,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- Note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually.
   allModules := allModules.erase "Batteries"
   let mut numberErrors := ← lintModules allModules style fix
-  if !(← checkScriptsDocumented) then numberErrors := numberErrors + 1
+  if !(← allScriptsDocumented) then numberErrors := numberErrors + 1
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.
