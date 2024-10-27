@@ -358,7 +358,7 @@ theorem toAlgAut_surjective [Finite G] :
   let _ : MulSemiringAction Q F := MulSemiringAction.compHom _ (QuotientGroup.kerLift f)
   have : FaithfulSMul Q F := ⟨by
     intro q₁ q₂
-    refine Quotient.inductionOn₂' q₁ q₂ (fun g₁ g₂ h ↦ QuotientGroup.eq.mpr ?_)
+    refine Quotient.inductionOn₂ q₁ q₂ (fun g₁ g₂ h ↦ QuotientGroup.eq.mpr ?_)
     rwa [MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
   intro f
   obtain ⟨q, hq⟩ := (toAlgAut_bijective Q F).surjective
