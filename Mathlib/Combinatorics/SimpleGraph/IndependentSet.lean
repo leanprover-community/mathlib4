@@ -37,7 +37,7 @@ theorem isIndependentSet_iff_isClique_of_complement : G.IsIndependentSet s ↔ G
 /-- An independent set is a set of vertices whose induced graph is empty. -/
 theorem isIndependentSet_iff_induce_eq : G.IsIndependentSet s ↔ G.induce s = ⊥ := by
   rw [isIndependentSet_iff_isClique_of_complement, isClique_iff_induce_eq, ←compl_eq_top,
-  induce_compl_eq_compl_induc]
+  induce_compl_eq_compl_induce]
 
 instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsIndependentSet s) :=
   decidable_of_iff' _ G.isIndependentSet_iff
