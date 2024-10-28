@@ -811,7 +811,7 @@ variable {K} (s : Set {w : InfinitePlace K // IsReal w})
 
 open Classical in
 /-- Let `s` be a set of real places, define the continuous linear equiv of the mixed space that
-changes sign at places in `s` and leaves the rest unchanged. -/
+swaps sign at places in `s` and leaves the rest unchanged. -/
 def negAt :
     (mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
   (piCongrRight fun w ↦ if w ∈ s then neg ℝ else ContinuousLinearEquiv.refl ℝ ℝ).prod
