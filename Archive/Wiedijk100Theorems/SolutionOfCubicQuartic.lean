@@ -30,7 +30,7 @@ where the discriminant equals zero.
     $q = (9abc - 2b^3 - 27a^2d) / (54a^3)$ (`h₁` in `cubic_eq_zero_iff`).
 2.  When $p$ is zero, this is easily solved (`cubic_eq_zero_iff_of_p_eq_zero`).
 3.  Otherwise one can directly derive a factorization of the depressed cubic, in terms of some
-    primitive root of trinity $\omega^3 = 1$ (`cubic_depressed_eq_zero_iff`).
+    primitive cube root of unity $\omega^3 = 1$ (`cubic_depressed_eq_zero_iff`).
 
 ## References
 
