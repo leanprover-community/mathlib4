@@ -1127,13 +1127,14 @@ instance : Fintype { L₂ // Red L₁ L₂ } :=
 
 end Reduce
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem one_ne_of (a : α) : 1 ≠ of a :=
   letI := Classical.decEq α; ne_of_apply_ne toWord <| by simp
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem of_ne_one (a : α) : of a ≠ 1 := one_ne_of _ |>.symm
 
+@[to_additive]
 instance [Nonempty α] : Nontrivial (FreeGroup α) where
   exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨1, of x, one_ne_of x⟩
 
