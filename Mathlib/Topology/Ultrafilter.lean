@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 import Mathlib.Algebra.Group.Support
 import Mathlib.Order.Filter.Lift
 import Mathlib.Topology.Basic
-import Mathlib.Topology.Defs.Ultrafilter
 import Mathlib.Order.Filter.Ultrafilter
 
 /-! # Characterization of basic topological properties in terms of ultrafilters -/

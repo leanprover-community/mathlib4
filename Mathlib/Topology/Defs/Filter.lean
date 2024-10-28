@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 import Mathlib.Topology.Defs.Basic
-import Mathlib.Order.Filter.Cofinite
-import Mathlib.Order.ZornAtoms
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Setoid.Basic
+import Mathlib.Order.Filter.Defs
+import Mathlib.Tactic.IrreducibleDef
 
 /-!
 # Definitions about filters in topological spaces
