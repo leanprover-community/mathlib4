@@ -81,8 +81,10 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
     -- which makes no use of the earlier unused block.
     -- Perhaps modifying `to` to allow multiple modules, and highlighting all of these in some way,
     -- would be a useful addition.
+    let from_idx := min r.top (modules.length - 1)
+    let to_idx := r.right - 1
     IO.println
-      s!"lake exe graph --from {modules[r.top]!} --to {modules[r.right - 1]!} unused{i}.pdf"
+      s!"lake exe graph --from {modules[from_idx]!} --to {modules[to_idx]!} unused{i}.pdf"
 
   return 0
 
