@@ -8,6 +8,10 @@ Authors: Kim Morrison
 # Finding the maximal rectangles in a list of points.
 -/
 
+/--
+A rectangle `r` is a product of the left-closed, right-open intervals
+`[r.left, r.right) × [r.bottom, r.top)`, whose corners are indexed by natural numbers.
+-/
 structure Rectangle where
   left : Nat
   right : Nat

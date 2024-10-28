@@ -134,6 +134,15 @@ lean_exe pole where
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
 
+/--
+`lake exe unused module_1 ... module_n` will analyze unused transitive imports in a given sequence.
+The script expects the sequence to be in "reverse order", i.e. later files in the Mathlib should
+come earlier in the sequence.
+
+Outputs a `unused.md` file and a number of `lake exe graph` commands.
+
+Typically this should be run via `scripts/unused_in_pole.sh`.
+-/
 lean_exe unused where
   root := `LongestPole.Unused
   supportInterpreter := true

@@ -3,35 +3,33 @@ Copyright (c) 2024 Lean FRO. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import ImportGraph
-import Mathlib.Util.FormatTable
+import Cli.Basic
 import Batteries.Data.List.Basic
+import ImportGraph.Imports
 import LongestPole.Rectangles
-import Cli
+import Mathlib.Util.FormatTable
 
 /-!
-# `lake exe pole`
+# `lake exe unused`
 
-Longest pole analysis for Mathlib build times.
+Reports blocks of transitively unused imports in a sequence of modules.
+
+Typically used via `scripts/unused_in_pole.sh`.
 -/
 
 
 open Cli
-open Lean Meta
+open Lean
 
-/-- Runs a terminal command and retrieves its output -/
-def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO String := do
-  let out ← IO.Process.output { cmd := cmd, args := args }
-  if out.exitCode != 0 && throwFailure then throw <| IO.userError out.stderr
-  else return out.stdout
-
+/-- Count the number of declarations in each module. -/
 def countDecls (modules : Array Name) : CoreM (Array Nat) := do
   let env ← getEnv
   let mut counts := Array.mkArray modules.size 0
+  let moduleIndices := Std.HashMap.ofList <| modules.zipWithIndex.toList
   for (n, _) in env.constants.map₁ do
     if ! n.isInternal then
     if let some m := env.getModuleFor? n then
-      if let some i := modules.indexOf? m then
+      if let some i := moduleIndices[m]? then
         counts := counts.modify i (· + 1)
   return counts
 
@@ -65,10 +63,22 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
   let data := unused.bind fun (m, u) => u.map fun n => (modules.indexOf m, modules.indexOf n)
   let rectangles := maximalRectangles data
     |>.map (fun r => (r, r.area))
+    -- Prefer rectangles with larger areas.
     |>.mergeSort (fun r₁ r₂ => r₁.2 > r₂.2)
+    -- The `lake exe graph` command we print only depends on the top-right corner, so deduplicate.
+    |>.pwFilter (fun r₁ r₂ => (r₁.1.top, r₂.1.right) ≠ (r₂.1.top, r₁.1.right))
     |>.take 10
 
   for (i, (r, _)) in rectangles.enum do
+    -- We use `--from top` so that the graph starts at the module immediately *before*
+    -- the block of unused imports. This is useful for deciding how a split should be made.
+    -- We use `--to (right-1)` so that the graph ends at the earliest of the modules
+    -- which do not make use of any of the unused block.
+    -- Note that this means that the later modules which do not use the block are not displayed,
+    -- and in particular it is not possible to see from the graph the size of the later block
+    -- which makes no use of the earlier unused block.
+    -- Perhaps modifying `to` to allow multiple modules, and highlighting all of these in some way,
+    -- would be a useful addition.
     IO.println
       s!"lake exe graph --from {modules[r.top]!} --to {modules[r.right - 1]!} unused{i}.pdf"
 
@@ -80,7 +90,9 @@ def unused : Cmd := `[Cli|
   "Determine unused imports amongst a given set of modules.\n\
    Produces a table with rows and columns indexed by the specified modules,\n\
    with an 'x' in row A, column B if module A imports module B,\n\
-   but does not make any transitive use of constants defined in B."
+   but does not make any transitive use of constants defined in B.
+   This table is written to `unused.md`, and a number of `lake exe graph` commands are printed
+   to visualize the largest rectangles of unused imports."
 
   ARGS:
     ...modules : ModuleName; "Modules to check for unused imports."
