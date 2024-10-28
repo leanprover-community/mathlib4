@@ -197,9 +197,11 @@ open Classical in
 instance : NoAtoms (volume : Measure (mixedSpace K)) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw : IsReal w
-  · exact @prod.instNoAtoms_fst _ _ _ _ volume volume _ (pi_noAtoms ⟨w, hw⟩)
-  · exact @prod.instNoAtoms_snd _ _ _ _ volume volume _
-      (pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩)
+  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsReal w} → ℝ)) := pi_noAtoms ⟨w, hw⟩
+    exact prod.instNoAtoms_fst
+  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsComplex w} → ℂ)) :=
+      pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩
+    exact prod.instNoAtoms_snd
 
 end Measure
 
@@ -769,6 +771,8 @@ end integerLattice
 
 noncomputable section plusPart
 
+open ContinuousLinearEquiv
+
 variable {K} (s : Set {w : InfinitePlace K // IsReal w})
 
 open Classical in
@@ -776,8 +780,8 @@ open Classical in
 changes sign at places in `s` and leaves the rest unchanged. -/
 def negAt :
     (mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
-  (ContinuousLinearEquiv.piCongrRight
-    fun w ↦ if w ∈ s then ContinuousLinearEquiv.neg ℝ else ContinuousLinearEquiv.refl ℝ ℝ).prod
+  (piCongrRight
+    fun w ↦ if w ∈ s then neg ℝ else ContinuousLinearEquiv.refl ℝ ℝ).prod
       (ContinuousLinearEquiv.refl ℝ _)
 
 variable {s}
@@ -785,14 +789,13 @@ variable {s}
 @[simp]
 theorem negAt_apply_of_isReal_and_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∈ s) :
     (negAt s x).1 w = - x.1 w := by
-  simp_rw [negAt, ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.piCongrRight_apply,
-    if_pos hw, ContinuousLinearEquiv.neg_apply]
+  simp only [negAt, ContinuousLinearEquiv.prod_apply, refl_apply, piCongrRight_apply, if_pos hw,
+    neg_apply]
 
 @[simp]
 theorem negAt_apply_of_isReal_and_not_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∉ s) :
     (negAt s x).1 w = x.1 w := by
-  simp_rw [negAt, ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.piCongrRight_apply,
-    if_neg hw, ContinuousLinearEquiv.refl_apply]
+  simp only [negAt, ContinuousLinearEquiv.prod_apply, refl_apply, piCongrRight_apply, if_neg hw]
 
 @[simp]
 theorem negAt_apply_of_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
@@ -813,9 +816,9 @@ theorem volume_preserving_negAt [NumberField K] (s : Set {w : InfinitePlace K //
     MeasurePreserving (negAt s) := by
   refine MeasurePreserving.prod (volume_preserving_pi fun w ↦ ?_) (MeasurePreserving.id _)
   by_cases hw : w ∈ s
-  · simp_rw [if_pos hw]
+  · simp only [if_pos hw]
     exact Measure.measurePreserving_neg _
-  · simp_rw [if_neg hw]
+  · simp only [if_neg hw]
     exact MeasurePreserving.id _
 
 /-- `negAt` preserves `normAtPlace`. -/
@@ -823,8 +826,8 @@ theorem volume_preserving_negAt [NumberField K] (s : Set {w : InfinitePlace K //
 theorem normAtPlace_negAt (s : Set {w // IsReal w}) (x : mixedSpace K) (w : InfinitePlace K) :
     normAtPlace w (negAt s x) = normAtPlace w x := by
   obtain hw | hw := isReal_or_isComplex w
-  · simp_rw [normAtPlace_apply_isReal hw, Real.norm_eq_abs, negAt_apply_abs_of_isReal]
-  · simp_rw [normAtPlace_apply_isComplex hw, negAt_apply_of_isComplex]
+  · simp only [normAtPlace_apply_isReal hw, Real.norm_eq_abs, negAt_apply_abs_of_isReal]
+  · simp only [normAtPlace_apply_isComplex hw, negAt_apply_of_isComplex, Complex.norm_eq_abs]
 
 /-- `negAt` preserves the `norm`. -/
 @[simp]
@@ -832,16 +835,18 @@ theorem norm_negAt [NumberField K] (s : Set {w // IsReal w}) (x : mixedSpace K) 
     mixedEmbedding.norm (negAt s x) = mixedEmbedding.norm x :=
   norm_eq_of_normAtPlace_eq (fun w ↦ normAtPlace_negAt _ _ w)
 
+
 open ContinuousLinearEquiv in
 /-- `negAt` is equal to its inverse. -/
+@[simp]
 theorem negAt_symm (s : Set {w : InfinitePlace K // IsReal w}) :
     (negAt s).symm = negAt s := by
   ext x w
   · by_cases hw : w ∈ s
-    · simp_rw [negAt_apply_of_isReal_and_mem _ hw, negAt, prod_symm,
-        ContinuousLinearEquiv.prod_apply, piCongrRight_symm_apply, if_pos hw, symm_neg, neg_apply]
-    · simp_rw [negAt_apply_of_isReal_and_not_mem _ hw, negAt, prod_symm,
-        ContinuousLinearEquiv.prod_apply, piCongrRight_symm_apply, if_neg hw, refl_symm, refl_apply]
+    · simp only [negAt, prod_symm, refl_symm, ContinuousLinearEquiv.prod_apply, refl_apply,
+        piCongrRight_symm_apply, if_pos hw, symm_neg, neg_apply, piCongrRight_apply]
+    · simp only [negAt, prod_symm, refl_symm, ContinuousLinearEquiv.prod_apply, refl_apply,
+        piCongrRight_symm_apply, if_neg hw, piCongrRight_apply]
   · rfl
 
 variable (A : Set (mixedSpace K))
@@ -909,8 +914,8 @@ theorem mem_negAt_plusPart_of_mem {x : mixedSpace K} (hx₁ : x ∈ A) (hx₂ : 
       fun ⟨h₁, h₂⟩ ↦ ⟨(fun w ↦ |x.1 w|, x.2), ⟨(hA x).mp hx₁, fun w ↦ abs_pos.mpr (hx₂ w)⟩, ?_⟩⟩
   ext w
   · by_cases hw : w ∈ s
-    · simp_rw [negAt_apply_of_isReal_and_mem _ hw, abs_of_neg (h₁ w hw), neg_neg]
-    · simp_rw [negAt_apply_of_isReal_and_not_mem _ hw, abs_of_pos (h₂ w hw)]
+    · simp only [negAt_apply_of_isReal_and_mem _ hw, abs_of_neg (h₁ w hw), neg_neg]
+    · simp only [negAt_apply_of_isReal_and_not_mem _ hw, abs_of_pos (h₂ w hw)]
   · rfl
 
 include hA in
@@ -984,10 +989,10 @@ open Classical in
 `2^ nrRealPlaces K` times the volume of its `plusPart`. -/
 theorem volume_eq_two_pow_mul_volume_plusPart (hm : MeasurableSet A) :
     volume A = 2 ^ nrRealPlaces K * volume (plusPart A) := by
-  simp_rw [← measure_congr (iUnion_negAt_plusPart_ae A hA), measure_iUnion
-    (disjoint_negAt_plusPart A) (fun _ ↦ measurableSet_negAt_plusPart _ A hm),
-    volume_negAt_plusPart _ hm, tsum_fintype, Finset.sum_const, Finset.card_univ, nrRealPlaces,
-    nsmul_eq_mul, Fintype.card_set, Nat.cast_pow, Nat.cast_ofNat]
+  simp only [← measure_congr (iUnion_negAt_plusPart_ae A hA),
+    measure_iUnion (disjoint_negAt_plusPart A) (fun _ ↦ measurableSet_negAt_plusPart _ A hm),
+    volume_negAt_plusPart _ hm, tsum_fintype, sum_const, card_univ, Fintype.card_set, nsmul_eq_mul,
+    Nat.cast_pow, Nat.cast_ofNat, nrRealPlaces]
 
 end plusPart
 

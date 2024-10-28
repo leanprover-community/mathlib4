@@ -2013,12 +2013,15 @@ def arrowCongrEquiv (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[
     ContinuousLinearMap.ext fun x => by
       simp only [ContinuousLinearMap.comp_apply, apply_symm_apply, coe_coe]
 
+section piCongrRight
+
+variable {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)] [∀ i, AddCommMonoid (M i)]
+  [∀ i, Module R₁ (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)] [∀ i, AddCommMonoid (N i)]
+  [∀ i, Module R₁ (N i)] (f : (i : ι) → M i ≃L[R₁] N i)
+
 /-- Combine a family of continuous linear equivalences into a continuous linear equivalence of
 pi-types. -/
-def piCongrRight {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)]
-    [∀ i, AddCommMonoid (M i)] [∀ i, Module R₁ (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)]
-    [∀ i, AddCommMonoid (N i)] [∀ i, Module R₁ (N i)] (f : (i : ι) → M i ≃L[R₁] N i) :
-    ((i : ι) → M i) ≃L[R₁] (i : ι) → N i :=
+def piCongrRight : ((i : ι) → M i) ≃L[R₁] (i : ι) → N i :=
   { LinearEquiv.piCongrRight fun i ↦ f i with
     continuous_toFun := by
       exact continuous_pi fun i ↦ (f i).continuous_toFun.comp (continuous_apply i)
@@ -2026,18 +2029,14 @@ def piCongrRight {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)]
       exact continuous_pi fun i => (f i).continuous_invFun.comp (continuous_apply i) }
 
 @[simp]
-theorem piCongrRight_apply {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)]
-    [∀ i, AddCommMonoid (M i)] [∀ i, Module R₁ (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)]
-    [∀ i, AddCommMonoid (N i)] [∀ i, Module R₁ (N i)] (f : (i : ι) → M i ≃L[R₁] N i)
-    (m : (i : ι) → M i) (i : ι) :
+theorem piCongrRight_apply (m : (i : ι) → M i) (i : ι) :
     piCongrRight f m i = (f i) (m i) := rfl
 
 @[simp]
-theorem piCongrRight_symm_apply {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)]
-    [∀ i, AddCommMonoid (M i)] [∀ i, Module R₁ (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)]
-    [∀ i, AddCommMonoid (N i)] [∀ i, Module R₁ (N i)] (f : (i : ι) → M i ≃L[R₁] N i)
-    (n : (i : ι) → N i) (i : ι) :
+theorem piCongrRight_symm_apply (n : (i : ι) → N i) (i : ι) :
     (piCongrRight f).symm n i = (f i).symm (n i) := rfl
+
+end piCongrRight
 
 end AddCommMonoid
 
