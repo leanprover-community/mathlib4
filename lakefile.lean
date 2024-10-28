@@ -73,7 +73,6 @@ lean_lib Cache
 lean_lib LongestPole
 
 lean_lib MathlibTest where
-  globs := #[.submodules `MathlibTest]
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
