@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export LEAN_SYSROOT=$LEAN_REAL_SYSROOT
+unset LEAN_SYSROOT
 
 MODE=linking
 for arg in "$@"; do

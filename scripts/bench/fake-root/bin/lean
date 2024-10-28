@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export LEAN_SYSROOT=$LEAN_REAL_SYSROOT
+unset LEAN_SYSROOT
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 if [[ "$@" == "--print-prefix" ]]; then echo "$DIR/.."; exit; fi
