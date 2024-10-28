@@ -76,7 +76,7 @@ theorem iff_of_bijective_map {φ : M → N} {f : α →ₑ[φ] β}
     (hφ : Function.Surjective φ) (hf : Function.Bijective f) :
     IsPretransitive M α ↔ IsPretransitive N β := by
   constructor
-  apply of_surjective_map hf.surjective
+  · apply of_surjective_map hf.surjective
   · intro hN
     apply IsPretransitive.mk
     intro x y
