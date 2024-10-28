@@ -164,8 +164,6 @@ lemma isClique_compl_map_iff_isClique_map_compl {f : α ↪ β} {s : Set α} :
 
 end Clique
 
--- examle {f : α ↪ β} {s : Set α} (a : α) (h : a ∈ f '' s) ↔ : 
-
 /-! ### `n`-cliques -/
 
 
