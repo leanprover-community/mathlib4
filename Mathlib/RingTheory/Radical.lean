@@ -108,4 +108,63 @@ theorem radical_pow_of_prime {a : M} (ha : Prime a) {n : ℕ} (hn : 0 < n) :
   rw [radical_pow a hn]
   exact radical_of_prime ha
 
+theorem radical_ne_zero (a : M) [Nontrivial M] : radical a ≠ 0 := by
+  rw [radical, ← Finset.prod_val]
+  apply Multiset.prod_ne_zero
+  rw [primeFactors]
+  simp only [Multiset.toFinset_val, Multiset.mem_dedup]
+  exact zero_not_mem_normalizedFactors _
+
 end UniqueFactorizationMonoid
+
+open UniqueFactorizationMonoid
+
+namespace UniqueFactorizationDomain
+-- Theorems for UFDs
+
+variable {R : Type*} [CommRing R] [IsDomain R] [NormalizationMonoid R]
+  [UniqueFactorizationMonoid R]
+
+/-- Coprime elements have disjoint prime factors (as multisets). -/
+theorem disjoint_normalizedFactors {a b : R} (hc : IsCoprime a b) :
+    (normalizedFactors a).Disjoint (normalizedFactors b) := by
+  intro x hxa hxb
+  have x_dvd_a := dvd_of_mem_normalizedFactors hxa
+  have x_dvd_b := dvd_of_mem_normalizedFactors hxb
+  have xp := prime_of_normalized_factor x hxa
+  exact xp.not_unit (hc.isUnit_of_dvd' x_dvd_a x_dvd_b)
+
+/-- Coprime elements have disjoint prime factors (as finsets). -/
+theorem disjoint_primeFactors {a b : R} (hc : IsCoprime a b) :
+    Disjoint (primeFactors a) (primeFactors b) :=
+  Multiset.disjoint_toFinset.mpr (disjoint_normalizedFactors hc)
+
+theorem mul_primeFactors_disjUnion {a b : R} (ha : a ≠ 0) (hb : b ≠ 0)
+    (hc : IsCoprime a b) :
+    primeFactors (a * b) =
+    (primeFactors a).disjUnion (primeFactors b) (disjoint_primeFactors hc) := by
+  rw [Finset.disjUnion_eq_union]
+  simp_rw [primeFactors]
+  rw [normalizedFactors_mul ha hb, Multiset.toFinset_add]
+
+@[simp]
+theorem radical_neg_one : radical (-1 : R) = 1 :=
+  radical_unit_eq_one isUnit_one.neg
+
+/-- Radical is multiplicative for coprime elements. -/
+theorem radical_mul {a b : R} (hc : IsCoprime a b) :
+    radical (a * b) = (radical a) * (radical b) := by
+  by_cases ha : a = 0
+  · subst ha; rw [isCoprime_zero_left] at hc
+    simp only [zero_mul, radical_zero_eq, one_mul, radical_unit_eq_one hc]
+  by_cases hb : b = 0
+  · subst hb; rw [isCoprime_zero_right] at hc
+    simp only [mul_zero, radical_zero_eq, mul_one, radical_unit_eq_one hc]
+  simp_rw [radical]
+  rw [mul_primeFactors_disjUnion ha hb hc]
+  rw [Finset.prod_disjUnion (disjoint_primeFactors hc)]
+
+theorem radical_neg {a : R} : radical (-a) = radical a :=
+  radical_eq_of_associated Associated.rfl.neg_left
+
+end UniqueFactorizationDomain

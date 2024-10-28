@@ -83,10 +83,7 @@ lemma isClosedEmbedding_cfcₙAux : IsClosedEmbedding (cfcₙAux hp₁ a ha) := 
   refine ((cfcHom_isClosedEmbedding (hp₁.mpr ha)).comp ?_).comp
     ContinuousMapZero.isClosedEmbedding_toContinuousMap
   let e : C(σₙ 𝕜 a, 𝕜) ≃ₜ C(σ 𝕜 (a : A⁺¹), 𝕜) :=
-    { (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr <|
-        (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm) with
-      continuous_toFun := ContinuousMap.continuous_comp_left _
-      continuous_invFun := ContinuousMap.continuous_comp_left _ }
+    (Homeomorph.setCongr (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a)).arrowCongr (.refl _)
   exact e.isClosedEmbedding
 
 @[deprecated (since := "2024-10-20")]
@@ -183,16 +180,16 @@ instance IsStarNormal.instNonUnitalContinuousFunctionalCalculus {A : Type*}
     [NonUnitalCStarAlgebra A] : NonUnitalContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) :=
   RCLike.nonUnitalContinuousFunctionalCalculus Unitization.isStarNormal_inr
 
-open Unitization CStarAlgebra in
+open Unitization in
 lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalCStarAlgebra A] (a : A)
     [ha : IsStarNormal a] : (inrNonUnitalStarAlgHom ℂ A).comp (cfcₙHom ha) =
       cfcₙAux (isStarNormal_inr (R := ℂ) (A := A)) a ha := by
   have h (a : A) := isStarNormal_inr (R := ℂ) (A := A) (a := a)
   refine @UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id
     _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ rfl _ _ ?_ ?_ ?_
-  · show Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
+  · show Continuous (fun f ↦ (cfcₙHom ha f : Unitization ℂ A)); fun_prop
   · exact isClosedEmbedding_cfcₙAux @(h) a ha |>.continuous
-  · trans (a : A⁺¹)
+  · trans (a : Unitization ℂ A)
     · congrm(inr $(cfcₙHom_id ha))
     · exact cfcₙAux_id @(h) a ha |>.symm
 
