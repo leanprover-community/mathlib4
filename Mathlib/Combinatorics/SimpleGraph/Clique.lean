@@ -153,7 +153,7 @@ protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsCl
 
 @[simp]
 lemma isClique_compl_map_iff_isClique_map_compl {f : α ↪ β} {s : Set α} :
-   (SimpleGraph.map f G)ᶜ.IsClique (f '' s) ↔ (SimpleGraph.map f Gᶜ).IsClique (f '' s) := by
+    (SimpleGraph.map f G)ᶜ.IsClique (f '' s) ↔ (SimpleGraph.map f Gᶜ).IsClique (f '' s) := by
   repeat rw [isClique_iff];
   repeat rw [Set.Pairwise];
   aesop

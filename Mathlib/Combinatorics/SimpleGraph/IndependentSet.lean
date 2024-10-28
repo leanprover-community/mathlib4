@@ -36,7 +36,7 @@ theorem isIndependentSet_iff_isClique_of_complement : G.IsIndependentSet s ↔ G
 
 /-- An independent set is a set of vertices whose induced graph is empty. -/
 theorem isIndependentSet_iff_induce_eq : G.IsIndependentSet s ↔ G.induce s = ⊥ := by
-  rw [isIndependentSet_iff_isClique_of_complement, isClique_iff_induce_eq, ←compl_eq_top,
+  rw [isIndependentSet_iff_isClique_of_complement, isClique_iff_induce_eq, ← compl_eq_top,
   induce_compl_eq_compl_induce]
 
 instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsIndependentSet s) :=
@@ -97,7 +97,7 @@ protected theorem IsIndependentSet.map (h : G.IsIndependentSet s) {f : α ↪ β
 
 @[simp] -- TODO this should live in Clique.lean also the aesop is expensve...
 lemma isClique_compl_map_iff_isClique_map_compl {f : α ↪ β} {s : Set α} :
-   (SimpleGraph.map f G)ᶜ.IsClique (f '' s) ↔ (SimpleGraph.map f Gᶜ).IsClique (f '' s) := by
+    (SimpleGraph.map f G)ᶜ.IsClique (f '' s) ↔ (SimpleGraph.map f Gᶜ).IsClique (f '' s) := by
   repeat rw [isClique_iff];
   repeat rw [Set.Pairwise];
   aesop
@@ -168,12 +168,12 @@ instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
 
 variable {G H} {a b c : α}
 
-@[simp] lemma isNIndependentSet_empty : G.IsNIndependentSet n ∅ ↔ n = 0 :=
-  by simp [isNIndependentSet_iff, eq_comm]
+@[simp] lemma isNIndependentSet_empty : G.IsNIndependentSet n ∅ ↔ n = 0 := by
+  simp [isNIndependentSet_iff, eq_comm]
 
 @[simp]
-lemma isNIndependentSet_singleton : G.IsNIndependentSet n {a} ↔ n = 1 :=
-  by simp [isNIndependentSet_iff, eq_comm]
+lemma isNIndependentSet_singleton : G.IsNIndependentSet n {a} ↔ n = 1 := by
+  simp [isNIndependentSet_iff, eq_comm]
 
 theorem IsNIndependentSet.anti (h : G ≤ H) : H.IsNIndependentSet n s → G.IsNIndependentSet n s := by
   simp_rw [isNIndependentSet_iff]
@@ -215,7 +215,7 @@ theorem is3IndependentSet_triple_iff :
     G.IsNIndependentSet 3 {a, b, c} ↔
     (a ≠ b ∧ ¬ G.Adj a b) ∧ (a ≠ c ∧ ¬ G.Adj a c) ∧ (b ≠ c ∧ ¬ G.Adj b c) := by
   rw [isNIndependentSet_iff_isNClique_of_complement]
-  repeat rw [←compl_adj]
+  repeat rw [← compl_adj]
   simp [is3Clique_triple_iff]
 
 theorem is3IndependentSet_iff :
@@ -274,7 +274,7 @@ noncomputable def botEmbeddingOfNotIndependentSetFree {n : ℕ} (h : ¬G.Indepen
   intro a b
   by_cases h : a = b
   · subst h; simp
-  · simp; exact And.right ((compl_adj _ _ _).mp (by simp [←compl_adj]; exact h))
+  · simp; exact And.right ((compl_adj _ _ _).mp (by simp [← compl_adj]; exact h))
 
 theorem not_independentSetFree_iff (n : ℕ) :
     ¬G.IndependentSetFree n ↔ Nonempty ((⊥ : SimpleGraph (Fin n)) ↪g G) :=
