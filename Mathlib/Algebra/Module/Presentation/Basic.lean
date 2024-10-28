@@ -437,6 +437,7 @@ structure Presentation extends Relations.{w₀, w₁} A,
 
 variable {A M}
 
+/-- Constructor for `Module.Presentation`. -/
 @[simps toRelations toSolution]
 def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
     {solution : relations.Solution M} (h : solution.IsPresentation) :

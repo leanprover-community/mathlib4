@@ -5,7 +5,8 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.Logic.UnivLE
 
 /-!
 # Presentation of free modules
