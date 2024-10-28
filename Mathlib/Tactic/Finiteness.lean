@@ -16,7 +16,7 @@ set.
 
 ## Syntax
 
-Standard `aesop` syntax apply. Namely one can write
+Standard `aesop` syntax applies. Namely one can write
 * `finiteness (add unfold [def1, def2])` to make `finiteness` unfold `def1`, `def2`
 * `finiteness?` for the tactic to show what proof it found
 * etc
