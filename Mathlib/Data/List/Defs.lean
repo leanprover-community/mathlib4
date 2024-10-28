@@ -488,6 +488,10 @@ theorem length_mapAccumr₂ :
 
 end MapAccumr
 
+/-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
+def finRange (n : ℕ) : List (Fin n) :=
+  (range n).pmap Fin.mk fun _ => List.mem_range.1
+
 section Deprecated
 
 @[deprecated List.mem_cons (since := "2024-08-10")]

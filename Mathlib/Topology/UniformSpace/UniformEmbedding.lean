@@ -330,16 +330,20 @@ theorem isUniformEmbedding_of_spaced_out {α} {f : α → β} {s : Set (β × β
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_of_spaced_out := isUniformEmbedding_of_spaced_out
 
-protected lemma IsUniformEmbedding.embedding {f : α → β} (h : IsUniformEmbedding f) : Embedding f :=
-  { toInducing := h.isUniformInducing.inducing
-    inj := h.inj }
+protected lemma IsUniformEmbedding.isEmbedding {f : α → β} (h : IsUniformEmbedding f) :
+    IsEmbedding f where
+  toInducing := h.toIsUniformInducing.inducing
+  inj := h.inj
+
+@[deprecated (since := "2024-10-26")]
+alias IsUniformEmbedding.embedding := IsUniformEmbedding.isEmbedding
 
 @[deprecated (since := "2024-10-01")]
-alias UniformEmbedding.embedding := IsUniformEmbedding.embedding
+alias UniformEmbedding.embedding := IsUniformEmbedding.isEmbedding
 
 theorem IsUniformEmbedding.isDenseEmbedding {f : α → β} (h : IsUniformEmbedding f)
     (hd : DenseRange f) : IsDenseEmbedding f :=
-  { h.embedding with dense := hd }
+  { h.isEmbedding with dense := hd }
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.isDenseEmbedding := IsUniformEmbedding.isDenseEmbedding
@@ -352,7 +356,7 @@ theorem isClosedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopo
     (hf : Pairwise fun x y => (f x, f y) ∉ s) : IsClosedEmbedding f := by
   rcases @DiscreteTopology.eq_bot α _ _ with rfl; let _ : UniformSpace α := ⊥
   exact
-    { (isUniformEmbedding_of_spaced_out hs hf).embedding with
+    { (isUniformEmbedding_of_spaced_out hs hf).isEmbedding with
       isClosed_range := isClosed_range_of_spaced_out hs hf }
 
 @[deprecated (since := "2024-10-20")]
@@ -557,12 +561,15 @@ alias uniformEmbedding_comap := isUniformEmbedding_comap
 
 /-- Pull back a uniform space structure by an embedding, adjusting the new uniform structure to
 make sure that its topology is defeq to the original one. -/
-def Embedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β] (f : α → β)
-    (h : Embedding f) : UniformSpace α :=
+def IsEmbedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β]
+    (f : α → β) (h : IsEmbedding f) : UniformSpace α :=
   (u.comap f).replaceTopology h.induced
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.comapUniformSpace := IsEmbedding.comapUniformSpace
+
 theorem Embedding.to_isUniformEmbedding {α β} [TopologicalSpace α] [u : UniformSpace β] (f : α → β)
-    (h : Embedding f) : @IsUniformEmbedding α β (h.comapUniformSpace f) u f :=
+    (h : IsEmbedding f) : @IsUniformEmbedding α β (h.comapUniformSpace f) u f :=
   let _ := h.comapUniformSpace f
   { comap_uniformity := rfl
     inj := h.inj }
