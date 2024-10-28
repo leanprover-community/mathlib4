@@ -46,17 +46,26 @@ def Core.withImportModules (modules : Array Name) {α} (f : CoreM α) : IO α :=
 def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
   let output := args.flag! "output" |>.as! String
   let n := args.flag! "n" |>.as! Nat
-  let modules := (args.variableArgsAs! ModuleName).toList
-  if modules.isEmpty then
-    IO.eprintln
-      "No modules specified, please specify at least two modules on the command line."
-    return 1
+  let all := args.hasFlag "all"
 
   -- Should we sort the modules?
   -- The code below assumes that it is "deeper files first", as reported by `lake exe pole`.
 
   searchPathRef.set compile_time_search_path%
   Core.withImportModules #[`Mathlib] do
+    let mut modules := (args.variableArgsAs! ModuleName).toList
+    if all then
+      if modules.isEmpty then
+        modules := (← getEnv).header.moduleNames |>.toList
+      else
+        IO.eprintln "Cannot specify both --all and specific modules."
+        return 1
+    else
+      if modules.isEmpty then
+        IO.eprintln
+          "No modules specified, please specify at least two modules on the command line."
+        return 1
+
     let unused ← unusedTransitiveImports modules
 
     let headings := #["#", "module"] ++ ((List.range' 1 modules.length).map toString)
@@ -105,7 +114,8 @@ def unused : Cmd := `[Cli|
 
   FLAGS:
     output : String; "Write the table to a given file instead of `unused.md`."
-    n : Nat; "Number of `lake exe graph` commands to print."
+    n : Nat;         "Number of `lake exe graph` commands to print."
+    all;             "Process all modules, not just the ones specified on the command line."
 
   ARGS:
     ...modules : ModuleName; "Modules to check for unused imports."
