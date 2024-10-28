@@ -39,7 +39,8 @@ variable [DecidableEq ι] [Fintype ι] [Semiring R]
 variable [∀ i k, AddCommMonoid (M i k)] [ AddCommMonoid N]
 variable [∀ i k, Module R (M i k)] [Module R N]
 
-/-- Two multilinear maps from finitely supported functions are equal if they agree on the generators.
+/-- Two multilinear maps from finitely supported functions are equal if they agree on the
+generators.
 
 This is a multilinear version of `DFinsupp.lhom_ext'`. -/
 @[ext]
