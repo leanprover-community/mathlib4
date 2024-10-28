@@ -444,6 +444,13 @@ theorem isometry_extend (f : α ↪ δ) (h : δ →ᵇ β) : Isometry fun g : α
 
 end Extend
 
+/-- The indicator function of a clopen set, as a bounded continuous function. -/
+@[simps]
+noncomputable def indicator (s : Set α) (hs : IsClopen s) : BoundedContinuousFunction α ℝ where
+  toFun := s.indicator 1
+  continuous_toFun := continuous_indicator (by simp [hs]) <| continuous_const.continuousOn
+  map_bounded' := ⟨1, fun x y ↦ by by_cases hx : x ∈ s <;> by_cases hy : y ∈ s <;> simp [hx, hy]⟩
+
 end Basics
 
 section ArzelaAscoli
