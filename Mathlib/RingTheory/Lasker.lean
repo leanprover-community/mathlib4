@@ -43,6 +43,7 @@ section Noetherian
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
 lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := by
+  rw [Ideal.isPrimary_iff']
   refine ⟨h.ne_top, fun {a b} hab ↦ ?_⟩
   let f : ℕ → Ideal R := fun n ↦ (I.colon (span {b ^ n}))
   have hf : Monotone f := by
