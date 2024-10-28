@@ -334,9 +334,6 @@ theorem preAleph_omega0 : preAleph ω = ℵ₀ :=
 theorem aleph0_le_preAleph {o : Ordinal} : ℵ₀ ≤ preAleph o ↔ ω ≤ o := by
   rw [← preAleph_omega0, preAleph_le_preAleph]
 
-theorem range_preAleph : range preAleph = Set.univ :=
-  preAleph.range_eq
-
 /-- The `aleph` function gives the infinite cardinals listed by their ordinal index. `aleph 0 = ℵ₀`,
 `aleph 1 = succ ℵ₀` is the first uncountable cardinal, and so on.
 
