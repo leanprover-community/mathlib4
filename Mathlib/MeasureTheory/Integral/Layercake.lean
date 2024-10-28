@@ -458,7 +458,8 @@ end Layercake
 
 section LayercakeLT
 
-variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ}
+variable {α : Type*} [MeasurableSpace α]
+variable {f : α → ℝ} {g : ℝ → ℝ}
 
 /-- The layer cake formula / Cavalieri's principle / tail probability formula:
 
