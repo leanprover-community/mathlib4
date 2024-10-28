@@ -90,6 +90,9 @@ protected def comap (f : α → β) (m : MeasurableSpace β) : MeasurableSpace �
     let ⟨s', hs'⟩ := Classical.axiom_of_choice hs
     ⟨⋃ i, s' i, m.measurableSet_iUnion _ fun i => (hs' i).left, by simp [hs']⟩
 
+lemma measurableSet_comap {m : MeasurableSpace β} :
+    MeasurableSet[m.comap f] s ↔ ∃ s', MeasurableSet[m] s' ∧ f ⁻¹' s' = s := .rfl
+
 theorem comap_eq_generateFrom (m : MeasurableSpace β) (f : α → β) :
     m.comap f = generateFrom { t | ∃ s, MeasurableSet s ∧ f ⁻¹' s = t } :=
   (@generateFrom_measurableSet _ (.comap f m)).symm
@@ -284,7 +287,7 @@ protected theorem MeasurableSet.preimage {t : Set β} (ht : MeasurableSet t) (hf
     MeasurableSet (f ⁻¹' t) :=
   hf ht
 
-@[measurability]
+@[measurability, fun_prop]
 protected theorem Measurable.piecewise {_ : DecidablePred (· ∈ s)} (hs : MeasurableSet s)
     (hf : Measurable f) (hg : Measurable g) : Measurable (piecewise s f g) := by
   intro t ht
@@ -1264,6 +1267,13 @@ def IsCountablySpanning (C : Set (Set α)) : Prop :=
 theorem isCountablySpanning_measurableSet [MeasurableSpace α] :
     IsCountablySpanning { s : Set α | MeasurableSet s } :=
   ⟨fun _ => univ, fun _ => MeasurableSet.univ, iUnion_const _⟩
+
+/-- Rectangles of countably spanning sets are countably spanning. -/
+lemma IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsCountablySpanning C)
+    (hD : IsCountablySpanning D) : IsCountablySpanning (image2 (· ×ˢ ·) C D) := by
+  rcases hC, hD with ⟨⟨s, h1s, h2s⟩, t, h1t, h2t⟩
+  refine ⟨fun n => s n.unpair.1 ×ˢ t n.unpair.2, fun n => mem_image2_of_mem (h1s _) (h1t _), ?_⟩
+  rw [iUnion_unpair_prod, h2s, h2t, univ_prod_univ]
 
 namespace MeasurableSet
 

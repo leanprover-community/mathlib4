@@ -432,7 +432,7 @@ the equalities, since the type of `(A'.addSubgroupOf A : AddSubgroup A)` depends
 def equivQuotientSubgroupOfOfEq {A' A B' B : Subgroup G} [hAN : (A'.subgroupOf A).Normal]
     [hBN : (B'.subgroupOf B).Normal] (h' : A' = B') (h : A = B) :
     A ⧸ A'.subgroupOf A ≃* B ⧸ B'.subgroupOf B :=
-  MonoidHom.toMulEquiv (quotientMapSubgroupOfOfLe h'.le h.le) (quotientMapSubgroupOfOfLe h'.ge h.ge)
+  (quotientMapSubgroupOfOfLe h'.le h.le).toMulEquiv (quotientMapSubgroupOfOfLe h'.ge h.ge)
     (by ext ⟨x, hx⟩; rfl)
     (by ext ⟨x, hx⟩; rfl)
 

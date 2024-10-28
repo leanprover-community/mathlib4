@@ -252,20 +252,29 @@ theorem surjective_proj [Nonempty F] : Function.Surjective (π F E) := fun b =>
 
 /-- The projection from a fiber bundle with a nonempty fiber to its base is a quotient
 map. -/
-theorem quotientMap_proj [Nonempty F] : QuotientMap (π F E) :=
-  (isOpenMap_proj F E).to_quotientMap (continuous_proj F E) (surjective_proj F E)
+theorem isQuotientMap_proj [Nonempty F] : IsQuotientMap (π F E) :=
+  (isOpenMap_proj F E).isQuotientMap (continuous_proj F E) (surjective_proj F E)
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_proj := isQuotientMap_proj
 
 theorem continuous_totalSpaceMk (x : B) : Continuous (@TotalSpace.mk B F E x) :=
   (totalSpaceMk_inducing F E x).continuous
 
-theorem totalSpaceMk_embedding (x : B) : Embedding (@TotalSpace.mk B F E x) :=
+theorem totalSpaceMk_isEmbedding (x : B) : IsEmbedding (@TotalSpace.mk B F E x) :=
   ⟨totalSpaceMk_inducing F E x, TotalSpace.mk_injective x⟩
 
-theorem totalSpaceMk_closedEmbedding [T1Space B] (x : B) :
-    ClosedEmbedding (@TotalSpace.mk B F E x) :=
-  ⟨totalSpaceMk_embedding F E x, by
+@[deprecated (since := "2024-10-26")]
+alias totalSpaceMk_embedding := totalSpaceMk_isEmbedding
+
+theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
+    IsClosedEmbedding (@TotalSpace.mk B F E x) :=
+  ⟨totalSpaceMk_isEmbedding F E x, by
     rw [TotalSpace.range_mk]
     exact isClosed_singleton.preimage <| continuous_proj F E⟩
+
+@[deprecated (since := "2024-10-20")]
+alias totalSpaceMk_closedEmbedding := totalSpaceMk_isClosedEmbedding
 
 variable {E F}
 
@@ -665,7 +674,6 @@ theorem mem_localTrivAt_baseSet (b : B) : b ∈ (Z.localTrivAt b).baseSet := by
   rw [localTrivAt, ← baseSet_at]
   exact Z.mem_baseSet_at b
 
--- Porting note (#10618): was @[simp, mfld_simps], now `simp` can prove it
 theorem mk_mem_localTrivAt_source : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source := by
   simp only [mfld_simps]
 
@@ -675,7 +683,7 @@ instance fiberBundle : FiberBundle F Z.Fiber where
     rw [(Z.localTrivAt b).nhds_eq_comap_inf_principal (mk_mem_localTrivAt_source _ _ _), comap_inf,
       comap_principal, comap_comap]
     simp only [Function.comp_def, localTrivAt_apply_mk, Trivialization.coe_coe,
-      ← (embedding_prod_mk b).nhds_eq_comap]
+      ← (isEmbedding_prodMk b).nhds_eq_comap]
     convert_to 𝓝 x = 𝓝 x ⊓ 𝓟 univ
     · congr
       exact eq_univ_of_forall (mk_mem_localTrivAt_source Z _)

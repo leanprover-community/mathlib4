@@ -356,9 +356,6 @@ abbrev DistribMulActionHomClass (F : Type*) (M : outParam Type*)
     [DistribMulAction M A] [DistribMulAction M B] [FunLike F A B] :=
     DistribMulActionSemiHomClass F (MonoidHom.id M) A B
 
-/- porting note: Removed a @[nolint dangerousInstance] for
-DistribMulActionHomClass.toAddMonoidHomClass not dangerous due to `outParam`s -/
-
 namespace DistribMulActionHom
 
 /- Porting note (#11215): TODO decide whether the next two instances should be removed
@@ -524,13 +521,10 @@ def inverse (f : A →+[M] B₁) (g : B₁ → A) (h₁ : Function.LeftInverse g
 section Semiring
 
 variable (R : Type*) [Semiring R] [MulSemiringAction M R]
-variable (R' : Type*) [Ring R'] [MulSemiringAction M R']
 variable (S : Type*) [Semiring S] [MulSemiringAction N S]
-variable (S' : Type*) [Ring S'] [MulSemiringAction N S']
 variable (T : Type*) [Semiring T] [MulSemiringAction P T]
 
-variable {R S M' N'}
-variable [AddMonoid M'] [DistribMulAction R M']
+variable {R S N'}
 variable [AddMonoid N'] [DistribMulAction S N']
 
 variable {σ : R →* S}
@@ -603,9 +597,6 @@ abbrev MulSemiringActionHomClass
     (R S : outParam Type*) [Semiring R] [Semiring S]
     [DistribMulAction M R] [DistribMulAction M S] [FunLike F R S] :=
   MulSemiringActionSemiHomClass F (MonoidHom.id M) R S
-
-/- porting note: Removed a @[nolint dangerousInstance] for MulSemiringActionHomClass.toRingHomClass
- not dangerous due to outParam -/
 
 namespace MulSemiringActionHom
 

@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Basic
+import Mathlib.Order.Filter.Tendsto
 import Mathlib.Topology.Bases
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Topology.Bornology.Basic
@@ -908,8 +908,11 @@ theorem Inducing.isCompact_iff {f : X → Y} (hf : Inducing f) :
 
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is compact
   if and only if `s` is compact. -/
-theorem Embedding.isCompact_iff {f : X → Y} (hf : Embedding f) :
+theorem IsEmbedding.isCompact_iff {f : X → Y} (hf : IsEmbedding f) :
     IsCompact s ↔ IsCompact (f '' s) := hf.toInducing.isCompact_iff
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isCompact_iff := IsEmbedding.isCompact_iff
 
 /-- The preimage of a compact set under an inducing map is a compact set. -/
 theorem Inducing.isCompact_preimage {f : X → Y} (hf : Inducing f) (hf' : IsClosed (range f))
@@ -927,21 +930,27 @@ lemma Inducing.isCompact_preimage' {f : X → Y} (hf : Inducing f) {K : Set Y}
   (hf.isCompact_preimage_iff Kf).2 hK
 
 /-- The preimage of a compact set under a closed embedding is a compact set. -/
-theorem ClosedEmbedding.isCompact_preimage {f : X → Y} (hf : ClosedEmbedding f)
+theorem IsClosedEmbedding.isCompact_preimage {f : X → Y} (hf : IsClosedEmbedding f)
     {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
   hf.toInducing.isCompact_preimage (hf.isClosed_range) hK
 
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.isCompact_preimage := IsClosedEmbedding.isCompact_preimage
+
 /-- A closed embedding is proper, ie, inverse images of compact sets are contained in compacts.
-Moreover, the preimage of a compact set is compact, see `ClosedEmbedding.isCompact_preimage`. -/
-theorem ClosedEmbedding.tendsto_cocompact {f : X → Y} (hf : ClosedEmbedding f) :
+Moreover, the preimage of a compact set is compact, see `IsClosedEmbedding.isCompact_preimage`. -/
+theorem IsClosedEmbedding.tendsto_cocompact {f : X → Y} (hf : IsClosedEmbedding f) :
     Tendsto f (Filter.cocompact X) (Filter.cocompact Y) :=
   Filter.hasBasis_cocompact.tendsto_right_iff.mpr fun _K hK =>
     (hf.isCompact_preimage hK).compl_mem_cocompact
 
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.tendsto_cocompact := IsClosedEmbedding.tendsto_cocompact
+
 /-- Sets of subtype are compact iff the image under a coercion is. -/
 theorem Subtype.isCompact_iff {p : X → Prop} {s : Set { x // p x }} :
     IsCompact s ↔ IsCompact ((↑) '' s : Set X) :=
-  embedding_subtype_val.isCompact_iff
+  IsEmbedding.subtypeVal.isCompact_iff
 
 theorem isCompact_iff_isCompact_univ : IsCompact s ↔ IsCompact (univ : Set s) := by
   rw [Subtype.isCompact_iff, image_univ, Subtype.range_coe]
@@ -956,13 +965,19 @@ theorem exists_nhds_ne_inf_principal_neBot (hs : IsCompact s) (hs' : s.Infinite)
     ∃ z ∈ s, (𝓝[≠] z ⊓ 𝓟 s).NeBot :=
   hs'.exists_accPt_of_subset_isCompact hs Subset.rfl
 
-protected theorem ClosedEmbedding.noncompactSpace [NoncompactSpace X] {f : X → Y}
-    (hf : ClosedEmbedding f) : NoncompactSpace Y :=
+protected theorem IsClosedEmbedding.noncompactSpace [NoncompactSpace X] {f : X → Y}
+    (hf : IsClosedEmbedding f) : NoncompactSpace Y :=
   noncompactSpace_of_neBot hf.tendsto_cocompact.neBot
 
-protected theorem ClosedEmbedding.compactSpace [h : CompactSpace Y] {f : X → Y}
-    (hf : ClosedEmbedding f) : CompactSpace X :=
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.noncompactSpace := IsClosedEmbedding.noncompactSpace
+
+protected theorem IsClosedEmbedding.compactSpace [h : CompactSpace Y] {f : X → Y}
+    (hf : IsClosedEmbedding f) : CompactSpace X :=
   ⟨by rw [hf.toInducing.isCompact_iff, image_univ]; exact hf.isClosed_range.isCompact⟩
+
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.compactSpace := IsClosedEmbedding.compactSpace
 
 theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
     IsCompact (s ×ˢ t) := by
@@ -981,7 +996,7 @@ instance (priority := 100) Finite.compactSpace [Finite X] : CompactSpace X where
   isCompact_univ := finite_univ.isCompact
 
 instance ULift.compactSpace [CompactSpace X] : CompactSpace (ULift.{v} X) :=
-  ULift.closedEmbedding_down.compactSpace
+  ULift.isClosedEmbedding_down.compactSpace
 
 /-- The product of two compact spaces is compact. -/
 instance [CompactSpace X] [CompactSpace Y] : CompactSpace (X × Y) :=

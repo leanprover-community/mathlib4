@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat
-import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Common
+import Mathlib.Data.Set.Basic
 
 /-!
 # Set enumeration

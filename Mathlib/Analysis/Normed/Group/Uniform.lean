@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.UniformGroup.Basic
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Analysis.Normed.Group.Basic
@@ -191,13 +191,11 @@ theorem dist_self_mul_right (a b : E) : dist a (a * b) = ‖b‖ := by
 theorem dist_self_mul_left (a b : E) : dist (a * b) a = ‖b‖ := by
   rw [dist_comm, dist_self_mul_right]
 
-@[to_additive (attr := simp 1001)]
--- porting note (#10618): increase priority because `simp` can prove this
+@[to_additive (attr := simp 1001)] -- Increase priority because `simp` can prove this
 theorem dist_self_div_right (a b : E) : dist a (a / b) = ‖b‖ := by
   rw [div_eq_mul_inv, dist_self_mul_right, norm_inv']
 
-@[to_additive (attr := simp 1001)]
--- porting note (#10618): increase priority because `simp` can prove this
+@[to_additive (attr := simp 1001)] -- Increase priority because `simp` can prove this
 theorem dist_self_div_left (a b : E) : dist (a / b) a = ‖b‖ := by
   rw [dist_comm, dist_self_div_right]
 
