@@ -712,9 +712,6 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
 def omega0 : Ordinal.{u} :=
   lift <| @type ℕ (· < ·) _
 
-@[deprecated Ordinal.omega0 (since := "2024-09-26")]
-alias omega := omega0
-
 @[inherit_doc]
 scoped notation "ω" => Ordinal.omega0
 
@@ -792,14 +789,13 @@ theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
     card.{u} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   card_nat n
 
-instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
+instance instAddLeftMono : AddLeftMono Ordinal.{u} where
   elim c a b := by
     refine inductionOn₃ a b c fun α r _ β s _ γ t _ ⟨f⟩ ↦
       (RelEmbedding.ofMonotone (Sum.recOn · Sum.inl (Sum.inr ∘ f)) ?_).ordinal_type_le
     simp [f.map_rel_iff]
 
-instance add_swap_covariantClass_le :
-    CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) where
+instance instAddRightMono : AddRightMono Ordinal.{u} where
   elim c a b := by
     refine inductionOn₃ a b c fun α r _ β s _ γ t _  ⟨f⟩ ↦
       (RelEmbedding.ofMonotone (Sum.recOn · (Sum.inl ∘ f) Sum.inr) ?_).ordinal_type_le
@@ -1139,10 +1135,7 @@ theorem lt_ord {c o} : o < ord c ↔ o.card < c :=
 
 @[simp]
 theorem card_ord (c) : (ord c).card = c :=
-  Quotient.inductionOn c fun α => by
-    let ⟨r, _, e⟩ := ord_eq α
-    -- Porting note: cardinal.mk_def is now Cardinal.mk'_def, not sure why
-    simp only [mk'_def, e, card_type]
+  c.inductionOn fun α ↦ let ⟨r, _, e⟩ := ord_eq α; e ▸ card_type r
 
 theorem card_surjective : Function.Surjective card :=
   fun c ↦ ⟨_, card_ord c⟩

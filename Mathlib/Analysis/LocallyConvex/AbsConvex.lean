@@ -6,6 +6,7 @@ Authors: Moritz Doll
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Convex.Gauge
+import Mathlib.Analysis.Convex.TotallyBounded
 
 /-!
 # Absolutely convex sets
@@ -237,6 +238,18 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
     (by
       rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s))]
       exact convexHull_mono balancedHull_subset_convexHull_union_neg)
+
+variable (E 𝕜) {s : Set E}
+variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+variable [UniformSpace E] [UniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
+
+-- TVS II.25 Prop3
+theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
+    TotallyBounded (absConvexHull ℝ s) := by
+  rw [← convexHull_union_neg_eq_absConvexHull]
+  apply totallyBounded_convexHull
+  rw [totallyBounded_union]
+  exact ⟨hs, totallyBounded_neg hs⟩
 
 end
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.OrderOfElement
 
@@ -311,7 +312,6 @@ theorem inv_apply' {R : Type*} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ a
   (inv_apply χ a).trans <| congr_arg _ (Ring.inverse_eq_inv a)
 
 /-- The product of a character with its inverse is the trivial character. -/
--- Porting note (#10618): @[simp] can prove this (later)
 theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   ext x
   rw [coeToFun_mul, Pi.mul_apply, inv_apply_eq_inv]
