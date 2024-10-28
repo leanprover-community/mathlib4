@@ -337,6 +337,12 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 
 end
 
+@[simp] lemma norm_smul_const {R β : Type*} [NormedAddCommGroup β] [NormedDivisionRing R]
+    [Module R β] [BoundedSMul R β] (f : C(α, R)) (b : β) :
+    ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
+  simp_rw [norm_eq_iSup_norm, ← coe_nnnorm, ← coe_iSup, ← NNReal.coe_mul, iSup_mul, smul_apply',
+    const_apply, nnnorm_smul]
+
 section
 
 variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [SeminormedRing γ] [NormedAlgebra 𝕜 γ]
