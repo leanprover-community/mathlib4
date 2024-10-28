@@ -18,6 +18,8 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 # Linearly disjoint subalgebras
 
 This file contains basics about linearly disjoint subalgebras.
+We adapt the definitions in <https://en.wikipedia.org/wiki/Linearly_disjoint>.
+See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
 
 ## Main definitions
 
@@ -32,7 +34,7 @@ This file contains basics about linearly disjoint subalgebras.
 ### Equivalent characterization of linearly disjointness
 
 - `Subalgebra.LinearDisjoint.linearIndependent_left_of_flat`:
-  if `A` and `B` are linearly disjoint, if `B` is a flat `R`-module, then for any family of
+  if `A` and `B` are linearly disjoint, and if `B` is a flat `R`-module, then for any family of
   `R`-linearly independent elements of `A`, they are also `B`-linearly independent.
 
 - `Subalgebra.LinearDisjoint.of_basis_left_op`:
@@ -40,7 +42,7 @@ This file contains basics about linearly disjoint subalgebras.
   linearly disjoint.
 
 - `Subalgebra.LinearDisjoint.linearIndependent_right_of_flat`:
-  if `A` and `B` are linearly disjoint, if `A` is a flat `R`-module, then for any family of
+  if `A` and `B` are linearly disjoint, and if `A` is a flat `R`-module, then for any family of
   `R`-linearly independent elements of `B`, they are also `A`-linearly independent.
 
 - `Subalgebra.LinearDisjoint.of_basis_right`:
@@ -48,7 +50,7 @@ This file contains basics about linearly disjoint subalgebras.
   then `A` and `B` are linearly disjoint.
 
 - `Subalgebra.LinearDisjoint.linearIndependent_mul_of_flat`:
-  if `A` and `B` are linearly disjoint, if one of `A` and `B` is flat, then for any family of
+  if `A` and `B` are linearly disjoint, and if one of `A` and `B` is flat, then for any family of
   `R`-linearly independent elements `{ a_i }` of `A`, and any family of
   `R`-linearly independent elements `{ b_j }` of `B`, the family `{ a_i * b_j }` in `S` is
   also `R`-linearly independent.
@@ -145,12 +147,14 @@ namespace LinearDisjoint
 variable (A B)
 
 /-- The image of `R` in `S` is linearly disjoint with any other subalgebras. -/
-theorem bot_left : (⊥ : Subalgebra R S).LinearDisjoint B :=
-  Submodule.LinearDisjoint.one_left _
+theorem bot_left : (⊥ : Subalgebra R S).LinearDisjoint B := by
+  rw [Subalgebra.LinearDisjoint, Algebra.toSubmodule_bot]
+  exact Submodule.LinearDisjoint.one_left _
 
 /-- The image of `R` in `S` is linearly disjoint with any other subalgebras. -/
-theorem bot_right : A.LinearDisjoint ⊥ :=
-  Submodule.LinearDisjoint.one_right _
+theorem bot_right : A.LinearDisjoint ⊥ := by
+  rw [Subalgebra.LinearDisjoint, Algebra.toSubmodule_bot]
+  exact Submodule.LinearDisjoint.one_right _
 
 end LinearDisjoint
 
@@ -201,12 +205,10 @@ variable [CommRing R] [Ring S] [Algebra R S]
 
 variable (A B : Subalgebra R S)
 
+set_option maxSynthPendingDepth 2 in
 lemma mulLeftMap_ker_eq_bot_iff_linearIndependent_op {ι : Type*} (a : ι → A) :
     LinearMap.ker (Submodule.mulLeftMap (M := toSubmodule A) (toSubmodule B) a) = ⊥ ↔
     LinearIndependent B.op (MulOpposite.op ∘ A.val ∘ a) := by
-  -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
-  letI : AddCommGroup (ι →₀ toSubmodule B) := Finsupp.instAddCommGroup
-  letI : AddCommGroup (ι →₀ B.op) := Finsupp.instAddCommGroup
   simp_rw [LinearIndependent, LinearMap.ker_eq_bot]
   let i : (ι →₀ B) →ₗ[R] S := Submodule.mulLeftMap (M := toSubmodule A) (toSubmodule B) a
   let j : (ι →₀ B) →ₗ[R] S := (MulOpposite.opLinearEquiv _).symm.toLinearMap ∘ₗ
@@ -214,9 +216,8 @@ lemma mulLeftMap_ker_eq_bot_iff_linearIndependent_op {ι : Type*} (a : ι → A)
     (Finsupp.mapRange.linearEquiv (linearEquivOp B)).toLinearMap
   suffices i = j by
     change Function.Injective i ↔ _
-    simp_rw [this, j, LinearMap.coe_comp,
-      LinearEquiv.coe_coe, EquivLike.comp_injective, EquivLike.injective_comp]
-    rfl
+    simp_rw [this, j, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_injective,
+      EquivLike.injective_comp, LinearMap.coe_restrictScalars]
   ext
   simp only [LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply, coe_val,
     Finsupp.mapRange.linearEquiv_toLinearMap, LinearEquiv.coe_coe,
@@ -243,11 +244,10 @@ theorem of_basis_left_op {ι : Type*} (a : Basis ι R A)
   rw [← mulLeftMap_ker_eq_bot_iff_linearIndependent_op] at H
   exact Submodule.LinearDisjoint.of_basis_left _ _ a H
 
+set_option maxSynthPendingDepth 2 in
 lemma mulRightMap_ker_eq_bot_iff_linearIndependent {ι : Type*} (b : ι → B) :
     LinearMap.ker (Submodule.mulRightMap (toSubmodule A) (N := toSubmodule B) b) = ⊥ ↔
     LinearIndependent A (B.val ∘ b) := by
-  -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
-  letI : AddCommGroup (ι →₀ toSubmodule A) := Finsupp.instAddCommGroup
   simp_rw [LinearIndependent, LinearMap.ker_eq_bot]
   let i : (ι →₀ A) →ₗ[R] S := Submodule.mulRightMap (toSubmodule A) (N := toSubmodule B) b
   let j : (ι →₀ A) →ₗ[R] S := (Finsupp.linearCombination A (B.val ∘ b)).restrictScalars R

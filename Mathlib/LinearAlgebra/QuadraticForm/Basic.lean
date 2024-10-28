@@ -161,11 +161,6 @@ instance instFunLike : FunLike (QuadraticMap R M N) M N where
   coe := toFun
   coe_injective' x y h := by cases x; cases y; congr
 
-/-- Helper instance for when there's too many metavariables to apply
-`DFunLike.hasCoeToFun` directly. -/
-instance : CoeFun (QuadraticMap R M N) fun _ => M → N :=
-  ⟨DFunLike.coe⟩
-
 variable (Q)
 
 /-- The `simp` normal form for a quadratic map is `DFunLike.coe`, not `toFun`. -/
@@ -334,7 +329,7 @@ theorem choose_exists_companion : Q.exists_companion.choose = polarBilin Q :=
 
 protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
     Q (∑ i ∈ s, f i) = ∑ i ∈ s, Q (f i) +
-      ∑ ij in s.sym2.filter (¬ ·.IsDiag),
+      ∑ ij ∈ s.sym2 with ¬ ij.IsDiag,
         Sym2.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩ ij := by
   induction s using Finset.cons_induction with
   | empty => simp
@@ -578,6 +573,28 @@ def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S 
     [IsScalarTower S R N] [IsScalarTower S R M] [Module S P]
     (f : N →ₗ[S] P) (Q : QuadraticMap R M N) : QuadraticMap S M P :=
   _root_.LinearMap.compQuadraticMap f Q.restrictScalars
+
+/-- When `N` and `P` are equivalent, quadratic maps on `M` into `N` are equivalent to quadratic
+maps on `M` into `P`.
+
+See `LinearMap.BilinMap.congr₂` for the bilinear map version. -/
+@[simps]
+def _root_.LinearEquiv.congrQuadraticMap (e : N ≃ₗ[R] P) :
+    QuadraticMap R M N ≃ₗ[R] QuadraticMap R M P where
+  toFun Q := e.compQuadraticMap Q
+  invFun Q := e.symm.compQuadraticMap Q
+  left_inv _ := ext fun _ => e.symm_apply_apply _
+  right_inv _ := ext fun _ => e.apply_symm_apply _
+  map_add' _ _ := ext fun _ => map_add e _ _
+  map_smul' _ _ := ext fun _ => _root_.map_smul e _ _
+
+@[simp]
+theorem _root_.LinearEquiv.congrQuadraticMap_refl :
+    LinearEquiv.congrQuadraticMap (.refl R N) = .refl R (QuadraticMap R M N) := rfl
+
+@[simp]
+theorem _root_.LinearEquiv.congrQuadraticMap_symm (e : N ≃ₗ[R] P) :
+    (LinearEquiv.congrQuadraticMap e (M := M)).symm = e.symm.congrQuadraticMap := rfl
 
 end Comp
 section NonUnitalNonAssocSemiring
@@ -1062,7 +1079,7 @@ theorem posDef_of_nonneg {Q : QuadraticMap R₂ M N} (h : ∀ x, 0 ≤ Q x) (h0 
 theorem posDef_iff_nonneg {Q : QuadraticMap R₂ M N} : PosDef Q ↔ (∀ x, 0 ≤ Q x) ∧ Q.Anisotropic :=
   ⟨fun h => ⟨h.nonneg, h.anisotropic⟩, fun ⟨n, a⟩ => posDef_of_nonneg n a⟩
 
-theorem PosDef.add [CovariantClass N N (· + ·) (· < ·)]
+theorem PosDef.add [AddLeftStrictMono N]
     (Q Q' : QuadraticMap R₂ M N) (hQ : PosDef Q) (hQ' : PosDef Q') :
     PosDef (Q + Q') :=
   fun x hx => add_pos (hQ x hx) (hQ' x hx)

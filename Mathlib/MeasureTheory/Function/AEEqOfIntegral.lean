@@ -113,7 +113,7 @@ variable {𝕜}
 
 end AeEqOfForall
 
-variable {α E : Type*} {m m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
+variable {α E : Type*} {m m0 : MeasurableSpace α} {μ : Measure α}
   [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {p : ℝ≥0∞}
 
 section AeEqOfForallSetIntegralEq
@@ -423,10 +423,10 @@ theorem ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite [SigmaFinite μ] {f :
     (hf_zero : ∀ s : Set α, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) : f =ᵐ[μ] 0 := by
   let S := spanningSets μ
   rw [← @Measure.restrict_univ _ _ μ, ← iUnion_spanningSets μ, EventuallyEq, ae_iff,
-    Measure.restrict_apply' (MeasurableSet.iUnion (measurable_spanningSets μ))]
+    Measure.restrict_apply' (MeasurableSet.iUnion (measurableSet_spanningSets μ))]
   rw [Set.inter_iUnion, measure_iUnion_null_iff]
   intro n
-  have h_meas_n : MeasurableSet (S n) := measurable_spanningSets μ n
+  have h_meas_n : MeasurableSet (S n) := measurableSet_spanningSets μ n
   have hμn : μ (S n) < ∞ := measure_spanningSets_lt_top μ n
   rw [← Measure.restrict_apply' h_meas_n]
   exact ae_eq_zero_restrict_of_forall_setIntegral_eq_zero hf_int_finite hf_zero h_meas_n hμn.ne

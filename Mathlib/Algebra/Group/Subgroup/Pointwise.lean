@@ -41,6 +41,10 @@ lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (
     a • (s : Set G) = s := by
   ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_left, ha]
 
+@[norm_cast, to_additive]
+lemma coe_set_eq_one [Group G] {s : Subgroup G} : (s : Set G) = 1 ↔ s = ⊥ :=
+  (SetLike.ext'_iff.trans (by rfl)).symm
+
 @[to_additive (attr := simp)]
 lemma op_smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
     MulOpposite.op a • (s : Set G) = s := by
@@ -542,5 +546,25 @@ theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubgroup A} :
   subset_set_smul_iff₀ ha
 
 end GroupWithZero
+
+section Mul
+
+variable {R : Type*} [NonUnitalNonAssocRing R]
+
+/-- For additive subgroups `S` and `T` of a ring, the product of `S` and `T` as submonoids
+is automatically a subgroup, which we define as the product of `S` and `T` as subgroups. -/
+protected def mul : Mul (AddSubgroup R) where
+  mul M N :=
+  { __ := M.toAddSubmonoid * N.toAddSubmonoid
+    neg_mem' := fun h ↦ AddSubmonoid.mul_induction_on h
+      (fun m hm n hn ↦ by rw [← neg_mul]; exact AddSubmonoid.mul_mem_mul (M.neg_mem hm) hn)
+      fun r₁ r₂ h₁ h₂ ↦ by rw [neg_add]; exact (M.1 * N.1).add_mem h₁ h₂ }
+
+scoped[Pointwise] attribute [instance] AddSubgroup.mul
+
+theorem mul_toAddSubmonoid (M N : AddSubgroup R) :
+    (M * N).toAddSubmonoid = M.toAddSubmonoid * N.toAddSubmonoid := rfl
+
+end Mul
 
 end AddSubgroup
