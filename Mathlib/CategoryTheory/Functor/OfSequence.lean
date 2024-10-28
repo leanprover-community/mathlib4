@@ -153,7 +153,7 @@ variable {X : ℕ → C} (f : ∀ n, X (n + 1) ⟶ X n)
 
 /-- The functor `ℕᵒᵖ ⥤ C` constructed from a sequence of
 morphisms `f : X (n + 1) ⟶ X n` for all `n : ℕ`. -/
-@[simps!]
+@[simps! obj]
 def ofOpSequence : ℕᵒᵖ ⥤ C := (ofSequence (fun n ↦ (f n).op)).leftOp
 
 -- `ofOpSequence` has good definitional properties when applied to explicit natural numbers
