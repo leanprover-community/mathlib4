@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Exact
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.ULift
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Quotient
 
@@ -183,9 +183,13 @@ lemma postcomp_comp {N' : Type v''} [AddCommGroup N'] [Module A N'] (g : N →�
 @[simp]
 lemma postcomp_id : solution.postcomp LinearMap.id = solution := rfl
 
-variable {solution} in
+variable {solution}
+
 lemma congr_var {solution' : relations.Solution M} (h : solution = solution') (g : relations.G) :
     solution.var g = solution'.var g := by rw [h]
+
+lemma congr_postcomp {solution' : relations.Solution M} (h : solution = solution')
+    (f : M →ₗ[A] N) : solution.postcomp f = solution'.postcomp f := by rw [h]
 
 end
 
@@ -315,6 +319,8 @@ section
 
 variable {solution' : relations.Solution N} (h' : solution'.IsPresentation)
 
+/-- Uniqueness (up to a unique linear equivalence) of the module defined
+by generators and relations. -/
 noncomputable def uniq : M ≃ₗ[A] N := LinearEquiv.ofLinear
   (h.desc solution') (h'.desc solution)
     (h'.postcomp_injective (by simp))
@@ -367,7 +373,13 @@ lemma ofQuotient_isPresentation : (ofQuotient relations).IsPresentation where
 
 variable {relations}
 
+/-- Helper structure in order to prover `Module.Relations.Solutions.IsPresentation`
+by showing the universal property of the module defined by generators and relations.
+The universal property is restricted to modules that are in `Type w'` for
+an auxiliary universes `w'`. See `IsPresentationCore.isPresentation`. -/
 structure IsPresentationCore (solution : relations.Solution M) where
+  /-- any solution in a module `N : Type w'` is obtained in a unique way
+  by postcomposing `solution : relations.Solution M` by a linear map `M →ₗ[A] N`. -/
   desc {N : Type w'} [AddCommGroup N] [Module A N] (s : relations.Solution N) : M →ₗ[A] N
   postcomp_desc {N : Type w'} [AddCommGroup N] [Module A N] (s : relations.Solution N) :
     solution.postcomp (desc s) = s
@@ -384,12 +396,20 @@ lemma desc_var (h : IsPresentationCore.{w'} solution)
     h.desc s (solution.var g) = s.var g :=
   congr_var (h.postcomp_desc s) g
 
+/-- The structure `IsPresentationCore` can be shrunk to a lower universe. -/
 def down (h : IsPresentationCore.{max w' w''} solution) :
     IsPresentationCore.{w''} solution where
-  desc := sorry
-  postcomp_desc := sorry
-  postcomp_injective {N _ _ f f'} h := by
-    sorry
+  desc s := ULift.moduleEquiv.toLinearMap.comp
+    (h.desc (s.postcomp ULift.moduleEquiv.symm.toLinearMap))
+  postcomp_desc s:= by
+    simpa using congr_postcomp
+      (h.postcomp_desc (s.postcomp ULift.moduleEquiv.symm.toLinearMap))
+        ULift.moduleEquiv.toLinearMap
+  postcomp_injective {N _ _ f f'} h' := by
+    ext x
+    have := congr_postcomp h' ULift.moduleEquiv.{_, _, w'}.symm.toLinearMap
+    simp only [← postcomp_comp] at this
+    simpa using DFunLike.congr_fun (h.postcomp_injective this) x
 
 lemma isPresentation {solution : relations.Solution M}
     (h : IsPresentationCore.{max u v w₀} solution) :
@@ -414,5 +434,14 @@ generators and relations. -/
 @[nolint checkUnivs]
 structure Presentation extends Relations.{w₀, w₁} A,
   toRelations.Solution M, toSolution.IsPresentation where
+
+variable {A M}
+
+@[simps toRelations toSolution]
+def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
+    {solution : relations.Solution M} (h : solution.IsPresentation) :
+    Presentation.{w₀, w₁} A M where
+  toSolution := solution
+  toIsPresentation := h
 
 end Module
