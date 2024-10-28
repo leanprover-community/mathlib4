@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Grothendieck
 /-!
 # Structured Arrow Categories as strict functor to Cat
 
-Forming a structured arrow category `StructuredArrow d T` with `d : D` and `T : C ⥤ D` is stictly
+Forming a structured arrow category `StructuredArrow d T` with `d : D` and `T : C ⥤ D` is strictly
 functorial in `S`, inducing a functor `Dᵒᵖ ⥤ Cat`. This file constructs said functor and proves
 that, in the dual case, we can precompose it with another functor `L : E ⥤ D` to obtain a category
 equivalent to `Comma L T`.
@@ -52,15 +52,15 @@ variable (L : C ⥤ D) (R : E ⥤ D)
 the Grothendieck construction on `CostructuredArrow.functor` and the comma category. -/
 @[simps]
 def grothendieckPrecompFunctorToComma : Grothendieck (R ⋙ functor L) ⥤ Comma L R where
-  obj := fun P => ⟨P.fiber.left, P.base, P.fiber.hom⟩
-  map := fun f => ⟨f.fiber.left, f.base, by simp⟩
+  obj P := ⟨P.fiber.left, P.base, P.fiber.hom⟩
+  map f := ⟨f.fiber.left, f.base, by simp⟩
 
 /-- The inverse functor used to establish the equivalence `grothendieckPrecompFunctorEquivalence`
 between the Grothendieck construction on `CostructuredArrow.functor` and the comma category. -/
 @[simps]
 def commaToGrothendieckPrecompFunctor : Comma L R ⥤ Grothendieck (R ⋙ functor L) where
-  obj := fun X => ⟨X.right, mk X.hom⟩
-  map := fun f => ⟨f.right, homMk f.left⟩
+  obj X := ⟨X.right, mk X.hom⟩
+  map f := ⟨f.right, homMk f.left⟩
   map_id X := Grothendieck.ext _ _ rfl (by simp)
   map_comp f g := Grothendieck.ext _ _ rfl (by simp)
 
