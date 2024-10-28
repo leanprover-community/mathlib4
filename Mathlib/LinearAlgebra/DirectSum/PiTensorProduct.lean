@@ -62,8 +62,8 @@ theorem directSum_tprod_apply (x : Π i, ⨁ j, M i j) (p : Π i, κ i):
     PiTensorProduct.directSum R M (tprod R x) p =
       ⨂ₜ[R] i, x i (p i) := by
   -- restate with bundled morphisms, to let `ext` fire
-  let appLHS := DFinsupp.lapply (R := R) (M := fun p : Π i, κ i => ⨂[R] i, M i (p i)) p
-  let appRHS (i : ι) : (⨁ j, M i j) →ₗ[R] M i (p i) := DFinsupp.lapply (R := R) (p i)
+  let appLHS := DirectSum.component (R := R) (M := fun p : Π i, κ i => ⨂[R] i, M i (p i)) _ p
+  let appRHS (i : ι) : (⨁ j, M i j) →ₗ[R] M i (p i) := DirectSum.component (R := R) _ _ (p i)
   suffices
       (appLHS ∘ₗ (PiTensorProduct.directSum R M).toLinearMap).compMultilinearMap (tprod R) =
       (tprod R).compLinearMap appRHS by
@@ -71,9 +71,8 @@ theorem directSum_tprod_apply (x : Π i, ⨁ j, M i j) (p : Π i, κ i):
   ext p' x
   -- clean up
   simp only [MultilinearMap.compLinearMap_apply, compMultilinearMap_apply, coe_comp,
-    Function.comp_apply, DFinsupp.lapply_apply, appLHS, appRHS]
+    Function.comp_apply, ← apply_eq_component, appLHS, appRHS]
   erw [directSum_tprod_lof R M _ x]
-  simp only [DFinsupp.lapply, coe_mk, AddHom.coe_mk]
   obtain rfl | hp := eq_or_ne p' p
   · simp only [lof_apply]
   · obtain ⟨i, hi⟩ := Function.ne_iff.1 hp
