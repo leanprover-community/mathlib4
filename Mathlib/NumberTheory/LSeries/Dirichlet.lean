@@ -106,7 +106,7 @@ local notation (name := Dchar_one) "χ₁" => (1 : DirichletCharacter ℂ 1)
 namespace DirichletCharacter
 
 open ArithmeticFunction in
-/-- The arihmetic function associated to a Dirichlet character is multiplicative. -/
+/-- The arithmetic function associated to a Dirichlet character is multiplicative. -/
 lemma isMultiplicative_toArithmeticFunction {N : ℕ} {R : Type*} [CommMonoidWithZero R]
     (χ : DirichletCharacter R N) :
     (toArithmeticFunction (χ ·)).IsMultiplicative := by
