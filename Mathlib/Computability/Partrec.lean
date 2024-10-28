@@ -357,8 +357,7 @@ end Computable
 
 namespace Partrec
 
-variable {α : Type*} {β : Type*} {σ : Type*}
-variable [Primcodable α] [Primcodable β] [Primcodable σ]
+variable {α : Type*} {β : Type*} {σ : Type*} [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Computable
 
