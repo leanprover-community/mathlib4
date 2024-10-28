@@ -4577,7 +4577,6 @@ import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
-import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.StacksAttribute
@@ -4612,10 +4611,9 @@ import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Widget.StringDiagram
 import Mathlib.Tactic.Zify
-import Mathlib.Testing.SlimCheck.Functions
-import Mathlib.Testing.SlimCheck.Gen
-import Mathlib.Testing.SlimCheck.Sampleable
-import Mathlib.Testing.SlimCheck.Testable
+import Mathlib.Testing.Plausible.Functions
+import Mathlib.Testing.Plausible.Sampleable
+import Mathlib.Testing.Plausible.Testable
 import Mathlib.Topology.AlexandrovDiscrete
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Algebra
