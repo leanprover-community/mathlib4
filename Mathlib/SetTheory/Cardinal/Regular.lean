@@ -44,9 +44,6 @@ theorem IsSingular.natCast_lt (H : c.IsSingular) (n : ℕ) : n < c :=
 theorem IsSingular.pos (H : c.IsSingular) : 0 < c :=
   H.natCast_lt 0
 
-theorem IsSingular.ord_pos (H : c.IsSingular) : 0 < c.ord :=
-  Cardinal.ord_pos.mpr H.pos
-
 theorem IsRegular.not_isSingular (H : c.IsRegular) : ¬c.IsSingular :=
   fun h ↦ h.2 H
 
