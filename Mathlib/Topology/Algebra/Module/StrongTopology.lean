@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker
+Authors: Anatole Dedecker, Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.Module.UniformConvergence
+import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Hom.ContinuousEvalConst
 
 /-!
@@ -55,7 +56,6 @@ sets).
 uniform convergence, bounded convergence
 -/
 
-
 open scoped Topology UniformConvergence Uniformity
 open Filter Set Function Bornology
 
@@ -75,17 +75,16 @@ uniform convergence on the elements of `𝔖`".
 If the continuous linear image of any element of `𝔖` is bounded, this makes `E →SL[σ] F` a
 topological vector space. -/
 @[nolint unusedArguments]
-def UniformConvergenceCLM [TopologicalSpace F] [TopologicalAddGroup F] (_ : Set (Set E)) :=
-  E →SL[σ] F
+def UniformConvergenceCLM [TopologicalSpace F] (_ : Set (Set E)) := E →SL[σ] F
 
 namespace UniformConvergenceCLM
 
-instance instFunLike [TopologicalSpace F] [TopologicalAddGroup F]
-    (𝔖 : Set (Set E)) : FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
+instance instFunLike [TopologicalSpace F] (𝔖 : Set (Set E)) :
+    FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
   ContinuousLinearMap.funLike
 
-instance instContinuousSemilinearMapClass [TopologicalSpace F] [TopologicalAddGroup F]
-    (𝔖 : Set (Set E)) : ContinuousSemilinearMapClass (UniformConvergenceCLM σ F 𝔖) σ E F :=
+instance instContinuousSemilinearMapClass [TopologicalSpace F] (𝔖 : Set (Set E)) :
+    ContinuousSemilinearMapClass (UniformConvergenceCLM σ F 𝔖) σ E F :=
   ContinuousLinearMap.continuousSemilinearMapClass
 
 instance instTopologicalSpace [TopologicalSpace F] [TopologicalAddGroup F] (𝔖 : Set (Set E)) :
@@ -120,9 +119,13 @@ theorem uniformity_toTopologicalSpace_eq [UniformSpace F] [UniformAddGroup F] (�
       UniformConvergenceCLM.instTopologicalSpace σ F 𝔖 :=
   rfl
 
+theorem isUniformInducing_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
+    IsUniformInducing (α := UniformConvergenceCLM σ F 𝔖) (UniformOnFun.ofFun 𝔖 ∘ DFunLike.coe) :=
+  ⟨rfl⟩
+
 theorem isUniformEmbedding_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     IsUniformEmbedding (α := UniformConvergenceCLM σ F 𝔖) (UniformOnFun.ofFun 𝔖 ∘ DFunLike.coe) :=
-  ⟨⟨rfl⟩, DFunLike.coe_injective⟩
+  ⟨isUniformInducing_coeFn .., DFunLike.coe_injective⟩
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_coeFn := isUniformEmbedding_coeFn
@@ -262,7 +265,7 @@ instance instUniformContinuousConstSMul (M : Type*)
     [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [UniformSpace F] [UniformAddGroup F] [UniformContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     UniformContinuousConstSMul M (UniformConvergenceCLM σ F 𝔖) :=
-  (isUniformEmbedding_coeFn σ F 𝔖).isUniformInducing.uniformContinuousConstSMul fun _ _ ↦ by rfl
+  (isUniformInducing_coeFn σ F 𝔖).uniformContinuousConstSMul fun _ _ ↦ by rfl
 
 instance instContinuousConstSMul (M : Type*)
     [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
@@ -279,6 +282,32 @@ theorem tendsto_iff_tendstoUniformlyOn {ι : Type*} {p : Filter ι} [UniformSpac
     Filter.Tendsto a p (𝓝 a₀) ↔ ∀ s ∈ 𝔖, TendstoUniformlyOn (a · ·) a₀ p s := by
   rw [(embedding_coeFn σ F 𝔖).tendsto_nhds_iff, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
   rfl
+
+variable {F} in
+theorem isUniformInducing_postcomp
+    {G : Type*} [AddCommGroup G] [UniformSpace G] [UniformAddGroup G]
+    {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
+    {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] [UniformSpace F] [UniformAddGroup F]
+    (g : F →SL[τ] G) (hg : IsUniformInducing g) (𝔖 : Set (Set E)) :
+    IsUniformInducing (α := UniformConvergenceCLM σ F 𝔖) (β := UniformConvergenceCLM ρ G 𝔖)
+      g.comp := by
+  rw [← (isUniformInducing_coeFn _ _ _).of_comp_iff]
+  exact (UniformOnFun.postcomp_isUniformInducing hg).comp (isUniformInducing_coeFn _ _ _)
+
+theorem completeSpace [UniformSpace F] [UniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
+    {𝔖 : Set (Set E)} (h𝔖 : RestrictGenTopology 𝔖) (h𝔖U : ⋃₀ 𝔖 = univ) :
+    CompleteSpace (UniformConvergenceCLM σ F 𝔖) := by
+  wlog hF : T2Space F generalizing F
+  · rw [(isUniformInducing_postcomp σ (SeparationQuotient.mkCLM 𝕜₂ F)
+      SeparationQuotient.isUniformInducing_mk _).completeSpace_congr]
+    exacts [this _ inferInstance, SeparationQuotient.postcomp_mkCLM_surjective F σ E]
+  rw [completeSpace_iff_isComplete_range (isUniformInducing_coeFn _ _ _)]
+  apply IsClosed.isComplete
+  have H₁ : IsClosed {f : E →ᵤ[𝔖] F | Continuous ((UniformOnFun.toFun 𝔖) f)} :=
+    UniformOnFun.isClosed_setOf_continuous h𝔖
+  convert H₁.inter <| (LinearMap.isClosed_range_coe E F σ).preimage
+    (UniformOnFun.uniformContinuous_toFun h𝔖U).continuous
+  exact ContinuousLinearMap.range_coeFn_eq
 
 variable {𝔖₁ 𝔖₂ : Set (Set E)}
 
@@ -414,6 +443,16 @@ theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
     IsVonNBounded R S ↔
       ∀ s, IsVonNBounded 𝕜₁ s → IsVonNBounded R (Set.image2 (fun f x ↦ f x) S s) :=
   UniformConvergenceCLM.isVonNBounded_iff
+
+theorem completeSpace [UniformSpace F] [UniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
+    [ContinuousSMul 𝕜₁ E] (h : RestrictGenTopology {s : Set E | IsVonNBounded 𝕜₁ s}) :
+    CompleteSpace (E →SL[σ] F) :=
+  UniformConvergenceCLM.completeSpace _ _ h isVonNBounded_covers
+
+instance instCompleteSpace [TopologicalAddGroup E] [ContinuousSMul 𝕜₁ E] [SequentialSpace E]
+    [UniformSpace F] [UniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F] :
+    CompleteSpace (E →SL[σ] F) :=
+  completeSpace <| .of_seq fun _ _ h ↦ (h.isVonNBounded_range 𝕜₁).insert _
 
 variable (G) [TopologicalSpace F] [TopologicalSpace G]
 

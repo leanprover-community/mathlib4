@@ -9,7 +9,7 @@ import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Seminorm
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.Bornology.Basic
-import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.UniformGroup.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.Algebra.Module.Basic
 
@@ -42,7 +42,7 @@ von Neumann-bounded sets.
 -/
 
 
-variable {𝕜 𝕜' E E' F ι : Type*}
+variable {𝕜 𝕜' E F ι : Type*}
 
 open Set Filter Function
 open scoped Topology Pointwise
