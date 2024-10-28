@@ -27,7 +27,7 @@ noncomputable section
 
 open Set Function Filter Finset Metric Asymptotics Topology Nat NNReal ENNReal
 
-variable {α β ι : Type*}
+variable {α : Type*}
 
 /-! ### Powers -/
 
