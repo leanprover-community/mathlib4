@@ -274,7 +274,7 @@ theorem map.isLocalHom : IsLocalHom (map f) :=
 @[deprecated (since := "2024-10-10")]
 alias map.isLocalRingHom := map.isLocalHom
 
-variable [LocalRing R] [LocalRing S]
+variable [LocalRing R]
 
 instance : LocalRing R⟦X⟧ :=
   { inferInstanceAs <| LocalRing <| MvPowerSeries Unit R with }

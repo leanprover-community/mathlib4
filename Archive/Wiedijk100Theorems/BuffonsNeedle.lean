@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
 
-import Mathlib.Probability.Density
-import Mathlib.Probability.Notation
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Uniform
+import Mathlib.Probability.Notation
 
 /-!
 

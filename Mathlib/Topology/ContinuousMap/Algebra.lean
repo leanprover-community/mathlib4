@@ -13,7 +13,6 @@ import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
-import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
@@ -696,6 +695,10 @@ def ContinuousMap.compRightAlgHom {α β : Type*} [TopologicalSpace α] [Topolog
   map_one' := ext fun _ ↦ rfl
   map_mul' _ _ := ext fun _ ↦ rfl
   commutes' _ := ext fun _ ↦ rfl
+
+theorem ContinuousMap.compRightAlgHom_continuous {α β : Type*} [TopologicalSpace α]
+    [TopologicalSpace β] (f : C(α, β)) : Continuous (compRightAlgHom R A f) :=
+  continuous_precomp f
 
 variable {A}
 

@@ -258,7 +258,7 @@ theorem nhds_coe_eq (x : X) : 𝓝 ↑x = map ((↑) : X → OnePoint X) (𝓝 x
 
 theorem nhdsWithin_coe_image (s : Set X) (x : X) :
     𝓝[(↑) '' s] (x : OnePoint X) = map (↑) (𝓝[s] x) :=
-  (isOpenEmbedding_coe.toEmbedding.map_nhdsWithin_eq _ _).symm
+  (isOpenEmbedding_coe.isEmbedding.map_nhdsWithin_eq _ _).symm
 
 theorem nhdsWithin_coe (s : Set (OnePoint X)) (x : X) : 𝓝[s] ↑x = map (↑) (𝓝[(↑) ⁻¹' s] x) :=
   (isOpenEmbedding_coe.map_nhdsWithin_preimage_eq _ _).symm
