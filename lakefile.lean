@@ -10,7 +10,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.43-pre"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.43"
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
   from git "https://github.com/leanprover-community/LeanSearchClient" @ "main"
@@ -36,6 +36,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.style.longLine, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
   ⟨`linter.style.missingEnd, true⟩,
+  ⟨`linter.style.multiGoal, true⟩,
   ⟨`linter.style.setOption, true⟩
 ]
 
@@ -51,6 +52,8 @@ package mathlib where
   leanOptions := mathlibLeanOptions
   -- Mathlib also enforces these linter options, which are not active by default.
   moreServerOptions := mathlibOnlyLinters
+  -- Use Batteries' test driver for `lake test`
+  testDriver := "batteries/test"
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
@@ -130,18 +133,6 @@ lean_exe pole where
   supportInterpreter := true
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
-
-/--
-`lake exe test` is a thin wrapper around `lake exe batteries/test`, until
-https://github.com/leanprover/lean4/issues/4121 is resolved.
-
-You can also use it as e.g. `lake exe test conv eval_elab` to only run the named tests.
--/
-@[test_driver]
-lean_exe test where
-  -- We could add the above `leanOptions` and `moreServerOptions`: currently, these do not take
-  -- effect as `test` is a `lean_exe`. With a `lean_lib`, it would work...
-  srcDir := "scripts"
 
 /-!
 ## Other configuration

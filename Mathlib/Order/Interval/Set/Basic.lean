@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.Says
+import Mathlib.Tactic.Contrapose
 
 /-!
 # Intervals
@@ -142,38 +143,22 @@ instance decidableMemIci [Decidable (a ≤ x)] : Decidable (x ∈ Ici a) := by a
 
 instance decidableMemIoi [Decidable (a < x)] : Decidable (x ∈ Ioi a) := by assumption
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem left_mem_Ioo : a ∈ Ioo a b ↔ False := by simp [lt_irrefl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp [le_refl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem left_mem_Ioc : a ∈ Ioc a b ↔ False := by simp [lt_irrefl]
 
 theorem left_mem_Ici : a ∈ Ici a := by simp
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem right_mem_Ioo : b ∈ Ioo a b ↔ False := by simp [lt_irrefl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem right_mem_Ico : b ∈ Ico a b ↔ False := by simp [lt_irrefl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp [le_refl]
 
 theorem right_mem_Iic : a ∈ Iic a := by simp
@@ -318,18 +303,12 @@ theorem Ioc_eq_empty_of_le (h : b ≤ a) : Ioc a b = ∅ :=
 theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
   Ioo_eq_empty h.not_lt
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Ico_self (a : α) : Ico a a = ∅ :=
   Ico_eq_empty <| lt_irrefl _
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Ioc_self (a : α) : Ioc a a = ∅ :=
   Ioc_eq_empty <| lt_irrefl _
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Ioo_self (a : α) : Ioo a a = ∅ :=
   Ioo_eq_empty <| lt_irrefl _
 
@@ -585,12 +564,8 @@ theorem not_mem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_le h.1
 
 theorem not_mem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_le h.2
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem not_mem_Ioi_self : a ∉ Ioi a := lt_irrefl _
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem not_mem_Iio_self : b ∉ Iio b := lt_irrefl _
 
 theorem not_mem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
@@ -693,13 +668,9 @@ theorem Ici_diff_Ioi_same : Ici a \ Ioi a = {a} := by
 theorem Iic_diff_Iio_same : Iic a \ Iio a = {a} := by
   rw [← Iic_diff_right, diff_diff_cancel_left (singleton_subset_iff.2 right_mem_Iic)]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Ioi_union_left : Ioi a ∪ {a} = Ici a :=
   ext fun x => by simp [eq_comm, le_iff_eq_or_lt]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Iio_union_right : Iio a ∪ {a} = Iic a :=
   ext fun _ => le_iff_lt_or_eq.symm
 

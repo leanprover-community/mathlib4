@@ -6,7 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Ring.Divisibility.Lemmas
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Engel
-import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+import Mathlib.LinearAlgebra.Eigenspace.Pi
 import Mathlib.RingTheory.Artinian
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.FreeModule.PID
@@ -165,7 +165,7 @@ theorem mem_genWeightSpaceOf (χ : R) (x : L) (m : M) :
 
 theorem coe_genWeightSpaceOf_zero (x : L) :
     ↑(genWeightSpaceOf M (0 : R) x) = ⨆ k, LinearMap.ker (toEnd R L M x ^ k) := by
-  simp [genWeightSpaceOf, Module.End.maxGenEigenspace_def]
+  simp [genWeightSpaceOf, ← Module.End.iSup_genEigenspace_eq]
 
 /-- If `M` is a representation of a nilpotent Lie algebra `L`
 and `χ : L → R` is a family of scalars,
@@ -267,7 +267,7 @@ lemma genWeightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
 lemma hasEigenvalueAt (χ : Weight R L M) (x : L) :
     (toEnd R L M x).HasEigenvalue (χ x) := by
   obtain ⟨k : ℕ, hk : (toEnd R L M x).genEigenspace (χ x) k ≠ ⊥⟩ := by
-    simpa [genWeightSpaceOf, Module.End.maxGenEigenspace_def] using χ.genWeightSpaceOf_ne_bot x
+    simpa [genWeightSpaceOf, ← Module.End.iSup_genEigenspace_eq] using χ.genWeightSpaceOf_ne_bot x
   exact Module.End.hasEigenvalue_of_hasGenEigenvalue hk
 
 lemma apply_eq_zero_of_isNilpotent [NoZeroSMulDivisors R M] [IsReduced R]
@@ -308,7 +308,7 @@ theorem exists_genWeightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L 
   intro m hm
   replace hm : m ∈ (toEnd R L M x).maxGenEigenspace (χ x) :=
     genWeightSpace_le_genWeightSpaceOf M x χ hm
-  rwa [Module.End.maxGenEigenspace_eq, Module.End.genEigenspace_def] at hm
+  rwa [Module.End.maxGenEigenspace_eq, Module.End.genEigenspace_nat] at hm
 
 variable (R) in
 theorem exists_genWeightSpace_zero_le_ker_of_isNoetherian
@@ -631,8 +631,7 @@ lemma disjoint_genWeightSpaceOf [NoZeroSMulDivisors R M] {x : L} {φ₁ φ₂ : 
     Disjoint (genWeightSpaceOf M φ₁ x) (genWeightSpaceOf M φ₂ x) := by
   rw [LieSubmodule.disjoint_iff_coe_toSubmodule]
   dsimp [genWeightSpaceOf]
-  simp_rw [Module.End.maxGenEigenspace_def]
-  exact Module.End.disjoint_iSup_genEigenspace _ h
+  exact Module.End.disjoint_genEigenspace _ h _ _
 
 lemma disjoint_genWeightSpace [NoZeroSMulDivisors R M] {χ₁ χ₂ : L → R} (h : χ₁ ≠ χ₂) :
     Disjoint (genWeightSpace M χ₁) (genWeightSpace M χ₂) := by
@@ -650,48 +649,11 @@ lemma injOn_genWeightSpace [NoZeroSMulDivisors R M] :
 
 See also `LieModule.independent_genWeightSpace'`. -/
 lemma independent_genWeightSpace [NoZeroSMulDivisors R M] :
-    CompleteLattice.Independent fun (χ : L → R) ↦ genWeightSpace M χ := by
-  classical
-  suffices ∀ χ (s : Finset (L → R)) (_ : χ ∉ s),
-      Disjoint (genWeightSpace M χ) (s.sup fun (χ : L → R) ↦ genWeightSpace M χ) by
-    simpa only [CompleteLattice.independent_iff_supIndep_of_injOn (injOn_genWeightSpace R L M),
-      Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.not_mem_erase χ)
-  intro χ₁ s
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert _n ih =>
-  rename_i χ₂ s
-  intro hχ₁₂
-  obtain ⟨hχ₁₂ : χ₁ ≠ χ₂, hχ₁ : χ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hχ₁₂
-  specialize ih hχ₁
-  rw [Finset.sup_insert, disjoint_iff, LieSubmodule.eq_bot_iff]
-  rintro x ⟨hx, hx'⟩
-  simp only [SetLike.mem_coe, LieSubmodule.mem_coeSubmodule] at hx hx'
-  suffices x ∈ genWeightSpace M χ₂ by
-    rw [← LieSubmodule.mem_bot (R := R) (L := L), ← (disjoint_genWeightSpace R L M hχ₁₂).eq_bot]
-    exact ⟨hx, this⟩
-  obtain ⟨y, hy, z, hz, rfl⟩ := (LieSubmodule.mem_sup _ _ _).mp hx'; clear hx'
-  suffices ∀ l, ∃ (k : ℕ),
-      ((toEnd R L M l - algebraMap R (Module.End R M) (χ₂ l)) ^ k) (y + z) ∈
-      genWeightSpace M χ₁ ⊓ Finset.sup s fun χ ↦ genWeightSpace M χ by
-    simpa only [ih.eq_bot, LieSubmodule.mem_bot, mem_genWeightSpace] using this
-  intro l
-  let g : Module.End R M := toEnd R L M l - algebraMap R (Module.End R M) (χ₂ l)
-  obtain ⟨k, hk : (g ^ k) y = 0⟩ := (mem_genWeightSpace _ _ _).mp hy l
-  refine ⟨k, (LieSubmodule.mem_inf _ _ _).mp ⟨?_, ?_⟩⟩
-  · exact LieSubmodule.mapsTo_pow_toEnd_sub_algebraMap _ hx
-  · rw [map_add, hk, zero_add]
-    suffices (s.sup fun χ ↦ genWeightSpace M χ : Submodule R M).map (g ^ k) ≤
-        s.sup fun χ ↦ genWeightSpace M χ by
-      refine this (Submodule.mem_map_of_mem ?_)
-      simp_rw [← LieSubmodule.mem_coeSubmodule, Finset.sup_eq_iSup,
-        LieSubmodule.iSup_coe_toSubmodule, ← Finset.sup_eq_iSup] at hz
-      exact hz
-    simp_rw [Finset.sup_eq_iSup, Submodule.map_iSup (ι := L → R), Submodule.map_iSup (ι := _ ∈ s),
-      LieSubmodule.iSup_coe_toSubmodule]
-    refine iSup₂_mono fun χ _ ↦ ?_
-    rintro - ⟨u, hu, rfl⟩
-    exact LieSubmodule.mapsTo_pow_toEnd_sub_algebraMap _ hu
+    CompleteLattice.Independent fun χ : L → R ↦ genWeightSpace M χ := by
+  simp only [LieSubmodule.independent_iff_coe_toSubmodule, genWeightSpace,
+    LieSubmodule.iInf_coe_toSubmodule]
+  exact Module.End.independent_iInf_maxGenEigenspace_of_forall_mapsTo (toEnd R L M)
+    (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem)
 
 lemma independent_genWeightSpace' [NoZeroSMulDivisors R M] :
     CompleteLattice.Independent fun χ : Weight R L M ↦ genWeightSpace M χ :=
@@ -702,8 +664,7 @@ lemma independent_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
     CompleteLattice.Independent fun (χ : R) ↦ genWeightSpaceOf M χ x := by
   rw [LieSubmodule.independent_iff_coe_toSubmodule]
   dsimp [genWeightSpaceOf]
-  simp_rw [Module.End.maxGenEigenspace_def]
-  exact (toEnd R L M x).independent_genEigenspace
+  exact (toEnd R L M x).independent_genEigenspace _
 
 lemma finite_genWeightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
     {χ : R | genWeightSpaceOf M χ x ≠ ⊥}.Finite :=
@@ -725,16 +686,18 @@ noncomputable instance Weight.instFintype [NoZeroSMulDivisors R M] [IsNoetherian
 /-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorhpism of `M` defined by
 any `x : L` is triangularizable. -/
 class IsTriangularizable : Prop where
-  iSup_eq_top : ∀ x, ⨆ φ, ⨆ k, (toEnd R L M x).genEigenspace φ k = ⊤
+  maxGenEigenspace_eq_top : ∀ x, ⨆ φ, (toEnd R L M x).maxGenEigenspace φ = ⊤
 
 instance (L' : LieSubalgebra R L) [IsTriangularizable R L M] : IsTriangularizable R L' M where
-  iSup_eq_top x := IsTriangularizable.iSup_eq_top (x : L)
+  maxGenEigenspace_eq_top x := IsTriangularizable.maxGenEigenspace_eq_top (x : L)
 
 instance (I : LieIdeal R L) [IsTriangularizable R L M] : IsTriangularizable R I M where
-  iSup_eq_top x := IsTriangularizable.iSup_eq_top (x : L)
+  maxGenEigenspace_eq_top x := IsTriangularizable.maxGenEigenspace_eq_top (x : L)
 
 instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L M).range M where
-  iSup_eq_top := by rintro ⟨-, x, rfl⟩; exact IsTriangularizable.iSup_eq_top x
+  maxGenEigenspace_eq_top := by
+    rintro ⟨-, x, rfl⟩
+    exact IsTriangularizable.maxGenEigenspace_eq_top x
 
 @[simp]
 lemma iSup_genWeightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
@@ -742,8 +705,7 @@ lemma iSup_genWeightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
   rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.iSup_coe_toSubmodule,
     LieSubmodule.top_coeSubmodule]
   dsimp [genWeightSpaceOf]
-  simp_rw [Module.End.maxGenEigenspace_def]
-  exact IsTriangularizable.iSup_eq_top x
+  exact IsTriangularizable.maxGenEigenspace_eq_top x
 
 open LinearMap Module in
 @[simp]
@@ -766,12 +728,12 @@ variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [LieAlgebra.I
   [FiniteDimensional K M]
 
 instance instIsTriangularizableOfIsAlgClosed [IsAlgClosed K] : IsTriangularizable K L M :=
-  ⟨fun _ ↦ Module.End.iSup_genEigenspace_eq_top _⟩
+  ⟨fun _ ↦ Module.End.iSup_maxGenEigenspace_eq_top _⟩
 
 instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizable K L N := by
   refine ⟨fun y ↦ ?_⟩
   rw [← N.toEnd_restrict_eq_toEnd y]
-  exact Module.End.iSup_genEigenspace_restrict_eq_top _ (IsTriangularizable.iSup_eq_top y)
+  exact Module.End.genEigenspace_restrict_eq_top _ (IsTriangularizable.maxGenEigenspace_eq_top y)
 
 /-- For a triangularizable Lie module in finite dimensions, the weight spaces span the entire space.
 
@@ -782,8 +744,7 @@ lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
     LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.top_coeSubmodule, genWeightSpace]
   refine Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo (toEnd K L M)
     (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem) ?_
-  simp_rw [Module.End.maxGenEigenspace_def]
-  apply IsTriangularizable.iSup_eq_top
+  apply IsTriangularizable.maxGenEigenspace_eq_top
 
 lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
     ⨆ χ : Weight K L M, genWeightSpace M χ = ⊤ := by
