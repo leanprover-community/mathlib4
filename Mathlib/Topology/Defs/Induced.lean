@@ -93,7 +93,7 @@ if either of the following equivalent conditions hold:
 - for any topological space `Y`, a function `f : X → Y` is continuous
   provided that it is continuous on each `s ∈ S`.
 -/
-structure RestrictGenTopology (S : Set (Set X)) : Prop where
+structure IsRestrictGen (S : Set (Set X)) : Prop where
   isOpen_of_forall_induced (u : Set X) : (∀ s ∈ S, IsOpen ((↑) ⁻¹' u : Set s)) → IsOpen u
 
 /-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
