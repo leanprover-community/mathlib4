@@ -307,5 +307,3 @@ def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
 end Pullback
 
 end CommRingCat
-
-#min_imports
