@@ -28,8 +28,9 @@ variable {X Y : Scheme.{u}} (f : X.Hom Y) (S S' : Scheme.{u})
 `X.Over S` is the typeclass containing the data of a structure morphism `X ⮕ S : X ⟶ S`.
 -/
 protected class Over (X S : Scheme.{u}) : Type u where
+  ofHom ::
   /-- The structure morphism. Use `X ⮕ S` instead. -/
-  ofHom :: hom : X ⟶ S
+  hom : X ⟶ S
 
 /--
 The structure morphism `X ⮕ S : X ⟶ S` given `X.Over S`.
