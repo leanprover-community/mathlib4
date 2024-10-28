@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Tactic.FinCases
+import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.Field.IsField
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.Algebra.Field.IsField
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.FinCases
 
 /-!
 
@@ -28,7 +30,7 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 
 universe u v w
 
-variable {α : Type u} {β : Type v}
+variable {α : Type u} {β : Type v} {F : Type w}
 
 open Set Function
 
@@ -804,6 +806,12 @@ theorem zero_mem_nonunits [Semiring α] : 0 ∈ nonunits α ↔ (0 : α) ≠ 1 :
 @[simp 1001] -- increased priority to appease `simpNF`
 theorem one_not_mem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
   not_not_intro isUnit_one
+
+-- Porting note : as this can be proved by other `simp` lemmas, this is marked as high priority.
+@[simp (high)]
+theorem map_mem_nonunits_iff [Monoid α] [Monoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F)
+    [IsLocalHom f] (a) : f a ∈ nonunits β ↔ a ∈ nonunits α :=
+  ⟨fun h ha => h <| ha.map f, fun h ha => h <| ha.of_map⟩
 
 theorem coe_subset_nonunits [Semiring α] {I : Ideal α} (h : I ≠ ⊤) : (I : Set α) ⊆ nonunits α :=
   fun _x hx hu => h <| I.eq_top_of_isUnit_mem hx hu

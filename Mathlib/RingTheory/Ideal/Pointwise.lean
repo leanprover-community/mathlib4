@@ -37,12 +37,12 @@ protected def pointwiseMulSemiringAction : MulSemiringAction M (Ideal R) where
   smul a := Ideal.map (MulSemiringAction.toRingHom _ _ a)
   one_smul I :=
     congr_arg (I.map ·) (RingHom.ext <| one_smul M) |>.trans I.map_id
-  mul_smul a₁ a₂ I :=
+  mul_smul _ _ I :=
     congr_arg (I.map ·) (RingHom.ext <| mul_smul _ _) |>.trans (I.map_map _ _).symm
   smul_one a := by simp only [Ideal.one_eq_top]; exact Ideal.map_top _
   smul_mul a I J := Ideal.map_mul (MulSemiringAction.toRingHom _ _ a) I J
-  smul_add a I J := Ideal.map_sup _ I J
-  smul_zero a := Ideal.map_bot
+  smul_add _ I J := Ideal.map_sup _ I J
+  smul_zero _ := Ideal.map_bot
 
 scoped[Pointwise] attribute [instance] Ideal.pointwiseMulSemiringAction
 
@@ -126,6 +126,14 @@ theorem pointwise_smul_subset_iff {a : M} {S T : Ideal R} : a • S ≤ T ↔ S 
 
 theorem subset_pointwise_smul_iff {a : M} {S T : Ideal R} : S ≤ a • T ↔ a⁻¹ • S ≤ T := by
   rw [← pointwise_smul_le_pointwise_smul_iff (a := a⁻¹), inv_smul_smul]
+
+theorem IsPrime.smul {I : Ideal R} [H : I.IsPrime] (g : M) : (g • I).IsPrime := by
+  rw [I.pointwise_smul_eq_comap]
+  apply H.comap
+
+@[simp]
+theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime :=
+  ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
 
 /-! TODO: add `equivSMul` like we have for subgroup. -/
 

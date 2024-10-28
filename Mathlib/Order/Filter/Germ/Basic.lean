@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Order.Filter.Basic
+import Mathlib.Order.Filter.Tendsto
 import Mathlib.Algebra.Module.Pi
 
 /-!
@@ -118,7 +118,7 @@ def IsConstant {l : Filter α} (P : Germ l β) : Prop :=
     exact fun f g b hfg hf ↦ (hfg.symm).trans hf
 
 theorem isConstant_coe {l : Filter α} {b} (h : ∀ x', f x' = b) : (↑f : Germ l β).IsConstant :=
-  ⟨b, Eventually.of_forall (fun x ↦ h x)⟩
+  ⟨b, Eventually.of_forall h⟩
 
 @[simp]
 theorem isConstant_coe_const {l : Filter α} {b : β} : (fun _ : α ↦ b : Germ l β).IsConstant := by
@@ -690,7 +690,7 @@ theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y 
 instance instPreorder [Preorder β] : Preorder (Germ l β) where
   le := (· ≤ ·)
   le_refl f := inductionOn f <| EventuallyLE.refl l
-  le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun f₁ f₂ f₃ => EventuallyLE.trans
+  le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun _ _ _ => EventuallyLE.trans
 
 instance instPartialOrder [PartialOrder β] : PartialOrder (Germ l β) where
   le_antisymm f g := inductionOn₂ f g fun _ _ h₁ h₂ ↦ (EventuallyLE.antisymm h₁ h₂).germ_eq

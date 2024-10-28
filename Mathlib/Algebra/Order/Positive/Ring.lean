@@ -19,11 +19,11 @@ open Function
 
 namespace Positive
 
-variable {M R K : Type*}
+variable {M R : Type*}
 
 section AddBasic
 
-variable [AddMonoid M] [Preorder M] [CovariantClass M M (· + ·) (· < ·)]
+variable [AddMonoid M] [Preorder M] [AddLeftStrictMono M]
 
 instance : Add { x : M // 0 < x } :=
   ⟨fun x y => ⟨x + y, add_pos x.2 y.2⟩⟩
@@ -36,46 +36,39 @@ instance addSemigroup : AddSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addSemigroup _ coe_add
 
 instance addCommSemigroup {M : Type*} [AddCommMonoid M] [Preorder M]
-    [CovariantClass M M (· + ·) (· < ·)] : AddCommSemigroup { x : M // 0 < x } :=
+    [AddLeftStrictMono M] : AddCommSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addCommSemigroup _ coe_add
 
 instance addLeftCancelSemigroup {M : Type*} [AddLeftCancelMonoid M] [Preorder M]
-    [CovariantClass M M (· + ·) (· < ·)] : AddLeftCancelSemigroup { x : M // 0 < x } :=
+    [AddLeftStrictMono M] : AddLeftCancelSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addLeftCancelSemigroup _ coe_add
 
 instance addRightCancelSemigroup {M : Type*} [AddRightCancelMonoid M] [Preorder M]
-    [CovariantClass M M (· + ·) (· < ·)] : AddRightCancelSemigroup { x : M // 0 < x } :=
+    [AddLeftStrictMono M] : AddRightCancelSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addRightCancelSemigroup _ coe_add
 
-instance covariantClass_add_lt :
-    CovariantClass { x : M // 0 < x } { x : M // 0 < x } (· + ·) (· < ·) :=
+instance addLeftStrictMono : AddLeftStrictMono { x : M // 0 < x } :=
   ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_left (show (y : M) < z from hyz) _⟩
 
-instance covariantClass_swap_add_lt [CovariantClass M M (swap (· + ·)) (· < ·)] :
-    CovariantClass { x : M // 0 < x } { x : M // 0 < x } (swap (· + ·)) (· < ·) :=
+instance addRightStrictMono [AddRightStrictMono M] : AddRightStrictMono { x : M // 0 < x } :=
   ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_right (show (y : M) < z from hyz) _⟩
 
-instance contravariantClass_add_lt [ContravariantClass M M (· + ·) (· < ·)] :
-    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (· + ·) (· < ·) :=
+instance addLeftReflectLT [AddLeftReflectLT M] : AddLeftReflectLT { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_lt_coe.1 <| lt_of_add_lt_add_left h⟩
 
-instance contravariantClass_swap_add_lt [ContravariantClass M M (swap (· + ·)) (· < ·)] :
-    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (swap (· + ·)) (· < ·) :=
+instance addRightReflectLT [AddRightReflectLT M] : AddRightReflectLT { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_lt_coe.1 <| lt_of_add_lt_add_right h⟩
 
-instance contravariantClass_add_le [ContravariantClass M M (· + ·) (· ≤ ·)] :
-    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (· + ·) (· ≤ ·) :=
+instance addLeftReflectLE [AddLeftReflectLE M] : AddLeftReflectLE { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_le_coe.1 <| le_of_add_le_add_left h⟩
 
-instance contravariantClass_swap_add_le [ContravariantClass M M (swap (· + ·)) (· ≤ ·)] :
-    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (swap (· + ·)) (· ≤ ·) :=
+instance addRightReflectLE [AddRightReflectLE M] : AddRightReflectLE { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_le_coe.1 <| le_of_add_le_add_right h⟩
 
 end AddBasic
 
-instance covariantClass_add_le [AddMonoid M] [PartialOrder M]
-    [CovariantClass M M (· + ·) (· < ·)] :
-    CovariantClass { x : M // 0 < x } { x : M // 0 < x } (· + ·) (· ≤ ·) :=
+instance addLeftMono [AddMonoid M] [PartialOrder M] [AddLeftStrictMono M] :
+    AddLeftMono { x : M // 0 < x } :=
   ⟨@fun _ _ _ h₁ => StrictMono.monotone (fun _ _ h => add_lt_add_left h _) h₁⟩
 
 section Mul

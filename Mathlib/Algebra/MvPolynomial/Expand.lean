@@ -29,7 +29,6 @@ noncomputable def expand (p : ℕ) : MvPolynomial σ R →ₐ[R] MvPolynomial σ
   { (eval₂Hom C fun i ↦ X i ^ p : MvPolynomial σ R →+* MvPolynomial σ R) with
     commutes' := fun _ ↦ eval₂Hom_C _ _ _ }
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem expand_C (p : ℕ) (r : R) : expand p (C r : MvPolynomial σ R) = C r :=
   eval₂Hom_C _ _ _
 

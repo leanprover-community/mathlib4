@@ -63,7 +63,7 @@ taking a limit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
 noncomputable def limitPresheafOfModules : PresheafOfModules R where
   obj X := limit (F ⋙ evaluation R X)
-  map {X Y} f := limMap (whiskerLeft F (restriction R f)) ≫
+  map {_ Y} f := limMap (whiskerLeft F (restriction R f)) ≫
     (preservesLimitIso (ModuleCat.restrictScalars (R.map f)) (F ⋙ evaluation R Y)).inv
   map_id X := by
     dsimp
@@ -73,7 +73,7 @@ noncomputable def limitPresheafOfModules : PresheafOfModules R where
     dsimp
     simp only [limMap_π, Functor.comp_obj, evaluation_obj, whiskerLeft_app,
       restriction_app, assoc]
-    erw [preservesLimitsIso_hom_π]
+    erw [preservesLimitIso_hom_π]
     rw [← ModuleCat.restrictScalarsId'App_inv_naturality, map_id,
       ModuleCat.restrictScalarsId'_inv_app]
     dsimp
@@ -85,14 +85,14 @@ noncomputable def limitPresheafOfModules : PresheafOfModules R where
     intro j
     simp only [Functor.comp_obj, evaluation_obj, limMap_π, whiskerLeft_app, restriction_app,
       map_comp, ModuleCat.restrictScalarsComp'_inv_app, Functor.map_comp, assoc]
-    erw [preservesLimitsIso_hom_π]
+    erw [preservesLimitIso_hom_π]
     rw [← ModuleCat.restrictScalarsComp'App_inv_naturality]
     dsimp
     rw [← Functor.map_comp_assoc, ← Functor.map_comp_assoc, assoc,
-      preservesLimitsIso_inv_π]
+      preservesLimitIso_inv_π]
     erw [limMap_π]
     dsimp
-    simp only [Functor.map_comp, assoc, preservesLimitsIso_inv_π_assoc]
+    simp only [Functor.map_comp, assoc, preservesLimitIso_inv_π_assoc]
     erw [limMap_π_assoc]
     dsimp
 
@@ -106,7 +106,7 @@ noncomputable def limitCone : Cone F where
         { app := fun X ↦ limit.π (F ⋙ evaluation R X) j
           naturality := fun {X Y} f ↦ by
             dsimp
-            simp only [assoc, preservesLimitsIso_inv_π]
+            simp only [assoc, preservesLimitIso_inv_π]
             apply limMap_π }
       naturality := fun {j j'} f ↦ by
         ext1 X
