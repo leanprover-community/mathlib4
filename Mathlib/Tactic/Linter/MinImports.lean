@@ -30,14 +30,14 @@ namespace Mathlib.Linter
 
 /--
 `ImportState` is the structure keeping track of the data that the `minImports` linter uses.
-* `importGraph` is the import graph of the current file.
+* `transClosure` is the import graph of the current file.
 * `minImports` is the `NameSet` of minimal imports to build the file up to the current command.
 * `importSize` is the number of transitive imports to build the file up to the current command.
 -/
 structure ImportState where
-  importGraph : Option (NameMap (Array Name)) := none
-  minImports : NameSet := {}
-  importSize : Nat := 0
+  transClosure : Option (NameMap NameSet) := none
+  minImports   : NameSet := {}
+  importSize   : Nat := 0
   deriving Inhabited
 
 /--
@@ -67,11 +67,12 @@ namespace MinImports
 
 open Mathlib.Command.MinImports
 
-/-- `impsBelow ig ms` takes as input an `importGraph` `ig` and a `NameSet` of module names `ms`.
-It returns the modules that are transitively imported by `ms`, using the data in `ig`.
+/-- `importsBelow tc ms` takes as input a `NameMap NameSet` `tc`, representing the
+`transitiveClosure` of the imports of the current module, and a `NameSet` of module names `ms`.
+It returns the modules that are transitively imported by `ms`, using the data in `tc`.
 -/
-def importsBelow (ig : NameMap (Array Name)) (ms : NameSet) : NameSet :=
-  (ig.upstreamOf ms).fold (σ := NameSet) (fun _ ↦ ·.insert ·) {}
+def importsBelow (tc : NameMap NameSet) (ms : NameSet) : NameSet :=
+  ms.fold (·.append <| tc.findD · default) ms
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
 def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -81,10 +82,10 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if stx == (← `(command| set_option $(mkIdent `linter.minImports) true)) then return
     let env ← getEnv
-    -- the first time `minImportsRef` is read, it has `ig = none`; in this case, we set it to
-    -- be the `importGraph` for the file.
-    if (← minImportsRef.get).importGraph.isNone then
-      minImportsRef.modify ({· with importGraph := env.importGraph})
+    -- the first time `minImportsRef` is read, it has `transClosure = none`;
+    -- in this case, we set it to be the `transClosure` for the file.
+    if (← minImportsRef.get).transClosure.isNone then
+      minImportsRef.modify ({· with transClosure := env.importGraph.transitiveClosure})
     let impState ← minImportsRef.get
     let (importsSoFar, oldCumulImps) := (impState.minImports, impState.importSize)
     -- when the linter reaches the end of the file or `#exit`, it gives a report
@@ -118,7 +119,8 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let currImpArray := currImports.toArray.qsort Name.lt
     if currImpArray != #[] &&
        currImpArray ≠ importsSoFar.toArray.qsort Name.lt then
-      let newCumulImps := (importsBelow (impState.importGraph.getD env.importGraph) tot).size
+      let newCumulImps := -- We should always be in the situation where `getD` finds something
+        (importsBelow (impState.transClosure.getD env.importGraph.transitiveClosure) tot).size
       minImportsRef.modify ({· with minImports := currImports, importSize := newCumulImps})
       let new := currImpArray.filter (!importsSoFar.contains ·)
       let redundant := importsSoFar.toArray.filter (!currImports.contains ·)
