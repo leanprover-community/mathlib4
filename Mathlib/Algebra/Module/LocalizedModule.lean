@@ -1067,6 +1067,31 @@ lemma map_mk' (h : M →ₗ[R] N) (x) (s : S) :
   rw [iso_symm_apply' S f (mk' f x s) x s (mk'_cancel' f x s), LocalizedModule.lift_mk]
   rfl
 
+@[simp]
+lemma map_id : map S f f (.id ) = .id := by
+  ext x
+  obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
+  simp
+
+@[simp]
+theorem map_injective (h : M →ₗ[R] N) (h_inj : Function.Injective h) :
+    Function.Injective (map S f g h) := by
+  intros x y
+  obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
+  obtain ⟨⟨y, t⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f y
+  simp only [Function.uncurry_apply_pair, map_mk', mk'_eq_mk'_iff, Subtype.exists,
+    Submonoid.mk_smul, exists_prop, forall_exists_index, and_imp]
+  intros c hc e
+  exact ⟨c, hc, h_inj (by simpa)⟩
+
+@[simp]
+theorem map_surjective (h : M →ₗ[R] N) (h_surj : Function.Surjective h) :
+    Function.Surjective (map S f g h) := by
+  intros x
+  obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S g x
+  obtain ⟨x, rfl⟩ := h_surj x
+  exact ⟨mk' f x s, by simp⟩
+
 open LocalizedModule LinearEquiv LinearMap Submonoid
 
 variable (M)
@@ -1145,6 +1170,14 @@ theorem map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : Func
     Function.Exact (map S f₀ f₁ g) (map S f₁ f₂ h) :=
   Function.Exact.of_ladder_linearEquiv_of_exact
     (map_iso_commute S f₀ f₁ g) (map_iso_commute S f₁ f₂ h) (LocalizedModule.map_exact S g h ex)
+
+/-- Localization of composition is the composition of localization -/
+@[simp]
+theorem map_comp' (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) :
+    map S f₀ f₂ (h ∘ₗ g) = map S f₁ f₂ h ∘ₗ map S f₀ f₁ g := by
+  ext x
+  obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f₀ x
+  simp
 
 section Algebra
 

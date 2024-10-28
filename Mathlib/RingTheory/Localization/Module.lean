@@ -265,6 +265,7 @@ abbrev LocalizedModule.map :
   IsLocalizedModule.mapExtendScalars S (LocalizedModule.mkLinearMap S M)
         (LocalizedModule.mkLinearMap S N) (Localization S)
 
+@[simp]
 lemma LocalizedModule.map_mk (f : M →ₗ[R] N) (x y) :
     map S f (.mk x y) = LocalizedModule.mk (f x) y := by
   rw [IsLocalizedModule.mk_eq_mk', IsLocalizedModule.mk_eq_mk']
@@ -272,16 +273,15 @@ lemma LocalizedModule.map_mk (f : M →ₗ[R] N) (x y) :
 
 @[simp]
 lemma LocalizedModule.map_id :
-    LocalizedModule.map S (.id (R := R) (M := M)) = LinearMap.id := by
-  ext x
-  induction x using induction_on
-  simp only [LocalizedModule.map_mk, LinearMap.id_coe, id_eq]
+    LocalizedModule.map S (.id (R := R) (M := M)) = LinearMap.id :=
+  LinearMap.ext fun x ↦ LinearMap.congr_fun (IsLocalizedModule.map_id S (mkLinearMap S M)) x
+
+lemma LocalizedModule.map_injective (l : M →ₗ[R] N) (hl : Function.Injective l) :
+    Function.Injective (map S l) :=
+  IsLocalizedModule.map_injective S (mkLinearMap S M) (mkLinearMap S N) l hl
 
 lemma LocalizedModule.map_surjective (l : M →ₗ[R] N) (hl : Function.Surjective l) :
-    Function.Surjective (map S l) := by
-  intro x
-  induction' x using LocalizedModule.induction_on with m s
-  obtain ⟨m, rfl⟩ := hl m
-  exact ⟨mk m s, map_mk _ _ _ _⟩
+    Function.Surjective (map S l) :=
+  IsLocalizedModule.map_surjective S (mkLinearMap S M) (mkLinearMap S N) l hl
 
 end LocalizedModule
