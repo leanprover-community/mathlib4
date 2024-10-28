@@ -2688,6 +2688,7 @@ import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Set.Subset
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Data.Set.Sups
+import Mathlib.Data.Set.SymmDiff
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.SetLike.Fintype
@@ -4670,7 +4671,8 @@ import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.Algebra.UniformConvergence
 import Mathlib.Topology.Algebra.UniformField
 import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.UniformRing
 import Mathlib.Topology.Algebra.Valued.NormedValued
