@@ -88,7 +88,7 @@ lemma rnDeriv_pos' [HaveLebesgueDecomposition ν μ] [SigmaFinite μ] (hμν : �
 
 section rnDeriv_withDensity_leftRight
 
-variable {μ ν : Measure α} {f : α → ℝ≥0∞}
+variable {f : α → ℝ≥0∞}
 
 /-- Auxiliary lemma for `rnDeriv_withDensity_left`. -/
 lemma rnDeriv_withDensity_withDensity_rnDeriv_left (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
