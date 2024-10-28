@@ -7,7 +7,7 @@ Authors: Kevin Buzzard, Patrick Massot
 
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.GroupTheory.Coset.Defs
+import Mathlib.GroupTheory.Coset.Basic
 
 /-!
 # Quotients of groups by normal subgroups
