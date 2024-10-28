@@ -320,8 +320,8 @@ theorem isPreconnected_closed_iff {s : Set α} :
       rw [← compl_union] at this
       exact this.ne_empty huv.disjoint_compl_right.inter_eq⟩
 
-theorem Inducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α → β}
-    (hf : Inducing f) : IsPreconnected (f '' s) ↔ IsPreconnected s := by
+theorem IsInducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α → β}
+    (hf : IsInducing f) : IsPreconnected (f '' s) ↔ IsPreconnected s := by
   refine ⟨fun h => ?_, fun h => h.image _ hf.continuous.continuousOn⟩
   rintro u v hu' hv' huv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩
   rcases hf.isOpen_iff.1 hu' with ⟨u, hu, rfl⟩
@@ -497,7 +497,7 @@ theorem isPreconnected_connectedComponent {x : α} : IsPreconnected (connectedCo
 theorem isPreconnected_connectedComponentIn {x : α} {F : Set α} :
     IsPreconnected (connectedComponentIn F x) := by
   rw [connectedComponentIn]; split_ifs
-  · exact inducing_subtype_val.isPreconnected_image.mpr isPreconnected_connectedComponent
+  · exact IsInducing.subtypeVal.isPreconnected_image.mpr isPreconnected_connectedComponent
   · exact isPreconnected_empty
 
 theorem isConnected_connectedComponent {x : α} : IsConnected (connectedComponent x) :=
@@ -514,7 +514,7 @@ theorem IsPreconnected.subset_connectedComponent {x : α} {s : Set α} (H1 : IsP
 theorem IsPreconnected.subset_connectedComponentIn {x : α} {F : Set α} (hs : IsPreconnected s)
     (hxs : x ∈ s) (hsF : s ⊆ F) : s ⊆ connectedComponentIn F x := by
   have : IsPreconnected (((↑) : F → α) ⁻¹' s) := by
-    refine inducing_subtype_val.isPreconnected_image.mp ?_
+    refine IsInducing.subtypeVal.isPreconnected_image.mp ?_
     rwa [Subtype.image_preimage_coe, inter_eq_right.mpr hsF]
   have h2xs : (⟨x, hsF hxs⟩ : F) ∈ (↑) ⁻¹' s := by
     rw [mem_preimage]
@@ -701,7 +701,7 @@ instance (priority := 100) IrreducibleSpace.connectedSpace (α : Type u) [Topolo
 
 theorem Subtype.preconnectedSpace {s : Set α} (h : IsPreconnected s) : PreconnectedSpace s where
   isPreconnected_univ := by
-    rwa [← inducing_subtype_val.isPreconnected_image, image_univ, Subtype.range_val]
+    rwa [← IsInducing.subtypeVal.isPreconnected_image, image_univ, Subtype.range_val]
 
 theorem Subtype.connectedSpace {s : Set α} (h : IsConnected s) : ConnectedSpace s where
   toPreconnectedSpace := Subtype.preconnectedSpace h.isPreconnected

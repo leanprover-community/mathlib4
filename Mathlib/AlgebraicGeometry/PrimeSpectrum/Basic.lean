@@ -250,8 +250,8 @@ theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective 
 
 variable (S)
 
-theorem localization_comap_inducing [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
-    Inducing (comap (algebraMap R S)) := by
+theorem localization_comap_isInducing [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+    IsInducing (comap (algebraMap R S)) := by
   refine ⟨TopologicalSpace.ext_isClosed fun Z ↦ ?_⟩
   simp_rw [isClosed_induced_iff, isClosed_iff_zeroLocus, @eq_comm _ _ (zeroLocus _),
     exists_exists_eq_and, preimage_comap_zeroLocus]
@@ -268,7 +268,7 @@ theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocaliza
 
 theorem localization_comap_isEmbedding [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     IsEmbedding (comap (algebraMap R S)) :=
-  ⟨localization_comap_inducing S M, localization_comap_injective S M⟩
+  ⟨localization_comap_isInducing S M, localization_comap_injective S M⟩
 
 @[deprecated (since := "2024-10-26")]
 alias localization_comap_embedding := localization_comap_isEmbedding
@@ -279,8 +279,8 @@ theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization
 
 open Function RingHom
 
-theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) where
-  induced := by
+theorem comap_isInducing_of_surjective (hf : Surjective f) : IsInducing (comap f) where
+  eq_induced := by
     simp only [TopologicalSpace.ext_iff, ← isClosed_compl_iff, isClosed_iff_zeroLocus,
       isClosed_induced_iff]
     refine fun s =>
@@ -332,10 +332,10 @@ theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
   rw [range_comap_of_surjective _ f hf]
   exact isClosed_zeroLocus _
 
-theorem isClosedEmbedding_comap_of_surjective (hf : Surjective f) : IsClosedEmbedding (comap f) :=
-  { induced := (comap_inducing_of_surjective S f hf).induced
-    inj := comap_injective_of_surjective f hf
-    isClosed_range := isClosed_range_comap_of_surjective S f hf }
+lemma isClosedEmbedding_comap_of_surjective (hf : Surjective f) : IsClosedEmbedding (comap f) where
+  toIsInducing := comap_isInducing_of_surjective S f hf
+  inj := comap_injective_of_surjective f hf
+  isClosed_range := isClosed_range_comap_of_surjective S f hf
 
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_comap_of_surjective := isClosedEmbedding_comap_of_surjective
@@ -359,9 +359,9 @@ to the disjoint union of `PrimeSpectrum R` and `PrimeSpectrum S`. -/
 noncomputable
 def primeSpectrumProdHomeo :
     PrimeSpectrum (R × S) ≃ₜ PrimeSpectrum R ⊕ PrimeSpectrum S := by
-  refine ((primeSpectrumProd R S).symm.toHomeomorphOfInducing ?_).symm
+  refine ((primeSpectrumProd R S).symm.toHomeomorphOfIsInducing ?_).symm
   refine (IsClosedEmbedding.of_continuous_injective_isClosedMap ?_
-    (Equiv.injective _) ?_).toInducing
+    (Equiv.injective _) ?_).isInducing
   · rw [continuous_sum_dom]
     simp only [Function.comp_def, primeSpectrumProd_symm_inl, primeSpectrumProd_symm_inr]
     exact ⟨(comap _).2, (comap _).2⟩

@@ -114,7 +114,7 @@ lemma closure_sUnion (S : Set (Set α)) : closure (⋃₀ S) = ⋃ s ∈ S, clos
 
 end AlexandrovDiscrete
 
-lemma Inducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β → α} (h : Inducing f) :
+lemma IsInducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β → α} (h : IsInducing f) :
     AlexandrovDiscrete β where
   isOpen_sInter S hS := by
     simp_rw [h.isOpen_iff] at hS ⊢
@@ -186,7 +186,7 @@ instance AlexandrovDiscrete.toLocallyCompactSpace : LocallyCompactSpace α where
       exterior_singleton_subset_iff_mem_nhds.2 hU, isCompact_singleton.exterior⟩
 
 instance Subtype.instAlexandrovDiscrete {p : α → Prop} : AlexandrovDiscrete {a // p a} :=
-  inducing_subtype_val.alexandrovDiscrete
+  IsInducing.subtypeVal.alexandrovDiscrete
 
 instance Quotient.instAlexandrovDiscrete {s : Setoid α} : AlexandrovDiscrete (Quotient s) :=
   alexandrovDiscrete_coinduced

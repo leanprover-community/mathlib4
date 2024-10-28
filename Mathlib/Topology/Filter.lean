@@ -183,8 +183,8 @@ theorem nhds_nhds (x : X) :
     𝓝 (𝓝 x) = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 (Iic (𝓟 s)) := by
   simp only [(nhds_basis_opens x).nhds.eq_biInf, iInf_and, @iInf_comm _ (_ ∈ _)]
 
-theorem inducing_nhds : Inducing (𝓝 : X → Filter X) :=
-  inducing_iff_nhds.2 fun x =>
+theorem isInducing_nhds : IsInducing (𝓝 : X → Filter X) :=
+  isInducing_iff_nhds.2 fun x =>
     (nhds_def' _).trans <| by
       simp (config := { contextual := true }) only [nhds_nhds, comap_iInf, comap_principal,
         Iic_principal, preimage_setOf_eq, ← mem_interior_iff_mem_nhds, setOf_mem_eq,
@@ -192,7 +192,7 @@ theorem inducing_nhds : Inducing (𝓝 : X → Filter X) :=
 
 @[continuity]
 theorem continuous_nhds : Continuous (𝓝 : X → Filter X) :=
-  inducing_nhds.continuous
+  isInducing_nhds.continuous
 
 protected theorem Tendsto.nhds {f : α → X} {l : Filter α} {x : X} (h : Tendsto f l (𝓝 x)) :
     Tendsto (𝓝 ∘ f) l (𝓝 (𝓝 x)) :=

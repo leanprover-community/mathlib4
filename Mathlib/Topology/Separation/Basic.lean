@@ -270,25 +270,25 @@ theorem t0Space_iff_not_inseparable (X : Type u) [TopologicalSpace X] :
 theorem Inseparable.eq [T0Space X] {x y : X} (h : Inseparable x y) : x = y :=
   T0Space.t0 h
 
-/-- A topology `Inducing` map from a T₀ space is injective. -/
-protected theorem Inducing.injective [TopologicalSpace Y] [T0Space X] {f : X → Y}
-    (hf : Inducing f) : Injective f := fun _ _ h =>
+/-- A topology inducing map from a T₀ space is injective. -/
+protected theorem IsInducing.injective [TopologicalSpace Y] [T0Space X] {f : X → Y}
+    (hf : IsInducing f) : Injective f := fun _ _ h =>
   (hf.inseparable_iff.1 <| .of_eq h).eq
 
-/-- A topology `Inducing` map from a T₀ space is a topological embedding. -/
-protected theorem Inducing.isEmbedding [TopologicalSpace Y] [T0Space X] {f : X → Y}
-    (hf : Inducing f) : IsEmbedding f :=
+/-- A topology inducing map from a T₀ space is a topological embedding. -/
+protected theorem IsInducing.isEmbedding [TopologicalSpace Y] [T0Space X] {f : X → Y}
+    (hf : IsInducing f) : IsEmbedding f :=
   ⟨hf, hf.injective⟩
 
 @[deprecated (since := "2024-10-26")]
-alias Inducing.embedding := Inducing.isEmbedding
+alias Inducing.embedding := IsInducing.isEmbedding
 
-lemma isEmbedding_iff_inducing [TopologicalSpace Y] [T0Space X] {f : X → Y} :
-    IsEmbedding f ↔ Inducing f :=
-  ⟨IsEmbedding.toInducing, Inducing.isEmbedding⟩
+lemma isEmbedding_iff_isInducing [TopologicalSpace Y] [T0Space X] {f : X → Y} :
+    IsEmbedding f ↔ IsInducing f :=
+  ⟨IsEmbedding.isInducing, IsInducing.isEmbedding⟩
 
 @[deprecated (since := "2024-10-26")]
-alias embedding_iff_inducing := isEmbedding_iff_inducing
+alias embedding_iff_inducing := isEmbedding_iff_isInducing
 
 theorem t0Space_iff_nhds_injective (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Injective (𝓝 : X → Filter X) :=
@@ -334,7 +334,7 @@ def specializationOrder (X) [TopologicalSpace X] [T0Space X] : PartialOrder X :=
 
 instance SeparationQuotient.instT0Space : T0Space (SeparationQuotient X) :=
   ⟨fun x y => Quotient.inductionOn₂' x y fun _ _ h =>
-    SeparationQuotient.mk_eq_mk.2 <| SeparationQuotient.inducing_mk.inseparable_iff.1 h⟩
+    SeparationQuotient.mk_eq_mk.2 <| SeparationQuotient.isInducing_mk.inseparable_iff.1 h⟩
 
 theorem minimal_nonempty_closed_subsingleton [T0Space X] {s : Set X} (hs : IsClosed s)
     (hmin : ∀ t, t ⊆ s → t.Nonempty → IsClosed t → t = s) : s.Subsingleton := by
@@ -465,11 +465,11 @@ theorem specializes_iff_inseparable : x ⤳ y ↔ Inseparable x y :=
 /-- In an R₀ space, `Specializes` implies `Inseparable`. -/
 alias ⟨Specializes.inseparable, _⟩ := specializes_iff_inseparable
 
-theorem Inducing.r0Space [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) : R0Space Y where
+theorem IsInducing.r0Space [TopologicalSpace Y] {f : Y → X} (hf : IsInducing f) : R0Space Y where
   specializes_symmetric a b := by
     simpa only [← hf.specializes_iff] using Specializes.symm
 
-instance {p : X → Prop} : R0Space {x // p x} := inducing_subtype_val.r0Space
+instance {p : X → Prop} : R0Space {x // p x} := IsInducing.subtypeVal.r0Space
 
 instance [TopologicalSpace Y] [R0Space Y] : R0Space (X × Y) where
   specializes_symmetric _ _ h := h.fst.symm.prod h.snd.symm
@@ -910,9 +910,9 @@ theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Sp
   rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 0 9 :)]
   constructor
   · intro h x y xspecy
-    rw [← Inducing.specializes_iff inducing_mk, h xspecy] at *
+    rw [← IsInducing.specializes_iff isInducing_mk, h xspecy] at *
   · rintro h ⟨x⟩ ⟨y⟩ sxspecsy
-    have xspecy : x ⤳ y := (Inducing.specializes_iff inducing_mk).mp sxspecsy
+    have xspecy : x ⤳ y := isInducing_mk.specializes_iff.mp sxspecsy
     have yspecx : y ⤳ x := h xspecy
     erw [mk_eq_mk, inseparable_iff_specializes_and]
     exact ⟨xspecy, yspecx⟩
@@ -1146,11 +1146,11 @@ theorem R1Space.of_continuous_specializes_imp [TopologicalSpace Y] {f : Y → X}
   specializes_or_disjoint_nhds x y := (specializes_or_disjoint_nhds (f x) (f y)).imp (hspec x y) <|
     ((hc.tendsto _).disjoint · (hc.tendsto _))
 
-theorem Inducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) : R1Space Y :=
+theorem IsInducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : IsInducing f) : R1Space Y :=
   .of_continuous_specializes_imp hf.continuous fun _ _ ↦ hf.specializes_iff.1
 
 protected theorem R1Space.induced (f : Y → X) : @R1Space Y (.induced f ‹_›) :=
-  @Inducing.r1Space _ _ _ _ (.induced f _) f (inducing_induced f)
+  @IsInducing.r1Space _ _ _ _ (.induced f _) f (.induced f)
 
 instance (p : X → Prop) : R1Space (Subtype p) := .induced _
 
@@ -2010,7 +2010,7 @@ theorem TopologicalSpace.IsTopologicalBasis.exists_closure_subset {B : Set (Set 
     ∃ t ∈ B, x ∈ t ∧ closure t ⊆ s := by
   simpa only [exists_prop, and_assoc] using hB.nhds_hasBasis.nhds_closure.mem_iff.mp h
 
-protected theorem Inducing.regularSpace [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) :
+protected theorem IsInducing.regularSpace [TopologicalSpace Y] {f : Y → X} (hf : IsInducing f) :
     RegularSpace Y :=
   .of_hasBasis
     (fun b => by rw [hf.nhds_eq_comap b]; exact (closed_nhds_basis _).comap _)
@@ -2018,7 +2018,7 @@ protected theorem Inducing.regularSpace [TopologicalSpace Y] {f : Y → X} (hf :
 
 theorem regularSpace_induced (f : Y → X) : @RegularSpace Y (induced f ‹_›) :=
   letI := induced f ‹_›
-  (inducing_induced f).regularSpace
+  (IsInducing.induced f).regularSpace
 
 theorem regularSpace_sInf {X} {T : Set (TopologicalSpace X)} (h : ∀ t ∈ T, @RegularSpace X t) :
     @RegularSpace X (sInf T) := by
@@ -2042,7 +2042,7 @@ theorem RegularSpace.inf {X} {t₁ t₂ : TopologicalSpace X} (h₁ : @RegularSp
   exact regularSpace_iInf (Bool.forall_bool.2 ⟨h₂, h₁⟩)
 
 instance {p : X → Prop} : RegularSpace (Subtype p) :=
-  IsEmbedding.subtypeVal.toInducing.regularSpace
+  IsEmbedding.subtypeVal.isInducing.regularSpace
 
 instance [TopologicalSpace Y] [RegularSpace Y] : RegularSpace (X × Y) :=
   (regularSpace_induced (@Prod.fst X Y)).inf (regularSpace_induced (@Prod.snd X Y))
@@ -2192,7 +2192,7 @@ instance (priority := 100) T3Space.t25Space [T3Space X] : T25Space X := by
 protected theorem IsEmbedding.t3Space [TopologicalSpace Y] [T3Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T3Space X :=
   { toT0Space := hf.t0Space
-    toRegularSpace := hf.toInducing.regularSpace }
+    toRegularSpace := hf.isInducing.regularSpace }
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t3Space := IsEmbedding.t3Space
@@ -2353,7 +2353,7 @@ instance (priority := 100) CompletelyNormalSpace.toNormalSpace
 theorem IsEmbedding.completelyNormalSpace [TopologicalSpace Y] [CompletelyNormalSpace Y]
     {e : X → Y} (he : IsEmbedding e) : CompletelyNormalSpace X := by
   refine ⟨fun s t hd₁ hd₂ => ?_⟩
-  simp only [he.toInducing.nhdsSet_eq_comap]
+  simp only [he.isInducing.nhdsSet_eq_comap]
   refine disjoint_comap (completely_normal ?_ ?_)
   · rwa [← subset_compl_iff_disjoint_left, image_subset_iff, preimage_compl,
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_left]
