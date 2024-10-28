@@ -271,9 +271,9 @@ scoped[ChangeOfRings]
 
 end Unbundled
 
-namespace ExtendScalars
-
 open ChangeOfRings
+
+namespace ExtendScalars
 
 variable (M : ModuleCat.{v} R)
 
@@ -321,8 +321,6 @@ def extendScalars {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f :
   map_comp := ExtendScalars.map'_comp f
 
 namespace ExtendScalars
-
-open ChangeOfRings
 
 variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S)
 
@@ -616,8 +614,6 @@ instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
 
 namespace ExtendRestrictScalarsAdj
 
-open ChangeOfRings
-
 open TensorProduct
 
 variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S)
@@ -851,7 +847,7 @@ lemma extendRestrictScalarsAdj_homEquiv_apply
 lemma extendRestrictScalarsAdj_unit_app_apply
     {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
     (f : R →+* S) (M : ModuleCat.{max v u₂} R) (m : M):
-    (extendRestrictScalarsAdj f).unit.app M m = by exact (1 : S) ⊗ₜ m :=
+    (extendRestrictScalarsAdj f).unit.app M m = (1 : S) ⊗ₜ[R,f] m :=
   rfl
 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
@@ -933,7 +929,7 @@ lemma homEquiv_extendScalarsComp (M : ModuleCat R₁) :
 
 lemma extendScalarsComp_hom_app_one_tmul (M : ModuleCat R₁) (m : M) :
     (extendScalarsComp f₁₂ f₂₃).hom.app M ((1 : R₃) ⊗ₜ m) =
-        by exact (1 : R₃) ⊗ₜ ((1 : R₂) ⊗ₜ m) := by
+      (1 : R₃) ⊗ₜ[R₂,f₂₃] ((1 : R₂) ⊗ₜ[R₁,f₁₂] m) := by
   rw [← extendRestrictScalarsAdj_homEquiv_apply, homEquiv_extendScalarsComp]
   rfl
 
