@@ -11,11 +11,6 @@ import Mathlib.Topology.Algebra.Monoid
 An *approximate unit* is a filter `l` such that multiplication on the left (or right) by `m : α`
 tends to `𝓝 m` along the filter, and additionally `l ≠ ⊥` and `Disjoint l (cobounded α)`.
 
-In many cases of interest, an approximate unit is specified by a filter basis with certain
-properties, and the filter itself is of less interest. For instance, in the case of non-unital
-normed rings, it is often required that the elements of the basis are contained in the unit ball.
-In order to reduce the type class burden, we instead only require a bornology on the underlying
-type.
 
 Examples of approximate units include:
 
@@ -24,6 +19,13 @@ Examples of approximate units include:
 - In a C⋆-algebra, the collection of sections `fun a ↦ {x | a ≤ x} ∩ ball 0 1`, where `a`
   ranges over the positive elements of norm strictly less than 1, is a filter basis for an
   approximate unit.
+
+In many cases of interest, an approximate unit is specified by a filter basis with certain
+properties, and the filter itself is of less interest. For instance, in the case of non-unital
+C⋆-algebras, the canonical approximate unit is the one derived from the net of nonnegative elements
+contained in the unit ball. This set is directed under the natural star order:
+`x ≤ y ↔ ∃ s, y = x + star s * s`. In order to reduce the type class burden, we only require a
+bornology on the underlying type.
 
 One reason to help explain why the filter is of less interest than the basis is that there may be
 *many* approximate units, and they may even be disjoint! Indeed, in a topological unital magma,
