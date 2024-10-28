@@ -2555,6 +2555,7 @@ import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.Data.Nat.Prime.Infinite
 import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Data.Nat.Prime.Nth
 import Mathlib.Data.Nat.Prime.Pow
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Set
