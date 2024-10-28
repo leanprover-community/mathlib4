@@ -30,14 +30,14 @@ namespace Mathlib.Linter
 
 /--
 `ImportState` is the structure keeping track of the data that the `minImports` linter uses.
-* `ig` is the import graph of the current file.
-* `minImps` is the `NameSet` of minimal imports to build the file up to the current command.
-* `impsSize` is the number of transitive imports to build the file up to the current command.
+* `importGraph` is the import graph of the current file.
+* `minImports` is the `NameSet` of minimal imports to build the file up to the current command.
+* `importSize` is the number of transitive imports to build the file up to the current command.
 -/
 structure ImportState where
-  ig : Option (NameMap (Array Name)) := none
-  minImps : NameSet := {}
-  impsSize : Nat := 0
+  importGraph : Option (NameMap (Array Name)) := none
+  minImports : NameSet := {}
+  importSize : Nat := 0
   deriving Inhabited
 
 /--
@@ -83,9 +83,10 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let env ← getEnv
     -- the first time `minImportsRef` is read, it has `ig = none`; in this case, we set it to
     -- be the `importGraph` for the file.
-    if (← minImportsRef.get).ig.isNone then minImportsRef.modify ({· with ig := env.importGraph})
+    if (← minImportsRef.get).importGraph.isNone then
+      minImportsRef.modify ({· with importGraph := env.importGraph})
     let impState ← minImportsRef.get
-    let (importsSoFar, oldCumulImps) := (impState.minImps, impState.impsSize)
+    let (importsSoFar, oldCumulImps) := (impState.minImports, impState.importSize)
     -- when the linter reaches the end of the file or `#exit`, it gives a report
     if #[``Parser.Command.eoi, ``Lean.Parser.Command.exit].contains stx.getKind then
       let explicitImportsInFile : NameSet :=
@@ -117,14 +118,14 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let currImpArray := currImports.toArray.qsort Name.lt
     if currImpArray != #[] &&
        currImpArray ≠ importsSoFar.toArray.qsort Name.lt then
-      let newCumulImps := (importsBelow env.importGraph tot).size
-      minImportsRef.set {minImps := currImports, impsSize := newCumulImps}
+      let newCumulImps := (importsBelow (impState.importGraph.getD env.importGraph) tot).size
+      minImportsRef.modify ({· with minImports := currImports, importSize := newCumulImps})
       let new := currImpArray.filter (!importsSoFar.contains ·)
       let redundant := importsSoFar.toArray.filter (!currImports.contains ·)
-      Linter.logLint linter.minImports stx
+      Linter.logLint linter.minImports stx <|
         m!"Imports increased by {newCumulImps - oldCumulImps} to\n{currImpArray}\n\n\
-          Now redundant: {redundant}\n\n\
-          New imports: {new}\n"
+          New imports: {new}\n" ++
+            if redundant.isEmpty then m!"" else m!"\nNow redundant: {redundant}\n"
 
 initialize addLinter minImportsLinter
 
