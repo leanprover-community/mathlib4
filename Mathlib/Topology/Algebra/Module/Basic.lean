@@ -1745,10 +1745,6 @@ theorem refl_apply (x : M₁) :
 
 end
 
-@[simp]
-theorem refl_apply (x : M₁) :
-    ContinuousLinearEquiv.refl R₁ M₁ x = x := rfl
-
 @[simp, norm_cast]
 theorem coe_refl : ↑(ContinuousLinearEquiv.refl R₁ M₁) = ContinuousLinearMap.id R₁ M₁ :=
   rfl
