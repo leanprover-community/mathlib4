@@ -46,7 +46,7 @@ theorem exists_inducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Inducing f := by
   rsuffices ⟨f, hf⟩ : ∃ f : X → s →ᵇ ℝ, Inducing f
   · exact ⟨fun x => (f x).extend (Encodable.encode' s) 0,
       (BoundedContinuousFunction.isometry_extend (Encodable.encode' s)
-        (0 : ℕ →ᵇ ℝ)).embedding.toInducing.comp hf⟩
+        (0 : ℕ →ᵇ ℝ)).isEmbedding.toInducing.comp hf⟩
   have hd : ∀ UV : s, Disjoint (closure UV.1.1) UV.1.2ᶜ :=
     fun UV => disjoint_compl_right.mono_right (compl_subset_compl.2 UV.2.2)
   -- Choose a sequence of `εₙ > 0`, `n : s`, that is bounded above by `1` and tends to zero
@@ -116,8 +116,8 @@ end RegularSpace
 variable (X : Type*) [TopologicalSpace X] [T3Space X] [SecondCountableTopology X]
 
 /-- A T₃ topological space with second countable topology can be embedded into `l^∞ = ℕ →ᵇ ℝ`. -/
-theorem exists_embedding_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Embedding f :=
-  let ⟨f, hf⟩ := exists_inducing_l_infty X; ⟨f, hf.embedding⟩
+theorem exists_embedding_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsEmbedding f :=
+  let ⟨f, hf⟩ := exists_inducing_l_infty X; ⟨f, hf.isEmbedding⟩
 
 /-- *Urysohn's metrization theorem* (Tychonoff's version): a T₃ topological space with second
 countable topology `X` is metrizable, i.e., there exists a metric space structure that generates the
