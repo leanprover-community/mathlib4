@@ -43,7 +43,7 @@ modulo `N`. -/
 def Gamma (N : ℕ) : Subgroup SL(2, ℤ) :=
   SLMOD(N).ker
 
-scoped notation  "Γ(" n ")"  => CongruenceSubgroup.Gamma n
+@[inherit_doc] scoped notation  "Γ(" n ")"  => CongruenceSubgroup.Gamma n
 
 theorem Gamma_mem' (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ SLMOD(N) γ = 1 :=
   Iff.rfl

@@ -97,11 +97,6 @@ theorem slash_action_eqn'' {F : Type*} [FunLike F ℍ ℂ] {k : ℤ} {Γ : Subgr
 instance [SlashInvariantFormClass F Γ k] : CoeTC F (SlashInvariantForm Γ k) :=
   ⟨fun f ↦ { slash_action_eq' := slash_action_eqn f }⟩
 
-@[simp]
-theorem SlashInvariantFormClass.coe_coe [SlashInvariantFormClass F Γ k] (f : F) :
-    ((f : SlashInvariantForm Γ k) : ℍ → ℂ) = f :=
-  rfl
-
 instance instAdd : Add (SlashInvariantForm Γ k) :=
   ⟨fun f g ↦
     { toFun := f + g
