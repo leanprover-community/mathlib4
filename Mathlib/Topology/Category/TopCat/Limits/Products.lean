@@ -51,7 +51,7 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan �
     dsimp
     rw [ContinuousMap.coe_mk, ← h ⟨i⟩]
     rfl
-  fac s j := rfl
+  fac _ _ := rfl
 
 /-- The product is homeomorphic to the product of the underlying spaces,
 equipped with the product topology.
@@ -161,7 +161,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
     rintro S (_ | _) <;> {dsimp; ext; rfl}
   uniq := by
     intro S m h
-    -- Porting note: used to be `ext x`
+    -- Porting note (#11041): used to be `ext x`
     refine ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext ?_ ?_)
     · specialize h ⟨WalkingPair.left⟩
       apply_fun fun e => e x at h
@@ -252,12 +252,15 @@ theorem inducing_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf
   erw [← hf.induced, ← hg.induced] -- now `erw` after #13170
   rfl -- `rfl` was not needed before #13170
 
-theorem embedding_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Embedding f)
-    (hg : Embedding g) : Embedding (Limits.prod.map f g) :=
+theorem isEmbedding_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsEmbedding f)
+    (hg : IsEmbedding g) : IsEmbedding (Limits.prod.map f g) :=
   ⟨inducing_prod_map hf.toInducing hg.toInducing, by
     haveI := (TopCat.mono_iff_injective _).mpr hf.inj
     haveI := (TopCat.mono_iff_injective _).mpr hg.inj
     exact (TopCat.mono_iff_injective _).mp inferInstance⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_prod_map := isEmbedding_prodMap
 
 end Prod
 
@@ -283,7 +286,8 @@ def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y)
 
 theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
-      OpenEmbedding c.inl ∧ OpenEmbedding c.inr ∧ IsCompl (Set.range c.inl) (Set.range c.inr) := by
+      IsOpenEmbedding c.inl ∧ IsOpenEmbedding c.inr ∧
+        IsCompl (Set.range c.inl) (Set.range c.inr) := by
   classical
     constructor
     · rintro ⟨h⟩
@@ -293,9 +297,9 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
           h.comp_coconePointUniqueUpToIso_inv (binaryCofanIsColimit X Y) ⟨WalkingPair.right⟩]
       dsimp
       refine ⟨(homeoOfIso <| h.coconePointUniqueUpToIso
-        (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inl,
+        (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp isOpenEmbedding_inl,
           (homeoOfIso <| h.coconePointUniqueUpToIso
-            (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inr, ?_⟩
+            (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp isOpenEmbedding_inr, ?_⟩
       erw [Set.range_comp, ← eq_compl_iff_isCompl, Set.range_comp _ Sum.inr,
         ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]
@@ -315,7 +319,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         · revert h x
           apply (IsOpen.continuousOn_iff _).mp
           · rw [continuousOn_iff_continuous_restrict]
-            convert_to Continuous (f ∘ (Homeomorph.ofEmbedding _ h₁.toEmbedding).symm)
+            convert_to Continuous (f ∘ (Homeomorph.ofIsEmbedding _ h₁.isEmbedding).symm)
             · ext ⟨x, hx⟩
               exact dif_pos hx
             apply Continuous.comp
@@ -329,14 +333,14 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
               rintro a (h : a ∈ (Set.range c.inl)ᶜ)
               rwa [eq_compl_iff_isCompl.mpr h₃.symm]
             convert_to Continuous
-                (g ∘ (Homeomorph.ofEmbedding _ h₂.toEmbedding).symm ∘ Subtype.map _ this)
+                (g ∘ (Homeomorph.ofIsEmbedding _ h₂.isEmbedding).symm ∘ Subtype.map _ this)
             · ext ⟨x, hx⟩
               exact dif_neg hx
             apply Continuous.comp
             · exact g.continuous_toFun
             · apply Continuous.comp
               · continuity
-              · rw [embedding_subtype_val.toInducing.continuous_iff]
+              · rw [IsEmbedding.subtypeVal.toInducing.continuous_iff]
                 exact continuous_subtype_val
           · change IsOpen (Set.range c.inl)ᶜ
             rw [← eq_compl_iff_isCompl.mpr h₃.symm]

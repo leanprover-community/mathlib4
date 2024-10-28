@@ -176,7 +176,7 @@ theorem LineDifferentiableWithinAt.mono (h : LineDifferentiableWithinAt 𝕜 f t
 
 theorem HasLineDerivWithinAt.congr_mono (h : HasLineDerivWithinAt 𝕜 f f' s x v) (ht : EqOn f₁ f t)
     (hx : f₁ x = f x) (h₁ : t ⊆ s) : HasLineDerivWithinAt 𝕜 f₁ f' t x v :=
-  HasDerivWithinAt.congr_mono h (fun y hy ↦ ht hy) (by simpa using hx) (preimage_mono h₁)
+  HasDerivWithinAt.congr_mono h (fun _ hy ↦ ht hy) (by simpa using hx) (preimage_mono h₁)
 
 theorem HasLineDerivWithinAt.congr (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : EqOn f₁ f s)
     (hx : f₁ x = f x) : HasLineDerivWithinAt 𝕜 f₁ f' s x v :=
@@ -199,7 +199,7 @@ theorem LineDifferentiableWithinAt.congr (h : LineDifferentiableWithinAt 𝕜 f 
 
 theorem lineDerivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v :=
-  derivWithin_congr (fun y hy ↦ hs hy) (by simpa using hx)
+  derivWithin_congr (fun _ hy ↦ hs hy) (by simpa using hx)
 
 theorem lineDerivWithin_congr' (hs : EqOn f₁ f s) (hx : x ∈ s) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v :=
@@ -475,7 +475,7 @@ section CompRight
 
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
   {E' : Type*} [AddCommGroup E'] [Module 𝕜 E']
-  {f : E → F} {f' : F} {x v : E'} {L : E' →ₗ[𝕜] E}
+  {f : E → F} {f' : F} {x : E'} {L : E' →ₗ[𝕜] E}
 
 theorem HasLineDerivAt.of_comp {v : E'} (hf : HasLineDerivAt 𝕜 (f ∘ L) f' x v) :
     HasLineDerivAt 𝕜 f f' (L x) (L v) := by

@@ -1,6 +1,7 @@
 import Mathlib.Tactic.ClearExcept
 
 set_option linter.unusedTactic false
+set_option linter.unusedVariables false
 
 -- Most basic test
 example (_delete_this : Nat) (dont_delete_this : Int) : Nat := by

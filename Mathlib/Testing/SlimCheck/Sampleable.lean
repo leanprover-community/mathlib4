@@ -3,6 +3,7 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
+import Batteries.Data.Rat.Basic
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.List.Monad
 import Mathlib.Testing.SlimCheck.Gen
@@ -158,11 +159,11 @@ instance Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
 
 /-- `Int.shrinkable` operates like `Nat.shrinkable` but also includes the negative variants. -/
 instance Int.shrinkable : Shrinkable Int where
-  shrink n := Nat.shrink n.natAbs |>.map (fun x ↦ ([x, -x] : List ℤ)) |>.join
+  shrink n := Nat.shrink n.natAbs |>.map (fun x ↦ ([x, -x] : List ℤ)) |>.flatten
 
 instance Rat.shrinkable : Shrinkable Rat where
   shrink r :=
-    (Shrinkable.shrink r.num).bind fun d => Nat.shrink r.den |>.map fun n => Rat.divInt d n
+    (Shrinkable.shrink r.num).flatMap fun d => Nat.shrink r.den |>.map fun n => Rat.divInt d n
 
 instance Bool.shrinkable : Shrinkable Bool := {}
 instance Char.shrinkable : Shrinkable Char := {}
@@ -187,7 +188,7 @@ open Shrinkable
 instance List.shrinkable [Shrinkable α] : Shrinkable (List α) where
   shrink := fun L =>
     (L.mapIdx fun i _ => L.eraseIdx i) ++
-    (L.mapIdx fun i a => (shrink a).map fun a' => L.modifyNth (fun _ => a') i).join
+    (L.mapIdx fun i a => (shrink a).map fun a' => L.modify (fun _ => a') i).flatten
 
 end Shrinkers
 

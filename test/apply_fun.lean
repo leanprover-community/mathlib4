@@ -8,6 +8,8 @@ import Mathlib.Data.Matrix.Basic
 private axiom test_sorry : ∀ {α}, α
 
 set_option autoImplicit true
+set_option linter.unusedVariables false
+
 open Function
 
 example (f : ℕ → ℕ) (h : f x = f y) : x = y := by

@@ -173,13 +173,18 @@ lemma isUniformEmbedding (hf : Isometry f) : IsUniformEmbedding f :=
 @[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 /-- An isometry from an emetric space is an embedding -/
-protected theorem embedding (hf : Isometry f) : Embedding f :=
-  hf.isUniformEmbedding.embedding
+theorem isEmbedding (hf : Isometry f) : IsEmbedding f := hf.isUniformEmbedding.isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding := isEmbedding
 
 /-- An isometry from a complete emetric space is a closed embedding -/
-theorem closedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
-    ClosedEmbedding f :=
-  hf.antilipschitz.closedEmbedding hf.lipschitz.uniformContinuous
+theorem isClosedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
+    IsClosedEmbedding f :=
+  hf.antilipschitz.isClosedEmbedding hf.lipschitz.uniformContinuous
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding := isClosedEmbedding
 
 end EmetricIsometry
 
@@ -243,10 +248,13 @@ alias UniformEmbedding.to_isometry := IsUniformEmbedding.to_isometry
 
 /-- An embedding from a topological space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
-theorem Embedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
-    (h : Embedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
+theorem IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
+    (h : IsEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.to_isometry := IsEmbedding.to_isometry
 
 -- such a bijection need not exist
 /-- `α` and `β` are isometric if there is an isometric bijection between them. -/
@@ -458,9 +466,9 @@ instance : Group (α ≃ᵢ α) where
   one := IsometryEquiv.refl _
   mul e₁ e₂ := e₂.trans e₁
   inv := IsometryEquiv.symm
-  mul_assoc e₁ e₂ e₃ := rfl
-  one_mul e := ext fun _ => rfl
-  mul_one e := ext fun _ => rfl
+  mul_assoc _ _ _ := rfl
+  one_mul _ := ext fun _ => rfl
+  mul_one _ := ext fun _ => rfl
   inv_mul_cancel e := ext e.symm_apply_apply
 
 @[simp] theorem coe_one : ⇑(1 : α ≃ᵢ α) = id := rfl

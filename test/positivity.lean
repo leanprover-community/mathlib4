@@ -4,6 +4,7 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.Tactic.Positivity.Finset
 
 /-! # Tests for the `positivity` tactic
 
@@ -289,8 +290,8 @@ example (n : ℕ+) : 0 < (↑n : ℕ) := by positivity
 example (n : ℕ) : 0 < n ! := by positivity
 example (n k : ℕ) : 0 < (n+1).ascFactorial k := by positivity
 
--- example {α : Type _} (s : Finset α) (hs : s.Nonempty) : 0 < s.card := by positivity
--- example {α : Type _} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
+example {α : Type _} (s : Finset α) (hs : s.Nonempty) : 0 < #s := by positivity
+example {α : Type _} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
 
 example {r : ℝ} : 0 < Real.exp r := by positivity
 
@@ -393,6 +394,7 @@ example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by p
 set_option linter.unusedVariables false in
 example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑ n ∈ Finset.range 10, f n := by positivity
 
+set_option linter.unusedVariables false in
 example (n : ℕ) : ∏ j ∈ range n, (-1) ≠ 0 := by positivity
 example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∏ j ∈ range n, a j^2 := by positivity
 example (a : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∏ j ∈ s, a j^2 := by positivity

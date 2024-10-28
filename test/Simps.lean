@@ -938,6 +938,7 @@ structure MyType where
   ⟨{ _x : Fin (Nat.add 3 0) // 1 + 1 = 2 }⟩
 
 -- todo: this fails in Lean 4, not sure what is going on
+set_option linter.unusedVariables false in
 example (h : false) (x y : { x : Fin (Nat.add 3 0) // 1 + 1 = 2 }) : myTypeDef.A = Unit := by
   simp only [myTypeDef_A]
   guard_target = { _x : Fin 3 // True } = Unit

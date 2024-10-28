@@ -223,6 +223,10 @@ instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field
     [IsAlgClosure R K] [CharZero R] : Algebra.IsSeparable R K :=
   ⟨fun _ => (minpoly.irreducible (Algebra.IsIntegral.isIntegral _)).separable⟩
 
+instance IsAlgClosed.instIsAlgClosure (F : Type*) [Field F] [IsAlgClosed F] : IsAlgClosure F F where
+  isAlgClosed := ‹_›
+  isAlgebraic := .of_finite F F
+
 namespace IsAlgClosed
 
 variable {K : Type u} [Field K] {L : Type v} {M : Type w} [Field L] [Algebra K L] [Field M]

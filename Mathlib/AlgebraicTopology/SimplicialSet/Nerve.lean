@@ -39,7 +39,7 @@ instance {C : Type*} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerv
 @[simps]
 def nerveFunctor : Cat ⥤ SSet where
   obj C := nerve C
-  map F := { app := fun Δ => (F.mapComposableArrows _).obj }
+  map F := { app := fun _ => (F.mapComposableArrows _).obj }
 
 namespace Nerve
 

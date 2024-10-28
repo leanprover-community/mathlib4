@@ -38,9 +38,9 @@ variable {α : Type u} [EMetricSpace α] {s : Set α}
 on the type of closed subsets -/
 instance Closeds.emetricSpace : EMetricSpace (Closeds α) where
   edist s t := hausdorffEdist (s : Set α) t
-  edist_self s := hausdorffEdist_self
-  edist_comm s t := hausdorffEdist_comm
-  edist_triangle s t u := hausdorffEdist_triangle
+  edist_self _ := hausdorffEdist_self
+  edist_comm _ _ := hausdorffEdist_comm
+  edist_triangle _ _ _ := hausdorffEdist_triangle
   eq_of_edist_eq_zero {s t} h :=
     Closeds.ext <| (hausdorffEdist_zero_iff_eq_of_closed s.closed t.closed).1 h
 
@@ -224,9 +224,9 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
 where the edistance is the Hausdorff edistance -/
 instance NonemptyCompacts.emetricSpace : EMetricSpace (NonemptyCompacts α) where
   edist s t := hausdorffEdist (s : Set α) t
-  edist_self s := hausdorffEdist_self
-  edist_comm s t := hausdorffEdist_comm
-  edist_triangle s t u := hausdorffEdist_triangle
+  edist_self _ := hausdorffEdist_self
+  edist_comm _ _ := hausdorffEdist_comm
+  edist_triangle _ _ _ := hausdorffEdist_triangle
   eq_of_edist_eq_zero {s t} h := NonemptyCompacts.ext <| by
     have : closure (s : Set α) = closure t := hausdorffEdist_zero_iff_closure_eq_closure.1 h
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
@@ -288,7 +288,7 @@ instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (None
 the same statement for closed subsets -/
 instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   ⟨by
-    rw [NonemptyCompacts.ToCloseds.isUniformEmbedding.embedding.isCompact_iff, image_univ]
+    rw [NonemptyCompacts.ToCloseds.isUniformEmbedding.isEmbedding.isCompact_iff, image_univ]
     exact NonemptyCompacts.isClosed_in_closeds.isCompact⟩
 
 /-- In a second countable space, the type of nonempty compact subsets is second countable -/

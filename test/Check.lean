@@ -7,6 +7,7 @@ open Lean PrettyPrinter Delaborator in @[delab mvar] def delabMVar : Delab := do
   `(?m)
 
 set_option linter.unusedTactic false
+set_option linter.unusedVariables false
 
 /-!
 Basic check of `#check`

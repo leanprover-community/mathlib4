@@ -11,6 +11,7 @@ example (n : Nat) : n = n := by
   exacts [rfl, rfl]
   exacts []
 
+set_option linter.unusedVariables false in
 example (n : Nat) : Nat := by
   guard_hyp n : Nat
   let m : Nat := 1

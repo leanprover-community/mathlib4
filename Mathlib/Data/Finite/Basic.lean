@@ -3,11 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Sigma
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Fintype.Vector
+import Mathlib.Data.Finite.Prod
 
 /-!
 # Finite types
@@ -42,12 +38,7 @@ finiteness, finite types
 
 open Mathlib
 
-noncomputable section
-
-open scoped Classical
-
-variable {α β γ : Type*}
-
+variable {α β : Type*}
 namespace Finite
 
 -- see Note [lower instance priority]
@@ -59,56 +50,7 @@ instance (priority := 100) of_subsingleton {α : Sort*} [Subsingleton α] : Fini
 instance prop (p : Prop) : Finite p :=
   Finite.of_subsingleton
 
-instance [Finite α] [Finite β] : Finite (α × β) := by
-  haveI := Fintype.ofFinite α
-  haveI := Fintype.ofFinite β
-  infer_instance
-
-instance {α β : Sort*} [Finite α] [Finite β] : Finite (PProd α β) :=
-  of_equiv _ Equiv.pprodEquivProdPLift.symm
-
-theorem prod_left (β) [Finite (α × β)] [Nonempty β] : Finite α :=
-  of_surjective (Prod.fst : α × β → α) Prod.fst_surjective
-
-theorem prod_right (α) [Finite (α × β)] [Nonempty α] : Finite β :=
-  of_surjective (Prod.snd : α × β → β) Prod.snd_surjective
-
-instance [Finite α] [Finite β] : Finite (α ⊕ β) := by
-  haveI := Fintype.ofFinite α
-  haveI := Fintype.ofFinite β
-  infer_instance
-
-theorem sum_left (β) [Finite (α ⊕ β)] : Finite α :=
-  of_injective (Sum.inl : α → α ⊕ β) Sum.inl_injective
-
-theorem sum_right (α) [Finite (α ⊕ β)] : Finite β :=
-  of_injective (Sum.inr : β → α ⊕ β) Sum.inr_injective
-
-instance {β : α → Type*} [Finite α] [∀ a, Finite (β a)] : Finite (Σa, β a) := by
-  letI := Fintype.ofFinite α
-  letI := fun a => Fintype.ofFinite (β a)
-  infer_instance
-
-instance {ι : Sort*} {π : ι → Sort*} [Finite ι] [∀ i, Finite (π i)] : Finite (Σ'i, π i) :=
-  of_equiv _ (Equiv.psigmaEquivSigmaPLift π).symm
-
-instance [Finite α] : Finite (Set α) := by
-  cases nonempty_fintype α
-  infer_instance
-
 end Finite
-
-instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (β a)] :
-    Finite (∀ a, β a) := by
-  haveI := Fintype.ofFinite (PLift α)
-  haveI := fun a => Fintype.ofFinite (PLift (β a))
-  exact
-    Finite.of_equiv (∀ a : PLift α, PLift (β (Equiv.plift a)))
-      (Equiv.piCongr Equiv.plift fun _ => Equiv.plift)
-
-instance Vector.finite {α : Type*} [Finite α] {n : ℕ} : Finite (Vector α n) := by
-  haveI := Fintype.ofFinite α
-  infer_instance
 
 instance Quot.finite {α : Sort*} [Finite α] (r : α → α → Prop) : Finite (Quot r) :=
   Finite.of_surjective _ (surjective_quot_mk r)
@@ -118,10 +60,7 @@ instance Quotient.finite {α : Sort*} [Finite α] (s : Setoid α) : Finite (Quot
 
 instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ β) := by
   cases' isEmpty_or_nonempty (α ↪ β) with _ h
-  · -- Porting note: infer_instance fails because it applies `Finite.of_fintype` and produces a
-    -- "stuck at solving universe constraint" error.
-    apply Finite.of_subsingleton
-
+  · infer_instance
   · refine h.elim fun f => ?_
     haveI : Finite α := Finite.of_injective _ f.injective
     exact Finite.of_injective _ DFunLike.coe_injective
@@ -132,7 +71,3 @@ instance Equiv.finite_right {α β : Sort*} [Finite β] : Finite (α ≃ β) :=
 
 instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) :=
   Finite.of_equiv _ ⟨Equiv.symm, Equiv.symm, Equiv.symm_symm, Equiv.symm_symm⟩
-
-instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
-  haveI := Fintype.ofFinite α
-  infer_instance

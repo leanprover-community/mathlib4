@@ -4,6 +4,7 @@ import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 
 set_option linter.flexible true
+set_option linter.unusedVariables false
 
 /--
 warning: 'simp at h' is a flexible tactic modifying 'h'…

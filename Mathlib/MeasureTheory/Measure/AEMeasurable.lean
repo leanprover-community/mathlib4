@@ -248,7 +248,7 @@ theorem aemeasurable_restrict_iff_comap_subtype {s : Set α} (hs : MeasurableSet
     {f : α → β} : AEMeasurable f (μ.restrict s) ↔ AEMeasurable (f ∘ (↑) : s → β) (comap (↑) μ) := by
   rw [← map_comap_subtype_coe hs, (MeasurableEmbedding.subtype_coe hs).aemeasurable_map_iff]
 
-@[to_additive] -- @[to_additive (attr := simp)] -- Porting note (#10618): simp can prove this
+@[to_additive]
 theorem aemeasurable_one [One β] : AEMeasurable (fun _ : α => (1 : β)) μ :=
   measurable_one.aemeasurable
 

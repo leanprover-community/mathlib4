@@ -50,7 +50,7 @@ def fst : chosenProd F₁ F₂ ⟶ F₁ where
 /-- The second projection `chosenProd F₁ F₂ ⟶ F₂`. -/
 @[simps]
 def snd : chosenProd F₁ F₂ ⟶ F₂ where
-  app j := ChosenFiniteProducts.snd _ _
+  app _ := ChosenFiniteProducts.snd _ _
 
 /-- `Functor.chosenProd F₁ F₂` is a binary product of `F₁` and `F₂`. -/
 noncomputable def isLimit : IsLimit (BinaryFan.mk (fst F₁ F₂) (snd F₁ F₂)) :=

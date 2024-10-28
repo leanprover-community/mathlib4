@@ -18,9 +18,9 @@ Further results about pseudo-metric spaces.
 open Set Filter TopologicalSpace Bornology
 open scoped ENNReal NNReal Uniformity Topology
 
-universe u v w
+universe u v
 
-variable {α : Type u} {β : Type v} {X ι : Type*}
+variable {α : Type u} {β : Type v} {ι : Type*}
 
 variable [PseudoMetricSpace α]
 
@@ -59,7 +59,6 @@ theorem dist_le_range_sum_of_dist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ
 namespace Metric
 
 -- instantiate pseudometric space as a topology
-variable {x y z : α} {δ ε ε₁ ε₂ : ℝ} {s : Set α}
 
 nonrec theorem isUniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
     IsUniformInducing f ↔ UniformContinuous f ∧
@@ -163,6 +162,8 @@ protected theorem cauchy_iff {f : Filter α} :
     Cauchy f ↔ NeBot f ∧ ∀ ε > 0, ∃ t ∈ f, ∀ x ∈ t, ∀ y ∈ t, dist x y < ε :=
   uniformity_basis_dist.cauchy_iff
 
+variable {s : Set α}
+
 /-- Given a point `x` in a discrete subset `s` of a pseudometric space, there is an open ball
 centered at `x` and intersecting `s` only at `x`. -/
 theorem exists_ball_inter_eq_singleton_of_mem_discrete [DiscreteTopology s] {x : α} (hx : x ∈ s) :
@@ -206,8 +207,6 @@ end Real
 
 namespace Metric
 
-variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
-
 -- Porting note: `TopologicalSpace.IsSeparable.separableSpace` moved to `EMetricSpace`
 
 /-- The preimage of a separable set by an inducing map is separable. -/
@@ -220,9 +219,12 @@ protected theorem _root_.Inducing.isSeparable_preimage {f : β → α} [Topologi
   have := this.secondCountableTopology
   exact .of_subtype _
 
-protected theorem _root_.Embedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
-    (hf : Embedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
+protected theorem _root_.IsEmbedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
+    (hf : IsEmbedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
   hf.toInducing.isSeparable_preimage hs
+
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.isSeparable_preimage := _root_.IsEmbedding.isSeparable_preimage
 
 end Metric
 

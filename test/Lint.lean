@@ -2,6 +2,15 @@ import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Order.SetNotation
 
+namespace termG
+
+-- this creates a hygienic declaration starting with `termG.termG.«_@».test.Lint...`
+-- and the linter ignores it
+set_option linter.dupNamespace true in
+local notation "G" => Unit
+
+end termG
+
 /--
 warning: The namespace 'add' is duplicated in the declaration 'add.add'
 note: this linter can be disabled with `set_option linter.dupNamespace false`
@@ -18,8 +27,12 @@ note: this linter can be disabled with `set_option linter.dupNamespace false`
 #guard_msgs in
 def Foo.foo := True
 
--- the `dupNamespace` linter does not notice that `to_additive` created `Foo.add.add`.
+/--
+warning: The namespace 'add' is duplicated in the declaration 'Foo.add.add'
+note: this linter can be disabled with `set_option linter.dupNamespace false`
+-/
 #guard_msgs in
+set_option linter.dupNamespace true in
 @[to_additive] theorem add.mul : True := .intro
 
 --  However, the declaration `Foo.add.add` is present in the environment.
@@ -44,9 +57,12 @@ namespace add
 /--
 warning: The namespace 'add' is duplicated in the declaration 'add.add'
 note: this linter can be disabled with `set_option linter.dupNamespace false`
+---
+warning: The namespace 'add' is duplicated in the declaration 'add.add'
+note: this linter can be disabled with `set_option linter.dupNamespace false`
 -/
 #guard_msgs in
-export Nat (add)
+export Nat (add add_comm add)
 
 end add
 
