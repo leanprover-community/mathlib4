@@ -445,9 +445,7 @@ theorem preAleph_isNormal : IsNormal (ord ∘ preAleph) :=
 theorem aleph_isNormal : IsNormal (ord ∘ aleph) :=
   preAleph_isNormal.trans <| isNormal_add_right ω
 
-@[simp]
-theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by
-  rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
+@[simp] theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
 
 theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by
   rw [← succ_aleph0]
