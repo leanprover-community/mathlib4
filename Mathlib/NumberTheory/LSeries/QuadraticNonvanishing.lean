@@ -83,13 +83,13 @@ lemma zetaMul_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) (n : ℕ
 /-!
 ### "Bad" Dirichlet characters
 
-Our goal is to show that `L χ 1 ≠ 0` when `χ` is a (nontrivial) quadratic Dirichlet character.
+Our goal is to show that `L(χ, 1) ≠ 0` when `χ` is a (nontrivial) quadratic Dirichlet character.
 To do that, we package the contradictory properties in a structure `DirichletCharacter.BadChar`
 and derive further statements eventually leading to a contradiction.
 -/
 
 /-- The object we're trying to show doesn't exist: A nontrivial quadratic Dirichlet character
-whose L-function vanishes at `s =1`. -/
+whose L-function vanishes at `s = 1`. -/
 structure BadChar (N : ℕ) [NeZero N] where
   /-- The character we want to show cannot exist. -/
   χ : DirichletCharacter ℂ N
