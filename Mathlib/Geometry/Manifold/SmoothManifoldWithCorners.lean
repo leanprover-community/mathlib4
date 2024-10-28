@@ -364,7 +364,7 @@ protected theorem secondCountableTopology [SecondCountableTopology E] (I : Model
 
 include I in
 protected theorem t1Space (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : T1Space M := by
-  have : T2Space H := I.isClosedEmbedding.toEmbedding.t2Space
+  have : T2Space H := I.isClosedEmbedding.toIsEmbedding.t2Space
   exact ChartedSpace.t1Space H M
 
 end ModelWithCorners

@@ -4,20 +4,46 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.VectorField
+import Mathlib.Geometry.Manifold.Algebra.LieGroup
+import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 
 /-!
-# Glouglou
+# Vector fields in manifolds
 
+We study functions of the form `V : Π (x : M) → TangentSpace I x` on a manifold, i.e.,
+vector fields.
+
+We define the pullback of a vector field under a map, as
+`VectorField.mpullback I I' f V x := (mfderiv I I' f x).inverse (V (f x))`
+(together with the same notion within a set).
+
+We also define the Lie bracket of two vector fields, denoted with
+`VectorField.mlieBracket I V W x`, as the pullback in the manifold of the corresponding notion
+in the model space (through `extChartAt I x`).
+
+In addition to comprehensive API on these two notions, the main results are the following:
+* `VectorField.mpullback_mlieBracket` states that the pullback of the Lie bracket
+  is the Lie bracket of the pullbacks, when the second derivative is symmetric.
+* `VectorField.leibniz_identity_mlieBracket` is the Leibniz
+  identity `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`.
+
+All these are given in the `VectorField` namespace because pullbacks, Lie brackets, and so on,
+are notions that make sense in a variety of contexts. We also prefix the notions with `m` to
+distinguish the manifold notions from the vector spaces notions.
+
+For notions that come naturally in other namespaces for dot notation, we specify `vectorField` in
+the name to lift ambiguities. For instance, the fact that the Lie bracket of two smooth vector
+fields is smooth is `ContMDiffAt.mlieBracket_vectorField`.
+
+Note that a smoothness assumption for a vector field is written by seeing the vector field as
+a function from `M` to its tangent bundle through a coercion, as in:
+`MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x`.
 -/
 
 open Set Function Filter
 open scoped Topology Manifold
-
-/- TODO: move me -/
-lemma _root_.Set.MapsTo.preimage_mem_nhdsWithin {α β : Type*} [TopologicalSpace α]
-    {f : α → β} {s : Set α} {t : Set β} {x : α}
-    (hst : MapsTo f s t) : f ⁻¹' t ∈ 𝓝[s] x :=
-  Filter.mem_of_superset self_mem_nhdsWithin hst
 
 noncomputable section
 
@@ -1113,7 +1139,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
   simp only [mpullbackWithin_eq_pullbackWithin]
   -- finally, use the fact that for `C^2` maps between vector spaces with symmetric second
   -- derivative, the pullback and the Lie bracket commute.
-  rw [lieBracketWithin_pullbackWithin_of_eventuallyEq
+  rw [pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq
       (u := (extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target)]
   · exact hsymm
   · rw [hF, comp_assoc]

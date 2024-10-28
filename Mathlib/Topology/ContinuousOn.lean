@@ -437,6 +437,11 @@ theorem eventually_nhdsWithin_of_eventually_nhds {α : Type*} [TopologicalSpace 
     {a : α} {p : α → Prop} (h : ∀ᶠ x in 𝓝 a, p x) : ∀ᶠ x in 𝓝[s] a, p x :=
   mem_nhdsWithin_of_mem_nhds h
 
+lemma Set.MapsTo.preimage_mem_nhdsWithin {f : α → β} {s : Set α} {t : Set β} {x : α}
+    (hst : MapsTo f s t) : f ⁻¹' t ∈ 𝓝[s] x :=
+  Filter.mem_of_superset self_mem_nhdsWithin hst
+
+
 /-!
 ### `nhdsWithin` and subtypes
 -/
