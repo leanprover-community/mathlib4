@@ -11,21 +11,40 @@ def LocalSubring (K : Type*) [Ring K] : Type _ :=
 
 def LocalSubring.of {K : Type*} [Ring K] (s : Subring K) [h : LocalRing s] : LocalSubring K := ⟨s, h⟩
 
--- maybe genralizable to [Ring R] [Ring S]
-instance {R : Type*} {S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) (s : LocalSubring R) : LocalRing <| Subring.map f s.1 where
-  exists_pair_ne := sorry
-  isUnit_or_isUnit_of_add_one := sorry
+instance (S : LocalSubring K) : LocalRing S := S.2
 
-def LocalSubring.map {R : Type*} {S : Type*} [CommRing R] [CommRing S]
+-- maybe genralizable to [Ring R] [Ring S]
+instance {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Nontrivial S]
+    (f : R →+* S) (𝓡 : LocalSubring R) : LocalRing <| Subring.map f 𝓡.1 where
+  exists_pair_ne := by
+    use 0, 1
+    apply zero_ne_one
+  isUnit_or_isUnit_of_add_one :=  by
+    intro ⟨a, x, hx, hfx⟩
+    intro ⟨b, y, hy, hfy⟩
+    intro h
+    let f_domrest := f.domRestrict 𝓡.1
+    have hr : ∀ r, (f_domrest r) ∈ (Subring.map f 𝓡.1) := sorry
+    let f_rest := f_domrest.codRestrict (Subring.map f 𝓡.1) hr
+    have is_f_rest_surj : Function.Surjective f_rest := sorry
+    have is_local : LocalRing (Subring.map f 𝓡.1) := sorry
+      --LocalRing.of_surjective f_rest is_f_rest_surj
+    exact isUnit_or_isUnit_of_add_one h
+
+def LocalSubring.map {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Nontrivial S]
     (f : R →+* S) (s : LocalSubring R) : LocalSubring S := LocalSubring.of (Subring.map f s.1)
 
-instance topislocal (R : Type*) [Ring R] [LocalRing R] : LocalRing (⊤ : Subring R) := sorry
 
-def LocalSubring.range {R : Type*} {S : Type*} [CommRing R] [LocalRing R] [CommRing S]
+instance topislocal (R : Type*) [Ring R] [LocalRing R] : LocalRing (⊤ : Subring R) := by
+  refine of_is_unit_or_is_unit_of_add_one ?isUnit_or_isUnit_of_add_one
+  intro ⟨a,x⟩ ⟨b,y⟩ h
+  sorry
+
+
+def LocalSubring.range {R : Type*} {S : Type*} [CommRing R] [LocalRing R] [CommRing S] [Nontrivial S]
   (f : R →+* S) : LocalSubring S := LocalSubring.map f (LocalSubring.of ⊤)
 
-lemma LocalSubring.range_eq_range {R : Type*} {S : Type*} [CommRing R] [LocalRing R] [CommRing S]
+lemma LocalSubring.range_eq_range {R : Type*} {S : Type*} [CommRing R] [LocalRing R] [CommRing S] [Nontrivial S]
     (f : R →+* S) : (LocalSubring.range f).1 = Subring.map f ⊤ := by
   exact rfl
 
@@ -41,9 +60,24 @@ variable {K : Type u} [CommRing K]
 /-- https://stacks.math.columbia.edu/tag/00I9 -/
 instance : PartialOrder (LocalSubring K) where
   le A B := ∃ h : A.1 ≤ B.1, IsLocalHom (Subring.inclusion h)
-  le_refl := sorry
-  le_trans := sorry
-  le_antisymm := sorry
+  le_refl := by
+    intro ⟨a,x⟩
+    dsimp
+    use le_refl a
+    exact (isLocalHom_iff_comap_closedPoint (Subring.inclusion (le_refl a))).mpr rfl
+  le_trans := by
+    intro ⟨a, x⟩ ⟨b, y⟩ ⟨c, z⟩
+    intro hab hbc
+    dsimp
+    use le_trans hab.1 hbc.1
+    sorry
+  le_antisymm := by
+    intro ⟨a, x⟩ ⟨b, y⟩ hab hba
+    obtain ⟨hab2, hab2_loc⟩ := hab
+    obtain ⟨hba2, hba2_loc⟩ := hba
+    have hab_eq : a = b := le_antisymm hab2 hba2
+    sorry
+
 
 instance : CoeSort (LocalSubring K) (Type u) := ⟨fun s ↦ s.1⟩
 
@@ -52,7 +86,7 @@ instance : Membership K (LocalSubring K) := ⟨fun x k ↦ k ∈ x.1⟩
 instance LocalSubring.localRing (A : LocalSubring K) : LocalRing A := A.2
 
 lemma domination_preserved_by_range {R : Type*} {S : Type*} {K : Type*}
-    [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing K]
+    [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing K] [Nontrivial K]
       (f : R →+* S) [IsLocalHom f] (g : S →+* K):
         (LocalSubring.range (g.comp f)) ≤ (LocalSubring.range g) := by
   sorry
