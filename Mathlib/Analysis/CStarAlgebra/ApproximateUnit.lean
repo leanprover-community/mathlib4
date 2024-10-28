@@ -243,13 +243,13 @@ theorem CStarAlgebra.nnnorm_le_nnnorm_of_nonneg_of_le
 theorem CStarAlgebra.extracted
     {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
     (x : A) (hx₁ : 0 ≤ x) (hx₂ : ‖x‖ < 1) (ε : ℝ) (hε : 0 < ε) (b : A) (hb₁ : 0 ≤ b)
-    (hb₂ : b ∈ ball 0 1) (hb₃ : cfcₙ (fun y : ℝ≥0 ↦ 1 - (1 + y)⁻¹) (ε⁻¹ ^ 2 • x) ≤ b) :
+    (hb₂ : b ∈ closedBall 0 1) (hb₃ : cfcₙ (fun y : ℝ≥0 ↦ 1 - (1 + y)⁻¹) (ε⁻¹ ^ 2 • x) ≤ b) :
     ‖star (x : A⁺¹) * ((1 - b) * (1 - b)) * x‖ ≤ ε ^ 2 := by
   set g : ℝ≥0 → ℝ≥0 := fun y ↦ 1 - (1 + y)⁻¹
   have hg : Continuous g := by
     rw [continuous_iff_continuousOn_univ]
     fun_prop (disch := intro _ _; positivity)
-  simp only [mem_ball, dist_zero_right] at hb₂
+  simp only [mem_closedBall, dist_zero_right] at hb₂
   rw [← norm_inr (𝕜 := ℂ)] at hx₂ hb₂
   rw [← Unitization.inr_le_iff _ _ (.of_nonneg cfcₙ_nonneg_of_predicate) (.of_nonneg hb₁),
     Unitization.nnreal_cfcₙ_eq_cfc_inr _ _ (by simp [g, tsub_self]), inr_smul] at hb₃
@@ -257,7 +257,7 @@ theorem CStarAlgebra.extracted
   generalize (x : A⁺¹) = x, (b : A⁺¹) = b at hx₁ hx₂ hb₁ hb₂ hb₃
   rw [← sq]
   have hx₃ := norm_le_one_iff_of_nonneg x |>.mp hx₂.le
-  have hb₄ := norm_le_one_iff_of_nonneg b |>.mp hb₂.le
+  have hb₄ := norm_le_one_iff_of_nonneg b |>.mp hb₂
   rw [← sub_nonneg] at hb₄
   lift ε to ℝ≥0 using hε.le
   rw [← coe_nnnorm]
@@ -313,7 +313,7 @@ def CStarAlgebra.increasingApproximateUnit : IncreasingApproximateUnit
       refine abs_le_of_sq_le_sq' ?_ (by positivity) |>.2
       rw [sq, ← CStarRing.norm_star_mul_self, star_mul, ← mul_assoc, mul_assoc (star _),
         (IsSelfAdjoint.one A⁺¹ |>.sub <| (IsSelfAdjoint.of_nonneg hb₂).inr _).star_eq]
-      exact extracted x hx₁ hx₂ ε hε b hb₂ hb₃ hb₁
+      exact extracted x hx₁ hx₂ ε hε b hb₂ (ball_subset_closedBall hb₃) hb₁
 
 
 end ApproximateUnit
