@@ -138,7 +138,7 @@ section
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable [HasLimits C] [(forget C).ReflectsIsomorphisms] [PreservesLimits (forget C)]
-variable {X : TopCat.{v}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
+variable {X : TopCat.{v}} (F : Presheaf C X)
 
 /-- For presheaves valued in a concrete category, whose forgetful functor reflects isomorphisms and
 preserves limits, the sheaf condition in terms of unique gluings is equivalent to the usual one.

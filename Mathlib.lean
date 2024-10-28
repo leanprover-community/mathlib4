@@ -2252,7 +2252,6 @@ import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.FinEnum
-import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Powerset
@@ -2556,6 +2555,7 @@ import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.Data.Nat.Prime.Infinite
 import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Data.Nat.Prime.Nth
 import Mathlib.Data.Nat.Prime.Pow
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Set
@@ -2688,6 +2688,7 @@ import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Set.Subset
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Data.Set.Sups
+import Mathlib.Data.Set.SymmDiff
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.SetLike.Fintype
@@ -4092,6 +4093,7 @@ import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.KrullDimension.Field
 import Mathlib.RingTheory.Lasker
 import Mathlib.RingTheory.LaurentSeries
+import Mathlib.RingTheory.LinearDisjoint
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
@@ -4670,7 +4672,8 @@ import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.Algebra.UniformConvergence
 import Mathlib.Topology.Algebra.UniformField
 import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.UniformRing
 import Mathlib.Topology.Algebra.Valued.NormedValued
