@@ -38,14 +38,18 @@ def formatTable (headers : Array String) (table : Array (Array String))
     String := Id.run do
   -- If no alignments are provided, default to left alignment for all columns.
   let alignments := alignments.getD (Array.mkArray headers.size Alignment.left)
+  -- Escape all vertical bar characters inside a table cell,
+  -- otherwise these could get interpreted as starting a new row or column.
+  let escapedHeaders := headers.map (fun header => header.replace "|" "\\|")
+  let escapedTable := table.map (fun row => row.map (fun cell => cell.replace "|" "\\|"))
   -- Compute the maximum width of each column.
-  let mut widths := headers.map (·.length)
-  for row in table do
+  let mut widths := escapedHeaders.map (·.length)
+  for row in escapedTable do
     for i in [0:widths.size] do
       widths := widths.set! i (max widths[i]! ((row[i]?.map (·.length)).getD 0))
   -- Pad each cell with spaces to match the column width.
-  let paddedHeaders := headers.mapIdx fun i h => h.rightpad widths[i]!
-  let paddedTable := table.map fun row => row.mapIdx fun i cell =>
+  let paddedHeaders := escapedHeaders.mapIdx fun i h => h.rightpad widths[i]!
+  let paddedTable := escapedTable.map fun row => row.mapIdx fun i cell =>
     cell.justify alignments[i]! widths[i]!
   -- Construct the lines of the table
   let headerLine := "| " ++ String.intercalate " | " (paddedHeaders.toList) ++ " |"
