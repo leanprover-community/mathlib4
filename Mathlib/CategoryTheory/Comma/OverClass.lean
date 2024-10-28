@@ -22,7 +22,6 @@ For other applications use unbundled arrows or `CategoryTheory.Over`.
 
 -/
 
-
 namespace CategoryTheory
 
 universe v u
