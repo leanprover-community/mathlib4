@@ -37,6 +37,9 @@ instance (x : Nat × Nat) (r : Rectangle) : Decidable (x ∈ r) := by
   dsimp [Membership.mem]
   infer_instance
 
+/--
+We say `r₁ ≤ r₂` if and only if every point in `r₁` is contained in `r₂`.
+-/
 instance instLE : LE Rectangle where
   le r₁ r₂ := r₁.width = 0 ∨ r₁.height = 0 ∨ ((r₁.left, r₁.bottom) ∈ r₂ ∧ (r₁.right - 1, r₁.top - 1) ∈ r₂)
 
@@ -51,6 +54,11 @@ instance (r : Rectangle) (xs : List (Nat × Nat)) : Decidable (r ∈ xs) := by
   dsimp [Membership.mem]
   infer_instance
 
+/--
+Given a rectangle `r`, return the up to four four rectangles obtained from `r` by
+- shifting the bottom left corner one coordinate to the left resp. bottom (if possible), or
+- shifting the top right corner one coordinate to the right resp. top.
+-/
 def expansions (r : Rectangle) : List Rectangle :=
   (if r.left = 0 then [] else [{ r with left := r.left - 1 }]) ++
   (if r.bottom = 0 then [] else [{ r with bottom := r.bottom - 1 }]) ++
@@ -58,6 +66,9 @@ def expansions (r : Rectangle) : List Rectangle :=
 
 def area (r : Rectangle) : Nat := r.width * r.height
 
+/--
+The number of points in `r`, weighted by the function `w`.
+-/
 def weightedArea (r : Rectangle) (w : Nat × Nat → Nat) : Nat :=
   Nat.sum <|
     (List.range' r.left r.width).bind fun x => (List.range' r.bottom r.height).map fun y => w (x, y)
@@ -75,7 +86,7 @@ where
       go maximal rs
     else
       match r.expansions.filter (· ∈ xs) with
-      | [] => go (r::maximal) rs
+      | [] => go (r :: maximal) rs
       | rs' => go maximal (rs' ++ rs)
 
 /--
