@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.Ring.Ideal
+import Mathlib.Topology.Algebra.UniformGroup.Basic
 
 /-!
 # Completion of topological rings:
