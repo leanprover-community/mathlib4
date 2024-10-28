@@ -3,7 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Range
+import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.List.Pairwise
 
 /-!
@@ -164,9 +164,6 @@ protected theorem Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ 
     Nodup s → Nodup (filterMap f s) :=
   Quot.induction_on s fun _ => List.Nodup.filterMap H
 
-theorem nodup_range (n : ℕ) : Nodup (range n) :=
-  List.nodup_range _
-
 theorem Nodup.inter_left [DecidableEq α] (t) : Nodup s → Nodup (s ∩ t) :=
   nodup_of_le <| inter_le_left _ _
 
@@ -185,9 +182,6 @@ theorem Nodup.ext {s t : Multiset α} : Nodup s → Nodup t → (s = t ↔ ∀ a
 
 theorem le_iff_subset {s t : Multiset α} : Nodup s → (s ≤ t ↔ s ⊆ t) :=
   Quotient.inductionOn₂ s t fun _ _ d => ⟨subset_of_le, d.subperm⟩
-
-theorem range_le {m n : ℕ} : range m ≤ range n ↔ m ≤ n :=
-  (le_iff_subset (nodup_range _)).trans range_subset
 
 theorem mem_sub_of_nodup [DecidableEq α] {a : α} {s t : Multiset α} (d : Nodup s) :
     a ∈ s - t ↔ a ∈ s ∧ a ∉ t :=

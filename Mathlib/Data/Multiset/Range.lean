@@ -3,7 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Basic
+import Mathlib.Data.Multiset.Nodup
 
 /-! # `Multiset.range n` gives `{0, 1, ..., n-1}` as a multiset. -/
 
@@ -59,5 +59,11 @@ theorem range_disjoint_map_add (a : ℕ) (m : Multiset ℕ) :
 theorem range_add_eq_union (a b : ℕ) : range (a + b) = range a ∪ (range b).map (a + ·) := by
   rw [range_add, add_eq_union_iff_disjoint]
   apply range_disjoint_map_add
+
+theorem nodup_range (n : ℕ) : Nodup (range n) :=
+  List.nodup_range _
+
+theorem range_le {m n : ℕ} : range m ≤ range n ↔ m ≤ n :=
+  (le_iff_subset (nodup_range _)).trans range_subset
 
 end Multiset
