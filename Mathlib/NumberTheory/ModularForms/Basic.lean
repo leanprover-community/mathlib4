@@ -134,7 +134,7 @@ namespace ModularForm
 
 open SlashInvariantForm
 
-variable {F : Type*} {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
+variable {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
 
 instance add : Add (ModularForm Γ k) :=
   ⟨fun f g =>
