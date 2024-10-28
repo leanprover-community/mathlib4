@@ -23,30 +23,25 @@ namespace Complex
 
 local notation "ℂ_ℤ " => IntegerComplement
 
-noncomputable instance : UniformSpace ℂ_ℤ := instUniformSpaceSubtype
-
-instance : LocallyCompactSpace ℂ_ℤ := by
-  apply IsOpen.locallyCompactSpace
+instance : IsOpen ℂ_ℤ := by
   convert Complex.isOpen_compl_range_intCast
   rw [IntegerComplement]
   aesop
 
-/--The coercion from the upper half plane into the IntegerComplement. -/
-@[coe] def ucoe : ℍ → ℂ_ℤ := fun z => ⟨z, by simpa using UpperHalfPlane.ne_int z⟩
+lemma UpperHalfPlane.coe_mem_integerComplement (z : ℍ) : ↑z ∈ ℂ_ℤ := by
+  simpa using UpperHalfPlane.ne_int z
 
-instance : Coe ℍ ℂ_ℤ := ⟨ucoe⟩
-
-lemma IntegerComplement_add_ne_zero (x : ℂ_ℤ) (a : ℤ) : x.1 + a ≠ 0 := by
+lemma IntegerComplement_add_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (a : ℤ) : x + (a : ℂ)  ≠ 0 := by
   intro h
   rw [add_eq_zero_iff_eq_neg] at h
-  have := not_exists.mp x.2 (-a)
+  have := not_exists.mp hx (-a)
   aesop
 
-lemma IntegerComplement_ne_zero (x : ℂ_ℤ) : x.1 ≠ 0 := by
-  simpa using IntegerComplement_add_ne_zero x 0
+lemma IntegerComplement_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) : (x : ℂ) ≠ (0 : ℂ) := by
+  simpa using IntegerComplement_add_ne_zero hx 0
 
-lemma IntegerComplement_ne_one (x : ℂ_ℤ) : x.1 ≠ 1 := by
-  have := IntegerComplement_add_ne_zero x (-1 : ℤ)
+lemma IntegerComplement_ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ): x.1 ≠ 1 := by
+  have := IntegerComplement_add_ne_zero hx (-1 : ℤ)
   aesop
 
 end Complex
