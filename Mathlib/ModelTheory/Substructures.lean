@@ -929,6 +929,28 @@ theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
 lemma subtype_comp_inclusion {S T : L.Substructure M} (h : S ≤ T) :
     T.subtype.comp (inclusion h) = S.subtype := rfl
 
+def equiv_from_eq {S T : L.Substructure M} (h : S = T) : S ≃[L] T := by
+  cases h
+  exact Equiv.refl _ _
+
+@[simp]
+theorem equiv_from_eq_symm {S T : L.Substructure M} (h : S = T) :
+    (equiv_from_eq h).symm = equiv_from_eq h.symm := by
+  cases h
+  rfl
+
+@[simp]
+theorem equiv_from_eq_apply {S T : L.Substructure M} (h : S = T) {m : M} (hm : m ∈ S) :
+    equiv_from_eq h ⟨m, hm⟩ = ⟨m, h ▸ hm⟩ := by
+  cases h
+  rfl
+
+@[simp]
+theorem subtype_comp_equiv_from_eq {S T : L.Substructure M} (h : S = T) :
+    T.subtype.comp (equiv_from_eq h).toEmbedding = S.subtype := by
+  cases h
+  rfl
+
 end Substructure
 
 end Language

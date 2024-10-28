@@ -289,6 +289,36 @@ theorem map_monotone (f : M ↪[L] N) : Monotone (fun g : M ≃ₚ[L] M ↦ g.ma
       (f.substructureEquivMap g'.dom ⟨u, dom_le_dom h u_mem⟩))
   simp only [Equiv.symm_apply_apply, coeSubtype]
 
+@[simp]
+theorem map_map (f : M ↪[L] N) (g : N ↪[L] P) (h : M ≃ₚ[L] M) :
+    (h.map f).map g = h.map (g.comp f) := by
+  have same_dom : ((h.map f).map g).dom = (h.map (g.comp f)).dom := by
+    apply Substructure.map_map
+  rw [ext_iff]
+  use same_dom
+  intro x hx
+  simp
+  unfold map
+  simp
+  show _ = ↑(((g.comp f).substructureEquivMap h.cod) _)
+  rw [Embedding.substructureEquivMap_apply, Embedding.comp_apply]
+  simp
+  rw [←Equiv.comp_apply, ←Equiv.comp_symm]
+  have hi : h.dom.map (g.comp f).toHom = (h.dom.map f.toHom).map g.toHom := by
+    simp [←Substructure.map_map]
+  have H : (g.substructureEquivMap (Substructure.map f.toHom h.dom)).comp
+      (f.substructureEquivMap h.dom) =
+        (Substructure.equiv_from_eq hi).comp ((g.comp f).substructureEquivMap h.dom) := by
+    ext ⟨x, hx⟩
+    simp
+    show _ =(Substructure.subtype _).comp (equiv_from_eq hi).toEmbedding _
+    simp
+    rfl
+  simp [H]
+
+theorem map_fg (f : M ↪[L] N) {g : M ≃ₚ[L] M} (g_fg : g.dom.FG) : (g.map f).dom.FG :=
+  g_fg.map f.toHom
+
 theorem dom_fg_iff_cod_fg {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
     f.dom.FG ↔ f.cod.FG := by
   rw [Substructure.fg_iff_structure_fg, f.toEquiv.fg_iff, Substructure.fg_iff_structure_fg]

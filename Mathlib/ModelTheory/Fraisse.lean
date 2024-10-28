@@ -539,7 +539,6 @@ theorem system_eq {n : ℕ} {m : ℕ} (h : m ≤ n) :
 theorem system_eq' {n : ℕ} {m : ℕ} (h : m ≤ n) :
     (system K_fraisse m : Bundled.{w} L.Structure) = ((init_system K_fraisse n).2 m).1 :=
     congr_arg _ (system_eq K_fraisse h)
-variable (n m : ℕ)
 
 noncomputable def maps_system {m n : ℕ} (h : m ≤ n): system K_fraisse m ↪[L] system K_fraisse n :=
   ((init_system K_fraisse n).2 m).2.comp (Embedding.eq_embed (system_eq' K_fraisse h))
@@ -600,7 +599,7 @@ noncomputable def map_step (m : ℕ) : system K_fraisse m ↪[L] system K_fraiss
 theorem factorize_with_map_step {m n : ℕ} (h : m ≤ n) :
     maps_system K_fraisse (h.trans (Nat.le_add_right n 1)) =
       (map_step K_fraisse n).comp (maps_system K_fraisse h) := by
-  sorry -- the proof works but is really slow, it takes multiple minutes
+  sorry -- the proof works but is really slow, Lean takes multiple minutes to go through
   /-nth_rw 1 [maps_system]
   simp only [init_system]
   simp only [map_step, maps_system]
@@ -635,11 +634,31 @@ theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
       · simp [maps_system_same_step]
       · rename_i h'
         rw [factorize_with_map_step, map_step, Embedding.comp_assoc,
-            transitive_maps_system h h',←map_step, ←factorize_with_map_step]
+            transitive_maps_system h h', ←map_step, ←factorize_with_map_step]
 
 theorem all_fgequiv_extend {m : ℕ} : ∀ f : L.FGEquiv (system _ m) (system _ m),
     ∀ x : ↑(system K_fraisse m), ∃ n, ∃ h : m ≤ n, ∃ g : (system _ n) ≃ₚ[L] (system _ n),
-      maps_system _ h x ∈ g.dom ∧ f.val.map (maps_system K_fraisse h) ≤ g :=
+      maps_system _ h x ∈ g.dom ∧ f.val.map (maps_system K_fraisse h) ≤ g := by
+  intro f
+  let ⟨n, hn⟩ := (countable_iff_exists_surjective.1
+      (countable_self_fgequiv_of_countable (L := L) (M := system _ m))).choose_spec f
+  let r := Nat.pair m n
+  have h_unpair_m : m = (Nat.unpair r).1 := by simp [r]
+  have h_unpair_n : n = (Nat.unpair r).2 := by simp [r]
+  clear_value r
+  let ⟨f'', f''_fg⟩ := (countable_iff_exists_surjective.1
+      (countable_self_fgequiv_of_countable (L := L)
+        (M := ((init_system K_fraisse r).2 m).1))).choose n
+  cases h_unpair_m
+  let f' := f.1.map (Embedding.eq_embed (system_eq' K_fraisse (Nat.unpair_left_le r)))
+  have f'_fg : f'.dom.FG := f.1.map_fg _ f.2
+  cases h_unpair_n
+  cases hn
+  have h_f'_f'' : f' = f'' := by
+    sorry
+  intro x
+  use r+1
+  use (by linarith [Nat.unpair_left_le r])
   sorry
 
 theorem contains_K : ∀ M ∈ K, ∃ n, Nonempty (M ↪[L] system K_fraisse n) := by
