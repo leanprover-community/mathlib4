@@ -23,6 +23,9 @@ Standard `aesop` syntax apply. Namely one can write
 * `finiteness?` for the tactic to show what proof it found
 * etc
 
+We also provide `finiteness_nonterminal` as a version of `finiteness` that doesn't have to close the
+goal.
+
 ## TODO
 
 Improve `finiteness` to also deal with other situations, such as balls in proper spaces with
@@ -49,4 +52,13 @@ macro (name := finiteness?) "finiteness?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop? $c*
     (config := { introsTransparency? := some .reducible, terminal := true, enableSimp := false })
+    (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
+
+/-- Tactic to solve goals of the form `*** < ∞` and (equivalently) `*** ≠ ∞` in the extended
+nonnegative reals (`ℝ≥0∞`). -/
+macro (name := finiteness_nonterminal) "finiteness_nonterminal" c:Aesop.tactic_clause* : tactic =>
+`(tactic|
+  aesop $c*
+    (config := { introsTransparency? := some .reducible, terminal := true, enableSimp := false,
+                 warnOnNonterminal := false  })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
