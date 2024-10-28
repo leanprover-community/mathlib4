@@ -76,8 +76,11 @@ lemma hi (n : ℕ) : n = n := by extract_goal; rfl
 
 set_option linter.minImports true
 /--
-warning: Imports increased to
+warning: Imports increased by 398 to
 [Init.Guard, Mathlib.Data.Int.Notation]
+
+New imports: [Init.Guard, Mathlib.Data.Int.Notation]
+
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
@@ -91,8 +94,11 @@ set_option linter.minImports false in
 #reset_min_imports
 
 /--
-warning: Imports increased to
+warning: Imports increased by 398 to
 [Init.Guard, Mathlib.Data.Int.Notation]
+
+New imports: [Init.Guard, Mathlib.Data.Int.Notation]
+
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
@@ -100,16 +106,24 @@ note: this linter can be disabled with `set_option linter.minImports false`
 #guard (0 : ℤ) = 0
 
 /--
-warning: Imports increased to
+warning: Imports increased by 967 to
 [Mathlib.Tactic.Linter.MinImports]
+
+New imports: [Mathlib.Tactic.Linter.MinImports]
+
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
 #reset_min_imports
 
 /--
-warning: Imports increased to
+warning: Imports increased by 424 to
 [Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.NormNum.Basic]
+
+New imports: [Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.NormNum.Basic]
+
+Now redundant: [Mathlib.Tactic.Linter.MinImports]
+
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
