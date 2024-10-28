@@ -1100,6 +1100,10 @@ namespace SubfieldClass
 
 variable {S F : Type*} [SetLike S F]
 
+/--
+If `s` is a subfield of a normed field `F`, then `s` is equipped with an induced normed
+field structure.
+-/
 instance toNormedField [NormedField F] [SubfieldClass S F] (s : S) : NormedField s :=
   NormedField.induced s F (SubringClass.subtype s) Subtype.val_injective
 
