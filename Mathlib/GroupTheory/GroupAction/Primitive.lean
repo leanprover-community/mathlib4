@@ -229,7 +229,7 @@ theorem IsPreprimitive.iff_of_bijective
     apply IsPreprimitive.mk
     · intro B hB
       rw [← Set.preimage_image_eq B hf.injective]
-      exact IsTrivialBlock.preimage hf.injective 
+      exact IsTrivialBlock.preimage hf.injective
         (hN.has_trivial_blocks (hB.image f hφ hf.injective))
 
 end EquivariantMap
