@@ -47,6 +47,9 @@ instance : IsAffine (⊤_ Scheme.{u}) :=
 instance : HasFiniteLimits Scheme :=
   hasFiniteLimits_of_hasTerminal_and_pullbacks
 
+instance (X : Scheme.{u}) : X.Over (⊤_ _) := ⟨terminal.from _⟩
+instance {X Y : Scheme.{u}} (f : X ⟶ Y) : f.IsOver (⊤_ _) := ⟨terminal.hom_ext _ _⟩
+
 section Initial
 
 /-- The map from the empty scheme. -/
