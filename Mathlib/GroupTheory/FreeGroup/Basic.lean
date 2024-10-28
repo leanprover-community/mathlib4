@@ -1054,6 +1054,10 @@ theorem toWord_mk : (mk L₁).toWord = reduce L₁ :=
   rfl
 
 @[to_additive (attr := simp)]
+theorem toWord_of (a : α) : (of a).toWord = [(a, true)] :=
+  rfl
+
+@[to_additive (attr := simp)]
 theorem reduce_toWord : ∀ x : FreeGroup α, reduce (toWord x) = toWord x := by
   rintro ⟨L⟩
   exact reduce.idem
@@ -1123,6 +1127,16 @@ instance : Fintype { L₂ // Red L₁ L₂ } :=
 
 end Reduce
 
+@[simp]
+theorem one_ne_of (a : α) : 1 ≠ of a :=
+  letI := Classical.decEq α; ne_of_apply_ne toWord <| by simp
+
+@[simp]
+theorem of_ne_one (a : α) : of a ≠ 1 := one_ne_of _ |>.symm
+
+instance [Nonempty α] : Nontrivial (FreeGroup α) where
+  exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨1, of x, one_ne_of x⟩
+
 section Metric
 
 variable [DecidableEq α]
@@ -1142,6 +1156,10 @@ theorem norm_eq_zero {x : FreeGroup α} : norm x = 0 ↔ x = 1 := by
 
 @[to_additive (attr := simp)]
 theorem norm_one : norm (1 : FreeGroup α) = 0 :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem norm_of (a : α) : norm (of a) = 1 :=
   rfl
 
 @[to_additive]
