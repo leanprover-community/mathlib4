@@ -412,11 +412,7 @@ variable (M : Type v) [AddCommGroup M] [Module A M]
 /-- Given an `A`-module `M`, a term in this type is a presentation by `M` by
 generators and relations. -/
 @[nolint checkUnivs]
-structure Presentation where
-  /-- the shape of the relations -/
-  relations : Relations A
-  /-- a solution to the given equations -/
-  solution : relations.Solution M
-  isPresentation : solution.IsPresentation
+structure Presentation extends Relations.{w₀, w₁} A,
+  toRelations.Solution M, toSolution.IsPresentation where
 
 end Module
