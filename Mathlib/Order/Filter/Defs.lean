@@ -308,6 +308,10 @@ instance instSProd : SProd (Filter α) (Filter β) (Filter (α × β)) where
 theorem prod_eq_inf (f : Filter α) (g : Filter β) : f ×ˢ g = f.comap Prod.fst ⊓ g.comap Prod.snd :=
   rfl
 
+/-- The product of an indexed family of filters. -/
+def pi {ι : Type*} {α : ι → Type*} (f : ∀ i, Filter (α i)) : Filter (∀ i, α i) :=
+  ⨅ i, comap (Function.eval i) (f i)
+
 /-- The monadic bind operation on filter is defined the usual way in terms of `map` and `join`.
 
 Unfortunately, this `bind` does not result in the expected applicative. See `Filter.seq` for the
