@@ -183,40 +183,6 @@ open NumberField.InfinitePlace Module Finset
 abbrev mixedSpace :=
   ({w : InfinitePlace K // IsReal w} → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℂ)
 
-section Measure
-
-open MeasureTheory.Measure MeasureTheory
-
-variable [NumberField K]
-
-open Classical in
-instance : IsAddHaarMeasure (volume : Measure (mixedSpace K)) :=
-  prod.instIsAddHaarMeasure volume volume
-
-open Classical in
-instance : NoAtoms (volume : Measure (mixedSpace K)) := by
-  obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
-  by_cases hw : IsReal w
-  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsReal w} → ℝ)) := pi_noAtoms ⟨w, hw⟩
-    exact prod.instNoAtoms_fst
-  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsComplex w} → ℂ)) :=
-      pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩
-    exact prod.instNoAtoms_snd
-
-variable {K} in
-open Classical in
-/-- The set of points in the mixedSpace that are equal to `0` at a fixed (real) place has
-volume zero. -/
-theorem volume_eq_zero (w : {w // IsReal w}) :
-    volume ({x : mixedSpace K | x.1 w = 0}) = 0 := by
-  let A : AffineSubspace ℝ (mixedSpace K) :=
-    Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x.1 w = 0}, by aesop⟩, rfl⟩ (by aesop))
-  convert Measure.addHaar_affineSubspace volume A fun h ↦ ?_
-  have : 1 ∈ A := h ▸ Set.mem_univ _
-  simp [A] at this
-
-end Measure
-
 /-- The mixed embedding of a number field `K` into the mixed space of `K`. -/
 noncomputable def _root_.NumberField.mixedEmbedding : K →+* (mixedSpace K) :=
   RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
@@ -270,6 +236,18 @@ instance : NoAtoms (volume : Measure (mixedSpace K)) := by
   · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsComplex w} → ℂ)) :=
       pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩
     exact prod.instNoAtoms_snd
+
+variable {K} in
+open Classical in
+/-- The set of points in the mixedSpace that are equal to `0` at a fixed (real) place has
+volume zero. -/
+theorem volume_eq_zero (w : {w // IsReal w}) :
+    volume ({x : mixedSpace K | x.1 w = 0}) = 0 := by
+  let A : AffineSubspace ℝ (mixedSpace K) :=
+    Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x.1 w = 0}, by aesop⟩, rfl⟩ (by aesop))
+  convert Measure.addHaar_affineSubspace volume A fun h ↦ ?_
+  have : 1 ∈ A := h ▸ Set.mem_univ _
+  simp [A] at this
 
 end Measure
 
