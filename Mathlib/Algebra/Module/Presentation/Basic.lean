@@ -293,6 +293,14 @@ lemma desc_var (s : relations.Solution N) (g : relations.G) :
   rw [linearEquiv_symm_var, fromQuotient_mk, π_single]
 
 @[simp]
+lemma desc_comp_π (s : relations.Solution N) : (h.desc s).comp solution.π = s.π := by aesop
+
+@[simp]
+lemma π_desc_apply (s : relations.Solution N) (x : relations.G →₀ A) :
+    h.desc s (solution.π x) = s.π x :=
+  DFunLike.congr_fun (h.desc_comp_π s) x
+
+@[simp]
 lemma postcomp_desc (s : relations.Solution N) :
     solution.postcomp (h.desc s) = s := by aesop
 
@@ -437,6 +445,7 @@ structure Presentation extends Relations.{w₀, w₁} A,
 
 variable {A M}
 
+/-- Constructor for `Module.Presentation`. -/
 @[simps toRelations toSolution]
 def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
     {solution : relations.Solution M} (h : solution.IsPresentation) :
