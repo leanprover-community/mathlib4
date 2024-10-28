@@ -390,13 +390,24 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
   -- we look inside `stx` to find a terminal command.
   -- This simplifies testing: writing `open Nat in #exit` prints the current linter output
   if (stx.find? (Parser.isTerminalCommand ·)).isSome then
-      let varTrack ← usedVarsRef.get
-      let sorted := varTrack.seen.toArray.qsort (·.toString < ·.toString)
-      let unused := varTrack.dict.toList.filter (!sorted.contains ·.1)
-      for (uniq, user) in unused do
-        match uniq.eraseMacroScopes with
-          | .anonymous => Linter.logLint linter.unusedVariableCommand user m!"'{user}' is unused"
-          | x          => Linter.logLint linter.unusedVariableCommand user m!"'{x}' is unused"
+    let varTrack ← usedVarsRef.get
+    let sorted := varTrack.seen.toArray.qsort (·.toString < ·.toString)
+    let unused := varTrack.dict.toList.filter (!sorted.contains ·.1)
+    let fm ← getFileMap
+    for (uniq, user) in unused do
+      let rg := user.getRange?.getD default
+      let var : Substring := {
+          str := fm.source
+          startPos := rg.start
+          stopPos := rg.stop
+        }
+      let toPrint := match uniq.eraseMacroScopes with
+        | .anonymous => user.prettyPrint.pretty
+        | x          => x.toString
+      if rg == default || var.toString != toPrint then
+        logInfoAt user "Rebuild the file to get accurate variable information."
+      Linter.logLint linter.unusedVariableCommand user
+        m!"'{toPrint}' is unused {user.getRange?.map fun r => (r.start, r.stop)}"
   -- if there is a `variable` command in `stx`, then we update `usedVarsRef` with all the
   -- information that is available
   if (stx.find? (·.isOfKind ``Lean.Parser.Command.variable)).isSome then
@@ -431,10 +442,13 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     let newRStx : Syntax := stx.replaceM (m := Id)
       (if · == decl then return some renStx else return none)
     elabCommand (← `(def $toFalse (S : Sort _) := False))
-    try
-      elabCommand newRStx
-    catch _ =>
-      elabCommand (← mkThm' decl true)
+    if decl.isOfKind `lemma || (decl.find? (·.isOfKind ``Command.theorem)).isSome then
+      try
+        elabCommand newRStx
+        dbg_trace "success"
+      catch _ =>
+        dbg_trace "caught something"
+        elabCommand (← mkThm' decl true)
     set s
     let left2 := (← usedVarsRef.get).dict.toList
     let left := left2.map Prod.fst
