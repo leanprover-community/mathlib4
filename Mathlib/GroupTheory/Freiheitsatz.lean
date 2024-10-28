@@ -63,6 +63,7 @@ section Equivs
 
 open SemidirectProduct Multiplicative FreeGroup Function
 
+
 def FreeGroup.mapPermHom (α : Type*) :
     Equiv.Perm α →* MulAut (FreeGroup α) :=
   { toFun := fun e =>
@@ -76,6 +77,7 @@ def FreeGroup.mapPermHom (α : Type*) :
     map_mul' := fun _ _ => MulEquiv.toMonoidHom_injective
       (FreeGroup.ext_hom _ _ (fun _ => by simp)) }
 
+/-- `prodPerm g (a, h) = (a, g * h)` -/
 def prodPerm (α : Type*) : Multiplicative ℤ →*
     Equiv.Perm (α × Multiplicative ℤ) :=
   { toFun := fun g => Equiv.prodCongr 1 (MulAction.toPermHom _ _ g),
@@ -122,6 +124,7 @@ def freeGroupEquivSemidirectProduct {α : Type*} [DecidableEq α] (a : α) :
 
 axiom FreeGroup.vars {α : Type*} : FreeGroup α → Finset α
 
+/-- The set of variables of an element of the Free Group after it has been cyclically reduced. -/
 axiom FreeGroup.conjVars {α : Type*} : FreeGroup α → Finset α
 
 end Equivs
@@ -240,9 +243,7 @@ axiom letterMem : { n : Multiplicative ℤ // (d.x, n) ∈ d.subgroupA }
 
 noncomputable def toHNNExtension (h : FreiheitsatzProp d.newRelator) :
     OneRelator r →* HNNExtension _ d.subgroupA d.subgroupB (d.subgroupEquiv h) :=
-  OneRelator.lift
-    (fun a => _)
-    _
+  sorry
 
 
 end HNNExtension
