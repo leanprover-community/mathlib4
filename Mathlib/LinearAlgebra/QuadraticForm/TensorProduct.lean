@@ -95,6 +95,13 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : Quadra
     QuadraticForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
+/- Previously `QuadraticForm.tensorDistrib` was defined in a similar way to
+`QuadraticMap.tensorDistrib`. We now obtain the definition of `QuadraticForm.tensorDistrib`
+from `QuadraticMap.tensorDistrib` using `A ⊗[R] R ≃ₗ[A] A`. Hypothesis `e1` below shows that the
+new definition is equal to the old, and allows us to reuse the old proof.
+
+TODO: Define `IsSymm` for bilinear maps and generalise this result to Quadratic Maps.
+-/
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     associated (R := A) (Q₁.tmul Q₂)
       = BilinForm.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
