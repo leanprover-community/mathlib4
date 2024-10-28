@@ -158,10 +158,18 @@ theorem mem_fixedPoints' {a : α} : a ∈ fixedPoints M α ↔ ∀ a', a' ∈ or
     hm ▸ h m,
     fun h _ => h _ (mem_orbit _ _)⟩
 
+@[to_additive] theorem mem_fixedPoints_iff_subsingleton_orbit {a : α} :
+    a ∈ fixedPoints M α ↔ (orbit M a).Subsingleton := by
+  rw [mem_fixedPoints]
+  constructor
+  · rintro h _ ⟨m, rfl⟩ y ⟨p, rfl⟩
+    simp only [h]
+  · exact fun h m ↦ h (mem_orbit a m) (mem_orbit_self a)
+
 @[to_additive mem_fixedPoints_iff_card_orbit_eq_one]
 theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     a ∈ fixedPoints M α ↔ Fintype.card (orbit M a) = 1 := by
-  rw [Fintype.card_eq_one_iff, mem_fixedPoints]
+  rw [mem_fixedPoints, Fintype.card_eq_one_iff]
   constructor
   · exact fun h => ⟨⟨a, mem_orbit_self _⟩, fun ⟨a, ⟨x, hx⟩⟩ => Subtype.eq <| by simp [h x, hx.symm]⟩
   · intro h x
