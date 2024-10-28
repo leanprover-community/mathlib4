@@ -3,6 +3,7 @@ Copyright (c) 2024 Tristan Figueroa-Reid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tristan Figueroa-Reid
 -/
+import Mathlib.Data.Finset.Max
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.SetTheory.Game.State
 import Mathlib.SetTheory.Game.Impartial
@@ -25,6 +26,10 @@ Assume G is a 2nd player win:
   There exists a G' that is a first-player win, such that G'' is a second-player win
   However, there exists a direct move from G -> G''. End contradiction
 -/
+
+-- TODO: this could be computable if we drop the reliance on Classical.decPred
+noncomputable section
+
 namespace SetTheory
 
 namespace PGame
@@ -39,8 +44,6 @@ abbrev PNon1Nat := { n : ℕ // 1 < n }
 def noMultiples (D : Finset ℕ) : Prop :=
   ∀ x ∈ D, ∀ d ∈ x.properDivisors, d ∉ D
 
-instance : DecidablePred noMultiples := by unfold noMultiples; infer_instance
-
 /--
 Should be true iff D is a subset of the proper divisors of n
 where none of the numbers are multiples of each other.
@@ -51,17 +54,12 @@ is the board state without `n`.
 def validMentionableDivisors (n : ℕ) (D : Finset ℕ) : Prop :=
   D ⊆ n.properDivisors ∧ noMultiples D
 
-instance : ∀ n : ℕ, DecidablePred (validMentionableDivisors n) :=
-  by unfold validMentionableDivisors; infer_instance
-
 def validDivisorSet (D : Finset ℕ) : Prop :=
   match D.max with
   | none => False
   | some α => validMentionableDivisors α (D.erase α)
 
-instance : DecidablePred validDivisorSet := by
-  unfold validDivisorSet
-  sorry
+instance : DecidablePred validDivisorSet := Classical.decPred _
 
 /--
 A Chomp game is a natural number
@@ -72,16 +70,23 @@ In this representation, a game starts out with some 'controlling' natural number
 which is the max number in the Finset.
 -/
 abbrev Board := Subtype validDivisorSet
+theorem max_not_bot (b : Board) : b.val.max.isSome := by
+  have p := b.property
+  unfold validDivisorSet at p
+  by_contra k
+  simp only [ne_eq, Bool.not_eq_true, Option.not_isSome, Option.isNone_iff_eq_none] at k
+  simp only [k] at p
 
 theorem never_empty (b : Board) : b.val ≠ ∅ := by
-  have x := b.property
-  sorry
+  have p := b.property
+  unfold validDivisorSet at p
+  by_contra k
+  have y : b.val.max = ⊥ := by
+    rw [k]
+    exact Finset.max_empty
+  simp only [y] at p
 
-def controlling (b : Board) : ℕ := match b.val.max with
-  -- b.val ≠ ∅ → b.val.max ≠ none
-  | none => by solve_by_elim
-  | some α => α
-
+def controlling (b : Board) : ℕ := b.val.max.get (max_not_bot b)
 
 /--
 Players can move by 'saying' a divisor.
@@ -89,17 +94,10 @@ This constructs the list of possible games to be made
 in one move.
 -/
 def moves (b : Board) : Finset ℕ :=
-  -- No divisors exist past b.n
-  have upperPossibleMoves := Finset.range (controlling b)
-  -- However, our only possible moves exist if the divisors + that move is still valid
-  have moveset := upperPossibleMoves.val.filterMap fun x =>
-    have newValid := b.val ∪ {x}
-    have p := instDecidablePredFinsetNatValidDivisorSet newValid
-    match p with
-    | isTrue _ => x
-    | isFalse _ => none
-
-  moveset.toFinset
+  let upperPossibleMoves := Finset.range (controlling b)
+  let validMoves := upperPossibleMoves.val.filterMap fun x =>
+    if validDivisorSet (b.val ∪ {x}) then some x else none
+  validMoves.toFinset
 
 def move (b : Board) (move : ℕ) : Board :=
   have newValid := b.val ∪ {move}
@@ -112,24 +110,33 @@ def upperBoundMoveCount (b : Board) : ℕ := (controlling b).properDivisors.card
 
 theorem unchanging_controller (b : Board) (m : ℕ) :
     controlling b = controlling (move b m) := by
-  unfold controlling
+  unfold controlling move
+  let D := b.val
+  simp
   sorry
 
 theorem move_card {b : Board} {m : ℕ} (h : m ∈ moves b) :
-  Finset.card (move b m).val = Finset.card b.val + 1 := by sorry
+    Finset.card (move b m).val = Finset.card b.val + 1 := by
+  unfold move
+  sorry
 
 theorem moves_smaller {b : Board} {m : ℕ} (h : m ∈ moves b) :
     upperBoundMoveCount (move b m) < upperBoundMoveCount b := by
-  simp [upperBoundMoveCount, move_card h, ← unchanging_controller b]
+  simp only [upperBoundMoveCount, ← unchanging_controller b, move_card h, add_tsub_cancel_right]
   -- an unfinished game b will always have a move left
   have x : b.val.card - 1 < (controlling b).properDivisors.card := by
+    have p := b.property
+    have k : b.val.max.isSome := max_not_bot b
+    unfold controlling
+    simp [k]
     sorry
+
   refine Nat.sub_lt_sub_left ?a ?b
   · exact x
   have y : 0 < b.val.card := by
     by_contra k
-    simp at k
-    have x : b.val ≠ ∅ := never_empty b
+    simp only [Finset.card_pos, Finset.not_nonempty_iff_eq_empty] at k
+    have := never_empty b
     contradiction
   exact Nat.sub_one_lt_of_lt y
 
@@ -154,7 +161,7 @@ def chomp (b : Chomp.Board) : PGame :=
 
 /-- All games of Chomp are short.r -/
 instance shortChomp (b : Chomp.Board) : Short (chomp b) := by
-  dsimp [chomp]
+  dsimp only [chomp]
   infer_instance
 
 end PGame
