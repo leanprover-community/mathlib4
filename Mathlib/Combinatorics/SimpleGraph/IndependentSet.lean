@@ -91,13 +91,6 @@ protected theorem IsIndependentSet.map (h : G.IsIndependentSet s) {f : α ↪ β
   have haneb : a ≠ b := fun a' ↦ hab (congrArg (⇑f) a')
   simp [h ha hb haneb]
 
-@[simp] -- TODO this should live in Clique.lean also the aesop is expensve...
-lemma isClique_compl_map_iff_isClique_map_compl {f : α ↪ β} {s : Set α} :
-    (SimpleGraph.map f G)ᶜ.IsClique (f '' s) ↔ (SimpleGraph.map f Gᶜ).IsClique (f '' s) := by
-  repeat rw [isClique_iff];
-  repeat rw [Set.Pairwise];
-  aesop
-
 @[simp] theorem isIndependentSet_map_image_iff {f : α ↪ β} :
     (G.map f).IsIndependentSet (f '' s) ↔ G.IsIndependentSet s := by
   constructor
