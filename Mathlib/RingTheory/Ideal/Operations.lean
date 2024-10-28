@@ -554,10 +554,8 @@ theorem pow_sup_pow_eq_top {m n : ℕ} (h : I ⊔ J = ⊤) : I ^ m ⊔ J ^ n = �
 
 variable (I)
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem mul_bot : I * ⊥ = ⊥ := by simp
 
--- @[simp] -- Porting note (#10618): simp can prove thisrove this
 theorem bot_mul : ⊥ * I = ⊥ := by simp
 
 @[simp]
@@ -604,6 +602,20 @@ theorem pow_right_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n
   · rw [pow_zero, pow_zero]
   · rw [pow_succ, pow_succ]
     exact Ideal.mul_mono hn e
+
+lemma sup_pow_add_le_pow_sup_pow {R} [CommSemiring R] {I J : Ideal R} {n m : ℕ} :
+    (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔ J ^ m := by
+  rw [← Ideal.add_eq_sup, ← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup]
+  apply Finset.sup_le
+  intros i hi
+  by_cases hn : n ≤ i
+  · exact (Ideal.mul_le_right.trans (Ideal.mul_le_right.trans
+      ((Ideal.pow_le_pow_right hn).trans le_sup_left)))
+  · refine (Ideal.mul_le_right.trans (Ideal.mul_le_left.trans
+      ((Ideal.pow_le_pow_right ?_).trans le_sup_right)))
+    simp only [Finset.mem_range, Nat.lt_succ] at hi
+    rw [Nat.le_sub_iff_add_le hi]
+    nlinarith
 
 @[simp]
 theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal R} :

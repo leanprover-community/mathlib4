@@ -491,12 +491,6 @@ open NonUnitalStarAlgebra Submodule
 
 namespace ContinuousMap
 
-/-
-`set_option maxSynthPendingDepth 2` after https://github.com/leanprover/lean4/pull/4119
-allows use to remove some shortcut instances.
--/
-set_option maxSynthPendingDepth 2
-
 lemma adjoin_id_eq_span_one_union (s : Set 𝕜) :
     ((StarAlgebra.adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))}) : Set C(s, 𝕜)) =
       span 𝕜 ({(1 : C(s, 𝕜))} ∪ (adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))})) := by

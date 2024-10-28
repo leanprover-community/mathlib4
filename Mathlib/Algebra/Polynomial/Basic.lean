@@ -455,7 +455,6 @@ theorem smul_C {S} [SMulZeroClass S R] (s : S) (r : R) : s • C r = C (s • r)
 theorem C_pow : C (a ^ n) = C a ^ n :=
   C.map_pow a n
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem C_eq_natCast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
 

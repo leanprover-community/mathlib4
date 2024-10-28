@@ -30,8 +30,6 @@ noncomputable instance : NegPart A where
 
 end CStarAlgebra
 
-attribute [fun_prop] continuous_posPart continuous_negPart
-
 namespace CFC
 
 lemma posPart_def (a : A) : a⁺ = cfcₙ (·⁺ : ℝ → ℝ) a := rfl
@@ -86,10 +84,12 @@ end Unique
 
 variable [PartialOrder A] [StarOrderedRing A]
 
+@[aesop norm apply (rule_sets := [CStarAlgebra])]
 lemma posPart_nonneg (a : A) :
     0 ≤ a⁺ :=
   cfcₙ_nonneg (fun x _ ↦ by positivity)
 
+@[aesop norm apply (rule_sets := [CStarAlgebra])]
 lemma negPart_nonneg (a : A) :
     0 ≤ a⁻ :=
   cfcₙ_nonneg (fun x _ ↦ by positivity)
