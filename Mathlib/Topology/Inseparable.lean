@@ -152,6 +152,8 @@ theorem IsInducing.specializes_iff (hf : IsInducing f) : f x ⤳ f y ↔ x ⤳ y
   simp only [specializes_iff_mem_closure, hf.closure_eq_preimage_closure_image, image_singleton,
     mem_preimage]
 
+@[deprecated (since := "2024-10-28")] alias Inducing.specializes_iff := IsInducing.specializes_iff
+
 theorem subtype_specializes_iff {p : X → Prop} (x y : Subtype p) : x ⤳ y ↔ (x : X) ⤳ y :=
   IsInducing.subtypeVal.specializes_iff.symm
 
@@ -365,11 +367,15 @@ lemma IsInducing.specializingMap (hf : IsInducing f)
   obtain ⟨y, rfl⟩ := h e ⟨x, rfl⟩
   exact ⟨_, hf.specializes_iff.mp e, rfl⟩
 
+@[deprecated (since := "2024-10-28")] alias Inducing.specializingMap := IsInducing.specializingMap
+
 lemma IsInducing.generalizingMap (hf : IsInducing f)
     (h : StableUnderGeneralization (range f)) : GeneralizingMap f := by
   intros x y e
   obtain ⟨y, rfl⟩ := h e ⟨x, rfl⟩
   exact ⟨_, hf.specializes_iff.mp e, rfl⟩
+
+@[deprecated (since := "2024-10-28")] alias Inducing.generalizingMap := IsInducing.generalizingMap
 
 lemma IsOpenEmbedding.generalizingMap (hf : IsOpenEmbedding f) : GeneralizingMap f :=
   hf.isInducing.generalizingMap hf.isOpen_range.stableUnderGeneralization
@@ -439,6 +445,8 @@ theorem inseparable_of_nhdsWithin_eq (hx : x ∈ s) (hy : y ∈ s) (h : 𝓝[s] 
 
 theorem IsInducing.inseparable_iff (hf : IsInducing f) : (f x ~ᵢ f y) ↔ (x ~ᵢ y) := by
   simp only [inseparable_iff_specializes_and, hf.specializes_iff]
+
+@[deprecated (since := "2024-10-28")] alias Inducing.inseparable_iff := IsInducing.inseparable_iff
 
 theorem subtype_inseparable_iff {p : X → Prop} (x y : Subtype p) : (x ~ᵢ y) ↔ ((x : X) ~ᵢ y) :=
   IsInducing.subtypeVal.inseparable_iff.symm
@@ -568,6 +576,8 @@ theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := 
 theorem isInducing_mk : IsInducing (mk : X → SeparationQuotient X) :=
   ⟨le_antisymm (continuous_iff_le_induced.1 continuous_mk) fun s hs =>
       ⟨mk '' s, isOpenMap_mk s hs, preimage_image_mk_open hs⟩⟩
+
+@[deprecated (since := "2024-10-28")] alias inducing_mk := isInducing_mk
 
 theorem isClosedMap_mk : IsClosedMap (mk : X → SeparationQuotient X) :=
   isInducing_mk.isClosedMap <| by rw [range_mk]; exact isClosed_univ

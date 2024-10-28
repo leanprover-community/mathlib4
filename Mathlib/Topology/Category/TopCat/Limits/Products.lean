@@ -250,6 +250,8 @@ theorem isInducing_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (h
   erw [← hf.eq_induced, ← hg.eq_induced] -- now `erw` after #13170
   rfl -- `rfl` was not needed before #13170
 
+@[deprecated (since := "2024-10-28")] alias inducing_prod_map := isInducing_prodMap
+
 theorem isEmbedding_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsEmbedding f)
     (hg : IsEmbedding g) : IsEmbedding (Limits.prod.map f g) :=
   ⟨isInducing_prodMap hf.isInducing hg.isInducing, by

@@ -160,6 +160,9 @@ theorem IsInducing.frechetUrysohnSpace [FrechetUrysohnSpace Y] {f : X → Y}
   refine ⟨v, hv, ?_⟩
   simpa only [hf.tendsto_nhds_iff, Function.comp_def, hvu]
 
+@[deprecated (since := "2024-10-28")]
+alias Inducing.frechetUrysohnSpace := IsInducing.frechetUrysohnSpace
+
 /-- Subtype of a Fréchet-Urysohn space is a Fréchet-Urysohn space. -/
 instance Subtype.instFrechetUrysohnSpace [FrechetUrysohnSpace X] {p : X → Prop} :
     FrechetUrysohnSpace (Subtype p) :=

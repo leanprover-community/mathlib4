@@ -87,6 +87,8 @@ instance instTopologicalSpaceUnits : TopologicalSpace Mˣ :=
 @[to_additive]
 theorem isInducing_embedProduct : IsInducing (embedProduct M) := ⟨rfl⟩
 
+@[deprecated (since := "2024-10-28")] alias inducing_embedProduct := isInducing_embedProduct
+
 @[to_additive]
 theorem isEmbedding_embedProduct : IsEmbedding (embedProduct M) :=
   ⟨isInducing_embedProduct, embedProduct_injective M⟩

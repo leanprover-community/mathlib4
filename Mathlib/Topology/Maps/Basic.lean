@@ -55,9 +55,13 @@ variable [TopologicalSpace Y]
 protected lemma IsInducing.induced (f : X → Y) : @IsInducing X Y (induced f ‹_›) _ f :=
   @IsInducing.mk _ _ (TopologicalSpace.induced f ‹_›) _ _ rfl
 
+@[deprecated (since := "2024-10-28")] alias inducing_induced := IsInducing.induced
+
 variable [TopologicalSpace X]
 
 protected lemma IsInducing.id : IsInducing (@id X) := ⟨induced_id.symm⟩
+
+@[deprecated (since := "2024-10-28")] alias inducing_id := IsInducing.id
 
 variable [TopologicalSpace Z]
 
@@ -65,9 +69,13 @@ protected lemma IsInducing.comp (hg : IsInducing g) (hf : IsInducing f) :
     IsInducing (g ∘ f) :=
   ⟨by rw [hf.eq_induced, hg.eq_induced, induced_compose]⟩
 
+@[deprecated (since := "2024-10-28")] alias Inducing.comp := IsInducing.comp
+
 lemma IsInducing.of_comp_iff (hg : IsInducing g) : IsInducing (g ∘ f) ↔ IsInducing f := by
   refine ⟨fun h ↦ ?_, hg.comp⟩
   rw [isInducing_iff, hg.eq_induced, induced_compose, h.eq_induced]
+
+@[deprecated (since := "2024-10-28")] alias Inducing.of_comp_iff := IsInducing.of_comp_iff
 
 lemma IsInducing.of_comp (hf : Continuous f) (hg : Continuous g) (hgf : IsInducing (g ∘ f)) :
     IsInducing f :=
@@ -76,8 +84,12 @@ lemma IsInducing.of_comp (hf : Continuous f) (hg : Continuous g) (hgf : IsInduci
         rw [hgf.eq_induced, ← induced_compose]
         exact induced_mono hg.le_induced)⟩
 
+@[deprecated (since := "2024-10-28")] alias inducing_of_inducing_compose := IsInducing.of_comp
+
 lemma isInducing_iff_nhds : IsInducing f ↔ ∀ x, 𝓝 x = comap f (𝓝 (f x)) :=
   (isInducing_iff _).trans (induced_iff_nhds_eq f)
+
+@[deprecated (since := "2024-10-28")] alias inducing_iff_nhds := isInducing_iff_nhds
 
 namespace IsInducing
 
@@ -159,9 +171,11 @@ end IsInducing.IsInducing
 
 namespace IsEmbedding
 
-protected lemma induced [t : TopologicalSpace Y] (hf : Injective f) :
+lemma induced [t : TopologicalSpace Y] (hf : Injective f) :
     @IsEmbedding X Y (t.induced f) t f :=
   @IsEmbedding.mk X Y (t.induced f) t _ (.induced f) hf
+
+@[deprecated (since := "2024-10-28")] alias _root_.Function.Injective.isEmbedding_induced := induced
 
 alias _root_.Function.Injective.isEmbedding_induced := IsEmbedding.induced
 
@@ -171,6 +185,8 @@ alias Function.Injective.embedding_induced := _root_.Function.Injective.isEmbedd
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 lemma isInducing (hf : IsEmbedding f) : IsInducing f := hf.toIsInducing
+
+@[deprecated (since := "2024-10-28")] alias inducing := isInducing
 
 lemma mk' (f : X → Y) (inj : Injective f) (induced : ∀ x, comap f (𝓝 (f x)) = 𝓝 x) :
     IsEmbedding f :=
@@ -423,6 +439,8 @@ protected lemma IsInducing.isOpenMap (hi : IsInducing f) (ho : IsOpen (range f))
     IsOpenMap f :=
   IsOpenMap.of_nhds_le fun _ => (hi.map_nhds_of_mem _ <| IsOpen.mem_nhds ho <| mem_range_self _).ge
 
+@[deprecated (since := "2024-10-28")] alias Inducing.isOpenMap := IsInducing.isOpenMap
+
 /-- Preimage of a dense set under an open map is dense. -/
 protected theorem Dense.preimage {s : Set Y} (hs : Dense s) (hf : IsOpenMap f) :
     Dense (f ⁻¹' s) := fun x ↦
@@ -481,6 +499,8 @@ lemma IsInducing.isClosedMap (hf : IsInducing f) (h : IsClosed (range f)) :
   rw [image_preimage_eq_inter_range]
   exact ht.inter h
 
+@[deprecated (since := "2024-10-28")] alias Inducing.isClosedMap := IsInducing.isClosedMap
+
 theorem isClosedMap_iff_closure_image :
     IsClosedMap f ↔ ∀ s, closure (f '' s) ⊆ f '' closure s :=
   ⟨IsClosedMap.closure_image_subset, fun hs c hc =>
@@ -526,6 +546,8 @@ variable [TopologicalSpace X] [TopologicalSpace Y]
 lemma IsOpenEmbedding.isEmbedding (hf : IsOpenEmbedding f) : IsEmbedding f := hf.toIsEmbedding
 lemma IsOpenEmbedding.isInducing (hf : IsOpenEmbedding f) : IsInducing f :=
   hf.isEmbedding.isInducing
+
+@[deprecated (since := "2024-10-28")] alias IsOpenEmbedding.inducing := IsOpenEmbedding.isInducing
 
 lemma IsOpenEmbedding.isOpenMap (hf : IsOpenEmbedding f) : IsOpenMap f :=
   hf.isEmbedding.isInducing.isOpenMap hf.isOpen_range
@@ -676,6 +698,8 @@ namespace IsClosedEmbedding
 lemma isEmbedding (hf : IsClosedEmbedding f) : IsEmbedding f := hf.toIsEmbedding
 lemma isInducing (hf : IsClosedEmbedding f) : IsInducing f := hf.isEmbedding.isInducing
 lemma continuous (hf : IsClosedEmbedding f) : Continuous f := hf.isEmbedding.continuous
+
+@[deprecated (since := "2024-10-28")] alias inducing := isInducing
 
 lemma tendsto_nhds_iff {g : ι → X} {l : Filter ι} {x : X} (hf : IsClosedEmbedding f) :
     Tendsto g l (𝓝 x) ↔ Tendsto (f ∘ g) l (𝓝 (f x)) := hf.isEmbedding.tendsto_nhds_iff

@@ -125,6 +125,9 @@ lemma IsInducing.isLocallyClosed_iff {s : Set X}
   · rintro ⟨_, ⟨U, Z, hU, hZ, rfl⟩, rfl⟩
     exact ⟨_, _, ⟨U, hU, rfl⟩, ⟨Z, hZ, rfl⟩, rfl⟩
 
+@[deprecated (since := "2024-10-28")]
+alias Inducing.isLocallyClosed_iff := IsInducing.isLocallyClosed_iff
+
 lemma IsEmbedding.isLocallyClosed_iff {s : Set X}
     {f : X → Y} (hf : IsEmbedding f) :
     IsLocallyClosed s ↔ ∃ s' : Set Y, IsLocallyClosed s' ∧ s' ∩ range f = f '' s := by

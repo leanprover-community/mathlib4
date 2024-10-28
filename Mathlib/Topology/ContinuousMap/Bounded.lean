@@ -246,6 +246,8 @@ theorem isInducing_coeFn : IsInducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ �
     UniformFun.tendsto_iff_tendstoUniformly]
   simp [comp_def]
 
+@[deprecated (since := "2024-10-28")] alias inducing_coeFn := isInducing_coeFn
+
 -- TODO: upgrade to `IsUniformEmbedding`
 theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
   ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩

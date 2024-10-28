@@ -91,6 +91,8 @@ theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
     simp only [compactOpen_eq, induced_generateFrom_eq, image_image2, hg.setOf_isOpen,
       image2_image_right, MapsTo, mem_preimage, preimage_setOf_eq, comp_apply]
 
+@[deprecated (since := "2024-10-28")] alias inducing_postcomp := isInducing_postcomp
+
 @[deprecated (since := "2024-10-19")] alias inducing_comp := isInducing_postcomp
 
 /-- If `g : C(Y, Z)` is a topological embedding,

@@ -102,6 +102,8 @@ structure IsInducing (f : X → Y) : Prop where
   /-- The topology on the domain is equal to the induced topology. -/
   eq_induced : tX = tY.induced f
 
+@[deprecated (since := "2024-10-28")] alias Inducing := IsInducing
+
 /-- A function between topological spaces is an embedding if it is injective,
   and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
 @[mk_iff]

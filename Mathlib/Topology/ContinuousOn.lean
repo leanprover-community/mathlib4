@@ -1099,9 +1099,14 @@ lemma IsInducing.continuousWithinAt_iff {f : α → β} {g : β → γ} (hg : Is
     {s : Set α} {x : α} : ContinuousWithinAt f s x ↔ ContinuousWithinAt (g ∘ f) s x := by
   simp_rw [ContinuousWithinAt, hg.tendsto_nhds_iff]; rfl
 
+@[deprecated (since := "2024-10-28")]
+alias Inducing.continuousWithinAt_iff := IsInducing.continuousWithinAt_iff
+
 lemma IsInducing.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsInducing g)
     {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s := by
   simp_rw [ContinuousOn, hg.continuousWithinAt_iff]
+
+@[deprecated (since := "2024-10-28")] alias Inducing.continuousOn_iff := IsInducing.continuousOn_iff
 
 lemma IsEmbedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsEmbedding g)
     {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=

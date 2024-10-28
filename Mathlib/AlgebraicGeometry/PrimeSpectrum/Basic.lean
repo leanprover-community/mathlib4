@@ -262,6 +262,9 @@ theorem localization_comap_isInducing [Algebra R S] (M : Submonoid R) [IsLocaliz
   · rintro ⟨s, rfl⟩
     exact ⟨_, rfl⟩
 
+@[deprecated (since := "2024-10-28")]
+alias localization_comap_inducing := localization_comap_isInducing
+
 theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Function.Injective (comap (algebraMap R S)) :=
   fun _ _ h => localization_specComap_injective S M h
@@ -290,6 +293,9 @@ theorem comap_isInducing_of_surjective (hf : Surjective f) : IsInducing (comap f
         ?_⟩
     rintro ⟨-, ⟨F, rfl⟩, hF⟩
     exact ⟨f '' F, hF.symm.trans (preimage_comap_zeroLocus f F)⟩
+
+@[deprecated (since := "2024-10-28")]
+alias comap_inducing_of_surjective := comap_isInducing_of_surjective
 
 
 end Comap

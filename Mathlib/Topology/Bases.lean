@@ -242,6 +242,9 @@ protected lemma IsTopologicalBasis.isInducing {β} [TopologicalSpace β] {f : α
     convert (hf.basis_nhds (h.nhds_hasBasis (a := f a))).to_image_id with s
     aesop
 
+@[deprecated (since := "2024-10-28")]
+alias IsTopologicalBasis.inducing := IsTopologicalBasis.isInducing
+
 protected theorem IsTopologicalBasis.induced {α} [s : TopologicalSpace β] (f : α → β)
     {T : Set (Set β)} (h : IsTopologicalBasis T) :
     IsTopologicalBasis (t := induced f s) ((preimage f) '' T) :=
@@ -665,6 +668,9 @@ protected theorem _root_.IsInducing.firstCountableTopology {β : Type*}
   rw [hf.1]
   exact firstCountableTopology_induced α β f
 
+@[deprecated (since := "2024-10-28")]
+alias _root_.Inducing.firstCountableTopology := _root_.IsInducing.firstCountableTopology
+
 protected theorem _root_.IsEmbedding.firstCountableTopology {β : Type*}
     [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : IsEmbedding f) :
     FirstCountableTopology α :=
@@ -976,6 +982,9 @@ protected theorem IsInducing.secondCountableTopology [TopologicalSpace β]
     [SecondCountableTopology β] (hf : IsInducing f) : SecondCountableTopology α := by
   rw [hf.1]
   exact secondCountableTopology_induced α β f
+
+@[deprecated (since := "2024-10-28")]
+alias Inducing.secondCountableTopology := IsInducing.secondCountableTopology
 
 protected theorem IsEmbedding.secondCountableTopology
     [TopologicalSpace β] [SecondCountableTopology β]

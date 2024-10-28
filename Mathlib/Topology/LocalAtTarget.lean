@@ -32,7 +32,12 @@ theorem Set.restrictPreimage_isInducing (s : Set β) (h : IsInducing f) :
   intro a
   rw [← h, ← IsInducing.subtypeVal.nhds_eq_comap]
 
+@[deprecated (since := "2024-10-28")]
+alias Set.restrictPreimage_inducing := Set.restrictPreimage_isInducing
+
 alias IsInducing.restrictPreimage := Set.restrictPreimage_isInducing
+
+@[deprecated (since := "2024-10-28")] alias Inducing.restrictPreimage := IsInducing.restrictPreimage
 
 theorem Set.restrictPreimage_isEmbedding (s : Set β) (h : IsEmbedding f) :
     IsEmbedding (s.restrictPreimage f) :=

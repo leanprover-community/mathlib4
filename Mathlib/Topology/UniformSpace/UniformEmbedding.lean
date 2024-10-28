@@ -154,8 +154,13 @@ theorem IsUniformInducing.isInducing {f : α → β} (h : IsUniformInducing f) :
   obtain rfl := h.comap_uniformSpace
   exact .induced f
 
+@[deprecated (since := "2024-10-28")]
+alias IsUniformInducing.inducing := IsUniformInducing.isInducing
+
 @[deprecated (since := "2024-10-05")]
 alias UniformInducing.isInducing := IsUniformInducing.isInducing
+
+@[deprecated (since := "2024-10-28")] alias UniformInducing.inducing := UniformInducing.isInducing
 
 theorem IsUniformInducing.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : IsUniformInducing e₁) (h₂ : IsUniformInducing e₂) :

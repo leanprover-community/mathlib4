@@ -118,6 +118,9 @@ lemma IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
         _ = f ⁻¹' (f '' s) ∩ s := by rw [hcov]
         _ = s := inter_eq_right.mpr (subset_preimage_image _ _)
 
+@[deprecated (since := "2024-10-28")]
+alias Inducing.isSigmaCompact_iff := IsInducing.isSigmaCompact_iff
+
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
   if and only `s` is σ-compact. -/
 lemma IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}

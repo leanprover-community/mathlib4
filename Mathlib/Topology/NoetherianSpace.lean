@@ -66,6 +66,9 @@ protected theorem _root_.IsInducing.noetherianSpace [NoetherianSpace α] {i : β
     (hi : IsInducing i) : NoetherianSpace β :=
   (noetherianSpace_iff_opens _).2 fun _ => hi.isCompact_iff.2 (NoetherianSpace.isCompact _)
 
+@[deprecated (since := "2024-10-28")]
+alias _root_.Inducing.noetherianSpace := _root_.IsInducing.noetherianSpace
+
 /-- [Stacks: Lemma 0052 (1)](https://stacks.math.columbia.edu/tag/0052)-/
 instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s :=
   IsInducing.subtypeVal.noetherianSpace

@@ -801,6 +801,8 @@ lemma IsInducing.prodMap {f : X → Y} {g : Z → W} (hf : IsInducing f) (hg : I
   isInducing_iff_nhds.2 fun (x, z) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
     hg.nhds_eq_comap, prod_comap_comap_eq]
 
+@[deprecated (since := "2024-10-28")] alias Inducing.prodMap := IsInducing.prodMap
+
 @[deprecated (since := "2024-10-05")] alias Inducing.prod_map := IsInducing.prodMap
 
 @[simp]
@@ -809,11 +811,15 @@ lemma isInducing_const_prod {x : X} {f : Y → Z} :
   simp_rw [isInducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose,
     Function.comp_def, induced_const, top_inf_eq]
 
+@[deprecated (since := "2024-10-28")] alias inducing_const_prod := isInducing_const_prod
+
 @[simp]
 lemma isInducing_prod_const {y : Y} {f : X → Z} :
     IsInducing (fun x => (f x, y)) ↔ IsInducing f := by
   simp_rw [isInducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose,
     Function.comp_def, induced_const, inf_top_eq]
+
+@[deprecated (since := "2024-10-28")] alias inducing_prod_const := isInducing_prod_const
 
 lemma IsEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsEmbedding f)
     (hg : IsEmbedding g) : IsEmbedding (Prod.map f g) where
@@ -1019,8 +1025,12 @@ variable [TopologicalSpace X] [TopologicalSpace Y] {p : X → Prop}
 
 lemma IsInducing.subtypeVal {t : Set Y} : IsInducing ((↑) : t → Y) := ⟨rfl⟩
 
+@[deprecated (since := "2024-10-28")] alias inducing_subtype_val := IsInducing.subtypeVal
+
 lemma IsInducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, f x ∈ t)
     (h : IsInducing (t.codRestrict f ht)) : IsInducing f := subtypeVal.comp h
+
+@[deprecated (since := "2024-10-28")] alias Inducing.of_codRestrict := IsInducing.of_codRestrict
 
 lemma IsEmbedding.subtypeVal : IsEmbedding ((↑) : Subtype p → X) :=
   ⟨.subtypeVal, Subtype.coe_injective⟩
@@ -1138,6 +1148,8 @@ theorem Continuous.restrictPreimage {f : X → Y} {s : Set Y} (h : Continuous f)
 theorem IsInducing.codRestrict {e : X → Y} (he : IsInducing e) {s : Set Y}
     (hs : ∀ x, e x ∈ s) : IsInducing (codRestrict e s hs) :=
   he.of_comp (he.continuous.codRestrict hs) continuous_subtype_val
+
+@[deprecated (since := "2024-10-28")] alias Inducing.codRestrict := IsInducing.codRestrict
 
 protected lemma IsEmbedding.codRestrict {e : X → Y} (he : IsEmbedding e) (s : Set Y)
     (hs : ∀ x, e x ∈ s) : IsEmbedding (codRestrict e s hs) :=
@@ -1673,6 +1685,8 @@ lemma isInducing_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)
     (h₁ : Injective f₁) : IsInducing (Sigma.map f₁ f₂) ↔ ∀ i, IsInducing (f₂ i) := by
   simp only [isInducing_iff_nhds, Sigma.forall, Sigma.nhds_mk, Sigma.map_mk,
     ← map_sigma_mk_comap h₁, map_inj sigma_mk_injective]
+
+@[deprecated (since := "2024-10-28")] alias inducing_sigma_map := isInducing_sigmaMap
 
 lemma isEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)}
     (h : Injective f₁) : IsEmbedding (Sigma.map f₁ f₂) ↔ ∀ i, IsEmbedding (f₂ i) := by

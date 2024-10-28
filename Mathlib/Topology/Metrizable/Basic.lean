@@ -49,6 +49,9 @@ theorem _root_.IsInducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X
   letI : PseudoMetricSpace Y := pseudoMetrizableSpacePseudoMetric Y
   ⟨⟨hf.comapPseudoMetricSpace, rfl⟩⟩
 
+@[deprecated (since := "2024-10-28")]
+alias _root_.Inducing.pseudoMetrizableSpace := _root_.IsInducing.pseudoMetrizableSpace
+
 /-- Every pseudo-metrizable space is first countable. -/
 instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
     [h : PseudoMetrizableSpace X] : FirstCountableTopology X := by

@@ -47,6 +47,9 @@ theorem productOfMemOpens_isInducing : IsInducing (productOfMemOpens X) := by
   convert inducing_iInf_to_pi fun (u : Opens X) (x : X) => x ∈ u
   apply eq_induced_by_maps_to_sierpinski
 
+@[deprecated (since := "2024-10-28")]
+alias productOfMemOpens_inducing := productOfMemOpens_isInducing
+
 theorem productOfMemOpens_injective [T0Space X] : Function.Injective (productOfMemOpens X) := by
   intro x1 x2 h
   apply Inseparable.eq

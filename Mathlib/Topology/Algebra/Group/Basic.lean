@@ -379,6 +379,8 @@ theorem IsInducing.continuousInv {G H : Type*} [Inv G] [Inv H] [TopologicalSpace
     (hf_inv : ∀ x, f x⁻¹ = (f x)⁻¹) : ContinuousInv G :=
   ⟨hf.continuous_iff.2 <| by simpa only [Function.comp_def, hf_inv] using hf.continuous.inv⟩
 
+@[deprecated (since := "2024-10-28")] alias Inducing.continuousInv := IsInducing.continuousInv
+
 section TopologicalGroup
 
 /-!
@@ -587,6 +589,8 @@ protected theorem IsInducing.topologicalGroup {F : Type*} [Group H] [Topological
     [FunLike F H G] [MonoidHomClass F H G] (f : F) (hf : IsInducing f) : TopologicalGroup H :=
   { toContinuousMul := hf.continuousMul _
     toContinuousInv := hf.continuousInv (map_inv f) }
+
+@[deprecated (since := "2024-10-28")] alias Inducing.topologicalGroup := IsInducing.topologicalGroup
 
 @[to_additive]
 -- Porting note: removed `protected` (needs to be in namespace)
