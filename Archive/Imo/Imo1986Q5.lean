@@ -71,7 +71,7 @@ theorem isGood_iff {f : ℝ≥0 → ℝ≥0} : IsGood f ↔ f = fun x ↦ 2 / (2
   refine ⟨fun hf ↦ funext hf.map_eq, ?_⟩
   rintro rfl
   constructor
-  case map_two => simp
+  case map_two => simp [tsub_self]
   case map_ne_zero => intro x hx; simpa [tsub_eq_zero_iff_le]
   case map_add_rev =>
     intro x y

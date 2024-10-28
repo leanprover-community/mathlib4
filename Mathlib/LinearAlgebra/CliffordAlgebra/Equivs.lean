@@ -392,7 +392,6 @@ theorem equiv_ι (r : R) : CliffordAlgebraDualNumber.equiv (ι (R := R) _ r) = r
 @[simp]
 theorem equiv_symm_eps :
     CliffordAlgebraDualNumber.equiv.symm (eps : R[ε]) = ι (0 : QuadraticForm R R) 1 :=
-  -- Porting note: Original proof was `DualNumber.lift_apply_eps _`
-  DualNumber.lift_apply_eps (R := R) (B := CliffordAlgebra (0 : QuadraticForm R R)) _
+  DualNumber.lift_apply_eps _
 
 end CliffordAlgebraDualNumber

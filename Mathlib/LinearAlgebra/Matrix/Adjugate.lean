@@ -114,8 +114,7 @@ theorem cramer_row_self (i : n) (h : ∀ j, b j = A j i) : A.cramer b = Pi.singl
 
 @[simp]
 theorem cramer_one : cramer (1 : Matrix n n α) = 1 := by
-  -- Porting note: was `ext i j`
-  refine LinearMap.pi_ext' (fun (i : n) => LinearMap.ext_ring (funext (fun (j : n) => ?_)))
+  ext i j
   convert congr_fun (cramer_row_self (1 : Matrix n n α) (Pi.single i 1) i _) j
   · simp
   · intro j

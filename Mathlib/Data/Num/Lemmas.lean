@@ -45,7 +45,7 @@ theorem cast_to_nat [AddMonoidWithOne α] : ∀ n : PosNum, ((n : ℕ) : α) = n
   | bit0 p => by dsimp; rw [Nat.cast_add, p.cast_to_nat]
   | bit1 p => by dsimp; rw [Nat.cast_add, Nat.cast_add, Nat.cast_one, p.cast_to_nat]
 
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem to_nat_to_int (n : PosNum) : ((n : ℕ) : ℤ) = n :=
   cast_to_nat _
 
@@ -201,7 +201,7 @@ theorem bit1_of_bit1 : ∀ n : Num, (n + n) + 1 = n.bit1
 theorem ofNat'_zero : Num.ofNat' 0 = 0 := by simp [Num.ofNat']
 
 theorem ofNat'_bit (b n) : ofNat' (Nat.bit b n) = cond b Num.bit1 Num.bit0 (ofNat' n) :=
-  Nat.binaryRec_eq rfl _ _
+  Nat.binaryRec_eq _ _ (.inl rfl)
 
 @[simp]
 theorem ofNat'_one : Num.ofNat' 1 = 1 := by erw [ofNat'_bit true 0, cond, ofNat'_zero]; rfl
@@ -399,11 +399,11 @@ instance linearOrderedSemiring : LinearOrderedSemiring Num :=
     decidableEq := instDecidableEqNum
     exists_pair_ne := ⟨0, 1, by decide⟩ }
 
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem add_of_nat (m n) : ((m + n : ℕ) : Num) = m + n :=
   add_ofNat' _ _
 
-@[norm_cast]  -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem to_nat_to_int (n : Num) : ((n : ℕ) : ℤ) = n :=
   cast_to_nat _
 
@@ -422,7 +422,7 @@ theorem of_natCast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n :
 @[deprecated (since := "2024-04-17")]
 alias of_nat_cast := of_natCast
 
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem of_nat_inj {m n : ℕ} : (m : Num) = n ↔ m = n :=
   ⟨fun h => Function.LeftInverse.injective to_of_nat h, congr_arg _⟩
 
@@ -661,12 +661,11 @@ theorem natSize_to_nat (n) : natSize n = Nat.size n := by rw [← size_eq_natSiz
 theorem ofNat'_eq : ∀ n, Num.ofNat' n = n :=
   Nat.binaryRec (by simp) fun b n IH => by
     rw [ofNat'] at IH ⊢
-    rw [Nat.binaryRec_eq, IH]
+    rw [Nat.binaryRec_eq _ _ (.inl rfl), IH]
     -- Porting note: `Nat.cast_bit0` & `Nat.cast_bit1` are not `simp` theorems anymore.
-    · cases b <;> simp only [cond_false, cond_true, Nat.bit, two_mul, Nat.cast_add, Nat.cast_one]
-      · rw [bit0_of_bit0]
-      · rw [bit1_of_bit1]
-    · rfl
+    cases b <;> simp only [cond_false, cond_true, Nat.bit, two_mul, Nat.cast_add, Nat.cast_one]
+    · rw [bit0_of_bit0]
+    · rw [bit1_of_bit1]
 
 theorem zneg_toZNum (n : Num) : -n.toZNum = n.toZNumNeg := by cases n <;> rfl
 
@@ -1324,7 +1323,7 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
 @[simp, norm_cast]
 theorem cast_sub [Ring α] (m n) : ((m - n : ZNum) : α) = m - n := by simp [sub_eq_neg_add]
 
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem neg_of_int : ∀ n, ((-n : ℤ) : ZNum) = -n
   | (_ + 1 : ℕ) => rfl
   | 0 => by rw [Int.cast_neg]

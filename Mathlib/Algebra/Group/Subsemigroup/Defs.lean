@@ -47,13 +47,11 @@ subsemigroup, subsemigroups
 assert_not_exists CompleteLattice
 assert_not_exists MonoidWithZero
 
--- Only needed for notation
-variable {M : Type*} {N : Type*} {A : Type*}
+variable {M : Type*} {N : Type*}
 
 section NonAssoc
 
 variable [Mul M] {s : Set M}
-variable [Add A] {t : Set A}
 
 /-- `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(*)` -/
 class MulMemClass (S : Type*) (M : outParam Type*) [Mul M] [SetLike S M] : Prop where
