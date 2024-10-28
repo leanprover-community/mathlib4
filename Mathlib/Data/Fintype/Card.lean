@@ -396,12 +396,27 @@ theorem Finite.of_injective {α β : Sort*} [Finite β] (f : α → β) (H : Inj
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e⟩⟩
   classical exact .of_equiv (Set.range (e ∘ f)) (Equiv.ofInjective _ (e.injective.comp H)).symm
 
+-- see Note [lower instance priority]
+instance (priority := 100) Finite.of_subsingleton {α : Sort*} [Subsingleton α] : Finite α :=
+  Finite.of_injective (Function.const α ()) <| Function.injective_of_subsingleton _
+
+-- Higher priority for `Prop`s
+-- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
+instance prop (p : Prop) : Finite p :=
+  Finite.of_subsingleton
+
 /-- This instance also provides `[Finite s]` for `s : Set α`. -/
 instance Subtype.finite {α : Sort*} [Finite α] {p : α → Prop} : Finite { x // p x } :=
   Finite.of_injective (↑) Subtype.coe_injective
 
 theorem Finite.of_surjective {α β : Sort*} [Finite α] (f : α → β) (H : Surjective f) : Finite β :=
   Finite.of_injective _ <| injective_surjInv H
+
+instance Quot.finite {α : Sort*} [Finite α] (r : α → α → Prop) : Finite (Quot r) :=
+  Finite.of_surjective _ (surjective_quot_mk r)
+
+instance Quotient.finite {α : Sort*} [Finite α] (s : Setoid α) : Finite (Quotient s) :=
+  Quot.finite _
 
 theorem Finite.exists_univ_list (α) [Finite α] : ∃ l : List α, l.Nodup ∧ ∀ x : α, x ∈ l := by
   cases nonempty_fintype α

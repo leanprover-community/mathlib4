@@ -498,7 +498,7 @@ def quotientEquiv (I : Ideal R) (J : Ideal S) (f : R ≃+* S) (hIJ : J = I.map (
       quotientMap I (↑f.symm)
         (by
           rw [hIJ]
-          exact le_of_eq (map_comap_of_equiv I f))
+          exact le_of_eq (map_comap_of_equiv f))
     left_inv := by
       rintro ⟨r⟩
       simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, RingHom.toFun_eq_coe,

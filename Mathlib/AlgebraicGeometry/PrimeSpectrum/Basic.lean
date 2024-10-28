@@ -260,9 +260,12 @@ theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocaliza
     Function.Injective (comap (algebraMap R S)) :=
   fun _ _ h => localization_specComap_injective S M h
 
-theorem localization_comap_embedding [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
-    Embedding (comap (algebraMap R S)) :=
+theorem localization_comap_isEmbedding [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+    IsEmbedding (comap (algebraMap R S)) :=
   ⟨localization_comap_inducing S M, localization_comap_injective S M⟩
+
+@[deprecated (since := "2024-10-26")]
+alias localization_comap_embedding := localization_comap_isEmbedding
 
 theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Set.range (comap (algebraMap R S)) = { p | Disjoint (M : Set R) p.asIdeal } :=
@@ -462,11 +465,11 @@ theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S
     exact h₁ (x.2.mem_of_pow_mem _ h₃)
 
 theorem localization_away_isOpenEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
-    [IsLocalization.Away r S] : IsOpenEmbedding (comap (algebraMap R S)) :=
-  { toEmbedding := localization_comap_embedding S (Submonoid.powers r)
-    isOpen_range := by
-      rw [localization_away_comap_range S r]
-      exact isOpen_basicOpen }
+    [IsLocalization.Away r S] : IsOpenEmbedding (comap (algebraMap R S)) where
+  toIsEmbedding := localization_comap_isEmbedding S (Submonoid.powers r)
+  isOpen_range := by
+    rw [localization_away_comap_range S r]
+    exact isOpen_basicOpen
 
 @[deprecated (since := "2024-10-18")]
 alias localization_away_openEmbedding := localization_away_isOpenEmbedding
