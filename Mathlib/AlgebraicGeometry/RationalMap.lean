@@ -185,7 +185,7 @@ def equiv (f g : X.PartialMap Y) : Prop :=
   ∃ (W : X.Opens) (hW : Dense (W : Set X)) (hWl : W ≤ f.domain) (hWr : W ≤ g.domain),
     (f.restrict W hW hWl).hom = (g.restrict W hW hWr).hom
 
-lemma iseqv_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
+lemma equivalence_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
   refl f := ⟨f.domain, f.dense_domain, by simp⟩
   symm {f g} := by
     intro ⟨W, hW, hWl, hWr, e⟩
@@ -200,7 +200,7 @@ lemma iseqv_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
       Category.assoc, e₁, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_right hW₂r, ← e₂]
     simp only [homOfLE_homOfLE_assoc]
 
-instance : Setoid (X.PartialMap Y) := ⟨@PartialMap.equiv X Y, iseqv_rel⟩
+instance : Setoid (X.PartialMap Y) := ⟨@PartialMap.equiv X Y, equivalence_rel⟩
 
 lemma restrict_equiv (f : X.PartialMap Y) (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : (f.restrict U hU hU').equiv f :=
