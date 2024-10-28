@@ -80,7 +80,7 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
       · rintro - ⟨r, hr, rfl⟩
         simp_rw [Scheme.preimage_basicOpen] at hf
         exact (hf ⟨r, hr⟩).left
-    refine ⟨inferInstance, hQs.ofIsLocalization hPi (f.app ⊤) s hs fun a ↦ ?_⟩ 
+    refine ⟨inferInstance, hQs.ofIsLocalization hPi (f.app ⊤) s hs fun a ↦ ?_⟩
     refine ⟨Γ(Y, Y.basicOpen a.val), Γ(X, X.basicOpen (f.app ⊤ a.val)), inferInstance,
       inferInstance, inferInstance, inferInstance, inferInstance, ?_, ?_⟩
     · exact (isAffineOpen_top X).isLocalization_basicOpen (f.app ⊤ a.val)
