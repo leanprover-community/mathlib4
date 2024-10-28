@@ -260,7 +260,7 @@ variable {N} [AddCommMonoid N] [Module R N]
 
 /-- A linear map `M →ₗ[R] N` gives a map between localized modules `Mₛ →ₗ[Rₛ] Nₛ`. -/
 noncomputable
-abbrev LocalizedModule.map :
+def LocalizedModule.map :
     (M →ₗ[R] N) →ₗ[R] (LocalizedModule S M →ₗ[Localization S] LocalizedModule S N) :=
   IsLocalizedModule.mapExtendScalars S (LocalizedModule.mkLinearMap S M)
         (LocalizedModule.mkLinearMap S N) (Localization S)
