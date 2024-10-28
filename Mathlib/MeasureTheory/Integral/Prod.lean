@@ -3,9 +3,9 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Integration with respect to the product measure

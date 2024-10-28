@@ -501,16 +501,18 @@ lemma injective_toWeakDualBCNN :
 
 variable (Ω)
 
-lemma embedding_toWeakDualBCNN :
-    Embedding (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) where
+lemma isEmbedding_toWeakDualBCNN :
+    IsEmbedding (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) where
   induced := rfl
   inj := injective_toWeakDualBCNN
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_toWeakDualBCNN := isEmbedding_toWeakDualBCNN
 
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
 continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of finite Borel
 measures is Hausdorff (`T2Space`). -/
-instance t2Space : T2Space (FiniteMeasure Ω) :=
-  Embedding.t2Space (embedding_toWeakDualBCNN Ω)
+instance t2Space : T2Space (FiniteMeasure Ω) := (isEmbedding_toWeakDualBCNN Ω).t2Space
 
 end Hausdorff -- section
 
