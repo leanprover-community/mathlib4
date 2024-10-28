@@ -6,6 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Tactic.Says
+import Mathlib.Tactic.Contrapose
 
 /-!
 # Intervals

@@ -240,6 +240,9 @@ instance (priority := 910) Semiring.toModule [Semiring R] : Module R R where
   zero_smul := zero_mul
   smul_zero := mul_zero
 
+instance [NonUnitalNonAssocSemiring R] : DistribSMul R R where
+  smul_add := left_distrib
+
 /-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`. -/
 def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f

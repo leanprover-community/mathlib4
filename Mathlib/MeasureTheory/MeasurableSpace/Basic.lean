@@ -1268,6 +1268,13 @@ theorem isCountablySpanning_measurableSet [MeasurableSpace α] :
     IsCountablySpanning { s : Set α | MeasurableSet s } :=
   ⟨fun _ => univ, fun _ => MeasurableSet.univ, iUnion_const _⟩
 
+/-- Rectangles of countably spanning sets are countably spanning. -/
+lemma IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsCountablySpanning C)
+    (hD : IsCountablySpanning D) : IsCountablySpanning (image2 (· ×ˢ ·) C D) := by
+  rcases hC, hD with ⟨⟨s, h1s, h2s⟩, t, h1t, h2t⟩
+  refine ⟨fun n => s n.unpair.1 ×ˢ t n.unpair.2, fun n => mem_image2_of_mem (h1s _) (h1t _), ?_⟩
+  rw [iUnion_unpair_prod, h2s, h2t, univ_prod_univ]
+
 namespace MeasurableSet
 
 /-!

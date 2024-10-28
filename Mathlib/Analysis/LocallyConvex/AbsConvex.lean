@@ -6,6 +6,7 @@ Authors: Moritz Doll
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Convex.Gauge
+import Mathlib.Analysis.Convex.TotallyBounded
 
 /-!
 # Absolutely convex sets
@@ -48,7 +49,7 @@ open NormedField Set
 
 open NNReal Pointwise Topology
 
-variable {𝕜 E F G ι : Type*}
+variable {𝕜 E : Type*}
 
 section AbsolutelyConvex
 
@@ -102,7 +103,7 @@ theorem absConvexHull_eq_iInter :
     absConvexHull 𝕜 s = ⋂ (t : Set E) (_ : s ⊆ t) (_ : AbsConvex 𝕜 t), t := by
   simp [absConvexHull, iInter_subtype, iInter_and]
 
-variable {t : Set E} {x y : E}
+variable {t : Set E} {x : E}
 
 theorem mem_absConvexHull_iff : x ∈ absConvexHull 𝕜 s ↔ ∀ t, s ⊆ t → AbsConvex 𝕜 t → x ∈ t := by
   simp_rw [absConvexHull_eq_iInter, mem_iInter]
@@ -150,7 +151,7 @@ end AbsolutelyConvex
 
 section NontriviallyNormedField
 
-variable (𝕜 E) {s : Set E}
+variable (𝕜 E)
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
@@ -237,6 +238,18 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
     (by
       rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s))]
       exact convexHull_mono balancedHull_subset_convexHull_union_neg)
+
+variable (E 𝕜) {s : Set E}
+variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+variable [UniformSpace E] [UniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
+
+-- TVS II.25 Prop3
+theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
+    TotallyBounded (absConvexHull ℝ s) := by
+  rw [← convexHull_union_neg_eq_absConvexHull]
+  apply totallyBounded_convexHull
+  rw [totallyBounded_union]
+  exact ⟨hs, totallyBounded_neg hs⟩
 
 end
 
