@@ -40,7 +40,6 @@ variable (a : A) [ha : IsStarNormal a]
 open Unitization NNReal
 open scoped CStarAlgebra
 
--- need a non-unital version of this too, where should it go?
 theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
     [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A]
     [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
@@ -55,6 +54,24 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
     fun x hx ↦ NNReal.coe_sub <| hfg _ <| ha'.apply_mem hx
   rw [cfc_nnreal_eq_real, cfc_nnreal_eq_real, cfc_nnreal_eq_real, cfc_congr this]
   refine cfc_sub _ _ a ?_ ?_
+  all_goals
+    exact continuous_subtype_val.comp_continuousOn <|
+      ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
+
+theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
+    [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [TopologicalRing A]
+    [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    [UniqueNonUnitalContinuousFunctionalCalculus ℝ A] [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
+    (a : A) (hfg : ∀ x ∈ σₙ ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
+    (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
+    (hg : ContinuousOn g (σₙ ℝ≥0 a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac) :
+    cfcₙ (fun x ↦ f x - g x) a = cfcₙ f a - cfcₙ g a := by
+  have ha' := QuasispectrumRestricts.nnreal_of_nonneg ha
+  have : (σₙ ℝ a).EqOn (fun x ↦ ((f x.toNNReal - g x.toNNReal : ℝ≥0) : ℝ))
+      (fun x ↦ f x.toNNReal - g x.toNNReal) :=
+    fun x hx ↦ NNReal.coe_sub <| hfg _ <| ha'.apply_mem hx
+  rw [cfcₙ_nnreal_eq_real, cfcₙ_nnreal_eq_real, cfcₙ_nnreal_eq_real, cfcₙ_congr this]
+  refine cfcₙ_sub _ _ a ?_ (by simpa) ?_
   all_goals
     exact continuous_subtype_val.comp_continuousOn <|
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
@@ -98,14 +115,9 @@ lemma Set.InvOn.one_sub_one_add_inv : Set.InvOn (fun x ↦ 1 - (1 + x)⁻¹) (fu
     field_simp [tsub_add_cancel_of_le hx.le, tsub_tsub_cancel_of_le hx.le]
   · field_simp [mul_tsub]
 
-lemma norm_cfcₙ_one_sub_one_add_inv_lt_one (a : A) (ha : 0 ≤ a) :
-    ‖cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) a‖ < 1 := by
-  have : ContinuousOn (fun x ↦ (1 + x)⁻¹) (σₙ ℝ≥0 a) :=
-    ContinuousOn.inv₀ (by fun_prop) (by intro _ _; positivity)
-  obtain ⟨y, -, hy'⟩ := And.left <| IsGreatest.nnnorm_cfcₙ_nnreal (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) a
-    (continuousOn_const.sub this)
-  calc ‖cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) a‖₊ = 1 - (1 + y)⁻¹ := hy'.symm
-    _ < 1 := tsub_lt_self zero_lt_one (by positivity)
+lemma norm_cfcₙ_one_sub_one_add_inv_lt_one (a : A) :
+    ‖cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) a‖ < 1 :=
+  nnnorm_cfcₙ_nnreal_lt fun x _ ↦ tsub_lt_self zero_lt_one (by positivity)
 
 lemma CStarAlgebra.le_nnnorm_of_mem_quasispectrum {a : A} {x : ℝ≥0} (hx : x ∈ σₙ ℝ≥0 a) :
     x ≤ ‖a‖₊ := by
@@ -123,8 +135,7 @@ lemma CStarAlgebra.directedOn_nonneg_ball :
     rintro a ⟨(ha₁ : 0 ≤ a), ha₂⟩ b ⟨(hb₁ : 0 ≤ b), hb₂⟩
     simp only [Metric.mem_ball, dist_zero_right] at ha₂ hb₂
     refine ⟨cfcₙ f (cfcₙ g a + cfcₙ g b), ⟨by simp, ?_⟩, ?_, ?_⟩
-    · simpa only [Metric.mem_ball, dist_zero_right] using
-        norm_cfcₙ_one_sub_one_add_inv_lt_one _ (by simp [add_nonneg])
+    · simpa only [Metric.mem_ball, dist_zero_right] using norm_cfcₙ_one_sub_one_add_inv_lt_one _
     · exact this a b ha₁ hb₁ ha₂ hb₂
     · exact add_comm (cfcₙ g a) (cfcₙ g b) ▸ this b a hb₁ ha₁ hb₂ ha₂
   rintro a b ha₁ - ha₂ -
