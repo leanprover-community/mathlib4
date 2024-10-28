@@ -9,14 +9,15 @@ import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.PowerSeries.Inverse
+import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Laurent Series
 
-In this file we define `LaurentSeries R`, the formal Laurent series over `R` here an *arbitrary*
-type with a zero. It is denoted `R⸨X⸩`.
+In this file we define `LaurentSeries R`, the formal Laurent series over `R`, here an *arbitrary*
+type with a zero. They are denoted `R⸨X⸩`.
 
 ## Main Definitions
 
@@ -694,7 +695,7 @@ variable {K : Type*} [Field K]
 
 section Complete
 
-open Filter
+open Filter Multiplicative
 
 /- Sending a Laurent series to its `d`-th coefficient is uniformly continuous (independently of the
  uniformity with which `K` is endowed). -/
@@ -855,7 +856,7 @@ section Dense
 
 open scoped Multiplicative
 
-open HahnSeries LaurentSeries
+open HahnSeries LaurentSeries PowerSeries IsDedekindDomain.HeightOneSpectrum
 
 theorem exists_pol_int_val_lt (F : PowerSeries K) (η : ℤₘ₀ˣ) :
     ∃ P : Polynomial K, (PowerSeries.idealX K).intValuation (F - P) < η := by
@@ -891,18 +892,18 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤₘ₀ˣ) :
   by_cases ord_nonpos : f.order < 0
   · have h₀ : ((Multiplicative.ofAdd f.order : Multiplicative ℤ) : ℤₘ₀) ≠ 0 := WithZero.coe_ne_zero
     set η : ℤₘ₀ˣ := Units.mk0 (Multiplicative.ofAdd f.order : Multiplicative ℤ) h₀ with hη
-    obtain ⟨P, hP⟩ := exists_pol_int_val_lt K F (η * γ)
+    obtain ⟨P, hP⟩ := exists_pol_int_val_lt F (η * γ)
     use RatFunc.X ^ f.order * (P : RatFunc K)
     have F_mul := f.ofPowerSeries_powerSeriesPart
     obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (le_of_lt ord_nonpos)
     rw [← hF, hs, neg_neg, ← HahnSeries.ofPowerSeries_X_pow s, ← inv_mul_eq_iff_eq_mul₀] at F_mul
-    erw [hs, ← F_mul, PowerSeries.coe_pow, PowerSeries.coe_X, RatFunc.coe_mul, zpow_neg, zpow_ofNat,
-      inv_eq_one_div (RatFunc.X ^ s), RatFunc.coe_div, RatFunc.coe_pow, RatFunc.coe_X,
-      RatFunc.coe_one, ← inv_eq_one_div, ← mul_sub, map_mul, map_inv₀, ← PowerSeries.coe_X,
-      valuation_X_pow, ← hs, ← RatFunc.coe_coe, ← coe_sub, ← LaurentSeries.coe_algebraMap,
-        valuation_of_algebraMap, ← Units.val_mk0 h₀, ← hη]
-    apply inv_mul_lt_of_lt_mul₀
-    rwa [← Units.val_mul]
+    · erw [hs, ← F_mul, PowerSeries.coe_pow, PowerSeries.coe_X, RatFunc.coe_mul, zpow_neg,
+        zpow_ofNat, inv_eq_one_div (RatFunc.X ^ s), RatFunc.coe_div, RatFunc.coe_pow, RatFunc.coe_X,
+        RatFunc.coe_one, ← inv_eq_one_div, ← mul_sub, map_mul, map_inv₀, ← PowerSeries.coe_X,
+        valuation_X_pow, ← hs, ← RatFunc.coe_coe, ← coe_sub, ← LaurentSeries.coe_algebraMap,
+          valuation_of_algebraMap, ← Units.val_mk0 h₀, ← hη]
+      apply inv_mul_lt_of_lt_mul₀
+      rwa [← Units.val_mul]
     · simp only [PowerSeries.coe_pow, pow_ne_zero, PowerSeries.coe_X, ne_eq,
         HahnSeries.single_eq_zero_iff, one_ne_zero, not_false_iff]
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (not_lt.mp ord_nonpos))
@@ -911,7 +912,7 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤₘ₀ˣ) :
       rw [← f.single_order_mul_powerSeriesPart, hs, hF, PowerSeries.coe_mul, PowerSeries.coe_pow,
         PowerSeries.coe_X, single_pow, nsmul_eq_mul, mul_one, one_pow]
     rw [← hf_coe]
-    obtain ⟨P, hP⟩ := exists_pol_int_val_lt K (PowerSeries.X ^ s * F) γ
+    obtain ⟨P, hP⟩ := exists_pol_int_val_lt (PowerSeries.X ^ s * F) γ
     use ↑P
     erw [← RatFunc.coe_coe, ← coe_sub, ← LaurentSeries.coe_algebraMap, valuation_of_algebraMap]
     exact hP
@@ -926,7 +927,7 @@ theorem coe_range_dense : DenseRange (Coe.coe : RatFunc K → K⸨X⸩) := by
   rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
   obtain ⟨T, hT₀, hT₁⟩ := hV
   obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
-  obtain ⟨P, hP⟩ := exists_ratFunc_val_lt K f γ
+  obtain ⟨P, hP⟩ := exists_ratFunc_val_lt f γ
   use P
   apply hT₁
   apply hγ
@@ -936,11 +937,9 @@ end Dense
 
 section Comparison
 
-
-open RatFunc AbstractCompletion
+open RatFunc AbstractCompletion IsDedekindDomain.HeightOneSpectrum
 
 theorem inducing_coe : IsUniformInducing (Coe.coe : RatFunc K → K⸨X⸩) := by
-  letI : Ring (K⸨X⸩) := inferInstance -- Porting note: I had to add this
   rw [isUniformInducing_iff, Filter.comap]
   ext S
   simp only [exists_prop, Filter.mem_mk, Set.mem_setOf_eq, uniformity_eq_comap_nhds_zero,
@@ -973,12 +972,13 @@ theorem inducing_coe : IsUniformInducing (Coe.coe : RatFunc K → K⸨X⸩) := b
       assumption
 
 theorem continuous_coe : Continuous (Coe.coe : RatFunc K → K⸨X⸩) :=
-  (isUniformInducing_iff'.1 (inducing_coe K)).1.continuous
+  (isUniformInducing_iff'.1 (inducing_coe)).1.continuous
 
 /-- The `X`-adic completion as an abstract completion of `RatFunc K`-/
 abbrev ratfuncAdicComplPkg : AbstractCompletion (RatFunc K) :=
   UniformSpace.Completion.cPkg
 
+variable (K)
 /-- Having established that the `LaurentSeries K` is complete and contains `RatFunc K` as a dense
 subspace, it gives rise to an abstract completion of `RatFunc K`.-/
 noncomputable def LaurentSeriesPkg : AbstractCompletion (RatFunc K) where
@@ -987,8 +987,8 @@ noncomputable def LaurentSeriesPkg : AbstractCompletion (RatFunc K) where
   uniformStruct := inferInstance
   complete := inferInstance
   separation := inferInstance
-  isUniformInducing := inducing_coe K
-  dense := coe_range_dense K
+  isUniformInducing := inducing_coe
+  dense := coe_range_dense
 
 instance : TopologicalSpace (LaurentSeriesPkg K).space :=
   (LaurentSeriesPkg K).uniformStruct.toTopologicalSpace
@@ -1013,10 +1013,10 @@ instance : UniformSpace K⸨X⸩ := inferInstance
 
 /-- The uniform space isomorphism between two abstract completions of `ratfunc K` -/
 abbrev comparePkg : RatFuncAdicCompl K ≃ᵤ K⸨X⸩ :=
-  compareEquiv (ratfuncAdicComplPkg K) (LaurentSeriesPkg K)
+  compareEquiv ratfuncAdicComplPkg (LaurentSeriesPkg K)
 
 lemma comparePkg_eq_extension (x : UniformSpace.Completion (RatFunc K)) :
-    (comparePkg K).toFun x = (extensionAsRingHom K (continuous_coe K)).toFun x := rfl
+    (comparePkg K).toFun x = (extensionAsRingHom K (continuous_coe)).toFun x := rfl
 
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: this will be the *inverse* of the fundamental one.-/
@@ -1024,29 +1024,20 @@ abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
   {comparePkg K with
     map_mul' := by
       intro x y
-      rw [comparePkg_eq_extension, (extensionAsRingHom K (continuous_coe K)).map_mul']
+      rw [comparePkg_eq_extension, (extensionAsRingHom K (continuous_coe)).map_mul']
       rfl
     map_add' := by
       intro x y
-      rw [comparePkg_eq_extension, (extensionAsRingHom K (continuous_coe K)).map_add']
+      rw [comparePkg_eq_extension, (extensionAsRingHom K (continuous_coe)).map_add']
       rfl }
 
--- **NEW**
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: it goes from `K⸨X⸩` to `RatFuncAdicCompl K` -/
 abbrev LaurentSeriesRingEquiv : K⸨X⸩ ≃+* RatFuncAdicCompl K :=
   (ratfuncAdicComplRingEquiv K).symm
 
--- *FAE** ToDo : rajouter que l'equiv d'anneaux n' a pas oublié qu'elle est continue et une equiv d'espaces
--- uniformes
-
--- Porting note: times out
-/- theorem LaurentSeriesRingEquiv_apply (x : K⸨X⸩) :
-    (LaurentSeriesRingEquiv K) x = compareEquiv (LaurentSeriesPkg K) (ratfuncAdicComplPkg K) x := by
-  simpa only [RingEquiv.apply_symm_apply]  -/
-
 theorem ratfuncAdicComplRingEquiv_apply (x : RatFuncAdicCompl K) :
-    ratfuncAdicComplRingEquiv K x = (ratfuncAdicComplPkg K).compare (LaurentSeriesPkg K) x :=
+    ratfuncAdicComplRingEquiv K x = ratfuncAdicComplPkg.compare (LaurentSeriesPkg K) x :=
   rfl
 
 theorem coe_X_compare :
@@ -1106,10 +1097,10 @@ theorem tendsto_valuation (a : (Polynomial.idealX K).adicCompletion (RatFunc K))
 
 theorem valuation_compare (f : K⸨X⸩) :
     (@Valued.v (RatFuncAdicCompl K) _ ℤₘ₀ _ _)
-        (AbstractCompletion.compare (LaurentSeriesPkg K) (ratfuncAdicComplPkg K) f) =
+        (AbstractCompletion.compare (LaurentSeriesPkg K) ratfuncAdicComplPkg f) =
       Valued.v f := by
   rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare
-    (pkg := (ratfuncAdicComplPkg K)) (cont_f := Valued.continuous_valuation)]
+    (pkg := ratfuncAdicComplPkg) (cont_f := Valued.continuous_valuation)]
   · rfl
   exact (tendsto_valuation K)
 
@@ -1123,13 +1114,13 @@ abbrev powerSeries_as_subring : Subring (K⸨X⸩) :=
 /-- The ring `power_series K` is isomorphic to the subring `power series_as_subring K` -/
 abbrev powerSeriesEquivSubring : PowerSeries K ≃+* powerSeries_as_subring K := by
   rw [powerSeries_as_subring, RingHom.range_eq_map]
-  exact ((Subring.topEquiv).symm).trans (Subring.equivMapOfInjective ⊤ (HahnSeries.ofPowerSeries ℤ K)
-    HahnSeries.ofPowerSeries_injective)
+  exact ((Subring.topEquiv).symm).trans (Subring.equivMapOfInjective ⊤ (ofPowerSeries ℤ K)
+    ofPowerSeries_injective)
 
 theorem mem_integers_of_powerSeries (F : PowerSeries K) :
     (LaurentSeriesRingEquiv K) F ∈ (Polynomial.idealX K).adicCompletionIntegers (RatFunc K) := by
   have : (LaurentSeriesRingEquiv K) F =
-    (LaurentSeriesPkg K).compare (ratfuncAdicComplPkg K) (F : K⸨X⸩) := rfl
+    (LaurentSeriesPkg K).compare ratfuncAdicComplPkg (F : K⸨X⸩) := rfl
   simp only [Subring.mem_map, exists_prop, ValuationSubring.mem_toSubring,
     mem_adicCompletionIntegers, this,  valuation_compare K F, val_le_one_iff_eq_coe]
   exact ⟨F, rfl⟩
@@ -1140,10 +1131,10 @@ theorem exists_powerSeries_of_memIntegers {x : RatFuncAdicCompl K}
   set f := (ratfuncAdicComplRingEquiv K) x with hf
   have := valuation_compare K f
   have H_x :
-    (LaurentSeriesPkg K).compare (ratfuncAdicComplPkg K)
+    (LaurentSeriesPkg K).compare ratfuncAdicComplPkg
         ((ratfuncAdicComplRingEquiv K) x) =
       x :=
-    congr_fun (inverse_compare (LaurentSeriesPkg K) (ratfuncAdicComplPkg K)) x
+    congr_fun (inverse_compare (LaurentSeriesPkg K) ratfuncAdicComplPkg) x
   simp only [Subring.mem_map, exists_prop, ValuationSubring.mem_toSubring,
     mem_adicCompletionIntegers, this] at hx
   rw [H_x] at this
