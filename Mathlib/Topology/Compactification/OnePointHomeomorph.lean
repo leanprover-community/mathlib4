@@ -205,9 +205,9 @@ noncomputable def tupFinNonzero :
     simp
   right_inv := by
     intro x
-    simp
+    simp only [ne_eq, Fin.isValue]
     ext i
-    simp_all
+    simp_all only
     fin_cases i <;> tauto
 
 /-- Equivalence between two forms of projective line. -/
@@ -227,9 +227,7 @@ noncomputable def projFinTup :
       refine Quotient.sound ?_
       obtain ⟨c,hc⟩ := hab
       use c
-      simp
       unfold tupFinNonzero
-      simp
       ext i
       fin_cases i <;>
       · simp
@@ -247,7 +245,7 @@ noncomputable def projFinTup :
 
 /-- Express div_slope in terms of OnePointEquiv. -/
 theorem reconcile :
-  div_slope = (OnePoint.equivProjectivization ℝ).invFun ∘ projFinTup.toFun := by
+    div_slope = (OnePoint.equivProjectivization ℝ).invFun ∘ projFinTup.toFun := by
   ext p
   simp
   exact @Quotient.ind {v : Fin 2 → ℝ // v ≠ 0}
@@ -256,15 +254,15 @@ theorem reconcile :
     (by
       intro v
       unfold div_slope projFinTup OnePoint.equivProjectivization tupFinNonzero
-      simp
       unfold OnePoint_div
-      simp
+      simp only [ne_eq, Fin.isValue, ite_not, Quotient.lift_mk, Equiv.invFun_as_coe,
+        Equiv.coe_fn_symm_mk, Equiv.toFun_as_coe, Equiv.coe_fn_mk]
       split_ifs with g₀
       · simp_rw [g₀]
         rw [Projectivization.lift]
         aesop
       · rw [Projectivization.lift]
-        simp_all
+        simp_all only [ne_eq, Quotient.lift_mk, ite_false]
         ring_nf
     ) p
 
