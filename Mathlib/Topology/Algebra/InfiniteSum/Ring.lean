@@ -107,11 +107,10 @@ theorem tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a := by
 theorem tsum_div_const [T2Space α] : ∑' x, f x / a = (∑' x, f x) / a := by
   simpa only [div_eq_mul_inv] using tsum_mul_right
 
-theorem HasSum.const_div (h : HasSum (1 / f) a) (b : α) :
+theorem HasSum.const_div (h :  HasSum (fun x ↦ 1 / f x) a) (b : α) :
     HasSum (fun i ↦ b / f i) (b * a) := by
   have := h.mul_left b
-  simp only [div_eq_mul_inv, Pi.mul_apply, Pi.one_apply, Pi.inv_apply, one_mul] at *
-  exact this
+  simpa only [div_eq_mul_inv, one_mul] using this
 
 theorem Summable.const_div (h : Summable (1 / f)) (b : α) : Summable fun i ↦ b / f i :=
   (h.hasSum.const_div b).summable
@@ -123,11 +122,10 @@ theorem hasSum_const_div_iff (h : a₂ ≠ 0) :
 theorem summable_const_div_iff (h : a ≠ 0) : (Summable fun i ↦ a / f i) ↔ Summable (1 / f) := by
   simpa only [div_eq_mul_inv, one_mul] using summable_mul_left_iff h
 
-theorem summable_const_div (h : Summable (1 / f)) : (Summable fun i ↦ a / f i) := by
-  simp_rw [div_eq_mul_inv]
+theorem summable_const_div (h : Summable (fun i ↦ 1 / f i)) : (Summable fun i ↦ a / f i) := by
+  simp_rw [div_eq_mul_inv] at *
   apply Summable.mul_left
-  simp_rw [inv_eq_one_div]
-  apply h
+  simpa only [one_mul] using h
 
 end DivisionSemiring
 
