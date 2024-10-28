@@ -8,6 +8,7 @@ import Mathlib.Topology.Bases
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.LocallyFinite
+import Mathlib.Topology.Ultrafilter
 /-!
 # Compact sets and compact spaces
 

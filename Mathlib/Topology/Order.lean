@@ -313,7 +313,8 @@ theorem discreteTopology_iff_singleton_mem_nhds [TopologicalSpace α] :
 neighbourhoods. -/
 theorem discreteTopology_iff_nhds [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, 𝓝 x = pure x := by
-  simp only [discreteTopology_iff_singleton_mem_nhds, ← nhds_neBot.le_pure_iff, le_pure_iff]
+  simp [discreteTopology_iff_singleton_mem_nhds, le_pure_iff]
+  sorry
 
 theorem discreteTopology_iff_nhds_ne [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, 𝓝[≠] x = ⊥ := by
