@@ -77,13 +77,28 @@ instance instUniformContinuousConstSMul {M : Type*}
     UniformContinuousConstSMul M (E [⋀^ι]→L[𝕜] F) :=
   isUniformEmbedding_toContinuousMultilinearMap.uniformContinuousConstSMul fun _ _ ↦ rfl
 
+theorem isUniformInducing_postcomp {G : Type*} [AddCommGroup G] [UniformSpace G] [UniformAddGroup G]
+    [Module 𝕜 G] (g : F →L[𝕜] G) (hg : IsUniformInducing g) :
+    IsUniformInducing (g.compContinuousAlternatingMap : (E [⋀^ι]→L[𝕜] F) → (E [⋀^ι]→L[𝕜] G)) := by
+  rw [← isUniformEmbedding_toContinuousMultilinearMap.1.of_comp_iff]
+  exact (ContinuousMultilinearMap.isUniformInducing_postcomp g hg).comp
+    isUniformEmbedding_toContinuousMultilinearMap.1
+
 section CompleteSpace
 
-variable [ContinuousSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [CompleteSpace F] [T2Space F]
+variable [ContinuousSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [CompleteSpace F]
 
 open UniformOnFun in
 theorem completeSpace (h : RestrictGenTopology {s : Set (ι → E) | IsVonNBounded 𝕜 s}) :
     CompleteSpace (E [⋀^ι]→L[𝕜] F) := by
+  wlog hF : T2Space F generalizing F
+  · rw [(isUniformInducing_postcomp (SeparationQuotient.mkCLM _ _)
+      SeparationQuotient.isUniformInducing_mk).completeSpace_congr]
+    · exact this inferInstance
+    · intro f
+      use (SeparationQuotient.outCLM _ _).compContinuousAlternatingMap f
+      ext
+      simp
   have := ContinuousMultilinearMap.completeSpace (F := F) h
   rw [completeSpace_iff_isComplete_range
     isUniformEmbedding_toContinuousMultilinearMap.isUniformInducing]
