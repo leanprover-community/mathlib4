@@ -226,10 +226,8 @@ lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
         induction j with
         | zero => intros; simp [map]
         | succ j hj =>
-            intro _ h
-            nth_rewrite 2 [map_zero_succ]
-            rw [hj (by omega) (by omega), map_succ _ k j (by omega)]
-            simp
+            intros
+            simp [map_zero_succ _ j, hj (by omega) (by omega), map_succ _ k j (by omega)]
       · rintro (_|j)
         · omega
         · intros
