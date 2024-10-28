@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.PUnit
+import Mathlib.CategoryTheory.Category.Cat
 
 /-!
 # The category of elements
