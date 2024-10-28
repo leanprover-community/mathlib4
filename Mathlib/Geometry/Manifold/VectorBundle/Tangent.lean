@@ -301,6 +301,14 @@ end TangentBundleInstances
 
 /-! ## The tangent bundle to the model space -/
 
+@[simp, mfld_simps]
+theorem trivializationAt_model_space_apply (p : TangentBundle I H) (x : H) :
+    trivializationAt E (TangentSpace I) x p = (p.1, p.2) := by
+  simp [TangentBundle.trivializationAt_apply]
+  have : fderivWithin 𝕜 (↑I ∘ ↑I.symm) (range I) (I p.proj) =
+      fderivWithin 𝕜 id (range I) (I p.proj) :=
+    fderivWithin_congr' (fun y hy ↦ by simp [hy]) (mem_range_self p.proj)
+  simp [this, fderivWithin_id (ModelWithCorners.uniqueDiffWithinAt_image I)]
 
 /-- In the tangent bundle to the model space, the charts are just the canonical identification
 between a product type and a sigma type, a.k.a. `TotalSpace.toProd`. -/
