@@ -247,7 +247,6 @@ noncomputable def projFinTup :
 theorem reconcile :
     div_slope = (OnePoint.equivProjectivization ℝ).invFun ∘ projFinTup.toFun := by
   ext p
-  simp
   exact @Quotient.ind {v : Fin 2 → ℝ // v ≠ 0}
     (projectivizationSetoid ℝ (Fin 2 → ℝ))
     (fun p => div_slope p = (OnePoint.equivProjectivization ℝ).symm (projFinTup p))
