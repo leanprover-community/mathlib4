@@ -95,11 +95,14 @@ theorem inducing_postcomp (g : C(Y, Z)) (hg : Inducing g) :
 
 /-- If `g : C(Y, Z)` is a topological embedding,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
-theorem embedding_postcomp (g : C(Y, Z)) (hg : Embedding g) :
-    Embedding (g.comp : C(X, Y) → C(X, Z)) :=
+theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
+    IsEmbedding (g.comp : C(X, Y) → C(X, Z)) :=
   ⟨inducing_postcomp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
 
-@[deprecated (since := "2024-10-19")] alias embedding_comp := embedding_postcomp
+@[deprecated (since := "2024-10-26")]
+alias embedding_postcomp := isEmbedding_postcomp
+
+@[deprecated (since := "2024-10-19")] alias embedding_comp := isEmbedding_postcomp
 
 /-- `C(·, Z)` is a functor. -/
 @[continuity, fun_prop]
