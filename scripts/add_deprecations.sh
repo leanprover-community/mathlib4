@@ -34,6 +34,8 @@ git cat-file -e "${commit}" || { printf $'invalid commit hash \'%s\'\n' "${commi
 
 ## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
 begs="(theorem|lemma|inductive|structure|def|class|alias|abbrev)"
+## regex for the first letter of an identifier (cf `Lean.isIdFirst`)
+identRegex=[a-zA-Z_\u3b1-\u3ba\u3bc-\u3c9\u391-\u39f\u3a1-\u3a2\u3a4-\u3a9\u3ca-\u3fb\u1f00-\u1ffe\u2100-\u214f\u1d49c-\u1d59f]
 
 ##  `mkDeclAndDepr <file>` outputs a single line of the form
 ##  `@[deprecated (since := "yyyy-mm-dd")]||||alias yyy := xxx@@@`
@@ -43,7 +45,7 @@ begs="(theorem|lemma|inductive|structure|def|class|alias|abbrev)"
 ## To use a specific date, replace $(date +%Y-%m-%d) with 2024-04-17 for instance
 mkDeclAndDepr () {
   git diff --unified=0 "${commit}" "${1}" |
-    awk -v regex="${begs}" -v date="$(date +%Y-%m-%d)" '
+    awk -v regex="${begs}" -v idRegex="${identRegex}" -v date="$(date +%Y-%m-%d)" '
     function depr(ol,ne) {
       aliasLine=sprintf("alias %s :=||||  %s", ol, ne)
       # if the `alias` line contains less than 100 characters long, we leave it on a single line
@@ -56,7 +58,7 @@ mkDeclAndDepr () {
     # `{plus/minus}Regex` makes sure that we find a declaration, followed by something that
     # could be an identifier. For instance, this filters out "We now prove theorem `my_name`."
     BEGIN{
-      regexIdent=regex "  *[a-zA-Z_]"
+      regexIdent=regex "  *" idRegex
       plusRegex="^\\+[^+-]*" regexIdent
       minusRegex="^-[^+-]*" regexIdent
     }
