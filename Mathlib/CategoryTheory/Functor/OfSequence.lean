@@ -18,6 +18,9 @@ We also provide a constructor `NatTrans.ofSequence` for natural
 transformations between functors `ℕ ⥤ C` which allows to check
 the naturality condition only for morphisms `n ⟶ n + 1`.
 
+The duals of the above for functors `ℕᵒᵖ ⥤ C` are given by `Functor.ofOpSequence` and
+`NatTrans.ofOpSequence`.
+
 -/
 
 namespace CategoryTheory
@@ -155,11 +158,8 @@ lemma congr_f (i j : ℕ) (h : i = j) :
   subst h
   simp
 
--- def shift_down : ∀ n, X (n + 1) ⟶ X n := fun n ↦ f (n - 1)
-
-
-/-- The morphism `X i ⟶ X j` obtained by composing morphisms of
-the form `X n ⟶ X (n + 1)` when `i ≤ j`. -/
+/-- The morphism `X j ⟶ X i` obtained by composing morphisms of
+the form `X (n + 1) ⟶ X n` when `i ≤ j`. -/
 def map : ∀ {X : ℕ → C} (_ : ∀ n, X (n + 1) ⟶ X n) (i j : ℕ), i ≤ j → (X j ⟶ X i)
   | _, _, 0, 0 => fun _ ↦ 𝟙 _
   | _, f, 0, 1 => fun _ ↦ f 0
@@ -184,22 +184,22 @@ lemma map_le_succ (i : ℕ) : map f i (i + 1) (by omega) = f i := by
       intro X f
       apply hi
 
-lemma map_succ_zero (i : ℕ) : map f 0 (i + 1) (by omega) = f i ≫ map f 0 i (by omega) := by
+lemma map_zero_succ (i : ℕ) : map f 0 (i + 1) (by omega) = f i ≫ map f 0 i (by omega) := by
   revert X f
   induction i with
   | zero => intros; simp [map]
   | succ _ _ => intros; simp [map]
 
-lemma map_succ (i j : ℕ) (h : j ≤ i) : map f j (i + 1) (by omega) = f i ≫ map f j i h := by
+lemma map_succ (i j : ℕ) (h : j ≤ i) :
+    map f j (i + 1) (by omega) = map f (j + 1) (i + 1) (by omega) ≫ f j := by
   revert X f i
   induction j with
-  | zero => intros; exact map_succ_zero _ _
-  | succ j hj =>
-      rintro X f i h
+  | zero =>
+      intro X f i
       induction i with
-      | zero => omega
-      | succ n ih => sorry
-
+      | zero => simp [map]
+      | succ _ hi => simp [map, map_zero_succ, hi]
+  | succ j hj => rintro X f (_|i) h; exacts [by omega, hj _ _ (by omega)]
 
 @[reassoc]
 lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
@@ -220,93 +220,20 @@ lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
           · obtain rfl : j = 0 := by omega
             rw [map_id, comp_id]
           · omega
-  | succ i hi =>
-      rintro X f (_|j) (_|k)
-      · intros
-        simp [map_succ_zero, map]
-      · intro hij hjk
-        by_cases hki : k = i
-        · subst hki
-          rw [map_id]
-          simp
-        · have hjk' : k + 1 ≤ i := by omega
-          specialize hi f _ _ hij hjk'
-          rw [map_succ_zero, hi]
-          simp [map, map_succ_zero, ← Category.assoc]
-          congr 2
-          sorry
-        -- revert k
-        -- induction i with
-        -- | zero =>
-        --     intros k _ _
-        --     obtain rfl : k = 0 := by omega
-        --     simp [map_id]
-        -- | succ n ih =>
-        --     rintro (_|k) hij hjk
-        --     · sorry
-        --     · have := hi f _ _ hij
-      · omega
-      · intros
-        exact hi _ j k (by omega) (by omega)
-  -- | zero =>
-  --     intro X f j i hj hji
-  --     induction j with
-  --     | zero => simp [map]
-  --     | succ n ih =>
-  --       rw [ih (by omega) (by omega), map_succ_zero, ← Category.assoc]
-  --       congr
-  --       revert X f i n
-  --       intro X f i n
-
-
-        -- induction i with
-        -- | zero => omega
-        -- | succ i hi =>
-        --     simp [map]
-
-      -- revert X f j
-      -- induction i with
-      -- | zero =>
-      --     intros X f k hij hjk
-      --     obtain rfl : k = 0 := by omega
-      --     rw [map_id, id_comp]
-      -- | succ i hi =>
-      --     rintro X f (_|_|k) hij hjk
-      --     · simp [map_succ_zero, map]
-      --     · sorry
-      --     · sorry
-
-      -- intros X f j
-      -- revert X f
-      -- induction j with
-      -- | zero =>
-      --     intros X f k hij hjk
-      --     rw [map_id, comp_id]
-      -- | succ j hj =>
-      --     rintro X f (_|_|k) hij hjk
-      --     · omega
-      --     · obtain rfl : j = 0 := by omega
-      --       rw [map_id, id_comp]
-      --     · dsimp [map]
-      --       rw [hj _ (k + 1) (by omega) (by omega), hj _ (j + 1) (by omega) (by omega)]
-      --       simp only [← Category.assoc]
-      --       congr 1
-      --       rw [map_le_succ]
-      --       obtain _|j := j
-      --       · simp [map, map_succ_zero]
-      --         congr 1
-      --         rw [← map_succ_zero]
-      --         induction k with
-      --         | zero => simp [map, map_succ_zero]
-      --         | succ n ih => simp [map, ih, map_succ_zero]
-      --       · sorry
-  -- | succ i hi =>
-  --     rintro X f (_|j) (_|k)
-  --     · omega
-  --     · omega
-  --     · omega
-  --     · intros
-  --       exact hi _ j k (by omega) (by omega)
+  | succ k hk =>
+      rintro X f (_|i)
+      · intro j
+        induction j with
+        | zero => intros; simp [map]
+        | succ j hj =>
+            intro _ h
+            nth_rewrite 2 [map_zero_succ]
+            rw [hj (by omega) (by omega), map_succ _ k j (by omega)]
+            simp
+      · rintro (_|j)
+        · omega
+        · intros
+          exact hk _ i j (by omega) (by omega)
 
 -- `map` has good definitional properties when applied to explicit natural numbers
 example : map f 5 5 (by omega) = 𝟙 _ := rfl
@@ -315,8 +242,8 @@ example : map f 3 7 (by omega) = f 6 ≫ f 5 ≫ f 4 ≫ f 3 := rfl
 
 end OfOpSequence
 
-/-- The functor `ℕ ⥤ C` constructed from a sequence of
-morphisms `f : X n ⟶ X (n + 1)` for all `n : ℕ`. -/
+/-- The functor `ℕᵒᵖ ⥤ C` constructed from a sequence of
+morphisms `f : X (n + 1) ⟶ X n` for all `n : ℕ`. -/
 @[simps obj]
 def ofOpSequence : ℕᵒᵖ ⥤ C where
   obj n := X n.unop
@@ -331,22 +258,21 @@ lemma ofOpSequence_map_homOfLE_succ (n : ℕ) :
 
 end Functor
 
-#exit
-
 namespace NatTrans
 
-variable {F G : ℕ ⥤ C} (app : ∀ (n : ℕ), F.obj n ⟶ G.obj n)
-  (naturality : ∀ (n : ℕ), F.map (homOfLE (n.le_add_right 1)) ≫ app (n + 1) =
-      app n ≫ G.map (homOfLE (n.le_add_right 1)))
+variable {F G : ℕᵒᵖ ⥤ C} (app : ∀ (n : ℕ), F.obj ⟨n⟩ ⟶ G.obj ⟨n⟩)
+  (naturality : ∀ (n : ℕ), F.map (homOfLE (n.le_add_right 1)).op ≫ app n =
+      app (n + 1) ≫ G.map (homOfLE (n.le_add_right 1)).op)
 
-/-- Constructor for natural transformations `F ⟶ G` in `ℕ ⥤ C` which takes as inputs
-the morphisms `F.obj n ⟶ G.obj n` for all `n : ℕ` and the naturality condition only
+/-- Constructor for natural transformations `F ⟶ G` in `ℕᵒᵖ ⥤ C` which takes as inputs
+the morphisms `F.obj ⟨n⟩ ⟶ G.obj ⟨n⟩` for all `n : ℕ` and the naturality condition only
 for morphisms of the form `n ⟶ n + 1`. -/
 @[simps app]
-def ofSequence : F ⟶ G where
-  app := app
+def ofOpSequence : F ⟶ G where
+  app n := app n.unop
   naturality := by
-    intro i j φ
+    intro ⟨i⟩ ⟨j⟩ ⟨(φ : j ⟶ i)⟩
+    change F.map φ.op ≫ _ = _ ≫ G.map φ.op
     obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_le (leOfHom φ)
     obtain rfl := Subsingleton.elim φ (homOfLE (by omega))
     revert i j
@@ -357,9 +283,10 @@ def ofSequence : F ⟶ G where
         simp
     | succ k hk =>
         intro i j hk'
-        obtain rfl : j = i + k + 1 := by omega
-        simp only [← homOfLE_comp (show i ≤ i + k by omega) (show i + k ≤ i + k + 1 by omega),
-          Functor.map_comp, assoc, naturality, reassoc_of% (hk rfl)]
+        obtain rfl : i = j + k + 1 := by omega
+        simp only [← homOfLE_comp (show j ≤ j + k by omega) (show j + k ≤ j + k + 1 by omega),
+          Functor.map_comp, assoc, naturality, op_comp, hk _ j rfl ]
+        simp only [homOfLE_leOfHom, ← assoc, naturality]
 
 end NatTrans
 
