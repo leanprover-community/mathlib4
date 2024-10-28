@@ -308,11 +308,6 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
 
 variable (E 𝕜) {s : Set E}
 variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-
-theorem absConvexHull_inter_neg_eq {s : Set E} :
-    absConvexHull ℝ (s ∩ -s) = convexHull ℝ (s ∩ -s) := by
-  rw [← convexHull_union_neg_eq_absConvexHull, inter_neg, neg_neg, inter_comm, union_self]
-
 variable [UniformSpace E] [UniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3
