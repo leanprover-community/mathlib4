@@ -248,6 +248,29 @@ theorem RingHom.PropertyIsLocal.ofLocalizationSpan (hP : RingHom.PropertyIsLocal
   · apply hP.StableUnderCompositionWithLocalizationAway.right _ r
     exact hs' ⟨r, hr⟩
 
+lemma RingHom.OfLocalizationSpan.ofIsLocalization
+    (hP : RingHom.OfLocalizationSpan P) (hPi : RingHom.RespectsIso P)
+    {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (s : Set R) (hs : Ideal.span s = ⊤)
+    (hT : ∀ r : s, ∃ (Rᵣ Sᵣ : Type u) (_ : CommRing Rᵣ) (_ : CommRing Sᵣ)
+      (_ : Algebra R Rᵣ) (_ : Algebra S Sᵣ) (_ : IsLocalization.Away r.val Rᵣ)
+      (_ : IsLocalization.Away (f r.val) Sᵣ),
+        P (IsLocalization.Away.map Rᵣ Sᵣ f r)) : P f := by
+  apply hP _ s hs
+  intro r
+  obtain ⟨Rᵣ, Sᵣ, _, _, _, _, _, _, hf⟩ := hT r
+  let e₁ := (Localization.algEquiv (.powers r.val) Rᵣ).toRingEquiv
+  let e₂ := (IsLocalization.algEquiv (.powers (f r.val))
+    (Localization (.powers (f r.val))) Sᵣ).symm.toRingEquiv
+  have : Localization.awayMap f r.val =
+      (e₂.toRingHom.comp (IsLocalization.Away.map Rᵣ Sᵣ f r.val)).comp e₁.toRingHom := by
+    apply IsLocalization.ringHom_ext (.powers r.val)
+    ext x
+    simp [-AlgEquiv.symm_toRingEquiv, e₂, e₁, Localization.awayMap, IsLocalization.Away.map]
+  rw [this]
+  apply hPi.right
+  apply hPi.left
+  exact hf
+
 lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
     (hP : RingHom.OfLocalizationSpanTarget P) (hP' : RingHom.RespectsIso P)
     {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (s : Set S) (hs : Ideal.span s = ⊤)
