@@ -219,7 +219,8 @@
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.Positivity.Finset":
-  ["Mathlib.Algebra.Order.BigOperators.Group.Finset", "Mathlib.Data.Finset.Density"],
+  ["Mathlib.Algebra.Order.BigOperators.Group.Finset",
+   "Mathlib.Data.Finset.Density"],
   "Mathlib.Tactic.Positivity.Basic":
   ["Mathlib.Algebra.GroupPower.Order",
    "Mathlib.Algebra.Order.Group.PosPart",
@@ -350,7 +351,8 @@
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
   "Mathlib.Deprecated.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
-  "Mathlib.Data.Set.Image": ["Batteries.Tactic.Congr"],
+  "Mathlib.Data.Set.Image":
+  ["Batteries.Tactic.Congr", "Mathlib.Data.Set.SymmDiff"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Data.PEquiv": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
@@ -378,6 +380,7 @@
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.CategoryTheory.Sites.IsSheafFor":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono"],
+  "Mathlib.CategoryTheory.Preadditive.Basic": ["Mathlib.Algebra.Module.End"],
   "Mathlib.CategoryTheory.Monoidal.Rigid.Basic":
   ["Mathlib.Tactic.CategoryTheory.Monoidal.Basic"],
   "Mathlib.CategoryTheory.Monoidal.Braided.Basic":
