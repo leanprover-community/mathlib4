@@ -240,7 +240,7 @@ lemma Hom.Spec_map_residueFieldMap_fromSpecResidueField (x : X) :
     ← Spec.map_comp_assoc]
   rfl
 
-instance [X.Over Y] (x : X) : (Spec.map ((X.over Y).residueFieldMap x)).IsOver Y where
+instance [X.Over Y] (x : X) : Spec.map ((X ⮕ Y).residueFieldMap x) |>.IsOver Y where
 
 @[simp]
 lemma fromSpecResidueField_apply (x : X.carrier) (s : Spec (X.residueField x)) :

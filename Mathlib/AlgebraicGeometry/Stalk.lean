@@ -65,7 +65,7 @@ noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
     Spec (X.presheaf.stalk x) ⟶ X :=
   (isAffineOpen_opensRange (X.affineOpenCover.map x)).fromSpecStalk (X.affineOpenCover.covers x)
 
-@[simps] noncomputable
+@[simps over] noncomputable
 instance (X : Scheme.{u}) (x : X) : (Spec (X.presheaf.stalk x)).Over X := ⟨X.fromSpecStalk x⟩
 
 @[simps! over] noncomputable
@@ -137,7 +137,7 @@ lemma Spec_map_stalkMap_fromSpecStalk {x} :
     Spec.map_comp_assoc, Category.assoc, ← Spec.map_comp_assoc (f.app _),
       Hom.app_eq_appLE, Hom.appLE_map, IsAffineOpen.Spec_map_appLE_fromSpec]
 
-instance [X.Over Y] {x} : (Spec.map <| (X.over Y).stalkMap x).IsOver Y where
+instance [X.Over Y] {x} : Spec.map ((X ⮕ Y).stalkMap x) |>.IsOver Y where
 
 lemma Spec_fromSpecStalk (R : CommRingCat) (x) :
     (Spec R).fromSpecStalk x =

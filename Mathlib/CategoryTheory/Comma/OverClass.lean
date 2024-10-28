@@ -49,7 +49,7 @@ def over (X S : C) (_ : OverClass X S := by infer_instance) : X ⟶ S := OverCla
 notation:90 X:90 " ⮕ " S:90 => CategoryTheory.over X S inferInstance
 
 /-- See Note [custom simps projection] -/
-def Over.Simps.over (X S :C) [OverClass X S] : X ⟶ S := X ⮕ S
+def OverClass.Simps.over (X S : C) [OverClass X S] : X ⟶ S := X ⮕ S
 
 initialize_simps_projections OverClass (hom → over)
 
