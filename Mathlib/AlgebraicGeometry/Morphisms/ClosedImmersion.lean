@@ -43,12 +43,14 @@ class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
   base_closed : IsClosedEmbedding f.base
   surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
 
-namespace IsClosedImmersion
-
-lemma isClosedEmbedding {X Y : Scheme} (f : X ⟶ Y)
+lemma Scheme.Hom.isClosedEmbedding {X Y : Scheme} (f : X.Hom Y)
     [IsClosedImmersion f] : IsClosedEmbedding f.base :=
   IsClosedImmersion.base_closed
 
+namespace IsClosedImmersion
+
+@[deprecated (since := "2024-10-24")]
+alias isClosedEmbedding := Scheme.Hom.isClosedEmbedding
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding := isClosedEmbedding
 
@@ -61,7 +63,7 @@ lemma eq_inf : @IsClosedImmersion = (topologically IsClosedEmbedding) ⊓
 lemma iff_isPreimmersion {X Y : Scheme} {f : X ⟶ Y} :
     IsClosedImmersion f ↔ IsPreimmersion f ∧ IsClosed (Set.range f.base) := by
   rw [and_comm, isClosedImmersion_iff, isPreimmersion_iff, ← and_assoc, isClosedEmbedding_iff,
-    @and_comm (Embedding _)]
+    @and_comm (IsEmbedding _)]
 
 lemma of_isPreimmersion {X Y : Scheme} (f : X ⟶ Y) [IsPreimmersion f]
     (hf : IsClosed (Set.range f.base)) : IsClosedImmersion f :=
@@ -128,11 +130,11 @@ where `g` is only required to be separated.
 theorem of_comp_isClosedImmersion {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion g]
     [IsClosedImmersion (f ≫ g)] : IsClosedImmersion f where
   base_closed := by
-    have h := isClosedEmbedding (f ≫ g)
+    have h := (f ≫ g).isClosedEmbedding
     simp only [Scheme.comp_coeBase, TopCat.coe_comp] at h
     refine .of_continuous_injective_isClosedMap (Scheme.Hom.continuous f) h.inj.of_comp ?_
     intro Z hZ
-    rw [IsClosedEmbedding.closed_iff_image_closed (isClosedEmbedding g),
+    rw [IsClosedEmbedding.closed_iff_image_closed g.isClosedEmbedding,
       ← Set.image_comp]
     exact h.isClosedMap _ hZ
   surj_on_stalks x := by
@@ -228,14 +230,14 @@ namespace IsClosedImmersion
 sections is injective, `f` is an isomorphism. -/
 theorem isIso_of_injective_of_isAffine [IsClosedImmersion f]
     (hf : Function.Injective (f.app ⊤)) : IsIso f := (isIso_iff_stalk_iso f).mpr <|
-  have : CompactSpace X := (isClosedEmbedding f).compactSpace
+  have : CompactSpace X := f.isClosedEmbedding.compactSpace
   have hiso : IsIso f.base := TopCat.isIso_of_bijective_of_isClosedMap _
-    ⟨(isClosedEmbedding f).inj,
-     surjective_of_isClosed_range_of_injective ((isClosedEmbedding f).isClosed_range) hf⟩
-    ((isClosedEmbedding f).isClosedMap)
+    ⟨f.isClosedEmbedding.inj,
+     surjective_of_isClosed_range_of_injective f.isClosedEmbedding.isClosed_range hf⟩
+    (f.isClosedEmbedding.isClosedMap)
   ⟨hiso, fun x ↦ (ConcreteCategory.isIso_iff_bijective _).mpr
     ⟨stalkMap_injective_of_isOpenMap_of_injective ((TopCat.homeoOfIso (asIso f.base)).isOpenMap)
-    (isClosedEmbedding f).inj hf _, f.stalkMap_surjective x⟩⟩
+    f.isClosedEmbedding.inj hf _, f.stalkMap_surjective x⟩⟩
 
 variable (f)
 

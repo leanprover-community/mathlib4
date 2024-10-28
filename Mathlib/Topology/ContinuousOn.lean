@@ -861,6 +861,10 @@ theorem ContinuousOn.comp_continuous {g : β → γ} {f : α → β} {s : Set β
   rw [continuous_iff_continuousOn_univ] at *
   exact hg.comp hf fun x _ => hs x
 
+theorem ContinuousOn.image_comp_continuous {g : β → γ} {f : α → β} {s : Set α}
+    (hg : ContinuousOn g (f '' s)) (hf : Continuous f) : ContinuousOn (g ∘ f) s :=
+  hg.comp hf.continuousOn (s.mapsTo_image f)
+
 theorem ContinuousAt.comp₂_continuousWithinAt {f : β × γ → δ} {g : α → β} {h : α → γ} {x : α}
     {s : Set α} (hf : ContinuousAt f (g x, h x)) (hg : ContinuousWithinAt g s x)
     (hh : ContinuousWithinAt h s x) :
@@ -1099,18 +1103,24 @@ theorem Inducing.continuousOn_iff {f : α → β} {g : β → γ} (hg : Inducing
     ContinuousOn f s ↔ ContinuousOn (g ∘ f) s := by
   simp_rw [ContinuousOn, hg.continuousWithinAt_iff]
 
-theorem Embedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : Embedding g) {s : Set α} :
-    ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
+lemma IsEmbedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsEmbedding g)
+    {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
   Inducing.continuousOn_iff hg.1
 
-theorem Embedding.map_nhdsWithin_eq {f : α → β} (hf : Embedding f) (s : Set α) (x : α) :
+@[deprecated (since := "2024-10-26")]
+alias Embedding.continuousOn_iff := IsEmbedding.continuousOn_iff
+
+lemma IsEmbedding.map_nhdsWithin_eq {f : α → β} (hf : IsEmbedding f) (s : Set α) (x : α) :
     map f (𝓝[s] x) = 𝓝[f '' s] f x := by
   rw [nhdsWithin, Filter.map_inf hf.inj, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
     inter_eq_self_of_subset_right (image_subset_range _ _)]
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.map_nhdsWithin_eq := IsEmbedding.map_nhdsWithin_eq
+
 theorem IsOpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : IsOpenEmbedding f) (s : Set β)
     (x : α) : map f (𝓝[f ⁻¹' s] x) = 𝓝[s] f x := by
-  rw [hf.toEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
+  rw [hf.isEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
   apply nhdsWithin_eq_nhdsWithin (mem_range_self _) hf.isOpen_range
   rw [inter_assoc, inter_self]
 
