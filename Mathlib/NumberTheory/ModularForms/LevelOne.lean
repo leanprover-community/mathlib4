@@ -14,7 +14,7 @@ TODO: Add finite dimisionality of these spaces of modular forms.
 
 -/
 
-open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm CongruenceSubgroup Complex
+open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex
   MatrixGroups
 
 lemma SlashInvariantForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
