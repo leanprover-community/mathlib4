@@ -98,13 +98,16 @@ instance metrizableSpace_prod [MetrizableSpace X] [MetrizableSpace Y] : Metrizab
 
 /-- Given an embedding of a topological space into a metrizable space, the source space is also
 metrizable. -/
-theorem _root_.Embedding.metrizableSpace [MetrizableSpace Y] {f : X → Y} (hf : Embedding f) :
-    MetrizableSpace X :=
+theorem _root_.IsEmbedding.metrizableSpace [MetrizableSpace Y] {f : X → Y}
+    (hf : IsEmbedding f) : MetrizableSpace X :=
   letI : MetricSpace Y := metrizableSpaceMetric Y
   ⟨⟨hf.comapMetricSpace f, rfl⟩⟩
 
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.metrizableSpace := IsEmbedding.metrizableSpace
+
 instance MetrizableSpace.subtype [MetrizableSpace X] (s : Set X) : MetrizableSpace s :=
-  embedding_subtype_val.metrizableSpace
+  IsEmbedding.subtypeVal.metrizableSpace
 
 instance metrizableSpace_pi [∀ i, MetrizableSpace (π i)] : MetrizableSpace (∀ i, π i) := by
   cases nonempty_fintype ι

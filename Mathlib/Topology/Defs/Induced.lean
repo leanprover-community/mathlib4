@@ -105,14 +105,16 @@ structure Inducing (f : X → Y) : Prop where
 /-- A function between topological spaces is an embedding if it is injective,
   and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
 @[mk_iff]
-structure Embedding [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) extends
-  Inducing f : Prop where
+structure IsEmbedding (f : X → Y) extends Inducing f : Prop where
   /-- A topological embedding is injective. -/
   inj : Function.Injective f
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding := IsEmbedding
+
 /-- An open embedding is an embedding with open range. -/
 @[mk_iff]
-structure IsOpenEmbedding (f : X → Y) extends Embedding f : Prop where
+structure IsOpenEmbedding (f : X → Y) extends IsEmbedding f : Prop where
   /-- The range of an open embedding is an open set. -/
   isOpen_range : IsOpen <| range f
 
@@ -121,7 +123,7 @@ alias OpenEmbedding := IsOpenEmbedding
 
 /-- A closed embedding is an embedding with closed image. -/
 @[mk_iff]
-structure IsClosedEmbedding (f : X → Y) extends Embedding f : Prop where
+structure IsClosedEmbedding (f : X → Y) extends IsEmbedding f : Prop where
   /-- The range of a closed embedding is a closed set. -/
   isClosed_range : IsClosed <| range f
 

@@ -132,11 +132,11 @@ protected def rec {C : EReal → Sort*} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C
   | (a : ℝ) => h_real a
   | ⊤ => h_top
 
-@[simp] lemma «forall» {p : EReal → Prop} : (∀ r, p r) ↔ p ⊥ ∧ p ⊤ ∧ ∀ r : ℝ, p r where
+protected lemma «forall» {p : EReal → Prop} : (∀ r, p r) ↔ p ⊥ ∧ p ⊤ ∧ ∀ r : ℝ, p r where
   mp h := ⟨h _, h _, fun _ ↦ h _⟩
   mpr h := EReal.rec h.1 h.2.2 h.2.1
 
-@[simp] lemma «exists» {p : EReal → Prop} : (∃ r, p r) ↔ p ⊥ ∨ p ⊤ ∨ ∃ r : ℝ, p r where
+protected lemma «exists» {p : EReal → Prop} : (∃ r, p r) ↔ p ⊥ ∨ p ⊤ ∨ ∃ r : ℝ, p r where
   mp := by rintro ⟨r, hr⟩; cases r <;> aesop
   mpr := by rintro (h | h | ⟨r, hr⟩) <;> exact ⟨_, ‹_›⟩
 
