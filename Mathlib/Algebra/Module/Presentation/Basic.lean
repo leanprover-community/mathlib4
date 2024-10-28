@@ -373,10 +373,10 @@ lemma ofQuotient_isPresentation : (ofQuotient relations).IsPresentation where
 
 variable {relations}
 
-/-- Helper structure in order to prover `Module.Relations.Solutions.IsPresentation`
+/-- Helper structure in order to prove `Module.Relations.Solutions.IsPresentation`
 by showing the universal property of the module defined by generators and relations.
 The universal property is restricted to modules that are in `Type w'` for
-an auxiliary universes `w'`. See `IsPresentationCore.isPresentation`. -/
+an auxiliary universe `w'`. See `IsPresentationCore.isPresentation`. -/
 structure IsPresentationCore (solution : relations.Solution M) where
   /-- any solution in a module `N : Type w'` is obtained in a unique way
   by postcomposing `solution : relations.Solution M` by a linear map `M →ₗ[A] N`. -/
