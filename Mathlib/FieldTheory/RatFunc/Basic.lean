@@ -357,7 +357,7 @@ theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
     map φ hφ (ofFractionRing (Localization.mk n d)) =
       ofFractionRing (Localization.mk (φ n) ⟨φ d, hφ d.prop⟩) := by
   simp only [map, MonoidHom.coe_mk, OneHom.coe_mk, liftOn_ofFractionRing_mk,
-      Submonoid.mem_comap.mp (hφ d.2), ↓reduceDIte]
+    Submonoid.mem_comap.mp (hφ d.2), ↓reduceDIte]
 
 theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ)
     (hf : Function.Injective φ) : Function.Injective (map φ hφ) := by
