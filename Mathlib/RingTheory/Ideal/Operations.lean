@@ -812,19 +812,19 @@ theorem IsRadical.inf (hI : IsRadical I) (hJ : IsRadical J) : IsRadical (I ⊓ J
   rw [IsRadical, radical_inf]; exact inf_le_inf hI hJ
 
 /-- `Ideal.radical` as an `InfTopHom`, bundling in that it distributes over `inf`. -/
-def radical_hom : InfTopHom (Ideal R) (Ideal R) where
+def radicalInfTopHom : InfTopHom (Ideal R) (Ideal R) where
   toFun := radical
   map_inf' := radical_inf
   map_top' := radical_top _
 
 @[simp]
-lemma radical_hom_apply (I : Ideal R) : radical_hom I = radical I := rfl
+lemma radicalInfTopHom_apply (I : Ideal R) : radicalInfTopHom I = radical I := rfl
 
 open Finset in
 lemma radical_finset_inf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (hi : i ∈ s)
     (hs : ∀ ⦃y⦄, y ∈ s → (f y).radical = (f i).radical) :
     (s.inf f).radical = (f i).radical := by
-  rw [← radical_hom_apply, map_finset_inf, ← Finset.inf'_eq_inf ⟨_, hi⟩]
+  rw [← radicalInfTopHom_apply, map_finset_inf, ← Finset.inf'_eq_inf ⟨_, hi⟩]
   exact Finset.inf'_eq_of_forall _ _ hs
 
 /-- The reverse inclusion does not hold for e.g. `I := fun n : ℕ ↦ Ideal.span {(2 ^ n : ℤ)}`. -/
