@@ -68,8 +68,10 @@ mkDeclAndDepr () {
         if ($i ~ regex"$") { old=$(i+1); break }
       }
     }
-    ($0 ~ plusRegex) {
-      #printf("Comparing to: %s\n\n", $0)
+    # the check on `old` is to make sure that we found an "old" name to deprecate
+    # otherwise, the declaration could be a genuinely new one.
+    (($0 ~ plusRegex) && (!(old == ""))) {
+      #printf("Comparing to: %s\nold: `%s`\n\n", $0, old)
       for(i=1; i<=NF; i++) {
         if ($i ~ regex"$") {
           sub(/^\+/, "", $i)
