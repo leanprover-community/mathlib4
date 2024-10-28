@@ -1085,8 +1085,9 @@ theorem isOpen_singleton_iff_nhds_eq_pure (x : X) : IsOpen ({x} : Set X) ↔ �
     simp [isOpen_iff_nhds, h]
 
 theorem isOpen_singleton_iff_punctured_nhds (x : X) : IsOpen ({x} : Set X) ↔ 𝓝[≠] x = ⊥ := by
-  rw [isOpen_singleton_iff_nhds_eq_pure, nhdsWithin, ← mem_iff_inf_principal_compl, ← le_pure_iff]
-  sorry
+  rw [isOpen_singleton_iff_nhds_eq_pure, nhdsWithin, ← mem_iff_inf_principal_compl,
+      le_antisymm_iff]
+  simp [pure_le_nhds x]
 
 theorem mem_closure_iff_frequently : x ∈ closure s ↔ ∃ᶠ x in 𝓝 x, x ∈ s := by
   rw [Filter.Frequently, Filter.Eventually, ← mem_interior_iff_mem_nhds,
@@ -1191,7 +1192,12 @@ theorem clusterPt_iff_lift'_closure {F : Filter X} :
 theorem clusterPt_iff_lift'_closure' {F : Filter X} :
     ClusterPt x F ↔ (F.lift' closure ⊓ pure x).NeBot := by
   rw [clusterPt_iff_lift'_closure, inf_comm]
-  sorry
+  constructor
+  · intro h
+    simp [h, pure_neBot]
+  · intro h U hU
+    simp_rw [← forall_mem_nonempty_iff_neBot, mem_inf_iff] at h
+    simpa using h ({x} ∩ U) ⟨{x}, by simp, U, hU, rfl⟩
 
 @[simp]
 theorem clusterPt_lift'_closure_iff {F : Filter X} :
