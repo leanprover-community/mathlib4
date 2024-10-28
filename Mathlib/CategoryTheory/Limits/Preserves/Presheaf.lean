@@ -117,15 +117,13 @@ noncomputable def iso [IsFiltered (CostructuredArrow yoneda A)] :
         (IsColimit.coconePointUniqueUpToIso
           (colimit.isColimit _) (Presheaf.isColimitTautologicalCocone A)))
 
-theorem isIso_post [IsFiltered (CostructuredArrow yoneda A)] : IsIso (limit.post K A) := by
-  suffices limit.post K A = (iso A K).hom from this ▸ inferInstance
-
+theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limit.post K A := by
   -- We will have to use `ι_colimitLimitIso_limit_π` eventually, so let's start by
   -- transforming the goal into something from a colimit to a limit so that we can apply
   -- `limit.hom_ext` and `colimit.hom_ext`.
   dsimp [iso, -Iso.app_hom]
   simp only [Category.assoc]
-  rw [← Iso.inv_comp_eq, ← Iso.inv_comp_eq]
+  rw [Eq.comm, ← Iso.inv_comp_eq, ← Iso.inv_comp_eq]
   refine limit.hom_ext (fun j => colimit.hom_ext (fun i => ?_))
   simp only [Category.assoc]
 
@@ -151,6 +149,9 @@ theorem isIso_post [IsFiltered (CostructuredArrow yoneda A)] : IsIso (limit.post
   rw [← this]
   ext
   simp
+
+theorem isIso_post [IsFiltered (CostructuredArrow yoneda A)] : IsIso (limit.post K A) :=
+  iso_hom A K ▸ inferInstance
 
 end PreservesFiniteLimitsOfIsFilteredCostructuredArrowYonedaAux
 
