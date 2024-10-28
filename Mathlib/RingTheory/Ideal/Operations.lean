@@ -811,22 +811,21 @@ variable {I J} in
 theorem IsRadical.inf (hI : IsRadical I) (hJ : IsRadical J) : IsRadical (I ⊓ J) := by
   rw [IsRadical, radical_inf]; exact inf_le_inf hI hJ
 
+/-- `Ideal.radical` as an `InfTopHom`, bundling in that it distributes over `inf`. -/
+def radical_hom : InfTopHom (Ideal R) (Ideal R) where
+  toFun := radical
+  map_inf' := radical_inf
+  map_top' := radical_top _
+
+@[simp]
+lemma radical_hom_apply (I : Ideal R) : radical_hom I = radical I := rfl
+
 open Finset in
 lemma radical_finset_inf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (hi : i ∈ s)
     (hs : ∀ ⦃y⦄, y ∈ s → (f y).radical = (f i).radical) :
     (s.inf f).radical = (f i).radical := by
-  classical
-  induction s using Finset.induction_on generalizing i with
-  | empty => simp at hi
-  | @insert a s ha IH =>
-    rcases s.eq_empty_or_nonempty with rfl|⟨y, hy⟩
-    · simp only [insert_emptyc_eq, mem_singleton] at hi
-      simp [hi]
-    specialize IH hy fun z hz ↦ ?_
-    · rw [hs (by simp [hz]), ← hs]
-      simp [hy]
-    simp only [inf_insert, radical_inf, IH,
-      hs (mem_insert_self _ _), hs (mem_insert_of_mem hy), inf_idem]
+  rw [← radical_hom_apply, map_finset_inf, ← Finset.inf'_eq_inf ⟨_, hi⟩]
+  exact Finset.inf'_eq_of_forall _ _ hs
 
 /-- The reverse inclusion does not hold for e.g. `I := fun n : ℕ ↦ Ideal.span {(2 ^ n : ℤ)}`. -/
 theorem radical_iInf_le {ι} (I : ι → Ideal R) : radical (⨅ i, I i) ≤ ⨅ i, radical (I i) :=
