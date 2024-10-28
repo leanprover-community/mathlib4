@@ -499,7 +499,7 @@ instance subsingleton_fin_zero : Subsingleton (Fin 0) :=
 instance subsingleton_fin_one : Subsingleton (Fin 1) :=
   finOneEquiv.subsingleton
 
-/-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `(Fin (m + n) → α)`.-/
+/-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α`.-/
 @[simps]
 def Fin.appendEquiv {α : Type*} (m n : ℕ) :
     (Fin m → α) × (Fin n → α) ≃ (Fin (m + n) → α) where

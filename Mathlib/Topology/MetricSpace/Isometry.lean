@@ -484,8 +484,9 @@ theorem completeSpace_iff (e : α ≃ᵢ β) : CompleteSpace α ↔ CompleteSpac
 protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : CompleteSpace α :=
   e.completeSpace_iff.2 ‹_›
 
-/-- `Equiv.piCongrLeft'` as an `IsometryEquiv`: this is the natural
-`∀ i, Y i ≃ᵢ ∀ j, Y (e.symm j)` obtained from a bijection `ι ≃ ι'` of finite types.-/
+/-- The natural isometry `∀ i, Y i ≃ᵢ ∀ j, Y (e.symm j)` obtained from a bijection `ι ≃ ι'` of
+fintypes.
+`Equiv.piCongrLeft'` as an `IsometryEquiv`.-/
 @[simps!]
 def piCongrLeft' {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι → Type*}
     [∀ j, PseudoEMetricSpace (Y j)] (e : ι ≃ ι') : (∀ i, Y i) ≃ᵢ ∀ j, Y (e.symm j) where
@@ -494,14 +495,16 @@ def piCongrLeft' {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι → Type*}
     simp_rw [edist_pi_def, Finset.sup_univ_eq_iSup]
     exact (Equiv.iSup_comp (g := fun b ↦ edist (x1 b) (x2 b)) e.symm)
 
-/-- `Equiv.piCongrLeft` as an `IsometryEquiv`: this is the natural
-`∀ i, Y (e i) ≃ᵢ ∀ j, Y j` obtained from a bijection `ι ≃ ι'` of finite types.-/
+/-- The natural isometry `∀ i, Y (e i) ≃ᵢ ∀ j, Y j` obtained from a bijection `ι ≃ ι'` of fintypes.
+`Equiv.piCongrLeft` as an `IsometryEquiv`. -/
 @[simps!]
 def piCongrLeft {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι' → Type*}
     [∀ j, PseudoEMetricSpace (Y j)] (e : ι ≃ ι') : (∀ i, Y (e i)) ≃ᵢ ∀ j, Y j :=
   (piCongrLeft' e.symm).symm
 
-/-- `Equiv.sumArrowEquivProdArrow` as an `IsometryEquiv`.-/
+/-- The natural isometry `(α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ)` between the type of maps on a sum of
+fintypes `α ⊕ β` and the pairs of functions on the types `α` and `β`.
+`Equiv.sumArrowEquivProdArrow` as an `IsometryEquiv`.-/
 @[simps!]
 def sumArrowIsometryEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ) where
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
@@ -517,7 +520,8 @@ theorem _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {
   simp [edist_pi_def, Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv),
     Prod.edist_eq, iSup_sum]
 
-/-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `(Fin (m + n) → α)`.-/
+/-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α`.
+`Fin.appendEquiv` as an `IsometryEquiv`.-/
 @[simps!]
 def _root_.Fin.appendIsometry (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃ᵢ (Fin (m + n) → α) where
   toEquiv := Fin.appendEquiv _ _

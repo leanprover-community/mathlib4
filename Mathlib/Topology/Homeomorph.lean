@@ -701,8 +701,8 @@ def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X whe
   continuous_invFun := continuous_uLift_up
   toEquiv := Equiv.ulift
 
-/-- `Equiv.sumArrowEquivProdArrow` as a homeomorphism. The natural homeomorphism
-`(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)` -/
+/-- The natural homeomorphism `(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)`.
+`Equiv.sumArrowEquivProdArrow` as a homeomorphism. -/
 @[simps!]
 def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)  where
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
@@ -729,7 +729,8 @@ theorem _root_.Fin.continuous_append (m n : ℕ) :
   rw [Fin.appendEquiv_eq_Homeomorph]
   exact Homeomorph.continuous_toFun _
 
-/-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `(Fin (m + n) → X)`.-/
+/-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
+`Fin.appendEquiv` as a homeomorphism.-/
 @[simps!]
 def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) where
   toEquiv := Fin.appendEquiv m n
