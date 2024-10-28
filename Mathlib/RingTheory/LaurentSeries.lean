@@ -687,14 +687,17 @@ theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤₘ₀) �
 end LaurentSeries
 
 end AdicValuation
+
 namespace LaurentSeries
+
+variable {K : Type*} [Field K]
+
 section Complete
 
 open Filter
 
 open scoped Multiplicative
 
-variable {K : Type*} [Field K]
 
 /- Sending a Laurent series to its `d`-th coefficient is uniformly continuous (independently of the
  uniformity with which `K` is endowed). -/
