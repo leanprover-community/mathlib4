@@ -5,10 +5,8 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.Flat.FaithfullyFlat
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -103,17 +101,6 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
     change _ = h (a ⊗ₜ 1) * h (1 ⊗ₜ b)
     rw [← h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     rfl
-
-lemma nontrivial_of_isPushout_of_isField {A B C D : CommRingCat.{u}}
-    (hA : IsField A) {f : A ⟶ B} {g : A ⟶ C} {inl : B ⟶ D} {inr : C ⟶ D}
-    [Nontrivial B] [Nontrivial C]
-    (h : IsPushout f g inl inr) : Nontrivial D := by
-  letI : Field A := hA.toField
-  algebraize [RingHomClass.toRingHom f, RingHomClass.toRingHom g]
-  let e : D ≅ .of (B ⊗[A] C) :=
-    IsColimit.coconePointUniqueUpToIso h.isColimit (CommRingCat.pushoutCoconeIsColimit A B C)
-  let e' : D ≃ B ⊗[A] C := e.commRingCatIsoToRingEquiv.toEquiv
-  apply e'.nontrivial
 
 end Pushout
 
@@ -320,3 +307,5 @@ def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
 end Pullback
 
 end CommRingCat
+
+#min_imports

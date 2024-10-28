@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.AlgebraicGeometry.Spec
-import Mathlib.Algebra.Category.Ring.Constructions
+import Mathlib.Algebra.Category.Ring.LinearAlgebra
 import Mathlib.CategoryTheory.Elementwise
 
 /-!
