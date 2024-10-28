@@ -86,7 +86,7 @@ variable {ι : Type u} (β : ι → Type v)
 
 /-- `sets β` -/
 private abbrev sets :=
-  { s : Set (∀ i, β i) | ∀ i : ι, s.InjOn (fun x => x i) }
+  { s : Set (∀ i, β i) | ∀ i : ι, s.InjOn fun x => x i }
 
 /-- The cardinals are well-ordered. We express it here by the fact that in any set of cardinals
 there is an element that injects into the others.
@@ -98,10 +98,11 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
     exact (hcc.total hpc hqc).elim (fun h ↦ hc hqc i (h hxp) hyq hi)
       fun h ↦ hc hpc i hxp (h hyq) hi
   let ⟨i, e⟩ :=
-    show ∃ i, ∀ y, ∃ x ∈ s, (x : ∀ i, β i) i = y from
+    show ∃ i, Surjective fun x : s => x.val i from
       Classical.by_contradiction fun h =>
         have h : ∀ i, ∃ y, ∀ x ∈ s, (x : ∀ i, β i) i ≠ y := by
-          simpa only [ne_eq, not_exists, not_forall, not_and] using h
+          simpa only [ne_eq, Surjective, Subtype.exists, exists_prop, not_exists, not_forall,
+            not_and] using h
         let ⟨f, hf⟩ := Classical.axiom_of_choice h
         have : f ∈ s :=
           have : insert f s ∈ sets β := fun i x hx y hy => by
@@ -114,13 +115,8 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
           hs.eq_of_subset this (subset_insert _ _) ▸ mem_insert ..
         let ⟨i⟩ := I
         hf i f this rfl
-  let ⟨f, hf⟩ := Classical.axiom_of_choice e
-  ⟨i,
-    ⟨fun j =>
-      ⟨fun a => f a j, fun a b e' => by
-        let ⟨sa, ea⟩ := hf a
-        let ⟨sb, eb⟩ := hf b
-        rw [← ea, ← eb, hs.prop _ sa sb e']⟩⟩⟩
+  ⟨i, ⟨fun j => ⟨s.restrict (fun x => x j) ∘ surjInv e, 
+    ((hs.1 j).injective).comp (injective_surjInv _)⟩⟩⟩
 
 end Wo
 
