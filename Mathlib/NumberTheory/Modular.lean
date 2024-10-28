@@ -515,16 +515,14 @@ end FundamentalDomain
 
 section UpperHalfPlane
 
-lemma exists_translate (τ : ℍ) :
-    ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ) := by
+lemma exists_translate (τ : ℍ) : ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ) := by
   obtain ⟨γ, hγ⟩ := ModularGroup.exists_smul_mem_fd τ
   use γ
   nlinarith [ModularGroup.three_le_four_mul_im_sq_of_mem_fd hγ, UpperHalfPlane.im_pos (γ • τ)]
 
-/--For every `τ : ℍ` there is some matrix in `SL(2, ℤ)` that sends it to an elemenet whose
+/--For every `τ : ℍ` there is some matrix in `γ ∈ SL(2, ℤ)` that sends it to an element whose
 imaginary part is at least `1/2` and `denom γ τ` has norm at most 1. -/
-lemma exists_translate' (τ : ℍ) :
-    ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ) ∧ ‖denom γ τ‖ ≤ 1 := by
+lemma exists_translate' (τ : ℍ) : ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ) ∧ ‖denom γ τ‖ ≤ 1 := by
   by_cases h : 1 / 2 ≤ τ.im
   · refine ⟨1, by simpa using h, by simp [ModularGroup.coe_one, denom_one]⟩
   · obtain ⟨γ, hγ⟩ := exists_translate τ
