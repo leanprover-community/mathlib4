@@ -29,11 +29,11 @@ lemma IntegerComplement_eq : ℂ_ℤ = {z : ℂ | ¬ ∃ (n : ℤ), z = ↑n} :=
   rw [IntegerComplement]
   aesop
 
-lemma IntegerComplemet_not_exist {x : ℂ} (hx : x ∈ ℂ_ℤ) : ¬ ∃ (n : ℤ), x = ↑n := by
+lemma IntegerComplement_not_exist {x : ℂ} (hx : x ∈ ℂ_ℤ) : ¬ ∃ (n : ℤ), x = ↑n := by
   rw [IntegerComplement_eq] at hx
   exact hx
 
-lemma IntegerComplemet_mk {x : ℂ} (hx : ¬ ∃ (n : ℤ), x = ↑n) : x ∈ ℂ_ℤ := by
+lemma IntegerComplement_mk {x : ℂ} (hx : ¬ ∃ (n : ℤ), x = ↑n) : x ∈ ℂ_ℤ := by
   rw [IntegerComplement_eq]
   exact hx
 
