@@ -18,7 +18,7 @@ For other applications use unbundled arrows or `CategoryTheory.Over`.
 - `CategoryTheory.OverClass`: `OverClass X S` equips `X` with a morphism into `S`.
   `X ⮕ S : X ⟶ S` is the structure morphism.
 - `CategoryTheory.HomIsOver`:
-  `HomIsOver f S` asserts that `f` is commutes with the structure morphisms.
+  `HomIsOver f S` asserts that `f` commutes with the structure morphisms.
 
 -/
 
