@@ -3,12 +3,12 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.List.Sigma
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Int.Range
-import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.Testing.SlimCheck.Sampleable
-import Mathlib.Testing.SlimCheck.Testable
+import Mathlib.Data.List.Perm.Lattice
+import Mathlib.Data.List.Range
+import Mathlib.Data.List.Sigma
+import Plausible.Functions
 
 /-!
 ## `slim_check`: generators for functions
@@ -46,191 +46,13 @@ their defining property is invariant through shrinking. Injective
 functions are an example of how complicated it can get.
 -/
 
-
 universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Sort w}
 
-namespace SlimCheck
+namespace Plausible
 
-/-- Data structure specifying a total function using a list of pairs
-and a default value returned when the input is not in the domain of
-the partial function.
-
-`withDefault f y` encodes `x ↦ f x` when `x ∈ f` and `x ↦ y`
-otherwise.
-
-We use `Σ` to encode mappings instead of `×` because we
-rely on the association list API defined in `Mathlib/Data/List/Sigma.lean`.
- -/
-inductive TotalFunction (α : Type u) (β : Type v) : Type max u v
-  | withDefault : List (Σ _ : α, β) → β → TotalFunction α β
-
-instance TotalFunction.inhabited [Inhabited β] : Inhabited (TotalFunction α β) :=
-  ⟨TotalFunction.withDefault ∅ default⟩
-
-namespace TotalFunction
-
--- Porting note: new
-/-- Compose a total function with a regular function on the left -/
-def comp {γ : Type w} (f : β → γ) : TotalFunction α β → TotalFunction α γ
-  | TotalFunction.withDefault m y => TotalFunction.withDefault
-    (m.map <| Sigma.map id fun _ => f) (f y)
-
-/-- Apply a total function to an argument. -/
-def apply [DecidableEq α] : TotalFunction α β → α → β
-  | TotalFunction.withDefault m y, x => (m.dlookup x).getD y
-
-/-- Implementation of `Repr (TotalFunction α β)`.
-
-Creates a string for a given `Finmap` and output, `x₀ ↦ y₀, .. xₙ ↦ yₙ`
-for each of the entries. The brackets are provided by the calling function.
--/
-def reprAux [Repr α] [Repr β] (m : List (Σ _ : α, β)) : String :=
-  String.join <|
-    -- Porting note: No `List.qsort`, so convert back and forth to an `Array`.
-    Array.toList <| Array.qsort (lt := fun x y => x < y)
-      (m.map fun x => s!"{(repr <| Sigma.fst x)} ↦ {repr <| Sigma.snd x}, ").toArray
-
-/-- Produce a string for a given `TotalFunction`.
-The output is of the form `[x₀ ↦ f x₀, .. xₙ ↦ f xₙ, _ ↦ y]`.
--/
-protected def repr [Repr α] [Repr β] : TotalFunction α β → String
-  | TotalFunction.withDefault m y => s!"[{(reprAux m)}_ ↦ {repr y}]"
-
-instance (α : Type u) (β : Type v) [Repr α] [Repr β] : Repr (TotalFunction α β) where
-  reprPrec f _ := TotalFunction.repr f
-
-/-- Create a `Finmap` from a list of pairs. -/
-def List.toFinmap' (xs : List (α × β)) : List (Σ _ : α, β) :=
-  xs.map Prod.toSigma
-
-section
-
-universe ua ub
-variable [SampleableExt.{_,u} α] [SampleableExt.{_,ub} β]
-
--- Porting note: removed, there is no `SizeOf.sizeOf` in the new `Sampleable`
-
--- /-- Redefine `SizeOf.sizeOf` to follow the structure of `sampleable` instances. -/
--- def Total.sizeof : TotalFunction α β → ℕ
---   | ⟨m, x⟩ => 1 + @SizeOf.sizeOf _ Sampleable.wf m + SizeOf.sizeOf x
-
--- instance (priority := 2000) : SizeOf (TotalFunction α β) :=
---   ⟨Total.sizeof⟩
-
-variable [DecidableEq α]
-
-/-- Shrink a total function by shrinking the lists that represent it. -/
-def shrink {α β} [DecidableEq α] [Shrinkable α] [Shrinkable β] :
-    TotalFunction α β → List (TotalFunction α β)
-  | ⟨m, x⟩ => (Shrinkable.shrink (m, x)).map fun ⟨m', x'⟩ => ⟨List.dedupKeys m', x'⟩
-
-variable [Repr α]
-
-instance Pi.sampleableExt : SampleableExt (α → β) where
-  proxy := TotalFunction α (SampleableExt.proxy β)
-  interp f := SampleableExt.interp ∘ f.apply
-  sample := do
-    let xs : List (_ × _) ← (SampleableExt.sample (α := List (α × β)))
-    let ⟨x⟩ ← ULiftable.up.{max u ub} <| (SampleableExt.sample : Gen (SampleableExt.proxy β))
-    pure <| TotalFunction.withDefault (List.toFinmap' <| xs.map <|
-      Prod.map SampleableExt.interp id) x
-  -- note: no way of shrinking the domain without an inverse to `interp`
-  shrink := { shrink := letI : Shrinkable α := {}; TotalFunction.shrink }
-
-end
-
-section Finsupp
-
-variable [Zero β]
-
-/-- Map a total_function to one whose default value is zero so that it represents a finsupp. -/
-@[simp]
-def zeroDefault : TotalFunction α β → TotalFunction α β
-  | withDefault A _ => withDefault A 0
-
-variable [DecidableEq α] [DecidableEq β]
-
-/-- The support of a zero default `TotalFunction`. -/
-@[simp]
-def zeroDefaultSupp : TotalFunction α β → Finset α
-  | withDefault A _ =>
-    List.toFinset <| (A.dedupKeys.filter fun ab => Sigma.snd ab ≠ 0).map Sigma.fst
-
-/-- Create a finitely supported function from a total function by taking the default value to
-zero. -/
-def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
-  support := zeroDefaultSupp tf
-  toFun := tf.zeroDefault.apply
-  mem_support_toFun := by
-    intro a
-    rcases tf with ⟨A, y⟩
-    simp only [apply, zeroDefaultSupp, List.mem_map, List.mem_filter, exists_and_right,
-      List.mem_toFinset, exists_eq_right, Sigma.exists, Ne, zeroDefault]
-    constructor
-    · rintro ⟨od, hval, hod⟩
-      have := List.mem_dlookup (List.nodupKeys_dedupKeys A) hval
-      rw [(_ : List.dlookup a A = od)]
-      · simpa using hod
-      · simpa [List.dlookup_dedupKeys]
-    · intro h
-      use (A.dlookup a).getD (0 : β)
-      rw [← List.dlookup_dedupKeys] at h ⊢
-      simp only [h, ← List.mem_dlookup_iff A.nodupKeys_dedupKeys, not_false_iff, Option.mem_def]
-      cases haA : List.dlookup a A.dedupKeys
-      · simp [haA] at h
-      · simp
-
-variable [SampleableExt α] [SampleableExt β] [Repr α]
-
-instance Finsupp.sampleableExt : SampleableExt (α →₀ β) where
-  proxy := TotalFunction α (SampleableExt.proxy β)
-  interp := fun f => (f.comp SampleableExt.interp).applyFinsupp
-  sample := SampleableExt.sample (α := α → β)
-  -- note: no way of shrinking the domain without an inverse to `interp`
-  shrink := { shrink := letI : Shrinkable α := {}; TotalFunction.shrink }
-
--- TODO: support a non-constant codomain type
-instance DFinsupp.sampleableExt : SampleableExt (Π₀ _ : α, β) where
-  proxy := TotalFunction α (SampleableExt.proxy β)
-  interp := fun f => (f.comp SampleableExt.interp).applyFinsupp.toDFinsupp
-  sample := SampleableExt.sample (α := α → β)
-  -- note: no way of shrinking the domain without an inverse to `interp`
-  shrink := { shrink := letI : Shrinkable α := {}; TotalFunction.shrink }
-
-end Finsupp
-
-section SampleableExt
-
-open SampleableExt
-
-instance (priority := 2000) PiPred.sampleableExt [SampleableExt (α → Bool)] :
-    SampleableExt.{u + 1} (α → Prop) where
-  proxy := proxy (α → Bool)
-  interp m x := interp m x
-  sample := sample
-  shrink := SampleableExt.shrink
-
-instance (priority := 2000) PiUncurry.sampleableExt [SampleableExt (α × β → γ)] :
-    SampleableExt.{imax (u + 1) (v + 1) w} (α → β → γ) where
-  proxy := proxy (α × β → γ)
-  interp m x y := interp m (x, y)
-  sample := sample
-  shrink := SampleableExt.shrink
-
-end SampleableExt
-
-end TotalFunction
-
-end SlimCheck
-
--- We need List perm notation from `List` namespace but can't open `_root_.List` directly,
--- so have to close the `SlimCheck` namespace first.
--- Lean issue: https://github.com/leanprover/lean4/issues/3045
-open List
-
-namespace SlimCheck
+open _root_.List
 
 /-- Data structure specifying a total function using a list of pairs
 and a default value returned when the input is not in the domain of
@@ -466,7 +288,7 @@ instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function
   proxy := InjectiveFunction ℤ
   interp f := ⟨apply f, f.injective⟩
   sample := do
-    let ⟨sz⟩ ← ULiftable.up Gen.getSize
+    let ⟨sz⟩ ← Gen.up Gen.getSize
     let xs' := Int.range (-(2 * sz + 2)) (2 * sz + 2)
     let ys ← Gen.permutationOf xs'
     have Hinj : Injective fun r : ℕ => -(2 * sz + 2 : ℤ) + ↑r := fun _x _y h =>
@@ -498,4 +320,4 @@ instance Antitone.testable [Preorder α] [Preorder β] (f : α → β)
     Testable (Antitone f) :=
   I
 
-end SlimCheck
+end Plausible
