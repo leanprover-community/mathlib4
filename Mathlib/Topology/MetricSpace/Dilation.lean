@@ -427,9 +427,12 @@ lemma isUniformEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F)
 @[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 /-- A dilation from a metric space is an embedding -/
-protected theorem embedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
-    Embedding (f : α → β) :=
-  (Dilation.isUniformEmbedding f).embedding
+theorem isEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
+    IsEmbedding (f : α → β) :=
+  (Dilation.isUniformEmbedding f).isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding := isEmbedding
 
 /-- A dilation from a complete emetric space is a closed embedding -/
 lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α β] (f : F) :
