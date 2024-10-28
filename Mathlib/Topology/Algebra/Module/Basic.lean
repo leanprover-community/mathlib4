@@ -1739,6 +1739,10 @@ protected def refl : M₁ ≃L[R₁] M₁ :=
     continuous_toFun := continuous_id
     continuous_invFun := continuous_id }
 
+@[simp]
+theorem refl_apply (x : M₁) :
+    ContinuousLinearEquiv.refl R₁ M₁ x = x := rfl
+
 end
 
 @[simp]

@@ -106,6 +106,12 @@ theorem isRadical_vanishingIdeal (s : Set (PrimeSpectrum R)) : (vanishingIdeal s
     vanishingIdeal_zeroLocus_eq_radical]
   apply Ideal.radical_isRadical
 
+theorem zeroLocus_eq_iff {I J : Ideal R} :
+    zeroLocus (I : Set R) = zeroLocus J ↔ I.radical = J.radical := by
+  constructor
+  · intro h; simp_rw [← vanishingIdeal_zeroLocus_eq_radical, h]
+  · intro h; rw [← zeroLocus_radical, h, zeroLocus_radical]
+
 theorem vanishingIdeal_anti_mono_iff {s t : Set (PrimeSpectrum R)} (ht : IsClosed t) :
     s ⊆ t ↔ vanishingIdeal t ≤ vanishingIdeal s :=
   ⟨vanishingIdeal_anti_mono, fun h => by
@@ -260,9 +266,12 @@ theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocaliza
     Function.Injective (comap (algebraMap R S)) :=
   fun _ _ h => localization_specComap_injective S M h
 
-theorem localization_comap_embedding [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
-    Embedding (comap (algebraMap R S)) :=
+theorem localization_comap_isEmbedding [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+    IsEmbedding (comap (algebraMap R S)) :=
   ⟨localization_comap_inducing S M, localization_comap_injective S M⟩
+
+@[deprecated (since := "2024-10-26")]
+alias localization_comap_embedding := localization_comap_isEmbedding
 
 theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Set.range (comap (algebraMap R S)) = { p | Disjoint (M : Set R) p.asIdeal } :=
@@ -272,11 +281,8 @@ open Function RingHom
 
 theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) where
   induced := by
-    set_option tactic.skipAssignedInstances false in
-    simp_rw [TopologicalSpace.ext_iff, ← isClosed_compl_iff,
-      ← @isClosed_compl_iff (PrimeSpectrum S)
-        ((TopologicalSpace.induced (comap f) zariskiTopology)), isClosed_induced_iff,
-      isClosed_iff_zeroLocus]
+    simp only [TopologicalSpace.ext_iff, ← isClosed_compl_iff, isClosed_iff_zeroLocus,
+      isClosed_induced_iff]
     refine fun s =>
       ⟨fun ⟨F, hF⟩ =>
         ⟨zeroLocus (f ⁻¹' F), ⟨f ⁻¹' F, rfl⟩, by
@@ -462,11 +468,11 @@ theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S
     exact h₁ (x.2.mem_of_pow_mem _ h₃)
 
 theorem localization_away_isOpenEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
-    [IsLocalization.Away r S] : IsOpenEmbedding (comap (algebraMap R S)) :=
-  { toEmbedding := localization_comap_embedding S (Submonoid.powers r)
-    isOpen_range := by
-      rw [localization_away_comap_range S r]
-      exact isOpen_basicOpen }
+    [IsLocalization.Away r S] : IsOpenEmbedding (comap (algebraMap R S)) where
+  toIsEmbedding := localization_comap_isEmbedding S (Submonoid.powers r)
+  isOpen_range := by
+    rw [localization_away_comap_range S r]
+    exact isOpen_basicOpen
 
 @[deprecated (since := "2024-10-18")]
 alias localization_away_openEmbedding := localization_away_isOpenEmbedding
@@ -544,6 +550,32 @@ protected def pointsEquivIrreducibleCloseds :
   __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
+
+/-- Also see `PrimeSpectrum.isClosed_singleton_iff_isMaximal` -/
+lemma isMax_iff {x : PrimeSpectrum R} :
+    IsMax x ↔ x.asIdeal.IsMaximal := by
+  refine ⟨fun hx ↦ ⟨⟨x.2.ne_top, fun I hI ↦ ?_⟩⟩, fun hx y e ↦ (hx.eq_of_le y.2.ne_top e).ge⟩
+  by_contra e
+  obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
+  exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
+
+lemma stableUnderSpecialization_singleton {x : PrimeSpectrum R} :
+    StableUnderSpecialization {x} ↔ x.asIdeal.IsMaximal := by
+  simp_rw [← isMax_iff, StableUnderSpecialization, ← le_iff_specializes, Set.mem_singleton_iff,
+    @forall_comm _ (_ = _), forall_eq]
+  exact ⟨fun H a h ↦ (H a h).le, fun H a h ↦ le_antisymm (H h) h⟩
+
+lemma isMin_iff {x : PrimeSpectrum R} :
+    IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
+  show IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
+  simp only [IsMin, Minimal, x.2, bot_le, and_self, and_true, true_and]
+  exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.2 e⟩
+
+lemma stableUnderGeneralization_singleton {x : PrimeSpectrum R} :
+    StableUnderGeneralization {x} ↔ x.asIdeal ∈ minimalPrimes R := by
+  simp_rw [← isMin_iff, StableUnderGeneralization, ← le_iff_specializes, Set.mem_singleton_iff,
+    @forall_comm _ (_ = _), forall_eq]
+  exact ⟨fun H a h ↦ (H a h).ge, fun H a h ↦ le_antisymm h (H h)⟩
 
 section LocalizationAtMinimal
 

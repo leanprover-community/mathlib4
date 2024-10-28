@@ -93,7 +93,7 @@ instance : T2Space (Aut F) :=
   T2Space.of_injective_continuous (autEmbedding_injective F) continuous_induced_dom
 
 instance : TotallyDisconnectedSpace (Aut F) :=
-  (Embedding.isTotallyDisconnected_range (autEmbedding_isClosedEmbedding F).embedding).mp
+  (autEmbedding_isClosedEmbedding F).isEmbedding.isTotallyDisconnected_range.mp
     (isTotallyDisconnected_of_totallyDisconnectedSpace _)
 
 instance : ContinuousMul (Aut F) :=

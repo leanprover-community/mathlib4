@@ -218,6 +218,7 @@ import Mathlib.Algebra.Free
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.FreeMonoid.Count
+import Mathlib.Algebra.FreeMonoid.Symbols
 import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.GCDMonoid.Finset
@@ -509,6 +510,7 @@ import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
+import Mathlib.Algebra.Module.Presentation.Basic
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Rat
@@ -910,6 +912,7 @@ import Mathlib.AlgebraicGeometry.Noetherian
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.IsOpenComapC
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.Jacobson
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Maximal
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Module
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
@@ -2251,7 +2254,6 @@ import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.FinEnum
-import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Powerset
@@ -3163,6 +3165,7 @@ import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Matrix.Dual
 import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
+import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Card
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
@@ -4093,6 +4096,7 @@ import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.KrullDimension.Field
 import Mathlib.RingTheory.Lasker
 import Mathlib.RingTheory.LaurentSeries
+import Mathlib.RingTheory.LinearDisjoint
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
@@ -4845,6 +4849,7 @@ import Mathlib.Topology.Instances.TrivSqZeroExt
 import Mathlib.Topology.Instances.ZMod
 import Mathlib.Topology.Irreducible
 import Mathlib.Topology.IsLocalHomeomorph
+import Mathlib.Topology.JacobsonSpace
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.List
 import Mathlib.Topology.LocalAtTarget
