@@ -29,6 +29,7 @@ Definition of the integers mod n, and the field structure on the integers mod p.
 
 * A coercion `cast` is defined from `ZMod n` into any ring.
 This is a ring hom if the ring has characteristic dividing `n`
+
 -/
 
 assert_not_exists Submodule
