@@ -1793,7 +1793,9 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
 
 open Filter
 
-lemma mpullbackWithin_mlieBracketWithin [IsRCLikeNormedField 𝕜]
+variable [IsRCLikeNormedField 𝕜]
+
+lemma mpullbackWithin_mlieBracketWithin
     {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : Set M} {t : Set M'}
     (hV : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (V x : TangentBundle I' M')) t (f x₀))
     (hW : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (W x : TangentBundle I' M')) t (f x₀))
@@ -1828,7 +1830,7 @@ lemma mpullbackWithin_mlieBracketWithin [IsRCLikeNormedField 𝕜]
   · simp [hx₀]
   · exact (contMDiffWithinAt_iff.1 hf).2.congr_set A.symm
 
-lemma mpullback_mlieBracketWithin [IsRCLikeNormedField 𝕜]
+lemma mpullback_mlieBracketWithin
     {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : Set M} {t : Set M'}
     (hV : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (V x : TangentBundle I' M')) t (f x₀))
     (hW : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (W x : TangentBundle I' M')) t (f x₀))
@@ -1859,6 +1861,18 @@ lemma mpullback_mlieBracketWithin [IsRCLikeNormedField 𝕜]
     apply mfderivWithin_eq_mfderiv (hu _ h'y)
     exact hy.mdifferentiableAt one_le_two
 
+lemma ContMDiffWithinAt.mlieBracketWithin {m n : ℕ∞}
+    {U V : Π (x : M), TangentSpace I x} {s : Set M} {x : M}
+    (hs : UniqueMDiffOn I s) (h's : s ⊆ closure (interior s)) (hx : x ∈ s)
+    (hU : ContMDiffWithinAt I I.tangent n (fun x ↦ (U x : TangentBundle I M)) s x)
+    (hV : ContMDiffWithinAt I I.tangent n (fun x ↦ (V x : TangentBundle I M)) s x)
+    (hmn : m + 1 ≤ n) :
+    ContMDiffWithinAt I I.tangent m
+      (fun x ↦ (mlieBracketWithin I U V s x : TangentBundle I M)) s x := by
+  sorry
+
+#exit
+
 lemma leibniz_identity_mlieBracketWithin [IsRCLikeNormedField 𝕜]
     {U V W : Π (x : M), TangentSpace I x} {s : Set M} {x : M}
     (hs : UniqueMDiffOn I s) (h's : s ⊆ closure (interior s)) (hx : x ∈ s)
@@ -1870,6 +1884,11 @@ lemma leibniz_identity_mlieBracketWithin [IsRCLikeNormedField 𝕜]
       + mlieBracketWithin I V (mlieBracketWithin I U W s) s x := by
   have s_inter_mem : s ∩ (extChartAt I x).source ∈ 𝓝[s] x :=
     inter_mem self_mem_nhdsWithin (nhdsWithin_le_nhds (extChartAt_source_mem_nhds x))
+  have pre_mem : (extChartAt I x) ⁻¹' ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s)
+      ∈ 𝓝[s] x := by
+    filter_upwards [s_inter_mem] with y hy
+    exact ⟨(extChartAt I x).map_source hy.2,
+      by simpa only [mem_preimage, (extChartAt I x).left_inv hy.2] using hy.1⟩
   -- write everything as pullbacks of vector fields in `E` (denoted with primes), for which
   -- the identity can be checked via direct calculation.
   set U' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm U (range I) with hU'
@@ -1888,7 +1907,7 @@ lemma leibniz_identity_mlieBracketWithin [IsRCLikeNormedField 𝕜]
       ((mapsTo_preimage _ _).mono_left inter_subset_right)
       (Subset.trans inter_subset_left (extChartAt_target_subset_range x)) (extChartAt_to_inv x)
   have J1 (Z : Π (x : M), TangentSpace I x)
-      (hZ : ContMDiffWithinAt I I.tangent 2 (fun x ↦ (Z x : TangentBundle I M)) s x) :
+        (hZ : ContMDiffWithinAt I I.tangent 2 (fun x ↦ (Z x : TangentBundle I M)) s x) :
       ∀ᶠ y in 𝓝[s] x, ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent 2
       (fun y ↦ (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm Z (range I) y :
         TangentBundle 𝓘(𝕜, E) E))
@@ -1946,16 +1965,17 @@ lemma leibniz_identity_mlieBracketWithin [IsRCLikeNormedField 𝕜]
         (mpullback I 𝓘(𝕜, E) (extChartAt I x) V') (mpullback I 𝓘(𝕜, E) (extChartAt I x) W') s y
       = mpullback I 𝓘(𝕜, E) (extChartAt I x) (mlieBracketWithin 𝓘(𝕜, E) V' W'
         ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s)) y := by
-    filter_upwards [eventually_eventually_nhdsWithin.2 s_inter_mem, J1V, J1W,
+    filter_upwards [eventually_eventually_nhdsWithin.2 pre_mem, J1V, J1W,
       nhdsWithin_le_nhds (chart_source_mem_nhds H x), self_mem_nhdsWithin] with y hy hyV hyW h'y ys
-    symm
-    apply mpullback_mlieBracketWithin (hyV.mdifferentiableWithinAt one_le_two)
-      (hyW.mdifferentiableWithinAt one_le_two) hs (contMDiffAt_extChartAt' h'y) ys _ (h's ys)
-    filter_upwards [hy] with z (hz : z ∈ s ∩ (extChartAt I x).source)
-    exact ⟨(extChartAt I x).map_source hz.2,
-      by simpa only [mem_preimage, (extChartAt I x).left_inv hz.2] using hz.1⟩
+    exact (mpullback_mlieBracketWithin (hyV.mdifferentiableWithinAt one_le_two)
+      (hyW.mdifferentiableWithinAt one_le_two) hs (contMDiffAt_extChartAt' h'y) ys hy (h's ys)).symm
   rw [Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem EventuallyEq.rfl this hx,
-    ← mpullback_mlieBracketWithin]
+    ← mpullback_mlieBracketWithin (J0U.mdifferentiableWithinAt one_le_two) _ hs
+      contMDiffAt_extChartAt hx pre_mem (h's hx)]
+
+
+
+
 
 
 
