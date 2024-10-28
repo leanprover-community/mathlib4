@@ -151,108 +151,20 @@ namespace Functor
 
 variable {X : ℕ → C} (f : ∀ n, X (n + 1) ⟶ X n)
 
-namespace OfOpSequence
-
-lemma congr_f (i j : ℕ) (h : i = j) :
-    f i = eqToHom (by rw [h]) ≫ f j ≫ eqToHom (by rw [h]) := by
-  subst h
-  simp
-
-/-- The morphism `X j ⟶ X i` obtained by composing morphisms of
-the form `X (n + 1) ⟶ X n` when `i ≤ j`. -/
-def map : ∀ {X : ℕ → C} (_ : ∀ n, X (n + 1) ⟶ X n) (i j : ℕ), i ≤ j → (X j ⟶ X i)
-  | _, _, 0, 0 => fun _ ↦ 𝟙 _
-  | _, f, 0, 1 => fun _ ↦ f 0
-  | _, f, 0, l + 1 => fun _ ↦ f l ≫ map f 0 l (by omega)
-  | _, _, _ + 1, 0 => nofun
-  | X, f, k + 1, l + 1 => fun _ ↦ map (X := fun n ↦ X (n + 1)) (fun n ↦ f (n + 1)) k l (by omega)
-
-
-lemma map_id (i : ℕ) : map f i i (by omega) = 𝟙 _ := by
-  revert X f
-  induction i with
-  | zero => intros; rfl
-  | succ _ hi =>
-      intro X f
-      apply hi
-
-lemma map_le_succ (i : ℕ) : map f i (i + 1) (by omega) = f i := by
-  revert X f
-  induction i with
-  | zero => intros; rfl
-  | succ _ hi =>
-      intro X f
-      apply hi
-
-lemma map_zero_succ (i : ℕ) : map f 0 (i + 1) (by omega) = f i ≫ map f 0 i (by omega) := by
-  revert X f
-  induction i with
-  | zero => intros; simp [map]
-  | succ _ _ => intros; simp [map]
-
-lemma map_succ (i j : ℕ) (h : j ≤ i) :
-    map f j (i + 1) (by omega) = map f (j + 1) (i + 1) (by omega) ≫ f j := by
-  revert X f i
-  induction j with
-  | zero =>
-      intro X f i
-      induction i with
-      | zero => simp [map]
-      | succ _ hi => simp [map, map_zero_succ, hi]
-  | succ j hj => rintro X f (_|i) h; exacts [by omega, hj _ _ (by omega)]
-
-@[reassoc]
-lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
-    map f i k (hij.trans hjk) = map f j k hjk ≫ map f i j hij := by
-  revert X f i j
-  induction k with
-  | zero =>
-      intros X f j
-      revert X f
-      induction j with
-      | zero =>
-          intros X f k hij hjk
-          obtain rfl : k = 0 := by omega
-          rw [map_id, comp_id]
-      | succ j hj =>
-          rintro X f (_|_|k) hij hjk
-          · omega
-          · obtain rfl : j = 0 := by omega
-            rw [map_id, comp_id]
-          · omega
-  | succ k hk =>
-      rintro X f (_|i)
-      · intro j
-        induction j with
-        | zero => intros; simp [map]
-        | succ j hj =>
-            intros
-            simp [map_zero_succ _ j, hj (by omega) (by omega), map_succ _ k j (by omega)]
-      · rintro (_|j)
-        · omega
-        · intros
-          exact hk _ i j (by omega) (by omega)
-
--- `map` has good definitional properties when applied to explicit natural numbers
-example : map f 5 5 (by omega) = 𝟙 _ := rfl
-example : map f 0 3 (by omega) = f 2 ≫ f 1 ≫ f 0 := rfl
-example : map f 3 7 (by omega) = f 6 ≫ f 5 ≫ f 4 ≫ f 3 := rfl
-
-end OfOpSequence
-
 /-- The functor `ℕᵒᵖ ⥤ C` constructed from a sequence of
 morphisms `f : X (n + 1) ⟶ X n` for all `n : ℕ`. -/
-@[simps obj]
-def ofOpSequence : ℕᵒᵖ ⥤ C where
-  obj n := X n.unop
-  map φ := OfOpSequence.map f _ _ (leOfHom φ.unop)
-  map_id i := OfOpSequence.map_id f i.unop
-  map_comp α β := OfOpSequence.map_comp f _ _ _ (leOfHom β.unop) (leOfHom α.unop)
+@[simps!]
+def ofOpSequence : ℕᵒᵖ ⥤ C := (ofSequence (fun n ↦ (f n).op)).leftOp
 
-@[simp]
+-- `ofOpSequence` has good definitional properties when applied to explicit natural numbers
+example : (ofOpSequence f).map (homOfLE (show 5 ≤ 5 by omega)).op = 𝟙 _ := rfl
+example : (ofOpSequence f).map (homOfLE (show 0 ≤ 3 by omega)).op = (f 2 ≫ f 1) ≫ f 0 := rfl
+example : (ofOpSequence f).map (homOfLE (show 3 ≤ 7 by omega)).op =
+    ((f 6 ≫ f 5) ≫ f 4) ≫ f 3 := rfl
+
 lemma ofOpSequence_map_homOfLE_succ (n : ℕ) :
-    (ofOpSequence f).map (homOfLE (Nat.le_add_right n 1)).op = f n :=
-  OfOpSequence.map_le_succ f n
+    (ofOpSequence f).map (homOfLE (Nat.le_add_right n 1)).op = f n := by
+  simp
 
 end Functor
 
