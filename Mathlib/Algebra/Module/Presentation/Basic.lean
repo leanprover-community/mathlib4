@@ -115,7 +115,7 @@ section
 variable (solution : relations.Solution M)
 
 /-- Given `relations : Relations A` and a solution in `relations.Solution M`, this is
-the linear map `(relations.G →₀ A) →ₗ[A] M` canonically associated to the . -/
+the linear map `(relations.G →₀ A) →ₗ[A] M` canonically associated to the solution. -/
 noncomputable def π : (relations.G →₀ A) →ₗ[A] M := Finsupp.linearCombination _ solution.var
 
 @[simp]
