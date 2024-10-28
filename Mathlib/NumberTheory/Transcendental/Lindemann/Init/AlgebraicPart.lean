@@ -172,15 +172,12 @@ noncomputable def mapDomainFixedEquivSubtype :
 variable [FiniteDimensional K G] [Normal K G]
 
 def toConjEquiv : mapDomainFixed K L G ≃ (ConjRootClass K G →₀ L) := by
-  refine (mapDomainFixedEquivSubtype K L G).trans ?_
-  let f'
-      (f : { f : L[G] // MulAction.orbitRel (G ≃ₐ[K] G) G ≤ Setoid.ker ↑f }) :=
-    Quotient.liftFinsupp (s := IsConjRoot.setoid _ _) (f : L[G]) (by
-      change ∀ _ _, IsConjRoot K _ _ → _
-      simp_rw [isConjRoot_iff_exists_algEquiv]
-      exact f.2)
-  refine
-    { toFun := f'
+  refine (mapDomainFixedEquivSubtype K L G).trans
+    { toFun := fun f ↦
+       Quotient.liftFinsupp (s := IsConjRoot.setoid _ _) (f : L[G]) (by
+        change ∀ _ _, IsConjRoot K _ _ → _
+        simp_rw [isConjRoot_iff_exists_algEquiv]
+        exact f.2)
       invFun := fun f => ⟨?_, ?_⟩
       left_inv := ?_
       right_inv := ?_ }
@@ -290,13 +287,13 @@ instance : MulZeroClass (ConjRootClass K G →₀ L) where
     rw [mul_comm]
     exact graph_eq_empty.mp <| by rw [mul_def, map_zero, zero_mul, map_zero, graph_zero]
 
-instance : AddEquivClass (↥(mapDomainFixed K L G) ≃ₗ[L] ConjRootClass K G →₀ L) _ _ := by
+instance : AddEquivClass (mapDomainFixed K L G ≃ₗ[L] ConjRootClass K G →₀ L) _ _ := by
   infer_instance
 
-instance : AddHomClass (↥(mapDomainFixed K L G) ≃ₗ[L] ConjRootClass K G →₀ L) _ _ :=
+instance : AddHomClass (mapDomainFixed K L G ≃ₗ[L] ConjRootClass K G →₀ L) _ _ :=
   AddEquivClass.instAddHomClass _
 
-instance : MulActionHomClass ((ConjRootClass K G →₀ L) ≃ₗ[L] ↥(mapDomainFixed K L G)) L
+instance : MulActionHomClass ((ConjRootClass K G →₀ L) ≃ₗ[L] mapDomainFixed K L G) L
     (ConjRootClass K G →₀ L) ↥(mapDomainFixed K L G) :=
   inferInstance
 
@@ -358,7 +355,7 @@ def toConjAlgEquiv : mapDomainFixed K L G ≃ₐ[L] ConjRootClass K G →₀ L :
         RingHom.id_apply, AddMonoidAlgebra.single_apply,
         eq_comm (b := i), eq_comm (b := ConjRootClass.mk K i), ConjRootClass.mk_eq_zero_iff] }
 
-theorem ToConjEquivSymmSingle.aux (x : ConjRootClass K G) (a : L) :
+theorem indicator_const_mem_mapDomainFixed (x : ConjRootClass K G) (a : L) :
     (Finsupp.indicator x.carrier.toFinset fun _ _ => a) ∈ mapDomainFixed K L G := by
   rw [mem_mapDomainFixed_iff]
   rintro i j h
@@ -369,7 +366,8 @@ theorem ToConjEquivSymmSingle.aux (x : ConjRootClass K G) (a : L) :
 
 theorem toConjEquiv_symm_single (x : ConjRootClass K G) (a : L) :
     (toConjEquiv K L G).symm (Finsupp.single x a) =
-      ⟨Finsupp.indicator x.carrier.toFinset fun _ _ => a, ToConjEquivSymmSingle.aux K L G x a⟩ := by
+      ⟨Finsupp.indicator x.carrier.toFinset fun _ _ => a,
+        indicator_const_mem_mapDomainFixed K L G x a⟩ := by
   rw [Equiv.symm_apply_eq]
   ext i; induction i with | h i => ?_
   rw [toConjEquiv_apply_apply_mk]
@@ -480,8 +478,7 @@ theorem linearIndependent_range_aux (K : Type*) {L G R : Type*}
     (by simpa using Finsupp.mapRange_injective _ _ (algebraMap K L).injective)] at y0
   exact ⟨y', y0, hfy⟩
 
-theorem linearIndependent_exp_aux2_1
-    {K L R : Type*}
+theorem linearIndependent_exp_aux2_1 {K L R : Type*}
     [Field K] [Field L] [Algebra K L] [FiniteDimensional K L] [Normal K L] [NoZeroDivisors K[L]]
     [Semiring R] [Algebra K R]
     (f : K[L] →ₐ[K] R)
@@ -501,7 +498,7 @@ theorem linearIndependent_exp_aux2_1
       show ((1 : L ≃ₐ[K] L) : L ≃+ L) = 1 from rfl,
       map_one, AlgEquiv.one_apply, map_mul, hfx, zero_mul]
 
-theorem linearIndependent_aux2_2
+theorem linearIndependent_exp_aux2_2
     (x : mapDomainFixed ℚ ℚ (K s)) (x0 : x ≠ 0) (hx : Eval s ℚ x = 0) :
     ∃ (w : ℚ) (_w0 : w ≠ 0) (q : Finset (ConjRootClass ℚ (K s)))
       (_hq : (0 : ConjRootClass ℚ (K s)) ∉ q) (w' : ConjRootClass ℚ (K s) → ℚ),
@@ -543,7 +540,7 @@ theorem linearIndependent_exp_aux2 (s : Finset ℂ) (x : ℚ[K s]) (x0 : x ≠ 0
       (_hq : (0 : ConjRootClass ℚ (K s)) ∉ q) (w' : ConjRootClass ℚ (K s) → ℚ),
       (w + ∑ c in q, w' c • ∑ x in c.carrier.toFinset, exp (algebraMap (K s) ℂ x) : ℂ) = 0 := by
   obtain ⟨y, y0, hy⟩ := linearIndependent_exp_aux2_1 _ x x0 x_ker
-  exact linearIndependent_aux2_2 s y y0 hy
+  exact linearIndependent_exp_aux2_2 s y y0 hy
 
 theorem linearIndependent_exp_aux1 (s : Finset ℂ) (x : (K s)[K s]) (x0 : x ≠ 0)
     (x_ker : x ∈ RingHom.ker (Eval s (K s))) :
@@ -683,8 +680,7 @@ theorem linearIndependent_exp_aux_aroots_rat (u : ι → ℂ) (hu : ∀ i, IsInt
   rw [← h, add_right_inj]
   change ∑ j, ((fun c => w' c • ((c.minpoly.aroots ℂ).map exp).sum) ·) (q.equivFin.symm j) = _
   -- Porting note: were `rw [Equiv.sum_comp q.equivFin.symm, sum_coe_sort]`
-  rw [Equiv.sum_comp q.equivFin.symm
-    ((fun c ↦ w' c • ((c.minpoly.aroots ℂ).map exp).sum) ·),
+  rw [Equiv.sum_comp q.equivFin.symm ((fun c ↦ w' c • ((c.minpoly.aroots ℂ).map exp).sum) ·),
     sum_coe_sort _ (fun c ↦ w' c • ((c.minpoly.aroots ℂ).map exp).sum)]
   refine sum_congr rfl fun c _hc => ?_
   have : c.minpoly.aroots ℂ =
