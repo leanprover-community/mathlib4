@@ -1152,6 +1152,17 @@ theorem mfderiv_comp_of_eq {x : M} {y : M'} (hg : MDifferentiableAt I' I'' g y)
     mfderiv I I'' (g ∘ f) x = (mfderiv I' I'' g (f x)).comp (mfderiv I I' f x) := by
   subst hy; exact mfderiv_comp x hg hf
 
+theorem mfderiv_comp_apply (hg : MDifferentiableAt I' I'' g (f x))
+    (hf : MDifferentiableAt I I' f x) (v : TangentSpace I x) :
+    mfderiv I I'' (g ∘ f) x v = (mfderiv I' I'' g (f x)) ((mfderiv I I' f x) v) := by
+  rw [mfderiv_comp _ hg hf]
+  rfl
+
+theorem mfderiv_comp_apply_of_eq {y : M'} (hg : MDifferentiableAt I' I'' g y)
+    (hf : MDifferentiableAt I I' f x)  (hy : f x = y) (v : TangentSpace I x) :
+    mfderiv I I'' (g ∘ f) x v = (mfderiv I' I'' g y) ((mfderiv I I' f x) v) := by
+  subst hy; exact mfderiv_comp_apply _ hg hf v
+
 theorem MDifferentiableOn.comp (hg : MDifferentiableOn I' I'' g u) (hf : MDifferentiableOn I I' f s)
     (st : s ⊆ f ⁻¹' u) : MDifferentiableOn I I'' (g ∘ f) s := fun x hx =>
   MDifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
