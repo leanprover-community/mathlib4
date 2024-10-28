@@ -23,8 +23,6 @@ namespace Complex
 
 local notation "ℂ_ℤ " => IntegerComplement
 
-instance : IsOpen ℂ_ℤ := isOpen_compl_range_intCast
-
 lemma IntegerComplement_eq : ℂ_ℤ = {z : ℂ | ¬ ∃ (n : ℤ), z = ↑n} := by
   rw [IntegerComplement]
   aesop
