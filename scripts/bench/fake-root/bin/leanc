@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export LEAN_SYSROOT=$LEAN_REAL_SYSROOT
+
 MODE=linking
 for arg in "$@"; do
     if [[ "$arg" == "-c" ]]; then
