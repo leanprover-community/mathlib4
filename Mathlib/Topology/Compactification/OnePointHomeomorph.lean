@@ -3,7 +3,7 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen
 -/
-import Mathlib.Topology.Compactification.OnePointSlope
+import Mathlib.Topology.Compactification.OnePointEquiv
 import Mathlib.Topology.Compactification.OnePointRealLemmas
 
 /-!
@@ -39,6 +39,13 @@ lemma cont_inv_lift_ (a x:ℝ) (h : x ≠ 0) :
   · apply ContinuousAt.div₀
     · exact continuousAt_const
     repeat tauto
+
+/-- -/
+noncomputable def OnePoint_div {K : Type} [DivisionRing K] (a : K) (r : K): OnePoint K :=
+    ite (r ≠ 0) (a / r) ∞
+
+/-- -/
+infix:50 " ÷ " => OnePoint_div
 
 /-- OnePoint_div is continuous. -/
 lemma cont_nonzero_ (a x:ℝ) (h: x ≠ 0) : ContinuousAt (OnePoint_div a) x := by
@@ -104,15 +111,185 @@ lemma suffice
     · intros;simp;linarith
   · apply hε.2
 
+/-- -/
+lemma div_slope_well_defined {K : Type} [Field K]
+    (a b : { v : Fin 2 → K // v ≠ 0 })
+    (h : ∃ c : Kˣ, (fun m : Kˣ ↦ m • b.1) c = a.1) :
+    (fun u ↦ u.1 0 ÷ u.1 1) a = (fun u ↦ u.1 0 ÷ u.1 1) b := by
+  obtain ⟨c,hc⟩ := h
+  simp_all only
+  rw [← hc]; unfold OnePoint_div; simp only [ne_eq, Fin.isValue, Pi.smul_apply, ite_not]
+  split_ifs with hbc hb hb
+  · rfl
+  · simp_all only [ne_eq, OnePoint.infty_ne_coe]
+    apply hb;exact (Units.mul_right_eq_zero c).mp hbc
+  · rw [hb] at hbc;simp at hbc
+  · apply congrArg some
+    field_simp
+    show c * b.1 0 * b.1 1 = b.1 0 * (c * b.1 1)
+    ring
+
 /-- Function underlying homeomorphism. -/
 noncomputable def div_slope (p : ℙ ℝ (Fin 2 → ℝ)) : OnePoint ℝ :=
   Quotient.lift
     (fun u : { v : Fin 2 → ℝ // v ≠ 0} ↦
       OnePoint_div (u.1 0) (u.1 1)) div_slope_well_defined p
 
-/-- Division is injective. -/
-lemma div_slope_injective : Function.Injective div_slope :=
-  Quotient.ind (fun a ↦ Quotient.ind (field_div_slope_inj_lifted a))
+/-- A pair is nonzero if the corresponding tuple is nonzero. -/
+lemma nonzero_of_nonzero (a : {v : Fin 2 → ℝ // v ≠ 0}) :
+    (a.1 0, a.1 1) ≠ 0 := by
+  have := a.2
+  contrapose this
+  simp_all
+  ext z
+  fin_cases z <;> simp_all
+
+/-- Prove that this div_slope_katz is also an equiv. -/
+noncomputable def div_slope_katz (p : ℙ ℝ (Fin 2 → ℝ)) : OnePoint ℝ := by
+  have d := (@OnePoint.equivProjectivization ℝ _ _).invFun
+  exact Quotient.lift
+    (fun u : { v : Fin 2 → ℝ // v ≠ 0} ↦ d <| (by
+        apply mk ℝ
+        show (u.1 0, u.1 1) ≠ 0
+        have := u.2
+        contrapose this
+        simp_all
+        ext z
+        fin_cases z <;> simp_all
+    )) (fun a b hab => by
+    show d (mk ℝ (a.1 0, a.1 1) _) = d (mk ℝ (b.1 0, b.1 1) _)
+    have : (mk ℝ (a.1 0, a.1 1) (nonzero_of_nonzero a))
+         = (mk ℝ (b.1 0, b.1 1) (nonzero_of_nonzero b)) := by
+      have := (mk_eq_mk_iff ℝ (a.1 0, a.1 1) (b.1 0, b.1 1)
+        (nonzero_of_nonzero a) (nonzero_of_nonzero b)).mpr
+      apply this
+      obtain ⟨c,hc⟩ := hab
+      use c
+      simp_all
+      rw [← hc]
+      simp
+    rw [this]
+    ) p
+
+/-- Equivalence between two forms of the real plane. -/
+noncomputable def tupleFin :
+  ℝ × ℝ ≃ (Fin 2 → ℝ) where
+  toFun     := fun p => ![p.1, p.2]
+  invFun    := fun p => (p 0, p 1)
+  left_inv  := fun _ => by simp
+  right_inv := fun p => funext fun i => by fin_cases i <;> simp
+
+/-- Equivalence between two parametrizations of "lines through the origin". -/
+noncomputable def tupFinNonzero :
+  { p : ℝ × ℝ // p ≠ 0} ≃ {p : Fin 2 → ℝ // p ≠ 0} where
+  toFun := by
+    intro p
+    exact ⟨![p.1.1, p.1.2], by
+      have := p.2
+      contrapose this
+      simp_all
+      ext <;> simp_all
+    ⟩
+  invFun := by
+    intro p
+    exact ⟨(p.1 0,p.1 1),by
+      have := p.2
+      contrapose this
+      simp_all
+      ext i
+      simp_all
+      fin_cases i <;> tauto
+    ⟩
+  left_inv := by
+    intro x
+    simp
+  right_inv := by
+    intro x
+    simp
+    ext i
+    simp_all
+    fin_cases i <;> tauto
+
+/-- Equivalence between two forms of projective line. -/
+noncomputable def projFinTup :
+  ℙ ℝ (Fin 2 → ℝ) ≃ ℙ ℝ (ℝ × ℝ) where
+  toFun := Quotient.lift
+      (fun w : {p : Fin 2 → ℝ // p ≠ 0} => (Quotient.mk _ (tupFinNonzero.invFun w) : ℙ ℝ (ℝ × ℝ)))
+      (fun u v huv => Quotient.sound <| by
+        obtain ⟨c,hc⟩ := huv
+        use c
+        aesop)
+  invFun := by
+    let f : { p : ℝ × ℝ // p ≠ 0} → ℙ ℝ (Fin 2 → ℝ) :=
+      fun w => Quotient.mk _ (tupFinNonzero.toFun w)
+    refine Quotient.lift f (by
+      intro a b hab; unfold f;
+      refine Quotient.sound ?_
+      obtain ⟨c,hc⟩ := hab
+      use c
+      simp
+      unfold tupFinNonzero
+      simp
+      ext i
+      fin_cases i <;>
+      · simp
+        rw [← hc]
+        simp
+    )
+  left_inv := by
+    apply Quotient.ind
+    intro a
+    simp
+  right_inv := by
+    apply Quotient.ind
+    intro a
+    simp
+
+/-- Express div_slope in terms of OnePointEquiv. -/
+theorem reconcile :
+  div_slope = (OnePoint.equivProjectivization ℝ).invFun ∘ projFinTup.toFun := by
+  ext p
+  simp
+  exact @Quotient.ind {v : Fin 2 → ℝ // v ≠ 0}
+    (projectivizationSetoid ℝ (Fin 2 → ℝ))
+    (fun p => div_slope p = (OnePoint.equivProjectivization ℝ).symm (projFinTup p))
+    (by
+      intro v
+      unfold div_slope projFinTup OnePoint.equivProjectivization tupFinNonzero
+      simp
+      unfold OnePoint_div
+      simp
+      split_ifs with g₀
+      · simp_rw [g₀]
+        rw [Projectivization.lift]
+        aesop
+      · rw [Projectivization.lift]
+        simp_all
+        ring_nf
+    ) p
+
+/-- Equivalence OnePoint ℝ ≃ ℙ ℝ (Fin 2 → ℝ). -/
+noncomputable def div_slope_equiv :
+  OnePoint ℝ ≃ ℙ ℝ (Fin 2 → ℝ) where
+  toFun     := projFinTup.invFun ∘ (OnePoint.equivProjectivization ℝ).toFun
+  invFun    := div_slope
+  left_inv  := by
+    rw [reconcile]
+    show Function.LeftInverse (⇑(OnePoint.equivProjectivization ℝ).symm ∘ ⇑projFinTup)
+      (⇑projFinTup.symm ∘ ⇑(OnePoint.equivProjectivization ℝ))
+    intro
+    simp
+  right_inv := by
+    rw [reconcile]
+    show Function.RightInverse ((OnePoint.equivProjectivization ℝ).invFun ∘ projFinTup.toFun)
+      (projFinTup.invFun ∘ (OnePoint.equivProjectivization ℝ).toFun)
+    intro
+    simp
+
+
+-- Division is injective. -/
+-- lemma div_slope_injective : Function.Injective div_slope :=
+--   Quotient.ind (fun a ↦ Quotient.ind (field_div_slope_inj_lifted a))
 
 /-- Division is continnuous. -/
 lemma continuous_slope_nonzero_case {x : { v : Fin 2 → ℝ // v ≠ 0 }} (hx : ¬x.1 1 = 0) :
@@ -352,5 +529,4 @@ instance {n:ℕ} : CompactSpace (ℙ ℝ (Fin n → ℝ)) := by
 
 /-- The real projective line ℙ ℝ (Fin 2 → ℝ) and OnePoint ℝ are homeomorphic.-/
 noncomputable def onepointhomeo : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoint ℝ) :=
-  @Continuous.homeoOfEquivCompactToT2 (ℙ ℝ (Fin 2 → ℝ)) (OnePoint ℝ) _ _ _ _ field_slope_equiv.symm
-  div_slope_continuous
+  Continuous.homeoOfEquivCompactToT2 (f := div_slope_equiv.symm) div_slope_continuous
