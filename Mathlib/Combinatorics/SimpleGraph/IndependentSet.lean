@@ -66,10 +66,6 @@ lemma isIndependentSet_insert :
   have hu : (∀ b ∈ s, (a ≠ b → Gᶜ.Adj a b)) ↔ ∀ b ∈ s, ¬ G.Adj a b := by aesop
   rw [isClique_insert, hu]
 
--- TODO this is implied in the normal insert one
---lemma isIndependentSet_insert_of_not_mem (ha : a ∉ s) :
---    G.IsIndependentSet (insert a s) ↔ G.IsIndependentSet s ∧ ∀ b ∈ s, ¬ G.Adj a b :=
-
 -- TODO why do we have this?
 lemma IsIndependentSet.insert (hs : G.IsIndependentSet s) (h : ∀ b ∈ s, ¬ G.Adj a b) :
     G.IsIndependentSet (insert a s) := isIndependentSet_insert.mpr ⟨hs ,h⟩
