@@ -14,9 +14,6 @@ import Mathlib.Tactic.ApplyFun
 /-!
 # Subgroups
 
-This file defines multiplicative and additive subgroups as an extension of submonoids, in a bundled
-form (unbundled subgroups are in `Deprecated/Subgroups.lean`).
-
 We prove subgroups of a group form a complete lattice, and results about images and preimages of
 subgroups under group homomorphisms. The bundled subgroups use bundled monoid homomorphisms.
 
@@ -43,10 +40,6 @@ Notation used here:
 - `s k` are sets of elements of type `G`
 
 Definitions in the file:
-
-* `Subgroup G` : the type of subgroups of a group `G`
-
-* `AddSubgroup A` : the type of subgroups of an additive group `A`
 
 * `CompleteLattice (Subgroup G)` : the subgroups of `G` form a complete lattice
 
