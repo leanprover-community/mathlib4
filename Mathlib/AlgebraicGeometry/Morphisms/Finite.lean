@@ -60,6 +60,9 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 instance (priority := 900) [IsIso f] : IsFinite f := of_isIso @IsFinite f
 
+instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsFinite f] [IsFinite g] : IsFinite (f ≫ g) :=
+  IsStableUnderComposition.comp_mem f g ‹IsFinite f› ‹IsFinite g›
+
 instance (priority := 900) [hf : IsFinite f] : LocallyOfFiniteType f := by
   wlog hY : IsAffine Y
   · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
