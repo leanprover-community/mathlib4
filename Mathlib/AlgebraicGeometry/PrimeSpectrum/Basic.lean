@@ -28,6 +28,7 @@ which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
 -/
 
+open Topology
 
 noncomputable section
 
