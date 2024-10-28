@@ -145,7 +145,7 @@ section
 open ContinuousLinearMap
 
 variable {V W V₁ W₁ : Π (x : M'), TangentSpace I' x}
-variable {m n : ℕ∞} {t : Set M'} {y₀ : M'}
+variable {c : 𝕜} {m n : ℕ∞} {t : Set M'} {y₀ : M'}
 
 variable (I I') in
 /-- The pullback of a vector field under a map between manifolds, within a set `s`. -/
@@ -161,6 +161,15 @@ def mpullback (f : M → M') (V : Π (x : M'), TangentSpace I' x) (x : M) :
 
 lemma mpullbackWithin_apply :
     mpullbackWithin I I' f V s x = (mfderivWithin I I' f s x).inverse (V (f x)) := rfl
+
+lemma mpullbackWithin_smul_apply :
+    mpullbackWithin I I' f (c • V) s x = c • mpullbackWithin I I' f V s x := by
+  simp [mpullbackWithin_apply]
+
+lemma mpullbackWithin_smul :
+    mpullbackWithin I I' f (c • V) s = c • mpullbackWithin I I' f V s := by
+  ext x
+  simp [mpullbackWithin_apply]
 
 lemma mpullbackWithin_add_apply :
     mpullbackWithin I I' f (V + V₁) s x =
@@ -662,7 +671,7 @@ lemma mlieBracketWithin_apply :
       ((extChartAt I x₀).symm ⁻¹' s ∩ range I)) ((extChartAt I x₀ x₀))) := rfl
 
 lemma mlieBracketWithin_eq_lieBracketWithin {V W : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {s : Set E} :
-     mlieBracketWithin 𝓘(𝕜, E) V W s  = lieBracketWithin 𝕜 V W s := by
+    mlieBracketWithin 𝓘(𝕜, E) V W s  = lieBracketWithin 𝕜 V W s := by
   ext x
   simp [mlieBracketWithin_apply]
 
@@ -860,6 +869,8 @@ protected theorem _root_.Filter.EventuallyEq.mlieBracket_vectorField
 
 section
 
+
+variable {c : 𝕜}
 variable [SmoothManifoldWithCorners I M] [CompleteSpace E]
 
 lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vectorField
@@ -874,6 +885,36 @@ lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vect
   rw [inter_comm]
   exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
     le_rfl).comp_mdifferentiableWithinAt _ this
+
+lemma mlieBracketWithin_smul_left
+    (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
+    (hs : UniqueMDiffWithinAt I s x) :
+    mlieBracketWithin I (c • V) W s x = c • mlieBracketWithin I V W s x := by
+  simp only [mlieBracketWithin_apply]
+  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_smul_left]
+  · exact hV.differentiableWithinAt_mpullbackWithin_vectorField
+  · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
+
+lemma mlieBracket_smul_left
+    (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x) :
+    mlieBracket I (c • V) W  x = c • mlieBracket I V W x := by
+  simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hV ⊢
+  exact mlieBracketWithin_smul_left hV (uniqueMDiffWithinAt_univ _)
+
+lemma mlieBracketWithin_smul_right
+    (hW : MDifferentiableWithinAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) s x)
+    (hs : UniqueMDiffWithinAt I s x) :
+    mlieBracketWithin I V (c • W) s x = c • mlieBracketWithin I V W s x := by
+  simp only [mlieBracketWithin_apply]
+  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_smul_right]
+  · exact hW.differentiableWithinAt_mpullbackWithin_vectorField
+  · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
+
+lemma mlieBracket_smul_right
+    (hW : MDifferentiableAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) x) :
+    mlieBracket I V (c • W) x = c • mlieBracket I V W x := by
+  simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hW ⊢
+  exact mlieBracketWithin_smul_right hW (uniqueMDiffWithinAt_univ _)
 
 lemma mlieBracketWithin_add_left
     (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
@@ -942,7 +983,6 @@ theorem mlieBracketWithin_eq_mlieBracket (hs : UniqueMDiffWithinAt I s x)
     mlieBracketWithin I V W s x = mlieBracket I V W x := by
   simp only [← mlieBracketWithin_univ, ← mdifferentiableWithinAt_univ] at hV hW ⊢
   exact mlieBracketWithin_subset (subset_univ _) hs hV hW
-
 
 theorem _root_.DifferentiableWithinAt.mlieBracketWithin_congr_mono
     (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
@@ -1523,7 +1563,7 @@ lemma leibniz_identity_mlieBracket_apply
 /-- The Lie bracket of vector fields in manifolds satisfies the Leibniz identity
 `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`. -/
 lemma leibniz_identity_mlieBracket
-    {U V W : Π (x : M), TangentSpace I x} {x : M}
+    {U V W : Π (x : M), TangentSpace I x}
     (hU : ContMDiff I I.tangent 2 (fun x ↦ (U x : TangentBundle I M)))
     (hV : ContMDiff I I.tangent 2 (fun x ↦ (V x : TangentBundle I M)))
     (hW : ContMDiff I I.tangent 2 (fun x ↦ (W x : TangentBundle I M))) :

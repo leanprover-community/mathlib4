@@ -116,6 +116,21 @@ theorem contMDiff_invariantVectorField (v : LieGroupAlgebra I G) {n : ℕ∞} :
     rw [mfderiv_prod_eq_add_apply (smooth_mul I (G := G)).mdifferentiableAt]
     simp [invariantVectorField]
 
+theorem contMDiffAt_invariantVectorField (v : LieGroupAlgebra I G) {n : ℕ∞} {g : G }:
+    ContMDiffAt I I.tangent n
+      (fun (g : G) ↦ (invariantVectorField v g : TangentBundle I G)) g :=
+  (contMDiff_invariantVectorField v).contMDiffAt
+
+theorem mdifferentiable_invariantVectorField (v : LieGroupAlgebra I G) :
+    MDifferentiable I I.tangent
+      (fun (g : G) ↦ (invariantVectorField v g : TangentBundle I G)) :=
+  (contMDiff_invariantVectorField v).mdifferentiable le_rfl
+
+theorem mdifferentiableAt_invariantVectorField (v : LieGroupAlgebra I G) {g : G} :
+    MDifferentiableAt I I.tangent
+      (fun (g : G) ↦ (invariantVectorField v g : TangentBundle I G)) g :=
+  (contMDiffAt_invariantVectorField v).mdifferentiableAt le_rfl
+
 open VectorField
 
 instance : Bracket (LieGroupAlgebra I G) (LieGroupAlgebra I G) where
@@ -133,31 +148,31 @@ lemma invariantVector_mlieBracket (v w : LieGroupAlgebra I G) :
   ext g
   rw [invariantVectorField_eq_mpullback, mpullback_mlieBracket, mpullback_invariantVectorField,
     mpullback_invariantVectorField]
-  · exact (contMDiff_invariantVectorField _).mdifferentiableAt le_rfl
-  · exact (contMDiff_invariantVectorField _).mdifferentiableAt le_rfl
-  · exact smooth_mul_left.contMDiff.contMDiffAt
+  · exact mdifferentiableAt_invariantVectorField _
+  · exact mdifferentiableAt_invariantVectorField _
+  · exact contMDiffAt_mul_left
 
-instance : LieRing (TangentSpace I (1 : G)) where
+instance : LieRing (LieGroupAlgebra I G) where
   add_lie u v w := by
     simp only [bracket_def, invariantVectorField_add]
     rw [mlieBracket_add_left]
-    · exact ((contMDiff_invariantVectorField _).mdifferentiable le_top).mdifferentiableAt
-    · exact ((contMDiff_invariantVectorField _).mdifferentiable le_top).mdifferentiableAt
+    · exact mdifferentiableAt_invariantVectorField _
+    · exact mdifferentiableAt_invariantVectorField _
   lie_add u v w := by
     simp only [bracket_def, invariantVectorField_add]
     rw [mlieBracket_add_right]
-    · exact ((contMDiff_invariantVectorField _).mdifferentiable le_top).mdifferentiableAt
-    · exact ((contMDiff_invariantVectorField _).mdifferentiable le_top).mdifferentiableAt
+    · exact mdifferentiableAt_invariantVectorField _
+    · exact mdifferentiableAt_invariantVectorField _
   lie_self v := by simp [bracket_def]
   leibniz_lie u v w := by
     simp [bracket_def, invariantVector_mlieBracket]
     apply leibniz_identity_mlieBracket_apply <;>
       exact contMDiff_invariantVectorField _ _
 
-instance : LieAlgebra 𝕜 (TangentSpace I (1 : G)) where
+instance : LieAlgebra 𝕜 (LieGroupAlgebra I G) where
   lie_smul c v w := by
     simp only [bracket_def, invariantVectorField_smul]
     rw [mlieBracket_smul_right]
-
+    exact mdifferentiableAt_invariantVectorField _
 
 end LieGroup
