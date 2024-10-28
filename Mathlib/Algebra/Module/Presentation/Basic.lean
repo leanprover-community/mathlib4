@@ -26,9 +26,9 @@ Then, if `solution : relations.Solution M`, we introduce the predicate
 solution to the given equations, i.e. `solution` gives a presentation
 of `M` by generators and relations.
 
-Given `M` and `relations : Relations A`, we also introduce a structure
-`Presentation M relations` which contains a solution of `relations` in `M`
-which is a presentation of `M` by generators and relations.
+Given an `A`-module `M`, we also introduce the type `Presentation A M` which
+contains all the data and properties involved in a presentation of `M` by
+generators and relations.
 
 ## TODO
 * Relate this to `Module.FinitePresentation`
@@ -103,7 +103,8 @@ variable (M : Type v) [AddCommGroup M] [Module A M]
 structure Solution where
   /-- the image in `M` of each variable -/
   var (g : relations.G) : M
-  relation (r : relations.R) : Finsupp.linearCombination _ var (relations.relation r) = 0
+  linearCombination_var_relation (r : relations.R) :
+    Finsupp.linearCombination _ var (relations.relation r) = 0
 
 namespace Solution
 
@@ -122,7 +123,8 @@ lemma π_single (g : relations.G) :
     solution.π (Finsupp.single g 1) = solution.var g := by simp [π]
 
 @[simp]
-lemma π_relation (r : relations.R) : solution.π (relations.relation r) = 0 := solution.relation r
+lemma π_relation (r : relations.R) : solution.π (relations.relation r) = 0 :=
+  solution.linearCombination_var_relation r
 
 @[simp]
 lemma π_comp_map : solution.π.comp relations.map = 0 := by aesop
@@ -166,7 +168,7 @@ variable {N : Type v'} [AddCommGroup N] [Module A N] (f : M →ₗ[A] N)
 @[simps]
 def postcomp : relations.Solution N where
   var g := f (solution.var g)
-  relation r := by
+  linearCombination_var_relation r := by
     have : Finsupp.linearCombination _ (fun g ↦ f (solution.var g)) = f.comp solution.π := by aesop
     simp [this]
 
@@ -183,7 +185,7 @@ vanishing criterion.) -/
 @[simps (config := .lemmasOnly)]
 noncomputable def ofπ : relations.Solution M where
   var g := π (Finsupp.single g 1)
-  relation r := by
+  linearCombination_var_relation r := by
     have : π = Finsupp.linearCombination _ (fun g ↦ π (Finsupp.single g 1)) := by ext; simp
     rw [← this]
     exact hπ r
