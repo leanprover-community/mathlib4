@@ -50,7 +50,7 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
     else
       stx[1][1]
   -- The name of the current declaration, with namespaces resolved.
-  let declName :=
+  let declName : Name :=
     if let `_root_ :: rest := declId[0].getId.components then
       rest.foldl (· ++ ·) default
     else (← getCurrNamespace) ++ declId[0].getId
