@@ -855,7 +855,7 @@ theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).base := by
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
   erw [TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_comp_isIso,
     TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_isIso_comp]
-  exact isOpenEmbedding_sigmaMk
+  exact .sigmaMk
 
 @[deprecated (since := "2024-10-18")]
 alias sigma_ι_openEmbedding := sigma_ι_isOpenEmbedding

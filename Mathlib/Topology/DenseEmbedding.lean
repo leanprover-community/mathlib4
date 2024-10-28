@@ -227,6 +227,8 @@ open TopologicalSpace
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 variable {e : α → β}
 
+lemma isDenseInducing (de : IsDenseEmbedding e) : IsDenseInducing e := de.toIsDenseInducing
+
 theorem inj_iff (de : IsDenseEmbedding e) {x y} : e x = e y ↔ x = y :=
   de.inj.eq_iff
 
@@ -237,12 +239,12 @@ alias to_embedding := isEmbedding
 
 /-- If the domain of a `IsDenseEmbedding` is a separable space, then so is its codomain. -/
 protected theorem separableSpace [SeparableSpace α] (de : IsDenseEmbedding e) : SeparableSpace β :=
-  de.toIsDenseInducing.separableSpace
+  de.isDenseInducing.separableSpace
 
 /-- The product of two dense embeddings is a dense embedding. -/
 protected theorem prodMap {e₁ : α → β} {e₂ : γ → δ} (de₁ : IsDenseEmbedding e₁)
     (de₂ : IsDenseEmbedding e₂) : IsDenseEmbedding fun p : α × γ => (e₁ p.1, e₂ p.2) :=
-  { de₁.toIsDenseInducing.prodMap de₂.toIsDenseInducing with
+  { de₁.isDenseInducing.prodMap de₂.isDenseInducing with
     inj := de₁.inj.prodMap de₂.inj }
 
 @[deprecated (since := "2024-10-06")] protected alias prod := IsDenseEmbedding.prodMap
@@ -267,7 +269,7 @@ protected theorem subtype (de : IsDenseEmbedding e) (p : α → Prop) :
         Function.comp_def]
 
 theorem dense_image (de : IsDenseEmbedding e) {s : Set α} : Dense (e '' s) ↔ Dense s :=
-  de.toIsDenseInducing.dense_image
+  de.isDenseInducing.dense_image
 
 protected lemma id {α : Type*} [TopologicalSpace α] : IsDenseEmbedding (id : α → α) :=
   { IsEmbedding.id with dense := denseRange_id }

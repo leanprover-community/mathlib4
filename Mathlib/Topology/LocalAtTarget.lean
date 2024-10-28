@@ -119,7 +119,7 @@ theorem isOpen_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
   -- Porting note: rewrote to avoid ´simp´ issues
   rw [isOpen_iff_inter_of_iSup_eq_top hU s]
   refine forall_congr' fun i => ?_
-  rw [(U _).2.isOpenEmbedding_subtypeVal.open_iff_image_open]
+  rw [(U _).2.isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen]
   erw [Set.image_preimage_eq_inter_range]
   rw [Subtype.range_coe, Opens.carrier_eq_coe]
 

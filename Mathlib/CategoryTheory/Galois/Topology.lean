@@ -87,7 +87,7 @@ lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
 @[deprecated (since := "2024-10-20")]
 alias autEmbedding_closedEmbedding := autEmbedding_isClosedEmbedding
 
-instance : CompactSpace (Aut F) := IsClosedEmbedding.compactSpace (autEmbedding_isClosedEmbedding F)
+instance : CompactSpace (Aut F) := (autEmbedding_isClosedEmbedding F).compactSpace
 
 instance : T2Space (Aut F) :=
   T2Space.of_injective_continuous (autEmbedding_injective F) continuous_induced_dom

@@ -1204,7 +1204,7 @@ theorem IsOpenEmbedding.locPathConnectedSpace {e : Y → X} (he : IsOpenEmbeddin
 alias OpenEmbedding.locPathConnectedSpace := IsOpenEmbedding.locPathConnectedSpace
 
 theorem IsOpen.locPathConnectedSpace {U : Set X} (h : IsOpen U) : LocPathConnectedSpace U :=
-  (isOpenEmbedding_subtypeVal h).locPathConnectedSpace
+  h.isOpenEmbedding_subtypeVal.locPathConnectedSpace
 
 @[deprecated (since := "2024-10-17")]
 alias locPathConnected_of_isOpen := IsOpen.locPathConnectedSpace

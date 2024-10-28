@@ -713,7 +713,7 @@ alias denseEmbedding := isDenseEmbedding
 
 protected theorem isDenseInducing (hp_ne_top : p ≠ ∞) :
     IsDenseInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  (simpleFunc.isDenseEmbedding hp_ne_top).toIsDenseInducing
+  (simpleFunc.isDenseEmbedding hp_ne_top).isDenseInducing
 
 protected theorem denseRange (hp_ne_top : p ≠ ∞) :
     DenseRange ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
