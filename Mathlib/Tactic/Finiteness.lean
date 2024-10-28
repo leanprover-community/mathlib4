@@ -17,11 +17,11 @@ set.
 ## Syntax
 
 Standard `aesop` syntax apply. Namely one can write
-* `finiteness (add simp [lemma1, lemma2])` to make the `simp` call in `finiteness` use `lemma1`,
-  `lemma2`
 * `finiteness (add unfold [def1, def2])` to make `finiteness` unfold `def1`, `def2`
 * `finiteness?` for the tactic to show what proof it found
 * etc
+* Note that `finiteness` disables `simp`, so `finiteness (add simp [lemma1, lemma2])` does not do
+  anything more than a bare `finiteness`.
 
 We also provide `finiteness_nonterminal` as a version of `finiteness` that doesn't have to close the
 goal.
