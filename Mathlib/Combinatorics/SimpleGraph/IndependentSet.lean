@@ -1,15 +1,16 @@
 import Mathlib.Combinatorics.SimpleGraph.Clique
+import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Data.Finset.Pairwise
 
 /-!
 # Independent Sets in Graphs
 
 This file defines independent sets (aka cocliques) in simple graphs.
-A clique is a set of vertices that are pairwise nonadjacent.
+An independent set is a set of vertices that are pairwise nonadjacent.
 
 -/
 
-open Finset Fintype Function SimpleGraph.Walk
+open Finset Fintype Function
 
 namespace SimpleGraph
 
@@ -33,19 +34,10 @@ theorem isIndependentSet_iff_isClique_of_complement : G.IsIndependentSet s ↔ G
   rw [isIndependentSet_iff, isClique_iff]; repeat rw [Set.Pairwise]
   simp_all only [compl_adj, ne_eq, not_false_eq_true, true_and]
 
--- TODO this should live in Maps.lean probably
-lemma induce_compl_eq_compl_induce : induce s Gᶜ = (induce s G)ᶜ := by
-  ext u v
-  simp only [comap_adj, Embedding.coe_subtype, compl_adj, ne_eq, and_congr_left_iff]
-  intro a
-  obtain ⟨valu, _⟩ := u
-  obtain ⟨valv, _⟩ := v
-  rw [Subtype.mk.injEq]
-
 /-- An independent set is a set of vertices whose induced graph is empty. -/
 theorem isIndependentSet_iff_induce_eq : G.IsIndependentSet s ↔ G.induce s = ⊥ := by
   rw [isIndependentSet_iff_isClique_of_complement, isClique_iff_induce_eq, ←compl_eq_top,
-  induce_compl_eq_compl_induce]
+  induce_compl_eq_compl_induc]
 
 instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsIndependentSet s) :=
   decidable_of_iff' _ G.isIndependentSet_iff
@@ -86,6 +78,8 @@ theorem IsIndependentSet.anti (h : G ≤ H) : H.IsIndependentSet s → G.IsIndep
   repeat rw [isIndependentSet_iff_isClique_of_complement]
   apply IsClique.mono (compl_le_compl_iff_le.mpr h)
 
+theorem IsIndependentSet.subset (h : t ⊆ s) : G.IsIndependentSet s → G.IsIndependentSet t :=
+  Set.Pairwise.mono h
 
 @[simp]
 theorem isIndependentSet_top_iff :
@@ -235,11 +229,11 @@ theorem is3IndependentSet_iff :
   · rintro ⟨a, b, c, hab, hbc, hca, rfl⟩
     exact is3IndependentSet_triple_iff.2 ⟨hab, hbc, hca⟩
 
+end DecidableEq
+
 -- theorem is3IndependentSet_iff_exists_cycle_length_three :
 -- (∃ s : Finset α, G.IsNIndependentSet 3 s) ↔ ∃ (u : α) (w : G.Walk u u), w.IsCycle ∧ w.length
 -- TODO is there a dual to this one? if not, do we even need the other thrms about 3-sets?
-
-end DecidableEq
 
 end NIndependentSet
 
@@ -358,6 +352,65 @@ protected theorem IndependentSetFree.sup_edge (h : G.IndependentSetFree n) (v w 
 
 end IndependentSetFree
 
+/-
+section IndependentSetFreeOn
+variable {s s₁ s₂ : Set α} {t : Finset α} {a b : α} {m n : ℕ}
+
+/-- `G.IndependentSetFreeOn s n` means that `G` has no `n`-cliques contained in `s`. -/
+def IndependentSetFreeOn (G : SimpleGraph α) (s : Set α) (n : ℕ) : Prop :=
+  ∀ ⦃t⦄, ↑t ⊆ s → ¬G.IsNIndependentSet n t
+
+theorem IndependentSetFreeOn.subset (hs : s₁ ⊆ s₂) (h₂ : G.IndependentSetFreeOn s₂ n) : G.IndependentSetFreeOn s₁ n :=
+  fun _t hts => h₂ <| hts.trans hs
+
+theorem IndependentSetFreeOn.mono (hmn : m ≤ n) (hG : G.IndependentSetFreeOn s m) : G.IndependentSetFreeOn s n := by
+  rintro t hts ht
+  obtain ⟨u, hut, hu⟩ := exists_subset_card_eq (hmn.trans ht.card_eq.ge)
+  exact hG ((coe_subset.2 hut).trans hts) ⟨ht.clique.subset hut, hu⟩
+
+theorem IndependentSetFreeOn.anti (hGH : G ≤ H) (hH : H.IndependentSetFreeOn s n) : G.IndependentSetFreeOn s n :=
+  fun _t hts ht => hH hts <| ht.mono hGH
+
+@[simp]
+theorem cliqueFreeOn_empty : G.IndependentSetFreeOn ∅ n ↔ n ≠ 0 := by
+  simp [IndependentSetFreeOn, Set.subset_empty_iff]
+
+@[simp]
+theorem cliqueFreeOn_singleton : G.IndependentSetFreeOn {a} n ↔ 1 < n := by
+  obtain _ | _ | n := n <;>
+    simp [IndependentSetFreeOn, isNIndependentSet_iff, ← subset_singleton_iff', (Nat.succ_ne_zero _).symm]
+
+@[simp]
+theorem cliqueFreeOn_univ : G.IndependentSetFreeOn Set.univ n ↔ G.IndependentSetFree n := by
+  simp [IndependentSetFree, IndependentSetFreeOn]
+
+protected theorem IndependentSetFree.cliqueFreeOn (hG : G.IndependentSetFree n) : G.IndependentSetFreeOn s n :=
+  fun _t _ ↦ hG _
+
+theorem cliqueFreeOn_of_card_lt {s : Finset α} (h : s.card < n) : G.IndependentSetFreeOn s n :=
+  fun _t hts ht => h.not_le <| ht.2.symm.trans_le <| card_mono hts
+
+-- TODO: Restate using `SimpleGraph.IndepSet` once we have it
+@[simp]
+theorem cliqueFreeOn_two : G.IndependentSetFreeOn s 2 ↔ s.Pairwise (G.Adjᶜ) := by
+  classical
+  refine ⟨fun h a ha b hb _ hab => h ?_ ⟨by simpa [hab.ne], card_pair hab.ne⟩, ?_⟩
+  · push_cast
+    exact Set.insert_subset_iff.2 ⟨ha, Set.singleton_subset_iff.2 hb⟩
+  simp only [IndependentSetFreeOn, isNIndependentSet_iff, card_eq_two, coe_subset, not_and, not_exists]
+  rintro h t hst ht a b hab rfl
+  simp only [coe_insert, coe_singleton, Set.insert_subset_iff, Set.singleton_subset_iff] at hst
+  refine h hst.1 hst.2 hab (ht ?_ ?_ hab) <;> simp
+
+theorem IndependentSetFreeOn.of_succ (hs : G.IndependentSetFreeOn s (n + 1)) (ha : a ∈ s) :
+    G.IndependentSetFreeOn (s ∩ G.neighborSet a) n := by
+  classical
+  refine fun t hts ht => hs ?_ (ht.insert fun b hb => (hts hb).2)
+  push_cast
+  exact Set.insert_subset_iff.2 ⟨ha, hts.trans Set.inter_subset_left⟩
+
+end IndependentSetFreeOn
+-/
 
 /-! ### Set of independent sets -/
 
@@ -382,7 +435,7 @@ theorem independentSetSet_eq_empty_iff : G.independentSetSet n = ∅ ↔ G.Indep
 
 protected alias ⟨_, IndependentSetFree.independentSetSet⟩ := independentSetSet_eq_empty_iff
 
---@[mono] TODO probably not?
+--@[mono] TODO probably not @mono?
 theorem independentSetSet_anti (h : G ≤ H) : H.independentSetSet n ⊆ G.independentSetSet n :=
   fun _ ↦ IsNIndependentSet.anti h
 
@@ -398,7 +451,7 @@ theorem independentSetSet_one (G : SimpleGraph α) : G.independentSetSet 1 = Set
   Set.ext fun s => by simp [eq_comm]
 
 @[simp]
-theorem independentSetSet_bot (hn : 1 < n) : (⊤ : SimpleGraph α).independentSetSet n = ∅ :=
+theorem independentSetSet_top (hn : 1 < n) : (⊤ : SimpleGraph α).independentSetSet n = ∅ :=
   (independentSetFree_top hn).independentSetSet
 
 -- TODO equality does not hold. is this interesting still?
