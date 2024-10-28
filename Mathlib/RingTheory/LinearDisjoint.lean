@@ -126,12 +126,14 @@ namespace LinearDisjoint
 variable (A B)
 
 /-- The image of `R` in `S` is linearly disjoint with any other subalgebras. -/
-theorem bot_left : (⊥ : Subalgebra R S).LinearDisjoint B :=
-  Submodule.LinearDisjoint.one_left _
+theorem bot_left : (⊥ : Subalgebra R S).LinearDisjoint B := by
+  rw [Subalgebra.LinearDisjoint, Algebra.toSubmodule_bot]
+  exact Submodule.LinearDisjoint.one_left _
 
 /-- The image of `R` in `S` is linearly disjoint with any other subalgebras. -/
-theorem bot_right : A.LinearDisjoint ⊥ :=
-  Submodule.LinearDisjoint.one_right _
+theorem bot_right : A.LinearDisjoint ⊥ := by
+  rw [Subalgebra.LinearDisjoint, Algebra.toSubmodule_bot]
+  exact Submodule.LinearDisjoint.one_right _
 
 end LinearDisjoint
 
