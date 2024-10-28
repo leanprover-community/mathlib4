@@ -59,7 +59,7 @@ noncomputable def quotientTensorQuotientEquiv (m : Submodule R M) (n : Submodule
       ext y
       simp only [LinearMap.compr₂_apply, LinearMap.flip_apply, mk_apply, Submodule.mkQ_apply,
         LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
-      refine Submodule.mem_sup_right ⟨y ⊗ₜ ⟨x, hx⟩, rfl⟩) fun x hx => ?_
+      exact Submodule.mem_sup_right ⟨y ⊗ₜ ⟨x, hx⟩, rfl⟩) fun x hx => by
       ext y
       simp only [LinearMap.coe_comp, Function.comp_apply, Submodule.mkQ_apply, LinearMap.flip_apply,
         Submodule.liftQ_apply, LinearMap.compr₂_apply, mk_apply, LinearMap.zero_comp,
