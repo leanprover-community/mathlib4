@@ -136,20 +136,15 @@ variable (hS : S ≤ IsUnit.submonoid M)
 `AddEquiv` to `S`."]
 noncomputable def leftInvEquiv : S.leftInv ≃* S :=
   { S.fromCommLeftInv with
-    invFun := fun x ↦ by
-      choose x' hx using hS x.prop
-      exact ⟨x'.inv, x, hx ▸ x'.inv_val⟩
-    left_inv := fun x ↦
-      Subtype.eq <| by
-        dsimp only; generalize_proofs h; rw [← h.choose.mul_left_inj]
-        conv => rhs; rw [h.choose_spec]
-        exact h.choose.inv_val.trans (S.mul_fromLeftInv x).symm
-    right_inv := fun x ↦ by
-      dsimp only [fromCommLeftInv]
+    invFun := fun x ↦ ⟨↑(hS x.2).unit⁻¹, x, by simp⟩
+    left_inv := by
+      intro x
       ext
-      rw [fromLeftInv_eq_iff]
-      convert (hS x.prop).choose.inv_val
-      exact (hS x.prop).choose_spec.symm }
+      simp [← Units.mul_eq_one_iff_inv_eq]
+    right_inv := by
+      rintro ⟨x, hx⟩
+      ext
+      simp [fromLeftInv_eq_iff] }
 
 @[to_additive (attr := simp)]
 theorem fromLeftInv_leftInvEquiv_symm (x : S) : S.fromLeftInv ((S.leftInvEquiv hS).symm x) = x :=

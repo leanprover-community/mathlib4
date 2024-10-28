@@ -369,7 +369,6 @@ lemma autAdjoinRootXPowSubCEquiv_root (η) :
     autAdjoinRootXPowSubCEquiv hζ hn H η (root _) = ((η : Kˣ) : K) • root _ :=
   autAdjoinRootXPowSubC_root hn a η
 
-set_option tactic.skipAssignedInstances false in
 lemma autAdjoinRootXPowSubCEquiv_symm_smul (σ) :
     ((autAdjoinRootXPowSubCEquiv hζ hn H).symm σ : Kˣ) • (root _ : K[n√a]) = σ (root _) := by
   have := Fact.mk H
@@ -380,7 +379,7 @@ lemma autAdjoinRootXPowSubCEquiv_symm_smul (σ) :
     Units.val_ofPowEqOne, ite_mul, one_mul, ne_eq]
   simp_rw [← root_X_pow_sub_C_eq_zero_iff H]
   split_ifs with h
-  · rw [h, mul_zero, map_zero]
+  · rw [h, map_zero]
   · rw [div_mul_cancel₀ _ h]
 
 end AdjoinRoot

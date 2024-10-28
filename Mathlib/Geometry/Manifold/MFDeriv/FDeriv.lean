@@ -39,7 +39,7 @@ theorem ModelWithCorners.uniqueMDiffOn {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : UniqueMDiffOn 𝓘(𝕜, E) (Set.range I) :=
   I.uniqueDiffOn.uniqueMDiffOn
 
--- Porting note (#10618): was `@[simp, mfld_simps]` but `simp` can prove it
+@[simp, mfld_simps]
 theorem writtenInExtChartAt_model_space : writtenInExtChartAt 𝓘(𝕜, E) 𝓘(𝕜, E') x f = f :=
   rfl
 

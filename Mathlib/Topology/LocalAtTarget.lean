@@ -11,7 +11,7 @@ import Mathlib.Topology.LocallyClosed
 
 We show that the following properties of continuous maps are local at the target :
 - `Inducing`
-- `Embedding`
+- `IsEmbedding`
 - `IsOpenEmbedding`
 - `IsClosedEmbedding`
 
@@ -34,11 +34,17 @@ theorem Set.restrictPreimage_inducing (s : Set β) (h : Inducing f) :
 
 alias Inducing.restrictPreimage := Set.restrictPreimage_inducing
 
-theorem Set.restrictPreimage_embedding (s : Set β) (h : Embedding f) :
-    Embedding (s.restrictPreimage f) :=
+theorem Set.restrictPreimage_isEmbedding (s : Set β) (h : IsEmbedding f) :
+    IsEmbedding (s.restrictPreimage f) :=
   ⟨h.1.restrictPreimage s, h.2.restrictPreimage s⟩
 
-alias Embedding.restrictPreimage := Set.restrictPreimage_embedding
+@[deprecated (since := "2024-10-26")]
+alias Set.restrictPreimage_embedding := Set.restrictPreimage_isEmbedding
+
+alias IsEmbedding.restrictPreimage := Set.restrictPreimage_isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.restrictPreimage := IsEmbedding.restrictPreimage
 
 theorem Set.restrictPreimage_isOpenEmbedding (s : Set β) (h : IsOpenEmbedding f) :
     IsOpenEmbedding (s.restrictPreimage f) :=
@@ -167,9 +173,9 @@ theorem inducing_iff_inducing_of_iSup_eq_top (h : Continuous f) :
       inf_eq_left, Filter.le_principal_iff]
     exact Filter.preimage_mem_comap ((U i).2.mem_nhds hi)
 
-theorem embedding_iff_embedding_of_iSup_eq_top (h : Continuous f) :
-    Embedding f ↔ ∀ i, Embedding ((U i).1.restrictPreimage f) := by
-  simp_rw [embedding_iff]
+theorem isEmbedding_iff_of_iSup_eq_top (h : Continuous f) :
+    IsEmbedding f ↔ ∀ i, IsEmbedding ((U i).1.restrictPreimage f) := by
+  simp_rw [isEmbedding_iff]
   rw [forall_and]
   apply and_congr
   · apply inducing_iff_inducing_of_iSup_eq_top <;> assumption
@@ -177,12 +183,15 @@ theorem embedding_iff_embedding_of_iSup_eq_top (h : Continuous f) :
     convert congr_arg SetLike.coe hU
     simp
 
+@[deprecated (since := "2024-10-26")]
+alias embedding_iff_embedding_of_iSup_eq_top := isEmbedding_iff_of_iSup_eq_top
+
 theorem isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top (h : Continuous f) :
     IsOpenEmbedding f ↔ ∀ i, IsOpenEmbedding ((U i).1.restrictPreimage f) := by
   simp_rw [isOpenEmbedding_iff]
   rw [forall_and]
   apply and_congr
-  · apply embedding_iff_embedding_of_iSup_eq_top <;> assumption
+  · apply isEmbedding_iff_of_iSup_eq_top <;> assumption
   · simp_rw [Set.range_restrictPreimage]
     apply isOpen_iff_coe_preimage_of_iSup_eq_top hU
 
@@ -195,7 +204,7 @@ theorem isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top (h : Continuous f
   simp_rw [isClosedEmbedding_iff]
   rw [forall_and]
   apply and_congr
-  · apply embedding_iff_embedding_of_iSup_eq_top <;> assumption
+  · apply isEmbedding_iff_of_iSup_eq_top <;> assumption
   · simp_rw [Set.range_restrictPreimage]
     apply isClosed_iff_coe_preimage_of_iSup_eq_top hU
 
