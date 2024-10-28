@@ -696,9 +696,6 @@ section Complete
 
 open Filter
 
-open scoped Multiplicative
-
-
 /- Sending a Laurent series to its `d`-th coefficient is uniformly continuous (independently of the
  uniformity with which `K` is endowed). -/
 theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
@@ -829,7 +826,6 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
       apply coeff_tendsto hℱ
       simp only [principal_singleton, mem_pure]; rfl
 
-
 open scoped Topology
 
 /- The main result showing that the Cauchy filter tends to the `Cauchy.limit`-/
@@ -857,7 +853,7 @@ end Complete
 
 section Dense
 
--- open scoped Multiplicative
+open scoped Multiplicative
 
 open HahnSeries LaurentSeries
 
