@@ -175,8 +175,6 @@ lemma induced [t : TopologicalSpace Y] (hf : Injective f) :
     @IsEmbedding X Y (t.induced f) t f :=
   @IsEmbedding.mk X Y (t.induced f) t _ (.induced f) hf
 
-@[deprecated (since := "2024-10-28")] alias _root_.Function.Injective.isEmbedding_induced := induced
-
 alias _root_.Function.Injective.isEmbedding_induced := IsEmbedding.induced
 
 @[deprecated (since := "2024-10-26")]
