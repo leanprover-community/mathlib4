@@ -21,17 +21,10 @@ Typically used via `scripts/unused_in_pole.sh`.
 open Cli
 open Lean
 
-/-- Count the number of declarations in each module. -/
-def countDecls (modules : Array Name) : CoreM (Array Nat) := do
-  let env ← getEnv
-  let mut counts := Array.mkArray modules.size 0
-  let moduleIndices := Std.HashMap.ofList <| modules.zipWithIndex.toList
-  for (n, _) in env.constants.map₁ do
-    if ! n.isInternal then
-    if let some m := env.getModuleFor? n then
-      if let some i := moduleIndices[m]? then
-        counts := counts.modify i (· + 1)
-  return counts
+def Core.withImportModules (modules : Array Name) {α} (f : CoreM α) : IO α := do
+  unsafe Lean.withImportModules (modules.map (fun m => {module := m})) {} (trustLevel := 1024)
+    fun env => Prod.fst <$> Core.CoreM.toIO
+        (ctx := { fileName := "<CoreM>", fileMap := default }) (s := { env := env }) do f
 
 /-- Implementation of `lake exe unused` -/
 def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
@@ -47,46 +40,42 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
   -- The code below assumes that it is "deeper files first", as reported by `lake exe pole`.
 
   searchPathRef.set compile_time_search_path%
-  let (unused, _) ← unsafe withImportModules #[{module := `Mathlib}] {} (trustLevel := 1024)
-    fun env => Prod.fst <$> Core.CoreM.toIO
-        (ctx := { fileName := "<CoreM>", fileMap := default }) (s := { env := env }) do
-      let unused ← unusedTransitiveImports modules
-      let counts ← countDecls modules.toArray
-      return (unused, counts)
+  Core.withImportModules #[`Mathlib] do
+    let unused ← unusedTransitiveImports modules
 
-  let headings := #["#", "module"] ++ ((List.range' 1 modules.length).map toString)
-  let rows := modules.mapIdx fun i m =>
-    let data := (unused.lookup m).getD []
-    #[toString (i + 1), m.toString] ++
-      modules.map fun m' => if data.contains m' then "x" else ""
-  IO.println s!"Writing table to {output}."
-  IO.FS.writeFile output (formatTable headings rows.toArray)
+    let headings := #["#", "module"] ++ ((List.range' 1 modules.length).map toString)
+    let rows := modules.mapIdx fun i m =>
+      let data := (unused.lookup m).getD []
+      #[toString (i + 1), m.toString] ++
+        modules.map fun m' => if data.contains m' then "x" else ""
+    IO.println s!"Writing table to {output}."
+    IO.FS.writeFile output (formatTable headings rows.toArray)
 
-  let data := unused.bind fun (m, u) => u.map fun n => (modules.indexOf m, modules.indexOf n)
-  let rectangles := maximalRectangles data
-    |>.map (fun r => (r, r.area))
-    -- Prefer rectangles with larger areas.
-    |>.mergeSort (fun r₁ r₂ => r₁.2 > r₂.2)
-    -- The `lake exe graph` command we print only depends on the top-right corner, so deduplicate.
-    |>.pwFilter (fun r₁ r₂ => (r₁.1.top, r₂.1.right) ≠ (r₂.1.top, r₁.1.right))
-    |>.take n
+    let data := unused.bind fun (m, u) => u.map fun n => (modules.indexOf m, modules.indexOf n)
+    let rectangles := maximalRectangles data
+      |>.map (fun r => (r, r.area))
+      -- Prefer rectangles with larger areas.
+      |>.mergeSort (fun r₁ r₂ => r₁.2 > r₂.2)
+      -- The `lake exe graph` command we print only depends on the top-right corner, so deduplicate.
+      |>.pwFilter (fun r₁ r₂ => (r₁.1.top, r₂.1.right) ≠ (r₂.1.top, r₁.1.right))
+      |>.take n
 
-  for (i, (r, _)) in rectangles.enum do
-    -- We use `--from top` so that the graph starts at the module immediately *before*
-    -- the block of unused imports. This is useful for deciding how a split should be made.
-    -- We use `--to (right-1)` so that the graph ends at the earliest of the modules
-    -- which do not make use of any of the unused block.
-    -- Note that this means that the later modules which do not use the block are not displayed,
-    -- and in particular it is not possible to see from the graph the size of the later block
-    -- which makes no use of the earlier unused block.
-    -- Perhaps modifying `to` to allow multiple modules, and highlighting all of these in some way,
-    -- would be a useful addition.
-    let from_idx := min r.top (modules.length - 1)
-    let to_idx := r.right - 1
-    IO.println
-      s!"lake exe graph --from {modules[from_idx]!} --to {modules[to_idx]!} unused{i}.pdf"
+    for (i, (r, _)) in rectangles.enum do
+      -- We use `--from top` so that the graph starts at the module immediately *before*
+      -- the block of unused imports. This is useful for deciding how a split should be made.
+      -- We use `--to (right-1)` so that the graph ends at the earliest of the modules
+      -- which do not make use of any of the unused block.
+      -- Note that this means that the later modules which do not use the block are not displayed,
+      -- and in particular it is not possible to see from the graph the size of the later block
+      -- which makes no use of the earlier unused block.
+      -- Perhaps modifying `to` to allow multiple modules,
+      -- and highlighting all of these in some way, would be a useful addition.
+      let from_idx := min r.top (modules.length - 1)
+      let to_idx := r.right - 1
+      IO.println
+        s!"lake exe graph --from {modules[from_idx]!} --to {modules[to_idx]!} unused{i}.pdf"
 
-  return 0
+    return 0
 
 /-- Setting up command line options and help text for `lake exe unused`. -/
 def unused : Cmd := `[Cli|
