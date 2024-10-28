@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Subgroup.MulOpposite
+import Mathlib.Algebra.Quotient
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Coset.Defs
-import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 # Cosets
