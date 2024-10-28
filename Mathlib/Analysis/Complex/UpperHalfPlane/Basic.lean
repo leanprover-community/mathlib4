@@ -29,9 +29,9 @@ we state lemmas in this file without spurious `coe_fn` terms. -/
 attribute [-instance] Matrix.SpecialLinearGroup.instCoeFun
 attribute [-instance] Matrix.GeneralLinearGroup.instCoeFun
 
-local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
 local notation:1024 "↑ₘ" A:1024 =>
   (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
+
 local notation:1024 "↑ₘ[" R "]" A:1024 =>
   ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
 

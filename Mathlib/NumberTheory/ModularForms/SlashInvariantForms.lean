@@ -16,13 +16,9 @@ that they form a module.
 
 open Complex UpperHalfPlane
 
-open scoped UpperHalfPlane ModularForm
+open scoped MatrixGroups ModularForm
 
 noncomputable section
-
-local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
-
-local notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
 
 local notation:1024 "↑ₘ" A:1024 =>
   (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)

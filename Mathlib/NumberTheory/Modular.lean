@@ -67,11 +67,9 @@ open Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup
 
 noncomputable section
 
-local notation "SL(" n ", " R ")" => SpecialLinearGroup (Fin n) R
-
 local macro "↑ₘ" t:term:80 : term => `(term| ($t : Matrix (Fin 2) (Fin 2) ℤ))
 
-open scoped UpperHalfPlane ComplexConjugate
+open scoped ComplexConjugate MatrixGroups
 
 namespace ModularGroup
 

@@ -22,6 +22,8 @@ attribute [-instance] Matrix.SpecialLinearGroup.instCoeFun
 
 open Matrix.SpecialLinearGroup Matrix MatrixGroups
 
+open scoped MatrixGroups
+
 variable (N : ℕ)
 
 local notation "SLMOD(" N ")" =>
