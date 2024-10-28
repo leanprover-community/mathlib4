@@ -3,14 +3,10 @@ Copyright (c) 2024 Daniel Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Morrison
 -/
+
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.BilinearForm.Basic
-import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.LinearAlgebra.Orientation
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.InnerProductSpace.Orientation
-import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
+import Mathlib.LinearAlgebra.BilinearForm.Properties
 
 /-!
 Documentation
@@ -27,98 +23,103 @@ finite-dimensional oriented vector space endowed with a nondegenerate symmetric 
 α ∧ ⋆β = ⟨α , β⟩ ω
 -/
 
-open ExteriorAlgebra CliffordAlgebra LinearMap BigOperators
-
-namespace Hodge
-
-noncomputable section HodgeStar
-
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-variable [Nontrivial E]
-instance : Nonempty (Fin <| Module.finrank ℝ E) := Fin.pos_iff_nonempty.mp Module.finrank_pos
-variable (o : Orientation ℝ E (Fin <| Module.finrank ℝ E))
-
-def orientedBasis : OrthonormalBasis (Fin <| Module.finrank ℝ E) ℝ E :=
-  OrthonormalBasis.adjustToOrientation (stdOrthonormalBasis ℝ E) o
-
-def vol : ExteriorAlgebra ℝ E := (ιMulti ℝ (Module.finrank ℝ E)) (orientedBasis o)
-
-variable (B : LinearMap.BilinForm ℝ E) --(Bsymm : B.IsSymm) --(Bnondeg : B.Nondegenerate)
-
-def Q := BilinMap.toQuadraticMap B
-def C := CliffordAlgebra (Q B)
-
-def star : (ExteriorAlgebra ℝ E) → (ExteriorAlgebra ℝ E) :=
-  fun v ↦ equivExterior (Q B) ((equivExterior (Q B)).symm v * (equivExterior (Q B)).symm (vol o))
-
-theorem star_add : ∀ v w : ExteriorAlgebra ℝ E, star o B (v + w) = star o B v + star o B w := by
-  intro v w
-  unfold star
-  rw [map_add, add_mul, map_add]
-
-theorem star_smul : ∀ (r : ℝ) (v : ExteriorAlgebra ℝ E), star o B (r • v) = r • star o B v := by
-  intro r v
-  unfold star
-  rw [map_smul, smul_mul_assoc, map_smul]
-
-def starLinear : ExteriorAlgebra ℝ E →ₗ[ℝ] ExteriorAlgebra ℝ E where
-  toFun := star o B
-  map_add' := star_add o B
-  map_smul' := star_smul o B
-
-omit [FiniteDimensional ℝ E] [Nontrivial E] in
-theorem equivExterior_one : equivExterior (Q B) 1 = 1 := by
-  simp only [equivExterior, map_neg, changeFormEquiv_apply, changeForm_one]
-
-theorem star_one : star o B 1 = vol o := by
-  unfold star
-  rw [← equivExterior_one, LinearEquiv.symm_apply_apply, one_mul, LinearEquiv.apply_symm_apply]
-
-theorem star_vol : star o B (vol o) = 1 := by
-  unfold star
-  rw [← equivExterior_one B]
-  congr
-
-  sorry
-
-theorem star_star (v : ExteriorAlgebra ℝ E) : star o B (star o B v) = v := by
-  unfold star
-  rw [LinearEquiv.symm_apply_apply]
-
-  sorry
-
-theorem star_grading {i : ℕ} {v : ExteriorAlgebra ℝ E} :
-  v ∈ ⋀[ℝ]^i E → star o B v ∈ ⋀[ℝ]^(Module.finrank ℝ E - i) E := by
-  intro hv
-
-  sorry
-
-end HodgeStar
-
-end Hodge
+open ExteriorAlgebra BigOperators
 
 namespace exteriorPower
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {I : Type*} [LinearOrder I] [Fintype I]
 variable {n : ℕ}
-
 
 /-- If `b` is a basis of `M` (indexed by a linearly ordered type), the basis of the `n`th
 exterior power of `M` formed by the `n`-fold exterior products of elements of `b`. -/
 noncomputable def _root_.Basis.exteriorPower {I : Type*} [LinearOrder I] (b : Basis I R M) :
     Basis {s : Finset I // Finset.card s = n} R (⋀[R]^n M) := sorry --From SM.ExteriorPower
 
-variable (B : LinearMap.BilinForm R M)
-variable {I : Type*} [LinearOrder I] (b : Basis I R M)
-
--- M.det = ∑ σ : Equiv.Perm n, Equiv.Perm.sign σ • ∏ i : n, M (σ i) i
-
-noncomputable def preForm (b : Basis I R M) (s t : Finset I) (hs : Finset.card s = n)
-  (ht : Finset.card t = n) : R := ∑ σ : Equiv.Perm (Fin n), Equiv.Perm.sign σ •
+/-
+noncomputable def preForm (b : Basis I R M) (B : LinearMap.BilinForm R M)
+  (s t : Finset I) (hs : Finset.card s = n) (ht : Finset.card t = n) : R :=
+  ∑ σ : Equiv.Perm (Fin n), Equiv.Perm.sign σ •
   ∏ i : Fin n, B (b (Finset.orderIsoOfFin s hs (σ i))) (b (Finset.orderIsoOfFin t ht i))
 
-variable (m : M) (i : I)
-#check b.coord i
-#check b.repr m
+noncomputable def inducedForm' (B : LinearMap.BilinForm R M) (b : Basis I R M) :
+  ⋀[R]^n M → ⋀[R]^n M → R := fun v w ↦ ∑ i : {s : Finset I // Finset.card s = n},
+  ∑ j : {s : Finset I // Finset.card s = n},
+  (b.exteriorPower.coord i v * b.exteriorPower.coord j w) •
+  preForm b B i.val j.val i.property j.property
+
+noncomputable def inducedForm' (B : LinearMap.BilinForm R M) (b : Basis I R M) :
+  ⋀[R]^n M → ⋀[R]^n M → R := fun v w ↦ ∑ i : {s : Finset I // Finset.card s = n},
+  ∑ j : {s : Finset I // Finset.card s = n},
+  (b.exteriorPower.coord i v * b.exteriorPower.coord j w) •
+  ∑ σ : Equiv.Perm (Fin n), Equiv.Perm.sign σ •
+  ∏ k : Fin n, B (b (Finset.orderIsoOfFin i.val i.property (σ k)))
+  (b (Finset.orderIsoOfFin j.val j.property k))
+-/
+
+noncomputable def inducedForm (B : LinearMap.BilinForm R M) (b : Basis I R M) :
+  ⋀[R]^n M → ⋀[R]^n M → R := fun v w ↦ ∑ s : {s : Finset I // Finset.card s = n},
+  ∑ t : {s : Finset I // Finset.card s = n},
+  (b.exteriorPower.coord s v * b.exteriorPower.coord t w) •
+  Matrix.det (fun i j ↦ B (b (Finset.orderIsoOfFin s.val s.property i))
+  (b (Finset.orderIsoOfFin t.val t.property j)) )
+
+theorem induced_add_left (B : LinearMap.BilinForm R M) (b : Basis I R M) : ∀ u v w : ⋀[R]^n M,
+  inducedForm B b (u + v) w = inducedForm B b u w + inducedForm B b v w := by
+  intro u v w
+  unfold inducedForm
+  simp only [map_add, add_mul, add_smul, Finset.sum_add_distrib]
+
+theorem induced_add_right (B : LinearMap.BilinForm R M) (b : Basis I R M) : ∀ u v w : ⋀[R]^n M,
+  inducedForm B b u (v + w) = inducedForm B b u v + inducedForm B b u w := by
+  intro u v w
+  unfold inducedForm
+  simp only [map_add, mul_add, add_smul, Finset.sum_add_distrib]
+
+theorem induced_smul_left (B : LinearMap.BilinForm R M) (b : Basis I R M) : ∀ r : R,
+  ∀ v w : ⋀[R]^n M, inducedForm B b (r • v) w = r • inducedForm B b v w := by
+  intro r v w
+  unfold inducedForm
+  simp only [map_smul, smul_mul_assoc, smul_assoc, Finset.smul_sum]
+
+theorem induced_smul_right (B : LinearMap.BilinForm R M) (b : Basis I R M) : ∀ r : R,
+  ∀ v w : ⋀[R]^n M, inducedForm B b v (r • w) = r • inducedForm B b v w := by
+  intro r v w
+  unfold inducedForm
+  simp only [map_smul, mul_smul_comm, smul_assoc, Finset.smul_sum]
+
+noncomputable def inducedBilinForm (B : LinearMap.BilinForm R M) (b : Basis I R M) :
+  LinearMap.BilinForm R <| ⋀[R]^n M where
+  toFun := fun v ↦ {
+    toFun := fun w ↦ inducedForm B b v w,
+    map_add' := induced_add_right B b v,
+    map_smul' := fun r w ↦ induced_smul_right B b r v w
+  }
+  map_add' := by intro u v; ext w; exact induced_add_left B b u v w
+  map_smul' := by intro r v; ext w; exact induced_smul_left B b r v w
+
+#check OrderIso
+#check Finset.orderIsoOfFin
+#check Fintype.sum_bijective
+#check Equiv.sum_comp
+
+theorem inducedSymm (B : LinearMap.BilinForm R M) (b : Basis I R M) (h : B.IsSymm) :
+  ∀ v w : ⋀[R]^n M, inducedForm B b v w = inducedForm B b w v := by
+  intro v w
+  unfold inducedForm
+
+
+
+
+
+  sorry
+
+theorem inducedBilinSymm (B : LinearMap.BilinForm R M) (b : Basis I R M) (h : B.IsSymm) :
+  (@inducedBilinForm _ _ _ _ _ _ _ _ n B b).IsSymm := by
+  intro v w
+  rw [RingHom.id_apply]
+  unfold inducedBilinForm
+  dsimp
+  exact inducedSymm B b h v w
 
 end exteriorPower
