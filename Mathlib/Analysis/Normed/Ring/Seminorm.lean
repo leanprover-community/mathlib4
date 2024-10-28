@@ -155,11 +155,10 @@ section CommRing
 variable [CommRing R] (p : RingSeminorm R)
 
 theorem exists_index_pow_le (hna : IsNonarchimedean p) (x y : R) (n : ℕ) :
-    ∃ (m : ℕ) (_ : m ∈ Finset.range (n + 1)), p ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
+    ∃ (m : ℕ), m < n + 1 ∧ p ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
       (p (x ^ m) * p (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) := by
   obtain ⟨m, hm_lt, hm⟩ := IsNonarchimedean.add_pow_le hna n x y
-  exact ⟨m, Finset.mem_range.mpr hm_lt,
-    Real.rpow_le_rpow (apply_nonneg p _) hm (one_div_nonneg.mpr n.cast_nonneg')⟩
+  exact ⟨m, hm_lt, Real.rpow_le_rpow (apply_nonneg p _) hm (one_div_nonneg.mpr n.cast_nonneg')⟩
 
 end CommRing
 
