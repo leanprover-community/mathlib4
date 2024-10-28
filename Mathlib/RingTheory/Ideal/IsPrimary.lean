@@ -60,4 +60,25 @@ theorem isPrimary_inf {I J : Ideal R} (hi : I.IsPrimary) (hj : J.IsPrimary)
     · rw [hij] at hyi
       exact Or.inr hyi⟩
 
+open Finset in
+lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (hi : i ∈ s)
+    (hs : ∀ ⦃y⦄, y ∈ s → (f y).IsPrimary)
+    (hs' : ∀ ⦃y⦄, y ∈ s → (f y).radical = (f i).radical) :
+    IsPrimary (s.inf f) := by
+  classical
+  induction s using Finset.induction_on generalizing i with
+  | empty => simp at hi
+  | @insert a s ha IH =>
+    rcases s.eq_empty_or_nonempty with rfl|⟨y, hy⟩
+    · simp only [insert_emptyc_eq, mem_singleton] at hi
+      simpa [hi] using hs
+    simp only [inf_insert]
+    have H : ∀ ⦃x : ι⦄, x ∈ s → (f x).radical = (f y).radical := by
+      intro x hx
+      rw [hs' (mem_insert_of_mem hx), hs' (mem_insert_of_mem hy)]
+    refine isPrimary_inf (hs (by simp)) (IH hy ?_ H) ?_
+    · intro x hx
+      exact hs (by simp [hx])
+    · rw [radical_finset_inf hy H, hs' (mem_insert_self _ _), hs' (mem_insert_of_mem hy)]
+
 end Ideal
