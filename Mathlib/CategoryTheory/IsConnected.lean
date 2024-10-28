@@ -325,11 +325,18 @@ def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
   iseqv := zigzag_equivalence
 
 /-- If there is a zigzag from `j₁` to `j₂`, then there is a zigzag from `F j₁` to
+`F j₂` as long as `F` is a prefunctor.
+-/
+theorem zigzag_prefunctor_obj_of_zigzag (F : J ⥤q K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
+    Zigzag (F.obj j₁) (F.obj j₂) :=
+  h.lift _ fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
+
+/-- If there is a zigzag from `j₁` to `j₂`, then there is a zigzag from `F j₁` to
 `F j₂` as long as `F` is a functor.
 -/
 theorem zigzag_obj_of_zigzag (F : J ⥤ K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
     Zigzag (F.obj j₁) (F.obj j₂) :=
-  h.lift _ fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
+  zigzag_prefunctor_obj_of_zigzag F.toPrefunctor h
 
 /-- A Zag in a discrete category entails an equality of its extremities -/
 lemma eq_of_zag (X) {a b : Discrete X} (h : Zag a b) : a.as = b.as :=
@@ -412,7 +419,9 @@ def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] :
       unitIso := isoConstant _ (Classical.arbitrary _)
       counitIso := Functor.punitExt _ _ }
 
-variable {C : Type u₂} [Category.{u₁} C]
+universe v u
+
+variable {C : Type u} [Category.{v} C]
 
 /-- For objects `X Y : C`, any natural transformation `α : const X ⟶ const Y` from a connected
 category must be constant.
