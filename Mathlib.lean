@@ -4669,7 +4669,8 @@ import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.Algebra.UniformConvergence
 import Mathlib.Topology.Algebra.UniformField
 import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.UniformRing
 import Mathlib.Topology.Algebra.Valued.NormedValued
