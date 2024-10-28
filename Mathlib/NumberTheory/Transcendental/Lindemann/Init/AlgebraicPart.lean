@@ -442,15 +442,13 @@ instance instIsDomain3 : IsDomain (ConjRootClass ℚ (K s) →₀ ℚ) :=
   MulEquiv.isDomain (mapDomainFixed ℚ ℚ (K s)) (toConjAlgEquiv ℚ ℚ (K s)).symm
 instance : AddZeroClass (mapDomainFixed ℚ ℚ (K s)) := inferInstance
 
-theorem linearIndependent_range_aux
-    (K : Type*) {L G R : Type*}
+theorem linearIndependent_range_aux (K : Type*) {L G R : Type*}
     [Field K] [Field L] [Algebra K L] [FiniteDimensional K L] [IsGalois K L]
     [AddCommMonoid G] [Semiring R] [NoZeroDivisors L[G]]
     (f : L[G] →+* R)
     (x : L[G]) (x0 : x ≠ 0) (hfx : f x = 0) :
     ∃ (y : K[G]), y ≠ 0 ∧
       f (AddMonoidAlgebra.mapRangeAlgHom (algebraMap K L).toNatAlgHom y) = 0 := by
-  have x_ker : x ∈ RingHom.ker f := hfx
   let y := ∏ f : L ≃ₐ[K] L, AddMonoidAlgebra.mapRangeAlgAut f x
   have hy : ∀ f : L ≃ₐ[K] L, AddMonoidAlgebra.mapRangeAlgAut f y = y := by
     intro f; dsimp only [y]
@@ -459,16 +457,13 @@ theorem linearIndependent_range_aux
   have y0 : y ≠ 0 := by
     dsimp only [y]; rw [prod_ne_zero_iff]; intro f _hf
     rwa [AddEquivClass.map_ne_zero_iff]
-  have y_ker : y ∈ RingHom.ker f := by
+  have hfy : f y = 0 := by
     suffices
-      (fun f : L ≃ₐ[K] L => AddMonoidAlgebra.mapRangeAlgAut f x) 1 *
-          ∏ f : L ≃ₐ[K] L in univ.erase 1, AddMonoidAlgebra.mapRangeAlgAut f x ∈
-            RingHom.ker f by
+      f (AddMonoidAlgebra.mapRangeAlgAut 1 x *
+          ∏ f : L ≃ₐ[K] L in univ.erase 1, AddMonoidAlgebra.mapRangeAlgAut f x) = 0 by
       convert this
       exact (mul_prod_erase (univ : Finset (L ≃ₐ[K] L)) _ (mem_univ _)).symm
-    dsimp only
-    rw [map_one]
-    exact Ideal.mul_mem_right _ _ x_ker
+    simp [map_one, hfx]
   have y_mem : ∀ i : G, y i ∈ IntermediateField.fixedField (⊤ : Subgroup (L ≃ₐ[K] L)) := by
     intro i; dsimp [IntermediateField.fixedField, FixedPoints.intermediateField]
     rintro ⟨f, hf⟩; rw [Subgroup.smul_def, Subgroup.coe_mk]
@@ -480,46 +475,40 @@ theorem linearIndependent_range_aux
     simp [((IsGalois.tfae (F := K) (E := L)).out 0 1).mp (by infer_instance),
       IntermediateField.mem_bot] at y_mem
     rwa [AddMonoidAlgebra.mapRangeAlgHom_apply, Finsupp.range_mapRange]
-  rw [← hy'] at y0 y_mem y_ker
+  rw [← hy'] at y0 y_mem hfy
   rw [map_ne_zero_iff _
     (by simpa using Finsupp.mapRange_injective _ _ (algebraMap K L).injective)] at y0
-  exact ⟨y', y0, y_ker⟩
+  exact ⟨y', y0, hfy⟩
 
 theorem linearIndependent_exp_aux2_1
     {K L R : Type*}
     [Field K] [Field L] [Algebra K L] [FiniteDimensional K L] [Normal K L] [NoZeroDivisors K[L]]
     [Semiring R] [Algebra K R]
     (f : K[L] →ₐ[K] R)
-    (x : K[L]) (x0 : x ≠ 0) (x_ker : x ∈ RingHom.ker f) :
-    ∃ (y : ConjRootClass K L →₀ K) (_ : y ≠ 0),
-      f ((toConjAlgEquiv K K L).symm y) = 0 := by
-  let V := ∏ f : L ≃ₐ[K] L, AddMonoidAlgebra.domCongrAut K _ f.toAddEquiv x
-  have hV : V ∈ mapDomainFixed K K L := by
-    intro f; dsimp only [V]
-    rw [map_prod]; simp_rw [← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
+    (x : K[L]) (x0 : x ≠ 0) (hfx : f x = 0) :
+    ∃ (y : mapDomainFixed K K L) (_ : y ≠ 0), f y = 0 := by
+  refine ⟨⟨∏ f : L ≃ₐ[K] L, AddMonoidAlgebra.domCongrAut K _ (f : L ≃+ L) x, ?_⟩,
+    fun h => absurd (Subtype.mk.inj h) ?_, ?_⟩
+  · intro f
+    rw [map_prod]
+    simp_rw [← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
     exact
       (Group.mulLeft_bijective f).prod_comp fun g =>
-        AddMonoidAlgebra.domCongrAut K _ g.toAddEquiv x
-  have V0 : V ≠ 0 := by
-    dsimp only [V]; rw [prod_ne_zero_iff]; intro f _hf
-    rwa [AddEquivClass.map_ne_zero_iff]
-  have V_ker : V ∈ RingHom.ker f := by
-    dsimp only [V]
-    rw [← mul_prod_erase (univ : Finset (L ≃ₐ[K] L)) _ (mem_univ 1)]
-    erw [map_one]
-    rw [AlgEquiv.one_apply]
-    exact Ideal.mul_mem_right _ _ x_ker
-  refine ⟨toConjAlgEquiv K K L ⟨V, hV⟩, ?_, ?_⟩
-  · rw [AddEquivClass.map_ne_zero_iff]
-    exact fun h => absurd (Subtype.mk.inj h) V0
-  · rwa [AlgEquiv.symm_apply_apply, Subtype.coe_mk]
+        AddMonoidAlgebra.domCongrAut K _ (g : L ≃+ L) x
+  · simpa [prod_eq_zero_iff]
+  · dsimp only
+    rw [← mul_prod_erase (univ : Finset (L ≃ₐ[K] L)) _ (mem_univ 1),
+      show ((1 : L ≃ₐ[K] L) : L ≃+ L) = 1 from rfl,
+      map_one, AlgEquiv.one_apply, map_mul, hfx, zero_mul]
 
 theorem linearIndependent_aux2_2
-    (x : ConjRootClass ℚ (K s) →₀ ℚ) (x0 : x ≠ 0)
-    (hx : Eval s ℚ ((toConjAlgEquiv ℚ ℚ (K s)).symm x) = 0) :
+    (x : mapDomainFixed ℚ ℚ (K s)) (x0 : x ≠ 0) (hx : Eval s ℚ x = 0) :
     ∃ (w : ℚ) (_w0 : w ≠ 0) (q : Finset (ConjRootClass ℚ (K s)))
       (_hq : (0 : ConjRootClass ℚ (K s)) ∉ q) (w' : ConjRootClass ℚ (K s) → ℚ),
       (w + ∑ c in q, w' c • ∑ x in c.carrier.toFinset, exp (algebraMap (K s) ℂ x) : ℂ) = 0 := by
+  rw [← map_ne_zero_iff _ (toConjAlgEquiv ℚ ℚ (K s)).injective] at x0
+  rw [← (toConjAlgEquiv ℚ ℚ (K s)).symm_apply_apply x] at hx
+  generalize (toConjAlgEquiv ℚ ℚ (K s)) x = x at x0 hx
   obtain ⟨i, hi⟩ := Finsupp.support_nonempty_iff.mpr x0
   set x' := x * Finsupp.single (-i) (1 : ℚ) with x'_def
   have hx' : x' 0 ≠ 0 := by
