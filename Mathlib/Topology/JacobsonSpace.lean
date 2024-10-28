@@ -164,7 +164,7 @@ lemma jacobsonSpace_iff_of_iSup_eq_top {ι : Type*} {U : ι → Opens X} (hU : i
   · convert_to IsClosed {(⟨y, h⟩ : U j)}
     · ext z; exact @Subtype.coe_inj _ _ z ⟨y, h⟩
     apply isClosed_singleton_of_isLocallyClosed_singleton
-    convert (hy'.isLocallyClosed.image embedding_subtype_val.toInducing
+    convert (hy'.isLocallyClosed.image IsEmbedding.subtypeVal.toInducing
       (U i).2.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
       continuous_subtype_val
     rw [Set.image_singleton]
