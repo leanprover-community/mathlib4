@@ -180,16 +180,16 @@ instance IsStarNormal.instNonUnitalContinuousFunctionalCalculus {A : Type*}
     [NonUnitalCStarAlgebra A] : NonUnitalContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) :=
   RCLike.nonUnitalContinuousFunctionalCalculus Unitization.isStarNormal_inr
 
-open Unitization in
+open Unitization CStarAlgebra in
 lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalCStarAlgebra A] (a : A)
     [ha : IsStarNormal a] : (inrNonUnitalStarAlgHom ℂ A).comp (cfcₙHom ha) =
       cfcₙAux (isStarNormal_inr (R := ℂ) (A := A)) a ha := by
   have h (a : A) := isStarNormal_inr (R := ℂ) (A := A) (a := a)
   refine @UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id
     _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ rfl _ _ ?_ ?_ ?_
-  · show Continuous (fun f ↦ (cfcₙHom ha f : Unitization ℂ A)); fun_prop
+  · show Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
   · exact isClosedEmbedding_cfcₙAux @(h) a ha |>.continuous
-  · trans (a : Unitization ℂ A)
+  · trans (a : A⁺¹)
     · congrm(inr $(cfcₙHom_id ha))
     · exact cfcₙAux_id @(h) a ha |>.symm
 
