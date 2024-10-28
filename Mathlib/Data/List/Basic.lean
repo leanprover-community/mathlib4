@@ -1010,6 +1010,43 @@ theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as 
 
 /-! ### take, drop -/
 
+@[simp] lemma take_eq_self (x : List α) n : x.take n = x ↔ x.length ≤ n :=
+  ⟨fun h ↦ by rw [← h]; simp; omega, take_of_length_le⟩
+
+@[simp] lemma take_self_eq (x : List α) n : x = x.take n ↔ x.length ≤ n := by
+  rw [Eq.comm, take_eq_self]
+
+@[simp] lemma take_eq_left {x y : List α} n :
+  (x ++ y).take n = x.take n ↔ y = [] ∨ n ≤ x.length := by
+  constructor
+  · rcases le_or_gt n x.length with _ | h
+    · tauto
+    · cases y
+      · tauto
+      · intro h; replace h := congr_arg length h; simp at h; omega
+  · rintro (rfl | h)
+    · rw [append_nil]
+    · exact take_append_of_le_length h
+
+@[simp] lemma take_eq_right {x y : List α} n :
+  x.take n = (x ++ y).take n ↔ y = [] ∨ n ≤ x.length := by
+  rw [Eq.comm]; apply take_eq_left
+
+@[simp] lemma drop_take_append_drop (x : List α) (m n : ℕ) :
+  (x.drop m).take n ++ x.drop (n + m) = x.drop m := by rw [← drop_drop, take_append_drop]
+
+/--order of summands is swapped-/
+@[simp] lemma drop_take_append_drop' (x : List α) (m n : ℕ) :
+  (x.drop m).take n ++ x.drop (m + n) = x.drop m := by rw [Nat.add_comm, drop_take_append_drop]
+
+/--take_concat_get in simp normal form-/
+@[simp] lemma take_concat_get' (l : List α) (i : ℕ) (h : i < l.length) :
+  l.take i ++ [l[i]] = l.take (i + 1) := by simpa using take_concat_get l i h
+
+/--eq_nil_or_concat in simp normal form-/
+lemma eq_nil_or_concat' (l : List α) : l = [] ∨ ∃ L b, l = L ++ [b] := by
+  simpa using l.eq_nil_or_concat
+
 theorem cons_getElem_drop_succ {l : List α} {n : Nat} {h : n < l.length} :
     l[n] :: l.drop (n + 1) = l.drop n :=
   (drop_eq_getElem_cons h).symm
