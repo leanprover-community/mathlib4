@@ -413,7 +413,7 @@ theorem Finite.of_surjective {α β : Sort*} [Finite α] (f : α → β) (H : Su
   Finite.of_injective _ <| injective_surjInv H
 
 instance Quot.finite {α : Sort*} [Finite α] (r : α → α → Prop) : Finite (Quot r) :=
-  Finite.of_surjective _ (surjective_quot_mk r)
+  Finite.of_surjective _ Quot.mk_surjective
 
 instance Quotient.finite {α : Sort*} [Finite α] (s : Setoid α) : Finite (Quotient s) :=
   Quot.finite _
