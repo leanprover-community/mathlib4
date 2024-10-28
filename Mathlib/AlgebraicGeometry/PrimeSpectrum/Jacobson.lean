@@ -26,7 +26,6 @@ variable {R : Type*} [CommRing R] [IsJacobson R]
 
 namespace PrimeSpectrum
 
-/-- The spectrum of a jacobson ring is a jacobson space. -/
 lemma exists_isClosed_singleton_of_isJacobson
     (s : (Set (PrimeSpectrum R))) (hs : IsOpen s) (hs' : s.Nonempty) :
     ∃ x ∈ s, IsClosed {x} := by
