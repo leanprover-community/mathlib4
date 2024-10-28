@@ -75,6 +75,7 @@ def weightedArea (r : Rectangle) (w : Nat × Nat → Nat) : Nat :=
 
 end Rectangle
 
+/-- Find all (inclusion-)maximal rectangles contained within `xs`. -/
 partial def maximalRectangles (xs : List (Nat × Nat)) : List Rectangle :=
   go [] (xs.map fun (x, y) => Rectangle.mk x (x+1) y (y+1))
 where
