@@ -211,4 +211,4 @@ theorem minpoly_splits_algebraicClosure {x : K} (h : IsIntegral F x)
     simp only [IsRoot.def, Polynomial.eval_map] at hrm
     simp only [RingHom.mem_range, IntermediateField.algebraMap_apply, Subtype.exists, exists_prop',
       nonempty_prop, exists_eq_right]
-    exact ⟨minpoly F x, ⟨monic h, hrm⟩⟩
+    exact ⟨minpoly F x, ⟨minpoly.monic h, hrm⟩⟩
