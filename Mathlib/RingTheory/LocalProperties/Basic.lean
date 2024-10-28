@@ -44,8 +44,8 @@ open scoped Pointwise Classical
 
 universe u
 
-variable {R S : Type u} [CommRing R] [CommRing S] (M : Submonoid R) (f : R →+* S)
-variable (N : Submonoid S) (R' S' : Type u) [CommRing R'] [CommRing S']
+variable {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
+variable (R' S' : Type u) [CommRing R'] [CommRing S']
 variable [Algebra R R'] [Algebra S S']
 
 section Properties

@@ -29,7 +29,7 @@ open scoped UpperHalfPlane ComplexConjugate NNReal Topology MatrixGroups
 
 open Set Metric Filter Real
 
-variable {z w : ℍ} {r R : ℝ}
+variable {z w : ℍ} {r : ℝ}
 
 namespace UpperHalfPlane
 
