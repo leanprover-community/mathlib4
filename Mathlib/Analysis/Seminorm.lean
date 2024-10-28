@@ -61,9 +61,6 @@ class SeminormClass (F : Type*) (𝕜 E : outParam Type*) [SeminormedRing 𝕜] 
 
 export SeminormClass (map_smul_eq_mul)
 
--- Porting note: dangerous instances no longer exist
--- attribute [nolint dangerousInstance] SeminormClass.toAddGroupSeminormClass
-
 section Of
 
 /-- Alternative constructor for a `Seminorm` on an `AddCommGroup E` that is a module over a

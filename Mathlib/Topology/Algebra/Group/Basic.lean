@@ -1257,7 +1257,7 @@ variable {G}
 @[to_additive]
 theorem group_inseparable_iff {x y : G} : Inseparable x y ↔ x / y ∈ closure (1 : Set G) := by
   rw [← singleton_one, ← specializes_iff_mem_closure, specializes_comm, specializes_iff_inseparable,
-    ← (Homeomorph.mulRight y⁻¹).embedding.inseparable_iff]
+    ← (Homeomorph.mulRight y⁻¹).isEmbedding.inseparable_iff]
   simp [div_eq_mul_inv]
 
 @[to_additive]
@@ -1563,9 +1563,12 @@ def toUnits_homeomorph [Group G] [TopologicalSpace G] [ContinuousInv G] : G ≃�
   continuous_toFun := Units.continuous_iff.2 ⟨continuous_id, continuous_inv⟩
   continuous_invFun := Units.continuous_val
 
-@[to_additive] theorem Units.embedding_val [Group G] [TopologicalSpace G] [ContinuousInv G] :
-    Embedding (val : Gˣ → G) :=
-  toUnits_homeomorph.symm.embedding
+@[to_additive] theorem Units.isEmbedding_val [Group G] [TopologicalSpace G] [ContinuousInv G] :
+    IsEmbedding (val : Gˣ → G) :=
+  toUnits_homeomorph.symm.isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias Units.embedding_val := Units.isEmbedding_val
 
 namespace Units
 

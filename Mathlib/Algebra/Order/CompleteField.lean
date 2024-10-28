@@ -216,7 +216,6 @@ theorem inducedMap_inducedMap (a : α) : inducedMap β γ (inducedMap α β a) =
   eq_of_forall_rat_lt_iff_lt fun q => by
     rw [coe_lt_inducedMap_iff, coe_lt_inducedMap_iff, Iff.comm, coe_lt_inducedMap_iff]
 
---@[simp] -- Porting note (#10618): simp can prove it
 theorem inducedMap_inv_self (b : β) : inducedMap γ β (inducedMap β γ b) = b := by
   rw [inducedMap_inducedMap, inducedMap_self]
 
