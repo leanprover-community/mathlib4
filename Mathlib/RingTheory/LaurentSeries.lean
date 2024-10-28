@@ -48,6 +48,10 @@ series to which the filter `ℱ` converges.
 `LaurentSeries.val_le_one_iff_eq_coe`.
 * The uniform space of `LaurentSeries` over a field is complete, formalized in the instance
 `instLaurentSeriesComplete`.
+************************************************************************************************************************
+* The field of rational functions is dense in `LaurentSeries`: this relies principally upon
+`exists_ratFunc_val_lt`, stating that for every Laurent series `f` and every `γ : ℤₘ₀` one can find
+a rational function `Q` such that the `X`-adic valuation `v (f - Q) < γ`.
 
 ## Implementation details
 
@@ -856,65 +860,64 @@ section Dense
 
 open scoped Multiplicative
 
-open HahnSeries LaurentSeries PowerSeries IsDedekindDomain.HeightOneSpectrum
+open HahnSeries LaurentSeries PowerSeries IsDedekindDomain.HeightOneSpectrum WithZero
 
-theorem exists_pol_int_val_lt (F : PowerSeries K) (η : ℤₘ₀ˣ) :
-    ∃ P : Polynomial K, (PowerSeries.idealX K).intValuation (F - P) < η := by
-  by_cases h_neg' : 1 < η
+theorem exists_Polynomial_intValuation_lt (F : PowerSeries K) (η : ℤₘ₀ˣ) :
+    ∃ P : K[X], (PowerSeries.idealX K).intValuation (F - P) < η := by
+  by_cases h_neg : 1 < η
   · use 0
     rw [Polynomial.coe_zero, sub_zero]
     apply lt_of_le_of_lt (intValuation_le_one (PowerSeries.idealX K) F)
     rwa [← Units.val_one, Units.val_lt_val]
-  · set D := Multiplicative.toAdd (WithZero.unzero η.ne_zero) with hD
-    rw [not_lt, ← Units.val_le_val, Units.val_one, ← WithZero.coe_one, ←
-      WithZero.coe_unzero η.ne_zero, WithZero.coe_le_coe, ← Multiplicative.toAdd_le, ← hD,
-      toAdd_one] at h_neg'
-    obtain ⟨d, hd⟩ := Int.exists_eq_neg_ofNat h_neg'
+  · rw [not_lt, ← Units.val_le_val, Units.val_one, ← WithZero.coe_one, ← coe_unzero η.ne_zero,
+      coe_le_coe, ← Multiplicative.toAdd_le, toAdd_one] at h_neg
+    obtain ⟨d, hd⟩ := Int.exists_eq_neg_ofNat h_neg
     use F.trunc (d + 1)
-    have trunc_prop : ∀ m : ℕ, m < d + 1 → PowerSeries.coeff K m (F - ↑(F.trunc (d + 1))) = 0 := by
-      intro m hm
-      rw [map_sub, sub_eq_zero, Polynomial.coeff_coe, coeff_trunc, if_pos hm]
-    have := (LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero K _).mpr trunc_prop
-    rw [Nat.cast_add, neg_add, ofAdd_add, ← hd, hD, ofAdd_toAdd, WithZero.coe_mul,
-      WithZero.coe_unzero, ← LaurentSeries.coe_algebraMap] at this
-    rw [← @valuation_of_algebraMap (PowerSeries K) _ _ (K⸨X⸩) _ _ _
-      (PowerSeries.idealX K) (F - ↑(F.trunc (d + 1)))]
+    have trunc_prop : ∀ m : ℕ, m < d + 1 → coeff K m (F - ↑(F.trunc (d + 1))) = 0 := by
+      simpa only [map_sub, sub_eq_zero, Polynomial.coeff_coe, coeff_trunc] using
+        fun _ h ↦ (if_pos h).symm
+    have := (intValuation_le_iff_coeff_lt_eq_zero K _).mpr trunc_prop
+    rw [Nat.cast_add, neg_add, ofAdd_add, ← hd, ofAdd_toAdd, WithZero.coe_mul, coe_unzero,
+      ← coe_algebraMap] at this
+    rw [← valuation_of_algebraMap (K := K⸨X⸩) (PowerSeries.idealX K) (F - F.trunc (d + 1))]
     apply lt_of_le_of_lt this
     rw [← mul_one (η : ℤₘ₀), mul_assoc, one_mul]
     apply mul_lt_mul_of_lt_of_le₀ (le_refl _) η.ne_zero
-    rw [← WithZero.coe_one, WithZero.coe_lt_coe, ofAdd_neg, Right.inv_lt_one_iff, ← ofAdd_zero,
+    rw [← WithZero.coe_one, coe_lt_coe, ofAdd_neg, Right.inv_lt_one_iff, ← ofAdd_zero,
       Multiplicative.ofAdd_lt]
     apply Int.zero_lt_one
 
+/-- For every Laurent series `f` and every `γ : ℤₘ₀` one can find
+a rational function `Q` such that the `X`-adic valuation `v (f - Q) < γ`. -/
 theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤₘ₀ˣ) :
     ∃ Q : RatFunc K, Valued.v (f - Q) < γ := by
   set F := f.powerSeriesPart with hF
   by_cases ord_nonpos : f.order < 0
-  · have h₀ : ((Multiplicative.ofAdd f.order : Multiplicative ℤ) : ℤₘ₀) ≠ 0 := WithZero.coe_ne_zero
+  · have h₀ : ((Multiplicative.ofAdd f.order : Multiplicative ℤ) : ℤₘ₀) ≠ 0 := coe_ne_zero
     set η : ℤₘ₀ˣ := Units.mk0 (Multiplicative.ofAdd f.order : Multiplicative ℤ) h₀ with hη
-    obtain ⟨P, hP⟩ := exists_pol_int_val_lt F (η * γ)
+    obtain ⟨P, hP⟩ := exists_Polynomial_intValuation_lt F (η * γ)
     use RatFunc.X ^ f.order * (P : RatFunc K)
     have F_mul := f.ofPowerSeries_powerSeriesPart
     obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (le_of_lt ord_nonpos)
-    rw [← hF, hs, neg_neg, ← HahnSeries.ofPowerSeries_X_pow s, ← inv_mul_eq_iff_eq_mul₀] at F_mul
+    rw [← hF, hs, neg_neg, ← ofPowerSeries_X_pow s, ← inv_mul_eq_iff_eq_mul₀] at F_mul
     · erw [hs, ← F_mul, PowerSeries.coe_pow, PowerSeries.coe_X, RatFunc.coe_mul, zpow_neg,
         zpow_ofNat, inv_eq_one_div (RatFunc.X ^ s), RatFunc.coe_div, RatFunc.coe_pow, RatFunc.coe_X,
         RatFunc.coe_one, ← inv_eq_one_div, ← mul_sub, map_mul, map_inv₀, ← PowerSeries.coe_X,
-        valuation_X_pow, ← hs, ← RatFunc.coe_coe, ← coe_sub, ← LaurentSeries.coe_algebraMap,
+        valuation_X_pow, ← hs, ← RatFunc.coe_coe, ← coe_sub, ← coe_algebraMap,
           valuation_of_algebraMap, ← Units.val_mk0 h₀, ← hη]
       apply inv_mul_lt_of_lt_mul₀
       rwa [← Units.val_mul]
     · simp only [PowerSeries.coe_pow, pow_ne_zero, PowerSeries.coe_X, ne_eq,
-        HahnSeries.single_eq_zero_iff, one_ne_zero, not_false_iff]
+        single_eq_zero_iff, one_ne_zero, not_false_iff]
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (not_lt.mp ord_nonpos))
     simp only [neg_inj] at hs
     have hf_coe : (PowerSeries.X ^ s * F : PowerSeries K) = f := by
       rw [← f.single_order_mul_powerSeriesPart, hs, hF, PowerSeries.coe_mul, PowerSeries.coe_pow,
         PowerSeries.coe_X, single_pow, nsmul_eq_mul, mul_one, one_pow]
     rw [← hf_coe]
-    obtain ⟨P, hP⟩ := exists_pol_int_val_lt (PowerSeries.X ^ s * F) γ
+    obtain ⟨P, hP⟩ := exists_Polynomial_intValuation_lt (PowerSeries.X ^ s * F) γ
     use ↑P
-    erw [← RatFunc.coe_coe, ← coe_sub, ← LaurentSeries.coe_algebraMap, valuation_of_algebraMap]
+    erw [← RatFunc.coe_coe, ← coe_sub, ← coe_algebraMap, valuation_of_algebraMap]
     exact hP
 
 theorem coe_range_dense : DenseRange (Coe.coe : RatFunc K → K⸨X⸩) := by
@@ -956,7 +959,7 @@ theorem inducing_coe : IsUniformInducing (Coe.coe : RatFunc K → K⸨X⸩) := b
         apply pre_R
         apply hd
         simp only [sub_zero, Set.mem_setOf_eq]
-        erw [← RatFunc.coe_sub, ← RatFunc.valuation_eq_LaurentSeries_valuation]
+        erw [← coe_sub, ← valuation_eq_LaurentSeries_valuation]
         assumption
   · rintro ⟨T, ⟨hT, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hT
@@ -967,8 +970,8 @@ theorem inducing_coe : IsUniformInducing (Coe.coe : RatFunc K → K⸨X⸩) := b
         use d
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
-      erw [Set.mem_setOf_eq, sub_zero, RatFunc.valuation_eq_LaurentSeries_valuation,
-        RatFunc.coe_sub]
+      erw [Set.mem_setOf_eq, sub_zero, valuation_eq_LaurentSeries_valuation,
+        coe_sub]
       assumption
 
 theorem continuous_coe : Continuous (Coe.coe : RatFunc K → K⸨X⸩) :=
@@ -1043,27 +1046,25 @@ theorem ratfuncAdicComplRingEquiv_apply (x : RatFuncAdicCompl K) :
 theorem coe_X_compare :
     (ratfuncAdicComplRingEquiv K) (↑(@RatFunc.X K _ _) : RatFuncAdicCompl K) =
       (↑(@PowerSeries.X K _) : K⸨X⸩) := by
-  rw [PowerSeries.coe_X, ← RatFunc.coe_X, ← LaurentSeries_coe, ← AbstractCompletion.compare_coe]
+  rw [PowerSeries.coe_X, ← RatFunc.coe_X, ← LaurentSeries_coe, ← compare_coe]
   rfl
 
-open Filter AbstractCompletion LaurentSeries
+open Filter AbstractCompletion LaurentSeries WithZero
 
 open scoped WithZeroTopology Topology Multiplicative
 
 theorem valuation_LaurentSeries_equal_extension :
-    (LaurentSeriesPkg K).isDenseInducing.extend Valued.v =
-      (@Valued.v (K⸨X⸩) _ ℤₘ₀ _ _ : K⸨X⸩ → ℤₘ₀) := by
+    (LaurentSeriesPkg K).isDenseInducing.extend Valued.v = (Valued.v : K⸨X⸩ → ℤₘ₀) := by
   apply IsDenseInducing.extend_unique
   · intro x
     erw [valuation_eq_LaurentSeries_valuation K x]
     rfl
-  · exact @Valued.continuous_valuation (K⸨X⸩) _ ℤₘ₀ _ _
+  · exact Valued.continuous_valuation (K := K⸨X⸩)
 
 theorem tendsto_valuation (a : (Polynomial.idealX K).adicCompletion (RatFunc K)) :
-    Tendsto (@Valued.v (RatFunc K) _ ℤₘ₀ _ _) (comap Coe.coe (𝓝 a)) (𝓝 (Valued.v a : ℤₘ₀)) := by
-  set ψ := @Valued.v (RatFunc K) _ ℤₘ₀ _ _ with hψ
-  let this := @Valued.is_topological_valuation
-    ((Polynomial.idealX K).adicCompletion (RatFunc K)) _ ℤₘ₀ _ _
+    Tendsto (Valued.v : RatFunc K → ℤₘ₀) (comap Coe.coe (𝓝 a)) (𝓝 (Valued.v a : ℤₘ₀)) := by
+  set ψ := (Valued.v : RatFunc K → ℤₘ₀) with hψ
+  have := Valued.is_topological_valuation (R := (Polynomial.idealX K).adicCompletion (RatFunc K))
   by_cases ha : a = 0
   · rw [tendsto_def]
     intro S hS
@@ -1076,20 +1077,20 @@ theorem tendsto_valuation (a : (Polynomial.idealX K).adicCompletion (RatFunc K))
       use Units.mk0 γ γ_ne_zero
       rw [Units.val_mk0]
     · refine Set.Subset.trans (fun a _ ↦ ?_) (Set.preimage_mono γ_le)
-      rwa [Set.mem_preimage, Set.mem_Iio, ← Valued.valuedCompletion_apply a]
+      rwa [Set.mem_preimage, Set.mem_Iio, hψ, ← Valued.valuedCompletion_apply a]
   · rw [WithZeroTopology.tendsto_of_ne_zero ((Valuation.ne_zero_iff Valued.v).mpr ha), hψ,
       Filter.eventually_comap, Filter.Eventually, Valued.mem_nhds]
     simp only [Set.setOf_subset_setOf]
     set γ := Valued.v a / (↑(Multiplicative.ofAdd (1 : ℤ)) : ℤₘ₀) with h_aγ
     have γ_ne_zero : γ ≠ 0 := by
       rw [ne_eq, _root_.div_eq_zero_iff, Valuation.zero_iff]
-      simpa only [WithZero.coe_ne_zero, or_false]
+      simpa only [coe_ne_zero, or_false]
     use Units.mk0 γ γ_ne_zero
     intro y val_y b diff_b_y
     replace val_y : Valued.v y = Valued.v a := by
       refine Valuation.map_eq_of_sub_lt _ (val_y.trans ?_)
-      rw [Units.val_mk0, h_aγ, ← WithZero.coe_unzero ((Valuation.ne_zero_iff Valued.v).mpr ha), ←
-        WithZero.coe_div, WithZero.coe_lt_coe, div_lt_self_iff, ← ofAdd_zero,
+      rw [Units.val_mk0, h_aγ, ← coe_unzero ((Valuation.ne_zero_iff Valued.v).mpr ha), ←
+        WithZero.coe_div, coe_lt_coe, div_lt_self_iff, ← ofAdd_zero,
         Multiplicative.ofAdd_lt]
       exact Int.zero_lt_one
     rw [← Valued.extension_extends, ← val_y, ← diff_b_y]
