@@ -272,8 +272,11 @@ open Function RingHom
 
 theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) where
   induced := by
-    simp only [TopologicalSpace.ext_iff, ← isClosed_compl_iff, isClosed_iff_zeroLocus,
-      isClosed_induced_iff]
+    set_option tactic.skipAssignedInstances false in
+    simp_rw [TopologicalSpace.ext_iff, ← isClosed_compl_iff,
+      ← @isClosed_compl_iff (PrimeSpectrum S)
+        ((TopologicalSpace.induced (comap f) zariskiTopology)), isClosed_induced_iff,
+      isClosed_iff_zeroLocus]
     refine fun s =>
       ⟨fun ⟨F, hF⟩ =>
         ⟨zeroLocus (f ⁻¹' F), ⟨f ⁻¹' F, rfl⟩, by
