@@ -200,7 +200,10 @@ theorem nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ :=
 protected theorem isometry : Isometry f :=
   AddMonoidHomClass.isometry_of_norm f.toLinearMap (norm_map _)
 
-protected lemma embedding (f : F →ₛₗᵢ[σ₁₂] E₂) : Embedding f := f.isometry.embedding
+lemma isEmbedding (f : F →ₛₗᵢ[σ₁₂] E₂) : IsEmbedding f := f.isometry.isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding := isEmbedding
 
 -- Should be `@[simp]` but it doesn't fire due to `lean4#3107`.
 theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :
