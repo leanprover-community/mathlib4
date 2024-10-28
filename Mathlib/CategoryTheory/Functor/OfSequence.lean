@@ -162,9 +162,10 @@ example : (ofOpSequence f).map (homOfLE (show 0 ≤ 3 by omega)).op = (f 2 ≫ f
 example : (ofOpSequence f).map (homOfLE (show 3 ≤ 7 by omega)).op =
     ((f 6 ≫ f 5) ≫ f 4) ≫ f 3 := rfl
 
+@[simp]
 lemma ofOpSequence_map_homOfLE_succ (n : ℕ) :
     (ofOpSequence f).map (homOfLE (Nat.le_add_right n 1)).op = f n := by
-  simp
+  simp [ofOpSequence]
 
 end Functor
 
