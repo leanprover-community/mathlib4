@@ -136,10 +136,11 @@ lean_exe pole where
 
 /--
 `lake exe unused module_1 ... module_n` will analyze unused transitive imports in a given sequence.
-The script expects the sequence to be in "reverse order", i.e. later files in the Mathlib should
+The script expects the sequence to be in "reverse order", i.e. files imported later in `Mathlib` should
 come earlier in the sequence.
 
-Outputs a `unused.md` file and a number of `lake exe graph` commands.
+Outputs a markdown file (called  `unused.md` by default) and a number of `lake exe graph` commands
+highlighting particular ranges of transitively unused imports.
 
 Typically this should be run via `scripts/unused_in_pole.sh`.
 -/
