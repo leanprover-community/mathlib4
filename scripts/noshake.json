@@ -219,7 +219,8 @@
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.Positivity.Finset":
-  ["Mathlib.Algebra.Order.BigOperators.Group.Finset", "Mathlib.Data.Finset.Density"],
+  ["Mathlib.Algebra.Order.BigOperators.Group.Finset",
+   "Mathlib.Data.Finset.Density"],
   "Mathlib.Tactic.Positivity.Basic":
   ["Mathlib.Algebra.GroupPower.Order",
    "Mathlib.Algebra.Order.Group.PosPart",
@@ -236,7 +237,16 @@
   ["Mathlib.Algebra.Group.Basic", "Mathlib.Init.Order.LinearOrder"],
   "Mathlib.Tactic.Measurability":
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
-  "Mathlib.Tactic.Linter.UnusedTactic": ["Batteries.Tactic.Unreachable"],
+  "Mathlib.Tactic.Linter.UnusedTactic":
+  ["Batteries.Tactic.Unreachable", "Mathlib.Tactic.Linter.Header"],
+  "Mathlib.Tactic.Linter.Style": ["Mathlib.Tactic.Linter.Header"],
+  "Mathlib.Tactic.Linter.RefineLinter": ["Mathlib.Tactic.Linter.Header"],
+  "Mathlib.Tactic.Linter.OldObtain": ["Mathlib.Tactic.Linter.Header"],
+  "Mathlib.Tactic.Linter.Multigoal": ["Mathlib.Tactic.Linter.Header"],
+  "Mathlib.Tactic.Linter.Lint": ["Mathlib.Tactic.Linter.Header"],
+  "Mathlib.Tactic.Linter.HashCommandLinter": ["Mathlib.Tactic.Linter.Header"],
+  "Mathlib.Tactic.Linter.GlobalAttributeIn": ["Mathlib.Tactic.Linter.Header"],
+  "Mathlib.Tactic.Linter.DocPrime": ["Mathlib.Tactic.Linter.Header"],
   "Mathlib.Tactic.LinearCombination":
   ["Mathlib.Tactic.LinearCombination.Lemmas"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
