@@ -81,7 +81,7 @@ noncomputable def directSum.isRepresentationCore :
     Solution.IsPresentationCore.{w'} (directSum solution) where
   desc s := DirectSum.toModule _ _ _ (fun i ↦ (h i).desc (directSumEquiv s i))
   postcomp_desc s := by ext ⟨i, g⟩; simp
-  postcomp_injective {N _ _ f f'} h' := by
+  postcomp_injective h' := by
     ext i : 1
     apply (h i).postcomp_injective
     ext g
