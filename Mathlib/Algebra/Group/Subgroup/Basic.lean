@@ -5,7 +5,6 @@ Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Data.Set.Image
