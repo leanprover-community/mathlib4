@@ -3,7 +3,7 @@ Copyright (c) 2024 Lean FRO. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Cli.Basic
+import Cli
 import Batteries.Data.List.Basic
 import ImportGraph.Imports
 import LongestPole.Rectangles
@@ -35,6 +35,8 @@ def countDecls (modules : Array Name) : CoreM (Array Nat) := do
 
 /-- Implementation of `lake exe unused` -/
 def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
+  let output := args.flag! "output" |>.as! String
+  let n := args.flag! "n" |>.as! Nat
   let modules := (args.variableArgsAs! ModuleName).toList
   if modules.isEmpty then
     IO.eprintln
@@ -57,8 +59,8 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
     let data := (unused.lookup m).getD []
     #[toString (i + 1), m.toString] ++
       modules.map fun m' => if data.contains m' then "x" else ""
-  IO.println "Writing table to unused.md."
-  IO.FS.writeFile "unused.md" (formatTable headings rows.toArray)
+  IO.println s!"Writing table to {output}."
+  IO.FS.writeFile output (formatTable headings rows.toArray)
 
   let data := unused.bind fun (m, u) => u.map fun n => (modules.indexOf m, modules.indexOf n)
   let rectangles := maximalRectangles data
@@ -67,7 +69,7 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
     |>.mergeSort (fun r₁ r₂ => r₁.2 > r₂.2)
     -- The `lake exe graph` command we print only depends on the top-right corner, so deduplicate.
     |>.pwFilter (fun r₁ r₂ => (r₁.1.top, r₂.1.right) ≠ (r₂.1.top, r₁.1.right))
-    |>.take 10
+    |>.take n
 
   for (i, (r, _)) in rectangles.enum do
     -- We use `--from top` so that the graph starts at the module immediately *before*
@@ -94,10 +96,18 @@ def unused : Cmd := `[Cli|
    This table is written to `unused.md`, and a number of `lake exe graph` commands are printed
    to visualize the largest rectangles of unused imports."
 
+  FLAGS:
+    output : String; "Write the table to a given file instead of `unused.md`."
+    n : Nat; "Number of `lake exe graph` commands to print."
+
   ARGS:
     ...modules : ModuleName; "Modules to check for unused imports."
+
+  EXTENSIONS:
+    author "mhuisi";
+    defaultValues! #[("output", "unused.md"), ("n", "10")]
 ]
 
-/-- `lake exe pole` -/
+/-- `lake exe unused` -/
 def main (args : List String) : IO UInt32 :=
   unused.validate args
