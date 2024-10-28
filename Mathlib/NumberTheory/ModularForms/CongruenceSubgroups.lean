@@ -18,9 +18,7 @@ It also contains basic results about congruence subgroups.
 
 -/
 
-attribute [-instance] Matrix.SpecialLinearGroup.instCoeFun
-
-open Matrix.SpecialLinearGroup Matrix MatrixGroups
+open Matrix.SpecialLinearGroup Matrix
 
 open scoped MatrixGroups
 

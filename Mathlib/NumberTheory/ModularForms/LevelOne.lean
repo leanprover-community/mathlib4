@@ -5,7 +5,6 @@ Authors: Chris Birkbeck
 -/
 import Mathlib.NumberTheory.Modular
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
-import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 /-!
 # Level one modular forms
 
