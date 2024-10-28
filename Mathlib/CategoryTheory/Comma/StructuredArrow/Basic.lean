@@ -5,7 +5,7 @@ Authors: Adam Topaz, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Comma.Basic
 import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 /-!
 # The category of "structured arrows"
