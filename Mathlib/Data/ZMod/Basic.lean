@@ -29,19 +29,6 @@ Definition of the integers mod n, and the field structure on the integers mod p.
 
 * A coercion `cast` is defined from `ZMod n` into any ring.
 This is a ring hom if the ring has characteristic dividing `n`
-
-## Implementations notes
-
-For `G` a group and `n` a natural number, `G` having characteristic dividing `n`
-(`∀ x : G, n • x = 0`) can be derived from `Module R G` where `R` has characteristic dividing `n`.
-
-It is however painful to have the API for such groups `G` stated in this generality, as `R` does not
-appear anywhere in the lemmas' return type. Instead of writing the API in terms of a general `R`, we
-therefore specialise to the canonical ring of order `n`, namely `ZMod n`.
-
-This spelling `Module (ZMod n) G` has the extra advantage of providing the canonical action by
-`ZMod n`. It is however Type-valued, so we might want to acquire a Prop-valued version in the
-future.
 -/
 
 assert_not_exists Submodule
@@ -1443,6 +1430,21 @@ lemma lift_injective {f : {f : ℤ →+ A // f n = 0}} :
 end lift
 
 end ZMod
+
+/-!
+### Groups of bounded torsion
+
+For `G` a group and `n` a natural number, `G` having torsion dividing `n`
+(`∀ x : G, n • x = 0`) can be derived from `Module R G` where `R` has characteristic dividing `n`.
+
+It is however painful to have the API for such groups `G` stated in this generality, as `R` does not
+appear anywhere in the lemmas' return type. Instead of writing the API in terms of a general `R`, we
+therefore specialise to the canonical ring of order `n`, namely `ZMod n`.
+
+This spelling `Module (ZMod n) G` has the extra advantage of providing the canonical action by
+`ZMod n`. It is however Type-valued, so we might want to acquire a Prop-valued version in the
+future.
+-/
 
 section Module
 variable {n : ℕ} {S G : Type*} [AddCommGroup G] [SetLike S G] [AddSubgroupClass S G] {K : S} {x : G}
