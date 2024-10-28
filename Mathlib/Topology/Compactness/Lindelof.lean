@@ -610,8 +610,11 @@ theorem Inducing.isLindelof_iff {f : X → Y} (hf : Inducing f) :
 
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is Lindelöf
   if and only if `s` is Lindelöf. -/
-theorem Embedding.isLindelof_iff {f : X → Y} (hf : Embedding f) :
+theorem IsEmbedding.isLindelof_iff {f : X → Y} (hf : IsEmbedding f) :
     IsLindelof s ↔ IsLindelof (f '' s) := hf.toInducing.isLindelof_iff
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isLindelof_iff := IsEmbedding.isLindelof_iff
 
 /-- The preimage of a Lindelöf set under an inducing map is a Lindelöf set. -/
 theorem Inducing.isLindelof_preimage {f : X → Y} (hf : Inducing f) (hf' : IsClosed (range f))
@@ -641,7 +644,7 @@ alias ClosedEmbedding.tendsto_coLindelof := IsClosedEmbedding.tendsto_coLindelof
 /-- Sets of subtype are Lindelöf iff the image under a coercion is. -/
 theorem Subtype.isLindelof_iff {p : X → Prop} {s : Set { x // p x }} :
     IsLindelof s ↔ IsLindelof ((↑) '' s : Set X) :=
-  embedding_subtype_val.isLindelof_iff
+  IsEmbedding.subtypeVal.isLindelof_iff
 
 theorem isLindelof_iff_isLindelof_univ : IsLindelof s ↔ IsLindelof (univ : Set s) := by
   rw [Subtype.isLindelof_iff, image_univ, Subtype.range_coe]

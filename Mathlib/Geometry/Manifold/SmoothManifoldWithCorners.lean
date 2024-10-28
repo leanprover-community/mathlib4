@@ -292,10 +292,10 @@ theorem isClosed_range : IsClosed (range I) :=
 @[deprecated (since := "2024-03-17")] alias closed_range := isClosed_range
 
 theorem map_nhds_eq (x : H) : map I (𝓝 x) = 𝓝[range I] I x :=
-  I.isClosedEmbedding.toEmbedding.map_nhds_eq x
+  I.isClosedEmbedding.isEmbedding.map_nhds_eq x
 
 theorem map_nhdsWithin_eq (s : Set H) (x : H) : map I (𝓝[s] x) = 𝓝[I '' s] I x :=
-  I.isClosedEmbedding.toEmbedding.map_nhdsWithin_eq s x
+  I.isClosedEmbedding.isEmbedding.map_nhdsWithin_eq s x
 
 theorem image_mem_nhdsWithin {x : H} {s : Set H} (hs : s ∈ 𝓝 x) : I '' s ∈ 𝓝[range I] I x :=
   I.map_nhds_eq x ▸ image_mem_map hs
@@ -351,7 +351,7 @@ open TopologicalSpace
 
 protected theorem secondCountableTopology [SecondCountableTopology E] (I : ModelWithCorners 𝕜 E H) :
     SecondCountableTopology H :=
-  I.isClosedEmbedding.toEmbedding.secondCountableTopology
+  I.isClosedEmbedding.isEmbedding.secondCountableTopology
 
 end ModelWithCorners
 
