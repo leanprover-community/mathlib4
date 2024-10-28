@@ -11,7 +11,7 @@ import Cli.Basic
 /-!
 # Text-based style linters
 
-This files defines the `lint-style` executable which runs all text-based style linters.
+This file defines the `lint-style` executable which runs all text-based style linters.
 The linters themselves are defined in `Mathlib.Tactic.Linter.TextBased`.
 
 In addition, this checks that `Mathlib.Init` is (transitively) imported in all of mathlib.
@@ -36,7 +36,7 @@ def checkInitImports : IO Bool := do
       modulesWithoutMathlibImports := modulesWithoutMathlibImports.push module
 
   -- We check that each of these is imported in `Mathlib/Init.lean`.
-  let initImports := (← IO.FS.lines "Mathlib/Init.lean").filter (·.startsWith "import ")
+  let initImports := (← IO.FS.lines ("Mathlib" / "Init.lean")).filter (·.startsWith "import ")
     |>.map (·.stripPrefix "import ")
   let missing := modulesWithoutMathlibImports.filter (fun mod ↦ !initImports.contains mod)
     -- `DeclarationNames` is imported transitively in `Mathlib/Init.lean`.
@@ -44,7 +44,7 @@ def checkInitImports : IO Bool := do
   if missing.size > 0 then
     IO.eprintln s!"error: the following {missing.size} module(s) do not import Mathlib.Init: \
       {missing}"
-    return True
+    return true
 
   -- Secondly, after #18725 almost all files imported in Mathlib.Init import the `header` linter
   -- defined in `Mathlib.Tactic.Linter.Header`: so, we verify that the only
@@ -61,8 +61,8 @@ def checkInitImports : IO Bool := do
       directly, but also import Mathlib.Init: {mismatch}\n\
       The `header` linter is already imported in Mathlib.Init; there is no need to import it \
       again.\nPlease remove the import of `Mathlib.Tactic.Linter.Header."
-    return True
-  return False
+    return true
+  return false
 
 
 /-- Implementation of the `lint-style` command line program. -/

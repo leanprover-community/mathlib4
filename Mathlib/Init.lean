@@ -11,7 +11,7 @@ import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Linter.Style
 
 /-!
-This is the root file in Mathlib: it is imported by *all* Mathlib files.
+This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
 For this reason, the imports of this files are carefully curated.
 Any modification involving a change in the imports of this file should be discussed beforehand.
 
