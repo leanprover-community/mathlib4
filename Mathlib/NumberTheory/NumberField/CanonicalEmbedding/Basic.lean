@@ -231,9 +231,12 @@ open Classical in
 instance : NoAtoms (volume : Measure (mixedSpace K)) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw : IsReal w
-  · exact @prod.instNoAtoms_fst _ _ _ _ volume volume _ (pi_noAtoms ⟨w, hw⟩)
-  · exact @prod.instNoAtoms_snd _ _ _ _ volume volume _
-      (pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩)
+  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsReal w} → ℝ)) := pi_noAtoms ⟨w, hw⟩
+    exact prod.instNoAtoms_fst
+  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsComplex w} → ℂ)) :=
+      pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩
+    exact prod.instNoAtoms_snd
+
 end Measure
 
 section commMap
@@ -834,6 +837,7 @@ theorem norm_negAt [NumberField K] (x : mixedSpace K) :
 
 open ContinuousLinearEquiv in
 /-- `negAt` is its own inverse. -/
+@[simp]
 theorem negAt_symm :
     (negAt s).symm = negAt s := by
   ext x w
