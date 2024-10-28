@@ -178,26 +178,13 @@ variable {F G : ℕᵒᵖ ⥤ C} (app : ∀ (n : ℕ), F.obj ⟨n⟩ ⟶ G.obj �
 /-- Constructor for natural transformations `F ⟶ G` in `ℕᵒᵖ ⥤ C` which takes as inputs
 the morphisms `F.obj ⟨n⟩ ⟶ G.obj ⟨n⟩` for all `n : ℕ` and the naturality condition only
 for morphisms of the form `n ⟶ n + 1`. -/
-@[simps app]
+@[simps!]
 def ofOpSequence : F ⟶ G where
   app n := app n.unop
-  naturality := by
-    intro ⟨i⟩ ⟨j⟩ ⟨(φ : j ⟶ i)⟩
-    change F.map φ.op ≫ _ = _ ≫ G.map φ.op
-    obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_le (leOfHom φ)
-    obtain rfl := Subsingleton.elim φ (homOfLE (by omega))
-    revert i j
-    induction k with
-    | zero =>
-        intro i j hk
-        obtain rfl : j = i := by omega
-        simp
-    | succ k hk =>
-        intro i j hk'
-        obtain rfl : i = j + k + 1 := by omega
-        simp only [← homOfLE_comp (show j ≤ j + k by omega) (show j + k ≤ j + k + 1 by omega),
-          Functor.map_comp, assoc, naturality, op_comp, hk _ j rfl ]
-        simp only [homOfLE_leOfHom, ← assoc, naturality]
+  naturality _ _ f := by
+    let φ : G.rightOp ⟶ F.rightOp := ofSequence (fun n ↦ (app n).op)
+      (fun n ↦ Quiver.Hom.unop_inj (naturality n).symm)
+    exact Quiver.Hom.op_inj (φ.naturality f.unop).symm
 
 end NatTrans
 
