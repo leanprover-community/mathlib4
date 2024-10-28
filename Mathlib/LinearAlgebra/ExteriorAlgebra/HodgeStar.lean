@@ -27,7 +27,7 @@ finite-dimensional oriented vector space endowed with a nondegenerate symmetric 
 α ∧ ⋆β = ⟨α , β⟩ ω
 -/
 
-open ExteriorAlgebra CliffordAlgebra LinearMap
+open ExteriorAlgebra CliffordAlgebra LinearMap BigOperators
 
 namespace Hodge
 
@@ -97,15 +97,28 @@ end HodgeStar
 
 end Hodge
 
-noncomputable section ExteriorBilinear
-namespace ExteriorAlgebra
+namespace exteriorPower
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-variable [Nontrivial E]
-variable {n : ℕ} (e : OrthonormalBasis (Fin n) ℝ E)
-variable (B : LinearMap.BilinForm ℝ E)
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {n : ℕ}
 
 
+/-- If `b` is a basis of `M` (indexed by a linearly ordered type), the basis of the `n`th
+exterior power of `M` formed by the `n`-fold exterior products of elements of `b`. -/
+noncomputable def _root_.Basis.exteriorPower {I : Type*} [LinearOrder I] (b : Basis I R M) :
+    Basis {s : Finset I // Finset.card s = n} R (⋀[R]^n M) := sorry --From SM.ExteriorPower
 
-end ExteriorAlgebra
-end ExteriorBilinear
+variable (B : LinearMap.BilinForm R M)
+variable {I : Type*} [LinearOrder I] (b : Basis I R M)
+
+-- M.det = ∑ σ : Equiv.Perm n, Equiv.Perm.sign σ • ∏ i : n, M (σ i) i
+
+noncomputable def preForm (b : Basis I R M) (s t : Finset I) (hs : Finset.card s = n)
+  (ht : Finset.card t = n) : R := ∑ σ : Equiv.Perm (Fin n), Equiv.Perm.sign σ •
+  ∏ i : Fin n, B (b (Finset.orderIsoOfFin s hs (σ i))) (b (Finset.orderIsoOfFin t ht i))
+
+variable (m : M) (i : I)
+#check b.coord i
+#check b.repr m
+
+end exteriorPower
