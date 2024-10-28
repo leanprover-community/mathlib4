@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.Algebra.Module.ZLattice.Basic
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 import Mathlib.NumberTheory.NumberField.Units.Basic
 
@@ -57,7 +58,7 @@ that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`. -/
 theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
     conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
-  refine Submodule.span_induction hx ?_ ?_ (fun _ _ hx hy => ?_) (fun a _ hx => ?_)
+  refine Submodule.span_induction ?_ ?_ (fun _ _ _ _ hx hy => ?_) (fun a _ _ hx => ?_) hx
   · rintro _ ⟨x, rfl⟩
     rw [apply_at, apply_at, ComplexEmbedding.conjugate_coe_eq]
   · rw [Pi.zero_apply, Pi.zero_apply, map_zero]
@@ -137,7 +138,7 @@ theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 
   simp only [latticeBasis, integralBasis_apply, coe_basisOfLinearIndependentOfCardEqFinrank,
     Function.comp_apply, Equiv.apply_symm_apply]
 
-theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
+theorem mem_span_latticeBasis [NumberField K] {x : (K →+* ℂ) → ℂ} :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
       x ∈ ((canonicalEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
   rw [show Set.range (latticeBasis K) =
@@ -208,13 +209,35 @@ instance [NumberField K] : Nontrivial (mixedSpace K) := by
 protected theorem finrank [NumberField K] : finrank ℝ (mixedSpace K) = finrank ℚ K := by
   classical
   rw [finrank_prod, finrank_pi, finrank_pi_fintype, Complex.finrank_real_complex, sum_const,
-    card_univ, ← NrRealPlaces, ← NrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul,
+    card_univ, ← nrRealPlaces, ← nrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul,
     mul_comm, ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ,
     Fintype.card_subtype_compl, Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
 theorem _root_.NumberField.mixedEmbedding_injective [NumberField K] :
     Function.Injective (NumberField.mixedEmbedding K) := by
   exact RingHom.injective _
+
+section Measure
+
+open MeasureTheory.Measure MeasureTheory
+
+variable [NumberField K]
+
+open Classical in
+instance : IsAddHaarMeasure (volume : Measure (mixedSpace K)) :=
+  prod.instIsAddHaarMeasure volume volume
+
+open Classical in
+instance : NoAtoms (volume : Measure (mixedSpace K)) := by
+  obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
+  by_cases hw : IsReal w
+  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsReal w} → ℝ)) := pi_noAtoms ⟨w, hw⟩
+    exact prod.instNoAtoms_fst
+  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsComplex w} → ℂ)) :=
+      pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩
+    exact prod.instNoAtoms_snd
+
+end Measure
 
 section commMap
 
@@ -517,7 +540,7 @@ def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
     (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; - I, I]))
 
 theorem det_matrixToStdBasis :
-    (matrixToStdBasis K).det = (2⁻¹ * I) ^ NrComplexPlaces K :=
+    (matrixToStdBasis K).det = (2⁻¹ * I) ^ nrComplexPlaces K :=
   calc
   _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, det ((2 : ℂ)⁻¹ • !![1, 1; -I, I]) := by
       rw [matrixToStdBasis, det_fromBlocks_zero₂₁, det_diagonal, prod_const_one, one_mul,
@@ -590,8 +613,8 @@ def latticeBasis :
     -- and it's a basis since it has the right cardinality
     refine basisOfLinearIndependentOfCardEqFinrank this ?_
     rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_prod, finrank_pi,
-      finrank_pi_fintype, Complex.finrank_real_complex, sum_const, card_univ, ← NrRealPlaces,
-      ← NrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
+      finrank_pi_fintype, Complex.finrank_real_complex, sum_const, card_univ, ← nrRealPlaces,
+      ← nrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
       ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ, Fintype.card_subtype_compl,
       Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
@@ -601,9 +624,9 @@ theorem latticeBasis_apply (i : ChooseBasisIndex ℤ (𝓞 K)) :
   simp only [latticeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, Function.comp_apply,
     canonicalEmbedding.latticeBasis_apply, integralBasis_apply, commMap_canonical_eq_mixed]
 
-theorem mem_span_latticeBasis (x : (mixedSpace K)) :
+theorem mem_span_latticeBasis {x : (mixedSpace K)} :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
-      x ∈ ((mixedEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
+      x ∈ mixedEmbedding.integerLattice K := by
   rw [show Set.range (latticeBasis K) =
       (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
     rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
@@ -614,7 +637,7 @@ theorem mem_span_latticeBasis (x : (mixedSpace K)) :
 
 theorem span_latticeBasis :
     Submodule.span ℤ (Set.range (latticeBasis K)) = mixedEmbedding.integerLattice K :=
-  Submodule.ext_iff.mpr (mem_span_latticeBasis K)
+  Submodule.ext_iff.mpr fun _ ↦ mem_span_latticeBasis K
 
 instance : DiscreteTopology (mixedEmbedding.integerLattice K) := by
   classical
@@ -625,6 +648,13 @@ open Classical in
 instance : IsZLattice ℝ (mixedEmbedding.integerLattice K) := by
   simp_rw [← span_latticeBasis]
   exact ZSpan.isZLattice (latticeBasis K)
+
+open Classical in
+theorem fundamentalDomain_integerLattice :
+    MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.integerLattice K)
+      (ZSpan.fundamentalDomain (latticeBasis K)) := by
+  rw [← span_latticeBasis]
+  exact ZSpan.isAddFundamentalDomain (latticeBasis K) _
 
 theorem mem_rat_span_latticeBasis (x : K) :
     mixedEmbedding K x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by
@@ -651,6 +681,14 @@ theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
   simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, this, Basis.repr_self]
 
 variable (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
+
+/-- The image of the fractional ideal `I` in the mixed space. -/
+abbrev idealLattice : Submodule ℤ (mixedSpace K) := LinearMap.range <|
+  (mixedEmbedding K).toIntAlgHom.toLinearMap ∘ₗ ((I : Submodule (𝓞 K) K).subtype.restrictScalars ℤ)
+
+theorem mem_idealLattice {x : mixedSpace K} :
+    x ∈ idealLattice K I ↔ ∃ y, y ∈ (I : Set K) ∧ mixedEmbedding K y = x := by
+  simp [idealLattice]
 
 /-- The generalized index of the lattice generated by `I` in the lattice generated by
 `𝓞 K` is equal to the norm of the ideal `I`. The result is stated in terms of base change
@@ -694,7 +732,7 @@ theorem fractionalIdealLatticeBasis_apply (i : ChooseBasisIndex ℤ I) :
   simp only [fractionalIdealLatticeBasis, Basis.coe_reindex, Basis.coe_mk, Function.comp_apply,
     Equiv.apply_symm_apply]
 
-theorem mem_span_fractionalIdealLatticeBasis (x : (mixedSpace K)) :
+theorem mem_span_fractionalIdealLatticeBasis {x : (mixedSpace K)} :
     x ∈ Submodule.span ℤ (Set.range (fractionalIdealLatticeBasis K I)) ↔
       x ∈ mixedEmbedding K '' I := by
   rw [show Set.range (fractionalIdealLatticeBasis K I) =
@@ -706,6 +744,124 @@ theorem mem_span_fractionalIdealLatticeBasis (x : (mixedSpace K)) :
         ext; erw [mem_span_basisOfFractionalIdeal]]
   rfl
 
+theorem span_idealLatticeBasis :
+    (Submodule.span ℤ (Set.range (fractionalIdealLatticeBasis K I))) =
+      (mixedEmbedding.idealLattice K I) := by
+  ext x
+  simp [mem_span_fractionalIdealLatticeBasis]
+
+instance : DiscreteTopology (mixedEmbedding.idealLattice K I) := by
+  classical
+  rw [← span_idealLatticeBasis]
+  infer_instance
+
+open Classical in
+instance : IsZLattice ℝ (mixedEmbedding.idealLattice K I) := by
+  simp_rw [← span_idealLatticeBasis]
+  exact ZSpan.isZLattice (fractionalIdealLatticeBasis K I)
+
+open Classical in
+theorem fundamentalDomain_idealLattice :
+    MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.idealLattice K I)
+      (ZSpan.fundamentalDomain (fractionalIdealLatticeBasis K I)) := by
+  rw [← span_idealLatticeBasis]
+  exact ZSpan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) _
+
 end integerLattice
+
+noncomputable section plusPart
+
+variable {K} (s : Set {w : InfinitePlace K // IsReal w})
+
+open Classical in
+/-- Let `s` be a set of real places, define the continuous linear equiv of the mixed space that
+swaps sign at places in `s` and leaves the rest unchanged. -/
+def negAt :
+    (mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
+  (ContinuousLinearEquiv.piCongrRight
+    fun w ↦ if w ∈ s then ContinuousLinearEquiv.neg ℝ else ContinuousLinearEquiv.refl ℝ ℝ).prod
+      (ContinuousLinearEquiv.refl ℝ _)
+
+variable {s}
+
+@[simp]
+theorem negAt_apply_of_isReal_and_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∈ s) :
+    (negAt s x).1 w = - x.1 w := by
+  simp_rw [negAt, ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.piCongrRight_apply,
+    if_pos hw, ContinuousLinearEquiv.neg_apply]
+
+@[simp]
+theorem negAt_apply_of_isReal_and_not_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∉ s) :
+    (negAt s x).1 w = x.1 w := by
+  simp_rw [negAt, ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.piCongrRight_apply,
+    if_neg hw, ContinuousLinearEquiv.refl_apply]
+
+@[simp]
+theorem negAt_apply_of_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
+    (negAt s x).2 w = x.2 w := rfl
+
+@[simp]
+theorem negAt_apply_snd (x : mixedSpace K) :
+    (negAt s x).2 = x.2 := rfl
+
+@[simp]
+theorem negAt_apply_abs_of_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
+    |(negAt s x).1 w| = |x.1 w| := by
+  by_cases hw : w ∈ s <;> simp [hw]
+
+open MeasureTheory Classical in
+/-- `negAt` preserves the volume . -/
+theorem volume_preserving_negAt [NumberField K] :
+    MeasurePreserving (negAt s) := by
+  refine MeasurePreserving.prod (volume_preserving_pi fun w ↦ ?_) (MeasurePreserving.id _)
+  by_cases hw : w ∈ s
+  · simp_rw [if_pos hw]
+    exact Measure.measurePreserving_neg _
+  · simp_rw [if_neg hw]
+    exact MeasurePreserving.id _
+
+variable (s) in
+/-- `negAt` preserves `normAtPlace`. -/
+@[simp]
+theorem normAtPlace_negAt (x : mixedSpace K) (w : InfinitePlace K) :
+    normAtPlace w (negAt s x) = normAtPlace w x := by
+  obtain hw | hw := isReal_or_isComplex w
+  · simp_rw [normAtPlace_apply_isReal hw, Real.norm_eq_abs, negAt_apply_abs_of_isReal]
+  · simp_rw [normAtPlace_apply_isComplex hw, negAt_apply_of_isComplex]
+
+/-- `negAt` preserves the `norm`. -/
+@[simp]
+theorem norm_negAt [NumberField K] (x : mixedSpace K) :
+    mixedEmbedding.norm (negAt s x) = mixedEmbedding.norm x :=
+  norm_eq_of_normAtPlace_eq (fun w ↦ normAtPlace_negAt _ _ w)
+
+open ContinuousLinearEquiv in
+/-- `negAt` is its own inverse. -/
+@[simp]
+theorem negAt_symm :
+    (negAt s).symm = negAt s := by
+  ext x w
+  · by_cases hw : w ∈ s
+    · simp_rw [negAt_apply_of_isReal_and_mem _ hw, negAt, prod_symm,
+        ContinuousLinearEquiv.prod_apply, piCongrRight_symm_apply, if_pos hw, symm_neg, neg_apply]
+    · simp_rw [negAt_apply_of_isReal_and_not_mem _ hw, negAt, prod_symm,
+        ContinuousLinearEquiv.prod_apply, piCongrRight_symm_apply, if_neg hw, refl_symm, refl_apply]
+  · rfl
+
+/-- For `x : mixedSpace K`, the set `signSet x` is the set of real places `w` s.t. `x w ≤ 0`. -/
+def signSet (x : mixedSpace K) : Set {w : InfinitePlace K // IsReal w} := {w | x.1 w ≤ 0}
+
+@[simp]
+theorem negAt_signSet_apply_of_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
+    (negAt (signSet x) x).1 w = |x.1 w| := by
+  by_cases hw : x.1 w ≤ 0
+  · rw [negAt_apply_of_isReal_and_mem _ hw, abs_of_nonpos hw]
+  · rw [negAt_apply_of_isReal_and_not_mem _ hw, abs_of_pos (lt_of_not_ge hw)]
+
+@[simp]
+theorem negAt_signSet_apply_of_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
+    (negAt (signSet x) x).2 w = x.2 w := rfl
+
+end plusPart
 
 end NumberField.mixedEmbedding

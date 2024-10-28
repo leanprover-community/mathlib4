@@ -6,7 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.Computability.Encoding
 import Mathlib.Logic.Small.List
 import Mathlib.ModelTheory.Syntax
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Encodings and Cardinality of First-Order Syntax
@@ -33,15 +33,14 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 -/
 
 
-universe u v w u' v'
+universe u v w u'
 
 namespace FirstOrder
 
 namespace Language
 
 variable {L : Language.{u, v}}
-variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
-variable {α : Type u'} {β : Type v'}
+variable {α : Type u'}
 
 open FirstOrder Cardinal
 

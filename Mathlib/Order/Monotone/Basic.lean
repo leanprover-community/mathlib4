@@ -66,7 +66,6 @@ open Function OrderDual
 universe u v w
 
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {π : ι → Type*}
-  {r : α → α → Prop}
 
 section MonotoneDef
 
@@ -1074,7 +1073,7 @@ theorem const_strictMono [Nonempty β] : StrictMono (const β : α → β → α
 end Function
 
 section apply
-variable {ι α : Type*} {β : ι → Type*} [∀ i, Preorder (β i)] [Preorder α] {f : α → ∀ i, β i}
+variable {β : ι → Type*} [∀ i, Preorder (β i)] [Preorder α] {f : α → ∀ i, β i}
 
 lemma monotone_iff_apply₂ : Monotone f ↔ ∀ i, Monotone (f · i) := by
   simp [Monotone, Pi.le_def, @forall_swap ι]

@@ -39,7 +39,6 @@ variable [Applicative F] [LawfulApplicative F]
 variable [Applicative G] [LawfulApplicative G]
 variable {α β γ : Type u}
 variable (g : α → F β)
-variable (h : β → G γ)
 variable (f : β → γ)
 
 /-- The natural applicative transformation from the identity functor
@@ -47,7 +46,7 @@ to `F`, defined by `pure : Π {α}, α → F α`. -/
 def PureTransformation :
     ApplicativeTransformation Id F where
   app := @pure F _
-  preserves_pure' x := rfl
+  preserves_pure' _ := rfl
   preserves_seq' f x := by
     simp only [map_pure, seq_pure]
     rfl
