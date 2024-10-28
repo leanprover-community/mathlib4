@@ -132,6 +132,14 @@ protected def rec {C : EReal → Sort*} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C
   | (a : ℝ) => h_real a
   | ⊤ => h_top
 
+protected lemma «forall» {p : EReal → Prop} : (∀ r, p r) ↔ p ⊥ ∧ p ⊤ ∧ ∀ r : ℝ, p r where
+  mp h := ⟨h _, h _, fun _ ↦ h _⟩
+  mpr h := EReal.rec h.1 h.2.2 h.2.1
+
+protected lemma «exists» {p : EReal → Prop} : (∃ r, p r) ↔ p ⊥ ∨ p ⊤ ∨ ∃ r : ℝ, p r where
+  mp := by rintro ⟨r, hr⟩; cases r <;> aesop
+  mpr := by rintro (h | h | ⟨r, hr⟩) <;> exact ⟨_, ‹_›⟩
+
 /-- The multiplication on `EReal`. Our definition satisfies `0 * x = x * 0 = 0` for any `x`, and
 picks the only sensible value elsewhere. -/
 protected def mul : EReal → EReal → EReal
@@ -673,7 +681,7 @@ theorem natCast_mul (m n : ℕ) :
 
 theorem exists_rat_btwn_of_lt :
     ∀ {a b : EReal}, a < b → ∃ x : ℚ, a < (x : ℝ) ∧ ((x : ℝ) : EReal) < b
-  | ⊤, b, h => (not_top_lt h).elim
+  | ⊤, _, h => (not_top_lt h).elim
   | (a : ℝ), ⊥, h => (lt_irrefl _ ((bot_lt_coe a).trans h)).elim
   | (a : ℝ), (b : ℝ), h => by simp [exists_rat_btwn (EReal.coe_lt_coe_iff.1 h)]
   | (a : ℝ), ⊤, _ =>

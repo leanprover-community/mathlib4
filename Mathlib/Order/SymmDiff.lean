@@ -89,7 +89,7 @@ theorem Bool.symmDiff_eq_xor : ∀ p q : Bool, p ∆ q = xor p q := by decide
 
 section GeneralizedCoheytingAlgebra
 
-variable [GeneralizedCoheytingAlgebra α] (a b c d : α)
+variable [GeneralizedCoheytingAlgebra α] (a b c : α)
 
 @[simp]
 theorem toDual_symmDiff : toDual (a ∆ b) = toDual a ⇔ toDual b :=
@@ -192,7 +192,7 @@ end GeneralizedCoheytingAlgebra
 
 section GeneralizedHeytingAlgebra
 
-variable [GeneralizedHeytingAlgebra α] (a b c d : α)
+variable [GeneralizedHeytingAlgebra α] (a b c : α)
 
 @[simp]
 theorem toDual_bihimp : toDual (a ⇔ b) = toDual a ∆ toDual b :=

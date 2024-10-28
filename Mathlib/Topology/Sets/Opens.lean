@@ -243,15 +243,21 @@ def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
 
 instance instFrame : Frame (Opens α) := .ofMinimalAxioms frameMinimalAxioms
 
-theorem openEmbedding' (U : Opens α) : OpenEmbedding (Subtype.val : U → α) :=
-  U.isOpen.openEmbedding_subtype_val
+theorem isOpenEmbedding' (U : Opens α) : IsOpenEmbedding (Subtype.val : U → α) :=
+  U.isOpen.isOpenEmbedding_subtypeVal
 
-theorem openEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
-    OpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) :=
-  { toEmbedding := embedding_inclusion i
-    isOpen_range := by
-      rw [Set.range_inclusion i]
-      exact U.isOpen.preimage continuous_subtype_val }
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding' := isOpenEmbedding'
+
+theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
+    IsOpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) where
+  toIsEmbedding := .inclusion i
+  isOpen_range := by
+    rw [Set.range_inclusion i]
+    exact U.isOpen.preimage continuous_subtype_val
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_of_le := isOpenEmbedding_of_le
 
 theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔ U = ⊥ := by
   rw [← coe_inj, coe_bot, ← Set.not_nonempty_iff_eq_empty]
@@ -343,7 +349,7 @@ theorem isCompactElement_iff (s : Opens α) :
 def comap (f : C(α, β)) : FrameHom (Opens β) (Opens α) where
   toFun s := ⟨f ⁻¹' s, s.2.preimage f.continuous⟩
   map_sSup' s := ext <| by simp only [coe_sSup, preimage_iUnion, biUnion_image, coe_mk]
-  map_inf' a b := rfl
+  map_inf' _ _ := rfl
   map_top' := rfl
 
 @[simp]
@@ -379,10 +385,10 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
 /-- A homeomorphism induces an order-preserving equivalence on open sets, by taking comaps. -/
 @[simps (config := .asFn) apply]
 def _root_.Homeomorph.opensCongr (f : α ≃ₜ β) : Opens α ≃o Opens β where
-  toFun := Opens.comap f.symm.toContinuousMap
-  invFun := Opens.comap f.toContinuousMap
-  left_inv := fun U => ext <| f.toEquiv.preimage_symm_preimage _
-  right_inv := fun U => ext <| f.toEquiv.symm_preimage_preimage _
+  toFun := Opens.comap (f.symm : C(β, α))
+  invFun := Opens.comap (f : C(α, β))
+  left_inv _ := ext <| f.toEquiv.preimage_symm_preimage _
+  right_inv _ := ext <| f.toEquiv.symm_preimage_preimage _
   map_rel_iff' := by
     simp only [← SetLike.coe_subset_coe]; exact f.symm.surjective.preimage_subset_preimage_iff
 
