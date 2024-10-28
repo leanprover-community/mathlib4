@@ -37,10 +37,10 @@ lemma IntegerComplement_add_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (a : ℤ) : x
   have := not_exists.mp hx (-a)
   aesop
 
-lemma IntegerComplement_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) : (x : ℂ) ≠ (0 : ℂ) := by
+lemma IntegerComplement_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 0 := by
   simpa using IntegerComplement_add_ne_zero hx 0
 
-lemma IntegerComplement_ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ): x.1 ≠ 1 := by
+lemma IntegerComplement_ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ): x ≠ 1 := by
   have := IntegerComplement_add_ne_zero hx (-1 : ℤ)
   aesop
 
