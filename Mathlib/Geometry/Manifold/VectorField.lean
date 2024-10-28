@@ -1236,6 +1236,16 @@ lemma mpullback_mlieBracketWithin
     apply mfderivWithin_eq_mfderiv (hu _ h'y)
     exact hy.mdifferentiableAt one_le_two
 
+lemma mpullback_mlieBracket
+    {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M}
+    (hV : MDifferentiableAt I' I'.tangent (fun x ↦ (V x : TangentBundle I' M')) (f x₀))
+    (hW : MDifferentiableAt I' I'.tangent (fun x ↦ (W x : TangentBundle I' M')) (f x₀))
+    (hf : ContMDiffAt I I' 2 f x₀) :
+    mpullback I I' f (mlieBracket I' V W) x₀ =
+      mlieBracket I (mpullback I I' f V) (mpullback I I' f W) x₀ := by
+  simp only [← mlieBracketWithin_univ, ← mdifferentiableWithinAt_univ] at hV hW ⊢
+  exact mpullback_mlieBracketWithin hV hW uniqueMDiffOn_univ hf (mem_univ _) (by simp) (by simp)
+
 omit [IsRCLikeNormedField 𝕜] in
 lemma contMDiffWithinAt_mpullbackWithin_extChartAt_symm
     {V : Π (x : M), TangentSpace I x} {m : ℕ∞}

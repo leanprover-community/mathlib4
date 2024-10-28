@@ -86,8 +86,19 @@ theorem fderivWithin_const_smul (hxs : UniqueDiffWithinAt 𝕜 s x)
     fderivWithin 𝕜 (fun y => c • f y) s x = c • fderivWithin 𝕜 f s x :=
   (h.hasFDerivWithinAt.const_smul c).fderivWithin hxs
 
+/-- Version of `fderivWithin_const_smul` written with `c • f` instead of `fun y ↦ c • f y`. -/
+theorem fderivWithin_const_smul' (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (h : DifferentiableWithinAt 𝕜 f s x) (c : R) :
+    fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x :=
+  fderivWithin_const_smul hxs h c
+
 theorem fderiv_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
     fderiv 𝕜 (fun y => c • f y) x = c • fderiv 𝕜 f x :=
+  (h.hasFDerivAt.const_smul c).fderiv
+
+/-- Version of `fderiv_const_smul` written with `c • f` instead of `fun y ↦ c • f y`. -/
+theorem fderiv_const_smul' (h : DifferentiableAt 𝕜 f x) (c : R) :
+    fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x :=
   (h.hasFDerivAt.const_smul c).fderiv
 
 end ConstSMul

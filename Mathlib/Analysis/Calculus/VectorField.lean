@@ -210,8 +210,20 @@ lemma lieBracket_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
     lieBracket 𝕜 V W x = 0 := by
   simp [lieBracket, hV, hW]
 
+lemma lieBracketWithin_smul_left {c : 𝕜} (hV : DifferentiableWithinAt 𝕜 V s x)
+    (hs : UniqueDiffWithinAt 𝕜 s x) :
+    lieBracketWithin 𝕜 (c • V) W s x =
+      c • lieBracketWithin 𝕜 V W s x := by
+  simp only [lieBracketWithin, Pi.add_apply, map_add, Pi.smul_apply, map_smul, smul_sub]
+  rw [fderivWithin_const_smul]
+  rw [fderivWithin_add' hs hV hV₁, ContinuousLinearMap.add_apply]
+  abel
+
+
+#exit
+
 lemma lieBracketWithin_add_left (hV : DifferentiableWithinAt 𝕜 V s x)
-    (hV₁ : DifferentiableWithinAt 𝕜 V₁ s x) (hs :  UniqueDiffWithinAt 𝕜 s x) :
+    (hV₁ : DifferentiableWithinAt 𝕜 V₁ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (V + V₁) W s x =
       lieBracketWithin 𝕜 V W s x + lieBracketWithin 𝕜 V₁ W s x := by
   simp only [lieBracketWithin, Pi.add_apply, map_add]
