@@ -4785,6 +4785,7 @@ import Mathlib.Topology.Defs.Basic
 import Mathlib.Topology.Defs.Filter
 import Mathlib.Topology.Defs.Induced
 import Mathlib.Topology.Defs.Sequences
+import Mathlib.Topology.Defs.Ultrafilter
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.DerivedSet
 import Mathlib.Topology.DiscreteQuotient
@@ -4989,6 +4990,7 @@ import Mathlib.Topology.Spectral.Hom
 import Mathlib.Topology.StoneCech
 import Mathlib.Topology.Support
 import Mathlib.Topology.TietzeExtension
+import Mathlib.Topology.Ultrafilter
 import Mathlib.Topology.UniformSpace.AbsoluteValue
 import Mathlib.Topology.UniformSpace.AbstractCompletion
 import Mathlib.Topology.UniformSpace.Ascoli
