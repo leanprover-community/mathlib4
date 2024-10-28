@@ -39,12 +39,12 @@ variable (F : Type*) (Γ : outParam <| Subgroup SL(2, ℤ)) (k : outParam ℤ)
 /-- Functions `ℍ → ℂ` that are invariant under the `SlashAction`. -/
 structure SlashInvariantForm where
   toFun : ℍ → ℂ
-  slash_action_eq' : ∀ γ : Γ, toFun ∣[k] γ = toFun
+  slash_action_eq' : ∀ γ ∈ Γ, toFun ∣[k] γ = toFun
 
 /-- `SlashInvariantFormClass F Γ k` asserts `F` is a type of bundled functions that are invariant
 under the `SlashAction`. -/
 class SlashInvariantFormClass [FunLike F ℍ ℂ] : Prop where
-  slash_action_eq : ∀ (f : F) (γ : Γ), (f : ℍ → ℂ) ∣[k] γ = f
+  slash_action_eq : ∀ (f : F), ∀ γ ∈ Γ, (f : ℍ → ℂ) ∣[k] γ = f
 
 instance (priority := 100) SlashInvariantForm.funLike :
     FunLike (SlashInvariantForm Γ k) ℍ ℂ where
@@ -62,7 +62,7 @@ theorem SlashInvariantForm.toFun_eq_coe {f : SlashInvariantForm Γ k} : f.toFun 
   rfl
 
 @[simp]
-theorem SlashInvariantForm.coe_mk (f : ℍ → ℂ) (hf : ∀ γ : Γ, f ∣[k] γ = f) : ⇑(mk f hf) = f := rfl
+theorem SlashInvariantForm.coe_mk (f : ℍ → ℂ) (hf : ∀ γ ∈ Γ, f ∣[k] γ = f) : ⇑(mk f hf) = f := rfl
 
 @[ext]
 theorem SlashInvariantForm.ext {f g : SlashInvariantForm Γ k} (h : ∀ x, f x = g x) : f = g :=
@@ -83,26 +83,23 @@ open SlashInvariantForm
 
 variable {F : Type*} {Γ : Subgroup SL(2, ℤ)} {k : ℤ} [FunLike F ℍ ℂ]
 
--- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
-theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ : Γ) :
+theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ) (hγ : γ ∈ Γ) :
     ↑f ∣[k] γ = ⇑f :=
-  SlashInvariantFormClass.slash_action_eq f γ
+  SlashInvariantFormClass.slash_action_eq f γ hγ
 
-theorem slash_action_eqn' (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [SlashInvariantFormClass F Γ k] (f : F)
-    (γ : Γ) (z : ℍ) : f (γ • z) = ((↑ₘ[ℤ] γ 1 0 : ℂ) * z + (↑ₘ[ℤ] γ 1 1 : ℂ)) ^ k * f z := by
-  rw [← ModularForm.slash_action_eq'_iff, slash_action_eqn]
+theorem slash_action_eqn' {k : ℤ} {Γ : Subgroup SL(2, ℤ)} [SlashInvariantFormClass F Γ k]
+    (f : F) {γ} (hγ : γ ∈ Γ) (z : ℍ) :
+    f (γ • z) = ((↑ₘ[ℤ] γ 1 0 : ℂ) * z + (↑ₘ[ℤ] γ 1 1 : ℂ)) ^ k * f z := by
+  rw [← ModularForm.slash_action_eq'_iff, slash_action_eqn f γ hγ]
 
 /--For `f` SlashInvariantForm, we show ` f (γ • z) = (denom γ z) ^ k * f z`. -/
-theorem slash_action_eqn'' {F : Type*} [FunLike F ℍ ℂ] (k : ℤ) (Γ : Subgroup SL(2, ℤ))
-    [SlashInvariantFormClass F Γ k] (f : F) (γ : Γ) (z : ℍ) :
-    f (γ • z) = (denom γ z) ^ k * f z := by
-  rw [denom]
-  exact (SlashInvariantForm.slash_action_eqn' k Γ f γ z)
+theorem slash_action_eqn'' {F : Type*} [FunLike F ℍ ℂ] {k : ℤ} {Γ : Subgroup SL(2, ℤ)}
+    [SlashInvariantFormClass F Γ k] (f : F) {γ : SL(2, ℤ)} (hγ : γ ∈ Γ) (z : ℍ) :
+    f (γ • z) = (denom γ z) ^ k * f z :=
+  SlashInvariantForm.slash_action_eqn' f hγ z
 
 instance [SlashInvariantFormClass F Γ k] : CoeTC F (SlashInvariantForm Γ k) :=
-  ⟨fun f =>
-    { toFun := f
-      slash_action_eq' := slash_action_eqn f }⟩
+  ⟨fun f ↦ { slash_action_eq' := slash_action_eqn f }⟩
 
 @[simp]
 theorem SlashInvariantFormClass.coe_coe [SlashInvariantFormClass F Γ k] (f : F) :
@@ -110,10 +107,10 @@ theorem SlashInvariantFormClass.coe_coe [SlashInvariantFormClass F Γ k] (f : F)
   rfl
 
 instance instAdd : Add (SlashInvariantForm Γ k) :=
-  ⟨fun f g =>
+  ⟨fun f g ↦
     { toFun := f + g
-      slash_action_eq' := fun γ => by
-        rw [SlashAction.add_slash, slash_action_eqn, slash_action_eqn] }⟩
+      slash_action_eq' := fun γ hγ ↦ by
+        rw [SlashAction.add_slash, slash_action_eqn f γ hγ, slash_action_eqn g γ hγ] }⟩
 
 @[simp]
 theorem coe_add (f g : SlashInvariantForm Γ k) : ⇑(f + g) = f + g :=
@@ -125,7 +122,7 @@ theorem add_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f + g) z = f z + 
 
 instance instZero : Zero (SlashInvariantForm Γ k) :=
   ⟨{toFun := 0
-    slash_action_eq' := SlashAction.zero_slash _}⟩
+    slash_action_eq' := fun _ _ ↦ SlashAction.zero_slash _ _}⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : SlashInvariantForm Γ k) = (0 : ℍ → ℂ) :=
@@ -138,7 +135,8 @@ variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 instance instSMul : SMul α (SlashInvariantForm Γ k) :=
   ⟨fun c f =>
     { toFun := c • ↑f
-      slash_action_eq' := fun γ => by rw [SlashAction.smul_slash_of_tower, slash_action_eqn] }⟩
+      slash_action_eq' := fun γ hγ => by
+        rw [SlashAction.smul_slash_of_tower, slash_action_eqn f _ hγ]}⟩
 
 @[simp]
 theorem coe_smul (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
@@ -153,7 +151,7 @@ end
 instance instNeg : Neg (SlashInvariantForm Γ k) :=
   ⟨fun f =>
     { toFun := -f
-      slash_action_eq' := fun γ => by rw [SlashAction.neg_slash, slash_action_eqn] }⟩
+      slash_action_eq' := fun γ hγ => by rw [SlashAction.neg_slash, slash_action_eqn f γ hγ] }⟩
 
 @[simp]
 theorem coe_neg (f : SlashInvariantForm Γ k) : ⇑(-f) = -f :=
@@ -193,7 +191,7 @@ instance : Module ℂ (SlashInvariantForm Γ k) :=
 @[simps (config := .asFn)]
 def const (x : ℂ) : SlashInvariantForm Γ 0 where
   toFun := Function.const _ x
-  slash_action_eq' A := ModularForm.is_invariant_const A x
+  slash_action_eq' A _ := ModularForm.is_invariant_const A x
 
 instance : One (SlashInvariantForm Γ 0) where
   one := { const 1 with toFun := 1 }
@@ -210,8 +208,8 @@ weights `k₁` and `k₂`. -/
 def mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariantForm Γ k₁)
     (g : SlashInvariantForm Γ k₂) : SlashInvariantForm Γ (k₁ + k₂) where
   toFun := f * g
-  slash_action_eq' A := by
-    simp_rw [ModularForm.mul_slash_subgroup, SlashInvariantFormClass.slash_action_eq]
+  slash_action_eq' A hA := by rw [ModularForm.mul_slash_SL2,
+    SlashInvariantFormClass.slash_action_eq f A hA, SlashInvariantFormClass.slash_action_eq g A hA]
 
 @[simp]
 theorem coe_mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariantForm Γ k₁)

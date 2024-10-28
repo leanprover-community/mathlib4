@@ -20,29 +20,12 @@ open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm CongruenceSubgro
 local notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
 local notation  "Γ(" n ")"  => CongruenceSubgroup.Gamma n
 
-/--The map from `SL(2, ℤ)` to `Γ(1)`. Its preferable to work with this, since levels of modular
-forms are terms of type Subgroup `SL(2, ℤ)`. -/
-@[coe]def CongruenceSubgroup.coe1 : SL(2, ℤ) → Γ(1) :=
-  fun g => ⟨↑g, by simp [CongruenceSubgroup.Gamma_one_top]⟩
-
-instance : Coe SL(2, ℤ) Γ(1) := ⟨coe1⟩
-
-lemma CongruenceSubgroup.coe_smul_eq_smul {g : SL(2, ℤ)} {τ : ℍ} : (g : Γ(1)) • τ = (g • τ) := by
-  simp only [coe1, Subgroup.mk_smul, ModularGroup.sl_moeb]
-
-@[simp]
-lemma CongruenceSubgroup.denom_coe1_eq_denom {g : SL(2, ℤ)} {τ : ℍ} :
-    denom (g : Γ(1)) τ = denom g τ := by
-  simp only [denom, coe1, Fin.isValue, ModularGroup.coe'_apply_complex]
-
 lemma SlashInvariantForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
-    [SlashInvariantFormClass F Γ(1) k] (f : F) (τ : ℍ) :
+    [SlashInvariantFormClass F ⊤ k] (f : F) (τ : ℍ) :
     ∃ ξ : ℍ, 1/2 ≤ ξ.im ∧ ‖f τ‖ ≤ ‖f ξ‖ := by
   obtain ⟨γ, hγ, hdenom⟩ := exists_translate' τ
   refine ⟨γ • τ, hγ, ?_⟩
-  have := slash_action_eqn'' k Γ(1) f γ τ
-  rw [coe_smul_eq_smul, denom_coe1_eq_denom] at this
-  rw [this, norm_mul, norm_zpow]
+  rw [slash_action_eqn'' _ (show γ ∈ ⊤ by tauto), norm_mul, norm_zpow]
   have h3 : 1 ≤ ‖denom (γ : SL(2, ℤ)) τ‖ ^ k := by
     apply one_le_zpow_of_nonpos₀ _ hdenom hk
     exact norm_pos_iff.2 (denom_ne_zero _ _)
@@ -56,11 +39,12 @@ lemma Complex.zpow_eq_one (k : ℤ) {n : ℝ} (hn : 1 < n) (h : (n : ℂ) ^ k = 
   replace h : (n : ℝ) ^ k = (n : ℝ) ^ (0 : ℤ) := by simp only [zpow_zero, ← h]
   exact zpow_right_injective₀ (a := (n : ℝ)) (by norm_cast at *; linarith) (by aesop) h
 
-lemma SlashInvariantForm.neg_wt_const_eq_zero {F : Type*} [FunLike F ℍ ℂ] (k : ℤ) (f : F) (c : ℂ)
-    [SlashInvariantFormClass F Γ(1) k] (hf : ⇑f = (fun _ => c)) : k = 0 ∨ c = 0 := by
-  have hI := (slash_action_eqn'' k Γ(1) f ModularGroup.S) I
-  have h2I2 := (slash_action_eqn'' k Γ(1) f ModularGroup.S) ⟨2 * Complex.I, by simp⟩
-  simp only [hf, subgroup_to_sl_moeb, sl_moeb, denom_coe1_eq_denom, denom_S] at *
+/-- If a non-zero constant is modular of weight `k`, then we must have `k = 0`.  -/
+lemma SlashInvariantForm.wt_const_eq_zero {F : Type*} [FunLike F ℍ ℂ] (k : ℤ) (f : F) (c : ℂ)
+    [SlashInvariantFormClass F ⊤ k] (hf : ⇑f = (fun _ => c)) : k = 0 ∨ c = 0 := by
+  have hI := slash_action_eqn'' f (by tauto : ModularGroup.S ∈ ⊤) I
+  have h2I2 := slash_action_eqn'' f (by tauto : ModularGroup.S ∈ ⊤) ⟨2 * Complex.I, by simp⟩
+  simp only [hf, subgroup_to_sl_moeb, sl_moeb, denom_S] at *
   nth_rw 1 [h2I2] at hI
   simp only [mul_eq_mul_right_iff] at hI
   rcases hI with H | H

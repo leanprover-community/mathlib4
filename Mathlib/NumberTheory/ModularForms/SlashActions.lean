@@ -145,15 +145,6 @@ end
 theorem slash_def (A : GL(2, ℝ)⁺) : f ∣[k] A = slash k A f :=
   rfl
 
-instance subgroupAction (Γ : Subgroup SL(2, ℤ)) : SlashAction ℤ Γ (ℍ → ℂ) ℂ :=
-  monoidHomSlashAction
-    (MonoidHom.comp Matrix.SpecialLinearGroup.toGLPos
-      (MonoidHom.comp (Matrix.SpecialLinearGroup.map (Int.castRingHom ℝ)) (Subgroup.subtype Γ)))
-
-@[simp]
-theorem subgroup_slash (Γ : Subgroup SL(2, ℤ)) (γ : Γ) : f ∣[k] γ = f ∣[k] (γ : GL(2, ℝ)⁺) :=
-  rfl
-
 instance SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) ℂ :=
   monoidHomSlashAction
     (MonoidHom.comp Matrix.SpecialLinearGroup.toGLPos
@@ -178,12 +169,12 @@ theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A =
 /-- A function `f : ℍ → ℂ` is slash-invariant, of weight `k ∈ ℤ` and level `Γ`,
   if for every matrix `γ ∈ Γ` we have `f(γ • z)= (c*z+d)^k f(z)` where `γ= ![![a, b], ![c, d]]`,
   and it acts on `ℍ` via Möbius transformations. -/
-theorem slash_action_eq'_iff (k : ℤ) (Γ : Subgroup SL(2, ℤ)) (f : ℍ → ℂ) (γ : Γ) (z : ℍ) :
+theorem slash_action_eq'_iff (k : ℤ) (f : ℍ → ℂ) (γ : SL(2, ℤ)) (z : ℍ) :
     (f ∣[k] γ) z = f z ↔ f (γ • z) = ((↑ₘ[ℤ] γ 1 0 : ℂ) * z + (↑ₘ[ℤ] γ 1 1 : ℂ)) ^ k * f z := by
-  simp only [subgroup_slash, slash_def, ModularForm.slash]
+  simp only [SL_slash, slash_def, ModularForm.slash]
   convert inv_mul_eq_iff_eq_mul₀ (G₀ := ℂ) _ using 2
   · rw [mul_comm]
-    simp only [denom, zpow_neg, det_coe', ofReal_one, one_zpow, mul_one, subgroup_to_sl_moeb,
+    simp only [denom, zpow_neg, det_coe', ofReal_one, one_zpow, mul_one,
       sl_moeb]
     rfl
   · convert zpow_ne_zero k (denom_ne_zero γ z)
@@ -207,7 +198,6 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
   rw [h1, h22]
   ring
 
--- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
 theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A :=
   calc
@@ -216,10 +206,6 @@ theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
       apply mul_slash
     _ = (1 : ℝ) • f ∣[k1] A * g ∣[k2] A := by rw [det_coe']
     _ = f ∣[k1] A * g ∣[k2] A := by rw [one_smul]
-
-theorem mul_slash_subgroup (k1 k2 : ℤ) (Γ : Subgroup SL(2, ℤ)) (A : Γ) (f g : ℍ → ℂ) :
-    (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A :=
-  mul_slash_SL2 k1 k2 A f g
 
 end
 
