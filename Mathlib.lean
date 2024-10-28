@@ -510,7 +510,6 @@ import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.Algebra.Module.Presentation.Free
 import Mathlib.Algebra.Module.Presentation.Cokernel
 import Mathlib.Algebra.Module.Presentation.Free
 import Mathlib.Algebra.Module.Prod
