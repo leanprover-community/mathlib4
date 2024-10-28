@@ -16,8 +16,6 @@ TODO: Add finite dimisionality of these spaces of modular forms.
 -/
 
 open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm CongruenceSubgroup Complex
-local notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
-local notation  "Γ(" n ")"  => CongruenceSubgroup.Gamma n
 
 lemma SlashInvariantForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
     [SlashInvariantFormClass F ⊤ k] (f : F) (τ : ℍ) :
