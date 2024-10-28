@@ -138,6 +138,10 @@ namespace Subgroup
 
 variable (H K : Subgroup G)
 
+@[to_additive]
+protected theorem div_mem_comm_iff {a b : G} : a / b ∈ H ↔ b / a ∈ H :=
+  div_mem_comm_iff
+
 /-- The subgroup `G` of the group `G`. -/
 @[to_additive "The `AddSubgroup G` of the `AddGroup G`."]
 instance : Top (Subgroup G) :=
