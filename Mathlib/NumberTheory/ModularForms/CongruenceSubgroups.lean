@@ -20,15 +20,12 @@ It also contains basic results about congruence subgroups.
 
 attribute [-instance] Matrix.SpecialLinearGroup.instCoeFun
 
-open Matrix.SpecialLinearGroup Matrix
+open Matrix.SpecialLinearGroup Matrix MatrixGroups
 
 variable (N : ℕ)
 
 local notation "SLMOD(" N ")" =>
   @Matrix.SpecialLinearGroup.map (Fin 2) _ _ _ _ _ _ (Int.castRingHom (ZMod N))
-namespace CongruenceSubgroup
-
-scoped notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
 
 local notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)
 
@@ -37,6 +34,7 @@ theorem SL_reduction_mod_hom_val (N : ℕ) (γ : SL(2, ℤ)) :
     ∀ i j : Fin 2, (SLMOD(N) γ : Matrix (Fin 2) (Fin 2) (ZMod N)) i j = ((↑ₘγ i j : ℤ) : ZMod N) :=
   fun _ _ => rfl
 
+namespace CongruenceSubgroup
 
 /-- The full level `N` congruence subgroup of `SL(2, ℤ)` of matrices that reduce to the identity
 modulo `N`. -/
