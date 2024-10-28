@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Group.Arithmetic
-import Mathlib.Topology.GDelta
+import Mathlib.Topology.GDelta.UniformSpace
 import Mathlib.Topology.Instances.EReal
 import Mathlib.Topology.Instances.Rat
 
@@ -629,22 +629,25 @@ instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
   constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, MeasurableSet.of_discrete]
 
-protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embedding f)
+protected theorem IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
   show MeasurableEmbedding
-      (((↑) : range f → β) ∘ (Homeomorph.ofEmbedding f h₁).toMeasurableEquiv) from
+      (((↑) : range f → β) ∘ (Homeomorph.ofIsEmbedding f h₁).toMeasurableEquiv) from
     (MeasurableEmbedding.subtype_coe h₂).comp (MeasurableEquiv.measurableEmbedding _)
 
-protected theorem IsClosedEmbedding.measurableEmbedding {f : α → β} (h : IsClosedEmbedding f) :
-    MeasurableEmbedding f :=
-  h.toEmbedding.measurableEmbedding h.isClosed_range.measurableSet
+@[deprecated (since := "2024-10-26")]
+alias Embedding.measurableEmbedding := IsEmbedding.measurableEmbedding
+
+protected theorem IsClosedEmbedding.measurableEmbedding {f : α → β}
+    (h : IsClosedEmbedding f) : MeasurableEmbedding f :=
+  h.isEmbedding.measurableEmbedding h.isClosed_range.measurableSet
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.measurableEmbedding := IsClosedEmbedding.measurableEmbedding
 
 protected theorem IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
     MeasurableEmbedding f :=
-  h.toEmbedding.measurableEmbedding h.isOpen_range.measurableSet
+  h.isEmbedding.measurableEmbedding h.isOpen_range.measurableSet
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.measurableEmbedding := IsOpenEmbedding.measurableEmbedding

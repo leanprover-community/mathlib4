@@ -32,8 +32,6 @@ noncomputable instance : NegPart A where
 
 end CStarAlgebra
 
-attribute [fun_prop] continuous_posPart continuous_negPart
-
 namespace CFC
 
 lemma posPart_def (a : A) : a⁺ = cfcₙ (·⁺ : ℝ → ℝ) a := rfl
@@ -88,12 +86,12 @@ end Unique
 
 variable [PartialOrder A] [StarOrderedRing A]
 
-@[simp]
+@[aesop norm apply (rule_sets := [CStarAlgebra])]
 lemma posPart_nonneg (a : A) :
     0 ≤ a⁺ :=
   cfcₙ_nonneg (fun x _ ↦ by positivity)
 
-@[simp]
+@[aesop norm apply (rule_sets := [CStarAlgebra])]
 lemma negPart_nonneg (a : A) :
     0 ≤ a⁻ :=
   cfcₙ_nonneg (fun x _ ↦ by positivity)
@@ -132,30 +130,3 @@ lemma posPart_eq_zero_iff (a : A) (ha : IsSelfAdjoint a) :
   simp
 
 end CFC
-
-section SpanNonneg
-
-variable {A : Type*} [NonUnitalRing A] [Module ℂ A] [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
-variable [StarRing A] [TopologicalSpace A] [StarModule ℂ A]
-variable [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-variable [PartialOrder A] [StarOrderedRing A]
-
-open Submodule Complex
-open scoped ComplexStarModule
-
-@[simp] -- how is this not a thing already?
-lemma selfAdjoint.isSelfAdjoint (R : Type*) [AddGroup R] [StarAddMonoid R] (x : selfAdjoint R) :
-    IsSelfAdjoint (x : R) :=
-  x.property
-
-/-- A C⋆-algebra is spanned by its nonnegative elements. -/
-lemma CStarAlgebra.span_nonneg : Submodule.span ℂ {a : A | 0 ≤ a} = ⊤ := by
-  refine eq_top_iff.mpr fun x _ => ?_
-  suffices ((ℜ x : A)⁺ - (ℜ x : A)⁻) + I • ((ℑ x : A)⁺ - (ℑ x : A)⁻) = x by
-    rw [← this, smul_sub]
-    apply_rules [sub_mem, Submodule.smul_mem, add_mem]
-    all_goals exact subset_span (by simp)
-  rw [CFC.posPart_sub_negPart (ℜ x : A), CFC.posPart_sub_negPart (ℑ x : A),
-    realPart_add_I_smul_imaginaryPart x]
-
-end SpanNonneg

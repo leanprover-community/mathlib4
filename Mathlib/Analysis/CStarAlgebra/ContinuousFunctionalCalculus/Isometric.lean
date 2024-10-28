@@ -11,7 +11,7 @@ This file adds a class for an *isometric* continuous functional calculus. This i
 usual `ContinuousFunctionalCalculus` class because we prefer not to require a metric (or a norm) on
 the algebra for reasons discussed in the module documentation for that file.
 
-Of courrse, with a metric on the algebra and an isometric continuous functional calculus, the
+Of course, with a metric on the algebra and an isometric continuous functional calculus, the
 algebra must *be* a C⋆-algebra already. As such, it may seem like this class is not useful. However,
 the main purpose is to allow for the continuous functional calculus to be a isometric for the other
 scalar rings `ℝ` and `ℝ≥0` too.

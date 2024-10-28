@@ -5,7 +5,6 @@ Authors: Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Equicontinuity
-import Mathlib.Topology.Separation
 import Mathlib.Topology.Support
 
 /-!
