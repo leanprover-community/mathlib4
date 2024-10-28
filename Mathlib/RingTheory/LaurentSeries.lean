@@ -854,7 +854,7 @@ end Complete
 
 section Dense
 
-open scoped Multiplicative
+-- open scoped Multiplicative
 
 open HahnSeries LaurentSeries
 
@@ -871,8 +871,7 @@ theorem exists_pol_int_val_lt (F : PowerSeries K) (η : ℤₘ₀ˣ) :
       toAdd_one] at h_neg'
     obtain ⟨d, hd⟩ := Int.exists_eq_neg_ofNat h_neg'
     use F.trunc (d + 1)
-    have trunc_prop : ∀ m : ℕ, m < d + 1 → PowerSeries.coeff K m (F - ↑(F.trunc (d + 1))) = 0 :=
-      by
+    have trunc_prop : ∀ m : ℕ, m < d + 1 → PowerSeries.coeff K m (F - ↑(F.trunc (d + 1))) = 0 := by
       intro m hm
       rw [map_sub, sub_eq_zero, Polynomial.coeff_coe, coeff_trunc, if_pos hm]
     have := (LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero K _).mpr trunc_prop
