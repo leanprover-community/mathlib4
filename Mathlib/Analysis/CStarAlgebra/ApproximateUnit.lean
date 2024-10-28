@@ -305,7 +305,7 @@ def CStarAlgebra.increasingApproximateUnit : IncreasingApproximateUnit
       intro ε hε
       refine ⟨cfcₙ (fun y : ℝ≥0 ↦ 1 - (1 + y)⁻¹) (ε⁻¹ ^ 2 • x),
         Set.mem_inter cfcₙ_nonneg_of_predicate (by simpa [- inv_pow, mem_closedBall_iff_norm]
-          using norm_cfcₙ_one_sub_one_add_inv_lt_one _ (smul_nonneg (by positivity) hx₁)), ?_⟩
+          using norm_cfcₙ_one_sub_one_add_inv_lt_one _), ?_⟩
       rintro b ⟨(hb₁ : cfcₙ _ _ ≤ _), (hb₂ : 0 ≤ b), hb₃⟩
       rw [mem_closedBall_iff_norm, ← norm_inr (𝕜 := ℂ), inr_sub, inr_mul, norm_sub_rev]
       nth_rw 1 [← one_mul (x : A⁺¹)]
