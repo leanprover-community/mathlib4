@@ -148,7 +148,7 @@ theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J
       Ideal.Quotient.mkₐ_eq_mk, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero]
   apply le_antisymm
   · intro y hy
-    exact ((Ideal.isPrimary_iff'.1 hI).2 <|
+    exact ((Ideal.isPrimary_iff.1 hI).2 <|
       e.mp hy).resolve_left ((Submodule.Quotient.mk_eq_zero I).not.mp this)
   · rw [hJ.radical_le_iff]
     intro y hy

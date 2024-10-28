@@ -47,11 +47,6 @@ protected def IsPrimary (S : Submodule R M) : Prop :=
 
 variable {S : Submodule R M}
 
-lemma isPrimary_iff :
-    S.IsPrimary ↔ S ≠ ⊤ ∧
-      ∀ {r : R} {x : M}, r • x ∈ S → x ∈ S ∨ ∃ n : ℕ, (r ^ n • ⊤ : Submodule R M) ≤ S :=
-  Iff.rfl
-
 lemma IsPrimary.ne_top (h : S.IsPrimary) : S ≠ ⊤ := h.left
 
 end CommSemiring
@@ -63,7 +58,7 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {S : Submodule
 lemma isPrimary_iff_zero_divisor_quotient_imp_nilpotent_smul :
     S.IsPrimary ↔ S ≠ ⊤ ∧ ∀ (r : R) (x : M ⧸ S), x ≠ 0 → r • x = 0 →
       ∃ n : ℕ, r ^ n • (⊤ : Submodule R (M ⧸ S)) = ⊥ := by
-  refine isPrimary_iff.trans (and_congr_right fun _ ↦ ?_)
+  refine (and_congr_right fun _ ↦ ?_)
   simp_rw [S.mkQ_surjective.forall, ← map_smul, ne_eq, ← LinearMap.mem_ker, ker_mkQ]
   congr! 2
   rw [forall_comm, ← or_iff_not_imp_left, ← LinearMap.range_eq_top.mpr S.mkQ_surjective, ← map_top]
