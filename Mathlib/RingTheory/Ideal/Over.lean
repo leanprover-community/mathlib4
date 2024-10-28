@@ -30,6 +30,7 @@ variable {R : Type*} [CommRing R]
 namespace Ideal
 
 open Polynomial Submodule
+
 open scoped Pointwise
 
 section CommRing
