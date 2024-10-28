@@ -12,6 +12,8 @@ import Mathlib.Data.Finsupp.ToDFinsupp
 
 If `M : ι → Type _` is a family of `A`-modules, then the data of a presentation
 of each `M i`, we obtain a presentation of the module `⨁ i, M i`.
+In particular, from a presentation of an `A`-module `M`, we get
+a presention of `ι →₀ M`.
 
 -/
 
@@ -66,10 +68,14 @@ def directSumEquiv :
 
 /-- Given `solution : ∀ (i : ι), (relations i).Solution (M i)`, this is the
 canonical solution of `Relations.directSum relations` in `⨁ i, M i`. -/
-@[simps! var]
 def directSum (solution : ∀ (i : ι), (relations i).Solution (M i)) :
     (Relations.directSum relations).Solution (⨁ i, M i) :=
   directSumEquiv.symm (fun i ↦ (solution i).postcomp (lof A ι M i))
+
+@[simp]
+lemma directSum_var (solution : ∀ (i : ι), (relations i).Solution (M i))
+    (i : ι) (g : (relations i).G) :
+    (directSum solution).var ⟨i, g⟩ = lof A ι M i ((solution i).var g) := rfl
 
 namespace IsPresentation
 
@@ -101,22 +107,36 @@ namespace Presentation
 
 /-- The obvious presentation of the module `⨁ i, M i` that is obtained from
 the data of presentations of the module `M i` for each `i`. -/
-@[simps! G R relation var]
+@[simps! G R relation]
 noncomputable def directSum (pres : ∀ (i : ι), Presentation A (M i)) :
     Presentation A (⨁ i, M i) :=
   ofIsPresentation
     (Relations.Solution.IsPresentation.directSum (fun i ↦ (pres i).toIsPresentation))
 
-/-- The obvious presentation of the module `ι →₀ M` that is deduced from a presentation
-of the module `M`. -/
-noncomputable def finsupp {M : Type v} [AddCommGroup M] [Module A M]
-    (pres : Presentation A M) (ι : Type w)
-    [DecidableEq ι] [DecidableEq M] : Presentation A (ι →₀ M) :=
-  (directSum (fun (i : ι) ↦ pres)).ofLinearEquiv (by
-    symm
-    apply finsuppAddEquivDFinsupp.toLinearEquiv
-    intros
-    sorry)
+@[simp]
+lemma directSum_var (pres : ∀ (i : ι), Presentation A (M i)) (i : ι) (g : (pres i).G):
+    (directSum pres).var ⟨i, g⟩ = lof A ι M i ((pres i).var g) := rfl
+
+section
+
+variable {N : Type v} [AddCommGroup N] [Module A N]
+  (pres : Presentation A N) (ι : Type w) [DecidableEq ι] [DecidableEq N]
+
+/-- The obvious presentation of the module `ι →₀ N` that is deduced from a presentation
+of the module `N`. -/
+@[simps! G R relation]
+noncomputable def finsupp : Presentation A (ι →₀ N) :=
+  (directSum (fun (_ : ι) ↦ pres)).ofLinearEquiv (finsuppLequivDFinsupp _).symm
+
+@[simp]
+lemma finsupp_var (i : ι) (g : pres.G) :
+    (finsupp pres ι).var ⟨i, g⟩ = Finsupp.single i (pres.var g) := by
+  apply (finsuppLequivDFinsupp A).injective
+  erw [(finsuppLequivDFinsupp A).apply_symm_apply]
+  rw [directSum_var, finsuppLequivDFinsupp_apply_apply, Finsupp.toDFinsupp_single]
+  rfl
+
+end
 
 end Presentation
 
