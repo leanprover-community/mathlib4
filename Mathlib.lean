@@ -512,6 +512,7 @@ import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Presentation.Basic
 import Mathlib.Algebra.Module.Presentation.Free
 import Mathlib.Algebra.Module.Presentation.Cokernel
+import Mathlib.Algebra.Module.Presentation.Free
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Rat
