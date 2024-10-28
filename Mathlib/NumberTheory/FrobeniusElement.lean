@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.FieldTheory.Fixed
+import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Pointwise
 
 /-!
@@ -29,14 +30,6 @@ invariants.
 open scoped Pointwise
 
 section ForMathlib
-
--- PRed
-lemma Finset.smul_prod_perm
-    {A : Type*} [CommMonoid A] {G : Type*} [Group G] [Fintype G] [MulDistribMulAction G A]
-    (a : A) (g0 : G) : g0 • (∏ g : G, g • a) = ∏ g : G, g • a := by
-  simp_rw [Finset.smul_prod', smul_smul]
-  exact Finset.prod_bijective (fun g ↦ g0 * g)
-    (Group.mulLeft_bijective g0) (by simp) (fun g _ ↦ rfl)
 
 -- PRed
 lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
@@ -183,7 +176,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
 lemma Ideal.comap_smul (P : Ideal B) (g : G) :
-    (g • P).comap (algebraMap A B) = P.comap (algebraMap A B) := by
+    (g • P : Ideal B).under A = P.under A := by
   ext a
   rw [mem_comap, mem_comap, mem_pointwise_smul_iff_inv_smul_mem, smul_algebraMap]
 
@@ -191,11 +184,11 @@ lemma Ideal.comap_smul (P : Ideal B) (g : G) :
 theorem exists_smul_of_comap_eq [Finite G]
     (hAB : ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, b = algebraMap A B a)
     (P Q : Ideal B) [hP : P.IsPrime] [hQ : Q.IsPrime]
-    (hPQ : Ideal.comap (algebraMap A B) P = Ideal.comap (algebraMap A B) Q) :
+    (hPQ : P.under A = Q.under A) :
     ∃ g : G, Q = g • P := by
   cases nonempty_fintype G
-  have : ∀ (P Q : Ideal B) [P.IsPrime] [Q.IsPrime],
-      P.comap (algebraMap A B) = Q.comap (algebraMap A B) → ∃ g ∈ (⊤ : Finset G), Q ≤ g • P := by
+  have : ∀ (P Q : Ideal B) [P.IsPrime] [Q.IsPrime], P.under A = Q.under A →
+      ∃ g ∈ (⊤ : Finset G), Q ≤ g • P := by
     intro P Q hP hQ hPQ
     rw [← Ideal.subset_union_prime 1 1 (fun _ _ _ _ ↦ hP.smul _)]
     intro b hb
@@ -203,7 +196,8 @@ theorem exists_smul_of_comap_eq [Finite G]
       obtain ⟨g, -, hg⟩ := h
       apply Set.mem_biUnion (Finset.mem_univ g⁻¹) (Ideal.mem_inv_pointwise_smul_iff.mpr hg)
     obtain ⟨a, ha⟩ := hAB (∏ g : G, g • b) (Finset.smul_prod_perm b)
-    rw [← hP.prod_mem_iff, ha, ← P.mem_comap, hPQ, Q.mem_comap, ← ha, hQ.prod_mem_iff]
+    rw [← hP.prod_mem_iff, ha, ← P.mem_comap, ← P.under_def A,
+      hPQ, Q.mem_comap, ← ha, hQ.prod_mem_iff]
     exact ⟨1, Finset.mem_univ 1, (one_smul G b).symm ▸ hb⟩
   obtain ⟨g, -, hg⟩ := this P Q hPQ
   have h := hP.smul g -- should this be an instance?
@@ -262,19 +256,13 @@ theorem exists_map_eq_charpoly
       Polynomial.map_X, Polynomial.map_C, hf]
     exact (charpoly_monic G b).as_sum.symm
 
-variable (P : Ideal A) (Q : Ideal B) [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
-
 theorem isIntegral_quot_quot
     (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) :
-    Algebra.IsIntegral (A ⧸ P) (B ⧸ Q) where
-  isIntegral q := by
-    obtain ⟨b, rfl⟩ := Ideal.Quotient.mk_surjective q
-    change IsIntegral (A ⧸ P) (algebraMap B (B ⧸ Q) b)
+    Algebra.IsIntegral A B where
+  isIntegral b := by
     obtain ⟨f, hf1, hf2⟩ := exists_map_eq_charpoly hFull' b
-    refine ⟨f.map (algebraMap A (A ⧸ P)), hf1.map (algebraMap A (A ⧸ P)), ?_⟩
-    rw [← eval_map, map_map, ← IsScalarTower.algebraMap_eq,
-        IsScalarTower.algebraMap_eq A B (B ⧸ Q), ← map_map, hf2, eval_map, eval₂_at_apply,
-        charpoly_eval, map_zero]
+    refine ⟨f, hf1, ?_⟩
+    rw [← eval_map, hf2, charpoly_eval]
 
 end MulSemiringAction
 
@@ -284,7 +272,7 @@ section stabilizerAction
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
-  (P : Ideal A) (Q : Ideal B) [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
+  (P : Ideal A) (Q : Ideal B) [Q.LiesOver P]
 
 def stabilizerAction : MulAction.stabilizer G Q →* ((B ⧸ Q) ≃ₐ[A ⧸ P] (B ⧸ Q)) where
   toFun g :=
@@ -404,7 +392,7 @@ section redo_part_b
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
   (P : Ideal A) (Q : Ideal B) [Q.IsPrime]
-  [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
+  [Q.LiesOver P]
   variable (K L : Type*) [Field K] [Field L]
   [Algebra (A ⧸ P) K]
   [Algebra (B ⧸ Q) L] [NoZeroSMulDivisors (B ⧸ Q) L]
@@ -454,8 +442,7 @@ end redo_part_b
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
-  (P : Ideal A) (Q : Ideal B) [P.IsPrime] [Q.IsPrime]
-  [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A ⧸ P) (B ⧸ Q)]
+  (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
   variable (K L : Type*) [Field K] [Field L]
   [Algebra (A ⧸ P) K] [IsFractionRing (A ⧸ P) K]
   [Algebra (B ⧸ Q) L] [IsFractionRing (B ⧸ Q) L]
@@ -463,6 +450,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   [Algebra K L] [IsScalarTower (A ⧸ P) K L]
 
 noncomputable def fullHom : MulAction.stabilizer G Q →* (L ≃ₐ[K] L) :=
+  have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under A Q
   MonoidHom.comp (liftHom (A ⧸ P) (B ⧸ Q) K L) (stabilizerAction G P Q)
 
 theorem fullHom_surjective1
@@ -470,7 +458,9 @@ theorem fullHom_surjective1
     (f : L ≃ₐ[K] L) (x : L) (hx : ∀ g : MulAction.stabilizer G Q, fullHom G P Q K L g x = x) :
     f x = x := by
   obtain ⟨_⟩ := nonempty_fintype G
-  have := MulSemiringAction.isIntegral_quot_quot P Q hAB
+  have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under A Q
+  have : Algebra.IsIntegral A B := MulSemiringAction.isIntegral_quot_quot hAB
+  have := Ideal.Quotient.algebra_isIntegral_of_liesOver Q P
   obtain ⟨b, a, ha, rfl⟩ := lem0 (A ⧸ P) (B ⧸ Q) K L x
   simp only [map_div₀, IsScalarTower.algebraMap_apply (A ⧸ P) K L, AlgEquiv.commutes] at hx ⊢
   replace ha : algebraMap (A ⧸ P) L a ≠ 0 := by
