@@ -33,7 +33,7 @@ See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
 ### Equivalent characterization of linearly disjointness
 
 - `Subalgebra.LinearDisjoint.linearIndependent_left_of_flat`:
-  if `A` and `B` are linearly disjoint, if `B` is a flat `R`-module, then for any family of
+  if `A` and `B` are linearly disjoint, and if `B` is a flat `R`-module, then for any family of
   `R`-linearly independent elements of `A`, they are also `B`-linearly independent.
 
 - `Subalgebra.LinearDisjoint.of_basis_left_op`:
@@ -41,7 +41,7 @@ See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
   linearly disjoint.
 
 - `Subalgebra.LinearDisjoint.linearIndependent_right_of_flat`:
-  if `A` and `B` are linearly disjoint, if `A` is a flat `R`-module, then for any family of
+  if `A` and `B` are linearly disjoint, and if `A` is a flat `R`-module, then for any family of
   `R`-linearly independent elements of `B`, they are also `A`-linearly independent.
 
 - `Subalgebra.LinearDisjoint.of_basis_right`:
@@ -49,7 +49,7 @@ See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
   then `A` and `B` are linearly disjoint.
 
 - `Subalgebra.LinearDisjoint.linearIndependent_mul_of_flat`:
-  if `A` and `B` are linearly disjoint, if one of `A` and `B` is flat, then for any family of
+  if `A` and `B` are linearly disjoint, and if one of `A` and `B` is flat, then for any family of
   `R`-linearly independent elements `{ a_i }` of `A`, and any family of
   `R`-linearly independent elements `{ b_j }` of `B`, the family `{ a_i * b_j }` in `S` is
   also `R`-linearly independent.
