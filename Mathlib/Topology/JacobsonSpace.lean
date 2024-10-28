@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Topology.LocalAtTarget
 import Mathlib.Topology.Separation.Basic
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 
@@ -56,7 +57,7 @@ end closedPoints
 
 /-- The class of jacobson spaces, i.e.
 spaces such that the set of closed points are dense in every closed subspace. -/
-@[mk_iff]
+@[mk_iff, stacks 005U]
 class JacobsonSpace : Prop where
   closure_inter_closedPoints : ∀ {Z}, IsClosed Z → closure (Z ∩ closedPoints X) = Z
 
@@ -142,6 +143,9 @@ lemma JacobsonSpace.discreteTopology [JacobsonSpace X]
 
 instance (priority := 100) [Finite X] [JacobsonSpace X] : DiscreteTopology X :=
   JacobsonSpace.discreteTopology (Set.toFinite _)
+
+instance (priority := 100) [T2Space X] : JacobsonSpace X :=
+  ⟨by simp [closedPoints_eq_univ, closure_eq_iff_isClosed]⟩
 
 open TopologicalSpace in
 lemma jacobsonSpace_iff_of_iSup_eq_top {ι : Type*} {U : ι → Opens X} (hU : iSup U = ⊤) :

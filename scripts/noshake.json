@@ -198,6 +198,7 @@
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
+  "Mathlib.Topology.JacobsonSpace": ["Mathlib.Tactic.StacksAttribute"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
@@ -219,7 +220,8 @@
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.Positivity.Finset":
-  ["Mathlib.Algebra.Order.BigOperators.Group.Finset", "Mathlib.Data.Finset.Density"],
+  ["Mathlib.Algebra.Order.BigOperators.Group.Finset",
+   "Mathlib.Data.Finset.Density"],
   "Mathlib.Tactic.Positivity.Basic":
   ["Mathlib.Algebra.GroupPower.Order",
    "Mathlib.Algebra.Order.Group.PosPart",
