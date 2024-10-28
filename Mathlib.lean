@@ -509,6 +509,7 @@ import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
+import Mathlib.Algebra.Module.Presentation.Basic
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Rat
