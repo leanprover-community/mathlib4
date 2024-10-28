@@ -38,7 +38,7 @@ weak dual, seminorm
 -/
 
 
-variable {𝕜 E F ι : Type*}
+variable {𝕜 E F : Type*}
 
 open Topology
 
@@ -84,8 +84,6 @@ end BilinForm
 section Topology
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
-variable [Nonempty ι]
-variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
 
 theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     (𝓝 (0 : WeakBilin B)).HasBasis B.toSeminormFamily.basisSets _root_.id := by
@@ -134,7 +132,7 @@ end Topology
 section LocallyConvex
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
-variable [Nonempty ι] [NormedSpace ℝ 𝕜] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
+variable [NormedSpace ℝ 𝕜] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 
 instance WeakBilin.locallyConvexSpace {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} :
     LocallyConvexSpace ℝ (WeakBilin B) :=
