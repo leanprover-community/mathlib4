@@ -309,7 +309,7 @@ theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L
 variable {X Y}
 
 /-- The action by an intermediate field is the action by the underlying field. -/
-instance [SMul L X] (F : IntermediateField K L): SMul F X :=
+instance [SMul L X] (F : IntermediateField K L) : SMul F X :=
   inferInstanceAs (SMul F.toSubfield X)
 
 theorem smul_def [SMul L X] {F : IntermediateField K L} (g : F) (m : X) : g • m = (g : L) • m :=

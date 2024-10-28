@@ -14,6 +14,7 @@ import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Instances.Int
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Order.Bornology
+import Mathlib.Topology.Algebra.UniformGroup.Basic
 
 /-!
 # Topological properties of ℝ

@@ -814,7 +814,7 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClas
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
 lemma nsmul_sup' {α β : Type*} [AddMonoid β] [LinearOrder β]
-    [CovariantClass β β (· + ·) (· ≤ ·)] [CovariantClass β β (swap (· + ·)) (· ≤ ·)]
+    [AddLeftMono β] [AddRightMono β]
     {s : Finset α} (hs : s.Nonempty) (f : α → β) (n : ℕ) :
     s.sup' hs (fun a => n • f a) = n • s.sup' hs f :=
   let ns : SupHom β β := { toFun := (n • ·), map_sup' := fun _ _ => (nsmul_right_mono n).map_max }
@@ -966,7 +966,7 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [FunLike F α β] [InfHomClas
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
 lemma nsmul_inf' {α β : Type*} [AddMonoid β] [LinearOrder β]
-    [CovariantClass β β (· + ·) (· ≤ ·)] [CovariantClass β β (swap (· + ·)) (· ≤ ·)]
+    [AddLeftMono β] [AddRightMono β]
     {s : Finset α} (hs : s.Nonempty) (f : α → β) (n : ℕ) :
     s.inf' hs (fun a => n • f a) = n • s.inf' hs f :=
   let ns : InfHom β β := { toFun := (n • ·), map_inf' := fun _ _ => (nsmul_right_mono n).map_min }
@@ -1181,12 +1181,18 @@ theorem mem_sup {α β} [DecidableEq β] {s : Finset α} {f : α → Multiset β
 end Multiset
 
 namespace Finset
+variable [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α}
 
-theorem mem_sup {α β} [DecidableEq β] {s : Finset α} {f : α → Finset β} {x : β} :
-    x ∈ s.sup f ↔ ∃ v ∈ s, x ∈ f v := by
-  change _ ↔ ∃ v ∈ s, x ∈ (f v).val
-  rw [← Multiset.mem_sup, ← Multiset.mem_toFinset, sup_toFinset]
-  simp_rw [val_toFinset]
+set_option linter.docPrime false in
+@[simp] lemma mem_sup' (hs) : a ∈ s.sup' hs f ↔ ∃ i ∈ s, a ∈ f i := by
+  induction' hs using Nonempty.cons_induction <;> simp [*]
+
+set_option linter.docPrime false in
+@[simp] lemma mem_inf' (hs) : a ∈ s.inf' hs f ↔ ∀ i ∈ s, a ∈ f i := by
+  induction' hs using Nonempty.cons_induction <;> simp [*]
+
+@[simp] lemma mem_sup : a ∈ s.sup f ↔ ∃ i ∈ s, a ∈ f i := by
+  induction' s using cons_induction <;> simp [*]
 
 theorem sup_eq_biUnion {α β} [DecidableEq β] (s : Finset α) (t : α → Finset β) :
     s.sup t = s.biUnion t := by
@@ -1194,14 +1200,14 @@ theorem sup_eq_biUnion {α β} [DecidableEq β] (s : Finset α) (t : α → Fins
   rw [mem_sup, mem_biUnion]
 
 @[simp]
-theorem sup_singleton'' [DecidableEq α] (s : Finset β) (f : β → α) :
+theorem sup_singleton'' (s : Finset β) (f : β → α) :
     (s.sup fun b => {f b}) = s.image f := by
   ext a
   rw [mem_sup, mem_image]
   simp only [mem_singleton, eq_comm]
 
 @[simp]
-theorem sup_singleton' [DecidableEq α] (s : Finset α) : s.sup singleton = s :=
+theorem sup_singleton' (s : Finset α) : s.sup singleton = s :=
   (s.sup_singleton'' _).trans image_id
 
 end Finset
