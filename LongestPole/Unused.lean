@@ -12,9 +12,25 @@ import Mathlib.Util.FormatTable
 /-!
 # `lake exe unused`
 
-Reports blocks of transitively unused imports in a sequence of modules.
+A tool for library-scale analysis of unused imports.
 
-Typically used via `scripts/unused_in_pole.sh`.
+`lake exe unused module_1 module_2 ... module_n` will generate a markdown table with rows and
+columns indexed 1 through n, with an `x` in `(i, j)` if `module_i` transitively imports `module_j`,
+but makes no direct use of the declarations there.
+
+(This is often an indication that some *intermediate* file `module_k` could be split into two parts,
+one that needs `module_j`, and another that is needed by `module_i`, thereby removing the transitive
+import of `module_j` into `module_i`.)
+
+The tool further identifies large rectangles of `x`s in this table, and suggests `lake exe graph`
+commands that can show the dependency structure from the unused import up to the earliest file which
+"unnecessarily" transitively imports it.
+
+`scripts/unused_in_pole.sh module` (or no argument for all of Mathlib), will calculate the current
+longest pole in Mathlib (note for this you need to be on a commit on which the speed center has
+run), and then feed that list of modules into `lake exe unused`.
+
+Demo video at https://youtu.be/PVj_FHGwhUI
 -/
 
 
