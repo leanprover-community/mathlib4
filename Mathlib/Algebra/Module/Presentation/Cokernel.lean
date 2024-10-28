@@ -104,8 +104,8 @@ noncomputable def isPresentationCore :
           rw [Set.mem_preimage, SetLike.mem_coe, LinearMap.mem_ker, ← data.π_lift,
             Relations.Solution.IsPresentation.π_desc_apply]
           exact s.linearCombination_var_relation (.inr i))
-  postcomp_desc {N _ _ s} := by aesop
-  postcomp_injective {N _ _ f f'} h := by
+  postcomp_desc s := by aesop
+  postcomp_injective h := by
     ext : 1
     apply pres₂.toIsPresentation.postcomp_injective
     ext g
