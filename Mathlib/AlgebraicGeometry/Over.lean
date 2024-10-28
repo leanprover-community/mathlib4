@@ -18,7 +18,6 @@ We define these as thin wrappers around `CategoryTheory/Comma/OverClass`.
 
 -/
 
-
 namespace AlgebraicGeometry.Scheme
 
 universe u
