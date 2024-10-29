@@ -2439,7 +2439,7 @@ theorem ring_inverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : 
 ring of self-maps of the domain. -/
 theorem to_ring_inverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     inverse f = Ring.inverse ((e.symm : M₂ →L[R] M).comp f) ∘L e.symm := by
-  by_cases h₁ : ∃ e' : M ≃L[R] M₂, e' = f
+  by_cases h₁ : f.IsInvertible
   · obtain ⟨e', he'⟩ := h₁
     rw [← he']
     change _ = Ring.inverse (e'.trans e.symm : M →L[R] M) ∘L (e.symm : M₂ →L[R] M)
@@ -2564,15 +2564,4 @@ def opContinuousLinearEquiv : M ≃L[R] Mᵐᵒᵖ where
 
 end MulOpposite
 
-
-namespace ContinuousLinearMap
-
-variable {R : Type*} [Semiring R]
-  {E : Type*} [TopologicalSpace E] [AddCommGroup E] [Module R E]
-  {F : Type*} [TopologicalSpace F] [AddCommGroup F] [Module R F]
-  {G : Type*} [TopologicalSpace G] [AddCommGroup G] [Module R G]
-
-end ContinuousLinearMap
-
-
-set_option linter.style.longFile 2500
+set_option linter.style.longFile 2700
