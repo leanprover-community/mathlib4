@@ -40,6 +40,12 @@ def algebraicClosure : IntermediateField K L :=
 
 namespace IntermediateField
 
+instance isAlgebraic_tower_bot [Algebra.IsAlgebraic K L] : Algebra.IsAlgebraic K S :=
+  Algebra.IsAlgebraic.of_injective S.val S.val.injective
+
+instance isAlgebraic_tower_top [Algebra.IsAlgebraic K L] : Algebra.IsAlgebraic S L :=
+  Algebra.IsAlgebraic.tower_top (K := K) S
+
 section FiniteDimensional
 
 variable (F E : IntermediateField K L)
@@ -111,12 +117,6 @@ theorem isIntegral_iff {x : S} : IsIntegral K x ↔ IsIntegral K (x : L) :=
 
 theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) :=
   (minpoly.algebraMap_eq (algebraMap S L).injective x).symm
-
-instance isAlgebraic [Algebra.IsAlgebraic K L] : Algebra.IsAlgebraic K F := by
-  constructor
-  intro x
-  rw [← isAlgebraic_iff, ← isAlgebraic_iff]
-  exact Algebra.IsAlgebraic.isAlgebraic x
 
 end IntermediateField
 
