@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Jireh Loreaux
 -/
 
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.RingTheory.Congruence.Opposite
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Order.GaloisConnection
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.RingTheory.Congruence.Opposite
+import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
 /-!
 # Operations on two-sided ideals

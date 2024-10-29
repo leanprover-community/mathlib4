@@ -64,6 +64,13 @@ lemma Submodule.localized'_bot : (⊥ : Submodule R M).localized' S p f = ⊥ :=
   simp only [IsLocalizedModule.mk'_zero, mem_bot]
 
 @[simp]
+lemma Submodule.localized'_top : (⊤ : Submodule R M).localized' S p f = ⊤ := by
+  rw [← top_le_iff]
+  rintro x _
+  obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f x
+  exact ⟨x, trivial, s, rfl⟩
+
+@[simp]
 lemma Submodule.localized'_span (s : Set M) : (span R s).localized' S p f = span S (f '' s) := by
   apply le_antisymm
   · rintro _ ⟨x, hx, t, rfl⟩

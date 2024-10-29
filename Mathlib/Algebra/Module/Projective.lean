@@ -177,7 +177,7 @@ theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 theorem Projective.of_ringEquiv {R S} [Semiring R] [Semiring S] {M N}
-    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] [Module S N]
+    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S N]
     (e₁ : R ≃+* S) (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] N)
     [Projective R M] : Projective S N := by
   obtain ⟨f, hf⟩ := ‹Projective R M›

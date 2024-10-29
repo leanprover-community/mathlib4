@@ -6,10 +6,11 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
-import Mathlib.Order.SymmDiff
+import Mathlib.Order.BooleanAlgebra
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
 import Mathlib.Util.Delaborators
+import Mathlib.Tactic.Lift
 
 /-!
 # Basic properties of sets
@@ -1694,43 +1695,6 @@ theorem subset_pair_iff_eq {x y : α} : s ⊆ {x, y} ↔ s = ∅ ∨ s = {x} ∨
 theorem Nonempty.subset_pair_iff_eq (hs : s.Nonempty) :
     s ⊆ {a, b} ↔ s = {a} ∨ s = {b} ∨ s = {a, b} := by
   rw [Set.subset_pair_iff_eq, or_iff_right]; exact hs.ne_empty
-
-/-! ### Symmetric difference -/
-
-section
-
-open scoped symmDiff
-
-theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s :=
-  Iff.rfl
-
-protected theorem symmDiff_def (s t : Set α) : s ∆ t = s \ t ∪ t \ s :=
-  rfl
-
-theorem symmDiff_subset_union : s ∆ t ⊆ s ∪ t :=
-  @symmDiff_le_sup (Set α) _ _ _
-
-@[simp]
-theorem symmDiff_eq_empty : s ∆ t = ∅ ↔ s = t :=
-  symmDiff_eq_bot
-
-@[simp]
-theorem symmDiff_nonempty : (s ∆ t).Nonempty ↔ s ≠ t :=
-  nonempty_iff_ne_empty.trans symmDiff_eq_empty.not
-
-theorem inter_symmDiff_distrib_left (s t u : Set α) : s ∩ t ∆ u = (s ∩ t) ∆ (s ∩ u) :=
-  inf_symmDiff_distrib_left _ _ _
-
-theorem inter_symmDiff_distrib_right (s t u : Set α) : s ∆ t ∩ u = (s ∩ u) ∆ (t ∩ u) :=
-  inf_symmDiff_distrib_right _ _ _
-
-theorem subset_symmDiff_union_symmDiff_left (h : Disjoint s t) : u ⊆ s ∆ u ∪ t ∆ u :=
-  h.le_symmDiff_sup_symmDiff_left
-
-theorem subset_symmDiff_union_symmDiff_right (h : Disjoint t u) : s ⊆ s ∆ t ∪ s ∆ u :=
-  h.le_symmDiff_sup_symmDiff_right
-
-end
 
 /-! ### Powerset -/
 

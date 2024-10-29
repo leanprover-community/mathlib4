@@ -92,11 +92,9 @@ def NullMeasurableSet [MeasurableSpace α] (s : Set α)
 theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasurableSet s μ :=
   h.eventuallyMeasurableSet
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem nullMeasurableSet_empty : NullMeasurableSet ∅ μ :=
   MeasurableSet.empty
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem nullMeasurableSet_univ : NullMeasurableSet univ μ :=
   MeasurableSet.univ
 
@@ -173,7 +171,6 @@ protected theorem disjointed {f : ℕ → Set α} (h : ∀ i, NullMeasurableSet 
     NullMeasurableSet (disjointed f n) μ :=
   MeasurableSet.disjointed h n
 
--- @[simp] -- Porting note (#10618): simp can prove thisrove this
 protected theorem const (p : Prop) : NullMeasurableSet { _a : α | p } μ :=
   MeasurableSet.const p
 
