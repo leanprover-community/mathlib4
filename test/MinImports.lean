@@ -74,6 +74,7 @@ import Mathlib.Data.Nat.Notation
 #min_imports in
 lemma hi (n : ℕ) : n = n := by extract_goal; rfl
 
+set_option linter.minImports.increases false
 /--
 warning: Imports increased by X to
 [Init.Guard, Mathlib.Data.Int.Notation]
