@@ -224,9 +224,6 @@ protected theorem IsEmbedding.isSeparable_preimage {f : β → α} [TopologicalS
     (hf : IsEmbedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
   hf.isInducing.isSeparable_preimage hs
 
-@[deprecated (since := "2024-10-28")]
-alias _root_.IsEmbedding.isSeparable_preimage := IsEmbedding.isSeparable_preimage
-
 @[deprecated (since := "2024-10-26")]
 alias _root_.Embedding.isSeparable_preimage := IsEmbedding.isSeparable_preimage
 
