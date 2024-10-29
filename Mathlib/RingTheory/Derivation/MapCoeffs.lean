@@ -113,7 +113,7 @@ def mapCoeffs : Derivation ℤ A[X] A[X] :=
   PolynomialModule.equivPolynomialSelf.compDer Differential.deriv.mapCoeffs
 
 @[simp]
-lemma mapCoeffs_apply (p : A[X]) (i) :
+lemma coeff_mapCoeffs (p : A[X]) (i) :
     coeff (mapCoeffs p) i = (coeff p i)′ := rfl
 
 @[simp]
