@@ -257,7 +257,7 @@ theorem dist_cone_neg {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 
 
 /-- -/
 lemma posOrNeg {n : ℕ} {a : { v : Fin n → ℝ // v ≠ 0 }} :
-  ∃ j : Fin n, a.1 j > 0 ∨ a.1 j < 0 := by
+    ∃ j : Fin n, a.1 j > 0 ∨ a.1 j < 0 := by
   by_contra H
   push_neg at H
   have (j) : a.1 j = 0 := by linarith[H j]
