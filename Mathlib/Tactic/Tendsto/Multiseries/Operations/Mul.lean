@@ -2140,7 +2140,7 @@ mutual
 
 end
 
-set_option maxHeartbeats 400000 in -- TODO : very slow. May be speed up?
+set_option maxHeartbeats 400000 in -- TODO : very slow. How to speed up?
 mutual
 
   theorem mulMonomial_isApproximation {basis_hd : _} {basis_tl : _} {B M : ℝ → ℝ} {b : PreMS (basis_hd :: basis_tl)}
@@ -2813,5 +2813,24 @@ mutual
 end
 
 end PreMS
+
+noncomputable def MS.mul (x y : MS) (h_basis_eq : y.basis = x.basis) (h_basis_wo : MS.wellOrderedBasis x.basis) : MS where
+  basis := x.basis
+  val := x.val.mul (h_basis_eq ▸ y.val)
+  F := x.F * y.F
+  h_wo := by
+    have := y.h_wo
+    apply PreMS.mul_wellOrdered x.h_wo
+    generalize y.val = z at *
+    generalize y.basis = b at *
+    subst h_basis_eq
+    simpa
+  h_approx := by
+    have := y.h_approx
+    apply PreMS.mul_isApproximation h_basis_wo x.h_approx
+    generalize y.val = z at *
+    generalize y.basis = b at *
+    subst h_basis_eq
+    simpa
 
 end TendstoTactic

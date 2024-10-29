@@ -28,6 +28,22 @@ instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : Neg (PreMS (basis_hd :: b
 
 open Filter Asymptotics
 
+theorem const_wellOrdered {c : ℝ} {basis : Basis} :
+    (const c basis).wellOrdered := by
+  cases basis with
+  | nil => constructor
+  | cons basis_hd basis_tl =>
+    simp [const]
+    apply wellOrdered.cons
+    · exact const_wellOrdered
+    · simp [leadingExp, Ne.bot_lt] -- may be `Ne.bot_lt` should be simp lemma?
+    · apply wellOrdered.nil
+
+theorem zero_wellOrdered {basis : Basis} : (0 : PreMS basis).wellOrdered := by
+  cases basis with
+  | nil => constructor
+  | cons => exact wellOrdered.nil
+
 -- TODO : move it
 theorem const_isApproximation_const {c : ℝ} {basis : Basis} (h_wo : MS.wellOrderedBasis basis) :
     (const c basis).isApproximation (fun _ ↦ c) basis := by
@@ -36,8 +52,7 @@ theorem const_isApproximation_const {c : ℝ} {basis : Basis} (h_wo : MS.wellOrd
   | cons basis_hd basis_tl =>
     simp [const]
     have ih : (const c basis_tl).isApproximation (fun _ ↦ c) basis_tl := by
-      simp [MS.wellOrderedBasis] at h_wo
-      apply const_isApproximation_const h_wo.right.left
+      apply const_isApproximation_const (MS.wellOrderedBasis_tail h_wo)
     apply isApproximation.cons _ ih
     · intro deg h_deg
       apply Asymptotics.isLittleO_const_left.mpr
@@ -62,6 +77,61 @@ theorem zero_isApproximation_zero {basis : Basis} :
 theorem one_isApproximation_one {basis : Basis} (h_wo : MS.wellOrderedBasis basis) :
     (one basis).isApproximation (fun _ ↦ 1) basis :=
   const_isApproximation_const h_wo
+
+theorem monomial_wellOrdered {basis : Basis} {n : ℕ} : (monomial basis n).wellOrdered := by
+  cases basis with
+  | nil =>
+    cases n with
+    | zero =>
+      simp [monomial]
+      constructor
+    | succ m =>
+      simp [monomial, default]
+      apply zero_wellOrdered
+  | cons basis_hd basis_tl =>
+    cases n with
+    | zero =>
+      simp [monomial]
+      apply wellOrdered.cons
+      · exact const_wellOrdered
+      · simp [leadingExp, Ne.bot_lt]
+      · exact wellOrdered.nil
+    | succ m =>
+      simp [monomial]
+      apply wellOrdered.cons
+      · exact monomial_wellOrdered
+      · simp [leadingExp, Ne.bot_lt]
+      · exact wellOrdered.nil
+
+theorem monomial_isApproximation {basis : Basis} {n : ℕ} (h : n < basis.length)
+    (h_wo : MS.wellOrderedBasis basis) : (monomial basis n).isApproximation basis[n] basis := by
+  cases basis with
+  | nil =>
+    simp at h
+  | cons basis_hd basis_tl =>
+    cases n with
+    | zero =>
+      simp [monomial]
+      apply isApproximation.cons (fun _ ↦ 1)
+      · exact one_isApproximation_one (MS.wellOrderedBasis_tail h_wo)
+      · nth_rw 1 [show basis_hd = fun x ↦ (basis_hd x)^(1 : ℝ) by ext x; simp]
+        apply PreMS.majorated_self
+        apply MS.basis_tendsto_top h_wo
+        simp
+      · simp
+        apply isApproximation.nil
+        rfl
+    | succ m =>
+      simp [monomial]
+      apply isApproximation.cons
+      · apply monomial_isApproximation
+        · simpa using h
+        · exact MS.wellOrderedBasis_tail h_wo
+      · apply MS.basis_tail_majorated_head h_wo
+        apply List.getElem_mem
+      · simp
+        apply isApproximation.nil
+        rfl
 
 @[simp]
 theorem mulConst_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
@@ -198,7 +268,6 @@ theorem mulConst_isApproximation {basis : Basis} {ms : PreMS basis} {c : ℝ} {F
       use ms
       use F
 
-
 @[simp]
 theorem neg_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : PreMS (basis_hd :: basis_tl)} :
     X.neg.leadingExp = X.leadingExp := by
@@ -228,5 +297,19 @@ theorem neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
   simp [neg]
 
 end PreMS
+
+def MS.monomial (basis : Basis) (n : ℕ) (h : n < basis.length) (h_basis : MS.wellOrderedBasis basis) : MS where
+  basis := basis
+  val := PreMS.monomial basis n
+  F := basis[n]
+  h_wo := PreMS.monomial_wellOrdered
+  h_approx := PreMS.monomial_isApproximation h h_basis
+
+def MS.neg (x : MS) : MS where
+  basis := x.basis
+  val := x.val.neg
+  F := -x.F
+  h_wo := PreMS.neg_wellOrdered x.h_wo
+  h_approx := PreMS.neg_isApproximation x.h_approx
 
 end TendstoTactic

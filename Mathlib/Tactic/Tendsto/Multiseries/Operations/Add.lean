@@ -403,6 +403,7 @@ private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
   · simp only [motive]
     use X, Y, Z
 
+-- to be able to use `abel` tactic
 noncomputable instance instAddCommMonoid (basis : List (ℝ → ℝ)) : AddCommMonoid (PreMS basis) where
   zero_add := by
     intro a
@@ -792,7 +793,25 @@ theorem add_isApproximation {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ →
       use fX
       use fY
 
-
 end PreMS
+
+noncomputable def MS.add (x y : MS) (h_basis : y.basis = x.basis) : MS where
+  basis := x.basis
+  val := x.val.add (h_basis ▸ y.val)
+  F := x.F + y.F
+  h_wo := by
+    have := y.h_wo
+    apply PreMS.add_wellOrdered x.h_wo
+    generalize y.val = z at *
+    generalize y.basis = b at *
+    subst h_basis
+    simpa
+  h_approx := by
+    have := y.h_approx
+    apply PreMS.add_isApproximation x.h_approx
+    generalize y.val = z at *
+    generalize y.basis = b at *
+    subst h_basis
+    simpa
 
 end TendstoTactic

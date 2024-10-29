@@ -66,7 +66,7 @@ theorem fun_inv {t : MS.Term} {basis : Basis} (h_basis : MS.wellOrderedBasis bas
     | nil => simp
     | cons basis_hd basis_tl =>
       unfold EventuallyEq
-      specialize ih h_basis.right.left
+      specialize ih (MS.wellOrderedBasis_tail h_basis)
       unfold EventuallyEq at ih
       apply Eventually.mono ((MS.basis_head_eventually_pos h_basis).and ih)
       rintro x ⟨h_pos, ih⟩
@@ -243,7 +243,7 @@ theorem IsEquivalent_of_nonzero_head {coef deg : ℝ} {tl : List ℝ} {basis : L
           rw [← Function.comp_def]
           apply Filter.Tendsto.comp Real.tendsto_log_atTop
           simp [MS.wellOrderedBasis] at h_basis
-          exact h_basis.left
+          exact h_basis.right.left
         rw [show (fun x ↦ Real.log coef + deg * Real.log (basis_hd x)) =
           (fun _ ↦ Real.log coef) + (fun x ↦ deg * Real.log (basis_hd x)) by rfl]
         apply Asymptotics.IsLittleO.trans_isTheta _ (Asymptotics.IsLittleO.right_isTheta_add this)
@@ -421,7 +421,7 @@ theorem tail_fun_IsLittleO_head {t : MS.Term} {basis_hd : ℝ → ℝ} {basis_tl
     apply Tendsto.comp tendsto_norm_atTop_atTop
     apply Tendsto.comp (tendsto_rpow_atTop h_deg)
     simp [MS.wellOrderedBasis] at h_basis
-    exact h_basis.left
+    exact h_basis.right.left
   | cons degs_hd degs_tl ih =>
     cases basis_tl with
     | nil =>
@@ -430,7 +430,7 @@ theorem tail_fun_IsLittleO_head {t : MS.Term} {basis_hd : ℝ → ℝ} {basis_tl
       simp only [List.zip_cons_cons, List.foldl_cons]
       unfold MS.wellOrderedBasis at h_basis
       simp only [List.length_cons, add_left_inj] at h_length
-      specialize ih h_basis.right.left h_length
+      specialize ih (MS.wellOrderedBasis_tail h_basis) h_length
       conv at ih =>
         lhs
         ext
@@ -450,8 +450,8 @@ theorem tail_fun_IsLittleO_head {t : MS.Term} {basis_hd : ℝ → ℝ} {basis_tl
       have h_comp : ∀ (a b : ℝ), (0 < a) → (fun x ↦ (basis_tl_hd x)^b) =o[atTop] fun x ↦ (basis_hd x)^a := by
         intro a b ha
         simp [MS.wellOrderedBasis] at h_basis
-        apply MS.basis_compare b a (Tendsto.eventually_gt_atTop h_basis.right.left.left 0)
-          h_basis.left h_basis.right.right ha
+        apply MS.basis_compare b a (Tendsto.eventually_gt_atTop h_basis.right.right.left 0)
+          h_basis.right.left h_basis.left.left.left ha
 
       have ih := IsLittleO.trans ih (h_comp (deg / 2) deg (by linarith))
 

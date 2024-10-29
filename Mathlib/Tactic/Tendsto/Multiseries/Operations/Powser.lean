@@ -430,9 +430,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
             · exact h_ms_eq
             · constructor
               · apply mul_isApproximation (MS.wellOrderedBasis_tail h_basis)
-                · apply const_isApproximation_const
-                  simp [MS.wellOrderedBasis] at h_basis
-                  exact h_basis.right.left
+                · apply const_isApproximation_const (MS.wellOrderedBasis_tail h_basis)
                 · exact hY_coef
               · constructor
                 · intro deg h_deg
@@ -459,7 +457,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                   · simp only [EventuallyEq] at hf_eq hX_approx ⊢
                     apply Eventually.mono <| (hf_eq.and hX_approx).and hF_in_ball
                     intro x ⟨⟨hf_eq, hX_approx⟩, hF_in_ball⟩
-                    simp [hf_eq, hX_approx, toFun_cons h_analytic hF_in_ball] -- add h_analytic to toFun_cons
+                    simp [hf_eq, hX_approx, toFun_cons h_analytic hF_in_ball]
                     ring_nf!
                   constructor
                   · rfl
@@ -467,9 +465,8 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                   · apply mulMonomial_wellOrdered hY_tl_wo
                     exact const_wellOrdered
                   constructor
-                  · simp [MS.wellOrderedBasis] at h_basis
-                    have := mulMonomial_isApproximation h_basis (m_coef := const s_hd basis_tl) (m_deg := 0) hY_tl
-                      (const_isApproximation_const h_basis.right.left)
+                  · have := mulMonomial_isApproximation h_basis (m_coef := const s_hd basis_tl) (m_deg := 0) hY_tl
+                      (const_isApproximation_const (MS.wellOrderedBasis_tail h_basis))
                     simpa using this
                   constructor
                   · apply mul_wellOrdered h_wo hY_wo
@@ -659,8 +656,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
               · exact h_ms_eq
               constructor
               · apply mul_isApproximation (MS.wellOrderedBasis_tail h_basis)
-                · simp [MS.wellOrderedBasis] at h_basis
-                  apply const_isApproximation_const h_basis.right.left
+                · apply const_isApproximation_const (MS.wellOrderedBasis_tail h_basis)
                 · exact hY_coef
               constructor
               · intro deg h_deg
@@ -705,9 +701,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                     rw [show s_hd = (fun x ↦ s_hd * (basis_hd x)^(0 : ℝ)) x by simp]
                   apply mulMonomial_isApproximation h_basis
                   · exact hY_tl
-                  · apply const_isApproximation_const
-                    simp [MS.wellOrderedBasis] at h_basis
-                    exact h_basis.right.left
+                  · exact const_isApproximation_const (MS.wellOrderedBasis_tail h_basis)
               constructor
               · apply mul_wellOrdered
                 · exact h_wo
@@ -727,9 +721,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
               · apply add_isApproximation
                 · exact hX_coef
                 · apply mul_isApproximation (MS.wellOrderedBasis_tail h_basis)
-                  · apply const_isApproximation_const
-                    simp [MS.wellOrderedBasis] at h_basis
-                    exact h_basis.right.left
+                  · apply const_isApproximation_const (MS.wellOrderedBasis_tail h_basis)
                   · exact hY_coef
               constructor
               · intro deg h_deg
@@ -773,9 +765,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : analytic s) {basis 
                     rw [show s_hd = (fun x ↦ s_hd * (basis_hd x)^(0 : ℝ)) x by simp]
                   apply mulMonomial_isApproximation h_basis
                   · exact hY_tl
-                  · apply const_isApproximation_const
-                    simp [MS.wellOrderedBasis] at h_basis
-                    exact h_basis.right.left
+                  · apply const_isApproximation_const (MS.wellOrderedBasis_tail h_basis)
               constructor
               · apply mul_wellOrdered
                 · exact h_wo

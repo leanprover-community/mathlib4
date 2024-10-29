@@ -96,9 +96,8 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
       replace h_wo := wellOrdered_cons h_wo
       obtain ⟨h_coef_wo, _, _⟩ := h_wo
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := isTrimmed_cons h_trimmed
-      simp [MS.wellOrderedBasis] at h_basis
       let coef_ih := coef.leadingTerm_eventually_ne_zero h_coef_wo h_coef_trimmed h_coef_ne_zero
-        h_basis.right.left
+        (MS.wellOrderedBasis_tail h_basis)
       apply Eventually.mono <| coef_ih.and (MS.basis_head_eventually_pos h_basis)
       rintro x ⟨coef_ih, h_basis_hd_pos⟩
       simp [leadingTerm, MS.Term.toFun, -ne_eq]
@@ -127,7 +126,7 @@ mutual
       (h_basis : MS.wellOrderedBasis (basis_hd :: basis_tl)) :
       F ~[atTop] fun x ↦ (basis_hd x)^deg * (C x) := by
     have coef_ih := coef.IsEquivalent_leadingTerm (F := C) h_coef_wo h_coef h_coef_trimmed
-      h_basis.right.left
+      (MS.wellOrderedBasis_tail h_basis)
     simp [IsEquivalent]
     eta_expand
     simp only [Pi.sub_apply]
@@ -158,11 +157,10 @@ mutual
           apply IsLittleO.trans_eventuallyEq _ this.symm
           have := IsEquivalent.inv coef_ih
           apply IsEquivalent.trans_isLittleO this
-          apply EventuallyEq.trans_isLittleO (MS.Term.fun_inv h_basis.right.left)
+          apply EventuallyEq.trans_isLittleO (MS.Term.fun_inv ((MS.wellOrderedBasis_tail h_basis)))
           apply MS.Term.tail_fun_IsLittleO_head
           · rw [MS.Term.inv_length, PreMS.leadingTerm_length]
-          · simp [MS.wellOrderedBasis]
-            tauto
+          · exact h_basis
           · simp only [deg']
             linarith
         · apply Eventually.mono <| MS.basis_head_eventually_pos h_basis
@@ -175,7 +173,7 @@ mutual
             apply eventually_gt_of_tendsto_gt (by simp) h_φ
           apply EventuallyEq.rw (p := fun _ b => b ≠ 0) h_C.symm
           apply Eventually.mono <| h_φ_pos.and (leadingTerm_eventually_ne_zero h_coef_wo
-            h_coef_trimmed h_coef_ne_zero h_basis.right.left)
+            h_coef_trimmed h_coef_ne_zero ((MS.wellOrderedBasis_tail h_basis)))
           rintro x ⟨h_φ_pos, h⟩
           exact mul_ne_zero h_φ_pos.ne.symm h
         apply Eventually.mono <| h_C_ne_zero.and
@@ -208,9 +206,8 @@ mutual
         obtain ⟨C, h_coef, h_comp, h_tl⟩ := isApproximation_cons h_approx
         obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := isTrimmed_cons h_trimmed
         obtain ⟨h_coef_wo, h_comp_wo, h_tl_wo⟩ := wellOrdered_cons h_wo
-        simp [MS.wellOrderedBasis] at h_basis
         have coef_ih := coef.IsEquivalent_leadingTerm (F := C) h_coef_wo h_coef h_coef_trimmed
-          h_basis.right.left
+          (MS.wellOrderedBasis_tail h_basis)
         have : F ~[atTop] fun x ↦ (basis_hd x)^deg * (C x) :=
           PreMS.IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp_wo h_basis
         apply IsEquivalent.trans this

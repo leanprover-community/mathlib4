@@ -866,24 +866,15 @@ def zero (basis) : PreMS basis :=
 def one (basis : Basis) : PreMS basis :=
   const 1 basis
 
+def monomial (basis : Basis) (n : ℕ) : PreMS basis :=
+  match n, basis with
+  | 0, [] => 1
+  | 0, List.cons basis_hd basis_tl => .cons (1, one _) .nil
+  | m + 1, [] => default
+  | m + 1, List.cons basis_hd basis_tl => .cons (0, monomial basis_tl m) .nil
+
 instance instZero {basis : Basis} : Zero (PreMS basis) where
   zero := zero basis
-
-theorem const_wellOrdered {c : ℝ} {basis : Basis} :
-    (const c basis).wellOrdered := by
-  cases basis with
-  | nil => constructor
-  | cons basis_hd basis_tl =>
-    simp [const]
-    apply wellOrdered.cons
-    · exact const_wellOrdered
-    · simp [leadingExp, Ne.bot_lt] -- may be `Ne.bot_lt` should be simp lemma?
-    · apply wellOrdered.nil
-
-theorem zero_wellOrdered {basis : Basis} : (0 : PreMS basis).wellOrdered := by
-  cases basis with
-  | nil => constructor
-  | cons => exact wellOrdered.nil
 
 end PreMS
 
