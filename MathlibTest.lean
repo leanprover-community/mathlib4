@@ -158,6 +158,7 @@ import MathlibTest.fin_cases
 import MathlibTest.finset_builder
 import MathlibTest.finset_repr
 import MathlibTest.finsupp_notation
+import MathlibTest.format_table
 import MathlibTest.fun_prop
 import MathlibTest.fun_prop2
 import MathlibTest.fun_prop_dev
