@@ -203,7 +203,7 @@ theorem preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' (h '' s) = s :=
 lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
   h.toEquiv.image_compl s
 
-protected lemma isInducing (h : X ≃ₜ Y) : IsInducing h :=
+lemma isInducing (h : X ≃ₜ Y) : IsInducing h :=
   .of_comp h.continuous h.symm.continuous <| by simp only [symm_comp_self, IsInducing.id]
 
 @[deprecated (since := "2024-10-28")] alias inducing := isInducing
