@@ -2353,7 +2353,6 @@ import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.FunLike.Fintype
 import Mathlib.Data.Holor
 import Mathlib.Data.Int.AbsoluteValue
-import Mathlib.Data.Int.Align
 import Mathlib.Data.Int.Associated
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.CardIntervalMod
