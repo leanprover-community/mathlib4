@@ -56,12 +56,10 @@ local notation3:1000 (priority := high) X " _[" n "]" =>
 def SSet.OneTruncation (S : SSet) := S _[0]
 
 /-- The source vertex of `f : S _[1]` for use in defining the underlying refl quiver.-/
-def SSet.OneTruncation.src {S : SSet} (f : S _[1]) : OneTruncation S :=
-  S.map (SimplexCategory.δ (n := 0) 1).op f
+def SSet.OneTruncation.src {S : SSet} (f : S _[1]) : OneTruncation S := S.δ 1 f
 
 /-- The target vertex of `f : S _[1]` for use in defining the underlying refl quiver.-/
-def SSet.OneTruncation.tgt {S : SSet} (f : S _[1]) : OneTruncation S :=
-  S.map (SimplexCategory.δ (n := 0) 0).op f
+def SSet.OneTruncation.tgt {S : SSet} (f : S _[1]) : OneTruncation S := S.δ 0 f
 
 /-- The hom-types of the refl quiver underlying a simplicial set `S` are subtypes of `S _[1]`.-/
 def SSet.OneTruncation.Hom {S : SSet} (X Y : OneTruncation S) :=
@@ -71,7 +69,7 @@ def SSet.OneTruncation.Hom {S : SSet} (X Y : OneTruncation S) :=
 instance (S : SSet) : ReflQuiver (SSet.OneTruncation S) where
   Hom X Y := SSet.OneTruncation.Hom X Y
   id X := by
-    refine ⟨S.map (SimplexCategory.σ (n := 0) 0).op X, ?_, ?_⟩ <;>
+    refine ⟨S.σ 0 X, ?_, ?_⟩ <;>
     · change (S.map _ ≫ S.map _) X = X
       rw [← map_comp, (_ : _ ≫ _ = 𝟙 _)]; simp
       show ({..} : Opposite _) = _; congr; ext i
@@ -460,7 +458,7 @@ theorem SSet.hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) 
     SSet.hoFunctor₂Obj.quotientFunctor X ⋙ hoFunctor₂Map f := rfl
 
 /-- The functor that takes a simplicial set to its homotopy category by passing through the
-2-truncation. This should be naturally isomorphic to `SSet.hoFunctor₂`.-/
+2-truncation. This should be naturally isomorphic to `SSet.hoFunctor'`.-/
 def SSet.hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ SSet.hoFunctor₂
 
 end
