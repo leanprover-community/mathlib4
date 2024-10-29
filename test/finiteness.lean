@@ -12,6 +12,10 @@ example (a : ℝ) (b : ℕ) : ENNReal.ofReal a + b < ∞ := by finiteness
 
 example {a : ℝ≥0∞} (ha : a ≠ ∞) : a + 3 < ∞ := by finiteness
 example {a : ℝ≥0∞} (ha : a < ∞) : a + 3 < ∞ := by finiteness
+/-- 
+Test that `finiteness_nonterminal` makes progress but does not fail on not 
+closing the goal. 
+-/
 example {a : ℝ≥0∞} (ha : a = 0) : a + 3 < ∞ := by finiteness_nonterminal; simp [ha]
 
 example (a : ℝ) : (ENNReal.ofReal (1 + a ^ 2))⁻¹ < ∞ := by finiteness
