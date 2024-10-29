@@ -72,7 +72,7 @@ instance : IsScalarTower R (R ⧸ I) I.ResidueField :=
 
 @[simp]
 lemma algebraMap_mk (x) :
-  algebraMap (R ⧸ I) I.ResidueField (Ideal.Quotient.mk _ x) =
+    algebraMap (R ⧸ I) I.ResidueField (Ideal.Quotient.mk _ x) =
     algebraMap R I.ResidueField x := rfl
 
 lemma Ideal.injective_algebraMap_quotient_residueField :
