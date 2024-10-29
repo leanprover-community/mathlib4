@@ -27,112 +27,111 @@ namespace Algebra
 transfer Algebra R' B to Algebra R B if R' ≃+* R
 -/
 noncomputable def ofAlgOnEquivRing
-  {R: Type*} (R' B : Type*)
-  [CommSemiring R] [CommSemiring R'] [Semiring B]
-  [Algebra R' B]
-  (e: R ≃+* R') :
-  Algebra R B where
-    smul := fun r b => e r • b
-    toFun := fun r => e r • 1
-    map_one' := by
-      simp only [map_one, one_smul]
-    map_mul' := by
-      intro x y
-      simp only [map_mul, Algebra.mul_smul_comm, mul_one]
-      rw [<-mul_smul, mul_comm]
-    map_zero' := by
-      simp only [map_zero, zero_smul]
-    map_add' := by
-      intro x y
-      simp only [map_add,add_smul]
-    commutes' := by
-      intro r b
-      simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Algebra.smul_mul_assoc, one_mul,
-        Algebra.mul_smul_comm, mul_one]
-    smul_def' :=
-      by
-        intro r b
-        simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Algebra.smul_mul_assoc, one_mul]
-        rfl
+    {R: Type*} (R' B : Type*)
+    [CommSemiring R] [CommSemiring R'] [Semiring B]
+    [Algebra R' B]
+    (e: R ≃+* R') :
+    Algebra R B where
+smul := fun r b => e r • b
+toFun := fun r => e r • 1
+map_one' := by
+  simp only [map_one, one_smul]
+map_mul' := by
+  intro x y
+  simp only [map_mul, Algebra.mul_smul_comm, mul_one]
+  rw [<-mul_smul, mul_comm]
+map_zero' := by
+  simp only [map_zero, zero_smul]
+map_add' := by
+  intro x y
+  simp only [map_add,add_smul]
+commutes' := by
+  intro r b
+  simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Algebra.smul_mul_assoc, one_mul,
+    Algebra.mul_smul_comm, mul_one]
+smul_def' := by
+    intro r b
+    simp only [RingHom.coe_mk
+    , MonoidHom.coe_mk, OneHom.coe_mk, Algebra.smul_mul_assoc, one_mul]
+    rfl
 
 @[simp]
 theorem ofAlgOnEquivRing_smul_def {R: Type*} {R' B : Type*}
-  [CommSemiring R] [CommSemiring R'] [Semiring B]
-  [Algebra R' B] (e: R ≃+* R')
-  (r: R) (b: B) :
-    let _: Algebra R B := ofAlgOnEquivRing R' B e
-    r • b = e r • b := rfl
+    [CommSemiring R] [CommSemiring R'] [Semiring B]
+    [Algebra R' B] (e: R ≃+* R')
+    (r: R) (b: B) :
+      let _: Algebra R B := ofAlgOnEquivRing R' B e
+      r • b = e r • b := rfl
 
 @[simp]
 theorem ofAlgOnEquivRing_algebraMap_def {R: Type*} {R' B : Type*}
-  [CommSemiring R] [CommSemiring R'] [Semiring B]
-  [Algebra R' B] (e: R ≃+* R')
-  (r: R): @algebraMap R B  _ _ (ofAlgOnEquivRing R' B e) r = e r • 1 := rfl
+    [CommSemiring R] [CommSemiring R'] [Semiring B]
+    [Algebra R' B] (e: R ≃+* R')
+    (r: R): @algebraMap R B  _ _ (ofAlgOnEquivRing R' B e) r = e r • 1 := rfl
 
 /--
 if `R' ≃+* R`, then there is a canonical `Algebra R R'` instance.
 -/
 noncomputable def ofRingEquiv
-  (R R': Type*) [CommSemiring R] [CommSemiring R'] (e: R ≃+* R') :
-  Algebra R R' := ofAlgOnEquivRing R' R' e
+    (R R': Type*) [CommSemiring R] [CommSemiring R'] (e: R ≃+* R') :
+    Algebra R R' := ofAlgOnEquivRing R' R' e
 
 /--
 if `R' ≃+* R`, then there is a canonical `Algebra R' R` instance.
 -/
 noncomputable def ofRingEquivReverse
-  (R R': Type*) [CommSemiring R] [CommSemiring R'] (e: R ≃+* R'): Algebra R' R :=
-  @ofRingEquiv R' R _ _ e.symm
+    (R R': Type*) [CommSemiring R] [CommSemiring R'] (e: R ≃+* R'): Algebra R' R :=
+    @ofRingEquiv R' R _ _ e.symm
 
 theorem ofRingEquiv_smul_def {R R': Type*} [CommSemiring R] [CommSemiring R'] (e: R ≃+* R')
-  (r: R) (b: R'):
-    let _: Algebra R R' := ofRingEquiv R R' e
-    r • b = e r • b := rfl
+    (r: R) (b: R'):
+      let _: Algebra R R' := ofRingEquiv R R' e
+      r • b = e r • b := rfl
 
 theorem ofRingEquiv_algebraMap_def_ext
-  {R R': Type*} [CommSemiring R] [CommSemiring R'] (e: R ≃+* R') (r: R):
-    @algebraMap R R'  _ _ (ofRingEquiv R R' e) r = e r := by
-    simp only [ofAlgOnEquivRing_algebraMap_def, smul_eq_mul, mul_one]
+    {R R': Type*} [CommSemiring R] [CommSemiring R'] (e: R ≃+* R') (r: R):
+      @algebraMap R R'  _ _ (ofRingEquiv R R' e) r = e r := by
+      simp only [ofAlgOnEquivRing_algebraMap_def, smul_eq_mul, mul_one]
 
 @[simp]
 theorem ofRingEquiv_algebraMap_def
-  {R R': Type*} [CommSemiring R] [CommSemiring R'] (e: R ≃+* R'):
-    @algebraMap R R'  _ _ (ofRingEquiv R R' e)  = e := by
-    ext r
-    exact ofRingEquiv_algebraMap_def_ext e r
+    {R R': Type*} [CommSemiring R] [CommSemiring R'] (e: R ≃+* R'):
+      @algebraMap R R'  _ _ (ofRingEquiv R R' e)  = e := by
+      ext r
+      exact ofRingEquiv_algebraMap_def_ext e r
 
 @[simp]
 theorem ofRingEquiv_RingHom
-  {R R': Type*} [CommSemiring R] [CommSemiring R'] (e: R ≃+* R'):
-  (ofRingEquiv R R' e).toRingHom = e := by
-    ext x
-    rw [show (ofRingEquiv R R' e).toRingHom x = e x • 1 from rfl]
-    simp only [smul_eq_mul, mul_one, RingHom.coe_coe]
+    {R R': Type*} [CommSemiring R] [CommSemiring R'] (e: R ≃+* R'):
+    (ofRingEquiv R R' e).toRingHom = e := by
+      ext x
+      rw [show (ofRingEquiv R R' e).toRingHom x = e x • 1 from rfl]
+      simp only [smul_eq_mul, mul_one, RingHom.coe_coe]
 
 theorem ofRingEquivReverse_RingHom
-  {R R': Type*} [CommSemiring R] [CommSemiring R'] (e: R ≃+* R'):
-    (ofRingEquivReverse R R' e).toRingHom = e.symm
-    := by
-      unfold ofRingEquivReverse
-      rw [@ofRingEquiv_RingHom R' R _ _ e.symm]
+    {R R': Type*} [CommSemiring R] [CommSemiring R'] (e: R ≃+* R'):
+      (ofRingEquivReverse R R' e).toRingHom = e.symm := by
+        unfold ofRingEquivReverse
+        rw [@ofRingEquiv_RingHom R' R _ _ e.symm]
 
 /--
 shows that the Algebra structure generated by `ofAlgOnEquivRing` is
 compatible with the Algebra structure generated by `ofRingEquiv`
 -/
 theorem ofAlgOnEquivRing_scalar_tower
-  {R: Type*} (R' B : Type*)
-  [CommSemiring R] [CommSemiring R'] [Semiring B]
-  [Algebra R' B] (e: R ≃+* R'):
-  @IsScalarTower R R' B (ofRingEquiv R R' e).toSMul _ (ofAlgOnEquivRing R' B e).toSMul := by
-    letI smul1_instance := (ofRingEquiv R R' e).toSMul
-    letI smul2_instance := (ofAlgOnEquivRing R' B e: Algebra R B).toSMul
-    let smul1 := fun (s: R) (f: R') => e s • f
-    let smul2 := fun s (f: B) => e s • f
-    apply IsScalarTower.mk
-    intro r x y
-    show (smul1 r x) • y = smul2 r (x • y)
-    unfold_let smul1 smul2
-    simp only [smul_eq_mul, map_mul, RingEquiv.apply_symm_apply, mul_smul]
+    {R: Type*} (R' B : Type*)
+    [CommSemiring R] [CommSemiring R'] [Semiring B]
+    [Algebra R' B] (e: R ≃+* R'):
+    @IsScalarTower R R' B (ofRingEquiv R R' e).toSMul _ (ofAlgOnEquivRing R' B e).toSMul := by
+      letI smul1_instance := (ofRingEquiv R R' e).toSMul
+      letI smul2_instance := (ofAlgOnEquivRing R' B e: Algebra R B).toSMul
+      let smul1 := fun (s: R) (f: R') => e s • f
+      let smul2 := fun s (f: B) => e s • f
+      apply IsScalarTower.mk
+      intro r x y
+      show (smul1 r x) • y = smul2 r (x • y)
+      unfold_let smul1 smul2
+      simp only [smul_eq_mul, map_mul, RingEquiv.apply_symm_apply, mul_smul]
 end Algebra
 
 
@@ -142,19 +141,19 @@ open Algebra
 define a `AlgEquiv` directly from equiv ring
 -/
 noncomputable def of_equiv_on_equiv_ring
-  {R R' A B: Type*}
-  [CommSemiring R] [CommSemiring R'] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R' B]
-  (e: R ≃+* R')
-  (ring_eqv: A ≃+* B)
-  (commutes:
-    ∀ r: R, (ring_eqv <| (algebraMap R A) r) = algebraMap R' B (e r)
-  ):
-  @AlgEquiv R A B _ _ _ _ (ofAlgOnEquivRing R' B e) := by
-    letI algR'B: Algebra R B := ofAlgOnEquivRing R' B e
-    apply AlgEquiv.ofRingEquiv (f := ring_eqv)
-    intro x
-    specialize commutes x
-    rw [commutes, ofAlgOnEquivRing_algebraMap_def, algebraMap_eq_smul_one]
+    {R R' A B: Type*}
+    [CommSemiring R] [CommSemiring R'] [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R' B]
+    (e: R ≃+* R')
+    (ring_eqv: A ≃+* B)
+    (commutes:
+      ∀ r: R, (ring_eqv <| (algebraMap R A) r) = algebraMap R' B (e r)
+    ):
+    @AlgEquiv R A B _ _ _ _ (ofAlgOnEquivRing R' B e) := by
+      letI algR'B: Algebra R B := ofAlgOnEquivRing R' B e
+      apply AlgEquiv.ofRingEquiv (f := ring_eqv)
+      intro x
+      specialize commutes x
+      rw [commutes, ofAlgOnEquivRing_algebraMap_def, algebraMap_eq_smul_one]
 
 end AlgEquiv
