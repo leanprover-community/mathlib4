@@ -983,7 +983,7 @@ theorem isOrtho_comm {x y : M} : IsOrtho Q x y ↔ IsOrtho Q y x := by simp_rw [
 alias ⟨IsOrtho.symm, _⟩ := isOrtho_comm
 
 theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd N] [Invertible (2 : R)]
-     {B : BilinMap R M N} {x y : M} (h : B.IsConjSymm (AddMonoidHom.id N)) :
+    {B : BilinMap R M N} {x y : M} (h : B.IsConjSymm (AddMonoidHom.id N)) :
     B.toQuadraticMap.IsOrtho x y ↔ B.IsOrtho x y := by
   letI : AddCancelMonoid N := { ‹IsCancelAdd N›, (inferInstanceAs <| AddCommMonoid N) with }
   simp_rw [isOrtho_def, LinearMap.isOrtho_def, B.toQuadraticMap_apply, map_add,
