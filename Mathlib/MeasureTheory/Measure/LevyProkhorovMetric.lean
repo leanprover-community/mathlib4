@@ -675,7 +675,7 @@ instance (X : Type*) [TopologicalSpace X] [PseudoMetrizableSpace X] [SeparableSp
     [MeasurableSpace X] [OpensMeasurableSpace X] :
     PseudoMetrizableSpace (ProbabilityMeasure X) :=
   letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
-  (homeomorph_probabilityMeasure_levyProkhorov (Ω := X)).inducing.pseudoMetrizableSpace
+  (homeomorph_probabilityMeasure_levyProkhorov (Ω := X)).isInducing.pseudoMetrizableSpace
 
 /-- The topology of convergence in distribution on a separable Borel space is metrizable. -/
 instance instMetrizableSpaceProbabilityMeasure (X : Type*) [TopologicalSpace X]
