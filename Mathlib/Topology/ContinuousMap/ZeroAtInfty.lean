@@ -381,7 +381,7 @@ theorem toBCF_injective : Function.Injective (toBCF : C₀(α, β) → α →ᵇ
 
 end
 
-variable {C : ℝ} {f g : C₀(α, β)}
+variable {f g : C₀(α, β)}
 
 /-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
 inclusion `ZeroAtInftyContinuousMap.toBCF`, is a pseudo-metric space. -/
