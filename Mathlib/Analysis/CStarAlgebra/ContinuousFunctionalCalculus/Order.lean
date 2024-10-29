@@ -35,13 +35,49 @@ the spectral order.
 continuous functional calculus, normal, selfadjoint
 -/
 
-open scoped NNReal
+open scoped NNReal CStarAlgebra
+
+local notation "σₙ" => quasispectrum
+
+theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
+    [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A]
+    [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    [UniqueContinuousFunctionalCalculus ℝ A] [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
+    (a : A) (hfg : ∀ x ∈ spectrum ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
+    (hf : ContinuousOn f (spectrum ℝ≥0 a) := by cfc_cont_tac)
+    (hg : ContinuousOn g (spectrum ℝ≥0 a) := by cfc_cont_tac) :
+    cfc (fun x ↦ f x - g x) a = cfc f a - cfc g a := by
+  have ha' := SpectrumRestricts.nnreal_of_nonneg ha
+  have : (spectrum ℝ a).EqOn (fun x ↦ ((f x.toNNReal - g x.toNNReal : ℝ≥0) : ℝ))
+      (fun x ↦ f x.toNNReal - g x.toNNReal) :=
+    fun x hx ↦ NNReal.coe_sub <| hfg _ <| ha'.apply_mem hx
+  rw [cfc_nnreal_eq_real, cfc_nnreal_eq_real, cfc_nnreal_eq_real, cfc_congr this]
+  refine cfc_sub _ _ a ?_ ?_
+  all_goals
+    exact continuous_subtype_val.comp_continuousOn <|
+      ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
+
+theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
+    [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [TopologicalRing A]
+    [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    [UniqueNonUnitalContinuousFunctionalCalculus ℝ A] [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
+    (a : A) (hfg : ∀ x ∈ σₙ ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
+    (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
+    (hg : ContinuousOn g (σₙ ℝ≥0 a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac) :
+    cfcₙ (fun x ↦ f x - g x) a = cfcₙ f a - cfcₙ g a := by
+  have ha' := QuasispectrumRestricts.nnreal_of_nonneg ha
+  have : (σₙ ℝ a).EqOn (fun x ↦ ((f x.toNNReal - g x.toNNReal : ℝ≥0) : ℝ))
+      (fun x ↦ f x.toNNReal - g x.toNNReal) :=
+    fun x hx ↦ NNReal.coe_sub <| hfg _ <| ha'.apply_mem hx
+  rw [cfcₙ_nnreal_eq_real, cfcₙ_nnreal_eq_real, cfcₙ_nnreal_eq_real, cfcₙ_congr this]
+  refine cfcₙ_sub _ _ a ?_ (by simpa) ?_
+  all_goals
+    exact continuous_subtype_val.comp_continuousOn <|
+      ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
 namespace Unitization
 
-variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A]
-  [PartialOrder A] [StarRing A] [StarOrderedRing A] [CStarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
-  [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 instance instPartialOrder : PartialOrder (Unitization ℂ A) :=
     CStarAlgebra.spectralOrder _
@@ -103,8 +139,7 @@ lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A]
 
 section CStar_unital
 
-variable {A : Type*} [NormedRing A] [StarRing A] [CStarRing A] [CompleteSpace A]
-variable [NormedAlgebra ℂ A] [StarModule ℂ A]
+variable {A : Type*} [CStarAlgebra A]
 
 section StarOrderedRing
 
@@ -317,9 +352,7 @@ end CStar_unital
 
 section CStar_nonunital
 
-variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A] [PartialOrder A] [StarRing A]
-  [StarOrderedRing A] [CStarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
-  [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 namespace CStarAlgebra
 
@@ -370,8 +403,8 @@ lemma conjugate_le_norm_smul' {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
 /-- The set of nonnegative elements in a C⋆-algebra is closed. -/
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
   suffices IsClosed {a : Unitization ℂ A | 0 ≤ a} by
-    rw [Unitization.isometry_inr (𝕜 := ℂ) |>.closedEmbedding.closed_iff_image_closed]
-    convert this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).closedEmbedding.isClosed_range
+    rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.closed_iff_image_closed]
+    convert this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).isClosedEmbedding.isClosed_range
     ext a
     simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_inter_iff, Set.mem_range, ← exists_and_left]
     congr! 2 with x
