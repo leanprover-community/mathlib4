@@ -236,9 +236,12 @@ theorem inducing_toContinuousMap : Inducing (toContinuousMap : ContinuousMonoidH
   ⟨rfl⟩
 
 @[to_additive]
-theorem embedding_toContinuousMap :
-    Embedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
+theorem isEmbedding_toContinuousMap :
+    IsEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
   ⟨inducing_toContinuousMap A B, toContinuousMap_injective⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_toContinuousMap := isEmbedding_toContinuousMap
 
 @[to_additive]
 instance instContinuousEvalConst : ContinuousEvalConst (ContinuousMonoidHom A B) A B :=
@@ -260,7 +263,7 @@ lemma range_toContinuousMap :
 @[to_additive]
 theorem isClosedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
     IsClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
-  toEmbedding := embedding_toContinuousMap A B
+  toIsEmbedding := isEmbedding_toContinuousMap A B
   isClosed_range := by
     simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
     refine .inter (isClosed_singleton.preimage (continuous_eval_const 1)) <|
@@ -275,7 +278,7 @@ variable {A B C D E}
 
 @[to_additive]
 instance [T2Space B] : T2Space (ContinuousMonoidHom A B) :=
-  (embedding_toContinuousMap A B).t2Space
+  (isEmbedding_toContinuousMap A B).t2Space
 
 @[to_additive]
 instance : TopologicalGroup (ContinuousMonoidHom A E) :=
@@ -302,13 +305,13 @@ theorem continuous_comp [LocallyCompactSpace B] :
 theorem continuous_comp_left (f : ContinuousMonoidHom A B) :
     Continuous fun g : ContinuousMonoidHom B C => g.comp f :=
   (inducing_toContinuousMap A C).continuous_iff.2 <|
-    f.toContinuousMap.continuous_comp_left.comp (inducing_toContinuousMap B C).continuous
+    f.toContinuousMap.continuous_precomp.comp (inducing_toContinuousMap B C).continuous
 
 @[to_additive]
 theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
     Continuous fun g : ContinuousMonoidHom A B => f.comp g :=
   (inducing_toContinuousMap A C).continuous_iff.2 <|
-    f.toContinuousMap.continuous_comp.comp (inducing_toContinuousMap A B).continuous
+    f.toContinuousMap.continuous_postcomp.comp (inducing_toContinuousMap A B).continuous
 
 variable (E)
 
