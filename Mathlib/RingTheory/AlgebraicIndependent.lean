@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
 # Algebraic Independence
@@ -82,6 +83,21 @@ theorem algebraicIndependent_empty_type_iff [IsEmpty ι] :
     AlgebraicIndependent R x ↔ Injective (algebraMap R A) := by
   rw [algebraicIndependent_iff_injective_aeval, MvPolynomial.aeval_injective_iff_of_isEmpty]
 
+/-- An element `x` is transcendental if and only if the one-element family `![x]` is
+algebraically independent. -/
+theorem transcendental_iff_algebraicIndependent {x : A} :
+    Transcendental R x ↔ AlgebraicIndependent R ![x] := by
+  rw [transcendental_iff_injective, algebraicIndependent_iff_injective_aeval]
+  let i := (finSuccEquiv R 0).toRingEquiv.trans <|
+    Polynomial.mapEquiv (isEmptyAlgEquiv R (Fin 0)).toRingEquiv
+  have key : (MvPolynomial.aeval (R := R) ![x]).toRingHom =
+      (Polynomial.aeval (R := R) x).toRingHom.comp i.toRingHom := by
+    ext y
+    · simp [i]
+    · fin_cases y; simp [i]
+  change _ ↔ Injective (MvPolynomial.aeval (R := R) ![x]).toRingHom
+  rw [key]; simp
+
 namespace AlgebraicIndependent
 
 theorem of_comp (f : A →ₐ[R] A') (hfv : AlgebraicIndependent R (f ∘ x)) :
@@ -138,7 +154,27 @@ theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
 theorem map' {f : A →ₐ[R] A'} (hf_inj : Injective f) : AlgebraicIndependent R (f ∘ x) :=
   hx.map hf_inj.injOn
 
+/-- If a family `x` is algebraically independent, then any of its element is transcendental. -/
+theorem transcendental (i : ι) : Transcendental R (x i) := by
+  have := hx.comp ![i] (Function.injective_of_subsingleton _)
+  have : AlgebraicIndependent R ![x i] := by rwa [← FinVec.map_eq] at this
+  rwa [transcendental_iff_algebraicIndependent]
+
 end AlgebraicIndependent
+
+namespace MvPolynomial
+
+variable (σ R : Type*) [CommRing R]
+
+theorem algebraicIndependent_X : AlgebraicIndependent R (X (R := R) (σ := σ)) := by
+  rw [AlgebraicIndependent, aeval_X_left]
+  exact injective_id
+
+variable {σ} in
+theorem transcendental_X (i : σ) : Transcendental R (X (R := R) i) :=
+  (algebraicIndependent_X σ R).transcendental i
+
+end MvPolynomial
 
 open AlgebraicIndependent
 
@@ -409,12 +445,25 @@ theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
 
 theorem AlgebraicIndependent.option_iff (hx : AlgebraicIndependent R x) (a : A) :
     (AlgebraicIndependent R fun o : Option ι => o.elim a x) ↔
-      ¬IsAlgebraic (adjoin R (Set.range x)) a := by
-  rw [algebraicIndependent_iff_injective_aeval, isAlgebraic_iff_not_injective, Classical.not_not, ←
-    AlgHom.coe_toRingHom, ← hx.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin,
+      Transcendental (adjoin R (Set.range x)) a := by
+  rw [algebraicIndependent_iff_injective_aeval, transcendental_iff_injective,
+    ← AlgHom.coe_toRingHom, ← hx.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin,
     RingHom.coe_comp]
   exact Injective.of_comp_iff' (Polynomial.aeval a)
     (mvPolynomialOptionEquivPolynomialAdjoin hx).bijective
+
+/-- Variant of `algebraicIndependent_of_finite` using `Transcendental`. -/
+theorem algebraicIndependent_of_finite' (s : Set A)
+    (hinj : Injective (algebraMap R A))
+    (H : ∀ t ⊆ s, t.Finite → ∀ a ∈ s, a ∉ t → Transcendental (adjoin R t) a) :
+    AlgebraicIndependent R ((↑) : s → A) := by
+  classical
+  refine algebraicIndependent_of_finite s fun t hts hfin ↦ hfin.induction_on'
+    ((algebraicIndependent_empty_iff R A).2 hinj) fun {a} {u} ha hu ha' h ↦ ?_
+  convert ((Subtype.range_coe ▸ h.option_iff a).2 <| H u (hu.trans hts) (hfin.subset hu)
+    a (hts ha) ha').comp _ (Set.subtypeInsertEquivOption ha').injective
+  ext x
+  by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
 
 variable (R)
 
@@ -431,6 +480,13 @@ theorem exists_isTranscendenceBasis (h : Injective (algebraMap R A)) :
   refine ⟨s, hs.2.1.1, fun t ht hst ↦ ?_⟩
   simp only [Subtype.range_coe_subtype, setOf_mem_eq] at *
   exact hs.2.eq_of_le ⟨ht, subset_univ _⟩ hst
+
+/-- `Type` version of `exists_isTranscendenceBasis`. -/
+theorem exists_isTranscendenceBasis' (R : Type u) {A : Type v} [CommRing R] [CommRing A]
+    [Algebra R A] (h : Injective (algebraMap R A)) :
+    ∃ (ι : Type v) (x : ι → A), IsTranscendenceBasis R x := by
+  obtain ⟨s, h⟩ := exists_isTranscendenceBasis R h
+  exact ⟨s, Subtype.val, h⟩
 
 variable {R}
 
