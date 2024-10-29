@@ -886,9 +886,7 @@ theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤₘ₀ˣ) :
     ∃ P : K[X], (PowerSeries.idealX K).intValuation (F - P) < η := by
   by_cases h_neg : 1 < η
   · use 0
-    rw [Polynomial.coe_zero, sub_zero]
-    apply lt_of_le_of_lt (intValuation_le_one (PowerSeries.idealX K) F)
-    rwa [← Units.val_one, Units.val_lt_val]
+    simpa using (intValuation_le_one (PowerSeries.idealX K) F).trans_lt h_neg
   · rw [not_lt, ← Units.val_le_val, Units.val_one, ← WithZero.coe_one, ← coe_unzero η.ne_zero,
       coe_le_coe, ← Multiplicative.toAdd_le, toAdd_one] at h_neg
     obtain ⟨d, hd⟩ := Int.exists_eq_neg_ofNat h_neg
