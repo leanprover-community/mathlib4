@@ -139,12 +139,12 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let redundant := importsSoFar.toArray.filter (!currImports.contains ·)
       -- to make `test` files more stable, we suppress the exact count of import changes if
       -- the `linter.minImports.increases` option is `false`
-      let count :=  if Linter.getLinterValue linter.minImports.increases (← getOptions) then
-                      m!"{newCumulImps - oldCumulImps}"
+      let byCount :=  if Linter.getLinterValue linter.minImports.increases (← getOptions) then
+                      m!"by {newCumulImps - oldCumulImps} "
                     else
-                      m!"X"
+                      m!""
       Linter.logLint linter.minImports stx <|
-        m!"Imports increased by {count} to\n{currImpArray}\n\n\
+        m!"Imports increased {byCount}to\n{currImpArray}\n\n\
           New imports: {new}\n" ++
             if redundant.isEmpty then m!"" else m!"\nNow redundant: {redundant}\n"
 
