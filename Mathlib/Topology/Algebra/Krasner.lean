@@ -8,7 +8,11 @@ import Mathlib.FieldTheory.Minpoly.IsConjRoot
 import Mathlib.FieldTheory.AlgebraicClosure
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valued.NormedValued
+import Mathlib.Topology.Algebra.IntermediateField
 import Mathlib.Analysis.Normed.Group.Hom
+import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Topology.Algebra.Module.FiniteDimension
+import Mathlib.FieldTheory.SeparableDegree
 
 /-!
 # Krasner's Lemma
@@ -66,32 +70,25 @@ theorem of_completeSpace {K L : Type*} [Nm_K : NontriviallyNormedField K] [Norme
   have _ := IntermediateField.adjoin.finiteDimensional yint
   let i_K : NormedAddGroupHom K (⊥ : IntermediateField K L) :=
     (AddMonoidHomClass.toAddMonoidHom (botEquiv K L).symm).mkNormedAddGroupHom 1 (by simp [extd])
-  have : ContinuousSMul K M := by
-    -- decompose as `ContinuousSMul K L`
-    -- and `ContinuousSMul K L implies ContinuousSMul K M`
+  have _ : ContinuousSMul K M := by
     apply Inducing.continuousSMul (N := K) (M := (⊥ : IntermediateField K L)) (X := M) (Y := M)
-      (f := (IntermediateField.botEquiv K L).symm) inducing_id
-    · exact i_K.continuous
-    · intros c x
-      rw [Algebra.smul_def, @Algebra.smul_def (⊥ : IntermediateField K L) M _ _ _]
-      rfl
-  letI : CompleteSpace M := FiniteDimensional.complete K M
+      (f := (IntermediateField.botEquiv K L).symm) inducing_id i_K.continuous
+    intros c x
+    rw [Algebra.smul_def, @Algebra.smul_def (⊥ : IntermediateField K L) M _ _ _]
+    rfl
+  let _ : CompleteSpace M := FiniteDimensional.complete K M
   have hy : y ∈ K⟮y⟯ := IntermediateField.subset_adjoin K {y} rfl
   have zsep : IsSeparable M z := by
     apply Field.isSeparable_sub (IsSeparable.tower_top M xsep)
-    simp only [IsSeparable]
-    exact
-      minpoly.eq_X_sub_C_of_algebraMap_inj (⟨y, hy⟩ : M)
-          (NoZeroSMulDivisors.algebraMap_injective (↥M) L) ▸
-        Polynomial.separable_X_sub_C (x := (⟨y, hy⟩ : M))
+    simpa using isSeparable_algebraMap (⟨y, hy⟩ : M)
   suffices z ∈ K⟮y⟯ by simpa [z] using add_mem this hy
-  by_contra hnin
+  by_contra hz
   have : z ∈ K⟮y⟯ ↔ z ∈ (⊥ : Subalgebra M L) := by simp [Algebra.mem_bot]
-  rw [this.not] at hnin
+  rw [this.not] at hz
   -- need + algebra map split and split tower.
   obtain ⟨z', hne, h1⟩ := (not_mem_iff_exists_ne_and_isConjRoot zsep
-      (minpoly_split_sub_algebraMap ⟨y, hy⟩ (IsIntegral.minpoly_splits_tower_top
-        xsep.isIntegral sp))).mp hnin
+      (minpoly_splits_sub_algebraMap ⟨y, hy⟩ (IsIntegral.minpoly_splits_tower_top
+        xsep.isIntegral sp))).mp hz
   -- this is where the separablity is used.
   simp only [ne_eq, Subtype.mk.injEq] at hne
   have eq_spnM : (norm : M → ℝ) = spectralNorm K M :=
