@@ -340,7 +340,8 @@ theorem LinearMap.rank_le_of_surjective (f : M →ₗ[R] M₁) (h : Surjective f
   apply rank_range_le
 
 @[nontriviality, simp]
-theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
+theorem rank_subsingleton {R M} [Semiring R] [Subsingleton R] [AddCommMonoid M] [Module R M] :
+    Module.rank R M = 1 := by
   haveI := Module.subsingleton R M
   have : Nonempty { s : Set M // LinearIndependent R ((↑) : s → M) } :=
     ⟨⟨∅, linearIndependent_empty _ _⟩⟩
