@@ -90,8 +90,8 @@ theorem HasNegativeLeading_tendsto_zero {basis : Basis} {ms : PreMS basis} {F : 
       apply tendsto_const_nhds
     · intro (deg, coef) tl h_neg h_approx
       simp at h_neg
-      obtain ⟨_, _, h_comp, _⟩ := Approximates_cons h_approx
-      apply majorated_tendsto_zero_of_neg h_neg h_comp
+      obtain ⟨_, _, h_maj, _⟩ := Approximates_cons h_approx
+      apply majorated_tendsto_zero_of_neg h_neg h_maj
 
 namespace Trimming
 
@@ -145,7 +145,7 @@ def maxUnfoldingSteps : ℕ := 20
 --                   exact tl_trimmed.h_wo h_wo.right.right
 --                 h_approx := by
 --                   intro F h_approx
---                   obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons h_approx
+--                   obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
 --                   simp [Approximates] at h_coef
 --                   subst h_c_zero
 --                   apply tl_trimmed.h_approx
@@ -167,10 +167,10 @@ def maxUnfoldingSteps : ℕ := 20
 --                   · exact h_wo.right.right
 --                 h_approx := by
 --                   intro F h_approx
---                   obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons h_approx
+--                   obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
 --                   apply PreMS.Approximates.cons C
 --                   · exact coef_trimmed.h_approx _ h_coef
---                   · exact h_comp
+--                   · exact h_maj
 --                   · exact h_tl
 --                 h_trimmed := by
 --                   constructor
@@ -201,10 +201,10 @@ def maxUnfoldingSteps : ℕ := 20
 --                   · exact h_wo.right.right
 --                 h_approx := by
 --                   intro F h_approx
---                   obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons h_approx
+--                   obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
 --                   apply PreMS.Approximates.cons C
 --                   · exact coef_trimmed.h_approx _ h_coef
---                   · exact h_comp
+--                   · exact h_maj
 --                   · exact h_tl
 --                 h_trimmed := by
 --                   -- simp [PreMS.Trimmed]
@@ -236,7 +236,7 @@ def maxUnfoldingSteps : ℕ := 20
 --                     exact tl_trimmed.h_wo h_wo.right.right
 --                   h_approx := by
 --                     intro F h_approx
---                     obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons h_approx
+--                     obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
 --                     -- simp [Approximates] at h_coef
 --                     -- subst h_c_zero
 --                     apply tl_trimmed.h_approx
@@ -263,10 +263,10 @@ def maxUnfoldingSteps : ℕ := 20
 --                     · exact h_wo.right.right
 --                   h_approx := by
 --                     intro F h_approx
---                     obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons h_approx
+--                     obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
 --                     apply PreMS.Approximates.cons C
 --                     · exact coef_trimmed.h_approx _ h_coef
---                     · exact h_comp
+--                     · exact h_maj
 --                     · exact h_tl
 --                   h_trimmed := by
 --                     constructor

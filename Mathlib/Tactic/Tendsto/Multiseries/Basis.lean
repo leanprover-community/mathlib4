@@ -129,8 +129,8 @@ theorem PreMS.Approximates_coef_isLittleO_head {C basis_hd : ℝ → ℝ} {basis
       left
       rfl
     · intro (deg, coef) tl h_approx
-      obtain ⟨CC, _, h_comp, _⟩ := Approximates_cons h_approx
-      apply Asymptotics.IsLittleO.trans <| h_comp (deg + 1) (by linarith)
+      obtain ⟨CC, _, h_maj, _⟩ := Approximates_cons h_approx
+      apply Asymptotics.IsLittleO.trans <| h_maj (deg + 1) (by linarith)
       apply MS.basis_compare
       · apply MS.basis_head_eventually_pos (MS.WellOrderedBasis_tail h_basis)
       · apply MS.basis_tendsto_top h_basis

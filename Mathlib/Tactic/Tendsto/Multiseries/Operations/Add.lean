@@ -474,8 +474,7 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
           · apply WellOrdered.nil
           · exact hY_tl_wo
       · intro (X_deg, X_coef) X_tl h_ms_eq hX_wo
-        have hX_wo' := WellOrdered_cons hX_wo
-        obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := hX_wo'
+        obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
         right
         revert h_ms_eq hY_wo
         apply Y.recOn
@@ -495,8 +494,7 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
           · apply WellOrdered.nil
           · exact hX_tl_wo
         · intro (Y_deg, Y_coef) Y_tl hY_wo h_ms_eq
-          have hY_wo' := WellOrdered_cons hY_wo
-          obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := hY_wo'
+          obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
           rw [add_cons_cons] at h_ms_eq
           split_ifs at h_ms_eq
           · use ?_, ?_, ?_
@@ -573,8 +571,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
           apply EventuallyEq.add
           exacts [hX_approx, hY_approx]
         · intro (Y_deg, Y_coef) Y_tl hY_approx h_ms_eq
-          have hY_approx' := Approximates_cons hY_approx
-          obtain ⟨YC, hY_coef, hY_comp, hY_tl⟩ := hY_approx'
+          obtain ⟨YC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
           right
           simp at h_ms_eq
           replace hf_eq : f =ᶠ[atTop] fY := by
@@ -589,9 +586,8 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
           constructor
           · exact hY_coef
           constructor
-          · intro deg h_deg
-            apply EventuallyEq.trans_isLittleO hf_eq
-            apply hY_comp _ h_deg
+          · apply majorated_of_EventuallyEq hf_eq
+            exact hY_maj
           simp only [motive]
           use .nil, Y_tl, 0, fun x ↦ fY x - basis_hd x ^ Y_deg * YC x
           constructor
@@ -607,8 +603,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             rfl
           · exact hY_tl
       · intro (X_deg, X_coef) X_tl h_ms_eq hX_approx
-        have hX_approx' := Approximates_cons hX_approx
-        obtain ⟨XC, hX_coef, hX_comp, hX_tl⟩ := hX_approx'
+        obtain ⟨XC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
         right
         revert h_ms_eq hY_approx
         apply Y.recOn
@@ -627,9 +622,8 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
           constructor
           · exact hX_coef
           constructor
-          · intro deg h_deg
-            apply EventuallyEq.trans_isLittleO hf_eq
-            apply hX_comp _ h_deg
+          · apply majorated_of_EventuallyEq hf_eq
+            exact hX_maj
           simp only [motive]
           use .nil, X_tl, 0, fun x ↦ fX x - basis_hd x ^ X_deg * XC x
           constructor
@@ -645,8 +639,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             rfl
           · exact hX_tl
         · intro (Y_deg, Y_coef) Y_tl hY_approx h_ms_eq
-          have hY_approx' := Approximates_cons hY_approx
-          obtain ⟨YC, hY_coef, hY_comp, hY_tl⟩ := hY_approx'
+          obtain ⟨YC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
           rw [add_cons_cons] at h_ms_eq
           split_ifs at h_ms_eq
           · use X_deg, X_coef, ?_, XC
@@ -655,12 +648,10 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             constructor
             · exact hX_coef
             constructor
-            · intro deg h_deg
-              apply EventuallyEq.trans_isLittleO hf_eq
-              apply IsLittleO.add
-              · exact hX_comp _ h_deg
-              · apply hY_comp
-                linarith
+            · apply majorated_of_EventuallyEq hf_eq
+              convert add_majorated hX_maj hY_maj
+              simp
+              linarith
             simp only [motive]
             use X_tl, Seq.cons (Y_deg, Y_coef) Y_tl, fun x ↦ fX x - basis_hd x ^ X_deg * XC x, fY
             constructor
@@ -684,12 +675,10 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             constructor
             · exact hY_coef
             constructor
-            · intro deg h_deg
-              apply EventuallyEq.trans_isLittleO hf_eq
-              apply IsLittleO.add
-              · apply hX_comp
-                linarith
-              · exact hY_comp _ h_deg
+            · apply majorated_of_EventuallyEq hf_eq
+              convert add_majorated hX_maj hY_maj
+              simp
+              linarith
             simp only [motive]
             use Seq.cons (X_deg, X_coef) X_tl, Y_tl, fX, fun x ↦ fY x - basis_hd x ^ Y_deg * YC x
             constructor
@@ -715,11 +704,9 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             constructor
             · exact add_Approximates hX_coef hY_coef
             constructor
-            · intro deg h_deg
-              apply EventuallyEq.trans_isLittleO hf_eq
-              apply IsLittleO.add
-              · exact hX_comp _ h_deg
-              · exact hY_comp _ h_deg
+            · apply majorated_of_EventuallyEq hf_eq
+              convert add_majorated hX_maj hY_maj
+              simp
             simp only [motive]
             use X_tl, Y_tl,
               fun x ↦ fX x - basis_hd x ^ X_deg * XC x,

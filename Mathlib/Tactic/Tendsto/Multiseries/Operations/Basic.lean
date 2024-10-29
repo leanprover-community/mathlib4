@@ -54,11 +54,7 @@ theorem const_Approximates_const {c : ℝ} {basis : Basis} (h_wo : MS.WellOrdere
     have ih : (const c basis_tl).Approximates (fun _ ↦ c) basis_tl := by
       apply const_Approximates_const (MS.WellOrderedBasis_tail h_wo)
     apply Approximates.cons _ ih
-    · intro deg h_deg
-      apply Asymptotics.isLittleO_const_left.mpr
-      right
-      apply Tendsto.comp tendsto_norm_atTop_atTop
-      apply Tendsto.comp (tendsto_rpow_atTop h_deg)
+    · apply const_majorated
       apply MS.basis_tendsto_top h_wo
       simp
     · apply Approximates.nil
@@ -183,7 +179,7 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
         left
         simp [mulConst]
       · intro (deg, coef) tl hX_wo
-        obtain ⟨hX_coef_wo, hX_tl_wo, hX_comp⟩ := WellOrdered_cons hX_wo
+        obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
         right
         use deg, coef.mulConst c, mulConst (basis := basis_hd :: basis_tl) tl c
         constructor
@@ -232,7 +228,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
         apply EventuallyEq.mul hX_approx
         rfl
       · intro (X_deg, X_coef) X_tl h_ms_eq hX_approx
-        obtain ⟨XC, hX_coef, hX_comp, hX_tl⟩ := Approximates_cons hX_approx
+        obtain ⟨XC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
         right
         simp [mulConst] at h_ms_eq
         use ?_, ?_, ?_, fun x ↦ XC x * c
@@ -241,10 +237,8 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
         constructor
         · exact mulConst_Approximates hX_coef
         constructor
-        · intro deg h_deg
-          apply Filter.EventuallyEq.trans_isLittleO hf_eq
-          simp_rw [mul_comm]
-          apply IsLittleO.const_mul_left (hX_comp deg h_deg)
+        · apply majorated_of_EventuallyEq hf_eq
+          exact mul_const_majorated hX_maj
         simp only [motive]
         use X_tl, fun x ↦ fX x - basis_hd x ^ X_deg * XC x
         constructor

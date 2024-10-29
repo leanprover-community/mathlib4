@@ -106,6 +106,7 @@ theorem tail_analytic {s_hd : ℝ} {s_tl : LazySeries}
 noncomputable def toFun (s : LazySeries) : ℝ → ℝ :=
   s.toFormalMultilinearSeries.sum
 
+@[simp]
 theorem toFun_nil : toFun Seq.nil = 0 := by
   simp [toFun]
   unfold toFormalMultilinearSeries coeff
@@ -169,6 +170,17 @@ theorem toFun_IsBigO_one {s : LazySeries} (h_analytic : s.analytic) {F : ℝ →
     apply isBigO_const_of_tendsto (y := s_hd) _ (by exact ne_zero_of_eq_one rfl)
     apply Tendsto.comp _ hF
     apply toFun_tendsto_head h_analytic
+
+theorem mul_bounded_majorated {f g basis_hd : ℝ → ℝ} {deg : ℝ} (hf : majorated f basis_hd deg)
+    (hg : g =O[atTop] (fun _ ↦ (1 : ℝ))) :
+    majorated (f * g) basis_hd deg := by
+  simp only [majorated] at *
+  intro deg h_deg
+  conv =>
+    rhs; ext x; rw [← mul_one (basis_hd x ^ deg)]
+  apply IsLittleO.mul_isBigO
+  · exact hf _ h_deg
+  · exact hg
 
 @[simp]
 theorem apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
@@ -416,10 +428,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
               intro x h
               simp [h]
         · intro (Y_deg, Y_coef) Y_tl hY_wo hY_approx h_ms_eq
-          have hY_approx' := Approximates_cons hY_approx
-          obtain ⟨YC, hY_coef, hY_comp, hY_tl⟩ := hY_approx'
-          have hY_wo' := WellOrdered_cons hY_wo
-          obtain ⟨hY_coef_wo, hY_comp_wo, hY_tl_wo⟩ := hY_wo'
+          obtain ⟨YC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
+          obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
           revert h_ms_eq hf_eq h_analytic hF_in_ball
           apply s.recOn
           · intro h_analytic hf_eq hF_in_ball h_ms_eq
@@ -446,18 +456,12 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
                 · apply const_Approximates_const (MS.WellOrderedBasis_tail h_basis)
                 · exact hY_coef
               · constructor
-                · intro deg h_deg
-                  apply EventuallyEq.trans_isLittleO (f₂ := fY * toFun (Seq.cons s_hd s_tl) ∘ F)
+                · apply majorated_of_EventuallyEq (f := fY * toFun (Seq.cons s_hd s_tl) ∘ F)
                   · trans; exact hf_eq
                     apply eventuallyEq_iff_sub.mpr
                     simpa
-                  conv =>
-                    rhs; ext x; rw [← mul_one (basis_hd x ^ deg)]
-                  apply IsLittleO.mul_isBigO
-                  · exact hY_comp deg (by assumption)
-                  apply isBigO_const_of_tendsto (y := s_hd) _ (by simp)
-                  apply Tendsto.comp _ hF_tendsto_zero
-                  apply toFun_tendsto_head h_analytic
+                  · apply mul_bounded_majorated hY_maj
+                    exact toFun_IsBigO_one h_analytic hF_tendsto_zero
                 · simp only [motive]
                   use s_tl
                   constructor
@@ -487,10 +491,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
                   · exact hY_approx
       · intro (X_deg, X_coef) X_tl h_ms_eq hX_wo hX_approx
         right
-        have hX_approx' := Approximates_cons hX_approx
-        obtain ⟨XC, hX_coef, hX_comp, hX_tl⟩ := hX_approx'
-        have hX_wo' := WellOrdered_cons hX_wo
-        obtain ⟨hX_coef_wo, hX_comp_wo, hX_tl_wo⟩ := hX_wo'
+        obtain ⟨XC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
+        obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
         revert h_ms_eq hY_wo hY_approx
         apply Y.recOn
         · intro _ hY_approx h_ms_eq
@@ -515,8 +517,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
           constructor
           · exact hX_coef
           constructor
-          · intro deg h_deg
-            apply Filter.EventuallyEq.trans_isLittleO hf_eq (hX_comp deg h_deg)
+          · apply majorated_of_EventuallyEq hf_eq
+            exact hX_maj
           · simp [motive]
             use s
             constructor
@@ -539,10 +541,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
             · apply Approximates.nil
               rfl
         · intro (Y_deg, Y_coef) Y_tl hY_wo hY_approx h_ms_eq
-          have hY_approx' := Approximates_cons hY_approx
-          obtain ⟨YC, hY_coef, hY_comp, hY_tl⟩ := hY_approx'
-          have hY_wo' := WellOrdered_cons hY_wo
-          obtain ⟨hY_coef_wo, hY_comp_wo, hY_tl_wo⟩ := hY_wo'
+          obtain ⟨YC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
+          obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
           revert h_ms_eq hf_eq h_analytic hF_in_ball
           apply s.recOn
           · intro h_analytic hf_eq hF_in_ball h_ms_eq
@@ -567,8 +567,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
             constructor
             · exact hX_coef
             constructor
-            · intro deg h_deg
-              apply Filter.EventuallyEq.trans_isLittleO hf_eq (hX_comp deg h_deg)
+            · apply majorated_of_EventuallyEq hf_eq
+              exact hX_maj
             · simp [motive]
               use .nil
               constructor
@@ -600,16 +600,11 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
               constructor
               · exact hX_coef
               constructor
-              · intro deg h_deg
-                apply EventuallyEq.trans_isLittleO hf_eq
-                apply IsLittleO.add
-                · exact hX_comp deg h_deg
-                conv =>
-                  rhs; ext x; rw [← mul_one (basis_hd x ^ deg)]
-                apply IsLittleO.mul_isBigO
-                · apply hY_comp deg
-                  linarith
-                apply toFun_IsBigO_one h_analytic hF_tendsto_zero
+              · apply majorated_of_EventuallyEq hf_eq
+                rw [show X_deg = X_deg ⊔ Y_deg by simp; linarith]
+                apply add_majorated hX_maj
+                apply mul_bounded_majorated hY_maj
+                exact toFun_IsBigO_one h_analytic hF_tendsto_zero
               simp [motive]
               use .cons s_hd s_tl
               constructor
@@ -650,16 +645,11 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
                 · apply const_Approximates_const (MS.WellOrderedBasis_tail h_basis)
                 · exact hY_coef
               constructor
-              · intro deg h_deg
-                apply EventuallyEq.trans_isLittleO hf_eq
-                apply IsLittleO.add
-                · apply hX_comp deg
-                  linarith
-                conv =>
-                  rhs; ext x; rw [← mul_one (basis_hd x ^ deg)]
-                apply IsLittleO.mul_isBigO
-                · apply hY_comp deg h_deg
-                apply toFun_IsBigO_one h_analytic hF_tendsto_zero
+              · apply majorated_of_EventuallyEq hf_eq
+                rw [show Y_deg = X_deg ⊔ Y_deg by simp; linarith]
+                apply add_majorated hX_maj
+                apply mul_bounded_majorated hY_maj
+                exact toFun_IsBigO_one h_analytic hF_tendsto_zero
               simp [motive]
               use s_tl
               constructor
@@ -712,15 +702,11 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
                   · apply const_Approximates_const (MS.WellOrderedBasis_tail h_basis)
                   · exact hY_coef
               constructor
-              · intro deg h_deg
-                apply EventuallyEq.trans_isLittleO hf_eq
-                apply IsLittleO.add
-                · exact hX_comp deg h_deg
-                conv =>
-                  rhs; ext x; rw [← mul_one (basis_hd x ^ deg)]
-                apply IsLittleO.mul_isBigO
-                · exact hY_comp deg (h ▸ h_deg)
-                apply toFun_IsBigO_one h_analytic hF_tendsto_zero
+              · apply majorated_of_EventuallyEq hf_eq
+                rw [show X_deg = X_deg ⊔ Y_deg by simp; linarith]
+                apply add_majorated hX_maj
+                apply mul_bounded_majorated hY_maj
+                exact toFun_IsBigO_one h_analytic hF_tendsto_zero
               simp [motive]
               use s_tl
               constructor

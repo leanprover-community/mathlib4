@@ -127,9 +127,8 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
     · intro (deg, coef) tl h_wo h_trimmed h_approx
       apply Trimmed_cons at h_trimmed
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed
-      obtain ⟨h_coef_wo, h_comp_wo, h_tl_wo⟩ := WellOrdered_cons h_wo
-      apply Approximates_cons at h_approx
-      obtain ⟨C, h_coef, h_comp, h_tl⟩ := h_approx
+      obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
+      obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
       have hC_ne_zero : ∀ᶠ x in atTop, C x ≠ 0 :=
         eventually_ne_zero_of_not_FlatZero h_coef_ne_zero h_coef_wo h_coef h_coef_trimmed
           (MS.WellOrderedBasis_tail h_basis)
@@ -179,7 +178,7 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
             ring
           rw [← isEquivalent_iff_tendsto_one]
           conv => rhs; ext x; rw [mul_comm]
-          apply IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp_wo h_basis
+          apply IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
           apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
           intro x ⟨hC_ne_zero, h_basis_hd_pos⟩
           simp
@@ -205,10 +204,10 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
         · exact neg_WellOrdered h_tl_wo
         · exact inv'_WellOrdered h_coef_wo
       · simp [HasNegativeLeading]
-        generalize leadingExp tl = t at h_comp_wo
+        generalize leadingExp tl = t at h_comp
         cases t with
         | bot => simp [Ne.bot_lt']
-        | coe => simpa [← WithBot.coe_add] using h_comp_wo
+        | coe => simpa [← WithBot.coe_add] using h_comp
       · exact this
 
 end PreMS

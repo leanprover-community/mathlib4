@@ -81,7 +81,6 @@ theorem mul_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg y_deg :
 
 -- Note: the condition `x.WellOrdered` is required. Counterexample: `x = [1, 2]`, `y = [1]` (well-ordered).
 -- Then `lhs = [1, 2]` while `rhs = [2, 1]`.
-@[simp]
 theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg : ℝ} {x_coef : PreMS basis_tl}
     {x_tl y : PreMS (basis_hd :: basis_tl)} (hx_wo : WellOrdered (basis := basis_hd :: basis_tl) (Seq.cons (x_deg, x_coef) x_tl)) :
     mul (Seq.cons (x_deg, x_coef) x_tl) y = (mulMonomial y x_coef x_deg) + (x_tl.mul y) := by
@@ -1816,8 +1815,7 @@ mutual
         left
         simp
       · intro (deg, coef) tl h_wo
-        have h_wo' := WellOrdered_cons h_wo
-        obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := h_wo'
+        obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
         right
         use ?_, ?_, ?_
         constructor
@@ -2144,7 +2142,7 @@ mutual
         apply EventuallyEq.mul (by rfl) hb_approx
       · intro (b_deg, b_coef) b_tl hb_approx
         have hb_approx' := Approximates_cons hb_approx
-        obtain ⟨C, h_coef_approx, h_comp, h_tl_approx⟩ := hb_approx'
+        obtain ⟨C, h_coef_approx, h_maj, h_tl_approx⟩ := hb_approx'
         right
         use ?_, ?_, ?_, M * C
         constructor
@@ -2162,7 +2160,7 @@ mutual
               apply MS.basis_tendsto_top h_basis
               simp
             · exact MS.basis_head_eventually_pos h_basis
-          · exact h_comp
+          · exact h_maj
           · exact MS.basis_head_eventually_pos h_basis
         simp only [motive]
         use ?_, ?_, ?_
@@ -2322,8 +2320,8 @@ mutual
             simp
             obtain ⟨X_deg, X_coef, X_tl, Y_deg, Y_coef, Y_tl, hX_eq, hY_eq⟩ := mul_eq_cons h_right_eq
             subst hX_eq hY_eq
-            obtain ⟨XC, hX_coef_approx, hX_comp, hX_tl_approx⟩ := Approximates_cons hX_approx
-            obtain ⟨YC, hY_coef_approx, hY_comp, hY_tl_approx⟩ := Approximates_cons hY_approx
+            obtain ⟨XC, hX_coef_approx, hX_maj, hX_tl_approx⟩ := Approximates_cons hX_approx
+            obtain ⟨YC, hY_coef_approx, hY_maj, hY_tl_approx⟩ := Approximates_cons hY_approx
             simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
 
             obtain ⟨⟨h_deg, h_coef⟩, h_tl⟩ := h_right_eq
@@ -2333,7 +2331,7 @@ mutual
             · apply mul_Approximates (MS.WellOrderedBasis_tail h_basis) hX_coef_approx hY_coef_approx
             constructor
             · apply majorated_of_EventuallyEq hf_eq
-              apply mul_majorated hX_comp hY_comp
+              apply mul_majorated hX_maj hY_maj
               apply MS.basis_head_eventually_pos h_basis
             simp only [motive]
             use 1, fun _ ↦ (Y_tl, X_coef, X_deg),
@@ -2358,7 +2356,7 @@ mutual
             · exact hX_tl_approx
             · exact hY_approx
         · intro (left_deg, left_coef) left_tl h_left_eq h_left_approx
-          obtain ⟨LC', h_left_coef_approx, h_left_comp, h_left_tl_approx⟩ := Approximates_cons h_left_approx
+          obtain ⟨LC', h_left_coef_approx, h_left_maj, h_left_tl_approx⟩ := Approximates_cons h_left_approx
           replace h_left_coef_approx := longAdd_mulMonomial_cons_Approximates_coef h_basis hB_approx hM_approx h_left_eq -- Nasty workaround
           generalize h_LC_eq : (longAdd_mulMonomial_fC left_deg hB_approx hM_approx) = LC at h_left_coef_approx
           right
@@ -2405,7 +2403,7 @@ mutual
                 · exact h_left_coef_approx
                 constructor
                 · apply majorated_of_EventuallyEq hf_eq
-                  exact h_left_comp
+                  exact h_left_maj
                 simp only [motive]
                 use (l + 1), ?_, longAdd_mulMonomial_tail_fB BM left_deg hB_approx,
                   fM, .nil, .nil, 0, 0
@@ -2456,8 +2454,8 @@ mutual
               · intro (right_deg, right_coef) right_tl h_right_eq
                 obtain ⟨X_deg, X_coef, X_tl, Y_deg, Y_coef, Y_tl, hX_eq, hY_eq⟩ := mul_eq_cons h_right_eq
                 subst hX_eq hY_eq
-                obtain ⟨XC, hX_coef_approx, hX_comp, hX_tl_approx⟩ := Approximates_cons hX_approx
-                obtain ⟨YC, hY_coef_approx, hY_comp, hY_tl_approx⟩ := Approximates_cons hY_approx
+                obtain ⟨XC, hX_coef_approx, hX_maj, hX_tl_approx⟩ := Approximates_cons hX_approx
+                obtain ⟨YC, hY_coef_approx, hY_maj, hY_tl_approx⟩ := Approximates_cons hY_approx
                 simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
 
                 rw [add_cons_cons]
@@ -2471,11 +2469,10 @@ mutual
                   · apply majorated_of_EventuallyEq hf_eq
                     rw [← sup_of_le_left h1.le]
                     apply add_majorated
-                    · exact h_left_comp
+                    · exact h_left_maj
                     · rw [← h_right_eq.1.1]
-                      apply mul_majorated hX_comp hY_comp
+                      apply mul_majorated hX_maj hY_maj
                       apply MS.basis_head_eventually_pos h_basis
-                    · apply MS.basis_head_eventually_pos h_basis
                   simp only [motive]
                   use (l + 1), ?_, longAdd_mulMonomial_tail_fB BM left_deg hB_approx,
                     fM, Seq.cons (X_deg, X_coef) X_tl, Seq.cons (Y_deg, Y_coef) Y_tl, fX, fY
@@ -2537,11 +2534,10 @@ mutual
                   · apply majorated_of_EventuallyEq hf_eq
                     rw [← sup_of_le_right h2.le]
                     apply add_majorated
-                    · exact h_left_comp
+                    · exact h_left_maj
                     · rw [← h_right_eq.1.1]
-                      apply mul_majorated hX_comp hY_comp
+                      apply mul_majorated hX_maj hY_maj
                       apply MS.basis_head_eventually_pos h_basis
-                    · apply MS.basis_head_eventually_pos h_basis
                   rw [← h_left_eq, ← h_right_eq.2, ← add_assoc]
                   simp only [motive]
                   use (l + 2),
@@ -2619,11 +2615,10 @@ mutual
                   · apply majorated_of_EventuallyEq hf_eq
                     rw [← sup_idem deg']
                     apply add_majorated
-                    · exact h_left_comp
+                    · exact h_left_maj
                     · rw [← h_right_eq.1.1]
-                      apply mul_majorated hX_comp hY_comp
+                      apply mul_majorated hX_maj hY_maj
                       apply MS.basis_head_eventually_pos h_basis
-                    · apply MS.basis_head_eventually_pos h_basis
                   rw [← h_left_tl_eq', ← h_right_eq.2, ← add_assoc]
                   simp only [motive]
                   use l + 2,

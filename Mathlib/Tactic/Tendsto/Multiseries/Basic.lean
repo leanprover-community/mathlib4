@@ -330,8 +330,25 @@ theorem majorated_tendsto_zero_of_neg {f basis_hd : ℝ → ℝ} {deg : ℝ}
   specialize h 0 (by linarith)
   simpa using h
 
+theorem const_majorated {basis_hd : ℝ → ℝ} (h_tendsto : Tendsto basis_hd atTop atTop)
+    {c : ℝ}
+    : majorated (fun _ ↦ c) basis_hd 0 := by
+  intro deg h_deg
+  apply Asymptotics.isLittleO_const_left.mpr
+  right
+  apply Tendsto.comp tendsto_norm_atTop_atTop
+  apply Tendsto.comp (tendsto_rpow_atTop h_deg)
+  exact h_tendsto
+
+theorem mul_const_majorated {f basis_hd : ℝ → ℝ} {deg : ℝ} (h : majorated f basis_hd deg)
+    {c : ℝ}
+    : majorated (fun x ↦ (f x) * c) basis_hd deg := by
+  intro deg h_deg
+  simp_rw [mul_comm]
+  apply IsLittleO.const_mul_left (h deg h_deg)
+
 theorem add_majorated {f g basis_hd : ℝ → ℝ} {f_deg g_deg : ℝ} (hf : majorated f basis_hd f_deg)
-    (hg : majorated g basis_hd g_deg) (h_pos : ∀ᶠ x in atTop, 0 < basis_hd x)
+    (hg : majorated g basis_hd g_deg)
     : majorated (f + g) basis_hd (f_deg ⊔ g_deg) := by
   simp only [majorated] at *
   intro deg h_deg
@@ -452,7 +469,7 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {degs : Seq ℝ} {basis_
 -- | colist {F basis_hd : ℝ → ℝ} {basis_tl : Basis} (ms : PreMS (basis_hd :: basis_tl))
 --   (Cs : CoList (ℝ → ℝ))
 --   (h_coef : (Cs.zip ms).all fun (C, (deg, coef)) => Approximates C basis_tl coef)
---   (h_comp : (partialSums Cs (ms.map fun x => x.1) basis_hd).zip (ms.map fun x => x.1) |>.all
+--   (h_maj : (partialSums Cs (ms.map fun x => x.1) basis_hd).zip (ms.map fun x => x.1) |>.all
 --     fun (ps, deg) => ∀ deg', deg < deg' → (fun x ↦ F x - ps x) =o[atTop]
 --       (fun x ↦ (basis_hd x)^deg')) :
 --   Approximates F (basis_hd :: basis_tl) ms
@@ -478,12 +495,12 @@ theorem Approximates_nil {F basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h : Approximates F (basis_hd :: basis_tl) Seq.nil) :
     F =ᶠ[atTop] 0 := by
   unfold Approximates at h
-  obtain ⟨Cs, _, _, h_comp⟩ := h
-  simp at h_comp
-  apply Seq.all_get at h_comp
-  unfold Seq.All at h_comp
-  specialize h_comp (n := 0)
-  simpa [partialSums, partialSumsFrom] using h_comp
+  obtain ⟨Cs, _, _, h_maj⟩ := h
+  simp at h_maj
+  apply Seq.all_get at h_maj
+  unfold Seq.All at h_maj
+  specialize h_maj (n := 0)
+  simpa [partialSums, partialSumsFrom] using h_maj
 
 theorem Approximates_cons {F basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
@@ -493,7 +510,7 @@ theorem Approximates_cons {F basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : �
       majorated F basis_hd deg ∧
       Approximates (fun x ↦ F x - (basis_hd x)^deg * (C x)) (basis_hd :: basis_tl) tl := by
   unfold Approximates at h
-  obtain ⟨Cs, h_alal, h_coef, h_comp⟩ := h
+  obtain ⟨Cs, h_alal, h_coef, h_maj⟩ := h
   obtain ⟨C, Cs_tl, h_alal⟩ := Seq.atLeastAsLongAs_cons h_alal
   subst h_alal
   use C
@@ -501,8 +518,8 @@ theorem Approximates_cons {F basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : �
   constructor
   · exact h_coef.left
   · constructor
-    · simp [partialSums, partialSumsFrom] at h_comp
-      exact h_comp.left
+    · simp [partialSums, partialSumsFrom] at h_maj
+      exact h_maj.left
     · simp at h_alal
       unfold Approximates
       use Cs_tl
@@ -510,11 +527,11 @@ theorem Approximates_cons {F basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : �
       · assumption
       · constructor
         · exact h_coef.right
-        · simp [partialSums, partialSumsFrom_cons] at h_comp
-          apply And.right at h_comp
-          rw [partialSumsFrom_eq_map (Seq.atLeastAsLongAs_map h_alal)] at h_comp
-          rw [Seq.map_zip_left] at h_comp
-          apply Seq.all_mp _ (Seq.map_all_iff.mp h_comp)
+        · simp [partialSums, partialSumsFrom_cons] at h_maj
+          apply And.right at h_maj
+          rw [partialSumsFrom_eq_map (Seq.atLeastAsLongAs_map h_alal)] at h_maj
+          rw [Seq.map_zip_left] at h_maj
+          apply Seq.all_mp _ (Seq.map_all_iff.mp h_maj)
           intro (C', deg?)
           simp
           intro h
@@ -682,8 +699,8 @@ theorem Approximates.coind'  {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : �
                   rfl
                 · exact hF_eq
               · generalize_proofs h at h_eq
-                obtain ⟨_, _, h_comp, _⟩ := h
-                apply h_comp _ h_deg
+                obtain ⟨_, _, h_maj, _⟩ := h
+                apply h_maj _ h_deg
             · simp [motive']
               right
               generalize_proofs h1 h2
@@ -733,7 +750,7 @@ theorem Approximates.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : ℝ 
       exact h_survive
     | inr h_survive =>
       right
-      obtain ⟨deg, coef, tl, C, h_ms_eq, h_coef, h_comp, h_tl⟩ := h_survive
+      obtain ⟨deg, coef, tl, C, h_ms_eq, h_coef, h_maj, h_tl⟩ := h_survive
       use deg, coef, tl
       constructor
       · exact h_ms_eq
@@ -741,7 +758,7 @@ theorem Approximates.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : ℝ 
       constructor
       · exact h_coef
       constructor
-      · exact h_comp
+      · exact h_maj
       simpa
 
 -- Prove with coinduction?
@@ -754,11 +771,11 @@ theorem Approximates.nil {F : ℝ → ℝ} {basis_hd : ℝ → ℝ} {basis_tl : 
 theorem Approximates.cons {F : ℝ → ℝ} {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
     (C : ℝ → ℝ) (h_coef : coef.Approximates C basis_tl)
-    (h_comp : majorated F basis_hd deg)
+    (h_maj : majorated F basis_hd deg)
     (h_tl : tl.Approximates (fun x ↦ F x - (basis_hd x)^deg * (C x)) (basis_hd :: basis_tl)) :
     Approximates F (basis_hd :: basis_tl) (.cons (deg, coef) tl) := by
   simp [Approximates] at h_tl ⊢
-  obtain ⟨Cs, h_tl_alal, h_tl_coef, h_tl_comp⟩ := h_tl
+  obtain ⟨Cs, h_tl_alal, h_tl_coef, h_tl_maj⟩ := h_tl
   use .cons C Cs
   constructor
   · simpa
@@ -767,14 +784,14 @@ theorem Approximates.cons {F : ℝ → ℝ} {basis_hd : ℝ → ℝ} {basis_tl :
     constructor
     · exact h_coef
     · exact h_tl_coef
-  · unfold partialSums at h_tl_comp ⊢
+  · unfold partialSums at h_tl_maj ⊢
     simp [partialSumsFrom_cons]
     constructor
-    · exact h_comp
+    · exact h_maj
     · rw [partialSumsFrom_eq_map (Seq.atLeastAsLongAs_map h_tl_alal)] -- copypaste from `Approximates_cons`
       rw [Seq.map_zip_left]
       apply Seq.map_all_iff.mpr
-      apply Seq.all_mp _ h_tl_comp
+      apply Seq.all_mp _ h_tl_maj
       intro (C', deg?)
       simp
       intro h
@@ -815,14 +832,14 @@ theorem Approximates_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {F F' : 
         simp
         simp [motive] at ih
         obtain ⟨F, h_equiv, hF⟩ := ih
-        obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons hF
+        obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons hF
         use C
         constructor
         · exact h_coef
         constructor
         · intro deg' h
           apply EventuallyEq.trans_isLittleO h_equiv.symm
-          apply h_comp _ h
+          apply h_maj _ h
         · simp [motive]
           use fun x ↦ F x - basis_hd x ^ deg * (C x)
           constructor

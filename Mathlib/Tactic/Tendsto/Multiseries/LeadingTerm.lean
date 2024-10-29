@@ -121,7 +121,7 @@ mutual
       (h_coef_trimmed : coef.Trimmed)
       (h_coef_ne_zero : ¬coef.FlatZero)
       (h_tl : tl.Approximates (fun x ↦ F x - (basis_hd x)^deg * C x))
-      (h_comp_wo : leadingExp tl < ↑deg)
+      (h_comp : leadingExp tl < ↑deg)
       (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl)) :
       F ~[atTop] fun x ↦ (basis_hd x)^deg * (C x) := by
     have coef_ih := coef.IsEquivalent_leadingTerm (F := C) h_coef_wo h_coef h_coef_trimmed
@@ -129,18 +129,18 @@ mutual
     simp [IsEquivalent]
     eta_expand
     simp only [Pi.sub_apply]
-    revert h_tl h_comp_wo
+    revert h_tl h_comp
     apply tl.recOn
-    · intro h_tl h_comp_wo
+    · intro h_tl h_comp
       apply Approximates_nil at h_tl
       apply EventuallyEq.trans_isLittleO h_tl
       apply Asymptotics.isLittleO_zero -- should be simp lemma
-    · intro (tl_deg, tl_coef) tl_tl h_tl h_comp_wo
-      obtain ⟨tl_C, h_tl_coef, h_tl_comp, h_tl_tl⟩ := Approximates_cons h_tl
-      simp at h_comp_wo
+    · intro (tl_deg, tl_coef) tl_tl h_tl h_comp
+      obtain ⟨tl_C, h_tl_coef, h_tl_maj, h_tl_tl⟩ := Approximates_cons h_tl
+      simp at h_comp
       let deg' := (deg + tl_deg) / 2
-      specialize h_tl_comp deg' (by simp only [deg']; linarith)
-      apply IsLittleO.trans h_tl_comp
+      specialize h_tl_maj deg' (by simp only [deg']; linarith)
+      apply IsLittleO.trans h_tl_maj
       apply (isLittleO_iff_tendsto' _).mpr
       · simp_rw [← div_div]
         conv in _ / _ =>
@@ -201,13 +201,13 @@ mutual
         simp [MS.Term.zero_coef_fun]
         apply EventuallyEq.isEquivalent (by assumption)
       · intro (deg, coef) tl h_wo h_approx h_trimmed
-        obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons h_approx
+        obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
         obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
-        obtain ⟨h_coef_wo, h_comp_wo, h_tl_wo⟩ := WellOrdered_cons h_wo
+        obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
         have coef_ih := coef.IsEquivalent_leadingTerm (F := C) h_coef_wo h_coef h_coef_trimmed
           (MS.WellOrderedBasis_tail h_basis)
         have : F ~[atTop] fun x ↦ (basis_hd x)^deg * (C x) :=
-          PreMS.IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp_wo h_basis
+          PreMS.IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
         apply IsEquivalent.trans this
         eta_expand
         simp_rw [PreMS.leadingTerm_cons_toFun]

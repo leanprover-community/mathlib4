@@ -447,6 +447,7 @@ theorem tail_fun_IsLittleO_head {t : MS.Term} {basis_hd : ℝ → ℝ} {basis_tl
         rw [mul_assoc]
       simp only
 
+      -- TODO: rewrite it using proved lemmas
       have h_comp : ∀ (a b : ℝ), (0 < a) → (fun x ↦ (basis_tl_hd x)^b) =o[atTop] fun x ↦ (basis_hd x)^a := by
         intro a b ha
         simp [MS.WellOrderedBasis] at h_basis
