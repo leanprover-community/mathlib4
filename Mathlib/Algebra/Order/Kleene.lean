@@ -326,7 +326,7 @@ protected abbrev idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul
     ‹Bot β› with
     add_eq_sup := fun a b ↦ hf <| by erw [sup, add, add_eq_sup]
     bot := ⊥
-    bot_le := fun a ↦ bot.trans_le <| @bot_le _ _ _ <| f a}
+    bot_le := fun a ↦ bot.trans_le <| @bot_le _ _ _ <| f a }
 
 -- See note [reducible non-instances]
 /-- Pullback an `IdemCommSemiring` instance along an injective function. -/
