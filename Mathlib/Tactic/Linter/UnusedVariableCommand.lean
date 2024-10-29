@@ -259,27 +259,6 @@ def getPropValue {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) : 
   else
     return flse
 
-/--
-`mkThm' cmd typeSorry` takes as input the `Syntax` `cmd` and an optional `Bool`ean `typeSorry`
-with default value `false`.
-
-It returns the syntax for `theorem nm (binders) : type := by included_variables plumb; sorry`
-where
-* `nm` is a "new" name;
-* `(binders)` are the binders that can be found in the syntax of `cmd`, including the ones
-  mentioned in an `extends` statement;
-* if `cmd` has a type specification `t`, then `type` is `toFalse t`, otherwise it is `False`.
-
-The idea is that `mkThm' cmd` is "as close as possible" to `cmd` in terms of implied variables,
-so that `included_variables plumb` will label all variables that `cmd` uses as actually used.
-
-This is the less "structured" sibling of `mkThm`.
--/
-def mkThm' (cmd : Syntax) (typeSorry : Bool := false) : CommandElabM Syntax := do
-  let exts ← getExtendBinders cmd
-  let typ ← if typeSorry then do return (← `($(mkIdent `toFalse) sorry)).raw else getPropValue cmd
-  mkThmCore (mkIdent `helr) ((findBinders cmd ++ exts).map (⟨·⟩)) typ
-
 open Lean.Parser.Term in
 /--
 Like `Lean.Elab.Command.getBracketedBinderIds`, but returns the identifier `Syntax`,
@@ -445,10 +424,8 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     if decl.isOfKind `lemma || (decl.find? (·.isOfKind ``Command.theorem)).isSome then
       try
         elabCommand newRStx
-        dbg_trace "success"
       catch _ =>
         dbg_trace "caught something"
-        elabCommand (← mkThm' decl true)
     set s
     let left2 := (← usedVarsRef.get).dict.toList
     let left := left2.map Prod.fst
