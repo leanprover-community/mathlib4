@@ -680,9 +680,12 @@ theorem ContinuousWithinAt.mono (h : ContinuousWithinAt f t x)
     (hs : s ⊆ t) : ContinuousWithinAt f s x :=
   h.mono_left (nhdsWithin_mono x hs)
 
-theorem ContinuousWithinAt.mono_of_mem (h : ContinuousWithinAt f t x) (hs : t ∈ 𝓝[s] x) :
+theorem ContinuousWithinAt.mono_of_mem_nhdsWithin (h : ContinuousWithinAt f t x) (hs : t ∈ 𝓝[s] x) :
     ContinuousWithinAt f s x :=
   h.mono_left (nhdsWithin_le_of_mem hs)
+
+@[deprecated (since := "2024-10-18")]
+alias ContinuousWithinAt.mono_of_mem := ContinuousWithinAt.mono_of_mem_nhdsWithin
 
 /-- If two sets coincide around `x`, then being continuous within one or the other at `x` is
 equivalent. See also `continuousWithinAt_congr_set'` which requires that the sets coincide
@@ -922,7 +925,7 @@ theorem ContinuousWithinAt.comp_of_preimage_mem_nhdsWithin_of_eq {g : β → γ}
 theorem ContinuousWithinAt.comp_of_mem_nhdsWithin_image {g : β → γ} {t : Set β}
     (hg : ContinuousWithinAt g t (f x)) (hf : ContinuousWithinAt f s x)
     (hs : t ∈ 𝓝[f '' s] f x) : ContinuousWithinAt (g ∘ f) s x :=
-  (hg.mono_of_mem hs).comp hf (subset_preimage_image f s)
+  (hg.mono_of_mem_nhdsWithin hs).comp hf (subset_preimage_image f s)
 
 theorem ContinuousWithinAt.comp_of_mem_nhdsWithin_image_of_eq {g : β → γ} {t : Set β} {y : β}
     (hg : ContinuousWithinAt g t y) (hf : ContinuousWithinAt f s x)
