@@ -921,8 +921,6 @@ theorem reduce_replicate (n : ℕ) (x : α × Bool) :
   | zero => simp [reduce]
   | succ n ih =>
     rw [List.replicate_succ, reduce.cons, ih]
-    clear ih
-    simp
     cases n with
     | zero => simp
     | succ n => simp [List.replicate_succ]
