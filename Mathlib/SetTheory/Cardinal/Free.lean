@@ -35,9 +35,9 @@ instance [Nonempty α] : Infinite (FreeGroup α) := by
 instance [Nonempty α] : Infinite (FreeAbelianGroup α) :=
   (FreeAbelianGroup.equivFinsupp α).toEquiv.infinite_iff.2 inferInstance
 
-instance [Nonempty α] : Infinite (FreeRing α) := by unfold FreeRing; infer_instance
+instance : Infinite (FreeRing α) := by unfold FreeRing; infer_instance
 
-instance [Nonempty α] : Infinite (FreeCommRing α) := by unfold FreeCommRing; infer_instance
+instance : Infinite (FreeCommRing α) := by unfold FreeCommRing; infer_instance
 
 end Infinite
 
@@ -72,19 +72,21 @@ theorem mk_freeAbelianGroup [Nonempty α] : #(FreeAbelianGroup α) = max #α ℵ
   simp
 
 @[simp]
-theorem mk_freeRing [Nonempty α] : #(FreeRing α) = max #α ℵ₀ := by
-  simp [FreeRing]
+theorem mk_freeRing : #(FreeRing α) = max #α ℵ₀ := by
+  cases isEmpty_or_nonempty α <;> simp [FreeRing]
 
 @[simp]
-theorem mk_freeCommRing [Nonempty α] : #(FreeCommRing α) = max #α ℵ₀ := by
-  simp [FreeCommRing]
+theorem mk_freeCommRing : #(FreeCommRing α) = max #α ℵ₀ := by
+  cases isEmpty_or_nonempty α <;> simp [FreeCommRing]
 
 end Cardinal
 
 section Nonempty
 
-/-- A commutative ring can be constructed on any non-empty type. -/
-instance [Nonempty α] : Nonempty (CommRing α) := by
+/-- A commutative ring can be constructed on any non-empty type.
+
+See also `Infinite.nonempty_field`. -/
+instance nonempty_commRing [Nonempty α] : Nonempty (CommRing α) := by
   obtain hR | hR := finite_or_infinite α
   · obtain ⟨x⟩ := nonempty_fintype α
     have : NeZero (Fintype.card α) := ⟨by inhabit α; simp⟩
@@ -93,5 +95,21 @@ instance [Nonempty α] : Nonempty (CommRing α) := by
     exact ⟨e.commRing⟩
   · have ⟨e⟩ : Nonempty (α ≃ FreeCommRing α) := by simp [← Cardinal.eq]
     exact ⟨e.commRing⟩
+
+@[simp]
+theorem nonempty_commRing_iff : Nonempty (CommRing α) ↔ Nonempty α :=
+  ⟨Nonempty.map (·.zero), fun _ => nonempty_commRing _⟩
+
+@[simp]
+theorem nonempty_ring_iff : Nonempty (Ring α) ↔ Nonempty α :=
+  ⟨Nonempty.map (·.zero), fun _ => (nonempty_commRing _).map (·.toRing)⟩
+
+@[simp]
+theorem nonempty_commSemiring_iff : Nonempty (CommSemiring α) ↔ Nonempty α :=
+  ⟨Nonempty.map (·.zero), fun _ => (nonempty_commRing _).map (·.toCommSemiring)⟩
+
+@[simp]
+theorem nonempty_semiring_iff : Nonempty (Semiring α) ↔ Nonempty α :=
+  ⟨Nonempty.map (·.zero), fun _ => (nonempty_commRing _).map (·.toSemiring)⟩
 
 end Nonempty
