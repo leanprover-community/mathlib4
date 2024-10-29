@@ -74,9 +74,9 @@ import Mathlib.Data.Nat.Notation
 #min_imports in
 lemma hi (n : ℕ) : n = n := by extract_goal; rfl
 
-set_option linter.minImports true
+set_option linter.minImports.increases false
 /--
-warning: Imports increased by 398 to
+warning: Imports increased to
 [Init.Guard, Mathlib.Data.Int.Notation]
 
 New imports: [Init.Guard, Mathlib.Data.Int.Notation]
@@ -94,7 +94,7 @@ set_option linter.minImports false in
 #reset_min_imports
 
 /--
-warning: Imports increased by 398 to
+warning: Imports increased to
 [Init.Guard, Mathlib.Data.Int.Notation]
 
 New imports: [Init.Guard, Mathlib.Data.Int.Notation]
@@ -106,7 +106,7 @@ note: this linter can be disabled with `set_option linter.minImports false`
 #guard (0 : ℤ) = 0
 
 /--
-warning: Imports increased by 967 to
+warning: Imports increased to
 [Mathlib.Tactic.Linter.MinImports]
 
 New imports: [Mathlib.Tactic.Linter.MinImports]
@@ -117,7 +117,7 @@ note: this linter can be disabled with `set_option linter.minImports false`
 #reset_min_imports
 
 /--
-warning: Imports increased by 424 to
+warning: Imports increased to
 [Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.NormNum.Basic]
 
 New imports: [Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.NormNum.Basic]

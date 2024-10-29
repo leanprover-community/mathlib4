@@ -106,6 +106,12 @@ theorem isRadical_vanishingIdeal (s : Set (PrimeSpectrum R)) : (vanishingIdeal s
     vanishingIdeal_zeroLocus_eq_radical]
   apply Ideal.radical_isRadical
 
+theorem zeroLocus_eq_iff {I J : Ideal R} :
+    zeroLocus (I : Set R) = zeroLocus J ↔ I.radical = J.radical := by
+  constructor
+  · intro h; simp_rw [← vanishingIdeal_zeroLocus_eq_radical, h]
+  · intro h; rw [← zeroLocus_radical, h, zeroLocus_radical]
+
 theorem vanishingIdeal_anti_mono_iff {s t : Set (PrimeSpectrum R)} (ht : IsClosed t) :
     s ⊆ t ↔ vanishingIdeal t ≤ vanishingIdeal s :=
   ⟨vanishingIdeal_anti_mono, fun h => by
@@ -244,8 +250,8 @@ theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective 
 
 variable (S)
 
-theorem localization_comap_inducing [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
-    Inducing (comap (algebraMap R S)) := by
+theorem localization_comap_isInducing [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+    IsInducing (comap (algebraMap R S)) := by
   refine ⟨TopologicalSpace.ext_isClosed fun Z ↦ ?_⟩
   simp_rw [isClosed_induced_iff, isClosed_iff_zeroLocus, @eq_comm _ _ (zeroLocus _),
     exists_exists_eq_and, preimage_comap_zeroLocus]
@@ -256,13 +262,16 @@ theorem localization_comap_inducing [Algebra R S] (M : Submonoid R) [IsLocalizat
   · rintro ⟨s, rfl⟩
     exact ⟨_, rfl⟩
 
+@[deprecated (since := "2024-10-28")]
+alias localization_comap_inducing := localization_comap_isInducing
+
 theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Function.Injective (comap (algebraMap R S)) :=
   fun _ _ h => localization_specComap_injective S M h
 
 theorem localization_comap_isEmbedding [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     IsEmbedding (comap (algebraMap R S)) :=
-  ⟨localization_comap_inducing S M, localization_comap_injective S M⟩
+  ⟨localization_comap_isInducing S M, localization_comap_injective S M⟩
 
 @[deprecated (since := "2024-10-26")]
 alias localization_comap_embedding := localization_comap_isEmbedding
@@ -273,8 +282,8 @@ theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization
 
 open Function RingHom
 
-theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) where
-  induced := by
+theorem comap_isInducing_of_surjective (hf : Surjective f) : IsInducing (comap f) where
+  eq_induced := by
     simp only [TopologicalSpace.ext_iff, ← isClosed_compl_iff, isClosed_iff_zeroLocus,
       isClosed_induced_iff]
     refine fun s =>
@@ -284,6 +293,9 @@ theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) wh
         ?_⟩
     rintro ⟨-, ⟨F, rfl⟩, hF⟩
     exact ⟨f '' F, hF.symm.trans (preimage_comap_zeroLocus f F)⟩
+
+@[deprecated (since := "2024-10-28")]
+alias comap_inducing_of_surjective := comap_isInducing_of_surjective
 
 
 end Comap
@@ -326,10 +338,10 @@ theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
   rw [range_comap_of_surjective _ f hf]
   exact isClosed_zeroLocus _
 
-theorem isClosedEmbedding_comap_of_surjective (hf : Surjective f) : IsClosedEmbedding (comap f) :=
-  { induced := (comap_inducing_of_surjective S f hf).induced
-    inj := comap_injective_of_surjective f hf
-    isClosed_range := isClosed_range_comap_of_surjective S f hf }
+lemma isClosedEmbedding_comap_of_surjective (hf : Surjective f) : IsClosedEmbedding (comap f) where
+  toIsInducing := comap_isInducing_of_surjective S f hf
+  inj := comap_injective_of_surjective f hf
+  isClosed_range := isClosed_range_comap_of_surjective S f hf
 
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_comap_of_surjective := isClosedEmbedding_comap_of_surjective
@@ -353,9 +365,9 @@ to the disjoint union of `PrimeSpectrum R` and `PrimeSpectrum S`. -/
 noncomputable
 def primeSpectrumProdHomeo :
     PrimeSpectrum (R × S) ≃ₜ PrimeSpectrum R ⊕ PrimeSpectrum S := by
-  refine ((primeSpectrumProd R S).symm.toHomeomorphOfInducing ?_).symm
+  refine ((primeSpectrumProd R S).symm.toHomeomorphOfIsInducing ?_).symm
   refine (IsClosedEmbedding.of_continuous_injective_isClosedMap ?_
-    (Equiv.injective _) ?_).toInducing
+    (Equiv.injective _) ?_).isInducing
   · rw [continuous_sum_dom]
     simp only [Function.comp_def, primeSpectrumProd_symm_inl, primeSpectrumProd_symm_inr]
     exact ⟨(comap _).2, (comap _).2⟩
@@ -544,6 +556,32 @@ protected def pointsEquivIrreducibleCloseds :
   __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
+
+/-- Also see `PrimeSpectrum.isClosed_singleton_iff_isMaximal` -/
+lemma isMax_iff {x : PrimeSpectrum R} :
+    IsMax x ↔ x.asIdeal.IsMaximal := by
+  refine ⟨fun hx ↦ ⟨⟨x.2.ne_top, fun I hI ↦ ?_⟩⟩, fun hx y e ↦ (hx.eq_of_le y.2.ne_top e).ge⟩
+  by_contra e
+  obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
+  exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
+
+lemma stableUnderSpecialization_singleton {x : PrimeSpectrum R} :
+    StableUnderSpecialization {x} ↔ x.asIdeal.IsMaximal := by
+  simp_rw [← isMax_iff, StableUnderSpecialization, ← le_iff_specializes, Set.mem_singleton_iff,
+    @forall_comm _ (_ = _), forall_eq]
+  exact ⟨fun H a h ↦ (H a h).le, fun H a h ↦ le_antisymm (H h) h⟩
+
+lemma isMin_iff {x : PrimeSpectrum R} :
+    IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
+  show IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
+  simp only [IsMin, Minimal, x.2, bot_le, and_self, and_true, true_and]
+  exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.2 e⟩
+
+lemma stableUnderGeneralization_singleton {x : PrimeSpectrum R} :
+    StableUnderGeneralization {x} ↔ x.asIdeal ∈ minimalPrimes R := by
+  simp_rw [← isMin_iff, StableUnderGeneralization, ← le_iff_specializes, Set.mem_singleton_iff,
+    @forall_comm _ (_ = _), forall_eq]
+  exact ⟨fun H a h ↦ (H a h).ge, fun H a h ↦ le_antisymm h (H h)⟩
 
 section LocalizationAtMinimal
 

@@ -49,7 +49,7 @@ open NormedField Set
 
 open NNReal Pointwise Topology
 
-variable {𝕜 E F G ι : Type*}
+variable {𝕜 E : Type*}
 
 section AbsolutelyConvex
 
@@ -103,7 +103,7 @@ theorem absConvexHull_eq_iInter :
     absConvexHull 𝕜 s = ⋂ (t : Set E) (_ : s ⊆ t) (_ : AbsConvex 𝕜 t), t := by
   simp [absConvexHull, iInter_subtype, iInter_and]
 
-variable {t : Set E} {x y : E}
+variable {t : Set E} {x : E}
 
 theorem mem_absConvexHull_iff : x ∈ absConvexHull 𝕜 s ↔ ∀ t, s ⊆ t → AbsConvex 𝕜 t → x ∈ t := by
   simp_rw [absConvexHull_eq_iInter, mem_iInter]
@@ -151,7 +151,7 @@ end AbsolutelyConvex
 
 section NontriviallyNormedField
 
-variable (𝕜 E) {s : Set E}
+variable (𝕜 E)
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]

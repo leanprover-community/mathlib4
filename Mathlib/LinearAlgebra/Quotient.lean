@@ -54,23 +54,20 @@ when `p` is a submodule of `M`. -/
 def mk {p : Submodule R M} : M → M ⧸ p :=
   Quotient.mk''
 
-/- porting note: here and throughout elaboration is sped up *tremendously* (in some cases even
-avoiding timeouts) by providing type ascriptions to `mk` (or `mk x`) and its variants. Lean 3
-didn't need this help. -/
 theorem mk'_eq_mk' {p : Submodule R M} (x : M) :
-    @Quotient.mk' _ (quotientRel p) x = (mk : M → M ⧸ p) x :=
+    @Quotient.mk' _ (quotientRel p) x = mk x :=
   rfl
 
-theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = (mk : M → M ⧸ p) x :=
+theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = mk x :=
   rfl
 
-theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = (mk : M → M ⧸ p) x :=
+theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = mk x :=
   rfl
 
-protected theorem eq' {x y : M} : (mk x : M ⧸ p) = (mk : M → M ⧸ p) y ↔ -x + y ∈ p :=
+protected theorem eq' {x y : M} : (mk x : M ⧸ p) = mk y ↔ -x + y ∈ p :=
   QuotientAddGroup.eq
 
-protected theorem eq {x y : M} : (mk x : M ⧸ p) = (mk y : M ⧸ p) ↔ x - y ∈ p :=
+protected theorem eq {x y : M} : (mk x : M ⧸ p) = mk y ↔ x - y ∈ p :=
   (Submodule.Quotient.eq' p).trans (leftRel_apply.symm.trans p.quotientRel_def)
 
 instance : Zero (M ⧸ p) where
@@ -93,15 +90,15 @@ instance addCommGroup : AddCommGroup (M ⧸ p) :=
   QuotientAddGroup.Quotient.addCommGroup p.toAddSubgroup
 
 @[simp]
-theorem mk_add : (mk (x + y) : M ⧸ p) = (mk x : M ⧸ p) + (mk y : M ⧸ p) :=
+theorem mk_add : (mk (x + y) : M ⧸ p) = mk x + mk y :=
   rfl
 
 @[simp]
-theorem mk_neg : (mk (-x) : M ⧸ p) = -(mk x : M ⧸ p) :=
+theorem mk_neg : (mk (-x) : M ⧸ p) = -(mk x) :=
   rfl
 
 @[simp]
-theorem mk_sub : (mk (x - y) : M ⧸ p) = (mk x : M ⧸ p) - (mk y : M ⧸ p) :=
+theorem mk_sub : (mk (x - y) : M ⧸ p) = mk x - mk y :=
   rfl
 
 protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
@@ -211,13 +208,13 @@ def restrictScalarsEquiv [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
 @[simp]
 theorem restrictScalarsEquiv_mk [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) (x : M) :
-    restrictScalarsEquiv S P (mk x : M ⧸ P) = (mk x : M ⧸ P) :=
+    restrictScalarsEquiv S P (mk x) = mk x :=
   rfl
 
 @[simp]
 theorem restrictScalarsEquiv_symm_mk [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) (x : M) :
-    (restrictScalarsEquiv S P).symm ((mk : M → M ⧸ P) x) = (mk : M → M ⧸ P) x :=
+    (restrictScalarsEquiv S P).symm (mk x) = mk x :=
   rfl
 
 end Module
@@ -284,7 +281,7 @@ def mkQ : M →ₗ[R] M ⧸ p where
   map_smul' := by simp
 
 @[simp]
-theorem mkQ_apply (x : M) : p.mkQ x = (Quotient.mk x : M ⧸ p) :=
+theorem mkQ_apply (x : M) : p.mkQ x = Quotient.mk x :=
   rfl
 
 theorem mkQ_surjective : Function.Surjective p.mkQ := by
@@ -370,7 +367,7 @@ def mapQ (f : M →ₛₗ[τ₁₂] M₂) (h : p ≤ comap f q) : M ⧸ p →ₛ
 
 @[simp]
 theorem mapQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) :
-    mapQ p q f h (Quotient.mk x : M ⧸ p) = (Quotient.mk (f x) : M₂ ⧸ q) :=
+    mapQ p q f h (Quotient.mk x) = Quotient.mk (f x) :=
   rfl
 
 theorem mapQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) {h} : (mapQ p q f h).comp p.mkQ = q.mkQ.comp f := by
@@ -549,12 +546,12 @@ def quotEquivOfEqBot (hp : p = ⊥) : (M ⧸ p) ≃ₗ[R] M :=
 
 @[simp]
 theorem quotEquivOfEqBot_apply_mk (hp : p = ⊥) (x : M) :
-    p.quotEquivOfEqBot hp (Quotient.mk x : M ⧸ p) = x :=
+    p.quotEquivOfEqBot hp (Quotient.mk x) = x :=
   rfl
 
 @[simp]
 theorem quotEquivOfEqBot_symm_apply (hp : p = ⊥) (x : M) :
-    (p.quotEquivOfEqBot hp).symm x = (Quotient.mk x : M ⧸ p) :=
+    (p.quotEquivOfEqBot hp).symm x = (Quotient.mk x) :=
   rfl
 
 @[simp]
@@ -576,8 +573,8 @@ def quotEquivOfEq (h : p = p') : (M ⧸ p) ≃ₗ[R] M ⧸ p' :=
 
 @[simp]
 theorem quotEquivOfEq_mk (h : p = p') (x : M) :
-    Submodule.quotEquivOfEq p p' h (Submodule.Quotient.mk x : M ⧸ p) =
-      (Submodule.Quotient.mk x : M ⧸ p') :=
+    Submodule.quotEquivOfEq p p' h (Submodule.Quotient.mk x) =
+      (Submodule.Quotient.mk x) :=
   rfl
 
 @[simp]
