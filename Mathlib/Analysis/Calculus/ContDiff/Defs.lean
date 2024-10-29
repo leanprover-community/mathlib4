@@ -148,7 +148,7 @@ theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) 
     ContinuousWithinAt f s x := by
   rcases h 0 bot_le with ⟨u, hu, p, H⟩
   rw [mem_nhdsWithin_insert] at hu
-  exact (H.continuousOn.continuousWithinAt hu.1).mono_of_mem hu.2
+  exact (H.continuousOn.continuousWithinAt hu.1).mono_of_mem_nhdsWithin hu.2
 
 theorem ContDiffWithinAt.congr_of_eventuallyEq (h : ContDiffWithinAt 𝕜 n f s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : ContDiffWithinAt 𝕜 n f₁ s x := fun m hm =>
