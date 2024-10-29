@@ -91,7 +91,7 @@ theorem closure_range : closure (range ι) = univ :=
   pkg.dense.closure_range
 
 theorem isDenseInducing : IsDenseInducing ι :=
-  ⟨pkg.isUniformInducing.inducing, pkg.dense⟩
+  ⟨pkg.isUniformInducing.isInducing, pkg.dense⟩
 
 theorem uniformContinuous_coe : UniformContinuous ι :=
   IsUniformInducing.uniformContinuous pkg.isUniformInducing

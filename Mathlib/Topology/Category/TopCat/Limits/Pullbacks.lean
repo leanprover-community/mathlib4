@@ -135,7 +135,7 @@ theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
       induced (pullback.fst f g) X.str ⊓
         induced (pullback.snd f g) Y.str := by
   let homeo := homeoOfIso (pullbackIsoProdSubtype f g)
-  refine homeo.inducing.induced.trans ?_
+  refine homeo.isInducing.eq_induced.trans ?_
   change induced homeo (induced _ ( (induced Prod.fst X.str) ⊓ (induced Prod.snd Y.str))) = _
   simp only [induced_compose, induced_inf]
   congr
@@ -177,18 +177,20 @@ def pullbackHomeoPreimage
     exact continuous_fst.comp continuous_subtype_val
   continuous_invFun := by
     apply Continuous.subtype_mk
-    refine continuous_prod_mk.mpr ⟨continuous_subtype_val, hg.toInducing.continuous_iff.mpr ?_⟩
+    refine continuous_prod_mk.mpr ⟨continuous_subtype_val, hg.isInducing.continuous_iff.mpr ?_⟩
     convert hf.comp continuous_subtype_val
     ext x
     exact Exists.choose_spec x.2
 
-theorem inducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
-    Inducing <| ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) :=
+theorem isInducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
+    IsInducing <| ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨by simp [topologicalSpace_coe, prod_topology, pullback_topology, induced_compose, ← coe_comp]⟩
+
+@[deprecated (since := "2024-10-28")] alias inducing_pullback_to_prod := isInducing_pullback_to_prod
 
 theorem isEmbedding_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     IsEmbedding <| ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) :=
-  ⟨inducing_pullback_to_prod f g, (TopCat.mono_iff_injective _).mp inferInstance⟩
+  ⟨isInducing_pullback_to_prod f g, (TopCat.mono_iff_injective _).mp inferInstance⟩
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_pullback_to_prod := isEmbedding_pullback_to_prod
