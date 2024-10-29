@@ -11,9 +11,9 @@ import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
-# Linearly disjoint of submodules
+# Linearly disjoint submodules
 
-This file contains basics about the linearly disjoint of submodules.
+This file contains basics about linearly disjoint submodules.
 
 ## Mathematical background
 
@@ -115,7 +115,7 @@ The following is the second equivalent characterization of linearly disjointness
   if `M` and itself are linearly disjoint, if `M` is flat, if any two elements in `M`
   are commutative, then the rank of `M` is at most one.
 
-The results with name containing "of_commute" also have corresponding specified versions
+The results with name containing "of_commute" also have corresponding specialized versions
 assuming `S` is commutative.
 
 ## Tags
@@ -399,7 +399,7 @@ theorem linearIndependent_mul_of_flat (H : M.LinearDisjoint N)
   · exact H.linearIndependent_mul_of_flat_left hm hn
   · exact H.linearIndependent_mul_of_flat_right hm hn
 
-/-- If `{ m_i }` is an `R`-basis of `M`, if `{ n_i }` is an `R`-basis of `N`,
+/-- If `{ m_i }` is an `R`-basis of `M`, if `{ n_j }` is an `R`-basis of `N`,
 such that the family `{ m_i * n_j }` in `S` is `R`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_mul {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)

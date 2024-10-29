@@ -33,14 +33,18 @@ instance [TopologicalSemiring A] (s : StarSubalgebra R A) : TopologicalSemiring 
   s.toSubalgebra.topologicalSemiring
 
 /-- The `StarSubalgebra.inclusion` of a star subalgebra is an `Embedding`. -/
-theorem embedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂) : Embedding (inclusion h) :=
-  { induced := Eq.symm induced_compose
-    inj := Subtype.map_injective h Function.injective_id }
+lemma isEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂) :
+    IsEmbedding (inclusion h) where
+  induced := Eq.symm induced_compose
+  inj := Subtype.map_injective h Function.injective_id
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_inclusion := isEmbedding_inclusion
 
 /-- The `StarSubalgebra.inclusion` of a closed star subalgebra is a `IsClosedEmbedding`. -/
 theorem isClosedEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂)
     (hS₁ : IsClosed (S₁ : Set A)) : IsClosedEmbedding (inclusion h) :=
-  { embedding_inclusion h with
+  { IsEmbedding.inclusion h with
     isClosed_range := isClosed_induced_iff.2
       ⟨S₁, hS₁, by
           convert (Set.range_subtype_map id _).symm
@@ -135,7 +139,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
     φ = ψ := by
   rw [DFunLike.ext'_iff]
   have : Dense (Set.range <| inclusion (le_topologicalClosure S)) := by
-    refine embedding_subtype_val.toInducing.dense_iff.2 fun x => ?_
+    refine IsEmbedding.subtypeVal.toInducing.dense_iff.2 fun x => ?_
     convert show ↑x ∈ closure (S : Set A) from x.prop
     rw [← Set.range_comp]
     exact

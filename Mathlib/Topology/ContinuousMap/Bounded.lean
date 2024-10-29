@@ -246,9 +246,12 @@ theorem inducing_coeFn : Inducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) �
     UniformFun.tendsto_iff_tendstoUniformly]
   simp [comp_def]
 
--- TODO: upgrade to a `IsUniformEmbedding`
-theorem embedding_coeFn : Embedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
+-- TODO: upgrade to `IsUniformEmbedding`
+theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
   ⟨inducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_coeFn := isEmbedding_coeFn
 
 variable (α)
 
@@ -440,6 +443,13 @@ theorem isometry_extend (f : α ↪ δ) (h : δ →ᵇ β) : Isometry fun g : α
   Isometry.of_dist_eq fun g₁ g₂ => by simp [dist_nonneg]
 
 end Extend
+
+/-- The indicator function of a clopen set, as a bounded continuous function. -/
+@[simps]
+noncomputable def indicator (s : Set α) (hs : IsClopen s) : BoundedContinuousFunction α ℝ where
+  toFun := s.indicator 1
+  continuous_toFun := continuous_indicator (by simp [hs]) <| continuous_const.continuousOn
+  map_bounded' := ⟨1, fun x y ↦ by by_cases hx : x ∈ s <;> by_cases hy : y ∈ s <;> simp [hx, hy]⟩
 
 end Basics
 
