@@ -5,6 +5,7 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Data.Set.Function
 
 /-!
 # Monoid, group etc structures on `M × N`
@@ -721,3 +722,20 @@ def divMonoidHom [DivisionCommMonoid α] : α × α →* α where
   map_mul' _ _ := mul_div_mul_comm _ _ _ _
 
 end BundledMulDiv
+
+/-! ### Graph of a function -/
+
+variable {α β : Type*} [Group α] [Group β]
+
+
+/-- The pairs of points in the graph of `f` satisfying that their sum still belongs to the graph
+correspond to the pairs `(x, y)` with `f (x + y) = f x + f y` (by considering the first
+coordinates). -/
+@[to_additive]
+def mulMemGraphEquiv (f : α → β) (s : Set α) :
+    {ab ∈ s.graphOn f ×ˢ s.graphOn f | ab.1 * ab.2 ∈ Set.univ.graphOn f} ≃
+      {ab ∈ s ×ˢ s | f (ab.1 * ab.2) = f ab.1 * f ab.2} where
+  toFun := fun ⟨((a, fa), (b, fb)), h⟩ ↦ ⟨(a, b), by aesop⟩
+  invFun := fun ⟨(a, b), ha⟩ ↦ ⟨((a, f a), (b, f b)), by aesop⟩
+  left_inv _ := by aesop
+  right_inv _ := rfl
