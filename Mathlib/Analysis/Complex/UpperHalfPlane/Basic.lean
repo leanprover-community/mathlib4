@@ -29,12 +29,6 @@ we state lemmas in this file without spurious `coe_fn` terms. -/
 attribute [-instance] Matrix.SpecialLinearGroup.instCoeFun
 attribute [-instance] Matrix.GeneralLinearGroup.instCoeFun
 
-local notation:1024 "↑ₘₙ" A:1024 =>
-  (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
-
-local notation:1024 "↑ₘₙ[" R "]" A:1024 =>
-  ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
-
 /-- The open upper half plane -/
 def UpperHalfPlane :=
   { point : ℂ // 0 < point.im }
@@ -44,6 +38,14 @@ def UpperHalfPlane :=
 open UpperHalfPlane
 
 namespace UpperHalfPlane
+
+/--The coercion first into an element of  `GL(2, ℝ)⁺`, then  `GL(2, ℝ)` and finally a Matrix. -/
+scoped notation:1024 "↑ₘₙ" A:1024 =>
+  (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
+
+/-- like `↑ₘₙ`, but allows the user to specify the ring `R`. Useful to help Lean elaborate.-/
+scoped notation:1024 "↑ₘₙ[" R "]" A:1024 =>
+  ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
 
 /-- Canonical embedding of the upper half-plane into `ℂ`. -/
 @[coe] protected def coe (z : ℍ) : ℂ := z.1

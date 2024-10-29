@@ -28,18 +28,6 @@ open Complex UpperHalfPlane ModularGroup
 
 open scoped MatrixGroups
 
-namespace ModularForm
-
-/--The coercion first into an element of  `GL(2, ℝ)⁺`, then  `GL(2, ℝ)` and finally a Matrix-/
-scoped notation:1024 "↑ₘₙ" A:1024 =>
-  (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
-
-/-- like `↑ₘₙ`, but allows the user to specify the ring `R`. Useful to help Lean elaborate.-/
-scoped notation:1024 "↑ₘₙ[" R "]" A:1024 =>
-  ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
-
-end ModularForm
-
 /-- A general version of the slash action of the space of modular forms. -/
 class SlashAction (β G α γ : Type*) [Group G] [AddMonoid α] [SMul γ α] where
   map : β → G → α → α
