@@ -5,8 +5,6 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 import Mathlib.RingTheory.Ideal.Lattice
 
-set_option linter.minImports true
-
 /-!
 
 # Prime ideals
