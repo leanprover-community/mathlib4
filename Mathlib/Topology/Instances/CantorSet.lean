@@ -5,7 +5,6 @@ Authors: Artur Szafarczyk, Suraj Krishna M S, Jean-Baptiste Stiegler, Isabelle D
 Tomáš Jakl, Lorenzo Zanichelli, Alina Yan, Emilie Uthaiwat, Jana Göken,
 Filippo A. E. Nuccio
 -/
-import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Instances.Real
 
