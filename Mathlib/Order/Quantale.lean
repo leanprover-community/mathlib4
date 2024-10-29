@@ -141,13 +141,8 @@ I.e. `x ⇨ᵣ y = sSup { z | x + z ≤ y }`.
 "]
 def rightResiduation (x y : α) := sSup { z | x * z ≤ y }
 
-<<<<<<< HEAD
 @[inherit_doc]
 scoped infixr:60 " ⇨ₗ " => leftResiduation
-=======
-@[to_additive (attr := inherit_doc)]
-scoped infixr:60 " ⇨ₗ " => left_residuation
->>>>>>> 8f2416b881 (Update Mathlib/Order/Quantale.lean)
 
 @[inherit_doc]
 scoped infixr:60 " ⇨ᵣ " => rightResiduation
