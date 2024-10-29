@@ -117,16 +117,16 @@ variable (h : ∀ a b : FreeMonoid α, rels a b → FreeMonoid.lift f a = FreeMo
 from `PresentedMonoid rels → M`. -/
 @[to_additive "The extension of a map `f : α → M` that satisfies the given relations to an
 additive-monoid homomorphism from `PresentedAddMonoid rels → M`"]
-def toMonoid : PresentedMonoid rels →* M :=
+def lift : PresentedMonoid rels →* M :=
   Con.lift _ (FreeMonoid.lift f) (Con.conGen_le h)
 
 @[to_additive]
 theorem toMonoid.unique (g : MonoidHom (conGen rels).Quotient M)
-    (hg : ∀ a : α, g (of rels a) = f a) : g = toMonoid f h :=
-  Con.lift_unique (proof_1 f h) g (FreeMonoid.hom_eq fun x ↦ let_fun this := hg x; this)
+    (hg : ∀ a : α, g (of rels a) = f a) : g = lift f h :=
+  Con.lift_unique (Con.conGen_le h) g (FreeMonoid.hom_eq fun x ↦ let_fun this := hg x; this)
 
 @[to_additive (attr := simp)]
-theorem toMonoid.of {x : α} : toMonoid f h (of rels x) =
+theorem lift_of {x : α} : lift f h (of rels x) =
     f x := rfl
 
 end ToMonoid
