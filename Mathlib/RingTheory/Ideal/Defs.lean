@@ -36,15 +36,6 @@ open Pointwise
 abbrev Ideal (R : Type u) [Semiring R] :=
   Submodule R R
 
-/-
-/-- A ring is a principal ideal ring if all (left) ideals are principal. -/
-@[mk_iff]
-class IsPrincipalIdealRing (R : Type u) [Semiring R] : Prop where
-  principal : ∀ S : Ideal R, S.IsPrincipal
-
-attribute [instance] IsPrincipalIdealRing.principal
--/
-
 section Semiring
 
 namespace Ideal
