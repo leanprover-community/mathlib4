@@ -3,6 +3,7 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
+import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.SetToL1
 
 /-!
@@ -1761,7 +1762,7 @@ theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set
   simp
 
 theorem integral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → E)
-    (hf : Integrable f (μ.restrict s)) :
+    (hf : IntegrableOn f s μ) :
     ∫ x in s, f x ∂μ = ∑ x ∈ s, (μ {x}).toReal • f x := by
   rw [integral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
 
@@ -1770,7 +1771,7 @@ theorem integral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → 
     ∫ x, f x ∂μ = ∑ x, (μ {x}).toReal • f x := by
   -- NB: Integrable f does not follow from Fintype, because the measure itself could be non-finite
   rw [← integral_finset .univ, Finset.coe_univ, Measure.restrict_univ]
-  simp only [Finset.coe_univ, Measure.restrict_univ, hf]
+  simp [Finset.coe_univ, Measure.restrict_univ, hf]
 
 theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = (μ univ).toReal • f default :=
   calc

@@ -188,6 +188,11 @@ theorem integrableOn_finite_iUnion [Finite β] {t : β → Set α} :
   cases nonempty_fintype β
   simpa using @integrableOn_finset_iUnion _ _ _ _ _ f μ Finset.univ t
 
+lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
+    {s : Finset α} {f : α → E} : IntegrableOn f s μ := by
+  rw [← s.toSet.biUnion_of_singleton]
+  simp [integrableOn_finset_iUnion, measure_lt_top]
+
 theorem IntegrableOn.add_measure (hμ : IntegrableOn f s μ) (hν : IntegrableOn f s ν) :
     IntegrableOn f s (μ + ν) := by
   delta IntegrableOn; rw [Measure.restrict_add]; exact hμ.integrable.add_measure hν
