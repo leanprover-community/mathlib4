@@ -49,9 +49,6 @@ universe v u
 
 section
 
-local notation3:1000 (priority := high) X " _[" n "]" =>
-    (X : CategoryTheory.SimplicialObject _).obj (Opposite.op (SimplexCategory.mk n))
-
 /-- A simplicial set `S` has an underlying refl quiver with `S _[0]` as its underlying type.-/
 def SSet.OneTruncation (S : SSet) := S _[0]
 
@@ -96,8 +93,9 @@ def SSet.oneTruncation : SSet.{u} ⥤ ReflQuiv.{u,u} where
       rw [← F.naturality]
       rfl
   }
-  map_id X := by rfl
-  map_comp f g := by rfl
+
+@[ext] lemma hom_ext {S : SSet} {x y : SSet.OneTruncation S} {f g : x ⟶ y} :
+    f.1 = g.1 → f = g := Subtype.ext
 
 section
 variable {C : Type u} [Category.{v} C]
@@ -120,22 +118,16 @@ def SSet.OneTruncation.ofNerve.hom : OneTruncation (nerve C) ⥤rq C where
   obj := (·.left)
   map := OneTruncation.ofNerve.map
   map_id := fun X : ComposableArrows _ 0 => by
-    simp only [SimplexCategory.len_mk, map, nerve_obj, eqToHom_refl, comp_id, id_comp,
-      ReflQuiver.id_eq_id]
-    exact ComposableArrows.map'_self _ 0
+    obtain ⟨x, rfl⟩ := X.mk₀_surjective
+    simp [map]; rfl
 
 /-- The refl prefunctor from the refl quiver underlying a category to the refl quiver underlying
 a nerve.-/
 def SSet.OneTruncation.ofNerve.inv : C ⥤rq OneTruncation (nerve C) where
   obj := (.mk₀ ·)
   map := fun f => by
-    refine ⟨.mk₁ f, ?_⟩
-    constructor <;> apply ComposableArrows.ext <;>
-      simp [SimplexCategory.len] <;> (exact fun 0 ↦ rfl)
-  map_id := fun X : C => Subtype.ext <| by
-    simp; apply ComposableArrows.ext <;> simp
-    · rintro _ rfl; simp; rfl
-    · intro; split <;> rfl
+    refine ⟨.mk₁ f, ?_, ?_⟩ <;> apply ComposableArrows.ext₀ <;> simp <;> rfl
+  map_id _ := by ext; apply ComposableArrows.ext₁ <;> simp <;> rfl
 
 /-- The refl quiver underlying a nerve is isomorphic to the refl quiver underlying the category.-/
 def SSet.OneTruncation.ofNerve (C : Type u) [Category.{u} C] :
