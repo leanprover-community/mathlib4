@@ -1250,6 +1250,29 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
 
 variable [IsRCLikeNormedField 𝕜]
 
+lemma mpullbackWithin_mlieBracketWithin'
+    {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s u : Set M} {t : Set M'}
+    (hV : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (V x : TangentBundle I' M')) t (f x₀))
+    (hW : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (W x : TangentBundle I' M')) t (f x₀))
+    (hu : UniqueMDiffOn I s) (hf : ContMDiffWithinAt I I' 2 f u x₀) (hx₀ : x₀ ∈ s)
+    (hst : f ⁻¹' t ∈ 𝓝[s] x₀) (h'x₀ : x₀ ∈ closure (interior u)) (hsu : s ⊆ u) :
+    mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ =
+      mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
+  apply mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt hV hW hu (hf.mono hsu) hx₀ hst
+  have A : ((extChartAt I x₀).symm ⁻¹' u ∩ (extChartAt I x₀).target : Set E)
+      =ᶠ[𝓝 (extChartAt I x₀ x₀)] ((extChartAt I x₀).symm ⁻¹' u ∩ range I : Set E) :=
+    EventuallyEq.inter (by rfl) extChartAt_target_eventuallyEq
+  apply IsSymmSndFDerivWithinAt.congr_set _ A
+  apply ContDiffWithinAt.isSymmSndFDerivWithinAt (n := 2) _ le_rfl
+  · rw [inter_comm]
+    exact UniqueMDiffOn.uniqueDiffOn_target_inter hu x₀
+  · apply extChartAt_mem_closure_interior h'x₀ (mem_extChartAt_source x₀)
+  · simp [hx₀]
+  · exact (contMDiffWithinAt_iff.1 hf).2.congr_set A.symm
+
+
+#exit
+
 lemma mpullbackWithin_mlieBracketWithin
     {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : Set M} {t : Set M'}
     (hV : MDifferentiableWithinAt I' I'.tangent (fun x ↦ (V x : TangentBundle I' M')) t (f x₀))

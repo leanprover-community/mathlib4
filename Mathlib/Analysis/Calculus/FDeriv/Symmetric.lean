@@ -95,6 +95,28 @@ protected lemma IsSymmSndFDerivAt.eq
     fderiv 𝕜 (fderiv 𝕜 f) x v w = fderiv 𝕜 (fderiv 𝕜 f) x w v :=
   h v w
 
+lemma fderivWithin_fderivWithin_eq_of_mem_nhdsWithin (h : t ∈ 𝓝[s] x)
+    (hf : ContDiffWithinAt 𝕜 2 f t x) :
+    fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := by
+  have : ∀ᶠ y in 𝓝[s] x, fderivWithin 𝕜 f s y = fderivWithin 𝕜 f t y := by
+    have : ∀ᶠ y in 𝓝[t] x, ContDiffWithinAt 𝕜 2 f t y := by
+      apply ContDiffWithinAt.contDiffOn
+    filter_upwards [self_mem_nhdsWithin] with y hy
+    apply DifferentiableWithinAt.fderivWithin_congr_mono
+
+
+
+
+#exit
+
+  fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x
+    = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x :=
+      (fderivWithin_eventually_congr_set h).fderivWithin_eq_nhds
+  _ = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := fderivWithin_congr_set h
+
+
+#exit
+
 lemma fderivWithin_fderivWithin_eq_of_eventuallyEq (h : s =ᶠ[𝓝 x] t) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
   fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x
@@ -112,6 +134,13 @@ lemma fderivWithin_fderivWithin_eq_of_mem_nhds {f : E → F} {x : E} {s : Set E}
 @[simp] lemma isSymmSndFDerivWithinAt_univ :
     IsSymmSndFDerivWithinAt 𝕜 f univ x ↔ IsSymmSndFDerivAt 𝕜 f x := by
   simp [IsSymmSndFDerivWithinAt, IsSymmSndFDerivAt]
+
+theorem IsSymmSndFDerivWithinAt.mono_of_mem (h : IsSymmSndFDerivWithinAt 𝕜 f t x)
+    (hst : t ∈ 𝓝[s] x) : IsSymmSndFDerivWithinAt 𝕜 f t x := by
+  intro v w
+  rw [fderivWithin_fderivWithin_eq_of_eventuallyEq hst.symm]
+  exact h v w
+
 
 theorem IsSymmSndFDerivWithinAt.congr_set (h : IsSymmSndFDerivWithinAt 𝕜 f s x)
     (hst : s =ᶠ[𝓝 x] t) : IsSymmSndFDerivWithinAt 𝕜 f t x := by

@@ -362,6 +362,17 @@ theorem ContDiffWithinAt.contDiffOn {m : ℕ} (hm : (m : ℕ∞) ≤ n) (h : Con
   let ⟨_u, uo, xu, h⟩ := h.contDiffOn' hm
   ⟨_, inter_mem_nhdsWithin _ (uo.mem_nhds xu), inter_subset_left, h⟩
 
+/-- A function is `C^n` within a set at a point, for `n : ℕ`, if and only if it is `C^n` on
+a neighborhood of this point. -/
+theorem contDiffWithinAt_iff_contDiffOn_nhds {n : ℕ} :
+    ContDiffWithinAt 𝕜 n f s x ↔ ∃ u ∈ 𝓝[insert x s] x, ContDiffOn 𝕜 n f u := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases h.contDiffOn le_rfl with ⟨u, hu, h'u⟩
+    exact ⟨u, hu, h'u.2⟩
+  · rcases h with ⟨u, u_mem, hu⟩
+    have : x ∈ u := mem_of_mem_nhdsWithin (mem_insert x s) u_mem
+    exact (hu x this).mono_of_mem (nhdsWithin_mono _ (subset_insert x s) u_mem)
+
 protected theorem ContDiffWithinAt.eventually {n : ℕ} (h : ContDiffWithinAt 𝕜 n f s x) :
     ∀ᶠ y in 𝓝[insert x s] x, ContDiffWithinAt 𝕜 n f s y := by
   rcases h.contDiffOn le_rfl with ⟨u, hu, _, hd⟩
