@@ -117,7 +117,7 @@ variable (h : ∀ a b : FreeMonoid α, rels a b →  FreeMonoid.lift f a = FreeM
 from `PresentedMonoid rels → M`. -/
 @[to_additive "The extension of a map `f : α → M` that satisfies the given relations to an
 additive-monoid homomorphism from `PresentedAddMonoid rels → M`"]
-def toMonoid : MonoidHom (PresentedMonoid rels) M :=
+def toMonoid : PresentedMonoid rels →* M :=
   Con.lift _ (FreeMonoid.lift f) (Con.conGen_le h)
 
 @[to_additive]
