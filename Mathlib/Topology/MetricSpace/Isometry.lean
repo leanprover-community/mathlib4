@@ -485,8 +485,7 @@ protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : Complete
   e.completeSpace_iff.2 ‹_›
 
 /-- The natural isometry `∀ i, Y i ≃ᵢ ∀ j, Y (e.symm j)` obtained from a bijection `ι ≃ ι'` of
-fintypes.
-`Equiv.piCongrLeft'` as an `IsometryEquiv`.-/
+fintypes. `Equiv.piCongrLeft'` as an `IsometryEquiv`.-/
 @[simps!]
 def piCongrLeft' {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι → Type*}
     [∀ j, PseudoEMetricSpace (Y j)] (e : ι ≃ ι') : (∀ i, Y i) ≃ᵢ ∀ j, Y (e.symm j) where
@@ -510,7 +509,7 @@ def sumArrowIsometryEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
   isometry_toFun _ _ := by simp [Prod.edist_eq, edist_pi_def, Finset.sup_univ_eq_iSup, iSup_sum]
 
-theorem sumArrowIsometryEquivProdArrow_eq_homeomorph {α β : Type*} [Fintype α] [Fintype β] :
+theorem sumArrowIsometryEquivProdArrow_toHomeomorph {α β : Type*} [Fintype α] [Fintype β] :
     sumArrowIsometryEquivProdArrow.toHomeomorph
     = Homeomorph.sumArrowHomeomorphProdArrow (ι := α) (ι' := β) (X := γ) :=
   rfl
@@ -527,7 +526,8 @@ def _root_.Fin.appendIsometry (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃
   toEquiv := Fin.appendEquiv _ _
   isometry_toFun _ _ := by simp_rw [Fin.appendEquiv, Fin.edist_append_eq_max_edist, Prod.edist_eq]
 
-theorem _root_.Fin.appendIsometry_eq_appendHomeomorph (m n : ℕ) :
+@[simp]
+theorem _root_.Fin.appendIsometry_toHomeomorph (m n : ℕ) :
     (Fin.appendIsometry m n).toHomeomorph = Fin.appendHomeomorph (X := α) m n :=
   rfl
 

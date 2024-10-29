@@ -739,7 +739,8 @@ def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃
     rw [Fin.appendEquiv_eq_Homeomorph]
     exact Homeomorph.continuous_invFun _
 
-theorem _root_.Fin.appendHomeomorph_eq_appendEquiv (m n : ℕ) :
+@[simp]
+theorem _root_.Fin.appendHomeomorph_toEquiv (m n : ℕ) :
     (Fin.appendHomeomorph (X := X) m n).toEquiv = Fin.appendEquiv m n :=
   rfl
 
