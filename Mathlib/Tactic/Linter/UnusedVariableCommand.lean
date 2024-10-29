@@ -5,7 +5,8 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
-
+import Mathlib.Tactic.DeclarationNames
+--import Mathlib.adomaniLeanUtils.inspect
 /-!
 #  The "unusedVariableCommand" linter
 
@@ -301,8 +302,18 @@ def getForallStrings (e : Expr) : MetaM (Array String) :=
     Meta.forallTelescopeReducing e fun xs _ =>
       (xs.zip infers?).mapM fun (exp, infer?) => do
         let typ := ← if infer? then Meta.inferType exp else return exp
+        --typ.inspect
+        dbg_trace typ
         return (← Meta.ppExpr typ).pretty
   catch _ => return #[]
+
+def getUsedVariableFromName (declName : Name) : CommandElabM (Array String) := do
+  let env ← getEnv
+  let decl := (env.find? declName).getD default
+  let (d, _) ← liftCoreM do Meta.MetaM.run do getForallStrings decl.type
+  if Linter.getLinterValue showDefs (← getOptions) then
+    dbg_trace "getForallStrings: {d}"
+  return d
 
 /--
 `getUsedVariableNames pos` takes as input a position `pos`.
@@ -402,6 +413,7 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     let s ← get
     let usedVarNames := ← do
       if #[``definition, ``Command.structure, ``Command.abbrev].contains decl[1].getKind then
+        --dbg_trace "here"
         let declIdStx := (decl.find? (·.isOfKind ``declId)).getD default
         getUsedVariableNames (declIdStx.getPos?.getD default)
       else if decl[1].getKind == ``Command.example then
