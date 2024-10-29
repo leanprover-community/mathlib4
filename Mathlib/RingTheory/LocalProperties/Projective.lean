@@ -5,6 +5,7 @@ Authors: Andrew Yang, David Swinarski
 -/
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.Algebra.Module.Projective
+import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.RingTheory.LocalProperties.Submodule
 import Mathlib.RingTheory.Localization.BaseChange
 
@@ -86,9 +87,9 @@ theorem LinearMap.split_surjective_of_localization_maximal
       apply LinearMap.restrictScalars_injective R
       apply IsLocalizedModule.ringHom_ext I.primeCompl (LocalizedModule.mkLinearMap I.primeCompl N)
       · exact IsLocalizedModule.map_units (LocalizedModule.mkLinearMap I.primeCompl N)
-      ext; simp only [LocalizedModule.map, LinearMap.coe_comp,
-        LinearMap.coe_restrictScalars, Function.comp_apply, LocalizedModule.mkLinearMap_apply,
-        LocalizedModule.map_mk, LinearMap.smul_apply, LinearMap.llcomp_apply]
+      ext
+      simp only [coe_comp, coe_restrictScalars, Function.comp_apply,
+        LocalizedModule.mkLinearMap_apply, LocalizedModule.map_mk, llcomp_apply]
 
 theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.IsMaximal),
     Module.Projective (Localization.AtPrime I) (LocalizedModule I.primeCompl M))
