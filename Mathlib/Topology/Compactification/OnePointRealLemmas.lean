@@ -33,12 +33,6 @@ lemma abs_le_inv {a x : ℝ} (ha : a > 0) (G₀ : ¬x = 0)
   apply le_abs'.mp; rw [abs_inv, le_inv_comm₀]; repeat tauto
   rw [abs_pos]; exact G₀
 
-
-/-- -/
-lemma close_enough {x l y : ℝ} (hlu : l < x) (hy' : 2 * |x - y| ≤ |x - l|) : l < y := by
-  nth_rewrite 2 [abs_eq_self.mpr] at hy'
-  repeat linarith[le_abs_self (x - y)]
-
 /-- -/
 lemma symmetrize
     (P : ℝ → Prop)
@@ -61,20 +55,22 @@ lemma symmetrize
            _ ≤ a     := le_max_right |a₀| |a₁|
            _ ≤ _     := hr
 
+
+
 /-- -/
-lemma geometry_pos
-    {y v : { v : Fin 2 → ℝ // ¬v = 0 }}
-    (hv : dist y.1 v.1 < y.1 1)
-    (hy : 0 < y.1 1) : 0 < v.1 1 := by
+lemma geometryPos {n : ℕ} {k : Fin n}
+    {y v : Fin n → ℝ}
+    (hv : dist y v < y k)
+    (hy : 0 < y k) : 0 < v k := by
   by_contra H
-  have g₀ : dist 0 (v.1 1) = 0 - v.1 1 := by apply abs_eq_self.mpr;linarith
-  have g₁ : dist (y.1 1) 0 = y.1 1 - 0:= by apply abs_eq_self.mpr;linarith
-  have g₂ : dist (y.1 1) (v.1 1) = y.1 1 - v.1 1 := by apply abs_eq_self.mpr;linarith
-  have h₀: dist (y.1 1) 0 + dist 0 (v.1 1) = dist (v.1 1) (y.1 1) := by
+  have g₀ : dist 0 (v k) = 0 - v k := by apply abs_eq_self.mpr;linarith
+  have g₁ : dist (y k) 0 = y k - 0:= by apply abs_eq_self.mpr;linarith
+  have g₂ : dist (y k) (v k) = y k - v k := by apply abs_eq_self.mpr;linarith
+  have h₀: dist (y k) 0 + dist 0 (v k) = dist (v k) (y k) := by
     rw [g₀,g₁,dist_comm,g₂];ring
 
-  have h₂: dist (v.1 1) (y.1 1) < (y.1 1)      := calc
-                              _ ≤ dist v.1 y.1 := by apply dist_le_pi_dist -- the key!
+  have h₂: dist (v k) (y k) < (y k)      := calc
+                              _ ≤ dist v y := by apply dist_le_pi_dist -- the key!
                               _ < _            := by rw [dist_comm]; exact hv
   simp only [sub_zero] at g₁
   nth_rewrite 2 [← g₁] at h₂
@@ -82,233 +78,199 @@ lemma geometry_pos
   linarith
 
 /-- -/
-lemma geometry_neg
-    {y v : { v : Fin 2 → ℝ // ¬v = 0 }}
-    (hy : y.1 1 < 0)
-    (hv : dist y.1 v.1 < - y.1 1) : v.1 1 < 0 := by
-  have Q := @geometry_pos
-    ⟨-y.1,by
-      simp only [neg_eq_zero]
-      intro hc
-      rw [hc] at hy
-      simp_all⟩
-    ⟨-v.1,by
-      simp only [neg_eq_zero]
-      exact v.2⟩
-    (by simp only [dist_neg_neg, Fin.isValue, Pi.neg_apply]; tauto)
-    (by simp only [Fin.isValue, Pi.neg_apply, Left.neg_pos_iff];tauto)
-  simp only [Fin.isValue, Pi.neg_apply, Left.neg_pos_iff] at Q
-  tauto
+lemma geometry_pos {n : ℕ} {k : Fin n}
+    {P : (Fin n → ℝ) → Prop} {y v : { v : Fin n → ℝ // P v }}
+    (hv : dist y.1 v.1 < y.1 k) (hy : 0 < y.1 k) : 0 < v.1 k := geometryPos hv hy
 
 /-- -/
-lemma open_geometry_pos :
-    IsOpen fun y : {v : Fin 2 → ℝ // v ≠ 0} ↦ 0 < y.1 1 := by
+lemma geometry_neg {n : ℕ} {k : Fin n}
+    {P : (Fin n → ℝ) → Prop} {y v : { v : Fin n → ℝ // P v }}
+    (hy : y.1 k < 0)
+    (hv : dist y.1 v.1 < - y.1 k) : v.1 k < 0 := by
+  have R := @geometryPos n k (-y.1) (-v.1) (by simp; tauto) (by simp; tauto)
+  simp at R
+  exact R
+
+
+
+/-- -/
+lemma open_geometry_pos {n : ℕ} {k : Fin n} {P : (Fin n → ℝ) → Prop} :
+    IsOpen fun y : {v : Fin n → ℝ // P v} ↦ 0 < y.1 k := by
   rw [isOpen_iff_ball_subset]
   intro y hy
-  use {(u,v) | dist u v < y.1 1}
+  use {(u,v) | dist u v < y.1 k}
   constructor
   · rw [Metric.mem_uniformity_dist]
-    use y.1 1; simp_all only [ne_eq, gt_iff_lt, Set.mem_setOf_eq, implies_true, and_true]; tauto
+    use y.1 k; simp_all only [ne_eq, gt_iff_lt, Set.mem_setOf_eq, implies_true, and_true]; tauto
   · intro v hv; exact geometry_pos hv hy
 
 /-- -/
-lemma open_geometry_neg :
-    IsOpen fun y : {v : Fin 2 → ℝ // v ≠ 0} ↦ y.1 1 < 0 := by
+lemma open_geometry_neg {n : ℕ} {k : Fin n} {P : (Fin n → ℝ) → Prop} :
+    IsOpen fun y : {v : Fin n → ℝ // P v} ↦ y.1 k < 0 := by
   rw [isOpen_iff_ball_subset]
   intro y hy
-  use {(u,v) | dist u v < - y.1 1}
+  use {(u,v) | dist u v < - y.1 k}
   constructor
   · rw [Metric.mem_uniformity_dist]
-    use -y.1 1; simp_all only [ne_eq, gt_iff_lt, Left.neg_pos_iff, Set.mem_setOf_eq, implies_true,
+    use -y.1 k; simp_all only [ne_eq, gt_iff_lt, Left.neg_pos_iff, Set.mem_setOf_eq, implies_true,
       and_true]; tauto
   · intro v hv; exact geometry_neg hy hv
 
-/-- -/
-lemma same_set₀ : fun y : {v : Fin 2 → ℝ // v ≠ 0} ↦ y.1 1 < 2 * y.1 1 = fun y ↦ 0 < y.1 1 := by
-  ext y; constructor; repeat (intro;linarith)
 
 /-- -/
-lemma same_set₁ : fun y : {v : Fin 2 → ℝ // v ≠ 0} ↦ y.1 1 > 2 * y.1 1 = fun y ↦ 0 > y.1 1 := by
-  ext y; constructor; repeat (intro;linarith)
+lemma lt_div_two (y : ℝ) : y < y / 2 ↔ y < 0 := by constructor; repeat (intro;linarith)
 
 /-- -/
-lemma same_set₂ : fun y : {v : Fin 2 → ℝ // v ≠ 0} ↦ y.1 1 < (y.1 1) / 2 = fun y ↦ 0 > y.1 1 := by
-  ext y; constructor; repeat (intro;linarith)
-
-/-- -/
-lemma open_nonzero
-    {x : { v : Fin 2 → ℝ // v ≠ 0 }}
-    (H₁ : ¬x.1 1 = 0) : ∃ t, (∀ y ∈ t, ¬y.1 1 = 0) ∧ IsOpen t ∧ x ∈ t := by
-  use {y | y.1 1 ∈ Set.Ioo ((y.1 1) / 2) (2*(y.1 1))
-          ∨ y.1 1 ∈ Set.Ioo (2*(y.1 1)) ((y.1 1) / 2)}
+lemma open_nonzero {n : ℕ} {k : Fin n} {P : (Fin n → ℝ) → Prop}
+    {x : { v : Fin n → ℝ // P v}}
+    (H₁ : ¬x.1 k = 0) : ∃ t, (∀ y ∈ t, ¬y.1 k = 0) ∧ IsOpen t ∧ x ∈ t := by
+  use {y | y.1 k ∈ Set.Ioo ((y.1 k) / 2) (2*(y.1 k))
+          ∨ y.1 k ∈ Set.Ioo (2*(y.1 k)) ((y.1 k) / 2)}
   simp only [ne_eq, Fin.isValue, Set.mem_Ioo, half_lt_self_iff, Set.mem_setOf_eq, Subtype.forall]
   constructor
-  · intro _ _ haa; cases haa; repeat linarith
+  · intro _ _ haa; cases haa <;> linarith
   · constructor
     · apply IsOpen.union
       · apply IsOpen.inter
         · exact open_geometry_pos
-        · rw [same_set₀]; exact open_geometry_pos
+        · simp_rw [two_mul]; simp only [lt_add_iff_pos_right]; exact open_geometry_pos
       · apply IsOpen.inter
-        · rw [same_set₁]; exact open_geometry_neg
-        · rw [same_set₂]; exact open_geometry_neg
-    · have : x.1 1 < 0 ∨ x.1 1 > 0 := lt_or_gt_of_ne H₁
+        · simp_rw [two_mul]; simp only [add_lt_iff_neg_left]; exact open_geometry_neg
+        · simp_rw [lt_div_two]; exact open_geometry_neg
+    · have : x.1 k < 0 ∨ x.1 k > 0 := lt_or_gt_of_ne H₁
       cases this
-      · right; constructor; repeat linarith
-      · left;  constructor; repeat linarith
+      · right; constructor <;> linarith
+      · left;  constructor <;> linarith
 
 /-- -/
-theorem dist_cone_pos_pos {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 > 0) {s : ℝ} (hs : s ≥ 0) :
-    (a 0 / (s+1) > 0) ∧ ∀ y, dist y a ≤ (a 0 / (s+1)) → y 1 > 0 → s ≤ y 0 / y 1 := by
+theorem distConePosPos {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 0) (h₁ : a i > 0)
+    {s : ℝ} (hs : s ≥ 0) :
+    (a i / (s+1) > 0) ∧ ∀ y, dist y a ≤ (a i / (s+1)) → y j > 0 → s ≤ y i / y j := by
   constructor
   · exact div_pos h₁ (add_pos_of_nonneg_of_pos hs Real.zero_lt_one)
   · intro y hay  hy₀
     rw [le_div_iff₀ hy₀]
-    have g₁ : dist (y 1) (a 1) ≤ dist y a := dist_le_pi_dist y a 1
-    have g₄ : - (y 0) + (a 0) ≤ dist (y 0) (a 0) := by
+    have g₁ : dist (y j) (a j) ≤ dist y a := dist_le_pi_dist y a j
+    have g₄ : - (y i) + (a i) ≤ dist (y i) (a i) := by
       rw [dist_comm,add_comm];apply le_abs_self
-    have g₅ : dist y a * (s+1) ≤ a 0 / (s+1) * (s+1):= by
+    have g₅ : dist y a * (s+1) ≤ a i / (s+1) * (s+1):= by
       apply mul_le_mul_of_nonneg hay
       linarith;exact dist_nonneg;linarith
-    have g₇ : dist y a * (s+1) ≤ a 0 := by
+    have g₇ : dist y a * (s+1) ≤ a i := by
       field_simp at g₅; exact g₅
     simp_all only [gt_iff_lt, ge_iff_le, dist_zero_right, Real.norm_eq_abs, neg_add_le_iff_le_add]
     calc
-    s * y 1 ≤ s * dist y a     := mul_le_mul_of_nonneg_left (by linarith[le_abs_self (y 1)]) hs
-    _       ≤ a 0 - (dist y a) := by linarith[dist_le_pi_dist y a 1]
-    _       ≤ y 0              := by linarith[dist_le_pi_dist y a 0]
+    s * y j ≤ s * dist y a     := mul_le_mul_of_nonneg_left (by linarith[le_abs_self (y j)]) hs
+    _       ≤ a i - (dist y a) := by linarith[dist_le_pi_dist y a j]
+    _       ≤ y i              := by linarith[dist_le_pi_dist y a i]
 
-/-- -/
-theorem dist_cone_pos_neg {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 > 0) {s : ℝ} (hs : s ≥ 0) :
-    (a 0 / (s+1) > 0) ∧ ∀ y, dist y a ≤ (a 0 / (s+1)) → y 1 < 0 → y 0 / y 1 ≤  -s := by
-  let Q₀ := dist_cone_pos_pos h₀ h₁ hs
+
+def flipPos {n : ℕ} (j : Fin n) (y : Fin n → ℝ) (k : Fin n) : ℝ :=
+    ite (j = k) (- y k) (y k)
+
+theorem distConePosNeg {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 0) (h₁ : a i > 0)
+    {s : ℝ} (hs : s ≥ 0) :
+    (a i / (s+1) > 0) ∧ ∀ y, dist y a ≤ (a i / (s+1)) → y j < 0 → y i / y j ≤  -s := by
+  let Q₀ := distConePosPos h₀ h₁ hs
   constructor
   · tauto
   · intro y hy hy'
-    have : dist ![y 0, -y 1] a = dist y a := by
+    have : dist (flipPos j y) a = dist y a := by
       repeat rw [dist_pi_def]
       congr
       ext z
-      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, coe_nndist]
-      cases (Nat.le_one_iff_eq_zero_or_eq_one.mp (Fin.is_le z)) with
-      | inl h =>
-        have : z = 0 := by apply Fin.eq_of_val_eq; simp_all
-        rw [this];tauto
-      | inr h =>
-        have : z = 1 := by apply Fin.eq_of_val_eq; simp_all
-        rw [this];simp only [Fin.isValue, Matrix.cons_val_one, Matrix.head_cons];rw [h₀];simp;
-    have Q := Q₀.2 (![y 0,- y 1]) (by rw [this]; exact hy) (by simp only [Fin.isValue,
-      Matrix.cons_val_one, Matrix.head_cons, gt_iff_lt, Left.neg_pos_iff];tauto)
-    simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons] at Q
+      unfold flipPos
+      simp
+      by_cases H : j = z
+      · subst H
+        simp
+        rw [h₀]
+        simp
+      · rw [if_neg H]
+    have Q := Q₀.2 (flipPos j y) (by rw [this]; exact hy) (by
+      unfold flipPos
+      simp
+      tauto
+    )
+    unfold flipPos at *
+    simp at Q
+    simp_all
+    have : j ≠ i := by aesop
+    rw [if_neg this] at Q
     linarith
 
 /-- -/
-theorem dist_cone_neg_pos {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 <  0)
+theorem distConeNegPos {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 0) (h₁ : a i <  0)
     {s : ℝ} (hs : s ≥ 0) :
-    (- a 0 / (s+1) > 0) ∧ ∀ y, dist y a ≤ (- a 0 / (s+1)) → y 1 > 0 → y 0 / y 1 ≤  - s := by
-  have Q := @dist_cone_pos_neg ![-a 0,a 1] h₀ (by
-  simp only [Fin.isValue, Matrix.cons_val_zero,
-    gt_iff_lt, Left.neg_pos_iff];exact h₁) s hs
-  rw [h₀] at Q
-  have hn : ![-a 0, 0] = -a := by
-    ext z;simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Pi.neg_apply]
-    have : z.1 = 0 ∨ z.1 = 1 := Nat.le_one_iff_eq_zero_or_eq_one.mp (Fin.is_le z)
-    cases this with
-    | inl h =>
-      have : z = 0 := by apply Fin.eq_of_val_eq; simp_all
-      rw [this];simp
-    | inr h =>
-      have : z = 1 := by apply Fin.eq_of_val_eq; simp_all
-      rw [this]
-      simp only [Fin.isValue, Matrix.cons_val_one, Matrix.head_cons, zero_eq_neg]; exact h₀
+    (- a i / (s+1) > 0) ∧ ∀ y, dist y a ≤ (- a i / (s+1)) → y j > 0 → y i / y j ≤  - s := by
   constructor
-  · exact Q.1
-  · intro y hay hy
-    have Q₂ := Q.2
-    have W := @Q₂ (-y) (by
-      simp only [Fin.isValue, Matrix.cons_val_zero]; rw [hn, dist_neg_neg]
-      exact hay) (by simp only [Fin.isValue, Pi.neg_apply, Left.neg_neg_iff];tauto)
-    simp only [Fin.isValue, Pi.neg_apply, neg_div_neg_eq] at W
-    exact W
+  · have g₁ : s + 1 > 0 := by linarith
+    aesop
+  · intro y hy hy'
+    have := (@distConePosNeg n i j (-a) (by simp_all) (by simp_all) s hs).2 (-y)
+      (by simp_all) (by simp_all)
+    simp_all
 
 /-- -/
-theorem dist_cone_neg_neg {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 <  0) {s : ℝ} (hs : s ≥ 0) :
-    (- a 0 / (s+1) > 0) ∧ ∀ y, dist y a ≤ (- a 0 / (s+1)) → y 1 < 0 → y 0 / y 1 ≥ s := by
-  have Q := @dist_cone_pos_pos ![-a 0,a 1] (by tauto) (by
-    simp only [Fin.isValue,
-    Matrix.cons_val_zero, gt_iff_lt, Left.neg_pos_iff];tauto) s hs
-
-  have Q₂ := Q.2
+theorem distConeNegNeg {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 0) (h₁ : a i <  0)
+    {s : ℝ} (hs : s ≥ 0) :
+    (- a i / (s+1) > 0) ∧ ∀ y, dist y a ≤ (- a i / (s+1)) → y j < 0 → y i / y j ≥ s := by
   constructor
-  · have Q₁ := Q.1;tauto
-  · intro y hay hy;
+  · have g₁ : s + 1 > 0 := by linarith
+    aesop
+  · intro y hy hy'
+    have := (@distConePosPos n i j (-a) (by simp_all) (by simp_all) s hs).2 (-y)
+      (by simp_all) (by simp_all)
+    simp_all
 
-    have W := @Q₂ (-y) (by
-      have : ![-a 0, a 1] = -a := by
-        ext z
-        have : z.1 = 0 ∨ z.1 = 1 := by
-          refine Nat.le_one_iff_eq_zero_or_eq_one.mp ?_
-          exact Fin.is_le z
-        cases this with
-        | inl h =>
-          have : z = 0 := by apply Fin.eq_of_val_eq; simp_all
-          rw [this];tauto
-        | inr h =>
-          have : z = 1 := by apply Fin.eq_of_val_eq; simp_all
-          rw [this]
-          simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Matrix.cons_val_one,
-            Matrix.head_cons, Pi.neg_apply]
-          rw [h₀]
-          simp
-      rw [this]
-      have : dist (-y) (-a) = dist y a := by exact dist_neg_neg y a
-      rw [this]
-      tauto
-    ) (by simp only [Fin.isValue, Pi.neg_apply, gt_iff_lt, Left.neg_pos_iff];tauto)
-    simp only [Fin.isValue, Pi.neg_apply, neg_div_neg_eq] at W
-    tauto
 
-/-- -/
-theorem dist_cone_pos {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 > 0) {s : ℝ} (hs : s ≥ 0) :
+/--  -/
+theorem dist_cone_pos {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 0) (h₁ : a i > 0)
+    {s : ℝ} (hs : s ≥ 0) :
     ∃ δ > 0, ∀ y, dist y a ≤ δ →
-      (y 1 < 0 → y 0 / y 1 ≤  -s)
-      ∧ (y 1 > 0 → y 0 / y 1 ≥  s) := by
-  use a 0 / (s+1)
+      (y j < 0 → y i / y j ≤  -s)
+      ∧ (y j > 0 → y i / y j ≥  s) := by
+  use a i / (s+1)
   constructor
-  · exact (dist_cone_pos_pos h₀ h₁ hs).1
+  · exact (distConePosPos h₀ h₁ hs).1
   · intro y hy;
     constructor
-    · exact (dist_cone_pos_neg h₀ h₁ hs).2 y hy
-    · exact (dist_cone_pos_pos h₀ h₁ hs).2 y hy
+    · exact (distConePosNeg h₀ h₁ hs).2 y hy
+    · exact (distConePosPos h₀ h₁ hs).2 y hy
 
-/-- -/
-theorem dist_cone_neg {a : Fin 2 → ℝ} (h₀ : a 1 = 0) (h₁ : a 0 < 0) {s : ℝ} (hs : s ≥ 0) :
+/--  -/
+theorem dist_cone_neg {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 0) (h₁ : a i < 0)
+    {s : ℝ} (hs : s ≥ 0) :
     ∃ δ > 0, ∀ y, dist y a ≤ δ →
-      (y 1 > 0 → y 0 / y 1 ≤  -s)
-      ∧ (y 1 < 0 → y 0 / y 1 ≥  s) := by
-  use - a 0 / (s+1)
+      (y j > 0 → y i / y j ≤  -s)
+      ∧ (y j < 0 → y i / y j ≥  s) := by
+  use - a i / (s+1)
   constructor
-  · exact (dist_cone_neg_pos h₀ h₁ hs).1
+  · exact (distConeNegPos h₀ h₁ hs).1
   · intro y hy;
     constructor
-    · exact (dist_cone_neg_pos h₀ h₁ hs).2 y hy
-    · exact (dist_cone_neg_neg h₀ h₁ hs).2 y hy
+    · exact (distConeNegPos h₀ h₁ hs).2 y hy
+    · exact (distConeNegNeg h₀ h₁ hs).2 y hy
 
 /-- -/
+lemma posOrNeg {n : ℕ} {a : { v : Fin n → ℝ // v ≠ 0 }} :
+  ∃ j : Fin n, a.1 j > 0 ∨ a.1 j < 0 := by
+  by_contra H
+  push_neg at H
+  have (j) : a.1 j = 0 := by linarith[H j]
+  have : a.1 = 0 := by
+    ext z
+    aesop
+  exact a.2 this
+
+/-- Only for `Fin 2`. -/
 lemma pos_or_neg {a : { v : Fin 2 → ℝ // v ≠ 0 }} (H : a.1 1 = 0) : a.1 0 > 0 ∨ a.1 0 < 0 := by
   by_contra H
   push_neg at H
   have : a.1 0 = 0 := by linarith
   have : a.1 = 0 := by
     ext z
-    have : z.1 = 0 ∨ z.1 = 1 := by
-      refine Nat.le_one_iff_eq_zero_or_eq_one.mp ?_
-      exact Fin.is_le z
-    cases this with
-    | inl h =>
-      have : z = 0 := by apply Fin.eq_of_val_eq; tauto
-      rw [this];tauto
-    | inr h =>
-      have : z = 1 := by apply Fin.eq_of_val_eq; tauto
-      rw [this];tauto
-  apply a.2;tauto
+    fin_cases z <;> (simp; tauto)
+  exact a.2 this
+
+-- used : -- abs_le_inv, open_nonzero, symmetrize, dist_cone_pos, dist_cone_neg, pos_or_neg

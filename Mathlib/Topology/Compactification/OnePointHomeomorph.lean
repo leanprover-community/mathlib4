@@ -5,6 +5,15 @@ Authors: Bjørn Kjos-Hanssen
 -/
 import Mathlib.Topology.Compactification.OnePointEquiv
 import Mathlib.Topology.Compactification.OnePointRealLemmas
+-- abs_le_inv, open_nonzero, symmetrize, dist_cone_pos, dist_cone_neg, pos_or_neg
+-- import Mathlib.Data.Real.Sqrt
+-- import Mathlib.Topology.Instances.Real
+-- import Mathlib.Algebra.Order.Group.Unbundled.Abs
+-- import Mathlib.Topology.UniformSpace.Basic
+-- import Mathlib.Algebra.EuclideanDomain.Field
+-- import Mathlib.Algebra.EuclideanDomain.Basic
+-- import Mathlib.Analysis.RCLike.Basic
+-- import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Homeomorphism between one-point compactification and projective space
@@ -28,18 +37,6 @@ open Projectivization
 
 open Classical
 
-/-- The inverse of `r` is `1 / r`, with `1 / 0 = ∞`.-/
-noncomputable def OnePoint_inv (r : ℝ) : OnePoint ℝ := ite (r ≠ 0) (some ((1:ℝ)/r)) ∞
-
-/-- Ordinary division is continuous. -/
-lemma cont_inv_lift_ (a x:ℝ) (h : x ≠ 0) :
-    ContinuousAt (fun x : ℝ ↦ ( (a / x) : OnePoint ℝ)) x := by
-  apply ContinuousAt.comp'
-  · exact Continuous.continuousAt OnePoint.continuous_coe
-  · apply ContinuousAt.div₀
-    · exact continuousAt_const
-    repeat tauto
-
 /-- -/
 noncomputable def OnePoint_div {K : Type} [DivisionRing K] (a : K) (r : K): OnePoint K :=
     ite (r ≠ 0) (a / r) ∞
@@ -47,69 +44,6 @@ noncomputable def OnePoint_div {K : Type} [DivisionRing K] (a : K) (r : K): OneP
 /-- -/
 infix:50 " ÷ " => OnePoint_div
 
-/-- OnePoint_div is continuous. -/
-lemma cont_nonzero_ (a x:ℝ) (h: x ≠ 0) : ContinuousAt (OnePoint_div a) x := by
-  rw [continuousAt_congr]
-  · show ContinuousAt (fun x : ℝ ↦ ( (a / x) : OnePoint ℝ)) x
-    apply cont_inv_lift_; tauto
-
-  · unfold Filter.EventuallyEq OnePoint_div;simp;
-    rw [eventually_nhds_iff]
-    by_cases H : 0 < x
-    · use Set.Ioo (x/2) (2*x)
-      constructor
-      · intro y hy
-        simp at hy
-        have : y ≠ 0 := by
-          linarith
-        simp_all
-      · constructor
-        · exact isOpen_Ioo
-        · refine Set.mem_Ioo.mpr ?h.right.right.a;
-          constructor
-          · simp_all only [half_lt_self_iff]
-          · simp_all only [lt_mul_iff_one_lt_left, Nat.one_lt_ofNat]
-    use Set.Ioo (2*x) (x/2)
-    constructor
-    · intro y hy
-      simp at hy
-      have : y ≠ 0 := by linarith
-      simp_all
-
-    · simp_all
-      have : x < 0 := lt_of_le_of_ne H h
-      constructor
-      · exact isOpen_Ioo
-      · constructor
-        · linarith
-        · linarith
-
-/-- Auxiliary fact. -/
-lemma in_onepoint_set
-    {t : Set (OnePoint ℝ)} {a₀ a₁ : ℝ}
-    (ha : ∀ (b : ℝ), b ≤ -(max |a₀| |a₁|) ∨ (max |a₀| |a₁|) ≤ b → some b ∈ t)
-    (hap : max |a₀| |a₁| > 0) (h : ∞ ∈ t)
-    (x : ℝ) (hx : |x| ≤ (max |a₀| |a₁|)⁻¹) :
-    (if x = 0 then ∞ else some x⁻¹) ∈ t := by
-  split_ifs
-  · simp_all
-  · apply ha; apply abs_le_inv; repeat tauto
-
-/-- Auxiliary fact. -/
-lemma suffice
-    (t : Set (OnePoint ℝ))
-    (x : ℝ)
-    (h : ∃ ε > 0, ∀ (y : ℝ), |x - y| ≤ ε → (if y = 0 then ∞ else ↑y⁻¹) ∈ t) :
-    ∃ V ∈ uniformity ℝ, {y | (x, y) ∈ V} ⊆ {r | (if r = 0 then ∞ else some r⁻¹) ∈ t} := by
-  obtain ⟨ε,hε⟩ := h
-  use {(x,y) | dist x y ≤ ε}
-  rw [Metric.mem_uniformity_dist]
-  constructor
-  · use ε
-    constructor
-    · tauto
-    · intros;simp;linarith
-  · apply hε.2
 
 /-- -/
 lemma div_slope_well_defined {K : Type} [Field K]
@@ -144,40 +78,6 @@ lemma nonzero_of_nonzero (a : {v : Fin 2 → ℝ // v ≠ 0}) :
   ext z
   fin_cases z <;> simp_all
 
-/-- Prove that this div_slope_katz is also an equiv. -/
-noncomputable def div_slope_katz (p : ℙ ℝ (Fin 2 → ℝ)) : OnePoint ℝ := by
-  have d := (@OnePoint.equivProjectivization ℝ _ _).invFun
-  exact Quotient.lift
-    (fun u : { v : Fin 2 → ℝ // v ≠ 0} ↦ d <| (by
-        apply mk ℝ
-        show (u.1 0, u.1 1) ≠ 0
-        have := u.2
-        contrapose this
-        simp_all
-        ext z
-        fin_cases z <;> simp_all
-    )) (fun a b hab => by
-    show d (mk ℝ (a.1 0, a.1 1) _) = d (mk ℝ (b.1 0, b.1 1) _)
-    have : (mk ℝ (a.1 0, a.1 1) (nonzero_of_nonzero a))
-         = (mk ℝ (b.1 0, b.1 1) (nonzero_of_nonzero b)) := by
-      have := (mk_eq_mk_iff ℝ (a.1 0, a.1 1) (b.1 0, b.1 1)
-        (nonzero_of_nonzero a) (nonzero_of_nonzero b)).mpr
-      apply this
-      obtain ⟨c,hc⟩ := hab
-      use c
-      simp_all
-      rw [← hc]
-      simp
-    rw [this]
-    ) p
-
-/-- Equivalence between two forms of the real plane. -/
-noncomputable def tupleFin :
-  ℝ × ℝ ≃ (Fin 2 → ℝ) where
-  toFun     := fun p => ![p.1, p.2]
-  invFun    := fun p => (p 0, p 1)
-  left_inv  := fun _ => by simp
-  right_inv := fun p => funext fun i => by fin_cases i <;> simp
 
 /-- Equivalence between two parametrizations of "lines through the origin". -/
 noncomputable def tupFinNonzero :
@@ -283,11 +183,6 @@ noncomputable def div_slope_equiv :
     intro
     simp
 
-
--- Division is injective. -/
--- lemma div_slope_injective : Function.Injective div_slope :=
---   Quotient.ind (fun a ↦ Quotient.ind (field_div_slope_inj_lifted a))
-
 /-- Division is continnuous. -/
 lemma continuous_slope_nonzero_case {x : { v : Fin 2 → ℝ // v ≠ 0 }} (hx : ¬x.1 1 = 0) :
     ContinuousAt (fun u ↦ u.1 0 ÷ u.1 1) x := by
@@ -327,14 +222,14 @@ lemma slope_open_nonzero
   tauto
 
 /-- Auxiliary uniformity lemma.  -/
-lemma slope_uniform_of_compact_pos
+lemma slope_uniform_of_compact_pos {n : ℕ} {i j : Fin n}
     {t : Set (OnePoint ℝ)}
     (ht₀ : IsCompact (OnePoint.some ⁻¹' t)ᶜ)
     (ht₂ : ∞ ∈ t)
-    {a : { v : Fin 2 → ℝ // v ≠ 0 }}
-    (H : a.1 1 = 0)
-    (hl : a.1 0 > 0) : ∃ V ∈ uniformity { v // ¬v = 0 },
-    UniformSpace.ball a V ⊆ (fun u ↦ if u.1 1 = 0 then ∞ else some (u.1 0 / u.1 1)) ⁻¹' t :=  by
+    {a : { v : Fin n → ℝ // v ≠ 0 }}
+    (H : a.1 j = 0)
+    (hl : a.1 i > 0) : ∃ V ∈ uniformity { v // ¬v = 0 },
+    UniformSpace.ball a V ⊆ (fun u ↦ if u.1 j = 0 then ∞ else some (u.1 i / u.1 j)) ⁻¹' t :=  by
   have W := IsCompact.isBounded (ht₀)
   rw [Bornology.isBounded_def] at W
   simp at W
@@ -354,28 +249,28 @@ lemma slope_uniform_of_compact_pos
     have hx : dist a x < δ := h_x
     clear h_x
     simp only [ne_eq, Fin.isValue, Set.mem_preimage]
-    by_cases hz : x.1 1 = 0
+    by_cases hz : x.1 j = 0
     · rw [hz];simp;tauto
     · rw [if_neg hz]
       apply hamax
-      by_cases hpos : x.1 1 > 0
+      by_cases hpos : x.1 j > 0
       · right
         have : dist a x = dist a.1 x.1 := rfl
         have hδ' := hδ.2 x.1 (by rw [dist_comm];linarith)
         tauto
       · left
-        have h₁: x.1 1 < 0 := lt_of_le_of_ne (le_of_not_lt hpos) hz
+        have h₁: x.1 j < 0 := lt_of_le_of_ne (le_of_not_lt hpos) hz
         rw [dist_comm] at hx
         have : dist x.1 a.1 < δ := hx
         have h₀: dist x.1 a.1 ≤ δ := by linarith
         exact (hδ.2 x h₀).1 h₁
 
 /-- Auxiliary uniformity lemma.  -/
-lemma slope_uniform_of_compact_neg {t : Set (OnePoint ℝ)}
+lemma slope_uniform_of_compact_neg {n : ℕ} {i j : Fin n} {t : Set (OnePoint ℝ)}
     (ht₀ : IsCompact (OnePoint.some ⁻¹' t)ᶜ) (ht₂ : ∞ ∈ t)
-    {a : { v : Fin 2 → ℝ // v ≠ 0 }} (H : a.1 1 = 0) (hl : a.1 0 < 0) :
+    {a : { v : Fin n → ℝ // v ≠ 0 }} (H : a.1 j = 0) (hl : a.1 i < 0) :
     ∃ V ∈ uniformity { v // ¬v = 0 },
-    UniformSpace.ball a V ⊆ (fun u ↦ if u.1 1 = 0 then ∞ else some (u.1 0 / u.1 1)) ⁻¹' t :=  by
+    UniformSpace.ball a V ⊆ (fun u ↦ if u.1 j = 0 then ∞ else some (u.1 i / u.1 j)) ⁻¹' t :=  by
   have W := IsCompact.isBounded (ht₀)
   rw [Bornology.isBounded_def] at W
   simp at W
@@ -393,23 +288,39 @@ lemma slope_uniform_of_compact_neg {t : Set (OnePoint ℝ)}
     have hx : dist a x < δ := h_x
     clear h_x
     simp only [ne_eq, Fin.isValue, Set.mem_preimage]
-    by_cases X : x.1 1 = 0
+    by_cases X : x.1 j = 0
     · rw [X];simp;tauto
     · rw [if_neg X];
       apply hamax
-      by_cases hpos : x.1 1 > 0
+      by_cases hpos : x.1 j > 0
       · left
         have : dist a x = dist a.1 x.1 := rfl
         have hδ' := hδ.2 x.1 (by rw [dist_comm];linarith)
         tauto
       · right
-        have hneg: x.1 1 < 0 := lt_of_le_of_ne (le_of_not_lt hpos) X
+        have hneg: x.1 j < 0 := lt_of_le_of_ne (le_of_not_lt hpos) X
         rw [dist_comm] at hx
         have : dist x.1 a.1 < δ := hx
         have h₀: dist x.1 a.1 ≤ δ := by linarith
         exact (hδ.2 x h₀).2 hneg
 
-/-- Auxiliary uniformity lemma.  -/
+/-- -/
+lemma slopeUniform_of_compact {n : ℕ} {j : Fin n}
+    {t : Set (OnePoint ℝ)}
+    (ht₀ : IsCompact (OnePoint.some ⁻¹' t)ᶜ)
+    (ht₂ : ∞ ∈ t)
+    {a : { v : Fin n → ℝ // v ≠ 0 }}
+    (H : a.1 j = 0) :
+    ∃ i,
+    ∃ V ∈ uniformity { v // ¬v = 0 },
+    UniformSpace.ball a V ⊆ (fun u ↦ if u.1 j = 0 then ∞ else some (u.1 i / u.1 j)) ⁻¹' t := by
+  obtain ⟨i,hi⟩ := @posOrNeg n a
+  use i
+  cases hi with
+  |inl hl => exact slope_uniform_of_compact_pos ht₀ ht₂ H hl
+  |inr hr => exact slope_uniform_of_compact_neg ht₀ ht₂ H hr
+
+/-- Auxiliary uniformity lemma requiring Fin 2.  -/
 lemma slope_uniform_of_compact
     {t : Set (OnePoint ℝ)}
     (ht₀ : IsCompact (OnePoint.some ⁻¹' t)ᶜ)
@@ -525,5 +436,5 @@ instance {n:ℕ} : CompactSpace (ℙ ℝ (Fin n → ℝ)) := by
   }
 
 /-- The real projective line ℙ ℝ (Fin 2 → ℝ) and OnePoint ℝ are homeomorphic.-/
-noncomputable def onepointhomeo : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoint ℝ) :=
+noncomputable def OnePointHomeo : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoint ℝ) :=
   Continuous.homeoOfEquivCompactToT2 (f := div_slope_equiv.symm) div_slope_continuous
