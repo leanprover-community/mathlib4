@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.Divisible
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.IsLocalHomeomorph
+import Mathlib.Topology.Instances.ZMultiples
 
 /-!
 # The additive circle

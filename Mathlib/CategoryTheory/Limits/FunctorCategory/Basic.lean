@@ -236,6 +236,29 @@ theorem limit_obj_ext {H : J ⥤ K ⥤ C} [HasLimitsOfShape J C] {k : K} {W : C}
   ext j
   simpa using w j
 
+/-- Taking a limit after whiskering by `G` is the same as using `G` and then taking a limit. -/
+def limitCompWhiskeringLeftIsoCompLimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasLimitsOfShape J C] :
+    limit (F ⋙ (whiskeringLeft _ _ _).obj G) ≅ G ⋙ limit F :=
+  NatIso.ofComponents (fun j =>
+    limitObjIsoLimitCompEvaluation (F ⋙ (whiskeringLeft _ _ _).obj G) j ≪≫
+      HasLimit.isoOfNatIso (isoWhiskerLeft F (whiskeringLeftCompEvaluation G j)) ≪≫
+      (limitObjIsoLimitCompEvaluation F (G.obj j)).symm)
+
+@[reassoc (attr := simp)]
+theorem limitCompWhiskeringLeftIsoCompLimit_hom_whiskerLeft_π (F : J ⥤ K ⥤ C) (G : D ⥤ K)
+    [HasLimitsOfShape J C] (j : J) :
+    (limitCompWhiskeringLeftIsoCompLimit F G).hom ≫ whiskerLeft G (limit.π F j) =
+      limit.π (F ⋙ (whiskeringLeft _ _ _).obj G) j := by
+  ext d
+  simp [limitCompWhiskeringLeftIsoCompLimit]
+
+@[reassoc (attr := simp)]
+theorem limitCompWhiskeringLeftIsoCompLimit_inv_π (F : J ⥤ K ⥤ C) (G : D ⥤ K)
+    [HasLimitsOfShape J C] (j : J) :
+    (limitCompWhiskeringLeftIsoCompLimit F G).inv ≫ limit.π (F ⋙ (whiskeringLeft _ _ _).obj G) j =
+      whiskerLeft G (limit.π F j) := by
+  simp [Iso.inv_comp_eq]
+
 instance hasColimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasColimit (F.flip.obj k)] :
     HasColimit (F ⋙ (evaluation _ _).obj k) :=
   hasColimitOfIso (F := F.flip.obj k) (Iso.refl _)
@@ -301,6 +324,29 @@ theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W 
   apply (cancel_epi (colimitObjIsoColimitCompEvaluation H k).inv).1
   ext j
   simpa using w j
+
+/-- Taking a colimit after whiskering by `G` is the same as using `G` and then taking a colimit. -/
+def colimitCompWhiskeringLeftIsoCompColimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasColimitsOfShape J C] :
+    colimit (F ⋙ (whiskeringLeft _ _ _).obj G) ≅ G ⋙ colimit F :=
+  NatIso.ofComponents (fun j =>
+    colimitObjIsoColimitCompEvaluation (F ⋙ (whiskeringLeft _ _ _).obj G) j ≪≫
+      HasColimit.isoOfNatIso (isoWhiskerLeft F (whiskeringLeftCompEvaluation G j)) ≪≫
+      (colimitObjIsoColimitCompEvaluation F (G.obj j)).symm)
+
+@[reassoc (attr := simp)]
+theorem ι_colimitCompWhiskeringLeftIsoCompColimit_hom (F : J ⥤ K ⥤ C) (G : D ⥤ K)
+    [HasColimitsOfShape J C] (j : J) :
+    colimit.ι (F ⋙ (whiskeringLeft _ _ _).obj G) j ≫
+      (colimitCompWhiskeringLeftIsoCompColimit F G).hom = whiskerLeft G (colimit.ι F j) := by
+  ext d
+  simp [colimitCompWhiskeringLeftIsoCompColimit]
+
+@[reassoc (attr := simp)]
+theorem whiskerLeft_ι_colimitCompWhiskeringLeftIsoCompColimit_inv (F : J ⥤ K ⥤ C) (G : D ⥤ K)
+    [HasColimitsOfShape J C] (j : J) :
+    whiskerLeft G (colimit.ι F j) ≫ (colimitCompWhiskeringLeftIsoCompColimit F G).inv =
+      colimit.ι (F ⋙ (whiskeringLeft _ _ _).obj G) j := by
+  simp [Iso.comp_inv_eq]
 
 instance evaluationPreservesLimits [HasLimits C] (k : K) :
     PreservesLimits ((evaluation K C).obj k) where

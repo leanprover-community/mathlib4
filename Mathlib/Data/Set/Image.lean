@@ -8,6 +8,7 @@ import Mathlib.Tactic.Use
 import Batteries.Tactic.Congr
 import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.Basic
+import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Images and preimages of sets

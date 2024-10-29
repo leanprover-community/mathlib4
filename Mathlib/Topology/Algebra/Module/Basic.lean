@@ -4,15 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Algebra.UniformGroup
-import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.LinearAlgebra.Pi
+import Mathlib.Algebra.Module.Opposite
 import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.Algebra.Module.Opposites
+import Mathlib.LinearAlgebra.Projection
+import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.Topology.Algebra.Group.Quotient
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 
 /-!
 # Theory of topological modules and continuous linear maps.
@@ -429,6 +427,16 @@ theorem coe_copy (f : M₁ →SL[σ₁₂] M₂) (f' : M₁ → M₂) (h : f' = 
 theorem copy_eq (f : M₁ →SL[σ₁₂] M₂) (f' : M₁ → M₂) (h : f' = ⇑f) : f.copy f' h = f :=
   DFunLike.ext' h
 
+theorem range_coeFn_eq :
+    Set.range ((⇑) : (M₁ →SL[σ₁₂] M₂) → (M₁ → M₂)) =
+      {f | Continuous f} ∩ Set.range ((⇑) : (M₁ →ₛₗ[σ₁₂] M₂) → (M₁ → M₂)) := by
+  ext f
+  constructor
+  · rintro ⟨f, rfl⟩
+    exact ⟨f.continuous, f, rfl⟩
+  · rintro ⟨hfc, f, rfl⟩
+    exact ⟨⟨f, hfc⟩, rfl⟩
+
 -- make some straightforward lemmas available to `simp`.
 protected theorem map_zero (f : M₁ →SL[σ₁₂] M₂) : f (0 : M₁) = 0 :=
   map_zero f
@@ -436,7 +444,7 @@ protected theorem map_zero (f : M₁ →SL[σ₁₂] M₂) : f (0 : M₁) = 0 :=
 protected theorem map_add (f : M₁ →SL[σ₁₂] M₂) (x y : M₁) : f (x + y) = f x + f y :=
   map_add f x y
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 protected theorem map_smulₛₗ (f : M₁ →SL[σ₁₂] M₂) (c : R₁) (x : M₁) : f (c • x) = σ₁₂ c • f x :=
   (toLinearMap _).map_smulₛₗ _ _
 
@@ -1681,7 +1689,7 @@ theorem map_zero (e : M₁ ≃SL[σ₁₂] M₂) : e (0 : M₁) = 0 :=
 theorem map_add (e : M₁ ≃SL[σ₁₂] M₂) (x y : M₁) : e (x + y) = e x + e y :=
   (e : M₁ →SL[σ₁₂] M₂).map_add x y
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem map_smulₛₗ (e : M₁ ≃SL[σ₁₂] M₂) (c : R₁) (x : M₁) : e (c • x) = σ₁₂ c • e x :=
   (e : M₁ →SL[σ₁₂] M₂).map_smulₛₗ c x
 
@@ -1730,6 +1738,10 @@ protected def refl : M₁ ≃L[R₁] M₁ :=
   { LinearEquiv.refl R₁ M₁ with
     continuous_toFun := continuous_id
     continuous_invFun := continuous_id }
+
+@[simp]
+theorem refl_apply (x : M₁) :
+    ContinuousLinearEquiv.refl R₁ M₁ x = x := rfl
 
 end
 
@@ -2001,6 +2013,31 @@ def arrowCongrEquiv (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[
     ContinuousLinearMap.ext fun x => by
       simp only [ContinuousLinearMap.comp_apply, apply_symm_apply, coe_coe]
 
+section piCongrRight
+
+variable {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)] [∀ i, AddCommMonoid (M i)]
+  [∀ i, Module R₁ (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)] [∀ i, AddCommMonoid (N i)]
+  [∀ i, Module R₁ (N i)] (f : (i : ι) → M i ≃L[R₁] N i)
+
+/-- Combine a family of continuous linear equivalences into a continuous linear equivalence of
+pi-types. -/
+def piCongrRight : ((i : ι) → M i) ≃L[R₁] (i : ι) → N i :=
+  { LinearEquiv.piCongrRight fun i ↦ f i with
+    continuous_toFun := by
+      exact continuous_pi fun i ↦ (f i).continuous_toFun.comp (continuous_apply i)
+    continuous_invFun := by
+      exact continuous_pi fun i => (f i).continuous_invFun.comp (continuous_apply i) }
+
+@[simp]
+theorem piCongrRight_apply (m : (i : ι) → M i) (i : ι) :
+    piCongrRight f m i = (f i) (m i) := rfl
+
+@[simp]
+theorem piCongrRight_symm_apply (n : (i : ι) → N i) (i : ι) :
+    (piCongrRight f).symm n i = (f i).symm (n i) := rfl
+
+end piCongrRight
+
 end AddCommMonoid
 
 section AddCommGroup
@@ -2035,6 +2072,26 @@ theorem skewProd_apply (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L
 theorem skewProd_symm_apply (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L[R] M₄) (x) :
     (e.skewProd e' f).symm x = (e.symm x.1, e'.symm (x.2 - f (e.symm x.1))) :=
   rfl
+
+variable (R) in
+/-- The negation map as a continuous linear equivalence. -/
+def neg [ContinuousNeg M] :
+    M ≃L[R] M :=
+  { LinearEquiv.neg R with
+    continuous_toFun := continuous_neg
+    continuous_invFun := continuous_neg }
+
+@[simp]
+theorem coe_neg [ContinuousNeg M] :
+    (neg R : M → M) = -id := rfl
+
+@[simp]
+theorem neg_apply [ContinuousNeg M] (x : M) :
+    neg R x = -x := by simp
+
+@[simp]
+theorem symm_neg [ContinuousNeg M] :
+    (neg R : M ≃L[R] M).symm = neg R := rfl
 
 end AddCommGroup
 
