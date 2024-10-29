@@ -3,9 +3,12 @@ Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
-import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Group.Subgroup.MulOpposite
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Algebra.Quotient
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Cosets
