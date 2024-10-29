@@ -24,8 +24,8 @@ by multiplication by a nonzero real number, see `smul_mem_of_mem`, that is also 
 domain for the action of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and
 `torsion_unit_smul_mem_of_mem`.
 
-* `NumberField.mixedEmbedding.fundamentalCone.idealSet`: for `J` an integral ideal, the subset of
-elements of the fundamental cone that are images of element of `J`.
+* `NumberField.mixedEmbedding.fundamentalCone.idealSet`: for `J` an integral ideal, the intersection
+between the fundamental cone and the `idealLattice` defined by the image of `J`.
 
 * `NumberField.mixedEmbedding.fundamentalCone.idealSetEquivNorm`: for `J` an integral ideal and `n`
 a natural integer, the equivalence between the elements of `idealSet K` of norm `n` and the
@@ -245,8 +245,7 @@ theorem unit_smul_mem_iff_mem_torsion (hx : x ∈ fundamentalCone K) (u : (𝓞 
     exact hx.1
 
 variable (K) in
-/-- The set of images by `mixedEmbedding` of algebraic integers of `K` contained in the
-fundamental cone. -/
+/-- The intersection between the fundamental cone and the `integerLattice`. -/
 def integerSet : Set (mixedSpace K) :=
   fundamentalCone K ∩ mixedEmbedding.integerLattice K
 
@@ -422,7 +421,7 @@ theorem integerSetEquiv_apply_fst (a : integerSet K) :
     ((integerSetEquiv K a).1 : Ideal (𝓞 K)) = span {(preimageOfMemIntegerSet a : 𝓞 K)} := rfl
 
 variable (K) in
-/-- For an integer `n`, The equivalence between the `integerSet K` of norm `n`
+/-- For an integer `n`, The equivalence between the elements of `integerSet K` of norm `n`
 and the product of the set of nonzero principal ideals of `K` of norm `n` and the torsion of `K`. -/
 def integerSetEquivNorm (n : ℕ) :
     {a : integerSet K // mixedEmbedding.norm (a : mixedSpace K) = n} ≃
@@ -463,8 +462,8 @@ theorem card_isPrincipal_norm_eq_mul_torsion (n : ℕ) :
 
 variable (J : (Ideal (𝓞 K))⁰)
 
-/-- The set of images by `mixedEmbedding` of the elements of the integral ideal `J` contained in
-the fundamental cone. -/
+/-- The intersection between the fundamental cone and the `idealLattice` defined by the image of
+the integral ideal `J`. -/
 def idealSet : Set (mixedSpace K) :=
   fundamentalCone K ∩ (mixedEmbedding.idealLattice K (FractionalIdeal.mk0 K J))
 
