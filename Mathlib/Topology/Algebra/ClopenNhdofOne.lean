@@ -18,9 +18,9 @@ namespace TopologicalGroup
 
 /-- An arbitrary normal subgroup contained in a clopen nhd of `1` in a compact topological group. -/
 noncomputable def OpenNormalSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]
-    [TopologicalGroup G] [CompactSpace G] {U : Set G}
-    (UClopen : IsClopen U) (einU : 1 ∈ U) : OpenNormalSubgroup G :=
-  let H := OpenSubgroupSubClopenNhdsOfOne UClopen einU
+    [TopologicalGroup G] [CompactSpace G] {U : Set G} (UClopen : IsClopen U) :
+    OpenNormalSubgroup G :=
+  let H := OpenSubgroupSubClopenNhdsOfOne UClopen
   letI : Subgroup.FiniteIndex H.1 := Subgroup.finiteIndex_of_finite_quotient H.1
   { toSubgroup := Subgroup.normalCore H
     isOpen' := Subgroup.isOpen_of_isClosed_of_finiteIndex _ <|
@@ -29,14 +29,14 @@ noncomputable def OpenNormalSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [To
 theorem openNormalSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] {U : Set G}
     (UClopen : IsClopen U) (einU : 1 ∈ U) :
-    ((OpenNormalSubgroupSubClopenNhdsOfOne UClopen einU) : Set G) ⊆ U :=
+    ((OpenNormalSubgroupSubClopenNhdsOfOne UClopen) : Set G) ⊆ U :=
     fun _ b ↦ openSubgroupSubClopenNhdsOfOne_spec UClopen einU
-      (Subgroup.normalCore_le (OpenSubgroupSubClopenNhdsOfOne UClopen einU).1 b)
+      (Subgroup.normalCore_le (OpenSubgroupSubClopenNhdsOfOne UClopen).1 b)
 
 theorem openNormalSubgroupSubClopenNhdsOfOne_nonempty {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] {U : Set G} (UClopen : IsClopen U) (einU : 1 ∈ U) :
     Nonempty {H : OpenNormalSubgroup G // (H : Set G) ⊆ U} :=
-  Nonempty.intro ⟨OpenNormalSubgroupSubClopenNhdsOfOne UClopen einU,
+  Nonempty.intro ⟨OpenNormalSubgroupSubClopenNhdsOfOne UClopen,
     openNormalSubgroupSubClopenNhdsOfOne_spec UClopen einU⟩
 
 end TopologicalGroup

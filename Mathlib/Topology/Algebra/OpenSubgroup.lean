@@ -461,193 +461,58 @@ This section define `OpenSubgroupSubClopenNhdsOfOne` (`OpenNormalSubgroupSubClop
 which can pick an open subgroup contained in a clopen neighborhood of `1`.
 -/
 
+open scoped Pointwise
+
+variable {G : Type*} [TopologicalSpace G]
+
+structure TopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop where
+  nhd : T ∈ 𝓝 0
+  inv : -T = T
+  isOpen : IsOpen T
+  mul : W + T ⊆ W
+
+@[to_additive]
+structure TopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
+  nhd : T ∈ 𝓝 1
+  inv : T⁻¹ = T
+  isOpen : IsOpen T
+  mul : W * T ⊆ W
+
 namespace TopologicalGroup
 
-open scoped Pointwise
+variable [Group G] [TopologicalGroup G] [CompactSpace G]
 
-variable {G : Type*} [Group G]
+open Set Filter
 
-/-- The first side of rectangle neighborhood of `(w,1)` in `mulClosurePairs`. -/
-@[to_additive "The first side of rectangle neighborhood of `(w,1)` in `addClosurePairs`."]
-def rectNhdSide [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) : Set G :=
-  Classical.choose <| isOpen_prod_iff.mp
-    (mulClosurePairs_open WOpen) w 1 (mem_mulClosurePairs einW w)
+lemma exist_mul_closure_nhd {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝 (1 : G), W * T ⊆ W := by
+  apply WClopen.isClosed.isCompact.induction_on (p := fun S ↦ ∃ T ∈ 𝓝 (1 : G), S * T ⊆ W)
+    ⟨Set.univ ,by simp only [univ_mem, empty_mul, empty_subset, and_self]⟩
+    (fun _ _ huv ⟨T, hT, mem⟩ ↦ ⟨T, ⟨hT, (mul_subset_mul_right huv).trans mem⟩⟩)
+    fun U V ⟨T₁, hT₁, mem1⟩ ⟨T₂, hT₂, mem2⟩ ↦ ⟨T₁ ∩ T₂, ⟨inter_mem hT₁ hT₂,
+      mul_subset_iff.mpr fun x hx y ⟨h1, h2⟩ ↦ by
+      rcases hx with memU | memV
+      · exact mem1 (Set.mul_mem_mul memU h1)
+      · exact mem2 (Set.mul_mem_mul memV h2)⟩⟩
+  intro x memW
+  have : (x, 1) ∈ (fun p ↦ p.1 * p.2) ⁻¹' W := by simp only [mem_preimage, mul_one, memW]
+  rcases isOpen_prod_iff.mp (continuous_mul.isOpen_preimage W <| WClopen.2) x 1 this with
+    ⟨U, V, h1, h2, h3, h4, h5⟩
+  have h6 : U * V ⊆ W := mul_subset_iff.mpr (fun _ hx _ hy ↦ h5 (mk_mem_prod hx hy))
+  exact ⟨U ∩ W, ⟨⟨U, ⟨IsOpen.mem_nhds h1 h3, ⟨W, ⟨fun _ a ↦ a, rfl⟩⟩⟩⟩,
+    ⟨V, ⟨IsOpen.mem_nhds h2 h4, fun _ a ↦ h6 ((mul_subset_mul_right inter_subset_left) a)⟩⟩⟩⟩
 
-/-- The second side of rectangle neighborhood of `(w,1)` in `mulClosurePairs`. -/
-@[to_additive "The second side of rectangle neighborhood of `(w,1)` in `addClosurePairs`."]
-def rectNhdSideOne [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) : Set G :=
-  Classical.choose <| Classical.choose_spec <| isOpen_prod_iff.mp
-    (mulClosurePairs_open WOpen) w 1 (mem_mulClosurePairs einW w)
-
-@[to_additive]
-lemma rectNhdSide_open [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
-    IsOpen (rectNhdSide WOpen einW w) :=
-  (Classical.choose_spec <| Classical.choose_spec <| isOpen_prod_iff.mp
-    (mulClosurePairs_open WOpen) w 1 (mem_mulClosurePairs einW w)).1
-
-@[to_additive]
-lemma rectNhdSideOne_open [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
-    IsOpen (rectNhdSideOne WOpen einW w) :=
-  (Classical.choose_spec <| Classical.choose_spec <| isOpen_prod_iff.mp
-    (mulClosurePairs_open WOpen) w 1 (mem_mulClosurePairs einW w)).2.1
-
-@[to_additive]
-lemma mem_rectNhdSide [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
-    w.1 ∈ (rectNhdSide WOpen einW w) :=
-    (Classical.choose_spec <| Classical.choose_spec <| isOpen_prod_iff.mp
-      (mulClosurePairs_open WOpen) w 1 (mem_mulClosurePairs einW w)).2.2.1
-
-@[to_additive]
-lemma one_mem_rectNhdSideOne [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
-    1 ∈ (rectNhdSideOne WOpen einW w) :=
-    (Classical.choose_spec <| Classical.choose_spec <| isOpen_prod_iff.mp
-      (mulClosurePairs_open WOpen) w 1 (mem_mulClosurePairs einW w)).2.2.2.1
-
-@[to_additive]
-lemma nhds_side_mul_sub [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
-    (rectNhdSide WOpen einW w) ×ˢ (rectNhdSideOne WOpen einW w) ⊆ mulClosurePairs W :=
-  (Classical.choose_spec <| Classical.choose_spec <| isOpen_prod_iff.mp
-    (mulClosurePairs_open WOpen) w 1 (mem_mulClosurePairs einW w)).2.2.2.2
-
-/-- The symm core of `rectNhdSideOne`. -/
-@[to_additive "The symm core of `rectNhdSideOne`."]
-def rectNhdSideOneCore [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) : Set G :=
-  Set.selfInvCore (rectNhdSideOne WOpen einW w)
-
-@[to_additive]
-lemma rectNhdSideOneCore_open [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
-    IsOpen (rectNhdSideOneCore WOpen einW w) := by
-  simp only [rectNhdSideOneCore, Set.selfInvCore]
-  apply IsOpen.inter (rectNhdSideOne_open WOpen einW w)
-    (IsOpen.inv (rectNhdSideOne_open WOpen einW w))
-
-@[to_additive]
-lemma one_mem_rectNhdSideOneCore [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
-    1 ∈ (rectNhdSideOneCore WOpen einW w) := by
-  simp only [rectNhdSideOneCore, Set.selfInvCore, Set.mem_inter_iff, Set.mem_inv, inv_one, and_self]
-  exact (one_mem_rectNhdSideOne WOpen einW w)
-
-@[to_additive]
-lemma nhds_side_sub [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
-    (rectNhdSide WOpen einW w) ⊆ W ∧ (rectNhdSideOne WOpen einW w) ⊆ W:= by
-  have mulClosurePairssubWp : mulClosurePairs W ⊆ (W ×ˢ W) := Set.inter_subset_right
-  have := Set.Subset.trans (nhds_side_mul_sub WOpen einW w) mulClosurePairssubWp
-  rw [Set.prod_subset_prod_iff] at this
-  rcases this with h | e1 | e2
-  · exact h
-  · absurd e1
-    exact ne_of_mem_of_not_mem' (mem_rectNhdSide WOpen einW w) fun a ↦ a
-  · absurd e2
-    exact ne_of_mem_of_not_mem' (one_mem_rectNhdSideOne WOpen einW w) fun a ↦ a
-
-@[to_additive]
-lemma rectNhdSide_sub [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
-    (rectNhdSide WOpen einW w) ⊆ W := (nhds_side_sub WOpen einW w).1
-
-@[to_additive]
-lemma rectNhdSideOneCore_sub [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
-    (rectNhdSideOneCore WOpen einW w) ⊆ W := by
-  simp only [rectNhdSideOneCore, Set.selfInvCore]
-  exact Set.Subset.trans Set.inter_subset_left (nhds_side_sub WOpen einW w).2
-
-@[to_additive]
-lemma rectNhdSide_cover [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) :
-    W ⊆ ⋃ w : W, (rectNhdSide WOpen einW w) := by
-  intro x xinW
-  simp only [Set.iUnion_coe_set, Set.mem_iUnion]
-  exact ⟨x, xinW, (mem_rectNhdSide WOpen einW ⟨x, xinW⟩)⟩
-
-/-- The index of the finite subcover of the first side of the rectangle neighborhoods
-covering `(W,1)`. -/
-@[to_additive "The index of the finite subcover of the first side of the rectangle neighborhoods
-covering `(W,1)`."]
-private noncomputable def openSymmSubClopenNhdsOfOneIndex [TopologicalSpace G]  [TopologicalGroup G]
-    [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) : Finset W :=
-  Classical.choose (IsCompact.elim_finite_subcover (IsClosed.isCompact (IsClopen.isClosed WClopen))
-    _ (fun (w : W) ↦
-    (rectNhdSide_open WClopen.isOpen einW w)) (rectNhdSide_cover WClopen.isOpen einW))
-
-@[to_additive]
-private lemma openSymmSubClopenNhdsOfOneIndex_spec [TopologicalSpace G]  [TopologicalGroup G]
-    [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
-    W ⊆ ⋃ i ∈ (openSymmSubClopenNhdsOfOneIndex WClopen einW), rectNhdSide WClopen.isOpen einW i :=
-  Classical.choose_spec (IsCompact.elim_finite_subcover (IsClosed.isCompact
-  (IsClopen.isClosed WClopen)) _ (fun (w : W) ↦ (rectNhdSide_open WClopen.isOpen einW w))
-  (rectNhdSide_cover WClopen.isOpen einW))
-
-/-- An open symmetric neighborhood of `1` such that it is contained in a given
-  clopen neighborhood of `1` and the given neighborhood is closed under multiplying by
-  an element in it. -/
-@[to_additive "An open symmetric neighborhood of `1` such that it is contained in a given
-  clopen neighborhood of `1` and the given neighborhood is closed under adding by
-  an element in it."]
-def openSymmSubClopenNhdsOfOne [TopologicalSpace G]  [TopologicalGroup G]
-    [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) : Set G :=
-  ⋂ w ∈ (openSymmSubClopenNhdsOfOneIndex WClopen einW) , rectNhdSideOneCore WClopen.isOpen einW w
-
-namespace openSymmSubClopenNhdsOfOne
-
-variable [TopologicalSpace G]  [TopologicalGroup G]
-
-@[to_additive]
-lemma isopen [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
-    IsOpen (openSymmSubClopenNhdsOfOne WClopen einW) :=
-  isOpen_biInter_finset (fun w _ ↦ rectNhdSideOneCore_open WClopen.isOpen einW w)
-
-@[to_additive]
-lemma symm [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
-    (openSymmSubClopenNhdsOfOne WClopen einW) = (openSymmSubClopenNhdsOfOne WClopen einW)⁻¹ := by
-  simp only [openSymmSubClopenNhdsOfOne, rectNhdSideOneCore]
-  apply Set.iInter_selfInvCore_symm
-
-@[to_additive]
-lemma one_mem [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
-    1 ∈ (openSymmSubClopenNhdsOfOne WClopen einW) := by
-  simp only [openSymmSubClopenNhdsOfOne, Set.mem_iInter]
-  exact fun w _ ↦ one_mem_rectNhdSideOneCore WClopen.isOpen einW w
-
-@[to_additive]
-lemma mul_sub [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
-    W * (openSymmSubClopenNhdsOfOne WClopen einW) ⊆ W := by
-  rintro a ⟨x,xinW,y,yinInter,xmuly⟩
-  have := openSymmSubClopenNhdsOfOneIndex_spec WClopen einW xinW
-  simp only [Set.mem_iUnion] at this
-  rcases this with ⟨w,winfin,xinU⟩
-  simp only [openSymmSubClopenNhdsOfOne, Set.iUnion_coe_set, Set.iInter_coe_set,
-    Set.mem_iInter ] at yinInter
-  have yinV := Set.mem_of_mem_inter_left (yinInter w w.2 winfin)
-  simpa only [Set.mem_preimage, xmuly] using Set.mem_of_mem_inter_left <|
-    nhds_side_mul_sub WClopen.isOpen einW w <| Set.mk_mem_prod xinU yinV
-
-@[to_additive]
-lemma sub [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
-    (openSymmSubClopenNhdsOfOne WClopen einW) ⊆ W :=
-  Set.Subset.trans (Set.subset_mul_right (openSymmSubClopenNhdsOfOne WClopen einW) einW)
-    (mul_sub WClopen einW)
-
-end openSymmSubClopenNhdsOfOne
-
-end TopologicalGroup
-
-section
-
-open scoped Pointwise
-
-open TopologicalGroup
+lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
+    ∃ T, mulInvClosureNhd T W := by
+  rcases exist_mul_closure_nhd WClopen with ⟨S, hS, h⟩
+  rcases mem_nhds_iff.mp hS with ⟨U, h1, h2, h3⟩
+  use U ∩ U⁻¹
+  have := h2.inter h2.inv
+  constructor
+  · exact IsOpen.mem_nhds this (by simp only [mem_inter_iff, h3, Set.mem_inv, inv_one, and_self])
+  · ext
+    simp only [Set.mem_inter_iff, Set.mem_inv, Set.inter_inv, inv_inv, and_comm]
+  · exact this
+  · exact fun a ha ↦ h (mul_subset_mul_left h1 (mul_subset_mul_left inter_subset_left ha))
 
 @[to_additive]
 lemma iUnion_pow {G : Type*} [Group G] {V : Set G} (einV : 1 ∈ V) :
@@ -662,46 +527,47 @@ lemma iUnion_pow {G : Type*} [Group G] {V : Set G} (einV : 1 ∈ V) :
   · use n - 1
     rwa [Nat.sub_add_cancel <| Nat.one_le_iff_ne_zero.mpr h]
 
-namespace TopologicalGroup
-
 /-- An arbitrary open subgroup that is contained in a given clopen neighborhood of `1`. -/
-@[to_additive "An open subgroup that is contained in a given clopen neighborhood of `1`."]
+--@[to_additive "An open subgroup that is contained in a given clopen neighborhood of `1`."]
 def OpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]  [TopologicalGroup G]
-    [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) : OpenSubgroup G where
-  carrier := {x : G | ∃ n : ℕ, x ∈ (openSymmSubClopenNhdsOfOne WClopen einW) ^ n}
+    [CompactSpace G] {W : Set G} (WClopen : IsClopen W) : OpenSubgroup G where
+  carrier := {x : G | ∃ n : ℕ, x ∈ (Classical.choose (exists_mulInvClosureNhd WClopen)) ^ n}
   mul_mem':= by
     rintro a b ⟨na, hna⟩ ⟨nb, hnb⟩
     simp only [Set.mem_setOf_eq] at *
     use na + nb
     rw [pow_add]
     exact Set.mul_mem_mul hna hnb
-  one_mem':= ⟨1, by simp only [pow_one, openSymmSubClopenNhdsOfOne.one_mem WClopen einW]⟩
+  one_mem':= ⟨1, by simp only [pow_one,
+      mem_of_mem_nhds (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).nhd]⟩
   inv_mem':= by
     simp only [Set.mem_setOf_eq, forall_exists_index] at *
     intro x m hm
     use m
-    rw [TopologicalGroup.openSymmSubClopenNhdsOfOne.symm]
+    rw [← (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).inv]
     simpa only [inv_pow, Set.mem_inv, inv_inv] using hm
   isOpen' := by
-    simp only [iUnion_pow (openSymmSubClopenNhdsOfOne.one_mem WClopen einW)]
+    simp only [iUnion_pow <|
+      mem_of_mem_nhds (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).nhd]
     refine isOpen_iUnion (fun n ↦ ?_)
     rw [pow_succ]
-    exact IsOpen.mul_left (openSymmSubClopenNhdsOfOne.isopen WClopen einW)
+    exact IsOpen.mul_left (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).isOpen
 
-@[to_additive]
+--@[to_additive]
 theorem openSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
-    ((OpenSubgroupSubClopenNhdsOfOne WClopen einW) : Set G) ⊆ W := by
-  let V := (openSymmSubClopenNhdsOfOne WClopen einW)
+    ((OpenSubgroupSubClopenNhdsOfOne WClopen) : Set G) ⊆ W := by
+  let V := (Classical.choose (exists_mulInvClosureNhd WClopen))
   show {x : G | ∃ n : ℕ, x ∈ V ^ n} ⊆ W
-  simp_rw [iUnion_pow (openSymmSubClopenNhdsOfOne.one_mem WClopen einW), Set.iUnion_subset_iff]
+  simp_rw [iUnion_pow (mem_of_mem_nhds
+    (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).nhd), Set.iUnion_subset_iff]
   intro n _
   have mulVpow: W * V ^ (n + 1) ⊆ W := by
     induction' n with n ih
-    · simp only [zero_add, pow_one, openSymmSubClopenNhdsOfOne.mul_sub WClopen einW]
+    · simp only [zero_add, pow_one, (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).mul]
     · rw [pow_succ, ← mul_assoc]
       exact le_trans (Set.mul_subset_mul_right ih) <|
-        openSymmSubClopenNhdsOfOne.mul_sub WClopen einW
+        (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).mul
   apply le_trans _ mulVpow
   intro x xin
   rw [Set.mem_mul]
@@ -711,9 +577,7 @@ theorem openSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSp
 theorem openSubgroupSubClopenNhdsOfOne_nonempty {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] {U : Set G} {UClopen : IsClopen U} {einU : 1 ∈ U} :
     Nonempty {H : OpenSubgroup G // (H : Set G) ⊆ U} :=
-  Nonempty.intro ⟨OpenSubgroupSubClopenNhdsOfOne UClopen einU,
+  Nonempty.intro ⟨OpenSubgroupSubClopenNhdsOfOne UClopen,
     openSubgroupSubClopenNhdsOfOne_spec UClopen einU⟩
 
 end TopologicalGroup
-
-end

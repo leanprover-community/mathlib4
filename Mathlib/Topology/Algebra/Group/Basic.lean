@@ -1217,25 +1217,6 @@ lemma IsOpen.mul_closure_one_eq {U : Set G} (hU : IsOpen U) :
     U * (closure {1} : Set G) = U :=
   compl_mul_closure_one_eq_iff.1 (hU.isClosed_compl.mul_closure_one_eq)
 
-
-variable {G : Type*} [Group G]
-
-/-- The set of tuples `(x,y)` in a set `W` which `x * y` is in `W` too. -/
-@[to_additive "The set of tuples `(x,y)` in a set `W` which `x + y` is in `W` too."]
-def mulClosurePairs (W : Set G) : Set (G × G) :=
-  (fun (x, y) ↦ x * y)⁻¹' W ∩ (W ×ˢ W)
-
-@[to_additive]
-lemma mulClosurePairs_open [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) : IsOpen (mulClosurePairs W) :=
-  IsOpen.inter (continuous_mul.isOpen_preimage W <| WOpen) (IsOpen.prod WOpen WOpen)
-
-@[to_additive]
-lemma mem_mulClosurePairs
-    {W : Set G} (einW : 1 ∈ W) (w : W) : ((w : G), 1) ∈ mulClosurePairs W := by
-  simp only [mulClosurePairs, Set.mem_inter_iff, Set.mem_preimage, Set.mem_prod, mul_one,
-    Subtype.coe_prop, Subtype.coe_prop, einW, and_self]
-
 end TopologicalGroup
 
 section FilterMul
