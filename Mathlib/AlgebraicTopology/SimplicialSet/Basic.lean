@@ -509,41 +509,42 @@ variable {X} in
 def diagonal {n : ℕ} (Δ : X _[n]) : X _[1] := X.map ((mkOfDiag n).op) Δ
 
 /-- A simplicial set `X` satisfies the strict Segal condition if its simplices are uniquely
-determined by their spine.-/
-def StrictSegal : Prop := ∀ (n : ℕ), Function.Bijective (X.spine (n := n))
+determined by their spine. -/
+class StrictSegal : Prop where
+  segal : ∀ (n : ℕ), Function.Bijective (X.spine n)
 
 namespace StrictSegal
-variable {X : SSet.{u}} {hX : StrictSegal X} {n : ℕ}
+variable {X : SSet.{u}} [StrictSegal X] {n : ℕ}
 
 /-- In the presence of the strict Segal condition, a path of length `n` extends to an `n`-simplex
-whose spine is that path.-/
+whose spine is that path. -/
 noncomputable def spineToSimplex : Path X n → X _[n] :=
-  (Equiv.ofBijective _ (hX n)).invFun
+  (Equiv.ofBijective _ (segal n)).invFun
 
 @[simp]
 theorem spineToSimplex_spine (f : Path X n) :
-    X.spine n (StrictSegal.spineToSimplex (hX := hX) f) = f :=
-  (Equiv.ofBijective _ (hX n)).right_inv f
+    X.spine n (StrictSegal.spineToSimplex f) = f :=
+  (Equiv.ofBijective _ (segal n)).right_inv f
 
 @[simp]
 theorem spineToSimplex_vertex (i : Fin (n + 1)) (f : Path X n) :
-    X.map (const [0] [n] i).op (spineToSimplex (hX := hX) f) = f.vertex i := by
+    X.map (const [0] [n] i).op (spineToSimplex f) = f.vertex i := by
   rw [← spine_vertex, spineToSimplex_spine]
 
 @[simp]
 theorem spineToSimplex_spine_edge (i : Fin n) (f : Path X n) :
-    X.map (mkOfSucc i).op (spineToSimplex (hX := hX) f) = f.arrow i := by
+    X.map (mkOfSucc i).op (spineToSimplex f) = f.arrow i := by
   rw [← spine_arrow, spineToSimplex_spine]
 
 /-- In the presence of the strict Segal condition, a path of length `n` can be "composed" by taking
-the diagonal edge of the resulting `n`-simplex.-/
-noncomputable def spineToDiagonal (f : Path X n) : X _[1] := diagonal (spineToSimplex (hX := hX) f)
+the diagonal edge of the resulting `n`-simplex. -/
+noncomputable def spineToDiagonal (f : Path X n) : X _[1] := diagonal (spineToSimplex f)
 
 @[simp]
 theorem spineToSimplex_interval (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n) :
-    X.map (subinterval j k hjk).op (spineToSimplex (hX := hX) f) =
-      spineToSimplex (hX := hX) (Path.interval X f _ _ hjk (Nat.le_of_lt_succ k.2)) := by
-  apply (hX _).injective
+    X.map (subinterval j k hjk).op (spineToSimplex f) =
+      spineToSimplex (Path.interval X f _ _ hjk (Nat.le_of_lt_succ k.2)) := by
+  apply (segal _).injective
   rw [StrictSegal.spineToSimplex_spine]
   ext i
   · unfold Path.interval
@@ -577,10 +578,10 @@ theorem spineToSimplex_interval (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n
 
 @[simp]
 theorem spineToSimplex_edge (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n) :
-    X.map (mkOfLe j k hjk).op (spineToSimplex (hX := hX) f) =
-      spineToDiagonal (hX := hX) (Path.interval X f _ _ hjk (Nat.le_of_lt_succ k.2)) := by
+    X.map (mkOfLe j k hjk).op (spineToSimplex f) =
+      spineToDiagonal (Path.interval X f _ _ hjk (Nat.le_of_lt_succ k.2)) := by
   unfold spineToDiagonal
-  rw [← congrArg diagonal (spineToSimplex_interval (hX := hX) j k hjk f)]
+  rw [← congrArg diagonal (spineToSimplex_interval j k hjk f)]
   unfold diagonal
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
   have : mkOfLe j k hjk = mkOfDiag (k.1 - j.1) ≫ subinterval j k hjk := by
@@ -600,10 +601,10 @@ theorem spineToSimplex_edge (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n) :
 `k : ℕ` and `hjk : j.1 + k < n + 1`.-/
 @[simp]
 theorem spineToSimplex_edge' (j : Fin (n + 1)) (k : ℕ) (hjk : j.1 + k < n + 1) (f : Path X n) :
-    X.map (mkOfLe j ⟨j.1 + k, hjk⟩ (Nat.le_add_right j k)).op (spineToSimplex (hX := hX) f) =
-      spineToDiagonal (hX := hX)
+    X.map (mkOfLe j ⟨j.1 + k, hjk⟩ (Nat.le_add_right j k)).op (spineToSimplex f) =
+      spineToDiagonal
         (Path.interval X f j (j + k) (Nat.le_add_right j k) (Nat.le_of_lt_succ hjk)) :=
-  spineToSimplex_edge (hX := hX) j ⟨j.1 + k, hjk⟩ (Nat.le_add_right j.1 k) f
+  spineToSimplex_edge j ⟨j.1 + k, hjk⟩ (Nat.le_add_right j.1 k) f
 
 end StrictSegal
 

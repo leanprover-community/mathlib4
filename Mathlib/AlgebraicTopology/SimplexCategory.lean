@@ -169,9 +169,12 @@ theorem const_fac_thru_zero (n m : SimplexCategory) (i : Fin (m.len + 1)) :
     const n m i = const n [0] 0 ≫ SimplexCategory.const [0] m i := by
   rw [const_comp]; rfl
 
+theorem Hom.ext_zero_left {n : SimplexCategory} (f g : ([0] : SimplexCategory) ⟶ n)
+    (h0 : f.toOrderHom 0 = g.toOrderHom 0 := by rfl) : f = g := by
+  ext i; match i with | 0 => exact h0 ▸ rfl
+
 theorem eq_const_of_zero {n : SimplexCategory} (f : ([0] : SimplexCategory) ⟶ n) :
-    f = const _ n (f.toOrderHom 0) := by
-  ext x; match x with | 0 => rfl
+    f = const _ n (f.toOrderHom 0) := Hom.ext_zero_left ..
 
 theorem exists_eq_const_of_zero {n : SimplexCategory} (f : ([0] : SimplexCategory) ⟶ n) :
     ∃ a, f = const _ n a := ⟨_, eq_const_of_zero _⟩
@@ -180,6 +183,14 @@ theorem eq_const_to_zero {n : SimplexCategory} (f : n ⟶ [0]) :
     f = const n _ 0 := by
   ext : 3
   apply @Subsingleton.elim (Fin 1)
+
+theorem Hom.ext_one_left {n : SimplexCategory} (f g : ([1] : SimplexCategory) ⟶ n)
+    (h0 : f.toOrderHom 0 = g.toOrderHom 0 := by rfl)
+    (h1 : f.toOrderHom 1 = g.toOrderHom 1 := by rfl) : f = g := by
+  ext i
+  match i with
+  | 0 => exact h0 ▸ rfl
+  | 1 => exact h1 ▸ rfl
 
 theorem eq_of_one_to_one (f : ([1] : SimplexCategory) ⟶ [1]) :
     (∃ a, f = const [1] _ a) ∨ f = 𝟙 _ := by
@@ -220,10 +231,8 @@ def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n]
   }
 
 /-- The morphism `[1] ⟶ [n]` that picks out the "diagonal composite" edge-/
-def mkOfDiag (n : ℕ) : ([1] : SimplexCategory) ⟶ [n] := by
-  refine mkOfLe 0 n ?_
-  apply Fin.mk_le_mk.mpr
-  exact StrictMono.minimal_preimage_bot (fun ⦃a b⦄ a ↦ a) rfl (n % (n + 1))
+def mkOfDiag (n : ℕ) : ([1] : SimplexCategory) ⟶ [n] :=
+  mkOfLe 0 n (Fin.zero_le _)
 
 /-- The morphism `[1] ⟶ [n]` that picks out the arrow `i ⟶ i+1` in `Fin (n+1)`.-/
 def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
