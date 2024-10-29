@@ -266,6 +266,10 @@
    "Mathlib.Analysis.SpecialFunctions.Log.Deriv",
    "Mathlib.Tactic.FunProp",
    "Mathlib.Tactic.FunProp.Differentiable"],
+  "Mathlib.Tactic.Finiteness":
+  ["Mathlib.MeasureTheory.Constructions.Prod.Basic",
+   "Mathlib.Tactic.Finiteness.Attr",
+   "Mathlib.Tactic.Positivity.Core"],
   "Mathlib.Tactic.FinCases": ["Mathlib.Data.Fintype.Basic"],
   "Mathlib.Tactic.Eval": ["Qq.Macro"],
   "Mathlib.Tactic.DeriveToExpr": ["Lean.Elab.Deriving.Ord"],
@@ -330,6 +334,7 @@
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
   "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
+  "Mathlib.Order.BoundedOrder": ["Mathlib.Tactic.Finiteness.Attr"],
   "Mathlib.Order.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.NumberTheory.Cyclotomic.Basic": ["Mathlib.Init.Core"],
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
