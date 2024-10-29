@@ -115,7 +115,7 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
     revert h_trimmed h_wo h_approx
     apply ms.recOn
     · intro h_trimmed h_wo h_approx
-      replace h_approx := Approximates_nil h_approx
+      apply Approximates_nil at h_approx
       simp [inv']
       apply Approximates.nil
       conv =>
@@ -125,10 +125,10 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
         rw [← inv_zero]
       apply EventuallyEq.inv h_approx
     · intro (deg, coef) tl h_wo h_trimmed h_approx
-      replace h_trimmed := Trimmed_cons h_trimmed
+      apply Trimmed_cons at h_trimmed
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed
       obtain ⟨h_coef_wo, h_comp_wo, h_tl_wo⟩ := WellOrdered_cons h_wo
-      replace h_approx := Approximates_cons h_approx
+      apply Approximates_cons at h_approx
       obtain ⟨C, h_coef, h_comp, h_tl⟩ := h_approx
       have hC_ne_zero : ∀ᶠ x in atTop, C x ≠ 0 :=
         eventually_ne_zero_of_not_FlatZero h_coef_ne_zero h_coef_wo h_coef h_coef_trimmed

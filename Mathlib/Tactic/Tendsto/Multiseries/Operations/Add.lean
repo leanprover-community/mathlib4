@@ -462,8 +462,7 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
           left
           simpa using h_ms_eq
         · intro (Y_deg, Y_coef) Y_tl hY_wo h_ms_eq
-          replace hY_wo := WellOrdered_cons hY_wo
-          obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := hY_wo
+          obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
           right
           simp at h_ms_eq
           use Y_deg
@@ -583,11 +582,11 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
       revert h_ms_eq hX_approx
       apply X.recOn
       · intro h_ms_eq hX_approx
-        replace hX_approx := Approximates_nil hX_approx
+        apply Approximates_nil at hX_approx
         revert h_ms_eq hY_approx
         apply Y.recOn
         · intro hY_approx h_ms_eq
-          replace hY_approx := Approximates_nil hY_approx
+          apply Approximates_nil at hY_approx
           left
           simp at h_ms_eq
           constructor
@@ -644,7 +643,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
         revert h_ms_eq hY_approx
         apply Y.recOn
         · intro hY_approx h_ms_eq
-          replace hY_approx := Approximates_nil hY_approx
+          apply Approximates_nil at hY_approx
           simp at h_ms_eq
           replace hf_eq : f =ᶠ[atTop] fX := by
             trans

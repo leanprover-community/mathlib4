@@ -123,7 +123,7 @@ theorem PreMS.Approximates_coef_isLittleO_head {C basis_hd : ℝ → ℝ} {basis
     revert h_approx
     apply ms.recOn
     · intro h_approx
-      replace h_approx := Approximates_nil h_approx
+      apply Approximates_nil at h_approx
       apply EventuallyEq.trans_isLittleO h_approx
       apply isLittleO_const_left.mpr
       left

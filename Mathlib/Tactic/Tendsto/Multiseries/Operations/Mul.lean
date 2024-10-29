@@ -1304,7 +1304,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
     cases deg? with
     | bot =>
       simp
-      replace h_deg := Finset.sup'_eq_bot.mp h_deg
+      apply Finset.sup'_eq_bot.mp at h_deg
       simp at h_deg
       have : args = fun _ ↦ .nil := by
         ext1 i
@@ -1342,7 +1342,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
         cases deg?' with
         | bot =>
           simp only [nil_add]
-          replace h_deg' := Finset.sup'_eq_bot.mp h_deg'
+          apply Finset.sup'_eq_bot.mp at h_deg'
           simp at h_deg'
 
           have h_last : (args (Fin.last (k + 1))).leadingExp = deg := by
@@ -1539,11 +1539,11 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
               rw [add_cons_right]
               · congr
                 · have := h1.choose_spec
-                  replace this := Seq.cons_eq_cons.mp this
+                  apply Seq.cons_eq_cons.mp at this
                   simp only [Prod.mk.injEq, true_and] at this
                   exact this.left
                 · have := h1.choose_spec
-                  replace this := Seq.cons_eq_cons.mp this
+                  apply Seq.cons_eq_cons.mp at this
                   simp only [Prod.mk.injEq, true_and] at this
                   exact this.right
               · simpa
@@ -1745,7 +1745,7 @@ noncomputable def longAdd_mulMonomial_tail_fB {basis_hd : _} {basis_tl : _} {k :
           have h' := (h_BM_cons i h).choose_spec
           specialize hB_approx i
           rw [h'] at hB_approx
-          replace hB_approx := Approximates_cons hB_approx
+          apply Approximates_cons at hB_approx
           let C := hB_approx.choose
           exact fun x ↦ fB i x - basis_hd x ^ (deg - (BM i).2.2) * C x
       else
@@ -1797,7 +1797,7 @@ noncomputable def longAdd_mulMonomial_fC {basis_hd : _} {basis_tl : _} {k : ℕ}
           have h' := (h_BM_cons i h).choose_spec
           specialize hB_approx i
           rw [h'] at hB_approx
-          replace hB_approx := Approximates_cons hB_approx
+          apply Approximates_cons at hB_approx
           let fBC := hB_approx.choose
           exact (fM i x) * (fBC x)
       else
@@ -2166,7 +2166,7 @@ mutual
       revert hb_approx
       apply b.recOn
       · intro hb_approx
-        replace hb_approx := Approximates_nil hb_approx
+        apply Approximates_nil at hb_approx
         left
         simp
         conv => rhs; ext x; simp; rw [← mul_zero (M x * basis_hd x ^ m_deg)]
@@ -2322,12 +2322,12 @@ mutual
           cases mul_eq_nil h with
           | inl hX =>
             subst hX
-            replace hX_approx := Approximates_nil hX_approx
+            apply Approximates_nil at hX_approx
             conv => rhs; ext x; simp; rw [← zero_mul (fY x)]
             exact EventuallyEq.mul hX_approx (by rfl)
           | inr hY =>
             subst hY
-            replace hY_approx := Approximates_nil hY_approx
+            apply Approximates_nil at hY_approx
             conv => rhs; ext x; simp; rw [← mul_zero (fX x)]
             exact EventuallyEq.mul (by rfl) hY_approx
 
@@ -2345,7 +2345,7 @@ mutual
         revert h_left_eq h_left_approx
         apply left.recOn
         · intro h_left_eq h_left_approx
-          replace h_left_approx := Approximates_nil h_left_approx
+          apply Approximates_nil at h_left_approx
           replace hf_eq : f =ᶠ[atTop] fX * fY := by
             trans
             · exact hf_eq

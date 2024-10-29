@@ -85,13 +85,12 @@ theorem HasNegativeLeading_tendsto_zero {basis : Basis} {ms : PreMS basis} {F : 
     revert h_neg h_approx
     apply ms.recOn
     · intro _ h_approx
-      replace h_approx := Approximates_nil h_approx
+      apply Approximates_nil at h_approx
       apply Filter.Tendsto.congr' h_approx.symm
       apply tendsto_const_nhds
     · intro (deg, coef) tl h_neg h_approx
       simp at h_neg
-      replace h_approx := Approximates_cons h_approx
-      obtain ⟨_, _, h_comp, _⟩ := h_approx
+      obtain ⟨_, _, h_comp, _⟩ := Approximates_cons h_approx
       apply majorated_tendsto_zero_of_neg h_neg h_comp
 
 namespace Trimming
@@ -142,12 +141,11 @@ def maxUnfoldingSteps : ℕ := 20
 --                 result := tl_trimmed.result
 --                 h_wo := by
 --                   intro h_wo
---                   replace h_wo := WellOrdered_cons h_wo
+--                   apply WellOrdered_cons at h_wo
 --                   exact tl_trimmed.h_wo h_wo.right.right
 --                 h_approx := by
 --                   intro F h_approx
---                   replace h_approx := Approximates_cons h_approx
---                   obtain ⟨C, h_coef, h_comp, h_tl⟩ := h_approx
+--                   obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons h_approx
 --                   simp [Approximates] at h_coef
 --                   subst h_c_zero
 --                   apply tl_trimmed.h_approx
@@ -161,7 +159,7 @@ def maxUnfoldingSteps : ℕ := 20
 --                 result := .cons (deg, coef_trimmed.result) tl
 --                 h_wo := by
 --                   intro h_wo
---                   replace h_wo := WellOrdered_cons h_wo
+--                   apply WellOrdered_cons at h_wo
 --                   apply WellOrdered.cons
 --                   · apply coef_trimmed.h_wo
 --                     exact h_wo.left
@@ -169,8 +167,7 @@ def maxUnfoldingSteps : ℕ := 20
 --                   · exact h_wo.right.right
 --                 h_approx := by
 --                   intro F h_approx
---                   replace h_approx := Approximates_cons h_approx
---                   obtain ⟨C, h_coef, h_comp, h_tl⟩ := h_approx
+--                   obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons h_approx
 --                   apply PreMS.Approximates.cons C
 --                   · exact coef_trimmed.h_approx _ h_coef
 --                   · exact h_comp
@@ -196,7 +193,7 @@ def maxUnfoldingSteps : ℕ := 20
 --                 result := .cons (deg, coef_trimmed.result) tl
 --                 h_wo := by
 --                   intro h_wo
---                   replace h_wo := WellOrdered_cons h_wo
+--                   apply WellOrdered_cons at h_wo
 --                   apply WellOrdered.cons
 --                   · apply coef_trimmed.h_wo
 --                     exact h_wo.left
@@ -204,8 +201,7 @@ def maxUnfoldingSteps : ℕ := 20
 --                   · exact h_wo.right.right
 --                 h_approx := by
 --                   intro F h_approx
---                   replace h_approx := Approximates_cons h_approx
---                   obtain ⟨C, h_coef, h_comp, h_tl⟩ := h_approx
+--                   obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons h_approx
 --                   apply PreMS.Approximates.cons C
 --                   · exact coef_trimmed.h_approx _ h_coef
 --                   · exact h_comp
@@ -236,12 +232,11 @@ def maxUnfoldingSteps : ℕ := 20
 --                   result := tl_trimmed.result
 --                   h_wo := by
 --                     intro h_wo
---                     replace h_wo := WellOrdered_cons h_wo
+--                     apply WellOrdered_cons at h_wo
 --                     exact tl_trimmed.h_wo h_wo.right.right
 --                   h_approx := by
 --                     intro F h_approx
---                     replace h_approx := Approximates_cons h_approx
---                     obtain ⟨C, h_coef, h_comp, h_tl⟩ := h_approx
+--                     obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons h_approx
 --                     -- simp [Approximates] at h_coef
 --                     -- subst h_c_zero
 --                     apply tl_trimmed.h_approx
@@ -260,7 +255,7 @@ def maxUnfoldingSteps : ℕ := 20
 --                   result := .cons (deg, coef_trimmed.result) tl
 --                   h_wo := by
 --                     intro h_wo
---                     replace h_wo := WellOrdered_cons h_wo
+--                     apply WellOrdered_cons at h_wo
 --                     apply WellOrdered.cons
 --                     · apply coef_trimmed.h_wo
 --                       exact h_wo.left
@@ -268,8 +263,7 @@ def maxUnfoldingSteps : ℕ := 20
 --                     · exact h_wo.right.right
 --                   h_approx := by
 --                     intro F h_approx
---                     replace h_approx := Approximates_cons h_approx
---                     obtain ⟨C, h_coef, h_comp, h_tl⟩ := h_approx
+--                     obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons h_approx
 --                     apply PreMS.Approximates.cons C
 --                     · exact coef_trimmed.h_approx _ h_coef
 --                     · exact h_comp

@@ -93,8 +93,7 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
       absurd h_ne_zero
       constructor
     · intro (deg, coef) tl h_wo h_trimmed _
-      replace h_wo := WellOrdered_cons h_wo
-      obtain ⟨h_coef_wo, _, _⟩ := h_wo
+      obtain ⟨h_coef_wo, _, _⟩ := WellOrdered_cons h_wo
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
       let coef_ih := coef.leadingTerm_eventually_ne_zero h_coef_wo h_coef_trimmed h_coef_ne_zero
         (MS.WellOrderedBasis_tail h_basis)
@@ -133,12 +132,11 @@ mutual
     revert h_tl h_comp_wo
     apply tl.recOn
     · intro h_tl h_comp_wo
-      replace h_tl := Approximates_nil h_tl
+      apply Approximates_nil at h_tl
       apply EventuallyEq.trans_isLittleO h_tl
       apply Asymptotics.isLittleO_zero -- should be simp lemma
     · intro (tl_deg, tl_coef) tl_tl h_tl h_comp_wo
-      replace h_tl := Approximates_cons h_tl
-      obtain ⟨tl_C, h_tl_coef, h_tl_comp, h_tl_tl⟩ := h_tl
+      obtain ⟨tl_C, h_tl_coef, h_tl_comp, h_tl_tl⟩ := Approximates_cons h_tl
       simp at h_comp_wo
       let deg' := (deg + tl_deg) / 2
       specialize h_tl_comp deg' (by simp only [deg']; linarith)

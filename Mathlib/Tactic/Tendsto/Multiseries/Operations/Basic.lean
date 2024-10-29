@@ -183,8 +183,7 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
         left
         simp [mulConst]
       · intro (deg, coef) tl hX_wo
-        replace hX_wo := WellOrdered_cons hX_wo
-        obtain ⟨hX_coef_wo, hX_tl_wo, hX_comp⟩ := hX_wo
+        obtain ⟨hX_coef_wo, hX_tl_wo, hX_comp⟩ := WellOrdered_cons hX_wo
         right
         use deg
         use coef.mulConst c
@@ -222,7 +221,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
       apply X.recOn
       · intro h_ms_eq hX_approx
         left
-        replace hX_approx := Approximates_nil hX_approx
+        apply Approximates_nil at hX_approx
         simp [mulConst] at h_ms_eq
         constructor
         · exact h_ms_eq
@@ -236,8 +235,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
         apply EventuallyEq.mul hX_approx
         rfl
       · intro (X_deg, X_coef) X_tl h_ms_eq hX_approx
-        replace hX_approx := Approximates_cons hX_approx
-        obtain ⟨XC, hX_coef, hX_comp, hX_tl⟩ := hX_approx
+        obtain ⟨XC, hX_coef, hX_comp, hX_tl⟩ := Approximates_cons hX_approx
         right
         simp [mulConst] at h_ms_eq
         use ?_

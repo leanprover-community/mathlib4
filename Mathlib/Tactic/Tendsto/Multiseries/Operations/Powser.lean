@@ -399,11 +399,11 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
       revert h_ms_eq hX_wo hX_approx
       apply X.recOn
       · intro h_ms_eq _ hX_approx
-        replace hX_approx := Approximates_nil hX_approx
+        apply Approximates_nil at hX_approx
         revert h_ms_eq hY_wo hY_approx
         apply Y.recOn
         · intro _ hY_approx h_ms_eq
-          replace hY_approx := Approximates_nil hY_approx
+          apply Approximates_nil at hY_approx
           left
           constructor
           · simpa using h_ms_eq
@@ -499,7 +499,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
         revert h_ms_eq hY_wo hY_approx
         apply Y.recOn
         · intro _ hY_approx h_ms_eq
-          replace hY_approx := Approximates_nil hY_approx
+          apply Approximates_nil at hY_approx
           replace hf_eq : f =ᶠ[atTop] fX := by
             trans
             · exact hf_eq

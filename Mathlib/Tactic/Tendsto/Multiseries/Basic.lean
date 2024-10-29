@@ -172,7 +172,7 @@ theorem WellOrdered_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
     (h : WellOrdered (basis := basis_hd :: basis_tl) (.cons (deg, coef) tl)) :
     coef.WellOrdered ∧ tl.leadingExp < deg ∧ tl.WellOrdered := by
   cases h with | colist _ h_coef h_sorted =>
-  replace h_sorted := Seq.Sorted_cons h_sorted
+  apply Seq.Sorted_cons at h_sorted
   constructor
   · specialize h_coef 0 (deg, coef)
     simpa using h_coef
@@ -518,11 +518,10 @@ theorem Approximates_cons {F basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : �
       · constructor
         · exact h_coef.right
         · simp [partialSums, partialSumsFrom_cons] at h_comp
-          replace h_comp := h_comp.right
+          apply And.right at h_comp
           rw [partialSumsFrom_eq_map (Seq.atLeastAsLongAs_map h_alal)] at h_comp
           rw [Seq.map_zip_left] at h_comp
-          replace h_comp := Seq.map_all_iff.mp h_comp
-          apply Seq.all_mp _ h_comp
+          apply Seq.all_mp _ (Seq.map_all_iff.mp h_comp)
           intro (C', deg?)
           simp
           intro h
@@ -827,7 +826,7 @@ theorem Approximates_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {F F' : 
         left
         simp [motive] at ih
         obtain ⟨F, h_equiv, hF⟩ := ih
-        replace hF := Approximates_nil hF
+        apply Approximates_nil at hF
         constructor
         · rfl
         · exact EventuallyEq.trans h_equiv.symm hF
@@ -839,8 +838,7 @@ theorem Approximates_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {F F' : 
         simp
         simp [motive] at ih
         obtain ⟨F, h_equiv, hF⟩ := ih
-        replace hF := Approximates_cons hF
-        obtain ⟨C, h_coef, h_comp, h_tl⟩ := hF
+        obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons hF
         use C
         constructor
         · exact h_coef
