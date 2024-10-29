@@ -170,42 +170,6 @@ theorem lem0 (A B K L : Type*) [CommRing A] [CommRing B] [IsDomain B] [Field K] 
 
 end integrallemma
 
-section transitivity
-
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
-
-lemma Ideal.comap_smul (P : Ideal B) (g : G) :
-    (g • P : Ideal B).under A = P.under A := by
-  ext a
-  rw [mem_comap, mem_comap, mem_pointwise_smul_iff_inv_smul_mem, smul_algebraMap]
-
-/-- If `G` is finite, then `G` acts transitively on primes of `B` above the same prime of `A`. -/
-theorem exists_smul_of_comap_eq [Finite G]
-    (hAB : ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, b = algebraMap A B a)
-    (P Q : Ideal B) [hP : P.IsPrime] [hQ : Q.IsPrime]
-    (hPQ : P.under A = Q.under A) :
-    ∃ g : G, Q = g • P := by
-  cases nonempty_fintype G
-  have : ∀ (P Q : Ideal B) [P.IsPrime] [Q.IsPrime], P.under A = Q.under A →
-      ∃ g ∈ (⊤ : Finset G), Q ≤ g • P := by
-    intro P Q hP hQ hPQ
-    rw [← Ideal.subset_union_prime 1 1 (fun _ _ _ _ ↦ hP.smul _)]
-    intro b hb
-    suffices h : ∃ g ∈ Finset.univ, g • b ∈ P by
-      obtain ⟨g, -, hg⟩ := h
-      apply Set.mem_biUnion (Finset.mem_univ g⁻¹) (Ideal.mem_inv_pointwise_smul_iff.mpr hg)
-    obtain ⟨a, ha⟩ := hAB (∏ g : G, g • b) (Finset.smul_prod_perm b)
-    rw [← hP.prod_mem_iff, ha, ← P.mem_comap, ← P.under_def A,
-      hPQ, Q.mem_comap, ← ha, hQ.prod_mem_iff]
-    exact ⟨1, Finset.mem_univ 1, (one_smul G b).symm ▸ hb⟩
-  obtain ⟨g, -, hg⟩ := this P Q hPQ
-  have h := hP.smul g -- should this be an instance?
-  obtain ⟨g', -, hg'⟩ := this Q (g • P) ((P.comap_smul g).trans hPQ).symm
-  exact ⟨g, le_antisymm hg (smul_eq_of_le_smul (hg.trans hg') ▸ hg')⟩
-
-end transitivity
-
 section charpoly
 
 open Polynomial
@@ -267,6 +231,37 @@ theorem isIntegral_quot_quot
 end MulSemiringAction
 
 end charpoly
+
+section transitivity
+
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+
+/-- If `G` is finite, then `G` acts transitively on primes of `B` above the same prime of `A`. -/
+theorem exists_smul_of_comap_eq [Finite G]
+    (hAB : ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, b = algebraMap A B a)
+    (P Q : Ideal B) [hP : P.IsPrime] [hQ : Q.IsPrime]
+    (hPQ : P.under A = Q.under A) :
+    ∃ g : G, Q = g • P := by
+  cases nonempty_fintype G
+  have : ∀ (P Q : Ideal B) [P.IsPrime] [Q.IsPrime], P.under A = Q.under A →
+      ∃ g ∈ (⊤ : Finset G), Q ≤ g • P := by
+    intro P Q hP hQ hPQ
+    rw [← Ideal.subset_union_prime 1 1 (fun _ _ _ _ ↦ hP.smul _)]
+    intro b hb
+    suffices h : ∃ g ∈ Finset.univ, g • b ∈ P by
+      obtain ⟨g, -, hg⟩ := h
+      apply Set.mem_biUnion (Finset.mem_univ g⁻¹) (Ideal.mem_inv_pointwise_smul_iff.mpr hg)
+    obtain ⟨a, ha⟩ := hAB (∏ g : G, g • b) (Finset.smul_prod_perm b)
+    rw [← hP.prod_mem_iff, ha, ← P.mem_comap, ← P.under_def A,
+      hPQ, Q.mem_comap, ← ha, hQ.prod_mem_iff]
+    exact ⟨1, Finset.mem_univ 1, (one_smul G b).symm ▸ hb⟩
+  obtain ⟨g, -, hg⟩ := this P Q hPQ
+  have h := hP.smul g -- should this be an instance?
+  obtain ⟨g', -, hg'⟩ := this Q (g • P) ((P.under_smul A g).trans hPQ).symm
+  exact ⟨g, le_antisymm hg (smul_eq_of_le_smul (hg.trans hg') ▸ hg')⟩
+
+end transitivity
 
 section stabilizerAction
 
