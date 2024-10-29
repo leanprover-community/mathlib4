@@ -13,13 +13,11 @@ import Mathlib.GroupTheory.CosetCover
 
 `Field.nonempty_algHom_of_exist_roots` says if `E/F` and `K/F` are field extensions
 with `E/F` algebraic, and if the minimal polynomial of every element of `E` over `F` has a root
-in `K`, then there exists an `F`-embedding of `E` into `K`.
+in `K`, then there exists an `F`-embedding of `E` into `K`. If `E/F` and `K/F` have the same
+set of minimal polynomials, then `E` and `K` are isomorphic as `F`-algebras. As a corollary:
 
-As a corollary, if `E/F` is algebraic and every monic irreducible polynomial in `F[X]` has a root
-in `E`, then `E` is an algebraic closure of `F`.
-
-As another corollary, if `E/F` and `K/F` are both algebraic and have the same set of minimal
-polynomials, then `E` and `K` are isomorphic as `F`-algebras.
+`IsAlgClosure.of_exist_roots`: if `E/F` is algebraic and every monic irreducible polynomial
+in `F[X]` has a root in `E`, then `E` is an algebraic closure of `F`.
 
 ## Reference
 

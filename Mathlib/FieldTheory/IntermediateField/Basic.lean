@@ -417,7 +417,7 @@ end IntermediateField
 
 namespace AlgHom
 
-variable (f g : L →ₐ[K] L')
+variable (f : L →ₐ[K] L')
 
 /-- The range of an algebra homomorphism, as an intermediate field. -/
 @[simps toSubalgebra]

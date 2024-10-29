@@ -89,7 +89,7 @@ theorem Lifts.le_of_carrier_le_iSup {ι} {ρ : ι → Lifts F E K} {σ τ : Lift
     have ⟨i, hx⟩ := Set.mem_iUnion.mp hx
     ((hτ i).2 ⟨x, hx⟩).trans ((hσ i).2 ⟨x, hx⟩).symm⟩
 
-/-- `σ : L →ₐ[F] K` is an extendible lift ("extendible pair" in [Isaacs]) if for every
+/-- `σ : L →ₐ[F] K` is an extendible lift ("extendible pair" in [Isaacs1980]) if for every
 intermediate field `M` that is finite-dimensional over `L`, `σ` extends to some `M →ₐ[F] K`.
 In our definition we only require `M` to be finitely generated over `L`, which is equivalent
 if the ambient field `E` is algebraic over `F` (which is the case in our main application).
