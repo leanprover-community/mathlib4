@@ -58,7 +58,7 @@ computeDiff () {
 # The script uses the fact that a line represents a technical debt if and only if the text before
 # the first `|` is a number.  This is then used for comparison and formatting.
 tdc () {
-titlesAndRegexes=(
+titlesPathsAndRegexes=(
   "porting notes"                  "*"      "Porting note"
   "backwards compatibility flags"  "*"      "set_option.*backward"
   "skipAssignedInstances flags"    "*"      "set_option tactic.skipAssignedInstances"
@@ -69,12 +69,12 @@ titlesAndRegexes=(
   "maxHeartBeats modifications"    ":^test" "^ *set_option .*maxHeartbeats"
 )
 
-for i in ${!titlesAndRegexes[@]}; do
+for i in ${!titlesPathsAndRegexes[@]}; do
   # loop on every 3rd entry and name that entry and the following two
   if (( i % 3 == 0 )); then
-    title="${titlesAndRegexes[$i]}"
-    pathspec="${titlesAndRegexes[$(( i + 1 ))]}"
-    regex="${titlesAndRegexes[$(( i + 2 ))]}"
+    title="${titlesPathsAndRegexes[$i]}"
+    pathspec="${titlesPathsAndRegexes[$(( i + 1 ))]}"
+    regex="${titlesPathsAndRegexes[$(( i + 2 ))]}"
     if [ "${title}" == "porting notes" ]
     then fl="-i"  # just for porting notes we ignore the case in the regex
     else fl="--"
