@@ -17,8 +17,7 @@ the noncommutative division algebra `D` with center `k`.
 ## Main Results
 
 - `Jacobson_Noether` : Let `D` be a noncommutative division algebra with center `k`.
-  If `D` is algebraic over `k`,
-  then there exists an element of `D \ k` which is separable over `k`.
+  If `D` is algebraic over `k`, then there exists an element of `D \ k` which is separable over `k`.
 
 ## Notations
 
@@ -42,19 +41,17 @@ private def δ : D → D →ₗ[k] D := mulLeft k - mulRight k
 
 private lemma δ_def (a x : D) : δ a x = mulLeft k a x - mulRight k a x := rfl
 
-private lemma δ_def' (a : D) : δ a = mulLeft k a - mulRight k a := rfl
-
-private lemma l_pow (a : D) (n : ℕ) : ∀ x : D, ((mulLeft k a) ^ n).1 x = (a ^ n) * x := by
+private lemma l_pow (a : D) (n : ℕ) : ∀ x : D, ((mulLeft k a) ^ n) x = (a ^ n) * x := by
   intro x
-  rw [coe_toAddHom, pow_apply]
+  rw [pow_apply]
   induction n with
   | zero => rw [Function.iterate_zero, id_eq, pow_zero, one_mul]
   | succ _ h => rw [Function.iterate_succ', Function.comp_apply, h,
     pow_succ', mul_assoc, mulLeft_apply]
 
-private lemma r_pow (a : D) (n : ℕ) : ∀ x : D, ((mulRight k a) ^ n).1 x = x * (a ^ n) := by
+private lemma r_pow (a : D) (n : ℕ) : ∀ x : D, ((mulRight k a) ^ n) x = x * (a ^ n) := by
   intro x
-  rw [coe_toAddHom, pow_apply]
+  rw [pow_apply]
   induction n with
   | zero => rw [Function.iterate_zero, id_eq, pow_zero, mul_one]
   | succ _ h => rw [Function.iterate_succ', Function.comp_apply, h,
@@ -71,52 +68,47 @@ open Polynomial
 /-- If `D` is a purely inseparable extension of `k` with characteristic `p`,
   then for every element `a` of `D`, there exists a natural number `n`
   such that `a ^ (p ^ n)` is contained in `k`. -/
-lemma exists_pow_mem_center_ofInseparable (p : ℕ) [hchar : ExpChar D p] (a : D)
+lemma exists_pow_mem_center_of_inseparable (p : ℕ) [hchar : ExpChar D p] (a : D)
     (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, a ^ (p ^ n) ∈ k := by
   have := (@isPurelyInseparable_iff_pow_mem k D _ _ _ _ p (ExpChar.center_expChar_iff.1 hchar)).1
-  have bridge : ∀ x : k, (algebraMap k D) x = x := fun _ ↦ rfl
-  have bridge' : k = (algebraMap k D).range := Subring.ext_iff.mpr <| fun x ↦
-    ⟨fun hx ↦ Set.mem_range.mpr (Exists.intro ⟨x, hx⟩ rfl),
-    fun hx ↦ Exists.casesOn hx fun y hy ↦ (bridge y ▸ hy) ▸ y.2⟩
-  have pure : IsPurelyInseparable k D := ⟨Algebra.IsAlgebraic.isIntegral, (bridge' ▸ hinsep)⟩
+  have pure : IsPurelyInseparable k D := ⟨Algebra.IsAlgebraic.isIntegral, fun x hx ↦ by
+    rw [RingHom.mem_range, Subtype.exists]
+    exact ⟨x, ⟨(hinsep x hx), rfl⟩⟩⟩
   obtain ⟨n, ⟨m, hm⟩⟩ := (this pure) a
   have := Subalgebra.range_subset (R := k) ⟨(k).toSubsemiring, by intro r; exact r.2⟩
   exact ⟨n, Set.mem_of_subset_of_mem this <| Set.mem_range.2 ⟨m, hm⟩⟩
 
 /-- If `D` is a purely inseparable extension of `k` with characteristic `p`,
-  then for every element `a` of `D\k`, there exists a natural number `n`
+  then for every element `a` of `D \ k`, there exists a natural number `n`
   **greater than 0** such that `a ^ (p ^ n)` is contained in `k`. -/
-lemma exists_pow_mem_center_ofInseparable' (p : ℕ) [ExpChar D p] {a : D}
+lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
     (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n ≥ 1, a ^ (p ^ n) ∈ k := by
-  obtain ⟨n, hn⟩ := exists_pow_mem_center_ofInseparable p a hinsep
+  obtain ⟨n, hn⟩ := exists_pow_mem_center_of_inseparable p a hinsep
   by_cases nzero : n = 0
   · rw [nzero, pow_zero, pow_one] at hn
-    exact False.elim <| ha hn
+    exact (ha hn).elim
   · exact ⟨n, ⟨by omega, hn⟩⟩
 
-/-- If `D` is a purely inseparable extension of `k` with characteristic `p`,
-  then for every element `a` of `D\k`, there exists a natural number `m`
-  greater than 0 such that linear map `(a * x - x * a) ^ n = 0` for
-  any `n` greater than `(p ^ n)`. -/
+/-- If `D` is a purely inseparable extension of `k` of characteristic `p`,
+  then for every element `a` of `D \ k`, there exists a natural number `m`
+  greater than 0 such that `(a * x - x * a) ^ n = 0` (as linear maps) for
+  every `n` greater than `(p ^ m)`. -/
 lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
     {a : D} (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k):
   ∃ m ≥ 1, ∀ n ≥ (p ^ m), (δ a) ^ n = 0 := by
-  obtain ⟨m, hm⟩ := exists_pow_mem_center_ofInseparable' p ha hinsep
-  refine ⟨m, ⟨hm.1, ?_⟩⟩
-  intro n hn
+  obtain ⟨m, hm⟩ := exists_pow_mem_center_of_inseparable' p ha hinsep
+  refine ⟨m, ⟨hm.1, fun n hn ↦ ?_⟩⟩
   have inter : (δ a) ^ (p ^ m) = 0 := by
-    refine LinearMap.ext_iff.2 ?_
-    intro x
-    rw [δ_def' a, sub_pow_expChar_pow_of_commute p m (commute_mulLeft_right a a)]
-    show ((mulLeft k a) ^ (p ^ m)).1 x - ((mulRight k a) ^ (p ^ m)).1 x = 0
-    rw [l_pow, r_pow, sub_eq_zero_of_eq]
+    ext x
+    rw [δ, Pi.sub_apply, sub_pow_expChar_pow_of_commute p m (commute_mulLeft_right a a)]
+    rw [sub_apply, l_pow, r_pow, sub_eq_zero_of_eq]; rfl
     suffices h : a ^ (p ^ m) ∈ k from (Subring.mem_center_iff.1 h x).symm
     exact hm.2
   rw [((Nat.sub_eq_iff_eq_add hn).1 rfl), pow_add, inter, mul_zero]
 
 variable (D) in
 /-- For a non-commutative finite dimensional division algebra D (with base ring being its center),
-  there exist a separable element xover its center-/
+  there exist an element `x` that is separable over its center-/
 theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
     ∃ x : D, x ∉ k ∧ IsSeparable k x := by
   obtain ⟨p, hp⟩ := ExpChar.exists D
@@ -176,10 +168,10 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
   -- This then derives a contradiction.
   apply_fun (a⁻¹ * · ) at deq
   rw [mul_sub, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul, ← mul_assoc, sub_eq_iff_eq_add] at deq
-  obtain ⟨r, hr⟩ := (exists_pow_mem_center_ofInseparable p d hinsep)
+  obtain ⟨r, hr⟩ := (exists_pow_mem_center_of_inseparable p d hinsep)
   apply_fun (· ^ (p ^ r)) at deq
   rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _) , one_pow,
-    ← conj_nonComm_Algebra ha₀, ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
+    ← DivisionSemiring.conj_pow ha₀, ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
     self_eq_add_left] at deq
   exact one_ne_zero deq
 

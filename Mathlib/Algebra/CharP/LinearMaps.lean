@@ -9,13 +9,13 @@ import Mathlib.Algebra.CharP.Subring
 # Characteristic of the ring of linear Maps
 
 This file contains properties of the characteristic of the ring of linear maps.
-Characteristics of linear maps are determined by its scalar.
+The characteristic of the ring of linear maps is determined by its base ring.
 
 ## Main Results
 
 - `CharP_if` : For a commutative semiring `R` and a `R`-module `M`,
   the characteristic of `R` is equal to the characteristic of `R`-linear endomorphisms of `M` when
-  `M` contains an element `x` that can eliminate `r` in `r • x = 0`
+  `M` contains an element `x` that can deduce `r = 0` given `r • x = 0`
 
 ## Notations
 
@@ -43,10 +43,10 @@ theorem CharP_if {p : ℕ} [hchar : CharP R p]
     have exact : (n : M →ₗ[R] M) = (n : R) • 1 := by
       simp only [Nat.cast_smul_eq_nsmul, nsmul_eq_mul, mul_one]
     rw [exact, LinearMap.ext_iff, ← hchar.1]
-    refine ⟨fun h ↦ Exists.casesOn hreduction fun x hx ↦ hx n (h x),
+    exact ⟨fun h ↦ Exists.casesOn hreduction fun x hx ↦ hx n (h x),
       fun h ↦ (congrArg (fun t ↦ ∀ x, t • x = 0) h).mpr fun x ↦ zero_smul R x⟩
 
-/-- For a division ring `D` and its center `k`, the ring of `k`-linear endomorphisms
+/-- For a division ring `D` with center `k`, the ring of `k`-linear endomorphisms
   of `D` has the same characteristic as `D`-/
 instance {D : Type*} [DivisionRing D] {p : ℕ} [CharP D p] :
   CharP (D →ₗ[(Subring.center D)] D) p :=
@@ -54,7 +54,7 @@ instance {D : Type*} [DivisionRing D] {p : ℕ} [CharP D p] :
       (Algebra.lmul ((Subring.center D)) D).toRingHom) p
 
 instance {D : Type*} [DivisionRing D] {p : ℕ} [hchar : ExpChar D p] :
-  ExpChar (D →ₗ[(Subring.center D)] D) p :=
+  ExpChar (D →ₗ[Subring.center D] D) p :=
     @expChar_of_injective_algebraMap _ _ _ _ _
-      (NoZeroSMulDivisors.algebraMap_injective (Subring.center D) (D →ₗ[(Subring.center D)] D))
-        p (ExpChar.center_expChar_iff.1 hchar)
+      (NoZeroSMulDivisors.algebraMap_injective
+        (Subring.center D) (D →ₗ[Subring.center D] D)) p (ExpChar.center_expChar_iff.1 hchar)
