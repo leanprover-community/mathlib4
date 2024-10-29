@@ -401,13 +401,11 @@ lemma pullback_eq_of_fderiv_eq
 lemma pullback_eq_of_not_isInvertible {f : E → F} {x : E}
     (h : ¬(fderiv 𝕜 f x).IsInvertible) (V : F → F) :
     pullback 𝕜 f V x = 0 := by
-  simp only [ContinuousLinearMap.IsInvertible] at h
   simp [pullback, h]
 
 lemma pullbackWithin_eq_of_not_isInvertible {f : E → F} {x : E}
     (h : ¬(fderivWithin 𝕜 f s x).IsInvertible) (V : F → F) :
     pullbackWithin 𝕜 f V s x = 0 := by
-  simp only [ContinuousLinearMap.IsInvertible] at h
   simp [pullbackWithin, h]
 
 lemma pullbackWithin_eq_of_fderivWithin_eq

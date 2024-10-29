@@ -396,6 +396,57 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm {n : ℕ∞} :
   simp [PartialEquiv.prod]
   exact ⟨rfl, rfl⟩
 
+variable (H I) in
+/-- In the tangent bundle to the model space, the second projection is smooth. -/
+lemma contMDiff_snd_tangentBundle_modelSpace {n : ℕ∞} :
+    ContMDiff I.tangent 𝓘(𝕜, E) n (fun (p : TangentBundle I H) ↦ p.2) := by
+  change ContMDiff I.tangent 𝓘(𝕜, E) n
+    ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph I))
+  apply ContMDiff.comp (I' := I.prod 𝓘(𝕜, E))
+  · convert contMDiff_snd
+    rw [chartedSpaceSelf_prod]
+    rfl
+  · exact contMDiff_tangentBundleModelSpaceHomeomorph
+
+/-- A vector field on a vector space is smooth in the manifold sense iff it is smoooth in the vector
+space sense-/
+lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
+    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {s : Set E} {x : E} :
+    ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) s x ↔
+      ContDiffWithinAt 𝕜 n V s x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact ContMDiffWithinAt.contDiffWithinAt <|
+      (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ h
+  · apply (Bundle.contMDiffWithinAt_totalSpace _).2
+    refine ⟨contMDiffWithinAt_id, ?_⟩
+    convert h.contMDiffWithinAt with y
+    simp
+
+/-- A vector field on a vector space is smooth in the manifold sense iff it is smoooth in the vector
+space sense-/
+lemma contMDiffAt_vectorSpace_iff_contDiffAt
+    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {x : E} :
+    ContMDiffAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) x ↔
+      ContDiffAt 𝕜 n V x := by
+  simp only [← contMDiffWithinAt_univ, ← contDiffWithinAt_univ,
+    contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt]
+
+/-- A vector field on a vector space is smooth in the manifold sense iff it is smoooth in the vector
+space sense-/
+lemma contMDiffOn_vectorSpace_iff_contDiffOn
+    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {s : Set E} :
+    ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) s ↔
+      ContDiffOn 𝕜 n V s := by
+  simp only [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt ]
+
+/-- A vector field on a vector space is smooth in the manifold sense iff it is smoooth in the vector
+space sense-/
+lemma contMDiff_vectorSpace_iff_contDiff
+    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} :
+    ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) ↔
+      ContDiff 𝕜 n V := by
+  simp only [← contMDiffOn_univ, ← contDiffOn_univ, contMDiffOn_vectorSpace_iff_contDiffOn]
+
 section inTangentCoordinates
 
 variable {N : Type*}

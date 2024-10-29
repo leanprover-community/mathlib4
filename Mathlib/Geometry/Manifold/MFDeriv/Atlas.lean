@@ -334,4 +334,19 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt'
   have : y = (extChartAt I x).symm (extChartAt I x y) := ((extChartAt I x).left_inv hy).symm
   convert mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt ((extChartAt I x).map_source hy)
 
+lemma isInvertible_mfderivWithin_extChartAt_symm {y : E} (hy : y ∈ (extChartAt I x).target) :
+    (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) y).IsInvertible :=
+  ContinuousLinearMap.IsInvertible.of_inverse
+    (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt hy)
+    (mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm hy)
+
+lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).source) :
+    (mfderiv I 𝓘(𝕜, E) (extChartAt I x) y).IsInvertible := by
+  have h'y : extChartAt I x y ∈ (extChartAt I x).target := (extChartAt I x).map_source hy
+  have Z := ContinuousLinearMap.IsInvertible.of_inverse
+    (mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm h'y)
+    (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt h'y)
+  have : (extChartAt I x).symm ((extChartAt I x) y) = y := (extChartAt I x).left_inv hy
+  rwa [this] at Z
+
 end extChartAt

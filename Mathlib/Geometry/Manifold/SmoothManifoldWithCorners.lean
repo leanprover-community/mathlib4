@@ -1245,6 +1245,22 @@ theorem extChartAt_target_eventuallyEq {x : M} :
     (extChartAt I x).target =ᶠ[𝓝 (extChartAt I x x)] range I :=
   nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq x)
 
+theorem continuousAt_extChartAt_symm'' {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
+    ContinuousAt (extChartAt I x).symm y :=
+  continuousAt_extend_symm' _ h
+
+theorem continuousAt_extChartAt_symm' {x x' : M} (h : x' ∈ (extChartAt I x).source) :
+    ContinuousAt (extChartAt I x).symm (extChartAt I x x') :=
+  continuousAt_extChartAt_symm'' <| (extChartAt I x).map_source h
+
+theorem continuousAt_extChartAt_symm (x : M) :
+    ContinuousAt (extChartAt I x).symm ((extChartAt I x) x) :=
+  continuousAt_extChartAt_symm' (mem_extChartAt_source x)
+
+theorem continuousOn_extChartAt_symm (x : M) :
+    ContinuousOn (extChartAt I x).symm (extChartAt I x).target :=
+  fun _y hy => (continuousAt_extChartAt_symm'' hy).continuousWithinAt
+
 lemma extChartAt_target_subset_closure_interior {x : M} :
     (extChartAt I x).target ⊆ closure (interior (extChartAt I x).target) := by
   intro y hy
@@ -1261,21 +1277,27 @@ lemma extChartAt_target_subset_closure_interior {x : M} :
   have h''z : z ∈ (extChartAt I x).target := by simpa [interior_subset hz] using h'z
   exact (extChartAt_target_eventuallyEq_of_mem h''z).symm.mem_interior hz
 
-theorem continuousAt_extChartAt_symm'' {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
-    ContinuousAt (extChartAt I x).symm y :=
-  continuousAt_extend_symm' _ h
-
-theorem continuousAt_extChartAt_symm' {x x' : M} (h : x' ∈ (extChartAt I x).source) :
-    ContinuousAt (extChartAt I x).symm (extChartAt I x x') :=
-  continuousAt_extChartAt_symm'' <| (extChartAt I x).map_source h
-
-theorem continuousAt_extChartAt_symm (x : M) :
-    ContinuousAt (extChartAt I x).symm ((extChartAt I x) x) :=
-  continuousAt_extChartAt_symm' (mem_extChartAt_source x)
-
-theorem continuousOn_extChartAt_symm (x : M) :
-    ContinuousOn (extChartAt I x).symm (extChartAt I x).target :=
-  fun _y hy => (continuousAt_extChartAt_symm'' hy).continuousWithinAt
+lemma extChartAt_mem_closure_interior {x₀ x : M}
+    (hx : x ∈ closure (interior s)) (h'x : x ∈ (extChartAt I x₀).source) :
+    extChartAt I x₀ x ∈
+      closure (interior ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target)) := by
+  simp_rw [mem_closure_iff, interior_inter, ← inter_assoc]
+  intro o o_open ho
+  obtain ⟨y, ⟨yo, hy⟩, ys⟩ :
+      ((extChartAt I x₀) ⁻¹' o ∩ (extChartAt I x₀).source ∩ interior s).Nonempty := by
+    have : (extChartAt I x₀) ⁻¹' o ∈ 𝓝 x := by
+      apply (continuousAt_extChartAt' h'x).preimage_mem_nhds (o_open.mem_nhds ho)
+    refine (mem_closure_iff_nhds.1 hx) _ (inter_mem this ?_)
+    apply (isOpen_extChartAt_source x₀).mem_nhds h'x
+  have A : interior (↑(extChartAt I x₀).symm ⁻¹' s) ∈ 𝓝 (extChartAt I x₀ y) := by
+    simp only [interior_mem_nhds]
+    apply (continuousAt_extChartAt_symm' hy).preimage_mem_nhds
+    simp only [hy, PartialEquiv.left_inv]
+    exact mem_interior_iff_mem_nhds.mp ys
+  have B : (extChartAt I x₀) y ∈ closure (interior (extChartAt I x₀).target) := by
+    apply extChartAt_target_subset_closure_interior (x := x₀)
+    exact (extChartAt I x₀).map_source hy
+  exact mem_closure_iff_nhds.1 B _ (inter_mem (o_open.mem_nhds yo) A)
 
 theorem isOpen_extChartAt_preimage' (x : M) {s : Set E} (hs : IsOpen s) :
     IsOpen ((extChartAt I x).source ∩ extChartAt I x ⁻¹' s) :=

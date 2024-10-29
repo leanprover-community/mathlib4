@@ -96,26 +96,21 @@ protected lemma IsSymmSndFDerivAt.eq
   h v w
 
 lemma fderivWithin_fderivWithin_eq_of_mem_nhdsWithin (h : t ∈ 𝓝[s] x)
-    (hf : ContDiffWithinAt 𝕜 2 f t x) :
+    (hf : ContDiffWithinAt 𝕜 2 f t x) (hs : UniqueDiffOn 𝕜 s) (ht : UniqueDiffOn 𝕜 t) (hx : x ∈ s) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := by
-  have : ∀ᶠ y in 𝓝[s] x, fderivWithin 𝕜 f s y = fderivWithin 𝕜 f t y := by
-    have : ∀ᶠ y in 𝓝[t] x, ContDiffWithinAt 𝕜 2 f t y := by
-      apply ContDiffWithinAt.contDiffOn
-    filter_upwards [self_mem_nhdsWithin] with y hy
-    apply DifferentiableWithinAt.fderivWithin_congr_mono
-
-
-
-
-#exit
-
-  fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x
-    = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x :=
-      (fderivWithin_eventually_congr_set h).fderivWithin_eq_nhds
-  _ = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := fderivWithin_congr_set h
-
-
-#exit
+  have A : ∀ᶠ y in 𝓝[s] x, fderivWithin 𝕜 f s y = fderivWithin 𝕜 f t y := by
+    have : ∀ᶠ y in 𝓝[s] x, ContDiffWithinAt 𝕜 2 f t y :=
+      nhdsWithin_le_iff.2 h (nhdsWithin_mono _ (subset_insert x t) hf.eventually)
+    filter_upwards [self_mem_nhdsWithin, this, eventually_eventually_nhdsWithin.2 h]
+      with y hy h'y h''y
+    exact fderivWithin_of_mem h''y (hs y hy) (h'y.differentiableWithinAt one_le_two)
+  have : fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x := by
+    apply Filter.EventuallyEq.fderivWithin_eq A
+    exact fderivWithin_of_mem h (hs x hx) (hf.differentiableWithinAt one_le_two)
+  rw [this]
+  apply fderivWithin_of_mem h (hs x hx)
+  exact (hf.fderivWithin_right (m := 1) ht le_rfl
+    (mem_of_mem_nhdsWithin hx h)).differentiableWithinAt le_rfl
 
 lemma fderivWithin_fderivWithin_eq_of_eventuallyEq (h : s =ᶠ[𝓝 x] t) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
@@ -135,12 +130,13 @@ lemma fderivWithin_fderivWithin_eq_of_mem_nhds {f : E → F} {x : E} {s : Set E}
     IsSymmSndFDerivWithinAt 𝕜 f univ x ↔ IsSymmSndFDerivAt 𝕜 f x := by
   simp [IsSymmSndFDerivWithinAt, IsSymmSndFDerivAt]
 
-theorem IsSymmSndFDerivWithinAt.mono_of_mem (h : IsSymmSndFDerivWithinAt 𝕜 f t x)
-    (hst : t ∈ 𝓝[s] x) : IsSymmSndFDerivWithinAt 𝕜 f t x := by
+theorem IsSymmSndFDerivWithinAt.mono_of_mem_nhdsWithin (h : IsSymmSndFDerivWithinAt 𝕜 f t x)
+    (hst : t ∈ 𝓝[s] x) (hf : ContDiffWithinAt 𝕜 2 f t x)
+    (hs : UniqueDiffOn 𝕜 s) (ht : UniqueDiffOn 𝕜 t) (hx : x ∈ s) :
+    IsSymmSndFDerivWithinAt 𝕜 f s x := by
   intro v w
-  rw [fderivWithin_fderivWithin_eq_of_eventuallyEq hst.symm]
+  rw [fderivWithin_fderivWithin_eq_of_mem_nhdsWithin hst hf hs ht hx]
   exact h v w
-
 
 theorem IsSymmSndFDerivWithinAt.congr_set (h : IsSymmSndFDerivWithinAt 𝕜 f s x)
     (hst : s =ᶠ[𝓝 x] t) : IsSymmSndFDerivWithinAt 𝕜 f t x := by
