@@ -50,17 +50,17 @@ theorem nonempty_algHom_of_exists_roots (h : ∀ x : E, ∃ y : K, aeval y (minp
   let Ω := FS →ₐ[F] K'
   have := finiteDimensional_adjoin (S := (S : Set E)) fun _ _ ↦ (alg.isIntegral).1 _
   let M (ω : Ω) := Subalgebra.toSubmodule (K₀.comap ω).toSubalgebra
-  have : ⋃ ω : Ω, ↑(M ω) = @Set.univ FS := Set.eq_univ_of_forall fun α ↦ Set.mem_iUnion.mpr <| by
-    have ⟨β, hβ⟩ := h α.1
-    let ϕ : F⟮α.1⟯ →ₐ[F] K' := (IsScalarTower.toAlgHom _ _ _).comp ((AdjoinRoot.liftHom _ _ hβ).comp
-      (adjoinRootEquivAdjoin F <| (alg.isIntegral).1 _).symm.toAlgHom)
-    have ⟨ω, hω⟩ := exists_algHom_adjoin_of_splits
-      (fun s hs ↦ ⟨(alg.isIntegral).1 _, splits s hs⟩) ϕ (adjoin_simple_le_iff.mpr α.2)
-    refine ⟨ω, β, .symm ?_⟩
-    refine (DFunLike.congr_fun hω <| AdjoinSimple.gen F α.1).trans ?_
-    /- rw [AlgHom.comp_apply, AlgHom.comp_apply, AlgEquiv.coe_algHom,
-      adjoinRootEquivAdjoin_symm_apply_gen, AdjoinRoot.liftHom_root] -/
-    sorry --rfl
+  have : ⋃ ω : Ω, ↑(M ω) = @Set.univ FS :=
+    Set.eq_univ_of_forall fun ⟨α, hα⟩ ↦ Set.mem_iUnion.mpr <| by
+      have ⟨β, hβ⟩ := h α
+      let ϕ : F⟮α⟯ →ₐ[F] K' := (IsScalarTower.toAlgHom _ _ _).comp ((AdjoinRoot.liftHom _ _ hβ).comp
+        (adjoinRootEquivAdjoin F <| (alg.isIntegral).1 _).symm.toAlgHom)
+      have ⟨ω, hω⟩ := exists_algHom_adjoin_of_splits
+        (fun s hs ↦ ⟨(alg.isIntegral).1 _, splits s hs⟩) ϕ (adjoin_simple_le_iff.mpr hα)
+      refine ⟨ω, β, ((DFunLike.congr_fun hω <| AdjoinSimple.gen F α).trans ?_).symm⟩
+      rw [AlgHom.comp_apply, AlgHom.comp_apply, AlgEquiv.coe_algHom,
+        adjoinRootEquivAdjoin_symm_apply_gen, AdjoinRoot.liftHom_root]
+      rfl
   have ⟨ω, hω⟩ : ∃ ω : Ω, ⊤ ≤ M ω := by
     cases finite_or_infinite F
     · have ⟨α, hα⟩ := exists_primitive_element_of_finite_bot F FS
@@ -72,4 +72,8 @@ theorem nonempty_algHom_of_exists_roots (h : ∀ x : E, ∃ y : K, aeval y (minp
 
 theorem nonempty_algHom_of_minpoly_eq (h : ∀ x : E, ∃ y : K, minpoly F x = minpoly F y) :
     Nonempty (E →ₐ[F] K) := by
-  _
+  sorry
+
+-- if and only if
+
+end Field
