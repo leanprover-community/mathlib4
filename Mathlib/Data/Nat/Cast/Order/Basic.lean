@@ -26,7 +26,7 @@ we use a generic collection of instances so that it applies in other settings (e
 `StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
 
 variable [AddMonoidWithOne α] [PartialOrder α]
-variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
+variable [AddLeftMono α] [ZeroLEOneClass α]
 
 @[mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=

@@ -31,16 +31,16 @@ variable (X : Scheme)
 
 instance : T0Space X :=
   T0Space.of_open_cover fun x => ⟨_, X.affineCover.covers x,
-    (X.affineCover.map x).opensRange.2, Embedding.t0Space (Y := PrimeSpectrum _)
-    (isAffineOpen_opensRange (X.affineCover.map x)).isoSpec.schemeIsoToHomeo.embedding⟩
+    (X.affineCover.map x).opensRange.2, IsEmbedding.t0Space (Y := PrimeSpectrum _)
+    (isAffineOpen_opensRange (X.affineCover.map x)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
 
 instance : QuasiSober X := by
   apply (config := { allowSynthFailures := true })
     quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).base)
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.IsOpen i).base_open.isOpen_range
   · rintro ⟨_, i, rfl⟩
-    exact @IsOpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofEmbedding _
-      (X.affineCover.IsOpen i).base_open.toEmbedding).symm.isOpenEmbedding PrimeSpectrum.quasiSober
+    exact @IsOpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofIsEmbedding _
+      (X.affineCover.IsOpen i).base_open.isEmbedding).symm.isOpenEmbedding PrimeSpectrum.quasiSober
   · rw [Set.top_eq_univ, Set.sUnion_range, Set.eq_univ_iff_forall]
     intro x; exact ⟨_, ⟨_, rfl⟩, X.affineCover.covers x⟩
 
