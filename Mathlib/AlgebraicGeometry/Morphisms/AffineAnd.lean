@@ -100,15 +100,15 @@ lemma affineAnd_stableUnderBaseChange (hQi : RingHom.RespectsIso Q)
 
 lemma targetAffineLocally_affineAnd_iff (hQi : RingHom.RespectsIso Q)
     {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    targetAffineLocally (affineAnd Q) f ↔ ∀ (U : Y.affineOpens),
+    targetAffineLocally (affineAnd Q) f ↔ ∀ U : Y.Opens, IsAffineOpen U →
       IsAffineOpen (f ⁻¹ᵁ U) ∧ Q (f.app U) := by
   simp only [targetAffineLocally, affineAnd_apply, morphismRestrict_app, hQi.cancel_right_isIso]
-  refine ⟨fun hf U ↦ ?_, fun h U ↦ ?_⟩
-  · obtain ⟨hfU, hf⟩ := hf U
+  refine ⟨fun hf U hU ↦ ?_, fun h U ↦ ?_⟩
+  · obtain ⟨hfU, hf⟩ := hf ⟨U, hU⟩
     exact ⟨hfU, by rwa [Scheme.Opens.ι_image_top] at hf⟩
-  · refine ⟨(h U).1, ?_⟩
+  · refine ⟨(h U U.2).1, ?_⟩
     rw [Scheme.Opens.ι_image_top]
-    exact (h U).2
+    exact (h U U.2).2
 
 end
 
@@ -152,8 +152,8 @@ lemma HasAffineProperty.affineAnd_containsIdentities {P : MorphismProperty Schem
     P.ContainsIdentities where
   id_mem X := by
     rw [eq_targetAffineLocally P, targetAffineLocally_affineAnd_iff hQi]
-    intro U
-    exact ⟨U.2, hQ _⟩
+    intro U hU
+    exact ⟨hU, hQ _⟩
 
 /-- A convenience constructor for `HasAffineProperty P (affineAnd Q)`. The `IsAffineHom` is bundled,
 since this goes well with defining morphism properties via `extends IsAffineHom`. -/
@@ -162,12 +162,14 @@ lemma HasAffineProperty.affineAnd_iff (P : MorphismProperty Scheme.{u})
     (hQs : RingHom.OfLocalizationSpan Q) :
     HasAffineProperty P (affineAnd Q) ↔
       ∀ {X Y : Scheme.{u}} (f : X ⟶ Y), P f ↔
-        (IsAffineHom f ∧ ∀ (U : Y.affineOpens), Q (f.app U)) := by
-  simp_rw [isAffineHom_iff']
+        (IsAffineHom f ∧ ∀ U : Y.Opens, IsAffineOpen U → Q (f.app U)) := by
+  simp_rw [isAffineHom_iff]
   refine ⟨fun h X Y f ↦ ?_, fun h ↦ ⟨affineAnd_isLocal hQi hQl hQs, ?_⟩⟩
-  · rw [eq_targetAffineLocally P, targetAffineLocally_affineAnd_iff hQi, forall_and]
+  · rw [eq_targetAffineLocally P, targetAffineLocally_affineAnd_iff hQi]
+    aesop
   · ext X Y f
-    rw [targetAffineLocally_affineAnd_iff hQi, h f, forall_and]
+    rw [targetAffineLocally_affineAnd_iff hQi, h f]
+    aesop
 
 lemma HasAffineProperty.affineAnd_le_isAffineHom (P : MorphismProperty Scheme.{u})
     (hA : HasAffineProperty P (affineAnd Q)) : P ≤ @IsAffineHom := by
