@@ -6,7 +6,7 @@ Authors: Wanyi He, Huanyu Zheng
 import Mathlib.Algebra.CharP.Subring
 
 /-!
-# Characteristics of Linear Maps
+# Characteristic of the ring of linear Maps
 
 This file contains properties of the characteristic of the ring of linear maps.
 Characteristics of linear maps are determined by its scalar.
