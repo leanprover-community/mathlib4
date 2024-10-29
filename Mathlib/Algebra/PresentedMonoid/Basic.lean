@@ -111,7 +111,7 @@ theorem closure_range_of (rels : FreeMonoid α → FreeMonoid α → Prop) :
 section ToMonoid
 variable {α M : Type*} [Monoid M] (f : α → M)
 variable {rels : FreeMonoid α → FreeMonoid α → Prop}
-variable (h : ∀ a b : FreeMonoid α, rels a b →  FreeMonoid.lift f a = FreeMonoid.lift f b)
+variable (h : ∀ a b : FreeMonoid α, rels a b → FreeMonoid.lift f a = FreeMonoid.lift f b)
 
 /-- The extension of a map `f : α → M` that satisfies the given relations to a monoid homomorphism
 from `PresentedMonoid rels → M`. -/
