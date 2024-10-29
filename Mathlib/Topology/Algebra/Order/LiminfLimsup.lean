@@ -8,11 +8,9 @@ import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Data.Real.Archimedean
-import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Order.Filter.CountableInter
+import Mathlib.Order.LiminfLimsup
 import Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.Data.Set.Lattice
 import Mathlib.Topology.Order.Monotone
 
 /-!
