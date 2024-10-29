@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Presentations of modules

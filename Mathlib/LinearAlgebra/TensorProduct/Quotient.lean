@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir, Jujian Zhang
 
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.LinearAlgebra.TensorProduct.Basic
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.RingTheory.Ideal.Quotient
 
