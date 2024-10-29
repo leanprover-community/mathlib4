@@ -348,6 +348,27 @@ theorem whiskerLeft_ι_colimitCompWhiskeringLeftIsoCompColimit_inv (F : J ⥤ K 
       colimit.ι (F ⋙ (whiskeringLeft _ _ _).obj G) j := by
   simp [Iso.comp_inv_eq]
 
+def colimitCompWhiskeringRightIsoColimitComp (F : J ⥤ K ⥤ C) (G : C ⥤ D) [HasColimitsOfShape J C]
+    [PreservesColimitsOfShape J G] [HasColimitsOfShape J D] :
+    colimit (F ⋙ (whiskeringRight _ _ _).obj G) ≅ colimit F ⋙ G :=
+  NatIso.ofComponents (fun j =>
+    colimitObjIsoColimitCompEvaluation (F ⋙ (whiskeringRight _ _ _).obj G) j ≪≫
+      HasColimit.isoOfNatIso (Functor.associator _ _ _) ≪≫
+      HasColimit.isoOfNatIso (isoWhiskerLeft _ (whiskeringRightCompEvaluation G j)) ≪≫
+      (preservesColimitIso _ _).symm ≪≫ Iso.refl _
+    ) (by
+    intros k k' f
+    ext j
+    simp only [comp_obj, whiskeringRight_obj_obj, whiskeringRight_comp_evaluation,
+      evaluation_obj_obj, Iso.trans_refl, Iso.trans_hom, Iso.symm_hom,
+      colimit_map_colimitObjIsoColimitCompEvaluation_hom_assoc,
+      colimitObjIsoColimitCompEvaluation_ι_app_hom_assoc, ι_colimMap_assoc, whiskerLeft_app,
+      evaluation_map_app, Functor.comp_map, HasColimit.isoOfNatIso_ι_hom_assoc, associator_hom_app,
+      isoWhiskerLeft_hom, whiskeringRightCompEvaluation_hom_app, ι_preservesColimitIso_inv,
+      evaluation_obj_map, id_comp, assoc, ι_preservesColimitIso_inv_assoc]
+    simp only [← Functor.map_comp]
+    rw [(colimit.ι F j).naturality _])
+
 instance evaluationPreservesLimits [HasLimits C] (k : K) :
     PreservesLimits ((evaluation K C).obj k) where
   preservesLimitsOfShape {_} _𝒥 := inferInstance
