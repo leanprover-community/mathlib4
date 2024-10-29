@@ -51,17 +51,17 @@ theorem eq_of_prefix_of_length_eq (h : l₁ <+: l₂) : l₁.length = l₂.lengt
 theorem eq_of_suffix_of_length_eq (h : l₁ <:+ l₂) : l₁.length = l₂.length → l₁ = l₂ :=
   h.eq_of_length
 
-lemma IsPrefix.take (h : l₁ <+: l₂) n : l₁.take n <+: l₂.take n := by
+lemma IsPrefix.take (h : l₁ <+: l₂) (n : ℕ) : l₁.take n <+: l₂.take n := by
   simpa [prefix_take_iff, Nat.min_le_left] using (take_prefix n l₁).trans h
 
-lemma IsPrefix.drop (h : l₁ <+: l₂) n : l₁.drop n <+: l₂.drop n := by
+lemma IsPrefix.drop (h : l₁ <+: l₂) (n : ℕ) : l₁.drop n <+: l₂.drop n := by
   rw [prefix_iff_eq_take.mp h, drop_take]; apply take_prefix
 
 lemma isPrefix_append_of_length (h : l₁.length ≤ l₂.length) : l₁ <+: l₂ ++ l₃ ↔ l₁ <+: l₂ :=
   ⟨fun h ↦ by rw [prefix_iff_eq_take] at *; nth_rw 1 [h, take_eq_left]; tauto,
    fun h ↦ h.trans <| l₂.prefix_append l₃⟩
 
-@[simp] lemma take_prefix_take {m n} : l.take m <+: l.take n ↔ m ≤ n ∨ l.length ≤ n := by
+@[simp] lemma take_isPrefix_take {m n : ℕ} : l.take m <+: l.take n ↔ m ≤ n ∨ l.length ≤ n := by
   simp [prefix_take_iff, take_prefix]; omega
 
 lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
