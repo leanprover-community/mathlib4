@@ -8,6 +8,7 @@ import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.Directed
 import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Finite sets
