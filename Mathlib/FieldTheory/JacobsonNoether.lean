@@ -44,8 +44,6 @@ private lemma δ_def (a x : D) : δ a x = mulLeft k a x - mulRight k a x := rfl
 
 private lemma δ_def' (a : D) : δ a = mulLeft k a - mulRight k a := rfl
 
-private lemma lr_comm (a : D) : Commute (mulLeft k a) (mulRight k a) := commute_mulLeft_right a a
-
 private lemma l_pow (a : D) (n : ℕ) : ∀ x : D, ((mulLeft k a) ^ n).1 x = (a ^ n) * x := by
   intro x
   rw [coe_toAddHom, pow_apply]
@@ -109,7 +107,7 @@ lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
   have inter : (δ a) ^ (p ^ m) = 0 := by
     refine LinearMap.ext_iff.2 ?_
     intro x
-    rw [δ_def' a, sub_pow_expChar_pow_of_commute p m (lr_comm a)]
+    rw [δ_def' a, sub_pow_expChar_pow_of_commute p m (commute_mulLeft_right a a)]
     show ((mulLeft k a) ^ (p ^ m)).1 x - ((mulRight k a) ^ (p ^ m)).1 x = 0
     rw [l_pow, r_pow, sub_eq_zero_of_eq]
     suffices h : a ^ (p ^ m) ∈ k from (Subring.mem_center_iff.1 h x).symm
