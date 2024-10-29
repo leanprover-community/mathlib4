@@ -43,12 +43,14 @@ class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
   base_closed : IsClosedEmbedding f.base
   surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
 
-namespace IsClosedImmersion
-
-lemma isClosedEmbedding {X Y : Scheme} (f : X ⟶ Y)
+lemma Scheme.Hom.isClosedEmbedding {X Y : Scheme} (f : X.Hom Y)
     [IsClosedImmersion f] : IsClosedEmbedding f.base :=
   IsClosedImmersion.base_closed
 
+namespace IsClosedImmersion
+
+@[deprecated (since := "2024-10-24")]
+alias isClosedEmbedding := Scheme.Hom.isClosedEmbedding
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding := isClosedEmbedding
 
@@ -120,15 +122,19 @@ lemma of_surjective_of_isAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X 
   apply spec_of_surjective
   exact h
 
-/-- If `f ≫ g` is a closed immersion, then `f` is a closed immersion. -/
-theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion g]
+/--
+If `f ≫ g` and `g` are closed immersions, then `f` is a closed immersion.
+Also see `IsClosedImmersion.of_comp` for the general version
+where `g` is only required to be separated.
+-/
+theorem of_comp_isClosedImmersion {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion g]
     [IsClosedImmersion (f ≫ g)] : IsClosedImmersion f where
   base_closed := by
-    have h := isClosedEmbedding (f ≫ g)
+    have h := (f ≫ g).isClosedEmbedding
     simp only [Scheme.comp_coeBase, TopCat.coe_comp] at h
     refine .of_continuous_injective_isClosedMap (Scheme.Hom.continuous f) h.inj.of_comp ?_
     intro Z hZ
-    rw [IsClosedEmbedding.closed_iff_image_closed (isClosedEmbedding g),
+    rw [IsClosedEmbedding.closed_iff_image_closed g.isClosedEmbedding,
       ← Set.image_comp]
     exact h.isClosedMap _ hZ
   surj_on_stalks x := by
@@ -224,14 +230,14 @@ namespace IsClosedImmersion
 sections is injective, `f` is an isomorphism. -/
 theorem isIso_of_injective_of_isAffine [IsClosedImmersion f]
     (hf : Function.Injective (f.app ⊤)) : IsIso f := (isIso_iff_stalk_iso f).mpr <|
-  have : CompactSpace X := (isClosedEmbedding f).compactSpace
+  have : CompactSpace X := f.isClosedEmbedding.compactSpace
   have hiso : IsIso f.base := TopCat.isIso_of_bijective_of_isClosedMap _
-    ⟨(isClosedEmbedding f).inj,
-     surjective_of_isClosed_range_of_injective ((isClosedEmbedding f).isClosed_range) hf⟩
-    ((isClosedEmbedding f).isClosedMap)
+    ⟨f.isClosedEmbedding.inj,
+     surjective_of_isClosed_range_of_injective f.isClosedEmbedding.isClosed_range hf⟩
+    (f.isClosedEmbedding.isClosedMap)
   ⟨hiso, fun x ↦ (ConcreteCategory.isIso_iff_bijective _).mpr
     ⟨stalkMap_injective_of_isOpenMap_of_injective ((TopCat.homeoOfIso (asIso f.base)).isOpenMap)
-    (isClosedEmbedding f).inj hf _, f.stalkMap_surjective x⟩⟩
+    f.isClosedEmbedding.inj hf _, f.stalkMap_surjective x⟩⟩
 
 variable (f)
 
@@ -243,7 +249,7 @@ theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
   rw [← affineTargetImageFactorization_comp f] at i ⊢
   haveI := of_surjective_of_isAffine (affineTargetImageInclusion f)
     (affineTargetImageInclusion_app_surjective f)
-  haveI := IsClosedImmersion.of_comp (affineTargetImageFactorization f)
+  haveI := IsClosedImmersion.of_comp_isClosedImmersion (affineTargetImageFactorization f)
     (affineTargetImageInclusion f)
   haveI := isIso_of_injective_of_isAffine (affineTargetImageFactorization_app_injective f)
   exact ⟨isAffine_of_isIso (affineTargetImageFactorization f),

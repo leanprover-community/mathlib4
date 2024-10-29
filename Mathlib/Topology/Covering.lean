@@ -152,8 +152,11 @@ protected theorem isLocalHomeomorph : IsLocalHomeomorph f :=
 protected theorem isOpenMap : IsOpenMap f :=
   hf.isLocalHomeomorph.isOpenMap
 
-protected theorem quotientMap (hf' : Function.Surjective f) : QuotientMap f :=
-  hf.isOpenMap.to_quotientMap hf.continuous hf'
+theorem isQuotientMap (hf' : Function.Surjective f) : IsQuotientMap f :=
+  hf.isOpenMap.isQuotientMap hf.continuous hf'
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap := isQuotientMap
 
 protected theorem isSeparatedMap : IsSeparatedMap f :=
   fun e₁ e₂ he hne ↦ by
