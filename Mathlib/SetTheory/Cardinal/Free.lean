@@ -3,74 +3,87 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Daniel Weber
 -/
+import Mathlib.Data.Finsupp.Fintype
+import Mathlib.GroupTheory.FreeAbelianGroupFinsupp
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Finsupp
-import Mathlib.GroupTheory.FreeAbelianGroupFinsupp
 
 /-! # Cardinalities of free constructions -/
 
 universe u
 variable (α : Type u)
 
+section Infinite
+
+@[to_additive]
 instance [Nonempty α] : Infinite (FreeMonoid α) := inferInstanceAs <| Infinite (List α)
 
-instance [Infinite α] : Infinite (FreeGroup α) := by
+@[to_additive]
+instance [Nonempty α] : Infinite (FreeGroup α) := by
   classical
-  exact Infinite.of_surjective FreeGroup.norm _
+  exact Infinite.of_surjective FreeGroup.norm FreeGroup.norm_surjective
+
+instance [Nonempty α] : Infinite (FreeAbelianGroup α) :=
+  (FreeAbelianGroup.equivFinsupp α).toEquiv.infinite_iff.2 inferInstance
+
+instance [Nonempty α] : Infinite (FreeRing α) := by unfold FreeRing; infer_instance
+
+instance [Nonempty α] : Infinite (FreeCommRing α) := by unfold FreeCommRing; infer_instance
+
+end Infinite
 
 namespace Cardinal
-
-@[simp] theorem mk_additive : #(Additive α) = #α := rfl
-@[simp] theorem mk_multiplicative : #(Multiplicative α) = #α := rfl
 
 theorem mk_abelianization_le (G : Type u) [Group G] :
     #(Abelianization G) ≤ #G := Cardinal.mk_le_of_surjective <| surjective_quotient_mk _
 
-@[to_additive]
-theorem mk_freeMonoid [Nonempty α] :
-    #(FreeMonoid α) = max #α ℵ₀ := Cardinal.mk_list_eq_max_mk_aleph0 _
+@[to_additive (attr := simp)]
+theorem mk_freeMonoid [Nonempty α] : #(FreeMonoid α) = max #α ℵ₀ :=
+    Cardinal.mk_list_eq_max_mk_aleph0 _
 
 @[to_additive (attr := simp)]
-theorem mk_freeMonoid_of_infinite [Infinite α] :
-    #(FreeMonoid α) = #α := Cardinal.mk_list_eq_mk _
-
-theorem mk_freeGroup_of_infinite [Nonempty α]:
-    #(FreeGroup α) = max #α ℵ₀ := by
+theorem mk_freeGroup [Nonempty α] : #(FreeGroup α) = max #α ℵ₀ := by
   classical
   apply le_antisymm
   · apply (mk_le_of_injective (FreeGroup.toWord_injective (α := α))).trans_eq
-    rw [mk_list_eq_max_mk_aleph0]
-    simp only [mk_list_eq_mk, mk_prod, lift_id', mk_fintype, Fintype.card_bool, Nat.cast_ofNat,
-      lift_ofNat]
-    rw [Cardinal.mul_eq_left (by simp) _ (by simp)]
-    exact (nat_lt_aleph0 2).le.trans (by simp)
-  · exact mk_le_of_injective FreeGroup.of_injective
-
-
-@[to_additive (attr := simp)]
-theorem mk_freeGroup_of_infinite [Infinite α] :
-    #(FreeGroup α) = #α := by
-  classical
-  apply le_antisymm
-  · apply (mk_le_of_injective (FreeGroup.toWord_injective (α := α))).trans_eq
-    simp only [mk_list_eq_mk, mk_prod, lift_id', mk_fintype, Fintype.card_bool, Nat.cast_ofNat,
-      lift_ofNat]
-    rw [Cardinal.mul_eq_left (by simp) _ (by simp)]
-    exact (nat_lt_aleph0 2).le.trans (by simp)
-  · exact mk_le_of_injective FreeGroup.of_injective
-
+    simp [Cardinal.mk_list_eq_max_mk_aleph0]
+    obtain hα | hα := lt_or_le #α ℵ₀
+    · simp only [hα.le, max_eq_right, max_eq_right_iff]
+      exact (mul_lt_aleph0 hα (nat_lt_aleph0 2)).le
+    · rw [max_eq_left hα, max_eq_left (hα.trans <| Cardinal.le_mul_right two_ne_zero),
+        Cardinal.mul_eq_left hα _ (by simp)]
+      exact (nat_lt_aleph0 2).le.trans hα
+  · apply max_le
+    · exact mk_le_of_injective FreeGroup.of_injective
+    · simp
 
 @[simp]
-theorem mk_freeAbelianGroup_of_infinite [Infinite α] : #(FreeAbelianGroup α) = #α := by
+theorem mk_freeAbelianGroup [Nonempty α] : #(FreeAbelianGroup α) = max #α ℵ₀ := by
   rw [Cardinal.mk_congr (FreeAbelianGroup.equivFinsupp α).toEquiv]
   simp
 
 @[simp]
-theorem mk_freeRing_of_infinite [Infinite α] : #(FreeRing α) = #α := by simp [FreeRing]
+theorem mk_freeRing [Nonempty α] : #(FreeRing α) = max #α ℵ₀ := by
+  simp [FreeRing]
 
 @[simp]
-theorem mk_freeCommRing_of_infinite [Infinite α] : #(FreeCommRing α) = #α := by
+theorem mk_freeCommRing [Nonempty α] : #(FreeCommRing α) = max #α ℵ₀ := by
   simp [FreeCommRing]
 
 end Cardinal
+
+section Nonempty
+
+/-- A commutative ring can be constructed on any non-empty type. -/
+instance [Nonempty α] : Nonempty (CommRing α) := by
+  obtain hR | hR := finite_or_infinite α
+  · obtain ⟨x⟩ := nonempty_fintype α
+    have : NeZero (Fintype.card α) := ⟨by inhabit α; simp⟩
+    classical
+    obtain ⟨e⟩ := Fintype.truncEquivFin α
+    exact ⟨e.commRing⟩
+  · have ⟨e⟩ : Nonempty (α ≃ FreeCommRing α) := by simp [← Cardinal.eq]
+    exact ⟨e.commRing⟩
+
+end Nonempty
