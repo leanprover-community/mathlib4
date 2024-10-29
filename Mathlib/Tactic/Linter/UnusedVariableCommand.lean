@@ -6,7 +6,7 @@ Authors: Damiano Testa
 
 import Lean.Elab.Command
 import Mathlib.Tactic.DeclarationNames
---import Mathlib.adomaniLeanUtils.inspect
+
 /-!
 #  The "unusedVariableCommand" linter
 
@@ -302,9 +302,8 @@ def getForallStrings (e : Expr) : MetaM (Array String) :=
     Meta.forallTelescopeReducing e fun xs _ =>
       (xs.zip infers?).mapM fun (exp, infer?) => do
         let typ := ← if infer? then Meta.inferType exp else return exp
-        --typ.inspect
-        dbg_trace typ
-        return (← Meta.ppExpr typ).pretty
+        -- strip out universe annotations
+        return (← Meta.ppExpr (typ.setPPUniverses false)).pretty
   catch _ => return #[]
 
 def getUsedVariableFromName (declName : Name) : CommandElabM (Array String) := do
@@ -325,15 +324,9 @@ This is used on `def`-like declaration to try to determine the section `variable
 declaration uses.
 -/
 def getUsedVariableNames (pos : String.Pos) : CommandElabM (Array String) := do
-  let env ← getEnv
-  let posit := (← getFileMap).toPosition pos
-  let declRangeExt := declRangeExt.getState env
-  let names := declRangeExt.toList.find? (·.2.selectionRange.pos == posit)
-  let decl := (env.find? (names.getD default).1).getD default
-  let (d, _) ← liftCoreM do Meta.MetaM.run do getForallStrings decl.type
-  if Linter.getLinterValue showDefs (← getOptions) then
-    dbg_trace "getForallStrings: {d}"
-  return d
+  let declNames ← getNamesFrom pos
+  let vars ← declNames.mapM (getUsedVariableFromName ∘ Syntax.getId)
+  return vars.flatten
 
 /-- `lemmaToThm stx` assumes that `stx` is of kind `lemma` and converts it into `theorem`. -/
 def lemmaToThm (stx : Syntax) : Syntax :=
@@ -370,6 +363,14 @@ def exampleToDef (stx : Syntax) (nm : Name) : Syntax :=
       | _ => return none
   toDecl
 
+def cleanUpExplicitUniverses (stx : Syntax) : Syntax :=
+  stx.replaceM (m := Id) fun s =>
+    if s.isOfKind ``Lean.Parser.Term.explicitUniv then
+      let firstPos := s[0].getPos?.getD default
+      let lastPos := s.getArgs.back.getHeadInfo.getTailPos?.getD default
+      some (mkIdentFrom (.ofRange ⟨firstPos, lastPos⟩) s[0].getId)
+    else none
+
 @[inherit_doc Mathlib.Linter.linter.unusedVariableCommand]
 def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.unusedVariableCommand (← getOptions) do
@@ -404,18 +405,31 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     let scope ← getScope
     let pairs := scope.varUIds.zip (scope.varDecls.map getBracketedBinderIds).flatten
     for (uniq, user) in pairs do
-      usedVarsRef.addDict uniq user
+      if Linter.getLinterValue showDefs (← getOptions) then
+        logInfo m!"Variable syntax found: '{user}'\n\
+                   Variable syntax saved: '{cleanUpExplicitUniverses user}'"
+      usedVarsRef.addDict uniq (cleanUpExplicitUniverses user)
   -- On all declarations that are not examples, we "rename" them, so that we can elaborate
   -- their syntax again, and we replace `:= proof-term` by `:= by included_variables plumb: sorry`
   -- in order to update the `usedVarsRef` counter.
   -- TODO: find a way to deal with proofs that use the equation compiler directly.
   if let some decl := stx.find? (#[``declaration, `lemma].contains <|·.getKind) then
-    let s ← get
+    if decl.isOfKind `lemma || decl[1].isOfKind ``Command.theorem
+    then
+      let s ← get
+      let toFalse := mkIdent `toFalse
+      let toThm : Syntax := if decl.isOfKind `lemma then lemmaToThm decl else decl
+      let renStx ← mkThm toThm
+      let newRStx : Syntax := stx.replaceM (m := Id)
+        (if · == decl then return some renStx else return none)
+      elabCommand (← `(def $toFalse (S : Sort _) := False))
+      try elabCommand newRStx
+      catch _ => dbg_trace "caught something"
+      set s
+      return
     let usedVarNames := ← do
-      if #[``definition, ``Command.structure, ``Command.abbrev].contains decl[1].getKind then
-        --dbg_trace "here"
-        let declIdStx := (decl.find? (·.isOfKind ``declId)).getD default
-        getUsedVariableNames (declIdStx.getPos?.getD default)
+      if #[``Command.instance, ``definition, ``Command.structure, ``Command.abbrev].contains decl[1].getKind then
+        getUsedVariableNames (decl.getPos?.getD default)
       else if decl[1].getKind == ``Command.example then
         let toDef := exampleToDef decl `newName
         elabCommand toDef
@@ -425,20 +439,8 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
           dbg_trace "getForallStrings: {d}"
         return d
       else return #[]
-    let toFalse := mkIdent `toFalse
-    let toThm : Syntax := if decl.isOfKind `lemma then lemmaToThm decl else decl
-    let renStx ← mkThm toThm
     -- Replace the declaration in the initial `stx` with the "revised" one.
     -- This handles `include h in` and other "`in`"s.
-    let newRStx : Syntax := stx.replaceM (m := Id)
-      (if · == decl then return some renStx else return none)
-    elabCommand (← `(def $toFalse (S : Sort _) := False))
-    if decl.isOfKind `lemma || (decl.find? (·.isOfKind ``Command.theorem)).isSome then
-      try
-        elabCommand newRStx
-      catch _ =>
-        dbg_trace "caught something"
-    set s
     let left2 := (← usedVarsRef.get).dict.toList
     let left := left2.map Prod.fst
     let _leftPretty := (left2.map Prod.snd).map fun l => l.prettyPrint.pretty
@@ -450,7 +452,7 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
       filt2 := filt2 ++ left2.filter fun (_a, b) =>
         let new :=
           if _a.eraseMacroScopes.isAnonymous then
-            s == b.prettyPrint.pretty
+            s == b.prettyPrint.pretty.trim
           else
             s == _a.eraseMacroScopes.toString
         --if cond && new != (s == b.prettyPrint.pretty) then dbg_trace "error (variable in)!"; new else
