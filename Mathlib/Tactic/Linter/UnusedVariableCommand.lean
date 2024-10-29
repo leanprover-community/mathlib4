@@ -264,13 +264,13 @@ open Lean.Parser.Term in
 Like `Lean.Elab.Command.getBracketedBinderIds`, but returns the identifier `Syntax`,
 rather than the `Name`, in the given bracketed binder.
 -/
-def getBracketedBinderIds : Syntax → CommandElabM (Array Syntax)
-  | `(bracketedBinderF|($ids* $[: $ty?]? $(_annot?)?)) => return ids
-  | `(bracketedBinderF|{$ids* $[: $ty?]?})             => return ids
-  | `(bracketedBinderF|⦃$ids* : $_⦄)                   => return ids
-  | `(bracketedBinderF|[$id : $_])                     => return #[id]
-  | `(bracketedBinderF|[$f])                           => return #[f]
-  | _                                                  => throwUnsupportedSyntax
+def getBracketedBinderIds : Syntax → Array Syntax
+  | `(bracketedBinderF|($ids* $[: $ty?]? $(_annot?)?)) => ids
+  | `(bracketedBinderF|{$ids* $[: $ty?]?})             => ids
+  | `(bracketedBinderF|⦃$ids* : $_⦄)                   => ids
+  | `(bracketedBinderF|[$id : $_])                     => #[id]
+  | `(bracketedBinderF|[$f])                           => #[f]
+  | _                                                  => #[]
 
 /--
 `getNamelessVars exp` takes as input an expression, assumes that it is an iterated
@@ -391,7 +391,7 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
   -- information that is available
   if (stx.find? (·.isOfKind ``Lean.Parser.Command.variable)).isSome then
     let scope ← getScope
-    let pairs := scope.varUIds.zip (← scope.varDecls.mapM getBracketedBinderIds).flatten
+    let pairs := scope.varUIds.zip (scope.varDecls.map getBracketedBinderIds).flatten
     for (uniq, user) in pairs do
       usedVarsRef.addDict uniq user
   -- On all declarations that are not examples, we "rename" them, so that we can elaborate
