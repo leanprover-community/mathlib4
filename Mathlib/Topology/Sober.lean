@@ -3,7 +3,6 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Separation
 import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -201,7 +200,7 @@ theorem IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbedding f) [Qua
       simpa using subset_closure
     use y
     change _ = _
-    rw [hf.toEmbedding.closure_eq_preimage_closure_image, image_singleton, show _ = _ from hx]
+    rw [hf.isEmbedding.closure_eq_preimage_closure_image, image_singleton, show _ = _ from hx]
     apply image_injective.mpr hf.inj
     ext z
     simp only [image_preimage_eq_inter_range, mem_inter_iff, and_congr_left_iff]

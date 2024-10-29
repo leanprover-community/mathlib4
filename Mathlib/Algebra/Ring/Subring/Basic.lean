@@ -358,8 +358,6 @@ theorem coe_one : ((1 : s) : R) = 1 :=
 theorem coe_pow (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
   SubmonoidClass.coe_pow x n
 
--- TODO: can be generalized to `AddSubmonoidClass`
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
   ⟨fun h => Subtype.ext (Trans.trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩
 
@@ -387,11 +385,11 @@ def subtype (s : Subring R) : s →+* R :=
 theorem coeSubtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
 
-@[norm_cast] -- Porting note (#10618): simp can prove this (removed `@[simp]`)
+@[norm_cast]
 theorem coe_natCast : ∀ n : ℕ, ((n : s) : R) = n :=
   map_natCast s.subtype
 
-@[norm_cast] -- Porting note (#10618): simp can prove this (removed `@[simp]`)
+@[norm_cast]
 theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
   map_intCast s.subtype
 
@@ -1100,11 +1098,9 @@ def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
 theorem range_subtype (s : Subring R) : s.subtype.range = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem range_fst : (fst R S).rangeS = ⊤ :=
   (fst R S).rangeS_top_of_surjective <| Prod.fst_surjective
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem range_snd : (snd R S).rangeS = ⊤ :=
   (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
 

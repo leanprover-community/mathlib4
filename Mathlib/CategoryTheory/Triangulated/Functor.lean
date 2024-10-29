@@ -71,11 +71,6 @@ section Additive
 
 variable [Preadditive C] [Preadditive D] [F.Additive]
 
-#adaptation_note
-/--
-At nightly-2024-08-08 we needed to increase the maxHeartbeats here.
--/
-set_option maxHeartbeats 400000 in
 /-- The functor `F.mapTriangle` commutes with the shift. -/
 noncomputable def mapTriangleCommShiftIso (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
