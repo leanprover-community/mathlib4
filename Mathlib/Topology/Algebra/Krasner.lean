@@ -13,6 +13,7 @@ import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.FieldTheory.SeparableDegree
+import Mathlib.FieldTheory.IntermediateField.Algebraic
 
 /-!
 # Krasner's Lemma
