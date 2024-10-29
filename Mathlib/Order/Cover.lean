@@ -421,6 +421,19 @@ lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
   · rcases h.exists_lt_lt h' with ⟨c, ha, hb⟩
     exact ⟨c, ha, c, hb, fun _ h₁ _ => lt_trans h₁⟩
 
+theorem covBy_iff_lt_iff_le {x y : α} : x ⋖ y ↔ ∀ z, z < y ↔ z ≤ x where
+  mp := fun hx _z ↦ ⟨hx.le_of_lt, fun hz ↦ hz.trans_lt hx.lt⟩
+  mpr := fun H ↦ ⟨(H _).2 le_rfl, fun _z hx hz ↦ ((H _).1 hz).not_lt hx⟩
+
+theorem covBy_iff_le_iff_lt {x y : α} : x ⋖ y ↔ ∀ z, z ≤ x ↔ z < y := by
+  simp_rw [covBy_iff_lt_iff_le, iff_comm]
+
+theorem CovBy.lt_iff_le {x y z : α} (h : x ⋖ y) : z < y ↔ z ≤ x :=
+  covBy_iff_lt_iff_le.1 h z
+
+theorem CovBy.le_iff_lt {x y z : α} (h : x ⋖ y) : z ≤ x ↔ z < y :=
+  covBy_iff_le_iff_lt.1 h z
+
 end LinearOrder
 
 namespace Set
