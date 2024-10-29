@@ -50,10 +50,6 @@ theorem frattini_nongenerating [IsCoatomic (Subgroup G)] {K : Subgroup G}
     (h : K ⊔ frattini G = ⊤) : K = ⊤ :=
   Order.radical_nongenerating h
 
--- The Sylow files unnecessarily use `Fintype` (computable) where often `Finite` would suffice,
--- so we need this:
-attribute [local instance] Fintype.ofFinite
-
 /-- When `G` is finite, the Frattini subgroup is nilpotent. -/
 theorem frattini_nilpotent [Finite G] : Group.IsNilpotent (frattini G) := by
   -- We use the characterisation of nilpotency in terms of all Sylow subgroups being normal.

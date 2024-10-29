@@ -3,8 +3,9 @@ Copyright (c) 2024 James Sundstrom. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom
 -/
-import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.Data.ENNReal.Real
 import Mathlib.Order.WellFoundedSet
+import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
 # Oscillation
@@ -51,7 +52,7 @@ namespace ContinuousWithinAt
 
 theorem oscillationWithin_eq_zero [TopologicalSpace E] {f : E → F} {D : Set E}
     {x : E} (hf : ContinuousWithinAt f D x) : oscillationWithin f D x = 0 := by
-  refine le_antisymm (le_of_forall_pos_le_add fun ε hε _ ↦ ?_) (zero_le _)
+  refine le_antisymm (_root_.le_of_forall_pos_le_add fun ε hε ↦ ?_) (zero_le _)
   rw [zero_add]
   have : ball (f x) (ε / 2) ∈ (𝓝[D] x).map f := hf <| ball_mem_nhds _ (by simp [ne_of_gt hε])
   refine (biInf_le diam this).trans (le_of_le_of_eq diam_ball ?_)

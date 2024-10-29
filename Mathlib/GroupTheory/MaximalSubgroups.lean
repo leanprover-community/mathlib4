@@ -2,8 +2,8 @@
 Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
-
 -/
+
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Order.Atoms
 
@@ -47,11 +47,12 @@ theorem isMaximal_iff {K : Subgroup G} :
     K.IsMaximal ↔ K ≠ ⊤ ∧ ∀ (H : Subgroup G) (g), K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
   constructor
   · intro hK
-    refine ⟨hK.ne_top, ?_⟩
-    intro H g hKH hgK hgH
-    apply (isMaximal_def.1 hK).2
-    rw [← Ne.le_iff_lt (ne_of_mem_of_not_mem' hgH hgK).symm]
-    exact hKH
+    constructor
+    · exact hK.ne_top
+    · intro H g hKH hgK hgH
+      apply (isMaximal_def.1 hK).2
+      rw [lt_iff_le_and_ne]
+      exact ⟨hKH, Ne.symm (ne_of_mem_of_not_mem' hgH hgK)⟩
   · rintro ⟨hG, hmax⟩
     constructor; constructor;
     · assumption

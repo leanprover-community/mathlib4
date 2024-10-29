@@ -5,8 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Data.NNReal.Defs
 
 /-!
 # Extended non-negative reals
@@ -133,9 +132,9 @@ noncomputable instance : DivInvMonoid ℝ≥0∞ where
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
 -- Porting note: are these 2 instances still required in Lean 4?
-instance covariantClass_mul_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (· * ·) (· ≤ ·) := inferInstance
+instance mulLeftMono : MulLeftMono ℝ≥0∞ := inferInstance
 
-instance covariantClass_add_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (· + ·) (· ≤ ·) := inferInstance
+instance addLeftMono : AddLeftMono ℝ≥0∞ := inferInstance
 
 -- Porting note (#11215): TODO: add a `WithTop` instance and use it here
 noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
@@ -186,8 +185,7 @@ protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 /-- `ofReal x` returns `x` if it is nonnegative, `0` otherwise. -/
 protected noncomputable def ofReal (r : Real) : ℝ≥0∞ := r.toNNReal
 
-@[simp, norm_cast]
-theorem toNNReal_coe : (r : ℝ≥0∞).toNNReal = r := rfl
+@[simp, norm_cast] lemma toNNReal_coe (r : ℝ≥0) : (r : ℝ≥0∞).toNNReal = r := rfl
 
 @[simp]
 theorem coe_toNNReal : ∀ {a : ℝ≥0∞}, a ≠ ∞ → ↑a.toNNReal = a
@@ -214,6 +212,8 @@ theorem coe_nnreal_eq (r : ℝ≥0) : (r : ℝ≥0∞) = ENNReal.ofReal r := by
 theorem ofReal_eq_coe_nnreal {x : ℝ} (h : 0 ≤ x) :
     ENNReal.ofReal x = ofNNReal ⟨x, h⟩ :=
   (coe_nnreal_eq ⟨x, h⟩).symm
+
+theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.ofReal x := rfl
 
 @[simp] theorem ofReal_coe_nnreal : ENNReal.ofReal p = p := (coe_nnreal_eq p).symm
 
@@ -402,7 +402,7 @@ def neTopEquivNNReal : { a | a ≠ ∞ } ≃ ℝ≥0 where
   toFun x := ENNReal.toNNReal x
   invFun x := ⟨x, coe_ne_top⟩
   left_inv := fun x => Subtype.eq <| coe_toNNReal x.2
-  right_inv _ := toNNReal_coe
+  right_inv := toNNReal_coe
 
 theorem cinfi_ne_top [InfSet α] (f : ℝ≥0∞ → α) : ⨅ x : { x // x ≠ ∞ }, f x = ⨅ x : ℝ≥0, f x :=
   Eq.symm <| neTopEquivNNReal.symm.surjective.iInf_congr _ fun _ => rfl
@@ -435,11 +435,6 @@ def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
 
 @[simp] theorem coe_ofNNRealHom : ⇑ofNNRealHom = some := rfl
 
-@[simp, norm_cast]
-theorem coe_indicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
-    ((s.indicator f a : ℝ≥0) : ℝ≥0∞) = s.indicator (fun x => ↑(f x)) a :=
-  (ofNNRealHom : ℝ≥0 →+ ℝ≥0∞).map_indicator _ _ _
-
 section Order
 
 theorem bot_eq_zero : (⊥ : ℝ≥0∞) = 0 := rfl
@@ -471,6 +466,7 @@ theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
   ofReal_natCast n
 
 @[simp] theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_ne_top n
+@[simp] theorem natCast_lt_top (n : ℕ) : (n : ℝ≥0∞) < ∞ := WithTop.natCast_lt_top n
 
 @[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
 
@@ -500,10 +496,6 @@ theorem toReal_le_coe_of_le_coe {a : ℝ≥0∞} {b : ℝ≥0} (h : a ≤ b) : a
   lift a to ℝ≥0 using ne_top_of_le_ne_top coe_ne_top h
   simpa using h
 
-@[simp, norm_cast]
-theorem coe_finset_sup {s : Finset α} {f : α → ℝ≥0} : ↑(s.sup f) = s.sup fun x => (f x : ℝ≥0∞) :=
-  Finset.comp_sup_eq_sup_comp_of_is_total _ coe_mono rfl
-
 @[simp] theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
 
 theorem max_zero_left : max 0 a = a :=
@@ -524,7 +516,7 @@ theorem lt_iff_exists_rat_btwn :
     rcases lt_iff_exists_coe.1 cb with ⟨r, rfl, _⟩
     rcases (NNReal.lt_iff_exists_rat_btwn _ _).1 (coe_lt_coe.1 pc) with ⟨q, hq0, pq, qr⟩
     exact ⟨q, hq0, coe_lt_coe.2 pq, lt_trans (coe_lt_coe.2 qr) cb⟩,
-      fun ⟨q, _, qa, qb⟩ => lt_trans qa qb⟩
+      fun ⟨_, _, qa, qb⟩ => lt_trans qa qb⟩
 
 theorem lt_iff_exists_real_btwn :
     a < b ↔ ∃ r : ℝ, 0 ≤ r ∧ a < ENNReal.ofReal r ∧ (ENNReal.ofReal r : ℝ≥0∞) < b :=
@@ -709,8 +701,3 @@ def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
   | _, _, _ => throwError "not ENNReal.ofNNReal"
 
 end Mathlib.Meta.Positivity
-
-@[deprecated (since := "2023-12-23")] protected alias
-ENNReal.le_inv_smul_iff_of_pos := le_inv_smul_iff_of_pos
-@[deprecated (since := "2023-12-23")] protected alias
-ENNReal.inv_smul_le_iff_of_pos := inv_smul_le_iff_of_pos

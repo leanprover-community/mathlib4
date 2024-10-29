@@ -65,7 +65,7 @@ theorem cauchySeq_finset_of_norm_bounded_eventually {f : ι → E} {g : ι → �
 
 theorem cauchySeq_finset_of_norm_bounded {f : ι → E} (g : ι → ℝ) (hg : Summable g)
     (h : ∀ i, ‖f i‖ ≤ g i) : CauchySeq fun s : Finset ι => ∑ i ∈ s, f i :=
-  cauchySeq_finset_of_norm_bounded_eventually hg <| eventually_of_forall h
+  cauchySeq_finset_of_norm_bounded_eventually hg <| Eventually.of_forall h
 
 /-- A version of the **direct comparison test** for conditionally convergent series.
 See `cauchySeq_finset_of_norm_bounded` for the same statement about absolutely convergent ones. -/

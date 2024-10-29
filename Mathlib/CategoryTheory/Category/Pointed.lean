@@ -22,8 +22,6 @@ open CategoryTheory
 
 universe u
 
-variable {α β : Type*}
-
 /-- The category of pointed types. -/
 structure Pointed : Type (u + 1) where
   /-- the underlying type -/
@@ -124,7 +122,7 @@ def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
             cases x
             · exact f.map_point.symm
             · rfl
-          right_inv := fun f => funext fun _ => rfl }
+          right_inv := fun _ => funext fun _ => rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Pointed.Hom.ext
         funext x

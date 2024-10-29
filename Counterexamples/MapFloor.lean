@@ -125,7 +125,7 @@ theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
 itself. -/
 theorem forgetEpsilons_floor_lt (n : ℤ) :
     forgetEpsilons ⌊(n - ↑ε : ℤ[ε])⌋ < ⌊forgetEpsilons (n - ↑ε)⌋ := by
-  suffices ⌊(n - ↑ε : ℤ[ε])⌋ = n - 1 by simp [this]
+  suffices ⌊(n - ↑ε : ℤ[ε])⌋ = n - 1 by simp [map_sub, this]
   have : (0 : ℤ[ε]) < ε := ⟨1, by simp⟩
   exact (if_neg <| by rw [coeff_sub, intCast_coeff_zero]; simp [this]).trans (by
     rw [coeff_sub, intCast_coeff_zero]; simp)

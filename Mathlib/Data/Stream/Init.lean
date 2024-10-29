@@ -5,7 +5,6 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Stream.Defs
 import Mathlib.Logic.Function.Basic
-import Mathlib.Init.Data.List.Basic
 import Mathlib.Data.List.Basic
 
 /-!
@@ -13,7 +12,7 @@ import Mathlib.Data.List.Basic
 
 Porting note:
 This file used to be in the core library. It was moved to `mathlib` and renamed to `init` to avoid
-name clashes.  -/
+name clashes. -/
 
 open Nat Function Option
 
@@ -357,7 +356,7 @@ theorem interleave_tail_tail (s₁ s₂ : Stream' α) : tail s₁ ⋈ tail s₂ 
 
 theorem get_interleave_left : ∀ (n : ℕ) (s₁ s₂ : Stream' α),
     get (s₁ ⋈ s₂) (2 * n) = get s₁ n
-  | 0, s₁, s₂ => rfl
+  | 0, _, _ => rfl
   | n + 1, s₁, s₂ => by
     change get (s₁ ⋈ s₂) (succ (succ (2 * n))) = get s₁ (succ n)
     rw [get_succ, get_succ, interleave_eq, tail_cons, tail_cons]
@@ -366,7 +365,7 @@ theorem get_interleave_left : ∀ (n : ℕ) (s₁ s₂ : Stream' α),
 
 theorem get_interleave_right : ∀ (n : ℕ) (s₁ s₂ : Stream' α),
     get (s₁ ⋈ s₂) (2 * n + 1) = get s₂ n
-  | 0, s₁, s₂ => rfl
+  | 0, _, _ => rfl
   | n + 1, s₁, s₂ => by
     change get (s₁ ⋈ s₂) (succ (succ (2 * n + 1))) = get s₂ (succ n)
     rw [get_succ, get_succ, interleave_eq, tail_cons, tail_cons,
@@ -416,7 +415,7 @@ theorem interleave_even_odd (s₁ : Stream' α) : even s₁ ⋈ odd s₁ = s₁ 
     rfl
 
 theorem get_even : ∀ (n : ℕ) (s : Stream' α), get (even s) n = get s (2 * n)
-  | 0, s => rfl
+  | 0, _ => rfl
   | succ n, s => by
     change get (even s) (succ n) = get s (succ (succ (2 * n)))
     rw [get_succ, get_succ, tail_even, get_even n]; rfl
@@ -439,13 +438,13 @@ theorem cons_append_stream (a : α) (l : List α) (s : Stream' α) :
 
 theorem append_append_stream : ∀ (l₁ l₂ : List α) (s : Stream' α),
     l₁ ++ l₂ ++ₛ s = l₁ ++ₛ (l₂ ++ₛ s)
-  | [], l₂, s => rfl
+  | [], _, _ => rfl
   | List.cons a l₁, l₂, s => by
     rw [List.cons_append, cons_append_stream, cons_append_stream, append_append_stream l₁]
 
 theorem map_append_stream (f : α → β) :
     ∀ (l : List α) (s : Stream' α), map f (l ++ₛ s) = List.map f l ++ₛ map f s
-  | [], s => rfl
+  | [], _ => rfl
   | List.cons a l, s => by
     rw [cons_append_stream, List.map_cons, map_cons, cons_append_stream, map_append_stream f l]
 
@@ -494,13 +493,13 @@ theorem length_take (n : ℕ) (s : Stream' α) : (take n s).length = n := by
 theorem take_take {s : Stream' α} : ∀ {m n}, (s.take n).take m = s.take (min n m)
   | 0, n => by rw [Nat.min_zero, List.take_zero, take_zero]
   | m, 0 => by rw [Nat.zero_min, take_zero, List.take_nil]
-  | m+1, n+1 => by rw [take_succ, List.take_cons, Nat.succ_min_succ, take_succ, take_take]
+  | m+1, n+1 => by rw [take_succ, List.take_succ_cons, Nat.succ_min_succ, take_succ, take_take]
 
 @[simp] theorem concat_take_get {n : ℕ} {s : Stream' α} : s.take n ++ [s.get n] = s.take (n+1) :=
   (take_succ' n).symm
 
 theorem get?_take {s : Stream' α} : ∀ {k n}, k < n → (s.take n).get? k = s.get k
-  | 0, n+1, _ => rfl
+  | 0, _+1, _ => rfl
   | k+1, n+1, h => by rw [take_succ, List.get?, get?_take (Nat.lt_of_succ_lt_succ h), get_succ]
 
 theorem get?_take_succ (n : ℕ) (s : Stream' α) :

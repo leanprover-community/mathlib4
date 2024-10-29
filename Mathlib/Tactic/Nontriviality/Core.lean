@@ -123,3 +123,7 @@ syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)?
       g.assert `inst ty m
     let g ← liftM <| tac <|> nontrivialityByElim α g stx[2][1].getSepArgs
     replaceMainGoal [(← g.intro1).2]
+
+end Nontriviality
+
+end Mathlib.Tactic

@@ -107,9 +107,9 @@ theorem smeval_add : (p + q).smeval x = p.smeval x + q.smeval x := by
   · rw [smul_pow, smul_pow, smul_pow, add_smul]
 
 theorem smeval_natCast (n : ℕ) : (n : R[X]).smeval x = n • x ^ 0 := by
-  induction' n with n ih
-  · simp only [smeval_zero, Nat.cast_zero, Nat.zero_eq, zero_smul]
-  · rw [n.cast_succ, smeval_add, ih, smeval_one, ← add_nsmul]
+  induction n with
+  | zero => simp only [smeval_zero, Nat.cast_zero, zero_smul]
+  | succ n ih => rw [n.cast_succ, smeval_add, ih, smeval_one, ← add_nsmul]
 
 @[deprecated (since := "2024-04-17")]
 alias smeval_nat_cast := smeval_natCast
@@ -133,7 +133,7 @@ theorem smeval.linearMap_apply : smeval.linearMap R x p = p.smeval x := rfl
 
 theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
     ⇑(leval r) = fun p => p.smeval r := by
-  rw [Function.funext_iff]
+  rw [funext_iff]
   intro
   rw [leval_apply, smeval_def, eval_eq_sum]
   rfl
@@ -153,7 +153,7 @@ variable (R : Type*) [Ring R] {S : Type*} [AddCommGroup S] [Pow S ℕ] [Module R
 
 @[simp]
 theorem smeval_neg : (-p).smeval x = - p.smeval x := by
-  rw [← add_eq_zero_iff_eq_neg, ← smeval_add, add_left_neg, smeval_zero]
+  rw [← add_eq_zero_iff_eq_neg, ← smeval_add, neg_add_cancel, smeval_zero]
 
 @[simp]
 theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by
@@ -180,7 +180,7 @@ the defining structures independently.  For non-associative power-associative al
 octonions), we replace the `[Semiring S]` with `[NonAssocSemiring S] [Pow S ℕ] [NatPowAssoc S]`.
 -/
 
-variable (R : Type*) [Semiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
+variable (R : Type*) [Semiring R] (r : R) (p q : R[X]) {S : Type*}
   [NonAssocSemiring S] [Module R S] [Pow S ℕ] (x : S)
 
 theorem smeval_C_mul : (C r * p).smeval x = r • p.smeval x := by
@@ -210,7 +210,7 @@ theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
     simp_all only [smeval_add, coeff_add, add_smul]
   | h_monomial n a =>
     cases n with
-    | zero => simp only [Nat.zero_eq, monomial_zero_left, smeval_C, npow_zero, coeff_C_zero]
+    | zero => simp only [monomial_zero_left, smeval_C, npow_zero, coeff_C_zero]
     | succ n => rw [coeff_monomial_succ, smeval_monomial, npow_add, npow_one, mul_zero, zero_smul,
         smul_zero]
 

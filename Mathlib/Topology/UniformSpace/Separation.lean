@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # Hausdorff properties of uniform spaces. Separation quotient.
@@ -96,7 +96,6 @@ uniform space, separated space, Hausdorff space, separation quotient
 -/
 
 open Filter Set Function Topology Uniformity UniformSpace
-open scoped Classical
 
 noncomputable section
 
@@ -219,7 +218,7 @@ instance instUniformSpace : UniformSpace (SeparationQuotient α) where
     exact @hUt (x, z) ⟨y', this.mem_open (UniformSpace.isOpen_ball _ hUo) hxyU, hyzU⟩
   nhds_eq_comap_uniformity := surjective_mk.forall.2 fun x ↦ comap_injective surjective_mk <| by
     conv_lhs => rw [comap_mk_nhds_mk, nhds_eq_comap_uniformity, ← comap_map_mk_uniformity]
-    simp only [Filter.comap_comap, Function.comp, Prod.map_apply]
+    simp only [Filter.comap_comap, Function.comp_def, Prod.map_apply]
 
 theorem uniformity_eq : 𝓤 (SeparationQuotient α) = (𝓤 α).map (Prod.map mk mk) := rfl
 
@@ -248,6 +247,7 @@ theorem uniformContinuous_uncurry_lift₂ {f : α → β → γ}
 theorem comap_mk_uniformity : (𝓤 (SeparationQuotient α)).comap (Prod.map mk mk) = 𝓤 α :=
   comap_map_mk_uniformity
 
+open Classical in
 /-- Factoring functions to a separated space through the separation quotient.
 
 TODO: unify with `SeparationQuotient.lift`. -/
@@ -285,6 +285,6 @@ theorem map_id : map (@id α) = id := map_unique uniformContinuous_id rfl
 
 theorem map_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f) (hg : UniformContinuous g) :
     map g ∘ map f = map (g ∘ f) :=
-  (map_unique (hg.comp hf) <| by simp only [Function.comp, map_mk, hf, hg]).symm
+  (map_unique (hg.comp hf) <| by simp only [Function.comp_def, map_mk, hf, hg]).symm
 
 end SeparationQuotient

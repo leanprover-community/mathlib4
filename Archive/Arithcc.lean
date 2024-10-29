@@ -3,7 +3,6 @@ Copyright (c) 2020 Xi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xi Wang
 -/
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Nat.Defs
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
@@ -145,9 +144,9 @@ def outcome : List Instruction → State → State
 @[simp]
 theorem outcome_append (p₁ p₂ : List Instruction) (η : State) :
     outcome (p₁ ++ p₂) η = outcome p₂ (outcome p₁ η) := by
-  revert η
-  induction' p₁ with _ _ p₁_ih <;> intros <;> simp
-  apply p₁_ih
+  induction p₁ generalizing η with
+  | nil => simp
+  | cons _ _ p₁_ih => simp [p₁_ih]
 
 end Target
 
@@ -280,10 +279,7 @@ theorem compiler_correctness
   | const => simp [StateEq, step]; rfl
   -- 5.II
   | var =>
-    simp [hmap, StateEq, step] -- Porting note: was `finish [hmap, StateEq, step]`
-    constructor
-    · simp_all only [read, loc]
-    · rfl
+    simp_all [StateEq, StateEqRs, step]
   -- 5.III
   | sum =>
     rename_i e_s₁ e_s₂ e_ih_s₁ e_ih_s₂

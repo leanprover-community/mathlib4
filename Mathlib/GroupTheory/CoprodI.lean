@@ -151,7 +151,7 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
             FreeMonoid.lift _ (FreeMonoid.of _ * FreeMonoid.of _) =
               FreeMonoid.lift _ (FreeMonoid.of _)
           simp only [MonoidHom.map_mul, FreeMonoid.lift_eval_of]
-  invFun f i := f.comp of
+  invFun f _ := f.comp of
   left_inv := by
     intro fi
     ext i x
@@ -236,14 +236,14 @@ theorem inv_def (x : CoprodI G) :
   rfl
 
 instance : Group (CoprodI G) :=
-  { mul_left_inv := by
+  { inv_mul_cancel := by
       intro m
       rw [inv_def]
       induction m using CoprodI.induction_on with
       | h_one => rw [MonoidHom.map_one, MulOpposite.unop_one, one_mul]
       | h_of m ih =>
         change of _⁻¹ * of _ = 1
-        rw [← of.map_mul, mul_left_inv, of.map_one]
+        rw [← of.map_mul, inv_mul_cancel, of.map_one]
       | h_mul x y ihx ihy =>
         rw [MonoidHom.map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
           ihy] }
@@ -314,7 +314,6 @@ instance (i : ι) : Inhabited (Pair M i) :=
   ⟨⟨1, empty, by tauto⟩⟩
 
 variable {M}
-variable [∀ i, DecidableEq (M i)]
 
 /-- Construct a new `Word` without any reduction. The underlying list of
 `cons m w _ _` is `⟨_, m⟩::w`  -/
@@ -327,6 +326,18 @@ def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
       · exact h1
       · exact w.ne_one l hl
     chain_ne := w.chain_ne.cons' (fstIdx_ne_iff.mp hmw) }
+
+@[simp]
+theorem fstIdx_cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
+    fstIdx (cons m w hmw h1) = some i := by simp [cons, fstIdx]
+
+@[simp]
+theorem prod_cons (i) (m : M i) (w : Word M) (h1 : m ≠ 1) (h2 : w.fstIdx ≠ some i) :
+    prod (cons m w h2 h1) = of m * prod w := by
+  simp [cons, prod, List.map_cons, List.prod_cons]
+
+section
+variable [∀ i, DecidableEq (M i)]
 
 /-- Given a pair `(head, tail)`, we can form a word by prepending `head` to `tail`, except if `head`
 is `1 : M i` then we have to just return `Word` since we need the result to be reduced. -/
@@ -353,7 +364,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
     rw [← he] at h'
     exact h' rfl
   · have : m = m' ∧ w.toList = w'.toList := by
-      simpa [cons, rcons, dif_neg hm, dif_neg hm', true_and_iff, eq_self_iff_true, Subtype.mk_eq_mk,
+      simpa [cons, rcons, dif_neg hm, dif_neg hm', eq_self_iff_true, Subtype.mk_eq_mk,
         heq_iff_eq, ← Subtype.ext_iff_val] using he
     rcases this with ⟨rfl, h⟩
     congr
@@ -371,14 +382,7 @@ theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     · split_ifs <;> simp_all
   · split_ifs <;> simp_all [Ne.symm hij]
 
-@[simp]
-theorem fstIdx_cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
-    fstIdx (cons m w hmw h1) = some i := by simp [cons, fstIdx]
-
-@[simp]
-theorem prod_cons (i) (m : M i) (w : Word M) (h1 : m ≠ 1) (h2 : w.fstIdx ≠ some i) :
-    prod (cons m w h2 h1) = of m * prod w := by
-  simp [cons, prod, List.map_cons, List.prod_cons]
+end
 
 /-- Induct on a word by adding letters one at a time without reduction,
 effectively inducting on the underlying `List`. -/
@@ -410,7 +414,7 @@ theorem consRecOn_cons {motive : Word M → Sort*} (i) (m : M i) (w : Word M) h1
     consRecOn (cons m w h1 h2) h_empty h_cons = h_cons i m w h1 h2
       (consRecOn w h_empty h_cons) := rfl
 
-variable [DecidableEq ι]
+variable [DecidableEq ι] [∀ i, DecidableEq (M i)]
 
 -- This definition is computable but not very nice to look at. Thankfully we don't have to inspect
 -- it, since `rcons` is known to be injective.
@@ -531,7 +535,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
         · rintro rfl
           exact Or.inl ⟨_, rfl, rfl⟩
         · rintro (⟨_, h, rfl⟩ | hm')
-          · simp [Sigma.ext_iff] at h
+          · simp only [Sigma.ext_iff, heq_eq_eq, true_and] at h
             subst h
             rfl
           · simp only [fstIdx, Option.map_eq_some', Sigma.exists,
@@ -768,9 +772,10 @@ theorem mulHead_head {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
 theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1) :
     (mulHead w x hnotone).prod = of x * w.prod := by
   unfold mulHead
-  induction' w with _ _ _ _ _ _ _ _ _ _ w_ih_w₁ w_ih_w₂
-  · simp [mulHead, replaceHead]
-  · specialize w_ih_w₁ _ hnotone
+  induction w with
+  | singleton => simp [mulHead, replaceHead]
+  | append _ _ _ w_ih_w₁ w_ih_w₂ =>
+    specialize w_ih_w₁ _ hnotone
     clear w_ih_w₂
     simp? [replaceHead, ← mul_assoc] at * says
       simp only [replaceHead, head, append_prod, ← mul_assoc] at *
@@ -807,7 +812,6 @@ open Pointwise
 
 open Cardinal
 
-variable [hnontriv : Nontrivial ι]
 variable {G : Type*} [Group G]
 variable {H : ι → Type*} [∀ i, Group (H i)]
 variable (f : ∀ i, H i →* G)
@@ -821,6 +825,7 @@ variable (X : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
 variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
 variable (hpp : Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
+include hpp
 
 theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
     lift f w.prod • X k ⊆ X i := by
@@ -832,6 +837,8 @@ theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
       _ ⊆ lift f w₁.prod • X _ := set_smul_subset_set_smul_iff.mpr (hIw₂ hk)
       _ ⊆ X i := hIw₁ hne
 
+include hXnonempty hXdisj
+
 theorem lift_word_prod_nontrivial_of_other_i {i j k} (w : NeWord H i j) (hhead : k ≠ i)
     (hlast : k ≠ j) : lift f w.prod ≠ 1 := by
   intro heq1
@@ -839,12 +846,15 @@ theorem lift_word_prod_nontrivial_of_other_i {i j k} (w : NeWord H i j) (hhead :
   obtain ⟨x, hx⟩ := hXnonempty k
   exact (hXdisj hhead).le_bot ⟨hx, this hx⟩
 
-theorem lift_word_prod_nontrivial_of_head_eq_last {i} (w : NeWord H i i) : lift f w.prod ≠ 1 := by
+variable [Nontrivial ι]
+
+theorem lift_word_prod_nontrivial_of_head_eq_last {i} (w : NeWord H i i) :
+    lift f w.prod ≠ 1 := by
   obtain ⟨k, hk⟩ := exists_ne i
   exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hk hk
 
-theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard : 3 ≤ #(H i))
-    (hheadtail : i ≠ j) : lift f w.prod ≠ 1 := by
+theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j)
+    (hcard : 3 ≤ #(H i)) (hheadtail : i ≠ j) : lift f w.prod ≠ 1 := by
   obtain ⟨h, hn1, hnh⟩ := Cardinal.three_le hcard 1 w.head⁻¹
   have hnot1 : h * w.head ≠ 1 := by
     rw [← div_inv_eq_mul]
@@ -858,7 +868,9 @@ theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard :
   apply hw'
   simp [w', heq1]
 
-theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) : lift f w.prod ≠ 1 := by
+include hcard in
+theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
+    lift f w.prod ≠ 1 := by
   classical
     cases' hcard with hcard hcard
     · obtain ⟨i, h1, h2⟩ := Cardinal.three_le hcard i j
@@ -890,11 +902,14 @@ theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) : lift f
         apply hw'
         simp [w', heq1]
 
-theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) : w = Word.empty := by
+include hcard in
+theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) :
+    w = Word.empty := by
   by_contra hnotempty
   obtain ⟨i, j, w, rfl⟩ := NeWord.of_word w hnotempty
   exact lift_word_prod_nontrivial_of_not_empty f hcard X hXnonempty hXdisj hpp w h
 
+include hcard in
 /-- The **Ping-Pong-Lemma**.
 
 Given a group action of `G` on `X` so that the `H i` acts in a specific way on disjoint subsets
@@ -964,6 +979,7 @@ variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
 variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
 variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
 
+include hXnonempty hXdisj hYdisj hXYdisj hX hY in
 /-- The Ping-Pong-Lemma.
 
 Given a group action of `G` on `X` so that the generators of the free groups act in specific

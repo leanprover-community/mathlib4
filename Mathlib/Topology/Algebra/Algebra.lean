@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Antoine Chambert-Loir, María Inés de Frutos-Fernández
+Authors: Kim Morrison, Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Topology.Algebra.Module.Basic
@@ -241,7 +241,7 @@ whose `TopologicalClosure` is `⊤` is sent to another such submodule.
 That is, the image of a dense subalgebra under a map with dense range is dense.
 -/
 theorem _root_.DenseRange.topologicalClosure_map_subalgebra
-    [TopologicalSemiring B] {f : A →A[R] B}  (hf' : DenseRange f) {s : Subalgebra R A}
+    [TopologicalSemiring B] {f : A →A[R] B} (hf' : DenseRange f) {s : Subalgebra R A}
     (hs : s.topologicalClosure = ⊤) : (s.map (f : A →ₐ[R] B)).topologicalClosure = ⊤ := by
   rw [SetLike.ext'_iff] at hs ⊢
   simp only [Subalgebra.topologicalClosure_coe, coe_top, ← dense_iff_closure_eq, Subalgebra.coe_map,
@@ -408,7 +408,7 @@ theorem fst_comp_prod (f : A →A[R] B) (g : A →A[R] C) :
   ext fun _x => rfl
 
 @[simp]
-theorem snd_comp_prod  (f : A →A[R] B) (g : A →A[R] C) :
+theorem snd_comp_prod (f : A →A[R] B) (g : A →A[R] C) :
     (snd R B C).comp (f.prod g) = g :=
   ext fun _x => rfl
 
