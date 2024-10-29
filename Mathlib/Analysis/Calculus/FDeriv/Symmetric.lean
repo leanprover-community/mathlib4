@@ -422,7 +422,7 @@ theorem second_derivative_symmetric [IsRCLikeNormedField 𝕜]
 variable (𝕜) in
 /-- A smoothness exponent is admissible if it is `ω` or the field is ℝ or ℂ. This guarantees that
 second derivatives are symmetric, and more generally good behavior for calculus. -/
-class IsAdmissibleSmoothness (n : WithTop ℕ∞) :=
+class IsAdmissibleSmoothness (n : WithTop ℕ∞) : Prop :=
   out : n = ⊤ ∨ IsRCLikeNormedField 𝕜
 
 instance (priority := 100) [h : IsRCLikeNormedField 𝕜] (n : WithTop ℕ∞) :
