@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Comma.Over
-import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
@@ -201,15 +199,6 @@ lemma comma_iso_iff (P : MorphismProperty C) [P.RespectsIso] {A B : Type*} [Cate
     {L : A ⥤ C} {R : B ⥤ C} {f g : Comma L R} (e : f ≅ g) :
     P f.hom ↔ P g.hom := by
   simp [← Comma.inv_left_hom_right e.hom, cancel_left_of_respectsIso, cancel_right_of_respectsIso]
-
-lemma costructuredArrow_iso_iff (P : MorphismProperty C) [P.RespectsIso] {A : Type*} [Category A]
-    {L : A ⥤ C} {X : C} {f g : CostructuredArrow L X} (e : f ≅ g) :
-    P f.hom ↔ P g.hom :=
-  P.comma_iso_iff e
-
-lemma over_iso_iff (P : MorphismProperty C) [P.RespectsIso] {X : C} {f g : Over X} (e : f ≅ g) :
-    P f.hom ↔ P g.hom :=
-  P.comma_iso_iff e
 
 theorem arrow_iso_iff (P : MorphismProperty C) [RespectsIso P] {f g : Arrow C}
     (e : f ≅ g) : P f.hom ↔ P g.hom :=

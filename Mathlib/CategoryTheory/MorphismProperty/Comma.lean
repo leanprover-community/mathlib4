@@ -41,6 +41,15 @@ section Comma
 variable {A : Type*} [Category A] {B : Type*} [Category B] {T : Type*} [Category T]
   (L : A ⥤ T) (R : B ⥤ T)
 
+lemma costructuredArrow_iso_iff (P : MorphismProperty T) [P.RespectsIso] {A : Type*} [Category A]
+    {L : A ⥤ T} {X : T} {f g : CostructuredArrow L X} (e : f ≅ g) :
+    P f.hom ↔ P g.hom :=
+  P.comma_iso_iff e
+
+lemma over_iso_iff (P : MorphismProperty T) [P.RespectsIso] {X : T} {f g : Over X} (e : f ≅ g) :
+    P f.hom ↔ P g.hom :=
+  P.comma_iso_iff e
+
 variable (P : MorphismProperty T) (Q : MorphismProperty A) (W : MorphismProperty B)
 
 /-- `P.Comma L R Q W` is the subcategory of `Comma L R` consisting of
