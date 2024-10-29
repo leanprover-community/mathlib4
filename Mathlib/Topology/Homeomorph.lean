@@ -311,7 +311,7 @@ protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y := h.symm.isE
 protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconnectedSpace X] :
     TotallyDisconnectedSpace Y :=
   (totallyDisconnectedSpace_iff Y).mpr
-    (h.range_coe ▸ ((Embedding.isTotallyDisconnected_range h.embedding).mpr tdc))
+    (h.range_coe ▸ ((IsEmbedding.isTotallyDisconnected_range h.isEmbedding).mpr tdc))
 
 theorem isDenseEmbedding (h : X ≃ₜ Y) : IsDenseEmbedding h :=
   { h.isEmbedding with dense := h.surjective.denseRange }
