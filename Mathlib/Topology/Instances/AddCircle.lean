@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.Divisible
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.IsLocalHomeomorph
+import Mathlib.Topology.Instances.ZMultiples
 
 /-!
 # The additive circle
@@ -594,7 +595,7 @@ def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot
     on_goal 2 => erw [equivIccQuot_comp_mk_eq_toIcoMod]
     all_goals
       apply continuous_quot_mk.continuousAt.comp_continuousWithinAt
-      rw [inducing_subtype_val.continuousWithinAt_iff]
+      rw [IsInducing.subtypeVal.continuousWithinAt_iff]
     · apply continuous_left_toIocMod
     · apply continuous_right_toIcoMod
   continuous_invFun :=

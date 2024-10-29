@@ -59,7 +59,7 @@ namespace Submodule
 
 lemma mem_traceDual {I : Submodule B L} {x} :
     x ∈ Iᵛ ↔ ∀ a ∈ I, traceForm K L x a ∈ (algebraMap A K).range :=
-  Iff.rfl
+  forall₂_congr fun _ _ ↦ mem_one
 
 lemma le_traceDual_iff_map_le_one {I J : Submodule B L} :
     I ≤ Jᵛ ↔ ((I * J : Submodule B L).restrictScalars A).map
@@ -149,14 +149,15 @@ variable [IsIntegrallyClosed A]
 
 lemma Submodule.mem_traceDual_iff_isIntegral {I : Submodule B L} {x} :
     x ∈ Iᵛ ↔ ∀ a ∈ I, IsIntegral A (traceForm K L x a) :=
-  forall₂_congr (fun _ _ ↦ IsIntegrallyClosed.isIntegral_iff.symm)
+  forall₂_congr fun _ _ ↦ mem_one.trans IsIntegrallyClosed.isIntegral_iff.symm
 
 variable [FiniteDimensional K L] [IsIntegralClosure B A L]
 
 lemma Submodule.one_le_traceDual_one :
     (1 : Submodule B L) ≤ 1ᵛ := by
-  rw [le_traceDual_iff_map_le_one, mul_one]
+  rw [le_traceDual_iff_map_le_one, mul_one, one_eq_range]
   rintro _ ⟨x, ⟨x, rfl⟩, rfl⟩
+  rw [mem_one]
   apply IsIntegrallyClosed.isIntegral_iff.mp
   apply isIntegral_trace
   rw [IsIntegralClosure.isIntegral_iff (A := B)]
@@ -262,7 +263,7 @@ variable {A K L B}
 
 lemma mem_dual (hI : I ≠ 0) {x} :
     x ∈ dual A K I ↔ ∀ a ∈ I, traceForm K L x a ∈ (algebraMap A K).range := by
-  rw [dual, dif_neg hI]; rfl
+  rw [dual, dif_neg hI]; exact forall₂_congr fun _ _ ↦ mem_one
 
 variable (A K)
 
@@ -300,6 +301,7 @@ lemma le_dual_inv_aux (hI : I ≠ 0) (hIJ : I * J ≤ 1) :
     J ≤ dual A K I := by
   rw [dual, dif_neg hI]
   intro x hx y hy
+  rw [mem_one]
   apply IsIntegrallyClosed.isIntegral_iff.mp
   apply isIntegral_trace
   rw [IsIntegralClosure.isIntegral_iff (A := B)]
@@ -412,7 +414,7 @@ lemma coeSubmodule_differentIdeal_fractionRing
   simp only [← one_div, FractionalIdeal.val_eq_coe] at this
   rw [FractionalIdeal.coe_div (FractionalIdeal.dual_ne_zero _ _ _),
     FractionalIdeal.coe_dual] at this
-  · simpa only [FractionalIdeal.coe_one] using this
+  · simpa only [FractionalIdeal.coe_one, Submodule.one_eq_range] using this
   · exact one_ne_zero
   · exact one_ne_zero
 
@@ -559,7 +561,7 @@ lemma conductor_mul_differentIdeal [NoZeroSMulDivisors A B]
     derivative_map, aeval_map_algebraMap, aeval_algebraMap_apply, mul_assoc,
     FractionalIdeal.mem_one_iff, forall_exists_index, forall_apply_eq_imp_iff]
   simp_rw [← IsScalarTower.toAlgHom_apply A B L x, ← AlgHom.map_adjoin_singleton]
-  simp only [Subalgebra.mem_map, IsScalarTower.coe_toAlgHom',
+  simp only [Subalgebra.mem_map, IsScalarTower.coe_toAlgHom', Submodule.one_eq_range,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, ← _root_.map_mul]
   exact ⟨fun H b ↦ (mul_one b) ▸ H b 1 (one_mem _), fun H _ _ _ ↦ H _⟩
 

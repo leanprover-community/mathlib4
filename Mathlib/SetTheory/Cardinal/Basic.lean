@@ -141,7 +141,8 @@ theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
-@[simp]
+/-- Avoid using `Quotient.mk` to construct a `Cardinal` directly -/
+@[deprecated (since := "2024-10-24")]
 theorem mk'_def (α : Type u) : @Eq Cardinal ⟦α⟧ #α :=
   rfl
 
@@ -266,6 +267,10 @@ theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
 theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
   inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
+theorem out_lift_equiv (a : Cardinal.{u}) : Nonempty ((lift.{v} a).out ≃ a.out) := by
+  rw [← mk_out a, ← mk_uLift, mk_out]
+  exact ⟨outMkEquiv.trans Equiv.ulift⟩
+
 @[simp]
 lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
   rw [← mk_uLift, Cardinal.eq]
@@ -276,9 +281,7 @@ lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s)
   exact Equiv.ofBijective f this
 
 theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
-  trans
-  · rw [← Quotient.out_eq c, ← Quotient.out_eq c']
-  · rw [mk'_def, mk'_def, le_def]
+  conv_lhs => rw [← Cardinal.mk_out c, ← Cardinal.mk_out c', le_def]
 
 theorem lift_mk_le {α : Type v} {β : Type w} :
     lift.{max u w} #α ≤ lift.{max u v} #β ↔ Nonempty (α ↪ β) :=
@@ -1474,6 +1477,7 @@ theorem nat_lt_aleph0 (n : ℕ) : (n : Cardinal.{u}) < ℵ₀ :=
 @[simp]
 theorem one_lt_aleph0 : 1 < ℵ₀ := by simpa using nat_lt_aleph0 1
 
+@[simp]
 theorem one_le_aleph0 : 1 ≤ ℵ₀ :=
   one_lt_aleph0.le
 
@@ -1757,6 +1761,13 @@ theorem mk_punit : #PUnit = 1 :=
 
 theorem mk_unit : #Unit = 1 :=
   mk_punit
+
+@[simp] theorem mk_additive : #(Additive α) = #α := rfl
+
+@[simp] theorem mk_multiplicative : #(Multiplicative α) = #α := rfl
+
+@[to_additive (attr := simp)] theorem mk_mulOpposite : #(MulOpposite α) = #α :=
+  mk_congr MulOpposite.opEquiv.symm
 
 theorem mk_singleton {α : Type u} (x : α) : #({x} : Set α) = 1 :=
   mk_eq_one _

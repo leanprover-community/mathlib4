@@ -786,7 +786,6 @@ theorem _root_.QuadraticMap.polarBilin_injective (h : IsUnit (2 : R)) :
 section
 
 variable {N' : Type*} [AddCommGroup N'] [Module R N']
-variable [CommRing S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 theorem _root_.QuadraticMap.polarBilin_comp (Q : QuadraticMap R N' N) (f : M →ₗ[R] N') :
     polarBilin (Q.comp f) = LinearMap.compl₁₂ (polarBilin Q) f f :=
@@ -1270,7 +1269,7 @@ theorem basisRepr_apply [Fintype ι] {v : Basis ι R M} (Q : QuadraticMap R M N)
   rw [← v.equivFun_symm_apply]
   rfl
 
-variable [Fintype ι] {v : Basis ι R M}
+variable [Fintype ι]
 
 section
 
