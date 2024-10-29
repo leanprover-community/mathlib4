@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.CategoryTheory.Comma.Over
 
 /-!
 # Typeclasses for `S`-objects and `S`-morphisms
@@ -100,5 +101,8 @@ instance [OverClass X S]
     [OverClass X S'] [CanonicallyOverClass Y S] [OverClass Y S'] [OverClass S S']
     [IsOverTower X S S'] [IsOverTower Y S S'] [HomIsOver f S] : HomIsOver f S' :=
   isOver_of_isOverTower f S S'
+
+/-- Bundle `X` with an `OverClass X S` instance into `Over S`. -/
+def OverClass.asOver [OverClass X S] : Over S := Over.mk (X ↘ S)
 
 end CategoryTheory
