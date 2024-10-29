@@ -89,6 +89,7 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
           simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true]
           exact congrFun rfl
 
+set_option synthInstance.maxHeartbeats 25000 in
 lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     IntermediateField.fixedField L.fixingSubgroup = L := by
   letI : IsGalois L K := inferInstance
@@ -104,7 +105,8 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     have : ⟨x, mem⟩ ∈ (⊥ : IntermediateField L Lx) := by
       rw [← this, IntermediateField.mem_fixedField_iff]
       intro f _
-      rcases restrictNormalHom_surjective (K₁ := Lx) K f with ⟨σ,hσ⟩
+      have := restrictNormalHom_surjective (K₁ := Lx) K f
+      rcases this with ⟨σ,hσ⟩
       apply Subtype.val_injective
       rw [← hσ, restrictNormalHom_apply Lx.1 σ ⟨x, mem⟩]
       have := id <| (IntermediateField.fixingSubgroupEquiv L).symm σ
