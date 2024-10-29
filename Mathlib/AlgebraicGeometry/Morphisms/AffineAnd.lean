@@ -80,7 +80,7 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
       · rintro - ⟨r, hr, rfl⟩
         simp_rw [Scheme.preimage_basicOpen] at hf
         exact (hf ⟨r, hr⟩).left
-    refine ⟨inferInstance, hQs.ofIsLocalization hPi (f.app ⊤) s hs fun a ↦ ?_⟩
+    refine ⟨inferInstance, hQs.ofIsLocalization' hPi (f.app ⊤) s hs fun a ↦ ?_⟩
     refine ⟨Γ(Y, Y.basicOpen a.val), Γ(X, X.basicOpen (f.app ⊤ a.val)), inferInstance,
       inferInstance, inferInstance, inferInstance, inferInstance, ?_, ?_⟩
     · exact (isAffineOpen_top X).isLocalization_basicOpen (f.app ⊤ a.val)
@@ -119,14 +119,15 @@ variable {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop
 /-- If `P` is a morphism property affine locally defined by `affineAnd Q`, `P` is stable under
 composition if `Q` is. -/
 lemma HasAffineProperty.affineAnd_isStableUnderComposition {P : MorphismProperty Scheme.{u}}
-    [HasAffineProperty P (affineAnd Q)] (hQ : RingHom.StableUnderComposition Q) :
+    (hA : HasAffineProperty P (affineAnd Q)) (hQ : RingHom.StableUnderComposition Q) :
     P.IsStableUnderComposition where
   comp_mem {X Y Z} f g hf hg := by
+    haveI := hA
     wlog hZ : IsAffine Z
     · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
       intro U
       rw [morphismRestrict_comp]
-      exact this hQ _ _ (IsLocalAtTarget.restrict hf _) (IsLocalAtTarget.restrict hg _) U.2
+      exact this hA hQ _ _ (IsLocalAtTarget.restrict hf _) (IsLocalAtTarget.restrict hg _) hA U.2
     rw [HasAffineProperty.iff_of_isAffine (P := P) (Q := (affineAnd Q))] at hg
     obtain ⟨hY, hg⟩ := hg
     rw [HasAffineProperty.iff_of_isAffine (P := P) (Q := (affineAnd Q))] at hf
@@ -137,7 +138,7 @@ lemma HasAffineProperty.affineAnd_isStableUnderComposition {P : MorphismProperty
 /-- If `P` is a morphism property affine locally defined by `affineAnd Q`, `P` is stable under
 base change if `Q` is. -/
 lemma HasAffineProperty.affineAnd_stableUnderBaseChange {P : MorphismProperty Scheme.{u}}
-    [HasAffineProperty P (affineAnd Q)] (hQi : RingHom.RespectsIso Q)
+    (_ : HasAffineProperty P (affineAnd Q)) (hQi : RingHom.RespectsIso Q)
     (hQb : RingHom.StableUnderBaseChange Q) :
     P.StableUnderBaseChange :=
   HasAffineProperty.stableUnderBaseChange
@@ -146,7 +147,7 @@ lemma HasAffineProperty.affineAnd_stableUnderBaseChange {P : MorphismProperty Sc
 /-- If `Q` contains identities and respects isomorphisms (i.e. is satisfied by isomorphisms),
 and `P` is affine locally defined by `affineAnd Q`, then `P` contains identities. -/
 lemma HasAffineProperty.affineAnd_containsIdentities {P : MorphismProperty Scheme.{u}}
-    [HasAffineProperty P (affineAnd Q)] (hQi : RingHom.RespectsIso Q)
+    (hA : HasAffineProperty P (affineAnd Q)) (hQi : RingHom.RespectsIso Q)
     (hQ : RingHom.ContainsIdentities Q) :
     P.ContainsIdentities where
   id_mem X := by
@@ -169,12 +170,12 @@ lemma HasAffineProperty.affineAnd_iff (P : MorphismProperty Scheme.{u})
     rw [targetAffineLocally_affineAnd_iff hQi, h f, forall_and]
 
 lemma HasAffineProperty.affineAnd_le_isAffineHom (P : MorphismProperty Scheme.{u})
-    [HasAffineProperty P (affineAnd Q)] : P ≤ @IsAffineHom := by
+    (hA : HasAffineProperty P (affineAnd Q)) : P ≤ @IsAffineHom := by
   intro X Y f hf
   wlog hY : IsAffine Y
   · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsAffineHom) _ (iSup_affineOpens_eq_top _)]
     intro U
-    exact this P _ (IsLocalAtTarget.restrict hf _) U.2
+    exact this P hA _ (IsLocalAtTarget.restrict hf _) U.2
   rw [HasAffineProperty.iff_of_isAffine (P := P) (Q := (affineAnd Q))] at hf
   rw [HasAffineProperty.iff_of_isAffine (P := @IsAffineHom)]
   exact hf.1
