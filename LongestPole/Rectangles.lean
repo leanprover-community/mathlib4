@@ -102,6 +102,11 @@ def all : ∀ {n} (_ : Fin n → Bool), Bool
   | 0, _ => true
   | (n + 1), f => f ⟨0, by omega⟩ && all (f ∘ Fin.succ)
 
+-- make tail-recursive
+def find? : ∀ {n} (_ : Fin n → Bool), Option (Fin n)
+  | 0, _ => none
+  | (n + 1), f => if f ⟨0, by omega⟩ then some ⟨0, by omega⟩ else (find? (f ∘ Fin.succ)).map Fin.succ
+
 end Fin
 
 namespace BitVec
@@ -118,6 +123,9 @@ def filterMap {w} (xs : BitVec w) {α} (f : Fin w → Option α) : List α :=
     | some a => a :: acc
     | none => acc
     else acc
+
+def find? {w} (xs : BitVec w) (p : Fin w → Bool) : Option (Fin w) :=
+  Fin.find? fun i => xs[i] && p i
 
 def foldr {w} {α} (xs : BitVec w) (f : Fin w → α → α) (init : α) : α :=
   Fin.foldr w (init := init) fun i acc => if xs[i] then f i acc else acc
@@ -203,24 +211,30 @@ def area (r : GeneralizedRectangle n) : Nat := r.xs.popCount * r.ys.popCount
 
 end GeneralizedRectangle
 
+variable {n : Nat}
+
 /-- Find all (inclusion-)maximal generalized rectangles contained within `xs`. -/
-partial def maximalGeneralizedRectangles {n} (pts : NatNatSet n) : List (GeneralizedRectangle n) :=
-  go [] (pts.map fun x y => GeneralizedRectangle.singleton x y)
+partial def maximalGeneralizedRectangles (pts : NatNatSet n) : List (GeneralizedRectangle n) :=
+  go [] [(n, GeneralizedRectangle.mk 0 (.allOnes _))]
 where
-  go (maximal : List (GeneralizedRectangle n)) (queue : List (GeneralizedRectangle n)) :
+  go (maximal : List (GeneralizedRectangle n)) (queue : List (Nat × GeneralizedRectangle n)) :
     List (GeneralizedRectangle n) :=
   match queue with
-  | [] => maximal
-  | r :: rs =>
-    if maximal.any (r ≤ ·) then
-      go maximal rs
+  | [] => maximal.pwFilter (fun r₁ r₂ => (! r₁ ≤ r₂) && (! r₂ ≤ r₁))
+  | (k, r) :: rs =>
+    let next := (List.range k).filterMap fun i =>
+      let ys := r.ys &&& pts.points[i]!
+      if ys = 0 then none else some (i, { xs := r.xs ||| BitVec.twoPow n i, ys := ys })
+    if next.isEmpty then
+      if maximal.any (r ≤ ·) then
+        go maximal rs
+      else
+        go (r :: maximal.filter (! · ≤ r)) rs
     else
-      match r.expansionsWithin pts with
-      | [] => go (r :: maximal) rs
-      | rs' => go maximal (rs' ++ rs)
+      go maximal (next ++ rs)
 
 def board := NatNatSet.ofList 3 [(0, 0), (1, 0), (0, 1), (1, 1), (2, 0), (0, 2), (2, 1), (2, 2)]
 
-/-- info: [{ xs := 0x5#3, ys := 0x7#3 }, { xs := 0x7#3, ys := 0x3#3 }] -/
+/-- info: [{ xs := 0x7#3, ys := 0x3#3 }, { xs := 0x5#3, ys := 0x7#3 }] -/
 #guard_msgs in
 #eval maximalGeneralizedRectangles board

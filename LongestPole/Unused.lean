@@ -107,30 +107,18 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
     IO.FS.writeFile output (formatTable headings rows.toArray)
 
     let data := unused.bind fun (m, u) => u.map fun n => (modules.indexOf m, modules.indexOf n)
-    let rectangles := maximalRectangles data
+    let rectangles := maximalGeneralizedRectangles (NatNatSet.ofList modules.length data)
       |>.map (fun r => (r, r.area))
       -- Prefer rectangles with larger areas.
       |>.mergeSort (fun r₁ r₂ => r₁.2 > r₂.2)
-      -- The `lake exe graph` command we print only depends on the top-right corner, so deduplicate.
-      |>.pwFilter (fun r₁ r₂ => (r₁.1.top, r₂.1.right) ≠ (r₂.1.top, r₁.1.right))
       |>.take n
 
     for (i, (r, _)) in rectangles.enum do
-      -- We use `--from top` so that the graph starts at the module immediately *before*
-      -- the block of unused imports. This is useful for deciding how a split should be made.
-      -- We use `--to (right-1)` so that the graph ends at the earliest of the modules
-      -- which do not make use of any of the unused block.
-      -- Note that this means that the later modules which do not use the block are not displayed,
-      -- and in particular it is not possible to see from the graph the size of the later block
-      -- which makes no use of the earlier unused block.
-      -- Perhaps modifying `to` to allow multiple modules,
-      -- and highlighting all of these in some way, would be a useful addition.
-      let from_idx := min r.top (modules.length - 1)
-      let to_idx := r.right - 1
+      let from_ := ",".intercalate (r.xs.map fun i => modules[i]!.toString)
+      let to_ := ",".intercalate (r.ys.map fun i => modules[i]!.toString)
       let excludeMetaFlag := if excludeMeta then "--exclude-meta " else ""
       IO.println
-        s!"lake exe graph --from {modules[from_idx]!} --to {modules[to_idx]!} {excludeMetaFlag}\
-             unused{i}.pdf"
+        s!"lake exe graph --from {from_} --to {to_} {excludeMetaFlag}unused{i}.pdf"
 
     return 0
 
