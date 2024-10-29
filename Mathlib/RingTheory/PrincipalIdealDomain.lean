@@ -72,11 +72,11 @@ end
 
 namespace Submodule.IsPrincipal
 
-variable [AddCommGroup M]
+variable [AddCommMonoid M]
 
-section Ring
+section Semiring
 
-variable [Ring R] [Module R M]
+variable [Semiring R] [Module R M]
 
 /-- `generator I`, if `I` is a principal submodule, is an `x ∈ M` such that `span R {x} = I` -/
 noncomputable def generator (S : Submodule R M) [S.IsPrincipal] : M :=
@@ -103,7 +103,14 @@ theorem mem_iff_eq_smul_generator (S : Submodule R M) [S.IsPrincipal] {x : M} :
 theorem eq_bot_iff_generator_eq_zero (S : Submodule R M) [S.IsPrincipal] :
     S = ⊥ ↔ generator S = 0 := by rw [← @span_singleton_eq_bot R M, span_singleton_generator]
 
-end Ring
+protected lemma FG {S : Submodule R M} (h : S.IsPrincipal) : S.FG :=
+  ⟨{h.generator}, by simp only [Finset.coe_singleton, span_singleton_generator]⟩
+
+instance _root_.IsNoetherianRing.of_isPrincipalIdealRing [IsPrincipalIdealRing R] :
+    IsNoetherianRing R where
+  noetherian S := (IsPrincipalIdealRing.principal S).FG
+
+end Semiring
 
 section CommRing
 
