@@ -100,4 +100,3 @@ instance : IsFractionRing (R ⧸ I) I.ResidueField where
       IsLocalization.AtPrime.to_map_mem_maximal_iff _ I, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem] at e
     use 1
     simp [e]
-#min_imports
