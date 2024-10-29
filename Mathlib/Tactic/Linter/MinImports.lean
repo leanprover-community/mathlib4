@@ -137,8 +137,8 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
       minImportsRef.modify ({· with minImports := currImports, importSize := newCumulImps})
       let new := currImpArray.filter (!importsSoFar.contains ·)
       let redundant := importsSoFar.toArray.filter (!currImports.contains ·)
-      -- to make `test` files more stable, we suppress the exact count of import changes in
-      -- modules whose path starts with `test`
+      -- to make `test` files more stable, we suppress the exact count of import changes if
+      -- the `linter.minImports.increases` option is `false`
       let count :=  if Linter.getLinterValue linter.minImports.increases (← getOptions) then
                       m!"{newCumulImps - oldCumulImps}"
                     else
