@@ -193,8 +193,8 @@ variable {f : M₁ →ₗ[A] M₂} {g : M₂ →ₗ[A] M₃}
 of `M₃` that is obtained from a presentation `pres₂` of `M₂`, a choice of generators
 `g₁ : ι → M₁` of `M₁`, and an additional data in a `Presentation.CokernelData` structure. -/
 noncomputable def ofExact : Presentation A M₃ :=
-  ofIsPresentation ((pres₂.cokernel data hg₁).ofLinearEquiv
-    (LinearEquiv.ofExactOfSurjective hfg hg))
+  (pres₂.cokernel data hg₁).ofLinearEquiv
+    (LinearEquiv.ofExactOfSurjective hfg hg)
 
 end OfExact
 
