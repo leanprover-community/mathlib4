@@ -40,19 +40,19 @@ overhead if a user does not need them.
 * class `Quantale`: a semigroup distributing over a complete lattice, i.e satisfying
   `x * (sSup s) = ⨆ y ∈ s, x * y` and `(sSup s) * y = ⨆ x ∈ s, x * y`;
 
-* mix-in class `IsIntegral`: a unital quantale (i.e. a quantale in which the semigroup is
-  a monoid) is called integral, or strictly two-sided, when `⊤ = 1`;
+* `IsIntegralQuantale`: Typeclass mixin for a unital quantale (i.e. a quantale in which the
+  semigroup is a monoid) respecting `⊤ = 1` (also called a two-sided quantale);
 
 * next to these classes, we define the additive versions `AddQuantale`, `IsAddIntegral` in
-  which the semigroup is denoted `+` i.s.o. `*`;
+  which the semigroup operation is denoted by addition instead of multiplication;
 
 ## Naming conventions
 
 ## Notation
 
-* `x ⇨ₗ y` : `sSup { z | z * x ≤ y }`, the left-residuation of `y` over `x`;
+* `x ⇨ₗ y` : `sSup { z | z * x ≤ y }`, the leftResiduation of `y` over `x`;
 
-* `x ⇨ᵣ y` : `sSup { z | x * z ≤ y }`, the right-residuation of `y` over `x`;
+* `x ⇨ᵣ y` : `sSup { z | x * z ≤ y }`, the rightResiduation of `y` over `x`;
 
 ## References
 
@@ -60,12 +60,10 @@ overhead if a user does not need them.
 <https://encyclopediaofmath.org/wiki/Quantale>
 <https://ncatlab.org/nlab/show/quantale>
 
-## TODO
-
 -/
 
 /-- An additive quantale is an additive semigroup distributing over a complete lattice. -/
-class AddQuantale (α : Type*) [AddSemigroup α] extends CompleteLattice α where
+class AddQuantale (α : Type _) [AddSemigroup α] extends CompleteLattice α where
   /-- Addition is distributive over join in a quantale -/
   protected add_sSup_eq_iSup_add (x : α) (s : Set α) : x + sSup s = ⨆ y ∈ s, x + y
   /-- Addition is distributive over join in a quantale -/
@@ -73,7 +71,7 @@ class AddQuantale (α : Type*) [AddSemigroup α] extends CompleteLattice α wher
 
 /-- A quantale is a semigroup distributing over a complete lattice. -/
 @[to_additive]
-class Quantale (α : Type*) [Semigroup α] extends CompleteLattice α where
+class Quantale (α : Type _) [Semigroup α] extends CompleteLattice α where
   /-- Multiplication is distributive over join in a quantale -/
   protected mul_sSup_eq_iSup_mul (x : α) (s : Set α) : x * sSup s = ⨆ y ∈ s, x * y
   /-- Multiplication is distributive over join in a quantale -/
@@ -81,14 +79,14 @@ class Quantale (α : Type*) [Semigroup α] extends CompleteLattice α where
 
 /-- An integral (or strictly two-sided) additive quantale is a quantale over an additive monoid
     where top and unit coincide. -/
-class IsIntegralAddQuantale (α : Type*) [AddMonoid α] [AddQuantale α] : Prop where
+class IsIntegralAddQuantale (α : Type _) [AddMonoid α] [AddQuantale α] : Prop where
   /-- Top and unit coincide in an integral (or strictly two-sided) quantale -/
   protected top_eq_zero : (⊤ : α) = 0
 
 /-- An integral (or strictly two-sided) quantale is a quantale over a monoid where
     top and unit coincide. -/
 @[to_additive]
-class IsIntegralQuantale (α : Type*) [Monoid α] [Quantale α] : Prop where
+class IsIntegralQuantale (α : Type _) [Monoid α] [Quantale α] : Prop where
   /-- Top and unit coincide in an integral (or strictly two-sided) quantale -/
   protected top_eq_one : (⊤ : α) = 1
 
@@ -120,7 +118,7 @@ end IsIntegral
 
 namespace Quantale
 
-variable {α : Type*}
+variable {α : Type _}
 variable [Semigroup α] [Quantale α]
 
 /-- Left- and right- residuation operators on an additive quantale are similar to the Heyting

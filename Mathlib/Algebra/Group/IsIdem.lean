@@ -25,7 +25,7 @@ class IsIdemAddSemigroup (G : Type _) [AddSemigroup G] : Prop where
 @[to_additive]
 class IsIdemSemigroup (G : Type _) [Semigroup G] : Prop where
   /-- Idempotence: `x * x = x` -/
-  protected mul_idem : ∀ x : G, x * x = x
+  protected mul_idem (x : G) : x * x = x
 
 section IsIdem
 
