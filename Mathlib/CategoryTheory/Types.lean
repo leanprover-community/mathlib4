@@ -117,7 +117,7 @@ lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
   s.property f
 
 lemma sections_ext_iff {F : J ⥤ Type w} {x y : F.sections} : x = y ↔ ∀ j, x.val j = y.val j :=
-  Subtype.ext_iff.trans Function.funext_iff
+  Subtype.ext_iff.trans funext_iff
 
 variable (J)
 

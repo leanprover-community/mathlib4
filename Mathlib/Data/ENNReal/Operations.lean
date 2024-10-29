@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.ENNReal.Basic
+import Mathlib.Data.NNReal.Basic
 
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers
@@ -39,10 +39,10 @@ theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := by
     ↑(a * b) < ↑(a' * b') := coe_lt_coe.2 (mul_lt_mul₀ aa' bb')
     _ ≤ c * d := mul_le_mul' a'c.le b'd.le
 
--- TODO: generalize to `CovariantClass α α (· * ·) (· ≤ ·)`
+-- TODO: generalize to `MulLeftMono α`
 theorem mul_left_mono : Monotone (a * ·) := fun _ _ => mul_le_mul' le_rfl
 
--- TODO: generalize to `CovariantClass α α (swap (· * ·)) (· ≤ ·)`
+-- TODO: generalize to `MulRightMono α`
 theorem mul_right_mono : Monotone (· * a) := fun _ _ h => mul_le_mul' h le_rfl
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
@@ -143,8 +143,8 @@ protected theorem add_lt_add_of_le_of_lt : a ≠ ∞ → a ≤ b → c < d → a
 protected theorem add_lt_add_of_lt_of_le : c ≠ ∞ → a < b → c ≤ d → a + c < b + d :=
   WithTop.add_lt_add_of_lt_of_le
 
-instance contravariantClass_add_lt : ContravariantClass ℝ≥0∞ ℝ≥0∞ (· + ·) (· < ·) :=
-  WithTop.contravariantClass_add_lt
+instance addLeftReflectLT : AddLeftReflectLT ℝ≥0∞ :=
+  WithTop.addLeftReflectLT
 
 theorem lt_add_right (ha : a ≠ ∞) (hb : b ≠ 0) : a < a + b := by
   rwa [← pos_iff_ne_zero, ← ENNReal.add_lt_add_iff_left ha, add_zero] at hb
@@ -406,7 +406,7 @@ theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc :
     (cancel_of_ne <| ne_top_of_le_ne_top ha hc) hb hc
 
 theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
-  rcases le_or_lt a b with hab | hab; · simp [hab, mul_right_mono hab]
+  rcases le_or_lt a b with hab | hab; · simp [hab, mul_right_mono hab, tsub_eq_zero_of_le]
   rcases eq_or_lt_of_le (zero_le b) with (rfl | hb); · simp
   exact (cancel_of_ne <| mul_ne_top hab.ne_top (h hb hab)).tsub_mul
 
