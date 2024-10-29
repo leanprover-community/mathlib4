@@ -170,7 +170,7 @@ the `AddMonoid`."]
 instance [Repr α] : Repr αˣ :=
   ⟨reprPrec ∘ val⟩
 
-variable (a b c : αˣ) {u : αˣ}
+variable (a b : αˣ) {u : αˣ}
 
 @[to_additive (attr := simp, norm_cast)]
 theorem val_mul : (↑(a * b) : α) = a * b :=
@@ -477,7 +477,7 @@ theorem mul_iff [CommMonoid M] {x y : M} : IsUnit (x * y) ↔ IsUnit x ∧ IsUni
 
 section Monoid
 
-variable [Monoid M] {a b c : M}
+variable [Monoid M] {a : M}
 
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. When
 `α` is a `DivisionMonoid`, use `IsUnit.unit'` instead. -/
@@ -577,7 +577,7 @@ protected lemma mul_div_mul_right (h : IsUnit c) (a b : α) : a * c / (b * c) = 
 end DivisionMonoid
 
 section DivisionCommMonoid
-variable [DivisionCommMonoid α] {a b c d : α}
+variable [DivisionCommMonoid α] {a c : α}
 
 @[to_additive]
 protected lemma div_mul_cancel_left (h : IsUnit a) (b : α) : a / (a * b) = b⁻¹ := by

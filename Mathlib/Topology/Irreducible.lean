@@ -212,6 +212,11 @@ instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology
     simpa only [compl_union, compl_compl] using ((hu hu').union (hv hv')).infinite_compl.nonempty
   toNonempty := (inferInstance : Nonempty X)
 
+theorem irreducibleComponents_eq_singleton [IrreducibleSpace X] :
+    irreducibleComponents X = {univ} :=
+  Set.ext fun _ ↦ IsGreatest.maximal_iff (s := IsIrreducible (X := X))
+    ⟨IrreducibleSpace.isIrreducible_univ X, fun _ _ ↦ Set.subset_univ _⟩
+
 /-- A set `s` is irreducible if and only if
 for every finite collection of open sets all of whose members intersect `s`,
 `s` also intersects the intersection of the entire collection
@@ -292,7 +297,7 @@ theorem IsPreirreducible.interior (ht : IsPreirreducible t) : IsPreirreducible (
   ht.open_subset isOpen_interior interior_subset
 
 theorem IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
-    (hf : OpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
+    (hf : IsOpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
   rintro U V hU hV ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
   obtain ⟨_, h₁, ⟨y, h₂, rfl⟩, ⟨y', h₃, h₄⟩⟩ :=
     ht _ _ (hf.isOpenMap _ hU) (hf.isOpenMap _ hV) ⟨f x, hx, Set.mem_image_of_mem f hx'⟩

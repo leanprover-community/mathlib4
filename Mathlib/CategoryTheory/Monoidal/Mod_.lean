@@ -57,7 +57,6 @@ instance : Category (Mod_ A) where
   id := id
   comp f g := comp f g
 
--- Porting note (#5229): added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Mod_ A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f₁ = f₂ :=
   Hom.ext h
