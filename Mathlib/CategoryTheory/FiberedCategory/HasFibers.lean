@@ -30,8 +30,7 @@ Here is an example of when this typeclass is useful. Suppose we have a presheaf 
 `F : 𝒮ᵒᵖ ⥤ Type _`. The associated fibered category then has objects `(S, a)` where `S : 𝒮` and `a`
 is an element of `F(S)`. The fiber category `Fiber p S` is then equivalent to the discrete category
 `Fib S` with objects `a` in `F(S)`. In this case, the `HasFibers` instance is given by the
-categories `F(S)` and the functor `ι` sends `a : F(S)` to `(S, a)` in the fibered category. See
-`Presheaf.lean` for more details.
+categories `F(S)` and the functor `ι` sends `a : F(S)` to `(S, a)` in the fibered category.
 
 ## Main API
 The following API is developed so that the fibers from a `HasFibers` instance can be used
@@ -79,7 +78,7 @@ namespace HasFibers
 @[default_instance]
 instance canonical (p : 𝒳 ⥤ 𝒮) : HasFibers p where
   Fib := Fiber p
-  ι S := @fiberInclusion _ _ _ _ p S
+  ι S := fiberInclusion
   comp_const S := fiberInclusion_comp_eq_const
   equiv S := by exact isEquivalence_of_iso (F := 𝟭 (Fiber p S)) (Iso.refl _)
 
@@ -87,7 +86,7 @@ section
 
 variable (p : 𝒳 ⥤ 𝒮) [HasFibers p] (S : 𝒮)
 
-instance : Category (Fib p S) := isCategory S
+attribute [instance] isCategory
 
 /-- The induced functor from `Fib p S` to the standard fiber. -/
 @[simps!]
