@@ -4079,7 +4079,6 @@ import Mathlib.RingTheory.Ideal.Pointwise
 import Mathlib.RingTheory.Ideal.Prime
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
-import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Ideal.Span
 import Mathlib.RingTheory.Idempotents
