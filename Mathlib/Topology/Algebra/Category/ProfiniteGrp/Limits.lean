@@ -44,7 +44,7 @@ noncomputable def OpenNormalSubgroupSubOpenNhdsOfOne {G : Type*} [Group G] [Topo
     (UOpen : IsOpen U) (einU : 1 ∈ U) : OpenNormalSubgroup G :=
   let h := Classical.choose_spec ((Filter.HasBasis.mem_iff'
     ((nhds_basis_clopen (1 : G))) U ).mp <| mem_nhds_iff.mpr (by use U))
-  OpenNormalSubgroupSubClopenNhdsOfOne h.1.2 h.1.1
+  OpenNormalSubgroupSubClopenNhdsOfOne h.1.2
 
 theorem openNormalSubgroupSubOpenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] [TotallyDisconnectedSpace G] {U : Set G}
