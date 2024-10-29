@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 
 /-!
-# End and coends
+# Ends and coends
 
 In this file, given a functor `F : Jᵒᵖ ⥤ J ⥤ C`, we define its end `end_ F`,
 which is a suitable multiequalizer of the objects `(F.obj (op j)).obj j` for all `j : J`.
