@@ -35,9 +35,9 @@ instance [Nonempty α] : Infinite (FreeGroup α) := by
 instance [Nonempty α] : Infinite (FreeAbelianGroup α) :=
   (FreeAbelianGroup.equivFinsupp α).toEquiv.infinite_iff.2 inferInstance
 
-instance [Nonempty α] : Infinite (FreeRing α) := by unfold FreeRing; infer_instance
+instance : Infinite (FreeRing α) := by unfold FreeRing; infer_instance
 
-instance [Nonempty α] : Infinite (FreeCommRing α) := by unfold FreeCommRing; infer_instance
+instance : Infinite (FreeCommRing α) := by unfold FreeCommRing; infer_instance
 
 end Infinite
 
