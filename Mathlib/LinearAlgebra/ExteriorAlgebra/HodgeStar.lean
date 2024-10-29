@@ -44,6 +44,8 @@ noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) :
     {s : Finset I // Finset.card s = n} → ⋀[R]^n M :=
   fun ⟨s, hs⟩ => ιMulti (fun i => v (Finset.orderIsoOfFin s hs i))
 
+
+
 /-
 noncomputable def preForm (b : Basis I R M) (B : LinearMap.BilinForm R M)
   (s t : Finset I) (hs : Finset.card s = n) (ht : Finset.card t = n) : R :=
@@ -152,9 +154,15 @@ variable (B : LinearMap.BilinForm K V) (b : Basis I K V)
 
 local notation "⟪" x ", " y "⟫" => @inducedForm _ _ _ _ _ _ _ _ n B b x y
 
-theorem ortho_aux (s t : {a : Finset I // a.card = n}) (h : s ≠ t) :
-  ∃ (i : Fin n), (∀ (j : Fin n), 1=1) := by
+abbrev ind (s: {a : Finset I // a.card = n}) : Fin n → I :=
+  fun i ↦ (s.1.orderIsoOfFin s.2 i)
 
+variable (v : I → M) (s : {a : Finset I // a.card = n})
+#check ιMulti (fun x ↦ v (ind s x))
+#check ιMulti_family v s
+
+theorem ortho_aux (s t : {a : Finset I // a.card = n}) (h : s ≠ t) :
+  ∃ (i : Fin n), (∀ (j : Fin n), b (ind s i) ≠ b (ind t j)) := by
 
   sorry
 
