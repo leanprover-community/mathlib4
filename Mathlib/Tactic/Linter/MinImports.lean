@@ -128,8 +128,13 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
       minImportsRef.modify ({· with minImports := currImports, importSize := newCumulImps})
       let new := currImpArray.filter (!importsSoFar.contains ·)
       let redundant := importsSoFar.toArray.filter (!currImports.contains ·)
+      -- to make `test` files more stable, we suppress the exact count of import changes in
+      -- modules whose path starts with `test`
+      let count := m!"by {if (← getMainModule).getRoot == `test then
+                            m!"X"
+                          else m!"newCumulImps - oldCumulImps"}"
       Linter.logLint linter.minImports stx <|
-        m!"Imports increased by {newCumulImps - oldCumulImps} to\n{currImpArray}\n\n\
+        m!"Imports increased {count} to\n{currImpArray}\n\n\
           New imports: {new}\n" ++
             if redundant.isEmpty then m!"" else m!"\nNow redundant: {redundant}\n"
 
