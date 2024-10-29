@@ -13,6 +13,7 @@ import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.FieldTheory.SeparableDegree
+import Mathlib.FieldTheory.IntermediateField.Algebraic
 
 /-!
 # Krasner's Lemma
@@ -50,15 +51,15 @@ compatible with the one on `K`, then `IsKrasnerNorm K L` holds.
 - Show that $\mathbb{C}_p$ is algebraically closed.
 
 -/
-section PR
-variable {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
-    (M : IntermediateField K L)
+-- section PR
+-- variable {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
+--     (M : IntermediateField K L)
 
-instance : Algebra.IsAlgebraic K M := sorry
+-- instance : Algebra.IsAlgebraic K M := sorry
 
-instance : Algebra.IsAlgebraic M L := sorry
+-- instance : Algebra.IsAlgebraic M L := sorry
 
-end PR
+-- end PR
 def uniqueNormExtension (K L: Type*) [NormedCommRing K] [Field L] [Algebra K L]
     [Algebra.IsAlgebraic K L] :=
   ∃! (_ : NormedField L), ∀ (x : K), ‖x‖ = ‖algebraMap K L x‖
