@@ -442,11 +442,14 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
       set s
       return
     let usedVarNames := ← do
-      if #[``Command.instance, ``definition, ``Command.structure, ``Command.abbrev].contains decl[1].getKind then
-        getUsedVariableNames (decl.getPos?.getD default)
+      if #[``Command.instance, ``definition, ``Command.structure, ``Command.abbrev].contains
+        decl[1].getKind
+      then getUsedVariableNames (decl.getPos?.getD default)
       else if decl[1].getKind == ``Command.example then
         let toDef := exampleToDef decl `newName
-        elabCommand toDef
+        let newRStx : Syntax := stx.replaceM (m := Id)
+          (if · == decl then return some toDef else return none)
+        elabCommand newRStx
         let cinfo := ((← getEnv).find? ((← getCurrNamespace) ++ `newName)).getD default
         let (d, _) ← liftCoreM do Meta.MetaM.run do getForallStrings cinfo.type
         if Linter.getLinterValue showDefs (← getOptions) then
