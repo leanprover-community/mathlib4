@@ -9,7 +9,15 @@ import Mathlib.RingTheory.FreeCommRing
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Finsupp
 
-/-! # Cardinalities of free constructions -/
+/-!
+# Cardinalities of free constructions
+
+This file shows that all the free constructions over `α` have cardinality `max #α ℵ₀`,
+and are thus infinite.
+
+Combined with the ring `Fin n` for the finite cases, this lets us show that there is a `CommRing` of
+any cardinality.
+-/
 
 universe u
 variable (α : Type u)
