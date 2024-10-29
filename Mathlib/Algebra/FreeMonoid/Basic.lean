@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Group.List
-import Mathlib.Data.Finset.Basic
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Units.Basic
 
@@ -67,6 +66,9 @@ instance : CancelMonoid (FreeMonoid α) where
 
 @[to_additive]
 instance : Inhabited (FreeMonoid α) := ⟨1⟩
+
+@[to_additive]
+instance [IsEmpty α] : Unique (FreeMonoid α) := inferInstanceAs <| Unique (List α)
 
 @[to_additive (attr := simp)]
 theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
@@ -138,11 +140,14 @@ theorem length_eq_two {v : FreeMonoid α} :
 theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=
   List.length_append _ _
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem of_ne_one (a : α) : of a ≠ 1 := by
   intro h
   have := congrArg FreeMonoid.length h
   simp only [length_of, length_one, Nat.succ_ne_self] at this
+
+@[to_additive (attr := simp)]
+theorem one_ne_of (a : α) : 1 ≠ of a := of_ne_one _ |>.symm
 
 end Length
 
@@ -345,7 +350,27 @@ theorem map_comp (g : β → γ) (f : α → β) : map (g ∘ f) = (map g).comp 
 @[to_additive (attr := simp)]
 theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦ rfl
 
-theorem map_surjective (f : α → β) : Function.Surjective f → Function.Surjective (map f) := by
+/-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
+@[to_additive]
+instance uniqueUnits : Unique (FreeMonoid α)ˣ where
+  uniq u := Units.ext <| toList.injective <|
+    have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
+    (List.append_eq_nil.mp this).1
+
+@[to_additive (attr := simp)]
+theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Function.Surjective f := by
+  constructor
+  · intro fs d
+    rcases fs (FreeMonoid.of d) with ⟨b, hb⟩
+    induction' b using FreeMonoid.inductionOn' with head _ _
+    · have H := congr_arg length hb
+      simp only [length_one, length_of, Nat.zero_ne_one, map_one] at H
+    simp only [map_mul, map_of] at hb
+    use head
+    have H := congr_arg length hb
+    simp only [length_mul, length_of, add_right_eq_self, length_eq_zero] at H
+    rw [H, mul_one] at hb
+    exact FreeMonoid.of_injective hb
   intro fs d
   induction' d using FreeMonoid.inductionOn' with head tail ih
   · use 1
@@ -357,13 +382,6 @@ theorem map_surjective (f : α → β) : Function.Surjective f → Function.Surj
   rfl
 
 end Map
-
-/-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
-@[to_additive]
-instance uniqueUnits : Unique (FreeMonoid α)ˣ where
-  uniq u := Units.ext <| toList.injective <|
-    have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
-    (List.append_eq_nil.mp this).1
 
 /-! ### reverse -/
 

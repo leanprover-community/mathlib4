@@ -6,7 +6,7 @@ Authors: Hannah Fechtner
 
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.GroupTheory.Congruence.Basic
+import Mathlib.GroupTheory.Congruence.Hom
 
 /-!
 # Defining a monoid given by generators and relations
@@ -111,13 +111,13 @@ theorem closure_range_of (rels : FreeMonoid α → FreeMonoid α → Prop) :
 section ToMonoid
 variable {α M : Type*} [Monoid M] (f : α → M)
 variable {rels : FreeMonoid α → FreeMonoid α → Prop}
-variable (h : ∀ a b : FreeMonoid α, rels a b →  FreeMonoid.lift f a = FreeMonoid.lift f b)
+variable (h : ∀ a b : FreeMonoid α, rels a b → FreeMonoid.lift f a = FreeMonoid.lift f b)
 
 /-- The extension of a map `f : α → M` that satisfies the given relations to a monoid homomorphism
 from `PresentedMonoid rels → M`. -/
 @[to_additive "The extension of a map `f : α → M` that satisfies the given relations to an
 additive-monoid homomorphism from `PresentedAddMonoid rels → M`"]
-def toMonoid : MonoidHom (PresentedMonoid rels) M :=
+def toMonoid : PresentedMonoid rels →* M :=
   Con.lift _ (FreeMonoid.lift f) (Con.conGen_le h)
 
 @[to_additive]
@@ -126,7 +126,7 @@ theorem toMonoid.unique (g : MonoidHom (conGen rels).Quotient M)
   Con.lift_unique (proof_1 f h) g (FreeMonoid.hom_eq fun x ↦ let_fun this := hg x; this)
 
 @[to_additive (attr := simp)]
-theorem toMonoid.of {x : α} : (PresentedMonoid.toMonoid f h) (PresentedMonoid.of rels x) =
+theorem toMonoid.of {x : α} : toMonoid f h (of rels x) =
     f x := rfl
 
 end ToMonoid

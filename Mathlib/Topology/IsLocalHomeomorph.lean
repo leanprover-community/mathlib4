@@ -46,7 +46,7 @@ theorem isLocalHomeomorphOn_iff_isOpenEmbedding_restrict {f : X → Y} :
     exact ⟨e.source, e.open_source.mem_nhds hxe, e.isOpenEmbedding_restrict⟩
   · obtain ⟨U, hU, emb⟩ := h x hx
     have : IsOpenEmbedding ((interior U).restrict f) := by
-      refine emb.comp ⟨embedding_inclusion interior_subset, ?_⟩
+      refine emb.comp ⟨.inclusion interior_subset, ?_⟩
       rw [Set.range_inclusion]; exact isOpen_induced isOpen_interior
     obtain ⟨cont, inj, openMap⟩ := isOpenEmbedding_iff_continuous_injective_open.mp this
     haveI : Nonempty X := ⟨x⟩
@@ -212,10 +212,13 @@ theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injectiv
 alias openEmbedding_of_injective := isOpenEmbedding_of_injective
 
 /-- A surjective embedding is a homeomorphism. -/
-noncomputable def _root_.Embedding.toHomeomeomorph_of_surjective (hf : Embedding f)
+noncomputable def _root_.IsEmbedding.toHomeomorph_of_surjective (hf : IsEmbedding f)
     (hsurj : Function.Surjective f) : X ≃ₜ Y :=
   Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f ⟨hf.inj, hsurj⟩)
-    hf.continuous (hf.toIsOpenEmbedding_of_surjective hsurj).isOpenMap
+    hf.continuous (hf.isOpenEmbedding_of_surjective hsurj).isOpenMap
+
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.toHomeomeomorph_of_surjective := IsEmbedding.toHomeomorph_of_surjective
 
 /-- A bijective local homeomorphism is a homeomorphism. -/
 noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
@@ -237,7 +240,8 @@ theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
     {U : Set X | ∃ V : Set Y, IsOpen V ∧ ∃ s : C(V,X), f ∘ s = (↑) ∧ Set.range s = U} := by
   refine isTopologicalBasis_of_isOpen_of_nhds ?_ fun x U hx hU ↦ ?_
   · rintro _ ⟨U, hU, s, hs, rfl⟩
-    refine (isOpenEmbedding_of_comp hf (hs ▸ ⟨embedding_subtype_val, ?_⟩) s.continuous).isOpen_range
+    refine (isOpenEmbedding_of_comp hf (hs ▸ ⟨IsEmbedding.subtypeVal, ?_⟩)
+      s.continuous).isOpen_range
     rwa [Subtype.range_val]
   · obtain ⟨f, hxf, rfl⟩ := hf x
     refine ⟨f.source ∩ U, ⟨f.target ∩ f.symm ⁻¹' U, f.symm.isOpen_inter_preimage hU,

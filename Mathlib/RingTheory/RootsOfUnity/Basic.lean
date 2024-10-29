@@ -856,14 +856,14 @@ theorem nthRoots_one_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
 
 @[simp]
 theorem card_nthRootsFinset {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
-    (nthRootsFinset n R).card = n := by
+    #(nthRootsFinset n R) = n := by
   rw [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_one_nodup h), card_mk, h.card_nthRoots_one]
 
 open scoped Nat
 
 /-- If an integral domain has a primitive `k`-th root of unity, then it has `φ k` of them. -/
 theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
-    (primitiveRoots k R).card = φ k := by
+    #(primitiveRoots k R) = φ k := by
   by_cases h0 : k = 0
   · simp [h0]
   symm

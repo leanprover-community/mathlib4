@@ -205,6 +205,33 @@ theorem nhdsWithin_union (a : α) (s t : Set α) : 𝓝[s ∪ t] a = 𝓝[s] a �
   delta nhdsWithin
   rw [← inf_sup_left, sup_principal]
 
+theorem nhds_eq_nhdsWithin_sup_nhdsWithin (b : α) {I₁ I₂ : Set α} (hI : Set.univ = I₁ ∪ I₂) :
+    nhds b = nhdsWithin b I₁ ⊔ nhdsWithin b I₂ := by
+  rw [← nhdsWithin_univ b, hI, nhdsWithin_union]
+
+/-- If `L` and `R` are neighborhoods of `b` within sets whose union is `Set.univ`, then
+`L ∪ R` is a neighborhood of `b`. -/
+theorem union_mem_nhds_of_mem_nhdsWithin {b : α}
+    {I₁ I₂ : Set α} (h : Set.univ = I₁ ∪ I₂)
+    {L : Set α} (hL : L ∈ nhdsWithin b I₁)
+    {R : Set α} (hR : R ∈ nhdsWithin b I₂) : L ∪ R ∈ nhds b := by
+  rw [← nhdsWithin_univ b, h, nhdsWithin_union]
+  exact ⟨mem_of_superset hL (by aesop), mem_of_superset hR (by aesop)⟩
+
+
+/-- Writing a punctured neighborhood filter as a sup of left and right filters. -/
+lemma punctured_nhds_eq_nhdsWithin_sup_nhdsWithin [LinearOrder α] {x : α} :
+    𝓝[≠] x = 𝓝[<] x ⊔ 𝓝[>] x := by
+  rw [← Iio_union_Ioi, nhdsWithin_union]
+
+
+/-- Obtain a "predictably-sided" neighborhood of `b` from two one-sided neighborhoods. -/
+theorem nhds_of_Ici_Iic [LinearOrder α] {b : α}
+    {L : Set α} (hL : L ∈ 𝓝[≤] b)
+    {R : Set α} (hR : R ∈ 𝓝[≥] b) : L ∩ Iic b ∪ R ∩ Ici b ∈ 𝓝 b :=
+  union_mem_nhds_of_mem_nhdsWithin Iic_union_Ici.symm
+    (inter_mem hL self_mem_nhdsWithin) (inter_mem hR self_mem_nhdsWithin)
+
 theorem nhdsWithin_biUnion {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α) (a : α) :
     𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a :=
   Set.Finite.induction_on hI (by simp) fun _ _ hT ↦ by
@@ -834,6 +861,10 @@ theorem ContinuousOn.comp_continuous {g : β → γ} {f : α → β} {s : Set β
   rw [continuous_iff_continuousOn_univ] at *
   exact hg.comp hf fun x _ => hs x
 
+theorem ContinuousOn.image_comp_continuous {g : β → γ} {f : α → β} {s : Set α}
+    (hg : ContinuousOn g (f '' s)) (hf : Continuous f) : ContinuousOn (g ∘ f) s :=
+  hg.comp hf.continuousOn (s.mapsTo_image f)
+
 theorem ContinuousAt.comp₂_continuousWithinAt {f : β × γ → δ} {g : α → β} {h : α → γ} {x : α}
     {s : Set α} (hf : ContinuousAt f (g x, h x)) (hg : ContinuousWithinAt g s x)
     (hh : ContinuousWithinAt h s x) :
@@ -1064,36 +1095,50 @@ theorem Function.LeftInverse.map_nhds_eq {f : α → β} {g : β → α} {x : β
   simpa only [nhdsWithin_univ, image_univ] using
     (h.leftInvOn univ).map_nhdsWithin_eq (h x) (by rwa [image_univ]) hg.continuousWithinAt
 
-theorem Inducing.continuousWithinAt_iff {f : α → β} {g : β → γ} (hg : Inducing g) {s : Set α}
-    {x : α} : ContinuousWithinAt f s x ↔ ContinuousWithinAt (g ∘ f) s x := by
-  simp_rw [ContinuousWithinAt, Inducing.tendsto_nhds_iff hg]; rfl
+lemma IsInducing.continuousWithinAt_iff {f : α → β} {g : β → γ} (hg : IsInducing g)
+    {s : Set α} {x : α} : ContinuousWithinAt f s x ↔ ContinuousWithinAt (g ∘ f) s x := by
+  simp_rw [ContinuousWithinAt, hg.tendsto_nhds_iff]; rfl
 
-theorem Inducing.continuousOn_iff {f : α → β} {g : β → γ} (hg : Inducing g) {s : Set α} :
-    ContinuousOn f s ↔ ContinuousOn (g ∘ f) s := by
+@[deprecated (since := "2024-10-28")]
+alias Inducing.continuousWithinAt_iff := IsInducing.continuousWithinAt_iff
+
+lemma IsInducing.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsInducing g)
+    {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s := by
   simp_rw [ContinuousOn, hg.continuousWithinAt_iff]
 
-theorem Embedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : Embedding g) {s : Set α} :
-    ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
-  Inducing.continuousOn_iff hg.1
+@[deprecated (since := "2024-10-28")] alias Inducing.continuousOn_iff := IsInducing.continuousOn_iff
 
-theorem Embedding.map_nhdsWithin_eq {f : α → β} (hf : Embedding f) (s : Set α) (x : α) :
+lemma IsEmbedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsEmbedding g)
+    {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
+  hg.isInducing.continuousOn_iff
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.continuousOn_iff := IsEmbedding.continuousOn_iff
+
+lemma IsEmbedding.map_nhdsWithin_eq {f : α → β} (hf : IsEmbedding f) (s : Set α) (x : α) :
     map f (𝓝[s] x) = 𝓝[f '' s] f x := by
   rw [nhdsWithin, Filter.map_inf hf.inj, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
     inter_eq_self_of_subset_right (image_subset_range _ _)]
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.map_nhdsWithin_eq := IsEmbedding.map_nhdsWithin_eq
+
 theorem IsOpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : IsOpenEmbedding f) (s : Set β)
     (x : α) : map f (𝓝[f ⁻¹' s] x) = 𝓝[s] f x := by
-  rw [hf.toEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
+  rw [hf.isEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
   apply nhdsWithin_eq_nhdsWithin (mem_range_self _) hf.isOpen_range
   rw [inter_assoc, inter_self]
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.map_nhdsWithin_preimage_eq := IsOpenEmbedding.map_nhdsWithin_preimage_eq
 
-theorem QuotientMap.continuousOn_isOpen_iff {f : α → β} {g : β → γ} (h : QuotientMap f) {s : Set β}
-    (hs : IsOpen s) : ContinuousOn g s ↔ ContinuousOn (g ∘ f) (f ⁻¹' s) := by
+theorem IsQuotientMap.continuousOn_isOpen_iff {f : α → β} {g : β → γ} (h : IsQuotientMap f)
+    {s : Set β} (hs : IsOpen s) : ContinuousOn g s ↔ ContinuousOn (g ∘ f) (f ⁻¹' s) := by
   simp only [continuousOn_iff_continuous_restrict, (h.restrictPreimage_isOpen hs).continuous_iff]
   rfl
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.continuousOn_isOpen_iff := IsQuotientMap.continuousOn_isOpen_iff
 
 theorem IsOpenMap.continuousOn_image_of_leftInvOn {f : α → β} {s : Set α}
     (h : IsOpenMap (s.restrict f)) {finv : β → α} (hleft : LeftInvOn finv f s) :
@@ -1275,3 +1320,15 @@ theorem continuousOn_piecewise_ite {s s' t : Set α} {f f' : α → β} [∀ x, 
     (h : ContinuousOn f s) (h' : ContinuousOn f' s') (H : s ∩ frontier t = s' ∩ frontier t)
     (Heq : EqOn f f' (s ∩ frontier t)) : ContinuousOn (t.piecewise f f') (t.ite s s') :=
   continuousOn_piecewise_ite' (h.mono inter_subset_left) (h'.mono inter_subset_left) H Heq
+
+
+/-- If `f` is continuous on an open set `s` and continuous at each point of another
+set `t` then `f` is continuous on `s ∪ t`. -/
+lemma ContinuousOn.union_continuousAt
+    {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {s t : Set X} {f : X → Y} (s_op : IsOpen s)
+    (hs : ContinuousOn f s) (ht : ∀ x ∈ t, ContinuousAt f x) :
+    ContinuousOn f (s ∪ t) :=
+  ContinuousAt.continuousOn <| fun _ hx => hx.elim
+  (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
+  (ht _)

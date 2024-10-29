@@ -3,12 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.NNReal.Defs
-import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
 # Extended non-negative reals
@@ -135,9 +132,9 @@ noncomputable instance : DivInvMonoid ℝ≥0∞ where
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
 -- Porting note: are these 2 instances still required in Lean 4?
-instance covariantClass_mul_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (· * ·) (· ≤ ·) := inferInstance
+instance mulLeftMono : MulLeftMono ℝ≥0∞ := inferInstance
 
-instance covariantClass_add_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (· + ·) (· ≤ ·) := inferInstance
+instance addLeftMono : AddLeftMono ℝ≥0∞ := inferInstance
 
 -- Porting note (#11215): TODO: add a `WithTop` instance and use it here
 noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
@@ -285,13 +282,15 @@ theorem toNNReal_ne_one : a.toNNReal ≠ 1 ↔ a ≠ 1 :=
 theorem toReal_ne_one : a.toReal ≠ 1 ↔ a ≠ 1 :=
   a.toReal_eq_one_iff.not
 
-@[simp] theorem coe_ne_top : (r : ℝ≥0∞) ≠ ∞ := WithTop.coe_ne_top
+@[simp, aesop (rule_sets := [finiteness]) safe apply]
+theorem coe_ne_top : (r : ℝ≥0∞) ≠ ∞ := WithTop.coe_ne_top
 
 @[simp] theorem top_ne_coe : ∞ ≠ (r : ℝ≥0∞) := WithTop.top_ne_coe
 
 @[simp] theorem coe_lt_top : (r : ℝ≥0∞) < ∞ := WithTop.coe_lt_top r
 
-@[simp] theorem ofReal_ne_top {r : ℝ} : ENNReal.ofReal r ≠ ∞ := coe_ne_top
+@[simp, aesop (rule_sets := [finiteness]) safe apply]
+theorem ofReal_ne_top {r : ℝ} : ENNReal.ofReal r ≠ ∞ := coe_ne_top
 
 @[simp] theorem ofReal_lt_top {r : ℝ} : ENNReal.ofReal r < ∞ := coe_lt_top
 
@@ -309,11 +308,11 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
     rw [← h]
     exact toReal_nonneg, toReal_ofReal⟩
 
-@[simp] theorem zero_ne_top : 0 ≠ ∞ := coe_ne_top
+@[simp, aesop (rule_sets := [finiteness]) safe apply] theorem zero_ne_top : 0 ≠ ∞ := coe_ne_top
 
 @[simp] theorem top_ne_zero : ∞ ≠ 0 := top_ne_coe
 
-@[simp] theorem one_ne_top : 1 ≠ ∞ := coe_ne_top
+@[simp, aesop (rule_sets := [finiteness]) safe apply] theorem one_ne_top : 1 ≠ ∞ := coe_ne_top
 
 @[simp] theorem top_ne_one : ∞ ≠ 1 := top_ne_coe
 
@@ -384,9 +383,9 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
 
 theorem one_lt_two : (1 : ℝ≥0∞) < 2 := Nat.one_lt_ofNat
 
-@[simp] theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
+theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
 
-@[simp] theorem two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
+theorem two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
 
 /-- `(1 : ℝ≥0∞) ≤ 1`, recorded as a `Fact` for use with `Lp` spaces. -/
 instance _root_.fact_one_le_one_ennreal : Fact ((1 : ℝ≥0∞) ≤ 1) :=
@@ -438,11 +437,6 @@ def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
 
 @[simp] theorem coe_ofNNRealHom : ⇑ofNNRealHom = some := rfl
 
-@[simp, norm_cast]
-theorem coe_indicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
-    ((s.indicator f a : ℝ≥0) : ℝ≥0∞) = s.indicator (fun x => ↑(f x)) a :=
-  (ofNNRealHom : ℝ≥0 →+ ℝ≥0∞).map_indicator _ _ _
-
 section Order
 
 theorem bot_eq_zero : (⊥ : ℝ≥0∞) = 0 := rfl
@@ -473,8 +467,16 @@ theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
     ENNReal.ofReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   ofReal_natCast n
 
-@[simp] theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_ne_top n
+@[simp, aesop (rule_sets := [finiteness]) safe apply]
+theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_ne_top n
+
 @[simp] theorem natCast_lt_top (n : ℕ) : (n : ℝ≥0∞) < ∞ := WithTop.natCast_lt_top n
+
+@[simp, aesop (rule_sets := [finiteness]) safe apply]
+lemma ofNat_ne_top {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) ≠ ∞ := natCast_ne_top n
+
+@[simp]
+lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) < ∞ := natCast_lt_top n
 
 @[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
 
@@ -503,10 +505,6 @@ theorem lt_iff_exists_coe : a < b ↔ ∃ p : ℝ≥0, a = p ∧ ↑p < b :=
 theorem toReal_le_coe_of_le_coe {a : ℝ≥0∞} {b : ℝ≥0} (h : a ≤ b) : a.toReal ≤ b := by
   lift a to ℝ≥0 using ne_top_of_le_ne_top coe_ne_top h
   simpa using h
-
-@[simp, norm_cast]
-theorem coe_finset_sup {s : Finset α} {f : α → ℝ≥0} : ↑(s.sup f) = s.sup fun x => (f x : ℝ≥0∞) :=
-  Finset.comp_sup_eq_sup_comp_of_is_total _ coe_mono rfl
 
 @[simp] theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
 

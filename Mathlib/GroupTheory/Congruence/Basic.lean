@@ -69,47 +69,6 @@ protected def congr {c d : Con M} (h : c = d) : c.Quotient ≃* d.Quotient :=
   { Quotient.congr (Equiv.refl M) <| by apply Con.ext_iff.mp h with
     map_mul' := fun x y => by rcases x with ⟨⟩; rcases y with ⟨⟩; rfl }
 
--- The complete lattice of congruence relations on a type
-/-- For congruence relations `c, d` on a type `M` with a multiplication, `c ≤ d` iff `∀ x y ∈ M`,
-    `x` is related to `y` by `d` if `x` is related to `y` by `c`. -/
-@[to_additive "For additive congruence relations `c, d` on a type `M` with an addition, `c ≤ d` iff
-`∀ x y ∈ M`, `x` is related to `y` by `d` if `x` is related to `y` by `c`."]
-instance : LE (Con M) where
-  le c d := ∀ ⦃x y⦄, c x y → d x y
-
-/-- The infimum of a set of congruence relations on a given type with a multiplication. -/
-@[to_additive "The infimum of a set of additive congruence relations on a given type with
-an addition."]
-instance : InfSet (Con M) where
-  sInf S :=
-    { r := fun x y => ∀ c : Con M, c ∈ S → c x y
-      iseqv := ⟨fun x c _ => c.refl x, fun h c hc => c.symm <| h c hc,
-        fun h1 h2 c hc => c.trans (h1 c hc) <| h2 c hc⟩
-      mul' := fun h1 h2 c hc => c.mul (h1 c hc) <| h2 c hc }
-
-@[to_additive]
-instance : PartialOrder (Con M) where
-  le_refl _ _ _ := id
-  le_trans _ _ _ h1 h2 _ _ h := h2 <| h1 h
-  le_antisymm _ _ hc hd := ext fun _ _ => ⟨fun h => hc h, fun h => hd h⟩
-
-/-- The complete lattice of congruence relations on a given type with a multiplication. -/
-@[to_additive "The complete lattice of additive congruence relations on a given type with
-an addition."]
-instance : CompleteLattice (Con M) where
-  __ := completeLatticeOfInf (Con M) fun s =>
-      ⟨fun r hr x y h => (h : ∀ r ∈ s, (r : Con M) x y) r hr, fun r hr x y h r' hr' =>
-        hr hr'
-          h⟩
-  inf c d := ⟨c.toSetoid ⊓ d.toSetoid, fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩⟩
-  inf_le_left _ _ := fun _ _ h => h.1
-  inf_le_right _ _ := fun _ _ h => h.2
-  le_inf  _ _ _ hb hc := fun _ _ h => ⟨hb h, hc h⟩
-  top := { Setoid.completeLattice.top with mul' := by tauto }
-  le_top _ := fun _ _ _ => trivial
-  bot := { Setoid.completeLattice.bot with mul' := fun h1 h2 => h1 ▸ h2 ▸ rfl }
-  bot_le c := fun x y h => h ▸ c.refl x
-
 end
 
 section MulOneClass
@@ -221,15 +180,6 @@ For a `computable` version, see `AddCon.quotientKerEquivOfRightInverse`.
 noncomputable def quotientKerEquivOfSurjective (f : M →* P) (hf : Surjective f) :
     (ker f).Quotient ≃* P :=
   quotientKerEquivOfRightInverse _ _ hf.hasRightInverse.choose_spec
-
-/-- If e : M →* N is surjective then (c.comap e).Quotient ≃* c.Quotient
-with c : Con N -/
-@[to_additive "If e : M →* N is surjective then (c.comap e).Quotient ≃* c.Quotient
-with c : AddCon N"]
-noncomputable def comapQuotientEquivOfSurj (c : Con M) (f : N →* M) (hf : Function.Surjective f) :
-    (Con.comap f f.map_mul c).Quotient ≃* c.Quotient :=
-  (Con.congr Con.comap_eq).trans <| Con.quotientKerEquivOfSurjective
-  (c.mk'.comp f) <| Con.mk'_surjective.comp hf
 
 /-- The **second isomorphism theorem for monoids**. -/
 @[to_additive "The second isomorphism theorem for `AddMonoid`s."]

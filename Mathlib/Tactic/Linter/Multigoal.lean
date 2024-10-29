@@ -118,7 +118,9 @@ abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofList [
     ``Lean.Parser.Tactic.tacticIterate____,
     ``Lean.Parser.Tactic.anyGoals,
     ``Lean.Parser.Tactic.allGoals,
-    ``Lean.Parser.Tactic.focus
+    ``Lean.Parser.Tactic.focus,
+    ``Lean.Parser.Tactic.failIfSuccess,
+    `Mathlib.Tactic.successIfFailWithMsg
   ]
 
 /-- `getManyGoals t` returns the syntax nodes of the `InfoTree` `t` corresponding to tactic calls

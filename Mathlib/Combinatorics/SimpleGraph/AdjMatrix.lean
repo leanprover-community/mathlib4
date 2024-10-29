@@ -40,7 +40,7 @@ open Matrix
 
 open Finset Matrix SimpleGraph
 
-variable {V α β : Type*}
+variable {V α : Type*}
 
 namespace Matrix
 
@@ -231,7 +231,6 @@ theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
 
 variable {G}
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem adjMatrix_mulVec_const_apply [NonAssocSemiring α] {a : α} {v : V} :
     (G.adjMatrix α *ᵥ Function.const _ a) v = G.degree v * a := by simp
 
