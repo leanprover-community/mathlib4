@@ -143,11 +143,7 @@ I.e. `x ⇨ᵣ y = sSup { z | x + z ≤ y }`.
 "]
 def right_residuation (x y : α) := sSup { z | x * z ≤ y }
 
-/-- Notation for left-residuation in quantales.
-    I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
--/
-@[to_additive "Notation for left-residuation in quantales.
-    I.e. `x ⇨ₗ y = sSup { z | z + x ≤ y }`. "]
+@[to_additive (attr := inherit_doc)]
 scoped infixr:60 " ⇨ₗ " => left_residuation
 
 /-- Notation for right-residuation in quantales.
