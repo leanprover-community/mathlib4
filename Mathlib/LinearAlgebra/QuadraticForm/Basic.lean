@@ -823,7 +823,7 @@ section AssociatedHom
 variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (S) [CommSemiring S] [Algebra S R]
 variable [Module S N] [IsScalarTower S R N]
-variable [Invertible (2 : R)] {B₁ : BilinMap R M R}
+variable [Invertible (2 : R)] {B₁ : BilinMap R M N}
 
 /-- `associatedHom` is the map that sends a quadratic map on a module `M` over `R` to its
 associated symmetric bilinear map.  As provided here, this has the structure of an `S`-linear map
@@ -851,11 +851,14 @@ theorem associated_apply (x y : M) : associatedHom S Q x y = ⅟ (2 : R) • (Q 
   dsimp
   rw [← smul_assoc, two_nsmul, invOf_two_add_invOf_two, one_smul, polar]
 
-theorem associated_isSymm (Q : QuadraticMap R M R) : (associatedHom S Q).IsSymm := fun x y => by
+theorem associated_isConjSymm (Q : QuadraticMap R M N) :
+    (associatedHom S Q).IsConjSymm (AddMonoidHom.id N) := fun x y => by
   simp only [associated_apply, sub_eq_add_neg, add_assoc, map_mul, RingHom.id_apply, map_add,
     _root_.map_neg, add_comm, add_left_comm, RingHom.coe_addMonoidHom_id, smul_eq_mul,
     AddMonoidHom.id_apply]
 
+theorem associated_isSymm (Q : QuadraticForm R M) : (associatedHom S Q).IsSymm :=
+  associated_isConjSymm S Q
 
 @[simp]
 theorem associated_comp {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N' →ₗ[R] M) :
@@ -863,15 +866,16 @@ theorem associated_comp {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N' →
   ext
   simp only [associated_apply, comp_apply, map_add, LinearMap.compl₁₂_apply]
 
-theorem associated_toQuadraticMap (B : BilinMap R M R) (x y : M) :
+theorem associated_toQuadraticMap (B : BilinMap R M N) (x y : M) :
     associatedHom S B.toQuadraticMap x y = ⅟ (2 : R) • (B x y + B y x) := by
   simp only [associated_apply, LinearMap.BilinMap.toQuadraticMap_apply, map_add,
     LinearMap.add_apply, smul_eq_mul]
   abel_nf
 
-theorem associated_left_inverse (h : B₁.IsSymm) : associatedHom S B₁.toQuadraticMap = B₁ :=
+theorem associated_left_inverse (h : B₁.IsConjSymm (AddMonoidHom.id N)) :
+    associatedHom S B₁.toQuadraticMap = B₁ :=
   LinearMap.ext₂ fun x y => by
-    rw [associated_toQuadraticMap, ← h.eq x y, RingHom.id_apply]
+    rw [associated_toQuadraticMap, ← h.eq x y, AddMonoidHom.id_apply]
     match_scalars
     linear_combination invOf_mul_self' (2:R)
 
@@ -887,12 +891,12 @@ theorem toQuadraticMap_associated : (associatedHom S Q).toQuadraticMap = Q :=
 -- note: usually `rightInverse` lemmas are named the other way around, but this is consistent
 -- with historical naming in this file.
 theorem associated_rightInverse :
-    Function.RightInverse (associatedHom S) (BilinMap.toQuadraticMap : _ → QuadraticMap R M R) :=
+    Function.RightInverse (associatedHom S) (BilinMap.toQuadraticMap : _ → QuadraticMap R M N) :=
   fun Q => toQuadraticMap_associated S Q
 
 /-- `associated'` is the `ℤ`-linear map that sends a quadratic form on a module `M` over `R` to its
 associated symmetric bilinear form. -/
-abbrev associated' : QuadraticMap R M R →ₗ[ℤ] BilinMap R M R :=
+abbrev associated' : QuadraticMap R M N →ₗ[ℤ] BilinMap R M N :=
   associatedHom ℤ
 
 /-- Symmetric bilinear forms can be lifted to quadratic forms -/
@@ -902,9 +906,9 @@ instance canLift :
 
 /-- There exists a non-null vector with respect to any quadratic form `Q` whose associated
 bilinear form is non-zero, i.e. there exists `x` such that `Q x ≠ 0`. -/
-theorem exists_quadraticForm_ne_zero {Q : QuadraticForm R M}
+theorem exists_quadraticForm_ne_zero {Q : QuadraticMap R M N}
     -- Porting note: added implicit argument
-    (hB₁ : associated' (R := R) Q ≠ 0) :
+    (hB₁ : associated' (N := N) Q ≠ 0) :
     ∃ x, Q x ≠ 0 := by
   rw [← not_forall]
   intro h
@@ -978,14 +982,24 @@ theorem isOrtho_comm {x y : M} : IsOrtho Q x y ↔ IsOrtho Q y x := by simp_rw [
 
 alias ⟨IsOrtho.symm, _⟩ := isOrtho_comm
 
-theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd R]
-    [NoZeroDivisors R] [CharZero R] {B : BilinMap R M R} {x y : M} (h : B.IsSymm) :
+theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd N] [Invertible (2 : R)]
+     {B : BilinMap R M N} {x y : M} (h : B.IsConjSymm (AddMonoidHom.id N)) :
     B.toQuadraticMap.IsOrtho x y ↔ B.IsOrtho x y := by
-  letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstanceAs <| AddCommMonoid R) with }
+  letI : AddCancelMonoid N := { ‹IsCancelAdd N›, (inferInstanceAs <| AddCommMonoid N) with }
   simp_rw [isOrtho_def, LinearMap.isOrtho_def, B.toQuadraticMap_apply, map_add,
     LinearMap.add_apply, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
-  rw [add_right_eq_self (a := B x x + B y y), ← h, RingHom.coe_addMonoidHom_id,
-    AddMonoidHom.id_apply, add_self_eq_zero]
+  rw [add_right_eq_self (a := B x x + B y y), ← h]
+  rw [AddMonoidHom.id_apply]
+  constructor
+  · intro h'
+    rw [← two_smul (R := R)] at h'
+    calc (B x) y = (1 : R) • (B x) y := by rw [MulAction.one_smul]
+    _ = (⅟2 * 2 : R) • (B x) y := by rw [invOf_mul_self']
+    _ =  (⅟2 : R) • ((2 : R) • (B x) y) := by rw [mul_smul]
+    _ =  (⅟2 : R) • 0 := by rw [h']
+    _ = 0 := by rw [DistribMulAction.smul_zero]
+  · intro h'
+    rw [h', AddZeroClass.zero_add]
 
 end CommSemiring
 
@@ -1032,13 +1046,13 @@ end Semiring
 
 section Ring
 
-variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 /-- The associated bilinear form of an anisotropic quadratic form is nondegenerate. -/
-theorem separatingLeft_of_anisotropic [Invertible (2 : R)] (Q : QuadraticMap R M R)
+theorem separatingLeft_of_anisotropic [Invertible (2 : R)] (Q : QuadraticMap R M N)
     (hB : Q.Anisotropic) :
     -- Porting note: added implicit argument
-    (QuadraticMap.associated' (R := R) Q).SeparatingLeft := fun x hx ↦ hB _ <| by
+    (QuadraticMap.associated' (N := N) Q).SeparatingLeft := fun x hx ↦ hB _ <| by
   rw [← hx x]
   exact (associated_eq_self_apply _ _ x).symm
 
@@ -1127,7 +1141,7 @@ theorem QuadraticMap.toMatrix'_smul (a : R) (Q : QuadraticMap R (n → R) R) :
 theorem QuadraticMap.isSymm_toMatrix' (Q : QuadraticMap R (n → R) R) : Q.toMatrix'.IsSymm := by
   ext i j
   rw [toMatrix', Matrix.transpose_apply, LinearMap.toMatrix₂'_apply, LinearMap.toMatrix₂'_apply,
-    ← associated_isSymm, RingHom.coe_addMonoidHom_id, associated_apply, smul_eq_mul,
+    ← associated_isSymm, associated_apply, smul_eq_mul, RingHom.coe_addMonoidHom_id,
     AddMonoidHom.id_apply]
 
 end
