@@ -267,7 +267,7 @@ protected def id (α) [PseudoEMetricSpace α] : α →ᵈ α where
 instance : Inhabited (α →ᵈ α) :=
   ⟨Dilation.id α⟩
 
-@[simp] -- Porting note: Removed `@[protected]`
+@[simp]
 theorem coe_id : ⇑(Dilation.id α) = id :=
   rfl
 

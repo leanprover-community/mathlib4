@@ -589,7 +589,6 @@ protected theorem Inducing.topologicalGroup {F : Type*} [Group H] [TopologicalSp
     toContinuousInv := hf.continuousInv (map_inv f) }
 
 @[to_additive]
--- Porting note: removed `protected` (needs to be in namespace)
 theorem topologicalGroup_induced {F : Type*} [Group H] [FunLike F H G] [MonoidHomClass F H G]
     (f : F) :
     @TopologicalGroup H (induced f ‹_›) _ :=
