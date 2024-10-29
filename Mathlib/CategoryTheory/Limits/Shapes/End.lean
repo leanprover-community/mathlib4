@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 
 /-!
-# End and coends
+# Ends and coends
 
 In this file, given a functor `F : Jᵒᵖ ⥤ J ⥤ C`, we define its end `end_ F`,
 which is a suitable multiequalizer of the objects `(F.obj (op j)).obj j` for all `j : J`.
@@ -101,7 +101,7 @@ end Wedge
 
 section End
 
-/-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this property assets the existence of the end of `F`. -/
+/-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this property asserts the existence of the end of `F`. -/
 abbrev HasEnd := HasMultiequalizer (multicospanIndexEnd F)
 
 variable [HasEnd F]
