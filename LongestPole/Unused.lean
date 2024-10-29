@@ -67,7 +67,7 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
           "No modules specified, please specify at least two modules on the command line."
         return 1
 
-    let unused ← unusedTransitiveImports modules
+    let unused ← unusedTransitiveImports modules (verbose := true)
 
     let headings := #["#", "module"] ++ ((List.range' 1 modules.length).map toString)
     let rows := modules.mapIdx fun i m =>
