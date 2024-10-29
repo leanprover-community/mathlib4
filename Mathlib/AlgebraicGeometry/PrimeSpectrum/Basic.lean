@@ -584,21 +584,27 @@ lemma stableUnderGeneralization_singleton {x : PrimeSpectrum R} :
   exact ⟨fun H a h ↦ (H a h).ge, fun H a h ↦ le_antisymm h (H h)⟩
 
 lemma isCompact_isOpen_iff {s : Set (PrimeSpectrum R)} :
-    IsCompact s ∧ IsOpen s ↔
-      ∃ I : Ideal R, I.FG ∧ (PrimeSpectrum.zeroLocus (I : Set R))ᶜ = s := by
+    IsCompact s ∧ IsOpen s ↔ ∃ t : Finset R, (zeroLocus t)ᶜ = s := by
   rw [isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis _
     isTopologicalBasis_basic_opens isCompact_basicOpen]
   simp only [basicOpen_eq_zeroLocus_compl, ← Set.compl_iInter₂, ← zeroLocus_iUnion₂,
     Set.biUnion_of_singleton]
-  exact ⟨fun ⟨s, hs, e⟩ ↦ ⟨.span s, ⟨hs.toFinset, by simp⟩, by simpa using e.symm⟩,
-    fun ⟨I, ⟨s, hs⟩, e⟩ ↦ ⟨s, s.finite_toSet, by simpa [hs.symm] using e.symm⟩⟩
+  exact ⟨fun ⟨s, hs, e⟩ ↦ ⟨hs.toFinset, by simpa using e.symm⟩,
+    fun ⟨s, e⟩ ↦ ⟨s, s.finite_toSet, by simpa using e.symm⟩⟩
+
+lemma isCompact_isOpen_iff_ideal {s : Set (PrimeSpectrum R)} :
+    IsCompact s ∧ IsOpen s ↔
+      ∃ I : Ideal R, I.FG ∧ (PrimeSpectrum.zeroLocus (I : Set R))ᶜ = s := by
+  rw [isCompact_isOpen_iff]
+  exact ⟨fun ⟨s, e⟩ ↦ ⟨.span s, ⟨s, rfl⟩, by simpa using e⟩,
+    fun ⟨I, ⟨s, hs⟩, e⟩ ↦ ⟨s, by simpa [hs.symm] using e⟩⟩
 
 lemma exists_idempotent_basicOpen_eq_of_is_clopen {s : Set (PrimeSpectrum R)}
     (hs : IsClopen s) : ∃ e : R, IsIdempotentElem e ∧ s = basicOpen e := by
   cases subsingleton_or_nontrivial R
   · exact ⟨0, Subsingleton.elim _ _, Subsingleton.elim _ _⟩
-  obtain ⟨I, hI, hI'⟩ := isCompact_isOpen_iff.mp ⟨hs.1.isCompact, hs.2⟩
-  obtain ⟨J, hJ, hJ'⟩ := isCompact_isOpen_iff.mp
+  obtain ⟨I, hI, hI'⟩ := isCompact_isOpen_iff_ideal.mp ⟨hs.1.isCompact, hs.2⟩
+  obtain ⟨J, hJ, hJ'⟩ := isCompact_isOpen_iff_ideal.mp
     ⟨hs.2.isClosed_compl.isCompact, hs.1.isOpen_compl⟩
   simp only [compl_eq_iff_isCompl, ← eq_compl_iff_isCompl, compl_compl] at hI' hJ'
   have : I * J ≤ nilradical R := by
@@ -792,5 +798,12 @@ lemma PrimeSpectrum.isClopen_iff {s : Set (PrimeSpectrum R)} :
   refine ⟨?_, (basicOpen e).2⟩
   rw [PrimeSpectrum.basicOpen_eq_zeroLocus_of_isIdempotentElem e he]
   exact isClosed_zeroLocus _
+
+lemma PrimeSpectrum.isClopen_iff_zeroLocus {s : Set (PrimeSpectrum R)} :
+    IsClopen s ↔ ∃ e : R, IsIdempotentElem e ∧ s = zeroLocus {e} := by
+  rw [isClopen_iff]
+  refine ⟨fun ⟨e, he, h⟩ ↦ ⟨1 - e, he.one_sub,
+    h.trans (basicOpen_eq_zeroLocus_of_isIdempotentElem e he)⟩, fun ⟨e, he, h⟩ ↦
+    ⟨1 - e, he.one_sub, h.trans (zeroLocus_eq_basicOpen_of_isIdempotentElem e he)⟩⟩
 
 end Idempotent
