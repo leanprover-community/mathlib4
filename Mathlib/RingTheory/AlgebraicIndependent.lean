@@ -83,20 +83,23 @@ theorem algebraicIndependent_empty_type_iff [IsEmpty ι] :
     AlgebraicIndependent R x ↔ Injective (algebraMap R A) := by
   rw [algebraicIndependent_iff_injective_aeval, MvPolynomial.aeval_injective_iff_of_isEmpty]
 
-/-- An element `x` is transcendental if and only if the one-element family `![x]` is
-algebraically independent. -/
-theorem transcendental_iff_algebraicIndependent {x : A} :
-    Transcendental R x ↔ AlgebraicIndependent R ![x] := by
+/-- A one-element family `x` is algebraically independent if and only if
+its element is transcendental. -/
+@[simp]
+theorem algebraicIndependent_unique_type_iff [Unique ι] :
+    AlgebraicIndependent R x ↔ Transcendental R (x default) := by
   rw [transcendental_iff_injective, algebraicIndependent_iff_injective_aeval]
-  let i := (finSuccEquiv R 0).toRingEquiv.trans <|
-    Polynomial.mapEquiv (isEmptyAlgEquiv R (Fin 0)).toRingEquiv
-  have key : (MvPolynomial.aeval (R := R) ![x]).toRingHom =
-      (Polynomial.aeval (R := R) x).toRingHom.comp i.toRingHom := by
+  let i := (renameEquiv R (Equiv.equivPUnit.{_, 1} ι)).trans (pUnitAlgEquiv R)
+  have key : aeval (R := R) x = (Polynomial.aeval (R := R) (x default)).comp i := by
     ext y
-    · simp [i]
-    · fin_cases y; simp [i]
-  change _ ↔ Injective (MvPolynomial.aeval (R := R) ![x]).toRingHom
-  rw [key]; simp
+    simp [i, Subsingleton.elim y default]
+  simp [key]
+
+/-- The one-element family `![x]` is algebraically independent if and only if
+`x` is transcendental. -/
+theorem algebraicIndependent_iff_transcendental {x : A} :
+    AlgebraicIndependent R ![x] ↔ Transcendental R x := by
+  simp
 
 namespace AlgebraicIndependent
 
@@ -158,7 +161,7 @@ theorem map' {f : A →ₐ[R] A'} (hf_inj : Injective f) : AlgebraicIndependent 
 theorem transcendental (i : ι) : Transcendental R (x i) := by
   have := hx.comp ![i] (Function.injective_of_subsingleton _)
   have : AlgebraicIndependent R ![x i] := by rwa [← FinVec.map_eq] at this
-  rwa [transcendental_iff_algebraicIndependent]
+  rwa [← algebraicIndependent_iff_transcendental]
 
 end AlgebraicIndependent
 
