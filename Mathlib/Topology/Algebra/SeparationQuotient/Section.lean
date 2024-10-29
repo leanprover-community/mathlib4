@@ -31,7 +31,7 @@ theorem exists_out_continuousLinearMap :
   rcases (mkCLM K E).toLinearMap.exists_rightInverse_of_surjective
     (LinearMap.range_eq_top.mpr surjective_mk) with ⟨f, hf⟩
   replace hf : mk ∘ f = id := congr_arg DFunLike.coe hf
-  exact ⟨⟨f, inducing_mk.continuous_iff.2 (by continuity)⟩, DFunLike.ext' hf⟩
+  exact ⟨⟨f, isInducing_mk.continuous_iff.2 (by continuity)⟩, DFunLike.ext' hf⟩
 
 /-- A continuous `K`-linear map from `SeparationQuotient E` to `E`
 such that `mk (outCLM x) = x` for all `x`. -/

@@ -195,7 +195,7 @@ instance instContinuousSMul [ContinuousSMul 𝕜 F] :
   let φ : ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] (Π i, E i) → F :=
     { toFun := (↑), map_add' := fun _ _ ↦ rfl, map_smul' := fun _ _ ↦ rfl }
   UniformOnFun.continuousSMul_induced_of_image_bounded _ _ _ _ φ
-    isEmbedding_toUniformOnFun.toInducing fun _ _ hu ↦ hu.image_multilinear _
+    isEmbedding_toUniformOnFun.isInducing fun _ _ hu ↦ hu.image_multilinear _
 
 theorem hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → Set F}
     (h : (𝓝 (0 : F)).HasBasis p b) :
