@@ -60,6 +60,7 @@ theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
     x = HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) Seq.nil y
   apply Seq.Eq.coind motive
+  · simp only [motive]
   · intro x y ih
     simp [motive] at ih
     subst ih
@@ -82,7 +83,6 @@ theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
       · rfl
       simp only [motive]
       rfl
-  · simp only [motive]
 
 @[simp]
 private theorem zero_add' {basis : Basis} {ms : PreMS basis} :
@@ -98,6 +98,7 @@ theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
     x = HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) y Seq.nil
   apply Seq.Eq.coind motive
+  · simp only [motive]
   · intro x y ih
     simp [motive] at ih
     subst ih
@@ -120,7 +121,6 @@ theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
       · rfl
       simp only [motive]
       rfl
-  · simp only [motive]
 
 @[simp]
 private theorem add_zero' {basis : Basis} {ms : PreMS basis} :
@@ -231,6 +231,8 @@ theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
       ∃ (X Y : PreMS (basis_hd :: basis_tl)), a = (X + Y).mulConst c ∧ b = X.mulConst c + Y.mulConst c
     apply Seq.Eq.coind_strong motive
+    · simp only [motive]
+      use X, Y
     · intro a b ih
       simp only [motive] at ih ⊢
       obtain ⟨X, Y, ha, hb⟩ := ih
@@ -286,8 +288,6 @@ theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
         constructor
         · exact Eq.refl _
         · simp
-    · simp only [motive]
-      use X, Y
 
 private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
     X + Y = Y + X := by
@@ -297,6 +297,8 @@ private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
     ∃ (X Y : PreMS (basis_hd :: basis_tl)), a = (X + Y) ∧ b = Y + X
   apply Seq.Eq.coind_strong motive
+  · simp only [motive]
+    use X, Y
   · intro a b ih
     obtain ⟨X, Y, ha_eq, hb_eq⟩ := ih
     subst ha_eq hb_eq
@@ -345,8 +347,6 @@ private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
       constructor
       · exact Eq.refl _
       · rfl
-  · simp only [motive]
-    use X, Y
 
 private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
     X + (Y + Z) = (X + Y) + Z := by
@@ -356,6 +356,8 @@ private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
     ∃ (X Y Z : PreMS (basis_hd :: basis_tl)), a = X + (Y + Z) ∧ b = (X + Y) + Z
   apply Seq.Eq.coind_strong motive
+  · simp only [motive]
+    use X, Y, Z
   · intro a b ih
     simp only [motive] at ih ⊢
     obtain ⟨X, Y, Z, ha_eq, hb_eq⟩ := ih
@@ -400,8 +402,6 @@ private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
           try rfl
       )
     )
-  · simp only [motive]
-    use X, Y, Z
 
 -- to be able to use `abel` tactic
 noncomputable instance instAddCommMonoid (basis : List (ℝ → ℝ)) : AddCommMonoid (PreMS basis) where
@@ -447,6 +447,9 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
       ∃ (X Y : PreMS (basis_hd :: basis_tl)),
         ms = X + Y ∧ X.WellOrdered ∧ Y.WellOrdered
     apply WellOrdered.coind motive
+    · simp only [motive]
+      use x
+      use y
     · intro ms ih
       simp only [motive] at ih
       obtain ⟨X, Y, h_ms_eq, hX_wo, hY_wo⟩ := ih
@@ -556,9 +559,6 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
             simp only [motive]
             use X_tl
             use Y_tl
-    · simp only [motive]
-      use x
-      use y
 
 theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
     (hX_approx : X.Approximates fX basis) (hY_approx : Y.Approximates fY basis) :
@@ -572,6 +572,11 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
       ∃ (X Y : PreMS (basis_hd :: basis_tl)) (fX fY : ℝ → ℝ),
         ms = X + Y ∧ f =ᶠ[atTop] fX + fY ∧ X.Approximates fX ∧ Y.Approximates fY
     apply Approximates.coind motive
+    · simp only [motive]
+      use X
+      use Y
+      use fX
+      use fY
     · intro f ms ih
       simp only [motive] at ih
       obtain ⟨X, Y, fX, fY, h_ms_eq, hf_eq, hX_approx, hY_approx⟩ := ih
@@ -787,11 +792,6 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             constructor
             · exact hX_tl
             · exact hY_tl
-    · simp only [motive]
-      use X
-      use Y
-      use fX
-      use fY
 
 end PreMS
 

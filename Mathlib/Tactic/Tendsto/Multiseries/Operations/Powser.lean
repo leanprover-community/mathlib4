@@ -195,6 +195,8 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
       x = Seq.corec (apply_aux ms) (X.mul ms, s) ∧
       y = Seq.map (fun x ↦ x.mul ms) (Seq.corec (apply_aux ms) (X, s))
   apply Seq.Eq.coind motive
+  · simp [motive]
+    use const 1 (basis_hd :: basis_tl), s_tl
   · intro x y ih
     simp [motive] at ih
     obtain ⟨X, s, hx, hy⟩ := ih
@@ -239,8 +241,6 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
         exact Eq.refl _
       · unfold apply_aux
         simp
-  · simp [motive]
-    use const 1 (basis_hd :: basis_tl), s_tl
 
 @[simp]
 theorem apply_cons_leadingExp {s_hd : ℝ} {s_tl : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
@@ -274,6 +274,10 @@ theorem apply_WellOrdered {s : LazySeries} {basis : Basis}
     · let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
         ∃ X s, a = Seq.corec (apply_aux ms) (X, s) ∧ X.WellOrdered
       apply Seq.All.coind motive
+      · simp only [motive]
+        use one _, s
+        simp
+        exact const_WellOrdered
       · intro hd tl ih
         simp only [motive] at ih ⊢
         obtain ⟨X, s, h_eq⟩ := ih
@@ -297,14 +301,15 @@ theorem apply_WellOrdered {s : LazySeries} {basis : Basis}
         constructor
         · exact h_tl
         · exact mul_WellOrdered hX_wo h_wo
-      · simp only [motive]
-        use one _, s
-        simp
-        exact const_WellOrdered
     · simp [HasNegativeLeading] at h_neg
       let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
         ∃ X s, a = Seq.corec (apply_aux ms) (X, s) ∧ X ≠ .nil
       apply Seq.Sorted.coind (r := (fun x1 x2 ↦ x1 > x2)) motive
+      · simp only [motive]
+        use one _, s
+        constructor
+        · rfl
+        · simp [one, const]
       · intro hd tl ih
         simp only [motive] at ih ⊢
         obtain ⟨X, s, h_eq, hX_ne_nil⟩ := ih
@@ -345,11 +350,6 @@ theorem apply_WellOrdered {s : LazySeries} {basis : Basis}
         · intro h
           apply mul_eq_nil at h
           tauto
-      · simp only [motive]
-        use one _, s
-        constructor
-        · rfl
-        · simp [one, const]
 
 theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : Basis}
     {ms : PreMS basis}
@@ -368,6 +368,23 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
         X.WellOrdered ∧ X.Approximates fX (basis_hd :: basis_tl) ∧
         Y.WellOrdered ∧ Y.Approximates fY (basis_hd :: basis_tl)
     apply Approximates.coind motive
+    · simp [motive]
+      use s
+      constructor
+      · exact h_analytic
+      use .nil
+      use one _
+      use 0
+      use 1
+      simp
+      constructor
+      · apply WellOrdered.nil
+      constructor
+      · apply Approximates.nil
+        apply Filter.EventuallyEq.refl
+      constructor
+      · apply const_WellOrdered
+      · apply one_Approximates_one h_basis
     · intro f ms' ih
       simp [motive] at ih
       obtain ⟨s, h_analytic, ⟨X, Y, fX, fY, hf_eq, h_ms_eq, hX_wo, hX_approx, hY_wo, hY_approx⟩⟩ := ih
@@ -773,23 +790,6 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
               · apply mul_Approximates h_basis
                 · exact h_approx
                 · exact hY_approx
-    · simp [motive]
-      use s
-      constructor
-      · exact h_analytic
-      use .nil
-      use one _
-      use 0
-      use 1
-      simp
-      constructor
-      · apply WellOrdered.nil
-      constructor
-      · apply Approximates.nil
-        apply Filter.EventuallyEq.refl
-      constructor
-      · apply const_WellOrdered
-      · apply one_Approximates_one h_basis
 
 theorem analytic_of_all_le_one {s : LazySeries} (h : s.All fun x ↦ |x| ≤ 1) : s.analytic := by
   simp [analytic]

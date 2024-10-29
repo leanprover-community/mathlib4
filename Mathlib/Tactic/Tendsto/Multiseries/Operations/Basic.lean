@@ -171,6 +171,8 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
     let motive : (PreMS (basis_hd :: basis_tl)) → Prop := fun ms' =>
       ∃ (X : PreMS (basis_hd :: basis_tl)), ms' = X.mulConst c ∧ X.WellOrdered
     apply WellOrdered.coind motive
+    · simp [motive]
+      use ms
     · intro ms ih
       simp [motive] at ih
       obtain ⟨X, h_ms_eq, hX_wo⟩ := ih
@@ -195,8 +197,6 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
         · simpa
         simp [motive]
         use tl
-    · simp [motive]
-      use ms
 
 theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : ℝ → ℝ}
     (h_approx : ms.Approximates F basis) :
@@ -212,6 +212,9 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
         ms' = X.mulConst c ∧ f =ᶠ[atTop] (fun x ↦ fX x * c) ∧
         X.Approximates fX (basis_hd :: basis_tl)
     apply Approximates.coind motive
+    · simp only [motive]
+      use ms
+      use F
     · intro f ms ih
       simp only [motive] at ih
       obtain ⟨X, fX, h_ms_eq, hf_eq, hX_approx⟩ := ih
@@ -264,9 +267,6 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
           conv => rhs; ext; rw [mul_comm]
           exact hf_eq
         · exact hX_tl
-    · simp only [motive]
-      use ms
-      use F
 
 @[simp]
 theorem neg_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : PreMS (basis_hd :: basis_tl)} :

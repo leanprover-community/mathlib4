@@ -235,10 +235,10 @@ section Eq
 /-- Coinduction principle for proving `a = b`. -/
 theorem Eq.coind {α : Type u} {a b : Seq α}
     (motive : Seq α → Seq α → Prop)
+    (h_base : motive a b)
     (h_survive : ∀ a b, motive a b →
       (∃ hd a_tl b_tl, a = cons hd a_tl ∧ b = cons hd b_tl ∧ motive a_tl b_tl) ∨
-      (a = nil ∧ b = nil))
-    (h : motive a b) : a = b := by
+      (a = nil ∧ b = nil)) : a = b := by
   apply Subtype.eq
   ext1 n
   simp [get]
@@ -268,10 +268,10 @@ theorem Eq.coind {α : Type u} {a b : Seq α}
 -- useful for edge cases
 theorem Eq.coind_strong {α : Type u} {a b : Seq α}
     (motive : Seq α → Seq α → Prop)
+    (h_base : motive a b)
     (h_survive : ∀ a b, motive a b →
       (a = b) ∨
-      (∃ hd a_tl b_tl, a = cons hd a_tl ∧ b = cons hd b_tl ∧ (motive a_tl b_tl)))
-    (h : motive a b) : a = b := by
+      (∃ hd a_tl b_tl, a = cons hd a_tl ∧ b = cons hd b_tl ∧ (motive a_tl b_tl))): a = b := by
   apply Subtype.eq
   ext1 n
   simp [get]
@@ -332,6 +332,8 @@ theorem zip_eq_zip' {α : Type u} {β : Type v} {a : Seq α} {b : Seq β} : zip 
   let motive : Seq (α × β) → Seq (α × β) → Prop := fun x y =>
     ∃ (a : Seq α) (b : Seq β), x = a.zip b ∧ y = a.zip' b
   apply Eq.coind motive
+  · simp [motive]
+    use a, b
   · intro a b ih
     simp only [motive] at ih ⊢
     obtain ⟨x, y, ha, hb⟩ := ih
@@ -362,8 +364,6 @@ theorem zip_eq_zip' {α : Type u} {β : Type v} {a : Seq α} {b : Seq β} : zip 
       simp
     use ?_, ?_
     constructor <;> exact Eq.refl _
-  · simp [motive]
-    use a, b
 
 @[simp]
 theorem zip_nil_left {α : Type u} {β : Type v} (a : Seq α) : (nil (α := β)).zip a = .nil := by
@@ -533,9 +533,9 @@ theorem all_of_get {α : Type u} {p : α → Prop} {li : Seq α} (h : ∀ n, (li
   simpa [← hx] using h
 
 theorem All.coind {α : Type u} {li : Seq α} {p : α → Prop}
-    (motive : Seq α → Prop)
+    (motive : Seq α → Prop) (h_base : motive li)
     (h_cons : ∀ hd tl, motive (cons hd tl) → p hd ∧ motive tl)
-    (h : motive li) : li.All p := by
+    : li.All p := by
   apply all_of_get
   intro n
   have : (li.get? n).elim True p ∧ motive (li.drop n) := by
@@ -549,10 +549,10 @@ theorem All.coind {α : Type u} {li : Seq α} {p : α → Prop}
       | some hd =>
         simp
         have := head_eq_some h1
-        specialize h_cons hd li.tail (this ▸ h)
+        specialize h_cons hd li.tail (this ▸ h_base)
         constructor
         · exact h_cons.left
-        · exact h
+        · exact h_base
     | succ m ih =>
       simp at ih
       simp only [drop, ← head_dropn]
@@ -582,26 +582,28 @@ theorem all_mp {α : Type u} {p q : α → Prop} (h : ∀ a, p a → q a) {li : 
     li.All q := by
   let motive : Seq α → Prop := fun x => x.All p
   apply All.coind motive
+  · exact hp
   · intro hd tl ih
     simp [motive] at ih
     constructor
     · exact h _ ih.left
     · simp [motive]
       exact ih.right
-  · exact hp
 
 theorem map_all_iff {α : Type u} {β : Type u} {f : α → β} {p : β → Prop} {li : Seq α} :
     (li.map f).All p ↔ li.All (p ∘ f) := by
   constructor
   · intro h
     let motive : Seq α → Prop := fun x => (map f x).All p
-    apply All.coind motive _ h
+    apply All.coind motive h
     · intro hd tl ih
       simp [motive] at ih
       exact ih
   · intro h
     let motive : Seq β → Prop := fun x => ∃ (y : Seq α), x = y.map f ∧ y.All (p ∘ f)
     apply All.coind motive
+    · simp [motive]
+      use li
     · intro hd tl ih
       simp [motive] at ih
       obtain ⟨y, hx_eq, hy⟩ := ih
@@ -619,8 +621,6 @@ theorem map_all_iff {α : Type u} {β : Type u} {f : α → β} {p : β → Prop
           constructor
           · exact hx_eq.right
           · exact hy.right
-    · simp [motive]
-      use li
 
 theorem take_all {α : Type u} {li : Seq α} {p : α → Prop} (h_all : li.All p) {n : ℕ} :
     ∀ x ∈ li.take n, p x := by
@@ -661,6 +661,8 @@ end All
 
 section Sorted
 
+-- Note: `irreducible` here is necessary for the same reason as for `All` above
+@[irreducible]
 def Sorted {α : Type u} (r : α → α → Prop) (li : Seq α) : Prop :=
   ∀ i j x y, i < j → li.get? i = .some x → li.get? j = .some y → r x y
 
@@ -700,9 +702,10 @@ theorem Sorted.cons {α : Type u} {r : α → α → Prop} [IsTrans _ r] {hd : �
     | succ n =>
       exact h_tl n k x y (by omega) hx hy
 
-theorem Sorted.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] (motive : Seq α → Prop)
+theorem Sorted.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] {li : Seq α}
+    (motive : Seq α → Prop) (h_base : motive li)
     (h_survive : ∀ hd tl, motive (.cons hd tl) → tl.head.elim True (r hd ·) ∧ motive tl)
-    {li : Seq α} (h : motive li) : Sorted r li := by
+    : Sorted r li := by
   have h_all : ∀ n, motive (li.drop n) := by
     intro n
     induction n with
@@ -775,7 +778,7 @@ theorem Sorted_tail {α : Type u} {r : α → α → Prop} {li : Seq α} (h : li
     simp
     exact (Sorted_cons h).right
 
-theorem Sorted_tail' {α : Type u} {r : α → α → Prop} {li : Seq α} (h : li.Sorted r) {n : ℕ} :
+theorem Sorted_drop {α : Type u} {r : α → α → Prop} {li : Seq α} (h : li.Sorted r) {n : ℕ} :
     (li.drop n).Sorted r := by
   induction n with
   | zero => simpa
@@ -839,10 +842,11 @@ theorem atLeastAsLongAs_map {α : Type v} {β : Type v} {γ : Type w} {f : β �
   simpa [TerminatedAt] using h
 
 -- very bad proof. May be possible to do everything in a single induction?
-theorem atLeastAsLong.coind {α : Type u} {β : Type v} (motive : Seq α → Seq β → Prop)
+theorem atLeastAsLong.coind {α : Type u} {β : Type v} {a : Seq α} {b : Seq β}
+    (motive : Seq α → Seq β → Prop) (h_base : motive a b)
     (h_survive : ∀ a b, motive a b →
       (∀ b_hd b_tl, (b = cons b_hd b_tl) → ∃ a_hd a_tl, a = cons a_hd a_tl ∧ motive a_tl b_tl))
-    {a : Seq α} {b : Seq β} (h : motive a b) : a.atLeastAsLongAs b := by
+    : a.atLeastAsLongAs b := by
   simp only [atLeastAsLongAs]
   intro n
   have : b.drop n ≠ .nil → motive (a.drop n) (b.drop n) := by

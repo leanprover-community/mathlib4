@@ -101,6 +101,8 @@ theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg : ℝ} {x_co
     ∃ (x : PreMS (basis_hd :: basis_tl)), a = (Seq.map (fun x ↦ y.mulMonomial x.2 x.1) x) ∧
     x.WellOrdered
   apply Seq.Sorted.coind motive (r := fun x1 x2 ↦ x1 > x2)
+  · simp [motive]
+    use x
   · intro hd tl ih
     simp only [motive] at ih
     obtain ⟨x, ih, hx_wo⟩ := ih
@@ -123,8 +125,6 @@ theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg : ℝ} {x_co
         simpa using hx_comp
     · simp only [motive]
       use x_tl
-  · simp [motive]
-    use x
 
 @[simp]
 theorem mul_leadingExp {basis_hd : _} {basis_tl : _} {x y : PreMS (basis_hd :: basis_tl)} :
@@ -162,6 +162,7 @@ theorem mul_one' {basis : Basis} {ms : PreMS basis} : mul ms (one basis) = ms :=
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
       x = y.mul (one (basis_hd :: basis_tl))
     apply Seq.Eq.coind motive
+    · simp only [motive]
     · intro a b ih
       simp only [motive] at ih
       subst ih
@@ -180,7 +181,6 @@ theorem mul_one' {basis : Basis} {ms : PreMS basis} : mul ms (one basis) = ms :=
         · exact Eq.refl _
         · simp [one, const, Seq.cons_eq_cons]
           apply mul_one'
-    · simp only [motive]
 
 @[simp]
 theorem one_mul' {basis : Basis} {ms : PreMS basis} : mul (one basis) ms = ms := by
@@ -191,6 +191,7 @@ theorem one_mul' {basis : Basis} {ms : PreMS basis} : mul (one basis) ms = ms :=
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
       x = y.mulMonomial (const 1 basis_tl) 0
     apply Seq.Eq.coind motive
+    · simp only [motive]
     · intro x y ih
       subst ih
       apply y.recOn
@@ -208,7 +209,6 @@ theorem one_mul' {basis : Basis} {ms : PreMS basis} : mul (one basis) ms = ms :=
               apply one_mul'
             · exact Eq.refl _
           · simp only [motive]
-    · simp only [motive]
 
 -- Is not needed so far
 -- theorem mulMonomial_mulConst {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -225,6 +225,8 @@ mutual
         x = b.mulMonomial (m_coef.mulConst c) m_deg ∧
         y = (b.mulMonomial m_coef m_deg).mulConst c
     apply Seq.Eq.coind motive
+    · simp only [motive]
+      use b
     · intro x y ih
       simp only [motive] at ih ⊢
       obtain ⟨b, hx, hy⟩ := ih
@@ -243,8 +245,6 @@ mutual
         · rw [mul_mulConst]
         · exact Eq.refl _
       use b_tl
-    · simp only [motive]
-      use b
 
   theorem mul_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
       (X.mulConst c).mul Y = (X.mul Y).mulConst c := by
@@ -254,6 +254,9 @@ mutual
       let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
         ∃ (X Y S : PreMS (basis_hd :: basis_tl)), a = S + (X.mulConst c).mul Y ∧ b = S + (X.mul Y).mulConst c
       apply Seq.Eq.coind_strong motive
+      · simp only [motive]
+        use X, Y, 0
+        simp
       · intro a b ih
         simp only [motive] at ih ⊢
         obtain ⟨X, Y, S, ha, hb⟩ := ih
@@ -320,9 +323,6 @@ mutual
             exact Eq.refl _
           · rw [add_assoc]
             rw [add_mulConst, mulMonomial_mulConst_coef]
-      · simp only [motive]
-        use X, Y, 0
-        simp
 end
 
 mutual
@@ -335,6 +335,8 @@ mutual
       x = b.mulMonomial (m_coef1 + m_coef2) m_deg ∧
       y = b.mulMonomial m_coef1 m_deg + b.mulMonomial m_coef2 m_deg
     apply Seq.Eq.coind motive
+    · simp [motive]
+      use b
     · intro x y ih
       simp only [motive] at ih
       obtain ⟨b, hx, hy⟩ := ih
@@ -361,8 +363,6 @@ mutual
         constructor
         · exact Eq.refl _
         · rfl
-    · simp [motive]
-      use b
 
   -- TODO : lots of similar cases. Can simplify?
   @[simp]
@@ -379,6 +379,9 @@ mutual
           a = S + ((X + Y).mul (.cons (Z_deg, Z_coef) Z_tl)) ∧
           b = S + ((X.mul (.cons (Z_deg, Z_coef) Z_tl)) + (Y.mul (.cons (Z_deg, Z_coef) Z_tl)))
       apply Seq.Eq.coind_strong motive
+      · simp only [motive]
+        use 0, X, Y
+        simp
       · intro a b ih
         obtain ⟨S, X, Y, ha, hb⟩ := ih
         subst ha hb
@@ -609,9 +612,6 @@ mutual
             · rw [add_mulMonomial_right]
               abel
             · abel
-      · simp only [motive]
-        use .nil, X, Y
-        simp
 end
 
 mutual
@@ -625,6 +625,8 @@ mutual
       x = (b1 + b2).mulMonomial m_coef m_deg ∧
       y = b1.mulMonomial m_coef m_deg + b2.mulMonomial m_coef m_deg
     apply Seq.Eq.coind_strong motive
+    · simp [motive]
+      use b1, b2
     · intro x y ih
       simp only [motive] at ih
       obtain ⟨b1, b2, hx, hy⟩ := ih
@@ -691,8 +693,6 @@ mutual
         constructor
         · exact Eq.refl _
         · simp
-    · simp [motive]
-      use b1, b2
 
   -- Note: `Z.WellOrdered` is necessary. Counterexample: `X = [0]`, `Y = [1]`, `Z = [0, 2]`.
   -- Then `lhs = [0, 2] * [1, 0] = [1, 3, 2, 0]` while `rhs = [0, 2] + [1, 3] = [1, 3, 0, 2]`.
@@ -716,6 +716,9 @@ mutual
           b = S + (Z.mul (Seq.cons (X_deg, X_coef) X_tl)) + Z.mul (Seq.cons (Y_deg, Y_coef) Y_tl) ∧
           Z.WellOrdered
       apply Seq.Eq.coind_strong motive
+      · simp only [motive]
+        use Z, 0
+        simpa
       · intro a b ih
         simp only [motive] at ih
         obtain ⟨Z, S, ha, hb, hZ_wo⟩ := ih
@@ -917,9 +920,7 @@ mutual
             · rw [add_mulMonomial_left hZ_coef_wo]
               abel
             · assumption
-      · simp only [motive]
-        use Z, 0
-        simpa
+
 end
 
 mutual
@@ -958,6 +959,8 @@ mutual
         x = S + (b.mulMonomial m_coef m_deg).mul (Seq.cons (c_deg, c_coef) c_tl) ∧
         y = S + (b.mul (Seq.cons (c_deg, c_coef) c_tl)).mulMonomial m_coef m_deg
     apply Seq.Eq.coind_strong motive
+    · use 0, b
+      simp
     · intro x y ih
       simp only [motive] at ih
       obtain ⟨S, b, hx, hy⟩ := ih
@@ -1036,8 +1039,6 @@ mutual
           · abel
           · rw [add_mulMonomial_left hm_wo, mulMonomial_mul hm_wo]
             abel
-    · use 0, b
-      simp
 
   -- Note: `X.WellOrdered` is necessary. Counterexample: `basis = [x, y]`.
   -- `X = x^0 * (y^0 + y^2)`
@@ -1067,6 +1068,10 @@ mutual
           b = S + X.mul (mul (Seq.cons (Y_deg, Y_coef) Y_tl) (Seq.cons (Z_deg, Z_coef) Z_tl)) ∧
           X.WellOrdered
       apply Seq.Eq.coind_strong motive
+      · simp only [motive]
+        use X, 0
+        simp
+        exact hX_wo
       · intro a b ih
         obtain ⟨X, S, ha, hb, hX_wo⟩ := ih
         subst ha hb
@@ -1142,10 +1147,6 @@ mutual
             · rw [add_mulMonomial_left hX_coef_wo, mulMonomial_mul hX_coef_wo, mul_cons_cons]
               abel
             · exact hX_tl_wo
-      · simp only [motive]
-        use X, 0
-        simp
-        exact hX_wo
 end
 
 -- Is not needed so far
@@ -1170,6 +1171,9 @@ theorem merge1_mul_comm_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       a = Y + merge1 (Seq.map (fun x ↦ x.mul (.cons (X_deg, X_coef) X_tl)) s) ∧
       b = Y + (merge1 s).mul (.cons (X_deg, X_coef) X_tl)
   apply Seq.Eq.coind_strong motive
+  · simp only [motive]
+    use 0, s
+    simp
   · intro a b ih
     simp only [motive] at ih ⊢
     obtain ⟨Y, s, ha, hb⟩ := ih
@@ -1230,9 +1234,6 @@ theorem merge1_mul_comm_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         exact Eq.refl _
       · rw [add_mul_right']
         abel
-  · simp only [motive]
-    use 0, s
-    simp
 
 noncomputable def longAdd {basis : Basis} {k : ℕ} (args : Fin k → PreMS basis) : PreMS basis :=
   match k with
@@ -1813,6 +1814,8 @@ mutual
       ∃ (b : PreMS (basis_hd :: basis_tl)), x = b.mulMonomial m_coef m_deg ∧
       b.WellOrdered
     apply WellOrdered.coind motive
+    · simp only [motive]
+      use b
     · intro ms ih
       simp only [motive] at ih
       obtain ⟨b, h_eq, hb_wo⟩ := ih
@@ -1841,8 +1844,6 @@ mutual
           · exact h_comp
         simp only [motive]
         use tl
-    · simp only [motive]
-      use b
 
   -- TODO: maybe use `merge1_WellOrdered`?
   -- TODO: very ugly. rewrite
@@ -1859,6 +1860,13 @@ mutual
           (∀ j , (BM j).1.WellOrdered ∧ (BM j).2.1.WellOrdered) ∧
           X.WellOrdered ∧ Y.WellOrdered
       apply WellOrdered.coind motive
+      · simp only [motive]
+        use 0
+        use default
+        use X
+        use Y
+        simp [longAdd, zero]
+        constructor <;> assumption
       · intro ms ih
         simp only [motive] at ih
         obtain ⟨k, BM, X, Y, h_eq, h_BM, hX_wo, hY_wo⟩ := ih
@@ -2130,13 +2138,6 @@ mutual
                   constructor
                   · exact hX_tl_wo
                   · exact hY_wo
-      · simp only [motive]
-        use 0
-        use default
-        use X
-        use Y
-        simp [longAdd, zero]
-        constructor <;> assumption
 
 end
 
@@ -2155,6 +2156,10 @@ mutual
       f =ᶠ[atTop] (fun x ↦ (M x) * (basis_hd x)^m_deg * (B x)) ∧
       b.Approximates B (basis_hd :: basis_tl) ∧ m_coef.Approximates M basis_tl
     apply Approximates.coind motive
+    · simp only [motive]
+      use b
+      use B
+      use M
     · intro f ms ih
       simp only [motive] at ih
       obtain ⟨b, B, M, h_ms_eq, hf_eq, hb_approx, hm_approx⟩ := ih
@@ -2211,10 +2216,6 @@ mutual
           intro x ⟨hf_eq, h_pos⟩
           simp [Real.rpow_add h_pos, hf_eq]
           ring_nf
-    · simp only [motive]
-      use b
-      use B
-      use M
 
   theorem longAdd_mulMonomial_cons_Approximates_coef {basis_hd : _} {basis_tl : _} {k : ℕ}
       {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {deg : ℝ}
@@ -2296,6 +2297,21 @@ mutual
           X.Approximates fX (basis_hd :: basis_tl) ∧
           Y.Approximates fY (basis_hd :: basis_tl)
       apply Approximates.coind motive
+      · simp only [motive]
+        use 0
+        use default
+        use 1
+        use 1
+        use X
+        use Y
+        use fX
+        use fY
+        simp [longAdd]
+        constructor
+        · rfl
+        constructor
+        · exact hX_approx
+        · exact hY_approx
       · intro f ms ih
         simp only [motive] at ih
         obtain ⟨k, BM, fB, fM, X, Y, fX, fY, h_ms_eq, hf_eq, hB_approx, hM_approx, hX_approx, hY_approx⟩ := ih
@@ -2795,21 +2811,6 @@ mutual
                   constructor
                   · exact hX_tl_approx
                   · exact hY_approx
-      · simp only [motive]
-        use 0
-        use default
-        use 1
-        use 1
-        use X
-        use Y
-        use fX
-        use fY
-        simp [longAdd]
-        constructor
-        · rfl
-        constructor
-        · exact hX_approx
-        · exact hY_approx
 end
 
 end PreMS

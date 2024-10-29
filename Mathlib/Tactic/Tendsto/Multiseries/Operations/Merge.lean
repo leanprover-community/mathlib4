@@ -269,6 +269,8 @@ theorem merge1_cons_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : PreMS 
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
     ∃ m, x = merge m (.cons y .nil)
   apply Seq.Eq.coind motive
+  · simp only [motive, merge1]
+    use 0
   · intro x y ih
     simp only [motive] at ih
     obtain ⟨m, ih⟩ := ih
@@ -292,8 +294,6 @@ theorem merge1_cons_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : PreMS 
       use ?_
       congr
       exact Eq.refl _
-  · simp only [motive, merge1]
-    use 0
 
 @[simp]
 theorem megre1_cons_head_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -589,6 +589,8 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
       x = merge (m + 1) (Seq.cons s_hd s_tl) ∧
       y = s_hd + (merge m s_tl)
   apply Seq.Eq.coind motive
+  · simp only [motive]
+    use m, s_hd, s_tl
   · intro x y ih
     simp only [motive] at ih
     obtain ⟨m, s_hd, s_tl, hx_eq, hy_eq⟩ := ih
@@ -753,8 +755,6 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
             · exact Eq.refl _
           · congr
             conv => lhs; simp [merge_aux_liNew_cons_cons]
-  · simp only [motive]
-    use m, s_hd, s_tl
 
 @[simp]
 theorem merge1_cons_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -822,6 +822,14 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       s.All WellOrdered ∧
       s.Sorted (fun x1 x2 ↦ x1 > x2)
   apply WellOrdered.coind motive
+  · simp only [motive]
+    use 0, s
+    simp
+    constructor
+    · exact zero_WellOrdered
+    constructor
+    · exact h_wo
+    · exact h_sorted
   · intro ms ih
     simp only [motive] at ih ⊢
     obtain ⟨X, s, h_eq, hX_wo, h_wo, h_sorted⟩ := ih
@@ -996,14 +1004,6 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         constructor
         · exact h_tl_wo
         · exact h_sorted_tl
-  · simp only [motive]
-    use 0, s
-    simp
-    constructor
-    · exact zero_WellOrdered
-    constructor
-    · exact h_wo
-    · exact h_sorted
 
 end PreMS
 

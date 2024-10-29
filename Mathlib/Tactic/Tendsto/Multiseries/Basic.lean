@@ -95,7 +95,8 @@ theorem WellOrdered.nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
   · intro i x
     intro h
     simp at h
-  · intro i j x y _ h
+  · unfold Seq.Sorted
+    intro i j x y _ h
     simp at h
 
 theorem WellOrdered.cons_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
@@ -110,7 +111,8 @@ theorem WellOrdered.cons_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : 
       simpa
     | succ j =>
       simp at h
-  · intro i j x y h_lt _ hj
+  · unfold Seq.Sorted
+    intro i j x y h_lt _ hj
     cases j with
     | zero => simp at h_lt
     | succ k => simp at hj
@@ -191,8 +193,9 @@ theorem WellOrdered_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
       exact h_coef hx
     · exact h_sorted.right
 
-theorem WellOrdered.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem WellOrdered.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
     (motive : (ms : PreMS (basis_hd :: basis_tl)) → Prop)
+    (h_base : motive ms)
     (h_survive : ∀ ms, motive ms →
       (ms = .nil) ∨
       (
@@ -201,8 +204,8 @@ theorem WellOrdered.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         tl.leadingExp < deg ∧
         motive tl
       )
-    ) {ms : PreMS (basis_hd :: basis_tl)}
-    (h : motive ms) : ms.WellOrdered := by
+    )
+    : ms.WellOrdered := by
   have h_all : ∀ n, motive (ms.drop n) := by
     intro n
     induction n with
@@ -232,7 +235,7 @@ theorem WellOrdered.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       rw [h_ms_eq] at hx
       simp at hx
       simpa [← hx]
-  · refine Seq.Sorted.coind motive ?_ h
+  · apply Seq.Sorted.coind motive h_base
     intro hd tl ih
     specialize h_survive _ ih
     simp [Seq.cons_eq_cons] at h_survive
@@ -255,6 +258,10 @@ theorem WellOrdered_allLt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreM
   let motive : PreMS (basis_hd :: basis_tl) → Prop := fun ms =>
     ms.leadingExp < a ∧ ms.WellOrdered
   apply Seq.All.coind motive
+  · simp only [motive]
+    constructor
+    · exact h_lt
+    · exact h_wo
   · intro (deg, coef) tl ih
     simp [motive, leadingExp] at ih
     obtain ⟨h_lt, h_wo⟩ := ih
@@ -267,10 +274,7 @@ theorem WellOrdered_allLt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreM
       · exact h_comp
       · simp [h_lt]
     · exact h_tl_wo
-  · simp only [motive]
-    constructor
-    · exact h_lt
-    · exact h_wo
+
 
 theorem WellOrdered_cons_allLt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} {a : ℝ}
@@ -390,6 +394,17 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {degs : Seq ℝ} {basis_
       ) ∨
       (x = .nil ∧ y = .nil)
   apply Seq.Eq.coind motive
+  · simp [motive]
+    use Cs
+    use degs
+    use 0
+    use init
+    left
+    constructor
+    · assumption
+    constructor
+    · simp
+    · simp [partialSums]
   · intro x y ih
     simp [motive] at ih
     obtain ⟨Cs', degs', init', D, ih⟩ := ih
@@ -439,17 +454,6 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {degs : Seq ℝ} {basis_
         rfl
     · right
       exact ih
-  · simp [motive]
-    use Cs
-    use degs
-    use 0
-    use init
-    left
-    constructor
-    · assumption
-    constructor
-    · simp
-    · simp [partialSums]
 
 -- a non valid occurrence of the datatypes being declared
 -- inductive Approximates : (ℝ → ℝ) → (basis : Basis) → PreMS basis → Prop where
@@ -535,8 +539,10 @@ private structure Approximates_coind_auxT (motive : (F : ℝ → ℝ) → (basis
   F : ℝ → ℝ
   h : motive F basis_hd basis_tl val
 
-theorem Approximates.coind' (motive : (F : ℝ → ℝ) → (basis_hd : ℝ → ℝ) →
+theorem Approximates.coind'  {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : ℝ → ℝ}
+    {ms : PreMS (basis_hd :: basis_tl)} (motive : (F : ℝ → ℝ) → (basis_hd : ℝ → ℝ) →
     (basis_tl : Basis) → (ms : PreMS (basis_hd :: basis_tl)) → Prop)
+    (h_base : motive F basis_hd basis_tl ms)
     (h_survive : ∀ basis_hd basis_tl F ms, motive F basis_hd basis_tl ms →
       (ms = .nil ∧ F =ᶠ[atTop] 0) ∨
       (
@@ -545,8 +551,7 @@ theorem Approximates.coind' (motive : (F : ℝ → ℝ) → (basis_hd : ℝ → 
         majorated F basis_hd deg ∧
         (motive (fun x ↦ F x - (basis_hd x)^deg * (C x)) basis_hd basis_tl tl)
       )
-    ) {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : ℝ → ℝ} {ms : PreMS (basis_hd :: basis_tl)}
-    (h : motive F basis_hd basis_tl ms) : Approximates F (basis_hd :: basis_tl) ms := by
+    ) : Approximates F (basis_hd :: basis_tl) ms := by
   simp [Approximates]
   let T := Approximates_coind_auxT motive basis_hd basis_tl
   let g : T → Option ((ℝ → ℝ) × T) := fun ⟨val, F, h⟩ =>
@@ -569,12 +574,15 @@ theorem Approximates.coind' (motive : (F : ℝ → ℝ) → (basis_hd : ℝ → 
         .some (C, ⟨tl, fun x ↦ F x - (basis_hd x)^deg * (C x), spec.choose_spec.right.right⟩)
     )
     ) h
-  let Cs : Seq (ℝ → ℝ) := Seq.corec g ⟨ms, F, h⟩
+  let Cs : Seq (ℝ → ℝ) := Seq.corec g ⟨ms, F, h_base⟩
   use Cs
   constructor
   · let motive' : Seq (ℝ → ℝ) → Seq (ℝ × PreMS basis_tl) → Prop := fun Cs ms =>
       ∃ F h, Cs = (Seq.corec g ⟨ms, F, h⟩)
     apply Seq.atLeastAsLong.coind motive'
+    · simp only [motive']
+      use F
+      use h_base
     · intro Cs ms ih (deg, coef) tl h_ms_eq
       simp only [motive'] at ih
       obtain ⟨F, h, h_Cs_eq⟩ := ih
@@ -591,14 +599,15 @@ theorem Approximates.coind' (motive : (F : ℝ → ℝ) → (basis_hd : ℝ → 
       generalize_proofs p1 p2
       use fun x ↦ F x - basis_hd x ^ deg * p1.choose x
       use p2
-    · simp only [motive']
-      use F
-      use h
   · constructor
     · let motive' : Seq ((ℝ → ℝ) × ℝ × PreMS basis_tl) → Prop := fun li =>
         ∃ (ms : Seq (ℝ × PreMS basis_tl)), ∃ F h,
           li = (Seq.corec g ⟨ms, F, h⟩).zip ms
       apply Seq.All.coind motive'
+      · simp only [motive']
+        use ms
+        use F
+        use h_base
       · intro (C, (deg, coef)) tl ih
         simp only
         simp only [motive'] at ih
@@ -625,10 +634,6 @@ theorem Approximates.coind' (motive : (F : ℝ → ℝ) → (basis_hd : ℝ → 
             use ?_
             use ?_
             use ?_
-      · simp only [motive']
-        use ms
-        use F
-        use h
     · simp [partialSums]
       let motive' : Seq ((ℝ → ℝ) × Option ℝ) → Prop := fun li =>
         li = .nil ∨ ∃ (ms : Seq (ℝ × PreMS basis_tl)), ∃ G h init,
@@ -636,6 +641,15 @@ theorem Approximates.coind' (motive : (F : ℝ → ℝ) → (basis_hd : ℝ → 
       ((Seq.map some (Seq.map (fun x ↦ x.1) ms)).append (Seq.cons none Seq.nil))) ∧
       G + init =ᶠ[atTop] F
       apply Seq.All.coind motive'
+      · simp only [motive']
+        right
+        use ms
+        use F
+        use h_base
+        use 0
+        constructor
+        · rfl
+        simp
       · intro (F', deg?) li_tl ih
         simp only [motive'] at ih
         cases ih with
@@ -707,19 +721,12 @@ theorem Approximates.coind' (motive : (F : ℝ → ℝ) → (basis_hd : ℝ → 
                 lhs; ext x; rw [show G x + (F' x - F x) = (G x + F' x) - F x by ring]
               apply eventuallyEq_iff_sub.mp
               exact hF_eq
-      · simp only [motive']
-        right
-        use ms
-        use F
-        use h
-        use 0
-        constructor
-        · rfl
-        simp
 
--- without basis in motive
-theorem Approximates.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+-- without basis in motive. TODO: remove `coind'`
+theorem Approximates.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : ℝ → ℝ}
+    {ms : PreMS (basis_hd :: basis_tl)}
     (motive : (F : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop)
+    (h_base : motive F ms)
     (h_survive : ∀ F ms, motive F ms →
       (ms = .nil ∧ F =ᶠ[atTop] 0) ∨
       (
@@ -728,13 +735,15 @@ theorem Approximates.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         majorated F basis_hd deg ∧
         (motive (fun x ↦ F x - (basis_hd x)^deg * (C x)) tl)
       )
-    ) {F : ℝ → ℝ} {ms : PreMS (basis_hd :: basis_tl)}
-    (h : motive F ms) : Approximates F (basis_hd :: basis_tl) ms := by
+    )
+    : Approximates F (basis_hd :: basis_tl) ms := by
   let motive' : (F : ℝ → ℝ) → (basis_hd : ℝ → ℝ) →
     (basis_tl : Basis) → (ms : PreMS (basis_hd :: basis_tl)) → Prop :=
     fun F' basis_hd' basis_tl' ms' =>
       ∃ (h_hd : basis_hd' = basis_hd) (h_tl : basis_tl' = basis_tl), motive F' (h_tl ▸ (h_hd ▸ ms'))
   apply Approximates.coind' motive'
+  · simp [motive']
+    assumption
   · intro basis_hd' basis_tl' F' ms' ih
     simp [motive'] at ih ⊢
     obtain ⟨h_hd, h_tl, ih⟩ := ih
@@ -758,8 +767,6 @@ theorem Approximates.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       constructor
       · exact h_comp
       simpa
-  · simp [motive']
-    assumption
 
 -- Prove with coinduction?
 theorem Approximates.nil {F : ℝ → ℝ} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -813,6 +820,8 @@ theorem Approximates_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {F F' : 
       fun F' ms =>
         ∃ F, F =ᶠ[atTop] F' ∧ Approximates F (basis_hd :: basis_tl) ms
     apply Approximates.coind motive
+    · simp only [motive]
+      use F
     · intro F' ms ih
       revert ih
       apply ms.recOn
@@ -847,8 +856,6 @@ theorem Approximates_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {F F' : 
           · apply EventuallyEq.sub h_equiv
             apply EventuallyEq.rfl
           · exact h_tl
-    · simp only [motive]
-      use F
 
 --------------------------------
 
