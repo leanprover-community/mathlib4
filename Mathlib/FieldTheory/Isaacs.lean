@@ -11,11 +11,11 @@ import Mathlib.GroupTheory.CosetCover
 
 ## Main results
 
-`Field.nonempty_algHom_of_exists_roots` says if `E/F` and `K/F` are field extensions
+`Field.nonempty_algHom_of_exist_roots` says if `E/F` and `K/F` are field extensions
 with `E/F` algebraic, and if the minimal polynomial of every element of `E` over `F` has a root
 in `K`, then there exists an `F`-embedding of `E` into `K`.
 
-As a corollary, if `E/F` is algebraic and every irreducible polynomial in `F[X]` has a root
+As a corollary, if `E/F` is algebraic and every monic irreducible polynomial in `F[X]` has a root
 in `E`, then `E` is an algebraic closure of `F`.
 
 As another corollary, if `E/F` and `K/F` are both algebraic and have the same set of minimal
@@ -35,9 +35,9 @@ open Polynomial IntermediateField
 variable {F E K : Type*} [Field F] [Field E] [Field K] [Algebra F E] [Algebra F K]
 variable [alg : Algebra.IsAlgebraic F E]
 
-theorem nonempty_algHom_of_exists_roots (h : ∀ x : E, ∃ y : K, aeval y (minpoly F x) = 0) :
+theorem nonempty_algHom_of_exist_roots (h : ∀ x : E, ∃ y : K, aeval y (minpoly F x) = 0) :
     Nonempty (E →ₐ[F] K) := by
-  refine nonempty_algHom_of_exists_lifts_finset
+  refine nonempty_algHom_of_exist_lifts_finset
     fun S ↦ ⟨⟨adjoin F S, Nonempty.some ?_⟩, subset_adjoin _ _⟩
   let p := (S.prod <| minpoly F).map (algebraMap F K)
   let K' := SplittingField p
@@ -70,10 +70,49 @@ theorem nonempty_algHom_of_exists_roots (h : ∀ x : E, ∃ y : K, aeval y (minp
   exact ⟨((botEquiv K K').toAlgHom.restrictScalars F).comp <|
     ω.codRestrict K₀.toSubalgebra fun x ↦ hω trivial⟩
 
-theorem nonempty_algHom_of_minpoly_eq (h : ∀ x : E, ∃ y : K, minpoly F x = minpoly F y) :
-    Nonempty (E →ₐ[F] K) := by
-  sorry
+theorem nonempty_algHom_of_minpoly_eq
+    (h : ∀ x : E, ∃ y : K, minpoly F x = minpoly F y) :
+    Nonempty (E →ₐ[F] K) :=
+  nonempty_algHom_of_exist_roots fun x ↦ have ⟨y, hy⟩ := h x; ⟨y, by rw [hy, minpoly.aeval]⟩
 
--- if and only if
+theorem nonempty_algHom_of_range_minpoly_subset
+    (h : Set.range (@minpoly F E _ _ _) ⊆ Set.range (@minpoly F K _ _ _)) :
+    Nonempty (E →ₐ[F] K) :=
+  nonempty_algHom_of_minpoly_eq fun x ↦ have ⟨y, hy⟩ := h ⟨x, rfl⟩; ⟨y, hy.symm⟩
+
+theorem nonempty_algEquiv_of_range_minpoly_eq
+    (h : Set.range (@minpoly F E _ _ _) = Set.range (@minpoly F K _ _ _)) :
+    Nonempty (E ≃ₐ[F] K) :=
+  have ⟨σ⟩ := nonempty_algHom_of_range_minpoly_subset h.le
+  have : Algebra.IsAlgebraic F K := ⟨fun y ↦ IsIntegral.isAlgebraic <| by
+    by_contra hy
+    have ⟨x, hx⟩ := h.ge ⟨y, rfl⟩
+    rw [minpoly.eq_zero hy] at hx
+    exact minpoly.ne_zero ((alg.isIntegral).1 x) hx⟩
+  have ⟨τ⟩ := nonempty_algHom_of_range_minpoly_subset h.ge
+  ⟨.ofBijective _ (Algebra.IsAlgebraic.algHom_bijective₂ σ τ).1⟩
+
+theorem nonempty_algHom_of_aeval_eq_zero_subset
+    (h : {p : F[X] | ∃ x : E, aeval x p = 0} ⊆ {p | ∃ y : K, aeval y p = 0}) :
+    Nonempty (E →ₐ[F] K) :=
+  nonempty_algHom_of_minpoly_eq fun x ↦
+    have ⟨y, hy⟩ := h ⟨_, minpoly.aeval F x⟩
+    ⟨y, (minpoly.eq_iff_aeval_minpoly_eq_zero <| (alg.isIntegral).1 x).mpr hy⟩
+
+theorem nonempty_algEquiv_of_aeval_eq_zero_eq [Algebra.IsAlgebraic F K]
+    (h : {p : F[X] | ∃ x : E, aeval x p = 0} = {p | ∃ y : K, aeval y p = 0}) :
+    Nonempty (E ≃ₐ[F] K) :=
+  have ⟨σ⟩ := nonempty_algHom_of_aeval_eq_zero_subset h.le
+  have ⟨τ⟩ := nonempty_algHom_of_aeval_eq_zero_subset h.ge
+  ⟨.ofBijective _ (Algebra.IsAlgebraic.algHom_bijective₂ σ τ).1⟩
+
+theorem _root_.IsAlgClosure.of_exist_roots
+    (h : ∀ p : F[X], p.Monic → Irreducible p → ∃ x : E, aeval x p = 0) :
+    IsAlgClosure F E :=
+  .of_splits fun p _ _ ↦
+    have ⟨σ⟩ := nonempty_algHom_of_exist_roots fun x : p.SplittingField ↦
+      have := Algebra.IsAlgebraic.isIntegral (K := F).1 x
+      h _ (minpoly.monic this) (minpoly.irreducible this)
+    splits_of_algHom (SplittingField.splits _) σ
 
 end Field

@@ -227,6 +227,16 @@ instance IsAlgClosed.instIsAlgClosure (F : Type*) [Field F] [IsAlgClosed F] : Is
   isAlgClosed := ‹_›
   isAlgebraic := .of_finite F F
 
+theorem IsAlgClosure.of_splits {R K} [CommRing R] [IsDomain R] [Field K] [Algebra R K]
+    [Algebra.IsIntegral R K] [NoZeroSMulDivisors R K]
+    (h : ∀ p : R[X], p.Monic → Irreducible p → p.Splits (algebraMap R K)) : IsAlgClosure R K where
+  isAlgebraic := inferInstance
+  isAlgClosed := .of_exists_root _ fun _p _ p_irred ↦
+    have ⟨g, monic, irred, dvd⟩ := p_irred.exists_dvd_monic_irreducible_of_isIntegral (K := R)
+    exists_root_of_splits _ (splits_of_splits_of_dvd _ (map_monic_ne_zero monic)
+      ((splits_id_iff_splits _).mpr <| h g monic irred) dvd) <|
+        degree_ne_of_natDegree_ne p_irred.natDegree_pos.ne'
+
 namespace IsAlgClosed
 
 variable {K : Type u} [Field K] {L : Type v} {M : Type w} [Field L] [Algebra K L] [Field M]

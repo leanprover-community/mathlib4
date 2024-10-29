@@ -164,7 +164,7 @@ theorem Lifts.union_isExtendible [alg : Algebra.IsAlgebraic F E]
   exact (subset_adjoin _ _).trans (SetLike.coe_subset_coe.mpr <|
     le_sup_right.trans <| le_iSup_of_le (Classical.arbitrary _) le_rfl)
 
-theorem nonempty_algHom_of_exists_lifts_finset [alg : Algebra.IsAlgebraic F E]
+theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     (h : ∀ S : Finset E, ∃ σ : Lifts F E K, (S : Set E) ⊆ σ.carrier) :
     Nonempty (E →ₐ[F] K) := by
   have : (⊥ : Lifts F E K).IsExtendible := fun S ↦ have ⟨σ, hσ⟩ := h S; ⟨σ, bot_le, hσ⟩
