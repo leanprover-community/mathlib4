@@ -87,8 +87,11 @@ lemma geometry_neg {n : ℕ} {k : Fin n}
     {P : (Fin n → ℝ) → Prop} {y v : { v : Fin n → ℝ // P v }}
     (hy : y.1 k < 0)
     (hv : dist y.1 v.1 < - y.1 k) : v.1 k < 0 := by
-  have R := @geometryPos n k (-y.1) (-v.1) (by simp; tauto) (by simp; tauto)
-  simp at R
+  have R := @geometryPos n k (-y.1) (-v.1)
+    (by simp only [dist_neg_neg, Pi.neg_apply]; tauto)
+    (by simp only [Pi.neg_apply,
+      Left.neg_pos_iff]; tauto)
+  simp only [Pi.neg_apply, Left.neg_pos_iff] at R
   exact R
 
 
@@ -180,21 +183,21 @@ theorem distConePosNeg {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j =
       congr
       ext z
       unfold flipPos
-      simp
+      simp only [coe_nndist]
       by_cases H : j = z
       · subst H
-        simp
+        simp only [↓reduceIte]
         rw [h₀]
         simp
       · rw [if_neg H]
     have Q := Q₀.2 (flipPos j y) (by rw [this]; exact hy) (by
       unfold flipPos
-      simp
+      simp only [↓reduceIte, gt_iff_lt, Left.neg_pos_iff]
       tauto
     )
     unfold flipPos at *
-    simp at Q
-    simp_all
+    simp only [↓reduceIte] at Q
+    simp_all only [ge_iff_le]
     have : j ≠ i := by aesop
     rw [if_neg this] at Q
     linarith
@@ -270,7 +273,7 @@ lemma pos_or_neg {a : { v : Fin 2 → ℝ // v ≠ 0 }} (H : a.1 1 = 0) : a.1 0 
   have : a.1 0 = 0 := by linarith
   have : a.1 = 0 := by
     ext z
-    fin_cases z <;> (simp; tauto)
+    fin_cases z <;> (simp only [ne_eq, Fin.zero_eta, Fin.isValue, Pi.zero_apply]; tauto)
   exact a.2 this
 
 -- used : -- abs_le_inv, open_nonzero, symmetrize, dist_cone_pos, dist_cone_neg, pos_or_neg

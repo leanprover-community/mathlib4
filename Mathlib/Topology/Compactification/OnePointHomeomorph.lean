@@ -74,7 +74,7 @@ lemma nonzero_of_nonzero (a : {v : Fin 2 → ℝ // v ≠ 0}) :
     (a.1 0, a.1 1) ≠ 0 := by
   have := a.2
   contrapose this
-  simp_all
+  simp_all only [ne_eq, Prod.mk_eq_zero, not_and, Classical.not_imp, Decidable.not_not]
   ext z
   fin_cases z <;> simp_all
 
@@ -87,7 +87,8 @@ noncomputable def tupFinNonzero :
     exact ⟨![p.1.1, p.1.2], by
       have := p.2
       contrapose this
-      simp_all
+      simp_all only [ne_eq, Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_true, not_and,
+        Classical.not_imp, Decidable.not_not]
       ext <;> simp_all
     ⟩
   invFun := by
@@ -95,9 +96,9 @@ noncomputable def tupFinNonzero :
     exact ⟨(p.1 0,p.1 1),by
       have := p.2
       contrapose this
-      simp_all
+      simp_all only [ne_eq, Prod.mk_eq_zero, not_and, Classical.not_imp, Decidable.not_not]
       ext i
-      simp_all
+      simp_all only [Pi.zero_apply]
       fin_cases i <;> tauto
     ⟩
   left_inv := by
@@ -130,7 +131,7 @@ noncomputable def projFinTup :
       unfold tupFinNonzero
       ext i
       fin_cases i <;>
-      · simp
+      · simp only [ne_eq, Fin.zero_eta, Fin.isValue, Pi.smul_apply, Matrix.cons_val_zero]
         rw [← hc]
         simp
     )
@@ -232,7 +233,8 @@ lemma slope_uniform_of_compact_pos {n : ℕ} {i j : Fin n}
     UniformSpace.ball a V ⊆ (fun u ↦ if u.1 j = 0 then ∞ else some (u.1 i / u.1 j)) ⁻¹' t :=  by
   have W := IsCompact.isBounded (ht₀)
   rw [Bornology.isBounded_def] at W
-  simp at W
+  simp only [Real.cobounded_eq, compl_compl, Filter.mem_sup, Filter.mem_atBot_sets,
+    Set.mem_preimage, Filter.mem_atTop_sets, ge_iff_le] at W
   obtain ⟨⟨a₀,ha₀⟩,⟨a₁,ha₁⟩⟩ := W
 
   let amax := max |a₀| |a₁|
@@ -245,12 +247,12 @@ lemma slope_uniform_of_compact_pos {n : ℕ} {i j : Fin n}
   · refine Metric.dist_mem_uniformity ?h.left.ε0
     tauto
   · intro x h_x
-    simp at h_x
+    simp only [ne_eq] at h_x
     have hx : dist a x < δ := h_x
     clear h_x
     simp only [ne_eq, Fin.isValue, Set.mem_preimage]
     by_cases hz : x.1 j = 0
-    · rw [hz];simp;tauto
+    · rw [hz];simp only [↓reduceIte];tauto
     · rw [if_neg hz]
       apply hamax
       by_cases hpos : x.1 j > 0
@@ -273,7 +275,8 @@ lemma slope_uniform_of_compact_neg {n : ℕ} {i j : Fin n} {t : Set (OnePoint �
     UniformSpace.ball a V ⊆ (fun u ↦ if u.1 j = 0 then ∞ else some (u.1 i / u.1 j)) ⁻¹' t :=  by
   have W := IsCompact.isBounded (ht₀)
   rw [Bornology.isBounded_def] at W
-  simp at W
+  simp only [Real.cobounded_eq, compl_compl, Filter.mem_sup, Filter.mem_atBot_sets,
+    Set.mem_preimage, Filter.mem_atTop_sets, ge_iff_le] at W
   obtain ⟨⟨a₀,ha₀⟩,⟨a₁,ha₁⟩⟩ := W
 
   let amax := max |a₀| |a₁|
@@ -289,7 +292,7 @@ lemma slope_uniform_of_compact_neg {n : ℕ} {i j : Fin n} {t : Set (OnePoint �
     clear h_x
     simp only [ne_eq, Fin.isValue, Set.mem_preimage]
     by_cases X : x.1 j = 0
-    · rw [X];simp;tauto
+    · rw [X];simp only [↓reduceIte];tauto
     · rw [if_neg X];
       apply hamax
       by_cases hpos : x.1 j > 0
@@ -346,12 +349,15 @@ lemma slope_open
   clear h_t
   rw [isOpen_iff_nhds]
   intro a ha
-  simp_all;
+  simp_all only [ne_eq, Set.mem_preimage, Filter.le_principal_iff]
   by_cases H : a.1 1 = 0
   · have Q := slope_uniform_of_compact ht₀ ht₂ H
     obtain ⟨V,hV⟩ := Q
     rw [nhds_eq_comap_uniformity]
-    simp;use V;simp_all;tauto
+    simp only [Fin.isValue, Filter.mem_comap]
+    use V
+    simp_all only [div_zero, ite_true, ne_eq,
+      true_and];tauto
   · exact slope_open_nonzero ht₀ ht₁ ha H
 
 /-- Auxiliary continuity lemma.  -/
@@ -408,8 +414,8 @@ lemma surjective_lift_unit_circle {n:ℕ} :
   Quotient.ind (fun x ↦ by
     have := x.2
     have : ‖x.1‖ ≠ 0 := by simp_all
-    use ⟨‖x.1‖⁻¹ • x.1, by simp; rw [norm_smul]; field_simp⟩
-    unfold lift_unit_circle; simp
+    use ⟨‖x.1‖⁻¹ • x.1, by simp only [ne_eq, dist_zero_right]; rw [norm_smul]; field_simp⟩
+    unfold lift_unit_circle; simp only [ne_eq, mk'_eq_mk]
     show mk ℝ (‖x.1‖⁻¹ • x.1) _ = mk ℝ x.1 _
     rw [mk_eq_mk_iff]
     use Units.mk ‖x.1‖⁻¹ ‖x.1‖ (by field_simp) (by field_simp)
