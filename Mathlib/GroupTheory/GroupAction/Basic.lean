@@ -67,21 +67,6 @@ section FixedPoints
 
 variable {M α}
 
-@[to_additive (attr := simp)]
-theorem mem_fixedPoints {a : α} : a ∈ fixedPoints M α ↔ ∀ m : M, m • a = a :=
-  Iff.rfl
-
-@[to_additive (attr := simp)]
-theorem mem_fixedBy {m : M} {a : α} : a ∈ fixedBy α m ↔ m • a = a :=
-  Iff.rfl
-
-@[to_additive]
-theorem mem_fixedPoints' {a : α} : a ∈ fixedPoints M α ↔ ∀ a', a' ∈ orbit M a → a' = a :=
-  ⟨fun h _ h₁ =>
-    let ⟨m, hm⟩ := mem_orbit_iff.1 h₁
-    hm ▸ h m,
-    fun h _ => h _ (mem_orbit _ _)⟩
-
 @[to_additive] theorem mem_fixedPoints_iff_subsingleton_orbit {a : α} :
     a ∈ fixedPoints M α ↔ (orbit M a).Subsingleton := by
   rw [mem_fixedPoints]
