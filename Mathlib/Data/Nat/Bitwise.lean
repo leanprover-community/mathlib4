@@ -71,7 +71,7 @@ theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n →
     binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
   cases n using bitCasesOn with
   | h b n =>
-    rw [binaryRec_eq' _ _ (by right; simpa [bit_eq_zero_iff] using h)]
+    rw [binaryRec_eq _ _ (by right; simpa [bit_eq_zero_iff] using h)]
     generalize_proofs h; revert h
     rw [bodd_bit, div2_bit]
     simp

@@ -3,10 +3,8 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+import Mathlib.CategoryTheory.Category.Cat
 
 /-!
 # Over and under categories
@@ -59,7 +57,7 @@ theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.
   congr
   simp only [eq_iff_true_of_subsingleton]
 
--- @[simp] : Porting note (#10618): simp can prove this
+@[simp]
 theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
 
 @[simp]
@@ -369,7 +367,7 @@ theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right =
   let ⟨_,b,_⟩ := f; let ⟨_,e,_⟩ := g
   congr; simp only [eq_iff_true_of_subsingleton]
 
--- @[simp] Porting note (#10618): simp can prove this
+@[simp]
 theorem under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only
 
 @[simp]

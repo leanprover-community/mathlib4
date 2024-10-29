@@ -56,7 +56,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
     (m.prod : M) = (m.map (↑)).prod :=
   (SubmonoidClass.subtype S : _ →* M).map_multiset_prod m
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast, simp)]
 theorem coe_finset_prod {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
     (s : Finset ι) : ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod (SubmonoidClass.subtype S) f s
@@ -97,16 +97,16 @@ namespace Submonoid
 
 variable (s : Submonoid M)
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast)]
 theorem coe_list_prod (l : List s) : (l.prod : M) = (l.map (↑)).prod :=
   map_list_prod s.subtype l
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast)]
 theorem coe_multiset_prod {M} [CommMonoid M] (S : Submonoid M) (m : Multiset S) :
     (m.prod : M) = (m.map (↑)).prod :=
   S.subtype.map_multiset_prod m
 
-@[to_additive (attr := norm_cast, simp)]
+@[to_additive (attr := norm_cast)]
 theorem coe_finset_prod {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod S.subtype f s

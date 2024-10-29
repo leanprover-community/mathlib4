@@ -41,10 +41,10 @@ variable {X ι : Type*} {Y : ι → Type*} [TopologicalSpace X] [∀ i, Topologi
 
 namespace ContinuousMap
 
-theorem embedding_sigmaMk_comp [Nonempty X] :
-    Embedding (fun g : Σ i, C(X, Y i) ↦ (sigmaMk g.1).comp g.2) where
+theorem isEmbedding_sigmaMk_comp [Nonempty X] :
+    IsEmbedding (fun g : Σ i, C(X, Y i) ↦ (sigmaMk g.1).comp g.2) where
   toInducing := inducing_sigma.2
-    ⟨fun i ↦ (sigmaMk i).inducing_comp embedding_sigmaMk.toInducing, fun i ↦
+    ⟨fun i ↦ (sigmaMk i).inducing_postcomp IsEmbedding.sigmaMk.toInducing, fun i ↦
       let ⟨x⟩ := ‹Nonempty X›
       ⟨_, (isOpen_sigma_fst_preimage {i}).preimage (continuous_eval_const x), fun _ ↦ Iff.rfl⟩⟩
   inj := by
@@ -52,6 +52,9 @@ theorem embedding_sigmaMk_comp [Nonempty X] :
       obtain ⟨rfl, hg⟩ : i = i' ∧ HEq (⇑g) (⇑g') :=
         Function.eq_of_sigmaMk_comp <| congr_arg DFunLike.coe h
       simpa using hg
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_sigmaMk_comp := isEmbedding_sigmaMk_comp
 
 section ConnectedSpace
 
@@ -76,9 +79,9 @@ The inverse map sends `⟨i, g⟩` to `ContinuousMap.comp (ContinuousMap.sigmaMk
 @[simps! symm_apply]
 def sigmaCodHomeomorph : C(X, Σ i, Y i) ≃ₜ Σ i, C(X, Y i) :=
   .symm <| Equiv.toHomeomorphOfInducing
-    (.ofBijective _ ⟨embedding_sigmaMk_comp.inj, fun f ↦
+    (.ofBijective _ ⟨isEmbedding_sigmaMk_comp.inj, fun f ↦
       let ⟨i, g, hg⟩ := f.exists_lift_sigma; ⟨⟨i, g⟩, hg.symm⟩⟩)
-    embedding_sigmaMk_comp.toInducing
+    isEmbedding_sigmaMk_comp.toInducing
 
 end ConnectedSpace
 
