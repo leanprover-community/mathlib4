@@ -51,7 +51,6 @@
   "Mathlib.Data.Vector.Basic",
   "Mathlib.Geometry.Manifold.Instances.Real",
   "Mathlib.Init",
-  "Mathlib.Init.Align",
   "Mathlib.LinearAlgebra.AffineSpace.Basic",
   "Mathlib.Mathport.Attributes",
   "Mathlib.Mathport.Notation",
@@ -123,6 +122,7 @@
   "Mathlib.Tactic.Linarith.Lemmas",
   "Mathlib.Tactic.LinearCombination",
   "Mathlib.Tactic.Linter",
+  "Mathlib.Tactic.Linter.Header",
   "Mathlib.Tactic.Measurability",
   "Mathlib.Tactic.MkIffOfInductiveProp",
   "Mathlib.Tactic.ModCases",
@@ -237,16 +237,7 @@
   ["Mathlib.Algebra.Group.Basic", "Mathlib.Init.Order.LinearOrder"],
   "Mathlib.Tactic.Measurability":
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
-  "Mathlib.Tactic.Linter.UnusedTactic":
-  ["Batteries.Tactic.Unreachable", "Mathlib.Tactic.Linter.Header"],
-  "Mathlib.Tactic.Linter.Style": ["Mathlib.Tactic.Linter.Header"],
-  "Mathlib.Tactic.Linter.RefineLinter": ["Mathlib.Tactic.Linter.Header"],
-  "Mathlib.Tactic.Linter.OldObtain": ["Mathlib.Tactic.Linter.Header"],
-  "Mathlib.Tactic.Linter.Multigoal": ["Mathlib.Tactic.Linter.Header"],
-  "Mathlib.Tactic.Linter.Lint": ["Mathlib.Tactic.Linter.Header"],
-  "Mathlib.Tactic.Linter.HashCommandLinter": ["Mathlib.Tactic.Linter.Header"],
-  "Mathlib.Tactic.Linter.GlobalAttributeIn": ["Mathlib.Tactic.Linter.Header"],
-  "Mathlib.Tactic.Linter.DocPrime": ["Mathlib.Tactic.Linter.Header"],
+  "Mathlib.Tactic.Linter.UnusedTactic": ["Batteries.Tactic.Unreachable"],
   "Mathlib.Tactic.LinearCombination":
   ["Mathlib.Tactic.LinearCombination.Lemmas"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
