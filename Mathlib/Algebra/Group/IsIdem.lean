@@ -12,9 +12,8 @@ An idempotent semigroup is a semigroup that satisfies `x * x = x`.
 
 ## Main definitions
 
-* class `IsAddIdem`: a additive semigroup satisfying `x + x = x`.
-
-* class `IsIdem`: a semigroup satisfying `x * x = x`.
+* `IsIdemSemigroup`: Typeclass mixin for a semigroup respecting `x * x = x`.
+* `IsAddIdemSemigroup`: Typeclass mixin for a semigroup respecting `x + x = x`.
 
 ## Naming conventions
 
