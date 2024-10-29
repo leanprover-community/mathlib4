@@ -42,12 +42,12 @@ theorem leadingExp_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} 
 
 theorem leadingExp_of_head {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     ms.leadingExp = ms.head.elim ⊥ (fun (deg, _) ↦ deg) := by
-  apply ms.recOn <;> simp [leadingExp]
+  apply ms.recOn <;> simp
 
 theorem leadingExp_eq_bot {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     ms = .nil ↔ ms.leadingExp = ⊥ := by
   apply ms.recOn
-  · simp [leadingExp]
+  · simp
   · intros
     simp [leadingExp]
 
@@ -56,9 +56,9 @@ theorem leadingExp_eq_coe {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreM
   revert h
   apply ms.recOn
   · intro h
-    simp [leadingExp] at h
+    simp at h
   · intro (deg', coef) tl h
-    simp [leadingExp] at h
+    simp at h
     subst h
     use (coef, tl)
 
@@ -80,8 +80,6 @@ private theorem lt_iff_lt {basis : _} {deg1 deg2 : ℝ} {coef1 coef2 : PreMS bas
   · intro h
     rw [lt_iff_le_not_le] at h ⊢
     exact h
-
--- theorem lt_of_leadingExp_gt {}
 
 inductive WellOrdered : {basis : Basis} → (PreMS basis) → Prop
 | const (ms : PreMS []) : WellOrdered ms
@@ -164,7 +162,7 @@ theorem WellOrdered.cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
     · revert h_comp
       apply tl.recOn
       · simp
-      · simp [leadingExp]
+      · simp
         intro a b h
         rwa [lt_iff_lt]
     · exact h_tl_tl
@@ -181,10 +179,10 @@ theorem WellOrdered_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
   constructor
   · revert h_sorted
     apply tl.recOn
-    · simp [leadingExp]
+    · simp
     · intro (tl_deg, tl_coef) tl_tl h_sorted
       simp [lt_iff_lt] at h_sorted
-      simp [leadingExp]
+      simp
       exact h_sorted.left
   · constructor
     · intro i x hx
@@ -245,7 +243,7 @@ theorem WellOrdered.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreM
     · revert h_comp
       apply tl.recOn
       · simp
-      simp [leadingExp, lt_iff_lt]
+      simp [lt_iff_lt]
     · exact h_tl
 
 def allLt {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ms : PreMS (basis_hd :: basis_tl)) (a : ℝ) :
@@ -263,7 +261,7 @@ theorem WellOrdered_allLt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreM
     · exact h_lt
     · exact h_wo
   · intro (deg, coef) tl ih
-    simp [motive, leadingExp] at ih
+    simp [motive] at ih
     obtain ⟨h_lt, h_wo⟩ := ih
     obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
     constructor
@@ -282,7 +280,7 @@ theorem WellOrdered_cons_allLt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg 
     (h_lt : deg < a) :
     allLt (basis_hd := basis_hd) (Seq.cons (deg, coef) tl) a := by
   apply WellOrdered_allLt h_wo
-  simpa [leadingExp]
+  simpa
 
 def majorated (f basis_hd : ℝ → ℝ) (deg : ℝ) : Prop :=
   ∀ deg', deg < deg' → f =o[atTop] (fun x ↦ (basis_hd x)^deg')

@@ -426,14 +426,14 @@ noncomputable instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : AddCommMono
 theorem add_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)} :
     (X + Y).leadingExp = X.leadingExp ⊔ Y.leadingExp := by
   apply X.recOn
-  · simp [leadingExp]
+  · simp
   · intro (X_deg, X_coef) X_tl
     apply Y.recOn
-    · simp [leadingExp]
+    · simp
     intro (Y_deg, Y_coef) Y_tl
     rw [add_cons_cons]
     split_ifs <;> {
-      simp [leadingExp]
+      simp
       linarith
     }
 
@@ -522,7 +522,7 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
             · simp
               constructor
               · exact hX_comp
-              · simpa [leadingExp]
+              · simpa
             simp only [motive]
             use X_tl
             use .cons (Y_deg, Y_coef) Y_tl
@@ -536,7 +536,7 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
             constructor
             · simp
               constructor
-              · simpa [leadingExp]
+              · simpa
               · exact hY_comp
             simp only [motive]
             use .cons (X_deg, X_coef) X_tl

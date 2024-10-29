@@ -245,11 +245,11 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
 @[simp]
 theorem apply_cons_leadingExp {s_hd : ℝ} {s_tl : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     (apply (.cons s_hd s_tl) ms).leadingExp = 0 := by
-  simp [leadingExp]
+  simp
 
 theorem apply_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     (apply s ms).leadingExp ≤ 0 := by
-  apply s.recOn <;> simp [leadingExp]
+  apply s.recOn <;> simp
 
 theorem apply_WellOrdered {s : LazySeries} {basis : Basis}
     {ms : PreMS basis}

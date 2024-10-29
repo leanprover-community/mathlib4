@@ -55,9 +55,9 @@ theorem mulMonomial_leadingExp {basis_hd : _} {basis_tl : _} {b : PreMS (basis_h
     {m_coef : PreMS basis_tl} {m_deg : ℝ} :
     (mulMonomial b m_coef m_deg).leadingExp = m_deg + b.leadingExp := by
   apply b.recOn
-  · simp [leadingExp]
+  · simp
   · intro (b_deg, b_coef) b_tl
-    simp [leadingExp]
+    simp
 
 theorem mul_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {coef : PreMS basis_tl}
     {tl X Y : PreMS (basis_hd :: basis_tl)} (h : X.mul Y = .cons (deg, coef) tl) :
@@ -130,10 +130,10 @@ theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg : ℝ} {x_co
 theorem mul_leadingExp {basis_hd : _} {basis_tl : _} {x y : PreMS (basis_hd :: basis_tl)} :
     (mul x y).leadingExp = x.leadingExp + y.leadingExp := by
   apply x.recOn
-  · simp [leadingExp]
+  · simp
   intro (x_deg, x_coef) x_tl
   apply y.recOn
-  · simp [leadingExp]
+  · simp
   intro (y_deg, y_coef) y_tl
   have : Seq.head (mul (basis := basis_hd :: basis_tl) (Seq.cons (x_deg, x_coef) x_tl) (Seq.cons (y_deg, y_coef) y_tl)) = .some ?_ := by
     simp
@@ -1359,8 +1359,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
             intro i
             specialize h_deg' i
             exact leadingExp_eq_bot.mpr h_deg'
-          simp only [longAdd, ← h_coef_tl_args, this,
-            show leadingExp Seq.nil = ⊥ by simp [leadingExp], WithBot.bot_ne_coe, ↓reduceDIte,
+          simp only [longAdd, ← h_coef_tl_args, this, leadingExp_nil, WithBot.bot_ne_coe, ↓reduceDIte,
             longAdd_zeros, Fin.natCast_eq_last, add_zero, Nat.cast_one, zero_add,
             longAdd_nils, add_nil, h_last] at h_coef h_tl
           rw [← h_coef, ← h_tl, nil_add]
@@ -1488,9 +1487,9 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
             generalize (args ↑(k + 1)) = a at *
             apply a.recOn
             · intro h_eq h1 h_coef h_tl
-              simp [leadingExp] at h_eq
+              simp at h_eq
             · intro (a_deg, a_coef) a_tl h_eq h1 h_tl h_coef
-              simp [leadingExp] at h_eq
+              simp at h_eq
               subst h_eq
               rw [add_cons_cons]
               simp
@@ -1533,9 +1532,9 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
             generalize (args ↑(k + 1)) = a at *
             apply a.recOn
             · intro h_deg
-              simp [leadingExp] at h_deg
+              simp at h_deg
             · intro (a_deg, a_coef) a_tl h_deg h_lt h1 h_coef h_tl
-              simp [leadingExp] at h_deg h_lt
+              simp at h_deg h_lt
               subst h_deg
               rw [add_cons_right]
               · congr
@@ -1547,7 +1546,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
                   replace this := Seq.cons_eq_cons.mp this
                   simp only [Prod.mk.injEq, true_and] at this
                   exact this.right
-              · simpa [leadingExp]
+              · simpa
 
 theorem longAdd_WellOrdered {basis : Basis} {k : ℕ} {args : Fin k → PreMS basis}
     (h_wo : ∀ i, (args i).WellOrdered) : (longAdd args).WellOrdered := by
@@ -2023,7 +2022,7 @@ mutual
                   constructor
                   · simp
                     constructor
-                    · simpa [leadingExp]
+                    · simpa
                     · rw [← h_right_eq.2, ← h_right_eq.1.1]
                       simp
                       constructor

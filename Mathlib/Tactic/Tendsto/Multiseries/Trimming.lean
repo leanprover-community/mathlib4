@@ -89,7 +89,7 @@ theorem HasNegativeLeading_tendsto_zero {basis : Basis} {ms : PreMS basis} {F : 
       apply Filter.Tendsto.congr' h_approx.symm
       apply tendsto_const_nhds
     · intro (deg, coef) tl h_neg h_approx
-      simp [leadingExp] at h_neg
+      simp at h_neg
       replace h_approx := Approximates_cons h_approx
       obtain ⟨_, _, h_comp, _⟩ := h_approx
       apply majorated_tendsto_zero_of_neg h_neg h_comp

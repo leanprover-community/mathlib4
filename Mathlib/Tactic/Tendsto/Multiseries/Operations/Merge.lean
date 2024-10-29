@@ -85,7 +85,7 @@ theorem maxExp_cons_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {tl : List (PreMS (basis_hd :: basis_tl))} :
     maxExp (.nil :: tl) = maxExp tl := by
   simp [maxExp]
-  conv => arg 1; arg 1; arg 1; arg 1; simp [leadingExp]
+  conv => arg 1; arg 1; arg 1; arg 1; simp
   rw [List.maximum_cons]
   generalize (List.map leadingExp tl).maximum = m
   cases m with
@@ -140,7 +140,7 @@ theorem maxExp_eq_bot_iff {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         simp [h]
       ⟩
       conv at this =>
-        arg 2; simp [leadingExp]
+        arg 2; simp
       rw [this]
       simp [Option.bind]
     · have : li = [] := by
@@ -301,7 +301,7 @@ theorem megre1_cons_head_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     merge1 (.cons .nil s_tl) = .nil := by
   simp [merge1, merge]
   rw [Seq.corec_nil]
-  simp [merge_aux, leadingExp]
+  simp [merge_aux]
 
 @[simp]
 theorem merge_aux_kNew_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {m : ℕ}
@@ -398,7 +398,7 @@ theorem merge_aux_liNew_cons_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} 
     simp [merge_aux_liNew]
     exact merge_aux_liNew_aux
   · intro (hd_deg, hd_coef) hd_tl h_deg
-    simp [leadingExp] at h_deg
+    simp at h_deg
     rw [merge_aux_liNew_cons_cons]
     split_ifs with h
     · exfalso
@@ -410,7 +410,7 @@ theorem merge_aux_liNew_cons_nil_stable {basis_hd : ℝ → ℝ} {basis_tl : Bas
     {tl : List (PreMS (basis_hd :: basis_tl))} {s_tl : Seq (PreMS (basis_hd :: basis_tl))} :
     merge_aux_liNew (.nil :: tl) deg (.cons .nil s_tl) = .cons .nil (merge_aux_liNew tl deg s_tl) := by
   apply merge_aux_liNew_cons_stable
-  simp [leadingExp]
+  simp
 
 theorem merge_aux_liNew_cons_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {s_hd_deg : ℝ} {s_hd_coef : PreMS basis_tl} {s_hd_tl : PreMS (basis_hd :: basis_tl)}
@@ -436,7 +436,7 @@ theorem merge_aux_liNew_cons_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     · intro (firsts_tl_hd_deg, firsts_tl_hd_coef) firsts_tl_hd_tl h_lt
       simp
       split_ifs with h
-      · simp [leadingExp] at h_lt
+      · simp at h_lt
         exfalso
         linarith [h, h_lt.left]
       · apply ih
@@ -513,7 +513,7 @@ theorem merge_aux_tail_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg :
             generalize (s.drop m) = t
             apply t.recOn <;> simp
 
-          simp [merge_aux_kNew, h_get, leadingExp, h_deg]
+          simp [merge_aux_kNew, h_get, h_deg]
           rw [← Seq.drop.eq_2]
           apply Seq.set_dropn_stable_of_lt
           simp
@@ -574,7 +574,7 @@ theorem merge_aux_coef_cons_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg 
       apply ih
       exact h_li
     · intro (li_hd_deg, li_hd_coef) li_hd_tl h_li
-      simp [leadingExp] at h_li ⊢
+      simp at h_li ⊢
       split_ifs with h
       · exfalso
         linarith [h, h_li.left]
@@ -602,12 +602,11 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
       cases h_maxExp : maxExp (Seq.take (m + 1) s_tl) with
       | bot =>
         right
-        simp [h_maxExp, leadingExp] at hx_eq hy_eq
-        -- rw [add_nil] at hy_eq
+        simp [h_maxExp] at hx_eq hy_eq
         exact ⟨hx_eq, hy_eq⟩
       | coe right_deg =>
         left
-        simp [h_maxExp, leadingExp] at hx_eq hy_eq
+        simp [h_maxExp] at hx_eq hy_eq
         use ?_, ?_, ?_
         constructor
         · exact hx_eq
@@ -624,7 +623,7 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
       left
       cases h_maxExp : maxExp (Seq.take (m + 1) s_tl) with
       | bot =>
-        simp [h_maxExp, leadingExp] at hx_eq hy_eq
+        simp [h_maxExp] at hx_eq hy_eq
         use ?_, ?_, ?_
         constructor
         · exact hx_eq
@@ -634,7 +633,7 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
           · rw [merge_aux_coef_cons_lt]
             intro x hx
             rw [maxExp_eq_bot_iff] at h_maxExp
-            simp [h_maxExp x hx, leadingExp]
+            simp [h_maxExp x hx]
           · exact Eq.refl _
         simp only [motive]
         use ?_, s_hd_tl, s_tl
@@ -644,7 +643,7 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
           · rw [merge_aux_liNew_cons_lt]
             rw [maxExp_eq_bot_iff] at h_maxExp
             intro x hx
-            simp [h_maxExp x hx, leadingExp]
+            simp [h_maxExp x hx]
         · symm
           convert add_nil
           rw [merge_unfold, merge']
@@ -659,9 +658,9 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
               apply Seq.get_mem_take _ h
               simp
             rw [this]
-            simpa [leadingExp]
+            simpa
       | coe right_deg =>
-        simp [h_maxExp, leadingExp] at hx_eq hy_eq
+        simp [h_maxExp] at hx_eq hy_eq
         rw [add_cons_cons] at hy_eq
         split_ifs at hy_eq with h1 h2
         · rw [sup_of_le_left h1.le] at hx_eq
@@ -764,9 +763,9 @@ theorem merge1_cons_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   rw [merge1, merge_unfold, merge']
   simp
   apply s_hd.recOn
-  · simp [leadingExp]
+  · simp
   · intro (deg, coef) tl
-    simp [leadingExp]
+    simp
 
 theorem merge1_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {s : Seq (PreMS (basis_hd :: basis_tl))} :
@@ -779,7 +778,7 @@ theorem merge1_cons_head {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd_deg :
     (merge1 (.cons (.cons (s_hd_deg, s_hd_coef) s_hd_tl) s_tl)).head = (s_hd_deg, s_hd_coef) := by
   simp [merge1]
   rw [merge_unfold, merge']
-  simp [leadingExp, merge_aux_coef]
+  simp [merge_aux_coef]
 
 @[simp]
 theorem merge1_cons_head_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
@@ -787,8 +786,8 @@ theorem merge1_cons_head_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg :
     {s_tl : Seq (PreMS (basis_hd :: basis_tl))} :
     merge1 (.cons (.cons (deg, coef) tl) s_tl) = .cons (deg, coef) (tl + (merge1 s_tl)) := by
   simp [merge1]
-  conv => lhs; rw [merge_unfold, merge']; simp [leadingExp]
-  simp [merge_aux_coef, merge_aux_kNew, leadingExp, merge_aux_liNew, Seq.cons_eq_cons]
+  conv => lhs; rw [merge_unfold, merge']; simp
+  simp [merge_aux_coef, merge_aux_kNew, merge_aux_liNew, Seq.cons_eq_cons]
   apply merge_succ_cons
 
 theorem merge1_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}

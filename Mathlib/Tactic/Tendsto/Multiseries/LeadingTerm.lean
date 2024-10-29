@@ -139,7 +139,7 @@ mutual
     · intro (tl_deg, tl_coef) tl_tl h_tl h_comp_wo
       replace h_tl := Approximates_cons h_tl
       obtain ⟨tl_C, h_tl_coef, h_tl_comp, h_tl_tl⟩ := h_tl
-      simp [leadingExp] at h_comp_wo
+      simp at h_comp_wo
       let deg' := (deg + tl_deg) / 2
       specialize h_tl_comp deg' (by simp only [deg']; linarith)
       apply IsLittleO.trans h_tl_comp
