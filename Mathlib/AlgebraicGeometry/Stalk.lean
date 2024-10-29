@@ -137,7 +137,7 @@ lemma Spec_map_stalkMap_fromSpecStalk {x} :
     Spec.map_comp_assoc, Category.assoc, ← Spec.map_comp_assoc (f.app _),
       Hom.app_eq_appLE, Hom.appLE_map, IsAffineOpen.Spec_map_appLE_fromSpec]
 
-instance [X.Over Y] {x} : Spec.map ((X ⮕ Y).stalkMap x) |>.IsOver Y where
+instance [X.Over Y] {x} : Spec.map ((X ↘ Y).stalkMap x) |>.IsOver Y where
 
 lemma Spec_fromSpecStalk (R : CommRingCat) (x) :
     (Spec R).fromSpecStalk x =

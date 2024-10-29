@@ -13,7 +13,7 @@ We define these as thin wrappers around `CategoryTheory/Comma/OverClass`.
 
 ## Main definition
 - `AlgebraicGeometry.Scheme.Over`: `X.Over S` equips `X` with a `S`-scheme structure.
-  `X ⮕ S : X ⟶ S` is the structure morphism.
+  `X ↘ S : X ⟶ S` is the structure morphism.
 - `AlgebraicGeometry.Scheme.Hom.IsOver`: `f.IsOver S` asserts that `f` is a `S`-morphism.
 
 -/
@@ -27,12 +27,12 @@ open CategoryTheory
 variable {X Y : Scheme.{u}} (f : X.Hom Y) (S S' : Scheme.{u})
 
 /--
-`X.Over S` is the typeclass containing the data of a structure morphism `X ⮕ S : X ⟶ S`.
+`X.Over S` is the typeclass containing the data of a structure morphism `X ↘ S : X ⟶ S`.
 -/
 protected abbrev Over (X S : Scheme.{u}) := OverClass X S
 
 /--
-`X.CanonicallyOver S` is the typeclass containing the data of a structure morphism `X ⮕ S : X ⟶ S`,
+`X.CanonicallyOver S` is the typeclass containing the data of a structure morphism `X ↘ S : X ⟶ S`,
 and that `S` is (uniquely) inferrable from the structure of `X`.
 -/
 abbrev CanonicallyOver := CanonicallyOverClass X S
