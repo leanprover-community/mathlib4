@@ -183,6 +183,16 @@ end Reflexive
 
 /-! ### Symmetric bilinear forms -/
 
+section ConjugateSymmetric
+
+variable [AddCommMonoid M₁] [AddCommMonoid M] [CommSemiring R] [Module R M₁] [Module R M]
+  {I : R →+* R} {J : M →+ M}
+
+/-- The proposition that a sesquilinear form is conjugate symmetric -/
+def IsConjSymm (B : M₁ →ₛₗ[I] M₁ →ₗ[R] M) : Prop :=
+  ∀ x y, J (B x y) = B y x
+
+end ConjugateSymmetric
 
 section Symmetric
 
@@ -190,7 +200,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] {I : R →+* R} {B : M 
 
 /-- The proposition that a sesquilinear form is symmetric -/
 def IsSymm (B : M →ₛₗ[I] M →ₗ[R] R) : Prop :=
-  ∀ x y, I (B x y) = B y x
+  IsConjSymm B (J := I)
 
 namespace IsSymm
 
@@ -217,7 +227,8 @@ theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := fun _ _ => ma
 theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip := by
   constructor <;> intro h
   · ext
-    rw [← h, flip_apply, RingHom.id_apply]
+    rw [← h, flip_apply]
+    rfl
   intro x y
   conv_lhs => rw [h]
   rfl

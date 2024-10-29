@@ -853,7 +853,8 @@ theorem associated_apply (x y : M) : associatedHom S Q x y = ⅟ (2 : R) • (Q 
 
 theorem associated_isSymm (Q : QuadraticMap R M R) : (associatedHom S Q).IsSymm := fun x y => by
   simp only [associated_apply, sub_eq_add_neg, add_assoc, map_mul, RingHom.id_apply, map_add,
-    _root_.map_neg, add_comm, add_left_comm]
+    _root_.map_neg, add_comm, add_left_comm, RingHom.coe_addMonoidHom_id, smul_eq_mul,
+    AddMonoidHom.id_apply]
 
 
 @[simp]
@@ -983,7 +984,8 @@ theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd R]
   letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstanceAs <| AddCommMonoid R) with }
   simp_rw [isOrtho_def, LinearMap.isOrtho_def, B.toQuadraticMap_apply, map_add,
     LinearMap.add_apply, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
-  rw [add_right_eq_self (a := B x x + B y y), ← h, RingHom.id_apply, add_self_eq_zero]
+  rw [add_right_eq_self (a := B x x + B y y), ← h, RingHom.coe_addMonoidHom_id,
+    AddMonoidHom.id_apply, add_self_eq_zero]
 
 end CommSemiring
 
@@ -1125,7 +1127,8 @@ theorem QuadraticMap.toMatrix'_smul (a : R) (Q : QuadraticMap R (n → R) R) :
 theorem QuadraticMap.isSymm_toMatrix' (Q : QuadraticMap R (n → R) R) : Q.toMatrix'.IsSymm := by
   ext i j
   rw [toMatrix', Matrix.transpose_apply, LinearMap.toMatrix₂'_apply, LinearMap.toMatrix₂'_apply,
-    ← associated_isSymm, RingHom.id_apply, associated_apply]
+    ← associated_isSymm, RingHom.coe_addMonoidHom_id, associated_apply, smul_eq_mul,
+    AddMonoidHom.id_apply]
 
 end
 
