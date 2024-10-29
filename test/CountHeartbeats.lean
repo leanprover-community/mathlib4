@@ -7,12 +7,12 @@ set_option linter.style.header false
 count_heartbeats in
 example (a : Nat) : a = a := rfl
 
-/-- info: Used 7 heartbeats, which is less than the guarded quorum of 200000. -/
+/-- info: Used 7 heartbeats, which is less than the minimum of 200000. -/
 #guard_msgs in
 guard_min_heartbeats in
 example (a : Nat) : a = a := rfl
 
-/-- info: Used 7 heartbeats, which is less than the guarded quorum of 2000. -/
+/-- info: Used 7 heartbeats, which is less than the minimum of 2000. -/
 #guard_msgs in
 guard_min_heartbeats 2000 in
 example (a : Nat) : a = a := rfl

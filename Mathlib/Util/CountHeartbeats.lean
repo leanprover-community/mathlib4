@@ -140,7 +140,7 @@ elab "guard_min_heartbeats " n:(num)? "in" ppLine cmd:command : command => do
     let finish ← IO.getNumHeartbeats
     let elapsed := (finish - start) / 1000
     if elapsed < n then
-      logInfo m!"Used {elapsed} heartbeats, which is less than the guarded quorum of {n}."
+      logInfo m!"Used {elapsed} heartbeats, which is less than the minimum of {n}."
 
 /--
 Run a command, optionally restoring the original state, and report just the number of heartbeats.
