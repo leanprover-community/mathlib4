@@ -603,7 +603,6 @@ theorem spineToSimplex_edge (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n) :
 
 /-- Perhaps it is more useful to index an edge from `j` to `j + k` by `j : Fin (n + 1)` and
 `k : ℕ` and `hjk : j.1 + k < n + 1`.-/
-@[simp]
 theorem spineToSimplex_edge' (j : Fin (n + 1)) (k : ℕ) (hjk : j.1 + k < n + 1) (f : Path X n) :
     X.map (mkOfLe j ⟨j.1 + k, hjk⟩ (Nat.le_add_right j k)).op (spineToSimplex f) =
       spineToDiagonal

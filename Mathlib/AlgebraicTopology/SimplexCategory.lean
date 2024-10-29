@@ -243,12 +243,13 @@ def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
       | 0, 1, _ => Fin.castSucc_le_succ i
   }
 
-lemma mkOfSucc_homToOrderHom_zero {n} (i : Fin n) : Hom.toOrderHom (mkOfSucc i) 0 = i.castSucc :=
-  rfl
+@[simp]
+lemma mkOfSucc_homToOrderHom_zero {n} (i : Fin n) :
+    DFunLike.coe (F := Fin 2 →o Fin (n+1)) (Hom.toOrderHom (mkOfSucc i)) 0 = i.castSucc := rfl
 
-lemma mkOfSucc_homToOrderHom_one {n} (i : Fin n) : Hom.toOrderHom (mkOfSucc i) 1 = i.succ := by
-  unfold mkOfSucc
-  dsimp
+@[simp]
+lemma mkOfSucc_homToOrderHom_one {n} (i : Fin n) :
+    DFunLike.coe (F := Fin 2 →o Fin (n+1)) (Hom.toOrderHom (mkOfSucc i)) 1 = i.succ := rfl
 
 /-- The morphism `[2] ⟶ [n]` that picks out a specified composite of morphisms in `Fin (n+1)`.-/
 def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
