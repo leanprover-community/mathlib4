@@ -665,10 +665,13 @@ protected theorem _root_.Inducing.firstCountableTopology {β : Type*}
   rw [hf.1]
   exact firstCountableTopology_induced α β f
 
-protected theorem _root_.Embedding.firstCountableTopology {β : Type*}
-    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : Embedding f) :
+protected theorem _root_.IsEmbedding.firstCountableTopology {β : Type*}
+    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : IsEmbedding f) :
     FirstCountableTopology α :=
   hf.1.firstCountableTopology
+
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.firstCountableTopology := IsEmbedding.firstCountableTopology
 
 namespace FirstCountableTopology
 
@@ -974,13 +977,13 @@ protected theorem Inducing.secondCountableTopology [TopologicalSpace β] [Second
   rw [hf.1]
   exact secondCountableTopology_induced α β f
 
-protected theorem Embedding.secondCountableTopology
+protected theorem IsEmbedding.secondCountableTopology
     [TopologicalSpace β] [SecondCountableTopology β]
-    (hf : Embedding f) : SecondCountableTopology α :=
+    (hf : IsEmbedding f) : SecondCountableTopology α :=
   hf.1.secondCountableTopology
 
-protected theorem Embedding.separableSpace
-    [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : Embedding f) :
+protected theorem IsEmbedding.separableSpace
+    [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : IsEmbedding f) :
     TopologicalSpace.SeparableSpace α := by
   have := hf.secondCountableTopology
   exact SecondCountableTopology.to_separableSpace

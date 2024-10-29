@@ -1171,7 +1171,7 @@ whose source is all of `X`. The converse is also true; see
 `PartialHomeomorph.to_isOpenEmbedding`. -/
 @[simps! (config := mfld_cfg) apply source target]
 noncomputable def toPartialHomeomorph [Nonempty X] : PartialHomeomorph X Y :=
-  PartialHomeomorph.ofContinuousOpen (h.toEmbedding.inj.injOn.toPartialEquiv f univ)
+  PartialHomeomorph.ofContinuousOpen (h.isEmbedding.inj.injOn.toPartialEquiv f univ)
     h.continuous.continuousOn h.isOpenMap isOpen_univ
 
 variable [Nonempty X]

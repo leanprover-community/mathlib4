@@ -219,9 +219,12 @@ protected theorem _root_.Inducing.isSeparable_preimage {f : β → α} [Topologi
   have := this.secondCountableTopology
   exact .of_subtype _
 
-protected theorem _root_.Embedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
-    (hf : Embedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
+protected theorem _root_.IsEmbedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
+    (hf : IsEmbedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
   hf.toInducing.isSeparable_preimage hs
+
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.isSeparable_preimage := _root_.IsEmbedding.isSeparable_preimage
 
 end Metric
 

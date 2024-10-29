@@ -5,6 +5,7 @@ Authors: Zhouhang Zhou
 -/
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Support
+import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Indicator function

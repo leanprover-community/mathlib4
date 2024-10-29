@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
 import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
+import Mathlib.MeasureTheory.Integral.Prod
 
 /-!
 # Integration with respect to a finite product of measures

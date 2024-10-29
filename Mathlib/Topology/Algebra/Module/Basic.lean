@@ -4,15 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Module.Opposite
 import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Projection
-import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.Topology.Algebra.Group.Quotient
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 
 /-!
 # Theory of topological modules and continuous linear maps.
@@ -428,6 +426,16 @@ theorem coe_copy (f : M₁ →SL[σ₁₂] M₂) (f' : M₁ → M₂) (h : f' = 
 
 theorem copy_eq (f : M₁ →SL[σ₁₂] M₂) (f' : M₁ → M₂) (h : f' = ⇑f) : f.copy f' h = f :=
   DFunLike.ext' h
+
+theorem range_coeFn_eq :
+    Set.range ((⇑) : (M₁ →SL[σ₁₂] M₂) → (M₁ → M₂)) =
+      {f | Continuous f} ∩ Set.range ((⇑) : (M₁ →ₛₗ[σ₁₂] M₂) → (M₁ → M₂)) := by
+  ext f
+  constructor
+  · rintro ⟨f, rfl⟩
+    exact ⟨f.continuous, f, rfl⟩
+  · rintro ⟨hfc, f, rfl⟩
+    exact ⟨⟨f, hfc⟩, rfl⟩
 
 -- make some straightforward lemmas available to `simp`.
 protected theorem map_zero (f : M₁ →SL[σ₁₂] M₂) : f (0 : M₁) = 0 :=
@@ -1731,11 +1739,11 @@ protected def refl : M₁ ≃L[R₁] M₁ :=
     continuous_toFun := continuous_id
     continuous_invFun := continuous_id }
 
-end
-
 @[simp]
 theorem refl_apply (x : M₁) :
     ContinuousLinearEquiv.refl R₁ M₁ x = x := rfl
+
+end
 
 @[simp, norm_cast]
 theorem coe_refl : ↑(ContinuousLinearEquiv.refl R₁ M₁) = ContinuousLinearMap.id R₁ M₁ :=
@@ -2005,12 +2013,15 @@ def arrowCongrEquiv (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[
     ContinuousLinearMap.ext fun x => by
       simp only [ContinuousLinearMap.comp_apply, apply_symm_apply, coe_coe]
 
+section piCongrRight
+
+variable {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)] [∀ i, AddCommMonoid (M i)]
+  [∀ i, Module R₁ (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)] [∀ i, AddCommMonoid (N i)]
+  [∀ i, Module R₁ (N i)] (f : (i : ι) → M i ≃L[R₁] N i)
+
 /-- Combine a family of continuous linear equivalences into a continuous linear equivalence of
 pi-types. -/
-def piCongrRight {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)]
-    [∀ i, AddCommMonoid (M i)] [∀ i, Module R₁ (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)]
-    [∀ i, AddCommMonoid (N i)] [∀ i, Module R₁ (N i)] (f : (i : ι) → M i ≃L[R₁] N i) :
-    ((i : ι) → M i) ≃L[R₁] (i : ι) → N i :=
+def piCongrRight : ((i : ι) → M i) ≃L[R₁] (i : ι) → N i :=
   { LinearEquiv.piCongrRight fun i ↦ f i with
     continuous_toFun := by
       exact continuous_pi fun i ↦ (f i).continuous_toFun.comp (continuous_apply i)
@@ -2018,18 +2029,14 @@ def piCongrRight {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)]
       exact continuous_pi fun i => (f i).continuous_invFun.comp (continuous_apply i) }
 
 @[simp]
-theorem piCongrRight_apply {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)]
-    [∀ i, AddCommMonoid (M i)] [∀ i, Module R₁ (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)]
-    [∀ i, AddCommMonoid (N i)] [∀ i, Module R₁ (N i)] (f : (i : ι) → M i ≃L[R₁] N i)
-    (m : (i : ι) → M i) (i : ι) :
-    ContinuousLinearEquiv.piCongrRight f m i = (f i) (m i) := rfl
+theorem piCongrRight_apply (m : (i : ι) → M i) (i : ι) :
+    piCongrRight f m i = (f i) (m i) := rfl
 
 @[simp]
-theorem piCongrRight_symm_apply {ι : Type*} {M : ι → Type*} [∀ i, TopologicalSpace (M i)]
-    [∀ i, AddCommMonoid (M i)] [∀ i, Module R₁ (M i)] {N : ι → Type*} [∀ i, TopologicalSpace (N i)]
-    [∀ i, AddCommMonoid (N i)] [∀ i, Module R₁ (N i)] (f : (i : ι) → M i ≃L[R₁] N i)
-    (n : (i : ι) → N i) (i : ι) :
-    (ContinuousLinearEquiv.piCongrRight f).symm n i = (f i).symm (n i) := rfl
+theorem piCongrRight_symm_apply (n : (i : ι) → N i) (i : ι) :
+    (piCongrRight f).symm n i = (f i).symm (n i) := rfl
+
+end piCongrRight
 
 end AddCommMonoid
 

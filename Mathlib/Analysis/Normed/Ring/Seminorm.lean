@@ -39,7 +39,7 @@ ring_seminorm, ring_norm
 
 open NNReal
 
-variable {F R S : Type*} (x y : R) (r : ℝ)
+variable {R : Type*}
 
 /-- A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes nonnegative
   values, is subadditive and submultiplicative and such that `f (-x) = f x` for all `x ∈ R`. -/

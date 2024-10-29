@@ -41,8 +41,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 section ChartedSpace
 variable [ChartedSpace H M] [ChartedSpace H' M'] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
-  {e : PartialHomeomorph M H}
-  {e' : PartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
+  {f : M → M'} {s : Set M} {x : M} {n : ℕ∞}
 
 /-! ### Smoothness of the composition of smooth functions between manifolds -/
 

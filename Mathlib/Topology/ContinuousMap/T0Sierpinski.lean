@@ -52,7 +52,10 @@ theorem productOfMemOpens_injective [T0Space X] : Function.Injective (productOfM
   apply Inseparable.eq
   rw [← Inducing.inseparable_iff (productOfMemOpens_inducing X), h]
 
-theorem productOfMemOpens_embedding [T0Space X] : Embedding (productOfMemOpens X) :=
-  Embedding.mk (productOfMemOpens_inducing X) (productOfMemOpens_injective X)
+theorem productOfMemOpens_isEmbedding [T0Space X] : IsEmbedding (productOfMemOpens X) :=
+  .mk (productOfMemOpens_inducing X) (productOfMemOpens_injective X)
+
+@[deprecated (since := "2024-10-26")]
+alias productOfMemOpens_embedding := productOfMemOpens_isEmbedding
 
 end TopologicalSpace
