@@ -26,7 +26,8 @@ is a generalization of `Algebra.Polynomial.Eval`.
 * `smeval_monomial`: monomials evaluate as we expect.
 * `smeval_add`, `smeval_smul`: linearity of evaluation, given an `R`-module.
 * `smeval_mul`, `smeval_comp`: multiplicativity of evaluation, given power-associativity.
-* `eval₂_eq_smeval`, `leval_eq_smeval.linearMap`, `aeval = smeval.algebraMap`, etc.: comparisons
+* `eval₂_smulOneHom_eq_smeval`, `leval_eq_smeval.linearMap`,
+  `aeval_eq_smeval`, etc.: comparisons
 
 ## TODO
 
@@ -64,7 +65,7 @@ theorem eval_eq_smeval : p.eval r = p.smeval r := by
   rw [eval_eq_sum, smeval_eq_sum]
   rfl
 
-theorem eval₂_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] [Module R S]
+theorem eval₂_smulOneHom_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] [Module R S]
     [IsScalarTower R S S] (p : R[X]) (x : S) :
     p.eval₂ RingHom.smulOneHom x = p.smeval x := by
   rw [smeval_eq_sum, eval₂_eq_sum]
