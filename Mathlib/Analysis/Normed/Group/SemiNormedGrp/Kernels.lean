@@ -349,8 +349,8 @@ theorem ExplicitCoker.map_desc {A B C D B' D' : SemiNormedGrp.{u}}
     (h' : fbb' ≫ g = fbd ≫ fdd') :
     explicitCokernelDesc condb ≫ g = explicitCokernel.map h ≫ explicitCokernelDesc condd := by
   delta explicitCokernel.map
-  simp [← cancel_epi (explicitCokernelπ fab), ← Category.assoc, Category.assoc,
-    explicitCokernelπ_desc, h']
+  simp only [← Category.assoc, ← cancel_epi (explicitCokernelπ fab)]
+  simp [Category.assoc, explicitCokernelπ_desc, h']
 
 end ExplicitCokernel
 

@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.InnerProductSpace.Positive
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!
 # Continuous linear maps on a Hilbert space are a `StarOrderedRing`
