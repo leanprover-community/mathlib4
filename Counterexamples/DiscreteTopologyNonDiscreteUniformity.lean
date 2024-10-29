@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio
 -/
 
-import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 # Discrete uniformities and discrete topology
@@ -71,12 +72,17 @@ inequality) to explicit subsets, many proofs are easily closed by `aesop` or `om
 -/
 
 
-open Set Function Filter
+open Set Function Filter Metric
 
 /- We remove the "usual" instances of (discrete) topological space and of (discrete) uniform space
 from `ℕ`-/
 attribute [-instance] instTopologicalSpaceNat instUniformSpaceNat
 
+noncomputable instance : PseudoMetricSpace ℕ where
+  dist := fun n m ↦ |2 ^ (- n : ℤ) - 2 ^ (- m : ℤ)|
+  dist_self := by simp only [zpow_neg, zpow_natCast, sub_self, abs_zero, implies_true]
+  dist_comm := fun _ _ ↦ abs_sub_comm _ _
+  dist_triangle := by sorry
 
 /-- The fundamental entourages (index by `n : ℕ`) used to construct a basis of the uniformity: for
 each `n`, the set `fundamentalEntourage n : Set (ℕ × ℕ)` consists of the `n+1` points
