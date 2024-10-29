@@ -246,8 +246,7 @@ theorem volume_eq_zero (w : {w // IsReal w}) :
   let A : AffineSubspace ℝ (mixedSpace K) :=
     Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x.1 w = 0}, by aesop⟩, rfl⟩ (by aesop))
   convert Measure.addHaar_affineSubspace volume A fun h ↦ ?_
-  have : 1 ∈ A := h ▸ Set.mem_univ _
-  simp [A] at this
+  simpa [A] using (h ▸ Set.mem_univ _ : 1 ∈ A)
 
 end Measure
 
@@ -874,7 +873,7 @@ theorem negAt_signSet_apply_of_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
 theorem negAt_signSet_apply_of_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
     (negAt (signSet x) x).2 w = x.2 w := rfl
 
-variable (A : Set (mixedSpace K))
+variable (A : Set (mixedSpace K)) {x : mixedSpace K}
 
 variable (s) in
  /-- `negAt s A` is also equal to the preimage of `A` by `negAt s`. This fact is used to simplify
@@ -887,23 +886,20 @@ variable (s) in
 positive at all real places. -/
 abbrev plusPart : Set (mixedSpace K) := A ∩ {x | ∀ w, 0 < x.1 w}
 
-theorem neg_of_mem_negA_plusPart {x : mixedSpace K} (hx : x ∈ negAt s '' (plusPart A))
-    {w : {w // IsReal w}} (hw : w ∈ s) :
-    x.1 w < 0 := by
+theorem neg_of_mem_negA_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w // IsReal w}}
+    (hw : w ∈ s) : x.1 w < 0 := by
   obtain ⟨y, hy, rfl⟩ := hx
   rw [negAt_apply_of_isReal_and_mem _ hw, neg_lt_zero]
   exact hy.2 w
 
- theorem pos_of_not_mem_negAt_plusPart {x : mixedSpace K} (hx : x ∈ negAt s '' (plusPart A))
-    {w : {w // IsReal w}} (hw : w ∉ s) :
-    0 < x.1 w := by
+ theorem pos_of_not_mem_negAt_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w // IsReal w}}
+    (hw : w ∉ s) : 0 < x.1 w := by
   obtain ⟨y, hy, rfl⟩ := hx
   rw [negAt_apply_of_isReal_and_not_mem _ hw]
   exact hy.2 w
 
  /-- The images of `plusPart` by `negAt` are pairwise disjoint. -/
  theorem disjoint_negAt_plusPart : Pairwise (Disjoint on (fun s ↦ negAt s '' (plusPart A))) := by
-  classical
   intro s t hst
   refine Set.disjoint_left.mpr fun _ hx hx' ↦ ?_
   obtain ⟨w, hw | hw⟩ : ∃ w, (w ∈ s ∧ w ∉ t) ∨ (w ∈ t ∧ w ∉ s) := by
@@ -918,7 +914,7 @@ variable  (hA : ∀ x, x ∈ A ↔ (fun w ↦ |x.1 w|, x.2) ∈ A)
 
 open Classical in
 include hA in
-theorem mem_negAt_plusPart_of_mem {x : mixedSpace K} (hx₁ : x ∈ A) (hx₂ : ∀ w, x.1 w ≠ 0) :
+theorem mem_negAt_plusPart_of_mem (hx₁ : x ∈ A) (hx₂ : ∀ w, x.1 w ≠ 0) :
     x ∈ negAt s '' (plusPart A) ↔ (∀ w, w ∈ s → x.1 w < 0) ∧ (∀ w, w ∉ s → x.1 w > 0) := by
   refine ⟨fun hx ↦ ⟨fun _ hw ↦ neg_of_mem_negA_plusPart A hx hw,
       fun _ hw ↦ pos_of_not_mem_negAt_plusPart A hx hw⟩,
@@ -972,9 +968,8 @@ theorem measurableSet_plusPart (hm : MeasurableSet A) :
 
 variable (s) in
 theorem measurableSet_negAt_plusPart (hm : MeasurableSet A) :
-    MeasurableSet (negAt s '' (plusPart A)) := by
-  rw [← negAt_preimage]
-  exact (measurableSet_plusPart hm).preimage (negAt s).continuous.measurable
+    MeasurableSet (negAt s '' (plusPart A)) :=
+  negAt_preimage s _ ▸ (measurableSet_plusPart hm).preimage (negAt s).continuous.measurable
 
 open Classical in
 /-- The image of the `plusPart` of `A` by `negAt` have all the same volume as `plusPart A`. -/
