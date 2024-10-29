@@ -34,7 +34,7 @@ instance subring' (R : Type u) [CommRing R] (p : ℕ) [CharP R p] (S : Subring R
 
 /-- The characteristic of a division ring is equal to the characteristic
   of its center-/
-theorem center_char_eq_iff {R : Type u} [DivisionRing R] {p : ℕ} :
+theorem center_CharP_iff {R : Type u} [DivisionRing R] {p : ℕ} :
     CharP R p ↔ CharP (Subring.center R) p :=
   (algebraMap (Subring.center R) R).charP_iff (Subtype.val_injective) p |>.symm
 
@@ -42,7 +42,7 @@ end CharP
 
 namespace ExpChar
 
-theorem center_expChar_eq_iff {R : Type u} [DivisionRing R] {p : ℕ} :
+theorem center_expChar_iff {R : Type u} [DivisionRing R] {p : ℕ} :
     ExpChar R p ↔ ExpChar (Subring.center R) p :=
   (algebraMap (Subring.center R) R).expChar_iff Subtype.val_injective p |>.symm
 

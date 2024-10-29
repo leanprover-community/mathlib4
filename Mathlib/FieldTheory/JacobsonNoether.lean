@@ -12,11 +12,11 @@ import Mathlib.FieldTheory.PurelyInseparable
 
 This file contains a proof of the Jacobson-Noether theorem and some auxiliary lemmas.
 Here we discuss different cases of characteristics of
-the noncommutative division algebra `D` with the center `k`.
+the noncommutative division algebra `D` with center `k`.
 
 ## Main Results
 
-- `Jacobson_Noether` : Let `D` be a noncommutative division algebra with the center `k`.
+- `Jacobson_Noether` : Let `D` be a noncommutative division algebra with center `k`.
   If `D` is algebraic over `k`,
   then there exists an element of `D \ k` which is separable over `k`.
 
@@ -35,37 +35,36 @@ namespace JacobsonNoether
 
 variable {D : Type*} [DivisionRing D]
 
+open LinearMap
+
 local notation3 "k" => (Subring.center D)
-local notation3 "f" => (LinearMap.mulLeft k)
-local notation3 "g" => (LinearMap.mulRight k)
-private def δ : D → D →ₗ[k] D := f - g
+private def δ : D → D →ₗ[k] D := mulLeft k - mulRight k
 
-private lemma δ_def (a x : D) : δ a x = f a x - g a x := rfl
+private lemma δ_def (a x : D) : δ a x = mulLeft k a x - mulRight k a x := rfl
 
-private lemma δ_def' (a : D) : δ a = f a - g a := rfl
+private lemma δ_def' (a : D) : δ a = mulLeft k a - mulRight k a := rfl
 
-private lemma fg_comm (a : D) : Commute (f a) (g a) := LinearMap.commute_mulLeft_right a a
+private lemma lr_comm (a : D) : Commute (mulLeft k a) (mulRight k a) := commute_mulLeft_right a a
 
-private lemma f_pow (a : D) (n : ℕ) : ∀ x : D, ((f a) ^ n).1 x = (a ^ n) * x := by
+private lemma l_pow (a : D) (n : ℕ) : ∀ x : D, ((mulLeft k a) ^ n).1 x = (a ^ n) * x := by
   intro x
-  rw [LinearMap.coe_toAddHom, LinearMap.pow_apply]
+  rw [coe_toAddHom, pow_apply]
   induction n with
   | zero => rw [Function.iterate_zero, id_eq, pow_zero, one_mul]
   | succ _ h => rw [Function.iterate_succ', Function.comp_apply, h,
-    pow_succ', mul_assoc, LinearMap.mulLeft_apply]
+    pow_succ', mul_assoc, mulLeft_apply]
 
-private lemma g_pow (a : D) (n : ℕ) : ∀ x : D, ((g a) ^ n).1 x = x * (a ^ n) := by
+private lemma r_pow (a : D) (n : ℕ) : ∀ x : D, ((mulRight k a) ^ n).1 x = x * (a ^ n) := by
   intro x
-  rw [LinearMap.coe_toAddHom, LinearMap.pow_apply]
+  rw [coe_toAddHom, pow_apply]
   induction n with
   | zero => rw [Function.iterate_zero, id_eq, pow_zero, mul_one]
   | succ _ h => rw [Function.iterate_succ', Function.comp_apply, h,
-    pow_add, pow_one, LinearMap.mulRight_apply, mul_assoc]
+    pow_add, pow_one, mulRight_apply, mul_assoc]
 
 private lemma δ_iterate_succ (x y : D) (n : ℕ) :
     δ x (((δ x) ^ n) y) = ((δ x) ^ (n + 1)) y := by
-  simp only [LinearMap.pow_apply, δ_def, LinearMap.mulLeft_apply,
-    LinearMap.mulRight_apply, Function.iterate_succ_apply']
+  simp only [pow_apply, δ_def, mulLeft_apply, mulRight_apply, Function.iterate_succ_apply']
 
 variable [Algebra.IsAlgebraic (Subring.center D) D]
 
@@ -76,7 +75,7 @@ open Polynomial
   such that `a ^ (p ^ n)` is contained in `k`. -/
 lemma exists_pow_mem_center_ofInseparable (p : ℕ) [hchar : ExpChar D p] (a : D)
     (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, a ^ (p ^ n) ∈ k := by
-  have := (@isPurelyInseparable_iff_pow_mem k D _ _ _ _ p (ExpChar.center_expChar_eq_iff.1 hchar)).1
+  have := (@isPurelyInseparable_iff_pow_mem k D _ _ _ _ p (ExpChar.center_expChar_iff.1 hchar)).1
   have bridge : ∀ x : k, (algebraMap k D) x = x := fun _ ↦ rfl
   have bridge' : k = (algebraMap k D).range := Subring.ext_iff.mpr <| fun x ↦
     ⟨fun hx ↦ Set.mem_range.mpr (Exists.intro ⟨x, hx⟩ rfl),
@@ -110,9 +109,9 @@ lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
   have inter : (δ a) ^ (p ^ m) = 0 := by
     refine LinearMap.ext_iff.2 ?_
     intro x
-    rw [δ_def' a, @sub_pow_expChar_pow_of_commute (D →ₗ[k] D) _ (f a) (g a) p m _ (fg_comm a)]
-    show ((f a) ^ (p ^ m)).1 x - ((g a) ^ (p ^ m)).1 x = 0
-    rw [f_pow, g_pow, sub_eq_zero_of_eq]
+    rw [δ_def' a, sub_pow_expChar_pow_of_commute p m (lr_comm a)]
+    show ((mulLeft k a) ^ (p ^ m)).1 x - ((mulRight k a) ^ (p ^ m)).1 x = 0
+    rw [l_pow, r_pow, sub_eq_zero_of_eq]
     suffices h : a ^ (p ^ m) ∈ k from (Subring.mem_center_iff.1 h x).symm
     exact hm.2
   rw [((Nat.sub_eq_iff_eq_add hn).1 rfl), pow_add, inter, mul_zero]
@@ -158,7 +157,7 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
   -- We prove that `c` is commute with `a`.
   have hc : c * a = a * c := by
     symm; apply eq_of_sub_eq_zero
-    rw [← LinearMap.mulLeft_apply (R := k), ← LinearMap.mulRight_apply (R := k),
+    rw [← mulLeft_apply (R := k), ← mulRight_apply (R := k),
       ← δ_def, δ_iterate_succ a b n, hb.2]
   -- We now make some computation to obtain the final equation.
   set d := c⁻¹ * a * ((δ a) ^ (n - 1)) b with hd_def
@@ -182,7 +181,7 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
   obtain ⟨r, hr⟩ := (exists_pow_mem_center_ofInseparable p d hinsep)
   apply_fun (· ^ (p ^ r)) at deq
   rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _) , one_pow,
-    ← conj_nonComm_Algebra (ha := ha₀), ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
+    ← conj_nonComm_Algebra ha₀, ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
     self_eq_add_left] at deq
   exact one_ne_zero deq
 
