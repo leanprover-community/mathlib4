@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Epimorphisms in `CommRingCat`
@@ -41,3 +42,8 @@ lemma RingHom.surjective_of_epi_of_finite {R S : CommRingCat} (f : R ⟶ S) [Epi
   have : Module.Finite R S := h₂
   apply RingHom.surjective_of_tmul_eq_tmul_of_finite
   rwa [← CommRingCat.epi_iff_tmul_eq_tmul]
+
+lemma RingHom.surjective_iff_epi_and_finite {R S : CommRingCat} {f : R ⟶ S} :
+    Function.Surjective f ↔ Epi f ∧ RingHom.Finite f where
+  mp h := ⟨ConcreteCategory.epi_of_surjective f h, .of_surjective f h⟩
+  mpr := fun ⟨_, h⟩ ↦ surjective_of_epi_of_finite f h
