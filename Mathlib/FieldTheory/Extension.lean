@@ -5,7 +5,6 @@ Authors: Thomas Browning, Junyan Xu
 -/
 import Mathlib.Data.Fintype.Order
 import Mathlib.FieldTheory.Adjoin
-import Mathlib.GroupTheory.CosetCover
 
 /-!
 # Extension of field embeddings
