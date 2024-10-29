@@ -447,6 +447,7 @@ open MatrixGroups
 
 open Matrix Matrix.SpecialLinearGroup
 
+/--Coercion into an element of `SL(2, ℤ)` and then an element of `Matrix (Fin 2) (Fin 2) ℤ`. -/
 scoped notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)
 
 
