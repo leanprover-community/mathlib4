@@ -35,7 +35,7 @@ Demo video at https://youtu.be/PVj_FHGwhUI
 
 
 open Cli
-open Lean
+open Lean Name
 
 def Core.withImportModules (modules : Array Name) {α} (f : CoreM α) : IO α := do
   unsafe Lean.withImportModules (modules.map (fun m => {module := m})) {} (trustLevel := 1024)
@@ -54,10 +54,30 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   Core.withImportModules #[to?.getD `Mathlib] do
     let mut modules := (args.variableArgsAs! ModuleName).toList
+
+    let includeLean := args.hasFlag "include-lean"
+    let includeStd := args.hasFlag "include-std" || includeLean
+    let includeDeps := args.hasFlag "include-deps" || includeStd
+    let excludeMeta := args.hasFlag "exclude-meta"
+
     match to? with
     | some _ =>
       if modules.isEmpty then
         modules := (← getEnv).header.moduleNames |>.toList
+        if excludeMeta then
+          -- Mathlib-specific exclusion of tactics
+          let filterMathlibMeta : Name → Bool := fun n => (
+            isPrefixOf `Mathlib.Tactic n ∨
+            isPrefixOf `Mathlib.Lean n ∨
+            isPrefixOf `Mathlib.Mathport n ∨
+            isPrefixOf `Mathlib.Util n)
+          modules := modules.filter fun n => ¬ filterMathlibMeta n
+        let filter (n : Name) : Bool :=
+          (`Mathlib).isPrefixOf n ||
+          bif isPrefixOf `Std n then includeStd else
+          bif isPrefixOf `Lean n || isPrefixOf `Init n then includeLean else
+          includeDeps
+        modules := modules.filter filter
       else
         IO.eprintln "Cannot specify both --to and specific modules."
         return 1
@@ -66,6 +86,15 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
         IO.eprintln
           "No modules specified, please specify at least two modules on the command line."
         return 1
+      if excludeMeta then IO.eprintln "--exclude-meta flag is ignored without --to."
+      if includeLean then IO.eprintln "--include-lean flag is ignored without --to."
+      else if includeStd then IO.eprintln "--include-std flag is ignored without --to."
+      else if includeDeps then IO.eprintln "--include-deps flag is ignored without --to."
+
+    let transitiveImports := (← getEnv).importGraph.transitiveClosure
+
+    modules := modules.mergeSort fun m₁ m₂ => m₁.toString < m₂.toString
+    modules := modules.mergeSort fun m₁ m₂ => ((transitiveImports.find? m₁).getD {}).contains m₂
 
     let unused ← unusedTransitiveImports modules (verbose := true)
 
@@ -98,8 +127,10 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
       -- and highlighting all of these in some way, would be a useful addition.
       let from_idx := min r.top (modules.length - 1)
       let to_idx := r.right - 1
+      let excludeMetaFlag := if excludeMeta then "--exclude-meta " else ""
       IO.println
-        s!"lake exe graph --from {modules[from_idx]!} --to {modules[to_idx]!} unused{i}.pdf"
+        s!"lake exe graph --from {modules[from_idx]!} --to {modules[to_idx]!} {excludeMetaFlag}\
+             unused{i}.pdf"
 
     return 0
 
@@ -117,6 +148,11 @@ def unused : Cmd := `[Cli|
     output : String; "Write the table to a given file instead of `unused.md`."
     n : Nat;         "Number of `lake exe graph` commands to print."
     to : ModuleName; "Process all modules up to the specified module."
+    "exclude-meta";  "Exclude any files starting with `Mathlib.[Tactic|Lean|Util|Mathport]`."
+    "include-deps";  "Include used files from other libraries (not including Lean itself and `std`)"
+    "include-std";   "Include used files from the Lean standard library (implies `--include-deps`)"
+    "include-lean";  "Include used files from Lean itself \
+                        (implies `--include-deps` and `--include-std`)"
 
   ARGS:
     ...modules : ModuleName; "Modules to check for unused imports."
