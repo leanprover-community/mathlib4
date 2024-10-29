@@ -395,18 +395,6 @@ theorem denom_apply (g : SL(2, ℤ)) (z : ℍ) :
     denom g z = (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 0 * z + (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 1 := by
   simp [denom, coe']
 
-lemma denom_one (τ : ℍ) : denom 1 τ = 1 := by
-  simp [denom]
-
-@[simp]
-lemma denom_S (z : ℍ) : denom (ModularGroup.S) z = z.1 := by
-  rw [ModularGroup.S, denom]
-  simp only [Int.reduceNeg, Fin.isValue, ModularGroup.coe'_apply_complex, Matrix.of_apply,
-    Matrix.cons_val', Matrix.cons_val_zero, Matrix.empty_val', Matrix.cons_val_fin_one,
-    Matrix.cons_val_one, Matrix.head_fin_const, Int.cast_one, one_mul, Matrix.head_cons,
-    Int.cast_zero, add_zero]
-  rfl
-
 end ModularGroup
 
 end SLModularAction
