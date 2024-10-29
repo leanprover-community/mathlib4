@@ -287,7 +287,8 @@ string from `expr`, for every `.forallE` constructor with which `expr` starts, r
 as an array.
 
 If the name associated to a `.forallE` constructor has macro-scopes (e.g. it is nameless),
-then the string is the pretty-printed name of the type of the variable.
+then the string is the pretty-printed name of the type of the variable, stripped out of any
+possible universe annotations.
 If the `.forallE` has an associated name that is not macro-scoped, then the string is the name of
 the binder.
 
@@ -306,6 +307,14 @@ def getForallStrings (e : Expr) : MetaM (Array String) :=
         return (← Meta.ppExpr (typ.setPPUniverses false)).pretty
   catch _ => return #[]
 
+/--
+`getUsedVariableFromName declName` takes as input the name `declName` of a declaration.
+
+It retrieves its `type` and returns the binder names of `type`, using `getForallStrings`.
+
+This is used on `def`-like declaration to try to determine the section `variable`s that the
+declaration uses.
+-/
 def getUsedVariableFromName (declName : Name) : CommandElabM (Array String) := do
   let env ← getEnv
   let decl := (env.find? declName).getD default
@@ -363,6 +372,11 @@ def exampleToDef (stx : Syntax) (nm : Name) : Syntax :=
       | _ => return none
   toDecl
 
+/-- `cleanUpExplicitUniverses stx` takes as input a syntax node `stx` and removes explicit
+universe annotations from it.
+
+It may not work well if there are several universe annotations present.
+-/
 def cleanUpExplicitUniverses (stx : Syntax) : Syntax :=
   stx.replaceM (m := Id) fun s =>
     if s.isOfKind ``Lean.Parser.Term.explicitUniv then
