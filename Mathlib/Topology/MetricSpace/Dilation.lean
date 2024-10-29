@@ -268,7 +268,7 @@ instance : Inhabited (α →ᵈ α) :=
   ⟨Dilation.id α⟩
 
 @[simp]
-theorem coe_id : ⇑(Dilation.id α) = id :=
+protected theorem coe_id : ⇑(Dilation.id α) = id :=
   rfl
 
 theorem ratio_id : ratio (Dilation.id α) = 1 := by
