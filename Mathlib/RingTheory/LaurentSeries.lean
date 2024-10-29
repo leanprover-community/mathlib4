@@ -48,7 +48,6 @@ series to which the filter `ℱ` converges.
 `LaurentSeries.val_le_one_iff_eq_coe`.
 * The uniform space of `LaurentSeries` over a field is complete, formalized in the instance
 `instLaurentSeriesComplete`.
-************************************************************************************************************************
 * The field of rational functions is dense in `LaurentSeries`: this is the declaration
 `LaurentSeries.coe_range_dense` and relies principally upon `LaurentSeries.exists_ratFunc_val_lt`,
 stating that for every Laurent series `f` and every `γ : ℤₘ₀` one can find a rational function `Q`
