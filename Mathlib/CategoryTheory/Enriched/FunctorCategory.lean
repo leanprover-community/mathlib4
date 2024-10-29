@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Enriched.Basic
+import Mathlib.CategoryTheory.Enriched.Ordinary
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Limits.Shapes.End
 
@@ -16,90 +16,13 @@ universe v v' v'' u u' u''
 
 namespace CategoryTheory
 
-open Category Opposite
-
-variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
-  (C : Type u) [Category.{v} C]
-
-open MonoidalCategory
-
--- `SimplicialCategory` should be an abbrev for this
-class EnrichedOrdinaryCategory extends EnrichedCategory V C where
-  homEquiv (K L : C) : (K ⟶ L) ≃ (𝟙_ V ⟶ EnrichedCategory.Hom K L)
-  homEquiv_id (K : C) : homEquiv K K (𝟙 K) = eId V K := by aesop_cat
-  homEquiv_comp {K L M : C} (f : K ⟶ L) (g : L ⟶ M) :
-    homEquiv K M (f ≫ g) = (λ_ _).inv ≫ (homEquiv K L f ⊗ homEquiv L M g) ≫
-      eComp V K L M := by aesop_cat
-
-section
-
-variable {C} [EnrichedOrdinaryCategory V C]
-
-def eHomEquiv {K L : C} : (K ⟶ L) ≃ (𝟙_ V ⟶ EnrichedCategory.Hom K L) :=
-  EnrichedOrdinaryCategory.homEquiv K L
-
-lemma eHomEquiv_id (K : C) : eHomEquiv V (𝟙 K) = eId V K :=
-  EnrichedOrdinaryCategory.homEquiv_id _
-
-@[reassoc]
-lemma eHomEquiv_comp {K L M : C} (f : K ⟶ L) (g : L ⟶ M) :
-    eHomEquiv V (f ≫ g) = (λ_ _).inv ≫ (eHomEquiv V f ⊗ eHomEquiv V g) ≫ eComp V K L M :=
-  EnrichedOrdinaryCategory.homEquiv_comp _ _
-
-attribute [local simp] eHomEquiv_id eHomEquiv_comp
-
-variable (C)
-
-@[simps]
-def eHomBifunctor : Cᵒᵖ ⥤ C ⥤ V where
-  obj K :=
-    { obj := fun L ↦ K.unop ⟶[V] L
-      map := fun {L L'} g ↦ (ρ_ _).inv ≫ _ ◁ eHomEquiv V g ≫ eComp V K.unop L L'
-      map_comp := fun {L L' L''} f g ↦ by
-        dsimp
-        rw [eHomEquiv_comp, assoc, assoc, Iso.cancel_iso_inv_left,
-          MonoidalCategory.whiskerLeft_comp_assoc,
-          MonoidalCategory.whiskerLeft_comp_assoc, ← e_assoc]
-        nth_rw 2 [← id_tensorHom]
-        rw [associator_inv_naturality_assoc, id_tensorHom, tensorHom_def, assoc,
-          whisker_exchange_assoc, MonoidalCategory.whiskerRight_id,
-          MonoidalCategory.whiskerRight_id, assoc, assoc, assoc, assoc,
-          Iso.inv_hom_id_assoc, triangle_assoc_comp_left_inv_assoc,
-          MonoidalCategory.whiskerRight_id, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc] }
-  map {K K'} f :=
-    { app := fun L ↦ (λ_ _).inv ≫ eHomEquiv V f.unop ▷ _ ≫ eComp V K'.unop K.unop L
-      naturality := fun L L' g ↦ by
-        dsimp
-        have := ((λ_ _).inv ≫ _ ◁ (ρ_ _).inv ≫ _ ◁ _ ◁ eHomEquiv V g ≫
-          eHomEquiv V f.unop ▷ _) ≫= (e_assoc V K'.unop K.unop L L').symm
-        simp only [assoc] at this ⊢
-        conv_lhs at this =>
-          rw [← whisker_exchange_assoc,
-            whiskerLeft_rightUnitor_inv, id_whiskerLeft, id_whiskerLeft, assoc,
-            assoc, assoc, assoc, assoc, Iso.inv_hom_id_assoc, leftUnitor_tensor,
-            MonoidalCategory.whiskerRight_id, assoc, assoc, assoc,
-            Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id_assoc]
-        rw [this, ← MonoidalCategory.whiskerLeft_comp_assoc,
-            whisker_exchange_assoc, MonoidalCategory.whiskerLeft_comp,
-            whiskerLeft_rightUnitor_inv, assoc, assoc, ← associator_naturality_right_assoc,
-            Iso.hom_inv_id_assoc, whisker_exchange_assoc, MonoidalCategory.whiskerRight_id,
-            assoc, assoc, Iso.inv_hom_id_assoc] }
-  map_comp {K K' K''} f g := by
-    ext L
-    dsimp
-    rw [eHomEquiv_comp, assoc, assoc, Iso.cancel_iso_inv_left, comp_whiskerRight,
-      comp_whiskerRight, assoc, assoc, ← e_assoc', tensorHom_def', comp_whiskerRight, assoc,
-      id_whiskerLeft, ← comp_whiskerRight_assoc, Iso.inv_hom_id_assoc, comp_whiskerRight_assoc,
-      associator_naturality_left_assoc, ← whisker_exchange_assoc, leftUnitor_inv_whiskerRight,
-      id_whiskerLeft, assoc, assoc, assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id_assoc]
-
-end
-
-open Limits
+open Category MonoidalCategory Limits
 
 namespace Enriched
 
-variable {C} {J : Type u''} [Category.{v''} J] [EnrichedOrdinaryCategory V C]
+variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
+  {C : Type u} [Category.{v} C]
+  {J : Type u''} [Category.{v''} J] [EnrichedOrdinaryCategory V C]
 
 namespace FunctorCategory
 
@@ -108,7 +31,7 @@ section
 variable (F₁ F₂ F₃ : J ⥤ C)
 
 @[simps!]
-def diagram : Jᵒᵖ ⥤ J ⥤ V := F₁.op ⋙ eHomBifunctor V C ⋙ (whiskeringLeft J C V).obj F₂
+def diagram : Jᵒᵖ ⥤ J ⥤ V := F₁.op ⋙ eHomFunctor V C ⋙ (whiskeringLeft J C V).obj F₂
 
 abbrev HasEnrichedHom := HasEnd (diagram V F₁ F₂)
 
@@ -136,10 +59,10 @@ noncomputable def homEquiv : (F₁ ⟶ F₂) ≃ (𝟙_ V ⟶ enrichedHom V F₁
     trans eHomEquiv V (τ.app i ≫ F₂.map f)
     · dsimp
       simp only [eHomEquiv_comp, tensorHom_def_assoc, MonoidalCategory.whiskerRight_id,
-        ← unitors_equal, assoc, Iso.inv_hom_id_assoc]
+        ← unitors_equal, assoc, Iso.inv_hom_id_assoc, eHomWhiskerLeft]
     · dsimp
       simp only [← NatTrans.naturality, eHomEquiv_comp, tensorHom_def', id_whiskerLeft,
-        assoc, Iso.inv_hom_id_assoc])
+        assoc, Iso.inv_hom_id_assoc, eHomWhiskerRight])
   invFun g :=
     { app := fun j ↦ (eHomEquiv V).symm (g ≫ end_.π _ j)
       naturality := fun i j f ↦ (eHomEquiv V).injective (by
@@ -190,7 +113,7 @@ noncomputable def enrichedComp : enrichedHom V F₁ F₂ ⊗ enrichedHom V F₂ 
         eComp V _ (F₂.obj j) _
     · sorry
     · have := end_.condition (diagram V F₁ F₂) f
-      dsimp at this
+      dsimp [eHomWhiskerLeft, eHomWhiskerRight] at this ⊢
       conv_rhs => rw [assoc, tensorHom_def'_assoc]
       conv_lhs =>
         rw [tensorHom_def'_assoc, ← comp_whiskerRight_assoc,
@@ -257,7 +180,7 @@ noncomputable def enrichedOrdinaryCategory : EnrichedOrdinaryCategory V (J ⥤ C
         whisker_exchange_assoc, ← tensorHom_def_assoc]
     dsimp
     rw [e_assoc]
-  homEquiv _ _ := homEquiv V
+  homEquiv := homEquiv V
   homEquiv_id _ := homEquiv_id V _
   homEquiv_comp f g := homEquiv_comp V f g
 
