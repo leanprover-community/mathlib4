@@ -393,10 +393,7 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {degs : Seq ℝ} {basis_
       (x = .nil ∧ y = .nil)
   apply Seq.Eq.coind motive
   · simp [motive]
-    use Cs
-    use degs
-    use 0
-    use init
+    use Cs, degs, 0, init
     left
     constructor
     · assumption
@@ -413,8 +410,7 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {degs : Seq ℝ} {basis_
       apply degs'.recOn
       · simp [partialSums, partialSumsFrom]
         intro h_x_eq h_y_eq
-        use D + init'
-        use .nil
+        use D + init', .nil
         constructor
         · assumption
         use .nil
@@ -425,21 +421,18 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {degs : Seq ℝ} {basis_
         obtain ⟨Cs_hd, Cs_tl, h_Cs⟩ := Seq.atLeastAsLongAs_cons h_alal
         subst h_Cs
         simp [partialSums, partialSumsFrom_cons] at h_x_eq h_y_eq
-        use D + init'
-        use (partialSumsFrom Cs_tl degs_tl basis_fun fun x ↦ D x + init' x +
-          basis_fun x ^ degs_hd * Cs_hd x)
-        use (Seq.map (fun G ↦ D + G) (partialSumsFrom Cs_tl degs_tl basis_fun fun x ↦ init' x +
-          basis_fun x ^ degs_hd * Cs_hd x))
+        use D + init',
+          partialSumsFrom Cs_tl degs_tl basis_fun fun x ↦ D x + init' x +
+            basis_fun x ^ degs_hd * Cs_hd x,
+          Seq.map (fun G ↦ D + G) (partialSumsFrom Cs_tl degs_tl basis_fun fun x ↦ init' x +
+            basis_fun x ^ degs_hd * Cs_hd x)
         constructor
         · assumption
         constructor
         · assumption
         simp [motive]
         simp at h_alal
-        use Cs_tl
-        use degs_tl
-        use fun x ↦ init' x + basis_fun x ^ degs_hd * Cs_hd x
-        use D
+        use Cs_tl, degs_tl, fun x ↦ init' x + basis_fun x ^ degs_hd * Cs_hd x, D
         left
         constructor
         · assumption
@@ -578,8 +571,7 @@ theorem Approximates.coind'  {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : �
       ∃ F h, Cs = (Seq.corec g ⟨ms, F, h⟩)
     apply Seq.atLeastAsLong.coind motive'
     · simp only [motive']
-      use F
-      use h_base
+      use F, h_base
     · intro Cs ms ih (deg, coef) tl h_ms_eq
       simp only [motive'] at ih
       obtain ⟨F, h, h_Cs_eq⟩ := ih
@@ -588,23 +580,19 @@ theorem Approximates.coind'  {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : �
       pick_goal 2
       · simp [g]
         constructor <;> rfl
-      use ?_
-      use ?_
+      use ?_, ?_
       constructor
       · exact h_Cs_eq
       simp only [motive']
       generalize_proofs p1 p2
-      use fun x ↦ F x - basis_hd x ^ deg * p1.choose x
-      use p2
+      use fun x ↦ F x - basis_hd x ^ deg * p1.choose x, p2
   · constructor
     · let motive' : Seq ((ℝ → ℝ) × ℝ × PreMS basis_tl) → Prop := fun li =>
         ∃ (ms : Seq (ℝ × PreMS basis_tl)), ∃ F h,
           li = (Seq.corec g ⟨ms, F, h⟩).zip ms
       apply Seq.All.coind motive'
       · simp only [motive']
-        use ms
-        use F
-        use h_base
+        use ms, F, h_base
       · intro (C, (deg, coef)) tl ih
         simp only
         simp only [motive'] at ih
@@ -628,9 +616,7 @@ theorem Approximates.coind'  {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : �
             generalize_proofs p
             exact p.choose_spec.left
           · simp only [motive']
-            use ?_
-            use ?_
-            use ?_
+            use ?_, ?_, ?_
     · simp [partialSums]
       let motive' : Seq ((ℝ → ℝ) × Option ℝ) → Prop := fun li =>
         li = .nil ∨ ∃ (ms : Seq (ℝ × PreMS basis_tl)), ∃ G h init,
@@ -640,10 +626,7 @@ theorem Approximates.coind'  {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : �
       apply Seq.All.coind motive'
       · simp only [motive']
         right
-        use ms
-        use F
-        use h_base
-        use 0
+        use ms, F, h_base, 0
         constructor
         · rfl
         simp
@@ -704,10 +687,8 @@ theorem Approximates.coind'  {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : �
             · simp [motive']
               right
               generalize_proofs h1 h2
-              use tl
-              use fun x ↦ G x - basis_hd x ^ deg * h1.choose x
-              use h2
-              use fun x ↦ F' x + basis_hd x ^ deg * h1.choose x
+              use tl, fun x ↦ G x - basis_hd x ^ deg * h1.choose x,
+                h2, fun x ↦ F' x + basis_hd x ^ deg * h1.choose x
               constructor
               · rfl
               apply eventuallyEq_iff_sub.mpr
@@ -753,9 +734,7 @@ theorem Approximates.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : ℝ 
     | inr h_survive =>
       right
       obtain ⟨deg, coef, tl, C, h_ms_eq, h_coef, h_comp, h_tl⟩ := h_survive
-      use deg
-      use coef
-      use tl
+      use deg, coef, tl
       constructor
       · exact h_ms_eq
       use C
@@ -832,9 +811,7 @@ theorem Approximates_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {F F' : 
         · exact EventuallyEq.trans h_equiv.symm hF
       · intro (deg, coef) tl ih
         right
-        use deg
-        use coef
-        use tl
+        use deg, coef, tl
         simp
         simp [motive] at ih
         obtain ⟨F, h_equiv, hF⟩ := ih

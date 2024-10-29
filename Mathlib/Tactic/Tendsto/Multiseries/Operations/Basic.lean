@@ -185,9 +185,7 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
       · intro (deg, coef) tl hX_wo
         obtain ⟨hX_coef_wo, hX_tl_wo, hX_comp⟩ := WellOrdered_cons hX_wo
         right
-        use deg
-        use coef.mulConst c
-        use mulConst (basis := basis_hd :: basis_tl) tl c
+        use deg, coef.mulConst c, mulConst (basis := basis_hd :: basis_tl) tl c
         constructor
         · simp [mulConst]
         constructor
@@ -212,8 +210,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
         X.Approximates fX (basis_hd :: basis_tl)
     apply Approximates.coind motive
     · simp only [motive]
-      use ms
-      use F
+      use ms, F
     · intro f ms ih
       simp only [motive] at ih
       obtain ⟨X, fX, h_ms_eq, hf_eq, hX_approx⟩ := ih
@@ -238,10 +235,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
         obtain ⟨XC, hX_coef, hX_comp, hX_tl⟩ := Approximates_cons hX_approx
         right
         simp [mulConst] at h_ms_eq
-        use ?_
-        use ?_
-        use ?_
-        use fun x ↦ XC x * c
+        use ?_, ?_, ?_, fun x ↦ XC x * c
         constructor
         · exact h_ms_eq
         constructor
@@ -252,8 +246,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
           simp_rw [mul_comm]
           apply IsLittleO.const_mul_left (hX_comp deg h_deg)
         simp only [motive]
-        use X_tl
-        use fun x ↦ fX x - basis_hd x ^ X_deg * XC x
+        use X_tl, fun x ↦ fX x - basis_hd x ^ X_deg * XC x
         constructor
         · rfl
         constructor

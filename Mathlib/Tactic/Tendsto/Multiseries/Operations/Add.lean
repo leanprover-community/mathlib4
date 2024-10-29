@@ -69,9 +69,7 @@ theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
       simp [HAdd.hAdd, Add.add, add, Seq.corec_nil]
     · intro (deg, coef) tl
       left
-      use (deg, coef)
-      use ?_
-      use tl
+      use (deg, coef), ?_, tl
       constructor
       · simp [HAdd.hAdd, Add.add, add]
         rw [corec_cons]
@@ -107,9 +105,7 @@ theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
       simp
     · intro (deg, coef) tl
       left
-      use (deg, coef)
-      use ?_
-      use tl
+      use (deg, coef), ?_, tl
       constructor
       · simp [HAdd.hAdd, Add.add, add]
         rw [corec_cons]
@@ -448,8 +444,7 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
         ms = X + Y ∧ X.WellOrdered ∧ Y.WellOrdered
     apply WellOrdered.coind motive
     · simp only [motive]
-      use x
-      use y
+      use x, y
     · intro ms ih
       simp only [motive] at ih
       obtain ⟨X, Y, h_ms_eq, hX_wo, hY_wo⟩ := ih
@@ -465,9 +460,7 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
           obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
           right
           simp at h_ms_eq
-          use Y_deg
-          use Y_coef
-          use Y_tl
+          use Y_deg, Y_coef, Y_tl
           constructor
           · exact h_ms_eq
           constructor
@@ -475,8 +468,7 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
           constructor
           · exact hY_comp
           simp only [motive]
-          use .nil
-          use Y_tl
+          use .nil, Y_tl
           simp
           constructor
           · apply WellOrdered.nil
@@ -489,9 +481,7 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
         apply Y.recOn
         · intro hY_wo h_ms_eq
           simp at h_ms_eq
-          use X_deg
-          use X_coef
-          use X_tl
+          use X_deg, X_coef, X_tl
           constructor
           · exact h_ms_eq
           constructor
@@ -499,8 +489,7 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
           constructor
           · exact hX_comp
           simp only [motive]
-          use .nil
-          use X_tl
+          use .nil, X_tl
           simp
           constructor
           · apply WellOrdered.nil
@@ -509,10 +498,8 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
           have hY_wo' := WellOrdered_cons hY_wo
           obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := hY_wo'
           rw [add_cons_cons] at h_ms_eq
-          split_ifs at h_ms_eq with h1 h2
-          · use ?_
-            use ?_
-            use ?_
+          split_ifs at h_ms_eq
+          · use ?_, ?_, ?_
             constructor
             · exact h_ms_eq
             constructor
@@ -523,11 +510,8 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
               · exact hX_comp
               · simpa
             simp only [motive]
-            use X_tl
-            use .cons (Y_deg, Y_coef) Y_tl
-          · use ?_
-            use ?_
-            use ?_
+            use X_tl, .cons (Y_deg, Y_coef) Y_tl
+          · use ?_, ?_, ?_
             constructor
             · exact h_ms_eq
             constructor
@@ -538,14 +522,10 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
               · simpa
               · exact hY_comp
             simp only [motive]
-            use .cons (X_deg, X_coef) X_tl
-            use Y_tl
+            use .cons (X_deg, X_coef) X_tl, Y_tl
           · have h_deg : X_deg = Y_deg := by linarith
             subst h_deg
-            clear h1 h2
-            use ?_
-            use ?_
-            use ?_
+            use ?_, ?_, ?_
             constructor
             · exact h_ms_eq
             constructor
@@ -556,8 +536,7 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
               · exact hX_comp
               · exact hY_comp
             simp only [motive]
-            use X_tl
-            use Y_tl
+            use X_tl, Y_tl
 
 theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
     (hX_approx : X.Approximates fX basis) (hY_approx : Y.Approximates fY basis) :
@@ -572,10 +551,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
         ms = X + Y ∧ f =ᶠ[atTop] fX + fY ∧ X.Approximates fX ∧ Y.Approximates fY
     apply Approximates.coind motive
     · simp only [motive]
-      use X
-      use Y
-      use fX
-      use fY
+      use X, Y, fX, fY
     · intro f ms ih
       simp only [motive] at ih
       obtain ⟨X, Y, fX, fY, h_ms_eq, hf_eq, hX_approx, hY_approx⟩ := ih
@@ -607,10 +583,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             conv => rhs; ext x; rw [← zero_add (fY x)]
             apply EventuallyEq.add hX_approx
             rfl
-          use ?_
-          use ?_
-          use ?_
-          use YC
+          use ?_, ?_, ?_, YC
           constructor
           · exact h_ms_eq
           constructor
@@ -620,10 +593,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             apply EventuallyEq.trans_isLittleO hf_eq
             apply hY_comp _ h_deg
           simp only [motive]
-          use .nil
-          use Y_tl
-          use 0
-          use fun x ↦ fY x - basis_hd x ^ Y_deg * YC x
+          use .nil, Y_tl, 0, fun x ↦ fY x - basis_hd x ^ Y_deg * YC x
           constructor
           · simp
           constructor
@@ -651,10 +621,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             conv => rhs; ext x; rw [← add_zero (fX x)]
             apply EventuallyEq.add _ hY_approx
             rfl
-          use ?_
-          use ?_
-          use ?_
-          use XC
+          use ?_, ?_, ?_, XC
           constructor
           · exact h_ms_eq
           constructor
@@ -664,10 +631,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             apply EventuallyEq.trans_isLittleO hf_eq
             apply hX_comp _ h_deg
           simp only [motive]
-          use .nil
-          use X_tl
-          use 0
-          use fun x ↦ fX x - basis_hd x ^ X_deg * XC x
+          use .nil, X_tl, 0, fun x ↦ fX x - basis_hd x ^ X_deg * XC x
           constructor
           · simp
           constructor
@@ -685,10 +649,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
           obtain ⟨YC, hY_coef, hY_comp, hY_tl⟩ := hY_approx'
           rw [add_cons_cons] at h_ms_eq
           split_ifs at h_ms_eq
-          · use X_deg
-            use X_coef
-            use ?_
-            use XC
+          · use X_deg, X_coef, ?_, XC
             constructor
             · exact h_ms_eq
             constructor
@@ -701,10 +662,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
               · apply hY_comp
                 linarith
             simp only [motive]
-            use X_tl
-            use Seq.cons (Y_deg, Y_coef) Y_tl
-            use fun x ↦ fX x - basis_hd x ^ X_deg * XC x
-            use fY
+            use X_tl, Seq.cons (Y_deg, Y_coef) Y_tl, fun x ↦ fX x - basis_hd x ^ X_deg * XC x, fY
             constructor
             · rfl
             constructor
@@ -720,10 +678,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             constructor
             · exact hX_tl
             · exact hY_approx
-          · use Y_deg
-            use Y_coef
-            use ?_
-            use YC
+          · use Y_deg, Y_coef, ?_, YC
             constructor
             · exact h_ms_eq
             constructor
@@ -736,10 +691,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
                 linarith
               · exact hY_comp _ h_deg
             simp only [motive]
-            use Seq.cons (X_deg, X_coef) X_tl
-            use Y_tl
-            use fX
-            use fun x ↦ fY x - basis_hd x ^ Y_deg * YC x
+            use Seq.cons (X_deg, X_coef) X_tl, Y_tl, fX, fun x ↦ fY x - basis_hd x ^ Y_deg * YC x
             constructor
             · rfl
             constructor
@@ -757,10 +709,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             · exact hY_tl
           · have : X_deg = Y_deg := by linarith
             subst this
-            use X_deg
-            use X_coef.add Y_coef
-            use ?_
-            use XC + YC
+            use X_deg, X_coef + Y_coef, ?_, XC + YC
             constructor
             · exact h_ms_eq
             constructor
@@ -772,10 +721,9 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
               · exact hX_comp _ h_deg
               · exact hY_comp _ h_deg
             simp only [motive]
-            use X_tl
-            use Y_tl
-            use fun x ↦ fX x - basis_hd x ^ X_deg * XC x
-            use fun x ↦ fY x - basis_hd x ^ X_deg * YC x
+            use X_tl, Y_tl,
+              fun x ↦ fX x - basis_hd x ^ X_deg * XC x,
+              fun x ↦ fY x - basis_hd x ^ X_deg * YC x
             constructor
             · rfl
             constructor

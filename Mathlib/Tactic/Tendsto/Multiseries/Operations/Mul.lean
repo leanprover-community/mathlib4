@@ -69,12 +69,7 @@ theorem mul_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {coe
     apply Y.recOn
     · simp
     · intro (Y_deg, Y_coef) Y_tl h
-      use X_deg
-      use X_coef
-      use X_tl
-      use Y_deg
-      use Y_coef
-      use Y_tl
+      use X_deg, X_coef, X_tl, Y_deg, Y_coef, Y_tl
 
 @[simp]
 theorem mul_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg y_deg : ℝ} {x_coef y_coef : PreMS basis_tl}
@@ -171,10 +166,7 @@ theorem mul_one' {basis : Basis} {ms : PreMS basis} : mul ms (one basis) = ms :=
         simp
       · intro (deg, coef) tl
         left
-        use ?_
-        use ?_
-        use ?_
-        use ?_
+        use ?_, ?_, ?_, ?_
         constructor
         · congr <;> exact Eq.refl _
         simp only [motive]
@@ -1016,8 +1008,8 @@ mutual
               apply mul_assoc' hm_wo
             · exact Eq.refl _
           simp only [motive]
-          use mulMonomial c_tl (m_coef.mul b_coef) (m_deg + b_deg) + (.cons (S_deg, S_coef) S_tl)
-          use b_tl
+          use mulMonomial c_tl (m_coef.mul b_coef) (m_deg + b_deg) + (.cons (S_deg, S_coef) S_tl),
+            b_tl
           constructor
           · abel
           · rw [add_mulMonomial_left hm_wo, mulMonomial_mul hm_wo]
@@ -1033,8 +1025,7 @@ mutual
               apply mul_assoc' hm_wo
             · exact Eq.refl _
           simp only [motive]
-          use mulMonomial c_tl (m_coef.mul b_coef) (m_deg + b_deg) + S_tl
-          use b_tl
+          use mulMonomial c_tl (m_coef.mul b_coef) (m_deg + b_deg) + S_tl, b_tl
           constructor
           · abel
           · rw [add_mulMonomial_left hm_wo, mulMonomial_mul hm_wo]
@@ -1828,9 +1819,7 @@ mutual
         have h_wo' := WellOrdered_cons h_wo
         obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := h_wo'
         right
-        use ?_
-        use ?_
-        use ?_
+        use ?_, ?_, ?_
         constructor
         · simp only [mulMonomial_cons]
           congr <;> exact Eq.refl _
@@ -1860,10 +1849,7 @@ mutual
           X.WellOrdered ∧ Y.WellOrdered
       apply WellOrdered.coind motive
       · simp only [motive]
-        use 0
-        use default
-        use X
-        use Y
+        use 0, default, X, Y
         simp [longAdd, zero]
         constructor <;> assumption
       · intro ms ih
@@ -1890,9 +1876,7 @@ mutual
           · simp
           · intro (right_deg, right_coef) right_tl h_right_eq
             simp
-            use right_deg
-            use right_coef
-            use right_tl
+            use right_deg, right_coef, right_tl
             simp
             obtain ⟨X_deg, X_coef, X_tl, Y_deg, Y_coef, Y_tl, hX_eq, hY_eq⟩ := mul_eq_cons h_right_eq
             subst hX_eq hY_eq
@@ -1913,10 +1897,7 @@ mutual
                 · simp
                 · exact hX_comp
             simp only [motive]
-            use 1
-            use fun _ ↦ (Y_tl, X_coef, X_deg)
-            use X_tl
-            use .cons (Y_deg, Y_coef) Y_tl
+            use 1, fun _ ↦ (Y_tl, X_coef, X_deg), X_tl, .cons (Y_deg, Y_coef) Y_tl
             simp
             constructor
             · simp [longAdd_one]
@@ -1961,9 +1942,7 @@ mutual
               revert h_right_eq
               apply right.recOn
               · intro h_right_eq
-                use left_deg
-                use left_coef
-                use left_tl
+                use left_deg, left_coef, left_tl
                 constructor
                 · simp
                 constructor
@@ -1971,10 +1950,7 @@ mutual
                 constructor
                 · exact h_left_comp
                 simp only [motive]
-                use (l + 1) -- =k
-                use ?_
-                use .nil
-                use .nil
+                use (l + 1), ?_, .nil, .nil
                 constructor
                 · simp
                   exact h_left_tl_eq
@@ -1984,7 +1960,7 @@ mutual
               · intro (right_deg, right_coef) right_tl h_right_eq
                 rw [add_cons_cons]
                 split_ifs with h1 h2
-                · use ?_; use ?_; use ?_
+                · use ?_, ?_, ?_
                   constructor
                   · congr 2 <;> exact Eq.refl _
                   constructor
@@ -1995,10 +1971,7 @@ mutual
                     · exact h_left_comp
                     · exact h1
                   simp only [motive]
-                  use (l + 1) -- l + 1 = k
-                  use ?_
-                  use X
-                  use Y
+                  use (l + 1), ?_, X, Y
                   constructor
                   · rw [h_right_eq]
                     congr 1
@@ -2013,7 +1986,7 @@ mutual
                   obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
                   obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
                   simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
-                  use ?_; use ?_; use ?_
+                  use ?_, ?_, ?_
                   constructor
                   · congr 2 <;> exact Eq.refl _
                   constructor
@@ -2034,12 +2007,11 @@ mutual
                         · exact hX_comp
                   rw [← h_left_eq, ← h_right_eq.2, ← add_assoc]
                   simp only [motive]
-                  use (l + 2) -- l + 2 = k + 1
-                  use fun i => by cases i using Fin.lastCases with
-                  | last => exact (Y_tl, X_coef, X_deg)
-                  | cast j => exact BM j
-                  use X_tl
-                  use Seq.cons (Y_deg, Y_coef) Y_tl
+                  use (l + 2),
+                    fun i => by cases i using Fin.lastCases with
+                    | last => exact (Y_tl, X_coef, X_deg)
+                    | cast j => exact BM j
+                  use X_tl, Seq.cons (Y_deg, Y_coef) Y_tl
                   constructor
                   · congr 1
                     conv => rhs; unfold longAdd
@@ -2066,7 +2038,7 @@ mutual
                   obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
                   obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
                   simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
-                  use ?_; use ?_; use ?_
+                  use ?_, ?_, ?_
                   constructor
                   · congr 2 <;> exact Eq.refl _
                   constructor
@@ -2089,12 +2061,11 @@ mutual
                         · exact hX_comp
                   rw [← h_left_tl_eq', ← h_right_eq.2, ← add_assoc]
                   simp only [motive]
-                  use l + 2
-                  use fun i => by cases i using Fin.lastCases with
-                  | last => exact (Y_tl, X_coef, X_deg)
-                  | cast j => exact longAdd_mulMonomial_tail_BM BM deg' j
-                  use X_tl
-                  use Seq.cons (Y_deg, Y_coef) Y_tl
+                  use l + 2,
+                    fun i => by cases i using Fin.lastCases with
+                    | last => exact (Y_tl, X_coef, X_deg)
+                    | cast j => exact longAdd_mulMonomial_tail_BM BM deg' j
+                  use X_tl, Seq.cons (Y_deg, Y_coef) Y_tl
                   constructor
                   · congr 1
                     conv => rhs; unfold longAdd
@@ -2156,9 +2127,7 @@ mutual
       b.Approximates B (basis_hd :: basis_tl) ∧ m_coef.Approximates M basis_tl
     apply Approximates.coind motive
     · simp only [motive]
-      use b
-      use B
-      use M
+      use b, B, M
     · intro f ms ih
       simp only [motive] at ih
       obtain ⟨b, B, M, h_ms_eq, hf_eq, hb_approx, hm_approx⟩ := ih
@@ -2177,10 +2146,7 @@ mutual
         have hb_approx' := Approximates_cons hb_approx
         obtain ⟨C, h_coef_approx, h_comp, h_tl_approx⟩ := hb_approx'
         right
-        use ?_
-        use ?_
-        use ?_
-        use M * C
+        use ?_, ?_, ?_, M * C
         constructor
         · simp only [mulMonomial_cons]
           congr <;> exact Eq.refl _
@@ -2199,9 +2165,7 @@ mutual
           · exact h_comp
           · exact MS.basis_head_eventually_pos h_basis
         simp only [motive]
-        use ?_
-        use ?_
-        use ?_
+        use ?_, ?_, ?_
         constructor
         · congr 1
           exact Eq.refl _
@@ -2297,14 +2261,7 @@ mutual
           Y.Approximates fY (basis_hd :: basis_tl)
       apply Approximates.coind motive
       · simp only [motive]
-        use 0
-        use default
-        use 1
-        use 1
-        use X
-        use Y
-        use fX
-        use fY
+        use 0, default, 1, 1, X, Y, fX, fY
         simp [longAdd]
         constructor
         · rfl
@@ -2361,9 +2318,7 @@ mutual
             · exact h_mul_eq_nil h_right_eq
           · intro (right_deg, right_coef) right_tl h_right_eq
             simp
-            use right_deg
-            use right_coef
-            use right_tl
+            use right_deg, right_coef, right_tl
             simp
             obtain ⟨X_deg, X_coef, X_tl, Y_deg, Y_coef, Y_tl, hX_eq, hY_eq⟩ := mul_eq_cons h_right_eq
             subst hX_eq hY_eq
@@ -2381,14 +2336,10 @@ mutual
               apply mul_majorated hX_comp hY_comp
               apply MS.basis_head_eventually_pos h_basis
             simp only [motive]
-            use 1
-            use fun _ ↦ (Y_tl, X_coef, X_deg)
-            use fun _ ↦ (fun x ↦ fY x - basis_hd x ^ Y_deg * YC x)
-            use fun _ ↦ XC
-            use X_tl
-            use .cons (Y_deg, Y_coef) Y_tl
-            use fun x ↦ fX x - basis_hd x ^ X_deg * XC x
-            use fY
+            use 1, fun _ ↦ (Y_tl, X_coef, X_deg),
+              fun _ ↦ (fun x ↦ fY x - basis_hd x ^ Y_deg * YC x), fun _ ↦ XC,
+              X_tl, .cons (Y_deg, Y_coef) Y_tl,
+              fun x ↦ fX x - basis_hd x ^ X_deg * XC x, fY
             simp
             constructor
             · simp [longAdd_one]
@@ -2447,10 +2398,7 @@ mutual
                   · exact hf_eq
                   conv => rhs; ext x; simp; rw [← add_zero (∑ i : Fin (l + 1), fM i x * basis_hd x ^ (BM i).2.2 * fB i x)]
                   apply EventuallyEq.add (by rfl) (h_mul_eq_nil h_right_eq)
-                use left_deg
-                use left_coef
-                use left_tl
-                use ?_
+                use left_deg, left_coef, left_tl, ?_
                 constructor
                 · simp
                 constructor
@@ -2459,14 +2407,8 @@ mutual
                 · apply majorated_of_EventuallyEq hf_eq
                   exact h_left_comp
                 simp only [motive]
-                use (l + 1) -- =k
-                use ?_
-                use longAdd_mulMonomial_tail_fB BM left_deg hB_approx
-                use fM
-                use .nil
-                use .nil
-                use 0
-                use 0
+                use (l + 1), ?_, longAdd_mulMonomial_tail_fB BM left_deg hB_approx,
+                  fM, .nil, .nil, 0, 0
                 constructor
                 · simp
                   exact h_left_tl_eq
@@ -2520,7 +2462,7 @@ mutual
 
                 rw [add_cons_cons]
                 split_ifs with h1 h2
-                · use ?_; use ?_; use ?_; use ?_
+                · use ?_, ?_, ?_, ?_
                   constructor
                   · congr 2 <;> exact Eq.refl _
                   constructor
@@ -2535,14 +2477,8 @@ mutual
                       apply MS.basis_head_eventually_pos h_basis
                     · apply MS.basis_head_eventually_pos h_basis
                   simp only [motive]
-                  use (l + 1) -- l + 1 = k
-                  use ?_
-                  use longAdd_mulMonomial_tail_fB BM left_deg hB_approx
-                  use fM
-                  use Seq.cons (X_deg, X_coef) X_tl
-                  use Seq.cons (Y_deg, Y_coef) Y_tl
-                  use fX
-                  use fY
+                  use (l + 1), ?_, longAdd_mulMonomial_tail_fB BM left_deg hB_approx,
+                    fM, Seq.cons (X_deg, X_coef) X_tl, Seq.cons (Y_deg, Y_coef) Y_tl, fX, fY
                   constructor
                   · rw [← h_right_eq.1.1, ← h_right_eq.1.2, ← h_right_eq.2]
                     congr 1
@@ -2591,7 +2527,7 @@ mutual
                   constructor
                   · exact hX_approx
                   · exact hY_approx
-                · use ?_; use ?_; use ?_; use (XC * YC)
+                · use ?_, ?_, ?_, (XC * YC)
                   constructor
                   · congr 2 <;> exact Eq.refl _
                   constructor
@@ -2608,20 +2544,18 @@ mutual
                     · apply MS.basis_head_eventually_pos h_basis
                   rw [← h_left_eq, ← h_right_eq.2, ← add_assoc]
                   simp only [motive]
-                  use (l + 2) -- l + 2 = k + 1
-                  use fun i => by cases i using Fin.lastCases with
-                  | last => exact (Y_tl, X_coef, X_deg)
-                  | cast j => exact BM j
-                  use fun i => by cases i using Fin.lastCases with
-                  | last => exact (fun x ↦ fY x - basis_hd x ^ Y_deg * YC x)
-                  | cast j => exact fB j
-                  use fun i => by cases i using Fin.lastCases with
-                  | last => exact XC
-                  | cast j => exact fM j
-                  use X_tl
-                  use Seq.cons (Y_deg, Y_coef) Y_tl
-                  use fun x ↦ fX x - basis_hd x ^ X_deg * XC x
-                  use fY
+                  use (l + 2),
+                    fun i => by cases i using Fin.lastCases with
+                    | last => exact (Y_tl, X_coef, X_deg)
+                    | cast j => exact BM j,
+                    fun i => by cases i using Fin.lastCases with
+                    | last => exact (fun x ↦ fY x - basis_hd x ^ Y_deg * YC x)
+                    | cast j => exact fB j,
+                    fun i => by cases i using Fin.lastCases with
+                    | last => exact XC
+                    | cast j => exact fM j,
+                    X_tl, Seq.cons (Y_deg, Y_coef) Y_tl, fun x ↦ fX x - basis_hd x ^ X_deg * XC x,
+                    fY
                   constructor
                   · congr 1
                     conv => rhs; unfold longAdd
@@ -2673,7 +2607,7 @@ mutual
                 · have h_deg : right_deg = left_deg := by linarith -- I am here
                   subst h_deg h_deg'
                   clear h1 h2
-                  use ?_; use ?_; use ?_; use (LC + XC * YC)
+                  use ?_, ?_, ?_, (LC + XC * YC)
                   constructor
                   · congr 2 <;> exact Eq.refl _
                   constructor
@@ -2692,20 +2626,18 @@ mutual
                     · apply MS.basis_head_eventually_pos h_basis
                   rw [← h_left_tl_eq', ← h_right_eq.2, ← add_assoc]
                   simp only [motive]
-                  use l + 2
-                  use fun i => by cases i using Fin.lastCases with
-                  | last => exact (Y_tl, X_coef, X_deg)
-                  | cast j => exact longAdd_mulMonomial_tail_BM BM deg' j
-                  use fun i => by cases i using Fin.lastCases with
-                  | last => exact (fun x ↦ fY x - basis_hd x ^ Y_deg * YC x)
-                  | cast j => exact longAdd_mulMonomial_tail_fB BM deg' hB_approx j
-                  use fun i => by cases i using Fin.lastCases with
-                  | last => exact XC
-                  | cast j => exact fM j
-                  use X_tl
-                  use Seq.cons (Y_deg, Y_coef) Y_tl
-                  use fun x ↦ fX x - basis_hd x ^ X_deg * XC x
-                  use fY
+                  use l + 2,
+                    fun i => by cases i using Fin.lastCases with
+                    | last => exact (Y_tl, X_coef, X_deg)
+                    | cast j => exact longAdd_mulMonomial_tail_BM BM deg' j,
+                    fun i => by cases i using Fin.lastCases with
+                    | last => exact (fun x ↦ fY x - basis_hd x ^ Y_deg * YC x)
+                    | cast j => exact longAdd_mulMonomial_tail_fB BM deg' hB_approx j,
+                    fun i => by cases i using Fin.lastCases with
+                    | last => exact XC
+                    | cast j => exact fM j,
+                    X_tl, Seq.cons (Y_deg, Y_coef) Y_tl, fun x ↦ fX x - basis_hd x ^ X_deg * XC x,
+                    fY
                   constructor
                   · congr 1
                     conv => rhs; unfold longAdd
