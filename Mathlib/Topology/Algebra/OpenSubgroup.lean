@@ -471,7 +471,9 @@ structure TopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop
   isOpen : IsOpen T
   mul : W + T ⊆ W
 
-@[to_additive]
+/--For a set W, the neighborhood of `1` which is open, self inverse and satisfying `T * W ⊆ W` -/
+@[to_additive
+"For a set W, the neighborhood of `0` which is open, self negative and satisfying `T + W ⊆ W`"]
 structure TopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
   nhd : T ∈ 𝓝 1
   inv : T⁻¹ = T
