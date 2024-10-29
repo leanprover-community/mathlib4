@@ -220,6 +220,9 @@ class Subcanonical (J : GrothendieckTopology C) : Prop where
 lemma le_canonical (J : GrothendieckTopology C) [Subcanonical J] : J ≤ canonicalTopology C :=
   Subcanonical.le_canonical
 
+instance : (canonicalTopology C).Subcanonical where
+  le_canonical := le_rfl
+
 namespace Subcanonical
 
 /-- If every functor `yoneda.obj X` is a `J`-sheaf, then `J` is subcanonical. -/
@@ -268,5 +271,17 @@ instance : (J.yoneda).Full := (J.yonedaFullyFaithful).full
 instance : (J.yoneda).Faithful := (J.yonedaFullyFaithful).faithful
 
 end GrothendieckTopology
+
+@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical := GrothendieckTopology.Subcanonical
+@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.of_yoneda_isSheaf :=
+  GrothendieckTopology.Subcanonical.of_yoneda_isSheaf
+@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.isSheaf_of_isRepresentable :=
+  GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable
+@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.yoneda :=
+  GrothendieckTopology.yoneda
+@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.yonedaCompSheafToPresheaf :=
+  GrothendieckTopology.yonedaCompSheafToPresheaf
+@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.yonedaFullyFaithful :=
+  GrothendieckTopology.yonedaFullyFaithful
 
 end CategoryTheory
