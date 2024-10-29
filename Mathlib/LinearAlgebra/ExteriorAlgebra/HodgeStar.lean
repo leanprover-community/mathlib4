@@ -110,10 +110,14 @@ noncomputable def inducedBilinForm (B : LinearMap.BilinForm R M) (b : Basis I R 
 
 end inducedForm
 
-section properties
+section ringProperties
 
-theorem induced_symm (B : LinearMap.BilinForm R M) (b : Basis I R M) (h : B.IsSymm) :
-  ∀ v w : ⋀[R]^n M, inducedForm B b v w = inducedForm B b w v := by
+noncomputable abbrev bExterior (n : ℕ) (b : Basis I R M) := @Basis.exteriorPower _ _ _ _ _ n _ _ b
+variable (B : LinearMap.BilinForm R M) (b : Basis I R M)
+local notation "⟪" x ", " y "⟫" => @inducedForm _ _ _ _ _ _ _ _ n B b x y
+
+theorem induced_symm (h : B.IsSymm) :
+  ∀ v w : ⋀[R]^n M, ⟪v, w⟫ = ⟪w, v⟫ := by
   intro v w
   unfold inducedForm
   rw [Finset.sum_comm]
@@ -122,7 +126,7 @@ theorem induced_symm (B : LinearMap.BilinForm R M) (b : Basis I R M) (h : B.IsSy
   congr; ext i j
   rw [LinearMap.BilinForm.IsSymm.eq h, Matrix.transpose_apply]
 
-theorem inducedBilin_symm (B : LinearMap.BilinForm R M) (b : Basis I R M) (h : B.IsSymm) :
+theorem inducedBilin_symm (h : B.IsSymm) :
   (@inducedBilinForm _ _ _ _ _ _ _ _ n B b).IsSymm := by
   intro v w
   rw [RingHom.id_apply]
@@ -130,42 +134,52 @@ theorem inducedBilin_symm (B : LinearMap.BilinForm R M) (b : Basis I R M) (h : B
   dsimp
   exact induced_symm B b h v w
 
-noncomputable abbrev bExterior (n : ℕ) (b : Basis I R M) := @Basis.exteriorPower _ _ _ _ _ n _ _ b
-variable (B : LinearMap.BilinForm R M) (b : Basis I R M)
-local notation "⟪" x ", " y "⟫" => @inducedForm _ _ _ _ _ _ _ _ n B b x y
-
-#check Finset.orderIsoOfFin
-#check ExteriorAlgebra.ιMulti_family
-
-#check Basis.coord
-#check Basis.repr
-#check Basis.repr_self_apply
-
 theorem inducedForm_basis (s t : {a : Finset I // a.card = n}) :
   ⟪bExterior n b s, bExterior n b t⟫ = Matrix.det (fun i j ↦
   B (b (s.1.orderIsoOfFin s.property i)) (b (t.1.orderIsoOfFin t.property j)) ) := by
   unfold inducedForm
-  simp only [Basis.coord_apply, Basis.repr_self_apply, ite_smul, mul_ite, Finset.sum_ite]
+  simp only [Basis.coord_apply, Basis.repr_self_apply, ite_smul, mul_ite,
+  mul_one, Finset.coe_orderIsoOfFin_apply, smul_eq_mul, ite_mul, one_mul, zero_mul,
+  mul_zero, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+
+end ringProperties
+
+section fieldOrthoProperties
+
+variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+variable {I : Type*} [LinearOrder I] [Fintype I]
+variable (B : LinearMap.BilinForm K V) (b : Basis I K V)
+
+local notation "⟪" x ", " y "⟫" => @inducedForm _ _ _ _ _ _ _ _ n B b x y
+
+theorem ortho_aux (s t : {a : Finset I // a.card = n}) (h : s ≠ t) :
+  ∃ (i : Fin n), (∀ (j : Fin n), 1=1) := by
 
 
   sorry
 
-theorem induced_nondegenerate (h : B.Nondegenerate) :
-  ∀ (v : ⋀[R]^n M), (∀ (w : ⋀[R]^n M), inducedForm B b v w = 0) → v = 0 := by
+theorem inducedBilin_ortho (h : LinearMap.IsOrthoᵢ B b) :
+  LinearMap.IsOrthoᵢ (inducedBilinForm B b) (bExterior n b) := by
+  rw [LinearMap.isOrthoᵢ_def]
+  intro s t hst
+  unfold inducedBilinForm
+  dsimp
+  simp only [inducedForm_basis, Finset.coe_orderIsoOfFin_apply]
+
+  sorry
+
+theorem induced_nondegenerate (hB : B.Nondegenerate) :
+  ∀ (v : ⋀[K]^n V), (∀ (w : ⋀[K]^n V), ⟪v, w⟫ = 0) → v = 0 := by
   intro v h'
 
 
   sorry
 
-theorem inducedBilin_nondegenerate (h : B.Nondegenerate) :
-  (@inducedBilinForm _ _ _ _ _ _ _ _ n B b).Nondegenerate := induced_nondegenerate B b h
+theorem inducedBilin_nondegenerate (hB : B.Nondegenerate) :
+  (@inducedBilinForm _ _ _ _ _ _ _ _ n B b).Nondegenerate := induced_nondegenerate B b hB
 
 
 
-
-
-
-
-end properties
+end fieldOrthoProperties
 
 end exteriorPower
