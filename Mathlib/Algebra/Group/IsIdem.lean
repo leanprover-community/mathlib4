@@ -32,7 +32,6 @@ section IsIdem
 variable (G : Type _)
 variable [Semigroup G] [IsIdemSemigroup G]
 
-/-- Making mul_idem available globally -/
 @[to_additive]
 theorem mul_idem (x : G) : x * x = x := IsIdemSemigroup.mul_idem _
 
