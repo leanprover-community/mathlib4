@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Enriched.Basic
 import Mathlib.CategoryTheory.Functor.Category
+import Mathlib.CategoryTheory.Limits.Shapes.End
 
 /-!
 # Functor categories are enriched
@@ -16,100 +17,6 @@ universe v v' v'' u u' u''
 namespace CategoryTheory
 
 open Category Opposite
-
-namespace Limits
-
-variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C] (F : Jᵒᵖ ⥤ J ⥤ C)
-
-@[simps]
-def multicospanIndexEnd : MulticospanIndex C where
-  L := J
-  R := Arrow J
-  fstTo f := f.left
-  sndTo f := f.right
-  left j := (F.obj (op j)).obj j
-  right f := (F.obj (op f.left)).obj f.right
-  fst f := (F.obj (op f.left)).map f.hom
-  snd f := (F.map f.hom.op).app f.right
-
-abbrev EndCone := Multifork (multicospanIndexEnd F)
-
-namespace EndCone
-
-variable {F}
-variable (c : EndCone F)
-
-@[reassoc]
-lemma condition {i j : J} (f : i ⟶ j) :
-    c.ι i ≫ (F.obj (op i)).map f = c.ι j ≫ (F.map f.op).app j :=
-  Multifork.condition c (Arrow.mk f)
-
-variable {c} (hc : IsLimit c)
-
-namespace IsLimit
-
-section
-
-variable {X : C} (f : ∀ j, X ⟶ (F.obj (op j)).obj j)
-  (hf : ∀ ⦃i j : J⦄ (g : i ⟶ j), f i ≫ (F.obj (op i)).map g = f j ≫ (F.map g.op).app j)
-
-abbrev lift : X ⟶ c.pt :=
-  Multifork.IsLimit.lift hc (fun j ↦ f j) (fun _ ↦ hf _)
-
-end
-
-include hc in
-lemma hom_ext {X : C} {f g : X ⟶ c.pt} (h : ∀ j, f ≫ c.ι j = g ≫ c.ι j) : f = g :=
-  Multifork.IsLimit.hom_ext hc h
-
-end IsLimit
-
-end EndCone
-
-section
-
-abbrev HasEnd := HasMultiequalizer (multicospanIndexEnd F)
-
-variable [HasEnd F]
-
-noncomputable def end_ : C := multiequalizer (multicospanIndexEnd F)
-
-section
-
-noncomputable abbrev end_.π (j : J) : end_ F ⟶ (F.obj (op j)).obj j := Multiequalizer.ι _ _
-
-@[reassoc]
-lemma end_.condition {i j : J} (f : i ⟶ j) :
-    π F i ≫ (F.obj (op i)).map f = π F j ≫ (F.map f.op).app j := by
-  apply EndCone.condition
-
-variable {F}
-
-section
-
-variable {X : C} (f : ∀ j, X ⟶ (F.obj (op j)).obj j)
-  (hf : ∀ ⦃i j : J⦄ (g : i ⟶ j), f i ≫ (F.obj (op i)).map g = f j ≫ (F.map g.op).app j)
-
-noncomputable def end_.lift : X ⟶ end_ F :=
-  EndCone.IsLimit.lift (limit.isLimit _) f hf
-
-@[reassoc (attr := simp)]
-lemma end_.lift_π (j : J) : lift f hf ≫ π F j = f j := by
-  apply IsLimit.fac
-
-end
-
-@[ext]
-lemma hom_ext {X : C} {f g : X ⟶ end_ F} (h : ∀ j, f ≫ end_.π F j = g ≫ end_.π F j) :
-    f = g :=
-  Multiequalizer.hom_ext _ _ _ (fun _ ↦ h _)
-
-end
-
-end
-
-
-end Limits
 
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
   (C : Type u) [Category.{v} C]
@@ -278,12 +185,23 @@ variable [HasEnrichedHom V F₁ F₂] [HasEnrichedHom V F₂ F₃] [HasEnrichedH
 noncomputable def enrichedComp : enrichedHom V F₁ F₂ ⊗ enrichedHom V F₂ F₃ ⟶ enrichedHom V F₁ F₃ :=
   end_.lift (fun j ↦ (end_.π _ j ⊗ end_.π _ j) ≫ eComp V _ _ _) (fun i j f ↦ by
     dsimp
-    simp only [assoc]
     trans (end_.π (diagram V F₁ F₂) i ⊗ end_.π (diagram V F₂ F₃) j) ≫
       (ρ_ _).inv ▷ _ ≫ (_ ◁ (eHomEquiv V (F₂.map f))) ▷ _ ≫ eComp V _ (F₂.obj i) _ ▷ _ ≫
         eComp V _ (F₂.obj j) _
     · sorry
-    · sorry)
+    · have := end_.condition (diagram V F₁ F₂) f
+      dsimp at this
+      conv_rhs => rw [assoc, tensorHom_def'_assoc]
+      conv_lhs =>
+        rw [tensorHom_def'_assoc, ← comp_whiskerRight_assoc,
+          ← comp_whiskerRight_assoc, ← comp_whiskerRight_assoc,
+          assoc, assoc]
+        dsimp
+        rw [this, comp_whiskerRight_assoc, comp_whiskerRight_assoc,
+          comp_whiskerRight_assoc, leftUnitor_inv_whiskerRight_assoc,
+          ← associator_inv_naturality_left_assoc, ← e_assoc',
+          Iso.inv_hom_id_assoc, ← whisker_exchange_assoc, id_whiskerLeft_assoc,
+          Iso.inv_hom_id_assoc])
 
 @[reassoc (attr := simp)]
 lemma enrichedComp_π (j : J) :
