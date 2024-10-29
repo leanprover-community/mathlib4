@@ -185,7 +185,8 @@ lemma setValue_eq_of_ne {α β} {f : α ↪ β} {a : α} {b : β} {c : α} [∀ 
   simp [setValue, hc, hb]
 
 @[simp]
-lemma setValue_right_apply_eq {α β} (f : α ↪ β) (a c : α) : setValue f a (f c) c = f a := by
+lemma setValue_right_apply_eq {α β} (f : α ↪ β) (a c : α) [∀ a', Decidable (a' = a)]
+    [∀ a', Decidable (f a' = f c)] : setValue f a (f c) c = f a := by
   simp [setValue]
 
 /-- Embedding into `Option α` using `some`. -/
