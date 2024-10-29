@@ -168,9 +168,11 @@ theorem distConePosPos {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j =
     _       ≤ y i              := by linarith[dist_le_pi_dist y a i]
 
 
+/-- Multiply a designated coordinate by -1. -/
 def flipPos {n : ℕ} (j : Fin n) (y : Fin n → ℝ) (k : Fin n) : ℝ :=
     ite (j = k) (- y k) (y k)
 
+/--  -/
 theorem distConePosNeg {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 0) (h₁ : a i > 0)
     {s : ℝ} (hs : s ≥ 0) :
     (a i / (s+1) > 0) ∧ ∀ y, dist y a ≤ (a i / (s+1)) → y j < 0 → y i / y j ≤  -s := by
