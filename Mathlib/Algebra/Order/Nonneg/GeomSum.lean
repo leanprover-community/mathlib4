@@ -7,6 +7,10 @@ Authors: Johan Commelin, Daniel Weber
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Fintype.BigOperators
+/-!
+# Partial sums of geometric series in semifields
+-/
+
 
 variable {α : Type*} [CanonicallyLinearOrderedSemifield α] [Sub α] [OrderedSub α]
 
