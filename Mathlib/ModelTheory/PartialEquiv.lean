@@ -297,9 +297,7 @@ theorem map_map (f : M ↪[L] N) (g : N ↪[L] P) (h : M ≃ₚ[L] M) :
   rw [ext_iff]
   use same_dom
   intro x hx
-  simp
   unfold map
-  simp
   show _ = ↑(((g.comp f).substructureEquivMap h.cod) _)
   rw [Embedding.substructureEquivMap_apply, Embedding.comp_apply]
   simp
@@ -310,7 +308,6 @@ theorem map_map (f : M ↪[L] N) (g : N ↪[L] P) (h : M ≃ₚ[L] M) :
       (f.substructureEquivMap h.dom) =
         (Substructure.equiv_from_eq hi).comp ((g.comp f).substructureEquivMap h.dom) := by
     ext ⟨x, hx⟩
-    simp
     show _ =(Substructure.subtype _).comp (equiv_from_eq hi).toEmbedding _
     simp
     rfl
@@ -318,6 +315,28 @@ theorem map_map (f : M ↪[L] N) (g : N ↪[L] P) (h : M ≃ₚ[L] M) :
 
 theorem map_fg (f : M ↪[L] N) {g : M ≃ₚ[L] M} (g_fg : g.dom.FG) : (g.map f).dom.FG :=
   g_fg.map f.toHom
+
+def is_extended_by (f : M ≃ₚ[L] M) (g : M ↪[L] N) : Prop :=
+  ∃ f', f.map g ≤ f' ∧ g.toHom.range ≤ f'.dom
+
+theorem is_extended_by_comp (f : M ≃ₚ[L] M) (g : M ↪[L] N) (g' : N ↪[L] P)
+    (H : is_extended_by f g) : is_extended_by f (g'.comp g) := by
+  let ⟨h, ⟨le_h, le_h_dom⟩⟩ := H
+  use h.map g'
+  constructor
+  · rw [←map_map]
+    exact map_monotone _ le_h
+  · rw [map_dom, Embedding.comp_toHom, Hom.range_comp]
+    exact Substructure.monotone_map le_h_dom
+
+theorem comp_is_extended_by (f : M ≃ₚ[L] M) (g : M ↪[L] N) (g' : N ↪[L] P)
+    (H : is_extended_by (f.map g) g') : is_extended_by f (g'.comp g) := by
+  let ⟨h, ⟨le_h, le_h_dom⟩⟩ := H
+  use h
+  constructor
+  · rwa [←map_map]
+  · rw [Embedding.comp_toHom, Hom.range_comp]
+    exact Hom.map_le_range.trans le_h_dom
 
 theorem dom_fg_iff_cod_fg {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
     f.dom.FG ↔ f.cod.FG := by

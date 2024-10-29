@@ -482,21 +482,21 @@ noncomputable def join (S : K) (T : K) : (U : K) × (S ↪[L] U) × (T ↪[L] U)
   exact ⟨⟨h.choose, h.choose_spec.1⟩, Classical.choice h.choose_spec.2.1,
     Classical.choice h.choose_spec.2.2⟩
 
-noncomputable def extend_and_join (A B : K) {f : A ≃ₚ[L] A} (f_fg : f.dom.FG) :
+noncomputable def extend_and_join (B : K) {A : K} {f : A ≃ₚ[L] A} (f_fg : f.dom.FG) :
     (C : K) × (A ↪[L] C) := by
   let ⟨C', A_to_C', _, _⟩ := extend_finiteEquiv_in_class K_fraisse A f f_fg
   let ⟨C, C'_to_C, _⟩ := join K_fraisse C' B
   exact ⟨C, C'_to_C.comp A_to_C'⟩
 
-theorem extend_and_join_spec_1 (A B : K) {f : A ≃ₚ[L] A} (f_fg : f.dom.FG) :
-    ∃ g : (extend_and_join K_fraisse A B f_fg).1 ≃ₚ[L] _,
-      f.map (extend_and_join K_fraisse A B f_fg).2 ≤ g ∧
-        (extend_and_join K_fraisse A B f_fg).2.toHom.range ≤ g.dom := by
-  sorry
+theorem extend_and_join_spec_1 {A : K} (B : K) {f : A ≃ₚ[L] A} (f_fg : f.dom.FG) :
+    f.is_extended_by (extend_and_join K_fraisse B f_fg).2 := by
+  apply PartialEquiv.is_extended_by_comp
+  show f.is_extended_by (extend_finiteEquiv_in_class K_fraisse A f f_fg).2.1
+  let ⟨C, A_to_C, g, le_g, le_g_dom⟩ := extend_finiteEquiv_in_class K_fraisse A f f_fg
+  exact ⟨g, le_g, le_g_dom⟩
 
 theorem extend_and_join_spec_2 (A B : K) {f : A ≃ₚ[L] A} (f_fg : f.dom.FG) :
-    Nonempty (B ↪[L] (extend_and_join K_fraisse A B f_fg).1) := by
-  sorry
+    Nonempty (B ↪[L] (extend_and_join K_fraisse B f_fg).1) := ⟨(join K_fraisse _ B).2.2⟩
 
 noncomputable def init_system : (n : ℕ) →
     (A : K) × (ℕ → (B : K) × (B ↪[L] A))
@@ -635,6 +635,31 @@ theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
       · rename_i h'
         rw [factorize_with_map_step, map_step, Embedding.comp_assoc,
             transitive_maps_system h h', ←map_step, ←factorize_with_map_step]
+
+noncomputable def FGEquiv_extended (n : ℕ) :
+    FGEquiv L ((init_system K_fraisse n).2 (Nat.unpair n).1).1
+      ((init_system K_fraisse n).2 (Nat.unpair n).1).1 :=
+  ((countable_iff_exists_surjective.1 (countable_self_fgequiv_of_countable (L := L)
+    (M := ((init_system K_fraisse n).2 (Nat.unpair n).1).1))).choose (Nat.unpair n).2)
+
+theorem step_is_extend_and_join (n : ℕ) : system K_fraisse (n+1) =
+    (extend_and_join K_fraisse (ess_surj_sequence K_fraisse (n+1))
+      (f := ((FGEquiv_extended K_fraisse n).1.map
+        ((init_system K_fraisse n).2 (Nat.unpair n).1).2)) sorry).1:= by
+  rfl
+
+theorem step_map_is_extend_and_join (n : ℕ) : ((init_system K_fraisse (n+1)).2 n).2 =
+    ((extend_and_join K_fraisse (ess_surj_sequence K_fraisse (n+1))
+      (f := ((FGEquiv_extended K_fraisse n).1.map
+        ((init_system K_fraisse n).2 (Nat.unpair n).1).2)) sorry).2).comp
+          (((init_system K_fraisse n).2 n).2.comp
+            (Embedding.eq_embed ((system_eq' K_fraisse (Nat.le_add_right n 1)).symm.trans
+              (system_eq' K_fraisse (le_refl n))))) := by
+  apply if_then_else_left
+  simp only [le_refl]
+
+
+
 
 theorem all_fgequiv_extend {m : ℕ} : ∀ f : L.FGEquiv (system _ m) (system _ m),
     ∀ x : ↑(system K_fraisse m), ∃ n, ∃ h : m ≤ n, ∃ g : (system _ n) ≃ₚ[L] (system _ n),
