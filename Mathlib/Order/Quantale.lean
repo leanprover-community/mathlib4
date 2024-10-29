@@ -120,7 +120,7 @@ end IsIntegral
 
 namespace Quantale
 
-variable {α : Type _}
+variable {α : Type*}
 variable [Semigroup α] [Quantale α]
 
 /-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
