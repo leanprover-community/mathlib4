@@ -1597,11 +1597,11 @@ theorem volume_frontier_normLessThanOne :
     simp_rw [mixedEmbedding.norm_eq_zero_iff]
     use w
     rw [normAtPlace_apply_isReal, hw, norm_zero]
-  rw [← iUnion_negAtPlusPart_union (normLessThanOne K) mem_normLessThanOne_iff, h, Set.union_empty]
+  rw [← iUnion_negAt_plusPart_union (normLessThanOne K) mem_normLessThanOne_iff, h, Set.union_empty]
   refine measure_mono_null (frontier_iUnion _) (measure_iUnion_null_iff.mpr fun s ↦ ?_)
-  rw [negAtPlusPart, ← negAt_preimage]
+  rw [← negAt_preimage]
   rw [← ContinuousLinearEquiv.coe_toHomeomorph, ← Homeomorph.preimage_frontier,
-    ContinuousLinearEquiv.coe_toHomeomorph, (volume_preserving_negAt s).measure_preimage
+    ContinuousLinearEquiv.coe_toHomeomorph, volume_preserving_negAt.measure_preimage
     measurableSet_frontier.nullMeasurableSet]
   exact volume_frontier_plusPart_normLessThanOne K
 
