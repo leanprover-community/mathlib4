@@ -456,4 +456,10 @@ def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
   toSolution := solution
   toIsPresentation := h
 
+@[simps! toRelations toSolution]
+def Presentation.ofLinearEquiv (pres : Presentation.{w₀, w₁} A M)
+    {N : Type v'} [AddCommGroup N] [Module A N] (e : M ≃ₗ[A] N) :
+    Presentation A N :=
+  ofIsPresentation (pres.toIsPresentation.ofLinearEquiv e)
+
 end Module
