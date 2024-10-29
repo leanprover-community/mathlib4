@@ -89,7 +89,7 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
           simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true]
           exact congrFun rfl
 
-set_option synthInstance.maxHeartbeats 25000 in
+set_option synthInstance.maxHeartbeats 23000 in
 lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     IntermediateField.fixedField L.fixingSubgroup = L := by
   letI : IsGalois L K := inferInstance
@@ -97,21 +97,19 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
   · intro x hx
     rw [IntermediateField.mem_fixedField_iff] at hx
     have id : ∀ σ ∈ L.fixingSubgroup, σ x = x := hx
-    let Lx := adjoin L {x}
-    have mem : x ∈ Lx.1 := subset_adjoin _ _
-      (by simp only [Set.mem_singleton_iff])
-    have : IntermediateField.fixedField (⊤ : Subgroup (Lx ≃ₐ[L] Lx)) = ⊥ :=
+    have mem : x ∈ (adjoin L {x}).1 := subset_adjoin _ _ (by simp only [Set.mem_singleton_iff])
+    have : IntermediateField.fixedField (⊤ : Subgroup ((adjoin L {x}) ≃ₐ[L] (adjoin L {x}))) = ⊥ :=
       (IsGalois.tfae.out 0 1).mp (by infer_instance)
-    have : ⟨x, mem⟩ ∈ (⊥ : IntermediateField L Lx) := by
+    have : ⟨x, mem⟩ ∈ (⊥ : IntermediateField L (adjoin L {x})) := by
       rw [← this, IntermediateField.mem_fixedField_iff]
       intro f _
-      have := restrictNormalHom_surjective (K₁ := Lx) K f
+      have := restrictNormalHom_surjective K f
       rcases this with ⟨σ,hσ⟩
       apply Subtype.val_injective
-      rw [← hσ, restrictNormalHom_apply Lx.1 σ ⟨x, mem⟩]
+      rw [← hσ, restrictNormalHom_apply (adjoin L {x}).1 σ ⟨x, mem⟩]
       have := id <| (IntermediateField.fixingSubgroupEquiv L).symm σ
       simp only [SetLike.coe_mem, true_implies] at this
-      convert this
+      exact this
     rcases IntermediateField.mem_bot.mp this with ⟨y, hy⟩
     obtain ⟨rfl⟩ : y = x := congrArg Subtype.val hy
     exact y.2
@@ -127,8 +125,7 @@ lemma restrict_fixedField (H : Subgroup (K ≃ₐ[k] K)) (L : IntermediateField 
   apply SetLike.ext'
   ext x
   simp only [SetLike.mem_coe]
-  constructor
-  all_goals intro h
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have xL := h.out.2
     have : (⟨x,xL⟩ : L).1 = x := rfl
     rw [← this]
@@ -141,7 +138,6 @@ lemma restrict_fixedField (H : Subgroup (K ≃ₐ[k] K)) (L : IntermediateField 
     dsimp
     have := (AlgEquiv.restrictNormal_commutes σ L ⟨x, xL⟩).symm
     nth_rw 2 [← (h.out.1 ⟨σ,hσ⟩)]
-    convert this
     exact id (Eq.symm this)
   · have xL := IntermediateField.lift_le _ h
     have : (⟨x,xL⟩ : L).1 = x := rfl
@@ -155,7 +151,6 @@ lemma restrict_fixedField (H : Subgroup (K ≃ₐ[k] K)) (L : IntermediateField 
     nth_rw 2 [← this]
     show σ x = ((AlgEquiv.restrictNormal σ L) ⟨x, xL⟩).1
     have := AlgEquiv.restrictNormal_commutes σ L ⟨x, xL⟩
-    convert this
     exact id (Eq.symm this)
 
 lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k K] :
@@ -165,8 +160,7 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k
   intro σ hσ
   by_contra h
   have := H.isClosed'
-  have op : IsOpen H.carrierᶜ := IsClosed.isOpen_compl
-  have nhd : H.carrierᶜ ∈ nhds σ := IsOpen.mem_nhds op h
+  have nhd : H.carrierᶜ ∈ nhds σ := IsOpen.mem_nhds (IsClosed.isOpen_compl) h
   rw [GroupFilterBasis.nhds_eq (x₀ := σ) (galGroupBasis k K)] at nhd
   rcases nhd with ⟨b,⟨gp,⟨L,hL,eq'⟩,eq⟩,sub⟩
   rw [← eq'] at eq
@@ -176,7 +170,6 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k
     normalClosure k L K with
     finiteDimensional := normalClosure.is_finiteDimensional k L K
     isGalois := IsGalois.normalClosure k L K }
-  letI := L'.finiteDimensional
   have compl : σ • L'.1.fixingSubgroup.carrier ⊆ H.carrierᶜ :=
     fun ⦃a⦄ d ↦ sub ((Set.set_smul_subset_set_smul_iff.mpr <| eq ▸ (fun σ h =>
     (mem_fixingSubgroup_iff (K ≃ₐ[k] K)).mpr fun y hy => (mem_fixingSubgroup_iff (K ≃ₐ[k] K)).mp
