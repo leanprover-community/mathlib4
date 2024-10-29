@@ -53,7 +53,7 @@ is mapped to the equivalence class of the image of `x` in `FreeMonoid α`. -/
 @[to_additive "`of` is the canonical map from `α` to a presented additive monoid with generators
 `x : α`. The term `x` is mapped to the equivalence class of the image of `x` in `FreeAddMonoid α`"]
 def of (rels : FreeMonoid α → FreeMonoid α → Prop) (x : α) : PresentedMonoid rels :=
-  Quotient.mk (conGen rels).toSetoid (FreeMonoid.of x)
+  mk rels (.of x)
 
 section inductionOn
 
