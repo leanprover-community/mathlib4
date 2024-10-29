@@ -486,15 +486,15 @@ variable [Group G] [TopologicalGroup G] [CompactSpace G]
 
 open Set Filter
 
+@[to_additive]
 lemma exist_mul_closure_nhd {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝 (1 : G), W * T ⊆ W := by
   apply WClopen.isClosed.isCompact.induction_on (p := fun S ↦ ∃ T ∈ 𝓝 (1 : G), S * T ⊆ W)
     ⟨Set.univ ,by simp only [univ_mem, empty_mul, empty_subset, and_self]⟩
     (fun _ _ huv ⟨T, hT, mem⟩ ↦ ⟨T, ⟨hT, (mul_subset_mul_right huv).trans mem⟩⟩)
-    fun U V ⟨T₁, hT₁, mem1⟩ ⟨T₂, hT₂, mem2⟩ ↦ ⟨T₁ ∩ T₂, ⟨inter_mem hT₁ hT₂,
-      mul_subset_iff.mpr fun x hx y ⟨h1, h2⟩ ↦ by
-      rcases hx with memU | memV
-      · exact mem1 (Set.mul_mem_mul memU h1)
-      · exact mem2 (Set.mul_mem_mul memV h2)⟩⟩
+    fun U V ⟨T₁, hT₁, mem1⟩ ⟨T₂, hT₂, mem2⟩ ↦ ⟨T₁ ∩ T₂, ⟨inter_mem hT₁ hT₂, by
+      rw [union_mul]
+      exact union_subset (mul_subset_mul_left inter_subset_left |>.trans mem1)
+        (mul_subset_mul_left inter_subset_right |>.trans mem2)⟩⟩
   intro x memW
   have : (x, 1) ∈ (fun p ↦ p.1 * p.2) ⁻¹' W := by simp only [mem_preimage, mul_one, memW]
   rcases isOpen_prod_iff.mp (continuous_mul.isOpen_preimage W <| WClopen.2) x 1 this with
@@ -503,17 +503,17 @@ lemma exist_mul_closure_nhd {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝 
   exact ⟨U ∩ W, ⟨⟨U, ⟨IsOpen.mem_nhds h1 h3, ⟨W, ⟨fun _ a ↦ a, rfl⟩⟩⟩⟩,
     ⟨V, ⟨IsOpen.mem_nhds h2 h4, fun _ a ↦ h6 ((mul_subset_mul_right inter_subset_left) a)⟩⟩⟩⟩
 
+@[to_additive]
 lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
     ∃ T, mulInvClosureNhd T W := by
   rcases exist_mul_closure_nhd WClopen with ⟨S, hS, h⟩
   rcases mem_nhds_iff.mp hS with ⟨U, h1, h2, h3⟩
   use U ∩ U⁻¹
-  have := h2.inter h2.inv
   constructor
-  · exact IsOpen.mem_nhds this (by simp only [mem_inter_iff, h3, Set.mem_inv, inv_one, and_self])
-  · ext
-    simp only [Set.mem_inter_iff, Set.mem_inv, Set.inter_inv, inv_inv, and_comm]
-  · exact this
+  · exact IsOpen.mem_nhds (h2.inter h2.inv) (by simp only [mem_inter_iff, h3, Set.mem_inv, inv_one,
+    and_self])
+  · simp only [inter_inv, inv_inv, inter_comm]
+  · exact h2.inter h2.inv
   · exact fun a ha ↦ h (mul_subset_mul_left h1 (mul_subset_mul_left inter_subset_left ha))
 
 @[to_additive]
@@ -530,7 +530,7 @@ lemma iUnion_pow {G : Type*} [Group G] {V : Set G} (einV : 1 ∈ V) :
     rwa [Nat.sub_add_cancel <| Nat.one_le_iff_ne_zero.mpr h]
 
 /-- An arbitrary open subgroup that is contained in a given clopen neighborhood of `1`. -/
---@[to_additive "An open subgroup that is contained in a given clopen neighborhood of `1`."]
+@[to_additive "An open subgroup that is contained in a given clopen neighborhood of `1`."]
 def OpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]  [TopologicalGroup G]
     [CompactSpace G] {W : Set G} (WClopen : IsClopen W) : OpenSubgroup G where
   carrier := {x : G | ∃ n : ℕ, x ∈ (Classical.choose (exists_mulInvClosureNhd WClopen)) ^ n}
@@ -555,7 +555,7 @@ def OpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]  [
     rw [pow_succ]
     exact IsOpen.mul_left (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).isOpen
 
---@[to_additive]
+@[to_additive]
 theorem openSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
     ((OpenSubgroupSubClopenNhdsOfOne WClopen) : Set G) ⊆ W := by
@@ -576,6 +576,7 @@ theorem openSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSp
   use 1, einW, x, xin
   rw [one_mul]
 
+@[to_additive]
 theorem openSubgroupSubClopenNhdsOfOne_nonempty {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] {U : Set G} {UClopen : IsClopen U} {einU : 1 ∈ U} :
     Nonempty {H : OpenSubgroup G // (H : Set G) ⊆ U} :=
