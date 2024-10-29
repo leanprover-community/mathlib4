@@ -44,8 +44,6 @@ variable {i : α → β}
 
 lemma isInducing (di : IsDenseInducing i) : IsInducing i := di.toIsInducing
 
-@[deprecated (since := "2024-10-28")] alias  := isInducing
-
 theorem nhds_eq_comap (di : IsDenseInducing i) : ∀ a : α, 𝓝 a = comap i (𝓝 <| i a) :=
   di.isInducing.nhds_eq_comap
 
