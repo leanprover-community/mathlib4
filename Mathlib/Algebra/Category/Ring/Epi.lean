@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 # Epimorphisms in `CommRingCat`
 
 ## Main results
-- `RingHom.surjective_of_epi_of_finite`: epi + finite => surjective
+- `RingHom.surjective_iff_epi_and_finite`: surjective <=> epi + finite
 -/
 
 open CategoryTheory TensorProduct
