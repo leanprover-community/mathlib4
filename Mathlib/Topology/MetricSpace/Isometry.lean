@@ -509,6 +509,7 @@ def sumArrowIsometryEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
   isometry_toFun _ _ := by simp [Prod.edist_eq, edist_pi_def, Finset.sup_univ_eq_iSup, iSup_sum]
 
+@[simp]
 theorem sumArrowIsometryEquivProdArrow_toHomeomorph {α β : Type*} [Fintype α] [Fintype β] :
     sumArrowIsometryEquivProdArrow.toHomeomorph
     = Homeomorph.sumArrowHomeomorphProdArrow (ι := α) (ι' := β) (X := γ) :=
