@@ -437,16 +437,16 @@ theorem add_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS 
       linarith
     }
 
-theorem add_wellOrdered {basis : Basis} {x y : PreMS basis}
-    (h_x_wo : x.wellOrdered) (h_y_wo : y.wellOrdered) : (x + y).wellOrdered := by
+theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
+    (h_x_wo : x.WellOrdered) (h_y_wo : y.WellOrdered) : (x + y).WellOrdered := by
   cases basis with
   | nil =>
     constructor
   | cons basis_hd basis_tl =>
     let motive : (PreMS (basis_hd :: basis_tl)) → Prop := fun ms =>
       ∃ (X Y : PreMS (basis_hd :: basis_tl)),
-        ms = X + Y ∧ X.wellOrdered ∧ Y.wellOrdered
-    apply wellOrdered.coind motive
+        ms = X + Y ∧ X.WellOrdered ∧ Y.WellOrdered
+    apply WellOrdered.coind motive
     · intro ms ih
       simp only [motive] at ih
       obtain ⟨X, Y, h_ms_eq, hX_wo, hY_wo⟩ := ih
@@ -459,7 +459,7 @@ theorem add_wellOrdered {basis : Basis} {x y : PreMS basis}
           left
           simpa using h_ms_eq
         · intro (Y_deg, Y_coef) Y_tl hY_wo h_ms_eq
-          replace hY_wo := wellOrdered_cons hY_wo
+          replace hY_wo := WellOrdered_cons hY_wo
           obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := hY_wo
           right
           simp at h_ms_eq
@@ -477,10 +477,10 @@ theorem add_wellOrdered {basis : Basis} {x y : PreMS basis}
           use Y_tl
           simp
           constructor
-          · apply wellOrdered.nil
+          · apply WellOrdered.nil
           · exact hY_tl_wo
       · intro (X_deg, X_coef) X_tl h_ms_eq hX_wo
-        have hX_wo' := wellOrdered_cons hX_wo
+        have hX_wo' := WellOrdered_cons hX_wo
         obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := hX_wo'
         right
         revert h_ms_eq hY_wo
@@ -501,10 +501,10 @@ theorem add_wellOrdered {basis : Basis} {x y : PreMS basis}
           use X_tl
           simp
           constructor
-          · apply wellOrdered.nil
+          · apply WellOrdered.nil
           · exact hX_tl_wo
         · intro (Y_deg, Y_coef) Y_tl hY_wo h_ms_eq
-          have hY_wo' := wellOrdered_cons hY_wo
+          have hY_wo' := WellOrdered_cons hY_wo
           obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := hY_wo'
           rw [add_cons_cons] at h_ms_eq
           split_ifs at h_ms_eq with h1 h2
@@ -547,7 +547,7 @@ theorem add_wellOrdered {basis : Basis} {x y : PreMS basis}
             constructor
             · exact h_ms_eq
             constructor
-            · exact add_wellOrdered hX_coef_wo hY_coef_wo
+            · exact add_WellOrdered hX_coef_wo hY_coef_wo
             constructor
             · simp
               constructor
@@ -560,29 +560,29 @@ theorem add_wellOrdered {basis : Basis} {x y : PreMS basis}
       use x
       use y
 
-theorem add_isApproximation {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
-    (hX_approx : X.isApproximation fX basis) (hY_approx : Y.isApproximation fY basis) :
-    (X + Y).isApproximation (fX + fY) basis := by
+theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
+    (hX_approx : X.Approximates fX basis) (hY_approx : Y.Approximates fY basis) :
+    (X + Y).Approximates (fX + fY) basis := by
   cases basis with
   | nil =>
-    simp [isApproximation] at *
+    simp [Approximates] at *
     exact EventuallyEq.add hX_approx hY_approx
   | cons basis_hd basis_tl =>
     let motive : (ℝ → ℝ) → (PreMS (basis_hd :: basis_tl)) → Prop := fun f ms =>
       ∃ (X Y : PreMS (basis_hd :: basis_tl)) (fX fY : ℝ → ℝ),
-        ms = X + Y ∧ f =ᶠ[atTop] fX + fY ∧ X.isApproximation fX ∧ Y.isApproximation fY
-    apply isApproximation.coind motive
+        ms = X + Y ∧ f =ᶠ[atTop] fX + fY ∧ X.Approximates fX ∧ Y.Approximates fY
+    apply Approximates.coind motive
     · intro f ms ih
       simp only [motive] at ih
       obtain ⟨X, Y, fX, fY, h_ms_eq, hf_eq, hX_approx, hY_approx⟩ := ih
       revert h_ms_eq hX_approx
       apply X.recOn
       · intro h_ms_eq hX_approx
-        replace hX_approx := isApproximation_nil hX_approx
+        replace hX_approx := Approximates_nil hX_approx
         revert h_ms_eq hY_approx
         apply Y.recOn
         · intro hY_approx h_ms_eq
-          replace hY_approx := isApproximation_nil hY_approx
+          replace hY_approx := Approximates_nil hY_approx
           left
           simp at h_ms_eq
           constructor
@@ -593,7 +593,7 @@ theorem add_isApproximation {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ →
           apply EventuallyEq.add
           exacts [hX_approx, hY_approx]
         · intro (Y_deg, Y_coef) Y_tl hY_approx h_ms_eq
-          have hY_approx' := isApproximation_cons hY_approx
+          have hY_approx' := Approximates_cons hY_approx
           obtain ⟨YC, hY_coef, hY_comp, hY_tl⟩ := hY_approx'
           right
           simp at h_ms_eq
@@ -629,17 +629,17 @@ theorem add_isApproximation {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ →
             ring_nf!
             apply eventuallyEq_iff_sub.mp hf_eq
           constructor
-          · apply isApproximation.nil
+          · apply Approximates.nil
             rfl
           · exact hY_tl
       · intro (X_deg, X_coef) X_tl h_ms_eq hX_approx
-        have hX_approx' := isApproximation_cons hX_approx
+        have hX_approx' := Approximates_cons hX_approx
         obtain ⟨XC, hX_coef, hX_comp, hX_tl⟩ := hX_approx'
         right
         revert h_ms_eq hY_approx
         apply Y.recOn
         · intro hY_approx h_ms_eq
-          replace hY_approx := isApproximation_nil hY_approx
+          replace hY_approx := Approximates_nil hY_approx
           simp at h_ms_eq
           replace hf_eq : f =ᶠ[atTop] fX := by
             trans
@@ -673,11 +673,11 @@ theorem add_isApproximation {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ →
             ring_nf!
             apply eventuallyEq_iff_sub.mp hf_eq
           constructor
-          · apply isApproximation.nil
+          · apply Approximates.nil
             rfl
           · exact hX_tl
         · intro (Y_deg, Y_coef) Y_tl hY_approx h_ms_eq
-          have hY_approx' := isApproximation_cons hY_approx
+          have hY_approx' := Approximates_cons hY_approx
           obtain ⟨YC, hY_coef, hY_comp, hY_tl⟩ := hY_approx'
           rw [add_cons_cons] at h_ms_eq
           split_ifs at h_ms_eq
@@ -760,7 +760,7 @@ theorem add_isApproximation {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ →
             constructor
             · exact h_ms_eq
             constructor
-            · exact add_isApproximation hX_coef hY_coef
+            · exact add_Approximates hX_coef hY_coef
             constructor
             · intro deg h_deg
               apply EventuallyEq.trans_isLittleO hf_eq
@@ -801,14 +801,14 @@ noncomputable def MS.add (x y : MS) (h_basis : y.basis = x.basis) : MS where
   F := x.F + y.F
   h_wo := by
     have := y.h_wo
-    apply PreMS.add_wellOrdered x.h_wo
+    apply PreMS.add_WellOrdered x.h_wo
     generalize y.val = z at *
     generalize y.basis = b at *
     subst h_basis
     simpa
   h_approx := by
     have := y.h_approx
-    apply PreMS.add_isApproximation x.h_approx
+    apply PreMS.add_Approximates x.h_approx
     generalize y.val = z at *
     generalize y.basis = b at *
     subst h_basis

@@ -441,12 +441,12 @@ theorem merge_aux_liNew_cons_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         linarith [h, h_lt.left]
       · apply ih
 
-theorem merge_aux_liNew_wellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {m : ℕ}
+theorem merge_aux_liNew_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {m : ℕ}
     {s : Seq (PreMS (basis_hd :: basis_tl))}
-    (hs : s.All wellOrdered) :
-    (merge_aux_liNew (s.take m) deg s).All wellOrdered := by
+    (hs : s.All WellOrdered) :
+    (merge_aux_liNew (s.take m) deg s).All WellOrdered := by
   simp [merge_aux_liNew]
-  have h_firsts : ∀ x ∈ s.take m, x.wellOrdered := Seq.take_all hs
+  have h_firsts : ∀ x ∈ s.take m, x.WellOrdered := Seq.take_all hs
   generalize s.take m = firsts at h_firsts
   generalize 0 = offset
   induction firsts generalizing offset s with
@@ -463,7 +463,7 @@ theorem merge_aux_liNew_wellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} 
       simp
       split_ifs
       · apply Seq.set_all hs
-        exact (wellOrdered_cons h_firsts.left).right.right
+        exact (WellOrdered_cons h_firsts.left).right.right
       · assumption
 
 theorem merge_aux_tail_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {m : ℕ}
@@ -811,17 +811,17 @@ theorem merge1_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         simp
         exact lt_iff_lt.mp h_sorted.left
 
-theorem merge1_wellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {s : Seq (PreMS (basis_hd :: basis_tl))}
-    (h_wo : s.All wellOrdered)
-    (h_sorted : s.Sorted (· > ·)) : (merge1 s).wellOrdered := by
+    (h_wo : s.All WellOrdered)
+    (h_sorted : s.Sorted (· > ·)) : (merge1 s).WellOrdered := by
   let motive : PreMS (basis_hd :: basis_tl) → Prop := fun ms =>
     ∃ X s,
       ms = X + merge1 s ∧
-      X.wellOrdered ∧
-      s.All wellOrdered ∧
+      X.WellOrdered ∧
+      s.All WellOrdered ∧
       s.Sorted (fun x1 x2 ↦ x1 > x2)
-  apply wellOrdered.coind motive
+  apply WellOrdered.coind motive
   · intro ms ih
     simp only [motive] at ih ⊢
     obtain ⟨X, s, h_eq, hX_wo, h_wo, h_sorted⟩ := ih
@@ -842,7 +842,7 @@ theorem merge1_wellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       · intros
         simp
       intro (s_hd_deg, s_hd_coef) s_hd_tl h_hd_wo h_sorted_hd h_sorted_tl
-      obtain ⟨h_hd_coef_wo, h_hd_comp, h_hd_tl_wo⟩ := wellOrdered_cons h_hd_wo
+      obtain ⟨h_hd_coef_wo, h_hd_comp, h_hd_tl_wo⟩ := WellOrdered_cons h_hd_wo
       right
       use ?_, ?_, ?_
       constructor
@@ -868,7 +868,7 @@ theorem merge1_wellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       · exact h_tl_wo
       · exact h_sorted_tl
     · intro (X_deg, X_coef) X_tl hX_wo
-      obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := wellOrdered_cons hX_wo
+      obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
       right
       revert h_wo h_sorted
       apply s.recOn
@@ -913,7 +913,7 @@ theorem merge1_wellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         · simp
           apply Seq.Sorted.nil
       intro (s_hd_deg, s_hd_coef) s_hd_tl h_hd_wo h_sorted_hd h_sorted_tl
-      obtain ⟨h_hd_coef_wo, h_hd_comp, h_hd_tl_wo⟩ := wellOrdered_cons h_hd_wo
+      obtain ⟨h_hd_coef_wo, h_hd_comp, h_hd_tl_wo⟩ := WellOrdered_cons h_hd_wo
       rw [merge1_cons_head_cons, add_cons_cons]
       split_ifs with h1 h2
       · use ?_, ?_, ?_
@@ -959,7 +959,7 @@ theorem merge1_wellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         · rw [← add_assoc]
           exact Eq.refl _
         constructor
-        · apply add_wellOrdered
+        · apply add_WellOrdered
           · exact hX_wo
           · exact h_hd_tl_wo
         constructor
@@ -971,7 +971,7 @@ theorem merge1_wellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         constructor
         · exact Eq.refl _
         constructor
-        · apply add_wellOrdered
+        · apply add_WellOrdered
           · exact hX_coef_wo
           · exact h_hd_coef_wo
         constructor
@@ -990,7 +990,7 @@ theorem merge1_wellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         · rw [← add_assoc]
           exact Eq.refl _
         constructor
-        · apply add_wellOrdered
+        · apply add_WellOrdered
           · exact hX_tl_wo
           · exact h_hd_tl_wo
         constructor
@@ -1000,7 +1000,7 @@ theorem merge1_wellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     use 0, s
     simp
     constructor
-    · exact zero_wellOrdered
+    · exact zero_WellOrdered
     constructor
     · exact h_wo
     · exact h_sorted

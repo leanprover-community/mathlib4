@@ -52,14 +52,14 @@ theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg 
 
 -- somehow I avoided it
 -- lemma PreMS.leadingTerm_coef_ne_zero {basis : Basis} {ms : PreMS}
---     (h_depth : ms.hasDepth basis.length) (h_wo : ms.wellOrdered) (h_trimmed : ms.isTrimmed)
---     (h_basis : MS.wellOrderedBasis basis) :
+--     (h_depth : ms.hasDepth basis.length) (h_wo : ms.WellOrdered) (h_trimmed : ms.Trimmed)
+--     (h_basis : MS.WellOrderedBasis basis) :
 --     (ms.leadingTerm h_depth).coef ≠ 0 := by
 --   induction ms using PreMS.rec' generalizing basis with
 --   | nil =>
---     simp [isTrimmed] at h_trimmed
+--     simp [Trimmed] at h_trimmed
 --   | const c =>
---     simp [isTrimmed] at h_trimmed
+--     simp [Trimmed] at h_trimmed
 --     unfold leadingTerm
 --     simpa
 --   | cons deg coef tl coef_ih _ =>
@@ -67,14 +67,14 @@ theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg 
 --     | nil => simp [hasDepth] at h_depth
 --     | cons basis_hd basis_tl =>
 --       simp [leadingTerm]
---       simp [wellOrdered] at h_wo
---       simp [isTrimmed] at h_trimmed
---       simp [MS.wellOrderedBasis] at h_basis
+--       simp [WellOrdered] at h_wo
+--       simp [Trimmed] at h_trimmed
+--       simp [MS.WellOrderedBasis] at h_basis
 --       exact coef_ih _ h_wo.left h_trimmed h_basis.right.left
 
 theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
-    (h_wo : ms.wellOrdered) (h_trimmed : ms.isTrimmed) (h_ne_zero : ¬ ms.isFlatZero)
-    (h_basis : MS.wellOrderedBasis basis) :
+    (h_wo : ms.WellOrdered) (h_trimmed : ms.Trimmed) (h_ne_zero : ¬ ms.FlatZero)
+    (h_basis : MS.WellOrderedBasis basis) :
     ∀ᶠ x in atTop, ms.leadingTerm.toFun basis x ≠ 0 :=
   match basis with
   | [] => by
@@ -93,11 +93,11 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
       absurd h_ne_zero
       constructor
     · intro (deg, coef) tl h_wo h_trimmed _
-      replace h_wo := wellOrdered_cons h_wo
+      replace h_wo := WellOrdered_cons h_wo
       obtain ⟨h_coef_wo, _, _⟩ := h_wo
-      obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := isTrimmed_cons h_trimmed
+      obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
       let coef_ih := coef.leadingTerm_eventually_ne_zero h_coef_wo h_coef_trimmed h_coef_ne_zero
-        (MS.wellOrderedBasis_tail h_basis)
+        (MS.WellOrderedBasis_tail h_basis)
       apply Eventually.mono <| coef_ih.and (MS.basis_head_eventually_pos h_basis)
       rintro x ⟨coef_ih, h_basis_hd_pos⟩
       simp [leadingTerm, MS.Term.toFun, -ne_eq]
@@ -117,27 +117,27 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
 mutual
   theorem IsEquivalent_coef {basis_hd C F : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
       {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-      (h_coef : coef.isApproximation C basis_tl)
-      (h_coef_wo : coef.wellOrdered)
-      (h_coef_trimmed : coef.isTrimmed)
-      (h_coef_ne_zero : ¬coef.isFlatZero)
-      (h_tl : tl.isApproximation (fun x ↦ F x - (basis_hd x)^deg * C x))
+      (h_coef : coef.Approximates C basis_tl)
+      (h_coef_wo : coef.WellOrdered)
+      (h_coef_trimmed : coef.Trimmed)
+      (h_coef_ne_zero : ¬coef.FlatZero)
+      (h_tl : tl.Approximates (fun x ↦ F x - (basis_hd x)^deg * C x))
       (h_comp_wo : leadingExp tl < ↑deg)
-      (h_basis : MS.wellOrderedBasis (basis_hd :: basis_tl)) :
+      (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl)) :
       F ~[atTop] fun x ↦ (basis_hd x)^deg * (C x) := by
     have coef_ih := coef.IsEquivalent_leadingTerm (F := C) h_coef_wo h_coef h_coef_trimmed
-      (MS.wellOrderedBasis_tail h_basis)
+      (MS.WellOrderedBasis_tail h_basis)
     simp [IsEquivalent]
     eta_expand
     simp only [Pi.sub_apply]
     revert h_tl h_comp_wo
     apply tl.recOn
     · intro h_tl h_comp_wo
-      replace h_tl := isApproximation_nil h_tl
+      replace h_tl := Approximates_nil h_tl
       apply EventuallyEq.trans_isLittleO h_tl
       apply Asymptotics.isLittleO_zero -- should be simp lemma
     · intro (tl_deg, tl_coef) tl_tl h_tl h_comp_wo
-      replace h_tl := isApproximation_cons h_tl
+      replace h_tl := Approximates_cons h_tl
       obtain ⟨tl_C, h_tl_coef, h_tl_comp, h_tl_tl⟩ := h_tl
       simp [leadingExp] at h_comp_wo
       let deg' := (deg + tl_deg) / 2
@@ -157,7 +157,7 @@ mutual
           apply IsLittleO.trans_eventuallyEq _ this.symm
           have := IsEquivalent.inv coef_ih
           apply IsEquivalent.trans_isLittleO this
-          apply EventuallyEq.trans_isLittleO (MS.Term.fun_inv ((MS.wellOrderedBasis_tail h_basis)))
+          apply EventuallyEq.trans_isLittleO (MS.Term.fun_inv ((MS.WellOrderedBasis_tail h_basis)))
           apply MS.Term.tail_fun_IsLittleO_head
           · rw [MS.Term.inv_length, PreMS.leadingTerm_length]
           · exact h_basis
@@ -173,7 +173,7 @@ mutual
             apply eventually_gt_of_tendsto_gt (by simp) h_φ
           apply EventuallyEq.rw (p := fun _ b => b ≠ 0) h_C.symm
           apply Eventually.mono <| h_φ_pos.and (leadingTerm_eventually_ne_zero h_coef_wo
-            h_coef_trimmed h_coef_ne_zero ((MS.wellOrderedBasis_tail h_basis)))
+            h_coef_trimmed h_coef_ne_zero ((MS.WellOrderedBasis_tail h_basis)))
           rintro x ⟨h_φ_pos, h⟩
           exact mul_ne_zero h_φ_pos.ne.symm h
         apply Eventually.mono <| h_C_ne_zero.and
@@ -185,29 +185,29 @@ mutual
         exact (Real.rpow_pos_of_pos h_basis_pos _).ne.symm
 
   theorem IsEquivalent_leadingTerm {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
-      (h_wo : ms.wellOrdered)
-      (h_approx : ms.isApproximation F basis) (h_trimmed : ms.isTrimmed)
-      (h_basis : MS.wellOrderedBasis basis)
+      (h_wo : ms.WellOrdered)
+      (h_approx : ms.Approximates F basis) (h_trimmed : ms.Trimmed)
+      (h_basis : MS.WellOrderedBasis basis)
       : F ~[atTop] ms.leadingTerm.toFun basis :=
     match basis with
     | [] => by
-      simp [isApproximation] at h_approx
+      simp [Approximates] at h_approx
       simp [leadingTerm]
       apply EventuallyEq.isEquivalent (by assumption)
     | List.cons basis_hd basis_tl => by
       revert h_wo h_approx h_trimmed
       apply ms.recOn
       · intro h_wo h_approx h_trimmed
-        have hF := isApproximation_nil h_approx
+        have hF := Approximates_nil h_approx
         unfold leadingTerm
         simp [MS.Term.zero_coef_fun]
         apply EventuallyEq.isEquivalent (by assumption)
       · intro (deg, coef) tl h_wo h_approx h_trimmed
-        obtain ⟨C, h_coef, h_comp, h_tl⟩ := isApproximation_cons h_approx
-        obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := isTrimmed_cons h_trimmed
-        obtain ⟨h_coef_wo, h_comp_wo, h_tl_wo⟩ := wellOrdered_cons h_wo
+        obtain ⟨C, h_coef, h_comp, h_tl⟩ := Approximates_cons h_approx
+        obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
+        obtain ⟨h_coef_wo, h_comp_wo, h_tl_wo⟩ := WellOrdered_cons h_wo
         have coef_ih := coef.IsEquivalent_leadingTerm (F := C) h_coef_wo h_coef h_coef_trimmed
-          (MS.wellOrderedBasis_tail h_basis)
+          (MS.WellOrderedBasis_tail h_basis)
         have : F ~[atTop] fun x ↦ (basis_hd x)^deg * (C x) :=
           PreMS.IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp_wo h_basis
         apply IsEquivalent.trans this
@@ -217,9 +217,9 @@ mutual
         exact coef_ih
 end
 
-theorem eventually_ne_zero_of_not_isFlatZero {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
-    (h_ne_zero : ¬ ms.isFlatZero) (h_wo : ms.wellOrdered) (h_approx : ms.isApproximation F _)
-    (h_trimmed : ms.isTrimmed) (h_basis : MS.wellOrderedBasis basis):
+theorem eventually_ne_zero_of_not_FlatZero {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
+    (h_ne_zero : ¬ ms.FlatZero) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates F _)
+    (h_trimmed : ms.Trimmed) (h_basis : MS.WellOrderedBasis basis):
     ∀ᶠ x in atTop, F x ≠ 0 := by
   have := IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis
   obtain ⟨φ, ⟨hφ_tendsto, h_eq⟩⟩ := Asymptotics.IsEquivalent.exists_eq_mul this
@@ -244,12 +244,12 @@ def MS.leadingTerm (ms : MS) : MS.Term :=
 theorem MS.leadingTerm_length {ms : MS} : ms.leadingTerm.degs.length = ms.basis.length := by
   apply PreMS.leadingTerm_length
 
-theorem MS.IsEquivalent_leadingTerm (ms : MS) (h_basis : MS.wellOrderedBasis ms.basis)
-    (h_trimmed : ms.isTrimmed) : ms.F ~[atTop] ms.leadingTerm.toFun ms.basis := by
+theorem MS.IsEquivalent_leadingTerm (ms : MS) (h_basis : MS.WellOrderedBasis ms.basis)
+    (h_trimmed : ms.Trimmed) : ms.F ~[atTop] ms.leadingTerm.toFun ms.basis := by
   apply PreMS.IsEquivalent_leadingTerm ms.h_wo ms.h_approx h_trimmed h_basis
 
-def MS.findLimitTrimmed (ms : MS) (h_basis : MS.wellOrderedBasis ms.basis)
-    (h_trimmed : ms.isTrimmed) :
+def MS.findLimitTrimmed (ms : MS) (h_basis : MS.WellOrderedBasis ms.basis)
+    (h_trimmed : ms.Trimmed) :
     TendstoM <| FindLimitResult ms.F := do
   let r ← ms.leadingTerm.findLimit (basis := ms.basis) (by apply MS.leadingTerm_length) h_basis
   match r with
@@ -263,7 +263,7 @@ def MS.findLimitTrimmed (ms : MS) (h_basis : MS.wellOrderedBasis ms.basis)
       exact IsEquivalent.tendsto_nhds (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed).symm p
     })
 
--- def MS.findLimit (ms : MS) (h_basis : MS.wellOrderedBasis ms.basis) :
+-- def MS.findLimit (ms : MS) (h_basis : MS.WellOrderedBasis ms.basis) :
 --     TendstoM <| FindLimitResult ms.F := do
 --   let trimmed ← MS.trim ms
 --   let r ← MS.findLimitTrimmed trimmed.result (trimmed.h_eq_basis ▸ h_basis) trimmed.h_trimmed

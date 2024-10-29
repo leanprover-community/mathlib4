@@ -6,21 +6,21 @@ namespace TendstoTactic
 
 namespace PreMS
 
-theorem monomial_trimmed {basis : Basis} {n : ℕ} : (monomial basis n).isTrimmed := by
+theorem monomial_trimmed {basis : Basis} {n : ℕ} : (monomial basis n).Trimmed := by
   sorry
 
 end PreMS
 
 def basis : Basis := [id]
 
-theorem h_basis : MS.wellOrderedBasis basis := by
+theorem h_basis : MS.WellOrderedBasis basis := by
   sorry
 
 def b1 : ℝ → ℝ := id
 
 def ms1 : MS := MS.monomial basis 0 (by simp [basis]) h_basis
 
-theorem tr1 : ms1.isTrimmed := PreMS.monomial_trimmed
+theorem tr1 : ms1.Trimmed := PreMS.monomial_trimmed
 
 example : Filter.Tendsto basis[0] Filter.atTop Filter.atTop := by
   have h_equiv := MS.IsEquivalent_leadingTerm ms1 h_basis tr1

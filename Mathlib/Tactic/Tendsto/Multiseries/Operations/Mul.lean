@@ -84,11 +84,11 @@ theorem mul_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg y_deg :
       (x_tl.mul (Seq.cons (y_deg, y_coef) y_tl))) := by
   simp [mul]
 
--- Note: the condition `x.wellOrdered` is required. Counterexample: `x = [1, 2]`, `y = [1]` (well-ordered).
+-- Note: the condition `x.WellOrdered` is required. Counterexample: `x = [1, 2]`, `y = [1]` (well-ordered).
 -- Then `lhs = [1, 2]` while `rhs = [2, 1]`.
 @[simp]
 theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg : ℝ} {x_coef : PreMS basis_tl}
-    {x_tl y : PreMS (basis_hd :: basis_tl)} (hx_wo : wellOrdered (basis := basis_hd :: basis_tl) (Seq.cons (x_deg, x_coef) x_tl)) :
+    {x_tl y : PreMS (basis_hd :: basis_tl)} (hx_wo : WellOrdered (basis := basis_hd :: basis_tl) (Seq.cons (x_deg, x_coef) x_tl)) :
     mul (Seq.cons (x_deg, x_coef) x_tl) y = (mulMonomial y x_coef x_deg) + (x_tl.mul y) := by
   by_cases hy : y.leadingExp = ⊥
   · rw [← leadingExp_eq_bot] at hy
@@ -99,7 +99,7 @@ theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg : ℝ} {x_co
   generalize (Seq.cons (x_deg, x_coef) x_tl) = x at hx_wo
   let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
     ∃ (x : PreMS (basis_hd :: basis_tl)), a = (Seq.map (fun x ↦ y.mulMonomial x.2 x.1) x) ∧
-    x.wellOrdered
+    x.WellOrdered
   apply Seq.Sorted.coind motive (r := fun x1 x2 ↦ x1 > x2)
   · intro hd tl ih
     simp only [motive] at ih
@@ -109,7 +109,7 @@ theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x_deg : ℝ} {x_co
     · intro ih hx_wo
       simp at ih
     intro (x_deg, x_coef) x_tl ih hx_wo
-    obtain ⟨hx_coef_wo, hx_comp, hx_tail_wo⟩ := wellOrdered_cons hx_wo
+    obtain ⟨hx_coef_wo, hx_comp, hx_tail_wo⟩ := WellOrdered_cons hx_wo
     simp [Seq.cons_eq_cons] at ih
     rw [ih.left, ih.right]
     constructor
@@ -618,7 +618,7 @@ mutual
   @[simp]
   theorem add_mulMonomial_left {basis_hd : _} {basis_tl : _} {b1 b2 : PreMS (basis_hd :: basis_tl)}
       {m_coef : PreMS basis_tl} {m_deg : ℝ}
-      (m_wo : m_coef.wellOrdered) :
+      (m_wo : m_coef.WellOrdered) :
       (mulMonomial (b1 + b2) m_coef m_deg) = (mulMonomial b1 m_coef m_deg) + (mulMonomial b2 m_coef m_deg) := by
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
       ∃ (b1 b2 : PreMS (basis_hd :: basis_tl)),
@@ -694,12 +694,12 @@ mutual
     · simp [motive]
       use b1, b2
 
-  -- Note: `Z.wellOrdered` is necessary. Counterexample: `X = [0]`, `Y = [1]`, `Z = [0, 2]`.
+  -- Note: `Z.WellOrdered` is necessary. Counterexample: `X = [0]`, `Y = [1]`, `Z = [0, 2]`.
   -- Then `lhs = [0, 2] * [1, 0] = [1, 3, 2, 0]` while `rhs = [0, 2] + [1, 3] = [1, 3, 0, 2]`.
   -- TODO : lots of similar cases. Can simplify?
   @[simp]
   theorem add_mul_left' {basis : Basis} {X Y Z : PreMS basis}
-      (hZ_wo : Z.wellOrdered) :
+      (hZ_wo : Z.WellOrdered) :
       Z.mul (X + Y) = (Z.mul X) + (Z.mul Y) := by
     cases basis with
     | nil => simp [mul]; ring
@@ -714,7 +714,7 @@ mutual
         ∃ (Z S : PreMS (basis_hd :: basis_tl)),
           a = S + Z.mul (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_deg, X_coef) X_tl) (Seq.cons (Y_deg, Y_coef) Y_tl)) ∧
           b = S + (Z.mul (Seq.cons (X_deg, X_coef) X_tl)) + Z.mul (Seq.cons (Y_deg, Y_coef) Y_tl) ∧
-          Z.wellOrdered
+          Z.WellOrdered
       apply Seq.Eq.coind_strong motive
       · intro a b ih
         simp only [motive] at ih
@@ -726,7 +726,7 @@ mutual
           left
           simp
         intro (Z_deg, Z_coef) Z_tl hZ_wo
-        obtain ⟨hZ_coef_wo, hZ_comp, hZ_tl_wo⟩ := wellOrdered_cons hZ_wo
+        obtain ⟨hZ_coef_wo, hZ_comp, hZ_tl_wo⟩ := WellOrdered_cons hZ_wo
         right
         apply S.recOn
         · rw [add_cons_cons]
@@ -926,7 +926,7 @@ mutual
   @[simp]
   theorem mulMonomial_mul {basis_hd : _} {basis_tl : _} {b : PreMS (basis_hd :: basis_tl)}
       {m_coef1 m_coef2 : PreMS basis_tl} {m_deg1 m_deg2 : ℝ}
-      (h_coef2_wo : m_coef2.wellOrdered) :
+      (h_coef2_wo : m_coef2.WellOrdered) :
       (b.mulMonomial m_coef1 m_deg1).mulMonomial m_coef2 m_deg2 =
       b.mulMonomial (m_coef2.mul m_coef1) (m_deg2 + m_deg1) := by
     simp [mulMonomial]
@@ -947,7 +947,7 @@ mutual
   @[simp]
   theorem mul_mulMonomial {basis_hd : _} {basis_tl : _} {b c : PreMS (basis_hd :: basis_tl)}
       {m_coef : PreMS basis_tl} {m_deg : ℝ}
-      (hm_wo : m_coef.wellOrdered) :
+      (hm_wo : m_coef.WellOrdered) :
       (b.mulMonomial m_coef m_deg).mul c =
       (b.mul c).mulMonomial m_coef m_deg := by
     apply c.recOn
@@ -1039,7 +1039,7 @@ mutual
     · use 0, b
       simp
 
-  -- Note: `X.wellOrdered` is necessary. Counterexample: `basis = [x, y]`.
+  -- Note: `X.WellOrdered` is necessary. Counterexample: `basis = [x, y]`.
   -- `X = x^0 * (y^0 + y^2)`
   -- `Y = x^0 * y^0 + x^(-1) * y^1` (well-ordered)
   -- `Z = x^2 * y^(-1) + x^1 * y^1` (well-ordered)
@@ -1047,10 +1047,10 @@ mutual
   -- `lhs = x^2 * (y^(-1) + y) + x^1 * (y^1 + y^3 + y^0 + y^2) + x^0 * (y^2 + y^4)`
   -- `rhs = x^2 * (y^(-1) + y) + x^1 * (y^1 + y^3 + y^2 + y^0) + x^0 * (y^2 + y^4)`
   -- There is a difference in the second coefficient.
-  -- It is enough, however, if all coefs of `X` is well-ordered, i.e. `X.all wellOrdered`
+  -- It is enough, however, if all coefs of `X` is well-ordered, i.e. `X.all WellOrdered`
   @[simp]
   theorem mul_assoc' {basis : Basis} {X Y Z : PreMS basis}
-      (hX_wo : X.wellOrdered) :
+      (hX_wo : X.WellOrdered) :
       (X.mul Y).mul Z = X.mul (Y.mul Z) := by
     cases basis with
     | nil => simp [mul]; ring
@@ -1065,7 +1065,7 @@ mutual
         ∃ (X S : PreMS (basis_hd :: basis_tl)),
           a = S + (X.mul (Seq.cons (Y_deg, Y_coef) Y_tl)).mul (Seq.cons (Z_deg, Z_coef) Z_tl) ∧
           b = S + X.mul (mul (Seq.cons (Y_deg, Y_coef) Y_tl) (Seq.cons (Z_deg, Z_coef) Z_tl)) ∧
-          X.wellOrdered
+          X.WellOrdered
       apply Seq.Eq.coind_strong motive
       · intro a b ih
         obtain ⟨X, S, ha, hb, hX_wo⟩ := ih
@@ -1075,7 +1075,7 @@ mutual
         · intro
           simp
         intro (X_deg, X_coef) X_tl hX_wo
-        obtain ⟨hX_coef_wo, _, hX_tl_wo⟩ := wellOrdered_cons hX_wo
+        obtain ⟨hX_coef_wo, _, hX_tl_wo⟩ := WellOrdered_cons hX_wo
         right
         apply S.recOn
         · use ?_, ?_, ?_
@@ -1548,28 +1548,28 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
                   exact this.right
               · simpa [leadingExp]
 
-theorem longAdd_wellOrdered {basis : Basis} {k : ℕ} {args : Fin k → PreMS basis}
-    (h_wo : ∀ i, (args i).wellOrdered) : (longAdd args).wellOrdered := by
+theorem longAdd_WellOrdered {basis : Basis} {k : ℕ} {args : Fin k → PreMS basis}
+    (h_wo : ∀ i, (args i).WellOrdered) : (longAdd args).WellOrdered := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
     induction k with
-    | zero => simp [longAdd]; exact wellOrdered.nil
+    | zero => simp [longAdd]; exact WellOrdered.nil
     | succ k ih =>
       unfold longAdd
-      apply add_wellOrdered
+      apply add_WellOrdered
       · apply ih
         intro i
         apply h_wo
       · apply h_wo
 
-theorem longAdd_isApproximation {basis : Basis} {k : ℕ} {args : Fin k → PreMS basis}
+theorem longAdd_Approximates {basis : Basis} {k : ℕ} {args : Fin k → PreMS basis}
     {F : Fin k → (ℝ → ℝ)}
-    (h_approx : ∀ i, (args i).isApproximation (F i) basis) :
-    (longAdd args).isApproximation (fun x ↦ ∑ i, F i x) := by
+    (h_approx : ∀ i, (args i).Approximates (F i) basis) :
+    (longAdd args).Approximates (fun x ↦ ∑ i, F i x) := by
   cases basis with
   | nil =>
-    simp [isApproximation] at *
+    simp [Approximates] at *
     induction k with
     | zero => simp [longAdd, zero]
     | succ l ih =>
@@ -1587,7 +1587,7 @@ theorem longAdd_isApproximation {basis : Basis} {k : ℕ} {args : Fin k → PreM
     induction k with
     | zero =>
       simp [longAdd, zero]
-      apply isApproximation.nil
+      apply Approximates.nil
       rfl
     | succ k ih =>
       conv =>
@@ -1595,7 +1595,7 @@ theorem longAdd_isApproximation {basis : Basis} {k : ℕ} {args : Fin k → PreM
         ext x
         rw [Fin.sum_univ_castSucc]
       unfold longAdd
-      apply add_isApproximation
+      apply add_Approximates
       · apply ih
         intro i
         apply h_approx
@@ -1671,10 +1671,10 @@ theorem longAdd_mulMonomial_tail_eq {basis_hd : _} {basis_tl : _} {k : ℕ}
         exact h1.right.symm
       · simp
 
-theorem longAdd_mulMonomial_tail_B_wellOrdered {basis_hd : _} {basis_tl : _} {k : ℕ}
+theorem longAdd_mulMonomial_tail_B_WellOrdered {basis_hd : _} {basis_tl : _} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {deg : ℝ}
-    (h_wo : ∀ j, (BM j).1.wellOrdered) :
-    ∀ j, (longAdd_mulMonomial_tail_BM BM deg j).1.wellOrdered := by
+    (h_wo : ∀ j, (BM j).1.WellOrdered) :
+    ∀ j, (longAdd_mulMonomial_tail_BM BM deg j).1.WellOrdered := by
   intro j
   cases k with
   | zero =>
@@ -1687,14 +1687,14 @@ theorem longAdd_mulMonomial_tail_B_wellOrdered {basis_hd : _} {basis_tl : _} {k 
       have hh := h.choose_spec
       have := h_wo j
       rw [hh] at this
-      have := wellOrdered_cons this
+      have := WellOrdered_cons this
       exact this.2.2
     · exact h_wo j
 
-theorem longAdd_mulMonomial_tail_M_wellOrdered {basis_hd : _} {basis_tl : _} {k : ℕ}
+theorem longAdd_mulMonomial_tail_M_WellOrdered {basis_hd : _} {basis_tl : _} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {deg : ℝ}
-    (h_wo : ∀ j, (BM j).2.1.wellOrdered) :
-    ∀ j, (longAdd_mulMonomial_tail_BM BM deg j).2.1.wellOrdered := by
+    (h_wo : ∀ j, (BM j).2.1.WellOrdered) :
+    ∀ j, (longAdd_mulMonomial_tail_BM BM deg j).2.1.WellOrdered := by
   intro j
   cases k with
   | zero =>
@@ -1706,22 +1706,22 @@ theorem longAdd_mulMonomial_tail_M_wellOrdered {basis_hd : _} {basis_tl : _} {k 
       exact h_wo j
     · exact h_wo j
 
-theorem longAdd_mulMonomial_tail_BM_wellOrdered {basis_hd : _} {basis_tl : _} {k : ℕ}
+theorem longAdd_mulMonomial_tail_BM_WellOrdered {basis_hd : _} {basis_tl : _} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {deg : ℝ}
-    (h_wo : ∀ j, (BM j).1.wellOrdered ∧ (BM j).2.1.wellOrdered) :
-    ∀ j, (longAdd_mulMonomial_tail_BM BM deg j).1.wellOrdered ∧
-      (longAdd_mulMonomial_tail_BM BM deg j).2.1.wellOrdered := by
+    (h_wo : ∀ j, (BM j).1.WellOrdered ∧ (BM j).2.1.WellOrdered) :
+    ∀ j, (longAdd_mulMonomial_tail_BM BM deg j).1.WellOrdered ∧
+      (longAdd_mulMonomial_tail_BM BM deg j).2.1.WellOrdered := by
   intro j
   constructor
-  · apply longAdd_mulMonomial_tail_B_wellOrdered
+  · apply longAdd_mulMonomial_tail_B_WellOrdered
     exact fun j ↦ (h_wo j).left
-  · apply longAdd_mulMonomial_tail_M_wellOrdered
+  · apply longAdd_mulMonomial_tail_M_WellOrdered
     exact fun j ↦ (h_wo j).right
 
 noncomputable def longAdd_mulMonomial_tail_fB {basis_hd : _} {basis_tl : _} {k : ℕ}
     (BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)) (deg : ℝ)
     {fB : Fin k → (ℝ → ℝ)}
-    (hB_approx : ∀ j, (BM j).1.isApproximation (fB j) (basis_hd :: basis_tl)) :
+    (hB_approx : ∀ j, (BM j).1.Approximates (fB j) (basis_hd :: basis_tl)) :
     Fin k → (ℝ → ℝ) :=
   match k with
   | 0 => default
@@ -1745,17 +1745,17 @@ noncomputable def longAdd_mulMonomial_tail_fB {basis_hd : _} {basis_tl : _} {k :
           have h' := (h_BM_cons i h).choose_spec
           specialize hB_approx i
           rw [h'] at hB_approx
-          replace hB_approx := isApproximation_cons hB_approx
+          replace hB_approx := Approximates_cons hB_approx
           let C := hB_approx.choose
           exact fun x ↦ fB i x - basis_hd x ^ (deg - (BM i).2.2) * C x
       else
         fB i
 
-theorem longAdd_mulMonomial_tail_B_isApproximation {basis_hd : _} {basis_tl : _} {k : ℕ}
+theorem longAdd_mulMonomial_tail_B_Approximates {basis_hd : _} {basis_tl : _} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {deg : ℝ}
     {fB : Fin k → (ℝ → ℝ)}
-    {hB_approx : ∀ j, (BM j).1.isApproximation (fB j) (basis_hd :: basis_tl)} : ∀ (j : Fin k),
-    isApproximation (longAdd_mulMonomial_tail_fB BM deg hB_approx j) (basis_hd :: basis_tl)
+    {hB_approx : ∀ j, (BM j).1.Approximates (fB j) (basis_hd :: basis_tl)} : ∀ (j : Fin k),
+    Approximates (longAdd_mulMonomial_tail_fB BM deg hB_approx j) (basis_hd :: basis_tl)
       (longAdd_mulMonomial_tail_BM BM deg j).1 := by
   intro j
   cases k with
@@ -1772,8 +1772,8 @@ theorem longAdd_mulMonomial_tail_B_isApproximation {basis_hd : _} {basis_tl : _}
 noncomputable def longAdd_mulMonomial_fC {basis_hd : _} {basis_tl : _} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} (deg : ℝ)
     {fB fM : Fin k → (ℝ → ℝ)}
-    (hB_approx : ∀ j , (BM j).1.isApproximation (fB j) (basis_hd :: basis_tl))
-    (hM_approx : ∀ j , (BM j).2.1.isApproximation (fM j) basis_tl) :
+    (hB_approx : ∀ j , (BM j).1.Approximates (fB j) (basis_hd :: basis_tl))
+    (hM_approx : ∀ j , (BM j).2.1.Approximates (fM j) basis_tl) :
     ℝ → ℝ :=
   match k with
   | 0 => default
@@ -1797,7 +1797,7 @@ noncomputable def longAdd_mulMonomial_fC {basis_hd : _} {basis_tl : _} {k : ℕ}
           have h' := (h_BM_cons i h).choose_spec
           specialize hB_approx i
           rw [h'] at hB_approx
-          replace hB_approx := isApproximation_cons hB_approx
+          replace hB_approx := Approximates_cons hB_approx
           let fBC := hB_approx.choose
           exact (fM i x) * (fBC x)
       else
@@ -1805,14 +1805,14 @@ noncomputable def longAdd_mulMonomial_fC {basis_hd : _} {basis_tl : _} {k : ℕ}
     )
 
 mutual
-  theorem mulMonomial_wellOrdered {basis_hd : _} {basis_tl : _} {b : PreMS (basis_hd :: basis_tl)}
+  theorem mulMonomial_WellOrdered {basis_hd : _} {basis_tl : _} {b : PreMS (basis_hd :: basis_tl)}
       {m_coef : PreMS basis_tl} {m_deg : ℝ}
-      (hb_wo : b.wellOrdered) (hm_wo : m_coef.wellOrdered) :
-      (mulMonomial b m_coef m_deg).wellOrdered := by
+      (hb_wo : b.WellOrdered) (hm_wo : m_coef.WellOrdered) :
+      (mulMonomial b m_coef m_deg).WellOrdered := by
     let motive : PreMS (basis_hd :: basis_tl) → Prop := fun x =>
       ∃ (b : PreMS (basis_hd :: basis_tl)), x = b.mulMonomial m_coef m_deg ∧
-      b.wellOrdered
-    apply wellOrdered.coind motive
+      b.WellOrdered
+    apply WellOrdered.coind motive
     · intro ms ih
       simp only [motive] at ih
       obtain ⟨b, h_eq, hb_wo⟩ := ih
@@ -1823,7 +1823,7 @@ mutual
         left
         simp
       · intro (deg, coef) tl h_wo
-        have h_wo' := wellOrdered_cons h_wo
+        have h_wo' := WellOrdered_cons h_wo
         obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := h_wo'
         right
         use ?_
@@ -1833,7 +1833,7 @@ mutual
         · simp only [mulMonomial_cons]
           congr <;> exact Eq.refl _
         constructor
-        · apply mul_wellOrdered hm_wo h_coef_wo
+        · apply mul_WellOrdered hm_wo h_coef_wo
         constructor
         · simp
           apply WithBot.add_lt_add_left
@@ -1844,11 +1844,11 @@ mutual
     · simp only [motive]
       use b
 
-  -- TODO: maybe use `merge1_wellOrdered`?
+  -- TODO: maybe use `merge1_WellOrdered`?
   -- TODO: very ugly. rewrite
-  theorem mul_wellOrdered {basis : Basis} {X Y : PreMS basis}
-      (hX_wo : X.wellOrdered) (hY_wo : Y.wellOrdered) :
-      (X.mul Y).wellOrdered := by
+  theorem mul_WellOrdered {basis : Basis} {X Y : PreMS basis}
+      (hX_wo : X.WellOrdered) (hY_wo : Y.WellOrdered) :
+      (X.mul Y).WellOrdered := by
     cases basis with
     | nil => constructor
     | cons basis_hd basis_tl =>
@@ -1856,21 +1856,21 @@ mutual
         ∃ (k : ℕ) (BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ))
           (X Y : PreMS (basis_hd :: basis_tl)),
           x = (longAdd <| (fun (B, M_coef, M_deg) => B.mulMonomial M_coef M_deg) ∘ BM) + (X.mul Y) ∧
-          (∀ j , (BM j).1.wellOrdered ∧ (BM j).2.1.wellOrdered) ∧
-          X.wellOrdered ∧ Y.wellOrdered
-      apply wellOrdered.coind motive
+          (∀ j , (BM j).1.WellOrdered ∧ (BM j).2.1.WellOrdered) ∧
+          X.WellOrdered ∧ Y.WellOrdered
+      apply WellOrdered.coind motive
       · intro ms ih
         simp only [motive] at ih
         obtain ⟨k, BM, X, Y, h_eq, h_BM, hX_wo, hY_wo⟩ := ih
         generalize h_left_eq : (longAdd ((fun x ↦ x.1.mulMonomial x.2.1 x.2.2) ∘ BM)) = left at h_eq
         generalize h_right_eq : X.mul Y = right at h_eq
 
-        have h_left_wo : left.wellOrdered := by
+        have h_left_wo : left.WellOrdered := by
           rw [← h_left_eq]
-          apply longAdd_wellOrdered
+          apply longAdd_WellOrdered
           intro i
           simp
-          apply mulMonomial_wellOrdered
+          apply mulMonomial_WellOrdered
           · exact (h_BM i).left
           · exact (h_BM i).right
         subst h_eq
@@ -1889,13 +1889,13 @@ mutual
             simp
             obtain ⟨X_deg, X_coef, X_tl, Y_deg, Y_coef, Y_tl, hX_eq, hY_eq⟩ := mul_eq_cons h_right_eq
             subst hX_eq hY_eq
-            obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := wellOrdered_cons hX_wo
-            obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := wellOrdered_cons hY_wo
+            obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
+            obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
             simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
             obtain ⟨⟨h_deg, h_coef⟩, h_tl⟩ := h_right_eq
             subst h_deg h_coef h_tl
             constructor
-            · apply mul_wellOrdered hX_coef_wo hY_coef_wo
+            · apply mul_WellOrdered hX_coef_wo hY_coef_wo
             constructor
             · simp
               constructor
@@ -1919,9 +1919,9 @@ mutual
               · exact hX_coef_wo
             · constructor
               · exact hX_tl_wo
-              · apply wellOrdered.cons <;> assumption
+              · apply WellOrdered.cons <;> assumption
         · intro (left_deg, left_coef) left_tl h_left_eq h_left_wo
-          obtain ⟨h_left_coef_wo, h_left_comp, h_left_tl_wo⟩ := wellOrdered_cons h_left_wo
+          obtain ⟨h_left_coef_wo, h_left_comp, h_left_tl_wo⟩ := WellOrdered_cons h_left_wo
           right
           have h_left_tl_eq := longAdd_mulMonomial_tail_eq h_left_eq
           have h_left_eq' := h_left_eq
@@ -1972,8 +1972,8 @@ mutual
                 · simp
                   exact h_left_tl_eq
                 constructor
-                · exact longAdd_mulMonomial_tail_BM_wellOrdered h_BM
-                · constructor <;> exact wellOrdered.nil
+                · exact longAdd_mulMonomial_tail_BM_WellOrdered h_BM
+                · constructor <;> exact WellOrdered.nil
               · intro (right_deg, right_coef) right_tl h_right_eq
                 rw [add_cons_cons]
                 split_ifs with h1 h2
@@ -1997,21 +1997,21 @@ mutual
                     congr 1
                     exact h_left_tl_eq
                   constructor
-                  · exact longAdd_mulMonomial_tail_BM_wellOrdered h_BM
+                  · exact longAdd_mulMonomial_tail_BM_WellOrdered h_BM
                   constructor
                   · exact hX_wo
                   · exact hY_wo
                 · obtain ⟨X_deg, X_coef, X_tl, Y_deg, Y_coef, Y_tl, hX_eq, hY_eq⟩ := mul_eq_cons h_right_eq
                   subst hX_eq hY_eq
-                  obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := wellOrdered_cons hX_wo
-                  obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := wellOrdered_cons hY_wo
+                  obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
+                  obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
                   simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
                   use ?_; use ?_; use ?_
                   constructor
                   · congr 2 <;> exact Eq.refl _
                   constructor
                   · rw [← h_right_eq.1.2]
-                    apply mul_wellOrdered hX_coef_wo hY_coef_wo
+                    apply mul_WellOrdered hX_coef_wo hY_coef_wo
                   constructor
                   · simp
                     constructor
@@ -2056,17 +2056,17 @@ mutual
                   clear h1 h2
                   obtain ⟨X_deg, X_coef, X_tl, Y_deg, Y_coef, Y_tl, hX_eq, hY_eq⟩ := mul_eq_cons h_right_eq
                   subst hX_eq hY_eq
-                  obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := wellOrdered_cons hX_wo
-                  obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := wellOrdered_cons hY_wo
+                  obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
+                  obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
                   simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
                   use ?_; use ?_; use ?_
                   constructor
                   · congr 2 <;> exact Eq.refl _
                   constructor
-                  · apply add_wellOrdered
+                  · apply add_WellOrdered
                     · exact h_left_coef_wo
                     · rw [← h_right_eq.1.2]
-                      apply mul_wellOrdered hX_coef_wo hY_coef_wo
+                      apply mul_WellOrdered hX_coef_wo hY_coef_wo
                   constructor
                   · simp
                     constructor
@@ -2126,7 +2126,7 @@ mutual
                       exact ⟨hY_tl_wo, hX_coef_wo⟩
                     | cast j =>
                       simp
-                      exact longAdd_mulMonomial_tail_BM_wellOrdered h_BM j
+                      exact longAdd_mulMonomial_tail_BM_WellOrdered h_BM j
                   constructor
                   · exact hX_tl_wo
                   · exact hY_wo
@@ -2143,18 +2143,18 @@ end
 set_option maxHeartbeats 400000 in -- TODO : very slow. How to speed up?
 mutual
 
-  theorem mulMonomial_isApproximation {basis_hd : _} {basis_tl : _} {B M : ℝ → ℝ} {b : PreMS (basis_hd :: basis_tl)}
+  theorem mulMonomial_Approximates {basis_hd : _} {basis_tl : _} {B M : ℝ → ℝ} {b : PreMS (basis_hd :: basis_tl)}
         {m_coef : PreMS basis_tl} {m_deg : ℝ}
-        (h_basis : MS.wellOrderedBasis (basis_hd :: basis_tl))
-        (hb_approx : b.isApproximation B (basis_hd :: basis_tl))
-        (hm_approx : m_coef.isApproximation M basis_tl) :
-      (mulMonomial b m_coef m_deg).isApproximation (fun x ↦ (M x) * (basis_hd x)^m_deg * (B x)) := by
+        (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl))
+        (hb_approx : b.Approximates B (basis_hd :: basis_tl))
+        (hm_approx : m_coef.Approximates M basis_tl) :
+      (mulMonomial b m_coef m_deg).Approximates (fun x ↦ (M x) * (basis_hd x)^m_deg * (B x)) := by
     let motive : (ℝ → ℝ) → PreMS (basis_hd :: basis_tl) → Prop := fun f ms =>
       ∃ (b : PreMS (basis_hd :: basis_tl)) (B M : ℝ → ℝ),
       ms = b.mulMonomial m_coef m_deg ∧
       f =ᶠ[atTop] (fun x ↦ (M x) * (basis_hd x)^m_deg * (B x)) ∧
-      b.isApproximation B (basis_hd :: basis_tl) ∧ m_coef.isApproximation M basis_tl
-    apply isApproximation.coind motive
+      b.Approximates B (basis_hd :: basis_tl) ∧ m_coef.Approximates M basis_tl
+    apply Approximates.coind motive
     · intro f ms ih
       simp only [motive] at ih
       obtain ⟨b, B, M, h_ms_eq, hf_eq, hb_approx, hm_approx⟩ := ih
@@ -2162,7 +2162,7 @@ mutual
       revert hb_approx
       apply b.recOn
       · intro hb_approx
-        replace hb_approx := isApproximation_nil hb_approx
+        replace hb_approx := Approximates_nil hb_approx
         left
         simp
         conv => rhs; ext x; simp; rw [← mul_zero (M x * basis_hd x ^ m_deg)]
@@ -2170,7 +2170,7 @@ mutual
         · exact hf_eq
         apply EventuallyEq.mul (by rfl) hb_approx
       · intro (b_deg, b_coef) b_tl hb_approx
-        have hb_approx' := isApproximation_cons hb_approx
+        have hb_approx' := Approximates_cons hb_approx
         obtain ⟨C, h_coef_approx, h_comp, h_tl_approx⟩ := hb_approx'
         right
         use ?_
@@ -2181,13 +2181,13 @@ mutual
         · simp only [mulMonomial_cons]
           congr <;> exact Eq.refl _
         constructor
-        · apply mul_isApproximation (MS.wellOrderedBasis_tail h_basis) hm_approx h_coef_approx
+        · apply mul_Approximates (MS.WellOrderedBasis_tail h_basis) hm_approx h_coef_approx
         constructor
         · apply majorated_of_EventuallyEq hf_eq
           rw [show m_deg + b_deg = 0 + m_deg + b_deg by simp]
           apply mul_majorated
           · apply mul_majorated
-            · exact isApproximation_coef_isLittleO_head hm_approx h_basis
+            · exact Approximates_coef_isLittleO_head hm_approx h_basis
             · apply majorated_self
               apply MS.basis_tendsto_top h_basis
               simp
@@ -2216,15 +2216,15 @@ mutual
       use B
       use M
 
-  theorem longAdd_mulMonomial_cons_isApproximation_coef {basis_hd : _} {basis_tl : _} {k : ℕ}
+  theorem longAdd_mulMonomial_cons_Approximates_coef {basis_hd : _} {basis_tl : _} {k : ℕ}
       {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {deg : ℝ}
       {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
       {fB fM : Fin k → (ℝ → ℝ)}
-      (h_basis : MS.wellOrderedBasis (basis_hd :: basis_tl))
-      (hB_approx : ∀ j, (BM j).1.isApproximation (fB j) (basis_hd :: basis_tl))
-      (hM_approx : ∀ j, (BM j).2.1.isApproximation (fM j) basis_tl)
+      (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl))
+      (hB_approx : ∀ j, (BM j).1.Approximates (fB j) (basis_hd :: basis_tl))
+      (hM_approx : ∀ j, (BM j).2.1.Approximates (fM j) basis_tl)
       (h_cons : (longAdd ((fun x ↦ x.1.mulMonomial x.2.1 x.2.2) ∘ BM)) = Seq.cons (deg, coef) tl) :
-      coef.isApproximation (longAdd_mulMonomial_fC deg hB_approx hM_approx) basis_tl := by
+      coef.Approximates (longAdd_mulMonomial_fC deg hB_approx hM_approx) basis_tl := by
     induction k generalizing deg coef with
     | zero =>
       simp [longAdd] at h_cons
@@ -2240,7 +2240,7 @@ mutual
         obtain ⟨⟨h_deg, h_coef⟩, h_tl⟩ := h_cons
         subst h_deg
         rw [← h_coef]
-        apply longAdd_isApproximation
+        apply longAdd_Approximates
         intro i
         simp only [mulMonomial_leadingExp]
         split_ifs with h_if
@@ -2269,19 +2269,19 @@ mutual
           rw [h1] at h3
           simp [Seq.cons_eq_cons] at h3
           rw [← h3.left]
-          apply mul_isApproximation (MS.wellOrderedBasis_tail h_basis)
+          apply mul_Approximates (MS.WellOrderedBasis_tail h_basis)
           · apply hM_approx
           · exact h2.left
         · simp
-          exact zero_isApproximation_zero
+          exact zero_Approximates_zero
 
-  theorem mul_isApproximation {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
-      (h_basis : MS.wellOrderedBasis basis)
-      (hX_approx : X.isApproximation fX basis) (hY_approx : Y.isApproximation fY basis) :
-      (X.mul Y).isApproximation (fX * fY) basis := by
+  theorem mul_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
+      (h_basis : MS.WellOrderedBasis basis)
+      (hX_approx : X.Approximates fX basis) (hY_approx : Y.Approximates fY basis) :
+      (X.mul Y).Approximates (fX * fY) basis := by
     cases basis with
     | nil =>
-      simp [isApproximation, mul] at *
+      simp [Approximates, mul] at *
       apply EventuallyEq.mul hX_approx hY_approx
     | cons basis_hd basis_tl =>
       let motive : (ℝ → ℝ) → PreMS (basis_hd :: basis_tl) → Prop := fun f ms =>
@@ -2291,11 +2291,11 @@ mutual
           (fX fY : ℝ → ℝ),
           ms = (longAdd <| (fun (B, M_coef, M_deg) => B.mulMonomial M_coef M_deg) ∘ BM) + (X.mul Y) ∧
           f =ᶠ[atTop] (fun x ↦ (∑ i, (fM i x) * (basis_hd x)^(BM i).2.2 * (fB i x)) + (fX x) * (fY x)) ∧ -- I am here. Need finite sum of BM
-          (∀ j , (BM j).1.isApproximation (fB j) (basis_hd :: basis_tl)) ∧
-          (∀ j , (BM j).2.1.isApproximation (fM j) basis_tl) ∧
-          X.isApproximation fX (basis_hd :: basis_tl) ∧
-          Y.isApproximation fY (basis_hd :: basis_tl)
-      apply isApproximation.coind motive
+          (∀ j , (BM j).1.Approximates (fB j) (basis_hd :: basis_tl)) ∧
+          (∀ j , (BM j).2.1.Approximates (fM j) basis_tl) ∧
+          X.Approximates fX (basis_hd :: basis_tl) ∧
+          Y.Approximates fY (basis_hd :: basis_tl)
+      apply Approximates.coind motive
       · intro f ms ih
         simp only [motive] at ih
         obtain ⟨k, BM, fB, fM, X, Y, fX, fY, h_ms_eq, hf_eq, hB_approx, hM_approx, hX_approx, hY_approx⟩ := ih
@@ -2307,30 +2307,30 @@ mutual
           cases mul_eq_nil h with
           | inl hX =>
             subst hX
-            replace hX_approx := isApproximation_nil hX_approx
+            replace hX_approx := Approximates_nil hX_approx
             conv => rhs; ext x; simp; rw [← zero_mul (fY x)]
             exact EventuallyEq.mul hX_approx (by rfl)
           | inr hY =>
             subst hY
-            replace hY_approx := isApproximation_nil hY_approx
+            replace hY_approx := Approximates_nil hY_approx
             conv => rhs; ext x; simp; rw [← mul_zero (fX x)]
             exact EventuallyEq.mul (by rfl) hY_approx
 
-        have h_left_approx : left.isApproximation
+        have h_left_approx : left.Approximates
             (fun x ↦ ∑ i, (fM i x) * (basis_hd x)^(BM i).2.2 * (fB i x)) (basis_hd :: basis_tl) := by
           rw [← h_left_eq]
 
-          apply longAdd_isApproximation
+          apply longAdd_Approximates
           intro i
           simp
-          apply mulMonomial_isApproximation h_basis
+          apply mulMonomial_Approximates h_basis
           · exact hB_approx i
           · exact hM_approx i
         subst h_ms_eq
         revert h_left_eq h_left_approx
         apply left.recOn
         · intro h_left_eq h_left_approx
-          replace h_left_approx := isApproximation_nil h_left_approx
+          replace h_left_approx := Approximates_nil h_left_approx
           replace hf_eq : f =ᶠ[atTop] fX * fY := by
             trans
             · exact hf_eq
@@ -2352,15 +2352,15 @@ mutual
             simp
             obtain ⟨X_deg, X_coef, X_tl, Y_deg, Y_coef, Y_tl, hX_eq, hY_eq⟩ := mul_eq_cons h_right_eq
             subst hX_eq hY_eq
-            obtain ⟨XC, hX_coef_approx, hX_comp, hX_tl_approx⟩ := isApproximation_cons hX_approx
-            obtain ⟨YC, hY_coef_approx, hY_comp, hY_tl_approx⟩ := isApproximation_cons hY_approx
+            obtain ⟨XC, hX_coef_approx, hX_comp, hX_tl_approx⟩ := Approximates_cons hX_approx
+            obtain ⟨YC, hY_coef_approx, hY_comp, hY_tl_approx⟩ := Approximates_cons hY_approx
             simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
 
             obtain ⟨⟨h_deg, h_coef⟩, h_tl⟩ := h_right_eq
             subst h_deg h_coef h_tl
             use XC * YC
             constructor
-            · apply mul_isApproximation (MS.wellOrderedBasis_tail h_basis) hX_coef_approx hY_coef_approx
+            · apply mul_Approximates (MS.WellOrderedBasis_tail h_basis) hX_coef_approx hY_coef_approx
             constructor
             · apply majorated_of_EventuallyEq hf_eq
               apply mul_majorated hX_comp hY_comp
@@ -2392,8 +2392,8 @@ mutual
             · exact hX_tl_approx
             · exact hY_approx
         · intro (left_deg, left_coef) left_tl h_left_eq h_left_approx
-          obtain ⟨LC', h_left_coef_approx, h_left_comp, h_left_tl_approx⟩ := isApproximation_cons h_left_approx
-          replace h_left_coef_approx := longAdd_mulMonomial_cons_isApproximation_coef h_basis hB_approx hM_approx h_left_eq -- Nasty workaround
+          obtain ⟨LC', h_left_coef_approx, h_left_comp, h_left_tl_approx⟩ := Approximates_cons h_left_approx
+          replace h_left_coef_approx := longAdd_mulMonomial_cons_Approximates_coef h_basis hB_approx hM_approx h_left_eq -- Nasty workaround
           generalize h_LC_eq : (longAdd_mulMonomial_fC left_deg hB_approx hM_approx) = LC at h_left_coef_approx
           right
           have h_left_tl_eq := longAdd_mulMonomial_tail_eq h_left_eq
@@ -2485,7 +2485,7 @@ mutual
                     ring_nf
                   · ring_nf
                 constructor
-                · apply longAdd_mulMonomial_tail_B_isApproximation
+                · apply longAdd_mulMonomial_tail_B_Approximates
                 constructor
                 · intro j
                   simp [longAdd_mulMonomial_tail_BM]
@@ -2494,13 +2494,13 @@ mutual
                     exact hM_approx j
                   · exact hM_approx j
                 constructor
-                · apply isApproximation.nil (by rfl)
-                · apply isApproximation.nil (by rfl)
+                · apply Approximates.nil (by rfl)
+                · apply Approximates.nil (by rfl)
               · intro (right_deg, right_coef) right_tl h_right_eq
                 obtain ⟨X_deg, X_coef, X_tl, Y_deg, Y_coef, Y_tl, hX_eq, hY_eq⟩ := mul_eq_cons h_right_eq
                 subst hX_eq hY_eq
-                obtain ⟨XC, hX_coef_approx, hX_comp, hX_tl_approx⟩ := isApproximation_cons hX_approx
-                obtain ⟨YC, hY_coef_approx, hY_comp, hY_tl_approx⟩ := isApproximation_cons hY_approx
+                obtain ⟨XC, hX_coef_approx, hX_comp, hX_tl_approx⟩ := Approximates_cons hX_approx
+                obtain ⟨YC, hY_coef_approx, hY_comp, hY_tl_approx⟩ := Approximates_cons hY_approx
                 simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
 
                 rw [add_cons_cons]
@@ -2565,7 +2565,7 @@ mutual
                       ring_nf
                     · ring_nf
                   constructor
-                  · exact longAdd_mulMonomial_tail_B_isApproximation
+                  · exact longAdd_mulMonomial_tail_B_Approximates
                   constructor
                   · intro j
                     simp [longAdd_mulMonomial_tail_BM]
@@ -2581,7 +2581,7 @@ mutual
                   · congr 2 <;> exact Eq.refl _
                   constructor
                   · rw [← h_right_eq.1.2]
-                    exact mul_isApproximation (MS.wellOrderedBasis_tail h_basis) hX_coef_approx hY_coef_approx
+                    exact mul_Approximates (MS.WellOrderedBasis_tail h_basis) hX_coef_approx hY_coef_approx
                   constructor
                   · apply majorated_of_EventuallyEq hf_eq
                     rw [← sup_of_le_right h2.le]
@@ -2662,10 +2662,10 @@ mutual
                   constructor
                   · congr 2 <;> exact Eq.refl _
                   constructor
-                  · apply add_isApproximation
+                  · apply add_Approximates
                     · exact h_left_coef_approx
                     · rw [← h_right_eq.1.2]
-                      apply mul_isApproximation (MS.wellOrderedBasis_tail h_basis) hX_coef_approx hY_coef_approx
+                      apply mul_Approximates (MS.WellOrderedBasis_tail h_basis) hX_coef_approx hY_coef_approx
                   constructor
                   · apply majorated_of_EventuallyEq hf_eq
                     rw [← sup_idem deg']
@@ -2778,7 +2778,7 @@ mutual
                       exact hY_tl_approx
                     | cast j =>
                       simp
-                      apply longAdd_mulMonomial_tail_B_isApproximation
+                      apply longAdd_mulMonomial_tail_B_Approximates
                   constructor
                   · intro j
                     cases j using Fin.lastCases with
@@ -2814,20 +2814,20 @@ end
 
 end PreMS
 
-noncomputable def MS.mul (x y : MS) (h_basis_eq : y.basis = x.basis) (h_basis_wo : MS.wellOrderedBasis x.basis) : MS where
+noncomputable def MS.mul (x y : MS) (h_basis_eq : y.basis = x.basis) (h_basis_wo : MS.WellOrderedBasis x.basis) : MS where
   basis := x.basis
   val := x.val.mul (h_basis_eq ▸ y.val)
   F := x.F * y.F
   h_wo := by
     have := y.h_wo
-    apply PreMS.mul_wellOrdered x.h_wo
+    apply PreMS.mul_WellOrdered x.h_wo
     generalize y.val = z at *
     generalize y.basis = b at *
     subst h_basis_eq
     simpa
   h_approx := by
     have := y.h_approx
-    apply PreMS.mul_isApproximation h_basis_wo x.h_approx
+    apply PreMS.mul_Approximates h_basis_wo x.h_approx
     generalize y.val = z at *
     generalize y.basis = b at *
     subst h_basis_eq
