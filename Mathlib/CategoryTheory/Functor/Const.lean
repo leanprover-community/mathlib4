@@ -99,6 +99,13 @@ def compConstIso (F : C ⥤ D) :
     (fun X => NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat))
     (by aesop_cat)
 
+/-- The canonical isomorphism
+`const D ⋙ (whiskeringLeft J _ _).obj F ≅ const J`.-/
+@[simps!]
+def constCompWhiskeringLeftIso (F : J ⥤ D) :
+    const D ⋙ (whiskeringLeft J D C).obj F ≅ const J :=
+  NatIso.ofComponents fun X => NatIso.ofComponents fun Y => Iso.refl _
+
 end
 
 end CategoryTheory.Functor
