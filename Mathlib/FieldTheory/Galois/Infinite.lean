@@ -80,9 +80,7 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
         rw [this]
         exact ne
       · constructor
-        · have : IsOpen ((adjoin k {y}).1.fixingSubgroup : Set (K ≃ₐ[k] K)) := by
-            apply IntermediateField.fixingSubgroup_isOpen
-          exact IsOpen.smul this σ
+        · exact IsOpen.smul (IntermediateField.fixingSubgroup_isOpen (adjoin k {y}).1) σ
         · apply Set.mem_smul_set.mpr
           use 1
           simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true]
@@ -143,7 +141,7 @@ lemma restrict_fixedField (H : Subgroup (K ≃ₐ[k] K)) (L : IntermediateField 
     intro σ hσ
     have : ((restrictNormalHom L σ) ⟨x, xL⟩).1 = x := by rw [h σ hσ]
     nth_rw 2 [← this]
-    exact id (Eq.symm (AlgEquiv.restrictNormal_commutes σ L ⟨x, xL⟩))
+    exact id (AlgEquiv.restrictNormal_commutes σ L ⟨x, xL⟩).symm
 
 lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k K] :
     (IntermediateField.fixedField H).fixingSubgroup = H.1 := by
@@ -176,11 +174,9 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k
     set cH := (Subgroup.map (restrictNormalHom L') H.toSubgroup)
     apply (mem_fixingSubgroup_iff (L' ≃ₐ[k] L')).mpr
     intro y hy
-    have : y.1 ∈ IntermediateField.lift (IntermediateField.fixedField cH) :=
-      (IntermediateField.mem_lift y).mpr hy
-    show ((restrictNormalHom ↥L'.toIntermediateField) σ) ⟨y.1, y.2⟩ = ⟨y.1, y.2⟩
+    show ((restrictNormalHom ↥L'.toIntermediateField) σ) y = y
     apply Subtype.val_injective
-    rw [restrictNormalHom_apply L'.1 σ y, fix y.1 this]
+    rw [restrictNormalHom_apply L'.1 σ y, fix y.1 ((IntermediateField.mem_lift y).mpr hy)]
   rcases this with ⟨h,hh,sub⟩
   have : h ∈ σ • L'.1.fixingSubgroup.carrier := by
     use σ⁻¹ * h
