@@ -1369,7 +1369,7 @@ lemma le_limsup_mul {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞} :
   mul_le_of_forall_lt fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
     ((eventually_lt_of_lt_liminf) b_v)) fun _ ab_x ↦ c_ab.trans (mul_lt_mul ab_x.1 ab_x.2)
- 
+
 /-- See also `ENNReal.limsup_mul_le`.-/
 lemma limsup_mul_le' {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞}
     (h : limsup u f ≠ 0 ∨ limsup v f ≠ ∞) (h' : limsup u f ≠ ∞ ∨ limsup v f ≠ 0) :
