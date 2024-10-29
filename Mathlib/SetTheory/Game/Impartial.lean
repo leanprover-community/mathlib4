@@ -25,7 +25,7 @@ open scoped PGame
 namespace PGame
 
 /-- The definition for an impartial game, defined using Conway induction. -/
-def ImpartialAux (G : PGame) : Prop :=
+def ImpartialAux (G : PGame) : Prop := 
   (G ≈ -G) ∧ (∀ i, ImpartialAux (G.moveLeft i)) ∧ ∀ j, ImpartialAux (G.moveRight j)
 termination_by G
 

@@ -97,9 +97,13 @@ theorem controlling_is_max (b : Board) : Option.some (controlling b) = b.val.max
   unfold controlling
   rw [Option.some_get (max_is_some b)]
 
+/-- max' is the assertive max -/
 theorem controlling_is_max' (b : Board) : controlling b = b.val.max' (never_empty b) := by
   unfold controlling
-  sorry
+  rw [Option.get_of_mem (max_is_some b)]
+  simp [Option.mem_some_self, Option.mem_some]
+  have y := Finset.coe_max' (never_empty b)
+  exact Eq.symm y
 
 theorem controlling_in_board (b : Board) : controlling b ∈ b.val := by
   rw [controlling_is_max']
@@ -125,11 +129,12 @@ theorem move_not_in_board (b : Board) (m : ℕ) (h : m ∈ moves b) : m ∉ b.va
 
 theorem move_smaller_than_controller (b : Board) (m : ℕ) (h : m ∈ moves b) : m < controlling b := by
   unfold moves at h
+  -- Nat.mem_properDivisors
   sorry
 
 theorem move_is_set (b : Board) (m : ℕ) (h : m ∈ moves b) : (move b m h).val = b.val ∪ {m} := by
   unfold move
-  sorry
+  simp only
 
 def upperBoundMoveCount (b : Board) : ℕ := (controlling b).properDivisors.card - (b.val.card - 1)
 
@@ -138,9 +143,9 @@ theorem unchanging_controller (b : Board) (m : ℕ) (h : m ∈ moves b) :
   repeat rw [controlling_is_max']
   unfold move
   let D := b.val
-  simp
+  simp only
   have s := move_smaller_than_controller b m h
-  
+  unfold controlling at s
   sorry
 
 theorem move_card {b : Board} {m : ℕ} (h : m ∈ moves b) :
@@ -150,8 +155,8 @@ theorem move_card {b : Board} {m : ℕ} (h : m ∈ moves b) :
   rw [← Finset.disjoint_singleton_right] at x
   simp only [Finset.sup_eq_union, Finset.card_union_of_disjoint x, Finset.card_singleton]
 
-theorem unfinished_game_has_moves (b : Board) (h : moves b ≠ ∅) :
-    b.val.card - 1 < (controlling b).properDivisors.card := by
+theorem game_move_count (b : Board) :
+    b.val.card - 1 ≤ (controlling b).properDivisors.card := by
   have p := b.property
   unfold validDivisorSet validMentionableDivisors at p
   have s : controlling b = b.val.max := controlling_is_max b
@@ -160,7 +165,12 @@ theorem unfinished_game_has_moves (b : Board) (h : moves b ≠ ∅) :
   have y := Finset.card_erase_add_one (controlling_in_board b)
   have j := Nat.eq_sub_of_add_eq y
   rw [← j]
-  unfold moves at h
+  exact u
+
+theorem unfinished_game_has_moves (b : Board) (h : moves b ≠ ∅) :
+    b.val.card - 1 < (controlling b).properDivisors.card := by
+  have := game_move_count b
+
   -- TODO: by h, ≤ transforms
   sorry
 
@@ -183,16 +193,16 @@ theorem moves_smaller {b : Board} {m : ℕ} (h : m ∈ moves b) :
 
 instance state : State Board where
   turnBound s := upperBoundMoveCount s
-  l s := ((moves s).val.map (fun m => (move s m (sorry)))).toFinset
-  r s := ((moves s).val.map (fun m => (move s m (sorry)))).toFinset
+  l s := ((moves s).attach.val.map (fun m => (move s _ m.property))).toFinset
+  r s := ((moves s).attach.val.map (fun m => (move s _ m.property))).toFinset
   left_bound m := by
     simp only [Multiset.mem_toFinset, Multiset.mem_map, Finset.mem_val] at m
-    rcases m with ⟨_, ⟨h, rfl⟩⟩
-    exact moves_smaller h
+    rcases m with ⟨_, ⟨_, rfl⟩⟩
+    exact moves_smaller _
   right_bound m := by
     simp only [Multiset.mem_toFinset, Multiset.mem_map, Finset.mem_val] at m
-    rcases m with ⟨_, ⟨h, rfl⟩⟩
-    exact moves_smaller h
+    rcases m with ⟨_, ⟨_, rfl⟩⟩
+    exact moves_smaller _
 
 end Chomp
 
