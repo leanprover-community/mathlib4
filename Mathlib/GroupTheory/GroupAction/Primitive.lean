@@ -520,7 +520,6 @@ theorem IsPreprimitive.of_card_lt
       apply lt_of_lt_of_le hf'
       rw [mul_comm, mul_le_mul_right Nat.succ_pos']
       apply le_trans (Set.ncard_le_ncard h) (Set.ncard_image_le B.toFinite)
-    
   simp only [Set.Finite.coe_toFinset, Set.subset_univ]
   
 /-- Theorem of Rudio (Wielandt, 1964, Th. 8.1) -/
