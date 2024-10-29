@@ -126,7 +126,7 @@ theorem toMonoid.unique (g : MonoidHom (conGen rels).Quotient M)
   Con.lift_unique (proof_1 f h) g (FreeMonoid.hom_eq fun x ↦ let_fun this := hg x; this)
 
 @[to_additive (attr := simp)]
-theorem toMonoid.of {x : α} : (PresentedMonoid.toMonoid f h) (PresentedMonoid.of rels x) =
+theorem toMonoid.of {x : α} : toMonoid f h (of rels x) =
     f x := rfl
 
 end ToMonoid
