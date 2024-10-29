@@ -6,12 +6,10 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Data.List.Join
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.List.Count
-import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.InsertIdx
-import Mathlib.Data.List.Lattice
-import Mathlib.Data.List.Perm
 import Batteries.Data.List.Perm
+import Mathlib.Data.List.Perm.Basic
 
 /-!
 # Permutations of a list
@@ -44,10 +42,6 @@ all positions. Hence, to build `[0, 1, 2, 3].permutations'`, it does
    `[0, 1, 3, 2], [1, 0, 3, 2], [1, 3, 0, 2], [1, 3, 2, 0],`
    `[0, 3, 1, 2], [3, 0, 1, 2], [3, 1, 0, 2], [3, 1, 2, 0],`
    `[0, 3, 2, 1], [3, 0, 2, 1], [3, 2, 0, 1], [3, 2, 1, 0]]`
-
-## TODO
-
-Show that `l.Nodup → l.permutations.Nodup`. See `Data.Fintype.List`.
 -/
 
 -- Make sure we don't import algebra

@@ -130,6 +130,19 @@ theorem Monic.of_mul_monic_right (hq : q.Monic) (hpq : (p * q).Monic) : p.Monic 
 
 namespace Monic
 
+lemma comp (hp : p.Monic) (hq : q.Monic) (h : q.natDegree ≠ 0) : (p.comp q).Monic := by
+  nontriviality R
+  have : (p.comp q).natDegree = p.natDegree * q.natDegree :=
+    natDegree_comp_eq_of_mul_ne_zero <| by simp [hp.leadingCoeff, hq.leadingCoeff]
+  rw [Monic.def, Polynomial.leadingCoeff, this, coeff_comp_degree_mul_degree h, hp.leadingCoeff,
+    hq.leadingCoeff, one_pow, mul_one]
+
+lemma comp_X_add_C (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
+  nontriviality R
+  refine hp.comp (monic_X_add_C _) fun ha ↦ ?_
+  rw [natDegree_X_add_C] at ha
+  exact one_ne_zero ha
+
 @[simp]
 theorem natDegree_eq_zero_iff_eq_one (hp : p.Monic) : p.natDegree = 0 ↔ p = 1 := by
   constructor <;> intro h
@@ -262,6 +275,78 @@ theorem Monic.nextCoeff_prod (s : Finset ι) (f : ι → R[X]) (h : ∀ i ∈ s,
     nextCoeff (∏ i ∈ s, f i) = ∑ i ∈ s, nextCoeff (f i) :=
   Monic.nextCoeff_multiset_prod s.1 f h
 
+variable [NoZeroDivisors R] {p q : R[X]}
+
+lemma irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
+    Irreducible p ↔ ∀ f g : R[X], f.Monic → g.Monic → f * g = p → f = 1 ∨ g = 1 := by
+  refine
+    ⟨fun h f g hf hg hp => (h.2 f g hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
+      ⟨hp1 ∘ hp.eq_one_of_isUnit, fun f g hfg =>
+        (h (g * C f.leadingCoeff) (f * C g.leadingCoeff) ?_ ?_ ?_).symm.imp
+          (isUnit_of_mul_eq_one f _)
+          (isUnit_of_mul_eq_one g _)⟩⟩
+  · rwa [Monic, leadingCoeff_mul, leadingCoeff_C, ← leadingCoeff_mul, mul_comm, ← hfg, ← Monic]
+  · rwa [Monic, leadingCoeff_mul, leadingCoeff_C, ← leadingCoeff_mul, ← hfg, ← Monic]
+  · rw [mul_mul_mul_comm, ← C_mul, ← leadingCoeff_mul, ← hfg, hp.leadingCoeff, C_1, mul_one,
+      mul_comm, ← hfg]
+
+
+lemma Monic.irreducible_iff_natDegree (hp : p.Monic) :
+    Irreducible p ↔
+      p ≠ 1 ∧ ∀ f g : R[X], f.Monic → g.Monic → f * g = p → f.natDegree = 0 ∨ g.natDegree = 0 := by
+  by_cases hp1 : p = 1; · simp [hp1]
+  rw [irreducible_of_monic hp hp1, and_iff_right hp1]
+  refine forall₄_congr fun a b ha hb => ?_
+  rw [ha.natDegree_eq_zero_iff_eq_one, hb.natDegree_eq_zero_iff_eq_one]
+
+lemma Monic.irreducible_iff_natDegree' (hp : p.Monic) : Irreducible p ↔ p ≠ 1 ∧
+    ∀ f g : R[X], f.Monic → g.Monic → f * g = p → g.natDegree ∉ Ioc 0 (p.natDegree / 2) := by
+  simp_rw [hp.irreducible_iff_natDegree, mem_Ioc, Nat.le_div_iff_mul_le zero_lt_two, mul_two]
+  apply and_congr_right'
+  constructor <;> intro h f g hf hg he <;> subst he
+  · rw [hf.natDegree_mul hg, add_le_add_iff_right]
+    exact fun ha => (h f g hf hg rfl).elim (ha.1.trans_le ha.2).ne' ha.1.ne'
+  · simp_rw [hf.natDegree_mul hg, pos_iff_ne_zero] at h
+    contrapose! h
+    obtain hl | hl := le_total f.natDegree g.natDegree
+    · exact ⟨g, f, hg, hf, mul_comm g f, h.1, add_le_add_left hl _⟩
+    · exact ⟨f, g, hf, hg, rfl, h.2, add_le_add_right hl _⟩
+
+/-- Alternate phrasing of `Polynomial.Monic.irreducible_iff_natDegree'` where we only have to check
+one divisor at a time. -/
+lemma Monic.irreducible_iff_lt_natDegree_lt {p : R[X]} (hp : p.Monic) (hp1 : p ≠ 1) :
+    Irreducible p ↔ ∀ q, Monic q → natDegree q ∈ Finset.Ioc 0 (natDegree p / 2) → ¬ q ∣ p := by
+  rw [hp.irreducible_iff_natDegree', and_iff_right hp1]
+  constructor
+  · rintro h g hg hdg ⟨f, rfl⟩
+    exact h f g (hg.of_mul_monic_left hp) hg (mul_comm f g) hdg
+  · rintro h f g - hg rfl hdg
+    exact h g hg hdg (dvd_mul_left g f)
+
+lemma Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : p.natDegree = 2) :
+    ¬Irreducible p ↔ ∃ c₁ c₂, p.coeff 0 = c₁ * c₂ ∧ p.coeff 1 = c₁ + c₂ := by
+  cases subsingleton_or_nontrivial R
+  · simp [natDegree_of_subsingleton] at hnd
+  rw [hm.irreducible_iff_natDegree', and_iff_right, hnd]
+  · push_neg
+    constructor
+    · rintro ⟨a, b, ha, hb, rfl, hdb⟩
+      simp only [zero_lt_two, Nat.div_self, Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hdb
+      have hda := hnd
+      rw [ha.natDegree_mul hb, hdb] at hda
+      use a.coeff 0, b.coeff 0, mul_coeff_zero a b
+      simpa only [nextCoeff, hnd, add_right_cancel hda, hdb] using ha.nextCoeff_mul hb
+    · rintro ⟨c₁, c₂, hmul, hadd⟩
+      refine
+        ⟨X + C c₁, X + C c₂, monic_X_add_C _, monic_X_add_C _, ?_, ?_⟩
+      · rw [p.as_sum_range_C_mul_X_pow, hnd, Finset.sum_range_succ, Finset.sum_range_succ,
+          Finset.sum_range_one, ← hnd, hm.coeff_natDegree, hnd, hmul, hadd, C_mul, C_add, C_1]
+        ring
+      · rw [mem_Ioc, natDegree_X_add_C _]
+        simp
+  · rintro rfl
+    simp [natDegree_one] at hnd
+
 end CommSemiring
 
 section Semiring
@@ -352,6 +437,9 @@ theorem not_isUnit_X_pow_sub_one (R : Type*) [CommRing R] [Nontrivial R] (n : �
   · simp at h
   apply hn
   rw [← @natDegree_one R, ← (monic_X_pow_sub_C _ hn).eq_one_of_isUnit h, natDegree_X_pow_sub_C]
+
+lemma Monic.comp_X_sub_C {p : R[X]} (hp : p.Monic) (r : R) : (p.comp (X - C r)).Monic := by
+  simpa using hp.comp_X_add_C (-r)
 
 theorem Monic.sub_of_left {p q : R[X]} (hp : Monic p) (hpq : degree q < degree p) :
     Monic (p - q) := by
