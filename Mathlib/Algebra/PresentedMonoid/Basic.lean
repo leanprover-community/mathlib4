@@ -135,13 +135,10 @@ end ToMonoid
 theorem ext {M : Type*} [Monoid M] (rels : FreeMonoid α → FreeMonoid α → Prop)
     {φ ψ : PresentedMonoid rels →* M} (hx : ∀ (x : α), φ (.of rels x) = ψ (.of rels x)) :
     φ = ψ := by
-  ext a
-  induction' a with b
-  induction b
-  · rw [← one_def, map_one, map_one]
-  · rename_i x
-    exact hx x
-  rename_i x y hx hy
-  rw [← mul_mk, map_mul, map_mul, hx, hy]
+  apply MonoidHom.eq_of_eqOn_denseM (closure_range_of _)
+  apply eqOn_range.mpr
+  ext
+  rw [Function.comp_apply]
+  exact hx _
 
 end PresentedMonoid
