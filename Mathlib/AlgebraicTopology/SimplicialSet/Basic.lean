@@ -451,9 +451,13 @@ variable (X : SSet.{u})
 /-- A path in a simplicial set `X` of length `n` is a directed path of `n` edges.-/
 @[ext]
 structure Path (n : ℕ) where
+  /-- A path includes the data of `n+1` 0-simplices in `X`.-/
   vertex (i : Fin (n + 1)) : X _[0]
+  /-- A path includes the data of `n` 1-simplices in `X`.-/
   arrow (i : Fin n) : X _[1]
+  /-- The sources of the 1-simplices in a path are identified with appropriate 0-simplices.-/
   arrow_src (i : Fin n) : X.δ 1 (arrow i) = vertex i.castSucc
+  /-- The targets of the 1-simplices in a path are identified with appropriate 0-simplices.-/
   arrow_tgt (i : Fin n) : X.δ 0 (arrow i) = vertex i.succ
 
 /-- For `j ≤ k ≤ n`, a path of length `n` restricts to a path of length `k-j`, namely the subpath

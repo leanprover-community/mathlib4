@@ -243,11 +243,9 @@ def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
       | 0, 1, _ => Fin.castSucc_le_succ i
   }
 
-@[simp]
 lemma mkOfSucc_homToOrderHom_zero {n} (i : Fin n) : Hom.toOrderHom (mkOfSucc i) 0 = i.castSucc :=
   rfl
 
-@[simp]
 lemma mkOfSucc_homToOrderHom_one {n} (i : Fin n) : Hom.toOrderHom (mkOfSucc i) 1 = i.succ := by
   unfold mkOfSucc
   dsimp
