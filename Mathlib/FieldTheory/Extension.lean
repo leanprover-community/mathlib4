@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2020 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Browning
+Authors: Thomas Browning, Junyan Xu
 -/
 import Mathlib.Data.Fintype.Order
 import Mathlib.FieldTheory.Adjoin
+import Mathlib.GroupTheory.CosetCover
 
 /-!
 # Extension of field embeddings
@@ -15,7 +16,7 @@ that the minimal polynomials of a set of generators of E/L splits in K (via `f`)
 extends to an embedding of E/F into K/F.
 
 Reference:
-[Isaacs1980] Roots of Polynomials in Algebraic Extensions of Fields,
+[Isaacs1980] *Roots of Polynomials in Algebraic Extensions of Fields*,
 The American Mathematical Monthly
 
 -/
@@ -58,19 +59,44 @@ noncomputable instance : OrderBot (Lifts F E K) where
 noncomputable instance : Inhabited (Lifts F E K) :=
   ⟨⊥⟩
 
-theorem Lifts.le_of_carrier_le_iSup {ι} (ρ : ι → Lifts F E K) (σ τ : Lifts F E K)
+variable {L₁ L₂ : Lifts F E K}
+
+theorem Lifts.le_iff : L₁ ≤ L₂ ↔
+    ∃ h : L₁.carrier ≤ L₂.carrier, L₂.emb.comp (inclusion h) = L₁.emb := by
+  simp_rw [AlgHom.ext_iff]; rfl
+
+theorem Lifts.eq_iff_le_carrier_eq : L₁ = L₂ ↔ L₁ ≤ L₂ ∧ L₁.carrier = L₂.carrier :=
+  ⟨fun eq ↦ ⟨eq.le, congr_arg _ eq⟩, fun ⟨le, eq⟩ ↦ le.antisymm ⟨eq.ge, fun x ↦ (le.2 ⟨x, _⟩).symm⟩⟩
+
+theorem Lifts.eq_iff : L₁ = L₂ ↔
+    ∃ h : L₁.carrier = L₂.carrier, L₂.emb.comp (inclusion h.le) = L₁.emb := by
+  rw [eq_iff_le_carrier_eq, le_iff]
+  exact ⟨fun h ↦ ⟨h.2, h.1.2⟩, fun h ↦ ⟨⟨h.1.le, h.2⟩, h.1⟩⟩
+
+theorem Lifts.lt_iff_le_carrier_ne : L₁ < L₂ ↔ L₁ ≤ L₂ ∧ L₁.carrier ≠ L₂.carrier := by
+  rw [lt_iff_le_and_ne, and_congr_right]; intro h; simp_rw [Ne, eq_iff_le_carrier_eq, h, true_and]
+
+theorem Lifts.lt_iff : L₁ < L₂ ↔
+    ∃ h : L₁.carrier < L₂.carrier, L₂.emb.comp (inclusion h.le) = L₁.emb := by
+  rw [lt_iff_le_carrier_ne, le_iff]
+  exact ⟨fun h ↦ ⟨h.1.1.lt_of_ne h.2, h.1.2⟩, fun h ↦ ⟨⟨h.1.le, h.2⟩, h.1.ne⟩⟩
+
+theorem Lifts.le_of_carrier_le_iSup {ι} {ρ : ι → Lifts F E K} {σ τ : Lifts F E K}
     (hσ : ∀ i, ρ i ≤ σ) (hτ : ∀ i, ρ i ≤ τ) (carrier_le : σ.carrier ≤ ⨆ i, (ρ i).carrier) :
     σ ≤ τ :=
-  have le := carrier_le.trans (iSup_le fun i ↦ (hτ i).1)
-  have : (⊤ : IntermediateField F σ.carrier) ≤ ⨆ i, (inclusion (hσ i).1).fieldRange := by
-    sorry
-  ⟨le, suffices τ.emb.comp (inclusion le) = σ.emb by sorry
-    sorry⟩
+  le_iff.mpr ⟨carrier_le.trans (iSup_le fun i ↦ (hτ i).1), algHom_ext_of_eq_adjoin _
+      (carrier_le.antisymm (iSup_le fun i ↦ (hσ i).1)|>.trans <| iSup_eq_adjoin _ _) fun x hx ↦
+    have ⟨i, hx⟩ := Set.mem_iUnion.mp hx
+    ((hτ i).2 ⟨x, hx⟩).trans ((hσ i).2 ⟨x, hx⟩).symm⟩
 
 /-- `σ : L →ₐ[F] K` is an extendible lift ("extendible pair" in [Isaacs]) if for every
-intermediate field `M` that is finite-dimensional over `L`, `σ` extends to some `M →ₐ[F] K`. -/
+intermediate field `M` that is finite-dimensional over `L`, `σ` extends to some `M →ₐ[F] K`.
+In our definition we only require `M` to be finitely generated over `L`, which is equivalent
+if the ambient field `E` is algebraic over `F` (which is the case in our main application).
+We also allow the domain of the extension to be an intermediate field that properly contains `M`,
+since one can always restrict the domain to `M`. -/
 def Lifts.IsExtendible (σ : Lifts F E K) : Prop :=
-  ∀ M : IntermediateField σ.carrier E, M.FG → ∃ τ ≥ σ, τ.carrier = M.restrictScalars F
+  ∀ S : Finset E, ∃ τ ≥ σ, (S : Set E) ⊆ τ.carrier
 
 section Chain
 variable (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c)
@@ -87,7 +113,7 @@ def Lifts.union : Lifts F E K :=
         inclusion_inclusion, inclusion_self, AlgHom.id_apply x]) _ rfl).comp
       (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir)⟩
 
-theorem Lifts.le_union : ∀ σ ∈ c, σ ≤ Lifts.union c hc := fun σ hσ ↦
+theorem Lifts.le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ Lifts.union c hc :=
   have hσ := Set.mem_insert_of_mem ⊥ hσ
   let t (i : ↑(insert ⊥ c)) := i.val.carrier
   ⟨le_iSup t ⟨σ, hσ⟩, fun x ↦ by
@@ -95,60 +121,77 @@ theorem Lifts.le_union : ∀ σ ∈ c, σ ≤ Lifts.union c hc := fun σ hσ ↦
     exact Subalgebra.iSupLift_inclusion (K := (toSubalgebra <| t ·))
       (i := ⟨σ, hσ⟩) x (le_iSup (toSubalgebra <| t ·) ⟨σ, hσ⟩)⟩
 
+theorem Lifts.carrier_union : (Lifts.union c hc).carrier = ⨆ i : c, i.1.carrier :=
+  le_antisymm (iSup_le <| by rintro ⟨i, rfl|hi⟩; exacts [bot_le, le_iSup_of_le ⟨i, hi⟩ le_rfl]) <|
+    iSup_le fun i ↦ le_iSup_of_le ⟨i, .inr i.2⟩ le_rfl
+
 /-- A chain of lifts has an upper bound. -/
 theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c) :
     ∃ ub, ∀ a ∈ c, a ≤ ub := ⟨_, Lifts.le_union c hc⟩
 
-theorem Lifts.exists_upper_bound_isExtendible (alg : Algebra.IsAlgebraic F E)
+theorem Lifts.union_isExtendible [alg : Algebra.IsAlgebraic F E]
     [Nonempty c] (hext : ∀ σ ∈ c, σ.IsExtendible) :
-    (Lifts.union c hc).IsExtendible := fun L' ⟨S, hS⟩ ↦ by
-  let σ := Lifts.union c hc
+    (Lifts.union c hc).IsExtendible := fun S ↦ by
   let Ω := adjoin F (S : Set E) →ₐ[F] K
-  obtain ⟨ω, hω⟩ : ∃ ω : Ω, ∀ π : c, ∃ θ ≥ π.1, ⟨_, ω⟩ ≤ θ ∧ θ.carrier = adjoin F (π.1.carrier ∪ S)
-  · by_contra!; choose π hπ using this
-    have := finiteDimensional_adjoin (K := F) (S := S) fun _ _ ↦ (alg _).isIntegral
-    obtain ⟨π', hπ'⟩ := hc.directed.finite_le π
-    obtain ⟨θ, hθπ, hθ⟩ := hext _ π'.2 _ (fg_adjoin_finset S)
-    rw [restrictScalars_adjoin] at hθ
-    -- restrict θ' to `adjoin F S`
-    let θ' := θ.emb.comp (inclusion <| (adjoin.mono _ _ _ fun _ ↦ (.inr ·)).trans_eq hθ.symm)
-    have : adjoin F ((π θ').1.carrier ∪ S) ≤ θ.carrier :=
-      (adjoin.mono _ _ _ <| Set.union_subset_union_left _ (hπ' _).1).trans_eq hθ.symm
-    exact hπ θ' ⟨_, θ.emb.comp (inclusion this)⟩
-      ⟨(Set.subset_union_left _ _).trans (subset_adjoin _ _), ((hπ' _).trans hθπ).2⟩
-      ⟨adjoin.mono _ _ _ fun _ ↦ (.inr ·), fun _ ↦ rfl⟩ rfl
+  have ⟨ω, hω⟩ : ∃ ω : Ω, ∀ π : c, ∃ θ ≥ π.1, ⟨_, ω⟩ ≤ θ ∧ θ.carrier = π.1.1 ⊔ adjoin F S := by
+    by_contra!; choose π hπ using this
+    have := finiteDimensional_adjoin (S := (S : Set E)) fun _ _ ↦ (alg.isIntegral).1 _
+    have ⟨π₀, hπ₀⟩ := hc.directed.finite_le π
+    have ⟨θ, hθπ, hθ⟩ := hext _ π₀.2 S
+    rw [← adjoin_le_iff] at hθ
+    let θ₀ := θ.emb.comp (inclusion hθ)
+    have := (hπ₀ θ₀).trans hθπ
+    exact hπ θ₀ ⟨_, θ.emb.comp <| inclusion <| sup_le this.1 hθ⟩
+      ⟨le_sup_left, this.2⟩ ⟨le_sup_right, fun _ ↦ rfl⟩ rfl
   choose θ ge hθ eq using hω
-  simp_rw [← toSubalgebra_injective.eq_iff, adjoin_algebraic_toSubalgebra fun _ _ ↦ alg _] at eq
   have : IsChain (· ≤ ·) (Set.range θ) := by
+    simp_rw [← restrictScalars_adjoin_eq_sup, restrictScalars_adjoin] at eq
     rintro _ ⟨π₁, rfl⟩ _ ⟨π₂, rfl⟩ -
     wlog h : π₁ ≤ π₂ generalizing π₁ π₂
     · exact (this _ _ <| (hc.total π₁.2 π₂.2).resolve_left h).symm
-    refine .inl ⟨toSubalgebra_le_toSubalgebra.mp ?_, (Equiv.Set.ofEq <| SetLike.ext'_iff.mp <| eq _)
-      |>.forall_congr_left'.mpr <| Algebra.adjoin_induction' ?_ ?_ ?_ ?_⟩
-    · rw [eq, eq]; exact Algebra.adjoin_mono (Set.union_subset_union_left _ h.1)
-    · rintro x (hx|hx)
-      · apply h.2
-    simp
-    --sorry
-    --intro; simp; apply h.2 --simp
+    refine .inl (le_iff.mpr ⟨?_, algHom_ext_of_eq_adjoin _ (eq _) ?_⟩)
+    · rw [eq, eq]; exact adjoin.mono _ _ _ (Set.union_subset_union_left _ h.1)
+    rintro x (hx|hx)
+    · change (θ π₂).emb (inclusion (ge π₂).1 <| inclusion h.1 ⟨x, hx⟩) =
+        (θ π₁).emb (inclusion (ge π₁).1 ⟨x, hx⟩)
+      rw [(ge π₁).2, (ge π₂).2, h.2]
+    · change (θ π₂).emb (inclusion (hθ π₂).1 ⟨x, subset_adjoin _ _ hx⟩) =
+        (θ π₁).emb (inclusion (hθ π₁).1 ⟨x, subset_adjoin _ _ hx⟩)
+      rw [(hθ π₁).2, (hθ π₂).2]
+  refine ⟨Lifts.union _ this, le_of_carrier_le_iSup (fun π ↦ le_union c hc π.2)
+    (fun π ↦ (ge π).trans <| le_union _ _ ⟨_, rfl⟩) (carrier_union _ _).le, ?_⟩
+  simp_rw [carrier_union, iSup_range', eq]
+  exact (subset_adjoin _ _).trans (SetLike.coe_subset_coe.mpr <|
+    le_sup_right.trans <| le_iSup_of_le (Classical.arbitrary _) le_rfl)
 
-    --have : ∀ x, x ∈ (θ' π₁).carrier ↔ x ∈ Algebra.adjoin π₁.1.carrier (S : Set E) --F (π₁.1.carrier ∪ (S : Set E))
-    · sorry
-    --.forall_congr_left'
-    /-simp_rw [this]
-    simp_rw [restrictScalars_adjoin] at hx
-    rw [mem_restrictScalars, ← mem_toSubalgebra, adjoin_algebraic_toSubalgebra] at hx
-    have := adjoin_induction π₁.1.carrier hx
-    refine adjoin_induction _ hx ?_ ?_ ?_ ?_ ?_ ?_ -/
-  have : Lifts.union c hc ≤ Lifts.union _ this := ⟨fun x hx ↦ ?_, ?_⟩
-  · sorry
-  · rw [Lifts.union]
-  refine ⟨Lifts.union _ this, ?_, fun x hx ↦ ?_⟩
-  · sorry
-  · rw [mem_restrictScalars, ← hS] at hx
-
-
-  sorry
+theorem nonempty_algHom_of_exists_lifts_finset [alg : Algebra.IsAlgebraic F E]
+    (h : ∀ S : Finset E, ∃ σ : Lifts F E K, (S : Set E) ⊆ σ.carrier) :
+    Nonempty (E →ₐ[F] K) := by
+  have : (⊥ : Lifts F E K).IsExtendible := fun S ↦ have ⟨σ, hσ⟩ := h S; ⟨σ, bot_le, hσ⟩
+  have ⟨ϕ, hϕ⟩ := zorn_le₀ {ϕ : Lifts F E K | ϕ.IsExtendible}
+    fun c hext hc ↦ (isEmpty_or_nonempty c).elim
+      (fun _ ↦ ⟨⊥, this, fun ϕ hϕ ↦ isEmptyElim (⟨ϕ, hϕ⟩ : c)⟩)
+      fun _ ↦ ⟨_, Lifts.union_isExtendible c hc hext, Lifts.le_union c hc⟩
+  suffices ϕ.carrier = ⊤ from ⟨ϕ.emb.comp <| ((equivOfEq this).trans topEquiv).symm⟩
+  by_contra!
+  obtain ⟨α, -, hα⟩ := SetLike.exists_of_lt this.lt_top
+  let _ : Algebra ϕ.carrier K := ϕ.emb.toAlgebra
+  let Λ := ϕ.carrier⟮α⟯ →ₐ[ϕ.carrier] K
+  have := finiteDimensional_adjoin (S := {α}) fun _ _ ↦ ((alg.tower_top ϕ.carrier).isIntegral).1 _
+  let L (σ : Λ) : Lifts F E K := ⟨ϕ.carrier⟮α⟯.restrictScalars F, σ.restrictScalars F⟩
+  have hL (σ : Λ) : ϕ < L σ := Lifts.lt_iff.mpr
+    ⟨by simpa only [restrictScalars_adjoin_eq_sup, left_lt_sup, adjoin_simple_le_iff],
+      AlgHom.coe_ringHom_injective σ.comp_algebraMap⟩
+  have ⟨(ϕ_ext : ϕ.IsExtendible), ϕ_max⟩ := maximal_iff_forall_gt.mp hϕ
+  simp_rw [Set.mem_setOf, Lifts.IsExtendible] at ϕ_max; push_neg at ϕ_max
+  choose S hS using fun σ : Λ ↦ ϕ_max (hL σ)
+  classical
+  have ⟨θ, hθϕ, hθ⟩ := ϕ_ext ({α} ∪ Finset.univ.biUnion S)
+  simp_rw [Finset.coe_union, Set.union_subset_iff, Finset.coe_singleton, Set.singleton_subset_iff,
+    Finset.coe_biUnion, Finset.coe_univ, Set.mem_univ, Set.iUnion_true, Set.iUnion_subset_iff] at hθ
+  have : ϕ.carrier⟮α⟯.restrictScalars F ≤ θ.carrier := by
+    rw [restrictScalars_adjoin_eq_sup, sup_le_iff, adjoin_simple_le_iff]; exact ⟨hθϕ.1, hθ.1⟩
+  exact hS ⟨(θ.emb.comp <| inclusion this).toRingHom, hθϕ.2⟩ θ ⟨this, fun _ ↦ rfl⟩ (hθ.2 _)
 
 end Chain
 

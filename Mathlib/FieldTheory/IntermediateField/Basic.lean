@@ -438,12 +438,6 @@ variable {f}
 theorem mem_fieldRange {y : L'} : y ∈ f.fieldRange ↔ ∃ x, f x = y :=
   Iff.rfl
 
-variable (f)
-/-- The intermediate field of elements `x : L` such that `f x = g x`-/
-@[simps toSubalgebra] def eqLocusField : IntermediateField K L where
-  __ := f.equalizer g
-  inv_mem' x hx := show f x⁻¹ = g x⁻¹ by rw [map_inv₀, map_inv₀]; exact congr($hx⁻¹)
-
 end AlgHom
 
 namespace IntermediateField
