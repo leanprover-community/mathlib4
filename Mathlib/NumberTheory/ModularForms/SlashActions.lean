@@ -28,12 +28,16 @@ open Complex UpperHalfPlane ModularGroup
 
 open scoped MatrixGroups
 
-local notation:1024 "↑ₘ" A:1024 =>
+namespace ModularForm
+
+scoped notation:1024 "↑ₘₙ" A:1024 =>
   (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
 
--- like `↑ₘ`, but allows the user to specify the ring `R`. Useful to help Lean elaborate.
-local notation:1024 "↑ₘ[" R "]" A:1024 =>
+-- like `↑ₘₙ`, but allows the user to specify the ring `R`. Useful to help Lean elaborate.
+scoped notation:1024 "↑ₘₙ[" R "]" A:1024 =>
   ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
+
+end ModularForm
 
 /-- A general version of the slash action of the space of modular forms. -/
 class SlashAction (β G α γ : Type*) [Group G] [AddMonoid α] [SMul γ α] where
@@ -81,7 +85,7 @@ noncomputable section
 
 /-- The weight `k` action of `GL(2, ℝ)⁺` on functions `f : ℍ → ℂ`. -/
 def slash (k : ℤ) (γ : GL(2, ℝ)⁺) (f : ℍ → ℂ) (x : ℍ) : ℂ :=
-  f (γ • x) * (((↑ₘγ).det : ℝ) : ℂ) ^ (k - 1) * UpperHalfPlane.denom γ x ^ (-k)
+  f (γ • x) * (((↑ₘₙγ).det : ℝ) : ℂ) ^ (k - 1) * UpperHalfPlane.denom γ x ^ (-k)
 
 variable {Γ : Subgroup SL(2, ℤ)} {k : ℤ} (f : ℍ → ℂ)
 
@@ -153,7 +157,7 @@ theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL(2, ℝ)⁺)
 
 theorem is_invariant_const (A : SL(2, ℤ)) (x : ℂ) :
     Function.const ℍ x ∣[(0 : ℤ)] A = Function.const ℍ x := by
-  have : ((↑ₘ(A : GL(2, ℝ)⁺)).det : ℝ) = 1 := det_coe'
+  have : ((↑ₘₙ(A : GL(2, ℝ)⁺)).det : ℝ) = 1 := det_coe'
   funext
   rw [SL_slash, slash_def, slash, zero_sub, this]
   simp
@@ -167,7 +171,7 @@ theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A =
   if for every matrix `γ ∈ Γ` we have `f(γ • z)= (c*z+d)^k f(z)` where `γ= ![![a, b], ![c, d]]`,
   and it acts on `ℍ` via Möbius transformations. -/
 theorem slash_action_eq'_iff (k : ℤ) (f : ℍ → ℂ) (γ : SL(2, ℤ)) (z : ℍ) :
-    (f ∣[k] γ) z = f z ↔ f (γ • z) = ((↑ₘ[ℤ] γ 1 0 : ℂ) * z + (↑ₘ[ℤ] γ 1 1 : ℂ)) ^ k * f z := by
+    (f ∣[k] γ) z = f z ↔ f (γ • z) = ((↑ₘₙ[ℤ] γ 1 0 : ℂ) * z + (↑ₘₙ[ℤ] γ 1 1 : ℂ)) ^ k * f z := by
   simp only [SL_slash, slash_def, ModularForm.slash]
   convert inv_mul_eq_iff_eq_mul₀ (G₀ := ℂ) _ using 2
   · rw [mul_comm]
@@ -177,11 +181,11 @@ theorem slash_action_eq'_iff (k : ℤ) (f : ℍ → ℂ) (γ : SL(2, ℤ)) (z : 
   · convert zpow_ne_zero k (denom_ne_zero γ z)
 
 theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
-    (f * g) ∣[k1 + k2] A = ((↑ₘA).det : ℝ) • f ∣[k1] A * g ∣[k2] A := by
+    (f * g) ∣[k1 + k2] A = ((↑ₘₙA).det : ℝ) • f ∣[k1] A * g ∣[k2] A := by
   ext1 x
   simp only [slash_def, slash, Matrix.GeneralLinearGroup.val_det_apply,
     Pi.mul_apply, Pi.smul_apply, Algebra.smul_mul_assoc, real_smul]
-  set d : ℂ := ↑((↑ₘA).det : ℝ)
+  set d : ℂ := ↑((↑ₘₙA).det : ℝ)
   have h1 : d ^ (k1 + k2 - 1) = d * d ^ (k1 - 1) * d ^ (k2 - 1) := by
     have : d ≠ 0 := by
       dsimp [d]
@@ -199,7 +203,7 @@ theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A :=
   calc
     (f * g) ∣[k1 + k2] (A : GL(2, ℝ)⁺) =
-        ((↑ₘA).det : ℝ) • f ∣[k1] A * g ∣[k2] A := by
+        ((↑ₘₙA).det : ℝ) • f ∣[k1] A * g ∣[k2] A := by
       apply mul_slash
     _ = (1 : ℝ) • f ∣[k1] A * g ∣[k2] A := by rw [det_coe']
     _ = f ∣[k1] A * g ∣[k2] A := by rw [one_smul]

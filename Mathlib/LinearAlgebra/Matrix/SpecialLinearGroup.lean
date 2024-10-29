@@ -447,7 +447,7 @@ open MatrixGroups
 
 open Matrix Matrix.SpecialLinearGroup
 
-local notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)
+scoped notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)
 
 
 /-- The matrix `S = [[0, -1], [1, 0]]` as an element of `SL(2, ℤ)`.

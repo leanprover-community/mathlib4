@@ -20,14 +20,12 @@ It also contains basic results about congruence subgroups.
 
 open Matrix.SpecialLinearGroup Matrix
 
-open scoped MatrixGroups
+open scoped MatrixGroups ModularGroup
 
 variable (N : ℕ)
 
 local notation "SLMOD(" N ")" =>
   @Matrix.SpecialLinearGroup.map (Fin 2) _ _ _ _ _ _ (Int.castRingHom (ZMod N))
-
-local notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)
 
 @[simp]
 theorem SL_reduction_mod_hom_val (N : ℕ) (γ : SL(2, ℤ)) :

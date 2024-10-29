@@ -20,12 +20,6 @@ open scoped MatrixGroups ModularForm
 
 noncomputable section
 
-local notation:1024 "↑ₘ" A:1024 =>
-  (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
--- like `↑ₘ`, but allows the user to specify the ring `R`. Useful to help Lean elaborate.
-local notation:1024 "↑ₘ[" R "]" A:1024 =>
-  ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
-
 section SlashInvariantForms
 
 open ModularForm
@@ -77,6 +71,8 @@ namespace SlashInvariantForm
 
 open SlashInvariantForm
 
+open scoped ModularForm
+
 variable {F : Type*} {Γ : Subgroup SL(2, ℤ)} {k : ℤ} [FunLike F ℍ ℂ]
 
 theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ) (hγ : γ ∈ Γ) :
@@ -85,7 +81,7 @@ theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ) (hγ : γ
 
 theorem slash_action_eqn' {k : ℤ} {Γ : Subgroup SL(2, ℤ)} [SlashInvariantFormClass F Γ k]
     (f : F) {γ} (hγ : γ ∈ Γ) (z : ℍ) :
-    f (γ • z) = ((↑ₘ[ℤ] γ 1 0 : ℂ) * z + (↑ₘ[ℤ] γ 1 1 : ℂ)) ^ k * f z := by
+    f (γ • z) = ((↑ₘₙ[ℤ] γ 1 0 : ℂ) * z + (↑ₘₙ[ℤ] γ 1 1 : ℂ)) ^ k * f z := by
   rw [← ModularForm.slash_action_eq'_iff, slash_action_eqn f γ hγ]
 
 /--Every `SlashInvariantForm` `f` satisfies ` f (γ • z) = (denom γ z) ^ k * f z`. -/
