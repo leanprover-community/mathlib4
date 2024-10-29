@@ -101,7 +101,7 @@ end Wedge
 
 section End
 
-/-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this property assets the existence of the end of `F`. -/
+/-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this property asserts the existence of the end of `F`. -/
 abbrev HasEnd := HasMultiequalizer (multicospanIndexEnd F)
 
 variable [HasEnd F]
