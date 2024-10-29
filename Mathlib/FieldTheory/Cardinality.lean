@@ -57,10 +57,6 @@ theorem Fintype.not_isField_of_card_not_prime_pow {α} [Fintype α] [Ring α] :
     ¬IsPrimePow ‖α‖ → ¬IsField α :=
   mt fun h => Fintype.nonempty_field_iff.mp ⟨h.toField⟩
 
-@[simp]
-theorem Cardinal.mk_fractionRing (α : Type u) [CommRing α] : #(FractionRing α) = #α :=
-  IsLocalization.card (FractionRing α) α⁰ le_rfl |>.symm
-
 /-- Any infinite type can be endowed a field structure. -/
 theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α) := by
   suffices #α = #(FractionRing (MvPolynomial α <| ULift.{u} ℚ)) from

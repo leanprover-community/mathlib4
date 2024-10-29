@@ -72,12 +72,12 @@ theorem mk_freeAbelianGroup [Nonempty α] : #(FreeAbelianGroup α) = max #α ℵ
   simp
 
 @[simp]
-theorem mk_freeRing [Nonempty α] : #(FreeRing α) = max #α ℵ₀ := by
-  simp [FreeRing]
+theorem mk_freeRing : #(FreeRing α) = max #α ℵ₀ := by
+  cases isEmpty_or_nonempty α <;> simp [FreeRing]
 
 @[simp]
-theorem mk_freeCommRing [Nonempty α] : #(FreeCommRing α) = max #α ℵ₀ := by
-  simp [FreeCommRing]
+theorem mk_freeCommRing : #(FreeCommRing α) = max #α ℵ₀ := by
+  cases isEmpty_or_nonempty α <;> simp [FreeCommRing]
 
 end Cardinal
 
