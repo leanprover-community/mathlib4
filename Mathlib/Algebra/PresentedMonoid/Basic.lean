@@ -41,12 +41,18 @@ namespace PresentedMonoid
 open Set Submonoid
 
 
+@[to_additive]
+instance {rels : FreeMonoid α → FreeMonoid α → Prop} : Monoid (PresentedMonoid rels) :=
+  Con.monoid (conGen rels)
+
 /-- The quotient map from the free monoid on `α` to the presented monoid with the same generators
 and the given relations `rels`. -/
 @[to_additive "The quotient map from the free additive monoid on `α` to the presented additive
 monoid with the same generators and the given relations `rels`"]
-def mk (rels : FreeMonoid α → FreeMonoid α → Prop) (a : FreeMonoid α) : PresentedMonoid rels :=
-  Quotient.mk (conGen rels).toSetoid a
+def mk (rels : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid α →* PresentedMonoid rels where
+  toFun := Quotient.mk (conGen rels).toSetoid
+  map_one' := rfl
+  map_mul' := fun _ _ => rfl
 
 /-- `of` is the canonical map from `α` to a presented monoid with generators `x : α`. The term `x`
 is mapped to the equivalence class of the image of `x` in `FreeMonoid α`. -/
@@ -82,15 +88,6 @@ protected theorem inductionOn₃ {δ : P₁ → P₂ → P₃ → Prop} (q₁ : 
 end inductionOn
 
 variable {α : Type*} {rels : FreeMonoid α → FreeMonoid α → Prop}
-
-@[to_additive]
-instance : Monoid (PresentedMonoid rels) := Con.monoid (conGen rels)
-
-@[to_additive]
-theorem mul_mk (a b : FreeMonoid α) : mk rels a * (mk rels b) = mk rels (a*b) := rfl
-
-@[to_additive]
-theorem one_def : (1 : PresentedMonoid rels) = mk rels 1 := rfl
 
 /-- The generators of a presented monoid generate the presented monoid. That is, the submonoid
 closure of the set of generators equals `⊤`. -/
