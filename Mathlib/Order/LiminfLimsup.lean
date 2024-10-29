@@ -345,12 +345,12 @@ lemma IsCoboundedUnder.frequently_le [LinearOrder α] {f : Filter ι} [NeBot f] 
     ∃ a, ∃ᶠ x in f, u x ≤ a :=
   IsCobounded.frequently_le h
 
-lemma IsCoboundedUnder.of_frequently_ge [LinearOrder α] {f : Filter ι} [NeBot f] {u : ι → α}
+lemma IsCoboundedUnder.of_frequently_ge [LinearOrder α] {f : Filter ι} {u : ι → α}
     {a : α} (freq_ge : ∃ᶠ x in f, a ≤ u x) :
     IsCoboundedUnder (· ≤ ·) f u :=
   IsCobounded.of_frequently_ge freq_ge
 
-lemma IsCoboundedUnder.of_frequently_le [LinearOrder α] {f : Filter ι} [NeBot f] {u : ι → α}
+lemma IsCoboundedUnder.of_frequently_le [LinearOrder α] {f : Filter ι} {u : ι → α}
     {a : α} (freq_le : ∃ᶠ x in f, u x ≤ a) :
     IsCoboundedUnder (· ≥ ·) f u :=
   IsCobounded.of_frequently_le freq_le
