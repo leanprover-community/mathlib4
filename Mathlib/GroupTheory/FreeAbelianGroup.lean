@@ -139,15 +139,15 @@ theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
     one_ne_zero <| hfy1.symm.trans hfy0
 
 @[simp]
-theorem zero_ne_of (x : α) : 0 ≠ of x := by
+theorem of_ne_zero (x : α) : of x ≠ 0 := by
   intro h
   let f : FreeAbelianGroup α →+ ℤ := lift 1
   have hfx : f (of x) = 1 := lift.of _ _
-  have hf0 : f (of x) = 0 := congr(f $h.symm).trans <| map_zero f
+  have hf0 : f (of x) = 0 := by rw [h, map_zero]
   exact one_ne_zero <| hfx.symm.trans hf0
 
 @[simp]
-theorem of_ne_zero (x : α) : of x ≠ 0 := zero_ne_of _ |>.symm
+theorem zero_ne_of (x : α) : 0 ≠ of x := of_ne_zero _ |>.symm
 
 instance [Nonempty α] : Nontrivial (FreeAbelianGroup α) where
   exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨0, of x, zero_ne_of _⟩
