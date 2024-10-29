@@ -14,7 +14,7 @@ Characteristics of linear maps are determined by its scalar.
 ## Main Results
 
 - `CharP_if` : For a commutative semiring `R` and a `R`-module `M`,
-  the characteristic of `R` is equal to the characteristic of `R`-linear endomorphism of `M` when
+  the characteristic of `R` is equal to the characteristic of `R`-linear endomorphisms of `M` when
   `M` contains an element `x` that can eliminate `r` in `r • x = 0`
 
 ## Notations
