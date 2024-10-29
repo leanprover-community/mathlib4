@@ -141,16 +141,22 @@ I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
 the Heyting operator on complete lattices, but for a non-commutative logic.
 I.e. `x ⇨ᵣ y = sSup { z | x + z ≤ y }`.
 "]
-def right_residuation (x y : α) := sSup { z | x * z ≤ y }
+def rightResiduation (x y : α) := sSup { z | x * z ≤ y }
 
-@[to_additive (attr := inherit_doc)]
-scoped infixr:60 " ⇨ₗ " => left_residuation
+@[inherit_doc]
+scoped infixr:60 " ⇨ₗ " => leftResiduation
 
-/-- Notation for right-residuation in quantales.
-    I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
--/
-@[to_additive "Notation for right-residuation in quantales.
-    I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`."]
-scoped infixr:60 " ⇨ᵣ " => right_residuation
+@[inherit_doc]
+scoped infixr:60 " ⇨ᵣ " => rightResiduation
 
 end Quantale
+
+namespace AddQuantale
+
+@[inherit_doc]
+scoped infixr:60 " ⇨ₗ " => leftResiduation
+
+@[inherit_doc]
+scoped infixr:60 " ⇨ᵣ " => rightResiduation
+
+end AddQuantale
