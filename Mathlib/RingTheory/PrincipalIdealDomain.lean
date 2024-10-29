@@ -106,7 +106,7 @@ theorem eq_bot_iff_generator_eq_zero (S : Submodule R M) [S.IsPrincipal] :
 protected lemma FG {S : Submodule R M} (h : S.IsPrincipal) : S.FG :=
   ⟨{h.generator}, by simp only [Finset.coe_singleton, span_singleton_generator]⟩
 
-instance _root_.IsNoetherianRing.of_isPrincipalIdealRing [IsPrincipalIdealRing R] :
+instance _root_.PrincipalIdealRing.isNoetherianRing [IsPrincipalIdealRing R] :
     IsNoetherianRing R where
   noetherian S := (IsPrincipalIdealRing.principal S).FG
 
@@ -288,15 +288,6 @@ theorem IsField.isPrincipalIdealRing {R : Type*} [CommRing R] (h : IsField R) :
 namespace PrincipalIdealRing
 
 open IsPrincipalIdealRing
-
--- see Note [lower instance priority]
-instance (priority := 100) isNoetherianRing [Ring R] [IsPrincipalIdealRing R] :
-    IsNoetherianRing R :=
-  isNoetherianRing_iff.2
-    ⟨fun s : Ideal R => by
-      rcases (IsPrincipalIdealRing.principal s).principal with ⟨a, rfl⟩
-      rw [← Finset.coe_singleton]
-      exact ⟨{a}, SetLike.coe_injective rfl⟩⟩
 
 theorem isMaximal_of_irreducible [CommRing R] [IsPrincipalIdealRing R] {p : R}
     (hp : Irreducible p) : Ideal.IsMaximal (span R ({p} : Set R)) :=
