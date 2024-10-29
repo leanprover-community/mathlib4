@@ -6,7 +6,6 @@ Authors: Simon Hudon
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Int.Range
 import Mathlib.Data.List.Perm.Lattice
-import Mathlib.Data.List.Range
 import Mathlib.Data.List.Sigma
 import Plausible.Functions
 
