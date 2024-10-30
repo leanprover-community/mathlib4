@@ -717,6 +717,14 @@ theorem annihilator_iSup (ι : Sort w) (f : ι → Submodule R M) :
       (fun i ↦ mem_annihilator.1 <| (mem_iInf _).mp H i) (smul_zero _)
       fun m₁ m₂ h₁ h₂ ↦ by simp_rw [smul_add, h₁, h₂, add_zero]
 
+@[simp]
+theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=
+  eq_bot_iff.2 (smul_le.2 fun _ => mem_annihilator.1)
+
+@[simp]
+theorem annihilator_mul (I : Ideal R) : annihilator I * I = ⊥ :=
+  annihilator_smul I
+
 end Submodule
 
 end Semiring
@@ -746,14 +754,6 @@ theorem mem_annihilator_span (s : Set M) (r : R) :
 
 theorem mem_annihilator_span_singleton (g : M) (r : R) :
     r ∈ (Submodule.span R ({g} : Set M)).annihilator ↔ r • g = 0 := by simp [mem_annihilator_span]
-
-@[simp]
-theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=
-  eq_bot_iff.2 (smul_le.2 fun _ => mem_annihilator.1)
-
-@[simp]
-theorem annihilator_mul (I : Ideal R) : annihilator I * I = ⊥ :=
-  annihilator_smul I
 
 @[simp]
 theorem mul_annihilator (I : Ideal R) : I * annihilator I = ⊥ := by rw [mul_comm, annihilator_mul]
