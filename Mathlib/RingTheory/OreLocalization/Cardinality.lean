@@ -22,7 +22,7 @@ namespace OreLocalization
 
 variable {R : Type u} [Ring R] {S : Submonoid R} [OreLocalization.OreSet S]
 
-theorem card (hS : S ≤ nonZeroDivisorsRight R) : #(OreLocalization S R) = #R :=
-  le_antisymm (card_le S) (mk_le_of_injective (numeratorHom_inj hS))
+theorem cardinal_mk (hS : S ≤ nonZeroDivisorsRight R) : #(OreLocalization S R) = #R :=
+  le_antisymm (cardinal_mk_le S) (mk_le_of_injective (numeratorHom_inj hS))
 
 end OreLocalization

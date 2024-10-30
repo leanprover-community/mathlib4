@@ -17,9 +17,9 @@ submonoid, then your localization is trivial (see `IsLocalization.uniqueOfZeroMe
 
 ## Main statements
 
-* `IsLocalization.card_le`: A localization has cardinality no larger than the base ring.
-* `IsLocalization.card`: If you don't localize at zero-divisors, the localization of a ring has
-  cardinality equal to its base ring,
+* `IsLocalization.cardinal_mk_le`: A localization has cardinality no larger than the base ring.
+* `IsLocalization.cardinal_mk`: If you don't localize at zero-divisors, the localization of a ring
+  has cardinality equal to its base ring.
 
 -/
 
@@ -34,15 +34,17 @@ variable {R : Type u} [CommSemiring R] {L : Type v} [CommSemiring L] [Algebra R 
 
 namespace IsLocalization
 
-theorem lift_card_le (S : Submonoid R) [IsLocalization S L] :
+theorem lift_cardinal_mk_le (S : Submonoid R) [IsLocalization S L] :
     Cardinal.lift.{u} #L ≤ Cardinal.lift.{v} #R := by
-  have := Localization.card_le S
+  have := Localization.cardinal_mk_le S
   rwa [← lift_le.{v}, lift_mk_eq'.2 ⟨(Localization.algEquiv S L).toEquiv⟩] at this
 
 /-- A localization always has cardinality less than or equal to the base ring. -/
-theorem card_le {L : Type u} [CommSemiring L] [Algebra R L]
+theorem cardinal_mk_le {L : Type u} [CommSemiring L] [Algebra R L]
     (S : Submonoid R) [IsLocalization S L] : #L ≤ #R := by
-  simpa using lift_card_le (L := L) S
+  simpa using lift_cardinal_mk_le (L := L) S
+
+@[deprecated (since := "2024-10-30")] alias card_le := cardinal_mk_le
 
 end IsLocalization
 
@@ -54,8 +56,8 @@ variable {R : Type u} [CommRing R] {L : Type v} [CommRing L] [Algebra R L]
 
 namespace Localization
 
-theorem card {S : Submonoid R} (hS : S ≤ R⁰) : #(Localization S) = #R := by
-  apply OreLocalization.card
+theorem cardinal_mk {S : Submonoid R} (hS : S ≤ R⁰) : #(Localization S) = #R := by
+  apply OreLocalization.cardinal_mk
   convert hS using 1
   ext x
   rw [mem_nonZeroDivisorsRight_iff, mem_nonZeroDivisors_iff]
@@ -68,27 +70,29 @@ namespace IsLocalization
 
 variable (L)
 
-theorem lift_card (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) :
+theorem lift_cardinal_mk (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) :
     Cardinal.lift.{u} #L = Cardinal.lift.{v} #R := by
-  have := Localization.card hS
+  have := Localization.cardinal_mk hS
   rwa [← lift_inj.{u, v}, lift_mk_eq'.2 ⟨(Localization.algEquiv S L).toEquiv⟩] at this
 
 /-- If you do not localize at any zero-divisors, localization preserves cardinality. -/
-theorem card (L : Type u) [CommRing L] [Algebra R L]
+theorem cardinal_mk (L : Type u) [CommRing L] [Algebra R L]
     (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) : #L = #R := by
   simpa using lift_card L S hS
+
+@[deprecated (since := "2024-10-30")] alias card := cardinal_mk
 
 end IsLocalization
 
 @[simp]
 theorem Cardinal.mk_fractionRing (R : Type u) [CommRing R] : #(FractionRing R) = #R :=
-  IsLocalization.card (FractionRing R) R⁰ le_rfl
+  IsLocalization.cardinal_mk (FractionRing R) R⁰ le_rfl
 
 namespace FractionRing
 
 variable (R)
 
-alias card := Cardinal.mk_fractionRing
+alias cardinal_mk := Cardinal.mk_fractionRing
 
 end FractionRing
 
@@ -96,10 +100,10 @@ namespace IsFractionRing
 
 variable (R L)
 
-theorem lift_card [IsFractionRing R L] : Cardinal.lift.{u} #L = Cardinal.lift.{v} #R :=
+theorem lift_cardinal_mk [IsFractionRing R L] : Cardinal.lift.{u} #L = Cardinal.lift.{v} #R :=
   IsLocalization.lift_card L _ le_rfl
 
-theorem card (L : Type u) [CommRing L] [Algebra R L] [IsFractionRing R L] : #L = #R :=
+theorem cardinal_mk (L : Type u) [CommRing L] [Algebra R L] [IsFractionRing R L] : #L = #R :=
   IsLocalization.card L _ le_rfl
 
 end IsFractionRing
