@@ -93,6 +93,8 @@ lemma coe_eq_one : (s : Set α) = 1 ↔ s = 1 := coe_eq_singleton
 theorem one_subset : (1 : Finset α) ⊆ s ↔ (1 : α) ∈ s :=
   singleton_subset_iff
 
+-- TODO: This would be a good simp lemma scoped to `Pointwise`, but it seems `@[simp]` can't be
+-- scoped
 @[to_additive]
 theorem singleton_one : ({1} : Finset α) = 1 :=
   rfl
@@ -168,6 +170,12 @@ lemma max'_one [LinearOrder α] : (1 : Finset α).max' one_nonempty = 1 := rfl
 
 @[to_additive (attr := simp)]
 lemma min'_one [LinearOrder α] : (1 : Finset α).min' one_nonempty = 1 := rfl
+
+@[to_additive (attr := simp)]
+lemma image_op_one [DecidableEq α] : (1 : Finset α).image op = 1 := rfl
+
+@[to_additive (attr := simp)]
+lemma map_op_one : (1 : Finset α).map opEquiv.toEmbedding = 1 := rfl
 
 end One
 
@@ -255,6 +263,10 @@ lemma inf'_inv [SemilatticeInf β] {s : Finset α} (hs : s⁻¹.Nonempty) (f : �
 @[to_additive] lemma image_op_inv (s : Finset α) : s⁻¹.image op = (s.image op)⁻¹ :=
   image_comm op_inv
 
+@[to_additive]
+lemma map_op_inv (s : Finset α) : s⁻¹.map opEquiv.toEmbedding = (s.map opEquiv.toEmbedding)⁻¹ := by
+  simp [map_eq_image, image_op_inv]
+
 end Inv
 
 open Pointwise
@@ -285,6 +297,164 @@ lemma inv_univ [Fintype α] : (univ : Finset α)⁻¹ = univ := by ext; simp
 lemma inv_inter (s t : Finset α) : (s ∩ t)⁻¹ = s⁻¹ ∩ t⁻¹ := coe_injective <| by simp
 
 end InvolutiveInv
+
+/-! ### Scalar addition/multiplication of finsets -/
+
+section SMul
+variable [DecidableEq β] [SMul α β] {s s₁ s₂ : Finset α} {t t₁ t₂ u : Finset β} {a : α} {b : β}
+
+/-- The pointwise product of two finsets `s` and `t`: `s • t = {x • y | x ∈ s, y ∈ t}`. -/
+@[to_additive "The pointwise sum of two finsets `s` and `t`: `s +ᵥ t = {x +ᵥ y | x ∈ s, y ∈ t}`."]
+protected def smul : SMul (Finset α) (Finset β) := ⟨image₂ (· • ·)⟩
+
+scoped[Pointwise] attribute [instance] Finset.smul Finset.vadd
+
+@[to_additive] lemma smul_def : s • t = (s ×ˢ t).image fun p : α × β => p.1 • p.2 := rfl
+
+@[to_additive]
+lemma image_smul_product : ((s ×ˢ t).image fun x : α × β => x.fst • x.snd) = s • t := rfl
+
+@[to_additive] lemma mem_smul {x : β} : x ∈ s • t ↔ ∃ y ∈ s, ∃ z ∈ t, y • z = x := mem_image₂
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_smul (s : Finset α) (t : Finset β) : ↑(s • t) = (s : Set α) • (t : Set β) := coe_image₂ ..
+
+@[to_additive] lemma smul_mem_smul : a ∈ s → b ∈ t → a • b ∈ s • t := mem_image₂_of_mem
+
+@[to_additive] lemma smul_card_le : (s • t).card ≤ s.card • t.card := card_image₂_le ..
+
+@[to_additive (attr := simp)]
+lemma empty_smul (t : Finset β) : (∅ : Finset α) • t = ∅ := image₂_empty_left
+
+@[to_additive (attr := simp)]
+lemma smul_empty (s : Finset α) : s • (∅ : Finset β) = ∅ := image₂_empty_right
+
+@[to_additive (attr := simp)]
+lemma smul_eq_empty : s • t = ∅ ↔ s = ∅ ∨ t = ∅ := image₂_eq_empty_iff
+
+@[to_additive (attr := simp)]
+lemma smul_nonempty_iff : (s • t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := image₂_nonempty_iff
+
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
+lemma Nonempty.smul : s.Nonempty → t.Nonempty → (s • t).Nonempty := .image₂
+
+@[to_additive] lemma Nonempty.of_smul_left : (s • t).Nonempty → s.Nonempty := .of_image₂_left
+@[to_additive] lemma Nonempty.of_smul_right : (s • t).Nonempty → t.Nonempty := .of_image₂_right
+
+@[to_additive]
+lemma smul_singleton (b : β) : s • ({b} : Finset β) = s.image (· • b) := image₂_singleton_right
+
+@[to_additive]
+lemma singleton_smul_singleton (a : α) (b : β) : ({a} : Finset α) • ({b} : Finset β) = {a • b} :=
+  image₂_singleton
+
+@[to_additive (attr := mono, gcongr)]
+lemma smul_subset_smul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ • t₁ ⊆ s₂ • t₂ := image₂_subset
+
+@[to_additive] lemma smul_subset_smul_left : t₁ ⊆ t₂ → s • t₁ ⊆ s • t₂ := image₂_subset_left
+@[to_additive] lemma smul_subset_smul_right : s₁ ⊆ s₂ → s₁ • t ⊆ s₂ • t := image₂_subset_right
+@[to_additive] lemma smul_subset_iff : s • t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a • b ∈ u := image₂_subset_iff
+
+@[to_additive]
+lemma union_smul [DecidableEq α] : (s₁ ∪ s₂) • t = s₁ • t ∪ s₂ • t := image₂_union_left
+
+@[to_additive]
+lemma smul_union : s • (t₁ ∪ t₂) = s • t₁ ∪ s • t₂ := image₂_union_right
+
+@[to_additive]
+lemma inter_smul_subset [DecidableEq α] : (s₁ ∩ s₂) • t ⊆ s₁ • t ∩ s₂ • t :=
+  image₂_inter_subset_left
+
+@[to_additive]
+lemma smul_inter_subset : s • (t₁ ∩ t₂) ⊆ s • t₁ ∩ s • t₂ := image₂_inter_subset_right
+
+@[to_additive]
+lemma inter_smul_union_subset_union [DecidableEq α] : (s₁ ∩ s₂) • (t₁ ∪ t₂) ⊆ s₁ • t₁ ∪ s₂ • t₂ :=
+  image₂_inter_union_subset_union
+
+@[to_additive]
+lemma union_smul_inter_subset_union [DecidableEq α] : (s₁ ∪ s₂) • (t₁ ∩ t₂) ⊆ s₁ • t₁ ∪ s₂ • t₂ :=
+  image₂_union_inter_subset_union
+
+/-- If a finset `u` is contained in the scalar product of two sets `s • t`, we can find two finsets
+`s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' • t'`. -/
+@[to_additive
+"If a finset `u` is contained in the scalar sum of two sets `s +ᵥ t`, we can find two
+finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`."]
+lemma subset_smul {s : Set α} {t : Set β} :
+    ↑u ⊆ s • t → ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
+  subset_set_image₂
+
+end SMul
+
+/-! ### Translation/scaling of finsets -/
+
+section SMul
+variable [DecidableEq β] [SMul α β] {s s₁ s₂ t : Finset β} {a : α} {b : β}
+
+/-- The scaling of a finset `s` by a scalar `a`: `a • s = {a • x | x ∈ s}`. -/
+@[to_additive "The translation of a finset `s` by a vector `a`: `a +ᵥ s = {a +ᵥ x | x ∈ s}`."]
+protected def smulFinset : SMul α (Finset β) where smul a := image <| (a • ·)
+
+scoped[Pointwise] attribute [instance] Finset.smulFinset Finset.vaddFinset
+
+@[to_additive] lemma smul_finset_def : a • s = s.image (a • ·) := rfl
+
+@[to_additive] lemma image_smul : s.image (a • ·) = a • s := rfl
+
+@[to_additive]
+lemma mem_smul_finset {x : β} : x ∈ a • s ↔ ∃ y, y ∈ s ∧ a • y = x := by
+  simp only [Finset.smul_finset_def, and_assoc, mem_image, exists_prop, Prod.exists, mem_product]
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Set β) := coe_image
+
+@[to_additive] lemma smul_mem_smul_finset : b ∈ s → a • b ∈ a • s := mem_image_of_mem _
+
+@[to_additive] lemma smul_finset_card_le : (a • s).card ≤ s.card := card_image_le
+
+@[to_additive (attr := simp)]
+lemma smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ := image_empty _
+
+@[to_additive (attr := simp)]
+lemma smul_finset_eq_empty : a • s = ∅ ↔ s = ∅ := image_eq_empty
+
+@[to_additive (attr := simp)]
+lemma smul_finset_nonempty : (a • s).Nonempty ↔ s.Nonempty := image_nonempty
+
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
+lemma Nonempty.smul_finset (hs : s.Nonempty) : (a • s).Nonempty :=
+  hs.image _
+
+@[to_additive (attr := simp)]
+lemma singleton_smul (a : α) : ({a} : Finset α) • t = a • t := image₂_singleton_left
+
+@[to_additive (attr := mono, gcongr)]
+lemma smul_finset_subset_smul_finset : s ⊆ t → a • s ⊆ a • t := image_subset_image
+
+@[to_additive (attr := simp)]
+lemma smul_finset_singleton (b : β) : a • ({b} : Finset β) = {a • b} := image_singleton ..
+
+@[to_additive]
+lemma smul_finset_union : a • (s₁ ∪ s₂) = a • s₁ ∪ a • s₂ := image_union _ _
+
+@[to_additive]
+lemma smul_finset_insert (a : α) (b : β) (s : Finset β) : a • insert b s = insert (a • b) (a • s) :=
+  image_insert ..
+
+@[to_additive]
+lemma smul_finset_inter_subset : a • (s₁ ∩ s₂) ⊆ a • s₁ ∩ a • s₂ := image_inter_subset _ _ _
+
+@[to_additive]
+lemma smul_finset_subset_smul {s : Finset α} : a ∈ s → a • t ⊆ s • t := image_subset_image₂_right
+
+@[to_additive (attr := simp)]
+lemma biUnion_smul_finset (s : Finset α) (t : Finset β) : s.biUnion (· • t) = s • t :=
+  biUnion_image_left
+
+end SMul
+
+open scoped Pointwise
 
 /-! ### Finset addition/multiplication -/
 
@@ -360,13 +530,9 @@ theorem Nonempty.of_mul_left : (s * t).Nonempty → s.Nonempty :=
 theorem Nonempty.of_mul_right : (s * t).Nonempty → t.Nonempty :=
   Nonempty.of_image₂_right
 
-@[to_additive]
-theorem mul_singleton (a : α) : s * {a} = s.image (· * a) :=
-  image₂_singleton_right
-
-@[to_additive]
-theorem singleton_mul (a : α) : {a} * s = s.image (a * ·) :=
-  image₂_singleton_left
+open scoped RightActions in
+@[to_additive] lemma mul_singleton (a : α) : s * {a} = s <• a := image₂_singleton_right
+@[to_additive] lemma singleton_mul (a : α) : {a} * s = a • s := image₂_singleton_left
 
 @[to_additive (attr := simp)]
 theorem singleton_mul_singleton (a b : α) : ({a} : Finset α) * {b} = {a * b} :=
@@ -424,6 +590,15 @@ theorem subset_mul {s t : Set α} :
 @[to_additive]
 theorem image_mul [DecidableEq β] : (s * t).image (f : α → β) = s.image f * t.image f :=
   image_image₂_distrib <| map_mul f
+
+@[to_additive]
+lemma image_op_mul (s t : Finset α) : (s * t).image op = t.image op * s.image op :=
+  image_image₂_antidistrib op_mul
+
+@[to_additive]
+lemma map_op_mul (s t : Finset α) :
+    (s * t).map opEquiv.toEmbedding = t.map opEquiv.toEmbedding * s.map opEquiv.toEmbedding := by
+  simp [map_eq_image, image_op_mul]
 
 /-- The singleton operation as a `MulHom`. -/
 @[to_additive "The singleton operation as an `AddHom`."]
@@ -552,8 +727,6 @@ theorem div_singleton (a : α) : s / {a} = s.image (· / a) :=
 theorem singleton_div (a : α) : {a} / s = s.image (a / ·) :=
   image₂_singleton_left
 
--- @[to_additive (attr := simp)]
--- Porting note (#10618): simp can prove this & the additive version
 @[to_additive]
 theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :=
   image₂_singleton
@@ -809,13 +982,23 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
-  -- Also compiles without the option, but much slower.
-  set_option tactic.skipAssignedInstances false in
   simp [← mem_coe, coe_pow, Set.mem_pow]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) nsmul_empty]
 theorem empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by
   rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', empty_mul]
+
+@[deprecated (since := "2024-10-21")] alias empty_nsmul := nsmul_empty
+
+@[to_additive (attr := simp) nsmul_singleton]
+lemma singleton_pow (a : α) : ∀ n, ({a} : Finset α) ^ n = {a ^ n}
+  | 0 => by simp [singleton_one]
+  | n + 1 => by simp [pow_succ, singleton_pow _ n]
+
+@[to_additive]
+lemma card_pow_le : ∀ {n}, (s ^ n).card ≤ s.card ^ n
+  | 0 => by simp
+  | n + 1 => by rw [pow_succ, pow_succ]; refine card_mul_le.trans (by gcongr; exact card_pow_le)
 
 @[to_additive]
 theorem mul_univ_of_one_mem [Fintype α] (hs : (1 : α) ∈ s) : s * univ = univ :=
@@ -861,7 +1044,7 @@ open Pointwise
 
 section DivisionMonoid
 
-variable [DivisionMonoid α] {s t : Finset α}
+variable [DivisionMonoid α] {s t : Finset α} {n : ℤ}
 
 @[to_additive (attr := simp)]
 theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
@@ -905,6 +1088,12 @@ lemma univ_div_univ [Fintype α] : (univ / univ : Finset α) = univ := by simp [
 
 @[to_additive] lemma inv_subset_div_right (hs : 1 ∈ s) : t⁻¹ ⊆ s / t := by
   rw [div_eq_mul_inv]; exact subset_mul_right _ hs
+
+@[to_additive (attr := simp) zsmul_empty]
+lemma empty_zpow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by cases n <;> aesop
+
+@[to_additive (attr := simp) zsmul_singleton]
+lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Finset α) ^ n = {a ^ n} := by cases n <;> simp
 
 end DivisionMonoid
 
@@ -1011,137 +1200,11 @@ theorem preimage_mul_right_one' : preimage 1 (· * b⁻¹) (mul_left_injective _
 
 end Group
 
-/-! ### Scalar addition/multiplication of finsets -/
-
-
-section SMul
-
-variable [DecidableEq β] [SMul α β] {s s₁ s₂ : Finset α} {t t₁ t₂ u : Finset β} {a : α} {b : β}
-
-/-- The pointwise product of two finsets `s` and `t`: `s • t = {x • y | x ∈ s, y ∈ t}`. -/
-@[to_additive "The pointwise sum of two finsets `s` and `t`: `s +ᵥ t = {x +ᵥ y | x ∈ s, y ∈ t}`."]
-protected def smul : SMul (Finset α) (Finset β) :=
-  ⟨image₂ (· • ·)⟩
-
-scoped[Pointwise] attribute [instance] Finset.smul Finset.vadd
-
-@[to_additive]
-theorem smul_def : s • t = (s ×ˢ t).image fun p : α × β => p.1 • p.2 :=
-  rfl
-
-@[to_additive]
-theorem image_smul_product : ((s ×ˢ t).image fun x : α × β => x.fst • x.snd) = s • t :=
-  rfl
-
-@[to_additive]
-theorem mem_smul {x : β} : x ∈ s • t ↔ ∃ y ∈ s, ∃ z ∈ t, y • z = x :=
-  mem_image₂
-
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_smul (s : Finset α) (t : Finset β) : ↑(s • t) = (s : Set α) • (t : Set β) :=
-  coe_image₂ _ _ _
-
-@[to_additive]
-theorem smul_mem_smul : a ∈ s → b ∈ t → a • b ∈ s • t :=
-  mem_image₂_of_mem
-
-@[to_additive]
-theorem smul_card_le : (s • t).card ≤ s.card • t.card :=
-  card_image₂_le _ _ _
-
-@[to_additive (attr := simp)]
-theorem empty_smul (t : Finset β) : (∅ : Finset α) • t = ∅ :=
-  image₂_empty_left
-
-@[to_additive (attr := simp)]
-theorem smul_empty (s : Finset α) : s • (∅ : Finset β) = ∅ :=
-  image₂_empty_right
-
-@[to_additive (attr := simp)]
-theorem smul_eq_empty : s • t = ∅ ↔ s = ∅ ∨ t = ∅ :=
-  image₂_eq_empty_iff
-
-@[to_additive (attr := simp)]
-theorem smul_nonempty_iff : (s • t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
-  image₂_nonempty_iff
-
-@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
-theorem Nonempty.smul : s.Nonempty → t.Nonempty → (s • t).Nonempty :=
-  Nonempty.image₂
-
-@[to_additive]
-theorem Nonempty.of_smul_left : (s • t).Nonempty → s.Nonempty :=
-  Nonempty.of_image₂_left
-
-@[to_additive]
-theorem Nonempty.of_smul_right : (s • t).Nonempty → t.Nonempty :=
-  Nonempty.of_image₂_right
-
-@[to_additive]
-theorem smul_singleton (b : β) : s • ({b} : Finset β) = s.image (· • b) :=
-  image₂_singleton_right
-
-@[to_additive]
-theorem singleton_smul_singleton (a : α) (b : β) : ({a} : Finset α) • ({b} : Finset β) = {a • b} :=
-  image₂_singleton
-
-@[to_additive (attr := mono, gcongr)]
-theorem smul_subset_smul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ • t₁ ⊆ s₂ • t₂ :=
-  image₂_subset
-
-@[to_additive]
-theorem smul_subset_smul_left : t₁ ⊆ t₂ → s • t₁ ⊆ s • t₂ :=
-  image₂_subset_left
-
-@[to_additive]
-theorem smul_subset_smul_right : s₁ ⊆ s₂ → s₁ • t ⊆ s₂ • t :=
-  image₂_subset_right
-
-@[to_additive]
-theorem smul_subset_iff : s • t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a • b ∈ u :=
-  image₂_subset_iff
-
-@[to_additive]
-theorem union_smul [DecidableEq α] : (s₁ ∪ s₂) • t = s₁ • t ∪ s₂ • t :=
-  image₂_union_left
-
-@[to_additive]
-theorem smul_union : s • (t₁ ∪ t₂) = s • t₁ ∪ s • t₂ :=
-  image₂_union_right
-
-@[to_additive]
-theorem inter_smul_subset [DecidableEq α] : (s₁ ∩ s₂) • t ⊆ s₁ • t ∩ s₂ • t :=
-  image₂_inter_subset_left
-
-@[to_additive]
-theorem smul_inter_subset : s • (t₁ ∩ t₂) ⊆ s • t₁ ∩ s • t₂ :=
-  image₂_inter_subset_right
-
-@[to_additive]
-theorem inter_smul_union_subset_union [DecidableEq α] : (s₁ ∩ s₂) • (t₁ ∪ t₂) ⊆ s₁ • t₁ ∪ s₂ • t₂ :=
-  image₂_inter_union_subset_union
-
-@[to_additive]
-theorem union_smul_inter_subset_union [DecidableEq α] : (s₁ ∪ s₂) • (t₁ ∩ t₂) ⊆ s₁ • t₁ ∪ s₂ • t₂ :=
-  image₂_union_inter_subset_union
-
-/-- If a finset `u` is contained in the scalar product of two sets `s • t`, we can find two finsets
-`s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' • t'`. -/
-@[to_additive
-      "If a finset `u` is contained in the scalar sum of two sets `s +ᵥ t`, we can find two
-      finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`."]
-theorem subset_smul {s : Set α} {t : Set β} :
-    ↑u ⊆ s • t → ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
-  subset_set_image₂
-
-end SMul
-
 /-! ### Scalar subtraction of finsets -/
 
 
 section VSub
 
--- Porting note: Reordered [VSub α β] and [DecidableEq α] to make vsub less dangerous. Bad?
 variable [VSub α β] [DecidableEq α] {s s₁ s₂ t t₁ t₂ : Finset β} {u : Finset α} {a : α} {b c : β}
 
 /-- The pointwise subtraction of two finsets `s` and `t`: `s -ᵥ t = {x -ᵥ y | x ∈ s, y ∈ t}`. -/
@@ -1203,7 +1266,6 @@ theorem vsub_singleton (b : β) : s -ᵥ ({b} : Finset β) = s.image (· -ᵥ b)
 theorem singleton_vsub (a : β) : ({a} : Finset β) -ᵥ t = t.image (a -ᵥ ·) :=
   image₂_singleton_left
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem singleton_vsub_singleton (a b : β) : ({a} : Finset β) -ᵥ {b} = {a -ᵥ b} :=
   image₂_singleton
 
@@ -1245,98 +1307,6 @@ theorem subset_vsub {s t : Set β} :
   subset_set_image₂
 
 end VSub
-
-open Pointwise
-
-/-! ### Translation/scaling of finsets -/
-
-
-section SMul
-
-variable [DecidableEq β] [SMul α β] {s s₁ s₂ t : Finset β} {a : α} {b : β}
-
-/-- The scaling of a finset `s` by a scalar `a`: `a • s = {a • x | x ∈ s}`. -/
-@[to_additive "The translation of a finset `s` by a vector `a`: `a +ᵥ s = {a +ᵥ x | x ∈ s}`."]
-protected def smulFinset : SMul α (Finset β) :=
-  ⟨fun a => image <| (a • ·)⟩
-
-scoped[Pointwise] attribute [instance] Finset.smulFinset Finset.vaddFinset
-
-@[to_additive]
-theorem smul_finset_def : a • s = s.image (a • ·) :=
-  rfl
-
-@[to_additive]
-theorem image_smul : (s.image fun x => a • x) = a • s :=
-  rfl
-
-@[to_additive]
-theorem mem_smul_finset {x : β} : x ∈ a • s ↔ ∃ y, y ∈ s ∧ a • y = x := by
-  simp only [Finset.smul_finset_def, and_assoc, mem_image, exists_prop, Prod.exists, mem_product]
-
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Set β) :=
-  coe_image
-
-@[to_additive]
-theorem smul_mem_smul_finset : b ∈ s → a • b ∈ a • s :=
-  mem_image_of_mem _
-
-@[to_additive]
-theorem smul_finset_card_le : (a • s).card ≤ s.card :=
-  card_image_le
-
-@[to_additive (attr := simp)]
-theorem smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ :=
-  image_empty _
-
-@[to_additive (attr := simp)]
-theorem smul_finset_eq_empty : a • s = ∅ ↔ s = ∅ :=
-  image_eq_empty
-
-@[to_additive (attr := simp)]
-theorem smul_finset_nonempty : (a • s).Nonempty ↔ s.Nonempty :=
-  image_nonempty
-
-@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
-theorem Nonempty.smul_finset (hs : s.Nonempty) : (a • s).Nonempty :=
-  hs.image _
-
-@[to_additive (attr := simp)]
-theorem singleton_smul (a : α) : ({a} : Finset α) • t = a • t :=
-  image₂_singleton_left
-
-@[to_additive (attr := mono, gcongr)]
-theorem smul_finset_subset_smul_finset : s ⊆ t → a • s ⊆ a • t :=
-  image_subset_image
-
-@[to_additive (attr := simp)]
-theorem smul_finset_singleton (b : β) : a • ({b} : Finset β) = {a • b} :=
-  image_singleton _ _
-
-@[to_additive]
-theorem smul_finset_union : a • (s₁ ∪ s₂) = a • s₁ ∪ a • s₂ :=
-  image_union _ _
-
-@[to_additive]
-lemma smul_finset_insert (a : α) (b : β) (s : Finset β) : a • insert b s = insert (a • b) (a • s) :=
-  image_insert ..
-
-@[to_additive]
-theorem smul_finset_inter_subset : a • (s₁ ∩ s₂) ⊆ a • s₁ ∩ a • s₂ :=
-  image_inter_subset _ _ _
-
-@[to_additive]
-theorem smul_finset_subset_smul {s : Finset α} : a ∈ s → a • t ⊆ s • t :=
-  image_subset_image₂_right
-
-@[to_additive (attr := simp)]
-theorem biUnion_smul_finset (s : Finset α) (t : Finset β) : s.biUnion (· • t) = s • t :=
-  biUnion_image_left
-
-end SMul
-
-open Pointwise
 
 section Instances
 
@@ -1517,6 +1487,27 @@ theorem card_le_card_mul_self' {s : Finset α} : s.card ≤ (s * s).card := by
   cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_right, *]
 
 end
+
+section CancelMonoid
+variable [DecidableEq α] [CancelMonoid α] {s : Finset α} {m n : ℕ}
+
+/-- See `Finset.card_pow_mono` for a version that works for the empty set. -/
+@[to_additive "See `Finset.card_nsmul_mono` for a version that works for the empty set."]
+protected lemma Nonempty.card_pow_mono (hs : s.Nonempty) : Monotone fun n : ℕ ↦ (s ^ n).card :=
+  monotone_nat_of_le_succ fun n ↦ by rw [pow_succ]; exact card_le_card_mul_right _ hs
+
+/-- See `Finset.Nonempty.card_pow_mono` for a version that works for zero powers. -/
+@[to_additive "See `Finset.Nonempty.card_nsmul_mono` for a version that works for zero scalars."]
+lemma card_pow_mono (hm : m ≠ 0) (hmn : m ≤ n) : (s ^ m).card ≤ (s ^ n).card := by
+  obtain rfl | hs := s.eq_empty_or_nonempty
+  · simp [hm]
+  · exact hs.card_pow_mono hmn
+
+@[to_additive]
+lemma card_le_card_pow (hn : n ≠ 0) : s.card ≤ (s ^ n).card := by
+  simpa using card_pow_mono (s := s) one_ne_zero (Nat.one_le_iff_ne_zero.2 hn)
+
+end CancelMonoid
 
 section Group
 variable [Group α] [DecidableEq α] {s t : Finset α}
