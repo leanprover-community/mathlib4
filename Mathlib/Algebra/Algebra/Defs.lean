@@ -175,13 +175,11 @@ def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
   smul_def' _ _ := rfl
   toRingHom := i
 
-/---/
 theorem RingHom.smul_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) (r: R) (s: S) :
     let _ := RingHom.toAlgebra' i h
     r • s = i r * s := rfl
 
-/---/
 theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) :
     @algebraMap R S _ _ (i.toAlgebra' h) = i :=
@@ -332,15 +330,19 @@ variable {R : Type u} {S : Type v} (A : Type w)
 Compose a Algebra with a RingHom, with action f s • m.
 -/
 abbrev compHom: Algebra S A :=
-  RingHom.toAlgebra' ((algebraMap R A).comp f)
-    (fun _ _ => Algebra.commutes' _ _)
+  {
+    (algebraMap R A).comp f with
+    smul := fun s x => f s • x
+    commutes' := fun _ _ => Algebra.commutes' _ _,
+    smul_def' := fun s x =>  smul_def (f s) x
+  }
 
 theorem compHom_smul_def (s : S) (x : A):
     letI := compHom A f
     s • x = f s • x := by
       letI := compHom A f
-      simp only [RingHom.smul_toAlgebra', RingHom.coe_comp, Function.comp_apply]
       rw [Algebra.smul_def]
+      exact Eq.symm (smul_def (f s) x)
 
 theorem compHom_algebraMap_eq :
     letI := compHom A f
@@ -357,15 +359,6 @@ theorem compHom_toRingHom_eq :
 theorem compHom_toRingHom_apply (s : S) :
     letI := compHom A f
     (compHom A f).toRingHom s = (algebraMap R A) (f s) := rfl
-
-/--
-Used for convert tactic when using IsScalarTower.of_compHom
-which uses MulAction.compHom rather than Algebra.compHom -/
-theorem compHom_toSMul_eq_mulAction_compHom_toSMul:
-    letI alg := compHom A f
-    alg.toSMul = (@MulAction.compHom R S A _ _ _ f).toSMul := by
-      ext
-      exact compHom_smul_def _ _ _ _
 
 end compHom
 
