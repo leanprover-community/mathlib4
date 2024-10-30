@@ -1,16 +1,11 @@
 /-
-Copyright (c) 2024 Jineon Back and Seewoo Lee. All rights reserved.
+Copyright (c) 2024 Jineon Baek and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
-import Init.Data.Nat.Lemmas
-import Mathlib.Algebra.EuclideanDomain.Defs
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.Algebra.Ring.Regular
+import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.Polynomial.Wronskian
 import Mathlib.RingTheory.Radical
-import Mathlib.RingTheory.UniqueFactorizationDomain
-import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # Mason-Stothers theorem
@@ -24,12 +19,13 @@ which is essentially based on Noah Snyder's paper "An Alternative Proof of Mason
 but slightly different.
 
 ## TODO
+
 Prove polynomial FLT using Mason-Stothers theorem.
 -/
 
 noncomputable section
 
-open scoped Polynomial Classical
+open scoped Classical
 
 open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain
 
@@ -208,7 +204,7 @@ private theorem rot3_add {a b c : k[X]} : a + b + c = b + c + a := by ring_nf
 
 private theorem rot3_mul {a b c : k[X]} : a * b * c = b * c * a := by ring_nf
 
-/-- Polynomial ABC theorem. -/
+/-- **Polynomial ABC theorem.** -/
 theorem Polynomial.abc {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b)
     (hbc : IsCoprime b c) (hca : IsCoprime c a) (hsum : a + b + c = 0) :
     max₃ (natDegree a) (natDegree b) (natDegree c) + 1 ≤ (radical (a * b * c)).natDegree ∨
