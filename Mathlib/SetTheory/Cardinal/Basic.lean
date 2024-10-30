@@ -1477,6 +1477,7 @@ theorem nat_lt_aleph0 (n : ℕ) : (n : Cardinal.{u}) < ℵ₀ :=
 @[simp]
 theorem one_lt_aleph0 : 1 < ℵ₀ := by simpa using nat_lt_aleph0 1
 
+@[simp]
 theorem one_le_aleph0 : 1 ≤ ℵ₀ :=
   one_lt_aleph0.le
 
@@ -1760,6 +1761,13 @@ theorem mk_punit : #PUnit = 1 :=
 
 theorem mk_unit : #Unit = 1 :=
   mk_punit
+
+@[simp] theorem mk_additive : #(Additive α) = #α := rfl
+
+@[simp] theorem mk_multiplicative : #(Multiplicative α) = #α := rfl
+
+@[to_additive (attr := simp)] theorem mk_mulOpposite : #(MulOpposite α) = #α :=
+  mk_congr MulOpposite.opEquiv.symm
 
 theorem mk_singleton {α : Type u} (x : α) : #({x} : Set α) = 1 :=
   mk_eq_one _
