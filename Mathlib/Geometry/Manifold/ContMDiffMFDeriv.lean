@@ -226,7 +226,7 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
     have A := (tangentBundleModelSpaceHomeomorph I).continuous
     rw [continuous_iff_continuousOn_univ] at A
     have B :=
-      ((tangentBundleModelSpaceHomeomorph I').symm.continuous.comp_continuousOn h).comp' A
+      ((tangentBundleModelSpaceHomeomorph I').symm.continuous.comp_continuousOn h).comp_inter A
     have :
       univ ∩ tangentBundleModelSpaceHomeomorph I ⁻¹' (Prod.fst ⁻¹' s) =
         π E (TangentSpace I) ⁻¹' s := by
