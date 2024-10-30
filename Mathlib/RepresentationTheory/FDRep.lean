@@ -203,20 +203,20 @@ def ofRep (V : Rep k G) [hV : FiniteDimensional k V] : FDRep k G :=
   ⟨⟨V.V, hV⟩, V.ρ⟩
 
 /-- Functor from `FDRep` to the full subcategory of finite dimensional `Rep`. Also see
-`equivFiniteDimensional` for an equivalence of category. -/
+`equivalenceFiniteDimensional` for an equivalence of category. -/
 def toFiniteDimensional :
     FDRep k G ⥤ FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) :=
   FullSubcategory.lift _ (forget₂ _ _) inferInstance
 
 /-- Functor from the full subcategory of finite dimensional `Rep` to `FDRep`. Also see
-`equivFiniteDimensional` for an equivalence of category. -/
+`equivalenceFiniteDimensional` for an equivalence of category. -/
 def ofFiniteDimensional :
     FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) ⥤ FDRep k G where
   obj := fun ⟨V, _⟩ ↦ FDRep.ofRep V
   map := fun f ↦ ⟨f.hom, f.comm⟩
 
 /-- Equivalence between `FDRep` and the full subcategory of finite dimensional `Rep`. -/
-def equivFiniteDimensional :
+def equivalenceFiniteDimensional :
     FDRep k G ≌ FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) where
   functor := toFiniteDimensional
   inverse := ofFiniteDimensional
