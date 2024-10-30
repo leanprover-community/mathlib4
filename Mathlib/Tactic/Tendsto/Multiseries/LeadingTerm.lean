@@ -7,9 +7,6 @@ Here we find the limit of series by reducing the problem to computing limits for
 term.
 -/
 
-set_option linter.unusedVariables false
-set_option linter.style.longLine false
-
 open Filter Asymptotics
 
 namespace TendstoTactic
@@ -48,11 +45,11 @@ theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp 
   rw [← mul_assoc]
 
 theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
-    (h_wo : ms.WellOrdered) (h_trimmed : ms.Trimmed) (h_ne_zero : ¬ ms.FlatZero)
+    (h_trimmed : ms.Trimmed) (h_ne_zero : ¬ ms.FlatZero)
     (h_basis : MS.WellOrderedBasis basis) :
-    ∀ᶠ x in atTop, ms.leadingTerm.toFun basis x ≠ 0 :=
-  match basis with
-  | [] => by
+    ∀ᶠ x in atTop, ms.leadingTerm.toFun basis x ≠ 0 := by
+  cases basis with
+  | nil =>
     unfold leadingTerm
     simp [MS.Term.toFun]
     use default
@@ -61,13 +58,12 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
     absurd h_ne_zero
     constructor
     assumption
-  | List.cons basis_hd basis_tl => by
+  | cons basis_hd basis_tl =>
     cases' ms with exp coef tl
     · absurd h_ne_zero
       constructor
-    · obtain ⟨h_coef_wo, _, _⟩ := WellOrdered_cons h_wo
-      obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
-      let coef_ih := coef.leadingTerm_eventually_ne_zero h_coef_wo h_coef_trimmed h_coef_ne_zero
+    · obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
+      let coef_ih := coef.leadingTerm_eventually_ne_zero h_coef_trimmed h_coef_ne_zero
         (MS.WellOrderedBasis_tail h_basis)
       apply Eventually.mono <| coef_ih.and (MS.basis_head_eventually_pos h_basis)
       rintro x ⟨coef_ih, h_basis_hd_pos⟩
@@ -105,7 +101,7 @@ mutual
     · apply Approximates_nil at h_tl
       apply EventuallyEq.trans_isLittleO h_tl
       apply Asymptotics.isLittleO_zero -- should be simp lemma
-    · obtain ⟨tl_C, h_tl_coef, h_tl_maj, h_tl_tl⟩ := Approximates_cons h_tl
+    · obtain ⟨tl_C, _, h_tl_maj, _⟩ := Approximates_cons h_tl
       simp at h_comp
       let exp' := (exp + tl_exp) / 2
       specialize h_tl_maj exp' (by simp only [exp']; linarith)
@@ -139,7 +135,7 @@ mutual
           have h_φ_pos : ∀ᶠ x in atTop, 0 < φ x := by
             apply eventually_gt_of_tendsto_gt (by simp) h_φ
           apply EventuallyEq.rw (p := fun _ b => b ≠ 0) h_C.symm
-          apply Eventually.mono <| h_φ_pos.and (leadingTerm_eventually_ne_zero h_coef_wo
+          apply Eventually.mono <| h_φ_pos.and (leadingTerm_eventually_ne_zero
             h_coef_trimmed h_coef_ne_zero ((MS.WellOrderedBasis_tail h_basis)))
           rintro x ⟨h_φ_pos, h⟩
           exact mul_ne_zero h_φ_pos.ne.symm h
@@ -155,21 +151,21 @@ mutual
       (h_wo : ms.WellOrdered)
       (h_approx : ms.Approximates F) (h_trimmed : ms.Trimmed)
       (h_basis : MS.WellOrderedBasis basis)
-      : F ~[atTop] ms.leadingTerm.toFun basis :=
-    match basis with
-    | [] => by
+      : F ~[atTop] ms.leadingTerm.toFun basis := by
+    cases basis with
+    | nil =>
       simp [Approximates] at h_approx
       simp [leadingTerm]
       apply EventuallyEq.isEquivalent (by assumption)
-    | List.cons basis_hd basis_tl => by
+    | cons basis_hd basis_tl =>
       cases' ms with exp coef tl
       · have hF := Approximates_nil h_approx
         unfold leadingTerm
         simp [MS.Term.zero_coef_fun]
         apply EventuallyEq.isEquivalent (by assumption)
-      · obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
+      · obtain ⟨C, h_coef, _, h_tl⟩ := Approximates_cons h_approx
         obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
-        obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
+        obtain ⟨h_coef_wo, h_comp, _⟩ := WellOrdered_cons h_wo
         have coef_ih := coef.IsEquivalent_leadingTerm (F := C) h_coef_wo h_coef h_coef_trimmed
           (MS.WellOrderedBasis_tail h_basis)
         have : F ~[atTop] fun x ↦ (basis_hd x)^exp * (C x) :=
@@ -190,7 +186,7 @@ theorem eventually_ne_zero_of_not_FlatZero {basis : Basis} {ms : PreMS basis} {F
   have hφ : ∀ᶠ x in atTop, 1/2 < φ x := by
     apply eventually_gt_of_tendsto_gt _ hφ_tendsto
     linarith
-  have h_leadingTerm := leadingTerm_eventually_ne_zero h_wo h_trimmed h_ne_zero h_basis
+  have h_leadingTerm := leadingTerm_eventually_ne_zero h_trimmed h_ne_zero h_basis
   simp only [EventuallyEq] at h_eq
   apply Eventually.mono <| (h_eq.and hφ).and h_leadingTerm
   intro x ⟨⟨h_eq, hφ⟩, h_leadingTerm⟩
@@ -218,10 +214,12 @@ def MS.findLimitTrimmed (ms : MS) (h_basis : MS.WellOrderedBasis ms.basis)
   let r ← ms.leadingTerm.findLimit (basis := ms.basis) (by apply MS.leadingTerm_length) h_basis
   match r with
   | .top p => return .top (by {
-      exact (IsEquivalent.tendsto_atTop_iff (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed)).mpr p
+      exact (IsEquivalent.tendsto_atTop_iff
+        (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed)).mpr p
     })
   | .bot p => return .bot (by {
-      exact (IsEquivalent.tendsto_atBot_iff (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed)).mpr p
+      exact (IsEquivalent.tendsto_atBot_iff
+        (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed)).mpr p
     })
   | .fin c p => return .fin c (by {
       exact IsEquivalent.tendsto_nhds (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed).symm p

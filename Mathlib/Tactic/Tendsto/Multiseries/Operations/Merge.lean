@@ -1,8 +1,5 @@
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Add
 
-set_option linter.unusedVariables false
-set_option linter.style.longLine false
-
 namespace TendstoTactic
 
 namespace PreMS
@@ -20,7 +17,7 @@ noncomputable def merge_aux_coef {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   firsts.foldl (init := 0) fun curCoef elem =>
     match destruct elem with
     | none => curCoef
-    | some ((exp', coef), tl) =>
+    | some ((exp', coef), _) =>
       if exp' == exp then
         curCoef + coef
       else
@@ -32,7 +29,7 @@ noncomputable def merge_aux_liNew {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   firsts.foldlIdx (init := li) fun idx curLi elem =>
     match destruct elem with
     | none => curLi
-    | some ((exp', coef), tl) =>
+    | some ((exp', _), tl) =>
       if exp' == exp then
         curLi.set idx tl
       else
@@ -48,7 +45,8 @@ noncomputable def merge_aux_kNew {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ex
     else
       k
 
-noncomputable def merge_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis} : (ℕ × Seq (PreMS (basis_hd :: basis_tl))) →
+noncomputable def merge_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
+    (ℕ × Seq (PreMS (basis_hd :: basis_tl))) →
     Option ((ℝ × PreMS basis_tl) × (ℕ × Seq (PreMS (basis_hd :: basis_tl)))) :=
   fun (k, li) =>
   let firsts := li.take (k + 1)
@@ -185,7 +183,8 @@ theorem merge_unfold {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     unfold merge merge_aux
     simp
 
-scoped instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : Preorder (PreMS (basis_hd :: basis_tl)) where
+scoped instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
+    Preorder (PreMS (basis_hd :: basis_tl)) where
   le := fun x y ↦ x.leadingExp ≤ y.leadingExp
   le_refl := by simp
   le_trans := by
@@ -274,7 +273,8 @@ theorem merge_aux_kNew_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : �
   · simp; split_ifs <;> rfl
 
 theorem merge_aux_kNew_eq_or_succ {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {m : ℕ}
-    {s : Seq (PreMS (basis_hd :: basis_tl))} : merge_aux_kNew exp m s = m ∨ merge_aux_kNew exp m s = m + 1 := by
+    {s : Seq (PreMS (basis_hd :: basis_tl))} :
+    merge_aux_kNew exp m s = m ∨ merge_aux_kNew exp m s = m + 1 := by
   simp only [merge_aux_kNew]
   cases Seq.get? s m with
   | none => simp
@@ -311,10 +311,11 @@ theorem merge_aux_coef_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd_exp 
 theorem merge_aux_liNew_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {s_hd : PreMS (basis_hd :: basis_tl)} {s_tl : Seq (PreMS (basis_hd :: basis_tl))}
     {firsts : List (PreMS (basis_hd :: basis_tl))} :
-    let f : ℕ → Seq (PreMS (basis_hd :: basis_tl)) → PreMS (basis_hd :: basis_tl) → Seq (PreMS (basis_hd :: basis_tl)) := (fun idx curLi elem ↦
+    let f : ℕ → Seq (PreMS (basis_hd :: basis_tl)) → PreMS (basis_hd :: basis_tl) →
+        Seq (PreMS (basis_hd :: basis_tl)) := (fun idx curLi elem ↦
       match elem.destruct with
       | none => curLi
-      | some ((exp', coef), tl) => if exp' = exp then Seq.set idx curLi tl else curLi);
+      | some ((exp', _), tl) => if exp' = exp then Seq.set idx curLi tl else curLi);
     List.foldlIdx f (Seq.cons s_hd s_tl) firsts 1 =
     .cons s_hd (List.foldlIdx f s_tl firsts 0) := by
   generalize h_offset : 0 = offset
@@ -350,7 +351,8 @@ theorem merge_aux_liNew_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s
 theorem merge_aux_liNew_cons_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {hd : PreMS (basis_hd :: basis_tl)} (h_exp : hd.leadingExp < exp)
     {firsts_tl : List (PreMS (basis_hd :: basis_tl))} {s_tl : Seq (PreMS (basis_hd :: basis_tl))} :
-    merge_aux_liNew (hd :: firsts_tl) exp (.cons hd s_tl) = .cons hd (merge_aux_liNew firsts_tl exp s_tl) := by
+    merge_aux_liNew (hd :: firsts_tl) exp (.cons hd s_tl) =
+    .cons hd (merge_aux_liNew firsts_tl exp s_tl) := by
   cases' hd with hd_exp h_coef hd_tl
   · simp [merge_aux_liNew]
     exact merge_aux_liNew_aux
@@ -364,7 +366,8 @@ theorem merge_aux_liNew_cons_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} 
 @[simp]
 theorem merge_aux_liNew_cons_nil_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {tl : List (PreMS (basis_hd :: basis_tl))} {s_tl : Seq (PreMS (basis_hd :: basis_tl))} :
-    merge_aux_liNew (.nil :: tl) exp (.cons .nil s_tl) = .cons .nil (merge_aux_liNew tl exp s_tl) := by
+    merge_aux_liNew (.nil :: tl) exp (.cons .nil s_tl) =
+    .cons .nil (merge_aux_liNew tl exp s_tl) := by
   apply merge_aux_liNew_cons_stable
   simp
 
@@ -480,7 +483,8 @@ theorem merge_aux_tail_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp :
           rw [ih]
           apply Seq.set_dropn_stable_of_lt
           apply lt_of_lt_of_le h_offset_lt
-          have : merge_aux_kNew exp m s = m ∨ merge_aux_kNew exp m s = m + 1 := merge_aux_kNew_eq_or_succ
+          have : merge_aux_kNew exp m s = m ∨ merge_aux_kNew exp m s = m + 1 :=
+            merge_aux_kNew_eq_or_succ
           cases this with
           | inl this => linarith only [this]
           | inr this => linarith only [this]
@@ -492,11 +496,14 @@ theorem merge_aux_tail_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp :
 theorem merge_aux_liNew_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {m : ℕ}
     {s_hd : PreMS (basis_hd :: basis_tl)}
     {s_tl : Seq (PreMS (basis_hd :: basis_tl))}
-    (h : ((Seq.cons s_hd s_tl).drop (m + 1)).Sorted (fun (x y : PreMS (basis_hd :: basis_tl)) ↦ x > y)) :
-    ((merge_aux_liNew (Seq.take (m + 1) s_tl) exp s_tl).drop (merge_aux_kNew exp m s_tl)).Sorted (· > ·) := by
+    (h : ((Seq.cons s_hd s_tl).drop (m + 1)).Sorted
+      (fun (x y : PreMS (basis_hd :: basis_tl)) ↦ x > y)) :
+    ((merge_aux_liNew (Seq.take (m + 1) s_tl) exp s_tl).drop
+      (merge_aux_kNew exp m s_tl)).Sorted (· > ·) := by
   rw [← Seq.dropn_tail, Seq.tail_cons] at h
   rw [merge_aux_tail_stable]
-  have : merge_aux_kNew exp m s_tl = m ∨ merge_aux_kNew exp m s_tl = m + 1 := merge_aux_kNew_eq_or_succ
+  have : merge_aux_kNew exp m s_tl = m ∨ merge_aux_kNew exp m s_tl = m + 1 :=
+    merge_aux_kNew_eq_or_succ
   cases this with
   | inl h_kNew =>
     rwa [h_kNew]
@@ -709,8 +716,9 @@ theorem merge1_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   cases s <;> simp
 
 @[simp]
-theorem merge1_cons_head {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd_exp : ℝ} {s_hd_coef : PreMS basis_tl}
-    {s_hd_tl : PreMS (basis_hd :: basis_tl)} {s_tl : Seq (PreMS (basis_hd :: basis_tl))} :
+theorem merge1_cons_head {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd_exp : ℝ}
+    {s_hd_coef : PreMS basis_tl} {s_hd_tl : PreMS (basis_hd :: basis_tl)}
+    {s_tl : Seq (PreMS (basis_hd :: basis_tl))} :
     (merge1 (.cons (.cons (s_hd_exp, s_hd_coef) s_hd_tl) s_tl)).head = (s_hd_exp, s_hd_coef) := by
   simp [merge1]
   rw [merge_unfold, merge']

@@ -1,9 +1,6 @@
 import Mathlib.Tactic.Tendsto.Multiseries.Basic
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
 
-set_option linter.unusedVariables false
-set_option linter.style.longLine false
-
 namespace TendstoTactic
 
 namespace PreMS
@@ -148,7 +145,8 @@ theorem mulConst_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : Pre
   cases X <;> simp [mulConst]
 
 @[simp]
-theorem const_mulConst {basis : Basis} {x y : ℝ}: (const x basis).mulConst y = const (x * y) basis := by
+theorem const_mulConst {basis : Basis} {x y : ℝ} :
+    (const x basis).mulConst y = const (x * y) basis := by
   cases basis with
   | nil => simp [mulConst, const]
   | cons =>
@@ -274,7 +272,8 @@ theorem neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
 
 end PreMS
 
-def MS.monomial (basis : Basis) (n : ℕ) (h : n < basis.length) (h_basis : MS.WellOrderedBasis basis) : MS where
+def MS.monomial (basis : Basis) (n : ℕ) (h : n < basis.length)
+    (h_basis : MS.WellOrderedBasis basis) : MS where
   basis := basis
   val := PreMS.monomial basis n
   F := basis[n]

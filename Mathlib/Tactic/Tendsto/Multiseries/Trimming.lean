@@ -1,9 +1,6 @@
 import Mathlib.Tactic.Tendsto.TendstoM
 import Mathlib.Tactic.Tendsto.Multiseries.Basic
 
-set_option linter.style.longLine false
-set_option linter.unusedVariables false
-
 namespace TendstoTactic
 
 namespace PreMS
@@ -39,7 +36,7 @@ theorem Trimmed_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
     {tl : PreMS (basis_hd :: basis_tl)}
     (h : Trimmed (basis := basis_hd :: basis_tl) (Seq.cons (exp, coef) tl)) :
     coef.Trimmed ∧ ¬ coef.FlatZero := by
-  apply h.casesOn (motive := fun {basis : Basis} (a : PreMS basis) (h_trimmed : a.Trimmed) =>
+  apply h.casesOn (motive := fun {basis : Basis} (a : PreMS basis) (_ : a.Trimmed) =>
     (h_basis : basis = basis_hd :: basis_tl) → (a = h_basis ▸ (Seq.cons (exp, coef) tl)) →
       coef.Trimmed ∧ ¬ coef.FlatZero)
   · intro _ h_basis
@@ -215,7 +212,9 @@ def maxUnfoldingSteps : ℕ := 20
 --                     linarith
 --               }
 --           | basis_tl_hd :: basis_tl_tl =>
---             coef_trimmed.result.casesOn (motive := fun x => coef_trimmed.result = x → TendstoM (TrimmingResult (basis := basis_hd :: basis_tl_hd :: basis_tl_tl) (CoList.cons (exp, coef) tl)))
+--             coef_trimmed.result.casesOn (motive := fun x => coef_trimmed.result = x →
+--                 TendstoM (TrimmingResult (basis := basis_hd :: basis_tl_hd :: basis_tl_tl)
+--                 (CoList.cons (exp, coef) tl)))
 --               (nil := fun h_coef_trimmed => do
 --                 let tl_trimmed ← PreMS.trim tl stepsLeftNext
 --                 return {

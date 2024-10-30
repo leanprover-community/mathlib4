@@ -2,9 +2,6 @@ import Mathlib.Tactic.Tendsto.Multiseries.SeqLemmas
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
-set_option linter.unusedVariables false
-set_option linter.style.longLine false
-
 namespace TendstoTactic
 
 open Filter Asymptotics Stream' Seq
@@ -215,7 +212,7 @@ theorem WellOrdered.coind {ms : PreMS (basis_hd :: basis_tl)}
     intro hd tl ih
     specialize h_step _ ih
     simp [Seq.cons_eq_cons] at h_step
-    obtain ⟨exp, coef, tl, ⟨h_hd_eq, h_tl_eq⟩, h_coef, h_comp, h_tl⟩ := h_step
+    obtain ⟨exp, coef, tl, ⟨h_hd_eq, h_tl_eq⟩, _, h_comp, h_tl⟩ := h_step
     subst h_hd_eq h_tl_eq
     constructor
     · cases tl
@@ -311,7 +308,8 @@ theorem mul_majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : maj
   let ε := (exp - f_exp - g_exp) / 2
   specialize hf (f_exp + ε) (by dsimp [ε]; linarith)
   specialize hg (g_exp + ε) (by dsimp [ε]; linarith)
-  apply IsLittleO.trans_eventuallyEq (g₁ := fun x ↦ basis_hd x ^ (f_exp + ε) * basis_hd x ^ (g_exp + ε))
+  apply IsLittleO.trans_eventuallyEq
+    (g₁ := fun x ↦ basis_hd x ^ (f_exp + ε) * basis_hd x ^ (g_exp + ε))
   · exact IsLittleO.mul hf hg
   · simp only [EventuallyEq]
     apply Eventually.mono h_pos
@@ -409,7 +407,7 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {exps : Seq ℝ} {basis_
 def Approximates (F : ℝ → ℝ) {basis : Basis} (ms : PreMS basis) : Prop :=
   match basis with
   | [] => F =ᶠ[atTop] fun _ ↦ ms
-  | List.cons basis_hd basis_tl =>
+  | List.cons basis_hd _ =>
     ∃ Cs : Seq (ℝ → ℝ),
     Cs.atLeastAsLongAs ms ∧
     ((Cs.zip ms).All fun (C, (_, coef)) => coef.Approximates C) ∧
@@ -568,8 +566,9 @@ theorem Approximates.coind' {ms : PreMS (basis_hd :: basis_tl)}
     · simp [partialSums]
       let motive' : Seq ((ℝ → ℝ) × Option ℝ) → Prop := fun li =>
         li = .nil ∨ ∃ (ms : Seq (ℝ × PreMS basis_tl)), ∃ G h init,
-          li = ((partialSumsFrom (Seq.corec g ⟨ms, G, h⟩) (Seq.map (fun x ↦ x.1) ms) basis_hd init).zip
-      ((Seq.map some (Seq.map (fun x ↦ x.1) ms)).append (Seq.cons none Seq.nil))) ∧
+          li = ((partialSumsFrom (Seq.corec g ⟨ms, G, h⟩)
+            (Seq.map (fun x ↦ x.1) ms) basis_hd init).zip
+              ((Seq.map some (Seq.map (fun x ↦ x.1) ms)).append (Seq.cons none Seq.nil))) ∧
       G + init =ᶠ[atTop] F
       apply Seq.All.coind motive'
       · simp only [motive']
@@ -713,7 +712,8 @@ theorem Approximates.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis
     simp [partialSumsFrom_cons]
     constructor
     · exact h_maj
-    · rw [partialSumsFrom_eq_map (Seq.atLeastAsLongAs_map h_tl_alal)] -- copypaste from `Approximates_cons`
+    -- copypaste from `Approximates_cons`
+    · rw [partialSumsFrom_eq_map (Seq.atLeastAsLongAs_map h_tl_alal)]
       rw [Seq.map_zip_left]
       apply Seq.map_all_iff.mpr
       apply Seq.all_mp _ h_tl_maj
@@ -788,9 +788,9 @@ def one (basis : Basis) : PreMS basis :=
 def monomial (basis : Basis) (n : ℕ) : PreMS basis :=
   match n, basis with
   | 0, [] => 1
-  | 0, List.cons basis_hd basis_tl => .cons (1, one _) .nil
-  | m + 1, [] => default
-  | m + 1, List.cons basis_hd basis_tl => .cons (0, monomial basis_tl m) .nil
+  | 0, List.cons _ _ => .cons (1, one _) .nil
+  | _ + 1, [] => default
+  | m + 1, List.cons _ basis_tl => .cons (0, monomial basis_tl m) .nil
 
 instance instZero {basis : Basis} : Zero (PreMS basis) where
   zero := zero basis

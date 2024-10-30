@@ -2,9 +2,6 @@ import Mathlib.Tactic.Tendsto.Multiseries.Basic
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Basic
 
-set_option linter.unusedVariables false
-set_option linter.style.longLine false
-
 namespace TendstoTactic
 
 namespace PreMS
@@ -34,7 +31,8 @@ noncomputable instance instAdd {basis : List (ℝ → ℝ)} : Add (PreMS basis) 
   add := add
 
 -- TODO: can I get rid of it?
-noncomputable instance {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} : Add (PreMS (basis_hd :: basis_tl)) :=
+noncomputable instance {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} :
+    Add (PreMS (basis_hd :: basis_tl)) :=
   instAdd
 
 -- theorems
@@ -44,13 +42,15 @@ scoped instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : Zero (PreMS (basis
   instZero
 
 @[simp]
-theorem noConfusion_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : ℝ × PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
+theorem noConfusion_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : ℝ × PreMS basis_tl}
+    {tl : PreMS (basis_hd :: basis_tl)} :
     (Seq.cons hd tl) ≠ (0 : PreMS (basis_hd :: basis_tl)) := by
   rw [show (0 : PreMS (basis_hd :: basis_tl)) = Seq.nil by rfl]
   simp
 
 @[simp]
-theorem noConfusion_zero' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : ℝ × PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
+theorem noConfusion_zero' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : ℝ × PreMS basis_tl}
+    {tl : PreMS (basis_hd :: basis_tl)} :
     (0 : PreMS (basis_hd :: basis_tl)) ≠ (Seq.cons hd tl) := by
   exact noConfusion_zero.symm
 
@@ -154,7 +154,8 @@ theorem add_unfold {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x y : PreMS (bas
 
 theorem add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_exp : ℝ} {X_coef : PreMS basis_tl}
     {X_tl Y : PreMS (basis_hd :: basis_tl)} (h_lt : Y.leadingExp < X_exp) :
-    HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_exp, X_coef) X_tl) Y = Seq.cons (X_exp, X_coef) (X_tl + Y) := by
+    HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_exp, X_coef) X_tl) Y =
+    Seq.cons (X_exp, X_coef) (X_tl + Y) := by
   rw [add_unfold, add']
   cases' Y with Y_exp Y_coef Y_tl
   · simp
@@ -178,13 +179,16 @@ theorem add_cons_right {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_exp : ℝ}
       linarith
     · rfl
 
-theorem add_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_tl Y_tl: PreMS (basis_hd :: basis_tl)}
-    {X_exp Y_exp : ℝ} {X_coef Y_coef : PreMS basis_tl}
-    : HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_exp, X_coef) X_tl) (Seq.cons (Y_exp, Y_coef) Y_tl) =
+theorem add_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {X_tl Y_tl: PreMS (basis_hd :: basis_tl)} {X_exp Y_exp : ℝ} {X_coef Y_coef : PreMS basis_tl}
+    : HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_exp, X_coef) X_tl)
+      (Seq.cons (Y_exp, Y_coef) Y_tl) =
     if Y_exp < X_exp then
-      Seq.cons (X_exp, X_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl (Seq.cons (Y_exp, Y_coef) Y_tl))
+      Seq.cons (X_exp, X_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl
+        (Seq.cons (Y_exp, Y_coef) Y_tl))
     else if X_exp < Y_exp then
-      Seq.cons (Y_exp, Y_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_exp, X_coef) X_tl) Y_tl)
+      Seq.cons (Y_exp, Y_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl))
+        (Seq.cons (X_exp, X_coef) X_tl) Y_tl)
     else
       Seq.cons (X_exp, X_coef + Y_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl Y_tl)
     := by
@@ -197,7 +201,8 @@ theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
   | nil => simp [mulConst]; ring
   | cons basis_hd basis_tl =>
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
-      ∃ (X Y : PreMS (basis_hd :: basis_tl)), a = (X + Y).mulConst c ∧ b = X.mulConst c + Y.mulConst c
+      ∃ (X Y : PreMS (basis_hd :: basis_tl)), a = (X + Y).mulConst c ∧
+      b = X.mulConst c + Y.mulConst c
     apply Seq.Eq.coind_strong motive
     · simp only [motive]
       use X, Y
@@ -331,11 +336,13 @@ private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
     cases' Z with Z_exp Z_coef Z_tl
     · simp
     right
-    have h_XY : HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_exp, X_coef) X_tl) (Seq.cons (Y_exp, Y_coef) Y_tl) = ?_ := by
+    have h_XY : HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_exp, X_coef) X_tl)
+        (Seq.cons (Y_exp, Y_coef) Y_tl) = ?_ := by
       rw [add_unfold, add']
       simp
       exact Eq.refl _
-    have h_YZ : HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (Y_exp, Y_coef) Y_tl) (Seq.cons (Z_exp, Z_coef) Z_tl) = ?_ := by
+    have h_YZ : HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (Y_exp, Y_coef) Y_tl)
+        (Seq.cons (Z_exp, Z_coef) Z_tl) = ?_ := by
       rw [add_unfold, add']
       simp
       exact Eq.refl _
@@ -379,7 +386,8 @@ noncomputable instance instAddCommMonoid (basis : List (ℝ → ℝ)) : AddCommM
   nsmul := nsmulRec
 
 -- TODO: can I get rid of specifiyng in explicitly?
-noncomputable instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : AddCommMonoid (PreMS (basis_hd :: basis_tl)) := by apply instAddCommMonoid
+noncomputable instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
+    AddCommMonoid (PreMS (basis_hd :: basis_tl)) := by apply instAddCommMonoid
 
 @[simp]
 theorem add_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)} :

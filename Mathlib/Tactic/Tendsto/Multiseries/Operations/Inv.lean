@@ -4,9 +4,6 @@ import Mathlib.Tactic.Tendsto.Multiseries.Operations.Powser
 import Mathlib.Tactic.Tendsto.Multiseries.Trimming
 import Mathlib.Tactic.Tendsto.Multiseries.LeadingTerm
 
-set_option linter.unusedVariables false
-set_option linter.style.longLine false
-
 open Filter Asymptotics
 
 namespace TendstoTactic
@@ -40,9 +37,12 @@ theorem invSeries'_get_eq_one {n : ℕ} : invSeries'.get? n = .some 1 := by
     rw [invSeries'_eq_cons_self]
     simpa using ih
 
-theorem invSeries'_eq_geom : invSeries'.toFormalMultilinearSeries = formalMultilinearSeries_geometric ℝ ℝ := by
+theorem invSeries'_eq_geom :
+    invSeries'.toFormalMultilinearSeries = formalMultilinearSeries_geometric ℝ ℝ := by
   ext n f
-  simp only [formalMultilinearSeries_geometric, FormalMultilinearSeries.apply_eq_prod_smul_coeff, toFormalMultilinearSeries_coeff, invSeries'_get_eq_one, smul_eq_mul, Option.getD_some, mul_one, ContinuousMultilinearMap.mkPiAlgebraFin_apply]
+  simp only [formalMultilinearSeries_geometric, FormalMultilinearSeries.apply_eq_prod_smul_coeff,
+    toFormalMultilinearSeries_coeff, invSeries'_get_eq_one, smul_eq_mul, Option.getD_some, mul_one,
+    ContinuousMultilinearMap.mkPiAlgebraFin_apply]
   exact Eq.symm List.prod_ofFn
 
 theorem invSeries'_analytic : analytic invSeries' := by
@@ -52,7 +52,8 @@ theorem invSeries'_analytic : analytic invSeries' := by
 theorem invSeries'_toFun_eq {x : ℝ} (hx : ‖x‖ < 1) : invSeries'.toFun x = (1 - x)⁻¹ := by
   simp [toFun, invSeries'_eq_geom]
   have := hasFPowerSeriesOnBall_inv_one_sub ℝ ℝ
-  have := HasFPowerSeriesOnBall.sum this (y := x) (by simpa [edist, PseudoMetricSpace.edist] using hx)
+  have := HasFPowerSeriesOnBall.sum this (y := x)
+    (by simpa [edist, PseudoMetricSpace.edist] using hx)
   simp at this
   exact this.symm
 
@@ -67,14 +68,16 @@ theorem invSeries'_toFun_eq {x : ℝ} (hx : ‖x‖ < 1) : invSeries'.toFun x = 
 --     )
 
 -- variant with true geometric series (not alternating one) but with neg
--- generaly it's easier to use `inv`, but there is no API for `[1, -1, 1, ...]`, while enough for `[1, 1, 1, ...]`
+-- generaly it's easier to use `inv`, but there is no API for `[1, -1, 1, ...]`,
+-- while enough for `[1, 1, 1, ...]`.
 noncomputable def inv' {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   match basis with
   | [] => ms⁻¹
-  | List.cons basis_hd basis_tl =>
+  | List.cons _ _ =>
     match destruct ms with
     | none => .nil
-    | some ((exp, coef), tl) => mulMonomial (invSeries'.apply (mulMonomial (neg tl) coef.inv' (-exp))) coef.inv' (-exp)
+    | some ((exp, coef), tl) => mulMonomial
+      (invSeries'.apply (mulMonomial (neg tl) coef.inv' (-exp))) coef.inv' (-exp)
 
 theorem inv'_WellOrdered {basis : Basis} {ms : PreMS basis}
     (h_wo : ms.WellOrdered) : ms.inv'.WellOrdered := by
@@ -129,7 +132,8 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
       have h_basis_hd_pos : ∀ᶠ x in atTop, 0 < basis_hd x :=
         MS.basis_head_eventually_pos h_basis
       simp [inv']
-      apply Approximates_of_EventuallyEq (F := fun x ↦ C⁻¹ x * (basis_hd x)^(-exp) * (C x * (basis_hd x)^(exp) * F⁻¹ x))
+      apply Approximates_of_EventuallyEq (F := fun x ↦ C⁻¹ x * (basis_hd x)^(-exp) *
+        (C x * (basis_hd x)^(exp) * F⁻¹ x))
       · simp only [EventuallyEq]
         apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
         intro x ⟨hC_ne_zero, h_basis_hd_pos⟩
@@ -140,12 +144,14 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
       apply mulMonomial_Approximates h_basis
       swap
       · exact inv'_Approximates (MS.WellOrderedBasis_tail h_basis) h_coef_wo h_coef_trimmed h_coef
-      focus
-      have : ((neg tl).mulMonomial coef.inv' (-exp)).Approximates (fun x ↦ C⁻¹ x * (basis_hd x)^(-exp) * -(F x - basis_hd x ^ exp * C x)) (basis := basis_hd :: basis_tl) := by
+      have : ((neg tl).mulMonomial coef.inv' (-exp)).Approximates (fun x ↦ C⁻¹ x *
+          (basis_hd x)^(-exp) * -(F x - basis_hd x ^ exp * C x))
+          (basis := basis_hd :: basis_tl) := by
         apply mulMonomial_Approximates h_basis
         · exact neg_Approximates h_tl
         · exact inv'_Approximates (MS.WellOrderedBasis_tail h_basis) h_coef_wo h_coef_trimmed h_coef
-      apply Approximates_of_EventuallyEq (F' := (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x)) at this
+      apply Approximates_of_EventuallyEq
+        (F' := (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x)) at this
       swap
       · simp only [EventuallyEq]
         apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
@@ -154,13 +160,15 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
         ring_nf
         simp [mul_inv_cancel₀ hC_ne_zero]
         simp [← Real.rpow_add h_basis_hd_pos]
-      apply Approximates_of_EventuallyEq (F := (fun x ↦ (1 - x)⁻¹) ∘ (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x))
+      apply Approximates_of_EventuallyEq
+        (F := (fun x ↦ (1 - x)⁻¹) ∘ (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x))
       · simp only [EventuallyEq]
         apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
         intro x ⟨hC_ne_zero, h_basis_hd_pos⟩
         simp [Real.rpow_neg h_basis_hd_pos.le]
         ring
-      apply Approximates_of_EventuallyEq (F := invSeries'.toFun ∘ (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x))
+      apply Approximates_of_EventuallyEq (F := invSeries'.toFun ∘
+          (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x))
       · have : Tendsto (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x) atTop (nhds 0) := by
           rw [show (0 : ℝ) = 1 - 1 by simp]
           apply Tendsto.const_sub
@@ -206,7 +214,8 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
 
 end PreMS
 
-noncomputable def MS.inv (x : MS) (h_basis : MS.WellOrderedBasis x.basis) (h_trimmed : x.Trimmed) : MS where
+noncomputable def MS.inv (x : MS) (h_basis : MS.WellOrderedBasis x.basis) (h_trimmed : x.Trimmed) :
+    MS where
   basis := x.basis
   val := x.val.inv'
   F := x.F⁻¹
