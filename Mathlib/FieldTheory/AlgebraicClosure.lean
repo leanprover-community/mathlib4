@@ -53,6 +53,7 @@ theorem map_mem_algebraicClosure_iff (i : E →ₐ[F] K) {x : E} :
   simp_rw [mem_algebraicClosure_iff', ← minpoly.ne_zero_iff, minpoly.algHom_eq i i.injective]
 
 namespace algebraicClosure
+
 /-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then the preimage of
 `algebraicClosure F K` under the map `i` is equal to `algebraicClosure F E`. -/
 theorem comap_eq_of_algHom (i : E →ₐ[F] K) :
