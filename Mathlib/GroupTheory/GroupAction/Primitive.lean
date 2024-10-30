@@ -174,7 +174,7 @@ theorem mk_mem {a : X} (ha : a ∉ fixedPoints G X)
     IsPreprimitive G X := by
   have : IsPretransitive G X := by
     rw [IsPretransitive.mk_base_iff a]
-    cases' H (orbit G a) (mem_orbit_self a) (isBlock_orbit a) with H H
+    cases' H (orbit G a) (mem_orbit_self a) (IsBlock.orbit a) with H H
     · exfalso; apply ha
       rw [Set.subsingleton_iff_singleton (mem_orbit_self a)] at H
       simp only [mem_fixedPoints]
@@ -484,33 +484,33 @@ theorem IsPreprimitive.image_of_card
   -- We reduce to proving that (set.range f ∩ g • B).ncard ≤ 1 for every g
   rw [(hB.isBlockSystem hB').left.ncard_eq_finsum]
   rw [finsum_eq_finset_sum_of_support_subset]
-  apply le_trans (Finset.sum_le_card_nsmul _ _ 1 _)
-  simp only [smul_eq_mul, mul_one]
-  conv_rhs => rw [Set.ncard_coe]
-  apply le_of_eq
-  rw [← Set.ncard_eq_toFinset_card]
-  -- we prove (Set.range f ∩ g • B).ncard ≤ 1
-  rintro ⟨t, ⟨g, rfl⟩⟩
-  simp only [Set.Finite.mem_toFinset, Set.mem_univ, forall_true_left]
-  suffices Set.Subsingleton (Set.range f ∩ g • B) by
-    rw [Set.ncard_le_one_iff]
-    exact fun {a b} a_1 a_2 ↦ this a_1 a_2
-  -- It suffices to prove that the preimage is subsingleton
-  rw [← Set.image_preimage_eq_range_inter]
-  apply Set.Subsingleton.image
-  -- Since the action of M on α is primitive, it suffices to prove that
-  -- the preimage is a block which is not ⊤
-  apply Or.resolve_right (hM.has_trivial_blocks ((hB.translate g).preimage f))
-  intro h
-  simp only [Set.top_eq_univ, Set.preimage_eq_univ_iff] at h
-  -- We will prove that B is large, which will contradict the assumption that it is not ⊤
-  apply hB_ne_top
-  apply hB.is_top_of_large_block
-  -- It remains to show that Nat.card β < Set.ncard B * 2
-  apply lt_of_lt_of_le hf'
-  rw [mul_comm, mul_le_mul_right Nat.succ_pos']
-  apply le_trans (Set.ncard_le_ncard h) (Set.ncard_image_le B.toFinite)
-  simp only [Set.Finite.coe_toFinset, Set.subset_univ]
+  · apply le_trans (Finset.sum_le_card_nsmul _ _ 1 _)
+    · simp only [smul_eq_mul, mul_one]
+      conv_rhs => rw [Set.ncard_coe]
+      apply le_of_eq
+      rw [← Set.ncard_eq_toFinset_card]
+    -- we prove (Set.range f ∩ g • B).ncard ≤ 1
+    · rintro ⟨t, ⟨g, rfl⟩⟩
+      simp only [Set.Finite.mem_toFinset, Set.mem_univ, forall_true_left]
+      suffices Set.Subsingleton (Set.range f ∩ g • B) by
+        rw [Set.ncard_le_one_iff]
+        exact fun {a b} a_1 a_2 ↦ this a_1 a_2
+      -- It suffices to prove that the preimage is subsingleton
+      rw [← Set.image_preimage_eq_range_inter]
+      apply Set.Subsingleton.image
+      -- Since the action of M on α is primitive, it suffices to prove that
+      -- the preimage is a block which is not ⊤
+      apply Or.resolve_right (hM.has_trivial_blocks ((hB.translate g).preimage f))
+      intro h
+      simp only [Set.top_eq_univ, Set.preimage_eq_univ_iff] at h
+      -- We will prove that B is large, which will contradict the assumption that it is not ⊤
+      apply hB_ne_top
+      apply hB.eq_univ_card_lt
+      -- It remains to show that Nat.card β < Set.ncard B * 2
+      apply lt_of_lt_of_le hf'
+      rw [mul_comm, mul_le_mul_right Nat.succ_pos']
+      apply le_trans (Set.ncard_le_ncard h) (Set.ncard_image_le B.toFinite)
+  · simp only [Set.Finite.coe_toFinset, Set.subset_univ]
 
 /-- Theorem of Rudio (Wielandt, 1964, Th. 8.1) -/
 theorem IsPreprimitive.rudio (hpGX : IsPreprimitive M α)
