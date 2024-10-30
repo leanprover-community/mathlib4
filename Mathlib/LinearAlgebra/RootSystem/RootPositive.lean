@@ -55,7 +55,7 @@ lemma two_mul_apply_root_root :
     2 * B (P.root i) (P.root j) = P.pairing i j * B (P.root j) (P.root j) := by
   rw [two_mul, ← eq_sub_iff_add_eq]
   nth_rw 1 [← IsRootPositive.apply_reflection_eq (P := P) (B := B) j (P.root i) (P.root j)]
-  rw [reflection_apply, reflection_apply_self, root_coroot_eq_pairing, LinearMap.map_sub₂,
+  rw [reflection_apply, reflection_apply_self, root_coroot'_eq_pairing, LinearMap.map_sub₂,
     LinearMap.map_smul₂, smul_eq_mul, LinearMap.map_neg, LinearMap.map_neg, mul_neg, neg_sub_neg]
 
 @[simp]

@@ -51,7 +51,7 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
     simp only [hasBracketAux, LinearMap.lTensor_add, LinearMap.rTensor_add, LieHom.map_add,
       LinearMap.add_apply]
     abel
-  lie_add x := LinearMap.map_add _
+  lie_add _ := LinearMap.map_add _
   leibniz_lie x y t := by
     suffices (hasBracketAux x).comp (hasBracketAux y) =
         hasBracketAux ⁅x, y⁆ + (hasBracketAux y).comp (hasBracketAux x) by
@@ -69,7 +69,7 @@ instance lieModule : LieModule R L (M ⊗[R] N) where
     change hasBracketAux (c • x) _ = c • hasBracketAux _ _
     simp only [hasBracketAux, smul_add, LinearMap.rTensor_smul, LinearMap.smul_apply,
       LinearMap.lTensor_smul, LieHom.map_smul, LinearMap.add_apply]
-  lie_smul c x := LinearMap.map_smul _ c
+  lie_smul c _ := LinearMap.map_smul _ c
 
 @[simp]
 theorem lie_tmul_right (x : L) (m : M) (n : N) : ⁅x, m ⊗ₜ[R] n⁆ = ⁅x, m⁆ ⊗ₜ n + m ⊗ₜ ⁅x, n⁆ :=
@@ -201,8 +201,8 @@ theorem lieIdeal_oper_eq_tensor_map_range :
     TensorProduct.map_range_eq_span_tmul, Submodule.map_span]
   congr; ext m; constructor
   · rintro ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩; use x ⊗ₜ n; constructor
-    · use ⟨x, hx⟩, ⟨n, hn⟩; simp
+    · use ⟨x, hx⟩, ⟨n, hn⟩; rfl
     · simp
-  · rintro ⟨t, ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩, h⟩; rw [← h]; use ⟨x, hx⟩, ⟨n, hn⟩; simp
+  · rintro ⟨t, ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩, h⟩; rw [← h]; use ⟨x, hx⟩, ⟨n, hn⟩; rfl
 
 end LieSubmodule

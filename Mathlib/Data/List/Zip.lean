@@ -31,7 +31,7 @@ variable {α : Type u} {β γ δ ε : Type*}
 
 @[simp]
 theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Prod.swap = zip l₂ l₁
-  | [], l₂ => zip_nil_right.symm
+  | [], _ => zip_nil_right.symm
   | l₁, [] => by rw [zip_nil_right]; rfl
   | a :: l₁, b :: l₂ => by
     simp only [zip_cons_cons, map_cons, zip_swap l₁ l₂, Prod.swap_prod_mk]

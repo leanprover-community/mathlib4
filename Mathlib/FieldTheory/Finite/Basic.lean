@@ -61,10 +61,10 @@ open Polynomial
 /-- The cardinality of a field is at most `n` times the cardinality of the image of a degree `n`
   polynomial -/
 theorem card_image_polynomial_eval [DecidableEq R] [Fintype R] {p : R[X]} (hp : 0 < p.degree) :
-    Fintype.card R ≤ natDegree p * (univ.image fun x => eval x p).card :=
+    Fintype.card R ≤ natDegree p * #(univ.image fun x => eval x p) :=
   Finset.card_le_mul_card_image _ _ (fun a _ =>
     calc
-      _ = (p - C a).roots.toFinset.card :=
+      _ = #(p - C a).roots.toFinset :=
         congr_arg card (by simp [Finset.ext_iff, ← mem_roots_sub_C hp])
       _ ≤ Multiset.card (p - C a).roots := Multiset.toFinset_card_le _
       _ ≤ _ := card_roots_sub_C' hp)
@@ -80,17 +80,17 @@ theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) 
     rcases this with ⟨x, ⟨a, _, ha⟩, ⟨b, _, hb⟩⟩
     exact ⟨a, b, by rw [ha, ← hb, eval_neg, neg_add_cancel]⟩
   fun hd : Disjoint _ _ =>
-  lt_irrefl (2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card) <|
-    calc 2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card
+  lt_irrefl (2 * #((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g))) <|
+    calc 2 * #((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g))
         ≤ 2 * Fintype.card R := Nat.mul_le_mul_left _ (Finset.card_le_univ _)
       _ = Fintype.card R + Fintype.card R := two_mul _
-      _ < natDegree f * (univ.image fun x : R => eval x f).card +
-            natDegree (-g) * (univ.image fun x : R => eval x (-g)).card :=
+      _ < natDegree f * #(univ.image fun x : R => eval x f) +
+            natDegree (-g) * #(univ.image fun x : R => eval x (-g)) :=
         (add_lt_add_of_lt_of_le
           (lt_of_le_of_ne (card_image_polynomial_eval (by rw [hf2]; decide))
             (mt (congr_arg (· % 2)) (by simp [natDegree_eq_of_degree_eq_some hf2, hR])))
           (card_image_polynomial_eval (by rw [degree_neg, hg2]; decide)))
-      _ = 2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card := by
+      _ = 2 * #((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)) := by
         rw [card_union_of_disjoint hd]
         simp [natDegree_eq_of_degree_eq_some hf2, natDegree_eq_of_degree_eq_some hg2, mul_add]
 
@@ -328,8 +328,6 @@ theorem X_pow_card_pow_sub_X_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - 
 
 end
 
-variable (p : ℕ) [Fact p.Prime] [Algebra (ZMod p) K]
-
 theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := by
   classical
     have aux : (X ^ q - X : K[X]) ≠ 0 := X_pow_card_sub_X_ne_zero K Fintype.one_lt_card
@@ -455,9 +453,9 @@ variable {V : Type*} [Fintype K] [DivisionRing K] [AddCommGroup V] [Module K V]
 -- should this go in a namespace?
 -- finite_dimensional would be natural,
 -- but we don't assume it...
-theorem card_eq_pow_finrank [Fintype V] : Fintype.card V = q ^ FiniteDimensional.finrank K V := by
+theorem card_eq_pow_finrank [Fintype V] : Fintype.card V = q ^ Module.finrank K V := by
   let b := IsNoetherian.finsetBasis K V
-  rw [Module.card_fintype b, ← FiniteDimensional.finrank_eq_card_basis b]
+  rw [Module.card_fintype b, ← Module.finrank_eq_card_basis b]
 
 end
 

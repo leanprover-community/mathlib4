@@ -6,16 +6,17 @@ Authors: Violeta Hernández Palacios
 import Mathlib.Data.List.Chain
 
 /-!
-# Group a list by a relation
+# Group consecutive elements in a list by a relation
 
-This file provides the basic API for `List.groupBy`. The main results are the following:
+This file provides the basic API for `List.groupBy` which is defined in Core.
+The main results are the following:
 
 - `List.join_groupBy`: the lists in `List.groupBy` join to the original list.
 - `List.nil_not_mem_groupBy`: the empty list is not contained in `List.groupBy`.
 - `List.chain'_of_mem_groupBy`: any two adjacent elements in a list in `List.groupBy` are related by
   the specified relation.
-- `List.chain'_last_head_groupBy`: the last element of each list in `List.groupBy` is not related
-  to the first element of the next list.
+- `List.chain'_getLast_head_groupBy`: the last element of each list in `List.groupBy` is not
+  related to the first element of the next list.
 - `List.groupBy_eq_iff`: the previous four properties uniquely characterize `List.groupBy`.
 -/
 
@@ -27,7 +28,7 @@ variable {α : Type*} {m : List α}
 theorem groupBy_nil (r : α → α → Bool) : groupBy r [] = [] :=
   rfl
 
-private theorem groupBy_loop_eq_append {r : α → α → Bool} {l : List α} {a : α} {g : List α}
+private theorem groupByLoop_eq_append {r : α → α → Bool} {l : List α} {a : α} {g : List α}
     (gs : List (List α)) : groupBy.loop r l a g gs = gs.reverse ++ groupBy.loop r l a g [] := by
   induction l generalizing a g gs with
   | nil => simp [groupBy.loop]
@@ -37,21 +38,21 @@ private theorem groupBy_loop_eq_append {r : α → α → Bool} {l : List α} {a
     conv_rhs => rw [IH]
     simp
 
-private theorem join_groupBy_loop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
+private theorem join_groupByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
     (groupBy.loop r l a g []).join = g.reverse ++ a :: l := by
   induction l generalizing a g with
   | nil => simp [groupBy.loop]
   | cons b l IH =>
-    rw [groupBy.loop, groupBy_loop_eq_append [_]]
+    rw [groupBy.loop, groupByLoop_eq_append [_]]
     split <;> simp [IH]
 
 @[simp]
 theorem join_groupBy (r : α → α → Bool) (l : List α) : (l.groupBy r).join = l :=
   match l with
   | nil => rfl
-  | cons _ _ => join_groupBy_loop
+  | cons _ _ => join_groupByLoop
 
-private theorem nil_not_mem_groupBy_loop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
+private theorem nil_not_mem_groupByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
     [] ∉ groupBy.loop r l a g [] := by
   induction l generalizing a g with
   | nil =>
@@ -60,19 +61,19 @@ private theorem nil_not_mem_groupBy_loop {r : α → α → Bool} {l : List α} 
     rw [groupBy.loop]
     split
     · exact IH
-    · rw [groupBy_loop_eq_append, mem_append]
+    · rw [groupByLoop_eq_append, mem_append]
       simpa using IH
 
 theorem nil_not_mem_groupBy (r : α → α → Bool) (l : List α) : [] ∉ l.groupBy r :=
   match l with
   | nil => not_mem_nil _
-  | cons _ _ => nil_not_mem_groupBy_loop
+  | cons _ _ => nil_not_mem_groupByLoop
 
 theorem ne_nil_of_mem_groupBy (r : α → α → Bool) {l : List α} (h : m ∈ l.groupBy r) : m ≠ [] := by
   rintro rfl
   exact nil_not_mem_groupBy r l h
 
-private theorem chain'_of_mem_groupBy_loop {r : α → α → Bool} {l : List α} {a : α} {g : List α}
+private theorem chain'_of_mem_groupByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α}
     (hga : ∀ b ∈ g.head?, r b a) (hg : g.Chain' fun y x ↦ r x y)
     (h : m ∈ groupBy.loop r l a g []) : m.Chain' fun x y ↦ r x y := by
   induction l generalizing a g with
@@ -90,7 +91,7 @@ private theorem chain'_of_mem_groupBy_loop {r : α → α → Bool} {l : List α
       intro b hb
       rw [head?_cons, Option.mem_some_iff] at hb
       rwa [← hb]
-    · rw [groupBy_loop_eq_append, mem_append, reverse_singleton, mem_singleton] at h
+    · rw [groupByLoop_eq_append, mem_append, reverse_singleton, mem_singleton] at h
       obtain rfl | hm := h
       · apply List.chain'_reverse.1
         rw [reverse_append, reverse_cons, reverse_nil, nil_append, reverse_reverse]
@@ -103,11 +104,11 @@ theorem chain'_of_mem_groupBy {r : α → α → Bool} {l : List α} (h : m ∈ 
   cases l with
   | nil => cases h
   | cons a l =>
-    apply chain'_of_mem_groupBy_loop _ _ h
+    apply chain'_of_mem_groupByLoop _ _ h
     · rintro _ ⟨⟩
     · exact chain'_nil
 
-private theorem chain'_last_head_groupBy_loop {r : α → α → Bool} (l : List α) {a : α}
+private theorem chain'_getLast_head_groupByLoop {r : α → α → Bool} (l : List α) {a : α}
     {g : List α} {gs : List (List α)} (hgs' : [] ∉ gs)
     (hgs : gs.Chain' fun b a ↦ ∃ ha hb, r (a.getLast ha) (b.head hb) = false)
     (hga : ∀ m ∈ gs.head?, ∃ ha hb, r (m.getLast ha) ((g.reverse ++ [a]).head hb) = false) :
@@ -131,7 +132,7 @@ private theorem chain'_last_head_groupBy_loop {r : α → α → Bool} (l : List
         apply chain'_cons'.2 ⟨hga, hgs⟩
       · simpa
 
-theorem chain'_last_head_groupBy (r : α → α → Bool) (l : List α) :
+theorem chain'_getLast_head_groupBy (r : α → α → Bool) (l : List α) :
     (l.groupBy r).Chain' fun a b ↦ ∃ ha hb, r (a.getLast ha) (b.head hb) = false := by
   cases l with
   | nil => exact chain'_nil

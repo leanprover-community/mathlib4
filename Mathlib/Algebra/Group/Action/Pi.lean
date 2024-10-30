@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Data.Set.Function
 
 /-!
@@ -21,7 +21,7 @@ This file defines instances for `MulAction` and related structures on `Pi` types
 
 assert_not_exists MonoidWithZero
 
-variable {ι M N : Type*} {α β γ : ι → Type*} (x y : ∀ i, α i) (i : ι)
+variable {ι M N : Type*} {α β γ : ι → Type*} (i : ι)
 
 namespace Pi
 
