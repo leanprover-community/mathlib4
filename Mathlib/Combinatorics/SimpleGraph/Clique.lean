@@ -604,11 +604,14 @@ section CliqueNumber
 
 variable {α : Type*} {G : SimpleGraph α}
 
+/-- The maximal number of vertices in a graph `G`. -/
 noncomputable def cliqueNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNClique n s}
 
+/-- A clique in a graph `G` such that there is no clique with more vertices. -/
 def isMaximumClique (G : SimpleGraph α) (s : Finset α) : Prop :=
   G.IsClique s ∧ ∀ (t : Finset α), G.IsClique t → #t ≤ #s
 
+/-- A clique in a graph `G` that cannot be extended by adding vertices. -/
 def isMaximalClique (G : SimpleGraph α) (s : Finset α) : Prop :=
   G.IsClique s ∧ ∀ (t : Finset α), G.IsClique t → ¬ s ⊂ t
 
@@ -616,9 +619,9 @@ variable [fin : Fintype α]
 
 lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
   rw [bddAbove_def]
-  refine Exists.intro (@Finset.univ α _).card ?_
+  refine Exists.intro #(@Finset.univ α _) ?_
   rintro y ⟨sy, syc⟩
-  rw [isNClique_iff, ←And.right syc] at *
+  rw [isNClique_iff, ← And.right syc] at *
   exact Finset.card_le_card (Finset.subset_univ sy)
 
 theorem clique_card_le_cliqueNum (t : Finset α) (tc : G.IsClique ↑t) : #t ≤ G.cliqueNum :=
@@ -630,7 +633,7 @@ theorem maximumClique_card_eq_cliqueNum (t : Finset α) (tmc : G.isMaximumClique
   refine eq_of_le_of_not_lt (clique_card_le_cliqueNum _ tclique) ?_
   have ⟨s, sclique, scn⟩ : G.cliqueNum ∈ {n | ∃ s, G.IsNClique n s} :=
     Nat.sSup_mem ⟨ 0, by simp[isNClique_empty.mpr rfl] ⟩ fintype_cliqueNum_bddAbove
-  rw [cliqueNum, ←scn]
+  rw [cliqueNum, ← scn]
   exact LE.le.not_lt (tmax s sclique)
 
 end CliqueNumber
