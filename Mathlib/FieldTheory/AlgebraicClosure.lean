@@ -36,6 +36,7 @@ def algebraicClosure : IntermediateField F E :=
   Algebra.IsAlgebraic.toIntermediateField (integralClosure F E)
 
 variable {F E}
+
 /-- An element is contained in the algebraic closure of `F` in `E` if and only if
 it is an integral element. -/
 theorem mem_algebraicClosure_iff' {x : E} :
@@ -53,6 +54,7 @@ theorem map_mem_algebraicClosure_iff (i : E →ₐ[F] K) {x : E} :
   simp_rw [mem_algebraicClosure_iff', ← minpoly.ne_zero_iff, minpoly.algHom_eq i i.injective]
 
 namespace algebraicClosure
+
 /-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then the preimage of
 `algebraicClosure F K` under the map `i` is equal to `algebraicClosure F E`. -/
 theorem comap_eq_of_algHom (i : E →ₐ[F] K) :
@@ -68,7 +70,7 @@ theorem map_le_of_algHom (i : E →ₐ[F] K) :
 
 variable (F) in
 /-- If `K / E / F` is a field extension tower, such that `K / E` has no non-trivial algebraic
-subextensions (this means that it is purely trancendental),
+subextensions (this means that it is purely transcendental),
 then the image of `algebraicClosure F E` in `K` is equal to `algebraicClosure F K`. -/
 theorem map_eq_of_algebraicClosure_eq_bot [Algebra E K] [IsScalarTower F E K]
     (h : algebraicClosure E K = ⊥) :
@@ -112,8 +114,8 @@ variable (F E K)
 if all of its elements are algebraic over `F`. -/
 theorem le_algebraicClosure' {L : IntermediateField F E} (hs : ∀ x : L, IsAlgebraic F x) :
     L ≤ algebraicClosure F E := fun x h ↦ by
-    simpa only [mem_algebraicClosure_iff, IsAlgebraic, ne_eq, ← aeval_algebraMap_eq_zero_iff E,
-      Algebra.id.map_eq_id, RingHom.id_apply, IntermediateField.algebraMap_apply] using hs ⟨x, h⟩
+  simpa only [mem_algebraicClosure_iff, IsAlgebraic, ne_eq, ← aeval_algebraMap_eq_zero_iff E,
+    Algebra.id.map_eq_id, RingHom.id_apply, IntermediateField.algebraMap_apply] using hs ⟨x, h⟩
 
 /-- An intermediate field of `E / F` is contained in the algebraic closure of `F` in `E`
 if it is algebraic over `F`. -/
@@ -130,6 +132,7 @@ theorem le_algebraicClosure_iff (L : IntermediateField F E) :
     fun _ ↦ le_algebraicClosure _ _ _⟩
 
 namespace algebraicClosure
+
 /-- The algebraic closure in `E` of the algebraic closure of `F` in `E` is equal to itself. -/
 theorem algebraicClosure_eq_bot :
     algebraicClosure (algebraicClosure F E) E = ⊥ :=
@@ -164,6 +167,7 @@ theorem IntermediateField.isAlgebraic_adjoin_iff_isAlgebraic {S : Set E} :
     fun _ => Iff.imp Iff.rfl mem_algebraicClosure_iff))
 
 namespace algebraicClosure
+
 /-- If `E` is algebraically closed, then the algebraic closure of `F` in `E` is an absolute
 algebraic closure of `F`. -/
 instance isAlgClosure [IsAlgClosed E] : IsAlgClosure F (algebraicClosure F E) :=
