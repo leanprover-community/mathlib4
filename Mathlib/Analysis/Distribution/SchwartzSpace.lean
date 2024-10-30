@@ -25,7 +25,7 @@ natural numbers `k` and `n` we have uniform bounds `‖x‖^k * ‖iteratedFDeri
 This approach completely avoids using partial derivatives as well as polynomials.
 We construct the topology on the Schwartz space by a family of seminorms, which are the best
 constants in the above estimates. The abstract theory of topological vector spaces developed in
-`SeminormFamily.moduleFilterBasis` and `WithSeminorms.toLocallyConvexSpace` turns the
+`SeminormFamily.isModuleBasis` and `WithSeminorms.toLocallyConvexSpace` turns the
 Schwartz space into a locally convex topological vector space.
 
 ## Main definitions
@@ -483,7 +483,7 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 variable (𝕜 E F)
 
 instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
-  (schwartzSeminormFamily ℝ E F).moduleFilterBasis.topology'
+  (schwartzSeminormFamily ℝ E F).topology
 
 theorem _root_.schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily 𝕜 E F) := by
   have A : WithSeminorms (schwartzSeminormFamily ℝ E F) := ⟨rfl⟩
@@ -493,18 +493,17 @@ theorem _root_.schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily �
 
 variable {𝕜 E F}
 
-instance instContinuousSMul : ContinuousSMul 𝕜 𝓢(E, F) := by
-  rw [(schwartz_withSeminorms 𝕜 E F).withSeminorms_eq]
-  exact (schwartzSeminormFamily 𝕜 E F).moduleFilterBasis.continuousSMul
+instance instContinuousSMul : ContinuousSMul 𝕜 𝓢(E, F) :=
+  schwartz_withSeminorms 𝕜 E F |>.continuousSMul
 
 instance instTopologicalAddGroup : TopologicalAddGroup 𝓢(E, F) :=
-  (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isTopologicalAddGroup
+  schwartz_withSeminorms ℝ E F |>.topologicalAddGroup
 
 instance instUniformSpace : UniformSpace 𝓢(E, F) :=
-  (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformSpace
+  (schwartzSeminormFamily ℝ E F).isAddGroupBasis.uniformSpace
 
 instance instUniformAddGroup : UniformAddGroup 𝓢(E, F) :=
-  (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformAddGroup
+  (schwartzSeminormFamily ℝ E F).isAddGroupBasis.uniformAddGroup
 
 instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace

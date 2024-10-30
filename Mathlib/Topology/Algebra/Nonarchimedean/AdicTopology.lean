@@ -3,7 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.Algebra.UniformRing
 
@@ -22,10 +22,10 @@ change the associated topology.
 Finally, it defines `WithIdeal`, a class registering an ideal in a ring and providing the
 corresponding adic topology to the type class inference system.
 
-
 ## Main definitions and results
 
-* `Ideal.adic_basis`: the basis of submodules given by powers of an ideal.
+* `Ideal.adicBasis`: the basis of submodules given by powers of an ideal.
+* `Ideal.adicBasis_isBasis`: `Ideal.adicBasis` is indeed a filter basis.
 * `Ideal.adicTopology`: the adic topology associated to an ideal. It has the above basis
   for neighborhoods of zero.
 * `Ideal.nonarchimedean`: the adic topology is non-archimedean
@@ -47,164 +47,191 @@ open Set TopologicalAddGroup Submodule Filter
 
 open Topology Pointwise
 
+-- Common facts about the two cases (ring or module)
+section Common
+
 namespace Ideal
-
-theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n • ⊤ : Ideal R) :=
-  { inter := by
-      suffices ∀ i j : ℕ, ∃ k, I ^ k ≤ I ^ i ∧ I ^ k ≤ I ^ j by
-        simpa only [smul_eq_mul, mul_top, Algebra.id.map_eq_id, map_id, le_inf_iff] using this
-      intro i j
-      exact ⟨max i j, pow_le_pow_right (le_max_left i j), pow_le_pow_right (le_max_right i j)⟩
-    leftMul := by
-      suffices ∀ (a : R) (i : ℕ), ∃ j : ℕ, a • I ^ j ≤ I ^ i by
-        simpa only [smul_top_eq_map, Algebra.id.map_eq_id, map_id] using this
-      intro r n
-      use n
-      rintro a ⟨x, hx, rfl⟩
-      exact (I ^ n).smul_mem r hx
-    mul := by
-      suffices ∀ i : ℕ, ∃ j : ℕ, (↑(I ^ j) * ↑(I ^ j) : Set R) ⊆ (↑(I ^ i) : Set R) by
-        simpa only [smul_top_eq_map, Algebra.id.map_eq_id, map_id] using this
-      intro n
-      use n
-      rintro a ⟨x, _hx, b, hb, rfl⟩
-      exact (I ^ n).smul_mem x hb }
-
-/-- The adic ring filter basis associated to an ideal `I` is made of powers of `I`. -/
-def ringFilterBasis (I : Ideal R) :=
-  I.adic_basis.toRing_subgroups_basis.toRingFilterBasis
-
-/-- The adic topology associated to an ideal `I`. This topology admits powers of `I` as a basis of
-neighborhoods of zero. It is compatible with the ring structure and is non-archimedean. -/
-def adicTopology (I : Ideal R) : TopologicalSpace R :=
-  (adic_basis I).topology
-
-theorem nonarchimedean (I : Ideal R) : @NonarchimedeanRing R _ I.adicTopology :=
-  I.adic_basis.toRing_subgroups_basis.nonarchimedean
-
-/-- For the `I`-adic topology, the neighborhoods of zero has basis given by the powers of `I`. -/
-theorem hasBasis_nhds_zero_adic (I : Ideal R) :
-    HasBasis (@nhds R I.adicTopology (0 : R)) (fun _n : ℕ => True) fun n =>
-      ((I ^ n : Ideal R) : Set R) :=
-  ⟨by
-    intro U
-    rw [I.ringFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff]
-    constructor
-    · rintro ⟨-, ⟨i, rfl⟩, h⟩
-      replace h : ↑(I ^ i) ⊆ U := by simpa using h
-      exact ⟨i, trivial, h⟩
-    · rintro ⟨i, -, h⟩
-      exact ⟨(I ^ i : Ideal R), ⟨i, by simp⟩, h⟩⟩
-
-theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
-    HasBasis (@nhds R I.adicTopology x) (fun _n : ℕ => True) fun n =>
-      (fun y => x + y) '' (I ^ n : Ideal R) := by
-  letI := I.adicTopology
-  have := I.hasBasis_nhds_zero_adic.map fun y => x + y
-  rwa [map_add_left_nhds_zero x] at this
 
 variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
-theorem adic_module_basis :
-    I.ringFilterBasis.SubmodulesBasis fun n : ℕ => I ^ n • (⊤ : Submodule R M) :=
-  { inter := fun i j =>
-      ⟨max i j,
-        le_inf_iff.mpr
-          ⟨smul_mono_left <| pow_le_pow_right (le_max_left i j),
-            smul_mono_left <| pow_le_pow_right (le_max_right i j)⟩⟩
-    smul := fun m i =>
-      ⟨(I ^ i • ⊤ : Ideal R), ⟨i, by simp⟩, fun a a_in => by
-        replace a_in : a ∈ I ^ i := by simpa [(I ^ i).mul_top] using a_in
-        exact smul_mem_smul a_in mem_top⟩ }
+/-- Given a ring $R$, an $R$-module $M$ and an ideal $I$ of $R$, `I.adicBasis M n`
+is the submodule $I^n M$ of $M$. As the name suggest, this is a basis of neighborhoods
+of zero for the $I$--adic topology on $M$. -/
+abbrev adicBasis (n : ℕ) : Set M := (I ^ n • ⊤ : Submodule R M)
 
-/-- The topology on an `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
-written `I^n • ⊤` form a basis of neighborhoods of zero. -/
-def adicModuleTopology : TopologicalSpace M :=
-  @ModuleFilterBasis.topology R M _ I.adic_basis.topology _ _
-    (I.ringFilterBasis.moduleFilterBasis (I.adic_module_basis M))
+/-- A restatement of the definition, convenient when rewriting `I.adicBasis M` instead
+of `I.adicBasis M n`. -/
+@[simp]
+theorem adicBasis_def :
+    I.adicBasis M = (fun n ↦ (I ^ n • ⊤ : Submodule R M) : ℕ → Set M) :=
+  rfl
 
-/-- The elements of the basis of neighborhoods of zero for the `I`-adic topology
-on an `R`-module `M`, seen as open additive subgroups of `M`. -/
-def openAddSubgroup (n : ℕ) : @OpenAddSubgroup R _ I.adicTopology := by
-  letI := I.adicTopology
-  refine ⟨(I ^ n).toAddSubgroup, ?_⟩
-  convert (I.adic_basis.toRing_subgroups_basis.openAddSubgroup n).isOpen
-  change (↑(I ^ n) : Set R) = ↑(I ^ n • (⊤ : Ideal R))
-  simp [smul_top_eq_map, Algebra.id.map_eq_id, map_id, restrictScalars_self]
+theorem adicBasis_isBasis :
+    IsBasis (fun _ ↦ True) (I.adicBasis M) where
+  nonempty := ⟨0, trivial⟩
+  inter := fun {i j} _ _ ↦
+    ⟨max i j, trivial, le_inf_iff.mpr
+      ⟨smul_mono_left <| pow_le_pow_right (le_max_left i j),
+        smul_mono_left <| pow_le_pow_right (le_max_right i j)⟩⟩
+
+theorem adicBasis_isAddGroupBasis :
+    IsAddGroupBasis (fun _ ↦ True) (I.adicBasis M) :=
+  .mk_of_subgroups_of_comm <| I.adicBasis_isBasis M
+
+/-- The $I$-adic topology on an $R$-module $M$, where $I$ is an ideal of $R$. Submodules $I^n M$,
+form a basis of neighborhoods of zero. -/
+def adicTopology : TopologicalSpace M :=
+  I.adicBasis_isAddGroupBasis M |>.topology
 
 end Ideal
 
+/-- Given a topology on a module `M` and an ideal `J` of the base ring,
+`IsAdic J` means the topology is the `J`-adic one. -/
+def IsAdic (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
+    [tM : TopologicalSpace M] : Prop :=
+  tM = I.adicTopology M
+
 section IsAdic
 
-/-- Given a topology on a ring `R` and an ideal `J`, `IsAdic J` means the topology is the
-`J`-adic one. -/
-def IsAdic [H : TopologicalSpace R] (J : Ideal R) : Prop :=
-  H = J.adicTopology
+theorem Ideal.isAdic_adicTopology (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M] :
+    IsAdic I M (tM := I.adicTopology M) :=
+  rfl
 
-/-- A topological ring is `J`-adic if and only if it admits the powers of `J` as a basis of
+instance (priority := 100) Ideal.instTopologicalAddGroup_adic
+    (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M] :
+    @TopologicalAddGroup M (I.adicTopology M) _ :=
+  (I.adicBasis_isAddGroupBasis M).topologicalAddGroup
+
+theorem IsAdic.topologicalAddGroup {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
+    {_ : TopologicalSpace M} (h : IsAdic I M) :
+    TopologicalAddGroup M :=
+  h ▸ I.instTopologicalAddGroup_adic M
+
+/-- For the `I`-adic topology, the neighborhoods of zero has basis given by the powers of `I`. -/
+theorem IsAdic.hasBasis_nhds_zero {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
+    {_ : TopologicalSpace M} (h : IsAdic I M) :
+    (𝓝 0).HasBasis (fun _ ↦ True) (I.adicBasis M) :=
+  h ▸ (I.adicBasis_isAddGroupBasis M).nhds_zero_hasBasis
+
+theorem IsAdic.hasBasis_nhds {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
+    {_ : TopologicalSpace M} (h : IsAdic I M) (m : M) :
+    (𝓝 m).HasBasis (fun _ ↦ True) (fun n ↦ m +ᵥ I.adicBasis M n) :=
+  h ▸ (I.adicBasis_isAddGroupBasis M).nhds_hasBasis m
+
+theorem isAdic_iff_hasBasis_nhds_zero {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
+    {_ : TopologicalSpace M} [TopologicalAddGroup M] : IsAdic I M ↔
+    (𝓝 0).HasBasis (fun _ ↦ True) (I.adicBasis M) :=
+  ⟨IsAdic.hasBasis_nhds_zero, fun H ↦ TopologicalAddGroup.ext inferInstance
+    (I.isAdic_adicTopology M).topologicalAddGroup
+    (H.eq_of_same_basis <| I.isAdic_adicTopology M |>.hasBasis_nhds_zero)⟩
+
+/-- A topological module is `J`-adic if and only if it admits the `Jⁿ M` as a basis of
 open neighborhoods of zero. -/
-theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} :
-    IsAdic J ↔
-      (∀ n : ℕ, IsOpen ((J ^ n : Ideal R) : Set R)) ∧
-        ∀ s ∈ 𝓝 (0 : R), ∃ n : ℕ, ((J ^ n : Ideal R) : Set R) ⊆ s := by
-  constructor
-  · intro H
-    change _ = _ at H
-    rw [H]
-    letI := J.adicTopology
-    constructor
-    · intro n
-      exact (J.openAddSubgroup n).isOpen'
-    · intro s hs
-      simpa using J.hasBasis_nhds_zero_adic.mem_iff.mp hs
-  · rintro ⟨H₁, H₂⟩
-    apply TopologicalAddGroup.ext
-    · apply @TopologicalRing.to_topologicalAddGroup
-    · apply (RingSubgroupsBasis.toRingFilterBasis _).toAddGroupFilterBasis.isTopologicalAddGroup
-    · ext s
-      letI := Ideal.adic_basis J
-      rw [J.hasBasis_nhds_zero_adic.mem_iff]
-      constructor <;> intro H
-      · rcases H₂ s H with ⟨n, h⟩
-        exact ⟨n, trivial, h⟩
-      · rcases H with ⟨n, -, hn⟩
-        rw [mem_nhds_iff]
-        exact ⟨_, hn, H₁ n, (J ^ n).zero_mem⟩
+theorem isAdic_iff {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
+    {_ : TopologicalSpace M} [TopologicalAddGroup M] :
+    IsAdic I M ↔
+      (∀ n : ℕ, IsOpen ((I ^ n • ⊤ : Submodule R M) : Set M)) ∧
+        ∀ s ∈ 𝓝 (0 : M), ∃ n : ℕ, ((I ^ n • ⊤ : Submodule R M) : Set M) ⊆ s := by
+  rw [isAdic_iff_hasBasis_nhds_zero]
+  refine ⟨fun H ↦ ⟨fun n ↦ (I ^ n • ⊤ : Submodule R M).toAddSubgroup.isOpen_of_mem_nhds
+    (H.mem_of_mem trivial), fun _ hS ↦ H.mem_iff.mp hS |>.imp fun n h ↦ h.2⟩,
+    fun H ↦ ⟨fun s ↦ ⟨fun hs ↦ H.2 s hs |>.imp fun n h ↦ ⟨trivial, h⟩, fun h ↦ h.elim
+      fun n h ↦ mem_of_superset ((H.1 n).mem_nhds (zero_mem _)) h.2⟩⟩⟩
 
-variable [TopologicalSpace R] [TopologicalRing R]
+theorem IsAdic.pow {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
+    {_ : TopologicalSpace M} (h : IsAdic I M) {n : ℕ} (hn : 0 < n) : IsAdic (I ^ n) M := by
+  haveI := h.topologicalAddGroup
+  simp_rw [isAdic_iff_hasBasis_nhds_zero, Ideal.adicBasis_def, ← pow_mul] at h ⊢
+  exact h.to_hasBasis
+    (fun k _ ↦ ⟨k, trivial, smul_mono_left <| Ideal.pow_le_pow_right <| n.le_mul_of_pos_left k hn⟩)
+    (fun k _ ↦ ⟨n * k, trivial, subset_rfl⟩)
 
-theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : IsAdic (J ^ n) := by
-  rw [isAdic_iff] at h ⊢
-  constructor
-  · intro m
-    rw [← pow_mul]
-    apply h.left
-  · intro V hV
-    cases' h.right V hV with m hm
-    use m
-    refine Set.Subset.trans ?_ hm
-    cases n
-    · exfalso
-      exact Nat.not_succ_le_zero 0 hn
-    rw [← pow_mul, Nat.succ_mul]
-    apply Ideal.pow_le_pow_right
-    apply Nat.le_add_left
+theorem isAdic_bot_iff {M : Type*} [AddCommGroup M] [Module R M] {_ : TopologicalSpace M} :
+    IsAdic (⊥ : Ideal R) M ↔ DiscreteTopology M := by
+  constructor <;> intro H
+  · haveI := H.topologicalAddGroup
+    exact discreteTopology_iff_isOpen_singleton_zero.mpr <|
+      isOpen_iff_mem_nhds.mpr fun _ h ↦ h.symm ▸ by
+      simpa [Ideal.adicBasis] using H.hasBasis_nhds_zero.mem_of_mem (i := 1) trivial
+  -- TODO: this should be an instance
+  · haveI : TopologicalAddGroup M := ⟨⟩
+    exact isAdic_iff_hasBasis_nhds_zero.mpr (nhds_discrete M ▸ (hasBasis_pure _).to_hasBasis
+      (fun _ _ ↦ ⟨1, trivial, by simp⟩) (by simp))
 
-theorem is_bot_adic_iff {A : Type*} [CommRing A] [TopologicalSpace A] [TopologicalRing A] :
-    IsAdic (⊥ : Ideal A) ↔ DiscreteTopology A := by
-  rw [isAdic_iff]
-  constructor
-  · rintro ⟨h, _h'⟩
-    rw [discreteTopology_iff_isOpen_singleton_zero]
-    simpa using h 1
-  · intros
-    constructor
-    · simp
-    · intro U U_nhds
-      use 1
-      simp [mem_of_mem_nhds U_nhds]
+instance (priority := 100) Ideal.instNonarchimedeanAddGroup_adic
+    (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M] :
+    @NonarchimedeanAddGroup M _ (I.adicTopology M) :=
+  (I.adicBasis_isAddGroupBasis M).nonarchimedean_of_subgroups
+
+theorem IsAdic.nonarchimedeanAddGroup {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
+    {_ : TopologicalSpace M} (h : IsAdic I M) :
+    NonarchimedeanAddGroup M :=
+  h ▸ I.instNonarchimedeanAddGroup_adic M
+
+/-- The elements of the basis of neighborhoods of zero for the `I`-adic topology
+on an `R`-module `M`, seen as open additive subgroups of `M`. -/
+def IsAdic.openAddSubgroup {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
+    {_ : TopologicalSpace M} (h : IsAdic I M) (n : ℕ) : OpenAddSubgroup M :=
+  haveI := h.topologicalAddGroup
+  ⟨(I ^ n • ⊤ : Submodule R M).toAddSubgroup,
+    AddSubgroup.isOpen_of_mem_nhds _ (h.hasBasis_nhds_zero.mem_of_mem trivial)⟩
 
 end IsAdic
+
+end Common
+
+section Ring
+
+variable (I : Ideal R)
+
+theorem Ideal.adicBasis_eq (n : ℕ) : I.adicBasis R n = (I ^ n : Submodule R R) := by
+  simp only [Ideal.adicBasis, smul_eq_mul, mul_top]
+
+theorem Ideal.adicBasis_isRingBasis :
+    IsRingBasis (fun _ ↦ True) (I.adicBasis R) :=
+  .mk_of_ideals_of_comm (I.adicBasis_isBasis R)
+    (fun {n} _ ↦ ⟨n, trivial, mul_subset_iff.mpr fun x _ _ hb ↦ Submodule.smul_mem _ x hb⟩)
+
+instance (priority := 100) Ideal.instTopologicalRing_adic :
+    @TopologicalRing R (I.adicTopology R) _ :=
+  I.adicBasis_isRingBasis.topologicalRing
+
+theorem IsAdic.topologicalRing {I : Ideal R} {_ : TopologicalSpace R} (h : IsAdic I R) :
+    TopologicalRing R :=
+  h ▸ I.instTopologicalRing_adic
+
+instance (priority := 100) Ideal.instNonarchimedeanRing_adic :
+    @NonarchimedeanRing R _ (I.adicTopology R) :=
+  I.adicBasis_isRingBasis.nonarchimedean_of_subgroups
+
+theorem IsAdic.nonarchimedeanRing {I : Ideal R} {_ : TopologicalSpace R} (h : IsAdic I R) :
+    NonarchimedeanRing R :=
+  h ▸ I.instNonarchimedeanRing_adic
+
+end Ring
+
+section Module
+
+theorem Ideal.adicBasis_isModuleBasis [TopologicalSpace R] (I : Ideal R) (M : Type*)
+    (hR : IsAdic I R) [AddCommGroup M] [Module R M] :
+    IsModuleBasis R (fun _ ↦ True) (I.adicBasis M) :=
+  .mk_of_submodules_of_hasBasis hR.hasBasis_nhds_zero (I.adicBasis_isBasis M)
+    (fun m i _ ↦ ⟨i, trivial, fun r hr ↦ Submodule.smul_mem_smul (by simpa using hr) trivial⟩)
+
+instance (priority := 100) Ideal.instContinuousSMul_adic (I : Ideal R) (M : Type*)
+    [AddCommGroup M] [Module R M] :
+    @ContinuousSMul R M _ (I.adicTopology R) (I.adicTopology M) :=
+  letI := I.adicTopology R
+  (I.adicBasis_isModuleBasis M (I.isAdic_adicTopology R)).continuousSMul
+
+variable {I : Ideal R} {M : Type*} [AddCommGroup M] [Module R M]
+  [TopologicalSpace R] [TopologicalSpace M] (hR : IsAdic I R) (hM : IsAdic I M)
+
+include hR hM in
+theorem IsAdic.continuousSMul : ContinuousSMul R M :=
+  hR ▸ hM ▸ I.instContinuousSMul_adic M
+
+end Module
 
 /-- The ring `R` is equipped with a preferred ideal. -/
 class WithIdeal (R : Type*) [CommRing R] where
@@ -216,10 +243,9 @@ variable (R)
 variable [WithIdeal R]
 
 instance (priority := 100) : TopologicalSpace R :=
-  i.adicTopology
+  (i : Ideal R).adicTopology R
 
-instance (priority := 100) : NonarchimedeanRing R :=
-  RingSubgroupsBasis.nonarchimedean _
+theorem isAdic : IsAdic (i : Ideal R) R := rfl
 
 instance (priority := 100) : UniformSpace R :=
   TopologicalAddGroup.toUniformSpace R
@@ -227,27 +253,27 @@ instance (priority := 100) : UniformSpace R :=
 instance (priority := 100) : UniformAddGroup R :=
   comm_topologicalAddGroup_is_uniform
 
-/-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
+/-- The adic topology on an `R` module coming from the ideal `WithIdeal.i`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
 def topologicalSpaceModule (M : Type*) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
-  (i : Ideal R).adicModuleTopology M
+  (i : Ideal R).adicTopology M
 
 /-
 The next examples are kept to make sure potential future refactors won't break the instance
 chaining.
 -/
-example : NonarchimedeanRing R := by infer_instance
+example : NonarchimedeanRing R := inferInstance
 
-example : TopologicalRing (UniformSpace.Completion R) := by infer_instance
-
-example (M : Type*) [AddCommGroup M] [Module R M] :
-    @TopologicalAddGroup M (WithIdeal.topologicalSpaceModule R M) _ := by infer_instance
+example : TopologicalRing (UniformSpace.Completion R) := inferInstance
 
 example (M : Type*) [AddCommGroup M] [Module R M] :
-    @ContinuousSMul R M _ _ (WithIdeal.topologicalSpaceModule R M) := by infer_instance
+    @TopologicalAddGroup M (WithIdeal.topologicalSpaceModule R M) _ := inferInstance
+
+example (M : Type*) [AddCommGroup M] [Module R M] :
+    @ContinuousSMul R M _ _ (WithIdeal.topologicalSpaceModule R M) := inferInstance
 
 example (M : Type*) [AddCommGroup M] [Module R M] :
     @NonarchimedeanAddGroup M _ (WithIdeal.topologicalSpaceModule R M) :=
-  SubmodulesBasis.nonarchimedean _
+  inferInstance
 
 end WithIdeal

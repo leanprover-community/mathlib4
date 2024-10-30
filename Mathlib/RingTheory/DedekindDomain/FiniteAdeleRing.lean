@@ -395,42 +395,56 @@ lemma mul_nonZeroDivisor_mem_finiteIntegralAdeles (a : FiniteAdeleRing R K) :
     rw [← mul_assoc]
     exact mul_mem (h v (a v)) <| coe_mem_adicCompletionIntegers _ _
 
-theorem submodulesRingBasis : SubmodulesRingBasis
-    (fun (r : R⁰) ↦ Submodule.span (R_hat R K) {((r : R) : FiniteAdeleRing R K)}) where
-  inter i j := ⟨i * j, by
+/-- The canonical basis of neighborhoods of zero on `FiniteAdeleRing R K`. -/
+abbrev basis (r : R⁰) : Set (FiniteAdeleRing R K) :=
+  Submodule.span (R_hat R K) {((r : R) : FiniteAdeleRing R K)}
+
+open Submodule in
+theorem basis_isBasis :
+    Filter.IsBasis (fun _ ↦ True) (basis R K) where
+  nonempty := ⟨1, trivial⟩
+  inter {i j} _ _ := ⟨i * j, trivial, by
+    simp only [basis, subset_inter_iff, SetLike.coe_subset_coe,
+      span_singleton_le_iff_mem, mem_span_singleton]
     push_cast
-    simp only [le_inf_iff, Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton]
     exact ⟨⟨((j : R) : R_hat R K), by rw [mul_comm]; rfl⟩, ⟨((i : R) : R_hat R K), rfl⟩⟩⟩
-  leftMul a r := by
+
+theorem basis_isRingBasis :
+    Filter.IsRingBasis (fun _ ↦ True) (basis R K) := by
+  refine .mk_of_subgroups_of_comm (basis_isBasis R K) ?mul ?mul_left
+  case mul_left =>
+    rintro a r -
     rcases mul_nonZeroDivisor_mem_finiteIntegralAdeles a with ⟨b, c, h⟩
-    use r * b
-    rintro x ⟨m, hm, rfl⟩
-    simp only [Submonoid.coe_mul, SetLike.mem_coe] at hm
-    rw [Submodule.mem_span_singleton] at hm ⊢
+    use r * b, trivial
+    rintro m hm
+    rw [SetLike.mem_coe, Submodule.mem_span_singleton] at hm ⊢
     rcases hm with ⟨n, rfl⟩
-    simp only [LinearMapClass.map_smul, DistribMulAction.toLinearMap_apply, smul_eq_mul]
     use n * c
     push_cast
-    rw [mul_left_comm, h, mul_comm _ (c : FiniteAdeleRing R K),
-      Algebra.smul_def', Algebra.smul_def', ← mul_assoc]
-    rfl
-  mul r := ⟨r, by
-    intro x hx
-    rw [mem_mul] at hx
-    rcases hx with ⟨a, ha, b, hb, rfl⟩
+    simp only [Algebra.smul_def, Algebra.cast, smul_eq_mul, map_mul] at h ⊢
+    rw [← h]
+    ring
+  case mul =>
+    rintro r -
+    use r, trivial
+    rw [mul_subset_iff]
+    intro a ha b hb
     simp only [SetLike.mem_coe, Submodule.mem_span_singleton] at ha hb ⊢
     rcases ha with ⟨m, rfl⟩
     rcases hb with ⟨n, rfl⟩
     use m * n * (r : R)
     simp only [Algebra.smul_def', map_mul]
     rw [mul_mul_mul_comm, mul_assoc]
-    rfl⟩
+    rfl
 
 instance : TopologicalSpace (FiniteAdeleRing R K) :=
-  SubmodulesRingBasis.topology (submodulesRingBasis R K)
+  (basis_isRingBasis R K).topology
 
--- the point of `submodulesRingBasis` above: this now works
-example : TopologicalRing (FiniteAdeleRing R K) := inferInstance
+instance : TopologicalRing (FiniteAdeleRing R K) :=
+  (basis_isRingBasis R K).topologicalRing
+
+instance : NonarchimedeanRing (FiniteAdeleRing R K) :=
+  (basis_isRingBasis R K).nonarchimedean_of_subgroups
 
 end Topology
 

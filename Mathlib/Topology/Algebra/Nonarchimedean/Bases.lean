@@ -1,384 +1,182 @@
 /-
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot
+Authors: Patrick Massot, Anatole Dedecker
 -/
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
-# Neighborhood bases for non-archimedean rings and modules
+# Neighborhood bases for non-archimedean groups, rings and modules
 
-This files contains special families of filter bases on rings and modules that give rise to
-non-archimedean topologies.
+This file specializes the theory of algebraic filter bases (see
+the docstring of `Topology.Algebra.FilterBasis`) to filter bases whose elements are
+algebraic subobjects.
 
-The main definition is `RingSubgroupsBasis` which is a predicate on a family of
-additive subgroups of a ring. The predicate ensures there is a topology
-`RingSubgroupsBasis.topology` which is compatible with a ring structure and admits the given
-family as a basis of neighborhoods of zero. In particular the given subgroups become open subgroups
-(bundled in `RingSubgroupsBasis.openAddSubgroup`) and we get a non-archimedean topological ring
-(`RingSubgroupsBasis.nonarchimedean`).
+More specifically, we provide multiple alternative constructors for `Filter.IsXBasis`,
+where `X ∈ {Group, AddGroup, Ring, Module}`, in the case where the basis elements
+have some extra algebraic structure. For example, `Filter.IsAddGroupBasis.mk_of_subgroups_of_comm`
+shows that, in a commutative additive group, any filter basis made of subgroups is automatically
+a group filter basis.
 
-A special case of this construction is given by `SubmodulesBasis` where the subgroups are
-sub-modules in a commutative algebra. This important example gives rise to the adic topology
-(studied in its own file).
+We also prove some extra results about the topological objects obtained in this setting
+(that is, nonarchimedean objects), but these should probably be tweaked to *not* mention
+`IsGroupBasis` (and friends) and moved elsewhere. More details in comments around the file.
+
+## Implementation note
+
+* We use subobject classes, so for example `Filter.IsAddGroupBasis.mk_of_subgroups` will
+  also apply if your basis is valued in `Submodule`, `Ideal`, ...
+
+* For a long time, each additional constructor in this file was its own predicate (e.g
+  there was a definition for "ring filter bases made of subgroups", another one for
+  "ring filter bases made of submodules", and so on...). Furthermore, these did not take any
+  predicate bounding the filter basis, making them inconsistent with both `Filter.IsBasis`
+  and `FilterBasis` (recall that the general setup used to rely on `FilterBasis`).
+  This led to a lot of (inconsistent) code duplication, which doesn't exist anymore.
+
 -/
 
 open Set Filter Function Lattice
 
 open Topology Filter Pointwise
 
-/-- A family of additive subgroups on a ring `A` is a subgroups basis if it satisfies some
-axioms ensuring there is a topology on `A` which is compatible with the ring structure and
-admits this family as a basis of neighborhoods of zero. -/
-structure RingSubgroupsBasis {A ι : Type*} [Ring A] (B : ι → AddSubgroup A) : Prop where
-  /-- Condition for `B` to be a filter basis on `A`. -/
-  inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
-  /-- For each set `B` in the submodule basis on `A`, there is another basis element `B'` such
-   that the set-theoretic product `B' * B'` is in `B`. -/
-  mul : ∀ i, ∃ j, (B j : Set A) * B j ⊆ B i
-  /-- For any element `x : A` and any set `B` in the submodule basis on `A`,
-    there is another basis element `B'` such that `B' * x` is in `B`. -/
-  leftMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (x * ·) ⁻¹' B i
-  /-- For any element `x : A` and any set `B` in the submodule basis on `A`,
-    there is another basis element `B'` such that `x * B'` is in `B`. -/
-  rightMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (· * x) ⁻¹' B i
+namespace Filter
 
-namespace RingSubgroupsBasis
+namespace IsGroupBasis
 
-variable {A ι : Type*} [Ring A]
+/-- A simpler constructor for `Filter.IsGroupBasis` for bases valued in
+`Subgroup` (or any `S` satisfying `SubgroupClass S G`). -/
+@[to_additive "A simpler constructor for `Filter.IsAddGroupBasis` for bases valued in
+`AddSubgroup` (or any `S` satisfying `AddSubgroupClass S G`)."]
+theorem mk_of_subgroups {G S : Type*} {ι : Sort*} [Group G] [SetLike S G] [SubgroupClass S G]
+    {p : ι → Prop} {B : ι → S} (isBasis : IsBasis p (fun i ↦ B i : ι → Set G))
+    (conj : ∀ x₀, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x₀ * · * x₀⁻¹) (B j) (B i : Set G)) :
+    IsGroupBasis p (fun i ↦ B i : ι → Set G) where
+  toIsBasis := isBasis
+  one _ := one_mem _
+  mul {i} hi := ⟨i, hi, mul_subset_iff.mpr fun _ ha _ hb ↦ mul_mem ha hb⟩
+  inv {i} hi := ⟨i, hi, fun _ ha ↦ inv_mem ha⟩
+  conj := conj
 
-theorem of_comm {A ι : Type*} [CommRing A] (B : ι → AddSubgroup A)
-    (inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j) (mul : ∀ i, ∃ j, (B j : Set A) * B j ⊆ B i)
-    (leftMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (fun y : A => x * y) ⁻¹' B i) :
-    RingSubgroupsBasis B :=
-  { inter
-    mul
-    leftMul
-    rightMul := fun x i ↦ (leftMul x i).imp fun j hj ↦ by simpa only [mul_comm] using hj }
+/-- A version of `Filter.IsGroupBasis.mk_of_subgroups` for commutative groups. -/
+@[to_additive "A version of `Filter.IsAddGroupBasis.mk_of_subgroups` for commutative groups."]
+theorem mk_of_subgroups_of_comm {G S : Type*} {ι : Sort*} [CommGroup G]
+    [SetLike S G] [SubgroupClass S G] {p : ι → Prop} {B : ι → S}
+    (isBasis : IsBasis p (fun i ↦ B i : ι → Set G)) :
+    IsGroupBasis p (fun i ↦ B i : ι → Set G) :=
+  .mk_of_comm _ _ isBasis (fun _ ↦ one_mem _)
+    (fun {i} hi ↦ ⟨i, hi, mul_subset_iff.mpr fun _ ha _ hb ↦ mul_mem ha hb⟩)
+    (fun {i} hi ↦ ⟨i, hi, fun _ ha ↦ inv_mem ha⟩)
 
-/-- Every subgroups basis on a ring leads to a ring filter basis. -/
-def toRingFilterBasis [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgroupsBasis B) :
-    RingFilterBasis A where
-  sets := { U | ∃ i, U = B i }
-  nonempty := by
-    inhabit ι
-    exact ⟨B default, default, rfl⟩
-  inter_sets := by
-    rintro _ _ ⟨i, rfl⟩ ⟨j, rfl⟩
-    cases' hB.inter i j with k hk
-    use B k
-    constructor
-    · use k
-    · exact hk
-  zero' := by
-    rintro _ ⟨i, rfl⟩
-    exact (B i).zero_mem
-  add' := by
-    rintro _ ⟨i, rfl⟩
-    use B i
-    constructor
-    · use i
-    · rintro x ⟨y, y_in, z, z_in, rfl⟩
-      exact (B i).add_mem y_in z_in
-  neg' := by
-    rintro _ ⟨i, rfl⟩
-    use B i
-    constructor
-    · use i
-    · intro x x_in
-      exact (B i).neg_mem x_in
-  conj' := by
-    rintro x₀ _ ⟨i, rfl⟩
-    use B i
-    constructor
-    · use i
-    · simp
-  mul' := by
-    rintro _ ⟨i, rfl⟩
-    cases' hB.mul i with k hk
-    use B k
-    constructor
-    · use k
-    · exact hk
-  mul_left' := by
-    rintro x₀ _ ⟨i, rfl⟩
-    cases' hB.leftMul x₀ i with k hk
-    use B k
-    constructor
-    · use k
-    · exact hk
-  mul_right' := by
-    rintro x₀ _ ⟨i, rfl⟩
-    cases' hB.rightMul x₀ i with k hk
-    use B k
-    constructor
-    · use k
-    · exact hk
+variable {G S : Type*} {ι : Sort*} [Group G] [SetLike S G] [SubgroupClass S G]
+  {p : ι → Prop} {B : ι → S} (hB : IsGroupBasis p (fun i ↦ B i : ι → Set G))
+include hB
 
-variable [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgroupsBasis B)
+-- TODO(Anatole) : this should be a general lemma assuming `(𝓝 1).HasBasis p s`
+-- with `s` valued in subgroups.
+/-- If a group filter basis is made of subgroups, these are open for the associated topology. -/
+@[to_additive "If a group filter basis is made of subgroups, these are open for the associated
+topology."]
+def openSubgroup_of_subgroups {i : ι} (hi : p i) :
+    @OpenSubgroup G _ hB.topology :=
+  -- Porting note: failed to synthesize instance `TopologicalSpace G`
+  letI := hB.topology
+  { carrier := B i
+    mul_mem' := mul_mem
+    one_mem' := one_mem _
+    inv_mem' := inv_mem
+    isOpen' := Subgroup.isOpen_of_mem_nhds _ <| hB.nhds_one_hasBasis.mem_of_mem hi }
 
-theorem mem_addGroupFilterBasis_iff {V : Set A} :
-    V ∈ hB.toRingFilterBasis.toAddGroupFilterBasis ↔ ∃ i, V = B i :=
-  Iff.rfl
-
-theorem mem_addGroupFilterBasis (i) : (B i : Set A) ∈ hB.toRingFilterBasis.toAddGroupFilterBasis :=
-  ⟨i, rfl⟩
-
-/-- The topology defined from a subgroups basis, admitting the given subgroups as a basis
-of neighborhoods of zero. -/
-def topology : TopologicalSpace A :=
-  hB.toRingFilterBasis.toAddGroupFilterBasis.topology
-
-theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ => True) fun i => B i :=
-  ⟨by
-    intro s
-    rw [hB.toRingFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff]
-    constructor
-    · rintro ⟨-, ⟨i, rfl⟩, hi⟩
-      exact ⟨i, trivial, hi⟩
-    · rintro ⟨i, -, hi⟩
-      exact ⟨B i, ⟨i, rfl⟩, hi⟩⟩
-
-theorem hasBasis_nhds (a : A) :
-    HasBasis (@nhds A hB.topology a) (fun _ => True) fun i => { b | b - a ∈ B i } :=
-  ⟨by
-    intro s
-    rw [(hB.toRingFilterBasis.toAddGroupFilterBasis.nhds_hasBasis a).mem_iff]
-    simp only [true_and]
-    constructor
-    · rintro ⟨-, ⟨i, rfl⟩, hi⟩
-      use i
-      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i) by
-        rw [h]
-        assumption
-      simp only [image_add_left, neg_add_eq_sub]
-      ext b
-      simp
-    · rintro ⟨i, hi⟩
-      use B i
-      constructor
-      · use i
-      · rw [image_subset_iff]
-        rintro b b_in
-        apply hi
-        simpa using b_in⟩
-
-/-- Given a subgroups basis, the basis elements as open additive subgroups in the associated
-topology. -/
-def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
-  -- Porting note: failed to synthesize instance `TopologicalSpace A`
-  let _ := hB.topology
-  { B i with
-    isOpen' := by
-      rw [isOpen_iff_mem_nhds]
-      intro a a_in
-      rw [(hB.hasBasis_nhds a).mem_iff]
-      use i, trivial
-      rintro b b_in
-      simpa using (B i).add_mem a_in b_in }
-
+-- TODO(Anatole) : this should be a general lemma assuming `(𝓝 1).HasBasis p s`
+-- with `s` valued in subgroups.
 -- see Note [nonarchimedean non instances]
-theorem nonarchimedean : @NonarchimedeanRing A _ hB.topology := by
+@[to_additive]
+theorem nonarchimedean_of_subgroups : @NonarchimedeanGroup G _ hB.topology := by
   letI := hB.topology
   constructor
   intro U hU
-  obtain ⟨i, -, hi : (B i : Set A) ⊆ U⟩ := hB.hasBasis_nhds_zero.mem_iff.mp hU
-  exact ⟨hB.openAddSubgroup i, hi⟩
+  obtain ⟨i, hi, hiU : (B i : Set G) ⊆ U⟩ := hB.nhds_one_hasBasis.mem_iff.mp hU
+  exact ⟨hB.openSubgroup_of_subgroups hi, hiU⟩
 
-end RingSubgroupsBasis
+end IsGroupBasis
 
-variable {ι R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+namespace IsRingBasis
 
-/-- A family of submodules in a commutative `R`-algebra `A` is a submodules basis if it satisfies
-some axioms ensuring there is a topology on `A` which is compatible with the ring structure and
-admits this family as a basis of neighborhoods of zero. -/
-structure SubmodulesRingBasis (B : ι → Submodule R A) : Prop where
-  /-- Condition for `B` to be a filter basis on `A`. -/
-  inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
-  /-- For any element `a : A` and any set `B` in the submodule basis on `A`,
-    there is another basis element `B'` such that `a • B'` is in `B`. -/
-  leftMul : ∀ (a : A) (i), ∃ j, a • B j ≤ B i
-  /-- For each set `B` in the submodule basis on `A`, there is another basis element `B'` such
-    that the set-theoretic product `B' * B'` is in `B`. -/
-  mul : ∀ i, ∃ j, (B j : Set A) * B j ⊆ B i
+/-- A simpler constructor for `Filter.IsRingBasis` for bases valued in
+`AddSubgroup` (or any `S` satisfying `AddSubgroupClass S A`). -/
+theorem mk_of_subgroups {A S : Type*} {ι : Sort*} [Ring A] [SetLike S A] [AddSubgroupClass S A]
+    {p : ι → Prop} {B : ι → S} (isBasis : IsBasis p (fun i ↦ B i : ι → Set A))
+    (mul : ∀ {i}, p i → ∃ j, p j ∧ (B j : Set A) * B j ⊆ B i)
+    (mul_left : ∀ x : A, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x * ·) (B j) (B i))
+    (mul_right : ∀ x : A, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (· * x) (B j) (B i)) :
+    IsRingBasis p (fun i ↦ B i : ι → Set A) where
+  toIsAddGroupBasis := .mk_of_subgroups_of_comm isBasis
+  mul := mul
+  mul_left := mul_left
+  mul_right := mul_right
 
-namespace SubmodulesRingBasis
+/-- A version of `Filter.IsRingBasis.mk_of_subgroups` in the commutative case. -/
+theorem mk_of_subgroups_of_comm {A S : Type*} {ι : Sort*} [CommRing A]
+    [SetLike S A] [AddSubgroupClass S A] {p : ι → Prop} {B : ι → S}
+    (isBasis : IsBasis p (fun i ↦ B i : ι → Set A))
+    (mul : ∀ {i}, p i → ∃ j, p j ∧ (B j : Set A) * B j ⊆ B i)
+    (mul_left : ∀ x : A, ∀ {i}, p i → ∃ j, p j ∧ MapsTo (x * ·) (B j) (B i)) :
+    IsRingBasis p (fun i ↦ B i : ι → Set A) :=
+  .mk_of_comm _ _ (.mk_of_subgroups_of_comm isBasis) mul mul_left
 
-variable {B : ι → Submodule R A} (hB : SubmodulesRingBasis B)
+/-- A simpler constructor for `Filter.IsRingBasis` for bases valued in
+`Ideal` (or any `S` satisfying `AddSubgroupClass S A` and `SMulMemClass S A A`). -/
+theorem mk_of_ideals_of_comm {A S : Type*} {ι : Sort*} [CommRing A]
+    [SetLike S A] [AddSubgroupClass S A] [SMulMemClass S A A] {p : ι → Prop} {B : ι → S}
+    (isBasis : IsBasis p (fun i ↦ B i : ι → Set A))
+    (mul : ∀ {i}, p i → ∃ j, p j ∧ (B j : Set A) * B j ⊆ B i) :
+    IsRingBasis p (fun i ↦ B i : ι → Set A) :=
+  .mk_of_subgroups_of_comm isBasis mul fun a {i} hi ↦ ⟨i, hi, fun _ hx ↦ SMulMemClass.smul_mem a hx⟩
 
-theorem toRing_subgroups_basis (hB : SubmodulesRingBasis B) :
-    RingSubgroupsBasis fun i => (B i).toAddSubgroup := by
-  apply RingSubgroupsBasis.of_comm (fun i => (B i).toAddSubgroup) hB.inter hB.mul
-  intro a i
-  rcases hB.leftMul a i with ⟨j, hj⟩
-  use j
-  rintro b (b_in : b ∈ B j)
-  exact hj ⟨b, b_in, rfl⟩
+variable {A S : Type*} {ι : Sort*} [Ring A] [SetLike S A] [AddSubgroupClass S A]
+    {p : ι → Prop} {B : ι → S} (hB : IsRingBasis p (fun i ↦ B i : ι → Set A))
 
-/-- The topology associated to a basis of submodules in an algebra. -/
-def topology [Nonempty ι] (hB : SubmodulesRingBasis B) : TopologicalSpace A :=
-  hB.toRing_subgroups_basis.topology
-
-end SubmodulesRingBasis
-
-variable {M : Type*} [AddCommGroup M] [Module R M]
-
-/-- A family of submodules in an `R`-module `M` is a submodules basis if it satisfies
-some axioms ensuring there is a topology on `M` which is compatible with the module structure and
-admits this family as a basis of neighborhoods of zero. -/
-structure SubmodulesBasis [TopologicalSpace R] (B : ι → Submodule R M) : Prop where
-  /-- Condition for `B` to be a filter basis on `M`. -/
-  inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
-  /-- For any element `m : M` and any set `B` in the basis, `a • m` lies in `B` for all
-    `a` sufficiently close to `0`. -/
-  smul : ∀ (m : M) (i : ι), ∀ᶠ a in 𝓝 (0 : R), a • m ∈ B i
-
-namespace SubmodulesBasis
-
-variable [TopologicalSpace R] [Nonempty ι] {B : ι → Submodule R M} (hB : SubmodulesBasis B)
-
-/-- The image of a submodules basis is a module filter basis. -/
-def toModuleFilterBasis : ModuleFilterBasis R M where
-  sets := { U | ∃ i, U = B i }
-  nonempty := by
-    inhabit ι
-    exact ⟨B default, default, rfl⟩
-  inter_sets := by
-    rintro _ _ ⟨i, rfl⟩ ⟨j, rfl⟩
-    cases' hB.inter i j with k hk
-    use B k
-    constructor
-    · use k
-    · exact hk
-  zero' := by
-    rintro _ ⟨i, rfl⟩
-    exact (B i).zero_mem
-  add' := by
-    rintro _ ⟨i, rfl⟩
-    use B i
-    constructor
-    · use i
-    · rintro x ⟨y, y_in, z, z_in, rfl⟩
-      exact (B i).add_mem y_in z_in
-  neg' := by
-    rintro _ ⟨i, rfl⟩
-    use B i
-    constructor
-    · use i
-    · intro x x_in
-      exact (B i).neg_mem x_in
-  conj' := by
-    rintro x₀ _ ⟨i, rfl⟩
-    use B i
-    constructor
-    · use i
-    · simp
-  smul' := by
-    rintro _ ⟨i, rfl⟩
-    use univ
-    constructor
-    · exact univ_mem
-    · use B i
-      constructor
-      · use i
-      · rintro _ ⟨a, -, m, hm, rfl⟩
-        exact (B i).smul_mem _ hm
-  smul_left' := by
-    rintro x₀ _ ⟨i, rfl⟩
-    use B i
-    constructor
-    · use i
-    · intro m
-      exact (B i).smul_mem _
-  smul_right' := by
-    rintro m₀ _ ⟨i, rfl⟩
-    exact hB.smul m₀ i
-
-/-- The topology associated to a basis of submodules in a module. -/
-def topology : TopologicalSpace M :=
-  hB.toModuleFilterBasis.toAddGroupFilterBasis.topology
-
-/-- Given a submodules basis, the basis elements as open additive subgroups in the associated
-topology. -/
-def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
-  let _ := hB.topology -- Porting note: failed to synthesize instance `TopologicalSpace A`
-  { (B i).toAddSubgroup with
-    isOpen' := by
-      letI := hB.topology
-      rw [isOpen_iff_mem_nhds]
-      intro a a_in
-      rw [(hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_hasBasis a).mem_iff]
-      use B i
-      constructor
-      · use i
-      · rintro - ⟨b, b_in, rfl⟩
-        exact (B i).add_mem a_in b_in }
-
+-- TODO(Anatole) : this should be a general lemma assuming `(𝓝 0).HasBasis p s`
+-- with `s` valued in subgroups.
 -- see Note [nonarchimedean non instances]
-theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB.topology := by
+nonrec theorem nonarchimedean_of_subgroups : @NonarchimedeanRing A _ hB.topology := by
   letI := hB.topology
   constructor
-  intro U hU
-  obtain ⟨-, ⟨i, rfl⟩, hi : (B i : Set M) ⊆ U⟩ :=
-    hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff.mp hU
-  exact ⟨hB.openAddSubgroup i, hi⟩
+  exact hB.nonarchimedean_of_subgroups.is_nonarchimedean
 
-library_note "nonarchimedean non instances"/--
-The non archimedean subgroup basis lemmas cannot be instances because some instances
-(such as `MeasureTheory.AEEqFun.instAddMonoid` or `TopologicalAddGroup.toContinuousAdd`)
-cause the search for `@TopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where
-the topology/group structure are unknown. -/
+end IsRingBasis
 
+namespace IsModuleBasis
 
-end SubmodulesBasis
+/-- A simpler constructor for `Filter.IsModuleBasis` for bases valued in
+`Submodule` (or any `S` satisfying `AddSubgroupClass S M` and `SMulMemClass S R M`). -/
+theorem mk_of_submodules {R M S : Type*} {ι : Sort*} [Ring R]
+    [TopologicalSpace R] [AddCommGroup M] [Module R M]
+    [SetLike S M] [AddSubgroupClass S M] [SMulMemClass S R M]
+    {p : ι → Prop} {B : ι → S}
+    (isBasis : IsBasis p (fun i ↦ B i : ι → Set M))
+    (smul : ∀ (m : M) {i : ι}, p i → ∀ᶠ a in 𝓝 (0 : R), a • m ∈ B i) :
+    IsModuleBasis R p (fun i ↦ B i : ι → Set M) where
+  toIsAddGroupBasis := .mk_of_subgroups_of_comm isBasis
+  smul {i} hi := ⟨univ, univ_mem, i, hi, smul_subset_iff.mpr
+    fun _ _ _ hb ↦ SMulMemClass.smul_mem _ hb⟩
+  smul_left _ {i} hi := ⟨i, hi, fun _ hb ↦ SMulMemClass.smul_mem _ hb⟩
+  smul_right := smul
 
-section
+set_option linter.unusedVariables.funArgs false
+/-- A version of `IsModuleBasis.mk_of_submodules` given a preferred basis of neighborhoods of zero
+in the base ring. In particular, this applies when the ring topology comes from
+`Filter.IsRingBasis`. -/
+theorem mk_of_submodules_of_hasBasis {R M S : Type*} {ιR ιM : Sort*} [CommRing R]
+    [tR : TopologicalSpace R] [AddCommGroup M] [Module R M]
+    [SetLike S M] [AddSubgroupClass S M] [SMulMemClass S R M]
+    {pR : ιR → Prop} {sR : ιR → Set R} (hR : (𝓝 0).HasBasis pR sR)
+    {pM : ιM → Prop} {sM : ιM → S} (isBasis : IsBasis pM (fun i ↦ sM i : ιM → Set M))
+    (smul : ∀ (m : M) {i}, pM i → ∃ j, pR j ∧ MapsTo (· • m) (sR j) (sM i)) :
+    IsModuleBasis R pM (fun i ↦ sM i : ιM → Set M) :=
+  .mk_of_submodules isBasis (fun m₀ _ hi ↦ hR.eventually_iff.mpr <| smul m₀ hi)
 
-/-
-In this section, we check that in an `R`-algebra `A` over a ring equipped with a topology,
-a basis of `R`-submodules which is compatible with the topology on `R` is also a submodule basis
-in the sense of `R`-modules (forgetting about the ring structure on `A`) and those two points of
-view definitionaly gives the same topology on `A`.
--/
-variable [TopologicalSpace R] {B : ι → Submodule R A} (hB : SubmodulesRingBasis B)
-  (hsmul : ∀ (m : A) (i : ι), ∀ᶠ a : R in 𝓝 0, a • m ∈ B i)
-include hB hsmul
+end IsModuleBasis
 
-theorem SubmodulesRingBasis.toSubmodulesBasis : SubmodulesBasis B :=
-  { inter := hB.inter
-    smul := hsmul }
-
-example [Nonempty ι] : hB.topology = (hB.toSubmodulesBasis hsmul).topology :=
-  rfl
-
-end
-
-/-- Given a ring filter basis on a commutative ring `R`, define a compatibility condition
-on a family of submodules of an `R`-module `M`. This compatibility condition allows to get
-a topological module structure. -/
-structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → Submodule R M) :
-    Prop where
-  /-- Condition for `B` to be a filter basis on `M`. -/
-  inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
-  /-- For any element `m : M` and any set `B i` in the submodule basis on `M`,
-    there is a `U` in the ring filter basis on `R` such that `U * m` is in `B i`. -/
-  smul : ∀ (m : M) (i : ι), ∃ U ∈ BR, U ⊆ (· • m) ⁻¹' B i
-
-theorem RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι → Submodule R M}
-    (hB : BR.SubmodulesBasis B) : @_root_.SubmodulesBasis ι R _ M _ _ BR.topology B :=
-  let _ := BR.topology -- Porting note: failed to synthesize instance `TopologicalSpace R`
-  { inter := hB.inter
-    smul := by
-      letI := BR.topology
-      intro m i
-      rcases hB.smul m i with ⟨V, V_in, hV⟩
-      exact mem_of_superset (BR.toAddGroupFilterBasis.mem_nhds_zero V_in) hV }
-
-/-- The module filter basis associated to a ring filter basis and a compatible submodule basis.
-This allows to build a topological module structure compatible with the given module structure
-and the topology associated to the given ring filter basis. -/
-def RingFilterBasis.moduleFilterBasis [Nonempty ι] (BR : RingFilterBasis R) {B : ι → Submodule R M}
-    (hB : BR.SubmodulesBasis B) : @ModuleFilterBasis R M _ BR.topology _ _ :=
-  @SubmodulesBasis.toModuleFilterBasis ι R _ M _ _ BR.topology _ _ (BR.submodulesBasisIsBasis hB)
+end Filter
