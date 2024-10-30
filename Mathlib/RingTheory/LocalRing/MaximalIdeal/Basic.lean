@@ -57,7 +57,7 @@ theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
 An element `x` of a commutative local semiring is not contained in the maximal ideal
 iff it is a unit.
 -/
-theorem not_mem_maximalIdeal (x : R) : x ∉ maximalIdeal R ↔ IsUnit x := by
+theorem not_mem_maximalIdeal {x : R} : x ∉ maximalIdeal R ↔ IsUnit x := by
   simp only [mem_maximalIdeal, mem_nonunits_iff, not_not]
 
 theorem isField_iff_maximalIdeal_eq : IsField R ↔ maximalIdeal R = ⊥ :=
