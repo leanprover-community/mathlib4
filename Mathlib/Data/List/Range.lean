@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kenny Lau, Scott Morrison
+Authors: Mario Carneiro, Kenny Lau, Kim Morrison
 -/
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Nodup
@@ -34,18 +34,13 @@ theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
   induction' n with n hn
   · simp
   · rw [range_succ]
-    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton,
-      and_true_iff]
+    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton, and_true]
     rw [hn, forall_lt_succ]
 
 theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
     Chain r a (range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ := by
   rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
-
-/-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
-def finRange (n : ℕ) : List (Fin n) :=
-  (range n).pmap Fin.mk fun _ => List.mem_range.1
 
 @[simp]
 theorem finRange_zero : finRange 0 = [] :=

@@ -16,7 +16,7 @@ namespace Mathlib.Tactic
 
 open Lean Meta Tactic
 
-variable {m : Type → Type} [Monad m]
+variable {m : Type → Type}
 
 /--
 `modifyMetavarDecl mvarId f` updates the `MetavarDecl` for `mvarId` with `f`.
@@ -31,7 +31,7 @@ Conditions on `f`:
 If `mvarId` does not refer to a declared metavariable, nothing happens.
 -/
 def modifyMetavarDecl [MonadMCtx m] (mvarId : MVarId)
-    (f : MetavarDecl → MetavarDecl) : m Unit := do
+    (f : MetavarDecl → MetavarDecl) : m Unit :=
   modifyMCtx fun mctx ↦
     match mctx.decls.find? mvarId with
     | none => mctx

@@ -34,7 +34,7 @@ assert_not_exists MonoidWithZero
 -- assert_not_exists AddMonoidWithOne
 assert_not_exists DenselyOrdered
 
-variable {A : Type*} {B : Type*} {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
+variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
 namespace Prod
 
@@ -179,8 +179,8 @@ instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) :=
 
 @[to_additive]
 instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
-  { mul_inv_rev := fun a b => Prod.ext (mul_inv_rev _ _) (mul_inv_rev _ _),
-    inv_eq_of_mul := fun a b h =>
+  { mul_inv_rev := fun _ _ => Prod.ext (mul_inv_rev _ _) (mul_inv_rev _ _),
+    inv_eq_of_mul := fun _ _ h =>
       Prod.ext (inv_eq_of_mul_eq_one_right <| congr_arg fst h)
         (inv_eq_of_mul_eq_one_right <| congr_arg snd h),
     inv_inv := by simp }
@@ -217,12 +217,14 @@ instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigrou
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
   { mul_one := by simp,
-    one_mul := by simp }
+    one_mul := by simp
+    mul_left_cancel := by simp }
 
 @[to_additive]
 instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
   { mul_one := by simp,
-    one_mul := by simp }
+    one_mul := by simp
+    mul_right_cancel := by simp }
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
@@ -234,7 +236,7 @@ instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
 
 @[to_additive]
 instance [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) :=
-  { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
+  { mul_left_cancel := by simp }
 
 @[to_additive]
 instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
@@ -584,7 +586,24 @@ theorem coe_prodComm : ⇑(prodComm : M × N ≃* N × M) = Prod.swap :=
 theorem coe_prodComm_symm : ⇑(prodComm : M × N ≃* N × M).symm = Prod.swap :=
   rfl
 
-variable {M' N' : Type*} [MulOneClass M'] [MulOneClass N']
+variable [MulOneClass P]
+
+/-- The equivalence between `(M × N) × P` and `M × (N × P)` is multiplicative. -/
+@[to_additive prodAssoc
+      "The equivalence between `(M × N) × P` and `M × (N × P)` is additive."]
+def prodAssoc : (M × N) × P ≃* M × (N × P) :=
+  { Equiv.prodAssoc M N P with map_mul' := fun ⟨_, _⟩ ⟨_, _⟩ => rfl }
+
+@[to_additive (attr := simp) coe_prodAssoc]
+theorem coe_prodAssoc : ⇑(prodAssoc : (M × N) × P ≃* M × (N × P)) = Equiv.prodAssoc M N P :=
+  rfl
+
+@[to_additive (attr := simp) coe_prodAssoc_symm]
+theorem coe_prodAssoc_symm :
+    ⇑(prodAssoc : (M × N) × P ≃* M × (N × P)).symm = (Equiv.prodAssoc M N P).symm :=
+  rfl
+
+variable {M' : Type*} {N' : Type*} [MulOneClass N'] [MulOneClass M']
 
 section
 

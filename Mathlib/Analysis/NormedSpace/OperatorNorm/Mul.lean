@@ -121,7 +121,7 @@ examples. Any algebra with an approximate identity (e.g., $$L^1$$) is also regul
 
 This is a useful class because it gives rise to a nice norm on the unitization; in particular it is
 a C⋆-norm when the norm on `A` is a C⋆-norm. -/
-class _root_.RegularNormedAlgebra : Prop :=
+class _root_.RegularNormedAlgebra : Prop where
   /-- The left regular representation of the algebra on itself is an isometry. -/
   isometry_mul' : Isometry (mul 𝕜 𝕜')
 
@@ -239,7 +239,7 @@ section Normed
 
 namespace ContinuousLinearMap
 
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] (c : 𝕜)
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable (𝕜) (𝕜' : Type*)
 
 section

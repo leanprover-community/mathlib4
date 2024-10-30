@@ -112,7 +112,7 @@ lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
 
 lemma retractionOfSectionOfKerSqZero_comp_kerToTensor :
     (retractionOfSectionOfKerSqZero g hf' hg).comp (kerToTensor R P S) = LinearMap.id := by
-  ext x; simp [(RingHom.mem_ker _).mp x.2]
+  ext x; simp [RingHom.mem_ker.mp x.2]
 
 end ofSection
 
@@ -172,7 +172,7 @@ lemma toAlgHom_comp_sectionOfRetractionKerToTensorAux :
       (sectionOfRetractionKerToTensorAux l hl σ hσ hf') = AlgHom.id _ _ := by
   ext x
   obtain ⟨x, rfl⟩ := hf x
-  simp [sectionOfRetractionKerToTensorAux_algebraMap, (RingHom.mem_ker _).mp]
+  simp [sectionOfRetractionKerToTensorAux_algebraMap, RingHom.mem_ker.mp]
 
 /--
 Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`.

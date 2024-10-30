@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 
-import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.BigOperators.Group.Multiset
 import Mathlib.Algebra.BigOperators.Group.List
+import Mathlib.GroupTheory.Congruence.Defs
 
 /-!
 # Interactions between `∑, ∏` and `(Add)Con`

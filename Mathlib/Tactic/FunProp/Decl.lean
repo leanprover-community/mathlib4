@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.Init
-import Lean
 
 /-!
 ## `funProp` environment extension that stores all registered function properties
