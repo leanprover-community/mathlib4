@@ -36,6 +36,7 @@ def algebraicClosure : IntermediateField F E :=
   Algebra.IsAlgebraic.toIntermediateField (integralClosure F E)
 
 variable {F E}
+
 /-- An element is contained in the algebraic closure of `F` in `E` if and only if
 it is an integral element. -/
 theorem mem_algebraicClosure_iff' {x : E} :
