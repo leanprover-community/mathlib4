@@ -152,8 +152,8 @@ theorem ofFn_take_get {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) 
   List.ext_get (by simp [h]) (fun n h1 h2 => by simp)
 
 /-- `Fin.take` intertwines with `List.take` via `List.get`. -/
-theorem take_eq_take_list_get {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) :
-    (l.take m).get = (take m h l.get) ∘ Fin.cast (List.length_take_of_le h) := by
+theorem get_take_eq_take_get_comp_cast {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) :
+    (l.take m).get = take m h l.get ∘ Fin.cast (List.length_take_of_le h) := by
   ext i
   simp only [List.get_eq_getElem, List.getElem_take, comp_apply, take_apply, coe_castLE, coe_cast]
 
