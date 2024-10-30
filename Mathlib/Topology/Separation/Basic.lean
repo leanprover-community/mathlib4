@@ -771,9 +771,9 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space X] {x y : X} {s t : Set 
 
 lemma eventuallyEq_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     (insert x s : Set X) =ᶠ[𝓝 x] (insert x t : Set X) := by
-  simp_rw [eventuallyEq_set] at h ⊢ 
+  simp_rw [eventuallyEq_set] at h ⊢
   simp_rw [← union_singleton, ← nhdsWithin_univ, ← compl_union_self {x},
-    nhdsWithin_union, eventually_sup, nhdsWithin_singleton, 
+    nhdsWithin_union, eventually_sup, nhdsWithin_singleton,
     eventually_pure, union_singleton, mem_insert_iff, true_or, and_true]
   filter_upwards [nhdsWithin_compl_singleton_le x y h] with y using or_congr (Iff.rfl)
 
