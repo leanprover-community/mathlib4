@@ -5,12 +5,12 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.LinearAlgebra.Quotient
-import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
+import Mathlib.LinearAlgebra.Basis.Cardinality
+import Mathlib.LinearAlgebra.Quotient.Defs
+import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.Tactic.Algebraize
 
 /-!
@@ -493,6 +493,34 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
       rw [add_comm, Nat.add_sub_assoc h.le]
       apply Nat.le_add_right
 
+theorem exists_pow_le_of_le_radical_of_fg_radical {R : Type*} [CommSemiring R] {I J : Ideal R}
+    (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
+    ∃ k : ℕ, I ^ k ≤ J := by
+  obtain ⟨k, hk⟩ := J.exists_radical_pow_le_of_fg hJ
+  use k
+  calc
+    I ^ k ≤ J.radical ^ k := Ideal.pow_right_mono hIJ _
+    _ ≤ J := hk
+
+@[deprecated (since := "2024-10-24")]
+alias exists_pow_le_of_le_radical_of_fG := exists_pow_le_of_le_radical_of_fg_radical
+
+lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Ideal R}
+    (h' : I ≤ J.radical) (h : I.FG) :
+    ∃ n : ℕ, I ^ n ≤ J := by
+  revert h'
+  apply Submodule.fg_induction _ _ _ _ _ I h
+  · intro x hJ
+    simp only [Ideal.submodule_span_eq, Ideal.span_le,
+      Set.singleton_subset_iff, SetLike.mem_coe] at hJ
+    obtain ⟨n, hn⟩ := hJ
+    refine ⟨n, by simpa [Ideal.span_singleton_pow, Ideal.span_le]⟩
+  · intros I₁ I₂ h₁ h₂ hJ
+    obtain ⟨n₁, hn₁⟩ := h₁ (le_sup_left.trans hJ)
+    obtain ⟨n₂, hn₂⟩ := h₂ (le_sup_right.trans hJ)
+    use n₁ + n₂
+    exact Ideal.sup_pow_add_le_pow_sup_pow.trans (sup_le hn₁ hn₂)
+
 end Ideal
 
 section ModuleAndAlgebra
@@ -724,7 +752,7 @@ instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module 
   out := (TensorProduct.map₂_mk_top_top_eq_top R M N).subst (hM.out.map₂ _ hN.out)
 
 /-- If a free module is finite, then any arbitrary basis is finite. -/
-lemma Module.Finite.finite_basis {R M} [Semiring R] [Nontrivial R] [AddCommGroup M] [Module R M]
+lemma Module.Finite.finite_basis {R M} [Semiring R] [Nontrivial R] [AddCommMonoid M] [Module R M]
     {ι} [Module.Finite R M] (b : Basis ι R M) :
     _root_.Finite ι :=
   let ⟨s, hs⟩ := ‹Module.Finite R M›

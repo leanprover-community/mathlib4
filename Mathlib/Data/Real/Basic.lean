@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.CauSeq.Completion
+import Mathlib.Algebra.Order.Field.Rat
 
 /-!
 # Real numbers from Cauchy sequences

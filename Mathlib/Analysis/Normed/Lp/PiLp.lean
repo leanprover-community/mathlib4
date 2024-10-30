@@ -91,7 +91,7 @@ section
 /- Register simplification lemmas for the applications of `PiLp` elements, as the usual lemmas
 for Pi types will not trigger. -/
 variable {𝕜 p α}
-variable [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 variable [∀ i, Module 𝕜 (β i)] (c : 𝕜)
 variable (x y : PiLp p β) (i : ι)
 
@@ -121,6 +121,13 @@ theorem smul_apply : (c • x) i = c • x i :=
 @[simp]
 theorem neg_apply : (-x) i = -x i :=
   rfl
+
+variable (p) in
+/-- The projection on the `i`-th coordinate of `WithLp p (∀ i, α i)`, as a linear map. -/
+@[simps!]
+def projₗ (i : ι) : PiLp p β →ₗ[𝕜] β i :=
+  (LinearMap.proj i : (∀ i, β i) →ₗ[𝕜] β i) ∘ₗ (WithLp.linearEquiv p 𝕜 (∀ i, β i)).toLinearMap
+
 end
 
 /-! Note that the unapplied versions of these lemmas are deliberately omitted, as they break
@@ -890,6 +897,13 @@ protected def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := WithLp.linearEquiv _ _ _
   continuous_toFun := continuous_equiv _ _
   continuous_invFun := continuous_equiv_symm _ _
+
+variable {𝕜} in
+/-- The projection on the `i`-th coordinate of `PiLp p β`, as a continuous linear map. -/
+@[simps!]
+def proj (i : ι) : PiLp p β →L[𝕜] β i where
+  __ := projₗ p β i
+  cont := continuous_apply i
 
 end Fintype
 

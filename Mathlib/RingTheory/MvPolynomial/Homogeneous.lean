@@ -457,8 +457,7 @@ theorem coeff_homogeneousComponent (d : σ →₀ ℕ) :
   convert coeff_weightedHomogeneousComponent n φ d
 
 theorem homogeneousComponent_apply :
-    homogeneousComponent n φ =
-      ∑ d ∈ φ.support.filter fun d => d.degree = n, monomial d (coeff d φ) := by
+    homogeneousComponent n φ = ∑ d ∈ φ.support with d.degree = n, monomial d (coeff d φ) := by
   simp_rw [degree_eq_weight_one]
   convert weightedHomogeneousComponent_apply n φ
 
