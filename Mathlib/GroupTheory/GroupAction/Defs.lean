@@ -385,7 +385,7 @@ theorem orbitRel.Quotient.orbit_mk (a : α) :
 @[to_additive]
 theorem orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
     a ∈ x.orbit ↔ Quotient.mk'' a = x := by
-  induction x using Quotient.inductionOn'
+  induction x using Quotient.inductionOn
   rw [Quotient.eq'']
   rfl
 
