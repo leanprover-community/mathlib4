@@ -185,6 +185,7 @@ namespace EuclideanDomain
 
 variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactorizationMonoid E]
 
+/-- For an element `a` in an Euclidean domain, `a / radical a`. -/
 def divRadical (a : E) : E := a / radical a
 
 theorem mul_radical_divRadical (a : E) : radical a * divRadical a = a := by
