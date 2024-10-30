@@ -167,6 +167,7 @@ theorem IntermediateField.isAlgebraic_adjoin_iff_isAlgebraic {S : Set E} :
     fun _ => Iff.imp Iff.rfl mem_algebraicClosure_iff))
 
 namespace algebraicClosure
+
 /-- If `E` is algebraically closed, then the algebraic closure of `F` in `E` is an absolute
 algebraic closure of `F`. -/
 instance isAlgClosure [IsAlgClosed E] : IsAlgClosure F (algebraicClosure F E) :=
