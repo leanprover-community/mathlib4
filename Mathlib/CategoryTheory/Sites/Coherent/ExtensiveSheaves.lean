@@ -70,7 +70,7 @@ theorem extensiveTopology.isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (extensi
 
 /-- The extensive topology on a finitary pre-extensive category is subcanonical. -/
 instance extensiveTopology.subcanonical : (extensiveTopology C).Subcanonical :=
-  GrothendieckTopology.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
+  GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ isSheaf_yoneda_obj
 
 variable [FinitaryExtensive C]
 

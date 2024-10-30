@@ -226,7 +226,7 @@ instance : (canonicalTopology C).Subcanonical where
 namespace Subcanonical
 
 /-- If every functor `yoneda.obj X` is a `J`-sheaf, then `J` is subcanonical. -/
-theorem of_yoneda_isSheaf (J : GrothendieckTopology C)
+theorem of_isSheaf_yoneda_obj (J : GrothendieckTopology C)
     (h : ∀ X, Presieve.IsSheaf J (yoneda.obj X)) : Subcanonical J where
   le_canonical := le_finestTopology _ _ (by rintro P ⟨X, rfl⟩; apply h)
 
@@ -273,8 +273,8 @@ instance : (J.yoneda).Faithful := (J.yonedaFullyFaithful).faithful
 end GrothendieckTopology
 
 @[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical := GrothendieckTopology.Subcanonical
-@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.of_yoneda_isSheaf :=
-  GrothendieckTopology.Subcanonical.of_yoneda_isSheaf
+@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.of_isSheaf_yoneda_obj :=
+  GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
 @[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.isSheaf_of_isRepresentable :=
   GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable
 @[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.yoneda :=
