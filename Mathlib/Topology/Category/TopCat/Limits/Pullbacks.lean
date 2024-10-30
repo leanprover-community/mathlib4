@@ -370,6 +370,9 @@ theorem isOpenEmbedding_of_pullback {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}
   rw [← coe_comp, ← limit.w _ WalkingCospan.Hom.inr]
   rfl
 
+@[deprecated (since := "2024-10-30")]
+alias isOpenEmbedding_of_pullback_open_embeddings := isOpenEmbedding_of_pullback
+
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_of_pullback_open_embeddings := isOpenEmbedding_of_pullback
 

@@ -931,11 +931,15 @@ theorem isOpenMap_inr : IsOpenMap (@inr X Y) := fun u hu => by
 protected lemma IsOpenEmbedding.inl : IsOpenEmbedding (@inl X Y) :=
   .of_continuous_injective_isOpenMap continuous_inl inl_injective isOpenMap_inl
 
+@[deprecated (since := "2024-10-30")] alias isOpenEmbedding_inl := IsOpenEmbedding.inl
+
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_inl := IsOpenEmbedding.inl
 
 protected lemma IsOpenEmbedding.inr : IsOpenEmbedding (@inr X Y) :=
   .of_continuous_injective_isOpenMap continuous_inr inr_injective isOpenMap_inr
+
+@[deprecated (since := "2024-10-30")] alias isOpenEmbedding_inr := IsOpenEmbedding.inr
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_inr := IsOpenEmbedding.inr
@@ -943,11 +947,15 @@ alias openEmbedding_inr := IsOpenEmbedding.inr
 protected lemma IsEmbedding.inl : IsEmbedding (@inl X Y) := IsOpenEmbedding.inl.1
 protected lemma IsEmbedding.inr : IsEmbedding (@inr X Y) := IsOpenEmbedding.inr.1
 
+@[deprecated (since := "2024-10-30")] alias IsEmbedding.inr := IsEmbedding.inl
+
 @[deprecated (since := "2024-10-26")]
 alias embedding_inr := IsEmbedding.inr
 
 lemma isOpen_range_inl : IsOpen (range (inl : X → X ⊕ Y)) := IsOpenEmbedding.inl.2
 lemma isOpen_range_inr : IsOpen (range (inr : Y → X ⊕ Y)) := IsOpenEmbedding.inr.2
+
+@[deprecated (since := "2024-10-30")] alias isOpen_range_inr := isOpen_range_inl
 
 theorem isClosed_range_inl : IsClosed (range (inl : X → X ⊕ Y)) := by
   rw [← isOpen_compl_iff, compl_range_inl]
@@ -960,11 +968,15 @@ theorem isClosed_range_inr : IsClosed (range (inr : Y → X ⊕ Y)) := by
 theorem IsClosedEmbedding.inl : IsClosedEmbedding (inl : X → X ⊕ Y) :=
   ⟨.inl, isClosed_range_inl⟩
 
+@[deprecated (since := "2024-10-30")] alias isClosedEmbedding_inl := IsClosedEmbedding.inl
+
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_inl := IsClosedEmbedding.inl
 
 theorem IsClosedEmbedding.inr : IsClosedEmbedding (inr : Y → X ⊕ Y) :=
   ⟨.inr, isClosed_range_inr⟩
+
+@[deprecated (since := "2024-10-30")] alias isClosedEmbedding_inr := IsClosedEmbedding.inr
 
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_inr := IsClosedEmbedding.inr
@@ -1597,11 +1609,15 @@ theorem isClosed_range_sigmaMk {i : ι} : IsClosed (range (@Sigma.mk ι σ i)) :
 lemma IsOpenEmbedding.sigmaMk {i : ι} : IsOpenEmbedding (@Sigma.mk ι σ i) :=
   .of_continuous_injective_isOpenMap continuous_sigmaMk sigma_mk_injective isOpenMap_sigmaMk
 
+@[deprecated (since := "2024-10-30")] alias isOpenEmbedding_sigmaMk := IsOpenEmbedding.sigmaMk
+
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_sigmaMk := IsOpenEmbedding.sigmaMk
 
 lemma IsClosedEmbedding.sigmaMk {i : ι} : IsClosedEmbedding (@Sigma.mk ι σ i) :=
   .of_continuous_injective_isClosedMap continuous_sigmaMk sigma_mk_injective isClosedMap_sigmaMk
+
+@[deprecated (since := "2024-10-30")] alias isClosedEmbedding_sigmaMk := IsClosedEmbedding.sigmaMk
 
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_sigmaMk := IsClosedEmbedding.sigmaMk
@@ -1696,6 +1712,8 @@ lemma isOpenEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f�
   simp only [isOpenEmbedding_iff_isEmbedding_isOpenMap, isOpenMap_sigma_map, isEmbedding_sigmaMap h,
     forall_and]
 
+@[deprecated (since := "2024-10-30")] alias isOpenEmbedding_sigma_map := isOpenEmbedding_sigmaMap
+
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_sigma_map := isOpenEmbedding_sigmaMap
 
@@ -1728,6 +1746,9 @@ alias embedding_uLift_down := IsEmbedding.uliftDown
 lemma IsClosedEmbedding.uliftDown [TopologicalSpace X] :
     IsClosedEmbedding (ULift.down : ULift.{v, u} X → X) :=
   ⟨.uliftDown, by simp only [ULift.down_surjective.range_eq, isClosed_univ]⟩
+
+@[deprecated (since := "2024-10-30")]
+alias ULift.isClosedEmbedding_down := IsClosedEmbedding.uliftDown
 
 @[deprecated (since := "2024-10-20")]
 alias ULift.closedEmbedding_down := IsClosedEmbedding.uliftDown

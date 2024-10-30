@@ -565,6 +565,9 @@ lemma IsOpenEmbedding.isOpen_iff_image_isOpen (hf : IsOpenEmbedding f) {s : Set 
   mp := hf.isOpenMap s
   mpr h := by convert ← h.preimage hf.isEmbedding.continuous; apply preimage_image_eq _ hf.inj
 
+@[deprecated (since := "2024-10-30")]
+alias IsOpenEmbedding.open_iff_image_open := IsOpenEmbedding.isOpen_iff_image_isOpen
+
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.open_iff_image_open := IsOpenEmbedding.isOpen_iff_image_isOpen
 
@@ -598,6 +601,9 @@ alias OpenEmbedding.continuous := IsOpenEmbedding.continuous
 lemma IsOpenEmbedding.isOpen_iff_preimage_isOpen (hf : IsOpenEmbedding f) {s : Set Y}
     (hs : s ⊆ range f) : IsOpen s ↔ IsOpen (f ⁻¹' s) := by
   rw [hf.isOpen_iff_image_isOpen, image_preimage_eq_inter_range, inter_eq_self_of_subset_left hs]
+
+@[deprecated (since := "2024-10-30")]
+alias IsOpenEmbedding.open_iff_preimage_open := IsOpenEmbedding.isOpen_iff_preimage_isOpen
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.open_iff_preimage_open := IsOpenEmbedding.isOpen_iff_preimage_isOpen
@@ -645,6 +651,10 @@ lemma isOpenEmbedding_iff_continuous_injective_isOpenMap :
     IsOpenEmbedding f ↔ Continuous f ∧ Injective f ∧ IsOpenMap f :=
   ⟨fun h => ⟨h.continuous, h.inj, h.isOpenMap⟩, fun h =>
     .of_continuous_injective_isOpenMap h.1 h.2.1 h.2.2⟩
+
+@[deprecated (since := "2024-10-30")]
+alias isOpenEmbedding_iff_continuous_injective_open :=
+  isOpenEmbedding_iff_continuous_injective_isOpenMap
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_iff_continuous_injective_open :=
@@ -709,9 +719,14 @@ lemma isClosed_iff_image_isClosed (hf : IsClosedEmbedding f) {s : Set X} :
     rw [← preimage_image_eq s hf.inj]
     exact h.preimage hf.continuous⟩
 
+@[deprecated (since := "2024-10-30")] alias closed_iff_image_closed := isClosed_iff_image_isClosed
+
 lemma isClosed_iff_preimage_isClosed (hf : IsClosedEmbedding f) {s : Set Y}
     (hs : s ⊆ range f) : IsClosed s ↔ IsClosed (f ⁻¹' s) := by
   rw [hf.isClosed_iff_image_isClosed, image_preimage_eq_of_subset hs]
+
+@[deprecated (since := "2024-10-30")]
+alias closed_iff_preimage_closed := isClosed_iff_preimage_isClosed
 
 lemma of_isEmbedding_isClosedMap (h₁ : IsEmbedding f) (h₂ : IsClosedMap f) :
     IsClosedEmbedding f :=
@@ -729,6 +744,10 @@ lemma of_continuous_injective_isClosedMap (h₁ : Continuous f) (h₂ : Injectiv
   refine h₁.le_induced.antisymm fun s hs => ?_
   refine ⟨(f '' sᶜ)ᶜ, (h₃ _ hs.isClosed_compl).isOpen_compl, ?_⟩
   rw [preimage_compl, preimage_image_eq _ h₂, compl_compl]
+
+@[deprecated (since := "2024-10-30")]
+alias _root_.IsClosedEmbedding.of_continuous_injective_isClosedMap :=
+  of_continuous_injective_isClosedMap
 
 @[deprecated (since := "2024-10-20")]
 alias _root_.closedEmbedding_of_continuous_injective_closed :=
