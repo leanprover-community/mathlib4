@@ -31,8 +31,6 @@ which `x` and `y` commute. Even versions not using division or subtraction, vali
 are recorded.
 -/
 
--- Porting note: corrected type in the description of `geom_sum₂_Ico` (in the doc string only).
-
 universe u
 
 variable {α : Type u}
@@ -72,7 +70,6 @@ theorem one_geom_sum (n : ℕ) : ∑ i ∈ range n, (1 : α) ^ i = n := by simp
 theorem op_geom_sum (x : α) (n : ℕ) : op (∑ i ∈ range n, x ^ i) = ∑ i ∈ range n, op x ^ i := by
   simp
 
--- Porting note: linter suggested to change left hand side
 @[simp]
 theorem op_geom_sum₂ (x y : α) (n : ℕ) : ∑ i ∈ range n, op y ^ (n - 1 - i) * op x ^ i =
     ∑ i ∈ range n, op y ^ i * op x ^ (n - 1 - i) := by

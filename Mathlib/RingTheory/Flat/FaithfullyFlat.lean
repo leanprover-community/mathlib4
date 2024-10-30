@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 -/
 
-import Mathlib.RingTheory.Flat.Stability
 import Mathlib.LinearAlgebra.TensorProduct.Quotient
+import Mathlib.RingTheory.Flat.Stability
+import Mathlib.RingTheory.Ideal.Quotient.Basic
 
 /-!
 # Faithfully flat modules

@@ -375,7 +375,7 @@ alias uniformInducing := isUniformInducing
 
 theorem tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α} :
     Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto ((f : α → β) ∘ g) a (𝓝 (f b)) :=
-  (Dilation.isUniformInducing f).inducing.tendsto_nhds_iff
+  (Dilation.isUniformInducing f).isInducing.tendsto_nhds_iff
 
 /-- A dilation is continuous. -/
 theorem toContinuous : Continuous (f : α → β) :=
@@ -406,11 +406,11 @@ theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
     ContinuousOn ((f : α → β) ∘ g) s ↔ ContinuousOn g s :=
-  (Dilation.isUniformInducing f).inducing.continuousOn_iff.symm
+  (Dilation.isUniformInducing f).isInducing.continuousOn_iff.symm
 
 theorem comp_continuous_iff {γ} [TopologicalSpace γ] {g : γ → α} :
     Continuous ((f : α → β) ∘ g) ↔ Continuous g :=
-  (Dilation.isUniformInducing f).inducing.continuous_iff.symm
+  (Dilation.isUniformInducing f).isInducing.continuous_iff.symm
 
 end PseudoEmetricDilation
 
