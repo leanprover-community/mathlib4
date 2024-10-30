@@ -47,8 +47,8 @@ algebraic extension `L` over `K`.
 3. Show that if `IsKrasner K (AlgebraicClosure K)` holds, then the completion of
 `(AlgebraicClosure K)` is algebraically closed.
 
-4. After the uniqueness of norm extension of complete normed field is in mathlib, drop the conditions
-about `uniqueNormExtension` in `of_complete`.
+4. After the uniqueness of norm extension of complete normed field is in mathlib, drop the
+conditions about `uniqueNormExtension` in `of_complete`.
 If `K` is a complete normed/valued field and the norm/valuation on `L` is
 compatible with the one on `K`, then `IsKrasnerNorm K L` holds.
 
@@ -56,9 +56,29 @@ compatible with the one on `K`, then `IsKrasnerNorm K L` holds.
 
 -/
 
-def uniqueNormExtension (K L: Type*) [NormedCommRing K] [Field L] [Algebra K L]
+section test
+
+variable {K L : Type*} [Nm_K : NontriviallyNormedField K] [CompleteSpace K]
+[Nm_L : NormedField L] [Algebra K L]
+(is_na : IsNonarchimedean (‖·‖ : K → ℝ)) [Algebra.IsAlgebraic K L]
+(extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) (M : IntermediateField K L)
+
+#synth NormedField M
+
+theorem IsNonarchimedean.norm_extension (is_na : IsNonarchimedean (‖·‖ : K → ℝ))
+    (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) : IsNonarchimedean (‖·‖ : L → ℝ) := by
+  sorry
+
+end test
+def uniqueNormExtension (K L : Type*) [NormedCommRing K] [Field L] [Algebra K L]
     [Algebra.IsAlgebraic K L] :=
   ∃! (_ : NormedField L), ∀ (x : K), ‖x‖ = ‖algebraMap K L x‖
+
+theorem IsConjRoot.norm_eq_of_uniqueNormExtension (K L) [NormedField K] [NormedField L]
+    [Algebra K L]
+    [Algebra.IsAlgebraic K L] (x y: L) (uniq : uniqueNormExtension K L)
+    (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖)
+    (h : IsConjRoot K x y) : ‖x‖ = ‖y‖ := by sorry
 
 open IntermediateField Valued
 
@@ -107,39 +127,41 @@ theorem of_completeSpace {K L : Type*} [Nm_K : NontriviallyNormedField K] [Compl
         xsep.isIntegral sp))).mp hz
   -- this is where the separablity is used.
   simp only [ne_eq, Subtype.mk.injEq] at hne
-  have eq_spnM : (norm : M → ℝ) = spectralNorm K M :=
-    funext <| spectralNorm_unique_field_norm_ext
-      (f := instNormedIntermediateField.toMulRingNorm) extd is_na
-  have eq_spnL : (norm : L → ℝ) = spectralNorm K L :=
-    funext <| spectralNorm_unique_field_norm_ext (f := NL.toMulRingNorm) extd is_na
-  have is_naM : IsNonarchimedean (norm : M → ℝ) := eq_spnM ▸ spectralNorm_isNonarchimedean K M is_na
-  have is_naL : IsNonarchimedean (norm : L → ℝ) := eq_spnL ▸ spectralNorm_isNonarchimedean K L is_na
+
+  -- have eq_spnM : (norm : M → ℝ) = spectralNorm K M :=
+  --   funext <| spectralNorm_unique_field_norm_ext
+  --     (f := instNormedIntermediateField.toMulRingNorm) extd is_na
+  -- have eq_spnL : (norm : L → ℝ) = spectralNorm K L :=
+  --   funext <| spectralNorm_unique_field_norm_ext (f := NL.toMulRingNorm) extd is_na
+  -- have is_naM : IsNonarchimedean (norm : M → ℝ) := eq_spnM ▸ spectralNorm_isNonarchimedean K M is_na
+  -- have is_naL : IsNonarchimedean (norm : L → ℝ) := eq_spnL ▸ spectralNorm_isNonarchimedean K L is_na
+
   letI : NontriviallyNormedField M := {
-    instNormedIntermediateField with
+    SubfieldClass.toNormedField M with
     non_trivial := by
       obtain ⟨k, hk⟩ :=  @NontriviallyNormedField.non_trivial K _
       use algebraMap K M k
       change 1 < ‖(algebraMap K L) k‖
-      simp [extd k, hk]-- a lemma for extends nontrivial implies nontrivial
-  }
-  have eq_spnML: (norm : L → ℝ) = spectralNorm M L := by
-    apply Eq.trans eq_spnL
-    apply (_root_.funext <| spectralNorm_unique_field_norm_ext (K := K)
-      (f := (spectralMulAlgNorm is_naM).toMulRingNorm) _ is_na).symm
-    apply functionExtends_of_functionExtends_of_functionExtends (fA := (norm : M → ℝ))
-    · intro m
-      exact extd m
-    · exact spectralNorm_extends M L -- a lemma for extends extends
-  have norm_eq: ‖z‖ = ‖z'‖ := by -- a lemma
-    simp only [eq_spnML, spectralNorm]
-    congr 1
+      simp [(extd k).symm, hk]-- a lemma for extends nontrivial implies nontrivial
+    }
+  -- have eq_spnML: (norm : L → ℝ) = spectralNorm M L := by
+  --   apply Eq.trans eq_spnL
+  --   apply (_root_.funext <| spectralNorm_unique_field_norm_ext (K := K)
+  --     (f := (spectralMulAlgNorm is_naM).toMulRingNorm) _ is_na).symm
+  --   apply functionExtends_of_functionExtends_of_functionExtends (fA := (norm : M → ℝ))
+  --   · intro m
+  --     exact extd m
+  --   · exact spectralNorm_extends M L -- a lemma for extends extends
+  -- have norm_eq: ‖z‖ = ‖z'‖ := by -- a lemma
+  --   simp only [eq_spnML, spectralNorm]
+  --   congr 1
     -- spectralNorm K L = spectralnorm M L
   -- IsConjRoot.val_eq M hM (Polynomial.Separable.isIntegral zsep) h1
   -- need rank one -- exist_algEquiv
   have : ‖z - z'‖ < ‖z - z'‖ := by
     calc
       _ ≤ max ‖z‖ ‖z'‖ := by
-        simpa only [norm_neg, sub_eq_add_neg] using (is_naL z (- z'))
+        simpa only [norm_neg, sub_eq_add_neg] using (is_na.norm_extension extd z (- z'))
       _ ≤ ‖x - y‖ := by
         simp only [← norm_eq, max_self, le_refl]
       _ < ‖x - (z' + y)‖ := by
