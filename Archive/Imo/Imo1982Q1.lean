@@ -64,11 +64,9 @@ lemma f₁ : f 1 = 0 := by
   · cases Nat.succ_ne_zero _ h₂.symm
 
 lemma f₃ : f 3 = 1 := by
-    have h : f 3 = f 2 + f 1 ∨ f 3  = f 2 + f 1 + 1 := by apply hf.rel 2 1
-    rw [hf.f₁, hf.f₂, add_zero, zero_add] at h
-    have not_left : ¬ f 3 = 0 := by apply ne_of_gt hf.hf₃
-    rw [or_iff_right (not_left)] at h
-    exact h
+  have h : f 3 = f 2 + f 1 ∨ f 3  = f 2 + f 1 + 1 := hf.rel 2 1
+  rw [hf.f₁, hf.f₂, add_zero, zero_add] at h
+  exact h.resolve_left hf.hf₃.ne'
 
 lemma superadditive {m n : ℕ+} : f m + f n ≤ f (m + n) := by
   have h := hf.rel m n
@@ -77,9 +75,9 @@ lemma superadditive {m n : ℕ+} : f m + f n ≤ f (m + n) := by
   · rw [hr]; nth_rewrite 1 [← add_zero (f n), ← add_assoc]; apply add_le_add_right (by norm_num)
 
 lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
-  induction n using PNat.recOn
-  case p1 => simp
-  case hp n' ih =>
+  induction n using PNat.recOn with
+  | p1 => simp
+  | hp n' ih =>
     calc
     ↑(n' + 1) * f m = ↑n' * f m + f m := by rw [PNat.add_coe, add_mul, PNat.val_ofNat, one_mul]
     _ ≤ f (n' * m) + f m := add_le_add_right ih (f m)

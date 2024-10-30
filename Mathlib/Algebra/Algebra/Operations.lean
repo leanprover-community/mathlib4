@@ -352,11 +352,11 @@ theorem one_eq_range : (1 : Submodule R A) = LinearMap.range (Algebra.linearMap 
     LinearMap.toSpanSingleton_eq_algebra_linearMap]
 
 theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) := by
-  rw [one_eq_range]; exact LinearMap.mem_range_self _ _
+  simp [one_eq_range]
 
 @[simp]
 theorem mem_one {x : A} : x ∈ (1 : Submodule R A) ↔ ∃ y, algebraMap R A y = x := by
-  rw [one_eq_range]; rfl
+  simp [one_eq_range]
 
 protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
     map f.toLinearMap (1 : Submodule R A) = 1 := by
