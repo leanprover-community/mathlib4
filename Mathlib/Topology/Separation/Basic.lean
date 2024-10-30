@@ -771,14 +771,11 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space X] {x y : X} {s t : Set 
 
 lemma eventuallyEq_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     (insert x s : Set X) =ᶠ[𝓝 x] (insert x t : Set X) := by
-  simp only [← union_singleton, ← nhdsWithin_univ, ← compl_union_self {x}]
-  rw [nhdsWithin_union]
-  apply Filter.mem_sup.2
-  simp only [eq_iff_iff, nhdsWithin_singleton, mem_pure, mem_setOf_eq]
-  change {y | y ∈ (s ∪ {x}) ↔ y ∈ (t ∪ {x})} ∈ 𝓝[≠] x ∧ (x ∈ (s ∪ {x}) ↔ x ∈ (t ∪ {x}))
-  simp only [union_singleton, mem_insert_iff, true_or, and_true]
-  filter_upwards [nhdsWithin_compl_singleton_le x y h] with y (hy : (y ∈ s) = (y ∈ t))
-  aesop
+  simp_rw [eventuallyEq_set] at h ⊢ 
+  simp_rw [← union_singleton, ← nhdsWithin_univ, ← compl_union_self {x},
+    nhdsWithin_union, eventually_sup, nhdsWithin_singleton, 
+    eventually_pure, union_singleton, mem_insert_iff, true_or, and_true]
+  filter_upwards [nhdsWithin_compl_singleton_le x y h] with y using or_congr (Iff.rfl)
 
 @[simp]
 theorem ker_nhds [T1Space X] (x : X) : (𝓝 x).ker = {x} := by
