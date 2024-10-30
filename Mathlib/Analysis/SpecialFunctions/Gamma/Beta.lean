@@ -151,7 +151,8 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   have hu' : 0 < re (u + 1) := by rw [add_re, one_re]; positivity
   have hv' : 0 < re (v + 1) := by rw [add_re, one_re]; positivity
   have hc : ContinuousOn F (Icc 0 1) := by
-    refine (continuousOn_of_forall_continuousAt fun x hx => ?_).mul (continuousOn_of_forall_continuousAt fun x hx => ?_)
+    refine (continuousOn_of_forall_continuousAt fun x hx => ?_).mul
+        (continuousOn_of_forall_continuousAt fun x hx => ?_)
     · refine (continuousAt_cpow_const_of_re_pos (Or.inl ?_) hu).comp continuous_ofReal.continuousAt
       rw [ofReal_re]; exact hx.1
     · refine (continuousAt_cpow_const_of_re_pos (Or.inl ?_) hv).comp
