@@ -19,8 +19,9 @@ to learn about it as well!
   Bulk processing of unused variable warnings, replacing them with `_`.
 
 **Analyzing Mathlib's import structure**
-- `unused_in_pole.sh <target>` calls `lake exe pole --loc --to <target>` to compute the longest
-  pole to a given target module (defaults to `Mathlib`), and then feeds this into
+- `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
+  calls `lake exe pole --loc --to <target>` to compute the longest
+  pole to a given target module, and then feeds this into
   `lake exe unused` to analyze transitively unused imports.
   Generates `unused.md` containing a markdown table showing the unused imports,
   and suggests `lake exe graph` commands to visualize the largest "rectangles" of unused imports.
