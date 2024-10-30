@@ -426,8 +426,10 @@ theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [Semiring k] [AddMonoid 
 abbrev lsingle [Semiring R] [Semiring k] [Module R k] (a : G) :
     k →ₗ[R] MonoidAlgebra k G := Finsupp.lsingle a
 
-@[simp] lemma lsingle_apply [Semiring R] [Semiring k] [Module R k] (a : G) (b : k) :
-  lsingle (R := R) a b = single a b := rfl
+@[simp]
+lemma lsingle_apply [Semiring R] [Semiring k] [Module R k] (a : G) (b : k) :
+    lsingle (R := R) a b = single a b :=
+  rfl
 
 /-- A copy of `Finsupp.lhom_ext'` for `MonoidAlgebra`. -/
 @[ext high]

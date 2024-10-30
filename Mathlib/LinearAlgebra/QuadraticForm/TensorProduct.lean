@@ -106,7 +106,7 @@ theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
 
   TODO: Define `IsSymm` for bilinear maps and generalise this result to Quadratic Maps.
   -/
-  have e1: (BilinMap.toQuadraticMapLinearMap A A (M₁ ⊗[R] M₂) ∘
+  have e1 : (BilinMap.toQuadraticMapLinearMap A A (M₁ ⊗[R] M₂) ∘
     BilinForm.tensorDistrib R A (M₁ := M₁) (M₂ := M₂) ∘
     AlgebraTensorModule.map
       (QuadraticMap.associated : QuadraticForm A M₁ →ₗ[A] BilinForm A M₁)
