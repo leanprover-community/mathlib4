@@ -175,11 +175,13 @@ def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
   smul_def' _ _ := rfl
   toRingHom := i
 
+/-- definition of smul of toAlgebra'-/
 theorem RingHom.smul_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) (r: R) (s: S) :
     let _ := RingHom.toAlgebra' i h
     r • s = i r * s := rfl
 
+/--definition of algebraMap of toAlgebra'-/
 theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) :
     @algebraMap R S _ _ (i.toAlgebra' h) = i :=
