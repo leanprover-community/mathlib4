@@ -32,10 +32,12 @@ polynomial in `k` splits.
 
 algebraic closure, algebraically closed
 
-## TODO
+## Main reults
 
-- Prove that if `K / k` is algebraic, and any monic irreducible polynomial over `k` has a root
-  in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
+- `IsAlgClosure.of_splits`: if `K / k` is algebraic, and every monic irreducible polynomial over
+  `k` splits in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
+  For the stronger fact that only requires every such polynomial has a root in `K`,
+  see `IsAlgClosure.of_exist_roots`.
 
   Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
 
