@@ -93,11 +93,11 @@ instance instCoeFun : CoeFun (SpecialLinearGroup n R) fun _ => n → n → R whe
 
 end CoeFnInstance
 
-theorem ext_iff (A B : SpecialLinearGroup n R) : A = B ↔ ∀ i j, ↑ₘA i j = ↑ₘB i j :=
+theorem ext_iff (A B : SpecialLinearGroup n R) : A = B ↔ ∀ i j, A i j = B i j :=
   Subtype.ext_iff.trans Matrix.ext_iff.symm
 
 @[ext]
-theorem ext (A B : SpecialLinearGroup n R) : (∀ i j, ↑ₘA i j = ↑ₘB i j) → A = B :=
+theorem ext (A B : SpecialLinearGroup n R) : (∀ i j, A i j = B i j) → A = B :=
   (SpecialLinearGroup.ext_iff A B).mpr
 
 instance subsingleton_of_subsingleton [Subsingleton n] : Subsingleton (SpecialLinearGroup n R) := by
@@ -111,13 +111,13 @@ instance hasInv : Inv (SpecialLinearGroup n R) :=
   ⟨fun A => ⟨adjugate A, by rw [det_adjugate, A.prop, one_pow]⟩⟩
 
 instance hasMul : Mul (SpecialLinearGroup n R) :=
-  ⟨fun A B => ⟨↑ₘA * ↑ₘB, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
+  ⟨fun A B => ⟨A * B, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
 
 instance hasOne : One (SpecialLinearGroup n R) :=
   ⟨⟨1, det_one⟩⟩
 
 instance : Pow (SpecialLinearGroup n R) ℕ where
-  pow x n := ⟨↑ₘx ^ n, (det_pow _ _).trans <| x.prop.symm ▸ one_pow _⟩
+  pow x n := ⟨x ^ n, (det_pow _ _).trans <| x.prop.symm ▸ one_pow _⟩
 
 instance : Inhabited (SpecialLinearGroup n R) :=
   ⟨1⟩
@@ -141,7 +141,7 @@ theorem coe_mk (A : Matrix n n R) (h : det A = 1) : ↑(⟨A, h⟩ : SpecialLine
   rfl
 
 @[simp]
-theorem coe_inv : ↑ₘA⁻¹ = adjugate A :=
+theorem coe_inv : ↑ₘ(A⁻¹) = adjugate A :=
   rfl
 
 @[simp]
@@ -149,7 +149,7 @@ theorem coe_mul : ↑ₘ(A * B) = ↑ₘA * ↑ₘB :=
   rfl
 
 @[simp]
-theorem coe_one : ↑ₘ(1 : SpecialLinearGroup n R) = (1 : Matrix n n R) :=
+theorem coe_one : (1 : SpecialLinearGroup n R) = (1 : Matrix n n R) :=
   rfl
 
 @[simp]
@@ -168,7 +168,7 @@ theorem det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg �
   rw [g.det_coe]
   norm_num
 
-theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : ↑ₘg i ≠ 0 := fun h =>
+theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : g i ≠ 0 := fun h =>
   g.det_ne_zero <| det_eq_zero_of_row_eq_zero i <| by simp [h]
 
 end CoeLemmas
@@ -367,7 +367,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
   ext i j; fin_cases i <;> fin_cases j <;> rfl
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
-    (hg : (g : Matrix (Fin 2) (Fin 2) R) 1 0 = 0) :
+    (hg : g 1 0 = 0) :
     ∃ (a b : R) (h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
   replace hg : c = 0 := by simpa using hg
