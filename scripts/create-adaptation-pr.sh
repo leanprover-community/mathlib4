@@ -204,7 +204,7 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
   echo "### [auto/user] post a link to the PR on Zulip"
   
   zulip_title="#$pr_number adaptations for nightly-$NIGHTLYDATE"
-  zulip_body="> $pr_title #$pr_number"
+  zulip_body="> $pr_title #$pr_number\\\n\\\nPlease review this PR. At the end of the month this diff will land in \\\`master\\\`."
   
   echo "Post the link to the PR in a new thread on the #nightly-testing channel on Zulip"
   echo "Here is a suggested message:"

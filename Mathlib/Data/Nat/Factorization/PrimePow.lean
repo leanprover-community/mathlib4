@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.Prime.Pow
 
 /-!
 # Prime powers and factorizations

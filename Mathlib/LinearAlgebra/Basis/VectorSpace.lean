@@ -266,15 +266,6 @@ theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, Is
 instance Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
   ⟨Submodule.exists_isCompl⟩
 
-theorem LinearMap.exists_rightInverse_of_surjective (f : V →ₗ[K] V') (hf_surj : range f = ⊤) :
-    ∃ g : V' →ₗ[K] V, f.comp g = LinearMap.id := by
-  let C := Basis.ofVectorSpaceIndex K V'
-  let hC := Basis.ofVectorSpace K V'
-  haveI : Inhabited V := ⟨0⟩
-  refine ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hC.ext fun c => ?_⟩
-  rw [LinearMap.comp_apply, hC.constr_basis]
-  simp [hC, rightInverse_invFun (LinearMap.range_eq_top.1 hf_surj) c]
-
 /-- Any linear map `f : p →ₗ[K] V'` defined on a subspace `p` can be extended to the whole
 space. -/
 theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :

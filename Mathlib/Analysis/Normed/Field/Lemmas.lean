@@ -320,6 +320,19 @@ example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1
 @[simp] lemma AddChar.norm_apply {G : Type*} [AddLeftCancelMonoid G] [Finite G] (ψ : AddChar G α)
     (x : G) : ‖ψ x‖ = 1 := (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
 
+lemma NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop :
+    Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
+  (tendsto_inv_zero_atTop.comp tendsto_norm_zero').congr fun x ↦ (norm_inv x).symm
+
+lemma NormedField.tendsto_norm_zpow_nhdsWithin_0_atTop {m : ℤ} (hm : m < 0) :
+    Tendsto (fun x : α ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
+  obtain ⟨m, rfl⟩ := neg_surjective m
+  rw [neg_lt_zero] at hm
+  lift m to ℕ using hm.le
+  rw [Int.natCast_pos] at hm
+  simp only [norm_pow, zpow_neg, zpow_natCast, ← inv_pow]
+  exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop
+
 end NormedDivisionRing
 
 namespace NormedField
@@ -361,6 +374,22 @@ theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
 
 end Densely
 
+section NontriviallyNormedField
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℤ} {x : 𝕜}
+
+@[simp]
+protected lemma continuousAt_zpow : ContinuousAt (fun x ↦ x ^ n) x ↔ x ≠ 0 ∨ 0 ≤ n := by
+  refine ⟨?_, continuousAt_zpow₀ _ _⟩
+  contrapose!
+  rintro ⟨rfl, hm⟩ hc
+  exact not_tendsto_atTop_of_tendsto_nhds (hc.tendsto.mono_left nhdsWithin_le_nhds).norm
+    (tendsto_norm_zpow_nhdsWithin_0_atTop hm)
+
+@[simp]
+protected lemma continuousAt_inv : ContinuousAt Inv.inv x ↔ x ≠ 0 := by
+  simpa using NormedField.continuousAt_zpow (n := -1) (x := x)
+
+end NontriviallyNormedField
 end NormedField
 
 namespace NNReal
