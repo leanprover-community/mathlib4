@@ -780,13 +780,13 @@ lemma le_mul_of_forall_lt₀ {a b c : α} (h : ∀ a' > a, ∀ b' > b, c ≤ a' 
   exact (h a' ha' b' hb').trans hd.le
 
 lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
-    (h : ∀ a' ∈ Set.Ico 0 a, ∀ b' ∈ Set.Ico 0 b, a' * b' ≤ c) : a * b ≤ c := by
+    (h : ∀ a' ≥ 0, a' < a → ∀ b' ≥ 0, b' < b → a' * b' ≤ c) : a * b ≤ c := by
   refine le_of_forall_ge_of_dense fun d d_ab ↦ ?_
   rcases lt_or_le d 0 with hd | hd
   · exact hd.le.trans hc
   obtain ⟨a', ha', d_ab⟩ := exists_lt_mul_left_of_nonneg ha hd d_ab
   obtain ⟨b', hb', d_ab⟩ := exists_lt_mul_right_of_nonneg ha'.1 hd d_ab
-  exact d_ab.le.trans (h a' ha' b' hb')
+  exact d_ab.le.trans (h a' ha'.1 ha'.2 b' hb'.1 hb'.2)
 
 theorem mul_self_inj_of_nonneg (a0 : 0 ≤ a) (b0 : 0 ≤ b) : a * a = b * b ↔ a = b :=
   mul_self_eq_mul_self_iff.trans <|

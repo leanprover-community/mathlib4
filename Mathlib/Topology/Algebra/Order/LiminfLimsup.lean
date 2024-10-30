@@ -594,12 +594,13 @@ lemma le_limsup_mul (h₁ : 0 ≤ᶠ[f] u) (h₂ : IsBoundedUnder (fun x1 x2 ↦
   have u0 : 0 ≤ limsup u f := le_limsup_of_frequently_le h₁.frequently h₂
   have uv : 0 ≤ limsup (u * v) f :=
     le_limsup_of_frequently_le ((h₁.and h₃).mono fun _ ⟨hu, hv⟩ ↦ mul_nonneg hu hv).frequently h'
-  refine mul_le_of_forall_lt_of_nonneg u0 uv fun a au b bv ↦ (le_limsup_iff h h').2 fun c c_ab ↦ ?_
+  refine mul_le_of_forall_lt_of_nonneg u0 uv fun a _ au b b0 bv ↦ (le_limsup_iff h h').2
+    fun c c_ab ↦ ?_
   refine ((frequently_lt_of_lt_limsup
-    (isBoundedUnder_of_eventually_ge h₁).isCoboundedUnder_le au.2).and_eventually
-    ((eventually_lt_of_lt_liminf bv.2 (isBoundedUnder_of_eventually_ge h₃)).and
-    (h₁.and h₃))).mono fun x ⟨x_a, ⟨x_b, u0, _⟩⟩ ↦ ?_
-  exact c_ab.trans_le (mul_le_mul x_a.le x_b.le bv.1 u0)
+    (isBoundedUnder_of_eventually_ge h₁).isCoboundedUnder_le au).and_eventually
+    ((eventually_lt_of_lt_liminf bv (isBoundedUnder_of_eventually_ge h₃)).and
+    (h₁.and h₃))).mono fun x ⟨xa, ⟨xb, u0, _⟩⟩ ↦ ?_
+  exact c_ab.trans_le (mul_le_mul xa.le xb.le b0 u0)
 
 lemma limsup_mul_le (h₁ : 0 ≤ᶠ[f] u) (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
     (h₃ : 0 ≤ᶠ[f] v) (h₄ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f v) :
@@ -618,12 +619,13 @@ lemma le_liminf_mul (h₁ : 0 ≤ᶠ[f] u) (h₂ : IsBoundedUnder (fun x1 x2 ↦
   have h := isCoboundedUnder_ge_mul_of_nonneg h₁ h₂ h₃ h₄
   have h' := isBoundedUnder_of_eventually_ge (a := 0)
     <| (h₁.and h₃).mono fun x ⟨u0, v0⟩ ↦ mul_nonneg u0 v0
-  refine mul_le_of_forall_lt_of_nonneg (le_liminf_of_le h₂.isCoboundedUnder_ge h₁)
-    (le_liminf_of_le h ((h₁.and h₃).mono fun x ⟨u0, v0⟩ ↦ mul_nonneg u0 v0)) fun a au b bv ↦ ?_
+  apply mul_le_of_forall_lt_of_nonneg (le_liminf_of_le h₂.isCoboundedUnder_ge h₁)
+    (le_liminf_of_le h ((h₁.and h₃).mono fun x ⟨u0, v0⟩ ↦ mul_nonneg u0 v0))
+  intro a a0 au b b0 bv
   refine (le_liminf_iff h h').2 fun c c_ab ↦ ?_
-  filter_upwards [eventually_lt_of_lt_liminf au.2 (isBoundedUnder_of_eventually_ge h₁),
-    eventually_lt_of_lt_liminf bv.2 (isBoundedUnder_of_eventually_ge h₃)] with x xa xb
-  exact c_ab.trans_le (mul_le_mul xa.le xb.le bv.1 (au.1.trans xa.le))
+  filter_upwards [eventually_lt_of_lt_liminf au (isBoundedUnder_of_eventually_ge h₁),
+    eventually_lt_of_lt_liminf bv (isBoundedUnder_of_eventually_ge h₃)] with x xa xb
+  exact c_ab.trans_le (mul_le_mul xa.le xb.le b0 (a0.trans xa.le))
 
 lemma liminf_mul_le (h₁ : 0 ≤ᶠ[f] u) (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
     (h₃ : 0 ≤ᶠ[f] v) (h₄ : IsCoboundedUnder (fun x1 x2 ↦ x1 ≥ x2) f v) :
