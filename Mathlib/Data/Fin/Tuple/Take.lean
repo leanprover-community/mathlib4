@@ -142,7 +142,7 @@ theorem take_append_right {n' : ℕ} {α : Sort*} (m : ℕ) (h : m ≤ n') (u : 
   take_addCases_right m h _ _
 
 /-- `Fin.take` intertwines with `List.take` via `List.ofFn`. -/
-theorem take_eq_take_list_ofFn {α : Type*} {m : ℕ} (h : m ≤ n) (v : Fin n → α) :
+theorem ofFn_take_eq_take_ofFn {α : Type*} {m : ℕ} (h : m ≤ n) (v : Fin n → α) :
     List.ofFn (take m h v) = (List.ofFn v).take m :=
   List.ext_get (by simp [h]) (fun n h1 h2 => by simp)
 
