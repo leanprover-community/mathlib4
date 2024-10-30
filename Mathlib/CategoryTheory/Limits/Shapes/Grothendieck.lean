@@ -45,9 +45,9 @@ noncomputable section
 variable [∀ X, HasColimit (Grothendieck.ι F X ⋙ G)]
   [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F Y ⋙ G)]
 
-/-- A functor taking the colimit on each fiber of a functor `G : Grothendieck F ⥤ H`. -/
+/-- A functor taking a colimit on each fiber of a functor `G : Grothendieck F ⥤ H`. -/
 @[simps]
-noncomputable def fiberwiseColimit : C ⥤ H where
+def fiberwiseColimit : C ⥤ H where
   obj X := colimit (Grothendieck.ι F X ⋙ G)
   map {X Y} f := colimMap (whiskerRight (Grothendieck.ιNatTrans f) G ≫
     (Functor.associator _ _ _).hom) ≫ colimit.pre (Grothendieck.ι F Y ⋙ G) (F.map f)
@@ -80,34 +80,38 @@ noncomputable def fiberwiseColimit : C ⥤ H where
       conv_rhs => enter [2, 1]; rw [eqToHom_map (F.map (𝟙 Z))]
       conv_rhs => rw [eqToHom_trans, eqToHom_trans]
 
+/-- Every functor `G : Grothendieck F ⥤ H` induces a natural transformation from `G` to the
+composition of the forgetful functor on `Grothendieck F` with the fiberwise colimit on `G`. -/
 @[simps]
-noncomputable def natTransIntoForgetCompFiberwiseColimit :
+def natTransIntoForgetCompFiberwiseColimit :
     G ⟶ Grothendieck.forget F ⋙ fiberwiseColimit G where
   app X := colimit.ι (Grothendieck.ι F X.base ⋙ G) X.fiber
-  naturality {X Y} f := by
-    rcases X with ⟨c, d⟩
-    rcases Y with ⟨c', d'⟩
-    rcases f with ⟨f, g⟩
-    dsimp at f g
-    simp [Grothendieck.ιNatTrans]
-    rw [← colimit.w (Grothendieck.ι F _ ⋙ G) g, ← Category.assoc]
-    congr 1
-    simp
-    rw [← G.map_comp]
-    congr 1
+  naturality _ _ f := by
+    simp only [Functor.comp_obj, Grothendieck.forget_obj, fiberwiseColimit_obj, Functor.comp_map,
+      Grothendieck.forget_map, fiberwiseColimit_map, Grothendieck.ιNatTrans,
+      Grothendieck.ι_obj_base, Grothendieck.ι_obj_fiber, ι_colimMap_assoc, NatTrans.comp_app,
+      whiskerRight_app, Functor.associator_hom_app, Category.comp_id, colimit.ι_pre]
+    rw [← colimit.w (Grothendieck.ι F _ ⋙ G) f.fiber]
+    simp only [← Category.assoc, Functor.comp_obj, Functor.comp_map, ← G.map_comp]
+    congr 2
     apply Grothendieck.ext <;> simp
 
 variable {G} in
+/-- A cocone on a functor `G : Grothendieck F ⥤ H` induces a cocone on the fiberwise colimit
+on `G`. -/
 @[simps]
-noncomputable def coconeFiberwiseColimitOfCocone (c : Cocone G) : Cocone (fiberwiseColimit G) where
+def coconeFiberwiseColimitOfCocone (c : Cocone G) : Cocone (fiberwiseColimit G) where
   pt := c.pt
   ι := { app := fun X => colimit.desc _ (c.whisker (Grothendieck.ι F X)),
          naturality := fun _ _ f => by dsimp; ext; simp }
 
-noncomputable def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
+variable {G} in
+/-- If `c` is a colimit cocone on `G : Grockendieck F ⥤ H`, then the induced cocone on the
+fiberwise colimit on `G` is a colimit cocone, too. -/
+def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
     IsColimit (coconeFiberwiseColimitOfCocone c) where
-  desc s := hc.desc (Cocone.mk s.pt (natTransIntoForgetCompFiberwiseColimit G
-    ≫ whiskerLeft (Grothendieck.forget F) s.ι))
+  desc s := hc.desc <| Cocone.mk s.pt <| natTransIntoForgetCompFiberwiseColimit G ≫
+    whiskerLeft (Grothendieck.forget F) s.ι
   fac s c := by dsimp; ext; simp
   uniq s m hm := hc.hom_ext fun X => by
     have := hm X.base
@@ -118,10 +122,13 @@ noncomputable def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : I
       coconeFiberwiseColimitOfCocone_ι_app] at this
     simp [← this, Grothendieck.ι]
 
-noncomputable def colimitFiberwiseColimitIso [HasColimit G] [HasColimit (fiberwiseColimit G)] :
+/-- For every functor `G` on the Grothendieck construction `Grothendieck F`, taking its colimit
+is isomorphic to first taking the fiberwise colimit and then the colimit of the resulting fucntor.
+-/
+def colimitFiberwiseColimitIso [HasColimit G] [HasColimit (fiberwiseColimit G)] :
     colimit (fiberwiseColimit G) ≅ colimit G :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit (fiberwiseColimit G))
-    (isColimitCoconeFiberwiseColimitOfCocone _ (colimit.isColimit _))
+    (isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _))
 
 end
 
