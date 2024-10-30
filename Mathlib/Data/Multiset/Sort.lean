@@ -76,8 +76,8 @@ theorem sort_le_range (n : ℕ) : sort (· ≤ ·) (range n) = List.range n :=
   List.mergeSort_eq_self (sorted_le_range n)
 
 @[simp]
-theorem sort_lt_range (n : ℕ) : sort (· ≤ ·) (range n) = List.range n :=
-  List.mergeSort_eq_self (sorted_le_range n)
+theorem sort_lt_range (n : ℕ) : sort (· < ·) (range n) = List.range n :=
+  List.mergeSort_eq_self (sorted_lt_range n)
 
 end sort
 
