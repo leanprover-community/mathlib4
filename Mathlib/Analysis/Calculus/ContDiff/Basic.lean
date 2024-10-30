@@ -135,6 +135,12 @@ theorem iteratedFDeriv_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) :
   funext fun x ↦ by simpa [← iteratedFDerivWithin_univ] using
     iteratedFDerivWithin_const_of_ne hn c uniqueDiffOn_univ (mem_univ x)
 
+theorem contDiffWithinAt_singleton : ContDiffWithinAt 𝕜 n f {x} x := by
+
+
+#exit
+
+
 /-! ### Smoothness of linear functions -/
 
 /-- Unbundled bounded linear functions are `C^∞`.
@@ -790,10 +796,28 @@ theorem ContDiff.comp₂ {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F 
     (hf₁ : ContDiff 𝕜 n f₁) (hf₂ : ContDiff 𝕜 n f₂) : ContDiff 𝕜 n fun x => g (f₁ x, f₂ x) :=
   hg.comp <| hf₁.prod hf₂
 
-theorem ContDiff.comp₃ {g : E₁ × E₂ × E₃ → G} {f₁ : F → E₁} {f₂ : F → E₂} {f₃ : F → E₃}
-    (hg : ContDiff 𝕜 n g) (hf₁ : ContDiff 𝕜 n f₁) (hf₂ : ContDiff 𝕜 n f₂) (hf₃ : ContDiff 𝕜 n f₃) :
-    ContDiff 𝕜 n fun x => g (f₁ x, f₂ x, f₃ x) :=
-  hg.comp₂ hf₁ <| hf₂.prod hf₃
+theorem ContDiffAt.comp₂ {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂} {x : F}
+    (hg : ContDiffAt 𝕜 n g (f₁ x, f₂ x))
+    (hf₁ : ContDiffAt 𝕜 n f₁ x) (hf₂ : ContDiffAt 𝕜 n f₂ x) :
+    ContDiffAt 𝕜 n (fun x => g (f₁ x, f₂ x)) x :=
+  hg.comp x (hf₁.prod hf₂)
+
+theorem ContDiffAt.comp_contDiffWithinAt₂ {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂}
+    {s : Set F} {x : F} (hg : ContDiffAt 𝕜 n g (f₁ x, f₂ x))
+    (hf₁ : ContDiffWithinAt 𝕜 n f₁ s x) (hf₂ : ContDiffWithinAt 𝕜 n f₂ s x) :
+    ContDiffWithinAt 𝕜 n (fun x => g (f₁ x, f₂ x)) s x :=
+  hg.comp_contDiffWithinAt x (hf₁.prod hf₂)
+
+theorem ContDiff.comp_contDiffAt₂ {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂} {x : F}
+    (hg : ContDiff 𝕜 n g) (hf₁ : ContDiffAt 𝕜 n f₁ x) (hf₂ : ContDiffAt 𝕜 n f₂ x) :
+    ContDiffAt 𝕜 n (fun x => g (f₁ x, f₂ x)) x :=
+  hg.contDiffAt.comp₂ hf₁ hf₂
+
+theorem ContDiff.comp_contDiffWithinAt₂ {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂}
+    {s : Set F} {x : F} (hg : ContDiff 𝕜 n g)
+    (hf₁ : ContDiffWithinAt 𝕜 n f₁ s x) (hf₂ : ContDiffWithinAt 𝕜 n f₂ s x) :
+    ContDiffWithinAt 𝕜 n (fun x => g (f₁ x, f₂ x)) s x :=
+  hg.contDiffAt.comp_contDiffWithinAt x  (hf₁.prod hf₂)
 
 theorem ContDiff.comp_contDiffOn₂ {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂} {s : Set F}
     (hg : ContDiff 𝕜 n g) (hf₁ : ContDiffOn 𝕜 n f₁ s) (hf₂ : ContDiffOn 𝕜 n f₂ s) :
@@ -801,6 +825,11 @@ theorem ContDiff.comp_contDiffOn₂ {g : E₁ × E₂ → G} {f₁ : F → E₁}
   hg.comp_contDiffOn <| hf₁.prod hf₂
 
 @[deprecated (since := "2024-10-10")] alias ContDiff.comp_contDiff_on₂ := ContDiff.comp_contDiffOn₂
+
+theorem ContDiff.comp₃ {g : E₁ × E₂ × E₃ → G} {f₁ : F → E₁} {f₂ : F → E₂} {f₃ : F → E₃}
+    (hg : ContDiff 𝕜 n g) (hf₁ : ContDiff 𝕜 n f₁) (hf₂ : ContDiff 𝕜 n f₂) (hf₃ : ContDiff 𝕜 n f₃) :
+    ContDiff 𝕜 n fun x => g (f₁ x, f₂ x, f₃ x) :=
+  hg.comp₂ hf₁ <| hf₂.prod hf₃
 
 theorem ContDiff.comp_contDiffOn₃ {g : E₁ × E₂ × E₃ → G} {f₁ : F → E₁} {f₂ : F → E₂} {f₃ : F → E₃}
     {s : Set F} (hg : ContDiff 𝕜 n g) (hf₁ : ContDiffOn 𝕜 n f₁ s) (hf₂ : ContDiffOn 𝕜 n f₂ s)
@@ -821,21 +850,53 @@ theorem ContDiff.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} 
 theorem ContDiffOn.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} {s : Set X}
     (hg : ContDiffOn 𝕜 n g s) (hf : ContDiffOn 𝕜 n f s) :
     ContDiffOn 𝕜 n (fun x => (g x).comp (f x)) s :=
-  (isBoundedBilinearMap_comp (𝕜 := 𝕜) (E := E) (F := F) (G := G)).contDiff.comp_contDiffOn₂ hg hf
+  (isBoundedBilinearMap_comp (E := E) (F := F) (G := G)).contDiff.comp_contDiffOn₂ hg hf
 
-theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F} {n : ℕ∞} (hf : ContDiff 𝕜 n f)
+theorem ContDiffAt.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} {x : X}
+    (hg : ContDiffAt 𝕜 n g x) (hf : ContDiffAt 𝕜 n f x) :
+    ContDiffAt 𝕜 n (fun x => (g x).comp (f x)) x :=
+  (isBoundedBilinearMap_comp (E := E) (G := G)).contDiff.comp_contDiffAt₂ hg hf
+
+theorem ContDiffWithinAt.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} {s : Set X} {x : X}
+    (hg : ContDiffWithinAt 𝕜 n g s x) (hf : ContDiffWithinAt 𝕜 n f s x) :
+    ContDiffWithinAt 𝕜 n (fun x => (g x).comp (f x)) s x :=
+  (isBoundedBilinearMap_comp (E := E) (G := G)).contDiff.comp_contDiffWithinAt₂ hg hf
+
+theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x => (f x) (g x) :=
   isBoundedBilinearMap_apply.contDiff.comp₂ hf hg
 
-theorem ContDiffOn.clm_apply {f : E → F →L[𝕜] G} {g : E → F} {n : ℕ∞} (hf : ContDiffOn 𝕜 n f s)
+theorem ContDiffOn.clm_apply {f : E → F →L[𝕜] G} {g : E → F} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x => (f x) (g x)) s :=
   isBoundedBilinearMap_apply.contDiff.comp_contDiffOn₂ hf hg
 
+theorem ContDiffAt.clm_apply {f : E → F →L[𝕜] G} {g : E → F} (hf : ContDiffAt 𝕜 n f x)
+    (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x => (f x) (g x)) x :=
+  isBoundedBilinearMap_apply.contDiff.comp_contDiffAt₂ hf hg
+
+theorem ContDiffWithinAt.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
+    ContDiffWithinAt 𝕜 n (fun x => (f x) (g x)) s x :=
+  isBoundedBilinearMap_apply.contDiff.comp_contDiffWithinAt₂ hf hg
+
 -- Porting note: In Lean 3 we had to give implicit arguments in proofs like the following,
 -- to speed up elaboration. In Lean 4 this isn't necessary anymore.
-theorem ContDiff.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} {n : ℕ∞} (hf : ContDiff 𝕜 n f)
+theorem ContDiff.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x => (f x).smulRight (g x) :=
   isBoundedBilinearMap_smulRight.contDiff.comp₂ hf hg
+
+theorem ContDiffOn.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
+    (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x => (f x).smulRight (g x)) s :=
+  (isBoundedBilinearMap_smulRight (E := F)).contDiff.comp_contDiffOn₂ hf hg
+
+theorem ContDiffAt.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
+    (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x => (f x).smulRight (g x)) x :=
+  (isBoundedBilinearMap_smulRight (E := F)).contDiff.comp_contDiffAt₂ hf hg
+
+theorem ContDiffWithinAt.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G}
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
+    ContDiffWithinAt 𝕜 n (fun x => (f x).smulRight (g x)) s x :=
+  (isBoundedBilinearMap_smulRight (E := F)).contDiff.comp_contDiffWithinAt₂ hf hg
 
 end SpecificBilinearMaps
 
@@ -991,6 +1052,16 @@ theorem ContDiffWithinAt.fderivWithin_right (hf : ContDiffWithinAt 𝕜 n f s x�
   ContDiffWithinAt.fderivWithin
     (ContDiffWithinAt.comp (x₀, x₀) hf contDiffWithinAt_snd <| prod_subset_preimage_snd s s)
     contDiffWithinAt_id hs hmn hx₀s (by rw [preimage_id'])
+
+/-- `x ↦ fderivWithin 𝕜 f s x (k x)` is smooth at `x₀` within `s`. -/
+theorem ContDiffWithinAt.fderivWithin_right_apply
+    {f : F → G} {k : F → F} {s : Set F} {n : ℕ∞} {x₀ : F}
+    (hf : ContDiffWithinAt 𝕜 n f s x₀) (hk : ContDiffWithinAt 𝕜 m k s x₀)
+    (hs : UniqueDiffOn 𝕜 s) (hmn : (m + 1 : ℕ∞) ≤ n) (hx₀s : x₀ ∈ s) :
+    ContDiffWithinAt 𝕜 m (fun x => fderivWithin 𝕜 f s x (k x)) s x₀ :=
+  ContDiffWithinAt.fderivWithin_apply
+    (ContDiffWithinAt.comp (x₀, x₀) hf contDiffWithinAt_snd <| prod_subset_preimage_snd s s)
+    contDiffWithinAt_id hk hs hmn hx₀s (by rw [preimage_id'])
 
 -- TODO: can we make a version of `ContDiffWithinAt.fderivWithin` for iterated derivatives?
 theorem ContDiffWithinAt.iteratedFderivWithin_right {i : ℕ} (hf : ContDiffWithinAt 𝕜 n f s x₀)
