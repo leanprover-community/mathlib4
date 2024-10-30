@@ -175,13 +175,14 @@ def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
   smul_def' _ _ := rfl
   toRingHom := i
 
-/-- definition of smul of toAlgebra'-/
+-- just simple lemmas for a declaration that is itself primed, no need for docstrings
+set_option linter.docPrime false in
 theorem RingHom.smul_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) (r: R) (s: S) :
     let _ := RingHom.toAlgebra' i h
     r • s = i r * s := rfl
 
-/--definition of algebraMap of toAlgebra'-/
+set_option linter.docPrime false in
 theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) :
     @algebraMap R S _ _ (i.toAlgebra' h) = i :=
@@ -331,13 +332,11 @@ variable {R : Type u} {S : Type v} (A : Type w)
 /--
 Compose a Algebra with a RingHom, with action f s • m.
 -/
-abbrev compHom: Algebra S A :=
-  {
-    (algebraMap R A).comp f with
-    smul := fun s x => f s • x
-    commutes' := fun _ _ => Algebra.commutes' _ _,
-    smul_def' := fun s x =>  smul_def (f s) x
-  }
+abbrev compHom: Algebra S A where
+  smul s a := f s • a
+  toRingHom := (algebraMap R A).comp f
+  commutes' _ _ := Algebra.commutes _ _
+  smul_def' _ _ := Algebra.smul_def _ _
 
 theorem compHom_smul_def (s : S) (x : A):
     letI := compHom A f
