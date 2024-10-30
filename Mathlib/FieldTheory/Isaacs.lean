@@ -7,7 +7,7 @@ import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.GroupTheory.CosetCover
 
 /-!
-# Characterize algebraic extensions by minimal polynomials
+# Algebraic extensions are determined by their sets of minimal polynomials up to isomorphism
 
 ## Main results
 
@@ -48,7 +48,7 @@ theorem nonempty_algHom_of_exist_roots (h : ∀ x : E, ∃ y : K, aeval y (minpo
   let Ω := FS →ₐ[F] K'
   have := finiteDimensional_adjoin (S := (S : Set E)) fun _ _ ↦ (alg.isIntegral).1 _
   let M (ω : Ω) := Subalgebra.toSubmodule (K₀.comap ω).toSubalgebra
-  have : ⋃ ω : Ω, ↑(M ω) = @Set.univ FS :=
+  have : ⋃ ω : Ω, (M ω : Set FS) = Set.univ :=
     Set.eq_univ_of_forall fun ⟨α, hα⟩ ↦ Set.mem_iUnion.mpr <| by
       have ⟨β, hβ⟩ := h α
       let ϕ : F⟮α⟯ →ₐ[F] K' := (IsScalarTower.toAlgHom _ _ _).comp ((AdjoinRoot.liftHom _ _ hβ).comp
