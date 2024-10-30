@@ -1587,6 +1587,7 @@ import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Endofunctor.Algebra
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Enriched.Basic
+import Mathlib.CategoryTheory.Enriched.Ordinary
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Equivalence
@@ -1712,6 +1713,7 @@ import Mathlib.CategoryTheory.Limits.IsConnected
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Lattice
 import Mathlib.CategoryTheory.Limits.MonoCoprod
+import Mathlib.CategoryTheory.Limits.MorphismProperty
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Over
 import Mathlib.CategoryTheory.Limits.Pi
