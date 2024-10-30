@@ -118,7 +118,7 @@ end List
 
 namespace Cycle
 
-variable [DecidableEq α] (s s' : Cycle α)
+variable [DecidableEq α] (s : Cycle α)
 
 /-- A cycle `s : Cycle α`, given `Nodup s` can be interpreted as an `Equiv.Perm α`
 where each element in the list is permuted to the next one, defined as `formPerm`.

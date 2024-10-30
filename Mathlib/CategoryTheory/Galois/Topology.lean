@@ -80,7 +80,7 @@ lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
   · fun_prop
 
 lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
-  induced := rfl
+  eq_induced := rfl
   inj := autEmbedding_injective F
   isClosed_range := autEmbedding_range_isClosed F
 
@@ -93,15 +93,14 @@ instance : T2Space (Aut F) :=
   T2Space.of_injective_continuous (autEmbedding_injective F) continuous_induced_dom
 
 instance : TotallyDisconnectedSpace (Aut F) :=
-  (Embedding.isTotallyDisconnected_range (autEmbedding_isClosedEmbedding F).embedding).mp
+  (autEmbedding_isClosedEmbedding F).isEmbedding.isTotallyDisconnected_range.mp
     (isTotallyDisconnected_of_totallyDisconnectedSpace _)
 
 instance : ContinuousMul (Aut F) :=
-  Inducing.continuousMul (autEmbedding F)
-    (autEmbedding_isClosedEmbedding F).toInducing
+  (autEmbedding_isClosedEmbedding F).isInducing.continuousMul (autEmbedding F)
 
 instance : ContinuousInv (Aut F) :=
-  Inducing.continuousInv (autEmbedding_isClosedEmbedding F).toInducing (fun _ ↦ rfl)
+  (autEmbedding_isClosedEmbedding F).isInducing.continuousInv fun _ ↦ rfl
 
 instance : TopologicalGroup (Aut F) := ⟨⟩
 
