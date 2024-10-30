@@ -25,7 +25,7 @@ It is inspired by Isabelle/HOL's linear algebra, and hence indirectly by HOL Lig
 We define `LinearIndependent R v` as `Function.Injective (Finsupp.linearCombination R v)`. Here
 `Finsupp.linearCombination` is the linear map sending a function `f : ι →₀ R` with finite support to
 the linear combination of vectors from `v` with these coefficients. Then we prove that several other
-statements are equivalent to this one, including injectivity of `Finsupp.linearCombination R v` and
+statements are equivalent to this one, including `ker (Finsupp.linearCombination R v) = ⊥` and
 some versions with explicitly written linear combinations.
 
 ## Main definitions
@@ -126,6 +126,12 @@ def delabLinearIndependent : Delab :=
 
 variable {R v}
 
+theorem linearIndependent_iff_injective_linearCombination :
+    LinearIndependent R v ↔ Function.Injective (Finsupp.linearCombination R v) := Iff.rfl
+
+alias ⟨LinearIndependent.injective_linearCombination, _⟩ :=
+  linearIndependent_iff_injective_linearCombination
+
 theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependent R v) :
     v i ≠ 0 := by
   intro h
@@ -141,20 +147,11 @@ variable (R M) in
 theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M) → M) :=
   linearIndependent_empty_type
 
-lemma LinearIndependent.eq_zero_of_pair {x y : M} (h : LinearIndependent R ![x, y])
-    {s t : R} (h' : s • x + t • y = 0) : s = 0 ∧ t = 0 := by
-  replace h := @h (.single 0 s + .single 1 t) 0 ?_
-  · exact ⟨by simpa using congr($h 0), by simpa using congr($h 1)⟩
-  simpa
-
 /-- A subfamily of a linearly independent family (i.e., a composition with an injective map) is a
 linearly independent family. -/
 theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf : Injective f) :
     LinearIndependent R (v ∘ f) := by
-  intros x y hxy
-  simp_rw [Finsupp.linearCombination_comp] at hxy
-  exact Finsupp.mapDomain_injective hf (h hxy)
-
+  simpa [Function.comp_def] using Function.Injective.comp h (Finsupp.mapDomain_injective hf)
 
 /-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
 independent over a subring `R` of `K`.
@@ -246,6 +243,12 @@ theorem Fintype.linearIndependent_iff' [Fintype ι] [DecidableEq ι] :
 theorem Fintype.not_linearIndependent_iff [Fintype ι] :
     ¬LinearIndependent R v ↔ ∃ g : ι → R, ∑ i, g i • v i = 0 ∧ ∃ i, g i ≠ 0 := by
   simpa using not_iff_not.2 Fintype.linearIndependent_iff
+
+lemma LinearIndependent.eq_zero_of_pair {x y : M} (h : LinearIndependent R ![x, y])
+    {s t : R} (h' : s • x + t • y = 0) : s = 0 ∧ t = 0 := by
+  replace h := @h (.single 0 s + .single 1 t) 0 ?_
+  · exact ⟨by simpa using congr($h 0), by simpa using congr($h 1)⟩
+  simpa
 
 /-- Also see `LinearIndependent.pair_iff'` for a simpler version over fields. -/
 lemma LinearIndependent.pair_iff {x y : M} :
@@ -526,31 +529,15 @@ variable {v : ι → M}
 variable [Ring R] [AddCommGroup M] [AddCommGroup M']
 variable [Module R M] [Module R M']
 
-theorem linearIndependent_iff_injective_linearCombination :
-    LinearIndependent R v ↔ Function.Injective (Finsupp.linearCombination R v) :=
-  linearIndependent_iff.trans
-    (injective_iff_map_eq_zero (Finsupp.linearCombination R v).toAddMonoidHom).symm
-
 @[deprecated (since := "2024-08-29")] alias linearIndependent_iff_injective_total :=
-  linearIndependent_iff_injective_linearCombination
-
-alias ⟨LinearIndependent.injective_linearCombination, _⟩ :=
-
   linearIndependent_iff_injective_linearCombination
 
 @[deprecated (since := "2024-08-29")] alias LinearIndependent.injective_total :=
   LinearIndependent.injective_linearCombination
 
 theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) : Injective v := by
-  intro i j hij
-  let l : ι →₀ R := Finsupp.single i (1 : R) - Finsupp.single j 1
-  have h_total : Finsupp.linearCombination R v l = 0 := by
-    simp_rw [l, LinearMap.map_sub, Finsupp.linearCombination_apply]
-    simp [hij]
-  have h_single_eq : Finsupp.single i (1 : R) = Finsupp.single j 1 := by
-    rw [linearIndependent_iff] at hv
-    simp [eq_add_of_sub_eq' (hv l h_total)]
-  simpa [Finsupp.single_eq_single_iff] using h_single_eq
+  simpa [Function.comp_def]
+    using Function.Injective.comp hv (Finsupp.single_left_injective one_ne_zero)
 
 theorem LinearIndependent.to_subtype_range {ι} {f : ι → M} (hf : LinearIndependent R f) :
     LinearIndependent R ((↑) : range f → M) := by
