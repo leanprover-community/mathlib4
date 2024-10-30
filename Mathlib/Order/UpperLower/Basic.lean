@@ -41,6 +41,8 @@ open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
+attribute [aesop norm unfold] IsUpperSet IsLowerSet
+
 /-! ### Unbundled upper/lower sets -/
 
 
