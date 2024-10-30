@@ -37,12 +37,12 @@ open CategoryTheory Topology TopologicalGroup
 
 namespace ProfiniteGrp
 
-theorem existOpenNormalSubgroupSubOpenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]
+theorem exist_openNormalSubgroup_sub_open_nhd_of_one {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] [TotallyDisconnectedSpace G] {U : Set G}
     (UOpen : IsOpen U) (einU : 1 ∈ U) : ∃ H : OpenNormalSubgroup G, (H : Set G) ⊆ U := by
   rcases ((Filter.HasBasis.mem_iff' ((nhds_basis_clopen (1 : G))) U ).mp <|
     mem_nhds_iff.mpr (by use U)) with ⟨W, hW, h⟩
-  rcases existOpenNormalSubgroupSubClopenNhdsOfOne hW.2 hW.1 with ⟨H, hH⟩
+  rcases exist_openNormalSubgroup_sub_clopen_nhd_of_one hW.2 hW.1 with ⟨H, hH⟩
   exact ⟨H, fun _ a ↦ h (hH a)⟩
 
 section
@@ -125,7 +125,7 @@ theorem canonicalQuotientMap_injective (P : ProfiniteGrp.{u}) :
   rw [← MonoidHom.ker_eq_bot_iff, Subgroup.eq_bot_iff_forall]
   intro x h
   by_contra xne1
-  rcases existOpenNormalSubgroupSubOpenNhdsOfOne (isOpen_compl_singleton)
+  rcases exist_openNormalSubgroup_sub_open_nhd_of_one (isOpen_compl_singleton)
     (Set.mem_compl_singleton_iff.mpr fun a => xne1 a.symm) with ⟨H, hH⟩
   exact hH ((QuotientGroup.eq_one_iff x).mp (congrFun (Subtype.val_inj.mpr h) H)) rfl
 
