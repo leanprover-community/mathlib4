@@ -24,22 +24,22 @@ def leadingTerm {basis : Basis} (ms : PreMS basis) : MS.Term :=
   | List.cons _ _ =>
     match destruct ms with
     | none => ⟨0, List.range basis.length |>.map fun _ => 0⟩
-    | some ((deg, coef), _) =>
+    | some ((exp, coef), _) =>
       let pre := coef.leadingTerm
-      ⟨pre.coef, deg :: pre.degs⟩
+      ⟨pre.coef, exp :: pre.exps⟩
 
 theorem leadingTerm_length {basis : Basis} {ms : PreMS basis} :
-    ms.leadingTerm.degs.length = basis.length :=
+    ms.leadingTerm.exps.length = basis.length :=
   match basis with
   | [] => by simp [leadingTerm]
   | List.cons basis_hd basis_tl => by
     cases ms <;> simp [leadingTerm, leadingTerm_length]
 
-theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
+theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} (x : ℝ) :
-    (leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (deg, coef) tl)).toFun
+    (leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp, coef) tl)).toFun
       (basis_hd :: basis_tl) x =
-    (basis_hd x)^deg * (leadingTerm coef).toFun basis_tl x := by
+    (basis_hd x)^exp * (leadingTerm coef).toFun basis_tl x := by
   simp [leadingTerm, MS.Term.toFun]
   conv =>
     congr <;> rw [MS.Term.fun_mul]
@@ -62,7 +62,7 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
     constructor
     assumption
   | List.cons basis_hd basis_tl => by
-    cases' ms with deg coef tl
+    cases' ms with exp coef tl
     · absurd h_ne_zero
       constructor
     · obtain ⟨h_coef_wo, _, _⟩ := WellOrdered_cons h_wo
@@ -86,37 +86,37 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
 
 -- TODO: rewrite without mutual
 mutual
-  theorem IsEquivalent_coef {basis_hd C F : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
+  theorem IsEquivalent_coef {basis_hd C F : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
       {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
       (h_coef : coef.Approximates C)
       (h_coef_wo : coef.WellOrdered)
       (h_coef_trimmed : coef.Trimmed)
       (h_coef_ne_zero : ¬coef.FlatZero)
-      (h_tl : tl.Approximates (fun x ↦ F x - (basis_hd x)^deg * C x))
-      (h_comp : leadingExp tl < ↑deg)
+      (h_tl : tl.Approximates (fun x ↦ F x - (basis_hd x)^exp * C x))
+      (h_comp : leadingExp tl < ↑exp)
       (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl)) :
-      F ~[atTop] fun x ↦ (basis_hd x)^deg * (C x) := by
+      F ~[atTop] fun x ↦ (basis_hd x)^exp * (C x) := by
     have coef_ih := coef.IsEquivalent_leadingTerm (F := C) h_coef_wo h_coef h_coef_trimmed
       (MS.WellOrderedBasis_tail h_basis)
     simp [IsEquivalent]
     eta_expand
     simp only [Pi.sub_apply]
-    cases' tl with tl_deg tl_coef tl_tl
+    cases' tl with tl_exp tl_coef tl_tl
     · apply Approximates_nil at h_tl
       apply EventuallyEq.trans_isLittleO h_tl
       apply Asymptotics.isLittleO_zero -- should be simp lemma
     · obtain ⟨tl_C, h_tl_coef, h_tl_maj, h_tl_tl⟩ := Approximates_cons h_tl
       simp at h_comp
-      let deg' := (deg + tl_deg) / 2
-      specialize h_tl_maj deg' (by simp only [deg']; linarith)
+      let exp' := (exp + tl_exp) / 2
+      specialize h_tl_maj exp' (by simp only [exp']; linarith)
       apply IsLittleO.trans h_tl_maj
       apply (isLittleO_iff_tendsto' _).mpr
       · simp_rw [← div_div]
         conv in _ / _ =>
           rw [div_eq_mul_inv, div_mul_comm, div_mul]
         apply (isLittleO_iff_tendsto' _).mp
-        · have : (fun x ↦ basis_hd x ^ deg / basis_hd x ^ deg') =ᶠ[atTop]
-              fun x ↦ (basis_hd x)^(deg - deg') := by
+        · have : (fun x ↦ basis_hd x ^ exp / basis_hd x ^ exp') =ᶠ[atTop]
+              fun x ↦ (basis_hd x)^(exp - exp') := by
             apply Eventually.mono <| MS.basis_head_eventually_pos h_basis
             intro x h
             simp only
@@ -128,7 +128,7 @@ mutual
           apply MS.Term.tail_fun_IsLittleO_head
           · rw [MS.Term.inv_length, PreMS.leadingTerm_length]
           · exact h_basis
-          · simp only [deg']
+          · simp only [exp']
             linarith
         · apply Eventually.mono <| MS.basis_head_eventually_pos h_basis
           intro x h1 h2
@@ -162,7 +162,7 @@ mutual
       simp [leadingTerm]
       apply EventuallyEq.isEquivalent (by assumption)
     | List.cons basis_hd basis_tl => by
-      cases' ms with deg coef tl
+      cases' ms with exp coef tl
       · have hF := Approximates_nil h_approx
         unfold leadingTerm
         simp [MS.Term.zero_coef_fun]
@@ -172,7 +172,7 @@ mutual
         obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
         have coef_ih := coef.IsEquivalent_leadingTerm (F := C) h_coef_wo h_coef h_coef_trimmed
           (MS.WellOrderedBasis_tail h_basis)
-        have : F ~[atTop] fun x ↦ (basis_hd x)^deg * (C x) :=
+        have : F ~[atTop] fun x ↦ (basis_hd x)^exp * (C x) :=
           PreMS.IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
         apply IsEquivalent.trans this
         eta_expand
@@ -205,7 +205,7 @@ end PreMS
 def MS.leadingTerm (ms : MS) : MS.Term :=
   PreMS.leadingTerm ms.val
 
-theorem MS.leadingTerm_length {ms : MS} : ms.leadingTerm.degs.length = ms.basis.length := by
+theorem MS.leadingTerm_length {ms : MS} : ms.leadingTerm.exps.length = ms.basis.length := by
   apply PreMS.leadingTerm_length
 
 theorem MS.IsEquivalent_leadingTerm (ms : MS) (h_basis : MS.WellOrderedBasis ms.basis)

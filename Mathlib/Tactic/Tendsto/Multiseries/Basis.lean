@@ -91,7 +91,7 @@ theorem MS.basis_tail_majorated_head {hd f : ℝ → ℝ} {tl : Basis}
     (h_basis : MS.WellOrderedBasis (hd :: tl)) (hf : f ∈ tl) :
     PreMS.majorated f hd 0 := by
   simp [PreMS.majorated]
-  intro deg h_deg
+  intro exp h_exp
   rw [show f = fun x ↦ (f x)^(1 : ℝ) by simp]
   apply MS.basis_compare
   · apply Eventually.mono <| MS.basis_eventually_pos (MS.WellOrderedBasis_tail h_basis)
@@ -102,14 +102,14 @@ theorem MS.basis_tail_majorated_head {hd f : ℝ → ℝ} {tl : Basis}
     simp
   · simp [MS.WellOrderedBasis] at h_basis
     tauto
-  · exact h_deg
+  · exact h_exp
 
 -- TODO: rename
 theorem PreMS.Approximates_coef_isLittleO_head {C basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS basis_tl} (h_approx : ms.Approximates C)
     (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl)) :
     majorated C basis_hd 0 := by
-  intro deg' h_deg
+  intro exp' h_exp
   cases basis_tl with
   | nil =>
     simp [Approximates] at h_approx
@@ -117,23 +117,23 @@ theorem PreMS.Approximates_coef_isLittleO_head {C basis_hd : ℝ → ℝ} {basis
     apply isLittleO_const_left.mpr
     right
     apply Tendsto.comp tendsto_norm_atTop_atTop
-    apply Tendsto.comp (tendsto_rpow_atTop h_deg)
+    apply Tendsto.comp (tendsto_rpow_atTop h_exp)
     simpa [MS.WellOrderedBasis] using h_basis
   | cons basis_tl_hd basis_tl_tl =>
-    cases' ms with deg coef tl
+    cases' ms with exp coef tl
     · apply Approximates_nil at h_approx
       apply EventuallyEq.trans_isLittleO h_approx
       apply isLittleO_const_left.mpr
       left
       rfl
     · obtain ⟨CC, _, h_maj, _⟩ := Approximates_cons h_approx
-      apply Asymptotics.IsLittleO.trans <| h_maj (deg + 1) (by linarith)
+      apply Asymptotics.IsLittleO.trans <| h_maj (exp + 1) (by linarith)
       apply MS.basis_compare
       · apply MS.basis_head_eventually_pos (MS.WellOrderedBasis_tail h_basis)
       · apply MS.basis_tendsto_top h_basis
         simp only [List.mem_cons, true_or]
       · simp [MS.WellOrderedBasis] at h_basis
         exact h_basis.left.left.left
-      · exact h_deg
+      · exact h_exp
 
 end TendstoTactic

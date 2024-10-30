@@ -16,9 +16,9 @@ inductive FlatZero : {basis : Basis} → PreMS basis → Prop
 | const {c : ℝ} (h : c = 0) : FlatZero (basis := []) c
 | nil {basis_hd} {basis_tl} : FlatZero (basis := basis_hd :: basis_tl) Seq.nil
 
-theorem FlatZero_cons {basis_hd} {basis_tl} {deg : ℝ} {coef : PreMS basis_tl}
+theorem FlatZero_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
     {tl : PreMS (basis_hd :: basis_tl)} :
-    ¬(FlatZero (basis := (basis_hd :: basis_tl)) (Seq.cons (deg, coef) tl)) := by
+    ¬(FlatZero (basis := (basis_hd :: basis_tl)) (Seq.cons (exp, coef) tl)) := by
   intro h
   let motive : {basis : Basis} → (a : PreMS basis) → a.FlatZero → Prop := fun {basis} a _ =>
     match basis with
@@ -30,17 +30,17 @@ theorem FlatZero_cons {basis_hd} {basis_tl} {deg : ℝ} {coef : PreMS basis_tl}
 inductive Trimmed : {basis : Basis} → PreMS basis → Prop
 | const {c : ℝ} : Trimmed (basis := []) c
 | nil {basis_hd} {basis_tl} : Trimmed (basis := basis_hd :: basis_tl) Seq.nil
-| cons {basis_hd} {basis_tl} {deg : ℝ} {coef : PreMS basis_tl}
+| cons {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
   {tl : PreMS (basis_hd :: basis_tl)} (h_trimmed : coef.Trimmed)
   (h_ne_flat_zero : ¬ coef.FlatZero) :
-  Trimmed (basis := basis_hd :: basis_tl) (Seq.cons (deg, coef) tl)
+  Trimmed (basis := basis_hd :: basis_tl) (Seq.cons (exp, coef) tl)
 
-theorem Trimmed_cons {basis_hd} {basis_tl} {deg : ℝ} {coef : PreMS basis_tl}
+theorem Trimmed_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
     {tl : PreMS (basis_hd :: basis_tl)}
-    (h : Trimmed (basis := basis_hd :: basis_tl) (Seq.cons (deg, coef) tl)) :
+    (h : Trimmed (basis := basis_hd :: basis_tl) (Seq.cons (exp, coef) tl)) :
     coef.Trimmed ∧ ¬ coef.FlatZero := by
   apply h.casesOn (motive := fun {basis : Basis} (a : PreMS basis) (h_trimmed : a.Trimmed) =>
-    (h_basis : basis = basis_hd :: basis_tl) → (a = h_basis ▸ (Seq.cons (deg, coef) tl)) →
+    (h_basis : basis = basis_hd :: basis_tl) → (a = h_basis ▸ (Seq.cons (exp, coef) tl)) →
       coef.Trimmed ∧ ¬ coef.FlatZero)
   · intro _ h_basis
     simp at h_basis
@@ -49,7 +49,7 @@ theorem Trimmed_cons {basis_hd} {basis_tl} {deg : ℝ} {coef : PreMS basis_tl}
     obtain ⟨h_basis_hd, h_basis_tl⟩ := h_basis
     subst h_basis_hd h_basis_tl
     simp at h
-  · intro _ _ deg coef tl h_trimmed h_ne_flat_zero h_basis h
+  · intro _ _ exp coef tl h_trimmed h_ne_flat_zero h_basis h
     simp at h_basis
     obtain ⟨h_basis_hd, h_basis_tl⟩ := h_basis
     subst h_basis_hd h_basis_tl
@@ -75,7 +75,7 @@ theorem HasNegativeLeading_tendsto_zero {basis : Basis} {ms : PreMS basis} {F : 
   | nil => simp [HasNegativeLeading] at h_neg
   | cons =>
     simp [HasNegativeLeading] at h_neg
-    cases' ms with deg coef tl
+    cases' ms with exp coef tl
     · apply Approximates_nil at h_approx
       apply Filter.Tendsto.congr' h_approx.symm
       apply tendsto_const_nhds
@@ -120,7 +120,7 @@ def maxUnfoldingSteps : ℕ := 20
 --           h_approx := by simp
 --           h_trimmed := by constructor
 --         })
---         (cons := fun (deg, coef) tl => do
+--         (cons := fun (exp, coef) tl => do
 --           let coef_trimmed ← PreMS.trim coef stepsLeftNext
 --           match basis_tl with
 --           | [] =>
@@ -141,12 +141,12 @@ def maxUnfoldingSteps : ℕ := 20
 --                   apply tl_trimmed.h_approx
 --                   apply Approximates_sub_zero h_tl
 --                   have := Filter.EventuallyEq.mul
---                     (Filter.EventuallyEq.refl _ (fun x ↦ basis_hd x ^ deg)) h_coef
+--                     (Filter.EventuallyEq.refl _ (fun x ↦ basis_hd x ^ exp)) h_coef
 --                   simpa using this
 --                 h_trimmed := tl_trimmed.h_trimmed
 --               }
 --             | .pos h_c_pos => return {
---                 result := .cons (deg, coef_trimmed.result) tl
+--                 result := .cons (exp, coef_trimmed.result) tl
 --                 h_wo := by
 --                   intro h_wo
 --                   apply WellOrdered_cons at h_wo
@@ -180,7 +180,7 @@ def maxUnfoldingSteps : ℕ := 20
 --                     linarith
 --               }
 --             | .neg h_c_neg => return { -- copypaste from pos
---                 result := .cons (deg, coef_trimmed.result) tl
+--                 result := .cons (exp, coef_trimmed.result) tl
 --                 h_wo := by
 --                   intro h_wo
 --                   apply WellOrdered_cons at h_wo
@@ -215,7 +215,7 @@ def maxUnfoldingSteps : ℕ := 20
 --                     linarith
 --               }
 --           | basis_tl_hd :: basis_tl_tl =>
---             coef_trimmed.result.casesOn (motive := fun x => coef_trimmed.result = x → TendstoM (TrimmingResult (basis := basis_hd :: basis_tl_hd :: basis_tl_tl) (CoList.cons (deg, coef) tl)))
+--             coef_trimmed.result.casesOn (motive := fun x => coef_trimmed.result = x → TendstoM (TrimmingResult (basis := basis_hd :: basis_tl_hd :: basis_tl_tl) (CoList.cons (exp, coef) tl)))
 --               (nil := fun h_coef_trimmed => do
 --                 let tl_trimmed ← PreMS.trim tl stepsLeftNext
 --                 return {
@@ -235,14 +235,14 @@ def maxUnfoldingSteps : ℕ := 20
 --                       have := h_coef_trimmed ▸ coef_trimmed.h_approx C h_coef
 --                       exact Approximates_nil this
 --                     have := Filter.EventuallyEq.mul
---                       (Filter.EventuallyEq.refl _ (fun x ↦ basis_hd x ^ deg)) hC
+--                       (Filter.EventuallyEq.refl _ (fun x ↦ basis_hd x ^ exp)) hC
 --                     simpa using this
 --                   h_trimmed := tl_trimmed.h_trimmed
 --                 }
 --               )
---               (cons := fun (tl_deg, tl_coef) tl_tl => fun h_coef_trimmed => do
+--               (cons := fun (tl_exp, tl_coef) tl_tl => fun h_coef_trimmed => do
 --                 return {
---                   result := .cons (deg, coef_trimmed.result) tl
+--                   result := .cons (exp, coef_trimmed.result) tl
 --                   h_wo := by
 --                     intro h_wo
 --                     apply WellOrdered_cons at h_wo

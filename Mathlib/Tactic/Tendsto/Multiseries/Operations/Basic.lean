@@ -14,7 +14,7 @@ def mulConst {basis : Basis} (ms : PreMS basis) (c : ℝ) : PreMS basis :=
   match basis with
   | [] => ms * c
   | List.cons _ _ =>
-    Seq.map (fun (deg, coef) => (deg, mulConst coef c)) ms
+    Seq.map (fun (exp, coef) => (exp, mulConst coef c)) ms
 
 def neg {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   ms.mulConst (-1)
@@ -135,10 +135,10 @@ theorem mulConst_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
   simp [mulConst]
 
 @[simp]
-theorem mulConst_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c deg : ℝ}
+theorem mulConst_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c exp : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
-    mulConst (basis := basis_hd :: basis_tl) (Seq.cons (deg, coef) tl) c =
-    Seq.cons (deg, coef.mulConst c) (tl.mulConst c) := by
+    mulConst (basis := basis_hd :: basis_tl) (Seq.cons (exp, coef) tl) c =
+    Seq.cons (exp, coef.mulConst c) (tl.mulConst c) := by
   simp [mulConst]
 
 @[simp]
@@ -170,12 +170,12 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
       simp [motive] at ih
       obtain ⟨X, h_ms_eq, hX_wo⟩ := ih
       subst h_ms_eq
-      cases' X with deg coef tl
+      cases' X with exp coef tl
       · left
         simp [mulConst]
       · obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
         right
-        use deg, coef.mulConst c, mulConst (basis := basis_hd :: basis_tl) tl c
+        use exp, coef.mulConst c, mulConst (basis := basis_hd :: basis_tl) tl c
         constructor
         · simp [mulConst]
         constructor
@@ -204,7 +204,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
     · intro f ms ih
       simp only [motive] at ih
       obtain ⟨X, fX, h_ms_eq, hf_eq, hX_approx⟩ := ih
-      cases' X with X_deg X_coef X_tl
+      cases' X with X_exp X_coef X_tl
       · left
         apply Approximates_nil at hX_approx
         simp [mulConst] at h_ms_eq
@@ -231,7 +231,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
         · apply majorated_of_EventuallyEq hf_eq
           exact mul_const_majorated hX_maj
         simp only [motive]
-        use X_tl, fun x ↦ fX x - basis_hd x ^ X_deg * XC x
+        use X_tl, fun x ↦ fX x - basis_hd x ^ X_exp * XC x
         constructor
         · rfl
         constructor
@@ -266,10 +266,10 @@ theorem neg_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
   simp [neg]
 
 @[simp]
-theorem neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
+theorem neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
-    neg (basis := basis_hd :: basis_tl) (Seq.cons (deg, coef) tl) =
-    Seq.cons (deg, coef.neg) tl.neg := by
+    neg (basis := basis_hd :: basis_tl) (Seq.cons (exp, coef) tl) =
+    Seq.cons (exp, coef.neg) tl.neg := by
   simp [neg]
 
 end PreMS

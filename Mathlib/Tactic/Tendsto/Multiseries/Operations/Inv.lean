@@ -62,8 +62,8 @@ theorem invSeries'_toFun_eq {x : ℝ} (hx : ‖x‖ < 1) : invSeries'.toFun x = 
 --   | basis_hd :: basis_tl =>
 --     ms.casesOn'
 --     (nil := .nil)
---     (cons := fun (deg, coef) tl =>
---       mulMonomial (invSeries.apply (mulMonomial tl coef.inv (-deg))) coef.inv (-deg)
+--     (cons := fun (exp, coef) tl =>
+--       mulMonomial (invSeries.apply (mulMonomial tl coef.inv (-exp))) coef.inv (-exp)
 --     )
 
 -- variant with true geometric series (not alternating one) but with neg
@@ -74,14 +74,14 @@ noncomputable def inv' {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   | List.cons basis_hd basis_tl =>
     match destruct ms with
     | none => .nil
-    | some ((deg, coef), tl) => mulMonomial (invSeries'.apply (mulMonomial (neg tl) coef.inv' (-deg))) coef.inv' (-deg)
+    | some ((exp, coef), tl) => mulMonomial (invSeries'.apply (mulMonomial (neg tl) coef.inv' (-exp))) coef.inv' (-exp)
 
 theorem inv'_WellOrdered {basis : Basis} {ms : PreMS basis}
     (h_wo : ms.WellOrdered) : ms.inv'.WellOrdered := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    cases' ms with deg coef tl
+    cases' ms with exp coef tl
     · simp [inv']
       apply WellOrdered.nil
     · obtain ⟨h_coef, h_comp, h_tl⟩ := WellOrdered_cons h_wo
@@ -109,7 +109,7 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
     simp only [Approximates] at *
     apply EventuallyEq.inv h_approx
   | cons basis_hd basis_tl =>
-    cases' ms with deg coef tl
+    cases' ms with exp coef tl
     · apply Approximates_nil at h_approx
       simp [inv']
       apply Approximates.nil
@@ -129,7 +129,7 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
       have h_basis_hd_pos : ∀ᶠ x in atTop, 0 < basis_hd x :=
         MS.basis_head_eventually_pos h_basis
       simp [inv']
-      apply Approximates_of_EventuallyEq (F := fun x ↦ C⁻¹ x * (basis_hd x)^(-deg) * (C x * (basis_hd x)^(deg) * F⁻¹ x))
+      apply Approximates_of_EventuallyEq (F := fun x ↦ C⁻¹ x * (basis_hd x)^(-exp) * (C x * (basis_hd x)^(exp) * F⁻¹ x))
       · simp only [EventuallyEq]
         apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
         intro x ⟨hC_ne_zero, h_basis_hd_pos⟩
@@ -141,11 +141,11 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
       swap
       · exact inv'_Approximates (MS.WellOrderedBasis_tail h_basis) h_coef_wo h_coef_trimmed h_coef
       focus
-      have : ((neg tl).mulMonomial coef.inv' (-deg)).Approximates (fun x ↦ C⁻¹ x * (basis_hd x)^(-deg) * -(F x - basis_hd x ^ deg * C x)) (basis := basis_hd :: basis_tl) := by
+      have : ((neg tl).mulMonomial coef.inv' (-exp)).Approximates (fun x ↦ C⁻¹ x * (basis_hd x)^(-exp) * -(F x - basis_hd x ^ exp * C x)) (basis := basis_hd :: basis_tl) := by
         apply mulMonomial_Approximates h_basis
         · exact neg_Approximates h_tl
         · exact inv'_Approximates (MS.WellOrderedBasis_tail h_basis) h_coef_wo h_coef_trimmed h_coef
-      apply Approximates_of_EventuallyEq (F' := (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-deg) * F x)) at this
+      apply Approximates_of_EventuallyEq (F' := (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x)) at this
       swap
       · simp only [EventuallyEq]
         apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
@@ -154,17 +154,17 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
         ring_nf
         simp [mul_inv_cancel₀ hC_ne_zero]
         simp [← Real.rpow_add h_basis_hd_pos]
-      apply Approximates_of_EventuallyEq (F := (fun x ↦ (1 - x)⁻¹) ∘ (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-deg) * F x))
+      apply Approximates_of_EventuallyEq (F := (fun x ↦ (1 - x)⁻¹) ∘ (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x))
       · simp only [EventuallyEq]
         apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
         intro x ⟨hC_ne_zero, h_basis_hd_pos⟩
         simp [Real.rpow_neg h_basis_hd_pos.le]
         ring
-      apply Approximates_of_EventuallyEq (F := invSeries'.toFun ∘ (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-deg) * F x))
-      · have : Tendsto (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-deg) * F x) atTop (nhds 0) := by
+      apply Approximates_of_EventuallyEq (F := invSeries'.toFun ∘ (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x))
+      · have : Tendsto (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x) atTop (nhds 0) := by
           rw [show (0 : ℝ) = 1 - 1 by simp]
           apply Tendsto.const_sub
-          apply Tendsto.congr' (f₁ := F / (fun k ↦ C k * basis_hd k ^ (deg)))
+          apply Tendsto.congr' (f₁ := F / (fun k ↦ C k * basis_hd k ^ (exp)))
           · simp only [EventuallyEq]
             apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
             intro x ⟨hC_ne_zero, h_basis_hd_pos⟩
@@ -183,7 +183,7 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
               intro h
               simp [h] at h_basis_hd_pos
             · exact h_basis_hd_pos.le
-        have : ∀ᶠ x in atTop, ‖1 - C⁻¹ x * basis_hd x ^ (-deg) * F x‖ < 1 := by
+        have : ∀ᶠ x in atTop, ‖1 - C⁻¹ x * basis_hd x ^ (-exp) * F x‖ < 1 := by
           apply NormedAddCommGroup.tendsto_nhds_zero.mp this
           simp
         simp only [EventuallyEq]

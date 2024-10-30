@@ -1,3 +1,4 @@
+import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
 import Mathlib.Tactic.Tendsto.TendstoM
 
@@ -14,7 +15,7 @@ open Asymptotics Filter
 
 structure MS.Term where
   coef : ℝ
-  degs : List ℝ
+  exps : List ℝ
 
 instance : Inhabited MS.Term where
   default := ⟨0, []⟩
@@ -23,13 +24,13 @@ instance : Inhabited MS.Term where
 namespace MS.Term
 
 noncomputable def toFun (t : MS.Term) (basis : List (ℝ → ℝ)) : ℝ → ℝ :=
-  fun x => t.degs.zip basis |>.foldl (init := t.coef) fun acc (deg, f) =>
-    acc * (f x)^deg
+  fun x => t.exps.zip basis |>.foldl (init := t.coef) fun acc (exp, f) =>
+    acc * (f x)^exp
 
 -- TODO: rename
 theorem fun_mul (li : List (ℝ × (ℝ → ℝ))) (coef : ℝ) (x : ℝ) :
-    (li.foldl (init := coef) fun acc (deg, f) => acc * (f x)^deg) =
-    coef * (li.foldl (init := 1) fun acc (deg, f) => acc * (f x)^deg) := by
+    (li.foldl (init := coef) fun acc (exp, f) => acc * (f x)^exp) =
+    coef * (li.foldl (init := 1) fun acc (exp, f) => acc * (f x)^exp) := by
   induction li generalizing coef with
   | nil => simp
   | cons hd tl ih =>
@@ -45,22 +46,22 @@ theorem zero_coef_fun {t : MS.Term} (basis : List (ℝ → ℝ)) (h_coef : t.coe
   simp
 
 theorem neg_coef {t : MS.Term} {basis : List (ℝ → ℝ)} :
-    t.toFun basis = fun x => -(MS.Term.mk (-t.coef) t.degs).toFun basis x := by
+    t.toFun basis = fun x => -(MS.Term.mk (-t.coef) t.exps).toFun basis x := by
   unfold MS.Term.toFun
   ext
   rw [fun_mul (coef := t.coef), fun_mul (coef := -t.coef)]
   simp
 
 noncomputable def inv (t : MS.Term) : MS.Term :=
-  ⟨t.coef⁻¹, t.degs.map fun deg => -deg⟩
+  ⟨t.coef⁻¹, t.exps.map fun exp => -exp⟩
 
-theorem inv_length {t : MS.Term} : t.inv.degs.length = t.degs.length := by
+theorem inv_length {t : MS.Term} : t.inv.exps.length = t.exps.length := by
   simp [inv]
 
 theorem fun_inv {t : MS.Term} {basis : Basis} (h_basis : MS.WellOrderedBasis basis) : (fun x ↦ (t.toFun basis x)⁻¹) =ᶠ[atTop] fun x ↦ t.inv.toFun basis x := by
   unfold toFun
   simp [inv]
-  induction t.degs generalizing basis with
+  induction t.exps generalizing basis with
   | nil => simp
   | cons hd tl ih =>
     cases basis with
@@ -106,12 +107,12 @@ theorem fun_pos {t : MS.Term} {basis : List (ℝ → ℝ)}
     ∀ᶠ x in atTop, 0 < t.toFun basis x := by
   apply Eventually.mono <| MS.basis_eventually_pos h_basis
   intro x hx
-  have hx' : ∀ hd ∈ t.degs.zip basis, 0 < hd.2 x := by
+  have hx' : ∀ hd ∈ t.exps.zip basis, 0 < hd.2 x := by
     intro hd h_hd
     exact hx _ (List.of_mem_zip h_hd).right
   simp [toFun]
   generalize t.coef = c at *
-  generalize t.degs.zip basis = li at *
+  generalize t.exps.zip basis = li at *
   induction li generalizing c with
   | nil => simpa
   | cons hd tl ih =>
@@ -127,17 +128,17 @@ theorem fun_pos {t : MS.Term} {basis : List (ℝ → ℝ)}
 
 theorem fun_log {t : MS.Term} {basis : List (ℝ → ℝ)}
     (h_coef : 0 < t.coef) (h_basis : MS.WellOrderedBasis basis) :
-    Real.log ∘ t.toFun basis =ᶠ[atTop] (fun x => t.degs.zip basis |>.foldl (init := Real.log t.coef) fun acc (deg, f) =>
-    acc + deg * Real.log ((f x))) := by
-  have h_pos : ∀ᶠ x in atTop, ∀ hd ∈ t.degs.zip basis, 0 < hd.2 x := by -- todo : rewrite with `MS.basis_eventually_pos`
-    have h_pos : ∀ hd ∈ t.degs.zip basis, ∀ᶠ x in atTop, 0 < hd.2 x := by
-      have h' : ∀ hd ∈ t.degs.zip basis, Tendsto hd.2 atTop atTop := by
+    Real.log ∘ t.toFun basis =ᶠ[atTop] (fun x => t.exps.zip basis |>.foldl (init := Real.log t.coef) fun acc (exp, f) =>
+    acc + exp * Real.log ((f x))) := by
+  have h_pos : ∀ᶠ x in atTop, ∀ hd ∈ t.exps.zip basis, 0 < hd.2 x := by -- todo : rewrite with `MS.basis_eventually_pos`
+    have h_pos : ∀ hd ∈ t.exps.zip basis, ∀ᶠ x in atTop, 0 < hd.2 x := by
+      have h' : ∀ hd ∈ t.exps.zip basis, Tendsto hd.2 atTop atTop := by
         intro hd h_hd
         apply MS.basis_tendsto_top h_basis
         exact (List.of_mem_zip h_hd).right
       intro hd h_hd
       exact Tendsto.eventually (h' hd h_hd) <| eventually_gt_atTop 0
-    generalize t.degs.zip basis = li at *
+    generalize t.exps.zip basis = li at *
     induction li with
     | nil => simp
     | cons hd tl ih =>
@@ -155,7 +156,7 @@ theorem fun_log {t : MS.Term} {basis : List (ℝ → ℝ)}
   apply Eventually.mono h_pos
   clear h_pos
   intro x hf
-  generalize t.degs.zip basis = li at *
+  generalize t.exps.zip basis = li at *
   generalize t.coef = c at *
   induction li generalizing c with
   | nil => simp [Function.comp, Real.exp_log h_coef]
@@ -173,28 +174,28 @@ theorem fun_log {t : MS.Term} {basis : List (ℝ → ℝ)}
       simp [hd_mem]
     · nlinarith [Real.rpow_pos_of_pos hf' hd.1]
 
-theorem trim_zero_head (coef : ℝ) {deg : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
-    (h_length : (deg :: tl).length = basis.length) (h_deg : deg = 0) :
-    let t : MS.Term := ⟨coef, deg :: tl⟩;
+theorem trim_zero_head (coef : ℝ) {exp : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
+    (h_length : (exp :: tl).length = basis.length) (h_exp : exp = 0) :
+    let t : MS.Term := ⟨coef, exp :: tl⟩;
     t.toFun basis = (MS.Term.mk coef tl).toFun basis.tail! := by
   unfold toFun
   cases basis with
   | nil => simp at h_length
-  | cons basis_hd basis_tl => simp [h_deg]
+  | cons basis_hd basis_tl => simp [h_exp]
 
-theorem IsEquivalent_of_nonzero_head {coef deg : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
-    (h_length : (deg :: tl).length = basis.length) (h_basis : MS.WellOrderedBasis basis)
-    (h_coef : 0 < coef) (h_deg : deg ≠ 0) :
-    let t : MS.Term := ⟨coef, deg :: tl⟩;
-    Real.log ∘ t.toFun basis ~[atTop] fun x => Real.log coef + deg * Real.log (basis.head! x) := by
+theorem IsEquivalent_of_nonzero_head {coef exp : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
+    (h_length : (exp :: tl).length = basis.length) (h_basis : MS.WellOrderedBasis basis)
+    (h_coef : 0 < coef) (h_exp : exp ≠ 0) :
+    let t : MS.Term := ⟨coef, exp :: tl⟩;
+    Real.log ∘ t.toFun basis ~[atTop] fun x => Real.log coef + exp * Real.log (basis.head! x) := by
   intro t
   apply Asymptotics.IsEquivalent.congr_left _ <| (MS.Term.fun_log (t := t) h_coef h_basis).symm
   cases basis with
   | nil => simp at h_length
   | cons basis_hd basis_tl =>
     have h_pull_init : ∀ (li : List (ℝ × (ℝ → ℝ))) (init : ℝ) (x : ℝ),
-        (li.foldl (init := init) (fun acc (deg, f) => acc + deg * Real.log (f x))) =
-        init + (li.foldl (init := 0) (fun acc (deg, f) => acc + deg * Real.log (f x))) := by
+        (li.foldl (init := init) (fun acc (exp, f) => acc + exp * Real.log (f x))) =
+        init + (li.foldl (init := 0) (fun acc (exp, f) => acc + exp * Real.log (f x))) := by
       intro li init x
       induction li generalizing init with
       | nil => simp
@@ -236,8 +237,8 @@ theorem IsEquivalent_of_nonzero_head {coef deg : ℝ} {tl : List ℝ} {basis : L
         rw [h_pull_init]
       apply IsLittleO.add
       · apply IsLittleO.const_mul_left
-        have : (fun _ ↦ Real.log coef) =o[atTop] fun x ↦ deg * Real.log (basis_hd x) := by
-          apply IsLittleO.const_mul_right' (by simp [h_deg])
+        have : (fun _ ↦ Real.log coef) =o[atTop] fun x ↦ exp * Real.log (basis_hd x) := by
+          apply IsLittleO.const_mul_right' (by simp [h_exp])
           apply Asymptotics.isLittleO_const_left.mpr
           right
           apply Filter.Tendsto.comp tendsto_norm_atTop_atTop
@@ -245,10 +246,10 @@ theorem IsEquivalent_of_nonzero_head {coef deg : ℝ} {tl : List ℝ} {basis : L
           apply Filter.Tendsto.comp Real.tendsto_log_atTop
           simp [MS.WellOrderedBasis] at h_basis
           exact h_basis.right.left
-        rw [show (fun x ↦ Real.log coef + deg * Real.log (basis_hd x)) =
-          (fun _ ↦ Real.log coef) + (fun x ↦ deg * Real.log (basis_hd x)) by rfl]
+        rw [show (fun x ↦ Real.log coef + exp * Real.log (basis_hd x)) =
+          (fun _ ↦ Real.log coef) + (fun x ↦ exp * Real.log (basis_hd x)) by rfl]
         apply Asymptotics.IsLittleO.trans_isTheta _ (Asymptotics.IsLittleO.right_isTheta_add this)
-        apply IsLittleO.const_mul_right' (by simp [h_deg])
+        apply IsLittleO.const_mul_right' (by simp [h_exp])
         apply h_little
         simp
       · apply ih
@@ -258,13 +259,13 @@ theorem IsEquivalent_of_nonzero_head {coef deg : ℝ} {tl : List ℝ} {basis : L
           apply h_tendsto; right; assumption
 
 
-theorem tendsto_top {coef deg : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
-    (h_length : (deg :: tl).length = basis.length) (h_basis : MS.WellOrderedBasis basis)
-    (h_coef : 0 < coef) (h_deg : 0 < deg) :
-    let t : MS.Term := ⟨coef, deg :: tl⟩;
+theorem tendsto_top {coef exp : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
+    (h_length : (exp :: tl).length = basis.length) (h_basis : MS.WellOrderedBasis basis)
+    (h_coef : 0 < coef) (h_exp : 0 < exp) :
+    let t : MS.Term := ⟨coef, exp :: tl⟩;
     Tendsto (t.toFun basis) atTop atTop := by
   intro t
-  have h_t_equiv : Real.log ∘ t.toFun basis ~[atTop] fun x => Real.log coef + deg * Real.log (basis.head! x) := MS.Term.IsEquivalent_of_nonzero_head h_length h_basis h_coef h_deg.ne.symm
+  have h_t_equiv : Real.log ∘ t.toFun basis ~[atTop] fun x => Real.log coef + exp * Real.log (basis.head! x) := MS.Term.IsEquivalent_of_nonzero_head h_length h_basis h_coef h_exp.ne.symm
   suffices h_log : Tendsto (Real.log ∘ t.toFun basis) atTop atTop by
     have := Tendsto.comp Real.tendsto_exp_atTop h_log
     apply Filter.Tendsto.congr' _ this
@@ -275,7 +276,7 @@ theorem tendsto_top {coef deg : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)
 
   apply IsEquivalent.tendsto_atTop h_t_equiv.symm
   apply Filter.tendsto_atTop_add_const_left
-  apply Filter.Tendsto.const_mul_atTop h_deg
+  apply Filter.Tendsto.const_mul_atTop h_exp
   rw [← Function.comp_def]
   apply Tendsto.comp Real.tendsto_log_atTop
   apply MS.basis_tendsto_top h_basis
@@ -283,25 +284,25 @@ theorem tendsto_top {coef deg : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)
   · simp at h_length
   · simp
 
-theorem tendsto_bot {coef deg : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
-    (h_length : (deg :: tl).length = basis.length) (h_basis : MS.WellOrderedBasis basis)
-    (h_coef : coef < 0) (h_deg : 0 < deg) :
-    let t : MS.Term := ⟨coef, deg :: tl⟩;
+theorem tendsto_bot {coef exp : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
+    (h_length : (exp :: tl).length = basis.length) (h_basis : MS.WellOrderedBasis basis)
+    (h_coef : coef < 0) (h_exp : 0 < exp) :
+    let t : MS.Term := ⟨coef, exp :: tl⟩;
     Tendsto (t.toFun basis) atTop atBot := by
   intro t
   rw [neg_coef (t := t)]
   apply Filter.tendsto_neg_atBot_iff.mpr
-  apply MS.Term.tendsto_top h_length h_basis _ h_deg
+  apply MS.Term.tendsto_top h_length h_basis _ h_exp
   linarith
 
 -- todo: it's copypaste from `MS.Term.tendsto_top`
-lemma tendsto_zero_aux1 {coef deg : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
-    (h_length : (deg :: tl).length = basis.length) (h_basis : MS.WellOrderedBasis basis)
-    (h_coef : 0 < coef) (h_deg : deg < 0) :
-    let t : MS.Term := ⟨coef, deg :: tl⟩;
+lemma tendsto_zero_aux1 {coef exp : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
+    (h_length : (exp :: tl).length = basis.length) (h_basis : MS.WellOrderedBasis basis)
+    (h_coef : 0 < coef) (h_exp : exp < 0) :
+    let t : MS.Term := ⟨coef, exp :: tl⟩;
     Tendsto (t.toFun basis) atTop (nhds 0) := by
   intro t
-  have h_t_equiv : Real.log ∘ t.toFun basis ~[atTop] fun x => Real.log coef + deg * Real.log (basis.head! x) := MS.Term.IsEquivalent_of_nonzero_head h_length h_basis h_coef h_deg.ne
+  have h_t_equiv : Real.log ∘ t.toFun basis ~[atTop] fun x => Real.log coef + exp * Real.log (basis.head! x) := MS.Term.IsEquivalent_of_nonzero_head h_length h_basis h_coef h_exp.ne
   suffices h_log : Tendsto (Real.log ∘ t.toFun basis) atTop atBot by
     have := Tendsto.comp Real.tendsto_exp_atBot h_log
     apply Filter.Tendsto.congr' _ this
@@ -322,21 +323,21 @@ lemma tendsto_zero_aux1 {coef deg : ℝ} {tl : List ℝ} {basis : List (ℝ → 
   · simp at h_length
   · simp
 
-lemma tendsto_zero_aux2 {coef deg : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
-    (h_length : (deg :: tl).length = basis.length)
-    (h_coef : coef < 0) (h_deg : deg < 0) (h_basis : MS.WellOrderedBasis basis) :
-    let t : MS.Term := ⟨coef, deg :: tl⟩;
+lemma tendsto_zero_aux2 {coef exp : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
+    (h_length : (exp :: tl).length = basis.length)
+    (h_coef : coef < 0) (h_exp : exp < 0) (h_basis : MS.WellOrderedBasis basis) :
+    let t : MS.Term := ⟨coef, exp :: tl⟩;
     Tendsto (t.toFun basis) atTop (nhds 0) := by
   intro t
   rw [neg_coef (t := t), ← neg_zero]
   apply Filter.Tendsto.neg
-  apply MS.Term.tendsto_zero_aux1 h_length h_basis _ h_deg
+  apply MS.Term.tendsto_zero_aux1 h_length h_basis _ h_exp
   linarith
 
-theorem tendsto_zero (coef : ℝ) {deg : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
-    (h_length : (deg :: tl).length = basis.length)
-    (h_deg : deg < 0) (h_basis : MS.WellOrderedBasis basis) :
-    let t : MS.Term := ⟨coef, deg :: tl⟩;
+theorem tendsto_zero (coef : ℝ) {exp : ℝ} {tl : List ℝ} {basis : List (ℝ → ℝ)}
+    (h_length : (exp :: tl).length = basis.length)
+    (h_exp : exp < 0) (h_basis : MS.WellOrderedBasis basis) :
+    let t : MS.Term := ⟨coef, exp :: tl⟩;
     Tendsto (t.toFun basis) atTop (nhds 0) := by
   intro t
   rcases lt_trichotomy coef 0 with (h_coef | h_coef | h_coef)
@@ -351,28 +352,28 @@ theorem nil_tendsto_const (coef : ℝ) (basis : List (ℝ → ℝ)) :
   eta_expand
   simp [toFun]
 
-def findLimit {t : MS.Term} {basis : List (ℝ → ℝ)} (h_length : t.degs.length = basis.length)
+def findLimit {t : MS.Term} {basis : List (ℝ → ℝ)} (h_length : t.exps.length = basis.length)
     (h_basis : MS.WellOrderedBasis basis) :
     TendstoM <| FindLimitResult (t.toFun basis) := do
-  match h_degs : t.degs with
+  match h_exps : t.exps with
   | [] => return .fin t.coef (by {
       have := MS.Term.nil_tendsto_const t.coef basis
       cases t
       simp_all
     })
-  | deg :: tl =>
-    let cr ← TendstoTactic.runOracle deg
+  | exp :: tl =>
+    let cr ← TendstoTactic.runOracle exp
     match cr with
-    | .pos h_deg =>
+    | .pos h_exp =>
       let cr_coef ← TendstoTactic.runOracle t.coef
       match cr_coef with
       | .pos h_coef => return .top (by {
-          have := MS.Term.tendsto_top (h_degs ▸ h_length) h_basis h_coef h_deg
+          have := MS.Term.tendsto_top (h_exps ▸ h_length) h_basis h_coef h_exp
           cases t
           simp_all
         })
       | .neg h_coef => return .bot (by {
-          have := MS.Term.tendsto_bot (h_degs ▸ h_length) h_basis h_coef h_deg
+          have := MS.Term.tendsto_bot (h_exps ▸ h_length) h_basis h_coef h_exp
           cases t
           simp_all
         })
@@ -380,28 +381,28 @@ def findLimit {t : MS.Term} {basis : List (ℝ → ℝ)} (h_length : t.degs.leng
           rw [MS.Term.zero_coef_fun basis h_coef]
           apply tendsto_const_nhds
         })
-    | .neg h_deg => return .fin 0 (by {
-        have := MS.Term.tendsto_zero t.coef (h_degs ▸ h_length) h_deg
+    | .neg h_exp => return .fin 0 (by {
+        have := MS.Term.tendsto_zero t.coef (h_exps ▸ h_length) h_exp
         cases t
         simp_all
       })
-    | .zero h_deg => match basis with
-      | [] => by simp [h_degs] at h_length
+    | .zero h_exp => match basis with
+      | [] => by simp [h_exps] at h_length
       | basis_hd :: basis_tl =>
-        let r ← MS.Term.findLimit (t := ⟨t.coef, tl⟩) (basis := basis_tl) (by simpa [h_degs] using h_length) (by simp [MS.WellOrderedBasis] at h_basis; tauto)
+        let r ← MS.Term.findLimit (t := ⟨t.coef, tl⟩) (basis := basis_tl) (by simpa [h_exps] using h_length) (by simp [MS.WellOrderedBasis] at h_basis; tauto)
         match r with
         | .top p => return .top (by {
-            have := MS.Term.trim_zero_head t.coef (h_degs ▸ h_length) h_deg
+            have := MS.Term.trim_zero_head t.coef (h_exps ▸ h_length) h_exp
             cases t
             simp_all
           })
         | .bot p => return .bot (by {
-            have := MS.Term.trim_zero_head t.coef (h_degs ▸ h_length) h_deg
+            have := MS.Term.trim_zero_head t.coef (h_exps ▸ h_length) h_exp
             cases t
             simp_all
           })
         | .fin c p => return .fin c (by {
-            have := MS.Term.trim_zero_head t.coef (h_degs ▸ h_length) h_deg
+            have := MS.Term.trim_zero_head t.coef (h_exps ▸ h_length) h_exp
             cases t
             simp_all
           })
@@ -409,21 +410,21 @@ def findLimit {t : MS.Term} {basis : List (ℝ → ℝ)} (h_length : t.degs.leng
 -------------------------------
 
 theorem tail_fun_IsLittleO_head {t : MS.Term} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    (h_length : t.degs.length = basis_tl.length)
-    (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl)) {deg : ℝ} (h_deg : 0 < deg) :
-    t.toFun basis_tl =o[atTop] fun x ↦ (basis_hd x)^deg := by
+    (h_length : t.exps.length = basis_tl.length)
+    (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl)) {exp : ℝ} (h_exp : 0 < exp) :
+    t.toFun basis_tl =o[atTop] fun x ↦ (basis_hd x)^exp := by
   unfold toFun
   simp only
-  generalize t.degs = degs at *
-  induction degs generalizing basis_hd basis_tl with
+  generalize t.exps = exps at *
+  induction exps generalizing basis_hd basis_tl with
   | nil =>
     simp
     right
     apply Tendsto.comp tendsto_norm_atTop_atTop
-    apply Tendsto.comp (tendsto_rpow_atTop h_deg)
+    apply Tendsto.comp (tendsto_rpow_atTop h_exp)
     simp [MS.WellOrderedBasis] at h_basis
     exact h_basis.right.left
-  | cons degs_hd degs_tl ih =>
+  | cons exps_hd exps_tl ih =>
     cases basis_tl with
     | nil =>
       simp at h_length
@@ -455,9 +456,9 @@ theorem tail_fun_IsLittleO_head {t : MS.Term} {basis_hd : ℝ → ℝ} {basis_tl
         apply MS.basis_compare b a (Tendsto.eventually_gt_atTop h_basis.right.right.left 0)
           h_basis.right.left h_basis.left.left.left ha
 
-      have ih := IsLittleO.trans ih (h_comp (deg / 2) deg (by linarith))
+      have ih := IsLittleO.trans ih (h_comp (exp / 2) exp (by linarith))
 
-      have aux : (fun x ↦ (basis_hd x)^deg) =ᶠ[atTop] fun x ↦ (basis_hd x)^(deg / 2) * (basis_hd x)^(deg / 2) := by
+      have aux : (fun x ↦ (basis_hd x)^exp) =ᶠ[atTop] fun x ↦ (basis_hd x)^(exp / 2) * (basis_hd x)^(exp / 2) := by
         apply Eventually.mono <| MS.basis_head_eventually_pos h_basis
         intro x h
         simp only
