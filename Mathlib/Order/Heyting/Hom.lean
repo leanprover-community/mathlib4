@@ -99,8 +99,8 @@ section Hom
 
 variable [FunLike F α β]
 
-/- Porting note: `[HeytingAlgebra α, β]` -> `{ _ : HeytingAlgebra α, β}` as a dangerous instance fix
-similar for Coheyting & Biheyting instances -/
+/-! This section passes in some instances implicitly. See note [implicit instance arguments] -/
+
 -- See note [lower instance priority]
 instance (priority := 100) HeytingHomClass.toBoundedLatticeHomClass [HeytingAlgebra α]
     { _ : HeytingAlgebra β} [HeytingHomClass F α β] : BoundedLatticeHomClass F α β :=

@@ -198,12 +198,15 @@ lemma continuous_of_dual_apply_continuous {α : Type*} [TopologicalSpace α] {g 
     (h : ∀ x (y : F⋆), Continuous fun a => y (g a x)) : Continuous g :=
   continuous_induced_rng.2 (continuous_pi_iff.mpr fun p => h p.1 p.2)
 
-lemma inducing_inducingFn : Inducing (inducingFn 𝕜 E F) := ⟨rfl⟩
+lemma isInducing_inducingFn : IsInducing (inducingFn 𝕜 E F) := ⟨rfl⟩
 
-lemma embedding_inducingFn [SeparatingDual 𝕜 F] : Embedding (inducingFn 𝕜 E F) := by
-  refine Function.Injective.embedding_induced fun A B hAB => ?_
+lemma isEmbedding_inducingFn [SeparatingDual 𝕜 F] : Embedding (inducingFn 𝕜 E F) := by
+  refine Function.Injective.isEmbedding_induced fun A B hAB => ?_
   rw [ContinuousLinearMapWOT.ext_dual_iff]
   simpa [funext_iff] using hAB
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_inducingFn := isEmbedding_inducingFn
 
 open Filter in
 /-- The defining property of the weak operator topology: a function `f` tends to
@@ -211,13 +214,13 @@ open Filter in
 lemma tendsto_iff_forall_dual_apply_tendsto {α : Type*} {l : Filter α} {f : α → E →WOT[𝕜] F}
     {A : E →WOT[𝕜] F} :
     Tendsto f l (𝓝 A) ↔ ∀ x (y : F⋆), Tendsto (fun a => y (f a x)) l (𝓝 (y (A x))) := by
-  simp [inducing_inducingFn.tendsto_nhds_iff, tendsto_pi_nhds]
+  simp [isInducing_inducingFn.tendsto_nhds_iff, tendsto_pi_nhds]
 
 lemma le_nhds_iff_forall_dual_apply_le_nhds {l : Filter (E →WOT[𝕜] F)} {A : E →WOT[𝕜] F} :
     l ≤ 𝓝 A ↔ ∀ x (y : F⋆), l.map (fun T => y (T x)) ≤ 𝓝 (y (A x)) :=
   tendsto_iff_forall_dual_apply_tendsto (f := id)
 
-instance instT3Space [SeparatingDual 𝕜 F] : T3Space (E →WOT[𝕜] F) := embedding_inducingFn.t3Space
+instance instT3Space [SeparatingDual 𝕜 F] : T3Space (E →WOT[𝕜] F) := isEmbedding_inducingFn.t3Space
 
 instance instContinuousAdd : ContinuousAdd (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
 instance instContinuousNeg : ContinuousNeg (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)

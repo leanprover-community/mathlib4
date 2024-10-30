@@ -180,6 +180,15 @@ theorem setValue_eq_iff {α β} (f : α ↪ β) {a a' : α} {b : β} [∀ a', De
     [∀ a', Decidable (f a' = b)] : setValue f a b a' = b ↔ a' = a :=
   (setValue f a b).injective.eq_iff' <| setValue_eq ..
 
+lemma setValue_eq_of_ne {α β} {f : α ↪ β} {a : α} {b : β} {c : α} [∀ a', Decidable (a' = a)]
+    [∀ a', Decidable (f a' = b)] (hc : c ≠ a) (hb : f c ≠ b) : setValue f a b c = f c := by
+  simp [setValue, hc, hb]
+
+@[simp]
+lemma setValue_right_apply_eq {α β} (f : α ↪ β) (a c : α) [∀ a', Decidable (a' = a)]
+    [∀ a', Decidable (f a' = f c)] : setValue f a (f c) c = f a := by
+  simp [setValue]
+
 /-- Embedding into `Option α` using `some`. -/
 @[simps (config := .asFn)]
 protected def some {α} : α ↪ Option α :=
