@@ -35,8 +35,8 @@ def allScriptsDocumented : IO Bool := do
   let undocumented := fileNames.filter fun script ↦
     !readme.containsSubstr s!"`{script}`" && !dataFiles.contains script
   if undocumented.size > 0 then
-    IO.println s!"error: found {undocumented.size} undocumented scripts: \
-      please describe the scripts in 'scripts/README.md'\n\
+    IO.println s!"error: found {undocumented.size} undocumented script(s): \
+      please describe the script(s) in 'scripts/README.md'\n  \
       {String.intercalate "," undocumented.toList}"
   return undocumented.size == 0
 
@@ -52,7 +52,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     allModules := allModules.append ((← IO.FS.lines s).map (·.stripPrefix "import "))
   -- Note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually.
   allModules := allModules.erase "Batteries"
-  let mut numberErrors := ← lintModules allModules style fix
+  let mut numberErrors ← lintModules allModules style fix
   if !(← allScriptsDocumented) then numberErrors := numberErrors + 1
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
