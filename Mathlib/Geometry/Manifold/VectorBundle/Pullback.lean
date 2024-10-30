@@ -20,7 +20,7 @@ This file defines pullbacks of smooth vector bundles over a smooth manifold.
 open Bundle Set
 open scoped Manifold
 
-variable {𝕜 B B' M : Type*} (F : Type*) (E : B → Type*)
+variable {𝕜 B B' : Type*} (F : Type*) (E : B → Type*)
 variable [NontriviallyNormedField 𝕜] [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
