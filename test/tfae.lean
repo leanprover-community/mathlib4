@@ -1,4 +1,5 @@
 import Mathlib.Tactic.TFAE
+import Mathlib.Tactic.SuccessIfFailWithMsg
 
 open List
 set_option autoImplicit true
@@ -121,3 +122,47 @@ example (h₁ : P → Q) (h₂ : Q → P) : TFAE [P, Q] := by
   tfae_finish
 
 end context
+
+section term
+
+axiom P : Prop
+axiom Q : Prop
+axiom pq : P → Q
+axiom qp : Q → P
+
+example : TFAE [P, Q] := by
+  tfae_have h : 1 → 2 := pq
+  guard_hyp h : P → Q
+  tfae_have _ : 1 ← 2 := qp
+  tfae_finish
+
+example : TFAE [P, Q] := by
+  have n : ℕ := 4
+  tfae_have 1 → 2 := by
+    guard_hyp n : ℕ -- hypotheses are accessible (context is correct)
+    guard_target =ₛ P → Q -- expected type is known
+    exact pq
+  tfae_have 1 ← 2 := qp
+  tfae_finish
+
+example : TFAE [P, Q] := by
+  have n : ℕ := 3
+  tfae_have 2 ← 1 := fun p => ?Qgoal
+  case Qgoal => exact pq p
+  refine ?a
+  fail_if_success (tfae_have 1 ← 2 := ((?a).out 1 2 sorry sorry).mpr)
+  tfae_have 2 → 1 := qp
+  tfae_finish
+
+example : TFAE [P, Q] := by
+  tfae_have 1 → 2
+  | p => pq p
+  tfae_have 2 → 1
+  | q => qp q
+  tfae_finish
+
+example : TFAE [P, Q] := by
+  tfae_have ⟨mp, mpr⟩ : 1 ↔ 2 := ⟨pq, qp⟩
+  tfae_finish
+
+end term

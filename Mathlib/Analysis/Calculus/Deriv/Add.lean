@@ -23,9 +23,9 @@ derivative
 universe u v w
 
 open scoped Classical
-open Topology Filter ENNReal
+open scoped Topology Filter ENNReal
 
-open Filter Asymptotics Set
+open Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -246,16 +246,6 @@ theorem differentiable_neg : Differentiable 𝕜 (Neg.neg : 𝕜 → 𝕜) :=
 
 theorem differentiableOn_neg : DifferentiableOn 𝕜 (Neg.neg : 𝕜 → 𝕜) s :=
   DifferentiableOn.neg differentiableOn_id
-
-theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → ℝ) 0 := by
-  intro h
-  have h₁ : deriv abs (0 : ℝ) = 1 :=
-    (uniqueDiffOn_Ici _ _ Set.left_mem_Ici).eq_deriv _ h.hasDerivAt.hasDerivWithinAt <|
-      (hasDerivWithinAt_id _ _).congr_of_mem (fun _ h ↦ abs_of_nonneg h) Set.left_mem_Ici
-  have h₂ : deriv abs (0 : ℝ) = -1 :=
-    (uniqueDiffOn_Iic _ _ Set.right_mem_Iic).eq_deriv _ h.hasDerivAt.hasDerivWithinAt <|
-      (hasDerivWithinAt_neg _ _).congr_of_mem (fun _ h ↦ abs_of_nonpos h) Set.right_mem_Iic
-  linarith
 
 lemma differentiableAt_comp_neg {a : 𝕜} :
     DifferentiableAt 𝕜 (fun x ↦ f (-x)) a ↔ DifferentiableAt 𝕜 f (-a) := by

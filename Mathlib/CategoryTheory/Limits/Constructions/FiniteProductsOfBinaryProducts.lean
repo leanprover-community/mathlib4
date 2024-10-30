@@ -157,12 +157,12 @@ def preservesShapeFinOfPreservesBinaryAndTerminal (n : ℕ) :
     apply preservesLimitOfIsoDiagram F that
 
 /-- If `F` preserves the terminal object and binary products then it preserves finite products. -/
-def preservesFiniteProductsOfPreservesBinaryAndTerminal (J : Type) [Fintype J] :
+def preservesFiniteProductsOfPreservesBinaryAndTerminal (J : Type*) [Fintype J] :
     PreservesLimitsOfShape (Discrete J) F := by
   classical
     let e := Fintype.equivFin J
     haveI := preservesShapeFinOfPreservesBinaryAndTerminal F (Fintype.card J)
-    apply preservesLimitsOfShapeOfEquiv.{0, 0} (Discrete.equivalence e).symm
+    apply preservesLimitsOfShapeOfEquiv (Discrete.equivalence e).symm
 
 end Preserves
 
@@ -288,12 +288,12 @@ def preservesShapeFinOfPreservesBinaryAndInitial (n : ℕ) :
     apply preservesColimitOfIsoDiagram F that
 
 /-- If `F` preserves the initial object and binary coproducts then it preserves finite products. -/
-def preservesFiniteCoproductsOfPreservesBinaryAndInitial (J : Type) [Fintype J] :
+def preservesFiniteCoproductsOfPreservesBinaryAndInitial (J : Type*) [Fintype J] :
     PreservesColimitsOfShape (Discrete J) F := by
   classical
     let e := Fintype.equivFin J
     haveI := preservesShapeFinOfPreservesBinaryAndInitial F (Fintype.card J)
-    apply preservesColimitsOfShapeOfEquiv.{0, 0} (Discrete.equivalence e).symm
+    apply preservesColimitsOfShapeOfEquiv (Discrete.equivalence e).symm
 
 end Preserves
 

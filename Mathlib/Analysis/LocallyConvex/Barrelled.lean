@@ -179,7 +179,8 @@ is a *continuous* linear map as well.
 
 This actually works for any *countably generated* filter instead of `atTop : Filter ℕ`,
 but the proof ultimately goes back to sequences. -/
-protected def continuousLinearMapOfTendsto [T2Space F] {l : Filter α} [l.IsCountablyGenerated]
+protected def continuousLinearMapOfTendsto (hq : WithSeminorms q)
+    [T2Space F] {l : Filter α} [l.IsCountablyGenerated]
     [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F} (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
     E →SL[σ₁₂] F where
   toLinearMap := linearMapOfTendsto _ _ h

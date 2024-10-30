@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Ext
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
@@ -195,7 +195,7 @@ section HasBiproduct
 
 variable {J : Type} [Fintype J] {f : J → C} [HasBiproduct f]
 
-/-- In any preadditive category, any biproduct satsifies
+/-- In any preadditive category, any biproduct satisfies
 `∑ j : J, biproduct.π f j ≫ biproduct.ι f j = 𝟙 (⨁ f)`
 -/
 @[simp]
@@ -415,7 +415,7 @@ section
 
 variable {X Y : C} [HasBinaryBiproduct X Y]
 
-/-- In any preadditive category, any binary biproduct satsifies
+/-- In any preadditive category, any binary biproduct satisfies
 `biprod.fst ≫ biprod.inl + biprod.snd ≫ biprod.inr = 𝟙 (X ⊞ Y)`.
 -/
 @[simp]

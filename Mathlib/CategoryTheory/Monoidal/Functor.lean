@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta
+Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
@@ -309,6 +309,27 @@ noncomputable def MonoidalFunctor.toOplaxMonoidalFunctor (F : MonoidalFunctor C 
         rw [← F.map_comp, Iso.hom_inv_id, F.map_id]
       simp }
 
+/-- Construct a (strong) monoidal functor out of an oplax monoidal functor whose tensorators and
+unitors are isomorphisms -/
+@[simps]
+noncomputable def MonoidalFunctor.fromOplaxMonoidalFunctor (F : OplaxMonoidalFunctor C D)
+    [IsIso F.η] [∀ (X Y : C), IsIso (F.δ X Y)] : MonoidalFunctor C D :=
+    { F with
+      ε := inv F.η
+      μ := fun X Y => inv (F.δ X Y)
+      associativity := by
+        intro X Y Z
+        rw [← inv_whiskerRight, IsIso.inv_comp_eq, IsIso.inv_comp_eq]
+        simp
+      left_unitality := by
+        intro X
+        rw [← inv_whiskerRight, ← IsIso.inv_comp_eq]
+        simp
+      right_unitality := by
+        intro X
+        rw [← inv_whiskerLeft, ← IsIso.inv_comp_eq]
+        simp }
+
 end
 
 open MonoidalCategory
@@ -322,7 +343,7 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 def id : LaxMonoidalFunctor.{v₁, v₁} C C :=
   { 𝟭 C with
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 instance : Inhabited (LaxMonoidalFunctor C C) :=
   ⟨id C⟩
@@ -338,7 +359,7 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 def id : OplaxMonoidalFunctor.{v₁, v₁} C C :=
   { 𝟭 C with
     η := 𝟙 _
-    δ := fun X Y => 𝟙 _ }
+    δ := fun _ _ => 𝟙 _ }
 
 instance : Inhabited (OplaxMonoidalFunctor C C) :=
   ⟨id C⟩
@@ -364,6 +385,22 @@ theorem map_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) :
 @[reassoc]
 theorem map_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
     F.map (f ▷ Z) = inv (F.μ X Z) ≫ F.map f ▷ F.obj Z ≫ F.μ Y Z := by simp
+
+@[reassoc]
+theorem map_associator (X Y Z : C) :
+    F.map (α_ X Y Z).hom =
+      inv (F.μ (X ⊗ Y) Z) ≫ inv (F.μ X Y) ▷ F.obj Z ≫
+        (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom ≫ F.obj X ◁ F.μ Y Z ≫ F.μ X (Y ⊗ Z) := by
+  rw [← inv_whiskerRight, ← IsIso.inv_comp_assoc, IsIso.eq_inv_comp]
+  simp
+
+@[reassoc]
+theorem map_associator_inv (X Y Z : C) :
+    F.map (α_ X Y Z).inv =
+      inv (F.μ X (Y ⊗ Z)) ≫ F.obj X ◁ inv (F.μ Y Z) ≫
+        (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv ≫ F.μ X Y ▷ F.obj Z ≫ F.μ (X ⊗ Y) Z := by
+  rw [← inv_whiskerLeft, ← IsIso.inv_comp_assoc, IsIso.eq_inv_comp]
+  simp
 
 @[reassoc]
 theorem map_leftUnitor (X : C) :
@@ -441,7 +478,7 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 def id : MonoidalFunctor.{v₁, v₁} C C :=
   { 𝟭 C with
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 instance : Inhabited (MonoidalFunctor C C) :=
   ⟨id C⟩
@@ -542,7 +579,7 @@ variable (C)
 def diag : MonoidalFunctor C (C × C) :=
   { Functor.diag C with
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 end MonoidalFunctor
 

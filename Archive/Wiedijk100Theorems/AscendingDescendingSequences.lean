@@ -3,6 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Powerset
 
 /-!
@@ -21,12 +22,9 @@ https://en.wikipedia.org/wiki/Erdos-Szekeres_theorem#Pigeonhole_principle.
 sequences, increasing, decreasing, Ramsey, Erdos-Szekeres, Erdős–Szekeres, Erdős-Szekeres
 -/
 
-
 variable {α : Type*} [LinearOrder α] {β : Type*}
 
 open Function Finset
-
-open scoped Classical
 
 namespace Theorems100
 
@@ -41,8 +39,8 @@ We then show the pair of labels must be unique. Now if there is no increasing se
 which is a contradiction if there are more than `r * s` elements.
 -/
 theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : Injective f) :
-    (∃ t : Finset (Fin n), r < t.card ∧ StrictMonoOn f ↑t) ∨
-      ∃ t : Finset (Fin n), s < t.card ∧ StrictAntiOn f ↑t := by
+    (∃ t : Finset (Fin n), r < #t ∧ StrictMonoOn f ↑t) ∨
+      ∃ t : Finset (Fin n), s < #t ∧ StrictAntiOn f ↑t := by
   -- Given an index `i`, produce the set of increasing (resp., decreasing) subsequences which ends
   -- at `i`.
   let inc_sequences_ending_in : Fin n → Finset (Finset (Fin n)) := fun i =>
@@ -150,7 +148,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   have : image ab univ ⊆ ran := by
     -- First some logical shuffling
     rintro ⟨x₁, x₂⟩
-    simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and_iff,
+    simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and,
       Prod.ext_iff]
     rintro ⟨i, rfl, rfl⟩
     specialize q i
