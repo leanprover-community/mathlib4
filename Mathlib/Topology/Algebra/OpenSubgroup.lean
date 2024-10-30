@@ -497,7 +497,7 @@ lemma exist_mul_closure_nhd {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝 
       exact union_subset (mul_subset_mul_left inter_subset_left |>.trans mem1)
         (mul_subset_mul_left inter_subset_right |>.trans mem2) ⟩
   intro x memW
-  have : (x, 1) ∈ (fun p ↦ p.1 * p.2) ⁻¹' W := by simp only [mem_preimage, mul_one, memW]
+  have : (x, 1) ∈ (fun p ↦ p.1 * p.2) ⁻¹' W := by simp [memW]
   rcases isOpen_prod_iff.mp (continuous_mul.isOpen_preimage W <| WClopen.2) x 1 this with
     ⟨U, V, Uopen, Vopen, xmemU, onememV, prodsub⟩
   have h6 : U * V ⊆ W := mul_subset_iff.mpr (fun _ hx _ hy ↦ prodsub (mk_mem_prod hx hy))
@@ -511,8 +511,8 @@ lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
   rcases mem_nhds_iff.mp Smemnhds with ⟨U, UsubS, Uopen, onememU⟩
   use U ∩ U⁻¹
   constructor
-  · simp only [inter_mem_iff, Uopen.mem_nhds onememU, inv_mem_nhds_one, and_self]
-  · simp only [inter_inv, inv_inv, inter_comm]
+  · simp [Uopen.mem_nhds onememU, inv_mem_nhds_one]
+  · simp [inter_comm]
   · exact Uopen.inter Uopen.inv
   · exact fun a ha ↦ mulclose (mul_subset_mul_left UsubS (mul_subset_mul_left inter_subset_left ha))
 
@@ -533,7 +533,7 @@ theorem existOpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSp
     one_mem' := by
       apply mem_iUnion.mpr
       use 0
-      simp only [zero_add, pow_one, mem_of_mem_nhds hV.nhd]
+      simp [mem_of_mem_nhds hV.nhd]
     inv_mem' := fun ha ↦ by
       rcases mem_iUnion.mp ha with ⟨k, hk⟩
       apply mem_iUnion.mpr
@@ -547,7 +547,7 @@ theorem existOpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSp
   use ⟨S, this⟩
   have mulVpow (n : ℕ) : W * V ^ (n + 1) ⊆ W := by
     induction' n with n ih
-    · simp only [zero_add, pow_one, hV.mul]
+    · simp [hV.mul]
     · rw [pow_succ, ← mul_assoc]
       exact (Set.mul_subset_mul_right ih).trans hV.mul
   have (n : ℕ) : V ^ (n + 1) ⊆ W * V ^ (n + 1) := by
