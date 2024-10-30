@@ -114,8 +114,8 @@ variable (F E K)
 if all of its elements are algebraic over `F`. -/
 theorem le_algebraicClosure' {L : IntermediateField F E} (hs : ∀ x : L, IsAlgebraic F x) :
     L ≤ algebraicClosure F E := fun x h ↦ by
-    simpa only [mem_algebraicClosure_iff, IsAlgebraic, ne_eq, ← aeval_algebraMap_eq_zero_iff E,
-      Algebra.id.map_eq_id, RingHom.id_apply, IntermediateField.algebraMap_apply] using hs ⟨x, h⟩
+  simpa only [mem_algebraicClosure_iff, IsAlgebraic, ne_eq, ← aeval_algebraMap_eq_zero_iff E,
+    Algebra.id.map_eq_id, RingHom.id_apply, IntermediateField.algebraMap_apply] using hs ⟨x, h⟩
 
 /-- An intermediate field of `E / F` is contained in the algebraic closure of `F` in `E`
 if it is algebraic over `F`. -/
