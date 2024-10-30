@@ -82,7 +82,7 @@ end IsLocalization
 
 @[simp]
 theorem Cardinal.mk_fractionRing (R : Type u) [CommRing R] : #(FractionRing R) = #R :=
-  IsLocalization.card (FractionRing R) R⁰ le_rfl |>.symm
+  IsLocalization.card (FractionRing R) R⁰ le_rfl
 
 namespace FractionRing
 
