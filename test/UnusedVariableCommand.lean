@@ -160,3 +160,13 @@ warning: 'n' is unused
 note: this linter can be disabled with `set_option linter.unusedVariableCommand false`
 -/
 #guard_msgs in set_option linter.unusedVariableCommand true in #exit
+--set_option showDefs true
+set_option linter.unusedVariableCommand true
+variable {C} [Add.{v} C] [Add  C]
+
+--#exit
+instance : Add.{v} C := ‹_›
+
+instance : Add C := ‹_›
+
+--theorem F : Nonempty (Add.{v} C) := .intro ‹_›
