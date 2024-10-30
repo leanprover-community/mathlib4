@@ -86,6 +86,8 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`. -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 
+attribute [instance 90] AddCommMonoidWithOne.toAddMonoidWithOne
+
 library_note "coercion into rings"
 /--
 Coercions such as `Nat.castCoe` that go from a concrete structure such as
