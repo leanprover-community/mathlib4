@@ -93,13 +93,13 @@ universe u' u
 variable {ι : Type u'} {ι' : Type*} {R : Type*} {K : Type*}
 variable {M : Type*} {M' : Type*} {V : Type u}
 
-section Module
+section Semiring
+
 
 variable {v : ι → M}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M']
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M']
 variable [Module R M] [Module R M']
 variable (R) (v)
-
 /-- `LinearIndependent R v` states the family of vectors `v` is linearly independent over `R`. -/
 def LinearIndependent : Prop :=
   Function.Injective (Finsupp.linearCombination R v)
@@ -124,7 +124,44 @@ def delabLinearIndependent : Delab :=
       withNaryArg 0 do return (← read).optionsPerPos.setBool (← getPos) `pp.analysis.namedArg true
     withTheReader Context ({· with optionsPerPos}) delab
 
-variable {R} {v}
+variable {R v}
+
+theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependent R v) :
+    v i ≠ 0 := by
+  intro h
+  have := @hv (Finsupp.single i 1 : ι →₀ R) 0 ?_
+  · simp at this
+  simpa using h
+
+
+theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
+  Function.injective_of_subsingleton _
+
+variable (R M) in
+theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M) → M) :=
+  linearIndependent_empty_type
+
+lemma LinearIndependent.eq_zero_of_pair {x y : M} (h : LinearIndependent R ![x, y])
+    {s t : R} (h' : s • x + t • y = 0) : s = 0 ∧ t = 0 := by
+  replace h := @h (.single 0 s + .single 1 t) 0 ?_
+  · exact ⟨by simpa using congr($h 0), by simpa using congr($h 1)⟩
+  simpa
+
+/-- A subfamily of a linearly independent family (i.e., a composition with an injective map) is a
+linearly independent family. -/
+theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf : Injective f) :
+    LinearIndependent R (v ∘ f) := by
+  intros x y hxy
+  simp_rw [Finsupp.linearCombination_comp] at hxy
+  exact Finsupp.mapDomain_injective hf (h hxy)
+
+end Semiring
+
+section Module
+
+variable {v : ι → M}
+variable [Ring R] [AddCommGroup M] [AddCommGroup M']
+variable [Module R M] [Module R M']
 
 theorem linearIndependent_iff_ker :
     LinearIndependent R v ↔ LinearMap.ker (Finsupp.linearCombination R v) = ⊥ :=
@@ -194,26 +231,6 @@ theorem Fintype.not_linearIndependent_iff [Fintype ι] :
     ¬LinearIndependent R v ↔ ∃ g : ι → R, ∑ i, g i • v i = 0 ∧ ∃ i, g i ≠ 0 := by
   simpa using not_iff_not.2 Fintype.linearIndependent_iff
 
-theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
-  linearIndependent_iff.mpr fun v _hv => Subsingleton.elim v 0
-
-theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependent R v) : v i ≠ 0 :=
-  fun h =>
-  zero_ne_one' R <|
-    Eq.symm
-      (by
-        suffices (Finsupp.single i 1 : ι →₀ R) i = 0 by simpa
-        rw [linearIndependent_iff.1 hv (Finsupp.single i 1)]
-        · simp
-        · simp [h])
-
-lemma LinearIndependent.eq_zero_of_pair {x y : M} (h : LinearIndependent R ![x, y])
-    {s t : R} (h' : s • x + t • y = 0) : s = 0 ∧ t = 0 := by
-  have := linearIndependent_iff'.1 h Finset.univ ![s, t]
-  simp only [Fin.sum_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, h',
-    Finset.mem_univ, forall_true_left] at this
-  exact ⟨this 0, this 1⟩
-
 /-- Also see `LinearIndependent.pair_iff'` for a simpler version over fields. -/
 lemma LinearIndependent.pair_iff {x y : M} :
     LinearIndependent R ![x, y] ↔ ∀ (s t : R), s • x + t • y = 0 → s = 0 ∧ t = 0 := by
@@ -224,18 +241,6 @@ lemma LinearIndependent.pair_iff {x y : M} :
   intro i
   fin_cases i
   exacts [(h _ _ hg).1, (h _ _ hg).2]
-
-/-- A subfamily of a linearly independent family (i.e., a composition with an injective map) is a
-linearly independent family. -/
-theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf : Injective f) :
-    LinearIndependent R (v ∘ f) := by
-  rw [linearIndependent_iff, Finsupp.linearCombination_comp]
-  intro l hl
-  have h_map_domain : ∀ x, (Finsupp.mapDomain f l) (f x) = 0 := by
-    rw [linearIndependent_iff.1 h (Finsupp.mapDomain f l) hl]; simp
-  ext x
-  convert h_map_domain x
-  rw [Finsupp.mapDomain_apply hf]
 
 /-- A family is linearly independent if and only if all of its finite subfamily is
 linearly independent. -/
@@ -469,13 +474,6 @@ theorem linearIndependent_iff_linearCombinationOn {s : Set M} :
 theorem LinearIndependent.restrict_of_comp_subtype {s : Set ι}
     (hs : LinearIndependent R (v ∘ (↑) : s → M)) : LinearIndependent R (s.restrict v) :=
   hs
-
-variable (R M)
-
-theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M) → M) := by
-  simp [linearIndependent_subtype_disjoint]
-
-variable {R M}
 
 theorem LinearIndependent.mono {t s : Set M} (h : t ⊆ s) :
     LinearIndependent R (fun x => x : s → M) → LinearIndependent R (fun x => x : t → M) := by

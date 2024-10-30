@@ -46,10 +46,8 @@ theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m => ∑ᶠ i, b
 end Coord
 
 protected theorem linearIndependent : LinearIndependent R b :=
-  linearIndependent_iff.mpr fun l hl =>
-    calc
-      l = b.repr (Finsupp.linearCombination _ b l) := (b.repr_linearCombination l).symm
-      _ = 0 := by rw [hl, LinearEquiv.map_zero]
+  fun x y hxy => by
+    rw [← b.repr_linearCombination x, hxy, b.repr_linearCombination y]
 
 protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
   b.linearIndependent.ne_zero i
@@ -116,6 +114,7 @@ theorem prod_apply (i) :
 end Prod
 
 section NoZeroSMulDivisors
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 -- Can't be an instance because the basis can't be inferred.
 protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
