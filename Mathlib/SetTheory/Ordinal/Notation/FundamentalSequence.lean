@@ -9,8 +9,8 @@ monotonic sequence `ℕ → α` whose supremum is `x`.
 
 If `x` is not a successor limit, we can define two other types of fundamental sequences: the empty
 sequence `∅` with limit `⊥`, and the singleton sequence `{x}` with limit `succ x`. This ensures that
-every countable ordinal has a fundamental sequence, and simplifies the definition of the
-fast-growing hierarchy.
+every countable ordinal (nonconstructively) has a fundamental sequence, and it simplifies the
+definition of the fast-growing hierarchy.
 
 To nicely manage these three different cases, we define `Sequence α = Option α ⊕ (ℕ → α)` as the
 type of sequences with length 0, 1, or `ω`. At the moment, the file contains only the basic API for
@@ -150,12 +150,6 @@ def pmap (s : Sequence α) (f : ∀ x ∈ s, β) : Sequence β :=
 
 @[simp]
 theorem pmap_empty (f : ∀ x ∈ (∅ : Sequence α), β) : pmap ∅ f = ∅ :=
-  rfl
-
-/-- `pmap_empty` but avoids type rewrites -/
-theorem pmap_eq_empty_of_empty {s : Sequence α} (hs : s = ∅)
-    (f : ∀ x ∈ s, β) : Sequence.pmap s f = ∅ := by
-  subst hs
   rfl
 
 @[simp]
