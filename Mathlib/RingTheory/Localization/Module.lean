@@ -28,12 +28,12 @@ This file contains some results about vector spaces over the field of fractions 
 open nonZeroDivisors
 
 section Localization
-
-variable {R : Type*} (Rₛ : Type*) [CommSemiring R] (S : Submonoid R)
+variable {R : Type*} (Rₛ : Type*)
 
 section IsLocalizedModule
 
 section AddCommMonoid
+variable [CommSemiring R] (S : Submonoid R)
 
 open Submodule
 
@@ -52,6 +52,18 @@ theorem span_eq_top_of_isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
   refine h ▸ smul_mem _ _  (span_subset_span R Rₛ _ ?_)
   rw [← LinearMap.coe_restrictScalars R, ← LinearMap.map_span, hv]
   exact mem_map_of_mem mem_top
+
+end AddCommMonoid
+
+section AddCommGroup
+
+variable {R : Type*} (Rₛ : Type*) [CommRing R] (S : Submonoid R)
+variable [CommRing Rₛ] [Algebra R Rₛ] [hT : IsLocalization S Rₛ]
+variable {M M' : Type*} [AddCommGroup M] [Module R M]
+  [AddCommGroup M'] [Module R M'] [Module Rₛ M'] [IsScalarTower R Rₛ M'] (f : M →ₗ[R] M')
+  [IsLocalizedModule S f]
+
+include S
 
 theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
     (hv : LinearIndependent R v) : LinearIndependent Rₛ (f ∘ v) := by
@@ -77,7 +89,10 @@ theorem LinearIndependent.localization {ι : Type*} {b : ι → M} (hli : Linear
   have := isLocalizedModule_id S M Rₛ
   exact hli.of_isLocalizedModule Rₛ S .id
 
-end AddCommMonoid
+end AddCommGroup
+
+
+variable [CommRing R] (S : Submonoid R)
 
 section Basis
 
@@ -123,7 +138,7 @@ end IsLocalizedModule
 
 section LocalizationLocalization
 
-variable [CommRing Rₛ] [Algebra R Rₛ]
+variable [CommRing R] (S : Submonoid R) [CommRing Rₛ] [Algebra R Rₛ]
 variable [hT : IsLocalization S Rₛ]
 variable {A : Type*} [CommRing A] [Algebra R A]
 variable (Aₛ : Type*) [CommRing Aₛ] [Algebra A Aₛ]
