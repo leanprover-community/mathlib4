@@ -83,6 +83,7 @@ variable {σ} (p)
 
 section Degrees
 
+@[simp]
 theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
 
@@ -94,6 +95,7 @@ end Degrees
 
 section Degrees
 
+@[simp]
 theorem degreeOf_neg (i : σ) (p : MvPolynomial σ R) : degreeOf i (-p) = degreeOf i p := by
   rw [degreeOf, degreeOf, degrees_neg]
 
