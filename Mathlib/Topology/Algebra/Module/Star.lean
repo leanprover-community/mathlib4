@@ -49,11 +49,11 @@ variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCo
   [Module R A] [StarAddMonoid A] [StarModule R A] [Invertible (2 : R)] [TopologicalSpace A]
 
 theorem continuous_selfAdjointPart [ContinuousAdd A] [ContinuousStar A] [ContinuousConstSMul R A] :
-    Continuous (@selfAdjointPart R A _ _ _ _ _ _ _ _) :=
+    Continuous (selfAdjointPart R (A := A)) :=
   ((continuous_const_smul _).comp <| continuous_id.add continuous_star).subtype_mk _
 
 theorem continuous_skewAdjointPart [ContinuousSub A] [ContinuousStar A] [ContinuousConstSMul R A] :
-    Continuous (@skewAdjointPart R A _ _ _ _ _ _ _ _) :=
+    Continuous (skewAdjointPart R (A := A)) :=
   ((continuous_const_smul _).comp <| continuous_id.sub continuous_star).subtype_mk _
 
 theorem continuous_decomposeProdAdjoint [TopologicalAddGroup A] [ContinuousStar A]

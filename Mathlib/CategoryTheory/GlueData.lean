@@ -216,7 +216,10 @@ theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
     simp [← Multicoequalizer.ι_sigmaπ]
     rfl ⟩
 
-variable (F : C ⥤ C') [H : ∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
+variable (F : C ⥤ C')
+
+section
+variable [∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
 
 instance (i j k : D.J) : HasPullback (F.map (D.f i j)) (F.map (D.f i k)) :=
   ⟨⟨⟨_, isLimitOfHasPullbackOfPreservesLimit F (D.f i j) (D.f i k)⟩⟩⟩
@@ -228,8 +231,8 @@ def mapGlueData : GlueData C' where
   U i := F.obj (D.U i)
   V i := F.obj (D.V i)
   f i j := F.map (D.f i j)
-  f_mono i j := preserves_mono_of_preservesLimit _ _
-  f_id i := inferInstance
+  f_mono _ _ := preserves_mono_of_preservesLimit _ _
+  f_id _ := inferInstance
   t i j := F.map (D.t i j)
   t_id i := by
     simp [D.t_id i]
@@ -248,8 +251,8 @@ def diagramIso : D.diagram.multispan ⋙ F ≅ (D.mapGlueData F).diagram.multisp
   NatIso.ofComponents
     (fun x =>
       match x with
-      | WalkingMultispan.left a => Iso.refl _
-      | WalkingMultispan.right b => Iso.refl _)
+      | WalkingMultispan.left _ => Iso.refl _
+      | WalkingMultispan.right _ => Iso.refl _)
     (by
       rintro (⟨_, _⟩ | _) _ (_ | _ | _)
       · erw [Category.comp_id, Category.id_comp, Functor.map_id]
@@ -291,12 +294,16 @@ theorem diagramIso_inv_app_right (i : D.J) :
     (D.diagramIso F).inv.app (WalkingMultispan.right i) = 𝟙 _ :=
   rfl
 
+end
+
 variable [HasMulticoequalizer D.diagram] [PreservesColimit D.diagram.multispan F]
 
 theorem hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
   ⟨⟨⟨_, PreservesColimit.preserves (colimit.isColimit _)⟩⟩⟩
 
 attribute [local instance] hasColimit_multispan_comp
+
+variable [∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
 
 theorem hasColimit_mapGlueData_diagram : HasMulticoequalizer (D.mapGlueData F).diagram :=
   hasColimitOfIso (D.diagramIso F).symm
@@ -311,7 +318,7 @@ def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.mapGlueData F).ι i := by
   haveI : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
-  erw [ι_preservesColimitsIso_hom_assoc]
+  erw [ι_preservesColimitIso_hom_assoc]
   rw [HasColimit.isoOfNatIso_ι_hom]
   erw [Category.id_comp]
   rfl
@@ -381,7 +388,7 @@ structure GlueData' where
   cocycle : ∀ i j k hij hik hjk, t' i j k hij hik hjk ≫
     t' j k i hjk hij.symm hik.symm ≫ t' k i j hik.symm hjk.symm hij = 𝟙 _
 
-attribute [local instance] GlueData'.f_mono GlueData'.f_hasPullback mono_comp
+attribute [local instance] GlueData'.f_mono GlueData'.f_hasPullback
 
 attribute [reassoc (attr := simp)] GlueData'.t_inv GlueData'.cocycle
 

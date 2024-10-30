@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Jendrusch, Scott Morrison
+Authors: Michael Jendrusch, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
@@ -25,19 +25,12 @@ open Opposite
 
 open MonoidalCategory
 
--- Porting note: made it noncomputable.
--- `failed to compile definition, consider marking it as 'noncomputable' because it`
--- `depends on 'CategoryTheory.typesMonoidal', and it does not have executable code`
--- I don't know if that is a problem, might need to change it back in the future, but
--- if so it might be better to fix then instead of at the moment of porting.
-
 /-- `(𝟙_ C ⟶ -)` is a lax monoidal functor to `Type`. -/
-noncomputable
 def coyonedaTensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] :
     LaxMonoidalFunctor C (Type v) := .ofTensorHom
     (F := coyoneda.obj (op (𝟙_ C)))
     (ε := fun _p => 𝟙 _)
-    (μ := fun X Y p => (λ_ (𝟙_ C)).inv ≫ (p.1 ⊗ p.2))
+    (μ := fun _ _ p => (λ_ (𝟙_ C)).inv ≫ (p.1 ⊗ p.2))
     (μ_natural := by aesop_cat)
     (associativity := fun X Y Z => by
       ext ⟨⟨f, g⟩, h⟩; dsimp at f g h

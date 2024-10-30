@@ -26,10 +26,8 @@ This file contains several standard constructions on vector bundles:
 Vector bundle, direct sum, pullback
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Bundle Set FiberBundle
 
 /-! ### The trivial vector bundle -/

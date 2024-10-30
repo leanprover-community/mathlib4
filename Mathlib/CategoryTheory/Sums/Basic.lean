@@ -1,9 +1,9 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # Binary disjoint unions of categories
@@ -31,11 +31,11 @@ section
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 
-/- Porting note: `aesop_cat` not firing on `assoc` where autotac in Lean 3 did-/
+/- Porting note: `aesop_cat` not firing on `assoc` where autotac in Lean 3 did -/
 
 /-- `sum C D` gives the direct sum of two categories.
 -/
-instance sum : Category.{v₁} (Sum C D) where
+instance sum : Category.{v₁} (C ⊕ D) where
   Hom X Y :=
     match X, Y with
     | inl X, inl Y => X ⟶ Y
@@ -48,12 +48,12 @@ instance sum : Category.{v₁} (Sum C D) where
     | inr X => 𝟙 X
   comp {X Y Z} f g :=
     match X, Y, Z, f, g with
-    | inl X, inl Y, inl Z, f, g => f ≫ g
-    | inr X, inr Y, inr Z, f, g => f ≫ g
+    | inl _, inl _, inl _, f, g => f ≫ g
+    | inr _, inr _, inr _, f, g => f ≫ g
   assoc {W X Y Z} f g h :=
     match X, Y, Z, W with
-    | inl X, inl Y, inl Z, inl W => Category.assoc f g h
-    | inr X, inr Y, inr Z, inr W => Category.assoc f g h
+    | inl _, inl _, inl _, inl _ => Category.assoc f g h
+    | inr _, inr _, inr _, inr _ => Category.assoc f g h
 
 @[aesop norm -10 destruct (rule_sets := [CategoryTheory])]
 theorem hom_inl_inr_false {X : C} {Y : D} (f : Sum.inl X ⟶ Sum.inr Y) : False := by
@@ -63,12 +63,12 @@ theorem hom_inl_inr_false {X : C} {Y : D} (f : Sum.inl X ⟶ Sum.inr Y) : False 
 theorem hom_inr_inl_false {X : C} {Y : D} (f : Sum.inr X ⟶ Sum.inl Y) : False := by
   cases f
 
-theorem sum_comp_inl {P Q R : C} (f : (inl P : Sum C D) ⟶ inl Q) (g : (inl Q : Sum C D) ⟶ inl R) :
+theorem sum_comp_inl {P Q R : C} (f : (inl P : C ⊕ D) ⟶ inl Q) (g : (inl Q : C ⊕ D) ⟶ inl R) :
     @CategoryStruct.comp _ _ P Q R (f : P ⟶ Q) (g : Q ⟶ R) =
       @CategoryStruct.comp _ _ (inl P) (inl Q) (inl R) (f : P ⟶ Q) (g : Q ⟶ R) :=
   rfl
 
-theorem sum_comp_inr {P Q R : D} (f : (inr P : Sum C D) ⟶ inr Q) (g : (inr Q : Sum C D) ⟶ inr R) :
+theorem sum_comp_inr {P Q R : D} (f : (inr P : C ⊕ D) ⟶ inr Q) (g : (inr Q : C ⊕ D) ⟶ inr R) :
     @CategoryStruct.comp _ _ P Q R (f : P ⟶ Q) (g : Q ⟶ R) =
       @CategoryStruct.comp _ _ (inr P) (inr Q) (inr R) (f : P ⟶ Q) (g : Q ⟶ R) :=
   rfl
@@ -82,21 +82,21 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 -- Unfortunate naming here, suggestions welcome.
 /-- `inl_` is the functor `X ↦ inl X`. -/
 @[simps]
-def inl_ : C ⥤ Sum C D where
+def inl_ : C ⥤ C ⊕ D where
   obj X := inl X
-  map {X Y} f := f
+  map {_ _} f := f
 
 /-- `inr_` is the functor `X ↦ inr X`. -/
 @[simps]
-def inr_ : D ⥤ Sum C D where
+def inr_ : D ⥤ C ⊕ D where
   obj X := inr X
-  map {X Y} f := f
+  map {_ _} f := f
 
 /- Porting note: `aesop_cat` not firing on `map_comp` where autotac in Lean 3 did
 but `map_id` was ok. -/
 
 /-- The functor exchanging two direct summand categories. -/
-def swap : Sum C D ⥤ Sum D C where
+def swap : C ⊕ D ⥤ D ⊕ C where
   obj X :=
     match X with
     | inl X => inr X
@@ -129,16 +129,18 @@ theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
 namespace Swap
 
 /-- `swap` gives an equivalence between `C ⊕ D` and `D ⊕ C`. -/
-def equivalence : Sum C D ≌ Sum D C :=
-  Equivalence.mk (swap C D) (swap D C)
-    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)))
-    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)))
+@[simps functor inverse]
+def equivalence : C ⊕ D ≌ D ⊕ C where
+  functor := swap C D
+  inverse := swap D C
+  unitIso := NatIso.ofComponents (by rintro (_|_) <;> exact Iso.refl _)
+  counitIso := NatIso.ofComponents (by rintro (_|_) <;> exact Iso.refl _)
 
 instance isEquivalence : (swap C D).IsEquivalence :=
   (by infer_instance : (equivalence C D).functor.IsEquivalence)
 
 /-- The double swap on `C ⊕ D` is naturally isomorphic to the identity functor. -/
-def symmetry : swap C D ⋙ swap D C ≅ 𝟭 (Sum C D) :=
+def symmetry : swap C D ⋙ swap D C ≅ 𝟭 (C ⊕ D) :=
   (equivalence C D).unitIso.symm
 
 end Swap
@@ -151,15 +153,15 @@ variable {A : Type u₁} [Category.{v₁} A] {B : Type u₁} [Category.{v₁} B]
 namespace Functor
 
 /-- The sum of two functors. -/
-def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D where
+def sum (F : A ⥤ B) (G : C ⥤ D) : A ⊕ C ⥤ B ⊕ D where
   obj X :=
     match X with
     | inl X => inl (F.obj X)
     | inr X => inr (G.obj X)
   map {X Y} f :=
     match X, Y, f with
-    | inl X, inl Y, f => F.map f
-    | inr X, inr Y, f => G.map f
+    | inl _, inl _, f => F.map f
+    | inr _, inr _, f => G.map f
   map_id {X} := by cases X <;> (erw [Functor.map_id]; rfl)
   map_comp {X Y Z} f g :=
     match X, Y, Z, f, g with
@@ -167,7 +169,7 @@ def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D where
     | inr X, inr Y, inr Z, f, g => by erw [G.map_comp]; rfl
 
 /-- Similar to `sum`, but both functors land in the same category `C` -/
-def sum' (F : A ⥤ C) (G : B ⥤ C) : Sum A B ⥤ C where
+def sum' (F : A ⥤ C) (G : B ⥤ C) : A ⊕ B ⥤ C where
   obj X :=
     match X with
     | inl X => F.obj X
@@ -185,12 +187,12 @@ def sum' (F : A ⥤ C) (G : B ⥤ C) : Sum A B ⥤ C where
 /-- The sum `F.sum' G` precomposed with the left inclusion functor is isomorphic to `F` -/
 @[simps!]
 def inlCompSum' (F : A ⥤ C) (G : B ⥤ C) : Sum.inl_ A B ⋙ F.sum' G ≅ F :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The sum `F.sum' G` precomposed with the right inclusion functor is isomorphic to `G` -/
 @[simps!]
 def inrCompSum' (F : A ⥤ C) (G : B ⥤ C) : Sum.inr_ A B ⋙ F.sum' G ≅ G :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 @[simp]
 theorem sum_obj_inl (F : A ⥤ B) (G : C ⥤ D) (a : A) : (F.sum G).obj (inl a) = inl (F.obj a) :=

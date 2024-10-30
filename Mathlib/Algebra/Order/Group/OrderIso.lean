@@ -24,8 +24,7 @@ variable [Group α]
 
 section TypeclassesLeftRightLE
 
-variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
-  {a b c d : α}
+variable [LE α] [MulLeftMono α] [MulRightMono α] {a b : α}
 
 section
 
@@ -35,7 +34,7 @@ variable (α)
 @[to_additive (attr := simps!) "`x ↦ -x` as an order-reversing equivalence."]
 def OrderIso.inv : α ≃o αᵒᵈ where
   toEquiv := (Equiv.inv α).trans OrderDual.toDual
-  map_rel_iff' {_ _} := @inv_le_inv_iff α _ _ _ _ _ _
+  map_rel_iff' {_ _} := inv_le_inv_iff (α := α)
 
 end
 
@@ -55,7 +54,7 @@ theorem le_inv' : a ≤ b⁻¹ ↔ b ≤ a⁻¹ :=
 @[to_additive (attr := simps!) "`x ↦ a - x` as an order-reversing equivalence."]
 def OrderIso.divLeft (a : α) : α ≃o αᵒᵈ where
   toEquiv := (Equiv.divLeft a).trans OrderDual.toDual
-  map_rel_iff' {_ _} := @div_le_div_iff_left α _ _ _ _ _ _ _
+  map_rel_iff' {_ _} := div_le_div_iff_left (α := α) _
 
 end TypeclassesLeftRightLE
 
@@ -71,7 +70,7 @@ variable [Group α] [LE α]
 
 section Right
 
-variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
+variable [MulRightMono α] {a : α}
 
 /-- `Equiv.mulRight` as an `OrderIso`. See also `OrderEmbedding.mulRight`. -/
 @[to_additive (attr := simps! (config := { simpRhs := true }) toEquiv apply)
@@ -95,7 +94,7 @@ end Right
 
 section Left
 
-variable [CovariantClass α α (· * ·) (· ≤ ·)]
+variable [MulLeftMono α]
 
 /-- `Equiv.mulLeft` as an `OrderIso`. See also `OrderEmbedding.mulLeft`. -/
 @[to_additive (attr := simps! (config := { simpRhs := true }) toEquiv apply)

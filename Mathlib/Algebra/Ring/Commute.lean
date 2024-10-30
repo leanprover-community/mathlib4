@@ -21,9 +21,9 @@ For the definitions of semirings and rings see `Mathlib.Algebra.Ring.Defs`.
 -/
 
 
-universe u v w x
+universe u
 
-variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
+variable {R : Type u}
 
 open Function
 
@@ -75,15 +75,11 @@ end
 
 section
 
-variable [MulOneClass R] [HasDistribNeg R] {a : R}
+variable [MulOneClass R] [HasDistribNeg R]
 
--- Porting note (#10618): no longer needs to be `@[simp]` since `simp` can prove it.
--- @[simp]
 theorem neg_one_right (a : R) : Commute a (-1) :=
   SemiconjBy.neg_one_right a
 
--- Porting note (#10618): no longer needs to be `@[simp]` since `simp` can prove it.
--- @[simp]
 theorem neg_one_left (a : R) : Commute (-1) a :=
   SemiconjBy.neg_one_left a
 
@@ -147,7 +143,7 @@ alias neg_one_pow_two := neg_one_sq
 end HasDistribNeg
 
 section Ring
-variable [Ring R] {a b : R} {n : ℕ}
+variable [Ring R] {a : R} {n : ℕ}
 
 @[simp] lemma neg_one_pow_mul_eq_zero_iff : (-1) ^ n * a = 0 ↔ a = 0 := by
   rcases neg_one_pow_eq_or R n with h | h <;> simp [h]
@@ -155,15 +151,15 @@ variable [Ring R] {a b : R} {n : ℕ}
 @[simp] lemma mul_neg_one_pow_eq_zero_iff : a * (-1) ^ n = 0 ↔ a = 0 := by
   obtain h | h := neg_one_pow_eq_or R n <;> simp [h]
 
+lemma neg_one_pow_eq_pow_mod_two (n : ℕ) : (-1 : R) ^ n = (-1) ^ (n % 2) := by
+  rw [← Nat.mod_add_div n 2, pow_add, pow_mul]; simp [sq]
+
 variable [NoZeroDivisors R]
 
 @[simp] lemma sq_eq_one_iff : a ^ 2 = 1 ↔ a = 1 ∨ a = -1 := by
   rw [← (Commute.one_right a).sq_eq_sq_iff_eq_or_eq_neg, one_pow]
 
 lemma sq_ne_one_iff : a ^ 2 ≠ 1 ↔ a ≠ 1 ∧ a ≠ -1 := sq_eq_one_iff.not.trans not_or
-
-lemma neg_one_pow_eq_pow_mod_two (n : ℕ) : (-1 : R) ^ n = (-1) ^ (n % 2) := by
-  rw [← Nat.mod_add_div n 2, pow_add, pow_mul]; simp [sq]
 
 end Ring
 
@@ -209,7 +205,7 @@ lemma eq_or_eq_neg_of_sq_eq_sq (a b : R) : a ^ 2 = b ^ 2 → a = b ∨ a = -b :=
 namespace Units
 
 protected lemma sq_eq_sq_iff_eq_or_eq_neg {a b : Rˣ} : a ^ 2 = b ^ 2 ↔ a = b ∨ a = -b := by
-  simp_rw [ext_iff, val_pow_eq_pow_val, sq_eq_sq_iff_eq_or_eq_neg, Units.val_neg]
+  simp_rw [Units.ext_iff, val_pow_eq_pow_val, sq_eq_sq_iff_eq_or_eq_neg, Units.val_neg]
 
 protected lemma eq_or_eq_neg_of_sq_eq_sq (a b : Rˣ) (h : a ^ 2 = b ^ 2) : a = b ∨ a = -b :=
   Units.sq_eq_sq_iff_eq_or_eq_neg.1 h
@@ -223,7 +219,7 @@ namespace Units
   one's additive inverse. -/
 theorem inv_eq_self_iff [Ring R] [NoZeroDivisors R] (u : Rˣ) : u⁻¹ = u ↔ u = 1 ∨ u = -1 := by
   rw [inv_eq_iff_mul_eq_one]
-  simp only [ext_iff]
+  simp only [Units.ext_iff]
   push_cast
   exact mul_self_eq_one_iff
 

@@ -3,13 +3,18 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.Pi
 
 /-!
 # The cartesian product of finsets
+
+## Main definitions
+
+* `Finset.pi`: Cartesian product of finsets indexed by a finset.
 -/
 
+open Function
 
 namespace Finset
 
@@ -28,7 +33,10 @@ def Pi.empty (β : α → Sort*) (a : α) (h : a ∈ (∅ : Finset α)) : β a :
   Multiset.Pi.empty β a h
 
 universe u v
-variable {β : α → Type u} {δ : α → Sort v} [DecidableEq α] {s : Finset α} {t : ∀ a, Finset (β a)}
+variable {β : α → Type u} {δ : α → Sort v} {s : Finset α} {t : ∀ a, Finset (β a)}
+
+section
+variable [DecidableEq α]
 
 /-- Given a finset `s` of `α` and for all `a : α` a finset `t a` of `δ a`, then one can define the
 finset `s.pi t` of all functions defined on elements of `s` taking values in `t a` for `a ∈ s`.
@@ -77,9 +85,16 @@ theorem Pi.cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
 theorem pi_empty {t : ∀ a : α, Finset (β a)} : pi (∅ : Finset α) t = singleton (Pi.empty β) :=
   rfl
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 lemma pi_nonempty : (s.pi t).Nonempty ↔ ∀ a ∈ s, (t a).Nonempty := by
   simp [Finset.Nonempty, Classical.skolem]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, pi_nonempty_of_forall_nonempty⟩ := pi_nonempty
+
+@[simp]
+lemma pi_eq_empty : s.pi t = ∅ ↔ ∃ a ∈ s, t a = ∅ := by
+  simp [← not_nonempty_iff_eq_empty]
 
 @[simp]
 theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}
@@ -123,6 +138,45 @@ theorem pi_disjoint_of_disjoint {δ : α → Type*} {s : Finset α} (t₁ t₂ :
     disjoint_iff_ne.1 h (f₁ a ha) (mem_pi.mp hf₁ a ha) (f₂ a ha) (mem_pi.mp hf₂ a ha) <|
       congr_fun (congr_fun eq₁₂ a) ha
 
-end Pi
+end
 
+/-! ### Diagonal -/
+
+variable {ι : Type*} [DecidableEq (ι → α)] {s : Finset α} {f : ι → α}
+
+/-- The diagonal of a finset `s : Finset α` as a finset of functions `ι → α`, namely the set of
+constant functions valued in `s`. -/
+def piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] : Finset (ι → α) := s.image (const ι)
+
+@[simp] lemma mem_piDiag : f ∈ s.piDiag ι ↔ ∃ a ∈ s, const ι a = f := mem_image
+
+@[simp] lemma card_piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] [Nonempty ι] :
+    (s.piDiag ι).card = s.card := by rw [piDiag, card_image_of_injective _ const_injective]
+
+/-! ### Restriction -/
+
+variable {π : ι → Type*}
+
+/-- Restrict domain of a function `f` to a finite set `s`. -/
+@[simp]
+def restrict (s : Finset ι) (f : (i : ι) → π i) : (i : s) → π i := fun x ↦ f x
+
+theorem restrict_def (s : Finset ι) : s.restrict (π := π) = fun f x ↦ f x := rfl
+
+/-- If a function `f` is restricted to a finite set `t`, and `s ⊆ t`,
+this is the restriction to `s`. -/
+@[simp]
+def restrict₂ {s t : Finset ι} (hst : s ⊆ t) (f : (i : t) → π i) : (i : s) → π i :=
+  fun x ↦ f ⟨x.1, hst x.2⟩
+
+theorem restrict₂_def {s t : Finset ι} (hst : s ⊆ t) :
+    restrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
+
+theorem restrict₂_comp_restrict {s t : Finset ι} (hst : s ⊆ t) :
+    (restrict₂ (π := π) hst) ∘ t.restrict = s.restrict := rfl
+
+theorem restrict₂_comp_restrict₂ {s t u : Finset ι} (hst : s ⊆ t) (htu : t ⊆ u) :
+    (restrict₂ (π := π) hst) ∘ (restrict₂ htu) = restrict₂ (hst.trans htu) := rfl
+
+end Pi
 end Finset

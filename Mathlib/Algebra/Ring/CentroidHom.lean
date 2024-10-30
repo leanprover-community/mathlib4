@@ -6,9 +6,9 @@ Authors: Yaël Dillies, Christopher Hoskin
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Module.Hom
-import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 # Centroid homomorphisms
@@ -61,8 +61,8 @@ attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 /-- `CentroidHomClass F α` states that `F` is a type of centroid homomorphisms.
 
 You should extend this class when you extend `CentroidHom`. -/
-class CentroidHomClass (F α : Type*) [NonUnitalNonAssocSemiring α] [FunLike F α α] extends
-  AddMonoidHomClass F α α : Prop where
+class CentroidHomClass (F : Type*) (α : outParam Type*)
+    [NonUnitalNonAssocSemiring α] [FunLike F α α] extends AddMonoidHomClass F α α : Prop where
   /-- Commutativity of centroid homomorphims with left multiplication. -/
   map_mul_left (f : F) (a b : α) : f (a * b) = a * f b
   /-- Commutativity of centroid homomorphims with right multiplication. -/
@@ -101,13 +101,6 @@ instance : CentroidHomClass (CentroidHom α) α where
   map_mul_left f := f.map_mul_left'
   map_mul_right f := f.map_mul_right'
 
-
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.CoeFun`
-directly. -/
-/- Porting note: Lean gave me `unknown constant 'DFunLike.CoeFun'` and says `CoeFun` is a type
-mismatch, so I used `library_search`. -/
-instance : CoeFun (CentroidHom α) fun _ ↦ α → α :=
-  inferInstanceAs (CoeFun (CentroidHom α) fun _ ↦ α → α)
 
 -- Porting note: removed @[simp]; not in normal form. (`toAddMonoidHom_eq_coe` below ensures that
 -- the LHS simplifies to the RHS anyway.)
@@ -270,16 +263,17 @@ instance hasNPowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
     { toAddMonoidHom := (f.toEnd ^ n : AddMonoid.End α)
       map_mul_left' := fun a b ↦ by
-        induction' n with n ih
-        · exact rfl
-        · rw [pow_succ']
+        induction n with
+        | zero => rfl
+        | succ n ih =>
+          rw [pow_succ']
           exact (congr_arg f.toEnd ih).trans (f.map_mul_left' _ _)
       map_mul_right' := fun a b ↦ by
-        induction' n with n ih
-        · exact rfl
-        · rw [pow_succ']
-          exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _)
-        }⟩
+        induction n with
+        | zero => rfl
+        | succ n ih =>
+          rw [pow_succ']
+          exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _)}⟩
 
 @[simp, norm_cast]
 theorem coe_zero : ⇑(0 : CentroidHom α) = 0 :=
@@ -459,19 +453,42 @@ lemma centroid_eq_centralizer_mulLeftRight :
     · exact congr($(h (L a) (.inl ⟨a, rfl⟩)) b).symm
     · exact congr($(h (R b) (.inr ⟨b, rfl⟩)) a).symm
 
-/-- The canonical homomorphism from the center into the centroid -/
-def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
+/-- The canonical homomorphism from the center into the center of the centroid -/
+def centerToCentroidCenter :
+    NonUnitalSubsemiring.center α →ₙ+* Subsemiring.center (CentroidHom α) where
   toFun z :=
     { L (z : α) with
-      map_mul_left' := z.prop.left_comm
-      map_mul_right' := z.prop.left_assoc }
+      val := ⟨L z, z.prop.left_comm, z.prop.left_assoc ⟩
+      property := by
+        rw [Subsemiring.mem_center_iff]
+        intros g
+        ext a
+        exact map_mul_left g (↑z) a }
   map_zero' := by
     simp only [ZeroMemClass.coe_zero, map_zero]
     exact rfl
   map_add' := fun _ _ => by
-    simp only [AddSubmonoid.coe_add, NonUnitalSubsemiring.coe_toAddSubmonoid, map_add]
-    exact rfl
+    dsimp
+    simp only [map_add]
+    rfl
   map_mul' z₁ z₂ := by ext a; exact (z₁.prop.left_assoc z₂ a).symm
+
+instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
+  coe f := f.val.toFun
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr with x
+    exact congrFun h x
+
+lemma centerToCentroidCenter_apply (z : NonUnitalSubsemiring.center α) (a : α) :
+    (centerToCentroidCenter z) a = z * a := rfl
+
+/-- The canonical homomorphism from the center into the centroid -/
+def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α :=
+  NonUnitalRingHom.comp
+    (SubsemiringClass.subtype (Subsemiring.center (CentroidHom α))).toNonUnitalRingHom
+    centerToCentroidCenter
 
 lemma centerToCentroid_apply (z : NonUnitalSubsemiring.center α) (a : α) :
     (centerToCentroid z) a = z * a := rfl
@@ -519,8 +536,10 @@ def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
     invFun := fun T ↦
       ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
-    left_inv := fun z ↦ Subtype.ext <| by simp [centerToCentroid_apply]
-    right_inv := fun T ↦ CentroidHom.ext <| by simp [centerToCentroid_apply, ← map_mul_right] }
+    left_inv := fun z ↦ Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
+      NonUnitalRingHom.coe_toMulHom, centerToCentroid_apply, mul_one]
+    right_inv := fun T ↦ CentroidHom.ext <| fun _ => by rw [MulHom.toFun_eq_coe,
+      NonUnitalRingHom.coe_toMulHom, centerToCentroid_apply, ← map_mul_right, one_mul] }
 
 end NonAssocSemiring
 

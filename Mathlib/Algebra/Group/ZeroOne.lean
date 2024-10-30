@@ -4,20 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Mario Carneiro
 -/
 import Mathlib.Tactic.ToAdditive
-import Mathlib.Mathport.Rename
 
 /-!
-## Classes for `Zero` and `One`
+## Typeclass `One`
+
+`Zero` has already been defined in Lean.
 -/
-
-class Zero.{u} (α : Type u) where
-  zero : α
-
-instance (priority := 300) Zero.toOfNat0 {α} [Zero α] : OfNat α (nat_lit 0) where
-  ofNat := ‹Zero α›.1
-
-instance (priority := 200) Zero.ofOfNat0 {α} [OfNat α (nat_lit 0)] : Zero α where
-  zero := 0
 
 universe u
 

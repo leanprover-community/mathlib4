@@ -60,7 +60,7 @@ variable {X : Type u} {Y : Type v} {Z : Type w}
 variable [MetricSpace X] [MetricSpace Y] {Φ : Z → X} {Ψ : Z → Y} {ε : ℝ}
 
 /-- Define a predistance on `X ⊕ Y`, for which `Φ p` and `Ψ p` are at distance `ε` -/
-def glueDist (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) : Sum X Y → Sum X Y → ℝ
+def glueDist (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) : X ⊕ Y → X ⊕ Y → ℝ
   | .inl x, .inl y => dist x y
   | .inr x, .inr y => dist x y
   | .inl x, .inr y => (⨅ p, dist x (Φ p) + dist y (Ψ p)) + ε
@@ -103,6 +103,7 @@ theorem le_glueDist_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
     ε ≤ glueDist Φ Ψ ε (.inr x) (.inl y) := by
   rw [glueDist_comm]; apply le_glueDist_inl_inr
 
+section
 variable [Nonempty Z]
 
 private theorem glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x : X) (y z : Y) :
@@ -128,8 +129,8 @@ private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε 
 private theorem glueDist_triangle (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
     (H : ∀ p q, |dist (Φ p) (Φ q) - dist (Ψ p) (Ψ q)| ≤ 2 * ε) :
     ∀ x y z, glueDist Φ Ψ ε x z ≤ glueDist Φ Ψ ε x y + glueDist Φ Ψ ε y z
-  | .inl x, .inl y, .inl z => dist_triangle _ _ _
-  | .inr x, .inr y, .inr z => dist_triangle _ _ _
+  | .inl _, .inl _, .inl _ => dist_triangle _ _ _
+  | .inr _, .inr _, .inr _ => dist_triangle _ _ _
   | .inr x, .inl y, .inl z => by
     simp only [← glueDist_swap Φ]
     apply glueDist_triangle_inl_inr_inr
@@ -138,15 +139,17 @@ private theorem glueDist_triangle (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
   | .inl x, .inl y, .inr z => by
     simpa only [← glueDist_swap Φ, glueDist_comm, add_comm, Sum.swap_inl, Sum.swap_inr]
       using glueDist_triangle_inl_inr_inr Ψ Φ ε z y x
-  | .inl x, .inr y, .inr z => glueDist_triangle_inl_inr_inr ..
+  | .inl _, .inr _, .inr _ => glueDist_triangle_inl_inr_inr ..
   | .inl x, .inr y, .inl z => glueDist_triangle_inl_inr_inl Φ Ψ ε H x y z
   | .inr x, .inl y, .inr z => by
     simp only [← glueDist_swap Φ]
     apply glueDist_triangle_inl_inr_inl
     simpa only [abs_sub_comm]
 
+end
+
 private theorem eq_of_glueDist_eq_zero (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε) :
-    ∀ p q : Sum X Y, glueDist Φ Ψ ε p q = 0 → p = q
+    ∀ p q : X ⊕ Y, glueDist Φ Ψ ε p q = 0 → p = q
   | .inl x, .inl y, h => by rw [eq_of_dist_eq_zero h]
   | .inl x, .inr y, h => by exfalso; linarith [le_glueDist_inl_inr Φ Ψ ε x y]
   | .inr x, .inl y, h => by exfalso; linarith [le_glueDist_inr_inl Φ Ψ ε x y]
@@ -170,7 +173,7 @@ theorem Sum.mem_uniformity_iff_glueDist (hε : 0 < ε) (s : Set ((X ⊕ Y) × (X
 `Φ p` and `Φ q`, and between `Ψ p` and `Ψ q`, coincide up to `2 ε` where `ε > 0`, one can almost
 glue the two spaces `X` and `Y` along the images of `Φ` and `Ψ`, so that `Φ p` and `Ψ p` are
 at distance `ε`. -/
-def glueMetricApprox (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
+def glueMetricApprox [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
     (H : ∀ p q, |dist (Φ p) (Φ q) - dist (Ψ p) (Ψ q)| ≤ 2 * ε) : MetricSpace (X ⊕ Y) where
   dist := glueDist Φ Ψ ε
   dist_self := glueDist_self Φ Ψ ε
@@ -205,7 +208,7 @@ We embed isometrically each factor, set the basepoints at distance 1,
 arbitrarily, and say that the distance from `a` to `b` is the sum of the distances of `a` and `b` to
 their respective basepoints, plus the distance 1 between the basepoints.
 Since there is an arbitrary choice in this construction, it is not an instance by default. -/
-protected def Sum.dist : Sum X Y → Sum X Y → ℝ
+protected def Sum.dist : X ⊕ Y → X ⊕ Y → ℝ
   | .inl a, .inl a' => dist a a'
   | .inr b, .inr b' => dist b b'
   | .inl a, .inr b => dist a (Nonempty.some ⟨a⟩) + 1 + dist (Nonempty.some ⟨b⟩) b
@@ -227,7 +230,7 @@ theorem Sum.one_le_dist_inl_inr {x : X} {y : Y} : 1 ≤ Sum.dist (.inl x) (.inr 
 theorem Sum.one_le_dist_inr_inl {x : X} {y : Y} : 1 ≤ Sum.dist (.inr y) (.inl x) := by
   rw [Sum.dist_comm]; exact Sum.one_le_dist_inl_inr
 
-private theorem Sum.mem_uniformity (s : Set (Sum X Y × Sum X Y)) :
+private theorem Sum.mem_uniformity (s : Set ((X ⊕ Y) × (X ⊕ Y))) :
     s ∈ 𝓤 (X ⊕ Y) ↔ ∃ ε > 0, ∀ a b, Sum.dist a b < ε → (a, b) ∈ s := by
   constructor
   · rintro ⟨hsX, hsY⟩
@@ -240,8 +243,7 @@ private theorem Sum.mem_uniformity (s : Set (Sum X Y × Sum X Y)) :
     · cases not_le_of_lt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inr_inl
     · exact hY (lt_of_lt_of_le h (le_trans (min_le_left _ _) (min_le_right _ _)))
   · rintro ⟨ε, ε0, H⟩
-    constructor <;> rw [Filter.mem_sets, Filter.mem_map, mem_uniformity_dist] <;>
-      exact ⟨ε, ε0, fun h => H _ _ h⟩
+    constructor <;> rw [Filter.mem_map, mem_uniformity_dist] <;> exact ⟨ε, ε0, fun h => H _ _ h⟩
 
 /-- The distance on the disjoint union indeed defines a metric space. All the distance properties
 follow from our choice of the distance. The harder work is to show that the uniform structure
@@ -273,14 +275,14 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
 
 attribute [local instance] metricSpaceSum
 
-theorem Sum.dist_eq {x y : Sum X Y} : dist x y = Sum.dist x y := rfl
+theorem Sum.dist_eq {x y : X ⊕ Y} : dist x y = Sum.dist x y := rfl
 
 /-- The left injection of a space in a disjoint union is an isometry -/
-theorem isometry_inl : Isometry (Sum.inl : X → Sum X Y) :=
+theorem isometry_inl : Isometry (Sum.inl : X → X ⊕ Y) :=
   Isometry.of_dist_eq fun _ _ => rfl
 
 /-- The right injection of a space in a disjoint union is an isometry -/
-theorem isometry_inr : Isometry (Sum.inr : Y → Sum X Y) :=
+theorem isometry_inr : Isometry (Sum.inr : Y → X ⊕ Y) :=
   Isometry.of_dist_eq fun _ _ => rfl
 
 end Sum
@@ -291,8 +293,7 @@ namespace Sigma
 of two spaces. I.e., work with sigma types instead of sum types. -/
 variable {ι : Type*} {E : ι → Type*} [∀ i, MetricSpace (E i)]
 
-open scoped Classical
-
+open Classical in
 /-- Distance on a disjoint union. There are many (noncanonical) ways to put a distance compatible
 with each factor.
 We choose a construction that works for unbounded spaces, but requires basepoints,
@@ -430,7 +431,7 @@ protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ
   set U := { p : (Σk, E k) × Σk, E k | dist p.1 p.2 < 1 }
   have hc : ∀ i, IsComplete (s i) := fun i => by
     simp only [s, ← range_sigmaMk]
-    exact (isometry_mk i).uniformInducing.isComplete_range
+    exact (isometry_mk i).isUniformInducing.isComplete_range
   have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
   refine completeSpace_of_isComplete_univ ?_
@@ -578,8 +579,7 @@ attribute [local instance] inductivePremetric
 def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
   @SeparationQuotient _ (inductivePremetric I).toUniformSpace.toTopologicalSpace
 
-set_option autoImplicit true in
-instance : MetricSpace (InductiveLimit (f := f) I) :=
+instance {I : ∀ (n : ℕ), Isometry (f n)} : MetricSpace (InductiveLimit (f := f) I) :=
   inferInstanceAs <| MetricSpace <|
     @SeparationQuotient _ (inductivePremetric I).toUniformSpace.toTopologicalSpace
 

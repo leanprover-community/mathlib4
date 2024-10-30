@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Group.PiLex
+import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Algebra.Polynomial.Reverse
 
 /-!
@@ -123,7 +125,7 @@ theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
 itself. -/
 theorem forgetEpsilons_floor_lt (n : ℤ) :
     forgetEpsilons ⌊(n - ↑ε : ℤ[ε])⌋ < ⌊forgetEpsilons (n - ↑ε)⌋ := by
-  suffices ⌊(n - ↑ε : ℤ[ε])⌋ = n - 1 by simp [this]
+  suffices ⌊(n - ↑ε : ℤ[ε])⌋ = n - 1 by simp [map_sub, this]
   have : (0 : ℤ[ε]) < ε := ⟨1, by simp⟩
   exact (if_neg <| by rw [coeff_sub, intCast_coeff_zero]; simp [this]).trans (by
     rw [coeff_sub, intCast_coeff_zero]; simp)

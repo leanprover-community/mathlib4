@@ -26,7 +26,7 @@ local macro:max "ℝ"n:superscript(term) : term => `(EuclideanSpace ℝ (Fin $(�
 local macro:max "𝕊"n:superscript(term) : term =>
   `(sphere (0 : EuclideanSpace ℝ (Fin ($(⟨n.raw[0]⟩) + 1))) 1)
 
-variable (M : Type*) [TopologicalSpace M] [T2Space M]
+variable (M : Type*) [TopologicalSpace M]
 
 open ContinuousMap
 
@@ -36,17 +36,17 @@ open ContinuousMap
    Newman (1966) and Connell (1967) proved it without the condition.
  - For n = 4 it was proven by Michael Freedman in 1982.
  - For n = 3 it was proven by Grigori Perelman in 2003. -/
-proof_wanted ContinuousMap.HomotopyEquiv.nonempty_homeomorph_sphere
+proof_wanted ContinuousMap.HomotopyEquiv.nonempty_homeomorph_sphere [T2Space M]
     (n : ℕ) [ChartedSpace ℝⁿ M] : M ≃ₕ 𝕊ⁿ → Nonempty (M ≃ₜ 𝕊ⁿ)
 
 /-- The 3-dimensional topological Poincaré conjecture (proven by Perelman) -/
 proof_wanted SimplyConnectedSpace.nonempty_homeomorph_sphere_three
-    [ChartedSpace ℝ³ M] [SimplyConnectedSpace M] [CompactSpace M] :
+    [T2Space M] [ChartedSpace ℝ³ M] [SimplyConnectedSpace M] [CompactSpace M] :
     Nonempty (M ≃ₜ 𝕊³)
 
 /-- The 3-dimensional smooth Poincaré conjecture (proven by Perelman) -/
 proof_wanted SimplyConnectedSpace.nonempty_diffeomorph_sphere_three
-    [ChartedSpace ℝ³ M] [SmoothManifoldWithCorners (𝓡 3) M]
+    [T2Space M] [ChartedSpace ℝ³ M] [SmoothManifoldWithCorners (𝓡 3) M]
     [SimplyConnectedSpace M] [CompactSpace M] :
     Nonempty (M ≃ₘ⟮𝓡 3, 𝓡 3⟯ 𝕊³)
 

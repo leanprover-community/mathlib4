@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 -/
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Order.Interval.Set.Basic
@@ -20,7 +19,7 @@ namespace Set
 
 section OrderedCommGroup
 
-variable [OrderedCommGroup α] {a b c d : α}
+variable [OrderedCommGroup α] {a c d : α}
 
 /-! `inv_mem_Ixx_iff`, `sub_mem_Ixx_iff` -/
 

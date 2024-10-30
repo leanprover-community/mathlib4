@@ -7,7 +7,7 @@ import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.FieldTheory.Finite.Trace
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Data.ZMod.Units
-import Mathlib.Analysis.Complex.Polynomial
+import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Additive characters of finite rings and fields
@@ -69,8 +69,8 @@ theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ
     Function.Injective ψ.mulShift := by
   intro a b h
   apply_fun fun x => x * mulShift ψ (-b) at h
-  simp only [mulShift_mul, mulShift_zero, add_right_neg, mulShift_apply] at h
-  simpa [← sub_eq_add_neg, sub_eq_zero] using (hψ . h)
+  simp only [mulShift_mul, mulShift_zero, add_neg_cancel, mulShift_apply] at h
+  simpa [← sub_eq_add_neg, sub_eq_zero] using (hψ · h)
 
 -- `AddCommGroup.equiv_direct_sum_zmod_of_fintype`
 -- gives the structure theorem for finite abelian groups.
@@ -293,7 +293,7 @@ end Ring
 
 section Field
 
-variable (F : Type*) [Field F] [Finite F] [DecidableEq F]
+variable (F : Type*) [Field F] [Finite F]
 
 private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
   simpa only [ringChar.eq_zero] using (CharP.ringChar_ne_zero_of_finite F).symm

@@ -43,10 +43,9 @@ protected def map {α β : Type u} (f : α → β) (x : t' α) : t' β :=
   eqv β <| map f ((eqv α).symm x)
 
 /-- The function `Equiv.map` transfers the functoriality of `t` to
-`t'` using the equivalences `eqv`.  -/
+`t'` using the equivalences `eqv`. -/
 protected def functor : Functor t' where map := Equiv.map eqv
 
--- Porting note: `LawfulFunctor` is missing an `#align`.
 variable [LawfulFunctor t]
 
 protected theorem id_map {α : Type u} (x : t' α) : Equiv.map eqv id x = x := by
@@ -54,7 +53,7 @@ protected theorem id_map {α : Type u} (x : t' α) : Equiv.map eqv id x = x := b
 
 protected theorem comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (x : t' α) :
     Equiv.map eqv (h ∘ g) x = Equiv.map eqv h (Equiv.map eqv g x) := by
-  simpa [Equiv.map] using comp_map ..
+  simp [Equiv.map, Function.comp_def]
 
 protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
   -- Porting note: why is `_inst` required here?
@@ -113,8 +112,6 @@ variable (η : ApplicativeTransformation F G)
 variable {α β γ : Type u}
 
 open LawfulTraversable Functor
-
--- Porting note: Id.bind_eq is missing an `#align`.
 
 protected theorem id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id α) x = x := by
   rw [Equiv.traverse, id_traverse, Id.map_eq, apply_symm_apply]

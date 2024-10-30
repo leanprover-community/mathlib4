@@ -161,11 +161,9 @@ theorem InfPrime.inf_le (ha : InfPrime a) : b ⊓ c ≤ a ↔ b ≤ a ∨ c ≤ 
 
 variable [OrderTop α] {s : Finset ι} {f : ι → α}
 
--- @[simp] Porting note (#10618): simp can prove this.
 theorem not_infIrred_top : ¬InfIrred (⊤ : α) :=
   isMax_top.not_infIrred
 
--- @[simp] Porting note (#10618): simp can prove this.
 theorem not_infPrime_top : ¬InfPrime (⊤ : α) :=
   isMax_top.not_infPrime
 
@@ -185,7 +183,7 @@ variable [WellFoundedGT α]
 elements. This is the order-theoretic analogue of prime factorisation. -/
 theorem exists_infIrred_decomposition (a : α) :
     ∃ s : Finset α, s.inf id = a ∧ ∀ ⦃b⦄, b ∈ s → InfIrred b :=
-  @exists_supIrred_decomposition αᵒᵈ _ _ _ _
+  exists_supIrred_decomposition (α := αᵒᵈ) _
 
 end SemilatticeInf
 
@@ -251,7 +249,7 @@ end SemilatticeInf
 
 section DistribLattice
 
-variable [DistribLattice α] {a b c : α}
+variable [DistribLattice α] {a : α}
 
 @[simp]
 theorem supPrime_iff_supIrred : SupPrime a ↔ SupIrred a :=
@@ -275,11 +273,9 @@ section LinearOrder
 
 variable [LinearOrder α] {a : α}
 
--- @[simp] Porting note (#10618): simp can prove this
 theorem supPrime_iff_not_isMin : SupPrime a ↔ ¬IsMin a :=
   and_iff_left <| by simp
 
--- @[simp] Porting note (#10618): simp can prove thisrove this
 theorem infPrime_iff_not_isMax : InfPrime a ↔ ¬IsMax a :=
   and_iff_left <| by simp
 

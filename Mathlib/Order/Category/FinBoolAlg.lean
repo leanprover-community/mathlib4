@@ -51,7 +51,6 @@ attribute [instance] FinBoolAlg.isFintype
 -- @[simp]
 -- theorem coe_toBoolAlg (X : FinBoolAlg) : ↥X.toBoolAlg = ↥X :=
 --   rfl
--- #align FinBoolAlg.coe_to_BoolAlg FinBoolAlg.coe_toBoolAlg
 
 /-- Construct a bundled `FinBoolAlg` from `BooleanAlgebra` + `Fintype`. -/
 def of (α : Type*) [BooleanAlgebra α] [Fintype α] : FinBoolAlg :=
@@ -127,7 +126,7 @@ def Iso.mk {α β : FinBoolAlg.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : FinBoolAlg ⥤ FinBoolAlg where
   obj X := of Xᵒᵈ
-  map {X Y} := BoundedLatticeHom.dual
+  map {_ _} := BoundedLatticeHom.dual
 
 /-- The equivalence between `FinBoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]

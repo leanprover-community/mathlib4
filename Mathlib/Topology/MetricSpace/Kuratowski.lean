@@ -3,7 +3,7 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.lpSpace
+import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.Topology.Sets.Compacts
 
 /-!
@@ -19,16 +19,16 @@ noncomputable section
 
 open Set Metric TopologicalSpace NNReal ENNReal lp Function
 
-universe u v w
+universe u
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u}
 
 namespace KuratowskiEmbedding
 
 /-! ### Any separable metric space can be embedded isometrically in ℓ^∞(ℕ, ℝ) -/
 
 
-variable {f g : ℓ^∞(ℕ)} {n : ℕ} {C : ℝ} [MetricSpace α] (x : ℕ → α) (a b : α)
+variable {n : ℕ} [MetricSpace α] (x : ℕ → α) (a : α)
 
 /-- A metric space can be embedded in `l^∞(ℝ)` via the distances to points in
 a fixed countable set, if this set is dense. This map is given in `kuratowskiEmbedding`,

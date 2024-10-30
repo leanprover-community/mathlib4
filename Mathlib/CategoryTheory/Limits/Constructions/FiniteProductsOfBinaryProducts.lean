@@ -90,20 +90,21 @@ This is a helper lemma for `hasFiniteProductsOfHasBinaryAndTerminal`, which is m
 than this.
 -/
 private theorem hasProduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
-  | 0 => fun f => by
+  | 0 => fun _ =>
     letI : HasLimitsOfShape (Discrete (Fin 0)) C :=
       hasLimitsOfShape_of_equivalence (Discrete.equivalence.{0} finZeroEquiv'.symm)
-    infer_instance
-  | n + 1 => fun f => by
+    inferInstance
+  | n + 1 => fun f =>
     haveI := hasProduct_fin n
-    apply HasLimit.mk ⟨_, extendFanIsLimit f (limit.isLimit _) (limit.isLimit _)⟩
+    HasLimit.mk ⟨_, extendFanIsLimit f (limit.isLimit _) (limit.isLimit _)⟩
 
 /-- If `C` has a terminal object and binary products, then it has finite products. -/
-theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C := by
-  refine ⟨fun n => ⟨fun K => ?_⟩⟩
-  letI := hasProduct_fin n fun n => K.obj ⟨n⟩
-  let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
-  apply @hasLimitOfIso _ _ _ _ _ _ this that
+theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C :=
+  ⟨fun n => ⟨fun K =>
+    let this := hasProduct_fin n fun n => K.obj ⟨n⟩
+    let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨_⟩ => Iso.refl _
+    @hasLimitOfIso _ _ _ _ _ _ this that⟩⟩
+
 
 end
 
@@ -156,12 +157,12 @@ def preservesShapeFinOfPreservesBinaryAndTerminal (n : ℕ) :
     apply preservesLimitOfIsoDiagram F that
 
 /-- If `F` preserves the terminal object and binary products then it preserves finite products. -/
-def preservesFiniteProductsOfPreservesBinaryAndTerminal (J : Type) [Fintype J] :
+def preservesFiniteProductsOfPreservesBinaryAndTerminal (J : Type*) [Fintype J] :
     PreservesLimitsOfShape (Discrete J) F := by
   classical
     let e := Fintype.equivFin J
     haveI := preservesShapeFinOfPreservesBinaryAndTerminal F (Fintype.card J)
-    apply preservesLimitsOfShapeOfEquiv.{0, 0} (Discrete.equivalence e).symm
+    apply preservesLimitsOfShapeOfEquiv (Discrete.equivalence e).symm
 
 end Preserves
 
@@ -222,21 +223,20 @@ This is a helper lemma for `hasCofiniteProductsOfHasBinaryAndTerminal`, which is
 than this.
 -/
 private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
-  | 0 => fun f => by
+  | 0 => fun _ =>
     letI : HasColimitsOfShape (Discrete (Fin 0)) C :=
       hasColimitsOfShape_of_equivalence (Discrete.equivalence.{0} finZeroEquiv'.symm)
-    infer_instance
-  | n + 1 => fun f => by
+    inferInstance
+  | n + 1 => fun f =>
     haveI := hasCoproduct_fin n
-    apply
-      HasColimit.mk ⟨_, extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)⟩
+    HasColimit.mk ⟨_, extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)⟩
 
 /-- If `C` has an initial object and binary coproducts, then it has finite coproducts. -/
-theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C := by
-  refine ⟨fun n => ⟨fun K => ?_⟩⟩
-  letI := hasCoproduct_fin n fun n => K.obj ⟨n⟩
-  let that : K ≅ Discrete.functor fun n => K.obj ⟨n⟩ := Discrete.natIso fun ⟨i⟩ => Iso.refl _
-  apply @hasColimitOfIso _ _ _ _ _ _ this that
+theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C :=
+  ⟨fun n => ⟨fun K =>
+    letI := hasCoproduct_fin n fun n => K.obj ⟨n⟩
+    let that : K ≅ Discrete.functor fun n => K.obj ⟨n⟩ := Discrete.natIso fun ⟨_⟩ => Iso.refl _
+    @hasColimitOfIso _ _ _ _ _ _ this that⟩⟩
 
 end
 
@@ -288,12 +288,12 @@ def preservesShapeFinOfPreservesBinaryAndInitial (n : ℕ) :
     apply preservesColimitOfIsoDiagram F that
 
 /-- If `F` preserves the initial object and binary coproducts then it preserves finite products. -/
-def preservesFiniteCoproductsOfPreservesBinaryAndInitial (J : Type) [Fintype J] :
+def preservesFiniteCoproductsOfPreservesBinaryAndInitial (J : Type*) [Fintype J] :
     PreservesColimitsOfShape (Discrete J) F := by
   classical
     let e := Fintype.equivFin J
     haveI := preservesShapeFinOfPreservesBinaryAndInitial F (Fintype.card J)
-    apply preservesColimitsOfShapeOfEquiv.{0, 0} (Discrete.equivalence e).symm
+    apply preservesColimitsOfShapeOfEquiv (Discrete.equivalence e).symm
 
 end Preserves
 

@@ -9,7 +9,7 @@ import Mathlib.RingTheory.DedekindDomain.Ideal
 /-!
 # Criteria under which a Dedekind domain is a PID
 
-This file contains some results that we can use to test wether all ideals in a Dedekind domain are
+This file contains some results that we can use to test whether all ideals in a Dedekind domain are
 principal.
 
 ## Main results
@@ -42,7 +42,6 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
     exact hxP2 (zero_mem _)
   by_cases hP0 : P = ⊥
   · subst hP0
-    -- Porting note: was `simpa using hxP2` but that hypothesis didn't even seem relevant in Lean 3
     rwa [eq_comm, span_singleton_eq_bot, ← mem_bot]
   have hspan0 : span ({x} : Set R) ≠ ⊥ := mt Ideal.span_singleton_eq_bot.mp hx0
   have span_le := (Ideal.span_singleton_le_iff_mem _).mpr x_mem
@@ -96,7 +95,7 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
   · conv_rhs => rw [← hinv, mul_comm]
     apply FractionalIdeal.mul_le_mul_left (FractionalIdeal.spanSingleton_le_iff_mem.mpr hw)
   · rw [FractionalIdeal.one_le, ← hvw, mul_comm]
-    exact FractionalIdeal.mul_mem_mul hv (FractionalIdeal.mem_spanSingleton_self _ _)
+    exact FractionalIdeal.mul_mem_mul (FractionalIdeal.mem_spanSingleton_self _ _) hv
 
 /--
 An invertible fractional ideal of a commutative ring with finitely many maximal ideals is principal.
@@ -189,6 +188,7 @@ variable (p : Ideal R) (hp0 : p ≠ ⊥) [IsPrime p]
 variable {Sₚ : Type*} [CommRing Sₚ] [Algebra S Sₚ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
 variable [Algebra R Sₚ] [IsScalarTower R S Sₚ]
+include hp0
 
 /- The first hypothesis below follows from properties of the localization but is needed for the
 second, so we leave it to the user to provide (automatically). -/

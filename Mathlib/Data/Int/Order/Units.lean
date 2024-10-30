@@ -50,8 +50,8 @@ theorem sq_eq_one_of_sq_le_three {x : ℤ} (h1 : x ^ 2 ≤ 3) (h2 : x ≠ 0) : x
 
 theorem units_pow_eq_pow_mod_two (u : ℤˣ) (n : ℕ) : u ^ n = u ^ (n % 2) := by
   conv =>
-      lhs
-      rw [← Nat.mod_add_div n 2]
-      rw [pow_add, pow_mul, units_sq, one_pow, mul_one]
+    lhs
+    rw [← Nat.mod_add_div n 2]
+    rw [pow_add, pow_mul, units_sq, one_pow, mul_one]
 
 end Int

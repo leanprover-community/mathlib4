@@ -46,12 +46,26 @@ instance isLocalization_op : W.Q.op.IsLocalization W.op :=
 
 end Localization
 
+variable (L W)
+variable [L.IsLocalization W]
+
 namespace Functor
 
-instance IsLocalization.op [L.IsLocalization W] : L.op.IsLocalization W.op :=
+instance IsLocalization.op : L.op.IsLocalization W.op :=
   IsLocalization.of_equivalence_target W.Q.op W.op L.op (Localization.equivalenceFromModel L W).op
     (NatIso.op (Localization.qCompEquivalenceFromModelFunctorIso L W).symm)
 
 end Functor
+
+namespace Localization
+
+lemma isoOfHom_unop  {X Y : Cᵒᵖ} (w : X ⟶ Y) (hw : W.op w) :
+    (isoOfHom L.op W.op w hw).unop = (isoOfHom L W w.unop hw) := by ext; rfl
+
+lemma isoOfHom_op_inv {X Y : Cᵒᵖ} (w : X ⟶ Y) (hw : W.op w) :
+    (isoOfHom L.op W.op w hw).inv = (isoOfHom L W w.unop hw).inv.op :=
+  congr_arg Quiver.Hom.op (congr_arg Iso.inv (isoOfHom_unop L W w hw))
+
+end Localization
 
 end CategoryTheory

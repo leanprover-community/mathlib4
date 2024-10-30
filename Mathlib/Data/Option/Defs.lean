@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 
@@ -60,7 +59,7 @@ instance decidableForallMem {p : α → Prop} [DecidablePred p] :
     ∀ o : Option α, Decidable (∀ a ∈ o, p a)
   | none => isTrue (by simp [false_imp_iff])
   | some a =>
-      if h : p a then isTrue fun o e ↦ some_inj.1 e ▸ h
+      if h : p a then isTrue fun _ e ↦ some_inj.1 e ▸ h
       else isFalse <| mt (fun H ↦ H _ rfl) h
 
 instance decidableExistsMem {p : α → Prop} [DecidablePred p] :
@@ -75,10 +74,6 @@ abbrev iget [Inhabited α] : Option α → α
 
 theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
-
-@[simp]
-theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
-  cases o <;> simp [toList, eq_comm]
 
 instance liftOrGet_isCommutative (f : α → α → α) [Std.Commutative f] :
     Std.Commutative (liftOrGet f) :=
@@ -100,3 +95,5 @@ instance liftOrGet_isId (f : α → α → α) : Std.LawfulIdentity (liftOrGet f
 def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
   | .some a => some a
   | _ => none
+
+end Option

@@ -268,7 +268,7 @@ protected theorem add_assoc : a + b + c = a + (b + c) :=
     congr 2
     ac_rfl
 
-protected lemma add_left_neg : -a + a = 0 := by
+protected lemma neg_add_cancel : -a + a = 0 := by
   simp [add_def, normalize_eq_mkRat, Int.neg_mul, Int.add_comm, ← Int.sub_eq_add_neg]
 
 @[deprecated zero_divInt (since := "2024-03-18")]
@@ -305,7 +305,7 @@ attribute [simp] mkRat_eq_zero
 
 protected theorem mul_inv_cancel : a ≠ 0 → a * a⁻¹ = 1 :=
   numDenCasesOn' a fun n d hd hn ↦ by
-    simp [hd] at hn
+    simp only [divInt_ofNat, ne_eq, hd, not_false_eq_true, mkRat_eq_zero] at hn
     simp [-divInt_ofNat, mkRat_eq_divInt, Int.mul_comm, Int.mul_ne_zero hn (Int.ofNat_ne_zero.2 hd)]
 
 protected theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
@@ -327,7 +327,7 @@ instance addCommGroup : AddCommGroup ℚ where
   add_zero := Rat.add_zero
   add_comm := Rat.add_comm
   add_assoc := Rat.add_assoc
-  add_left_neg := Rat.add_left_neg
+  neg_add_cancel := Rat.neg_add_cancel
   sub_eq_add_neg := Rat.sub_eq_add_neg
   nsmul := nsmulRec
   zsmul := zsmulRec

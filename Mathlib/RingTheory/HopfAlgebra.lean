@@ -28,6 +28,9 @@ agree then the antipodes must also agree).
 * If `A` is commutative then `antipode` is necessarily a bijection and its square is
   the identity.
 
+(Note that all three facts have been proved for Hopf bimonoids in an arbitrary braided category,
+so we could deduce the facts here from an equivalence `HopfAlgebraCat R ≌ Hopf_ (ModuleCat R)`.)
+
 ## References
 
 * <https://en.wikipedia.org/wiki/Hopf_algebra>
@@ -69,6 +72,30 @@ theorem mul_antipode_lTensor_comul_apply (a : A) :
     LinearMap.mul' R A (antipode.lTensor A (Coalgebra.comul a)) =
     algebraMap R A (Coalgebra.counit a) :=
   LinearMap.congr_fun mul_antipode_lTensor_comul a
+
+open Coalgebra
+
+@[simp]
+lemma sum_antipode_mul_eq {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, antipode (R := R) (repr.left i) * repr.right i =
+      algebraMap R A (counit a) := by
+  simpa [← repr.eq, map_sum] using congr($(mul_antipode_rTensor_comul (R := R)) a)
+
+@[simp]
+lemma sum_mul_antipode_eq {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, repr.left i * antipode (R := R) (repr.right i) =
+      algebraMap R A (counit a) := by
+  simpa [← repr.eq, map_sum] using congr($(mul_antipode_lTensor_comul (R := R)) a)
+
+lemma sum_antipode_mul_eq_smul {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, antipode (R := R) (repr.left i) * repr.right i =
+      counit (R := R) a • 1 := by
+  rw [sum_antipode_mul_eq, Algebra.smul_def, mul_one]
+
+lemma sum_mul_antipode_eq_smul {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, repr.left i * antipode (R := R) (repr.right i) =
+      counit (R := R) a • 1 := by
+  rw [sum_mul_antipode_eq, Algebra.smul_def, mul_one]
 
 end HopfAlgebra
 

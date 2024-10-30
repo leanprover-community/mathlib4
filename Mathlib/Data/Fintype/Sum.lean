@@ -20,22 +20,22 @@ variable {α β : Type*}
 
 open Finset
 
-instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (Sum α β) where
+instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (α ⊕ β) where
   elems := univ.disjSum univ
   complete := by rintro (_ | _) <;> simp
 
 @[simp]
 theorem Finset.univ_disjSum_univ {α β : Type*} [Fintype α] [Fintype β] :
-    univ.disjSum univ = (univ : Finset (Sum α β)) :=
+    univ.disjSum univ = (univ : Finset (α ⊕ β)) :=
   rfl
 
 @[simp]
 theorem Fintype.card_sum [Fintype α] [Fintype β] :
-    Fintype.card (Sum α β) = Fintype.card α + Fintype.card β :=
+    Fintype.card (α ⊕ β) = Fintype.card α + Fintype.card β :=
   card_disjSum _ _
 
 /-- If the subtype of all-but-one elements is a `Fintype` then the type itself is a `Fintype`. -/
-def fintypeOfFintypeNe (a : α) (h : Fintype { b // b ≠ a }) : Fintype α :=
+def fintypeOfFintypeNe (a : α) (_ : Fintype { b // b ≠ a }) : Fintype α :=
   Fintype.ofBijective (Sum.elim ((↑) : { b // b = a } → α) ((↑) : { b // b ≠ a } → α)) <| by
     classical exact (Equiv.sumCompl (· = a)).bijective
 
@@ -70,7 +70,7 @@ theorem image_subtype_univ_ssubset_image_univ [Fintype α] [DecidableEq β] (k :
 /-- Any injection from a finset `s` in a fintype `α` to a finset `t` of the same cardinality as `α`
 can be extended to a bijection between `α` and `t`. -/
 theorem Finset.exists_equiv_extend_of_card_eq [Fintype α] [DecidableEq β] {t : Finset β}
-    (hαt : Fintype.card α = t.card) {s : Finset α} {f : α → β} (hfst : Finset.image f s ⊆ t)
+    (hαt : Fintype.card α = #t) {s : Finset α} {f : α → β} (hfst : Finset.image f s ⊆ t)
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
     induction' s using Finset.induction with a s has H generalizing f
@@ -95,7 +95,7 @@ theorem Finset.exists_equiv_extend_of_card_eq [Fintype α] [DecidableEq β] {t :
 /-- Any injection from a set `s` in a fintype `α` to a finset `t` of the same cardinality as `α`
 can be extended to a bijection between `α` and `t`. -/
 theorem Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
-    (hαt : Fintype.card α = t.card) {s : Set α} {f : α → β} (hfst : s.MapsTo f t)
+    (hαt : Fintype.card α = #t) {s : Set α} {f : α → β} (hfst : s.MapsTo f t)
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
     let s' : Finset α := s.toFinset
@@ -125,7 +125,7 @@ section
 open scoped Classical
 
 @[simp]
-theorem infinite_sum : Infinite (Sum α β) ↔ Infinite α ∨ Infinite β := by
+theorem infinite_sum : Infinite (α ⊕ β) ↔ Infinite α ∨ Infinite β := by
   refine ⟨fun H => ?_, fun H => H.elim (@Sum.infinite_of_left α β) (@Sum.infinite_of_right α β)⟩
   contrapose! H; haveI := fintypeOfNotInfinite H.1; haveI := fintypeOfNotInfinite H.2
   exact Infinite.false

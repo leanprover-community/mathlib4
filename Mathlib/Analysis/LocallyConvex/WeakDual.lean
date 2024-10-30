@@ -3,9 +3,9 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Topology.Algebra.Module.WeakDual
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
+import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
 # Weak Dual in Topological Vector Spaces
@@ -38,7 +38,7 @@ weak dual, seminorm
 -/
 
 
-variable {𝕜 E F ι : Type*}
+variable {𝕜 E F : Type*}
 
 open Topology
 
@@ -84,8 +84,6 @@ end BilinForm
 section Topology
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
-variable [Nonempty ι]
-variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
 
 theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     (𝓝 (0 : WeakBilin B)).HasBasis B.toSeminormFamily.basisSets _root_.id := by
@@ -112,7 +110,7 @@ theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
       refine lt_of_le_of_lt (hp x) (lt_of_lt_of_le hx ?_)
       exact Finset.inf'_le _ hyU'
     rw [Set.not_nonempty_iff_eq_empty.mp hU₃]
-    simp only [Set.empty_pi, Set.preimage_univ, Set.subset_univ, and_true_iff]
+    simp only [Set.empty_pi, Set.preimage_univ, Set.subset_univ, and_true]
     exact Exists.intro ((p 0).ball 0 1) (p.basisSets_singleton_mem 0 one_pos)
   rintro U (hU : U ∈ p.basisSets)
   rw [SeminormFamily.basisSets_iff] at hU
@@ -134,7 +132,7 @@ end Topology
 section LocallyConvex
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
-variable [Nonempty ι] [NormedSpace ℝ 𝕜] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
+variable [NormedSpace ℝ 𝕜] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 
 instance WeakBilin.locallyConvexSpace {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} :
     LocallyConvexSpace ℝ (WeakBilin B) :=

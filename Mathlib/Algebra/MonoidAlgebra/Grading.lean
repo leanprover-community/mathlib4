@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.DirectSum.Internal
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Internal grading of an `AddMonoidAlgebra`
@@ -47,7 +48,7 @@ abbrev gradeBy (f : M → ι) (i : ι) : Submodule R R[M] where
   zero_mem' m h := by cases h
   add_mem' {a b} ha hb m h := by
     classical exact (Finset.mem_union.mp (Finsupp.support_add h)).elim (ha m) (hb m)
-  smul_mem' a m h := Set.Subset.trans Finsupp.support_smul h
+  smul_mem' _ _ h := Set.Subset.trans Finsupp.support_smul h
 
 /-- The submodule corresponding to each grade. -/
 abbrev grade (m : M) : Submodule R R[M] :=
@@ -119,7 +120,7 @@ def decomposeAux : R[M] →ₐ[R] ⨁ i : ι, gradeBy R f i :=
         dsimp only [toAdd_one, Eq.ndrec, Set.mem_setOf_eq, ne_eq, OneHom.toFun_eq_coe,
           OneHom.coe_mk, toAdd_mul]
         convert DirectSum.of_mul_of (A := (fun i : ι => gradeBy R f i)) _ _
-        repeat { rw [ AddMonoidHom.map_add] }
+        repeat { rw [AddMonoidHom.map_add] }
         simp only [SetLike.coe_gMul]
         exact Eq.trans (by rw [one_mul]) single_mul_single.symm }
 
@@ -131,7 +132,7 @@ theorem decomposeAux_single (m : M) (r : R) :
   refine (DirectSum.of_smul R _ _ _).symm.trans ?_
   apply DirectSum.of_eq_of_gradedMonoid_eq
   refine Sigma.subtype_ext rfl ?_
-  refine (Finsupp.smul_single' _ _ _).trans ?_
+  refine (smul_single' _ _ _).trans ?_
   rw [mul_one]
   rfl
 

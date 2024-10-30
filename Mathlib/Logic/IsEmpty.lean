@@ -63,10 +63,10 @@ instance Quot.instIsEmpty {α : Sort*} [IsEmpty α] {r : α → α → Prop} : I
 instance Quotient.instIsEmpty {α : Sort*} [IsEmpty α] {s : Setoid α} : IsEmpty (Quotient s) :=
   Quot.instIsEmpty
 
-instance [IsEmpty α] [IsEmpty β] : IsEmpty (PSum α β) :=
+instance [IsEmpty α] [IsEmpty β] : IsEmpty (α ⊕' β) :=
   ⟨fun x ↦ PSum.rec IsEmpty.false IsEmpty.false x⟩
 
-instance instIsEmptySum {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (Sum α β) :=
+instance instIsEmptySum {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (α ⊕ β) :=
   ⟨fun x ↦ Sum.rec IsEmpty.false IsEmpty.false x⟩
 
 /-- subtypes of an empty type are empty -/
@@ -138,7 +138,7 @@ theorem not_isEmpty_iff : ¬IsEmpty α ↔ Nonempty α :=
 
 @[simp]
 theorem isEmpty_Prop {p : Prop} : IsEmpty p ↔ ¬p := by
-  simp only [← not_nonempty_iff, nonempty_Prop]
+  simp only [← not_nonempty_iff, nonempty_prop]
 
 @[simp]
 theorem isEmpty_pi {π : α → Sort*} : IsEmpty (∀ a, π a) ↔ ∃ a, IsEmpty (π a) := by
@@ -172,11 +172,11 @@ theorem isEmpty_pprod : IsEmpty (PProd α β) ↔ IsEmpty α ∨ IsEmpty β := b
   simp only [← not_nonempty_iff, nonempty_pprod, not_and_or]
 
 @[simp]
-theorem isEmpty_sum {α β} : IsEmpty (Sum α β) ↔ IsEmpty α ∧ IsEmpty β := by
+theorem isEmpty_sum {α β} : IsEmpty (α ⊕ β) ↔ IsEmpty α ∧ IsEmpty β := by
   simp only [← not_nonempty_iff, nonempty_sum, not_or]
 
 @[simp]
-theorem isEmpty_psum {α β} : IsEmpty (PSum α β) ↔ IsEmpty α ∧ IsEmpty β := by
+theorem isEmpty_psum {α β} : IsEmpty (α ⊕' β) ↔ IsEmpty α ∧ IsEmpty β := by
   simp only [← not_nonempty_iff, nonempty_psum, not_or]
 
 @[simp]

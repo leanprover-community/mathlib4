@@ -3,7 +3,7 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Free
+import Mathlib.CategoryTheory.Bicategory.Coherence
 import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
@@ -27,7 +27,7 @@ open CategoryTheory CategoryTheory.FreeBicategory
 
 open scoped Bicategory
 
-variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
+variable {B : Type u} [Bicategory.{w, v} B] {a b c d : B}
 
 namespace Mathlib.Tactic.BicategoryCoherence
 
@@ -112,8 +112,10 @@ def mkLiftMap₂LiftExpr (e : Expr) : TermElabM Expr := do
 def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
-  -- TODO: is this `dsimp only` step necessary? It doesn't appear to be in the tests below.
-  let (ty, _) ← dsimp (← g.getType) (← Simp.Context.ofNames [] true)
+  let thms := [``BicategoricalCoherence.iso, ``Iso.trans, ``Iso.symm, ``Iso.refl,
+    ``Bicategory.whiskerRightIso, ``Bicategory.whiskerLeftIso].foldl
+    (·.addDeclToUnfoldCore ·) {}
+  let (ty, _) ← dsimp (← g.getType) { simpTheorems := #[thms] }
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
   let lift_lhs ← mkLiftMap₂LiftExpr lhs
   let lift_rhs ← mkLiftMap₂LiftExpr rhs
@@ -159,8 +161,4 @@ theorem assoc_liftHom₂ {f g h i : a ⟶ b} [LiftHom f] [LiftHom g] [LiftHom h]
     (η : f ⟶ g) (θ : g ⟶ h) (ι : h ⟶ i) [LiftHom₂ η] [LiftHom₂ θ] : η ≫ θ ≫ ι = (η ≫ θ) ≫ ι :=
   (Category.assoc _ _ _).symm
 
-end BicategoryCoherence
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.BicategoryCoherence
