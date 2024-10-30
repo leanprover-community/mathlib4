@@ -2,12 +2,9 @@
 Copyright (c) 2022 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
-
-! This file was ported from Lean 3 source module for_mathlib.pretransitive
 -/
-
+import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.GroupTheory.GroupAction.Basic
 
 /-! # Complements to pretransitive actions
 
@@ -59,8 +56,7 @@ theorem iff_orbit_eq_top (a : X) :
   rw [IsPretransitive.mk_base_iff a, Set.ext_iff]
   apply forall_congr'
   intro x
-  simp_rw [Set.top_eq_univ, Set.mem_univ, iff_true_iff, mem_orbit_iff]
-
+  simp_rw [Set.top_eq_univ, Set.mem_univ, iff_true, mem_orbit_iff]
 
 variable {M : Type _} [Monoid M] {α : Type _} [MulAction M α]
 
@@ -80,7 +76,7 @@ theorem iff_of_bijective_map {φ : M → N} {f : α →ₑ[φ] β}
     (hφ : Function.Surjective φ) (hf : Function.Bijective f) :
     IsPretransitive M α ↔ IsPretransitive N β := by
   constructor
-  apply of_surjective_map hf.surjective
+  · apply of_surjective_map hf.surjective
   · intro hN
     apply IsPretransitive.mk
     intro x y

@@ -789,6 +789,13 @@ theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
       (by { rwa [← ncard_eq_toFinset_card', ← ncard_eq_toFinset_card'] }) a₁
       (by simpa) a₂ (by simpa) (by simpa)
 
+theorem ncard_coe {α : Type*} (s : Set α) :
+    s.ncard = Set.ncard (Set.univ : Set (Set.Elem s)) := by
+  apply Set.ncard_congr (fun a ha ↦ ⟨a, ha⟩)
+  · exact fun a ha ↦ by simp only [Set.mem_univ]
+  · simp [Subtype.mk_eq_mk]
+  · exact fun ⟨a, ha⟩ _ ↦ ⟨a, ha, rfl⟩
+
 section Lattice
 
 theorem ncard_union_add_ncard_inter (s t : Set α) (hs : s.Finite := by toFinite_tac)
