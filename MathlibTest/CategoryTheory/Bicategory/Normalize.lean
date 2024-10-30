@@ -54,3 +54,5 @@ variable {f : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d} in
 #guard_expr normalize% (α_ f g h).inv = ((α_ f g h).symm).hom
 variable {f : a ⟶ b} {g : b ⟶ c} in
 #guard_expr normalize% 𝟙 (f ≫ g) = (Iso.refl (f ≫ g)).hom
+
+end CategoryTheory.Bicategory
