@@ -96,7 +96,7 @@ Any bipartite digraph may be regarded as a subgraph of one of these.
 def completeBipartiteGraph (V W : Type*) : Digraph (Sum V W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
 
-variable {ι : Sort*} {V W X : Type*} (G : Digraph V) (G' : Digraph W) {a b c u v w : V}
+variable {ι : Sort*} {V : Type*} (G : Digraph V) {a b : V}
 
 theorem adj_injective : Injective (Adj : Digraph V → V → V → Prop) := fun _ _ ↦ Digraph.ext
 
