@@ -1259,10 +1259,10 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
   | zero => simp [longAdd, longAdd']; rfl
   | succ k ih =>
     simp [longAdd']
-    -- наводим красоту
+    -- extracting variables
     generalize_proofs inst _
     generalize h_exp : (Finset.univ.sup' inst fun i ↦ (args i).leadingExp) = exp?
-    -- навели
+    -- extracted
     cases exp? with
     | bot =>
       simp
@@ -1275,7 +1275,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
       rw [this]
       exact longAdd_nils
     | coe exp =>
-      -- наводим красоту
+      -- extracting variables
       simp
       generalize_proofs h_coefs_tls
       generalize h_coef_tl_args : (fun i ↦
@@ -1289,7 +1289,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
       rw [show longAdd (fun i ↦
         (if h : (args i).leadingExp = ↑exp then (h_coefs_tls i h).choose else (0, args i)).2) =
         tl by rw [← h_tl, ← h_coef_tl_args]]
-      -- навели
+      -- extracted
       simp only [longAdd]
       rw [ih]
       cases k with
@@ -1301,10 +1301,10 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
         apply (h_coefs_tls 0 h_exp).choose_spec
       | succ k =>
         simp only [longAdd']
-        -- наводим красоту
+        -- extracting variables
         generalize_proofs inst2 h_coefs_tls_
         generalize h_exp' : (Finset.univ.sup' inst2 fun i ↦ (args i.castSucc).leadingExp) = exp?'
-        -- навели
+        -- extracted
         cases exp?' with
         | bot =>
           simp only [nil_add]
@@ -1336,7 +1336,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
           simp only [← Fin.natCast_eq_last]
         | coe exp' =>
           simp only
-          -- наводим красоту
+          -- extracting variables
           generalize_proofs h_coefs_tls'
           generalize h_coef_tl_args' : (fun i ↦
             (if h : (args i.castSucc).leadingExp = ↑exp' then (h_coefs_tls' i h).choose
@@ -1351,7 +1351,7 @@ theorem longAdd_eq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
             (if h : (args i.castSucc).leadingExp = ↑exp' then (h_coefs_tls' i h).choose
               else (0, args i.castSucc)).2) =
             tl' by rw [← h_tl', ← h_coef_tl_args']]
-          -- навели
+          -- extracted
           have h_left_eq : (longAdd fun i ↦ args i.castSucc) = Seq.cons (exp', coef') tl' := by
             rw [ih]
             simp [longAdd']
