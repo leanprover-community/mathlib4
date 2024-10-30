@@ -143,7 +143,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
     b = a⁺ ∧ c = a⁻ := by
   /- The key idea is to show that `cfcₙ f a = cfcₙ f b + cfcₙ f (-c)` for all real-valued `f`
   continuous on the union of the spectra of `a`, `b`, and `-c`. Then apply this to `f = (·⁺)`.
-  The equality holds because both sides consitute star homomorphisms which agree on `f = id` since
+  The equality holds because both sides constitute star homomorphisms which agree on `f = id` since
   `a = b - c`. -/
   /- `a`, `b`, `-c` are selfadjoint. -/
   have hb' : IsSelfAdjoint b := .of_nonneg hb
