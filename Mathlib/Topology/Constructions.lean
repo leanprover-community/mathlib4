@@ -947,15 +947,11 @@ alias openEmbedding_inr := IsOpenEmbedding.inr
 protected lemma IsEmbedding.inl : IsEmbedding (@inl X Y) := IsOpenEmbedding.inl.1
 protected lemma IsEmbedding.inr : IsEmbedding (@inr X Y) := IsOpenEmbedding.inr.1
 
-@[deprecated (since := "2024-10-30")] alias IsEmbedding.inr := IsEmbedding.inl
-
 @[deprecated (since := "2024-10-26")]
 alias embedding_inr := IsEmbedding.inr
 
 lemma isOpen_range_inl : IsOpen (range (inl : X → X ⊕ Y)) := IsOpenEmbedding.inl.2
 lemma isOpen_range_inr : IsOpen (range (inr : Y → X ⊕ Y)) := IsOpenEmbedding.inr.2
-
-@[deprecated (since := "2024-10-30")] alias isOpen_range_inr := isOpen_range_inl
 
 theorem isClosed_range_inl : IsClosed (range (inl : X → X ⊕ Y)) := by
   rw [← isOpen_compl_iff, compl_range_inl]
