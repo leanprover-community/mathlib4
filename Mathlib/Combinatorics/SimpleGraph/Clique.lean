@@ -7,7 +7,6 @@ import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Nat.Lattice
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 
 /-!
@@ -613,21 +612,21 @@ def isMaximumClique (G : SimpleGraph α) (s : Finset α) : Prop :=
 
 /-- A clique in a graph `G` that cannot be extended by adding vertices. -/
 def isMaximalClique (G : SimpleGraph α) (s : Finset α) : Prop :=
-  G.IsClique s ∧ ∀ (t : Finset α), G.IsClique t → ¬ s ⊂ t
+  G.IsClique s ∧ ¬ ∃ (t : Finset α), G.IsClique t ∧ s ⊂ t
 
 variable [fin : Fintype α]
 
 lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
   rw [bddAbove_def]
-  refine Exists.intro #(@Finset.univ α _) ?_
+  refine Exists.intro (Fintype.card α) ?_
   rintro y ⟨sy, syc⟩
   rw [isNClique_iff, ← And.right syc] at *
   exact Finset.card_le_card (Finset.subset_univ sy)
 
-theorem clique_card_le_cliqueNum (t : Finset α) (tc : G.IsClique ↑t) : #t ≤ G.cliqueNum :=
+theorem clique_card_le_cliqueNum (t : Finset α) (tc : G.IsClique t) : #t ≤ G.cliqueNum :=
   le_csSup fintype_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
 
-theorem maximumClique_card_eq_cliqueNum (t : Finset α) (tmc : G.isMaximumClique ↑t) :
+theorem maximumClique_card_eq_cliqueNum (t : Finset α) (tmc : G.isMaximumClique t) :
     #t = G.cliqueNum := by
   let ⟨tclique, tmax⟩ := tmc
   refine eq_of_le_of_not_lt (clique_card_le_cliqueNum _ tclique) ?_
