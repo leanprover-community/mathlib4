@@ -445,13 +445,6 @@ open MatrixGroups
 
 open Matrix Matrix.SpecialLinearGroup
 
-/-- Notation for coercion into an element of `SL(2, ℤ)` and then an element of
-`Matrix (Fin 2) (Fin 2) ℤ`.
-
-This notation is scoped in namespace `ModularGroup`. -/
-scoped notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)
-
-
 /-- The matrix `S = [[0, -1], [1, 0]]` as an element of `SL(2, ℤ)`.
 
 This element acts naturally on the Euclidean plane as a rotation about the origin by `π / 2`.
@@ -461,19 +454,19 @@ represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic
 def S : SL(2, ℤ) :=
   ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of]⟩
 
-/-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)` -/
+/-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)`. -/
 def T : SL(2, ℤ) :=
   ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of]⟩
 
-theorem coe_S : ↑ₘS = !![0, -1; 1, 0] :=
+theorem coe_S : ↑S = !![0, -1; 1, 0] :=
   rfl
 
-theorem coe_T : ↑ₘT = !![1, 1; 0, 1] :=
+theorem coe_T : ↑T = (!![1, 1; 0, 1] : Matrix _ _ ℤ) :=
   rfl
 
-theorem coe_T_inv : ↑ₘT⁻¹ = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
+theorem coe_T_inv : ↑(T⁻¹) = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
 
-theorem coe_T_zpow (n : ℤ) : ↑ₘ(T ^ n) = !![1, n; 0, 1] := by
+theorem coe_T_zpow (n : ℤ) : (T ^ n).1 = !![1, n; 0, 1] := by
   induction' n using Int.induction_on with n h n h
   · rw [zpow_zero, coe_one, Matrix.one_fin_two]
   · simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
@@ -483,16 +476,16 @@ theorem coe_T_zpow (n : ℤ) : ↑ₘ(T ^ n) = !![1, n; 0, 1] := by
     congrm !![?_, ?_; _, _] <;> ring
 
 @[simp]
-theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : ↑ₘ(T ^ n * g) 1 = ↑ₘg 1 := by
+theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : (T ^ n * g) 1 = g 1 := by
   ext j
   simp [coe_T_zpow, Matrix.vecMul, Matrix.dotProduct, Fin.sum_univ_succ, vecTail]
 
 @[simp]
-theorem T_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(T * g) 1 = ↑ₘg 1 := by
+theorem T_mul_apply_one (g : SL(2, ℤ)) : (T * g) 1 = g 1 := by
   simpa using T_pow_mul_apply_one 1 g
 
 @[simp]
-theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(T⁻¹ * g) 1 = ↑ₘg 1 := by
+theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : (T⁻¹ * g) 1 = g 1 := by
   simpa using T_pow_mul_apply_one (-1) g
 
 end ModularGroup
