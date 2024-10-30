@@ -79,9 +79,9 @@ please do not add new entries to these files. PRs removing (the need for) entrie
 
 **API surrounding CI**
 - `update_PR_comment.sh` is a script that edits an existing message (or creates a new one).
-  It is used by the `PR_summary` workflow to maintain an up-to-date report with a searchble history.
+  It is used by the `PR_summary` workflow to maintain an up-to-date report with a searchable history.
 - `get_tlabel.sh` extracts the `t-`label that a PR has (assuming that there is exactly one).
   It is used by the `maintainer_merge` family of workflows to dispatch `maintainer merge` requests
-  to the appropriate topic.
+  to the appropriate topic on zulip.
 - `count-trans-deps.py`, `import-graph-report.py` and `import_trans_difference.sh` produce various
   summaries of changes in transitive imports that the `PR_summary` message incorporates.
