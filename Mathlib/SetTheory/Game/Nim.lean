@@ -84,16 +84,26 @@ theorem toRightMovesNim_symm_lt {o : Ordinal} (i : (nim o).RightMoves) :
   (toRightMovesNim.symm i).prop
 
 @[simp]
-theorem moveLeft_nim' {o : Ordinal} (i) : (nim o).moveLeft i = nim (toLeftMovesNim.symm i).val :=
+theorem moveLeft_nim {o : Ordinal} (i) : (nim o).moveLeft i = nim (toLeftMovesNim.symm i).val :=
   (congr_heq (moveLeft_nim_hEq o).symm (cast_heq _ i)).symm
 
-theorem moveLeft_nim {o : Ordinal} (i) : (nim o).moveLeft (toLeftMovesNim i) = nim i := by simp
+@[deprecated moveLeft_nim (since := "2024-10-30")]
+alias moveLeft_nim' := moveLeft_nim
+
+theorem moveLeft_toLeftMovesNim {o : Ordinal} (i) :
+    (nim o).moveLeft (toLeftMovesNim i) = nim i := by
+  simp
 
 @[simp]
-theorem moveRight_nim' {o : Ordinal} (i) : (nim o).moveRight i = nim (toRightMovesNim.symm i).val :=
+theorem moveRight_nim {o : Ordinal} (i) : (nim o).moveRight i = nim (toRightMovesNim.symm i).val :=
   (congr_heq (moveRight_nim_hEq o).symm (cast_heq _ i)).symm
 
-theorem moveRight_nim {o : Ordinal} (i) : (nim o).moveRight (toRightMovesNim i) = nim i := by simp
+@[deprecated moveRight_nim (since := "2024-10-30")]
+alias moveRight_nim' := moveRight_nim
+
+theorem moveRight_toRightMovesNim {o : Ordinal} (i) :
+    (nim o).moveRight (toRightMovesNim i) = nim i := by
+  simp
 
 /-- A recursion principle for left moves of a nim game. -/
 @[elab_as_elim]
@@ -268,7 +278,7 @@ theorem equiv_nim_grundyValue (G : PGame.{u}) [G.Impartial] :
   · rw [add_moveLeft_inr, ← Impartial.exists_left_move_equiv_iff_fuzzy_zero]
     obtain ⟨j, hj⟩ := exists_grundyValue_moveLeft_of_lt <| toLeftMovesNim_symm_lt i
     use toLeftMovesAdd (Sum.inl j)
-    rw [add_moveLeft_inl, moveLeft_nim']
+    rw [add_moveLeft_inl, moveLeft_nim]
     exact Equiv.trans (add_congr_left (equiv_nim_grundyValue _)) (hj ▸ Impartial.add_self _)
 termination_by G
 
