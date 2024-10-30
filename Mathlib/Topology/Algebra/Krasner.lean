@@ -51,15 +51,7 @@ compatible with the one on `K`, then `IsKrasnerNorm K L` holds.
 - Show that $\mathbb{C}_p$ is algebraically closed.
 
 -/
--- section PR
--- variable {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
---     (M : IntermediateField K L)
 
--- instance : Algebra.IsAlgebraic K M := sorry
-
--- instance : Algebra.IsAlgebraic M L := sorry
-
--- end PR
 def uniqueNormExtension (K L: Type*) [NormedCommRing K] [Field L] [Algebra K L]
     [Algebra.IsAlgebraic K L] :=
   ∃! (_ : NormedField L), ∀ (x : K), ‖x‖ = ‖algebraMap K L x‖
@@ -91,11 +83,11 @@ theorem of_completeSpace {K L : Type*} [Nm_K : NontriviallyNormedField K] [Compl
   let i_K : NormedAddGroupHom K (⊥ : IntermediateField K L) :=
     (AddMonoidHomClass.toAddMonoidHom (botEquiv K L).symm).mkNormedAddGroupHom 1 (by simp [extd])
   have _ : ContinuousSMul K M := by
-    apply Inducing.continuousSMul (N := K) (M := (⊥ : IntermediateField K L)) (X := M) (Y := M)
-      (f := (IntermediateField.botEquiv K L).symm) inducing_id i_K.continuous
+    apply IsInducing.continuousSMul (N := K) (M := (⊥ : IntermediateField K L)) (X := M) (Y := M)
+      (f := (IntermediateField.botEquiv K L).symm) IsInducing.id i_K.continuous
     intros c x
     rw [Algebra.smul_def, @Algebra.smul_def (⊥ : IntermediateField K L) M _ _ _]
-    rfl
+    rfl -- note to reviewers: This is an ugly `rfl`. I'm not sure how to make it better.
   let _ : CompleteSpace M := FiniteDimensional.complete K M
   have hy : y ∈ K⟮y⟯ := IntermediateField.subset_adjoin K {y} rfl
   have zsep : IsSeparable M z := by
