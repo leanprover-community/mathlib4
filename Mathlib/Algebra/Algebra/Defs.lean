@@ -175,6 +175,18 @@ def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
   smul_def' _ _ := rfl
   toRingHom := i
 
+/---/
+theorem RingHom.smul_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
+    (h : ∀ c x, i c * x = x * i c) (r: R) (s: S) :
+    let _ := RingHom.toAlgebra' i h
+    r • s = i r * s := rfl
+
+/---/
+theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
+    (h : ∀ c x, i c * x = x * i c) :
+    @algebraMap R S _ _ (i.toAlgebra' h) = i :=
+  rfl
+
 /-- Creating an algebra from a morphism to a commutative semiring. -/
 def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
@@ -310,6 +322,55 @@ theorem _root_.smul_algebraMap {α : Type*} [Monoid α] [MulDistribMulAction α 
 section
 
 end
+
+section compHom
+variable {R : Type u} {S : Type v} (A : Type w)
+    [CommSemiring R] [Semiring A] [Algebra R A] [CommSemiring S]
+    (f : S →+* R)
+
+/--
+Compose a Algebra with a RingHom, with action f s • m.
+-/
+abbrev compHom: Algebra S A :=
+  RingHom.toAlgebra' ((algebraMap R A).comp f)
+    (fun _ _ => Algebra.commutes' _ _)
+
+@[simp]
+theorem compHom_smul_def (s : S) (x : A):
+    letI := compHom A f
+    s • x = f s • x := by
+      letI := compHom A f
+      simp only [RingHom.smul_toAlgebra', RingHom.coe_comp, Function.comp_apply]
+      rw [Algebra.smul_def]
+
+@[simp]
+theorem compHom_algebraMap_eq :
+    letI := compHom A f
+    algebraMap S A = (algebraMap R A).comp f := rfl
+
+theorem compHom_algebraMap_apply (s : S) :
+    letI := compHom A f
+    algebraMap S A s = (algebraMap R A) (f s) := rfl
+
+@[simp]
+theorem compHom_toRingHom_eq :
+    letI := compHom A f
+    (compHom A f).toRingHom = (algebraMap R A).comp f := rfl
+
+theorem compHom_toRingHom_apply (s : S) :
+    letI := compHom A f
+    (compHom A f).toRingHom s = (algebraMap R A) (f s) := rfl
+
+/--
+Used for convert tactic when using IsScalarTower.of_compHom
+which uses MulAction.compHom rather than Algebra.compHom -/
+theorem compHom_toSMul_eq_mulAction_compHom_toSMul:
+    letI alg := compHom A f
+    alg.toSMul = (@MulAction.compHom R S A _ _ _ f).toSMul := by
+      ext
+      exact compHom_smul_def _ _ _ _
+
+end compHom
 
 variable (R A)
 
