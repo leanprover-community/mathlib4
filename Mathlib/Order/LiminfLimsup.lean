@@ -303,11 +303,8 @@ from below. -/
 lemma IsCobounded.frequently_ge [LinearOrder α] [NeBot f] (cobdd : IsCobounded (· ≤ ·) f) :
     ∃ l, ∃ᶠ x in f, l ≤ x := by
   obtain ⟨t, ht⟩ := cobdd
-  by_cases tbot : IsBot t
-  · refine ⟨t, Frequently.of_forall fun r ↦ tbot r⟩
-  obtain ⟨t', ht'⟩ : ∃ t', t' < t := by
-    by_contra!
-    exact tbot this
+  rcases isBot_or_exists_lt t with tbot | ⟨t', ht'⟩
+  · exact ⟨t, .of_forall fun r ↦ tbot r⟩
   refine ⟨t', fun ev ↦ ?_⟩
   specialize ht t' (by filter_upwards [ev] with _ h using (not_le.mp h).le)
   exact not_lt_of_le ht ht'
@@ -321,11 +318,8 @@ lemma IsCobounded.frequently_le [LinearOrder α] [NeBot f] (cobdd : IsCobounded 
 /-- In linear orders, frequent boundedness from below implies coboundedness for `≤`. -/
 lemma IsCobounded.of_frequently_ge [LinearOrder α] {l : α} (freq_ge : ∃ᶠ x in f, l ≤ x) :
     IsCobounded (· ≤ ·) f := by
-  by_cases lbot : IsBot l
-  · refine ⟨l, fun x _ ↦ lbot x⟩
-  obtain ⟨l', hl'⟩ : ∃ l', l' < l := by
-    by_contra!
-    exact lbot this
+  rcases isBot_or_exists_lt l with lbot | ⟨l', hl'⟩
+  · exact ⟨l, fun x _ ↦ lbot x⟩
   refine ⟨l', fun u hu ↦ ?_⟩
   obtain ⟨w, l_le_w, w_le_u⟩ := (freq_ge.and_eventually hu).exists
   exact hl'.le.trans (l_le_w.trans w_le_u)
@@ -402,17 +396,15 @@ lemma isBoundedUnder_le_add [Add R]
 lemma isBoundedUnder_le_sum {κ : Type*} [AddCommMonoid R]
     [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
     {u : κ → α → R} (s : Finset κ) :
-    (∀ k ∈ s, f.IsBoundedUnder (· ≤ ·) (u k)) → f.IsBoundedUnder (· ≤ ·) (∑ k ∈ s, u k) := by
-  apply isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_le_add) le_rfl
+    (∀ k ∈ s, f.IsBoundedUnder (· ≤ ·) (u k)) → f.IsBoundedUnder (· ≤ ·) (∑ k ∈ s, u k) :=
+  fun h ↦ isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_le_add) le_rfl s h
 
 lemma isBoundedUnder_ge_sum {κ : Type*} [AddCommMonoid R]
     [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
     {u : κ → α → R} (s : Finset κ) :
     (∀ k ∈ s, f.IsBoundedUnder (· ≥ ·) (u k)) →
-      f.IsBoundedUnder (· ≥ ·) (∑ k ∈ s, u k) := by
-  haveI aux : CovariantClass R R (fun a b ↦ a + b) (· ≥ ·) :=
-    { elim := fun x _ _ hy ↦ add_le_add_left hy x }
-  apply isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_ge_add) le_rfl
+      f.IsBoundedUnder (· ≥ ·) (∑ k ∈ s, u k) :=
+  fun h ↦ isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_ge_add) le_rfl s h
 
 end add_and_sum
 
