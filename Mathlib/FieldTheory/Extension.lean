@@ -14,7 +14,8 @@ field extensions, K is another extension of F, and `f` is an embedding of L/F in
 that the minimal polynomials of a set of generators of E/L splits in K (via `f`), then `f`
 extends to an embedding of E/F into K/F.
 
-Reference:
+## Reference
+
 [Isaacs1980] *Roots of Polynomials in Algebraic Extensions of Fields*,
 The American Mathematical Monthly
 
@@ -34,6 +35,8 @@ structure Lifts where
   emb : carrier →ₐ[F] K
 
 variable {F E K}
+
+namespace Lifts
 
 instance : PartialOrder (Lifts F E K) where
   le L₁ L₂ := ∃ h : L₁.carrier ≤ L₂.carrier, ∀ x, L₂.emb (inclusion h x) = L₁.emb x
@@ -60,27 +63,27 @@ noncomputable instance : Inhabited (Lifts F E K) :=
 
 variable {L₁ L₂ : Lifts F E K}
 
-theorem Lifts.le_iff : L₁ ≤ L₂ ↔
+theorem le_iff : L₁ ≤ L₂ ↔
     ∃ h : L₁.carrier ≤ L₂.carrier, L₂.emb.comp (inclusion h) = L₁.emb := by
   simp_rw [AlgHom.ext_iff]; rfl
 
-theorem Lifts.eq_iff_le_carrier_eq : L₁ = L₂ ↔ L₁ ≤ L₂ ∧ L₁.carrier = L₂.carrier :=
+theorem eq_iff_le_carrier_eq : L₁ = L₂ ↔ L₁ ≤ L₂ ∧ L₁.carrier = L₂.carrier :=
   ⟨fun eq ↦ ⟨eq.le, congr_arg _ eq⟩, fun ⟨le, eq⟩ ↦ le.antisymm ⟨eq.ge, fun x ↦ (le.2 ⟨x, _⟩).symm⟩⟩
 
-theorem Lifts.eq_iff : L₁ = L₂ ↔
+theorem eq_iff : L₁ = L₂ ↔
     ∃ h : L₁.carrier = L₂.carrier, L₂.emb.comp (inclusion h.le) = L₁.emb := by
   rw [eq_iff_le_carrier_eq, le_iff]
   exact ⟨fun h ↦ ⟨h.2, h.1.2⟩, fun h ↦ ⟨⟨h.1.le, h.2⟩, h.1⟩⟩
 
-theorem Lifts.lt_iff_le_carrier_ne : L₁ < L₂ ↔ L₁ ≤ L₂ ∧ L₁.carrier ≠ L₂.carrier := by
+theorem lt_iff_le_carrier_ne : L₁ < L₂ ↔ L₁ ≤ L₂ ∧ L₁.carrier ≠ L₂.carrier := by
   rw [lt_iff_le_and_ne, and_congr_right]; intro h; simp_rw [Ne, eq_iff_le_carrier_eq, h, true_and]
 
-theorem Lifts.lt_iff : L₁ < L₂ ↔
+theorem lt_iff : L₁ < L₂ ↔
     ∃ h : L₁.carrier < L₂.carrier, L₂.emb.comp (inclusion h.le) = L₁.emb := by
   rw [lt_iff_le_carrier_ne, le_iff]
   exact ⟨fun h ↦ ⟨h.1.1.lt_of_ne h.2, h.1.2⟩, fun h ↦ ⟨⟨h.1.le, h.2⟩, h.1.ne⟩⟩
 
-theorem Lifts.le_of_carrier_le_iSup {ι} {ρ : ι → Lifts F E K} {σ τ : Lifts F E K}
+theorem le_of_carrier_le_iSup {ι} {ρ : ι → Lifts F E K} {σ τ : Lifts F E K}
     (hσ : ∀ i, ρ i ≤ σ) (hτ : ∀ i, ρ i ≤ τ) (carrier_le : σ.carrier ≤ ⨆ i, (ρ i).carrier) :
     σ ≤ τ :=
   le_iff.mpr ⟨carrier_le.trans (iSup_le fun i ↦ (hτ i).1), algHom_ext_of_eq_adjoin _
@@ -94,15 +97,14 @@ In our definition we only require `M` to be finitely generated over `L`, which i
 if the ambient field `E` is algebraic over `F` (which is the case in our main application).
 We also allow the domain of the extension to be an intermediate field that properly contains `M`,
 since one can always restrict the domain to `M`. -/
-def Lifts.IsExtendible (σ : Lifts F E K) : Prop :=
+def IsExtendible (σ : Lifts F E K) : Prop :=
   ∀ S : Finset E, ∃ τ ≥ σ, (S : Set E) ⊆ τ.carrier
 
 section Chain
 variable (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c)
 
 /-- The union of a chain of lifts. -/
-protected noncomputable
-def Lifts.union : Lifts F E K :=
+noncomputable def union : Lifts F E K :=
   let t (i : ↑(insert ⊥ c)) := i.val.carrier
   have hc := hc.insert fun _ _ _ ↦ .inl bot_le
   have dir : Directed (· ≤ ·) t := hc.directedOn.directed_val.mono_comp _ fun _ _ h ↦ h.1
@@ -112,25 +114,25 @@ def Lifts.union : Lifts F E K :=
         inclusion_inclusion, inclusion_self, AlgHom.id_apply x]) _ rfl).comp
       (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir)⟩
 
-theorem Lifts.le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ Lifts.union c hc :=
+theorem le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ union c hc :=
   have hσ := Set.mem_insert_of_mem ⊥ hσ
   let t (i : ↑(insert ⊥ c)) := i.val.carrier
   ⟨le_iSup t ⟨σ, hσ⟩, fun x ↦ by
-    dsimp only [Lifts.union, AlgHom.comp_apply]
+    dsimp only [union, AlgHom.comp_apply]
     exact Subalgebra.iSupLift_inclusion (K := (toSubalgebra <| t ·))
       (i := ⟨σ, hσ⟩) x (le_iSup (toSubalgebra <| t ·) ⟨σ, hσ⟩)⟩
 
-theorem Lifts.carrier_union : (Lifts.union c hc).carrier = ⨆ i : c, i.1.carrier :=
+theorem carrier_union : (union c hc).carrier = ⨆ i : c, i.1.carrier :=
   le_antisymm (iSup_le <| by rintro ⟨i, rfl|hi⟩; exacts [bot_le, le_iSup_of_le ⟨i, hi⟩ le_rfl]) <|
     iSup_le fun i ↦ le_iSup_of_le ⟨i, .inr i.2⟩ le_rfl
 
 /-- A chain of lifts has an upper bound. -/
-theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c) :
-    ∃ ub, ∀ a ∈ c, a ≤ ub := ⟨_, Lifts.le_union c hc⟩
+theorem exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c) :
+    ∃ ub, ∀ a ∈ c, a ≤ ub := ⟨_, le_union c hc⟩
 
-theorem Lifts.union_isExtendible [alg : Algebra.IsAlgebraic F E]
+theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
     [Nonempty c] (hext : ∀ σ ∈ c, σ.IsExtendible) :
-    (Lifts.union c hc).IsExtendible := fun S ↦ by
+    (union c hc).IsExtendible := fun S ↦ by
   let Ω := adjoin F (S : Set E) →ₐ[F] K
   have ⟨ω, hω⟩ : ∃ ω : Ω, ∀ π : c, ∃ θ ≥ π.1, ⟨_, ω⟩ ≤ θ ∧ θ.carrier = π.1.1 ⊔ adjoin F S := by
     by_contra!; choose π hπ using this
@@ -157,7 +159,7 @@ theorem Lifts.union_isExtendible [alg : Algebra.IsAlgebraic F E]
     · change (θ π₂).emb (inclusion (hθ π₂).1 ⟨x, subset_adjoin _ _ hx⟩) =
         (θ π₁).emb (inclusion (hθ π₁).1 ⟨x, subset_adjoin _ _ hx⟩)
       rw [(hθ π₁).2, (hθ π₂).2]
-  refine ⟨Lifts.union _ this, le_of_carrier_le_iSup (fun π ↦ le_union c hc π.2)
+  refine ⟨union _ this, le_of_carrier_le_iSup (fun π ↦ le_union c hc π.2)
     (fun π ↦ (ge π).trans <| le_union _ _ ⟨_, rfl⟩) (carrier_union _ _).le, ?_⟩
   simp_rw [carrier_union, iSup_range', eq]
   exact (subset_adjoin _ _).trans (SetLike.coe_subset_coe.mpr <|
@@ -170,7 +172,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
   have ⟨ϕ, hϕ⟩ := zorn_le₀ {ϕ : Lifts F E K | ϕ.IsExtendible}
     fun c hext hc ↦ (isEmpty_or_nonempty c).elim
       (fun _ ↦ ⟨⊥, this, fun ϕ hϕ ↦ isEmptyElim (⟨ϕ, hϕ⟩ : c)⟩)
-      fun _ ↦ ⟨_, Lifts.union_isExtendible c hc hext, Lifts.le_union c hc⟩
+      fun _ ↦ ⟨_, union_isExtendible c hc hext, le_union c hc⟩
   suffices ϕ.carrier = ⊤ from ⟨ϕ.emb.comp <| ((equivOfEq this).trans topEquiv).symm⟩
   by_contra!
   obtain ⟨α, -, hα⟩ := SetLike.exists_of_lt this.lt_top
@@ -178,11 +180,11 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
   let Λ := ϕ.carrier⟮α⟯ →ₐ[ϕ.carrier] K
   have := finiteDimensional_adjoin (S := {α}) fun _ _ ↦ ((alg.tower_top ϕ.carrier).isIntegral).1 _
   let L (σ : Λ) : Lifts F E K := ⟨ϕ.carrier⟮α⟯.restrictScalars F, σ.restrictScalars F⟩
-  have hL (σ : Λ) : ϕ < L σ := Lifts.lt_iff.mpr
+  have hL (σ : Λ) : ϕ < L σ := lt_iff.mpr
     ⟨by simpa only [restrictScalars_adjoin_eq_sup, left_lt_sup, adjoin_simple_le_iff],
       AlgHom.coe_ringHom_injective σ.comp_algebraMap⟩
   have ⟨(ϕ_ext : ϕ.IsExtendible), ϕ_max⟩ := maximal_iff_forall_gt.mp hϕ
-  simp_rw [Set.mem_setOf, Lifts.IsExtendible] at ϕ_max; push_neg at ϕ_max
+  simp_rw [Set.mem_setOf, IsExtendible] at ϕ_max; push_neg at ϕ_max
   choose S hS using fun σ : Λ ↦ ϕ_max (hL σ)
   classical
   have ⟨θ, hθϕ, hθ⟩ := ϕ_ext ({α} ∪ Finset.univ.biUnion S)
@@ -196,7 +198,7 @@ end Chain
 
 /-- Given a lift `x` and an integral element `s : E` over `x.carrier` whose conjugates over
 `x.carrier` are all in `K`, we can extend the lift to a lift whose carrier contains `s`. -/
-theorem Lifts.exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carrier s)
+theorem exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carrier s)
     (h2 : (minpoly x.carrier s).Splits x.emb.toRingHom) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
   have I2 := (minpoly.degree_pos h1).ne'
   letI : Algebra x.carrier K := x.emb.toRingHom.toAlgebra
@@ -213,10 +215,12 @@ theorem Lifts.exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral 
 
 /-- Given an integral element `s : E` over `F` whose `F`-conjugates are all in `K`,
 any lift can be extended to one whose carrier contains `s`. -/
-theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
+theorem exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
     (h2 : (minpoly F s).Splits (algebraMap F K)) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
-  Lifts.exists_lift_of_splits' x h1.tower_top <| h1.minpoly_splits_tower_top' <| by
+  exists_lift_of_splits' x h1.tower_top <| h1.minpoly_splits_tower_top' <| by
     rwa [← x.emb.comp_algebraMap] at h2
+
+end Lifts
 
 section
 
