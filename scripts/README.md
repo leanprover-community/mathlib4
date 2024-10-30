@@ -14,6 +14,17 @@ to learn about it as well!
   https://leanprover-community.github.io/install/macos.html
   If these web pages are deprecated or removed, we should remove these scripts.
 
+**Tool for manual maintenance**
+- `fix_unused.py`
+  Bulk processing of unused variable warnings, replacing them with `_`.
+
+**Analyzing Mathlib's import structure**
+- `unused_in_pole.sh <target>` calls `lake exe pole --loc --to <target>` to compute the longest
+  pole to a given target module (defaults to `Mathlib`), and then feeds this into
+  `lake exe unused` to analyze transitively unused imports.
+  Generates `unused.md` containing a markdown table showing the unused imports,
+  and suggests `lake exe graph` commands to visualize the largest "rectangles" of unused imports.
+
 **CI workflow**
 - `mk_all.lean`
   run via `lake exe mk_all`, regenerates the import-only files
@@ -72,10 +83,6 @@ to learn about it as well!
 
 Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
-
-**Tool for manual maintenance**
-- `fix_unused.py`
-  Bulk processing of unused variable warnings, replacing them with `_`.
 
 **API surrounding CI**
 - `update_PR_comment.sh` is a script that edits an existing message (or creates a new one).
