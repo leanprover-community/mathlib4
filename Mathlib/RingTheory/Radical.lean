@@ -194,6 +194,10 @@ theorem radical_mul_divRadical (a : E) : radical a * divRadical a = a := by
   ·refine mul_div_cancel_left₀ _ (radical_ne_zero a)
   exact radical_dvd_self a
 
+theorem divRadical_mul_radical (a : E) : divRadical a * radical a = a := by
+  rw [mul_comm]
+  exact radical_mul_divRadical a
+
 theorem divRadical_ne_zero {a : E} (ha : a ≠ 0) : divRadical a ≠ 0 := by
   rw [← radical_mul_divRadical a] at ha
   exact right_ne_zero_of_mul ha
@@ -212,9 +216,7 @@ theorem divRadical_mul {a b : E} (hab : IsCoprime a b) :
   rw [mul_mul_mul_comm, radical_mul_divRadical, radical_mul_divRadical]
 
 theorem divRadical_dvd_self (a : E) : divRadical a ∣ a := by
-  rw [divRadical]
-  apply EuclideanDomain.div_dvd_of_dvd
-  exact radical_dvd_self a
+  exact Dvd.intro (radical a) (divRadical_mul_radical a)
 
 theorem IsCoprime.divRadical {a b : E} (h : IsCoprime a b) :
     IsCoprime (divRadical a) (divRadical b) := by
