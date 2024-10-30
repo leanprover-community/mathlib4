@@ -344,15 +344,11 @@ attribute [to_additive CommonAdd] CommonMul
 
 section LeftCommonMul
 
-variable [LeftCommonMul G] {a b c : G}
+variable [LeftCommonMul G] {a b : G}
 
 @[to_additive]
-theorem mul_left_cancel : a * b = a * c → b = c :=
-  LeftCommonMul.mul_left_cancel a b c
-
-@[to_additive]
-theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
-  ⟨mul_left_cancel, congrArg _⟩
+theorem common_left_mul : LeftCommonMul.cl₁ a b * a = LeftCommonMul.cl₂ a b * b :=
+  LeftCommonMul.cl_spec a b
 
 end LeftCommonMul
 
@@ -361,12 +357,8 @@ section RightCommonMul
 variable [RightCommonMul G] {a b c : G}
 
 @[to_additive]
-theorem mul_right_cancel : a * b = c * b → a = c :=
-  RightCommonMul.mul_right_cancel a b c
-
-@[to_additive]
-theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
-  ⟨mul_right_cancel, congrArg (· * a)⟩
+theorem common_right_mul :  a * RightCommonMul.cr₁ a b = b * RightCommonMul.cr₂ a b :=
+  RightCommonMul.cr_spec a b
 
 end RightCommonMul
 
