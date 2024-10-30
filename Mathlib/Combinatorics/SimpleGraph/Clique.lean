@@ -614,6 +614,15 @@ def isMaximumClique (G : SimpleGraph α) (s : Finset α) : Prop :=
 def isMaximalClique (G : SimpleGraph α) (s : Finset α) : Prop :=
   G.IsClique s ∧ ¬ ∃ (t : Finset α), G.IsClique t ∧ s ⊂ t
 
+lemma maximalClique_if_maximumClique {s : Finset α} (smax : G.isMaximumClique s) :
+    G.isMaximalClique s := by
+  rw [isMaximalClique, isMaximumClique] at *
+  by_contra h
+  simp_all only [not_exists, not_and, not_forall, Classical.not_imp, not_not, true_implies]
+  let ⟨t, tc, tsub⟩ := h
+  let ⟨_ , smaxf⟩ := smax
+  exact (not_and_self_iff (#t ≤ #s)).mp ⟨not_le_of_lt (card_lt_card tsub), smaxf t tc⟩
+
 variable [fin : Fintype α]
 
 lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
