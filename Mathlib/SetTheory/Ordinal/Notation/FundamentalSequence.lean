@@ -18,7 +18,7 @@ this type.
 
 The `Sequence` API is intended to be used constructively in the context of ordinal notations. For a
 more general but non-constructive notion of fundamental sequences for values with arbitrary
-cofinalities, see `Ordinal.CofinalSeq`.
+cofinalities, see `Ordinal.IsFundamentalSequence`.
 
 ## Todo
 
