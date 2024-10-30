@@ -44,27 +44,22 @@ noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) :
     {s : Finset I // Finset.card s = n} → ⋀[R]^n M :=
   fun ⟨s, hs⟩ => ιMulti (fun i => v (Finset.orderIsoOfFin s hs i))
 
+/-
+abbrev ind_of_fin (s: {a : Finset I // a.card = n}) : Fin n → I :=
+  fun i ↦ (s.1.orderIsoOfFin s.2 i)
 
+noncomputable abbrev vec_of_finset (b : Basis I R M) (s: {a : Finset I // a.card = n}) :
+  Fin n → M := fun i ↦ b (ind_of_fin s i)
+-/
 
 /-
-noncomputable def preForm (b : Basis I R M) (B : LinearMap.BilinForm R M)
-  (s t : Finset I) (hs : Finset.card s = n) (ht : Finset.card t = n) : R :=
-  ∑ σ : Equiv.Perm (Fin n), Equiv.Perm.sign σ •
-  ∏ i : Fin n, B (b (Finset.orderIsoOfFin s hs (σ i))) (b (Finset.orderIsoOfFin t ht i))
-
-noncomputable def inducedForm' (B : LinearMap.BilinForm R M) (b : Basis I R M) :
-  ⋀[R]^n M → ⋀[R]^n M → R := fun v w ↦ ∑ i : {s : Finset I // Finset.card s = n},
-  ∑ j : {s : Finset I // Finset.card s = n},
-  (b.exteriorPower.coord i v * b.exteriorPower.coord j w) •
-  preForm b B i.val j.val i.property j.property
-
-noncomputable def inducedForm' (B : LinearMap.BilinForm R M) (b : Basis I R M) :
-  ⋀[R]^n M → ⋀[R]^n M → R := fun v w ↦ ∑ i : {s : Finset I // Finset.card s = n},
-  ∑ j : {s : Finset I // Finset.card s = n},
-  (b.exteriorPower.coord i v * b.exteriorPower.coord j w) •
-  ∑ σ : Equiv.Perm (Fin n), Equiv.Perm.sign σ •
-  ∏ k : Fin n, B (b (Finset.orderIsoOfFin i.val i.property (σ k)))
-  (b (Finset.orderIsoOfFin j.val j.property k))
+TODO:
+1. Split into separate files
+2. Rewrite as separate bases on left and right entries
+3. Prove independence of bases
+4. Show definition on simple tensors
+5. Use dual basis for nondegenerate forms
+6. Construct dual basis on exterior power
 -/
 
 section inducedForm
@@ -146,7 +141,7 @@ theorem inducedForm_basis (s t : {a : Finset I // a.card = n}) :
 
 end ringProperties
 
-section fieldOrthoProperties
+section fieldProperties
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 variable {I : Type*} [LinearOrder I] [Fintype I]
@@ -154,40 +149,24 @@ variable (B : LinearMap.BilinForm K V) (b : Basis I K V)
 
 local notation "⟪" x ", " y "⟫" => @inducedForm _ _ _ _ _ _ _ _ n B b x y
 
-abbrev ind (s: {a : Finset I // a.card = n}) : Fin n → I :=
-  fun i ↦ (s.1.orderIsoOfFin s.2 i)
+#check B.dualBasis
 
-variable (v : I → M) (s : {a : Finset I // a.card = n})
-#check ιMulti (fun x ↦ v (ind s x))
-#check ιMulti_family v s
-
-theorem ortho_aux (s t : {a : Finset I // a.card = n}) (h : s ≠ t) :
-  ∃ (i : Fin n), (∀ (j : Fin n), b (ind s i) ≠ b (ind t j)) := by
-
-  sorry
-
-theorem inducedBilin_ortho (h : LinearMap.IsOrthoᵢ B b) :
-  LinearMap.IsOrthoᵢ (inducedBilinForm B b) (bExterior n b) := by
-  rw [LinearMap.isOrthoᵢ_def]
-  intro s t hst
-  unfold inducedBilinForm
-  dsimp
-  simp only [inducedForm_basis, Finset.coe_orderIsoOfFin_apply]
+theorem induced_dualBasis (hB : B.Nondegenerate) (s t : {a : Finset I // a.card = n}) :
+  ⟪(B.dualBasis hB b).exteriorPower s, b.exteriorPower t⟫ = if s=t then 1 else 0 := by
+  unfold inducedForm
 
   sorry
 
 theorem induced_nondegenerate (hB : B.Nondegenerate) :
   ∀ (v : ⋀[K]^n V), (∀ (w : ⋀[K]^n V), ⟪v, w⟫ = 0) → v = 0 := by
   intro v h'
-
-
+  rw [← @Basis.forall_coord_eq_zero_iff _ K (⋀[K]^n V) _ _ _ (bExterior n b)]
+  intro s
   sorry
 
 theorem inducedBilin_nondegenerate (hB : B.Nondegenerate) :
   (@inducedBilinForm _ _ _ _ _ _ _ _ n B b).Nondegenerate := induced_nondegenerate B b hB
 
-
-
-end fieldOrthoProperties
+end fieldProperties
 
 end exteriorPower
