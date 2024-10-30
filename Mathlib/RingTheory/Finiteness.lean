@@ -3,12 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.LinearAlgebra.Basis.Cardinality
-import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Ideal.Quotient.Basic
+import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Tactic.Algebraize
