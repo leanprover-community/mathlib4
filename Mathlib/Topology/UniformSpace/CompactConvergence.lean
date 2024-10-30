@@ -382,6 +382,9 @@ lemma completeSpace_of_isRestrictGen (h : IsRestrictGen {K : Set α | IsCompact 
     range_toUniformOnFunIsCompact, ← completeSpace_coe_iff_isComplete]
   exact (UniformOnFun.isClosed_setOf_continuous h).completeSpace_coe
 
+@[deprecated (since := "2024-10-30")]
+alias completeSpace_of_restrictGenTopology := completeSpace_of_isRestrictGen
+
 instance instCompleteSpaceOfWeaklyLocallyCompactSpace [WeaklyLocallyCompactSpace α] :
     CompleteSpace C(α, β) := completeSpace_of_isRestrictGen .isCompact_of_weaklyLocallyCompact
 
