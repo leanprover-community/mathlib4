@@ -6,6 +6,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
 
 /-!
 # Graph cliques
@@ -593,5 +596,43 @@ theorem cliqueFinset_map_of_equiv (e : α ≃ β) (n : ℕ) :
   coe_injective <| by push_cast; exact cliqueSet_map_of_equiv _ _ _
 
 end CliqueFinset
+
+/-! ### Clique number -/
+
+
+section CliqueNumber
+
+variable {α : Type*} {G : SimpleGraph α}
+
+noncomputable def cliqueNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNClique n s}
+
+def isMaximumClique (G : SimpleGraph α) (s : Finset α) : Prop :=
+  G.IsClique s ∧ ∀ (t : Finset α), G.IsClique t → #t ≤ #s
+
+def isMaximalClique (G : SimpleGraph α) (s : Finset α) : Prop :=
+  G.IsClique s ∧ ∀ (t : Finset α), G.IsClique t → ¬ s ⊂ t
+
+variable [fin : Fintype α]
+
+lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
+  rw [bddAbove_def]
+  refine Exists.intro (@Finset.univ α _).card ?_
+  rintro y ⟨sy, syc⟩
+  rw [isNClique_iff, ←And.right syc] at *
+  exact Finset.card_le_card (Finset.subset_univ sy)
+
+theorem clique_card_le_cliqueNum (t : Finset α) (tc : G.IsClique ↑t) : #t ≤ G.cliqueNum :=
+  le_csSup fintype_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
+
+theorem maximumClique_card_eq_cliqueNum (t : Finset α) (tmc : G.isMaximumClique ↑t) :
+    #t = G.cliqueNum := by
+  let ⟨tclique, tmax⟩ := tmc
+  refine eq_of_le_of_not_lt (clique_card_le_cliqueNum _ tclique) ?_
+  have ⟨s, sclique, scn⟩ : G.cliqueNum ∈ {n | ∃ s, G.IsNClique n s} :=
+    Nat.sSup_mem ⟨ 0, by simp[isNClique_empty.mpr rfl] ⟩ fintype_cliqueNum_bddAbove
+  rw [cliqueNum, ←scn]
+  exact LE.le.not_lt (tmax s sclique)
+
+end CliqueNumber
 
 end SimpleGraph
