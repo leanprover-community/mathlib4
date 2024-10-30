@@ -313,6 +313,32 @@ def compEvaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b ≅ F.
 theorem comp_evaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b = F.flip.obj b :=
   rfl
 
+/-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F.obj a`. -/
+@[simps!]
+def whiskeringLeftCompEvaluation (F : A ⥤ B) (a : A) :
+    (whiskeringLeft A B C).obj F ⋙ (evaluation A C).obj a ≅ (evaluation B C).obj (F.obj a) :=
+  Iso.refl _
+
+/-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F.obj a`. -/
+@[simp]
+theorem whiskeringLeft_comp_evaluation (F : A ⥤ B) (a : A) :
+    (whiskeringLeft A B C).obj F ⋙ (evaluation A C).obj a = (evaluation B C).obj (F.obj a) :=
+  rfl
+
+/-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F` and then
+applying `F`. -/
+@[simps!]
+def whiskeringRightCompEvaluation (F : B ⥤ C) (a : A) :
+    (whiskeringRight A B C).obj F ⋙ (evaluation _ _).obj a ≅ (evaluation _ _).obj a ⋙ F :=
+  Iso.refl _
+
+/-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F` and then
+applying `F`. -/
+@[simp]
+theorem whiskeringRight_comp_evaluation (F : B ⥤ C) (a : A) :
+    (whiskeringRight A B C).obj F ⋙ (evaluation _ _).obj a = (evaluation _ _).obj a ⋙ F :=
+  rfl
+
 variable (A B C)
 
 /-- The forward direction for `functorProdFunctorEquiv` -/

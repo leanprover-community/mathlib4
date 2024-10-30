@@ -711,8 +711,8 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
     rcases mem_atTop_sets.1 hs with ⟨b, hb⟩
     rw [← top_le_iff, ← volume_Ici (a := b)]
     exact measure_mono hb
-  rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.isUniformEmbedding_coe E).embedding
+  rwa [B, ← IsEmbedding.tendsto_nhds_iff] at A
+  exact (Completion.isUniformEmbedding_coe E).isEmbedding
 
 variable [CompleteSpace E]
 
@@ -908,8 +908,8 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
     apply le_antisymm (le_top)
     rw [← volume_Iic (a := b)]
     exact measure_mono hb
-  rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.isUniformEmbedding_coe E).embedding
+  rwa [B, ← IsEmbedding.tendsto_nhds_iff] at A
+  exact (Completion.isUniformEmbedding_coe E).isEmbedding
 
 variable [CompleteSpace E]
 

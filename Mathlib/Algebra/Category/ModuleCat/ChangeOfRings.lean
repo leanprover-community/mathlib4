@@ -808,21 +808,15 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
       rw [ModuleCat.coe_comp, Function.comp_apply, restrictScalars.map_apply]
       rfl
     homEquiv_counit := fun {X Y g} ↦ LinearMap.ext fun x => by
-        -- Porting note: once again reminding Lean of the instances
-        letI m1 : Module R S := Module.compHom S f
-        letI m2 : Module R Y := Module.compHom Y f
         induction x using TensorProduct.induction_on with
         | zero => rw [map_zero, map_zero]
         | tmul =>
           rw [ExtendRestrictScalarsAdj.homEquiv_symm_apply]
-          -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-          erw [ModuleCat.coe_comp]
-          rw [Function.comp_apply, ExtendRestrictScalarsAdj.counit_app]
+          dsimp
+          rw [ModuleCat.coe_comp, Function.comp_apply]
           -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
           erw [ExtendRestrictScalarsAdj.Counit.map_apply]
-          set_option tactic.skipAssignedInstances false in dsimp
-          rw [TensorProduct.lift.tmul]
-          rfl
+          dsimp
         | add => rw [map_add, map_add]; congr 1 }
 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
