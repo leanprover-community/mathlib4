@@ -42,7 +42,7 @@ theorem take_one {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) :
   simp only [take]
 
 @[simp]
-theorem take_of_succ {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) :
+theorem take_eq_init {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) :
     take n n.le_succ v = init v := by
   ext i
   simp only [Nat.succ_eq_add_one, take, init]
