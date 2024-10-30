@@ -20,16 +20,6 @@ namespace Module
 
 variable {A : Type u} [Ring A] {M : Type v} [AddCommGroup M] [Module A M]
 
--- to be moved
-lemma _root_.Submodule.FG.exists_generators {N : Submodule A M} (hN : N.FG) :
-    ∃ (G : Type w₀) (_ : Finite G) (g : G → M), Submodule.span A (Set.range g) = N := by
-  rw [Submodule.fg_iff_exists_fin_generating_family] at hN
-  obtain ⟨n, f, h⟩ := hN
-  refine ⟨ULift (Fin n), inferInstance, f ∘ ULift.down, ?_⟩
-  convert h
-  ext x
-  simp only [Set.mem_range, Function.comp_apply, ULift.exists]
-
 namespace Presentation
 
 variable (pres : Presentation A M)
@@ -51,13 +41,14 @@ lemma finitePresentation_iff_exists_presentation :
       ∃ (pres : Presentation.{w₀, w₁} A M), Finite pres.G ∧ Finite pres.R := by
   constructor
   · intro
-    have h₁ : Module.Finite A M := inferInstance
-    rw [finite_def] at h₁
-    obtain ⟨G : Type w₀, _, var, hG⟩ := h₁.exists_generators
+    obtain ⟨G : Type w₀, _, var, hG⟩ :=
+      Submodule.fg_iff_exists_finite_generating_family.1
+        (finite_def.1 (inferInstanceAs (Module.Finite A M)))
     obtain ⟨R : Type w₁, _, relation, hR⟩ :=
-      (Module.FinitePresentation.fg_ker (Finsupp.linearCombination A var) (by
-        rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination, hG])).exists_generators
-    refine
+      Submodule.fg_iff_exists_finite_generating_family.1
+        (Module.FinitePresentation.fg_ker (Finsupp.linearCombination A var) (by
+          rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination, hG]))
+    exact
      ⟨{ G := G
         R := R
         relation := relation
