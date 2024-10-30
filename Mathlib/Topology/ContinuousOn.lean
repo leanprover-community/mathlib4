@@ -685,9 +685,12 @@ theorem ContinuousWithinAt.mono (h : ContinuousWithinAt f t x)
     (hs : s ⊆ t) : ContinuousWithinAt f s x :=
   h.mono_left (nhdsWithin_mono x hs)
 
-theorem ContinuousWithinAt.mono_of_mem (h : ContinuousWithinAt f t x) (hs : t ∈ 𝓝[s] x) :
+theorem ContinuousWithinAt.mono_of_mem_nhdsWithin (h : ContinuousWithinAt f t x) (hs : t ∈ 𝓝[s] x) :
     ContinuousWithinAt f s x :=
   h.mono_left (nhdsWithin_le_of_mem hs)
+
+@[deprecated (since := "2024-10-18")]
+alias ContinuousWithinAt.mono_of_mem := ContinuousWithinAt.mono_of_mem_nhdsWithin
 
 /-- If two sets coincide around `x`, then being continuous within one or the other at `x` is
 equivalent. See also `continuousWithinAt_congr_set'` which requires that the sets coincide
@@ -927,7 +930,7 @@ theorem ContinuousWithinAt.comp_of_preimage_mem_nhdsWithin_of_eq {g : β → γ}
 theorem ContinuousWithinAt.comp_of_mem_nhdsWithin_image {g : β → γ} {t : Set β}
     (hg : ContinuousWithinAt g t (f x)) (hf : ContinuousWithinAt f s x)
     (hs : t ∈ 𝓝[f '' s] f x) : ContinuousWithinAt (g ∘ f) s x :=
-  (hg.mono_of_mem hs).comp hf (subset_preimage_image f s)
+  (hg.mono_of_mem_nhdsWithin hs).comp hf (mapsTo_image f s)
 
 theorem ContinuousWithinAt.comp_of_mem_nhdsWithin_image_of_eq {g : β → γ} {t : Set β} {y : β}
     (hg : ContinuousWithinAt g t y) (hf : ContinuousWithinAt f s x)
@@ -1213,17 +1216,22 @@ theorem Function.LeftInverse.map_nhds_eq {f : α → β} {g : β → α} {x : β
   simpa only [nhdsWithin_univ, image_univ] using
     (h.leftInvOn univ).map_nhdsWithin_eq (h x) (by rwa [image_univ]) hg.continuousWithinAt
 
-theorem Inducing.continuousWithinAt_iff {f : α → β} {g : β → γ} (hg : Inducing g) {s : Set α}
-    {x : α} : ContinuousWithinAt f s x ↔ ContinuousWithinAt (g ∘ f) s x := by
-  simp_rw [ContinuousWithinAt, Inducing.tendsto_nhds_iff hg]; rfl
+lemma IsInducing.continuousWithinAt_iff {f : α → β} {g : β → γ} (hg : IsInducing g)
+    {s : Set α} {x : α} : ContinuousWithinAt f s x ↔ ContinuousWithinAt (g ∘ f) s x := by
+  simp_rw [ContinuousWithinAt, hg.tendsto_nhds_iff]; rfl
 
-theorem Inducing.continuousOn_iff {f : α → β} {g : β → γ} (hg : Inducing g) {s : Set α} :
-    ContinuousOn f s ↔ ContinuousOn (g ∘ f) s := by
+@[deprecated (since := "2024-10-28")]
+alias Inducing.continuousWithinAt_iff := IsInducing.continuousWithinAt_iff
+
+lemma IsInducing.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsInducing g)
+    {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s := by
   simp_rw [ContinuousOn, hg.continuousWithinAt_iff]
+
+@[deprecated (since := "2024-10-28")] alias Inducing.continuousOn_iff := IsInducing.continuousOn_iff
 
 lemma IsEmbedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsEmbedding g)
     {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
-  Inducing.continuousOn_iff hg.1
+  hg.isInducing.continuousOn_iff
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.continuousOn_iff := IsEmbedding.continuousOn_iff

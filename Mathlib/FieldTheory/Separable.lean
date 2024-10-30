@@ -8,6 +8,7 @@ import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.PowerBasis
+import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 
@@ -695,6 +696,18 @@ theorem Algebra.IsSeparable.of_algHom [Algebra.IsSeparable F E'] : Algebra.IsSep
   ⟨fun x => (Algebra.IsSeparable.isSeparable F (f x)).of_algHom⟩
 
 end
+
+namespace IntermediateField
+
+variable [Field K] [Algebra F K] (M : IntermediateField F K)
+
+instance isSeparable_tower_bot [Algebra.IsSeparable F K] : Algebra.IsSeparable F M :=
+  Algebra.isSeparable_tower_bot_of_isSeparable F M K
+
+instance isSeparable_tower_top [Algebra.IsSeparable F K] : Algebra.IsSeparable M K :=
+  Algebra.isSeparable_tower_top_of_isSeparable F M K
+
+end IntermediateField
 
 end Field
 
