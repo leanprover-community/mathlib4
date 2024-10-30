@@ -126,8 +126,7 @@ contain 0. If the nilradical of `R` is maximal then there is a `R`-algebra isomo
 `R` and `S`. -/
 noncomputable def nilradmaxlocalizationIsSelf [h : (nilradical R).IsMaximal] (h' : (0 : R) ∉ M)
     [IsLocalization M S] : R ≃ₐ[R] S := by
-  have : ∀ m ∈ M, IsUnit m := by
-    intro m hm
+  have (m) (hm : m ∈ M) : IsUnit m := by
     haveI := LocalRing.of_nilradical_isMaximal (h := h)
     apply (LocalRing.not_mem_maximalIdeal m).mp
     rw [← LocalRing.eq_maximalIdeal h]
