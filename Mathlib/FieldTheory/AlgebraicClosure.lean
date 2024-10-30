@@ -70,7 +70,7 @@ theorem map_le_of_algHom (i : E →ₐ[F] K) :
 
 variable (F) in
 /-- If `K / E / F` is a field extension tower, such that `K / E` has no non-trivial algebraic
-subextensions (this means that it is purely trancendental),
+subextensions (this means that it is purely transcendental),
 then the image of `algebraicClosure F E` in `K` is equal to `algebraicClosure F K`. -/
 theorem map_eq_of_algebraicClosure_eq_bot [Algebra E K] [IsScalarTower F E K]
     (h : algebraicClosure E K = ⊥) :
