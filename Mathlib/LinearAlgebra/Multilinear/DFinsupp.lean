@@ -9,24 +9,59 @@ import Mathlib.LinearAlgebra.Multilinear.Basic
 /-!
 # Interactions between finitely-supported functions and multilinear maps
 
-This file provides `MultilinearMap.dfinsuppFamily`, which satisfies
-`MultilinearMap.dfinsuppFamily f x p = f p (fun i => x i (p i))`.
-This is the finitely-supported version of `MultilinearMap.piFamily`.
+## Main definitions
 
-This is useful because all the intermediate results are bundled:
+* `MultilinearMap.dfinsupp_ext`
+* `MultilinearMap.dfinsuppFamily`, which satisfies
+  `dfinsuppFamily f x p = f p (fun i => x i (p i))`.
 
-* `MultilinearMap.dfinsuppFamily f x` is a `DFinsupp` supported by families of indices `p`.
-* `MultilinearMap.dfinsuppFamily f` is a `MultilinearMap` operating on finitely-supported functions
-  `x`.
-* `MultilinearMap.dfinsuppFamilyₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
+  This is the finitely-supported version of `MultilinearMap.piFamily`.
+
+  This is useful because all the intermediate results are bundled:
+
+  - `MultilinearMap.dfinsuppFamily f x` is a `DFinsupp` supported by families of indices `p`.
+  - `MultilinearMap.dfinsuppFamily f` is a `MultilinearMap` operating on finitely-supported
+    functions `x`.
+  - `MultilinearMap.dfinsuppFamilyₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
 
 -/
 
 universe uι uκ uS uR uM uN
 variable {ι : Type uι} {κ : ι → Type uκ}
-variable {S : Type uS} {R : Type uR} {M : ∀ i, κ i → Type uM} {N : (Π i, κ i) → Type uN}
+variable {S : Type uS} {R : Type uR}
 
 namespace MultilinearMap
+
+section Semiring
+variable {M : ∀ i, κ i → Type uM} {N : Type uN}
+
+variable [DecidableEq ι] [Fintype ι] [Semiring R]
+variable [∀ i k, AddCommMonoid (M i k)] [ AddCommMonoid N]
+variable [∀ i k, Module R (M i k)] [Module R N]
+
+/-- Two multilinear maps from finitely supported functions are equal if they agree on the
+generators.
+
+This is a multilinear version of `DFinsupp.lhom_ext'`. -/
+@[ext]
+theorem dfinsupp_ext [∀ i, DecidableEq (κ i)]
+    ⦃f g : MultilinearMap R (fun i ↦ Π₀ j : κ i, M i j) N⦄
+    (h : ∀ p : Π i, κ i,
+      f.compLinearMap (fun i => DFinsupp.lsingle (p i)) =
+      g.compLinearMap (fun i => DFinsupp.lsingle (p i))) : f = g := by
+  ext x
+  show f (fun i ↦ x i) = g (fun i ↦ x i)
+  classical
+  rw [funext (fun i ↦ Eq.symm (DFinsupp.sum_single (f := x i)))]
+  simp_rw [DFinsupp.sum, MultilinearMap.map_sum_finset]
+  congr! 1 with p
+  simp_rw [MultilinearMap.ext_iff] at h
+  exact h _ _
+
+end Semiring
+
+section dfinsuppFamily
+variable {M : ∀ i, κ i → Type uM} {N : (Π i, κ i) → Type uN}
 
 section Semiring
 
@@ -42,7 +77,7 @@ each family, `dfinsuppFamily f` maps a family of finitely-supported functions (o
 Strictly this doesn't need multilinearity, only the fact that `f p m = 0` whenever `m i = 0` for
 some `i`.
 
-This is the `DFinsupp` version of `MultilinearMap.pi'`.
+This is the `DFinsupp` version of `MultilinearMap.piFamily`.
 -/
 @[simps]
 def dfinsuppFamily
@@ -140,5 +175,7 @@ def dfinsuppFamilyₗ :
   map_smul' := dfinsuppFamily_smul
 
 end CommSemiring
+
+end dfinsuppFamily
 
 end MultilinearMap

@@ -40,6 +40,12 @@ def algebraicClosure : IntermediateField K L :=
 
 namespace IntermediateField
 
+instance isAlgebraic_tower_bot [Algebra.IsAlgebraic K L] : Algebra.IsAlgebraic K S :=
+  Algebra.IsAlgebraic.of_injective S.val S.val.injective
+
+instance isAlgebraic_tower_top [Algebra.IsAlgebraic K L] : Algebra.IsAlgebraic S L :=
+  Algebra.IsAlgebraic.tower_top (K := K) S
+
 section FiniteDimensional
 
 variable (F E : IntermediateField K L)
