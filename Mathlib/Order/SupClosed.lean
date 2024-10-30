@@ -306,7 +306,7 @@ lemma supClosure_min : s ⊆ t → SupClosed t → supClosure s ⊆ t := supClos
 protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite := by
   lift s to Finset α using hs
   classical
-  refine ((s.powerset.filter Finset.Nonempty).attach.image
+  refine ({t ∈ s.powerset | t.Nonempty}.attach.image
     fun t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
@@ -378,7 +378,7 @@ lemma infClosure_min : s ⊆ t → InfClosed t → infClosure s ⊆ t := infClos
 protected lemma Set.Finite.infClosure (hs : s.Finite) : (infClosure s).Finite := by
   lift s to Finset α using hs
   classical
-  refine ((s.powerset.filter Finset.Nonempty).attach.image
+  refine ({t ∈ s.powerset | t.Nonempty}.attach.image
     fun t ↦ t.1.inf' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
@@ -469,7 +469,7 @@ end DistribLattice
 def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α → α)
     (h : ∀ s, SupClosed s → IsLUB s (sSup s)) : CompleteSemilatticeSup α where
   sSup := fun s => sSup (supClosure s)
-  le_sSup s a ha := (h _ supClosed_supClosure).1 <| subset_supClosure ha
+  le_sSup _ _ ha := (h _ supClosed_supClosure).1 <| subset_supClosure ha
   sSup_le s a ha := (isLUB_le_iff <| h _ supClosed_supClosure).2 <| by rwa [upperBounds_supClosure]
 
 /-- A meet-semilattice where every inf-closed set has a greatest lower bound is automatically
@@ -477,5 +477,5 @@ complete. -/
 def SemilatticeInf.toCompleteSemilatticeInf [SemilatticeInf α] (sInf : Set α → α)
     (h : ∀ s, InfClosed s → IsGLB s (sInf s)) : CompleteSemilatticeInf α where
   sInf := fun s => sInf (infClosure s)
-  sInf_le s a ha := (h _ infClosed_infClosure).1 <| subset_infClosure ha
+  sInf_le _ _ ha := (h _ infClosed_infClosure).1 <| subset_infClosure ha
   le_sInf s a ha := (le_isGLB_iff <| h _ infClosed_infClosure).2 <| by rwa [lowerBounds_infClosure]

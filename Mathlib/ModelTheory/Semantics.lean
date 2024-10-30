@@ -339,7 +339,7 @@ theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
         (ft n t).realize (Sum.elim v' xs') = t.realize (Sum.elim (v xs') (xs' ∘ Fin.natAdd _)))
     (h2 : ∀ (n) (R : L.Relations n) (x : Fin n → M), RelMap (fr n R) x = RelMap R x)
     (hv : ∀ (n) (xs : Fin (k + n) → M) (x : M), @v (n + 1) (snoc xs x : Fin _ → M) = v xs) :
-    (φ.mapTermRel ft fr fun n => castLE (add_assoc _ _ _).symm.le).Realize v' xs ↔
+    (φ.mapTermRel ft fr fun _ => castLE (add_assoc _ _ _).symm.le).Realize v' xs ↔
       φ.Realize (v xs) (xs ∘ Fin.natAdd _) := by
   induction φ with
   | falsum => rfl

@@ -15,13 +15,12 @@ This file defines instances for ordered group, monoid, and related structures on
 
 open scoped AlgebraOrderInstances
 
-variable {ι I α β γ : Type*}
+open scoped AlgebraOrderInstances
+
+variable {I α β γ : Type*}
 
 -- The indexing type
 variable {f : I → Type*}
-
--- The family of types already equipped with instances
-variable (x y : ∀ i, f i) (i : I)
 
 namespace Pi
 

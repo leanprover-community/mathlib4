@@ -93,6 +93,7 @@ initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
     |>.insert `change?
     |>.insert `«tactic#adaptation_note_»
     |>.insert `tacticSleep_heartbeats_
+    |>.insert `Mathlib.Tactic.«tacticRename_bvar_→__»
 
 /-- `#allow_unused_tactic` takes an input a space-separated list of identifiers.
 These identifiers are then allowed by the unused tactic linter:

@@ -111,7 +111,7 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type*}
+variable {α : Type u}
 
 /-! Note that `OrderDual` does not satisfy any of the ordered ring typeclasses due to the
 `zero_le_one` field. -/
@@ -197,7 +197,7 @@ class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMono
 
 section OrderedSemiring
 
-variable [OrderedSemiring α] {a b c d : α}
+variable [OrderedSemiring α]
 -- see Note [lower instance priority]
 instance (priority := 100) OrderedSemiring.zeroLEOneClass : ZeroLEOneClass α :=
   { ‹OrderedSemiring α› with }
@@ -214,7 +214,7 @@ end OrderedSemiring
 
 section OrderedRing
 
-variable [OrderedRing α] {a b c d : α}
+variable [OrderedRing α] {a b c : α}
 
 -- see Note [lower instance priority]
 instance (priority := 100) OrderedRing.toOrderedSemiring : OrderedSemiring α :=
@@ -254,7 +254,7 @@ end OrderedCommRing
 
 section StrictOrderedSemiring
 
-variable [StrictOrderedSemiring α] {a b c d : α}
+variable [StrictOrderedSemiring α]
 
 -- see Note [lower instance priority]
 instance (priority := 200) StrictOrderedSemiring.toPosMulStrictMono : PosMulStrictMono α :=
@@ -322,7 +322,7 @@ instance (priority := 100) StrictOrderedCommSemiring.toOrderedCommSemiring :
 end StrictOrderedCommSemiring
 
 section StrictOrderedRing
-variable [StrictOrderedRing α] {a b c : α}
+variable [StrictOrderedRing α]
 
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedRing.toStrictOrderedSemiring : StrictOrderedSemiring α :=
@@ -375,7 +375,7 @@ end StrictOrderedCommRing
 
 section LinearOrderedSemiring
 
-variable [LinearOrderedSemiring α] {a b c d : α}
+variable [LinearOrderedSemiring α]
 
 -- see Note [lower instance priority]
 instance (priority := 200) LinearOrderedSemiring.toPosMulReflectLT : PosMulReflectLT α :=
@@ -414,7 +414,7 @@ instance (priority := 100) LinearOrderedSemiring.toLinearOrderedCancelAddCommMon
 end LinearOrderedSemiring
 
 section LinearOrderedRing
-variable [LinearOrderedRing α] {a b c : α}
+variable [LinearOrderedRing α]
 
 attribute [local instance] LinearOrderedRing.decidableLE LinearOrderedRing.decidableLT
 

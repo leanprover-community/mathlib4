@@ -459,7 +459,7 @@ theorem all_balance' {P l x r} : @All α P (balance' l x r) ↔ All P l ∧ P x 
 
 
 theorem foldr_cons_eq_toList : ∀ (t : Ordnode α) (r : List α), t.foldr List.cons r = toList t ++ r
-  | nil, r => rfl
+  | nil, _ => rfl
   | node _ l x r, r' => by
     rw [foldr, foldr_cons_eq_toList l, foldr_cons_eq_toList r, ← List.cons_append,
         ← List.append_assoc, ← foldr_cons_eq_toList l]; rfl
@@ -513,7 +513,7 @@ theorem findMax_dual (t : Ordnode α) : findMax (dual t) = findMin t := by
 
 theorem dual_eraseMin : ∀ t : Ordnode α, dual (eraseMin t) = eraseMax (dual t)
   | nil => rfl
-  | node _ nil x r => rfl
+  | node _ nil _ _ => rfl
   | node _ (node sz l' y r') x r => by
     rw [eraseMin, dual_balanceR, dual_eraseMin (node sz l' y r'), dual, dual, dual, eraseMax]
 
@@ -522,12 +522,12 @@ theorem dual_eraseMax (t : Ordnode α) : dual (eraseMax t) = eraseMin (dual t) :
 
 theorem splitMin_eq :
     ∀ (s l) (x : α) (r), splitMin' l x r = (findMin' l x, eraseMin (node s l x r))
-  | _, nil, x, r => rfl
+  | _, nil, _, _ => rfl
   | _, node ls ll lx lr, x, r => by rw [splitMin', splitMin_eq ls ll lx lr, findMin', eraseMin]
 
 theorem splitMax_eq :
     ∀ (s l) (x : α) (r), splitMax' l x r = (eraseMax (node s l x r), findMax' x r)
-  | _, l, x, nil => rfl
+  | _, _, _, nil => rfl
   | _, l, x, node ls ll lx lr => by rw [splitMax', splitMax_eq ls ll lx lr, findMax', eraseMax]
 
 @[elab_as_elim]
@@ -793,7 +793,7 @@ def Bounded : Ordnode α → WithBot α → WithTop α → Prop
 theorem Bounded.dual :
     ∀ {t : Ordnode α} {o₁ o₂}, Bounded t o₁ o₂ → @Bounded αᵒᵈ _ (dual t) o₂ o₁
   | nil, o₁, o₂, h => by cases o₁ <;> cases o₂ <;> trivial
-  | node _ l x r, _, _, ⟨ol, Or⟩ => ⟨Or.dual, ol.dual⟩
+  | node _ _ _ _, _, _, ⟨ol, Or⟩ => ⟨Or.dual, ol.dual⟩
 
 theorem Bounded.dual_iff {t : Ordnode α} {o₁ o₂} :
     Bounded t o₁ o₂ ↔ @Bounded αᵒᵈ _ (.dual t) o₂ o₁ :=
@@ -802,11 +802,11 @@ theorem Bounded.dual_iff {t : Ordnode α} {o₁ o₂} :
 
 theorem Bounded.weak_left : ∀ {t : Ordnode α} {o₁ o₂}, Bounded t o₁ o₂ → Bounded t ⊥ o₂
   | nil, o₁, o₂, h => by cases o₂ <;> trivial
-  | node _ l x r, _, _, ⟨ol, Or⟩ => ⟨ol.weak_left, Or⟩
+  | node _ _ _ _, _, _, ⟨ol, Or⟩ => ⟨ol.weak_left, Or⟩
 
 theorem Bounded.weak_right : ∀ {t : Ordnode α} {o₁ o₂}, Bounded t o₁ o₂ → Bounded t o₁ ⊤
   | nil, o₁, o₂, h => by cases o₁ <;> trivial
-  | node _ l x r, _, _, ⟨ol, Or⟩ => ⟨ol, Or.weak_right⟩
+  | node _ _ _ _, _, _, ⟨ol, Or⟩ => ⟨ol, Or.weak_right⟩
 
 theorem Bounded.weak {t : Ordnode α} {o₁ o₂} (h : Bounded t o₁ o₂) : Bounded t ⊥ ⊤ :=
   h.weak_left.weak_right
@@ -929,8 +929,8 @@ theorem Valid'.node {s l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Va
   ⟨⟨hl.1, hr.1⟩, ⟨hs, hl.2, hr.2⟩, ⟨H, hl.3, hr.3⟩⟩
 
 theorem Valid'.dual : ∀ {t : Ordnode α} {o₁ o₂}, Valid' o₁ t o₂ → @Valid' αᵒᵈ _ o₂ (dual t) o₁
-  | .nil, o₁, o₂, h => valid'_nil h.1.dual
-  | .node _ l x r, o₁, o₂, ⟨⟨ol, Or⟩, ⟨rfl, sl, sr⟩, ⟨b, bl, br⟩⟩ =>
+  | .nil, _, _, h => valid'_nil h.1.dual
+  | .node _ l _ r, _, _, ⟨⟨ol, Or⟩, ⟨rfl, sl, sr⟩, ⟨b, bl, br⟩⟩ =>
     let ⟨ol', sl', bl'⟩ := Valid'.dual ⟨ol, sl, bl⟩
     let ⟨or', sr', br'⟩ := Valid'.dual ⟨Or, sr, br⟩
     ⟨⟨or', ol'⟩, ⟨by simp [size_dual, add_comm], sr', sl'⟩,
@@ -1324,7 +1324,7 @@ theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ 
         Bounded nil o₁ x →
           Bounded nil x o₂ →
             Valid' o₁ (insertWith f x t) o₂ ∧ Raised (size t) (size (insertWith f x t))
-  | nil, o₁, o₂, _, bl, br => ⟨valid'_singleton bl br, Or.inr rfl⟩
+  | nil, _, _, _, bl, br => ⟨valid'_singleton bl br, Or.inr rfl⟩
   | node sz l y r, o₁, o₂, h, bl, br => by
     rw [insertWith, cmpLE]
     split_ifs with h_1 h_2 <;> dsimp only

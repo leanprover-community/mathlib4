@@ -16,7 +16,7 @@ open scoped AlgebraOrderInstances
 
 open Function
 
-variable {α : Type*} {β : α → Type*}
+variable {α : Type*}
 
 namespace DFinsupp
 
@@ -24,7 +24,7 @@ namespace DFinsupp
 instance addZeroClass' {β} [AddZeroClass β] : AddZeroClass (Π₀ _ : α, β) :=
   @DFinsupp.addZeroClass α (fun _ ↦ β) _
 
-variable [DecidableEq α] {s t : Multiset α}
+variable [DecidableEq α]
 
 /-- A DFinsupp version of `Finsupp.toMultiset`. -/
 def toMultiset : (Π₀ _ : α, ℕ) →+ Multiset α :=

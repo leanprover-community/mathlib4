@@ -76,7 +76,7 @@ theorem convex_iff_pointwise_add_subset :
     (by
       rintro hA a b ha hb hab w ⟨au, ⟨u, hu, rfl⟩, bv, ⟨v, hv, rfl⟩, rfl⟩
       exact hA hu hv ha hb hab)
-    fun h x hx y hy a b ha hb hab => (h ha hb hab) (Set.add_mem_add ⟨_, hx, rfl⟩ ⟨_, hy, rfl⟩)
+    fun h _ hx _ hy _ _ ha hb hab => (h ha hb hab) (Set.add_mem_add ⟨_, hx, rfl⟩ ⟨_, hy, rfl⟩)
 
 alias ⟨Convex.set_combo_subset, _⟩ := convex_iff_pointwise_add_subset
 
@@ -655,7 +655,7 @@ def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
       calc
         (1 : 𝕜) - f.1 0 = f.1 0 + f.1 1 - f.1 0 := by rw [← Fin.sum_univ_two f.1, f.2.2]
         _ = f.1 1 := add_sub_cancel_left _ _
-  right_inv x := Subtype.eq rfl
+  right_inv _ := Subtype.eq rfl
 
 end OrderedRing
 

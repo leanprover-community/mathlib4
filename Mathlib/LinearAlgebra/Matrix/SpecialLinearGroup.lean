@@ -304,7 +304,7 @@ noncomputable def center_equiv_rootsOfUnity :
   (fun hn ↦ by
     rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, Nat.toPNat'_zero, rootsOfUnity_one]
     exact MulEquiv.mulEquivOfUnique)
-  (fun hn ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
+  (fun _ ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
 
 end center
 
@@ -494,5 +494,11 @@ theorem T_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(T * g) 1 = ↑ₘg 1 := by
 @[simp]
 theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(T⁻¹ * g) 1 = ↑ₘg 1 := by
   simpa using T_pow_mul_apply_one (-1) g
+
+lemma S_mul_S_eq : (↑ₘS * ↑ₘS) = -1 := by
+  simp only [S, Int.reduceNeg, pow_two, coe_mul, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
+    vecMul_cons, head_cons, zero_smul, tail_cons, neg_smul, one_smul, neg_cons, neg_zero, neg_empty,
+    empty_vecMul, add_zero, zero_add, empty_mul, Equiv.symm_apply_apply]
+  exact Eq.symm (eta_fin_two (-1))
 
 end ModularGroup

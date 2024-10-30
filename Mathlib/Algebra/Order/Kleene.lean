@@ -162,13 +162,11 @@ instance (priority := 100) IdemSemiring.toCanonicallyOrderedAddCommMonoid :
     le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toCovariantClass_mul_le :
-    CovariantClass α α (· * ·) (· ≤ ·) :=
+instance (priority := 100) IdemSemiring.toMulLeftMono : MulLeftMono α :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← mul_add, hbc.add_eq_left]⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toCovariantClass_swap_mul_le :
-    CovariantClass α α (swap (· * ·)) (· ≤ ·) :=
+instance (priority := 100) IdemSemiring.toMulRightMono : MulRightMono α :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← add_mul, hbc.add_eq_left]⟩
 
 end IdemSemiring
