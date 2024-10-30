@@ -447,7 +447,7 @@ lemma of_linearEquiv [fl : FaithfullyFlat R M]
   apply_fun e at eq
   simp only [LinearEquiv.apply_symm_apply, Finsupp.sum, AddSubmonoidClass.coe_finset_sum,
     SetLike.val_smul, map_sum, map_smul] at eq
-  exact eq ▸ Submodule.sum_mem _ fun i hi => Submodule.apply_mem_map₂ (hm := hc hi) (hn := ⟨⟩) _
+  exact eq ▸ Submodule.sum_mem _ fun i hi => Submodule.smul_mem_smul (hc hi) ⟨⟩
 
 section comp
 
