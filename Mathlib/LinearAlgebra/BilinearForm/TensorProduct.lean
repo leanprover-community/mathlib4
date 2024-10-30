@@ -20,9 +20,9 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 suppress_compilation
 
-universe u v w uι uR uA uM₁ uM₂
+universe u v w uR uA uM₁ uM₂
 
-variable {ι : Type uι} {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂}
+variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂}
 
 open TensorProduct
 
