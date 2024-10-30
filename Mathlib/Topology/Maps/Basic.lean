@@ -745,10 +745,6 @@ lemma of_continuous_injective_isClosedMap (h₁ : Continuous f) (h₂ : Injectiv
   refine ⟨(f '' sᶜ)ᶜ, (h₃ _ hs.isClosed_compl).isOpen_compl, ?_⟩
   rw [preimage_compl, preimage_image_eq _ h₂, compl_compl]
 
-@[deprecated (since := "2024-10-30")]
-alias _root_.IsClosedEmbedding.of_continuous_injective_isClosedMap :=
-  of_continuous_injective_isClosedMap
-
 @[deprecated (since := "2024-10-20")]
 alias _root_.closedEmbedding_of_continuous_injective_closed :=
   IsClosedEmbedding.of_continuous_injective_isClosedMap
