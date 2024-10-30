@@ -1,0 +1,130 @@
+/-
+Copyright (c) 2024 Jakob von Raumer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jakob von Raumer
+-/
+import Mathlib.CategoryTheory.Grothendieck
+import Mathlib.CategoryTheory.Limits.HasLimits
+
+/-!
+# Limits on the (strict) Grothendieck Construction
+
+
+-/
+
+universe v₁ v₂ v₃ u₁ u₂ u₃
+
+namespace CategoryTheory
+
+variable {C : Type u₁} [Category.{v₁} C]
+variable {F : C ⥤ Cat}
+variable {H : Type u₂} [Category.{v₂} H]
+variable (G : Grothendieck F ⥤ H)
+
+@[simps]
+def Grothendieck.ιNatTrans {X Y : C} (f : X ⟶ Y) : ι F X ⟶ F.map f ⋙ ι F Y where
+  app d := ⟨f, 𝟙 _⟩
+  naturality _ _ _ := by
+    simp only [ι, Functor.comp_obj, Functor.comp_map]
+    exact Grothendieck.ext _ _ (by simp) (by simp [eqToHom_map])
+
+def Grothendieck.coherence {X Y : Grothendieck F} (hF : X = Y) :
+    eqToHom hF = { base := eqToHom (by subst hF; rfl), fiber := eqToHom (by subst hF; simp) } := by
+  subst hF
+  rfl
+
+namespace Limits
+
+lemma colimit.ι_coherence (F : C ⥤ H) [HasColimit F] {c c' : C} (hc : c = c') :
+    colimit.ι F c = eqToHom (by subst hc; rfl) ≫ colimit.ι F c' := by
+  subst hc
+  simp
+
+noncomputable section
+
+variable [∀ X, HasColimit (Grothendieck.ι F X ⋙ G)]
+  [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F Y ⋙ G)]
+
+/-- A functor taking the colimit on each fiber of a functor `G : Grothendieck F ⥤ H`. -/
+@[simps]
+noncomputable def fiberwiseColimit : C ⥤ H where
+  obj X := colimit (Grothendieck.ι F X ⋙ G)
+  map {X Y} f := colimMap (whiskerRight (Grothendieck.ιNatTrans f) G ≫
+    (Functor.associator _ _ _).hom) ≫ colimit.pre (Grothendieck.ι F Y ⋙ G) (F.map f)
+  map_id X := by
+    ext d
+    simp only [Functor.comp_obj, Grothendieck.ιNatTrans, Grothendieck.ι_obj_base,
+      Grothendieck.ι_obj_fiber, ι_colimMap_assoc, NatTrans.comp_app, whiskerRight_app,
+      Functor.associator_hom_app, Category.comp_id, colimit.ι_pre]
+    conv_rhs =>
+      rw [colimit.ι_coherence (Grothendieck.ι F X ⋙ G) (c' := (F.map (𝟙 X)).obj d) (by simp)]
+    rw [← eqToHom_map G (by simp), Grothendieck.coherence]
+    rfl
+  map_comp {X Y Z} f g := by
+    ext d
+    simp only [Functor.comp_obj, Grothendieck.ιNatTrans, Grothendieck.ι_obj_base,
+      Grothendieck.ι_obj_fiber, ι_colimMap_assoc, NatTrans.comp_app, whiskerRight_app,
+      Functor.associator_hom_app, Category.comp_id, colimit.ι_pre, Category.assoc,
+      colimit.ι_pre_assoc]
+    rw [← Category.assoc, ← G.map_comp]
+    conv_rhs =>
+      rw [colimit.ι_coherence (Grothendieck.ι F Z ⋙ G) (c' := (F.map (f ≫ g)).obj d) (by simp)]
+    rw [← Category.assoc, ← eqToHom_map G (by simp), ← G.map_comp, Grothendieck.coherence]
+    congr 2
+    fapply Grothendieck.ext
+    · simp only [Grothendieck.ι_obj_base, Cat.comp_obj, eqToHom_refl, Grothendieck.ι_obj_fiber,
+        Category.assoc, Grothendieck.comp_base, Category.comp_id]
+    · simp only [Grothendieck.ι_obj_base, Cat.comp_obj, eqToHom_refl, Grothendieck.ι_obj_fiber,
+        Cat.id_obj, Grothendieck.comp_base, Category.comp_id, Grothendieck.comp_fiber,
+        Functor.map_id]
+      conv_rhs => enter [2, 1]; rw [eqToHom_map (F.map (𝟙 Z))]
+      conv_rhs => rw [eqToHom_trans, eqToHom_trans]
+
+@[simps]
+noncomputable def natTransIntoForgetCompFiberwiseColimit :
+    G ⟶ Grothendieck.forget F ⋙ fiberwiseColimit G where
+  app X := colimit.ι (Grothendieck.ι F X.base ⋙ G) X.fiber
+  naturality {X Y} f := by
+    rcases X with ⟨c, d⟩
+    rcases Y with ⟨c', d'⟩
+    rcases f with ⟨f, g⟩
+    dsimp at f g
+    simp [Grothendieck.ιNatTrans]
+    rw [← colimit.w (Grothendieck.ι F _ ⋙ G) g, ← Category.assoc]
+    congr 1
+    simp
+    rw [← G.map_comp]
+    congr 1
+    apply Grothendieck.ext <;> simp
+
+variable {G} in
+@[simps]
+noncomputable def coconeFiberwiseColimitOfCocone (c : Cocone G) : Cocone (fiberwiseColimit G) where
+  pt := c.pt
+  ι := { app := fun X => colimit.desc _ (c.whisker (Grothendieck.ι F X)),
+         naturality := fun _ _ f => by dsimp; ext; simp }
+
+noncomputable def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
+    IsColimit (coconeFiberwiseColimitOfCocone c) where
+  desc s := hc.desc (Cocone.mk s.pt (natTransIntoForgetCompFiberwiseColimit G
+    ≫ whiskerLeft (Grothendieck.forget F) s.ι))
+  fac s c := by dsimp; ext; simp
+  uniq s m hm := hc.hom_ext fun X => by
+    have := hm X.base
+    simp only [Functor.const_obj_obj, IsColimit.fac, NatTrans.comp_app, Functor.comp_obj,
+      Grothendieck.forget_obj, fiberwiseColimit_obj, natTransIntoForgetCompFiberwiseColimit_app,
+      whiskerLeft_app]
+    simp only [fiberwiseColimit_obj, coconeFiberwiseColimitOfCocone_pt, Functor.const_obj_obj,
+      coconeFiberwiseColimitOfCocone_ι_app] at this
+    simp [← this, Grothendieck.ι]
+
+noncomputable def colimitFiberwiseColimitIso [HasColimit G] [HasColimit (fiberwiseColimit G)] :
+    colimit (fiberwiseColimit G) ≅ colimit G :=
+  IsColimit.coconePointUniqueUpToIso (colimit.isColimit (fiberwiseColimit G))
+    (isColimitCoconeFiberwiseColimitOfCocone _ (colimit.isColimit _))
+
+end
+
+end Limits
+
+end CategoryTheory
