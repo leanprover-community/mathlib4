@@ -36,6 +36,7 @@ import MathlibTest.ComputeDegree
 import MathlibTest.Constructor
 import MathlibTest.Continuity
 import MathlibTest.Contrapose
+import MathlibTest.CountHeartbeats
 import MathlibTest.DFinsuppMultiLinear
 import MathlibTest.DefEqTransformations
 import MathlibTest.DeprecateMe
@@ -155,6 +156,7 @@ import MathlibTest.eqns
 import MathlibTest.eval_elab
 import MathlibTest.fail_if_no_progress
 import MathlibTest.fin_cases
+import MathlibTest.finiteness
 import MathlibTest.finset_builder
 import MathlibTest.finset_repr
 import MathlibTest.finsupp_notation
