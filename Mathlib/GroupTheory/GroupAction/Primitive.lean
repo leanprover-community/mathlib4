@@ -153,7 +153,7 @@ variable [Group G] [MulAction G X]
 
 open scoped BigOperators Pointwise
 
-/-- If the action is pretransitive, then preprimitivity follows from 
+/-- If the action is pretransitive, then preprimitivity follows from
 the trivial blocks condition for blocks containing a given point -/
 theorem mk_mem_of_pretransitive [htGX : IsPretransitive G X] (a : X)
     (H : ∀ (B : Set X) (_ : a ∈ B) (_ : IsBlock G B), IsTrivialBlock B) :
