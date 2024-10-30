@@ -47,12 +47,9 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
   have h_cfc_one_sub (c : A⁺¹) (hc : 0 ≤ c := by cfc_tac) :
       cfc (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) c = 1 - cfc (·⁻¹ : ℝ≥0 → ℝ≥0) (1 + c) := by
     rw [cfc_tsub _ _ _ (fun x _ ↦ by simp) (hg := by fun_prop (disch := intro _ _; positivity)),
-      cfc_const_one ℝ≥0 c]
-    rw [cfc_comp' (·⁻¹) (1 + ·) c ?_, cfc_add .., cfc_const_one ℝ≥0 c, cfc_id' ℝ≥0 c]
-    refine continuousOn_id.inv₀ ?_
-    rintro - ⟨x, -, rfl⟩
-    simp only [id_def]
-    positivity
+      cfc_const_one ℝ≥0 c, cfc_comp' (·⁻¹) (1 + ·) c ?_, cfc_add .., cfc_const_one ℝ≥0 c, 
+      cfc_id' ℝ≥0 c]
+    exact continuousOn_id.inv₀ (Set.forall_mem_image.mpr fun x _ ↦ by dsimp only [id]; positivity)
   rw [← inr_le_iff a b (.of_nonneg ha) (.of_nonneg hb)] at hab
   rw [← inr_nonneg_iff] at ha hb
   rw [h_cfc_one_sub (a : A⁺¹), h_cfc_one_sub (b : A⁺¹)]
@@ -63,14 +60,12 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
 
 lemma Set.InvOn.one_sub_one_add_inv : Set.InvOn (fun x ↦ 1 - (1 + x)⁻¹) (fun x ↦ x * (1 - x)⁻¹)
     {x : ℝ≥0 | x < 1} {x : ℝ≥0 | x < 1} := by
-  have h1_add {x : ℝ≥0} : 0 < 1 + (x : ℝ) := by positivity
   have : (fun x : ℝ≥0 ↦ x * (1 + x)⁻¹) = fun x ↦ 1 - (1 + x)⁻¹ := by
-    ext x
+    ext x : 1
     field_simp
-    simp [sub_mul, inv_mul_cancel₀ h1_add.ne']
+    simp [tsub_mul, inv_mul_cancel₀]
   rw [← this]
-  constructor
-  all_goals intro x (hx : x < 1)
+  constructor <;> intro x (hx : x < 1)
   · have : 0 < 1 - x := tsub_pos_of_lt hx
     field_simp [tsub_add_cancel_of_le hx.le, tsub_tsub_cancel_of_le hx.le]
   · field_simp [mul_tsub]
