@@ -45,7 +45,9 @@ identRegex=[a-zA-Z_\u3b1-\u3ba\u3bc-\u3c9\u391-\u39f\u3a1-\u3a2\u3a4-\u3a9\u3ca-
 ## To use a specific date, replace $(date +%Y-%m-%d) with 2024-04-17 for instance
 mkDeclAndDepr () {
   git diff --unified=0 "${commit}" "${1}" |
-    awk -v regex="${begs}" -v idRegex="${identRegex}" -v date="$(date +%Y-%m-%d)" '
+    awk -v regex="${begs}" -v idRegex="${identRegex}" -v date="$(date +%Y-%m-%d)" -v fil="${1}" '
+    # with `perr` we print to stderr a summary of the deprecations
+    function perr(msg) { print msg | "cat >&2"; close("cat >&2") }
     function depr(ol,ne) {
       aliasLine=sprintf("alias %s :=||||  %s", ol, ne)
       # if the `alias` line contains less than 100 characters long, we leave it on a single line
@@ -58,12 +60,12 @@ mkDeclAndDepr () {
     # `{plus/minus}Regex` makes sure that we find a declaration, followed by something that
     # could be an identifier. For instance, this filters out "We now prove theorem `my_name`."
     BEGIN{
+      reps=1
       regexIdent=regex "  *" idRegex
       plusRegex="^\\+[^+-]*" regexIdent
       minusRegex="^-[^+-]*" regexIdent
     }
     ($0 ~ minusRegex) {
-      #printf("Found:        %s\n", $0)
       for(i=1; i<=NF; i++) {
         if ($i ~ regex"$") { old=$(i+1); break }
       }
@@ -71,15 +73,27 @@ mkDeclAndDepr () {
     # the check on `old` is to make sure that we found an "old" name to deprecate
     # otherwise, the declaration could be a genuinely new one.
     (($0 ~ plusRegex) && (!(old == ""))) {
-      #printf("Comparing to: %s\nold: `%s`\n\n", $0, old)
       for(i=1; i<=NF; i++) {
         if ($i ~ regex"$") {
           sub(/^\+/, "", $i)
           if (!(old == $(i+1))) {
+            # print the line that passes on to `addDeprecations`
             printf("%s %s ,%s@@@", $i, $(i+1), depr(old, $(i+1)))
+            # accumulate the summary of deprecations
+            report[reps]=sprintf("%s\n", depr(old, $(i+1)))
+            reps++
+            # reset the "old name counter", since the deprecation happened
+            old=""
             break
           }
         }
+      }
+    } END {
+      # print to stderr a summary of deprecations
+      if (!(reps == 1)) {
+        perr("\n`" fil "` deprecations:")
+        for(i=1; i<reps; i++)
+        perr(i": " report[i])
       }
     }'
 }
