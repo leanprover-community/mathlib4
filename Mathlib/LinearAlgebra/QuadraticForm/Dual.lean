@@ -145,7 +145,7 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
       smul_sub, LinearMap.smul_def, sub_add_sub_cancel, ← sub_eq_add_neg (Q x.1) (Q x.2)]
     rw [← LinearMap.map_sub (⅟ 2 : Module.End R R), ← mul_sub, ← LinearMap.smul_def]
     simp only [LinearMap.smul_def, half_moduleEnd_apply_eq_half_smul, smul_eq_mul,
-      mul_invOf_cancel_left']
+      invOf_mul_cancel_left']
 
 /-!
 TODO: show that `QuadraticForm.toDualProd` is an `QuadraticForm.IsometryEquiv`
