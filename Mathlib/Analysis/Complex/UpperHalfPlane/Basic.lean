@@ -38,15 +38,15 @@ namespace UpperHalfPlane
 matrix.
 
 This notation is scoped in namespace `UpperHalfPlane`. -/
-scoped notation:1024 "↑ₘₙ" A:1024 =>
+scoped notation:1024 "↑ₘ" A:1024 =>
   (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
 
 /-- The coercion into an element of  `GL(2, R)` and finally a 2 × 2 matrix over `R`. This is
-similar to `↑ₘₙ`, but without positivity requirements, and allows the user to specify the ring `R`,
+similar to `↑ₘ`, but without positivity requirements, and allows the user to specify the ring `R`,
 which can be useful to help Lean elaborate correctly.
 
 This notation is scoped in namespace `UpperHalfPlane`. -/
-scoped notation:1024 "↑ₘₙ[" R "]" A:1024 =>
+scoped notation:1024 "↑ₘ[" R "]" A:1024 =>
   ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
 
 /-- Canonical embedding of the upper half-plane into `ℂ`. -/
@@ -170,12 +170,12 @@ theorem im_inv_neg_coe_pos (z : ℍ) : 0 < (-z : ℂ)⁻¹.im := by
 -- Porting note: removed `@[simp]` because it broke `field_simp` calls below.
 /-- Numerator of the formula for a fractional linear transformation -/
 def num (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
-  (↑ₘₙg 0 0 : ℝ) * z + (↑ₘₙg 0 1 : ℝ)
+  (↑ₘg 0 0 : ℝ) * z + (↑ₘg 0 1 : ℝ)
 
 -- Porting note: removed `@[simp]` because it broke `field_simp` calls below.
 /-- Denominator of the formula for a fractional linear transformation -/
 def denom (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
-  (↑ₘₙg 1 0 : ℝ) * z + (↑ₘₙg 1 1 : ℝ)
+  (↑ₘg 1 0 : ℝ) * z + (↑ₘg 1 1 : ℝ)
 
 theorem linear_ne_zero (cd : Fin 2 → ℝ) (z : ℍ) (h : cd ≠ 0) : (cd 0 : ℂ) * z + cd 1 ≠ 0 := by
   contrapose! h
@@ -194,11 +194,11 @@ theorem denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : denom g z ≠ 0 := by
   have DET := (mem_glpos _).1 g.prop
   have hz := z.prop
   simp only [GeneralLinearGroup.val_det_apply] at DET
-  have H1 : (↑ₘₙg 1 0 : ℝ) = 0 ∨ z.im = 0 := by simpa [num, denom] using congr_arg Complex.im H
+  have H1 : (↑ₘg 1 0 : ℝ) = 0 ∨ z.im = 0 := by simpa [num, denom] using congr_arg Complex.im H
   cases' H1 with H1
   · simp only [H1, Complex.ofReal_zero, denom, zero_mul, zero_add,
       Complex.ofReal_eq_zero] at H
-    rw [Matrix.det_fin_two (↑ₘₙg : Matrix (Fin 2) (Fin 2) ℝ)] at DET
+    rw [Matrix.det_fin_two (↑ₘg : Matrix (Fin 2) (Fin 2) ℝ)] at DET
     simp only [H, H1, mul_zero, sub_zero, lt_self_iff_false] at DET
   · change z.im > 0 at hz
     linarith
@@ -214,7 +214,7 @@ def smulAux' (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
   num g z / denom g z
 
 theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
-    (smulAux' g z).im = det ↑ₘₙg * z.im / Complex.normSq (denom g z) := by
+    (smulAux' g z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) := by
   rw [smulAux', Complex.div_im]
   field_simp [smulAux', num, denom]
   -- Porting note: the local notation still didn't work here
@@ -308,8 +308,8 @@ end ModularScalarTowers
 theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     g • z =
       mk
-        (((algebraMap R ℝ (↑ₘₙ[R] g 0 0) : ℂ) * z + (algebraMap R ℝ (↑ₘₙ[R] g 0 1) : ℂ)) /
-          ((algebraMap R ℝ (↑ₘₙ[R] g 1 0) : ℂ) * z + (algebraMap R ℝ (↑ₘₙ[R] g 1 1) : ℂ)))
+        (((algebraMap R ℝ (↑ₘ[R] g 0 0) : ℂ) * z + (algebraMap R ℝ (↑ₘ[R] g 0 1) : ℂ)) /
+          ((algebraMap R ℝ (↑ₘ[R] g 1 0) : ℂ) * z + (algebraMap R ℝ (↑ₘ[R] g 1 1) : ℂ)))
         (g • z).property :=
   rfl
 
@@ -325,13 +325,13 @@ theorem im_smul (g : GL(2, ℝ)⁺) (z : ℍ) : (g • z).im = (num g z / denom 
   rfl
 
 theorem im_smul_eq_div_normSq (g : GL(2, ℝ)⁺) (z : ℍ) :
-    (g • z).im = det ↑ₘₙg * z.im / Complex.normSq (denom g z) :=
+    (g • z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) :=
   smulAux'_im g z
 
 theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
-    ((↑ₘₙg 1 0 : ℝ) * z.im) ^ 2 ≤ Complex.normSq (denom g z) := by
-  let c := (↑ₘₙg 1 0 : ℝ)
-  let d := (↑ₘₙg 1 1 : ℝ)
+    ((↑ₘg 1 0 : ℝ) * z.im) ^ 2 ≤ Complex.normSq (denom g z) := by
+  let c := (↑ₘg 1 0 : ℝ)
+  let d := (↑ₘg 1 1 : ℝ)
   calc
     (c * z.im) ^ 2 ≤ (c * z.im) ^ 2 + (c * z.re + d) ^ 2 := by nlinarith
     _ = Complex.normSq (denom g z) := by dsimp [c, d, denom, Complex.normSq]; ring
@@ -433,7 +433,7 @@ theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n 
 theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
   simpa only [Int.cast_one] using modular_T_zpow_smul z 1
 
-theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑ₘₙ[ℝ] g 1 0 = 0) :
+theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑ₘ[ℝ] g 1 0 = 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v : ℝ), (g • · : ℍ → ℍ) = (v +ᵥ ·) ∘ (u • ·) := by
   obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
   refine ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, ?_⟩
@@ -443,7 +443,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑�
     simpa [coeToGL, specialLinearGroup_apply, add_mul]
   ring
 
-theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑ₘₙ[ℝ] g 1 0 ≠ 0) :
+theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑ₘ[ℝ] g 1 0 ≠ 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v w : ℝ),
       (g • · : ℍ → ℍ) =
         (w +ᵥ ·) ∘ (ModularGroup.S • · : ℍ → ℍ) ∘ (v +ᵥ · : ℍ → ℍ) ∘ (u • · : ℍ → ℍ) := by
