@@ -65,7 +65,7 @@ empty type `R`.) -/
 noncomputable def presentationFinsupp (G : Type w₀) :
     Presentation.{w₀, w₁} A (G →₀ A) where
   G := G
-  R := PEmpty
+  R := PEmpty.{w₁ + 1}
   relation := by rintro ⟨⟩
   toSolution := Relations.solutionFinsupp _
   toIsPresentation := Relations.solutionFinsupp_isPresentation _

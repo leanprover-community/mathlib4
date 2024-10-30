@@ -96,9 +96,10 @@ protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (laws
     WithLower.toLower WithScott.toScott
   rw [@topology_eq_lawson α _ _ _, lawson]
   apply (congrArg₂ Inf.inf _) _
-  · letI _ := lower α; exact @IsLower.withLowerHomeomorph α ‹_› (lower α) ⟨rfl⟩ |>.inducing.induced
-  letI _ := scott α univ
-  exact @IsScott.withScottHomeomorph α _ (scott α univ) ⟨rfl⟩ |>.inducing.induced
+  · letI _ := lower α
+    exact (@IsLower.withLowerHomeomorph α ‹_› (lower α) ⟨rfl⟩).isInducing.eq_induced
+  · letI _ := scott α univ
+    exact (@IsScott.withScottHomeomorph α _ (scott α univ) ⟨rfl⟩).isInducing.eq_induced
 
 end Preorder
 end IsLawson
@@ -144,7 +145,7 @@ instance instIsLawson : IsLawson (WithLawson α) := ⟨rfl⟩
 /-- If `α` is equipped with the Lawson topology, then it is homeomorphic to `WithLawson α`.
 -/
 def homeomorph [TopologicalSpace α] [IsLawson α] : WithLawson α ≃ₜ α :=
-  ofLawson.toHomeomorphOfInducing ⟨by erw [IsLawson.topology_eq_lawson (α := α), induced_id]; rfl⟩
+  ofLawson.toHomeomorphOfIsInducing ⟨by erw [IsLawson.topology_eq_lawson (α := α), induced_id]; rfl⟩
 
 theorem isOpen_preimage_ofLawson {S : Set α} :
     IsOpen (ofLawson ⁻¹' S) ↔ (lawson α).IsOpen S := Iff.rfl

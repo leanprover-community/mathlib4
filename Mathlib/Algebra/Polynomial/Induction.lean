@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Induction on polynomials
