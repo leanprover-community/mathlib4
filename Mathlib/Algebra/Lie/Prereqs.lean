@@ -10,6 +10,19 @@ import Batteries.Tactic.ShowUnused
 -- move this
 section
 
+variable (R L M : Type*)
+variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M]
+variable [LieRingModule L M]
+
+instance instCanLiftSubmoduleLieSubmodule : CanLift (Submodule R M) (LieSubmodule R L M) (·)
+    (fun N ↦ ∀ {x : L} {m : M}, m ∈ N → ⁅x, m⁆ ∈ N) where
+  prf N hN := ⟨⟨N, hN⟩, rfl⟩
+
+end
+
+-- move this
+section
+
 open LieAlgebra
 
 class LieTower (L₁ L₂ M : Type*) [Add M] [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M] where

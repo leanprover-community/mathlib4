@@ -85,7 +85,7 @@ private lemma LieModule.exists_forall_lie_eq_smul_of_isSolvable_of_finite [Nontr
   change LieIdeal k L at A -- remove this line when bug in `lift` is fixed (#15865)
   obtain ⟨χ', v, hv, hvA⟩ := exists_forall_lie_eq_smul_of_isSolvable_of_finite A
   exact extend_weight A hA χ' v hv hvA
-termination_by FiniteDimensional.finrank k L
+termination_by Module.finrank k L
 decreasing_by
   simp_wf
   rw [← finrank_top k L]
