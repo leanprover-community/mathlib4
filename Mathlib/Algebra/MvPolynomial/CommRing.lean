@@ -92,6 +92,17 @@ theorem degrees_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
 
 end Degrees
 
+section Degrees
+
+theorem degreeOf_neg (i : σ) (p : MvPolynomial σ R) : degreeOf i (-p) = degreeOf i p := by
+  rw [degreeOf, degreeOf, degrees_neg]
+
+theorem degreeOf_sub_le [DecidableEq σ] (i : σ) (p q : MvPolynomial σ R) :
+    degreeOf i (p - q) ≤ max (degreeOf i p) (degreeOf i q) := by
+  simpa only [sub_eq_add_neg, degreeOf_neg] using degreeOf_add_le i p (-q)
+
+end Degrees
+
 section Vars
 
 @[simp]
