@@ -28,7 +28,7 @@ def leadingTerm {basis : Basis} (ms : PreMS basis) : MS.Term :=
       let pre := coef.leadingTerm
       ⟨pre.coef, deg :: pre.degs⟩
 
-theorem leadingTerm_length {basis : Basis} (ms : PreMS basis) :
+theorem leadingTerm_length {basis : Basis} {ms : PreMS basis} :
     ms.leadingTerm.degs.length = basis.length :=
   match basis with
   | [] => by simp [leadingTerm]
@@ -36,6 +36,7 @@ theorem leadingTerm_length {basis : Basis} (ms : PreMS basis) :
     apply ms.recOn
     · simp [leadingTerm]
     · simp [leadingTerm]
+      intro
       exact leadingTerm_length
 
 theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
@@ -49,28 +50,6 @@ theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg 
     lhs
     rw [mul_comm] -- why do I need these rws? Why ring_nf can't solve the goal?
   rw [← mul_assoc]
-
--- somehow I avoided it
--- lemma PreMS.leadingTerm_coef_ne_zero {basis : Basis} {ms : PreMS}
---     (h_depth : ms.hasDepth basis.length) (h_wo : ms.WellOrdered) (h_trimmed : ms.Trimmed)
---     (h_basis : MS.WellOrderedBasis basis) :
---     (ms.leadingTerm h_depth).coef ≠ 0 := by
---   induction ms using PreMS.rec' generalizing basis with
---   | nil =>
---     simp [Trimmed] at h_trimmed
---   | const c =>
---     simp [Trimmed] at h_trimmed
---     unfold leadingTerm
---     simpa
---   | cons deg coef tl coef_ih _ =>
---     cases basis with
---     | nil => simp [hasDepth] at h_depth
---     | cons basis_hd basis_tl =>
---       simp [leadingTerm]
---       simp [WellOrdered] at h_wo
---       simp [Trimmed] at h_trimmed
---       simp [MS.WellOrderedBasis] at h_basis
---       exact coef_ih _ h_wo.left h_trimmed h_basis.right.left
 
 theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
     (h_wo : ms.WellOrdered) (h_trimmed : ms.Trimmed) (h_ne_zero : ¬ ms.FlatZero)
@@ -116,7 +95,7 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
 mutual
   theorem IsEquivalent_coef {basis_hd C F : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
       {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-      (h_coef : coef.Approximates C basis_tl)
+      (h_coef : coef.Approximates C)
       (h_coef_wo : coef.WellOrdered)
       (h_coef_trimmed : coef.Trimmed)
       (h_coef_ne_zero : ¬coef.FlatZero)
@@ -184,7 +163,7 @@ mutual
 
   theorem IsEquivalent_leadingTerm {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
       (h_wo : ms.WellOrdered)
-      (h_approx : ms.Approximates F basis) (h_trimmed : ms.Trimmed)
+      (h_approx : ms.Approximates F) (h_trimmed : ms.Trimmed)
       (h_basis : MS.WellOrderedBasis basis)
       : F ~[atTop] ms.leadingTerm.toFun basis :=
     match basis with
@@ -216,7 +195,7 @@ mutual
 end
 
 theorem eventually_ne_zero_of_not_FlatZero {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
-    (h_ne_zero : ¬ ms.FlatZero) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates F _)
+    (h_ne_zero : ¬ ms.FlatZero) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates F)
     (h_trimmed : ms.Trimmed) (h_basis : MS.WellOrderedBasis basis):
     ∀ᶠ x in atTop, F x ≠ 0 := by
   have := IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis

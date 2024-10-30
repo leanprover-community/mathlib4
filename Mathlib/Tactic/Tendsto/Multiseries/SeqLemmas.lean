@@ -236,7 +236,7 @@ section Eq
 theorem Eq.coind {α : Type u} {a b : Seq α}
     (motive : Seq α → Seq α → Prop)
     (h_base : motive a b)
-    (h_survive : ∀ a b, motive a b →
+    (h_step : ∀ a b, motive a b →
       (∃ hd a_tl b_tl, a = cons hd a_tl ∧ b = cons hd b_tl ∧ motive a_tl b_tl) ∨
       (a = nil ∧ b = nil)) : a = b := by
   apply Subtype.eq
@@ -248,8 +248,8 @@ theorem Eq.coind {α : Type u} {a b : Seq α}
       simpa
     | succ m ih =>
       simp only [drop]
-      specialize h_survive (a.drop m) (b.drop m) ih
-      cases h_survive with
+      specialize h_step (a.drop m) (b.drop m) ih
+      cases h_step with
       | inl h =>
         obtain ⟨hd, a_tl, b_tl, h_a_eq, h_b_eq, h_tail⟩ := h
         rw [h_a_eq, h_b_eq]
@@ -257,8 +257,8 @@ theorem Eq.coind {α : Type u} {a b : Seq α}
       | inr h =>
         rw [h.1, h.2] at ih ⊢
         simpa
-  specialize h_survive _ _ this
-  cases h_survive with
+  specialize h_step _ _ this
+  cases h_step with
   | inl h =>
     obtain ⟨hd, a_tl, b_tl, h_a_eq, h_b_eq, _⟩ := h
     simp [← head_dropn, h_a_eq, h_b_eq]
@@ -269,7 +269,7 @@ theorem Eq.coind {α : Type u} {a b : Seq α}
 theorem Eq.coind_strong {α : Type u} {a b : Seq α}
     (motive : Seq α → Seq α → Prop)
     (h_base : motive a b)
-    (h_survive : ∀ a b, motive a b →
+    (h_step : ∀ a b, motive a b →
       (a = b) ∨
       (∃ hd a_tl b_tl, a = cons hd a_tl ∧ b = cons hd b_tl ∧ (motive a_tl b_tl))): a = b := by
   apply Subtype.eq
@@ -284,8 +284,8 @@ theorem Eq.coind_strong {α : Type u} {a b : Seq α}
       simp only [drop]
       cases ih with
       | inl ih =>
-        specialize h_survive (a.drop m) (b.drop m) ih
-        cases h_survive with
+        specialize h_step (a.drop m) (b.drop m) ih
+        cases h_step with
         | inl h_eq =>
           right
           congr
@@ -299,8 +299,8 @@ theorem Eq.coind_strong {α : Type u} {a b : Seq α}
         congr
   cases this with
   | inl this =>
-    specialize h_survive _ _ this
-    cases h_survive with
+    specialize h_step _ _ this
+    cases h_step with
     | inl h_eq =>
       simp [← head_dropn]
       congr
@@ -704,7 +704,7 @@ theorem Sorted.cons {α : Type u} {r : α → α → Prop} [IsTrans _ r] {hd : �
 
 theorem Sorted.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] {li : Seq α}
     (motive : Seq α → Prop) (h_base : motive li)
-    (h_survive : ∀ hd tl, motive (.cons hd tl) → tl.head.elim True (r hd ·) ∧ motive tl)
+    (h_step : ∀ hd tl, motive (.cons hd tl) → tl.head.elim True (r hd ·) ∧ motive tl)
     : Sorted r li := by
   have h_all : ∀ n, motive (li.drop n) := by
     intro n
@@ -717,7 +717,7 @@ theorem Sorted.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] {li : 
       apply t.recOn
       · simp
       · intro hd tl ih
-        exact (h_survive hd tl ih).right
+        exact (h_step hd tl ih).right
   simp [Sorted]
   intro i j x y h_ij hx hy
   replace h_ij := Nat.exists_eq_add_of_lt h_ij
@@ -734,10 +734,10 @@ theorem Sorted.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] {li : 
     apply t.recOn
     · simp
     intro hd tl hx hy h_all
-    specialize h_survive hd tl h_all
+    specialize h_step hd tl h_all
     simp at hx hy
-    simp [hy, hx] at h_survive
-    exact h_survive.left
+    simp [hy, hx] at h_step
+    exact h_step.left
   | succ l ih =>
     simp at hx hy ih
     rw [show l + 1 + 1 + i = l + 1 + i + 1 by omega] at hy
@@ -748,11 +748,11 @@ theorem Sorted.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] {li : 
     apply t.recOn
     · simp
     intro hd tl hy ih h_all
-    specialize h_survive hd tl h_all
+    specialize h_step hd tl h_all
     simp at ih hy
-    simp [hy] at h_survive
+    simp [hy] at h_step
     trans hd
-    exacts [ih, h_survive.left]
+    exacts [ih, h_step.left]
 
 theorem Sorted_cons {α : Type u} {r : α → α → Prop} {hd : α} {tl : Seq α}
     (h : Sorted r (.cons hd tl)) :
@@ -844,7 +844,7 @@ theorem atLeastAsLongAs_map {α : Type v} {β : Type v} {γ : Type w} {f : β �
 -- very bad proof. May be possible to do everything in a single induction?
 theorem atLeastAsLong.coind {α : Type u} {β : Type v} {a : Seq α} {b : Seq β}
     (motive : Seq α → Seq β → Prop) (h_base : motive a b)
-    (h_survive : ∀ a b, motive a b →
+    (h_step : ∀ a b, motive a b →
       (∀ b_hd b_tl, (b = cons b_hd b_tl) → ∃ a_hd a_tl, a = cons a_hd a_tl ∧ motive a_tl b_tl))
     : a.atLeastAsLongAs b := by
   simp only [atLeastAsLongAs]
@@ -864,22 +864,22 @@ theorem atLeastAsLong.coind {α : Type u} {β : Type v} {a : Seq α} {b : Seq β
         simp at hb
       · intro tb_hd tb_tl hb ih
         simp at ih
-        specialize h_survive ta (cons tb_hd tb_tl) ih _ _ (by rfl)
-        obtain ⟨a_hd, a_tl, ha, h_tail⟩ := h_survive
+        specialize h_step ta (cons tb_hd tb_tl) ih _ _ (by rfl)
+        obtain ⟨a_hd, a_tl, ha, h_tail⟩ := h_step
         subst ha
         simpa
   simp [TerminatedAt, ← head_dropn]
   intro hb
   contrapose hb
   specialize this hb
-  specialize h_survive _ _ this
+  specialize h_step _ _ this
   generalize b.drop n = tb at *
-  revert hb h_survive
+  revert hb h_step
   apply tb.recOn
   · simp
-  · intro tb_hd tb_tl _ h_survive
-    specialize h_survive _ _ (by rfl)
-    obtain ⟨a_hd, a_tl, ha, _⟩ := h_survive
+  · intro tb_hd tb_tl _ h_step
+    specialize h_step _ _ (by rfl)
+    obtain ⟨a_hd, a_tl, ha, _⟩ := h_step
     rw [ha]
     simp
 

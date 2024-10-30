@@ -537,8 +537,8 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
             use X_tl, Y_tl
 
 theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
-    (hX_approx : X.Approximates fX basis) (hY_approx : Y.Approximates fY basis) :
-    (X + Y).Approximates (fX + fY) basis := by
+    (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY) :
+    (X + Y).Approximates (fX + fY) := by
   cases basis with
   | nil =>
     simp [Approximates] at *

@@ -367,7 +367,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
     {ms : PreMS basis}
     (h_basis : MS.WellOrderedBasis basis) (h_wo : ms.WellOrdered)
     (h_neg : ms.HasNegativeLeading) {F : ℝ → ℝ}
-    (h_approx : ms.Approximates F basis) : (apply s ms).Approximates (s.toFun ∘ F) basis := by
+    (h_approx : ms.Approximates F) : (apply s ms).Approximates (s.toFun ∘ F) := by
   have hF_tendsto_zero : Tendsto F atTop (nhds 0) := by
     apply HasNegativeLeading_tendsto_zero h_neg h_approx
   cases basis with
@@ -377,8 +377,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
     let motive : (F : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop := fun F' ms' =>
       ∃ (s : LazySeries), (analytic s) ∧
         ∃ X Y fX fY, F' =ᶠ[atTop] fX + fY * s.toFun ∘ F ∧ ms' = X + ((s.apply ms).mul Y) ∧
-        X.WellOrdered ∧ X.Approximates fX (basis_hd :: basis_tl) ∧
-        Y.WellOrdered ∧ Y.Approximates fY (basis_hd :: basis_tl)
+        X.WellOrdered ∧ X.Approximates fX ∧
+        Y.WellOrdered ∧ Y.Approximates fY
     apply Approximates.coind motive
     · simp [motive]
       use s

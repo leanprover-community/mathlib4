@@ -14,9 +14,9 @@ open Stream' Seq
 
 inductive FlatZero : {basis : Basis} → PreMS basis → Prop
 | const {c : ℝ} (h : c = 0) : FlatZero (basis := []) c
-| nil {basis_hd : _} {basis_tl : _} : FlatZero (basis := basis_hd :: basis_tl) Seq.nil
+| nil {basis_hd} {basis_tl} : FlatZero (basis := basis_hd :: basis_tl) Seq.nil
 
-theorem FlatZero_cons {basis_hd : _} {basis_tl : _} {deg : ℝ} {coef : PreMS basis_tl}
+theorem FlatZero_cons {basis_hd} {basis_tl} {deg : ℝ} {coef : PreMS basis_tl}
     {tl : PreMS (basis_hd :: basis_tl)} :
     ¬(FlatZero (basis := (basis_hd :: basis_tl)) (Seq.cons (deg, coef) tl)) := by
   intro h
@@ -29,13 +29,13 @@ theorem FlatZero_cons {basis_hd : _} {basis_tl : _} {deg : ℝ} {coef : PreMS ba
 
 inductive Trimmed : {basis : Basis} → PreMS basis → Prop
 | const {c : ℝ} : Trimmed (basis := []) c
-| nil {basis_hd : _} {basis_tl : _} : Trimmed (basis := basis_hd :: basis_tl) Seq.nil
-| cons {basis_hd : _} {basis_tl : _} {deg : ℝ} {coef : PreMS basis_tl}
+| nil {basis_hd} {basis_tl} : Trimmed (basis := basis_hd :: basis_tl) Seq.nil
+| cons {basis_hd} {basis_tl} {deg : ℝ} {coef : PreMS basis_tl}
   {tl : PreMS (basis_hd :: basis_tl)} (h_trimmed : coef.Trimmed)
   (h_ne_flat_zero : ¬ coef.FlatZero) :
   Trimmed (basis := basis_hd :: basis_tl) (Seq.cons (deg, coef) tl)
 
-theorem Trimmed_cons {basis_hd : _} {basis_tl : _} {deg : ℝ} {coef : PreMS basis_tl}
+theorem Trimmed_cons {basis_hd} {basis_tl} {deg : ℝ} {coef : PreMS basis_tl}
     {tl : PreMS (basis_hd :: basis_tl)}
     (h : Trimmed (basis := basis_hd :: basis_tl) (Seq.cons (deg, coef) tl)) :
     coef.Trimmed ∧ ¬ coef.FlatZero := by
@@ -64,19 +64,12 @@ def HasNegativeLeading {basis : Basis} (ms : PreMS basis) : Prop :=
   | [] => False
   | List.cons _ _ => ms.leadingExp < 0
 
--- inductive HasNegativeLeading : {basis : Basis} → (ms : PreMS basis) → Prop
--- | nil {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} :
---   HasNegativeLeading (basis := basis_hd :: basis_tl) .nil
--- | cons {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} {deg : ℝ} {coef : PreMS basis_tl}
---     {tl : PreMS (basis_hd :: basis_tl)} (h : deg < 0) :
---   HasNegativeLeading (basis := basis_hd :: basis_tl) (.cons (deg, coef) tl)
-
 def PartiallyTrimmed {basis : Basis} (ms : PreMS basis) : Prop :=
   ms.HasNegativeLeading ∨ ms.Trimmed
 
 -- may be put in another file?
 theorem HasNegativeLeading_tendsto_zero {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
-    (h_neg : ms.HasNegativeLeading) (h_approx : ms.Approximates F basis) :
+    (h_neg : ms.HasNegativeLeading) (h_approx : ms.Approximates F) :
     Filter.Tendsto F Filter.atTop (nhds 0) := by
   cases basis with
   | nil => simp [HasNegativeLeading] at h_neg
@@ -96,16 +89,16 @@ theorem HasNegativeLeading_tendsto_zero {basis : Basis} {ms : PreMS basis} {F : 
 namespace Trimming
 
 theorem PreMS.Approximates_sub_zero {basis : Basis} {ms : PreMS basis} {F C : ℝ → ℝ}
-    (h_approx : ms.Approximates (F - C) basis) (h_C : C =ᶠ[Filter.atTop] 0) :
-    ms.Approximates F basis := by
+    (h_approx : ms.Approximates (F - C)) (hC : C =ᶠ[Filter.atTop] 0) :
+    ms.Approximates F := by
   apply PreMS.Approximates_of_EventuallyEq _ h_approx
-  have := Filter.EventuallyEq.sub (Filter.EventuallyEq.refl _ F) h_C
+  have := Filter.EventuallyEq.sub (Filter.EventuallyEq.refl _ F) hC
   simpa using this
 
 structure PreMS.TrimmingResult {basis : Basis} (ms : PreMS basis) where
   result : PreMS basis
   h_wo : ms.WellOrdered → result.WellOrdered
-  h_approx : ∀ F, ms.Approximates F basis → result.Approximates F basis
+  h_approx : ∀ F, ms.Approximates F → result.Approximates F
   h_trimmed : result.Trimmed
 
 def maxUnfoldingSteps : ℕ := 20

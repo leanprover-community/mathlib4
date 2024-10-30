@@ -1555,7 +1555,7 @@ theorem longAdd_WellOrdered {basis : Basis} {k : ℕ} {args : Fin k → PreMS ba
 
 theorem longAdd_Approximates {basis : Basis} {k : ℕ} {args : Fin k → PreMS basis}
     {F : Fin k → (ℝ → ℝ)}
-    (h_approx : ∀ i, (args i).Approximates (F i) basis) :
+    (h_approx : ∀ i, (args i).Approximates (F i)) :
     (longAdd args).Approximates (fun x ↦ ∑ i, F i x) := by
   cases basis with
   | nil =>
@@ -1711,7 +1711,7 @@ theorem longAdd_mulMonomial_tail_BM_WellOrdered {basis_hd : _} {basis_tl : _} {k
 noncomputable def longAdd_mulMonomial_tail_fB {basis_hd : _} {basis_tl : _} {k : ℕ}
     (BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)) (deg : ℝ)
     {fB : Fin k → (ℝ → ℝ)}
-    (hB_approx : ∀ j, (BM j).1.Approximates (fB j) (basis_hd :: basis_tl)) :
+    (hB_approx : ∀ j, (BM j).1.Approximates (fB j)) :
     Fin k → (ℝ → ℝ) :=
   match k with
   | 0 => default
@@ -1744,8 +1744,8 @@ noncomputable def longAdd_mulMonomial_tail_fB {basis_hd : _} {basis_tl : _} {k :
 theorem longAdd_mulMonomial_tail_B_Approximates {basis_hd : _} {basis_tl : _} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {deg : ℝ}
     {fB : Fin k → (ℝ → ℝ)}
-    {hB_approx : ∀ j, (BM j).1.Approximates (fB j) (basis_hd :: basis_tl)} : ∀ (j : Fin k),
-    Approximates (longAdd_mulMonomial_tail_fB BM deg hB_approx j) (basis_hd :: basis_tl)
+    {hB_approx : ∀ j, (BM j).1.Approximates (fB j)} : ∀ (j : Fin k),
+    Approximates (longAdd_mulMonomial_tail_fB BM deg hB_approx j)
       (longAdd_mulMonomial_tail_BM BM deg j).1 := by
   intro j
   cases k with
@@ -1762,8 +1762,8 @@ theorem longAdd_mulMonomial_tail_B_Approximates {basis_hd : _} {basis_tl : _} {k
 noncomputable def longAdd_mulMonomial_fC {basis_hd : _} {basis_tl : _} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} (deg : ℝ)
     {fB fM : Fin k → (ℝ → ℝ)}
-    (hB_approx : ∀ j , (BM j).1.Approximates (fB j) (basis_hd :: basis_tl))
-    (hM_approx : ∀ j , (BM j).2.1.Approximates (fM j) basis_tl) :
+    (hB_approx : ∀ j , (BM j).1.Approximates (fB j))
+    (hM_approx : ∀ j , (BM j).2.1.Approximates (fM j)) :
     ℝ → ℝ :=
   match k with
   | 0 => default
@@ -2115,14 +2115,14 @@ mutual
   theorem mulMonomial_Approximates {basis_hd : _} {basis_tl : _} {B M : ℝ → ℝ} {b : PreMS (basis_hd :: basis_tl)}
         {m_coef : PreMS basis_tl} {m_deg : ℝ}
         (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl))
-        (hb_approx : b.Approximates B (basis_hd :: basis_tl))
-        (hm_approx : m_coef.Approximates M basis_tl) :
+        (hb_approx : b.Approximates B)
+        (hm_approx : m_coef.Approximates M) :
       (mulMonomial b m_coef m_deg).Approximates (fun x ↦ (M x) * (basis_hd x)^m_deg * (B x)) := by
     let motive : (ℝ → ℝ) → PreMS (basis_hd :: basis_tl) → Prop := fun f ms =>
       ∃ (b : PreMS (basis_hd :: basis_tl)) (B M : ℝ → ℝ),
       ms = b.mulMonomial m_coef m_deg ∧
       f =ᶠ[atTop] (fun x ↦ (M x) * (basis_hd x)^m_deg * (B x)) ∧
-      b.Approximates B (basis_hd :: basis_tl) ∧ m_coef.Approximates M basis_tl
+      b.Approximates B ∧ m_coef.Approximates M
     apply Approximates.coind motive
     · simp only [motive]
       use b, B, M
@@ -2183,10 +2183,10 @@ mutual
       {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
       {fB fM : Fin k → (ℝ → ℝ)}
       (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl))
-      (hB_approx : ∀ j, (BM j).1.Approximates (fB j) (basis_hd :: basis_tl))
-      (hM_approx : ∀ j, (BM j).2.1.Approximates (fM j) basis_tl)
+      (hB_approx : ∀ j, (BM j).1.Approximates (fB j))
+      (hM_approx : ∀ j, (BM j).2.1.Approximates (fM j))
       (h_cons : (longAdd ((fun x ↦ x.1.mulMonomial x.2.1 x.2.2) ∘ BM)) = Seq.cons (deg, coef) tl) :
-      coef.Approximates (longAdd_mulMonomial_fC deg hB_approx hM_approx) basis_tl := by
+      coef.Approximates (longAdd_mulMonomial_fC deg hB_approx hM_approx) := by
     induction k generalizing deg coef with
     | zero =>
       simp [longAdd] at h_cons
@@ -2239,8 +2239,8 @@ mutual
 
   theorem mul_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
       (h_basis : MS.WellOrderedBasis basis)
-      (hX_approx : X.Approximates fX basis) (hY_approx : Y.Approximates fY basis) :
-      (X.mul Y).Approximates (fX * fY) basis := by
+      (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY) :
+      (X.mul Y).Approximates (fX * fY) := by
     cases basis with
     | nil =>
       simp [Approximates, mul] at *
@@ -2253,10 +2253,10 @@ mutual
           (fX fY : ℝ → ℝ),
           ms = (longAdd <| (fun (B, M_coef, M_deg) => B.mulMonomial M_coef M_deg) ∘ BM) + (X.mul Y) ∧
           f =ᶠ[atTop] (fun x ↦ (∑ i, (fM i x) * (basis_hd x)^(BM i).2.2 * (fB i x)) + (fX x) * (fY x)) ∧ -- I am here. Need finite sum of BM
-          (∀ j , (BM j).1.Approximates (fB j) (basis_hd :: basis_tl)) ∧
-          (∀ j , (BM j).2.1.Approximates (fM j) basis_tl) ∧
-          X.Approximates fX (basis_hd :: basis_tl) ∧
-          Y.Approximates fY (basis_hd :: basis_tl)
+          (∀ j , (BM j).1.Approximates (fB j)) ∧
+          (∀ j , (BM j).2.1.Approximates (fM j)) ∧
+          X.Approximates fX ∧
+          Y.Approximates fY
       apply Approximates.coind motive
       · simp only [motive]
         use 0, default, 1, 1, X, Y, fX, fY
@@ -2287,7 +2287,7 @@ mutual
             exact EventuallyEq.mul (by rfl) hY_approx
 
         have h_left_approx : left.Approximates
-            (fun x ↦ ∑ i, (fM i x) * (basis_hd x)^(BM i).2.2 * (fB i x)) (basis_hd :: basis_tl) := by
+            (fun x ↦ ∑ i, (fM i x) * (basis_hd x)^(BM i).2.2 * (fB i x)) := by
           rw [← h_left_eq]
 
           apply longAdd_Approximates

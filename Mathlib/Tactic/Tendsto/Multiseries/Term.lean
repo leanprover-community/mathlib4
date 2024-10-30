@@ -26,6 +26,7 @@ noncomputable def toFun (t : MS.Term) (basis : List (ℝ → ℝ)) : ℝ → ℝ
   fun x => t.degs.zip basis |>.foldl (init := t.coef) fun acc (deg, f) =>
     acc * (f x)^deg
 
+-- TODO: rename
 theorem fun_mul (li : List (ℝ × (ℝ → ℝ))) (coef : ℝ) (x : ℝ) :
     (li.foldl (init := coef) fun acc (deg, f) => acc * (f x)^deg) =
     coef * (li.foldl (init := 1) fun acc (deg, f) => acc * (f x)^deg) := by
@@ -40,14 +41,14 @@ theorem zero_coef_fun {t : MS.Term} (basis : List (ℝ → ℝ)) (h_coef : t.coe
     t.toFun basis = 0 := by
   unfold toFun
   ext
-  rw [MS.Term.fun_mul, h_coef]
+  rw [fun_mul, h_coef]
   simp
 
 theorem neg_coef {t : MS.Term} {basis : List (ℝ → ℝ)} :
     t.toFun basis = fun x => -(MS.Term.mk (-t.coef) t.degs).toFun basis x := by
   unfold MS.Term.toFun
   ext
-  rw [MS.Term.fun_mul (coef := t.coef), MS.Term.fun_mul (coef := -t.coef)]
+  rw [fun_mul (coef := t.coef), fun_mul (coef := -t.coef)]
   simp
 
 noncomputable def inv (t : MS.Term) : MS.Term :=

@@ -105,7 +105,7 @@ theorem inv'_WellOrdered {basis : Basis} {ms : PreMS basis}
 
 theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
     (h_basis : MS.WellOrderedBasis basis) (h_wo : ms.WellOrdered)
-    (h_trimmed : ms.Trimmed) (h_approx : ms.Approximates F basis) : ms.inv'.Approximates (F⁻¹) basis := by
+    (h_trimmed : ms.Trimmed) (h_approx : ms.Approximates F) : ms.inv'.Approximates (F⁻¹) := by
   cases basis with
   | nil =>
     unfold inv'
@@ -147,7 +147,7 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
       swap
       · exact inv'_Approximates (MS.WellOrderedBasis_tail h_basis) h_coef_wo h_coef_trimmed h_coef
       focus
-      have : ((neg tl).mulMonomial coef.inv' (-deg)).Approximates (fun x ↦ C⁻¹ x * (basis_hd x)^(-deg) * -(F x - basis_hd x ^ deg * C x)) (basis_hd :: basis_tl) := by
+      have : ((neg tl).mulMonomial coef.inv' (-deg)).Approximates (fun x ↦ C⁻¹ x * (basis_hd x)^(-deg) * -(F x - basis_hd x ^ deg * C x)) (basis := basis_hd :: basis_tl) := by
         apply mulMonomial_Approximates h_basis
         · exact neg_Approximates h_tl
         · exact inv'_Approximates (MS.WellOrderedBasis_tail h_basis) h_coef_wo h_coef_trimmed h_coef

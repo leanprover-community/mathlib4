@@ -106,7 +106,7 @@ theorem MS.basis_tail_majorated_head {hd f : ℝ → ℝ} {tl : Basis}
 
 -- TODO: rename
 theorem PreMS.Approximates_coef_isLittleO_head {C basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : PreMS basis_tl} (h_approx : ms.Approximates C basis_tl)
+    {ms : PreMS basis_tl} (h_approx : ms.Approximates C)
     (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl)) :
     majorated C basis_hd 0 := by
   intro deg' h_deg
