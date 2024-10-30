@@ -457,8 +457,9 @@ end
 
 /-!
 ## The Open Subgroup in a Clopen Neighborhood of One
-This section proved the lemma `TopologicalGroup.existOpenSubgroupSubClopenNhdsOfOne`, which
-states that for any clopen neighborhood of 1, there exists an open subgroup contained within it.
+This section proves the lemma `TopologicalGroup.existOpenSubgroupSubClopenNhdsOfOne`, which
+states that in a compact topological group, for any clopen neighborhood of 1,
+there exists an open subgroup contained within it.
 -/
 
 open scoped Pointwise
