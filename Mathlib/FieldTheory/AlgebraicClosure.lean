@@ -131,6 +131,7 @@ theorem le_algebraicClosure_iff (L : IntermediateField F E) :
     fun _ ↦ le_algebraicClosure _ _ _⟩
 
 namespace algebraicClosure
+
 /-- The algebraic closure in `E` of the algebraic closure of `F` in `E` is equal to itself. -/
 theorem algebraicClosure_eq_bot :
     algebraicClosure (algebraicClosure F E) E = ⊥ :=
