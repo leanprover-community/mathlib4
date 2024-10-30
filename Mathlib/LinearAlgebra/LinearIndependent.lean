@@ -155,6 +155,22 @@ theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf 
   simp_rw [Finsupp.linearCombination_comp] at hxy
   exact Finsupp.mapDomain_injective hf (h hxy)
 
+
+/-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
+independent over a subring `R` of `K`.
+The implementation uses minimal assumptions about the relationship between `R`, `K` and `M`.
+The version where `K` is an `R`-algebra is `LinearIndependent.restrict_scalars_algebras`.
+ -/
+theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Module K M]
+    [IsScalarTower R K M] (hinj : Function.Injective fun r : R => r • (1 : K))
+    (li : LinearIndependent K v) : LinearIndependent R v := by
+  intro x y hxy
+  let f := fun r : R => r • (1 : K)
+  have := @li (x.mapRange f (by simp [f])) (y.mapRange f (by simp [f])) ?_
+  · ext i
+    exact hinj congr($this i)
+  simpa [Finsupp.linearCombination, f, Finsupp.sum_mapRange_index]
+
 end Semiring
 
 section Module
@@ -368,20 +384,6 @@ theorem LinearIndependent.fin_cons' {m : ℕ} (x : M) (v : Fin m → M) (hli : L
     exact sum_mem fun i _ => smul_mem _ _ (subset_span ⟨i, rfl⟩)
   rw [this, zero_smul, zero_add] at total_eq
   exact Fin.cases this (hli _ total_eq) j
-
-/-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
-independent over a subring `R` of `K`.
-The implementation uses minimal assumptions about the relationship between `R`, `K` and `M`.
-The version where `K` is an `R`-algebra is `LinearIndependent.restrict_scalars_algebras`.
- -/
-theorem LinearIndependent.restrict_scalars [Ring K] [SMulWithZero R K] [Module K M]
-    [IsScalarTower R K M] (hinj : Function.Injective fun r : R => r • (1 : K))
-    (li : LinearIndependent K v) : LinearIndependent R v := by
-  refine linearIndependent_iff'.mpr fun s g hg i hi => hinj ?_
-  dsimp only; rw [zero_smul]
-  refine (linearIndependent_iff'.mp li : _) _ (g · • (1 : K)) ?_ i hi
-  simp_rw [smul_assoc, one_smul]
-  exact hg
 
 /-- Every finite subset of a linearly independent set is linearly independent. -/
 theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
