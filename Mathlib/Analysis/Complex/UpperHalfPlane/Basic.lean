@@ -24,11 +24,6 @@ noncomputable section
 open Matrix Matrix.SpecialLinearGroup
 open scoped MatrixGroups
 
-/- Disable these instances as they are not the simp-normal form, and having them disabled ensures
-we state lemmas in this file without spurious `coe_fn` terms. -/
-attribute [-instance] Matrix.SpecialLinearGroup.instCoeFun
-attribute [-instance] Matrix.GeneralLinearGroup.instCoeFun
-
 /-- The open upper half plane -/
 def UpperHalfPlane :=
   { point : ℂ // 0 < point.im }
