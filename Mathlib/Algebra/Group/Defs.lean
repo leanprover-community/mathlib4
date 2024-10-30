@@ -305,17 +305,22 @@ theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
 
 end IsRightCancelMul
 
-
 /-- A mixin for common left multiples. -/
 class LeftCommonMul (G : Type u) [Mul G] where
+  /-- the factor for a -/
   cl₁ : G → G → G
+  /-- the factor for b -/
   cl₂ : G → G → G
+   /-- there is a common multiple for any two elements of G -/
   cl_spec : ∀ (a b : G), cl₁ a b * a = cl₂ a b * b
 
 /-- A mixin for common right multiples. -/
 class RightCommonMul (G : Type u) [Mul G] where
+  /-- the factor for a -/
   cr₁ : G → G → G
+  /-- the factor for b -/
   cr₂ : G → G → G
+  /-- there is a common multiple for any two elements of G -/
   cr_spec : ∀ (a b : G), a * cr₁ a b = b * cr₂ a b
 
 /-- A mixin for common multiples. -/
@@ -323,16 +328,22 @@ class CommonMul (G : Type u) [Mul G] extends LeftCommonMul G, RightCommonMul G
 
 /-- A mixin for left common sums. -/
 class LeftCommonAdd (G : Type u) [Add G] where
+  /-- the addend for a -/
   cl₁ : G → G → G
-  cl₂ : G → G → G
+  /-- the addend for b -/
+    cl₂ : G → G → G
+  /-- there is a common sum for any two elements of G -/
   cl_spec : ∀ (a b : G), cl₁ a b + a = cl₂ a b + b
 
 attribute [to_additive LeftCommonAdd] LeftCommonMul
 
 /-- A mixin for right common sums. -/
 class RightCommonAdd (G : Type u) [Add G] where
+  /-- the addend for a -/
   cr₁ : G → G → G
+  /-- the addend for b -/
   cr₂ : G → G → G
+  /-- there is a common sum for any two elements of G -/
   cr_spec : ∀ (a b : G), a + cr₁ a b = b + cr₂ a b
 
 attribute [to_additive RightCommonAdd] RightCommonMul
