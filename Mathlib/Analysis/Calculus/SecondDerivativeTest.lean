@@ -21,72 +21,46 @@ derivative test, calculus
 
 open Set Filter Topology
 
-
-
-/-- If `f''(x) > 0` then `f' > 0` on an interval to the right of `x`. -/
-lemma deriv_pos_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ} (hf : deriv (deriv f) x₀ > 0)
-    (hd : deriv f x₀ = 0) :
-    ∃ u, x₀ < u ∧ ∀ b, b ∈ Ioo x₀ u → deriv f b > 0 := by
-  have hD' : DifferentiableAt ℝ (deriv f) x₀ := by
-    have : deriv (deriv f) x₀ ≠ 0 := by linarith
-    exact differentiableAt_of_deriv_ne_zero this
-  have h₀ := (@hasDerivAt_deriv_iff ℝ _ ℝ _ _ (deriv f) x₀).mpr (hD')
-  have h₁ := hasDerivAt_iff_tendsto_slope.mp h₀
-  rw [tendsto_nhds] at h₁
-
-  have j₁: slope (deriv f) x₀ ⁻¹' Ioi 0 ∈ 𝓝[>] x₀ :=
-    nhds_right'_le_nhds_ne x₀ <|h₁ (Set.Ioi 0) isOpen_Ioi hf
-  obtain ⟨u,hu⟩ := (@mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset ℝ _ _ _ x₀
-    (x₀ + 1) (slope (deriv f) x₀ ⁻¹' Ioi 0) (by simp)).mp j₁
-  unfold slope at hu
-  rw [hd] at hu
-  have G₀ : ∀ b, b ∈ Ioo x₀ u → deriv f b > 0 := by
-    intro b hb
-    have := hu.2 hb
-    simp at this
-    have q₀ : b - x₀ > 0 := by aesop
-    aesop
-  use u
-  simp at hu
-  tauto
-
-/-- Added to Mathlib by Yael Dilles. -/
-lemma neg_of_neg_of_div_pos (a b : ℝ) (h : 0 < a/b) (h₁ : b < 0) : a < 0 := by
+/-- Add to Mathlib/Algebra/Order/GroupWithZero/Unbundled.lean -/
+lemma neg_of_div_pos_left (a b : ℝ) (h : 0 < a/b) (h₁ : b < 0) : a < 0 := by
   contrapose h
-  rw [not_lt]
-  rw [not_lt] at h
-  exact div_nonpos_of_nonneg_of_nonpos h (by linarith)
+  rw [not_lt] at h ⊢
+  exact div_nonpos_of_nonneg_of_nonpos h (le_of_lt h₁)
 
 /-- If `f''(x) > 0` then `f' < 0` on an interval to the left of `x`. -/
 lemma deriv_neg_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ} (hf : deriv (deriv f) x₀ > 0)
-    (hd : deriv f x₀ = 0) :
-    ∃ u, x₀ > u ∧ ∀ b, b ∈ Ioo u x₀ → deriv f b < 0 := by
-    have hD' : DifferentiableAt ℝ (deriv f) x₀ := by
-        have :deriv (deriv f) x₀ ≠ 0 := by linarith
-        exact differentiableAt_of_deriv_ne_zero this
-    have h₀ := (@hasDerivAt_deriv_iff ℝ _ ℝ _ _ (deriv f) x₀).mpr (hD')
-    have h₁ := hasDerivAt_iff_tendsto_slope.mp h₀
-    rw [tendsto_nhds] at h₁
-    have := h₁ (Set.Ioi 0) isOpen_Ioi hf
-
-    have j₀: slope (deriv f) x₀ ⁻¹' Ioi 0 ∈ 𝓝[<] x₀ :=
-      nhds_left'_le_nhds_ne x₀ this
-    obtain ⟨u,hu⟩ := (@mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset ℝ _ _ _ x₀
-      (x₀ - 1) (slope (deriv f) x₀ ⁻¹' Ioi 0) (by simp)).mp j₀
+    (hd : deriv f x₀ = 0) : ∃ u < x₀, ∀ b ∈ Ioo u x₀, deriv f b < 0 := by
+    obtain ⟨u,hu⟩ := (mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset
+      (show x₀ - 1 < x₀ by simp)).mp
+        <| nhds_left'_le_nhds_ne x₀
+        <| (tendsto_nhds.mp
+          <| hasDerivAt_iff_tendsto_slope.mp
+          <| hasDerivAt_deriv_iff.mpr (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf))
+        (Set.Ioi 0) isOpen_Ioi hf
     unfold slope at hu
     rw [hd] at hu
-    have G₁ : ∀ b, b ∈ Ioo u x₀ → deriv f b < 0 := by
-      intro b hb
-      have hub := hu.2 hb
-      simp at hub
-      have q₀ : b - x₀ < 0 := by aesop
-      field_simp at hub
-      apply neg_of_neg_of_div_pos
-      exact hub
-      exact q₀
-    use u
-    simp at hu
-    tauto
+    have G₁ : ∀ b ∈ Ioo u x₀, deriv f b < 0 := fun b hb => neg_of_div_pos_left _ _ (by
+        have hub := hu.2 hb
+        field_simp at hub
+        exact hub
+      ) (by aesop)
+    exact ⟨u, hu.1.2, G₁⟩
+
+/-- If `f''(x) > 0` then `f' > 0` on an interval to the right of `x`. -/
+lemma deriv_pos_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ} (hf : deriv (deriv f) x₀ > 0)
+    (hd : deriv f x₀ = 0) : ∃ u > x₀, ∀ b ∈ Ioo x₀ u, deriv f b > 0 := by
+  obtain ⟨u,hu⟩ := (mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset (show x₀ < x₀ + 1 by simp)).mp
+      <| nhds_right'_le_nhds_ne x₀
+      <|(tendsto_nhds.mp <| hasDerivAt_iff_tendsto_slope.mp
+        <| hasDerivAt_deriv_iff.mpr (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf))
+        (Set.Ioi 0) isOpen_Ioi hf
+  unfold slope at hu
+  rw [hd] at hu
+  have G₀ : ∀ b ∈ Ioo x₀ u, deriv f b > 0 := fun b hb => by
+    have := hu.2 hb
+    simp only [vsub_eq_sub, sub_zero, smul_eq_mul, mem_preimage, mem_Ioi] at this
+    exact pos_of_mul_pos_right this <|le_of_lt (by aesop)
+  exact ⟨u, hu.1.1, G₀⟩
 
 /-- If `f''(x) > 0` then `f'` changes sign at `x`.
 This lemma applies to functions like `x^2 + 1[x ≥ 0]` as well as twice differentiable
@@ -94,194 +68,94 @@ functions.
 -/
 lemma deriv_neg_pos_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
     (hf : deriv (deriv f) x₀ > 0) (hd : deriv f x₀ = 0) :
-    ∃ ε, ε > 0 ∧ (∀ b, b ∈ Ioo (x₀-ε) x₀ → deriv f b < 0) ∧
-        ∀ b, b ∈ Ioo x₀ (x₀ + ε) → 0 < deriv f b := by
+    ∃ ε > 0, (∀ b ∈ Ioo (x₀-ε) x₀, deriv f b < 0) ∧
+              ∀ b ∈ Ioo x₀ (x₀ + ε), 0 < deriv f b := by
   obtain ⟨u₀,hu₀⟩ := deriv_pos_of_deriv_deriv_pos hf hd
   obtain ⟨u₁,hu₁⟩ := deriv_neg_of_deriv_deriv_pos hf hd
-  use (1/2) * min (u₀ - x₀) (x₀ - u₁)
+  have h₁ : x₀ - (x₀ - u₁) < x₀ - 2⁻¹ * (x₀ - u₁) := sub_lt_sub_left
+    ((inv_mul_lt_iff₀ zero_lt_two).mpr <|lt_two_mul_self <|sub_pos.mpr hu₁.1) x₀
+  have h₂ : 2 * (x₀ + 2⁻¹ * (u₀ - x₀)) < 2 * u₀ := by
+    ring_nf
+    rw [mul_two, add_lt_add_iff_right]
+    exact hu₀.1
+  use 2⁻¹ * min (u₀ - x₀) (x₀ - u₁)
   constructor
   · aesop
   · constructor
-    · intro b hb
-      apply hu₁.2
-      simp_all
-      refine lt_trans ?_ hb.1
-      have :  u₁ < x₀ - 2⁻¹ * (x₀ - u₁) := by
-        have : u₁ = x₀ - (x₀ - u₁) := by ring_nf
-        nth_rewrite 1 [this]
-        suffices x₀ - u₁ > 2⁻¹ * (x₀ - u₁) by
-            exact sub_lt_sub_left this x₀
-        show x₀ - u₁ > 2⁻¹ * (x₀ - u₁)
-        refine (inv_mul_lt_iff₀ ?hc).mpr <|lt_two_mul_self <|sub_pos.mpr hu₁.1
-        exact zero_lt_two
-      have T₀ : 2⁻¹ * min (u₀ - x₀) (x₀ - u₁) ≤ 2⁻¹ * (x₀ - u₁) := by
-        refine (inv_mul_le_iff₀ ?hc).mpr ?_
-        simp
-      calc _ < _ := this
-           _ ≤ _ := tsub_le_tsub_left T₀ x₀
-    · intro b hb
-      apply hu₀.2
-      simp_all only [gt_iff_lt, mem_Ioo, and_imp, one_div, true_and]
-      refine lt_trans hb.2 ?_
-      calc _ ≤ x₀ + 2⁻¹ * (u₀ - x₀) := by simp
-      _ < _ := by
-        suffices 2 * (x₀ + 2⁻¹ * (u₀ - x₀)) < 2 * u₀ by
-            linarith
-        rw [mul_add, ← mul_assoc]
-        simp
-        linarith
+    · exact fun b hb => hu₁.2 _ <| by
+        simp_all only [mem_Ioo, and_imp, sub_sub_cancel, Nat.ofNat_pos, mul_lt_mul_left, and_true]
+        calc u₁ < _ := h₁
+             _  ≤ _ := tsub_le_tsub_left ((inv_mul_le_iff₀ zero_lt_two).mpr (by simp)) x₀
+             _  < _ := hb.1
+    · exact fun b hb => hu₀.2 _ <| ⟨hb.1,
+        calc _ < _                    := hb.2
+             _ ≤ x₀ + 2⁻¹ * (u₀ - x₀) := by simp
+             _ < _                    := by rw[← mul_lt_mul_left zero_lt_two]; exact h₂⟩
+
+theorem differentiableOn_right {f : ℝ → ℝ} {x₀ : ℝ}
+    {p : Set ℝ} (hp2 : ∃ b ∈ 𝓟 {x₀}ᶜ, {x | DifferentiableAt ℝ f x} = p ∩ b)
+    {l u : ℝ} (hlu1 : x₀ ∈ Ioo l u) (hlu2: Ioo l u ⊆ p) :
+    DifferentiableOn ℝ f (Ioo x₀ u) := fun x hx => DifferentiableAt.differentiableWithinAt <| by
+  obtain ⟨b,hb⟩ := hp2
+  have : x ∈ p ∩ b := ⟨hlu2 <|by
+      simp_all only [mem_Ioo, mem_principal, and_true]
+      exact lt_trans hlu1.1 hx.1, hb.1 <| ne_of_gt hx.1⟩
+  rw [← hb.2] at this
+  exact this
+
+theorem differentiableOn_left {f : ℝ → ℝ} {x₀ : ℝ}
+    {p : Set ℝ} (hp2 : ∃ b ∈ 𝓟 {x₀}ᶜ, {x | DifferentiableAt ℝ f x} = p ∩ b)
+    {l u : ℝ} (hlu1 : x₀ ∈ Ioo l u) (hlu2: Ioo l u ⊆ p) :
+    DifferentiableOn ℝ f (Ioo l x₀) := fun x hx => DifferentiableAt.differentiableWithinAt <| by
+  obtain ⟨b,hb⟩ := hp2
+  have : x ∈ p ∩ b := ⟨hlu2 <|by
+      simp_all only [mem_Ioo, mem_principal, true_and]
+      exact lt_trans hx.2 hlu1.2, hb.1 <| ne_of_lt hx.2⟩
+  rw [← hb.2] at this
+  exact this
+
+/-- Insert a missing point between two adjacent open intervals. -/
+theorem insert_Ioo {x ε₀ ε₁ : ℝ} (hε₀ : ε₀ > 0) (hε₁ : ε₁ > 0):
+    insert x (Ioo (x - ε₀) x ∪ Ioo x (x + ε₁)) = Ioo (x - ε₀) (x + ε₁) := by
+  rw [← insert_union, Ioo_insert_right (by linarith)]
+  exact Ioc_union_Ioo_eq_Ioo (by linarith) (by linarith)
+
+/-- Already in FirstDerivativeTest? -/
+theorem eventually_differentiable_of_deriv_nonzero {f : ℝ → ℝ} {x₀ ε : ℝ}
+    (hε : ε > 0 ∧ (∀ b ∈ Ioo (x₀ - ε) x₀, deriv f b < 0)
+                ∧ ∀ b ∈ Ioo x₀ (x₀ + ε), 0 < deriv f b) :
+    ∀ᶠ x in 𝓝[≠] x₀, DifferentiableAt ℝ f x :=
+  Eventually.mono
+    (eventually_mem_set.mpr <| insert_mem_nhds_iff.mp <| insert_Ioo hε.1 hε.1 ▸
+    Ioo_mem_nhds (by linarith) (by linarith))
+    fun _ hb => differentiableAt_of_deriv_ne_zero <| hb.elim
+      (fun h => ne_of_lt <| hε.2.1 _ h)
+      (fun h => ne_of_gt <| hε.2.2 _ h)
 
 /-- The Second-Derivative Test from calculus. -/
 theorem isLocalMin_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
     (hf : deriv (deriv f) x₀ > 0) (hd : deriv f x₀ = 0)
     (hc : ContinuousAt f x₀) : IsLocalMin f x₀ := by
- obtain ⟨ε,hε⟩ := deriv_neg_pos_of_deriv_deriv_pos hf hd
- have hD' : ∀ᶠ x in 𝓝[≠] x₀, DifferentiableAt ℝ f x := by
-    use Ioo (x₀-ε) (x₀+ε) ∪ {x| DifferentiableAt ℝ f x}
-    constructor
-    ·   refine mem_interior_iff_mem_nhds.mp ?_;
-        refine mem_interior.mpr ?_
-        use Ioo (x₀ - ε) (x₀ + ε)
-        simp only [subset_union_left, mem_Ioo, sub_lt_self_iff, lt_add_iff_pos_right, and_self,
-            true_and]
-        constructor
-        exact isOpen_Ioo
-        tauto
-    by_cases H : DifferentiableAt ℝ f x₀
-    use Set.univ
-    simp only [univ_mem, inter_univ, true_and]
-    ext z
-    constructor
-    intro h
-    simp only [mem_union, mem_Ioo, mem_setOf_eq]
-    right
-    simp_all only [gt_iff_lt, mem_Ioo, and_imp, mem_setOf_eq]
-    intro h
-    apply h.elim
-    intro h
-    by_cases H' : z < x₀
-    · apply differentiableAt_of_deriv_ne_zero
-      apply ne_of_lt
-      apply hε.2.1
-      simp_all
-    · by_cases G : z = x₀
-      · subst G
-        simp_all
-      · have : x₀ < z := by
-          simp only [not_lt] at H'
-          exact lt_of_le_of_ne H' fun a ↦ G (a.symm)
-        apply differentiableAt_of_deriv_ne_zero
-        apply ne_of_gt
-        apply hε.2.2
-        simp_all
-    · tauto
-    use {x₀}ᶜ
-    simp only [mem_principal, subset_refl, true_and]
-    ext z
-    constructor
-    intro h
-    constructor
-    · tauto
-    · simp_all only [gt_iff_lt, mem_Ioo, and_imp, mem_setOf_eq, mem_compl_iff, mem_singleton_iff]
-      intro hc
-      subst hc
-      tauto
-    intro h
-    apply h.1.elim
-    intro h'
-    by_cases H' : z < x₀
-    · simp only [mem_setOf_eq]
-      apply differentiableAt_of_deriv_ne_zero
-      apply ne_of_lt
-      apply hε.2.1
-      simp_all
-    · have : x₀ < z := by
-        simp at h
-        simp only [not_lt] at H'
-        exact lt_of_le_of_ne H' fun a ↦ h.2 (id (Eq.symm a))
-      apply differentiableAt_of_deriv_ne_zero
-      apply ne_of_gt
-      apply hε.2.2
-      simp_all
-    tauto
-
- obtain ⟨p,hp⟩ := hD'
- have hm₀ := mem_nhds_iff_exists_Ioo_subset.mp hp.1
- obtain ⟨l,u,hlu⟩ := hm₀
- let δ := min (x₀ - l) (u - x₀)
- let ζ := (1/2) * min δ ε
- apply isLocalMin_of_deriv_Ioo
- · show x₀ - ζ < x₀
-   have : ζ > 0 := by aesop
-   linarith
- · show x₀ < x₀ + ζ
-   aesop
- · exact hc
-
- · obtain ⟨b,hb⟩ := hp.2
-   simp only [mem_principal] at hb
-   intro x hx
-   apply DifferentiableAt.differentiableWithinAt
-   suffices x ∈ p ∩ b by
-    rw [← hb.2] at this
-    exact this
-   constructor
-   ·    apply hlu.2
-        simp_all only [gt_iff_lt, mem_Ioo, and_imp, mem_principal]
-        constructor
-        ·   refine lt_trans ?_ hx.1
-            have : min (x₀ - l) (u - x₀) ≤ (x₀ - l) := by apply min_le_left
-            have : min δ ε ≤ δ := min_le_left δ ε
-            show l < x₀ - (1/2) * min δ ε
-            linarith
-        · linarith
-   · apply hb.1
-     simp only [mem_Ioo] at hx
-     simp only [mem_compl_iff, mem_singleton_iff]
-     linarith
- · obtain ⟨b,hb⟩ := hp.2
-   simp only [mem_principal] at hb
-   intro x hx
-   apply DifferentiableAt.differentiableWithinAt
-   suffices x ∈ p ∩ b by
-    rw [← hb.2] at this
-    exact this
-   constructor
-   ·    apply hlu.2
-        simp_all only [gt_iff_lt, mem_Ioo, and_imp, mem_principal]
-        constructor
-        · linarith
-        ·   refine lt_trans hx.2 ?_
-            show x₀ + (1/2) * min δ ε < u
-            suffices x₀ + (1/2) * δ < u by
-                have : min δ ε ≤ δ := min_le_left δ ε
-                linarith
-            show x₀ + (1/2) * min (x₀ - l) (u - x₀) < u
-            have : min (x₀ - l) (u - x₀) ≤ (u - x₀) := by apply min_le_right
-            linarith
-   · apply hb.1
-     simp only [mem_Ioo] at hx
-     simp only [mem_compl_iff, mem_singleton_iff]
-     linarith
- · intro x hx
-   apply le_of_lt
-   have : x ∈ Ioo (x₀ - ε) x₀ := by
-    simp_all only [gt_iff_lt, mem_Ioo, and_imp, mem_principal, and_true]
-    have : x₀ - ε ≤ x₀ - ζ := by
-        show x₀ - ε ≤ x₀ - (1/2) * min δ ε
-        suffices x₀ ≤ x₀ + (1/2) * (ε - min δ ε) by
-            linarith
-        aesop
-    linarith
-   aesop
- · intro x hx
-   apply le_of_lt
-   have : x ∈ Ioo x₀ (x₀ + ε) := by
-    simp_all only [gt_iff_lt, mem_Ioo, and_imp, mem_principal, true_and]
-    have : x₀ - ε ≤ x₀ - ζ := by
-        show x₀ - ε ≤ x₀ - (1/2) * min δ ε
-        suffices x₀ ≤ x₀ + (1/2) * (ε - min δ ε) by linarith
-        aesop
-    linarith
-   apply hε.2.2
-   exact this
+  obtain ⟨ε,hε⟩    := deriv_neg_pos_of_deriv_deriv_pos hf hd
+  obtain ⟨p,hp⟩    := eventually_differentiable_of_deriv_nonzero hε
+  obtain ⟨l,u,hlu⟩ := mem_nhds_iff_exists_Ioo_subset.mp hp.1
+  let δ := min (x₀ - l) (u - x₀)
+  let ζ := (1/2) * min δ ε
+  have hζ : ζ > 0 := by aesop
+  have hζ₀ : x₀ - ζ < x₀ := by linarith
+  have hζ₁ : x₀ < x₀ + ζ := by linarith
+  have hεζ : x₀ - ε ≤ x₀ - ζ := by
+    show x₀ - ε ≤ x₀ - (1/2) * min δ ε
+    suffices x₀ ≤ x₀ + (1/2) * (ε - min δ ε) by linarith
+    aesop
+  have hu :  x₀ + ζ ≤ u := by
+    show x₀ + (1/2) * min δ ε ≤ u
+    linarith[min_le_left δ ε, min_le_right (x₀ - l) (u - x₀), hlu.1.2]
+  have hl : l ≤ x₀ - ζ := by
+    show l ≤ x₀ - 1 / 2 * min δ ε
+    linarith[min_le_left δ ε, min_le_left (x₀ - l) (u - x₀), hlu.1.1]
+  exact isLocalMin_of_deriv_Ioo hζ₀ hζ₁ hc
+    ((differentiableOn_left hp.2 hlu.1 hlu.2).mono <| Ioo_subset_Ioo_left <| by linarith)
+    ((differentiableOn_right hp.2 hlu.1 hlu.2).mono <| Ioo_subset_Ioo_right <| by linarith)
+    (fun x hx => le_of_lt <| hε.2.1 _ ⟨by simp only [mem_Ioo] at hx;linarith, hx.2⟩)
+    (fun x hx => le_of_lt <| hε.2.2 _ ⟨hx.1, by simp only [mem_Ioo] at hx;linarith⟩)
