@@ -146,10 +146,8 @@ theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
 
 open Cardinal
 
-/-- The Theory `Theory.ACF p` is `κ`-categorical whenever `κ` is an uncountable cardinal.
-At the moment this is not as universe polymorphic as it could be,
-it currently requires `κ : Cardinal.{0}`, but it is true for any universe. -/
-theorem ACF_categorical {p : ℕ} (κ : Cardinal.{0}) (hκ : ℵ₀ < κ) :
+/-- The Theory `Theory.ACF p` is `κ`-categorical whenever `κ` is an uncountable cardinal. -/
+theorem ACF_categorical {p : ℕ} (κ : Cardinal) (hκ : ℵ₀ < κ) :
     Categorical κ (Theory.ACF p) := by
   rintro ⟨M⟩ ⟨N⟩ hM hN
   let _ := fieldOfModelACF p M
@@ -167,7 +165,7 @@ theorem ACF_categorical {p : ℕ} (κ : Cardinal.{0}) (hκ : ℵ₀ < κ) :
   apply Classical.choice
   refine IsAlgClosed.ringEquivOfCardinalEqOfCharEq p ?_ ?_
   · rw [hM]; exact hκ
-  · rw [hM, hN]
+  · rw [← Cardinal.eq, hM, hN]
 
 theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     (Theory.ACF p).IsComplete := by
