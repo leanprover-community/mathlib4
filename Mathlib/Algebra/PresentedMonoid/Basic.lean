@@ -19,7 +19,7 @@ given by generators `x : α` and relations `r ∈ rels`.
 * `PresentedMonoid rels`: the quot group of the free group on a type `α` by the steps-to closure
   of a subset `rels` of relations of the free monoid on `α`.
 * `PresentedMonoid.of`: The canonical map from `α` to a presented monoid with generators `α`.
-* `toMonoid f`: the canonical monoid homomorphism `PresentedMonoid rels → M`, given a function
+* `PresentedMonoid.lift f`: the canonical monoid homomorphism `PresentedMonoid rels → M`, given a function
   `f : α → G` from a type `α` to a monoid `M` which satisfies the relations `rels`.
 
 ## Tags
