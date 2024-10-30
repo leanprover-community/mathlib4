@@ -8,10 +8,12 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
+import Mathlib.LinearAlgebra.Basis.Cardinality
+import Mathlib.LinearAlgebra.Quotient.Defs
+import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.Tactic.Algebraize
 
 /-!

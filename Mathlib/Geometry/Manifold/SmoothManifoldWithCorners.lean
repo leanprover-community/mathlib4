@@ -292,10 +292,10 @@ theorem isClosed_range : IsClosed (range I) :=
 @[deprecated (since := "2024-03-17")] alias closed_range := isClosed_range
 
 theorem map_nhds_eq (x : H) : map I (𝓝 x) = 𝓝[range I] I x :=
-  I.isClosedEmbedding.toEmbedding.map_nhds_eq x
+  I.isClosedEmbedding.isEmbedding.map_nhds_eq x
 
 theorem map_nhdsWithin_eq (s : Set H) (x : H) : map I (𝓝[s] x) = 𝓝[I '' s] I x :=
-  I.isClosedEmbedding.toEmbedding.map_nhdsWithin_eq s x
+  I.isClosedEmbedding.isEmbedding.map_nhdsWithin_eq s x
 
 theorem image_mem_nhdsWithin {x : H} {s : Set H} (hs : s ∈ 𝓝 x) : I '' s ∈ 𝓝[range I] I x :=
   I.map_nhds_eq x ▸ image_mem_map hs
@@ -351,7 +351,7 @@ open TopologicalSpace
 
 protected theorem secondCountableTopology [SecondCountableTopology E] (I : ModelWithCorners 𝕜 E H) :
     SecondCountableTopology H :=
-  I.isClosedEmbedding.toEmbedding.secondCountableTopology
+  I.isClosedEmbedding.isEmbedding.secondCountableTopology
 
 end ModelWithCorners
 
@@ -949,9 +949,10 @@ theorem continuousOn_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M �
     (hs : s ⊆ f.source) (hmaps : MapsTo g s f'.source) :
     ContinuousOn (f'.extend I' ∘ g ∘ (f.extend I).symm) (f.extend I '' s) ↔ ContinuousOn g s := by
   refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
-  refine (continuousWithinAt_congr_nhds ?_).trans
+  refine (continuousWithinAt_congr_set ?_).trans
     (continuousWithinAt_writtenInExtend_iff _ (hs hx) (hmaps hx) hmaps)
-  rw [← map_extend_nhdsWithin_eq_image_of_subset, ← map_extend_nhdsWithin]
+  rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin_eq_image_of_subset,
+    ← map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]
 
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of a point
