@@ -823,6 +823,7 @@ A₁ <------> A₂
 |           |
 S --------> R
 -/
+@[simps apply symm_apply toEquiv]
 def ofRingEquiv_compHom
     {A₁: Type u} {A₂: Type v} {S: Type w} {R: Type u₁}
     [Semiring A₁] [Semiring A₂]
