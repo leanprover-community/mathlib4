@@ -197,18 +197,12 @@ theorem adjoin_le [Algebra E K] [IsScalarTower F E K] :
 
 end algebraicClosure
 
+variable (E)
 /--
-Let `E / F` be a field extension. If the minimal polynomial of an element `x` in `E` over `F`
+Let `E / F` be a field extension. If a polynomial `p`
 splits in `E`, then it splits in the relative algebraic closure of `F` in `E` already.
 -/
-theorem minpoly_splits_algebraicClosure {x : K} (h : IsIntegral F x)
-    (g : (minpoly F x).Splits (algebraMap F E)) :
-    (minpoly F x).Splits (algebraMap F (algebraicClosure F E)) := by
-    apply Polynomial.splits_of_comp (algebraMap F (algebraicClosure F E))
-      (algebraMap (algebraicClosure F E) E) g
-    simp only [mem_roots']
-    intro r ⟨_, hrm⟩
-    simp only [IsRoot.def, Polynomial.eval_map] at hrm
-    simp only [RingHom.mem_range, IntermediateField.algebraMap_apply, Subtype.exists, exists_prop',
-      nonempty_prop, exists_eq_right]
-    exact ⟨minpoly F x, ⟨minpoly.monic h, hrm⟩⟩
+theorem Splits.algebraicClosure {p : F[X]}
+    (g : p.Splits (algebraMap F E)) :
+    p.Splits (algebraMap F (algebraicClosure F E)) :=
+  splits_of_splits g fun _ hx ↦ (isAlgebraic_of_mem_rootSet hx).isIntegral
