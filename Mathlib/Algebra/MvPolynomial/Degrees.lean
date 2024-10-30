@@ -268,13 +268,13 @@ theorem degreeOf_pow_le (i : σ) (p : MvPolynomial σ R) (n : ℕ) :
   convert Multiset.count_le_of_le i (degrees_pow p n)
   rw [Multiset.count_nsmul]
 
-theorem degreeOf_sum_le (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
+theorem degreeOf_sum_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
     degreeOf i (∑ j in s, f j) ≤ s.sup fun j => degreeOf i (f j) := by
   simp_rw [degreeOf_eq_sup]
   exact supDegree_sum_le
 
-theorem degreeOf_prod_le (n : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
-    degreeOf n (∏ i in s, f i) ≤ ∑ i in s, (f i).degreeOf n := by
+theorem degreeOf_prod_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
+    degreeOf i (∏ j in s, f j) ≤ ∑ j in s, (f j).degreeOf i := by
   simp_rw [degreeOf_eq_sup]
   exact supDegree_prod_le (by simp only [coe_zero, Pi.zero_apply])
     (fun _ _ => by simp only [coe_add, Pi.add_apply])
