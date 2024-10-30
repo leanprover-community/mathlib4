@@ -122,9 +122,8 @@ open System in
 def countLOC (modules : List Name) : IO (NameMap Float) := do
   let mut r := {}
   for m in modules do
-    let fp := FilePath.mk ((← findOLean m).toString.replace ".lake/build/lib/" "")
-      |>.withExtension "lean"
-    if ← fp.pathExists then
+    if let .some fp ← Lean.SearchPath.findModuleWithExt [s!".{FilePath.pathSeparator}"] "lean" m
+    then
       let src ← IO.FS.readFile fp
       r := r.insert m (src.toList.count '\n').toFloat
   return r

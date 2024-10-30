@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Prod.TProd
+import Mathlib.Data.Set.UnionLift
+import Mathlib.GroupTheory.Coset.Defs
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
-import Mathlib.Order.LiminfLimsup
-import Mathlib.Data.Set.UnionLift
 import Mathlib.Order.Filter.SmallSets
-import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.Order.LiminfLimsup
 
 /-!
 # Measurable spaces and measurable functions
