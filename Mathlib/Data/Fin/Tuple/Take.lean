@@ -158,8 +158,8 @@ theorem take_eq_take_list_get {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.
   simp only [List.get_eq_getElem, List.getElem_take, comp_apply, take_apply, coe_castLE, coe_cast]
 
 /-- Alternative version of `take_eq_take_list_get` with `v : Fin n → α` instead of `l : List α`. -/
-theorem take_eq_take_list_get' {α : Type*} {m : ℕ} (v : Fin n → α) (h : m ≤ n) :
-    ((List.ofFn v).take m).get = (take m h v) ∘ Fin.cast (by simp [h]) := by
+theorem get_take_ofFn_eq_take_comp_cast {α : Type*} {m : ℕ} (v : Fin n → α) (h : m ≤ n) :
+    ((List.ofFn v).take m).get = take m h v ∘ Fin.cast (by simp [h]) := by
   ext i
   simp [castLE]
 
