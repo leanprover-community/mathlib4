@@ -42,8 +42,12 @@ lemma colimit.ι_coherence (F : C ⥤ H) [HasColimit F] {c c' : C} (hc : c = c')
 
 noncomputable section
 
-variable [∀ X, HasColimit (Grothendieck.ι F X ⋙ G)]
-  [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F Y ⋙ G)]
+variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F Y ⋙ G)]
+
+local instance : ∀ X, HasColimit (Grothendieck.ι F X ⋙ G) :=
+  fun X => hasColimitOfIso (F := F.map (𝟙 _) ⋙ Grothendieck.ι F X ⋙ G) <|
+    (Functor.leftUnitor (Grothendieck.ι F X ⋙ G)).symm ≪≫
+    (isoWhiskerRight (eqToIso (F.map_id X).symm) (Grothendieck.ι F X ⋙ G))
 
 /-- A functor taking a colimit on each fiber of a functor `G : Grothendieck F ⥤ H`. -/
 @[simps]
