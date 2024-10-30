@@ -131,8 +131,7 @@ noncomputable def nilradmaxlocalizationIsSelf [h : (nilradical R).IsMaximal] (h'
     haveI := LocalRing.of_nilradical_isMaximal (h := h)
     apply (LocalRing.not_mem_maximalIdeal m).mp
     rw [← LocalRing.eq_maximalIdeal h]
-    intro hm'
-    obtain ⟨k, hk⟩ := mem_nilradical.mp hm'
+    rintro ⟨k, hk⟩ 
     rw [← hk] at h'
     exact h' (Submonoid.pow_mem M hm k)
   exact IsLocalization.atUnits _ _ this
