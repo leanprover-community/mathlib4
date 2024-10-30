@@ -35,6 +35,7 @@ def IsAlgebraic (x : A) : Prop :=
 def Transcendental (x : A) : Prop :=
   ¬IsAlgebraic R x
 
+@[nontriviality]
 theorem is_transcendental_of_subsingleton [Subsingleton R] (x : A) : Transcendental R x :=
   fun ⟨p, h, _⟩ => h <| Subsingleton.elim p 0
 
@@ -64,6 +65,29 @@ theorem IsAlgebraic.of_aeval {r : A} (f : R[X]) (hf : f.natDegree ≠ 0)
 theorem Transcendental.aeval {r : A} (H : Transcendental R r) (f : R[X]) (hf : f.natDegree ≠ 0)
     (hf' : f.leadingCoeff ∈ nonZeroDivisors R) :
     Transcendental R (aeval r f) := fun h ↦ H (h.of_aeval f hf hf')
+
+/-- If `r : A` and `f : R[X]` are transcendental over `R`, then `Polynomial.aeval r f` is also
+transcendental over `R`. For the converse, see `Transcendental.of_aeval` and
+`transcendental_aeval_iff`. -/
+theorem Transcendental.aeval_of_transcendental {r : A} (H : Transcendental R r)
+    {f : R[X]} (hf : Transcendental R f) : Transcendental R (Polynomial.aeval r f) := by
+  rw [transcendental_iff] at H hf ⊢
+  intro p hp
+  exact hf _ (H _ (by rwa [← aeval_comp, comp_eq_aeval] at hp))
+
+/-- If `Polynomial.aeval r f` is transcendental over `R`, then `f : R[X]` is also
+transcendental over `R`. In fact, the `r` is also transcendental over `R` provided that `R`
+is a field (see `transcendental_aeval_iff`). -/
+theorem Transcendental.of_aeval {r : A} {f : R[X]}
+    (H : Transcendental R (Polynomial.aeval r f)) : Transcendental R f := by
+  rw [transcendental_iff] at H ⊢
+  intro p hp
+  exact H p (by rw [← aeval_comp, comp_eq_aeval, hp, map_zero])
+
+theorem IsAlgebraic.of_aeval_of_transcendental {r : A} {f : R[X]}
+    (hf : Transcendental R f) (H : IsAlgebraic R (aeval r f)) : IsAlgebraic R r := by
+  contrapose H
+  exact Transcendental.aeval_of_transcendental H hf
 
 theorem Polynomial.transcendental (f : R[X]) (hf : f.natDegree ≠ 0)
     (hf' : f.leadingCoeff ∈ nonZeroDivisors R) :
@@ -296,6 +320,17 @@ alias ⟨IsAlgebraic.isIntegral, _⟩ := isAlgebraic_iff_isIntegral
 protected instance Algebra.IsAlgebraic.isIntegral [Algebra.IsAlgebraic K A] :
     Algebra.IsIntegral K A := Algebra.isAlgebraic_iff_isIntegral.mp ‹_›
 
+/-- If `K` is a field, `r : A` and `f : K[X]`, then `Polynomial.aeval r f` is
+transcendental over `K` if and only if `r` and `f` are both transcendental over `K`.
+See also `Transcendental.aeval_of_transcendental` and `Transcendental.of_aeval`. -/
+theorem transcendental_aeval_iff {r : A} {f : K[X]} :
+    Transcendental K (Polynomial.aeval r f) ↔ Transcendental K r ∧ Transcendental K f := by
+  refine ⟨fun h ↦ ⟨?_, h.of_aeval⟩, fun ⟨h1, h2⟩ ↦ h1.aeval_of_transcendental h2⟩
+  rw [Transcendental] at h ⊢
+  contrapose! h
+  rw [isAlgebraic_iff_isIntegral] at h ⊢
+  exact .of_mem_of_fg _ h.fg_adjoin_singleton _ (aeval_mem_adjoin_singleton _ _)
+
 end Field
 
 section
@@ -309,7 +344,7 @@ section CommRing
 variable [CommRing R] [CommRing S] [Ring A]
 variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
-/-- If x is algebraic over R, then x is algebraic over S when S is an extension of R,
+/-- If `x` is algebraic over `R`, then `x` is algebraic over `S` when `S` is an extension of `R`,
   and the map from `R` to `S` is injective. -/
 theorem IsAlgebraic.tower_top_of_injective
     (hinj : Function.Injective (algebraMap R S)) {x : A}
@@ -317,6 +352,13 @@ theorem IsAlgebraic.tower_top_of_injective
   let ⟨p, hp₁, hp₂⟩ := A_alg
   ⟨p.map (algebraMap _ _), by
     rwa [Ne, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
+
+/-- If `x` is transcendental over `S`, then `x` is transcendental over `R` when `S` is an extension
+  of `R`, and the map from `R` to `S` is injective. -/
+theorem Transcendental.of_tower_top_of_injective
+    (hinj : Function.Injective (algebraMap R S)) {x : A}
+    (h : Transcendental S x) : Transcendental R x :=
+  fun H ↦ h (H.tower_top_of_injective hinj)
 
 /-- If A is an algebraic algebra over R, then A is algebraic over S when S is an extension of R,
   and the map from `R` to `S` is injective. -/
@@ -338,10 +380,16 @@ variable [Field K] [Field L] [Ring A]
 variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 variable (L)
 
-/-- If x is algebraic over K, then x is algebraic over L when L is an extension of K -/
+/-- If `x` is algebraic over `K`, then `x` is algebraic over `L` when `L` is an extension of `K` -/
 theorem IsAlgebraic.tower_top {x : A} (A_alg : IsAlgebraic K x) :
     IsAlgebraic L x :=
   A_alg.tower_top_of_injective (algebraMap K L).injective
+
+variable {L} (K) in
+/-- If `x` is transcendental over `L`, then `x` is transcendental over `K` when
+  `L` is an extension of `K` -/
+theorem Transcendental.of_tower_top {x : A} (h : Transcendental L x) :
+    Transcendental K x := fun H ↦ h (H.tower_top L)
 
 /-- If A is an algebraic algebra over K, then A is algebraic over L when L is an extension of K -/
 theorem Algebra.IsAlgebraic.tower_top [Algebra.IsAlgebraic K A] : Algebra.IsAlgebraic L A :=
