@@ -517,70 +517,44 @@ lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
   · exact fun a ha ↦ h (mul_subset_mul_left h1 (mul_subset_mul_left inter_subset_left ha))
 
 @[to_additive]
-lemma iUnion_pow {G : Type*} [Group G] {V : Set G} (einV : 1 ∈ V) :
-    {x : G | ∃ n : ℕ, x ∈ V ^ n} = ⋃ n , V ^ (n + 1) := by
-  ext x
-  rw [Set.mem_setOf_eq, Set.mem_iUnion]
-  refine ⟨fun ⟨n, hn⟩ ↦ ?_, fun ⟨n, _⟩ ↦ by use n + 1⟩
-  by_cases h : n = 0
-  · use 0
-    simp only [h, pow_zero, Set.mem_one] at hn
-    simpa only [zero_add, pow_one, hn] using einV
-  · use n - 1
-    rwa [Nat.sub_add_cancel <| Nat.one_le_iff_ne_zero.mpr h]
-
-/-- An arbitrary open subgroup that is contained in a given clopen neighborhood of `1`. -/
-@[to_additive "An open subgroup that is contained in a given clopen neighborhood of `1`."]
-def OpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]  [TopologicalGroup G]
-    [CompactSpace G] {W : Set G} (WClopen : IsClopen W) : OpenSubgroup G where
-  carrier := {x : G | ∃ n : ℕ, x ∈ (Classical.choose (exists_mulInvClosureNhd WClopen)) ^ n}
-  mul_mem':= by
-    rintro a b ⟨na, hna⟩ ⟨nb, hnb⟩
-    simp only [Set.mem_setOf_eq] at *
-    use na + nb
-    rw [pow_add]
-    exact Set.mul_mem_mul hna hnb
-  one_mem':= ⟨1, by simp only [pow_one,
-      mem_of_mem_nhds (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).nhd]⟩
-  inv_mem':= by
-    simp only [Set.mem_setOf_eq, forall_exists_index] at *
-    intro x m hm
-    use m
-    rw [← (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).inv]
-    simpa only [inv_pow, Set.mem_inv, inv_inv] using hm
-  isOpen' := by
-    simp only [iUnion_pow <|
-      mem_of_mem_nhds (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).nhd]
+theorem existOpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]
+    [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
+    ∃ H : OpenSubgroup G, (H : Set G) ⊆ W := by
+  rcases exists_mulInvClosureNhd WClopen with ⟨V, hV⟩
+  let S : Subgroup G := {
+    carrier := ⋃ n , V ^ (n + 1)
+    mul_mem' := fun ha hb ↦ by
+      rcases mem_iUnion.mp ha with ⟨k, hk⟩
+      rcases mem_iUnion.mp hb with ⟨l, hl⟩
+      apply mem_iUnion.mpr
+      use k + 1 + l
+      rw [add_assoc, pow_add]
+      exact Set.mul_mem_mul hk hl
+    one_mem' := by
+      apply mem_iUnion.mpr
+      use 0
+      simp only [zero_add, pow_one, mem_of_mem_nhds hV.nhd]
+    inv_mem' := fun ha ↦ by
+      rcases mem_iUnion.mp ha with ⟨k, hk⟩
+      apply mem_iUnion.mpr
+      use k
+      rw [← hV.inv]
+      simpa only [inv_pow, Set.mem_inv, inv_inv] using hk }
+  have : IsOpen (⋃ n , V ^ (n + 1)) := by
     refine isOpen_iUnion (fun n ↦ ?_)
     rw [pow_succ]
-    exact IsOpen.mul_left (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).isOpen
-
-@[to_additive]
-theorem openSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSpace G]
-    [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
-    ((OpenSubgroupSubClopenNhdsOfOne WClopen) : Set G) ⊆ W := by
-  let V := (Classical.choose (exists_mulInvClosureNhd WClopen))
-  show {x : G | ∃ n : ℕ, x ∈ V ^ n} ⊆ W
-  simp_rw [iUnion_pow (mem_of_mem_nhds
-    (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).nhd), Set.iUnion_subset_iff]
-  intro n _
-  have mulVpow: W * V ^ (n + 1) ⊆ W := by
+    exact IsOpen.mul_left hV.isOpen
+  use ⟨S, this⟩
+  have mulVpow (n : ℕ) : W * V ^ (n + 1) ⊆ W := by
     induction' n with n ih
-    · simp only [zero_add, pow_one, (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).mul]
+    · simp only [zero_add, pow_one, hV.mul]
     · rw [pow_succ, ← mul_assoc]
-      exact le_trans (Set.mul_subset_mul_right ih) <|
-        (Classical.choose_spec (exists_mulInvClosureNhd WClopen)).mul
-  apply le_trans _ mulVpow
-  intro x xin
-  rw [Set.mem_mul]
-  use 1, einW, x, xin
-  rw [one_mul]
-
-@[to_additive]
-theorem openSubgroupSubClopenNhdsOfOne_nonempty {G : Type*} [Group G] [TopologicalSpace G]
-    [TopologicalGroup G] [CompactSpace G] {U : Set G} {UClopen : IsClopen U} {einU : 1 ∈ U} :
-    Nonempty {H : OpenSubgroup G // (H : Set G) ⊆ U} :=
-  Nonempty.intro ⟨OpenSubgroupSubClopenNhdsOfOne UClopen,
-    openSubgroupSubClopenNhdsOfOne_spec UClopen einU⟩
+      exact le_trans (Set.mul_subset_mul_right ih) <| hV.mul
+  have (n : ℕ) : V ^ (n + 1) ⊆ W * V ^ (n + 1) := by
+    intro x xin
+    rw [Set.mem_mul]
+    use 1, einW, x, xin
+    rw [one_mul]
+  apply iUnion_subset fun i _ a ↦ mulVpow i (this i a)
 
 end TopologicalGroup

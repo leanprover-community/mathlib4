@@ -16,27 +16,14 @@ This file is split out from the file `OpenSubgroup` because the need of more imp
 
 namespace TopologicalGroup
 
-/-- An arbitrary normal subgroup contained in a clopen nhd of `1` in a compact topological group. -/
-noncomputable def OpenNormalSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]
-    [TopologicalGroup G] [CompactSpace G] {U : Set G} (UClopen : IsClopen U) :
-    OpenNormalSubgroup G :=
-  let H := OpenSubgroupSubClopenNhdsOfOne UClopen
+theorem existOpenNormalSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]
+    [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
+    ∃ H : OpenNormalSubgroup G, (H : Set G) ⊆ W := by
+  rcases existOpenSubgroupSubClopenNhdsOfOne WClopen einW with ⟨H, hH⟩
   letI : Subgroup.FiniteIndex H.1 := Subgroup.finiteIndex_of_finite_quotient H.1
-  { toSubgroup := Subgroup.normalCore H
-    isOpen' := Subgroup.isOpen_of_isClosed_of_finiteIndex _ <|
-      Subgroup.normalCore_isClosed H.1 <| OpenSubgroup.isClosed H }
-
-theorem openNormalSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSpace G]
-    [TopologicalGroup G] [CompactSpace G] {U : Set G}
-    (UClopen : IsClopen U) (einU : 1 ∈ U) :
-    ((OpenNormalSubgroupSubClopenNhdsOfOne UClopen) : Set G) ⊆ U :=
-    fun _ b ↦ openSubgroupSubClopenNhdsOfOne_spec UClopen einU
-      (Subgroup.normalCore_le (OpenSubgroupSubClopenNhdsOfOne UClopen).1 b)
-
-theorem openNormalSubgroupSubClopenNhdsOfOne_nonempty {G : Type*} [Group G] [TopologicalSpace G]
-    [TopologicalGroup G] [CompactSpace G] {U : Set G} (UClopen : IsClopen U) (einU : 1 ∈ U) :
-    Nonempty {H : OpenNormalSubgroup G // (H : Set G) ⊆ U} :=
-  Nonempty.intro ⟨OpenNormalSubgroupSubClopenNhdsOfOne UClopen,
-    openNormalSubgroupSubClopenNhdsOfOne_spec UClopen einU⟩
+  use { toSubgroup := Subgroup.normalCore H
+        isOpen' := Subgroup.isOpen_of_isClosed_of_finiteIndex _ <|
+          Subgroup.normalCore_isClosed H.1 <| OpenSubgroup.isClosed H }
+  exact fun _ b ↦ hH (Subgroup.normalCore_le H.1 b)
 
 end TopologicalGroup
