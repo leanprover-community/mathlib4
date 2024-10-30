@@ -991,7 +991,7 @@ theorem associated_linMulLin [Invertible (2 : R)] (f g : M →ₗ[R] R) :
   simp only [associated_apply, linMulLin_apply, map_add, smul_add, LinearMap.add_apply,
     LinearMap.smul_apply, compl₁₂_apply, mul_apply', smul_eq_mul, invOf_smul_eq_iff]
   simp only [smul_add, LinearMap.smul_def, Module.End.ofNat_apply, nsmul_eq_mul, Nat.cast_ofNat,
-    mul_invOf_self_assoc']
+    mul_invOf_cancel_left']
   ring_nf
 
 open LinearMap in
