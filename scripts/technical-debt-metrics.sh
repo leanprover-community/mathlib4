@@ -3,6 +3,19 @@
 # Make this script robust against unintentional errors.
 # See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
 set -euo pipefail
+
+# We need to make the script robust against changes on disk
+# that might have happened during the script execution, e.g. from switching branches.
+# We do that by making sure the entire script is parsed before execution starts
+# using the following pattern
+# {
+# # script content
+# exit
+# }
+# (see https://stackoverflow.com/a/2358432).
+# So please do not delete the following line, or the final two lines of this script.
+{
+
 IFS=$'\n\t'
 
 # `./scripts/technical-debt-metrics.sh` returns a tally of some technical debts in current Mathlib,
@@ -45,27 +58,28 @@ computeDiff () {
 # The script uses the fact that a line represents a technical debt if and only if the text before
 # the first `|` is a number.  This is then used for comparison and formatting.
 tdc () {
-titlesAndRegexes=(
-  "porting notes"                  "Porting note"
-  "backwards compatibility flags"  "set_option.*backward"
-  "skipAssignedInstances flags"    "set_option tactic.skipAssignedInstances"
-  "adaptation notes"               "adaptation_note"
-  "disabled simpNF lints"          "nolint simpNF"
-  "disabled deprecation lints"     "set_option linter.deprecated false"
-  "erw"                            "erw \["
-  "maxHeartBeats modifications"    "^ *set_option .*maxHeartbeats"
+titlesPathsAndRegexes=(
+  "porting notes"                  "*"      "Porting note"
+  "backwards compatibility flags"  "*"      "set_option.*backward"
+  "skipAssignedInstances flags"    "*"      "set_option tactic.skipAssignedInstances"
+  "adaptation notes"               "*"      "adaptation_note"
+  "disabled simpNF lints"          "*"      "nolint simpNF"
+  "disabled deprecation lints"     "*"      "set_option linter.deprecated false"
+  "erw"                            "*"      "erw \["
+  "maxHeartBeats modifications"    ":^test" "^ *set_option .*maxHeartbeats"
 )
 
-for i in ${!titlesAndRegexes[@]}; do
-  # loop on the odd-indexed entries and name each entry and the following
-  if (( (i + 1) % 2 )); then
-    title="${titlesAndRegexes[$i]}"
-    regex="${titlesAndRegexes[$(( i + 1 ))]}"
+for i in ${!titlesPathsAndRegexes[@]}; do
+  # loop on every 3rd entry and name that entry and the following two
+  if (( i % 3 == 0 )); then
+    title="${titlesPathsAndRegexes[$i]}"
+    pathspec="${titlesPathsAndRegexes[$(( i + 1 ))]}"
+    regex="${titlesPathsAndRegexes[$(( i + 2 ))]}"
     if [ "${title}" == "porting notes" ]
     then fl="-i"  # just for porting notes we ignore the case in the regex
     else fl="--"
     fi
-    printf '%s|%s\n' "$(git grep "${fl}" "${regex}" | wc -l)" "${title}"
+    printf '%s|%s\n' "$(git grep "${fl}" "${regex}" "${pathspec}" | wc -l)" "${title}"
   fi
 done
 
@@ -109,3 +123,9 @@ printf $'```spoiler Changed \'Deprecated\' lines by file\n%s\n```\n' "$(
 baseURL='https://github.com/leanprover-community/mathlib4/commit'
 printf '\nCurrent commit [%s](%s)\n' "${currCommit:0:10}" "${baseURL}/${currCommit}"
 printf 'Reference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
+
+# These last two lines are needed to make the script robust against changes on disk
+# that might have happened during the script execution, e.g. from switching branches
+# See the top of the file for more details.
+exit
+}

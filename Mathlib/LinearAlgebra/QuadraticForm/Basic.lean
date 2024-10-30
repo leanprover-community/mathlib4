@@ -915,6 +915,9 @@ theorem exists_quadraticForm_ne_zero {Q : QuadraticMap R M N}
   apply hB₁
   rw [(QuadraticMap.ext h : Q = 0), LinearMap.map_zero]
 
+@[deprecated (since := "2024-10-05")] alias exists_quadraticForm_ne_zero :=
+  exists_quadraticMap_ne_zero
+
 end AssociatedHom
 
 section Associated
@@ -1210,7 +1213,7 @@ on a module `M` over a ring `R` with invertible `2`, i.e. there exists some
 theorem exists_bilinForm_self_ne_zero [htwo : Invertible (2 : R)] {B : BilinForm R M}
     (hB₁ : B ≠ 0) (hB₂ : B.IsSymm) : ∃ x, ¬B.IsOrtho x x := by
   lift B to QuadraticForm R M using hB₂ with Q
-  obtain ⟨x, hx⟩ := QuadraticMap.exists_quadraticForm_ne_zero hB₁
+  obtain ⟨x, hx⟩ := QuadraticMap.exists_quadraticMap_ne_zero hB₁
   exact ⟨x, fun h => hx (Q.associated_eq_self_apply ℕ x ▸ h)⟩
 
 open Module
