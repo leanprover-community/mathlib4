@@ -13,9 +13,10 @@ If `x` is a successor limit in a linear order `α`, a fundamental sequence for `
 monotonic sequence `ℕ → α` whose supremum is `x`.
 
 If `x` is not a successor limit, we can define two other types of fundamental sequences: the empty
-sequence `∅` with limit `⊥`, and the singleton sequence `{x}` with limit `succ x`. This ensures that
-every countable ordinal (nonconstructively) has a fundamental sequence, and it simplifies the
-definition of the fast-growing hierarchy.
+sequence `∅` with limit `⊥`, and the singleton sequence `{x}` with limit `succ x` (the limit here is
+more properly the least strict upper bound). This ensures that every countable ordinal
+(nonconstructively) has a fundamental sequence, and it simplifies the definition of the fast-growing
+hierarchy.
 
 To nicely manage these three different cases, we define `Sequence α = Option α ⊕ (ℕ → α)` as the
 type of sequences with length 0, 1, or `ω`. At the moment, the file contains only the basic API for
@@ -56,7 +57,8 @@ instance : Inhabited (Sequence α) :=
 instance : Singleton α (Sequence α) :=
   ⟨fun x ↦ Sum.inl (some x)⟩
 
-/-- A sequence `ℕ → α`, whose limit is its supremum. -/
+/-- A sequence `ℕ → α`, whose limit is its least strict upper bound, or equivalently for strictly
+monotonic sequences, its supremum. -/
 def ofFun (f : ℕ → α) : Sequence α :=
   Sum.inr f
 
@@ -65,12 +67,12 @@ theorem singleton_ne_empty (x : α) : ({x} : Sequence α) ≠ ∅ := by
   change Sum.inl _ ≠ Sum.inl _
   simp
 
-@[simp]
-theorem ofFun_ne_empty (f : ℕ → α) : ofFun f ≠ ∅ :=
-  Sum.inr_ne_inl
+@[simp] theorem ofFun_ne_empty (f : ℕ → α) : ofFun f ≠ ∅ := Sum.inr_ne_inl
+@[simp] theorem ofFun_ne_singleton (f : ℕ → α) (x : α) : ofFun f ≠ {x} := Sum.inr_ne_inl
 
 @[simp] theorem empty_ne_singleton (x : α) : ∅ ≠ ({x} : Sequence α) := (singleton_ne_empty x).symm
-@[simp] theorem empty_ne_ofFun (f : ℕ → α) : ∅ ≠ ofFun f := (ofFun_ne_empty f).symm
+@[simp] theorem empty_ne_ofFun (f : ℕ → α) : ∅ ≠ ofFun f := Sum.inl_ne_inr
+@[simp] theorem singleton_ne_ofFun (x : α) (f : ℕ → α) : {x} ≠ ofFun f := Sum.inl_ne_inr
 
 @[simp] theorem sum_inl_none_def : Sum.inl none = (∅ : Sequence α) := rfl
 @[simp] theorem sum_inl_some_def (x : α) : Sum.inl (some x) = ({x} : Sequence α) := rfl
@@ -95,11 +97,8 @@ def range : Sequence α → Set α
 @[simp] theorem range_ofFun (f : ℕ → α) : range (ofFun f) = Set.range f := rfl
 
 /-- Membership predicate for sequences -/
-def mem (s : Sequence α) (x : α) : Prop :=
-  x ∈ s.range
-
 instance : Membership α (Sequence α) :=
-  ⟨mem⟩
+  ⟨fun s x ↦ x ∈ s.range⟩
 
 @[simp] theorem not_mem_empty (x : α) : x ∉ (∅ : Sequence α) := id
 @[simp] theorem mem_singleton_iff {x y : α} : x ∈ ({y} : Sequence α) ↔ x = y := Iff.rfl
