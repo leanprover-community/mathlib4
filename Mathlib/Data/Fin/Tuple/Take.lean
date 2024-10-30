@@ -74,7 +74,7 @@ theorem take_repeat {α : Type*} {n' : ℕ} (m : ℕ) (h : m ≤ n) (a : Fin n' 
 
 /-- Taking `m + 1` elements is equal to taking `m` elements and adding the `(m + 1)`th one. -/
 theorem take_succ_eq_snoc (m : ℕ) (h : m < n) (v : (i : Fin n) → α i) :
-    take m.succ h v = snoc (take m (le_of_lt h) v) (v ⟨m, h⟩) := by
+    take m.succ h v = snoc (take m h.le v) (v ⟨m, h⟩) := by
   ext i
   induction m with
   | zero =>
