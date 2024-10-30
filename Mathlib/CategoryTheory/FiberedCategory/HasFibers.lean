@@ -49,7 +49,7 @@ some fiber followed by a pullback.
 
 -/
 
-universe v₁ u₁ v₂ u₂ v₃ u₃
+universe v₃ u₃ v₂ u₂ v₁ u₁
 
 open CategoryTheory Functor Category IsCartesian IsHomLift Fiber
 
@@ -64,7 +64,7 @@ class HasFibers (p : 𝒳 ⥤ 𝒮) where
   /-- The type of objects of the category `Fib S` for each `S`. -/
   Fib (S : 𝒮) : Type u₃
   /-- `Fib S` is a category. -/
-  isCategory (S : 𝒮) : Category.{v₃} (Fib S) := by infer_instance
+  category (S : 𝒮) : Category.{v₃} (Fib S) := by infer_instance
   /-- The functor `ι : Fib S ⥤ 𝒳`. -/
   ι (S : 𝒮) : (Fib S) ⥤ 𝒳
   /-- The composition with the functor `p` is *equal* to the constant functor mapping to `S`. -/
@@ -76,7 +76,7 @@ namespace HasFibers
 
 /-- The `HasFibers` on `p : 𝒳 ⥤ 𝒮` given by the fibers of `p` -/
 @[default_instance]
-instance canonical (p : 𝒳 ⥤ 𝒮) : HasFibers p where
+def canonical (p : 𝒳 ⥤ 𝒮) : HasFibers p where
   Fib := Fiber p
   ι S := fiberInclusion
   comp_const S := fiberInclusion_comp_eq_const
@@ -86,7 +86,7 @@ section
 
 variable (p : 𝒳 ⥤ 𝒮) [HasFibers p] (S : 𝒮)
 
-attribute [instance] isCategory
+attribute [instance] category
 
 /-- The induced functor from `Fib p S` to the standard fiber. -/
 @[simps!]
