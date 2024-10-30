@@ -23,7 +23,7 @@ This file contains results related to classifying algebraically closed fields.
 -/
 
 
-universe u
+universe u v w
 
 open scoped Cardinal Polynomial
 
@@ -33,13 +33,13 @@ section AlgebraicClosure
 
 namespace Algebra.IsAlgebraic
 
-variable (R L : Type u) [CommRing R] [CommRing L] [IsDomain L] [Algebra R L]
+variable (R : Type u) (L : Type v) [CommRing R] [CommRing L] [IsDomain L] [Algebra R L]
 variable [NoZeroSMulDivisors R L] [Algebra.IsAlgebraic R L]
 
 theorem cardinal_mk_le_sigma_polynomial :
-    #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
-  @mk_le_of_injective L (Σ p : R[X], {x : L | x ∈ p.aroots L})
-    (fun x : L =>
+    lift #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
+  @mk_le_of_injective (ULift L) (Σ p : R[X], {x : L | x ∈ p.aroots L})
+    (fun ⟨x⟩ =>
       let p := Classical.indefiniteDescription _ (Algebra.IsAlgebraic.isAlgebraic x)
       ⟨p.1, x, by
         dsimp
@@ -50,27 +50,31 @@ theorem cardinal_mk_le_sigma_polynomial :
           exact p.2.1
         rw [Polynomial.mem_roots h, Polynomial.IsRoot, Polynomial.eval_map, ← Polynomial.aeval_def,
           p.2.2]⟩)
-    fun x y => by
+    fun ⟨x⟩ ⟨y⟩ => by
       intro h
       simp? at h says simp only [Set.coe_setOf, ne_eq, Set.mem_setOf_eq, Sigma.mk.inj_iff] at h
+      ext
       refine (Subtype.heq_iff_coe_eq ?_).1 h.2
       simp only [h.1, forall_true_iff]
 
 /-- The cardinality of an algebraic extension is at most the maximum of the cardinality
 of the base ring or `ℵ₀` -/
-theorem cardinal_mk_le_max : #L ≤ max #R ℵ₀ :=
+theorem cardinal_mk_le_max : lift.{u} #L ≤ lift (max #R ℵ₀) :=
   calc
-    #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
+    lift.{u} #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
       cardinal_mk_le_sigma_polynomial R L
     _ = Cardinal.sum fun p : R[X] => #{x : L | x ∈ p.aroots L} := by
       rw [← mk_sigma]; rfl
-    _ ≤ Cardinal.sum.{u, u} fun _ : R[X] => ℵ₀ :=
+    _ ≤ Cardinal.sum fun _ : R[X] => ℵ₀ :=
       (sum_le_sum _ _ fun _ => (Multiset.finite_toSet _).lt_aleph0.le)
-    _ = #(R[X]) * ℵ₀ := sum_const' _ _
-    _ ≤ max (max #(R[X]) ℵ₀) ℵ₀ := mul_le_max _ _
-    _ ≤ max (max (max #R ℵ₀) ℵ₀) ℵ₀ :=
-      (max_le_max (max_le_max Polynomial.cardinal_mk_le_max le_rfl) le_rfl)
-    _ = max #R ℵ₀ := by simp only [max_assoc, max_comm ℵ₀, max_left_comm ℵ₀, max_self]
+    _ = lift.{v} #(R[X]) * lift ℵ₀ := sum_const _ _
+    _ ≤ max (max (lift #(R[X])) (lift ℵ₀)) ℵ₀ := mul_le_max _ _
+    _ = lift.{v, u} (max #(R[X]) ℵ₀) := by simp only [lift_aleph0, le_max_iff,
+        aleph0_le_lift, le_refl, or_true, max_eq_left, lift_max]
+    _ ≤ lift.{v, u} (max (max #R ℵ₀) ℵ₀) :=
+      lift_le.2 (max_le_max Polynomial.cardinal_mk_le_max le_rfl)
+    _ = lift (max #R ℵ₀) := by simp only [le_max_iff, le_refl, or_true, max_eq_left, lift_max,
+      lift_aleph0]
 
 end Algebra.IsAlgebraic
 
@@ -119,76 +123,94 @@ end Classification
 
 section Cardinal
 
-variable {R K : Type u} [CommRing R] [Field K] [Algebra R K] [IsAlgClosed K]
-variable {ι : Type u} (v : ι → K)
+variable {R : Type u} {K : Type v} [CommRing R] [Field K] [Algebra R K] [IsAlgClosed K]
+variable {ι : Type w} (v : ι → K)
 
 theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
-    #K ≤ max (max #R #ι) ℵ₀ :=
+    Cardinal.lift.{max u w} #K ≤ max (max (Cardinal.lift.{max v w} #R)
+      (Cardinal.lift.{max u v} #ι)) ℵ₀ :=
   calc
-    #K ≤ max #(Algebra.adjoin R (Set.range v)) ℵ₀ :=
+    Cardinal.lift.{max u w} #K ≤ Cardinal.lift.{max u w}
+        (max #(Algebra.adjoin R (Set.range v)) ℵ₀) := by
       letI := isAlgClosure_of_transcendence_basis v hv
-      Algebra.IsAlgebraic.cardinal_mk_le_max _ _
-    _ = max #(MvPolynomial ι R) ℵ₀ := by rw [Cardinal.eq.2 ⟨hv.1.aevalEquiv.toEquiv⟩]
-    _ ≤ max (max (max #R #ι) ℵ₀) ℵ₀ := max_le_max MvPolynomial.cardinal_mk_le_max le_rfl
-    _ = _ := by simp [max_assoc]
+      simpa using Algebra.IsAlgebraic.cardinal_mk_le_max (Algebra.adjoin R (Set.range v)) K
+    _ = Cardinal.lift.{v} (max #(MvPolynomial ι R) ℵ₀) := by
+      rw [lift_max, ← Cardinal.lift_mk_eq.2 ⟨hv.1.aevalEquiv.toEquiv⟩, lift_aleph0,
+        ← lift_aleph0.{max u v w, max u w}, ← lift_max, lift_umax'.{max u w, v}]
+    _ ≤ Cardinal.lift.{v} (max (max (max (Cardinal.lift #R) (Cardinal.lift #ι)) ℵ₀) ℵ₀) :=
+        lift_le.2 (max_le_max MvPolynomial.cardinal_lift_mk_le_max le_rfl)
+    _ = _ := by simp
 
 /-- If `K` is an uncountable algebraically closed field, then its
 cardinality is the same as that of a transcendence basis. -/
 theorem cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt [Nontrivial R]
-    (hv : IsTranscendenceBasis R v) (hR : #R ≤ ℵ₀) (hK : ℵ₀ < #K) : #K = #ι :=
-  have : ℵ₀ ≤ #ι := le_of_not_lt fun h => not_le_of_gt hK <|
+    (hv : IsTranscendenceBasis R v) (hR : #R ≤ ℵ₀) (hK : ℵ₀ < #K) :
+    Cardinal.lift.{w} #K = Cardinal.lift.{v} #ι :=
+  have : ℵ₀ ≤ Cardinal.lift.{max u v} #ι := le_of_not_lt fun h => not_le_of_gt
+    (show ℵ₀ < Cardinal.lift.{max u w} #K by simpa) <|
     calc
-      #K ≤ max (max #R #ι) ℵ₀ := cardinal_le_max_transcendence_basis v hv
-      _ ≤ _ := max_le (max_le hR (le_of_lt h)) le_rfl
+      Cardinal.lift.{max u w, v} #K ≤ max (max (Cardinal.lift.{max v w, u} #R)
+        (Cardinal.lift.{max u v, w} #ι)) ℵ₀ := cardinal_le_max_transcendence_basis v hv
+      _ ≤ _ := max_le (max_le (by simpa) (by simpa using le_of_lt h)) le_rfl
+  suffices Cardinal.lift.{max u w} #K = Cardinal.lift.{max u v} #ι
+    from Cardinal.lift_injective.{u, max v w} (by simpa)
   le_antisymm
     (calc
-      #K ≤ max (max #R #ι) ℵ₀ := cardinal_le_max_transcendence_basis v hv
-      _ = #ι := by
+      Cardinal.lift.{max u w} #K ≤ max (max
+        (Cardinal.lift.{max v w} #R) (Cardinal.lift.{max u v} #ι)) ℵ₀ :=
+        cardinal_le_max_transcendence_basis v hv
+      _ = Cardinal.lift #ι := by
         rw [max_eq_left, max_eq_right]
-        · exact le_trans hR this
+        · exact le_trans (by simpa using hR) this
         · exact le_max_of_le_right this)
-    (mk_le_of_injective (show Function.Injective v from hv.1.injective))
+    (lift_mk_le.2 ⟨⟨v, hv.1.injective⟩⟩)
 
 end Cardinal
 
-variable {K L : Type} [Field K] [Field L] [IsAlgClosed K] [IsAlgClosed L]
+variable {K : Type u} {L : Type v} [Field K] [Field L] [IsAlgClosed K] [IsAlgClosed L]
 
 /-- Two uncountable algebraically closed fields of characteristic zero are isomorphic
 if they have the same cardinality. -/
 theorem ringEquivOfCardinalEqOfCharZero [CharZero K] [CharZero L] (hK : ℵ₀ < #K)
-    (hKL : #K = #L) : Nonempty (K ≃+* L) := by
+    (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   cases' exists_isTranscendenceBasis ℤ
     (show Function.Injective (algebraMap ℤ K) from Int.cast_injective) with s hs
   cases' exists_isTranscendenceBasis ℤ
     (show Function.Injective (algebraMap ℤ L) from Int.cast_injective) with t ht
-  have : #s = #t := by
-    rw [← cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _ hs (le_of_eq mk_int) hK, ←
-      cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _ ht (le_of_eq mk_int), hKL]
-    rwa [← hKL]
-  cases' Cardinal.eq.1 this with e
+  have hL : ℵ₀ < #L := by
+    rwa [← aleph0_lt_lift.{v, u}, ← lift_mk_eq'.2 hKL, aleph0_lt_lift]
+  have : Cardinal.lift.{v} #s = Cardinal.lift.{u} #t := by
+    rw [← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
+        hs (le_of_eq mk_int) hK),
+      ← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
+        ht (le_of_eq mk_int) hL)]
+    exact Cardinal.lift_mk_eq'.2 hKL
+  cases' Cardinal.lift_mk_eq'.1 this with e
   exact ⟨equivOfTranscendenceBasis _ _ e hs ht⟩
 
 private theorem ringEquivOfCardinalEqOfCharP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
-    (hK : ℵ₀ < #K) (hKL : #K = #L) : Nonempty (K ≃+* L) := by
+    (hK : ℵ₀ < #K) (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   letI : Algebra (ZMod p) K := ZMod.algebra _ _
   letI : Algebra (ZMod p) L := ZMod.algebra _ _
   cases' exists_isTranscendenceBasis (ZMod p)
     (show Function.Injective (algebraMap (ZMod p) K) from RingHom.injective _) with s hs
   cases' exists_isTranscendenceBasis (ZMod p)
     (show Function.Injective (algebraMap (ZMod p) L) from RingHom.injective _) with t ht
-  have : #s = #t := by
-    rw [← cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _ hs
-      (lt_aleph0_of_finite (ZMod p)).le hK,
-      ← cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _ ht
-        (lt_aleph0_of_finite (ZMod p)).le, hKL]
-    rwa [← hKL]
-  cases' Cardinal.eq.1 this with e
+  have hL : ℵ₀ < #L := by
+    rwa [← aleph0_lt_lift.{v, u}, ← lift_mk_eq'.2 hKL, aleph0_lt_lift]
+  have : Cardinal.lift.{v} #s = Cardinal.lift.{u} #t := by
+    rw [← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
+        hs (le_of_lt (lt_aleph0_of_finite _)) hK),
+      ← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
+        ht (le_of_lt (lt_aleph0_of_finite _)) hL)]
+    exact Cardinal.lift_mk_eq'.2 hKL
+  cases' Cardinal.lift_mk_eq'.1 this with e
   exact ⟨equivOfTranscendenceBasis _ _ e hs ht⟩
 
 /-- Two uncountable algebraically closed fields are isomorphic
 if they have the same cardinality and the same characteristic. -/
 theorem ringEquivOfCardinalEqOfCharEq (p : ℕ) [CharP K p] [CharP L p] (hK : ℵ₀ < #K)
-    (hKL : #K = #L) : Nonempty (K ≃+* L) := by
+    (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   rcases CharP.char_is_prime_or_zero K p with (hp | hp)
   · haveI : Fact p.Prime := ⟨hp⟩
     exact ringEquivOfCardinalEqOfCharP p hK hKL
