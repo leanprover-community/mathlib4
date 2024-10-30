@@ -39,16 +39,20 @@ algebraic extension `L` over `K`.
 ## Tags
 
 ## TODO
+1. The condition `Algebra.IsAlgebraic` can be dropped in `of_complete`.
 
-- Show that if `IsKrasner K (AlgebraicClosure K)` holds, then the completion of
+2. After the definition of `Valued` is fixed, the valued version can be proved under the assumption
+`IsValExtension K L`
+
+3. Show that if `IsKrasner K (AlgebraicClosure K)` holds, then the completion of
 `(AlgebraicClosure K)` is algebraically closed.
 
-- After the uniqueness of norm extension of complete normed field is in mathlib, drop the conditions
+4. After the uniqueness of norm extension of complete normed field is in mathlib, drop the conditions
 about `uniqueNormExtension` in `of_complete`.
 If `K` is a complete normed/valued field and the norm/valuation on `L` is
 compatible with the one on `K`, then `IsKrasnerNorm K L` holds.
 
-- Show that $\mathbb{C}_p$ is algebraically closed.
+5. After 3 and 4 are proved, show that $\mathbb{C}_p$ is algebraically closed.
 
 -/
 
