@@ -181,7 +181,7 @@ def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
 
 theorem bernoulli'_eq_bernoulli (n : ℕ) : bernoulli' n = (-1) ^ n * bernoulli n := by
-  simp [bernoulli, ← mul_assoc, ← sq, ← pow_mul, mul_comm n 2, pow_mul]
+  simp [bernoulli, ← mul_assoc, ← sq, ← pow_mul, mul_comm n 2]
 
 @[simp]
 theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]

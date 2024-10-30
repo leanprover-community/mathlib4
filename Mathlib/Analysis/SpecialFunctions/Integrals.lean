@@ -33,7 +33,7 @@ integrate, integration, integrable, integrability
 -/
 
 
-open Real Nat Set Finset
+open Real Set Finset
 
 open scoped Real Interval
 
@@ -43,7 +43,7 @@ namespace intervalIntegral
 
 open MeasureTheory
 
-variable {f : ℝ → ℝ} {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
+variable {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
 
 /-! ### Interval integrability -/
 
@@ -206,7 +206,6 @@ theorem integrableOn_Ioo_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
 theorem intervalIntegrable_id : IntervalIntegrable (fun x => x) μ a b :=
   continuous_id.intervalIntegrable a b
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem intervalIntegrable_const : IntervalIntegrable (fun _ => c) μ a b :=
   continuous_const.intervalIntegrable a b
 
@@ -409,7 +408,6 @@ theorem integral_id : ∫ x in a..b, x = (b ^ 2 - a ^ 2) / 2 := by
   norm_num at this
   exact this
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem integral_one : (∫ _ in a..b, (1 : ℝ)) = b - a := by
   simp only [mul_one, smul_eq_mul, integral_const]
 
@@ -580,8 +578,9 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
 
 end RpowCpow
 
-/-! ### Integral of `sin x ^ n` -/
+open Nat
 
+/-! ### Integral of `sin x ^ n` -/
 
 theorem integral_sin_pow_aux :
     (∫ x in a..b, sin x ^ (n + 2)) =
