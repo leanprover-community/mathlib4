@@ -865,10 +865,13 @@ theorem LinearMap.withSeminorms_induced [hι : Nonempty ι] {q : SeminormFamily 
   refine iInf_congr fun i => ?_
   exact Filter.comap_comap
 
-theorem Inducing.withSeminorms [hι : Nonempty ι] {q : SeminormFamily 𝕜₂ F ι} (hq : WithSeminorms q)
-    [TopologicalSpace E] {f : E →ₛₗ[σ₁₂] F} (hf : Inducing f) : WithSeminorms (q.comp f) := by
-  rw [hf.induced]
+lemma IsInducing.withSeminorms [hι : Nonempty ι] {q : SeminormFamily 𝕜₂ F ι}
+    (hq : WithSeminorms q) [TopologicalSpace E] {f : E →ₛₗ[σ₁₂] F} (hf : IsInducing f) :
+    WithSeminorms (q.comp f) := by
+  rw [hf.eq_induced]
   exact f.withSeminorms_induced hq
+
+@[deprecated (since := "2024-10-28")] alias Inducing.withSeminorms := IsInducing.withSeminorms
 
 /-- (Disjoint) union of seminorm families. -/
 protected def SeminormFamily.sigma {κ : ι → Type*} (p : (i : ι) → SeminormFamily 𝕜 E (κ i)) :
