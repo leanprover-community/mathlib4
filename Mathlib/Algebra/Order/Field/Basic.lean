@@ -763,21 +763,20 @@ private lemma exists_lt_mul_right_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 
   simp_rw [mul_comm a] at h ⊢
   exact exists_lt_mul_left_of_nonneg hb.le hc h
 
-private lemma exists_mul_left_lt {a b c : α} (hc : a * b < c) : ∃ a' > a, a' * b < c := by
+private lemma exists_mul_left_lt₀ {a b c : α} (hc : a * b < c) : ∃ a' > a, a' * b < c := by
   rcases le_or_lt b 0 with hb | hb
   · obtain ⟨a', ha'⟩ := exists_gt a
     exact ⟨a', ha', hc.trans_le' (antitone_mul_right hb ha'.le)⟩
   · obtain ⟨a', ha', hc'⟩ := exists_between ((lt_div_iff₀ hb).2 hc)
     exact ⟨a', ha', (lt_div_iff₀ hb).1 hc'⟩
 
-private lemma exists_mul_right_lt {a b c : α} (hc : a * b < c) : ∃ b' > b, a * b' < c := by
-  simp_rw [mul_comm a] at hc ⊢; exact exists_mul_left_lt hc
+private lemma exists_mul_right_lt₀ {a b c : α} (hc : a * b < c) : ∃ b' > b, a * b' < c := by
+  simp_rw [mul_comm a] at hc ⊢; exact exists_mul_left_lt₀ hc
 
-/-- See `le_mul_of_forall_lt` for multiplicative groups.-/
-lemma le_mul_of_forall_lt' {a b c : α} (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') : c ≤ a * b := by
+lemma le_mul_of_forall_lt₀ {a b c : α} (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') : c ≤ a * b := by
   refine le_of_forall_le_of_dense fun d hd ↦ ?_
-  obtain ⟨a', ha', hd⟩ := exists_mul_left_lt hd
-  obtain ⟨b', hb', hd⟩ := exists_mul_right_lt hd
+  obtain ⟨a', ha', hd⟩ := exists_mul_left_lt₀ hd
+  obtain ⟨b', hb', hd⟩ := exists_mul_right_lt₀ hd
   exact (h a' ha' b' hb').trans hd.le
 
 lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
