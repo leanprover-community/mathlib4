@@ -153,7 +153,7 @@ variable [Group G] [MulAction G X]
 
 open scoped BigOperators Pointwise
 
-/-- If the action is pretransitive, then preprimitivity follows from 
+/-- If the action is pretransitive, then preprimitivity follows from
 the trivial blocks condition for blocks containing a given point -/
 theorem mk_mem_of_pretransitive [htGX : IsPretransitive G X] (a : X)
     (H : ∀ (B : Set X) (_ : a ∈ B) (_ : IsBlock G B), IsTrivialBlock B) :
@@ -243,7 +243,7 @@ open scoped BigOperators Pointwise
 
 instance Block.boundedOrderOfMem (a : X) :
     BoundedOrder { B : Set X // a ∈ B ∧ IsBlock G B } where
-  top := ⟨⊤, Set.mem_univ _, IsBlock.univ⟩ 
+  top := ⟨⊤, Set.mem_univ _, IsBlock.univ⟩
   le_top := by
     rintro ⟨B, ha, hB⟩
     simp only [Set.top_eq_univ, Subtype.mk_le_mk, Set.le_eq_subset, Set.subset_univ]
