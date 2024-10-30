@@ -163,7 +163,7 @@ theorem eqToHom_right (X Y : Comma L R) (H : X = Y) :
 
 section
 
-variable {X Y : Comma L R} (e : X ⟶ Y)
+variable {L R} {X Y : Comma L R} (e : X ⟶ Y)
 
 instance [IsIso e] : IsIso e.left :=
   (Comma.fst L R).map_isIso e

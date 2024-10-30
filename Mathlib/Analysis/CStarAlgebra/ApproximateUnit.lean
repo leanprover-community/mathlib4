@@ -3,11 +3,9 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.PosPart
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
-import Mathlib.Topology.ApproximateUnit
 
 /-! # Positive contractions in a C⋆-algebra form an approximate unit
 
@@ -46,17 +44,14 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
   intro a ha b hb hab
   simp only [Set.mem_Ici] at ha hb
   rw [← inr_le_iff .., nnreal_cfcₙ_eq_cfc_inr a _, nnreal_cfcₙ_eq_cfc_inr b _]
+  rw [← inr_le_iff a b (.of_nonneg ha) (.of_nonneg hb)] at hab
+  rw [← inr_nonneg_iff] at ha hb
   have h_cfc_one_sub (c : A⁺¹) (hc : 0 ≤ c := by cfc_tac) :
       cfc (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) c = 1 - cfc (·⁻¹ : ℝ≥0 → ℝ≥0) (1 + c) := by
     rw [cfc_tsub _ _ _ (fun x _ ↦ by simp) (hg := by fun_prop (disch := intro _ _; positivity)),
-      cfc_const_one ℝ≥0 c]
-    rw [cfc_comp' (·⁻¹) (1 + ·) c ?_, cfc_add .., cfc_const_one ℝ≥0 c, cfc_id' ℝ≥0 c]
-    refine continuousOn_id.inv₀ ?_
-    rintro - ⟨x, -, rfl⟩
-    simp only [id_def]
-    positivity
-  rw [← inr_le_iff a b (.of_nonneg ha) (.of_nonneg hb)] at hab
-  rw [← inr_nonneg_iff] at ha hb
+      cfc_const_one ℝ≥0 c, cfc_comp' (·⁻¹) (1 + ·) c ?_, cfc_add .., cfc_const_one ℝ≥0 c,
+      cfc_id' ℝ≥0 c]
+    exact continuousOn_id.inv₀ (Set.forall_mem_image.mpr fun x _ ↦ by dsimp only [id]; positivity)
   rw [h_cfc_one_sub (a : A⁺¹), h_cfc_one_sub (b : A⁺¹)]
   gcongr
   rw [← CFC.rpow_neg_one_eq_cfc_inv, ← CFC.rpow_neg_one_eq_cfc_inv]
@@ -65,14 +60,12 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
 
 lemma Set.InvOn.one_sub_one_add_inv : Set.InvOn (fun x ↦ 1 - (1 + x)⁻¹) (fun x ↦ x * (1 - x)⁻¹)
     {x : ℝ≥0 | x < 1} {x : ℝ≥0 | x < 1} := by
-  have h1_add {x : ℝ≥0} : 0 < 1 + (x : ℝ) := by positivity
   have : (fun x : ℝ≥0 ↦ x * (1 + x)⁻¹) = fun x ↦ 1 - (1 + x)⁻¹ := by
-    ext x
+    ext x : 1
     field_simp
-    simp [sub_mul, inv_mul_cancel₀ h1_add.ne']
+    simp [tsub_mul, inv_mul_cancel₀]
   rw [← this]
-  constructor
-  all_goals intro x (hx : x < 1)
+  constructor <;> intro x (hx : x < 1)
   · have : 0 < 1 - x := tsub_pos_of_lt hx
     field_simp [tsub_add_cancel_of_le hx.le, tsub_tsub_cancel_of_le hx.le]
   · field_simp [mul_tsub]
@@ -112,23 +105,6 @@ lemma CStarAlgebra.directedOn_nonneg_ball :
       have hab' : cfcₙ g a ≤ cfcₙ g a + cfcₙ g b := le_add_of_nonneg_right cfcₙ_nonneg_of_predicate
       exact CFC.monotoneOn_one_sub_one_add_inv cfcₙ_nonneg_of_predicate
         (cfcₙ_nonneg_of_predicate.trans hab') hab'
-
-section NormedGroup
-
-variable {E : Type*} [NormedGroup E]
-
-@[to_additive]
-theorem eq_one_or_norm_pos (a : E) : a = 1 ∨ 0 < ‖a‖ := by
-  by_cases h : a = 1
-  · exact Or.inl h
-  · apply Or.inr
-    simpa [← norm_pos_iff''] using h
-
-@[to_additive]
-theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
-  eq_one_or_norm_pos a
-
-end NormedGroup
 
 section SpanNonneg
 
@@ -206,39 +182,6 @@ abbrev IncreasingApproximateUnit.of_forall_nonneg_tendsto {ι : Type*} {l : Filt
       refine tendsto_finset_sum _ fun i _ ↦ ?_
       simp_rw [mul_smul_comm]
       exact tendsto_const_nhds.smul <| h (x i) (x i).2.1 <| by simpa using (x i).2.2
-
-lemma CStarAlgebra.pow_nonneg
-    {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-    {a : A} (ha : 0 ≤ a) (n : ℕ) : 0 ≤ a ^ n := by
-  rw [← cfc_pow_id (R := ℝ≥0) a]
-  exact cfc_nonneg_of_predicate
-
-lemma CStarAlgebra.pow_monotone_of_one_le
-    {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-    {a : A} (ha : 1 ≤ a) : Monotone (a ^ · : ℕ → A) := by
-  have ha' : 0 ≤ a := zero_le_one.trans ha
-  intro n m hnm
-  simp only
-  rw [← cfc_pow_id (R := ℝ) a, ← cfc_pow_id (R := ℝ) a, cfc_le_iff ..]
-  rw [CFC.one_le_iff (R := ℝ) a] at ha
-  peel ha with x hx _
-  exact pow_le_pow_right₀ (ha x hx) hnm
-
-lemma CStarAlgebra.pow_antitone_of_le_one
-    {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-    {a : A} (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : Antitone (a ^ · : ℕ → A) := by
-  intro n m hnm
-  simp only
-  rw [← cfc_pow_id (R := ℝ) a, ← cfc_pow_id (R := ℝ) a, cfc_le_iff ..]
-  rw [CFC.le_one_iff (R := ℝ) a] at ha₁
-  peel ha₁ with x hx _
-  exact pow_le_pow_of_le_one (spectrum_nonneg_of_nonneg ha₀ hx) (ha₁ x hx) hnm
-
-theorem CStarAlgebra.nnnorm_le_nnnorm_of_nonneg_of_le
-    {A : Type u_1} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-    {a : A} {b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
-    ‖a‖₊ ≤ ‖b‖₊ :=
-  norm_le_norm_of_nonneg_of_le ha hab
 
 theorem CStarAlgebra.extracted
     {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]

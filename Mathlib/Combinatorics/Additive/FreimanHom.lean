@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.ZMod.Defs

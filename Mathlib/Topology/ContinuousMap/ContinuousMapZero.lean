@@ -81,7 +81,7 @@ protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ :=
   TopologicalSpace.induced ((↑) : C(X, R)₀ → C(X, R)) inferInstance
 
 lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
-  induced := rfl
+  eq_induced := rfl
   inj _ _ h := ext fun x ↦ congr($(h) x)
 
 @[deprecated (since := "2024-10-26")]
