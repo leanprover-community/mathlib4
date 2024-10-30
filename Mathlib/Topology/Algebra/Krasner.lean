@@ -39,7 +39,9 @@ algebraic extension `L` over `K`.
 ## Tags
 
 ## TODO
-1. The condition `Algebra.IsAlgebraic` can be dropped in `of_complete`.
+1. The condition `Algebra.IsAlgebraic` can be dropped in `of_complete`. This needs a generalization
+of the field `Mathlib.FieldTheory.Extension` to trancendental cases. Almost all theorems in that
+file still holds without the assumption of being algebraic.
 
 2. After the definition of `Valued` is fixed, the valued version can be proved under the assumption
 `IsValExtension K L`
@@ -68,8 +70,24 @@ variable {K L : Type*} [Nm_K : NontriviallyNormedField K] [CompleteSpace K]
 theorem IsNonarchimedean.norm_extension (is_na : IsNonarchimedean (‖·‖ : K → ℝ))
     (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) : IsNonarchimedean (‖·‖ : L → ℝ) := by
   sorry
+-- this is another PR, showing that fron any divisionring, nonarch is equiv to nonarch
+-- pullback to natural numbers
+
+
+open IntermediateField
+theorem IsConjRoot.exists_algEquiv_of_minpoly_split {K L} [Field K] [Field L] [Algebra K L]
+    [Algebra.IsAlgebraic K L] {x y: L}
+    (h : IsConjRoot K x y) (sp : (minpoly K x).Splits (algebraMap K L)) :
+    ∃ σ : L ≃ₐ[K] L, σ y = x := by
+  obtain ⟨σ, hσ⟩ :=
+    exists_algHom_of_splits_of_aeval (fun s => ⟨sorry, sorry⟩)
+    --minpoly_add_algebraMap_splits
+      (h ▸ minpoly.aeval K x)
+  exact ⟨AlgEquiv.ofBijective σ sorry, hσ⟩ -- fin dim vector space inj => bij
+-- another PR
 
 end test
+
 def uniqueNormExtension (K L : Type*) [NormedCommRing K] [Field L] [Algebra K L]
     [Algebra.IsAlgebraic K L] :=
   ∃! (_ : NormedField L), ∀ (x : K), ‖x‖ = ‖algebraMap K L x‖
@@ -78,7 +96,11 @@ theorem IsConjRoot.norm_eq_of_uniqueNormExtension (K L) [NormedField K] [NormedF
     [Algebra K L]
     [Algebra.IsAlgebraic K L] (x y: L) (uniq : uniqueNormExtension K L)
     (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖)
-    (h : IsConjRoot K x y) : ‖x‖ = ‖y‖ := by sorry
+    (h : IsConjRoot K x y) : ‖x‖ = ‖y‖ := by
+  obtain ⟨_, _, heq⟩ := uniq
+  calc
+    ‖x‖ = 
+
 
 open IntermediateField Valued
 
@@ -158,12 +180,17 @@ theorem of_completeSpace {K L : Type*} [Nm_K : NontriviallyNormedField K] [Compl
     -- spectralNorm K L = spectralnorm M L
   -- IsConjRoot.val_eq M hM (Polynomial.Separable.isIntegral zsep) h1
   -- need rank one -- exist_algEquiv
+  have extdM : ∀ x : M, ‖x‖ = ‖algebraMap M L x‖ := by
+    sorry
+  have uniqM : uniqueNormExtension M L := by
+    sorry
   have : ‖z - z'‖ < ‖z - z'‖ := by
     calc
       _ ≤ max ‖z‖ ‖z'‖ := by
         simpa only [norm_neg, sub_eq_add_neg] using (is_na.norm_extension extd z (- z'))
       _ ≤ ‖x - y‖ := by
-        simp only [← norm_eq, max_self, le_refl]
+        rw [h1.norm_eq_of_uniqueNormExtension M L z z' uniqM extdM]
+        simp only [max_self, le_refl]
       _ < ‖x - (z' + y)‖ := by
         apply kr (z' + y)
         · apply IsConjRoot.of_isScalarTower (L := M) xsep.isIntegral
