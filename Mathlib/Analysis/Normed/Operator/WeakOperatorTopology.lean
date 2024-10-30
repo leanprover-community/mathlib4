@@ -200,7 +200,7 @@ lemma continuous_of_dual_apply_continuous {α : Type*} [TopologicalSpace α] {g 
 
 lemma isInducing_inducingFn : IsInducing (inducingFn 𝕜 E F) := ⟨rfl⟩
 
-lemma isEmbedding_inducingFn [SeparatingDual 𝕜 F] : Embedding (inducingFn 𝕜 E F) := by
+lemma isEmbedding_inducingFn [SeparatingDual 𝕜 F] : IsEmbedding (inducingFn 𝕜 E F) := by
   refine Function.Injective.isEmbedding_induced fun A B hAB => ?_
   rw [ContinuousLinearMapWOT.ext_dual_iff]
   simpa [funext_iff] using hAB
@@ -257,7 +257,7 @@ def seminormFamily : SeminormFamily 𝕜 (E →WOT[𝕜] F) (E × F⋆) :=
 lemma withSeminorms : WithSeminorms (seminormFamily 𝕜 E F) :=
   let e : E × F⋆ ≃ (Σ _ : E × F⋆, Fin 1) := .symm <| .sigmaUnique _ _
   have : Nonempty (Σ _ : E × F⋆, Fin 1) := e.symm.nonempty
-  inducing_inducingFn.withSeminorms <| withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜 𝕜)
+  isInducing_inducingFn.withSeminorms <| withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜 𝕜)
     |>.congr_equiv e
 
 lemma hasBasis_seminorms : (𝓝 (0 : E →WOT[𝕜] F)).HasBasis (seminormFamily 𝕜 E F).basisSets id :=
