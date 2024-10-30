@@ -8,8 +8,9 @@ import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.OpenSubgroup
 /-!
 # Open normal subgroup in a clopen neighborhood of One
-This file defines `OpenNormalSubgroupSubClopenNhdsOfOne`, which strengthens the result of
-`OpenSubgroupSubClopenNhdsOfOne` into open *normal* subgroups.
+This file proved the lemma `TopologicalGroup.existOpenNormalSubgroupSubClopenNhdsOfOne`, which
+states that for any clopen neighborhood of 1, there exists an open normal subgroup
+contained within it.
 
 This file is split out from the file `OpenSubgroup` because the need of more imports.
 -/
@@ -20,10 +21,9 @@ theorem existOpenNormalSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [Topolog
     [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
     ∃ H : OpenNormalSubgroup G, (H : Set G) ⊆ W := by
   rcases existOpenSubgroupSubClopenNhdsOfOne WClopen einW with ⟨H, hH⟩
-  letI : Subgroup.FiniteIndex H.1 := Subgroup.finiteIndex_of_finite_quotient H.1
+  haveI : Subgroup.FiniteIndex H := H.finiteIndex_of_finite_quotient
   use { toSubgroup := Subgroup.normalCore H
-        isOpen' := Subgroup.isOpen_of_isClosed_of_finiteIndex _ <|
-          Subgroup.normalCore_isClosed H.1 <| OpenSubgroup.isClosed H }
-  exact fun _ b ↦ hH (Subgroup.normalCore_le H.1 b)
+        isOpen' := Subgroup.isOpen_of_isClosed_of_finiteIndex _ (H.normalCore_isClosed H.isClosed) }
+  exact fun _ b ↦ hH (H.normalCore_le b)
 
 end TopologicalGroup

@@ -457,8 +457,8 @@ end
 
 /-!
 ## The Open Subgroup in a Clopen Neighborhood of One
-This section define `OpenSubgroupSubClopenNhdsOfOne` (`OpenNormalSubgroupSubClopenNhdsOfOne`),
-which can pick an open subgroup contained in a clopen neighborhood of `1`.
+This section proved the lemma `TopologicalGroup.existOpenSubgroupSubClopenNhdsOfOne`, which
+states that for any clopen neighborhood of 1, there exists an open subgroup contained within it.
 -/
 
 open scoped Pointwise
@@ -467,9 +467,9 @@ variable {G : Type*} [TopologicalSpace G]
 
 structure TopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop where
   nhd : T ∈ 𝓝 0
-  inv : -T = T
+  neg : -T = T
   isOpen : IsOpen T
-  mul : W + T ⊆ W
+  add : W + T ⊆ W
 
 /--For a set W, the neighborhood of `1` which is open, self inverse and satisfying `T * W ⊆ W` -/
 @[to_additive
@@ -490,31 +490,30 @@ open Set Filter
 lemma exist_mul_closure_nhd {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝 (1 : G), W * T ⊆ W := by
   apply WClopen.isClosed.isCompact.induction_on (p := fun S ↦ ∃ T ∈ 𝓝 (1 : G), S * T ⊆ W)
     ⟨Set.univ ,by simp only [univ_mem, empty_mul, empty_subset, and_self]⟩
-    (fun _ _ huv ⟨T, hT, mem⟩ ↦ ⟨T, ⟨hT, (mul_subset_mul_right huv).trans mem⟩⟩)
-    fun U V ⟨T₁, hT₁, mem1⟩ ⟨T₂, hT₂, mem2⟩ ↦ ⟨T₁ ∩ T₂, ⟨inter_mem hT₁ hT₂, by
+    (fun _ _ huv ⟨T, hT, mem⟩ ↦ ⟨T, hT, (mul_subset_mul_right huv).trans mem⟩)
+    fun U V ⟨T₁, hT₁, mem1⟩ ⟨T₂, hT₂, mem2⟩ ↦ ⟨T₁ ∩ T₂, inter_mem hT₁ hT₂, by
       rw [union_mul]
       exact union_subset (mul_subset_mul_left inter_subset_left |>.trans mem1)
-        (mul_subset_mul_left inter_subset_right |>.trans mem2)⟩⟩
+        (mul_subset_mul_left inter_subset_right |>.trans mem2) ⟩
   intro x memW
   have : (x, 1) ∈ (fun p ↦ p.1 * p.2) ⁻¹' W := by simp only [mem_preimage, mul_one, memW]
   rcases isOpen_prod_iff.mp (continuous_mul.isOpen_preimage W <| WClopen.2) x 1 this with
-    ⟨U, V, h1, h2, h3, h4, h5⟩
-  have h6 : U * V ⊆ W := mul_subset_iff.mpr (fun _ hx _ hy ↦ h5 (mk_mem_prod hx hy))
-  exact ⟨U ∩ W, ⟨⟨U, ⟨IsOpen.mem_nhds h1 h3, ⟨W, ⟨fun _ a ↦ a, rfl⟩⟩⟩⟩,
-    ⟨V, ⟨IsOpen.mem_nhds h2 h4, fun _ a ↦ h6 ((mul_subset_mul_right inter_subset_left) a)⟩⟩⟩⟩
+    ⟨U, V, Uopen, Vopen, xmemU, onememV, prodsub⟩
+  have h6 : U * V ⊆ W := mul_subset_iff.mpr (fun _ hx _ hy ↦ prodsub (mk_mem_prod hx hy))
+  exact ⟨U ∩ W, ⟨U, Uopen.mem_nhds xmemU, W, fun _ a ↦ a, rfl⟩,
+    V, IsOpen.mem_nhds Vopen onememV, fun _ a ↦ h6 ((mul_subset_mul_right inter_subset_left) a)⟩
 
 @[to_additive]
 lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
     ∃ T, mulInvClosureNhd T W := by
-  rcases exist_mul_closure_nhd WClopen with ⟨S, hS, h⟩
-  rcases mem_nhds_iff.mp hS with ⟨U, h1, h2, h3⟩
+  rcases exist_mul_closure_nhd WClopen with ⟨S, Smemnhds, mulclose⟩
+  rcases mem_nhds_iff.mp Smemnhds with ⟨U, UsubS, Uopen, onememU⟩
   use U ∩ U⁻¹
   constructor
-  · exact IsOpen.mem_nhds (h2.inter h2.inv) (by simp only [mem_inter_iff, h3, Set.mem_inv, inv_one,
-    and_self])
+  · simp only [inter_mem_iff, Uopen.mem_nhds onememU, inv_mem_nhds_one, and_self]
   · simp only [inter_inv, inv_inv, inter_comm]
-  · exact h2.inter h2.inv
-  · exact fun a ha ↦ h (mul_subset_mul_left h1 (mul_subset_mul_left inter_subset_left ha))
+  · exact Uopen.inter Uopen.inv
+  · exact fun a ha ↦ mulclose (mul_subset_mul_left UsubS (mul_subset_mul_left inter_subset_left ha))
 
 @[to_additive]
 theorem existOpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]
@@ -543,13 +542,13 @@ theorem existOpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSp
   have : IsOpen (⋃ n , V ^ (n + 1)) := by
     refine isOpen_iUnion (fun n ↦ ?_)
     rw [pow_succ]
-    exact IsOpen.mul_left hV.isOpen
+    exact hV.isOpen.mul_left
   use ⟨S, this⟩
   have mulVpow (n : ℕ) : W * V ^ (n + 1) ⊆ W := by
     induction' n with n ih
     · simp only [zero_add, pow_one, hV.mul]
     · rw [pow_succ, ← mul_assoc]
-      exact le_trans (Set.mul_subset_mul_right ih) <| hV.mul
+      exact (Set.mul_subset_mul_right ih).trans hV.mul
   have (n : ℕ) : V ^ (n + 1) ⊆ W * V ^ (n + 1) := by
     intro x xin
     rw [Set.mem_mul]
