@@ -22,8 +22,8 @@ if ! command -v code &> /dev/null; then
     # Unzip the downloaded file to the Applications folder
     unzip -o ~/Downloads/VSCode-darwin-universal.zip -d /Applications
 
-  # Add the VS Code binary to the PATH to enable launching from the terminal
-  cat >> ~/.zprofile << EOF
+    # Add the VS Code binary to the PATH to enable launching from the terminal
+    cat >> ~/.zprofile << EOF
 # Add Visual Studio Code (code)
 export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 EOF
