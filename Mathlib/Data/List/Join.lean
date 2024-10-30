@@ -117,4 +117,12 @@ theorem append_join_map_append (L : List (List α)) (x : List α) :
 
 @[deprecated (since := "2024-08-15")] alias sublist_join := sublist_join_of_mem
 
+theorem head_join_of_head_ne_nil {l : List (List α)} (hl : l ≠ []) (hl' : l.head hl ≠ []) :
+    l.join.head (join_ne_nil_iff.2 ⟨_, head_mem hl, hl'⟩) = (l.head hl).head hl' := by
+  cases l with
+  | nil => contradiction
+  | cons a l =>
+    simp_rw [join_cons, head_cons]
+    exact head_append_of_ne_nil _
+
 end List

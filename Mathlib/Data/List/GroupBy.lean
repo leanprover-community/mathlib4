@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Join
 
 /-!
 # Group consecutive elements in a list by a relation
@@ -137,10 +138,10 @@ theorem chain'_getLast_head_groupBy (r : α → α → Bool) (l : List α) :
   cases l with
   | nil => exact chain'_nil
   | cons _ _ =>
-    apply chain'_last_head_groupBy_loop _ (not_mem_nil _) chain'_nil
+    apply chain'_getLast_head_groupByLoop _ (not_mem_nil _) chain'_nil
     rintro _ ⟨⟩
 
-private theorem groupBy_loop_append {r : α → α → Bool} {l g : List α} {a : α}
+private theorem groupByLoop_append {r : α → α → Bool} {l g : List α} {a : α}
     (h : (g.reverse ++ a :: l).Chain' fun x y ↦ r x y)
     (ha : ∀ h : m ≠ [], r ((a :: l).getLast (cons_ne_nil a l)) (m.head h) = false) :
     groupBy.loop r (l ++ m) a g [] = (g.reverse ++ a :: l) :: m.groupBy r := by
@@ -153,7 +154,7 @@ private theorem groupBy_loop_append {r : α → α → Bool} {l g : List α} {a 
       rw [groupBy.loop]
       have := ha (cons_ne_nil c m)
       rw [getLast_singleton, head_cons] at this
-      rw [this, groupBy_loop_eq_append [_], groupBy]
+      rw [this, groupByLoop_eq_append [_], groupBy]
       simp
   | cons b l IH =>
     rw [cons_append, groupBy.loop]
@@ -166,18 +167,23 @@ private theorem groupBy_loop_append {r : α → α → Bool} {l g : List α} {a 
       have := h.2.1
       contradiction
 
+set_option linter.docPrime false in
 theorem groupBy_of_chain' {r : α → α → Bool} {l : List α} (hn : l ≠ [])
     (h : l.Chain' fun x y ↦ r x y) : groupBy r l = [l] := by
   cases l with
   | nil => contradiction
-  | cons a l => rw [groupBy, ← append_nil l, groupBy_loop_append] <;> simp [h]
+  | cons a l => rw [groupBy, ← append_nil l, groupByLoop_append] <;> simp [h]
+
+@[simp]
+theorem groupBy_singleton {r : α → α → Bool} (a : α) : groupBy r [a] = [[a]] := by
+  apply groupBy_of_chain' <;> simp
 
 theorem groupBy_append {r : α → α → Bool} {l : List α} (hn : l ≠ [])
     (h : l.Chain' fun x y ↦ r x y) (ha : ∀ h : m ≠ [], r (l.getLast hn) (m.head h) = false) :
     (l ++ m).groupBy r = l :: m.groupBy r := by
   cases l with
   | nil => contradiction
-  | cons a l => rw [cons_append, groupBy, groupBy_loop_append] <;> simp [h, ha]
+  | cons a l => rw [cons_append, groupBy, groupByLoop_append] <;> simp [h, ha]
 
 theorem groupBy_append_cons {r : α → α → Bool} {l : List α} (hn : l ≠ []) {a : α} (m : List α)
     (h : l.Chain' fun x y ↦ r x y) (ha : r (l.getLast hn) a = false) :
@@ -185,18 +191,6 @@ theorem groupBy_append_cons {r : α → α → Bool} {l : List α} (hn : l ≠ [
   apply groupBy_append hn h
   intros
   rwa [head_cons]
-
-theorem join_head {l : List (List α)} (hl : l ≠ []) (hl' : l.head hl ≠ []) :
-    l.join.head ((join_ne_nil _).2 ⟨_, head_mem hl, hl'⟩) = (l.head hl).head hl' := by
-  cases l with
-  | nil => contradiction
-  | cons a l =>
-    simp_rw [join_cons, head_cons]
-    exact head_append_of_ne_nil _
-
-theorem head_mem_head? : ∀ {l : List α} (h : l ≠ []), head l h ∈ head? l
-  | [], h => by contradiction
-  | a :: l, _ => rfl
 
 theorem groupBy_join {r : α → α → Bool} {l : List (List α)} (hn : [] ∉ l)
     (hc : ∀ m ∈ l, m.Chain' fun x y ↦ r x y)
@@ -211,17 +205,23 @@ theorem groupBy_join {r : α → α → Bool} {l : List (List α)} (hn : [] ∉ 
       exact hc _ (mem_cons_of_mem a hm)
     · intro h
       rw [chain'_cons'] at hc'
-      obtain ⟨x, hx, _⟩ := (join_ne_nil _).1 h
+      obtain ⟨x, hx, _⟩ := join_ne_nil_iff.1 h
       obtain ⟨_, _, H⟩ := hc'.1 (l.head (ne_nil_of_mem hx)) (head_mem_head? _)
-      rwa [join_head]
+      rwa [head_join_of_head_ne_nil]
 
+/-- A characterization of `groupBy m r` as the unique list `l` such that:
+* Its join is `m`.
+* It does not contain the empty list.
+* Every list in `l` is `Chain'` of `r`.
+* The last element of each list in `l` is not related by `r` to the head of the next.
+-/
 theorem groupBy_eq_iff {r : α → α → Bool} {l : List (List α)} :
     m.groupBy r = l ↔ l.join = m ∧ [] ∉ l ∧ (∀ m ∈ l, m.Chain' fun x y ↦ r x y) ∧
       l.Chain' fun a b ↦ ∃ ha hb, r (a.getLast ha) (b.head hb) = false := by
   constructor
   · rintro rfl
     exact ⟨join_groupBy r m, nil_not_mem_groupBy r m, fun _ ↦ chain'_of_mem_groupBy,
-      chain'_last_head_groupBy r m⟩
+      chain'_getLast_head_groupBy r m⟩
   · rintro ⟨rfl, hn, hc, hc'⟩
     exact groupBy_join hn hc hc'
 
