@@ -134,10 +134,11 @@ theorem mk_of_subgroups_of_comm {A S : Type*} {ι : Sort*} [CommRing A]
 `Ideal` (or any `S` satisfying `AddSubgroupClass S A` and `SMulMemClass S A A`). -/
 theorem mk_of_ideals_of_comm {A S : Type*} {ι : Sort*} [CommRing A]
     [SetLike S A] [AddSubgroupClass S A] [SMulMemClass S A A] {p : ι → Prop} {B : ι → S}
-    (isBasis : IsBasis p (fun i ↦ B i : ι → Set A))
-    (mul : ∀ {i}, p i → ∃ j, p j ∧ (B j : Set A) * B j ⊆ B i) :
+    (isBasis : IsBasis p (fun i ↦ B i : ι → Set A)) :
     IsRingBasis p (fun i ↦ B i : ι → Set A) :=
-  .mk_of_subgroups_of_comm isBasis mul fun a {i} hi ↦ ⟨i, hi, fun _ hx ↦ SMulMemClass.smul_mem a hx⟩
+  .mk_of_subgroups_of_comm isBasis
+    (fun {i} hi ↦ ⟨i, hi, mul_subset_iff.mpr fun a _ _ hb ↦ SMulMemClass.smul_mem a hb⟩)
+    (fun a {i} hi ↦ ⟨i, hi, fun _ hx ↦ SMulMemClass.smul_mem a hx⟩)
 
 variable {A S : Type*} {ι : Sort*} [Ring A] [SetLike S A] [AddSubgroupClass S A]
     {p : ι → Prop} {B : ι → S} (hB : IsRingBasis p (fun i ↦ B i : ι → Set A))
