@@ -590,7 +590,7 @@ end Path
 namespace Walk
 
 variable {G} {p} {u v : V} {H : SimpleGraph V}
-variable (p : G.Walk u v)
+variable {p : G.Walk u v}
 
 protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
     (p.transfer H hp).IsPath := by

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Range
+import Mathlib.Data.List.Perm.Basic
 
 /-! # sublists
 
@@ -53,8 +53,7 @@ theorem sublists'_eq_sublists'Aux (l : List α) :
     sublists' l = l.foldr (fun a r => sublists'Aux a r r) [[]] := by
   simp only [sublists', sublists'Aux_eq_array_foldl]
   rw [← List.foldr_hom Array.toList]
-  · rfl
-  · intros _ _; congr <;> simp
+  · intros _ _; congr
 
 theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = r₂ ++ map (cons a) r₁ :=
@@ -128,8 +127,7 @@ theorem sublistsAux_eq_bind :
   · rw [sublistsAux_eq_bind, sublists]
   · simp only [sublistsFast, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_toList]
     rw [← foldr_hom Array.toList]
-    · rfl
-    · intros _ _; congr <;> simp
+    · intros _ _; congr
 
 theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
@@ -207,7 +205,7 @@ theorem sublistsLenAux_append :
     ∀ (n : ℕ) (l : List α) (f : List α → β) (g : β → γ) (r : List β) (s : List γ),
       sublistsLenAux n l (g ∘ f) (r.map g ++ s) = (sublistsLenAux n l f r).map g ++ s
   | 0, l, f, g, r, s => by unfold sublistsLenAux; simp
-  | n + 1, [], f, g, r, s => rfl
+  | _ + 1, [], _, _, _, _ => rfl
   | n + 1, a :: l, f, g, r, s => by
     unfold sublistsLenAux
     simp only [show (g ∘ f) ∘ List.cons a = g ∘ f ∘ List.cons a by rfl, sublistsLenAux_append,
@@ -380,7 +378,7 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
   · intro l₁ l₂ h
     rw [sublists_concat, reverse_append, zip_append (by simp), ← map_reverse, zip_map_right,
       zip_map_left] at *
-    simp only [Prod.mk.inj_iff, mem_map, mem_append, Prod.map_mk, Prod.exists] at h
+    simp only [Prod.mk.inj_iff, mem_map, mem_append, Prod.map_apply, Prod.exists] at h
     rcases h with (⟨l₁, l₂', h, rfl, rfl⟩ | ⟨l₁', l₂, h, rfl, rfl⟩)
     · rw [← append_assoc]
       exact (ih _ _ h).append_right _

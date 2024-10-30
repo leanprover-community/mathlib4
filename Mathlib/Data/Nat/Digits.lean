@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Shing Tak Lam, Mario Carneiro
+Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.List
@@ -82,7 +82,6 @@ def digits : ℕ → ℕ → List ℕ
 theorem digits_zero (b : ℕ) : digits b 0 = [] := by
   rcases b with (_ | ⟨_ | ⟨_⟩⟩) <;> simp [digits, digitsAux0, digitsAux1]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem digits_zero_zero : digits 0 0 = [] :=
   rfl
 

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Scott Morrison
+Authors: Chris Hughes, Kim Morrison
 -/
 import Archive.Examples.IfNormalization.Statement
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
@@ -36,7 +36,7 @@ theorem eval_ite_ite' {a b c d e : IfExpr} {f : ℕ → Bool} :
 `e` to the literal booleans given by `l` -/
 def normalize' (l : AList (fun _ : ℕ => Bool)) :
     (e : IfExpr) → { e' : IfExpr //
-        (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) (fun b => b)))
+        (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) id))
         ∧ e'.normalized
         ∧ ∀ (v : ℕ), v ∈ vars e' → l.lookup v = none }
   | lit b => ⟨lit b, by simp⟩

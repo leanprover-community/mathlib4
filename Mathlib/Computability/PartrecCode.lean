@@ -109,7 +109,6 @@ protected def id : Code :=
 def curry (c : Code) (n : ℕ) : Code :=
   comp c (pair (Code.const n) Code.id)
 
--- Porting note: `bit0` and `bit1` are deprecated.
 /-- An encoding of a `Nat.Partrec.Code` as a ℕ. -/
 def encodeCode : Code → ℕ
   | zero => 0
@@ -492,7 +491,7 @@ instance : Membership (ℕ →. ℕ) Code :=
 
 @[simp]
 theorem eval_const : ∀ n m, eval (Code.const n) m = Part.some n
-  | 0, m => rfl
+  | 0, _ => rfl
   | n + 1, m => by simp! [eval_const n m]
 
 @[simp]
@@ -1014,5 +1013,16 @@ theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c :
     funext fun n => by simp [e.symm, ef, Part.map_id']
 
 end
+
+/-- There are only countably many partial recursive partial functions `ℕ →. ℕ`. -/
+instance : Countable {f : ℕ →. ℕ // _root_.Partrec f} := by
+  apply Function.Surjective.countable (f := fun c => ⟨eval c, eval_part.comp (.const c) .id⟩)
+  intro ⟨f, hf⟩; simpa using exists_code.1 hf
+
+/-- There are only countably many computable functions `ℕ → ℕ`. -/
+instance : Countable {f : ℕ → ℕ // Computable f} :=
+  @Function.Injective.countable {f : ℕ → ℕ // Computable f} {f : ℕ →. ℕ // _root_.Partrec f} _
+    (fun f => ⟨f.val, f.2⟩)
+    (fun _ _ h => Subtype.val_inj.1 (PFun.lift_injective (by simpa using h)))
 
 end Nat.Partrec.Code

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.Bool.Basic
@@ -125,8 +125,6 @@ theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
   · rw [eq_nil_of_le (le_of_not_gt h)]
     trivial
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
 
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
