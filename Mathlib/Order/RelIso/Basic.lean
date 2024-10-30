@@ -640,7 +640,7 @@ protected def swap (f : r ≃r s) : swap r ≃r swap s :=
   ⟨f, f.map_rel_iff⟩
 
 /-- A relation isomorphism is also a relation isomorphism between complemented relations. -/
-@[simps]
+@[simps!]
 protected def compl (f : r ≃r s) : rᶜ ≃r sᶜ :=
   ⟨f, f.map_rel_iff.not⟩
 
