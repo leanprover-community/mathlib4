@@ -2,7 +2,6 @@
 Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
-
 -/
 
 import Mathlib.GroupTheory.Perm.Centralizer
@@ -98,8 +97,8 @@ theorem cycleType_θHom
   apply congr_arg₂ _ cycleType_ofSubtype
   simp only [Subgroup.noncommPiCoprod_apply]
   rw [Equiv.Perm.Disjoint.cycleType_noncommProd]
-  simp only [univ_eq_attach]
-  exact fun c _ d _ h ↦ pairdisjoint₂ h (v c) (v d) (v c).prop (v d).prop
+  · simp only [univ_eq_attach]
+  · exact fun c _ d _ h ↦ pairdisjoint₂ h (v c) (v d) (v c).prop (v d).prop
 
 variable {g} in
 theorem odd_of_centralizer_le_alternatingGroup
@@ -171,7 +170,9 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     rw [not_and_or] at hm
     split_ifs with hm'
     · rw [Equiv.Perm.card_of_cycleType, if_neg, zero_mul]
-      cases' hm with hm hm; exact hm; exfalso; exact hm hm'
+      cases' hm with hm hm
+      · exact hm
+      · exfalso; exact hm hm'
     · rw [zero_mul]
 
 /-- The cardinality of even permutation of given `cycleType` -/
