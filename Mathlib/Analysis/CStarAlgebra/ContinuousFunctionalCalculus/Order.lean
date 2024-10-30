@@ -390,7 +390,7 @@ namespace CStarAlgebra
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-lemma pow_nonneg {a : A} (ha : 0 ≤ a) (n : ℕ) : 0 ≤ a ^ n := by
+lemma pow_nonneg {a : A} (ha : 0 ≤ a := by cfc_tac) (n : ℕ) : 0 ≤ a ^ n := by
   rw [← cfc_pow_id (R := ℝ≥0) a]
   exact cfc_nonneg_of_predicate
 
@@ -403,7 +403,8 @@ lemma pow_monotone {a : A} (ha : 1 ≤ a) : Monotone (a ^ · : ℕ → A) := by
   peel ha with x hx _
   exact pow_le_pow_right₀ (ha x hx) hnm
 
-lemma pow_antitone {a : A} (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : Antitone (a ^ · : ℕ → A) := by
+lemma pow_antitone {a : A} (ha₀ : 0 ≤ a := by cfc_tac) (ha₁ : a ≤ 1) :
+    Antitone (a ^ · : ℕ → A) := by
   intro n m hnm
   simp only
   rw [← cfc_pow_id (R := ℝ) a, ← cfc_pow_id (R := ℝ) a, cfc_le_iff ..]
