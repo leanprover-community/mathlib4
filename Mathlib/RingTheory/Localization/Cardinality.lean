@@ -80,12 +80,15 @@ theorem card (L : Type u) [CommRing L] [Algebra R L]
 
 end IsLocalization
 
+@[simp]
+theorem Cardinal.mk_fractionRing (R : Type u) [CommRing R] : #(FractionRing R) = #R :=
+  IsLocalization.card (FractionRing R) R⁰ le_rfl |>.symm
+
 namespace FractionRing
 
 variable (R)
 
-@[simp]
-theorem card : #(FractionRing R) = #R := Localization.card le_rfl
+alias card := Cardinal.mk_fractionRing
 
 end FractionRing
 
