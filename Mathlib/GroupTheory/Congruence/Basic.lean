@@ -74,6 +74,18 @@ theorem congr_mk {c d : Con M} (h : c = d) (a : M) :
     Con.congr h (a : c.Quotient) = (a : d.Quotient) := rfl
 
 @[to_additive]
+theorem conGen_le_comap {M N : Type*} [Mul M] [Mul N] (f : M → N)
+    (H : ∀ (x y : M), f (x * y) = f x * f y) (rel : N → N → Prop) :
+    conGen (fun x y ↦ rel (f x) (f y)) ≤ Con.comap f H (conGen rel) := by
+  intro x y h
+  simp only [Con.comap_rel]
+  exact ConGen.Rel.rec (fun x y h ↦ ConGen.Rel.of (f x) (f y) h) (fun x ↦ ConGen.Rel.refl (f x))
+    (fun _ h ↦ ConGen.Rel.symm h) (fun _ _ h1 h2 ↦ h1.trans h2) (fun {w x y z} _ _ h1 h2 ↦
+    (congrArg (fun a ↦ (conGen rel) a (f (x * z))) (H w y)).mpr
+    (((congrArg (fun a ↦ (conGen rel) (f w * f y) a) (H x z))).mpr
+    (ConGen.Rel.mul h1 h2))) h
+
+@[to_additive]
 theorem comap_conGen_of_Bijective {M N : Type*} [Mul M] [Mul N] (f : M → N)
     (hf : Function.Bijective f) (H : ∀ (x y : M), f (x * y) = f x * f y) (rel : N → N → Prop) :
     Con.comap f H (conGen rel) = conGen (fun x y ↦ rel (f x) (f y)) := by
@@ -116,13 +128,8 @@ theorem comap_conGen_of_Bijective {M N : Type*} [Mul M] [Mul N] (f : M → N)
         exact ConGen.Rel.mul (ih (f' w) (f' x) (is_inv.right w) (is_inv.right x))
           (ih1 (f' y) (f' z) (is_inv.right y) (is_inv.right z))
     exact H (f a) (f b) h a b (refl _) (refl _)
-  intro h
-  simp only [Con.comap_rel]
-  exact ConGen.Rel.rec (fun x y h ↦ ConGen.Rel.of (f x) (f y) h) (fun x ↦ ConGen.Rel.refl (f x))
-    (fun _ h ↦ ConGen.Rel.symm h) (fun _ _ h1 h2 ↦ h1.trans h2) (fun {w x y z} _ _ h1 h2 ↦
-    (congrArg (fun a ↦ (conGen rel) a (f (x * z))) (H w y)).mpr
-    (((congrArg (fun a ↦ (conGen rel) (f w * f y) a) (H x z))).mpr
-    (ConGen.Rel.mul h1 h2))) h
+  apply conGen_le_comap
+  --exact conGen_le_comap f H rel
 
 end
 
