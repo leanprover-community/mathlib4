@@ -468,6 +468,30 @@ theorem algebraicIndependent_of_finite' (s : Set A)
   ext x
   by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
 
+/-- `Type` version of `algebraicIndependent_of_finite'`. -/
+theorem algebraicIndependent_of_finite_type'
+    (hinj : Injective (algebraMap R A))
+    (H : ∀ t : Set ι, t.Finite → ∀ i : ι, i ∉ t → Transcendental (adjoin R (x '' t)) (x i)) :
+    AlgebraicIndependent R x := by
+  nontriviality R
+  haveI := hinj.nontrivial
+  have hx : Injective x := by
+    simp_rw [Transcendental] at H
+    contrapose! H
+    obtain ⟨i, j, h1, h2⟩ := not_injective_iff.1 H
+    refine ⟨{j}, by simp, i, by simp [h2], ?_⟩
+    rw [h1, Set.image_singleton]
+    exact isAlgebraic_algebraMap (⟨x j, Algebra.self_mem_adjoin_singleton R _⟩ : adjoin R {x j})
+  rw [← Set.coe_comp_rangeFactorization x]
+  refine .comp (algebraicIndependent_of_finite' _ hinj fun t ht hfin a ha ha' ↦ ?_) _
+    (Set.rightInverse_rangeSplitting hx).injective
+  change Finite t at hfin
+  have := H (x ⁻¹' t) (Finite.of_injective _ (hx.restrictPreimage t))
+    ((Equiv.ofInjective _ hx).symm ⟨_, ha⟩)
+    (by rwa [Set.mem_preimage, Equiv.apply_ofInjective_symm hx])
+  rwa [Set.image_preimage_eq_inter_range, Set.inter_eq_self_of_subset_left ht,
+    Equiv.apply_ofInjective_symm hx] at this
+
 variable (R)
 
 /-- A family is a transcendence basis if it is a maximal algebraically independent subset. -/
