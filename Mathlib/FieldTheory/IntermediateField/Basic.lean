@@ -323,9 +323,9 @@ instance smulCommClass_right [SMul X Y] [SMul L Y] [SMulCommClass X L Y]
     (F : IntermediateField K L) : SMulCommClass X F Y :=
   inferInstanceAs (SMulCommClass X F.toSubfield Y)
 
---Porting note: setting this istance the default priority may trigger trouble to synthize instance
---for field extension with more than one intermedaitefield, example : `IsScalarTower K₁ K₂ E` where
---`K₁ ≤ K₂` are of `intermediatefield F E`
+--note: setting this istance the default priority may trigger trouble to synthize instance
+--for field extension with more than one intermedaite field, example : in a field extension `F/E`,
+--`K₁ ≤ K₂` are of type `intermediatefield F E`, the instance `IsScalarTower K₁ K₂ E`
 /-- Note that this provides `IsScalarTower F K K` which is needed by `smul_mul_assoc`. -/
 instance (priority := 900) [SMul X Y] [SMul L X] [SMul L Y] [IsScalarTower L X Y]
     (F : IntermediateField K L) : IsScalarTower F X Y :=
