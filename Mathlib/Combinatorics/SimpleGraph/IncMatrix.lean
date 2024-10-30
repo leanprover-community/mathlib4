@@ -105,7 +105,7 @@ end MulZeroOneClass
 
 section NonAssocSemiring
 
-variable [NonAssocSemiring R] {a b : α} {e : Sym2 α}
+variable [NonAssocSemiring R] {a : α} {e : Sym2 α}
 
 theorem sum_incMatrix_apply [Fintype (Sym2 α)] [Fintype (neighborSet G a)] :
     ∑ e, G.incMatrix R a e = G.degree a := by
@@ -158,7 +158,7 @@ end NonAssocSemiring
 
 section Semiring
 
-variable [Fintype (Sym2 α)] [Semiring R] {a b : α} {e : Sym2 α}
+variable [Fintype (Sym2 α)] [Semiring R] {a b : α}
 
 theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a b = (1 : R) := by
