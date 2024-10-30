@@ -97,6 +97,8 @@ lemma odd_iff : Odd n ↔ n % 2 = 1 where
 
 lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, emod_two_ne_one]
 
+@[simp] lemma not_odd_zero : ¬Odd (0 : ℤ) := not_odd_iff.mpr rfl
+
 @[simp] lemma not_odd_iff_even : ¬Odd n ↔ Even n := by rw [not_odd_iff, even_iff]
 @[simp] lemma not_even_iff_odd : ¬Even n ↔ Odd n := by rw [not_even_iff, odd_iff]
 
@@ -164,15 +166,13 @@ lemma even_mul_succ_self (n : ℤ) : Even (n * (n + 1)) := by
 lemma even_mul_pred_self (n : ℤ) : Even (n * (n - 1)) := by
   simpa [even_mul, parity_simps] using n.even_or_odd
 
--- Porting note (#10618): was simp. simp can prove this.
-@[norm_cast] lemma odd_coe_nat (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by
+@[simp, norm_cast] lemma odd_coe_nat (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by
   rw [← not_even_iff_odd, ← Nat.not_even_iff_odd, even_coe_nat]
 
 @[simp] lemma natAbs_even : Even n.natAbs ↔ Even n := by
   simp [even_iff_two_dvd, dvd_natAbs, natCast_dvd.symm]
 
--- Porting note (#10618): was simp. simp can prove this.
---@[simp]
+@[simp]
 lemma natAbs_odd : Odd n.natAbs ↔ Odd n := by
   rw [← not_even_iff_odd, ← Nat.not_even_iff_odd, natAbs_even]
 

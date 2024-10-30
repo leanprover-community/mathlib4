@@ -5,11 +5,13 @@ Authors: Chris Hughes, Thomas Browning
 -/
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
+import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.Commutator.Basic
 import Mathlib.Algebra.Group.Subgroup.Actions
+import Mathlib.Data.Finite.Prod
 
 /-!
 # Properties of group actions involving quotient groups
@@ -157,7 +159,7 @@ noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ 
   Equiv.symm <|
     Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer α b g, ofQuotientStabilizer_mem_orbit α b g⟩)
       ⟨fun x y hxy => injective_ofQuotientStabilizer α b (by convert congr_arg Subtype.val hxy),
-        fun ⟨b, ⟨g, hgb⟩⟩ => ⟨g, Subtype.eq hgb⟩⟩
+        fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.eq hgb⟩⟩
 
 /-- Orbit-stabilizer theorem. -/
 @[to_additive AddAction.orbitProdStabilizerEquivAddGroup "Orbit-stabilizer theorem."]
@@ -319,17 +321,16 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
   toFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     have hx := x.property
-    rwa [orbitRel.Quotient.mem_orbit, @Quotient.mk''_eq_mk] at hx⟩⟧) fun a b h ↦ by
-      simp only [← Quotient.eq'', Quotient.mk''_eq_mk,
+    rwa [orbitRel.Quotient.mem_orbit] at hx⟩⟧) fun a b h ↦ by
+      simp only [← Quotient.eq,
                  orbitRel.Quotient.subgroup_quotient_eq_iff] at h
-      simp only [← Quotient.mk''_eq_mk, Quotient.eq''] at h ⊢
+      simp only [Quotient.eq] at h ⊢
       exact h
   invFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
     have hx := x.property
     simp only [Set.mem_preimage, Set.mem_singleton_iff] at hx
     rwa [orbitRel.Quotient.mem_orbit, @Quotient.mk''_eq_mk]⟩⟧) fun a b h ↦ by
-      change Setoid.Rel _ _ _ at h
-      rw [Setoid.comap_rel, Setoid.Rel, ← Quotient.eq'', @Quotient.mk''_eq_mk] at h
+      rw [Setoid.comap_rel, ← Quotient.eq'', @Quotient.mk''_eq_mk] at h
       simp only [orbitRel.Quotient.subgroup_quotient_eq_iff]
       exact h
   left_inv := by
@@ -372,7 +373,7 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     orbitRel.Quotient H β ≃ α ⧸ H where
   toFun := fun q ↦ q.liftOn' (fun y ↦ (exists_smul_eq α y x).choose) (by
     intro y₁ y₂ h
-    rw [orbitRel_r_apply] at h
+    rw [orbitRel_apply] at h
     rw [Quotient.eq'', leftRel_eq]
     dsimp only
     rcases h with ⟨g, rfl⟩
@@ -388,12 +389,12 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     intro g₁ g₂ h
     rw [leftRel_eq] at h
     simp only
-    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_r_apply]
+    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     exact ⟨⟨_, h⟩, by simp [mul_smul]⟩)
   left_inv := fun y ↦ by
     induction' y using Quotient.inductionOn' with y
     simp only [Quotient.liftOn'_mk'']
-    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_r_apply]
+    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     convert mem_orbit_self _
     rw [inv_smul_eq_iff, (exists_smul_eq α y x).choose_spec]
   right_inv := fun g ↦ by
@@ -402,7 +403,7 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     rw [Quotient.eq'', leftRel_eq]
     simp only
     convert one_mem H
-    rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot, ← free (g⁻¹ • x),
+    · rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot, ← free (g⁻¹ • x),
         mem_stabilizer_iff, mul_smul, (exists_smul_eq α (g⁻¹ • x) x).choose_spec]
 
 end MulAction

@@ -3,7 +3,7 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli, Junyan Xu
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid
@@ -221,13 +221,13 @@ instance : CompleteLattice (Subgroupoid C) :=
       refine fun s => ⟨fun S Ss F => ?_, fun T Tl F fT => ?_⟩ <;> simp only [mem_sInf]
       exacts [fun hp => hp S Ss, fun S Ss => Tl Ss fT]) with
     bot := ⊥
-    bot_le := fun S => empty_subset _
+    bot_le := fun _ => empty_subset _
     top := ⊤
-    le_top := fun S => subset_univ _
+    le_top := fun _ => subset_univ _
     inf := (· ⊓ ·)
-    le_inf := fun R S T RS RT _ pR => ⟨RS pR, RT pR⟩
-    inf_le_left := fun R S _ => And.left
-    inf_le_right := fun R S _ => And.right }
+    le_inf := fun _ _ _ RS RT _ pR => ⟨RS pR, RT pR⟩
+    inf_le_left := fun _ _ _ => And.left
+    inf_le_right := fun _ _ _ => And.right }
 
 theorem le_objs {S T : Subgroupoid C} (h : S ≤ T) : S.objs ⊆ T.objs := fun s ⟨γ, hγ⟩ =>
   ⟨γ, @h ⟨s, s, γ⟩ hγ⟩
