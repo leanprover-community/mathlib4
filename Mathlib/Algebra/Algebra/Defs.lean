@@ -335,7 +335,6 @@ abbrev compHom: Algebra S A :=
   RingHom.toAlgebra' ((algebraMap R A).comp f)
     (fun _ _ => Algebra.commutes' _ _)
 
-@[simp]
 theorem compHom_smul_def (s : S) (x : A):
     letI := compHom A f
     s • x = f s • x := by
@@ -343,7 +342,6 @@ theorem compHom_smul_def (s : S) (x : A):
       simp only [RingHom.smul_toAlgebra', RingHom.coe_comp, Function.comp_apply]
       rw [Algebra.smul_def]
 
-@[simp]
 theorem compHom_algebraMap_eq :
     letI := compHom A f
     algebraMap S A = (algebraMap R A).comp f := rfl
@@ -352,7 +350,6 @@ theorem compHom_algebraMap_apply (s : S) :
     letI := compHom A f
     algebraMap S A s = (algebraMap R A) (f s) := rfl
 
-@[simp]
 theorem compHom_toRingHom_eq :
     letI := compHom A f
     (compHom A f).toRingHom = (algebraMap R A).comp f := rfl
