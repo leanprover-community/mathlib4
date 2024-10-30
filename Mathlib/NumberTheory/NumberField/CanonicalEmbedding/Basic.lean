@@ -957,10 +957,9 @@ theorem negAt_signSet_apply_of_isComplex (x : mixedSpace K) (w : {w // IsComplex
 variable (A : Set (mixedSpace K)) {x : mixedSpace K}
 
 variable (s) in
- /-- `negAt s A` is also equal to the preimage of `A` by `negAt s`. This fact is used to simplify
- some proofs. -/
- theorem negAt_preimage :
-    negAt s ⁻¹' A = negAt s '' A := by
+/-- `negAt s A` is also equal to the preimage of `A` by `negAt s`. This fact is used to simplify
+some proofs. -/
+theorem negAt_preimage : negAt s ⁻¹' A = negAt s '' A := by
   rw [ContinuousLinearEquiv.image_eq_preimage, negAt_symm]
 
 /-- The `plusPart` of a subset `A` of the `mixedSpace` is the set of points in `A` that are
@@ -973,14 +972,14 @@ theorem neg_of_mem_negA_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w //
   rw [negAt_apply_of_isReal_and_mem _ hw, neg_lt_zero]
   exact hy.2 w
 
- theorem pos_of_not_mem_negAt_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w // IsReal w}}
+theorem pos_of_not_mem_negAt_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w // IsReal w}}
     (hw : w ∉ s) : 0 < x.1 w := by
   obtain ⟨y, hy, rfl⟩ := hx
   rw [negAt_apply_of_isReal_and_not_mem _ hw]
   exact hy.2 w
 
- /-- The images of `plusPart` by `negAt` are pairwise disjoint. -/
- theorem disjoint_negAt_plusPart : Pairwise (Disjoint on (fun s ↦ negAt s '' (plusPart A))) := by
+/-- The images of `plusPart` by `negAt` are pairwise disjoint. -/
+theorem disjoint_negAt_plusPart : Pairwise (Disjoint on (fun s ↦ negAt s '' (plusPart A))) := by
   intro s t hst
   refine Set.disjoint_left.mpr fun _ hx hx' ↦ ?_
   obtain ⟨w, hw | hw⟩ : ∃ w, (w ∈ s ∧ w ∉ t) ∨ (w ∈ t ∧ w ∉ s) := by
