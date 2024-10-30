@@ -350,9 +350,9 @@ theorem newK_mul (σ τ : range_toPermHom' g) (x) :
   · simp only [newK_apply_of_mem_fixedPoints a _ hx]
   · simp only [newK_apply_of_cycleOf_mem a _ hc hm]
     rw [newK_apply_of_cycleOf_mem a _ _ rfl]
-    rfl
-    rw [zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff]
-    apply mem_support_self
+    · rfl
+    · rw [zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff]
+      apply mem_support_self
 
 theorem newK_one (x : α) : (newK a 1) x = x := by
   rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨c, hc, m, hm⟩)
@@ -472,7 +472,7 @@ theorem mem_range_toPermHom_iff {τ} : τ ∈ (toPermHom g).range ↔
 theorem mem_range_toPermHom_iff' {τ} : τ ∈ (toPermHom g).range ↔
     (fun (c : g.cycleFactorsFinset) ↦ (c : Perm α).support.card) ∘ τ =
       fun (c : g.cycleFactorsFinset) ↦ (c : Perm α).support.card := by
-  rw [mem_range_toPermHom_iff, Function.funext_iff]
+  rw [mem_range_toPermHom_iff, funext_iff]
   simp only [Finset.coe_sort_coe, Subtype.forall, Function.comp_apply]
 
 /-- Computes the range of `Equiv.Perm.toPermHom g` -/
@@ -594,7 +594,7 @@ theorem θHom_disjoint_self_iff :
   rw [θHom_disjoint_iff]
   suffices (ofSubtype u).Disjoint g by
     simp only [this, Subtype.forall, true_and]
-    rw [Function.funext_iff, Subtype.forall]
+    rw [funext_iff, Subtype.forall]
     apply forall₂_congr
     intro c hc
     rw [disjoint_iff_disjoint_support, disjoint_of_le_iff_left_eq_bot _]
@@ -914,10 +914,10 @@ theorem card_of_cycleType (m : Multiset ℕ) :
     apply symm
     apply Nat.div_eq_of_eq_mul_left
     · apply Nat.mul_pos
-      apply Nat.mul_pos
-      · apply Nat.factorial_pos
-      · apply Multiset.prod_pos
-        exact fun a ha ↦ lt_of_lt_of_le (zero_lt_two) (hm.2 a ha)
+      · apply Nat.mul_pos
+        · apply Nat.factorial_pos
+        · apply Multiset.prod_pos
+          exact fun a ha ↦ lt_of_lt_of_le (zero_lt_two) (hm.2 a ha)
       · exact Finset.prod_pos (fun _ _ ↦ Nat.factorial_pos _)
     rw [card_of_cycleType_mul_eq, if_pos hm]
   · -- empty case
