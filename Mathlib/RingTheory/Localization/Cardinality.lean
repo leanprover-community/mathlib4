@@ -78,7 +78,7 @@ theorem lift_cardinal_mk (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰
 /-- If you do not localize at any zero-divisors, localization preserves cardinality. -/
 theorem cardinal_mk (L : Type u) [CommRing L] [Algebra R L]
     (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) : #L = #R := by
-  simpa using lift_card L S hS
+  simpa using lift_cardinal_mk L S hS
 
 @[deprecated (since := "2024-10-30")] alias card := cardinal_mk
 
@@ -101,10 +101,10 @@ namespace IsFractionRing
 variable (R L)
 
 theorem lift_cardinal_mk [IsFractionRing R L] : Cardinal.lift.{u} #L = Cardinal.lift.{v} #R :=
-  IsLocalization.lift_card L _ le_rfl
+  IsLocalization.lift_cardinal_mk L _ le_rfl
 
 theorem cardinal_mk (L : Type u) [CommRing L] [Algebra R L] [IsFractionRing R L] : #L = #R :=
-  IsLocalization.card L _ le_rfl
+  IsLocalization.cardinal_mk L _ le_rfl
 
 end IsFractionRing
 
