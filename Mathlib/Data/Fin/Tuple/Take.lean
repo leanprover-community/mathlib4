@@ -147,7 +147,7 @@ theorem ofFn_take_eq_take_ofFn {α : Type*} {m : ℕ} (h : m ≤ n) (v : Fin n �
   List.ext_get (by simp [h]) (fun n h1 h2 => by simp)
 
 /-- Alternative version of `take_eq_take_list_ofFn` with `l : List α` instead of `v : Fin n → α`. -/
-theorem take_eq_take_list_ofFn' {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) :
+theorem ofFn_take_get {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) :
     List.ofFn (take m h l.get) = l.take m :=
   List.ext_get (by simp [h]) (fun n h1 h2 => by simp)
 
