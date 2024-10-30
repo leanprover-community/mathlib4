@@ -174,7 +174,7 @@ variable [Module R M] [Module R₂ M]
 variable {x y : M}
 variable (b : Basis ι R M)
 
-theorem eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : Submodule R M)
+theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : Submodule R M)
     (rank_eq : ∀ {m : ℕ} (v : Fin m → N), LinearIndependent R ((↑) ∘ v : Fin m → M) → m = 0) :
     N = ⊥ := by
   rw [Submodule.eq_bot_iff]
