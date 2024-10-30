@@ -311,10 +311,10 @@ theorem lift_preAleph (o : Ordinal.{u}) : lift.{v} (preAleph o) = preAleph (Ordi
   ((InitialSeg.ofIso preAleph.toRelIsoLT).trans liftInitialSeg).eq
     (Ordinal.liftInitialSeg.trans (InitialSeg.ofIso preAleph.toRelIsoLT)) o
 
-theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
+theorem preAleph_le_of_isLimit {o : Ordinal} (ho : o.IsLimit) {c} :
     preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
   ⟨fun h o' h' => (preAleph_le_preAleph.2 <| h'.le).trans h, fun h => by
-    rw [← preAleph.apply_symm_apply c, preAleph_le_preAleph, limit_le l]
+    rw [← preAleph.apply_symm_apply c, preAleph_le_preAleph, limit_le ho]
     intro x h'
     rw [← preAleph_le_preAleph, preAleph.apply_symm_apply]
     exact h _ h'⟩
