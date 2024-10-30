@@ -1196,6 +1196,12 @@ lemma toMatrix_baseChange (f : M₁ →ₗ[R] M₂) (b₁ : Basis ι R M₁) (b�
 
 end LinearMap
 
+lemma Algebra.baseChange_lmul {R B} [CommRing R] [CommRing B] [Algebra R B]
+    {A} [CommRing A] [Algebra R A] (f : B) :
+    (Algebra.lmul R B f).baseChange A = Algebra.lmul A (A ⊗[R] B) (1 ⊗ₜ f) := by
+  ext i
+  simp
+
 namespace LinearMap
 
 variable (R A M N : Type*) [CommRing R] [CommRing A] [Algebra R A]
