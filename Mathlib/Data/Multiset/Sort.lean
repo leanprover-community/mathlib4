@@ -71,7 +71,6 @@ theorem sort_cons (a : α) (s : Multiset α) :
   refine Quot.inductionOn s fun l => ?_
   simpa [mergeSort_eq_insertionSort] using insertionSort_cons r (a := a) (l := l)
 
-@[simp]
 theorem sort_range (n : ℕ) : sort (· ≤ ·) (range n) = List.range n :=
   List.mergeSort_eq_self (sorted_le_range n)
 
