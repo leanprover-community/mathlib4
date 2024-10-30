@@ -3,14 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Cardinal Numbers
@@ -140,7 +141,8 @@ theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
-@[simp]
+/-- Avoid using `Quotient.mk` to construct a `Cardinal` directly -/
+@[deprecated (since := "2024-10-24")]
 theorem mk'_def (α : Type u) : @Eq Cardinal ⟦α⟧ #α :=
   rfl
 
@@ -258,14 +260,16 @@ theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
   lift_id'.{u, u} a
 
 /-- A cardinal lifted to the zero universe equals itself. -/
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
   lift_id'.{0, u} a
 
 @[simp]
 theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
   inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
+
+theorem out_lift_equiv (a : Cardinal.{u}) : Nonempty ((lift.{v} a).out ≃ a.out) := by
+  rw [← mk_out a, ← mk_uLift, mk_out]
+  exact ⟨outMkEquiv.trans Equiv.ulift⟩
 
 @[simp]
 lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
@@ -277,9 +281,7 @@ lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s)
   exact Equiv.ofBijective f this
 
 theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
-  trans
-  · rw [← Quotient.out_eq c, ← Quotient.out_eq c']
-  · rw [mk'_def, mk'_def, le_def]
+  conv_lhs => rw [← Cardinal.mk_out c, ← Cardinal.mk_out c', le_def]
 
 theorem lift_mk_le {α : Type v} {β : Type w} :
     lift.{max u w} #α ≤ lift.{max u v} #β ↔ Nonempty (α ↪ β) :=
@@ -336,14 +338,14 @@ def liftInitialSeg : Cardinal.{u} ≤i Cardinal.{max u v} := by
     rintro ⟨a, ⟨b, rfl⟩⟩
     exact ⟨b, rfl⟩
 
-theorem mem_range_of_le_lift {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
+theorem mem_range_lift_of_le {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a → b ∈ Set.range lift.{v, u} :=
   liftInitialSeg.mem_range_of_le
 
-@[deprecated mem_range_of_le_lift (since := "2024-10-07")]
+@[deprecated mem_range_lift_of_le (since := "2024-10-07")]
 theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a → ∃ a', lift.{v, u} a' = b :=
-  mem_range_of_le_lift
+  mem_range_lift_of_le
 
 /-- `Cardinal.lift` as an `OrderEmbedding`. -/
 @[deprecated Cardinal.liftInitialSeg (since := "2024-10-07")]
@@ -540,12 +542,8 @@ instance commSemiring : CommSemiring Cardinal.{u} where
 theorem one_power {a : Cardinal} : (1 : Cardinal) ^ a = 1 :=
   inductionOn a fun _ => mk_eq_one _
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_bool : #Bool = 2 := by simp
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_Prop : #Prop = 2 := by simp
 
 @[simp]
@@ -568,9 +566,12 @@ theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
   rw [mul_comm b c]
   exact inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.curry γ β α
 
-@[simp]
-theorem pow_cast_right (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
+@[simp, norm_cast]
+theorem power_natCast (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
   rfl
+
+@[deprecated (since := "2024-10-16")]
+alias power_cast_right := power_natCast
 
 @[simp]
 theorem lift_one : lift 1 = 1 := mk_eq_one _
@@ -612,10 +613,10 @@ protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
 private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → a + c ≤ b + d := by
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
 
-instance add_covariantClass : CovariantClass Cardinal Cardinal (· + ·) (· ≤ ·) :=
+instance addLeftMono : AddLeftMono Cardinal :=
   ⟨fun _ _ _ => add_le_add' le_rfl⟩
 
-instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + ·)) (· ≤ ·) :=
+instance addRightMono : AddRightMono Cardinal :=
   ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
 
 instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
@@ -973,6 +974,12 @@ instance WellOrderingRel.isWellOrder : IsWellOrder α WellOrderingRel :=
 instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
   ⟨⟨WellOrderingRel, inferInstance⟩⟩
 
+variable (α) in
+/-- The **well-ordering theorem** (or **Zermelo's theorem**): every type has a well-order -/
+theorem exists_wellOrder : ∃ (_ : LinearOrder α), WellFoundedLT α := by
+  classical
+  exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.toIsWellFounded⟩
+
 /-! ### Small sets of cardinals -/
 
 namespace Cardinal
@@ -1039,7 +1046,7 @@ theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
   apply ((le_csSup_iff' (bddAbove_image.{_,u} _ hs)).2 fun c hc => _).antisymm (csSup_le' _)
   · intro c hc
     by_contra h
-    obtain ⟨d, rfl⟩ := Cardinal.mem_range_of_le_lift (not_le.1 h).le
+    obtain ⟨d, rfl⟩ := Cardinal.mem_range_lift_of_le (not_le.1 h).le
     simp_rw [lift_le] at h hc
     rw [csSup_le_iff' hs] at h
     exact h fun a ha => lift_le.1 <| hc (mem_image_of_mem _ ha)
@@ -1250,24 +1257,30 @@ theorem lift_aleph0 : lift ℵ₀ = ℵ₀ :=
 
 @[simp]
 theorem aleph0_le_lift {c : Cardinal.{u}} : ℵ₀ ≤ lift.{v} c ↔ ℵ₀ ≤ c := by
-  rw [← lift_aleph0.{v, u}, lift_le]
+  simpa using lift_le (a := ℵ₀)
 
 @[simp]
 theorem lift_le_aleph0 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₀ ↔ c ≤ ℵ₀ := by
-  rw [← lift_aleph0.{v, u}, lift_le]
+  simpa using lift_le (b := ℵ₀)
 
 @[simp]
 theorem aleph0_lt_lift {c : Cardinal.{u}} : ℵ₀ < lift.{v} c ↔ ℵ₀ < c := by
-  rw [← lift_aleph0.{v, u}, lift_lt]
+  simpa using lift_lt (a := ℵ₀)
 
 @[simp]
 theorem lift_lt_aleph0 {c : Cardinal.{u}} : lift.{v} c < ℵ₀ ↔ c < ℵ₀ := by
-  rw [← lift_aleph0.{v, u}, lift_lt]
+  simpa using lift_lt (b := ℵ₀)
+
+@[simp]
+theorem aleph0_eq_lift {c : Cardinal.{u}} : ℵ₀ = lift.{v} c ↔ ℵ₀ = c := by
+  simpa using lift_inj (a := ℵ₀)
+
+@[simp]
+theorem lift_eq_aleph0 {c : Cardinal.{u}} : lift.{v} c = ℵ₀ ↔ c = ℵ₀ := by
+  simpa using lift_inj (b := ℵ₀)
 
 /-! ### Properties about the cast from `ℕ` -/
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_fin (n : ℕ) : #(Fin n) = n := by simp
 
 @[simp]
@@ -1380,42 +1393,33 @@ theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α :
 theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _
 
--- Porting note (#11119): was `simp`. LHS is not normal form.
--- @[simp, norm_cast]
-@[norm_cast]
-theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
-  induction n <;> simp [pow_succ, power_add, *, Pow.pow]
+instance : CharZero Cardinal := by
+  refine ⟨fun a b h ↦ ?_⟩
+  rwa [← lift_mk_fin, ← lift_mk_fin, lift_inj, Cardinal.eq, ← Fintype.card_eq,
+    Fintype.card_fin, Fintype.card_fin] at h
 
--- porting note (#10618): simp can prove this
--- @[simp, norm_cast]
-@[norm_cast]
-theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := by
-  rw [← lift_mk_fin, ← lift_mk_fin, lift_le, le_def, Function.Embedding.nonempty_iff_card_le,
-    Fintype.card_fin, Fintype.card_fin]
+@[deprecated Nat.cast_le (since := "2024-10-16")]
+theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := Nat.cast_le
 
--- porting note (#10618): simp can prove this
--- @[simp, norm_cast]
-@[norm_cast]
-theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := by
-  rw [lt_iff_le_not_le, ← not_le]
-  simp only [natCast_le, not_le, and_iff_right_iff_imp]
-  exact fun h ↦ le_of_lt h
+@[deprecated Nat.cast_lt (since := "2024-10-16")]
+theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := Nat.cast_lt
 
-instance : CharZero Cardinal :=
-  ⟨StrictMono.injective fun _ _ => natCast_lt.2⟩
+@[deprecated Nat.cast_inj (since := "2024-10-16")]
+theorem natCast_inj {m n : ℕ} : (m : Cardinal) = n ↔ m = n := Nat.cast_inj
 
-theorem natCast_inj {m n : ℕ} : (m : Cardinal) = n ↔ m = n :=
-  Nat.cast_inj
+@[deprecated Nat.cast_injective (since := "2024-10-16")]
+theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) := Nat.cast_injective
 
-theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) :=
-  Nat.cast_injective
+@[deprecated Nat.cast_pow (since := "2024-10-16")]
+theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) :=
+  Nat.cast_pow m n
 
 @[norm_cast]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   rw [Nat.cast_succ]
   refine (add_one_le_succ _).antisymm (succ_le_of_lt ?_)
   rw [← Nat.cast_succ]
-  exact natCast_lt.2 (Nat.lt_succ_self _)
+  exact Nat.cast_lt.2 (Nat.lt_succ_self _)
 
 lemma succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
   rw [← Cardinal.nat_succ]
@@ -1473,6 +1477,7 @@ theorem nat_lt_aleph0 (n : ℕ) : (n : Cardinal.{u}) < ℵ₀ :=
 @[simp]
 theorem one_lt_aleph0 : 1 < ℵ₀ := by simpa using nat_lt_aleph0 1
 
+@[simp]
 theorem one_le_aleph0 : 1 ≤ ℵ₀ :=
   one_lt_aleph0.le
 
@@ -1495,7 +1500,7 @@ theorem aleph0_le {c : Cardinal} : ℵ₀ ≤ c ↔ ∀ n : ℕ, ↑n ≤ c :=
   ⟨fun h _ => (nat_lt_aleph0 _).le.trans h, fun h =>
     le_of_not_lt fun hn => by
       rcases lt_aleph0.1 hn with ⟨n, rfl⟩
-      exact (Nat.lt_succ_self _).not_le (natCast_le.1 (h (n + 1)))⟩
+      exact (Nat.lt_succ_self _).not_le (Nat.cast_le.1 (h (n + 1)))⟩
 
 theorem isSuccPrelimit_aleph0 : IsSuccPrelimit ℵ₀ :=
   isSuccPrelimit_of_succ_lt fun a ha => by
@@ -1560,8 +1565,6 @@ theorem lt_aleph0_iff_fintype {α : Type u} : #α < ℵ₀ ↔ Nonempty (Fintype
 theorem lt_aleph0_of_finite (α : Type u) [Finite α] : #α < ℵ₀ :=
   lt_aleph0_iff_finite.2 ‹_›
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem lt_aleph0_iff_set_finite {S : Set α} : #S < ℵ₀ ↔ S.Finite :=
   lt_aleph0_iff_finite.trans finite_coe_iff
 
@@ -1578,8 +1581,6 @@ theorem mk_le_aleph0_iff : #α ≤ ℵ₀ ↔ Countable α := by
 theorem mk_le_aleph0 [Countable α] : #α ≤ ℵ₀ :=
   mk_le_aleph0_iff.mpr ‹_›
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem le_aleph0_iff_set_countable {s : Set α} : #s ≤ ℵ₀ ↔ s.Countable := mk_le_aleph0_iff
 
 alias ⟨_, _root_.Set.Countable.le_aleph0⟩ := le_aleph0_iff_set_countable
@@ -1655,7 +1656,7 @@ theorem mul_lt_aleph0_iff_of_ne_zero {a b : Cardinal} (ha : a ≠ 0) (hb : b ≠
 
 theorem power_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : a ^ b < ℵ₀ :=
   match a, b, lt_aleph0.1 ha, lt_aleph0.1 hb with
-  | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [← natCast_pow]; apply nat_lt_aleph0
+  | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [power_natCast, ← Nat.cast_pow]; apply nat_lt_aleph0
 
 theorem eq_one_iff_unique {α : Type*} : #α = 1 ↔ Subsingleton α ∧ Nonempty α :=
   calc
@@ -1682,8 +1683,6 @@ theorem denumerable_iff {α : Type u} : Nonempty (Denumerable α) ↔ #α = ℵ�
     cases' Quotient.exact h with f
     exact ⟨Denumerable.mk' <| f.trans Equiv.ulift⟩⟩
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_denumerable (α : Type u) [Denumerable α] : #α = ℵ₀ :=
   denumerable_iff.1 ⟨‹_›⟩
 
@@ -1702,7 +1701,7 @@ theorem aleph0_mul_aleph0 : ℵ₀ * ℵ₀ = ℵ₀ :=
 theorem nat_mul_aleph0 {n : ℕ} (hn : n ≠ 0) : ↑n * ℵ₀ = ℵ₀ :=
   le_antisymm (lift_mk_fin n ▸ mk_le_aleph0) <|
     le_mul_of_one_le_left (zero_le _) <| by
-      rwa [← Nat.cast_one, natCast_le, Nat.one_le_iff_ne_zero]
+      rwa [← Nat.cast_one, Nat.cast_le, Nat.one_le_iff_ne_zero]
 
 @[simp]
 theorem aleph0_mul_nat {n : ℕ} (hn : n ≠ 0) : ℵ₀ * n = ℵ₀ := by rw [mul_comm, nat_mul_aleph0 hn]
@@ -1751,36 +1750,31 @@ theorem mk_pNat : #ℕ+ = ℵ₀ :=
 
 /-! ### Cardinalities of basic sets and types -/
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_empty : #Empty = 0 :=
   mk_eq_zero _
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_pempty : #PEmpty = 0 :=
   mk_eq_zero _
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_punit : #PUnit = 1 :=
   mk_eq_one PUnit
 
 theorem mk_unit : #Unit = 1 :=
   mk_punit
 
--- porting note (#10618): simp can prove this
--- @[simp]
+@[simp] theorem mk_additive : #(Additive α) = #α := rfl
+
+@[simp] theorem mk_multiplicative : #(Multiplicative α) = #α := rfl
+
+@[to_additive (attr := simp)] theorem mk_mulOpposite : #(MulOpposite α) = #α :=
+  mk_congr MulOpposite.opEquiv.symm
+
 theorem mk_singleton {α : Type u} (x : α) : #({x} : Set α) = 1 :=
   mk_eq_one _
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_plift_true : #(PLift True) = 1 :=
   mk_eq_one _
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_plift_false : #(PLift False) = 0 :=
   mk_eq_zero _
 
@@ -1803,8 +1797,6 @@ theorem mk_subtype_le_of_subset {α : Type u} {p q : α → Prop} (h : ∀ ⦃x�
     #(Subtype p) ≤ #(Subtype q) :=
   ⟨Embedding.subtypeMap (Embedding.refl α) h⟩
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem mk_emptyCollection (α : Type u) : #(∅ : Set α) = 0 :=
   mk_eq_zero _
 
@@ -2097,7 +2089,7 @@ theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length 
     #α = #(Set.univ : Set α) := mk_univ.symm
     _ ≤ #l.toFinset := mk_le_mk_of_subset fun x _ => List.mem_toFinset.mpr (h x)
     _ = l.toFinset.card := Cardinal.mk_coe_finset
-    _ ≤ l.length := Cardinal.natCast_le.mpr (List.toFinset_card_le l)
+    _ ≤ l.length := Nat.cast_le.mpr (List.toFinset_card_le l)
 
 theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
   have : ↑(3 : ℕ) ≤ #α := by simpa using h

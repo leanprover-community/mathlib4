@@ -113,7 +113,7 @@ variable {𝕜}
 
 end AeEqOfForall
 
-variable {α E : Type*} {m m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
+variable {α E : Type*} {m m0 : MeasurableSpace α} {μ : Measure α}
   [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {p : ℝ≥0∞}
 
 section AeEqOfForallSetIntegralEq

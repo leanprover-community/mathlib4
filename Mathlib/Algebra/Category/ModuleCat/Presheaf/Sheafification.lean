@@ -124,7 +124,7 @@ noncomputable def sheafificationAdjunction :
         apply (toPresheaf _).map_injective
         erw [toPresheaf_map_sheafificationHomEquiv] }
 
-lemma sheaififcationAdjunction_homEquiv_apply {P : PresheafOfModules.{v} R₀}
+lemma sheafificationAdjunction_homEquiv_apply {P : PresheafOfModules.{v} R₀}
     {F : SheafOfModules.{v} R} (f : (sheafification α).obj P ⟶ F) :
     (sheafificationAdjunction α).homEquiv P F f = sheafificationHomEquiv α f := rfl
 

@@ -172,18 +172,8 @@ lemma intCast_mul_intCast_mul (h : Commute a b) (m n : ℤ) : Commute (m * a) (n
 
 variable (a) (m n : ℤ)
 
-/- Porting note (#10618): `simp` attribute removed as linter reports:
-simp can prove this:
-  by simp only [Commute.cast_int_right, Commute.refl, Commute.mul_right]
--/
--- @[simp]
 lemma self_intCast_mul : Commute a (n * a : α) := (Commute.refl a).intCast_mul_right n
 
-/- Porting note (#10618): `simp` attribute removed as linter reports:
-simp can prove this:
-  by simp only [Commute.cast_int_left, Commute.refl, Commute.mul_left]
--/
--- @[simp]
 lemma intCast_mul_self : Commute ((n : α) * a) a := (Commute.refl a).intCast_mul_left n
 
 lemma self_intCast_mul_intCast_mul : Commute (m * a : α) (n * a : α) :=

@@ -40,7 +40,7 @@ open scoped TensorProduct
 namespace Algebra.FormallyUnramified
 
 theorem of_isSeparable [Algebra.IsSeparable K L] : FormallyUnramified K L := by
-  constructor
+  rw [iff_comp_injective]
   intros B _ _ I hI f₁ f₂ e
   ext x
   have : f₁ x - f₂ x ∈ I := by
@@ -206,7 +206,7 @@ theorem isSeparable : Algebra.IsSeparable K L := by
   rw [← range_eq_top_of_isPurelyInseparable (separableClosure K L) L]
   simp
 
-theorem iff_isSeparable (L) [Field L] [Algebra K L] [EssFiniteType K L] :
+theorem iff_isSeparable (L : Type u) [Field L] [Algebra K L] [EssFiniteType K L] :
     FormallyUnramified K L ↔ Algebra.IsSeparable K L :=
   ⟨fun _ ↦ isSeparable K L, fun _ ↦ of_isSeparable K L⟩
 
