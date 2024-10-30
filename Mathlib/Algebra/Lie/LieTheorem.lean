@@ -37,13 +37,13 @@ theorem extend_weight [LieModule.IsTriangularizable k L V]
   set Vχ₀ := altWeightSpace (L := L) (V := V) χ₀
   obtain ⟨c, hc⟩ : ∃ c, (toEnd k _ Vχ₀ z).HasEigenvalue c := by
     have : Nontrivial Vχ₀ := nontrivial_of_ne ⟨v₀, hv₀A⟩ 0 <| Subtype.coe_ne_coe.mp hv₀
-    apply Module.End.exists_hasEigenvalue_of_iSup_genEigenspace_eq_top
-    exact LieModule.IsTriangularizable.iSup_eq_top z
+    apply Module.End.exists_hasEigenvalue_of_genEigenspace_eq_top
+    exact LieModule.IsTriangularizable.maxGenEigenspace_eq_top z
   obtain ⟨⟨v, hv⟩, hvc⟩ := hc.exists_hasEigenvector
 
   use (χ₀.comp π₁) + c • (e.comp π₂), v
   constructor
-  · simpa only [ne_eq, AddSubmonoid.mk_eq_zero] using hvc.right
+  · simpa only [ne_eq, LieSubmodule.mk_eq_zero] using hvc.right
   · intro x
     have hπ : (π₁ x : L) + π₂ x = x := linear_proj_add_linearProjOfIsCompl_eq_self hA x
     suffices ⁅(π₂ x : L), v⁆ = (c • e (π₂ x)) • v by

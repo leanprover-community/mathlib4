@@ -138,6 +138,10 @@ theorem trace_πza_zero (a : A) :
     simp only [LieModule.toEnd_apply_apply, LieSubmodule.coe_bracket, LieHom.lie_apply,
       Module.End.lie_apply, AddSubgroupClass.coe_sub, LinearMap.restrict_coe_apply,
       leibniz_lie' z a, add_sub_cancel_right]
+    -- why do we need this `erw` now?
+    erw [LinearMap.restrict_coe_apply, LinearMap.restrict_coe_apply]
+    simp only [LieSubmodule.coe_bracket, LieModule.toEnd_apply_apply, leibniz_lie' z a,
+      add_sub_cancel_right]
   rw [hres, LieRing.of_associative_ring_bracket, map_sub, LinearMap.trace_mul_comm, sub_self]
 
 variable [IsNoetherian R V]
@@ -168,7 +172,7 @@ lemma trace_T_res_zero :
   apply IsNilpotent.eq_zero
   exact LinearMap.isNilpotent_trace_of_isNilpotent (T_res_nilpotent χ z w hv)
 
-open FiniteDimensional
+open Module (finrank)
 
 lemma trace_πza (a : A) :
     LinearMap.trace R (iSupIR χ z hv) (LieModule.toEnd R A _ ⁅z, a⁆) =
@@ -183,16 +187,16 @@ lemma chi_za_zero (a : A) (hv₀ : v ≠ 0) :
     χ ⁅z, a⁆ = 0 := by
   have h := trace_πza χ z hv a
   rw [trace_πza_zero χ z hv a] at h
-  suffices h' : finrank R ↥(iSupIR χ z hv).toSubmodule ≠ 0 by aesop
+  suffices h' : finrank R ↥(iSupIR χ z hv) ≠ 0 by aesop
   have hvU : v ∈ iSupIR χ z hv := by
     apply Submodule.mem_iSup_of_mem 1
     apply Submodule.subset_span
     use 0, zero_lt_one
     rw [pow_zero, LinearMap.one_apply]
   have iSup_iteratedRange_nontrivial : Nontrivial (iSupIR χ z hv) :=
-    ⟨⟨v,hvU⟩,0, by simp only [ne_eq, Submodule.mk_eq_zero, hv₀, not_false_eq_true]⟩
+    ⟨⟨v,hvU⟩,0, by simp only [ne_eq, LieSubmodule.mk_eq_zero, hv₀, not_false_eq_true]⟩
   apply Nat.ne_of_lt'
-  apply FiniteDimensional.finrank_pos
+  apply Module.finrank_pos
 
 /--
 The intersection of all eigenspaces of `V` of weight `χ : A → k`
