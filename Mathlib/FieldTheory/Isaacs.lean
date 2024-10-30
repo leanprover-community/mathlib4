@@ -35,7 +35,7 @@ variable [alg : Algebra.IsAlgebraic F E]
 
 theorem nonempty_algHom_of_exist_roots (h : ∀ x : E, ∃ y : K, aeval y (minpoly F x) = 0) :
     Nonempty (E →ₐ[F] K) := by
-  refine nonempty_algHom_of_exist_lifts_finset
+  refine Lifts.nonempty_algHom_of_exist_lifts_finset
     fun S ↦ ⟨⟨adjoin F S, Nonempty.some ?_⟩, subset_adjoin _ _⟩
   let p := (S.prod <| minpoly F).map (algebraMap F K)
   let K' := SplittingField p

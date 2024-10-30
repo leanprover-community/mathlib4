@@ -165,6 +165,8 @@ theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
   exact (subset_adjoin _ _).trans (SetLike.coe_subset_coe.mpr <|
     le_sup_right.trans <| le_iSup_of_le (Classical.arbitrary _) le_rfl)
 
+end Chain
+
 theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     (h : ∀ S : Finset E, ∃ σ : Lifts F E K, (S : Set E) ⊆ σ.carrier) :
     Nonempty (E →ₐ[F] K) := by
@@ -193,8 +195,6 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
   have : ϕ.carrier⟮α⟯.restrictScalars F ≤ θ.carrier := by
     rw [restrictScalars_adjoin_eq_sup, sup_le_iff, adjoin_simple_le_iff]; exact ⟨hθϕ.1, hθ.1⟩
   exact hS ⟨(θ.emb.comp <| inclusion this).toRingHom, hθϕ.2⟩ θ ⟨this, fun _ ↦ rfl⟩ (hθ.2 _)
-
-end Chain
 
 /-- Given a lift `x` and an integral element `s : E` over `x.carrier` whose conjugates over
 `x.carrier` are all in `K`, we can extend the lift to a lift whose carrier contains `s`. -/
