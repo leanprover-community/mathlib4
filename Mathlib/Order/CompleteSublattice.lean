@@ -97,6 +97,7 @@ instance instCompleteLattice : CompleteLattice L :=
   Subtype.coe_injective.completeLattice _
     Sublattice.coe_sup Sublattice.coe_inf coe_sSup' coe_sInf' coe_top coe_bot
 
+/-- The natural complete lattice hom from a complete sublattice to the original lattice. -/
 def subtype (L : CompleteSublattice α) : CompleteLatticeHom L α where
   toFun := Subtype.val
   map_sInf' _ := rfl
