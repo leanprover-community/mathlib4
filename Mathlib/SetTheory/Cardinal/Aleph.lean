@@ -269,7 +269,7 @@ def preAleph : Ordinal.{u} ≃o Cardinal.{u} := by
   have I : Injective f := f.toEmbedding.injective
   simpa only [typein_enum, leftInverse_invFun I (succ s)] using
     le_ciSup
-      (Cardinal.bddAbove_of_small (Set.range fun a : α => invFun f (Ordinal.typein r a)))
+      (Cardinal.bddAbove_range fun a : α => invFun f (Ordinal.typein r a))
       (Ordinal.enum r ⟨_, h (succ s)⟩)
 
 @[simp]
