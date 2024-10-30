@@ -5,12 +5,12 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.LinearAlgebra.Quotient
-import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
+import Mathlib.LinearAlgebra.Basis.Cardinality
+import Mathlib.LinearAlgebra.Quotient.Defs
+import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.Tactic.Algebraize
 
 /-!
@@ -72,6 +72,21 @@ theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
     exact ⟨n, f, hS⟩
   · rintro ⟨n, s, hs⟩
     exact ⟨range s, finite_range s, hs⟩
+
+universe w v u in
+lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type v}
+    [AddCommMonoid M] [Module A M] {N : Submodule A M} :
+    N.FG ↔ ∃ (G : Type w) (_ : Finite G) (g : G → M), Submodule.span A (Set.range g) = N := by
+  constructor
+  · intro hN
+    obtain ⟨n, f, h⟩ := Submodule.fg_iff_exists_fin_generating_family.1 hN
+    refine ⟨ULift (Fin n), inferInstance, f ∘ ULift.down, ?_⟩
+    convert h
+    ext x
+    simp only [Set.mem_range, Function.comp_apply, ULift.exists]
+  · rintro ⟨G, _, g, hg⟩
+    have := Fintype.ofFinite (range g)
+    exact ⟨(range g).toFinset, by simpa using hg⟩
 
 /-- **Nakayama's Lemma**. Atiyah-Macdonald 2.5, Eisenbud 4.7, Matsumura 2.2,
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV) -/
