@@ -1273,6 +1273,14 @@ alias ⟨eq_of_norm_div_eq_zero, _⟩ := norm_div_eq_zero_iff
 
 attribute [to_additive] eq_of_norm_div_eq_zero
 
+@[to_additive]
+theorem eq_one_or_norm_pos (a : E) : a = 1 ∨ 0 < ‖a‖ := by
+  simpa [eq_comm] using (norm_nonneg' a).eq_or_lt
+
+@[to_additive]
+theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
+  eq_one_or_norm_pos a
+
 @[to_additive (attr := simp) nnnorm_eq_zero]
 theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
   rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero'']
