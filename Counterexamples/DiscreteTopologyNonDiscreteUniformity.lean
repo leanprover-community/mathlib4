@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio
 -/
 
+import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.MetricSpace.Pseudo.Defs
+import Mathlib.Topology.MetricSpace.Cauchy
+import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Discrete uniformities and discrete topology
@@ -82,7 +84,43 @@ noncomputable instance : PseudoMetricSpace ℕ where
   dist := fun n m ↦ |2 ^ (- n : ℤ) - 2 ^ (- m : ℤ)|
   dist_self := by simp only [zpow_neg, zpow_natCast, sub_self, abs_zero, implies_true]
   dist_comm := fun _ _ ↦ abs_sub_comm _ _
-  dist_triangle := by sorry
+  dist_triangle := fun _ _ _ ↦ abs_sub_le ..
+
+@[simp]
+lemma dist_def {n m : ℕ} : dist n m = |2 ^ (-n : ℤ) - 2 ^ (-m : ℤ)| := rfl
+
+lemma idIsCauchy : CauchySeq (id : ℕ → ℕ) := by
+  rw [Metric.cauchySeq_iff]
+  intro ε hε
+  -- have := @cauchySeq_of_le_geometric_two ℝ _ 1 (fun n ↦ 2 ^(-n : ℤ)) ?_
+  obtain ⟨N, hN⟩ := Metric.cauchySeq_iff.mp
+    (@cauchySeq_of_le_geometric_two ℝ _ 1 (fun n ↦ 2 ^(-n : ℤ)) _) ε hε
+  use N
+  intro m hm n hn
+  · exact hN m hm n hn
+  · intro n
+    simp only [zpow_natCast, Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg, one_div]
+    rw [Real.dist_eq, zpow_add' <| Or.intro_left _ two_ne_zero]
+    · calc
+      |2 ^ (- n : ℤ) - 2 ^ (-1 : ℤ) * 2 ^ (- n : ℤ)| =
+        |(1 - (2 : ℝ)⁻¹) * 2 ^ (- n : ℤ)| := by rw [← one_sub_mul, zpow_neg_one]
+        _ = |2⁻¹ * 2 ^ (-(n : ℤ))| := by congr; rw [inv_eq_one_div 2, sub_half 1]
+        _ = (2 : ℝ)⁻¹ / 2 ^ n := by rw [zpow_neg, abs_mul, abs_inv, abs_inv, inv_eq_one_div,
+          Nat.abs_ofNat, one_div, zpow_natCast, abs_pow, ← div_eq_mul_inv, Nat.abs_ofNat]
+      rfl
+
+  -- · exact hN
+  -- ·
+  -- · simp
+    --rw [Real.dist_eq]
+  -- apply this
+  -- simp_rw [dist_def]
+
+
+
+
+
+
 
 /-- The fundamental entourages (index by `n : ℕ`) used to construct a basis of the uniformity: for
 each `n`, the set `fundamentalEntourage n : Set (ℕ × ℕ)` consists of the `n+1` points
@@ -224,4 +262,6 @@ lemma atTopIsCauchy : Cauchy (atTop : Filter ℕ) := by
   simp_rw [mem_fundamentalEntourage, mem_atTop_sets, ge_iff_le]
   exact ⟨Ici i, ⟨⟨i, fun _ hb ↦ hb⟩, fun _ hx _ hy ↦ Or.inl ⟨hx, hy⟩⟩⟩
 
-lemma idIsCauchy : CauchySeq (id : ℕ → _) := ⟨map_neBot, cauchy_iff_le.mp atTopIsCauchy⟩
+/-- We find the same result about the identity map found in `idIsCauchy`, without using any metric
+structure. -/
+lemma idIsCauchy' : CauchySeq (id : ℕ → _) := ⟨map_neBot, cauchy_iff_le.mp atTopIsCauchy⟩
