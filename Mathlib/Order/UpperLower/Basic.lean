@@ -7,7 +7,6 @@ import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.OrderIso
-import Mathlib.Order.UpperLower.Defs
 
 /-!
 # Up-sets and down-sets
@@ -40,6 +39,8 @@ Lattice structure on antichains. Order equivalence between upper/lower sets and 
 open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
+
+attribute [aesop norm unfold] IsUpperSet IsLowerSet
 
 /-! ### Unbundled upper/lower sets -/
 
