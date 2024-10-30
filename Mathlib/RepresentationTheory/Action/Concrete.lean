@@ -6,7 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.RepresentationTheory.Action.Basic
 
 /-!
