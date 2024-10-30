@@ -128,9 +128,11 @@ def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
       coconeFiberwiseColimitOfCocone_ι_app] at this
     simp [← this, Grothendieck.ι]
 
+section
+
 variable [HasColimit G]
 
-instance : HasColimit (fiberwiseColimit G) where
+local instance hasColimitFiberwiseColimit : HasColimit (fiberwiseColimit G) where
   exists_colimit := ⟨⟨_, isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _)⟩⟩
 
 /-- For every functor `G` on the Grothendieck construction `Grothendieck F`, taking its colimit
@@ -140,6 +142,35 @@ def colimitFiberwiseColimitIso [HasColimit G] :
     colimit (fiberwiseColimit G) ≅ colimit G :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit (fiberwiseColimit G))
     (isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _))
+
+end
+
+section
+
+variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F Y ⋙ G)]
+
+def coconeOfFiberwiseCocone (c : Cocone (fiberwiseColimit G)) : Cocone G where
+  pt := c.pt
+  ι := { app := fun X => colimit.ι (Grothendieck.ι F X.base ⋙ G) X.fiber ≫ c.ι.app X.base
+         naturality := fun {X Y} ⟨f, g⟩ => by
+          simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id]
+          rw [← Category.assoc, ← c.w f, ← Category.assoc]
+          simp only [fiberwiseColimit_obj, fiberwiseColimit_map, Grothendieck.ιNatTrans,
+            Functor.comp_obj, Grothendieck.ι_obj_base, Grothendieck.ι_obj_fiber, ι_colimMap_assoc,
+            NatTrans.comp_app, whiskerRight_app, Functor.associator_hom_app, Category.comp_id,
+            colimit.ι_pre]
+          rw [← colimit.w _ g, ← Category.assoc, Functor.comp_map, ← G.map_comp]
+          congr <;> simp }
+
+/-- We can infer that a functor `G : Grothendieck F ⥤ H`, with `F : C ⥤ Cat`, has a colimit from
+the fact that each of its fibers has a colimit and that these fiberwise colimits, as a functor
+`C ⥤ H` have a colimit. -/
+def hasColimitOfHasFiberwiseColimitOfHasBaseColimit
+    [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F Y ⋙ G)]
+    [HasColimit (fiberwiseColimit G)] : HasColimit G where
+  exists_colimit := ⟨⟨_, _⟩⟩
+
+end
 
 end
 
