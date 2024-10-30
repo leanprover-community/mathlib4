@@ -11,13 +11,13 @@ import Mathlib.GroupTheory.Congruence.Hom
 /-!
 # Defining a monoid given by generators and relations
 
-Given a subset `rels` of relations of the free monoid on a type `α`, this file constructs the monoid
-given by generators `x : α` and relations `r ∈ rels`.
+Given relations `rels` on the free monoid on a type `α`, this file constructs the monoid
+given by generators `x : α` and relations `rels`.
 
 ## Main definitions
 
-* `PresentedMonoid rels`: the quot group of the free group on a type `α` by the steps-to closure
-  of a subset `rels` of relations of the free monoid on `α`.
+* `PresentedMonoid rels`: the quotient of the free monoid on a type `α` by the closure of one-step
+  reductions (arising from a binary relation on free monoid elements `rels`).
 * `PresentedMonoid.of`: The canonical map from `α` to a presented monoid with generators `α`.
 * `PresentedMonoid.lift f`: the canonical monoid homomorphism `PresentedMonoid rels → M`, given
   a function `f : α → G` from a type `α` to a monoid `M` which satisfies the relations `rels`.
