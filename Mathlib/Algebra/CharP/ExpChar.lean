@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Lemmas
 
 /-!
 # Exponential characteristic

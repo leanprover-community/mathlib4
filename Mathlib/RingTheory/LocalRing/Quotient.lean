@@ -7,7 +7,9 @@ Authors: Andrew Yang, Riccardo Brasca
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.DiscreteValuationRing.TFAE
+import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 
