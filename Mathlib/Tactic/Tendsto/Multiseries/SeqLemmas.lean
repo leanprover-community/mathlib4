@@ -66,11 +66,9 @@ theorem head_eq_some {α : Type u} {li : Seq α} {hd : α} (h : li.head = some h
   use hd
 
 theorem head_eq_none {α : Type u} {li : Seq α} (h : li.head = none) : li = nil := by
-  revert h
-  apply li.recOn
-  · intro; rfl
-  · intro hd tl h
-    simp at h
+  cases' li with hd tl
+  · rfl
+  · simp at h
 
 @[simp]
 theorem head_eq_none_iff {α : Type u} {li : Seq α} : li.head = none ↔ li = nil := by
@@ -135,10 +133,7 @@ theorem take_nil {α : Type u} {n : ℕ} : (nil (α := α)).take n = List.nil :=
 
 @[simp]
 theorem take_zero {α : Type u} {li : Seq α} : li.take 0 = [] := by
-  apply li.recOn
-  · rfl
-  · intro hd tl
-    rfl
+  cases li <;> rfl
 
 @[simp]
 theorem take_succ {α : Type u} {n : ℕ} {hd : α} {tl : Seq α} :
@@ -183,9 +178,8 @@ theorem take_drop {α : Type u} {li : Seq α} {n m : ℕ} :
   induction m generalizing n li with
   | zero => simp
   | succ k ih =>
-    apply li.recOn
+    cases' li with hd tl
     · simp
-    intro hd tl
     cases n with
     | zero => simp
     | succ l =>
@@ -338,20 +332,18 @@ theorem zip_eq_zip' {α : Type u} {β : Type v} {a : Seq α} {b : Seq β} : zip 
     simp only [motive] at ih ⊢
     obtain ⟨x, y, ha, hb⟩ := ih
     subst ha hb
-    apply x.recOn
+    cases' x with x_hd x_tl
     · right
       constructor
       · simp [zip, zipWith]
         rfl
       · simp [zip', corec_nil]
-    intro x_hd x_tl
-    apply y.recOn
+    cases' y with y_hd y_tl
     · right
       constructor
       · simp [zip, zipWith]
         rfl
       · simp [zip', corec_nil]
-    intro y_hd y_tl
     left
     use (x_hd, y_hd), x_tl.zip y_tl, x_tl.zip' y_tl
     constructor
@@ -556,13 +548,11 @@ theorem All.coind {α : Type u} {li : Seq α} {p : α → Prop}
     | succ m ih =>
       simp at ih
       simp only [drop, ← head_dropn]
-      revert ih
-      generalize li.drop m = t
-      apply t.recOn
+      generalize li.drop m = t at ih
+      cases' t with hd tl
+      · simp [ih.right]
       · simp
-      · intro hd tl
-        simp
-        intro h1 h2
+        obtain ⟨h1, h2⟩ := ih
         have : motive tl := by
           specialize h_cons hd tl h2
           exact h_cons.right
@@ -607,12 +597,9 @@ theorem map_all_iff {α : Type u} {β : Type u} {f : α → β} {p : β → Prop
     · intro hd tl ih
       simp [motive] at ih
       obtain ⟨y, hx_eq, hy⟩ := ih
-      revert hx_eq hy
-      apply y.recOn
-      · intro hx_eq
-        simp at hx_eq
-      · intro y_hd y_tl hx_eq hy
-        simp [cons_eq_cons] at hx_eq hy
+      cases' y with y_hd y_tl
+      · simp at hx_eq
+      · simp [cons_eq_cons] at hx_eq hy
         constructor
         · convert hy.left
           exact hx_eq.left
@@ -629,12 +616,9 @@ theorem take_all {α : Type u} {li : Seq α} {p : α → Prop} (h_all : li.All p
   | zero => simp [take] at hx
   | succ m ih =>
     simp [take] at hx
-    revert h_all hx
-    apply li.recOn
-    · intro _ hx
-      simp at hx
-    · intro hd tl h_all hx
-      simp at hx h_all
+    cases' li with hd tl
+    · simp at hx
+    · simp at hx h_all
       cases hx with
       | inl hx =>
         rw [hx]
@@ -683,12 +667,9 @@ theorem Sorted.cons {α : Type u} {r : α → α → Prop} [IsTrans _ r] {hd : �
     | zero =>
       simp at hx
       subst hx
-      revert h_lt h_tl hy
-      apply tl.recOn
-      · intro _ _ hy
-        simp at hy
-      · intro tl_hd tl_tl h_lt h_tl hy
-        simp at h_lt
+      cases' tl with tl_hd tl_tl
+      · simp at hy
+      · simp at h_lt
         cases k with
         | zero =>
           simp at hy
@@ -713,11 +694,9 @@ theorem Sorted.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] {li : 
     | succ m ih =>
       simp only [drop]
       generalize li.drop m = t at *
-      revert ih
-      apply t.recOn
-      · simp
-      · intro hd tl ih
-        exact (h_step hd tl ih).right
+      cases' t with hd tl
+      · simpa
+      · exact (h_step hd tl ih).right
   simp [Sorted]
   intro i j x y h_ij hx hy
   replace h_ij := Nat.exists_eq_add_of_lt h_ij
@@ -730,10 +709,8 @@ theorem Sorted.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] {li : 
     simp [drop, ← head_dropn] at hx hy
     specialize h_all i
     generalize li.drop i = t at *
-    revert hx hy h_all
-    apply t.recOn
-    · simp
-    intro hd tl hx hy h_all
+    cases' t with hd tl
+    · simp at hx
     specialize h_step hd tl h_all
     simp at hx hy
     simp [hy, hx] at h_step
@@ -744,10 +721,8 @@ theorem Sorted.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] {li : 
     simp only [drop, ← head_dropn] at hx hy ih
     specialize h_all (l + 1 + i)
     generalize li.drop (l + 1 + i) = t at *
-    revert ih hy h_all
-    apply t.recOn
-    · simp
-    intro hd tl hy ih h_all
+    cases' t with hd tl
+    · simp at hy
     specialize h_step hd tl h_all
     simp at ih hy
     simp [hy] at h_step
@@ -759,10 +734,8 @@ theorem Sorted_cons {α : Type u} {r : α → α → Prop} {hd : α} {tl : Seq �
     tl.head.elim True (r hd ·) ∧ Sorted r tl := by
   simp [Sorted] at *
   constructor
-  · revert h
-    apply tl.recOn
+  · cases' tl with tl_hd tl_tl
     · simp
-    intro tl_hd tl_tl h
     specialize h 0 1 hd tl_hd (by omega)
     simpa using h
   · intro i j
@@ -771,11 +744,9 @@ theorem Sorted_cons {α : Type u} {r : α → α → Prop} {hd : α} {tl : Seq �
 
 theorem Sorted_tail {α : Type u} {r : α → α → Prop} {li : Seq α} (h : li.Sorted r) :
     li.tail.Sorted r := by
-  revert h
-  apply li.recOn
+  cases' li with hd tl
+  · simpa
   · simp
-  · intro hd tl h
-    simp
     exact (Sorted_cons h).right
 
 theorem Sorted_drop {α : Type u} {r : α → α → Prop} {li : Seq α} (h : li.Sorted r) {n : ℕ} :
@@ -803,15 +774,12 @@ theorem atLeastAsLongAs_nil {α : Type u} {β : Type v} {a : Seq α} :
 
 theorem atLeastAsLongAs_cons {α : Type u} {β : Type v} {a : Seq α} {hd : β} {tl : Seq β}
     (h : a.atLeastAsLongAs (cons hd tl)) : ∃ hd' tl', a = cons hd' tl' := by
-  revert h
-  apply a.recOn
-  · intro h
-    unfold atLeastAsLongAs at h
+  cases' a with hd' tl'
+  · unfold atLeastAsLongAs at h
     simp at h
     specialize h 0
     simp [TerminatedAt] at h
-  · intro hd' tl' _
-    use hd'
+  · use hd'
     use tl'
 
 @[simp]
@@ -858,12 +826,9 @@ theorem atLeastAsLong.coind {α : Type u} {β : Type v} {a : Seq α} {b : Seq β
       simp only [drop] at hb ⊢
       generalize a.drop m = ta at *
       generalize b.drop m = tb at *
-      revert hb ih
-      apply tb.recOn
-      · intro hb ih
-        simp at hb
-      · intro tb_hd tb_tl hb ih
-        simp at ih
+      cases' tb with tb_hd tb_tl
+      · simp at hb
+      · simp at ih
         specialize h_step ta (cons tb_hd tb_tl) ih _ _ (by rfl)
         obtain ⟨a_hd, a_tl, ha, h_tail⟩ := h_step
         subst ha
@@ -874,11 +839,9 @@ theorem atLeastAsLong.coind {α : Type u} {β : Type v} {a : Seq α} {b : Seq β
   specialize this hb
   specialize h_step _ _ this
   generalize b.drop n = tb at *
-  revert hb h_step
-  apply tb.recOn
-  · simp
-  · intro tb_hd tb_tl _ h_step
-    specialize h_step _ _ (by rfl)
+  cases' tb with tb_hd tb_tl
+  · simp at hb
+  · specialize h_step _ _ (by rfl)
     obtain ⟨a_hd, a_tl, ha, _⟩ := h_step
     rw [ha]
     simp

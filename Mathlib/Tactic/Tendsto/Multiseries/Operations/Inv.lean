@@ -81,13 +81,10 @@ theorem inv'_WellOrdered {basis : Basis} {ms : PreMS basis}
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    revert h_wo
-    apply ms.recOn
-    · intro h_wo
-      simp [inv']
+    cases' ms with deg coef tl
+    · simp [inv']
       apply WellOrdered.nil
-    · intro (deg, coef) tl h_wo
-      obtain ⟨h_coef, h_comp, h_tl⟩ := WellOrdered_cons h_wo
+    · obtain ⟨h_coef, h_comp, h_tl⟩ := WellOrdered_cons h_wo
       simp [inv']
       apply mulMonomial_WellOrdered
       · apply apply_WellOrdered
@@ -112,10 +109,8 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
     simp only [Approximates] at *
     apply EventuallyEq.inv h_approx
   | cons basis_hd basis_tl =>
-    revert h_trimmed h_wo h_approx
-    apply ms.recOn
-    · intro h_trimmed h_wo h_approx
-      apply Approximates_nil at h_approx
+    cases' ms with deg coef tl
+    · apply Approximates_nil at h_approx
       simp [inv']
       apply Approximates.nil
       conv =>
@@ -124,8 +119,7 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
         simp
         rw [← inv_zero]
       apply EventuallyEq.inv h_approx
-    · intro (deg, coef) tl h_wo h_trimmed h_approx
-      apply Trimmed_cons at h_trimmed
+    · apply Trimmed_cons at h_trimmed
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed
       obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
       obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx

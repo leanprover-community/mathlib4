@@ -1,5 +1,4 @@
 import Mathlib.Tactic.Tendsto.Multiseries.SeqLemmas
-import Mathlib.Data.Seq.Seq
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Tactic
 
@@ -18,6 +17,16 @@ abbrev PreMS (basis : Basis) : Type :=
   | .cons _ tl => Seq (ℝ × PreMS tl)
 
 namespace PreMS
+
+universe v in
+@[cases_eliminator]
+def recOn {basis_hd} {basis_tl} {motive : PreMS (basis_hd :: basis_tl) → Sort v}
+    (ms : PreMS (basis_hd :: basis_tl)) (nil : motive nil)
+    (cons : ∀ deg coef (tl : PreMS (basis_hd :: basis_tl)), motive (cons (deg, coef) tl)) :
+    motive ms := by
+  cases' ms using Stream'.Seq.recOn with hd tl
+  · exact nil
+  · exact cons hd.1 hd.2 tl
 
 instance (basis : Basis) : Inhabited (PreMS basis) where
   default := match basis with
@@ -44,23 +53,17 @@ theorem leadingExp_cons {hd : ℝ × PreMS basis_tl} {tl : PreMS (basis_hd :: ba
 
 theorem leadingExp_of_head :
     ms.leadingExp = ms.head.elim ⊥ (fun (deg, _) ↦ deg) := by
-  apply ms.recOn <;> simp
+  cases ms <;> simp
 
 theorem leadingExp_eq_bot :
     ms = .nil ↔ ms.leadingExp = ⊥ := by
-  apply ms.recOn
-  · simp
-  · intros
-    simp [leadingExp]
+  cases ms <;> simp
 
 theorem leadingExp_eq_coe {deg : ℝ} (h : ms.leadingExp = ↑deg) :
     ∃ (a : PreMS basis_tl × PreMS (basis_hd :: basis_tl)), ms = .cons (deg, a.1) a.2 := by
-  revert h
-  apply ms.recOn
-  · intro h
-    simp at h
-  · intro (deg', coef) tl h
-    simp at h
+  cases' ms with deg' coef tl
+  · simp at h
+  · simp at h
     subst h
     use (coef, tl)
 
@@ -139,11 +142,9 @@ theorem WellOrdered.cons {deg : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_
       simp at h_tl_coef
       solve_by_elim
   · apply Seq.Sorted.cons
-    · revert h_comp
-      apply tl.recOn
+    · cases tl
       · simp
-      · simp
-        intro a b h
+      · simp at h_comp ⊢
         rwa [lt_iff_lt]
     · exact h_tl_tl
 
@@ -156,11 +157,9 @@ theorem WellOrdered_cons {deg : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_
   · specialize h_coef 0 (deg, coef)
     simpa using h_coef
   constructor
-  · revert h_sorted
-    apply tl.recOn
+  · cases' tl with tl_deg tl_coef tl_tl
     · simp
-    · intro (tl_deg, tl_coef) tl_tl h_sorted
-      simp [lt_iff_lt] at h_sorted
+    · simp [lt_iff_lt] at h_sorted
       simp
       exact h_sorted.left
   · constructor
@@ -219,10 +218,10 @@ theorem WellOrdered.coind {ms : PreMS (basis_hd :: basis_tl)}
     obtain ⟨deg, coef, tl, ⟨h_hd_eq, h_tl_eq⟩, h_coef, h_comp, h_tl⟩ := h_step
     subst h_hd_eq h_tl_eq
     constructor
-    · revert h_comp
-      apply tl.recOn
+    · cases tl
       · simp
-      simp [lt_iff_lt]
+      simp at h_comp ⊢
+      rwa [lt_iff_lt]
     · exact h_tl
 
 end WellOrdered
@@ -370,19 +369,16 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {degs : Seq ℝ} {basis_
     cases' ih with ih ih
     · left
       obtain ⟨h_alal, h_x_eq, h_y_eq⟩ := ih
-      revert h_alal h_x_eq h_y_eq
-      apply degs'.recOn
-      · simp [partialSums, partialSumsFrom]
-        intro h_x_eq h_y_eq
+      cases' degs' with degs_hd degs_tl
+      · simp [partialSums, partialSumsFrom] at h_x_eq h_y_eq
         use D + init', .nil
         constructor
+        constructor
         · assumption
-        use .nil
         constructor
         · assumption
         simp [motive]
-      · intro degs_hd degs_tl h_alal h_x_eq h_y_eq
-        obtain ⟨Cs_hd, Cs_tl, h_Cs⟩ := Seq.atLeastAsLongAs_cons h_alal
+      · obtain ⟨Cs_hd, Cs_tl, h_Cs⟩ := Seq.atLeastAsLongAs_cons h_alal
         subst h_Cs
         simp [partialSums, partialSumsFrom_cons] at h_x_eq h_y_eq
         use D + init',
@@ -410,24 +406,13 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {degs : Seq ℝ} {basis_
     · right
       exact ih
 
--- a non valid occurrence of the datatypes being declared
--- inductive Approximates : (ℝ → ℝ) → (basis : Basis) → PreMS basis → Prop where
--- | const {c : ℝ} {F : ℝ → ℝ} (h : F =ᶠ[atTop] fun _ ↦ c) : Approximates F [] c
--- | colist {F basis_hd : ℝ → ℝ} {basis_tl : Basis} (ms : PreMS (basis_hd :: basis_tl))
---   (Cs : CoList (ℝ → ℝ))
---   (h_coef : (Cs.zip ms).all fun (C, (deg, coef)) => Approximates C basis_tl coef)
---   (h_maj : (partialSums Cs (ms.map fun x => x.1) basis_hd).zip (ms.map fun x => x.1) |>.all
---     fun (ps, deg) => ∀ deg', deg < deg' → (fun x ↦ F x - ps x) =o[atTop]
---       (fun x ↦ (basis_hd x)^deg')) :
---   Approximates F (basis_hd :: basis_tl) ms
-
 def Approximates (F : ℝ → ℝ) {basis : Basis} (ms : PreMS basis) : Prop :=
   match basis with
   | [] => F =ᶠ[atTop] fun _ ↦ ms
   | List.cons basis_hd basis_tl =>
     ∃ Cs : Seq (ℝ → ℝ),
     Cs.atLeastAsLongAs ms ∧
-    ((Cs.zip ms).All fun (C, (_, coef)) => Approximates C coef) ∧
+    ((Cs.zip ms).All fun (C, (_, coef)) => coef.Approximates C) ∧
     (
       let degs := ms.map fun x => x.1;
       let degs' : Seq (Option ℝ) := (degs.map .some).append (.cons .none .nil);
@@ -454,9 +439,9 @@ theorem Approximates_cons {deg : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
     (h : @Approximates F (basis_hd :: basis_tl) (.cons (deg, coef) tl)) :
     ∃ C,
-      Approximates C coef ∧
+      coef.Approximates C ∧
       majorated F basis_hd deg ∧
-      Approximates (fun x ↦ F x - (basis_hd x)^deg * (C x)) tl := by
+      tl.Approximates (fun x ↦ F x - (basis_hd x)^deg * (C x)) := by
   unfold Approximates at h
   obtain ⟨Cs, h_alal, h_coef, h_maj⟩ := h
   obtain ⟨C, Cs_tl, h_alal⟩ := Seq.atLeastAsLongAs_cons h_alal
@@ -502,7 +487,7 @@ theorem Approximates.coind' {ms : PreMS (basis_hd :: basis_tl)}
       (ms = .nil ∧ F =ᶠ[atTop] 0) ∨
       (
         ∃ deg coef tl C, ms = .cons (deg, coef) tl ∧
-        (Approximates C coef) ∧
+        (coef.Approximates C) ∧
         majorated F basis_hd deg ∧
         (motive (fun x ↦ F x - (basis_hd x)^deg * (C x)) basis_hd basis_tl tl)
       )
@@ -512,10 +497,10 @@ theorem Approximates.coind' {ms : PreMS (basis_hd :: basis_tl)}
   let g : T → Option ((ℝ → ℝ) × T) := fun ⟨val, F, h⟩ =>
     (val.recOn (motive := fun ms => motive F basis_hd basis_tl ms → Option ((ℝ → ℝ) × T))
     (nil := fun _ => .none)
-    (cons := fun (deg, coef) tl =>
+    (cons := fun deg coef tl =>
       fun h =>
         have spec : ∃ C,
-            Approximates C coef ∧
+            coef.Approximates C ∧
             majorated F basis_hd deg ∧
             motive (fun x ↦ F x - basis_hd x ^ deg * C x) basis_hd basis_tl tl := by
           specialize h_step _ _ _ _ h
@@ -544,16 +529,17 @@ theorem Approximates.coind' {ms : PreMS (basis_hd :: basis_tl)}
       rw [Seq.corec_cons] at h_Cs_eq
       pick_goal 2
       · simp [g]
-        constructor <;> rfl
+        constructor
       use ?_, ?_
       constructor
       · exact h_Cs_eq
       simp only [motive']
       generalize_proofs p1 p2
       use fun x ↦ F x - basis_hd x ^ deg * p1.choose x, p2
+      simp
   · constructor
     · let motive' : Seq ((ℝ → ℝ) × ℝ × PreMS basis_tl) → Prop := fun li =>
-        ∃ (ms : Seq (ℝ × PreMS basis_tl)), ∃ F h,
+        ∃ (ms : PreMS (basis_hd :: basis_tl)), ∃ F h,
           li = (Seq.corec g ⟨ms, F, h⟩).zip ms
       apply Seq.All.coind motive'
       · simp only [motive']
@@ -563,15 +549,12 @@ theorem Approximates.coind' {ms : PreMS (basis_hd :: basis_tl)}
         simp only [motive'] at ih
         obtain ⟨ms, F, h, h_eq⟩ := ih
         specialize h_step _ _ _ _ h
-        revert h h_eq h_step
-        apply ms.recOn
-        · intro h h_eq h_step
-          simp at h_eq
-        · intro (ms_deg, ms_coef) ms_tl h h_eq h_step
-          rw [Seq.corec_cons] at h_eq
+        cases' ms with ms_deg ms_coef ms_tl
+        · simp at h_eq
+        · rw [Seq.corec_cons] at h_eq
           pick_goal 2
           · simp [g]
-            constructor <;> rfl
+            constructor
           simp [Seq.cons_eq_cons] at h_eq
           obtain ⟨⟨h1, ⟨h2, h3⟩⟩, h_eq⟩ := h_eq
           constructor
@@ -600,14 +583,12 @@ theorem Approximates.coind' {ms : PreMS (basis_hd :: basis_tl)}
         cases ih with
         | inl ih => simp at ih
         | inr ih =>
-        obtain ⟨ms, G, h_mot, init, h_eq, hF_eq⟩ := ih
+        obtain ⟨(ms : PreMS (basis_hd :: basis_tl)), G, h_mot, init, h_eq, hF_eq⟩ := ih
         · simp
-          revert h_mot h_eq
-          apply ms.recOn
-          · intro h_mot h_eq
-            rw [Seq.corec_nil] at h_eq
+          cases' ms with deg coef tl
+          · rw [Seq.corec_nil] at h_eq
             pick_goal 2
-            · simp [g]
+            · simp [recOn, g]
             simp [Seq.cons_eq_cons, partialSumsFrom_nil] at h_eq
             obtain ⟨⟨h1, h2⟩, h3⟩ := h_eq
             subst h1 h2 h3
@@ -625,11 +606,10 @@ theorem Approximates.coind' {ms : PreMS (basis_hd :: basis_tl)}
                 apply EventuallyEq.add h_step
                 rfl
               · simp [motive']
-          · intro (deg, coef) tl h_mot h_eq
-            rw [Seq.corec_cons] at h_eq
+          · rw [Seq.corec_cons] at h_eq
             swap
             · simp [g]
-              constructor <;> rfl
+              rfl
             simp [Seq.cons_eq_cons, partialSumsFrom_cons] at h_eq
             obtain ⟨⟨h1, h2⟩, h3⟩ := h_eq
             subst h1 h2 h3
@@ -673,7 +653,7 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
       (ms = .nil ∧ F =ᶠ[atTop] 0) ∨
       (
         ∃ deg coef tl C, ms = .cons (deg, coef) tl ∧
-        (Approximates C coef) ∧
+        (coef.Approximates C) ∧
         majorated F basis_hd deg ∧
         (motive (fun x ↦ F x - (basis_hd x)^deg * (C x)) tl)
       )
@@ -759,18 +739,15 @@ theorem Approximates_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {F F' : 
     · simp only [motive]
       use F
     · intro F' ms ih
-      revert ih
-      apply ms.recOn
-      · intro ih
-        left
+      cases' ms with deg coef tl
+      · left
         simp [motive] at ih
         obtain ⟨F, h_equiv, hF⟩ := ih
         apply Approximates_nil at hF
         constructor
         · rfl
         · exact EventuallyEq.trans h_equiv.symm hF
-      · intro (deg, coef) tl ih
-        right
+      · right
         use deg, coef, tl
         simp
         simp [motive] at ih

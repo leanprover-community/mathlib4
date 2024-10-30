@@ -33,11 +33,7 @@ theorem leadingTerm_length {basis : Basis} {ms : PreMS basis} :
   match basis with
   | [] => by simp [leadingTerm]
   | List.cons basis_hd basis_tl => by
-    apply ms.recOn
-    · simp [leadingTerm]
-    · simp [leadingTerm]
-      intro
-      exact leadingTerm_length
+    cases ms <;> simp [leadingTerm, leadingTerm_length]
 
 theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} (x : ℝ) :
@@ -66,13 +62,10 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
     constructor
     assumption
   | List.cons basis_hd basis_tl => by
-    revert h_wo h_ne_zero h_trimmed
-    apply ms.recOn
-    · intro _ _ h_ne_zero
-      absurd h_ne_zero
+    cases' ms with deg coef tl
+    · absurd h_ne_zero
       constructor
-    · intro (deg, coef) tl h_wo h_trimmed _
-      obtain ⟨h_coef_wo, _, _⟩ := WellOrdered_cons h_wo
+    · obtain ⟨h_coef_wo, _, _⟩ := WellOrdered_cons h_wo
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
       let coef_ih := coef.leadingTerm_eventually_ne_zero h_coef_wo h_coef_trimmed h_coef_ne_zero
         (MS.WellOrderedBasis_tail h_basis)
@@ -108,14 +101,11 @@ mutual
     simp [IsEquivalent]
     eta_expand
     simp only [Pi.sub_apply]
-    revert h_tl h_comp
-    apply tl.recOn
-    · intro h_tl h_comp
-      apply Approximates_nil at h_tl
+    cases' tl with tl_deg tl_coef tl_tl
+    · apply Approximates_nil at h_tl
       apply EventuallyEq.trans_isLittleO h_tl
       apply Asymptotics.isLittleO_zero -- should be simp lemma
-    · intro (tl_deg, tl_coef) tl_tl h_tl h_comp
-      obtain ⟨tl_C, h_tl_coef, h_tl_maj, h_tl_tl⟩ := Approximates_cons h_tl
+    · obtain ⟨tl_C, h_tl_coef, h_tl_maj, h_tl_tl⟩ := Approximates_cons h_tl
       simp at h_comp
       let deg' := (deg + tl_deg) / 2
       specialize h_tl_maj deg' (by simp only [deg']; linarith)
@@ -172,15 +162,12 @@ mutual
       simp [leadingTerm]
       apply EventuallyEq.isEquivalent (by assumption)
     | List.cons basis_hd basis_tl => by
-      revert h_wo h_approx h_trimmed
-      apply ms.recOn
-      · intro h_wo h_approx h_trimmed
-        have hF := Approximates_nil h_approx
+      cases' ms with deg coef tl
+      · have hF := Approximates_nil h_approx
         unfold leadingTerm
         simp [MS.Term.zero_coef_fun]
         apply EventuallyEq.isEquivalent (by assumption)
-      · intro (deg, coef) tl h_wo h_approx h_trimmed
-        obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
+      · obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
         obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
         obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
         have coef_ih := coef.IsEquivalent_leadingTerm (F := C) h_coef_wo h_coef h_coef_trimmed

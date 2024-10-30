@@ -145,10 +145,7 @@ theorem mulConst_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c deg : ℝ}
 theorem mulConst_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : PreMS (basis_hd :: basis_tl)}
     {c : ℝ} :
     (mulConst X c).leadingExp = X.leadingExp := by
-  apply X.recOn
-  · simp [mulConst]
-  · intro (deg, coef) tl
-    simp [mulConst, leadingExp]
+  cases X <;> simp [mulConst]
 
 @[simp]
 theorem const_mulConst {basis : Basis} {x y : ℝ}: (const x basis).mulConst y = const (x * y) basis := by
@@ -173,13 +170,10 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
       simp [motive] at ih
       obtain ⟨X, h_ms_eq, hX_wo⟩ := ih
       subst h_ms_eq
-      revert hX_wo
-      apply X.recOn
-      · intro
-        left
+      cases' X with deg coef tl
+      · left
         simp [mulConst]
-      · intro (deg, coef) tl hX_wo
-        obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
+      · obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
         right
         use deg, coef.mulConst c, mulConst (basis := basis_hd :: basis_tl) tl c
         constructor
@@ -210,10 +204,8 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
     · intro f ms ih
       simp only [motive] at ih
       obtain ⟨X, fX, h_ms_eq, hf_eq, hX_approx⟩ := ih
-      revert h_ms_eq hX_approx
-      apply X.recOn
-      · intro h_ms_eq hX_approx
-        left
+      cases' X with X_deg X_coef X_tl
+      · left
         apply Approximates_nil at hX_approx
         simp [mulConst] at h_ms_eq
         constructor
@@ -227,8 +219,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
           rw [← zero_mul c]
         apply EventuallyEq.mul hX_approx
         rfl
-      · intro (X_deg, X_coef) X_tl h_ms_eq hX_approx
-        obtain ⟨XC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
+      · obtain ⟨XC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
         right
         simp [mulConst] at h_ms_eq
         use ?_, ?_, ?_, fun x ↦ XC x * c

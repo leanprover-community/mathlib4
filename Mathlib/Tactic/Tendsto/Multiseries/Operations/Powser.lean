@@ -17,6 +17,14 @@ abbrev LazySeries := Seq ℝ
 
 namespace LazySeries
 
+-- I do not know why it is necessary
+universe v in
+@[cases_eliminator]
+def recOn {motive : LazySeries → Sort v} (s : LazySeries) (nil : motive nil)
+    (cons : ∀ x s, motive (cons x s)) :
+    motive s :=
+  Stream'.Seq.recOn s nil cons
+
 noncomputable def apply_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (ms : PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) × LazySeries →
     Option ((PreMS (basis_hd :: basis_tl)) × (PreMS (basis_hd :: basis_tl) × LazySeries)) := fun (cur_power, cur_s) =>
@@ -161,13 +169,10 @@ theorem toFun_tendsto_head {s_hd : ℝ} {s_tl : LazySeries}
 
 theorem toFun_IsBigO_one {s : LazySeries} (h_analytic : s.analytic) {F : ℝ → ℝ}
     (hF : Tendsto F atTop (nhds 0)) : ((toFun s) ∘ F) =O[atTop] (1 : ℝ → ℝ) := by
-  revert h_analytic
-  apply s.recOn
+  cases' s with s_hd s_tl
   · simp [toFun_nil]
-    intro
     apply isBigO_zero
-  · intro s_hd s_tl h_analytic
-    apply isBigO_const_of_tendsto (y := s_hd) _ (by exact ne_zero_of_eq_one rfl)
+  · apply isBigO_const_of_tendsto (y := s_hd) _ (by exact ne_zero_of_eq_one rfl)
     apply Tendsto.comp _ hF
     apply toFun_tendsto_head h_analytic
 
@@ -213,12 +218,11 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
     simp [motive] at ih
     obtain ⟨X, s, hx, hy⟩ := ih
     subst hx hy
-    apply s.recOn
+    cases' s with s_hd s_tl
     · right
       unfold apply_aux
       simp [Seq.corec_nil]
-    · intro s_hd s_tl
-      left
+    · left
       use ?_, ?_, ?_
       constructor
       · unfold apply_aux
@@ -261,7 +265,7 @@ theorem apply_cons_leadingExp {s_hd : ℝ} {s_tl : LazySeries} {basis_hd : ℝ �
 
 theorem apply_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     (apply s ms).leadingExp ≤ 0 := by
-  apply s.recOn <;> simp
+  cases' s <;> simp
 
 theorem apply_WellOrdered {s : LazySeries} {basis : Basis}
     {ms : PreMS basis}
@@ -274,11 +278,10 @@ theorem apply_WellOrdered {s : LazySeries} {basis : Basis}
   | cons basis_hd basis_tl =>
     by_cases h_ms_ne_nil : ms = .nil
     · rw [h_ms_ne_nil]
-      apply s.recOn
+      cases' s with s_hd s_tl
       · simp
         exact WellOrdered.nil
-      · intro s_hd s_tl
-        simp
+      · simp
         apply WellOrdered.cons_nil
         exact const_WellOrdered
     simp [apply]
@@ -293,13 +296,10 @@ theorem apply_WellOrdered {s : LazySeries} {basis : Basis}
       · intro hd tl ih
         simp only [motive] at ih ⊢
         obtain ⟨X, s, h_eq⟩ := ih
-        revert h_eq
-        apply s.recOn
-        · intro h_eq
-          rw [Seq.corec_nil] at h_eq
+        cases' s with s_hd s_tl
+        · rw [Seq.corec_nil] at h_eq
           · simp at h_eq
           simp [apply_aux]
-        intro s_hd s_tl h_eq
         rw [Seq.corec_cons] at h_eq
         pick_goal 2
         · simp only [apply_aux, Seq.recOn_cons]
@@ -325,13 +325,10 @@ theorem apply_WellOrdered {s : LazySeries} {basis : Basis}
       · intro hd tl ih
         simp only [motive] at ih ⊢
         obtain ⟨X, s, h_eq, hX_ne_nil⟩ := ih
-        revert h_eq
-        apply s.recOn
-        · intro h_eq
-          rw [Seq.corec_nil] at h_eq
+        cases' s with s_hd s_tl
+        · rw [Seq.corec_nil] at h_eq
           · simp at h_eq
           simp [apply_aux]
-        intro s_hd s_tl h_eq
         rw [Seq.corec_cons] at h_eq
         pick_goal 2
         · simp only [apply_aux, Seq.recOn_cons]
@@ -340,11 +337,10 @@ theorem apply_WellOrdered {s : LazySeries} {basis : Basis}
         obtain ⟨h_hd, h_tl⟩ := h_eq
         constructor
         · rw [h_tl]
-          apply s_tl.recOn
+          cases' s_tl with s_tl_hd s_tl_tl
           · rw [Seq.corec_nil]
             · simp
             · simp [apply_aux]
-          intro s_tl_hd s_tl_tl
           rw [Seq.corec_cons]
           pick_goal 2
           · simp only [apply_aux, Seq.recOn_cons]
@@ -405,14 +401,10 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
           simp [analytic] at h_analytic
           specialize this r (by simpa [h_rad] using h_analytic)
           simpa using this
-      revert h_ms_eq hX_wo hX_approx
-      apply X.recOn
-      · intro h_ms_eq _ hX_approx
-        apply Approximates_nil at hX_approx
-        revert h_ms_eq hY_wo hY_approx
-        apply Y.recOn
-        · intro _ hY_approx h_ms_eq
-          apply Approximates_nil at hY_approx
+      cases' X with X_deg X_coef X_tl
+      · apply Approximates_nil at hX_approx
+        cases' Y with Y_deg Y_coef Y_tl
+        · apply Approximates_nil at hY_approx
           left
           constructor
           · simpa using h_ms_eq
@@ -427,19 +419,15 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
               apply Filter.Eventually.mono hY_approx
               intro x h
               simp [h]
-        · intro (Y_deg, Y_coef) Y_tl hY_wo hY_approx h_ms_eq
-          obtain ⟨YC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
+        · obtain ⟨YC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
           obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
-          revert h_ms_eq hf_eq h_analytic hF_in_ball
-          apply s.recOn
-          · intro h_analytic hf_eq hF_in_ball h_ms_eq
-            left
+          cases' s with s_hd s_tl
+          · left
             constructor
             · simpa [apply_nil] using h_ms_eq
             · trans; exact hf_eq
               simpa [toFun_nil]
-          · intro s_hd s_tl h_analytic hf_eq hF_in_ball h_ms_eq
-            right
+          · right
             simp [-apply_cons] at h_ms_eq -- TODO: rewrite
             rw [apply_cons] at h_ms_eq
             simp only [mul_cons_cons, zero_add] at h_ms_eq
@@ -489,14 +477,11 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
                   apply mul_Approximates h_basis
                   · exact h_approx
                   · exact hY_approx
-      · intro (X_deg, X_coef) X_tl h_ms_eq hX_wo hX_approx
-        right
+      · right
         obtain ⟨XC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
         obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
-        revert h_ms_eq hY_wo hY_approx
-        apply Y.recOn
-        · intro _ hY_approx h_ms_eq
-          apply Approximates_nil at hY_approx
+        cases' Y with Y_deg Y_coef Y_tl
+        · apply Approximates_nil at hY_approx
           replace hf_eq : f =ᶠ[atTop] fX := by
             trans
             · exact hf_eq
@@ -540,13 +525,10 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
             · apply WellOrdered.nil
             · apply Approximates.nil
               rfl
-        · intro (Y_deg, Y_coef) Y_tl hY_wo hY_approx h_ms_eq
-          obtain ⟨YC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
+        · obtain ⟨YC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
           obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
-          revert h_ms_eq hf_eq h_analytic hF_in_ball
-          apply s.recOn
-          · intro h_analytic hf_eq hF_in_ball h_ms_eq
-            replace hf_eq : f =ᶠ[atTop] fX := by
+          cases' s with s_hd s_tl
+          · replace hf_eq : f =ᶠ[atTop] fX := by
               trans
               · exact hf_eq
               conv =>
@@ -590,8 +572,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
               · exact WellOrdered.nil
               · apply Approximates.nil
                 rfl
-          · intro s_hd s_tl h_analytic hf_eq hF_in_ball h_ms_eq
-            simp only [apply_cons, zero_add, mul_assoc, mul_cons_cons] at h_ms_eq
+          · simp only [apply_cons, zero_add, mul_assoc, mul_cons_cons] at h_ms_eq
             rw [add_cons_cons] at h_ms_eq
             split_ifs at h_ms_eq
             · use X_deg, X_coef, ?_, XC

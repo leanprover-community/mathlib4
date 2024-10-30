@@ -75,14 +75,11 @@ theorem HasNegativeLeading_tendsto_zero {basis : Basis} {ms : PreMS basis} {F : 
   | nil => simp [HasNegativeLeading] at h_neg
   | cons =>
     simp [HasNegativeLeading] at h_neg
-    revert h_neg h_approx
-    apply ms.recOn
-    · intro _ h_approx
-      apply Approximates_nil at h_approx
+    cases' ms with deg coef tl
+    · apply Approximates_nil at h_approx
       apply Filter.Tendsto.congr' h_approx.symm
       apply tendsto_const_nhds
-    · intro (deg, coef) tl h_neg h_approx
-      simp at h_neg
+    · simp at h_neg
       obtain ⟨_, _, h_maj, _⟩ := Approximates_cons h_approx
       apply majorated_tendsto_zero_of_neg h_neg h_maj
 

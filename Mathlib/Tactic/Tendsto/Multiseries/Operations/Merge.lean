@@ -115,9 +115,9 @@ theorem maxExp_eq_bot_iff {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     maxExp li = ⊥ ↔ ∀ x ∈ li, x = .nil := by
   constructor
   · intro h x
-    apply x.recOn
+    cases' x with deg coef tl
     · simp
-    · intro (deg, coef) tl hx
+    · intro hx
       simp [maxExp] at h
       have := List.mem_map_of_mem leadingExp hx
       simp only [leadingExp_cons] at this
@@ -205,53 +205,15 @@ theorem lt_iff_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x y : PreMS (basi
 
 theorem eq_nil_of_le_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x : PreMS (basis_hd :: basis_tl)}
     (h : x ≤ .nil) : x = .nil := by
-  revert h
-  apply x.recOn
-  · simp
-  · intro hd tl h
-    simp [LE.le, leadingExp] at h
+  cases x <;> simp [LE.le] at h ⊢
 
 theorem tail_eq_nil_of_nil_head {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {tl : Seq (PreMS (basis_hd :: basis_tl))}
     (h_sorted : (Seq.cons .nil tl).Sorted (· > ·)) : tl = .nil := by
-  revert h_sorted
-  apply tl.recOn
+  cases tl
   · simp
-  · intro hd tl h_sorted
-    replace h_sorted := (Seq.Sorted_cons h_sorted).left
+  · replace h_sorted := (Seq.Sorted_cons h_sorted).left
     simp [LT.lt, leadingExp] at h_sorted
-
--- theorem all_eq_nil_of_head_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
---     {tl : Seq (PreMS (basis_hd :: basis_tl))}
---     (h_sorted : (Seq.cons .nil tl).Sorted (· ≥ ·)) : tl.All (· = .nil) := by
---   suffices h : (Seq.cons .nil tl).All (· = .nil) by
---     simpa using h
---   let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun x =>
---     x.Sorted (· ≥ ·) ∧ (x = .nil ∨ ∃ tl, x = .cons .nil tl)
---   apply Seq.All.coind motive
---   · intro hd tl ih
---     simp only [motive] at ih
---     obtain ⟨h_sorted, h_hd⟩ := ih
---     apply Seq.Sorted_cons at h_sorted
---     constructor
---     · exact h_hd
---     simp only [motive]
---     constructor
---     · exact h_sorted.right
---     · revert h_sorted
---       apply tl.recOn
---       · simp
---       · intro tl_hd tl_tl h_sorted
---         simp at h_sorted ⊢
---         rw [h_hd] at h_sorted
---         apply eq_nil_of_le_nil h_sorted.left
---   · simp only [motive]
---     constructor
---     · exact h_sorted
---     · right
---       use ?_
---       congr
---       exact Eq.refl _
 
 @[simp]
 theorem merge_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} :
@@ -275,15 +237,14 @@ theorem merge1_cons_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : PreMS 
     simp only [motive] at ih
     obtain ⟨m, ih⟩ := ih
     subst ih
-    apply y.recOn
+    cases' y with hd tl
     · right
       simp
       rw [merge]
       unfold merge_aux
       simp [Seq.corec_nil]
-    · intro (deg, coef) tl
-      left
-      use (deg, coef), ?_, ?_
+    · left
+      use hd, ?_, ?_
       constructor
       · rw [merge_unfold, merge']
         simp [merge_aux_coef, merge_aux_kNew, merge_aux_liNew]
@@ -338,11 +299,10 @@ theorem merge_aux_coef_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd_deg 
     | nil => simp
     | cons firsts_tl_hd firsts_tl_tl ih =>
       simp [add_assoc]
-      apply firsts_tl_hd.recOn
+      cases firsts_tl_hd
       · simp
         apply ih
-      · intro (firsts_tl_hd_deg, firsts_tl_hd_coef) firsts_tl_hd_tl
-        simp
+      · simp
         split_ifs
         · apply ih
         · apply ih
@@ -364,11 +324,10 @@ theorem merge_aux_liNew_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : �
   | nil => simp
   | cons firsts_hd firsts_tl ih =>
     simp
-    apply firsts_hd.recOn
+    cases' firsts_hd with firsts_hd_deg firsts_hd_coef firsts_hd_tl
     · simp
       apply ih
-    · intro (firsts_hd_deg, firsts_hd_coef) firsts_hd_tl
-      simp
+    · simp
       split_ifs
       · apply ih
       · apply ih
@@ -392,13 +351,10 @@ theorem merge_aux_liNew_cons_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} 
     {hd : PreMS (basis_hd :: basis_tl)} (h_deg : hd.leadingExp < deg)
     {firsts_tl : List (PreMS (basis_hd :: basis_tl))} {s_tl : Seq (PreMS (basis_hd :: basis_tl))} :
     merge_aux_liNew (hd :: firsts_tl) deg (.cons hd s_tl) = .cons hd (merge_aux_liNew firsts_tl deg s_tl) := by
-  revert h_deg
-  apply hd.recOn
-  · intro h_deg
-    simp [merge_aux_liNew]
+  cases' hd with hd_deg h_coef hd_tl
+  · simp [merge_aux_liNew]
     exact merge_aux_liNew_aux
-  · intro (hd_deg, hd_coef) hd_tl h_deg
-    simp at h_deg
+  · simp at h_deg
     rw [merge_aux_liNew_cons_cons]
     split_ifs with h
     · exfalso
@@ -428,13 +384,10 @@ theorem merge_aux_liNew_cons_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   | cons firsts_tl_hd firsts_tl_tl ih =>
     simp at h_lt
     specialize ih h_lt.right
-    revert h_lt
-    apply firsts_tl_hd.recOn
-    · intro h_lt
-      simp
+    cases' firsts_tl_hd with firsts_tl_hd_deg firsts_tl_hd_coef firsts_tl_hd_tl
+    · simp
       apply ih
-    · intro (firsts_tl_hd_deg, firsts_tl_hd_coef) firsts_tl_hd_tl h_lt
-      simp
+    · simp
       split_ifs with h
       · simp at h_lt
         exfalso
@@ -455,12 +408,9 @@ theorem merge_aux_liNew_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} 
     simp
     simp at h_firsts
     apply ih _ h_firsts.right
-    revert h_firsts
-    apply hd.recOn
-    · intro
-      simpa
-    · intro (deg, coef) tl' h_firsts
-      simp
+    cases' hd with deg coef tl'
+    · simpa
+    · simp
       split_ifs
       · apply Seq.set_all hs
         exact (WellOrdered_cons h_firsts.left).right.right
@@ -485,15 +435,13 @@ theorem merge_aux_tail_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg :
   | cons hd tl ih =>
     simp at h_len h_offset
     simp
-    apply hd.recOn (motive := fun x ↦ hd = x → _)
-    · intro h_hd
-      simp
+    cases' h_hd : hd with hd_deg hd_coef hd_tl
+    · simp
       apply ih
       · apply_fun List.tail at h_offset
         simpa using h_offset
       · linarith
-    · intro (hd_deg, hd_coef) hd_tl h_hd
-      simp
+    · simp
       split_ifs with h_deg
       · have : offset ≤ m := by omega
         apply Nat.eq_or_lt_of_le at this
@@ -511,8 +459,8 @@ theorem merge_aux_tail_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg :
             simp [← head_dropn]
             revert h_offset
             generalize (s.drop m) = t
-            apply t.recOn <;> simp
-
+            cases t <;> simp
+            exact Eq.symm
           simp [merge_aux_kNew, h_get, h_deg]
           rw [← Seq.drop.eq_2]
           apply Seq.set_dropn_stable_of_lt
@@ -540,7 +488,6 @@ theorem merge_aux_tail_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg :
         · apply_fun List.tail at h_offset
           simpa using h_offset
         · linarith
-    · rfl
 
 theorem merge_aux_liNew_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {m : ℕ}
     {s_hd : PreMS (basis_hd :: basis_tl)}
@@ -566,15 +513,11 @@ theorem merge_aux_coef_cons_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg 
   | nil => simp
   | cons li_hd li_tl ih =>
     simp
-    -- simp at h_li
-    revert h_li
-    apply li_hd.recOn
-    · intro h_li
-      simp at h_li ⊢
+    cases' li_hd with li_hd_deg li_hd_coef li_hd_tl
+    · simp at h_li ⊢
       apply ih
       exact h_li
-    · intro (li_hd_deg, li_hd_coef) li_hd_tl h_li
-      simp at h_li ⊢
+    · simp at h_li ⊢
       split_ifs with h
       · exfalso
         linarith [h, h_li.left]
@@ -596,10 +539,8 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
     obtain ⟨m, s_hd, s_tl, hx_eq, hy_eq⟩ := ih
     rw [merge_unfold] at hx_eq hy_eq
     simp [merge'] at hx_eq hy_eq
-    revert hx_eq hy_eq
-    apply s_hd.recOn
-    · intro hy_eq hx_eq
-      cases h_maxExp : maxExp (Seq.take (m + 1) s_tl) with
+    cases' s_hd with s_hd_deg s_hd_coef s_hd_tl
+    · cases h_maxExp : maxExp (Seq.take (m + 1) s_tl) with
       | bot =>
         right
         simp [h_maxExp] at hx_eq hy_eq
@@ -619,8 +560,7 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
         · simp
           exact Eq.refl _
         · rfl
-    · intro (s_hd_deg, s_hd_coef) s_hd_tl hy_eq hx_eq
-      left
+    · left
       cases h_maxExp : maxExp (Seq.take (m + 1) s_tl) with
       | bot =>
         simp [h_maxExp] at hx_eq hy_eq
@@ -761,16 +701,12 @@ theorem merge1_cons_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {s_tl : Seq (PreMS (basis_hd :: basis_tl))} :
     (merge1 (.cons s_hd s_tl)).leadingExp = s_hd.leadingExp := by
   rw [merge1, merge_unfold, merge']
-  simp
-  apply s_hd.recOn
-  · simp
-  · intro (deg, coef) tl
-    simp
+  cases s_hd <;> simp
 
 theorem merge1_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {s : Seq (PreMS (basis_hd :: basis_tl))} :
     (merge1 s).leadingExp = s.head.elim ⊥ (·.leadingExp) := by
-  apply s.recOn <;> simp
+  cases s <;> simp
 
 @[simp]
 theorem merge1_cons_head {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd_deg : ℝ} {s_hd_coef : PreMS basis_tl}
@@ -794,18 +730,13 @@ theorem merge1_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {s_hd : PreMS (basis_hd :: basis_tl)} {s_tl : Seq (PreMS (basis_hd :: basis_tl))}
     (h_sorted : (Seq.cons s_hd s_tl).Sorted (· > ·)) :
     merge1 (.cons s_hd s_tl) = s_hd + (merge1 s_tl) := by
-  revert h_sorted
-  apply s_hd.recOn
-  · intro h_sorted
-    simp [tail_eq_nil_of_nil_head h_sorted]
-  · intro (s_hd_deg, s_hd_coef) s_hd_tl h_sorted
-    rw [add_cons_left]
+  cases' s_hd with  s_hd_deg s_hd_coef s_hd_tl
+  · simp [tail_eq_nil_of_nil_head h_sorted]
+  · rw [add_cons_left]
     · apply merge1_cons_head_cons
-    · revert h_sorted
-      apply s_tl.recOn
+    · cases' s_tl with s_tl_hd s_tl_tl
       · simp
-      · intro s_tl_hd s_tl_tl h_sorted
-        apply Seq.Sorted_cons at h_sorted
+      · apply Seq.Sorted_cons at h_sorted
         simp at h_sorted
         simp
         exact lt_iff_lt.mp h_sorted.left
@@ -833,22 +764,14 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     simp only [motive] at ih ⊢
     obtain ⟨X, s, h_eq, hX_wo, h_wo, h_sorted⟩ := ih
     subst h_eq
-    revert hX_wo
-    apply X.recOn
-    · intro _
-      revert h_wo h_sorted
-      apply s.recOn
-      · intro _ _
-        simp
-      intro s_hd s_tl h_wo h_sorted
+    cases' X with X_deg X_coef X_tl
+    · cases' s with s_hd s_tl
+      · simp
       simp at h_wo
       obtain ⟨h_hd_wo, h_tl_wo⟩ := h_wo
       obtain ⟨h_sorted_hd, h_sorted_tl⟩ := Seq.Sorted_cons h_sorted
-      revert h_hd_wo h_sorted_hd h_sorted_tl
-      apply s_hd.recOn
-      · intros
-        simp
-      intro (s_hd_deg, s_hd_coef) s_hd_tl h_hd_wo h_sorted_hd h_sorted_tl
+      cases' s_hd with s_hd_deg s_hd_coef s_hd_tl
+      · simp
       obtain ⟨h_hd_coef_wo, h_hd_comp, h_hd_tl_wo⟩ := WellOrdered_cons h_hd_wo
       right
       use ?_, ?_, ?_
@@ -861,11 +784,9 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       · simp
         constructor
         · exact h_hd_comp
-        · revert h_sorted_hd
-          apply s_tl.recOn
+        · cases s_tl
           · simp
-          · intro s_tl_hd s_tl_tl h_sorted_hd
-            simpa [lt_iff_lt] using h_sorted_hd
+          · simpa [lt_iff_lt] using h_sorted_hd
       use ?_, ?_
       constructor
       · exact Eq.refl _
@@ -874,13 +795,10 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       constructor
       · exact h_tl_wo
       · exact h_sorted_tl
-    · intro (X_deg, X_coef) X_tl hX_wo
-      obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
+    · obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
       right
-      revert h_wo h_sorted
-      apply s.recOn
-      · intro _ _
-        use ?_, ?_, ?_
+      cases' s with s_hd s_tl
+      · use ?_, ?_, ?_
         constructor
         · simp only [merge1_nil, add_nil]
           exact Eq.refl _
@@ -896,14 +814,11 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         · exact hX_tl_wo
         · simp
           apply Seq.Sorted.nil
-      intro s_hd s_tl h_wo h_sorted
       simp at h_wo
       obtain ⟨h_hd_wo, h_tl_wo⟩ := h_wo
       obtain ⟨h_sorted_hd, h_sorted_tl⟩ := Seq.Sorted_cons h_sorted
-      revert h_hd_wo h_sorted_hd h_sorted_tl
-      apply s_hd.recOn
-      · intros -- Copypaste
-        use ?_, ?_, ?_
+      cases' s_hd with s_hd_deg s_hd_coef s_hd_tl
+      · use ?_, ?_, ?_  -- Copypaste
         constructor
         · simp only [megre1_cons_head_nil, add_nil]
           exact Eq.refl _
@@ -919,7 +834,6 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         · exact hX_tl_wo
         · simp
           apply Seq.Sorted.nil
-      intro (s_hd_deg, s_hd_coef) s_hd_tl h_hd_wo h_sorted_hd h_sorted_tl
       obtain ⟨h_hd_coef_wo, h_hd_comp, h_hd_tl_wo⟩ := WellOrdered_cons h_hd_wo
       rw [merge1_cons_head_cons, add_cons_cons]
       split_ifs with h1 h2
@@ -956,11 +870,9 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
           · exact h2
           constructor
           · exact h_hd_comp
-          · revert h_sorted_hd
-            apply s_tl.recOn
+          · cases s_tl
             · simp
-            · intro s_tl_hd s_tl_tl h_sorted_hd
-              simpa [lt_iff_lt] using h_sorted_hd
+            · simpa [lt_iff_lt] using h_sorted_hd
         use ?_, s_tl
         constructor
         · rw [← add_assoc]
@@ -987,11 +899,9 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
           · exact hX_comp
           constructor
           · exact h_hd_comp
-          · revert h_sorted_hd
-            apply s_tl.recOn
+          · cases s_tl
             · simp
-            · intro s_tl_hd s_tl_tl h_sorted_hd
-              simpa [lt_iff_lt] using h_sorted_hd
+            · simpa [lt_iff_lt] using h_sorted_hd
         use ?_, s_tl
         constructor
         · rw [← add_assoc]

@@ -120,16 +120,13 @@ theorem PreMS.Approximates_coef_isLittleO_head {C basis_hd : ℝ → ℝ} {basis
     apply Tendsto.comp (tendsto_rpow_atTop h_deg)
     simpa [MS.WellOrderedBasis] using h_basis
   | cons basis_tl_hd basis_tl_tl =>
-    revert h_approx
-    apply ms.recOn
-    · intro h_approx
-      apply Approximates_nil at h_approx
+    cases' ms with deg coef tl
+    · apply Approximates_nil at h_approx
       apply EventuallyEq.trans_isLittleO h_approx
       apply isLittleO_const_left.mpr
       left
       rfl
-    · intro (deg, coef) tl h_approx
-      obtain ⟨CC, _, h_maj, _⟩ := Approximates_cons h_approx
+    · obtain ⟨CC, _, h_maj, _⟩ := Approximates_cons h_approx
       apply Asymptotics.IsLittleO.trans <| h_maj (deg + 1) (by linarith)
       apply MS.basis_compare
       · apply MS.basis_head_eventually_pos (MS.WellOrderedBasis_tail h_basis)
