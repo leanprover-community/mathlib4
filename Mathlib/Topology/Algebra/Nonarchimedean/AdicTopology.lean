@@ -56,7 +56,7 @@ variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- Given a ring $R$, an $R$-module $M$ and an ideal $I$ of $R$, `I.adicBasis M n`
 is the submodule $I^n M$ of $M$. As the name suggest, this is a basis of neighborhoods
-of zero for the $I$--adic topology on $M$. -/
+of zero for the $I$-adic topology on $M$. -/
 abbrev adicBasis (n : ℕ) : Set M := (I ^ n • ⊤ : Submodule R M)
 
 /-- A restatement of the definition, convenient when rewriting `I.adicBasis M` instead
