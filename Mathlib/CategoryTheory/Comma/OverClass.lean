@@ -86,7 +86,7 @@ abbrev IsOverTower (X Y S : C) [OverClass X S] [OverClass Y S] [OverClass X Y] :
 instance [CanonicallyOverClass X Y] [OverClass Y S] : IsOverTower X Y S :=
   ⟨rfl⟩
 
-lemma isOver_of_isOverTower [OverClass X S] [OverClass X S'] [OverClass Y S]
+lemma homIsOver_of_isOverTower [OverClass X S] [OverClass X S'] [OverClass Y S]
     [OverClass Y S'] [OverClass S S']
     [IsOverTower X S S'] [IsOverTower Y S S'] [HomIsOver f S] : HomIsOver f S' := by
   constructor
