@@ -125,7 +125,7 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
     · apply Trimmed_cons at h_trimmed
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed
       obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
-      obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
+      obtain ⟨C, h_coef, _, h_tl⟩ := Approximates_cons h_approx
       have hC_ne_zero : ∀ᶠ x in atTop, C x ≠ 0 :=
         eventually_ne_zero_of_not_FlatZero h_coef_ne_zero h_coef_wo h_coef h_coef_trimmed
           (MS.WellOrderedBasis_tail h_basis)
@@ -164,7 +164,7 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
         (F := (fun x ↦ (1 - x)⁻¹) ∘ (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x))
       · simp only [EventuallyEq]
         apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
-        intro x ⟨hC_ne_zero, h_basis_hd_pos⟩
+        intro x ⟨_, h_basis_hd_pos⟩
         simp [Real.rpow_neg h_basis_hd_pos.le]
         ring
       apply Approximates_of_EventuallyEq (F := invSeries'.toFun ∘
@@ -175,7 +175,7 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
           apply Tendsto.congr' (f₁ := F / (fun k ↦ C k * basis_hd k ^ (exp)))
           · simp only [EventuallyEq]
             apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
-            intro x ⟨hC_ne_zero, h_basis_hd_pos⟩
+            intro x ⟨_, h_basis_hd_pos⟩
             simp [Real.rpow_neg h_basis_hd_pos.le]
             ring
           rw [← isEquivalent_iff_tendsto_one]
