@@ -456,7 +456,7 @@ end OpenNormalSubgroup
 end
 
 /-!
-## The Open Subgroup in a Clopen Neighborhood of One
+# Existence of an open subgroup in any clopen neighborhood of the neutral element
 This section proves the lemma `TopologicalGroup.existOpenSubgroupSubClopenNhdsOfOne`, which
 states that in a compact topological group, for any clopen neighborhood of 1,
 there exists an open subgroup contained within it.
@@ -517,7 +517,7 @@ lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
   · exact fun a ha ↦ mulclose (mul_subset_mul_left UsubS (mul_subset_mul_left inter_subset_left ha))
 
 @[to_additive]
-theorem existOpenSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [TopologicalSpace G]
+theorem exist_openSubgroup_sub_clopen_nhd_of_one {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
     ∃ H : OpenSubgroup G, (H : Set G) ⊆ W := by
   rcases exists_mulInvClosureNhd WClopen with ⟨V, hV⟩
