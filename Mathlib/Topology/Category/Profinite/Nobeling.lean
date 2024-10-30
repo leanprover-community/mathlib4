@@ -1788,7 +1788,7 @@ Given a profinite set `S` and a closed embedding `S → (I → Bool)`, the `ℤ`
 -/
 theorem Nobeling_aux : Module.Free ℤ (LocallyConstant S ℤ) := Module.Free.of_equiv'
   (Module.Free.of_basis <| GoodProducts.Basis _ hι.isClosed_range) (LocallyConstant.congrLeftₗ ℤ
-  (Homeomorph.ofEmbedding ι hι.toEmbedding)).symm
+    (.ofIsEmbedding ι hι.isEmbedding)).symm
 
 end NobelingProof
 
@@ -1801,7 +1801,7 @@ def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decid
 
 open scoped Classical in
 /-- The map `Nobeling.ι` is a closed embedding. -/
-theorem Nobeling.embedding : IsClosedEmbedding (Nobeling.ι S) := by
+theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
   apply Continuous.isClosedEmbedding
   · dsimp (config := { unfoldPartialApp := true }) [ι]
     refine continuous_pi ?_
@@ -1826,6 +1826,9 @@ theorem Nobeling.embedding : IsClosedEmbedding (Nobeling.ι S) := by
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
 
+@[deprecated (since := "2024-10-26")]
+alias Nobeling.embedding := Nobeling.isClosedEmbedding
+
 end Profinite
 
 open Profinite NobelingProof
@@ -1834,6 +1837,6 @@ open Profinite NobelingProof
 instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
     Module.Free ℤ (LocallyConstant S ℤ) := by
   obtain ⟨_, _⟩ := exists_wellOrder {C : Set S // IsClopen C}
-  exact @Nobeling_aux {C : Set S // IsClopen C} _ _ S (Nobeling.ι S) (Nobeling.embedding S)
+  exact @Nobeling_aux {C : Set S // IsClopen C} _ _ S (Nobeling.ι S) (Nobeling.isClosedEmbedding S)
 
 set_option linter.style.longFile 2000
