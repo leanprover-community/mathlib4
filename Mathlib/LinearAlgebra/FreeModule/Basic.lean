@@ -96,10 +96,6 @@ noncomputable def constr {S : Type z} [Semiring S] [Module S N] [SMulCommClass R
     (ChooseBasisIndex R M → N) ≃ₗ[S] M →ₗ[R] N :=
   Basis.constr (chooseBasis R M) S
 
-instance (priority := 100) noZeroSMulDivisors [NoZeroDivisors R] : NoZeroSMulDivisors R M :=
-  let ⟨⟨_, b⟩⟩ := exists_basis (R := R) (M := M)
-  b.noZeroSMulDivisors
-
 instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
   (Module.Free.chooseBasis R M).index_nonempty
 
@@ -179,5 +175,15 @@ instance tensor : Module.Free S (M ⊗[R] N) :=
   of_basis (bM.2.tensorProduct bN.2)
 
 end CommSemiring
+
+section Ring
+
+variable {R : Type*} [Ring R] [AddCommGroup M] [Module R M] [Module.Free R M]
+
+instance (priority := 100) noZeroSMulDivisors [NoZeroDivisors R] : NoZeroSMulDivisors R M :=
+  let ⟨⟨_, b⟩⟩ := exists_basis (R := R) (M := M)
+  b.noZeroSMulDivisors
+
+end Ring
 
 end Module.Free

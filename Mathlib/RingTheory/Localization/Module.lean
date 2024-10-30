@@ -28,11 +28,12 @@ This file contains some results about vector spaces over the field of fractions 
 open nonZeroDivisors
 
 section Localization
+variable {R : Type*} (Rₛ : Type*)
 
 section IsLocalizedModule
 
 section AddCommMonoid
-variable {R : Type*} (Rₛ : Type*) [CommSemiring R] (S : Submonoid R)
+variable [CommSemiring R] (S : Submonoid R)
 
 open Submodule
 
@@ -91,7 +92,7 @@ theorem LinearIndependent.localization {ι : Type*} {b : ι → M} (hli : Linear
 end AddCommGroup
 
 
-variable {R : Type*} (Rₛ : Type*) [CommSemiring R] (S : Submonoid R)
+variable [CommRing R] (S : Submonoid R)
 
 section Basis
 
@@ -137,7 +138,7 @@ end IsLocalizedModule
 
 section LocalizationLocalization
 
-variable [CommRing Rₛ] [Algebra R Rₛ]
+variable [CommRing R] (S : Submonoid R) [CommRing Rₛ] [Algebra R Rₛ]
 variable [hT : IsLocalization S Rₛ]
 variable {A : Type*} [CommRing A] [Algebra R A]
 variable (Aₛ : Type*) [CommRing Aₛ] [Algebra A Aₛ]
