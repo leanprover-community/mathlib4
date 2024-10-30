@@ -7,7 +7,6 @@ import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.OrderIso
-import Mathlib.Order.UpperLower.Defs
 
 /-!
 # Up-sets and down-sets
