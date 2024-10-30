@@ -53,8 +53,6 @@ namespace Matrix
 
 universe u v
 
-open Matrix
-
 open LinearMap
 
 section
@@ -447,7 +445,10 @@ open MatrixGroups
 
 open Matrix Matrix.SpecialLinearGroup
 
-/--Coercion into an element of `SL(2, ℤ)` and then an element of `Matrix (Fin 2) (Fin 2) ℤ`. -/
+/-- Notation for coercion into an element of `SL(2, ℤ)` and then an element of
+`Matrix (Fin 2) (Fin 2) ℤ`.
+
+This notation is scoped in namespace `ModularGroup`. -/
 scoped notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)
 
 

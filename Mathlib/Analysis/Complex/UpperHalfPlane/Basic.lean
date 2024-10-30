@@ -39,11 +39,18 @@ open UpperHalfPlane
 
 namespace UpperHalfPlane
 
-/--The coercion first into an element of  `GL(2, ℝ)⁺`, then  `GL(2, ℝ)` and finally a Matrix. -/
+/-- The coercion first into an element of  `GL(2, ℝ)⁺`, then  `GL(2, ℝ)` and finally a 2 × 2
+matrix.
+
+This notation is scoped in namespace `UpperHalfPlane`. -/
 scoped notation:1024 "↑ₘₙ" A:1024 =>
   (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
 
-/-- like `↑ₘₙ`, but allows the user to specify the ring `R`. Useful to help Lean elaborate.-/
+/-- The coercion into an element of  `GL(2, R)` and finally a 2 × 2 matrix over `R`. This is
+similar to `↑ₘₙ`, but without positivity requirements, and allows the user to specify the ring `R`,
+which can be useful to help Lean elaborate correctly.
+
+This notation is scoped in namespace `UpperHalfPlane`. -/
 scoped notation:1024 "↑ₘₙ[" R "]" A:1024 =>
   ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
 
