@@ -348,7 +348,7 @@ theorem IsBlockSystem.of_normal {N : Subgroup G} [N.Normal] :
     exact .orbit_of_normal a
 
 section Group
-variable {S H : Type*} [Group H] [SetLike S H] [SubgroupClass S H] {s : S} {a b : G}
+variable {S H : Type*} [Group H] [SetLike S H] [SubgroupClass S H] {s : S} {a : G}
 
 /-!
 Annoyingly, it seems like the following two lemmas cannot be unified.

@@ -3,6 +3,7 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
+import Mathlib.Algebra.Module.ZLattice.Covolume
 import Mathlib.Data.Real.Pi.Bounds
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.Tactic.Rify
@@ -40,7 +41,7 @@ open MeasureTheory MeasureTheory.Measure ZSpan NumberField.mixedEmbedding
 
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
     volume (fundamentalDomain (latticeBasis K)) =
-      (2 : ℝ≥0∞)⁻¹ ^ NrComplexPlaces K * sqrt ‖discr K‖₊ := by
+      (2 : ℝ≥0∞)⁻¹ ^ nrComplexPlaces K * sqrt ‖discr K‖₊ := by
   let f : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →+* ℂ) :=
     (canonicalEmbedding.latticeBasis K).indexEquiv (Pi.basisFun ℂ _)
   let e : (index K) ≃ Module.Free.ChooseBasisIndex ℤ (𝓞 K) := (indexEquiv K).trans f.symm
@@ -72,9 +73,27 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
     stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
   rfl
 
+theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
+    ZLattice.covolume (mixedEmbedding.integerLattice K) =
+      (2 ⁻¹) ^ nrComplexPlaces K * √|discr K| := by
+  rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_integerLattice K),
+    volume_fundamentalDomain_latticeBasis, ENNReal.toReal_mul, ENNReal.toReal_pow,
+    ENNReal.toReal_inv, toReal_ofNat, ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm,
+    Int.norm_eq_abs]
+
+theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
+    ZLattice.covolume (mixedEmbedding.idealLattice K I) =
+      (FractionalIdeal.absNorm (I : FractionalIdeal (𝓞 K)⁰ K)) *
+        (2 ⁻¹) ^ nrComplexPlaces K * √|discr K| := by
+  rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_idealLattice K I),
+    volume_fundamentalDomain_fractionalIdealLatticeBasis, volume_fundamentalDomain_latticeBasis,
+    ENNReal.toReal_mul, ENNReal.toReal_mul, ENNReal.toReal_pow, ENNReal.toReal_inv, toReal_ofNat,
+    ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm, Int.norm_eq_abs,
+    ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.val)), mul_assoc]
+
 theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
-      |Algebra.norm ℚ (a : K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K *
+      |Algebra.norm ℚ (a : K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ nrComplexPlaces K *
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
   -- The smallest possible value for `exists_ne_zero_mem_ideal_of_norm_le`
   let B := (minkowskiBound K I * (convexBodySumFactor K)⁻¹).toReal ^ (1 / (finrank ℚ K : ℝ))
@@ -92,8 +111,8 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
   congr 1
   rw [eq_comm]
   calc
-    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ)⁻¹ ^ NrComplexPlaces K * sqrt ‖discr K‖₊ *
-          (2 : ℝ) ^ finrank ℚ K * ((2 : ℝ) ^ NrRealPlaces K * (π / 2) ^ NrComplexPlaces K /
+    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ)⁻¹ ^ nrComplexPlaces K * sqrt ‖discr K‖₊ *
+          (2 : ℝ) ^ finrank ℚ K * ((2 : ℝ) ^ nrRealPlaces K * (π / 2) ^ nrComplexPlaces K /
             (Nat.factorial (finrank ℚ K)))⁻¹ := by
       simp_rw [minkowskiBound, convexBodySumFactor,
         volume_fundamentalDomain_fractionalIdealLatticeBasis,
@@ -102,19 +121,19 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
       rw [ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.1))]
       simp_rw [NNReal.coe_inv, NNReal.coe_div, NNReal.coe_mul, NNReal.coe_pow, NNReal.coe_div,
         coe_real_pi, NNReal.coe_ofNat, NNReal.coe_natCast]
-    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (finrank ℚ K - NrComplexPlaces K - NrRealPlaces K +
-          NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
-            π⁻¹ ^ (NrComplexPlaces K) := by
+    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (finrank ℚ K - nrComplexPlaces K - nrRealPlaces K +
+          nrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
+            π⁻¹ ^ (nrComplexPlaces K) := by
       simp_rw [inv_div, div_eq_mul_inv, mul_inv, ← zpow_neg_one, ← zpow_natCast, mul_zpow,
         ← zpow_mul, neg_one_mul, mul_neg_one, neg_neg, Real.coe_sqrt, coe_nnnorm, sub_eq_add_neg,
         zpow_add₀ (two_ne_zero : (2 : ℝ) ≠ 0)]
       ring
-    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (2 * NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
-          Nat.factorial (finrank ℚ K) * π⁻¹ ^ (NrComplexPlaces K) := by
+    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (2 * nrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
+          Nat.factorial (finrank ℚ K) * π⁻¹ ^ (nrComplexPlaces K) := by
       congr
       rw [← card_add_two_mul_card_eq_rank, Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat]
       ring
-    _ = FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K * (finrank ℚ K).factorial *
+    _ = FractionalIdeal.absNorm I.1 * (4 / π) ^ nrComplexPlaces K * (finrank ℚ K).factorial *
           Real.sqrt |discr K| := by
       rw [Int.norm_eq_abs, zpow_mul, show (2 : ℝ) ^ (2 : ℤ) = 4 by norm_cast, div_pow,
         inv_eq_one_div, div_pow, one_pow, zpow_natCast]
@@ -122,7 +141,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
 
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
     ∃ (a : 𝓞 K), a ≠ 0 ∧
-      |Algebra.norm ℚ (a : K)| ≤ (4 / π) ^ NrComplexPlaces K *
+      |Algebra.norm ℚ (a : K)| ≤ (4 / π) ^ nrComplexPlaces K *
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
   obtain ⟨_, h_mem, h_nz, h_nm⟩ := exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K ↑1
   obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
