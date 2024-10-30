@@ -3,9 +3,8 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.Data.Int.Range
-import Mathlib.Data.List.Perm.Lattice
 import Mathlib.Data.List.Sigma
 import Plausible.Functions
 
@@ -45,6 +44,90 @@ universe u v w
 variable {α : Type u} {β : Type v} {γ : Sort w}
 
 namespace Plausible
+
+namespace TotalFunction
+
+section Finsupp
+
+variable [DecidableEq α]
+
+/--
+This theorem exists because plausible does not have access to dlookup but
+mathlib has all the theory for it and wants to use it. We probably want to
+bring these two together at some point.
+-/
+private theorem apply_eq_dlookup (m : List (Σ _ : α, β)) (y : β) (x : α) :
+     (withDefault m y).apply x = (m.dlookup x).getD y := by
+  dsimp only [apply]
+  congr 1
+  induction m with
+  | nil => simp
+  | cons p m ih =>
+    rcases p with ⟨fst, snd⟩
+    by_cases heq : fst = x
+    · simp [heq]
+    · rw [List.dlookup_cons_ne]
+      · simp [heq, ih]
+      · symm
+        simp [heq]
+
+variable [Zero β] [DecidableEq β]
+
+/-- Map a total_function to one whose default value is zero so that it represents a finsupp. -/
+@[simp]
+def zeroDefault : TotalFunction α β → TotalFunction α β
+  | .withDefault A _ => .withDefault A 0
+
+/-- The support of a zero default `TotalFunction`. -/
+@[simp]
+def zeroDefaultSupp : TotalFunction α β → Finset α
+  | .withDefault A _ =>
+    List.toFinset <| (A.dedupKeys.filter fun ab => Sigma.snd ab ≠ 0).map Sigma.fst
+
+/-- Create a finitely supported function from a total function by taking the default value to
+zero. -/
+def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
+  support := zeroDefaultSupp tf
+  toFun := tf.zeroDefault.apply
+  mem_support_toFun := by
+    intro a
+    rcases tf with ⟨A, y⟩
+    simp only [zeroDefaultSupp, List.mem_map, List.mem_filter, exists_and_right,
+      List.mem_toFinset, exists_eq_right, Sigma.exists, Ne, zeroDefault]
+    rw [apply_eq_dlookup]
+    constructor
+    · rintro ⟨od, hval, hod⟩
+      have := List.mem_dlookup (List.nodupKeys_dedupKeys A) hval
+      rw [(_ : List.dlookup a A = od)]
+      · simpa using hod
+      · simpa [List.dlookup_dedupKeys]
+    · intro h
+      use (A.dlookup a).getD (0 : β)
+      rw [← List.dlookup_dedupKeys] at h ⊢
+      simp only [h, ← List.mem_dlookup_iff A.nodupKeys_dedupKeys, not_false_iff, Option.mem_def]
+      cases haA : List.dlookup a A.dedupKeys
+      · simp [haA] at h
+      · simp
+
+variable [SampleableExt α] [SampleableExt β] [Repr α]
+
+instance Finsupp.sampleableExt : SampleableExt (α →₀ β) where
+  proxy := TotalFunction α (SampleableExt.proxy β)
+  interp := fun f => (f.comp SampleableExt.interp).applyFinsupp
+  sample := SampleableExt.sample (α := α → β)
+  -- note: no way of shrinking the domain without an inverse to `interp`
+  shrink := { shrink := letI : Shrinkable α := {}; TotalFunction.shrink }
+
+-- TODO: support a non-constant codomain type
+instance DFinsupp.sampleableExt : SampleableExt (Π₀ _ : α, β) where
+  proxy := TotalFunction α (SampleableExt.proxy β)
+  interp := fun f => (f.comp SampleableExt.interp).applyFinsupp.toDFinsupp
+  sample := SampleableExt.sample (α := α → β)
+  -- note: no way of shrinking the domain without an inverse to `interp`
+  shrink := { shrink := letI : Shrinkable α := {}; TotalFunction.shrink }
+
+end Finsupp
+end TotalFunction
 
 open _root_.List
 

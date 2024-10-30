@@ -146,38 +146,38 @@ issue: 5 ≤ 0 does not hold
 example (f : ℤ → ℤ) : Monotone f := by
   plausible (config := { randomSeed := some 257 })
 
----- TODO: fails without this line!
---attribute [-instance] Finsupp.instRepr in
---
---example (f : ℕ →₀ ℕ) : true := by
---  have : f = 0 := by
---    success_if_fail_with_msg
---    "
---===================
---Found problems!
---f := [1 ↦ 1, _ ↦ 0]
---issue: ⋯ does not hold
---(1 shrinks)
----------------------
---"
---      plausible (config := { randomSeed := some 257 })
---    exact test_sorry
---  trivial
---
---example (f : Π₀ _n : ℕ, ℕ) : true := by
---  have : f.update 0 0 = 0 := by
---    success_if_fail_with_msg
---    "
---===================
---Found problems!
---f := [1 ↦ 1, _ ↦ 0]
---issue: ⋯ does not hold
---(1 shrinks)
----------------------
---"
---      plausible (config := { randomSeed := some 257 })
---    exact test_sorry
---  trivial
+-- TODO: fails without this line!
+attribute [-instance] Finsupp.instRepr in
+
+example (f : ℕ →₀ ℕ) : true := by
+  have : f = 0 := by
+    success_if_fail_with_msg
+    "
+===================
+Found a counter-example!
+f := [1 => 1, _ => 0]
+issue: ⋯ does not hold
+(1 shrinks)
+-------------------
+"
+      plausible (config := { randomSeed := some 257 })
+    exact test_sorry
+  trivial
+
+example (f : Π₀ _n : ℕ, ℕ) : true := by
+  have : f.update 0 0 = 0 := by
+    success_if_fail_with_msg
+    "
+===================
+Found a counter-example!
+f := [1 => 1, _ => 0]
+issue: ⋯ does not hold
+(1 shrinks)
+-------------------
+"
+      plausible (config := { randomSeed := some 257 })
+    exact test_sorry
+  trivial
 
 example (n : ℕ) : true := by
   have : ∑ f : Unit → Fin (n + 1), f () = 0 := by
@@ -220,20 +220,3 @@ issue: ⋯ does not hold
 #guard_msgs in
 example {a : ℕ} [Fact a.Prime] : (a + 1).Prime ∨ (a + 2).Prime := by
   plausible (config := { randomSeed := some 257 })
-
-
-
---TODO: move
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/slim_check.20giving.20wrong.20counterexamples.3F/near/420008365
-open Nat in
-/--
-info: Unable to find a counter-example
----
-warning: declaration uses 'sorry'
--/
-#guard_msgs in
-theorem testBit_pred :
-    testBit (pred x) i = (decide (0 < x) &&
-      (Bool.xor ((List.range i).all fun j => ! testBit x j) (testBit x i))) := by
-  plausible
-
