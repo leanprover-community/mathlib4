@@ -77,7 +77,7 @@ lemma dvd_iff {p : A[X]} : minpoly A x ∣ p ↔ Polynomial.aeval x p = 0 :=
 theorem isRadical [IsReduced B] : IsRadical (minpoly A x) := fun n p dvd ↦ by
   rw [dvd_iff] at dvd ⊢; rw [map_pow] at dvd; exact IsReduced.eq_zero _ ⟨n, dvd⟩
 
-theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
+theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [Ring R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
     minpoly K x ∣ (minpoly A x).map (algebraMap A K) := by
   refine minpoly.dvd K x ?_
@@ -144,7 +144,7 @@ theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     refine fun h ↦ hx ?_
     simpa only [add_sub_cancel_right] using IsIntegral.sub h (isIntegral_algebraMap (x := a))
 
-theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B}
+theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     (a : A) : minpoly A (x - algebraMap A B a) = (minpoly A x).comp (X + C a) := by
   simpa [sub_eq_add_neg] using add_algebraMap x (-a)
 

@@ -512,6 +512,7 @@ import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Presentation.Basic
+import Mathlib.Algebra.Module.Presentation.Free
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Rat
@@ -1005,6 +1006,7 @@ import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Analysis.BoxIntegral.Partition.Split
 import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
+import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
@@ -1714,6 +1716,7 @@ import Mathlib.CategoryTheory.Limits.IsConnected
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Lattice
 import Mathlib.CategoryTheory.Limits.MonoCoprod
+import Mathlib.CategoryTheory.Limits.MorphismProperty
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Over
 import Mathlib.CategoryTheory.Limits.Pi
@@ -2790,6 +2793,7 @@ import Mathlib.Dynamics.TopologicalEntropy.Semiconj
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.FieldTheory.AbsoluteGaloisGroup
 import Mathlib.FieldTheory.Adjoin
+import Mathlib.FieldTheory.AlgebraicClosure
 import Mathlib.FieldTheory.AxGrothendieck
 import Mathlib.FieldTheory.Cardinality
 import Mathlib.FieldTheory.ChevalleyWarning
@@ -4087,8 +4091,11 @@ import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Pointwise
 import Mathlib.RingTheory.Ideal.Prime
 import Mathlib.RingTheory.Ideal.Prod
-import Mathlib.RingTheory.Ideal.Quotient
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.Quotient.Basic
+import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Ideal.Span
 import Mathlib.RingTheory.Idempotents
 import Mathlib.RingTheory.Int.Basic
@@ -4223,8 +4230,6 @@ import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.PrimeSpectrum
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotSMulTop
-import Mathlib.RingTheory.QuotientNilpotent
-import Mathlib.RingTheory.QuotientNoetherian
 import Mathlib.RingTheory.Radical
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Regular.IsSMulRegular
