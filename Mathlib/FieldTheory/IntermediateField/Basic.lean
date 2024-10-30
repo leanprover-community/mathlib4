@@ -323,9 +323,11 @@ instance smulCommClass_right [SMul X Y] [SMul L Y] [SMulCommClass X L Y]
     (F : IntermediateField K L) : SMulCommClass X F Y :=
   inferInstanceAs (SMulCommClass X F.toSubfield Y)
 
+-- Porting note: setting this instance default priority may trigger difficulty to synthesize
+-- `IsScalarTower K₁ K₂ F` where `K₁ ≤ K₂` are of `IntermediateField E F`
 /-- Note that this provides `IsScalarTower F K K` which is needed by `smul_mul_assoc`. -/
-instance [SMul X Y] [SMul L X] [SMul L Y] [IsScalarTower L X Y] (F : IntermediateField K L) :
-    IsScalarTower F X Y :=
+instance (priority := 900) [SMul X Y] [SMul L X] [SMul L Y] [IsScalarTower L X Y]
+    (F : IntermediateField K L) : IsScalarTower F X Y :=
   inferInstanceAs (IsScalarTower F.toSubfield X Y)
 
 instance [SMul L X] [FaithfulSMul L X] (F : IntermediateField K L) : FaithfulSMul F X :=
