@@ -304,30 +304,6 @@ instance SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
     simp only [SLOnGLPos_smul_apply]
     apply mul_smul'
 
-instance subgroupGLPos : SMul Γ GL(2, ℝ)⁺ :=
-  ⟨fun s g => s * g⟩
-
-theorem subgroup_on_glpos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
-    (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
-  rfl
-
-instance subgroup_on_glpos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ where
-  smul_assoc s g z := by
-    simp only [subgroup_on_glpos_smul_apply]
-    apply mul_smul'
-
-instance subgroupSL : SMul Γ SL(2, ℤ) :=
-  ⟨fun s g => s * g⟩
-
-theorem subgroup_on_SL_apply (s : Γ) (g : SL(2, ℤ)) (z : ℍ) :
-    (s • g) • z = ((s : SL(2, ℤ)) * g) • z :=
-  rfl
-
-instance subgroup_to_SL_tower : IsScalarTower Γ SL(2, ℤ) ℍ where
-  smul_assoc s g z := by
-    rw [subgroup_on_SL_apply]
-    apply MulAction.mul_smul
-
 end ModularGroup
 
 end ModularScalarTowers
@@ -381,13 +357,6 @@ variable (g : SL(2, ℤ)) (z : ℍ) (Γ : Subgroup SL(2, ℤ))
 
 @[simp]
 theorem sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
-  rfl
-
-theorem subgroup_moeb (A : Γ) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
-  rfl
-
-@[simp]
-theorem subgroup_to_sl_moeb (A : Γ) (z : ℍ) : A • z = (A : SL(2, ℤ)) • z :=
   rfl
 
 @[simp high]
