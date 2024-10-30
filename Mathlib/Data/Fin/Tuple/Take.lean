@@ -49,7 +49,7 @@ theorem take_eq_init {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α 
   congr
 
 @[simp]
-theorem take_all (v : (i : Fin n) → α i) : take n (le_refl n) v = v := by
+theorem take_eq_self (v : (i : Fin n) → α i) : take n (le_refl n) v = v := by
   ext i
   simp [take]
 
