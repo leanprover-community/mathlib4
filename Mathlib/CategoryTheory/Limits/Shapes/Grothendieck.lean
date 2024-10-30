@@ -7,8 +7,10 @@ import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
-# Limits on the (strict) Grothendieck Construction
+# (Co)limits on the (strict) Grothendieck Construction
 
+* Shows that colimits of functors on the Grothendieck construction are colimits of
+  "fibered colimits", i.e. of applying the colimit to each fiber of the functor.
 
 -/
 
@@ -126,10 +128,15 @@ def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
       coconeFiberwiseColimitOfCocone_ι_app] at this
     simp [← this, Grothendieck.ι]
 
+variable [HasColimit G]
+
+instance : HasColimit (fiberwiseColimit G) where
+  exists_colimit := ⟨⟨_, isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _)⟩⟩
+
 /-- For every functor `G` on the Grothendieck construction `Grothendieck F`, taking its colimit
 is isomorphic to first taking the fiberwise colimit and then the colimit of the resulting fucntor.
 -/
-def colimitFiberwiseColimitIso [HasColimit G] [HasColimit (fiberwiseColimit G)] :
+def colimitFiberwiseColimitIso [HasColimit G] :
     colimit (fiberwiseColimit G) ≅ colimit G :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit (fiberwiseColimit G))
     (isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _))
