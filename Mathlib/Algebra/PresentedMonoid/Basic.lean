@@ -63,7 +63,7 @@ def of (rels : FreeMonoid α → FreeMonoid α → Prop) (x : α) : PresentedMon
 
 section inductionOn
 
-variable {α₁ α₂ α₃ : Type* } {rels₁ : FreeMonoid α₁ → FreeMonoid α₁ → Prop}
+variable {α₁ α₂ α₃ : Type*} {rels₁ : FreeMonoid α₁ → FreeMonoid α₁ → Prop}
   {rels₂ : FreeMonoid α₂ → FreeMonoid α₂ → Prop} {rels₃ : FreeMonoid α₃ → FreeMonoid α₃ → Prop}
 
 local notation "P₁" => PresentedMonoid rels₁
