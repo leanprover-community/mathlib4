@@ -443,6 +443,15 @@ theorem ess_surj_sequence_spec : ∀ V : K, ∃ n,
   convert (congr_arg (Subtype.val) n_prop).symm
   apply Quot.out_eq
 
+noncomputable def sequence_FGEquiv (A : K) (n : ℕ) : FGEquiv L A A :=
+  (countable_iff_exists_surjective.1 (countable_self_fgequiv_of_countable (L := L))).choose n
+
+theorem sequence_FGEquiv_spec {A : K} (f : FGEquiv L A A) :
+    ∃ n, f = sequence_FGEquiv K_fraisse A n := by
+  let ⟨m, hm⟩ := (countable_iff_exists_surjective.1
+    (countable_self_fgequiv_of_countable (L := L))).choose_spec f
+  use m
+  exact hm.symm
 
 include K_fraisse in
 
@@ -450,7 +459,6 @@ theorem can_extend_finiteEquiv_in_class : ∀ S : K, ∀ f : S ≃ₚ[L] S, ∀ 
     ∃ T : K, ∃ incl : S ↪[L] T, ∃ g : T ≃ₚ[L] T,
     f.map incl ≤ g ∧ incl.toHom.range ≤ g.dom := by
   rintro ⟨S, S_in_K⟩ f f_fg
-  have x := K_fraisse
   obtain ⟨R, g₁, g₂, R_in_K, eq⟩ := K_fraisse.amalgamation (Bundled.mk f.dom) S S
     (subtype _) ((subtype _).comp f.toEquiv.toEmbedding) (K_fraisse.hereditary S S_in_K
       (age.fg_substructure f_fg)) S_in_K S_in_K
@@ -509,8 +517,7 @@ noncomputable def init_system : (n : ℕ) →
     let Sn := (init_system n).2
     let Am1 := (Sn m1).1
     let Am1_to_An : Am1 ↪[L] An := (Sn m1).2
-    let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
-      (countable_self_fgequiv_of_countable (L := L) (M := Am1))).choose m2
+    let ⟨f, f_fg⟩ := sequence_FGEquiv K_fraisse Am1 m2
     let ⟨A, An_to_A⟩ := extend_and_join K_fraisse
       (A := An) (B := ess_surj_sequence K_fraisse (n+1))
         (f := f.map Am1_to_An) (PartialEquiv.map_dom Am1_to_An f ▸ FG.map _ f_fg)
@@ -594,13 +601,12 @@ theorem maps_system_same_step (m : ℕ) : maps_system K_fraisse (le_refl m)
   rfl
 
 noncomputable def map_step (m : ℕ) : system K_fraisse m ↪[L] system K_fraisse (m+1) :=
-  maps_system K_fraisse (by linarith)
+  maps_system K_fraisse (Nat.le_add_right m 1)
 
 theorem factorize_with_map_step {m n : ℕ} (h : m ≤ n) :
     maps_system K_fraisse (h.trans (Nat.le_add_right n 1)) =
       (map_step K_fraisse n).comp (maps_system K_fraisse h) := by
-  sorry -- the proof works but is really slow, Lean takes multiple minutes to go through
-  /-nth_rw 1 [maps_system]
+  nth_rw 1 [maps_system]
   simp only [init_system]
   simp only [map_step, maps_system]
   rw [if_then_else_left]
@@ -619,7 +625,7 @@ theorem factorize_with_map_step {m n : ℕ} (h : m ≤ n) :
   show _ = Embedding.comp _ (maps_system K_fraisse (le_refl n))
   simp only [maps_system_same_step K_fraisse n, Embedding.comp_refl]
   exact eq_true (le_refl n)
-  exact eq_true h -/
+  exact eq_true h
 
 theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
     (maps_system K_fraisse h').comp (maps_system K_fraisse h) =
@@ -639,52 +645,72 @@ theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
 noncomputable def FGEquiv_extended (n : ℕ) :
     FGEquiv L ((init_system K_fraisse n).2 (Nat.unpair n).1).1
       ((init_system K_fraisse n).2 (Nat.unpair n).1).1 :=
-  ((countable_iff_exists_surjective.1 (countable_self_fgequiv_of_countable (L := L)
-    (M := ((init_system K_fraisse n).2 (Nat.unpair n).1).1))).choose (Nat.unpair n).2)
+  sequence_FGEquiv K_fraisse ((init_system K_fraisse n).2 (Nat.unpair n).1).1 (Nat.unpair n).2
 
-theorem step_is_extend_and_join (n : ℕ) : system K_fraisse (n+1) =
-    (extend_and_join K_fraisse (ess_surj_sequence K_fraisse (n+1))
-      (f := ((FGEquiv_extended K_fraisse n).1.map
-        ((init_system K_fraisse n).2 (Nat.unpair n).1).2)) sorry).1:= by
+theorem init_system_map_decomposition {k r : ℕ} (h : k ≤ r) :
+    ((init_system K_fraisse (r+1)).2 k).2 =
+    ((extend_and_join K_fraisse (ess_surj_sequence K_fraisse (r+1))
+      (f := ((FGEquiv_extended K_fraisse r).1.map
+        ((init_system K_fraisse r).2 (Nat.unpair r).1).2))
+      (PartialEquiv.map_dom (((init_system K_fraisse r).2
+        (Nat.unpair r).1).2) _ ▸ FG.map _ (FGEquiv_extended K_fraisse r).2)).2
+    ).comp
+      (((init_system K_fraisse r).2 k).2.comp
+        (Embedding.eq_embed ((system_eq' K_fraisse (h.trans (Nat.le_add_right r 1))).symm.trans
+          (system_eq' K_fraisse h)))) := by
+  apply if_then_else_left
+  simp only [h]
+
+theorem map_step_is_extend_and_join (r : ℕ) :
+    map_step K_fraisse r = ((extend_and_join K_fraisse (ess_surj_sequence K_fraisse (r+1))
+      (f := ((FGEquiv_extended K_fraisse r).1.map
+        ((init_system K_fraisse r).2 (Nat.unpair r).1).2))
+      (PartialEquiv.map_dom (((init_system K_fraisse r).2
+        (Nat.unpair r).1).2) _ ▸ FG.map _ (FGEquiv_extended K_fraisse r).2)).2) := by
+  rw [map_step, maps_system, init_system_map_decomposition]
+  simp [Embedding.comp_assoc]
+  rw [←maps_system, maps_system_same_step, Embedding.comp_refl]
   rfl
 
-theorem step_map_is_extend_and_join (n : ℕ) : ((init_system K_fraisse (n+1)).2 n).2 =
-    ((extend_and_join K_fraisse (ess_surj_sequence K_fraisse (n+1))
-      (f := ((FGEquiv_extended K_fraisse n).1.map
-        ((init_system K_fraisse n).2 (Nat.unpair n).1).2)) sorry).2).comp
-          (((init_system K_fraisse n).2 n).2.comp
-            (Embedding.eq_embed ((system_eq' K_fraisse (Nat.le_add_right n 1)).symm.trans
-              (system_eq' K_fraisse (le_refl n))))) := by
-  apply if_then_else_left
-  simp only [le_refl]
-
-
-
-
 theorem all_fgequiv_extend {m : ℕ} : ∀ f : L.FGEquiv (system _ m) (system _ m),
-    ∀ x : ↑(system K_fraisse m), ∃ n, ∃ h : m ≤ n, ∃ g : (system _ n) ≃ₚ[L] (system _ n),
-      maps_system _ h x ∈ g.dom ∧ f.val.map (maps_system K_fraisse h) ≤ g := by
+    ∀ _ : ↑(system K_fraisse m), ∃ n, ∃ h : m ≤ n,
+      f.val.is_extended_by (maps_system K_fraisse h) := by
   intro f
-  let ⟨n, hn⟩ := (countable_iff_exists_surjective.1
-      (countable_self_fgequiv_of_countable (L := L) (M := system _ m))).choose_spec f
+  let ⟨n, hn⟩ := sequence_FGEquiv_spec K_fraisse f
   let r := Nat.pair m n
   have h_unpair_m : m = (Nat.unpair r).1 := by simp [r]
   have h_unpair_n : n = (Nat.unpair r).2 := by simp [r]
+  let f'' := FGEquiv_extended K_fraisse r
   clear_value r
-  let ⟨f'', f''_fg⟩ := (countable_iff_exists_surjective.1
-      (countable_self_fgequiv_of_countable (L := L)
-        (M := ((init_system K_fraisse r).2 m).1))).choose n
   cases h_unpair_m
   let f' := f.1.map (Embedding.eq_embed (system_eq' K_fraisse (Nat.unpair_left_le r)))
   have f'_fg : f'.dom.FG := f.1.map_fg _ f.2
   cases h_unpair_n
   cases hn
   have h_f'_f'' : f' = f'' := by
-    sorry
-  intro x
+    have H : ∀ (A B : K), ∀ (h : A = B),
+        (sequence_FGEquiv K_fraisse A (Nat.unpair r).2).val.map
+          (Embedding.eq_embed (congr_arg Subtype.val h)) =
+        (sequence_FGEquiv K_fraisse B (Nat.unpair r).2).val := by
+      intro A B h
+      cases h
+      simp
+    exact H _ _ (system_eq K_fraisse (Nat.unpair_left_le r))
+  intro _
   use r+1
-  use (by linarith [Nat.unpair_left_le r])
-  sorry
+  use (Nat.unpair_left_le r).trans (Nat.le_add_right r 1)
+  rw [←transitive_maps_system K_fraisse (Nat.unpair_left_le r) (Nat.le_add_right r 1)]
+  apply PartialEquiv.comp_is_extended_by
+  have H : f'.map ((init_system _ r).2 (Nat.unpair r).1).2 =
+      (sequence_FGEquiv K_fraisse (system K_fraisse (Nat.unpair r).1) (Nat.unpair r).2).1.map
+        (maps_system _ (Nat.unpair_left_le r)) := by
+      unfold_let f'
+      rw [PartialEquiv.map_map]
+      rfl
+  rw [←H, h_f'_f'', ←map_step, map_step_is_extend_and_join]
+  unfold_let f''
+  apply extend_and_join_spec_1
+
 
 theorem contains_K : ∀ M ∈ K, ∃ n, Nonempty (M ↪[L] system K_fraisse n) := by
   intro A h
@@ -707,9 +733,12 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
   let _ : (i : ℕ) → L.Structure ((Bundled.α ∘ Subtype.val ∘ system K_fraisse) i) :=
     fun i => Bundled.str _
   have _ : DirectedSystem (Bundled.α ∘ Subtype.val ∘ system K_fraisse)
-      fun i j h ↦ ⇑(maps_system K_fraisse h) :=
-    sorry
-
+      fun i j h ↦ ⇑(maps_system K_fraisse h) := by
+    constructor
+    intro _ _ _
+    simp [maps_system_same_step]
+    intro i j k hij hjk x
+    simp [←Embedding.comp_apply, transitive_maps_system]
   let M := DirectLimit (L := L) (Bundled.α ∘ Subtype.val ∘ system K_fraisse)
     (@maps_system _ _ _ K_fraisse)
   use ⟨M, DirectLimit.instStructureDirectLimit ..⟩
@@ -719,7 +748,10 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
     simp [Function.comp_apply, Structure.cg_of_countable, implies_true]
   use M_c
   refine ⟨?_, ?_⟩
-  · sorry
+  · 
+
+
+    sorry
   · rw [age_directLimit]
     apply Set.ext
     intro S

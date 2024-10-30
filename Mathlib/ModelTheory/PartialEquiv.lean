@@ -263,6 +263,21 @@ theorem map_commutes_apply (f : M ↪[L] N) (g : M ≃ₚ[L] M) (m : g.dom) :
       ⟨f (g.toEquiv m), g.cod.apply_coe_mem_map _ _⟩ := by
   exact congr_fun (congr_arg DFunLike.coe (g.map_commutes f)) m
 
+@[simp]
+theorem map_refl (f : M ≃ₚ[L] M) : f.map (Embedding.refl L M) = f := by
+  unfold map
+  rw [ext_iff]
+  simp
+  intro x h
+  have H (h' : x ∈ (f.map (Embedding.refl L M)).dom) :
+      ⟨x, h'⟩ = ((Embedding.refl L M).substructureEquivMap f.dom) ⟨x, h⟩ := rfl
+  rw [H]
+  show subtype _ (((Embedding.refl L M).substructureEquivMap f.cod)
+      (f.toEquiv (((Embedding.refl L M).substructureEquivMap f.dom).symm.comp
+    ((Embedding.refl L M).substructureEquivMap f.dom) ⟨x, h⟩))) = _
+  simp
+  rfl
+
 theorem map_monotone (f : M ↪[L] N) : Monotone (fun g : M ≃ₚ[L] M ↦ g.map f) := by
   intro g g' h
   rw [le_iff]
