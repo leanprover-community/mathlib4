@@ -197,7 +197,7 @@ theorem adjoin_le [Algebra E K] [IsScalarTower F E K] :
 
 end algebraicClosure
 
-variable (E)
+variable {F}
 /--
 Let `E / F` be a field extension. If a polynomial `p`
 splits in `E`, then it splits in the relative algebraic closure of `F` in `E` already.
