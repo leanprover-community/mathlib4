@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
+import Mathlib.Data.List.Perm.Subperm
 
 /-!
 # Prime numbers

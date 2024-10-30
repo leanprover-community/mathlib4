@@ -97,7 +97,8 @@ def Lean.MVarId.subsingleton (g : MVarId) (insts : Array (Term × AbstractMVarsR
         g.assign <| mkApp4 (.const ``proof_irrel_heq []) xTy yTy x y
         return
       throwError "tactic 'subsingleton' could not prove heterogeneous equality"
-    throwError "tactic 'subsingleton' failed, goal is neither an equality nor heterogeneous equality"
+    throwError "tactic 'subsingleton' failed, goal is neither an equality nor a \
+      heterogeneous equality"
 
 namespace Mathlib.Tactic
 
@@ -116,7 +117,7 @@ As a nicety, `subsingleton` first runs the `intros` tactic.
 
 Techniques the `subsingleton` tactic can apply:
 - proof irrelevance
-- heterogenous proof irrelevance (via `proof_irrel_heq`)
+- heterogeneous proof irrelevance (via `proof_irrel_heq`)
 - using `Subsingleton` (via `Subsingleton.elim`)
 - proving `BEq` instances are equal if they are both lawful (via `lawful_beq_subsingleton`)
 

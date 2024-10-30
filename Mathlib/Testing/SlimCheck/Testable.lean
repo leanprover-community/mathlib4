@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
 import Mathlib.Testing.SlimCheck.Sampleable
-import Lean
 
 /-!
 # `Testable` Class
@@ -423,7 +422,7 @@ end Testable
 
 section PrintableProp
 
-variable {α : Type*} {x y : α}
+variable {α : Type*}
 
 instance Eq.printableProp [Repr α] {x y : α} : PrintableProp (x = y) where
   printProp := s!"{repr x} = {repr y}"

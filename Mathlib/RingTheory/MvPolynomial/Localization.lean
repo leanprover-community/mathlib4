@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.MvPolynomial.Basic
@@ -91,13 +91,13 @@ private noncomputable
 def auxHom : (MvPolynomial Unit R) ⧸ (Ideal.span { C r * X () - 1 }) →ₐ[R] S :=
   Ideal.Quotient.liftₐ (Ideal.span { C r * X () - 1}) (aeval (fun _ ↦ invSelf r)) <| by
     intro p hp
-    refine Submodule.span_induction hp ?_ ?_ ?_ ?_
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ hp
     · rintro p ⟨q, rfl⟩
       simp
     · simp
-    · intro p q hp hq
+    · intro p q _ _ hp hq
       simp [hp, hq]
-    · intro a x hx
+    · intro a x _ hx
       simp [hx]
 
 @[simp]
@@ -129,8 +129,8 @@ private lemma auxInv_auxHom : (auxInv S r).comp (auxHom (S := S) r).toRingHom = 
       Function.comp_apply, auxHom_mk, aeval_X, RingHomCompTriple.comp_eq]
     erw [IsLocalization.lift_mk'_spec]
     simp only [map_one, RingHom.coe_comp, Function.comp_apply]
-    rw [← map_one (Ideal.Quotient.mk _)]
-    rw [← map_mul, Ideal.Quotient.mk_eq_mk_iff_sub_mem, ← Ideal.neg_mem_iff, neg_sub]
+    rw [← map_one (Ideal.Quotient.mk _), ← map_mul, Ideal.Quotient.mk_eq_mk_iff_sub_mem,
+      ← Ideal.neg_mem_iff, neg_sub]
     exact Ideal.mem_span_singleton_self (C r * X x - 1)
 
 /-- The canonical algebra isomorphism from `MvPolynomial Unit R` quotiented by

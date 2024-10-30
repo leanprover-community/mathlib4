@@ -27,7 +27,7 @@ We prove the following facts:
 
 variable {ι : Type*} {E P : Type*}
 
-open AffineBasis FiniteDimensional Metric Set
+open AffineBasis Module Metric Set
 open scoped Convex Pointwise Topology
 
 section SeminormedAddCommGroup
@@ -76,7 +76,7 @@ theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthicken
 of `s` at distance at least `dist x y` from `y`. -/
 theorem convexHull_exists_dist_ge {s : Set E} {x : E} (hx : x ∈ convexHull ℝ s) (y : E) :
     ∃ x' ∈ s, dist x y ≤ dist x' y :=
-  (convexOn_dist y (convex_convexHull ℝ _)).exists_ge_of_mem_convexHull hx
+  (convexOn_dist y (convex_convexHull ℝ _)).exists_ge_of_mem_convexHull (subset_convexHull ..) hx
 
 /-- Given a point `x` in the convex hull of `s` and a point `y` in the convex hull of `t`,
 there exist points `x' ∈ s` and `y' ∈ t` at distance at least `dist x y`. -/
@@ -112,7 +112,7 @@ instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpa
   TopologicalAddGroup.pathConnectedSpace
 
 instance (priority := 100) NormedSpace.instLocPathConnectedSpace : LocPathConnectedSpace E :=
-  locPathConnected_of_bases (fun x => Metric.nhds_basis_ball) fun x r r_pos =>
+  .of_bases (fun _ => Metric.nhds_basis_ball) fun x r r_pos =>
     (convex_ball x r).isPathConnected <| by simp [r_pos]
 
 theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
@@ -177,7 +177,7 @@ lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :
   have hdnorm : (range d : Set E) ⊆ closedBall 0 (ε / 2) := by
     simp [d, Set.set_smul_subset_iff₀ hε'.ne', hε₀.le, _root_.smul_closedBall, abs_of_nonneg hε'.le,
       range_subset_iff, norm_smul]
-    simpa [ε', hε₀.ne', range_subset_iff, ← mul_div_right_comm (ε / 2), div_le_iff hc',
+    simpa [ε', hε₀.ne', range_subset_iff, ← mul_div_right_comm (ε / 2), div_le_iff₀ hc',
       mul_le_mul_left hε₀] using hcnorm
   refine ⟨d, ?_, ?_⟩
   · simpa [d, Pi.smul_def, range_smul, interior_smul₀, convexHull_smul, zero_mem_smul_set_iff,

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta,
   Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 
 /-!
@@ -164,7 +164,7 @@ lemma pairwiseDisjoint_piAntidiag_map_addRightEmbedding (hi : i ∉ s) (n : μ) 
   rintro hfg _ f rfl - rfl g rfl - hgf
   exact hfg <| by simpa [sum_add_distrib, hi] using congr_arg (∑ j ∈ s, · j) hgf.symm
 
-lemma piAntidiag_cons (hi : i ∉ s)  (n : μ) :
+lemma piAntidiag_cons (hi : i ∉ s) (n : μ) :
     piAntidiag (cons i s hi) n = (antidiagonal n).disjiUnion (fun p : μ × μ ↦
       (piAntidiag s p.snd).map (addRightEmbedding fun t ↦ if t = i then p.fst else 0))
         (pairwiseDisjoint_piAntidiag_map_addRightEmbedding hi _) := by
@@ -226,7 +226,7 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
 
 lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag s m).map
-      ⟨(n • ·), fun f g h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
+      ⟨(n • ·), fun _ _ h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
         (piAntidiag s (n * m)).filter fun f : ι → ℕ ↦ ∀ i ∈ s, n ∣ f i := by
   classical rw [map_eq_image]; exact nsmul_piAntidiag _ _ hn
 
@@ -237,7 +237,7 @@ lemma nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
 
 lemma map_nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag (univ : Finset ι) m).map
-        ⟨(n • ·), fun f g h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
+        ⟨(n • ·), fun _ _ h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
       (piAntidiag univ (n * m)).filter fun f : ι → ℕ ↦ ∀ i, n ∣ f i := by
   simpa using map_nsmul_piAntidiag (univ : Finset ι) m hn
 

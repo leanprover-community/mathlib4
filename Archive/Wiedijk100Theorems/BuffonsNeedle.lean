@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
 
-import Mathlib.Probability.Density
-import Mathlib.Probability.Notation
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Uniform
+import Mathlib.Probability.Notation
 
 /-!
 
@@ -308,7 +308,7 @@ lemma integral_zero_to_arcsin_min :
     have hθ_mem : θ ∈ Set.Ioc (-(π / 2)) (π / 2) := by
       exact ⟨lt_of_lt_of_le (neg_lt_zero.mpr (div_pos Real.pi_pos two_pos)) hθ₁,
         le_trans hθ₂ (d / l).arcsin_mem_Icc.right⟩
-    simp_rw [min_eq_right ((le_div_iff hl).mp ((Real.le_arcsin_iff_sin_le' hθ_mem).mp hθ₂))]
+    simp_rw [min_eq_right ((le_div_iff₀ hl).mp ((Real.le_arcsin_iff_sin_le' hθ_mem).mp hθ₂))]
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_mul_const, integral_sin,
     Real.cos_zero, Real.cos_arcsin]
 
@@ -328,7 +328,7 @@ lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
       max_eq_right (d / l).arcsin_le_pi_div_two] at hθ₁ hθ₂
     have hθ_mem : θ ∈ Set.Ico (-(π / 2)) (π / 2) := by
       exact ⟨le_trans (Real.arcsin_mem_Icc (d / l)).left hθ₁, lt_of_le_of_ne hθ₂ hθ_ne_pi_div_two⟩
-    simp_rw [min_eq_left ((div_le_iff hl).mp ((Real.arcsin_le_iff_le_sin' hθ_mem).mp hθ₁))]
+    simp_rw [min_eq_left ((div_le_iff₀ hl).mp ((Real.arcsin_le_iff_le_sin' hθ_mem).mp hθ₁))]
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_const, smul_eq_mul]
 
 include hd hBₘ hB hl in

@@ -26,7 +26,7 @@ of the basis).
 -/
 
 
-open Set TopologicalSpace MeasureTheory MeasureTheory.Measure FiniteDimensional
+open Set TopologicalSpace MeasureTheory MeasureTheory.Measure Module
 
 open scoped Pointwise
 
@@ -162,7 +162,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
       · rw [sup_eq_left.mpr hai, inf_eq_right.mpr hai] at h
         exact ⟨div_nonneg_of_nonpos h.2 hai, div_le_one_of_ge h.1 hai⟩
       · rw [sup_eq_right.mpr hai, inf_eq_left.mpr hai] at h
-        exact ⟨div_nonneg h.1 hai, div_le_one_of_le h.2 hai⟩
+        exact ⟨div_nonneg h.1 hai, div_le_one_of_le₀ h.2 hai⟩
     · specialize h i
       simp only [smul_eq_mul, Pi.mul_apply]
       rcases eq_or_ne (a i) 0 with hai | hai
@@ -213,8 +213,6 @@ theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     LinearMap.isOpenMap_of_finiteDimensional _ e.surjective) :=
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 
--- removing this option makes elaboration approximately 1 second slower
-set_option tactic.skipAssignedInstances false in
 theorem Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by
   ext x
@@ -290,7 +288,18 @@ end Fintype
 /-- A finite dimensional inner product space has a canonical measure, the Lebesgue measure giving
 volume `1` to the parallelepiped spanned by any orthonormal basis. We define the measure using
 some arbitrary choice of orthonormal basis. The fact that it works with any orthonormal basis
-is proved in `orthonormalBasis.volume_parallelepiped`. -/
+is proved in `orthonormalBasis.volume_parallelepiped`.
+
+This instance creates:
+
+- a potential non-defeq diamond with the natural instance for `MeasureSpace (ULift E)`,
+  which does not exist in Mathlib at the moment;
+
+- a diamond with the existing instance `MeasureTheory.Measure.instMeasureSpacePUnit`.
+
+However, we've decided not to refactor until one of these diamonds starts creating issues, see
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Hausdorff.20measure.20normalisation
+-/
 instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] :
     MeasureSpace E where volume := (stdOrthonormalBasis ℝ E).toBasis.addHaar

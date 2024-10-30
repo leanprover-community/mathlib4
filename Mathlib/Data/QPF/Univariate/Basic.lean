@@ -176,7 +176,7 @@ theorem recF_eq_of_Wequiv {α : Type u} (u : F α → α) (x y : q.P.W) :
     Wequiv x y → recF u x = recF u y := by
   intro h
   induction h with
-  | ind a f f' _ ih => simp only [recF_eq', PFunctor.map_eq, Function.comp, ih]
+  | ind a f f' _ ih => simp only [recF_eq', PFunctor.map_eq, Function.comp_def, ih]
   | abs a f a' f' h => simp only [recF_eq', abs_map, h]
   | trans x y z _ _ ih₁ ih₂ => exact Eq.trans ih₁ ih₂
 
@@ -512,8 +512,8 @@ elements `x y : F α` are in the same equivalence class if
 def quotientQPF (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
     (FG_abs_map : ∀ {α β} (f : α → β) (x : F α), FG_abs (f <$> x) = f <$> FG_abs x) : QPF G where
   P := q.P
-  abs {α} p := FG_abs (abs p)
-  repr {α} x := repr (FG_repr x)
+  abs {_} p := FG_abs (abs p)
+  repr {_} x := repr (FG_repr x)
   abs_repr {α} x := by simp only; rw [abs_repr, FG_abs_repr]
   abs_map {α β} f x := by simp only; rw [abs_map, FG_abs_map]
 
