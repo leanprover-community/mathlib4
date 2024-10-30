@@ -35,8 +35,7 @@ variable [alg : Algebra.IsAlgebraic F E]
 
 theorem nonempty_algHom_of_exist_roots (h : ∀ x : E, ∃ y : K, aeval y (minpoly F x) = 0) :
     Nonempty (E →ₐ[F] K) := by
-  refine Lifts.nonempty_algHom_of_exist_lifts_finset
-    fun S ↦ ⟨⟨adjoin F S, Nonempty.some ?_⟩, subset_adjoin _ _⟩
+  refine Lifts.nonempty_algHom_of_exist_lifts_finset fun S ↦ ⟨⟨adjoin F S, ?_⟩, subset_adjoin _ _⟩
   let p := (S.prod <| minpoly F).map (algebraMap F K)
   let K' := SplittingField p
   have splits s (hs : s ∈ S) : (minpoly F s).Splits (algebraMap F K') := by
@@ -59,14 +58,14 @@ theorem nonempty_algHom_of_exist_roots (h : ∀ x : E, ∃ y : K, aeval y (minpo
       rw [AlgHom.comp_apply, AlgHom.comp_apply, AlgEquiv.coe_algHom,
         adjoinRootEquivAdjoin_symm_apply_gen, AdjoinRoot.liftHom_root]
       rfl
-  have ⟨ω, hω⟩ : ∃ ω : Ω, ⊤ ≤ M ω := by
+  have ω : ∃ ω : Ω, ⊤ ≤ M ω := by
     cases finite_or_infinite F
     · have ⟨α, hα⟩ := exists_primitive_element_of_finite_bot F FS
       have ⟨ω, hω⟩ := Set.mem_iUnion.mp (this ▸ Set.mem_univ α)
       exact ⟨ω, show ⊤ ≤ K₀.comap ω by rwa [← hα, adjoin_simple_le_iff]⟩
     · simp_rw [top_le_iff, Subspace.exists_eq_top_of_iUnion_eq_univ this]
-  exact ⟨((botEquiv K K').toAlgHom.restrictScalars F).comp <|
-    ω.codRestrict K₀.toSubalgebra fun x ↦ hω trivial⟩
+  exact ((botEquiv K K').toAlgHom.restrictScalars F).comp
+    (ω.choose.codRestrict K₀.toSubalgebra fun x ↦ ω.choose_spec trivial)
 
 theorem nonempty_algHom_of_minpoly_eq
     (h : ∀ x : E, ∃ y : K, minpoly F x = minpoly F y) :
