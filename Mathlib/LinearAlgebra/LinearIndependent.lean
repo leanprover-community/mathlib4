@@ -22,7 +22,7 @@ This file defines linear independence in a module or vector space.
 
 It is inspired by Isabelle/HOL's linear algebra, and hence indirectly by HOL Light.
 
-We define `LinearIndependent R v` as `ker (Finsupp.linearCombination R v) = ⊥`. Here
+We define `LinearIndependent R v` as `Function.Injective (Finsupp.linearCombination R v)`. Here
 `Finsupp.linearCombination` is the linear map sending a function `f : ι →₀ R` with finite support to
 the linear combination of vectors from `v` with these coefficients. Then we prove that several other
 statements are equivalent to this one, including injectivity of `Finsupp.linearCombination R v` and
@@ -70,6 +70,11 @@ If you want to use sets, use the family `(fun x ↦ x : s → M)` given a set `s
 `LinearIndependent.to_subtype_range` and `LinearIndependent.of_subtype_range` connect those two
 worlds.
 
+## TODO
+
+Rework proofs to hold in semirings, by avoiding the path through
+`ker (Finsupp.linearCombination R v) = ⊥`.
+
 ## Tags
 
 linearly dependent, linear dependence, linearly independent, linear independence
@@ -91,13 +96,13 @@ variable {M : Type*} {M' : Type*} {V : Type u}
 section Module
 
 variable {v : ι → M}
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M']
+variable [Ring R] [AddCommGroup M] [AddCommGroup M']
 variable [Module R M] [Module R M']
 variable (R) (v)
 
 /-- `LinearIndependent R v` states the family of vectors `v` is linearly independent over `R`. -/
 def LinearIndependent : Prop :=
-  LinearMap.ker (Finsupp.linearCombination R v) = ⊥
+  Function.Injective (Finsupp.linearCombination R v)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `LinearIndependent` that suggests pretty printing with type hints
@@ -121,9 +126,13 @@ def delabLinearIndependent : Delab :=
 
 variable {R} {v}
 
+theorem linearIndependent_iff_ker :
+    LinearIndependent R v ↔ LinearMap.ker (Finsupp.linearCombination R v) = ⊥ :=
+  LinearMap.ker_eq_bot.symm
+
 theorem linearIndependent_iff :
     LinearIndependent R v ↔ ∀ l, Finsupp.linearCombination R v l = 0 → l = 0 := by
-  simp [LinearIndependent, LinearMap.ker_eq_bot']
+  simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot']
 
 theorem linearIndependent_iff' :
     LinearIndependent R v ↔
@@ -247,7 +256,7 @@ theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
   rw [disjoint_iff_inf_le, ← Set.image_univ, Finsupp.span_image_eq_map_linearCombination,
     map_inf_eq_map_inf_comap, map_le_iff_le_comap, comap_bot, Finsupp.supported_univ, top_inf_eq]
       at hf_inj
-  unfold LinearIndependent at hv ⊢
+  rw [linearIndependent_iff_ker] at hv ⊢
   rw [hv, le_bot_iff] at hf_inj
   haveI : Inhabited M := ⟨0⟩
   rw [Finsupp.linearCombination_comp, Finsupp.lmapDomain_linearCombination _ _ f,
@@ -259,7 +268,7 @@ theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
 theorem Submodule.range_ker_disjoint {f : M →ₗ[R] M'}
     (hv : LinearIndependent R (f ∘ v)) :
     Disjoint (span R (range v)) (LinearMap.ker f) := by
-  rw [LinearIndependent, Finsupp.linearCombination_comp,
+  rw [linearIndependent_iff_ker, Finsupp.linearCombination_comp,
       Finsupp.lmapDomain_linearCombination R _ f (fun _ ↦ rfl), LinearMap.ker_comp] at hv
   rw [disjoint_iff_inf_le, ← Set.image_univ, Finsupp.span_image_eq_map_linearCombination,
     map_inf_eq_map_inf_comap, hv, inf_bot_eq, map_bot]
@@ -276,7 +285,7 @@ multiplications on `M` and `M'`, then `j` sends linearly independent families of
 linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/
 theorem LinearIndependent.map_of_injective_injective {R' : Type*} {M' : Type*}
-    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
+    [Ring R'] [AddCommGroup M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R' → R) (j : M →+ M') (hi : ∀ r, i r = 0 → r = 0) (hj : ∀ m, j m = 0 → m = 0)
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) : LinearIndependent R' (j ∘ v) := by
   rw [linearIndependent_iff'] at hv ⊢
@@ -290,7 +299,7 @@ scalar multiplications on `M` and `M'` are compatible, then `j` sends linearly i
 of vectors to linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/
 theorem LinearIndependent.map_of_surjective_injective {R' : Type*} {M' : Type*}
-    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
+    [Ring R'] [AddCommGroup M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : ZeroHom R R') (j : M →+ M') (hi : Surjective i) (hj : ∀ m, j m = 0 → m = 0)
     (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) : LinearIndependent R' (j ∘ v) := by
   obtain ⟨i', hi'⟩ := hi.hasRightInverse
@@ -360,7 +369,7 @@ independent over a subring `R` of `K`.
 The implementation uses minimal assumptions about the relationship between `R`, `K` and `M`.
 The version where `K` is an `R`-algebra is `LinearIndependent.restrict_scalars_algebras`.
  -/
-theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Module K M]
+theorem LinearIndependent.restrict_scalars [Ring K] [SMulWithZero R K] [Module K M]
     [IsScalarTower R K M] (hinj : Function.Injective fun r : R => r • (1 : K))
     (li : LinearIndependent K v) : LinearIndependent R v := by
   refine linearIndependent_iff'.mpr fun s g hg i hi => hinj ?_
@@ -629,7 +638,7 @@ universe v w
 A linearly independent family is maximal if there is no strictly larger linearly independent family.
 -/
 @[nolint unusedArguments]
-def LinearIndependent.Maximal {ι : Type w} {R : Type u} [Semiring R] {M : Type v} [AddCommMonoid M]
+def LinearIndependent.Maximal {ι : Type w} {R : Type u} [Ring R] {M : Type v} [AddCommGroup M]
     [Module R M] {v : ι → M} (_i : LinearIndependent R v) : Prop :=
   ∀ (s : Set M) (_i' : LinearIndependent R ((↑) : s → M)) (_h : range v ≤ s), range v = s
 
@@ -817,7 +826,7 @@ def LinearIndependent.linearCombinationEquiv (hv : LinearIndependent R v) :
   apply LinearEquiv.ofBijective (LinearMap.codRestrict (span R (range v))
                                  (Finsupp.linearCombination R v) _)
   constructor
-  · rw [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
+  · rw [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict, ← linearIndependent_iff_ker]
     · apply hv
     · intro l
       rw [← Finsupp.range_linearCombination]
@@ -1010,7 +1019,7 @@ theorem surjective_of_linearIndependent_of_span [Nontrivial R] (hv : LinearIndep
   have h_total_eq : Finsupp.linearCombination R v l = Finsupp.linearCombination R v
        (Finsupp.single i 1) := by
     rw [h_total_l, Finsupp.linearCombination_single, one_smul]
-  have l_eq : l = _ := LinearMap.ker_eq_bot.1 hv h_total_eq
+  have l_eq : l = _ := hv h_total_eq
   dsimp only [l] at l_eq
   rw [← Finsupp.embDomain_eq_mapDomain] at l_eq
   rcases Finsupp.single_of_embDomain_single (repr ⟨v i, _⟩) f i (1 : R) zero_ne_one.symm l_eq with
@@ -1181,7 +1190,7 @@ end Module
 
 section Nontrivial
 
-variable [Semiring R] [Nontrivial R] [AddCommMonoid M]
+variable [Ring R] [Nontrivial R] [AddCommGroup M]
 variable [Module R M] [NoZeroSMulDivisors R M]
 variable {s t : Set M}
 
