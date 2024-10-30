@@ -9,6 +9,35 @@ open scoped ComplexConjugate
 open scoped NNReal ENNReal Matrix Real
 open MeasureTheory Complex
 
+#check Finsupp.prod
+
+def SupportedCoprime (μ : Finsupp (Fin 2 → ℤ) ℂ) : Prop :=
+  ∀ p ∈ μ.support, IsCoprime (p 0) (p 1)
+
+variable (μ ν : Finsupp (Fin 2 → ℤ) ℂ)
+  (hμ : SupportedCoprime μ) (hν : SupportedCoprime ν)
+  (β : ℝ) (a q : ℕ) (hq₀ : q ≠ 0) (haq : IsCoprime a q) (N Q K : ℝ) (hK₀ : 0 ≤ K) (hQ₀ : 0 ≤ Q)
+  (hQ : Q ^ 2 < N)
+  (hK : Q ^ 2 * K ^ 2 < N) (hq₁ : Q / 2 ≤ q) (hq₂ : q ≤ Q) (hβ₁ : K / (2 * N) ≤ |β|)
+  (hβ₂ : |β| ≤ K / N)
+  (hμN : ∀ x ∈ μ.support, x ⬝ᵥ x ≤ N)
+  (hνN : ∀ y ∈ ν.support, y ⬝ᵥ y ≤ N)
+
+-- FIXME why isn't this notation showing up?
+set_option quotPrecheck false in
+notation "θ" => (a:ℝ) / q + β
+
+noncomputable def fourierBit (x y : Fin 2 → ℤ) : ℂ := exp (2 * π * I * θ * (x ⬝ᵥ y))
+
+noncomputable def thing : Finsupp (Fin 2 → ℤ) ℂ := ∑ x in μ.support, ∑ y in ν.support, fourierBit x y
+
+set_option quotPrecheck false in
+notation "S" => ∑ x : Fin 2 → ℤ, ∫ y : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y)) ∂ν ∂μ
+
+
+#exit
+
+#check Finsupp.sum
 
 /-! Delaborator for complex conjugation -- to be added to Mathlib. -/
 open Lean PrettyPrinter Delaborator SubExpr in
@@ -43,12 +72,7 @@ variable (μ ν : Measure (Fin 2 → ℤ)) [IsFiniteMeasure μ]
   (hμN : ∀ x : Fin 2 → ℤ, μ {x} ≠ 0 → x ⬝ᵥ x ≤ N)
   (hνN : ∀ y : Fin 2 → ℤ, ν {y} ≠ 0 → y ⬝ᵥ y ≤ N)
 
--- FIXME why isn't this notation showing up?
-set_option quotPrecheck false in
-notation "θ" => (a:ℝ) / q + β
 
-set_option quotPrecheck false in
-notation "S" => ∫ x : Fin 2 → ℤ, ∫ y : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y)) ∂ν ∂μ
 
 theorem MeasureTheory.Lp.norm_const'' {α : Type*} {E : Type*} {m0 : MeasurableSpace α} (p : ℝ≥0∞)
     (μ : Measure α) [NormedAddCommGroup E] [IsFiniteMeasure μ] (c : E) [NeZero μ]
