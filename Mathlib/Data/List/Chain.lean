@@ -333,12 +333,7 @@ theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
     · simp_rw [hb, Option.pbind_some] at hc
       have hb' := h b (mem_cons_of_mem a (mem_of_mem_head? hb))
       exact ⟨h a (mem_cons_self a l), hb', hc ⟨b, hb'⟩ rfl⟩
-    · cases l with
-      | nil => cases hb
-      | cons b l =>
-        obtain ⟨_, _, rfl⟩ := hb
-        obtain ⟨_, _, hr⟩ := hc b rfl
-        exact hr
+    · cases l <;> aesop
 
 theorem chain'_attach {l : List α} {r : {a // a ∈ l} → {a // a ∈ l} → Prop} :
     l.attach.Chain' r ↔ l.Chain' fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ :=
