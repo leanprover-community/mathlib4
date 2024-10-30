@@ -106,7 +106,7 @@ def subtype (L : CompleteSublattice α) : CompleteLatticeHom L α where
 lemma subtype_apply (L : Sublattice α) (a : L) : L.subtype a = a := rfl
 
 lemma subtype_injective (L : CompleteSublattice α) :
-  Injective <| subtype L := Subtype.coe_injective
+    Injective <| subtype L := Subtype.coe_injective
 
 /-- The push forward of a complete sublattice under a complete lattice hom is a complete
 sublattice. -/
