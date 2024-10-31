@@ -61,7 +61,7 @@ structure VariableChange (R : Type u) [CommRing R] where
 
 namespace VariableChange
 
-variable (C C' C'' : VariableChange R)
+variable (C C' : VariableChange R)
 
 /-- The identity linear change of variables given by the identity matrix. -/
 def id : VariableChange R :=

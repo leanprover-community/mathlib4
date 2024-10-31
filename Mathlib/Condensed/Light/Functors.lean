@@ -17,12 +17,6 @@ sets.
 * `lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u}`
   is the yoneda presheaf functor.
 
-TODO (Dagur):
-
-* Define the functor `Type u ⥤ LightCondSet.{u}` which takes a set `X` to the presheaf given by
-  mapping a light profinite space `S` to `LocallyConstant S X`, along with the isomorphism with
-  the functor that goes through `TopCat.{u+1}`.
-
 -/
 
 universe u v
