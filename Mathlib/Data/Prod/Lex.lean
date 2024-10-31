@@ -50,12 +50,6 @@ theorem lt_iff [LT α] [LT β] (a b : α × β) :
     toLex a < toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 < b.2 :=
   Prod.lex_def
 
-theorem left_le {α β} [PartialOrder α] [LT β] {a b : α} {c d : β}
-    (h₁ : a ≤ b) (h₂ : c < d) : toLex (a, c) < toLex (b, d) := by
-  obtain h₁ | rfl := h₁.lt_or_eq
-  · exact Prod.Lex.left _ _ h₁
-  · exact Prod.Lex.right _ h₂
-
 instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α ×ₗ β) :=
   ⟨WellFounded.prod_lex wellFounded_lt wellFounded_lt⟩
 
