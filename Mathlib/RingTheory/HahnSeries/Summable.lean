@@ -166,9 +166,9 @@ theorem hsum_add {s t : SummableFamily Γ R α} : (s + t).hsum = s.hsum + t.hsum
   simp only [hsum_coeff, add_coeff, add_apply]
   exact finsum_add_distrib (s.finite_co_support _) (t.finite_co_support _)
 
-theorem hsum_coeff_eq_sum of_subset {s : SummableFamily Γ R α} {g : Γ} {t : Finset α}
+theorem hsum_coeff_eq_sum_of_subset {s : SummableFamily Γ R α} {g : Γ} {t : Finset α}
     (h : { a | (s a).coeff g ≠ 0 } ⊆ t) : s.hsum.coeff g = ∑ i ∈ t, (s i).coeff g := by
-  rw [hsum_coeff_sum]
+  simp only [hsum_coeff, finsum_eq_sum _ (s.finite_co_support _)]
   exact sum_subset (Set.Finite.toFinset_subset.mpr h) (by simp)
 
 theorem hsum_coeff_eq_sum {s : SummableFamily Γ R α} {g : Γ} :
@@ -345,7 +345,7 @@ theorem family_smul_coeff {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     (FamilySMul s t).hsum.coeff g = ∑ gh ∈ VAddAntidiagonal s.isPWO_iUnion_support
       t.isPWO_iUnion_support g, (s.hsum.coeff gh.1) • (t.hsum.coeff gh.2) := by
   rw [hsum_coeff]
-  simp only [hsum_coeff_sum, FamilySMul_toFun, HahnModule.smul_coeff, Equiv.symm_apply_apply]
+  simp only [hsum_coeff_eq_sum, FamilySMul_toFun, HahnModule.smul_coeff, Equiv.symm_apply_apply]
   simp_rw [sum_vAddAntidiagonal_eq, Finset.smul_sum, Finset.sum_smul]
   rw [← sum_finsum_comm _ _ <| fun gh _ => smul_support_finite s t gh]
   refine sum_congr rfl fun gh _ => ?_
@@ -366,7 +366,7 @@ theorem hsum_family_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
   · intro gh hgh
     simp_all only [mem_coe, mem_vaddAntidiagonal, mem_support, ne_eq, Set.mem_iUnion, and_true]
     constructor
-    · rw [hsum_coeff_sum] at hgh
+    · rw [hsum_coeff_eq_sum] at hgh
       have h' := Finset.exists_ne_zero_of_sum_ne_zero hgh.1
       simpa using h'
     · by_contra hi
@@ -563,78 +563,26 @@ def PiFamily {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (α : σ → Type
 section cons_stuff -- delete when PR#17004 is merged!
 
 open Classical in
-theorem eq_of_not_mem_of_mem_cons {s : Finset σ} {a : σ} (has : a ∉ s) {i : σ}
-    (hi : i ∈ cons a s has) (his : i ∉ s) : i = a :=
-  Finset.eq_of_not_mem_of_mem_insert (cons_eq_insert a s has ▸ hi) his
-
-/-- Make an element of a product from a Pi type on cons. -/
-def consPiProd (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s) :
-    (Π i ∈ cons a s has, α i) → α a × Π i ∈ s, α i :=
-  fun x => (x a (mem_cons_self a s), fun i hi => x i (mem_cons_of_mem hi))
---#find_home! consPiProd -- [Mathlib.Data.Finset.Basic]
-
-@[simp]
-theorem consPiProd_mem (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s)
-    (f : (i : σ) → i ∈ cons a s has → α i) : (consPiProd s α has f).1 = f a (mem_cons_self a s) :=
-  rfl
-
-@[simp]
-theorem consPiProd_not_mem (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s)
-    (f : (i : σ) → i ∈ cons a s has → α i) :
-    (consPiProd s α has f).2 = fun i hi => f i (mem_cons_of_mem hi) :=
-  rfl
-
-open Classical in
-theorem mem_of_mem_cons_of_ne {s : Finset σ} {a : σ} (has : a ∉ s) {i : σ}
-    (hi : i ∈ cons a s has) (hia : i ≠ a) : i ∈ s :=
-  mem_of_mem_insert_of_ne (cons_eq_insert a s has ▸ hi) hia
---#find_home! mem_of_mem_cons_of_ne --[Mathlib.Data.Finset.Basic]
-
-open Classical in
-/-- A function from a product with a pi type to pi of cons. -/
-def prodPiCons (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s) :
-    (α a × Π i ∈ s, α i) → (Π i ∈ cons a s has, α i) :=
-  fun x => (fun i hi =>
-    if h : i = a then cast (congrArg α h.symm) x.1 else x.2 i (mem_of_mem_cons_of_ne has hi h))
-
 @[simp]
 theorem prodPiCons_mem (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s)
     (f : α a × ((i : σ) → i ∈ s → α i)) :
-    prodPiCons s α has f a (mem_cons_self a s) = f.1 := by
+    prodPiCons α has f a (mem_cons_self a s) = f.1 := by
   simp [prodPiCons]
-
-/-- The equivalence between pi types on cons and the product. -/
-def cons_pi_equiv (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s) :
-    (Π i ∈ cons a s has, α i) ≃ α a × Π i ∈ s, α i where
-  toFun := consPiProd s α has
-  invFun := prodPiCons s α has
-  left_inv _ := by
-    ext i hi
-    dsimp only [prodPiCons, consPiProd]
-    by_cases h : i = a
-    · rw [dif_pos h]
-      subst h
-      simp_all only [cast_eq]
-    · rw [dif_neg h]
-  right_inv _ := by
-    ext i hi
-    · simp [consPiProd_mem, prodPiCons]
-    · simp only [consPiProd_not_mem, prodPiCons]
-      exact dif_neg (ne_of_mem_of_not_mem hi has)
 
 end cons_stuff
 
+open Classical in
 theorem piFamily_cons (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
     (t : Π i : σ, SummableFamily Γ R (α i)) {a : σ} (has : a ∉ s) :
-    Equiv (cons_pi_equiv s α has) (PiFamily (cons a s has) α t) =
+    Equiv (consPiProdEquiv α has) (PiFamily (cons a s has) α t) =
       FamilyMul (t a) (PiFamily s α t) := by
   ext1 _
-  simp only [cons_pi_equiv, Equiv_toFun, Equiv.coe_fn_symm_mk, PiFamily_toFun, mem_cons, prod_cons,
-    true_or, ↓reduceDIte, prodPiCons_mem, FamilyMul_toFun]
+  simp only [consPiProdEquiv, Equiv_toFun, Equiv.coe_fn_symm_mk, PiFamily_toFun, mem_cons,
+    prod_cons, true_or, ↓reduceDIte, prodPiCons_mem, FamilyMul_toFun]
   congr 1
   refine prod_congr rfl ?_
   intro i hi
-  rw [dif_pos hi, dif_pos (mem_cons_of_mem hi)]
+  rw [dif_pos hi, dif_pos (Or.inr hi)]
   simp [prodPiCons, dif_neg (ne_of_mem_of_not_mem hi has)]
 
 theorem hsum_pi_family (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)

@@ -62,7 +62,7 @@ theorem sum_eq_top [AddCommMonoid Γ] (s : Finset σ) (f : σ → WithTop Γ)
     · simp only [sum_cons, WithTop.add_eq_top]
       exact Or.inr <| ih <| Exists.intro j ⟨hjs, hj.2⟩
     · classical
-      have hij : j = i := eq_of_not_mem_of_mem_insert (cons_eq_insert i s his ▸ hj.1) hjs
+      have hij : j = i := eq_of_mem_insert_of_not_mem (cons_eq_insert i s his ▸ hj.1) hjs
       rw [sum_cons, ← hij, hj.2, WithTop.add_eq_top]
       exact Or.inl rfl
 -- #find_home! sum_eq_top --[Mathlib.Algebra.BigOperators.Group.Finset]
@@ -332,22 +332,22 @@ theorem finsum_antidiagonal_prod [AddCommMonoid α] [HasAntidiagonal α] (f : α
   classical
   rw [finsum_eq_sum_of_support_subset _ (s := f.support) (fun i _ => by simp_all),
     finsum_eq_sum_of_support_subset _ (s := (f.support.image fun i => i.1 + i.2)) ?_, sum_sigma']
-  refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) ?_ ?_ ?_ ?_).symm
-  · exact fun x _ y _ hxy => by simp_all
-  · intro x hx
-    simp_all only [mem_coe, Finsupp.mem_support_iff, ne_eq, coe_sigma, coe_image, Set.mem_sigma_iff,
-      Set.mem_image, Prod.exists, mem_antidiagonal, and_true]
-    use x.1, x.2
-  · intro x hx h
-    simp_all only [mem_sigma, mem_image, Finsupp.mem_support_iff, ne_eq, Prod.exists,
-      mem_antidiagonal, Set.mem_image, mem_coe, not_exists, not_and]
-    have h0 : ∀ i j : α, ⟨i + j, (i, j)⟩ = x → f (i, j) = 0 := by
-      intro i j
-      contrapose!
-      exact h i j
-    refine h0 x.snd.1 x.snd.2 ?_
-    simp_all only [Prod.mk.eta, Sigma.eta]
-  · exact fun x _ => rfl
+  · refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) ?_ ?_ ?_ ?_).symm
+    · exact fun x _ y _ hxy => by simp_all
+    · intro x hx
+      simp_all only [mem_coe, Finsupp.mem_support_iff, ne_eq, coe_sigma, coe_image,
+        Set.mem_sigma_iff, Set.mem_image, Prod.exists, mem_antidiagonal, and_true]
+      use x.1, x.2
+    · intro x hx h
+      simp_all only [mem_sigma, mem_image, Finsupp.mem_support_iff, ne_eq, Prod.exists,
+        mem_antidiagonal, Set.mem_image, mem_coe, not_exists, not_and]
+      have h0 : ∀ i j : α, ⟨i + j, (i, j)⟩ = x → f (i, j) = 0 := by
+        intro i j
+        contrapose!
+        exact h i j
+      refine h0 x.snd.1 x.snd.2 ?_
+      simp_all only [Prod.mk.eta, Sigma.eta]
+    · exact fun x _ => rfl
   · intro x hx
     simp_all only [Function.mem_support, ne_eq, coe_image, Set.mem_image, mem_coe,
       Finsupp.mem_support_iff, Prod.exists]
@@ -382,7 +382,7 @@ theorem power_series_family_prod_eq_family_mul (hx : 0 < x.orderTop) (a b : Powe
     ((PowerSeriesFamily hx a).FamilyMul (PowerSeriesFamily hx b)).hsum := by
   ext g
   simp only [PowerSeriesFamily_toFun, PowerSeries.coeff_mul, Finset.sum_smul, ← Finset.sum_product,
-    hsum_coeff_sum, FamilyMul_toFun]
+    hsum_coeff_eq_sum, FamilyMul_toFun]
   rw [sum_subset (power_series_family_supp_subset hx a b g)]
   · rw [← HahnSeries.sum_coeff, sum_sigma', sum_coeff]
     refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) ?_ ?_ ?_ ?_).symm
@@ -568,7 +568,7 @@ theorem mvPowerSeries_family_prod_eq_family_mul {σ : Type*} [Fintype σ] (y : �
   ext g
   classical
   simp only [mvPowerSeriesFamily_toFun, MvPowerSeries.coeff_mul, Finset.sum_smul,
-    ← Finset.sum_product, hsum_coeff_sum, FamilyMul_toFun, mvPowers_apply]
+    ← Finset.sum_product, hsum_coeff_eq_sum, FamilyMul_toFun, mvPowers_apply]
   rw [sum_subset (mvPowerSeriesFamily_supp_subset y hy a b g)]
   · rw [← HahnSeries.sum_coeff, sum_sigma', sum_coeff]
     refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) ?_ ?_ ?_ ?_).symm
@@ -803,7 +803,7 @@ theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
       nth_rw 2 [eq_of_sub_eq_zero hy]
       simp only [leadingTerm_eq, single_mul_single, neg_add_cancel, hr, ← leadingCoeff_eq]
       exact rfl
-    simp only [hrx, sub_self, orderTop_zero, WithTop.zero_lt_top]
+    simp only [hrx, sub_self, orderTop_zero, WithTop.top_pos]
   have hr' : ∀ (s : R), r * s = 0 → s = 0 :=
     fun s hs => by rw [← one_mul s, ← hr, mul_right_comm, hs, zero_mul]
   have hy' : 0 < (single (-x.order) r * y).order := by
