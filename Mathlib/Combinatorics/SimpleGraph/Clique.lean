@@ -635,14 +635,23 @@ lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
 theorem clique_card_le_cliqueNum (t : Finset α) (tc : G.IsClique t) : #t ≤ G.cliqueNum :=
   le_csSup fintype_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
 
+lemma cliqueNum_attained : G.cliqueNum ∈ {n | ∃ s, G.IsNClique n s} :=
+    Nat.sSup_mem ⟨0, by simp[isNClique_empty.mpr rfl]⟩ fintype_cliqueNum_bddAbove
+
 theorem maximumClique_card_eq_cliqueNum (t : Finset α) (tmc : G.isMaximumClique t) :
     #t = G.cliqueNum := by
   let ⟨tclique, tmax⟩ := tmc
   refine eq_of_le_of_not_lt (clique_card_le_cliqueNum _ tclique) ?_
-  have ⟨s, sclique, scn⟩ : G.cliqueNum ∈ {n | ∃ s, G.IsNClique n s} :=
-    Nat.sSup_mem ⟨ 0, by simp[isNClique_empty.mpr rfl] ⟩ fintype_cliqueNum_bddAbove
-  rw [cliqueNum, ← scn]
+  have ⟨s, sclique, scn⟩ := G.cliqueNum_attained
+  rw [← scn]
   exact LE.le.not_lt (tmax s sclique)
+
+theorem maximumClique_exists : ∃ s , G.isMaximumClique s := by
+  have ⟨s, smax⟩ := G.cliqueNum_attained
+  simp_all [isMaximumClique]
+  refine Exists.intro s ⟨smax.clique , ?_⟩
+  rw [smax.card_eq]
+  exact clique_card_le_cliqueNum
 
 end CliqueNumber
 
