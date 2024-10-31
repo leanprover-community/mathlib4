@@ -35,6 +35,8 @@ end MonoidHom
 
 section OrderedSemiring
 
+open scoped AlgebraOrderInstances
+
 variable [OrderedSemiring R] {a b x y : R} {n m : ℕ}
 
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
@@ -103,6 +105,8 @@ abbrev OrderedRing.toStrictOrderedRing (α : Type*)
 
 section StrictOrderedSemiring
 
+open scoped AlgebraOrderInstances
+
 variable [StrictOrderedSemiring R] {a x y : R} {n m : ℕ}
 
 @[gcongr, bound]
@@ -157,6 +161,9 @@ lemma sq_pos_of_neg (ha : a < 0) : 0 < a ^ 2 := by rw [sq]; exact mul_pos_of_neg
 end StrictOrderedRing
 
 section LinearOrderedSemiring
+
+open scoped AlgebraOrderInstances
+
 variable [LinearOrderedSemiring R] {a b : R} {m n : ℕ}
 
 lemma pow_le_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n ≤ b ^ n ↔ a ≤ b :=

@@ -30,6 +30,7 @@ for an ordered module interpreted as an affine space.
 affine space, ordered module, slope
 -/
 
+open scoped AlgebraOrderInstances
 
 open AffineMap
 

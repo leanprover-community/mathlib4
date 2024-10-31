@@ -37,7 +37,8 @@ The case for `Monotone`/`Antitone` pairs of functions over a `LinearOrder` is no
 file because it is easily deducible from the `Monovary` API.
 -/
 
-set_option profiler true
+open scoped AlgebraOrderInstances
+
 open Equiv Equiv.Perm Finset Function OrderDual
 
 variable {ι α β : Type*}
