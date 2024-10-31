@@ -839,6 +839,11 @@ theorem linearCombination_comp (f : α' → α) :
   ext
   simp [linearCombination_apply]
 
+theorem linearCombination_comp_linear (f : M →ₗ[R] M') :
+    linearCombination R (f ∘ v) = f ∘ₗ linearCombination R v := by
+  ext
+  simp [linearCombination_apply]
+
 @[deprecated (since := "2024-08-29")] alias total_comp := linearCombination_comp
 
 theorem linearCombination_comapDomain (f : α → α') (l : α' →₀ R)

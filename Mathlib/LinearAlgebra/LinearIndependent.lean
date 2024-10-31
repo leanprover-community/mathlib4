@@ -153,6 +153,14 @@ theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf 
     LinearIndependent R (v ∘ f) := by
   simpa [Function.comp_def] using Function.Injective.comp h (Finsupp.mapDomain_injective hf)
 
+theorem LinearIndependent.coe_range (i : LinearIndependent R v) :
+    LinearIndependent R ((↑) : range v → M) := by
+  simpa using i.comp _ (rangeSplitting_injective v)
+
+theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) : Injective v := by
+  simpa [Function.comp_def]
+    using Function.Injective.comp hv (Finsupp.single_left_injective one_ne_zero)
+
 /-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
 independent over a subring `R` of `K`.
 The implementation uses minimal assumptions about the relationship between `R`, `K` and `M`.
@@ -269,23 +277,19 @@ theorem linearIndependent_iff_finset_linearIndependent :
     Fintype.linearIndependent_iff.1 (H s) (g ∘ Subtype.val)
       (hg ▸ Finset.sum_attach s fun j ↦ g j • v j) ⟨i, hi⟩⟩
 
-theorem LinearIndependent.coe_range (i : LinearIndependent R v) :
-    LinearIndependent R ((↑) : range v → M) := by simpa using i.comp _ (rangeSplitting_injective v)
+/-- If `v` is a linearly independent family of vectors and a linear map `f` is injective on the
+submodule spanned by the vectors of `v`, then `f ∘ v` is a linearly independent
+family of vectors.
 
-/-- If `v` is a linearly independent family of vectors and the kernel of a linear map `f` is
-disjoint with the submodule spanned by the vectors of `v`, then `f ∘ v` is a linearly independent
-family of vectors. See also `LinearIndependent.map'` for a special case assuming `ker f = ⊥`. -/
-theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
-    (hf_inj : Disjoint (span R (range v)) (LinearMap.ker f)) : LinearIndependent R (f ∘ v) := by
-  rw [disjoint_iff_inf_le, ← Set.image_univ, Finsupp.span_image_eq_map_linearCombination,
-    map_inf_eq_map_inf_comap, map_le_iff_le_comap, comap_bot, Finsupp.supported_univ, top_inf_eq]
-      at hf_inj
-  rw [linearIndependent_iff_ker] at hv ⊢
-  rw [hv, le_bot_iff] at hf_inj
-  haveI : Inhabited M := ⟨0⟩
-  rw [Finsupp.linearCombination_comp, Finsupp.lmapDomain_linearCombination _ _ f,
-      LinearMap.ker_comp, hf_inj]
-  exact fun _ => rfl
+See also `LinearIndependent.map'` for a special case assuming `f` is injective everywhere. -/
+theorem LinearIndependent.map (hv : LinearIndependent R v) (f : M →ₗ[R] M')
+    (hf : Set.InjOn f (span R (range v))):
+    LinearIndependent R (f ∘ v) := by
+  intro x y hxy
+  rw [← Finsupp.range_linearCombination] at hf
+  refine hv <| hf (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _) ?_
+  simp_rw [Finsupp.linearCombination_comp_linear] at hxy
+  exact hxy
 
 /-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
     spans a submodule disjoint from the kernel of `f` -/
@@ -300,8 +304,8 @@ theorem Submodule.range_ker_disjoint {f : M →ₗ[R] M'}
 /-- An injective linear map sends linearly independent families of vectors to linearly independent
 families of vectors. See also `LinearIndependent.map` for a more general statement. -/
 theorem LinearIndependent.map' (hv : LinearIndependent R v) (f : M →ₗ[R] M')
-    (hf_inj : LinearMap.ker f = ⊥) : LinearIndependent R (f ∘ v) :=
-  hv.map <| by simp [hf_inj]
+    (hf : Function.Injective f) :
+    LinearIndependent R (f ∘ v) := hv.map f <| hf.injOn
 
 /-- If `M / R` and `M' / R'` are modules, `i : R' → R` is a map, `j : M →+ M'` is a monoid map,
 such that they send non-zero elements to non-zero elements, and compatible with the scalar
@@ -309,13 +313,19 @@ multiplications on `M` and `M'`, then `j` sends linearly independent families of
 linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/
 theorem LinearIndependent.map_of_injective_injective {R' : Type*} {M' : Type*}
-    [Ring R'] [AddCommGroup M'] [Module R' M'] (hv : LinearIndependent R v)
-    (i : R' → R) (j : M →+ M') (hi : ∀ r, i r = 0 → r = 0) (hj : ∀ m, j m = 0 → m = 0)
+    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
+    (i : ZeroHom R' R) (j : M →+ M') (hi : Function.Injective i) (hj : Function.Injective j)
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) : LinearIndependent R' (j ∘ v) := by
-  rw [linearIndependent_iff'] at hv ⊢
-  intro S r' H s hs
-  simp_rw [comp_apply, ← hc, ← map_sum] at H
-  exact hi _ <| hv _ _ (hj _ H) s hs
+  intro x y hxy
+  suffices (x.mapRange i <| map_zero _) = (y.mapRange i <| map_zero _) by
+    ext k
+    apply hi
+    simpa using congr($this k)
+  apply hv
+  simp [Finsupp.linearCombination] at hxy ⊢
+  simp [Finsupp.sum_mapRange_index]
+  simp_rw [← hc, ← map_finsupp_sum j] at hxy
+  exact hj hxy
 
 /-- If `M / R` and `M' / R'` are modules, `i : R → R'` is a surjective map which maps zero to zero,
 `j : M →+ M'` is a monoid map which sends non-zero elements to non-zero elements, such that the
@@ -534,11 +544,6 @@ variable [Module R M] [Module R M']
 
 @[deprecated (since := "2024-08-29")] alias LinearIndependent.injective_total :=
   LinearIndependent.injective_linearCombination
-
-theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) : Injective v := by
-  simpa [Function.comp_def]
-    using Function.Injective.comp hv (Finsupp.single_left_injective one_ne_zero)
-
 theorem LinearIndependent.to_subtype_range {ι} {f : ι → M} (hf : LinearIndependent R f) :
     LinearIndependent R ((↑) : range f → M) := by
   nontriviality R
