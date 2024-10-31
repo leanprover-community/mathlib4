@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.Divisible
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.IsLocalHomeomorph
+import Mathlib.Topology.Instances.ZMultiples
 
 /-!
 # The additive circle
@@ -267,7 +268,7 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
   open_target := isOpen_compl_singleton
   continuousOn_toFun := (AddCircle.continuous_mk' p).continuousOn
   continuousOn_invFun := by
-    exact ContinuousAt.continuousOn
+    exact continuousOn_of_forall_continuousAt
       (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
 
 lemma isLocalHomeomorph_coe [DiscreteTopology (zmultiples p)] [DenselyOrdered 𝕜] :
@@ -594,7 +595,7 @@ def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot
     on_goal 2 => erw [equivIccQuot_comp_mk_eq_toIcoMod]
     all_goals
       apply continuous_quot_mk.continuousAt.comp_continuousWithinAt
-      rw [inducing_subtype_val.continuousWithinAt_iff]
+      rw [IsInducing.subtypeVal.continuousWithinAt_iff]
     · apply continuous_left_toIocMod
     · apply continuous_right_toIcoMod
   continuous_invFun :=
