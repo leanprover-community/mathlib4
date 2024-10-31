@@ -258,7 +258,7 @@ lemma isSheaf_yoneda_obj [Preregular C] (W : C)  :
 
 /-- The regular topology on any preregular category is subcanonical. -/
 instance subcanonical [Preregular C] : (regularTopology C).Subcanonical :=
-  GrothendieckTopology.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
+  GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ isSheaf_yoneda_obj
 
 end regularTopology
 

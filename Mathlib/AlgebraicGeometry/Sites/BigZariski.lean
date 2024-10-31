@@ -71,7 +71,7 @@ lemma zariskiTopology_openCover {Y : Scheme.{u}} (U : OpenCover.{v} Y) :
   exact ⟨_, 𝟙 _, U.map (U.f y), ⟨_⟩, by simp⟩
 
 instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
-  apply GrothendieckTopology.Subcanonical.of_yoneda_isSheaf
+  apply GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
   intro X
   rw [Presieve.isSheaf_pretopology]
   rintro Y S ⟨𝓤,rfl⟩ x hx
