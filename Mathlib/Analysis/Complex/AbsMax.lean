@@ -314,32 +314,32 @@ theorem eqOn_closedBall_of_isMaxOn_norm {f : E → F} {z : E} {r : ℝ}
 
 /-- If `f` is differentiable on the open unit ball `{z : ℂ | ‖z‖ < 1}`, and `‖f‖` attains a maximum
 in  this open ball, then `f` is constant.-/
-lemma eq_const_of_exists_max {f : E → F} (h_an : DifferentiableOn ℂ f {z : E | ‖z‖ < 1})
-    {v : E} (hv : ‖v‖ < 1) (hv_max : IsMaxOn (norm ∘ f) {z : E | ‖z‖ < 1} v) :
-    Set.EqOn f (Function.const E (f v)) {z : E | ‖z‖ < 1} := by
+lemma eq_const_of_exists_max {f : E → F} {b : ℝ} (h_an : DifferentiableOn ℂ f (ball 0 b))
+    {v : E} (hv : v ∈ (ball 0 b)) (hv_max : IsMaxOn (norm ∘ f) (ball 0 b) v) :
+    Set.EqOn f (Function.const E (f v)) (ball 0 b) := by
   refine Complex.eqOn_of_isPreconnected_of_isMaxOn_norm ?_ ?_ h_an hv hv_max
   · apply Convex.isPreconnected
-    simpa only [ball_zero_eq] using convex_ball (0 : E) 1
+    simpa only [ball_zero_eq] using convex_ball (0 : E) b
   · simpa only [← ball_zero_eq] using Metric.isOpen_ball
 
 /-- If `f` is a function differentiable on the open unit ball, and there exists an `r < 1` such that
 any value of `‖f‖` on the open ball is bounded above by some value on the closed ball of radius `r`,
 then `f` is constant. -/
-lemma eq_const_of_exists_le {f : ℂ → F} (h_an : DifferentiableOn ℂ f {z : ℂ | ‖z‖ < 1})
-    {r : ℝ} (hr_nn : 0 ≤ r) (hr_lt : r < 1)
-    (hr : ∀ z, ‖z‖ < 1 → ∃ w, ‖w‖ ≤ r ∧ ‖f z‖ ≤ ‖f w‖) :
-    Set.EqOn f (Function.const ℂ (f 0)) {z : ℂ | ‖z‖ < 1} := by
-  let V : Set ℂ := {z | ‖z‖ ≤ r}
-  have hVc : IsCompact V := by simpa only [norm_eq_abs, Metric.closedBall, dist_eq_norm_sub,
-    sub_zero, V] using isCompact_closedBall (0 : ℂ) r
-  have hVne : V.Nonempty := ⟨0, by simp only [norm_eq_abs, Set.mem_setOf_eq, map_zero, hr_nn, V]⟩
+lemma eq_const_of_exists_le {f : ℂ → F} {r b : ℝ} (h_an : DifferentiableOn ℂ f (ball 0 b))
+    (hr_nn : 0 ≤ r) (hr_lt : r < b)
+    (hr : ∀ z, z ∈ (ball 0 b) → ∃ w, w ∈ closedBall 0 r ∧ ‖f z‖ ≤ ‖f w‖) :
+    Set.EqOn f (Function.const ℂ (f 0)) (ball 0 b) := by
+  let V : Set ℂ := closedBall 0 r
+  have hVc : IsCompact V := isCompact_closedBall (0 : ℂ) r
   have : ContinuousOn f V := by
     apply h_an.continuousOn.mono
-    simpa only [norm_eq_abs, Set.setOf_subset_setOf, V] using fun _ ha ↦ ha.trans_lt hr_lt
-  obtain ⟨x, hx_mem, hx_max⟩ := hVc.exists_isMaxOn hVne this.norm
-  suffices Set.EqOn f (Function.const ℂ (f x)) {z : ℂ | ‖z‖ < 1} by
+    simpa only [V] using fun _ ha ↦ ha.trans_lt hr_lt
+  obtain ⟨x, hx_mem, hx_max⟩ := hVc.exists_isMaxOn (nonempty_closedBall.mpr hr_nn) this.norm
+  suffices Set.EqOn f (Function.const ℂ (f x)) (ball 0 b) by
     refine this.trans fun y _ ↦ ?_
-    simp only [Function.const_apply, this (by simp only [norm_zero, zero_lt_one] : ‖(0 : ℂ)‖ < 1)]
+    simp only [Function.const_apply]
+    have h0 : (0 : ℂ) ∈ ball 0 b := by simp only [mem_ball, dist_self, zero_lt_one]; linarith
+    simpa using (this h0).symm
   apply eq_const_of_exists_max h_an (lt_of_le_of_lt hx_mem hr_lt) (fun z hz ↦ ?_)
   obtain ⟨w, hw, hw'⟩ := hr z hz
   exact hw'.trans (hx_max hw)
