@@ -173,10 +173,6 @@ theorem algebraicIndependent_X : AlgebraicIndependent R (X (R := R) (σ := σ)) 
   rw [AlgebraicIndependent, aeval_X_left]
   exact injective_id
 
-variable {σ} in
-theorem transcendental_X (i : σ) : Transcendental R (X (R := R) i) :=
-  (algebraicIndependent_X σ R).transcendental i
-
 end MvPolynomial
 
 open AlgebraicIndependent

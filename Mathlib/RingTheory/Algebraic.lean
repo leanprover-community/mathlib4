@@ -7,6 +7,7 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.Algebra.Polynomial.Lifts
+import Mathlib.Algebra.MvPolynomial.Supported
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -697,3 +698,42 @@ theorem Polynomial.algebraMap_pi_self_eq_eval :
   rfl
 
 end Pi
+
+namespace MvPolynomial
+
+variable {σ : Type*} (R : Type*) [CommRing R]
+
+theorem transcendental_supported_X {i : σ} {s : Set σ} (h : i ∉ s) :
+    Transcendental (supported R s) (X i : MvPolynomial σ R) := by
+  rw [transcendental_iff_injective]
+  let f := (Subalgebra.val _).comp ((optionEquivLeft R s).symm |>.trans
+    (renameEquiv R (Set.subtypeInsertEquivOption h)).symm |>.trans
+    (supportedEquivMvPolynomial _).symm).toAlgHom
+  let g := ((Polynomial.aeval (R := supported R s) (X i : MvPolynomial σ R)).restrictScalars R).comp
+    (Polynomial.mapAlgEquiv (supportedEquivMvPolynomial s).symm).toAlgHom
+  have hinj : Function.Injective f := by
+    simp only [f, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, Subalgebra.coe_val,
+      EquivLike.injective_comp, Subtype.val_injective]
+  have hfg : f = g := by
+    ext1
+    · ext1
+      simp [f, g, Set.subtypeInsertEquivOption, Subalgebra.algebraMap_eq]
+    · simp [f, g, Set.subtypeInsertEquivOption]
+  simpa only [hfg, g, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
+    EquivLike.injective_comp, AlgHom.coe_restrictScalars'] using hinj
+
+theorem transcendental_X (i : σ) : Transcendental R (X i : MvPolynomial σ R) := by
+  have := transcendental_supported_X R (Set.not_mem_empty i)
+  let f := (Algebra.botEquivOfInjective (MvPolynomial.C_injective σ R)).symm.trans
+    (Subalgebra.equivOfEq _ _ supported_empty).symm |>.toRingEquiv
+  rwa [Transcendental, ← isAlgebraic_ringHom_iff f (RingHom.id (MvPolynomial σ R))
+    Function.injective_id (by ext1; rfl), RingHom.id_apply, ← Transcendental]
+
+theorem transcendental_supported_X_iff [Nontrivial R] {i : σ} {s : Set σ} :
+    Transcendental (supported R s) (X i : MvPolynomial σ R) ↔ i ∉ s := by
+  refine ⟨?_, transcendental_supported_X R⟩
+  rw [Transcendental, not_imp_not]
+  exact fun h ↦ isAlgebraic_algebraMap
+    (⟨X i, Algebra.subset_adjoin (Set.mem_image_of_mem _ h)⟩ : supported R s)
+
+end MvPolynomial
