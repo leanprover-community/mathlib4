@@ -317,7 +317,7 @@ variable {E : Type*} [Category E]
 variable (F) in
 /-- The inclusion of a fiber `F.obj c` of a functor `F : C ⥤ Cat` into its Grothendieck
 construction.-/
-@[simps]
+@[simps obj map]
 def ι (c : C) : F.obj c ⥤ Grothendieck F where
   obj d := ⟨c, d⟩
   map f := ⟨𝟙 _, eqToHom (by simp) ≫ f⟩
