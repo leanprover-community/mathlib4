@@ -264,7 +264,7 @@ stays the same).
 
 These operations are inverse to each other, giving rise to an equivalence between
 `((c : OrderedFinpartition n) × Option (Fin c.length))` and `OrderedFinpartition (n + 1)`
-called `OrderedFinPartion.extendEquiv`.
+called `OrderedFinPartition.extendEquiv`.
 -/
 
 /-- Extend an ordered partition of `n` entries, by adding a new singleton part to the left. -/
