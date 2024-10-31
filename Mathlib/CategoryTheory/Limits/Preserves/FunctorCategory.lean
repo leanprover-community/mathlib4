@@ -79,6 +79,16 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {E : Type u₃} [Category.{v₃} E]
 
+instance whiskeringLeftPreservesColimitsOfShape (J : Type u) [Category.{v} J]
+    [HasColimitsOfShape J D] (F : C ⥤ E) :
+    PreservesColimitsOfShape J ((whiskeringLeft C E D).obj F) :=
+  ⟨fun {K} =>
+    ⟨fun c {hc} => by
+      apply evaluationJointlyReflectsColimits
+      intro Y
+      change IsColimit (((evaluation E D).obj (F.obj Y)).mapCocone c)
+      exact PreservesColimit.preserves hc⟩⟩
+
 instance whiskeringLeftPreservesLimitsOfShape (J : Type u) [Category.{v} J]
     [HasLimitsOfShape J D] (F : C ⥤ E) :
     PreservesLimitsOfShape J ((whiskeringLeft C E D).obj F) :=
