@@ -1,5 +1,23 @@
 #! /bin/bash
 
+: <<'BASH_MODULE_DOCS'
+
+The script contained in this file tries to automatically generate deprecations for declarations that were renamed in a PR.
+
+The script is entirely text-based, so it makes several simplifying assumptions and may be easily confused.
+
+# Assumptions
+
+The script works under the assumption that the only modifications between master and the current branch are renames of lemmas that should be deprecated.
+
+The script inspects the relevant git diff, extracts the old name and the new one and uses this information to insert deprecated aliases as needed.
+
+Most other differences may confuse the script, although there is some slack.
+
+Please, do not try to push the boundaries of the script, since it is quite simple-minded!
+
+BASH_MODULE_DOCS
+
 if [ -z "${1}" ]
 then
   commit="$( git merge-base master "$( git rev-parse --abbrev-ref HEAD )" )"
