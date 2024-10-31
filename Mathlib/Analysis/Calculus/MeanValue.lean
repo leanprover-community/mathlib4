@@ -858,7 +858,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (f : ℝ → ℝ) 
     refine ⟨-b, by linarith, fun x hx => ?_⟩
     simp only [Pi.neg_apply, Function.comp_apply]
     suffices deriv f' x = deriv f (-x) * deriv (Neg.neg : ℝ → ℝ) x by simpa using this
-    refine deriv.comp x (differentiableAt_of_deriv_ne_zero ?_) (by fun_prop)
+    refine deriv_comp x (differentiableAt_of_deriv_ne_zero ?_) (by fun_prop)
     rw [mem_Ioo] at hx
     have h₁ : -x ∈ Ioo b a := ⟨by linarith, by linarith⟩
     have h₂ : deriv f (-x) ≤ -1 := hb₂ h₁
