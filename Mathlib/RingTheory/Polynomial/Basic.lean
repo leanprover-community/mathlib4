@@ -3,7 +3,8 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.ExpChar
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.RingTheory.Polynomial.Content
@@ -581,7 +582,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
     f ∈ (Ideal.map (C : R →+* R[X]) I : Ideal R[X]) ↔ ∀ n : ℕ, f.coeff n ∈ I := by
   constructor
   · intro hf
-    apply @Submodule.span_induction _ _ _ _ _ f _ _ hf
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ hf
     · intro f hf n
       cases' (Set.mem_image _ _ _).mp hf with x hx
       rw [← hx.right, coeff_C]
@@ -589,8 +590,8 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
       · simpa [h] using hx.left
       · simp [h]
     · simp
-    · exact fun f g hf hg n => by simp [I.add_mem (hf n) (hg n)]
-    · refine fun f g hg n => ?_
+    · exact fun f g _ _ hf hg n => by simp [I.add_mem (hf n) (hg n)]
+    · refine fun f g _ hg n => ?_
       rw [smul_eq_mul, coeff_mul]
       exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
   · intro hf
@@ -788,7 +789,7 @@ variable (σ) {r : R}
 namespace Polynomial
 
 theorem prime_C_iff : Prime (C r) ↔ Prime r :=
-  ⟨comap_prime C (evalRingHom (0 : R)) fun r => eval_C, fun hr => by
+  ⟨comap_prime C (evalRingHom (0 : R)) fun _ => eval_C, fun hr => by
     have := hr.1
     rw [← Ideal.span_singleton_prime] at hr ⊢
     · rw [← Set.image_singleton, ← Ideal.map_span]
@@ -912,7 +913,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
       let ⟨N, HN⟩ := hm
       let ⟨s, hs⟩ := I.is_fg_degreeLE N
       have hm2 : ∀ k, I.leadingCoeffNth k ≤ M := fun k =>
-        Or.casesOn (le_or_lt k N) (fun h => HN ▸ I.leadingCoeffNth_mono h) fun h x hx =>
+        Or.casesOn (le_or_lt k N) (fun h => HN ▸ I.leadingCoeffNth_mono h) fun h _ hx =>
           Classical.by_contradiction fun hxm =>
             haveI : IsNoetherian R R := inst
             have : ¬M < I.leadingCoeffNth k := by
@@ -920,8 +921,8 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
             this ⟨HN ▸ I.leadingCoeffNth_mono (le_of_lt h), fun H => hxm (H hx)⟩
       have hs2 : ∀ {x}, x ∈ I.degreeLE N → x ∈ Ideal.span (↑s : Set R[X]) :=
         hs ▸ fun hx =>
-          Submodule.span_induction hx (fun _ hx => Ideal.subset_span hx) (Ideal.zero_mem _)
-            (fun _ _ => Ideal.add_mem _) fun c f hf => f.C_mul' c ▸ Ideal.mul_mem_left _ _ hf
+          Submodule.span_induction (hx := hx) (fun _ hx => Ideal.subset_span hx) (Ideal.zero_mem _)
+            (fun _ _ _ _ => Ideal.add_mem _) fun c f _ hf => f.C_mul' c ▸ Ideal.mul_mem_left _ _ hf
       ⟨s, le_antisymm (Ideal.span_le.2 fun x hx =>
           have : x ∈ I.degreeLE N := hs ▸ Submodule.subset_span hx
           this.2) <| by
@@ -1183,7 +1184,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
   classical
   constructor
   · intro hf
-    apply @Submodule.span_induction _ _ _ _ Semiring.toModule f _ _ hf
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ hf
     · intro f hf n
       cases' (Set.mem_image _ _ _).mp hf with x hx
       rw [← hx.right, coeff_C]
@@ -1191,8 +1192,8 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
       · simpa [h] using hx.left
       · simp [Ne.symm h]
     · simp
-    · exact fun f g hf hg n => by simp [I.add_mem (hf n) (hg n)]
-    · refine fun f g hg n => ?_
+    · exact fun f g _ _ hf hg n => by simp [I.add_mem (hf n) (hg n)]
+    · refine fun f g _ hg n => ?_
       rw [smul_eq_mul, coeff_mul]
       exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
   · intro hf

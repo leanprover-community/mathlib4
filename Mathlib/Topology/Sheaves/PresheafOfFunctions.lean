@@ -43,11 +43,11 @@ There is no requirement that the functions are continuous, here.
 -/
 def presheafToTypes (T : X → Type v) : X.Presheaf (Type v) where
   obj U := ∀ x : U.unop, T x
-  map {U V} i g := fun x : V.unop => g (i.unop x)
+  map {_ V} i g := fun x : V.unop => g (i.unop x)
   map_id U := by
     ext g
     rfl
-  map_comp {U V W} i j := rfl
+  map_comp {_ _ _} _ _ := rfl
 
 @[simp]
 theorem presheafToTypes_obj {T : X → Type v} {U : (Opens X)ᵒᵖ} :
@@ -70,11 +70,11 @@ There is no requirement that the functions are continuous, here.
 -/
 def presheafToType (T : Type v) : X.Presheaf (Type v) where
   obj U := U.unop → T
-  map {U V} i g := g ∘ i.unop
+  map {_ _} i g := g ∘ i.unop
   map_id U := by
     ext g
     rfl
-  map_comp {U V W} i j := rfl
+  map_comp {_ _ _} _ _ := rfl
 
 @[simp]
 theorem presheafToType_obj {T : Type v} {U : (Opens X)ᵒᵖ} :
@@ -121,7 +121,7 @@ this is a ring homomorphism (with respect to the pointwise ring operations on fu
 def map (X : TopCat.{u}ᵒᵖ) {R S : TopCommRingCat.{u}} (φ : R ⟶ S) :
     continuousFunctions X R ⟶ continuousFunctions X S where
   toFun g := g ≫ (forget₂ TopCommRingCat TopCat).map φ
-  -- Porting note: `ext` tactic does not work, since Lean can't see through `R ⟶ S` is just
+  -- Porting note (#11041): `ext` tactic does not work, since Lean can't see through `R ⟶ S` is just
   -- continuous ring homomorphism
   map_one' := ContinuousMap.ext fun _ => φ.1.map_one
   map_zero' := ContinuousMap.ext fun _ => φ.1.map_zero
@@ -136,18 +136,18 @@ from `X : TopCat` to `R : TopCommRingCat` form a commutative ring, functorial in
 def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u} where
   obj R :=
     { obj := fun X => continuousFunctions X R
-      map := fun {X Y} f => continuousFunctions.pullback f R
+      map := fun {_ _} f => continuousFunctions.pullback f R
       map_id := fun X => by
         ext
         rfl
-      map_comp := fun {X Y Z} f g => rfl }
-  map {R S} φ :=
+      map_comp := fun {_ _ _} _ _ => rfl }
+  map {_ _} φ :=
     { app := fun X => continuousFunctions.map X φ
-      naturality := fun X Y f => rfl }
+      naturality := fun _ _ _ => rfl }
   map_id X := by
     ext
     rfl
-  map_comp {X Y Z} f g := rfl
+  map_comp {_ _ _} _ _ := rfl
 
 /-- The presheaf (of commutative rings), consisting of functions on an open set `U ⊆ X` with
 values in some topological commutative ring `T`.

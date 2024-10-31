@@ -156,13 +156,10 @@ theorem Ioo_eq_zero_of_le (h : b ≤ a) : Ioo a b = 0 :=
 
 variable (a)
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem Ico_self : Ico a a = 0 := by rw [Ico, Finset.Ico_self, Finset.empty_val]
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem Ioc_self : Ioc a a = 0 := by rw [Ioc, Finset.Ioc_self, Finset.empty_val]
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem Ioo_self : Ioo a a = 0 := by rw [Ioo, Finset.Ioo_self, Finset.empty_val]
 
 variable {a}
@@ -179,19 +176,15 @@ theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b :=
 theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b :=
   Finset.right_mem_Ioc
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem left_not_mem_Ioc : a ∉ Ioc a b :=
   Finset.left_not_mem_Ioc
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem left_not_mem_Ioo : a ∉ Ioo a b :=
   Finset.left_not_mem_Ioo
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem right_not_mem_Ico : b ∉ Ico a b :=
   Finset.right_not_mem_Ico
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem right_not_mem_Ioo : b ∉ Ioo a b :=
   Finset.right_not_mem_Ioo
 
