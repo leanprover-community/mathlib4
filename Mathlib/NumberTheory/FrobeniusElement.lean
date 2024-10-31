@@ -5,7 +5,6 @@ Authors: Thomas Browning
 -/
 import Mathlib.FieldTheory.Fixed
 import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.Ideal.Pointwise
 
 /-!
 # Frobenius Elements
@@ -76,56 +75,6 @@ lemma smul_eq_of_smul_le
   exact le_antisymm h key
 
 end ForMathlib
-
-section lifting
-
-variable (A B : Type*)
-  [CommRing A] [CommRing B]
-  [IsDomain A] [IsDomain B]
-  (K L : Type*) [Field K] [Field L]
-  [Algebra A K] [IsFractionRing A K]
-  [Algebra B L] [IsFractionRing B L]
-  [Algebra A B] [Algebra K L] [Algebra A L]
-  [IsScalarTower A B L] [IsScalarTower A K L]
-
--- PRed
-@[simp] lemma IsFractionRing.fieldEquivOfRingEquiv_commutes (f : B ≃+* B) (b : B) :
-    IsFractionRing.fieldEquivOfRingEquiv f (algebraMap B L b) = algebraMap B L (f b) := by
-  simp only [IsFractionRing.fieldEquivOfRingEquiv, IsLocalization.ringEquivOfRingEquiv_eq]
-
--- PRed
-noncomputable def lift (f : B ≃ₐ[A] B) : L ≃ₐ[K] L where
-  __ := IsFractionRing.fieldEquivOfRingEquiv f.toRingEquiv
-  commutes' := by
-    intro x
-    obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
-    simp only [AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe,
-      EquivLike.coe_coe]
-    rw [map_div₀, map_div₀]
-    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
-    rw [IsScalarTower.algebraMap_apply A B L, IsScalarTower.algebraMap_apply A B L]
-    rw [IsFractionRing.fieldEquivOfRingEquiv_commutes]
-    rw [IsFractionRing.fieldEquivOfRingEquiv_commutes]
-    simp only [AlgEquiv.toRingEquiv_eq_coe, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes]
-
--- PRed
-noncomputable def liftHom : (B ≃ₐ[A] B) →* (L ≃ₐ[K] L) where
-  toFun := lift A B K L
-  map_one' := by
-    ext x
-    obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := B) x
-    simp [lift, IsFractionRing.fieldEquivOfRingEquiv]
-  map_mul' := fun f g ↦ by
-    ext x
-    obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := B) x
-    simp [lift, IsFractionRing.fieldEquivOfRingEquiv]
-
--- PRed
-lemma liftHom_commutes (f : B ≃ₐ[A] B) (b : B) :
-    liftHom A B K L f (algebraMap B L b) = algebraMap B L (f b) := by
-  simp [liftHom, lift, IsFractionRing.fieldEquivOfRingEquiv]
-
-end lifting
 
 section integrallemma
 
@@ -446,7 +395,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 
 noncomputable def fullHom : MulAction.stabilizer G Q →* (L ≃ₐ[K] L) :=
   have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under A Q
-  MonoidHom.comp (liftHom (A ⧸ P) (B ⧸ Q) K L) (stabilizerAction G P Q)
+  MonoidHom.comp (IsFractionRing.fieldEquivOfAlgEquivHom K L) (stabilizerAction G P Q)
 
 theorem fullHom_surjective1
     (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b)
@@ -463,7 +412,8 @@ theorem fullHom_surjective1
       NoZeroSMulDivisors.algebraMap_eq_zero_iff, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
   simp only [← IsScalarTower.algebraMap_apply (A ⧸ P) K L, div_left_inj' ha] at hx ⊢
   refine lem4 G P Q K L hAB f b (fun g ↦ IsFractionRing.injective (B ⧸ Q) L ?_)
-  exact (liftHom_commutes (A ⧸ P) (B ⧸ Q) K L (stabilizerAction G P Q g) b).symm.trans (hx g)
+  exact (IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L
+    (stabilizerAction G P Q g) b).symm.trans (hx g)
 
 theorem fullHom_surjective
     (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) :
