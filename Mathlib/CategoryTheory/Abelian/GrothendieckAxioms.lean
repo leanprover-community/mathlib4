@@ -98,8 +98,8 @@ abbrev AB4Star [HasProducts C] := ∀ (α : Type v), ABStarOfShape (Discrete α)
 A category `C` which has countable coproducts is said to have countable `AB4Star` provided that
 countable products are exact.
 -/
-abbrev CountableAB4Star [∀ (α : Type v) [Countable α], HasLimitsOfShape (Discrete α) C] :=
-  ∀ (α : Type v) [Countable α], ABStarOfShape (Discrete α) C
+abbrev CountableAB4Star [HasCountableProducts C] :=
+  ∀ (α : Type) [Countable α], ABStarOfShape (Discrete α) C
 
 /--
 A category `C` which has filtered colimits is said to have `AB5` provided that
@@ -209,6 +209,18 @@ end
 /-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/
 def AB4Star.ofAB5Star [HasProducts C] [HasCofilteredLimits C] [AB5Star C] : AB4Star C :=
   fun _ ↦ ABStarOfShapeDiscreteOfABStarOfShapeFinsetDiscreteOp _ _
+
+def CountableAB4Star.ofCountableAB5Star [HasLimitsOfShape ℕᵒᵖ C] [ABStarOfShape ℕᵒᵖ C]
+    [HasCountableProducts C] : CountableAB4Star C := fun J _ ↦ (by
+  have : Countable (Finset (Discrete J)) := sorry
+  have : HasLimitsOfShape (Finset (Discrete J))ᵒᵖ C := by
+    -- let F := sequentialFunctor (Finset (Discrete J))ᵒᵖ
+    sorry
+  apply ( config := { allowSynthFailures := true } )
+    ABStarOfShapeDiscreteOfABStarOfShapeFinsetDiscreteOp
+  sorry
+
+)
 
 end
 
