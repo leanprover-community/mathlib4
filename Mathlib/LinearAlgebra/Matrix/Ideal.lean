@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Wojciech Nawrocki
 -/
 import Mathlib.Data.Matrix.Basis
+import Mathlib.RingTheory.Ideal.Lattice
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-!
@@ -159,7 +160,7 @@ def equivMatricesOver (i j : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n 
       by_cases hab : a = k ∧ b = l
       · rcases hab with ⟨ha, hb⟩
         subst ha hb
-        simp only [stdBasisMatrix, and_self, ↓reduceIte, StdBasisMatrix.mul_right_apply_same,
+        simp only [StdBasisMatrix.apply_same, StdBasisMatrix.mul_right_apply_same,
           StdBasisMatrix.mul_left_apply_same, one_mul, mul_one]
         rw [hy2 a b]
       · conv_lhs =>

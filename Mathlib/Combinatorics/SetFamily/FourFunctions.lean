@@ -7,7 +7,6 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Finset.Sups
-import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice
@@ -59,8 +58,8 @@ open scoped FinsetFamily
 variable {α β : Type*}
 
 section Finset
-variable [DecidableEq α] [LinearOrderedCommSemiring β] {𝒜 ℬ : Finset (Finset α)}
-  {a : α} {f f₁ f₂ f₃ f₄ g μ : Finset α → β} {s t u : Finset α}
+variable [DecidableEq α] [LinearOrderedCommSemiring β] {𝒜 : Finset (Finset α)}
+  {a : α} {f f₁ f₂ f₃ f₄ : Finset α → β} {s t u : Finset α}
 
 /-- The `n = 1` case of the Ahlswede-Daykin inequality. Note that we can't just expand everything
 out and bound termwise since `c₀ * d₁` appears twice on the RHS of the assumptions while `c₁ * d₀`
@@ -88,7 +87,7 @@ private lemma ineq [ExistsAddOfLE β] {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ :
     _ = (c₀ * d₁ + c₁ * d₀) * (c₀ * d₁) := by ring
 
 private def collapse (𝒜 : Finset (Finset α)) (a : α) (f : Finset α → β) (s : Finset α) : β :=
-  ∑ t ∈ 𝒜.filter fun t ↦ t.erase a = s, f t
+  ∑ t ∈ 𝒜 with t.erase a = s, f t
 
 private lemma erase_eq_iff (hs : a ∉ s) : t.erase a = s ↔ t = s ∨ t = insert a s := by
   by_cases ht : a ∈ t <;>
@@ -96,7 +95,7 @@ private lemma erase_eq_iff (hs : a ∉ s) : t.erase a = s ↔ t = s ∨ t = inse
     aesop
 
 private lemma filter_collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) :
-    (𝒜.filter fun t ↦ t.erase a = s) =
+    {t ∈ 𝒜 | t.erase a = s} =
       if s ∈ 𝒜 then
         (if insert a s ∈ 𝒜 then {s, insert a s} else {s})
       else
@@ -305,7 +304,7 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
 /-- An inequality of Daykin. Interestingly, any lattice in which this inequality holds is
 distributive. -/
 lemma Finset.le_card_infs_mul_card_sups [DecidableEq α] (s t : Finset α) :
-    s.card * t.card ≤ (s ⊼ t).card * (s ⊻ t).card := by
+    #s * #t ≤ #(s ⊼ t) * #(s ⊻ t) := by
   simpa using four_functions_theorem (1 : α → ℕ) 1 1 1 zero_le_one zero_le_one zero_le_one
     zero_le_one (fun _ _ ↦ le_rfl) s t
 
@@ -354,7 +353,7 @@ variable [DecidableEq α] [GeneralizedBooleanAlgebra α]
 
 /-- A slight generalisation of the **Marica-Schönheim Inequality**. -/
 lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
-    s.card * t.card ≤ (s \\ t).card * (t \\ s).card := by
+    #s * #t ≤ #(s \\ t) * #(t \\ s) := by
   have : ∀ s t : Finset α, (s \\ t).map ⟨_, liftLatticeHom_injective⟩ =
       s.map ⟨_, liftLatticeHom_injective⟩ \\ t.map ⟨_, liftLatticeHom_injective⟩ := by
     rintro s t
@@ -365,6 +364,6 @@ lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
       (t.map ⟨_, liftLatticeHom_injective⟩)ᶜˢ
 
 /-- The **Marica-Schönheim Inequality**. -/
-lemma Finset.card_le_card_diffs (s : Finset α) : s.card ≤ (s \\ s).card :=
+lemma Finset.card_le_card_diffs (s : Finset α) : #s ≤ #(s \\ s) :=
   le_of_pow_le_pow_left two_ne_zero (zero_le _) <| by
     simpa [← sq] using s.le_card_diffs_mul_card_diffs s
