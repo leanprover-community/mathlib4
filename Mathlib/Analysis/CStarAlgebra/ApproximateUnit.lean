@@ -5,7 +5,9 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.PosPart
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
+import Mathlib.Topology.ApproximateUnit
 
 /-! # Positive contractions in a C⋆-algebra form an approximate unit
 
@@ -148,115 +150,173 @@ end SpanNonneg
 
 section ApproximateUnit
 
-open Metric
+open Metric Filter
 
 /-- An *increasing approximate unit* in a C⋆-algebra is an approximate unit whose basis consists of
 sets in the closed unit ball of nonnegative elements. -/
-structure IncreasingApproximateUnit {ι : Type*} (p : ι → Prop) (s : ι → Set A) extends
-    ApproximateUnit p s where
-  nonneg' (i : ι) (hi : p i) : s i ⊆ {x | 0 ≤ x}
-  subset_closedBall (i : ι) (hi : p i) : s i ⊆ closedBall 0 1
+structure IncreasingApproximateUnit (l : Filter A) extends IsApproximateUnit l : Prop where
+  eventually_mem_Icc : ∀ᶠ x in l, 0 ≤ x
+  eventually_norm : ∀ᶠ x in l, ‖x‖ ≤ 1
+  disjoint_cobounded := Filter.disjoint_of_disjoint_of_mem subset_rfl.disjoint_compl_right
+    (by simpa [Filter.eventually_iff, closedBall] using eventually_norm)
+    (Metric.isBounded_closedBall (x := 0) (r := 1)).compl
 
-open Submodule Filter Topology in
-abbrev IncreasingApproximateUnit.of_forall_nonneg_tendsto {ι : Type*} {l : Filter A} {p : ι → Prop}
-    {s : ι → Set A} (hl : l.HasBasis p s) (hs : ∀ i, p i → s i ⊆ {x | 0 ≤ x} ∩ closedBall 0 1)
-    (hs_nonempty : ∀ i, p i → (s i).Nonempty) (h : ∀ m, 0 ≤ m → ‖m‖ < 1 → Tendsto (· * m) l (𝓝 m)) :
-    IncreasingApproximateUnit p s where
-  toFilter := l
-  toHasBasis := hl
-  bounded := ⟨closedBall 0 1, isBounded_closedBall, (hs · · |>.trans Set.inter_subset_right)⟩
-  nonneg' i hi := (hs i hi).trans Set.inter_subset_left
-  subset_closedBall i hi := (hs i hi).trans Set.inter_subset_right
-  neBot := hl.neBot_iff.mpr <| hs_nonempty _
-  filter_le := by
-    rw [mulLeftRightTendsto.le_iff, forall_and]
-    refine and_iff_left_of_imp (fun h_left a ↦ ?_) |>.mpr fun a ↦ ?_
-    · apply (star_star a ▸ (continuous_star.tendsto _ |>.comp <| h_left (star a))).congr'
-      obtain ⟨i, hi⟩ := hl.ex_mem
-      filter_upwards [hl.mem_of_mem hi] with x hx
-      simp [IsSelfAdjoint.star_eq (.of_nonneg (hs i hi hx).1)]
-    · obtain ⟨n, c, x, rfl⟩ := mem_span_set'.mp <| by
-        show a ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
-        simp [CStarAlgebra.span_nonneg_inter_unitBall]
-      simp_rw [Finset.mul_sum]
-      refine tendsto_finset_sum _ fun i _ ↦ ?_
-      simp_rw [mul_smul_comm]
-      exact tendsto_const_nhds.smul <| h (x i) (x i).2.1 <| by simpa using (x i).2.2
 
-theorem CStarAlgebra.extracted
-    {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-    (x : A) (hx₁ : 0 ≤ x) (hx₂ : ‖x‖ < 1) (ε : ℝ) (hε : 0 < ε) (b : A) (hb₁ : 0 ≤ b)
-    (hb₂ : b ∈ closedBall 0 1) (hb₃ : cfcₙ (fun y : ℝ≥0 ↦ 1 - (1 + y)⁻¹) (ε⁻¹ ^ 2 • x) ≤ b) :
-    ‖star (x : A⁺¹) * ((1 - b) * (1 - b)) * x‖ ≤ ε ^ 2 := by
+open Submodule Topology in
+lemma CStarAlgebra.tendsto_of_forall_nonneg_tendsto {l : Filter A}
+    (h : ∀ m, 0 ≤ m → ‖m‖ < 1 → Tendsto (· * m) l (𝓝 m)) (m : A) :
+    Tendsto (· * m) l (𝓝 m) := by
+  obtain ⟨n, c, x, rfl⟩ := mem_span_set'.mp <| by
+    show m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
+    simp [CStarAlgebra.span_nonneg_inter_unitBall]
+  simp_rw [Finset.mul_sum]
+  refine tendsto_finset_sum _ fun i _ ↦ ?_
+  simp_rw [mul_smul_comm]
+  exact tendsto_const_nhds.smul <| h (x i) (x i).2.1 <| by simpa using (x i).2.2
+
+omit [PartialOrder A] in
+open Topology in
+lemma CStarAlgebra.tendsto_mul_left_iff_tendsto_mul_right {l : Filter A}
+    (hl : ∀ᶠ x in l, IsSelfAdjoint x) :
+    (∀ m, Tendsto (m * ·) l (𝓝 m)) ↔ (∀ m, Tendsto (· * m) l (𝓝 m)) := by
+  refine ⟨fun h m ↦ ?_, fun h m ↦ ?_⟩
+  all_goals
+    apply (star_star m ▸ (continuous_star.tendsto _ |>.comp <| h (star m))).congr'
+    filter_upwards [hl] with x hx
+    simp [hx.star_eq]
+
+namespace Set.Icc
+
+variable {β : Type*} [AddCommGroup β] [Preorder β] [AddLeftMono β]
+
+-- should we deprecate the `one_sub_mem` versions?
+theorem right_sub_mem {t b : β} (ht : t ∈ Icc 0 b) : b - t ∈ Icc 0 b := by
+  rw [mem_Icc] at *
+  exact ⟨sub_nonneg.2 ht.2, (sub_le_self_iff _).2 ht.1⟩
+
+theorem mem_iff_right_sub_mem {t b : β} : t ∈ Icc 0 b ↔ b - t ∈ Icc 0 b :=
+  ⟨right_sub_mem, fun h => sub_sub_cancel b t ▸ right_sub_mem h⟩
+
+end Set.Icc
+
+lemma CStarAlgebra.preimage_inr_Icc_zero_one :
+    ((↑) : A → A⁺¹) ⁻¹' Set.Icc 0 1 = {x : A | 0 ≤ x} ∩ closedBall 0 1 := by
+  ext x
+  simp only [Set.mem_preimage, Set.mem_Icc, inr_nonneg_iff, Set.mem_inter_iff, Set.mem_setOf_eq,
+    mem_closedBall, dist_zero_right, and_congr_right_iff]
+  rw [← norm_inr (𝕜 := ℂ), ← inr_nonneg_iff, iff_comm]
+  exact (norm_le_one_iff_of_nonneg _ ·)
+
+variable (A) in
+lemma CStarAlgebra.isBasis_nonneg_sections :
+    IsBasis (fun x : A ↦ 0 ≤ x ∧ ‖x‖ < 1) ({x | · ≤ x}) where
+  nonempty := ⟨0, by simp⟩
+  inter {x y} hx hy := by
+    peel directedOn_nonneg_ball x (by simpa) y (by simpa) with z hz
+    exact ⟨by simpa using hz.1, fun a ha ↦ ⟨hz.2.1.trans ha, hz.2.2.trans ha⟩⟩
+
+variable (A) in
+/-- The canonical approximate unit in a C⋆-algebra generated by the basis of sets
+`{x | a ≤ x} ∩ closedBall 0 1` for `0 ≤ a`. -/
+def CStarAlgebra.approximateUnit : Filter A :=
+  (isBasis_nonneg_sections A).filter ⊓ 𝓟 (closedBall 0 1)
+
+variable (A) in
+lemma CStarAlgebra.hasBasis_approximateUnit :
+    (approximateUnit A).HasBasis (fun x : A ↦ 0 ≤ x ∧ ‖x‖ < 1)
+      ({x | · ≤ x} ∩ closedBall 0 1) :=
+  (isBasis_nonneg_sections A).hasBasis.inf_principal (closedBall 0 1)
+
+private theorem CStarAlgebra.tendsto_mul_right_approximateUnit_aux {A : Type*} [CStarAlgebra A]
+    [PartialOrder A] [StarOrderedRing A] {ε : ℝ≥0} (hε : 0 < ε) {m x : A} (hm : m ∈ Set.Icc 0 1)
+    (hx : x ∈ Set.Icc 0 1) (hmx : cfc (fun y : ℝ≥0 ↦ 1 - (1 + y)⁻¹) (ε⁻¹ ^ 2 • m) ≤ x) :
+    ‖m - x * m‖₊ ^ 2 ≤ ε ^ 2 := by
+  have hx' := Set.Icc.right_sub_mem hx
   set g : ℝ≥0 → ℝ≥0 := fun y ↦ 1 - (1 + y)⁻¹
   have hg : Continuous g := by
     rw [continuous_iff_continuousOn_univ]
     fun_prop (disch := intro _ _; positivity)
-  simp only [mem_closedBall, dist_zero_right] at hb₂
-  rw [← norm_inr (𝕜 := ℂ)] at hx₂ hb₂
-  rw [← Unitization.inr_le_iff _ _ (.of_nonneg cfcₙ_nonneg_of_predicate) (.of_nonneg hb₁),
-    Unitization.nnreal_cfcₙ_eq_cfc_inr _ _ (by simp [g, tsub_self]), inr_smul] at hb₃
-  rw [← Unitization.inr_nonneg_iff] at hx₁ hb₁
-  generalize (x : A⁺¹) = x, (b : A⁺¹) = b at hx₁ hx₂ hb₁ hb₂ hb₃
-  rw [← sq]
-  have hx₃ := norm_le_one_iff_of_nonneg x |>.mp hx₂.le
-  have hb₄ := norm_le_one_iff_of_nonneg b |>.mp hb₂
-  rw [← sub_nonneg] at hb₄
-  lift ε to ℝ≥0 using hε.le
-  rw [← coe_nnnorm]
-  norm_cast at hε hb₃ ⊢
-  rw [← NNReal.smul_def] at hb₃
-  have hg' : ContinuousOn (fun y ↦ (1 + ε⁻¹ ^ 2 * y)⁻¹) (spectrum ℝ≥0 x) :=
+  have hg' : ContinuousOn (fun y ↦ (1 + ε⁻¹ ^ 2 • y)⁻¹) (spectrum ℝ≥0 m) :=
     ContinuousOn.inv₀ (by fun_prop) fun _ _ ↦ by positivity
-  have : star x * (1 - b) ^ 2 * x ≤ cfc (fun y ↦ y * (1 + ε⁻¹ ^ 2 * y)⁻¹ * y) x := calc
-    star x * (1 - b) ^ 2 * x ≤ star x * (1 - b) * x := by
-      refine conjugate_le_conjugate ?_ _
-      simpa using pow_antitone_of_le_one hb₄ (sub_le_self 1 hb₁) one_le_two
-    _ ≤ star x * (1 - cfc g (ε⁻¹ ^ 2 • x)) * x := conjugate_le_conjugate (by gcongr) _
-    _ = cfc (fun y ↦ y * (1 + ε⁻¹ ^ 2 * y)⁻¹ * y) x := by
-      rw [cfc_mul _ _ x (continuousOn_id' _ |>.mul hg') (continuousOn_id' _),
-        cfc_mul _ _ x (continuousOn_id' _) hg', cfc_id' .., IsSelfAdjoint.star_eq (.of_nonneg hx₁)]
+  calc
+    ‖m - x * m‖₊ ^ 2 = ‖star m * ((1 - x) ^ 2) * m‖₊ := by
+      rw [sq, ← CStarRing.nnnorm_star_mul_self]
+      simp [sq, sub_mul, mul_sub, IsSelfAdjoint.star_eq (.of_nonneg hx.1), mul_assoc]
+    _ ≤ ‖star m * (1 - cfc g (ε⁻¹ ^ 2 • m)) * m‖₊ := by
+      refine nnnorm_le_nnnorm_of_nonneg_of_le ?_ ?_
+      · refine conjugate_nonneg (pow_nonneg hx'.1 2) _
+      · refine conjugate_le_conjugate ?_ _
+        refine pow_antitone hx'.1 hx'.2 one_le_two |>.trans ?_
+        simp only [pow_one]
+        gcongr
+    _ = ‖cfc (fun y : ℝ≥0 ↦ y * (1 + ε⁻¹ ^ 2 • y)⁻¹ * y) m‖₊ := by
+      rw [cfc_mul _ _ m (continuousOn_id' _ |>.mul hg') (continuousOn_id' _),
+        cfc_mul _ _ m (continuousOn_id' _) hg', cfc_id' .., IsSelfAdjoint.star_eq (.of_nonneg hm.1)]
       congr
-      rw [← cfc_one (R := ℝ≥0) x, ← cfc_comp_smul _ _ _ hg.continuousOn hx₁,
-        ← cfc_tsub _ _ x (by simp [g]) hx₁ (by fun_prop) (Continuous.continuousOn <| by fun_prop)]
+      rw [← cfc_one (R := ℝ≥0) m, ← cfc_comp_smul _ _ _ hg.continuousOn hm.1,
+        ← cfc_tsub _ _ m (by simp [g]) hm.1 (by fun_prop) (Continuous.continuousOn <| by fun_prop)]
       refine cfc_congr (fun y _ ↦ ?_)
       simp [g, tsub_tsub_cancel_of_le]
-  apply nnnorm_le_nnnorm_of_nonneg_of_le (conjugate_nonneg (pow_nonneg hb₄ 2) x) this |>.trans
-  refine nnnorm_cfc_nnreal_le fun y hy ↦ ?_
-  field_simp
-  calc
-    y * ε ^ 2 * y / (ε ^ 2 + y) ≤ ε ^ 2 * 1 := by
-      rw [mul_div_assoc]
-      gcongr
-      · refine mul_le_of_le_one_left (zero_le _) ?_
-        rw [← cfc_id' ℝ≥0 x, ← cfc_one (R := ℝ≥0) x,
-          cfc_nnreal_le_iff _ _ _ (QuasispectrumRestricts.nnreal_of_nonneg hx₁)] at hx₃
-        exact hx₃ y hy
-      · exact div_le_one (by positivity) |>.mpr le_add_self
-    _ = ε ^ 2 := mul_one _
+    _ ≤ ε ^ 2 := by
+      refine nnnorm_cfc_nnreal_le fun y hy ↦ ?_
+      field_simp
+      calc
+        y * ε ^ 2 * y / (ε ^ 2 + y) ≤ ε ^ 2 * 1 := by
+          rw [mul_div_assoc]
+          gcongr
+          · refine mul_le_of_le_one_left (zero_le _) ?_
+            have hm' := hm.2
+            rw [← cfc_id' ℝ≥0 m, ← cfc_one (R := ℝ≥0) m,
+              cfc_nnreal_le_iff _ _ _ (QuasispectrumRestricts.nnreal_of_nonneg hm.1)] at hm'
+            exact hm' y hy
+          · exact div_le_one (by positivity) |>.mpr le_add_self
+        _ = ε ^ 2 := mul_one _
 
-open Metric Set Unitization in
-/-- the approximate unit in a C⋆-algebra consisting of positive contractions of norm strictly
-less than 1. -/
-def CStarAlgebra.increasingApproximateUnit : IncreasingApproximateUnit
-    (· ∈ {x : A | 0 ≤ x} ∩ ball 0 1) ({x | · ≤ x} ∩ ({x | 0 ≤ x} ∩ ball 0 1)) :=
-  have basis := directedOn_nonneg_ball (A := A) |>.filterIsBasis ⟨0, by simp⟩ |>.hasBasis
-  .of_forall_nonneg_tendsto basis
-    (fun _ _ ↦ inter_subset_right.trans <| inter_subset_inter_right _ ball_subset_closedBall)
-    (⟨·, Set.mem_inter le_rfl ·⟩) fun x hx₁ hx₂ ↦ by
-      rw [basis.tendsto_iff nhds_basis_closedBall]
-      intro ε hε
-      refine ⟨cfcₙ (fun y : ℝ≥0 ↦ 1 - (1 + y)⁻¹) (ε⁻¹ ^ 2 • x),
-        Set.mem_inter cfcₙ_nonneg_of_predicate (by simpa [- inv_pow, mem_closedBall_iff_norm]
-          using norm_cfcₙ_one_sub_one_add_inv_lt_one _), ?_⟩
-      rintro b ⟨(hb₁ : cfcₙ _ _ ≤ _), (hb₂ : 0 ≤ b), hb₃⟩
-      rw [mem_closedBall_iff_norm, ← norm_inr (𝕜 := ℂ), inr_sub, inr_mul, norm_sub_rev]
-      nth_rw 1 [← one_mul (x : A⁺¹)]
-      rw [← sub_mul]
-      refine abs_le_of_sq_le_sq' ?_ (by positivity) |>.2
-      rw [sq, ← CStarRing.norm_star_mul_self, star_mul, ← mul_assoc, mul_assoc (star _),
-        (IsSelfAdjoint.one A⁺¹ |>.sub <| (IsSelfAdjoint.of_nonneg hb₂).inr _).star_eq]
-      exact extracted x hx₁ hx₂ ε hε b hb₂ (ball_subset_closedBall hb₃) hb₁
+open Topology
+private lemma CStarAlgebra.tendsto_mul_right_approximateUnit (m : A) :
+    Tendsto (· * m) (approximateUnit A) (𝓝 m) := by
+  refine tendsto_of_forall_nonneg_tendsto (fun m ↦ ?_) m
+  rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.tendsto_nhds_iff]
+  simp only [Function.comp_def, inr_mul]
+  intro hm₁ hm₂
+  refine tendsto_map'_iff (f := (· * (m : A⁺¹))) |>.mp ?_
+  rw [(hasBasis_approximateUnit A).map inr |>.tendsto_iff nhds_basis_closedBall]
+  intro ε hε
+  let g : ℝ≥0 → ℝ≥0 := fun y ↦ 1 - (1 + y)⁻¹
+  have hg : Continuous g := by
+    rw [continuous_iff_continuousOn_univ]
+    fun_prop (disch := intro _ _; positivity)
+  refine ⟨cfcₙ g (ε⁻¹ ^ 2 • m),
+    ⟨cfcₙ_nonneg_of_predicate, norm_cfcₙ_one_sub_one_add_inv_lt_one (ε⁻¹ ^ 2 • m)⟩, ?_⟩
+  rintro - ⟨x, ⟨(hx₁ : _ ≤ x), hx₂⟩, rfl⟩
+  simp [mem_closedBall, dist_zero_right, dist_eq_norm'] at hx₂ ⊢
+  have hx₀ : 0 ≤ x := cfcₙ_nonneg_of_predicate.trans hx₁
+  lift ε to ℝ≥0 using hε.le
+  rw [coe_pos] at hε
+  rw [← NNReal.coe_inv, ← coe_pow, ← smul_def, ← inr_le_iff _ _, nnreal_cfcₙ_eq_cfc_inr _ _,
+    inr_smul] at hx₁
+  rw [← coe_nnnorm, coe_le_coe]
+  rw [← norm_inr (𝕜 := ℂ)] at hm₂ hx₂
+  rw [← inr_nonneg_iff] at hx₀ hm₁
+  generalize (m : A⁺¹) = m, (x : A⁺¹) = x at hm₁ hm₂ hx₀ hx₁ hx₂
+  rw [← sqrt_sq ε, ← sqrt_sq ‖_‖₊, sqrt_le_sqrt]
+  have hm₃ : m ∈ Set.Icc 0 1 := ⟨hm₁, norm_le_one_iff_of_nonneg m hm₁ |>.mp hm₂.le⟩
+  have hx₃ : x ∈ Set.Icc 0 1 := ⟨hx₀, norm_le_one_iff_of_nonneg x hx₀ |>.mp hx₂⟩
+  exact CStarAlgebra.tendsto_mul_right_approximateUnit_aux hε hm₃ hx₃ hx₁
 
+lemma CStarAlgebra.increasingApproximateUnit :
+    IncreasingApproximateUnit (approximateUnit A) where
+  tendsto_mul_left := by
+    rw [tendsto_mul_left_iff_tendsto_mul_right]
+    · exact tendsto_mul_right_approximateUnit
+    · rw [(hasBasis_approximateUnit A).eventually_iff]
+      peel (hasBasis_approximateUnit A).ex_mem with x hx
+      exact ⟨hx, fun y hy ↦ .of_nonneg (hx.1.trans hy.1)⟩
+  tendsto_mul_right := tendsto_mul_right_approximateUnit
+  eventually_mem_Icc := .filter_mono inf_le_left <|
+    (isBasis_nonneg_sections A).hasBasis.eventually_iff.mpr ⟨0, by simp⟩
+  eventually_norm := .filter_mono inf_le_right <| by simp
+  neBot := hasBasis_approximateUnit A |>.neBot_iff.mpr
+    fun hx ↦ ⟨_, ⟨le_rfl, by simpa using hx.2.le⟩⟩
 
 end ApproximateUnit
