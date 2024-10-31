@@ -84,7 +84,7 @@ lemma Matrix.IsTotallyUnimodular.submatrix {A : Matrix m n R} (hA : A.IsTotallyU
 lemma Matrix.IsTotallyUnimodular.transpose {A : Matrix m n R} (hA : A.IsTotallyUnimodular) :
     Aᵀ.IsTotallyUnimodular := by
   intro _ _ _ _ _
-  simp only [←Matrix.transpose_submatrix, Matrix.det_transpose]
+  simp only [← Matrix.transpose_submatrix, Matrix.det_transpose]
   apply hA <;> assumption
 
 lemma Matrix.mapEquiv_IsTotallyUnimodular {X' Y' : Type*}
