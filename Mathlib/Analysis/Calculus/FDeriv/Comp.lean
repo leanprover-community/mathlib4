@@ -133,16 +133,12 @@ theorem fderivWithin_comp_of_eq {g : F → G} {t : Set F} {y : F}
     fderivWithin 𝕜 (g ∘ f) s x = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) := by
   subst hy; exact fderivWithin_comp _ hg hf h hxs
 
-@[deprecated (since := "2024-10-31")] alias fderivWithin.comp_of_eq := fderivWithin_comp_of_eq
-
 /-- A variant for the derivative of a composition, written without `∘`. -/
 theorem fderivWithin_comp' {g : F → G} {t : Set F} (hg : DifferentiableWithinAt 𝕜 g t (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun y ↦ g (f y)) s x
       = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) :=
   fderivWithin_comp _ hg hf h hxs
-
-@[deprecated (since := "2024-10-31")] alias fderivWithin.comp' := fderivWithin_comp'
 
 /-- A variant for the derivative of a composition, written without `∘`. -/
 theorem fderivWithin_comp_of_eq' {g : F → G} {t : Set F} {y : F}
@@ -151,8 +147,6 @@ theorem fderivWithin_comp_of_eq' {g : F → G} {t : Set F} {y : F}
     fderivWithin 𝕜 (fun y ↦ g (f y)) s x
       = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) := by
   subst hy; exact fderivWithin_comp _ hg hf h hxs
-
-@[deprecated (since := "2024-10-31")] alias fderivWithin.comp_of_eq' := fderivWithin_comp_of_eq'
 
 /-- A version of `fderivWithin_comp` that is useful to rewrite the composition of two derivatives
   into a single derivative. This version always applies, but creates a new side-goal `f x = y`. -/
@@ -187,8 +181,6 @@ theorem fderiv_comp {g : F → G} (hg : DifferentiableAt 𝕜 g (f x)) (hf : Dif
 theorem fderiv_comp' {g : F → G} (hg : DifferentiableAt 𝕜 g (f x)) (hf : DifferentiableAt 𝕜 f x) :
     fderiv 𝕜 (fun y ↦ g (f y)) x = (fderiv 𝕜 g (f x)).comp (fderiv 𝕜 f x) :=
   fderiv_comp x hg hf
-
-@[deprecated (since := "2024-10-31")] alias fderiv.comp' := fderiv_comp'
 
 theorem fderiv_comp_fderivWithin {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
