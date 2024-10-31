@@ -177,7 +177,7 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M 
 
 -- This proof closely follows `FreeAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `TensorAlgebra R M`, the `ι` of `x : M`,
-and is preserved under addition and muliplication, then it holds for all of `TensorAlgebra R M`.
+and is preserved under addition and multiplication, then it holds for all of `TensorAlgebra R M`.
 -/
 @[elab_as_elim]
 theorem induction {C : TensorAlgebra R M → Prop}
@@ -288,7 +288,7 @@ theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
 theorem ι_range_disjoint_one :
     Disjoint (LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M))
       (1 : Submodule R (TensorAlgebra R M)) := by
-  rw [Submodule.disjoint_def]
+  rw [Submodule.disjoint_def, Submodule.one_eq_range]
   rintro _ ⟨x, hx⟩ ⟨r, rfl⟩
   rw [Algebra.linearMap_apply, ι_eq_algebraMap_iff] at hx
   rw [hx.2, map_zero]

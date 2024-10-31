@@ -64,7 +64,7 @@ def piScalarRightInv : (ι → N) →ₗ[S] N ⊗[R] (ι → R) :=
   LinearMap.lsum S (fun _ ↦ N) S <| fun i ↦ {
     toFun := fun n ↦ n ⊗ₜ Pi.single i 1
     map_add' := fun x y ↦ by simp [add_tmul]
-    map_smul' := fun s x ↦ rfl
+    map_smul' := fun _ _ ↦ rfl
   }
 
 @[simp]

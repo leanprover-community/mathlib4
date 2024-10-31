@@ -194,7 +194,7 @@ theorem image_bot (s : Set α) : (⊥ : Rel α β).image s = ∅ := by
 @[simp]
 theorem image_top {s : Set α} (h : Set.Nonempty s) :
     (⊤ : Rel α β).image s = Set.univ :=
-  Set.eq_univ_of_forall fun x ↦ ⟨h.some, by simp [h.some_mem, Top.top]⟩
+  Set.eq_univ_of_forall fun _ ↦ ⟨h.some, by simp [h.some_mem, Top.top]⟩
 
 /-- Preimage of a set under a relation `r`. Same as the image of `s` under `r.inv` -/
 def preimage (s : Set β) : Set α :=
@@ -333,7 +333,7 @@ theorem graph_injective : Injective (graph : (α → β) → Rel α β) := by
 
 @[simp] lemma graph_inj {f g : α → β} : f.graph = g.graph ↔ f = g := graph_injective.eq_iff
 
-theorem graph_id : graph id = @Eq α := by simp  (config := { unfoldPartialApp := true }) [graph]
+theorem graph_id : graph id = @Eq α := by simp (config := { unfoldPartialApp := true }) [graph]
 
 theorem graph_comp {f : β → γ} {g : α → β} : graph (f ∘ g) = Rel.comp (graph g) (graph f) := by
   ext x y

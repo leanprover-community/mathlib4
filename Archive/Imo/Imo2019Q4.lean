@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.GCongr
 
@@ -37,14 +37,14 @@ namespace Imo2019Q4
 theorem upper_bound {k n : ℕ} (hk : k > 0)
     (h : (k ! : ℤ) = ∏ i ∈ range n, ((2:ℤ) ^ n - (2:ℤ) ^ i)) : n < 6 := by
   have h2 : ∑ i ∈ range n, i < k := by
-    suffices multiplicity 2 (k ! : ℤ) = ↑(∑ i ∈ range n, i : ℕ) by
-      rw [← PartENat.coe_lt_coe, ← this]; change multiplicity ((2 : ℕ) : ℤ) _ < _
-      simp_rw [Int.natCast_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
-    rw [h, multiplicity.Finset.prod Int.prime_two, Nat.cast_sum]
+    suffices emultiplicity 2 (k ! : ℤ) = ↑(∑ i ∈ range n, i : ℕ) by
+      rw [← Nat.cast_lt (α := ℕ∞), ← this]; change emultiplicity ((2 : ℕ) : ℤ) _ < _
+      simp_rw [Int.natCast_emultiplicity, emultiplicity_two_factorial_lt hk.lt.ne.symm]
+    rw [h, Finset.emultiplicity_prod Int.prime_two, Nat.cast_sum]
     apply sum_congr rfl; intro i hi
-    rw [multiplicity_sub_of_gt, multiplicity_pow_self_of_prime Int.prime_two]
-    rwa [multiplicity_pow_self_of_prime Int.prime_two, multiplicity_pow_self_of_prime Int.prime_two,
-      PartENat.coe_lt_coe, ← mem_range]
+    rw [emultiplicity_sub_of_gt, emultiplicity_pow_self_of_prime Int.prime_two]
+    rwa [emultiplicity_pow_self_of_prime Int.prime_two,
+      emultiplicity_pow_self_of_prime Int.prime_two, Nat.cast_lt, ← mem_range]
   rw [← not_le]; intro hn
   apply _root_.ne_of_gt _ h
   calc ∏ i ∈ range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ≤ ∏ __ ∈ range n, (2:ℤ) ^ n := ?_

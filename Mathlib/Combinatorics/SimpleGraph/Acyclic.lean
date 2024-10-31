@@ -14,8 +14,8 @@ This module introduces *acyclic graphs* (a.k.a. *forests*) and *trees*.
 
 ## Main definitions
 
-* `SimpleGraph.IsAcyclic` is a predicate for a graph having no cyclic walks
-* `SimpleGraph.IsTree` is a predicate for a graph being a tree (a connected acyclic graph)
+* `SimpleGraph.IsAcyclic` is a predicate for a graph having no cyclic walks.
+* `SimpleGraph.IsTree` is a predicate for a graph being a tree (a connected acyclic graph).
 
 ## Main statements
 
@@ -114,7 +114,7 @@ theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) :
   cases c with
   | nil => cases hc.2.1 rfl
   | cons ha c' =>
-    simp only [Walk.cons_isTrail_iff, Walk.support_cons, List.tail_cons, true_and_iff] at hc
+    simp only [Walk.cons_isTrail_iff, Walk.support_cons, List.tail_cons] at hc
     specialize h _ _ ⟨c', by simp only [Walk.isPath_def, hc.2]⟩ (Path.singleton ha.symm)
     rw [Path.singleton, Subtype.mk.injEq] at h
     simp [h] at hc
@@ -132,7 +132,7 @@ theorem isTree_iff_existsUnique_path :
     intro v w
     let q := (hc v w).some.toPath
     use q
-    simp only [true_and_iff, Path.isPath]
+    simp only [true_and, Path.isPath]
     intro p hp
     specialize hu ⟨p, hp⟩ q
     exact Subtype.ext_iff.mp hu
@@ -170,11 +170,12 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     · exact (congrArg (·.fst) h)
     · have h1 : ((f a).firstDart <| not_nil_of_ne (by simpa using ha)).snd = b :=
         congrArg (·.snd) h
-      have h3 := congrArg length (hf' _ (((f _).tail _).copy h1 rfl) ?_)
-      · rw [length_copy, ← add_left_inj 1, length_tail_add_one] at h3
+      have h3 := congrArg length (hf' _ ((f _).tail.copy h1 rfl) ?_)
+      · rw [length_copy, ← add_left_inj 1,
+          length_tail_add_one (not_nil_of_ne (by simpa using ha))] at h3
         omega
       · simp only [ne_eq, eq_mp_eq_cast, id_eq, isPath_copy]
-        exact (hf _).tail _
+        exact (hf _).tail (not_nil_of_ne (by simpa using ha))
   case surj =>
     simp only [mem_edgeFinset, Finset.mem_compl, Finset.mem_singleton, Sym2.forall, mem_edgeSet]
     intros x y h
@@ -188,7 +189,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
           length_cons, length_nil] at h'
       simp [Nat.le_zero, Nat.one_ne_zero] at h'
     rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
-    · rfl
+    · simp only [firstDart_toProd, getVert_cons_succ, getVert_zero, Prod.swap_prod_mk]
     case contra =>
       suffices (f x).takeUntil y hy = .cons h .nil by
         rw [← take_spec _ hy] at h'

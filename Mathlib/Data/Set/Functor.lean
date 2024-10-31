@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Set.Lattice
-import Mathlib.Init.Set
+import Mathlib.Data.Set.Defs
 import Mathlib.Control.Basic
 import Mathlib.Data.Set.Notation
 

@@ -46,7 +46,6 @@ This file is almost identical to `Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.le
 variable {R : Type*} [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable (Q : QuadraticForm R M)
-variable {n : ℕ}
 
 namespace CliffordAlgebra
 
@@ -185,7 +184,7 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q 
 
 -- This proof closely follows `TensorAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
-and is preserved under addition and muliplication, then it holds for all of `CliffordAlgebra Q`.
+and is preserved under addition and multiplication, then it holds for all of `CliffordAlgebra Q`.
 
 See also the stronger `CliffordAlgebra.left_induction` and `CliffordAlgebra.right_induction`.
 -/

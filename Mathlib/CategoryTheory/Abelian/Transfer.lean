@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
@@ -128,7 +128,7 @@ def coimageIsoImage (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X �
     _ ≅ Abelian.image f := Iso.refl _
 
 -- The account of this proof in the Stacks project omits this calculation.
-theorem coimageIsoImage_hom  (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y) :
+theorem coimageIsoImage_hom (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y) :
     (coimageIsoImage F G i adj f).hom = Abelian.coimageImageComparison f := by
   dsimp [coimageIsoImage, cokernelIso, cokernelEpiComp, cokernelCompIsIso_inv,
     coimageIsoImageAux, kernelCompMono]

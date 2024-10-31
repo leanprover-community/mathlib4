@@ -57,14 +57,15 @@ info: Unfolds for 5 / 3:
 info: Unfolds for 1 + 1:
 · Ordinal.type (Sum.Lex EmptyRelation EmptyRelation)
 · ⟦{ α := PUnit.{u_1 + 1} ⊕ PUnit.{u_1 + 1}, r := Sum.Lex EmptyRelation EmptyRelation, wo := ⋯ }⟧
-· Quot.mk Setoid.r { α := PUnit.{u_1 + 1} ⊕ PUnit.{u_1 + 1}, r := Sum.Lex EmptyRelation EmptyRelation, wo := ⋯ }
+· Quot.mk ⇑Ordinal.isEquivalent
+  { α := PUnit.{u_1 + 1} ⊕ PUnit.{u_1 + 1}, r := Sum.Lex EmptyRelation EmptyRelation, wo := ⋯ }
 -/
 #guard_msgs in
 #unfold? (1 : Ordinal) + 1
 
 /--
 info: Unfolds for 3 ∈ {1, 2, 3}:
-· Set.Mem 3 {1, 2, 3}
+· {1, 2, 3}.Mem 3
 · {1, 2, 3} 3
 · Set.insert 1 {2, 3} 3
 · {b | b = 1 ∨ b ∈ {2, 3}} 3
@@ -85,7 +86,7 @@ variable (A B : Set Nat) (n : Nat)
 
 /--
 info: Unfolds for 1 ∈ A ∪ B:
-· Set.Mem 1 (A ∪ B)
+· (A ∪ B).Mem 1
 · (A ∪ B) 1
 · A.union B 1
 · {a | a ∈ A ∨ a ∈ B} 1
