@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Lucas Whitfield. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Lucas Whitfield
+Authors: Lucas Whitfield, Johan Commelin
 -/
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.AltWeights
@@ -11,7 +11,7 @@ import Mathlib.Algebra.Lie.AltWeights
 
 Lie's theorem asserts that Lie modules of solvable Lie algebras over fields of characteristic 0
 have a common eigenvector for the action of all elements of the Lie algebra.
-This result is named `LieModule.exists_forall_lie_eq_smul_of_Solvable`.
+This result is named `LieModule.exists_forall_lie_eq_smul_of_isSolvable`.
 -/
 
 section
@@ -55,26 +55,20 @@ theorem extend_weight [LieModule.IsTriangularizable k L V]
         = e (π₂ x) • ↑(c • ⟨v, hv⟩ : Vχ₀) := by rw [← he, smul_lie, ← hvc.apply_eq_smul]; rfl
       _ = (c • e (π₂ x)) • v              := by rw [smul_assoc, smul_comm]; rfl
 
-end
-
-section
-
-variable {k : Type*} [Field k]
-variable {L : Type*} [LieRing L] [LieAlgebra k L]
-variable {V : Type*} [AddCommGroup V] [Module k V] [LieRingModule L V] [LieModule k L V]
-variable [CharZero k] [Module.Finite k V]
+variable (k L V)
+variable [Nontrivial V]
 
 open LieAlgebra
 
 -- This lemma is the central inductive argument in the proof of Lie's theorem below.
 -- The statement is identical to `LieModule.exists_forall_lie_eq_smul_of_isSolvable`
 -- except that it additionally assumes a finiteness hypothesis.
-private lemma LieModule.exists_forall_lie_eq_smul_of_isSolvable_of_finite [Nontrivial V]
+private lemma LieModule.exists_forall_lie_eq_smul_of_isSolvable_of_finite
     (L : Type*) [LieRing L] [LieAlgebra k L] [LieRingModule L V] [LieModule k L V]
     [IsSolvable k L] [LieModule.IsTriangularizable k L V] [Module.Finite k L] :
     ∃ χ : Module.Dual k L, ∃ v : V, v ≠ 0 ∧ ∀ x : L, ⁅x, v⁆ = χ x • v := by
   obtain H|⟨A, hA, hAL⟩ := eq_top_or_exists_le_coatom (derivedSeries k L 1).toSubmodule
-  · obtain _inst|_inst := subsingleton_or_nontrivial L
+  · obtain _|_ := subsingleton_or_nontrivial L
     · use 0
       simpa using exists_ne _
     · rw [LieSubmodule.coeSubmodule_eq_top_iff] at H
@@ -94,22 +88,19 @@ decreasing_by
 
 local notation "π" => LieModule.toEnd k L V
 
--- If `L` is solvable, we can find a non-zero eigenvector
-theorem LieModule.exists_forall_lie_eq_smul_of_isSolvable [Nontrivial V]
+/-- **Lie's theorem**: Lie modules of solvable Lie algebras over fields of characteristic 0
+have a common eigenvector for the action of all elements of the Lie algebra. -/
+theorem LieModule.exists_forall_lie_eq_smul_of_isSolvable
     [IsSolvable k L] [LieModule.IsTriangularizable k L V] :
     ∃ χ : Module.Dual k L, ∃ v : V, v ≠ 0 ∧ ∀ x : L, ⁅x, v⁆ = χ x • v := by
   let imL := (π).range
-  have hdim : FiniteDimensional k imL := Submodule.finiteDimensional_of_le (le_top)
-  suffices h : ∃ χ : Module.Dual k imL, ∃ v : V, v ≠ 0 ∧ ∀ x : imL, ⁅x, v⁆ = χ x • v by
-    rcases h with ⟨χ', v, hv, hχ'⟩
-    let toEndo : L →ₗ[k] imL := LinearMap.codRestrict imL.toSubmodule π
-        (fun x ↦ LinearMap.mem_range.mpr ⟨x, rfl⟩ : ∀ x : L, π x ∈ imL)
-    use χ'.comp toEndo, v, hv
-    intro x
-    have : ⁅x, v⁆ = ⁅toEndo x, v⁆ := rfl
-    rw [LinearMap.comp_apply, this, hχ' (toEndo x)]
-  have : IsSolvable k imL := LieHom.isSolvable_range π
-  apply exists_forall_lie_eq_smul_of_isSolvable_of_finite (L := imL)
+  let toEndo : L →ₗ[k] imL := LinearMap.codRestrict imL.toSubmodule π
+      (fun x ↦ LinearMap.mem_range.mpr ⟨x, rfl⟩ : ∀ x : L, π x ∈ imL)
+  have ⟨χ, v, hv, hχ⟩ := exists_forall_lie_eq_smul_of_isSolvable_of_finite k V imL
+  use χ.comp toEndo, v, hv
+  intro x
+  have : ⁅x, v⁆ = ⁅toEndo x, v⁆ := rfl
+  simpa [← hχ, toEndo] using this
 
 end
 

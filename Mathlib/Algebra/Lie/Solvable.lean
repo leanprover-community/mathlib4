@@ -238,7 +238,7 @@ theorem Surjective.lieAlgebra_isSolvable [h₁ : IsSolvable R L'] (h₂ : Surjec
 
 end Function
 
-theorem LieHom.isSolvable_range (f : L' →ₗ⁅R⁆ L) [LieAlgebra.IsSolvable R L'] :
+instance LieHom.isSolvable_range (f : L' →ₗ⁅R⁆ L) [LieAlgebra.IsSolvable R L'] :
     LieAlgebra.IsSolvable R f.range :=
   f.surjective_rangeRestrict.lieAlgebra_isSolvable
 
