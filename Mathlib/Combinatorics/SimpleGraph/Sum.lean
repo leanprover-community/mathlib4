@@ -39,20 +39,20 @@ protected def Sum (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α �
     | Sum.inl _, Sum.inr _ | Sum.inr _, Sum.inl _ => id
   loopless u := by cases u <;> simp
 
-@[simps!]
-instance : HAdd (SimpleGraph α) (SimpleGraph β) (SimpleGraph (α ⊕ β)) := ⟨SimpleGraph.Sum⟩
+/-- Disjoint sum of `G` and `H`. -/
+infixl:60 " ⊎ " => SimpleGraph.Sum
 
 variable {G : SimpleGraph α} {H : SimpleGraph β}
 
 /-- The disjoint sum is commutative up to isomorphism. `Equiv.sumComm` as a graph isomorphism. -/
 @[simps!]
-def SumComm : G + H ≃g H + G := ⟨Equiv.sumComm α β, by
+def SumComm : G ⊎ H ≃g H ⊎ G := ⟨Equiv.sumComm α β, by
   intro u v
   cases u <;> cases v <;> simp⟩
 
 /-- The disjoint sum is associative up to isomorphism. `Equiv.sumAssoc` as a graph isomorphism. -/
 @[simps!]
-def SumAssoc {I : SimpleGraph γ} : (G + H) + I ≃g G + (H + I) := ⟨Equiv.sumAssoc α β γ, by
+def SumAssoc {I : SimpleGraph γ} : (G ⊎ H) ⊎ I ≃g G ⊎ (H ⊎ I) := ⟨Equiv.sumAssoc α β γ, by
   intro u v
   cases u <;> cases v <;> rename_i u v
   · cases u <;> cases v <;> simp
@@ -60,16 +60,16 @@ def SumAssoc {I : SimpleGraph γ} : (G + H) + I ≃g G + (H + I) := ⟨Equiv.sum
   · cases v <;> simp
   · simp⟩
 
-/-- The embedding of `G` into `G + H`. -/
+/-- The embedding of `G` into `G ⊎ H`. -/
 @[simps]
-protected def Sum.inl : G ↪g G + H where
+protected def Sum.inl : G ↪g G ⊎ H where
   toFun u := _root_.Sum.inl u
   inj' u v := by simp
   map_rel_iff' := by simp
 
-/-- The embedding of `H` into `G + H`. -/
+/-- The embedding of `H` into `G ⊎ H`. -/
 @[simps]
-protected def Sum.inr : H ↪g G + H where
+protected def Sum.inr : H ↪g G ⊎ H where
   toFun u := _root_.Sum.inr u
   inj' u v := by simp
   map_rel_iff' := by simp
