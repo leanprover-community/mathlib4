@@ -443,7 +443,7 @@ section Subtype
 theorem linearIndependent_comp_subtype {s : Set ι} :
     LinearIndependent R (v ∘ (↑) : s → M) ↔
       ∀ l ∈ Finsupp.supported R R s, (Finsupp.linearCombination R v) l = 0 → l = 0 := by
-  simp only [linearIndependent_iff, (· ∘ ·), Finsupp.mem_supported, Finsupp.linearCombination_apply,
+  simp only [linearIndependent_iff_inj, (· ∘ ·), Finsupp.mem_supported, Finsupp.linearCombination_apply,
     Set.subset_def, Finset.mem_coe]
   constructor
   · intro h l hl₁ hl₂
@@ -1054,7 +1054,7 @@ theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
     (hs : LinearIndependent R (fun x => x : s → M))
     (ht : LinearIndependent R (fun x => x : t → M')) :
     LinearIndependent R (fun x => x : ↥(inl R M M' '' s ∪ inr R M M' '' t) → M × M') := by
-  refine (hs.image_subtype ?_).union (ht.image_subtype ?_) ?_ <;> [simp; simp; skip]
+  refine (hs.image_subtype inl_injective.injOn).union (ht.image_subtype inr_injective.injOn) ?_
   -- Note: #8386 had to change `span_image` into `span_image _`
   simp only [span_image _]
   simp [disjoint_iff, prod_inf_prod]
