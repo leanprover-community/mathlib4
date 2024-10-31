@@ -167,9 +167,8 @@ theorem exponents_sorted (b o : Ordinal) : (exponents b o).Sorted (· > ·) := b
       · rw [CNF.of_lt ho hob]
         exact sorted_singleton _
       · rw [CNF.ne_zero ho, map_cons, sorted_cons]
-        refine ⟨?_, IH⟩
-        intro a H
-        exact (le_log_of_mem_exponents H).trans_lt <| log_mod_opow_log_lt_log_self hb hbo
+        exact ⟨fun a H ↦ (le_log_of_mem_exponents H).trans_lt <|
+          log_mod_opow_log_lt_log_self hb hbo, IH⟩
 
 end CNF
 
