@@ -419,7 +419,8 @@ def ListBlank.flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ)
   rw [List.flatMap_append, mul_comm]; congr
   induction' i with i IH
   · rfl
-  simp only [IH, e, List.replicate_add, Nat.mul_succ, add_comm, List.replicate_succ, List.bind_cons]
+  simp only [IH, e, List.replicate_add, Nat.mul_succ, add_comm, List.replicate_succ,
+    List.flatMap_cons]
 
 @[deprecated (since := "2024-10-16")] alias ListBlank.bind := ListBlank.flatMap
 
@@ -437,7 +438,7 @@ theorem ListBlank.cons_flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) 
   refine l.inductionOn fun l ↦ ?_
   -- Porting note: Added `suffices` to get `simp` to work.
   suffices ((mk l).cons a).flatMap f hf = ((mk l).flatMap f hf).append (f a) by exact this
-  simp only [ListBlank.append_mk, ListBlank.flatMap_mk, ListBlank.cons_mk, List.cons_flatMap]
+  simp only [ListBlank.append_mk, ListBlank.flatMap_mk, ListBlank.cons_mk, List.flatMap_cons]
 
 @[deprecated (since := "2024-10-16")] alias ListBlank.cons_bind := ListBlank.cons_flatMap
 
@@ -1601,7 +1602,7 @@ theorem trTape'_move_right (L R : ListBlank Γ) :
 theorem stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
     stepAux (write (enc a).toList q) v (trTape' enc0 L (ListBlank.cons b R)) =
       stepAux q v (trTape' enc0 (ListBlank.cons a L) R) := by
-  simp only [trTape', ListBlank.cons_bind]
+  simp only [trTape', ListBlank.cons_flatMap]
   suffices ∀ {L' R'} (l₁ l₂ l₂' : List Bool) (_ : l₂'.length = l₂.length),
       stepAux (write l₂ q) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂' R')) =
       stepAux q v (Tape.mk' (L'.append (List.reverseAux l₂ l₁)) R') by
@@ -1627,15 +1628,15 @@ theorem stepAux_read (f : Γ → Stmt'₁) (v : σ) (L R : ListBlank Γ) :
     rw [read, this, stepAux_move, encdec, trTape'_move_left enc0]
     simp only [ListBlank.head_cons, ListBlank.cons_head_tail, ListBlank.tail_cons]
   obtain ⟨a, R, rfl⟩ := R.exists_cons
-  simp only [ListBlank.head_cons, ListBlank.tail_cons, trTape', ListBlank.cons_bind,
+  simp only [ListBlank.head_cons, ListBlank.tail_cons, trTape', ListBlank.cons_flatMap,
     ListBlank.append_assoc]
   suffices ∀ i f L' R' l₁ l₂ h,
       stepAux (readAux i f) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
       stepAux (f ⟨l₂, h⟩) v (Tape.mk' (ListBlank.append (l₂.reverseAux l₁) L') R') by
     intro f
     -- Porting note: Here was `change`.
-    exact this n f (L.bind (fun x => (enc x).1.reverse) _)
-      (R.bind (fun x => (enc x).1) _) [] _ (enc a).2
+    exact this n f (L.flatMap (fun x => (enc x).1.reverse) _)
+      (R.flatMap (fun x => (enc x).1) _) [] _ (enc a).2
   clear f L a R
   intro i f L' R' l₁ l₂ _
   subst i

@@ -131,7 +131,7 @@ attribute [notation_class one Simps.findOneArgs] OfNat
 attribute [notation_class zero Simps.findZeroArgs] OfNat
 
 /-- arguments to `@[simps]` attribute. -/
-syntax simpsArgsRest := (Tactic.config)? (ppSpace ident)*
+syntax simpsArgsRest := Tactic.optConfig (ppSpace ident)*
 
 /-- The `@[simps]` attribute automatically derives lemmas specifying the projections of this
 declaration.
@@ -872,7 +872,7 @@ structure Config where
   deriving Inhabited
 
 /-- Function elaborating `Config` -/
-declare_config_elab elabSimpsConfig Config
+declare_command_config_elab elabSimpsConfig Config
 
 /-- A common configuration for `@[simps]`: generate equalities between functions instead equalities
   between fully applied Expressions. Use this using `@[simps (config := .asFn)]`. -/
@@ -1183,8 +1183,8 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
 /-- elaborate the syntax and run `simpsTac`. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
   match stx with
-  | `(attr| simps $[!%$bang]? $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
-    let cfg ← MetaM.run' <| TermElabM.run' <| withSaveInfoContext <| elabSimpsConfig stx[3][0]
+  | `(attr| simps $[!%$bang]? $[?%$trc]? $c:optConfig $[$ids]*) => do
+    let cfg ← liftCommandElabM <| elabSimpsConfig c
     let cfg := if bang.isNone then cfg else { cfg with rhsMd := .default, simpRhs := true }
     let ids := ids.map fun x => (x.getId.eraseMacroScopes.lastComponentAsString, x.raw)
     simpsTac stx nm cfg ids.toList trc.isSome
