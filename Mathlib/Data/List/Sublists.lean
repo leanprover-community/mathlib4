@@ -330,12 +330,9 @@ theorem nodup_sublists {l : List α} : Nodup (sublists l) ↔ Nodup l :=
 theorem nodup_sublists' {l : List α} : Nodup (sublists' l) ↔ Nodup l := by
   rw [sublists'_eq_sublists, nodup_map_iff reverse_injective, nodup_sublists, nodup_reverse]
 
-alias ⟨nodup.of_sublists, nodup.sublists⟩ := nodup_sublists
+protected alias ⟨Nodup.of_sublists, Nodup.sublists⟩ := nodup_sublists
 
-alias ⟨nodup.of_sublists', nodup.sublists'⟩ := nodup_sublists'
-
--- Porting note: commented out
---attribute [protected] nodup.sublists nodup.sublists'
+protected alias ⟨Nodup.of_sublists', _⟩ := nodup_sublists'
 
 theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n l).Nodup := by
   have : Pairwise (· ≠ ·) l.sublists' := Pairwise.imp
