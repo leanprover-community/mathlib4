@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Hom
 import Mathlib.RingTheory.Congruence.Basic
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Ideal.Span
+import Mathlib.Tactic.IrreducibleDef
 
 /-!
 # Quotients of non-commutative rings

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Rat
 import Mathlib.Data.PNat.Defs
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Further lemmas for the Rational Numbers

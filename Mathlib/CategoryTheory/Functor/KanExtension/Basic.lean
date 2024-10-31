@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Kan extensions

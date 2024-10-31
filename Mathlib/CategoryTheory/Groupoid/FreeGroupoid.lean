@@ -5,6 +5,7 @@ Authors: Rémi Bottinelli
 -/
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.PathCategory.Basic
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Free groupoid on a quiver

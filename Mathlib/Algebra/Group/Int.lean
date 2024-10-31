@@ -6,6 +6,8 @@ Authors: Jeremy Avigad
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Int.Sqrt
+import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Tauto
 
 /-!
 # The integers form a group

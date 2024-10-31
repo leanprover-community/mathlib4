@@ -9,6 +9,7 @@ import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Tactic.IrreducibleDef
 
 /-!
 # Finite products and sums over types and sets

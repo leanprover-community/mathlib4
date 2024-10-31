@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Tactic.Says
 
 /-!
 # Prime and irreducible elements.

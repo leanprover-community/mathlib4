@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.NumberTheory.Liouville.Basic
+import Mathlib.Tactic.Rename
 import Mathlib.Topology.Instances.Irrational
 
 /-!

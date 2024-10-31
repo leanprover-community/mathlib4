@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Seq.Computation
+import Batteries.Data.MLList.Basic
 
 /-!
 # Possibly infinite lists

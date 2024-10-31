@@ -5,6 +5,7 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Logic.Equiv.Embedding
+import Mathlib.Tactic.ClearExclamation
 
 /-!
 # Number of embeddings

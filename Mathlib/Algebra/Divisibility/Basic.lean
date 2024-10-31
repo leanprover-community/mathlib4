@@ -6,7 +6,7 @@ Neil Strickland, Aaron Anderson
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Use
 
 /-!
 # Divisibility

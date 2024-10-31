@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
+import Mathlib.Tactic.Cases
 
 /-!
 # Relations holding pairwise

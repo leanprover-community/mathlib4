@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.WLOG
 
 /-!
 # Order connected components of a set

@@ -6,6 +6,7 @@ Authors: Reid Barton, Mario Carneiro, Kim Morrison, Floris van Doorn
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Limits.Cones
 import Batteries.Tactic.Congr
+import Mathlib.Tactic.Choose
 
 /-!
 # Limits and colimits

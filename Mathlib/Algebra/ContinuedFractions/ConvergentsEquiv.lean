@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Set
 import Mathlib.Tactic.Ring
 
 /-!

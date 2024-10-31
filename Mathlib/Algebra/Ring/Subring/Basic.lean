@@ -7,6 +7,7 @@ import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.RingTheory.NonUnitalSubring.Basic
+import Mathlib.Tactic.RSuffices
 
 /-!
 # Subrings

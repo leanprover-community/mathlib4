@@ -5,7 +5,6 @@ Authors: Zhouhang Zhou
 -/
 import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Tactic.Common
 
 /-!
 # Intervals without endpoints ordering

@@ -6,6 +6,7 @@ Authors: Stephen Morgan, Kim Morrison
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.Data.Prod.Basic
+import Mathlib.Tactic.Says
 
 /-!
 # Cartesian products of categories

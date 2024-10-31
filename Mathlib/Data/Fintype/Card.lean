@@ -8,6 +8,7 @@ import Mathlib.Data.Finset.Card
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.Set.Image
 import Mathlib.Order.WellFounded
+import Mathlib.Tactic.WLOG
 
 /-!
 # Cardinalities of finite types

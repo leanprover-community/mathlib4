@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Nat
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`

@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Common
 
 /-!
 

@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Modules over a ring

@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Size
+import Mathlib.Tactic.DefEqTransformations
 
 /-!
 # Bitwise operations on integers

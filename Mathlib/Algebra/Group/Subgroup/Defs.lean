@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Tactic.Common
 
 /-!
 # Subgroups

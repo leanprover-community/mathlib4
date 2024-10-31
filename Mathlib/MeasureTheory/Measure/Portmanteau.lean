@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+import Mathlib.Tactic.InferParam
 
 /-!
 # Characterizations of weak convergence of finite measures and probability measures

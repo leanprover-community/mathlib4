@@ -5,6 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.Tactic.ApplyWith
 
 /-!
 # Limit preservation properties of `Functor.op` and related constructions

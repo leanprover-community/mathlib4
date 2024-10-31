@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Logic.Function.Iterate
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.DefEqTransformations
 
 /-!
 # Iterates of monoid homomorphisms

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Order.WellFounded
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Cases
 
 /-!
 # Lexicographic order on Pi types

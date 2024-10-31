@@ -9,6 +9,7 @@ import Mathlib.Order.Filter.Bases
 import Mathlib.Order.Filter.Prod
 import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.Order.Interval.Set.OrderIso
+import Mathlib.Tactic.RSuffices
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on preorders, monoids and groups.

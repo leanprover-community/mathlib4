@@ -11,6 +11,7 @@ import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Grothendieck
+import Mathlib.Tactic.RSuffices
 
 /-!
 # Final and initial functors

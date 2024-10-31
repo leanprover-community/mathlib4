@@ -6,6 +6,7 @@ Authors: Sam van Gool
 
 import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.Zorn
+import Mathlib.Tactic.Set
 
 /-!
 # Separating prime filters and ideals

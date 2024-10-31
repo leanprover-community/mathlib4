@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 import Mathlib.CategoryTheory.Monad.Coequalizer
 import Mathlib.CategoryTheory.Monad.Limits
+import Mathlib.Tactic.ApplyWith
 
 /-!
 # Monadicity theorems

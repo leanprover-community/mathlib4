@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Computability.Partrec
 import Mathlib.Data.Option.Basic
+import Mathlib.Tactic.RSuffices
 
 /-!
 # Gödel Numbering for Partial Recursive Functions.

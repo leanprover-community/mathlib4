@@ -6,6 +6,8 @@ Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.Data.ULift
+import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.FailIfNoProgress
 
 /-!
 # Discrete categories

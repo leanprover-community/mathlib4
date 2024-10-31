@@ -5,6 +5,7 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Iso
+import Mathlib.Tactic.Subsingleton
 
 /-!
 # Thin categories

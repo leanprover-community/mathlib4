@@ -9,6 +9,7 @@ import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Hom.Basic
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Tactic.CongrM
 
 /-!
 # Relation embeddings from the naturals

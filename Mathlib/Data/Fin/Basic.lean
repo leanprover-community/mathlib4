@@ -8,8 +8,8 @@ import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Int.DivMod
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Set
-import Mathlib.Tactic.Common
 import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Cases
 
 /-!
 # The finite type with `n` elements

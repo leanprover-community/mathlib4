@@ -11,7 +11,12 @@ import Mathlib.Data.List.Monad
 import Mathlib.Logic.OpClass
 import Mathlib.Logic.Unique
 import Mathlib.Order.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Says
+import Mathlib.Tactic.Subsingleton
+import Mathlib.Tactic.TermCongr
+import Mathlib.Tactic.Use
 
 /-!
 # Basic properties of lists

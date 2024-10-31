@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Logic.Equiv.Set
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # The group of permutations (self-equivalences) of a type `α`

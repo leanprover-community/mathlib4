@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Eric Wieser, Joachim Breitner
 -/
 import Mathlib.GroupTheory.FreeGroup.Basic
+import Mathlib.Tactic.IrreducibleDef
 
 /-!
 # Free groups structures on arbitrary types

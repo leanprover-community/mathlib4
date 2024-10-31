@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Part
 import Mathlib.Order.Hom.Basic
-import Mathlib.Tactic.Common
 
 /-!
 # Monotonicity of monadic operations on `Part`

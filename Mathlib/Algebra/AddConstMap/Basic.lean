@@ -9,6 +9,7 @@ import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Tactic.WLOG
 
 /-!
 # Maps (semi)conjugating a shift to a shift

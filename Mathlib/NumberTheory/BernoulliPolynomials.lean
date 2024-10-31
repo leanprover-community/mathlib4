@@ -7,6 +7,7 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.NumberTheory.Bernoulli
+import Mathlib.Tactic.ApplyCongr
 
 /-!
 # Bernoulli polynomials

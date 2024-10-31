@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Ring.Regular
+import Mathlib.Tactic.DefEqTransformations
+import Mathlib.Tactic.Set
 
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`

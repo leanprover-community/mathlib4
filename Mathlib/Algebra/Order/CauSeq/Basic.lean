@@ -11,6 +11,7 @@ import Mathlib.Algebra.Ring.Pi
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Set
 
 /-!
 # Cauchy sequences

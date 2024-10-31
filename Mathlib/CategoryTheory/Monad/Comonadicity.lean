@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 import Mathlib.CategoryTheory.Monad.Equalizer
 import Mathlib.CategoryTheory.Monad.Limits
+import Mathlib.Tactic.ApplyWith
 
 /-!
 # Comonadicity theorems

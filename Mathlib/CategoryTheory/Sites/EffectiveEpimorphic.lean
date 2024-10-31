@@ -5,6 +5,8 @@ Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.EffectiveEpi.Basic
+import Mathlib.Tactic.NthRewrite
+
 /-!
 
 # Effective epimorphic sieves

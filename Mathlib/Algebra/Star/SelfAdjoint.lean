@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Rat
+import Mathlib.Tactic.TermCongr
 
 /-!
 # Self-adjoint, skew-adjoint and normal elements of a star additive group

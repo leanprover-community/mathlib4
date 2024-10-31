@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.WLOG
 
 /-!
 # Characteristic of semirings

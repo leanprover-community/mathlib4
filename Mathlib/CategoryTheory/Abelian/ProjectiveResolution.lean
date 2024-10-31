@@ -5,6 +5,7 @@ Authors: Markus Himmel, Kim Morrison, Jakob von Raumer, Joël Riou
 -/
 import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
 import Mathlib.Algebra.Homology.HomotopyCategory
+import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.SuppressCompilation
 
 /-!

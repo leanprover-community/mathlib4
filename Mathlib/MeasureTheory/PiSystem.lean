@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 import Mathlib.Logic.Encodable.Lattice
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
+import Mathlib.Tactic.DefEqTransformations
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.

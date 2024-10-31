@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Tactic.Cases
 
 /-!
 # Adjoining a zero to a semiring

@@ -7,7 +7,9 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Int.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Order.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Tauto
 import Batteries.Data.Rat.Lemmas
 
 /-!

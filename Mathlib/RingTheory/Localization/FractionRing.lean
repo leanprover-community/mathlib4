@@ -8,6 +8,7 @@ import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.Tactic.IrreducibleDef
 
 /-!
 # Fraction ring / fraction field Frac(R) as localization

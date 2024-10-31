@@ -5,7 +5,7 @@ Authors: Matthew Robert Ballard
 -/
 import Mathlib.Algebra.Divisibility.Units
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # The maximal power of one natural number dividing another

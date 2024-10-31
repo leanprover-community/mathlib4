@@ -5,6 +5,7 @@ Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Hom.Ring
+import Mathlib.Tactic.WLOG
 
 /-!
 ### Uniqueness of ring homomorphisms to archimedean fields.

@@ -13,6 +13,8 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
+import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Cases
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined

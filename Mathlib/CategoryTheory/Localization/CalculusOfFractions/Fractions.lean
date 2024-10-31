@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Lemmas on fractions

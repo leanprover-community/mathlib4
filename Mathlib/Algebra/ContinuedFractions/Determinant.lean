@@ -6,6 +6,7 @@ Authors: Kevin Kappelmann
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Set
 
 /-!
 # Determinant Formula for Simple Continued Fraction

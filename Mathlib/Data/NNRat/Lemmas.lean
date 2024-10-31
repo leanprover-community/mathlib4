@@ -7,6 +7,7 @@ import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Field and action structures on the nonnegative rationals

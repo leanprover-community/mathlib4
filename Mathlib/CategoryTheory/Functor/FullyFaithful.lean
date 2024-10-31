@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.Cases
 
 /-!
 # Full and faithful functors

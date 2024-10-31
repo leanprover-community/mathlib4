@@ -6,12 +6,14 @@ Authors: Mario Carneiro
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Vector.Basic
+import Mathlib.Data.List.GetD
 import Mathlib.Data.PFun
+import Mathlib.Data.Vector.Basic
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Basic
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.List.GetD
+import Mathlib.Tactic.DefEqTransformations
+import Mathlib.Tactic.RSuffices
 
 /-!
 # Turing machines

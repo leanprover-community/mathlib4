@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Tactic.InferParam
 
 /-!
 # Representation of `FormalMultilinearSeries.radius` as a `liminf`

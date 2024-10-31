@@ -10,6 +10,7 @@ import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.InsertIdx
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
+import Mathlib.Tactic.ClearExcept
 
 /-!
 # Additional theorems and definitions about the `Vector` type

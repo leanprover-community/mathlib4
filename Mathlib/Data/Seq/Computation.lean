@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Stream.Init
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.DefEqTransformations
 
 /-!
 # Coinductive formalization of unbounded computations.

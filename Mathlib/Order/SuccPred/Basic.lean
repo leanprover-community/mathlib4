@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Cover
 import Mathlib.Order.Iterate
+import Mathlib.Tactic.TermCongr
 
 /-!
 # Successor and predecessor

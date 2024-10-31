@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Data.List.Defs
-import Mathlib.Tactic.Common
+import Mathlib.Util.AssertExists
 
 /-!
 The type `Vector` represents lists with fixed length.

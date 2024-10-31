@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Kenny Lau, Yury Kudryashov
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Tactic.Set
 
 /-!
 # Fixed point construction on complete lattices
