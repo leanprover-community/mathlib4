@@ -372,24 +372,36 @@ theorem HasStrictFDerivAt.comp_hasStrictDerivAt_of_eq (hl : HasStrictFDerivAt l 
     HasStrictDerivAt (l ∘ f) (l' f') x := by
   rw [hy] at hl; exact hl.comp_hasStrictDerivAt x hf
 
-theorem fderivWithin.comp_derivWithin {t : Set F} (hl : DifferentiableWithinAt 𝕜 l t (f x))
+theorem fderivWithin_comp_derivWithin {t : Set F} (hl : DifferentiableWithinAt 𝕜 l t (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) (hs : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (l ∘ f) s x = (fderivWithin 𝕜 l t (f x) : F → E) (derivWithin f s x) :=
   (hl.hasFDerivWithinAt.comp_hasDerivWithinAt x hf.hasDerivWithinAt hs).derivWithin hxs
 
-theorem fderivWithin.comp_derivWithin_of_eq {t : Set F} (hl : DifferentiableWithinAt 𝕜 l t y)
+@[deprecated (since := "2024-10-31")]
+alias fderivWithin.comp_derivWithin := fderivWithin_comp_derivWithin
+
+theorem fderivWithin_comp_derivWithin_of_eq {t : Set F} (hl : DifferentiableWithinAt 𝕜 l t y)
     (hf : DifferentiableWithinAt 𝕜 f s x) (hs : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hy : y = f x) :
     derivWithin (l ∘ f) s x = (fderivWithin 𝕜 l t (f x) : F → E) (derivWithin f s x) := by
-  rw [hy] at hl; exact fderivWithin.comp_derivWithin x hl hf hs hxs
+  rw [hy] at hl; exact fderivWithin_comp_derivWithin x hl hf hs hxs
 
-theorem fderiv.comp_deriv (hl : DifferentiableAt 𝕜 l (f x)) (hf : DifferentiableAt 𝕜 f x) :
+@[deprecated (since := "2024-10-31")]
+alias fderivWithin.comp_derivWithin_of_eq := fderivWithin_comp_derivWithin_of_eq
+
+theorem fderiv_comp_deriv (hl : DifferentiableAt 𝕜 l (f x)) (hf : DifferentiableAt 𝕜 f x) :
     deriv (l ∘ f) x = (fderiv 𝕜 l (f x) : F → E) (deriv f x) :=
   (hl.hasFDerivAt.comp_hasDerivAt x hf.hasDerivAt).deriv
 
-theorem fderiv.comp_deriv_of_eq (hl : DifferentiableAt 𝕜 l y) (hf : DifferentiableAt 𝕜 f x)
+@[deprecated (since := "2024-10-31")]
+alias fderiv.comp_deriv := fderiv_comp_deriv
+
+theorem fderiv_comp_deriv_of_eq (hl : DifferentiableAt 𝕜 l y) (hf : DifferentiableAt 𝕜 f x)
     (hy : y = f x) :
     deriv (l ∘ f) x = (fderiv 𝕜 l (f x) : F → E) (deriv f x) := by
-  rw [hy] at hl; exact fderiv.comp_deriv x hl hf
+  rw [hy] at hl; exact fderiv_comp_deriv x hl hf
+
+@[deprecated (since := "2024-10-31")]
+alias fderiv.comp_deriv_of_eq := fderiv_comp_deriv_of_eq
 
 end CompositionVector
