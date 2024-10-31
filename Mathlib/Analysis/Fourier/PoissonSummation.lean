@@ -24,12 +24,6 @@ easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which
 `𝓕 f` both decay as `|x| ^ (-b)` for some `b > 1`, and the even more specific result
 `SchwartzMap.tsum_eq_tsum_fourierIntegral`, where we assume that both `f` and `𝓕 f` are Schwartz
 functions.
-
-## TODO
-
-At the moment `SchwartzMap.tsum_eq_tsum_fourierIntegral` requires separate proofs that both `f`
-and `𝓕 f` are Schwartz functions. In fact, `𝓕 f` is automatically Schwartz if `f` is; and once
-we have this lemma in the library, we should adjust the hypotheses here accordingly.
 -/
 
 
