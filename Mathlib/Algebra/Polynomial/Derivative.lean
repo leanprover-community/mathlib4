@@ -126,6 +126,10 @@ theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
     derivative (∑ b ∈ s, f b) = ∑ b ∈ s, derivative (f b) :=
   map_sum ..
 
+theorem iterate_derivative_sum {s : Finset ι} {f : ι → R[X]} {k : ℕ} :
+    derivative^[k] (∑ b ∈ s, f b) = ∑ b ∈ s, derivative^[k] (f b) := by
+  simp_rw [← LinearMap.pow_apply, map_sum]
+
 -- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S)
     (p : R[X]) : derivative (s • p) = s • derivative p :=
@@ -576,13 +580,6 @@ theorem iterate_derivative_X_sub_pow (n k : ℕ) (c : R) :
 theorem iterate_derivative_X_sub_pow_self (n : ℕ) (c : R) :
     derivative^[n] ((X - C c) ^ n) = n.factorial := by
   rw [iterate_derivative_X_sub_pow, n.sub_self, pow_zero, nsmul_one, n.descFactorial_self]
-
-theorem iterate_derivative_finset_sum (k : ℕ) (h : ℕ → ℕ) :
-    derivative^[k] (∑ m in range (k + 1), (h m * (-1 : R) ^ m) • X ^ (k + m)) =
-    ∑ m in range (k + 1), ((h m * (-1 : R) ^ m) • (derivative^[k] (X ^ (k + m))) : R[X]) := by
-  simp only [nsmul_eq_mul, ← LinearMap.pow_apply, map_sum]
-  congr! 1 with i _
-  rw [← smul_eq_mul, map_smul]
 
 end CommRing
 
