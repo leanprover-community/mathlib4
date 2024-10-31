@@ -54,6 +54,15 @@ class ZeroAddQuantaleHomClass [AddMonoid α] [AddMonoid β]
 structure ZeroAddQuantaleHom [AddMonoid α] [AddMonoid β]
   extends AddMonoidHom α β, CompleteLatticeHom α β
 
+/-- `LaxAddQuantaleHomClass F α β` states that `F` is a type of unital additive quantale
+morphisms. -/
+class LaxAddQuantaleHomClass [AddMonoid α] [AddMonoid β]
+  extends SubadditiveHomClass F α β, NonnegHomClass F α β, CompleteLatticeHomClass F α β : Prop
+
+-- In `Mathlib.Algebra.Order.Hom.Basic` there are only definitions for HomClasses and not
+-- for the associated Homs themselves. Those we need to introduce explicitly here, apparently.
+-- I need to check why this is the case (I have a hunch that they are not considered in isolation
+-- usually, so standalone Hom definitions are futile.)
 
 variable {F : Type*} {α β : outParam Type*}
 variable [AddSemigroup α] [AddSemigroup β] [AddQuantale α] [AddQuantale β] [FunLike F α β]
