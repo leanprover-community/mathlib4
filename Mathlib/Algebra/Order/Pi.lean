@@ -15,8 +15,6 @@ This file defines instances for ordered group, monoid, and related structures on
 
 open scoped AlgebraOrderInstances
 
-open scoped AlgebraOrderInstances
-
 variable {I α β γ : Type*}
 
 -- The indexing type
