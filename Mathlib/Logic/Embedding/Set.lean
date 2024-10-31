@@ -158,7 +158,7 @@ variable {α ι : Type*} {s t r : Set α}
 
 @[simp] theorem Function.Embedding.sumSet_range {s t : Set α} (h : Disjoint s t) :
     range (Function.Embedding.sumSet h) = s ∪ t := by
-  simp [Set.ext_iff]
+  simp [Set.ext_iff, Sum.exists]
 
 /-- For an indexed family `s : ι → Set α` of disjoint sets,
 the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/

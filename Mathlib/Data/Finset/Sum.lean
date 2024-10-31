@@ -22,6 +22,8 @@ the `Finset.sum` operation which computes the additive sum.
 
 open Function Multiset Sum
 
+attribute [local simp] Sum.forall Sum.exists
+
 namespace Finset
 
 variable {α β : Type*} (s : Finset α) (t : Finset β)

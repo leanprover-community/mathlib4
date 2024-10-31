@@ -486,7 +486,7 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
         exact x.2
       · suffices r x a ∨ ∃ _ : PUnit.{u}, ↑a = x by
           convert this
-          dsimp [RelEmbedding.ofMonotone]; simp
+          dsimp [RelEmbedding.ofMonotone]; simp [Sum.exists]
         rcases trichotomous_of r x a with (h | h | h)
         · exact Or.inl h
         · exact Or.inr ⟨PUnit.unit, h.symm⟩

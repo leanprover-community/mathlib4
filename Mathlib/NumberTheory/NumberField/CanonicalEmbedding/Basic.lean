@@ -498,7 +498,7 @@ theorem fundamentalDomain_stdBasis :
         (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
         (Set.univ.pi fun _ => Complex.measurableEquivPi⁻¹' (Set.univ.pi fun _ => Set.Ico 0 1)) := by
   ext
-  simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi]
+  simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi, Sum.forall]
 
 theorem volume_fundamentalDomain_stdBasis :
     volume (fundamentalDomain (stdBasis K)) = 1 := by

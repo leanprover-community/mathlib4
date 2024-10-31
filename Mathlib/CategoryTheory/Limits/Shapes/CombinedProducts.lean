@@ -19,6 +19,8 @@ We provide constructors for combining (co)fans and show their (co)limit properti
 
 universe u₁ u₂
 
+attribute [local simp] Sum.forall
+
 namespace CategoryTheory
 
 namespace Limits
