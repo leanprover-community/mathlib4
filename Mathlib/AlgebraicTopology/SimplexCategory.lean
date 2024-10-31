@@ -3,6 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
+import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
@@ -251,6 +252,7 @@ lemma mkOfSucc_homToOrderHom_zero {n} (i : Fin n) :
 lemma mkOfSucc_homToOrderHom_one {n} (i : Fin n) :
     DFunLike.coe (F := Fin 2 →o Fin (n+1)) (Hom.toOrderHom (mkOfSucc i)) 1 = i.succ := rfl
 
+
 /-- The morphism `[2] ⟶ [n]` that picks out a specified composite of morphisms in `Fin (n+1)`.-/
 def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
     ([2] : SimplexCategory) ⟶ [n] :=
@@ -264,14 +266,15 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
   }
 
 /-- The "inert" morphism associated to a subinterval `j ≤ i ≤ k` of `Fin (n + 1)`.-/
-def subinterval {n} (j k: Fin (n + 1)) (hjk : j ≤ k) : ([k - j] : SimplexCategory) ⟶ [n] :=
-SimplexCategory.mkHom {
-    toFun := fun i => ⟨i.1 + j.1, (by omega)⟩
+def subinterval {n} (j l : ℕ) (hjl : j + l < n + 1) :
+    ([l] : SimplexCategory) ⟶ [n] :=
+  SimplexCategory.mkHom {
+    toFun := fun i => ⟨i.1 + j, (by omega)⟩
     monotone' := by
       intro i i' hii'
       simp only [Fin.mk_le_mk, add_le_add_iff_right, Fin.val_fin_le]
       exact hii'
-}
+  }
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ [0]) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
@@ -500,6 +503,19 @@ lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fi
       · rwa [succ_le_castSucc_iff, lt_pred_iff]
       rw [succ_pred]
 
+@[simp]
+lemma δ_zero_mkOfSucc {n : ℕ} (i : Fin n) :
+    δ 0 ≫ mkOfSucc i = SimplexCategory.const _ [n] i.succ := by
+  ext x
+  fin_cases x
+  aesop
+
+@[simp]
+lemma δ_one_mkOfSucc {n : ℕ} (i : Fin n) :
+    δ 1 ≫ mkOfSucc i = SimplexCategory.const _ _ i.castSucc := by
+  ext x
+  fin_cases x
+  aesop
 
 theorem eq_of_one_to_two (f : ([1] : SimplexCategory) ⟶ [2]) :
     f = (δ (n := 1) 0) ∨ f = (δ (n := 1) 1) ∨ f = (δ (n := 1) 2) ∨

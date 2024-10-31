@@ -460,31 +460,6 @@ structure Path (n : ℕ) where
   /-- The targets of the 1-simplices in a path are identified with appropriate 0-simplices.-/
   arrow_tgt (i : Fin n) : X.δ 0 (arrow i) = vertex i.succ
 
-/-- For `j ≤ k ≤ n`, a path of length `n` restricts to a path of length `k-j`, namely the subpath
-spanned by the vertices `j ≤ i ≤ k` and edges `j ≤ i < k`. -/
-def Path.interval {n : ℕ} (f : Path X n) (j k : ℕ) (hjk : j ≤ k) (hkn : k ≤ n) :
-    Path X (k - j) where
-  vertex i := f.vertex (Fin.addNat i j)
-  arrow i := f.arrow ⟨Fin.addNat i j, (by omega)⟩
-  arrow_src i := by
-    have eq := f.arrow_src ⟨Fin.addNat i j, (by omega)⟩
-    simp_rw [eq]
-    congr 1
-    apply Fin.eq_of_val_eq
-    simp only [Fin.coe_addNat, Fin.coe_castSucc, Fin.val_natCast]
-    have : i.1 + j < n + 1 := by omega
-    have : (↑i + j) % (n + 1) = i.1 + j := by exact Nat.mod_eq_of_lt this
-    rw [this]
-  arrow_tgt i := by
-    have eq := f.arrow_tgt ⟨Fin.addNat i j, (by omega)⟩
-    simp_rw [eq]
-    congr 1
-    apply Fin.eq_of_val_eq
-    simp only [Fin.coe_addNat, Fin.succ_mk, Fin.val_succ, Fin.val_natCast]
-    have : i.1 + 1 + j < n + 1 := by omega
-    have : (i.1 + 1 + j) % (n + 1) = i.1 + 1 + j := by exact Nat.mod_eq_of_lt this
-    rw [this, Nat.add_right_comm]
-
 /-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed by
 traversing through its vertices in order.-/
 @[simps]
@@ -494,19 +469,12 @@ def spine (n : ℕ) (Δ : X _[n]) : X.Path n where
   arrow_src i := by
     dsimp [SimplicialObject.δ]
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-    apply congr_fun
-    congr 2
-    ext j
-    fin_cases j
-    rfl
+    rw [SimplexCategory.δ_one_mkOfSucc]
+    simp only [len_mk, Fin.coe_castSucc, Fin.coe_eq_castSucc]
   arrow_tgt i := by
     dsimp [SimplicialObject.δ]
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-    apply congr_fun
-    congr 2
-    ext j
-    fin_cases j
-    rfl
+    rw [SimplexCategory.δ_zero_mkOfSucc]
 
 variable {X} in
 /-- The diagonal of a simplex is the long edge of the simplex.-/
@@ -544,10 +512,35 @@ theorem spineToSimplex_spine_edge (i : Fin n) (f : Path X n) :
 the diagonal edge of the resulting `n`-simplex. -/
 noncomputable def spineToDiagonal (f : Path X n) : X _[1] := diagonal (spineToSimplex f)
 
+/-- For `j ≤ k ≤ n`, a path of length `n` restricts to a path of length `k-j`, namely the subpath
+spanned by the vertices `j ≤ i ≤ k` and edges `j ≤ i < k`. -/
+def Path.interval {n : ℕ} (f : Path X n) (j l : ℕ) (hjl : j + l < n + 1) :
+    Path X l where
+  vertex i := f.vertex (Fin.addNat i j)
+  arrow i := f.arrow ⟨Fin.addNat i j, (by omega)⟩
+  arrow_src i := by
+    have eq := f.arrow_src ⟨Fin.addNat i j, (by omega)⟩
+    simp_rw [eq]
+    congr 1
+    apply Fin.eq_of_val_eq
+    simp only [Fin.coe_addNat, Fin.coe_castSucc, Fin.val_natCast]
+    have : i.1 + j < n + 1 := by omega
+    have : (↑i + j) % (n + 1) = i.1 + j := by exact Nat.mod_eq_of_lt this
+    rw [this]
+  arrow_tgt i := by
+    have eq := f.arrow_tgt ⟨Fin.addNat i j, (by omega)⟩
+    simp_rw [eq]
+    congr 1
+    apply Fin.eq_of_val_eq
+    simp only [Fin.coe_addNat, Fin.succ_mk, Fin.val_succ, Fin.val_natCast]
+    have : i.1 + 1 + j < n + 1 := by omega
+    have : (i.1 + 1 + j) % (n + 1) = i.1 + 1 + j := by exact Nat.mod_eq_of_lt this
+    rw [this, Nat.add_right_comm]
+
 @[simp]
-theorem spineToSimplex_interval (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n) :
-    X.map (subinterval j k hjk).op (spineToSimplex f) =
-      spineToSimplex (Path.interval X f _ _ hjk (Nat.le_of_lt_succ k.2)) := by
+theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l < n + 1)  :
+    X.map (subinterval j l hjl).op (spineToSimplex f) =
+      spineToSimplex (Path.interval f j l hjl) := by
   apply (segal _).injective
   rw [StrictSegal.spineToSimplex_spine]
   ext i
@@ -565,7 +558,7 @@ theorem spineToSimplex_interval (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n
   · unfold Path.interval
     simp only [Equiv.invFun_as_coe, spine_arrow, Fin.coe_addNat]
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-    have ceq : mkOfSucc i ≫ subinterval j k hjk = mkOfSucc ⟨i + j, (by omega)⟩ := by
+    have ceq : mkOfSucc i ≫ subinterval j l hjl = mkOfSucc ⟨i + j, (by omega)⟩ := by
       ext ⟨e, he⟩ : 3
       unfold subinterval
       match e with
@@ -581,36 +574,28 @@ theorem spineToSimplex_interval (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n
     simp only [spineToSimplex_spine_edge]
 
 @[simp]
-theorem spineToSimplex_edge (j k: Fin (n + 1)) (hjk : j ≤ k) (f : Path X n) :
-    X.map (mkOfLe j k hjk).op (spineToSimplex f) =
-      spineToDiagonal (Path.interval X f _ _ hjk (Nat.le_of_lt_succ k.2)) := by
+theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hn : j + l < n + 1) :
+    X.map (mkOfLe ⟨j, (by omega)⟩ ⟨j + l, hn⟩ (Nat.le_add_right j l)).op (spineToSimplex f) =
+      spineToDiagonal (Path.interval f j l hn) := by
   unfold spineToDiagonal
-  rw [← congrArg diagonal (spineToSimplex_interval j k hjk f)]
+  rw [← congrArg diagonal (spineToSimplex_interval f j l hn)]
   unfold diagonal
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-  have : mkOfLe j k hjk = mkOfDiag (k.1 - j.1) ≫ subinterval j k hjk := by
+  have : mkOfLe ⟨j, (by omega)⟩ ⟨j + l, hn⟩ (Nat.le_add_right j l) =
+      mkOfDiag l ≫ subinterval j l hn := by
     ext e : 3
     unfold subinterval mkOfDiag mkOfLe
     simp only [len_mk, Nat.reduceAdd, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk,
       Fin.natCast_eq_last, comp_toOrderHom, OrderHom.mk_comp_mk, Function.comp_apply]
     match e with
     | 0 => simp
-    | 1 => ?_
+    | 1 =>
     apply Fin.eq_of_val_eq
-    simp only [Fin.val_last]
-    exact (Nat.sub_eq_iff_eq_add hjk).mp rfl
+    simp only [Fin.isValue, Fin.val_last]
+    exact Nat.add_comm j l
   rw [this]
 
-/-- Perhaps it is more useful to index an edge from `j` to `j + k` by `j : Fin (n + 1)` and
-`k : ℕ` and `hjk : j.1 + k < n + 1`.-/
-theorem spineToSimplex_edge' (j : Fin (n + 1)) (k : ℕ) (hjk : j.1 + k < n + 1) (f : Path X n) :
-    X.map (mkOfLe j ⟨j.1 + k, hjk⟩ (Nat.le_add_right j k)).op (spineToSimplex f) =
-      spineToDiagonal
-        (Path.interval X f j (j + k) (Nat.le_add_right j k) (Nat.le_of_lt_succ hjk)) :=
-  spineToSimplex_edge j ⟨j.1 + k, hjk⟩ (Nat.le_add_right j.1 k) f
-
 end StrictSegal
-
 
 end Spine
 
