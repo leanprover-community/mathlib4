@@ -239,43 +239,42 @@ variable {A B C D : Type*}
   [CommRing A] [CommRing B] [CommRing C] [CommRing D]
   [IsDomain A] [IsDomain B] [IsDomain C] [IsDomain D]
   [Algebra A B] [Algebra A C] [Algebra A D]
-  (K L M O : Type*) [Field K] [Field L] [Field M] [Field O]
-  [Algebra A K] [Algebra B L] [Algebra C M] [Algebra D O]
-  [IsFractionRing A K] [IsFractionRing B L] [IsFractionRing C M] [IsFractionRing D O]
-  [Algebra A L] [IsScalarTower A B L]
-  [Algebra A M] [IsScalarTower A C M]
-  [Algebra A O] [IsScalarTower A D O]
-  [Algebra K L] [IsScalarTower A K L]
-  [Algebra K M] [IsScalarTower A K M]
-  [Algebra K O] [IsScalarTower A K O]
+  (FA FB FC FD : Type*) [Field FA] [Field FB] [Field FC] [Field FD]
+  [Algebra A FA] [Algebra B FB] [Algebra C FC] [Algebra D FD]
+  [IsFractionRing A FA] [IsFractionRing B FB] [IsFractionRing C FC] [IsFractionRing D FD]
+  [Algebra A FB] [IsScalarTower A B FB]
+  [Algebra A FC] [IsScalarTower A C FC]
+  [Algebra A FD] [IsScalarTower A D FD]
+  [Algebra FA FB] [IsScalarTower A FA FB]
+  [Algebra FA FC] [IsScalarTower A FA FC]
+  [Algebra FA FD] [IsScalarTower A FA FD]
 
 /-- An algebra isomorphism of rings induces an algebra isomorphism of fraction fields. -/
-noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : L ≃ₐ[K] M where
+noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : FB ≃ₐ[FA] FC where
   __ := IsFractionRing.fieldEquivOfRingEquiv f.toRingEquiv
   commutes' x := by
     obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
-    simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L]
-    simp [← IsScalarTower.algebraMap_apply A C M]
+    simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B FB]
+    simp [← IsScalarTower.algebraMap_apply A C FC]
 
 /-- This says that `fieldEquivOfAlgEquiv f` is an extension of `f` (i.e., it agrees with `f` on
 `B`). Whereas `(fieldEquivOfAlgEquiv f).commutes` says that `fieldEquivOfAlgEquiv f` fixes `K`. -/
 @[simp]
 lemma fieldEquivOfAlgEquiv_algebraMap (f : B ≃ₐ[A] C) (b : B) :
-    fieldEquivOfAlgEquiv K L M f (algebraMap B L b) = algebraMap C M (f b) :=
+    fieldEquivOfAlgEquiv FA FB FC f (algebraMap B FB b) = algebraMap C FC (f b) :=
   fieldEquivOfRingEquiv_algebraMap f.toRingEquiv b
 
 variable (A B) in
 @[simp]
 lemma fieldEquivOfAlgEquiv_refl :
-    fieldEquivOfAlgEquiv K L L (AlgEquiv.refl : B ≃ₐ[A] B) = AlgEquiv.refl := by
+    fieldEquivOfAlgEquiv FA FB FB (AlgEquiv.refl : B ≃ₐ[A] B) = AlgEquiv.refl := by
   ext x
   obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := B) x
   simp
 
-@[simp]
 lemma fieldEquivOfAlgEquiv_trans (f : B ≃ₐ[A] C) (g : C ≃ₐ[A] D) :
-    fieldEquivOfAlgEquiv K L O (f.trans g) =
-      (fieldEquivOfAlgEquiv K L M f).trans (fieldEquivOfAlgEquiv K M O g) := by
+    fieldEquivOfAlgEquiv FA FB FD (f.trans g) =
+      (fieldEquivOfAlgEquiv FA FB FC f).trans (fieldEquivOfAlgEquiv FA FC FD g) := by
   ext x
   obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := B) x
   simp
@@ -298,9 +297,9 @@ noncomputable def fieldEquivOfAlgEquivHom : (B ≃ₐ[A] B) →* (L ≃ₐ[K] L)
   map_mul' f g := fieldEquivOfAlgEquiv_trans K L L L g f
 
 @[simp]
-lemma fieldEquivOfAlgEquivHom_algebraMap (f : B ≃ₐ[A] B) (b : B) :
-    fieldEquivOfAlgEquivHom K L f (algebraMap B L b) = algebraMap B L (f b) :=
-  fieldEquivOfAlgEquiv_algebraMap K L L f b
+lemma fieldEquivOfAlgEquivHom_apply (f : B ≃ₐ[A] B) :
+    fieldEquivOfAlgEquivHom K L f = fieldEquivOfAlgEquiv K L L f :=
+  rfl
 
 end fieldEquivOfAlgEquivHom
 
