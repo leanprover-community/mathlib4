@@ -450,9 +450,9 @@ def transDiffeomorph (I : ModelWithCorners 𝕜 E H) (e : E ≃ₘ[𝕜] E') : M
     simp only [PartialEquiv.trans_target, Equiv.toPartialEquiv_target,
       Equiv.toPartialEquiv_symm_apply, Diffeomorph.toEquiv_coe_symm, target_eq, univ_inter]
     change e.toHomeomorph.symm ⁻¹' _ ⊆ closure (interior (e.toHomeomorph.symm ⁻¹' (range I)))
-    rw [← IsOpenMap.preimage_interior_eq_interior_preimage e.toHomeomorph.symm.isOpenMap
+    rw [← e.toHomeomorph.symm.isOpenMap.preimage_interior_eq_interior_preimage
       e.toHomeomorph.continuous_symm,
-      ← IsOpenMap.preimage_closure_eq_closure_preimage e.toHomeomorph.symm.isOpenMap
+      ← e.toHomeomorph.symm.isOpenMap.preimage_closure_eq_closure_preimage
       e.toHomeomorph.continuous_symm]
     exact preimage_mono I.range_subset_closure_interior
   continuous_toFun := e.continuous.comp I.continuous
