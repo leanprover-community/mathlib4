@@ -273,7 +273,7 @@ theorem tendsto_setIntegral_of_antitone {ι : Type*} [Countable ι] [Semilattice
     simpa [hsm i₀, ν, ENNReal.ofReal, norm_toNNReal] using hi₀.norm.lintegral_lt_top.ne
   have νS : ν S ≠ ∞ := ((measure_mono (hsub i₀)).trans_lt νi₀.lt_top).ne
   have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) := by
-    apply tendsto_measure_iInter (fun i ↦ (hsm i).nullMeasurableSet) h_anti ⟨i₀, νi₀⟩
+    apply tendsto_measure_iInter_atTop (fun i ↦ (hsm i).nullMeasurableSet) h_anti ⟨i₀, νi₀⟩
     apply ENNReal.Icc_mem_nhds νS (ENNReal.coe_pos.2 ε0).ne'
   filter_upwards [this, Ici_mem_atTop i₀] with i hi h'i
   rw [mem_closedBall_iff_norm, ← integral_diff hSm (hi₀.mono_set (h_anti h'i)) (hsub i),
