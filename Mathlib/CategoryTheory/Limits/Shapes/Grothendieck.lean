@@ -199,6 +199,10 @@ def colimitFiberwiseColimitIso : colimit (fiberwiseColimit G) ≅ colimit G :=
 
 end
 
+theorem hasColimitsOfShapeGrothendieck [∀ X, HasColimitsOfShape (F.obj X) H]
+    [HasColimitsOfShape C H] : HasColimitsOfShape (Grothendieck F) H where
+  has_colimit _ := hasColimitOfHasFiberwiseColimitOfHasBaseColimit
+
 end
 
 end Limits
