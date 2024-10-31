@@ -77,17 +77,10 @@ theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l < n + 1)
   apply (segal _).injective
   rw [StrictSegal.spineToSimplex_spine]
   ext i
-  · unfold Path.interval
-    simp only [mkHom, Equiv.invFun_as_coe, spine_vertex, Fin.coe_addNat]
-    simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-    simp only [const_comp, len_mk]
-    unfold subinterval
-    simp only [spineToSimplex_vertex]
-    congr 1
-    apply Fin.eq_of_val_eq
-    simp only [mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk, Fin.val_natCast]
-    have : (i.1 + j) % (n + 1) = i.1 + j := by exact Nat.mod_eq_of_lt (by omega)
-    rw [this]
+  · simp only [mkHom, Equiv.invFun_as_coe, spine_vertex, Fin.coe_addNat,
+      ← FunctorToTypes.map_comp_apply, ← op_comp, const_comp, len_mk, spineToSimplex_vertex]
+    congr
+    exact Fin.eq_of_val_eq (Nat.mod_eq_of_lt (by omega)).symm
   · unfold Path.interval
     simp only [Equiv.invFun_as_coe, spine_arrow, Fin.coe_addNat]
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
