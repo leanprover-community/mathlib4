@@ -128,8 +128,7 @@ theorem comap_conGen_of_Bijective {M N : Type*} [Mul M] [Mul N] (f : M → N)
         exact ConGen.Rel.mul (ih (f' w) (f' x) (is_inv.right w) (is_inv.right x))
           (ih1 (f' y) (f' z) (is_inv.right y) (is_inv.right z))
     exact H (f a) (f b) h a b (refl _) (refl _)
-  apply conGen_le_comap
-  --exact conGen_le_comap f H rel
+  exact @conGen_le_comap _ _ _ _ f H rel a b
 
 end
 
