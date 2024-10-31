@@ -339,7 +339,7 @@ theorem exists_grundyValue_moveRight_of_lt {G : PGame} [G.Impartial] {o : Nimber
   rw [← grundyValue_neg] at h
   obtain ⟨i, hi⟩ := exists_grundyValue_moveLeft_of_lt h
   use toLeftMovesNeg.symm i
-  rwa [← grundyValue_neg, ← moveLeft_neg']
+  rwa [← grundyValue_neg, ← moveLeft_neg]
 
 theorem grundyValue_le_of_forall_moveRight {G : PGame} [G.Impartial] {o : Nimber}
     (h : ∀ i, grundyValue (G.moveRight i) ≠ o) : G.grundyValue ≤ o := by
