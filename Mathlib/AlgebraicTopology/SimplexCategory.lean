@@ -505,7 +505,7 @@ lemma δ_zero_mkOfSucc {n : ℕ} (i : Fin n) :
     δ 0 ≫ mkOfSucc i = SimplexCategory.const _ [n] i.succ := by
   ext x
   fin_cases x
-  aesop
+  rfl
 
 @[simp]
 lemma δ_one_mkOfSucc {n : ℕ} (i : Fin n) :
