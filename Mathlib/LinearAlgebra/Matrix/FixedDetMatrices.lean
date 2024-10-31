@@ -223,15 +223,15 @@ lemma reduce_mem_reps (m : ℤ) (hm : m ≠ 0) : ∀ A : Δ m, reduce m A ∈ re
       · rw [mul_comm, ← @Int.sub_eq_add_neg, (Int.emod_def (A.1 0 1) (A.1 1 1)).symm]
         apply le_trans _ (Int.emod_lt (A.1 0 1) (A_d_ne_zero m A (by simpa using h) hm))
         rw [abs_eq_self.mpr (Int.emod_nonneg (A.1 0 1) (A_d_ne_zero m A (by simpa using h) hm))]
-    · simp only [reduce_eqn2 m A h h1, Fin.isValue, Int.ediv_neg, neg_neg, smul_def, ← mul_assoc,
-      S_mul_S_eq, neg_mul, one_mul, coe_T_zpow, mul_neg, cons_mul, Nat.succ_eq_add_one,
-      Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply, neg_of, neg_cons, neg_empty, reps,
+    · simp only [reps, Fin.isValue, reduce_eqn2 m A h h1, Int.ediv_neg, neg_neg, smul_def, ←
+      mul_assoc, S_mul_S_eq, neg_mul, one_mul, coe_T_zpow, mul_neg, cons_mul, Nat.succ_eq_add_one,
+      Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply, neg_of, neg_cons, neg_empty,
       Set.mem_setOf_eq, of_apply, cons_val', Pi.neg_apply, vecMul, cons_dotProduct, vecHead,
       vecTail, Function.comp_apply, Fin.succ_zero_eq_one, dotProduct_empty, add_zero, neg_add_rev,
       zero_mul, zero_add, empty_val', cons_val_fin_one, cons_val_one, neg_eq_zero, cons_val_zero,
       lt_add_neg_iff_add_lt, le_add_neg_iff_add_le, abs_neg]
       refine ⟨abs_eq_zero.mp h, ?_, ?_,?_⟩
-      · simp only [Fin.isValue, abs_eq_zero.mp h, mul_zero, neg_zero, Int.lt_iff_le_and_ne]
+      · simp only [Fin.isValue, abs_eq_zero.mp h, mul_zero, neg_zero, Int.lt_iff_le_and_ne, ne_eq]
         refine ⟨not_lt.mp h1, A_a_ne_zero m A (by simpa using h) hm⟩
       · rw [le_neg]
         apply Int.ediv_mul_le; apply A_d_ne_zero m A (by simpa using h) hm
@@ -269,7 +269,7 @@ private lemma prop_red3 {C : Δ m → Prop} (hS : ∀ B, C B → C (S • B)) (h
   simpa using h
 
 private lemma prop_red4 {C : Δ m → Prop} (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
-     ∀ B (n : ℤ), C ((T^n) • B) → C B := by
+     ∀ B (n : ℤ), C (T^n • B) → C B := by
   intro B n
   induction' n using Int.induction_on with n hn m hm
   · simp only [zpow_zero, one_smul, imp_self]
