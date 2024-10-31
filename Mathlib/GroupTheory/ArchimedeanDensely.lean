@@ -299,7 +299,7 @@ lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
     split_ifs <;>
     simp_all [← Units.val_le_val]
 
- section WellFounded
+section WellFounded
 
 lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
     {G : Type*} [LinearOrderedAddCommGroup G] [Nontrivial G] {g : G} :
