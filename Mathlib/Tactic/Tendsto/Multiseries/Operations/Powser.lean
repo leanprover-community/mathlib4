@@ -1,8 +1,20 @@
+/-
+Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasily Nesterov
+-/
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Tactic.Tendsto.Multiseries.Basic
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Mul
 import Mathlib.Tactic.Tendsto.Multiseries.Trimming
+
+/-!
+# Substituting multiseries into analytic series
+
+-/
+
+
 
 open Filter Asymptotics Stream' Seq
 

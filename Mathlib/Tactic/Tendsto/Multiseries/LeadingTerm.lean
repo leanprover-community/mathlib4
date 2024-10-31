@@ -1,9 +1,13 @@
+/-
+Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasily Nesterov
+-/
 import Mathlib.Tactic.Tendsto.Multiseries.Term
 import Mathlib.Tactic.Tendsto.Multiseries.Trimming
 
-
 /-!
-Here we find the limit of series by reducing the problem to computing limits for series' leading
+Here we find the limit of series by reducing the problem to computing limits for its leading
 term.
 -/
 

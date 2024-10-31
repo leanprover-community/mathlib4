@@ -1,8 +1,18 @@
+/-
+Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasily Nesterov
+-/
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Powser
 import Mathlib.Tactic.Tendsto.Multiseries.Trimming
 import Mathlib.Tactic.Tendsto.Multiseries.LeadingTerm
+
+/-!
+# Inversion for multiseries
+
+-/
 
 open Filter Asymptotics
 

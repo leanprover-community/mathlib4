@@ -1,6 +1,17 @@
+/-
+Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasily Nesterov
+-/
 import Mathlib.Tactic.Tendsto.Multiseries.SeqLemmas
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+
+/-!
+# Main definitions
+
+-/
+
 
 namespace TendstoTactic
 

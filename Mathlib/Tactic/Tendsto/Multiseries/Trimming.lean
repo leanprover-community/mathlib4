@@ -1,13 +1,20 @@
+/-
+Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasily Nesterov
+-/
 import Mathlib.Tactic.Tendsto.TendstoM
 import Mathlib.Tactic.Tendsto.Multiseries.Basic
+
+/-!
+# Trimming of multiseries
+-/
 
 namespace TendstoTactic
 
 namespace PreMS
 
 open Stream' Seq
-
--- make basis explicit if further you will always have to specify it
 
 inductive FlatZero : {basis : Basis} → PreMS basis → Prop
 | const {c : ℝ} (h : c = 0) : FlatZero (basis := []) c

@@ -1,10 +1,15 @@
+/-
+Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasily Nesterov
+-/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
 import Mathlib.Tactic.Tendsto.TendstoM
 
 /-!
 Here we find the limit of the term of the form `coef * b1(x)^d1 * b2(x)^d2 * ...`
-where `[b1, b2, ...]` is well-formed basis.
+where `[b1, b2, ...]` is well-formed basis and `coef` is real constant.
 -/
 
 namespace TendstoTactic
@@ -14,10 +19,6 @@ open Asymptotics Filter
 structure MS.Term where
   coef : ℝ
   exps : List ℝ
-
-instance : Inhabited MS.Term where
-  default := ⟨0, []⟩
-
 
 namespace MS.Term
 

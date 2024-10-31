@@ -1,9 +1,21 @@
+/-
+Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasily Nesterov
+-/
 import Mathlib.Tactic.Tendsto.Multiseries.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+
+/-!
+# Lemmas about well ordered basises
+
+-/
+
+
 
 open Asymptotics Filter
 
