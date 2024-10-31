@@ -205,6 +205,7 @@ end sqrt
 
 section abs
 
+/-- The absolute value of an operator, using the nonunital continuous functional calculus. -/
 noncomputable def abs (a : A) := sqrt (star a * a)
 
 end abs
