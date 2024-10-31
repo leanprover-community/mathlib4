@@ -5,8 +5,6 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Order.Archimedean.Submonoid
 import Mathlib.Algebra.Order.Monoid.Submonoid
-import Mathlib.Algebra.Order.SuccPred.TypeTags
-import Mathlib.Data.Int.SuccPred
 import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.UniqueFactorizationDomain
