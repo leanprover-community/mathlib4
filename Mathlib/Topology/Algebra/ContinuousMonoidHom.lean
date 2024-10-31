@@ -232,22 +232,27 @@ instance : TopologicalSpace (ContinuousMonoidHom A B) :=
 variable (A B C D E)
 
 @[to_additive]
-theorem inducing_toContinuousMap : Inducing (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
-  ⟨rfl⟩
+theorem isInducing_toContinuousMap :
+    IsInducing (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) := ⟨rfl⟩
+
+@[deprecated (since := "2024-10-28")] alias inducing_toContinuousMap := isInducing_toContinuousMap
 
 @[to_additive]
-theorem embedding_toContinuousMap :
-    Embedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
-  ⟨inducing_toContinuousMap A B, toContinuousMap_injective⟩
+theorem isEmbedding_toContinuousMap :
+    IsEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
+  ⟨isInducing_toContinuousMap A B, toContinuousMap_injective⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_toContinuousMap := isEmbedding_toContinuousMap
 
 @[to_additive]
 instance instContinuousEvalConst : ContinuousEvalConst (ContinuousMonoidHom A B) A B :=
-  .of_continuous_forget (inducing_toContinuousMap A B).continuous
+  .of_continuous_forget (isInducing_toContinuousMap A B).continuous
 
 @[to_additive]
 instance instContinuousEval [LocallyCompactPair A B] :
     ContinuousEval (ContinuousMonoidHom A B) A B :=
-  .of_continuous_forget (inducing_toContinuousMap A B).continuous
+  .of_continuous_forget (isInducing_toContinuousMap A B).continuous
 
 @[to_additive]
 lemma range_toContinuousMap :
@@ -260,7 +265,7 @@ lemma range_toContinuousMap :
 @[to_additive]
 theorem isClosedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
     IsClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
-  toEmbedding := embedding_toContinuousMap A B
+  toIsEmbedding := isEmbedding_toContinuousMap A B
   isClosed_range := by
     simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
     refine .inter (isClosed_singleton.preimage (continuous_eval_const 1)) <|
@@ -275,11 +280,11 @@ variable {A B C D E}
 
 @[to_additive]
 instance [T2Space B] : T2Space (ContinuousMonoidHom A B) :=
-  (embedding_toContinuousMap A B).t2Space
+  (isEmbedding_toContinuousMap A B).t2Space
 
 @[to_additive]
 instance : TopologicalGroup (ContinuousMonoidHom A E) :=
-  let hi := inducing_toContinuousMap A E
+  let hi := isInducing_toContinuousMap A E
   let hc := hi.continuous
   { continuous_mul := hi.continuous_iff.mpr (continuous_mul.comp (Continuous.prodMap hc hc))
     continuous_inv := hi.continuous_iff.mpr (continuous_inv.comp hc) }
@@ -288,27 +293,27 @@ instance : TopologicalGroup (ContinuousMonoidHom A E) :=
 theorem continuous_of_continuous_uncurry {A : Type*} [TopologicalSpace A]
     (f : A → ContinuousMonoidHom B C) (h : Continuous (Function.uncurry fun x y => f x y)) :
     Continuous f :=
-  (inducing_toContinuousMap _ _).continuous_iff.mpr
+  (isInducing_toContinuousMap _ _).continuous_iff.mpr
     (ContinuousMap.continuous_of_continuous_uncurry _ h)
 
 @[to_additive]
 theorem continuous_comp [LocallyCompactSpace B] :
     Continuous fun f : ContinuousMonoidHom A B × ContinuousMonoidHom B C => f.2.comp f.1 :=
-  (inducing_toContinuousMap A C).continuous_iff.2 <|
+  (isInducing_toContinuousMap A C).continuous_iff.2 <|
     ContinuousMap.continuous_comp'.comp
-      ((inducing_toContinuousMap A B).prodMap (inducing_toContinuousMap B C)).continuous
+      ((isInducing_toContinuousMap A B).prodMap (isInducing_toContinuousMap B C)).continuous
 
 @[to_additive]
 theorem continuous_comp_left (f : ContinuousMonoidHom A B) :
     Continuous fun g : ContinuousMonoidHom B C => g.comp f :=
-  (inducing_toContinuousMap A C).continuous_iff.2 <|
-    f.toContinuousMap.continuous_comp_left.comp (inducing_toContinuousMap B C).continuous
+  (isInducing_toContinuousMap A C).continuous_iff.2 <|
+    f.toContinuousMap.continuous_precomp.comp (isInducing_toContinuousMap B C).continuous
 
 @[to_additive]
 theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
     Continuous fun g : ContinuousMonoidHom A B => f.comp g :=
-  (inducing_toContinuousMap A C).continuous_iff.2 <|
-    f.toContinuousMap.continuous_comp.comp (inducing_toContinuousMap A B).continuous
+  (isInducing_toContinuousMap A C).continuous_iff.2 <|
+    f.toContinuousMap.continuous_postcomp.comp (isInducing_toContinuousMap A B).continuous
 
 variable (E)
 
@@ -373,7 +378,7 @@ theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)
     have h3 : IsOpen T := isOpen_induced (ContinuousMap.isOpen_setOf_mapsTo hU isOpen_interior)
     exact h1.mono (interior_maximal h2 h3)
   exact TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
-    ⟨⟨S2, (inducing_toContinuousMap X Y).isCompact_iff.mpr
+    ⟨⟨S2, (isInducing_toContinuousMap X Y).isCompact_iff.mpr
       (ArzelaAscoli.isCompact_of_equicontinuous S3 hS4.isCompact h)⟩, hS2⟩
 
 variable [LocallyCompactSpace X]
