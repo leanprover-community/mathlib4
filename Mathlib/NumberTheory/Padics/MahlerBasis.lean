@@ -41,9 +41,9 @@ lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
     obtain ⟨δ, hδp, hδ⟩ := Metric.continuousAt_iff.mp hf _ (norm_pos_iff.mpr hC)
     obtain ⟨n, hn'⟩ := PadicInt.denseRange_natCast.exists_dist_lt x hδp
     simpa only [← dist_eq_norm_sub'] using ⟨n, (hδ (dist_comm x n ▸ hn')).le⟩
-  -- use ultrametric property to show that `‖f n‖ ≤ 1` implies `‖f x‖ ≤ 1`
+  -- use ultrametric property to show that `‖f n‖ ≤ ‖k!‖` implies `‖f x‖ ≤ ‖k!‖`
   refine sub_add_cancel (f x) _ ▸ (IsUltrametricDist.norm_add_le_max _ (f n)).trans (max_le hn ?_)
-  -- finish using the fact that `f n ∈ ℕ`
+  -- finish using the fact that `n.multichoose k ∈ ℤ`
   simp_rw [f, ← ascPochhammer_eval_cast, Polynomial.eval_eq_smeval,
     ← Ring.factorial_nsmul_multichoose_eq_ascPochhammer, smul_eq_mul, Nat.cast_mul, norm_mul]
   exact mul_le_of_le_one_right (norm_nonneg _) (norm_le_one _)
