@@ -57,7 +57,7 @@ def checkInitImports : IO Bool := do
     IO.eprintln s!"error: the following {mismatch.size} module(s) import the `header` linter \
       directly, but should import Mathlib.Init instead: {mismatch}\n\
       The `header` linter is included in Mathlib.Init, and every file in Mathlib \
-      should import Mathlib.Init. Please adjust the imports accordingly."
+      should import Mathlib.Init.\nPlease adjust the imports accordingly."
     return true
 
   -- Now, it only remains to check that every module (except for the Header linter itself)
