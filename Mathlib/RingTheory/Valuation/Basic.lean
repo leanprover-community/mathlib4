@@ -849,3 +849,30 @@ end Supp
 
 -- end of section
 end AddValuation
+
+namespace Valuation
+
+variable {K Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+
+instance [Ring K] (v : Valuation K Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) where
+  zero := ⟨0, 0, by simp⟩
+  zero_mul := by
+    intro a
+    exact Subtype.ext (zero_mul a.val)
+  mul_zero := by
+    intro a
+    exact Subtype.ext (mul_zero a.val)
+
+instance [DivisionRing K] (v : Valuation K Γ₀) : CommGroupWithZero (MonoidHom.mrange v) where
+  inv := fun x ↦ ⟨x⁻¹, by
+    obtain ⟨y, hy⟩ := x.prop
+    simp_rw [← hy, ← v.map_inv]
+    exact MonoidHom.mem_mrange.mpr ⟨_, rfl⟩⟩
+  exists_pair_ne := ⟨⟨v 0, by simp⟩, ⟨v 1, by simp [- _root_.map_one]⟩, by simp⟩
+  inv_zero := Subtype.ext inv_zero
+  mul_inv_cancel := by
+    rintro ⟨a, ha⟩ h
+    simp only [ne_eq, Subtype.ext_iff] at h
+    simpa using mul_inv_cancel₀ h
+
+end Valuation
