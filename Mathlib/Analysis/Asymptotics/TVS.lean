@@ -16,6 +16,16 @@ import Mathlib.Topology.Instances.ENNReal
 This file defines `Asymptotics.IsLittleOTVS` as a generalization of `Asymptotics.IsLittleO` from
 normed spaces to topological spaces.
 
+Given two functions `f` and `g` taking values in topological vector spaces
+over a normed field `K`,
+we say that $f = o(g)$ if for any neighborhood of zero `U` in the codomain of `f`
+there exists a neighborhood of zero `V` in the codomain of `g`
+such that $\operatorname{gauge}_{K, U} (f(x)) = o(\operatorname{gauge}_{K, V} (g(x)))$,
+where $\operatorname{gauge}_{K, U}(y) = \inf \{‖c‖ \mid y ∈ c • U\}$.
+
+In a normed space, we can use balls of positive radius as both `U` and `V`,
+thus reducing the definition to the classical one.
+
 This frees the user from having to chose a canonical norm, at the expense of having to pick a
 specific base ring.
 
@@ -26,6 +36,11 @@ https://en.wikipedia.org/wiki/Fr%C3%A9chet_derivative#Generalization_to_topologi
 but the definition there doesn't work for topological vector spaces over general normed fields.
 [This Zulip discussion](https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/generalizing.20deriv.20to.20TVS)
 led to the current choice of the definition.
+
+It may be possible to generalize $f = O(g)$ and $f = \Theta(g)$ in a similar way,
+but we don't need these definitions to redefine Fréchet derivatives,
+so formalization of these generalizations is left for later,
+until someone will need it (e.g., to prove properties of the Fréchet derivative over TVS).
 
 ## Main results
 
@@ -46,8 +61,18 @@ open scoped Topology Pointwise ENNReal NNReal
 
 namespace Asymptotics
 
-/-- `IsLittleOTVS 𝕜 f g l` is a generalization of `f =o[l] g` (`IsLittleO f g l`) that works in
-topological `𝕜`-vector spaces. -/
+/-- `IsLittleOTVS 𝕜 f g l` is a generalization of `f =o[l] g` (`IsLittleO f g l`)
+that works in topological `𝕜`-vector spaces.
+
+Given two functions `f` and `g` taking values in topological vector spaces
+over a normed field `K`,
+we say that $f = o(g)$ if for any neighborhood of zero `U` in the codomain of `f`
+there exists a neighborhood of zero `V` in the codomain of `g`
+such that $\operatorname{gauge}_{K, U} (f(x)) = o(\operatorname{gauge}_{K, V} (g(x)))$,
+where $\operatorname{gauge}_{K, U}(y) = \inf \{‖c‖ \mid y ∈ c • U\}$.
+
+We use an `ENNReal`-valued function `egauge` for the gauge,
+so we unfold the definition of little o instead of reusing it. -/
 def IsLittleOTVS (𝕜 : Type*) {α E F : Type*}
     [NNNorm 𝕜] [TopologicalSpace E] [TopologicalSpace F] [Zero E] [Zero F] [SMul 𝕜 E] [SMul 𝕜 F]
     (f : α → E) (g : α → F) (l : Filter α) : Prop :=
