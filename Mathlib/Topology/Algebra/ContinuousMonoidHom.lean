@@ -591,9 +591,9 @@ protected theorem map_mul (f : M ≃ₜ* N) : ∀ x y, f (x * y) = f x * f y :=
   map_mul f
 
 protected lemma isClosedMap (f : M ≃ₜ* N) : IsClosedMap f := f.toHomeomorph.isClosedMap
-protected lemma inducing (f : M ≃ₜ* N) : Inducing f := f.toHomeomorph.inducing
-protected lemma isQuotientMap (f : M ≃ₜ* N) : IsQuotientMap f := f.toHomeomorph.isQuotientMap
-protected lemma isEmbedding (f : M ≃ₜ* N) : IsEmbedding f := f.toHomeomorph.isEmbedding
+lemma isInducing (f : M ≃ₜ* N) : IsInducing f := f.toHomeomorph.isInducing
+lemma isQuotientMap (f : M ≃ₜ* N) : IsQuotientMap f := f.toHomeomorph.isQuotientMap
+lemma isEmbedding (f : M ≃ₜ* N) : IsEmbedding f := f.toHomeomorph.isEmbedding
 lemma isOpenEmbedding (f : M ≃ₜ* N) : IsOpenEmbedding f := f.toHomeomorph.isOpenEmbedding
 lemma isClosedEmbedding (f : M ≃ₜ* N) : IsClosedEmbedding f := f.toHomeomorph.isClosedEmbedding
 lemma isDenseEmbedding (f : M ≃ₜ* N) : IsDenseEmbedding f := f.toHomeomorph.isDenseEmbedding
