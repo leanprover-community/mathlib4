@@ -31,8 +31,8 @@ This is different from the radical of an ideal.
 
 ### For Euclidean domains
 
-- `divRadical`: For an element `a` in an Euclidean domain, `a / radical a`.
-- `divRadical_mul`: `divRadical` of a product is the product of `divRadical`s.
+- `EuclideanDomain.divRadical`: For an element `a` in an Euclidean domain, `a / radical a`.
+- `EuclideanDomain.divRadical_mul`: `divRadical` of a product is the product of `divRadical`s.
 - `IsCoprime.divRadical`: `divRadical` of coprime elements are coprime.
 
 ## TODO
@@ -218,7 +218,7 @@ theorem divRadical_mul {a b : E} (hab : IsCoprime a b) :
 theorem divRadical_dvd_self (a : E) : divRadical a ∣ a := by
   exact Dvd.intro (radical a) (divRadical_mul_radical a)
 
-protected theorem IsCoprime.divRadical {a b : E} (h : IsCoprime a b) :
+theorem _root_.IsCoprime.divRadical {a b : E} (h : IsCoprime a b) :
     IsCoprime (divRadical a) (divRadical b) := by
   rw [← radical_mul_divRadical a] at h
   rw [← radical_mul_divRadical b] at h
