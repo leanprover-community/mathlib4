@@ -23,8 +23,10 @@ instance (priority := 100) NoMaxOrder.infinite [Nonempty α] [NoMaxOrder α] : I
   let ⟨f, hf⟩ := Nat.exists_strictMono α
   Infinite.of_injective f hf.injective
 
-/-- A nonempty preorder with no minimal element is infinite. -/
-instance NoMinOrder.infinite [Nonempty α] [NoMinOrder α] : Infinite α :=
+/-- A nonempty preorder with no minimal element is infinite.
+This instance has lower priority to avoid the cycle `Infinite α → Nontrivial α → Nonempty α` if possible.
+-/
+instance (priority := 100) NoMinOrder.infinite [Nonempty α] [NoMinOrder α] : Infinite α :=
   @NoMaxOrder.infinite αᵒᵈ _ _ _
 
 namespace Set
