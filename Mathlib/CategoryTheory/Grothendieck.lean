@@ -338,6 +338,15 @@ instance faithful_ι (c : C) : (ι F c).Faithful where
     injection f with _ f
     rwa [cancel_epi] at f
 
+/-- Every morphism `f : X ⟶ Y` in the base category induces a naturl transformation from the fiber
+inclusion `ι F X` to the composition `F.map f ⋙ ι F Y`. -/
+@[simps]
+def ιNatTrans {X Y : C} (f : X ⟶ Y) : ι F X ⟶ F.map f ⋙ ι F Y where
+  app d := ⟨f, 𝟙 _⟩
+  naturality _ _ _ := by
+    simp only [ι, Functor.comp_obj, Functor.comp_map]
+    exact Grothendieck.ext _ _ (by simp) (by simp [eqToHom_map])
+
 variable (fib : ∀ c, F.obj c ⥤ E) (hom : ∀ {c c' : C} (f : c ⟶ c'), fib c ⟶ F.map f ⋙ fib c')
 variable (hom_id : ∀ c, hom (𝟙 c) = eqToHom (by simp only [Functor.map_id]; rfl))
 variable (hom_comp : ∀ c₁ c₂ c₃ (f : c₁ ⟶ c₂) (g : c₂ ⟶ c₃), hom (f ≫ g) =
