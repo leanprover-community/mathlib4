@@ -113,7 +113,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   have : ∀ n, ∃ U, N ⁻¹' {n} ⊆ U ∧ IsOpen U ∧ μ.restrict I U < δ n / n := fun n ↦ by
     refine (N ⁻¹' {n}).exists_isOpen_lt_of_lt _ ?_
     cases' n with n
-    · simpa [ENNReal.div_zero (ENNReal.coe_pos.2 (δ0 _)).ne'] using measure_lt_top (μ.restrict I) _
+    · simp [ENNReal.div_zero (ENNReal.coe_pos.2 (δ0 _)).ne']
     · refine (measure_mono_null ?_ hf).le.trans_lt ?_
       · exact fun x hxN hxf => n.succ_ne_zero ((Eq.symm hxN).trans <| N0.2 hxf)
       · simp [(δ0 _).ne']
@@ -321,7 +321,8 @@ theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
   constructor
   · let v := {x : (ι → ℝ) | ContinuousAt f x}
     have : AEStronglyMeasurable f (μ.restrict v) :=
-      (ContinuousAt.continuousOn fun _ h ↦ h).aestronglyMeasurable (measurableSet_of_continuousAt f)
+      (continuousOn_of_forall_continuousAt fun _ h ↦ h).aestronglyMeasurable
+      (measurableSet_of_continuousAt f)
     refine this.mono_measure (Measure.le_iff.2 fun s hs ↦ ?_)
     repeat rw [μ.restrict_apply hs]
     apply le_of_le_of_eq <| μ.mono s.inter_subset_left

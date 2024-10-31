@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.SymmDiff
 import Mathlib.Order.SuccPred.Relation
 import Mathlib.Topology.Irreducible
 
@@ -207,7 +207,7 @@ variable [LinearOrder β] [SuccOrder β] [IsSuccArchimedean β]
   such that any two neighboring sets meet is preconnected. -/
 theorem IsPreconnected.iUnion_of_chain {s : β → Set α} (H : ∀ n, IsPreconnected (s n))
     (K : ∀ n, (s n ∩ s (succ n)).Nonempty) : IsPreconnected (⋃ n, s n) :=
-  IsPreconnected.iUnion_of_reflTransGen H fun i j =>
+  IsPreconnected.iUnion_of_reflTransGen H fun _ _ =>
     reflTransGen_of_succ _ (fun i _ => K i) fun i _ => by
       rw [inter_comm]
       exact K i
@@ -216,7 +216,7 @@ theorem IsPreconnected.iUnion_of_chain {s : β → Set α} (H : ∀ n, IsPreconn
   such that any two neighboring sets meet is connected. -/
 theorem IsConnected.iUnion_of_chain [Nonempty β] {s : β → Set α} (H : ∀ n, IsConnected (s n))
     (K : ∀ n, (s n ∩ s (succ n)).Nonempty) : IsConnected (⋃ n, s n) :=
-  IsConnected.iUnion_of_reflTransGen H fun i j =>
+  IsConnected.iUnion_of_reflTransGen H fun _ _ =>
     reflTransGen_of_succ _ (fun i _ => K i) fun i _ => by
       rw [inter_comm]
       exact K i
@@ -320,8 +320,8 @@ theorem isPreconnected_closed_iff {s : Set α} :
       rw [← compl_union] at this
       exact this.ne_empty huv.disjoint_compl_right.inter_eq⟩
 
-theorem Inducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α → β}
-    (hf : Inducing f) : IsPreconnected (f '' s) ↔ IsPreconnected s := by
+theorem IsInducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α → β}
+    (hf : IsInducing f) : IsPreconnected (f '' s) ↔ IsPreconnected s := by
   refine ⟨fun h => ?_, fun h => h.image _ hf.continuous.continuousOn⟩
   rintro u v hu' hv' huv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩
   rcases hf.isOpen_iff.1 hu' with ⟨u, hu, rfl⟩
@@ -330,6 +330,9 @@ theorem Inducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α
   rcases h u v hu hv huv ⟨f x, mem_image_of_mem _ hxs, hxu⟩ ⟨f y, mem_image_of_mem _ hys, hyv⟩ with
     ⟨_, ⟨z, hzs, rfl⟩, hzuv⟩
   exact ⟨z, hzs, hzuv⟩
+
+@[deprecated (since := "2024-10-28")]
+alias Inducing.isPreconnected_image := IsInducing.isPreconnected_image
 
 /- TODO: The following lemmas about connection of preimages hold more generally for strict maps
 (the quotient and subspace topologies of the image agree) whose fibers are preconnected. -/
@@ -497,7 +500,7 @@ theorem isPreconnected_connectedComponent {x : α} : IsPreconnected (connectedCo
 theorem isPreconnected_connectedComponentIn {x : α} {F : Set α} :
     IsPreconnected (connectedComponentIn F x) := by
   rw [connectedComponentIn]; split_ifs
-  · exact inducing_subtype_val.isPreconnected_image.mpr isPreconnected_connectedComponent
+  · exact IsInducing.subtypeVal.isPreconnected_image.mpr isPreconnected_connectedComponent
   · exact isPreconnected_empty
 
 theorem isConnected_connectedComponent {x : α} : IsConnected (connectedComponent x) :=
@@ -514,7 +517,7 @@ theorem IsPreconnected.subset_connectedComponent {x : α} {s : Set α} (H1 : IsP
 theorem IsPreconnected.subset_connectedComponentIn {x : α} {F : Set α} (hs : IsPreconnected s)
     (hxs : x ∈ s) (hsF : s ⊆ F) : s ⊆ connectedComponentIn F x := by
   have : IsPreconnected (((↑) : F → α) ⁻¹' s) := by
-    refine inducing_subtype_val.isPreconnected_image.mp ?_
+    refine IsInducing.subtypeVal.isPreconnected_image.mp ?_
     rwa [Subtype.image_preimage_coe, inter_eq_right.mpr hsF]
   have h2xs : (⟨x, hsF hxs⟩ : F) ∈ (↑) ⁻¹' s := by
     rw [mem_preimage]
@@ -701,7 +704,7 @@ instance (priority := 100) IrreducibleSpace.connectedSpace (α : Type u) [Topolo
 
 theorem Subtype.preconnectedSpace {s : Set α} (h : IsPreconnected s) : PreconnectedSpace s where
   isPreconnected_univ := by
-    rwa [← inducing_subtype_val.isPreconnected_image, image_univ, Subtype.range_val]
+    rwa [← IsInducing.subtypeVal.isPreconnected_image, image_univ, Subtype.range_val]
 
 theorem Subtype.connectedSpace {s : Set α} (h : IsConnected s) : ConnectedSpace s where
   toPreconnectedSpace := Subtype.preconnectedSpace h.isPreconnected

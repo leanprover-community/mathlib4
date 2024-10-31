@@ -111,7 +111,8 @@ abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLi
 /-- `OrderIsoClass F α β` states that `F` is a type of order isomorphisms.
 
 You should extend this class when you extend `OrderIso`. -/
-class OrderIsoClass (F α β : Type*) [LE α] [LE β] [EquivLike F α β] : Prop where
+class OrderIsoClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [EquivLike F α β] :
+    Prop where
   /-- An order isomorphism respects `≤`. -/
   map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
 
@@ -146,6 +147,9 @@ variable [Preorder α] [Preorder β] [FunLike F α β] [OrderHomClass F α β]
 protected theorem monotone (f : F) : Monotone f := fun _ _ => map_rel f
 
 protected theorem mono (f : F) : Monotone f := fun _ _ => map_rel f
+
+@[gcongr] protected lemma GCongr.mono (f : F) {a b : α} (hab : a ≤ b) : f a ≤ f b :=
+  OrderHomClass.mono f hab
 
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` into an actual
 `OrderHom`. This is declared as the default coercion from `F` to `α →o β`. -/
@@ -751,8 +755,6 @@ protected theorem injective (e : α ≃o β) : Function.Injective e :=
 protected theorem surjective (e : α ≃o β) : Function.Surjective e :=
   e.toEquiv.surjective
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem apply_eq_iff_eq (e : α ≃o β) {x y : α} : e x = e y ↔ x = y :=
   e.toEquiv.apply_eq_iff_eq
 
@@ -914,11 +916,12 @@ open Set
 
 section LE
 
-variable [LE α] [LE β] [LE γ]
+variable [LE α] [LE β]
 
---@[simp] Porting note (#10618): simp can prove it
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
+
+@[gcongr] protected alias ⟨_, GCongr.orderIso_apply_le_apply⟩ := le_iff_le
 
 theorem le_symm_apply (e : α ≃o β) {x : α} {y : β} : x ≤ e.symm y ↔ e x ≤ y :=
   e.rel_symm_apply
@@ -928,7 +931,7 @@ theorem symm_apply_le (e : α ≃o β) {x : α} {y : β} : e.symm y ≤ x ↔ y 
 
 end LE
 
-variable [Preorder α] [Preorder β] [Preorder γ]
+variable [Preorder α] [Preorder β]
 
 protected theorem monotone (e : α ≃o β) : Monotone e :=
   e.toOrderEmbedding.monotone
@@ -939,6 +942,8 @@ protected theorem strictMono (e : α ≃o β) : StrictMono e :=
 @[simp]
 theorem lt_iff_lt (e : α ≃o β) {x y : α} : e x < e y ↔ x < y :=
   e.toOrderEmbedding.lt_iff_lt
+
+@[gcongr] protected alias ⟨_, GCongr.orderIso_apply_lt_apply⟩ := lt_iff_lt
 
 /-- Converts an `OrderIso` into a `RelIso (<) (<)`. -/
 def toRelIsoLT (e : α ≃o β) : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop) :=
@@ -1052,7 +1057,7 @@ end Equiv
 namespace StrictMono
 
 variable [LinearOrder α] [Preorder β]
-variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f)
+variable (f : α → β) (h_mono : StrictMono f)
 
 /-- A strictly monotone function with a right inverse is an order isomorphism. -/
 @[simps (config := .asFn)]
@@ -1171,6 +1176,13 @@ theorem coe_toDualTopEquiv_eq [LE α] :
     (WithBot.toDualTopEquiv : WithBot αᵒᵈ → (WithTop α)ᵒᵈ) = toDual ∘ WithBot.ofDual :=
   funext fun _ => rfl
 
+/-- The coercion `α → WithBot α` bundled as monotone map. -/
+@[simps]
+def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
+  toFun := (↑)
+  inj' := WithBot.coe_injective
+  map_rel_iff' := WithBot.coe_le_coe
+
 end WithBot
 
 namespace WithTop
@@ -1201,6 +1213,13 @@ theorem toDualBotEquiv_symm_top [LE α] : WithTop.toDualBotEquiv.symm (⊤ : (Wi
 theorem coe_toDualBotEquiv [LE α] :
     (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual :=
   funext fun _ => rfl
+
+/-- The coercion `α → WithTop α` bundled as monotone map. -/
+@[simps]
+def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
+  toFun := (↑)
+  inj' := WithTop.coe_injective
+  map_rel_iff' := WithTop.coe_le_coe
 
 end WithTop
 

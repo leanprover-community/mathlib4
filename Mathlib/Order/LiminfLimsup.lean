@@ -126,8 +126,16 @@ lemma isBoundedUnder_iff_eventually_bddBelow :
 lemma _root_.BddAbove.isBoundedUnder (hs : s ∈ f) (hu : BddAbove (u '' s)) :
     f.IsBoundedUnder (· ≤ ·) u := isBoundedUnder_iff_eventually_bddAbove.2 ⟨_, hu, hs⟩
 
+/-- A bounded above function `u` is in particular eventually bounded above. -/
+lemma _root_.BddAbove.isBoundedUnder_of_range (hu : BddAbove (Set.range u)) :
+    f.IsBoundedUnder (· ≤ ·) u := BddAbove.isBoundedUnder (s := univ) f.univ_mem (by simpa)
+
 lemma _root_.BddBelow.isBoundedUnder (hs : s ∈ f) (hu : BddBelow (u '' s)) :
     f.IsBoundedUnder (· ≥ ·) u := isBoundedUnder_iff_eventually_bddBelow.2 ⟨_, hu, hs⟩
+
+/-- A bounded below function `u` is in particular eventually bounded below. -/
+lemma _root_.BddBelow.isBoundedUnder_of_range (hu : BddBelow (Set.range u)) :
+    f.IsBoundedUnder (· ≥ ·) u := BddBelow.isBoundedUnder (s := univ) f.univ_mem (by simpa)
 
 end Preorder
 
@@ -277,7 +285,7 @@ end Relation
 
 section add_and_sum
 
-open Filter BigOperators Set
+open Filter Set
 
 variable {α : Type*} {f : Filter α}
 variable {R : Type*}
@@ -297,8 +305,7 @@ lemma isBoundedUnder_sum {κ : Type*} [AddCommMonoid R] {r : R → R → Prop}
 
 variable [Preorder R]
 
-lemma isBoundedUnder_ge_add [Add R]
-    [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+lemma isBoundedUnder_ge_add [Add R] [AddLeftMono R] [AddRightMono R]
     {u v : α → R} (u_bdd_ge : f.IsBoundedUnder (· ≥ ·) u) (v_bdd_ge : f.IsBoundedUnder (· ≥ ·) v) :
     f.IsBoundedUnder (· ≥ ·) (u + v) := by
   obtain ⟨U, hU⟩ := u_bdd_ge
@@ -307,8 +314,7 @@ lemma isBoundedUnder_ge_add [Add R]
   simp only [eventually_map, Pi.add_apply] at hU hV ⊢
   filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
 
-lemma isBoundedUnder_le_add [Add R]
-    [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+lemma isBoundedUnder_le_add [Add R] [AddLeftMono R] [AddRightMono R]
     {u v : α → R} (u_bdd_le : f.IsBoundedUnder (· ≤ ·) u) (v_bdd_le : f.IsBoundedUnder (· ≤ ·) v) :
     f.IsBoundedUnder (· ≤ ·) (u + v) := by
   obtain ⟨U, hU⟩ := u_bdd_le
@@ -317,14 +323,12 @@ lemma isBoundedUnder_le_add [Add R]
   simp only [eventually_map, Pi.add_apply] at hU hV ⊢
   filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
 
-lemma isBoundedUnder_le_sum {κ : Type*} [AddCommMonoid R]
-    [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+lemma isBoundedUnder_le_sum {κ : Type*} [AddCommMonoid R] [AddLeftMono R] [AddRightMono R]
     {u : κ → α → R} (s : Finset κ) :
     (∀ k ∈ s, f.IsBoundedUnder (· ≤ ·) (u k)) → f.IsBoundedUnder (· ≤ ·) (∑ k ∈ s, u k) := by
   apply isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_le_add) le_rfl
 
-lemma isBoundedUnder_ge_sum {κ : Type*} [AddCommMonoid R]
-    [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+lemma isBoundedUnder_ge_sum {κ : Type*} [AddCommMonoid R] [AddLeftMono R] [AddRightMono R]
     {u : κ → α → R} (s : Finset κ) :
     (∀ k ∈ s, f.IsBoundedUnder (· ≥ ·) (u k)) →
       f.IsBoundedUnder (· ≥ ·) (∑ k ∈ s, u k) := by

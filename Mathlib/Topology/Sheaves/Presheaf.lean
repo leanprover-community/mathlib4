@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
+Authors: Kim Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.CategoryTheory.Adjunction.Unique
@@ -153,9 +153,9 @@ variable (C)
 def pushforward {X Y : TopCat.{w}} (f : X ⟶ Y) : X.Presheaf C ⥤ Y.Presheaf C :=
   (whiskeringLeft _ _ _).obj (Opens.map f).op
 
-set_option quotPrecheck false in
 /-- push forward of a presheaf -/
-notation f:80 " _* " P:81 => (pushforward _ f).obj P
+scoped[AlgebraicGeometry] notation f:80 " _* " P:81 =>
+  Prefunctor.obj (Functor.toPrefunctor (TopCat.Presheaf.pushforward _ f)) P
 
 @[simp]
 theorem pushforward_map_app' {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : X.Presheaf C} (α : ℱ ⟶ 𝒢)
@@ -242,9 +242,7 @@ theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf
     (toPushforwardOfIso H₁ H₂).app U =
       ℱ.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) ≫
         H₂.app (op ((Opens.map H₁.inv).obj (unop U))) := by
-  delta toPushforwardOfIso
-  simp [-Functor.map_comp, ← Functor.map_comp_assoc]
-  rfl
+  simp [toPushforwardOfIso, Adjunction.homEquiv_unit]
 
 /-- If `H : X ≅ Y` is a homeomorphism,
 then given an `H _* ℱ ⟶ 𝒢`, we may obtain an `ℱ ⟶ H ⁻¹ _* 𝒢`.
@@ -259,7 +257,7 @@ theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
         𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) := by
-  simp [pushforwardToOfIso, Equivalence.toAdjunction]
+  simp [pushforwardToOfIso, Equivalence.toAdjunction, Adjunction.homEquiv_counit]
 
 end Iso
 
