@@ -146,7 +146,7 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
     HasDerivWithinAt (iteratedDerivWithin (k + 1) f s) (iteratedDerivWithin (k + 2) f s y) t y := by
     convert (hf.mono_of_mem_nhdsWithin hs).hasDerivWithinAt using 1
     rw [iteratedDerivWithin_succ (ht.mono_nhds (nhdsWithin_le_iff.mpr hs))]
-    exact (derivWithin_of_mem hs ht hf).symm
+    exact (derivWithin_of_mem_nhdsWithin hs ht hf).symm
   have : HasDerivWithinAt (fun t => ((k + 1 : ℝ) * k !)⁻¹ * (x - t) ^ (k + 1))
       (-((k ! : ℝ)⁻¹ * (x - y) ^ k)) t y := by
     -- Commuting the factors:
