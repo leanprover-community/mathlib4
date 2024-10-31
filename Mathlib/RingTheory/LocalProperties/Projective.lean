@@ -14,7 +14,7 @@ import Mathlib.RingTheory.Localization.BaseChange
 # Being projective is a local property
 
 ## Main results
-- `split_surjective_of_localization_maximal` If `N` is finitely presented, then `f : M →ₗ[R] N`
+- `LinearMap.split_surjective_of_localization_maximal` If `N` is finitely presented, then `f : M →ₗ[R] N`
   being split injective can be checked on stalks (of maximal ideals).
 - `Module.projective_of_localization_maximal` If `M` is finitely presented,
   then `M` being projective can be checked on stalks (of maximal ideals).
