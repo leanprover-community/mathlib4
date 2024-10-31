@@ -7,6 +7,7 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Order.Defs
 import Mathlib.Order.Notation
+import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.SimpRw
@@ -1068,9 +1069,13 @@ theorem mk_lt_mk [LT α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
 theorem coe_le_coe [LE α] {p : α → Prop} {x y : Subtype p} : (x : α) ≤ y ↔ x ≤ y :=
   Iff.rfl
 
+@[gcongr] alias ⟨_, GCongr.coe_le_coe⟩ := coe_le_coe
+
 @[simp, norm_cast]
 theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y ↔ x < y :=
   Iff.rfl
+
+@[gcongr] alias ⟨_, GCongr.coe_lt_coe⟩ := coe_lt_coe
 
 instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
   Preorder.lift (fun (a : Subtype p) ↦ (a : α))
