@@ -33,20 +33,27 @@ instance [TopologicalSemiring A] (s : StarSubalgebra R A) : TopologicalSemiring 
   s.toSubalgebra.topologicalSemiring
 
 /-- The `StarSubalgebra.inclusion` of a star subalgebra is an `Embedding`. -/
-theorem embedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂) : Embedding (inclusion h) :=
-  { induced := Eq.symm induced_compose
-    inj := Subtype.map_injective h Function.injective_id }
+lemma isEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂) :
+    IsEmbedding (inclusion h) where
+  eq_induced := Eq.symm induced_compose
+  inj := Subtype.map_injective h Function.injective_id
 
-/-- The `StarSubalgebra.inclusion` of a closed star subalgebra is a `ClosedEmbedding`. -/
-theorem closedEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂)
-    (hS₁ : IsClosed (S₁ : Set A)) : ClosedEmbedding (inclusion h) :=
-  { embedding_inclusion h with
+@[deprecated (since := "2024-10-26")]
+alias embedding_inclusion := isEmbedding_inclusion
+
+/-- The `StarSubalgebra.inclusion` of a closed star subalgebra is a `IsClosedEmbedding`. -/
+theorem isClosedEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂)
+    (hS₁ : IsClosed (S₁ : Set A)) : IsClosedEmbedding (inclusion h) :=
+  { IsEmbedding.inclusion h with
     isClosed_range := isClosed_induced_iff.2
       ⟨S₁, hS₁, by
           convert (Set.range_subtype_map id _).symm
           · rw [Set.image_id]; rfl
           · intro _ h'
             apply h h' ⟩ }
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_inclusion := isClosedEmbedding_inclusion
 
 variable [TopologicalSemiring A] [ContinuousStar A]
 variable [TopologicalSpace B] [Semiring B] [Algebra R B] [StarRing B]
@@ -99,7 +106,7 @@ theorem map_topologicalClosure_le [StarModule R B] [TopologicalSemiring B] [Cont
   image_closure_subset_closure_image hφ
 
 theorem topologicalClosure_map [StarModule R B] [TopologicalSemiring B] [ContinuousStar B]
-    (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : ClosedEmbedding φ) :
+    (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : IsClosedEmbedding φ) :
     (map φ s).topologicalClosure = map φ s.topologicalClosure :=
   SetLike.coe_injective <| hφ.closure_image_eq _
 
@@ -132,7 +139,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
     φ = ψ := by
   rw [DFunLike.ext'_iff]
   have : Dense (Set.range <| inclusion (le_topologicalClosure S)) := by
-    refine embedding_subtype_val.toInducing.dense_iff.2 fun x => ?_
+    refine IsInducing.subtypeVal.dense_iff.2 fun x => ?_
     convert show ↑x ∈ closure (S : Set A) from x.prop
     rw [← Set.range_comp]
     exact
@@ -205,9 +212,9 @@ theorem le_of_isClosed_of_mem {S : StarSubalgebra R A} (hS : IsClosed (S : Set A
     (hx : x ∈ S) : elementalStarAlgebra R x ≤ S :=
   topologicalClosure_minimal (adjoin_le <| Set.singleton_subset_iff.2 hx) hS
 
-/-- The coercion from an elemental algebra to the full algebra as a `ClosedEmbedding`. -/
-theorem closedEmbedding_coe (x : A) : ClosedEmbedding ((↑) : elementalStarAlgebra R x → A) :=
-  { induced := rfl
+/-- The coercion from an elemental algebra to the full algebra as a `IsClosedEmbedding`. -/
+theorem isClosedEmbedding_coe (x : A) : IsClosedEmbedding ((↑) : elementalStarAlgebra R x → A) :=
+  { eq_induced := rfl
     inj := Subtype.coe_injective
     isClosed_range := by
       convert isClosed R x
@@ -216,6 +223,9 @@ theorem closedEmbedding_coe (x : A) : ClosedEmbedding ((↑) : elementalStarAlge
           ⟨by
             rintro ⟨y, rfl⟩
             exact y.prop, fun hy => ⟨⟨y, hy⟩, rfl⟩⟩ }
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_coe := isClosedEmbedding_coe
 
 @[elab_as_elim]
 theorem induction_on {x y : A}

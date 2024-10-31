@@ -3,8 +3,9 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.SeparableClosure
+import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.CharP.IntermediateField
+import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 
@@ -454,6 +455,18 @@ theorem IsPurelyInseparable.trans [Algebra E K] [IsScalarTower F E K]
   obtain ⟨m, z, h1⟩ := h1 y
   refine ⟨n + m, z, ?_⟩
   rw [IsScalarTower.algebraMap_apply F E K, h1, map_pow, h2, ← pow_mul, ← pow_add]
+
+namespace IntermediateField
+
+variable (M : IntermediateField F K)
+
+instance isPurelyInseparable_tower_bot [IsPurelyInseparable F K] : IsPurelyInseparable F M :=
+  IsPurelyInseparable.tower_bot F M K
+
+instance isPurelyInseparable_tower_top [IsPurelyInseparable F K] : IsPurelyInseparable M K :=
+  IsPurelyInseparable.tower_top F M K
+
+end IntermediateField
 
 variable {E}
 

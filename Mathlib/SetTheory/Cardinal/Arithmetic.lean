@@ -43,7 +43,7 @@ section mul
 theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
   refine le_antisymm ?_ (by simpa only [mul_one] using mul_le_mul_left' (one_le_aleph0.trans h) c)
   -- the only nontrivial part is `c * c ≤ c`. We prove it inductively.
-  refine Acc.recOn (Cardinal.lt_wf.apply c) (fun c _ => Quotient.inductionOn c fun α IH ol => ?_) h
+  refine Acc.recOn (Cardinal.lt_wf.apply c) (fun c _ => Cardinal.inductionOn c fun α IH ol => ?_) h
   -- consider the minimal well-order `r` on `α` (a type with cardinality `c`).
   rcases ord_eq α with ⟨r, wo, e⟩
   classical
@@ -80,10 +80,10 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
     apply @irrefl _ r
   cases' lt_or_le (card (succ (typein (· < ·) (g p)))) ℵ₀ with qo qo
   · exact (mul_lt_aleph0 qo qo).trans_le ol
-  · suffices (succ (typein LT.lt (g p))).card < ⟦α⟧ from (IH _ this qo).trans_lt this
+  · suffices (succ (typein LT.lt (g p))).card < #α from (IH _ this qo).trans_lt this
     rw [← lt_ord]
     apply (isLimit_ord ol).2
-    rw [mk'_def, e]
+    rw [e]
     apply typein_lt_type
 
 /-- If `α` and `β` are infinite types, then the cardinality of `α × β` is the maximum
@@ -100,7 +100,7 @@ theorem mul_mk_eq_max {α β : Type u} [Infinite α] [Infinite β] : #α * #β =
   mul_eq_max (aleph0_le_mk α) (aleph0_le_mk β)
 
 @[simp]
-theorem aleph_mul_aleph (o₁ o₂ : Ordinal) : aleph o₁ * aleph o₂ = aleph (max o₁ o₂) := by
+theorem aleph_mul_aleph (o₁ o₂ : Ordinal) : ℵ_ o₁ * ℵ_ o₂ = ℵ_ (max o₁ o₂) := by
   rw [Cardinal.mul_eq_max (aleph0_le_aleph o₁) (aleph0_le_aleph o₂), aleph_max]
 
 @[simp]
@@ -111,20 +111,18 @@ theorem aleph0_mul_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : ℵ₀ * a = a :=
 theorem mul_aleph0_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a * ℵ₀ = a :=
   (mul_eq_max ha le_rfl).trans (max_eq_left ha)
 
--- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem aleph0_mul_mk_eq {α : Type*} [Infinite α] : ℵ₀ * #α = #α :=
   aleph0_mul_eq (aleph0_le_mk α)
 
--- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem mk_mul_aleph0_eq {α : Type*} [Infinite α] : #α * ℵ₀ = #α :=
   mul_aleph0_eq (aleph0_le_mk α)
 
 @[simp]
-theorem aleph0_mul_aleph (o : Ordinal) : ℵ₀ * aleph o = aleph o :=
+theorem aleph0_mul_aleph (o : Ordinal) : ℵ₀ * ℵ_ o = ℵ_ o :=
   aleph0_mul_eq (aleph0_le_aleph o)
 
 @[simp]
-theorem aleph_mul_aleph0 (o : Ordinal) : aleph o * ℵ₀ = aleph o :=
+theorem aleph_mul_aleph0 (o : Ordinal) : ℵ_ o * ℵ₀ = ℵ_ o :=
   mul_aleph0_eq (aleph0_le_aleph o)
 
 theorem mul_lt_of_lt {a b c : Cardinal} (hc : ℵ₀ ≤ c) (h1 : a < c) (h2 : b < c) : a * b < c :=
@@ -325,7 +323,6 @@ theorem nat_add_eq {a : Cardinal} (n : ℕ) (ha : ℵ₀ ≤ a) : n + a = a := b
 theorem add_one_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a + 1 = a :=
   add_one_of_aleph0_le ha
 
--- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem mk_add_one_eq {α : Type*} [Infinite α] : #α + 1 = #α :=
   add_one_eq (aleph0_le_mk α)
 
@@ -421,7 +418,7 @@ end ciSup
 section aleph
 
 @[simp]
-theorem aleph_add_aleph (o₁ o₂ : Ordinal) : aleph o₁ + aleph o₂ = aleph (max o₁ o₂) := by
+theorem aleph_add_aleph (o₁ o₂ : Ordinal) : ℵ_ o₁ + ℵ_ o₂ = ℵ_ (max o₁ o₂) := by
   rw [Cardinal.add_eq_max (aleph0_le_aleph o₁), aleph_max]
 
 theorem principal_add_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Ordinal.Principal (· + ·) c.ord :=
@@ -429,7 +426,7 @@ theorem principal_add_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Ordinal.Principal
   rw [lt_ord, Ordinal.card_add] at *
   exact add_lt_of_lt hc ha hb
 
-theorem principal_add_aleph (o : Ordinal) : Ordinal.Principal (· + ·) (aleph o).ord :=
+theorem principal_add_aleph (o : Ordinal) : Ordinal.Principal (· + ·) (ℵ_ o).ord :=
   principal_add_ord <| aleph0_le_aleph o
 
 theorem add_right_inj_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < aleph0) : α + γ = β + γ ↔ α = β :=

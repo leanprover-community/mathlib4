@@ -3,8 +3,9 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Topology.Algebra.Ring.Ideal
+import Mathlib.RingTheory.Ideal.Basic
 
 /-!
 # The group of units of a complete normed ring
@@ -201,7 +202,7 @@ open MulOpposite Filter NormedRing
 /-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
 induced topology from the embedding in `R × R`) to `R` is an open embedding. -/
 theorem isOpenEmbedding_val : IsOpenEmbedding (val : Rˣ → R) where
-  toEmbedding := embedding_val_mk'
+  toIsEmbedding := isEmbedding_val_mk'
     (fun _ ⟨u, hu⟩ ↦ hu ▸ (inverse_continuousAt u).continuousWithinAt) Ring.inverse_unit
   isOpen_range := Units.isOpen
 
