@@ -1244,7 +1244,7 @@ protected theorem HasFPowerSeriesOnBall.continuousOn (hf : HasFPowerSeriesOnBall
 protected theorem HasFPowerSeriesWithinOnBall.continuousWithinAt_insert
     (hf : HasFPowerSeriesWithinOnBall f p s x r) :
     ContinuousWithinAt f (insert x s) x := by
-  apply (hf.continuousOn.continuousWithinAt (x := x) (by simp [hf.r_pos])).mono_of_mem
+  apply (hf.continuousOn.continuousWithinAt (x := x) (by simp [hf.r_pos])).mono_of_mem_nhdsWithin
   exact inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds x hf.r_pos)
 
 protected theorem HasFPowerSeriesWithinOnBall.continuousWithinAt

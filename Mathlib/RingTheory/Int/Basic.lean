@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Prime.Int
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Divisibility over ℕ and ℤ

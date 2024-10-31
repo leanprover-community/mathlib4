@@ -475,7 +475,7 @@ section CompRight
 
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
   {E' : Type*} [AddCommGroup E'] [Module 𝕜 E']
-  {f : E → F} {f' : F} {x v : E'} {L : E' →ₗ[𝕜] E}
+  {f : E → F} {f' : F} {x : E'} {L : E' →ₗ[𝕜] E}
 
 theorem HasLineDerivAt.of_comp {v : E'} (hf : HasLineDerivAt 𝕜 (f ∘ L) f' x v) :
     HasLineDerivAt 𝕜 f f' (L x) (L v) := by
