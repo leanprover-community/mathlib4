@@ -254,9 +254,9 @@ theorem continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
 -- The canonical mapping from probability measures to finite measures is an embedding.
 theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [TopologicalSpace Ω]
     [OpensMeasurableSpace Ω] :
-    IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) :=
-  { induced := rfl
-    inj := fun _μ _ν h ↦ Subtype.eq <| congr_arg FiniteMeasure.toMeasure h }
+    IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
+  eq_induced := rfl
+  inj _μ _ν h := Subtype.eq <| congr_arg FiniteMeasure.toMeasure h
 
 @[deprecated (since := "2024-10-26")]
 alias toFiniteMeasure_embedding := toFiniteMeasure_isEmbedding

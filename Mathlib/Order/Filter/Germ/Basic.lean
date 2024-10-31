@@ -79,7 +79,6 @@ def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a
 
 /-- The filter product `(a : α) → ε a` at a filter `l`. This is a dependent version of
   `Filter.Germ`. -/
--- Porting note: removed @[protected]
 def Product (l : Filter α) (ε : α → Type*) : Type _ :=
   Quotient (productSetoid l ε)
 
