@@ -223,13 +223,13 @@ def twoCocycles : Submodule k (G × G → A) := LinearMap.ker (dTwo A)
 
 variable {A}
 
-instance : FunLike (oneCocycles A) G A := ⟨(·.val), Subtype.val_injective⟩
+instance : FunLike (oneCocycles A) G A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
-theorem oneCocycles_coe_mk (f : G → A) (hf) : ((⟨f, hf⟩ : oneCocycles A) : G → A) = f := rfl
+theorem oneCocycles.coe_mk (f : G → A) (hf) : ((⟨f, hf⟩ : oneCocycles A) : G → A) = f := rfl
 
 @[simp]
-theorem oneCocycles_toFun_eq_coe (f : oneCocycles A) : f.1 = f := rfl
+theorem oneCocycles.val_eq_coe (f : oneCocycles A) : f.1 = f := rfl
 
 @[ext]
 theorem oneCocycles_ext {f₁ f₂ : oneCocycles A} (h : ∀ g : G, f₁ g = f₂ g) : f₁ = f₂ :=
@@ -285,13 +285,13 @@ group homs `G → A`. -/
 
 variable {A}
 
-instance : FunLike (twoCocycles A) (G × G) A := ⟨(·.val), Subtype.val_injective⟩
+instance : FunLike (twoCocycles A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
-theorem twoCocycles_coe_mk (f : G × G → A) (hf) : ((⟨f, hf⟩ : twoCocycles A) : G × G → A) = f := rfl
+theorem twoCocycles.coe_mk (f : G × G → A) (hf) : ((⟨f, hf⟩ : twoCocycles A) : G × G → A) = f := rfl
 
 @[simp]
-theorem twoCocycles_toFun_eq_coe (f : twoCocycles A) : f.1 = f := rfl
+theorem twoCocycles.val_eq_coe (f : twoCocycles A) : f.1 = f := rfl
 
 @[ext]
 theorem twoCocycles_ext {f₁ f₂ : twoCocycles A} (h : ∀ g h : G, f₁ (g, h) = f₂ (g, h)) : f₁ = f₂ :=
