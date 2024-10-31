@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Batteries.Data.List.OfFn
-import Batteries.Data.List.Pairwise
 import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
@@ -178,8 +177,9 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
 @[simp]
 theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
-  simp only [pairwise_iff_get, (Fin.rightInverse_cast (length_ofFn f)).surjective.forall, get_ofFn,
-    ← Fin.not_le, Fin.cast_le_cast]
+  simp only [pairwise_iff_getElem, length_ofFn, List.getElem_ofFn,
+    (Fin.rightInverse_cast (length_ofFn f)).surjective.forall, Fin.forall_iff, Fin.cast_mk,
+    Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
 
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/
 @[simps]
@@ -200,14 +200,8 @@ def ofFnRec {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofF
 
 @[simp]
 theorem ofFnRec_ofFn {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) {n : ℕ}
-    (f : Fin n → α) : @ofFnRec _ C h (List.ofFn f) = h _ f := by
-  -- Porting note: Old proof was
-  -- equivSigmaTuple.rightInverse_symm.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
-  have := (@equivSigmaTuple α).rightInverse_symm
-  dsimp [equivSigmaTuple] at this
-  have := this.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
-  dsimp only at this
-  rw [ofFnRec, ← this]
+    (f : Fin n → α) : @ofFnRec _ C h (List.ofFn f) = h _ f :=
+  equivSigmaTuple.rightInverse_symm.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
 
 theorem exists_iff_exists_tuple {P : List α → Prop} :
     (∃ l : List α, P l) ↔ ∃ (n : _) (f : Fin n → α), P (List.ofFn f) :=

@@ -20,7 +20,7 @@ See `traceForm_dualBasis_powerBasis_eq`.
 - `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` spans `R<x>`.
 -/
 
-open Polynomial FiniteDimensional
+open Polynomial Module
 
 variable (R K) {L S} [CommRing R] [Field K] [Field L] [CommRing S] [Algebra R S] [Algebra K L]
 variable (x : S)

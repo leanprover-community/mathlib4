@@ -153,8 +153,7 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 
 namespace ComputablePred
 
-variable {α : Type*} {σ : Type*}
-variable [Primcodable α] [Primcodable σ]
+variable {α : Type*} [Primcodable α]
 
 open Nat.Partrec (Code)
 
@@ -162,7 +161,7 @@ open Nat.Partrec.Code Computable
 
 theorem computable_iff {p : α → Prop} :
     ComputablePred p ↔ ∃ f : α → Bool, Computable f ∧ p = fun a => (f a : Prop) :=
-  ⟨fun ⟨D, h⟩ => ⟨_, h, funext fun a => propext (Bool.decide_iff _).symm⟩, by
+  ⟨fun ⟨_, h⟩ => ⟨_, h, funext fun _ => propext (Bool.decide_iff _).symm⟩, by
     rintro ⟨f, h, rfl⟩; exact ⟨by infer_instance, by simpa using h⟩⟩
 
 protected theorem not {p : α → Prop} (hp : ComputablePred p) : ComputablePred fun a => ¬p a := by
@@ -223,7 +222,7 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
                 (Partrec.nat_iff.1 <| eval_part.comp (const cg) Computable.id) ((hC _).1 fC),
         fun h => by {
           obtain rfl | rfl := h <;> simpa [ComputablePred, Set.mem_empty_iff_false] using
-            ⟨⟨inferInstance⟩, Computable.const _⟩ }⟩
+            Computable.const _}⟩
 
 /-- The Halting problem is recursively enumerable -/
 theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
@@ -280,8 +279,6 @@ end Nat
 namespace Nat.Partrec'
 
 open Mathlib.Vector Partrec Computable
-
-open Nat (Partrec')
 
 open Nat.Partrec'
 
