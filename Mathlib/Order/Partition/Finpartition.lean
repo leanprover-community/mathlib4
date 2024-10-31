@@ -74,6 +74,8 @@ structure Finpartition [Lattice α] [OrderBot α] (a : α) where
 -- Porting note: attribute [protected] doesn't work
 -- attribute [protected] Finpartition.supIndep
 
+attribute [simp] Finpartition.not_bot_mem
+
 namespace Finpartition
 
 section Lattice
@@ -453,6 +455,9 @@ variable [DecidableEq α] {s t u : Finset α} (P : Finpartition s) {a : α}
 theorem nonempty_of_mem_parts {a : Finset α} (ha : a ∈ P.parts) : a.Nonempty :=
   nonempty_iff_ne_empty.2 <| P.ne_bot ha
 
+@[simp]
+theorem not_empty_mem_parts : ∅ ∉ P.parts := Finset.not_nonempty_empty ∘ (nonempty_of_mem_parts P ·)
+
 lemma eq_of_mem_parts (ht : t ∈ P.parts) (hu : u ∈ P.parts) (hat : a ∈ t) (hau : a ∈ u) : t = u :=
   P.disjoint.elim ht hu <| not_disjoint_iff.2 ⟨a, hat, hau⟩
 
@@ -472,8 +477,10 @@ theorem existsUnique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := b
 /-- The part of the finpartition that `a` lies in. -/
 def part (a : α) : Finset α := if ha : a ∈ s then choose (hp := P.existsUnique_mem ha) else ∅
 
+@[simp]
 lemma part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, choose_mem]
 
+@[simp]
 lemma mem_part (ha : a ∈ s) : a ∈ P.part a := by
   simp [part, ha, choose_property (p := fun s => a ∈ s) P.parts (P.existsUnique_mem ha)]
 
@@ -587,6 +594,13 @@ def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α
     simp only [filter_eq_empty_iff, not_forall, mem_univ, forall_true_left, true_and, not_not]
     use a
 
+theorem mem_parts_ofSetoid_iff {s : Setoid α} [DecidableRel s.r] {f : Finset α} :
+    f ∈ (ofSetoid s).parts ↔ ∃ x, ∀ y, (y ∈ f ↔ s.r x y) := by
+  simp [ofSetoid]
+  congr! with a
+  simp [Finset.ext_iff, iff_comm]
+
+@[simp]
 theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
     b ∈ (ofSetoid s).part a ↔ s.r a b := by
   simp_rw [part, ofSetoid, mem_univ, reduceDIte]
@@ -596,6 +610,13 @@ theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
   obtain ⟨⟨_, hc⟩, this⟩ := this
   simp only [← hc, mem_univ, mem_filter, true_and] at this ⊢
   exact ⟨s.trans (s.symm this), s.trans this⟩
+
+theorem mem_iff_rel_of_mem_parts {s : Setoid α} [DecidableRel s.r] {x y : α}
+    {f : Finset α} (hf : f ∈ (ofSetoid s).parts) (hx : x ∈ f) : y ∈ f ↔ s.r x y := by
+  obtain rfl := Finpartition.part_eq_of_mem _ hf hx
+  apply mem_part_ofSetoid_iff_rel
+
+alias ⟨rel_mem_mem, mem_of_rel_mem⟩ := mem_iff_rel_of_mem_parts
 
 end Setoid
 

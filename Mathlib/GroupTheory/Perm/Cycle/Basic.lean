@@ -193,6 +193,11 @@ theorem SameCycle.exists_pow_eq'' [Finite α] (h : SameCycle f x y) :
       rw [pow_orderOf_eq_one, pow_zero]
     · exact ⟨i.succ, i.zero_lt_succ, hi.le, by rfl⟩
 
+theorem SameCycle.iff_exists_pow_eq [Finite α] :
+    f.SameCycle x y ↔ ∃ i < orderOf f, (f ^ i) x = y where
+  mp := Equiv.Perm.SameCycle.exists_pow_eq'
+  mpr := fun ⟨i, _, hi⟩ ↦ ⟨i, hi⟩
+
 instance (f : Perm α) [DecidableRel (SameCycle f⁻¹)] :
     DecidableRel (SameCycle f) := fun x y =>
   decidable_of_iff (f⁻¹.SameCycle x y) (sameCycle_inv)
@@ -824,6 +829,14 @@ theorem IsCycleOn.exists_pow_eq' (hs : s.Finite) (hf : f.IsCycleOn s) (ha : a �
   lift s to Finset α using id hs
   obtain ⟨n, -, hn⟩ := hf.exists_pow_eq ha hb
   exact ⟨n, hn⟩
+
+theorem IsCycleOn.exists_pow_eq_iff {α : Type*} {a b : α} {f : Equiv.Perm α}
+    {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
+    b ∈ s ↔ ∃ n : ℕ, (f ^ n) a = b := by
+  constructor
+  · apply hf.exists_pow_eq' (Finset.finite_toSet s) ha
+  · rintro ⟨n, -, rfl⟩
+    exact (hf.1.perm_pow n).1 ha
 
 theorem IsCycleOn.range_pow (hs : s.Finite) (h : f.IsCycleOn s) (ha : a ∈ s) :
     Set.range (fun n => (f ^ n) a : ℕ → α) = s :=

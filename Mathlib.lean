@@ -2063,6 +2063,7 @@ import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.Combinatorics.Hindman
 import Mathlib.Combinatorics.Optimization.ValuedCSP
+import Mathlib.Combinatorics.Orbits
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.Basic
@@ -2436,10 +2437,12 @@ import Mathlib.Data.List.Rotate
 import Mathlib.Data.List.Sections
 import Mathlib.Data.List.Sigma
 import Mathlib.Data.List.Sort
+import Mathlib.Data.List.SplitLengths
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.Sym
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.ToFinsupp
+import Mathlib.Data.List.Transpose
 import Mathlib.Data.List.Zip
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Data.MLList.Dedup
@@ -2739,6 +2742,7 @@ import Mathlib.Data.Vector.Defs
 import Mathlib.Data.Vector.MapLemmas
 import Mathlib.Data.Vector.Mem
 import Mathlib.Data.Vector.Snoc
+import Mathlib.Data.Vector.Transpose
 import Mathlib.Data.Vector.Zip
 import Mathlib.Data.Vector3
 import Mathlib.Data.W.Basic
