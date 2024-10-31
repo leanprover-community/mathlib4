@@ -84,13 +84,13 @@ lemma zetaMul_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) (n : ℕ
 ### "Bad" Dirichlet characters
 
 Our goal is to show that `L(χ, 1) ≠ 0` when `χ` is a (nontrivial) quadratic Dirichlet character.
-To do that, we package the contradictory properties in a structure `DirichletCharacter.BadChar`
-and derive further statements eventually leading to a contradiction.
+To do that, we package the contradictory properties in a (private) structure
+`DirichletCharacter.BadChar` and derive further statements eventually leading to a contradiction.
 -/
 
 /-- The object we're trying to show doesn't exist: A nontrivial quadratic Dirichlet character
 whose L-function vanishes at `s = 1`. -/
-structure BadChar (N : ℕ) [NeZero N] where
+private structure BadChar (N : ℕ) [NeZero N] where
   /-- The character we want to show cannot exist. -/
   χ : DirichletCharacter ℂ N
   χ_ne : χ ≠ 1
@@ -106,11 +106,11 @@ namespace BadChar
 /-- The product of the Riemann zeta function with the L-function of `B.χ`.
 We will show that `B.F (-2) = 0` but also that `B.F (-2)` must be positive,
 giving the desired contradiction. -/
-noncomputable
+private noncomputable
 def F (B : BadChar N) : ℂ → ℂ :=
   Function.update (fun s : ℂ ↦ riemannZeta s * LFunction B.χ s) 1 (deriv (LFunction B.χ) 1)
 
-lemma F_differentiableAt_of_ne (B : BadChar N) {s : ℂ} (hs : s ≠ 1) :
+private lemma F_differentiableAt_of_ne (B : BadChar N) {s : ℂ} (hs : s ≠ 1) :
     DifferentiableAt ℂ B.F s := by
   apply DifferentiableAt.congr_of_eventuallyEq
   · exact (differentiableAt_riemannZeta hs).mul <| differentiableAt_LFunction B.χ s (.inl hs)
@@ -118,7 +118,7 @@ lemma F_differentiableAt_of_ne (B : BadChar N) {s : ℂ} (hs : s ≠ 1) :
 
 open ArithmeticFunction in
 /-- `B.F` agrees with the L-series of `zetaMul χ` on `1 < s.re`. -/
-lemma F_eq_LSeries (B : BadChar N) {s : ℂ} (hs : 1 < s.re) :
+private lemma F_eq_LSeries (B : BadChar N) {s : ℂ} (hs : 1 < s.re) :
     B.F s = LSeries B.χ.zetaMul s := by
   rw [F, zetaMul, ← coe_mul, LSeries_convolution']
   · have hs' : s ≠ 1 := fun h ↦ by simp only [h, one_re, lt_self_iff_false] at hs
@@ -132,7 +132,7 @@ lemma F_eq_LSeries (B : BadChar N) {s : ℂ} (hs : 1 < s.re) :
       ZMod.LSeriesSummable_of_one_lt_re B.χ hs
 
 /-- If `χ` is a bad character, then `F` is an entire function. -/
-lemma F_differentiable (B : BadChar N) : Differentiable ℂ B.F := by
+private lemma F_differentiable (B : BadChar N) : Differentiable ℂ B.F := by
   intro s
   rcases ne_or_eq s 1 with hs | rfl
   · exact B.F_differentiableAt_of_ne hs
@@ -157,7 +157,7 @@ lemma F_differentiable (B : BadChar N) : Differentiable ℂ B.F := by
 
 /-- The trivial zero at `s = -2` of the zeta function gives that `F (-2) = 0`.
 This is used later to obtain a contradction. -/
-lemma F_neg_two (B : BadChar N) : B.F (-2 : ℝ) = 0 := by
+private lemma F_neg_two (B : BadChar N) : B.F (-2 : ℝ) = 0 := by
   have := riemannZeta_neg_two_mul_nat_add_one 0
   rw [Nat.cast_zero, zero_add, mul_one] at this
   rw [F, ofReal_neg, ofReal_ofNat, Function.update_noteq (mod_cast (by omega : (-2 : ℤ) ≠ 1)),
