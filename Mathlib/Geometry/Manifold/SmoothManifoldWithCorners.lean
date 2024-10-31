@@ -949,9 +949,10 @@ theorem continuousOn_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M �
     (hs : s ⊆ f.source) (hmaps : MapsTo g s f'.source) :
     ContinuousOn (f'.extend I' ∘ g ∘ (f.extend I).symm) (f.extend I '' s) ↔ ContinuousOn g s := by
   refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
-  refine (continuousWithinAt_congr_nhds ?_).trans
+  refine (continuousWithinAt_congr_set ?_).trans
     (continuousWithinAt_writtenInExtend_iff _ (hs hx) (hmaps hx) hmaps)
-  rw [← map_extend_nhdsWithin_eq_image_of_subset, ← map_extend_nhdsWithin]
+  rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin_eq_image_of_subset,
+    ← map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]
 
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of a point
@@ -1033,7 +1034,7 @@ theorem contDiffOn_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtl
 theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
     (hf' : f' ∈ maximalAtlas I M) {x : E} (hx : x ∈ ((f'.extend I).symm ≫ f.extend I).source) :
     ContDiffWithinAt 𝕜 ⊤ (f.extend I ∘ (f'.extend I).symm) (range I) x := by
-  apply (contDiffOn_extend_coord_change hf hf' x hx).mono_of_mem
+  apply (contDiffOn_extend_coord_change hf hf' x hx).mono_of_mem_nhdsWithin
   rw [extend_coord_change_source] at hx ⊢
   obtain ⟨z, hz, rfl⟩ := hx
   exact I.image_mem_nhdsWithin ((PartialHomeomorph.open_source _).mem_nhds hz)
@@ -1274,6 +1275,14 @@ theorem ContinuousWithinAt.nhdsWithin_extChartAt_symm_preimage_inter_range
   rw [← (extChartAt I x).image_source_inter_eq', ← map_extChartAt_nhdsWithin_eq_image,
     ← map_extChartAt_nhdsWithin, nhdsWithin_inter_of_mem']
   exact hc (extChartAt_source_mem_nhds _)
+
+theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq
+    {f : M → M'} {x : M} (hc : ContinuousWithinAt f s x) :
+    ((extChartAt I x).symm ⁻¹' s ∩ range I : Set E) =ᶠ[𝓝 (extChartAt I x x)]
+      ((extChartAt I x).target ∩
+        (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source) : Set E) := by
+  rw [← nhdsWithin_eq_iff_eventuallyEq]
+  exact hc.nhdsWithin_extChartAt_symm_preimage_inter_range
 
 /-! We use the name `ext_coord_change` for `(extChartAt I x').symm ≫ extChartAt I x`. -/
 
