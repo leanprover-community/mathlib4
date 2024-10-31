@@ -58,7 +58,9 @@ theorem lt_rank_iff {o : Ordinal} {x : PSet} : o < rank x ↔ ∃ y ∈ x, o ≤
   rw [← not_iff_not, not_lt, rank_le_iff]
   simp
 
-@[gcongr] theorem rank_mono {x y : PSet} (h : x ⊆ y) : rank x ≤ rank y :=
+variable {x y : PSet.{u}}
+
+@[gcongr] theorem rank_mono (h : x ⊆ y) : rank x ≤ rank y :=
   rank_le_iff.2 fun _ h₁ => rank_lt_of_mem (mem_of_subset h h₁)
 
 @[simp]
@@ -127,23 +129,25 @@ end PSet
 
 namespace ZFSet
 
+variable {x y : ZFSet.{u}}
+
 /-- The ordinal rank of a ZFC set -/
 noncomputable def rank : ZFSet.{u} → Ordinal.{u} :=
   Quotient.lift _ fun _ _ => PSet.rank_congr
 
-theorem rank_lt_of_mem {x y} : y ∈ x → rank y < rank x :=
+theorem rank_lt_of_mem : y ∈ x → rank y < rank x :=
   Quotient.inductionOn₂ x y fun _ _ => PSet.rank_lt_of_mem
 
-theorem rank_le_iff {x : ZFSet} {o : Ordinal} : rank x ≤ o ↔ ∀ ⦃y⦄, y ∈ x → rank y < o :=
+theorem rank_le_iff {o : Ordinal} : rank x ≤ o ↔ ∀ ⦃y⦄, y ∈ x → rank y < o :=
   ⟨fun h _ h' => (rank_lt_of_mem h').trans_le h,
     Quotient.inductionOn x fun _ h =>
       PSet.rank_le_iff.2 fun y h' => @h ⟦y⟧ h'⟩
 
-theorem lt_rank_iff {x : ZFSet} {o : Ordinal} : o < rank x ↔ ∃ y ∈ x, o ≤ rank y := by
+theorem lt_rank_iff {o : Ordinal} : o < rank x ↔ ∃ y ∈ x, o ≤ rank y := by
   rw [← not_iff_not, not_lt, rank_le_iff]
   simp
 
-@[gcongr] theorem rank_mono {x y : ZFSet} (h : x ⊆ y) : rank x ≤ rank y :=
+@[gcongr] theorem rank_mono (h : x ⊆ y) : rank x ≤ rank y :=
   rank_le_iff.2 fun _ h₁ => rank_lt_of_mem (h h₁)
 
 @[simp]
