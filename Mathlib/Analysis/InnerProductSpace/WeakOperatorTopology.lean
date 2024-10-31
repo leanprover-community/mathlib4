@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.Normed.Operator.WeakOperatorTopology
+import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 
 /-!
 # The weak operator topology in Hilbert spaces
