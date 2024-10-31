@@ -458,7 +458,7 @@ noncomputable def OnePointHomeo' : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoin
         · refine isInducing_iff_nhds.mpr ?toIsInducing.a
           intro x
           ext s
-          simp
+          simp only [ne_eq, Filter.mem_comap]
           rw [mem_nhds_iff_exists_Ioo_subset ]
           simp_rw [mem_nhds_iff]
           constructor
@@ -491,16 +491,16 @@ noncomputable def OnePointHomeo' : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoin
 
                   apply If
                   exact isOpen_Ioo
-                · simp
+                · simp only [Set.mem_image, Set.mem_Ioo]
                   use x
                   aesop
-            simp_all
+            simp_all only [Set.mem_Ioo, ne_eq]
             intro a ha
-            simp at ha
+            simp only [Set.mem_preimage, Set.mem_image, Set.mem_Ioo] at ha
             apply hu.2
             obtain ⟨y,hy⟩ := ha
             have := hy.2
-            simp at this
+            simp only at this
             have : y = a := by
                 simp_all only [ne_eq, f]
                 obtain ⟨left, right⟩ := hu
@@ -511,7 +511,7 @@ noncomputable def OnePointHomeo' : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoin
                     clear left right_2 left_1 right_3 right f l u s x
                     rw [Quotient.eq] at right_1
                     obtain ⟨c,hc⟩ := right_1
-                    simp at hc
+                    simp only [Matrix.smul_cons, Matrix.smul_empty] at hc
                     have : c • a = c * a := rfl
                     rw [this] at hc
                     have : c • 1 = c.1 * 1 := rfl
@@ -532,9 +532,11 @@ noncomputable def OnePointHomeo' : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoin
                 refine continuous_pi ?hf.h.h
                 intro i
                 fin_cases i
-                simp
+                simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.zero_eta, Fin.isValue,
+                  Matrix.cons_val_zero]
                 exact continuous_id'
-                simp
+                simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.mk_one, Fin.isValue,
+                  Matrix.cons_val_one, Matrix.head_cons]
                 exact continuous_const
             let u := (fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ))) ⁻¹' t₁
             have h₀ : x ∈ u := by aesop
@@ -543,19 +545,13 @@ noncomputable def OnePointHomeo' : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoin
                 tauto
             rw [← mem_nhds_iff_exists_Ioo_subset]
             have h₂ : u ∈ nhds x := by exact IsOpen.mem_nhds h₁ h₀
-            have h₃ : u ⊆ s := by
-                intro z hz
-                change (z ∈ (fun r ↦ ⟦⟨![r, 1], by simp⟩⟧) ⁻¹' t₁) at hz
-                simp at hz
-                apply ht.2
-                simp_all
-                apply ht₁.1 hz
+            have h₃ : u ⊆ s := fun _ hz => ht.2 <| ht₁.1 hz
             exact Filter.mem_of_superset h₂ h₃
         · intro x y h
-          simp at h
+          simp only [ne_eq] at h
           rw [Quotient.eq] at h
           obtain ⟨c,hc⟩ := h
-          simp at hc
+          simp only [Matrix.smul_cons, Matrix.smul_empty] at hc
           have g₀: c • y = c.1 * y := rfl
           rw [g₀] at hc
           have g₁: c • 1 = c.1 * 1 := rfl
@@ -569,17 +565,15 @@ noncomputable def OnePointHomeo' : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoin
             apply Set.ext
             apply Quotient.ind
             intro p
-            simp
+            simp only [ne_eq, Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
             constructor
             · intro ⟨y,hy⟩
-              simp
               intro hc
               have h := Eq.trans hy hc
               clear hy hc p
-              simp at h
               rw [Quotient.eq] at h
               obtain ⟨c,hc⟩ := h
-              simp at hc
+              simp only [Matrix.smul_cons, smul_zero, Matrix.smul_empty] at hc
               have : ![c • 1, 0] 1 = ![y, 1] 1 := congrFun hc 1
               simp_all
             · intro h
@@ -592,8 +586,9 @@ noncomputable def OnePointHomeo' : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoin
               · exfalso
                 apply this
                 use ⟨p.1 0, 1 / p.1 0, by
-                    simp
-                    have := p.2;contrapose this;simp_all
+                    have := p.2
+                    contrapose this
+                    simp only [ne_eq, Decidable.not_not]
                     ext i
                     fin_cases i
                     · contrapose this
@@ -602,36 +597,39 @@ noncomputable def OnePointHomeo' : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoin
                     have : p.1 0 ≠ 0 := by
                         have := p.2
                         contrapose this
-                        simp_all
+                        simp_all only [Nat.succ_eq_add_one, Matrix.smul_cons, smul_zero,
+                          Matrix.smul_empty, ne_eq, not_exists, Decidable.not_not]
                         ext i
                         fin_cases i
                         · exact this
                         · exact H
-                    simp
+                    simp only [ne_eq, Fin.isValue, one_div]
                     exact inv_mul_cancel₀ this
                 ⟩
-                simp
                 ext i
                 fin_cases i
                 · simp
-                · simp;tauto
+                · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, ne_eq, Fin.isValue, one_div,
+                  Fin.mk_one, Pi.smul_apply, Matrix.cons_val_one, Matrix.head_cons, smul_zero];tauto
               · use p.1 0 / p.1 1
                 symm
                 apply Quotient.sound
                 use ⟨p.1 1, 1 / p.1 1,by
-                    simp
-                    have := p.2;contrapose this;simp_all
-                    , by
+                        have := p.2
+                        contrapose this
+                        simp_all, by
                     have : p.1 1 ≠ 0 := by
                         have := p.2
                         contrapose this
                         simp_all
-                    simp
+                    simp only [ne_eq, Fin.isValue, one_div]
                     exact inv_mul_cancel₀ this                ⟩
-                simp
                 ext i
                 fin_cases i
-                · simp;ring_nf;rw [mul_comm,← mul_assoc];
+                · simp only [ne_eq, Fin.isValue, one_div, Fin.zero_eta, Pi.smul_apply,
+                  Matrix.cons_val_zero, Units.smul_mk_apply, smul_eq_mul]
+                  ring_nf
+                  rw [mul_comm,← mul_assoc];
                   aesop
                 · simp
         )
