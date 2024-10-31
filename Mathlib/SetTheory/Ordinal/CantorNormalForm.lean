@@ -69,28 +69,26 @@ def CNF (b o : Ordinal) : List (Ordinal × Ordinal) :=
 
 namespace CNF
 
+variable {b o e c x : Ordinal.{u}}
+
 /-- The exponents of the Cantor normal form are stored
 in the first entries of elements in `CNF`. -/
 def exponents (b o : Ordinal) := (CNF b o).map Prod.fst
 
-theorem mem_exponents_iff {b o e : Ordinal} :
-    e ∈ exponents b o ↔ ∃ c, (e, c) ∈ CNF b o := by
+theorem mem_exponents_iff : e ∈ exponents b o ↔ ∃ c, (e, c) ∈ CNF b o := by
   simp [exponents]
 
-theorem mem_exponents_of_mem {b o e c : Ordinal.{u}} (h : (e, c) ∈ CNF b o) :
-    e ∈ exponents b o :=
+theorem mem_exponents_of_mem (h : (e, c) ∈ CNF b o) : e ∈ exponents b o :=
   mem_exponents_iff.2 ⟨c, h⟩
 
 /-- The coefficients of the Cantor normal form are stored
 in the second entries of elements in `CNF`. -/
 def coeffs (b o : Ordinal) := (CNF b o).map Prod.snd
 
-theorem mem_coeffs_iff {b o c : Ordinal} :
-    c ∈ coeffs b o ↔ ∃ e, (e, c) ∈ CNF b o := by
+theorem mem_coeffs_iff : c ∈ coeffs b o ↔ ∃ e, (e, c) ∈ CNF b o := by
   simp [coeffs]
 
-theorem mem_coeffs_of_mem {b o e c : Ordinal.{u}} (h : (e, c) ∈ CNF b o) :
-    c ∈ coeffs b o :=
+theorem mem_coeffs_of_mem (h : (e, c) ∈ CNF b o) : c ∈ coeffs b o :=
   mem_coeffs_iff.2 ⟨e, h⟩
 
 @[simp]
@@ -106,19 +104,19 @@ theorem coeffs_zero (b : Ordinal) : coeffs b 0 = [] := by
   rw [coeffs, zero_right, map_nil]
 
 /-- Recursive definition for the Cantor normal form. -/
-protected theorem ne_zero {b o : Ordinal} (ho : o ≠ 0) :
+protected theorem ne_zero (ho : o ≠ 0) :
     CNF b o = ⟨log b o, o / b ^ log b o⟩::CNF b (o % b ^ log b o) :=
   CNFRec_pos b ho _ _
 
-theorem zero_left {o : Ordinal} (ho : o ≠ 0) : CNF 0 o = [(0, o)] := by simp [CNF.ne_zero ho]
+theorem zero_left (ho : o ≠ 0) : CNF 0 o = [(0, o)] := by simp [CNF.ne_zero ho]
 
-protected theorem one {o : Ordinal} (ho : o ≠ 0) : CNF 1 o = [(0, o)] := by simp [CNF.ne_zero ho]
+protected theorem one (ho : o ≠ 0) : CNF 1 o = [(0, o)] := by simp [CNF.ne_zero ho]
 
-protected theorem of_le_one {b o : Ordinal} (hb : b ≤ 1) (ho : o ≠ 0) : CNF b o = [(0, o)] := by
+protected theorem of_le_one (hb : b ≤ 1) (ho : o ≠ 0) : CNF b o = [(0, o)] := by
   rcases le_one_iff.1 hb with (rfl | rfl)
   exacts [zero_left ho, CNF.one ho]
 
-protected theorem of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = [(0, o)] := by
+protected theorem of_lt (ho : o ≠ 0) (hb : o < b) : CNF b o = [(0, o)] := by
   rw [CNF.ne_zero ho, log_eq_zero hb, opow_zero, div_one, mod_one, zero_right]
 
 /-- Evaluating the Cantor normal form of an ordinal returns the ordinal. -/
@@ -129,7 +127,7 @@ protected theorem foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 *
     rw [CNF.ne_zero ho, foldr_cons, IH, div_add_mod]
 
 /-- Every exponent in the Cantor normal form `CNF b o` is less or equal to `log b o`. -/
-theorem le_log_of_mem_exponents {b o x : Ordinal} : x ∈ exponents b o → x ≤ log b o := by
+theorem le_log_of_mem_exponents : x ∈ exponents b o → x ≤ log b o := by
   refine CNFRec b ?_ (fun o ho H ↦ ?_) o
   · simp
   · rw [exponents, CNF.ne_zero ho, map_cons, mem_cons]
@@ -138,7 +136,7 @@ theorem le_log_of_mem_exponents {b o x : Ordinal} : x ∈ exponents b o → x �
     · exact (H h).trans (log_mono_right _ (mod_opow_log_lt_self b ho).le)
 
 /-- Every coefficient in a Cantor normal form is positive. -/
-theorem pos_of_mem_coeffs {b o : Ordinal.{u}} {x : Ordinal} : x ∈ coeffs b o → 0 < x := by
+theorem pos_of_mem_coeffs : x ∈ coeffs b o → 0 < x := by
   refine CNFRec b ?_ (fun o ho IH ↦ ?_) o
   · simp
   · rw [coeffs, CNF.ne_zero ho]
@@ -146,8 +144,7 @@ theorem pos_of_mem_coeffs {b o : Ordinal.{u}} {x : Ordinal} : x ∈ coeffs b o �
     exacts [div_opow_log_pos b ho, IH h]
 
 /-- Every coefficient in the Cantor normal form `CNF b o` is less than `b`. -/
-theorem lt_of_mem_coeffs {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal} :
-    x ∈ coeffs b o → x < b := by
+theorem lt_of_mem_coeffs (hb : 1 < b) {x : Ordinal} : x ∈ coeffs b o → x < b := by
   refine CNFRec b ?_ (fun o ho IH h ↦ ?_) o
   · simp
   · rw [coeffs, CNF.ne_zero ho] at h
