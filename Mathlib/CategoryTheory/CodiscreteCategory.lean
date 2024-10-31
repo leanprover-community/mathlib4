@@ -74,14 +74,12 @@ def functor (F : C → A) : C ⥤ Codiscrete A where
 def invFunctor (F : C ⥤ Codiscrete A) : C → A := Codiscrete.as ∘ F.obj
 
 /-- Given two functors to a codiscrete category, there is a trivial natural transformation.-/
-def natTrans {F G : C ⥤ Codiscrete A} :
-    F ⟶ G where
+def natTrans {F G : C ⥤ Codiscrete A} : F ⟶ G where
   app _ := ⟨⟩
 
 /-- Given two functors into a codiscrete category, the trivial natural transformation is an
 natural isomorphism.-/
-def natIso {F G : C ⥤ Codiscrete A} :
-    F ≅ G where
+def natIso {F G : C ⥤ Codiscrete A} : F ≅ G where
   hom := natTrans
   inv := natTrans
 
