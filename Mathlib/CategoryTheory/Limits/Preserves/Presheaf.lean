@@ -43,6 +43,8 @@ open CategoryTheory Limits
 
 universe v u
 
+namespace CategoryTheory.Limits
+
 section LargeCategory
 
 variable {C : Type u} [Category.{v} C] [HasFiniteColimits C] (A : Cᵒᵖ ⥤ Type v)
@@ -63,8 +65,6 @@ theorem isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits
 end LargeCategory
 
 variable {C : Type u} [SmallCategory C] [HasFiniteColimits C]
-
-namespace CategoryTheory.Limits
 
 variable (A : Cᵒᵖ ⥤ Type u)
 
