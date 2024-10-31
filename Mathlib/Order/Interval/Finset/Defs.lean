@@ -1291,8 +1291,8 @@ end LocallyFiniteOrderBot
 end Set
 
 /-- A `LocallyFiniteOrder` can be transferred across an order isomorphism. -/
-@[reducible]
-def LocallyFiniteOrder.ofOrderIsoClass {F M N : Type*} [Preorder M] [Preorder N] [EquivLike F M N]
+-- See note [reducible non instances]
+abbrev LocallyFiniteOrder.ofOrderIsoClass {F M N : Type*} [Preorder M] [Preorder N] [EquivLike F M N]
     [OrderIsoClass F M N] (f : F) [LocallyFiniteOrder N] :
     LocallyFiniteOrder M where
   finsetIcc x y := (finsetIcc (f x) (f y)).map ⟨EquivLike.inv f, (EquivLike.right_inv f).injective⟩
