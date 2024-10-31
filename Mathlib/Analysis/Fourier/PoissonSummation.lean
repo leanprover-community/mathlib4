@@ -6,7 +6,7 @@ Authors: David Loeffler
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Distribution.SchwartzSpace
+import Mathlib.Analysis.Distribution.FourierSchwartz
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 /-!
@@ -216,11 +216,11 @@ end RpowDecay
 section Schwartz
 
 /-- **Poisson's summation formula** for Schwartz functions. -/
-theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f g : SchwartzMap ℝ ℂ) (hfg : 𝓕 ⇑f = ⇑g) (x : ℝ) :
-    ∑' n : ℤ, f (x + n) = (∑' n : ℤ, g n * fourier n (x : UnitAddCircle)) := by
+theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f : SchwartzMap ℝ ℂ) (x : ℝ) :
+    ∑' n : ℤ, f (x + n) = ∑' n : ℤ, fourierTransformCLM ℝ f n * fourier n (x : UnitAddCircle) := by
   -- We know that Schwartz functions are `O(‖x ^ (-b)‖)` for *every* `b`; for this argument we take
   -- `b = 2` and work with that.
-  simp only [← hfg, Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay f.continuous one_lt_two
-    (f.isBigO_cocompact_rpow (-2)) (hfg ▸ g.isBigO_cocompact_rpow (-2))]
+  apply Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay f.continuous one_lt_two
+    (f.isBigO_cocompact_rpow (-2)) ((fourierTransformCLM ℝ f).isBigO_cocompact_rpow (-2))
 
 end Schwartz
