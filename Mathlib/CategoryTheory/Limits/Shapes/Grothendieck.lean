@@ -34,7 +34,7 @@ def Grothendieck.ιNatTrans {X Y : C} (f : X ⟶ Y) : ι F X ⟶ F.map f ⋙ ι 
     simp only [ι, Functor.comp_obj, Functor.comp_map]
     exact Grothendieck.ext _ _ (by simp) (by simp [eqToHom_map])
 
-def Grothendieck.coherence {X Y : Grothendieck F} (hF : X = Y) :
+lemma Grothendieck.coherence {X Y : Grothendieck F} (hF : X = Y) :
     eqToHom hF = { base := eqToHom (by subst hF; rfl), fiber := eqToHom (by subst hF; simp) } := by
   subst hF
   rfl
@@ -190,12 +190,19 @@ the fact that each of its fibers has a colimit and that these fiberwise colimits
 local instance hasColimitOfHasFiberwiseColimitOfHasBaseColimit : HasColimit G where
   exists_colimit := ⟨⟨_, isColimitCoconeOfFiberwiseCocone ((colimit.isColimit _))⟩⟩
 
+variable (G)
+
 /-- For every functor `G` on the Grothendieck construction `Grothendieck F`, if `G` has a colimit
 and every fiber of `G` has a colimit, then taking this colimit is isomorphic to first taking the
 fiberwise colimit and then the colimit of the resulting functor. -/
 def colimitFiberwiseColimitIso : colimit (fiberwiseColimit G) ≅ colimit G :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit (fiberwiseColimit G))
     (isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _))
+
+lemma ι_colimitFiberwiseColimitIso_hom (X : C) (d : F.obj X) [HasColimit (Grothendieck.ι F X)] :
+    colimit.ι (Grothendieck.ι F X ⋙ G) d ≫ colimit.ι (fiberwiseColimit G) X ≫
+      (colimitFiberwiseColimitIso G).hom = colimit.ι G ⟨X, d⟩ :=
+  sorry
 
 end
 
