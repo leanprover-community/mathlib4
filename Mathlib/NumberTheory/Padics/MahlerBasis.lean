@@ -36,7 +36,7 @@ lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
   change ‖f x‖ ≤ ‖_‖
   have hC : (k.factorial : ℤ_[p]) ≠ 0 := Nat.cast_ne_zero.mpr k.factorial_ne_zero
   have hf : ContinuousAt f x := Polynomial.continuousAt _
-  -- find `n : ℕ` such that `‖f x - f n‖ ≤ 1`
+  -- find `n : ℕ` such that `‖f x - f n‖ ≤ ‖k!‖`
   obtain ⟨n, hn⟩ : ∃ n : ℕ, ‖f x - f n‖ ≤ ‖(k.factorial : ℤ_[p])‖ := by
     obtain ⟨δ, hδp, hδ⟩ := Metric.continuousAt_iff.mp hf _ (norm_pos_iff.mpr hC)
     obtain ⟨n, hn'⟩ := PadicInt.denseRange_natCast.exists_dist_lt x hδp
@@ -59,13 +59,15 @@ noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
     PadicInt.coe_natCast, mul_div_cancel₀ _ (mod_cast k.factorial_ne_zero), Subtype.coe_inj,
     Polynomial.eval_eq_smeval, Polynomial.ascPochhammer_smeval_cast]
 
+@[fun_prop]
 lemma continuous_multichoose (k : ℕ) : Continuous (fun x : ℤ_[p] ↦ Ring.multichoose x k) := by
   simp only [Ring.multichoose, BinomialRing.multichoose, continuous_induced_rng]
-  exact (continuous_induced_rng.mp <| (Polynomial.continuous _)).div_const _
+  fun_prop
 
+@[fun_prop]
 lemma continuous_choose (k : ℕ) : Continuous (fun x : ℤ_[p] ↦ Ring.choose x k) := by
   simp only [Ring.choose]
-  exact (continuous_multichoose k).comp ((continuous_sub_right _).add continuous_const)
+  fun_prop
 
 end PadicInt
 
