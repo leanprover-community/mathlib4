@@ -60,12 +60,6 @@ Given these parameters, there are a few common structures for the model that ari
 
 assert_not_exists MonoidWithZero
 
--- After https://github.com/leanprover/lean4/pull/4400
--- the simp normal forms for `List` lookup use the `GetElem` typeclass, rather than `List.get?`.
--- This file has not been updated to reflect that change, so uses a number of deprecated lemmas.
--- Updating this file to allow restoring the deprecation linter would be much appreciated.
-set_option linter.deprecated false
-
 open Mathlib (Vector)
 open Relation
 
@@ -262,8 +256,7 @@ def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
   rw [List.getI_eq_default _ h]
   rcases le_or_lt _ n with h₂ | h₂
   · rw [List.getI_eq_default _ h₂]
-  rw [List.getI_eq_get _ h₂, List.get_eq_getElem, List.getElem_append_right h,
-    List.getElem_replicate]
+  rw [List.getI_eq_getElem _ h₂, List.getElem_append_right h, List.getElem_replicate]
 
 @[simp]
 theorem ListBlank.nth_mk {Γ} [Inhabited Γ] (l : List Γ) (n : ℕ) :
@@ -290,14 +283,13 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
     intro
     rw [H]
   refine Quotient.sound' (Or.inl ⟨l₂.length - l₁.length, ?_⟩)
-  refine List.ext_get ?_ fun i h h₂ ↦ Eq.symm ?_
+  refine List.ext_getElem ?_ fun i h h₂ ↦ Eq.symm ?_
   · simp only [Nat.add_sub_cancel' h, List.length_append, List.length_replicate]
   simp only [ListBlank.nth_mk] at H
   cases' lt_or_le i l₁.length with h' h'
-  · simp only [List.get_append _ h', List.get?_eq_get h, List.get?_eq_get h',
-      ← List.getI_eq_get _ h, ← List.getI_eq_get _ h', H]
-  · simp only [List.get_append_right' h', List.get_replicate, List.get?_eq_get h,
-      List.get?_len_le h', ← List.getI_eq_default _ h', H, List.getI_eq_get _ h]
+  · simp [h', List.getElem_append _ h₂, ← List.getI_eq_getElem _ h, ← List.getI_eq_getElem _ h', H]
+  · rw [List.getElem_append_right h', List.getElem_replicate,
+      ← List.getI_eq_default _ h', H, List.getI_eq_getElem _ h]
 
 /-- Apply a function to a value stored at the nth position of the list. -/
 @[simp]
@@ -380,10 +372,9 @@ theorem ListBlank.nth_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMa
   refine l.inductionOn fun l ↦ ?_
   -- Porting note: Added `suffices` to get `simp` to work.
   suffices ((mk l).map f).nth n = f ((mk l).nth n) by exact this
-  simp only [List.get?_map, ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?]
-  cases l.get? n
-  · exact f.2.symm
-  · rfl
+  simp only [ListBlank.map_mk, ListBlank.nth_mk, ← List.getD_default_eq_getI]
+  rw [← List.getD_map _ _ f]
+  simp
 
 /-- The `i`-th projection as a pointed map. -/
 def proj {ι : Type*} {Γ : ι → Type*} [∀ i, Inhabited (Γ i)] (i : ι) :
@@ -425,10 +416,10 @@ def ListBlank.bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ) (f
     (hf : ∃ n, f default = List.replicate n default) : ListBlank Γ' := by
   apply l.liftOn (fun l ↦ ListBlank.mk (List.bind l f))
   rintro l _ ⟨i, rfl⟩; cases' hf with n e; refine Quotient.sound' (Or.inl ⟨i * n, ?_⟩)
-  rw [List.append_bind, mul_comm]; congr
+  rw [List.bind_append, mul_comm]; congr
   induction' i with i IH
   · rfl
-  simp only [IH, e, List.replicate_add, Nat.mul_succ, add_comm, List.replicate_succ, List.cons_bind]
+  simp only [IH, e, List.replicate_add, Nat.mul_succ, add_comm, List.replicate_succ, List.bind_cons]
 
 @[simp]
 theorem ListBlank.bind_mk {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : List Γ) (f : Γ → List Γ') (hf) :
@@ -441,7 +432,7 @@ theorem ListBlank.cons_bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) (l 
   refine l.inductionOn fun l ↦ ?_
   -- Porting note: Added `suffices` to get `simp` to work.
   suffices ((mk l).cons a).bind f hf = ((mk l).bind f hf).append (f a) by exact this
-  simp only [ListBlank.append_mk, ListBlank.bind_mk, ListBlank.cons_mk, List.cons_bind]
+  simp only [ListBlank.append_mk, ListBlank.bind_mk, ListBlank.cons_mk, List.bind_cons]
 
 /-- The tape of a Turing machine is composed of a head element (which we imagine to be the
 current position of the head), together with two `ListBlank`s denoting the portions of the tape
@@ -2101,10 +2092,10 @@ namespace TM2to1
 -- A displaced lemma proved in unnecessary generality
 theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option (Γ k))} {k S} (n)
     (hL : ListBlank.map (proj k) L = ListBlank.mk (List.map some S).reverse) :
-    L.nth n k = S.reverse.get? n := by
-  rw [← proj_map_nth, hL, ← List.map_reverse, ListBlank.nth_mk, List.getI_eq_iget_get?,
-    List.get?_map]
-  cases S.reverse.get? n <;> rfl
+    L.nth n k = S.reverse[n]? := by
+  rw [← proj_map_nth, hL, ← List.map_reverse, ListBlank.nth_mk,
+    List.getI_eq_iget_getElem?, List.getElem?_map]
+  cases S.reverse[n]? <;> rfl
 
 variable {K : Type*}
 variable {Γ : K → Type*}
@@ -2322,10 +2313,10 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
     · subst k'
       split_ifs with h
         <;> simp only [List.reverse_cons, Function.update_same, ListBlank.nth_mk, List.map]
-      -- Porting note: `le_refl` is required.
-      · rw [List.getI_eq_get, List.get_append_right'] <;>
-          simp only [List.length_singleton, h, List.length_reverse, List.length_map, Nat.sub_self,
-            Fin.zero_eta, List.get_cons_zero, le_refl, List.length_append, Nat.lt_succ_self]
+      · rw [List.getI_eq_getElem _, List.getElem_append_right] <;>
+        simp only [List.length_append, List.length_reverse, List.length_map, ← h,
+          Nat.sub_self, List.length_singleton, List.getElem_singleton,
+          le_refl, Nat.lt_succ_self]
       rw [← proj_map_nth, hL, ListBlank.nth_mk]
       cases' lt_or_gt_of_ne h with h h
       · rw [List.getI_append]
@@ -2342,7 +2333,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
     cases e : S k; · rfl
     rw [List.length_cons, iterate_succ', Function.comp, Tape.move_right_left,
       Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_snd, stk_nth_val _ (hL k), e,
-      List.reverse_cons, ← List.length_reverse, List.get?_concat_length]
+      List.reverse_cons, ← List.length_reverse, List.getElem?_concat_length]
     rfl
   | pop f =>
     cases' e : S k with hd tl
@@ -2357,8 +2348,8 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
             Tape.mk'_nth_nat, Tape.write_move_right_n fun a : Γ' ↦ (a.1, update a.2 k none),
             addBottom_modifyNth fun a ↦ update a k none, addBottom_nth_snd,
             stk_nth_val _ (hL k), e,
-            show (List.cons hd tl).reverse.get? tl.length = some hd by
-              rw [List.reverse_cons, ← List.length_reverse, List.get?_concat_length],
+            show (List.cons hd tl).reverse[tl.length]? = some hd by
+              rw [List.reverse_cons, ← List.length_reverse, List.getElem?_concat_length],
             List.head?, List.tail]⟩
       refine ListBlank.ext fun i ↦ ?_
       rw [ListBlank.nth_map, ListBlank.nth_modifyNth, proj, PointedMap.mk_val]
@@ -2411,7 +2402,7 @@ theorem tr_respects_aux₁ {k} (o q v) {S : List (Γ k)} {L : ListBlank (∀ k, 
   rw [iterate_succ_apply']
   simp only [TM1.step, TM1.stepAux, tr, Tape.mk'_nth_nat, Tape.move_right_n_head,
     addBottom_nth_snd, Option.mem_def]
-  rw [stk_nth_val _ hL, List.get?_eq_get]
+  rw [stk_nth_val _ hL, List.getElem?_eq_getElem]
   · rfl
   · rwa [List.length_reverse]
 
@@ -2438,8 +2429,8 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
   obtain ⟨T', hT', hrun⟩ := tr_respects_aux₂ (Λ := Λ) hT o
   have := hgo.tail' rfl
   rw [tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_snd,
-    stk_nth_val _ (hT k), List.get?_len_le (le_of_eq (List.length_reverse _)), Option.isNone, cond,
-    hrun, TM1.stepAux] at this
+    stk_nth_val _ (hT k), List.getElem?_len_le (le_of_eq (List.length_reverse _)),
+    Option.isNone, cond, hrun, TM1.stepAux] at this
   obtain ⟨c, gc, rc⟩ := IH hT'
   refine ⟨c, gc, (this.to₀.trans (tr_respects_aux₃ M _) c (TransGen.head' rfl ?_)).to_reflTransGen⟩
   rw [tr, TM1.stepAux, Tape.mk'_head, addBottom_head_fst]
@@ -2474,18 +2465,18 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trIni
   rw [(_ : TM1.init _ = _)]
   · refine ⟨ListBlank.mk (L.reverse.map fun a ↦ update default k (some a)), fun k' ↦ ?_⟩
     refine ListBlank.ext fun i ↦ ?_
-    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?, List.map_map]
+    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_getElem?, List.map_map]
     have : ((proj k').f ∘ fun a => update (β := fun k => Option (Γ k)) default k (some a))
       = fun a => (proj k').f (update (β := fun k => Option (Γ k)) default k (some a)) := rfl
-    rw [this, List.get?_map, proj, PointedMap.mk_val]
+    rw [this, List.getElem?_map, proj, PointedMap.mk_val]
     simp only []
     by_cases h : k' = k
     · subst k'
       simp only [Function.update_same]
-      rw [ListBlank.nth_mk, List.getI_eq_iget_get?, ← List.map_reverse, List.get?_map]
+      rw [ListBlank.nth_mk, List.getI_eq_iget_getElem?, ← List.map_reverse, List.getElem?_map]
     · simp only [Function.update_noteq h]
-      rw [ListBlank.nth_mk, List.getI_eq_iget_get?, List.map, List.reverse_nil]
-      cases L.reverse.get? i <;> rfl
+      rw [ListBlank.nth_mk, List.getI_eq_iget_getElem?, List.map, List.reverse_nil]
+      cases L.reverse[i]? <;> rfl
   · rw [trInit, TM1.init]
     congr <;> cases L.reverse <;> try rfl
     simp only [List.map_map, List.tail_cons, List.map]

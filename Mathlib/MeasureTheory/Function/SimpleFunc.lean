@@ -197,21 +197,15 @@ theorem piecewise_apply {s : Set α} (hs : MeasurableSet s) (f g : α →ₛ β)
 @[simp]
 theorem piecewise_compl {s : Set α} (hs : MeasurableSet sᶜ) (f g : α →ₛ β) :
     piecewise sᶜ hs f g = piecewise s hs.of_compl g f :=
-  coe_injective <| by
-    set_option tactic.skipAssignedInstances false in
-    simp [hs]; convert Set.piecewise_compl s f g
+  coe_injective <| by simp [hs]
 
 @[simp]
 theorem piecewise_univ (f g : α →ₛ β) : piecewise univ MeasurableSet.univ f g = f :=
-  coe_injective <| by
-    set_option tactic.skipAssignedInstances false in
-    simp; convert Set.piecewise_univ f g
+  coe_injective <| by simp
 
 @[simp]
 theorem piecewise_empty (f g : α →ₛ β) : piecewise ∅ MeasurableSet.empty f g = g :=
-  coe_injective <| by
-    set_option tactic.skipAssignedInstances false in
-    simp; convert Set.piecewise_empty f g
+  coe_injective <| by simp
 
 @[simp]
 theorem piecewise_same (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) :

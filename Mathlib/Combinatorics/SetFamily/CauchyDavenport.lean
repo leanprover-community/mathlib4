@@ -202,7 +202,7 @@ lemma ZMod.min_le_card_add {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs 
 "The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups. The size of
 `s + t` is lower-bounded by `|s| + |t| - 1`."]
 lemma Finset.card_add_card_sub_one_le_card_mul [LinearOrder α] [Semigroup α] [IsCancelMul α]
-    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+    [MulLeftMono α] [MulRightMono α]
     {s t : Finset α} (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
   suffices s * {t.min' ht} ∩ ({s.max' hs} * t) = {s.max' hs * t.min' ht} by
     rw [← card_singleton_mul t (s.max' hs), ← card_mul_singleton s (t.min' ht),
