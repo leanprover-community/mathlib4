@@ -15,6 +15,8 @@ import Mathlib.CategoryTheory.Limits.HasLimits
   then `G` has a colimit.
 * Shows that colimits of functors on the Grothendieck construction are colimits of
   "fibered colimits", i.e. of applying the colimit to each fiber of the functor.
+* Derives `HasColimitsOfShape (Grothendieck F) H` with `F : C ⥤ Cat` from the presence of colimits
+  on each fiber shape `F.obj X` and on the base category `C`.
 
 -/
 
@@ -201,14 +203,20 @@ def colimitFiberwiseColimitIso : colimit (fiberwiseColimit G) ≅ colimit G :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit (fiberwiseColimit G))
     (isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _))
 
-end
-
-attribute [local instance] hasColimitOfHasFiberwiseColimitOfHasBaseColimit
-
-lemma ι_colimitFiberwiseColimitIso_hom (X : C) (d : F.obj X) [HasColimit (fiberwiseColimit G)] :
+@[reassoc (attr := simp)]
+lemma ι_colimitFiberwiseColimitIso_hom (X : C) (d : F.obj X) :
     colimit.ι (Grothendieck.ι F X ⋙ G) d ≫ colimit.ι (fiberwiseColimit G) X ≫
       (colimitFiberwiseColimitIso G).hom = colimit.ι G ⟨X, d⟩ := by
   simp [colimitFiberwiseColimitIso]
+
+@[reassoc (attr := simp)]
+lemma ι_colimitFiberwiseColimitIso_inv (X : Grothendieck F) :
+    colimit.ι G X ≫ (colimitFiberwiseColimitIso G).inv =
+    colimit.ι (Grothendieck.ι F X.base ⋙ G) X.fiber ≫ colimit.ι (fiberwiseColimit G) X.base := by
+  rw [Iso.comp_inv_eq]
+  simp
+
+end
 
 end
 
