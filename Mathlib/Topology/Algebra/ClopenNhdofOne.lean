@@ -8,7 +8,8 @@ import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.OpenSubgroup
 /-!
 # Existence of an open normal subgroup in any clopen neighborhood of the neutral element
-This file proves the lemma `TopologicalGroup.existOpenNormalSubgroupSubClopenNhdsOfOne`, which
+
+This file proves the lemma `TopologicalGroup.exist_openNormalSubgroup_sub_clopen_nhd_of_one`, which
 states that in a compact topological group, for any clopen neighborhood of 1,
 there exists an open normal subgroup contained within it.
 

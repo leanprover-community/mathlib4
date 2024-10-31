@@ -3,7 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Nailin Guan, Yi Song, Xuchun Li
 -/
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Sets.Opens
@@ -457,7 +459,8 @@ end
 
 /-!
 # Existence of an open subgroup in any clopen neighborhood of the neutral element
-This section proves the lemma `TopologicalGroup.existOpenSubgroupSubClopenNhdsOfOne`, which
+
+This section proves the lemma `TopologicalGroup.exist_openSubgroup_sub_clopen_nhd_of_one`, which
 states that in a compact topological group, for any clopen neighborhood of 1,
 there exists an open subgroup contained within it.
 -/
@@ -472,9 +475,11 @@ structure TopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop
   isOpen : IsOpen T
   add : W + T ⊆ W
 
-/--For a set W, the neighborhood of `1` which is open, self inverse and satisfying `T * W ⊆ W` -/
+/-- For a set `W`, `T` is a neighborhood of `1` which is open, statble under inverse and satisfies
+`T * W ⊆ W`. -/
 @[to_additive
-"For a set W, the neighborhood of `0` which is open, self negative and satisfying `T + W ⊆ W`"]
+"For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies
+`T + W ⊆ W`. "]
 structure TopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
   nhd : T ∈ 𝓝 1
   inv : T⁻¹ = T
