@@ -790,8 +790,11 @@ theorem ContinuousOn.continuousAt (h : ContinuousOn f s)
     (hx : s ∈ 𝓝 x) : ContinuousAt f x :=
   (h x (mem_of_mem_nhds hx)).continuousAt hx
 
-theorem ContinuousAt.continuousOn (hcont : ∀ x ∈ s, ContinuousAt f x) :
+theorem continuousOn_of_forall_continuousAt (hcont : ∀ x ∈ s, ContinuousAt f x) :
     ContinuousOn f s := fun x hx => (hcont x hx).continuousWithinAt
+
+@[deprecated (since := "2024-10-30")]
+alias ContinuousAt.continuousOn := continuousOn_of_forall_continuousAt
 
 @[fun_prop]
 theorem Continuous.continuousOn (h : Continuous f) : ContinuousOn f s := by
@@ -1449,6 +1452,6 @@ lemma ContinuousOn.union_continuousAt
     {s t : Set X} {f : X → Y} (s_op : IsOpen s)
     (hs : ContinuousOn f s) (ht : ∀ x ∈ t, ContinuousAt f x) :
     ContinuousOn f (s ∪ t) :=
-  ContinuousAt.continuousOn <| fun _ hx => hx.elim
+  continuousOn_of_forall_continuousAt <| fun _ hx => hx.elim
   (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
   (ht _)
