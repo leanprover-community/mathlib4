@@ -33,8 +33,7 @@ outer measure
 noncomputable section
 
 open Set Function Filter
-open scoped AlgebraOrderInstances
-open NNReal Topology ENNReal
+open scoped AlgebraOrderInstances NNReal Topology ENNReal
 
 namespace MeasureTheory
 
