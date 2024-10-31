@@ -270,10 +270,7 @@ def subinterval {n} (j l : ℕ) (hjl : j + l < n + 1) :
     ([l] : SimplexCategory) ⟶ [n] :=
   SimplexCategory.mkHom {
     toFun := fun i => ⟨i.1 + j, (by omega)⟩
-    monotone' := by
-      intro i i' hii'
-      simp only [Fin.mk_le_mk, add_le_add_iff_right, Fin.val_fin_le]
-      exact hii'
+    monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using hii'
   }
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ [0]) where
