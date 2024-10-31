@@ -74,7 +74,7 @@ theorem congr_mk {c d : Con M} (h : c = d) (a : M) :
     Con.congr h (a : c.Quotient) = (a : d.Quotient) := rfl
 
 @[to_additive]
-theorem conGen_le_comap {M N : Type*} [Mul M] [Mul N] (f : M → N)
+theorem le_comap_conGen {M N : Type*} [Mul M] [Mul N] (f : M → N)
     (H : ∀ (x y : M), f (x * y) = f x * f y) (rel : N → N → Prop) :
     conGen (fun x y ↦ rel (f x) (f y)) ≤ Con.comap f H (conGen rel) := by
   intro x y h
