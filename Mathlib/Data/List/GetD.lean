@@ -129,6 +129,9 @@ theorem getI_append_right (l l' : List α) (n : ℕ) (h : l.length ≤ n) :
 theorem getI_eq_iget_get? (n : ℕ) : l.getI n = (l.get? n).iget := by
   rw [← getD_default_eq_getI, getD_eq_getD_get?, Option.getD_default_eq_iget]
 
+theorem getI_eq_iget_getElem? (n : ℕ) : l.getI n = l[n]?.iget := by
+  rw [← getD_default_eq_getI, getD_eq_getElem?_getD, Option.getD_default_eq_iget]
+
 theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 
 end getI
