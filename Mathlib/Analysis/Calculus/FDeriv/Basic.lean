@@ -341,9 +341,13 @@ nonrec theorem HasFDerivAtFilter.mono (h : HasFDerivAtFilter f f' x L₂) (hst :
     HasFDerivAtFilter f f' x L₁ :=
   .of_isLittleO <| h.isLittleO.mono hst
 
-theorem HasFDerivWithinAt.mono_of_mem (h : HasFDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) :
+theorem HasFDerivWithinAt.mono_of_mem_nhdsWithin
+    (h : HasFDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) :
     HasFDerivWithinAt f f' s x :=
   h.mono <| nhdsWithin_le_iff.mpr hst
+
+@[deprecated (since := "2024-10-31")]
+alias HasFDerivWithinAt.mono_of_mem := HasFDerivWithinAt.mono_of_mem_nhdsWithin
 
 nonrec theorem HasFDerivWithinAt.mono (h : HasFDerivWithinAt f f' t x) (hst : s ⊆ t) :
     HasFDerivWithinAt f f' s x :=
@@ -387,7 +391,7 @@ theorem hasFDerivWithinAt_insert {y : E} :
   · simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO]
     apply Asymptotics.isLittleO_insert
     simp only [sub_self, map_zero]
-  refine ⟨fun h => h.mono <| subset_insert y s, fun hf => hf.mono_of_mem ?_⟩
+  refine ⟨fun h => h.mono <| subset_insert y s, fun hf => hf.mono_of_mem_nhdsWithin ?_⟩
   simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
 
 alias ⟨HasFDerivWithinAt.of_insert, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
@@ -557,13 +561,17 @@ theorem DifferentiableWithinAt.mono (h : DifferentiableWithinAt 𝕜 f t x) (st 
   rcases h with ⟨f', hf'⟩
   exact ⟨f', hf'.mono st⟩
 
-theorem DifferentiableWithinAt.mono_of_mem (h : DifferentiableWithinAt 𝕜 f s x) {t : Set E}
-    (hst : s ∈ 𝓝[t] x) : DifferentiableWithinAt 𝕜 f t x :=
-  (h.hasFDerivWithinAt.mono_of_mem hst).differentiableWithinAt
+theorem DifferentiableWithinAt.mono_of_mem_nhdsWithin
+    (h : DifferentiableWithinAt 𝕜 f s x) {t : Set E} (hst : s ∈ 𝓝[t] x) :
+    DifferentiableWithinAt 𝕜 f t x :=
+  (h.hasFDerivWithinAt.mono_of_mem_nhdsWithin hst).differentiableWithinAt
+
+@[deprecated (since := "2024-10-31")]
+alias DifferentiableWithinAt.mono_of_mem := DifferentiableWithinAt.mono_of_mem_nhdsWithin
 
 theorem DifferentiableWithinAt.congr_nhds (h : DifferentiableWithinAt 𝕜 f s x) {t : Set E}
     (hst : 𝓝[s] x = 𝓝[t] x) : DifferentiableWithinAt 𝕜 f t x :=
-  h.mono_of_mem <| hst ▸ self_mem_nhdsWithin
+  h.mono_of_mem_nhdsWithin <| hst ▸ self_mem_nhdsWithin
 
 theorem differentiableWithinAt_congr_nhds {t : Set E} (hst : 𝓝[s] x = 𝓝[t] x) :
     DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
@@ -629,13 +637,16 @@ theorem differentiableOn_of_locally_differentiableOn
   rcases h x xs with ⟨t, t_open, xt, ht⟩
   exact (differentiableWithinAt_inter (IsOpen.mem_nhds t_open xt)).1 (ht x ⟨xs, xt⟩)
 
-theorem fderivWithin_of_mem (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWithinAt 𝕜 s x)
+theorem fderivWithin_of_mem_nhdsWithin (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
-  ((DifferentiableWithinAt.hasFDerivWithinAt h).mono_of_mem st).fderivWithin ht
+  ((DifferentiableWithinAt.hasFDerivWithinAt h).mono_of_mem_nhdsWithin st).fderivWithin ht
+
+@[deprecated (since := "2024-10-31")]
+alias fderivWithin_of_mem := fderivWithin_of_mem_nhdsWithin
 
 theorem fderivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
-  fderivWithin_of_mem (nhdsWithin_mono _ st self_mem_nhdsWithin) ht h
+  fderivWithin_of_mem_nhdsWithin (nhdsWithin_mono _ st self_mem_nhdsWithin) ht h
 
 theorem fderivWithin_inter (ht : t ∈ 𝓝 x) : fderivWithin 𝕜 f (s ∩ t) x = fderivWithin 𝕜 f s x := by
   have A : 𝓝[(s ∩ t) \ {x}] x = 𝓝[s \ {x}] x := by

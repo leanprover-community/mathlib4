@@ -264,25 +264,33 @@ theorem HasDerivAt.comp_hasDerivWithinAt_of_eq (hh₂ : HasDerivAt h₂ h₂' y)
     HasDerivWithinAt (h₂ ∘ h) (h₂' * h') s x := by
   rw [hy] at hh₂; exact hh₂.comp_hasDerivWithinAt x hh
 
-theorem derivWithin.comp (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' (h x))
+theorem derivWithin_comp (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' (h x))
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s') (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (h₂ ∘ h) s x = derivWithin h₂ s' (h x) * derivWithin h s x :=
   (hh₂.hasDerivWithinAt.comp x hh.hasDerivWithinAt hs).derivWithin hxs
 
-theorem derivWithin.comp_of_eq (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' y)
-    (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s') (hxs : UniqueDiffWithinAt 𝕜 s x)
-    (hy : y = h x) :
-    derivWithin (h₂ ∘ h) s x = derivWithin h₂ s' (h x) * derivWithin h s x := by
-  rw [hy] at hh₂; exact derivWithin.comp x hh₂ hh hs hxs
+@[deprecated (since := "2024-10-31")] alias derivWithin.comp := derivWithin_comp
 
-theorem deriv.comp (hh₂ : DifferentiableAt 𝕜' h₂ (h x)) (hh : DifferentiableAt 𝕜 h x) :
+theorem derivWithin_comp_of_eq (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' y)
+    (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s') (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hy : h x = y) :
+    derivWithin (h₂ ∘ h) s x = derivWithin h₂ s' (h x) * derivWithin h s x := by
+  subst hy; exact derivWithin_comp x hh₂ hh hs hxs
+
+@[deprecated (since := "2024-10-31")] alias derivWithin.comp_of_eq := derivWithin_comp_of_eq
+
+theorem deriv_comp (hh₂ : DifferentiableAt 𝕜' h₂ (h x)) (hh : DifferentiableAt 𝕜 h x) :
     deriv (h₂ ∘ h) x = deriv h₂ (h x) * deriv h x :=
   (hh₂.hasDerivAt.comp x hh.hasDerivAt).deriv
 
-theorem deriv.comp_of_eq (hh₂ : DifferentiableAt 𝕜' h₂ y) (hh : DifferentiableAt 𝕜 h x)
-    (hy : y = h x) :
+@[deprecated (since := "2024-10-31")] alias deriv.comp := deriv_comp
+
+theorem deriv_comp_of_eq (hh₂ : DifferentiableAt 𝕜' h₂ y) (hh : DifferentiableAt 𝕜 h x)
+    (hy : h x = y) :
     deriv (h₂ ∘ h) x = deriv h₂ (h x) * deriv h x := by
-  rw [hy] at hh₂; exact deriv.comp x hh₂ hh
+  subst hy; exact deriv_comp x hh₂ hh
+
+@[deprecated (since := "2024-10-31")] alias deriv.comp_of_eq := deriv_comp_of_eq
 
 protected nonrec theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hf : HasDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
