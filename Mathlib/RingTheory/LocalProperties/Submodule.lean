@@ -60,7 +60,7 @@ theorem Submodule.eq_of_localization_maximal {N₁ N₂ : Submodule R M}
   le_antisymm (Submodule.le_of_localization_maximal Rₚ Mₚ f fun P _ => (h P).le)
     (Submodule.le_of_localization_maximal Rₚ Mₚ f fun P _ => (h P).ge)
 
-/-- An ideal is trivial if its localization at every maximal ideal is trivial. -/
+/-- A submodule is trivial if its localization at every maximal ideal is trivial. -/
 theorem Submodule.eq_bot_of_localization_maximal (N₁ : Submodule R M)
     (h : ∀ (P : Ideal R) [P.IsMaximal],
       N₁.localized' (Rₚ P) P.primeCompl (f P) = ⊥) :
