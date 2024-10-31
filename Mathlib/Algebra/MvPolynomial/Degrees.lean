@@ -261,7 +261,8 @@ theorem degreeOf_mul_le (i : σ) (f g : MvPolynomial σ R) :
   convert Multiset.count_le_of_le i (degrees_mul f g)
   rw [Multiset.count_add]
 
-theorem degreeOf_pow_le (i : σ) (p : MvPolynomial σ R) (n : ℕ) :
+-- TODO we can prove equality here with `NoZeroDivisors R`
+theorem degreeOf_pow_le [NoZeroDivisors R](i : σ) (p : MvPolynomial σ R) (n : ℕ) :
     degreeOf i (p ^ n) ≤ n * degreeOf i p := by
   classical
   repeat' rw [degreeOf]
@@ -273,6 +274,7 @@ theorem degreeOf_sum_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPoly
   simp_rw [degreeOf_eq_sup]
   exact supDegree_sum_le
 
+-- TODO we can prove equality here if R is a domain
 theorem degreeOf_prod_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
     degreeOf i (∏ j ∈ s, f j) ≤ ∑ j ∈ s, (f j).degreeOf i := by
   simp_rw [degreeOf_eq_sup]
