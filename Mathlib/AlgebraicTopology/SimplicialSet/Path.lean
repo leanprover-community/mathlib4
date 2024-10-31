@@ -46,14 +46,10 @@ def Path.interval {n : ℕ} (f : Path X n) (j l : ℕ) (hjl : j + l < n + 1) :
   vertex i := f.vertex (Fin.addNat i j)
   arrow i := f.arrow ⟨Fin.addNat i j, (by omega)⟩
   arrow_src i := by
-    have eq := f.arrow_src ⟨Fin.addNat i j, (by omega)⟩
-    simp_rw [eq]
-    congr 1
-    apply Fin.eq_of_val_eq
-    simp only [Fin.coe_addNat, Fin.coe_castSucc, Fin.val_natCast]
-    have : i.1 + j < n + 1 := by omega
-    have : (↑i + j) % (n + 1) = i.1 + j := by exact Nat.mod_eq_of_lt this
-    rw [this]
+    rw [f.arrow_src ⟨Fin.addNat i j, (by omega)⟩]
+    congr
+    refine Fin.eq_of_val_eq (Nat.mod_eq_of_lt ?_).symm
+    omega
   arrow_tgt i := by
     have eq := f.arrow_tgt ⟨Fin.addNat i j, (by omega)⟩
     simp_rw [eq]
