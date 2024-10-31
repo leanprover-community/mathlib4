@@ -89,7 +89,7 @@ theorem le_comap_conGen {M N : Type*} [Mul M] [Mul N] (f : M → N)
 theorem comap_conGen_of_bijective {M N : Type*} [Mul M] [Mul N] (f : M → N)
     (hf : Function.Bijective f) (H : ∀ (x y : M), f (x * y) = f x * f y) (rel : N → N → Prop) :
     Con.comap f H (conGen rel) = conGen (fun x y ↦ rel (f x) (f y)) := by
-  apply le_antisymm _ (conGen_le_comap f H rel)
+  apply le_antisymm _ (le_comap_conGen f H rel)
   intro a b h
   simp only [Con.comap_rel] at h
   have H : ∀ n1 n2, (conGen rel) n1 n2 → ∀ a b, f a = n1 → f b = n2 →
