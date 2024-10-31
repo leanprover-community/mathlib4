@@ -542,6 +542,9 @@ theorem singleton_ne_zero (a : α) : ({a} : Multiset α) ≠ 0 :=
   ne_of_gt (lt_cons_self _ _)
 
 @[simp]
+theorem zero_ne_singleton (a : α) : 0 ≠ ({a} : Multiset α) := singleton_ne_zero _ |>.symm
+
+@[simp]
 theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
   ⟨fun h => mem_of_le h (mem_singleton_self _), fun h =>
     let ⟨_t, e⟩ := exists_cons_of_mem h

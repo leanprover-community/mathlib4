@@ -456,6 +456,18 @@ theorem IsPurelyInseparable.trans [Algebra E K] [IsScalarTower F E K]
   refine ⟨n + m, z, ?_⟩
   rw [IsScalarTower.algebraMap_apply F E K, h1, map_pow, h2, ← pow_mul, ← pow_add]
 
+namespace IntermediateField
+
+variable (M : IntermediateField F K)
+
+instance isPurelyInseparable_tower_bot [IsPurelyInseparable F K] : IsPurelyInseparable F M :=
+  IsPurelyInseparable.tower_bot F M K
+
+instance isPurelyInseparable_tower_top [IsPurelyInseparable F K] : IsPurelyInseparable M K :=
+  IsPurelyInseparable.tower_top F M K
+
+end IntermediateField
+
 variable {E}
 
 /-- A field extension `E / F` is purely inseparable if and only if for every element `x` of `E`,
