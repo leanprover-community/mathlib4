@@ -30,6 +30,6 @@ variable [NonUnitalContinuousFunctionalCalculus ℝ (IsStarNormal : A → Prop)]
 
 namespace CStarAlgebra
 
-noncomputable def Modulus := cfcₙ (A := A) fun t ↦ √((star t)* t)
+noncomputable def CFC.abs (a : A) := cfcₙ (fun t ↦ √(star t * t)) a
 
 end CStarAlgebra
