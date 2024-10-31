@@ -56,6 +56,12 @@ theorem left_le {α β} [PartialOrder α] [LT β] {a b : α} {c d : β}
   · exact Prod.Lex.left _ _ h₁
   · exact Prod.Lex.right _ h₂
 
+instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α ×ₗ β) :=
+  ⟨WellFounded.prod_lex wellFounded_lt wellFounded_lt⟩
+
+instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedRelation (α ×ₗ β) :=
+  ⟨(· < ·), wellFounded_lt⟩
+
 /-- Dictionary / lexicographic preorder for pairs. -/
 instance preorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×ₗ β) :=
   { Prod.Lex.instLE α β, Prod.Lex.instLT α β with
