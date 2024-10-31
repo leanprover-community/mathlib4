@@ -87,7 +87,7 @@ namespace FreeAbelianGroup
 
 /-- The canonical map from `α` to `FreeAbelianGroup α`. -/
 def of (x : α) : FreeAbelianGroup α :=
-  Abelianization.of <| FreeGroup.of x
+  Additive.ofMul <| Abelianization.of <| FreeGroup.of x
 
 /-- The map `FreeAbelianGroup α →+ A` induced by a map of types `α → A`. -/
 def lift {β : Type v} [AddCommGroup β] : (α → β) ≃ (FreeAbelianGroup α →+ β) :=
@@ -137,6 +137,20 @@ theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
     have hfy1 : f (of y) = 1 := hoxy ▸ hfx1
     have hfy0 : f (of y) = 0 := (lift.of _ _).trans <| if_neg hxy
     one_ne_zero <| hfy1.symm.trans hfy0
+
+@[simp]
+theorem of_ne_zero (x : α) : of x ≠ 0 := by
+  intro h
+  let f : FreeAbelianGroup α →+ ℤ := lift 1
+  have hfx : f (of x) = 1 := lift.of _ _
+  have hf0 : f (of x) = 0 := by rw [h, map_zero]
+  exact one_ne_zero <| hfx.symm.trans hf0
+
+@[simp]
+theorem zero_ne_of (x : α) : 0 ≠ of x := of_ne_zero _ |>.symm
+
+instance [Nonempty α] : Nontrivial (FreeAbelianGroup α) where
+  exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨0, of x, zero_ne_of _⟩
 
 end
 
@@ -211,7 +225,6 @@ protected theorem map_sub (f : α → β) (x y : FreeAbelianGroup α) :
 theorem map_of (f : α → β) (y : α) : f <$> of y = of (f y) :=
   rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem pure_bind (f : α → FreeAbelianGroup β) (x) : pure x >>= f = f x :=
   lift.of _ _
 

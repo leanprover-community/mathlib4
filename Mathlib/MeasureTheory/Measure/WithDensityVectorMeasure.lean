@@ -26,13 +26,13 @@ noncomputable section
 
 open scoped MeasureTheory NNReal ENNReal
 
-variable {α β : Type*} {m : MeasurableSpace α}
+variable {α : Type*} {m : MeasurableSpace α}
 
 namespace MeasureTheory
 
 open TopologicalSpace
 
-variable {μ ν : Measure α}
+variable {μ : Measure α}
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 open Classical in

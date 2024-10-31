@@ -209,7 +209,7 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
     exact ⟨continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂',
       continuousOn_continuousLinearMapCoordChange,
       continuousLinearMapCoordChange_apply σ e₁ e₁' e₂ e₂'⟩
-  totalSpaceMk_inducing := by
+  totalSpaceMk_isInducing := by
     intro b
     let L₁ : E₁ b ≃L[𝕜₁] F₁ :=
       (trivializationAt F₁ E₁ b).continuousLinearEquivAt 𝕜₁ b
@@ -218,7 +218,7 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
       (trivializationAt F₂ E₂ b).continuousLinearEquivAt 𝕜₂ b
         (mem_baseSet_trivializationAt _ _ _)
     let φ : (E₁ b →SL[σ] E₂ b) ≃L[𝕜₂] F₁ →SL[σ] F₂ := L₁.arrowCongrSL L₂
-    have : Inducing fun x => (b, φ x) := inducing_const_prod.mpr φ.toHomeomorph.inducing
+    have : IsInducing fun x => (b, φ x) := isInducing_const_prod.mpr φ.toHomeomorph.isInducing
     convert this
     ext f
     dsimp [Pretrivialization.continuousLinearMap_apply]
