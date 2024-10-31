@@ -313,7 +313,7 @@ theorem eqOn_closedBall_of_isMaxOn_norm {f : E → F} {z : E} {r : ℝ}
   eq_of_isMaxOn_of_ball_subset hd hz <| ball_subset_ball hx
 
 /-- If `f` is differentiable on the open unit ball `{z : ℂ | ‖z‖ < 1}`, and `‖f‖` attains a maximum
-in  this open ball, then `f` is constant.-/
+in this open ball, then `f` is constant.-/
 lemma eq_const_of_exists_max {f : E → F} (h_an : DifferentiableOn ℂ f {z : E | ‖z‖ < 1})
     {v : E} (hv : ‖v‖ < 1) (hv_max : IsMaxOn (norm ∘ f) {z : E | ‖z‖ < 1} v) :
     Set.EqOn f (Function.const E (f v)) {z : E | ‖z‖ < 1} := by
