@@ -38,8 +38,7 @@ lemma Matrix.IsTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular 
     ∀ k : ℕ, ∀ f : Fin k → m, ∀ g : Fin k → n,
       (A.submatrix f g).det = 0 ∨
       (A.submatrix f g).det = 1 ∨
-      (A.submatrix f g).det = -1
-    := by
+      (A.submatrix f g).det = -1 := by
   constructor <;> intro hA
   · intro k f g
     if hf : f.Injective then
