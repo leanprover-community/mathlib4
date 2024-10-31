@@ -25,6 +25,7 @@ open Cli Mathlib.Linter.TextBased System.FilePath
 
 Every file imported in `Mathlib.Init` should in turn import the `Header` linter
 (except for the header linter itself, of course).
+Return `true` iff there was an error.
 -/
 def checkInitImports : IO Bool := do
   -- Find any file in the Mathlib directory which does not contain any Mathlib import.
@@ -104,7 +105,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- Note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually.
   allModules := allModules.erase "Batteries"
   let mut numberErrors ← lintModules allModules style fix
-  if !(← checkInitImports) then numberErrors := numberErrors + 1
+  if ← checkInitImports then numberErrors := numberErrors + 1
   if !(← allScriptsDocumented) then numberErrors := numberErrors + 1
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
