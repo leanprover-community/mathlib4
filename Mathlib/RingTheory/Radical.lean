@@ -218,7 +218,7 @@ theorem divRadical_mul {a b : E} (hab : IsCoprime a b) :
 theorem divRadical_dvd_self (a : E) : divRadical a ∣ a := by
   exact Dvd.intro (radical a) (divRadical_mul_radical a)
 
-protected theorem IsCoprime.divRadical {a b : E} (h : IsCoprime a b) :
+theorem _root_.IsCoprime.divRadical {a b : E} (h : IsCoprime a b) :
     IsCoprime (divRadical a) (divRadical b) := by
   rw [← radical_mul_divRadical a] at h
   rw [← radical_mul_divRadical b] at h
