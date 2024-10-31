@@ -43,3 +43,20 @@ instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (
 instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
   haveI := Fintype.ofFinite α
   infer_instance
+
+instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ β) := by
+  cases' isEmpty_or_nonempty (α ↪ β) with _ h
+  · -- Porting note: infer_instance fails because it applies `Finite.of_fintype` and produces a
+    -- "stuck at solving universe constraint" error.
+    apply Finite.of_subsingleton
+
+  · refine h.elim fun f => ?_
+    haveI : Finite α := Finite.of_injective _ f.injective
+    exact Finite.of_injective _ DFunLike.coe_injective
+
+instance Equiv.finite_right {α β : Sort*} [Finite β] : Finite (α ≃ β) :=
+  Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by
+    convert DFunLike.congr_fun h using 0
+
+instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) :=
+  Finite.of_equiv _ ⟨Equiv.symm, Equiv.symm, Equiv.symm_symm, Equiv.symm_symm⟩

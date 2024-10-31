@@ -63,7 +63,6 @@ instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
 
 /-- A version of `CliffordAlgebra.ι` that maps directly into the graded structure. This is
 primarily an auxiliary construction used to provide `CliffordAlgebra.gradedAlgebra`. -/
--- Porting note: added `protected`
 protected def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ZMod 2, evenOdd Q i :=
   DirectSum.lof R (ZMod 2) (fun i => ↥(evenOdd Q i)) 1 ∘ₗ (ι Q).codRestrict _ (ι_mem_evenOdd_one Q)
 
@@ -197,8 +196,8 @@ theorem even_induction {motive : ∀ x, x ∈ evenOdd Q 0 → Prop}
           motive (ι Q m₁ * ι Q m₂ * x)
             (zero_add (0 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 0) : motive x hx := by
-  refine evenOdd_induction _ _ (motive := motive) (fun rx => ?_) add ι_mul_ι_mul x hx
-  rintro ⟨r, rfl⟩
+  refine evenOdd_induction _ _ (motive := motive) (fun rx h => ?_) add ι_mul_ι_mul x hx
+  obtain ⟨r, rfl⟩ := Submodule.mem_one.mp h
   exact algebraMap r
 
 /-- To show a property is true on the odd parts, it suffices to show it is true on the
