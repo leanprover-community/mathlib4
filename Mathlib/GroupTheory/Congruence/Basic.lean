@@ -79,11 +79,11 @@ theorem conGen_le_comap {M N : Type*} [Mul M] [Mul N] (f : M → N)
     conGen (fun x y ↦ rel (f x) (f y)) ≤ Con.comap f H (conGen rel) := by
   intro x y h
   simp only [Con.comap_rel]
-  exact ConGen.Rel.rec (fun x y h ↦ ConGen.Rel.of (f x) (f y) h) (fun x ↦ ConGen.Rel.refl (f x))
-    (fun _ h ↦ ConGen.Rel.symm h) (fun _ _ h1 h2 ↦ h1.trans h2) (fun {w x y z} _ _ h1 h2 ↦
+  exact .rec (fun x y h ↦ .of (f x) (f y) h) (fun x ↦ .refl (f x))
+    (fun _ h ↦ .symm h) (fun _ _ h1 h2 ↦ h1.trans h2) (fun {w x y z} _ _ h1 h2 ↦
     (congrArg (fun a ↦ (conGen rel) a (f (x * z))) (H w y)).mpr
     (((congrArg (fun a ↦ (conGen rel) (f w * f y) a) (H x z))).mpr
-    (ConGen.Rel.mul h1 h2))) h
+    (.mul h1 h2))) h
 
 @[to_additive]
 theorem comap_conGen_of_Bijective {M N : Type*} [Mul M] [Mul N] (f : M → N)
