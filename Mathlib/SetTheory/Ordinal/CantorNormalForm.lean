@@ -22,12 +22,14 @@ normal form:
 - It is ordered.
 - It has finitely many entries.
 
+To avoid explicit reference to the implementation detail of the ordering of the entries, we define
+`CNF.exponents` and `CNF.coeffs` as the lists with the respective values.
+
 # Todo
 
 - Add API for the coefficients of the Cantor normal form.
 - Prove the basic results relating the CNF to the arithmetic operations on ordinals.
 -/
-
 
 noncomputable section
 
@@ -71,9 +73,25 @@ namespace CNF
 in the first entries of elements in `CNF`. -/
 def exponents (b o : Ordinal) := (CNF b o).map Prod.fst
 
+theorem mem_exponents_iff {b o e : Ordinal} :
+    e ∈ exponents b o ↔ ∃ c, (e, c) ∈ CNF b o := by
+  simp [exponents]
+
+theorem mem_exponents_of_mem {b o e c : Ordinal.{u}} (h : (e, c) ∈ CNF b o) :
+    e ∈ exponents b o :=
+  mem_exponents_iff.2 ⟨c, h⟩
+
 /-- The coefficients of the Cantor normal form are stored
 in the second entries of elements in `CNF`. -/
 def coeffs (b o : Ordinal) := (CNF b o).map Prod.snd
+
+theorem mem_coeffs_iff {b o c : Ordinal} :
+    c ∈ coeffs b o ↔ ∃ e, (e, c) ∈ CNF b o := by
+  simp [coeffs]
+
+theorem mem_coeffs_of_mem {b o e c : Ordinal.{u}} (h : (e, c) ∈ CNF b o) :
+    c ∈ coeffs b o :=
+  mem_coeffs_iff.2 ⟨e, h⟩
 
 @[simp]
 theorem zero_right (b : Ordinal) : CNF b 0 = [] :=
@@ -83,25 +101,9 @@ theorem zero_right (b : Ordinal) : CNF b 0 = [] :=
 theorem exponents_zero (b : Ordinal) : exponents b 0 = [] := by
   rw [exponents, zero_right, map_nil]
 
-theorem mem_exponents_iff {b o e : Ordinal} :
-    e ∈ exponents b o ↔ ∃ c, (e, c) ∈ CNF b o := by
-  simp [exponents]
-
-theorem mem_exponents_of_mem {b o e c : Ordinal.{u}} (h : (e, c) ∈ CNF b o) :
-    e ∈ exponents b o :=
-  mem_exponents_iff.2 ⟨c, h⟩
-
 @[simp]
 theorem coeffs_zero (b : Ordinal) : coeffs b 0 = [] := by
   rw [coeffs, zero_right, map_nil]
-
-theorem mem_coeffs_iff {b o c : Ordinal} :
-    c ∈ coeffs b o ↔ ∃ e, (e, c) ∈ CNF b o := by
-  simp [coeffs]
-
-theorem mem_coeffs_of_mem {b o e c : Ordinal.{u}} (h : (e, c) ∈ CNF b o) :
-    c ∈ coeffs b o :=
-  mem_coeffs_iff.2 ⟨e, h⟩
 
 /-- Recursive definition for the Cantor normal form. -/
 protected theorem ne_zero {b o : Ordinal} (ho : o ≠ 0) :
