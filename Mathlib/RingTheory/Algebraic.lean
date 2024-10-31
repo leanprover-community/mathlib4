@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.Algebra.Polynomial.Lifts
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -230,7 +231,7 @@ protected theorem IsAlgebraic.algebraMap {a : S} :
 
 section
 
-variable {B} [Ring B] [Algebra R B]
+variable {B : Type*} [Ring B] [Algebra R B]
 
 /-- This is slightly more general than `IsAlgebraic.algebraMap` in that it
   allows noncommutative intermediate rings `A`. -/
@@ -243,6 +244,38 @@ theorem isAlgebraic_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f)
     {a : A} : IsAlgebraic R (f a) ↔ IsAlgebraic R a :=
   ⟨fun ⟨p, hp0, hp⟩ ↦ ⟨p, hp0, hf <| by rwa [map_zero, ← f.comp_apply, ← aeval_algHom]⟩,
     IsAlgebraic.algHom f⟩
+
+section RingHom
+
+omit [Algebra R S] [Algebra S A] [IsScalarTower R S A] [Algebra R B]
+variable [Algebra S B]
+
+protected theorem IsAlgebraic.ringHom (f : R →+* S) (g : A →+* B)
+    (hf : Function.Injective f)
+    (h : (algebraMap S B).comp f = g.comp (algebraMap R A)) {a : A}
+    (halg : IsAlgebraic R a) : IsAlgebraic S (g a) := by
+  obtain ⟨p, h1, h2⟩ := halg
+  refine ⟨p.map f, (Polynomial.map_ne_zero_iff hf).2 h1, ?_⟩
+  rw [← map_aeval_eq_aeval_map h, h2, map_zero]
+
+theorem IsAlgebraic.of_ringHom (f : R →+* S) (g : A →+* B)
+    (hf : Function.Surjective f) (hg : Function.Injective g)
+    (h : (algebraMap S B).comp f = g.comp (algebraMap R A)) {a : A}
+    (halg : IsAlgebraic S (g a)) : IsAlgebraic R a := by
+  obtain ⟨p, h1, h2⟩ := halg
+  obtain ⟨q, rfl⟩ : ∃ q : R[X], q.map f = p := by
+    rw [← mem_lifts, lifts_iff_coeff_lifts]
+    simp [hf.range_eq]
+  refine ⟨q, fun h' ↦ by simp [h'] at h1, hg ?_⟩
+  rw [map_zero, map_aeval_eq_aeval_map h, h2]
+
+theorem isAlgebraic_ringHom_iff (f : R ≃+* S) (g : A →+* B)
+    (hg : Function.Injective g)
+    (h : (algebraMap S B).comp f = g.comp (algebraMap R A)) {a : A} :
+    IsAlgebraic S (g a) ↔ IsAlgebraic R a :=
+  ⟨fun H ↦ H.of_ringHom f g f.surjective hg h, fun H ↦ H.ringHom f g f.injective h⟩
+
+end RingHom
 
 theorem Algebra.IsAlgebraic.of_injective (f : A →ₐ[R] B) (hf : Function.Injective f)
     [Algebra.IsAlgebraic R B] : Algebra.IsAlgebraic R A :=
