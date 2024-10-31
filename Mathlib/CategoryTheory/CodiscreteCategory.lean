@@ -129,7 +129,7 @@ def adj : objects ⊣ functorToCat := mkOfHomEquiv {
 /-- Components of the unit of the adjunction Cat.objects ⊣ Codiscrete.functorToCat -/
 def unitApp (C : Type u) [Category.{v} C] : C ⥤ Codiscrete C := functor id
 
-/-- Componetnts of the counit of the adjunction Cat.objects ⊣ Codiscrete.functorToCat -/
+/-- Components of the counit of the adjunction `Cat.objects ⊣ Codiscrete.functorToCat` -/
 def counitApp (A : Type u) : Codiscrete A → A := Codiscrete.as
 
 lemma adj_unit_app (X : Cat.{0, u}) :
