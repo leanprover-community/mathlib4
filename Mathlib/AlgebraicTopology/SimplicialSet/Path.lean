@@ -51,14 +51,11 @@ def Path.interval {n : ℕ} (f : Path X n) (j l : ℕ) (hjl : j + l < n + 1) :
     refine Fin.eq_of_val_eq (Nat.mod_eq_of_lt ?_).symm
     omega
   arrow_tgt i := by
-    have eq := f.arrow_tgt ⟨Fin.addNat i j, (by omega)⟩
-    simp_rw [eq]
-    congr 1
-    apply Fin.eq_of_val_eq
-    simp only [Fin.coe_addNat, Fin.succ_mk, Fin.val_succ, Fin.val_natCast]
-    have : i.1 + 1 + j < n + 1 := by omega
-    have : (i.1 + 1 + j) % (n + 1) = i.1 + 1 + j := by exact Nat.mod_eq_of_lt this
-    rw [this, Nat.add_right_comm]
+    rw [f.arrow_tgt ⟨Fin.addNat i j, (by omega)⟩]
+    congr
+    simp only [Fin.coe_addNat, Fin.val_succ, Nat.add_right_comm]
+    refine Fin.eq_of_val_eq (Nat.mod_eq_of_lt ?_).symm
+    omega
 
 /-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed by
 traversing through its vertices in order.-/
