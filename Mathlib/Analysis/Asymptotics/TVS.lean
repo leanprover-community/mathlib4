@@ -14,7 +14,7 @@ import Mathlib.Topology.Instances.ENNReal
 # Asymptotics in a Topological Vector Space
 
 This file defines `Asymptotics.IsLittleOTVS` as a generalization of `Asymptotics.IsLittleO` from
-normed spaces to toplogical spaces.
+normed spaces to topological spaces.
 
 This frees the user from having to chose a canonical norm, at the expense of having to pick a
 specific base ring.
