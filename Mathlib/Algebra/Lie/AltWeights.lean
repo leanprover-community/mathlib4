@@ -40,28 +40,6 @@ lemma map_iteratedRange_iSup_le_iSup :
 
 end LinearMap.End
 
-section
-
-variable {R L A V : Type*} [CommRing R]
-variable [LieRing L]
-variable [LieRing A] [LieAlgebra R A]
-variable [AddCommGroup V] [Module R V]
-variable [LieRingModule L V]
-variable [LieRingModule A V] [LieModule R A V]
-
-variable (L V) in
-class LieWeightsy (χ : A → R) (k : ENat) : Prop where
-  lie_mem : ∀ (x : L) (v : V),
-    v ∈ (⨅ x, (((LieModule.toEnd R A V) x).genEigenspace (χ x)) k) →
-    ⁅x, v⁆ ∈ (⨅ x, (((LieModule.toEnd R A V) x).genEigenspace (χ x)) k)
-
-variable (L V) in
-def weightSpacy (χ : A → R) (k : ENat) [LieWeightsy L V χ k] : LieSubmodule R L V where
-  toSubmodule := ⨅ x : A, Module.End.genEigenspace (LieModule.toEnd R A V x) (χ x) k
-  lie_mem := LieWeightsy.lie_mem _ _
-
-end
-
 variable {R L A V : Type*} [CommRing R]
 variable [LieRing L] [LieAlgebra R L]
 variable [LieRing A] [LieAlgebra R A]
