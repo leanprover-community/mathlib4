@@ -1,11 +1,12 @@
 /-
-Copyright (c) 2024 Jineon Back and Seewoo Lee. All rights reserved.
+Copyright (c) 2024 Jineon Baek and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Wronskian of a pair of polynomial
@@ -112,5 +113,41 @@ theorem natDegree_wronskian_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
   · exact Polynomial.degree_eq_natDegree hw
   · exact Polynomial.degree_eq_natDegree ha
   · exact Polynomial.degree_eq_natDegree hb
+
+variable {k : Type*} [Field k]
+
+@[simp]
+theorem dvd_derivative_iff {a : k[X]} : a ∣ derivative a ↔ derivative a = 0 := by
+  constructor
+  · intro h
+    by_cases a_nz : a = 0
+    · rw [a_nz]; simp only [derivative_zero]
+    by_contra deriv_nz
+    have deriv_lt := degree_derivative_lt a_nz
+    have le_deriv := Polynomial.degree_le_of_dvd h deriv_nz
+    have lt_self := le_deriv.trans_lt deriv_lt
+    simp only [lt_self_iff_false] at lt_self
+  intro h; rw [h]; simp
+
+/--
+For coprime polynomials `a` and `b`, their Wronskian is zero
+if and only if their derivatives are constants.
+-/
+theorem IsCoprime.wronskian_eq_zero_iff {a b : k[X]} (hc : IsCoprime a b) :
+    wronskian a b = 0 ↔ derivative a = 0 ∧ derivative b = 0 := by
+  constructor
+  · intro hw
+    rw [wronskian, sub_eq_iff_eq_add, zero_add] at hw
+    constructor
+    · rw [← dvd_derivative_iff]
+      apply hc.dvd_of_dvd_mul_right
+      rw [← hw]; exact dvd_mul_right _ _
+    · rw [← dvd_derivative_iff]
+      apply hc.symm.dvd_of_dvd_mul_left
+      rw [hw]; exact dvd_mul_left _ _
+  intro hdab
+  cases' hdab with hda hdb
+  rw [wronskian]
+  rw [hda, hdb]; simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, sub_self]
 
 end Polynomial
