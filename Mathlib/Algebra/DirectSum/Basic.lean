@@ -272,7 +272,7 @@ protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι
       DirectSum.induction_on x (by rw [AddMonoidHom.map_zero, AddMonoidHom.map_zero])
         (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by
         rw [AddMonoidHom.map_add, AddMonoidHom.map_add, ihx, ihy]
-    right_inv := fun x => toAddMonoid_of _ _ _ }
+    right_inv := fun _ => toAddMonoid_of _ _ _ }
 
 section CongrLeft
 

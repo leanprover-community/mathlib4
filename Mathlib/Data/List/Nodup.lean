@@ -213,10 +213,7 @@ theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
   ⟨fun h => attach_map_subtype_val l ▸ h.map fun _ _ => Subtype.eq, fun h =>
     Nodup.of_map Subtype.val ((attach_map_subtype_val l).symm ▸ h)⟩
 
-alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
-
--- Porting note: commented out
---attribute [protected] nodup.attach
+protected alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
 
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
@@ -224,7 +221,7 @@ theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
   exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr; exact hf a (H _ ha) b (H _ hb) h
 
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
-  simpa using Pairwise.filter (fun a ↦ p a)
+  simpa using Pairwise.filter p
 
 @[simp]
 theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=

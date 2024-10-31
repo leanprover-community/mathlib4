@@ -58,11 +58,11 @@ instance : MonoidalCategoryStruct (AlgebraCat.{u} R) where
 noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R) :=
   Monoidal.induced
     (forget₂ (AlgebraCat R) (ModuleCat R))
-    { μIso := fun X Y => Iso.refl _
+    { μIso := fun _ _ => Iso.refl _
       εIso := Iso.refl _
-      associator_eq := fun X Y Z => TensorProduct.ext₃ (fun x y z => rfl)
-      leftUnitor_eq := fun X => TensorProduct.ext' (fun x y => rfl)
-      rightUnitor_eq := fun X => TensorProduct.ext' (fun x y => rfl) }
+      associator_eq := fun _ _ _ => TensorProduct.ext_threefold (fun _ _ _ => rfl)
+      leftUnitor_eq := fun _ => TensorProduct.ext' (fun _ _ => rfl)
+      rightUnitor_eq := fun _ => TensorProduct.ext' (fun _ _ => rfl) }
 
 variable (R) in
 /-- `forget₂ (AlgebraCat R) (ModuleCat R)` as a monoidal functor. -/

@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Reid Barton
 -/
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # The shrinking lemma
@@ -74,8 +74,8 @@ protected theorem subset (v : PartialRefinement u s) (i : ι) : v i ⊆ u i := b
 open Classical in
 instance : PartialOrder (PartialRefinement u s) where
   le v₁ v₂ := v₁.carrier ⊆ v₂.carrier ∧ ∀ i ∈ v₁.carrier, v₁ i = v₂ i
-  le_refl v := ⟨Subset.refl _, fun _ _ => rfl⟩
-  le_trans v₁ v₂ v₃ h₁₂ h₂₃ :=
+  le_refl _ := ⟨Subset.refl _, fun _ _ => rfl⟩
+  le_trans _ _ _ h₁₂ h₂₃ :=
     ⟨Subset.trans h₁₂.1 h₂₃.1, fun i hi => (h₁₂.2 i hi).trans (h₂₃.2 i <| h₁₂.1 hi)⟩
   le_antisymm v₁ v₂ h₁₂ h₂₁ :=
     have hc : v₁.carrier = v₂.carrier := Subset.antisymm h₁₂.1 h₂₁.1

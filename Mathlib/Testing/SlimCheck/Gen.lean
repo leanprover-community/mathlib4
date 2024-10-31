@@ -101,7 +101,7 @@ def permutationOf : (xs : List α) → Gen { ys // xs ~ ys }
   | x::xs => do
     let ⟨ys, h1⟩ ← permutationOf xs
     let ⟨n, _, h3⟩ ← ULiftable.up <| choose Nat 0 ys.length (Nat.zero_le _)
-    pure ⟨insertNth n x ys, Perm.trans (Perm.cons _ h1) (perm_insertNth _ _ h3).symm⟩
+    pure ⟨insertIdx n x ys, Perm.trans (Perm.cons _ h1) (perm_insertIdx _ _ h3).symm⟩
 
 /-- Given two generators produces a tuple consisting out of the result of both -/
 def prodOf {α : Type u} {β : Type v} (x : Gen α) (y : Gen β) : Gen (α × β) := do
