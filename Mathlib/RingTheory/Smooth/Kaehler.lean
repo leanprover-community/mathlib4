@@ -242,7 +242,7 @@ def retractionKerToTensorEquivSection :
 variable (R P S) in
 /--
 Given a tower of algebras `S/P/R`, with `I = ker(P → S)`,
-this is the `R`-derivative `P/I² → S ⊗ Ω[P] Ω[P⁄R]` given by `[x] ↦ 1 ⊗ D x`.
+this is the `R`-derivative `P/I² → S ⊗[P] Ω[P⁄R]` given by `[x] ↦ 1 ⊗ D x`.
 -/
 noncomputable
 def derivationQuotKerSq :
@@ -270,8 +270,8 @@ def derivationQuotKerSq :
       Derivation.leibniz, tmul_add, tmul_smul]
 
 @[simp]
-lemma derivationQuotKerSq_mk (x) :
-    derivationQuotKerSq R P S (Ideal.Quotient.mk _ x) = 1 ⊗ₜ .D R P x := rfl
+lemma derivationQuotKerSq_mk (x : P) :
+    derivationQuotKerSq R P S x = 1 ⊗ₜ .D R P x := rfl
 
 variable (R P S) in
 /--
@@ -280,21 +280,24 @@ there is an isomorphism of `S`-modules `S ⊗[Q] Ω[Q/R] ≃ S ⊗[P] Ω[P/R]`.
 -/
 noncomputable
 def tensorKaehlerQuotKerSqEquiv :
-    S ⊗[P ⧸ (RingHom.ker (algebraMap P S) ^ 2)] Ω[(P ⧸ (RingHom.ker (algebraMap P S) ^ 2))⁄R]
-      ≃ₗ[S] S ⊗[P] Ω[P⁄R] := by
+    S ⊗[P ⧸ (RingHom.ker (algebraMap P S) ^ 2)] Ω[(P ⧸ (RingHom.ker (algebraMap P S) ^ 2))⁄R] ≃ₗ[S]
+      S ⊗[P] Ω[P⁄R] :=
   letI f₁ := (derivationQuotKerSq R P S).liftKaehlerDifferential
   letI f₂ := AlgebraTensorModule.lift ((LinearMap.ringLmapEquivSelf S S _).symm f₁)
   letI f₃ := KaehlerDifferential.map R R P (P ⧸ (RingHom.ker (algebraMap P S) ^ 2))
   letI f₄ := ((mk (P ⧸ RingHom.ker (algebraMap P S) ^ 2) S _ 1).restrictScalars P).comp f₃
   letI f₅ := AlgebraTensorModule.lift ((LinearMap.ringLmapEquivSelf S S _).symm f₄)
-  refine { __ := f₂, invFun := f₅, left_inv := ?_, right_inv := ?_ }
-  · suffices f₅.comp f₂ = LinearMap.id from LinearMap.congr_fun this
-    ext a
-    obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective a
-    simp [f₁, f₂, f₃, f₄, f₅]
-  · suffices f₂.comp f₅ = LinearMap.id from LinearMap.congr_fun this
-    ext a
-    simp [f₁, f₂, f₃, f₄, f₅]
+  { __ := f₂
+    invFun := f₅
+    left_inv := by
+      suffices f₅.comp f₂ = LinearMap.id from LinearMap.congr_fun this
+      ext a
+      obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective a
+      simp [f₁, f₂, f₃, f₄, f₅]
+    right_inv := by
+      suffices f₂.comp f₅ = LinearMap.id from LinearMap.congr_fun this
+      ext a
+      simp [f₁, f₂, f₃, f₄, f₅] }
 
 @[simp]
 lemma tensorKaehlerQuotKerSqEquiv_tmul_D (s t) :
@@ -391,7 +394,7 @@ theorem Algebra.FormallySmooth.iff_injective_and_split :
     Function.comp_apply, LinearMap.extendScalarsOfSurjective_apply, LinearMap.id_coe, id_eq]
 
 /-- An auxiliary lemma strictly weaker than the unprimed version. Use that instead. -/
-theorem Algebra.FormallySmooth.iff_injective_and_projective' :
+private theorem Algebra.FormallySmooth.iff_injective_and_projective' :
     letI : Algebra (MvPolynomial S R) S := (MvPolynomial.aeval _root_.id).toAlgebra
     Algebra.FormallySmooth R S ↔
         Function.Injective (kerCotangentToTensor R (MvPolynomial S R) S) ∧
