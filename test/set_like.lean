@@ -8,10 +8,10 @@ set_option autoImplicit true
 section Delab
 variable {M : Type u} [Monoid M] (S S' : Submonoid M)
 
-/-- info: { x // x ∈ S } → { x // x ∈ S' } : Type u -/
+/-- info: ↥S → ↥S' : Type u -/
 #guard_msgs in #check S → S'
 
-/-- info: { x // x ∈ S } : Type u -/
+/-- info: ↥S : Type u -/
 #guard_msgs in #check {x // x ∈ S}
 
 /-- info: { x // 1 * x ∈ S } : Type u -/

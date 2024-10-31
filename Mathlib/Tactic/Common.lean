@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 
 -- First import Aesop and Qq
@@ -79,7 +79,6 @@ import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Says

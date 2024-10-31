@@ -107,7 +107,7 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
       _ = ‖f‖ := by rw [reCLM_norm, one_mul]
   · exact f.opNorm_le_bound g.extendTo𝕜.opNorm_nonneg fun x => h x ▸ g.extendTo𝕜.le_opNorm x
 
-open FiniteDimensional
+open Module
 
 /-- Corollary of the **Hahn-Banach theorem**: if `f : p → F` is a continuous linear map
 from a submodule of a normed space `E` over `𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
@@ -120,7 +120,7 @@ lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submod
     (f : p →L[𝕜] F) [FiniteDimensional 𝕜 (LinearMap.range f)] :
     ∃ g : E →L[𝕜] F, f = g.comp p.subtypeL := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  set b := finBasis 𝕜 (LinearMap.range f)
+  set b := Module.finBasis 𝕜 (LinearMap.range f)
   set e := b.equivFunL
   set fi := fun i ↦ (LinearMap.toContinuousLinearMap (b.coord i)).comp
     (f.codRestrict _ <| LinearMap.mem_range_self _)

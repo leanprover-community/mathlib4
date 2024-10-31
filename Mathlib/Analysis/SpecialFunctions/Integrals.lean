@@ -33,7 +33,7 @@ integrate, integration, integrable, integrability
 -/
 
 
-open Real Nat Set Finset
+open Real Set Finset
 
 open scoped Real Interval
 
@@ -43,7 +43,7 @@ namespace intervalIntegral
 
 open MeasureTheory
 
-variable {f : ℝ → ℝ} {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
+variable {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
 
 /-! ### Interval integrability -/
 
@@ -115,7 +115,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     IntervalIntegrable (fun x : ℝ => (x : ℂ) ^ r) μ a b := by
   by_cases h2 : (0 : ℝ) ∉ [[a, b]]
   · -- Easy case #1: 0 ∉ [a, b] -- use continuity.
-    refine (ContinuousAt.continuousOn fun x hx => ?_).intervalIntegrable
+    refine (continuousOn_of_forall_continuousAt fun x hx => ?_).intervalIntegrable
     exact Complex.continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_mem_of_not_mem hx h2)
   rw [eq_false h2, or_false] at h
   rcases lt_or_eq_of_le h with (h' | h')
@@ -124,7 +124,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
   -- Now the hard case: re r = 0 and 0 is in the interval.
   refine (IntervalIntegrable.intervalIntegrable_norm_iff ?_).mp ?_
   · refine (measurable_of_continuousOn_compl_singleton (0 : ℝ) ?_).aestronglyMeasurable
-    exact ContinuousAt.continuousOn fun x hx =>
+    exact continuousOn_of_forall_continuousAt fun x hx =>
       Complex.continuousAt_ofReal_cpow_const x r (Or.inr hx)
   -- reduce to case of integral over `[0, c]`
   suffices ∀ c : ℝ, IntervalIntegrable (fun x : ℝ => ‖(x : ℂ) ^ r‖) μ 0 c from
@@ -175,7 +175,7 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
         rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx.1]
       · exact measurableSet_uIoc
     · refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_uIoc
-      refine ContinuousAt.continuousOn fun x hx => ?_
+      refine continuousOn_of_forall_continuousAt fun x hx => ?_
       rw [uIoc_of_le hc] at hx
       refine (continuousAt_cpow_const (Or.inl ?_)).comp Complex.continuous_ofReal.continuousAt
       rw [Complex.ofReal_re]
@@ -206,7 +206,6 @@ theorem integrableOn_Ioo_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
 theorem intervalIntegrable_id : IntervalIntegrable (fun x => x) μ a b :=
   continuous_id.intervalIntegrable a b
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem intervalIntegrable_const : IntervalIntegrable (fun _ => c) μ a b :=
   continuous_const.intervalIntegrable a b
 
@@ -409,7 +408,6 @@ theorem integral_id : ∫ x in a..b, x = (b ^ 2 - a ^ 2) / 2 := by
   norm_num at this
   exact this
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem integral_one : (∫ _ in a..b, (1 : ℝ)) = b - a := by
   simp only [mul_one, smul_eq_mul, integral_const]
 
@@ -580,8 +578,9 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
 
 end RpowCpow
 
-/-! ### Integral of `sin x ^ n` -/
+open Nat
 
+/-! ### Integral of `sin x ^ n` -/
 
 theorem integral_sin_pow_aux :
     (∫ x in a..b, sin x ^ (n + 2)) =

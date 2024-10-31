@@ -71,23 +71,23 @@ instance : ConcreteCategory BddLat where
 instance hasForgetToBddOrd : HasForget₂ BddLat BddOrd where
   forget₂ :=
     { obj := fun X => BddOrd.of X
-      map := fun {X Y} => BoundedLatticeHom.toBoundedOrderHom }
+      map := fun {_ _} => BoundedLatticeHom.toBoundedOrderHom }
 
 instance hasForgetToLat : HasForget₂ BddLat Lat where
   forget₂ :=
     -- Porting note: was `⟨X⟩`, see https://github.com/leanprover-community/mathlib4/issues/4998
     { obj := fun X => {α := X}
-      map := fun {X Y} => BoundedLatticeHom.toLatticeHom }
+      map := fun {_ _} => BoundedLatticeHom.toLatticeHom }
 
 instance hasForgetToSemilatSup : HasForget₂ BddLat SemilatSupCat where
   forget₂ :=
     { obj := fun X => ⟨X⟩
-      map := fun {X Y} => BoundedLatticeHom.toSupBotHom }
+      map := fun {_ _} => BoundedLatticeHom.toSupBotHom }
 
 instance hasForgetToSemilatInf : HasForget₂ BddLat SemilatInfCat where
   forget₂ :=
     { obj := fun X => ⟨X⟩
-      map := fun {X Y} => BoundedLatticeHom.toInfTopHom }
+      map := fun {_ _} => BoundedLatticeHom.toInfTopHom }
 
 @[simp]
 theorem coe_forget_to_bddOrd (X : BddLat) : ↥((forget₂ BddLat BddOrd).obj X) = ↥X :=
@@ -135,7 +135,7 @@ def Iso.mk {α β : BddLat.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : BddLat ⥤ BddLat where
   obj X := of Xᵒᵈ
-  map {X Y} := BoundedLatticeHom.dual
+  map {_ _} := BoundedLatticeHom.dual
 
 /-- The equivalence between `BddLat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -177,7 +177,7 @@ def latToBddLat : Lat.{u} ⥤ BddLat where
 functor from `Lat` to `BddLat`. -/
 def latToBddLatForgetAdjunction : latToBddLat.{u} ⊣ forget₂ BddLat Lat :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
+    { homEquiv := fun X _ =>
         { toFun := fun f =>
             { toFun := f ∘ some ∘ some
               map_sup' := fun a b => (congr_arg f <| by rfl).trans (f.map_sup' _ _)
@@ -188,15 +188,15 @@ def latToBddLatForgetAdjunction : latToBddLat.{u} ⊣ forget₂ BddLat Lat :=
               match a with
               | none => f.map_top'.symm
               | some none => f.map_bot'.symm
-              | some (some a) => rfl
-          right_inv := fun f => LatticeHom.ext fun a => rfl }
-      homEquiv_naturality_left_symm := fun f g =>
+              | some (some _) => rfl
+          right_inv := fun _ => LatticeHom.ext fun _ => rfl }
+      homEquiv_naturality_left_symm := fun _ _ =>
         BoundedLatticeHom.ext fun a =>
           match a with
           | none => rfl
           | some none => rfl
-          | some (some a) => rfl
-      homEquiv_naturality_right := fun f g => LatticeHom.ext fun a => rfl }
+          | some (some _) => rfl
+      homEquiv_naturality_right := fun _ _ => LatticeHom.ext fun _ => rfl }
 
 /-- `latToBddLat` and `OrderDual` commute. -/
 -- Porting note: the `simpNF` linter is not happy as it simplifies something that does not
