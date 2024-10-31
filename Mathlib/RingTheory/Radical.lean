@@ -185,17 +185,21 @@ namespace EuclideanDomain
 
 variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactorizationMonoid E]
 
-/-- For an element `a` in an Euclidean domain, `a / radical a`. -/
+/-- Division of an element by its radical in an Euclidean domain. -/
 def divRadical (a : E) : E := a / radical a
 
-theorem mul_radical_divRadical (a : E) : radical a * divRadical a = a := by
+theorem radical_mul_divRadical (a : E) : radical a * divRadical a = a := by
   rw [divRadical]
   rw [← EuclideanDomain.mul_div_assoc]
   ·refine mul_div_cancel_left₀ _ (radical_ne_zero a)
   exact radical_dvd_self a
 
+theorem divRadical_mul_radical (a : E) : divRadical a * radical a = a := by
+  rw [mul_comm]
+  exact radical_mul_divRadical a
+
 theorem divRadical_ne_zero {a : E} (ha : a ≠ 0) : divRadical a ≠ 0 := by
-  rw [← mul_radical_divRadical a] at ha
+  rw [← radical_mul_divRadical a] at ha
   exact right_ne_zero_of_mul ha
 
 theorem divRadical_isUnit {u : E} (hu : IsUnit u) : IsUnit (divRadical u) := by
@@ -205,25 +209,19 @@ theorem eq_divRadical {a x : E} (h : radical a * x = a) : x = divRadical a := by
   apply EuclideanDomain.eq_div_of_mul_eq_left (radical_ne_zero a)
   rwa [mul_comm]
 
-theorem divRadical_mul {a b : E} (hc : IsCoprime a b) :
+theorem divRadical_mul {a b : E} (hab : IsCoprime a b) :
     divRadical (a * b) = divRadical a * divRadical b := by
-  by_cases ha : a = 0
-  · rw [ha, MulZeroClass.zero_mul, divRadical, EuclideanDomain.zero_div, MulZeroClass.zero_mul]
-  by_cases hb : b = 0
-  · rw [hb, MulZeroClass.mul_zero, divRadical, EuclideanDomain.zero_div, MulZeroClass.mul_zero]
   symm; apply eq_divRadical
-  rw [radical_mul hc]
-  rw [mul_mul_mul_comm, mul_radical_divRadical, mul_radical_divRadical]
+  rw [radical_mul hab]
+  rw [mul_mul_mul_comm, radical_mul_divRadical, radical_mul_divRadical]
 
 theorem divRadical_dvd_self (a : E) : divRadical a ∣ a := by
-  rw [divRadical]
-  apply EuclideanDomain.div_dvd_of_dvd
-  exact radical_dvd_self a
+  exact Dvd.intro (radical a) (divRadical_mul_radical a)
 
-theorem IsCoprime.divRadical {a b : E} (h : IsCoprime a b) :
+protected theorem IsCoprime.divRadical {a b : E} (h : IsCoprime a b) :
     IsCoprime (divRadical a) (divRadical b) := by
-  rw [← mul_radical_divRadical a] at h
-  rw [← mul_radical_divRadical b] at h
+  rw [← radical_mul_divRadical a] at h
+  rw [← radical_mul_divRadical b] at h
   exact h.of_mul_left_right.of_mul_right_right
 
 end EuclideanDomain
