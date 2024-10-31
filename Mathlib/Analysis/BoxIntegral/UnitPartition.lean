@@ -97,7 +97,7 @@ variable {n} in
 theorem mem_box_iff' {ν : ι → ℤ} {x : ι → ℝ} :
     x ∈ box n ν ↔ ∀ i, ν i < n * x i ∧ n * x i ≤ ν i + 1 := by
   have h_npos : 0 < (n:ℝ) := Nat.cast_pos.mpr <| PNat.pos n
-  simp_rw [mem_box_iff, ← _root_.le_div_iff₀' h_npos, ← div_lt_iff' h_npos, add_div]
+  simp_rw [mem_box_iff, ← _root_.le_div_iff₀' h_npos, ← div_lt_iff₀' h_npos, add_div]
 
 /-- The tag of a `unitPartition.Box`. -/
 abbrev tag (ν : ι → ℤ) : ι → ℝ := fun i ↦ (ν i + 1) / n
@@ -106,7 +106,7 @@ abbrev tag (ν : ι → ℤ) : ι → ℝ := fun i ↦ (ν i + 1) / n
 theorem tag_apply (ν : ι → ℤ) (i : ι) : tag n ν i = (ν i + 1) / n := rfl
 
 theorem tag_injective : Function.Injective (fun ν : ι → ℤ ↦ tag n ν) := by
-  refine fun _ _ h ↦ Function.funext_iff.mpr fun i ↦ ?_
+  refine fun _ _ h ↦ funext_iff.mpr fun i ↦ ?_
   have := congr_arg (fun x ↦ x i) h
   field_simp at this
   exact this
@@ -128,7 +128,7 @@ theorem index_apply {x : ι → ℝ} (i : ι) :
 variable {n} in
 theorem mem_box_iff_index {x : ι → ℝ} {ν : ι → ℤ} :
     x ∈ box n ν ↔ index n x = ν := by
-  simp_rw [mem_box_iff', Function.funext_iff, index_apply, sub_eq_iff_eq_add, Int.ceil_eq_iff,
+  simp_rw [mem_box_iff', funext_iff, index_apply, sub_eq_iff_eq_add, Int.ceil_eq_iff,
     Int.cast_add, Int.cast_one, add_sub_cancel_right]
 
 @[simp]
