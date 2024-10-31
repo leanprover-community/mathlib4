@@ -126,7 +126,7 @@ def adj : objects ⊣ functorToCat := mkOfHomEquiv {
   homEquiv_naturality_left_symm := fun _ _ => rfl
   homEquiv_naturality_right := fun _ _ => rfl }
 
-/-- Componetns of the unit of the adjunction Cat.objects ⊣ Codiscrete.functorToCat -/
+/-- Components of the unit of the adjunction Cat.objects ⊣ Codiscrete.functorToCat -/
 def unitApp (C : Type u) [Category.{v} C] : C ⥤ Codiscrete C := functor id
 
 /-- Componetnts of the counit of the adjunction Cat.objects ⊣ Codiscrete.functorToCat -/
