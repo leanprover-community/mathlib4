@@ -335,7 +335,7 @@ class LeftCommonAdd (G : Type u) [Add G] where
   /-- there is a common sum for any two elements of G -/
   cl_spec : ∀ (a b : G), cl₁ a b + a = cl₂ a b + b
 
-attribute [to_additive LeftCommonAdd] LeftCommonMul
+attribute [to_additive] LeftCommonMul
 
 /-- A mixin for right common sums. -/
 class RightCommonAdd (G : Type u) [Add G] where
@@ -346,12 +346,12 @@ class RightCommonAdd (G : Type u) [Add G] where
   /-- there is a common sum for any two elements of G -/
   cr_spec : ∀ (a b : G), a + cr₁ a b = b + cr₂ a b
 
-attribute [to_additive RightCommonAdd] RightCommonMul
+attribute [to_additive] RightCommonMul
 
 /-- A mixin for common sums. -/
 class CommonAdd (G : Type u) [Add G] extends IsLeftCancelAdd G, IsRightCancelAdd G : Prop
 
-attribute [to_additive CommonAdd] CommonMul
+attribute [to_additive] CommonMul
 
 section LeftCommonMul
 
