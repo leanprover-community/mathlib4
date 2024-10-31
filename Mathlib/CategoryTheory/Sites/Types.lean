@@ -159,7 +159,7 @@ noncomputable def typeEquiv : Type u ≌ SheafOfTypes typesGrothendieckTopology 
     erw [typesGlue_eval]
 
 instance subcanonical_typesGrothendieckTopology : typesGrothendieckTopology.{u}.Subcanonical :=
-  GrothendieckTopology.Subcanonical.of_yoneda_isSheaf _ fun _ => isSheaf_yoneda'
+  GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ fun _ => isSheaf_yoneda'
 
 theorem typesGrothendieckTopology_eq_canonical :
     typesGrothendieckTopology.{u} = Sheaf.canonicalTopology (Type u) := by

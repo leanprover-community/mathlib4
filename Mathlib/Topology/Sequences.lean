@@ -151,8 +151,8 @@ instance (priority := 100) FrechetUrysohnSpace.to_sequentialSpace [FrechetUrysoh
     SequentialSpace X :=
   ⟨fun s hs => by rw [← closure_eq_iff_isClosed, ← seqClosure_eq_closure, hs.seqClosure_eq]⟩
 
-theorem Inducing.frechetUrysohnSpace [FrechetUrysohnSpace Y] {f : X → Y} (hf : Inducing f) :
-    FrechetUrysohnSpace X := by
+theorem IsInducing.frechetUrysohnSpace [FrechetUrysohnSpace Y] {f : X → Y}
+    (hf : IsInducing f) : FrechetUrysohnSpace X := by
   refine ⟨fun s x hx ↦ ?_⟩
   rw [hf.closure_eq_preimage_closure_image, mem_preimage, mem_closure_iff_seq_limit] at hx
   rcases hx with ⟨u, hus, hu⟩
@@ -160,10 +160,13 @@ theorem Inducing.frechetUrysohnSpace [FrechetUrysohnSpace Y] {f : X → Y} (hf :
   refine ⟨v, hv, ?_⟩
   simpa only [hf.tendsto_nhds_iff, Function.comp_def, hvu]
 
+@[deprecated (since := "2024-10-28")]
+alias Inducing.frechetUrysohnSpace := IsInducing.frechetUrysohnSpace
+
 /-- Subtype of a Fréchet-Urysohn space is a Fréchet-Urysohn space. -/
 instance Subtype.instFrechetUrysohnSpace [FrechetUrysohnSpace X] {p : X → Prop} :
     FrechetUrysohnSpace (Subtype p) :=
-  inducing_subtype_val.frechetUrysohnSpace
+  IsInducing.subtypeVal.frechetUrysohnSpace
 
 /-- In a sequential space, a set is closed iff it's sequentially closed. -/
 theorem isSeqClosed_iff_isClosed [SequentialSpace X] {M : Set X} : IsSeqClosed M ↔ IsClosed M :=

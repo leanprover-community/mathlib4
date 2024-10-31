@@ -84,10 +84,13 @@ theorem HasFDerivAt.comp_hasFDerivWithinAt {g : F → G} {g' : F →L[𝕜] G}
   hg.comp x hf hf.continuousWithinAt
 
 @[fun_prop]
-theorem HasFDerivWithinAt.comp_of_mem {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
+theorem HasFDerivWithinAt.comp_of_tendsto {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x)
     (hst : Tendsto f (𝓝[s] x) (𝓝[t] f x)) : HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
   HasFDerivAtFilter.comp x hg hf hst
+
+@[deprecated (since := "2024-10-18")]
+alias HasFDerivWithinAt.comp_of_mem := HasFDerivWithinAt.comp_of_tendsto
 
 /-- The chain rule. -/
 @[fun_prop]
