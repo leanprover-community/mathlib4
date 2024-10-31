@@ -83,6 +83,11 @@ theorem pmap_cons {p : α → Prop} (f : (a : α) → p a → β) (a : α) (v : 
         simp only [Nat.succ_eq_add_one, toList_cons, List.mem_cons, forall_eq_or_imp] at hp
         exact hp.2)) := rfl
 
+/-- Opposite direction of `Vector.pmap_cons` -/
+theorem pmap_cons' {p : α → Prop} (f : (a : α) → p a → β) (a : α) (v : Vector α n)
+    (ha : p a) (hp : ∀ x ∈ v.toList, p x) :
+    cons (f a ha) (v.pmap f hp) = (cons a v).pmap f (by simpa [ha]) := rfl
+
 @[simp]
 theorem toList_map {β : Type*} (v : Vector α n) (f : α → β) :
     (v.map f).toList = v.toList.map f := by cases v; rfl
