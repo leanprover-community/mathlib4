@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
-import Mathlib.AlgebraicTopology.SimplicialSet
+import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Tactic.FinCases
@@ -153,7 +153,7 @@ theorem shiftFun_succ {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin 
   dsimp [shiftFun]
   split_ifs with h
   · exfalso
-    simp only [Fin.ext_iff, Fin.val_succ, Fin.val_zero, add_eq_zero, and_false] at h
+    simp only [Fin.ext_iff, Fin.val_succ, Fin.val_zero, add_eq_zero, and_false, reduceCtorEq] at h
   · simp only [Fin.pred_succ]
 
 /-- The shift of a morphism `f : [n] → Δ` in `SimplexCategory` corresponds to
@@ -181,7 +181,7 @@ open SSet.standardSimplex in
 protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     SimplicialObject.Augmented.ExtraDegeneracy (standardSimplex.obj Δ) where
   s' _ := objMk (OrderHom.const _ 0)
-  s  n f := (objEquiv _ _).symm
+  s  _ f := (objEquiv _ _).symm
     (shift (objEquiv _ _ f))
   s'_comp_ε := by
     dsimp
@@ -282,7 +282,7 @@ theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
   dsimp [ExtraDegeneracy.s]
   simp only [WidePullback.lift_π]
   split_ifs with h
-  · simp only [Fin.ext_iff, Fin.val_succ, Fin.val_zero, add_eq_zero, and_false] at h
+  · simp only [Fin.ext_iff, Fin.val_succ, Fin.val_zero, add_eq_zero, and_false, reduceCtorEq] at h
   · simp only [Fin.pred_succ]
 
 -- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form

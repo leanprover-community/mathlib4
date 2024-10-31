@@ -34,8 +34,7 @@ derivative, chain rule
 
 universe u v w
 
-open scoped Classical
-open Topology Filter ENNReal
+open scoped Classical Topology Filter ENNReal
 
 open Filter Asymptotics Set
 
@@ -44,11 +43,11 @@ open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {f f₀ f₁ g : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
+variable {f : 𝕜 → F}
+variable {f' : F}
 variable {x : 𝕜}
-variable {s t : Set 𝕜}
-variable {L L₁ L₂ : Filter 𝕜}
+variable {s : Set 𝕜}
+variable {L : Filter 𝕜}
 
 section Composition
 
@@ -66,8 +65,8 @@ usual multiplication in `comp` lemmas.
 /- For composition lemmas, we put x explicit to help the elaborator, as otherwise Lean tends to
 get confused since there are too many possibilities for composition -/
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
-  [IsScalarTower 𝕜 𝕜' F] {s' t' : Set 𝕜'} {h : 𝕜 → 𝕜'} {h₁ : 𝕜 → 𝕜} {h₂ : 𝕜' → 𝕜'} {h' h₂' : 𝕜'}
-  {h₁' : 𝕜} {g₁ : 𝕜' → F} {g₁' : F} {L' : Filter 𝕜'} {y : 𝕜'} (x)
+  [IsScalarTower 𝕜 𝕜' F] {s' t' : Set 𝕜'} {h : 𝕜 → 𝕜'} {h₂ : 𝕜' → 𝕜'} {h' h₂' : 𝕜'}
+  {g₁ : 𝕜' → F} {g₁' : F} {L' : Filter 𝕜'} {y : 𝕜'} (x)
 
 theorem HasDerivAtFilter.scomp (hg : HasDerivAtFilter g₁ g₁' (h x) L')
     (hh : HasDerivAtFilter h h' x L) (hL : Tendsto h L L') :
@@ -81,7 +80,7 @@ theorem HasDerivAtFilter.scomp_of_eq (hg : HasDerivAtFilter g₁ g₁' y L')
 
 theorem HasDerivWithinAt.scomp_hasDerivAt (hg : HasDerivWithinAt g₁ g₁' s' (h x))
     (hh : HasDerivAt h h' x) (hs : ∀ x, h x ∈ s') : HasDerivAt (g₁ ∘ h) (h' • g₁') x :=
-  hg.scomp x hh <| tendsto_inf.2 ⟨hh.continuousAt, tendsto_principal.2 <| eventually_of_forall hs⟩
+  hg.scomp x hh <| tendsto_inf.2 ⟨hh.continuousAt, tendsto_principal.2 <| Eventually.of_forall hs⟩
 
 theorem HasDerivWithinAt.scomp_hasDerivAt_of_eq (hg : HasDerivWithinAt g₁ g₁' s' y)
     (hh : HasDerivAt h h' x) (hs : ∀ x, h x ∈ s') (hy : y = h x) :

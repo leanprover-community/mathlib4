@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johan Commelin, Bhavik Mehta
+Authors: Kim Morrison, Johan Commelin, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Functor.Category
@@ -60,7 +60,7 @@ variable {B' : Type u₅} [Category.{v₅} B']
 variable {T' : Type u₆} [Category.{v₆} T']
 
 /-- The objects of the comma category are triples of an object `left : A`, an object
-   `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`.  -/
+   `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`. -/
 structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
   left : A
   right : B
@@ -106,8 +106,6 @@ section
 
 variable {X Y Z : Comma L R} {f : X ⟶ Y} {g : Y ⟶ Z}
 
--- Porting note: this lemma was added because `CommaMorphism.ext`
--- was not triggered automatically
 @[ext]
 lemma hom_ext (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) : f = g :=
   CommaMorphism.ext h₁ h₂
@@ -162,6 +160,34 @@ theorem eqToHom_right (X Y : Comma L R) (H : X = Y) :
     CommaMorphism.right (eqToHom H) = eqToHom (by cases H; rfl) := by
   cases H
   rfl
+
+section
+
+variable {L R} {X Y : Comma L R} (e : X ⟶ Y)
+
+instance [IsIso e] : IsIso e.left :=
+  (Comma.fst L R).map_isIso e
+
+instance [IsIso e] : IsIso e.right :=
+  (Comma.snd L R).map_isIso e
+
+@[simp]
+lemma inv_left [IsIso e] : (inv e).left = inv e.left := by
+  apply IsIso.eq_inv_of_hom_inv_id
+  rw [← Comma.comp_left, IsIso.hom_inv_id, id_left]
+
+@[simp]
+lemma inv_right [IsIso e] : (inv e).right = inv e.right := by
+  apply IsIso.eq_inv_of_hom_inv_id
+  rw [← Comma.comp_right, IsIso.hom_inv_id, id_right]
+
+lemma left_hom_inv_right [IsIso e] : L.map (e.left) ≫ Y.hom ≫ R.map (inv e.right) = X.hom := by
+  simp
+
+lemma inv_left_hom_right [IsIso e] : L.map (inv e.left) ≫ X.hom ≫ R.map e.right = Y.hom := by
+  simp
+
+end
 
 section
 
@@ -313,10 +339,11 @@ def mapLeftEq (l l' : L₁ ⟶ L₂) (h : l = l') : mapLeft R l ≅ mapLeft R l'
 /-- A natural isomorphism `L₁ ≅ L₂` induces an equivalence of categories
     `Comma L₁ R ≌ Comma L₂ R`. -/
 @[simps!]
-def mapLeftIso (i : L₁ ≅ L₂) : Comma L₁ R ≌ Comma L₂ R :=
-  Equivalence.mk (mapLeft _ i.inv) (mapLeft _ i.hom)
-    ((mapLeftId _ _).symm ≪≫ mapLeftEq _ _ _ i.hom_inv_id.symm ≪≫ mapLeftComp _ _ _)
-    ((mapLeftComp _ _ _).symm ≪≫ mapLeftEq _ _ _ i.inv_hom_id ≪≫ mapLeftId _ _)
+def mapLeftIso (i : L₁ ≅ L₂) : Comma L₁ R ≌ Comma L₂ R where
+  functor := mapLeft _ i.inv
+  inverse := mapLeft _ i.hom
+  unitIso := (mapLeftId _ _).symm ≪≫ mapLeftEq _ _ _ i.hom_inv_id.symm ≪≫ mapLeftComp _ _ _
+  counitIso := (mapLeftComp _ _ _).symm ≪≫ mapLeftEq _ _ _ i.inv_hom_id ≪≫ mapLeftId _ _
 
 /-- A natural transformation `R₁ ⟶ R₂` induces a functor `Comma L R₁ ⥤ Comma L R₂`. -/
 @[simps]
@@ -352,16 +379,17 @@ def mapRightEq (r r' : R₁ ⟶ R₂) (h : r = r') : mapRight L r ≅ mapRight L
 /-- A natural isomorphism `R₁ ≅ R₂` induces an equivalence of categories
     `Comma L R₁ ≌ Comma L R₂`. -/
 @[simps!]
-def mapRightIso (i : R₁ ≅ R₂) : Comma L R₁ ≌ Comma L R₂ :=
-  Equivalence.mk (mapRight _ i.hom) (mapRight _ i.inv)
-    ((mapRightId _ _).symm ≪≫ mapRightEq _ _ _ i.hom_inv_id.symm ≪≫ mapRightComp _ _ _)
-    ((mapRightComp _ _ _).symm ≪≫ mapRightEq _ _ _ i.inv_hom_id ≪≫ mapRightId _ _)
+def mapRightIso (i : R₁ ≅ R₂) : Comma L R₁ ≌ Comma L R₂ where
+  functor := mapRight _ i.hom
+  inverse := mapRight _ i.inv
+  unitIso := (mapRightId _ _).symm ≪≫ mapRightEq _ _ _ i.hom_inv_id.symm ≪≫ mapRightComp _ _ _
+  counitIso := (mapRightComp _ _ _).symm ≪≫ mapRightEq _ _ _ i.inv_hom_id ≪≫ mapRightId _ _
 
 end
 
 section
 
-variable {C : Type u₄} [Category.{v₄} C] {D : Type u₅} [Category.{v₅} D]
+variable {C : Type u₄} [Category.{v₄} C]
 
 /-- The functor `(F ⋙ L, R) ⥤ (L, R)` -/
 @[simps]
@@ -453,10 +481,11 @@ def fromProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
 is equivalent to their product. -/
 @[simps!]
 def equivProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
-    Comma L R ≌ A × B :=
-  Equivalence.mk ((fst L R).prod' (snd L R)) (fromProd L R)
-    { hom := 𝟙 _, inv := 𝟙 _ }
-    { hom := 𝟙 _, inv := 𝟙 _ }
+    Comma L R ≌ A × B where
+  functor := (fst L R).prod' (snd L R)
+  inverse := fromProd L R
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 /-- Taking the comma category of a functor into `A ⥤ Discrete PUnit` and the identity
 `Discrete PUnit ⥤ Discrete PUnit` results in a category equivalent to `A`. -/

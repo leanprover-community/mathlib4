@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 -/
 
-import Lean
+import Mathlib.Init
 
 /-!
 # The `simp_rw` tactic
@@ -77,3 +77,5 @@ elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => focus do
         `(tactic| simp%$e $[$cfg]? only [← $e:term] $g ?)
       else
         `(tactic| simp%$e $[$cfg]? only [$e:term] $g ?))
+
+end Mathlib.Tactic

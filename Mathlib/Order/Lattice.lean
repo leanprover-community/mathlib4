@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Bool.Basic
-import Mathlib.Order.Defs
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.ULift
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # (Semi-)lattices
@@ -197,7 +196,7 @@ instance : Std.Commutative (α := α) (· ⊔ ·) := ⟨sup_comm⟩
 theorem sup_assoc (a b c : α) : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
   eq_of_forall_ge_iff fun x => by simp only [sup_le_iff]; rw [and_assoc]
 
-instance : Std.Associative (α := α)  (· ⊔ ·) := ⟨sup_assoc⟩
+instance : Std.Associative (α := α) (· ⊔ ·) := ⟨sup_assoc⟩
 
 theorem sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
   rw [sup_comm, sup_comm a, sup_assoc]
@@ -529,7 +528,7 @@ def Lattice.mk' {α : Type*} [Sup α] [Inf α] (sup_comm : ∀ a b : α, a ⊔ b
 
 section Lattice
 
-variable [Lattice α] {a b c d : α}
+variable [Lattice α] {a b c : α}
 
 theorem inf_le_sup : a ⊓ b ≤ a ⊔ b :=
   inf_le_left.trans le_sup_left
@@ -902,9 +901,27 @@ theorem map_inf_le [SemilatticeInf α] [SemilatticeInf β] {f : α → β} (h : 
     f (x ⊓ y) ≤ f x ⊓ f y :=
   le_inf (h inf_le_left) (h inf_le_right)
 
+theorem of_map_inf_le_left [SemilatticeInf α] [Preorder β] {f : α → β}
+    (h : ∀ x y, f (x ⊓ y) ≤ f x) : Monotone f := by
+  intro x y hxy
+  rw [← inf_eq_right.2 hxy]
+  apply h
+
+theorem of_map_inf_le [SemilatticeInf α] [SemilatticeInf β] {f : α → β}
+    (h : ∀ x y, f (x ⊓ y) ≤ f x ⊓ f y) : Monotone f :=
+  of_map_inf_le_left fun x y ↦ (h x y).trans inf_le_left
+
 theorem of_map_inf [SemilatticeInf α] [SemilatticeInf β] {f : α → β}
     (h : ∀ x y, f (x ⊓ y) = f x ⊓ f y) : Monotone f :=
-  fun x y hxy => inf_eq_left.1 <| by rw [← h, inf_eq_left.2 hxy]
+  of_map_inf_le fun x y ↦ (h x y).le
+
+theorem of_left_le_map_sup [SemilatticeSup α] [Preorder β] {f : α → β}
+    (h : ∀ x y, f x ≤ f (x ⊔ y)) : Monotone f :=
+  monotone_dual_iff.1 <| of_map_inf_le_left h
+
+theorem of_le_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β}
+    (h : ∀ x y, f x ⊔ f y ≤ f (x ⊔ y)) : Monotone f :=
+  monotone_dual_iff.mp <| of_map_inf_le h
 
 theorem of_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β}
     (h : ∀ x y, f (x ⊔ y) = f x ⊔ f y) : Monotone f :=

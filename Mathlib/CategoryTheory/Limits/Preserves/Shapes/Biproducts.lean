@@ -224,7 +224,7 @@ theorem ι_biproductComparison' (j : J) :
 variable [PreservesZeroMorphisms F]
 
 /-- The composition in the opposite direction is equal to the identity if and only if `F` preserves
-    the biproduct, see `preservesBiproduct_of_monoBiproductComparison`.  -/
+    the biproduct, see `preservesBiproduct_of_monoBiproductComparison`. -/
 @[reassoc (attr := simp)]
 theorem biproductComparison'_comp_biproductComparison :
     biproductComparison' F f ≫ biproductComparison F f = 𝟙 (⨁ F.obj ∘ f) := by

@@ -3,12 +3,13 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # Ordered scalar product
@@ -135,7 +136,7 @@ end LinearOrderedSemifield
 section Invertible
 variable (α : Type*) {β : Type*}
 variable [Semiring α] [Invertible (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [CovariantClass β β (· + ·) (· ≤ ·)]
+  [AddLeftMono β]
 
 lemma inf_eq_half_smul_add_sub_abs_sub (x y : β) : x ⊓ y = (⅟2 : α) • (x + y - |y - x|) := by
   rw [← two_nsmul_inf_eq_add_sub_abs_sub x y, two_smul, ← two_smul α,
@@ -150,7 +151,7 @@ end Invertible
 section DivisionSemiring
 variable (α : Type*) {β : Type*}
 variable [DivisionSemiring α] [NeZero (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [CovariantClass β β (· + ·) (· ≤ ·)]
+  [AddLeftMono β]
 
 lemma inf_eq_half_smul_add_sub_abs_sub' (x y : β) : x ⊓ y = (2⁻¹ : α) • (x + y - |y - x|) := by
   letI := invertibleOfNonzero (two_ne_zero' α)

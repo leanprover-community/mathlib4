@@ -67,7 +67,7 @@ example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (
   refine .of_isLittleO <| this.triangle ?_
   calc
     (fun x' : E => g' (f x' - f x) - g'.comp f' (x' - x))
-    _ =ᶠ[L] fun x' => g' (f x' - f x - f' (x' - x)) := eventually_of_forall fun x' => by simp
+    _ =ᶠ[L] fun x' => g' (f x' - f x - f' (x' - x)) := Eventually.of_forall fun x' => by simp
     _ =O[L] fun x' => f x' - f x - f' (x' - x) := g'.isBigO_comp _ _
     _ =o[L] fun x' => x' - x := hf.isLittleO
 
@@ -84,10 +84,13 @@ theorem HasFDerivAt.comp_hasFDerivWithinAt {g : F → G} {g' : F →L[𝕜] G}
   hg.comp x hf hf.continuousWithinAt
 
 @[fun_prop]
-theorem HasFDerivWithinAt.comp_of_mem {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
+theorem HasFDerivWithinAt.comp_of_tendsto {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x)
     (hst : Tendsto f (𝓝[s] x) (𝓝[t] f x)) : HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
   HasFDerivAtFilter.comp x hg hf hst
+
+@[deprecated (since := "2024-10-18")]
+alias HasFDerivWithinAt.comp_of_mem := HasFDerivWithinAt.comp_of_tendsto
 
 /-- The chain rule. -/
 @[fun_prop]
@@ -172,7 +175,7 @@ theorem Differentiable.comp_differentiableOn {g : F → G} (hg : Differentiable 
 protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
     (hg : HasStrictFDerivAt g g' (f x)) (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => g (f x)) (g'.comp f') x :=
-  ((hg.comp_tendsto (hf.continuousAt.prod_map' hf.continuousAt)).trans_isBigO
+  ((hg.comp_tendsto (hf.continuousAt.prodMap' hf.continuousAt)).trans_isBigO
       hf.isBigO_sub).triangle <| by
     simpa only [g'.map_sub, f'.coe_comp'] using (g'.isBigO_comp _ _).trans_isLittleO hf
 

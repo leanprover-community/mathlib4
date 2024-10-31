@@ -17,8 +17,14 @@ implemented as totally disconnected second countable compact Hausdorff spaces.
 This file also defines the category `LightDiagram`, which consists of those spaces that can be
 written as a sequential limit (in `Profinite`) of finite sets.
 
-We define an equivalence of categories `LightProfinite ≌ LightDiagram` and prove that these are
+We define an equivalence of categories `LightProfinite ≌ LightDiagram` and prove that these are
 essentially small categories.
+
+## Implementation
+
+The category `LightProfinite` is defined using the structure `CompHausLike`. See the file
+`CompHausLike.Basic` for more information.
+
 -/
 
 /- The basic API for `LightProfinite` is largely copied from the API of `Profinite`;
@@ -94,7 +100,7 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `LightProfinite`, endowing a finite type with the
 discrete topology. -/
-@[simps!]
+@[simps! map_apply]
 def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
   obj A := LightProfinite.of A
   map f := ⟨f, by continuity⟩
@@ -112,6 +118,11 @@ instance : FintypeCat.toLightProfinite.Faithful :=
 
 instance : FintypeCat.toLightProfinite.Full :=
   FintypeCat.toLightProfiniteFullyFaithful.full
+
+instance (X : FintypeCat.{u}) : Fintype (FintypeCat.toLightProfinite.obj X) :=
+  inferInstanceAs (Fintype X)
+
+instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) :=  inferInstanceAs (Fintype X)
 
 end DiscreteTopology
 
@@ -134,7 +145,7 @@ def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
         constructor
         · infer_instance
         · change SecondCountableTopology ({ u : ∀ j : J, F.obj j | _ } : Type _)
-          apply inducing_subtype_val.secondCountableTopology }
+          apply IsInducing.subtypeVal.secondCountableTopology }
   π :=
   { app := (CompHaus.limitCone.{v, u} (F ⋙ lightProfiniteToCompHaus)).π.app
     naturality := by
@@ -149,7 +160,7 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] [CountableCategory J]
   lift S :=
     (CompHaus.limitConeIsLimit.{v, u} (F ⋙ lightProfiniteToCompHaus)).lift
       (lightProfiniteToCompHaus.mapCone S)
-  uniq S m h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (lightProfiniteToCompHaus.mapCone S) _ h
+  uniq S _ h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (lightProfiniteToCompHaus.mapCone S) _ h
 
 noncomputable instance createsCountableLimits {J : Type v} [SmallCategory J] [CountableCategory J] :
     CreatesLimitsOfShape J lightToProfinite.{max v u} where
@@ -225,6 +236,9 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget LightProfinite).epi_of_epi_map
 
+instance : lightToProfinite.PreservesEpimorphisms where
+  preserves f _ := (Profinite.epi_iff_surjective _).mpr ((epi_iff_surjective f).mp inferInstance)
+
 end LightProfinite
 
 /-- A structure containing the data of sequential limit in `Profinite` of finite sets. -/
@@ -238,7 +252,7 @@ structure LightDiagram : Type (u+1) where
 
 namespace LightDiagram
 
-/-- The underlying `Profinite` of a `LightDiagram`. -/
+/-- The underlying `Profinite` of a `LightDiagram`. -/
 def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 
 @[simps!]
@@ -324,7 +338,7 @@ noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiag
   inverse := lightDiagramToLightProfinite
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
-    (fun X ↦ lightDiagramToProfinite.preimageIso (Iso.refl _)) (by
+    (fun _ ↦ lightDiagramToProfinite.preimageIso (Iso.refl _)) (by
       intro _ _ f
       simp only [Functor.comp_obj, lightDiagramToLightProfinite_obj,
         lightProfiniteToLightDiagram_obj, Functor.id_obj, Functor.comp_map,
@@ -380,7 +394,7 @@ instance : LightDiagram'.toLightFunctor.{u}.EssSurj where
 
 instance : LightDiagram'.toLightFunctor.IsEquivalence where
 
-/-- The equivalence beween `LightDiagram` and a small category. -/
+/-- The equivalence between `LightDiagram` and a small category. -/
 def LightDiagram.equivSmall : LightDiagram.{u} ≌ LightDiagram'.{u} :=
   LightDiagram'.toLightFunctor.asEquivalence.symm
 

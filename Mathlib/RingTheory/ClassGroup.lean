@@ -3,7 +3,6 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.RingTheory.DedekindDomain.Ideal
 
 /-!
@@ -28,11 +27,7 @@ identical no matter the choice of field of fractions for `R`.
 -/
 
 
-variable {R K L : Type*} [CommRing R]
-variable [Field K] [Field L] [DecidableEq L]
-variable [Algebra R K] [IsFractionRing R K]
-variable [Algebra K L] [FiniteDimensional K L]
-variable [Algebra R L] [IsScalarTower R K L]
+variable {R K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
 
 open scoped nonZeroDivisors
 

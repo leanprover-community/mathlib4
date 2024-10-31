@@ -3,13 +3,13 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+import Mathlib.Algebra.Group.AddChar
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-import Mathlib.Algebra.Group.AddChar
+import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # The Fourier transform
@@ -78,15 +78,11 @@ def fourierIntegral (e : AddChar 𝕜 𝕊) (μ : Measure V) (L : V →ₗ[𝕜]
     (w : W) : E :=
   ∫ v, e (-L v w) • f v ∂μ
 
-theorem fourierIntegral_smul_const (e : AddChar 𝕜 𝕊) (μ : Measure V)
+theorem fourierIntegral_const_smul (e : AddChar 𝕜 𝕊) (μ : Measure V)
     (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (r : ℂ) :
     fourierIntegral e μ L (r • f) = r • fourierIntegral e μ L f := by
   ext1 w
-  -- Porting note: was
-  -- simp only [Pi.smul_apply, fourierIntegral, smul_comm _ r, integral_smul]
-  simp only [Pi.smul_apply, fourierIntegral, ← integral_smul]
-  congr 1 with v
-  rw [smul_comm]
+  simp only [Pi.smul_apply, fourierIntegral, smul_comm _ r, integral_smul]
 
 /-- The uniform norm of the Fourier integral of `f` is bounded by the `L¹` norm of `f`. -/
 theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Measure V)
@@ -145,7 +141,7 @@ alias fourier_integral_convergent_iff := VectorFourier.fourierIntegral_convergen
 
 theorem fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     {f g : V → E} (hf : Integrable f μ) (hg : Integrable g μ) :
-    fourierIntegral e μ L f + fourierIntegral e μ L g = fourierIntegral e μ L (f + g) := by
+    fourierIntegral e μ L (f + g) = fourierIntegral e μ L f + fourierIntegral e μ L g := by
   ext1 w
   dsimp only [Pi.add_apply, fourierIntegral]
   simp_rw [smul_add]
@@ -281,9 +277,9 @@ theorem fourierIntegral_def (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : �
     fourierIntegral e μ f w = ∫ v : 𝕜, e (-(v * w)) • f v ∂μ :=
   rfl
 
-theorem fourierIntegral_smul_const (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (r : ℂ) :
+theorem fourierIntegral_const_smul (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (r : ℂ) :
     fourierIntegral e μ (r • f) = r • fourierIntegral e μ f :=
-  VectorFourier.fourierIntegral_smul_const _ _ _ _ _
+  VectorFourier.fourierIntegral_const_smul _ _ _ _ _
 
 /-- The uniform norm of the Fourier transform of `f` is bounded by the `L¹` norm of `f`. -/
 theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜)

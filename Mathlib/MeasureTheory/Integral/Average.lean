@@ -321,7 +321,7 @@ theorem average_congr {f g : α → E} (h : f =ᵐ[μ] g) : ⨍ x, f x ∂μ = �
   simp only [average_eq, integral_congr_ae h]
 
 theorem setAverage_congr (h : s =ᵐ[μ] t) : ⨍ x in s, f x ∂μ = ⨍ x in t, f x ∂μ := by
-  simp only [setAverage_eq, setIntegral_congr_set_ae h, measure_congr h]
+  simp only [setAverage_eq, setIntegral_congr_set h, measure_congr h]
 
 theorem setAverage_congr_fun (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
     ⨍ x in s, f x ∂μ = ⨍ x in s, g x ∂μ := by simp only [average_eq, setIntegral_congr_ae hs h]
@@ -396,7 +396,6 @@ theorem setAverage_const {s : Set α} (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (
     ⨍ _ in s, c ∂μ = c :=
   have := NeZero.mk hs₀; have := Fact.mk hs.lt_top; average_const _ _
 
--- Porting note (#10618): was `@[simp]` but `simp` can prove it
 theorem integral_average (μ : Measure α) [IsFiniteMeasure μ] (f : α → E) :
     ∫ _, ⨍ a, f a ∂μ ∂μ = ∫ x, f x ∂μ := by simp
 
@@ -752,7 +751,7 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
       rw [← integrableOn_iff_integrable_of_support_subset A]
       apply Integrable.smul_of_top_right hif
       exact memℒp_top_of_bound hig.aestronglyMeasurable.restrict
-        (K / (μ (a i)).toReal) (eventually_of_forall hibound)
+        (K / (μ (a i)).toReal) (Eventually.of_forall hibound)
     · exact hig.smul_const _
   have L0 : Tendsto (fun i ↦ ∫ y, g i y • (f y - c) ∂μ) l (𝓝 0) := by
     have := hf.const_mul K
@@ -773,8 +772,8 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
       have : g i x = 0 := by rw [← Function.nmem_support]; exact fun h ↦ hx (hi h)
       simp [this]
     rw [← setIntegral_eq_integral_of_forall_compl_eq_zero this (μ := μ)]
-    refine integral_mono_of_nonneg (eventually_of_forall (fun x ↦ by positivity)) ?_
-      (eventually_of_forall (fun x ↦ ?_))
+    refine integral_mono_of_nonneg (Eventually.of_forall (fun x ↦ by positivity)) ?_
+      (Eventually.of_forall (fun x ↦ ?_))
     · apply (Integrable.sub h''i _).norm.const_mul
       change IntegrableOn (fun _ ↦ c) (a i) μ
       simp [integrableOn_const, mu_ai]

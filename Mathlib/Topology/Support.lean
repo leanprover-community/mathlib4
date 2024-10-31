@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
 import Mathlib.Algebra.GroupWithZero.Indicator
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # The topological support of a function
@@ -31,7 +32,7 @@ Furthermore, we say that `f` has compact support if the topological support of `
 
 open Function Set Filter Topology
 
-variable {X α α' β γ δ M E R : Type*}
+variable {X α α' β γ δ M R : Type*}
 
 section One
 
@@ -97,9 +98,9 @@ theorem mulTSupport_mul [TopologicalSpace X] [Monoid α] {f g : X → α} :
 
 section
 
-variable [TopologicalSpace α] [TopologicalSpace α']
-variable [One β] [One γ] [One δ]
-variable {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ} {x : α}
+variable [TopologicalSpace α]
+variable [One β]
+variable {f : α → β} {x : α}
 
 @[to_additive]
 theorem not_mem_mulTSupport_iff_eventuallyEq : x ∉ mulTSupport f ↔ f =ᶠ[𝓝 x] 1 := by
@@ -118,7 +119,7 @@ end
 section CompactSupport
 variable [TopologicalSpace α] [TopologicalSpace α']
 variable [One β] [One γ] [One δ]
-variable {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ} {x : α}
+variable {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ}
 
 /-- A function `f` *has compact multiplicative support* or is *compactly supported* if the closure
 of the multiplicative support of `f` is compact. In a T₂ space this is equivalent to `f` being equal
@@ -200,27 +201,23 @@ theorem _root_.hasCompactMulSupport_comp_left (hg : ∀ {x}, g x = 1 ↔ x = 1) 
   simp_rw [hasCompactMulSupport_def, mulSupport_comp_eq g (@hg) f]
 
 @[to_additive]
-theorem comp_closedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
-    (hg : ClosedEmbedding g) : HasCompactMulSupport (f ∘ g) := by
+theorem comp_isClosedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
+    (hg : IsClosedEmbedding g) : HasCompactMulSupport (f ∘ g) := by
   rw [hasCompactMulSupport_def, Function.mulSupport_comp_eq_preimage]
   refine IsCompact.of_isClosed_subset (hg.isCompact_preimage hf) isClosed_closure ?_
-  rw [hg.toEmbedding.closure_eq_preimage_closure_image]
+  rw [hg.isEmbedding.closure_eq_preimage_closure_image]
   exact preimage_mono (closure_mono <| image_preimage_subset _ _)
+
+@[deprecated (since := "2024-10-20")]
+alias comp_closedEmbedding := comp_isClosedEmbedding
 
 @[to_additive]
 theorem comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
     HasCompactMulSupport fun x => m (f x) (f₂ x) := by
   rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂ ⊢
-  #adaptation_note /-- `nightly-2024-03-11`
-  If we *either* (1) remove the type annotations on the
-  binders in the following `fun` or (2) revert `simp only` to `simp_rw`, `to_additive` fails
-  because an `OfNat.ofNat 1` is not replaced with `0`. Notably, as of this nightly, what used to
-  look like `OfNat.ofNat (nat_lit 1) x` in the proof term now looks like
-  `OfNat.ofNat (OfNat.ofNat (α := ℕ) (nat_lit 1)) x`, and this seems to trip up `to_additive`.
-  -/
-  filter_upwards [hf, hf₂] using fun x (hx : f x = (1 : α → β) x) (hx₂ : f₂ x = (1 : α → γ) x) => by
-    simp only [hx, hx₂, Pi.one_apply, hm]
+  filter_upwards [hf, hf₂] with x hx hx₂
+  simp_rw [hx, hx₂, Pi.one_apply, hm]
 
 @[to_additive]
 lemma isCompact_preimage [TopologicalSpace β]
@@ -263,7 +260,7 @@ theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U
   continuous_of_mulTSupport fun x h ↦ by
     rw [show x = ↑(⟨x, Subtype.coe_image_subset _ _
       (supp.mulTSupport_extend_one_subset continuous_subtype_val h)⟩ : U) by rfl,
-      ← (hU.openEmbedding_subtype_val).continuousAt_iff, extend_comp Subtype.val_injective]
+      ← (hU.isOpenEmbedding_subtypeVal).continuousAt_iff, extend_comp Subtype.val_injective]
     exact cont.continuousAt
 
 /-- If `f` has compact multiplicative support, then `f` tends to 1 at infinity. -/
@@ -300,18 +297,33 @@ section CompactSupport2
 section Monoid
 
 variable [TopologicalSpace α] [MulOneClass β]
-variable {f f' : α → β} {x : α}
+variable {f f' : α → β}
 
 @[to_additive]
 theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompactMulSupport f') :
     HasCompactMulSupport (f * f') := hf.comp₂_left hf' (mul_one 1)
 
+@[to_additive, simp]
+protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [One β] :
+    HasCompactMulSupport (1 : α → β) := by
+  simp [HasCompactMulSupport, mulTSupport]
+
 end Monoid
+
+section DivisionMonoid
+
+@[to_additive]
+protected lemma HasCompactMulSupport.inv' {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
+    {f : α → β} (hf : HasCompactMulSupport f) :
+    HasCompactMulSupport (f⁻¹) := by
+  simpa only [HasCompactMulSupport, mulTSupport, mulSupport_inv'] using hf
+
+end DivisionMonoid
 
 section SMulZeroClass
 
 variable [TopologicalSpace α] [Zero M] [SMulZeroClass R M]
-variable {f : α → R} {f' : α → M} {x : α}
+variable {f : α → R} {f' : α → M}
 
 theorem HasCompactSupport.smul_left (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
@@ -322,7 +334,7 @@ end SMulZeroClass
 section SMulWithZero
 
 variable [TopologicalSpace α] [Zero R] [Zero M] [SMulWithZero R M]
-variable {f : α → R} {f' : α → M} {x : α}
+variable {f : α → R} {f' : α → M}
 
 theorem HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupport (f • f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
@@ -336,7 +348,7 @@ end SMulWithZero
 section MulZeroClass
 
 variable [TopologicalSpace α] [MulZeroClass β]
-variable {f f' : α → β} {x : α}
+variable {f f' : α → β}
 
 theorem HasCompactSupport.mul_right (hf : HasCompactSupport f) : HasCompactSupport (f * f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
@@ -350,8 +362,7 @@ end MulZeroClass
 
 section OrderedAddGroup
 
-variable {α β : Type*} [TopologicalSpace α] [AddGroup β] [Lattice β]
-  [CovariantClass β β (· + ·) (· ≤ ·)]
+variable [TopologicalSpace α] [AddGroup β] [Lattice β] [AddLeftMono β]
 
 protected theorem HasCompactSupport.abs {f : α → β} (hf : HasCompactSupport f) :
     HasCompactSupport |f| :=

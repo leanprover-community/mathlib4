@@ -15,6 +15,7 @@ def sameParity : Nat → Nat → Prop
 
 example (a b : Nat) : sameParity a b → sameParity b a := by intros; symm; assumption
 
+set_option linter.unusedTactic false in
 example (a b c : Nat) (ab : a = b) (bc : b = c) : c = a := by
   symm_saturate
   -- Run twice to check that we don't add repeated copies.
@@ -43,7 +44,8 @@ infixl:25 " ≃* " => MulEquiv
 
 @[symm]
 def foo_symm {M N : Type _} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
-  { h.toEquiv.symm with map_mul' := (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul }
+  { h.toEquiv.symm with map_mul' :=
+    (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul }
 
 def MyEq (n m : Nat) := ∃ k, n + k = m ∧ m + k = n
 

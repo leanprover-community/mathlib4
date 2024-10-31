@@ -258,3 +258,5 @@ def getPackageDir (pkg : String) : IO System.FilePath := do
 
 /-- Returns the mathlib root directory. -/
 def getMathlibDir := getPackageDir "Mathlib"
+
+end Mathlib
