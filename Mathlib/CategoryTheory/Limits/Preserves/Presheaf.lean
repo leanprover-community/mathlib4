@@ -77,14 +77,16 @@ limits" to. -/
 def functorToInterchange : J ⥤ CostructuredArrow yoneda A ⥤ Type u :=
   K ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj _ _)
 
-/-- (Implementation) The definition of `functorToInterchange`, up to functor associativity. We
-choose this association because it is the one that appears naturally in the proof below. -/
+/-- (Implementation) The definition of `functorToInterchange`. -/
 @[simps!]
 def functorToInterchangeIso : functorToInterchange A K ≅
-    K ⋙ (coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj _ _)) :=
+    K ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj _ _) :=
   NatIso.ofComponents (fun _ => Iso.refl _)
 
-/-- (Implementation) One way to express the flipped version of our functor. -/
+/-- (Implementation) One way to express the flipped version of our functor. We choose this
+association because the type of `Presheaf.tautologicalCocone` is
+`Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda)`, so this association will show up in the
+proof.-/
 @[simps!]
 def flipFunctorToInterchange : (functorToInterchange A K).flip ≅
     ((CostructuredArrow.proj yoneda A ⋙ yoneda) ⋙ (whiskeringLeft J Cᵒᵖ (Type u)).obj K) :=
