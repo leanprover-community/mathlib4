@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.MonoidAlgebra.Defs
-import Mathlib.RingTheory.Ideal.Span
+import Mathlib.RingTheory.Ideal.Basic
 
 /-!
 # Lemmas about ideals of `MonoidAlgebra` and `AddMonoidAlgebra`

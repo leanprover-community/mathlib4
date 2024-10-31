@@ -42,6 +42,10 @@ namespace Ideal
 
 variable [Semiring α] (I : Ideal α) {a b : α}
 
+theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
+    (∀ c ∈ t, f c ∈ I) → (∑ i ∈ t, f i) ∈ I :=
+  Submodule.sum_mem I
+
 section Pi
 
 variable (ι : Type v)
