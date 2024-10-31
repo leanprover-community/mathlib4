@@ -19,7 +19,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 variable {R : Type*} [CommSemiring R] (S : Submonoid R)
   (A : Type*) [CommRing A] [Algebra R A] [IsLocalization S A]
-  {M : Type*} [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+  {M : Type*} [AddCommMonoid M] [Module R M]
   {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module A M'] [IsScalarTower R A M']
   (f : M →ₗ[R] M')
 
@@ -47,3 +47,12 @@ theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseCha
   rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.restrictScalars_apply, LinearEquiv.trans_apply, IsBaseChange.equiv_symm_apply,
     IsBaseChange.equiv_tmul, one_smul]
+
+variable (T B : Type*) [CommSemiring T] [CommSemiring B]
+  [Algebra R T] [Algebra T B] [Algebra R B] [Algebra A B] [IsScalarTower R T B]
+  [IsScalarTower R A B]
+
+lemma Algebra.isPushout_of_isLocalization [IsLocalization (Algebra.algebraMapSubmonoid T S) B] :
+    Algebra.IsPushout R T A B := by
+  rw [Algebra.IsPushout.comm, Algebra.isPushout_iff]
+  apply IsLocalizedModule.isBaseChange S

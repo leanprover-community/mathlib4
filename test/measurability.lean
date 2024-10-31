@@ -82,7 +82,7 @@ example [Div β] [MeasurableDiv₂ β] (hf : Measurable f) (hg : Measurable g)
 
 example [AddCommMonoid β] [MeasurableAdd₂ β] {s : Finset ℕ} {F : ℕ → α → β}
     (hF : ∀ i, Measurable (F i)) : Measurable (∑ i ∈ s, (fun x => F (i+1) x + F i x)) := by
-  measurability
+  fun_prop
 
 example [AddCommMonoid β] [MeasurableAdd₂ β] {s : Finset ℕ} {F : ℕ → α → β}
     (hF : ∀ i, AEMeasurable (F i) μ) : AEMeasurable (∑ i ∈ s, (fun x => F (i+1) x + F i x)) μ := by

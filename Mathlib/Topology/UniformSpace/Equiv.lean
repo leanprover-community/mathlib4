@@ -49,11 +49,11 @@ theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α �
   | ⟨e, h₁, h₂⟩, ⟨e', h₁', h₂'⟩, h => by simpa only [mk.injEq]
 
 instance : EquivLike (α ≃ᵤ β) α β where
-  coe := fun h => h.toEquiv
-  inv := fun h => h.toEquiv.symm
-  left_inv := fun h => h.left_inv
-  right_inv := fun h => h.right_inv
-  coe_injective' := fun _ _ H _ => toEquiv_injective <| DFunLike.ext' H
+  coe h := h.toEquiv
+  inv h := h.toEquiv.symm
+  left_inv h := h.left_inv
+  right_inv h := h.right_inv
+  coe_injective' _ _ H _ := toEquiv_injective <| DFunLike.ext' H
 
 @[simp]
 theorem uniformEquiv_mk_coe (a : Equiv α β) (b c) : (UniformEquiv.mk a b c : α → β) = a :=
@@ -178,7 +178,7 @@ theorem symm_comp_self (h : α ≃ᵤ β) : (h.symm : β → α) ∘ h = id :=
 theorem self_comp_symm (h : α ≃ᵤ β) : (h : α → β) ∘ h.symm = id :=
   funext h.apply_symm_apply
 
--- @[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.range_eq_univ]`
+@[simp]
 theorem range_coe (h : α ≃ᵤ β) : range h = univ :=
   h.surjective.range_eq
 
@@ -188,35 +188,42 @@ theorem image_symm (h : α ≃ᵤ β) : image h.symm = preimage h :=
 theorem preimage_symm (h : α ≃ᵤ β) : preimage h.symm = image h :=
   (funext h.toEquiv.image_eq_preimage).symm
 
--- @[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.image_preimage]`
+@[simp]
 theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' (h ⁻¹' s) = s :=
   h.toEquiv.image_preimage s
 
---@[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.preimage_image]`
+@[simp]
 theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 
-protected theorem uniformInducing (h : α ≃ᵤ β) : UniformInducing h :=
-  uniformInducing_of_compose h.uniformContinuous h.symm.uniformContinuous <| by
-    simp only [symm_comp_self, uniformInducing_id]
+theorem isUniformInducing (h : α ≃ᵤ β) : IsUniformInducing h :=
+  IsUniformInducing.of_comp h.uniformContinuous h.symm.uniformContinuous <| by
+    simp only [symm_comp_self, IsUniformInducing.id]
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing := isUniformInducing
 
 theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› :=
-  h.uniformInducing.comap_uniformSpace
+  h.isUniformInducing.comap_uniformSpace
 
-protected theorem uniformEmbedding (h : α ≃ᵤ β) : UniformEmbedding h :=
-  ⟨h.uniformInducing, h.injective⟩
+lemma isUniformEmbedding (h : α ≃ᵤ β) : IsUniformEmbedding h := ⟨h.isUniformInducing, h.injective⟩
+
+@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 theorem completeSpace_iff (h : α ≃ᵤ β) : CompleteSpace α ↔ CompleteSpace β :=
-  completeSpace_congr h.uniformEmbedding
+  completeSpace_congr h.isUniformEmbedding
 
 /-- Uniform equiv given a uniform embedding. -/
-noncomputable def ofUniformEmbedding (f : α → β) (hf : UniformEmbedding f) : α ≃ᵤ Set.range f where
-  uniformContinuous_toFun := hf.toUniformInducing.uniformContinuous.subtype_mk _
+noncomputable def ofIsUniformEmbedding (f : α → β) (hf : IsUniformEmbedding f) :
+    α ≃ᵤ Set.range f where
+  uniformContinuous_toFun := hf.isUniformInducing.uniformContinuous.subtype_mk _
   uniformContinuous_invFun := by
-    rw [hf.toUniformInducing.uniformContinuous_iff, Equiv.invFun_as_coe,
+    rw [hf.isUniformInducing.uniformContinuous_iff, Equiv.invFun_as_coe,
       Equiv.self_comp_ofInjective_symm]
     exact uniformContinuous_subtype_val
   toEquiv := Equiv.ofInjective f hf.inj
+
+@[deprecated (since := "2024-10-03")] alias ofUniformEmbedding := ofIsUniformEmbedding
 
 /-- If two sets are equal, then they are uniformly equivalent. -/
 def setCongr {s t : Set α} (h : s = t) : s ≃ᵤ t where
@@ -327,7 +334,7 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
   { Equiv.ulift with
     uniformContinuous_toFun := uniformContinuous_comap
     uniformContinuous_invFun := by
-      have hf : UniformInducing (@Equiv.ulift.{v, u} α).toFun := ⟨rfl⟩
+      have hf : IsUniformInducing (@Equiv.ulift.{v, u} α).toFun := ⟨rfl⟩
       simp_rw [hf.uniformContinuous_iff]
       exact uniformContinuous_id }
 
@@ -366,8 +373,8 @@ end UniformEquiv
 
 /-- A uniform inducing equiv between uniform spaces is a uniform isomorphism. -/
 -- @[simps] -- Porting note: removed, `simps?` produced no `simp` lemmas
-def Equiv.toUniformEquivOfUniformInducing [UniformSpace α] [UniformSpace β] (f : α ≃ β)
-    (hf : UniformInducing f) : α ≃ᵤ β :=
+def Equiv.toUniformEquivOfIsUniformInducing [UniformSpace α] [UniformSpace β] (f : α ≃ β)
+    (hf : IsUniformInducing f) : α ≃ᵤ β :=
   { f with
     uniformContinuous_toFun := hf.uniformContinuous
     uniformContinuous_invFun := hf.uniformContinuous_iff.2 <| by simpa using uniformContinuous_id }

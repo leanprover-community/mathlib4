@@ -42,7 +42,7 @@ noncomputable def oneHypercover : Scheme.zariskiTopology.OneHypercover D.glued w
   I₁ _ _ := PUnit
   Y i₁ i₂ _ := D.V (i₁, i₂)
   p₁ i₁ i₂ _ := D.f i₁ i₂
-  p₂ i₁ i₂ j := D.t i₁ i₂ ≫ D.f i₂ i₁
+  p₂ i₁ i₂ _ := D.t i₁ i₂ ≫ D.f i₂ i₁
   w i₁ i₂ _ := by simp only [Category.assoc, Scheme.GlueData.glue_condition]
   mem₀ := by
     refine zariskiTopology.superset_covering ?_ (zariskiTopology_openCover D.openCover)

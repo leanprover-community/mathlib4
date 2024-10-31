@@ -59,7 +59,7 @@ lemma tendsto_norm_cocompact_atTop' [ProperSpace E] : Tendsto norm (cocompact E)
 
 @[to_additive (attr := simp)]
 lemma Filter.inv_cobounded : (cobounded E)⁻¹ = cobounded E := by
-  simp only [← comap_norm_atTop', ← Filter.comap_inv, comap_comap, (· ∘ ·), norm_inv']
+  simp only [← comap_norm_atTop', ← Filter.comap_inv, comap_comap, Function.comp_def, norm_inv']
 
 /-- In a (semi)normed group, inversion `x ↦ x⁻¹` tends to infinity at infinity. -/
 @[to_additive "In a (semi)normed group, negation `x ↦ -x` tends to infinity at infinity."]
@@ -161,8 +161,6 @@ lemma HasCompactMulSupport.exists_pos_le_norm [One E] (hf : HasCompactMulSupport
   obtain ⟨K, ⟨hK1, hK2⟩⟩ := exists_compact_iff_hasCompactMulSupport.mpr hf
   obtain ⟨S, hS, hS'⟩ := hK1.isBounded.exists_pos_norm_le
   refine ⟨S + 1, by positivity, fun x hx => hK2 x ((mt <| hS' x) ?_)⟩
-  -- Porting note: `ENNReal.add_lt_add` should be `protected`?
-  -- [context: we used `_root_.add_lt_add` in a previous version of this proof]
   contrapose! hx
   exact lt_add_of_le_of_pos hx zero_lt_one
 

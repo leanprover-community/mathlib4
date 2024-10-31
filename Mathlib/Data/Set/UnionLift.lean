@@ -62,7 +62,6 @@ variable {S : ι → Set α} {f : ∀ i, S i → β}
 theorem iUnionLift_mk {i : ι} (x : S i) (hx : (x : α) ∈ T) :
     iUnionLift S f hf T hT ⟨x, hx⟩ = f i x := hf _ i x _ _
 
-@[simp]
 theorem iUnionLift_inclusion {i : ι} (x : S i) (h : S i ⊆ T) :
     iUnionLift S f hf T hT (Set.inclusion h x) = f i x :=
   iUnionLift_mk x _
@@ -104,7 +103,6 @@ theorem iUnionLift_unary (u : T → T) (ui : ∀ i, S i → S i)
           Set.inclusion (show S i ⊆ T from hT'.symm ▸ Set.subset_iUnion S i) (ui i x))
     (uβ : β → β) (h : ∀ (i) (x : S i), f i (ui i x) = uβ (f i x)) (x : T) :
     iUnionLift S f hf T (le_of_eq hT') (u x) = uβ (iUnionLift S f hf T (le_of_eq hT') x) := by
-  clear hT -- this prevents the argument from getting inserted by accident.
   subst hT'
   cases' Set.mem_iUnion.1 x.prop with i hi
   rw [iUnionLift_of_mem x hi, ← h i]
@@ -126,7 +124,6 @@ theorem iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (o
     (opβ : β → β → β) (h : ∀ (i) (x y : S i), f i (opi i x y) = opβ (f i x) (f i y)) (x y : T) :
     iUnionLift S f hf T (le_of_eq hT') (op x y) =
       opβ (iUnionLift S f hf T (le_of_eq hT') x) (iUnionLift S f hf T (le_of_eq hT') y) := by
-  clear hT -- this prevents the argument from getting inserted by accident.
   subst hT'
   cases' Set.mem_iUnion.1 x.prop with i hi
   cases' Set.mem_iUnion.1 y.prop with j hj
@@ -141,7 +138,6 @@ theorem iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (o
   have hxy : (Set.inclusion (Set.subset_iUnion S k) (opi k ⟨x, hik hi⟩ ⟨y, hjk hj⟩) : α) ∈ S k :=
     (opi k ⟨x, hik hi⟩ ⟨y, hjk hj⟩).prop
   conv_lhs => rw [hx, hy, ← hopi, iUnionLift_of_mem _ hxy]
-  rfl
 
 end UnionLift
 

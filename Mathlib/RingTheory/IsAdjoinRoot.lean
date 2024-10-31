@@ -121,10 +121,10 @@ theorem subsingleton (h : IsAdjoinRoot S f) [Subsingleton R] : Subsingleton S :=
 theorem algebraMap_apply (h : IsAdjoinRoot S f) (x : R) :
     algebraMap R S x = h.map (Polynomial.C x) := by rw [h.algebraMap_eq, RingHom.comp_apply]
 
-@[simp]
 theorem mem_ker_map (h : IsAdjoinRoot S f) {p} : p ∈ RingHom.ker h.map ↔ f ∣ p := by
   rw [h.ker_map, Ideal.mem_span_singleton]
 
+@[simp]
 theorem map_eq_zero_iff (h : IsAdjoinRoot S f) {p} : h.map p = 0 ↔ f ∣ p := by
   rw [← h.mem_ker_map, RingHom.mem_ker]
 
@@ -141,7 +141,6 @@ theorem aeval_eq (h : IsAdjoinRoot S f) (p : R[X]) : aeval h.root p = h.map p :=
     rw [map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, ← h.algebraMap_apply,
       RingHom.map_pow, map_X]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem aeval_root (h : IsAdjoinRoot S f) : aeval h.root f = 0 := by rw [aeval_eq, map_self]
 
 /-- Choose an arbitrary representative so that `h.map (h.repr x) = x`.
@@ -177,7 +176,11 @@ theorem ext (h h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
 
 section lift
 
-variable {T : Type*} [CommRing T] {i : R →+* T} {x : T} (hx : f.eval₂ i x = 0)
+variable {T : Type*} [CommRing T] {i : R →+* T} {x : T}
+
+section
+variable (hx : f.eval₂ i x = 0)
+include hx
 
 /-- Auxiliary lemma for `IsAdjoinRoot.lift` -/
 theorem eval₂_repr_eq_eval₂_of_map_eq (h : IsAdjoinRoot S f) (z : S) (w : R[X])
@@ -191,7 +194,7 @@ variable (i x)
 -- To match `AdjoinRoot.lift`
 /-- Lift a ring homomorphism `R →+* T` to `S →+* T` by specifying a root `x` of `f` in `T`,
 where `S` is given by adjoining a root of `f` to `R`. -/
-def lift (h : IsAdjoinRoot S f) : S →+* T where
+def lift (h : IsAdjoinRoot S f) (hx : f.eval₂ i x = 0) : S →+* T where
   toFun z := (h.repr z).eval₂ i x
   map_zero' := by
     dsimp only -- Porting note (#10752): added `dsimp only`
@@ -235,6 +238,8 @@ theorem apply_eq_lift (h : IsAdjoinRoot S f) (g : S →+* T) (hmap : ∀ a, g (a
 theorem eq_lift (h : IsAdjoinRoot S f) (g : S →+* T) (hmap : ∀ a, g (algebraMap R S a) = i a)
     (hroot : g h.root = x) : g = h.lift i x hx :=
   RingHom.ext (h.apply_eq_lift hx g hmap hroot)
+
+end
 
 variable [Algebra R T] (hx' : aeval x f = 0)
 variable (x)
@@ -364,7 +369,7 @@ Auxiliary definition for `IsAdjoinRootMonic.powerBasis`. -/
 def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
   Basis.ofRepr
     { toFun := fun x => (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn
-      invFun := fun g => h.map (ofFinsupp (g.mapDomain _))
+      invFun := fun g => h.map (ofFinsupp (g.mapDomain Fin.val))
       left_inv := fun x => by
         cases subsingleton_or_nontrivial R
         · subsingleton [h.subsingleton]
@@ -387,12 +392,10 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         ext i
         simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
         rw [(Polynomial.modByMonic_eq_self_iff h.Monic).mpr, Polynomial.coeff]
-        · dsimp only -- Porting note (#10752): added `dsimp only`
-          rw [Finsupp.mapDomain_apply Fin.val_injective]
+        · rw [Finsupp.mapDomain_apply Fin.val_injective]
         rw [degree_eq_natDegree h.Monic.ne_zero, degree_lt_iff_coeff_zero]
         intro m hm
         rw [Polynomial.coeff]
-        dsimp only -- Porting note (#10752): added `dsimp only`
         rw [Finsupp.mapDomain_notin_range]
         rw [Set.mem_range, not_exists]
         rintro i rfl

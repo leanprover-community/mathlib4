@@ -229,7 +229,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
         ∑ i ∈ range n, C ((p : ℤ) ^ i) * wittStructureInt p Φ i ^ p ^ (n - i) := by
   cases' n with n
   · simp only [isUnit_one, Int.ofNat_zero, Int.ofNat_succ, zero_add, pow_zero, C_1, IsUnit.dvd,
-      Nat.cast_one, Nat.zero_eq]
+      Nat.cast_one]
   -- prepare a useful equation for rewriting
   have key := bind₁_rename_expand_wittPolynomial Φ n IH
   apply_fun map (Int.castRingHom (ZMod (p ^ (n + 1)))) at key
@@ -370,7 +370,7 @@ theorem wittStructureRat_vars [Fintype idx] (Φ : MvPolynomial idx ℚ) (n : ℕ
     (wittStructureRat p Φ n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) := by
   rw [wittStructureRat]
   intro x hx
-  simp only [Finset.mem_product, true_and_iff, Finset.mem_univ, Finset.mem_range]
+  simp only [Finset.mem_product, true_and, Finset.mem_univ, Finset.mem_range]
   obtain ⟨k, hk, hx'⟩ := mem_vars_bind₁ _ _ hx
   obtain ⟨i, -, hx''⟩ := mem_vars_bind₁ _ _ hx'
   obtain ⟨j, hj, rfl⟩ := mem_vars_rename _ _ hx''

@@ -50,13 +50,11 @@ lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x
 variable {I J}
 
 theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.minimalPrimes, p ≤ J := by
-  suffices
-    ∃ m ∈ { p : (Ideal R)ᵒᵈ | Ideal.IsPrime p ∧ I ≤ OrderDual.ofDual p },
-      OrderDual.toDual J ≤ m ∧ ∀ z ∈ { p : (Ideal R)ᵒᵈ | Ideal.IsPrime p ∧ I ≤ p }, m ≤ z → z = m by
-    obtain ⟨p, h₁, h₂, h₃⟩ := this
-    simp_rw [← @eq_comm _ p] at h₃
-    exact ⟨p, ⟨h₁, fun a b c => le_of_eq (h₃ a b c)⟩, h₂⟩
-  apply zorn_nonempty_partialOrder₀
+  set S := { p : (Ideal R)ᵒᵈ | Ideal.IsPrime p ∧ I ≤ OrderDual.ofDual p }
+  suffices h : ∃ m, OrderDual.toDual J ≤ m ∧ Maximal (· ∈ S) m by
+    obtain ⟨p, hJp, hp⟩ := h
+    exact ⟨p, ⟨hp.prop, fun q hq hle ↦ hp.le_of_ge hq hle⟩, hJp⟩
+  apply zorn_le_nonempty₀
   swap
   · refine ⟨show J.IsPrime by infer_instance, e⟩
   rintro (c : Set (Ideal R)) hc hc' J' hJ'
@@ -107,7 +105,7 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
   obtain ⟨M, hM⟩ := Ideal.exists_maximal (Localization (Submonoid.map f p.primeCompl))
   refine ⟨M.comap (algebraMap S <| Localization (Submonoid.map f p.primeCompl)), inferInstance, ?_⟩
   rw [Ideal.comap_comap, ← @IsLocalization.map_comp _ _ _ _ _ _ _ _ Localization.isLocalization
-      _ _ _ _ p.primeCompl.le_comap_map _ Localization.isLocalization,
+      _ _ _ _ _ Localization.isLocalization p.primeCompl.le_comap_map,
     ← Ideal.comap_comap]
   suffices _ ≤ p by exact this.antisymm (H.2 ⟨inferInstance, bot_le⟩ this)
   intro x hx
@@ -212,6 +210,7 @@ end
 namespace Localization.AtPrime
 
 variable {R : Type*} [CommSemiring R] {I : Ideal R} [hI : I.IsPrime] (hMin : I ∈ minimalPrimes R)
+include hMin
 
 theorem _root_.IsLocalization.AtPrime.prime_unique_of_minimal {S} [CommSemiring S] [Algebra R S]
     [IsLocalization.AtPrime S I] {J K : Ideal S} [J.IsPrime] [K.IsPrime] : J = K :=

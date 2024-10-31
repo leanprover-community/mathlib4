@@ -83,13 +83,13 @@ open Polynomial
 
 variable {R : Type*} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
 variable {A : Type*} [CommRing A] [Algebra R A] [Algebra S A]
-variable [IsScalarTower R S A] {B : PowerBasis S A} (hB : IsIntegral R B.gen)
+variable [IsScalarTower R S A] {B : PowerBasis S A}
 
 /-- If `B : PowerBasis S A` is such that `IsIntegral R B.gen`, then
 `IsIntegral R (B.basis.repr (B.gen ^ n) i)` for all `i` if
 `minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case if `R` is a GCD domain
 and `S` is its fraction ring. -/
-theorem repr_gen_pow_isIntegral [IsDomain S]
+theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen) [IsDomain S]
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) (n : ℕ) :
     ∀ i, IsIntegral R (B.basis.repr (B.gen ^ n) i) := by
   intro i
@@ -121,8 +121,8 @@ theorem repr_gen_pow_isIntegral [IsDomain S]
 integral coordinates in the base `B.basis`. Then `IsIntegral R ((B.basis.repr (x * y) i)` for all
 `i` if `minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case if `R` is a GCD
 domain and `S` is its fraction ring. -/
-theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.basis.repr x i))
-    (hy : ∀ i, IsIntegral R (B.basis.repr y i))
+theorem repr_mul_isIntegral (hB : IsIntegral R B.gen) [IsDomain S] {x y : A}
+    (hx : ∀ i, IsIntegral R (B.basis.repr x i)) (hy : ∀ i, IsIntegral R (B.basis.repr y i))
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) :
     ∀ i, IsIntegral R (B.basis.repr (x * y) i) := by
   intro i
@@ -139,7 +139,8 @@ theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.
 with integral coordinates in the base `B.basis`. Then `IsIntegral R ((B.basis.repr (x ^ n) i)` for
 all `i` and all `n` if `minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case
 if `R` is a GCD domain and `S` is its fraction ring. -/
-theorem repr_pow_isIntegral [IsDomain S] {x : A} (hx : ∀ i, IsIntegral R (B.basis.repr x i))
+theorem repr_pow_isIntegral [IsDomain S] (hB : IsIntegral R B.gen) {x : A}
+    (hx : ∀ i, IsIntegral R (B.basis.repr x i))
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) (n : ℕ) :
     ∀ i, IsIntegral R (B.basis.repr (x ^ n) i) := by
   nontriviality A using Subsingleton.elim (x ^ n) 0, isIntegral_zero
