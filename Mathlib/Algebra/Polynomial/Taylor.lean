@@ -32,7 +32,7 @@ variable {R : Type*} [Semiring R] (r : R) (f : R[X])
 /-- The Taylor expansion of a polynomial `f` at `r`. -/
 def taylor (r : R) : R[X] →ₗ[R] R[X] where
   toFun f := f.comp (X + C r)
-  map_add' f g := add_comp
+  map_add' _ _ := add_comp
   map_smul' c f := by simp only [smul_eq_C_mul, C_mul_comp, RingHom.id_apply]
 
 theorem taylor_apply : taylor r f = f.comp (X + C r) :=
@@ -124,5 +124,12 @@ theorem sum_taylor_eq {R} [CommRing R] (f : R[X]) (r : R) :
     ((taylor r f).sum fun i a => C a * (X - C r) ^ i) = f := by
   rw [← comp_eq_sum_left, sub_eq_add_neg, ← C_neg, ← taylor_apply, taylor_taylor, neg_add_cancel,
     taylor_zero]
+
+theorem eval_add_of_sq_eq_zero {A} [CommSemiring A] (p : Polynomial A) (x y : A) (hy : y ^ 2 = 0) :
+    p.eval (x + y) = p.eval x + p.derivative.eval x * y := by
+  rw [add_comm, ← Polynomial.taylor_eval,
+    Polynomial.eval_eq_sum_range' ((Nat.lt_succ_self _).trans (Nat.lt_succ_self _)),
+    Finset.sum_range_succ', Finset.sum_range_succ']
+  simp [pow_succ, mul_assoc, ← pow_two, hy, add_comm (eval x p)]
 
 end Polynomial

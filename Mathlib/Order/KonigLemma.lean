@@ -51,7 +51,7 @@ Formulate the lemma as a statement about graphs.
 open Set
 section Sequence
 
-variable {α : Type*} [PartialOrder α] [IsStronglyAtomic α] {a b : α}
+variable {α : Type*} [PartialOrder α] [IsStronglyAtomic α] {b : α}
 
 /-- **Kőnig's infinity lemma** : if each element in a strongly atomic order
 is covered by only finitely many others, and `b` is an element with infinitely many things above it,

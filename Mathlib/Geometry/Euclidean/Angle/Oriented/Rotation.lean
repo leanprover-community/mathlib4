@@ -20,7 +20,7 @@ This file defines rotations by oriented angles in real inner product spaces.
 
 noncomputable section
 
-open FiniteDimensional Complex
+open Module Complex
 
 open scoped Real RealInnerProductSpace ComplexConjugate
 
@@ -65,9 +65,8 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_smul, map_sub, LinearMap.coe_comp,
-          LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply, ← mul_smul, add_smul,
-          smul_add, smul_neg, smul_sub, mul_comm, sq]
-        abel
+          LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply]
+        module
       · simp)
     (by
       ext x
@@ -75,10 +74,8 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_add, map_smul, LinearMap.coe_comp,
-          LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply,
-          add_smul, smul_neg, smul_sub, smul_smul]
-        ring_nf
-        abel
+          LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply]
+        module
       · simp)
 
 theorem rotation_apply (θ : Real.Angle) (x : V) :
@@ -104,8 +101,7 @@ theorem rotation_eq_matrix_toLin (θ : Real.Angle) {x : V} (hx : x ≠ 0) :
 /-- The determinant of `rotation` (as a linear map) is equal to `1`. -/
 @[simp]
 theorem det_rotation (θ : Real.Angle) : LinearMap.det (o.rotation θ).toLinearMap = 1 := by
-  haveI : Nontrivial V :=
-    FiniteDimensional.nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
+  haveI : Nontrivial V := nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
   obtain ⟨x, hx⟩ : ∃ x, x ≠ (0 : V) := exists_ne (0 : V)
   rw [o.rotation_eq_matrix_toLin θ hx]
   simpa [sq] using θ.cos_sq_add_sin_sq
@@ -146,11 +142,9 @@ theorem rotation_pi_div_two : o.rotation (π / 2 : ℝ) = J := by
 @[simp]
 theorem rotation_rotation (θ₁ θ₂ : Real.Angle) (x : V) :
     o.rotation θ₁ (o.rotation θ₂ x) = o.rotation (θ₁ + θ₂) x := by
-  simp only [o.rotation_apply, ← mul_smul, Real.Angle.cos_add, Real.Angle.sin_add, add_smul,
-    sub_smul, LinearIsometryEquiv.trans_apply, smul_add, LinearIsometryEquiv.map_add,
-    LinearIsometryEquiv.map_smul, rightAngleRotation_rightAngleRotation, smul_neg]
-  ring_nf
-  abel
+  simp only [o.rotation_apply, Real.Angle.cos_add, Real.Angle.sin_add, LinearIsometryEquiv.map_add,
+    LinearIsometryEquiv.trans_apply, map_smul, rightAngleRotation_rightAngleRotation]
+  module
 
 /-- Rotating twice is equivalent to rotating by the sum of the angles. -/
 @[simp]
@@ -338,8 +332,7 @@ theorem oangle_eq_iff_eq_pos_smul_rotation_or_eq_zero {x y : V} (θ : Real.Angle
 theorem exists_linearIsometryEquiv_eq_of_det_pos {f : V ≃ₗᵢ[ℝ] V}
     (hd : 0 < LinearMap.det (f.toLinearEquiv : V →ₗ[ℝ] V)) :
     ∃ θ : Real.Angle, f = o.rotation θ := by
-  haveI : Nontrivial V :=
-    FiniteDimensional.nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
+  haveI : Nontrivial V := nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
   obtain ⟨x, hx⟩ : ∃ x, x ≠ (0 : V) := exists_ne (0 : V)
   use o.oangle x (f x)
   apply LinearIsometryEquiv.toLinearEquiv_injective

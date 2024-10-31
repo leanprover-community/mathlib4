@@ -113,12 +113,6 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     rwa [← lie_skew, neg_mem_iff (G := L)]
   have aux₂ : ∀ n ∈ N, ⁅x, n⁆ ∈ N := fun n hn ↦ le_normalizer H (aux₁ _ hn)
   let dx : N →ₗ[R] N := (ad R L x).restrict aux₂
-  #adaptation_note
-  /--
-  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-  -/
-  have : IsArtinian R { x // x ∈ N } := isArtinian_submodule' _
   obtain ⟨k, hk⟩ : ∃ a, ∀ b ≥ a, Codisjoint (LinearMap.ker (dx ^ b)) (LinearMap.range (dx ^ b)) :=
     eventually_atTop.mp <| dx.eventually_codisjoint_ker_pow_range_pow
   specialize hk (k+1) (Nat.le_add_right k 1)
@@ -133,8 +127,9 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     clear hk; revert hy
     generalize k+1 = k
     induction k generalizing y with
-    | zero => cases y; intro hy; simp only [pow_zero, LinearMap.one_apply]; exact
-      (AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp hy
+    | zero =>
+      cases y; intro hy; simp only [pow_zero, LinearMap.one_apply]
+      exact (AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp hy
     | succ k ih => simp only [pow_succ, LinearMap.mem_ker, LinearMap.mul_apply] at ih ⊢; apply ih
   · rw [← Submodule.map_le_iff_le_comap]
     apply le_sup_of_le_right
@@ -142,7 +137,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     rintro _ ⟨y, rfl⟩
     simp only [pow_succ', LinearMap.mul_apply, Submodule.mem_comap, mem_coe_submodule]
     apply aux₁
-    simp only [Submodule.coeSubtype, SetLike.coe_mem]
+    simp only [Submodule.coe_subtype, SetLike.coe_mem]
 
 /-- A Lie subalgebra of a Noetherian Lie algebra is nilpotent
 if it is contained in the Engel subalgebra of all its elements. -/

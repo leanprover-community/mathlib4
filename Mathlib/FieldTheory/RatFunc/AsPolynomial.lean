@@ -213,7 +213,7 @@ end Polynomial
 
 namespace RatFunc
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 open Polynomial
 
