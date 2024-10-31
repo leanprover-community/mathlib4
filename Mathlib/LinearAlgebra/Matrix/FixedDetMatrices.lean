@@ -5,6 +5,7 @@ Authors: Chris Birkbeck
 -/
 
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.Data.Int.Interval
 
 /-!
 # Matrices with fixed determinant
@@ -18,7 +19,7 @@ kbb (https://github.com/kim-em/kbb/tree/master) repository, so credit to those a
 
 variable (n : Type*) [DecidableEq n] [Fintype n] (R : Type*) [CommRing R]
 
-/--The set of matrices with fixed determinant `m`. -/
+/--The subtype of matrices with fixed determinant `m`. -/
 def FixedDetMatrix (m : R) := { A : Matrix n n R // A.det = m }
 
 namespace FixedDetMatrix
@@ -144,6 +145,7 @@ private lemma A_c_eq_zero (A : Δ m) (ha : A.1 1 0 = 0) : A.1 0 0 * A.1 1 1 = m 
   rw [det_fin_two, ha] at this
   aesop
 
+/--An auxiliary result bounding the size of the entries of the representatives in `reps`. -/
 lemma reps_entries_le_m' (hm : m ≠ 0) (A : Δ m) (h : A ∈ reps m) (i j : Fin 2) :
     A.1 i j ∈ Finset.Icc (-|m|) |m|:= by
   have h1 : 0 < |A.1 1 1| := Eq.mpr (id (congrArg (fun _a ↦ _a) (propext abs_pos)))
@@ -151,11 +153,11 @@ lemma reps_entries_le_m' (hm : m ≠ 0) (A : Δ m) (h : A ∈ reps m) (i j : Fin
   have h2 : 0 < |A.1 0 0| := Eq.mpr (id (congrArg (fun _a ↦ _a) (propext abs_pos)))
     (A_a_ne_zero m A h.left hm)
   fin_cases i <;> fin_cases j
-  simp only [← A_c_eq_zero m A h.1, Fin.zero_eta, Fin.isValue, Finset.mem_Icc, abs_mul]
-  constructor
-  · rw [neg_le]
-    apply (le_trans (neg_le_abs (A.1 0 0)) ((le_mul_iff_one_le_right h2).mpr h1))
-  · exact le_trans (le_abs_self (A.1 0 0)) ((le_mul_iff_one_le_right h2).mpr h1)
+  · simp only [← A_c_eq_zero m A h.1, Fin.zero_eta, Fin.isValue, Finset.mem_Icc, abs_mul]
+    constructor
+    · rw [neg_le]
+      apply (le_trans (neg_le_abs (A.1 0 0)) ((le_mul_iff_one_le_right h2).mpr h1))
+    · exact le_trans (le_abs_self (A.1 0 0)) ((le_mul_iff_one_le_right h2).mpr h1)
   · simp only [Fin.zero_eta, Fin.isValue, Fin.mk_one, Finset.mem_Icc]
     constructor
     · have := abs_pos.mpr hm
@@ -258,7 +260,7 @@ private lemma prop_red1 {C : Δ m → Prop} (hS : ∀ B, C B → C (S • B)) : 
 private lemma prop_red2 {C : Δ m → Prop} (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
     ∀ B, C B → C (T⁻¹ • B) := by
   intro B ih
-  have h := (hS _ $ hS _ $ hS _ $ hT _ $ hS _ $ hT _ $ hS _ ih)
+  have h := (hS _ <| hS _ <| hS _ <| hT _ <| hS _ <| hT _ <| hS _ ih)
   rw [T_S_rel m B] at h
   exact h
 
@@ -275,7 +277,7 @@ private lemma prop_red4 {C : Δ m → Prop} (hS : ∀ B, C B → C (S • B)) (h
   · simp only [zpow_zero, one_smul, imp_self]
   · intro h
     rw [add_comm, zpow_add, ← smul_eq_mul, zpow_one, smul_assoc] at h
-    exact hn $ (prop_red3 _ hS hT) _ h
+    exact hn <| (prop_red3 _ hS hT) _ h
   · rw [sub_eq_neg_add, zpow_add, zpow_neg_one]
     intro h
     apply hm
@@ -305,10 +307,10 @@ theorem induction_on {C : Δ m → Prop} (A : Δ m) (hm : m ≠ 0)
       apply (prop_red4 _ hS hT) A (-(A.1 0 1 / A.1 1 1)) h
     · rw [reduce_eqn2 _ _ h h1]
       intro h
-      exact (prop_red1 _ hS) _ $ (prop_red1 _ hS) _ ((prop_red4 _ hS hT) _ _ h)
+      exact (prop_red1 _ hS) _ <| (prop_red1 _ hS) _ ((prop_red4 _ hS hT) _ _ h)
   intro A hc ih hA
   rw [reduce_eqn3 _ _ hc] at hA
-  exact (prop_red4 _ hS hT) _ _ $ (prop_red1 _ hS) _ (ih hA)
+  exact (prop_red4 _ hS hT) _ _ <| (prop_red1 _ hS) _ (ih hA)
 
 end IntegralFixedDetMatrices
 
