@@ -15,7 +15,7 @@ We prove that given `IsScalarTower F K A`, if `A` is finite as a module over `F`
 
 In particular these conditions hold when `A`, `F`, and `K` are fields.
 
-The formulas for the dimensions are given elsewhere by `FiniteDimensional.finrank_mul_finrank`.
+The formulas for the dimensions are given elsewhere by `Module.finrank_mul_finrank`.
 
 ## Tags
 

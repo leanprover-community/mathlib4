@@ -6,6 +6,7 @@ Authors: Peter Nelson, Yaël Dillies
 import Mathlib.Data.Finset.Order
 import Mathlib.Order.Atoms
 import Mathlib.Data.Set.Finite
+import Mathlib.Order.Minimal
 
 /-!
 # Order structures on finite types
@@ -87,9 +88,9 @@ noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : Complete
   sSup := fun s => s.toFinset.sup id
   sInf := fun s => s.toFinset.inf id
   le_sSup := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
-  sSup_le := fun s _ ha => Finset.sup_le fun b hb => ha _ <| Set.mem_toFinset.mp hb
+  sSup_le := fun _ _ ha => Finset.sup_le fun _ hb => ha _ <| Set.mem_toFinset.mp hb
   sInf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
-  le_sInf := fun s _ ha => Finset.le_inf fun b hb => ha _ <| Set.mem_toFinset.mp hb
+  le_sInf := fun _ _ ha => Finset.le_inf fun _ hb => ha _ <| Set.mem_toFinset.mp hb
 
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/

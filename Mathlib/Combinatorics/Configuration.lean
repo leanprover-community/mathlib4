@@ -117,27 +117,27 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
     (h : Fintype.card L ≤ Fintype.card P) : ∃ f : L → P, Function.Injective f ∧ ∀ l, f l ∉ l := by
   classical
     let t : L → Finset P := fun l => Set.toFinset { p | p ∉ l }
-    suffices ∀ s : Finset L, s.card ≤ (s.biUnion t).card by
+    suffices ∀ s : Finset L, #s ≤ (s.biUnion t).card by
       -- Hall's marriage theorem
       obtain ⟨f, hf1, hf2⟩ := (Finset.all_card_le_biUnion_card_iff_exists_injective t).mp this
       exact ⟨f, hf1, fun l => Set.mem_toFinset.mp (hf2 l)⟩
     intro s
-    by_cases hs₀ : s.card = 0
-    -- If `s = ∅`, then `s.card = 0 ≤ (s.bUnion t).card`
+    by_cases hs₀ : #s = 0
+    -- If `s = ∅`, then `#s = 0 ≤ #(s.bUnion t)`
     · simp_rw [hs₀, zero_le]
-    by_cases hs₁ : s.card = 1
+    by_cases hs₁ : #s = 1
     -- If `s = {l}`, then pick a point `p ∉ l`
     · obtain ⟨l, rfl⟩ := Finset.card_eq_one.mp hs₁
-      obtain ⟨p, hl⟩ := exists_point l
+      obtain ⟨p, hl⟩ := exists_point (P := P) l
       rw [Finset.card_singleton, Finset.singleton_biUnion, Nat.one_le_iff_ne_zero]
       exact Finset.card_ne_zero_of_mem (Set.mem_toFinset.mpr hl)
-    suffices (s.biUnion t)ᶜ.card ≤ sᶜ.card by
+    suffices #(s.biUnion t)ᶜ ≤ #sᶜ by
       -- Rephrase in terms of complements (uses `h`)
       rw [Finset.card_compl, Finset.card_compl, tsub_le_iff_left] at this
       replace := h.trans this
       rwa [← add_tsub_assoc_of_le s.card_le_univ, le_tsub_iff_left (le_add_left s.card_le_univ),
         add_le_add_iff_right] at this
-    have hs₂ : (s.biUnion t)ᶜ.card ≤ 1 := by
+    have hs₂ : #(s.biUnion t)ᶜ ≤ 1 := by
       -- At most one line through two points of `s`
       refine Finset.card_le_one_iff.mpr @fun p₁ p₂ hp₁ hp₂ => ?_
       simp_rw [t, Finset.mem_compl, Finset.mem_biUnion, not_exists, not_and,
@@ -145,7 +145,7 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
       obtain ⟨l₁, l₂, hl₁, hl₂, hl₃⟩ :=
         Finset.one_lt_card_iff.mp (Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨hs₀, hs₁⟩)
       exact (eq_or_eq (hp₁ l₁ hl₁) (hp₂ l₁ hl₁) (hp₁ l₂ hl₂) (hp₂ l₂ hl₂)).resolve_right hl₃
-    by_cases hs₃ : sᶜ.card = 0
+    by_cases hs₃ : #sᶜ = 0
     · rw [hs₃, Nat.le_zero]
       rw [Finset.card_compl, tsub_eq_zero_iff_le, LE.le.le_iff_eq (Finset.card_le_univ _), eq_comm,
         Finset.card_eq_iff_eq_univ] at hs₃ ⊢

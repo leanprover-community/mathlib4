@@ -96,7 +96,7 @@ theorem coe_injective : @Function.Injective (VectorMeasure α M) (Set α → M) 
   congr
 
 theorem ext_iff' (v w : VectorMeasure α M) : v = w ↔ ∀ i : Set α, v i = w i := by
-  rw [← coe_injective.eq_iff, Function.funext_iff]
+  rw [← coe_injective.eq_iff, funext_iff]
 
 theorem ext_iff (v w : VectorMeasure α M) : v = w ↔ ∀ i : Set α, MeasurableSet i → v i = w i := by
   constructor
@@ -237,7 +237,7 @@ def add (v w : VectorMeasure α M) : VectorMeasure α M where
   measureOf' := v + w
   empty' := by simp
   not_measurable' _ hi := by rw [Pi.add_apply, v.not_measurable hi, w.not_measurable hi, add_zero]
-  m_iUnion' f hf₁ hf₂ := HasSum.add (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
+  m_iUnion' _ hf₁ hf₂ := HasSum.add (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
 
 instance instAdd : Add (VectorMeasure α M) :=
   ⟨add⟩
@@ -268,7 +268,7 @@ def neg (v : VectorMeasure α M) : VectorMeasure α M where
   measureOf' := -v
   empty' := by simp
   not_measurable' _ hi := by rw [Pi.neg_apply, neg_eq_zero, v.not_measurable hi]
-  m_iUnion' f hf₁ hf₂ := HasSum.neg <| v.m_iUnion hf₁ hf₂
+  m_iUnion' _ hf₁ hf₂ := HasSum.neg <| v.m_iUnion hf₁ hf₂
 
 instance instNeg : Neg (VectorMeasure α M) :=
   ⟨neg⟩
@@ -283,7 +283,7 @@ def sub (v w : VectorMeasure α M) : VectorMeasure α M where
   measureOf' := v - w
   empty' := by simp
   not_measurable' _ hi := by rw [Pi.sub_apply, v.not_measurable hi, w.not_measurable hi, sub_zero]
-  m_iUnion' f hf₁ hf₂ := HasSum.sub (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
+  m_iUnion' _ hf₁ hf₂ := HasSum.sub (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
 
 instance instSub : Sub (VectorMeasure α M) :=
   ⟨sub⟩
@@ -462,7 +462,7 @@ def map (v : VectorMeasure α M) (f : α → β) : VectorMeasure β M :=
   if hf : Measurable f then
     { measureOf' := fun s => if MeasurableSet s then v (f ⁻¹' s) else 0
       empty' := by simp
-      not_measurable' := fun i hi => if_neg hi
+      not_measurable' := fun _ hi => if_neg hi
       m_iUnion' := by
         intro g hg₁ hg₂
         simp only
@@ -500,7 +500,7 @@ def mapRange (v : VectorMeasure α M) (f : M →+ N) (hf : Continuous f) : Vecto
   measureOf' s := f (v s)
   empty' := by simp only; rw [empty, AddMonoidHom.map_zero]
   not_measurable' i hi := by simp only; rw [not_measurable v hi, AddMonoidHom.map_zero]
-  m_iUnion' g hg₁ hg₂ := HasSum.map (v.m_iUnion hg₁ hg₂) f hf
+  m_iUnion' _ hg₁ hg₂ := HasSum.map (v.m_iUnion hg₁ hg₂) f hf
 
 @[simp]
 theorem mapRange_apply {f : M →+ N} (hf : Continuous f) {s : Set α} : v.mapRange f hf s = f (v s) :=
@@ -561,7 +561,7 @@ def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
   if hi : MeasurableSet i then
     { measureOf' := fun s => if MeasurableSet s then v (s ∩ i) else 0
       empty' := by simp
-      not_measurable' := fun i hi => if_neg hi
+      not_measurable' := fun _ hi => if_neg hi
       m_iUnion' := by
         intro f hf₁ hf₂
         simp only
@@ -694,11 +694,11 @@ variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
 This definition is consistent with `Measure.instPartialOrder`. -/
 instance instPartialOrder : PartialOrder (VectorMeasure α M) where
   le v w := ∀ i, MeasurableSet i → v i ≤ w i
-  le_refl v i _ := le_rfl
-  le_trans u v w h₁ h₂ i hi := le_trans (h₁ i hi) (h₂ i hi)
-  le_antisymm v w h₁ h₂ := ext fun i hi => le_antisymm (h₁ i hi) (h₂ i hi)
+  le_refl _ _ _ := le_rfl
+  le_trans _ _ _ h₁ h₂ i hi := le_trans (h₁ i hi) (h₂ i hi)
+  le_antisymm _ _ h₁ h₂ := ext fun i hi => le_antisymm (h₁ i hi) (h₂ i hi)
 
-variable {u v w : VectorMeasure α M}
+variable {v w : VectorMeasure α M}
 
 theorem le_iff : v ≤ w ↔ ∀ i, MeasurableSet i → v i ≤ w i := Iff.rfl
 
@@ -880,10 +880,9 @@ end
 section
 
 variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
-  [CovariantClass M M (· + ·) (· ≤ ·)] [ContinuousAdd M]
+  [AddLeftMono M] [ContinuousAdd M]
 
-instance covariant_add_le :
-    CovariantClass (VectorMeasure α M) (VectorMeasure α M) (· + ·) (· ≤ ·) :=
+instance instAddLeftMono : AddLeftMono (VectorMeasure α M) :=
   ⟨fun _ _ _ h i hi => add_le_add_left (h i hi) _⟩
 
 end

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Comma.StructuredArrow
+import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Unit
@@ -225,6 +225,10 @@ namespace CostructuredArrow
 
 variable {G : A ⥤ T} {X : T} (F : J ⥤ CostructuredArrow G X)
 
+instance hasTerminal [G.Faithful] [G.Full] {Y : A} :
+    HasTerminal (CostructuredArrow G (G.obj Y)) :=
+  CostructuredArrow.mkIdTerminal.hasTerminal
+
 instance hasColimit [i₁ : HasColimit (F ⋙ proj G X)] [i₂ : PreservesColimit (F ⋙ proj G X) G] :
     HasColimit F := by
   haveI : HasColimit (F ⋙ Comma.fst G (Functor.fromPUnit X)) := i₁
@@ -261,5 +265,11 @@ theorem epi_iff_epi_left [HasPushouts A] [PreservesColimitsOfShape WalkingSpan G
   ⟨fun _ => inferInstance, fun _ => epi_of_epi_left f⟩
 
 end CostructuredArrow
+
+namespace Over
+
+instance {X : T} : HasTerminal (Over X) := CostructuredArrow.hasTerminal
+
+end Over
 
 end CategoryTheory
