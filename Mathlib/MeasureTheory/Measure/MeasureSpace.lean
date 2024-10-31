@@ -615,10 +615,9 @@ alias tendsto_measure_iInter := tendsto_measure_iInter_atTop
 
 /-- Continuity from above: the measure of the intersection of an increasing sequence of measurable
 sets is the limit of the measures. -/
-theorem tendsto_measure_iInter_atBot [Preorder ι] [IsDirected ι (· ≥ ·)]
-    [IsCountablyGenerated (atBot : Filter ι)] {s : ι → Set α}
-    (hs : ∀ i, NullMeasurableSet (s i) μ) (hm : Monotone s) (hf : ∃ i, μ (s i) ≠ ∞) :
-    Tendsto (μ ∘ s) atBot (𝓝 (μ (⋂ n, s n))) :=
+theorem tendsto_measure_iInter_atBot [Preorder ι] [IsCountablyGenerated (atBot : Filter ι)]
+    {s : ι → Set α} (hs : ∀ i, NullMeasurableSet (s i) μ) (hm : Monotone s)
+    (hf : ∃ i, μ (s i) ≠ ∞) : Tendsto (μ ∘ s) atBot (𝓝 (μ (⋂ n, s n))) :=
   tendsto_measure_iInter_atTop (ι := ιᵒᵈ) hs hm.dual_left hf
 
 /-- Continuity from above: the measure of the intersection of a sequence of measurable
@@ -639,7 +638,7 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
     [OrderTopology ι] [DenselyOrdered ι] [FirstCountableTopology ι] {s : ι → Set α}
     {a : ι} (hs : ∀ r > a, NullMeasurableSet (s r) μ) (hm : ∀ i j, a < i → i ≤ j → s i ⊆ s j)
     (hf : ∃ r > a, μ (s r) ≠ ∞) : Tendsto (μ ∘ s) (𝓝[Ioi a] a) (𝓝 (μ (⋂ r > a, s r))) := by
-  have : (atBot : Filter (Ioi a)).IsCountablyGenerated := by -- TODO: instance?
+  have : (atBot : Filter (Ioi a)).IsCountablyGenerated := by
     rw [← comap_coe_Ioi_nhdsWithin_Ioi]
     infer_instance
   simp_rw [← map_coe_Ioi_atBot, tendsto_map'_iff, ← mem_Ioi, biInter_eq_iInter]
