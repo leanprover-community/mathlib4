@@ -18,8 +18,6 @@ assert_not_exists OrderedCommMonoid
 
 -- open scoped AlgebraOrderInstances
 
--- open scoped AlgebraOrderInstances
-
 variable {α : Type*}
 
 namespace Nat
