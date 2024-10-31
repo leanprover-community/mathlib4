@@ -20,6 +20,7 @@ Give the definition in the correct generality.
 namespace AddChar
 variable {A M : Type*} [AddMonoid A] [Monoid M] [MeasurableSpace A] [MeasurableSpace M]
 
+@[nolint unusedArguments]
 instance instMeasurableSpace [DiscreteMeasurableSpace A] [DiscreteMeasurableSpace M] :
     MeasurableSpace (AddChar A M) :=
   ⊤
