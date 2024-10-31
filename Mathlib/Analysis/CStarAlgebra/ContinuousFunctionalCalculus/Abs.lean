@@ -28,8 +28,4 @@ variable {A : Type*} [NonUnitalRing A] [Module ℝ A] [SMulCommClass ℝ A A] [I
 variable [StarRing A] [TopologicalSpace A]
 variable [NonUnitalContinuousFunctionalCalculus ℝ (IsStarNormal : A → Prop)]
 
-namespace CStarAlgebra
-
 noncomputable def CFC.abs (a : A) := cfcₙ (fun t ↦ √(star t * t)) a
-
-end CStarAlgebra
