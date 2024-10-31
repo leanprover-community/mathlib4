@@ -16,10 +16,8 @@ preorder is an infinite type.
 
 variable {α : Type*} [Preorder α]
 
-/-- A nonempty preorder with no maximal element is infinite.
-This instance has lower priority to avoid the cycle `Infinite α → Nontrivial α → Nonempty α` if possible.
--/
-instance (priority := 100) NoMaxOrder.infinite [Nonempty α] [NoMaxOrder α] : Infinite α :=
+/-- A nonempty preorder with no maximal element is infinite. -/
+instance NoMaxOrder.infinite [Nonempty α] [NoMaxOrder α] : Infinite α :=
   let ⟨f, hf⟩ := Nat.exists_strictMono α
   Infinite.of_injective f hf.injective
 
