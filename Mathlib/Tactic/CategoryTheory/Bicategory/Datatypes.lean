@@ -5,7 +5,7 @@ Authors: Yuma Mizuno
 -/
 import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 import Mathlib.Tactic.CategoryTheory.BicategoricalComp
-import QQ
+import Qq
 
 /-!
 # Expressions for bicategories
