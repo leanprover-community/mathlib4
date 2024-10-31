@@ -13,10 +13,18 @@ In this file we prove that if `C` is a small finitely cocomplete category and `A
 is a presheaf, then `CostructuredArrow yoneda A` is filtered (equivalently, the category of
 elements of `A` is cofiltered) if and only if `A` preserves finite limits.
 
-This is one of the keys steps of establishing the equivalence `Ind C ≌ (Cᵒᵖ ⥤ₗ Type u)` for a
-*small* finitely cocomplete category `C`.
+This is one of the keys steps of establishing the equivalence `Ind C ≌ (Cᵒᵖ ⥤ₗ Type u)` (here,
+`Cᵒᵖ ⥤ₗ Type u` is the category of left exact functors) for a *small* finitely cocomplete category
+`C`.
 
 ## Implementation notes
+
+In the entire file, we are careful about details like functor associativity to ensure that we do
+not end up in situations where we have morphisms like `colimit.ι F i ≫ f`, where the domain of `f`
+is `colimit G` where `F` and `G` are definitionally equal but not syntactically equal. In these
+situations, lemmas about `colimit.ι G i ≫ f` cannot be applied using `rw` and `simp`, forcing the
+use of `erw`. In particular, for us this means that `HasColimit.isoOfNatIso (Iso.refl _)` is better
+than `Iso.refl _` and that we should be very particular about functor associativity.
 
 The theorem is also true for large categories and the proof given here generalizes to this case on
 paper. However, our infrastructure for commuting finite limits of shape `J` and filtered colimits
@@ -69,7 +77,8 @@ limits" to. -/
 def functorToInterchange : J ⥤ CostructuredArrow yoneda A ⥤ Type u :=
   K ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj _ _)
 
-/-- (Implementation) The definition of `functorToInterchange`, up to functor associativity. -/
+/-- (Implementation) The definition of `functorToInterchange`, up to functor associativity. We
+choose this association because it is the one that appears naturally in the proof below. -/
 @[simps!]
 def functorToInterchangeIso : functorToInterchange A K ≅
     K ⋙ (coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj _ _)) :=
