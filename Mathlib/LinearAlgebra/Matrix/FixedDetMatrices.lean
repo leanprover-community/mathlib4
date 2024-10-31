@@ -92,8 +92,7 @@ def reduce_rec {C : Δ m → Sort*} (h0 : ∀ A : Δ m, |(A.1 1 0)| = 0 → C A)
   decreasing_by
     zify
     apply reduce_aux m A
-    simp only [Int.cast_id, Fin.isValue, ne_eq, Int.natAbs_eq_zero]
-    simpa using h
+    simpa only [Fin.isValue, ne_eq, abs_eq_zero] using h
 
 /--Map from `Δ m → Δ m` which reduces a FixedDetMatrix towards a representative element in reps. -/
 def reduce : Δ m → Δ m := fun A => by
@@ -107,26 +106,25 @@ def reduce : Δ m → Δ m := fun A => by
       next a h =>
       zify
       apply reduce_aux m
-      simpa only [Int.cast_id, Fin.isValue, ne_eq, Int.natAbs_eq_zero, Int.natAbs_eq_zero] using h
+      simpa only [Fin.isValue, ne_eq, abs_eq_zero] using h
 
 lemma reduce_eqn1 (A : Δ m) (hc : |(A.1 1 0)| = 0) (ha : 0 < A.1 0 0) :
     reduce m A = (T ^ (-(A.1 0 1/A.1 1 1))) • A := by
   rw [reduce]
-  simp only [Fin.isValue, Int.natAbs_eq_zero, abs_eq_zero, zpow_neg, Int.ediv_neg, neg_neg,
-    dite_eq_ite] at *
+  simp only [Fin.isValue, abs_eq_zero, zpow_neg, Int.ediv_neg, neg_neg, dite_eq_ite] at *
   simp_rw [if_pos hc, if_pos ha]
 
 lemma reduce_eqn2 (A : Δ m) (hc : |(A.1 1 0)| = 0) (ha : ¬ 0 < A.1 0 0) :
     reduce m A = (T ^ (-(-A.1 0 1/ -A.1 1 1))) • ( S • ( S • A)) := by
   rw [reduce]
-  simp only [Int.cast_id, Fin.isValue, Int.natAbs_eq_zero, zpow_neg, Int.ediv_neg, neg_neg,
+  simp only [Int.cast_id, Fin.isValue, zpow_neg, Int.ediv_neg, neg_neg,
     dite_eq_ite] at *
   simp_rw [if_pos hc, if_neg ha]
 
 lemma reduce_eqn3 (A : Δ m) (hc : ¬ |(A.1 1 0)| = 0) :
     reduce m A = reduce m (reduce_step m A) := by
   rw [reduce]
-  simp only [Int.cast_id, Fin.isValue, Int.natAbs_eq_zero, zpow_neg, Int.ediv_neg, neg_neg,
+  simp only [Int.cast_id, Fin.isValue, zpow_neg, Int.ediv_neg, neg_neg,
     dite_eq_ite] at *
   simp_rw [if_neg hc]
 
@@ -290,13 +288,12 @@ private lemma prop_red4 {C : Δ m → Prop} (hS : ∀ B, C B → C (S • B)) (h
 @[elab_as_elim]
 theorem induction_on {C : Δ m → Prop} (A : Δ m) (hm : m ≠ 0)
     (h0 : ∀ A : Δ m, A.1 1 0 = 0 → A.1 0 0 * A.1 1 1 = m → 0 < A.1 0 0 → 0 ≤ A.1 0 1 →
-      Int.natAbs (A.1 0 1) < Int.natAbs (A.1 1 1) → C A)
+      |(A.1 0 1)| < |(A.1 1 1)| → C A)
     (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) : C A := by
   have h_reduce : C (reduce m A) := by
     rcases reduce_mem_reps m hm A with ⟨H1, H2, H3, H4⟩
     apply h0 _ H1 ?_ H2 H3
-    · zify
-      apply H4
+    · apply H4
     · apply A_c_eq_zero _ _ H1
   suffices ∀ A : Δ m, C (reduce m A) → C A from this _ h_reduce
   apply reduce_rec
