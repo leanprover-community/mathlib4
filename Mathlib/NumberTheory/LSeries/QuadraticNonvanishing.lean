@@ -124,8 +124,7 @@ lemma F_eq_LSeries (B : BadChar N) {s : ℂ} (hs : 1 < s.re) :
   · have hs' : s ≠ 1 := fun h ↦ by simp only [h, one_re, lt_self_iff_false] at hs
     simp only [ne_eq, hs', not_false_eq_true, Function.update_noteq, B.χ.LFunction_eq_LSeries hs]
     congr 1
-    · rw [← LSeries_zeta_eq_riemannZeta hs]
-      rfl
+    · simp_rw [← LSeries_zeta_eq_riemannZeta hs, ← natCoe_apply]
     · exact LSeries_congr s B.χ.apply_eq_toArithmeticFunction_apply
   -- summability side goals from `LSeries_convolution'`
   · exact LSeriesSummable_zeta_iff.mpr hs
@@ -178,7 +177,7 @@ theorem LFunction_at_one_ne_zero_of_quadratic {N : ℕ} [NeZero N] {χ : Dirichl
   intro hL
   -- construct a "bad character" and put together a contradiction.
   let B : BadChar N := {χ := χ, χ_sq := hχ, hχ := hL, χ_ne := χ_ne}
-  refine (B.F_neg_two ▸ (?_ : 0 < B.F (-2 : ℝ))).false
+  refine B.F_neg_two.not_gt ?_
   refine ArithmeticFunction.LSeries_positive_of_differentiable_of_eqOn (zetaMul_nonneg hχ)
     (χ.isMultiplicative_zetaMul.map_one ▸ zero_lt_one) B.F_differentiable ?_
     (fun _ ↦ B.F_eq_LSeries) _
