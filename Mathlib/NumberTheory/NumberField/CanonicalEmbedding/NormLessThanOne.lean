@@ -585,7 +585,7 @@ def mapToUnitsPow : PartialHomeomorph (realSpace K) (realSpace K) where
     · simp_rw [dif_neg hw]
       refine Continuous.comp_continuousOn' (continuous_apply _) <|
         (continuous_equivFun_basis _).comp_continuousOn' ?_
-      refine ContinuousOn.comp'' (continuousOn_logMap K) ?_ ?_
+      refine ContinuousOn.comp' (continuousOn_logMap K) ?_ ?_
       · refine Continuous.continuousOn ?_
         exact ContinuousLinearMap.continuous realToMixed
       · intro x hx

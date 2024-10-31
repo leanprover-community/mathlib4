@@ -162,6 +162,23 @@ theorem logMap_eq_of_normAtPlace_eq (h : ∀ w, normAtPlace w x = normAtPlace w 
   ext
   simp_rw [logMap_apply, h, norm_eq_of_normAtPlace_eq h]
 
+variable (K)
+
+theorem measurable_logMap :
+    Measurable (logMap : (mixedSpace K) → _) :=
+  measurable_pi_iff.mpr fun _ ↦
+    measurable_const.mul <| (continuous_normAtPlace _).measurable.log.sub
+      <| (mixedEmbedding.continuous_norm K).measurable.log.mul measurable_const
+
+theorem continuousOn_logMap :
+    ContinuousOn (logMap : (mixedSpace K) → _) {x | mixedEmbedding.norm x ≠ 0} := by
+  refine continuousOn_pi.mpr fun w ↦ continuousOn_const.mul (ContinuousOn.sub ?_ ?_)
+  · exact Real.continuousOn_log.comp' (continuous_normAtPlace _).continuousOn
+      fun _ hx ↦ mixedEmbedding.norm_ne_zero_iff.mp hx _
+  · exact ContinuousOn.mul
+      (Real.continuousOn_log.comp' (mixedEmbedding.continuous_norm K).continuousOn
+        fun _ hx ↦ hx) continuousOn_const
+
 end logMap
 
 noncomputable section
@@ -177,6 +194,17 @@ of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem
 def fundamentalCone : Set (mixedSpace K) :=
   logMap⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
       {x | mixedEmbedding.norm x = 0}
+
+theorem measurableSet_fundamentalCone :
+    MeasurableSet (fundamentalCone K) := by
+  classical
+  refine MeasurableSet.diff ?_ ?_
+  · unfold logMap
+    refine MeasurableSet.preimage (ZSpan.fundamentalDomain_measurableSet _) <|
+      measurable_pi_iff.mpr fun w ↦ measurable_const.mul ?_
+    exact (continuous_normAtPlace _).measurable.log.sub <|
+      (mixedEmbedding.continuous_norm _).measurable.log.mul measurable_const
+  · exact measurableSet_eq_fun (mixedEmbedding.continuous_norm K).measurable measurable_const
 
 namespace fundamentalCone
 

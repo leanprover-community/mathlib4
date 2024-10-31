@@ -25,12 +25,12 @@ open Classical in
 private noncomputable def ideal.tendsto_mk_eq_norm_le_div_atop_aux₁ (J : (Ideal (𝓞 K))⁰) (s : ℝ) :
     ↑({x | x ∈ (toMixed K) ⁻¹' fundamentalCone K ∧ mixedEmbedding.norm ((toMixed K) x) ≤ s} ∩
       (ZLattice.comap ℝ (idealLattice K ((FractionalIdeal.mk0 K) J)) (toMixed K).toLinearMap))
-        ≃ {a : idealPoint K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} := by
+        ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} := by
   rw [ZLattice.coe_comap]
   refine (((toMixed K).toEquiv.image _).trans (Equiv.setCongr ?_)).trans
     (Equiv.subtypeSubtypeEquivSubtypeInter _ (mixedEmbedding.norm · ≤ s)).symm
   ext
-  simp_rw [mem_idealPoint, Set.mem_image, Set.mem_inter_iff, Set.mem_preimage, SetLike.mem_coe,
+  simp_rw [mem_idealSet, Set.mem_image, Set.mem_inter_iff, Set.mem_preimage, SetLike.mem_coe,
     mem_idealLattice, FractionalIdeal.coe_mk0]
   constructor
   · rintro ⟨_, ⟨⟨hx₁, hx₂⟩, _, ⟨x, hx₃, rfl⟩, rfl⟩, rfl⟩
