@@ -41,7 +41,7 @@ example : ∀ x : ℕ, 2 ∣ x → x < 100 := by
 --   admit
 --   trivial
 
-example (x : ℕ) (_h : 2 ∣ x) : x < 100 := by
+example (x : ℕ) (_h : 2 ∣ x) : true := by
   have : x < 100 := by
     success_if_fail_with_msg
     "
