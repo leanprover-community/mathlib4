@@ -13,7 +13,6 @@ import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
-import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
@@ -697,6 +696,10 @@ def ContinuousMap.compRightAlgHom {α β : Type*} [TopologicalSpace α] [Topolog
   map_mul' _ _ := ext fun _ ↦ rfl
   commutes' _ := ext fun _ ↦ rfl
 
+theorem ContinuousMap.compRightAlgHom_continuous {α β : Type*} [TopologicalSpace α]
+    [TopologicalSpace β] (f : C(α, β)) : Continuous (compRightAlgHom R A f) :=
+  continuous_precomp f
+
 variable {A}
 
 /-- Coercion to a function as an `AlgHom`. -/
@@ -832,15 +835,13 @@ variable {β : Type*} [TopologicalSpace β]
 /-! `C(α, β)`is a lattice ordered group -/
 
 @[to_additive]
-instance instCovariantClass_mul_le_left [PartialOrder β] [Mul β] [ContinuousMul β]
-    [CovariantClass β β (· * ·) (· ≤ ·)] :
-    CovariantClass C(α, β) C(α, β) (· * ·) (· ≤ ·) :=
+instance instMulLeftMono [PartialOrder β] [Mul β] [ContinuousMul β] [MulLeftMono β] :
+    MulLeftMono C(α, β) :=
   ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
 
 @[to_additive]
-instance instCovariantClass_mul_le_right [PartialOrder β] [Mul β] [ContinuousMul β]
-    [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
-    CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
+instance instMulRightMono [PartialOrder β] [Mul β] [ContinuousMul β] [MulRightMono β] :
+    MulRightMono C(α, β) :=
   ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
 
 variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]

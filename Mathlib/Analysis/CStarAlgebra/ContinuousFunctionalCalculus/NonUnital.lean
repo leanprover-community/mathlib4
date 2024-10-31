@@ -106,6 +106,11 @@ variable [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing 
 variable [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [instCFCₙ : NonUnitalContinuousFunctionalCalculus R p]
 
+include instCFCₙ in
+lemma NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (a : A) :
+    IsCompact (σₙ R a) :=
+  isCompact_iff_compactSpace.mpr inferInstance
+
 lemma NonUnitalStarAlgHom.ext_continuousMap [UniqueNonUnitalContinuousFunctionalCalculus R A]
     (a : A) (φ ψ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ ⟨.restrict (σₙ R a) <| .id R, rfl⟩ = ψ ⟨.restrict (σₙ R a) <| .id R, rfl⟩) :
@@ -173,7 +178,7 @@ theorem cfcₙHom_comp [UniqueNonUnitalContinuousFunctionalCalculus R A] (f : C(
   suffices cfcₙHom (cfcₙHom_predicate ha f) = φ from DFunLike.congr_fun this.symm g
   refine cfcₙHom_eq_of_continuous_of_map_id (cfcₙHom_predicate ha f) φ ?_ ?_
   · refine (cfcₙHom_isClosedEmbedding ha).continuous.comp <| continuous_induced_rng.mpr ?_
-    exact f'.toContinuousMap.continuous_comp_left.comp continuous_induced_dom
+    exact f'.toContinuousMap.continuous_precomp.comp continuous_induced_dom
   · simp only [φ, ψ, NonUnitalStarAlgHom.comp_apply, NonUnitalStarAlgHom.coe_mk',
       NonUnitalAlgHom.coe_mk]
     congr
@@ -266,6 +271,11 @@ lemma cfcₙ_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     · rwa [cfcₙ_apply_of_not_continuousOn _ h]
     · rwa [cfcₙ_apply_of_not_map_zero _ h]
     · rwa [cfcₙ_apply_of_not_predicate _ h]
+
+lemma cfcₙ_commute_cfcₙ (f g : R → R) (a : A) : Commute (cfcₙ f a) (cfcₙ g a) := by
+  refine cfcₙ_cases (fun x ↦ Commute x (cfcₙ g a)) a f (by simp) fun hf hf0 ha ↦ ?_
+  refine cfcₙ_cases (fun x ↦ Commute _ x) a g (by simp) fun hg hg0 _ ↦ ?_
+  exact Commute.all _ _ |>.map _
 
 variable (R) in
 include ha in
@@ -647,6 +657,50 @@ lemma cfcₙ_nonpos_iff (f : R → R) (a : A) (hf : ContinuousOn f (σₙ R a) :
 end Ring
 
 end Order
+
+/-! ### `cfcₙHom` on a superset of the quasispectrum -/
+
+section Superset
+
+open ContinuousMapZero
+
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [Nontrivial R] [StarRing R]
+    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
+    [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+    [instCFCₙ : NonUnitalContinuousFunctionalCalculus R p]
+
+/-- The composition of `cfcₙHom` with the natural embedding `C(s, R)₀ → C(quasispectrum R a, R)₀`
+whenever `quasispectrum R a ⊆ s`.
+
+This is sometimes necessary in order to consider the same continuous functions applied to multiple
+distinct elements, with the added constraint that `cfcₙ` does not suffice. This can occur, for
+example, if it is necessary to use uniqueness of this continuous functional calculus. A practical
+example can be found in the proof of `CFC.posPart_negPart_unique`. -/
+@[simps!]
+noncomputable def cfcₙHomSuperset {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
+    letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+    C(s, R)₀ →⋆ₙₐ[R] A :=
+  letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+  cfcₙHom ha (R := R) |>.comp <| ContinuousMapZero.nonUnitalStarAlgHom_precomp R <|
+    ⟨⟨_, continuous_id.subtype_map hs⟩, rfl⟩
+
+lemma cfcₙHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
+    Continuous (cfcₙHomSuperset ha hs) :=
+  letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+  (cfcₙHom_continuous ha).comp <| ContinuousMapZero.continuous_comp_left _
+
+lemma cfcₙHomSuperset_id {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
+    letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+    cfcₙHomSuperset ha hs ⟨.restrict s <| .id R, rfl⟩ = a :=
+  cfcₙHom_id ha
+
+/-- this version uses `ContinuousMapZero.id`. -/
+lemma cfcₙHomSuperset_id' {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
+    letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+    cfcₙHomSuperset ha hs (.id rfl) = a :=
+  cfcₙHom_id ha
+
+end Superset
 
 /-! ### Obtain a non-unital continuous functional calculus from a unital one -/
 
