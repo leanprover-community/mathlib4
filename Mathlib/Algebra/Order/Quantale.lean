@@ -11,7 +11,7 @@ import Mathlib.Order.CompleteLattice
 
 Quantales are the non-commutative generalization of locales/frames and as such are linked
 to point-free topology and order theory. Applications are found throughout logic,
-quantum mechanics, and computer science.
+quantum mechanics, and computer science (see e.g. [Vickers1989] and [Mulvey1986]).
 
 The most general definition of quantale occurring in literature, is that a quantale is a semigroup
 distributing over a complete sup-semilattice. In our definition below, we use the fact that
