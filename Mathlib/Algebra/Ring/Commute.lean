@@ -21,9 +21,9 @@ For the definitions of semirings and rings see `Mathlib.Algebra.Ring.Defs`.
 -/
 
 
-universe u v w x
+universe u
 
-variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
+variable {R : Type u}
 
 open Function
 
@@ -77,13 +77,9 @@ section
 
 variable [MulOneClass R] [HasDistribNeg R]
 
--- Porting note (#10618): no longer needs to be `@[simp]` since `simp` can prove it.
--- @[simp]
 theorem neg_one_right (a : R) : Commute a (-1) :=
   SemiconjBy.neg_one_right a
 
--- Porting note (#10618): no longer needs to be `@[simp]` since `simp` can prove it.
--- @[simp]
 theorem neg_one_left (a : R) : Commute (-1) a :=
   SemiconjBy.neg_one_left a
 

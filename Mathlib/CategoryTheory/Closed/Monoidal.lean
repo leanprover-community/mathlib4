@@ -304,6 +304,89 @@ theorem ofEquiv_uncurry_def {X Y Z : C} :
 
 end OfEquiv
 
+-- A closed monoidal category C is always enriched over itself.
+-- This section contains the necessary definitions and equalities to endow C with
+-- the structure of a C-category, while the instance itself is defined in `Closed/Enrichment`.
+-- In particular, we only assume the necessary instances of `Closed x`, rather than assuming
+-- C comes with an instance of `MonoidalClosed`
+section Enriched
+
+/-- The C-identity morphism
+  `𝟙_ C ⟶ hom(x, x)`
+used to equip `C` with the structure of a `C`-category -/
+def id (x : C) [Closed x] : 𝟙_ C ⟶ (ihom x).obj x := curry (ρ_ x).hom
+
+/-- The *uncurried* composition morphism
+  `x ⊗ (hom(x, y) ⊗ hom(y, z)) ⟶ (x ⊗ hom(x, y)) ⊗ hom(y, z) ⟶ y ⊗ hom(y, z) ⟶ z`.
+The `C`-composition morphism will be defined as the adjoint transpose of this map. -/
+def compTranspose (x y z : C) [Closed x] [Closed y] : x ⊗ (ihom x).obj y ⊗ (ihom y).obj z ⟶ z :=
+  (α_ x ((ihom x).obj y) ((ihom y).obj z)).inv ≫
+    (ihom.ev x).app y ▷ ((ihom y).obj z) ≫ (ihom.ev y).app z
+
+/-- The `C`-composition morphism
+  `hom(x, y) ⊗ hom(y, z) ⟶ hom(x, z)`
+used to equip `C` with the structure of a `C`-category -/
+def comp (x y z : C) [Closed x] [Closed y] : (ihom x).obj y ⊗ (ihom y).obj z ⟶ (ihom x).obj z :=
+  curry (compTranspose x y z)
+
+/-- Unfold the definition of `id`.
+This exists to streamline the proofs of `MonoidalClosed.id_comp` and `MonoidalClosed.comp_id` -/
+lemma id_eq (x : C) [Closed x] : id x = curry (ρ_ x).hom := rfl
+
+/-- Unfold the definition of `compTranspose`.
+This exists to streamline the proof of `MonoidalClosed.assoc` -/
+lemma compTranspose_eq (x y z : C) [Closed x] [Closed y] :
+    compTranspose x y z = (α_ _ _ _).inv ≫ (ihom.ev x).app y ▷ _ ≫ (ihom.ev y).app z :=
+  rfl
+
+/-- Unfold the definition of `comp`.
+This exists to streamline the proof of `MonoidalClosed.assoc` -/
+lemma comp_eq (x y z : C) [Closed x] [Closed y] : comp x y z = curry (compTranspose x y z) := rfl
+
+/-!
+The proofs of associativity and unitality use the following outline:
+  1. Take adjoint transpose on each side of the equality (uncurry_injective)
+  2. Do whatever rewrites/simps are necessary to apply uncurry_curry
+  3. Conclude with simp
+-/
+
+/-- Left unitality of the enriched structure -/
+@[reassoc (attr := simp)]
+lemma id_comp (x y : C) [Closed x] :
+    (λ_ ((ihom x).obj y)).inv ≫ id x ▷ _ ≫ comp x x y = 𝟙 _:= by
+  apply uncurry_injective
+  rw [uncurry_natural_left, uncurry_natural_left, comp_eq, uncurry_curry, id_eq, compTranspose_eq,
+      associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ← uncurry_eq,
+      uncurry_curry, triangle_assoc_comp_right_assoc, whiskerLeft_inv_hom_assoc,
+      uncurry_id_eq_ev _ _]
+
+/-- Right unitality of the enriched structure -/
+@[reassoc (attr := simp)]
+lemma comp_id (x y : C) [Closed x] [Closed y] :
+    (ρ_ ((ihom x).obj y)).inv ≫ _ ◁ id y ≫ comp x y y = 𝟙 _ := by
+  apply uncurry_injective
+  rw [uncurry_natural_left, uncurry_natural_left, comp_eq, uncurry_curry, compTranspose_eq,
+    associator_inv_naturality_right_assoc, ← rightUnitor_tensor_inv_assoc,
+    whisker_exchange_assoc, ← rightUnitor_inv_naturality_assoc, ← uncurry_id_eq_ev y y]
+  simp only [Functor.id_obj]
+  rw [← uncurry_natural_left]
+  simp [id_eq, uncurry_id_eq_ev]
+
+/-- Associativity of the enriched structure -/
+@[reassoc]
+lemma assoc (w x y z : C) [Closed w] [Closed x] [Closed y] :
+    (α_ _ _ _).inv ≫ comp w x y ▷ _ ≫ comp w y z = _ ◁ comp x y z ≫ comp w x z := by
+  apply uncurry_injective
+  simp only [uncurry_natural_left, comp_eq]
+  rw [uncurry_curry, uncurry_curry]; simp only [compTranspose_eq, Category.assoc]
+  rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc]; dsimp
+  rw [← uncurry_eq, uncurry_curry, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
+    ← uncurry_eq, uncurry_curry]
+  simp only [comp_whiskerRight, tensorLeft_obj, Category.assoc, pentagon_inv_assoc,
+    whiskerRight_tensor, Iso.hom_inv_id_assoc]
+
+end Enriched
+
 end MonoidalClosed
 attribute [nolint simpNF] CategoryTheory.MonoidalClosed.homEquiv_apply_eq
   CategoryTheory.MonoidalClosed.homEquiv_symm_apply_eq

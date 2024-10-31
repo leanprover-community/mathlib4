@@ -1354,13 +1354,13 @@ theorem CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
       exact C1_projOrd C hsC ho hx₁
 
 variable (o) in
-theorem succ_mono : CategoryTheory.Mono (ModuleCat.ofHom (πs C o)) := by
+theorem succ_mono : CategoryTheory.Mono (ModuleCat.asHom (πs C o)) := by
   rw [ModuleCat.mono_iff_injective]
   exact injective_πs _ _
 
 include hC in
 theorem succ_exact :
-    (ShortComplex.mk (ModuleCat.ofHom (πs C o)) (ModuleCat.ofHom (Linear_CC' C hsC ho))
+    (ShortComplex.mk (ModuleCat.asHom (πs C o)) (ModuleCat.asHom (Linear_CC' C hsC ho))
     (by ext; apply CC_comp_zero)).Exact := by
   rw [ShortComplex.moduleCat_exact_iff]
   intro f
@@ -1478,7 +1478,7 @@ theorem span_sum : Set.range (eval C) = Set.range (Sum.elim
 
 
 theorem square_commutes : SumEval C ho ∘ Sum.inl =
-    ModuleCat.ofHom (πs C o) ∘ eval (π C (ord I · < o)) := by
+    ModuleCat.asHom (πs C o) ∘ eval (π C (ord I · < o)) := by
   ext l
   dsimp [SumEval]
   rw [← Products.eval_πs C (Products.prop_of_isGood  _ _ l.prop)]
@@ -1644,7 +1644,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
     rfl
   have hse := succ_exact C hC hsC ho
   rw [ShortComplex.moduleCat_exact_iff_range_eq_ker] at hse
-  dsimp [ModuleCat.ofHom] at hse
+  dsimp [ModuleCat.asHom] at hse
 
   -- Rewrite `this` using exact sequence manipulations to conclude that a term is in the range of
   -- the linear map `πs`:
@@ -1701,8 +1701,8 @@ include hC in
 theorem linearIndependent_comp_of_eval
     (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
     LinearIndependent ℤ (eval (C' C ho)) →
-    LinearIndependent ℤ (ModuleCat.ofHom (Linear_CC' C hsC ho) ∘ SumEval C ho ∘ Sum.inr) := by
-  dsimp [SumEval, ModuleCat.ofHom]
+    LinearIndependent ℤ (ModuleCat.asHom (Linear_CC' C hsC ho) ∘ SumEval C ho ∘ Sum.inr) := by
+  dsimp [SumEval, ModuleCat.asHom]
   erw [max_eq_eval_unapply C hsC ho]
   intro h
   let f := MaxToGood C hC hsC ho h₁
@@ -1779,7 +1779,7 @@ def GoodProducts.Basis (hC : IsClosed C) :
 
 end Induction
 
-variable {S : Profinite} {ι : S → I → Bool} (hι : ClosedEmbedding ι)
+variable {S : Profinite} {ι : S → I → Bool} (hι : IsClosedEmbedding ι)
 include hι
 
 /--
@@ -1788,7 +1788,7 @@ Given a profinite set `S` and a closed embedding `S → (I → Bool)`, the `ℤ`
 -/
 theorem Nobeling_aux : Module.Free ℤ (LocallyConstant S ℤ) := Module.Free.of_equiv'
   (Module.Free.of_basis <| GoodProducts.Basis _ hι.isClosed_range) (LocallyConstant.congrLeftₗ ℤ
-  (Homeomorph.ofEmbedding ι hι.toEmbedding)).symm
+    (.ofIsEmbedding ι hι.isEmbedding)).symm
 
 end NobelingProof
 
@@ -1801,8 +1801,8 @@ def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decid
 
 open scoped Classical in
 /-- The map `Nobeling.ι` is a closed embedding. -/
-theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
-  apply Continuous.closedEmbedding
+theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
+  apply Continuous.isClosedEmbedding
   · dsimp (config := { unfoldPartialApp := true }) [ι]
     refine continuous_pi ?_
     intro C
@@ -1826,6 +1826,9 @@ theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
 
+@[deprecated (since := "2024-10-26")]
+alias Nobeling.embedding := Nobeling.isClosedEmbedding
+
 end Profinite
 
 open Profinite NobelingProof
@@ -1835,6 +1838,6 @@ instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
     Module.Free ℤ (LocallyConstant S ℤ) :=
   @Nobeling_aux {C : Set S // IsClopen C}
     (IsWellOrder.linearOrder WellOrderingRel) WellOrderingRel.isWellOrder
-    S (Nobeling.ι S) (Nobeling.embedding S)
+    S (Nobeling.ι S) (Nobeling.isClosedEmbedding S)
 
 set_option linter.style.longFile 2000

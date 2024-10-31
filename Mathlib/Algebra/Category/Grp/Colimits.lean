@@ -7,7 +7,7 @@ import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # The category of additive commutative groups has all colimits.
@@ -227,7 +227,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{w} F) where
       rw [map_neg, map_neg, ih]
     | add x y ihx ihy =>
       simp only [quot_add]
-      erw [m.map_add, (descMorphism F s).map_add, ihx, ihy]
+      rw [m.map_add, (descMorphism F s).map_add, ihx, ihy]
 
 end Colimits
 

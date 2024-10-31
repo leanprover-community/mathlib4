@@ -16,7 +16,7 @@ variable {ι κ G₀ M₀ R : Type*}
 
 namespace Set
 section MulZeroClass
-variable [MulZeroClass M₀] {s t : Set ι} {f g : ι → M₀} {i : ι}
+variable [MulZeroClass M₀] {s t : Set ι} {i : ι}
 
 lemma indicator_mul (s : Set ι) (f g : ι → M₀) :
     indicator s (fun i ↦ f i * g i) = fun i ↦ indicator s f i * indicator s g i := by

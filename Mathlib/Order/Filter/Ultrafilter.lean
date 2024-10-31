@@ -119,7 +119,7 @@ theorem diff_mem_iff (f : Ultrafilter α) : s \ t ∈ f ↔ s ∈ f ∧ t ∉ f 
 def ofComplNotMemIff (f : Filter α) (h : ∀ s, sᶜ ∉ f ↔ s ∈ f) : Ultrafilter α where
   toFilter := f
   neBot' := ⟨fun hf => by simp [hf] at h⟩
-  le_of_le g hg hgf s hs := (h s).1 fun hsc => compl_not_mem hs (hgf hsc)
+  le_of_le _ _ hgf s hs := (h s).1 fun hsc => compl_not_mem hs (hgf hsc)
 
 /-- If `f : Filter α` is an atom, then it is an ultrafilter. -/
 def ofAtom (f : Filter α) (hf : IsAtom f) : Ultrafilter α where

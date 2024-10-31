@@ -272,7 +272,7 @@ theorem MapsTo.range_restrict (f : α → β) (s : Set α) (t : Set β) (h : Map
 
 theorem mapsTo_iff_exists_map_subtype : MapsTo f s t ↔ ∃ g : s → t, ∀ x : s, f x = g x :=
   ⟨fun h => ⟨h.restrict f s t, fun _ => rfl⟩, fun ⟨g, hg⟩ x hx => by
-    erw [hg ⟨x, hx⟩]
+    rw [hg ⟨x, hx⟩]
     apply Subtype.coe_prop⟩
 
 theorem mapsTo' : MapsTo f s t ↔ f '' s ⊆ t :=
@@ -281,9 +281,9 @@ theorem mapsTo' : MapsTo f s t ↔ f '' s ⊆ t :=
 theorem mapsTo_prod_map_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
   diagonal_subset_iff.2 fun _ => rfl
 
-theorem MapsTo.subset_preimage {f : α → β} {s : Set α} {t : Set β} (hf : MapsTo f s t) :
-    s ⊆ f ⁻¹' t :=
-  hf
+theorem MapsTo.subset_preimage (hf : MapsTo f s t) : s ⊆ f ⁻¹' t := hf
+
+theorem mapsTo_iff_subset_preimage : MapsTo f s t ↔ s ⊆ f ⁻¹' t := Iff.rfl
 
 @[simp]
 theorem mapsTo_singleton {x : α} : MapsTo f {x} t ↔ f x ∈ t :=
@@ -544,7 +544,7 @@ theorem MapsTo.restrict_inj (h : MapsTo f s t) : Injective (h.restrict f s t) �
 
 theorem exists_injOn_iff_injective [Nonempty β] :
     (∃ f : α → β, InjOn f s) ↔ ∃ f : s → β, Injective f :=
-  ⟨fun ⟨f, hf⟩ => ⟨_, hf.injective⟩,
+  ⟨fun ⟨_, hf⟩ => ⟨_, hf.injective⟩,
    fun ⟨f, hf⟩ => by
     lift f to α → β using trivial
     exact ⟨f, injOn_iff_injective.2 hf⟩⟩
@@ -625,8 +625,15 @@ theorem InjOn.imageFactorization_injective (h : InjOn f s) :
 end injOn
 
 section graphOn
+variable {x : α × β}
+
+@[simp] lemma mem_graphOn : x ∈ s.graphOn f ↔ x.1 ∈ s ∧ f x.1 = x.2 := by aesop (add simp graphOn)
 
 @[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := image_empty _
+@[simp] lemma graphOn_eq_empty : graphOn f s = ∅ ↔ s = ∅ := image_eq_empty
+@[simp] lemma graphOn_nonempty : (s.graphOn f).Nonempty ↔ s.Nonempty := image_nonempty
+
+protected alias ⟨_, Nonempty.graphOn⟩ := graphOn_nonempty
 
 @[simp]
 lemma graphOn_union (f : α → β) (s t : Set α) : graphOn f (s ∪ t) = graphOn f s ∪ graphOn f t :=
@@ -644,6 +651,24 @@ lemma graphOn_insert (f : α → β) (x : α) (s : Set α) :
 @[simp]
 lemma image_fst_graphOn (f : α → β) (s : Set α) : Prod.fst '' graphOn f s = s := by
   simp [graphOn, image_image]
+
+@[simp] lemma image_snd_graphOn (f : α → β) : Prod.snd '' s.graphOn f = f '' s := by ext x; simp
+
+lemma fst_injOn_graph : (s.graphOn f).InjOn Prod.fst := by aesop (add simp InjOn)
+
+lemma graphOn_comp (s : Set α) (f : α → β) (g : β → γ) :
+    s.graphOn (g ∘ f) = (fun x ↦ (x.1, g x.2)) '' s.graphOn f := by
+  simpa using image_comp (fun x ↦ (x.1, g x.2)) (fun x ↦ (x, f x)) _
+
+lemma graphOn_univ_eq_range : univ.graphOn f = range fun x ↦ (x, f x) := image_univ
+
+@[simp] lemma graphOn_inj {g : α → β} : s.graphOn f = s.graphOn g ↔ s.EqOn f g := by
+  simp [Set.ext_iff, funext_iff, forall_swap, EqOn]
+
+lemma graphOn_univ_inj {g : α → β} : univ.graphOn f = univ.graphOn g ↔ f = g := by simp
+
+lemma graphOn_univ_injective : Injective (univ.graphOn : (α → β) → Set (α × β)) :=
+  fun _f _g ↦ graphOn_univ_inj.1
 
 lemma exists_eq_graphOn_image_fst [Nonempty β] {s : Set (α × β)} :
     (∃ f : α → β, s = graphOn f (Prod.fst '' s)) ↔ InjOn Prod.fst s := by
@@ -866,7 +891,7 @@ theorem BijOn.image_eq (h : BijOn f s t) : f '' s = t :=
   h.surjOn.image_eq_of_mapsTo h.mapsTo
 
 lemma BijOn.forall {p : β → Prop} (hf : BijOn f s t) : (∀ b ∈ t, p b) ↔ ∀ a ∈ s, p (f a) where
-  mp h a ha := h _ <| hf.mapsTo ha
+  mp h _ ha := h _ <| hf.mapsTo ha
   mpr h b hb := by obtain ⟨a, ha, rfl⟩ := hf.surjOn hb; exact h _ ha
 
 lemma BijOn.exists {p : β → Prop} (hf : BijOn f s t) : (∃ b ∈ t, p b) ↔ ∃ a ∈ s, p (f a) where
@@ -921,6 +946,34 @@ theorem BijOn.subset_right {r : Set β} (hf : BijOn f s t) (hrt : r ⊆ t) :
 theorem BijOn.subset_left {r : Set α} (hf : BijOn f s t) (hrs : r ⊆ s) :
     BijOn f r (f '' r) :=
   (hf.injOn.mono hrs).bijOn_image
+
+theorem BijOn.insert_iff (ha : a ∉ s) (hfa : f a ∉ t) :
+    BijOn f (insert a s) (insert (f a) t) ↔ BijOn f s t where
+  mp h := by
+    have := congrArg (· \ {f a}) (image_insert_eq ▸ h.image_eq)
+    simp only [mem_singleton_iff, insert_diff_of_mem] at this
+    rw [diff_singleton_eq_self hfa, diff_singleton_eq_self] at this
+    · exact ⟨by simp [← this, mapsTo'], h.injOn.mono (subset_insert ..),
+        by simp [← this, surjOn_image]⟩
+    simp only [mem_image, not_exists, not_and]
+    intro x hx
+    rw [h.injOn.eq_iff (by simp [hx]) (by simp)]
+    exact ha ∘ (· ▸ hx)
+  mpr h := by
+    repeat rw [insert_eq]
+    refine (bijOn_singleton.mpr rfl).union h ?_
+    simp only [singleton_union, injOn_insert fun x ↦ (hfa (h.mapsTo x)), h.injOn, mem_image,
+      not_exists, not_and, true_and]
+    exact fun _ hx h₂ ↦ hfa (h₂ ▸ h.mapsTo hx)
+
+theorem BijOn.insert (h₁ : BijOn f s t) (h₂ : f a ∉ t) :
+    BijOn f (insert a s) (insert (f a) t) :=
+  (insert_iff (h₂ <| h₁.mapsTo ·) h₂).mpr h₁
+
+theorem BijOn.sdiff_singleton (h₁ : BijOn f s t) (h₂ : a ∈ s) :
+    BijOn f (s \ {a}) (t \ {f a}) := by
+  convert h₁.subset_left diff_subset
+  simp [h₁.injOn.image_diff, h₁.image_eq, h₂, inter_eq_self_of_subset_right]
 
 end bijOn
 
@@ -1584,7 +1637,7 @@ lemma bijOn' (h₁ : MapsTo e s t) (h₂ : MapsTo e.symm t s) : BijOn e s t :=
   ⟨h₁, e.injective.injOn, fun b hb ↦ ⟨e.symm b, h₂ hb, apply_symm_apply _ _⟩⟩
 
 protected lemma bijOn (h : ∀ a, e a ∈ t ↔ a ∈ s) : BijOn e s t :=
-  e.bijOn' (fun a ↦ (h _).2) fun b hb ↦ (h _).1 <| by rwa [apply_symm_apply]
+  e.bijOn' (fun _ ↦ (h _).2) fun b hb ↦ (h _).1 <| by rwa [apply_symm_apply]
 
 lemma invOn : InvOn e e.symm t s :=
   ⟨e.rightInverse_symm.leftInvOn _, e.leftInverse_symm.leftInvOn _⟩

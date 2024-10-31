@@ -139,6 +139,6 @@ theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) :
         refine ⟨fun a H ↦ ?_, IH⟩
         rw [mem_map] at H
         rcases H with ⟨⟨a, a'⟩, H, rfl⟩
-        exact (CNF_fst_le_log H).trans_lt (log_mod_opow_log_lt_log_self hb ho hbo)
+        exact (CNF_fst_le_log H).trans_lt (log_mod_opow_log_lt_log_self hb hbo)
 
 end Ordinal

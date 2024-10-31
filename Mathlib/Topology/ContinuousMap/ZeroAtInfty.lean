@@ -381,7 +381,7 @@ theorem toBCF_injective : Function.Injective (toBCF : C₀(α, β) → α →ᵇ
 
 end
 
-variable {C : ℝ} {f g : C₀(α, β)}
+variable {f g : C₀(α, β)}
 
 /-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
 inclusion `ZeroAtInftyContinuousMap.toBCF`, is a pseudo-metric space. -/
@@ -428,7 +428,7 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
 /-- Continuous functions vanishing at infinity taking values in a complete space form a
 complete space. -/
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace C₀(α, β) :=
-  (completeSpace_iff_isComplete_range isometry_toBCF.uniformInducing).mpr
+  (completeSpace_iff_isComplete_range isometry_toBCF.isUniformInducing).mpr
     isClosed_range_toBCF.isComplete
 
 end Metric

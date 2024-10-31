@@ -16,7 +16,7 @@ import Mathlib.Order.Hom.Basic
 
 assert_not_exists OrderedCommMonoid
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Nat
 
@@ -26,7 +26,7 @@ we use a generic collection of instances so that it applies in other settings (e
 `StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
 
 variable [AddMonoidWithOne α] [PartialOrder α]
-variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
+variable [AddLeftMono α] [ZeroLEOneClass α]
 
 @[mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
@@ -176,7 +176,7 @@ section RingHomClass
 
 variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S] [FunLike F R S]
 
-theorem NeZero.nat_of_injective {n : ℕ} [h : NeZero (n : R)] [RingHomClass F R S] {f : F}
+theorem NeZero.nat_of_injective {n : ℕ} [NeZero (n : R)] [RingHomClass F R S] {f : F}
     (hf : Function.Injective f) : NeZero (n : S) :=
   ⟨fun h ↦ NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f]⟩
 

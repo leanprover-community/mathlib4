@@ -28,7 +28,7 @@ but generalize where appropriate.
 This is based on Lean code written as part of the bachelor's thesis of Alexander Spahl.
 -/
 
-open BigOperators Finset
+open Finset
 
 /-!
 ### Jacobi sums: definition and first properties
@@ -107,7 +107,7 @@ theorem jacobiSum_trivial_trivial :
     simpa only [isUnit_iff_ne_zero, mul_ne_zero_iff, ne_eq, sub_eq_zero, @eq_comm _ _ x] using hx
   calc ∑ x ∈ univ \ {0, 1}, (MulChar.trivial F R) x * (MulChar.trivial F R) (1 - x)
   _ = ∑ _ ∈ univ \ {0, 1}, 1 := sum_congr rfl this
-  _ = Finset.card (univ \ {0, 1}) := (cast_card _).symm
+  _ = #(univ \ {0, 1}) := (cast_card _).symm
   _ = Fintype.card F - 2 := by
     rw [card_sdiff (subset_univ _), card_univ, card_pair zero_ne_one,
       Nat.cast_sub <| Nat.add_one_le_of_lt Fintype.one_lt_card, Nat.cast_two]
@@ -269,7 +269,7 @@ lemma MulChar.exists_apply_sub_one_mul_apply_sub_one {n : ℕ} (hn : n ≠ 0) {�
 /-- If `χ` and `ψ` are multiplicative characters of order dividing `n` on a finite field `F`
 with values in an integral domain `R` and `μ` is a primitive `n`th root of unity in `R`,
 then `J(χ,ψ) = -1 + z*(μ - 1)^2` for some `z ∈ ℤ[μ] ⊆ R`. (We assume that `#F ≡ 1 mod n`.)
-Note that we do not state this as a divisbility in `R`, as this would give a weaker statement. -/
+Note that we do not state this as a divisibility in `R`, as this would give a weaker statement. -/
 lemma exists_jacobiSum_eq_neg_one_add {n : ℕ} (hn : 2 < n) {χ ψ : MulChar F R}
     {μ : R} (hχ : χ ^ n = 1) (hψ : ψ ^ n = 1) (hn' : n ∣ Fintype.card F - 1)
     (hμ : IsPrimitiveRoot μ n) :
