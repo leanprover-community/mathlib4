@@ -6,7 +6,7 @@ Authors: Damiano Testa, Moritz Firsching
 
 import Lean.DeclarationRange
 import Lean.ResolveName
--- transitively imported in Mathlib.Init
+import Mathlib.Tactic.Linter.Header
 
 /-!
 This file contains functions that are used by multiple linters.

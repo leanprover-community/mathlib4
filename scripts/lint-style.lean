@@ -14,20 +14,25 @@ import Cli.Basic
 This file defines the `lint-style` executable which runs all text-based style linters.
 The linters themselves are defined in `Mathlib.Tactic.Linter.TextBased`.
 
-In addition, this checks that `Mathlib.Init` is (transitively) imported in all of mathlib.
-
-In addition, this checks that every file in `scripts` is documented in its top-level README.
+In addition, this checks that
+- `Mathlib.Init` is (transitively) imported in all of mathlib, and
+- every file in `scripts` is documented in its top-level README.
 -/
 
-open Cli Mathlib.Linter.TextBased
+open Cli Mathlib.Linter.TextBased System.FilePath
 
-/-- Check that `Mathlib.Init` is transitively imported in all of Mathlib. -/
+/-- Check that `Mathlib.Init` is transitively imported in all of Mathlib.
+
+Every file imported in `Mathlib.Init` should in turn import the `Header` linter
+(except for the header linter itself, of course).
+-/
 def checkInitImports : IO Bool := do
   -- Find any file in the Mathlib directory which does not contain any Mathlib import.
   -- The current check (for any line starting with "import Mathlib") is not perfect
   -- (for instance, it would detect a multi-line comment containing the line import Mathlib),
   -- but is good enough in practice.
   let mut modulesWithoutMathlibImports := #[]
+  let mut importsHeaderLinter := #[]
   -- We simply parse `Mathlib.lean`; this removes the need for external tools like grep.
   let allModules := (← IO.FS.lines "Mathlib.lean").map (·.stripPrefix "import ")
     |>.filter (·.startsWith "Mathlib")
@@ -36,84 +41,32 @@ def checkInitImports : IO Bool := do
     let hasMathlibImport := (← IO.FS.lines path).any fun s ↦ s.startsWith "import Mathlib"
     if !hasMathlibImport then
       modulesWithoutMathlibImports := modulesWithoutMathlibImports.push module
+    if (← IO.FS.lines path).contains "import Mathlib.Tactic.Linter.Header" then
+      importsHeaderLinter := importsHeaderLinter.push module
 
-  -- We check that each of these is imported in `Mathlib/Init.lean`.
+  -- Every file importing the `header` linter should be imported in `Mathlib/Init.lean` itself.
+  -- (Downstream files should import `Mathlib.Init` and not the header linter.)
+  -- The only exception are auto-generated import-only files.
   let initImports := (← IO.FS.lines ("Mathlib" / "Init.lean")).filter (·.startsWith "import ")
     |>.map (·.stripPrefix "import ")
-  let missing := modulesWithoutMathlibImports.filter (fun mod ↦ !initImports.contains mod)
-    -- `DeclarationNames` is imported transitively in `Mathlib/Init.lean`.
-    |>.erase "Mathlib.Tactic.DeclarationNames"
+  let mismatch := importsHeaderLinter.filter (fun mod ↦
+    !["Mathlib", "Mathlib.Tactic", "Mathlib.Init"].contains mod && !initImports.contains mod)
+  if mismatch.size > 0 then
+    IO.eprintln s!"error: the following {mismatch.size} module(s) import the `header` linter \
+      directly, but should import Mathlib.Init instead: {mismatch}\n\
+      The `header` linter is included in Mathlib.Init, and every file in Mathlib \
+      should import Mathlib.Init. Please adjust the imports accordingly."
+    return true
+
+  -- Now, it only remains to check that every module (except for the Header linter itself)
+  -- imports some file in Mathlib.
+  let missing := modulesWithoutMathlibImports.erase "Mathlib.Tactic.Linter.Header"
   if missing.size > 0 then
     IO.eprintln s!"error: the following {missing.size} module(s) do not import Mathlib.Init: \
       {missing}"
     return true
-
-  -- Secondly, after #18725 almost all files imported in Mathlib.Init import the `header` linter
-  -- defined in `Mathlib.Tactic.Linter.Header`: so, we verify that the only
-  -- files importing `Mathlib.Tactic.Linter.Header` are also imported in `Mathlib.Init`.
-  let mut modulesImportingHeaderLinter := #[]
-  for module in allModules do
-    let path := (System.mkFilePath (module.split (· == '.'))).addExtension "lean"
-    if (← IO.FS.lines path).contains "import Mathlib.Tactic.Linter.Header" then
-      modulesImportingHeaderLinter := modulesImportingHeaderLinter.push module
-  let mismatch := modulesImportingHeaderLinter.filter (fun mod ↦
-    !["Mathlib", "Mathlib.Tactic", "Mathlib.Init"].contains mod && !initImports.contains mod)
-  if mismatch.size > 0 then
-    IO.eprintln s!"error: the following {mismatch.size} module(s) import the `header` linter \
-      directly, but also import Mathlib.Init: {mismatch}\n\
-      The `header` linter is already imported in Mathlib.Init; there is no need to import it \
-      again.\nPlease remove the import of `Mathlib.Tactic.Linter.Header."
-    return true
   return false
 
-
-/-- Check that `Mathlib.Init` is transitively imported in all of Mathlib. -/
-def checkInitImports : IO Bool := do
-  -- Find any file in the Mathlib directory which does not contain any Mathlib import.
-  -- The current check (for any line starting with "import Mathlib") is not perfect
-  -- (for instance, it would detect a multi-line comment containing the line import Mathlib),
-  -- but is good enough in practice.
-  let mut modulesWithoutMathlibImports := #[]
-  -- We simply parse `Mathlib.lean`; this removes the need for external tools like grep.
-  let allModules := (← IO.FS.lines "Mathlib.lean").map (·.stripPrefix "import ")
-    |>.filter (·.startsWith "Mathlib")
-  for module in allModules do
-    let path := (System.mkFilePath (module.split (· == '.'))).addExtension "lean"
-    let hasMathlibImport := (← IO.FS.lines path).any fun s ↦ s.startsWith "import Mathlib"
-    if !hasMathlibImport then
-      modulesWithoutMathlibImports := modulesWithoutMathlibImports.push module
-
-  -- We check that each of these is imported in `Mathlib/Init.lean`.
-  let initImports := (← IO.FS.lines ("Mathlib" / "Init.lean")).filter (·.startsWith "import ")
-    |>.map (·.stripPrefix "import ")
-  let missing := modulesWithoutMathlibImports.filter (fun mod ↦ !initImports.contains mod)
-    -- `DeclarationNames` is imported transitively in `Mathlib/Init.lean`.
-    |>.erase "Mathlib.Tactic.DeclarationNames"
-  if missing.size > 0 then
-    IO.eprintln s!"error: the following {missing.size} module(s) do not import Mathlib.Init: \
-      {missing}"
-    return true
-
-  -- Secondly, after #18725 almost all files imported in Mathlib.Init import the `header` linter
-  -- defined in `Mathlib.Tactic.Linter.Header`: so, we verify that the only
-  -- files importing `Mathlib.Tactic.Linter.Header` are also imported in `Mathlib.Init`.
-  let mut modulesImportingHeaderLinter := #[]
-  for module in allModules do
-    let path := (System.mkFilePath (module.split (· == '.'))).addExtension "lean"
-    if (← IO.FS.lines path).contains "import Mathlib.Tactic.Linter.Header" then
-      modulesImportingHeaderLinter := modulesImportingHeaderLinter.push module
-  let mismatch := modulesImportingHeaderLinter.filter (fun mod ↦
-    !["Mathlib", "Mathlib.Tactic", "Mathlib.Init"].contains mod && !initImports.contains mod)
-  if mismatch.size > 0 then
-    IO.eprintln s!"error: the following {mismatch.size} module(s) import the `header` linter \
-      directly, but also import Mathlib.Init: {mismatch}\n\
-      The `header` linter is already imported in Mathlib.Init; there is no need to import it \
-      again.\nPlease remove the import of `Mathlib.Tactic.Linter.Header."
-    return true
-  return false
-
-
-open System.FilePath
 
 /-- Verifies that every file in the `scripts` directory is documented in `scripts/README.md`.
 Return `True` if there are undocumented scripts, otherwise `False`. -/
@@ -135,6 +88,7 @@ def allScriptsDocumented : IO Bool := do
       {String.intercalate "," undocumented.toList}"
   return undocumented.size == 0
 
+
 /-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   let style : ErrorFormat := match args.hasFlag "github" with
@@ -147,13 +101,15 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     allModules := allModules.append ((← IO.FS.lines s).map (·.stripPrefix "import "))
   -- Note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually.
   allModules := allModules.erase "Batteries"
-  let numberErrorFiles ← lintModules allModules style fix
+  let mut numberErrors ← lintModules allModules style fix
+  if !(← checkInitImports) then numberErrors := numberErrors + 1
+  if !(← allScriptsDocumented) then numberErrors := numberErrors + 1
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.
   if args.hasFlag "fix" then
     return 0
-  else return min numberErrorFiles 125
+  else return min numberErrors 125
 
 /-- Setting up command line options and help text for `lake exe lint-style`. -/
 -- so far, no help options or so: perhaps that is fine?
