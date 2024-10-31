@@ -331,6 +331,10 @@ theorem map_map (f : M ↪[L] N) (g : N ↪[L] P) (h : M ≃ₚ[L] M) :
 theorem map_fg (f : M ↪[L] N) {g : M ≃ₚ[L] M} (g_fg : g.dom.FG) : (g.map f).dom.FG :=
   g_fg.map f.toHom
 
+theorem exists_preimage_map_iff (f : M ↪[L] N) (g : N ≃ₚ[L] N) :
+    (∃ (g' : M ≃ₚ[L] M), g'.map f = g) ↔ g.dom ⊔ g.cod ≤ f.toHom.range := by
+  sorry
+
 def is_extended_by (f : M ≃ₚ[L] M) (g : M ↪[L] N) : Prop :=
   ∃ f', f.map g ≤ f' ∧ g.toHom.range ≤ f'.dom
 
