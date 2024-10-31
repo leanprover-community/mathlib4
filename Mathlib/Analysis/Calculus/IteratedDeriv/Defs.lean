@@ -47,7 +47,6 @@ open Filter Asymptotics Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- The `n`-th iterated derivative of a function from `𝕜` to `F`, as a function from `𝕜` to `F`. -/
 def iteratedDeriv (n : ℕ) (f : 𝕜 → F) (x : 𝕜) : F :=
@@ -82,7 +81,7 @@ iterated derivative. -/
 theorem iteratedFDerivWithin_eq_equiv_comp :
     iteratedFDerivWithin 𝕜 n f s =
       ContinuousMultilinearMap.piFieldEquiv 𝕜 (Fin n) F ∘ iteratedDerivWithin n f s := by
-  rw [iteratedDerivWithin_eq_equiv_comp, ← Function.comp.assoc, LinearIsometryEquiv.self_comp_symm,
+  rw [iteratedDerivWithin_eq_equiv_comp, ← Function.comp_assoc, LinearIsometryEquiv.self_comp_symm,
     Function.id_comp]
 
 /-- The `n`-th Fréchet derivative applied to a vector `(m 0, ..., m (n-1))` is the derivative
@@ -166,7 +165,7 @@ theorem iteratedDerivWithin_succ {x : 𝕜} (hxs : UniqueDiffWithinAt 𝕜 s x) 
   rw [iteratedDerivWithin_eq_iteratedFDerivWithin, iteratedFDerivWithin_succ_apply_left,
     iteratedFDerivWithin_eq_equiv_comp, LinearIsometryEquiv.comp_fderivWithin _ hxs, derivWithin]
   change ((ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) ((fderivWithin 𝕜
-    (iteratedDerivWithin n f s) s x : 𝕜 → F) 1) : (Fin n → 𝕜) → F) fun i : Fin n => 1) =
+    (iteratedDerivWithin n f s) s x : 𝕜 → F) 1) : (Fin n → 𝕜) → F) fun _ : Fin n => 1) =
     (fderivWithin 𝕜 (iteratedDerivWithin n f s) s x : 𝕜 → F) 1
   simp
 
@@ -203,7 +202,7 @@ theorem iteratedDeriv_eq_equiv_comp : iteratedDeriv n f =
 iterated derivative. -/
 theorem iteratedFDeriv_eq_equiv_comp : iteratedFDeriv 𝕜 n f =
     ContinuousMultilinearMap.piFieldEquiv 𝕜 (Fin n) F ∘ iteratedDeriv n f := by
-  rw [iteratedDeriv_eq_equiv_comp, ← Function.comp.assoc, LinearIsometryEquiv.self_comp_symm,
+  rw [iteratedDeriv_eq_equiv_comp, ← Function.comp_assoc, LinearIsometryEquiv.self_comp_symm,
     Function.id_comp]
 
 /-- The `n`-th Fréchet derivative applied to a vector `(m 0, ..., m (n-1))` is the derivative

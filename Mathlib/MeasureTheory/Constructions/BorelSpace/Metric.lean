@@ -193,19 +193,19 @@ theorem tendsto_measure_cthickening_of_isCompact [MetricSpace α] [MeasurableSpa
 the borel sets of some second countable t4 topology (i.e. a separable metrizable one). -/
 theorem exists_borelSpace_of_countablyGenerated_of_separatesPoints (α : Type*)
     [m : MeasurableSpace α] [CountablyGenerated α] [SeparatesPoints α] :
-    ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ BorelSpace α := by
+    ∃ _ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ BorelSpace α := by
   rcases measurableEquiv_nat_bool_of_countablyGenerated α with ⟨s, ⟨f⟩⟩
   letI := induced f inferInstance
-  let F := f.toEquiv.toHomeomorphOfInducing <| inducing_induced _
+  let F := f.toEquiv.toHomeomorphOfIsInducing <| .induced _
   exact ⟨inferInstance, F.secondCountableTopology, F.symm.t4Space,
-    MeasurableEmbedding.borelSpace f.measurableEmbedding F.inducing⟩
+    f.measurableEmbedding.borelSpace F.isInducing⟩
 
 /-- If a measurable space on `α` is countably generated and separates points, there is some
 second countable t4 topology on `α` (i.e. a separable metrizable one) for which every
 open set is measurable. -/
 theorem exists_opensMeasurableSpace_of_countablySeparated (α : Type*)
     [m : MeasurableSpace α] [CountablySeparated α] :
-    ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ OpensMeasurableSpace α := by
+    ∃ _ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ OpensMeasurableSpace α := by
   rcases exists_countablyGenerated_le_of_countablySeparated α with ⟨m', _, _, m'le⟩
   rcases exists_borelSpace_of_countablyGenerated_of_separatesPoints (m := m') with ⟨τ, _, _, τm'⟩
   exact ⟨τ, ‹_›, ‹_›, @OpensMeasurableSpace.mk _ _ m (τm'.measurable_eq.symm.le.trans m'le)⟩

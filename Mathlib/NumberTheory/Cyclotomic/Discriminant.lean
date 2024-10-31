@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.NumberTheory.NumberField.Discriminant
+import Mathlib.RingTheory.DedekindDomain.Dvr
+import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 
 /-!
 # Discriminant of cyclotomic fields
@@ -168,7 +169,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
       convert_to (discr K fun i : Fin 1 ↦ (algebraMap K L) (-1) ^ ↑i) = _
       · congr
         ext i
-        simp only [map_neg, map_one, Function.comp_apply, Fin.coe_fin_one, _root_.pow_zero]
+        simp only [map_neg, map_one, Function.comp_apply, Fin.val_eq_zero, _root_.pow_zero]
         suffices (e.symm i : ℕ) = 0 by simp [this]
         rw [← Nat.lt_one_iff]
         convert (e.symm i).2

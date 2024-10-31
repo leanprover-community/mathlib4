@@ -325,7 +325,7 @@ lemma left_tensor_tensorObj₃_ext {j : I} {A : C} (Z : C)
       (_ ◁ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h) ≫ f =
         (_ ◁ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h) ≫ g) : f = g := by
     refine (@isColimitOfPreserves C _ C _ _ _ _ ((curriedTensor C).obj Z) _
-      (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (H := H) j) hZ).hom_ext ?_
+      (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (H := H) (j := j)) hZ).hom_ext ?_
     intro ⟨⟨i₁, i₂, i₃⟩, hi⟩
     exact h _ _ _ hi
 

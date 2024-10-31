@@ -67,7 +67,7 @@ def det : GL n R →* Rˣ where
       val_inv := by rw [← det_mul, A.mul_inv, det_one]
       inv_val := by rw [← det_mul, A.inv_mul, det_one] }
   map_one' := Units.ext det_one
-  map_mul' A B := Units.ext <| det_mul _ _
+  map_mul' _ _ := Units.ext <| det_mul _ _
 
 /-- The `GL n R` and `Matrix.GeneralLinearGroup R n` groups are multiplicatively equivalent -/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
@@ -138,6 +138,10 @@ theorem map_id : map (RingHom.id R) = MonoidHom.id (GL n R) :=
   rfl
 
 @[simp]
+protected lemma map_apply (f : R →+* S) (i j : n) (g : GL n R) : map f g i j = f (g i j) := by
+  rfl
+
+@[simp]
 theorem map_comp (f : T →+* R) (g : R →+* S) :
     map (g.comp f) = (map g).comp (map (n := n) f) :=
   rfl
@@ -146,6 +150,44 @@ theorem map_comp (f : T →+* R) (g : R →+* S) :
 theorem map_comp_apply (f : T →+* R) (g : R →+* S) (x : GL n T) :
     (map g).comp (map f) x = map g (map f x) :=
   rfl
+
+variable (f : R →+* S)
+
+@[simp]
+protected lemma map_one : map f (1 : GL n R) = 1 := by
+  ext
+  simp only [_root_.map_one, Units.val_one]
+
+protected lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
+  ext
+  simp only [_root_.map_mul, Units.val_mul]
+
+protected lemma map_inv (g : GL n R) : map f g⁻¹ = (map f g)⁻¹ := by
+  ext
+  simp only [_root_.map_inv, coe_units_inv]
+
+protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
+    Units.map f (Matrix.GeneralLinearGroup.det g) := by
+  ext
+  simp only [map, RingHom.mapMatrix_apply, Units.inv_eq_val_inv, Matrix.coe_units_inv,
+    Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_coe]
+  exact Eq.symm (RingHom.map_det f g.1)
+
+lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
+  simp only [map_inv, mul_inv_cancel]
+
+lemma map_inv_mul_map (g : GL n R) : map f g⁻¹ * map f g = 1 := by
+  simp only [map_inv, inv_mul_cancel]
+
+@[simp]
+lemma coe_map_mul_map_inv (g : GL n R) : g.val.map f * g.val⁻¹.map f = 1 := by
+  rw [← Matrix.map_mul]
+  simp only [isUnits_det_units, mul_nonsing_inv, map_zero, _root_.map_one, Matrix.map_one]
+
+@[simp]
+lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := by
+  rw [← Matrix.map_mul]
+  simp only [isUnits_det_units, nonsing_inv_mul, map_zero, _root_.map_one, Matrix.map_one]
 
 end GeneralLinearGroup
 
@@ -184,6 +226,8 @@ variable (n R)
 linear ordered ring and positive determinant. -/
 def GLPos : Subgroup (GL n R) :=
   (Units.posSubgroup R).comap GeneralLinearGroup.det
+
+@[inherit_doc] scoped[MatrixGroups] notation "GL(" n ", " R ")" "⁺" => GLPos (Fin n) R
 
 end
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Group.List
-import Mathlib.Algebra.Group.Pointwise.Set
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Data.List.OfFn
 
 /-!
@@ -15,8 +15,7 @@ This file proves some lemmas about pointwise algebraic operations with lists of 
 
 namespace Set
 
-variable {F α β γ : Type*}
-variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
+variable {α : Type*} [Monoid α] {s : Set α} {n : ℕ}
 
 open Pointwise
 

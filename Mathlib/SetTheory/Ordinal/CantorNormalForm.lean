@@ -130,7 +130,7 @@ protected theorem foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 *
 theorem le_log_of_mem_exponents {b o x : Ordinal} : x ∈ exponents b o → x ≤ log b o := by
   refine CNFRec b ?_ (fun o ho H ↦ ?_) o
   · simp
-  · rw [CNF.exponents, CNF.ne_zero ho, map_cons, mem_cons]
+  · rw [exponents, CNF.ne_zero ho, map_cons, mem_cons]
     rintro (rfl | h)
     · rfl
     · exact (H h).trans (log_mono_right _ (mod_opow_log_lt_self b ho).le)
@@ -175,44 +175,44 @@ section deprecated
 
 set_option linter.deprecated false
 
-@[deprecated CNF.zero_right (since := "2024-09-23")]
+@[deprecated CNF.zero_right (since := "2024-10-31")]
 alias CNF_zero := CNF.zero_right
 
-@[deprecated CNF.zero_left (since := "2024-09-23")]
+@[deprecated CNF.zero_left (since := "2024-10-31")]
 alias zero_CNF := CNF.zero_left
 
-@[deprecated CNF.ne_zero (since := "2024-09-23")]
+@[deprecated CNF.ne_zero (since := "2024-10-31")]
 alias CNF_ne_zero := CNF.ne_zero
 
-@[deprecated CNF.of_le_one (since := "2024-09-23")]
+@[deprecated CNF.of_le_one (since := "2024-10-31")]
 alias CNF_of_le_one := CNF.of_le_one
 
-@[deprecated CNF.of_lt (since := "2024-09-23")]
+@[deprecated CNF.of_lt (since := "2024-10-31")]
 alias CNF_of_lt := CNF.of_lt
 
-@[deprecated CNF.foldr (since := "2024-09-23")]
+@[deprecated CNF.foldr (since := "2024-10-31")]
 alias CNF_foldr := CNF.foldr
 
-@[deprecated CNF.le_log_of_mem_exponents (since := "2024-09-23")]
+@[deprecated CNF.le_log_of_mem_exponents (since := "2024-10-31")]
 theorem CNF_fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} (h : x ∈ CNF b o) :
     x.1 ≤ log b o :=
   CNF.le_log_of_mem_exponents (CNF.mem_exponents_of_mem h)
 
 /-- Every exponent in the Cantor normal form `CNF b o` is less or equal to `o`. -/
-@[deprecated CNF_fst_le_log (since := "2024-09-23")]
+@[deprecated CNF_fst_le_log (since := "2024-09-21")]
 theorem CNF_fst_le {b o : Ordinal.{u}} {x : Ordinal × Ordinal} (h : x ∈ CNF b o) : x.1 ≤ o :=
   (CNF_fst_le_log h).trans <| log_le_self _ _
 
-@[deprecated CNF.pos_of_mem_coeffs (since := "2024-09-23")]
+@[deprecated CNF.pos_of_mem_coeffs (since := "2024-10-31")]
 theorem CNF_lt_snd {b o : Ordinal.{u}} {x : Ordinal × Ordinal} (h : x ∈ CNF b o) : 0 < x.2 :=
   CNF.pos_of_mem_coeffs (CNF.mem_coeffs_of_mem h)
 
-@[deprecated CNF.lt_of_mem_coeffs (since := "2024-09-23")]
+@[deprecated CNF.lt_of_mem_coeffs (since := "2024-10-31")]
 theorem CNF_snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} (h : x ∈ CNF b o) :
     x.2 < b :=
   CNF.lt_of_mem_coeffs hb (CNF.mem_coeffs_of_mem h)
 
-@[deprecated CNF.exponents_sorted (since := "2024-09-23")]
+@[deprecated CNF.exponents_sorted (since := "2024-10-31")]
 theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) :=
   CNF.exponents_sorted b o
 
