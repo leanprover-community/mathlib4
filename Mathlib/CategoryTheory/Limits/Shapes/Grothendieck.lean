@@ -50,7 +50,8 @@ noncomputable section
 
 variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F Y ⋙ G)]
 
-local instance : ∀ X, HasColimit (Grothendieck.ι F X ⋙ G) :=
+@[local instance]
+private lemma hasColimitFiber : ∀ X, HasColimit (Grothendieck.ι F X ⋙ G) :=
   fun X => hasColimitOfIso (F := F.map (𝟙 _) ⋙ Grothendieck.ι F X ⋙ G) <|
     (Functor.leftUnitor (Grothendieck.ι F X ⋙ G)).symm ≪≫
     (isoWhiskerRight (eqToIso (F.map_id X).symm) (Grothendieck.ι F X ⋙ G))
@@ -134,7 +135,8 @@ section
 
 variable [HasColimit G]
 
-local instance hasColimitFiberwiseColimit : HasColimit (fiberwiseColimit G) where
+@[local instance]
+lemma hasColimitFiberwiseColimit : HasColimit (fiberwiseColimit G) where
   exists_colimit := ⟨⟨_, isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _)⟩⟩
 
 /-- For every functor `G` on the Grothendieck construction `Grothendieck F`, if `G` has a colimit
@@ -148,7 +150,6 @@ end
 
 section
 
-variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F Y ⋙ G)]
 variable {G}
 
 /-- For a functor `G : Grothendieck F ⥤ H`, every cocone over `fiberwiseColimit G` induces a
@@ -184,13 +185,14 @@ def isColimitCoconeOfFiberwiseCocone {c : Cocone (fiberwiseColimit G)} (hc : IsC
 
 variable [HasColimit (fiberwiseColimit G)]
 
+variable (G)
+
 /-- We can infer that a functor `G : Grothendieck F ⥤ H`, with `F : C ⥤ Cat`, has a colimit from
 the fact that each of its fibers has a colimit and that these fiberwise colimits, as a functor
 `C ⥤ H` have a colimit. -/
-local instance hasColimitOfHasFiberwiseColimitOfHasBaseColimit : HasColimit G where
-  exists_colimit := ⟨⟨_, isColimitCoconeOfFiberwiseCocone ((colimit.isColimit _))⟩⟩
-
-variable (G)
+@[local instance]
+lemma hasColimitOfHasFiberwiseColimitOfHasBaseColimit : HasColimit G where
+  exists_colimit := ⟨⟨_, isColimitCoconeOfFiberwiseCocone (colimit.isColimit _)⟩⟩
 
 /-- For every functor `G` on the Grothendieck construction `Grothendieck F`, if `G` has a colimit
 and every fiber of `G` has a colimit, then taking this colimit is isomorphic to first taking the
@@ -199,18 +201,20 @@ def colimitFiberwiseColimitIso : colimit (fiberwiseColimit G) ≅ colimit G :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit (fiberwiseColimit G))
     (isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _))
 
-lemma ι_colimitFiberwiseColimitIso_hom (X : C) (d : F.obj X) [HasColimit (Grothendieck.ι F X)] :
+end
+
+attribute [local instance] hasColimitOfHasFiberwiseColimitOfHasBaseColimit
+
+lemma ι_colimitFiberwiseColimitIso_hom (X : C) (d : F.obj X) [HasColimit (fiberwiseColimit G)] :
     colimit.ι (Grothendieck.ι F X ⋙ G) d ≫ colimit.ι (fiberwiseColimit G) X ≫
-      (colimitFiberwiseColimitIso G).hom = colimit.ι G ⟨X, d⟩ :=
-  sorry
+      (colimitFiberwiseColimitIso G).hom = colimit.ι G ⟨X, d⟩ := by
+  simp [colimitFiberwiseColimitIso]
 
 end
 
 theorem hasColimitsOfShapeGrothendieck [∀ X, HasColimitsOfShape (F.obj X) H]
     [HasColimitsOfShape C H] : HasColimitsOfShape (Grothendieck F) H where
-  has_colimit _ := hasColimitOfHasFiberwiseColimitOfHasBaseColimit
-
-end
+  has_colimit _ := hasColimitOfHasFiberwiseColimitOfHasBaseColimit _
 
 end Limits
 
