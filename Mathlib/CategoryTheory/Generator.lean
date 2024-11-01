@@ -29,7 +29,7 @@ We
 * show that separating and coseparating are dual notions;
 * show that detecting and codetecting are dual notions;
 * show that if `C` has equalizers, then detecting implies separating;
-* show that if `C` has coequalizers, then codetecting implies separating;
+* show that if `C` has coequalizers, then codetecting implies coseparating;
 * show that if `C` is balanced, then separating implies detecting and coseparating implies
   codetecting;
 * show that `∅` is separating if and only if `∅` is coseparating if and only if `C` is thin;
@@ -39,23 +39,26 @@ We
   situation;
 * show that `G` is a separator if and only if `coyoneda.obj (op G)` is faithful (and the dual);
 * show that `G` is a detector if and only if `coyoneda.obj (op G)` reflects isomorphisms (and the
-  dual).
+  dual);
+* show that `C` is `WellPowered` if it admits small pullbacks and a detector;
+* define corresponding type classes `HasSeparator`, `HasCoseparator`, `HasDetector`
+and `HasCodetector` on categories and prove analogous results for these.
 
 ## Future work
 
 * We currently don't have any examples yet.
-* We will want typeclasses `HasSeparator C` and similar.
 
 -/
 
 
-universe w v₁ v₂ u₁ u₂
+universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory.Limits Opposite
 
 namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+  (E : Type u₃) [Category.{v₃} E]
 
 /-- We say that `𝒢` is a separating set if the functors `C(G, -)` for `G ∈ 𝒢` are collectively
     faithful, i.e., if `h ≫ f = h ≫ g` for all `h` with domain in `𝒢` implies `f = g`. -/
@@ -386,7 +389,7 @@ theorem IsCodetector.isCoseparator [HasCoequalizers C] {G : C} : IsCodetector G 
 theorem IsSeparator.isDetector [Balanced C] {G : C} : IsSeparator G → IsDetector G :=
   IsSeparating.isDetecting
 
-theorem IsCospearator.isCodetector [Balanced C] {G : C} : IsCoseparator G → IsCodetector G :=
+theorem IsCoseparator.isCodetector [Balanced C] {G : C} : IsCoseparator G → IsCodetector G :=
   IsCoseparating.isCodetecting
 
 theorem isSeparator_def (G : C) :
@@ -563,8 +566,101 @@ theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
     rwa [isIso_iff_bijective, Function.bijective_iff_existsUnique]
 
 theorem wellPowered_of_isDetector [HasPullbacks C] (G : C) (hG : IsDetector G) : WellPowered C :=
-  -- Porting note: added the following `haveI` to prevent universe issues
-  haveI := small_subsingleton ({G} : Set C)
   wellPowered_of_isDetecting hG
+
+theorem wellPowered_of_isSeparator [HasPullbacks C] [Balanced C] (G : C) (hG : IsSeparator G) :
+    WellPowered C := wellPowered_of_isDetecting hG.isDetector
+
+section HasGenerator
+
+/--
+A category instantiates `HasSeparator` if and only if it has a separator.
+See also `IsSeparator`.
+-/
+class HasSeparator : Prop :=
+  hasSeparator : ∃ G : E, IsSeparator G
+
+
+/--
+A category instantiates `HasCoseparator` if and only if it has a coseparator.
+See also `IsCoseparator`.
+-/
+class HasCoseparator : Prop :=
+  hasCoseparator : ∃ G : E, IsCoseparator G
+
+
+/--
+A category instantiates `HasDetector` if and only if it has a detector.
+See also `IsDetector`.
+-/
+class HasDetector : Prop :=
+  hasDetector : ∃ G : E, IsDetector G
+
+
+/--
+A category instantiates `HasCodetector` if and only if it has a codetector.
+See also `IsCodetector`.
+-/
+class HasCodetector : Prop :=
+  hasCodetector : ∃ G : E, IsCodetector G
+
+theorem HasSeparator.hasDetector [Balanced C] [HasSeparator C] : HasDetector C := by
+  obtain ⟨G, hG⟩ : HasSeparator C := inferInstance
+  exact ⟨G, hG.isDetector⟩
+
+theorem HasDetector.hasSeparator [HasEqualizers C] [HasDetector C] : HasSeparator C := by
+  obtain ⟨G, hG⟩ : HasDetector C := inferInstance
+  exact ⟨G, hG.isSeparator⟩
+
+theorem HasCoseparator.hasCodetector [Balanced C] [HasCoseparator C] : HasCodetector C := by
+  obtain ⟨G, hG⟩ : HasCoseparator C := inferInstance
+  exact ⟨G, hG.isCodetector⟩
+
+theorem HasCodetector.hasCoseparator [HasCoequalizers C] [HasCodetector C] : HasCoseparator C := by
+  obtain ⟨G, hG⟩ : HasCodetector C := inferInstance
+  exact ⟨G, hG.isCoseparator⟩
+
+theorem HasDetector.wellPowered [HasPullbacks C] [HasDetector C] : WellPowered C := by
+  obtain ⟨G, hG⟩ : HasDetector C := inferInstance
+  exact wellPowered_of_isDetector G hG
+
+theorem HasSeparator.wellPowered [HasPullbacks C] [Balanced C] [HasSeparator C] :
+    WellPowered C := HasSeparator.hasDetector.wellPowered
+
+end HasGenerator
+
+section Dual
+
+@[simp]
+theorem hasSeparator_op_iff : HasSeparator Eᵒᵖ ↔ HasCoseparator E :=
+  ⟨fun ⟨G, hG⟩ => ⟨unop G, (isCoseparator_unop_iff G).mpr hG⟩,
+   fun ⟨G, hG⟩ => ⟨op G, (isSeparator_op_iff G).mpr hG⟩⟩
+
+@[simp]
+theorem hasCoseparator_op_iff : HasCoseparator Eᵒᵖ ↔ HasSeparator E :=
+  ⟨fun ⟨G, hG⟩ => ⟨unop G, (isSeparator_unop_iff G).mpr hG⟩,
+   fun ⟨G, hG⟩ => ⟨op G, (isCoseparator_op_iff G).mpr hG⟩⟩
+
+theorem HasSeparator.hasCoseparator_op [HasSeparator C] : HasCoseparator Cᵒᵖ := by simp [*]
+theorem HasSeparator.hasCoseparator_unop [HasSeparator Cᵒᵖ] : HasCoseparator C := by simp_all
+theorem HasCoseparator.hasSeparator_op [HasCoseparator C] : HasSeparator Cᵒᵖ := by simp [*]
+theorem HasCoseparator.hasSeparator_unop [HasCoseparator Cᵒᵖ] : HasSeparator C := by simp_all
+
+@[simp]
+theorem hasDetector_op_iff : HasDetector Eᵒᵖ ↔ HasCodetector E :=
+  ⟨fun ⟨G, hG⟩ => ⟨unop G, (isCodetector_unop_iff G).mpr hG⟩,
+   fun ⟨G, hG⟩ => ⟨op G, (isDetector_op_iff G).mpr hG⟩⟩
+
+@[simp]
+theorem hasCodetector_op_iff : HasCodetector Eᵒᵖ ↔ HasDetector E :=
+  ⟨fun ⟨G, hG⟩ => ⟨unop G, (isDetector_unop_iff G).mpr hG⟩,
+   fun ⟨G, hG⟩ => ⟨op G, (isCodetector_op_iff G).mpr hG⟩⟩
+
+theorem HasDetector.hasCodetector_op [HasDetector C] : HasCodetector Cᵒᵖ := by simp [*]
+theorem HasDetector.hasCodetector_unop [HasDetector Cᵒᵖ] : HasCodetector C := by simp_all
+theorem HasCodetector.hasDetector_op [HasCodetector C] : HasDetector Cᵒᵖ := by simp [*]
+theorem HasCodetector.hasDetector_unop [HasCodetector Cᵒᵖ] : HasDetector C := by simp_all
+
+end Dual
 
 end CategoryTheory
