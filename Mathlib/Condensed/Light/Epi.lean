@@ -93,12 +93,4 @@ lemma epi_π_app_zero_of_epi : Epi (c.π.app ⟨0⟩) := by
 
 open Functor Limits
 
-instance : PreservesEpimorphisms (lim (J := ℕᵒᵖ) (C := LightCondMod.{u} R)) where
-  preserves {X Y} f hf := by
-    rw [NatTrans.epi_iff_epi_app] at hf
-    have := epi_π_app_zero_of_epi R (limit.isLimit X)
-    have := epi_π_app_zero_of_epi R (limit.isLimit Y)
-    -- This is not the right approach, need to reformulate the Epi -> AB* lemma
-    sorry
-
 end LightCondensed
