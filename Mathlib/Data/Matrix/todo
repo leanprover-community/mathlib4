@@ -1,5 +1,5 @@
 TODO:
-push everything to branch
+troubleshoot push 
 parse through all swapRow theorems and do what i did for the others
 add docstring on theorems and lemmas
 make left and right of mulRow_mulRow_inv_cancel 

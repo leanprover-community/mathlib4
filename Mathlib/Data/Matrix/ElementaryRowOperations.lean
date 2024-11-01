@@ -57,6 +57,7 @@ variable [DecidableEq m]
 section swapRow
 
 -- Copies Row j to Row i, used in SwapRow
+
 def dupRow (M : Matrix m n α) (i : m) (j : m) : Matrix m n α :=
   updateRow M i (M j)
 
@@ -237,6 +238,7 @@ theorem mulRow_mulRow_inv_cancel_left [GroupWithZero R] [MulAction R α] (M : Ma
     exact hx
   · repeat rw [updateRow_ne h]
 
+-- CHANGE VARIABLE NAMES MAYBE (j is a column here i think?)
 @[simp]
 theorem mulRow_inv_cancel [DecidableEq α] [DivisionRing α] {y : ℕ} {z : ℕ}
     (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z) (h : M i j ≠ 0) :
