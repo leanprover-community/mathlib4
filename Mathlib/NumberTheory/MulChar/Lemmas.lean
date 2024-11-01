@@ -73,23 +73,18 @@ section IsCyclic
 variable {M : Type*} [CommMonoid M] [Fintype M] [DecidableEq M]
 variable {R : Type*} [CommMonoidWithZero R]
 
-
-variable (M) in
-/-- The order of the unit group of a finite monoid as a `PNat` (for use in `rootsOfUnity`). -/
-abbrev Monoid.orderUnits : ℕ+ := ⟨Fintype.card Mˣ, Fintype.card_pos⟩
-
 /-- Given a finite monoid `M` with unit group `Mˣ` cyclic of order `n` and an `n`th root of
 unity `ζ` in `R`, there is a multiplicative character `M → R` that sends a given generator
 of `Mˣ` to `ζ`. -/
-noncomputable def ofRootOfUnity {ζ : Rˣ} (hζ : ζ ∈ rootsOfUnity (Monoid.orderUnits M) R)
+noncomputable def ofRootOfUnity {ζ : Rˣ} (hζ : ζ ∈ rootsOfUnity (Fintype.card Mˣ) R)
     {g : Mˣ} (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     MulChar M R := by
-  have : orderOf ζ ∣ Monoid.orderUnits M :=
+  have : orderOf ζ ∣ Fintype.card Mˣ :=
     orderOf_dvd_iff_pow_eq_one.mpr <| (mem_rootsOfUnity _ ζ).mp hζ
   refine ofUnitHom <| monoidHomOfForallMemZpowers hg <| this.trans <| dvd_of_eq ?_
-  rw [orderOf_generator_eq_natCard hg, Nat.card_eq_fintype_card, PNat.mk_coe]
+  rw [orderOf_generator_eq_natCard hg, Nat.card_eq_fintype_card]
 
-lemma ofRootOfUnity_spec {ζ : Rˣ} (hζ : ζ ∈ rootsOfUnity (Monoid.orderUnits M) R)
+lemma ofRootOfUnity_spec {ζ : Rˣ} (hζ : ζ ∈ rootsOfUnity (Fintype.card Mˣ) R)
     {g : Mˣ} (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     ofRootOfUnity hζ hg g = ζ := by
   simp only [ofRootOfUnity, ofUnitHom_eq, equivToUnitHom_symm_coe,
@@ -99,10 +94,10 @@ variable (M R) in
 /-- The group of multiplicative characters on a finite monoid `M` with cyclic unit group `Mˣ`
 of order `n` is isomorphic to the group of `n`th roots of unity in the target `R`. -/
 noncomputable def equiv_rootsOfUnity [inst_cyc : IsCyclic Mˣ] :
-    MulChar M R ≃* rootsOfUnity (Monoid.orderUnits M) R where
+    MulChar M R ≃* rootsOfUnity (Fintype.card Mˣ) R where
   toFun χ :=
     ⟨χ.toUnitHom <| Classical.choose inst_cyc.exists_generator, by
-      simp only [toUnitHom_eq, mem_rootsOfUnity, PNat.mk_coe, ← map_pow, pow_card_eq_one, map_one]⟩
+      simp only [toUnitHom_eq, mem_rootsOfUnity, ← map_pow, pow_card_eq_one, map_one]⟩
   invFun ζ := ofRootOfUnity ζ.prop <| Classical.choose_spec inst_cyc.exists_generator
   left_inv χ := by
     simp only [toUnitHom_eq, eq_iff <| Classical.choose_spec inst_cyc.exists_generator,
@@ -138,11 +133,9 @@ lemma exists_mulChar_orderOf {n : ℕ} (h : n ∣ Fintype.card F - 1) {ζ : R}
     exact (Fintype.one_lt_card.trans_le h).false
   let e := MulChar.equiv_rootsOfUnity F R
   let ζ' : Rˣ := (hζ.isUnit hn₀).unit
-  have h' : ζ' ^ (Monoid.orderUnits F : ℕ) = 1 := by
-    have hn : n ∣ Monoid.orderUnits F := by
-      rwa [Monoid.orderUnits, PNat.mk_coe, Fintype.card_units]
-    exact Units.ext_iff.mpr <| (IsPrimitiveRoot.pow_eq_one_iff_dvd hζ _).mpr hn
-  use e.symm ⟨ζ', (mem_rootsOfUnity (Monoid.orderUnits F) ζ').mpr h'⟩
+  have h' : ζ' ^ (Fintype.card Fˣ : ℕ) = 1 :=
+    Units.ext_iff.mpr <| (hζ.pow_eq_one_iff_dvd _).mpr <| Fintype.card_units (α := F) ▸ h
+  use e.symm ⟨ζ', (mem_rootsOfUnity (Fintype.card Fˣ) ζ').mpr h'⟩
   rw [e.symm.orderOf_eq, orderOf_eq_iff hn₀]
   refine ⟨?_, fun m hm hm₀ h ↦ ?_⟩
   · ext
@@ -161,7 +154,7 @@ lemma orderOf_dvd_card_sub_one (χ : MulChar F R) : orderOf χ ∣ Fintype.card 
 /-- There is always a character on `F` of order `#F-1` with values in a ring that has
 a primitive `(#F-1)`th root of unity. -/
 lemma exists_mulChar_orderOf_eq_card_units [DecidableEq F]
-    {ζ : R} (hζ : IsPrimitiveRoot ζ (Monoid.orderUnits F)) :
+    {ζ : R} (hζ : IsPrimitiveRoot ζ (Fintype.card Fˣ)) :
     ∃ χ : MulChar F R, orderOf χ = Fintype.card Fˣ :=
   exists_mulChar_orderOf F (by rw [Fintype.card_units]) hζ
 
@@ -174,7 +167,7 @@ variable {R : Type*} [CommRing R]
 lemma apply_mem_rootsOfUnity_orderOf (χ : MulChar F R) {a : F} (ha : a ≠ 0) :
     ∃ ζ ∈ rootsOfUnity (orderOf χ) R, ζ = χ a := by
   have hu : IsUnit (χ a) := ha.isUnit.map χ
-  refine ⟨hu.unit, ?_, IsUnit.unit_spec hu⟩
+  refine ⟨hu.unit, ?_, hu.unit_spec⟩
   rw [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one,
     IsUnit.unit_spec, ← χ.pow_apply' χ.orderOf_pos.ne', pow_orderOf_eq_one,
     show a = (isUnit_iff_ne_zero.mpr ha).unit by simp only [IsUnit.unit_spec],
