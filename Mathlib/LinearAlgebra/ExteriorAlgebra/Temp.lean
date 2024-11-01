@@ -31,4 +31,9 @@ noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) :
     {s : Finset I // Finset.card s = n} → ⋀[R]^n M :=
   fun ⟨s, hs⟩ => ιMulti (fun i => v (Finset.orderIsoOfFin s hs i))
 
+theorem ιMulti_family_of_basis (b : Basis I R M)
+  (s : {a : Finset I // Finset.card a = n}) : b.exteriorPower s = ιMulti_family b s :=
+  sorry
+
+
 end exteriorPower

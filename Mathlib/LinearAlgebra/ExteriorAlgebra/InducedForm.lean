@@ -105,6 +105,19 @@ theorem inducedForm_basis (s t : {a : Finset I // a.card = k}) :
   mul_one, Finset.coe_orderIsoOfFin_apply, smul_eq_mul, ite_mul, one_mul, zero_mul,
   mul_zero, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
 
+#check ιMulti_family
+
+theorem inducedForm_ιMulti_basis (s t : {a : Finset I // a.card = k}) :
+  ⟪ιMulti_family b s, ιMulti_family b t⟫ = ⟪b.exteriorPower s, b.exteriorPower t⟫ := by
+  simp only [← ιMulti_family_of_basis]
+
+theorem inducedForm_ιMulti_family (v w : I → M) (s t : {a : Finset I // a.card = k}) :
+  ⟪ιMulti_family v s, ιMulti_family w t⟫ = Matrix.det (fun i j ↦
+  B (v (s.1.orderIsoOfFin s.property i)) (w (t.1.orderIsoOfFin t.property j)) ) := by
+
+
+  sorry
+
 end ringProperties
 
 end exteriorPower
