@@ -177,7 +177,7 @@ theorem prod_add (f g : ι → α) (s : Finset ι) :
           tauto)
 
 theorem prod_one_add {f : ι → α} (s : Finset ι) :
-    (s.prod fun i => 1 + f i) = s.powerset.sum fun t => t.prod f := by
+    ∏ i ∈ s, (1 + f i) = ∑ t ∈ s.powerset, t.prod f := by
   simp_rw [add_comm, Finset.prod_add]
   congr
   ext t

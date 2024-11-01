@@ -79,7 +79,8 @@ theorem instT0Space [T0Space R] : T0Space (MvPowerSeries σ R) := Pi.instT0Space
 theorem instT2Space [T2Space R] : T2Space (MvPowerSeries σ R) := Pi.t2Space
 
 variable (R) in
-/-- coeff are continuous -/
+/-- `MvPowerSeries.coeff` is continuous. -/
+@[fun_prop]
 theorem continuous_coeff [Semiring R] (d : σ →₀ ℕ) : Continuous (MvPowerSeries.coeff R d) :=
   continuous_pi_iff.mp continuous_id d
 
@@ -119,6 +120,7 @@ theorem instTopologicalRing (R : Type*) [TopologicalSpace R] [Ring R] [Topologic
 
 variable {σ R}
 
+@[fun_prop]
 theorem continuous_C [Ring R] [TopologicalRing R] :
     Continuous (C σ R) := by
   classical
