@@ -348,8 +348,6 @@ noncomputable instance filteredColimPreservesFiniteLimitsOfTypes :
   · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
   · exact asIso (colimitLimitToLimitColimitCone F)
 
-section
-
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
 
 section
@@ -375,7 +373,6 @@ noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesColimitsOfSh
   intro J _ _
   infer_instance
 
-end
 
 end
 
