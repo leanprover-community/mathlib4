@@ -186,3 +186,28 @@ protected def of [LinearOrderedField K] [FloorRing K] (v : K) : GenContFract K :
                             -- denominators; all partial numerators are simply 1
 
 end GenContFract
+
+namespace ContFract
+
+open GenContFract
+
+variable {K : Type*} [LinearOrderedField K] [FloorRing K]
+
+/-- Returns the `ContFract` of a value. The returned gcf is a `ContFract` that
+terminates if and only if `v` is rational
+(see `Algebra.ContinuedFractions.Computation.TerminatesIffRat`).
+
+The continued fraction representation of `v` is given by `[⌊v⌋; b₀, b₁, b₂,...]`, where
+`[b₀; b₁, b₂,...]` recursively is the continued fraction representation of `1 / (v - ⌊v⌋)`. This
+process stops when the fractional part `v - ⌊v⌋` hits 0 at some step.
+
+The implementation uses `IntFractPair.stream` to obtain the partial denominators of the continued
+fraction. Refer to said function for more details about the computation process.
+-/
+protected def of (v : K) : ContFract :=
+  let ⟨h, s⟩ := IntFractPair.seq1 v -- get the sequence of integer and fractional parts.
+  ⟨h.b, -- the head is just the first integer part
+    s.map fun p => p.b.toNat.toPNat'⟩ -- the sequence consists of the remaining integer parts as the
+    -- partial denominators
+
+end ContFract

@@ -378,11 +378,11 @@ end GenContFract
 
 open GenContFract
 
-namespace ContFract
+namespace RegContFract
 
 /-- Shows that the recurrence relation (`convs`) and direct evaluation (`convs'`) of a
 (regular) continued fraction coincide. -/
-nonrec theorem convs_eq_convs' [LinearOrderedField K] {c : ContFract K} :
+nonrec theorem convs_eq_convs' [LinearOrderedField K] {c : RegContFract K} :
     (↑c : GenContFract K).convs = (↑c : GenContFract K).convs' := by
   ext n
   apply convs_eq_convs'
@@ -390,4 +390,4 @@ nonrec theorem convs_eq_convs' [LinearOrderedField K] {c : ContFract K} :
   exact ⟨zero_lt_one.trans_le ((c : SimpContFract K).property m gp.a
     (partNum_eq_s_a s_nth_eq)).symm.le, c.property m gp.b <| partDen_eq_s_b s_nth_eq⟩
 
-end ContFract
+end RegContFract
