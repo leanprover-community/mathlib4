@@ -84,14 +84,17 @@ lemma ι_lanObjObjIsoColimit_hom (X : D) (f : CostructuredArrow L X) :
   LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
     (isPointwiseLeftKanExtensionLanUnit L F X) f
 
-variable [∀ X, HasColimitsOfShape (CostructuredArrow L X) H]
+variable [∀ X, HasPointwiseLeftKanExtensionAt L X H]
 
-local instance : ∀ {X Y : D} (f : X ⟶ Y), HasColimit ((functor L).map f ⋙
-    Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ⋙ F) := by
+@[local instance]
+private theorem lanObjIsoFiberwiseColimit_inst_1 {X Y : D} (f : X ⟶ Y) :
+    HasColimit ((functor L).map f ⋙ Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ⋙ F) := by
   simp only [functor_obj, Cat.of_α, functor_map]
   infer_instance
 
-local instance : ∀ X, HasColimit (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F) := by
+@[local instance]
+private theorem lanObjIsoFiberwiseColimit_inst_2 (X : D) :
+    HasColimit (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F) := by
   simp only [functor_obj, Cat.of_α]
   infer_instance
 
@@ -167,7 +170,8 @@ noncomputable def lanCompColimIso [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
 
 variable [∀ X, HasColimitsOfShape (CostructuredArrow L X) H]
 
-local instance (X) : HasColimitsOfShape ↑((CostructuredArrow.functor L).obj X) H := by
+@[local instance]
+private theorem foo (X : D) : HasColimitsOfShape ↑((CostructuredArrow.functor L).obj X) H := by
   simp only [CostructuredArrow.functor_obj, Cat.of_α]
   infer_instance
 
