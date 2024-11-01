@@ -16,7 +16,7 @@ import Mathlib.Logic.Equiv.TransferInstance
 A *monomial order* is well ordering relation on a type of the form `σ →₀ ℕ` which
 is compatible with addition and for which `0` is the smallest element.
 Since several monomial orders may have to be used simultaneously, one cannot
-gets them as instances.
+get them as instances.
 In this formalization, they are presented as a structure `MonomialOrder` which encapsulates
 `MonomialOrder.toSyn`, an additive and monotone isomorphism to a linearly ordered cancellative
 additive commutative monoid.
@@ -31,7 +31,7 @@ It is activated using `open scoped MonomialOrder`.
 
 ## Examples
 
-We provide four examples of monomial orders, the most standard one in commutative algebra.
+We provide four examples of monomial orders, the most standard ones in commutative algebra.
 
 * `MonomialOrder.lex` : the lexicographic ordering on `σ →₀ ℕ`.
 For this, `σ` needs to be embedded with an ordering relation which statisfies `WellFoundedGT σ`.
@@ -41,7 +41,7 @@ The type synonym is `Lex (σ →₀ ℕ)` and the two lemmas `MonomialOrder.lex_
 and `MonomialOrder.lex_lt_iff` rewrite the ordering as comparisons in the type `Lex (σ →₀ ℕ)`.
 
 * `MonomialOrder.revLex` : the reverse lexicographic ordering on `σ →₀ ℕ`.
-For this, `σ` needs to be embedded with an ordering relation which statisfies `WellFoundedLT σ`.
+For this, `σ` needs to be endowed with an ordering relation which satisfies `WellFoundedLT σ`.
 (This last property is automatic when `σ` is finite).
 
 The type synonym is `Lex (σᵒᵈ →₀ ℕ)` and the two lemmas `MonomialOrder.revLex_le_iff`
@@ -70,7 +70,7 @@ structure MonomialOrder (σ : Type*) where
   /-- The synonym type -/
   syn : Type*
   /-- `syn` is a linearly ordered cancellative additive commutative monoid -/
-  locacm : LinearOrderedCancelAddCommMonoid syn
+  locacm : LinearOrderedCancelAddCommMonoid syn := by infer_instance
   /-- the additive equivalence from `σ →₀ ℕ` to `syn` -/
   toSyn : (σ →₀ ℕ) ≃+ syn
   /-- `toSyn` is monotone -/
@@ -80,9 +80,10 @@ structure MonomialOrder (σ : Type*) where
 
 attribute [instance] MonomialOrder.locacm MonomialOrder.wf
 
+namespace MonomialOrder
+
 variable {σ : Type*} (m : MonomialOrder σ)
 
-namespace MonomialOrder
 
 lemma le_add_right (a b : σ →₀ ℕ) :
     m.toSyn a ≤ m.toSyn a + m.toSyn b := by
@@ -103,8 +104,6 @@ theorem eq_zero_iff {a : m.syn} : a = 0 ↔ a ≤ 0 := eq_bot_iff
 
 lemma toSyn_strictMono : StrictMono (m.toSyn) := by
   apply m.toSyn_monotone.strictMono_of_injective m.toSyn.injective
-
-variable {σ : Type*} (m : MonomialOrder σ)
 
 /-- Given a monomial order, notation for the corresponding strict order relation on `σ →₀ ℕ` -/
 scoped
@@ -225,8 +224,8 @@ theorem ofDegLex_inj {a b : DegLex α} : ofDegLex a = ofDegLex b ↔ a = b :=
 protected def DegLex.rec {β : DegLex α → Sort*} (h : ∀ a, β (toDegLex a)) :
     ∀ a, β a := fun a => h (ofDegLex a)
 
-@[simp] lemma DegLex.forall {p : DegLex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toDegLex a) := Iff.rfl
-@[simp] lemma DegLex.exists {p : DegLex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toDegLex a) := Iff.rfl
+@[simp] lemma DegLex.forall_iff {p : DegLex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toDegLex a) := Iff.rfl
+@[simp] lemma DegLex.exists_iff {p : DegLex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toDegLex a) := Iff.rfl
 
 noncomputable instance [AddCommMonoid α] :
     AddCommMonoid (DegLex α) := ofDegLex.addCommMonoid
