@@ -98,6 +98,7 @@ instance : PreservesEpimorphisms (lim (J := ℕᵒᵖ) (C := LightCondMod.{u} R)
     rw [NatTrans.epi_iff_epi_app] at hf
     have := epi_π_app_zero_of_epi R (limit.isLimit X)
     have := epi_π_app_zero_of_epi R (limit.isLimit Y)
+    -- This is not the right approach, need to reformulate the Epi -> AB* lemma
     sorry
 
 end LightCondensed
