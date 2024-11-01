@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Patrick Massot
 -/
 
-import Lean
+import Lean.Elab.Tactic.Location
 import Mathlib.Util.Tactic
 import Mathlib.Lean.Expr.Basic
 
