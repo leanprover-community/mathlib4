@@ -34,6 +34,7 @@ structure Filter.IsApproximateUnit {α : Type*} [TopologicalSpace α] [Mul α] [
   disjoint_cobounded : Disjoint l (cobounded α)
   /-- The filter is not `⊥`. -/
   protected [neBot : NeBot l]
+
 namespace Filter.IsApproximateUnit
 
 /-- A unital magma with a topology and bornology has the trivial approximate unit `pure 1`. -/
