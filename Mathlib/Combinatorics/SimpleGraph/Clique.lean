@@ -616,7 +616,7 @@ structure IsMaximalClique (G : SimpleGraph α) (s : Finset α) : Prop where
   (clique : G.IsClique s)
   (maximal : ∀ t : Finset α, G.IsClique t → s ⊆ t → t = s)
 
-instance maximal_of_maximum (s : Finset α) (M : G.IsMaximumClique s) : G.IsMaximalClique s :=
+lemma maximal_of_maximum (s : Finset α) (M : G.IsMaximumClique s) : G.IsMaximalClique s :=
   { clique := M.clique,
     maximal := fun t ht hsub => by
       by_contra hc
@@ -635,13 +635,13 @@ lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
   rw [isNClique_iff, ← And.right syc] at *
   exact Finset.card_le_card (Finset.subset_univ sy)
 
-theorem clique_card_le_cliqueNum (t : Finset α) (tc : G.IsClique t) : #t ≤ G.cliqueNum :=
+lemma clique_card_le_cliqueNum (t : Finset α) (tc : G.IsClique t) : #t ≤ G.cliqueNum :=
   le_csSup fintype_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
 
 lemma cliqueNum_attained : G.cliqueNum ∈ {n | ∃ s, G.IsNClique n s} :=
     Nat.sSup_mem ⟨0, by simp[isNClique_empty.mpr rfl]⟩ fintype_cliqueNum_bddAbove
 
-theorem maximumClique_card_eq_cliqueNum (s : Finset α) (sm : G.IsMaximumClique s) :
+lemma maximumClique_card_eq_cliqueNum (s : Finset α) (sm : G.IsMaximumClique s) :
     #s = G.cliqueNum := by
   let ⟨sc, sm⟩ := sm
   refine eq_of_le_of_not_lt (clique_card_le_cliqueNum _ sc) ?_
@@ -649,7 +649,7 @@ theorem maximumClique_card_eq_cliqueNum (s : Finset α) (sm : G.IsMaximumClique 
   rw [← scn]
   exact LE.le.not_lt (sm s sclique)
 
-instance maximumClique_exists : ∃ (s : Finset α), Nonempty (G.IsMaximumClique s) := by
+lemma maximumClique_exists : ∃ (s : Finset α), Nonempty (G.IsMaximumClique s) := by
   have ⟨s, hs⟩ := G.cliqueNum_attained
   use s
   exact ⟨{
