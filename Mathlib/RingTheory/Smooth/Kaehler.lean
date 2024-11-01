@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.Kaehler.CotangentComplex
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.Algebra.Module.Projective
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Relation of smoothness and `Ω[S⁄R]`
@@ -16,18 +17,18 @@ import Mathlib.Algebra.Module.Projective
   Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`,
   there is a one-to-one correspondence between `P`-linear retractions of `I →ₗ[P] S ⊗[P] Ω[P/R]`
   and algebra homomorphism sections of `f`.
-- `retractionEquivSectionKerCotangentToTensor`:
+- `retractionKerCotangentToTensorEquivSection`:
   Given a surjective algebra homomorphism `f : P →ₐ[R] S` with kernel `I`,
   there is a one-to-one correspondence between `P`-linear retractions of `I/I² →ₗ[P] S ⊗[P] Ω[P/R]`
   and algebra homomorphism sections of `f‾ : P/I² → S`.
 - `Algebra.FormallySmooth.iff_split_injection`:
   Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
   with kernel `I` (typically a presentation `R[X] → S`),
-  `S` is formally smooth iff the `P`-linear map `I/I² → B ⊗[A] Ω[A⁄R]` is split injective.
+  `S` is formally smooth iff the `P`-linear map `I/I² → S ⊗[P] Ω[P⁄R]` is split injective.
 - `Algebra.FormallySmooth.iff_injective_and_projective`:
   Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
   with kernel `I` (typically a presentation `R[X] → S`),
-  then `S` is formally smooth iff `Ω[S/R]` is projective and `I/I² → B ⊗[A] Ω[A⁄R]` is injective.
+  then `S` is formally smooth iff `Ω[S/R]` is projective and `I/I² → S ⊗[P] Ω[P⁄R]` is injective.
 - `Algebra.FormallySmooth.iff_subsingleton_and_projective`:
   An algebra is formally smooth if and only if `H¹(L_{R/S}) = 0` and `Ω_{S/R}` is projective.
 
@@ -35,6 +36,12 @@ import Mathlib.Algebra.Module.Projective
 
 - Show that being smooth is local on stalks.
 - Show that being formally smooth is Zariski-local (very hard).
+
+## References
+
+- https://stacks.math.columbia.edu/tag/00TH
+- [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
+
 
 -/
 
@@ -318,15 +325,15 @@ there is a one-to-one correspondence between `P`-linear retractions of `I/I² �
 and algebra homomorphism sections of `f‾ : P/I² → S`.
 -/
 noncomputable
-def retractionEquivSectionKerCotangentToTensor :
+def retractionKerCotangentToTensorEquivSection :
     { l // l ∘ₗ (kerCotangentToTensor R P S) = LinearMap.id } ≃
       { g // (IsScalarTower.toAlgHom R P S).kerSquareLift.comp g = AlgHom.id R S } := by
   let P' := P ⧸ (RingHom.ker (algebraMap P S) ^ 2)
   have h₁ : Surjective (algebraMap P' S) := Function.Surjective.of_comp (g := algebraMap P P') hf
   have h₂ : RingHom.ker (algebraMap P' S) ^ 2 = ⊥ := by
     rw [RingHom.algebraMap_toAlgebra, AlgHom.ker_kerSquareLift, Ideal.cotangentIdeal_square]
-  let e₁ : (RingHom.ker (algebraMap P S)).Cotangent ≃ₗ[P] (RingHom.ker (algebraMap P' S)) := by
-    refine (Ideal.cotangentEquivIdeal _).trans ((LinearEquiv.ofEq _ _
+  let e₁ : (RingHom.ker (algebraMap P S)).Cotangent ≃ₗ[P] (RingHom.ker (algebraMap P' S)) :=
+    (Ideal.cotangentEquivIdeal _).trans ((LinearEquiv.ofEq _ _
       (IsScalarTower.toAlgHom R P S).ker_kerSquareLift.symm).restrictScalars P)
   let e₂ : S ⊗[P'] Ω[P'⁄R] ≃ₗ[P] S ⊗[P] Ω[P⁄R] :=
     (tensorKaehlerQuotKerSqEquiv R P S).restrictScalars P
@@ -372,15 +379,22 @@ include hf in
 /--
 Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
 with kernel `I` (typically a presentation `R[X] → S`),
-`S` is formally smooth iff the `P`-linear map `I/I² → B ⊗[A] Ω[A⁄R]` is split injective.
+`S` is formally smooth iff the `P`-linear map `I/I² → S ⊗[P] Ω[P⁄R]` is split injective.
 -/
+@[stacks 031I]
 theorem Algebra.FormallySmooth.iff_split_injection :
     Algebra.FormallySmooth R S ↔ ∃ l, l ∘ₗ (kerCotangentToTensor R P S) = LinearMap.id := by
-  have := (retractionEquivSectionKerCotangentToTensor (R := R) hf).nonempty_congr
+  have := (retractionKerCotangentToTensorEquivSection (R := R) hf).nonempty_congr
   simp only [nonempty_subtype] at this
   rw [this, ← Algebra.FormallySmooth.iff_split_surjection _ hf]
 
 include hf in
+/--
+Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
+with kernel `I` (typically a presentation `R[X] → S`),
+then `S` is formally smooth iff `I/I² → S ⊗[P] Ω[S⁄R]` is injective and
+`S ⊗[P] Ω[P⁄R] → Ω[S⁄R]` is split surjective.
+-/
 theorem Algebra.FormallySmooth.iff_injective_and_split :
     Algebra.FormallySmooth R S ↔ Function.Injective (kerCotangentToTensor R P S) ∧
       ∃ l, (KaehlerDifferential.mapBaseChange R P S) ∘ₗ l = LinearMap.id := by
@@ -393,7 +407,6 @@ theorem Algebra.FormallySmooth.iff_injective_and_split :
   simp only [LinearMap.ext_iff, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
     Function.comp_apply, LinearMap.extendScalarsOfSurjective_apply, LinearMap.id_coe, id_eq]
 
-/-- An auxiliary lemma strictly weaker than the unprimed version. Use that instead. -/
 private theorem Algebra.FormallySmooth.iff_injective_and_projective' :
     letI : Algebra (MvPolynomial S R) S := (MvPolynomial.aeval _root_.id).toAlgebra
     Algebra.FormallySmooth R S ↔
@@ -413,7 +426,7 @@ include hf in
 /--
 Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
 with kernel `I` (typically a presentation `R[X] → S`),
-then `S` is formally smooth iff `Ω[S/R]` is projective and `I/I² → B ⊗[A] Ω[A⁄R]` is injective.
+then `S` is formally smooth iff `Ω[S/R]` is projective and `I/I² → S ⊗[P] Ω[P⁄R]` is injective.
 -/
 theorem Algebra.FormallySmooth.iff_injective_and_projective :
     Algebra.FormallySmooth R S ↔
@@ -425,6 +438,7 @@ theorem Algebra.FormallySmooth.iff_injective_and_projective :
 /--
 An algebra is formally smooth if and only if `H¹(L_{R/S}) = 0` and `Ω_{S/R}` is projective.
 -/
+@[stacks 031J]
 theorem Algebra.FormallySmooth.iff_subsingleton_and_projective :
     Algebra.FormallySmooth R S ↔
         Subsingleton (Algebra.H1Cotangent R S) ∧ Module.Projective S (Ω[S⁄R]) := by
