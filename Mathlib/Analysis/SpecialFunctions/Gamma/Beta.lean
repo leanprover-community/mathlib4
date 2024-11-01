@@ -62,7 +62,7 @@ theorem betaIntegral_convergent_left {u : ℂ} (hu : 0 < re u) (v : ℂ) :
   apply IntervalIntegrable.mul_continuousOn
   · refine intervalIntegral.intervalIntegrable_cpow' ?_
     rwa [sub_re, one_re, ← zero_sub, sub_lt_sub_iff_right]
-  · apply ContinuousAt.continuousOn
+  · apply continuousOn_of_forall_continuousAt
     intro x hx
     rw [uIcc_of_le (by positivity : (0 : ℝ) ≤ 1 / 2)] at hx
     apply ContinuousAt.cpow
@@ -151,7 +151,8 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   have hu' : 0 < re (u + 1) := by rw [add_re, one_re]; positivity
   have hv' : 0 < re (v + 1) := by rw [add_re, one_re]; positivity
   have hc : ContinuousOn F (Icc 0 1) := by
-    refine (ContinuousAt.continuousOn fun x hx => ?_).mul (ContinuousAt.continuousOn fun x hx => ?_)
+    refine (continuousOn_of_forall_continuousAt fun x hx => ?_).mul
+        (continuousOn_of_forall_continuousAt fun x hx => ?_)
     · refine (continuousAt_cpow_const_of_re_pos (Or.inl ?_) hu).comp continuous_ofReal.continuousAt
       rw [ofReal_re]; exact hx.1
     · refine (continuousAt_cpow_const_of_re_pos (Or.inl ?_) hv).comp
