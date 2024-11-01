@@ -37,7 +37,7 @@ instance {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Nontrivial S]
       apply RingHom.rangeSRestrict_surjective
     have is_local : LocalRing (Subring.map f 𝓡.1) := by
       -- apply LocalRing.of_surjective' f_rest is_f_rest_surj
-      -- gives an error
+      --  gives an error
       sorry
     exact isUnit_or_isUnit_of_add_one h
 
