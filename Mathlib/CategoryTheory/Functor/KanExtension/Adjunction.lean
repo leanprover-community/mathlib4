@@ -88,7 +88,7 @@ variable [∀ X, HasColimitsOfShape (CostructuredArrow L X) H]
 
 local instance : ∀ {X Y : D} (f : X ⟶ Y), HasColimit ((functor L).map f ⋙
     Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ⋙ F) := by
-  simp
+  simp only [functor_obj, Cat.of_α, functor_map]
   infer_instance
 
 local instance : ∀ X, HasColimit (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F) := by
