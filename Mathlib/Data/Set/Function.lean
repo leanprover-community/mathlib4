@@ -692,6 +692,9 @@ lemma graphOn_prod_graphOn (s : Set α) (t : Set β) (f : α → γ) (g : β →
     s.graphOn f ×ˢ t.graphOn g = Equiv.prodProdProdComm .. ⁻¹' (s ×ˢ t).graphOn (Prod.map f g) := by
   aesop
 
+lemma graphOn_prod_prodMap (s : Set α) (t : Set β) (f : α → γ) (g : β → δ) :
+    (s ×ˢ t).graphOn (Prod.map f g) = Equiv.prodProdProdComm .. ⁻¹' s.graphOn f ×ˢ t.graphOn g := by
+  aesop
 end graphOn
 
 /-! ### Surjectivity on a set -/
