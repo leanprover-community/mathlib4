@@ -338,7 +338,7 @@ instance faithful_ι (c : C) : (ι F c).Faithful where
     injection f with _ f
     rwa [cancel_epi] at f
 
-/-- Every morphism `f : X ⟶ Y` in the base category induces a naturl transformation from the fiber
+/-- Every morphism `f : X ⟶ Y` in the base category induces a natural transformation from the fiber
 inclusion `ι F X` to the composition `F.map f ⋙ ι F Y`. -/
 @[simps]
 def ιNatTrans {X Y : C} (f : X ⟶ Y) : ι F X ⟶ F.map f ⋙ ι F Y where
