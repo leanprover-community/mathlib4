@@ -269,6 +269,7 @@ theorem of_le_right {B' : IntermediateField F E} (H : A.LinearDisjoint B)
     (h : B' ≤ B) : A.LinearDisjoint B' :=
   linearDisjoint_iff'.2 ((linearDisjoint_iff'.1 H).of_le_right_of_flat h)
 
+/-- Similar to `IntermediateField.LinearDisjoint.of_le_right` but this is for abstract fields. -/
 theorem of_le_right' (H : A.LinearDisjoint L) (L' : Type*) [Field L']
     [Algebra F L'] [Algebra L' L] [IsScalarTower F L' L]
     [Algebra L' E] [IsScalarTower F L' E] [IsScalarTower L' L E] : A.LinearDisjoint L' := by
@@ -283,6 +284,7 @@ theorem of_le {A' B' : IntermediateField F E} (H : A.LinearDisjoint B)
     (hA : A' ≤ A) (hB : B' ≤ B) : A'.LinearDisjoint B' :=
   H.of_le_left hA |>.of_le_right hB
 
+/-- Similar to `IntermediateField.LinearDisjoint.of_le` but this is for abstract fields. -/
 theorem of_le' {A' : IntermediateField F E} (H : A.LinearDisjoint L)
     (hA : A' ≤ A) (L' : Type*) [Field L']
     [Algebra F L'] [Algebra L' L] [IsScalarTower F L' L]
