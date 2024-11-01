@@ -72,7 +72,9 @@ variable (n : ℕ) [NeZero n]
 theorem rootsOfUnity.integer_power_of_ringEquiv (g : L ≃+* L) :
     ∃ m : ℤ, ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ m : Lˣ) := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic ((g : L ≃* L).restrictRootsOfUnity n).toMonoidHom
-  exact ⟨m, fun t ↦ Units.ext_iff.1 <| SetCoe.ext_iff.2 <| hm t⟩
+  refine ⟨m, fun t ↦ ?_⟩ --Units.ext_iff.1 <| SetCoe.ext_iff.2 <| hm t⟩
+  rw [← SubgroupClass.coe_zpow, ← hm t, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe,
+    MulEquiv.restrictRootsOfUnity_coe_apply, RingEquiv.coe_toMulEquiv]
 
 theorem rootsOfUnity.integer_power_of_ringEquiv' (g : L ≃+* L) :
     ∃ m : ℤ, ∀ t ∈ rootsOfUnity n L, g (t : Lˣ) = (t ^ m : Lˣ) := by
