@@ -38,14 +38,14 @@ variable {α' β' : Type u} (f : α' → F β')
     and collect the results.
 -/
 def traverse : Multiset α' → F (Multiset β') := by
-  refine Quotient.lift (Functor.map ((↑) : List β' → Multiset β') ∘ Traversable.traverse f) ?_
+  refine Quotient.lift (Functor.map ofList ∘ Traversable.traverse f) ?_
   introv p; unfold Function.comp
   induction p with
   | nil => rfl
   | @cons x l₁ l₂ _ h =>
     have :
-      Multiset.cons <$> f x <*> ((↑) : List β' → Multiset β') <$> Traversable.traverse f l₁ =
-        Multiset.cons <$> f x <*> ((↑) : List β' → Multiset β') <$> Traversable.traverse f l₂ := by
+      Multiset.cons <$> f x <*> ofList <$> Traversable.traverse f l₁ =
+        Multiset.cons <$> f x <*> ofList <$> Traversable.traverse f l₂ := by
       rw [h]
     simpa [functor_norm] using this
   | swap x y l =>
@@ -84,8 +84,7 @@ open Traversable LawfulTraversable
 
 @[simp]
 theorem map_comp_coe {α β} (h : α → β) :
-    Functor.map h ∘ ((↑) : List α → Multiset α) =
-      (((↑) : List β → Multiset β) ∘ Functor.map h : List α → Multiset β) := by
+    Functor.map h ∘ ofList = (ofList ∘ Functor.map h : List α → Multiset β) := by
   funext; simp only [Function.comp_apply, fmap_def, map_coe, List.map_eq_map]
 
 theorem id_traverse {α : Type*} (x : Multiset α) : traverse (pure : α → Id α) x = x := by
