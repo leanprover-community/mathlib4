@@ -132,30 +132,25 @@ section CommMonoid
 variable [CommMonoid R] [CommMonoid S] [FunLike F R S]
 
 /-- Restrict a ring homomorphism to the nth roots of unity. -/
-def restrictRootsOfUnity [MonoidHomClass F R S] (σ : F) :
-    (n : ℕ) → rootsOfUnity n R →* rootsOfUnity n S
-  | 0 =>
-    { toFun := fun ξ ↦ ⟨Units.map σ (ξ : Rˣ), by simp only [rootsOfUnity_zero, Subgroup.mem_top]⟩
-      map_one' := by ext1; simp only [OneMemClass.coe_one, map_one]
-      map_mul' := fun ξ₁ ξ₂ ↦ by
-        ext1; simp only [Subgroup.coe_mul, map_mul, MulMemClass.mk_mul_mk]}
-  | n + 1 =>
-    let h : ∀ ξ : rootsOfUnity (n + 1) R, (σ (ξ : Rˣ)) ^ (n + 1) = 1 := fun ξ => by
-      rw [← map_pow, ← Units.val_pow_eq_pow_val, show (ξ : Rˣ) ^ (n + 1) = 1 from ξ.2,
-        Units.val_one, map_one σ]
-    { toFun := fun ξ =>
-        ⟨@unitOfInvertible _ _ _ (invertibleOfPowEqOne _ _ (h ξ) (Nat.zero_ne_add_one n).symm), by
-          ext; rw [Units.val_pow_eq_pow_val]; exact h ξ⟩
-      map_one' := by ext; exact map_one σ
-      map_mul' := fun ξ₁ ξ₂ => by ext; rw [Subgroup.coe_mul, Units.val_mul]; exact map_mul σ _ _ }
+def restrictRootsOfUnity [MonoidHomClass F R S] (σ : F) (n : ℕ) :
+    rootsOfUnity n R →* rootsOfUnity n S :=
+  let h : ∀ ξ : rootsOfUnity n R, (σ (ξ : Rˣ)) ^ n = 1 := fun ξ => by
+    rw [← map_pow, ← Units.val_pow_eq_pow_val, show (ξ : Rˣ) ^ n = 1 from ξ.2,
+      Units.val_one, map_one σ]
+  { toFun := fun ξ ↦ ⟨Units.map σ (ξ : Rˣ), by
+      simp only [mem_rootsOfUnity]
+      rw [Units.ext_iff, ← map_pow, Units.coe_map, Units.val_one,]
+      rw [@Units.val_pow_eq_pow_val, map_pow]
+      exact h ξ⟩
+    map_one' := by ext1; simp only [OneMemClass.coe_one, map_one]
+    map_mul' := fun ξ₁ ξ₂ ↦ by
+      ext1; simp only [Subgroup.coe_mul, map_mul, MulMemClass.mk_mul_mk] }
 
 @[simp]
 theorem restrictRootsOfUnity_coe_apply [MonoidHomClass F R S] (σ : F)
     (ζ : rootsOfUnity k R) :
-    (restrictRootsOfUnity σ k ζ : Sˣ) = σ (ζ : Rˣ) := by
-  match k with
-  | 0 => rfl
-  | _ + 1 => rfl
+    (restrictRootsOfUnity σ k ζ : Sˣ) = σ (ζ : Rˣ) :=
+  rfl
 
 /-- Restrict a monoid isomorphism to the nth roots of unity. -/
 nonrec def MulEquiv.restrictRootsOfUnity (σ : R ≃* S) (n : ℕ) :
@@ -168,10 +163,8 @@ nonrec def MulEquiv.restrictRootsOfUnity (σ : R ≃* S) (n : ℕ) :
 
 @[simp]
 theorem MulEquiv.restrictRootsOfUnity_coe_apply (σ : R ≃* S) (ζ : rootsOfUnity k R) :
-    (σ.restrictRootsOfUnity k ζ : Sˣ) = σ (ζ : Rˣ) := by
-  match k with
-  | 0 => rfl
-  | _ + 1 => rfl
+    (σ.restrictRootsOfUnity k ζ : Sˣ) = σ (ζ : Rˣ) :=
+  rfl
 
 @[simp]
 theorem MulEquiv.restrictRootsOfUnity_symm (σ : R ≃* S) :
