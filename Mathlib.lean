@@ -834,6 +834,7 @@ import Mathlib.Algebra.Ring.Subring.Order
 import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.Algebra.Ring.Subring.Units
 import Mathlib.Algebra.Ring.Subsemiring.Basic
+import Mathlib.Algebra.Ring.Subsemiring.Defs
 import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 import Mathlib.Algebra.Ring.Subsemiring.Order
 import Mathlib.Algebra.Ring.Subsemiring.Pointwise
