@@ -6,6 +6,7 @@ Authors: Kevin Kappelmann
 import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Data.Rat.Floor
+import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 
 /-!
 # Termination of Continued Fraction Computations (`GenContFract.of`)

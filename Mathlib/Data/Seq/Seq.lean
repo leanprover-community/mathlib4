@@ -569,6 +569,41 @@ theorem nil_append (s : Seq α) : append nil s = s := by
     exact ⟨rfl, s, rfl, rfl⟩
 
 @[simp]
+theorem get?_take : ∀ (n k : ℕ) (s : Seq α),
+    (s.take k).get? n = if n < k then s.get? n else none
+  | n, 0, s => by simp [take]
+  | n, k+1, s => by
+    rw [take]
+    cases h : destruct s with
+    | none =>
+      simp [destruct_eq_nil h]
+    | some a =>
+      match a with
+      | (x, r) =>
+        rw [destruct_eq_cons h]
+        match n with
+        | 0 => simp
+        | n+1 =>
+          simp only [List.get?_cons_succ, Nat.add_lt_add_iff_right, get?_cons_succ, get?_take]
+
+@[simp]
+theorem ofList_toList (s : Seq α) (h : s.Terminates) :
+    ofList (toList s h) = s := by
+  ext n
+  simp only [ofList, toList, get?_mk, Option.mem_def, get?_take, Nat.lt_find_iff,
+    Option.ite_none_right_eq_some, and_iff_right_iff_imp, TerminatedAt]
+  intro h m hmn hnone
+  rw [le_stable s hmn hnone] at h
+  cases h
+
+theorem terminatedAt_ofList (l : List α) :
+    (ofList l).TerminatedAt l.length := by
+  simp [ofList, TerminatedAt]
+
+theorem terminates_ofList (l : List α) : (ofList l).Terminates :=
+  ⟨_, terminatedAt_ofList l⟩
+
+@[simp]
 theorem cons_append (a : α) (s t) : append (cons a s) t = cons a (append s t) :=
   destruct_eq_cons <| by
     dsimp [append]; rw [corec_eq]
@@ -645,6 +680,16 @@ theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s)
 @[simp]
 theorem map_get? (f : α → β) : ∀ s n, get? (map f s) n = (get? s n).map f
   | ⟨_, _⟩, _ => rfl
+
+@[simp]
+theorem terminatedAt_map_iff {f : α → β} {s : Seq α} {n : ℕ} :
+    (map f s).TerminatedAt n ↔ s.TerminatedAt n := by
+  simp [TerminatedAt]
+
+@[simp]
+theorem terminates_map_iff {f : α → β} {s : Seq α}  :
+    (map f s).Terminates ↔ s.Terminates := by
+  simp [Terminates]
 
 instance : Functor Seq where map := @map
 

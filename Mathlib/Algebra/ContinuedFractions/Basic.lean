@@ -7,6 +7,7 @@ import Mathlib.Data.Seq.Seq
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Basic Definitions/Theorems for Continued Fractions
@@ -289,25 +290,53 @@ structure ContFract where
 
 namespace ContFract
 
+@[coe]
+def toGenContFract [IntCast α] [NatCast α] [One α] : ContFract → (GenContFract α) :=
+  fun ⟨h, s⟩ => ⟨h, s.map (fun n : ℕ+ => ⟨1, n⟩)⟩
+
 instance [IntCast α] [NatCast α] [One α] : Coe ContFract (GenContFract α) :=
-  ⟨fun ⟨h, s⟩ => ⟨h, s.map (fun n : ℕ+ => ⟨1, n⟩)⟩⟩
+  ⟨toGenContFract⟩
 
 theorem isSimpContFract [IntCast α] [NatCast α] [One α]
     (c : ContFract) : IsSimpContFract (c : GenContFract α) := by
-  simp [IsSimpContFract, partNums]
+  simp [IsSimpContFract, partNums, toGenContFract]
+
+@[coe]
+def toSimpContFract [IntCast α] [NatCast α] [One α] : ContFract → SimpContFract α :=
+  fun c => ⟨c, c.isSimpContFract⟩
 
 instance [IntCast α] [NatCast α] [One α] : Coe ContFract (SimpContFract α) :=
-  ⟨fun c => ⟨c, c.isSimpContFract⟩⟩
+  ⟨toSimpContFract⟩
 
 theorem isRegContFract [AddGroupWithOne α]
     [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α] [NeZero (1 : α)]
     (c : ContFract) : SimpContFract.IsRegContFract (c : SimpContFract α) := by
-  simp [SimpContFract.IsRegContFract, partDens]
+  simp [SimpContFract.IsRegContFract, partDens, toSimpContFract, toGenContFract]
+
+@[coe]
+def toRegContFract [AddGroupWithOne α]
+    [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α] [NeZero (1 : α)] :
+    ContFract → RegContFract α :=
+  fun c => ⟨c, c.isRegContFract⟩
 
 instance [AddGroupWithOne α]
     [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α] [NeZero (1 : α)] :
     Coe ContFract (RegContFract α) :=
-  ⟨fun c => ⟨c, c.isRegContFract⟩⟩
+  ⟨toRegContFract⟩
+
+def Terminates (c : ContFract) : Prop :=
+  c.s.Terminates
+
+def TerminatedAt (c : ContFract) (n : ℕ) : Prop :=
+  c.s.TerminatedAt n
+
+theorem terminates_coe_iff [IntCast α] [NatCast α] [One α] {c : ContFract} :
+    (c : GenContFract α).Terminates ↔ c.Terminates := by
+  simp [GenContFract.Terminates, ContFract.Terminates, toGenContFract]
+
+theorem terminatedAt_coe_iff [IntCast α] [NatCast α] [One α] {c : ContFract} {n : ℕ} :
+    (c : GenContFract α).TerminatedAt n ↔ c.TerminatedAt n := by
+  simp [GenContFract.TerminatedAt, ContFract.TerminatedAt, toGenContFract]
 
 end ContFract
 
@@ -398,3 +427,46 @@ def convs' (g : GenContFract K) (n : ℕ) : K :=
   g.h + convs'Aux g.s n
 
 end GenContFract
+
+@[ext]
+structure FiniteContFract where
+  /-- Head term -/
+  h : ℤ
+  /-- List of denominators. -/
+  s : List ℕ+
+deriving DecidableEq
+
+namespace FiniteContFract
+
+variable {K : Type*} [DivisionRing K]
+
+@[coe]
+def toContFract (c : FiniteContFract) : ContFract :=
+  ⟨c.h, c.s⟩
+
+theorem terminatedAt_toContFract (c : FiniteContFract) :
+    c.toContFract.s.TerminatedAt c.s.length :=
+  Stream'.Seq.terminatedAt_ofList _
+
+instance : Coe FiniteContFract ContFract :=
+  ⟨toContFract⟩
+
+def eval (c : FiniteContFract) : ℚ :=
+  c.h + c.s.foldr (fun a x => ((a : ℚ) + x)⁻¹) 0
+
+theorem coe_eval_eq_convs'_coe_length [CharZero K] : ∀ (c : FiniteContFract),
+    (c.eval : K) = (c : GenContFract K).convs' c.s.length
+  | ⟨h, []⟩ => by
+    simp [toContFract, ContFract.toGenContFract, eval, convs', convs'Aux,
+      ContFract.toSimpContFract]
+  | ⟨h, a::l⟩ => by
+    simpa [toContFract, ContFract.toGenContFract, eval, convs', convs'Aux,
+      ContFract.toSimpContFract] using coe_eval_eq_convs'_coe_length ⟨a, l⟩
+  termination_by l => l.s.length
+
+theorem eval_eq_convs'_coe_length (c : FiniteContFract) :
+    c.eval = (c : GenContFract ℚ).convs' c.s.length := by
+  erw [← coe_eval_eq_convs'_coe_length]
+  simp
+
+end FiniteContFract

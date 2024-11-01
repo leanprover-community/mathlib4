@@ -192,7 +192,7 @@ theorem coe_of (v : K) : ((ContFract.of v) : GenContFract K) = GenContFract.of v
   have hReg := SimpContFract.of_isRegContFract v
   simp only [ContFract.of, GenContFract.of, SimpContFract.of,
     SimpContFract.IsRegContFract, GenContFract.IsSimpContFract, partDens,
-    partNums] at *
+    partNums, ContFract.toGenContFract] at *
   match IntFractPair.seq1 v, hReg with
   | ⟨h, s⟩, hReg =>
     simp only at *
