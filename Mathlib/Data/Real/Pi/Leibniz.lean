@@ -6,8 +6,6 @@ Authors: Benjamin Davidson, Jeremy Tan
 import Mathlib.Analysis.Complex.AbelLimit
 import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
 
-#align_import data.real.pi.leibniz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-! ### Leibniz's series for `π` -/
 
 namespace Real
@@ -55,6 +53,5 @@ theorem tendsto_sum_pi_div_four :
     norm_cast
   -- But `arctan` is continuous everywhere, so the limit is `arctan 1 = π / 4`
   rwa [tendsto_nhds_unique abel ((continuous_arctan.tendsto 1).mono_left m), arctan_one] at h
-#align real.tendsto_sum_pi_div_four Real.tendsto_sum_pi_div_four
 
 end Real

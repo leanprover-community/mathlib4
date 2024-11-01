@@ -32,13 +32,14 @@ variable [∀ {X Y : Cᵒᵖ} (f : X ⟶ Y), PreservesColimit (F ⋙ evaluation 
 of the functors `evaluation R X` for all `X`. -/
 def evaluationJointlyReflectsColimits (c : Cocone F)
     (hc : ∀ (X : Cᵒᵖ), IsColimit ((evaluation R X).mapCocone c)) : IsColimit c where
-  desc s := Hom.mk'' (fun X => (hc X).desc ((evaluation R X).mapCocone s)) (fun X Y f => by
-    apply (hc X).hom_ext
-    intro j
-    erw [(hc X).fac_assoc ((evaluation R X).mapCocone s) j, ← restrictionApp_naturality_assoc]
-    rw [← Functor.map_comp]
-    erw [(hc Y).fac ((evaluation R Y).mapCocone s), restrictionApp_naturality]
-    rfl)
+  desc s :=
+    { app := fun X => (hc X).desc ((evaluation R X).mapCocone s)
+      naturality := fun {X Y} f ↦ (hc X).hom_ext (fun j ↦ by
+        rw [(hc X).fac_assoc ((evaluation R X).mapCocone s) j]
+        have h₁ := (c.ι.app j).naturality f
+        have h₂ := (hc Y).fac ((evaluation R Y).mapCocone s)
+        dsimp at h₁ h₂ ⊢
+        simp only [← reassoc_of% h₁, ← Functor.map_comp, h₂, Hom.naturality]) }
   fac s j := by
     ext1 X
     exact (hc X).fac ((evaluation R X).mapCocone s) j
@@ -57,53 +58,47 @@ instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   ⟨_, isColimitOfPreserves (ModuleCat.restrictScalars (R.map f))
     (colimit.isColimit (F ⋙ evaluation R Y))⟩
 
-/-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the `BundledCorePresheafOfModules R` which
-corresponds to the presheaf of modules which sends `X` to the colimit of `F ⋙ evaluation R X`. -/
+/-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the presheaf of modules obtained by
+taking a colimit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
-noncomputable def colimitBundledCore : BundledCorePresheafOfModules R where
+noncomputable def colimitPresheafOfModules : PresheafOfModules R where
   obj X := colimit (F ⋙ evaluation R X)
-  map {X Y} f := colimMap (whiskerLeft F (restriction R f)) ≫
+  map {_ Y} f := colimMap (whiskerLeft F (restriction R f)) ≫
     (preservesColimitIso (ModuleCat.restrictScalars (R.map f)) (F ⋙ evaluation R Y)).inv
   map_id X := colimit.hom_ext (fun j => by
     dsimp
     rw [ι_colimMap_assoc, whiskerLeft_app, restriction_app]
-    erw [ι_preservesColimitsIso_inv (G := ModuleCat.restrictScalars (R.map (𝟙 X))),
+    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (𝟙 X))),
       ModuleCat.restrictScalarsId'App_inv_naturality]
-    rw [restrictionApp_id]
-    rfl)
+    rw [map_id]
+    dsimp)
   map_comp {X Y Z} f g := colimit.hom_ext (fun j => by
     dsimp
     rw [ι_colimMap_assoc, whiskerLeft_app, restriction_app, assoc, ι_colimMap_assoc]
-    erw [ι_preservesColimitsIso_inv (G := ModuleCat.restrictScalars (R.map (f ≫ g))),
-      ι_preservesColimitsIso_inv_assoc (G := ModuleCat.restrictScalars (R.map f))]
+    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (f ≫ g))),
+      ι_preservesColimitIso_inv_assoc (G := ModuleCat.restrictScalars (R.map f))]
     rw [← Functor.map_comp_assoc, ι_colimMap_assoc]
-    erw [ι_preservesColimitsIso_inv (G := ModuleCat.restrictScalars (R.map g))]
-    rw [restrictionApp_comp, ModuleCat.restrictScalarsComp'_inv_app, assoc, assoc,
+    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map g))]
+    rw [map_comp, ModuleCat.restrictScalarsComp'_inv_app, assoc, assoc,
       whiskerLeft_app, whiskerLeft_app, restriction_app, restriction_app]
     simp only [Functor.map_comp, assoc]
     rfl)
-
-/-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the canonical map
-`F.obj j ⟶ (colimitBundledCore F).toPresheafOfModules` for all `j : J`. -/
-noncomputable def colimitCoconeιApp (j : J) :
-    F.obj j ⟶ (colimitBundledCore F).toPresheafOfModules :=
-  PresheafOfModules.Hom.mk'' (fun X => colimit.ι (F ⋙ evaluation R X) j) (fun X Y f => by
-    dsimp
-    erw [colimit.ι_desc_assoc, assoc, ← ι_preservesColimitsIso_inv]
-    rfl)
-
-@[reassoc (attr := simp)]
-lemma colimitCoconeιApp_naturality {i j : J} (f : i ⟶ j) :
-    F.map f ≫ colimitCoconeιApp F j = colimitCoconeιApp F i := by
-  ext1 X
-  exact colimit.w (F ⋙ evaluation R X) f
 
 /-- The (colimit) cocone for `F : J ⥤ PresheafOfModules.{v} R` that is constructed from
 the colimit of `F ⋙ evaluation R X` for all `X`. -/
 @[simps]
 noncomputable def colimitCocone : Cocone F where
-  pt := (colimitBundledCore F).toPresheafOfModules
-  ι := { app := colimitCoconeιApp F }
+  pt := colimitPresheafOfModules F
+  ι :=
+    { app := fun j ↦
+        { app := fun X ↦ colimit.ι (F ⋙ evaluation R X) j
+          naturality := fun {X Y} f ↦ by
+            dsimp
+            erw [colimit.ι_desc_assoc, assoc, ← ι_preservesColimitIso_inv]
+            rfl }
+      naturality := fun {X Y} f ↦ by
+        ext1 X
+        simpa using colimit.w (F ⋙ evaluation R X) f }
 
 /-- The cocone `colimitCocone F` is colimit for any `F : J ⥤ PresheafOfModules.{v} R`. -/
 noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) :=
@@ -116,13 +111,13 @@ noncomputable instance evaluationPreservesColimit (X : Cᵒᵖ) :
   preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F) (colimit.isColimit _)
 
 variable [∀ X, PreservesColimit F
-  (evaluation R X ⋙ forget₂ (ModuleCat (R.obj X)) AddCommGroupCat)]
+  (evaluation R X ⋙ forget₂ (ModuleCat (R.obj X)) AddCommGrp)]
 
 noncomputable instance toPresheafPreservesColimit :
     PreservesColimit F (toPresheaf R) :=
   preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
     (Limits.evaluationJointlyReflectsColimits _
-      (fun X => isColimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGroupCat)
+      (fun X => isColimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
         (isColimitColimitCocone F)))
 
 end Colimits
@@ -131,7 +126,7 @@ variable (R J)
 
 section HasColimitsOfShape
 
-variable [HasColimitsOfShape J AddCommGroupCat.{v}]
+variable [HasColimitsOfShape J AddCommGrp.{v}]
 
 instance hasColimitsOfShape : HasColimitsOfShape J (PresheafOfModules.{v} R) where
 

@@ -3,6 +3,7 @@ Copyright (c) 2023 Mac Malone. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mac Malone, Kyle Miller
 -/
+import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Elab.DeclUtil
 
@@ -76,3 +77,5 @@ elab_rules : command
       else
         unless binders.getNumArgs == 0 do
           throwError "expected type after ':'"
+
+end Mathlib.Tactic.Recall

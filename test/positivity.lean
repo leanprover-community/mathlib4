@@ -4,6 +4,7 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.Tactic.Positivity.Finset
 
 /-! # Tests for the `positivity` tactic
 
@@ -22,6 +23,9 @@ example : 0 ≤ 0 := by positivity
 example : 0 ≤ 3 := by positivity
 
 example : 0 < 3 := by positivity
+
+example : (0 : ℝ≥0∞) < 1 := by positivity
+example : (0 : ℝ≥0∞) < 2 := by positivity
 
 /- ## Goals working directly from a hypothesis -/
 -- set_option trace.Meta.debug true
@@ -95,7 +99,8 @@ end
 -- example [Nonempty ι] [Zero α] {a : α} (ha : a ≠ 0) : const ι a ≠ 0 := by positivity
 -- example [Zero α] [PartialOrder α] {a : α} (ha : 0 < a) : 0 ≤ const ι a := by positivity
 -- example [Zero α] [PartialOrder α] {a : α} (ha : 0 ≤ a) : 0 ≤ const ι a := by positivity
--- example [Nonempty ι] [Zero α] [PartialOrder α] {a : α} (ha : 0 < a) : 0 < const ι a := by positivity
+-- example [Nonempty ι] [Zero α] [PartialOrder α] {a : α} (ha : 0 < a) : 0 < const ι a := by
+--  positivity
 
 section ite
 variable {p : Prop} [Decidable p] {a b : ℤ}
@@ -260,8 +265,8 @@ example {a : ℝ} (ha : 0 ≤ a) : 0 < Real.sqrt (a + 3) := by positivity
 
 example {a b : ℤ} (ha : 3 < a) : 0 ≤ min a (b ^ 2) := by positivity
 
--- -- test that the tactic can ignore arithmetic operations whose associated extension tactic requires
--- -- more typeclass assumptions than are available
+-- -- test that the tactic can ignore arithmetic operations whose associated extension tactic
+-- -- requires more typeclass assumptions than are available
 -- example {R : Type _} [Zero R] [Div R] [LinearOrder R] {a b c : R} (h1 : 0 < a) (h2 : 0 < b)
 --   (h3 : 0 < c) :
 --   0 < max (a / b) c :=
@@ -285,8 +290,8 @@ example (n : ℕ+) : 0 < (↑n : ℕ) := by positivity
 example (n : ℕ) : 0 < n ! := by positivity
 example (n k : ℕ) : 0 < (n+1).ascFactorial k := by positivity
 
--- example {α : Type _} (s : Finset α) (hs : s.Nonempty) : 0 < s.card := by positivity
--- example {α : Type _} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
+example {α : Type _} (s : Finset α) (hs : s.Nonempty) : 0 < #s := by positivity
+example {α : Type _} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
 
 example {r : ℝ} : 0 < Real.exp r := by positivity
 
@@ -319,7 +324,7 @@ example [MetricSpace α] {s : Set α} : 0 ≤ Metric.diam s := by positivity
 /- ### Canonical orders -/
 
 example {a : ℕ} : 0 ≤ a := by positivity
--- example {a : ℚ≥0} : 0 ≤ a := by positivity
+example {a : ℚ≥0} : 0 ≤ a := by positivity
 example {a : ℝ≥0} : 0 ≤ a := by positivity
 example {a : ℝ≥0∞} : 0 ≤ a := by positivity
 
@@ -335,6 +340,9 @@ example {a : ℤ} (ha : 0 < a) : (0 : ℚ) < a := by positivity
 example {a : ℚ} (ha : a ≠ 0) : (a : ℝ) ≠ 0 := by positivity
 example {a : ℚ} (ha : 0 ≤ a) : (0 : ℝ) ≤ a := by positivity
 example {a : ℚ} (ha : 0 < a) : (0 : ℝ) < a := by positivity
+example {a : ℚ≥0} (ha : a ≠ 0) : (a : ℝ≥0) ≠ 0 := by positivity
+example {a : ℚ≥0} : (0 : ℝ≥0) ≤ a := by positivity
+example {a : ℚ≥0} (ha : 0 < a) : (0 : ℝ≥0) < a := by positivity
 example {r : ℝ≥0} : (0 : ℝ) ≤ r := by positivity
 example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 -- example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ≥0∞) < r := by positivity

@@ -1,12 +1,11 @@
 import Mathlib.Tactic.CategoryTheory.Elementwise
---import Mathlib.Algebra.Category.Mon.Basic
+import Mathlib.Algebra.Category.MonCat.Basic
 
 set_option autoImplicit true
 
 namespace ElementwiseTest
 open CategoryTheory
 
-set_option linter.existingAttributeWarning false in
 attribute [simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
 
 attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
@@ -70,8 +69,11 @@ example [Category C] [ConcreteCategory C]
   exact this x
 
 -- `elementwise_of%` allows a level metavariable for its `ConcreteCategory` instance.
-example [Category C] [ConcreteCategory C]
-    (h : ∀ D [Category D] (X Y : D) (f : X ⟶ Y) (g : Y ⟶ X), f ≫ g = 𝟙 X)
+-- Previously this example did not specify that the universe levels of `C` and `D` (inside `h`)
+-- were the same, and this constraint was added post-hoc by the proof term.
+-- After https://github.com/leanprover/lean4/pull/4493 this no longer works (happily!).
+example {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
+    (h : ∀ (D : Type u) [Category.{v} D] (X Y : D) (f : X ⟶ Y) (g : Y ⟶ X), f ≫ g = 𝟙 X)
     {M N : C} {f : M ⟶ N} {g : N ⟶ M} (x : M) : g (f x) = x := by
   have := elementwise_of% h
   guard_hyp this : ∀ D [Category D] (X Y : D) (f : X ⟶ Y) (g : Y ⟶ X)
@@ -79,22 +81,20 @@ example [Category C] [ConcreteCategory C]
   rw [this]
 
 section Mon
--- TODO: switch to actual Mon when it is ported
-variable (Mon : Type _) [Category Mon] [ConcreteCategory Mon]
 
-lemma bar' {M N K : Mon} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
+lemma bar' {M N K : MonCat} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
     g (f x) = h x := by exact foo_apply w x
 
-lemma bar'' {M N K : Mon} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
+lemma bar'' {M N K : MonCat} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
     g (f x) = h x := by apply foo_apply w
 
-lemma bar''' {M N K : Mon} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
+lemma bar''' {M N K : MonCat} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
     g (f x) = h x := by apply foo_apply w
 
-example (M N K : Mon) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
+example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
     g (f m) = h m := by rw [elementwise_of% w]
 
-example (M N K : Mon) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
+example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
     g (f m) = h m := by
   -- Porting note: did not port `elementwise!` tactic
   replace w := elementwise_of% w

@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Order.UpperLower.Basic
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Images of intervals under `Nat.cast : ℕ → ℤ`

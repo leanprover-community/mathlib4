@@ -3,12 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Limits.Presheaf
-
-#align_import category_theory.limits.preserves.functor_category from "leanprover-community/mathlib"@"39478763114722f0ec7613cb2f3f7701f9b86c8d"
 
 /-!
 # Preservation of (co)limits in the functor category
@@ -30,13 +29,15 @@ https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_
 -/
 
 
-universe w w' v₁ v₂ u u₂
+universe w w' v v₁ v₂ v₃ u u₁ u₂ u₃
 
 noncomputable section
 
 namespace CategoryTheory
 
 open Category Limits
+
+section
 
 variable {C : Type u} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{u} D]
@@ -71,18 +72,26 @@ def FunctorCategory.prodPreservesColimits [HasBinaryProducts D] [HasColimits D]
               apply asIso (prodComparison ((evaluation C D).obj k) F G)
             · intro G G'
               apply prodComparison_natural ((evaluation C D).obj k) (𝟙 F) } ) }
-#align category_theory.functor_category.prod_preserves_colimits CategoryTheory.FunctorCategory.prodPreservesColimits
 
-instance whiskeringLeftPreservesLimits [HasLimits D] (F : C ⥤ E) :
-    PreservesLimits ((whiskeringLeft C E D).obj F) :=
-  ⟨fun {J} [hJ : Category J] =>
-    ⟨fun {K} =>
-      ⟨fun c {hc} => by
-        apply evaluationJointlyReflectsLimits
-        intro Y
-        change IsLimit (((evaluation E D).obj (F.obj Y)).mapCone c)
-        exact PreservesLimit.preserves hc⟩⟩⟩
-#align category_theory.whiskering_left_preserves_limits CategoryTheory.whiskeringLeftPreservesLimits
+end
+
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable {E : Type u₃} [Category.{v₃} E]
+
+instance whiskeringLeftPreservesLimitsOfShape (J : Type u) [Category.{v} J]
+    [HasLimitsOfShape J D] (F : C ⥤ E) :
+    PreservesLimitsOfShape J ((whiskeringLeft C E D).obj F) :=
+  ⟨fun {K} =>
+    ⟨fun c {hc} => by
+      apply evaluationJointlyReflectsLimits
+      intro Y
+      change IsLimit (((evaluation E D).obj (F.obj Y)).mapCone c)
+      exact PreservesLimit.preserves hc⟩⟩
+
+instance whiskeringLeftPreservesLimits [HasLimitsOfSize.{w} D] (F : C ⥤ E) :
+    PreservesLimitsOfSize.{w, w'} ((whiskeringLeft C E D).obj F) :=
+  ⟨fun {J} _ => whiskeringLeftPreservesLimitsOfShape J F⟩
 
 instance whiskeringRightPreservesLimitsOfShape {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
@@ -93,23 +102,31 @@ instance whiskeringRightPreservesLimitsOfShape {C : Type*} [Category C] {D : Typ
       apply evaluationJointlyReflectsLimits _ (fun k => ?_)
       change IsLimit (((evaluation _ _).obj k ⋙ F).mapCone c)
       exact PreservesLimit.preserves hc⟩⟩
-#align category_theory.whiskering_right_preserves_limits_of_shape CategoryTheory.whiskeringRightPreservesLimitsOfShape
 
 instance whiskeringRightPreservesLimits {C : Type*} [Category C] {D : Type*} [Category D]
     {E : Type*} [Category E] (F : D ⥤ E) [HasLimitsOfSize.{w, w'} D]
     [PreservesLimitsOfSize.{w, w'} F] :
     PreservesLimitsOfSize.{w, w'} ((whiskeringRight C D E).obj F) :=
   ⟨inferInstance⟩
-#align category_theory.whiskering_right_preserves_limits CategoryTheory.whiskeringRightPreservesLimits
 
 -- Porting note: fixed spelling mistake in def
 /-- If `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
 noncomputable def preservesLimitOfLanPreservesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]
-    [PreservesLimitsOfShape J (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F := by
+    [PreservesLimitsOfShape J (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F := by
   apply @preservesLimitsOfShapeOfReflectsOfPreserves _ _ _ _ _ _ _ _ F yoneda ?_
-  exact preservesLimitsOfShapeOfNatIso (compYonedaIsoYonedaCompLan F).symm
-set_option linter.uppercaseLean3 false in
-#align category_theory.preserves_limit_of_Lan_preserves_limit CategoryTheory.preservesLimitOfLanPreservesLimit
+  exact preservesLimitsOfShapeOfNatIso (Presheaf.compYonedaIsoYonedaCompLan F).symm
+
+/-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
+def preservesFiniteLimitsOfEvaluation {D : Type*} [Category D] {E : Type*} [Category E]
+    (F : C ⥤ D ⥤ E) (h : ∀ d : D, PreservesFiniteLimits (F ⋙ (evaluation D E).obj d)) :
+    PreservesFiniteLimits F :=
+  ⟨fun J _ _ => preservesLimitsOfShapeOfEvaluation F J fun k => (h k).preservesFiniteLimits _⟩
+
+/-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
+def preservesFiniteColimitsOfEvaluation {D : Type*} [Category D] {E : Type*} [Category E]
+    (F : C ⥤ D ⥤ E) (h : ∀ d : D, PreservesFiniteColimits (F ⋙ (evaluation D E).obj d)) :
+    PreservesFiniteColimits F :=
+  ⟨fun J _ _ => preservesColimitsOfShapeOfEvaluation F J fun k => (h k).preservesFiniteColimits _⟩
 
 end CategoryTheory
