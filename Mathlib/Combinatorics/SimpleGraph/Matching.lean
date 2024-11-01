@@ -155,17 +155,13 @@ protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g
 @[simp]
 lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : SimpleGraph.Iso G G') :
     (M.map f.toHom).IsMatching ↔ M.IsMatching := by
-  constructor
-  · intro h
-    have : (M.map f.toHom).map f.symm.toHom = M := by
-      rw [← map_comp]
-      simp only [Iso.symm_toHom_comp_toHom, map_id]
-    rw [← this]
-    exact IsMatching.map f.symm.toHom (by
-      simp only [RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, RelIso.bijective]) h
-  · intro h
-    exact IsMatching.map f.toHom (by
-      simp only [RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, RelIso.bijective]) h
+  refine ⟨?_, fun h ↦ IsMatching.map f.toHom (by
+      simp only [RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, RelIso.bijective]) h⟩
+  intro h
+  rw [show M = (M.map f.toHom).map f.symm.toHom from
+    by rw [← map_comp]; simp only [Iso.symm_toHom_comp_toHom, map_id]]
+  exact IsMatching.map f.symm.toHom (by
+    simp only [RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, RelIso.bijective]) h
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
