@@ -48,11 +48,6 @@ TODO: add the similar result for the series of homogeneous components.
 
 -/
 
-
-theorem MvPowerSeries.apply_eq_coeff {σ R : Type _} [Semiring R] (f : MvPowerSeries σ R)
-    (d : σ →₀ ℕ) : f d = MvPowerSeries.coeff R d f :=
-  rfl
-
 namespace MvPowerSeries
 
 open Function

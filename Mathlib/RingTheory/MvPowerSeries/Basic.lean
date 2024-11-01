@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2019 Johan Commelin. All rights reserved.
+Mathlib/RingTheory/MvPowerSeries/PiTopology.leanCopyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
@@ -134,6 +134,9 @@ def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
 /-- The `n`th coefficient of a multivariate formal power series. -/
 def coeff (n : σ →₀ ℕ) : MvPowerSeries σ R →ₗ[R] R :=
   LinearMap.proj n
+
+theorem MvPowerSeries.apply_eq_coeff (f : MvPowerSeries σ R) (d : σ →₀ ℕ) :
+    f d = MvPowerSeries.coeff R d f := rfl
 
 variable {R}
 
