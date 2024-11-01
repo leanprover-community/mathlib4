@@ -79,12 +79,11 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
         simp only [AlgEquiv.smul_def] at this
         rw [this]
         exact ne
-      · constructor
-        · exact IsOpen.smul (IntermediateField.fixingSubgroup_isOpen (adjoin k {y}).1) σ
-        · apply Set.mem_smul_set.mpr
-          use 1
-          simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true]
-          exact congrFun rfl
+      · simp only [(IntermediateField.fixingSubgroup_isOpen (adjoin k {y}).1).smul σ, true_and]
+        apply Set.mem_smul_set.mpr
+        use 1
+        simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true]
+        exact congrFun rfl
 
 lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     IntermediateField.fixedField L.fixingSubgroup = L := by
@@ -92,7 +91,7 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
   apply le_antisymm
   · intro x hx
     rw [IntermediateField.mem_fixedField_iff] at hx
-    have id : ∀ σ ∈ L.fixingSubgroup, σ x = x := hx
+    have fix : ∀ σ ∈ L.fixingSubgroup, σ x = x := hx
     have mem : x ∈ (adjoin L {x}).1 := subset_adjoin _ _ (by simp only [Set.mem_singleton_iff])
     have : IntermediateField.fixedField (⊤ : Subgroup ((adjoin L {x}) ≃ₐ[L] (adjoin L {x}))) = ⊥ :=
       (IsGalois.tfae.out 0 1).mp (by infer_instance)
@@ -102,7 +101,7 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
       rcases restrictNormalHom_surjective K f with ⟨σ,hσ⟩
       apply Subtype.val_injective
       rw [← hσ, restrictNormalHom_apply (adjoin L {x}).1 σ ⟨x, mem⟩]
-      have := id <| (IntermediateField.fixingSubgroupEquiv L).symm σ
+      have := fix ((IntermediateField.fixingSubgroupEquiv L).symm σ)
       simp only [SetLike.coe_mem, true_implies] at this
       exact this
     rcases IntermediateField.mem_bot.mp this with ⟨y, hy⟩
@@ -147,8 +146,7 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k
     (IntermediateField.fixedField H.toSubgroup)).mp fun ⦃x⦄ a ↦ a)
   intro σ hσ
   by_contra h
-  have := H.isClosed'
-  have nhd : H.carrierᶜ ∈ nhds σ := IsOpen.mem_nhds (IsClosed.isOpen_compl) h
+  have nhd : H.carrierᶜ ∈ nhds σ := H.isClosed'.isOpen_compl.mem_nhds h
   rw [GroupFilterBasis.nhds_eq (x₀ := σ) (galGroupBasis k K)] at nhd
   rcases nhd with ⟨b,⟨gp,⟨L,hL,eq'⟩,eq⟩,sub⟩
   rw [← eq'] at eq
@@ -169,9 +167,9 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k
     rw [← IntermediateField.fixingSubgroup_fixedField (Subgroup.map (restrictNormalHom L') H.1)]
     apply (mem_fixingSubgroup_iff (L' ≃ₐ[k] L')).mpr
     intro y hy
-    show ((restrictNormalHom ↥L'.toIntermediateField) σ) y = y
     apply Subtype.val_injective
-    rw [restrictNormalHom_apply L'.1 σ y, fix y.1 ((IntermediateField.mem_lift y).mpr hy)]
+    simp only [AlgEquiv.smul_def, restrictNormalHom_apply L'.1 σ y,
+      fix y.1 ((IntermediateField.mem_lift y).mpr hy)]
   rcases this with ⟨h, mem, eq⟩
   have : h ∈ σ • L'.1.fixingSubgroup.carrier := by
     use σ⁻¹ * h
