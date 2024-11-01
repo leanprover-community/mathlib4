@@ -32,7 +32,7 @@ assert_not_exists Field
  -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
  -- finiteness currently relies on more algebra than it needs.
 
-universe w v₁ v₂ v u₁ u₂ u
+universe w v₁ v₂ v₃ v u₁ u₂ u₃ u
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits.Types
   CategoryTheory.Limits.Types.FilteredColimit
@@ -399,6 +399,21 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
     Limits.HasColimit.isoOfNatIso_ι_hom, NatIso.ofComponents_hom_app]
   dsimp
   simp
+
+variable {D : Type u₃} [Category.{v₃} D]
+
+noncomputable def FunctorCategory.colimitLimitIso
+    (F : J ⥤ K ⥤ D ⥤ C) : colimit (limit F) ≅ limit (colimit F.flip) :=
+  NatIso.ofComponents
+    (fun d => by
+      refine (colimitObjIsoColimitCompEvaluation _ _) ≪≫ ?_
+
+
+        -- HasColimit.isoOfMapIso ?_ ≪≫ ?_
+
+
+      )
+    sorry
 
 end
 
