@@ -237,15 +237,15 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
 variable [Semiring S]
 
 theorem natDegree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
-    (hz : eval₂ f z p = 0) (inj : ∀ x : R, f x = 0 → x = 0) : 0 < natDegree p :=
+    (hz : eval₂ f z p = 0) (inj : Function.Injective f) : 0 < natDegree p :=
   lt_of_not_ge fun hlt => by
     have A : p = C (p.coeff 0) := eq_C_of_natDegree_le_zero hlt
     rw [A, eval₂_C] at hz
-    simp only [inj (p.coeff 0) hz, RingHom.map_zero] at A
+    simp only [(map_eq_zero_iff _ inj).1 hz, RingHom.map_zero] at A
     exact hp A
 
 theorem degree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
-    (hz : eval₂ f z p = 0) (inj : ∀ x : R, f x = 0 → x = 0) : 0 < degree p :=
+    (hz : eval₂ f z p = 0) (inj : Function.Injective f) : 0 < degree p :=
   natDegree_pos_iff_degree_pos.mp (natDegree_pos_of_eval₂_root hp f hz inj)
 
 @[simp]

@@ -310,12 +310,12 @@ linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/
 theorem LinearIndependent.map_of_injective_injective {R' : Type*} {M' : Type*}
     [Ring R'] [AddCommGroup M'] [Module R' M'] (hv : LinearIndependent R v)
-    (i : R' → R) (j : M →+ M') (hi : ∀ r, i r = 0 → r = 0) (hj : ∀ m, j m = 0 → m = 0)
+    (i : R' → R) (j : M →+ M') (hi : ∀ r, i r = 0 → r = 0) (hj : Function.Injective j)
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) : LinearIndependent R' (j ∘ v) := by
   rw [linearIndependent_iff'] at hv ⊢
   intro S r' H s hs
   simp_rw [comp_apply, ← hc, ← map_sum] at H
-  exact hi _ <| hv _ _ (hj _ H) s hs
+  exact hi _ <| hv _ _ (hj <| H.trans (map_zero _).symm) s hs
 
 /-- If `M / R` and `M' / R'` are modules, `i : R → R'` is a surjective map which maps zero to zero,
 `j : M →+ M'` is a monoid map which sends non-zero elements to non-zero elements, such that the
@@ -324,7 +324,7 @@ of vectors to linearly independent families of vectors. As a special case, takin
 it is `LinearIndependent.map'`. -/
 theorem LinearIndependent.map_of_surjective_injective {R' : Type*} {M' : Type*}
     [Ring R'] [AddCommGroup M'] [Module R' M'] (hv : LinearIndependent R v)
-    (i : ZeroHom R R') (j : M →+ M') (hi : Surjective i) (hj : ∀ m, j m = 0 → m = 0)
+    (i : ZeroHom R R') (j : M →+ M') (hi : Surjective i) (hj : Function.Injective j)
     (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) : LinearIndependent R' (j ∘ v) := by
   obtain ⟨i', hi'⟩ := hi.hasRightInverse
   refine hv.map_of_injective_injective i' j (fun _ h ↦ ?_) hj fun r m ↦ ?_

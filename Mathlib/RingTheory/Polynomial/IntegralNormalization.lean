@@ -98,7 +98,7 @@ variable [CommRing R] [IsDomain R]
 variable [CommSemiring S]
 
 theorem integralNormalization_eval₂_eq_zero {p : R[X]} (f : R →+* S) {z : S} (hz : eval₂ f z p = 0)
-    (inj : ∀ x : R, f x = 0 → x = 0) :
+    (inj : Function.Injective f) :
     eval₂ f (z * f p.leadingCoeff) (integralNormalization p) = 0 :=
   calc
     eval₂ f (z * f p.leadingCoeff) (integralNormalization p) =
