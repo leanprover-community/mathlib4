@@ -649,13 +649,10 @@ lemma maximumClique_card_eq_cliqueNum (s : Finset α) (sm : G.IsMaximumClique s)
   rw [← scn]
   exact LE.le.not_lt (sm s sclique)
 
-lemma maximumClique_exists : ∃ (s : Finset α), Nonempty (G.IsMaximumClique s) := by
+lemma maximumClique_exists : ∃ (s : Finset α), G.IsMaximumClique s := by
   have ⟨s, hs⟩ := G.cliqueNum_attained
   use s
-  exact ⟨{
-    clique := hs.clique,
-    maximum := fun t ht => hs.card_eq.symm ▸ G.clique_card_le_cliqueNum t ht
-  }⟩
+  exact ⟨hs.clique, fun t ht => hs.card_eq.symm ▸ G.clique_card_le_cliqueNum t ht⟩
 end CliqueNumber
 
 end SimpleGraph
