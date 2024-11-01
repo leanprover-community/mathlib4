@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Noetherian
-import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.RingTheory.Localization.Module
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 /-!
@@ -289,10 +289,10 @@ lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
   simp only [SetLike.mem_coe, LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.smul_apply,
     sub_eq_zero, ← Finset.prod_erase_mul σ s hx, mul_smul, hs]
 
-lemma Module.FinitePresentation.isLocalizedModule_map
-    {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
-    {N' : Type*} [AddCommGroup N'] [Module R N'] (g : N →ₗ[R] N') [IsLocalizedModule S g]
-    [Module.FinitePresentation R M] :
+variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
+variable {N' : Type*} [AddCommGroup N'] [Module R N'] (g : N →ₗ[R] N') [IsLocalizedModule S g]
+
+instance Module.FinitePresentation.isLocalizedModule_map [Module.FinitePresentation R M] :
       IsLocalizedModule S (IsLocalizedModule.map S f g) := by
   constructor
   · intro s
@@ -314,5 +314,12 @@ lemma Module.FinitePresentation.isLocalizedModule_map
     apply Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule S g
     ext x
     simpa using LinearMap.congr_fun e (f x)
+
+instance Module.FinitePresentation.isLocalizedModule_mapExtendScalars
+    (Rₛ) [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ M'] [Module Rₛ N']
+    [IsScalarTower R Rₛ M'] [IsScalarTower R Rₛ N'] [IsLocalization S Rₛ]
+    [Module.FinitePresentation R M] :
+      IsLocalizedModule S (IsLocalizedModule.mapExtendScalars S f g Rₛ) :=
+  IsLocalizedModule.of_linearEquiv _ _ _
 
 end CommRing
