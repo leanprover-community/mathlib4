@@ -76,7 +76,7 @@ structure MonomialOrder (σ : Type*) where
   /-- `toSyn` is monotone -/
   toSyn_monotone : Monotone toSyn
   /-- `syn` is a well ordering -/
-  wf : WellFoundedLT syn
+  wf : WellFoundedLT syn := by infer_instance
 
 attribute [instance] MonomialOrder.locacm MonomialOrder.wf
 
