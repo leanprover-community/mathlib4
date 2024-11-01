@@ -616,14 +616,6 @@ structure IsMaximalClique (G : SimpleGraph α) (s : Finset α) :=
   (clique : G.IsClique s)
   (maximal : ∀ t : Finset α, G.IsClique t → s ⊆ t → t = s)
 
--- /-- A clique in a graph `G` such that there is no clique with more vertices. -/
--- def isMaximumClique (G : SimpleGraph α) (s : Finset α) : Prop :=
---   G.IsClique s ∧ ∀ (t : Finset α), G.IsClique t → #t ≤ #s
-
--- /-- A clique in a graph `G` that cannot be extended by adding vertices. -/
--- def isMaximalClique (G : SimpleGraph α) (s : Finset α) : Prop :=
---   G.IsClique s ∧ ¬ ∃ (t : Finset α), G.IsClique t ∧ s ⊂ t
-
 instance maximal_of_maximum (s : Finset α) (M : G.IsMaximumClique s) : G.IsMaximalClique s :=
   { clique := M.clique,
     maximal := fun t ht hsub => by
