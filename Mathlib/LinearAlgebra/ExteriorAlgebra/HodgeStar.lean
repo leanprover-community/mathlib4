@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Morrison
 -/
 
-import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
-import Mathlib.LinearAlgebra.BilinearForm.Basic
-import Mathlib.LinearAlgebra.BilinearForm.Properties
+import Mathlib.LinearAlgebra.ExteriorAlgebra.InducedForm
 
 /-!
 Documentation
@@ -23,150 +21,53 @@ finite-dimensional oriented vector space endowed with a nondegenerate symmetric 
 α ∧ ⋆β = ⟨α , β⟩ ω
 -/
 
-open ExteriorAlgebra BigOperators
-
-namespace exteriorPower
-
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-variable {I : Type*} [LinearOrder I] [Fintype I]
-variable {n : ℕ}
-
-/-- If `b` is a basis of `M` (indexed by a linearly ordered type), the basis of the `n`th
-exterior power of `M` formed by the `n`-fold exterior products of elements of `b`. -/
-noncomputable def _root_.Basis.exteriorPower {I : Type*} [LinearOrder I] (b : Basis I R M) :
-    Basis {s : Finset I // Finset.card s = n} R (⋀[R]^n M) := sorry --From SM.ExteriorPower
-
-def ιMulti : M [⋀^Fin n]→ₗ[R] (⋀[R]^n M) :=
-  (ExteriorAlgebra.ιMulti R n).codRestrict (⋀[R]^n M) fun _ =>
-    ExteriorAlgebra.ιMulti_range R n <| Set.mem_range_self _
-
-noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) :
-    {s : Finset I // Finset.card s = n} → ⋀[R]^n M :=
-  fun ⟨s, hs⟩ => ιMulti (fun i => v (Finset.orderIsoOfFin s hs i))
-
-/-
-abbrev ind_of_fin (s: {a : Finset I // a.card = n}) : Fin n → I :=
-  fun i ↦ (s.1.orderIsoOfFin s.2 i)
-
-noncomputable abbrev vec_of_finset (b : Basis I R M) (s: {a : Finset I // a.card = n}) :
-  Fin n → M := fun i ↦ b (ind_of_fin s i)
--/
-
 /-
 TODO:
-1. Split into separate files
-2. Rewrite as separate bases on left and right entries
+✓  Split into separate files
+✓  Rewrite as separate bases on left and right entries
 3. Prove independence of bases
 4. Show definition on simple tensors
 5. Use dual basis for nondegenerate forms
 6. Construct dual basis on exterior power
 -/
 
-section inducedForm
+open ExteriorAlgebra BigOperators
 
-noncomputable def inducedForm (B : LinearMap.BilinForm R M) (b : Basis I R M) :
-  ⋀[R]^n M → ⋀[R]^n M → R := fun v w ↦ ∑ s : {s : Finset I // Finset.card s = n},
-  ∑ t : {s : Finset I // Finset.card s = n},
-  (b.exteriorPower.coord s v * b.exteriorPower.coord t w) •
-  Matrix.det (fun i j ↦ B (b (Finset.orderIsoOfFin s.val s.property i))
-  (b (Finset.orderIsoOfFin t.val t.property j)) )
-
-theorem induced_add_left (B : LinearMap.BilinForm R M) (b : Basis I R M) : ∀ u v w : ⋀[R]^n M,
-  inducedForm B b (u + v) w = inducedForm B b u w + inducedForm B b v w := by
-  intro u v w
-  unfold inducedForm
-  simp only [map_add, add_mul, add_smul, Finset.sum_add_distrib]
-
-theorem induced_add_right (B : LinearMap.BilinForm R M) (b : Basis I R M) : ∀ u v w : ⋀[R]^n M,
-  inducedForm B b u (v + w) = inducedForm B b u v + inducedForm B b u w := by
-  intro u v w
-  unfold inducedForm
-  simp only [map_add, mul_add, add_smul, Finset.sum_add_distrib]
-
-theorem induced_smul_left (B : LinearMap.BilinForm R M) (b : Basis I R M) : ∀ r : R,
-  ∀ v w : ⋀[R]^n M, inducedForm B b (r • v) w = r • inducedForm B b v w := by
-  intro r v w
-  unfold inducedForm
-  simp only [map_smul, smul_mul_assoc, smul_assoc, Finset.smul_sum]
-
-theorem induced_smul_right (B : LinearMap.BilinForm R M) (b : Basis I R M) : ∀ r : R,
-  ∀ v w : ⋀[R]^n M, inducedForm B b v (r • w) = r • inducedForm B b v w := by
-  intro r v w
-  unfold inducedForm
-  simp only [map_smul, mul_smul_comm, smul_assoc, Finset.smul_sum]
-
-noncomputable def inducedBilinForm (B : LinearMap.BilinForm R M) (b : Basis I R M) :
-  LinearMap.BilinForm R <| ⋀[R]^n M where
-  toFun := fun v ↦ {
-    toFun := fun w ↦ inducedForm B b v w,
-    map_add' := induced_add_right B b v,
-    map_smul' := fun r w ↦ induced_smul_right B b r v w
-  }
-  map_add' := by intro u v; ext w; exact induced_add_left B b u v w
-  map_smul' := by intro r v; ext w; exact induced_smul_left B b r v w
-
-end inducedForm
-
-section ringProperties
-
-noncomputable abbrev bExterior (n : ℕ) (b : Basis I R M) := @Basis.exteriorPower _ _ _ _ _ n _ _ b
-variable (B : LinearMap.BilinForm R M) (b : Basis I R M)
-local notation "⟪" x ", " y "⟫" => @inducedForm _ _ _ _ _ _ _ _ n B b x y
-
-theorem induced_symm (h : B.IsSymm) :
-  ∀ v w : ⋀[R]^n M, ⟪v, w⟫ = ⟪w, v⟫ := by
-  intro v w
-  unfold inducedForm
-  rw [Finset.sum_comm]
-  congr; ext s; congr; ext t
-  rw [mul_comm, ← Matrix.det_transpose]
-  congr; ext i j
-  rw [LinearMap.BilinForm.IsSymm.eq h, Matrix.transpose_apply]
-
-theorem inducedBilin_symm (h : B.IsSymm) :
-  (@inducedBilinForm _ _ _ _ _ _ _ _ n B b).IsSymm := by
-  intro v w
-  rw [RingHom.id_apply]
-  unfold inducedBilinForm
-  dsimp
-  exact induced_symm B b h v w
-
-theorem inducedForm_basis (s t : {a : Finset I // a.card = n}) :
-  ⟪bExterior n b s, bExterior n b t⟫ = Matrix.det (fun i j ↦
-  B (b (s.1.orderIsoOfFin s.property i)) (b (t.1.orderIsoOfFin t.property j)) ) := by
-  unfold inducedForm
-  simp only [Basis.coord_apply, Basis.repr_self_apply, ite_smul, mul_ite,
-  mul_one, Finset.coe_orderIsoOfFin_apply, smul_eq_mul, ite_mul, one_mul, zero_mul,
-  mul_zero, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
-
-end ringProperties
-
-section fieldProperties
+namespace exteriorPower
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 variable {I : Type*} [LinearOrder I] [Fintype I]
 variable (B : LinearMap.BilinForm K V) (b : Basis I K V)
+variable {k : ℕ}
 
-local notation "⟪" x ", " y "⟫" => @inducedForm _ _ _ _ _ _ _ _ n B b x y
+local notation "⟪" x ", " y "⟫" => @inducedForm _ _ _ _ _ _ _ _ k B b x y
+
+section nondegenerate
 
 #check B.dualBasis
 
-theorem induced_dualBasis (hB : B.Nondegenerate) (s t : {a : Finset I // a.card = n}) :
+theorem induced_dualBasis (hB : B.Nondegenerate) (s t : {a : Finset I // a.card = k}) :
   ⟪(B.dualBasis hB b).exteriorPower s, b.exteriorPower t⟫ = if s=t then 1 else 0 := by
   unfold inducedForm
 
   sorry
 
 theorem induced_nondegenerate (hB : B.Nondegenerate) :
-  ∀ (v : ⋀[K]^n V), (∀ (w : ⋀[K]^n V), ⟪v, w⟫ = 0) → v = 0 := by
+  ∀ (v : ⋀[K]^k V), (∀ (w : ⋀[K]^k V), ⟪v, w⟫ = 0) → v = 0 := by
   intro v h'
-  rw [← @Basis.forall_coord_eq_zero_iff _ K (⋀[K]^n V) _ _ _ (bExterior n b)]
+  rw [← @Basis.forall_coord_eq_zero_iff _ K (⋀[K]^k V) _ _ _ (b.exteriorPower)]
   intro s
   sorry
 
 theorem inducedBilin_nondegenerate (hB : B.Nondegenerate) :
-  (@inducedBilinForm _ _ _ _ _ _ _ _ n B b).Nondegenerate := induced_nondegenerate B b hB
+  (@inducedBilinForm _ _ _ _ _ _ _ _ k B b).Nondegenerate := induced_nondegenerate B b hB
 
-end fieldProperties
+end nondegenerate
+
+section hodgeStar
+
+
+
+end hodgeStar
 
 end exteriorPower
