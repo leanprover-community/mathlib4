@@ -636,14 +636,14 @@ theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
 
 variable {α M}
 
-theorem linearCombination_comp_linear (f : M →ₗ[R] M') :
+theorem linearCombination_linear_comp (f : M →ₗ[R] M') :
     linearCombination R (f ∘ v) = f ∘ₗ linearCombination R v := by
   ext
   simp [linearCombination_apply]
 
 theorem apply_linearCombination (f : M →ₗ[R] M') (v) (l : α →₀ R) :
     f (linearCombination R v l) = linearCombination R (f ∘ v) l :=
-  congr($(linearCombination_comp_linear R f) l).symm
+  congr($(linearCombination_linear_comp R f) l).symm
 
 @[deprecated (since := "2024-08-29")] alias apply_total := apply_linearCombination
 
