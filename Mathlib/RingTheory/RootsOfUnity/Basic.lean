@@ -82,15 +82,21 @@ def rootsOfUnity (k : ℕ) (M : Type*) [CommMonoid M] : Subgroup Mˣ where
   inv_mem' _ := by simp_all only [Set.mem_setOf_eq, inv_pow, inv_one]
 
 @[simp]
-theorem mem_rootsOfUnity (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ ζ ^ (k : ℕ) = 1 :=
+theorem mem_rootsOfUnity (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ ζ ^ k = 1 :=
   Iff.rfl
 
-theorem mem_rootsOfUnity' (k : ℕ) (ζ : Mˣ) :
-    ζ ∈ rootsOfUnity k M ↔ (ζ : M) ^ (k : ℕ) = 1 := by
+theorem mem_rootsOfUnity' (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (ζ : M) ^ k = 1 := by
   rw [mem_rootsOfUnity]; norm_cast
 
 @[simp]
-theorem rootsOfUnity_one (M : Type*) [CommMonoid M] : rootsOfUnity 1 M = ⊥ := by ext; simp
+theorem rootsOfUnity_one (M : Type*) [CommMonoid M] : rootsOfUnity 1 M = ⊥ := by
+  ext1
+  simp only [mem_rootsOfUnity, pow_one, Subgroup.mem_bot]
+
+@[simp]
+lemma rootsOfUnity_zero (M : Type*) [CommMonoid M] : rootsOfUnity 0 M = ⊤ := by
+  ext1
+  simp only [mem_rootsOfUnity, pow_zero, Subgroup.mem_top]
 
 theorem rootsOfUnity.coe_injective {n : ℕ} :
     Function.Injective (fun x : rootsOfUnity n M ↦ x.val.val) :=
@@ -99,11 +105,11 @@ theorem rootsOfUnity.coe_injective {n : ℕ} :
 /-- Make an element of `rootsOfUnity` from a member of the base ring, and a proof that it has
 a positive power equal to one. -/
 @[simps! coe_val]
-def rootsOfUnity.mkOfPowEq (ζ : M) {n : ℕ} [NeZero n](h : ζ ^ (n : ℕ) = 1) : rootsOfUnity n M :=
+def rootsOfUnity.mkOfPowEq (ζ : M) {n : ℕ} [NeZero n] (h : ζ ^ n = 1) : rootsOfUnity n M :=
   ⟨Units.ofPowEqOne ζ n h <| NeZero.ne n, Units.pow_ofPowEqOne _ _⟩
 
 @[simp]
-theorem rootsOfUnity.coe_mkOfPowEq {ζ : M} {n : ℕ} [NeZero n] (h : ζ ^ (n : ℕ) = 1) :
+theorem rootsOfUnity.coe_mkOfPowEq {ζ : M} {n : ℕ} [NeZero n] (h : ζ ^ n = 1) :
     ((rootsOfUnity.mkOfPowEq _ h : Mˣ) : M) = ζ :=
   rfl
 
@@ -126,39 +132,49 @@ section CommMonoid
 variable [CommMonoid R] [CommMonoid S] [FunLike F R S]
 
 /-- Restrict a ring homomorphism to the nth roots of unity. -/
-def restrictRootsOfUnity [MonoidHomClass F R S] (σ : F) (n : ℕ) [NeZero n] :
-    rootsOfUnity n R →* rootsOfUnity n S :=
-  let h : ∀ ξ : rootsOfUnity n R, (σ (ξ : Rˣ)) ^ (n : ℕ) = 1 := fun ξ => by
-    rw [← map_pow, ← Units.val_pow_eq_pow_val, show (ξ : Rˣ) ^ (n : ℕ) = 1 from ξ.2, Units.val_one,
-      map_one σ]
-  { toFun := fun ξ =>
-      ⟨@unitOfInvertible _ _ _ (invertibleOfPowEqOne _ _ (h ξ) <| NeZero.ne n), by
-        ext; rw [Units.val_pow_eq_pow_val]; exact h ξ⟩
-    map_one' := by ext; exact map_one σ
-    map_mul' := fun ξ₁ ξ₂ => by ext; rw [Subgroup.coe_mul, Units.val_mul]; exact map_mul σ _ _ }
+def restrictRootsOfUnity [MonoidHomClass F R S] (σ : F) :
+    (n : ℕ) → rootsOfUnity n R →* rootsOfUnity n S
+  | 0 =>
+    { toFun := fun ξ ↦ ⟨Units.map σ (ξ : Rˣ), by simp only [rootsOfUnity_zero, Subgroup.mem_top]⟩
+      map_one' := by ext1; simp only [OneMemClass.coe_one, map_one]
+      map_mul' := fun ξ₁ ξ₂ ↦ by
+        ext1; simp only [Subgroup.coe_mul, map_mul, MulMemClass.mk_mul_mk]}
+  | n + 1 =>
+    let h : ∀ ξ : rootsOfUnity (n + 1) R, (σ (ξ : Rˣ)) ^ (n + 1) = 1 := fun ξ => by
+      rw [← map_pow, ← Units.val_pow_eq_pow_val, show (ξ : Rˣ) ^ (n + 1) = 1 from ξ.2,
+        Units.val_one, map_one σ]
+    { toFun := fun ξ =>
+        ⟨@unitOfInvertible _ _ _ (invertibleOfPowEqOne _ _ (h ξ) (Nat.zero_ne_add_one n).symm), by
+          ext; rw [Units.val_pow_eq_pow_val]; exact h ξ⟩
+      map_one' := by ext; exact map_one σ
+      map_mul' := fun ξ₁ ξ₂ => by ext; rw [Subgroup.coe_mul, Units.val_mul]; exact map_mul σ _ _ }
 
 @[simp]
-theorem restrictRootsOfUnity_coe_apply [NeZero k] [MonoidHomClass F R S] (σ : F)
+theorem restrictRootsOfUnity_coe_apply [MonoidHomClass F R S] (σ : F)
     (ζ : rootsOfUnity k R) :
-    (restrictRootsOfUnity σ k ζ : Sˣ) = σ (ζ : Rˣ) :=
-  rfl
+    (restrictRootsOfUnity σ k ζ : Sˣ) = σ (ζ : Rˣ) := by
+  match k with
+  | 0 => rfl
+  | _ + 1 => rfl
 
 /-- Restrict a monoid isomorphism to the nth roots of unity. -/
-nonrec def MulEquiv.restrictRootsOfUnity (σ : R ≃* S) (n : ℕ) [NeZero n] :
+nonrec def MulEquiv.restrictRootsOfUnity (σ : R ≃* S) (n : ℕ) :
     rootsOfUnity n R ≃* rootsOfUnity n S where
   toFun := restrictRootsOfUnity σ n
   invFun := restrictRootsOfUnity σ.symm n
-  left_inv ξ := by ext; exact σ.symm_apply_apply (ξ : Rˣ)
-  right_inv ξ := by ext; exact σ.apply_symm_apply (ξ : Sˣ)
+  left_inv ξ := by ext; simp only [restrictRootsOfUnity_coe_apply, symm_apply_apply]
+  right_inv ξ := by ext; simp only [restrictRootsOfUnity_coe_apply, apply_symm_apply]
   map_mul' := (restrictRootsOfUnity _ n).map_mul
 
 @[simp]
-theorem MulEquiv.restrictRootsOfUnity_coe_apply [NeZero k] (σ : R ≃* S) (ζ : rootsOfUnity k R) :
-    (σ.restrictRootsOfUnity k ζ : Sˣ) = σ (ζ : Rˣ) :=
-  rfl
+theorem MulEquiv.restrictRootsOfUnity_coe_apply (σ : R ≃* S) (ζ : rootsOfUnity k R) :
+    (σ.restrictRootsOfUnity k ζ : Sˣ) = σ (ζ : Rˣ) := by
+  match k with
+  | 0 => rfl
+  | _ + 1 => rfl
 
 @[simp]
-theorem MulEquiv.restrictRootsOfUnity_symm [NeZero k] (σ : R ≃* S) :
+theorem MulEquiv.restrictRootsOfUnity_symm (σ : R ≃* S) :
     (σ.restrictRootsOfUnity k).symm = σ.symm.restrictRootsOfUnity k :=
   rfl
 
