@@ -15,38 +15,36 @@ instance (S : LocalSubring K) : LocalRing S.1 := S.2
 
 -- maybe genralizable to [Ring R] [Ring S]
 instance {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Nontrivial S]
-    (f : R →+* S) (𝓡 : LocalSubring R) : LocalRing <| Subring.map f 𝓡.1 where
+    (f : R →+* S) (𝓡 : LocalSubring R) : LocalRing <| 𝓡.1.map f where
   exists_pair_ne := by
     use 0, 1
     apply zero_ne_one
   isUnit_or_isUnit_of_add_one :=  by
     intro ⟨a, x, hx, hfx⟩ ⟨b, y, hy, hfy⟩ h
-    let f_domrest := f.domRestrict 𝓡.1
-    have hr : ∀ r, (f_domrest r) ∈ (Subring.map f 𝓡.1) := by
-      intro r
+    have is_restriction : ∀ r ∈ 𝓡.1, (f r) ∈ (Subring.map f 𝓡.1) := by
+      intro r a_1
       subst hfx hfy
-      simp_all only [RingHom.restrict_apply, Subring.mem_map, f_domrest]
-      obtain ⟨val, property⟩ := r
-      simp_all only
+      simp_all only [Subring.mem_map]
       apply Exists.intro
       · apply And.intro
         on_goal 2 => {rfl}
         · simp_all only
-    let f_rest := f_domrest.rangeSRestrict
-    have is_f_rest_surj : Function.Surjective f_rest := by
-      apply RingHom.rangeSRestrict_surjective
+    let f_rest := f.restrict 𝓡.1 (𝓡.1.map f) is_restriction
+    have is_restriction_surj : Function.Surjective f_rest := by
+      intro ⟨c, z, hz, hfz⟩
+      use ⟨z, hz⟩
+      subst hfz hfy hfx
+      simp_all only [f_rest]
+      rfl
     have is_local : LocalRing (Subring.map f 𝓡.1) := by
-      -- apply LocalRing.of_surjective' f_rest is_f_rest_surj
-      --  gives an error
-      sorry
+      apply LocalRing.of_surjective' f_rest is_restriction_surj
     exact isUnit_or_isUnit_of_add_one h
 
 def LocalSubring.map {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Nontrivial S]
     (f : R →+* S) (s : LocalSubring R) : LocalSubring S := LocalSubring.of (Subring.map f s.1)
 
-
 instance topislocal (R : Type*) [Ring R] [LocalRing R] : LocalRing (⊤ : Subring R) := by
-  sorry
+
 
 def LocalSubring.range {R : Type*} {S : Type*} [CommRing R] [LocalRing R] [CommRing S] [Nontrivial S]
   (f : R →+* S) : LocalSubring S := LocalSubring.map f (LocalSubring.of ⊤)
