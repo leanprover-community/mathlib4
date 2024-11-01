@@ -119,6 +119,29 @@ instance whiskeringRightPreservesLimitsOfShape {C : Type*} [Category C] {D : Typ
       change IsLimit (((evaluation _ _).obj k ⋙ F).mapCone c)
       exact PreservesLimit.preserves hc⟩⟩
 
+/-- Whiskering right and then taking a limit is the same as taking the limit and applying the
+    functor. -/
+def limitCompWhiskeringRightIsoLimitComp {C : Type*} [Category C] {D : Type*}
+    [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
+    [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] (G : J ⥤ C ⥤ D) :
+    limit (G ⋙ (whiskeringRight _ _ _).obj F) ≅ limit G ⋙ F :=
+  (preservesLimitIso _ _).symm
+
+@[reassoc (attr := simp)]
+theorem π_limitCompWhiskeringRightIsoLimitComp_inv {C : Type*} [Category C] {D : Type*}
+    [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
+    [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] (G : J ⥤ C ⥤ D) (j : J) :
+     (limitCompWhiskeringRightIsoLimitComp F G).inv ≫
+        limit.π (G ⋙ (whiskeringRight _ _ _).obj F) j = whiskerRight (limit.π G j) F := by
+  simp [limitCompWhiskeringRightIsoLimitComp]
+
+@[reassoc (attr := simp)]
+theorem π_limitCompWhiskeringRightIsoLimitComp_hom {C : Type*} [Category C] {D : Type*}
+    [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
+    [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] (G : J ⥤ C ⥤ D) (j : J) :
+     (limitCompWhiskeringRightIsoLimitComp F G).hom ≫ whiskerRight (limit.π G j) F =
+      limit.π (G ⋙ (whiskeringRight _ _ _).obj F) j := by
+  simp [← Iso.eq_inv_comp]
 instance whiskeringRightPreservesColimitsOfShape {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasColimitsOfShape J D] (F : D ⥤ E) [PreservesColimitsOfShape J F] :
@@ -128,6 +151,30 @@ instance whiskeringRightPreservesColimitsOfShape {C : Type*} [Category C] {D : T
       apply evaluationJointlyReflectsColimits _ (fun k => ?_)
       change IsColimit (((evaluation _ _).obj k ⋙ F).mapCocone c)
       exact PreservesColimit.preserves hc⟩⟩
+
+/-- Whiskering right and then taking a colimit is the same as taking the colimit and applying the
+    functor. -/
+def colimitCompWhiskeringRightIsoColimitComp {C : Type*} [Category C] {D : Type*}
+    [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
+    [HasColimitsOfShape J D] (F : D ⥤ E) [PreservesColimitsOfShape J F] (G : J ⥤ C ⥤ D) :
+    colimit (G ⋙ (whiskeringRight _ _ _).obj F) ≅ colimit G ⋙ F :=
+  (preservesColimitIso _ _).symm
+
+@[reassoc (attr := simp)]
+theorem ι_colimitCompWhiskeringRightIsoColimitComp_hom {C : Type*} [Category C] {D : Type*}
+    [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
+    [HasColimitsOfShape J D] (F : D ⥤ E) [PreservesColimitsOfShape J F] (G : J ⥤ C ⥤ D) (j : J) :
+    colimit.ι (G ⋙ (whiskeringRight _ _ _).obj F) j ≫
+      (colimitCompWhiskeringRightIsoColimitComp F G).hom = whiskerRight (colimit.ι G j) F := by
+  simp [colimitCompWhiskeringRightIsoColimitComp]
+
+@[reassoc (attr := simp)]
+theorem ι_colimitCompWhiskeringRightIsoColimitComp_inv {C : Type*} [Category C] {D : Type*}
+    [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
+    [HasColimitsOfShape J D] (F : D ⥤ E) [PreservesColimitsOfShape J F] (G : J ⥤ C ⥤ D) (j : J) :
+    whiskerRight (colimit.ι G j) F ≫ (colimitCompWhiskeringRightIsoColimitComp F G).inv =
+      colimit.ι (G ⋙ (whiskeringRight _ _ _).obj F) j := by
+  simp [Iso.comp_inv_eq]
 
 instance whiskeringRightPreservesLimits {C : Type*} [Category C] {D : Type*} [Category D]
     {E : Type*} [Category E] (F : D ⥤ E) [HasLimitsOfSize.{w, w'} D]
