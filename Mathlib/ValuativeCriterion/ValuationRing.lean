@@ -73,11 +73,11 @@ instance : PartialOrder (LocalSubring K) where
     use le_refl a
     exact (isLocalHom_iff_comap_closedPoint (Subring.inclusion (le_refl a))).mpr rfl
   le_trans := by
-    intro ⟨a, x⟩ ⟨b, y⟩ ⟨c, z⟩
-    intro hab hbc
-    dsimp
-    use le_trans hab.1 hbc.1
-    sorry
+    intro ⟨a, x⟩ ⟨b, y⟩ ⟨c, z⟩ ⟨hab, hab_local⟩ ⟨hbc, hbc_local⟩
+    let f := Subring.inclusion hab
+    let g := Subring.inclusion hbc
+    use le_trans hab hbc
+    apply RingHom.isLocalHom_comp g f
   le_antisymm := by
     intro ⟨a, x⟩ ⟨b, y⟩ hab hba
     obtain ⟨hab2, hab2_loc⟩ := hab
