@@ -195,6 +195,7 @@ lemma ι_colimitFiberwiseColimitIso_inv (X : Grothendieck F) :
 
 end
 
+@[instance]
 theorem hasColimitsOfShapeGrothendieck [∀ X, HasColimitsOfShape (F.obj X) H]
     [HasColimitsOfShape C H] : HasColimitsOfShape (Grothendieck F) H where
   has_colimit _ := hasColimitOfHasFiberwiseColimitOfHasBaseColimit _
