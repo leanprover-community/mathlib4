@@ -270,19 +270,37 @@ lemma LinearIndependent.pair_iff {x y : M} :
   fin_cases i
   exacts [(h _ _ hg).1, (h _ _ hg).2]
 
-/-- A family is linearly independent if and only if all of its finite subfamily is
-linearly independent. -/
-theorem linearIndependent_iff_finset_linearIndependent :
-    LinearIndependent R v ↔ ∀ (s : Finset ι), LinearIndependent R (v ∘ (Subtype.val : s → ι)) :=
-  ⟨fun H _ ↦ H.comp _ Subtype.val_injective, fun H ↦ linearIndependent_iff'.2 fun s g hg i hi ↦
-    Fintype.linearIndependent_iff.1 (H s) (g ∘ Subtype.val)
-      (hg ▸ Finset.sum_attach s fun j ↦ g j • v j) ⟨i, hi⟩⟩
-
 end Ring
 
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M']
 variable [Module R M] [Module R M']
+
+/-- A family is linearly independent if and only if all of its finite subfamily is
+linearly independent. -/
+theorem linearIndependent_iff_finset_linearIndependent :
+    LinearIndependent R v ↔ ∀ (s : Finset ι), LinearIndependent R (v ∘ (Subtype.val : s → ι)) := by
+  refine ⟨fun H _ ↦ H.comp _ Subtype.val_injective, fun H ↦ ?_⟩
+  intro x y hxy
+  classical
+  specialize @H (x.support ∪ y.support) (x.subtypeDomain _) (y.subtypeDomain _) ?_
+  · simp_rw [Finsupp.linearCombination_comp, LinearMap.comp_apply, Finsupp.lmapDomain_apply,
+      ← Embedding.coe_subtype, ← Finsupp.embDomain_eq_mapDomain,
+      ← Finsupp.extendDomain_eq_embDomain_subtype,
+      Finsupp.extendDomain_subtypeDomain _ Finset.subset_union_left,
+      Finsupp.extendDomain_subtypeDomain _ Finset.subset_union_right, hxy]
+  simp_rw [DFunLike.ext_iff, Subtype.forall, Finsupp.subtypeDomain_apply] at H
+  ext i
+  by_cases h : i ∈ x.support ∪ y.support
+  · exact H _ h
+  · simp only [Finset.mem_union, Finsupp.mem_support_iff, not_or, not_ne_iff] at h
+    rw [h.1, h.2]
+
+theorem Fintype.linearIndependent_iff_injective [Fintype ι] :
+    LinearIndependent R v ↔ Function.Injective (Fintype.linearCombination R ℕ v) := by
+  rw [LinearIndependent, ← Finsupp.equivFunOnFinite.symm.injective_comp, Function.comp_def]
+  congr! with x
+  exact Finsupp.linearCombination_eq_fintype_linearCombination_apply _ _ _ _
 
 /-- If `v` is a linearly independent family of vectors and a linear map `f` is injective on the
 submodule spanned by the vectors of `v`, then `f ∘ v` is a linearly independent
