@@ -44,7 +44,9 @@ def LocalSubring.map {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Nontrivi
     (f : R →+* S) (s : LocalSubring R) : LocalSubring S := LocalSubring.of (Subring.map f s.1)
 
 instance topislocal (R : Type*) [Ring R] [LocalRing R] : LocalRing (⊤ : Subring R) := by
-
+  refine of_is_unit_or_is_unit_of_add_one ?isUnit_or_isUnit_of_add_one
+  intro ⟨a,ha⟩ ⟨b,hb⟩ h
+  sorry
 
 def LocalSubring.range {R : Type*} {S : Type*} [CommRing R] [LocalRing R] [CommRing S] [Nontrivial S]
   (f : R →+* S) : LocalSubring S := LocalSubring.map f (LocalSubring.of ⊤)
