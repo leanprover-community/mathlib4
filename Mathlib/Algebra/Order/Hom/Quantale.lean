@@ -11,86 +11,124 @@ import Mathlib.Data.FunLike.Basic
 import Mathlib.Order.Hom.CompleteLattice
 
 /-!
-# Algebraic order homomorphism classes
+# Quantale homomorphism classes
 
-This file defines hom classes for quantales, derived from those for the intersection between
-algebra and order theory in Mathlib.Algebra.Order.Hom.Basic.
+This file defines the bundled structures for quantale homomorphisms. Namely, we define
+`QuantaleHom` (resp., `AddQuantaleHom`) to be bundled homomorphisms between multiplicative (resp.,
+additive) quantales.
+
+We also define coercion to a function, and usual operations: composition, identity homomorphism,
+pointwise multiplication and pointwise inversion.
 
 ## Typeclasses
 
-Basic typeclasses for quantales
-* `QuantaleHom` : Homs are Semigroup Homs as well as CompleteLattice Homs
-* `LaxQuantaleHom` : Homs are Submultiplicative Semigroup Homs as well as CompleteLattice Homs
-* `OplaxQuantaleHom` : Homs are Supermultiplicative Semigroup Homs as well as CompleteLattice Homs
-* And their additive versions
+* `QuantaleHom`, resp. `AddQuantaleHom`: (Additive) Quantale homomorphisms are semigroup
+homomorphisms as well as complete lattice homomorphisms
+* `QuantaleHomClass`, resp. `AddQuantaleHomClass`: typeclass of (additive) quantale homomorphisms
 
-Basic typeclasses for unital quantales, i.e. quantales over a monoid
-* `OneQuantaleHom` : Homs are Monoid Homs as well as CompleteLattice Homs
-* `LaxOneQuantaleHom` : Homs are Submultiplicative Monoid Homs as well as CompleteLattice Homs
-* `OplaxOneQuantaleHom` : Homs are Supermultiplicative Monoid Homs as well as CompleteLattice Homs
-* And their additive versions
+## Todo
+
+* Add lax and oplax (i.e. supadditive and superadditive) variants of quantale homomorphisms
 
 -/
 
-open Function
-
 namespace AddQuantale
 
-variable {F : Type*} {α β : outParam Type*}
-variable [AddSemigroup α] [AddSemigroup β] [AddQuantale α] [AddQuantale β] [FunLike F α β]
+/-- `M →+q N` is the type of functions `M → N` that preserve the `AddQuantale` structure.
 
-/-- `AddQuantaleHomClass F α β` states that `F` is a type of additive quantale morphisms. -/
-class AddQuantaleHomClass extends AddHomClass F α β, CompleteLatticeHomClass F α β : Prop
+When possible, instead of parametrizing results over `(f : M →+q N)`,
+you should parametrize over `(F : Type*) [AddQuantaleHomClass F M N] (f : F)`.
 
-/-- `AddQuantaleHom α β` is a type of additive quantale morphisms. -/
-structure AddQuantaleHom extends AddHom α β, CompleteLatticeHom α β
+When you extend this structure, make sure to extend `AddQuantaleHomClass`.
+-/
+structure AddQuantaleHom (M N : Type*)
+  [AddSemigroup M] [AddSemigroup N] [AddQuantale M] [AddQuantale N]
+  extends AddHom M N, CompleteLatticeHom M N
 
-/-- `ZeroAddQuantaleHomClass F α β` states that `F` is a type of unital additive quantale
-morphisms. -/
-class ZeroAddQuantaleHomClass [AddMonoid α] [AddMonoid β]
-  extends AddMonoidHomClass F α β, CompleteLatticeHomClass F α β : Prop
+attribute [nolint docBlame] AddQuantaleHom.toAddHom
+attribute [nolint docBlame] AddQuantaleHom.toCompleteLatticeHom
 
-/-- `ZeroAddQuantaleHom α β` is a type of unital additive quantale morphisms. -/
-structure ZeroAddQuantaleHom [AddMonoid α] [AddMonoid β]
-  extends AddMonoidHom α β, CompleteLatticeHom α β
+/-- `M →+q N` denotes the type of additive quantale homomorphisms from `M` to `N`. -/
+infixr:25 " →+q " => AddQuantaleHom
 
-/-- `LaxAddQuantaleHomClass F α β` states that `F` is a type of unital additive quantale
-morphisms. -/
-class LaxAddQuantaleHomClass [AddMonoid α] [AddMonoid β]
-  extends SubadditiveHomClass F α β, NonnegHomClass F α β, CompleteLatticeHomClass F α β : Prop
+/-- `AddQuantaleHomClass F M N` states that `F` is a type of `AddQuantale`-preserving
+homomorphisms.
 
--- In `Mathlib.Algebra.Order.Hom.Basic` there are only definitions for HomClasses and not
--- for the associated Homs themselves. Those we need to introduce explicitly here, apparently.
--- I need to check why this is the case (I have a hunch that they are not considered in isolation
--- usually, so standalone Hom definitions are futile.)
+You should also extend this typeclass when you extend `AddQuantaleHom`.
+-/
+class AddQuantaleHomClass (F : Type*) (M N : outParam Type*)
+    [AddSemigroup M] [AddSemigroup N] [AddQuantale M] [AddQuantale N] [FunLike F M N]
+    extends AddHomClass F M N, CompleteLatticeHomClass F M N : Prop
 
-variable {F : Type*} {α β : outParam Type*}
-variable [AddSemigroup α] [AddSemigroup β] [AddQuantale α] [AddQuantale β] [FunLike F α β]
+-- Instances and lemmas are defined below through `@[to_additive]`.
 
 end AddQuantale
 
 namespace Quantale
 
-variable {F : Type*} {α β : outParam Type*}
-variable [Semigroup α] [Semigroup β] [Quantale α] [Quantale β] [FunLike F α β]
+/-- `M →*q N` is the type of functions `M → N` that preserve the `Quantale` structure.
 
-/-- `QuantaleHomClass F α β` states that `F` is a type of additive quantale morphisms. -/
-@[to_additive]
-class QuantaleHomClass extends MulHomClass F α β, CompleteLatticeHomClass F α β : Prop
+When possible, instead of parametrizing results over `(f : M →+q N)`,
+you should parametrize over `(F : Type*) [QuantaleHomClass F M N] (f : F)`.
 
-/-- `QuantaleHom α β` is a type of additive quantale morphisms. -/
+When you extend this structure, make sure to extend `QuantaleHomClass`.
+-/
 @[to_additive]
-structure QuantaleHom extends MulHom α β, CompleteLatticeHom α β
+structure QuantaleHom (M N : Type*)
+  [Semigroup M] [Semigroup N] [Quantale M] [Quantale N]
+  extends MulHom M N, CompleteLatticeHom M N
 
-/-- `OneQuantaleHomClass F α β` states that `F` is a type of unital additive quantale
-morphisms. -/
-@[to_additive]
-class OneQuantaleHomClass [Monoid α] [Monoid β]
-  extends MonoidHomClass F α β, CompleteLatticeHomClass F α β : Prop
+attribute [nolint docBlame] QuantaleHom.toMulHom
+attribute [nolint docBlame] QuantaleHom.toCompleteLatticeHom
 
-/-- `OneQuantaleHom α β` is a type of unital additive quantale morphisms. -/
+/-- `M →*q N` denotes the type of additive quantale homomorphisms from `M` to `N`. -/
+infixr:25 " →*q " => QuantaleHom
+
+/-- `QuantaleHomClass F M N` states that `F` is a type of `Quantale`-preserving
+homomorphisms.
+
+You should also extend this typeclass when you extend `QuantaleHom`.
+-/
 @[to_additive]
-structure OneQuantaleHom [Monoid α] [Monoid β]
-  extends MonoidHom α β, CompleteLatticeHom α β
+class QuantaleHomClass (F : Type*) (M N : outParam Type*)
+    [Semigroup M] [Semigroup N] [Quantale M] [Quantale N] [FunLike F M N]
+    extends MulHomClass F M N, CompleteLatticeHomClass F M N : Prop
+
+variable {M N : Type*} {F : Type*}
+variable [Semigroup M] [Semigroup N] [Quantale M] [Quantale N] [FunLike F M N]
+
+@[to_additive]
+instance QuantaleHom.instFunLike : FunLike (M →*q N) M N where
+  coe f := f.toFun
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr
+    apply DFunLike.coe_injective'
+    exact h
+
+@[to_additive]
+instance QuantaleHom.instQuantaleHomClass : QuantaleHomClass (M →*q N) M N where
+  map_mul f := f.toMulHom.map_mul'
+  map_sInf f := f.toCompleteLatticeHom.map_sInf'
+  map_sSup f := f.toCompleteLatticeHom.map_sSup'
+
+/-- Turn an element of a type `F` satisfying `QuantaleHomClass F M N` into an actual
+`QuantaleHom`. This is declared as the default coercion from `F` to `M →*q N`. -/
+@[to_additive (attr := coe)
+"Turn an element of a type `F` satisfying `AddQuantaleHomClass F M N` into an
+actual `AddQuantaleHom`. This is declared as the default coercion from `F` to `M →+q N`."]
+def QuantaleHomClass.toQuantaleHom [QuantaleHomClass F M N] (f : F) : M →*q N :=
+  { (f : MulHom M N), (f : CompleteLatticeHom M N) with }
+
+/-- Any type satisfying `QuantaleHomClass` can be cast into `QuantaleHom` via
+`QuantaleHomClass.toQuantaleHom`. -/
+@[to_additive "Any type satisfying `AddQuantaleHomClass` can be cast into `AddQuantaleHom` via
+`AddQuantaleHomClass.toAddQuantaleHom`."]
+instance [QuantaleHomClass F M N] : CoeTC F (M →*q N) :=
+  ⟨QuantaleHomClass.toQuantaleHom⟩
+
+@[to_additive (attr := simp)]
+theorem QuantaleHom.coe_coe [QuantaleHomClass F M N] (f : F) : ((f : M →*q N) : M → N) = f := rfl
 
 end Quantale
