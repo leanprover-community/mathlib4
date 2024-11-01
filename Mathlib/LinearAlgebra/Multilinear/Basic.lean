@@ -1603,15 +1603,27 @@ lemma _root_.Sum.desc_eq_elim (β : Type*) (f : ι₁ → β) (g : ι₂ → β)
 
 @[simp]
 lemma _root_.Sum.desc_update₁ [DecidableEq ι₁] [DecidableEq ι₂] (i₁ : ι₁) (x : α (.inl i₁)) :
-    Sum.desc (Function.update f i₁ x) g =
-      Function.update (Sum.desc f g) (.inl i₁) x := by
-  sorry
+    Sum.desc (update f i₁ x) g =
+      update (Sum.desc f g) (.inl i₁) x := by
+  ext (j₁ | _)
+  · rw [Sum.desc_inl]
+    by_cases h : j₁ = i₁
+    · subst h
+      simp
+    · rw [Function.update_noteq h, Function.update_noteq (by simpa using h), Sum.desc_inl]
+  · rfl
 
 @[simp]
 lemma _root_.Sum.desc_update₂ [DecidableEq ι₁] [DecidableEq ι₂] (i₂ : ι₂) (y : α (.inr i₂)) :
     Sum.desc f (Function.update g i₂ y) =
-      Function.update (Sum.desc f g) (.inr i₂) y := by
-  sorry
+      update (Sum.desc f g) (.inr i₂) y := by
+  ext (_ | j₂)
+  · rfl
+  · rw [Sum.desc_inr]
+    by_cases h : j₂ = i₂
+    · subst h
+      simp
+    · rw [update_noteq h, update_noteq (by simpa using h), Sum.desc_inr]
 
 end
 
@@ -1620,14 +1632,22 @@ theorem _root_.Sum.update_inl_comp_inl_apply {α β : Type*} {γ : α ⊕ β →
     [DecidableEq α] [DecidableEq (α ⊕ β)] {f : (i : α ⊕ β) → γ i} {i : α}
     {x : γ (.inl i)} (j : α) :
     update f (.inl i) x (Sum.inl j) =
-      update (fun j ↦ f (.inl j)) i x j := sorry
+      update (fun j ↦ f (.inl j)) i x j := by
+  by_cases h : j = i
+  · subst h
+    simp
+  · rw [update_noteq (by simpa using h), update_noteq h]
 
 @[simp]
 theorem _root_.Sum.update_inr_comp_inr_apply {α β : Type*} {γ : α ⊕ β → Type*}
     [DecidableEq β] [DecidableEq (α ⊕ β)] {f : (i : α ⊕ β) → γ i} {i : β}
     {x : γ (.inr i)} (j : β) :
     update f (.inr i) x (Sum.inr j) =
-      update (fun j ↦ f (.inr j)) i x j := sorry
+      update (fun j ↦ f (.inr j)) i x j := by
+  by_cases h : j = i
+  · subst h
+    simp
+  · rw [update_noteq (by simpa using h), update_noteq h]
 
 variable {ι' : Type*} {N : (ι ⊕ ι') → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
 variable {R M₂}
