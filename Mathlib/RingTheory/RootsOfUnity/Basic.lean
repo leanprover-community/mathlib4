@@ -134,14 +134,9 @@ variable [CommMonoid R] [CommMonoid S] [FunLike F R S]
 /-- Restrict a ring homomorphism to the nth roots of unity. -/
 def restrictRootsOfUnity [MonoidHomClass F R S] (σ : F) (n : ℕ) :
     rootsOfUnity n R →* rootsOfUnity n S :=
-  let h : ∀ ξ : rootsOfUnity n R, (σ (ξ : Rˣ)) ^ n = 1 := fun ξ => by
-    rw [← map_pow, ← Units.val_pow_eq_pow_val, show (ξ : Rˣ) ^ n = 1 from ξ.2,
-      Units.val_one, map_one σ]
   { toFun := fun ξ ↦ ⟨Units.map σ (ξ : Rˣ), by
-      simp only [mem_rootsOfUnity]
-      rw [Units.ext_iff, ← map_pow, Units.coe_map, Units.val_one,]
-      rw [@Units.val_pow_eq_pow_val, map_pow]
-      exact h ξ⟩
+      rw [mem_rootsOfUnity, ← map_pow, Units.ext_iff, Units.coe_map, ξ.prop]
+      exact map_one σ⟩
     map_one' := by ext1; simp only [OneMemClass.coe_one, map_one]
     map_mul' := fun ξ₁ ξ₂ ↦ by
       ext1; simp only [Subgroup.coe_mul, map_mul, MulMemClass.mk_mul_mk] }
