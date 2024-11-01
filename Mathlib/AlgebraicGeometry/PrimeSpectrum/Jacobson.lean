@@ -27,7 +27,7 @@ variable {R : Type*} [CommRing R]
 
 namespace PrimeSpectrum
 
-lemma exists_isClosed_singleton_of_isJacobson [IsJacobson R]
+lemma exists_isClosed_singleton_of_isJacobsonRing [IsJacobsonRing R]
     (s : (Set (PrimeSpectrum R))) (hs : IsOpen s) (hs' : s.Nonempty) :
     ∃ x ∈ s, IsClosed {x} := by
   simp_rw [isClosed_singleton_iff_isMaximal]
@@ -42,7 +42,7 @@ lemma exists_isClosed_singleton_of_isJacobson [IsJacobson R]
   rintro x ⟨-, hx⟩
   exact sInf_le ⟨this ⟨x, hx.isPrime⟩ hx, hx⟩
 
-instance [IsJacobson R] : JacobsonSpace (PrimeSpectrum R) := by
+instance [IsJacobsonRing R] : JacobsonSpace (PrimeSpectrum R) := by
   rw [jacobsonSpace_iff_locallyClosed]
   rintro S hS ⟨U, Z, hU, hZ, rfl⟩
   simp only [← isClosed_compl_iff, isClosed_iff_zeroLocus_ideal, @compl_eq_comm _ U] at hU hZ
@@ -55,7 +55,7 @@ instance [IsJacobson R] : JacobsonSpace (PrimeSpectrum R) := by
   exact @hS ⟨x, hx.isPrime⟩ ⟨hJx, (isClosed_singleton_iff_isMaximal _).mpr hx⟩
 
 lemma is_jacobson_iff_jacobsonSpace :
-    IsJacobson R ↔ JacobsonSpace (PrimeSpectrum R) := by
+    IsJacobsonRing R ↔ JacobsonSpace (PrimeSpectrum R) := by
   refine ⟨fun _ ↦ inferInstance, fun H ↦ ⟨fun I hI ↦ le_antisymm ?_ Ideal.le_jacobson⟩⟩
   rw [← I.isRadical_jacobson.radical]
   conv_rhs => rw [← hI.radical]
@@ -73,12 +73,12 @@ If `R` is both noetherian and jacobson, then the following are equivalent for `x
 3. `{x}` is both closed and stable under generalization
   (i.e. `x` is both a minimal prime and a maximal ideal)
 -/
-lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobson
-    [IsNoetherianRing R] [IsJacobson R] (x : PrimeSpectrum R) :
+lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
+    [IsNoetherianRing R] [IsJacobsonRing R] (x : PrimeSpectrum R) :
     List.TFAE [IsOpen {x}, IsClopen {x}, IsClosed {x} ∧ StableUnderGeneralization {x}] := by
   tfae_have 1 → 2
   · intro h
-    obtain ⟨y, rfl : y = x, h'⟩ := exists_isClosed_singleton_of_isJacobson _ h
+    obtain ⟨y, rfl : y = x, h'⟩ := exists_isClosed_singleton_of_isJacobsonRing _ h
       ⟨x, Set.mem_singleton x⟩
     exact ⟨h', h⟩
   tfae_have 2 → 3
