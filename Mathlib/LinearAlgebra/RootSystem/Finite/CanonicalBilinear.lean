@@ -61,27 +61,21 @@ lemma rank_le_of_smul_regular [CommRing R] [AddCommGroup M] [Module R M]
     (L L' : Submodule R M) {r : R} (hr : IsSMulRegular M r) (h : ∀ x ∈ L, r • x ∈ L') :
     Module.rank R L ≤ Module.rank R L' := by
   let f : L →ₗ[R] L' :=
-    {
-      toFun := fun x => ⟨r • x, h x x.2⟩
+    { toFun := fun x => ⟨r • x, h x x.2⟩
       map_add' := fun x y => by simp
-      map_smul' := fun s x => by simp [← smul_assoc, mul_comm]
-    }
-  have hf : Injective f := by
-    intro x y hxy
-    rw [show f x = ⟨r • x, h x x.2⟩ by rfl, show f y = ⟨r • y, h y y.2⟩ by rfl] at hxy
-    simp only [Subtype.mk.injEq] at hxy
-    exact SetLike.coe_eq_coe.mp (hr (hr (congrArg (HSMul.hSMul r) hxy)))
-  exact LinearMap.rank_le_of_injective f hf
+      map_smul' := fun s x => by simp [← smul_assoc, mul_comm] }
+  refine LinearMap.rank_le_of_injective f (fun x y hxy => ?_)
+  rw [show f x = ⟨r • x, h x x.2⟩ by rfl, show f y = ⟨r • y, h y y.2⟩ by rfl] at hxy
+  simp only [Subtype.mk.injEq] at hxy
+  exact SetLike.coe_eq_coe.mp (hr (hr (congrArg (HSMul.hSMul r) hxy)))
 --#find_home! rank_le_of_smul_regular --[Mathlib.LinearAlgebra.Dimension.Basic]
 
 lemma torsion_free_of_reflexive [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
     [IsReflexive R M] {r : R} {m : M} (h : r • m = 0) (hr : r ≠ 0) : m = 0 := by
-  suffices Dual.eval R M m = Dual.eval R M 0 by
-    exact Bijective.injective (bijective_dual_eval R M) this
+  suffices Dual.eval R M m = Dual.eval R M 0 by exact (bijective_dual_eval R M).injective this
   ext n
   simp only [Dual.eval_apply, map_zero, LinearMap.zero_apply]
-  suffices r • n m = 0 by
-    exact eq_zero_of_ne_zero_of_mul_left_eq_zero hr this
+  suffices r • n m = 0 by exact eq_zero_of_ne_zero_of_mul_left_eq_zero hr this
   rw [← LinearMap.map_smul_of_tower, h, LinearMap.map_zero]
 --#find_home! torsion_free_of_reflexive -- [Mathlib.LinearAlgebra.Dual]
 

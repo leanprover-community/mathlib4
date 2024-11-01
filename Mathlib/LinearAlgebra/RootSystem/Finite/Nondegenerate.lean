@@ -11,9 +11,9 @@ import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 /-!
 # Nondegeneracy of the polarization on a finite root pairing
 
-We show that if if the base ring of a root pairing is linearly ordered, the canonical bilinear form
-is root-positive, positive-semidefinite on the weight space, and positive-definite on the span of
-roots.
+We show that if if the base ring of a finite root pairing is linearly ordered, then the canonical
+bilinear form is root-positive, positive-semidefinite on the weight space, and positive-definite on
+the span of roots.
 
 From these facts, it is easy to show that Coxeter weights in a finite root pairing are bounded
 above by 4.  Thus, the pairings of roots and coroots in a root pairing are restricted to the
@@ -60,32 +60,28 @@ namespace RootPairing
 
 variable {ι R M N S : Type*}
 
-section localization
-
-open nonZeroDivisors
-
-variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N]
-variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
-variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
-variable (hp : p ≤ R⁰)
-
-/-!
-lemma reflexive_if_localization [IsReflexive R M ] : IsReflexive S N := by
-  sorry
-
-open scoped Cardinal in
-lemma finite_rank_of_reflexive [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
-    [IsReflexive R M] : Module.rank R M < ℵ₀ := by
-  by_contra contra
-  rw [IsLocalizedModule.lift_rank_eq (FractionRing R) R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl]
-
-  sorry
-  -- use IsLocalizedModule.lift_rank_eq and finiteness for vector spaces.
--/
-end localization
-
 variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
 [Module R N] (P : RootPairing ι R M N)
+
+lemma span_root_finite : Module.Finite R (span R (range P.root)) :=
+  Finite.span_of_finite R <| finite_range P.root
+
+lemma span_coroot_finite : Module.Finite R (span R (range P.coroot)) :=
+  Finite.span_of_finite R <| finite_range P.coroot
+
+lemma span_root_finite_rank : Module.rank R ↥(span R (range ⇑P.root)) < Cardinal.aleph0 := by
+  haveI := span_root_finite P
+  exact rank_lt_aleph0 R ↥(span R (range ⇑P.root))
+
+lemma finrank_eq_rank_span_root :
+    Module.finrank R (span R (range P.root)) = Module.rank R (span R (range P.root)) := by
+  haveI := span_root_finite P
+  exact finrank_eq_rank R ↥(span R (range P.root))
+
+lemma finrank_eq_rank_span_coroot :
+    Module.finrank R (span R (range P.coroot)) = Module.rank R (span R (range P.coroot)) := by
+  haveI := span_coroot_finite P
+  exact finrank_eq_rank R ↥(span R (range P.coroot))
 
 lemma rank_polarization_eq_rank_span_coroot :
     LinearMap.rank P.Polarization = Module.rank R (span R (range P.coroot)) := by
@@ -99,10 +95,6 @@ lemma rank_polarization_eq_rank_span_coroot :
   simp_rw [smul_smul, mul_comm, ← smul_smul]
   exact Submodule.sum_smul_mem (LinearMap.range P.Polarization) c
     (fun c _ ↦ prod_rootForm_smul_coroot_in_range P c)
-
-lemma rank_coPolarization_eq_rank_span_root :
-    LinearMap.rank P.CoPolarization = Module.rank R (span R (range P.root)) :=
-  P.flip.rank_polarization_eq_rank_span_coroot
 
 lemma rank_polarization_domRestrict_eq_rank_span_coroot :
     LinearMap.rank (P.Polarization.domRestrict (span R (range P.root))) =
@@ -126,54 +118,85 @@ lemma rank_Polarization_domRestrict :
   P.rank_polarization_domRestrict_eq_rank_span_coroot.trans
     P.rank_polarization_eq_rank_span_coroot.symm
 
+lemma rank_coPolarization_eq_rank_span_root :
+    LinearMap.rank P.CoPolarization = Module.rank R (span R (range P.root)) :=
+  P.flip.rank_polarization_eq_rank_span_coroot
+
+lemma rank_coPolarization_domRestrict_eq_rank_span_root :
+    LinearMap.rank (P.CoPolarization.domRestrict (span R (range P.coroot))) =
+      Module.rank R (span R (range P.root)) :=
+  P.flip.rank_polarization_domRestrict_eq_rank_span_coroot
+
+lemma finrank_polarization_domRestrict :
+    finrank R (LinearMap.range (P.Polarization.domRestrict (span R (range P.root)))) =
+      finrank R (span R (range P.coroot)) := by
+  refine finrank_eq_of_rank_eq ?h
+  rw [finrank_eq_rank_span_coroot]
+  exact rank_polarization_domRestrict_eq_rank_span_coroot P
+
+lemma rank_coPolarization_domRestrict :
+    LinearMap.rank (P.CoPolarization.domRestrict (span R (range P.coroot))) =
+      LinearMap.rank P.CoPolarization :=
+  P.flip.rank_Polarization_domRestrict
+
+lemma finrank_span_root_le :
+    Module.finrank R (span R (range P.coroot)) ≤ Module.finrank R (span R (range P.root)) := by
+  have h := lift_rank_map_le P.Polarization (span R (range P.root))
+  refine finrank_le_finrank_of_rank_le_rank (le_of_eq_of_le ?_ h) (span_root_finite_rank P)
+  rw [← rank_polarization_domRestrict_eq_rank_span_coroot, ← LinearMap.range_domRestrict]
+
+lemma finrank_span_root_eq :
+    Module.finrank R (span R (range P.coroot)) = Module.finrank R (span R (range P.root)) :=
+  Nat.le_antisymm (finrank_span_root_le P) (by simpa using finrank_span_root_le P.flip)
+
 /-!
-lemma polarization_kernel_rank_zero : Module.rank R (LinearMap.ker (LinearMap.domRestrict
-    P.Polarization (span R (range P.root)))) = 0 := by
-  have rn := rank_quotient_add_rank_of_isDomain (LinearMap.ker (LinearMap.domRestrict
-    P.Polarization (span R (range P.root))))
-  rw [← rank_coPolarization_eq_rank_span_root] at rn
-  let e := (P.Polarization.domRestrict (span R (range ⇑P.root))).quotKerEquivRange
-  have h := LinearEquiv.lift_rank_eq e
-  rw [h] at rn -- universe problems
-  sorry
-
-have:
-range Polarization ⊆ span R range P.coroot
-Polarization rank = rank span R range P.coroot
-range CoPolarization ⊆ span R range P.root
-coPolarization rank = rank span R range P.root
-
-need :
-
-       same for CoPolarization
-Then, using rank range ≤ rank domain (`LinearMap.rank_le_domain`), we get:
-rank (span R (range P.coroot)) ≤ rank (span R (range P.root)) and
-rank (span R (range P.root)) ≤ rank (span R (range P.coroot)) hence equality.
-
-To show kernel of P.Polarization.domRestrict (span R (range P.root)) has rank zero,
-use LinearMap.quotKerEquivRange to identify image with quotient.
-When they have the same rank, then the kernel has rank zero.
 To show the kernel vanishes, take `x` in kernel, use rank_eq_zero_iff to get suitable nonzero `r`.
 Then, x = 0 by injective_smul_pos_of_reflexive.
-
-use finite_rank_of_reflexive
-
 -/
---lemma polarization_restriction_injective : restriction of P.Polarization to range P.root is inj.
+lemma polarization_kernel_finrank_zero : Module.finrank R (LinearMap.ker (LinearMap.domRestrict
+    P.Polarization (span R (range P.root)))) = 0 := by
+  haveI := span_root_finite P
+  have h := Submodule.finrank_quotient_add_finrank
+    (LinearMap.ker (LinearMap.domRestrict P.Polarization (span R (range P.root))))
+  rw [LinearEquiv.finrank_eq (P.Polarization.domRestrict (span R
+    (range P.root))).quotKerEquivRange, ← finrank_span_root_eq, finrank_polarization_domRestrict,
+    Nat.add_eq_left] at h
+  exact h
 
--- injectivity from lemma: reflexive modules over a domain have no torsion
---torsion_free_of_reflexive or injective_smul_pos_of_reflexive
+lemma polarization_domRestrict_kernel_rank_zero : Module.rank R (LinearMap.ker
+    (LinearMap.domRestrict P.Polarization (span R (range P.root)))) = 0 := by
+  have h := Submodule.rank_quotient_add_rank
+    (LinearMap.ker (LinearMap.domRestrict P.Polarization (span R (range P.root))))
+  have h3 := congrArg Cardinal.lift.{u_4, u_3} h
+  rw [Cardinal.lift_add, LinearEquiv.lift_rank_eq ((P.Polarization.domRestrict (span R
+    (range P.root))).quotKerEquivRange), show (Module.rank R (LinearMap.range
+    (P.Polarization.domRestrict (span R (range P.root))))) = LinearMap.rank
+    (P.Polarization.domRestrict (span R (range P.root))) by rfl,
+    rank_polarization_domRestrict_eq_rank_span_coroot, ← finrank_eq_rank_span_coroot,
+    ← finrank_eq_rank_span_root, finrank_span_root_eq] at h3
+  refine Cardinal.lift_injective.{u_4, u_3} ?_
+  have h6 : Cardinal.lift.{u_4,u_3} (finrank R ↥(span R (range ⇑P.root))) < Cardinal.aleph0 :=
+    Cardinal.lift_lt_aleph0.mpr (Cardinal.nat_lt_aleph0 (finrank R ↥(span R (range ⇑P.root))))
+  exact Cardinal.eq_of_add_eq_add_left (by simpa using h3) h6
 
-lemma rank_eq_zero_iff : Module.rank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 :=
-  _root_.rank_eq_zero_iff
+lemma polarization_domRestrict_injective :
+    Injective (LinearMap.domRestrict P.Polarization (span R (range P.root))) := by
+  have htor := rank_eq_zero_iff.mp (polarization_domRestrict_kernel_rank_zero P)
+  refine LinearMap.ker_eq_bot.mp ?_
+  ext x
+  rw [Submodule.mem_bot]
+  refine ⟨fun hx => ?_, fun hx => hx ▸ Submodule.zero_mem _⟩
+  let y : (LinearMap.ker (P.Polarization.domRestrict (span R (range ⇑P.root)))) := ⟨x, hx⟩
+  have : (y : M) = 0 := by
+    haveI : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
+    obtain ⟨a, ⟨h1, h2⟩⟩ := htor y
+    obtain ⟨z, hz⟩ := x
+    exact torsion_free_of_reflexive (by simp_all [y]) h1
+  exact Submodule.coe_eq_zero.mp this
 
-theorem rank_quotient_add_rank_of_isDomain [IsDomain R] (M' : Submodule R M) :
-    Module.rank R (M ⧸ M') + Module.rank R M' = Module.rank R M :=
-  HasRankNullity.rank_quotient_add_rank M'
+
 
 --lemma coxeter_weight_leq_4 (i j : ι) : coxeterWeight i j ≤ 4 := by sorry
-
-
 
 -- Then, P.toPerfectPairing is nondegenerate on the span of roots, since (c,r) = 0 for all c implies
 -- p(r) = 0.
@@ -181,22 +204,6 @@ theorem rank_quotient_add_rank_of_isDomain [IsDomain R] (M' : Submodule R M) :
 -- it is a composition with a spanning injection.
 
 -- I need base change to be an injection on weight spaces, and this uses reflexivity and flatness.
-
-/-! This strategy seems doomed.
-theorem polarization_injective : InjOn P.Polarization (span R (range P.root)) := by
-  intro x hx y hy hxy
-  rw [SetLike.mem_coe, mem_span_range_iff_exists_fun] at hx
-  obtain ⟨cx, hcx⟩ := hx
-  rw [SetLike.mem_coe, mem_span_range_iff_exists_fun] at hy
-  obtain ⟨cy, hcy⟩ := hy
-  have hp : 4 • P.flip.Polarization (P.Polarization x) =
-      4 • P.flip.Polarization (P.Polarization y) :=
-    congrArg (HSMul.hSMul 4) (congrArg (⇑P.flip.Polarization) hxy)
-  rw [← hcx, ← hcy, map_sum, map_sum, map_sum, map_sum] at hp
-  sorry
--/
-
--- Use four_smul_flip_polarization_polarization to get injectivity of Polarization.
 
 
 /-!

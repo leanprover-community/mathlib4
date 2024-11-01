@@ -5,6 +5,7 @@ Authors: Florent Schaffhauser
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
