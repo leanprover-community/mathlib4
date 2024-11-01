@@ -142,6 +142,7 @@ theorem π_limitCompWhiskeringRightIsoLimitComp_hom {C : Type*} [Category C] {D 
      (limitCompWhiskeringRightIsoLimitComp F G).hom ≫ whiskerRight (limit.π G j) F =
       limit.π (G ⋙ (whiskeringRight _ _ _).obj F) j := by
   simp [← Iso.eq_inv_comp]
+
 instance whiskeringRightPreservesColimitsOfShape {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasColimitsOfShape J D] (F : D ⥤ E) [PreservesColimitsOfShape J F] :
