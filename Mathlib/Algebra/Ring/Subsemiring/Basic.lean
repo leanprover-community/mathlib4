@@ -44,6 +44,22 @@ namespace Subsemiring
 
 variable (s : Subsemiring R)
 
+@[mono]
+theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subsemiring R → Submonoid R) :=
+  fun _ _ => id
+
+@[mono]
+theorem toSubmonoid_mono : Monotone (toSubmonoid : Subsemiring R → Submonoid R) :=
+  toSubmonoid_strictMono.monotone
+
+@[mono]
+theorem toAddSubmonoid_strictMono : StrictMono (toAddSubmonoid : Subsemiring R → AddSubmonoid R) :=
+  fun _ _ => id
+
+@[mono]
+theorem toAddSubmonoid_mono : Monotone (toAddSubmonoid : Subsemiring R → AddSubmonoid R) :=
+  toAddSubmonoid_strictMono.monotone
+
 /-- Product of a list of elements in a `Subsemiring` is in the `Subsemiring`. -/
 nonrec theorem list_prod_mem {R : Type*} [Semiring R] (s : Subsemiring R) {l : List R} :
     (∀ x ∈ l, x ∈ s) → l.prod ∈ s :=

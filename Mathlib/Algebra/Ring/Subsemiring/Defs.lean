@@ -164,16 +164,6 @@ theorem copy_eq (S : Subsemiring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = 
 theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subsemiring R → Submonoid R)
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 
-/-
-@[mono]
-theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subsemiring R → Submonoid R) :=
-  fun _ _ => id
-
-@[mono]
-theorem toSubmonoid_mono : Monotone (toSubmonoid : Subsemiring R → Submonoid R) :=
-  toSubmonoid_strictMono.monotone
--/
-
 theorem toAddSubmonoid_injective :
     Function.Injective (toAddSubmonoid : Subsemiring R → AddSubmonoid R)
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
