@@ -348,6 +348,8 @@ noncomputable instance filteredColimPreservesFiniteLimitsOfTypes :
   · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
   · exact asIso (colimitLimitToLimitColimitCone F)
 
+section
+
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
 
 section
@@ -373,11 +375,17 @@ noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesColimitsOfSh
   intro J _ _
   infer_instance
 
+end
+
+end
+
 section
 
+variable {C : Type u} [Category.{v} C]
+variable {J : Type u₁} [Category.{v₁} J]
+variable {K : Type u₂} [Category.{v₂} K]
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
-variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
-variable [PreservesLimitsOfShape J (forget C)]
+variable [PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _)]
 
 /-- A curried version of the fact that filtered colimits commute with finite limits. -/
 noncomputable def colimitLimitIso (F : J ⥤ K ⥤ C) : colimit (limit F) ≅ limit (colimit F.flip) :=
@@ -399,8 +407,6 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
     Limits.HasColimit.isoOfNatIso_ι_hom, NatIso.ofComponents_hom_app]
   dsimp
   simp
-
-end
 
 end
 
