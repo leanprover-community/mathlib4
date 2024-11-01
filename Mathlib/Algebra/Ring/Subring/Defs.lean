@@ -201,40 +201,11 @@ theorem copy_eq (S : Subring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
 theorem toSubsemiring_injective : Function.Injective (toSubsemiring : Subring R → Subsemiring R)
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 
-/-
-@[mono]
-theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
-  fun _ _ => id
-
-@[mono]
-theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
-  toSubsemiring_strictMono.monotone
--/
-
 theorem toAddSubgroup_injective : Function.Injective (toAddSubgroup : Subring R → AddSubgroup R)
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 
-/-
-@[mono]
-theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
-  fun _ _ => id
-
-@[mono]
-theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
-  toAddSubgroup_strictMono.monotone
--/
-
 theorem toSubmonoid_injective : Function.Injective (fun s : Subring R => s.toSubmonoid)
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
-
-/-
-@[mono]
-theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
-
-@[mono]
-theorem toSubmonoid_mono : Monotone (fun s : Subring R => s.toSubmonoid) :=
-  toSubmonoid_strictMono.monotone
--/
 
 /-- Construct a `Subring R` from a set `s`, a submonoid `sm`, and an additive
 subgroup `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
