@@ -614,14 +614,14 @@ def isMaximumClique (G : SimpleGraph α) (s : Finset α) : Prop :=
 def isMaximalClique (G : SimpleGraph α) (s : Finset α) : Prop :=
   G.IsClique s ∧ ¬ ∃ (t : Finset α), G.IsClique t ∧ s ⊂ t
 
-lemma maximalClique_if_maximumClique {s : Finset α} (smax : G.isMaximumClique s) :
+lemma maximalClique_of_maximumClique {s : Finset α} (sm : G.isMaximumClique s) :
     G.isMaximalClique s := by
-  rw [isMaximalClique, isMaximumClique] at *
-  by_contra h
-  simp_all only [not_exists, not_and, not_forall, Classical.not_imp, not_not, true_implies]
-  let ⟨t, tc, tsub⟩ := h
-  let ⟨_ , smaxf⟩ := smax
-  exact (not_and_self_iff (#t ≤ #s)).mp ⟨not_le_of_lt (card_lt_card tsub), smaxf t tc⟩
+  by_contra hc
+  rw [isMaximalClique] at hc
+  push_neg at hc
+  obtain ⟨sc , sm⟩ := sm
+  obtain ⟨t, tc, tsub⟩ := hc sc
+  exact lt_irrefl _ (lt_of_lt_of_le (card_lt_card tsub) (sm t tc))
 
 variable [fin : Fintype α]
 
@@ -642,7 +642,7 @@ theorem maximumClique_card_eq_cliqueNum (t : Finset α) (tmc : G.isMaximumClique
     #t = G.cliqueNum := by
   let ⟨tclique, tmax⟩ := tmc
   refine eq_of_le_of_not_lt (clique_card_le_cliqueNum _ tclique) ?_
-  have ⟨s, sclique, scn⟩ := G.cliqueNum_attained
+  obtain ⟨s, sclique, scn⟩ := G.cliqueNum_attained
   rw [← scn]
   exact LE.le.not_lt (tmax s sclique)
 
