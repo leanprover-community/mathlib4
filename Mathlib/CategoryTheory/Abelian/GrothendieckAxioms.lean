@@ -33,10 +33,9 @@ comments of the linked Stacks page.
 Exactness as the preservation of short exact sequences is introduced in
 `CategoryTheory.Abelian.Exact`.
 
-## Projects
-
-- Add additional axioms, especially define Grothendieck categories.
-- Prove that `AB5` implies `AB4`.
+We do not require `Abelian` in the definition of `AB4` and `AB5` because these classes represent
+individual axioms. A non-abelian category with `AB5` is not an AB5 category in the sense of the
+literature.
 
 ## References
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
@@ -117,7 +116,7 @@ instance preservesFiniteLimitsLiftToFinset : PreservesFiniteLimits (liftToFinset
     preservesFiniteLimitsOfNatIso (liftToFinsetEvaluationIso  I).symm
 
 /-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/
-def AB4.ofAB5 [HasFiniteCoproducts C] [HasFilteredColimits C] [AB5 C] : AB4 C where
+def AB4.ofAB5 [HasFilteredColimits C] [AB5 C] : AB4 C where
   preservesFiniteLimits J :=
     letI : PreservesFiniteLimits (liftToFinset C J ⋙ colim) :=
       compPreservesFiniteLimits _ _
