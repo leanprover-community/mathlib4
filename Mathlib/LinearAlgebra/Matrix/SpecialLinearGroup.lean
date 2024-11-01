@@ -266,6 +266,8 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
     simpa only [coe_mul, ← hr] using (scalar_commute (n := n) r (Commute.all r) B).symm
 
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity. -/
+-- TODO: this looks like an ugly hack to map 0 --> 1
+--       replace by `max (Fintype.card n) 1`?
 @[simps]
 def center_equiv_rootsOfUnity' (i : n) :
     center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R where
@@ -294,11 +296,13 @@ open scoped Classical in
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity.
 
 See also `center_equiv_rootsOfUnity'`. -/
+-- TODO: this looks like an ugly hack to map 0 --> 1; see above
 noncomputable def center_equiv_rootsOfUnity :
     center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R :=
   (isEmpty_or_nonempty n).by_cases
   (fun hn ↦ by
-    rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, Nat.toPNat'_zero, rootsOfUnity_one]
+    rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, Nat.toPNat'_zero, PNat.one_coe,
+      rootsOfUnity_one]
     exact MulEquiv.mulEquivOfUnique)
   (fun _ ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
 
