@@ -292,6 +292,68 @@ lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
 variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
 variable {N' : Type*} [AddCommGroup N'] [Module R N'] (g : N →ₗ[R] N') [IsLocalizedModule S g]
 
+/--
+Let `M` be a finite `R`-module, and `N` be a finitely presented `R`-module.
+If `l : M →ₗ[R] N` is a linear map whose localization at `S : Submonoid R` is bijective,
+then `l` is already bijective under the localization at some `r ∈ S`.
+-/
+lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation R N]
+    (l : M →ₗ[R] N) (hf : Function.Bijective (IsLocalizedModule.map S f g l)) :
+    ∃ r, r ∈ S ∧ Function.Bijective (LocalizedModule.map (.powers r) l) := by
+  let e : M' ≃ₗ[R] N' := LinearEquiv.ofBijective _ hf
+  obtain ⟨l', s₀, H⟩ := Module.FinitePresentation.exists_lift_of_isLocalizedModule S f
+    (e.symm.toLinearMap.comp g)
+  have H₁ : g ∘ₗ l ∘ₗ l' = g ∘ₗ (s₀ • LinearMap.id) := by
+    ext a; simpa [-EmbeddingLike.apply_eq_iff_eq, e] using congr(e ($H a))
+  obtain ⟨s₁, hs₁⟩ := Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule S g _ _ H₁
+  have H₂ : f ∘ₗ l' ∘ₗ l = f ∘ₗ (s₀ • LinearMap.id) := by
+    rw [← LinearMap.comp_assoc, H, LinearMap.smul_comp, LinearMap.comp_assoc,
+      ← IsLocalizedModule.map_comp S f g l, ← LinearMap.comp_assoc]
+    show s₀ • (e.symm.toLinearMap ∘ₗ e.toLinearMap) ∘ₗ _ = _
+    simp [LinearMap.comp_smul]
+  obtain ⟨s₂, hs₂⟩ := Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule S f _ _ H₂
+  let s := s₀ * s₁ * s₂
+  let Rₛ := Localization (.powers s.1)
+  let lₛ := LocalizedModule.map (.powers s.1) l
+  have hu₀ : IsUnit (algebraMap R Rₛ s₀) := isUnit_of_dvd_unit
+      (hu := IsLocalization.map_units (M := .powers s.1) Rₛ ⟨s, Submonoid.mem_powers s.1⟩)
+      (map_dvd (algebraMap R Rₛ) ⟨s₁ * s₂, by simp [s, mul_assoc]⟩)
+  have hu₁ : IsUnit (algebraMap R Rₛ s₁) := isUnit_of_dvd_unit
+      (hu := IsLocalization.map_units (M := .powers s.1) Rₛ ⟨s, Submonoid.mem_powers s.1⟩)
+      (map_dvd (algebraMap R Rₛ) ⟨s₀ * s₂, by simp [s]; ring⟩)
+  have hu₂ : IsUnit (algebraMap R Rₛ s₂) := isUnit_of_dvd_unit
+      (hu := IsLocalization.map_units (M := .powers s.1) Rₛ ⟨s, Submonoid.mem_powers s.1⟩)
+      (map_dvd (algebraMap R Rₛ) ⟨s₀ * s₁, by simp [s]; ring⟩)
+  let lₛ' := LocalizedModule.map (.powers s.1) l'
+  have H_left : ((hu₀.unit⁻¹).1 • lₛ') ∘ₗ lₛ = LinearMap.id := by
+    apply ((Module.End_isUnit_iff _).mp (hu₂.map (algebraMap Rₛ (Module.End Rₛ _)))).1
+    apply ((Module.End_isUnit_iff _).mp (hu₀.map (algebraMap Rₛ (Module.End Rₛ _)))).1
+    simp only [Module.algebraMap_end_apply, algebraMap_smul, LinearMap.map_smul_of_tower]
+    rw [LinearMap.smul_comp, ← smul_assoc s₀.1, Algebra.smul_def s₀.1, IsUnit.mul_val_inv, one_smul]
+    apply LinearMap.restrictScalars_injective R
+    apply IsLocalizedModule.ringHom_ext (.powers s.1) (LocalizedModule.mkLinearMap (.powers s.1) M)
+      (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap (.powers s.1) M))
+    ext x
+    have : s₂.1 • l' (l x) = s₂.1 • s₀.1 • x := congr($hs₂ x)
+    simp [lₛ, lₛ', LocalizedModule.smul'_mk, this]
+  have H_right : lₛ ∘ₗ ((hu₀.unit⁻¹).1 • lₛ') = LinearMap.id := by
+    apply ((Module.End_isUnit_iff _).mp (hu₁.map (algebraMap Rₛ (Module.End Rₛ _)))).1
+    apply ((Module.End_isUnit_iff _).mp (hu₀.map (algebraMap Rₛ (Module.End Rₛ _)))).1
+    simp only [Module.algebraMap_end_apply, algebraMap_smul, LinearMap.map_smul_of_tower]
+    rw [LinearMap.comp_smul, ← smul_assoc s₀.1, Algebra.smul_def s₀.1, IsUnit.mul_val_inv, one_smul]
+    apply LinearMap.restrictScalars_injective R
+    apply IsLocalizedModule.ringHom_ext (.powers s.1) (LocalizedModule.mkLinearMap (.powers s.1) N)
+      (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap (.powers s.1) N))
+    ext x
+    have : s₁.1 • l (l' x) = s₁.1 • s₀.1 • x := congr($hs₁ x)
+    simp [lₛ, lₛ', LocalizedModule.smul'_mk, this]
+  let eₛ : LocalizedModule (.powers s.1) M ≃ₗ[Rₛ] LocalizedModule (.powers s.1) N :=
+    { __ := lₛ,
+      invFun := ((hu₀.unit⁻¹).1 • lₛ'),
+      left_inv := fun x ↦ congr($H_left x),
+      right_inv := fun x ↦ congr($H_right x) }
+  exact ⟨s.1, s.2, eₛ.bijective⟩
+
 instance Module.FinitePresentation.isLocalizedModule_map [Module.FinitePresentation R M] :
       IsLocalizedModule S (IsLocalizedModule.map S f g) := by
   constructor
