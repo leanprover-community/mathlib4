@@ -656,7 +656,6 @@ instance maximumClique_exists : ∃ (s : Finset α), Nonempty (G.IsMaximumClique
     clique := hs.clique,
     maximum := fun t ht => hs.card_eq.symm ▸ G.clique_card_le_cliqueNum t ht
   }⟩
-  
 end CliqueNumber
 
 end SimpleGraph
