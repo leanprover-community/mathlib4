@@ -22,7 +22,7 @@ Theorems about PID's are in the `principal_ideal_ring` namespace.
 - `IsPrincipalIdealRing`: a predicate on rings, saying that every left ideal is principal.
 - `IsBezout`: the predicate saying that every finitely generated left ideal is principal.
 - `generator`: a generator of a principal ideal (or more generally submodule)
-- `to_unique_factorization_monoid`: a PID is a unique factorization domain
+- `to_uniqueFactorizationMonoid`: a PID is a unique factorization domain
 
 # Main results
 
@@ -43,7 +43,7 @@ open Submodule
 
 section
 
-variable [Ring R] [AddCommGroup M] [Module R M]
+variable [Semiring R] [AddCommGroup M] [Module R M]
 
 instance bot_isPrincipal : (⊥ : Submodule R M).IsPrincipal :=
   ⟨⟨0, by simp⟩⟩
@@ -72,11 +72,11 @@ end
 
 namespace Submodule.IsPrincipal
 
-variable [AddCommGroup M]
+variable [AddCommMonoid M]
 
-section Ring
+section Semiring
 
-variable [Ring R] [Module R M]
+variable [Semiring R] [Module R M]
 
 /-- `generator I`, if `I` is a principal submodule, is an `x ∈ M` such that `span R {x} = I` -/
 noncomputable def generator (S : Submodule R M) [S.IsPrincipal] : M :=
@@ -103,7 +103,20 @@ theorem mem_iff_eq_smul_generator (S : Submodule R M) [S.IsPrincipal] {x : M} :
 theorem eq_bot_iff_generator_eq_zero (S : Submodule R M) [S.IsPrincipal] :
     S = ⊥ ↔ generator S = 0 := by rw [← @span_singleton_eq_bot R M, span_singleton_generator]
 
-end Ring
+protected lemma fg {S : Submodule R M} (h : S.IsPrincipal) : S.FG :=
+  ⟨{h.generator}, by simp only [Finset.coe_singleton, span_singleton_generator]⟩
+
+-- See note [lower instance priority]
+instance (priority := 100) _root_.PrincipalIdealRing.isNoetherianRing [IsPrincipalIdealRing R] :
+    IsNoetherianRing R where
+  noetherian S := (IsPrincipalIdealRing.principal S).fg
+
+-- See note [lower instance priority]
+instance (priority := 100) _root_.IsPrincipalIdealRing.of_isNoetherianRing_of_isBezout
+    [IsNoetherianRing R] [IsBezout R] : IsPrincipalIdealRing R where
+  principal S := IsBezout.isPrincipal_of_FG S (IsNoetherian.noetherian S)
+
+end Semiring
 
 section CommRing
 
@@ -278,15 +291,6 @@ namespace PrincipalIdealRing
 
 open IsPrincipalIdealRing
 
--- see Note [lower instance priority]
-instance (priority := 100) isNoetherianRing [Ring R] [IsPrincipalIdealRing R] :
-    IsNoetherianRing R :=
-  isNoetherianRing_iff.2
-    ⟨fun s : Ideal R => by
-      rcases (IsPrincipalIdealRing.principal s).principal with ⟨a, rfl⟩
-      rw [← Finset.coe_singleton]
-      exact ⟨{a}, SetLike.coe_injective rfl⟩⟩
-
 theorem isMaximal_of_irreducible [CommRing R] [IsPrincipalIdealRing R] {p : R}
     (hp : Irreducible p) : Ideal.IsMaximal (span R ({p} : Set R)) :=
   ⟨⟨mt Ideal.span_singleton_eq_top.1 hp.1, fun I hI => by
@@ -348,23 +352,32 @@ section Surjective
 
 open Submodule
 
-variable {S N : Type*} [Ring R] [AddCommGroup M] [AddCommGroup N] [Ring S]
-variable [Module R M] [Module R N]
+variable {S N F : Type*} [Ring R] [AddCommGroup M] [AddCommGroup N] [Ring S]
+variable [Module R M] [Module R N] [FunLike F R S] [RingHomClass F R S]
+
+theorem Submodule.IsPrincipal.map (f : M →ₗ[R] N) {S : Submodule R M}
+    (hI : IsPrincipal S) : IsPrincipal (map f S) :=
+  ⟨⟨f (IsPrincipal.generator S), by
+      rw [← Set.image_singleton, ← map_span, span_singleton_generator]⟩⟩
 
 theorem Submodule.IsPrincipal.of_comap (f : M →ₗ[R] N) (hf : Function.Surjective f)
-    (S : Submodule R N) [hI : IsPrincipal (S.comap f)] : IsPrincipal S :=
-  ⟨⟨f (IsPrincipal.generator (S.comap f)), by
-      rw [← Set.image_singleton, ← Submodule.map_span, IsPrincipal.span_singleton_generator,
-        Submodule.map_comap_eq_of_surjective hf]⟩⟩
+    (S : Submodule R N) [hI : IsPrincipal (S.comap f)] : IsPrincipal S := by
+  rw [← Submodule.map_comap_eq_of_surjective hf S]
+  exact hI.map f
 
-theorem Ideal.IsPrincipal.of_comap (f : R →+* S) (hf : Function.Surjective f) (I : Ideal S)
-    [hI : IsPrincipal (I.comap f)] : IsPrincipal I :=
-  ⟨⟨f (IsPrincipal.generator (I.comap f)), by
+theorem Submodule.IsPrincipal.map_ringHom (f : F) {I : Ideal R}
+    (hI : IsPrincipal I) : IsPrincipal (Ideal.map f I) :=
+  ⟨⟨f (IsPrincipal.generator I), by
       rw [Ideal.submodule_span_eq, ← Set.image_singleton, ← Ideal.map_span,
-        Ideal.span_singleton_generator, Ideal.map_comap_of_surjective f hf]⟩⟩
+      Ideal.span_singleton_generator]⟩⟩
+
+theorem Ideal.IsPrincipal.of_comap (f : F) (hf : Function.Surjective f) (I : Ideal S)
+    [hI : IsPrincipal (I.comap f)] : IsPrincipal I := by
+  rw [← map_comap_of_surjective f hf I]
+  exact hI.map_ringHom f
 
 /-- The surjective image of a principal ideal ring is again a principal ideal ring. -/
-theorem IsPrincipalIdealRing.of_surjective [IsPrincipalIdealRing R] (f : R →+* S)
+theorem IsPrincipalIdealRing.of_surjective [IsPrincipalIdealRing R] (f : F)
     (hf : Function.Surjective f) : IsPrincipalIdealRing S :=
   ⟨fun I => Ideal.IsPrincipal.of_comap f hf I⟩
 

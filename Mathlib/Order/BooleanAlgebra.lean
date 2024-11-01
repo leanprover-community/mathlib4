@@ -58,7 +58,7 @@ open Function OrderDual
 
 universe u v
 
-variable {α : Type u} {β : Type*} {w x y z : α}
+variable {α : Type u} {β : Type*} {x y z : α}
 
 /-!
 ### Generalized Boolean algebras
@@ -358,6 +358,11 @@ theorem sdiff_eq_comm (hy : y ≤ x) (hz : z ≤ x) : x \ y = z ↔ x \ z = y :=
 
 theorem eq_of_sdiff_eq_sdiff (hxz : x ≤ z) (hyz : y ≤ z) (h : z \ x = z \ y) : x = y := by
   rw [← sdiff_sdiff_eq_self hxz, h, sdiff_sdiff_eq_self hyz]
+
+theorem sdiff_le_sdiff_iff_le (hx : x ≤ z) (hy : y ≤ z) : z \ x ≤ z \ y ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, sdiff_le_sdiff_left⟩
+  rw [← sdiff_sdiff_eq_self hx, ← sdiff_sdiff_eq_self hy]
+  exact sdiff_le_sdiff_left h
 
 theorem sdiff_sdiff_left' : (x \ y) \ z = x \ y ⊓ x \ z := by rw [sdiff_sdiff_left, sdiff_sup]
 
@@ -692,8 +697,8 @@ instance Prop.instBooleanAlgebra : BooleanAlgebra Prop where
   __ := Prop.instHeytingAlgebra
   __ := GeneralizedHeytingAlgebra.toDistribLattice
   compl := Not
-  himp_eq p q := propext imp_iff_or_not
-  inf_compl_le_bot p H := H.2 H.1
+  himp_eq _ _ := propext imp_iff_or_not
+  inf_compl_le_bot _ H := H.2 H.1
   top_le_sup_compl p _ := Classical.em p
 
 instance Prod.instBooleanAlgebra [BooleanAlgebra α] [BooleanAlgebra β] :
@@ -745,8 +750,8 @@ protected abbrev Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] 
     GeneralizedBooleanAlgebra α where
   __ := hf.generalizedCoheytingAlgebra f map_sup map_inf map_bot map_sdiff
   __ := hf.distribLattice f map_sup map_inf
-  sup_inf_sdiff a b := hf <| by erw [map_sup, map_sdiff, map_inf, sup_inf_sdiff]
-  inf_inf_sdiff a b := hf <| by erw [map_inf, map_sdiff, map_inf, inf_inf_sdiff, map_bot]
+  sup_inf_sdiff a b := hf <| by rw [map_sup, map_sdiff, map_inf, sup_inf_sdiff]
+  inf_inf_sdiff a b := hf <| by rw [map_inf, map_sdiff, map_inf, inf_inf_sdiff, map_bot]
 
 -- See note [reducible non-instances]
 /-- Pullback a `BooleanAlgebra` along an injection. -/
@@ -760,8 +765,8 @@ protected abbrev Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [B
   compl := compl
   himp := himp
   top := ⊤
-  le_top a := (@le_top β _ _ _).trans map_top.ge
-  bot_le a := map_bot.le.trans bot_le
+  le_top _ := (@le_top β _ _ _).trans map_top.ge
+  bot_le _ := map_bot.le.trans bot_le
   inf_compl_le_bot a := ((map_inf _ _).trans <| by rw [map_compl, inf_compl_eq_bot, map_bot]).le
   top_le_sup_compl a := ((map_sup _ _).trans <| by rw [map_compl, sup_compl_eq_top, map_top]).ge
   sdiff_eq a b := by
@@ -779,7 +784,7 @@ instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit where
 
 namespace DistribLattice
 
-variable (α : Type*) [DistribLattice α]
+variable (α) [DistribLattice α]
 
 /--
 An alternative constructor for boolean algebras:

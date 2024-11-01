@@ -158,14 +158,16 @@ def elabLinearCombination (tk : Syntax)
   -- if we are in a "true" ring, with well-behaved negation, we rearrange from the form
   -- `[stuff] = [stuff]` (or `≤` or `<`) to the form `[stuff] = 0` (or `≤` or `<`), because this
   -- gives more useful error messages on failure
-  try
-    Tactic.liftMetaTactic fun g ↦ g.applyConst newGoalRel.rearrangeData
-  catch _ => pure ()
-  -- now run the normalization tactic provided, or the default normalization if none is provided
+  let _ ← Tactic.tryTactic <| Tactic.liftMetaTactic fun g ↦ g.applyConst newGoalRel.rearrangeData
   match norm? with
+  -- now run the normalization tactic provided
   | some norm => Tactic.evalTactic norm
+  -- or the default normalization tactic if none is provided
   | none => withRef tk <| Tactic.liftMetaFinishingTactic <|
     match newGoalRel with
+    -- for an equality task the default normalization tactic is (the internals of) `ring1` (but we
+    -- use `.instances` transparency, which is arguably more robust in algebraic settings than the
+    -- choice `.reducible` made in `ring1`)
     | Eq => fun g ↦ AtomM.run .instances <| Ring.proveEq g
     | Le => Ring.proveLE
     | Lt => Ring.proveLT

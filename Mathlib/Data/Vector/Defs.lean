@@ -65,7 +65,7 @@ theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
 @[simp]
 theorem cons_head_tail : ∀ v : Vector α (succ n), cons (head v) (tail v) = v
   | ⟨[], h⟩ => by contradiction
-  | ⟨a :: v, h⟩ => rfl
+  | ⟨_ :: _, _⟩ => rfl
 
 /-- The list obtained from a vector. -/
 def toList (v : Vector α n) : List α :=
