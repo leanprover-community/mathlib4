@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
 import Mathlib.Data.PNat.Equiv
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
 import Mathlib.Order.Hom.Basic

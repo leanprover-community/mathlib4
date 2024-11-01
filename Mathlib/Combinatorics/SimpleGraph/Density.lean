@@ -235,7 +235,7 @@ end Asymmetric
 
 section Symmetric
 
-variable {r : α → α → Prop} [DecidableRel r] {s s₁ s₂ t t₁ t₂ : Finset α} {a b : α}
+variable {r : α → α → Prop} [DecidableRel r] {s t : Finset α} {a b : α}
 
 @[simp]
 theorem swap_mem_interedges_iff (hr : Symmetric r) {x : α × α} :
