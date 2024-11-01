@@ -10,17 +10,18 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 /-!
 # The weak operator topology
 
-This file defines a type copy of `E →L[𝕜] F` (where `F` is a normed space) which is
-endowed with the weak operator topology (WOT) rather than the topology induced by the operator norm.
+This file defines a type copy of `E →L[𝕜] F` (where `E` and `F` are topological vector spaces)
+which is endowed with the weak operator topology (WOT) rather than the topology of bounded
+convergence (which is the usual one induced by the operator norm in the normed setting).
 The WOT is defined as the coarsest topology such that the functional `fun A => y (A x)` is
-continuous for any `x : E` and `y : NormedSpace.Dual 𝕜 F`. Equivalently, a function `f` tends to
+continuous for any `x : E` and `y : F →L[𝕜] 𝕜`. Equivalently, a function `f` tends to
 `A : E →WOT[𝕜] F` along filter `l` iff `y (f a x)` tends to `y (A x)` along the same filter.
 
 Basic non-topological properties of `E →L[𝕜] F` (such as the module structure) are copied over to
 the type copy.
 
 We also prove that the WOT is induced by the family of seminorms `‖y (A x)‖` for `x : E` and
-`y : NormedSpace.Dual 𝕜 F`.
+`y : F →L[𝕜] 𝕜`.
 
 ## Main declarations
 
@@ -32,19 +33,18 @@ We also prove that the WOT is induced by the family of seminorms `‖y (A x)‖`
 * `ContinuousLinearMap.continuous_toWOT`: the inclusion map is continuous, i.e. the WOT is coarser
   than the norm topology.
 * `ContinuousLinearMapWOT.withSeminorms`: the WOT is induced by the family of seminorms
-  `‖y (A x)‖` for `x : E` and `y : NormedSpace.Dual 𝕜 F`.
+  `‖y (A x)‖` for `x : E` and `y : F →L[𝕜] 𝕜`.
 
 ## Notation
 
 * The type copy of `E →L[𝕜] F` endowed with the weak operator topology is denoted by
   `E →WOT[𝕜] F`.
-* We locally use the notation `F⋆` for `NormedSpace.Dual 𝕜 F`.
+* We locally use the notation `F⋆` for `F →L[𝕜] 𝕜`.
 
 ## Implementation notes
 
-In the literature, the WOT is only defined on maps between Banach spaces. Here, we generalize this
-a bit to `E →L[𝕜] F` where `F` is an normed space, and `E` actually only needs to be a vector
-space with some topology for most results in this file.
+In most of the literature, the WOT is defined on maps between Banach spaces. Here, we only assume
+that the domain and codomains are topological vector spaces over a normed field.
 -/
 
 open scoped Topology
