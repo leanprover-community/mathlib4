@@ -129,7 +129,7 @@ of tensor powers are (noncomputably) equivalent as `R`-algebras.-/
   TensorAlgebra.equivDirectSum.symm
 
 theorem PowerAlgebra.ofDirectSum_ι :
-    (ofDirectSum.toLinearMap ∘ₗ PowerAlgebra.ι R A) = TensorAlgebra.ι R := by
+    ofDirectSum.toLinearMap ∘ₗ PowerAlgebra.ι R A = TensorAlgebra.ι R := by
   ext i a
   simp_rw [ι, LinearMap.comp_apply, lof_eq_of, MultilinearMap.ofSubsingleton_symm_apply_apply,
             ofDirectSum.toLinearMap_apply, ofDirectSum_of_tprod, tprod_apply,
@@ -138,9 +138,9 @@ theorem PowerAlgebra.ofDirectSum_ι :
 /--The generating equivalence relation for elements of the free tensor algebra
 that are identified in the free product.-/
 inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
-  /--`rel` relates the injections of any `(1 : A i)` to `1`.-/
+  /--`rel` relates the image of any `(1 : A i)` to `1`.-/
   | id  : ∀ {i : I}, rel (ι R <| lof R I A i 1) 1
-  /--`rel` relates the products of injections from the same `A i` to the injection of their
+  /--`rel` relates the product of the images of two terms from the same `A i` to the image of their
   product in `A i`.-/
   | prod : ∀ {i : I} {a₁ a₂ : A i},
       rel
@@ -150,6 +150,7 @@ inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
 -- We reproduce `rel.id` and `.prod here to make `R, A, i...` explicit.
 @[inherit_doc rel.id]
 theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id
+
 @[inherit_doc rel.prod]
 theorem rel_prod (i : I) (a₁ a₂ : A i) :
     rel R A (tprod R (⨁ i, A i) 2 (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂))
@@ -164,6 +165,7 @@ that are identified in the free product. -/
 theorem rel'_id (i : I) : rel' R A (PowerAlgebra.ι R A <| lof R I A i 1) 1 := by
   have := rel_id R A i; rw [lof_eq_of] at this
   aesop (add simp [Function.onFun, lof_eq_of])
+
 @[inherit_doc rel.prod]
 theorem rel'_prod (i : I) (a₁ a₂ : A i) :
     rel' R A (lof R ℕ _ 2  <| ⨂ₜ[R] b, (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂) b)
@@ -353,7 +355,7 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
 /--Universal property of the free product of algebras, property:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
 to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.-/
-@[simp↓] theorem lift_comp_ι : (lift R A maps) ∘ₐ (ι R A i) = maps := by
+@[simp↓] theorem lift_comp_ι : lift R A maps ∘ₐ ι R A i = maps := by
   ext a
   simp [lift_apply, ι]
 
