@@ -45,6 +45,12 @@ Also, the assumption that a quantale is unital is more common than the assumptio
 
 * `→+q`: Bundled additive unital quantale homs.
 * `→*q`: Bundled multiplicative unital quantale homs.
+
+## TODO
+
+The part where we define the usual operations: composition, identity homomorphism, pointwise
+multiplication and pointwise inversion, still needs to be added
+
 -/
 
 /- Additive Quantale Homomorphisms-/
