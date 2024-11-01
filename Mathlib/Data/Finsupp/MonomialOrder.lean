@@ -34,7 +34,7 @@ It is activated using `open scoped MonomialOrder`.
 We provide four examples of monomial orders, the most standard ones in commutative algebra.
 
 * `MonomialOrder.lex` : the lexicographic ordering on `σ →₀ ℕ`.
-For this, `σ` needs to be embedded with an ordering relation which statisfies `WellFoundedGT σ`.
+For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
 (This last property is automatic when `σ` is finite).
 
 The type synonym is `Lex (σ →₀ ℕ)` and the two lemmas `MonomialOrder.lex_le_iff`
@@ -48,7 +48,7 @@ The type synonym is `Lex (σᵒᵈ →₀ ℕ)` and the two lemmas `MonomialOrde
 and `MonomialOrder.revLex_lt_iff` rewrite the ordering as comparisons in the type `Lex (σᵒᵈ →₀ ℕ)`.
 
 * `MonomialOrder.degLex`: a variant of the lexicographic ordering that first compares degrees.
-For this, `σ` needs to be embedded with an ordering relation which statisfies `WellFoundedGT σ`.
+For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
 (This last property is automatic when `σ` is finite).
 
 The type synonym is `DegLex (σ →₀ ℕ)` and the two lemmas `MonomialOrder.degLex_le_iff`
@@ -56,7 +56,7 @@ and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the typ
 
 * `MonomialOrder.degRevLex`: a variant of the reverse lexicographic ordering
 that first compares degrees.
-For this, `σ` needs to be embedded with an ordering relation which statisfies `WellFoundedLT σ`.
+For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedLT σ`.
 (This last property is automatic when `σ` is finite).
 
 The type synonym is `DegLex (σᵒᵈ →₀ ℕ)` and the two lemmas `MonomialOrder.degRevLex_le_iff`
@@ -83,7 +83,6 @@ attribute [instance] MonomialOrder.locacm MonomialOrder.wf
 namespace MonomialOrder
 
 variable {σ : Type*} (m : MonomialOrder σ)
-
 
 lemma le_add_right (a b : σ →₀ ℕ) :
     m.toSyn a ≤ m.toSyn a + m.toSyn b := by
@@ -153,11 +152,9 @@ variable {σ : Type*} [LinearOrder σ]
 noncomputable def MonomialOrder.lex [WellFoundedGT σ] :
     MonomialOrder σ where
   syn := Lex (σ →₀ ℕ)
-  locacm := Lex.linearOrderedCancelAddCommMonoid
   toSyn := {
     toEquiv := toLex
     map_add' := toLex_add } -- AddEquiv.refl _ -- (AddEquiv.refl (Lex (σ →₀ ℕ))).symm
-  wf := Lex.wellFoundedLT
   toSyn_monotone := Finsupp.toLex_monotone
 
 theorem MonomialOrder.lex_le_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
@@ -188,36 +185,26 @@ def DegLex (α : Type*) := α
 
 variable {α : Type*}
 /-- `toDegLex` is the identity function to the `DegLex` of a type.  -/
-@[match_pattern]
-def toDegLex : α ≃ DegLex α :=
-  Equiv.refl _
+@[match_pattern] def toDegLex : α ≃ DegLex α := Equiv.refl _
+
+theorem toDegLex_injective : Function.Injective (toDegLex (α := α)) := fun _ _ ↦ _root_.id
+
+theorem toDegLex_inj {a b : α} : toDegLex a = toDegLex b ↔ a = b := Iff.rfl
 
 /-- `ofDegLex` is the identity function from the `DegLex` of a type.  -/
-@[match_pattern]
-def ofDegLex : DegLex α ≃ α :=
-  Equiv.refl _
+@[match_pattern] def ofDegLex : DegLex α ≃ α := Equiv.refl _
 
-@[simp]
-theorem toDegLex_symm_eq : (@toDegLex α).symm = ofDegLex :=
-  rfl
+theorem ofDegLex_injective : Function.Injective (ofDegLex (α := α)) := fun _ _ ↦ _root_.id
 
-@[simp]
-theorem ofDegLex_symm_eq : (@ofDegLex α).symm = toDegLex :=
-  rfl
+theorem ofDegLex_inj {a b : DegLex α} : ofDegLex a = ofDegLex b ↔ a = b := Iff.rfl
 
-@[simp]
-theorem toDegLex_ofDegLex (a : DegLex α) : toDegLex (ofDegLex a) = a :=
-  rfl
+@[simp] theorem ofDegLex_symm_eq : (@ofDegLex α).symm = toDegLex := rfl
 
-@[simp]
-theorem ofDegLex_toDegLex (a : α) : ofDegLex (toDegLex a) = a :=
-  rfl
+@[simp] theorem toDegLex_symm_eq : (@toDegLex α).symm = ofDegLex := rfl
 
-theorem toDegLex_inj {a b : α} : toDegLex a = toDegLex b ↔ a = b :=
-  Iff.rfl
+@[simp] theorem ofDegLex_toDegLex (a : α) : ofDegLex (toDegLex a) = a := rfl
 
-theorem ofDegLex_inj {a b : DegLex α} : ofDegLex a = ofDegLex b ↔ a = b :=
-  Iff.rfl
+@[simp] theorem toDegLex_ofDegLex (a : DegLex α) : toDegLex (ofDegLex a) = a := rfl
 
 /-- A recursor for `DegLex`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
@@ -238,8 +225,6 @@ theorem ofDegLex_add [AddCommMonoid α] (a b : DegLex α) :
 
 namespace Finsupp
 
-variable {M N : Type*} [AddCommMonoid M] [CanonicallyOrderedAddCommMonoid N]
-
 /-- `Finsupp.DegLex r s` is the homogeneous lexicographic order on `α →₀ M`,
 where `α` is ordered by `r` and `M` is ordered by `s`.
 The type synonym `DegLex (α →₀ M)` has an order given by `Finsupp.DegLex (· < ·) (· < ·)`. -/
@@ -248,8 +233,7 @@ protected def DegLex (r : α → α → Prop) (s : ℕ → ℕ → Prop) :
   (Prod.Lex s (Finsupp.Lex r s)) on (fun x ↦ (x.degree, x))
 
 theorem degLex_def {r : α → α → Prop} {s : ℕ → ℕ → Prop} {a b : α →₀ ℕ} :
-    Finsupp.DegLex r s a b ↔
-      Prod.Lex s (Finsupp.Lex r s) (a.degree, a) (b.degree, b) :=
+    Finsupp.DegLex r s a b ↔ Prod.Lex s (Finsupp.Lex r s) (a.degree, a) (b.degree, b) :=
   Iff.rfl
 
 theorem DegLex.wellFounded
@@ -371,9 +355,7 @@ variable {σ : Type*} [LinearOrder σ]
 noncomputable def MonomialOrder.degLex [WellFoundedGT σ] :
     MonomialOrder σ where
   syn := DegLex (σ →₀ ℕ)
-  locacm := inferInstance
   toSyn := { toEquiv := toDegLex, map_add' := toDegLex_add }
-  wf := Finsupp.DegLex.wellFoundedLT
   toSyn_monotone a b h := by
     change toDegLex a ≤ toDegLex b
     simp only [DegLex.le_iff, ofDegLex_toDegLex]
