@@ -515,11 +515,11 @@ theorem isEquiv_tfae [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGr
       ∀ {x}, v x = 1 ↔ v' x = 1,
       ∀ {x}, v x < 1 ↔ v' x < 1,
       ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1 ].TFAE := by
-  tfae_have 1 ↔ 2; · apply isEquiv_iff_val_lt_val
-  tfae_have 1 ↔ 3; · apply isEquiv_iff_val_le_one
-  tfae_have 1 ↔ 4; · apply isEquiv_iff_val_eq_one
-  tfae_have 1 ↔ 5; · apply isEquiv_iff_val_lt_one
-  tfae_have 1 ↔ 6; · apply isEquiv_iff_val_sub_one_lt_one
+  tfae_have 1 ↔ 2 := isEquiv_iff_val_lt_val
+  tfae_have 1 ↔ 3 := isEquiv_iff_val_le_one
+  tfae_have 1 ↔ 4 := isEquiv_iff_val_eq_one
+  tfae_have 1 ↔ 5 := isEquiv_iff_val_lt_one
+  tfae_have 1 ↔ 6 := isEquiv_iff_val_sub_one_lt_one
   tfae_finish
 
 end
