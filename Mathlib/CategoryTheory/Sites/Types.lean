@@ -158,12 +158,12 @@ noncomputable def typeEquiv : Type u ≌ SheafOfTypes typesGrothendieckTopology 
     dsimp [yoneda', yonedaEquiv, evalEquiv]
     erw [typesGlue_eval]
 
-theorem subcanonical_typesGrothendieckTopology : Sheaf.Subcanonical typesGrothendieckTopology.{u} :=
-  Sheaf.Subcanonical.of_yoneda_isSheaf _ fun _ => isSheaf_yoneda'
+instance subcanonical_typesGrothendieckTopology : typesGrothendieckTopology.{u}.Subcanonical :=
+  GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ fun _ => isSheaf_yoneda'
 
 theorem typesGrothendieckTopology_eq_canonical :
     typesGrothendieckTopology.{u} = Sheaf.canonicalTopology (Type u) := by
-  refine le_antisymm subcanonical_typesGrothendieckTopology (sInf_le ?_)
+  refine le_antisymm typesGrothendieckTopology.le_canonical (sInf_le ?_)
   refine ⟨yoneda.obj (ULift Bool), ⟨_, rfl⟩, GrothendieckTopology.ext ?_⟩
   funext α
   ext S

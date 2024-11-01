@@ -10,10 +10,12 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.43"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.44"
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
   from git "https://github.com/leanprover-community/LeanSearchClient" @ "main"
+require "leanprover-community" / "plausible" @ git "main"
+  from git "https://github.com/leanprover-community/plausible" @ "main"
 
 /-!
 ## Options for building mathlib
@@ -130,6 +132,22 @@ and then calculates the longest pole
 -/
 lean_exe pole where
   root := `LongestPole.Main
+  supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
+
+/--
+`lake exe unused module_1 ... module_n` will analyze unused transitive imports in a given sequence.
+The script expects the sequence to be in "reverse order", i.e. files imported later in `Mathlib` should
+come earlier in the sequence.
+
+Outputs a markdown file (called  `unused.md` by default) and a number of `lake exe graph` commands
+highlighting particular ranges of transitively unused imports.
+
+Typically this should be run via `scripts/unused_in_pole.sh`.
+-/
+lean_exe unused where
+  root := `LongestPole.Unused
   supportInterpreter := true
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]

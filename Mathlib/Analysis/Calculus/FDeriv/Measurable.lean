@@ -787,7 +787,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {α : Type*} [TopologicalSpace α]
-  {f : α → E → F} (K : Set (E →L[𝕜] F))
+  {f : α → E → F}
 
 namespace FDerivMeasurableAux
 

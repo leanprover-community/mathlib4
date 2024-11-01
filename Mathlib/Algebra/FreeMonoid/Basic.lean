@@ -67,6 +67,9 @@ instance : CancelMonoid (FreeMonoid α) where
 @[to_additive]
 instance : Inhabited (FreeMonoid α) := ⟨1⟩
 
+@[to_additive]
+instance [IsEmpty α] : Unique (FreeMonoid α) := inferInstanceAs <| Unique (List α)
+
 @[to_additive (attr := simp)]
 theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
 
@@ -137,11 +140,14 @@ theorem length_eq_two {v : FreeMonoid α} :
 theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=
   List.length_append _ _
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem of_ne_one (a : α) : of a ≠ 1 := by
   intro h
   have := congrArg FreeMonoid.length h
   simp only [length_of, length_one, Nat.succ_ne_self] at this
+
+@[to_additive (attr := simp)]
+theorem one_ne_of (a : α) : 1 ≠ of a := of_ne_one _ |>.symm
 
 end Length
 
