@@ -491,9 +491,6 @@ lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) < ∞
 
 @[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
 
-@[simp] theorem top_ne_ofNat {n : ℕ} [n.AtLeastTwo] : ∞ ≠ no_index (OfNat.ofNat n : ℝ≥0∞) :=
-  (ofNat_ne_top n).symm
-
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
 
 @[simp, norm_cast]
