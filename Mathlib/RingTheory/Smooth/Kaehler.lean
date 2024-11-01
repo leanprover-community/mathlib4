@@ -426,7 +426,7 @@ include hf in
 /--
 Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
 with kernel `I` (typically a presentation `R[X] → S`),
-then `S` is formally smooth iff `Ω[S/R]` is projective and `I/I² → S ⊗[P] Ω[P⁄R]` is injective.
+then `S` is formally smooth iff `I/I² → S ⊗[P] Ω[P⁄R]` is injective and `Ω[S/R]` is projective.
 -/
 theorem Algebra.FormallySmooth.iff_injective_and_projective :
     Algebra.FormallySmooth R S ↔
