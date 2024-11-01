@@ -619,9 +619,8 @@ lemma maximalClique_of_maximumClique {s : Finset α} (sm : G.isMaximumClique s) 
   by_contra hc
   rw [isMaximalClique] at hc
   push_neg at hc
-  obtain ⟨sc , sm⟩ := sm
-  obtain ⟨t, tc, tsub⟩ := hc sc
-  exact lt_irrefl _ (lt_of_lt_of_le (card_lt_card tsub) (sm t tc))
+  obtain ⟨t, tc, tsub⟩ := hc sm.1
+  exact lt_irrefl _ (lt_of_lt_of_le (card_lt_card tsub) (sm.2 t tc))
 
 variable [fin : Fintype α]
 
