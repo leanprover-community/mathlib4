@@ -32,7 +32,7 @@ assert_not_exists Field
  -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
  -- finiteness currently relies on more algebra than it needs.
 
-universe w v₁ v₂ v₃ v u₁ u₂ u₃ u
+universe w v₁ v₂ v u₁ u₂ u
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits.Types
   CategoryTheory.Limits.Types.FilteredColimit
@@ -373,36 +373,11 @@ noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesColimitsOfSh
   intro J _ _
   infer_instance
 
-end
-
 section
 
-variable {C : Type u} [Category.{v} C]
-variable {J : Type u₁} [Category.{v₁} J]
-variable {K : Type u₂} [Category.{v₂} K]
-variable {D : Type u₃} [Category.{v₃} D]
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
-variable [PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _)]
-
-noncomputable instance : PreservesLimitsOfShape J (colim : (K ⥤ D ⥤ C) ⥤ _) :=
-  preservesLimitsOfShapeOfEvaluation _ _ (fun d =>
-    let i : (colim : (K ⥤ D ⥤ C) ⥤ _) ⋙ (evaluation D C).obj d ≅
-        colimit ((whiskeringRight K (D ⥤ C) C).obj ((evaluation D C).obj d)).flip :=
-      NatIso.ofComponents (fun X => (colimitObjIsoColimitCompEvaluation _ _) ≪≫
-          (by exact HasColimit.isoOfNatIso (Iso.refl _)) ≪≫
-          (colimitObjIsoColimitCompEvaluation _ _).symm)
-        (fun {F G} η => colimit_obj_ext (fun j => by simp [← NatTrans.comp_app_assoc]))
-    preservesLimitsOfShapeOfNatIso (i ≪≫ colimitFlipIsoCompColim _).symm)
-
-end
-
-section
-
-variable {C : Type u} [Category.{v} C]
-variable {J : Type u₁} [Category.{v₁} J]
-variable {K : Type u₂} [Category.{v₂} K]
-variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
-variable [PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _)]
+variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
+variable [PreservesLimitsOfShape J (forget C)]
 
 /-- A curried version of the fact that filtered colimits commute with finite limits. -/
 noncomputable def colimitLimitIso (F : J ⥤ K ⥤ C) : colimit (limit F) ≅ limit (colimit F.flip) :=
@@ -424,6 +399,8 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
     Limits.HasColimit.isoOfNatIso_ι_hom, NatIso.ofComponents_hom_app]
   dsimp
   simp
+
+end
 
 end
 
