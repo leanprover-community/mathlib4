@@ -24,7 +24,6 @@ A clique is a set of vertices that are pairwise adjacent.
 
 ## TODO
 
-* Clique numbers
 * Dualise all the API to get independent sets
 -/
 
