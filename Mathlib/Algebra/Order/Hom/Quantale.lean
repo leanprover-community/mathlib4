@@ -24,6 +24,9 @@ and `ZeroQuantaleIso` to be bundled isomorphisms between multiplicative (resp. a
 We also define coercion to a function, and usual operations: composition, identity homomorphism,
 pointwise multiplication and pointwise inversion.
 
+We also include the theorem that every ordered (additive) monoid iso is a (additive) unital
+quantale iso.
+
 ## Typeclasses
 
 * `QuantaleHom`, resp. `AddQuantaleHom`: (Additive) Quantale homomorphisms are semigroup
@@ -33,11 +36,6 @@ homomorphisms as well as complete lattice homomorphisms
 monoid homomorphisms as well as complete lattice homomorphisms
 * `OneQuantaleHomClass`, resp. `ZeroAddQuantaleHomClass`: typeclass of (additive) unital quantale
 homomorphisms
-* `QuantaleIso`, resp. `AddQuantaleIso`: (Additive) Quantale isomorphisms.
-* `QuantaleIsoClass`, resp. `AddQuantaleIsoClass`: typeclass of (additive) quantale isomorphisms
-* `OneQuantaleIso`, resp. `ZeroAddQuantaleIso`: (Additive) unital quantale isomorphisms.
-* `OneQuantaleIsoClass`, resp. `ZeroAddQuantaleIsoClass`: typeclass of (additive) unital quantale
-isomorphisms
 
 ## Notation
 
@@ -47,8 +45,6 @@ Also, the assumption that a quantale is unital is more common than the assumptio
 
 * `→+q`: Bundled additive unital quantale homs.
 * `→*q`: Bundled multiplicative unital quantale homs.
-* `≃+o`: Bundled additive unital quantale isos.
-* `≃*o`: Bundled quantale unital isos.
 -/
 
 /- Additive Quantale Homomorphisms-/
@@ -126,9 +122,9 @@ instance QuantaleHom.instFunLike : FunLike (QuantaleHom M N) M N where
 
 @[to_additive]
 instance QuantaleHom.instQuantaleHomClass : QuantaleHomClass (QuantaleHom M N) M N where
-  map_mul f := f.toMulHom.map_mul'
-  map_sInf f := f.toCompleteLatticeHom.map_sInf'
-  map_sSup f := f.toCompleteLatticeHom.map_sSup'
+  map_mul f := f.map_mul'
+  map_sInf f := f.map_sInf'
+  map_sSup f := f.map_sSup'
 
 /-- Turn an element of a type `F` satisfying `QuantaleHomClass F M N` into an actual
 `QuantaleHom`. This is declared as the default coercion from `F` to `M →*q N`. -/
@@ -165,10 +161,10 @@ When you extend this structure, make sure to extend `ZeroAddQuantaleHomClass`.
 -/
 structure ZeroAddQuantaleHom (M N : Type*)
   [AddMonoid M] [AddMonoid N] [AddQuantale M] [AddQuantale N]
-  extends AddMonoidHom M N, CompleteLatticeHom M N
+  extends AddMonoidHom M N, AddQuantaleHom M N
 
-attribute [nolint docBlame] AddQuantaleHom.toAddHom
-attribute [nolint docBlame] AddQuantaleHom.toCompleteLatticeHom
+attribute [nolint docBlame] ZeroAddQuantaleHom.toAddMonoidHom
+attribute [nolint docBlame] ZeroAddQuantaleHom.toAddQuantaleHom
 
 /-- `M →+q N` denotes the type of additive unital quantale homomorphisms from `M` to `N`. -/
 infixr:25 " →+q " => ZeroAddQuantaleHom
@@ -180,7 +176,7 @@ You should also extend this typeclass when you extend `ZeroAddQuantaleHom`.
 -/
 class ZeroAddQuantaleHomClass (F : Type*) (M N : outParam Type*)
     [AddMonoid M] [AddMonoid N] [AddQuantale M] [AddQuantale N] [FunLike F M N]
-    extends AddMonoidHomClass F M N, CompleteLatticeHomClass F M N : Prop
+    extends AddMonoidHomClass F M N, AddQuantaleHomClass F M N : Prop
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 
@@ -201,10 +197,10 @@ When you extend this structure, make sure to extend `OneQuantaleHomClass`.
 @[to_additive]
 structure OneQuantaleHom (M N : Type*)
   [Monoid M] [Monoid N] [Quantale M] [Quantale N]
-  extends MonoidHom M N, CompleteLatticeHom M N
+  extends MonoidHom M N, QuantaleHom M N
 
-attribute [nolint docBlame] QuantaleHom.toMulHom
-attribute [nolint docBlame] QuantaleHom.toCompleteLatticeHom
+attribute [nolint docBlame] OneQuantaleHom.toMonoidHom
+attribute [nolint docBlame] OneQuantaleHom.toQuantaleHom
 
 /-- `M →*q N` denotes the type of additive quantale homomorphisms from `M` to `N`. -/
 infixr:25 " →*q " => OneQuantaleHom
@@ -217,7 +213,7 @@ You should also extend this typeclass when you extend `OneQuantaleHom`.
 @[to_additive]
 class OneQuantaleHomClass (F : Type*) (M N : outParam Type*)
     [Monoid M] [Monoid N] [Quantale M] [Quantale N] [FunLike F M N]
-    extends MonoidHomClass F M N, CompleteLatticeHomClass F M N : Prop
+    extends MonoidHomClass F M N, QuantaleHomClass F M N : Prop
 
 variable {M N : Type*} {F : Type*}
 variable [Monoid M] [Monoid N] [Quantale M] [Quantale N] [FunLike F M N]
@@ -234,16 +230,16 @@ instance OneQuantaleHom.instFunLike : FunLike (M →*q N) M N where
 
 @[to_additive]
 instance OneQuantaleHom.instOneQuantaleHomClass : OneQuantaleHomClass (M →*q N) M N where
-  map_mul f := f.toMonoidHom.map_mul'
-  map_sInf f := f.toCompleteLatticeHom.map_sInf'
-  map_sSup f := f.toCompleteLatticeHom.map_sSup'
-  map_one f := f.toMonoidHom.map_one'
+  map_mul f := f.map_mul'
+  map_sInf f := f.map_sInf'
+  map_sSup f := f.map_sSup'
+  map_one f := f.map_one'
 
 /-- Turn an element of a type `F` satisfying `OneQuantaleHomClass F M N` into an actual
-`OneQuantaleHom`. This is declared as the default coercion from `F` to `M →*₁q N`. -/
+`OneQuantaleHom`. This is declared as the default coercion from `F` to `M →*q N`. -/
 @[to_additive (attr := coe)
 "Turn an element of a type `F` satisfying `ZeroAddQuantaleHomClass F M N` into an
-actual `ZeroAddQuantaleHom`. This is declared as the default coercion from `F` to `M →+₀q N`."]
+actual `ZeroAddQuantaleHom`. This is declared as the default coercion from `F` to `M →+q N`."]
 def OneQuantaleHomClass.toOneQuantaleHom [OneQuantaleHomClass F M N] (f : F) : M →*q N :=
   { (f : MonoidHom M N), (f : CompleteLatticeHom M N) with }
 
@@ -257,5 +253,11 @@ instance [OneQuantaleHomClass F M N] : CoeTC F (M →*q N) :=
 @[to_additive (attr := simp)]
 theorem OneQuantaleHom.coe_coe [OneQuantaleHomClass F M N] (f : F) :
    ((f : M →*q N) : M → N) = f := rfl
+
+/- Isomorphisms -/
+
+@[to_additive]
+instance [Monoid M] [Monoid N] [Quantale M] [Quantale N] : OneQuantaleHomClass (M ≃*o N) M N :=
+  by constructor
 
 end Quantale
