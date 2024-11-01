@@ -15,9 +15,7 @@ lemma.
 
 universe u
 
-open Set Classical
-
-open scoped Classical
+open Set
 
 /-- Any partial order can be extended to a linear order.
 -/
@@ -47,13 +45,14 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
       cases' hc₂.total h₁s₁ h₁s₂ with h h
       · exact antisymm (h _ _ h₂s₁) h₂s₂
       · apply antisymm h₂s₁ (h _ _ h₂s₂)
-  obtain ⟨s, hs₁ : IsPartialOrder _ _, rs, hs₂⟩ := zorn_nonempty_partialOrder₀ S hS r ‹_›
-  haveI : IsPartialOrder α s := hs₁
-  refine ⟨s, { total := ?_, refl := hs₁.refl, trans := hs₁.trans, antisymm := hs₁.antisymm } , rs⟩
+  obtain ⟨s, hrs, hs⟩ := zorn_le_nonempty₀ S hS r ‹_›
+  haveI : IsPartialOrder α s := hs.prop
+  refine ⟨s,
+    { total := ?_, refl := hs.1.refl, trans := hs.1.trans, antisymm := hs.1.antisymm }, hrs⟩
   intro x y
   by_contra! h
   let s' x' y' := s x' y' ∨ s x' x ∧ s y y'
-  rw [← hs₂ s' _ fun _ _ ↦ Or.inl] at h
+  rw [hs.eq_of_le (y := s') ?_ fun _ _ ↦ Or.inl] at h
   · apply h.1 (Or.inr ⟨refl _, refl _⟩)
   · refine
     { refl := fun x ↦ Or.inl (refl _)

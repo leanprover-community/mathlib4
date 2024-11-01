@@ -77,7 +77,7 @@ lemma cast_ne_one : (n : α) ≠ 1 ↔ n ≠ 1 := cast_eq_one.not
 end AddGroupWithOne
 
 section NonAssocRing
-variable [NonAssocRing α] {a b : α} {n : ℤ}
+variable [NonAssocRing α]
 
 variable (α) in
 /-- `coe : ℤ → α` as a `RingHom`. -/
@@ -147,7 +147,7 @@ end SemiconjBy
 
 namespace Commute
 section NonAssocRing
-variable [NonAssocRing α] {a b : α} {n : ℤ}
+variable [NonAssocRing α] {a : α} {n : ℤ}
 
 @[simp] lemma intCast_left : Commute (n : α) a := Int.cast_commute _ _
 
@@ -159,7 +159,7 @@ variable [NonAssocRing α] {a b : α} {n : ℤ}
 end NonAssocRing
 
 section Ring
-variable [Ring α] {a b : α} {n : ℤ}
+variable [Ring α] {a b : α}
 
 @[simp] lemma intCast_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b) :=
   SemiconjBy.intCast_mul_right h m
@@ -172,18 +172,8 @@ lemma intCast_mul_intCast_mul (h : Commute a b) (m n : ℤ) : Commute (m * a) (n
 
 variable (a) (m n : ℤ)
 
-/- Porting note (#10618): `simp` attribute removed as linter reports:
-simp can prove this:
-  by simp only [Commute.cast_int_right, Commute.refl, Commute.mul_right]
--/
--- @[simp]
 lemma self_intCast_mul : Commute a (n * a : α) := (Commute.refl a).intCast_mul_right n
 
-/- Porting note (#10618): `simp` attribute removed as linter reports:
-simp can prove this:
-  by simp only [Commute.cast_int_left, Commute.refl, Commute.mul_left]
--/
--- @[simp]
 lemma intCast_mul_self : Commute ((n : α) * a) a := (Commute.refl a).intCast_mul_left n
 
 lemma self_intCast_mul_intCast_mul : Commute (m * a : α) (n * a : α) :=
@@ -283,10 +273,10 @@ theorem ext_int' [MonoidWithZero α] [FunLike F ℤ α] [MonoidWithZeroHomClass 
     this
 
 section Group
-variable (α) [Group α] [AddGroup α]
+variable (α) [Group α] (β) [AddGroup β]
 
 /-- Additive homomorphisms from `ℤ` are defined by the image of `1`. -/
-def zmultiplesHom : α ≃ (ℤ →+ α) where
+def zmultiplesHom : β ≃ (ℤ →+ β) where
   toFun x :=
   { toFun := fun n => n • x
     map_zero' := zero_zsmul x
@@ -301,9 +291,9 @@ of `Multiplicative.ofAdd 1`. -/
 def zpowersHom : α ≃ (Multiplicative ℤ →* α) :=
   ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
 
-lemma zmultiplesHom_apply (x : α) (n : ℤ) : zmultiplesHom α x n = n • x := rfl
+lemma zmultiplesHom_apply (x : β) (n : ℤ) : zmultiplesHom β x n = n • x := rfl
 
-lemma zmultiplesHom_symm_apply (f : ℤ →+ α) : (zmultiplesHom α).symm f = f 1 := rfl
+lemma zmultiplesHom_symm_apply (f : ℤ →+ β) : (zmultiplesHom β).symm f = f 1 := rfl
 
 @[to_additive existing (attr := simp)]
 lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) : zpowersHom α x n = x ^ toAdd n := rfl
@@ -316,17 +306,17 @@ lemma MonoidHom.apply_mint (f : Multiplicative ℤ →* α) (n : Multiplicative 
     f n = f (ofAdd 1) ^ (toAdd n) := by
   rw [← zpowersHom_symm_apply, ← zpowersHom_apply, Equiv.apply_symm_apply]
 
-lemma AddMonoidHom.apply_int (f : ℤ →+ α) (n : ℤ) : f n = n • f 1 := by
+lemma AddMonoidHom.apply_int (f : ℤ →+ β) (n : ℤ) : f n = n • f 1 := by
   rw [← zmultiplesHom_symm_apply, ← zmultiplesHom_apply, Equiv.apply_symm_apply]
 
 end Group
 
 section CommGroup
-variable (α) [CommGroup α] [AddCommGroup α]
+variable (α) [CommGroup α] (β) [AddCommGroup β]
 
 /-- If `α` is commutative, `zmultiplesHom` is an additive equivalence. -/
-def zmultiplesAddHom : α ≃+ (ℤ →+ α) :=
-  { zmultiplesHom α with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [zsmul_add] }
+def zmultiplesAddHom : β ≃+ (ℤ →+ β) :=
+  { zmultiplesHom β with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [zsmul_add] }
 
 /-- If `α` is commutative, `zpowersHom` is a multiplicative equivalence. -/
 def zpowersMulHom : α ≃* (Multiplicative ℤ →* α) :=
@@ -341,9 +331,9 @@ lemma zpowersMulHom_apply (x : α) (n : Multiplicative ℤ) : zpowersMulHom α x
 lemma zpowersMulHom_symm_apply (f : Multiplicative ℤ →* α) :
     (zpowersMulHom α).symm f = f (ofAdd 1) := rfl
 
-@[simp] lemma zmultiplesAddHom_apply (x : α) (n : ℤ) : zmultiplesAddHom α x n = n • x := rfl
+@[simp] lemma zmultiplesAddHom_apply (x : β) (n : ℤ) : zmultiplesAddHom β x n = n • x := rfl
 
-@[simp] lemma zmultiplesAddHom_symm_apply (f : ℤ →+ α) : (zmultiplesAddHom α).symm f = f 1 := rfl
+@[simp] lemma zmultiplesAddHom_symm_apply (f : ℤ →+ β) : (zmultiplesAddHom β).symm f = f 1 := rfl
 
 end CommGroup
 

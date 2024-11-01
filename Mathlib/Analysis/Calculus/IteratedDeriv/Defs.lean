@@ -40,16 +40,13 @@ by translating the corresponding result `iteratedFDerivWithin_succ_apply_left` f
 iterated Fréchet derivative.
 -/
 
-
 noncomputable section
 
-open scoped Classical Topology
-
+open scoped Topology
 open Filter Asymptotics Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- The `n`-th iterated derivative of a function from `𝕜` to `F`, as a function from `𝕜` to `F`. -/
 def iteratedDeriv (n : ℕ) (f : 𝕜 → F) (x : 𝕜) : F :=
@@ -84,7 +81,7 @@ iterated derivative. -/
 theorem iteratedFDerivWithin_eq_equiv_comp :
     iteratedFDerivWithin 𝕜 n f s =
       ContinuousMultilinearMap.piFieldEquiv 𝕜 (Fin n) F ∘ iteratedDerivWithin n f s := by
-  rw [iteratedDerivWithin_eq_equiv_comp, ← Function.comp.assoc, LinearIsometryEquiv.self_comp_symm,
+  rw [iteratedDerivWithin_eq_equiv_comp, ← Function.comp_assoc, LinearIsometryEquiv.self_comp_symm,
     Function.id_comp]
 
 /-- The `n`-th Fréchet derivative applied to a vector `(m 0, ..., m (n-1))` is the derivative
@@ -168,7 +165,7 @@ theorem iteratedDerivWithin_succ {x : 𝕜} (hxs : UniqueDiffWithinAt 𝕜 s x) 
   rw [iteratedDerivWithin_eq_iteratedFDerivWithin, iteratedFDerivWithin_succ_apply_left,
     iteratedFDerivWithin_eq_equiv_comp, LinearIsometryEquiv.comp_fderivWithin _ hxs, derivWithin]
   change ((ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) ((fderivWithin 𝕜
-    (iteratedDerivWithin n f s) s x : 𝕜 → F) 1) : (Fin n → 𝕜) → F) fun i : Fin n => 1) =
+    (iteratedDerivWithin n f s) s x : 𝕜 → F) 1) : (Fin n → 𝕜) → F) fun _ : Fin n => 1) =
     (fderivWithin 𝕜 (iteratedDerivWithin n f s) s x : 𝕜 → F) 1
   simp
 
@@ -176,9 +173,10 @@ theorem iteratedDerivWithin_succ {x : 𝕜} (hxs : UniqueDiffWithinAt 𝕜 s x) 
 iterating `n` times the differentiation operation. -/
 theorem iteratedDerivWithin_eq_iterate {x : 𝕜} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedDerivWithin n f s x = (fun g : 𝕜 → F => derivWithin g s)^[n] f x := by
-  induction' n with n IH generalizing x
-  · simp
-  · rw [iteratedDerivWithin_succ (hs x hx), Function.iterate_succ']
+  induction n generalizing x with
+  | zero => simp
+  | succ n IH =>
+    rw [iteratedDerivWithin_succ (hs x hx), Function.iterate_succ']
     exact derivWithin_congr (fun y hy => IH hy) (IH hx)
 
 /-- The `n+1`-th iterated derivative within a set with unique derivatives can be obtained by
@@ -204,7 +202,7 @@ theorem iteratedDeriv_eq_equiv_comp : iteratedDeriv n f =
 iterated derivative. -/
 theorem iteratedFDeriv_eq_equiv_comp : iteratedFDeriv 𝕜 n f =
     ContinuousMultilinearMap.piFieldEquiv 𝕜 (Fin n) F ∘ iteratedDeriv n f := by
-  rw [iteratedDeriv_eq_equiv_comp, ← Function.comp.assoc, LinearIsometryEquiv.self_comp_symm,
+  rw [iteratedDeriv_eq_equiv_comp, ← Function.comp_assoc, LinearIsometryEquiv.self_comp_symm,
     Function.id_comp]
 
 /-- The `n`-th Fréchet derivative applied to a vector `(m 0, ..., m (n-1))` is the derivative

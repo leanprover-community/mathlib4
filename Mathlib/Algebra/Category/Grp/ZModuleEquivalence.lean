@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 
@@ -27,7 +27,7 @@ namespace ModuleCat
 instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGrp.{u}).Full where
   map_surjective {A B}
     -- `AddMonoidHom.toIntLinearMap` doesn't work here because `A` and `B` are not
-    -- definitionally equal to the canonical `AddCommGroup.intModule` module
+    -- definitionally equal to the canonical `AddCommGroup.toIntModule` module
     -- instances it expects.
     f := ⟨@LinearMap.mk _ _ _ _ _ _ _ _ _ A.isModule B.isModule
         { toFun := f,

@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.Copy
 
@@ -75,6 +75,9 @@ instance : SetLike (Opens α) α where
 instance : CanLift (Set α) (Opens α) (↑) IsOpen :=
   ⟨fun s h => ⟨⟨s, h⟩, rfl⟩⟩
 
+instance instSecondCountableOpens [SecondCountableTopology α] (U : Opens α) :
+    SecondCountableTopology U := inferInstanceAs (SecondCountableTopology U.1)
+
 theorem «forall» {p : Opens α → Prop} : (∀ U, p U) ↔ ∀ (U : Set α) (hU : IsOpen U), p ⟨U, hU⟩ :=
   ⟨fun h _ _ => h _, fun h _ => h _ _⟩
 
@@ -104,6 +107,9 @@ theorem ext {U V : Opens α} (h : (U : Set α) = V) : U = V :=
 theorem coe_inj {U V : Opens α} : (U : Set α) = V ↔ U = V :=
   SetLike.ext'_iff.symm
 
+/-- A version of `Set.inclusion` not requiring definitional abuse -/
+abbrev inclusion {U V : Opens α} (h : U ≤ V) : U → V := Set.inclusion h
+
 protected theorem isOpen (U : Opens α) : IsOpen (U : Set α) :=
   U.is_open'
 
@@ -115,14 +121,18 @@ def Simps.coe (U : Opens α) : Set α := U
 initialize_simps_projections Opens (carrier → coe)
 
 /-- The interior of a set, as an element of `Opens`. -/
-nonrec def interior (s : Set α) : Opens α :=
+@[simps]
+protected def interior (s : Set α) : Opens α :=
   ⟨interior s, isOpen_interior⟩
 
-theorem gc : GaloisConnection ((↑) : Opens α → Set α) interior := fun U _ =>
+@[simp]
+theorem mem_interior {s : Set α} {x : α} : x ∈ Opens.interior s ↔ x ∈ _root_.interior s := .rfl
+
+theorem gc : GaloisConnection ((↑) : Opens α → Set α) Opens.interior := fun U _ =>
   ⟨fun h => interior_maximal h U.isOpen, fun h => le_trans h interior_subset⟩
 
 /-- The galois coinsertion between sets and opens. -/
-def gi : GaloisCoinsertion (↑) (@interior α _) where
+def gi : GaloisCoinsertion (↑) (@Opens.interior α _) where
   choice s hs := ⟨s, interior_eq_iff_isOpen.mp <| le_antisymm interior_subset hs⟩
   gc := gc
   u_l_le _ := interior_subset
@@ -233,15 +243,21 @@ def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
 
 instance instFrame : Frame (Opens α) := .ofMinimalAxioms frameMinimalAxioms
 
-theorem openEmbedding' (U : Opens α) : OpenEmbedding (Subtype.val : U → α) :=
-  U.isOpen.openEmbedding_subtype_val
+theorem isOpenEmbedding' (U : Opens α) : IsOpenEmbedding (Subtype.val : U → α) :=
+  U.isOpen.isOpenEmbedding_subtypeVal
 
-theorem openEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
-    OpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) :=
-  { toEmbedding := embedding_inclusion i
-    isOpen_range := by
-      rw [Set.range_inclusion i]
-      exact U.isOpen.preimage continuous_subtype_val }
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding' := isOpenEmbedding'
+
+theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
+    IsOpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) where
+  toIsEmbedding := .inclusion i
+  isOpen_range := by
+    rw [Set.range_inclusion i]
+    exact U.isOpen.preimage continuous_subtype_val
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_of_le := isOpenEmbedding_of_le
 
 theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔ U = ⊥ := by
   rw [← coe_inj, coe_bot, ← Set.not_nonempty_iff_eq_empty]
@@ -333,7 +349,7 @@ theorem isCompactElement_iff (s : Opens α) :
 def comap (f : C(α, β)) : FrameHom (Opens β) (Opens α) where
   toFun s := ⟨f ⁻¹' s, s.2.preimage f.continuous⟩
   map_sSup' s := ext <| by simp only [coe_sSup, preimage_iUnion, biUnion_image, coe_mk]
-  map_inf' a b := rfl
+  map_inf' _ _ := rfl
   map_top' := rfl
 
 @[simp]
@@ -346,6 +362,9 @@ theorem comap_mono (f : C(α, β)) {s t : Opens β} (h : s ≤ t) : comap f s �
 @[simp]
 theorem coe_comap (f : C(α, β)) (U : Opens β) : ↑(comap f U) = f ⁻¹' U :=
   rfl
+
+@[simp]
+theorem mem_comap {f : C(α, β)} {U : Opens β} {x : α} : x ∈ comap f U ↔ f x ∈ U := .rfl
 
 protected theorem comap_comp (g : C(β, γ)) (f : C(α, β)) :
     comap (g.comp f) = (comap f).comp (comap g) :=
@@ -366,10 +385,10 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
 /-- A homeomorphism induces an order-preserving equivalence on open sets, by taking comaps. -/
 @[simps (config := .asFn) apply]
 def _root_.Homeomorph.opensCongr (f : α ≃ₜ β) : Opens α ≃o Opens β where
-  toFun := Opens.comap f.symm.toContinuousMap
-  invFun := Opens.comap f.toContinuousMap
-  left_inv := fun U => ext <| f.toEquiv.preimage_symm_preimage _
-  right_inv := fun U => ext <| f.toEquiv.symm_preimage_preimage _
+  toFun := Opens.comap (f.symm : C(β, α))
+  invFun := Opens.comap (f : C(α, β))
+  left_inv _ := ext <| f.toEquiv.preimage_symm_preimage _
+  right_inv _ := ext <| f.toEquiv.symm_preimage_preimage _
   map_rel_iff' := by
     simp only [← SetLike.coe_subset_coe]; exact f.symm.surjective.preimage_subset_preimage_iff
 

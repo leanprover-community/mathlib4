@@ -3,8 +3,9 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Jireh Loreaux
 -/
-import Mathlib.GroupTheory.Subsemigroup.Center
 import Mathlib.Algebra.Group.Center
+import Mathlib.Algebra.Group.Subsemigroup.Basic
+import Mathlib.GroupTheory.Subsemigroup.Center
 
 /-!
 # Centralizers in semigroups, as subsemigroups.
@@ -18,6 +19,8 @@ We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`
 `AddSubgroup.centralizer` in other files.
 -/
 
+-- Guard against import creep
+assert_not_exists Finset
 
 variable {M : Type*} {S T : Set M}
 namespace Subsemigroup
@@ -67,6 +70,3 @@ theorem centralizer_univ : centralizer Set.univ = center M :=
 end
 
 end Subsemigroup
-
--- Guard against import creep
-assert_not_exists Finset

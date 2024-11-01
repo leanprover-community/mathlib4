@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot, Eric Wieser, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
@@ -114,7 +115,7 @@ theorem exists_norm_eq {c : ℝ} (hc : 0 ≤ c) : ∃ x : E, ‖x‖ = c := by
   rcases exists_ne (0 : E) with ⟨x, hx⟩
   rw [← norm_ne_zero_iff] at hx
   use c • ‖x‖⁻¹ • x
-  simp [norm_smul, Real.norm_of_nonneg hc, abs_of_nonneg hc, inv_mul_cancel hx]
+  simp [norm_smul, Real.norm_of_nonneg hc, abs_of_nonneg hc, inv_mul_cancel₀ hx]
 
 @[simp]
 theorem range_norm : range (norm : E → ℝ) = Ici 0 :=

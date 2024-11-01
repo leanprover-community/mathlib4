@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
+import Mathlib.Tactic.Bound.Attribute
 
 /-!
 # Basic lemmas about ordered rings
@@ -20,7 +21,7 @@ variable {α M R : Type*}
 
 namespace MonoidHom
 
-variable [Ring R] [Monoid M] [LinearOrder M] [CovariantClass M M (· * ·) (· ≤ ·)] (f : R →* M)
+variable [Ring R] [Monoid M] [LinearOrder M] [MulLeftMono M] (f : R →* M)
 
 theorem map_neg_one : f (-1) = 1 :=
   (pow_eq_one_iff (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]
@@ -36,15 +37,12 @@ section OrderedSemiring
 
 variable [OrderedSemiring R] {a b x y : R} {n m : ℕ}
 
-theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
-  | 0 => (pow_zero _).le
-  | n + 1 => by rw [zero_pow n.succ_ne_zero]; exact zero_le_one
-
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
   rcases Nat.exists_eq_add_one_of_ne_zero hn with ⟨k, rfl⟩
-  induction' k with k ih
-  · simp only [zero_add, pow_one, le_refl]
-  · let n := k.succ
+  induction k with
+  | zero => simp only [zero_add, pow_one, le_refl]
+  | succ k ih =>
+    let n := k.succ
     have h1 := add_nonneg (mul_nonneg hx (pow_nonneg hy n)) (mul_nonneg hy (pow_nonneg hx n))
     have h2 := add_nonneg hx hy
     calc
@@ -58,58 +56,56 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
         rw [pow_succ' _ n]
         exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
 
-theorem pow_le_one : ∀ n : ℕ, 0 ≤ a → a ≤ 1 → a ^ n ≤ 1
-  | 0, _, _ => (pow_zero a).le
-  | n + 1, h₀, h₁ => (pow_succ a n).le.trans (mul_le_one (pow_le_one n h₀ h₁) h₀ h₁)
+attribute [bound] pow_le_one₀ one_le_pow₀
 
-theorem pow_lt_one (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < 1
-  | 0, h => (h rfl).elim
-  | n + 1, _ => by
-    rw [pow_succ']
-    exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one _ h₀ h₁.le)
+@[deprecated (since := "2024-09-28")] alias mul_le_one := mul_le_one₀
+@[deprecated (since := "2024-09-28")] alias pow_le_one := pow_le_one₀
+@[deprecated (since := "2024-09-28")] alias pow_lt_one := pow_lt_one₀
+@[deprecated (since := "2024-09-28")] alias one_le_pow_of_one_le := one_le_pow₀
+@[deprecated (since := "2024-09-28")] alias one_lt_pow := one_lt_pow₀
+@[deprecated (since := "2024-10-04")] alias pow_right_mono := pow_right_mono₀
+@[deprecated (since := "2024-10-04")] alias pow_le_pow_right := pow_le_pow_right₀
+@[deprecated (since := "2024-10-04")] alias le_self_pow := le_self_pow₀
 
-theorem one_le_pow_of_one_le (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
-  | 0 => by rw [pow_zero]
-  | n + 1 => by
-    rw [pow_succ']
-    simpa only [mul_one] using
-      mul_le_mul H (one_le_pow_of_one_le H n) zero_le_one (le_trans zero_le_one H)
+/-- The `bound` tactic can't handle `m ≠ 0` goals yet, so we express as `0 < m` -/
+@[bound]
+lemma Bound.le_self_pow_of_pos {m : ℕ} (ha : 1 ≤ a) (h : 0 < m) : a ≤ a ^ m :=
+  le_self_pow₀ ha h.ne'
 
-theorem pow_right_mono (h : 1 ≤ a) : Monotone (a ^ ·) :=
-  monotone_nat_of_le_succ fun n => by
-    rw [pow_succ']
-    exact le_mul_of_one_le_left (pow_nonneg (zero_le_one.trans h) _) h
-
-@[gcongr]
-theorem pow_le_pow_right (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m := pow_right_mono ha h
-
-theorem le_self_pow (ha : 1 ≤ a) (h : m ≠ 0) : a ≤ a ^ m := by
-  simpa only [pow_one] using pow_le_pow_right ha <| Nat.pos_iff_ne_zero.2 h
-
-@[mono, gcongr]
+@[mono, gcongr, bound]
 theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n
   | 0 => by simp
   | n + 1 => by simpa only [pow_succ']
       using mul_le_mul hab (pow_le_pow_left ha hab _) (pow_nonneg ha _) (ha.trans hab)
-
-theorem one_lt_pow (ha : 1 < a) : ∀ {n : ℕ} (_ : n ≠ 0), 1 < a ^ n
-  | 0, h => (h rfl).elim
-  | n + 1, _ => by
-    rw [pow_succ']
-    exact one_lt_mul_of_lt_of_le ha (one_le_pow_of_one_le ha.le _)
 
 lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a + b) ^ n := by
   rw [two_mul]
   exact add_le_add (pow_le_pow_left ha (le_add_of_nonneg_right hb) _)
     (pow_le_pow_left hb (le_add_of_nonneg_left ha) _)
 
+/-- `bound` lemma for branching on `1 ≤ a ∨ a ≤ 1` when proving `a ^ n ≤ a ^ m` -/
+@[bound]
+lemma Bound.pow_le_pow_right_of_le_one_or_one_le (h : 1 ≤ a ∧ n ≤ m ∨ 0 ≤ a ∧ a ≤ 1 ∧ m ≤ n) :
+    a ^ n ≤ a ^ m := by
+  rcases h with ⟨a1, nm⟩ | ⟨a0, a1, mn⟩
+  · exact pow_right_mono₀ a1 nm
+  · exact pow_le_pow_of_le_one a0 a1 mn
+
 end OrderedSemiring
+
+-- See note [reducible non instances]
+/-- Turn an ordered domain into a strict ordered ring. -/
+abbrev OrderedRing.toStrictOrderedRing (α : Type*)
+    [OrderedRing α] [NoZeroDivisors α] [Nontrivial α] : StrictOrderedRing α where
+  __ := ‹OrderedRing α›
+  __ := ‹NoZeroDivisors α›
+  mul_pos _ _ ap bp := (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
 
 section StrictOrderedSemiring
 
 variable [StrictOrderedSemiring R] {a x y : R} {n m : ℕ}
 
-@[gcongr]
+@[gcongr, bound]
 theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → x ^ n < y ^ n
   | 0, hn => by contradiction
   | n + 1, _ => by
@@ -253,12 +249,12 @@ lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n -
     rw [pow_succ]
     calc
       _ ≤ 2 ^ n * (a ^ (n + 1) + b ^ (n + 1)) * (a + b) :=
-          mul_le_mul_of_nonneg_right (add_pow_le ha hb (n + 1)) $ add_nonneg ha hb
+          mul_le_mul_of_nonneg_right (add_pow_le ha hb (n + 1)) <| add_nonneg ha hb
       _ = 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * b + b ^ (n + 1) * a)) := by
           rw [mul_assoc, mul_add, add_mul, add_mul, ← pow_succ, ← pow_succ, add_comm _ (b ^ _),
             add_add_add_comm, add_comm (_ * a)]
       _ ≤ 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * a + b ^ (n + 1) * b)) :=
-          mul_le_mul_of_nonneg_left (add_le_add_left ?_ _) $ pow_nonneg (zero_le_two (α := R)) _
+          mul_le_mul_of_nonneg_left (add_le_add_left ?_ _) <| pow_nonneg (zero_le_two (α := R)) _
       _ = _ := by simp only [← pow_succ, ← two_mul, ← mul_assoc]; rfl
     · obtain hab | hba := le_total a b
       · exact mul_add_mul_le_mul_add_mul (pow_le_pow_left ha hab _) hab
@@ -273,7 +269,7 @@ protected lemma Even.add_pow_le (hn : Even n) :
     _ = 2 ^ n * (a ^ 2 + b ^ 2) ^ n := by -- TODO: Should be `Nat.cast_commute`
         rw [Commute.mul_pow]; simp [Commute, SemiconjBy, two_mul, mul_two]
     _ ≤ 2 ^ n * (2 ^ (n - 1) * ((a ^ 2) ^ n + (b ^ 2) ^ n)) := mul_le_mul_of_nonneg_left
-          (add_pow_le (sq_nonneg _) (sq_nonneg _) _) $ pow_nonneg (zero_le_two (α := R)) _
+          (add_pow_le (sq_nonneg _) (sq_nonneg _) _) <| pow_nonneg (zero_le_two (α := R)) _
     _ = _ := by
       simp only [← mul_assoc, ← pow_add, ← pow_mul]
       cases n
@@ -336,36 +332,3 @@ lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
   (pow_mul a 2 2).symm ▸ pow_le_pow_left (sq_nonneg a) h 2
 
 end LinearOrderedSemiring
-
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023-12-23.
--/
-
-@[deprecated (since := "2023-12-23")] alias pow_mono := pow_right_mono
-@[deprecated (since := "2023-12-23")] alias pow_le_pow := pow_le_pow_right
-@[deprecated (since := "2023-12-23")] alias pow_le_pow_of_le_left := pow_le_pow_left
-@[deprecated (since := "2023-12-23")] alias pow_lt_pow_of_lt_left := pow_lt_pow_left
-@[deprecated (since := "2023-12-23")] alias strictMonoOn_pow := pow_left_strictMonoOn
-@[deprecated (since := "2023-12-23")] alias pow_strictMono_right := pow_right_strictMono
-@[deprecated (since := "2023-12-23")] alias pow_lt_pow := pow_lt_pow_right
-@[deprecated (since := "2023-12-23")] alias pow_lt_pow_iff := pow_lt_pow_iff_right
-@[deprecated (since := "2023-12-23")] alias pow_le_pow_iff := pow_le_pow_iff_right
-@[deprecated (since := "2023-12-23")] alias self_lt_pow := lt_self_pow
-@[deprecated (since := "2023-12-23")] alias strictAnti_pow := pow_right_strictAnti
-
-@[deprecated (since := "2023-12-23")]
-alias pow_lt_pow_iff_of_lt_one := pow_lt_pow_iff_right_of_lt_one
-
-@[deprecated (since := "2023-12-23")] alias pow_lt_pow_of_lt_one := pow_lt_pow_right_of_lt_one
-@[deprecated (since := "2023-12-23")] alias lt_of_pow_lt_pow := lt_of_pow_lt_pow_left
-@[deprecated (since := "2023-12-23")] alias le_of_pow_le_pow := le_of_pow_le_pow_left
-@[deprecated (since := "2023-12-23")] alias self_le_pow := le_self_pow
-@[deprecated (since := "2023-12-23")] alias Nat.pow_lt_pow_of_lt_right := pow_lt_pow_right
-
-@[deprecated (since := "2023-12-23")]
-protected alias Nat.pow_right_strictMono := pow_right_strictMono
-
-@[deprecated (since := "2023-12-23")] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right
-@[deprecated (since := "2023-12-23")] alias Nat.pow_lt_iff_lt_right := pow_lt_pow_iff_right

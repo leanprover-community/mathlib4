@@ -99,7 +99,7 @@ theorem closure_mul_image_eq (hR : R ∈ rightTransversals (H : Set G)) (hR1 : (
   suffices (⟨r, hr⟩ : R) = (⟨1, hR1⟩ : R) by
     simpa only [show r = 1 from Subtype.ext_iff.mp this, mul_one]
   apply (mem_rightTransversals_iff_existsUnique_mul_inv_mem.mp hR r).unique
-  · rw [Subtype.coe_mk, mul_inv_self]
+  · rw [Subtype.coe_mk, mul_inv_cancel]
     exact H.one_mem
   · rw [Subtype.coe_mk, inv_one, mul_one]
     exact (H.mul_mem_cancel_left (hU hg)).mp hh

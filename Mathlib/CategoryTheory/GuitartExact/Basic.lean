@@ -70,7 +70,7 @@ variable {T L R B}
 @[ext]
 lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.app X = w'.app X) :
     w = w' :=
-  NatTrans.ext _ _ (funext h)
+  NatTrans.ext (funext h)
 
 variable (w : TwoSquare T L R B)
 
@@ -215,8 +215,8 @@ def costructuredArrowDownwardsPrecomp
     dsimp
     rw [← CostructuredArrow.w φ, structuredArrowDownwards_map]
     rfl)
-  map_id A := rfl
-  map_comp φ φ' := rfl
+  map_id _ := rfl
+  map_comp _ _ := rfl
 
 end
 

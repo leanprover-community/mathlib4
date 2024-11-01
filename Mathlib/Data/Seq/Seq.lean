@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Seq.Computation
-import Batteries.Data.LazyList
 
 /-!
 # Possibly infinite lists
@@ -127,7 +126,7 @@ def tail (s : Seq α) : Seq α :=
     exact al n'⟩
 
 /-- member definition for `Seq`-/
-protected def Mem (a : α) (s : Seq α) :=
+protected def Mem (s : Seq α) (a : α) :=
   some a ∈ s.1
 
 instance : Membership α (Seq α) :=
@@ -160,7 +159,7 @@ theorem mem_cons_of_mem (y : α) {a : α} : ∀ {s : Seq α}, a ∈ s → a ∈ 
   | ⟨_, _⟩ => Stream'.mem_cons_of_mem (some y)
 
 theorem eq_or_mem_of_mem_cons {a b : α} : ∀ {s : Seq α}, a ∈ cons b s → a = b ∨ a ∈ s
-  | ⟨f, al⟩, h => (Stream'.eq_or_mem_of_mem_cons h).imp_left fun h => by injection h
+  | ⟨_, _⟩, h => (Stream'.eq_or_mem_of_mem_cons h).imp_left fun h => by injection h
 
 @[simp]
 theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a ∈ s :=
@@ -259,7 +258,7 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     rw [h_eq] at e
     apply h1 _ _ (Or.inr (IH e))
 
-/-- Corecursor over pairs of `Option` values-/
+/-- Corecursor over pairs of `Option` values -/
 def Corec.f (f : β → Option (α × β)) : Option β → Option α × Option β
   | none => (none, none)
   | some b =>
@@ -316,8 +315,9 @@ def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
   | _, _ => False
 
 attribute [simp] BisimO
+attribute [nolint simpNF] BisimO.eq_3
 
-/-- a relation is bisimilar if it meets the `BisimO` test-/
+/-- a relation is bisimilar if it meets the `BisimO` test -/
 def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ → BisimO R (destruct s₁) (destruct s₂)
 
@@ -402,42 +402,39 @@ def ofStream (s : Stream' α) : Seq α :=
 instance coeStream : Coe (Stream' α) (Seq α) :=
   ⟨ofStream⟩
 
-section LazyList
+section MLList
 
-set_option linter.deprecated false
-
-/-- Embed a `LazyList α` as a sequence. Note that even though this
+/-- Embed a `MLList α` as a sequence. Note that even though this
   is non-meta, it will produce infinite sequences if used with
-  cyclic `LazyList`s created by meta constructions. -/
-@[deprecated (since := "2024-07-22")]
-def ofLazyList : LazyList α → Seq α :=
+  cyclic `MLList`s created by meta constructions. -/
+def ofMLList : MLList Id α → Seq α :=
   corec fun l =>
-    match l with
-    | LazyList.nil => none
-    | LazyList.cons a l' => some (a, l'.get)
+    match l.uncons with
+    | .none => none
+    | .some (a, l') => some (a, l')
 
-@[deprecated (since := "2024-07-22")]
-instance coeLazyList : Coe (LazyList α) (Seq α) :=
-  ⟨ofLazyList⟩
+@[deprecated (since := "2024-07-26")] alias ofLazyList := ofMLList
 
-/-- Translate a sequence into a `LazyList`. Since `LazyList` and `List`
-  are isomorphic as non-meta types, this function is necessarily meta. -/
-@[deprecated (since := "2024-07-22")]
-unsafe def toLazyList : Seq α → LazyList α
+instance coeMLList : Coe (MLList Id α) (Seq α) :=
+  ⟨ofMLList⟩
+
+@[deprecated (since := "2024-07-26")] alias coeLazyList := coeMLList
+
+/-- Translate a sequence into a `MLList`. -/
+unsafe def toMLList : Seq α → MLList Id α
   | s =>
     match destruct s with
-    | none => LazyList.nil
-    | some (a, s') => LazyList.cons a (toLazyList s')
+    | none => .nil
+    | some (a, s') => .cons a (toMLList s')
 
-end LazyList
+@[deprecated (since := "2024-07-26")] alias toLazyList := toMLList
+
+end MLList
 
 /-- Translate a sequence to a list. This function will run forever if
   run on an infinite sequence. -/
-unsafe def forceToList : Seq α → List α
-  | s =>
-    match destruct s with
-    | none => []
-    | some (a, s') => a :: forceToList s'
+unsafe def forceToList (s : Seq α) : List α :=
+  (toMLList s).force
 
 /-- The sequence of natural numbers some 0, some 1, ... -/
 def nats : Seq ℕ :=
@@ -514,8 +511,6 @@ section ZipWith
 def zipWith (f : α → β → γ) (s₁ : Seq α) (s₂ : Seq β) : Seq γ :=
   ⟨fun n => Option.map₂ f (s₁.get? n) (s₂.get? n), fun {_} hn =>
     Option.map₂_eq_none_iff.2 <| (Option.map₂_eq_none_iff.1 hn).imp s₁.2 s₂.2⟩
-
-variable {s : Seq α} {s' : Seq β} {n : ℕ}
 
 @[simp]
 theorem get?_zipWith (f : α → β → γ) (s s' n) :

@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Prime.Int
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Divisibility over ℕ and ℤ
@@ -138,7 +138,7 @@ alias eq_pow_of_mul_eq_pow_bit1_left := eq_pow_of_mul_eq_pow_odd_left
 
 theorem eq_pow_of_mul_eq_pow_odd_right {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
     (h : a * b = c ^ k) : ∃ d, b = d ^ k :=
-  eq_pow_of_mul_eq_pow_odd_left hab.symm hk (by rwa [mul_comm] at h)
+  eq_pow_of_mul_eq_pow_odd_left (c := c) hab.symm hk (by rwa [mul_comm] at h)
 
 @[deprecated (since := "2024-07-12")]
 alias eq_pow_of_mul_eq_pow_bit1_right := eq_pow_of_mul_eq_pow_odd_right

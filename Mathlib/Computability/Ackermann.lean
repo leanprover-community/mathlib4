@@ -3,7 +3,6 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Computability.Primrec
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
@@ -75,26 +74,26 @@ theorem ack_succ_succ (m n : ℕ) : ack (m + 1) (n + 1) = ack m (ack (m + 1) n) 
 @[simp]
 theorem ack_one (n : ℕ) : ack 1 n = n + 2 := by
   induction' n with n IH
-  · rfl
+  · simp
   · simp [IH]
 
 @[simp]
 theorem ack_two (n : ℕ) : ack 2 n = 2 * n + 3 := by
   induction' n with n IH
-  · rfl
+  · simp
   · simpa [mul_succ]
 
 -- Porting note: re-written to get rid of ack_three_aux
 @[simp]
 theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
   induction' n with n IH
-  · rfl
+  · simp
   · rw [ack_succ_succ, IH, ack_two, Nat.succ_add, Nat.pow_succ 2 (n + 3), mul_comm _ 2,
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
     have H : 2 * 3 ≤ 2 * 2 ^ 3 := by norm_num
     apply H.trans
     rw [_root_.mul_le_mul_left two_pos]
-    exact pow_le_pow_right one_le_two (Nat.le_add_left 3 n)
+    exact pow_right_mono₀ one_le_two (Nat.le_add_left 3 n)
 
 theorem ack_pos : ∀ m n, 0 < ack m n
   | 0, n => by simp
@@ -176,7 +175,7 @@ theorem lt_ack_right (m n : ℕ) : n < ack m n :=
 
 -- we reorder the arguments to appease the equation compiler
 private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack m₁ n < ack m₂ n
-  | m, 0, n => fun h => (not_lt_zero m h).elim
+  | m, 0, _ => fun h => (not_lt_zero m h).elim
   | 0, m + 1, 0 => fun _h => by simpa using one_lt_ack_succ_right m 0
   | 0, m + 1, n + 1 => fun h => by
     rw [ack_zero, ack_succ_succ]

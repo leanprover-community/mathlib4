@@ -16,7 +16,7 @@ import Mathlib.Order.Hom.Basic
 
 assert_not_exists OrderedCommMonoid
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Nat
 
@@ -26,7 +26,7 @@ we use a generic collection of instances so that it applies in other settings (e
 `StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
 
 variable [AddMonoidWithOne α] [PartialOrder α]
-variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
+variable [AddLeftMono α] [ZeroLEOneClass α]
 
 @[mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
@@ -69,6 +69,9 @@ variable [CharZero α] {m n : ℕ}
 theorem strictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
   mono_cast.strictMono_of_injective cast_injective
 
+@[gcongr]
+lemma _root_.GCongr.natCast_lt_natCast {a b : ℕ} (h : a < b) : (a : α) < b := strictMono_cast h
+
 /-- `Nat.cast : ℕ → α` as an `OrderEmbedding` -/
 @[simps! (config := .asFn)]
 def castOrderEmbedding : ℕ ↪o α :=
@@ -95,25 +98,8 @@ theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by
 @[simp, norm_cast]
 theorem cast_le_one : (n : α) ≤ 1 ↔ n ≤ 1 := by rw [← cast_one, cast_le]
 
-variable [m.AtLeastTwo] [n.AtLeastTwo]
-
--- TODO: These lemmas need to be `@[simp]` for confluence in the presence of `cast_lt`, `cast_le`,
--- and `Nat.cast_ofNat`, but their LHSs match literally every inequality, so they're too expensive.
--- If lean4#2867 is fixed in a performant way, these can be made `@[simp]`.
-
--- See note [no_index around OfNat.ofNat]
--- @[simp]
-theorem ofNat_le :
-    (no_index (OfNat.ofNat m : α)) ≤ (no_index (OfNat.ofNat n)) ↔
-      (OfNat.ofNat m : ℕ) ≤ OfNat.ofNat n :=
-  cast_le
-
--- See note [no_index around OfNat.ofNat]
--- @[simp]
-theorem ofNat_lt :
-    (no_index (OfNat.ofNat m : α)) < (no_index (OfNat.ofNat n)) ↔
-      (OfNat.ofNat m : ℕ) < OfNat.ofNat n :=
-  cast_lt
+section
+variable [m.AtLeastTwo]
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
@@ -124,6 +110,10 @@ theorem ofNat_le_cast : (no_index (OfNat.ofNat m : α)) ≤ n ↔ (OfNat.ofNat m
 @[simp]
 theorem ofNat_lt_cast : (no_index (OfNat.ofNat m : α)) < n ↔ (OfNat.ofNat m : ℕ) < n :=
   cast_lt
+
+end
+
+variable [n.AtLeastTwo]
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
@@ -155,6 +145,26 @@ theorem not_ofNat_le_one : ¬(no_index (OfNat.ofNat n : α)) ≤ 1 :=
 theorem not_ofNat_lt_one : ¬(no_index (OfNat.ofNat n : α)) < 1 :=
   mt le_of_lt not_ofNat_le_one
 
+variable [m.AtLeastTwo]
+
+-- TODO: These lemmas need to be `@[simp]` for confluence in the presence of `cast_lt`, `cast_le`,
+-- and `Nat.cast_ofNat`, but their LHSs match literally every inequality, so they're too expensive.
+-- If lean4#2867 is fixed in a performant way, these can be made `@[simp]`.
+
+-- See note [no_index around OfNat.ofNat]
+-- @[simp]
+theorem ofNat_le :
+    (no_index (OfNat.ofNat m : α)) ≤ (no_index (OfNat.ofNat n)) ↔
+      (OfNat.ofNat m : ℕ) ≤ OfNat.ofNat n :=
+  cast_le
+
+-- See note [no_index around OfNat.ofNat]
+-- @[simp]
+theorem ofNat_lt :
+    (no_index (OfNat.ofNat m : α)) < (no_index (OfNat.ofNat n)) ↔
+      (OfNat.ofNat m : ℕ) < OfNat.ofNat n :=
+  cast_lt
+
 end OrderedSemiring
 
 end Nat
@@ -166,7 +176,7 @@ section RingHomClass
 
 variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S] [FunLike F R S]
 
-theorem NeZero.nat_of_injective {n : ℕ} [h : NeZero (n : R)] [RingHomClass F R S] {f : F}
+theorem NeZero.nat_of_injective {n : ℕ} [NeZero (n : R)] [RingHomClass F R S] {f : F}
     (hf : Function.Injective f) : NeZero (n : S) :=
   ⟨fun h ↦ NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f]⟩
 

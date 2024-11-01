@@ -3,6 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 
 /-!
@@ -192,7 +193,7 @@ theorem midpoint_eq_smul_add (x y : V) : midpoint R x y = (⅟ 2 : R) • (x + y
 
 @[simp]
 theorem midpoint_self_neg (x : V) : midpoint R x (-x) = 0 := by
-  rw [midpoint_eq_smul_add, add_neg_self, smul_zero]
+  rw [midpoint_eq_smul_add, add_neg_cancel, smul_zero]
 
 @[simp]
 theorem midpoint_neg_self (x : V) : midpoint R (-x) x = 0 := by simpa using midpoint_self_neg R (-x)

@@ -85,9 +85,6 @@ instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
 @[instance] abbrev Equiv.Perm.coeEmbedding : Coe (Equiv.Perm α) (α ↪ α) :=
   Equiv.coeEmbedding
 
--- Porting note : `theorem Equiv.coe_eq_to_embedding : ↑f = f.toEmbedding` is a
--- syntactic tautology in Lean 4
-
 end Equiv
 
 namespace Function
@@ -104,10 +101,6 @@ theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
 instance {α β : Sort*} [IsEmpty α] : Unique (α ↪ β) where
   default := ⟨isEmptyElim, Function.injective_of_subsingleton _⟩
   uniq := by intro; ext v; exact isEmptyElim v
-
--- Porting note : in Lean 3 `DFunLike.ext_iff.symm` works
-theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
-  Iff.symm (DFunLike.ext_iff)
 
 @[simp]
 theorem toFun_eq_coe {α β} (f : α ↪ β) : toFun f = f :=
@@ -186,6 +179,15 @@ theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable
 theorem setValue_eq_iff {α β} (f : α ↪ β) {a a' : α} {b : β} [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : setValue f a b a' = b ↔ a' = a :=
   (setValue f a b).injective.eq_iff' <| setValue_eq ..
+
+lemma setValue_eq_of_ne {α β} {f : α ↪ β} {a : α} {b : β} {c : α} [∀ a', Decidable (a' = a)]
+    [∀ a', Decidable (f a' = b)] (hc : c ≠ a) (hb : f c ≠ b) : setValue f a b c = f c := by
+  simp [setValue, hc, hb]
+
+@[simp]
+lemma setValue_right_apply_eq {α β} (f : α ↪ β) (a c : α) [∀ a', Decidable (a' = a)]
+    [∀ a', Decidable (f a' = f c)] : setValue f a (f c) c = f a := by
+  simp [setValue]
 
 /-- Embedding into `Option α` using `some`. -/
 @[simps (config := .asFn)]

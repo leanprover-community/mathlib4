@@ -3,13 +3,9 @@ Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Fintype.Parity
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.LinearCombination
 
 /-!
 # The upper half plane and its automorphisms
@@ -23,12 +19,10 @@ We define the notation `ℍ` for the upper half plane available in the locale
 `UpperHalfPlane` so as not to conflict with the quaternions.
 -/
 
-
 noncomputable section
 
 open Matrix Matrix.SpecialLinearGroup
-
-open scoped Classical MatrixGroups
+open scoped MatrixGroups
 
 /- Disable these instances as they are not the simp-normal form, and having them disabled ensures
 we state lemmas in this file without spurious `coe_fn` terms. -/
@@ -62,7 +56,6 @@ instance : Inhabited ℍ :=
 
 @[ext] theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.eq h
 
-protected theorem ext_iff {a b : ℍ} : a = b ↔ (a : ℂ) = b := Subtype.coe_inj.symm
 @[simp, norm_cast] theorem ext_iff' {a b : ℍ} : (a : ℂ) = b ↔ a = b := UpperHalfPlane.ext_iff.symm
 
 instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im :=
@@ -185,7 +178,7 @@ theorem linear_ne_zero (cd : Fin 2 → ℝ) (z : ℍ) (h : cd ≠ 0) : (cd 0 : �
   have : cd 0 = 0 := by
     -- we will need this twice
     apply_fun Complex.im at h
-    simpa only [z.im_ne_zero, Complex.add_im, add_zero, coe_im, zero_mul, or_false_iff,
+    simpa only [z.im_ne_zero, Complex.add_im, add_zero, coe_im, zero_mul, or_false,
       Complex.ofReal_im, Complex.zero_im, Complex.mul_im, mul_eq_zero] using h
   simp only [this, zero_mul, Complex.ofReal_zero, zero_add, Complex.ofReal_eq_zero]
     at h
@@ -407,7 +400,7 @@ section PosRealAction
 
 instance posRealAction : MulAction { x : ℝ // 0 < x } ℍ where
   smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.2
-  one_smul z := Subtype.ext <| one_smul _ _
+  one_smul _ := Subtype.ext <| one_smul _ _
   mul_smul x y z := Subtype.ext <| mul_smul (x : ℝ) y (z : ℂ)
 
 variable (x : { x : ℝ // 0 < x }) (z : ℍ)
