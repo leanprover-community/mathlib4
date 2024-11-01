@@ -169,7 +169,6 @@ end BadChar
 ### The main result
 -/
 
-open scoped ComplexOrder in
 /-- If `χ` is a nontrivial quadratic Dirichlet character, then `L(χ, 1) ≠ 0`. -/
 theorem LFunction_at_one_ne_zero_of_quadratic {N : ℕ} [NeZero N] {χ : DirichletCharacter ℂ N}
     (hχ : χ ^ 2 = 1) (χ_ne : χ ≠ 1) :
