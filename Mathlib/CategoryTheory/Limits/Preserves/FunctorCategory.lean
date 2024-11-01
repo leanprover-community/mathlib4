@@ -128,7 +128,7 @@ def limitCompWhiskeringRightIsoLimitComp {C : Type*} [Category C] {D : Type*}
   (preservesLimitIso _ _).symm
 
 @[reassoc (attr := simp)]
-theorem π_limitCompWhiskeringRightIsoLimitComp_inv {C : Type*} [Category C] {D : Type*}
+theorem limitCompWhiskeringRightIsoLimitComp_inv_π {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] (G : J ⥤ C ⥤ D) (j : J) :
      (limitCompWhiskeringRightIsoLimitComp F G).inv ≫
@@ -136,7 +136,7 @@ theorem π_limitCompWhiskeringRightIsoLimitComp_inv {C : Type*} [Category C] {D 
   simp [limitCompWhiskeringRightIsoLimitComp]
 
 @[reassoc (attr := simp)]
-theorem π_limitCompWhiskeringRightIsoLimitComp_hom {C : Type*} [Category C] {D : Type*}
+theorem limitCompWhiskeringRightIsoLimitComp_hom_whiskerRight_π {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] (G : J ⥤ C ⥤ D) (j : J) :
      (limitCompWhiskeringRightIsoLimitComp F G).hom ≫ whiskerRight (limit.π G j) F =
@@ -170,8 +170,8 @@ theorem ι_colimitCompWhiskeringRightIsoColimitComp_hom {C : Type*} [Category C]
   simp [colimitCompWhiskeringRightIsoColimitComp]
 
 @[reassoc (attr := simp)]
-theorem ι_colimitCompWhiskeringRightIsoColimitComp_inv {C : Type*} [Category C] {D : Type*}
-    [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
+theorem whiskerRight_ι_colimitCompWhiskeringRightIsoColimitComp_inv {C : Type*} [Category C]
+    {D : Type*} [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasColimitsOfShape J D] (F : D ⥤ E) [PreservesColimitsOfShape J F] (G : J ⥤ C ⥤ D) (j : J) :
     whiskerRight (colimit.ι G j) F ≫ (colimitCompWhiskeringRightIsoColimitComp F G).inv =
       colimit.ι (G ⋙ (whiskeringRight _ _ _).obj F) j := by
