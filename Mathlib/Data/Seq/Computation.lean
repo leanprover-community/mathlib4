@@ -2,8 +2,6 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-Coinductive formalization of unbounded computations.
 -/
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Stream.Init
@@ -236,18 +234,19 @@ section Bisim
 
 variable (R : Computation α → Computation α → Prop)
 
-/-- bisimilarity relation-/
+/-- bisimilarity relation -/
 local infixl:50 " ~ " => R
 
-/-- Bisimilarity over a sum of `Computation`s-/
+/-- Bisimilarity over a sum of `Computation`s -/
 def BisimO : α ⊕ (Computation α) → α ⊕ (Computation α) → Prop
   | Sum.inl a, Sum.inl a' => a = a'
   | Sum.inr s, Sum.inr s' => R s s'
   | _, _ => False
 
 attribute [simp] BisimO
+attribute [nolint simpNF] BisimO.eq_3
 
-/-- Attribute expressing bisimilarity over two `Computation`s-/
+/-- Attribute expressing bisimilarity over two `Computation`s -/
 def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ → BisimO R (destruct s₁) (destruct s₂)
 
@@ -280,7 +279,7 @@ end Bisim
 -- It's more of a stretch to use ∈ for this relation, but it
 -- asserts that the computation limits to the given value.
 /-- Assertion that a `Computation` limits to a given value-/
-protected def Mem (a : α) (s : Computation α) :=
+protected def Mem (s : Computation α) (a : α) :=
   some a ∈ s.1
 
 instance : Membership α (Computation α) :=
@@ -504,7 +503,8 @@ theorem length_thinkN (s : Computation α) [_h : Terminates s] (n) :
 
 theorem eq_thinkN {s : Computation α} {a n} (h : Results s a n) : s = thinkN (pure a) n := by
   revert s
-  induction' n with n IH <;> intro s <;> apply recOn s (fun a' => _) fun s => _ <;> intro a h
+  induction n with | zero => _ | succ n IH => _ <;>
+  (intro s; apply recOn s (fun a' => _) fun s => _) <;> intro a h
   · rw [← eq_of_pure_mem h.mem]
     rfl
   · cases' of_results_think h with n h
@@ -519,7 +519,7 @@ theorem eq_thinkN' (s : Computation α) [_h : Terminates s] :
     s = thinkN (pure (get s)) (length s) :=
   eq_thinkN (results_of_terminates _)
 
-/-- Recursor based on membership-/
+/-- Recursor based on membership -/
 def memRecOn {C : Computation α → Sort v} {a s} (M : a ∈ s) (h1 : C (pure a))
     (h2 : ∀ s, C s → C (think s)) : C s := by
   haveI T := terminates_of_mem M
@@ -694,7 +694,8 @@ theorem length_bind (s : Computation α) (f : α → Computation β) [_T1 : Term
 
 theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
     Results (bind s f) b k → ∃ a m n, Results s a m ∧ Results (f a) b n ∧ k = n + m := by
-  induction' k with n IH generalizing s <;> apply recOn s (fun a => _) fun s' => _ <;> intro e h
+  induction k generalizing s with | zero => _ | succ n IH => _
+    <;> apply recOn s (fun a => _) fun s' => _ <;> intro e h
   · simp only [ret_bind] at h
     exact ⟨e, _, _, results_pure _, h, rfl⟩
   · have := congr_arg head (eq_thinkN h)
@@ -753,7 +754,7 @@ theorem exists_of_mem_map {f : α → β} {b : β} {s : Computation α} (h : b �
   exact ⟨a, as, mem_unique (ret_mem _) fb⟩
 
 instance terminates_map (f : α → β) (s : Computation α) [Terminates s] : Terminates (map f s) := by
-  rw [← bind_pure]; exact terminates_of_mem (mem_bind (get_mem s) (get_mem (f (get s))))
+  rw [← bind_pure]; exact terminates_of_mem (mem_bind (get_mem s) (get_mem (α := β) (f (get s))))
 
 theorem terminates_map_iff (f : α → β) (s : Computation α) : Terminates (map f s) ↔ Terminates s :=
   ⟨fun ⟨⟨_, h⟩⟩ =>
@@ -820,7 +821,7 @@ theorem orElse_empty (c : Computation α) : (c <|> empty α) = c := by
 def Equiv (c₁ c₂ : Computation α) : Prop :=
   ∀ a, a ∈ c₁ ↔ a ∈ c₂
 
-/-- equivalence relation for computations-/
+/-- equivalence relation for computations -/
 scoped infixl:50 " ~ " => Equiv
 
 @[refl]
@@ -959,10 +960,10 @@ theorem liftRel_def {R : α → β → Prop} {ca cb} :
       let ⟨b', mb', ab⟩ := h.left ma
       rwa [mem_unique mb mb']⟩,
     fun ⟨l, r⟩ =>
-    ⟨fun {a} ma =>
+    ⟨fun {_} ma =>
       let ⟨⟨b, mb⟩⟩ := l.1 ⟨⟨_, ma⟩⟩
       ⟨b, mb, r ma mb⟩,
-      fun {b} mb =>
+      fun {_} mb =>
       let ⟨⟨a, ma⟩⟩ := l.2 ⟨⟨_, mb⟩⟩
       ⟨a, ma, r ma mb⟩⟩⟩
 
@@ -1041,7 +1042,7 @@ theorem map_congr {s1 s2 : Computation α} {f : α → β}
   rw [← lift_eq_iff_equiv]
   exact liftRel_map Eq _ ((lift_eq_iff_equiv _ _).2 h1) fun {a} b => congr_arg _
 
-/-- Alternate definition of `LiftRel` over relations between `Computation`s-/
+/-- Alternate definition of `LiftRel` over relations between `Computation`s -/
 def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β → Prop) :
     α ⊕ (Computation α) → β ⊕ (Computation β) → Prop
   | Sum.inl a, Sum.inl b => R a b

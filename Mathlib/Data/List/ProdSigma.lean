@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Sigma.Basic
-import Batteries.Data.Nat.Lemmas
 
 /-!
 # Lists in product and sigma types

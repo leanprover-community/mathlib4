@@ -5,11 +5,10 @@ Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Lo
 -/
 
 import Lean.Elab.Tactic.Location
+import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Order.Defs
 import Mathlib.Tactic.Conv
-import Mathlib.Data.Set.Defs
-import Lean.Elab.Tactic.Location
 
 /-!
 # The `push_neg` tactic

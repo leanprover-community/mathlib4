@@ -126,7 +126,7 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
   apply List.Sublist.append _ (IH _ this)
-  rw [List.singleton_sublist, ← h, l'.getElem_take _ (Nat.lt_succ_self _)]
+  rw [List.singleton_sublist, ← h, l'.getElem_take' _ (Nat.lt_succ_self _)]
   apply List.get_mem
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
@@ -137,12 +137,14 @@ theorem sublist_iff_exists_orderEmbedding_get?_eq {l l' : List α} :
     l <+ l' ↔ ∃ f : ℕ ↪o ℕ, ∀ ix : ℕ, l.get? ix = l'.get? (f ix) := by
   constructor
   · intro H
-    induction' H with xs ys y _H IH xs ys x _H IH
-    · simp
-    · obtain ⟨f, hf⟩ := IH
+    induction H with
+    | slnil => simp
+    | cons _ _ IH =>
+      obtain ⟨f, hf⟩ := IH
       refine ⟨f.trans (OrderEmbedding.ofStrictMono (· + 1) fun _ => by simp), ?_⟩
       simpa using hf
-    · obtain ⟨f, hf⟩ := IH
+    | cons₂ _ _ IH =>
+      obtain ⟨f, hf⟩ := IH
       refine
         ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) ?_, ?_⟩
       · rintro ⟨_ | a⟩ ⟨_ | b⟩ <;> simp [Nat.succ_le_succ_iff]

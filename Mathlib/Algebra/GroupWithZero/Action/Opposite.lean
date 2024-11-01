@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.SMulWithZero
 
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
@@ -26,15 +27,26 @@ With `open scoped RightActions`, this provides:
 * `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
 
-variable {R M N α : Type*}
+variable {M α : Type*}
 
 /-! ### Actions _on_ the opposite type
 
 Actions on the opposite type just act on the underlying type.
 -/
 
-
 namespace MulOpposite
+
+instance instSMulZeroClass [AddMonoid α] [SMulZeroClass M α] : SMulZeroClass M αᵐᵒᵖ where
+  smul_zero _ := unop_injective <| smul_zero _
+
+instance instSMulWithZero [MonoidWithZero M] [AddMonoid α] [SMulWithZero M α] :
+    SMulWithZero M αᵐᵒᵖ where
+  zero_smul _ := unop_injective <| zero_smul _ _
+
+instance instMulActionWithZero [MonoidWithZero M] [AddMonoid α] [MulActionWithZero M α] :
+    MulActionWithZero M αᵐᵒᵖ where
+  smul_zero _ := unop_injective <| smul_zero _
+  zero_smul _ := unop_injective <| zero_smul _ _
 
 instance instDistribMulAction [Monoid M] [AddMonoid α] [DistribMulAction M α] :
     DistribMulAction M αᵐᵒᵖ where

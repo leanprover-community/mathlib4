@@ -279,6 +279,16 @@ theorem map_iSup {ι : Sort*} (f : M →ₙ* N) (s : ι → Subsemigroup M) :
   (gc_map_comap f).l_iSup
 
 @[to_additive]
+theorem map_inf (S T : Subsemigroup M) (f : M →ₙ* N) (hf : Function.Injective f) :
+    (S ⊓ T).map f = S.map f ⊓ T.map f := SetLike.coe_injective (Set.image_inter hf)
+
+@[to_additive]
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : M →ₙ* N) (hf : Function.Injective f)
+    (s : ι → Subsemigroup M) : (iInf s).map f = ⨅ i, (s i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
+
+@[to_additive]
 theorem comap_inf (S T : Subsemigroup N) (f : M →ₙ* N) : (S ⊓ T).comap f = S.comap f ⊓ T.comap f :=
   (gc_map_comap f).u_inf
 
@@ -407,55 +417,6 @@ end GaloisInsertion
 
 end Subsemigroup
 
-namespace MulMemClass
-
-variable {A : Type*} [Mul M] [SetLike A M] [hA : MulMemClass A M] (S' : A)
-
--- lower priority so other instances are found first
-/-- A submagma of a magma inherits a multiplication. -/
-@[to_additive "An additive submagma of an additive magma inherits an addition."]
-instance (priority := 900) mul : Mul S' :=
-  ⟨fun a b => ⟨a.1 * b.1, mul_mem a.2 b.2⟩⟩
-
--- lower priority so later simp lemmas are used first; to appease simp_nf
-@[to_additive (attr := simp low, norm_cast)]
-theorem coe_mul (x y : S') : (↑(x * y) : M) = ↑x * ↑y :=
-  rfl
-
--- lower priority so later simp lemmas are used first; to appease simp_nf
-@[to_additive (attr := simp low)]
-theorem mk_mul_mk (x y : M) (hx : x ∈ S') (hy : y ∈ S') :
-    (⟨x, hx⟩ : S') * ⟨y, hy⟩ = ⟨x * y, mul_mem hx hy⟩ :=
-  rfl
-
-@[to_additive]
-theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
-  rfl
-
-/-- A subsemigroup of a semigroup inherits a semigroup structure. -/
-@[to_additive "An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure."]
-instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
-    (S : A) : Semigroup S :=
-  Subtype.coe_injective.semigroup Subtype.val fun _ _ => rfl
-
-/-- A subsemigroup of a `CommSemigroup` is a `CommSemigroup`. -/
-@[to_additive "An `AddSubsemigroup` of an `AddCommSemigroup` is an `AddCommSemigroup`."]
-instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
-    (S : A) : CommSemigroup S :=
-  Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
-
-/-- The natural semigroup hom from a subsemigroup of semigroup `M` to `M`. -/
-@[to_additive "The natural semigroup hom from an `AddSubsemigroup` of
-`AddSubsemigroup` `M` to `M`."]
-def subtype : S' →ₙ* M where
-  toFun := Subtype.val; map_mul' := fun _ _ => rfl
-
-@[to_additive (attr := simp)]
-theorem coe_subtype : (MulMemClass.subtype S' : S' → M) = Subtype.val :=
-  rfl
-
-end MulMemClass
-
 namespace Subsemigroup
 
 variable [Mul M] [Mul N] [Mul P] (S : Subsemigroup M)
@@ -488,10 +449,8 @@ theorem coe_equivMapOfInjective_apply (f : M →ₙ* N) (hf : Function.Injective
 @[to_additive (attr := simp)]
 theorem closure_closure_coe_preimage {s : Set M} :
     closure ((Subtype.val : closure s → M) ⁻¹' s) = ⊤ :=
-  eq_top_iff.2 fun x =>
-    Subtype.recOn x fun _ hx _ =>
-      closure_induction' (p := fun y hy ↦ ⟨y, hy⟩ ∈ closure (((↑) : closure s → M) ⁻¹' s))
-        (fun _ hg => subset_closure hg) (fun _ _ _ _ => Subsemigroup.mul_mem _) hx
+  eq_top_iff.2 fun x _ ↦ Subtype.recOn x fun _ hx' ↦
+    closure_induction (fun _ h ↦ subset_closure h) (fun _ _ _ _ ↦ mul_mem) hx'
 
 /-- Given `Subsemigroup`s `s`, `t` of semigroups `M`, `N` respectively, `s × t` as a subsemigroup
 of `M × N`. -/
@@ -531,7 +490,7 @@ theorem top_prod_top : (⊤ : Subsemigroup M).prod (⊤ : Subsemigroup N) = ⊤ 
 
 @[to_additive bot_prod_bot]
 theorem bot_prod_bot : (⊥ : Subsemigroup M).prod (⊥ : Subsemigroup N) = ⊥ :=
-  SetLike.coe_injective <| by simp [coe_prod, Prod.one_eq_mk]
+  SetLike.coe_injective <| by simp [coe_prod]
 
 /-- The product of subsemigroups is isomorphic to their product as semigroups. -/
 @[to_additive prodEquiv
@@ -594,6 +553,15 @@ theorem coe_srange (f : M →ₙ* N) : (f.srange : Set N) = Set.range f :=
 @[to_additive (attr := simp)]
 theorem mem_srange {f : M →ₙ* N} {y : N} : y ∈ f.srange ↔ ∃ x, f x = y :=
   Iff.rfl
+
+@[to_additive]
+private theorem srange_mk_aux_mul {f : M → N} (hf : ∀ (x y : M), f (x * y) = f x * f y)
+    {x y : N} (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
+    x * y ∈ Set.range f :=
+  (srange ⟨f, hf⟩).mul_mem hx hy
+
+@[to_additive (attr := simp)] theorem srange_mk (f : M → N) (hf) :
+    srange ⟨f, hf⟩ = ⟨Set.range f, srange_mk_aux_mul hf⟩ := rfl
 
 @[to_additive]
 theorem srange_eq_map (f : M →ₙ* N) : f.srange = (⊤ : Subsemigroup M).map f :=

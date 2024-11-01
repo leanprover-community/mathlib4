@@ -64,7 +64,7 @@ lemma vecMul_SL2_mem_gammaSet {v : Fin 2 → ℤ} (hv : v ∈ gammaSet N a) (γ 
   refine ⟨?_, hv.2.vecMulSL γ⟩
   have := RingHom.map_vecMul (m := Fin 2) (n := Fin 2) (Int.castRingHom (ZMod N)) γ v
   simp only [eq_intCast, Int.coe_castRingHom] at this
-  simp_rw [Function.comp, this, hv.1]
+  simp_rw [Function.comp_def, this, hv.1]
   simp
 
 variable (a) in
@@ -118,8 +118,8 @@ lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
   and congruence condition given by `a : Fin 2 → ZMod N`. -/
 def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
   toFun := eisensteinSeries a k
-  slash_action_eq' A := by rw [subgroup_slash, ← SL_slash, eisensteinSeries_slash_apply,
-      (Gamma_mem' N A).mp A.2, SpecialLinearGroup.coe_one, vecMul_one]
+  slash_action_eq' A hA := by simp only [eisensteinSeries_slash_apply, Gamma_mem'.mp hA,
+    SpecialLinearGroup.coe_one, vecMul_one]
 
 lemma eisensteinSeries_SIF_apply (k : ℤ) (z : ℍ) :
     eisensteinSeries_SIF a k z = eisensteinSeries a k z := rfl

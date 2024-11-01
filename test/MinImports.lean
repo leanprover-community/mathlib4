@@ -1,4 +1,3 @@
-import Mathlib.Tactic.Linter.MinImports
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.FunProp.Attr
 
@@ -37,8 +36,7 @@ noncomputable instance : Semiring Nat := inferInstance
 /--
 info: ℤ : Type
 ---
-info: import Lean.Parser.Command
-import Mathlib.Data.Int.Notation
+info: import Mathlib.Data.Int.Notation
 -/
 #guard_msgs in
 #min_imports in #check ℤ
@@ -76,9 +74,14 @@ import Mathlib.Data.Nat.Notation
 #min_imports in
 lemma hi (n : ℕ) : n = n := by extract_goal; rfl
 
+set_option linter.minImports.increases false
+set_option linter.minImports true
 /--
 warning: Imports increased to
-[Init.Guard, Lean.Parser.Term, Mathlib.Data.Int.Notation]
+[Init.Guard, Mathlib.Data.Int.Notation]
+
+New imports: [Init.Guard, Mathlib.Data.Int.Notation]
+
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
@@ -95,7 +98,10 @@ set_option linter.minImports false in
 
 /--
 warning: Imports increased to
-[Init.Guard, Lean.Parser.Term, Mathlib.Data.Int.Notation]
+[Init.Guard, Mathlib.Data.Int.Notation]
+
+New imports: [Init.Guard, Mathlib.Data.Int.Notation]
+
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
@@ -111,6 +117,9 @@ set_option linter.minImports true
 /--
 warning: Imports increased to
 [Mathlib.Tactic.Linter.MinImports]
+
+New imports: [Mathlib.Tactic.Linter.MinImports]
+
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
@@ -118,7 +127,12 @@ note: this linter can be disabled with `set_option linter.minImports false`
 
 /--
 warning: Imports increased to
-[Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.Linter.MinImports, Mathlib.Tactic.NormNum.Basic]
+[Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.NormNum.Basic]
+
+New imports: [Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.NormNum.Basic]
+
+Now redundant: [Mathlib.Tactic.Linter.MinImports]
+
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in

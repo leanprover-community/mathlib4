@@ -47,9 +47,6 @@ noncomputable section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-variable {ε : ℝ}
 
 open Asymptotics Filter Metric Set
 
@@ -186,7 +183,7 @@ theorem to_localInverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
 and `g (f x) = x` in a neighborhood of `a`, then `g` has derivative `f'.symm` at `f a`.
 
 For a version assuming `f (g y) = y` and continuity of `g` at `f a` but not `[CompleteSpace E]`
-see `of_local_left_inverse`.  -/
+see `of_local_left_inverse`. -/
 theorem to_local_left_inverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) {g : F → E}
     (hg : ∀ᶠ x in 𝓝 a, g (f x) = x) : HasStrictFDerivAt g (f'.symm : F →L[𝕜] E) (f a) :=
   hf.to_localInverse.congr_of_eventuallyEq <| (hf.localInverse_unique hg).mono fun _ => Eq.symm
