@@ -111,7 +111,7 @@ separator (see `HasSeparator`).
 -/
 class GrothendieckCategory [Abelian C] [HasFilteredColimits C] [AB5 C] [HasSeparator C] : Prop where
 
-variable [HasFilteredColimits C] [AB5 C] [Abelian C] [HasSeparator C] [h : GrothendieckCategory C]
+variable [HasFilteredColimits C] [AB5 C] [Abelian C] [HasSeparator C] [GrothendieckCategory C]
 
 instance GrothendieckCategory.wellPowered : WellPowered C := HasSeparator.wellPowered
 
