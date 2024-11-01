@@ -135,6 +135,18 @@ theorem hasLimits_of_hasColimits_of_isSeparating [HasColimits C] [WellPowered C�
       hasLimitsOfShape_iff_isLeftAdjoint_const.2
         (isLeftAdjoint_of_preservesColimits_of_isSeparating h𝒢 _) }
 
+theorem hasLimits_of_hasColimits_of_hasSeparator [HasColimits C] [HasSeparator C]
+    [WellPowered Cᵒᵖ] : HasLimits C := by
+  obtain ⟨G, hG⟩ : HasSeparator C := inferInstance
+  exact hasLimits_of_hasColimits_of_isSeparating hG
+
+theorem hasColimits_of_hasLimits_of_hasCoseparator [HasLimits C] [HasCoseparator C]
+    [WellPowered C] : HasColimits C := by
+  suffices HasLimits Cᵒᵖ from hasColimits_of_hasLimits_op
+  have : WellPowered Cᵒᵖᵒᵖ := wellPowered_of_equiv (opOpEquivalence C).symm
+  have : HasSeparator Cᵒᵖ := HasCoseparator.hasSeparator_op
+  exact hasLimits_of_hasColimits_of_hasSeparator
+
 end Limits
 
 end CategoryTheory

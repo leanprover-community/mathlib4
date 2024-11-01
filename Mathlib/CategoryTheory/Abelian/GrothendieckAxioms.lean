@@ -7,6 +7,13 @@ Authors: Isaac Hernando, Coleton Kotch, Adam Topaz
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.FinallySmall
+import Mathlib.CategoryTheory.Generator
+import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
+import Mathlib.CategoryTheory.Abelian.Subobject
+import Mathlib.CategoryTheory.Subobject.WellPowered
+import Mathlib.CategoryTheory.Abelian.Opposite
 
 /-!
 
@@ -20,10 +27,15 @@ basic facts about them.
 - `AB4` -- an abelian category satisfies `AB4` provided that coproducts are exact.
 - `AB5` -- an abelian category satisfies `AB5` provided that filtered colimits are exact.
 - The duals of the above definitions, called `AB4Star` and `AB5Star`.
+- `GrothendieckCategory` -- an abelian category satisfies `GrothendieckCategory` provided that
+it has `AB5` and a separator.
 
 ## Theorems
 
 - The implication from `AB5` to `AB4` is established in `AB4.ofAB5`.
+- Relevant implications of `GrothendieckCategory` are established in
+`GrothendieckCategory.wellPowered`, `GrothendieckCategory.hasLimits` and
+`GrothendieckCategory.hasColimits`.
 
 ## Remarks
 
@@ -33,10 +45,9 @@ comments of the linked Stacks page.
 Exactness as the preservation of short exact sequences is introduced in
 `CategoryTheory.Abelian.Exact`.
 
-## Projects
-
-- Add additional axioms, especially define Grothendieck categories.
-- Prove that `AB5` implies `AB4`.
+We do not require `Abelian` in the definition of `AB4` and `AB5` because these classes represent
+individual axioms. A non-abelian category with `AB5` is not an AB5 category in the sense of the
+literature.
 
 ## References
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
@@ -97,6 +108,24 @@ class AB5Star [HasCofilteredLimits C] where
 
 attribute [instance] AB5Star.preservesFiniteColimits
 
+section GrothendieckCategory
+
+/--
+An abelian category `C` is called a Grothendieck category provided that it has `AB5` and a
+separator (see `HasSeparator`).
+-/
+class GrothendieckCategory [Abelian C] [HasFilteredColimits C] [AB5 C] [HasSeparator C] : Prop where
+
+variable [HasFilteredColimits C] [AB5 C] [Abelian C] [HasSeparator C] [h : GrothendieckCategory C]
+
+instance GrothendieckCategory.wellPowered : WellPowered C := HasSeparator.wellPowered
+
+instance GrothendieckCategory.hasColimits : HasColimits C := has_colimits_of_finite_and_filtered
+
+instance GrothendieckCategory.hasLimits : HasLimits C := hasLimits_of_hasColimits_of_hasSeparator
+
+end GrothendieckCategory
+
 noncomputable section
 
 open CoproductsFromFiniteFiltered
@@ -117,7 +146,7 @@ instance preservesFiniteLimitsLiftToFinset : PreservesFiniteLimits (liftToFinset
     preservesFiniteLimitsOfNatIso (liftToFinsetEvaluationIso  I).symm
 
 /-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/
-def AB4.ofAB5 [HasFiniteCoproducts C] [HasFilteredColimits C] [AB5 C] : AB4 C where
+def AB4.ofAB5 [HasFilteredColimits C] [AB5 C] : AB4 C where
   preservesFiniteLimits J :=
     letI : PreservesFiniteLimits (liftToFinset C J ⋙ colim) :=
       compPreservesFiniteLimits _ _
