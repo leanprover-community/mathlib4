@@ -47,7 +47,7 @@ variable [Algebra R S] [Algebra R T]
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 variable {ι κ : Type w} [Fintype ι]
 
-open FiniteDimensional
+open Module
 
 open LinearMap (BilinForm)
 open LinearMap
@@ -435,7 +435,7 @@ variable (K L)
 theorem traceForm_nondegenerate [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     (traceForm K L).Nondegenerate :=
   BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
-    (det_traceForm_ne_zero (FiniteDimensional.finBasis K L))
+    (det_traceForm_ne_zero (Module.finBasis K L))
 
 theorem Algebra.trace_ne_zero [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     Algebra.trace K L ≠ 0 := by
@@ -483,3 +483,22 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [Algebra.IsSepar
   ring
 
 end DetNeZero
+
+section isNilpotent
+
+namespace Algebra
+
+/-- The trace of a nilpotent element is nilpotent. -/
+lemma trace_isNilpotent_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
+    (hx : IsNilpotent x) : IsNilpotent (trace R S x) := by
+  by_cases hS : ∃ s : Finset S, Nonempty (Basis s R S)
+  · obtain ⟨s, ⟨b⟩⟩ := hS
+    have := Module.Finite.of_basis b
+    have := (Module.free_def R S).mpr ⟨s, ⟨b⟩⟩
+    apply LinearMap.isNilpotent_trace_of_isNilpotent (hx.map (lmul R S))
+  · rw [trace_eq_zero_of_not_exists_basis _ hS, LinearMap.zero_apply]
+    exact IsNilpotent.zero
+
+end Algebra
+
+end isNilpotent

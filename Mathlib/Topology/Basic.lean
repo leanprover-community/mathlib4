@@ -90,7 +90,7 @@ end
 
 protected theorem TopologicalSpace.ext_iff {t t' : TopologicalSpace X} :
     t = t' ↔ ∀ s, IsOpen[t] s ↔ IsOpen[t'] s :=
-  ⟨fun h s => h ▸ Iff.rfl, fun h => by ext; exact h _⟩
+  ⟨fun h _ => h ▸ Iff.rfl, fun h => by ext; exact h _⟩
 
 theorem isOpen_fold {t : TopologicalSpace X} : t.IsOpen s = IsOpen[t] s :=
   rfl
@@ -309,7 +309,7 @@ theorem interior_union_isClosed_of_interior_empty (h₁ : IsClosed s)
     (h₂ : interior t = ∅) : interior (s ∪ t) = interior s :=
   have : interior (s ∪ t) ⊆ s := fun x ⟨u, ⟨(hu₁ : IsOpen u), (hu₂ : u ⊆ s ∪ t)⟩, (hx₁ : x ∈ u)⟩ =>
     by_contradiction fun hx₂ : x ∉ s =>
-      have : u \ s ⊆ t := fun x ⟨h₁, h₂⟩ => Or.resolve_left (hu₂ h₁) h₂
+      have : u \ s ⊆ t := fun _ ⟨h₁, h₂⟩ => Or.resolve_left (hu₂ h₁) h₂
       have : u \ s ⊆ interior t := by rwa [(IsOpen.sdiff hu₁ h₁).subset_interior_iff]
       have : u \ s ⊆ ∅ := by rwa [h₂] at this
       this ⟨hx₁, hx₂⟩
@@ -799,8 +799,10 @@ theorem frequently_frequently_nhds {p : X → Prop} :
   simp only [not_frequently, eventually_eventually_nhds]
 
 @[simp]
-theorem eventually_mem_nhds : (∀ᶠ x' in 𝓝 x, s ∈ 𝓝 x') ↔ s ∈ 𝓝 x :=
+theorem eventually_mem_nhds_iff : (∀ᶠ x' in 𝓝 x, s ∈ 𝓝 x') ↔ s ∈ 𝓝 x :=
   eventually_eventually_nhds
+
+@[deprecated (since := "2024-10-04")] alias eventually_mem_nhds := eventually_mem_nhds_iff
 
 @[simp]
 theorem nhds_bind_nhds : (𝓝 x).bind 𝓝 = 𝓝 x :=
@@ -851,13 +853,13 @@ theorem tendsto_atTop_nhds [Nonempty α] [SemilatticeSup α] {f : α → X} :
 theorem tendsto_const_nhds {f : Filter α} : Tendsto (fun _ : α => x) f (𝓝 x) :=
   tendsto_nhds.mpr fun _ _ ha => univ_mem' fun _ => ha
 
-theorem tendsto_atTop_of_eventually_const {ι : Type*} [SemilatticeSup ι] [Nonempty ι]
+theorem tendsto_atTop_of_eventually_const {ι : Type*} [Preorder ι]
     {u : ι → X} {i₀ : ι} (h : ∀ i ≥ i₀, u i = x) : Tendsto u atTop (𝓝 x) :=
-  Tendsto.congr' (EventuallyEq.symm (eventually_atTop.mpr ⟨i₀, h⟩)) tendsto_const_nhds
+  Tendsto.congr' (EventuallyEq.symm ((eventually_ge_atTop i₀).mono h)) tendsto_const_nhds
 
-theorem tendsto_atBot_of_eventually_const {ι : Type*} [SemilatticeInf ι] [Nonempty ι]
+theorem tendsto_atBot_of_eventually_const {ι : Type*} [Preorder ι]
     {u : ι → X} {i₀ : ι} (h : ∀ i ≤ i₀, u i = x) : Tendsto u atBot (𝓝 x) :=
-  Tendsto.congr' (EventuallyEq.symm (eventually_atBot.mpr ⟨i₀, h⟩)) tendsto_const_nhds
+  tendsto_atTop_of_eventually_const (ι := ιᵒᵈ) h
 
 theorem pure_le_nhds : pure ≤ (𝓝 : X → Filter X) := fun _ _ hs => mem_pure.2 <| mem_of_mem_nhds hs
 
@@ -1029,6 +1031,17 @@ theorem AccPt.mono {F G : Filter X} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G 
 theorem AccPt.clusterPt (x : X) (F : Filter X) (h : AccPt x F) : ClusterPt x F :=
   ((acc_iff_cluster x F).mp h).mono inf_le_right
 
+theorem clusterPt_principal {x : X} {C : Set X} :
+    ClusterPt x (𝓟 C) ↔ x ∈ C ∨ AccPt x (𝓟 C) := by
+  constructor
+  · intro h
+    by_contra! hc
+    rw [acc_principal_iff_cluster] at hc
+    simp_all only [not_false_eq_true, diff_singleton_eq_self, not_true_eq_false, hc.1]
+  · rintro (h | h)
+    · exact clusterPt_principal_iff.mpr fun _ mem ↦ ⟨x, ⟨mem_of_mem_nhds mem, h⟩⟩
+    · exact h.clusterPt
+
 /-!
 ### Interior, closure and frontier in terms of neighborhoods
 -/
@@ -1060,7 +1073,7 @@ theorem isOpen_iff_nhds : IsOpen s ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s :=
 
 theorem TopologicalSpace.ext_iff_nhds {X} {t t' : TopologicalSpace X} :
     t = t' ↔ ∀ x, @nhds _ t x = @nhds _ t' x :=
-  ⟨fun H x ↦ congrFun (congrArg _ H) _, fun H ↦ by ext; simp_rw [@isOpen_iff_nhds _ _ _, H]⟩
+  ⟨fun H _ ↦ congrFun (congrArg _ H) _, fun H ↦ by ext; simp_rw [@isOpen_iff_nhds _ _ _, H]⟩
 
 alias ⟨_, TopologicalSpace.ext_nhds⟩ := TopologicalSpace.ext_iff_nhds
 
@@ -1142,7 +1155,6 @@ theorem dense_compl_singleton (x : X) [NeBot (𝓝[≠] x)] : Dense ({x}ᶜ : Se
 
 /-- If `x` is not an isolated point of a topological space, then the closure of `{x}ᶜ` is the whole
 space. -/
--- Porting note (#10618): was a `@[simp]` lemma but `simp` can prove it
 theorem closure_compl_singleton (x : X) [NeBot (𝓝[≠] x)] : closure {x}ᶜ = (univ : Set X) :=
   (dense_compl_singleton x).closure_eq
 
@@ -1400,7 +1412,7 @@ theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x
     (hs : s ∈ 𝓝 (f x)) : ∀ᶠ y in 𝓝 x, f y ∈ s :=
   hf hs
 
-/-- If a function ``f` tends to somewhere other than `𝓝 (f x)` at `x`,
+/-- If a function `f` tends to somewhere other than `𝓝 (f x)` at `x`,
 then `f` is not continuous at `x`
 -/
 lemma not_continuousAt_of_tendsto {f : X → Y} {l₁ : Filter X} {l₂ : Filter Y} {x : X}

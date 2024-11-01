@@ -189,10 +189,10 @@ theorem isCompactElement_finsetSup {α β : Type*} [CompleteLattice α] {f : β 
     specialize h d hemp hdir (le_trans (Finset.le_sup hps) hsup)
     simpa only [exists_prop]
 
-theorem WellFounded.isSupFiniteCompact (h : WellFounded ((· > ·) : α → α → Prop)) :
+theorem WellFoundedGT.isSupFiniteCompact [WellFoundedGT α] :
     IsSupFiniteCompact α := fun s => by
   let S := { x | ∃ t : Finset α, ↑t ⊆ s ∧ t.sup id = x }
-  obtain ⟨m, ⟨t, ⟨ht₁, rfl⟩⟩, hm⟩ := h.has_min S ⟨⊥, ∅, by simp⟩
+  obtain ⟨m, ⟨t, ⟨ht₁, rfl⟩⟩, hm⟩ := wellFounded_gt.has_min S ⟨⊥, ∅, by simp⟩
   refine ⟨t, ht₁, (sSup_le _ _ fun y hy => ?_).antisymm ?_⟩
   · classical
     rw [eq_of_le_of_not_lt (Finset.sup_mono (t.subset_insert y))
@@ -212,25 +212,26 @@ theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
   · rw [ht₂]
     exact hsc.finsetSup_mem h ht₁
 
-theorem IsSupClosedCompact.wellFounded (h : IsSupClosedCompact α) :
-    WellFounded ((· > ·) : α → α → Prop) := by
-  refine RelEmbedding.wellFounded_iff_no_descending_seq.mpr ⟨fun a => ?_⟩
-  suffices sSup (Set.range a) ∈ Set.range a by
-    obtain ⟨n, hn⟩ := Set.mem_range.mp this
-    have h' : sSup (Set.range a) < a (n + 1) := by
-      change _ > _
-      simp [← hn, a.map_rel_iff]
-    apply lt_irrefl (a (n + 1))
-    apply lt_of_le_of_lt _ h'
-    apply le_sSup
-    apply Set.mem_range_self
-  apply h (Set.range a)
-  · use a 37
-    apply Set.mem_range_self
-  · rintro x ⟨m, hm⟩ y ⟨n, hn⟩
-    use m ⊔ n
-    rw [← hm, ← hn]
-    apply RelHomClass.map_sup a
+theorem IsSupClosedCompact.wellFoundedGT (h : IsSupClosedCompact α) :
+    WellFoundedGT α where
+  wf := by
+    refine RelEmbedding.wellFounded_iff_no_descending_seq.mpr ⟨fun a => ?_⟩
+    suffices sSup (Set.range a) ∈ Set.range a by
+      obtain ⟨n, hn⟩ := Set.mem_range.mp this
+      have h' : sSup (Set.range a) < a (n + 1) := by
+        change _ > _
+        simp [← hn, a.map_rel_iff]
+      apply lt_irrefl (a (n + 1))
+      apply lt_of_le_of_lt _ h'
+      apply le_sSup
+      apply Set.mem_range_self
+    apply h (Set.range a)
+    · use a 37
+      apply Set.mem_range_self
+    · rintro x ⟨m, hm⟩ y ⟨n, hn⟩
+      use m ⊔ n
+      rw [← hm, ← hn]
+      apply RelHomClass.map_sup a
 
 theorem isSupFiniteCompact_iff_all_elements_compact :
     IsSupFiniteCompact α ↔ ∀ k : α, IsCompactElement k := by
@@ -247,39 +248,38 @@ theorem isSupFiniteCompact_iff_all_elements_compact :
     exact ⟨t, hts, this⟩
 
 open List in
-theorem wellFounded_characterisations : List.TFAE
-    [WellFounded ((· > ·) : α → α → Prop),
-      IsSupFiniteCompact α, IsSupClosedCompact α, ∀ k : α, IsCompactElement k] := by
-  tfae_have 1 → 2 := WellFounded.isSupFiniteCompact α
+theorem wellFoundedGT_characterisations : List.TFAE
+    [WellFoundedGT α, IsSupFiniteCompact α, IsSupClosedCompact α, ∀ k : α, IsCompactElement k] := by
+  tfae_have 1 → 2 := @WellFoundedGT.isSupFiniteCompact α _
   tfae_have 2 → 3 := IsSupFiniteCompact.isSupClosedCompact α
-  tfae_have 3 → 1 := IsSupClosedCompact.wellFounded α
+  tfae_have 3 → 1 := IsSupClosedCompact.wellFoundedGT α
   tfae_have 2 ↔ 4 := isSupFiniteCompact_iff_all_elements_compact α
   tfae_finish
 
-theorem wellFounded_iff_isSupFiniteCompact :
-    WellFounded ((· > ·) : α → α → Prop) ↔ IsSupFiniteCompact α :=
-  (wellFounded_characterisations α).out 0 1
+theorem wellFoundedGT_iff_isSupFiniteCompact :
+    WellFoundedGT α ↔ IsSupFiniteCompact α :=
+  (wellFoundedGT_characterisations α).out 0 1
 
 theorem isSupFiniteCompact_iff_isSupClosedCompact : IsSupFiniteCompact α ↔ IsSupClosedCompact α :=
-  (wellFounded_characterisations α).out 1 2
+  (wellFoundedGT_characterisations α).out 1 2
 
-theorem isSupClosedCompact_iff_wellFounded :
-    IsSupClosedCompact α ↔ WellFounded ((· > ·) : α → α → Prop) :=
-  (wellFounded_characterisations α).out 2 0
+theorem isSupClosedCompact_iff_wellFoundedGT :
+    IsSupClosedCompact α ↔ WellFoundedGT α :=
+  (wellFoundedGT_characterisations α).out 2 0
 
-alias ⟨_, IsSupFiniteCompact.wellFounded⟩ := wellFounded_iff_isSupFiniteCompact
+alias ⟨_, IsSupFiniteCompact.wellFoundedGT⟩ := wellFoundedGT_iff_isSupFiniteCompact
 
 alias ⟨_, IsSupClosedCompact.isSupFiniteCompact⟩ := isSupFiniteCompact_iff_isSupClosedCompact
 
-alias ⟨_, _root_.WellFounded.isSupClosedCompact⟩ := isSupClosedCompact_iff_wellFounded
+alias ⟨_, WellFoundedGT.isSupClosedCompact⟩ := isSupClosedCompact_iff_wellFoundedGT
 
 variable {α}
 
-theorem WellFounded.finite_of_setIndependent (h : WellFounded ((· > ·) : α → α → Prop)) {s : Set α}
+theorem WellFoundedGT.finite_of_setIndependent [WellFoundedGT α] {s : Set α}
     (hs : SetIndependent s) : s.Finite := by
   classical
     refine Set.not_infinite.mp fun contra => ?_
-    obtain ⟨t, ht₁, ht₂⟩ := WellFounded.isSupFiniteCompact α h s
+    obtain ⟨t, ht₁, ht₂⟩ := WellFoundedGT.isSupFiniteCompact α s
     replace contra : ∃ x : α, x ∈ s ∧ x ≠ ⊥ ∧ x ∉ t := by
       have : (s \ (insert ⊥ t : Finset α)).Infinite := contra.diff (Finset.finite_toSet _)
       obtain ⟨x, hx₁, hx₂⟩ := this.nonempty
@@ -292,14 +292,36 @@ theorem WellFounded.finite_of_setIndependent (h : WellFounded ((· > ·) : α �
     rw [← hs, eq_comm, inf_eq_left]
     exact le_sSup _ _ hx₀
 
-theorem WellFounded.finite_ne_bot_of_independent (hwf : WellFounded ((· > ·) : α → α → Prop))
+theorem WellFoundedGT.finite_ne_bot_of_independent [WellFoundedGT α]
     {ι : Type*} {t : ι → α} (ht : Independent t) : Set.Finite {i | t i ≠ ⊥} := by
   refine Finite.of_finite_image (Finite.subset ?_ (image_subset_range t _)) ht.injOn
-  exact WellFounded.finite_of_setIndependent hwf ht.setIndependent_range
+  exact WellFoundedGT.finite_of_setIndependent ht.setIndependent_range
 
-theorem WellFounded.finite_of_independent (hwf : WellFounded ((· > ·) : α → α → Prop)) {ι : Type*}
+theorem WellFoundedGT.finite_of_independent [WellFoundedGT α] {ι : Type*}
     {t : ι → α} (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Finite ι :=
-  haveI := (WellFounded.finite_of_setIndependent hwf ht.setIndependent_range).to_subtype
+  haveI := (WellFoundedGT.finite_of_setIndependent ht.setIndependent_range).to_subtype
+  Finite.of_injective_finite_range (ht.injective h_ne_bot)
+
+theorem WellFoundedLT.finite_of_setIndependent [WellFoundedLT α] {s : Set α}
+    (hs : SetIndependent s) : s.Finite := by
+  by_contra inf
+  let e := (Infinite.diff inf <| finite_singleton ⊥).to_subtype.natEmbedding
+  let a n := ⨆ i ≥ n, (e i).1
+  have sup_le n : (e n).1 ⊔ a (n + 1) ≤ a n := sup_le_iff.mpr ⟨le_iSup₂_of_le n le_rfl le_rfl,
+    iSup₂_le fun i hi ↦ le_iSup₂_of_le i (n.le_succ.trans hi) le_rfl⟩
+  have lt n : a (n + 1) < a n := (Disjoint.right_lt_sup_of_left_ne_bot
+    ((hs (e n).2.1).mono_right <| iSup₂_le fun i hi ↦ le_sSup _ _ ?_) (e n).2.2).trans_le (sup_le n)
+  · exact (RelEmbedding.natGT a lt).not_wellFounded_of_decreasing_seq wellFounded_lt
+  exact ⟨(e i).2.1, fun h ↦ n.lt_succ_self.not_le <| hi.trans_eq <| e.2 <| Subtype.val_injective h⟩
+
+theorem WellFoundedLT.finite_ne_bot_of_independent [WellFoundedLT α]
+    {ι : Type*} {t : ι → α} (ht : Independent t) : Set.Finite {i | t i ≠ ⊥} := by
+  refine Finite.of_finite_image (Finite.subset ?_ (image_subset_range t _)) ht.injOn
+  exact WellFoundedLT.finite_of_setIndependent ht.setIndependent_range
+
+theorem WellFoundedLT.finite_of_independent [WellFoundedLT α] {ι : Type*}
+    {t : ι → α} (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Finite ι :=
+  haveI := (WellFoundedLT.finite_of_setIndependent ht.setIndependent_range).to_subtype
   Finite.of_injective_finite_range (ht.injective h_ne_bot)
 
 end CompleteLattice
@@ -313,7 +335,7 @@ class IsCompactlyGenerated (α : Type*) [CompleteLattice α] : Prop where
 
 section
 
-variable [IsCompactlyGenerated α] {a b : α} {s : Set α}
+variable [IsCompactlyGenerated α] {a : α} {s : Set α}
 
 @[simp]
 theorem sSup_compact_le_eq (b) :
@@ -328,7 +350,7 @@ theorem sSup_compact_eq_top : sSup { a : α | CompleteLattice.IsCompactElement a
 
 theorem le_iff_compact_le_imp {a b : α} :
     a ≤ b ↔ ∀ c : α, CompleteLattice.IsCompactElement c → c ≤ a → c ≤ b :=
-  ⟨fun ab c _ ca => le_trans ca ab, fun h => by
+  ⟨fun ab _ _ ca => le_trans ca ab, fun h => by
     rw [← sSup_compact_le_eq a, ← sSup_compact_le_eq b]
     exact sSup_le_sSup fun c hc => ⟨hc.1, h c hc.1 hc.2⟩⟩
 
@@ -394,7 +416,7 @@ theorem inf_sSup_eq_iSup_inf_sup_finset :
 theorem CompleteLattice.setIndependent_iff_finite {s : Set α} :
     CompleteLattice.SetIndependent s ↔
       ∀ t : Finset α, ↑t ⊆ s → CompleteLattice.SetIndependent (↑t : Set α) :=
-  ⟨fun hs t ht => hs.mono ht, fun h a ha => by
+  ⟨fun hs _ ht => hs.mono ht, fun h a ha => by
     rw [disjoint_iff, inf_sSup_eq_iSup_inf_sup_finset, iSup_eq_bot]
     intro t
     rw [iSup_eq_bot, Finset.sup_id_eq_sSup]
@@ -452,11 +474,34 @@ end
 
 namespace CompleteLattice
 
-theorem isCompactlyGenerated_of_wellFounded (h : WellFounded ((· > ·) : α → α → Prop)) :
+theorem isCompactlyGenerated_of_wellFoundedGT [h : WellFoundedGT α] :
     IsCompactlyGenerated α := by
-  rw [wellFounded_iff_isSupFiniteCompact, isSupFiniteCompact_iff_all_elements_compact] at h
+  rw [wellFoundedGT_iff_isSupFiniteCompact, isSupFiniteCompact_iff_all_elements_compact] at h
   -- x is the join of the set of compact elements {x}
   exact ⟨fun x => ⟨{x}, ⟨fun x _ => h x, sSup_singleton⟩⟩⟩
+
+@[deprecated (since := "2024-10-07")]
+alias WellFounded.isSupFiniteCompact := WellFoundedGT.isSupFiniteCompact
+@[deprecated (since := "2024-10-07")]
+alias IsSupClosedCompact.wellFounded := IsSupClosedCompact.wellFoundedGT
+@[deprecated (since := "2024-10-07")]
+alias wellFounded_characterisations := wellFoundedGT_characterisations
+@[deprecated (since := "2024-10-07")]
+alias wellFounded_iff_isSupFiniteCompact := wellFoundedGT_iff_isSupFiniteCompact
+@[deprecated (since := "2024-10-07")]
+alias isSupClosedCompact_iff_wellFounded := isSupClosedCompact_iff_wellFoundedGT
+@[deprecated (since := "2024-10-07")]
+alias IsSupFiniteCompact.wellFounded := IsSupFiniteCompact.wellFoundedGT
+@[deprecated (since := "2024-10-07")]
+alias _root_.WellFounded.isSupClosedCompact := WellFoundedGT.isSupClosedCompact
+@[deprecated (since := "2024-10-07")]
+alias WellFounded.finite_of_setIndependent := WellFoundedGT.finite_of_setIndependent
+@[deprecated (since := "2024-10-07")]
+alias WellFounded.finite_ne_bot_of_independent := WellFoundedGT.finite_ne_bot_of_independent
+@[deprecated (since := "2024-10-07")]
+alias WellFounded.finite_of_independent := WellFoundedGT.finite_of_independent
+@[deprecated (since := "2024-10-07")]
+alias isCompactlyGenerated_of_wellFounded := isCompactlyGenerated_of_wellFoundedGT
 
 /-- A compact element `k` has the property that any `b < k` lies below a "maximal element below
 `k`", which is to say `[⊥, k]` is coatomic. -/

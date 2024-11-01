@@ -130,8 +130,7 @@ end LinearOrderedAddCommMonoid
 section LinearOrderedAddCommGroup
 variable [LinearOrderedAddCommGroup α] [Module ℚ≥0 α] [PosSMulMono ℚ≥0 α]
 
--- TODO: Norm version
-lemma abs_expect_le_expect_abs (s : Finset ι) (f : ι → α) : |𝔼 i ∈ s, f i| ≤ 𝔼 i ∈ s, |f i| :=
+lemma abs_expect_le (s : Finset ι) (f : ι → α) : |𝔼 i ∈ s, f i| ≤ 𝔼 i ∈ s, |f i| :=
   le_expect_of_subadditive abs_zero abs_add (fun _ ↦ abs_nnqsmul _)
 
 end LinearOrderedAddCommGroup

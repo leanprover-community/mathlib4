@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
@@ -31,7 +31,7 @@ theorem range_eq_top_of_epi [Epi f] : LinearMap.range f = ⊤ :=
   LinearMap.range_eq_top_of_cancel fun u v => (@cancel_epi _ _ _ _ _ f _ (↟u) (↟v)).1
 
 theorem mono_iff_ker_eq_bot : Mono f ↔ LinearMap.ker f = ⊥ :=
-  ⟨fun hf => ker_eq_bot_of_mono _, fun hf =>
+  ⟨fun _ => ker_eq_bot_of_mono _, fun hf =>
     ConcreteCategory.mono_of_injective _ <| by convert LinearMap.ker_eq_bot.1 hf⟩
 
 theorem mono_iff_injective : Mono f ↔ Function.Injective f := by

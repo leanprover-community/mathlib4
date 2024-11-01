@@ -52,7 +52,7 @@ namespace MeasureTheory
 
 namespace Measure
 
-variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
+variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 
 /-- A pair of measures `μ` and `ν` is said to `HaveLebesgueDecomposition` if there exists a
 measure `ξ` and a measurable function `f`, such that `ξ` is mutually singular with respect to
@@ -369,7 +369,7 @@ theorem rnDeriv_lt_top (μ ν : Measure α) [SigmaFinite μ] : ∀ᵐ x ∂ν, �
   suffices ∀ n, ∀ᵐ x ∂ν, x ∈ spanningSets μ n → μ.rnDeriv ν x < ∞ by
     filter_upwards [ae_all_iff.2 this] with _ hx using hx _ (mem_spanningSetsIndex _ _)
   intro n
-  rw [← ae_restrict_iff' (measurable_spanningSets _ _)]
+  rw [← ae_restrict_iff' (measurableSet_spanningSets _ _)]
   apply ae_lt_top (measurable_rnDeriv _ _)
   refine (lintegral_rnDeriv_lt_top_of_measure_ne_top _ ?_).ne
   exact (measure_spanningSets_lt_top _ _).ne
@@ -777,7 +777,7 @@ theorem iSup_mem_measurableLE (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n �
       (fun a : α ↦ ⨆ (k : ℕ) (_ : k ≤ m + 1), f k a) = fun a ↦
         f m.succ a ⊔ ⨆ (k : ℕ) (_ : k ≤ m), f k a :=
       funext fun _ ↦ iSup_succ_eq_sup _ _ _
-    refine ⟨measurable_iSup fun n ↦ Measurable.iSup_Prop _ (hf n).1, fun A hA ↦ ?_⟩
+    refine ⟨.iSup fun n ↦ Measurable.iSup_Prop _ (hf n).1, fun A hA ↦ ?_⟩
     rw [this]; exact (sup_mem_measurableLE (hf m.succ) hm).2 A hA
 
 theorem iSup_mem_measurableLE' (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n ∈ measurableLE μ ν) (n : ℕ) :
@@ -846,7 +846,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
       · refine Filter.Eventually.of_forall fun a ↦ ?_
         simp [tendsto_atTop_iSup (iSup_monotone' f a)]
     have hξm : Measurable ξ := by
-      convert measurable_iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1
+      convert Measurable.iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1
       simp [hξ]
     -- `ξ` is the `f` in the theorem statement and we set `μ₁` to be `μ - ν.withDensity ξ`
     -- since we need `μ₁ + ν.withDensity ξ = μ`
@@ -900,7 +900,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
             (∫⁻ a in A ∩ E, ε + ξ a ∂ν) + ∫⁻ a in A \ E, ξ a ∂ν := by
           simp only [lintegral_add_left measurable_const, lintegral_add_left hξm,
             setLIntegral_const, add_assoc, lintegral_inter_add_diff _ _ hE₁, Pi.add_apply,
-            lintegral_indicator _ hE₁, restrict_apply hE₁]
+            lintegral_indicator hE₁, restrict_apply hE₁]
           rw [inter_comm, add_comm]
         rw [this, ← measure_inter_add_diff A hE₁]
         exact add_le_add (hε₂ A hA) (hξle (A \ E) (hA.diff hE₁))
@@ -908,7 +908,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
         le_sSup ⟨ξ + E.indicator fun _ ↦ (ε : ℝ≥0∞), hξε, rfl⟩
       -- but this contradicts the maximality of `∫⁻ x, ξ x ∂ν`
       refine not_lt.2 this ?_
-      rw [hξ₁, lintegral_add_left hξm, lintegral_indicator _ hE₁, setLIntegral_const]
+      rw [hξ₁, lintegral_add_left hξm, lintegral_indicator hE₁, setLIntegral_const]
       refine ENNReal.lt_add_right ?_ (ENNReal.mul_pos_iff.2 ⟨ENNReal.coe_pos.2 hε₁, hE₂⟩).ne'
       have := measure_ne_top (ν.withDensity ξ) univ
       rwa [withDensity_apply _ MeasurableSet.univ, Measure.restrict_univ] at this
@@ -922,7 +922,7 @@ then the same is true for any s-finite measure. -/
 theorem HaveLebesgueDecomposition.sfinite_of_isFiniteMeasure [SFinite μ]
     (_h : ∀ (μ : Measure α) [IsFiniteMeasure μ], HaveLebesgueDecomposition μ ν) :
     HaveLebesgueDecomposition μ ν :=
-  sum_sFiniteSeq μ ▸ sum_left _
+  sum_sfiniteSeq μ ▸ sum_left _
 
 attribute [local instance] haveLebesgueDecomposition_of_finiteMeasure
 
@@ -938,7 +938,7 @@ nonrec instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite
   · exact .sfinite_of_isFiniteMeasure fun μ _ ↦ this μ ‹_›
   -- Take a disjoint cover that consists of sets of finite measure `ν`.
   set s : ℕ → Set α := disjointed (spanningSets ν)
-  have hsm : ∀ n, MeasurableSet (s n) := .disjointed <| measurable_spanningSets _
+  have hsm : ∀ n, MeasurableSet (s n) := .disjointed <| measurableSet_spanningSets _
   have hs : ∀ n, Fact (ν (s n) < ⊤) := fun n ↦
     ⟨lt_of_le_of_lt (measure_mono <| disjointed_le ..) (measure_spanningSets_lt_top ν n)⟩
   -- Note that the restrictions of `μ` and `ν` to `s n` are finite measures.

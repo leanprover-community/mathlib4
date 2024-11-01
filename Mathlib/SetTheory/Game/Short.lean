@@ -136,7 +136,7 @@ def moveRightShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (j : xr) : Shor
 
 attribute [local instance] moveRightShort'
 
-theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omega := by
+theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omega0 := by
   -- Porting note: Again `induction` is used instead of `pgame_wf_tac`
   induction x with
   | mk xl xr xL xR ihl ihr =>
@@ -219,11 +219,8 @@ instance shortNat : ∀ n : ℕ, Short n
 
 instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short (no_index (OfNat.ofNat n)) := shortNat n
 
--- Porting note: `bit0` and `bit1` are deprecated so these instances can probably be removed.
-set_option linter.deprecated false in
 instance shortBit0 (x : PGame.{u}) [Short x] : Short (x + x) := by infer_instance
 
-set_option linter.deprecated false in
 instance shortBit1 (x : PGame.{u}) [Short x] : Short ((x + x) + 1) := shortAdd _ _
 
 /-- Auxiliary construction of decidability instances.

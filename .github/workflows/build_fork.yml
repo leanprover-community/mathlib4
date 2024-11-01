@@ -47,7 +47,7 @@ jobs:
         uses: credfeto/action-case-checker@v1.3.0
 
       - name: Look for ignored files
-        uses: credfeto/action-no-ignored-files@v1.1.0
+        uses: credfeto/action-no-ignored-files@v1.2.0
 
       - name: "Check for Lean files with the executable bit set"
         shell: bash
@@ -106,7 +106,7 @@ jobs:
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
-        uses: dcarbone/install-jq-action@v1.0.1
+        uses: dcarbone/install-jq-action@v2.1.0
 
       - name: install elan
         run: |
@@ -147,8 +147,8 @@ jobs:
         run: |
           rm -rf .lake/build/lib/Mathlib/
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
-          lake exe cache get Mathlib.Init
-          lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
+          lake exe cache get #Mathlib.Init
+          #lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
@@ -262,7 +262,7 @@ jobs:
       - name: build everything
         # make sure everything is available for test/import_all.lean
         run: |
-          lake build Batteries Qq Aesop ProofWidgets
+          lake build Batteries Qq Aesop ProofWidgets Plausible
 
       - name: test mathlib
         id: test
@@ -317,7 +317,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - id: PR
-        uses: 8BitJonny/gh-get-current-pr@2.2.0
+        uses: 8BitJonny/gh-get-current-pr@3.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
         # https://github.com/8BitJonny/gh-get-current-pr/issues/8
         with:

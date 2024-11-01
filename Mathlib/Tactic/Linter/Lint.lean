@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Batteries.Tactic.Lint
+import Mathlib.Tactic.DeclarationNames
 
 /-!
 # Linters for Mathlib
@@ -77,29 +78,20 @@ namespace DupNamespaceLinter
 
 open Lean Parser Elab Command Meta
 
-/-- `getIds stx` extracts the `declId` nodes from the `Syntax` `stx`.
-If `stx` is an `alias` or an `export`, then it extracts an `ident`, instead of a `declId`. -/
-partial
-def getIds : Syntax → Array Syntax
-  | .node _ `Batteries.Tactic.Alias.alias args => args[2:3]
-  | .node _ ``Lean.Parser.Command.export args => (args[3:4] : Array Syntax).map (·[0])
-  | stx@(.node _ _ args) =>
-    ((args.attach.map fun ⟨a, _⟩ ↦ getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
-  | _ => default
-
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if Linter.getLinterValue linter.dupNamespace (← getOptions) then
-    match getIds stx with
-      | #[id] =>
-        let ns := (← getScope).currNamespace
-        let declName := ns ++ (if id.getKind == ``declId then id[0].getId else id.getId)
-        let nm := declName.components
-        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
-          | return
-        Linter.logLint linter.dupNamespace id
-          m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
-      | _ => return
+    let mut aliases := #[]
+    if let some exp := stx.find? (·.isOfKind `Lean.Parser.Command.export) then
+      aliases ← getAliasSyntax exp
+    for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
+      let declName := id.getId
+      if declName.hasMacroScopes then continue
+      let nm := declName.components
+      let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
+        | continue
+      Linter.logLint linter.dupNamespace id
+        m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
 
 initialize addLinter dupNamespace
 
@@ -311,13 +303,19 @@ The "longFile" linter emits a warning on files which are longer than a certain n
 
 /--
 The "longFile" linter emits a warning on files which are longer than a certain number of lines
-(1500 by default on mathlib, no limit for downstream projects).
+(`linter.style.longFileDefValue` by default on mathlib, no limit for downstream projects).
 If this option is set to `N` lines, the linter warns once a file has more than `N` lines.
 A value of `0` silences the linter entirely.
 -/
 register_option linter.style.longFile : Nat := {
   defValue := 0
   descr := "enable the longFile linter"
+}
+
+/-- The number of lines that the `longFile` linter considers the default. -/
+register_option linter.style.longFileDefValue : Nat := {
+  defValue := 1500
+  descr := "a soft upper bound on the number of lines of each file"
 }
 
 namespace Style.longFile
@@ -327,7 +325,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let linterBound := linter.style.longFile.get (← getOptions)
   if linterBound == 0 then
     return
-  let defValue := 1500
+  let defValue := linter.style.longFileDefValue.get (← getOptions)
   let smallOption := match stx with
       | `(set_option linter.style.longFile $x) => TSyntax.getNat ⟨x.raw⟩ ≤ defValue
       | _ => false
@@ -348,6 +346,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if let some init := stx.getTailPos? then
     -- the last line: we subtract 1, since the last line is expected to be empty
     let lastLine := ((← getFileMap).toPosition init).line
+    -- In this case, the file has an allowed length, and the linter option is unnecessarily set.
     if lastLine ≤ defValue && defValue < linterBound then
       logWarningAt stx <| .tagged linter.style.longFile.name
         m!"The default value of the `longFile` linter is {defValue}.\n\
@@ -359,12 +358,23 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- `candidate` is necessarily bigger than `lastLine` and hence bigger than `defValue`
     let candidate := (lastLine / 100) * 100 + 200
     let candidate := max candidate defValue
-    if linterBound < lastLine then
+    -- In this case, the file is longer than the default and also than what the option says.
+    if defValue ≤ linterBound && linterBound < lastLine then
       logWarningAt stx <| .tagged linter.style.longFile.name
         m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\n\
           You can extend the allowed length of the file using \
           `set_option linter.style.longFile {candidate}`.\n\
           You can completely disable this linter by setting the length limit to `0`."
+    else
+    -- Finally, the file exceeds the default value, but not the option: we only allow the value
+    -- of the option to be `candidate` or `candidate + 100`.
+    -- In particular, this flags any option that is set to an unnecessarily high value.
+    if linterBound == candidate || linterBound + 100 == candidate then return
+    else
+      logWarningAt stx <| .tagged linter.style.longFile.name
+        m!"This file is {lastLine} lines long. \
+          The current limit is {linterBound}, but it is expected to be {candidate}:\n\
+          `set_option linter.style.longFile {candidate}`."
 
 initialize addLinter longFileLinter
 
@@ -408,7 +418,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       if (line.splitOn "http").length ≤ 1 then
         let stringMsg := if line.contains '"' then
           "\nYou can use \"string gaps\" to format long strings: within a string quotation, \
-          using a '\' at the end of a line allows you to continue the string on the following \
+          using a '\\' at the end of a line allows you to continue the string on the following \
           line, removing all intervening whitespace."
         else ""
         Linter.logLint linter.style.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)

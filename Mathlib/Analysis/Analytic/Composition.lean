@@ -186,7 +186,7 @@ def compAlongComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : C
     simp only [applyComposition_update, ContinuousMultilinearMap.map_smul]
   cont :=
     f.cont.comp <|
-      continuous_pi fun i => (coe_continuous _).comp <| continuous_pi fun j => continuous_apply _
+      continuous_pi fun _ => (coe_continuous _).comp <| continuous_pi fun _ => continuous_apply _
 
 @[simp]
 theorem compAlongComposition_apply {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
@@ -473,7 +473,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
         simp only [Finset.prod_mul_distrib, Finset.prod_pow_eq_pow_sum, c.sum_blocksFun]
       _ ≤ ∏ _i : Fin c.length, Cp := Finset.prod_le_prod' fun i _ => hCp _
       _ = Cp ^ c.length := by simp
-      _ ≤ Cp ^ n := pow_le_pow_right hCp1 c.length_le
+      _ ≤ Cp ^ n := pow_right_mono₀ hCp1 c.length_le
     calc
       ‖q.compAlongComposition p c‖₊ * r ^ n ≤
           (‖q c.length‖₊ * ∏ i, ‖p (c.blocksFun i)‖₊) * r ^ n :=
@@ -1043,7 +1043,7 @@ def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     a.blocks_pos
       (by
         rw [← a.blocks.join_splitWrtComposition b]
-        exact mem_join_of_mem (List.getElem_mem _ _ _) hi)
+        exact mem_join_of_mem (List.getElem_mem _) hi)
   blocks_sum := by simp [Composition.blocksFun, getElem_map, Composition.gather]
 
 theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
@@ -1109,7 +1109,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     have : sizeUpTo b i + Nat.succ j = (sizeUpTo b i + j).succ := rfl
     rw [this, sizeUpTo_succ _ D, IHj A, sizeUpTo_succ _ B]
     simp only [sigmaCompositionAux, add_assoc, add_left_inj, Fin.val_mk]
-    rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop, getElem_take _ _ C]
+    rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop, getElem_take' _ _ C]
 
 /-- Natural equivalence between `(Σ (a : Composition n), Composition a.length)` and
 `(Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocksFun i))`, that shows up as a

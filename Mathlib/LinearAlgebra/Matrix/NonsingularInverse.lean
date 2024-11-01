@@ -470,6 +470,10 @@ theorem nonsing_inv_nonsing_inv (h : IsUnit A.det) : A⁻¹⁻¹ = A :=
 theorem isUnit_nonsing_inv_det_iff {A : Matrix n n α} : IsUnit A⁻¹.det ↔ IsUnit A.det := by
   rw [Matrix.det_nonsing_inv, isUnit_ring_inverse]
 
+@[simp]
+theorem isUnit_nonsing_inv_iff {A : Matrix n n α} : IsUnit A⁻¹ ↔ IsUnit A := by
+  simp_rw [isUnit_iff_isUnit_det, isUnit_nonsing_inv_det_iff]
+
 -- `IsUnit.invertible` lifts the proposition `IsUnit A` to a constructive inverse of `A`.
 /-- A version of `Matrix.invertibleOfDetInvertible` with the inverse defeq to `A⁻¹` that is
 therefore noncomputable. -/
@@ -606,6 +610,24 @@ theorem inv_diagonal (v : n → α) : (diagonal v)⁻¹ = diagonal (Ring.inverse
     rw [Ring.inverse_non_unit _ h, Pi.zero_def, diagonal_zero, Ring.inverse_non_unit _ this]
 
 end Diagonal
+
+/-- The inverse of a 1×1 or 0×0 matrix is always diagonal.
+
+While we could write this as `of fun _ _ => Ring.inverse (A default default)` on the RHS, this is
+less useful because:
+
+* It wouldn't work for 0×0 matrices.
+* More things are true about diagonal matrices than constant matrices, and so more lemmas exist.
+
+`Matrix.diagonal_unique` can be used to reach this form, while `Ring.inverse_eq_inv` can be used
+to replace `Ring.inverse` with `⁻¹`.
+-/
+@[simp]
+theorem inv_subsingleton [Subsingleton m] [Fintype m] [DecidableEq m] (A : Matrix m m α) :
+    A⁻¹ = diagonal fun i => Ring.inverse (A i i) := by
+  rw [inv_def, adjugate_subsingleton, smul_one_eq_diagonal]
+  congr! with i
+  exact det_eq_elem_of_subsingleton _ _
 
 section Woodbury
 
@@ -753,5 +775,22 @@ theorem det_conj' {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) :
     det (M⁻¹ * N * M) = det N := by rw [← h.unit_spec, ← coe_units_inv, det_units_conj']
 
 end Det
+
+/-! ### More results about traces -/
+
+
+section trace
+
+variable [Fintype m] [DecidableEq m]
+
+/-- A variant of `Matrix.trace_units_conj`. -/
+theorem trace_conj {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) :
+    trace (M * N * M⁻¹) = trace N := by rw [← h.unit_spec, ← coe_units_inv, trace_units_conj]
+
+/-- A variant of `Matrix.trace_units_conj'`. -/
+theorem trace_conj' {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) :
+    trace (M⁻¹ * N * M) = trace N := by rw [← h.unit_spec, ← coe_units_inv, trace_units_conj']
+
+end trace
 
 end Matrix
