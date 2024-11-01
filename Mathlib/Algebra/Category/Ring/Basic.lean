@@ -139,6 +139,11 @@ theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x 
     ofHom f x = f x :=
   rfl
 
+/-- A variant of `ofHom_apply` that makes `simpNF` happy -/
+@[simp]
+theorem ofHom_apply' {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
+    DFunLike.coe (α := R) (β := fun _ ↦ S) (ofHom f) x = f x := rfl
+
 /--
 Ring equivalence are isomorphisms in category of semirings
 -/
@@ -199,10 +204,9 @@ def of (R : Type u) [Ring R] : RingCat :=
 def ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : of R ⟶ of S :=
   f
 
--- Porting note: I think this is now redundant.
--- @[simp]
--- theorem ofHom_apply {R S : Type u} [Ring R] [Ring S] (f : R →+* S) (x : R) : ofHom f x = f x :=
---   rfl
+theorem ofHom_apply {R S : Type u} [Ring R] [Ring S] (f : R →+* S) (x : R) : ofHom f x = f x :=
+  rfl
+
 
 instance : Inhabited RingCat :=
   ⟨of PUnit⟩
@@ -213,6 +217,11 @@ instance (R : RingCat) : Ring R :=
 @[simp]
 theorem coe_of (R : Type u) [Ring R] : (RingCat.of R : Type u) = R :=
   rfl
+
+/-- A variant of `ofHom_apply` that makes `simpNF` happy -/
+@[simp]
+theorem ofHom_apply' {R S : Type u} [Ring R] [Ring S] (f : R →+* S) (x : R) :
+    DFunLike.coe (α := R) (β := fun _ ↦ S) (ofHom f) x = f x := rfl
 
 -- Coercing the identity morphism, as a ring homomorphism, gives the identity function.
 @[simp] theorem coe_ringHom_id {X : RingCat} :
@@ -324,11 +333,14 @@ lemma RingEquiv_coe_eq {X Y : Type _} [CommSemiring X] [CommSemiring Y] (e : X �
       ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
--- Porting note: I think this is now redundant.
--- @[simp]
--- theorem ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) (x : R) :
---     ofHom f x = f x :=
---   rfl
+theorem ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) (x : R) :
+    ofHom f x = f x :=
+  rfl
+
+/-- A variant of `ofHom_apply` that makes `simpNF` happy -/
+@[simp]
+theorem ofHom_apply' {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) (x : R) :
+    DFunLike.coe (α := R) (β := fun _ ↦ S) (ofHom f) x = f x := rfl
 
 instance : Inhabited CommSemiRingCat :=
   ⟨of PUnit⟩
@@ -472,11 +484,15 @@ lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) 
       ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
--- Porting note: I think this is now redundant.
--- @[simp]
--- theorem ofHom_apply {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
---     ofHom f x = f x :=
---   rfl
+theorem ofHom_apply {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
+    ofHom f x = f x :=
+  rfl
+
+/-- A variant of `ofHom_apply` that makes `simpNF` happy -/
+@[simp]
+theorem ofHom_apply' {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
+    DFunLike.coe (α := R) (β := fun _ ↦ S) (ofHom f) x = f x := rfl
+
 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
@@ -582,6 +598,16 @@ theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
 theorem commRingIsoToRingEquiv_symm_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.symm.toRingHom = i.inv := by
   ext
+  rfl
+
+@[simp]
+lemma commRingIsoToRingEquiv_apply {X Y : CommRingCat} (i : X ≅ Y) (x : X) :
+    i.commRingCatIsoToRingEquiv x = i.hom x :=
+  rfl
+
+@[simp]
+lemma commRingIsoToRingEquiv_symm_apply {X Y : CommRingCat} (i : X ≅ Y) (y : Y) :
+    i.commRingCatIsoToRingEquiv.symm y = i.inv y :=
   rfl
 
 end CategoryTheory.Iso
