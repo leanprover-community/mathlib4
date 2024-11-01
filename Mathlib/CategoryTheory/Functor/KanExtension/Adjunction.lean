@@ -95,6 +95,9 @@ local instance : ∀ X, HasColimit (Grothendieck.ι (functor L) X ⋙ grothendie
   simp only [functor_obj, Cat.of_α]
   infer_instance
 
+/-- The left Kan extension of `F : C ⥤ H` along a functor `L : C ⥤ D` is isomorphic to the
+fiberwise colimit of the projection functor on the Grothendieck construction of the costructured
+arrow category composed with `F`. -/
 @[simps!]
 noncomputable def lanObjIsoFiberwiseColimit :
     L.lan.obj F ≅ fiberwiseColimit (grothendieckProj L ⋙ F) :=
@@ -106,8 +109,7 @@ noncomputable def lanObjIsoFiberwiseColimit :
 end
 
 variable (H) in
-/-- The left Kan extension functor `L.Lan` is left adjoint to the
-precomposition by `L`. -/
+/-- The left Kan extension functor `L.Lan` is left adjoint to the precomposition by `L`. -/
 noncomputable def lanAdjunction : L.lan ⊣ (whiskeringLeft C D H).obj L :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F G => homEquivOfIsLeftKanExtension _ (L.lanUnit.app F) G
@@ -175,8 +177,7 @@ the colimit of a canonical functor `Grothendieck (CostructuredArrow.functor L) �
 `L` and `G`. -/
 noncomputable def colimitIsoColimitGrothendieck (G : C ⥤ H) [HasColimitsOfShape C H]
     [HasColimitsOfShape D H] [L.HasPointwiseLeftKanExtension G] :
-    colimit G ≅
-    colimit (CostructuredArrow.grothendieckProj L ⋙ G) :=
+    colimit G ≅ colimit (CostructuredArrow.grothendieckProj L ⋙ G) :=
   ((lanCompColimIso L).app G).symm ≪≫
   HasColimit.isoOfNatIso (lanObjIsoFiberwiseColimit L G) ≪≫
   colimitFiberwiseColimitIso _
