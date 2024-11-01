@@ -4,14 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.GroupTheory.Congruence.BigOperators
-import Mathlib.RingTheory.Congruence.Basic
+import Mathlib.RingTheory.Congruence.Defs
 
 /-!
 # Interactions between `∑, ∏` and `RingCon`
 
 -/
-
-open BigOperators
 
 namespace RingCon
 

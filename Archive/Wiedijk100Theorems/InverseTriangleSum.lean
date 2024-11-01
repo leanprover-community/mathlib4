@@ -8,8 +8,6 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
-#align_import wiedijk_100_theorems.inverse_triangle_sum from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
-
 /-!
 # Sum of the Reciprocals of the Triangular Numbers
 
@@ -29,11 +27,8 @@ open Finset
 /-- **Sum of the Reciprocals of the Triangular Numbers** -/
 theorem Theorems100.inverse_triangle_sum :
     ∀ n, ∑ k ∈ range n, (2 : ℚ) / (k * (k + 1)) = if n = 0 then 0 else 2 - (2 : ℚ) / n := by
-  refine sum_range_induction _ _ (if_pos rfl) ?_
-  rintro (_ | n)
-  · rw [if_neg, if_pos] <;> norm_num
-  simp only [Nat.succ_ne_zero, ↓reduceIte, Nat.cast_succ]
-  have A : (n + 1 + 1 : ℚ) ≠ 0 := by norm_cast
+  refine sum_range_induction _ _ rfl ?_
+  rintro (_ | _)
+  · norm_num
   field_simp
   ring
-#align theorem_100.inverse_triangle_sum Theorems100.inverse_triangle_sum

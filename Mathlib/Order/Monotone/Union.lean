@@ -5,8 +5,6 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.Order.Bounds.Basic
 
-#align_import order.monotone.union from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
-
 /-!
 # Monotonicity on intervals
 
@@ -49,7 +47,6 @@ protected theorem StrictMonoOn.union {s t : Set α} {c : α} (h₁ : StrictMonoO
   · have xt : x ∈ t := B _ hx hcx
     have yt : y ∈ t := B _ hy (hcx.trans hxy.le)
     exact h₂ xt yt hxy
-#align strict_mono_on.union StrictMonoOn.union
 
 /-- If `f` is strictly monotone both on `(-∞, a]` and `[a, ∞)`, then it is strictly monotone on the
 whole line. -/
@@ -57,21 +54,18 @@ protected theorem StrictMonoOn.Iic_union_Ici (h₁ : StrictMonoOn f (Iic a))
     (h₂ : StrictMonoOn f (Ici a)) : StrictMono f := by
   rw [← strictMonoOn_univ, ← @Iic_union_Ici _ _ a]
   exact StrictMonoOn.union h₁ h₂ isGreatest_Iic isLeast_Ici
-#align strict_mono_on.Iic_union_Ici StrictMonoOn.Iic_union_Ici
 
 /-- If `f` is strictly antitone both on `s` and `t`, with `s` to the left of `t` and the center
 point belonging to both `s` and `t`, then `f` is strictly antitone on `s ∪ t` -/
 protected theorem StrictAntiOn.union {s t : Set α} {c : α} (h₁ : StrictAntiOn f s)
     (h₂ : StrictAntiOn f t) (hs : IsGreatest s c) (ht : IsLeast t c) : StrictAntiOn f (s ∪ t) :=
   (h₁.dual_right.union h₂.dual_right hs ht).dual_right
-#align strict_anti_on.union StrictAntiOn.union
 
 /-- If `f` is strictly antitone both on `(-∞, a]` and `[a, ∞)`, then it is strictly antitone on the
 whole line. -/
 protected theorem StrictAntiOn.Iic_union_Ici (h₁ : StrictAntiOn f (Iic a))
     (h₂ : StrictAntiOn f (Ici a)) : StrictAnti f :=
   (h₁.dual_right.Iic_union_Ici h₂.dual_right).dual_right
-#align strict_anti_on.Iic_union_Ici StrictAntiOn.Iic_union_Ici
 
 /-- If `f` is monotone both on `s` and `t`, with `s` to the left of `t` and the center
 point belonging to both `s` and `t`, then `f` is monotone on `s ∪ t` -/
@@ -101,24 +95,20 @@ protected theorem MonotoneOn.union_right {s t : Set α} {c : α} (h₁ : Monoton
   · have xt : x ∈ t := B _ hx hcx
     have yt : y ∈ t := B _ hy (hcx.trans hxy)
     exact h₂ xt yt hxy
-#align monotone_on.union_right MonotoneOn.union_right
 
 /-- If `f` is monotone both on `(-∞, a]` and `[a, ∞)`, then it is monotone on the whole line. -/
 protected theorem MonotoneOn.Iic_union_Ici (h₁ : MonotoneOn f (Iic a)) (h₂ : MonotoneOn f (Ici a)) :
     Monotone f := by
   rw [← monotoneOn_univ, ← @Iic_union_Ici _ _ a]
   exact MonotoneOn.union_right h₁ h₂ isGreatest_Iic isLeast_Ici
-#align monotone_on.Iic_union_Ici MonotoneOn.Iic_union_Ici
 
 /-- If `f` is antitone both on `s` and `t`, with `s` to the left of `t` and the center
 point belonging to both `s` and `t`, then `f` is antitone on `s ∪ t` -/
 protected theorem AntitoneOn.union_right {s t : Set α} {c : α} (h₁ : AntitoneOn f s)
     (h₂ : AntitoneOn f t) (hs : IsGreatest s c) (ht : IsLeast t c) : AntitoneOn f (s ∪ t) :=
   (h₁.dual_right.union_right h₂.dual_right hs ht).dual_right
-#align antitone_on.union_right AntitoneOn.union_right
 
 /-- If `f` is antitone both on `(-∞, a]` and `[a, ∞)`, then it is antitone on the whole line. -/
 protected theorem AntitoneOn.Iic_union_Ici (h₁ : AntitoneOn f (Iic a)) (h₂ : AntitoneOn f (Ici a)) :
     Antitone f :=
   (h₁.dual_right.Iic_union_Ici h₂.dual_right).dual_right
-#align antitone_on.Iic_union_Ici AntitoneOn.Iic_union_Ici

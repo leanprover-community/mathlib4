@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Module.LocalizedModule
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Localization.Module
 
 /-!
 # Localization of Submodules
@@ -27,7 +28,7 @@ Results about localizations of submodules and quotient modules are provided in t
 
 open nonZeroDivisors
 
-universe u u' v v'
+universe u u' v v' w w'
 
 variable {R : Type u} (S : Type u') {M : Type v} {N : Type v'}
 variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N]
@@ -48,9 +49,42 @@ def Submodule.localized' : Submodule S N where
     have ⟨y, t, hyt⟩ := IsLocalization.mk'_surjective p r
     exact ⟨y • m, M'.smul_mem y hm, t * s, by simp [← hyt, ← hx, IsLocalizedModule.mk'_smul_mk']⟩
 
+lemma Submodule.mem_localized' (x : N) :
+    x ∈ Submodule.localized' S p f M' ↔ ∃ m ∈ M', ∃ s : p, IsLocalizedModule.mk' f m s = x :=
+  Iff.rfl
+
 /-- The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`. -/
 abbrev Submodule.localized : Submodule (Localization p) (LocalizedModule p M) :=
   M'.localized' (Localization p) p (LocalizedModule.mkLinearMap p M)
+
+@[simp]
+lemma Submodule.localized'_bot : (⊥ : Submodule R M).localized' S p f = ⊥ := by
+  rw [← le_bot_iff]
+  rintro _ ⟨_, rfl, s, rfl⟩
+  simp only [IsLocalizedModule.mk'_zero, mem_bot]
+
+@[simp]
+lemma Submodule.localized'_top : (⊤ : Submodule R M).localized' S p f = ⊤ := by
+  rw [← top_le_iff]
+  rintro x _
+  obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f x
+  exact ⟨x, trivial, s, rfl⟩
+
+@[simp]
+lemma Submodule.localized'_span (s : Set M) : (span R s).localized' S p f = span S (f '' s) := by
+  apply le_antisymm
+  · rintro _ ⟨x, hx, t, rfl⟩
+    have := IsLocalizedModule.mk'_smul_mk' S f 1 x t 1
+    simp only [IsLocalizedModule.mk'_one, one_smul, mul_one] at this
+    rw [← this]
+    apply Submodule.smul_mem
+    rw [← Submodule.restrictScalars_mem R, ← Submodule.mem_comap]
+    refine (show span R s ≤ _ from ?_) hx
+    rw [← Submodule.map_le_iff_le_comap, Submodule.map_span]
+    exact span_le_restrictScalars _ _ _
+  · rw [Submodule.span_le, Set.image_subset_iff]
+    intro x hx
+    exact ⟨x, subset_span hx, 1, IsLocalizedModule.mk'_one _ _ _⟩
 
 /-- The localization map of a submodule. -/
 @[simps!]
@@ -113,3 +147,53 @@ instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
 
 instance (M' : Submodule R M) : IsLocalizedModule p (M'.toLocalizedQuotient p) :=
   IsLocalizedModule.toLocalizedQuotient' _ _ _ _
+
+section LinearMap
+
+variable {P : Type w} [AddCommGroup P] [Module R P]
+variable {Q : Type w'} [AddCommGroup Q] [Module R Q] [Module S Q] [IsScalarTower R S Q]
+variable (f' : P →ₗ[R] Q) [IsLocalizedModule p f']
+
+lemma LinearMap.localized'_ker_eq_ker_localizedMap (g : M →ₗ[R] P) :
+    Submodule.localized' S p f (LinearMap.ker g) =
+      LinearMap.ker ((IsLocalizedModule.map p f f' g).extendScalarsOfIsLocalization p S) := by
+  ext x
+  simp only [Submodule.mem_localized', mem_ker, extendScalarsOfIsLocalization_apply']
+  constructor
+  · rintro ⟨m, hm, a, ha, rfl⟩
+    rw [IsLocalizedModule.map_mk', hm]
+    simp
+  · intro h
+    obtain ⟨⟨a, b⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f x
+    simp only [Function.uncurry_apply_pair, IsLocalizedModule.map_mk',
+      IsLocalizedModule.mk'_eq_zero, IsLocalizedModule.eq_zero_iff p f'] at h
+    obtain ⟨c, hc⟩ := h
+    refine ⟨c • a, by simpa, c * b, by simp⟩
+
+lemma LinearMap.ker_localizedMap_eq_localized'_ker (g : M →ₗ[R] P) :
+    LinearMap.ker (IsLocalizedModule.map p f f' g) =
+      ((LinearMap.ker g).localized' S p f).restrictScalars _ := by
+  ext
+  simp [localized'_ker_eq_ker_localizedMap S p f f']
+
+/--
+The canonical map from the kernel of `g` to the kernel of `g` localized at a submonoid.
+
+This is a localization map by `LinearMap.toKerLocalized_isLocalizedModule`.
+-/
+@[simps!]
+noncomputable def LinearMap.toKerIsLocalized (g : M →ₗ[R] P) :
+    ker g →ₗ[R] ker (IsLocalizedModule.map p f f' g) :=
+  f.restrict (fun x hx ↦ by simp [LinearMap.mem_ker, LinearMap.mem_ker.mp hx])
+
+include S in
+/-- The canonical map to the kernel of the localization of `g` is localizing.
+In other words, localization commutes with kernels. -/
+lemma LinearMap.toKerLocalized_isLocalizedModule (g : M →ₗ[R] P) :
+    IsLocalizedModule p (toKerIsLocalized p f f' g) :=
+  let e : Submodule.localized' S p f (ker g) ≃ₗ[S]
+      ker ((IsLocalizedModule.map p f f' g).extendScalarsOfIsLocalization p S) :=
+    LinearEquiv.ofEq _ _ (localized'_ker_eq_ker_localizedMap S p f f' g)
+  IsLocalizedModule.of_linearEquiv p (Submodule.toLocalized' S p f (ker g)) (e.restrictScalars R)
+
+end LinearMap

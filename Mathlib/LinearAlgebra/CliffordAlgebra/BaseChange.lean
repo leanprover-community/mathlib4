@@ -32,7 +32,7 @@ We show the additional results:
 
 variable {R A V : Type*}
 variable [CommRing R] [CommRing A] [AddCommGroup V]
-variable [Algebra R A] [Module R V] [Module A V] [IsScalarTower R A V]
+variable [Algebra R A] [Module R V]
 variable [Invertible (2 : R)]
 
 open scoped TensorProduct
@@ -85,7 +85,7 @@ noncomputable def toBaseChange (Q : QuadraticForm R V) :
     letI : Invertible (2 : A ⊗[R] CliffordAlgebra Q) :=
       (Invertible.map (algebraMap R _) 2).copy 2 (map_ofNat _ _).symm
     suffices hpure_tensor : ∀ v w, (1 * 1) ⊗ₜ[R] (ι Q v * ι Q w) + (1 * 1) ⊗ₜ[R] (ι Q w * ι Q v) =
-        QuadraticForm.polarBilin (Q.baseChange A) (1 ⊗ₜ[R] v) (1 ⊗ₜ[R] w) ⊗ₜ[R] 1 by
+        QuadraticMap.polarBilin (Q.baseChange A) (1 ⊗ₜ[R] v) (1 ⊗ₜ[R] w) ⊗ₜ[R] 1 by
       -- the crux is that by converting to a statement about linear maps instead of quadratic forms,
       -- we then have access to all the partially-applied `ext` lemmas.
       rw [CliffordAlgebra.forall_mul_self_eq_iff (isUnit_of_invertible _)]
@@ -96,7 +96,7 @@ noncomputable def toBaseChange (Q : QuadraticForm R V) :
     intros v w
     rw [← TensorProduct.tmul_add, CliffordAlgebra.ι_mul_ι_add_swap,
       QuadraticForm.polarBilin_baseChange, LinearMap.BilinForm.baseChange_tmul, one_mul,
-      TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one, QuadraticForm.polarBilin_apply_apply]
+      TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one, QuadraticMap.polarBilin_apply_apply]
 
 @[simp] theorem toBaseChange_ι (Q : QuadraticForm R V) (z : A) (v : V) :
     toBaseChange A Q (ι (Q.baseChange A) (z ⊗ₜ v)) = z ⊗ₜ ι Q v :=

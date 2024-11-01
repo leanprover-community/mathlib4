@@ -1,6 +1,5 @@
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Lean.Exception
-import Mathlib.Util.Time
 import Qq.MetaM
 open Qq Lean Meta Elab Command ToAdditive
 
@@ -20,12 +19,12 @@ def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
 
 theorem bar0_works : bar0 3 4 = 7 := by decide
 
-class my_has_pow (α : Type u) (β : Type v) :=
+class my_has_pow (α : Type u) (β : Type v) where
   (pow : α → β → α)
 
 instance : my_has_pow Nat Nat := ⟨fun a b => a ^ b⟩
 
-class my_has_scalar (M : Type u) (α : Type v) :=
+class my_has_scalar (M : Type u) (α : Type v) where
   (smul : M → α → α)
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
@@ -125,14 +124,6 @@ example [Group α] (x : α) : foo17 x = x := by simp
 example [AddGroup α] (x : α) : bar17 x = 0 + x := by simp
 example [AddGroup α] (x : α) : bar17 x = x := by simp
 
-run_cmd do
-  let mul1 := `test.toAdditive._auxLemma |>.mkNum 1
-  let mul2 := `test.toAdditive._auxLemma |>.mkNum 2
-  let add1 := `test.toAdditive._auxLemma |>.mkNum 3
-  let add2 := `test.toAdditive._auxLemma |>.mkNum 4
-  unless findTranslation? (← getEnv) mul1 == some add1 do throwError "1"
-  unless findTranslation? (← getEnv) mul2 == some add2 do throwError "2"
-
 /- Testing nested to_additive calls -/
 @[to_additive (attr := simp, to_additive baz19) bar19]
 def foo19 := 1
@@ -153,6 +144,20 @@ example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
 def foo21 {N} {A} [Pow A N] (a : A) (n : N) : A := a ^ n
 
 run_cmd liftCoreM <| MetaM.run' <| guard <| relevantArgAttr.find? (← getEnv) `Test.foo21 == some 1
+
+@[to_additive bar22]
+abbrev foo22 {α} [Monoid α] (a : α) : ℕ → α
+  | 0 => 1
+  | _ => a
+
+run_cmd liftCoreM <| MetaM.run' <| do
+  -- make `abbrev` definition `reducible` automatically
+  guard <| (← getReducibilityStatus `Test.bar22) == .reducible
+  -- make `abbrev` definition `inline` automatically
+  guard <| (Compiler.getInlineAttribute? (← getEnv) `Test.bar22) == some .inline
+  -- some auxiliary definitions are also `abbrev` but not `reducible`
+  guard <| (← getReducibilityStatus `Test.bar22.match_1) != .reducible
+  guard <| (Compiler.getInlineAttribute? (← getEnv) `Test.bar22.match_1) == some .inline
 
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do

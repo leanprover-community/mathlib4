@@ -39,14 +39,18 @@ variable {X Y : C} (f g : X ⟶ Y)
 
 /-- A split equalizer diagram consists of morphisms
 
+```
       ι   f
     W → X ⇉ Y
           g
+```
 
 satisfying `ι ≫ f = ι ≫ g` together with morphisms
 
+```
       r   t
     W ← X ← Y
+```
 
 satisfying `ι ≫ r = 𝟙 W`, `g ≫ t = 𝟙 X` and `f ≫ t = r ≫ ι`.
 

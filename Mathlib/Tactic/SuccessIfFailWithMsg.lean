@@ -1,9 +1,11 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Simon Hudon, Sébastien Gouëzel, Scott Morrison, Thomas Murrills
+Authors: Mario Carneiro, Simon Hudon, Sébastien Gouëzel, Kim Morrison, Thomas Murrills
 -/
-import Lean
+import Lean.Elab.Eval
+import Lean.Elab.Tactic.BuiltinTactic
+import Mathlib.Init
 
 /-!
 # Success If Fail With Message
@@ -14,9 +16,7 @@ It's mostly useful in tests, where we want to make sure that tactics fail in cer
 circumstances.
 -/
 
-set_option autoImplicit true
-
-open Lean Elab Meta Tactic Syntax
+open Lean Elab Tactic
 
 namespace Mathlib.Tactic
 
@@ -28,7 +28,8 @@ syntax (name := successIfFailWithMsg) "success_if_fail_with_msg " term:max tacti
 
 /-- Evaluates `tacs` and succeeds only if `tacs` both fails and throws an error equal (as a string)
 to `msg`. -/
-def successIfFailWithMessage [Monad m] [MonadLiftT IO m] [MonadBacktrack s m] [MonadError m]
+def successIfFailWithMessage {s α : Type} {m : Type → Type}
+    [Monad m] [MonadLiftT IO m] [MonadBacktrack s m] [MonadError m]
     (msg : String) (tacs : m α) (ref : Option Syntax := none) : m Unit := do
   let s ← saveState
   let err ←
@@ -52,3 +53,5 @@ elab_rules : tactic
   Term.withoutErrToSorry <| withoutRecover do
     let msg ← unsafe Term.evalTerm String (.const ``String []) msg
     successIfFailWithMessage msg (evalTacticSeq tacs) tacs
+
+end Mathlib.Tactic
