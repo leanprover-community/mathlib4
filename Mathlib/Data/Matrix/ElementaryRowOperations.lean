@@ -84,7 +84,8 @@ def swapRow (M : Matrix m n α) (i : m) (j : m) : Matrix m n α :=
 --   rw [Matrix.updateRow_self]
 
 -- --If you swap Rows i and j then all other rows stay the same
--- lemma swapRownotij [DecidableEq m](M : Matrix m n α) (i : m) (j : m) (p : m) (h1 : p ≠ i) (h2 : p ≠ j)
+-- lemma swapRownotij [DecidableEq m](M : Matrix m n α) (i : m) (j : m) (p : m)
+ --(h1 : p ≠ i) (h2 : p ≠ j)
 --   : swapRow M i j p = M p := by
 --   rw [swapRow, dupRow]
 --   rw [Matrix.updateRow_ne, Matrix.updateRow_ne]
@@ -147,7 +148,8 @@ def swapRow (M : Matrix m n α) (i : m) (j : m) : Matrix m n α :=
 -- theorem swapMatOwnInv [DecidableEq n]
 --   [Fintype n]
 --   (i : n) (j : n)
---   : (elemMatSwap i j : Matrix n n γ) * (elemMatSwap i j : Matrix n n γ) = (1 : Matrix n n γ) := by
+--   : (elemMatSwap i j : Matrix n n γ) * (elemMatSwap i j : Matrix n n γ) =
+-- (1 : Matrix n n γ) := by
 --   rw [swapMatEqSwap, elemMatSwap, swapSwapEq]
 
 -- -- if M * N = P
@@ -276,7 +278,8 @@ section addMulRow
 def addMulRow [SMul R α] [Add α] (M : Matrix m n α) (i : m) (j : m) (x : R): Matrix m n α :=
   updateRow M i (M i + x • M j)
 
--- If you add a multiple of Row j into Row i, then it will be the original i plus the multiple of Row j
+-- If you add a multiple of Row j into Row i, then it will be the original i plus the
+-- multiple of Row j
 @[simp]
 lemma addMulRow_eq_add_mul_row [SMul R α] [Add α] (M : Matrix m n α) (i : m) (j : m) (x : R) :
     addMulRow M i j x i = M i + x • M j := by
@@ -293,7 +296,8 @@ lemma addMulRow_other_rows_same [SMul R α] [Add α] (M : Matrix m n α) (i : m)
   rw [addMulRow]
   rw [updateRow_ne h1]
 
--- If you add a multiple of Row j into Row i, then substract the same multiple of Row j from Row will get the original matrix back
+-- If you add a multiple of Row j into Row i, then substract the same multiple of Row j
+-- from Row will get the original matrix back
 @[simp]
 theorem addMulRow_addMulRow_neg_cancel [Ring R] [AddCommGroup α] [Module R α] (M : Matrix m n α)
     (i : m) (j : m) (h1 : j ≠ i) (x : R) :
@@ -309,7 +313,8 @@ theorem addMulRow_addMulRow_neg_cancel [Ring R] [AddCommGroup α] [Module R α] 
   · rw [updateRow_ne h]
     rw [updateRow_ne h]
 
--- Let Eijx by the elementary matrix formed by adding a multiple of Row j to Row i of the identity matrix
+-- Let Eijx by the elementary matrix formed by adding a multiple of Row j to
+-- Row i of the identity matrix
 -- Here we show that multiplying Eijx by M is the same as adding a multiple of Row j into Row i of M
 @[simp]
 theorem addMulRow_id_mul_eq_addMulRow_mat [Fintype m] [Fintype n]
@@ -350,7 +355,8 @@ end addMulRow
 end Matrix
 
 -- -- If you replace a row by the same row, the matrix is unchanged
--- lemma replaceSame [DecidableEq m](M : Matrix m n α) (i : m) : Matrix.updateRow M i (M i) = M := by
+-- lemma replaceSame [DecidableEq m](M : Matrix m n α) (i : m) :
+ -- Matrix.updateRow M i (M i) = M := by
 --   rw [← Matrix.ext_iff]
 --   intros p q
 --   by_cases peqi : p = i
