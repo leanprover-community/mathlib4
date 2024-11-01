@@ -626,7 +626,7 @@ instance maximal_of_maximum (s : Finset α) (M : G.IsMaximumClique s) : G.IsMaxi
       exact lt_irrefl _ (lt_of_lt_of_le hlt hle)
   }
 
-variable [fin : Fintype α]
+variable [Fintype α]
 
 lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
   rw [bddAbove_def]
