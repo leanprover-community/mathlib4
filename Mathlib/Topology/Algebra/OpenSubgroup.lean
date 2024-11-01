@@ -486,80 +486,51 @@ structure TopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
   isOpen : IsOpen T
   mul : W * T ⊆ W
 
-namespace TopologicalGroup
+namespace IsClopen
 
 variable [Group G] [TopologicalGroup G] [CompactSpace G]
 
 open Set Filter
 
 @[to_additive]
-lemma exist_mul_closure_nhd {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝 (1 : G), W * T ⊆ W := by
-  apply WClopen.isClosed.isCompact.induction_on (p := fun S ↦ ∃ T ∈ 𝓝 (1 : G), S * T ⊆ W)
-    ⟨Set.univ ,by simp only [univ_mem, empty_mul, empty_subset, and_self]⟩
-    (fun _ _ huv ⟨T, hT, mem⟩ ↦ ⟨T, hT, (mul_subset_mul_right huv).trans mem⟩)
-    fun U V ⟨T₁, hT₁, mem1⟩ ⟨T₂, hT₂, mem2⟩ ↦ ⟨T₁ ∩ T₂, inter_mem hT₁ hT₂, by
-      rw [union_mul]
-      exact union_subset (mul_subset_mul_left inter_subset_left |>.trans mem1)
-        (mul_subset_mul_left inter_subset_right |>.trans mem2) ⟩
-  intro x memW
-  have : (x, 1) ∈ (fun p ↦ p.1 * p.2) ⁻¹' W := by simp [memW]
-  rcases isOpen_prod_iff.mp (continuous_mul.isOpen_preimage W <| WClopen.2) x 1 this with
-    ⟨U, V, Uopen, Vopen, xmemU, onememV, prodsub⟩
-  have h6 : U * V ⊆ W := mul_subset_iff.mpr (fun _ hx _ hy ↦ prodsub (mk_mem_prod hx hy))
-  exact ⟨U ∩ W, ⟨U, Uopen.mem_nhds xmemU, W, fun _ a ↦ a, rfl⟩,
-    V, IsOpen.mem_nhds Vopen onememV, fun _ a ↦ h6 ((mul_subset_mul_right inter_subset_left) a)⟩
+theorem eventually_mul_subset {G : Type*} [Group G] [TopologicalSpace G]
+    [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) :
+    ∀ᶠ (x : G) in 𝓝 1, x • W ⊆ W := by
+  rw [← (𝓝 1 : Filter G).iSup_ultrafilter_le_eq]
+  simp_rw [eventually_iSup, smul_set_subset_iff, smul_eq_mul,
+    ← Ultrafilter.frequently_iff_eventually, Filter.Frequently]
+  by_contra!
+  rcases this with ⟨𝓤, h𝓤₁, h𝓤⟩
+  rcases h𝓤.choice with ⟨φ, hφ⟩
+  rcases isCompact_univ.ultrafilter_le_nhds (𝓤.map φ) (by simp) with ⟨c, -, φ_tendsto⟩
+  have : c ∈ W := WClopen.isClosed.mem_of_tendsto φ_tendsto (hφ.mono fun x ⟨h, _⟩ ↦ h)
+  have : c ∉ W := one_mul c ▸ WClopen.isOpen.isClosed_compl.mem_of_tendsto
+    (tendsto_id'.mpr h𝓤₁ |>.mul φ_tendsto) (hφ.mono fun x ⟨_, h⟩ ↦ h)
+  contradiction
 
 @[to_additive]
-lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
-    ∃ T, mulInvClosureNhd T W := by
-  rcases exist_mul_closure_nhd WClopen with ⟨S, Smemnhds, mulclose⟩
-  rcases mem_nhds_iff.mp Smemnhds with ⟨U, UsubS, Uopen, onememU⟩
-  use U ∩ U⁻¹
-  constructor
-  · simp [Uopen.mem_nhds onememU, inv_mem_nhds_one]
-  · simp [inter_comm]
-  · exact Uopen.inter Uopen.inv
-  · exact fun a ha ↦ mulclose (mul_subset_mul_left UsubS (mul_subset_mul_left inter_subset_left ha))
+theorem eventually_mul_eq {G : Type*} [Group G] [TopologicalSpace G]
+    [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) :
+    ∀ᶠ (x : G) in 𝓝 1, x • W = W := by
+  filter_upwards [WClopen.eventually_mul_subset, WClopen.compl.eventually_mul_subset] with a ha ha'
+  rw [smul_set_compl, compl_subset_compl] at ha'
+  exact subset_antisymm ha ha'
 
 @[to_additive]
-theorem exist_openSubgroup_sub_clopen_nhd_of_one {G : Type*} [Group G] [TopologicalSpace G]
+theorem exist_openSubgroup_subset {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
     ∃ H : OpenSubgroup G, (H : Set G) ⊆ W := by
-  rcases exists_mulInvClosureNhd WClopen with ⟨V, hV⟩
-  let S : Subgroup G := {
-    carrier := ⋃ n , V ^ (n + 1)
-    mul_mem' := fun ha hb ↦ by
-      rcases mem_iUnion.mp ha with ⟨k, hk⟩
-      rcases mem_iUnion.mp hb with ⟨l, hl⟩
-      apply mem_iUnion.mpr
-      use k + 1 + l
-      rw [add_assoc, pow_add]
-      exact Set.mul_mem_mul hk hl
-    one_mem' := by
-      apply mem_iUnion.mpr
-      use 0
-      simp [mem_of_mem_nhds hV.nhd]
-    inv_mem' := fun ha ↦ by
-      rcases mem_iUnion.mp ha with ⟨k, hk⟩
-      apply mem_iUnion.mpr
-      use k
-      rw [← hV.inv]
-      simpa only [inv_pow, Set.mem_inv, inv_inv] using hk }
-  have : IsOpen (⋃ n , V ^ (n + 1)) := by
-    refine isOpen_iUnion (fun n ↦ ?_)
-    rw [pow_succ]
-    exact hV.isOpen.mul_left
-  use ⟨S, this⟩
-  have mulVpow (n : ℕ) : W * V ^ (n + 1) ⊆ W := by
-    induction' n with n ih
-    · simp [hV.mul]
-    · rw [pow_succ, ← mul_assoc]
-      exact (Set.mul_subset_mul_right ih).trans hV.mul
-  have (n : ℕ) : V ^ (n + 1) ⊆ W * V ^ (n + 1) := by
-    intro x xin
-    rw [Set.mem_mul]
-    use 1, einW, x, xin
-    rw [one_mul]
-  apply iUnion_subset fun i _ a ↦ mulVpow i (this i a)
+  let H : Subgroup G :=
+  { carrier := {g | g • W = W},
+    mul_mem' := fun {a b} (ha : a • W = W) (hb : b • W = W) ↦ by
+      rw [mem_setOf_eq, mul_smul, hb, ha],
+    one_mem' := one_smul G W,
+    inv_mem' := fun {a} (ha : a • W = W) ↦ by
+      rw [mem_setOf_eq, ← ha, ← mul_smul, inv_mul_cancel, one_smul, ha] }
+  have : (H : Set G) ⊆ W := fun x hx ↦ by
+    rcases (inv_mem hx) ▸ einW with ⟨g, hgW, hg⟩
+    simp only [smul_eq_mul, inv_mul_eq_one] at hg
+    exact hg ▸ hgW
+  exact ⟨⟨H, H.isOpen_of_mem_nhds (g := 1) WClopen.eventually_mul_eq⟩, this⟩
 
-end TopologicalGroup
+end IsClopen
