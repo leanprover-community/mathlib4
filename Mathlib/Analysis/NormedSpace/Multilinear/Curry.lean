@@ -495,13 +495,14 @@ multilinear map with variables indexed by `ι` taking values in the space of con
 maps with variables indexed by `ι'`. -/
 def currySum (f : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G') :
     ContinuousMultilinearMap 𝕜 (fun _ : ι => G) (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G') :=
-  MultilinearMap.mkContinuousMultilinear (MultilinearMap.currySum f.toMultilinearMap) ‖f‖
-    fun m m' => by simpa [Fintype.prod_sum_type, mul_assoc] using f.le_opNorm (Sum.elim m m')
+  MultilinearMap.mkContinuousMultilinear (MultilinearMap.currySumEquiv f.toMultilinearMap) ‖f‖
+    fun m m' => by simpa [Sum.desc_eq_elim, mul_assoc] using f.le_opNorm (Sum.elim m m')
 
 @[simp]
 theorem currySum_apply (f : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G') (m : ι → G)
-    (m' : ι' → G) : f.currySum m m' = f (Sum.elim m m') :=
-  rfl
+    (m' : ι' → G) : f.currySum m m' = f (Sum.elim m m') := by
+  dsimp [currySum]
+  rw [Sum.desc_eq_elim]
 
 /-- A continuous multilinear map with variables indexed by `ι` taking values in the space of
 continuous multilinear maps with variables indexed by `ι'` defines a continuous multilinear map with
@@ -510,7 +511,8 @@ def uncurrySum (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)
     (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G')) :
     ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' :=
   MultilinearMap.mkContinuous
-    (toMultilinearMapLinear.compMultilinearMap f.toMultilinearMap).uncurrySum ‖f‖ fun m => by
+    (MultilinearMap.currySumEquiv.symm
+      (toMultilinearMapLinear.compMultilinearMap f.toMultilinearMap)) ‖f‖ fun m => by
     simpa [Fintype.prod_sum_type, mul_assoc] using
       (f (m ∘ Sum.inl)).le_of_opNorm_le (m ∘ Sum.inr) (f.le_opNorm _)
 
@@ -542,7 +544,7 @@ def currySumEquiv : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' �
         rfl
       left_inv := fun f => by
         ext m
-        exact congr_arg f (Sum.elim_comp_inl_inr m)
+        simp only [uncurrySum_apply, currySum_apply, Sum.elim_comp_inl_inr]
       right_inv := fun f => by
         ext m₁ m₂
         rfl }
@@ -571,7 +573,7 @@ variable {𝕜 G G'}
 theorem curryFinFinset_apply (hk : #s = k) (hl : #sᶜ = l) (f : G[×n]→L[𝕜] G')
     (mk : Fin k → G) (ml : Fin l → G) : curryFinFinset 𝕜 G G' hk hl f mk ml =
       f fun i => Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i) :=
-  rfl
+  congr_arg f (by simp only [Sum.desc_eq_elim])
 
 @[simp]
 theorem curryFinFinset_symm_apply (hk : #s = k) (hl : #sᶜ = l)
