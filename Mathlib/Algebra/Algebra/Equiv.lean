@@ -822,7 +822,7 @@ A₁ <------> A₂
 |           |
 |           |
 S --------> R
-in which `Algebra S A₂` is definied by `Algebra.compHom A₂ f`
+in which `Algebra S A₂` is defined by `Algebra.compHom A₂ f`
 -/
 @[simps apply symm_apply toEquiv]
 def ofRingEquiv_compHom
