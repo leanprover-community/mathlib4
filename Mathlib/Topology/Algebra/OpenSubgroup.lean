@@ -460,37 +460,17 @@ end
 /-!
 # Existence of an open subgroup in any clopen neighborhood of the neutral element
 
-This section proves the lemma `TopologicalGroup.exist_openSubgroup_sub_clopen_nhd_of_one`, which
+This section proves the lemma `IsClopen.exist_openSubgroup_subset`, which
 states that in a compact topological group, for any clopen neighborhood of 1,
 there exists an open subgroup contained within it.
 -/
 
-open scoped Pointwise
-
-variable {G : Type*} [TopologicalSpace G]
-
-structure TopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop where
-  nhd : T ∈ 𝓝 0
-  neg : -T = T
-  isOpen : IsOpen T
-  add : W + T ⊆ W
-
-/-- For a set `W`, `T` is a neighborhood of `1` which is open, statble under inverse and satisfies
-`T * W ⊆ W`. -/
-@[to_additive
-"For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies
-`T + W ⊆ W`. "]
-structure TopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
-  nhd : T ∈ 𝓝 1
-  inv : T⁻¹ = T
-  isOpen : IsOpen T
-  mul : W * T ⊆ W
-
 namespace IsClopen
 
-variable [Group G] [TopologicalGroup G] [CompactSpace G]
-
+open scoped Pointwise
 open Set Filter
+
+variable {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G] [CompactSpace G]
 
 @[to_additive]
 theorem eventually_mul_subset {W : Set G} (WClopen : IsClopen W) :
