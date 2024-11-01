@@ -138,7 +138,7 @@ private def CacheM.getContext : IO CacheM.Context := do
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
     ("Qq", LAKEPACKAGESDIR / "Qq"),
     ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
-    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient")
+    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
     ("Plausible", LAKEPACKAGESDIR / "plausible")
   ]⟩
 
