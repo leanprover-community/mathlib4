@@ -75,7 +75,7 @@ of Faa di Bruno formula to identify the sums that show up.
 
 For now, the file only contains the combinatorial construction, i.e., the definition of
 `OrderedFinpartition n` and the equivalence between
-`((c : OrderedFinpartition n) × Option (Fin c.length))` and `OrderedFinpartition (n + 1)`.
+`(c : OrderedFinpartition n) × Option (Fin c.length)` and `OrderedFinpartition (n + 1)`.
 The application to the proof of the Faa di Bruno formula will be PRed in a second step.
 -/
 
@@ -118,7 +118,7 @@ namespace OrderedFinpartition
   emb_strictMono _ := Subsingleton.strictMono _
   parts_strictMono := strictMono_id
   disjoint _ _ _ _ h := by simpa using h
-  cover := eq_univ_of_forall (fun m ↦ by simp)
+  cover m := by simp
 
 variable {n : ℕ} (c : OrderedFinpartition n)
 
@@ -159,9 +159,7 @@ instance : Unique (OrderedFinpartition 0) := by
 
 lemma exists_inverse {n : ℕ} (c : OrderedFinpartition n) (j : Fin n) :
     ∃ p : Σ m, Fin (c.partSize m), c.emb p.1 p.2 = j := by
-  have : j ∈ ⋃ m, range (c.emb m) := by rw [OrderedFinpartition.cover]; exact mem_univ _
-  simp only [mem_iUnion, mem_range] at this
-  rcases this with ⟨m, r, hmr⟩
+  rcases c.cover j with ⟨m, r, hmr⟩
   exact ⟨⟨m, r⟩, hmr⟩
 
 lemma emb_injective : Injective (fun (p : Σ m, Fin (c.partSize m)) ↦ c.emb p.1 p.2) := by
@@ -272,7 +270,7 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
   length := c.length + 1
   partSize := Fin.cons 1 c.partSize
   partSize_pos := Fin.cases (by simp) (by simp [c.partSize_pos])
-  emb := Fin.cases (fun _ ↦ 0) (Fin.tail ∘ c.emb)
+  emb := Fin.cases (fun _ ↦ 0) (fun m ↦ Fin.succ ∘ c.emb m)
   emb_strictMono := by
     refine Fin.cases ?_ (fun i ↦ ?_)
     · exact @Subsingleton.strictMono _ _ _ _ (by simp; infer_instance) _
@@ -307,7 +305,6 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
         intro a b
         apply c.emb_ne_emb_of_ne (by simpa using hij)
   cover := by
-    apply eq_univ_of_forall
     refine Fin.cases ?_ (fun i ↦ ?_)
     · simp only [mem_iUnion, mem_range]
       exact ⟨0, ⟨0, by simp⟩, by simp⟩
@@ -335,13 +332,13 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
         rw [h]; simp
       exact (Fin.cases 0 (succ ∘ (c.emb k))) ∘ (Fin.cast this)
     · have : update c.partSize k (c.partSize k + 1) m = c.partSize m := by simp [h]
-      exact succ ∘ (c.emb m) ∘ (Fin.cast this)
+      exact succ ∘ c.emb m ∘ Fin.cast this
   emb_strictMono := by
     intro m
     rcases eq_or_ne m k with rfl | hm
     · suffices ∀ (a' b' : Fin (c.partSize m + 1)), a' < b' →
-          (cases (motive := fun _ ↦ Fin (n + 1)) 0 (tail <| c.emb m)) a' <
-          (cases (motive := fun _ ↦ Fin (n + 1)) 0 (tail <| c.emb m)) b' by
+          (cases (motive := fun _ ↦ Fin (n + 1)) 0 (succ ∘ c.emb m)) a' <
+          (cases (motive := fun _ ↦ Fin (n + 1)) 0 (succ ∘ c.emb m)) b' by
         simp only [↓reduceDIte, comp_apply]
         intro a b hab
         exact this _ _ hab
@@ -396,7 +393,6 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
       intro a b
       apply c.emb_ne_emb_of_ne hij
   cover := by
-    apply eq_univ_of_forall
     refine Fin.cases ?_ (fun i ↦ ?_)
     · simp only [mem_iUnion, mem_range]
       exact ⟨k, ⟨0, by simp⟩, by simp⟩
@@ -467,8 +463,7 @@ def eraseLeft (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) = {0}) :
     simp only [mem_range, ne_eq, forall_exists_index, forall_apply_eq_imp_iff, pred_inj]
     intro a b
     exact c.emb_ne_emb_of_ne ((cast_injective _).ne (by simpa using hij))
-  cover := by
-    apply eq_univ_of_forall (fun x ↦ ?_)
+  cover x := by
     simp only [mem_iUnion, mem_range]
     obtain ⟨i, j, hij⟩ : ∃ (i : Fin c.length), ∃ (j : Fin (c.partSize i)), c.emb i j = succ x :=
       ⟨c.index (succ x), c.invEmbedding (succ x), by simp⟩
@@ -569,8 +564,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
       simp only [mem_range, ne_eq, forall_exists_index, forall_apply_eq_imp_iff, pred_inj]
       intro a b
       exact c.emb_ne_emb_of_ne hij
-  cover := by
-    apply eq_univ_of_forall (fun x ↦ ?_)
+  cover x := by
     simp only [mem_iUnion, mem_range]
     obtain ⟨i, j, hij⟩ : ∃ (i : Fin c.length), ∃ (j : Fin (c.partSize i)), c.emb i j = succ x :=
       ⟨c.index (succ x), c.invEmbedding (succ x), by simp⟩
@@ -615,7 +609,7 @@ def extendEquiv (n : ℕ) :
         and_true]
       rfl
     | some i =>
-      simp only [extend, range_extendMiddle_emb_ne_singleton_zero, ↓reduceDIte,
+      simp only [extend, range_emb_extendMiddle_ne_singleton_zero, ↓reduceDIte,
         Sigma.mk.inj_iff, heq_eq_eq, and_true, eraseMiddle, Nat.succ_eq_add_one,
         index_extendMiddle_zero]
       ext
