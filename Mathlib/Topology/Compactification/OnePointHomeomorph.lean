@@ -5,6 +5,7 @@ Authors: Bjørn Kjos-Hanssen
 -/
 import Mathlib.Topology.Compactification.OnePointEquiv
 import Mathlib.Topology.Compactification.OnePointRealLemmas
+import Mathlib.Geometry.Manifold.Instances.Sphere
 -- abs_le_inv, open_nonzero, symmetrize, dist_cone_pos, dist_cone_neg, pos_or_neg
 -- import Mathlib.Data.Real.Sqrt
 -- import Mathlib.Topology.Instances.Real
@@ -399,14 +400,17 @@ theorem div_slope_continuous : Continuous div_slope := by
   apply continuous_quot_lift
   apply div_slope_continuous_unlifted
 
+lemma nonzero_of_dist_one {n : ℕ} (p : {v : Fin n → ℝ // dist v 0 = 1}) :
+    p.1 ≠ 0 := by
+      intro hc
+      apply @one_ne_zero ℝ
+      rw [← p.2, hc]
+      exact dist_self 0
+
 /-- List from unit circle to projectivization. -/
-def lift_unit_circle {n:ℕ}  : {v : Fin n → ℝ // dist v 0 = 1} → ℙ ℝ (Fin n → ℝ) := by
-  intro v
-  exact mk' ℝ ⟨v.1,by
-    intro hc;
-    have : dist v.1 0 = 1 := v.2
-    rw [hc] at this;simp_all
-  ⟩
+def lift_unit_circle {n:ℕ} (v : {v : Fin n → ℝ // dist v 0 = 1}) : ℙ ℝ (Fin n → ℝ) :=
+    mk' ℝ ⟨v.1, nonzero_of_dist_one _⟩
+
 
 /-- List from unit circle to projectivization is surjective. -/
 lemma surjective_lift_unit_circle {n:ℕ} :
@@ -422,6 +426,75 @@ lemma surjective_lift_unit_circle {n:ℕ} :
     simp
   )
 
+instance {n : ℕ}: Setoid {v : Fin n → ℝ // v ≠ 0} :=
+    @projectivizationSetoid ℝ (Fin n → ℝ) _ _ _
+
+
+/-- Lift from (part of) unit circle to projectivization is injective. -/
+lemma injective_lift_unit_circle {n : ℕ} : Function.Injective
+    (fun p :{ w : { v : Fin n.succ → ℝ // dist v 0 = 1 } // w.1 0 > 0}
+        => @lift_unit_circle n.succ p.1) := by
+  unfold Function.Injective
+  intro p q h
+  unfold lift_unit_circle at h
+  simp at h
+  have hQ := @Quotient.eq {v : Fin n.succ → ℝ // v ≠ 0}
+    (@projectivizationSetoid ℝ (Fin n.succ → ℝ) _ _ _)
+    ⟨p.1,nonzero_of_dist_one _⟩
+    ⟨q.1,nonzero_of_dist_one _⟩
+  have H := hQ.mp h
+  obtain ⟨c,hc⟩ := H
+  simp at hc
+  have hp := p.1.2
+  have hq := q.1.2
+  apply Subtype.ext
+  apply Subtype.ext
+  rw [dist_pi_def] at hp hq
+  simp at hp hq
+  rw [← hc] at hp
+  simp at hp
+  have g₀ (b : Fin n.succ) := @nnnorm_smul ℝ ℝ _ _ _ _ c (q.1.1 b)
+  have h₀ : (Finset.univ.sup fun b ↦  ‖c.1‖₊ * ‖q.1.1 b‖₊) = 1 := by
+    rw [← hp]
+    congr
+    ext b
+    exact Eq.symm ((fun {r₁ r₂} ↦ NNReal.coe_inj.mpr) (g₀ b))
+  have h₁ : (Finset.univ.sup fun b ↦ ‖c.1‖₊ * ‖q.1.1 b‖₊)
+    = ‖c.1‖₊ * (Finset.univ.sup fun b ↦  ‖q.1.1 b‖₊) := by
+    exact Eq.symm (NNReal.mul_finset_sup ‖c.1‖₊ Finset.univ fun b ↦ ‖q.1.1 b‖₊);
+  rw [h₁, hq] at h₀
+  simp at h₀
+  have g₁ : c = 1 := by
+    refine Units.val_eq_one.mp ?_
+    refine Real.toNNReal_eq_one.mp ?_
+    rw [← h₀]
+    refine Real.toNNReal_eq_nnnorm_of_nonneg ?hr
+    have : c • q.1.1 0 = p.1.1 0 := by
+        have c₀:= congrFun hc 0
+        aesop
+    -- have H : c = 1 ∨ c = -1 := by
+    --     clear hQ hp hq g₀ h₁ hc this h p q
+    --     sorry
+    have : c.1 = 1 ∨ c.1 = -1 := by
+        clear hQ hp hq g₀ h₁ hc this h p q
+        have :  ‖c.1‖₊ = |c.1| := by exact rfl
+        aesop
+        exact eq_or_eq_neg_of_abs_eq rfl
+    cases this with
+    | inl h =>
+        simp_all
+    | inr h =>
+        exfalso
+        rw [show c • q.1.1 0 = c.1 * q.1.1 0 by rfl] at this
+        rw [h] at this
+        simp at this
+        have := p.2
+        have := q.2
+        linarith
+  rw [g₁] at hc
+  simp_all
+
+
 /-- List from unit circle to projectivization is continuous. -/
 lemma continuous_lift_unit_circle {n:ℕ} : Continuous (@lift_unit_circle n) := by
   unfold lift_unit_circle
@@ -431,6 +504,10 @@ lemma continuous_lift_unit_circle {n:ℕ} : Continuous (@lift_unit_circle n) := 
 
 /-- Unit circle is compact. -/
 instance {n:ℕ} : CompactSpace {v : Fin n → ℝ // dist v 0 = 1} := Metric.sphere.compactSpace 0 1
+
+instance {n:ℕ} : T2Space {v : Fin n → ℝ // dist v 0 = 1} := inferInstance
+
+-- Create an equiv between unit circle and projectivization to show T2ness.
 
 /-- Projectivization is compact. -/
 instance {n:ℕ} : CompactSpace (ℙ ℝ (Fin n → ℝ)) := by
@@ -451,7 +528,7 @@ instance :  T2Space (ℙ ℝ (Fin 2 → ℝ)) := Homeomorph.t2Space OnePointHome
 /-- Nonvertical map has range missing one point. -/
 theorem nonVertical_hasRange :
     Set.range (fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ)))
-    = {⟦⟨![1, 0], by simp⟩⟧}ᶜ := Set.ext <| Quotient.ind <| fun p => by
+                     = {⟦⟨![1, 0], by simp⟩⟧}ᶜ := Set.ext <| Quotient.ind <| fun p => by
   simp only [ne_eq, Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
   constructor
   · intro ⟨y,hy⟩ hc
@@ -508,8 +585,19 @@ theorem nonVertical_isInjective :
   simp_all
 
 /-- Nonvertical map is inducing. -/
-theorem nonVertical_isInducing : IsInducing fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ)) :=
-  isInducing_iff_nhds.mpr <| by
+theorem nonVertical_isInducing : IsInducing fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ)) := by
+  have If : IsOpenMap (fun r : ℝ => div_slope_equiv r) := IsOpenMap.comp (fun S =>
+    (show ⇑div_slope_equiv '' S = OnePointHomeo.toFun ⁻¹' S by aesop)
+    ▸ OnePointHomeo.continuous_toFun.isOpen_preimage S) OnePoint.isOpenMap_coe
+  have h₀ : Continuous (fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ))) := by
+    apply Continuous.comp' continuous_quotient_mk'
+    apply Continuous.subtype_mk <| continuous_pi fun i => by
+      fin_cases i; exact continuous_id'; exact continuous_const
+
+
+
+
+  exact isInducing_iff_nhds.mpr <| by
     intro x
     ext s
     simp only [ne_eq, Filter.mem_comap]
@@ -518,11 +606,6 @@ theorem nonVertical_isInducing : IsInducing fun r ↦ (⟦⟨![r, 1], by simp⟩
     constructor
     · intro h
       obtain ⟨l,u,hu⟩ := h
-      have If : IsOpenMap (fun r : ℝ => div_slope_equiv r) := by
-        exact IsOpenMap.comp (fun S =>
-          (show ⇑div_slope_equiv '' S = OnePointHomeo.toFun ⁻¹' S by aesop)
-          ▸ OnePointHomeo.continuous_toFun.isOpen_preimage S)
-          OnePoint.isOpenMap_coe
       let f := fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ))
       use f '' (Set.Ioo l u)
       constructor
@@ -546,10 +629,6 @@ theorem nonVertical_isInducing : IsInducing fun r ↦ (⟦⟨![r, 1], by simp⟩
     · intro h
       obtain ⟨t,ht⟩ := h
       obtain ⟨t₁,ht₁⟩ := ht.1
-      have h₀ : Continuous (fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ))) := by
-        apply Continuous.comp' continuous_quotient_mk'
-        apply Continuous.subtype_mk <| continuous_pi fun i => by
-          fin_cases i; exact continuous_id'; exact continuous_const
       have h₁ : IsOpen <|(fun r ↦ ⟦⟨![r, 1], by simp⟩⟧) ⁻¹' t₁ :=
           h₀.isOpen_preimage t₁ ht₁.2.1
       rw [← mem_nhds_iff_exists_Ioo_subset]
