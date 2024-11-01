@@ -58,10 +58,12 @@ noncomputable def isPointwiseLeftKanExtensionLanUnit
     (LeftExtension.mk _ (L.lanUnit.app F)).IsPointwiseLeftKanExtension :=
   isPointwiseLeftKanExtensionOfIsLeftKanExtension (F := F) _ (L.lanUnit.app F)
 
+open CostructuredArrow
+
 /-- If a left Kan extension is pointwise, then evaluating it at an object is isomorphic to
 taking a colimit. -/
 noncomputable def lanObjObjIsoColimit (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) :
-    (L.lan.obj F).obj X ≅ Limits.colimit (CostructuredArrow.proj L X ⋙ F) :=
+    (L.lan.obj F).obj X ≅ Limits.colimit (proj L X ⋙ F) :=
   LeftExtension.IsPointwiseLeftKanExtensionAt.isoColimit (F := F)
    (isPointwiseLeftKanExtensionLanUnit L F X)
 
@@ -76,21 +78,26 @@ lemma ι_lanObjObjIsoColimit_inv
 lemma ι_lanObjObjIsoColimit_hom
     (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) (f : CostructuredArrow L X) :
     (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom ≫ (L.lanObjObjIsoColimit F X).hom =
-    Limits.colimit.ι (CostructuredArrow.proj L X ⋙ F) f :=
+    Limits.colimit.ι (proj L X ⋙ F) f :=
   LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
     (isPointwiseLeftKanExtensionLanUnit L F X) f
 
-example (F : C ⥤ H) [HasPointwiseLeftKanExtension L F]
-    [∀ X, HasColimitsOfShape ↑((𝟭 D ⋙ CostructuredArrow.functor L).obj X) H] :  -- TODO make local inst
+@[simps!]
+noncomputable def lanObjIsoFiberwiseColimit (F : C ⥤ H) [HasPointwiseLeftKanExtension L F]
+    [∀ X, HasColimitsOfShape ↑((𝟭 D ⋙ functor L).obj X) H]
+    [∀ X, HasColimit (Grothendieck.ι (𝟭 D ⋙ functor L) X ⋙
+      grothendieckPrecompFunctorToComma L (𝟭 D) ⋙ Comma.fst L (𝟭 D) ⋙ F)] :  -- TODO make local inst
     L.lan.obj F ≅
-    fiberwiseColimit (CostructuredArrow.grothendieckPrecompFunctorToComma L (𝟭 _) ⋙
-      Comma.fst L (𝟭 _) ⋙ F) :=
-  NatIso.ofComponents
-    (fun X => lanObjObjIsoColimit L F X ≪≫ (by { simp;  }))
-    _
-
-#check CostructuredArrow.grothendieckPrecompFunctorToComma
-#check Str
+    fiberwiseColimit (grothendieckPrecompFunctorToComma L (𝟭 _) ⋙ Comma.fst L (𝟭 _) ⋙ F) :=
+  Iso.symm <| NatIso.ofComponents
+    (fun X => HasColimit.isoOfNatIso
+        (isoWhiskerRight (ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 D) X) F) ≪≫
+      (lanObjObjIsoColimit L F X).symm)
+    fun f => by
+      simp only [comp_obj, id_obj, functor_obj, Cat.of_α, comp_map, id_map, functor_map,
+        fiberwiseColimit_obj, fiberwiseColimit_map, Iso.trans_hom, Iso.symm_hom, assoc]
+      ext d
+      simp
 
 variable (H) in
 /-- The left Kan extension functor `L.Lan` is left adjoint to the
