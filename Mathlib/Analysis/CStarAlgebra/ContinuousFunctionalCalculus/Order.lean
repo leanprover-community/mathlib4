@@ -232,6 +232,15 @@ lemma nnnorm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_
     ‖a‖₊ ≤ n ↔ a ≤ n := by
   simpa using nnnorm_le_iff_of_nonneg a n
 
+open Metric Unitization Set in
+lemma preimage_inr_Icc_zero_one :
+    ((↑) : A → A⁺¹) ⁻¹' Icc 0 1 = {x : A | 0 ≤ x} ∩ closedBall 0 1 := by
+  ext x
+  simp only [mem_preimage, mem_Icc, inr_nonneg_iff, mem_inter_iff, mem_setOf_eq,
+    mem_closedBall, dist_zero_right, and_congr_right_iff]
+  rw [← norm_inr (𝕜 := ℂ), ← inr_nonneg_iff, iff_comm]
+  exact (norm_le_one_iff_of_nonneg _ ·)
+
 end CStarAlgebra
 
 section Inv
