@@ -198,20 +198,6 @@ lemma chi_za_zero (a : A) (hv₀ : v ≠ 0) :
   apply Nat.ne_of_lt'
   apply Module.finrank_pos
 
-instance : LieWeightsy L V χ 1 where
-  lie_mem z v hv := by
-    rcases eq_or_ne v 0 with (rfl | hv')
-    · simp
-    have (v : V) : v ∈ (⨅ x, (((LieModule.toEnd R A V) x).genEigenspace (χ x)) 1) ↔
-        (∀ a : A, ⁅a, v⁆ = (χ a) • v) := by
-      simp only [Module.End.genEigenspace_one, Submodule.mem_iInf, LinearMap.mem_ker,
-        LinearMap.sub_apply, LieModule.toEnd_apply_apply, LinearMap.smul_apply, LinearMap.one_apply,
-        sub_eq_zero]
-    rw [this] at hv ⊢
-    intro a
-    rw [leibniz_lie', hv a, lie_smul, lie_swap_lie, hv,
-        chi_za_zero χ z hv a hv', zero_smul, neg_zero, zero_add]
-
 /--
 The intersection of all eigenspaces of `V` of weight `χ : A → k`
 with respect to the action of all elements in a Lie ideal `A`.
