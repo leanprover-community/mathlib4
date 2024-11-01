@@ -1676,8 +1676,6 @@ theorem currySumEquiv_symm_apply
     currySumEquiv.symm g u =
       g (fun i ↦ u (.inl i)) (fun i' ↦ u (.inr i')) := rfl
 
-variable {ι' : Type*}
-
 @[deprecated  (since := "2024-11-01")]
 alias currySum := currySumEquiv
 @[deprecated  (since := "2024-11-01")]
