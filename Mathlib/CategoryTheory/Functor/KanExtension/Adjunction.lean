@@ -165,20 +165,18 @@ noncomputable def lanCompColimIso [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
       congr 1
       exact congr_app (L.lanUnit.naturality f) i))
 
-noncomputable def colimitIsoColimitFiberwiseColimit (G : C ⥤ H) [HasColimitsOfShape C H]
+local instance (X) : HasColimitsOfShape ↑((𝟭 D ⋙ CostructuredArrow.functor L).obj X) H :=
+  sorry
+
+noncomputable def colimitIsoColimitGrothendieck (G : C ⥤ H) [HasColimitsOfShape C H]
     [HasColimitsOfShape D H] [L.HasPointwiseLeftKanExtension G]
-    [∀ {X Y : D} (f : X ⟶ Y),
-    HasColimit
-      ((𝟭 D ⋙ CostructuredArrow.functor L).map f ⋙
-        Grothendieck.ι (𝟭 D ⋙ CostructuredArrow.functor L) Y ⋙
-          CostructuredArrow.grothendieckPrecompFunctorToComma L (𝟭 D) ⋙ Comma.fst L (𝟭 D) ⋙ G)]
-    [HasColimit (fiberwiseColimit (CostructuredArrow.grothendieckPrecompFunctorToComma L (𝟭 D) ⋙
-      Comma.fst L (𝟭 D) ⋙ G))] :
+    [HasColimit (CostructuredArrow.grothendieckPrecompFunctorToComma L (𝟭 D) ⋙
+      Comma.fst L (𝟭 D) ⋙ G)] :
     colimit G ≅
-    colimit (fiberwiseColimit (CostructuredArrow.grothendieckPrecompFunctorToComma L (𝟭 _) ⋙
-      Comma.fst L (𝟭 _) ⋙ G)) :=
+    colimit (CostructuredArrow.grothendieckPrecompFunctorToComma L (𝟭 _) ⋙ Comma.fst _ _ ⋙ G):=
   ((lanCompColimIso L).app G).symm ≪≫
-  HasColimit.isoOfNatIso (lanObjIsoFiberwiseColimit L G)
+  HasColimit.isoOfNatIso (lanObjIsoFiberwiseColimit L G) ≪≫
+  colimitFiberwiseColimitIso _
 
 end
 
