@@ -19,7 +19,7 @@ bordism classes are the equivalence classes of singular n-manifolds w.r.t. the (
 ## Main definitions
 
 - **SingularNManifold**: a singular `n`-manifold on a topological space `X`, for `n ∈ ℕ`, is a pair
-`(M,f)` of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`.
+`(M, f)` of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`.
 - `SingularNManifold.map`: a map `X → Y` of topological spaces induces a map between the spaces
 of singular n-manifolds
 - `SingularNManifold.comap`: if `(N,f)` is a singular n-manifold on `X` and `φ: M → N` is smooth,
@@ -79,7 +79,7 @@ structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) where
   /-- `M` is finite-dimensional, as its model space `E` is -/
   [findim: FiniteDimensional ℝ E]
   /-- `M` is `n`-dimensional, as its model space `E` is -/
-  [dimension : finrank ℝ E = n]
+  dimension : finrank ℝ E = n
   /-- The underlying map `M → X` of a singular `n`-manifold `(M,f)` on `X` -/
   f : M → X
   hf : Continuous f
@@ -153,7 +153,7 @@ noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifold M n where
 
 /-- If `(N, f)` is a singular `n`-manifold on `X` and `M` another `n`-dimensional smooth manifold,
 a smooth map `φ : M → N` induces a singular `n`-manifold structure `(M, f ∘ φ)` on `X`. -/
-noncomputable def comap [h: Fact (finrank ℝ E = n)]
+noncomputable def comap [h : Fact (finrank ℝ E = n)]
     (s : SingularNManifold X n)
     {φ : M → s.M} (hφ : Smooth I s.model φ) : SingularNManifold X n where
   E := E
@@ -196,9 +196,9 @@ def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n where
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
 
-/-- The product of a singular `n`- and a `m`-manifold into a one-point space
+/-- The product of a singular `n`- and a singular `m`-manifold into a one-point space
 is a singular `n+m`-manifold. -/
--- FUTURE: prove that this observation inducess a commutative ring structure
+-- FUTURE: prove that this observation induces a commutative ring structure
 -- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
 def prod {m n : ℕ} (s : SingularNManifold PUnit n) (t : SingularNManifold PUnit m) :
     SingularNManifold PUnit (n + m) where
