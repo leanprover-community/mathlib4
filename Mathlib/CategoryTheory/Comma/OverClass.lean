@@ -95,12 +95,12 @@ lemma homIsOver_of_isOverTower [OverClass X S] [OverClass X S'] [OverClass Y S]
 instance [CanonicallyOverClass X S]
     [OverClass X S'] [OverClass Y S] [OverClass Y S'] [OverClass S S']
     [IsOverTower X S S'] [IsOverTower Y S S'] [HomIsOver f S] : HomIsOver f S' :=
-  isOver_of_isOverTower f S S'
+  homIsOver_of_isOverTower f S S'
 
 instance [OverClass X S]
     [OverClass X S'] [CanonicallyOverClass Y S] [OverClass Y S'] [OverClass S S']
     [IsOverTower X S S'] [IsOverTower Y S S'] [HomIsOver f S] : HomIsOver f S' :=
-  isOver_of_isOverTower f S S'
+  homIsOver_of_isOverTower f S S'
 
 /-- Bundle `X` with an `OverClass X S` instance into `Over S`. -/
 def OverClass.asOver [OverClass X S] : Over S := Over.mk (X ↘ S)
