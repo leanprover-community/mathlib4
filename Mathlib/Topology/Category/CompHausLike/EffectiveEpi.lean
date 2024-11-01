@@ -33,20 +33,20 @@ If `π` is a surjective morphism in `CompHausLike P`, then it is an effective ep
 noncomputable
 def effectiveEpiStruct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Surjective π) :
     EffectiveEpiStruct π where
-  desc e h := (QuotientMap.of_surjective_continuous hπ π.continuous).lift e fun a b hab ↦
+  desc e h := (IsQuotientMap.of_surjective_continuous hπ π.continuous).lift e fun a b hab ↦
     DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
     (by ext; exact hab)) a
-  fac e h := ((QuotientMap.of_surjective_continuous hπ π.continuous).lift_comp e
+  fac e h := ((IsQuotientMap.of_surjective_continuous hπ π.continuous).lift_comp e
     fun a b hab ↦ DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
     (by ext; exact hab)) a)
   uniq e h g hm := by
-    suffices g = (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv ⟨e,
+    suffices g = (IsQuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv ⟨e,
       fun a b hab ↦ DFunLike.congr_fun
         (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩ (by ext; exact hab))
         a⟩ by assumption
-    rw [← Equiv.symm_apply_eq (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv]
+    rw [← Equiv.symm_apply_eq (IsQuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv]
     ext
-    simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
+    simp only [IsQuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
     rfl
 
 theorem preregular [HasExplicitPullbacks P]

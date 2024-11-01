@@ -188,9 +188,9 @@ set_option linter.unusedVariables false in
 def RayVector (R M : Type*) [Zero M] :=
   { v : M // v ≠ 0 }
 
--- Porting note: Made Coe into CoeOut so it's not dangerous anymore
 instance RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
   coe := Subtype.val
+
 instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
   let ⟨x, hx⟩ := exists_ne (0 : M)
   ⟨⟨x, hx⟩⟩
@@ -217,7 +217,6 @@ theorem equiv_iff_sameRay {v₁ v₂ : RayVector R M} : v₁ ≈ v₂ ↔ SameRa
 
 variable (R)
 
--- Porting note: Removed `protected` here, not in namespace
 /-- The ray given by a nonzero vector. -/
 def rayOfNeZero (v : M) (h : v ≠ 0) : Module.Ray R M :=
   ⟦⟨v, h⟩⟧

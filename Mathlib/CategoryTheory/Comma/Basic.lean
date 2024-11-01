@@ -163,6 +163,34 @@ theorem eqToHom_right (X Y : Comma L R) (H : X = Y) :
 
 section
 
+variable {L R} {X Y : Comma L R} (e : X ⟶ Y)
+
+instance [IsIso e] : IsIso e.left :=
+  (Comma.fst L R).map_isIso e
+
+instance [IsIso e] : IsIso e.right :=
+  (Comma.snd L R).map_isIso e
+
+@[simp]
+lemma inv_left [IsIso e] : (inv e).left = inv e.left := by
+  apply IsIso.eq_inv_of_hom_inv_id
+  rw [← Comma.comp_left, IsIso.hom_inv_id, id_left]
+
+@[simp]
+lemma inv_right [IsIso e] : (inv e).right = inv e.right := by
+  apply IsIso.eq_inv_of_hom_inv_id
+  rw [← Comma.comp_right, IsIso.hom_inv_id, id_right]
+
+lemma left_hom_inv_right [IsIso e] : L.map (e.left) ≫ Y.hom ≫ R.map (inv e.right) = X.hom := by
+  simp
+
+lemma inv_left_hom_right [IsIso e] : L.map (inv e.left) ≫ X.hom ≫ R.map e.right = Y.hom := by
+  simp
+
+end
+
+section
+
 variable {L₁ L₂ L₃ : A ⥤ T} {R₁ R₂ R₃ : B ⥤ T}
 
 /-- Extract the isomorphism between the left objects from an isomorphism in the comma category. -/

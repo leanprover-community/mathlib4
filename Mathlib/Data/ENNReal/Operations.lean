@@ -39,10 +39,10 @@ theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := by
     ↑(a * b) < ↑(a' * b') := coe_lt_coe.2 (mul_lt_mul₀ aa' bb')
     _ ≤ c * d := mul_le_mul' a'c.le b'd.le
 
--- TODO: generalize to `CovariantClass α α (· * ·) (· ≤ ·)`
+-- TODO: generalize to `MulLeftMono α`
 theorem mul_left_mono : Monotone (a * ·) := fun _ _ => mul_le_mul' le_rfl
 
--- TODO: generalize to `CovariantClass α α (swap (· * ·)) (· ≤ ·)`
+-- TODO: generalize to `MulRightMono α`
 theorem mul_right_mono : Monotone (· * a) := fun _ _ h => mul_le_mul' h le_rfl
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
@@ -143,8 +143,8 @@ protected theorem add_lt_add_of_le_of_lt : a ≠ ∞ → a ≤ b → c < d → a
 protected theorem add_lt_add_of_lt_of_le : c ≠ ∞ → a < b → c ≤ d → a + c < b + d :=
   WithTop.add_lt_add_of_lt_of_le
 
-instance contravariantClass_add_lt : ContravariantClass ℝ≥0∞ ℝ≥0∞ (· + ·) (· < ·) :=
-  WithTop.contravariantClass_add_lt
+instance addLeftReflectLT : AddLeftReflectLT ℝ≥0∞ :=
+  WithTop.addLeftReflectLT
 
 theorem lt_add_right (ha : a ≠ ∞) (hb : b ≠ 0) : a < a + b := by
   rwa [← pos_iff_ne_zero, ← ENNReal.add_lt_add_iff_left ha, add_zero] at hb
@@ -169,6 +169,10 @@ theorem not_lt_top {x : ℝ≥0∞} : ¬x < ∞ ↔ x = ∞ := by rw [lt_top_iff
 
 theorem add_ne_top : a + b ≠ ∞ ↔ a ≠ ∞ ∧ b ≠ ∞ := by simpa only [lt_top_iff_ne_top] using add_lt_top
 
+@[aesop (rule_sets := [finiteness]) safe apply]
+protected lemma Finiteness.add_ne_top {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) : a + b ≠ ∞ :=
+  ENNReal.add_ne_top.2 ⟨ha, hb⟩
+
 theorem mul_top' : a * ∞ = if a = 0 then 0 else ∞ := by convert WithTop.mul_top' a
 
 -- Porting note: added because `simp` no longer uses `WithTop` lemmas for `ℝ≥0∞`
@@ -188,6 +192,9 @@ theorem mul_eq_top : a * b = ∞ ↔ a ≠ 0 ∧ b = ∞ ∨ a = ∞ ∧ b ≠ 0
   WithTop.mul_eq_top_iff
 
 theorem mul_lt_top : a < ∞ → b < ∞ → a * b < ∞ := WithTop.mul_lt_top
+
+-- This is unsafe because we could have `a = ∞` and `b = 0` or vice-versa
+@[aesop (rule_sets := [finiteness]) unsafe 75% apply]
 theorem mul_ne_top : a ≠ ∞ → b ≠ ∞ → a * b ≠ ∞ := WithTop.mul_ne_top
 
 theorem lt_top_of_mul_ne_top_left (h : a * b ≠ ∞) (hb : b ≠ 0) : a < ∞ :=
@@ -243,7 +250,7 @@ theorem coe_finset_prod {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a ∈ s, 
 end OperationsAndInfty
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
-@[gcongr] theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d := by
+@[gcongr] protected theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d := by
   lift a to ℝ≥0 using ac.ne_top
   lift b to ℝ≥0 using bd.ne_top
   cases c; · simp
@@ -308,6 +315,8 @@ theorem sub_top : a - ∞ = 0 := WithTop.sub_top
 @[simp] theorem sub_eq_top_iff : a - b = ∞ ↔ a = ∞ ∧ b ≠ ∞ := WithTop.sub_eq_top_iff
 lemma sub_ne_top_iff : a - b ≠ ∞ ↔ a ≠ ∞ ∨ b = ∞ := WithTop.sub_ne_top_iff
 
+-- This is unsafe because we could have `a = b = ∞`
+@[aesop (rule_sets := [finiteness]) unsafe 75% apply]
 theorem sub_ne_top (ha : a ≠ ∞) : a - b ≠ ∞ := sub_ne_top_iff.2 <| .inl ha
 
 @[simp, norm_cast]
@@ -405,14 +414,14 @@ theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc :
   (cancel_of_ne ha).tsub_right_inj (cancel_of_ne <| ne_top_of_le_ne_top ha hb)
     (cancel_of_ne <| ne_top_of_le_ne_top ha hc) hb hc
 
-theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
+protected theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
   rcases le_or_lt a b with hab | hab; · simp [hab, mul_right_mono hab, tsub_eq_zero_of_le]
   rcases eq_or_lt_of_le (zero_le b) with (rfl | hb); · simp
   exact (cancel_of_ne <| mul_ne_top hab.ne_top (h hb hab)).tsub_mul
 
-theorem mul_sub (h : 0 < c → c < b → a ≠ ∞) : a * (b - c) = a * b - a * c := by
+protected theorem mul_sub (h : 0 < c → c < b → a ≠ ∞) : a * (b - c) = a * b - a * c := by
   simp only [mul_comm a]
-  exact sub_mul h
+  exact ENNReal.sub_mul h
 
 theorem sub_le_sub_iff_left (h : c ≤ a) (h' : a ≠ ∞) :
     (a - b ≤ a - c) ↔ c ≤ b :=

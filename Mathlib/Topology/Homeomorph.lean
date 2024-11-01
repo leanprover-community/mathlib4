@@ -203,37 +203,45 @@ theorem preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' (h '' s) = s :=
 lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
   h.toEquiv.image_compl s
 
-protected theorem inducing (h : X ≃ₜ Y) : Inducing h :=
-  inducing_of_inducing_compose h.continuous h.symm.continuous <| by
-    simp only [symm_comp_self, inducing_id]
+lemma isInducing (h : X ≃ₜ Y) : IsInducing h :=
+  .of_comp h.continuous h.symm.continuous <| by simp only [symm_comp_self, IsInducing.id]
 
-theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› :=
-  h.inducing.1.symm
+@[deprecated (since := "2024-10-28")] alias inducing := isInducing
 
-protected theorem quotientMap (h : X ≃ₜ Y) : QuotientMap h :=
-  QuotientMap.of_quotientMap_compose h.symm.continuous h.continuous <| by
-    simp only [self_comp_symm, QuotientMap.id]
+theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› := h.isInducing.1.symm
+
+theorem isQuotientMap (h : X ≃ₜ Y) : IsQuotientMap h :=
+  IsQuotientMap.of_comp h.symm.continuous h.continuous <| by
+    simp only [self_comp_symm, IsQuotientMap.id]
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap := isQuotientMap
 
 theorem coinduced_eq (h : X ≃ₜ Y) : TopologicalSpace.coinduced h ‹_› = ‹_› :=
-  h.quotientMap.2.symm
+  h.isQuotientMap.2.symm
 
-protected theorem embedding (h : X ≃ₜ Y) : Embedding h :=
-  ⟨h.inducing, h.injective⟩
+theorem isEmbedding (h : X ≃ₜ Y) : IsEmbedding h := ⟨h.isInducing, h.injective⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding := isEmbedding
 
 /-- Homeomorphism given an embedding. -/
-noncomputable def ofEmbedding (f : X → Y) (hf : Embedding f) : X ≃ₜ Set.range f where
+noncomputable def ofIsEmbedding (f : X → Y) (hf : IsEmbedding f) : X ≃ₜ Set.range f where
   continuous_toFun := hf.continuous.subtype_mk _
   continuous_invFun := hf.continuous_iff.2 <| by simp [continuous_subtype_val]
   toEquiv := Equiv.ofInjective f hf.inj
 
+@[deprecated (since := "2024-10-26")]
+alias ofEmbedding := ofIsEmbedding
+
 protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
-  h.inducing.secondCountableTopology
+  h.isInducing.secondCountableTopology
 
 /-- If `h : X → Y` is a homeomorphism, `h(s)` is compact iff `s` is. -/
 @[simp]
 theorem isCompact_image {s : Set X} (h : X ≃ₜ Y) : IsCompact (h '' s) ↔ IsCompact s :=
-  h.embedding.isCompact_iff.symm
+  h.isEmbedding.isCompact_iff.symm
 
 /-- If `h : X → Y` is a homeomorphism, `h⁻¹(s)` is compact iff `s` is. -/
 @[simp]
@@ -244,7 +252,7 @@ theorem isCompact_preimage {s : Set Y} (h : X ≃ₜ Y) : IsCompact (h ⁻¹' s)
 @[simp]
 theorem isSigmaCompact_image {s : Set X} (h : X ≃ₜ Y) :
     IsSigmaCompact (h '' s) ↔ IsSigmaCompact s :=
-  h.embedding.isSigmaCompact_iff.symm
+  h.isEmbedding.isSigmaCompact_iff.symm
 
 /-- If `h : X → Y` is a homeomorphism, `h⁻¹(s)` is σ-compact iff `s` is. -/
 @[simp]
@@ -294,27 +302,21 @@ theorem map_cocompact (h : X ≃ₜ Y) : map h (cocompact X) = cocompact Y := by
 protected theorem compactSpace [CompactSpace X] (h : X ≃ₜ Y) : CompactSpace Y where
   isCompact_univ := h.symm.isCompact_preimage.2 isCompact_univ
 
-protected theorem t0Space [T0Space X] (h : X ≃ₜ Y) : T0Space Y :=
-  h.symm.embedding.t0Space
-
-protected theorem t1Space [T1Space X] (h : X ≃ₜ Y) : T1Space Y :=
-  h.symm.embedding.t1Space
-
-protected theorem t2Space [T2Space X] (h : X ≃ₜ Y) : T2Space Y :=
-  h.symm.embedding.t2Space
-
-protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
-  h.symm.embedding.t3Space
+protected theorem t0Space [T0Space X] (h : X ≃ₜ Y) : T0Space Y := h.symm.isEmbedding.t0Space
+protected theorem t1Space [T1Space X] (h : X ≃ₜ Y) : T1Space Y := h.symm.isEmbedding.t1Space
+protected theorem t2Space [T2Space X] (h : X ≃ₜ Y) : T2Space Y := h.symm.isEmbedding.t2Space
+protected theorem t25Space [T25Space X] (h : X ≃ₜ Y) : T25Space Y := h.symm.isEmbedding.t25Space
+protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y := h.symm.isEmbedding.t3Space
 
 theorem isDenseEmbedding (h : X ≃ₜ Y) : IsDenseEmbedding h :=
-  { h.embedding with dense := h.surjective.denseRange }
+  { h.isEmbedding with dense := h.surjective.denseRange }
 
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding := isDenseEmbedding
 
 @[simp]
 theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
-  h.quotientMap.isOpen_preimage
+  h.isQuotientMap.isOpen_preimage
 
 @[simp]
 theorem isOpen_image (h : X ≃ₜ Y) {s : Set X} : IsOpen (h '' s) ↔ IsOpen s := by
@@ -333,13 +335,13 @@ theorem isClosed_image (h : X ≃ₜ Y) {s : Set X} : IsClosed (h '' s) ↔ IsCl
 protected theorem isClosedMap (h : X ≃ₜ Y) : IsClosedMap h := fun _ => h.isClosed_image.2
 
 theorem isOpenEmbedding (h : X ≃ₜ Y) : IsOpenEmbedding h :=
-  isOpenEmbedding_of_embedding_open h.embedding h.isOpenMap
+  .of_isEmbedding_isOpenMap h.isEmbedding h.isOpenMap
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding := isOpenEmbedding
 
 theorem isClosedEmbedding (h : X ≃ₜ Y) : IsClosedEmbedding h :=
-  .of_embedding_closed h.embedding h.isClosedMap
+  .of_isEmbedding_isClosedMap h.isEmbedding h.isClosedMap
 
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding := isClosedEmbedding
@@ -347,8 +349,8 @@ alias closedEmbedding := isClosedEmbedding
 protected theorem normalSpace [NormalSpace X] (h : X ≃ₜ Y) : NormalSpace Y :=
   h.symm.isClosedEmbedding.normalSpace
 
-protected theorem t4Space [T4Space X] (h : X ≃ₜ Y) : T4Space Y :=
-  h.symm.isClosedEmbedding.t4Space
+protected theorem t4Space [T4Space X] (h : X ≃ₜ Y) : T4Space Y := h.symm.isClosedEmbedding.t4Space
+protected theorem t5Space [T5Space X] (h : X ≃ₜ Y) : T5Space Y := h.symm.isClosedEmbedding.t5Space
 
 theorem preimage_closure (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' closure s = closure (h ⁻¹' s) :=
   h.isOpenMap.preimage_closure_eq_closure_preimage h.continuous _
@@ -375,18 +377,18 @@ theorem _root_.HasCompactMulSupport.comp_homeomorph {M} [One M] {f : Y → M}
 
 @[simp]
 theorem map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=
-  h.embedding.map_nhds_of_mem _ (by simp)
+  h.isEmbedding.map_nhds_of_mem _ (by simp)
 
 @[simp]
 theorem map_punctured_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝[≠] x) = 𝓝[≠] (h x) := by
-  convert h.embedding.map_nhdsWithin_eq ({x}ᶜ) x
+  convert h.isEmbedding.map_nhdsWithin_eq ({x}ᶜ) x
   rw [h.image_compl, Set.image_singleton]
 
 theorem symm_map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h.symm (𝓝 (h x)) = 𝓝 x := by
   rw [h.symm.map_nhds_eq, h.symm_apply_apply]
 
 theorem nhds_eq_comap (h : X ≃ₜ Y) (x : X) : 𝓝 x = comap h (𝓝 (h x)) :=
-  h.inducing.nhds_eq_comap x
+  h.isInducing.nhds_eq_comap x
 
 @[simp]
 theorem comap_nhds_eq (h : X ≃ₜ Y) (y : Y) : comap h (𝓝 y) = 𝓝 (h.symm y) := by
@@ -442,27 +444,27 @@ theorem homeomorphOfContinuousOpen_symm_apply (e : X ≃ Y) (h₁ : Continuous e
 @[simp]
 theorem comp_continuousOn_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) :
     ContinuousOn (h ∘ f) s ↔ ContinuousOn f s :=
-  h.inducing.continuousOn_iff.symm
+  h.isInducing.continuousOn_iff.symm
 
 @[simp]
 theorem comp_continuous_iff (h : X ≃ₜ Y) {f : Z → X} : Continuous (h ∘ f) ↔ Continuous f :=
-  h.inducing.continuous_iff.symm
+  h.isInducing.continuous_iff.symm
 
 @[simp]
 theorem comp_continuous_iff' (h : X ≃ₜ Y) {f : Y → Z} : Continuous (f ∘ h) ↔ Continuous f :=
-  h.quotientMap.continuous_iff.symm
+  h.isQuotientMap.continuous_iff.symm
 
 theorem comp_continuousAt_iff (h : X ≃ₜ Y) (f : Z → X) (z : Z) :
     ContinuousAt (h ∘ f) z ↔ ContinuousAt f z :=
-  h.inducing.continuousAt_iff.symm
+  h.isInducing.continuousAt_iff.symm
 
 theorem comp_continuousAt_iff' (h : X ≃ₜ Y) (f : Y → Z) (x : X) :
     ContinuousAt (f ∘ h) x ↔ ContinuousAt f (h x) :=
-  h.inducing.continuousAt_iff' (by simp)
+  h.isInducing.continuousAt_iff' (by simp)
 
 theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (z : Z) :
     ContinuousWithinAt f s z ↔ ContinuousWithinAt (h ∘ f) s z :=
-  h.inducing.continuousWithinAt_iff
+  h.isInducing.continuousWithinAt_iff
 
 @[simp]
 theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
@@ -701,6 +703,49 @@ def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X whe
   continuous_invFun := continuous_uLift_up
   toEquiv := Equiv.ulift
 
+/-- The natural homeomorphism `(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)`.
+`Equiv.sumArrowEquivProdArrow` as a homeomorphism. -/
+@[simps!]
+def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)  where
+  toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
+  continuous_toFun := by
+    simp only [Equiv.sumArrowEquivProdArrow, Equiv.coe_fn_mk, continuous_prod_mk]
+    continuity
+  continuous_invFun := continuous_pi fun i ↦ match i with
+    | .inl i => by apply (continuous_apply _).comp' continuous_fst
+    | .inr i => by apply (continuous_apply _).comp' continuous_snd
+
+private theorem _root_.Fin.appendEquiv_eq_Homeomorph (m n : ℕ) : Fin.appendEquiv m n =
+    ((sumArrowHomeomorphProdArrow).symm.trans
+    (piCongrLeft (Y := fun _ ↦ X) finSumFinEquiv)).toEquiv := by
+  ext ⟨x1, x2⟩ l
+  simp only [sumArrowHomeomorphProdArrow, Equiv.sumArrowEquivProdArrow,
+    finSumFinEquiv, Fin.addCases, Fin.appendEquiv, Fin.append, Equiv.coe_fn_mk]
+  by_cases h : l < m
+  · simp [h]
+  · simp [h]
+
+theorem _root_.Fin.continuous_append (m n : ℕ) :
+    Continuous fun (p : (Fin m → X) × (Fin n → X)) ↦ Fin.append p.1 p.2 := by
+  suffices Continuous (Fin.appendEquiv m n) by exact this
+  rw [Fin.appendEquiv_eq_Homeomorph]
+  exact Homeomorph.continuous_toFun _
+
+/-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
+`Fin.appendEquiv` as a homeomorphism.-/
+@[simps!]
+def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) where
+  toEquiv := Fin.appendEquiv m n
+  continuous_toFun := Fin.continuous_append m n
+  continuous_invFun := by
+    rw [Fin.appendEquiv_eq_Homeomorph]
+    exact Homeomorph.continuous_invFun _
+
+@[simp]
+theorem _root_.Fin.appendHomeomorph_toEquiv (m n : ℕ) :
+    (Fin.appendHomeomorph (X := X) m n).toEquiv = Fin.appendEquiv m n :=
+  rfl
+
 section Distrib
 
 /-- `(X ⊕ Y) × Z` is homeomorphic to `X × Z ⊕ Y × Z`. -/
@@ -843,10 +888,12 @@ lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
 
 /-- An inducing equiv between topological spaces is a homeomorphism. -/
 @[simps toEquiv] -- Porting note (#11215): TODO: was `@[simps]`
-def toHomeomorphOfInducing (f : X ≃ Y) (hf : Inducing f) : X ≃ₜ Y :=
+def toHomeomorphOfIsInducing (f : X ≃ Y) (hf : IsInducing f) : X ≃ₜ Y :=
   { f with
     continuous_toFun := hf.continuous
     continuous_invFun := hf.continuous_iff.2 <| by simpa using continuous_id }
+
+@[deprecated (since := "2024-10-28")] alias toHomeomorphOfInducing := toHomeomorphOfIsInducing
 
 end Equiv
 
@@ -911,12 +958,20 @@ noncomputable def homeomorph : X ≃ₜ Y where
   toEquiv := Equiv.ofBijective f hf.bijective
 
 protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
-protected lemma inducing : Inducing f := (hf.homeomorph f).inducing
-protected lemma quotientMap : QuotientMap f := (hf.homeomorph f).quotientMap
-protected lemma embedding : Embedding f := (hf.homeomorph f).embedding
+lemma isInducing : IsInducing f := (hf.homeomorph f).isInducing
+lemma isQuotientMap : IsQuotientMap f := (hf.homeomorph f).isQuotientMap
+lemma isEmbedding : IsEmbedding f := (hf.homeomorph f).isEmbedding
 lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
 lemma isClosedEmbedding : IsClosedEmbedding f := (hf.homeomorph f).isClosedEmbedding
 lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
+
+@[deprecated (since := "2024-10-28")] alias inducing := isInducing
+
+@[deprecated (since := "2024-10-26")]
+alias embedding := isEmbedding
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap := isQuotientMap
 
 @[deprecated (since := "2024-10-20")] alias closedEmbedding := isClosedEmbedding
 @[deprecated (since := "2024-10-18")]
@@ -940,10 +995,13 @@ lemma isHomeomorph_iff_exists_inverse : IsHomeomorph f ↔ Continuous f ∧ ∃ 
   · exact (Homeomorph.mk ⟨f, g, hg.1, hg.2.1⟩ hf hg.2.2).isHomeomorph
 
 /-- A map is a homeomorphism iff it is a surjective embedding. -/
-lemma isHomeomorph_iff_embedding_surjective : IsHomeomorph f ↔ Embedding f ∧ Surjective f where
-  mp hf := ⟨hf.embedding, hf.surjective⟩
+lemma isHomeomorph_iff_isEmbedding_surjective : IsHomeomorph f ↔ IsEmbedding f ∧ Surjective f where
+  mp hf := ⟨hf.isEmbedding, hf.surjective⟩
   mpr h := ⟨h.1.continuous, ((isOpenEmbedding_iff f).2 ⟨h.1, h.2.range_eq ▸ isOpen_univ⟩).isOpenMap,
     h.1.inj, h.2⟩
+
+@[deprecated (since := "2024-10-26")]
+alias isHomeomorph_iff_embedding_surjective := isHomeomorph_iff_isEmbedding_surjective
 
 /-- A map is a homeomorphism iff it is continuous, closed and bijective. -/
 lemma isHomeomorph_iff_continuous_isClosedMap_bijective  : IsHomeomorph f ↔
@@ -974,8 +1032,8 @@ lemma IsHomeomorph.sigmaMap {ι κ : Type*} {X : ι → Type*} {Y : κ → Type*
     [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)] {f : ι → κ}
     (hf : Bijective f) {g : (i : ι) → X i → Y (f i)} (hg : ∀ i, IsHomeomorph (g i)) :
     IsHomeomorph (Sigma.map f g) := by
-  simp_rw [isHomeomorph_iff_embedding_surjective,] at hg ⊢
-  exact ⟨(embedding_sigma_map hf.1).2 fun i ↦ (hg i).1, hf.2.sigma_map fun i ↦ (hg i).2⟩
+  simp_rw [isHomeomorph_iff_isEmbedding_surjective,] at hg ⊢
+  exact ⟨(isEmbedding_sigmaMap hf.1).2 fun i ↦ (hg i).1, hf.2.sigma_map fun i ↦ (hg i).2⟩
 
 lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, TopologicalSpace (Y i)] {f : (i : ι) → X i → Y i} (h : ∀ i, IsHomeomorph (f i)) :
