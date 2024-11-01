@@ -54,7 +54,7 @@ variable {k K : Type*} [Field k] [Field K] [Algebra k K]
 namespace InfiniteGalois
 
 open Pointwise FiniteGaloisIntermediateField AlgEquiv
---The `adjoin`s below are `FiniteGaloisIntermediateField.adjoin`
+--Note: The `adjoin`s below are `FiniteGaloisIntermediateField.adjoin`
 
 instance : TopologicalSpace (K ≃ₐ[k] K) := inferInstance
 
@@ -86,7 +86,6 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
           simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true]
           exact congrFun rfl
 
-set_option synthInstance.maxHeartbeats 23000 in
 lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     IntermediateField.fixedField L.fixingSubgroup = L := by
   letI : IsGalois L K := inferInstance
