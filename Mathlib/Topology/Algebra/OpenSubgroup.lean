@@ -493,8 +493,7 @@ variable [Group G] [TopologicalGroup G] [CompactSpace G]
 open Set Filter
 
 @[to_additive]
-theorem eventually_mul_subset {G : Type*} [Group G] [TopologicalSpace G]
-    [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) :
+theorem eventually_mul_subset {W : Set G} (WClopen : IsClopen W) :
     ∀ᶠ (x : G) in 𝓝 1, x • W ⊆ W := by
   rw [← (𝓝 1 : Filter G).iSup_ultrafilter_le_eq]
   simp_rw [eventually_iSup, smul_set_subset_iff, smul_eq_mul,
@@ -509,16 +508,14 @@ theorem eventually_mul_subset {G : Type*} [Group G] [TopologicalSpace G]
   contradiction
 
 @[to_additive]
-theorem eventually_mul_eq {G : Type*} [Group G] [TopologicalSpace G]
-    [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) :
+theorem eventually_mul_eq {W : Set G} (WClopen : IsClopen W) :
     ∀ᶠ (x : G) in 𝓝 1, x • W = W := by
   filter_upwards [WClopen.eventually_mul_subset, WClopen.compl.eventually_mul_subset] with a ha ha'
   rw [smul_set_compl, compl_subset_compl] at ha'
   exact subset_antisymm ha ha'
 
 @[to_additive]
-theorem exist_openSubgroup_subset {G : Type*} [Group G] [TopologicalSpace G]
-    [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
+theorem exist_openSubgroup_subset {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
     ∃ H : OpenSubgroup G, (H : Set G) ⊆ W := by
   let H : Subgroup G :=
   { carrier := {g | g • W = W},
