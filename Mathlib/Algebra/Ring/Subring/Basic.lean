@@ -71,6 +71,14 @@ namespace Subring
 -- projection `s.toSubmonoid`
 
 @[mono]
+theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
+  fun _ _ => id
+
+@[mono]
+theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
+  toSubsemiring_strictMono.monotone
+
+@[mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
 
