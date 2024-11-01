@@ -28,7 +28,6 @@ extremely slow elaboration, so it is better to insert it explicitly.)
 We also show these natural isomorphisms satisfy the triangle and pentagon identities.
 -/
 
-
 namespace CategoryTheory
 
 universe u₁ v₁ u₂ v₂ u₃ v₃ u₄ v₄
