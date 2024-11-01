@@ -91,7 +91,6 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
   apply le_antisymm
   · intro x hx
     rw [IntermediateField.mem_fixedField_iff] at hx
-    have fix : ∀ σ ∈ L.fixingSubgroup, σ x = x := hx
     have mem : x ∈ (adjoin L {x}).1 := subset_adjoin _ _ (by simp only [Set.mem_singleton_iff])
     have : IntermediateField.fixedField (⊤ : Subgroup ((adjoin L {x}) ≃ₐ[L] (adjoin L {x}))) = ⊥ :=
       (IsGalois.tfae.out 0 1).mp (by infer_instance)
@@ -101,7 +100,7 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
       rcases restrictNormalHom_surjective K f with ⟨σ,hσ⟩
       apply Subtype.val_injective
       rw [← hσ, restrictNormalHom_apply (adjoin L {x}).1 σ ⟨x, mem⟩]
-      have := fix ((IntermediateField.fixingSubgroupEquiv L).symm σ)
+      have := hx ((IntermediateField.fixingSubgroupEquiv L).symm σ)
       simp only [SetLike.coe_mem, true_implies] at this
       exact this
     rcases IntermediateField.mem_bot.mp this with ⟨y, hy⟩
@@ -120,14 +119,13 @@ lemma restrict_fixedField (H : Subgroup (K ≃ₐ[k] K)) (L : IntermediateField 
   ext x
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have xL := h.out.2
-    show (⟨x,xL⟩ : L).1 ∈ _
-    apply (IntermediateField.mem_lift (⟨x,xL⟩ : L)).mpr
+    apply (IntermediateField.mem_lift (⟨x, xL⟩ : L)).mpr
     rw [IntermediateField.mem_fixedField_iff]
     simp only [Subgroup.mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     intro σ hσ
     apply Subtype.val_injective
     dsimp
-    nth_rw 2 [← (h.out.1 ⟨σ,hσ⟩)]
+    nth_rw 2 [← (h.out.1 ⟨σ, hσ⟩)]
     exact AlgEquiv.restrictNormal_commutes σ L ⟨x, xL⟩
   · have xL := IntermediateField.lift_le _ h
     apply (IntermediateField.mem_lift (⟨x,xL⟩ : L)).mp at h
@@ -220,8 +218,7 @@ def GaloisInsertionIntermediateFieldSubgroup [IsGalois k K] :
 
 /-- The Galois correspondence as a `GaloisCoinsertion` -/
 def GaloisCoinsertionIntermediateFieldSubgroup [IsGalois k K] :
-    GaloisCoinsertion (OrderDual.toDual ∘
-      fun (E : IntermediateField k K) ↦
+    GaloisCoinsertion (OrderDual.toDual ∘ fun (E : IntermediateField k K) ↦
       (⟨E.fixingSubgroup, fixingSubgroup_isClosed E⟩ : ClosedSubgroup (K ≃ₐ[k] K)))
       ((fun (H : ClosedSubgroup (K ≃ₐ[k] K)) ↦ IntermediateField.fixedField H) ∘
         OrderDual.toDual) where
@@ -267,7 +264,7 @@ theorem open_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     apply IntermediateField.finiteDimensional_of_le (N := L'.1)
     rw [← fixedField_fixingSubgroup L'.1, IntermediateField.le_iff_le]
     exact this
-  · apply IntermediateField.fixingSubgroup_isOpen
+  · exact IntermediateField.fixingSubgroup_isOpen L
 
 theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
     Subgroup.Normal (IntermediateFieldEquivClosedSubgroup L).1 ↔
