@@ -834,8 +834,8 @@ theorem card_rootsOfUnity {n : ℕ} [NeZero n] (h : IsPrimitiveRoot ζ n) :
 /-- The cardinality of the multiset `nthRoots ↑n (1 : R)` is `n`
 if there is a primitive root of unity in `R`. -/
 theorem card_nthRoots_one {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
-    Multiset.card (nthRoots n (1 : R)) = n :=
-  by rw [card_nthRoots h, if_pos ⟨ζ, h.pow_eq_one⟩]
+    Multiset.card (nthRoots n (1 : R)) = n := by
+  rw [card_nthRoots h, if_pos ⟨ζ, h.pow_eq_one⟩]
 
 theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) {a : R} (ha : a ≠ 0) :
     (nthRoots n a).Nodup := by
