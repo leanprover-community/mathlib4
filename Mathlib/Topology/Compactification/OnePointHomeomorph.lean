@@ -448,189 +448,117 @@ noncomputable def OnePointHomeo : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoint
 /-- The real projective line is a Hausdorff space. -/
 instance :  T2Space (ℙ ℝ (Fin 2 → ℝ)) := Homeomorph.t2Space OnePointHomeo.symm
 
+/-- Nonvertical map has range missing one point. -/
+theorem nonVertical_hasRange :
+    Set.range (fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ)))
+    = {⟦⟨![1, 0], by simp⟩⟧}ᶜ := Set.ext <| Quotient.ind <| fun p => by
+  simp only [ne_eq, Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
+  constructor
+  · intro ⟨y,hy⟩ hc
+    have ⟨c,hc⟩ := Quotient.eq.mp <| Eq.trans hy hc
+    simp only [Matrix.smul_cons, smul_zero, Matrix.smul_empty] at hc
+    have : ![c • 1, 0] 1 = ![y, 1] 1 := congrFun hc 1
+    simp_all
+  · intro h
+    rw [Quotient.eq] at h
+    by_cases H₁ : p.1 1 = 0
+    · exfalso
+      apply h
+      use ⟨p.1 0, 1 / p.1 0, by
+          have := p.2
+          contrapose this
+          simp only [Decidable.not_not]
+          ext i
+          fin_cases i
+          · contrapose this
+            simp_all
+          · exact H₁, by
+          have : p.1 0 ≠ 0 := fun H₀ => p.2 <| funext <| fun i => by
+              fin_cases i; exact H₀; exact H₁
+          simp only [ne_eq, Fin.isValue, one_div]
+          exact inv_mul_cancel₀ this
+      ⟩
+      ext i
+      fin_cases i
+      · simp
+      · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, ne_eq, Fin.isValue, one_div,
+        Fin.mk_one, Pi.smul_apply, Matrix.cons_val_one, Matrix.head_cons, smul_zero]
+        tauto
+    · use p.1 0 / p.1 1
+      apply Quotient.sound
+      use ⟨1 / p.1 1, p.1 1,by simp_all, by simp_all⟩
+      ext i
+      fin_cases i
+      · simp only [ne_eq, Fin.isValue, one_div, Fin.zero_eta, Pi.smul_apply,
+        Matrix.cons_val_zero, Units.smul_mk_apply, smul_eq_mul]
+        ring_nf
+      · simp only [ne_eq, Fin.isValue, one_div, Fin.mk_one, Pi.smul_apply,
+        Units.smul_mk_apply, smul_eq_mul, Matrix.cons_val_one, Matrix.head_cons]
+        aesop
+
+/-- Nonvertical map is injective. -/
+theorem nonVertical_isInjective :
+    Function.Injective fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ)) := by
+  intro x y h
+  obtain ⟨c,hc⟩ := Quotient.eq.mp h
+  simp only [Matrix.smul_cons] at hc
+  rw [show c • y = c.1 * y by rfl, show c • 1 = c.1 * 1 by rfl] at hc
+  have := congrFun hc 1
+  have := congrFun hc 0
+  simp_all
+
+/-- Nonvertical map is inducing. -/
+theorem nonVertical_isInducing : IsInducing fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ)) :=
+  isInducing_iff_nhds.mpr <| by
+    intro x
+    ext s
+    simp only [ne_eq, Filter.mem_comap]
+    rw [mem_nhds_iff_exists_Ioo_subset ]
+    simp_rw [mem_nhds_iff]
+    constructor
+    · intro h
+      obtain ⟨l,u,hu⟩ := h
+      have If : IsOpenMap (fun r : ℝ => div_slope_equiv r) := by
+        exact IsOpenMap.comp (fun S =>
+          (show ⇑div_slope_equiv '' S = OnePointHomeo.toFun ⁻¹' S by aesop)
+          ▸ OnePointHomeo.continuous_toFun.isOpen_preimage S)
+          OnePoint.isOpenMap_coe
+      let f := fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ))
+      use f '' (Set.Ioo l u)
+      constructor
+      · exact ⟨f '' (Set.Ioo l u), fun _ => id, ⟨If _ isOpen_Ioo, x, hu.1, rfl⟩⟩
+      · exact fun a ha => hu.2 <| by
+          obtain ⟨y,hy⟩ := ha
+          have := hy.2
+          simp only at this
+          have : ![y, 1] = ![a, 1] := by
+            rw [Quotient.eq] at hy
+            obtain ⟨c,hc⟩ := hy.2
+            simp only [Matrix.smul_cons] at hc
+            rw [show c • a = c * a by rfl, show c • 1 = c.1 * 1 by rfl] at hc
+            have := congrFun hc 0
+            have := congrFun hc 1
+            simp_all
+          have : y = a := by
+            have := congrFun this 0
+            aesop
+          aesop
+    · intro h
+      obtain ⟨t,ht⟩ := h
+      obtain ⟨t₁,ht₁⟩ := ht.1
+      have h₀ : Continuous (fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ))) := by
+        apply Continuous.comp' continuous_quotient_mk'
+        apply Continuous.subtype_mk <| continuous_pi fun i => by
+          fin_cases i; exact continuous_id'; exact continuous_const
+      have h₁ : IsOpen <|(fun r ↦ ⟦⟨![r, 1], by simp⟩⟧) ⁻¹' t₁ :=
+          h₀.isOpen_preimage t₁ ht₁.2.1
+      rw [← mem_nhds_iff_exists_Ioo_subset]
+      exact Filter.mem_of_superset (IsOpen.mem_nhds h₁ (by aesop))
+        fun _ hz => ht.2 <| ht₁.1 hz
 
 /-- Uniqueness-based proof that
   the real projective line ℙ ℝ (Fin 2 → ℝ) and OnePoint ℝ are homeomorphic. -/
-noncomputable def OnePointHomeo' : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoint ℝ) := by
-    have := @OnePoint.equivOfIsEmbeddingOfRangeEq ℝ (ℙ ℝ (Fin 2 → ℝ)) _ _ _ _
-        ⟦ ⟨![1,0],by simp⟩ ⟧ (fun r => ⟦ ⟨![r,1],by simp⟩ ⟧) (by
-        constructor
-        · refine isInducing_iff_nhds.mpr ?toIsInducing.a
-          intro x
-          ext s
-          simp only [ne_eq, Filter.mem_comap]
-          rw [mem_nhds_iff_exists_Ioo_subset ]
-          simp_rw [mem_nhds_iff]
-          constructor
-          · intro h
-            obtain ⟨l,hl⟩ := h
-            obtain ⟨u,hu⟩ := hl
-            let f := fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ))
-            have If : IsOpenMap f := by
-                have : f = fun r : ℝ => div_slope_equiv r := by
-                    aesop
-                rw [this]
-                apply IsOpenMap.comp
-                ·   intro S hS
-                    have hc := OnePointHomeo.continuous_toFun
-                    have hi : IsOpen ((OnePointHomeo.toFun) ⁻¹' S) := by
-                        exact hc.isOpen_preimage S hS
-                    show IsOpen (⇑div_slope_equiv '' S)
-                    have : ⇑div_slope_equiv '' S = OnePointHomeo.toFun ⁻¹' S := by
-                        aesop
-                    rw [this]
-                    exact hi
-                · exact OnePoint.isOpenMap_coe
-            use f '' (Set.Ioo l u)
-            constructor
-            · use f '' (Set.Ioo l u)
-              constructor
-              · aesop
-              · constructor
-                · show IsOpen ((fun r ↦ ⟦⟨![r, 1], by simp⟩⟧) '' Set.Ioo l u)
-
-                  apply If
-                  exact isOpen_Ioo
-                · simp only [Set.mem_image, Set.mem_Ioo]
-                  use x
-                  aesop
-            simp_all only [Set.mem_Ioo, ne_eq]
-            intro a ha
-            simp only [Set.mem_preimage, Set.mem_image, Set.mem_Ioo] at ha
-            apply hu.2
-            obtain ⟨y,hy⟩ := ha
-            have := hy.2
-            simp only at this
-            have : y = a := by
-                simp_all only [ne_eq, f]
-                obtain ⟨left, right⟩ := hu
-                obtain ⟨left_1, right_1⟩ := hy
-                obtain ⟨left, right_2⟩ := left
-                obtain ⟨left_1, right_3⟩ := left_1
-                have : ![y, 1] = ![a, 1] := by
-                    clear left right_2 left_1 right_3 right f l u s x
-                    rw [Quotient.eq] at right_1
-                    obtain ⟨c,hc⟩ := right_1
-                    simp only [Matrix.smul_cons, Matrix.smul_empty] at hc
-                    have : c • a = c * a := rfl
-                    rw [this] at hc
-                    have : c • 1 = c.1 * 1 := rfl
-                    rw [this] at hc
-                    have g₀ := congrFun hc 0
-                    have g₁ := congrFun hc 1
-                    simp_all
-                have := congrFun this 0
-                aesop
-            aesop
-          · intro h
-            obtain ⟨t,ht⟩ := h
-            obtain ⟨t₁,ht₁⟩ := ht.1
-            have : Continuous (fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ))) := by
-                apply Continuous.comp'
-                exact { isOpen_preimage := fun s a ↦ a }
-                apply Continuous.subtype_mk
-                refine continuous_pi ?hf.h.h
-                intro i
-                fin_cases i
-                simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.zero_eta, Fin.isValue,
-                  Matrix.cons_val_zero]
-                exact continuous_id'
-                simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.mk_one, Fin.isValue,
-                  Matrix.cons_val_one, Matrix.head_cons]
-                exact continuous_const
-            let u := (fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ))) ⁻¹' t₁
-            have h₀ : x ∈ u := by aesop
-            have h₁ : IsOpen u := by
-                refine this.isOpen_preimage t₁ ?_
-                tauto
-            rw [← mem_nhds_iff_exists_Ioo_subset]
-            have h₂ : u ∈ nhds x := by exact IsOpen.mem_nhds h₁ h₀
-            have h₃ : u ⊆ s := fun _ hz => ht.2 <| ht₁.1 hz
-            exact Filter.mem_of_superset h₂ h₃
-        · intro x y h
-          simp only [ne_eq] at h
-          rw [Quotient.eq] at h
-          obtain ⟨c,hc⟩ := h
-          simp only [Matrix.smul_cons, Matrix.smul_empty] at hc
-          have g₀: c • y = c.1 * y := rfl
-          rw [g₀] at hc
-          have g₁: c • 1 = c.1 * 1 := rfl
-          rw [g₁] at hc
-          clear g₀ g₁
-          have h₁ := congrFun hc 1
-          have h₀ := congrFun hc 0
-          simp_all
-        )
-        (by
-            apply Set.ext
-            apply Quotient.ind
-            intro p
-            simp only [ne_eq, Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
-            constructor
-            · intro ⟨y,hy⟩
-              intro hc
-              have h := Eq.trans hy hc
-              clear hy hc p
-              rw [Quotient.eq] at h
-              obtain ⟨c,hc⟩ := h
-              simp only [Matrix.smul_cons, smul_zero, Matrix.smul_empty] at hc
-              have : ![c • 1, 0] 1 = ![y, 1] 1 := congrFun hc 1
-              simp_all
-            · intro h
-              rw [Quotient.eq] at h
-              have : ¬ ∃ c : ℝˣ, (fun m ↦ m • ![1, 0]) c = p.1 := by
-                contrapose h
-                simp_all only [Decidable.not_not]
-                exact h
-              by_cases H : p.1 1 = 0
-              · exfalso
-                apply this
-                use ⟨p.1 0, 1 / p.1 0, by
-                    have := p.2
-                    contrapose this
-                    simp only [ne_eq, Decidable.not_not]
-                    ext i
-                    fin_cases i
-                    · contrapose this
-                      simp_all
-                    · exact H, by
-                    have : p.1 0 ≠ 0 := by
-                        have := p.2
-                        contrapose this
-                        simp_all only [Nat.succ_eq_add_one, Matrix.smul_cons, smul_zero,
-                          Matrix.smul_empty, ne_eq, not_exists, Decidable.not_not]
-                        ext i
-                        fin_cases i
-                        · exact this
-                        · exact H
-                    simp only [ne_eq, Fin.isValue, one_div]
-                    exact inv_mul_cancel₀ this
-                ⟩
-                ext i
-                fin_cases i
-                · simp
-                · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, ne_eq, Fin.isValue, one_div,
-                  Fin.mk_one, Pi.smul_apply, Matrix.cons_val_one, Matrix.head_cons, smul_zero];tauto
-              · use p.1 0 / p.1 1
-                symm
-                apply Quotient.sound
-                use ⟨p.1 1, 1 / p.1 1,by
-                        have := p.2
-                        contrapose this
-                        simp_all, by
-                    have : p.1 1 ≠ 0 := by
-                        have := p.2
-                        contrapose this
-                        simp_all
-                    simp only [ne_eq, Fin.isValue, one_div]
-                    exact inv_mul_cancel₀ this                ⟩
-                ext i
-                fin_cases i
-                · simp only [ne_eq, Fin.isValue, one_div, Fin.zero_eta, Pi.smul_apply,
-                  Matrix.cons_val_zero, Units.smul_mk_apply, smul_eq_mul]
-                  ring_nf
-                  rw [mul_comm,← mul_assoc];
-                  aesop
-                · simp
-        )
-    exact this.symm
+noncomputable def OnePointHomeo' : Homeomorph (OnePoint ℝ) (ℙ ℝ (Fin 2 → ℝ)) :=
+  OnePoint.equivOfIsEmbeddingOfRangeEq (Y := ℙ ℝ (Fin 2 → ℝ))
+  ⟦ ⟨![1,0],by simp⟩ ⟧ (fun r => ⟦ ⟨![r,1],by simp⟩ ⟧)
+  ⟨nonVertical_isInducing, nonVertical_isInjective⟩ nonVertical_hasRange
