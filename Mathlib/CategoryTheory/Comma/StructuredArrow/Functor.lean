@@ -55,6 +55,12 @@ def grothendieckPrecompFunctorToComma : Grothendieck (R ⋙ functor L) ⥤ Comma
   obj P := ⟨P.fiber.left, P.base, P.fiber.hom⟩
   map f := ⟨f.fiber.left, f.base, by simp⟩
 
+@[simps!]
+def ιCompGrothendieckPrecompFunctorToCommaCompFst (X : E) :
+    Grothendieck.ι (R ⋙ functor L) X ⋙ grothendieckPrecompFunctorToComma L R ⋙ Comma.fst _ _ ≅
+    proj L (R.obj X) :=
+  NatIso.ofComponents (fun X => Iso.refl _) (fun _ => by simp)
+
 /-- The inverse functor used to establish the equivalence `grothendieckPrecompFunctorEquivalence`
 between the Grothendieck construction on `CostructuredArrow.functor` and the comma category. -/
 @[simps]
