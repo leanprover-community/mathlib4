@@ -3111,15 +3111,10 @@ namespace Multiset
 
 variable [DecidableEq α]
 
+@[simp]
 theorem disjoint_toFinset {m1 m2 : Multiset α} :
     _root_.Disjoint m1.toFinset m2.toFinset ↔ m1.Disjoint m2 := by
-  rw [Finset.disjoint_iff_ne]
-  refine ⟨fun h a ha1 ha2 => ?_, ?_⟩
-  · rw [← Multiset.mem_toFinset] at ha1 ha2
-    exact h _ ha1 _ ha2 rfl
-  · rintro h a ha b hb rfl
-    rw [Multiset.mem_toFinset] at ha hb
-    exact h ha hb
+  simp only [Finset.disjoint_left, mem_toFinset, Multiset.Disjoint]
 
 end Multiset
 
@@ -3127,6 +3122,7 @@ namespace List
 
 variable [DecidableEq α] {l l' : List α}
 
+@[simp]
 theorem disjoint_toFinset_iff_disjoint : _root_.Disjoint l.toFinset l'.toFinset ↔ l.Disjoint l' :=
   Multiset.disjoint_toFinset
 
