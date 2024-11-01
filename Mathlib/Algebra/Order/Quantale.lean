@@ -15,7 +15,7 @@ quantum mechanics, and computer science (see e.g. [Vickers1989] and [Mulvey1986]
 
 The most general definition of quantale occurring in literature, is that a quantale is a semigroup
 distributing over a complete sup-semilattice. In our definition below, we use the fact that
-every complete sup-semlattice is in fact a complete lattice, and make constructs defined for
+every complete sup-semilattice is in fact a complete lattice, and make constructs defined for
 those immediately available. Another view could be to define a quantale as a complete idempotent
 semiring, i.e. a complete semiring in which + and sup coincide. However, we will often encounter
 additive quantales, i.e. quantales in which the semigroup operator is thought of as addition, in
