@@ -84,7 +84,9 @@ lemma ι_lanObjObjIsoColimit_hom (X : D) (f : CostructuredArrow L X) :
   LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
     (isPointwiseLeftKanExtensionLanUnit L F X) f
 
-variable [∀ X, HasPointwiseLeftKanExtensionAt L X H]
+omit [∀ (F : C ⥤ H), HasLeftKanExtension L F] [HasPointwiseLeftKanExtension L F]
+
+variable [∀ X, HasColimitsOfShape (CostructuredArrow L X) H]
 
 @[local instance]
 private theorem lanObjIsoFiberwiseColimit_inst_1 {X Y : D} (f : X ⟶ Y) :
@@ -157,8 +159,8 @@ lemma isIso_lanAdjunction_counit_app_iff (G : D ⥤ H) :
 /-- Composing the left Kan extension of `L : C ⥤ D` with `colim` on shapes `D` is isomorphic
 to `colim` on shapes `C`. -/
 @[simps!]
-noncomputable def lanCompColimIso [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
-    [HasColimitsOfShape C H] [HasColimitsOfShape D H] : L.lan ⋙ colim ≅ colim (C := H) :=
+noncomputable def lanCompColimIso [HasColimitsOfShape C H] [HasColimitsOfShape D H] :
+    L.lan ⋙ colim ≅ colim (C := H) :=
   Iso.symm <| NatIso.ofComponents
     (fun G ↦ (colimitIsoOfIsLeftKanExtension _ (L.lanUnit.app G)).symm)
     (fun f ↦ colimit.hom_ext (fun i ↦ by
@@ -167,6 +169,8 @@ noncomputable def lanCompColimIso [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
         ι_colimitIsoOfIsLeftKanExtension_inv_assoc, ι_colimMap, ← assoc, ← assoc]
       congr 1
       exact congr_app (L.lanUnit.naturality f) i))
+
+omit [∀ (F : C ⥤ H), L.HasLeftKanExtension F]
 
 variable [∀ X, HasColimitsOfShape (CostructuredArrow L X) H]
 
