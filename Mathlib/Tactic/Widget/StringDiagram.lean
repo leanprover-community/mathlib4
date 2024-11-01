@@ -182,7 +182,7 @@ def WhiskerLeft.nodes (v h₁ h₂ : ℕ) : WhiskerLeft → List Node
     let ss := η.nodes v (h₁ + 1) (h₂ + 1)
     s :: ss
 
-variable {ρ : Type} [Context ρ] [MonadMor₁ (CoherenceM ρ)]
+variable {ρ : Type} [MonadMor₁ (CoherenceM ρ)]
 
 /-- The list of nodes at the top of a string diagram. -/
 def topNodes (η : WhiskerLeft) : CoherenceM ρ (List Node) := do
