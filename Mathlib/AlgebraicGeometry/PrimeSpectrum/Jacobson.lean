@@ -53,7 +53,7 @@ lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
     List.TFAE [IsOpen {x}, IsClopen {x}, IsClosed {x} ∧ StableUnderGeneralization {x}] := by
   tfae_have 1 → 2
   | h => by
-    obtain ⟨y, rfl : y = x, h'⟩ := exists_isClosed_singleton_of_isJacobson _ h
+    obtain ⟨y, rfl : y = x, h'⟩ := exists_isClosed_singleton_of_isJacobsonRing _ h
       ⟨x, Set.mem_singleton x⟩
     exact ⟨h', h⟩
   tfae_have 2 → 3
