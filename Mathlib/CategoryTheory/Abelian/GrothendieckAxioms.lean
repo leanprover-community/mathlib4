@@ -3,7 +3,7 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Isaac Hernando, Coleton Kotch, Adam Topaz
 -/
-
+import Mathlib.Logic.Equiv.List
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.Countable
@@ -74,8 +74,8 @@ abbrev AB4 [HasCoproducts C] := ∀ (α : Type v), ABOfShape (Discrete α) C
 A category `C` which has countable coproducts is said to have countable `AB4` provided that
 countable coproducts are exact.
 -/
-abbrev CountableAB4 [∀ (α : Type v) [Countable α], HasColimitsOfShape (Discrete α) C] :=
-  ∀ (α : Type v) [Countable α], ABOfShape (Discrete α) C
+abbrev CountableAB4 [HasCountableCoproducts C] :=
+  ∀ (α : Type) [Countable α], ABOfShape (Discrete α) C
 
 instance [HasCoproducts C] [AB4 C] (J : Type v) : ABOfShape (Discrete J) C := inferInstance
 
@@ -163,6 +163,18 @@ end
 def AB4.ofAB5 [HasFiniteCoproducts C] [HasFilteredColimits C] [AB5 C] : AB4 C := fun _ ↦
   ABOfShapeDiscreteOfABOfShapeFinsetDiscrete _ _
 
+/--
+A category with finite biproducts and finite limits has countable AB4 if sequential colimits are
+exact.
+-/
+def CountableAB4.ofCountableAB5 [HasColimitsOfShape ℕ C] [ABOfShape ℕ C]
+    [HasCountableCoproducts C] : CountableAB4 C := fun J _ ↦
+  have : HasColimitsOfShape (Finset (Discrete J)) C :=
+    Functor.Final.hasColimitsOfShape_of_final
+      (IsFiltered.sequentialFunctor (Finset (Discrete J)))
+  have := ABOfShapeOfInitial C (IsFiltered.sequentialFunctor (Finset (Discrete J)))
+  ABOfShapeDiscreteOfABOfShapeFinsetDiscrete _ _
+
 end
 
 variable [HasFiniteColimits C]
@@ -210,17 +222,17 @@ end
 def AB4Star.ofAB5Star [HasProducts C] [HasCofilteredLimits C] [AB5Star C] : AB4Star C :=
   fun _ ↦ ABStarOfShapeDiscreteOfABStarOfShapeFinsetDiscreteOp _ _
 
+/--
+A category with finite biproducts and finite limits has countable AB4* if sequential limits are
+exact.
+-/
 def CountableAB4Star.ofCountableAB5Star [HasLimitsOfShape ℕᵒᵖ C] [ABStarOfShape ℕᵒᵖ C]
-    [HasCountableProducts C] : CountableAB4Star C := fun J _ ↦ (by
-  have : Countable (Finset (Discrete J)) := sorry
-  have : HasLimitsOfShape (Finset (Discrete J))ᵒᵖ C := by
-    -- let F := sequentialFunctor (Finset (Discrete J))ᵒᵖ
-    sorry
-  apply ( config := { allowSynthFailures := true } )
-    ABStarOfShapeDiscreteOfABStarOfShapeFinsetDiscreteOp
-  sorry
-
-)
+    [HasCountableProducts C] : CountableAB4Star C := fun J _ ↦
+  have : HasLimitsOfShape (Finset (Discrete J))ᵒᵖ C :=
+    Functor.Initial.hasLimitsOfShape_of_initial
+      (IsFiltered.sequentialFunctor (Finset (Discrete J))).op
+  have := ABStarOfShapeOfFinal C (IsFiltered.sequentialFunctor (Finset (Discrete J))).op
+  ABStarOfShapeDiscreteOfABStarOfShapeFinsetDiscreteOp _ _
 
 end
 

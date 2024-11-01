@@ -90,57 +90,73 @@ instance [Category.{v} J] [CountableCategory J] [HasCountableColimits C] : HasCo
   have : HasColimitsOfShape (HomAsType J) C := HasCountableColimits.out (HomAsType J)
   hasColimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
+class HasCountableCoproducts where
+  out (J : Type) [Countable J] : HasCoproductsOfShape J C
+
+instance [HasCountableCoproducts C] : HasCoproductsOfShape J C :=
+  have : Countable (Shrink.{0} J) := Countable.of_equiv _ (equivShrink.{0} J)
+  have : HasColimitsOfShape (Discrete (Shrink.{0} J)) C := HasCountableCoproducts.out _
+  hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{0} J)).symm
+
+instance (priority := 100) hasCountableCoproducts_of_hasCountableColimits [HasCountableColimits C] :
+    HasCountableCoproducts C where
+  out _ := inferInstance
+
+instance (priority := 100) hasFiniteCoproducts_of_hasCountableCoproducts
+    [HasCountableCoproducts C] : HasFiniteCoproducts C where
+  out _ := inferInstance
+
 section Preorder
 
--- section
+namespace IsFiltered
 
--- attribute [local instance] IsFiltered.nonempty
+attribute [local instance] IsFiltered.nonempty
 
--- variable {C} [Preorder J] [IsFiltered J]
+variable {C} [Preorder J] [IsFiltered J]
 
--- /-- The object part of the initial functor `ℕᵒᵖ ⥤ J` -/
--- noncomputable def sequentialFunctor_obj : ℕ → J := fun
---   | .zero => (exists_surjective_nat _).choose 0
---   | .succ n => (IsFilteredOrEmpty.cocone_objs ((exists_surjective_nat _).choose n)
---       (sequentialFunctor_obj n)).choose
+/-- The object part of the initial functor `ℕᵒᵖ ⥤ J` -/
+noncomputable def sequentialFunctor_obj : ℕ → J := fun
+  | .zero => (exists_surjective_nat _).choose 0
+  | .succ n => (IsFilteredOrEmpty.cocone_objs ((exists_surjective_nat _).choose n)
+      (sequentialFunctor_obj n)).choose
 
--- theorem sequentialFunctor_map : Monotone (sequentialFunctor_obj J) :=
---   monotone_nat_of_le_succ fun n ↦
---     leOfHom (IsFilteredOrEmpty.cocone_objs ((exists_surjective_nat _).choose n)
---       (sequentialFunctor_obj J n)).choose_spec.choose_spec.choose
+theorem sequentialFunctor_map : Monotone (sequentialFunctor_obj J) :=
+  monotone_nat_of_le_succ fun n ↦
+    leOfHom (IsFilteredOrEmpty.cocone_objs ((exists_surjective_nat _).choose n)
+      (sequentialFunctor_obj J n)).choose_spec.choose_spec.choose
 
--- /--
--- The initial functor `ℕᵒᵖ ⥤ J`, which allows us to turn cofiltered limits over countable preorders
--- into sequential limits.
--- -/
--- noncomputable def sequentialFunctor : ℕ ⥤ J where
---   obj n := sequentialFunctor_obj J n
---   map h := homOfLE (sequentialFunctor_map J (leOfHom h))
+/--
+The initial functor `ℕᵒᵖ ⥤ J`, which allows us to turn cofiltered limits over countable preorders
+into sequential limits.
+-/
+noncomputable def sequentialFunctor : ℕ ⥤ J where
+  obj n := sequentialFunctor_obj J n
+  map h := homOfLE (sequentialFunctor_map J (leOfHom h))
 
--- theorem sequentialFunctor_final_aux (j : J) : ∃ (n : ℕ), sequentialFunctor_obj J n ≤ j := by
---   obtain ⟨m, h⟩ := (exists_surjective_nat _).choose_spec j
---   refine ⟨m + 1, ?_⟩
---   simpa only [h] using leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose m)
---     (sequentialFunctor_obj J m)).choose_spec.choose
+theorem sequentialFunctor_final_aux (j : J) : ∃ (n : ℕ), j ≤ sequentialFunctor_obj J n := by
+  obtain ⟨m, h⟩ := (exists_surjective_nat _).choose_spec j
+  refine ⟨m + 1, ?_⟩
+  simpa only [h] using leOfHom (IsFilteredOrEmpty.cocone_objs ((exists_surjective_nat _).choose m)
+    (sequentialFunctor_obj J m)).choose_spec.choose
 
--- instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
---   out d := by
---     obtain ⟨n, (g : (sequentialFunctor J).obj ⟨n⟩ ≤ d)⟩ := sequentialFunctor_initial_aux J d
---     have : Nonempty (CostructuredArrow (sequentialFunctor J) d) :=
---       ⟨CostructuredArrow.mk (homOfLE g)⟩
---     apply isConnected_of_zigzag
---     refine fun i j ↦ ⟨[j], ?_⟩
---     simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
---       List.getLast_cons, not_true_eq_false, List.getLast_singleton', reduceCtorEq]
---     clear! C
---     wlog h : (unop i.left) ≤ (unop j.left)
---     · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
---     · right
---       exact ⟨CostructuredArrow.homMk (homOfLE h).op rfl⟩
+instance sequentialFunctor_final : (sequentialFunctor J).Final where
+  out d := by
+    obtain ⟨n, (g : d ≤ (sequentialFunctor J).obj n)⟩ := sequentialFunctor_final_aux J d
+    have : Nonempty (StructuredArrow d (sequentialFunctor J)) :=
+      ⟨StructuredArrow.mk (homOfLE g)⟩
+    apply isConnected_of_zigzag
+    refine fun i j ↦ ⟨[j], ?_⟩
+    simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
+      List.getLast_cons, not_true_eq_false, List.getLast_singleton', reduceCtorEq]
+    clear! C
+    wlog h : j.right ≤ i.right
+    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
+    · right
+      exact ⟨StructuredArrow.homMk (homOfLE h) rfl⟩
 
--- end
+end IsFiltered
 
-section
+namespace IsCofiltered
 
 attribute [local instance] IsCofiltered.nonempty
 
@@ -160,6 +176,9 @@ theorem sequentialFunctor_map : Antitone (sequentialFunctor_obj J) :=
 /--
 The initial functor `ℕᵒᵖ ⥤ J`, which allows us to turn cofiltered limits over countable preorders
 into sequential limits.
+
+TODO: redefine this as `(IsFiltered.sequentialFunctor Jᵒᵖ).leftOp`. This would need API for initial/
+final functors of the form `leftOp`/`rightOp`.
 -/
 noncomputable def sequentialFunctor : ℕᵒᵖ ⥤ J where
   obj n := sequentialFunctor_obj J (unop n)
@@ -219,8 +238,18 @@ For this we need to dualize this whole section.
 proof_wanted hasCountableColimits_of_hasFiniteColimits_and_hasSequentialColimits
   [HasFiniteColimits C] [HasLimitsOfShape ℕ C] : HasCountableColimits C
 
-end
+end IsCofiltered
 
 end Preorder
+
+@[deprecated (since := "2024-11-01")] alias sequentialFunctor := IsCofiltered.sequentialFunctor
+@[deprecated (since := "2024-11-01")] alias sequentialFunctor_obj :=
+  IsCofiltered.sequentialFunctor_obj
+@[deprecated (since := "2024-11-01")] alias sequentialFunctor_map :=
+  IsCofiltered.sequentialFunctor_map
+@[deprecated (since := "2024-11-01")] alias sequentialFunctor_initial_aux :=
+  IsCofiltered.sequentialFunctor_initial_aux
+@[deprecated (since := "2024-11-01")] alias sequentialFunctor_initial :=
+  IsCofiltered.sequentialFunctor_initial
 
 end CategoryTheory.Limits
