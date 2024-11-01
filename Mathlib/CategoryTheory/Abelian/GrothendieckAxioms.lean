@@ -242,7 +242,7 @@ section EpiMono
 
 open Functor
 
-variable [Abelian C]
+variable [Abelian C] -- Could be weakened
 
 variable (J : Type u') [Category.{v'} J]
 

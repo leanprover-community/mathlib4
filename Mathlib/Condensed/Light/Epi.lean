@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
-import Mathlib.Condensed.Light.Module
+import Mathlib.Condensed.Light.Limits
 /-!
 
 # Epimorphisms of light condensed objects
@@ -77,7 +77,7 @@ end LightCondMod
 
 namespace LightCondensed
 
-variable (R : Type*) [Ring R]
+variable (R : Type u) [Ring R]
 variable {F : ℕᵒᵖ ⥤ LightCondMod R} {c : Cone F} (hc : IsLimit c)
   (hF : ∀ n, Epi (F.map (homOfLE (Nat.le_succ n)).op))
 
@@ -90,5 +90,14 @@ lemma epi_π_app_zero_of_epi : Epi (c.π.app ⟨0⟩) := by
   · have := (freeForgetAdjunction R).isRightAdjoint
     exact isLimitOfPreserves _ hc
   · exact fun _ ↦ (forget R).map_epi _
+
+open Functor Limits
+
+instance : PreservesEpimorphisms (lim (J := ℕᵒᵖ) (C := LightCondMod.{u} R)) where
+  preserves {X Y} f hf := by
+    rw [NatTrans.epi_iff_epi_app] at hf
+    have := epi_π_app_zero_of_epi R (limit.isLimit X)
+    have := epi_π_app_zero_of_epi R (limit.isLimit Y)
+    sorry
 
 end LightCondensed
