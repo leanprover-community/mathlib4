@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
 
 /-! # The Kan extension functor
 
@@ -77,6 +79,18 @@ lemma ι_lanObjObjIsoColimit_hom
     Limits.colimit.ι (CostructuredArrow.proj L X ⋙ F) f :=
   LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
     (isPointwiseLeftKanExtensionLanUnit L F X) f
+
+example (F : C ⥤ H) [HasPointwiseLeftKanExtension L F]
+    [∀ X, HasColimitsOfShape ↑((𝟭 D ⋙ CostructuredArrow.functor L).obj X) H] :  -- TODO make local inst
+    L.lan.obj F ≅
+    fiberwiseColimit (CostructuredArrow.grothendieckPrecompFunctorToComma L (𝟭 _) ⋙
+      Comma.fst L (𝟭 _) ⋙ F) :=
+  NatIso.ofComponents
+    (fun X => lanObjObjIsoColimit L F X ≪≫ (by { simp;  }))
+    _
+
+#check CostructuredArrow.grothendieckPrecompFunctorToComma
+#check Str
 
 variable (H) in
 /-- The left Kan extension functor `L.Lan` is left adjoint to the
