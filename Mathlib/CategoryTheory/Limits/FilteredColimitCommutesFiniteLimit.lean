@@ -373,7 +373,6 @@ noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesColimitsOfSh
   intro J _ _
   infer_instance
 
-
 end
 
 section
