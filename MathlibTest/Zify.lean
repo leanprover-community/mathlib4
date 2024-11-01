@@ -5,7 +5,7 @@ Authors: Moritz Doll, Robert Y. Lewis
 -/
 
 import Mathlib.Tactic.Zify
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Basic
 
 set_option linter.unusedVariables false
 
