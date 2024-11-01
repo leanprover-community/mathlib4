@@ -60,7 +60,7 @@ theorem contDiffOn_fderiv_coord_change (i j : atlas H M) :
   intro x hx
   refine (ContDiffWithinAt.fderivWithin_right ?_ I.uniqueDiffOn le_top <| h hx).mono h
   refine (PartialHomeomorph.contDiffOn_extend_coord_change (subset_maximalAtlas j.2)
-    (subset_maximalAtlas i.2) x hx).mono_of_mem ?_
+    (subset_maximalAtlas i.2) x hx).mono_of_mem_nhdsWithin ?_
   exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 hx
 
 

@@ -515,6 +515,7 @@ import Mathlib.Algebra.Module.Presentation.Basic
 import Mathlib.Algebra.Module.Presentation.Finite
 import Mathlib.Algebra.Module.Presentation.Free
 import Mathlib.Algebra.Module.Presentation.PiTensor
+import Mathlib.Algebra.Module.Presentation.Tensor
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Rat
@@ -1008,6 +1009,7 @@ import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Analysis.BoxIntegral.Partition.Split
 import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
+import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
@@ -2263,6 +2265,7 @@ import Mathlib.Data.Fin.Tuple.Finset
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.Data.Fin.Tuple.Sort
+import Mathlib.Data.Fin.Tuple.Take
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.FinEnum
 import Mathlib.Data.Finite.Card
@@ -2793,6 +2796,7 @@ import Mathlib.Dynamics.TopologicalEntropy.Semiconj
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.FieldTheory.AbsoluteGaloisGroup
 import Mathlib.FieldTheory.Adjoin
+import Mathlib.FieldTheory.AlgebraicClosure
 import Mathlib.FieldTheory.AxGrothendieck
 import Mathlib.FieldTheory.Cardinality
 import Mathlib.FieldTheory.ChevalleyWarning
@@ -3667,6 +3671,7 @@ import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 import Mathlib.NumberTheory.NumberField.Units.Regulator
 import Mathlib.NumberTheory.Ostrowski
 import Mathlib.NumberTheory.Padics.Hensel
+import Mathlib.NumberTheory.Padics.MahlerBasis
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.NumberTheory.Padics.PadicNumbers
@@ -4090,8 +4095,11 @@ import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Pointwise
 import Mathlib.RingTheory.Ideal.Prime
 import Mathlib.RingTheory.Ideal.Prod
-import Mathlib.RingTheory.Ideal.Quotient
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.Quotient.Basic
+import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Ideal.Span
 import Mathlib.RingTheory.Idempotents
 import Mathlib.RingTheory.Int.Basic
@@ -4226,8 +4234,6 @@ import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.PrimeSpectrum
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotSMulTop
-import Mathlib.RingTheory.QuotientNilpotent
-import Mathlib.RingTheory.QuotientNoetherian
 import Mathlib.RingTheory.Radical
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Regular.IsSMulRegular
@@ -4620,6 +4626,7 @@ import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.Algebra.Rat
 import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
+import Mathlib.Topology.Algebra.ClopenNhdofOne
 import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions

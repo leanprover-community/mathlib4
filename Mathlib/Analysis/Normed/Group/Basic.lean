@@ -1084,9 +1084,8 @@ theorem mul_mem_ball_mul_iff {c : E} : a * c ∈ ball (b * c) r ↔ a ∈ ball b
 @[to_additive]
 theorem smul_closedBall'' : a • closedBall b r = closedBall (a • b) r := by
   ext
-  simp [mem_closedBall, Set.mem_smul_set, dist_eq_norm_div, _root_.div_eq_inv_mul, ←
+  simp [mem_closedBall, Set.mem_smul_set, dist_eq_norm_div, div_eq_inv_mul, ←
     eq_inv_mul_iff_mul_eq, mul_assoc]
-  -- Porting note: `ENNReal.div_eq_inv_mul` should be `protected`?
 
 @[to_additive]
 theorem smul_ball'' : a • ball b r = ball (a • b) r := by
