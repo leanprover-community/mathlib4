@@ -130,9 +130,12 @@ def elabLinearCombination (tk : Syntax)
   -- `[stuff] = [stuff]` to the form `[stuff] = 0`,
   -- because this gives more useful error messages on failure
   let _ ← Tactic.tryTactic <| Tactic.liftMetaTactic fun g ↦ g.applyConst ``eq_rearrange
-  -- now run the normalization tactic provided, or the default normalization if none is provided
   match norm? with
+  -- now run the normalization tactic provided
   | some norm => Tactic.evalTactic norm
+  -- or the default normalization tactic (the internals of `ring1`) if none is provided
+  -- (but we use `.instances` transparency, which is arguably more robust in algebraic settings than
+  -- the choice `.reducible` made in `ring1`)
   | none => withRef tk <| Tactic.liftMetaFinishingTactic <|
     fun g ↦ AtomM.run .instances <| Ring.proveEq g
 
