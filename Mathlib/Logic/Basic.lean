@@ -444,9 +444,6 @@ section Dependent
 
 variable {α : Sort*} {β : α → Sort*} {γ : ∀ a, β a → Sort*}
 
-theorem pi_congr {β' : α → Sort _} (h : ∀ a, β a = β' a) : (∀ a, β a) = ∀ a, β' a :=
-  (funext h : β = β') ▸ rfl
-
 -- Porting note: some higher order lemmas such as `forall₂_congr` and `exists₂_congr`
 -- were moved to `Batteries`
 

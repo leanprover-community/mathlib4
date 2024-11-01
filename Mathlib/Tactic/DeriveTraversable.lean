@@ -452,7 +452,7 @@ def traversableLawStarter (m : MVarId) (n : Name) (s : MetaM Simp.Context)
   let (fi, m) ← m.intros
   m.withContext do
     if let (some m, _) ← dsimpGoal m { simpTheorems := #[s'] } then
-      let ma ← m.induction fi.back (mkRecName n)
+      let ma ← m.induction fi.back! (mkRecName n)
       ma.forM fun is =>
         is.mvarId.withContext do
           if let (some (_, m), _) ← simpFunctorGoal is.mvarId (← s) then
