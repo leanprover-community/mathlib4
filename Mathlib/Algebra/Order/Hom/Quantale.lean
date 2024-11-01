@@ -13,7 +13,7 @@ import Mathlib.Order.Hom.CompleteLattice
 /-!
 # Quantale homomorphism classes
 
-This file defines the bundled structures for quantale homomorphisms and unital quantale
+This file defines the bundled structures for (unital) quantale homomorphisms and unital quantale
 homomorphism. Namely, we define `QuantaleHom` (resp., `AddQuantaleHom`) to be bundled
 homomorphisms between multiplicative (resp.,additive) quantales and `OneQuantaleHom`
 (resp. `ZeroAddQuantaleHom`) to be bundled homomorphisms between multiplicative (resp. additive)
@@ -41,23 +41,23 @@ isomorphisms
 
 ## Notation
 
-* `→+q`: Bundled additive quantale homs.
-* `→*q`: Bundled multiplicative quantale homs.
-* `→+₀q`: Bundled additive unital quantale homs.
-* `→*₁q`: Bundled multiplicative unital quantale homs.
-* `≃+o`: Bundled additive quantale isos.
-* `≃*o`: Bundled quantale isos.
-* `≃+₀o`: Bundled additive unital quantale isos.
-* `≃*₁o`: Bundled unital quantale isos.
+We only introduce notations for the homomorhpisms on unital quantales, since the notation
+`→*` in Mathlib already refers to monoids homomorphisms, rather than semigroup homomorphisms.
+Also, the assumption that a quantale is unital is more common than the assumption that it is not.
+
+* `→+q`: Bundled additive unital quantale homs.
+* `→*q`: Bundled multiplicative unital quantale homs.
+* `≃+o`: Bundled additive unital quantale isos.
+* `≃*o`: Bundled quantale unital isos.
 -/
 
 /- Additive Quantale Homomorphisms-/
 
 namespace AddQuantale
 
-/-- `M →+q N` is the type of functions `M → N` that preserve the `AddQuantale` structure.
+/-- `AddQuantaleHom` is the type of functions `M → N` that preserve the `AddQuantale` structure.
 
-When possible, instead of parametrizing results over `(f : M →+q N)`,
+When possible, instead of parametrizing results over `(f : AddQuantaleHom M N)`,
 you should parametrize over `(F : Type*) [AddQuantaleHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `AddQuantaleHomClass`.
@@ -68,9 +68,6 @@ structure AddQuantaleHom (M N : Type*)
 
 attribute [nolint docBlame] AddQuantaleHom.toAddHom
 attribute [nolint docBlame] AddQuantaleHom.toCompleteLatticeHom
-
-/-- `M →+q N` denotes the type of additive quantale homomorphisms from `M` to `N`. -/
-infixr:25 " →+q " => AddQuantaleHom
 
 /-- `AddQuantaleHomClass F M N` states that `F` is a type of `AddQuantale`-preserving
 homomorphisms.
@@ -89,9 +86,9 @@ end AddQuantale
 
 namespace Quantale
 
-/-- `M →*q N` is the type of functions `M → N` that preserve the `Quantale` structure.
+/-- `QuantaleHom` is the type of functions `M → N` that preserve the `Quantale` structure.
 
-When possible, instead of parametrizing results over `(f : M →+q N)`,
+When possible, instead of parametrizing results over `(f : QuantaleHom M N)`,
 you should parametrize over `(F : Type*) [QuantaleHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `QuantaleHomClass`.
@@ -103,9 +100,6 @@ structure QuantaleHom (M N : Type*)
 
 attribute [nolint docBlame] QuantaleHom.toMulHom
 attribute [nolint docBlame] QuantaleHom.toCompleteLatticeHom
-
-/-- `M →*q N` denotes the type of additive quantale homomorphisms from `M` to `N`. -/
-infixr:25 " →*q " => QuantaleHom
 
 /-- `QuantaleHomClass F M N` states that `F` is a type of `Quantale`-preserving
 homomorphisms.
@@ -121,7 +115,7 @@ variable {M N : Type*} {F : Type*}
 variable [Semigroup M] [Semigroup N] [Quantale M] [Quantale N] [FunLike F M N]
 
 @[to_additive]
-instance QuantaleHom.instFunLike : FunLike (M →*q N) M N where
+instance QuantaleHom.instFunLike : FunLike (QuantaleHom M N) M N where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -131,7 +125,7 @@ instance QuantaleHom.instFunLike : FunLike (M →*q N) M N where
     exact h
 
 @[to_additive]
-instance QuantaleHom.instQuantaleHomClass : QuantaleHomClass (M →*q N) M N where
+instance QuantaleHom.instQuantaleHomClass : QuantaleHomClass (QuantaleHom M N) M N where
   map_mul f := f.toMulHom.map_mul'
   map_sInf f := f.toCompleteLatticeHom.map_sInf'
   map_sSup f := f.toCompleteLatticeHom.map_sSup'
@@ -141,18 +135,19 @@ instance QuantaleHom.instQuantaleHomClass : QuantaleHomClass (M →*q N) M N whe
 @[to_additive (attr := coe)
 "Turn an element of a type `F` satisfying `AddQuantaleHomClass F M N` into an
 actual `AddQuantaleHom`. This is declared as the default coercion from `F` to `M →+q N`."]
-def QuantaleHomClass.toQuantaleHom [QuantaleHomClass F M N] (f : F) : M →*q N :=
+def QuantaleHomClass.toQuantaleHom [QuantaleHomClass F M N] (f : F) : QuantaleHom M N :=
   { (f : MulHom M N), (f : CompleteLatticeHom M N) with }
 
 /-- Any type satisfying `QuantaleHomClass` can be cast into `QuantaleHom` via
 `QuantaleHomClass.toQuantaleHom`. -/
 @[to_additive "Any type satisfying `AddQuantaleHomClass` can be cast into `AddQuantaleHom` via
 `AddQuantaleHomClass.toAddQuantaleHom`."]
-instance [QuantaleHomClass F M N] : CoeTC F (M →*q N) :=
+instance [QuantaleHomClass F M N] : CoeTC F (QuantaleHom M N) :=
   ⟨QuantaleHomClass.toQuantaleHom⟩
 
 @[to_additive (attr := simp)]
-theorem QuantaleHom.coe_coe [QuantaleHomClass F M N] (f : F) : ((f : M →*q N) : M → N) = f := rfl
+theorem QuantaleHom.coe_coe [QuantaleHomClass F M N] (f : F) :
+  ((f : QuantaleHom M N) : M → N) = f := rfl
 
 end Quantale
 
@@ -160,10 +155,10 @@ end Quantale
 
 namespace AddQuantale
 
-/-- `M →+₀q N` is the type of functions `M → N` that preserve the `AddQuantale` structure
+/-- `M →+q N` is the type of functions `M → N` that preserve the `AddQuantale` structure
 over a monoid rather than a semigroup.
 
-When possible, instead of parametrizing results over `(f : M →+₀q N)`,
+When possible, instead of parametrizing results over `(f : M →+q N)`,
 you should parametrize over `(F : Type*) [ZeroAddQuantaleHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `ZeroAddQuantaleHomClass`.
@@ -175,8 +170,8 @@ structure ZeroAddQuantaleHom (M N : Type*)
 attribute [nolint docBlame] AddQuantaleHom.toAddHom
 attribute [nolint docBlame] AddQuantaleHom.toCompleteLatticeHom
 
-/-- `M →+₀q N` denotes the type of additive unital quantale homomorphisms from `M` to `N`. -/
-infixr:25 " →+₀q " => ZeroAddQuantaleHom
+/-- `M →+q N` denotes the type of additive unital quantale homomorphisms from `M` to `N`. -/
+infixr:25 " →+q " => ZeroAddQuantaleHom
 
 /-- `ZeroAddQuantaleHomClass F M N` states that `F` is a type of `ZeroAddQuantale`-preserving
 homomorphisms.
@@ -195,10 +190,10 @@ end AddQuantale
 
 namespace Quantale
 
-/-- `M →*₁q N` is the type of functions `M → N` that preserve the `Quantale` structure over a
+/-- `M →*q N` is the type of functions `M → N` that preserve the `Quantale` structure over a
 monoid rather than a semigroup.
 
-When possible, instead of parametrizing results over `(f : M →+₁q N)`,
+When possible, instead of parametrizing results over `(f : M →+q N)`,
 you should parametrize over `(F : Type*) [OneQuantaleHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `OneQuantaleHomClass`.
@@ -211,8 +206,8 @@ structure OneQuantaleHom (M N : Type*)
 attribute [nolint docBlame] QuantaleHom.toMulHom
 attribute [nolint docBlame] QuantaleHom.toCompleteLatticeHom
 
-/-- `M →*₁q N` denotes the type of additive quantale homomorphisms from `M` to `N`. -/
-infixr:25 " →*₁q " => OneQuantaleHom
+/-- `M →*q N` denotes the type of additive quantale homomorphisms from `M` to `N`. -/
+infixr:25 " →*q " => OneQuantaleHom
 
 /-- `OneQuantaleHomClass F M N` states that `F` is a type of `OneQuantale`-preserving
 homomorphisms.
@@ -228,7 +223,7 @@ variable {M N : Type*} {F : Type*}
 variable [Monoid M] [Monoid N] [Quantale M] [Quantale N] [FunLike F M N]
 
 @[to_additive]
-instance OneQuantaleHom.instFunLike : FunLike (M →*₁q N) M N where
+instance OneQuantaleHom.instFunLike : FunLike (M →*q N) M N where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -238,7 +233,7 @@ instance OneQuantaleHom.instFunLike : FunLike (M →*₁q N) M N where
     exact h
 
 @[to_additive]
-instance OneQuantaleHom.instOneQuantaleHomClass : OneQuantaleHomClass (M →*₁q N) M N where
+instance OneQuantaleHom.instOneQuantaleHomClass : OneQuantaleHomClass (M →*q N) M N where
   map_mul f := f.toMonoidHom.map_mul'
   map_sInf f := f.toCompleteLatticeHom.map_sInf'
   map_sSup f := f.toCompleteLatticeHom.map_sSup'
@@ -249,18 +244,18 @@ instance OneQuantaleHom.instOneQuantaleHomClass : OneQuantaleHomClass (M →*₁
 @[to_additive (attr := coe)
 "Turn an element of a type `F` satisfying `ZeroAddQuantaleHomClass F M N` into an
 actual `ZeroAddQuantaleHom`. This is declared as the default coercion from `F` to `M →+₀q N`."]
-def OneQuantaleHomClass.toOneQuantaleHom [OneQuantaleHomClass F M N] (f : F) : M →*₁q N :=
+def OneQuantaleHomClass.toOneQuantaleHom [OneQuantaleHomClass F M N] (f : F) : M →*q N :=
   { (f : MonoidHom M N), (f : CompleteLatticeHom M N) with }
 
 /-- Any type satisfying `OneQuantaleHomClass` can be cast into `OneQuantaleHom` via
 `OneQuantaleHomClass.toOneQuantaleHom`. -/
 @[to_additive "Any type satisfying `ZeroAddQuantaleHomClass` can be cast into `ZeroAddQuantaleHom`
 via `ZeroAddQuantaleHomClass.toZeroAddQuantaleHom`."]
-instance [OneQuantaleHomClass F M N] : CoeTC F (M →*₁q N) :=
+instance [OneQuantaleHomClass F M N] : CoeTC F (M →*q N) :=
   ⟨OneQuantaleHomClass.toOneQuantaleHom⟩
 
 @[to_additive (attr := simp)]
 theorem OneQuantaleHom.coe_coe [OneQuantaleHomClass F M N] (f : F) :
-   ((f : M →*₁q N) : M → N) = f := rfl
+   ((f : M →*q N) : M → N) = f := rfl
 
 end Quantale
