@@ -126,24 +126,8 @@ def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
       coconeFiberwiseColimitOfCocone_ι_app] at this
     simp [← this]
 
-section
-
-variable [HasColimit G]
-
-@[local instance]
-lemma hasColimitFiberwiseColimit : HasColimit (fiberwiseColimit G) where
+lemma hasColimitFiberwiseColimit [HasColimit G] : HasColimit (fiberwiseColimit G) where
   exists_colimit := ⟨⟨_, isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _)⟩⟩
-
-/-- For every functor `G` on the Grothendieck construction `Grothendieck F`, if `G` has a colimit
-and every fiber of `G` has a colimit, then taking this colimit is isomorphic to first taking the
-fiberwise colimit and then the colimit of the resulting functor. -/
-def colimitFiberwiseColimitIsoOfHasColimit : colimit (fiberwiseColimit G) ≅ colimit G :=
-  IsColimit.coconePointUniqueUpToIso (colimit.isColimit (fiberwiseColimit G))
-    (isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _))
-
-end
-
-section
 
 variable {G}
 
@@ -208,8 +192,6 @@ lemma ι_colimitFiberwiseColimitIso_inv (X : Grothendieck F) :
     colimit.ι (Grothendieck.ι F X.base ⋙ G) X.fiber ≫ colimit.ι (fiberwiseColimit G) X.base := by
   rw [Iso.comp_inv_eq]
   simp
-
-end
 
 end
 
