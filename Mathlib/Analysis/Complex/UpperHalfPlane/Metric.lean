@@ -29,7 +29,7 @@ open scoped UpperHalfPlane ComplexConjugate NNReal Topology MatrixGroups
 
 open Set Metric Filter Real
 
-variable {z w : ℍ} {r R : ℝ}
+variable {z w : ℍ} {r : ℝ}
 
 namespace UpperHalfPlane
 
@@ -300,7 +300,7 @@ theorem image_coe_sphere (z : ℍ) (r : ℝ) :
 
 instance : ProperSpace ℍ := by
   refine ⟨fun z r => ?_⟩
-  rw [inducing_subtype_val.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
+  rw [IsInducing.subtypeVal.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
   apply isCompact_closedBall
 
 theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (exp_pos y) := by

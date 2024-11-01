@@ -3,8 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Sébastien Gouëzel, Kim Morrison, Thomas Murrills
 -/
+import Lean.Elab.Eval
+import Lean.Elab.Tactic.BuiltinTactic
 import Mathlib.Init
-import Lean
 
 /-!
 # Success If Fail With Message
@@ -15,7 +16,7 @@ It's mostly useful in tests, where we want to make sure that tactics fail in cer
 circumstances.
 -/
 
-open Lean Elab Meta Tactic Syntax
+open Lean Elab Tactic
 
 namespace Mathlib.Tactic
 

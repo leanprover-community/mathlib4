@@ -39,7 +39,7 @@ ring_seminorm, ring_norm
 
 open NNReal
 
-variable {F R S : Type*} (x y : R) (r : ℝ)
+variable {R : Type*}
 
 /-- A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes nonnegative
   values, is subadditive and submultiplicative and such that `f (-x) = f x` for all `x ∈ R`. -/
@@ -421,3 +421,13 @@ def NormedField.toMulRingNorm (R : Type*) [NormedField R] : MulRingNorm R where
   map_mul'  := norm_mul
   neg'      := norm_neg
   eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
+
+/-- Triangle inequality for `MulRingNorm` applied to a list. -/
+lemma mulRingNorm_sum_le_sum_mulRingNorm {R : Type*} [NonAssocRing R] (l : List R)
+    (f : MulRingNorm R) : f l.sum ≤ (l.map f).sum := by
+  induction l with
+  | nil => simp only [List.sum_nil, map_zero, List.map_nil, le_refl]
+  | cons head tail ih =>
+    simp only [List.sum_cons, List.map_cons]
+    calc f (head + List.sum tail) ≤ f head + f (List.sum tail) := by apply f.add_le'
+      _ ≤ f head + List.sum (List.map f tail) := by simp only [add_le_add_iff_left, ih]
