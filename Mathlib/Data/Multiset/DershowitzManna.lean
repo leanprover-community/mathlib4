@@ -34,20 +34,20 @@ the Dershowitz-Manna ordering defined over multisets is also well-founded.
 variable {α : Type*}
 
 /-- The standard Dershowitz–Manna ordering: -/
-inductive MultisetDMLT [DecidableEq α] [Preorder α] (M N : Multiset α) : Prop :=
-  | DMLT : ∀ (X Y Z : Multiset α),
-    Y ≠ ∅ →
-    M = Z + X →
-    N = Z + Y →
-    (∀ x ∈ X, ∃ y ∈ Y, x < y) → MultisetDMLT M N
+def MultisetDMLT [DecidableEq α] [Preorder α] (M N : Multiset α) : Prop :=
+  ∃ (X Y Z : Multiset α),
+      Y ≠ ∅
+    ∧ M = Z + X
+    ∧ N = Z + Y
+    ∧ (∀ x ∈ X, ∃ y ∈ Y, x < y)
 
 /-- MultisetRedLT is a special case of MultisetDMLT. The transitive closure of it is used to define
     an equivalent (proved later) version of the ordering. -/
-inductive MultisetRedLT [DecidableEq α] [LT α] (M N : Multiset α) : Prop :=
-  | RedLT : ∀ (X Y : Multiset α) (a : α) ,
-    (M = X + Y) →
-    (N = X + {a}) →
-    (∀ y, y ∈ Y → y < a) → MultisetRedLT M N
+def MultisetRedLT [DecidableEq α] [LT α] (M N : Multiset α) : Prop :=
+  ∃ (X Y : Multiset α) (a : α) ,
+      (M = X + Y)
+    ∧ (N = X + {a})
+    ∧ (∀ y, y ∈ Y → y < a)
 
 open Relation
 
@@ -56,26 +56,20 @@ open Relation
 def MultisetTransLT [DecidableEq α] [LT α] : Multiset α → Multiset α → Prop :=
     TransGen MultisetRedLT
 
-/-- A shorthand notation: AccM defines the accessibility relation given MultisetRedLT. -/
-def AccM [DecidableEq α] [Preorder α] : Multiset α → Prop := Acc MultisetRedLT
-
 /- MultisetRedLT is a special case of MultisetDMLT. -/
 theorem dmLT_of_redLT [DecidableEq α] [Preorder α] (M N : Multiset α) (h : MultisetRedLT M N):
     MultisetDMLT M N := by
   rcases h with ⟨X, Y, a, M_def, N_def, ys_lt_a⟩
-  apply MultisetDMLT.DMLT Y {a} X _ M_def N_def
+  use Y, {a}, X, by simp, M_def, N_def
   · simpa
-  · simp
 
 /- Some useful lemmas. -/
 lemma not_redLT_zero [DecidableEq α] [LT α] (M: Multiset α) : ¬ MultisetRedLT M 0 := by
-  intro h
-  cases h with
-  | RedLT X Y a M nonsense _ =>
-    have contra : a ∈ (0 : Multiset α):= by
-      rw [nonsense]
-      simp_all only [Multiset.mem_add, Multiset.mem_singleton, or_true]
-    contradiction
+  rintro ⟨X, Y, a, _, nonsense, _⟩
+  have contra : a ∈ (0 : Multiset α):= by
+    rw [nonsense]
+    simp_all only [Multiset.mem_add, Multiset.mem_singleton, or_true]
+  contradiction
 
 lemma red_insert [DecidableEq α] [LT α] {a : α} {M N : Multiset α} (h : MultisetRedLT N (a ::ₘ M)) :
     ∃ M',
@@ -94,18 +88,19 @@ lemma red_insert [DecidableEq α] [LT α] {a : α} {M N : Multiset α} (h : Mult
       have : X = (M - {a0} + {a}) := by
         rw [add_comm, Multiset.singleton_add] at *
         ext b
-        simp [Multiset.ext, Multiset.count_cons] at h0
+        simp only [Multiset.ext, Multiset.count_cons] at h0
         by_cases h : b = a
         · have := h0 b
-          aesop
+          simp_all?
         · have := h0 b
           simp [Multiset.sub_singleton]
-          aesop
+          aesop?
       subst this
       rw [add_comm]
       nth_rewrite 2 [add_comm]
       rw [Multiset.singleton_add, Multiset.add_cons]
-    · constructor
+    · unfold MultisetRedLT
+      refine ⟨M - {a0}, Y, a0, ?_, ?_, h2⟩
       · change Y + (M - {a0}) = (M - {a0}) + Y
         rw [add_comm]
       · change M = M - {a0} + {a0}
@@ -119,16 +114,15 @@ lemma red_insert [DecidableEq α] [LT α] {a : α} {M N : Multiset α} (h : Mult
           · exact fun h ↦ hyp (Eq.symm h)
         rw [add_comm]
         simp_all [Multiset.singleton_add]
-      exact h2
 
 lemma acc_cons [DecidableEq α] [Preorder α] (a : α) (M0 : Multiset α)
-    (_ : ∀ b M , LT.lt b a → AccM M → AccM (b ::ₘ M))
-    (_ : AccM M0)
-    (_ : ∀ M, MultisetRedLT M M0 → AccM (a ::ₘ M)) :
-    AccM (a ::ₘ M0) := by
+    (_ : ∀ b M , LT.lt b a → Acc MultisetRedLT M → Acc MultisetRedLT (b ::ₘ M))
+    (_ : Acc MultisetRedLT M0)
+    (_ : ∀ M, MultisetRedLT M M0 → Acc MultisetRedLT (a ::ₘ M)) :
+    Acc MultisetRedLT (a ::ₘ M0) := by
   constructor
   intros N N_lt
-  change AccM N
+  change Acc MultisetRedLT N
   rcases (red_insert N_lt) with ⟨x, H, h0⟩
   case h.intro.inr h =>
     rcases h with ⟨H, h0⟩
@@ -144,20 +138,18 @@ lemma acc_cons [DecidableEq α] [Preorder α] (a : α) (M0 : Multiset α)
     simp_all
 
 lemma acc_cons_of_acc [DecidableEq α] [Preorder α] (a : α)
-    (H : ∀ (b : α), ∀ M, LT.lt b a → AccM M → AccM (b ::ₘ M)) :
-    ∀ M, AccM M → AccM (a ::ₘ M) := by
-  unfold AccM
+    (H : ∀ (b : α), ∀ M, LT.lt b a → Acc MultisetRedLT M → Acc MultisetRedLT (b ::ₘ M)) :
+    ∀ M, Acc MultisetRedLT M → Acc MultisetRedLT (a ::ₘ M) := by
   intros M h0
   induction h0 with
   | intro x wfH wfh2 =>
     apply acc_cons
     · simpa
-    · constructor
-      simpa
-    · simpa
+    · constructor ; simpa only
+    · simpa only
 
 lemma acc_cons_of_acc_of_lt [DecidableEq α] [Preorder α] :
-    ∀ (a:α), Acc LT.lt a → ∀ M, AccM M → AccM (a ::ₘ M) := by
+    ∀ (a:α), Acc LT.lt a → ∀ M, Acc MultisetRedLT M → Acc MultisetRedLT (a ::ₘ M) := by
   intro w w_a
   induction w_a with
   | intro x _ ih =>
@@ -168,7 +160,7 @@ lemma acc_cons_of_acc_of_lt [DecidableEq α] [Preorder α] :
 /- If all elements of a multiset `M` are accessible with `LT.lt`, then the multiset M is
 accessible given the `MultisetRedLT` relation. -/
 lemma acc_of_acc_lt [DecidableEq α] [Preorder α] :
-    ∀ (M : Multiset α), (∀x, x ∈ M → Acc LT.lt x) → AccM M  := by
+    ∀ (M : Multiset α), (∀x, x ∈ M → Acc LT.lt x) → Acc MultisetRedLT M  := by
   intros M wf_el
   induction M using Multiset.induction_on with
   | empty =>
@@ -197,22 +189,13 @@ lemma redLT_wf [DecidableEq α] [Preorder α]
   apply Acc.intro y
   assumption
 
-/- If `MultisetRedLT` is well-founded, then its transitive closure `MultisetTransLT` is also
-well-founded. -/
-lemma transLT_wf [DecidableEq α] [LT α]
-    (h : WellFounded (MultisetRedLT : Multiset α → Multiset α → Prop)) :
-    WellFounded (MultisetTransLT : Multiset α → Multiset α → Prop) := by
-  unfold MultisetTransLT
-  apply WellFounded.transGen
-  assumption
-
 -- `MultisetDMLT` is transitive.
 lemma dmlt_trans {α} [pre : Preorder α] [dec : DecidableEq α]:
     ∀ (M N P : Multiset α) , MultisetDMLT N M → MultisetDMLT P N → MultisetDMLT P M := by
   intros M N P LTNM LTPN
   rcases LTNM with ⟨Y1, X1, Z1, X1_ne, N1_def, M1_def, Ord1⟩
   rcases LTPN with ⟨Y2, X2, Z2, _, P2_def, N2_def, Ord2⟩
-  apply MultisetDMLT.DMLT (Y2 + (Y1 - X2)) (X1 + (X2 - Y1)) (Z1 ∩ Z2)
+  refine ⟨Y2 + (Y1 - X2), X1 + (X2 - Y1), Z1 ∩ Z2, ⟨?_, ?_, ?_, ?_⟩⟩
   · simp only [Multiset.empty_eq_zero] at *
     rw [← Multiset.card_pos]
     rw [← Multiset.card_pos] at X1_ne
@@ -255,7 +238,6 @@ lemma dmlt_trans {α} [pre : Preorder α] [dec : DecidableEq α]:
           exact x_in
         · exact y_lt_x
     · have y_in : y ∈ (Y1 - X2) := by simp_all only [Multiset.mem_add, false_or]
-      let h := (Ord1 y)
       have y_in_Y1 : y ∈ Y1 := by
         have : Y1 - X2 ≤ Y1 := by
           simp_all [tsub_le_iff_right, le_add_iff_nonneg_right,
@@ -264,121 +246,123 @@ lemma dmlt_trans {α} [pre : Preorder α] [dec : DecidableEq α]:
         apply Multiset.mem_of_le
         exact this
         exact y_in
-      let _ := h y_in_Y1
-      aesop
+      let ⟨w, ⟨left_1, right⟩⟩ := (Ord1 y) y_in_Y1
+      subst P2_def M1_def N2_def
+      simp_all only [Multiset.empty_eq_zero, ne_eq, Multiset.mem_add, or_true]
+      use w
+      tauto
 
 lemma transLT_of_dmLT [dec : DecidableEq α] [Preorder α]
     [DecidableRel (fun (x : α) (y: α) => x < y)] (M N : Multiset α) (DMLTMN : MultisetDMLT M N) :
     MultisetTransLT M N := by
-  cases DMLTMN
-  case DMLT X Y Z Y_not_empty MZX NZY h =>
-    unfold MultisetTransLT
-    revert Z X M N
-    induction Y using Multiset.strongInductionOn
-    case ih Y IH =>
-      intro M N X Z M_def N_def X_lt_Y
-      cases em (Multiset.card Y = 0)
-      · simp_all
-      cases em (Multiset.card Y = 1)
-      case inl hyp' hyp=>
-        rw [Multiset.card_eq_one] at hyp
-        rcases hyp with ⟨y,Y'_def⟩
-        apply TransGen.single
-        rw [Y'_def] at N_def
-        apply @MultisetRedLT.RedLT α _ _ M N Z X y M_def N_def
-        simp [Y'_def] at X_lt_Y
-        exact X_lt_Y
-      case inr hyp' hyp =>
-        have : ∃ a, a ∈ Y := by
-          rw [← Y.card_pos_iff_exists_mem]
-          cases foo : Multiset.card Y
-          tauto
-          simp
-        rcases this with ⟨y,claim⟩
-        let newY := Y.erase y
-        have newY_nonEmpty : newY ≠ ∅ := by
-          have : ∀ (n : ℕ), n ≠ 0 → n ≠ 1 → n ≥ 2 := by
-            intros n h0 h1
-            cases n
+  rcases DMLTMN with ⟨X, Y, Z, Y_not_empty, MZX, NZY, h⟩
+  unfold MultisetTransLT
+  revert Z X M N
+  induction Y using Multiset.strongInductionOn
+  case ih Y IH =>
+    intro M N X Z M_def N_def X_lt_Y
+    cases em (Multiset.card Y = 0)
+    · simp_all
+    cases em (Multiset.card Y = 1)
+    case inl hyp' hyp=>
+      rw [Multiset.card_eq_one] at hyp
+      rcases hyp with ⟨y,Y'_def⟩
+      apply TransGen.single
+      rw [Y'_def] at N_def
+      refine ⟨Z, X, y, M_def, N_def, ?_⟩
+      simp only [Y'_def, Multiset.mem_singleton, exists_eq_left] at X_lt_Y
+      exact X_lt_Y
+    case inr hyp' hyp =>
+      have : ∃ a, a ∈ Y := by
+        rw [← Y.card_pos_iff_exists_mem]
+        cases foo : Multiset.card Y
+        tauto
+        simp
+      rcases this with ⟨y,claim⟩
+      let newY := Y.erase y
+      have newY_nonEmpty : newY ≠ ∅ := by
+        have : ∀ (n : ℕ), n ≠ 0 → n ≠ 1 → n ≥ 2 := by
+          intros n h0 h1
+          cases n
+          case zero => contradiction
+          case succ m =>
+            cases m
             case zero => contradiction
-            case succ m =>
-              cases m
-              case zero => contradiction
-              case succ n=>
-                apply Nat.succ_le_succ
-                simp_all only [le_add_iff_nonneg_left, zero_le]
-          have : 0 < Multiset.card (Multiset.erase Y y) := by aesop
-          rw [Multiset.card_pos] at this
-          simp_all only [Multiset.empty_eq_zero, ne_eq, not_false_eq_true]
-        have newY_sub_Y : newY < Y := by simp (config := {zetaDelta := true}); exact claim
-        let f : α → Multiset α := fun y' => X.filter (fun x => x < y') -- DecidableRel
-        let N' := Z + newY + f y
-        apply @transitive_transGen _ _ _ N'
-        -- step from N' to M
-        · apply IH newY newY_sub_Y newY_nonEmpty
-          change M = (Z + f y) + (X - f y)
-          · ext a
-            have count_lt := Multiset.count_le_of_le a (Multiset.filter_le (fun x => x < y) X)
-            rw [M_def]
-            simp_all only [Multiset.empty_eq_zero, ne_eq, Multiset.card_eq_zero, not_false_eq_true,
-              Multiset.count_add, Multiset.count_sub]
-            let x := Multiset.count a X
-            let z := Multiset.count a Z
-            let fx := Multiset.count a (Multiset.filter (fun x => x < y) X)
-            change z + x = z + fx + (x - fx)
-            change fx ≤ x at count_lt
-            have : x = fx + (x - fx) := by simp_all only [add_tsub_cancel_of_le]
-            linarith
-          · unfold_let N'
-            rw [add_assoc, add_assoc, add_comm newY (f y)]
-          · intro x x_in
-            let X_lt_Y := X_lt_Y x
-            have x_in_X : x ∈ X := by
-              have Xfy_le_X : X - f y ≤ X:= by simp (config := {zetaDelta := true})
-              apply Multiset.mem_of_le Xfy_le_X
-              exact x_in
-            let X_lt_Y := X_lt_Y x_in_X
-            rcases X_lt_Y with ⟨t, t_in_Y, x_lt_t⟩
-            use t
-            constructor
-            · by_cases t_in_newY : t ∈ newY
-              · exact t_in_newY
-              · exfalso
-                have : t = y := by
-                  have : Y = newY + {y} := by
-                    unfold_let newY
-                    rw [add_comm, Multiset.singleton_add]
-                    simp [Multiset.cons_erase claim]
-                  rw [this, Multiset.mem_add] at t_in_Y
-                  have : t ∈ ( {y} : Multiset α) := Or.resolve_left t_in_Y t_in_newY
-                  rwa [← Multiset.mem_singleton]
-                have x_in_fy : x ∈ f y := by
-                  unfold_let f; simp; rw [← this]; exact ⟨x_in_X, x_lt_t⟩
-                have x_notin_Xfy : x ∉ X - f y := by
-                  by_contra
-                  let neg_f : α → Multiset α := fun y' => X.filter (fun x => ¬ x < y')
-                  have : X - f y = neg_f y := by
-                    have fy_negfy_X : f y + neg_f y = X := Multiset.filter_add_not _ _
-                    rw [← fy_negfy_X, add_tsub_cancel_left]
-                  have x_in_neg_fy : x ∈ neg_f y := this ▸ x_in
-                  subst_eqs
-                  unfold_let neg_f at *
-                  simp_all only [Multiset.mem_filter]
-                exact x_notin_Xfy x_in
-            · exact x_lt_t
-        -- single step N to N'
-        · have : MultisetRedLT N' N := by
-            apply MultisetRedLT.RedLT (Z + newY) (f y) y
-            · rfl
-            · have newY_y_Y: newY + {y} = Y := by
-                unfold_let newY; rw [add_comm, Multiset.singleton_add]
-                apply Multiset.cons_erase claim
-              have : Z + newY + {y} = Z + (newY + {y}) := by apply add_assoc
-              rw [this, newY_y_Y]
-              exact N_def
-            · unfold_let f; intro z z_in; simp at z_in; exact z_in.2
-          apply TransGen.single
-          exact this
+            case succ n=>
+              apply Nat.succ_le_succ
+              simp_all only [le_add_iff_nonneg_left, zero_le]
+        have : 0 < Multiset.card (Multiset.erase Y y) := by aesop
+        rw [Multiset.card_pos] at this
+        simp_all only [Multiset.empty_eq_zero, ne_eq, not_false_eq_true]
+      have newY_sub_Y : newY < Y := by simp (config := {zetaDelta := true}); exact claim
+      let f : α → Multiset α := fun y' => X.filter (fun x => x < y') -- DecidableRel
+      let N' := Z + newY + f y
+      apply @transitive_transGen _ _ _ N'
+      -- step from N' to M
+      · apply IH newY newY_sub_Y newY_nonEmpty
+        change M = (Z + f y) + (X - f y)
+        · ext a
+          have count_lt := Multiset.count_le_of_le a (Multiset.filter_le (fun x => x < y) X)
+          rw [M_def]
+          simp_all only [Multiset.empty_eq_zero, ne_eq, Multiset.card_eq_zero, not_false_eq_true,
+            Multiset.count_add, Multiset.count_sub]
+          let x := Multiset.count a X
+          let z := Multiset.count a Z
+          let fx := Multiset.count a (Multiset.filter (fun x => x < y) X)
+          change z + x = z + fx + (x - fx)
+          change fx ≤ x at count_lt
+          have : x = fx + (x - fx) := by simp_all only [add_tsub_cancel_of_le]
+          linarith
+        · unfold_let N'
+          rw [add_assoc, add_assoc, add_comm newY (f y)]
+        · intro x x_in
+          let X_lt_Y := X_lt_Y x
+          have x_in_X : x ∈ X := by
+            have Xfy_le_X : X - f y ≤ X:= by simp (config := {zetaDelta := true})
+            apply Multiset.mem_of_le Xfy_le_X
+            exact x_in
+          let X_lt_Y := X_lt_Y x_in_X
+          rcases X_lt_Y with ⟨t, t_in_Y, x_lt_t⟩
+          use t
+          constructor
+          · by_cases t_in_newY : t ∈ newY
+            · exact t_in_newY
+            · exfalso
+              have : t = y := by
+                have : Y = newY + {y} := by
+                  unfold_let newY
+                  rw [add_comm, Multiset.singleton_add]
+                  simp [Multiset.cons_erase claim]
+                rw [this, Multiset.mem_add] at t_in_Y
+                have : t ∈ ( {y} : Multiset α) := Or.resolve_left t_in_Y t_in_newY
+                rwa [← Multiset.mem_singleton]
+              have x_in_fy : x ∈ f y := by
+                unfold_let f; simp; rw [← this]; exact ⟨x_in_X, x_lt_t⟩
+              have x_notin_Xfy : x ∉ X - f y := by
+                by_contra
+                let neg_f : α → Multiset α := fun y' => X.filter (fun x => ¬ x < y')
+                have : X - f y = neg_f y := by
+                  have fy_negfy_X : f y + neg_f y = X := Multiset.filter_add_not _ _
+                  rw [← fy_negfy_X, add_tsub_cancel_left]
+                have x_in_neg_fy : x ∈ neg_f y := this ▸ x_in
+                subst_eqs
+                unfold_let neg_f at *
+                simp_all only [Multiset.mem_filter]
+              exact x_notin_Xfy x_in
+          · exact x_lt_t
+      -- single step N to N'
+      · have : MultisetRedLT N' N := by
+          refine ⟨Z + newY, f y, y, ?_, ?_, ?_ ⟩
+          · rfl
+          · have newY_y_Y: newY + {y} = Y := by
+              unfold_let newY; rw [add_comm, Multiset.singleton_add]
+              apply Multiset.cons_erase claim
+            have : Z + newY + {y} = Z + (newY + {y}) := by apply add_assoc
+            rw [this, newY_y_Y]
+            exact N_def
+          · unfold_let f; intro z z_in; simp at z_in; exact z_in.2
+        apply TransGen.single
+        exact this
 
 /- MultisetTransLT and MultisetDMLT are equivalent. -/
 lemma transLT_eq_dmLT [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α) (y: α) => x < y)]:
@@ -389,13 +373,12 @@ lemma transLT_eq_dmLT [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α)
   constructor
   · -- TransLT → DMLT:
     intros TransLT
-    induction TransLT with
-    | single TransLT =>
-      rcases TransLT with ⟨Z, X, y, a_def, b_def, X_lt_y⟩
-      use X
-      · simp
-      · simpa
-    | tail _ aih bih => -- it suffices to show MultisetDMLT is transitive
+    induction TransLT
+    case single Z TransLT =>
+      rcases TransLT with ⟨W, U, y, X_def, Z_def, U_lt_y⟩
+      use U, {y}, W
+      simp_all
+    case tail _ aih bih => -- it suffices to show MultisetDMLT is transitive
       apply dmlt_trans _ _ _ _ bih
       apply dmLT_of_redLT
       assumption
@@ -406,4 +389,5 @@ lemma transLT_eq_dmLT [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α)
 theorem dmLT_wf [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α) (y : α) => x < y)]
     (wf_lt :  WellFoundedLT α) :WellFounded (MultisetDMLT : Multiset α → Multiset α → Prop) := by
   rw [← transLT_eq_dmLT]
-  exact transLT_wf (redLT_wf wf_lt)
+  apply WellFounded.transGen
+  exact (redLT_wf wf_lt)
