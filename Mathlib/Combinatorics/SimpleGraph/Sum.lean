@@ -19,7 +19,7 @@ both in `G` and adjacent in `G`, or they are both in `H` and adjacent in `H`.
 
 ## Notation
 
-* `G + H`: The disjoint sum of `G` and `H`.
+* `G ⊎ H`: The disjoint sum of `G` and `H`.
 -/
 
 variable {α β γ : Type*}
