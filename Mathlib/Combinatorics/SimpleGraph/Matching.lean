@@ -136,7 +136,7 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
 protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g G')
     (hf : Bijective f) (hM : M.IsMatching) : (M.map f).IsMatching := by
   intro w hw
-  rw [@map_verts] at hw
+  rw [map_verts] at hw
   obtain ⟨v, hv⟩ := hw
   obtain ⟨v', hv'⟩ := hM hv.1
   dsimp at *
@@ -157,13 +157,12 @@ lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : SimpleGraph.
     (M.map f.toHom).IsMatching ↔ M.IsMatching := by
   constructor
   · intro h
-    have hM := IsMatching.map f.symm.toHom (by
-      simp only [RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, RelIso.bijective]) h
     have : (M.map f.toHom).map f.symm.toHom = M := by
       rw [← map_comp]
       simp only [Iso.symm_toHom_comp_toHom, map_id]
     rw [← this]
-    exact hM
+    exact IsMatching.map f.symm.toHom (by
+      simp only [RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, RelIso.bijective]) h
   · intro h
     exact IsMatching.map f.toHom (by
       simp only [RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, RelIso.bijective]) h
