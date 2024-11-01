@@ -822,6 +822,7 @@ A₁ <------> A₂
 |           |
 |           |
 S --------> R
+in which `Algebra S A₂` is definied by `Algebra.compHom A₂ f`
 -/
 @[simps apply symm_apply toEquiv]
 def ofRingEquiv_compHom
@@ -833,15 +834,15 @@ def ofRingEquiv_compHom
     (commute: ∀ x, (algebraMap R A₂) (f x) = equiv (algebraMap S A₁ x)) :
     letI := Algebra.compHom A₂ f
     A₁ ≃ₐ[S] A₂ :=
-      letI := Algebra.compHom A₂ f
-      {
-        equiv with
-        toFun := equiv,
-        invFun := equiv.symm,
-        commutes' := by
-            simp only [Algebra.compHom_algebraMap_eq, RingHom.coe_comp, Function.comp_apply]
-            exact (fun x => (commute x).symm)
-      }
+  letI := Algebra.compHom A₂ f
+  {
+    equiv with
+    toFun := equiv,
+    invFun := equiv.symm,
+    commutes' := by
+        simp only [Algebra.compHom_algebraMap_eq, RingHom.coe_comp, Function.comp_apply]
+        exact (fun x => (commute x).symm)
+  }
 
 end CompHom
 end AlgEquiv

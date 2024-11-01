@@ -332,13 +332,13 @@ variable {R : Type u} {S : Type v} (A : Type w)
 /--
 Compose a Algebra with a RingHom, with action f s • m.
 -/
-abbrev compHom: Algebra S A where
+abbrev compHom : Algebra S A where
   smul s a := f s • a
   toRingHom := (algebraMap R A).comp f
   commutes' _ _ := Algebra.commutes _ _
   smul_def' _ _ := Algebra.smul_def _ _
 
-theorem compHom_smul_def (s : S) (x : A):
+theorem compHom_smul_def (s : S) (x : A) :
     letI := compHom A f
     s • x = f s • x := by
       letI := compHom A f
