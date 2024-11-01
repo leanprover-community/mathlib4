@@ -30,7 +30,7 @@ instance specializingMap_respectsIso : (topologically @SpecializingMap).Respects
 
 instance specializingMap_isLocalAtTarget : IsLocalAtTarget (topologically @SpecializingMap) := by
   apply topologically_isLocalAtTarget
-  · introv hf
+  · introv _ _ hf
     rw [specializingMap_iff_closure_singleton_subset] at hf ⊢
     intro ⟨x, hx⟩ ⟨y, hy⟩ hcl
     simp only [closure_subtype, Set.restrictPreimage_mk, Set.image_singleton] at hcl
@@ -212,7 +212,7 @@ use `isCompact_iff_exists` to reduce to range and use
 https://stacks.math.columbia.edu/tag/01K9
 -/
 private lemma isClosedMap_iff_isSpecializingMap_aux [IsAffine Y] (f : X ⟶ Y) [QuasiCompact f] :
-    IsClosedMap f.1.base ↔ SpecializingMap f.1.base := by
+    IsClosedMap f.base ↔ SpecializingMap f.base := by
   refine ⟨fun h ↦ h.specializingMap, fun h ↦ ?_⟩
   have : CompactSpace X := (quasiCompact_over_affine_iff f).mp inferInstance
   let U : Opens X := ⊤
@@ -228,7 +228,7 @@ private lemma isClosedMap_iff_isSpecializingMap_aux [IsAffine Y] (f : X ⟶ Y) [
     simp only [A', Set.image_preimage_eq _ hgs]
   rw [this]
   apply isClosed_image_of_stableUnderSpecialization_of_isAffine
-  exact hA.preimage (Scheme.Hom.continuous g)
+  · exact hA.preimage (Scheme.Hom.continuous g)
   rw [← this]
   exact h.stableUnderSpecialization_image hA.stableUnderSpecialization
 
@@ -251,7 +251,7 @@ lemma isClosedMap_iff_specializingMap [QuasiCompact f] :
     intro U
     haveI hqc : QuasiCompact (f ∣_ U) := IsLocalAtTarget.restrict ‹QuasiCompact f› U
     apply this (f ∣_ U)
-    exact IsLocalAtTarget.restrict (P := topologically @SpecializingMap) hf U
+    · exact IsLocalAtTarget.restrict (P := topologically @SpecializingMap) hf U
     exact U.2
   rwa [isClosedMap_iff_isSpecializingMap_aux]
 
@@ -432,7 +432,7 @@ lemma compactSpace_of_universallyClosed
 Use `compactSpace_of_universallyClosed` and `universallyClosed_stableUnderBaseChange` and
 `Scheme.Hom.range_fiberι` and `isProperMap_iff_isClosedMap_and_compact_fibers`
 -/
-lemma isProperMap_of_universallyClosed [UniversallyClosed f] : IsProperMap f.1.base := by
+lemma isProperMap_of_universallyClosed [UniversallyClosed f] : IsProperMap f.base := by
   rw [isProperMap_iff_isClosedMap_and_compact_fibers]
   refine ⟨Scheme.Hom.continuous f, ?_, ?_⟩
   · exact MorphismProperty.universally_le (P := topologically @IsClosedMap) _ UniversallyClosed.out
