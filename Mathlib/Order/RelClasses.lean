@@ -170,11 +170,10 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.
 
 See note [reducible non-instances]. -/
-abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] : LinearOrder α :=
-  let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y =>
-      decidable_of_iff (¬r y x)
-        ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
-          h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
+abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearOrder α :=
+  let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y => decidable_of_iff (¬r y x)
+    ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
+      h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
   { __ := partialOrderOfSO r
     le_total := fun x y =>
       match y, trichotomous_of r x y with
@@ -415,9 +414,9 @@ def toWellFoundedRelation : WellFoundedRelation α :=
 
 end WellFoundedGT
 
+open Classical in
 /-- Construct a decidable linear order from a well-founded linear order. -/
 noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
-  letI := fun x y => Classical.dec ¬r x y
   linearOrderOfSTO r
 
 /-- Derive a `WellFoundedRelation` instance from an `IsWellOrder` instance. -/
