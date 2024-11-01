@@ -152,19 +152,16 @@ protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g
   rw [← hv'.2 w' hy]
   exact hw'.1.symm
 
+@[simp]
 lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : SimpleGraph.Iso G G') :
     (M.map f.toHom).IsMatching ↔ M.IsMatching := by
   constructor
   · intro h
     have hM := IsMatching.map f.symm.toHom (by
       simp only [RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, RelIso.bijective]) h
-
     have : (M.map f.toHom).map f.symm.toHom = M := by
-      rw [← @Rel.inv_id]
-
-      rw [← SimpleGraph.Subgraph.map_comp]
-
-      sorry
+      rw [← map_comp]
+      simp only [Iso.symm_toHom_comp_toHom, map_id]
     rw [← this]
     exact hM
   · intro h
