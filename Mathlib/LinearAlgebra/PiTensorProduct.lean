@@ -909,6 +909,44 @@ theorem tmulEquiv_symm_apply (a : ι ⊕ ι₂ → M) :
 
 end Tmul
 
+section
+
+variable (R) (N : ι ⊕ ι₂ → Type*) [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+
+namespace tmulEquiv'
+
+def hom : (⨂[R] i₁, N (.inl i₁)) ⊗[R] (⨂[R] i₂, N (.inr i₂)) →ₗ[R] ⨂[R] i, N i :=
+  TensorProduct.lift
+    { toFun := fun a ↦ PiTensorProduct.lift (PiTensorProduct.lift
+        (MultilinearMap.currySumEquiv (tprod R)) a)
+      map_add' := sorry
+      map_smul' := sorry }
+
+def inv : (⨂[R] i, N i) →ₗ[R] (⨂[R] i₁, N (.inl i₁)) ⊗[R] (⨂[R] i₂, N (.inr i₂)) := by
+  refine PiTensorProduct.lift ?_
+  sorry
+#check MultilinearMap.domCoprod
+
+#exit
+/-- Collapse a `TensorProduct` of `PiTensorProduct`s. -/
+private def tmul : ((⨂[R] _ : ι, M) ⊗[R] ⨂[R] _ : ι₂, M) →ₗ[R] ⨂[R] _ : ι ⊕ ι₂, M :=
+  TensorProduct.lift
+    { toFun := fun a ↦
+        PiTensorProduct.lift <|
+          PiTensorProduct.lift (MultilinearMap.currySumEquiv R _ _ M _ (tprod R)) a
+      map_add' := fun a b ↦ by simp only [LinearEquiv.map_add, LinearMap.map_add]
+      map_smul' := fun r a ↦ by
+        simp only [LinearEquiv.map_smul, LinearMap.map_smul, RingHom.id_apply] }
+
+end tmulEquiv'
+
+open tmulEquiv' in
+def tmulEquiv' :
+    (⨂[R] i₁, N (.inl i₁)) ⊗[R] (⨂[R] i₂, N (.inr i₂)) ≃ₗ[R] ⨂[R] i, N i :=
+  LinearEquiv.ofLinear (hom R N) (inv R N) sorry sorry
+
+end
+
 end Multilinear
 
 end PiTensorProduct
