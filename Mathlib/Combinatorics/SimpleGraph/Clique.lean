@@ -413,7 +413,7 @@ protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
 end CliqueFree
 
 section CliqueFreeOn
-variable {s s₁ s₂ : Set α} {t : Finset α} {a b : α} {m n : ℕ}
+variable {s s₁ s₂ : Set α} {a : α} {m n : ℕ}
 
 /-- `G.CliqueFreeOn s n` means that `G` has no `n`-cliques contained in `s`. -/
 def CliqueFreeOn (G : SimpleGraph α) (s : Set α) (n : ℕ) : Prop :=
@@ -475,7 +475,7 @@ end CliqueFreeOn
 
 section CliqueSet
 
-variable {n : ℕ} {a b c : α} {s : Finset α}
+variable {n : ℕ} {s : Finset α}
 
 /-- The `n`-cliques in a graph as a set. -/
 def cliqueSet (n : ℕ) : Set (Finset α) :=
@@ -545,7 +545,7 @@ end CliqueSet
 
 section CliqueFinset
 
-variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {a b c : α} {s : Finset α}
+variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α}
 
 /-- The `n`-cliques in a graph as a finset. -/
 def cliqueFinset (n : ℕ) : Finset (Finset α) := {s | G.IsNClique n s}
