@@ -814,8 +814,8 @@ theorem card_nthRoots {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) (a : R) :
     push_neg at h
     simpa only [Multiset.card_eq_zero, Multiset.eq_zero_iff_forall_not_mem, mem_nthRoots hn]
 
--- was `card_rootsOfUnity'`
-theorem card_rootsOfUnity {n : ℕ} [NeZero n] (h : IsPrimitiveRoot ζ n) :
+/-- A variant of `IsPrimitiveRoot.card_rootsOfUnity` for `ζ : Rˣ`. -/
+theorem card_rootsOfUnity' {n : ℕ} [NeZero n] (h : IsPrimitiveRoot ζ n) :
     Fintype.card (rootsOfUnity n R) = n := by
   let e := h.zmodEquivZPowers
   haveI F : Fintype (Subgroup.zpowers ζ) := Fintype.ofEquiv _ e.toEquiv
@@ -825,11 +825,11 @@ theorem card_rootsOfUnity {n : ℕ} [NeZero n] (h : IsPrimitiveRoot ζ n) :
     _ = Fintype.card (ZMod n) := Fintype.card_congr e.toEquiv.symm
     _ = n := ZMod.card n
 
-/- theorem card_rootsOfUnity {ζ : R} {n : ℕ} [NeZero n] (h : IsPrimitiveRoot ζ n) :
+theorem card_rootsOfUnity {ζ : R} {n : ℕ} [NeZero n] (h : IsPrimitiveRoot ζ n) :
     Fintype.card (rootsOfUnity n R) = n := by
   obtain ⟨ζ, hζ⟩ := h.isUnit <| NeZero.pos n
   rw [← hζ, IsPrimitiveRoot.coe_units_iff] at h
-  exact h.card_rootsOfUnity' -/
+  exact h.card_rootsOfUnity'
 
 /-- The cardinality of the multiset `nthRoots ↑n (1 : R)` is `n`
 if there is a primitive root of unity in `R`. -/
