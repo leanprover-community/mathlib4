@@ -61,14 +61,14 @@ def SumAssoc {I : SimpleGraph γ} : (G ⊎ H) ⊎ I ≃g G ⊎ (H ⊎ I) := ⟨E
 
 /-- The embedding of `G` into `G ⊎ H`. -/
 @[simps]
-protected def Sum.inl : G ↪g G ⊎ H where
+def SumInl : G ↪g G ⊎ H where
   toFun u := _root_.Sum.inl u
   inj' u v := by simp
   map_rel_iff' := by simp
 
 /-- The embedding of `H` into `G ⊎ H`. -/
 @[simps]
-protected def Sum.inr : H ↪g G ⊎ H where
+def SumInr : H ↪g G ⊎ H where
   toFun u := _root_.Sum.inr u
   inj' u v := by simp
   map_rel_iff' := by simp
