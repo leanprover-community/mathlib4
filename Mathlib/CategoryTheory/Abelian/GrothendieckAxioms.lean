@@ -3,12 +3,12 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Isaac Hernando, Coleton Kotch, Adam Topaz
 -/
-import Mathlib.Logic.Equiv.List
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
-import Mathlib.CategoryTheory.Limits.Shapes.Countable
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-
+import Mathlib.CategoryTheory.Limits.Shapes.Countable
+import Mathlib.Logic.Equiv.List
 /-!
 
 # Grothendieck Axioms
@@ -237,5 +237,35 @@ def CountableAB4Star.ofCountableAB5Star [HasLimitsOfShape ℕᵒᵖ C] [ABStarOf
 end
 
 end
+
+section EpiMono
+
+open Functor
+
+variable [Abelian C]
+
+variable (J : Type u') [Category.{v'} J]
+
+noncomputable def ABOfShapeOfPreservesMono [HasColimitsOfShape J C]
+    [PreservesMonomorphisms (colim (J := J) (C := C))] : ABOfShape J C where
+  preservesFiniteLimits := by
+    apply (config := { allowSynthFailures := true }) preservesFiniteLimitsOfPreservesHomology
+    · exact preservesHomologyOfPreservesMonosAndCokernels _
+    · letI : PreservesZeroMorphisms (colim (J := J) (C := C)) := inferInstance
+      letI : PreservesBinaryBiproducts (colim (J := J) (C := C)) :=
+        preservesBinaryBiproductsOfPreservesBinaryCoproducts _
+      exact additive_of_preservesBinaryBiproducts _
+
+noncomputable def ABStarOfShapeOfPreservesEpi [HasLimitsOfShape J C]
+    [PreservesEpimorphisms (lim (J := J) (C := C))] : ABStarOfShape J C where
+  preservesFiniteColimits := by
+    apply (config := { allowSynthFailures := true }) preservesFiniteColimitsOfPreservesHomology
+    · exact preservesHomologyOfPreservesEpisAndKernels _
+    · letI : PreservesZeroMorphisms (lim (J := J) (C := C)) := inferInstance
+      letI : PreservesBinaryBiproducts (lim (J := J) (C := C)) :=
+        preservesBinaryBiproductsOfPreservesBinaryProducts _
+      exact additive_of_preservesBinaryBiproducts _
+
+end EpiMono
 
 end CategoryTheory
