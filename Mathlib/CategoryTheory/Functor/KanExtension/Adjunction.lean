@@ -84,24 +84,22 @@ lemma ι_lanObjObjIsoColimit_hom (X : D) (f : CostructuredArrow L X) :
   LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
     (isPointwiseLeftKanExtensionLanUnit L F X) f
 
-local instance {X Y : D} (f : X ⟶ Y) :
-    HasColimit
-      ((𝟭 D ⋙ functor L).map f ⋙
-        Grothendieck.ι (𝟭 D ⋙ functor L) Y ⋙ grothendieckPrecompFunctorToComma L (𝟭 D) ⋙
-          Comma.fst L (𝟭 D) ⋙ F) :=
-  sorry
+variable [∀ X, HasColimitsOfShape (CostructuredArrow L X) H]
 
-local instance : ∀ X, HasColimit (Grothendieck.ι (𝟭 D ⋙ functor L) X ⋙
-      grothendieckPrecompFunctorToComma L (𝟭 D) ⋙ Comma.fst L (𝟭 D) ⋙ F) :=
-  sorry
+local instance : ∀ {X Y : D} (f : X ⟶ Y), HasColimit ((functor L).map f ⋙
+    Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ⋙ F) := by
+  simp
+  infer_instance
+
+local instance : ∀ X, HasColimit (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F) := by
+  simp only [functor_obj, Cat.of_α]
+  infer_instance
 
 @[simps!]
 noncomputable def lanObjIsoFiberwiseColimit :
-    L.lan.obj F ≅
-    fiberwiseColimit (grothendieckPrecompFunctorToComma L (𝟭 _) ⋙ Comma.fst L (𝟭 _) ⋙ F) :=
+    L.lan.obj F ≅ fiberwiseColimit (grothendieckProj L ⋙ F) :=
   Iso.symm <| NatIso.ofComponents
-    (fun X => HasColimit.isoOfNatIso
-        (isoWhiskerRight (ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 D) X) F) ≪≫
+    (fun X => HasColimit.isoOfNatIso (isoWhiskerRight (ιCompGrothendieckProj L X) F) ≪≫
       (lanObjObjIsoColimit L F X).symm)
     fun f => colimit.hom_ext (by simp)
 
@@ -165,15 +163,20 @@ noncomputable def lanCompColimIso [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
       congr 1
       exact congr_app (L.lanUnit.naturality f) i))
 
-local instance (X) : HasColimitsOfShape ↑((𝟭 D ⋙ CostructuredArrow.functor L).obj X) H :=
-  sorry
+variable [∀ X, HasColimitsOfShape (CostructuredArrow L X) H]
 
+local instance (X) : HasColimitsOfShape ↑((CostructuredArrow.functor L).obj X) H := by
+  simp only [CostructuredArrow.functor_obj, Cat.of_α]
+  infer_instance
+
+/-- If `G : C ⥤ H` is a left Kan extension of a functor `L : C ⥤ D` and `H` has colimits of shape
+`C`, `D`, and `CostructuredArrow L X` for all `X : D`, then the colimit of `G` is isomorphic to
+the colimit of a canonical functor `Grothendieck (CostructuredArrow.functor L) ⥤ H` induced by
+`L` and `G`. -/
 noncomputable def colimitIsoColimitGrothendieck (G : C ⥤ H) [HasColimitsOfShape C H]
-    [HasColimitsOfShape D H] [L.HasPointwiseLeftKanExtension G]
-    [HasColimit (CostructuredArrow.grothendieckPrecompFunctorToComma L (𝟭 D) ⋙
-      Comma.fst L (𝟭 D) ⋙ G)] :
+    [HasColimitsOfShape D H] [L.HasPointwiseLeftKanExtension G] :
     colimit G ≅
-    colimit (CostructuredArrow.grothendieckPrecompFunctorToComma L (𝟭 _) ⋙ Comma.fst _ _ ⋙ G):=
+    colimit (CostructuredArrow.grothendieckProj L ⋙ G) :=
   ((lanCompColimIso L).app G).symm ≪≫
   HasColimit.isoOfNatIso (lanObjIsoFiberwiseColimit L G) ≪≫
   colimitFiberwiseColimitIso _

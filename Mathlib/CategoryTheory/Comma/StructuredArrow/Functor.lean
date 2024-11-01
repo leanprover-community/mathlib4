@@ -82,10 +82,12 @@ def grothendieckPrecompFunctorEquivalence : Grothendieck (R ⋙ functor L) ≌ C
 
 /-- The functor projecting out the domain of arrows from the Grothendieck construction on
 costructured arrows. -/
+@[simps!]
 def grothendieckProj : Grothendieck (functor L) ⥤ C :=
   grothendieckPrecompFunctorToComma L (𝟭 _) ⋙ Comma.fst _ _
 
 /-- Fibers of `grothendieckProj L` are isomorphic to the projection `proj L X`. -/
+@[simps!]
 def ιCompGrothendieckProj (X : D) :
     Grothendieck.ι (functor L) X ⋙ grothendieckProj L ≅ proj L X :=
   ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 _) X
