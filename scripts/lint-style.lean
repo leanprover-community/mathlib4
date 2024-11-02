@@ -23,10 +23,11 @@ In addition, this checks that
 open Cli Mathlib.Linter.TextBased System.FilePath
 
 /-- Parse all imports in a text file at `path` and return just their names:
-this is just a thin wrapper around `Lean.parseImports'`. -/
+this is just a thin wrapper around `Lean.parseImports'`.
+Omit `Init (which is part of the prelude). -/
 def findImports (path : System.FilePath) : IO (Array Lean.Name) := do
   return (← Lean.parseImports' (← IO.FS.readFile path) path.toString)
-    |>.map fun imp ↦ imp.module
+    |>.map (fun imp ↦ imp.module) |>.erase `Init
 
 
 /-- Check that `Mathlib.Init` is transitively imported in all of Mathlib.
@@ -38,9 +39,7 @@ Return `true` iff there was an error.
 def checkInitImports : IO Bool := do
   -- Find any file in the Mathlib directory which does not contain any Mathlib import.
   -- We simply parse `Mathlib.lean`, as CI ensures this file is up to date.
-  -- For some reason, this also returns a module `Init (related to the Lean prelude);
-  -- we erase it as it is not relevant for us.
-  let allModuleNames := (← findImports "Mathlib.lean").erase `Batteries |>.erase `Init
+  let allModuleNames := (← findImports "Mathlib.lean").erase `Batteries
   let mut modulesWithoutMathlibImports := #[]
   let mut importsHeaderLinter := #[]
   for module in allModuleNames do
@@ -107,9 +106,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- Read all module names to lint.
   let mut allModuleNames := #[]
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    -- XXX. For some reason, `findImports` always returns an `Init module (related to the Lean
-    -- prelude?). We remove it as not relevant. Mathlib.Init etc. *are* still included.
-    allModuleNames := allModuleNames.append (← findImports s)|>.erase `Init
+    allModuleNames := allModuleNames.append (← findImports s)
   -- Note: since "Batteries" is added explicitly to "Mathlib.lean", we remove it here manually.
   allModuleNames := allModuleNames.erase `Batteries
   let mut numberErrors ← lintModules allModuleNames style fix
