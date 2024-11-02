@@ -194,8 +194,7 @@ If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
 -/
 def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
   match ← (← inferType pf).ineq? with
-  | (Ineq.lt, ty, a, b) =>
-    unless ty == .const ``Int [] do return none
+  | (Ineq.lt, .const ``Int [], a, b) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
   | _ => return none
 
