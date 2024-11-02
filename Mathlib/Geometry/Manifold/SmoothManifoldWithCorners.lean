@@ -167,6 +167,22 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
+-- need a better constructor!
+def ModelWithCorners.mk_of_IsRCLikeNormedField {𝕜 E H : Type*}
+    [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
+    (hK : IsRCLikeNormedField 𝕜) (e : PartialEquiv H E) (hsource : e.source = univ)
+    (hcont : Continuous e) (hinv : Continuous e.symm) (hconvex : Convex (interior (range I))) :
+    ModelWithCorners 𝕜 E H where --:= sorry
+  __ := e
+  source_eq := hsource
+  continuous_toFun := hcont
+  continuous_invFun := hinv
+  convex_interior_range := sorry -- use hconvex
+  uniqueDiffOn' := sorry -- prove from hconvex
+  target_subset_closure_interior := sorry -- prove from hconvex
+
+-- TODO: toReal for a complex model...
+
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
 /-- A vector space is a model with corners. -/
