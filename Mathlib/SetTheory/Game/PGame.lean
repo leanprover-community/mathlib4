@@ -848,7 +848,6 @@ theorem Equiv.of_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
   exacts [⟨_, hl i⟩, ⟨_, hr i⟩,
     ⟨_, by simpa using hl (L.symm i)⟩, ⟨_, by simpa using hr (R.symm i)⟩]
 
-#exit
 @[deprecated (since := "2024-09-26")] alias equiv_of_mk_equiv := Equiv.of_equiv
 
 /-- The fuzzy, confused, or incomparable relation on pre-games.
