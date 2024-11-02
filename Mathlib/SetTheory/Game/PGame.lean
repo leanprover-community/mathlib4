@@ -843,11 +843,9 @@ theorem Equiv.of_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
   · exact ⟨_, hl i⟩
   · exact ⟨_, hr i⟩
   · use L.symm i
-    convert hl (L.symm i)
-    rw [L.apply_symm_apply i]
+    simpa using hl (L.symm i)
   · use R.symm i
-    convert hr (R.symm i)
-    rw [R.apply_symm_apply i]
+    simpa using hr (R.symm i)
 
 @[deprecated (since := "2024-09-26")] alias equiv_of_mk_equiv := Equiv.of_equiv
 
