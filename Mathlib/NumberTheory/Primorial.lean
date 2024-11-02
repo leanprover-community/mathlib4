@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Primorial
@@ -31,8 +31,7 @@ open Nat
 
 /-- The primorial `n#` of `n` is the product of the primes less than or equal to `n`.
 -/
-def primorial (n : ℕ) : ℕ :=
-  ∏ p ∈ filter Nat.Prime (range (n + 1)), p
+def primorial (n : ℕ) : ℕ := ∏ p ∈ range (n + 1) with p.Prime, p
 
 local notation x "#" => primorial x
 
@@ -45,17 +44,17 @@ theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# :=
   exact fun h ↦ h.even_sub_one <| mt succ.inj hn1
 
 theorem primorial_add (m n : ℕ) :
-    (m + n)# = m# * ∏ p ∈ filter Nat.Prime (Ico (m + 1) (m + n + 1)), p := by
+    (m + n)# = m# * ∏ p ∈ Ico (m + 1) (m + n + 1) with p.Prime, p := by
   rw [primorial, primorial, ← Ico_zero_eq_range, ← prod_union, ← filter_union, Ico_union_Ico_eq_Ico]
   exacts [Nat.zero_le _, add_le_add_right (Nat.le_add_right _ _) _,
     disjoint_filter_filter <| Ico_disjoint_Ico_consecutive _ _ _]
 
 theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (m + n) m :=
   calc
-    (m + n)# = m# * ∏ p ∈ filter Nat.Prime (Ico (m + 1) (m + n + 1)), p := primorial_add _ _
+    (m + n)# = m# * ∏ p ∈ Ico (m + 1) (m + n + 1) with p.Prime, p := primorial_add _ _
     _ ∣ m# * choose (m + n) m :=
       mul_dvd_mul_left _ <|
-        prod_primes_dvd _ (fun k hk ↦ (mem_filter.1 hk).2.prime) fun p hp ↦ by
+        prod_primes_dvd _ (fun _ hk ↦ (mem_filter.1 hk).2.prime) fun p hp ↦ by
           rw [mem_filter, mem_Ico] at hp
           exact hp.2.dvd_choose_add hp.1.1 (h.trans_lt (m.lt_succ_self.trans_le hp.1.1))
               (Nat.lt_succ_iff.1 hp.1.2)

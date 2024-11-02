@@ -336,7 +336,6 @@ theorem coeFn_neg (f : lp E p) : ⇑(-f) = -f :=
 theorem coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
   rfl
 
--- porting note (#10618): removed `@[simp]` because `simp` can prove this
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) := by
   simp
@@ -471,7 +470,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           intro i
           gcongr
           apply norm_add_le
-      eq_zero_of_map_eq_zero' := fun f => norm_eq_zero_iff.1 }
+      eq_zero_of_map_eq_zero' := fun _ => norm_eq_zero_iff.1 }
 
 -- TODO: define an `ENNReal` version of `IsConjExponent`, and then express this inequality
 -- in a better version which also covers the case `p = 1, q = ∞`.
@@ -737,6 +736,10 @@ instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
             mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
               (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
 
+instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
+    NonUnitalNormedCommRing (lp B ∞) where
+  mul_comm _ _ := ext <| mul_comm ..
+
 -- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for mathlib3 #13719
 instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
     [∀ i, IsScalarTower 𝕜 (B i) (B i)] : IsScalarTower 𝕜 (lp B ∞) (lp B ∞) :=
@@ -841,12 +844,8 @@ section NormedCommRing
 
 variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, NormOneClass (B i)]
 
-instance inftyCommRing : CommRing (lp B ∞) :=
-  { lp.inftyRing with
-    mul_comm := fun f g => by ext; simp only [lp.infty_coeFn_mul, Pi.mul_apply, mul_comm] }
-
-instance inftyNormedCommRing : NormedCommRing (lp B ∞) :=
-  { lp.inftyCommRing, lp.inftyNormedRing with }
+instance inftyNormedCommRing : NormedCommRing (lp B ∞) where
+  mul_comm := mul_comm
 
 end NormedCommRing
 

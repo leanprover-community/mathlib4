@@ -90,10 +90,6 @@ instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
-instance instCoeFun : CoeFun 𝓢(E, F) fun _ => E → F :=
-  DFunLike.hasCoeToFun
-
 /-- All derivatives of a Schwartz function are rapidly decaying. -/
 theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
     ∃ C : ℝ, 0 < C ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ C := by
@@ -139,7 +135,7 @@ theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
   refine ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite ?_⟩
   refine (Filter.eventually_cofinite_ne 0).mono fun x hx => ?_
   rw [Real.norm_of_nonneg (zpow_nonneg (norm_nonneg _) _), zpow_neg, ← div_eq_mul_inv, le_div_iff₀']
-  exacts [hd' x, zpow_pos_of_pos (norm_pos_iff.mpr hx) _]
+  exacts [hd' x, zpow_pos (norm_pos_iff.mpr hx) _]
 
 theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
     f =O[cocompact E] fun x => ‖x‖ ^ s := by
@@ -823,9 +819,7 @@ section Comp
 variable (𝕜)
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-variable [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
 
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
 provided that the function is temperate and growths polynomially near infinity. -/

@@ -211,7 +211,7 @@ theorem norm_eq_pow_val {f : PadicSeq p} (hf : ¬f ≈ 0) : f.norm = (p : ℚ) ^
 
 theorem val_eq_iff_norm_eq {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0) :
     f.valuation = g.valuation ↔ f.norm = g.norm := by
-  rw [norm_eq_pow_val hf, norm_eq_pow_val hg, ← neg_inj, zpow_inj]
+  rw [norm_eq_pow_val hf, norm_eq_pow_val hg, ← neg_inj, zpow_right_inj₀]
   · exact mod_cast (Fact.out : p.Prime).pos
   · exact mod_cast (Fact.out : p.Prime).ne_one
 
@@ -945,16 +945,6 @@ def valuation : ℚ_[p] → ℤ :=
 theorem valuation_zero : valuation (0 : ℚ_[p]) = 0 :=
   dif_pos ((const_equiv p).2 rfl)
 
-@[simp]
-theorem valuation_one : valuation (1 : ℚ_[p]) = 0 := by
-  classical
-  change dite (CauSeq.const (padicNorm p) 1 ≈ _) _ _ = _
-  have h : ¬CauSeq.const (padicNorm p) 1 ≈ 0 := by
-    rw [← const_zero, const_equiv p]
-    exact one_ne_zero
-  rw [dif_neg h]
-  simp
-
 theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
   refine Quotient.inductionOn' x fun f hf => ?_
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
@@ -969,26 +959,45 @@ theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.va
     simpa using hf'
 
 @[simp]
-theorem valuation_p : valuation (p : ℚ_[p]) = 1 := by
-  have h : (1 : ℝ) < p := mod_cast (Fact.out : p.Prime).one_lt
-  refine neg_injective ((zpow_strictMono h).injective <| (norm_eq_pow_val ?_).symm.trans ?_)
-  · exact mod_cast (Fact.out : p.Prime).ne_zero
-  · simp
+lemma valuation_ratCast (q : ℚ) : valuation (q : ℚ_[p]) = padicValRat p q := by
+  rcases eq_or_ne q 0 with rfl | hq
+  · simp only [Rat.cast_zero, valuation_zero, padicValRat.zero]
+  refine neg_injective ((zpow_right_strictMono₀ (mod_cast hp.out.one_lt)).injective
+    <| (norm_eq_pow_val (mod_cast hq)).symm.trans ?_)
+  rw [padicNormE.eq_padicNorm, ← Rat.cast_natCast, ← Rat.cast_zpow, Rat.cast_inj]
+  exact padicNorm.eq_zpow_of_nonzero hq
+
+@[simp]
+lemma valuation_intCast (n : ℤ) : valuation (n : ℚ_[p]) = padicValInt p n := by
+  rw [← Rat.cast_intCast, valuation_ratCast, padicValRat.of_int]
+
+@[simp]
+lemma valuation_natCast (n : ℕ) : valuation (n : ℚ_[p]) = padicValNat p n := by
+  rw [← Rat.cast_natCast, valuation_ratCast, padicValRat.of_nat]
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+lemma valuation_ofNat (n : ℕ) [n.AtLeastTwo] :
+    valuation (no_index (OfNat.ofNat n : ℚ_[p])) = padicValNat p n :=
+  valuation_natCast n
+
+@[simp]
+lemma valuation_one : valuation (1 : ℚ_[p]) = 0 := by
+  rw [← Nat.cast_one, valuation_natCast, padicValNat.one, cast_zero]
+
+-- not @[simp], since simp can prove it
+lemma valuation_p : valuation (p : ℚ_[p]) = 1 := by
+  rw [valuation_natCast, padicValNat_self, cast_one]
 
 theorem valuation_map_add {x y : ℚ_[p]} (hxy : x + y ≠ 0) :
     min (valuation x) (valuation y) ≤ valuation (x + y : ℚ_[p]) := by
   by_cases hx : x = 0
-  · rw [hx, zero_add]
-    exact min_le_right _ _
-  · by_cases hy : y = 0
-    · rw [hy, add_zero]
-      exact min_le_left _ _
-    · have h_norm : ‖x + y‖ ≤ max ‖x‖ ‖y‖ := padicNormE.nonarchimedean x y
-      have hp_one : (1 : ℝ) < p := by
-        rw [← Nat.cast_one, Nat.cast_lt]
-        exact Nat.Prime.one_lt hp.elim
-      rwa [norm_eq_pow_val hx, norm_eq_pow_val hy, norm_eq_pow_val hxy,
-        zpow_le_max_iff_min_le hp_one] at h_norm
+  · simpa only [hx, zero_add] using min_le_right _ _
+  by_cases hy : y = 0
+  · simpa only [hy, add_zero] using min_le_left _ _
+  have : ‖x + y‖ ≤ max ‖x‖ ‖y‖ := padicNormE.nonarchimedean x y
+  simpa only [norm_eq_pow_val hxy, norm_eq_pow_val hx, norm_eq_pow_val hy, le_max_iff,
+    zpow_le_zpow_iff_right₀ (mod_cast hp.out.one_lt : 1 < (p : ℝ)), neg_le_neg_iff, ← min_le_iff]
 
 @[simp]
 theorem valuation_map_mul {x y : ℚ_[p]} (hx : x ≠ 0) (hy : y ≠ 0) :
@@ -1001,7 +1010,7 @@ theorem valuation_map_mul {x y : ℚ_[p]} (hx : x ≠ 0) (hy : y ≠ 0) :
     rw [← Nat.cast_zero, Nat.cast_lt]
     exact Nat.Prime.pos hp.elim
   rw [norm_eq_pow_val hx, norm_eq_pow_val hy, norm_eq_pow_val (mul_ne_zero hx hy), ←
-    zpow_add₀ (ne_of_gt hp_pos), zpow_inj hp_pos hp_ne_one, ← neg_add, neg_inj] at h_norm
+    zpow_add₀ (ne_of_gt hp_pos), zpow_right_inj₀ hp_pos hp_ne_one, ← neg_add, neg_inj] at h_norm
   exact h_norm
 
 open Classical in
@@ -1059,14 +1068,12 @@ section NormLEIff
 
 theorem norm_le_pow_iff_norm_lt_pow_add_one (x : ℚ_[p]) (n : ℤ) :
     ‖x‖ ≤ (p : ℝ) ^ n ↔ ‖x‖ < (p : ℝ) ^ (n + 1) := by
-  have aux : ∀ n : ℤ, 0 < ((p : ℝ) ^ n) := by
-    apply Nat.zpow_pos_of_pos
-    exact hp.1.pos
+  have aux (n : ℤ) : 0 < ((p : ℝ) ^ n) := zpow_pos (mod_cast hp.1.pos) _
   by_cases hx0 : x = 0
   · simp [hx0, norm_zero, aux, le_of_lt (aux _)]
   rw [norm_eq_pow_val hx0]
   have h1p : 1 < (p : ℝ) := mod_cast hp.1.one_lt
-  have H := zpow_strictMono h1p
+  have H := zpow_right_strictMono₀ h1p
   rw [H.le_iff_le, H.lt_iff_lt, Int.lt_add_one_iff]
 
 theorem norm_lt_pow_iff_norm_le_pow_sub_one (x : ℚ_[p]) (n : ℤ) :
@@ -1076,7 +1083,7 @@ theorem norm_lt_pow_iff_norm_le_pow_sub_one (x : ℚ_[p]) (n : ℤ) :
 theorem norm_le_one_iff_val_nonneg (x : ℚ_[p]) : ‖x‖ ≤ 1 ↔ 0 ≤ x.valuation := by
   by_cases hx : x = 0
   · simp only [hx, norm_zero, valuation_zero, zero_le_one, le_refl]
-  · rw [norm_eq_pow_val hx, ← zpow_zero (p : ℝ), zpow_le_iff_le, Right.neg_nonpos_iff]
+  · rw [norm_eq_pow_val hx, ← zpow_zero (p : ℝ), zpow_le_zpow_iff_right₀, Right.neg_nonpos_iff]
     exact Nat.one_lt_cast.2 (Nat.Prime.one_lt' p).1
 
 end NormLEIff

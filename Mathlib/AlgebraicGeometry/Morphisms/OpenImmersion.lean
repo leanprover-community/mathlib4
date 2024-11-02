@@ -29,13 +29,13 @@ namespace AlgebraicGeometry
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
-    OpenEmbedding f.1.base ∧ ∀ x, IsIso (f.stalkMap x) := by
+    IsOpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) := by
   constructor
   · intro h; exact ⟨h.1, inferInstance⟩
   · rintro ⟨h₁, h₂⟩; exact IsOpenImmersion.of_stalk_iso f h₁
 
 theorem isOpenImmersion_eq_inf :
-    @IsOpenImmersion = (topologically OpenEmbedding) ⊓
+    @IsOpenImmersion = (topologically IsOpenEmbedding) ⊓
       stalkwise (fun f ↦ Function.Bijective f) := by
   ext
   exact isOpenImmersion_iff_stalk.trans
@@ -43,7 +43,7 @@ theorem isOpenImmersion_eq_inf :
 
 instance isOpenImmersion_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @IsOpenImmersion where
-  comp_mem f g _ _ := LocallyRingedSpace.IsOpenImmersion.comp f g
+  comp_mem f g _ _ := LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
 
 instance isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersion := by
   apply MorphismProperty.respectsIso_of_isStableUnderComposition
