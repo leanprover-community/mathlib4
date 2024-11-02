@@ -158,7 +158,7 @@ lemma MemHolder.holderWith {r : ℝ≥0} {f : X → Y} (hf : MemHolder r f) :
   by_cases hx : x₁ = x₂
   · simp only [hx, edist_self, zero_le]
   rw [nnHolderNorm, eHolderNorm, coe_toNNReal]
-  swap; exact hf.eHolderNorm_lt_top.ne
+  on_goal 2 => exact hf.eHolderNorm_lt_top.ne
   have h₁ : edist x₁ x₂ ^ (r : ℝ) ≠ 0 :=
     (Ne.symm <| ne_of_lt <| ENNReal.rpow_pos (edist_pos.2 hx) (edist_lt_top x₁ x₂).ne)
   have h₂ : edist x₁ x₂ ^ (r : ℝ) ≠ ∞ := by

@@ -153,8 +153,7 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 
 namespace ComputablePred
 
-variable {α : Type*} {σ : Type*}
-variable [Primcodable α] [Primcodable σ]
+variable {α : Type*} [Primcodable α]
 
 open Nat.Partrec (Code)
 

@@ -5,12 +5,13 @@ Authors: Chris Hughes, Thomas Browning
 -/
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
+import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.Commutator.Basic
 import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.Data.Finite.Basic
+import Mathlib.Data.Finite.Prod
 
 /-!
 # Properties of group actions involving quotient groups
@@ -320,10 +321,10 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
   toFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     have hx := x.property
-    rwa [orbitRel.Quotient.mem_orbit, @Quotient.mk''_eq_mk] at hx⟩⟧) fun a b h ↦ by
-      simp only [← Quotient.eq'', Quotient.mk''_eq_mk,
+    rwa [orbitRel.Quotient.mem_orbit] at hx⟩⟧) fun a b h ↦ by
+      simp only [← Quotient.eq,
                  orbitRel.Quotient.subgroup_quotient_eq_iff] at h
-      simp only [← Quotient.mk''_eq_mk, Quotient.eq''] at h ⊢
+      simp only [Quotient.eq] at h ⊢
       exact h
   invFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
     have hx := x.property

@@ -44,7 +44,7 @@ class QuotLikeStruct (Q : Sort*) (α : outParam Sort*) (r : outParam (α → α 
   /-- The canonical map from quotient to `Quot r`. -/
   toQuot : Q → Quot r := by exact (·)
   toQuot_mkQ : ∀ a, toQuot (mkQ a) = Quot.mk r a := by exact fun _ ↦ rfl
-  surjective_mkQ : Function.Surjective mkQ := by exact Quot.exists_rep
+  mkQ_surjective : Function.Surjective mkQ := by exact Quot.exists_rep
   /--
   The analogue of `Quot.sound`: If `a` and `b` are related by the relation,
   then they have equal equivalence classes.
@@ -285,7 +285,7 @@ theorem liftOn_mkQ {β : Sort*} (a : α) (f : α → β) (h : ∀ a₁ a₂, r a
   lift_mkQ f h a
 
 theorem exists_rep (q : Q) : ∃ a, ⟦a⟧ = q :=
-  QuotLikeStruct.surjective_mkQ q
+  QuotLikeStruct.mkQ_surjective q
 
 @[elab_as_elim]
 theorem ind {motive : Q → Prop}
@@ -576,20 +576,20 @@ instance (priority := 800) [IsEquiv α r] [dec : DecidableRel r] : DecidableEq Q
     | isTrue  h₁ => isTrue (QuotLike.sound h₁)
     | isFalse h₂ => isFalse (fun h ↦ absurd (QuotLike.exact h) h₂)
 
-theorem surjective_mkQ :
+theorem mkQ_surjective :
     Function.Surjective (mkQ (Q := Q)) :=
-  QuotLikeStruct.surjective_mkQ
+  QuotLikeStruct.mkQ_surjective
 
 @[simp]
-theorem surjective_lift {β : Sort*} {f : α → β} {h : ∀ a b, r a b → f a = f b} :
+theorem lift_surjective {β : Sort*} {f : α → β} {h : ∀ a b, r a b → f a = f b} :
     Function.Surjective (QuotLike.lift f h : Q → β) ↔ Function.Surjective f :=
   ⟨fun hf => by simpa only [lift_mkQ, Function.comp_def] using hf.comp QuotLike.exists_rep,
     fun hf y => let ⟨x, hx⟩ := hf y; ⟨mkQ x, by simpa only [lift_mkQ] using hx⟩⟩
 
 @[simp]
-lemma surjective_liftOn {β : Sort*} {f : α → β} {h : ∀ a b, r a b → f a = f b} :
+lemma liftOn_surjective {β : Sort*} {f : α → β} {h : ∀ a b, r a b → f a = f b} :
     Function.Surjective (fun x : Q ↦ QuotLike.liftOn x f h) ↔ Function.Surjective f :=
-  surjective_lift
+  lift_surjective
 
 @[simp]
 theorem lift_comp_mkQ {β : Sort*} {f : α → β} (h : ∀ a b, r a b → f a = f b) :
