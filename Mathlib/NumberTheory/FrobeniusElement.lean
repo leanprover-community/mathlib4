@@ -119,16 +119,14 @@ theorem lem0 (A B K L : Type*) [CommRing A] [CommRing B] [IsDomain B] [Field K] 
 
 end integrallemma
 
-section charpoly
+namespace MulSemiringAction
 
 open Polynomial
 
-namespace MulSemiringAction
-
 variable {B : Type*} [CommRing B] (G : Type*) [Group G] [Fintype G] [MulSemiringAction G B]
 
-noncomputable def charpoly (b : B) : B[X] :=
-  ∏ g : G, (X - C (g • b))
+/-- Characteristic polynomial of a group action on a ring. -/
+noncomputable def charpoly (b : B) : B[X] := ∏ g : G, (X - C (g • b))
 
 theorem charpoly_eq (b : B) : charpoly G b = ∏ g : G, (X - C (g • b)) := rfl
 
@@ -152,14 +150,37 @@ private theorem charpoly_coeff_smul (b : B) (n : ℕ) (g : G) :
     g • (charpoly G b).coeff n = (charpoly G b).coeff n := by
   rw [← coeff_smul, charpoly_smul]
 
-variable {A : Type*} [CommRing A] [Algebra A B]
+end MulSemiringAction
 
-theorem exists_map_eq_charpoly
-    (hinv : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) (b : B) :
+namespace Algebra
+
+variable (A B G : Type*) [CommSemiring A] [Semiring B] [Algebra A B]
+  [Group G] [MulSemiringAction G B]
+
+class IsInvariant : Prop where
+  isInvariant : ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, algebraMap A B a = b
+
+variable {A B G}
+
+theorem isInvariant_def :
+    IsInvariant A B G ↔ ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, algebraMap A B a = b :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+end Algebra
+
+namespace Algebra.IsInvariant
+
+open MulSemiringAction Polynomial
+
+variable (A B G : Type*) [CommRing A] [CommRing B] [Algebra A B]
+  [Group G] [Fintype G] [MulSemiringAction G B] [IsInvariant A B G]
+
+theorem exists_map_eq_charpoly (b : B) :
     ∃ M : A[X], M.Monic ∧ M.map (algebraMap A B) = charpoly G b := by
-  let f : ℕ → A := fun k ↦ (hinv ((charpoly G b).coeff k) (charpoly_coeff_smul b k)).choose
-  have hf : ∀ k, algebraMap A B (f k) = (charpoly G b).coeff k :=
-    fun k ↦ (hinv ((charpoly G b).coeff k) (charpoly_coeff_smul b k)).choose_spec
+  have hinv k : ∃ a : A, algebraMap A B a = (charpoly G b).coeff k :=
+    isInvariant ((charpoly G b).coeff k) (charpoly_coeff_smul b k)
+  let f : ℕ → A := fun k ↦ (hinv k).choose
+  have hf : ∀ k, algebraMap A B (f k) = (charpoly G b).coeff k := fun k ↦ (hinv k).choose_spec
   use X ^ (charpoly G b).natDegree + ∑ k ∈ Finset.range (charpoly G b).natDegree, C (f k) * X ^ k
   constructor
   · apply Polynomial.monic_X_pow_add
@@ -169,26 +190,23 @@ theorem exists_map_eq_charpoly
       Polynomial.map_X, Polynomial.map_C, hf]
     exact (charpoly_monic G b).as_sum.symm
 
-theorem isIntegral_quot_quot
-    (hFull' : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) :
-    Algebra.IsIntegral A B where
-  isIntegral b := by
-    obtain ⟨f, hf1, hf2⟩ := exists_map_eq_charpoly hFull' b
-    refine ⟨f, hf1, ?_⟩
-    rw [← eval_map, hf2, charpoly_eval]
+include G in
+theorem isIntegral : Algebra.IsIntegral A B := by
+  refine ⟨fun b ↦ ?_⟩
+  obtain ⟨f, hf1, hf2⟩ := exists_map_eq_charpoly A B G b
+  refine ⟨f, hf1, ?_⟩
+  rw [← eval_map, hf2, charpoly_eval]
 
-end MulSemiringAction
-
-end charpoly
+end Algebra.IsInvariant
 
 section transitivity
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
+  [hinv : Algebra.IsInvariant A B G]
 
 /-- If `G` is finite, then `G` acts transitively on primes of `B` above the same prime of `A`. -/
-theorem exists_smul_of_comap_eq [Finite G]
-    (hAB : ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, b = algebraMap A B a)
+theorem exists_smul_of_comap_eq
     (P Q : Ideal B) [hP : P.IsPrime] [hQ : Q.IsPrime]
     (hPQ : P.under A = Q.under A) :
     ∃ g : G, Q = g • P := by
@@ -201,9 +219,9 @@ theorem exists_smul_of_comap_eq [Finite G]
     suffices h : ∃ g ∈ Finset.univ, g • b ∈ P by
       obtain ⟨g, -, hg⟩ := h
       apply Set.mem_biUnion (Finset.mem_univ g⁻¹) (Ideal.mem_inv_pointwise_smul_iff.mpr hg)
-    obtain ⟨a, ha⟩ := hAB (∏ g : G, g • b) (Finset.smul_prod_perm b)
-    rw [← hP.prod_mem_iff, ha, ← P.mem_comap, ← P.under_def A,
-      hPQ, Q.mem_comap, ← ha, hQ.prod_mem_iff]
+    obtain ⟨a, ha⟩ := hinv.isInvariant (∏ g : G, g • b) (Finset.smul_prod_perm b)
+    rw [← hP.prod_mem_iff, ← ha, ← P.mem_comap, ← P.under_def A,
+      hPQ, Q.mem_comap, ha, hQ.prod_mem_iff]
     exact ⟨1, Finset.mem_univ 1, (one_smul G b).symm ▸ hb⟩
   obtain ⟨g, -, hg⟩ := this P Q hPQ
   have h := hP.smul g -- should this be an instance?
@@ -344,7 +362,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   [Algebra K L] [IsScalarTower (A ⧸ P) K L]
 
 open IsScalarTower Polynomial in
-theorem lem4 (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b)
+theorem lem4 [Algebra.IsInvariant A B G]
     (f : L ≃ₐ[K] L) (b : B ⧸ Q)
     (hx : ∀ g : MulAction.stabilizer G Q, stabilizerAction G P Q g b = b) :
     f (algebraMap (B ⧸ Q) L b) = (algebraMap (B ⧸ Q) L b) := by
@@ -355,7 +373,7 @@ theorem lem4 (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algeb
   intro hx
   rw [← Ideal.Quotient.algebraMap_eq]
   obtain ⟨a, b, ha1, ha2, hb⟩ := lem2 G Q b₀ (fun g hg ↦ hx ⟨g, hg⟩)
-  obtain ⟨M, _, key⟩ := MulSemiringAction.exists_map_eq_charpoly hAB b
+  obtain ⟨M, _, key⟩ := Algebra.IsInvariant.exists_map_eq_charpoly A B G b
   replace key := congrArg (map (algebraMap B (B ⧸ Q))) key
   rw [map_map, ← algebraMap_eq, algebraMap_eq A (A ⧸ P) (B ⧸ Q),
       ← map_map, MulSemiringAction.charpoly, Polynomial.map_prod] at key
@@ -374,7 +392,7 @@ theorem lem4 (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algeb
   replace key := lem3 key f (Finset.card_ne_zero_of_mem (Finset.mem_filter.mpr
     ⟨Finset.mem_univ 1, one_smul G Q⟩))
   simp only [map_mul] at key
-  obtain ⟨a, rfl⟩ := hAB a ha1
+  obtain ⟨a, rfl⟩ := Algebra.IsInvariant.isInvariant (A := A) a ha1
   rwa [← algebraMap_apply A B (B ⧸ Q), algebraMap_apply A (A ⧸ P) (B ⧸ Q),
       ← algebraMap_apply, algebraMap_apply (A ⧸ P) K L, f.commutes, mul_right_inj'] at key
   rwa [← algebraMap_apply, algebraMap_apply (A ⧸ P) (B ⧸ Q) L,
@@ -398,12 +416,12 @@ noncomputable def fullHom : MulAction.stabilizer G Q →* (L ≃ₐ[K] L) :=
   MonoidHom.comp (IsFractionRing.fieldEquivOfAlgEquivHom K L) (stabilizerAction G P Q)
 
 theorem fullHom_surjective1
-    (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b)
+    [Algebra.IsInvariant A B G]
     (f : L ≃ₐ[K] L) (x : L) (hx : ∀ g : MulAction.stabilizer G Q, fullHom G P Q K L g x = x) :
     f x = x := by
   obtain ⟨_⟩ := nonempty_fintype G
   have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under A Q
-  have : Algebra.IsIntegral A B := MulSemiringAction.isIntegral_quot_quot hAB
+  have : Algebra.IsIntegral A B := Algebra.IsInvariant.isIntegral A B G
   have := Ideal.Quotient.algebra_isIntegral_of_liesOver Q P
   obtain ⟨b, a, ha, rfl⟩ := lem0 (A ⧸ P) (B ⧸ Q) K L x
   simp only [map_div₀, IsScalarTower.algebraMap_apply (A ⧸ P) K L, AlgEquiv.commutes] at hx ⊢
@@ -411,19 +429,19 @@ theorem fullHom_surjective1
     rwa [Ne, IsScalarTower.algebraMap_apply (A ⧸ P) K L,
       NoZeroSMulDivisors.algebraMap_eq_zero_iff, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
   simp only [← IsScalarTower.algebraMap_apply (A ⧸ P) K L, div_left_inj' ha] at hx ⊢
-  refine lem4 G P Q K L hAB f b (fun g ↦ IsFractionRing.injective (B ⧸ Q) L ?_)
+  refine lem4 G P Q K L f b (fun g ↦ IsFractionRing.injective (B ⧸ Q) L ?_)
   exact (IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L
     (stabilizerAction G P Q g) b).symm.trans (hx g)
 
 theorem fullHom_surjective
-    (hAB : ∀ (b : B), (∀ (g : G), g • b = b) → ∃ a : A, algebraMap A B a = b) :
+    [Algebra.IsInvariant A B G] :
     Function.Surjective (fullHom G P Q K L : MulAction.stabilizer G Q →* (L ≃ₐ[K] L)) := by
   let action : MulSemiringAction (MulAction.stabilizer G Q) L :=
     MulSemiringAction.compHom _
       (fullHom G P Q K L : MulAction.stabilizer G Q →* (L ≃ₐ[K] L))
   intro f
   obtain ⟨g, hg⟩ := FixedPoints.toAlgAut_surjective (MulAction.stabilizer G Q) L
-    (AlgEquiv.ofRingEquiv (f := f) (fun x ↦ fullHom_surjective1 G P Q K L hAB f x x.2))
+    (AlgEquiv.ofRingEquiv (f := f) (fun x ↦ fullHom_surjective1 G P Q K L f x x.2))
   exact ⟨g, by rwa [AlgEquiv.ext_iff] at hg ⊢⟩
 
 end part_b
