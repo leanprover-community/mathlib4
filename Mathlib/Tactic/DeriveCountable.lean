@@ -94,7 +94,7 @@ private theorem pair_encode_step {p : Prop} {α : Sort*} [Countable α]
 Constructing the `toNat` functions.
 -/
 
-def mkToNatMatch (ctx : Deriving.Context) (header : Header) (indVal : InductiveVal)
+private def mkToNatMatch (ctx : Deriving.Context) (header : Header) (indVal : InductiveVal)
     (toFunNames : Array Name) : TermElabM Term := do
   let discrs ← mkDiscrs header indVal
   let alts ← mkAlts
@@ -129,6 +129,7 @@ where
         `(matchAltExpr| | $[$patterns:term],* => $rhs)
     return alts
 
+/-- Constructs a function from the inductive type to `Nat`. -/
 def mkToNatFuns (ctx : Deriving.Context) (toNatFnNames : Array Name) :
     TermElabM (TSyntax `command) := do
   let mut res : Array (TSyntax `command) := #[]
@@ -147,7 +148,7 @@ def mkToNatFuns (ctx : Deriving.Context) (toNatFnNames : Array Name) :
 Constructing the injectivity proofs for these `toNat` functions.
 -/
 
-def mkInjThmMatch (ctx : Deriving.Context) (header : Header) (indVal : InductiveVal) :
+private def mkInjThmMatch (ctx : Deriving.Context) (header : Header) (indVal : InductiveVal) :
     TermElabM Term := do
   let discrs ← mkDiscrs header indVal
   let alts ← mkAlts
@@ -189,6 +190,7 @@ where
           alts := alts.push (← `(matchAltExpr| | $[$patterns:term],* => $rhs:term))
     return alts
 
+/-- Constructs a proof that the functions created by `mkToNatFuns` are injective. -/
 def mkInjThms (ctx : Deriving.Context) (toNatFnNames : Array Name) :
     TermElabM (TSyntax `command) := do
   let mut res : Array (TSyntax `command) := #[]
@@ -214,7 +216,7 @@ Assembling the `Countable` instances.
 open TSyntax.Compat in
 /-- Assuming all of the auxiliary definitions exist, create all the `instance` commands
 for the `ToExpr` instances for the (mutual) inductive type(s). -/
-def mkCountableInstanceCmds (ctx : Deriving.Context) (typeNames : Array Name) :
+private def mkCountableInstanceCmds (ctx : Deriving.Context) (typeNames : Array Name) :
     TermElabM (Array Command) := do
   let mut instances := #[]
   for i in [:ctx.typeInfos.size] do
@@ -231,7 +233,7 @@ def mkCountableInstanceCmds (ctx : Deriving.Context) (typeNames : Array Name) :
       instances := instances.push instCmd
   return instances
 
-def mkCountableCmds (indVal : InductiveVal) (declNames : Array Name) :
+private def mkCountableCmds (indVal : InductiveVal) (declNames : Array Name) :
     TermElabM (Array Syntax) := do
   let ctx ← mkContext "countable" indVal.name
   let toNatFunNames : Array Name ← ctx.auxFunNames.mapM fun name => do
@@ -242,14 +244,14 @@ def mkCountableCmds (indVal : InductiveVal) (declNames : Array Name) :
   trace[Mathlib.Deriving.countable] "\n{cmds}"
   return cmds
 
+open Command
+
 /-!
-The deriving handler itself. Handles non-nested non-reflexive inductive types.
+The deriving handler for the `Countable` class.
+Handles non-nested non-reflexive inductive types.
 They can be mutual too — in that case, there is an optimization to re-use all the generated
 functions and proofs.
 -/
-
-open Command
-
 def mkCountableInstance (declNames : Array Name) : CommandElabM Bool := do
   let mut seen : NameSet := {}
   let mut toVisit : Array InductiveVal := #[]
