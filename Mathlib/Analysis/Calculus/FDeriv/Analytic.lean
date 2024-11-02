@@ -145,7 +145,7 @@ theorem HasFPowerSeriesWithinOnBall.differentiableOn [CompleteSpace F]
   have Z := (h.analyticWithinAt_of_mem hy).differentiableWithinAt
   rcases eq_or_ne y x with rfl | hy
   · exact Z.mono inter_subset_left
-  · apply (Z.mono (subset_insert _ _)).mono_of_mem
+  · apply (Z.mono (subset_insert _ _)).mono_of_mem_nhdsWithin
     suffices s ∈ 𝓝[insert x s] y from nhdsWithin_mono _ inter_subset_left this
     rw [nhdsWithin_insert_of_ne hy]
     exact self_mem_nhdsWithin
@@ -169,7 +169,7 @@ theorem HasFPowerSeriesWithinOnBall.hasFDerivWithinAt [CompleteSpace F]
   · convert (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
     simp
   · have Z := (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
-    apply (Z.mono (subset_insert _ _)).mono_of_mem
+    apply (Z.mono (subset_insert _ _)).mono_of_mem_nhdsWithin
     rw [nhdsWithin_insert_of_ne]
     · exact self_mem_nhdsWithin
     · simpa using h''y

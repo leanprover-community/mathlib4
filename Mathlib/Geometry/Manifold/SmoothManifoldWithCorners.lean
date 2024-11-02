@@ -142,6 +142,13 @@ scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 /-- A structure containing information on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a smooth manifold with model space `H`, and model vector space `E`.
+
+We require two conditions `uniqueDiffOn'` and `target_subset_closure_interior`, which
+are satisfied in the relevant cases (where `range I = univ` or a half space or a quadrant) and
+useful for technical reasons. The former makes sure that manifold derivatives are uniquely
+defined, the latter ensures that for `C^2` maps the second derivatives are symmetric even for points
+on the boundary, as these are limit points of interior points where symmetry holds. If further
+conditions turn out to be useful, they can be added here.
 -/
 @[ext] -- Porting note(#5171): was nolint has_nonempty_instance
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
@@ -363,6 +370,8 @@ protected theorem secondCountableTopology [SecondCountableTopology E] (I : Model
   I.isClosedEmbedding.isEmbedding.secondCountableTopology
 
 include I in
+/-- Every smooth manifold is a Fréchet space (T1 space) -- regardless of whether it is
+Hausdorff. -/
 protected theorem t1Space (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : T1Space M := by
   have : T2Space H := I.isClosedEmbedding.toIsEmbedding.t2Space
   exact ChartedSpace.t1Space H M
@@ -1217,21 +1226,27 @@ theorem extChartAt_target_mem_nhds' [I.Boundaryless] {x : M} {y : E}
 theorem extChartAt_target_subset_range (x : M) : (extChartAt I x).target ⊆ range I := by
   simp only [mfld_simps]
 
+/-- Around the image of a point in the source, the neighborhoods are the same
+within `(extChartAt I x).target` and within `range I`. -/
 theorem nhdsWithin_extChartAt_target_eq' {x y : M} (hy : y ∈ (extChartAt I x).source) :
     𝓝[(extChartAt I x).target] extChartAt I x y = 𝓝[range I] extChartAt I x y :=
   nhdsWithin_extend_target_eq _ <| by rwa [← extChartAt_source I]
 
-/-- Around a point in the target, `(extChartAt I x).target` and `range I` coincide locally. -/
+/-- Around a point in the target, the neighborhoods are the same within `(extChartAt I x).target`
+and within `range I`. -/
 theorem nhdsWithin_extChartAt_target_eq_of_mem {x : M} {z : E} (hz : z ∈ (extChartAt I x).target) :
     𝓝[(extChartAt I x).target] z = 𝓝[range I] z := by
   rw [← PartialEquiv.right_inv (extChartAt I x) hz]
   exact nhdsWithin_extChartAt_target_eq' ((extChartAt I x).map_target hz)
 
+/-- Around the image of the base point, the neighborhoods are the same
+within `(extChartAt I x).target` and within `range I`. -/
 theorem nhdsWithin_extChartAt_target_eq (x : M) :
     𝓝[(extChartAt I x).target] (extChartAt I x) x = 𝓝[range I] (extChartAt I x) x :=
   nhdsWithin_extChartAt_target_eq' (mem_extChartAt_source x)
 
-/-- Around a point in the target, `(extChartAt I x).target` and `range I` coincide locally. -/
+/-- Around the image of a point in the source, `(extChartAt I x).target` and `range I`
+coincide locally. -/
 theorem extChartAt_target_eventuallyEq' {x y : M} (hy : y ∈ (extChartAt I x).source) :
     (extChartAt I x).target =ᶠ[𝓝 (extChartAt I x y)] range I :=
   nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq' hy)
@@ -1241,6 +1256,7 @@ theorem extChartAt_target_eventuallyEq_of_mem {x : M} {z : E} (hz : z ∈ (extCh
     (extChartAt I x).target =ᶠ[𝓝 z] range I :=
   nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq_of_mem hz)
 
+/-- Around the image of the base point, `(extChartAt I x).target` and `range I` coincide locally. -/
 theorem extChartAt_target_eventuallyEq {x : M} :
     (extChartAt I x).target =ᶠ[𝓝 (extChartAt I x x)] range I :=
   nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq x)
