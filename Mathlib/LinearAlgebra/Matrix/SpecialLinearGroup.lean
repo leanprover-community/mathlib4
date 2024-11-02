@@ -271,7 +271,7 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
 def center_equiv_rootsOfUnity' (i : n) :
     center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n) R where
   toFun A :=
-    have : Nonempty n := ⟨i⟩
+    haveI : Nonempty n := ⟨i⟩
     rootsOfUnity.mkOfPowEq (↑ₘA i i) <| by
       obtain ⟨r, hr, hr'⟩ := mem_center_iff.mp A.property
       replace hr' : A.val i i = r := by simp only [← hr', scalar_apply, diagonal_apply_eq]

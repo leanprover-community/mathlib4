@@ -186,10 +186,9 @@ variable [IsDomain R]
 
 /-- If `χ` is a multiplicative character with `χ^n = 1` and `μ` is a primitive `n`th root
 of unity, then, for `a ≠ 0`, there is some `k` such that `χ a = μ^k`. -/
-lemma exists_apply_eq_pow {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ ^ n = 1) {μ : R}
+lemma exists_apply_eq_pow {χ : MulChar F R} {n : ℕ} [NeZero n] (hχ : χ ^ n = 1) {μ : R}
     (hμ : IsPrimitiveRoot μ n) {a : F} (ha : a ≠ 0) :
     ∃ k < n, χ a = μ ^ k := by
-  have : NeZero n := ⟨hn⟩
   obtain ⟨ζ, hζ₁, hζ₂⟩ := apply_mem_rootsOfUnity_of_pow_eq_one hχ ha
   have hζ' : ζ.val ^ n = 1 := (mem_rootsOfUnity' n ↑ζ).mp hζ₁
   obtain ⟨k, hk₁, hk₂⟩ := hμ.eq_pow_of_pow_eq_one hζ'
@@ -197,13 +196,12 @@ lemma exists_apply_eq_pow {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ 
 
 /-- The values of a multiplicative character `χ` such that `χ^n = 1` are contained in `ℤ[μ]` when
 `μ` is a primitive `n`th root of unity. -/
-lemma apply_mem_algebraAdjoin_of_pow_eq_one {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ ^ n = 1)
+lemma apply_mem_algebraAdjoin_of_pow_eq_one {χ : MulChar F R} {n : ℕ} [NeZero n] (hχ : χ ^ n = 1)
     {μ : R} (hμ : IsPrimitiveRoot μ n) (a : F) :
     χ a ∈ Algebra.adjoin ℤ {μ} := by
   rcases eq_or_ne a 0 with rfl | h
   · exact χ.map_zero ▸ Subalgebra.zero_mem _
-  · have : NeZero n := ⟨hn⟩
-    obtain ⟨ζ, hζ₁, hζ₂⟩ := apply_mem_rootsOfUnity_of_pow_eq_one hχ h
+  · obtain ⟨ζ, hζ₁, hζ₂⟩ := apply_mem_rootsOfUnity_of_pow_eq_one hχ h
     rw [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val] at hζ₁
     obtain ⟨k, _, hk⟩ := IsPrimitiveRoot.eq_pow_of_pow_eq_one hμ hζ₁
     exact hζ₂ ▸ hk ▸ Subalgebra.pow_mem _ (Algebra.self_mem_adjoin_singleton ℤ μ) k
@@ -213,7 +211,8 @@ lemma apply_mem_algebraAdjoin_of_pow_eq_one {χ : MulChar F R} {n : ℕ} (hn : n
 lemma apply_mem_algebraAdjoin {χ : MulChar F R} {μ : R} (hμ : IsPrimitiveRoot μ (orderOf χ))
     (a : F) :
     χ a ∈ Algebra.adjoin ℤ {μ} :=
-  apply_mem_algebraAdjoin_of_pow_eq_one χ.orderOf_pos.ne' (pow_orderOf_eq_one χ) hμ a
+  have : NeZero (orderOf χ) := ⟨χ.orderOf_pos.ne'⟩
+  apply_mem_algebraAdjoin_of_pow_eq_one (pow_orderOf_eq_one χ) hμ a
 
 end FiniteField
 
