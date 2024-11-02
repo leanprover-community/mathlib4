@@ -23,7 +23,7 @@ open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDom
 variable {k : Type*} [Field k]
 
 
-theorem divRadical_dvd_derivative (a : k[X]) : (divRadical a) ∣ (derivative a) := by
+theorem divRadical_dvd_derivative (a : k[X]) : divRadical a ∣ derivative a := by
   induction a using induction_on_coprime
   · case h0 =>
     rw [derivative_zero]
@@ -35,7 +35,7 @@ theorem divRadical_dvd_derivative (a : k[X]) : (divRadical a) ∣ (derivative a)
     · rw [pow_zero, derivative_one]
       apply dvd_zero
     · case succ i =>
-      rw [← mul_dvd_mul_iff_left (radical_ne_zero (p ^ i.succ)), mul_radical_divRadical,
+      rw [← mul_dvd_mul_iff_left (radical_ne_zero (p ^ i.succ)), radical_mul_divRadical,
         radical_pow_of_prime hp i.succ_pos, derivative_pow_succ, ← mul_assoc]
       apply dvd_mul_of_dvd_left
       rw [mul_comm, mul_assoc]
@@ -50,7 +50,7 @@ theorem divRadical_dvd_derivative (a : k[X]) : (divRadical a) ∣ (derivative a)
     rw [divRadical_mul hc, derivative_mul]
     exact dvd_add (mul_dvd_mul hx (divRadical_dvd_self y)) (mul_dvd_mul (divRadical_dvd_self x) hy)
 
-theorem divRadical_dvd_wronskian_left (a b : k[X]) : (divRadical a) ∣ wronskian a b := by
+theorem divRadical_dvd_wronskian_left (a b : k[X]) : divRadical a ∣ wronskian a b := by
   rw [wronskian]
   apply dvd_sub
   · apply dvd_mul_of_dvd_left
@@ -58,7 +58,6 @@ theorem divRadical_dvd_wronskian_left (a b : k[X]) : (divRadical a) ∣ wronskia
   · apply dvd_mul_of_dvd_left
     exact divRadical_dvd_derivative a
 
-theorem divRadical_dvd_wronskian_right (a b : k[X]) : (divRadical b) ∣ wronskian a b := by
+theorem divRadical_dvd_wronskian_right (a b : k[X]) : divRadical b ∣ wronskian a b := by
   rw [← wronskian_neg_eq, dvd_neg]
   exact divRadical_dvd_wronskian_left _ _
-
