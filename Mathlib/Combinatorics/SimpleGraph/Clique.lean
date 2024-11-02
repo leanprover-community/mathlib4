@@ -598,10 +598,8 @@ lemma cliqueNum_attained : G.cliqueNum ∈ {n | ∃ s, G.IsNClique n s} :=
 lemma maximumClique_card_eq_cliqueNum (s : Finset α) (sm : G.IsMaximumClique s) :
     #s = G.cliqueNum := by
   obtain ⟨sc, sm⟩ := sm
-  refine eq_of_le_of_not_lt (G.clique_card_le_cliqueNum _ sc) ?_
-  obtain ⟨s, sclique, scn⟩ := G.cliqueNum_attained
-  rw [← scn]
-  exact LE.le.not_lt (sm s sclique)
+  obtain ⟨t, tc, tcard⟩ := G.cliqueNum_attained
+  exact eq_of_le_of_not_lt (G.clique_card_le_cliqueNum s sc) (by simp [← tcard, sm t tc])
 
 lemma maximumClique_exists : ∃ (s : Finset α), G.IsMaximumClique s := by
   have ⟨s, hs⟩ := G.cliqueNum_attained
