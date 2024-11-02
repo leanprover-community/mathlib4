@@ -33,13 +33,12 @@ One can also deduce similar result via `charP_of_injective_ringHom` and
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- For a commutative semiring `R` and a `R`-module `M`, if `M` contains an
-  element `x` that can eliminate `r` in `r • x = 0` (finding such element usually
+  element `x` that can deduce `r = 0` given `r • x = 0` (finding such element usually
   depends on specific `•`), then the characteristic of `R` is equal to the
   characteristic of the `R`-linear endomorphisms of `M`.-/
 theorem CharP_if {p : ℕ} [hchar : CharP R p]
     (hreduction : ∃ x : M, ∀ r : R, r • x = 0 → r = 0) : CharP (M →ₗ[R] M) p where
-  cast_eq_zero_iff' := by
-    intro n
+  cast_eq_zero_iff' n := by
     have exact : (n : M →ₗ[R] M) = (n : R) • 1 := by
       simp only [Nat.cast_smul_eq_nsmul, nsmul_eq_mul, mul_one]
     rw [exact, LinearMap.ext_iff, ← hchar.1]
@@ -53,8 +52,7 @@ instance {D : Type*} [DivisionRing D] {p : ℕ} [CharP D p] :
     charP_of_injective_ringHom (RingHom.injective
       (Algebra.lmul ((Subring.center D)) D).toRingHom) p
 
-instance {D : Type*} [DivisionRing D] {p : ℕ} [hchar : ExpChar D p] :
+instance {D : Type*} [DivisionRing D] {p : ℕ} [ExpChar D p] :
   ExpChar (D →ₗ[Subring.center D] D) p :=
-    @expChar_of_injective_algebraMap _ _ _ _ _
-      (NoZeroSMulDivisors.algebraMap_injective
-        (Subring.center D) (D →ₗ[Subring.center D] D)) p (ExpChar.center_expChar_iff.1 hchar)
+    expChar_of_injective_ringHom (RingHom.injective
+      (Algebra.lmul ((Subring.center D)) D).toRingHom) p

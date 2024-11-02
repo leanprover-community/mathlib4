@@ -16,8 +16,14 @@ the noncommutative division algebra `D` with center `k`.
 
 ## Main Results
 
-- `Jacobson_Noether` : Let `D` be a noncommutative division algebra with center `k`.
-  If `D` is algebraic over `k`, then there exists an element of `D \ k` which is separable over `k`.
+- `exists_separable_mem_of_not_central` : (Jacobson-Noether theorem) For a
+  non-commutative finite dimensional division algebra `D` (with base ring
+  being its center `k`), if `k ≠ D`, then there exist an element `x` of
+  `D \ k` that is separable over its center.
+- `exists_separable_mem_of_not_central'` : (Jacobson-Noether theorem) For a
+  non-commutative finite dimensional division algebra `D` (with base ring
+  being a field `L`), if the center of `D` over `L` is `L` and `L ≠ D`,
+  then there exist an element `x` of `D \ L` that is separable over `L`.
 
 ## Notations
 
@@ -25,6 +31,13 @@ the noncommutative division algebra `D` with center `k`.
 - `k` is the center of `D`
 
 ## Implementation Notes
+
+Mathematically, `exists_separable_mem_of_not_central` and `exists_separable_mem_of_not_central'`
+are equivalent.
+
+The difference however, is that the former takes `D` as the only variable
+and fixing `D` would forces `k`. Whereas the later takes `D` and `L` as
+separate variables constrained by certain relations.
 
 ## Reference
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
@@ -107,13 +120,14 @@ lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
   rw [((Nat.sub_eq_iff_eq_add hn).1 rfl), pow_add, inter, mul_zero]
 
 variable (D) in
-/-- For a non-commutative finite dimensional division algebra D (with base ring being its center),
-  there exist an element `x` that is separable over its center-/
-theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
+/-- Jacobson-Noether theorem: For a non-commutative finite dimensional
+  division algebra `D` (with base ring being its center `k`), if `k ≠ D`, then
+  there exist an element `x` of `D \ k` that is separable over its center.-/
+theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
     ∃ x : D, x ∉ k ∧ IsSeparable k x := by
   obtain ⟨p, hp⟩ := ExpChar.exists D
   by_contra! insep
-  have hinsep : ∀ x : D, IsSeparable k x → x ∈ k :=
+  replace insep : ∀ x : D, IsSeparable k x → x ∈ k :=
     fun x h ↦ Classical.byContradiction fun hx ↦ insep x hx h
   -- The element `a` below is in `D` but not in `k`.
   obtain ⟨a, ha⟩ := not_forall.mp <| mt (Subring.eq_top_iff' k).mpr H
@@ -125,41 +139,40 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
     show a * ha.choose - ha.choose * a ≠ 0
     simpa only [ne_eq, sub_eq_zero] using Ne.symm ha.choose_spec
   -- We find a maximum natural number `n` such that `(δ a) ^ n b ≠ 0`.
-  obtain ⟨n, hn, hb⟩ : ∃ n > 0, ((δ a) ^ n) b ≠ 0 ∧ ((δ a) ^ (n + 1)) b = 0 := by
-    obtain ⟨m, -, hm2⟩ := exist_pow_eq_zero_of_le p ha hinsep
-    have exist : ∃ n > 0, ((δ a) ^ (n + 1)) b = 0 := by
-      refine ⟨(p ^ m), ⟨expChar_pow_pos D p m, by rw [hm2 (p ^ m + 1) (by omega)]; rfl⟩⟩
+  obtain ⟨n, hn, hb⟩ : ∃ n, (0 < n) ∧ ((δ a) ^ n) b ≠ 0 ∧ ((δ a) ^ (n + 1)) b = 0 := by
+    obtain ⟨m, -, hm2⟩ := exist_pow_eq_zero_of_le p ha insep
+    have h_exist : ∃ n > 0, ((δ a) ^ (n + 1)) b = 0 := ⟨(p ^ m),
+      ⟨expChar_pow_pos D p m, by rw [hm2 (p ^ m + 1) (by omega)]; rfl⟩⟩
     classical
-    refine ⟨Nat.find exist, ⟨(Nat.find_spec exist).1, ?_, (Nat.find_spec exist).2⟩⟩
-    set t := (Nat.find exist - 1 : ℕ) with ht
-    by_cases choice : 0 < t
-    · have := @Nat.find_min (H := exist) _ _ t ?_
-      · exact (@Nat.sub_add_cancel (Nat.find exist) 1 (by omega) ▸ ht ▸ not_and.1 this) choice
-      · exact Nat.sub_one_lt <| ne_of_gt (Nat.find_spec exist).1
-    · suffices h_find: Nat.find exist = 1 by
+    refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩
+    set t := (Nat.find h_exist - 1 : ℕ) with ht
+    by_cases h_pos : 0 < t
+    · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by omega)) h_pos
+      omega
+    · suffices h_find: Nat.find h_exist = 1 by
         rwa [h_find, pow_one]
-      rw [not_lt, Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at choice
-      linarith [(Nat.find_spec exist).1]
-    -- We define `c` to be the value that we proved above to be non-zero.
+      rw [not_lt, Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at h_pos
+      linarith [(Nat.find_spec h_exist).1]
+  -- We define `c` to be the value that we proved above to be non-zero.
   set c := ((δ a) ^ n) b with hc_def
   letI : Invertible c := ⟨c⁻¹, inv_mul_cancel₀ (hb.1), mul_inv_cancel₀ (hb.1)⟩
-  -- We prove that `c` is commute with `a`.
-  have hc : c * a = a * c := by
-    symm; apply eq_of_sub_eq_zero
+  -- We prove that `c` commutes with `a`.
+  have hc : a * c = c * a := by
+    apply eq_of_sub_eq_zero
     rw [← mulLeft_apply (R := k), ← mulRight_apply (R := k),
       ← δ_def, δ_iterate_succ a b n, hb.2]
   -- We now make some computation to obtain the final equation.
   set d := c⁻¹ * a * ((δ a) ^ (n - 1)) b with hd_def
   have hc': c⁻¹ * a = a * c⁻¹ := by
     apply_fun (c⁻¹ * · * c⁻¹) at hc
-    rw [← mul_assoc, inv_mul_cancel₀ hb.1, one_mul, mul_assoc, mul_assoc,
-      mul_inv_cancel₀ hb.1, mul_one] at hc
-    exact hc.symm
+    rw [mul_assoc, mul_assoc, mul_inv_cancel₀ hb.1, mul_one, ← mul_assoc,
+      inv_mul_cancel₀ hb.1, one_mul] at hc
+    exact hc
   have c_eq : a * ((δ a) ^ (n - 1)) b - ((δ a) ^ (n - 1)) b * a = c := by
     rw [hc_def, ← Nat.sub_add_cancel hn, ← δ_iterate_succ, δ_def]; rfl
   have eq1 : c⁻¹ * a * ((δ a)^ (n - 1)) b - c⁻¹ * ((δ a) ^ (n - 1)) b * a = 1 := by
     simp_rw [mul_assoc, (mul_sub_left_distrib c⁻¹ _ _).symm, c_eq, inv_mul_cancel_of_invertible]
-  -- We show that `a` is commute with `d`.
+  -- We show that `a` commutes with `d`.
   have deq : a * d - d * a = a := by
     nth_rw 3 [← mul_one a]
     rw [hd_def, ← eq1, mul_sub, mul_assoc _ _ a, sub_right_inj, hc',
@@ -167,7 +180,7 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
   -- This then derives a contradiction.
   apply_fun (a⁻¹ * · ) at deq
   rw [mul_sub, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul, ← mul_assoc, sub_eq_iff_eq_add] at deq
-  obtain ⟨r, hr⟩ := (exists_pow_mem_center_of_inseparable p d hinsep)
+  obtain ⟨r, hr⟩ := (exists_pow_mem_center_of_inseparable p d insep)
   apply_fun (· ^ (p ^ r)) at deq
   rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _) , one_pow,
     ← DivisionSemiring.conj_pow ha₀, ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
@@ -175,7 +188,11 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
   exact one_ne_zero deq
 
 open Subring Algebra in
-theorem Jacobson_Noether' {L D : Type*} [Field L] [DivisionRing D]
+/-- Jacobson-Noether theorem: For a non-commutative finite dimensional
+  division algebra `D` (with base ring being a field `L`), if the center of
+  `D` over `L` is `L` and `L ≠ D`, then there exist an element `x` of `D \ L`
+  that is separable over `L`.-/
+theorem exists_separable_mem_of_not_central' {L D : Type*} [Field L] [DivisionRing D]
     [Algebra L D] [Algebra.IsAlgebraic L D]
     (hcenter : Subalgebra.center L D = ⊥) (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
     ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
@@ -191,7 +208,7 @@ theorem Jacobson_Noether' {L D : Type*} [Field L] [DivisionRing D]
     congr
     exact (equiv.apply_symm_apply x).symm
   haveI : Algebra.IsAlgebraic (center D) D := .tower_top (K := L) _
-  obtain ⟨x, hxd, hx⟩ := Jacobson_Noether D ntrivial
+  obtain ⟨x, hxd, hx⟩ := exists_separable_mem_of_not_central D ntrivial
   refine ⟨x, ⟨by rwa [← Subalgebra.center_toSubring L, hcenter] at hxd, IsSeparable.tower_top _ hx⟩⟩
 
 end JacobsonNoether
