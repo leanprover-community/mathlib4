@@ -5,9 +5,11 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Perm.Subperm
 import Mathlib.Data.Set.List
 import Mathlib.Order.Hom.Basic
+import Mathlib.Data.List.Perm.Lattice
+import Mathlib.Data.List.Perm.Basic
 
 /-!
 # Multisets
@@ -538,6 +540,9 @@ theorem cons_le_of_not_mem (hs : a ∉ s) : a ::ₘ s ≤ t ↔ a ∈ t ∧ s �
 @[simp]
 theorem singleton_ne_zero (a : α) : ({a} : Multiset α) ≠ 0 :=
   ne_of_gt (lt_cons_self _ _)
+
+@[simp]
+theorem zero_ne_singleton (a : α) : 0 ≠ ({a} : Multiset α) := singleton_ne_zero _ |>.symm
 
 @[simp]
 theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=

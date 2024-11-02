@@ -262,15 +262,8 @@ variable [AddCommMonoid M'] [AddCommMonoid M''] [Module R M'] [Module R M'']
 section congr
 
 /-- Apply a linear equivalence on the arguments of a bilinear form. -/
-def congr (e : M ≃ₗ[R] M') : BilinForm R M ≃ₗ[R] BilinForm R M' where
-  toFun B := B.comp e.symm e.symm
-  invFun B := B.comp e e
-  left_inv B := ext₂ fun x => by
-    simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, forall_const]
-  right_inv B := ext₂ fun x => by
-    simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply, forall_const]
-  map_add' _ _ := ext₂ fun _ _ => rfl
-  map_smul' _ _ := ext₂ fun _ _ => rfl
+def congr (e : M ≃ₗ[R] M') : BilinForm R M ≃ₗ[R] BilinForm R M' :=
+  LinearEquiv.congrRight (LinearEquiv.congrLeft _ _ e) ≪≫ₗ LinearEquiv.congrLeft _ _ e
 
 @[simp]
 theorem congr_apply (e : M ≃ₗ[R] M') (B : BilinForm R M) (x y : M') :
