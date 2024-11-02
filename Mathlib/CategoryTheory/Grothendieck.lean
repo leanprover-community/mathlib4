@@ -147,6 +147,10 @@ theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
   dsimp
   simp
 
+lemma eqToHom_eq {X Y : Grothendieck F} (hF : X = Y) :
+    eqToHom hF = { base := eqToHom (by subst hF; rfl), fiber := eqToHom (by subst hF; simp) } := by
+  subst hF
+  rfl
 section
 
 variable (F)

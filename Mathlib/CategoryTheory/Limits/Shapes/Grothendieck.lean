@@ -24,22 +24,13 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
+namespace Limits
+
 variable {C : Type u₁} [Category.{v₁} C]
 variable {F : C ⥤ Cat}
 variable {H : Type u₂} [Category.{v₂} H]
 variable (G : Grothendieck F ⥤ H)
 
-lemma Grothendieck.coherence {X Y : Grothendieck F} (hF : X = Y) :
-    eqToHom hF = { base := eqToHom (by subst hF; rfl), fiber := eqToHom (by subst hF; simp) } := by
-  subst hF
-  rfl
-
-namespace Limits
-
-lemma colimit.ι_eq_eqToHom_comp_ι (F : C ⥤ H) [HasColimit F] {c c' : C} (hc : c = c') :
-    colimit.ι F c = eqToHom (by subst hc; rfl) ≫ colimit.ι F c' := by
-  subst hc
-  simp
 
 noncomputable section
 
@@ -62,9 +53,9 @@ def fiberwiseColimit : C ⥤ H where
     simp only [Functor.comp_obj, Grothendieck.ιNatTrans, Grothendieck.ι_obj, ι_colimMap_assoc,
       NatTrans.comp_app, whiskerRight_app, Functor.associator_hom_app, Category.comp_id,
       colimit.ι_pre]
-    conv_rhs => rw [colimit.ι_eq_eqToHom_comp_ι (Grothendieck.ι F X ⋙ G)
-      (c' := (F.map (𝟙 X)).obj d) (by simp)]
-    rw [← eqToHom_map G (by simp), Grothendieck.coherence]
+    conv_rhs => rw [← colimit.eqToHom_comp_ι (Grothendieck.ι F X ⋙ G)
+      (j' := (F.map (𝟙 X)).obj d) (by simp)]
+    rw [← eqToHom_map G (by simp), Grothendieck.eqToHom_eq]
     rfl
   map_comp {X Y Z} f g := by
     ext d
@@ -72,9 +63,9 @@ def fiberwiseColimit : C ⥤ H where
       whiskerRight_app, Functor.associator_hom_app, Category.comp_id, colimit.ι_pre, Category.assoc,
       colimit.ι_pre_assoc]
     rw [← Category.assoc, ← G.map_comp]
-    conv_rhs => rw [colimit.ι_eq_eqToHom_comp_ι (Grothendieck.ι F Z ⋙ G)
-      (c' := (F.map (f ≫ g)).obj d) (by simp)]
-    rw [← Category.assoc, ← eqToHom_map G (by simp), ← G.map_comp, Grothendieck.coherence]
+    conv_rhs => rw [← colimit.eqToHom_comp_ι (Grothendieck.ι F Z ⋙ G)
+      (j' := (F.map (f ≫ g)).obj d) (by simp)]
+    rw [← Category.assoc, ← eqToHom_map G (by simp), ← G.map_comp, Grothendieck.eqToHom_eq]
     congr 2
     fapply Grothendieck.ext
     · simp only [Cat.comp_obj, eqToHom_refl, Category.assoc, Grothendieck.comp_base,
