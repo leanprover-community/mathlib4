@@ -3,7 +3,7 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Lean.Data.Format
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # `Ineq` datatype
@@ -13,7 +13,7 @@ The type `Ineq` is one of the fundamental objects manipulated by the `linarith` 
 future, also the `linear_combination` tactic).
 -/
 
-open Lean
+open Lean Elab Tactic Meta
 
 namespace Linarith
 
@@ -58,5 +58,46 @@ instance : ToString Ineq := ⟨toString⟩
 instance : ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
 
 end Ineq
+
+/-! ### Parsing inequalities -/
+
+/--
+`getRelSides e` returns the left and right hand sides of `e` if `e` is a comparison,
+and fails otherwise.
+This function is more naturally in the `Option` monad, but it is convenient to put in `MetaM`
+for compositionality.
+ -/
+def getRelSides (e : Expr) : MetaM (Expr × Expr) := do
+  let e ← instantiateMVars e
+  match e.getAppFnArgs with
+  | (``LT.lt, #[_, _, a, b]) => return (a, b)
+  | (``LE.le, #[_, _, a, b]) => return (a, b)
+  | (``Eq, #[_, a, b]) => return (a, b)
+  | (``GE.ge, #[_, _, a, b]) => return (a, b)
+  | (``GT.gt, #[_, _, a, b]) => return (a, b)
+  | _ => throwError "Not a comparison (getRelSides) : {e}"
+
+/-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
+def leftOfIneqProof (prf : Expr) : MetaM Expr := do
+  let (t, _) ← getRelSides (← inferType prf)
+  return t
+
+/-- If `prf` is a proof of `t R s`, `typeOfIneqProof prf` returns the type of `t`. -/
+def typeOfIneqProof (prf : Expr) : MetaM Expr := do
+  inferType (← leftOfIneqProof prf)
+
+/--
+`parseCompAndExpr e` checks if `e` is of the form `t < 0`, `t ≤ 0`, or `t = 0`.
+If it is, it returns the comparison along with `t`.
+-/
+def parseCompAndExpr (e : Expr) : MetaM (Ineq × Expr) := do
+  let e ← instantiateMVars e
+  match e.getAppFnArgs with
+  | (``LT.lt, #[_, _, e, z]) => if z.zero? then return (Ineq.lt, e) else throwNotZero z
+  | (``LE.le, #[_, _, e, z]) => if z.zero? then return (Ineq.le, e) else throwNotZero z
+  | (``Eq, #[_, e, z]) => if z.zero? then return (Ineq.eq, e) else throwNotZero z
+  | _ => throwError "invalid comparison: {e}"
+  where /-- helper function for error message -/
+  throwNotZero (z : Expr) := throwError "invalid comparison, rhs not zero: {z}"
 
 end Linarith
