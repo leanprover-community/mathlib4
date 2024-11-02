@@ -163,9 +163,9 @@ theorem le_chainSup {c : Set (PartialRefinement u s p)} (hc : IsChain (· ≤ ·
 
 /-- If `s` is a closed set, `v` is a partial refinement, and `i` is an index such that
 `i ∉ v.carrier`, then there exists a partial refinement that is strictly greater than `v`. -/
-theorem exists_gt [NormalSpace X] (v : PartialRefinement u s (fun _ => true)) (hs : IsClosed s)
+theorem exists_gt [NormalSpace X] (v : PartialRefinement u s (fun _ => True)) (hs : IsClosed s)
     (i : ι) (hi : i ∉ v.carrier) :
-    ∃ v' : PartialRefinement u s (fun _ => true), v < v' := by
+    ∃ v' : PartialRefinement u s (fun _ => True), v < v' := by
   have I : (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) ⊆ v i := by
     simp only [subset_def, mem_inter_iff, mem_iInter, and_imp]
     intro x hxs H
@@ -190,7 +190,7 @@ theorem exists_gt [NormalSpace X] (v : PartialRefinement u s (fun _ => true)) (h
     · rwa [update_same, ← v.apply_eq hi]
     · rw [update_noteq (ne_of_mem_of_not_mem hj hi)]
       exact v.closure_subset hj
-  · exact fun _ => rfl
+  · exact fun _ => trivial
   · intro j hj
     rw [mem_insert_iff, not_or] at hj
     rw [update_noteq hj.1, v.apply_eq hj.2]
@@ -214,9 +214,9 @@ corresponding original open set. -/
 theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpen (u i))
     (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsOpen (v i)) ∧ ∀ i, closure (v i) ⊆ u i := by
-  haveI : Nonempty (PartialRefinement u s (fun _ => true)) :=
+  haveI : Nonempty (PartialRefinement u s (fun _ => True)) :=
     ⟨⟨u, ∅, uo, us, False.elim, False.elim, fun _ => rfl⟩⟩
-  have : ∀ c : Set (PartialRefinement u s (fun _ => true)),
+  have : ∀ c : Set (PartialRefinement u s (fun _ => True)),
       IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
     fun c hc ne => ⟨.chainSup c hc ne uf us, fun v hv => PartialRefinement.le_chainSup _ _ _ _ hv⟩
   rcases zorn_le_nonempty this with ⟨v, hv⟩

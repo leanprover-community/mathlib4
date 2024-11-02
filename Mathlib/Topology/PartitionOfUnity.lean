@@ -436,9 +436,10 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop_t2space [LocallyCompactSpa
     (p : (X → ℝ) → Prop) (h01 : ∀ s t, IsClosed s → IsCompact t → Disjoint s t → ∃ f : C(X, ℝ),
     p f ∧ EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1)
     (hs : IsCompact s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
-    (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U := by
+    (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U ∧
+    ∀ i, HasCompactSupport (f i) := by
   rcases exists_subset_iUnion_closure_subset_t2space hs ho (fun x _ => hf.point_finite x) hU with
-    ⟨V, hsV, hVo, hVU, _⟩
+    ⟨V, hsV, hVo, hVU, hcp⟩
   have hVU' : ∀ i, V i ⊆ U i := fun i => Subset.trans subset_closure (hVU i)
   rcases exists_subset_iUnion_closure_subset_t2space hs hVo
     (fun x _ => (hf.subset hVU').point_finite x) hsV with ⟨W, hsW, hWo, hWV, hWc⟩
@@ -448,7 +449,8 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop_t2space [LocallyCompactSpa
   have hsupp : ∀ i, support (f i) ⊆ V i := fun i => support_subset_iff'.2 (hf0 i)
   refine ⟨⟨f, hf.subset fun i => Subset.trans (hsupp i) (hVU' i), fun i x => (hf01 i x).1,
       fun i x => (hf01 i x).2, fun x hx => ?_⟩,
-    hfp, fun i => Subset.trans (closure_mono (hsupp i)) (hVU i)⟩
+    hfp, fun i => Subset.trans (closure_mono (hsupp i)) (hVU i),
+    fun i => IsCompact.of_isClosed_subset (hcp i) isClosed_closure <| closure_mono (hsupp i)⟩
   rcases mem_iUnion.1 (hsW hx) with ⟨i, hi⟩
   exact ⟨i, ((hf1 i).mono subset_closure).eventuallyEq_of_mem ((hWo i).mem_nhds hi)⟩
 
@@ -456,9 +458,11 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop_t2space [LocallyCompactSpa
 closed set `s`, then there exists a `BumpCovering ι X s` that is subordinate to `U`. If `X` is a
 paracompact space, then the assumption `hf : LocallyFinite U` can be omitted, see
 `BumpCovering.exists_isSubordinate`. -/
-theorem exists_isSubordinate_of_locallyFinite_t2space [LocallyCompactSpace X] [T2Space X]
+theorem exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space [LocallyCompactSpace X]
+    [T2Space X]
     (hs : IsCompact s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
-    (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, f.IsSubordinate U :=
+    (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, f.IsSubordinate U ∧
+    ∀ i, HasCompactSupport (f i):=
   -- need to switch 0 and 1 in `exists_continuous_zero_one_of_isCompact`
   let ⟨f, _, hfU⟩ :=
     exists_isSubordinate_of_locallyFinite_of_prop_t2space (fun _ => True)
@@ -623,8 +627,11 @@ theorem exists_isSubordinate [NormalSpace X] [ParacompactSpace X] (hs : IsClosed
 compact set `s`, then there exists a `PartitionOfUnity ι X s` that is subordinate to `U`. -/
 theorem exists_isSubordinate_of_locallyFinite_t2space [LocallyCompactSpace X] [T2Space X]
     (hs : IsCompact s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
-    (hU : s ⊆ ⋃ i, U i) : ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U :=
-  let ⟨f, hf⟩ := BumpCovering.exists_isSubordinate_of_locallyFinite_t2space hs U ho hf hU
-  ⟨f.toPartitionOfUnity, hf.toPartitionOfUnity⟩
+    (hU : s ⊆ ⋃ i, U i) : ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U ∧
+    ∀ i, HasCompactSupport (f i) :=
+  let ⟨f, hfsub, hfcp⟩ :=
+    BumpCovering.exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space hs U ho hf hU
+  ⟨f.toPartitionOfUnity, hfsub.toPartitionOfUnity, fun i => IsCompact.of_isClosed_subset (hfcp i)
+    isClosed_closure <| closure_mono (f.support_toPartitionOfUnity_subset i)⟩
 
 end PartitionOfUnity
