@@ -96,7 +96,7 @@ noncomputable def directLimitLeft :
 noncomputable def directLimitRight :
     M ⊗[R] DirectLimit G f ≃ₗ[R] DirectLimit (M ⊗[R] G ·) (M ◁ f) :=
   TensorProduct.comm _ _ _ ≪≫ₗ directLimitLeft f M ≪≫ₗ
-    Module.DirectLimit.congr (fun i ↦ TensorProduct.comm _ _ _)
+    Module.DirectLimit.congr (fun _ ↦ TensorProduct.comm _ _ _)
       (fun i j h ↦ TensorProduct.ext <| DFunLike.ext _ _ <| by aesop)
 
 @[simp] lemma directLimitRight_tmul_of {i : ι} (m : M) (g : G i) :

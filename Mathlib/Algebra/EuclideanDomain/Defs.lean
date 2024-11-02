@@ -6,6 +6,7 @@ Authors: Louis Carlin, Mario Carneiro
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Order.RelClasses
 
 /-!
 # Euclidean domains
@@ -99,6 +100,9 @@ variable {R : Type u} [EuclideanDomain R]
 local infixl:50 " ≺ " => EuclideanDomain.r
 
 local instance wellFoundedRelation : WellFoundedRelation R where
+  wf := r_wellFounded
+
+instance isWellFounded : IsWellFounded R (· ≺ ·) where
   wf := r_wellFounded
 
 -- see Note [lower instance priority]

@@ -122,7 +122,7 @@ variable {A : Type*} {e : A}
 lemma lt_of_le_of_ne' {a b : A} [PartialOrder A] :
     (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
 
-lemma pos_of_isNat {n : ℕ} [StrictOrderedSemiring A]
+lemma pos_of_isNat {n : ℕ} [OrderedSemiring A] [Nontrivial A]
     (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   apply Nat.cast_pos.2
@@ -184,11 +184,12 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
   | .isBool .. => failure
   | .isNat _ lit p =>
     if 0 < lit.natLit! then
-      let _a ← synthInstanceQ q(StrictOrderedSemiring $α)
+      let _a ← synthInstanceQ q(OrderedSemiring $α)
+      let _a ← synthInstanceQ q(Nontrivial $α)
       assumeInstancesCommute
       have p : Q(NormNum.IsNat $e $lit) := p
       haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
-      pure (.positive q(@pos_of_isNat $α _ _ _ $p $p'))
+      pure (.positive q(@pos_of_isNat $α _ _ _ _ $p $p'))
     else
       let _a ← synthInstanceQ q(OrderedSemiring $α)
       assumeInstancesCommute

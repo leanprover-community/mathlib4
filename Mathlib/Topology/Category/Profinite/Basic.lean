@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Calle Sönne
+Authors: Kevin Buzzard, Calle Sönne, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.Topology.Category.CompHaus.Basic
@@ -22,6 +22,9 @@ is called `Profinite.toTop`.
 
 A profinite type is defined to be a topological space which is
 compact, Hausdorff and totally disconnected.
+
+The category `Profinite` is defined using the structure `CompHausLike`. See the file
+`CompHausLike.Basic` for more information.
 
 ## TODO
 
@@ -137,7 +140,7 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `Profinite`, endowing a finite type with the
 discrete topology. -/
-@[simps]
+@[simps map_apply]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   obj A := Profinite.of A
   map f := ⟨f, by continuity⟩
@@ -153,6 +156,10 @@ def FintypeCat.toProfiniteFullyFaithful : toProfinite.FullyFaithful where
 instance : FintypeCat.toProfinite.Faithful := FintypeCat.toProfiniteFullyFaithful.faithful
 
 instance : FintypeCat.toProfinite.Full := FintypeCat.toProfiniteFullyFaithful.full
+
+instance (X : FintypeCat) : Fintype (FintypeCat.toProfinite.obj X) := inferInstanceAs (Fintype X)
+
+instance (X : FintypeCat) : Fintype (Profinite.of X) := inferInstanceAs (Fintype X)
 
 end DiscreteTopology
 
@@ -182,7 +189,7 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u 
   lift S :=
     (CompHaus.limitConeIsLimit.{v, u} (F ⋙ profiniteToCompHaus)).lift
       (profiniteToCompHaus.mapCone S)
-  uniq S m h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (profiniteToCompHaus.mapCone S) _ h
+  uniq S _ h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (profiniteToCompHaus.mapCone S) _ h
 
 /-- The adjunction between CompHaus.to_Profinite and Profinite.to_CompHaus -/
 def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
@@ -246,5 +253,8 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget Profinite).epi_of_epi_map
+
+/-- The pi-type of profinite spaces is profinite. -/
+def pi {α : Type u} (β : α → Profinite) : Profinite := .of (Π (a : α), β a)
 
 end Profinite

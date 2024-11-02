@@ -52,7 +52,7 @@ end CommSemiring
 
 section Semifield
 
-variable {m n : Type*} [Fintype m] [Fintype n] {K : Type u} [Semifield K]
+variable {m : Type*} [Fintype m] {K : Type u} [Semifield K]
 
 -- maybe try to relax the universe constraint
 theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
@@ -81,7 +81,7 @@ namespace LinearMap
 
 section Field
 
-variable {m n : Type*} [Fintype m] [Fintype n] {K : Type u} [Field K]
+variable {m : Type*} [Fintype m] {K : Type u} [Field K]
 
 theorem rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
     LinearMap.rank (toLin' (diagonal w)) = Fintype.card { i // w i ≠ 0 } := by

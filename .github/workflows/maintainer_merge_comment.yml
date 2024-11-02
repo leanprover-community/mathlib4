@@ -7,7 +7,7 @@ on:
 jobs:
   ping_zulip:
     name: Ping maintainers on Zulip
-    if: (github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'maintainer merge') || contains(toJSON(github.event.comment.body), '\nmaintainer merge'))
+    if: github.event.issue.pull_request && (startsWith(github.event.comment.body, 'maintainer merge') || contains(toJSON(github.event.comment.body), '\nmaintainer merge'))
     runs-on: ubuntu-latest
     steps:
       - name: Check whether user is part of mathlib-reviewers team
@@ -52,7 +52,7 @@ jobs:
           body: |
             🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}.
       - name: Add label to PR
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |

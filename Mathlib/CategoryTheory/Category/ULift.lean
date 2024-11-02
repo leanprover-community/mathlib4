@@ -50,20 +50,11 @@ def ULift.upFunctor : C ⥤ ULift.{u₂} C where
   obj := ULift.up
   map f := f
 
-#adaptation_note
-/--
-Prior to https://github.com/leanprover/lean4/pull/5225 and
-https://github.com/leanprover/lean4/pull/5226, the proofs for `map_id` and `map_comp`
-worked automatically via the `aesop` autoparam.
--/
-
 /-- The functorial version of `ULift.down`. -/
 @[simps]
 def ULift.downFunctor : ULift.{u₂} C ⥤ C where
   obj := ULift.down
   map f := f
-  map_id _ := rfl
-  map_comp _ _ := rfl
 
 /-- The categorical equivalence between `C` and `ULift C`. -/
 @[simps]
@@ -75,12 +66,12 @@ def ULift.equivalence : C ≌ ULift.{u₂} C where
       inv := 𝟙 _ }
   counitIso :=
     { hom :=
-        { app := fun X => 𝟙 _
+        { app := fun _ => 𝟙 _
           naturality := fun X Y f => by
             change f ≫ 𝟙 _ = 𝟙 _ ≫ f
             simp }
       inv :=
-        { app := fun X => 𝟙 _
+        { app := fun _ => 𝟙 _
           naturality := fun X Y f => by
             change f ≫ 𝟙 _ = 𝟙 _ ≫ f
             simp }
@@ -127,7 +118,7 @@ theorem objUp_objDown {C} (A : ULiftHom C) : ULiftHom.objUp A.objDown = A :=
 
 instance ULiftHom.category : Category.{max v₂ v₁} (ULiftHom.{v₂} C) where
   Hom A B := ULift.{v₂} <| A.objDown ⟶ B.objDown
-  id A := ⟨𝟙 _⟩
+  id _ := ⟨𝟙 _⟩
   comp f g := ⟨f.down ≫ g.down⟩
 
 /-- One half of the quivalence between `C` and `ULiftHom C`. -/
@@ -146,8 +137,8 @@ def ULiftHom.down : ULiftHom C ⥤ C where
 def ULiftHom.equiv : C ≌ ULiftHom C where
   functor := ULiftHom.up
   inverse := ULiftHom.down
-  unitIso := NatIso.ofComponents fun A => eqToIso rfl
-  counitIso := NatIso.ofComponents fun A => eqToIso rfl
+  unitIso := NatIso.ofComponents fun _ => eqToIso rfl
+  counitIso := NatIso.ofComponents fun _ => eqToIso rfl
 
 end ULiftHom
 /- Porting note: we want to keep around the category instance on `D`
@@ -168,7 +159,7 @@ def AsSmall.{w, v, u} (D : Type u) [Category.{v} D] := ULift.{max w v} D
 
 instance : SmallCategory (AsSmall.{w₁} C) where
   Hom X Y := ULift.{max w₁ u₁} <| X.down ⟶ Y.down
-  id X := ⟨𝟙 _⟩
+  id _ := ⟨𝟙 _⟩
   comp f g := ⟨f.down ≫ g.down⟩
 
 /-- One half of the equivalence between `C` and `AsSmall C`. -/
@@ -188,8 +179,8 @@ def AsSmall.down : AsSmall C ⥤ C where
 def AsSmall.equiv : C ≌ AsSmall C where
   functor := AsSmall.up
   inverse := AsSmall.down
-  unitIso := NatIso.ofComponents fun X => eqToIso rfl
-  counitIso := NatIso.ofComponents fun X => eqToIso <| ULift.ext _ _ rfl
+  unitIso := NatIso.ofComponents fun _ => eqToIso rfl
+  counitIso := NatIso.ofComponents fun _ => eqToIso <| ULift.ext _ _ rfl
 
 instance [Inhabited C] : Inhabited (AsSmall C) :=
   ⟨⟨default⟩⟩

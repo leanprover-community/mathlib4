@@ -123,6 +123,9 @@ instance : InvolutiveInv ℝ≥0∞ where
 
 theorem inv_ne_top : a⁻¹ ≠ ∞ ↔ a ≠ 0 := by simp
 
+@[aesop (rule_sets := [finiteness]) safe apply]
+protected alias ⟨_, Finiteness.inv_ne_top⟩ := ENNReal.inv_ne_top
+
 @[simp]
 theorem inv_lt_top {x : ℝ≥0∞} : x⁻¹ < ∞ ↔ 0 < x := by
   simp only [lt_top_iff_ne_top, inv_ne_top, pos_iff_ne_zero]
@@ -438,13 +441,32 @@ protected theorem half_lt_self (hz : a ≠ 0) (ht : a ≠ ∞) : a / 2 < a := by
 protected theorem half_le_self : a / 2 ≤ a :=
   le_add_self.trans_eq <| ENNReal.add_halves _
 
-theorem sub_half (h : a ≠ ∞) : a - a / 2 = a / 2 := by
-  lift a to ℝ≥0 using h
-  exact sub_eq_of_add_eq (mul_ne_top coe_ne_top <| by simp) (ENNReal.add_halves a)
+theorem sub_half (h : a ≠ ∞) : a - a / 2 = a / 2 := ENNReal.sub_eq_of_eq_add' h a.add_halves.symm
 
 @[simp]
 theorem one_sub_inv_two : (1 : ℝ≥0∞) - 2⁻¹ = 2⁻¹ := by
   simpa only [div_eq_mul_inv, one_mul] using sub_half one_ne_top
+
+private lemma exists_lt_mul_left {a b c : ℝ≥0∞} (hc : c < a * b) : ∃ a' < a, c < a' * b := by
+  obtain ⟨a', hc, ha'⟩ := exists_between (ENNReal.div_lt_of_lt_mul hc)
+  exact ⟨_, ha', (ENNReal.div_lt_iff (.inl <| by rintro rfl; simp at *)
+    (.inr <| by rintro rfl; simp at *)).1 hc⟩
+
+private lemma exists_lt_mul_right {a b c : ℝ≥0∞} (hc : c < a * b) : ∃ b' < b, c < a * b' := by
+  simp_rw [mul_comm a] at hc ⊢; exact exists_lt_mul_left hc
+
+lemma mul_le_of_forall_lt {a b c : ℝ≥0∞} (h : ∀ a' < a, ∀ b' < b, a' * b' ≤ c) : a * b ≤ c := by
+  refine le_of_forall_ge_of_dense fun d hd ↦ ?_
+  obtain ⟨a', ha', hd⟩ := exists_lt_mul_left hd
+  obtain ⟨b', hb', hd⟩ := exists_lt_mul_right hd
+  exact le_trans hd.le <| h _ ha' _ hb'
+
+lemma le_mul_of_forall_lt {a b c : ℝ≥0∞} (h₁ : a ≠ 0 ∨ b ≠ ∞) (h₂ : a ≠ ∞ ∨ b ≠ 0)
+    (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') : c ≤ a * b := by
+  rw [← ENNReal.inv_le_inv, ENNReal.mul_inv h₁ h₂]
+  exact mul_le_of_forall_lt fun a' ha' b' hb' ↦ ENNReal.le_inv_iff_le_inv.1 <|
+    (h _ (ENNReal.lt_inv_iff_lt_inv.1 ha') _ (ENNReal.lt_inv_iff_lt_inv.1 hb')).trans_eq
+    (ENNReal.mul_inv (Or.inr hb'.ne_top) (Or.inl ha'.ne_top)).symm
 
 /-- The birational order isomorphism between `ℝ≥0∞` and the unit interval `Set.Iic (1 : ℝ≥0∞)`. -/
 @[simps! apply_coe]
@@ -467,7 +489,7 @@ def orderIsoIicCoe (a : ℝ≥0) : Iic (a : ℝ≥0∞) ≃o Iic a :=
   OrderIso.symm
     { toFun := fun x => ⟨x, coe_le_coe.2 x.2⟩
       invFun := fun x => ⟨ENNReal.toNNReal x, coe_le_coe.1 <| coe_toNNReal_le_self.trans x.2⟩
-      left_inv := fun x => Subtype.ext <| toNNReal_coe _
+      left_inv := fun _ => Subtype.ext <| toNNReal_coe _
       right_inv := fun x => Subtype.ext <| coe_toNNReal (ne_top_of_le_ne_top coe_ne_top x.2)
       map_rel_iff' := fun {_ _} => by
         simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, coe_le_coe, Subtype.coe_le_coe] }
@@ -576,13 +598,13 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
 theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) : x ^ a ≤ x ^ b := by
   induction' a with a a <;> induction' b with b b
   · simp only [Int.ofNat_eq_coe, zpow_natCast]
-    exact pow_le_pow_right hx (Int.le_of_ofNat_le_ofNat h)
+    exact pow_right_mono₀ hx (Int.le_of_ofNat_le_ofNat h)
   · apply absurd h (not_le_of_gt _)
     exact lt_of_lt_of_le (Int.negSucc_lt_zero _) (Int.ofNat_nonneg _)
   · simp only [zpow_negSucc, Int.ofNat_eq_coe, zpow_natCast]
     refine (ENNReal.inv_le_one.2 ?_).trans ?_ <;> exact one_le_pow_of_one_le' hx _
   · simp only [zpow_negSucc, ENNReal.inv_le_inv]
-    apply pow_le_pow_right hx
+    apply pow_right_mono₀ hx
     simpa only [← Int.ofNat_le, neg_le_neg_iff, Int.ofNat_add, Int.ofNat_one, Int.negSucc_eq] using
       h
 
@@ -602,6 +624,259 @@ protected theorem zpow_neg {x : ℝ≥0∞} (x_ne_zero : x ≠ 0) (x_ne_top : x 
 protected theorem zpow_sub {x : ℝ≥0∞} (x_ne_zero : x ≠ 0) (x_ne_top : x ≠ ⊤) (m n : ℤ) :
     x ^ (m - n) = (x ^ m) * (x ^ n)⁻¹ := by
   rw [sub_eq_add_neg, ENNReal.zpow_add x_ne_zero x_ne_top, ENNReal.zpow_neg x_ne_zero x_ne_top n]
+
+variable {ι κ : Sort*} {f g : ι → ℝ≥0∞} {s : Set ℝ≥0∞} {a : ℝ≥0∞}
+
+@[simp] lemma iSup_eq_zero : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 := iSup_eq_bot
+
+@[simp] lemma iSup_zero_eq_zero : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
+
+lemma iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
+  (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
+
+@[simp] lemma iSup_lt_eq_self (a : ℝ≥0∞) : ⨆ b, ⨆ _ : b < a, b = a := by
+  refine le_antisymm (iSup₂_le fun b hb ↦ hb.le) ?_
+  refine le_of_forall_lt fun c hca ↦ ?_
+  obtain ⟨d, hcd, hdb⟩ := exists_between hca
+  exact hcd.trans_le <| le_iSup₂_of_le d hdb le_rfl
+
+lemma isUnit_iff : IsUnit a ↔ a ≠ 0 ∧ a ≠ ∞ := by
+  refine ⟨fun ha ↦ ⟨ha.ne_zero, ?_⟩,
+    fun ha ↦ ⟨⟨a, a⁻¹, ENNReal.mul_inv_cancel ha.1 ha.2, ENNReal.inv_mul_cancel ha.1 ha.2⟩, rfl⟩⟩
+  obtain ⟨u, rfl⟩ := ha
+  rintro hu
+  have := congr($hu * u⁻¹)
+  norm_cast at this
+  simp [mul_inv_cancel] at this
+
+/-- Left multiplication by a nonzero finite `a` as an order isomorphism. -/
+@[simps! toEquiv apply symm_apply]
+def mulLeftOrderIso (a  : ℝ≥0∞) (ha : IsUnit a) : ℝ≥0∞ ≃o ℝ≥0∞ where
+  toEquiv := ha.unit.mulLeft
+  map_rel_iff' := by simp [ENNReal.mul_le_mul_left, ha.ne_zero, (isUnit_iff.1 ha).2]
+
+/-- Right multiplication by a nonzero finite `a` as an order isomorphism. -/
+@[simps! toEquiv apply symm_apply]
+def mulRightOrderIso (a  : ℝ≥0∞) (ha : IsUnit a) : ℝ≥0∞ ≃o ℝ≥0∞ where
+  toEquiv := ha.unit.mulRight
+  map_rel_iff' := by simp [ENNReal.mul_le_mul_right, ha.ne_zero, (isUnit_iff.1 ha).2]
+
+lemma mul_iSup (a : ℝ≥0∞) (f : ι → ℝ≥0∞) : a * ⨆ i, f i = ⨆ i, a * f i := by
+  by_cases hf : ∀ i, f i = 0
+  · simp [hf]
+  obtain rfl | ha₀ := eq_or_ne a 0
+  · simp
+  obtain rfl | ha := eq_or_ne a ∞
+  · obtain ⟨i, hi⟩ := not_forall.1 hf
+    simpa [iSup_eq_zero.not.2 hf, eq_comm (a := ⊤)] using le_iSup_of_le i (top_mul hi).ge
+  · exact (mulLeftOrderIso _ <| isUnit_iff.2 ⟨ha₀, ha⟩).map_iSup _
+
+lemma iSup_mul (f : ι → ℝ≥0∞) (a : ℝ≥0∞) : (⨆ i, f i) * a = ⨆ i, f i * a := by
+  simp [mul_comm, mul_iSup]
+
+lemma mul_sSup {a : ℝ≥0∞} : a * sSup s = ⨆ b ∈ s, a * b := by
+  simp only [sSup_eq_iSup, mul_iSup]
+
+lemma sSup_mul {a : ℝ≥0∞} : sSup s * a = ⨆ b ∈ s, b * a := by
+  simp only [sSup_eq_iSup, iSup_mul]
+
+lemma iSup_div (f : ι → ℝ≥0∞) (a : ℝ≥0∞) : iSup f / a = ⨆ i, f i / a := iSup_mul ..
+lemma sSup_div (s : Set ℝ≥0∞) (a : ℝ≥0∞) : sSup s / a = ⨆ b ∈ s, b / a := sSup_mul ..
+
+/-- Very general version for distributivity of multiplication over an infimum.
+
+See `ENNReal.mul_iInf_of_ne` for the special case assuming `a ≠ 0` and `a ≠ ∞`, and
+`ENNReal.mul_iInf` for the special case assuming `Nonempty ι`. -/
+lemma mul_iInf' (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) (h₀ : a = 0 → Nonempty ι) :
+    a * ⨅ i, f i = ⨅ i, a * f i := by
+  obtain rfl | ha₀ := eq_or_ne a 0
+  · simp [h₀ rfl]
+  obtain rfl | ha := eq_or_ne a ∞
+  · obtain ⟨i, hi⟩ | hf := em (∃ i, f i = 0)
+    · rw [(iInf_eq_bot _).2, (iInf_eq_bot _).2, bot_eq_zero, mul_zero] <;>
+        exact fun _ _↦ ⟨i, by simpa [hi]⟩
+    · rw [top_mul (mt (hinfty rfl) hf), eq_comm, iInf_eq_top]
+      exact fun i ↦ top_mul fun hi ↦ hf ⟨i, hi⟩
+  · exact (mulLeftOrderIso _ <| isUnit_iff.2 ⟨ha₀, ha⟩).map_iInf _
+
+/-- Very general version for distributivity of multiplication over an infimum.
+
+See `ENNReal.iInf_mul_of_ne` for the special case assuming `a ≠ 0` and `a ≠ ∞`, and
+`ENNReal.iInf_mul` for the special case assuming `Nonempty ι`. -/
+lemma iInf_mul' (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) (h₀ : a = 0 → Nonempty ι) :
+    (⨅ i, f i) * a = ⨅ i, f i * a := by simpa only [mul_comm a] using mul_iInf' hinfty h₀
+
+/-- If `a ≠ 0` and `a ≠ ∞`, then right multiplication by `a` maps infimum to infimum.
+
+See `ENNReal.mul_iInf'` for the general case, and `ENNReal.iInf_mul` for another special case that
+assumes `Nonempty ι` but does not require `a ≠ 0`, and `ENNReal`. -/
+lemma mul_iInf_of_ne (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * ⨅ i, f i = ⨅ i, a * f i :=
+  mul_iInf' (by simp [ha]) (by simp [ha₀])
+
+/-- If `a ≠ 0` and `a ≠ ∞`, then right multiplication by `a` maps infimum to infimum.
+
+See `ENNReal.iInf_mul'` for the general case, and `ENNReal.iInf_mul` for another special case that
+assumes `Nonempty ι` but does not require `a ≠ 0`. -/
+lemma iInf_mul_of_ne (ha₀ : a ≠ 0) (ha : a ≠ ∞) : (⨅ i, f i) * a = ⨅ i, f i * a :=
+  iInf_mul' (by simp [ha]) (by simp [ha₀])
+
+/-- See `ENNReal.mul_iInf'` for the general case, and `ENNReal.mul_iInf_of_ne` for another special
+case that assumes `a ≠ 0` but does not require `Nonempty ι`. -/
+lemma mul_iInf [Nonempty ι] (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) :
+    a * ⨅ i, f i = ⨅ i, a * f i := mul_iInf' hinfty fun _ ↦ ‹Nonempty ι›
+
+/-- See `ENNReal.iInf_mul'` for the general case, and `ENNReal.iInf_mul_of_ne` for another special
+case that assumes `a ≠ 0` but does not require `Nonempty ι`. -/
+lemma iInf_mul [Nonempty ι] (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) :
+    (⨅ i, f i) * a = ⨅ i, f i * a := iInf_mul' hinfty fun _ ↦ ‹Nonempty ι›
+
+/-- Very general version for distributivity of division over an infimum.
+
+See `ENNReal.iInf_div_of_ne` for the special case assuming `a ≠ 0` and `a ≠ ∞`, and
+`ENNReal.iInf_div` for the special case assuming `Nonempty ι`. -/
+lemma iInf_div' (hinfty : a = 0 → ⨅ i, f i = 0 → ∃ i, f i = 0) (h₀ : a = ∞ → Nonempty ι) :
+    (⨅ i, f i) / a = ⨅ i, f i / a := iInf_mul' (by simpa) (by simpa)
+
+/-- If `a ≠ 0` and `a ≠ ∞`, then division by `a` maps infimum to infimum.
+
+See `ENNReal.iInf_div'` for the general case, and `ENNReal.iInf_div` for another special case that
+assumes `Nonempty ι` but does not require `a ≠ ∞`. -/
+lemma iInf_div_of_ne (ha₀ : a ≠ 0) (ha : a ≠ ∞) : (⨅ i, f i) / a = ⨅ i, f i / a :=
+  iInf_div' (by simp [ha₀]) (by simp [ha])
+
+/-- See `ENNReal.iInf_div'` for the general case, and `ENNReal.iInf_div_of_ne` for another special
+case that assumes `a ≠ ∞` but does not require `Nonempty ι`. -/
+lemma iInf_div [Nonempty ι] (hinfty : a = 0 → ⨅ i, f i = 0 → ∃ i, f i = 0) :
+    (⨅ i, f i) / a = ⨅ i, f i / a := iInf_div' hinfty fun _ ↦ ‹Nonempty ι›
+
+lemma inv_iInf (f : ι → ℝ≥0∞) : (⨅ i, f i)⁻¹ = ⨆ i, (f i)⁻¹ := OrderIso.invENNReal.map_iInf _
+lemma inv_iSup (f : ι → ℝ≥0∞) : (⨆ i, f i)⁻¹ = ⨅ i, (f i)⁻¹ := OrderIso.invENNReal.map_iSup _
+
+lemma inv_sInf (s : Set ℝ≥0∞) : (sInf s)⁻¹ = ⨆ a ∈ s, a⁻¹ := by simp [sInf_eq_iInf, inv_iInf]
+lemma inv_sSup (s : Set ℝ≥0∞) : (sSup s)⁻¹ = ⨅ a ∈ s, a⁻¹ := by simp [sSup_eq_iSup, inv_iSup]
+
+lemma le_iInf_mul {ι : Type*} (u v : ι → ℝ≥0∞) :
+    (⨅ i, u i) * ⨅ i, v i ≤ ⨅ i, u i * v i :=
+  le_iInf fun i ↦ mul_le_mul' (iInf_le u i) (iInf_le v i)
+
+lemma iSup_mul_le {ι : Type*} {u v : ι → ℝ≥0∞} :
+    ⨆ i, u i * v i ≤ (⨆ i, u i) * ⨆ i, v i :=
+  iSup_le fun i ↦ mul_le_mul' (le_iSup u i) (le_iSup v i)
+
+lemma add_iSup [Nonempty ι] (f : ι → ℝ≥0∞) : a + ⨆ i, f i = ⨆ i, a + f i := by
+  obtain rfl | ha := eq_or_ne a ∞
+  · simp
+  refine le_antisymm ?_ <| iSup_le fun i ↦ add_le_add_left (le_iSup ..) _
+  refine add_le_of_le_tsub_left_of_le (le_iSup_of_le (Classical.arbitrary _) le_self_add) ?_
+  exact iSup_le fun i ↦ ENNReal.le_sub_of_add_le_left ha <| le_iSup (a + f ·) i
+
+lemma iSup_add [Nonempty ι] (f : ι → ℝ≥0∞) : (⨆ i, f i) + a = ⨆ i, f i + a := by
+  simp [add_comm, add_iSup]
+
+lemma add_biSup' {p : ι → Prop} (h : ∃ i, p i) (f : ι → ℝ≥0∞) :
+    a + ⨆ i, ⨆ _ : p i, f i = ⨆ i, ⨆ _ : p i, a + f i := by
+  haveI : Nonempty {i // p i} := nonempty_subtype.2 h
+  simp only [iSup_subtype', add_iSup]
+
+lemma biSup_add' {p : ι → Prop} (h : ∃ i, p i) (f : ι → ℝ≥0∞) :
+    (⨆ i, ⨆ _ : p i, f i) + a = ⨆ i, ⨆ _ : p i, f i + a := by simp only [add_comm, add_biSup' h]
+
+lemma add_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) (f : ι → ℝ≥0∞) :
+    a + ⨆ i ∈ s, f i = ⨆ i ∈ s, a + f i := add_biSup' hs _
+
+lemma biSup_add {ι : Type*} {s : Set ι} (hs : s.Nonempty) (f : ι → ℝ≥0∞) :
+    (⨆ i ∈ s, f i) + a = ⨆ i ∈ s, f i + a := biSup_add' hs _
+
+lemma add_sSup (hs : s.Nonempty) : a + sSup s = ⨆ b ∈ s, a + b := by
+  rw [sSup_eq_iSup, add_biSup hs]
+
+lemma sSup_add (hs : s.Nonempty) : sSup s + a = ⨆ b ∈ s, b + a := by
+  rw [sSup_eq_iSup, biSup_add hs]
+
+lemma iSup_add_iSup_le [Nonempty ι] [Nonempty κ] {g : κ → ℝ≥0∞} (h : ∀ i j, f i + g j ≤ a) :
+    iSup f + iSup g ≤ a := by simp_rw [iSup_add, add_iSup]; exact iSup₂_le h
+
+lemma biSup_add_biSup_le' {p : ι → Prop} {q : κ → Prop} (hp : ∃ i, p i) (hq : ∃ j, q j)
+    {g : κ → ℝ≥0∞} (h : ∀ i, p i → ∀ j, q j → f i + g j ≤ a) :
+    (⨆ i, ⨆ _ : p i, f i) + ⨆ j, ⨆ _ : q j, g j ≤ a := by
+  simp_rw [biSup_add' hp, add_biSup' hq]
+  exact iSup₂_le fun i hi => iSup₂_le (h i hi)
+
+lemma biSup_add_biSup_le {ι κ : Type*} {s : Set ι} {t : Set κ} (hs : s.Nonempty) (ht : t.Nonempty)
+    {f : ι → ℝ≥0∞} {g : κ → ℝ≥0∞} {a : ℝ≥0∞} (h : ∀ i ∈ s, ∀ j ∈ t, f i + g j ≤ a) :
+    (⨆ i ∈ s, f i) + ⨆ j ∈ t, g j ≤ a := biSup_add_biSup_le' hs ht h
+
+lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSup g = ⨆ i, f i + g i := by
+  cases isEmpty_or_nonempty ι
+  · simp only [iSup_of_empty, bot_eq_zero, zero_add]
+  · refine le_antisymm ?_ (iSup_le fun a => add_le_add (le_iSup _ _) (le_iSup _ _))
+    refine iSup_add_iSup_le fun i j => ?_
+    rcases h i j with ⟨k, hk⟩
+    exact le_iSup_of_le k hk
+
+lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → ℝ≥0∞}
+    (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
+  iSup_add_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
+
+lemma finsetSum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
+    (hf : ∀ i j, ∃ k, ∀ a, f a i ≤ f a k ∧ f a j ≤ f a k) :
+    ∑ a ∈ s, ⨆ i, f a i = ⨆ i, ∑ a ∈ s, f a i := by
+  induction' s using Finset.cons_induction with a s ha ihs
+  · simp
+  simp_rw [Finset.sum_cons, ihs]
+  refine iSup_add_iSup fun i j ↦ (hf i j).imp fun k hk ↦ ?_
+  gcongr
+  exacts [(hk a).1, (hk _).2]
+
+lemma finsetSum_iSup_of_monotone {α ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {s : Finset α}
+    {f : α → ι → ℝ≥0∞} (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
+  finsetSum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
+
+@[deprecated (since := "2024-07-14")]
+alias finset_sum_iSup_nat := finsetSum_iSup_of_monotone
+
+lemma le_iInf_mul_iInf {g : κ → ℝ≥0∞} (hf : ∃ i, f i ≠ ∞) (hg : ∃ j, g j ≠ ∞)
+    (ha : ∀ i j, a ≤ f i * g j) : a ≤ (⨅ i, f i) * ⨅ j, g j := by
+  rw [← iInf_ne_top_subtype]
+  have := nonempty_subtype.2 hf
+  have := hg.nonempty
+  replace hg : ⨅ j, g j ≠ ∞ := by simpa using hg
+  rw [iInf_mul fun h ↦ (hg h).elim, le_iInf_iff]
+  rintro ⟨i, hi⟩
+  simpa [mul_iInf fun h ↦ (hi h).elim] using ha i
+
+lemma iInf_mul_iInf {f g : ι → ℝ≥0∞} (hf : ∃ i, f i ≠ ∞) (hg : ∃ j, g j ≠ ∞)
+    (h : ∀ i j, ∃ k, f k * g k ≤ f i * g j) : (⨅ i, f i) * ⨅ i, g i = ⨅ i, f i * g i := by
+  refine le_antisymm (le_iInf fun i ↦ mul_le_mul' (iInf_le ..) (iInf_le ..))
+    (le_iInf_mul_iInf hf hg fun i j ↦ ?_)
+  obtain ⟨k, hk⟩ := h i j
+  exact iInf_le_of_le k hk
+
+lemma smul_iSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (f : ι → ℝ≥0∞) (c : R) :
+    c • ⨆ i, f i = ⨆ i, c • f i := by
+  simp only [← smul_one_mul c (f _), ← smul_one_mul c (iSup _), ENNReal.mul_iSup]
+
+lemma smul_sSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (s : Set ℝ≥0∞) (c : R) :
+    c • sSup s = ⨆ a ∈ s, c • a := by
+  simp_rw [← smul_one_mul c (sSup s), ENNReal.mul_sSup, smul_one_mul]
+
+lemma sub_iSup [Nonempty ι] (ha : a ≠ ∞) : a - ⨆ i, f i = ⨅ i, a - f i := by
+  obtain ⟨i, hi⟩ | h := em (∃ i, a < f i)
+  · rw [tsub_eq_zero_iff_le.2 <| le_iSup_of_le _ hi.le, (iInf_eq_bot _).2, bot_eq_zero]
+    exact fun x hx ↦ ⟨i, by simpa [hi.le, tsub_eq_zero_of_le]⟩
+  simp_rw [not_exists, not_lt] at h
+  refine le_antisymm (le_iInf fun i ↦ tsub_le_tsub_left (le_iSup ..) _) <|
+    ENNReal.le_sub_of_add_le_left (ne_top_of_le_ne_top ha <| iSup_le h) <|
+    add_le_of_le_tsub_right_of_le (iInf_le_of_le (Classical.arbitrary _) tsub_le_self) <|
+    iSup_le fun i ↦ ?_
+  rw [← sub_sub_cancel ha (h _)]
+  exact tsub_le_tsub_left (iInf_le (a - f ·) i) _
+
+-- TODO: Prove the two one-side versions
+lemma exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠ 0) (hz : z ≠ 0) :
+    ∃ y' < y, ∃ z' < z, x < y' + z' := by
+  contrapose! h;
+  simpa using biSup_add_biSup_le' (by exact ⟨0, hy.bot_lt⟩) (by exact ⟨0, hz.bot_lt⟩) h
 
 end Inv
 end ENNReal
