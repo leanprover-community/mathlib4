@@ -644,7 +644,7 @@ def colimit (F : J ⥤ C) [HasColimit F] :=
 def colimit.ι (F : J ⥤ C) [HasColimit F] (j : J) : F.obj j ⟶ colimit F :=
   (colimit.cocone F).ι.app j
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem colimit.eqToHom_comp_ι (F : J ⥤ C) [HasColimit F] {j j' : J} (hj : j = j') :
     eqToHom (by subst hj; rfl) ≫ colimit.ι F j' = colimit.ι F j := by
   subst hj
