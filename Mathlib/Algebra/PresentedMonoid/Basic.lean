@@ -105,6 +105,10 @@ theorem closure_range_of (rels : FreeMonoid α → FreeMonoid α → Prop) :
   rename_i x y hx hy
   exact Submonoid.mul_mem _ hx hy
 
+@[to_additive]
+theorem surjective_mk {rels : FreeMonoid α → FreeMonoid α → Prop} :
+  Function.Surjective (mk rels) := fun x ↦ PresentedMonoid.inductionOn x fun a ↦ .intro a rfl
+
 section ToMonoid
 variable {α M : Type*} [Monoid M] (f : α → M)
 variable {rels : FreeMonoid α → FreeMonoid α → Prop}
