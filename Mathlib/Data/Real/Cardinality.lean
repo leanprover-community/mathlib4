@@ -200,6 +200,10 @@ theorem mk_real : #ℝ = 𝔠 := by
 theorem mk_univ_real : #(Set.univ : Set ℝ) = 𝔠 := by rw [mk_univ, mk_real]
 
 /-- **Non-Denumerability of the Continuum**: The reals are not countable. -/
+instance : Uncountable ℝ := by
+  rw [← aleph0_lt_mk_iff, mk_real]
+  exact aleph0_lt_continuum
+
 theorem not_countable_real : ¬(Set.univ : Set ℝ).Countable := by
   rw [← le_aleph0_iff_set_countable, not_le, mk_univ_real]
   apply cantor
