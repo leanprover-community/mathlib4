@@ -357,7 +357,7 @@ theorem isIntegral_leadingCoeff_smul [Algebra R S] (h : aeval x p = 0) :
 end
 
 lemma Polynomial.Monic.quotient_isIntegralElem_of_monic {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
-  (h : g ∈ I) :
+    (h : g ∈ I) :
     ((Ideal.Quotient.mk I).comp (algebraMap S S[X])).IsIntegralElem (Ideal.Quotient.mk I X) := by
   exact ⟨g, mon, by
   rw [← (Ideal.Quotient.eq_zero_iff_mem.mpr h), eval₂_eq_sum_range]
