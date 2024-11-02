@@ -603,7 +603,7 @@ lemma maximumClique_card_eq_cliqueNum (s : Finset α) (sm : G.IsMaximumClique s)
 
 lemma maximumClique_exists : ∃ (s : Finset α), G.IsMaximumClique s := by
   obtain ⟨s, snc⟩ := G.cliqueNum_attained
-  exact ⟨s, ⟨snc.clique, fun t ht => snc.card_eq.symm ▸ G.clique_card_le_cliqueNum t ht⟩⟩ 
+  exact ⟨s, ⟨snc.clique, fun t ht => snc.card_eq.symm ▸ G.clique_card_le_cliqueNum t ht⟩⟩
 
 variable [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {a b c : α} {s : Finset α}
 
