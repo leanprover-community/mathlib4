@@ -832,8 +832,7 @@ theorem eq_empty (x : ZFSet.{u}) : x = ∅ ↔ ∀ y : ZFSet.{u}, y ∉ x := by
 theorem eq_empty_or_nonempty (u : ZFSet) : u = ∅ ∨ u.Nonempty := by
   rw [eq_empty, ← not_exists]
   apply em'
--- ∀ (a₁ b₁ a₂ b₂ : PSet), a₁ ≈ a₂ → b₁ ≈ b₂ →
---(fun x1 x2 ↦ ⟦x1.insert x2⟧) a₁ b₁ = (fun x1 x2 ↦ ⟦x1.insert x2⟧) a₂ b₂
+
 /-- `Insert x y` is the set `{x} ∪ y` -/
 protected def Insert : ZFSet → ZFSet → ZFSet :=
   Quotient.map₂ (PSet.insert · ·)
