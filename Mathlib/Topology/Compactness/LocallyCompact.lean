@@ -185,8 +185,8 @@ theorem IsOpenQuotientMap.locallyCompactSpace [LocallyCompactSpace X] {f : X →
 
 /-- If `f` is a topology inducing map with a locally compact codomain and a locally closed range,
 then the domain of `f` is a locally compact space. -/
-theorem Inducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y} (hf : Inducing f)
-    (h : IsLocallyClosed (range f)) : LocallyCompactSpace X := by
+theorem IsInducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
+    (hf : IsInducing f) (h : IsLocallyClosed (range f)) : LocallyCompactSpace X := by
   rcases h with ⟨U, Z, hU, hZ, hUZ⟩
   have (x : X) : (𝓝 x).HasBasis (fun s ↦ (s ∈ 𝓝 (f x) ∧ IsCompact s) ∧ s ⊆ U)
       (fun s ↦ f ⁻¹' (s ∩ Z)) := by
@@ -198,23 +198,26 @@ theorem Inducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y} (hf :
   rw [hf.isCompact_preimage_iff]
   exacts [hs.inter_right hZ, hUZ ▸ by gcongr]
 
+@[deprecated (since := "2024-10-28")]
+alias Inducing.locallyCompactSpace := IsInducing.locallyCompactSpace
+
 protected theorem IsClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : IsClosedEmbedding f) : LocallyCompactSpace X :=
-  hf.toInducing.locallyCompactSpace hf.isClosed_range.isLocallyClosed
+  hf.isInducing.locallyCompactSpace hf.isClosed_range.isLocallyClosed
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.locallyCompactSpace := IsClosedEmbedding.locallyCompactSpace
 
 protected theorem IsOpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : IsOpenEmbedding f) : LocallyCompactSpace X :=
-  hf.toInducing.locallyCompactSpace hf.isOpen_range.isLocallyClosed
+  hf.isInducing.locallyCompactSpace hf.isOpen_range.isLocallyClosed
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.locallyCompactSpace := IsOpenEmbedding.locallyCompactSpace
 
 protected theorem IsLocallyClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     (hs : IsLocallyClosed s) : LocallyCompactSpace s :=
-  embedding_subtype_val.locallyCompactSpace <| by rwa [Subtype.range_val]
+  IsEmbedding.subtypeVal.locallyCompactSpace <| by rwa [Subtype.range_val]
 
 protected theorem IsClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     (hs : IsClosed s) : LocallyCompactSpace s :=

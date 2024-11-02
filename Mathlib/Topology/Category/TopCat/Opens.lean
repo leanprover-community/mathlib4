@@ -99,9 +99,7 @@ realising each open set as a topological space itself.
 -/
 def toTopCat (X : TopCat.{u}) : Opens X ⥤ TopCat where
   obj U := ⟨U, inferInstance⟩
-  map i :=
-    ⟨fun x => ⟨x.1, i.le x.2⟩,
-      (Embedding.continuous_iff embedding_subtype_val).2 continuous_induced_dom⟩
+  map i := ⟨fun x ↦ ⟨x.1, i.le x.2⟩, IsEmbedding.subtypeVal.continuous_iff.2 continuous_induced_dom⟩
 
 @[simp]
 theorem toTopCat_map (X : TopCat.{u}) {U V : Opens X} {f : U ⟶ V} {x} {h} :

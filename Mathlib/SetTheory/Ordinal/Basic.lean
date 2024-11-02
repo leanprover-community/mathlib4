@@ -724,9 +724,6 @@ theorem type_nat_lt : @type ℕ (· < ·) _ = ω :=
 theorem card_omega0 : card ω = ℵ₀ :=
   rfl
 
-@[deprecated (since := "2024-09-30")]
-alias card_omega := card_omega0
-
 @[simp]
 theorem lift_omega0 : lift ω = ω :=
   lift_lift _
@@ -1135,10 +1132,7 @@ theorem lt_ord {c o} : o < ord c ↔ o.card < c :=
 
 @[simp]
 theorem card_ord (c) : (ord c).card = c :=
-  Quotient.inductionOn c fun α => by
-    let ⟨r, _, e⟩ := ord_eq α
-    -- Porting note: cardinal.mk_def is now Cardinal.mk'_def, not sure why
-    simp only [mk'_def, e, card_type]
+  c.inductionOn fun α ↦ let ⟨r, _, e⟩ := ord_eq α; e ▸ card_type r
 
 theorem card_surjective : Function.Surjective card :=
   fun c ↦ ⟨_, card_ord c⟩
