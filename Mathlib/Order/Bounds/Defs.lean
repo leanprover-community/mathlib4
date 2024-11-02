@@ -55,5 +55,5 @@ def IsGLB (s : Set α) : α → Prop :=
   IsGreatest (lowerBounds s)
 
 /-- A set is cofinal when for every `x : α` there exists `y ∈ s` with `x ≤ y`. -/
-def Cofinal (s : Set α) : Prop :=
+def IsCofinal (s : Set α) : Prop :=
   ∀ x, ∃ y ∈ s, x ≤ y

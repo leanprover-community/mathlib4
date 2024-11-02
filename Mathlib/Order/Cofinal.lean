@@ -10,7 +10,7 @@ import Mathlib.Order.Bounds.Defs
 # Cofinal sets
 
 A set `s` in an ordered type `α` is cofinal when for every `a : α` there exists an element of `s`
-greater or equal to it. This file provides a basic API for the `Cofinal` predicate.
+greater or equal to it. This file provides a basic API for the `IsCofinal` predicate.
 
 For the cofinality of a set as a cardinal, see `Mathlib.SetTheory.Cardinal.Cofinality`.
 
@@ -24,17 +24,17 @@ variable {α : Type*}
 section LE
 variable [LE α]
 
-theorem cofinal_of_isEmpty [IsEmpty α] (s : Set α) : Cofinal s :=
+theorem isCofinal_of_isEmpty [IsEmpty α] (s : Set α) : IsCofinal s :=
   fun a ↦ isEmptyElim a
 
-theorem cofinal_empty_iff : Cofinal (∅ : Set α) ↔ IsEmpty α := by
+theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
   refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ cofinal_of_isEmpty _⟩
   simpa using h a
 
-theorem cofinal_top [OrderTop α] : Cofinal {(⊤ : α)} :=
+theorem isCofinal_top [OrderTop α] : IsCofinal {(⊤ : α)} :=
   fun _ ↦ ⟨⊤, Set.mem_singleton _, le_top⟩
 
-theorem cofinal_mono {s t : Set α} (h : s ⊆ t) (hs : Cofinal s) : Cofinal t := by
+theorem isCofinal_mono {s t : Set α} (h : s ⊆ t) (hs : IsCofinal s) : IsCofinal t := by
   intro a
   obtain ⟨b, hb, hb'⟩ := hs a
   exact ⟨b, h hb, hb'⟩
@@ -44,12 +44,12 @@ end LE
 section Preorder
 variable [Preorder α]
 
-theorem cofinal_univ : Cofinal (@Set.univ α) :=
+theorem isCofinal_univ : IsCofinal (@Set.univ α) :=
   fun a ↦ ⟨a, ⟨⟩, le_rfl⟩
 
 /-- A cofinal subset of a cofinal subset is cofinal. -/
-theorem cofinal_trans {s : Set α} {t : Set s} (hs : Cofinal s) (ht : Cofinal t) :
-    Cofinal (Subtype.val '' t) := by
+theorem IsCofinal.trans {s : Set α} {t : Set s} (hs : IsCofinal s) (ht : IsCofinal t) :
+    IsCofinal (Subtype.val '' t) := by
   intro a
   obtain ⟨b, hb, hb'⟩ := hs a
   obtain ⟨c, hc, hc'⟩ := ht ⟨b, hb⟩
@@ -60,15 +60,15 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α]
 
-theorem mem_cofinal_of_isMax {s : Set α} {a : α} (hs : Cofinal s) (ha : IsMax a) : a ∈ s := by
+theorem IsCofinal.isMax_mem {s : Set α} {a : α} (ha : IsMax a) (hs : IsCofinal s) : a ∈ s := by
   obtain ⟨b, hb, hb'⟩ := hs a
   rwa [ha.eq_of_ge hb'] at hb
 
-theorem top_mem_cofinal [OrderTop α] {s : Set α} (hs : Cofinal s) : ⊤ ∈ s :=
-  mem_cofinal_of_isMax hs isMax_top
+theorem IsCofinal.top_mem [OrderTop α] {s : Set α} (hs : Cofinal s) : ⊤ ∈ s :=
+  hs.mem_isMax isMax_top
 
 @[simp]
-theorem cofinal_iff_of_orderTop [OrderTop α] {s : Set α} : Cofinal s ↔ ⊤ ∈ s :=
+theorem isCofinal_iff_of_orderTop [OrderTop α] {s : Set α} : Cofinal s ↔ ⊤ ∈ s :=
   ⟨top_mem_cofinal, fun hs _ ↦ ⟨⊤, hs, le_top⟩⟩
 
 end PartialOrder
