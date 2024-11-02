@@ -109,54 +109,6 @@ def cmp : Linexp → Linexp → Ordering
 
 end Linexp
 
-/-! ### Inequalities -/
-
-/-- The three-element type `Ineq` is used to represent the strength of a comparison between
-terms. -/
-inductive Ineq : Type
-  | eq | le | lt
-deriving DecidableEq, Inhabited, Repr
-
-namespace Ineq
-
-/--
-`max R1 R2` computes the strength of the sum of two inequalities. If `t1 R1 0` and `t2 R2 0`,
-then `t1 + t2 (max R1 R2) 0`.
--/
-def max : Ineq → Ineq → Ineq
-  | lt, _ => lt
-  | _, lt => lt
-  | le, _ => le
-  | _, le => le
-  | eq, eq => eq
-
-/-- `Ineq` is ordered `eq < le < lt`. -/
-def cmp : Ineq → Ineq → Ordering
-  | eq, eq => Ordering.eq
-  | eq, _ => Ordering.lt
-  | le, le => Ordering.eq
-  | le, lt => Ordering.lt
-  | lt, lt => Ordering.eq
-  | _, _ => Ordering.gt
-
-/-- Prints an `Ineq` as the corresponding infix symbol. -/
-def toString : Ineq → String
-  | eq => "="
-  | le => "≤"
-  | lt => "<"
-
-/-- Finds the name of a multiplicative lemma corresponding to an inequality strength. -/
-def toConstMulName : Ineq → Name
-  | lt => ``mul_neg
-  | le => ``mul_nonpos
-  | eq => ``mul_eq
-
-instance : ToString Ineq := ⟨toString⟩
-
-instance : ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
-
-end Ineq
-
 /-! ### Comparisons with 0 -/
 
 /--
