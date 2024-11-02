@@ -22,7 +22,6 @@ open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDom
 
 variable {k : Type*} [Field k]
 
-
 theorem divRadical_dvd_derivative (a : k[X]) : divRadical a ∣ derivative a := by
   induction a using induction_on_coprime
   · case h0 =>
