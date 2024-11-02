@@ -319,6 +319,26 @@ lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
     simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
+theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
+    {r : {a // p a} → {a // p a} → Prop} :
+    (l.attachWith p h).Chain' r ↔ l.Chain' fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ := by
+  induction l with
+  | nil => rfl
+  | cons a l IH =>
+    rw [attachWith_cons, chain'_cons', chain'_cons', IH, and_congr_left]
+    simp_rw [head?_attachWith]
+    intros
+    constructor <;>
+    intro hc b (hb : _ = _)
+    · simp_rw [hb, Option.pbind_some] at hc
+      have hb' := h b (mem_cons_of_mem a (mem_of_mem_head? hb))
+      exact ⟨h a (mem_cons_self a l), hb', hc ⟨b, hb'⟩ rfl⟩
+    · cases l <;> aesop
+
+theorem chain'_attach {l : List α} {r : {a // a ∈ l} → {a // a ∈ l} → Prop} :
+    l.attach.Chain' r ↔ l.Chain' fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ :=
+  chain'_attachWith fun _ ↦ id
+
 /-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is an
 `r`-chain starting from `a` and ending on `b`.
 The converse of `relationReflTransGen_of_exists_chain`.

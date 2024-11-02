@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Data.Nat.Cast.WithTop
-import Mathlib.RingTheory.Prime
+import Mathlib.RingTheory.Ideal.Quotient.Basic
 import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Prime
 
 /-!
 # Eisenstein's criterion
