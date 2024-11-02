@@ -10,6 +10,7 @@ import Mathlib.Util.CompileInductive
 import Batteries.Tactic.Lint.Basic
 import Batteries.Data.List.Lemmas
 import Batteries.Data.RBMap.Basic
+import Batteries.Logic
 
 /-!
 ## Definitions on lists
@@ -486,6 +487,10 @@ theorem length_mapAccumr₂ :
   | _, [], [], _ => rfl
 
 end MapAccumr
+
+/-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
+def finRange (n : ℕ) : List (Fin n) :=
+  (range n).pmap Fin.mk fun _ => List.mem_range.1
 
 section Deprecated
 

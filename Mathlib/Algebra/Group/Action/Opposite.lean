@@ -3,7 +3,8 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Action.Faithful
+import Mathlib.Algebra.Group.Action.Pretransitive
 import Mathlib.Algebra.Group.Opposite
 
 /-!
@@ -27,7 +28,7 @@ With `open scoped RightActions`, this provides:
 
 assert_not_exists MonoidWithZero
 
-variable {R M N α : Type*}
+variable {M N α β : Type*}
 
 /-!
 ### Actions _on_ the opposite type
@@ -97,7 +98,7 @@ In lemma names this is still called `op_vadd`. -/
 scoped notation3:73 m:73 " <+ᵥ " r:74 => AddOpposite.op r +ᵥ m
 
 section examples
-variable {α β : Type*} [SMul α β] [SMul αᵐᵒᵖ β] [VAdd α β] [VAdd αᵃᵒᵖ β] {a a₁ a₂ a₃ a₄ : α} {b : β}
+variable [SMul α β] [SMul αᵐᵒᵖ β] [VAdd α β] [VAdd αᵃᵒᵖ β] {a a₁ a₂ a₃ a₄ : α} {b : β}
 
 -- Left and right actions are just notation around the general `•` and `+ᵥ` notations
 example : a •> b = a • b := rfl
@@ -124,7 +125,7 @@ end examples
 end RightActions
 
 section
-variable {α β : Type*} [Monoid α] [MulAction αᵐᵒᵖ β]
+variable [Monoid α] [MulAction αᵐᵒᵖ β]
 
 open scoped RightActions
 

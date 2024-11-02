@@ -255,4 +255,13 @@ def isoEquivHomeo {X Y : CompHausLike.{u} P} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   left_inv _ := rfl
   right_inv _ := rfl
 
+/-- A constant map as a morphism in `CompHausLike` -/
+def const {P : TopCat.{u} → Prop}
+    (T : CompHausLike.{u} P) {S : CompHausLike.{u} P} (s : S) : T ⟶ S :=
+  ContinuousMap.const _ s
+
+lemma const_comp {P : TopCat.{u} → Prop} {S T U : CompHausLike.{u} P}
+    (s : S) (g : S ⟶ U) : T.const s ≫ g = T.const (g s) :=
+  rfl
+
 end CompHausLike

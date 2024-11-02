@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Set.Sigma
+import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Finite sets in a sigma type

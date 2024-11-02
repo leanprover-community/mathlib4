@@ -29,13 +29,16 @@ variable [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [Topolog
 theorem continuous_projIcc : Continuous (projIcc a b h) :=
   (continuous_const.max <| continuous_const.min continuous_id).subtype_mk _
 
-theorem quotientMap_projIcc : QuotientMap (projIcc a b h) :=
-  quotientMap_iff.2 ⟨projIcc_surjective h, fun s =>
+theorem isQuotientMap_projIcc : IsQuotientMap (projIcc a b h) :=
+  isQuotientMap_iff.2 ⟨projIcc_surjective h, fun s =>
     ⟨fun hs => hs.preimage continuous_projIcc, fun hs => ⟨_, hs, by ext; simp⟩⟩⟩
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_projIcc := isQuotientMap_projIcc
 
 @[simp]
 theorem continuous_IccExtend_iff {f : Icc a b → β} : Continuous (IccExtend h f) ↔ Continuous f :=
-  quotientMap_projIcc.continuous_iff.symm
+  isQuotientMap_projIcc.continuous_iff.symm
 
 /-- See Note [continuity lemma statement]. -/
 protected theorem Continuous.IccExtend {f : γ → Icc a b → β} {g : γ → α} (hf : Continuous ↿f)

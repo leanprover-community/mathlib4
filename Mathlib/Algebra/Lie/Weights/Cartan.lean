@@ -105,8 +105,6 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
     simp only [SetLike.val_smul, smul_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.smul_apply,
       SetLike.mk_smul_mk]
 
--- Porting note (#11083): this def is _really_ slow
--- See https://github.com/leanprover-community/mathlib4/issues/5028
 /-- Given a nilpotent Lie subalgebra `H ⊆ L` together with `χ₁ χ₂ : H → R`, there is a natural
 `R`-bilinear product of root vectors and weight vectors, compatible with the actions of `H`. -/
 def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) :
@@ -289,9 +287,9 @@ lemma mem_corootSpace' {x : H} :
     erw [← (H : Submodule R L).injective_subtype.mem_set_image (s := Submodule.span R s)]
     rw [mem_image]
     simp_rw [SetLike.mem_coe]
-    rw [← Submodule.mem_map, Submodule.coeSubtype, Submodule.map_span, mem_corootSpace, ← this]
+    rw [← Submodule.mem_map, Submodule.coe_subtype, Submodule.map_span, mem_corootSpace, ← this]
   ext u
-  simp only [Submodule.coeSubtype, mem_image, Subtype.exists, LieSubalgebra.mem_coe_submodule,
+  simp only [Submodule.coe_subtype, mem_image, Subtype.exists, LieSubalgebra.mem_coe_submodule,
     exists_and_right, exists_eq_right, mem_setOf_eq, s]
   refine ⟨fun ⟨_, y, hy, z, hz, hyz⟩ ↦ ⟨y, hy, z, hz, hyz⟩,
     fun ⟨y, hy, z, hz, hyz⟩ ↦ ⟨?_, y, hy, z, hz, hyz⟩⟩

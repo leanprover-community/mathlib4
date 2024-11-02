@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 import Mathlib.Topology.Instances.Matrix
 import Mathlib.Topology.Algebra.Module.FiniteDimension
+import Mathlib.Topology.Instances.ZMultiples
 
 /-!
 # The action of the modular group SL(2, ℤ) on the upper half-plane
@@ -67,11 +68,7 @@ open Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup
 
 noncomputable section
 
-local notation "SL(" n ", " R ")" => SpecialLinearGroup (Fin n) R
-
-local macro "↑ₘ" t:term:80 : term => `(term| ($t : Matrix (Fin 2) (Fin 2) ℤ))
-
-open scoped UpperHalfPlane ComplexConjugate
+open scoped ComplexConjugate MatrixGroups
 
 namespace ModularGroup
 
@@ -113,7 +110,7 @@ attribute [local simp] ContinuousLinearMap.coe_smul
 theorem tendsto_normSq_coprime_pair :
     Filter.Tendsto (fun p : Fin 2 → ℤ => normSq ((p 0 : ℂ) * z + p 1)) cofinite atTop := by
   -- using this instance rather than the automatic `Function.module` makes unification issues in
-  -- `LinearEquiv.closedEmbedding_of_injective` less bad later in the proof.
+  -- `LinearEquiv.isClosedEmbedding_of_injective` less bad later in the proof.
   letI : Module ℝ (Fin 2 → ℝ) := NormedSpace.toModule
   let π₀ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 0
   let π₁ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 1
@@ -149,7 +146,7 @@ theorem tendsto_normSq_coprime_pair :
       rw [f_def, RingHom.map_add, RingHom.map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
         conj_ofReal, ← ofReal_mul, add_im, ofReal_im, zero_add, inv_mul_eq_iff_eq_mul₀ hz]
       simp only [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
-  have hf' : ClosedEmbedding f := f.closedEmbedding_of_injective hf
+  have hf' : IsClosedEmbedding f := f.isClosedEmbedding_of_injective hf
   have h₂ : Tendsto (fun p : Fin 2 → ℤ => ((↑) : ℤ → ℝ) ∘ p) cofinite (cocompact _) := by
     convert Tendsto.pi_map_coprodᵢ fun _ => Int.tendsto_coe_cofinite
     · rw [coprodᵢ_cofinite]
@@ -189,7 +186,7 @@ attribute [nolint simpNF] lcRow0Extend_apply lcRow0Extend_symm_apply
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
 `[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
-    Tendsto (fun g : { g : SL(2, ℤ) // (↑ₘg) 1 = cd } => lcRow0 cd ↑(↑g : SL(2, ℝ))) cofinite
+    Tendsto (fun g : { g : SL(2, ℤ) // g 1 = cd } => lcRow0 cd ↑(↑g : SL(2, ℝ))) cofinite
       (cocompact ℝ) := by
   let mB : ℝ → Matrix (Fin 2) (Fin 2) ℝ := fun t => of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
   have hmB : Continuous mB := by
@@ -207,8 +204,8 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
         Tendsto.pi_map_coprodᵢ fun _ : Fin 2 => Int.tendsto_coe_cofinite
   have hf₁ : Tendsto f₁ cofinite (cocompact _) :=
     cocompact_ℝ_to_cofinite_ℤ_matrix.comp Subtype.coe_injective.tendsto_cofinite
-  have hf₂ : ClosedEmbedding (lcRow0Extend hcd) :=
-    (lcRow0Extend hcd).toContinuousLinearEquiv.toHomeomorph.closedEmbedding
+  have hf₂ : IsClosedEmbedding (lcRow0Extend hcd) :=
+    (lcRow0Extend hcd).toContinuousLinearEquiv.toHomeomorph.isClosedEmbedding
   convert hf₂.tendsto_cocompact.comp (hf₁.comp Subtype.coe_injective.tendsto_cofinite) using 1
   ext ⟨g, rfl⟩ i j : 3
   fin_cases i <;> [fin_cases j; skip]
@@ -230,7 +227,7 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
 /-- This replaces `(g•z).re = a/c + *` in the standard theory with the following novel identity:
   `g • z = (a c + b d) / (c^2 + d^2) + (d z - c) / ((c^2 + d^2) (c z + d))`
   which does not need to be decomposed depending on whether `c = 0`. -/
-theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg : (↑ₘg) 1 = p) :
+theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg : g 1 = p) :
     ↑(g • z) =
       (lcRow0 p ↑(g : SL(2, ℝ)) : ℂ) / ((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) +
         ((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1)) := by
@@ -247,9 +244,9 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
 
 theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     Tendsto
-      (fun g : { g : SL(2, ℤ) // (↑ₘg) 1 = p } => |((g : SL(2, ℤ)) • z).re|) cofinite atTop := by
+      (fun g : { g : SL(2, ℤ) // g 1 = p } => |((g : SL(2, ℤ)) • z).re|) cofinite atTop := by
   suffices
-    Tendsto (fun g : (fun g : SL(2, ℤ) => (↑ₘg) 1) ⁻¹' {p} => ((g : SL(2, ℤ)) • z).re) cofinite
+    Tendsto (fun g : (fun g : SL(2, ℤ) => g 1) ⁻¹' {p} => ((g : SL(2, ℤ)) • z).re) cofinite
       (cocompact ℝ)
     by exact tendsto_norm_cocompact_atTop.comp this
   have : ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2)⁻¹ ≠ 0 := by
@@ -258,7 +255,7 @@ theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
   let f := Homeomorph.mulRight₀ _ this
   let ff := Homeomorph.addRight
     (((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1))).re
-  convert (f.trans ff).closedEmbedding.tendsto_cocompact.comp (tendsto_lcRow0 hp) with _ _ g
+  convert (f.trans ff).isClosedEmbedding.tendsto_cocompact.comp (tendsto_lcRow0 hp) with _ _ g
   change
     ((g : SL(2, ℤ)) • z).re =
       lcRow0 p ↑(↑g : SL(2, ℝ)) / ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2) +
@@ -283,7 +280,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
   refine ⟨g, fun g' => ?_⟩
   rw [ModularGroup.im_smul_eq_div_normSq, ModularGroup.im_smul_eq_div_normSq,
     div_le_div_left]
-  · simpa [← hg] using hp ((↑ₘg') 1) (bottom_row_coprime g')
+  · simpa [← hg] using hp (g' 1) (bottom_row_coprime g')
   · exact z.im_pos
   · exact normSq_denom_pos g' z
   · exact normSq_denom_pos g z
@@ -291,15 +288,15 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
 /-- Given `z : ℍ` and a bottom row `(c,d)`, among the `g : SL(2,ℤ)` with this bottom row, minimize
   `|(g•z).re|`. -/
 theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
-    ∃ g : SL(2, ℤ), (↑ₘg) 1 = cd ∧ ∀ g' : SL(2, ℤ), (↑ₘg) 1 = (↑ₘg') 1 →
+    ∃ g : SL(2, ℤ), g 1 = cd ∧ ∀ g' : SL(2, ℤ), g 1 = g' 1 →
       |(g • z).re| ≤ |(g' • z).re| := by
-  haveI : Nonempty { g : SL(2, ℤ) // (↑ₘg) 1 = cd } :=
+  haveI : Nonempty { g : SL(2, ℤ) // g 1 = cd } :=
     let ⟨x, hx⟩ := bottom_row_surj hcd
     ⟨⟨x, hx.2⟩⟩
   obtain ⟨g, hg⟩ := Filter.Tendsto.exists_forall_le (tendsto_abs_re_smul z hcd)
   refine ⟨g, g.2, ?_⟩
   intro g1 hg1
-  have : g1 ∈ (fun g : SL(2, ℤ) => (↑ₘg) 1) ⁻¹' {cd} := by
+  have : g1 ∈ (fun g : SL(2, ℤ) => g 1) ⁻¹' {cd} := by
     rw [Set.mem_preimage, Set.mem_singleton_iff]
     exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.2))
   exact hg ⟨g1, this⟩
@@ -325,39 +322,38 @@ theorem im_T_inv_smul : (T⁻¹ • z).im = z.im := by simpa using im_T_zpow_smu
 variable {z}
 
 -- If instead we had `g` and `T` of type `PSL(2, ℤ)`, then we could simply state `g = T^n`.
-theorem exists_eq_T_zpow_of_c_eq_zero (hc : (↑ₘg) 1 0 = 0) :
+theorem exists_eq_T_zpow_of_c_eq_zero (hc : g 1 0 = 0) :
     ∃ n : ℤ, ∀ z : ℍ, g • z = T ^ n • z := by
   have had := g.det_coe
-  replace had : (↑ₘg) 0 0 * (↑ₘg) 1 1 = 1 := by rw [det_fin_two, hc] at had; linarith
+  replace had : g 0 0 * g 1 1 = 1 := by rw [det_fin_two, hc] at had; linarith
   rcases Int.eq_one_or_neg_one_of_mul_eq_one' had with (⟨ha, hd⟩ | ⟨ha, hd⟩)
-  · use (↑ₘg) 0 1
-    suffices g = T ^ (↑ₘg) 0 1 by intro z; conv_lhs => rw [this]
+  · use g 0 1
+    suffices g = T ^ g 0 1 by intro z; conv_lhs => rw [this]
     ext i j; fin_cases i <;> fin_cases j <;>
       simp [ha, hc, hd, coe_T_zpow, show (1 : Fin (0 + 2)) = (1 : Fin 2) from rfl]
-  · use -((↑ₘg) 0 1)
-    suffices g = -T ^ (-((↑ₘg) 0 1)) by intro z; conv_lhs => rw [this, SL_neg_smul]
+  · use -(g 0 1)
+    suffices g = -T ^ (-(g 0 1)) by intro z; conv_lhs => rw [this, SL_neg_smul]
     ext i j; fin_cases i <;> fin_cases j <;>
       simp [ha, hc, hd, coe_T_zpow, show (1 : Fin (0 + 2)) = (1 : Fin 2) from rfl]
 
 -- If `c = 1`, then `g` factorises into a product terms involving only `T` and `S`.
-theorem g_eq_of_c_eq_one (hc : (↑ₘg) 1 0 = 1) : g = T ^ (↑ₘg) 0 0 * S * T ^ (↑ₘg) 1 1 := by
+theorem g_eq_of_c_eq_one (hc : g 1 0 = 1) : g = T ^ g 0 0 * S * T ^ g 1 1 := by
   have hg := g.det_coe.symm
-  replace hg : (↑ₘg) 0 1 = (↑ₘg) 0 0 * (↑ₘg) 1 1 - 1 := by rw [det_fin_two, hc] at hg; linarith
+  replace hg : g 0 1 = g 0 0 * g 1 1 - 1 := by rw [det_fin_two, hc] at hg; linarith
   refine Subtype.ext ?_
-  conv_lhs => rw [Matrix.eta_fin_two (↑ₘg)]
-  rw [hc, hg]
-  simp only [coe_mul, coe_T_zpow, coe_S, mul_fin_two]
-  congrm !![?_, ?_; ?_, ?_] <;> ring
+  conv_lhs => rw [(g : Matrix _ _ ℤ).eta_fin_two]
+  simp only [hg, sub_eq_add_neg, hc, coe_mul, coe_T_zpow, coe_S, mul_fin_two, mul_zero, mul_one,
+    zero_add, one_mul, add_zero, zero_mul]
 
 /-- If `1 < |z|`, then `|S • z| < 1`. -/
 theorem normSq_S_smul_lt_one (h : 1 < normSq z) : normSq ↑(S • z) < 1 := by
-  simpa [coe_S, num, denom] using (inv_lt_inv z.normSq_pos zero_lt_one).mpr h
+  simpa [coe_S, num, denom] using (inv_lt_inv₀ z.normSq_pos zero_lt_one).mpr h
 
 /-- If `|z| < 1`, then applying `S` strictly decreases `im`. -/
 theorem im_lt_im_S_smul (h : normSq z < 1) : z.im < (S • z).im := by
   have : z.im < z.im / normSq (z : ℂ) := by
     have imz : 0 < z.im := im_pos z
-    apply (lt_div_iff z.normSq_pos).mpr
+    apply (lt_div_iff₀ z.normSq_pos).mpr
     nlinarith
   convert this
   simp only [ModularGroup.im_smul_eq_div_normSq]
@@ -380,7 +376,7 @@ scoped[Modular] notation "𝒟ᵒ" => ModularGroup.fdo
 open scoped Modular
 
 theorem abs_two_mul_re_lt_one_of_mem_fdo (h : z ∈ 𝒟ᵒ) : |2 * z.re| < 1 := by
-  rw [abs_mul, abs_two, ← lt_div_iff' (zero_lt_two' ℝ)]
+  rw [abs_mul, abs_two, ← lt_div_iff₀' (zero_lt_two' ℝ)]
   exact h.2
 
 theorem three_lt_four_mul_im_sq_of_mem_fdo (h : z ∈ 𝒟ᵒ) : 3 < 4 * z.im ^ 2 := by
@@ -443,9 +439,9 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
 section UniqueRepresentative
 
 /-- An auxiliary result en route to `ModularGroup.c_eq_zero`. -/
-theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |(↑ₘg) 1 0| ≤ 1 := by
-  let c' : ℤ := (↑ₘg) 1 0
-  let c : ℝ := (c' : ℝ)
+theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| ≤ 1 := by
+  let c' : ℤ := g 1 0
+  let c := (c' : ℝ)
   suffices 3 * c ^ 2 < 4 by
     rw [← Int.cast_pow, ← Int.cast_three, ← Int.cast_four, ← Int.cast_mul, Int.cast_lt] at this
     replace this : c' ^ 2 ≤ 1 ^ 2 := by linarith
@@ -465,7 +461,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |(↑ₘg
         (by linarith) (by linarith))
       hc
   have h₂ : (c * z.im) ^ 4 / normSq (denom (↑g) z) ^ 2 ≤ 1 :=
-    div_le_one_of_le
+    div_le_one_of_le₀
       (pow_four_le_pow_two_of_pow_two_le (UpperHalfPlane.c_mul_im_sq_le_normSq_denom z g))
       (sq_nonneg _)
   let nsq := normSq (denom g z)
@@ -477,21 +473,21 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |(↑ₘg
     _ ≤ 16 := by rw [← mul_pow]; linarith
 
 /-- An auxiliary result en route to `ModularGroup.eq_smul_self_of_mem_fdo_mem_fdo`. -/
-theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : (↑ₘg) 1 0 = 0 := by
-  have hp : ∀ {g' : SL(2, ℤ)}, g' • z ∈ 𝒟ᵒ → (↑ₘg') 1 0 ≠ 1 := by
+theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g 1 0 = 0 := by
+  have hp : ∀ {g' : SL(2, ℤ)}, g' • z ∈ 𝒟ᵒ → g' 1 0 ≠ 1 := by
     intro g' hg'
     by_contra hc
-    let a := (↑ₘg') 0 0
-    let d := (↑ₘg') 1 1
+    let a := g' 0 0
+    let d := g' 1 1
     have had : T ^ (-a) * g' = S * T ^ d := by rw [g_eq_of_c_eq_one hc]; group
     let w := T ^ (-a) • g' • z
     have h₁ : w = S • T ^ d • z := by simp only [w, ← mul_smul, had]
     replace h₁ : normSq w < 1 := h₁.symm ▸ normSq_S_smul_lt_one (one_lt_normSq_T_zpow_smul hz d)
     have h₂ : 1 < normSq w := one_lt_normSq_T_zpow_smul hg' (-a)
     linarith
-  have hn : (↑ₘg) 1 0 ≠ -1 := by
+  have hn : g 1 0 ≠ -1 := by
     intro hc
-    replace hc : (↑ₘ(-g)) 1 0 = 1 := by simp [← neg_eq_iff_eq_neg.mpr hc]
+    replace hc : (-g) 1 0 = 1 := by simp [← neg_eq_iff_eq_neg.mpr hc]
     replace hg : -g • z ∈ 𝒟ᵒ := (SL_neg_smul g z).symm ▸ hg
     exact hp hg hc
   specialize hp hg

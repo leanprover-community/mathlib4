@@ -8,6 +8,7 @@ import Mathlib.Tactic.Use
 import Batteries.Tactic.Congr
 import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.Basic
+import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Images and preimages of sets
@@ -37,7 +38,7 @@ open Function Set
 
 namespace Set
 
-variable {α β γ : Type*} {ι ι' : Sort*}
+variable {α β γ : Type*} {ι : Sort*}
 
 /-! ### Inverse image -/
 
@@ -167,6 +168,12 @@ theorem preimage_subtype_coe_eq_compl {s u v : Set α} (hsuv : s ⊆ u ∪ v)
     exact eq_empty_iff_forall_not_mem.mp H x ⟨x_in_s, ⟨x_in_u, x_in_v⟩⟩
   · intro hx
     exact Or.elim (hsuv x_in_s) id fun hx' => hx.elim hx'
+
+lemma preimage_subset {s t} (hs : s ⊆ f '' t) (hf : Set.InjOn f (f ⁻¹' s)) : f ⁻¹' s ⊆ t := by
+  rintro a ha
+  obtain ⟨b, hb, hba⟩ := hs ha
+  rwa [hf ha _ hba.symm]
+  simpa [hba]
 
 end Preimage
 
@@ -570,7 +577,7 @@ theorem forall_mem_range {p : α → Prop} : (∀ a ∈ range f, p a) ↔ ∀ i,
 
 theorem forall_subtype_range_iff {p : range f → Prop} :
     (∀ a : range f, p a) ↔ ∀ i, p ⟨f i, mem_range_self _⟩ :=
-  ⟨fun H i => H _, fun H ⟨y, i, hi⟩ => by
+  ⟨fun H _ => H _, fun H ⟨y, i, hi⟩ => by
     subst hi
     apply H⟩
 
@@ -584,7 +591,7 @@ theorem exists_subtype_range_iff {p : range f → Prop} :
   ⟨fun ⟨⟨a, i, hi⟩, ha⟩ => by
     subst a
     exact ⟨i, ha⟩,
-   fun ⟨i, hi⟩ => ⟨_, hi⟩⟩
+   fun ⟨_, hi⟩ => ⟨_, hi⟩⟩
 
 theorem range_iff_surjective : range f = univ ↔ Surjective f :=
   eq_univ_iff_forall
@@ -628,7 +635,7 @@ theorem range_subset_iff : range f ⊆ s ↔ ∀ y, f y ∈ s :=
 
 theorem range_subset_range_iff_exists_comp {f : α → γ} {g : β → γ} :
     range f ⊆ range g ↔ ∃ h : α → β, f = g ∘ h := by
-  simp only [range_subset_iff, mem_range, Classical.skolem, Function.funext_iff, (· ∘ ·), eq_comm]
+  simp only [range_subset_iff, mem_range, Classical.skolem, funext_iff, (· ∘ ·), eq_comm]
 
 theorem range_eq_iff (f : α → β) (s : Set β) :
     range f = s ↔ (∀ a, f a ∈ s) ∧ ∀ b ∈ s, ∃ a, f a = b := by
@@ -663,7 +670,7 @@ theorem insert_image_compl_eq_range (f : α → β) (x : α) : insert (f x) (f '
 
 theorem image_preimage_eq_range_inter {f : α → β} {t : Set β} : f '' (f ⁻¹' t) = range f ∩ t :=
   ext fun x =>
-    ⟨fun ⟨x, hx, HEq⟩ => HEq ▸ ⟨mem_range_self _, hx⟩, fun ⟨⟨y, h_eq⟩, hx⟩ =>
+    ⟨fun ⟨_, hx, HEq⟩ => HEq ▸ ⟨mem_range_self _, hx⟩, fun ⟨⟨y, h_eq⟩, hx⟩ =>
       h_eq ▸ mem_image_of_mem f <| show y ∈ f ⁻¹' t by rw [preimage, mem_setOf, h_eq]; exact hx⟩
 
 theorem image_preimage_eq_inter_range {f : α → β} {t : Set β} : f '' (f ⁻¹' t) = t ∩ range f := by
@@ -817,9 +824,8 @@ theorem range_quot_lift {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = 
     range (Quot.lift f hf) = range f :=
   ext fun _ => (surjective_quot_mk _).exists
 
--- Porting note: the `Setoid α` instance is not being filled in
 @[simp]
-theorem range_quotient_mk [sa : Setoid α] : (range (α := Quotient sa) fun x : α => ⟦x⟧) = univ :=
+theorem range_quotient_mk {s : Setoid α} : range (Quotient.mk s) = univ :=
   range_quot_mk _
 
 @[simp]
@@ -831,7 +837,7 @@ theorem range_quotient_lift [s : Setoid ι] (hf) :
 theorem range_quotient_mk' {s : Setoid α} : range (Quotient.mk' : α → Quotient s) = univ :=
   range_quot_mk _
 
-@[simp] lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
+lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
   range_quotient_mk
 
 @[simp]
@@ -945,7 +951,7 @@ theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α)
 -- When `f` is injective, see also `Equiv.ofInjective`.
 theorem leftInverse_rangeSplitting (f : α → β) :
     LeftInverse (rangeFactorization f) (rangeSplitting f) := fun x => by
-  apply Subtype.ext -- Porting note: why doesn't `ext` find this lemma?
+  ext
   simp only [rangeFactorization_coe]
   apply apply_rangeSplitting
 
@@ -1089,6 +1095,9 @@ theorem Surjective.nonempty_preimage (hf : Surjective f) {s : Set β} :
 theorem Injective.image_injective (hf : Injective f) : Injective (image f) := by
   intro s t h
   rw [← preimage_image_eq s hf, ← preimage_image_eq t hf, h]
+
+lemma Injective.image_strictMono (inj : Function.Injective f) : StrictMono (image f) :=
+  monotone_image.strictMono_of_injective inj.image_injective
 
 theorem Surjective.preimage_subset_preimage_iff {s t : Set β} (hf : Surjective f) :
     f ⁻¹' s ⊆ f ⁻¹' t ↔ s ⊆ t := by

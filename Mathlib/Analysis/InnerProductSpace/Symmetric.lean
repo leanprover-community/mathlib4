@@ -38,11 +38,8 @@ open ComplexConjugate
 
 section Seminormed
 
-variable {𝕜 E E' F G : Type*} [RCLike 𝕜]
+variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-variable [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-variable [SeminormedAddCommGroup E'] [InnerProductSpace ℝ E']
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -74,16 +71,47 @@ theorem IsSymmetric.apply_clm {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →�
     ⟪T x, y⟫ = ⟪x, T y⟫ :=
   hT x y
 
-theorem isSymmetric_zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
+@[simp]
+protected theorem IsSymmetric.zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
   (inner_zero_right x : ⟪x, 0⟫ = 0).symm ▸ (inner_zero_left y : ⟪0, y⟫ = 0)
 
-theorem isSymmetric_id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
+@[deprecated (since := "2024-09-30")] alias isSymmetric_zero := IsSymmetric.zero
 
+@[simp]
+protected theorem IsSymmetric.id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
+
+@[deprecated (since := "2024-09-30")] alias isSymmetric_id := IsSymmetric.id
+
+@[aesop safe apply]
 theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T + S).IsSymmetric := by
   intro x y
   rw [LinearMap.add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right]
   rfl
+
+@[aesop safe apply]
+theorem IsSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
+    (T - S).IsSymmetric := by
+  intro x y
+  rw [LinearMap.sub_apply, inner_sub_left, hT x y, hS x y, ← inner_sub_right]
+  rfl
+
+@[aesop safe apply]
+theorem IsSymmetric.smul {c : 𝕜} (hc : conj c = c) {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
+    c • T |>.IsSymmetric := by
+  intro x y
+  simp only [smul_apply, inner_smul_left, hc, hT x y, inner_smul_right]
+
+@[aesop 30% apply]
+lemma IsSymmetric.mul_of_commute {S T : E →ₗ[𝕜] E} (hS : S.IsSymmetric) (hT : T.IsSymmetric)
+    (hST : Commute S T) : (S * T).IsSymmetric :=
+  fun _ _ ↦ by rw [mul_apply, hS, hT, hST, mul_apply]
+
+@[aesop safe apply]
+lemma IsSymmetric.pow {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (n : ℕ) : (T ^ n).IsSymmetric := by
+  refine Nat.le_induction (by simp [one_eq_id]) (fun k _ ih ↦ ?_) n n.zero_le
+  rw [iterate_succ, ← mul_eq_comp]
+  exact ih.mul_of_commute hT <| .pow_left rfl k
 
 /-- For a symmetric operator `T`, the function `fun x ↦ ⟪T x, x⟫` is real-valued. -/
 @[simp]
@@ -158,11 +186,8 @@ end Seminormed
 
 section Normed
 
-variable {𝕜 E E' F G : Type*} [RCLike 𝕜]
+variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-variable [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-variable [NormedAddCommGroup E'] [InnerProductSpace ℝ E']
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 

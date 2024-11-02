@@ -159,7 +159,7 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
     x ∈ l∗ ↔ ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] := by
   constructor
   · rintro ⟨S, rfl, h⟩
-    refine ⟨S.filter fun l ↦ !List.isEmpty l, by simp, fun y hy ↦ ?_⟩
+    refine ⟨S.filter fun l ↦ !List.isEmpty l, by simp [List.join_filter_not_isEmpty], fun y hy ↦ ?_⟩
     -- Porting note: The previous code was:
     -- rw [mem_filter, empty_iff_eq_nil] at hy
     rw [mem_filter, Bool.not_eq_true', ← Bool.bool_iff_false, List.isEmpty_iff] at hy
@@ -248,7 +248,7 @@ theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ 
 instance : KleeneAlgebra (Language α) :=
   { Language.instSemiring, Set.completeAtomicBooleanAlgebra with
     kstar := fun L ↦ L∗,
-    one_le_kstar := fun a l hl ↦ ⟨[], hl, by simp⟩,
+    one_le_kstar := fun a _ hl ↦ ⟨[], hl, by simp⟩,
     mul_kstar_le_kstar := fun a ↦ (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right,
     kstar_mul_le_kstar := fun a ↦ (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right,
     kstar_mul_le_self := fun l m h ↦ by

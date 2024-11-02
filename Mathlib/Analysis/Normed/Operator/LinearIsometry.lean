@@ -7,8 +7,9 @@ import Mathlib.Algebra.Star.Basic
 import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # (Semi-)linear isometries
@@ -170,27 +171,21 @@ theorem ext {f g : E →ₛₗᵢ[σ₁₂] E₂} (h : ∀ x, f x = g x) : f = g
 
 variable [FunLike 𝓕 E E₂]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_zero : f 0 = 0 :=
   f.toLinearMap.map_zero
 
--- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_add (x y : E) : f (x + y) = f x + f y :=
   f.toLinearMap.map_add x y
 
--- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_neg (x : E) : f (-x) = -f x :=
   f.toLinearMap.map_neg x
 
--- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_sub (x y : E) : f (x - y) = f x - f y :=
   f.toLinearMap.map_sub x y
 
--- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_smulₛₗ (c : R) (x : E) : f (c • x) = σ₁₂ c • f x :=
   f.toLinearMap.map_smulₛₗ c x
 
--- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_smul [Module R E₂] (f : E →ₗᵢ[R] E₂) (c : R) (x : E) : f (c • x) = c • f x :=
   f.toLinearMap.map_smul c x
 
@@ -205,10 +200,15 @@ theorem nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ :=
 protected theorem isometry : Isometry f :=
   AddMonoidHomClass.isometry_of_norm f.toLinearMap (norm_map _)
 
+lemma isEmbedding (f : F →ₛₗᵢ[σ₁₂] E₂) : IsEmbedding f := f.isometry.isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding := isEmbedding
+
 -- Should be `@[simp]` but it doesn't fire due to `lean4#3107`.
 theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
-  _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).uniformInducing
+  _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).isUniformInducing
 
 @[simp] -- Should be replaced with `LinearIsometry.isComplete_image_iff` when `lean4#3107` is fixed.
 theorem isComplete_image_iff' (f : LinearIsometry σ₁₂ E E₂) {s : Set E} :
@@ -484,9 +484,12 @@ instance instSemilinearIsometryEquivClass :
   map_smulₛₗ e := map_smulₛₗ e.toLinearEquiv
   norm_map e := e.norm_map'
 
--- TODO: Shouldn't these `CoeFun` instances be scrapped?
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
-directly. -/
+/-- Shortcut instance, saving 8.5% of compilation time in
+`Mathlib.Analysis.InnerProductSpace.Adjoint`.
+
+(This instance was pinpointed by benchmarks; we didn't do an in depth investigation why it is
+specifically needed.)
+-/
 instance instCoeFun : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ ↦ E → E₂ := ⟨DFunLike.coe⟩
 
 theorem coe_injective : @Function.Injective (E ≃ₛₗᵢ[σ₁₂] E₂) (E → E₂) (↑) :=
@@ -635,7 +638,6 @@ theorem apply_symm_apply (x : E₂) : e (e.symm x) = x :=
 theorem symm_apply_apply (x : E) : e.symm (e x) = x :=
   e.toLinearEquiv.symm_apply_apply x
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_eq_zero_iff {x : E} : e x = 0 ↔ x = 0 :=
   e.toLinearEquiv.map_eq_zero_iff
 
@@ -799,23 +801,18 @@ theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e :=
 theorem coe_coe'' : ⇑(e : E →SL[σ₁₂] E₂) = e :=
   rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_zero : e 0 = 0 :=
   e.1.map_zero
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_add (x y : E) : e (x + y) = e x + e y :=
   e.1.map_add x y
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_sub (x y : E) : e (x - y) = e x - e y :=
   e.1.map_sub x y
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_smulₛₗ (c : R) (x : E) : e (c • x) = σ₁₂ c • e x :=
   e.1.map_smulₛₗ c x
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_smul [Module R E₂] {e : E ≃ₗᵢ[R] E₂} (c : R) (x : E) : e (c • x) = c • e x :=
   e.1.map_smul c x
 
@@ -840,7 +837,6 @@ protected theorem injective : Injective e :=
 protected theorem surjective : Surjective e :=
   e.1.surjective
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_eq_iff {x y : E} : e x = e y ↔ x = y :=
   e.injective.eq_iff
 
@@ -952,16 +948,12 @@ variable (R E E₂ E₃)
 
 /-- The natural equivalence `(E × E₂) × E₃ ≃ E × (E₂ × E₃)` is a linear isometry. -/
 def prodAssoc [Module R E₂] [Module R E₃] : (E × E₂) × E₃ ≃ₗᵢ[R] E × E₂ × E₃ :=
-  { Equiv.prodAssoc E E₂ E₃ with
-    toFun := Equiv.prodAssoc E E₂ E₃
-    invFun := (Equiv.prodAssoc E E₂ E₃).symm
-    map_add' := by simp [-_root_.map_add] --  Fix timeout from #8386
-    map_smul' := by -- was `by simp` before #6057 caused that to time out.
-      rintro m ⟨⟨e, f⟩, g⟩
-      simp only [Prod.smul_mk, Equiv.prodAssoc_apply, RingHom.id_apply]
+  { LinearEquiv.prodAssoc R E E₂ E₃ with
     norm_map' := by
       rintro ⟨⟨e, f⟩, g⟩
-      simp only [LinearEquiv.coe_mk, Equiv.prodAssoc_apply, Prod.norm_def, max_assoc] }
+      simp only [LinearEquiv.prodAssoc_apply, AddEquiv.toEquiv_eq_coe,
+        Equiv.toFun_as_coe, EquivLike.coe_coe, AddEquiv.coe_prodAssoc,
+        Equiv.prodAssoc_apply, Prod.norm_def, max_assoc] }
 
 @[simp]
 theorem coe_prodAssoc [Module R E₂] [Module R E₃] :
