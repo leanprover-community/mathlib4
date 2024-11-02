@@ -422,7 +422,7 @@ theorem sum_eq_iSup_lift {f : ι → Cardinal.{max u v}} (hι : ℵ₀ ≤ #ι)
   rw [mul_eq_max (aleph0_le_lift.mpr hι) ((aleph0_le_lift.mpr hι).trans h), max_eq_right h]
 
 theorem sum_eq_iSup {f : ι → Cardinal} (hι : ℵ₀ ≤ #ι) (h : #ι ≤ iSup f) : sum f = iSup f :=
-  sum_eq_iSup_lift hι ((lift_id #ι).symm ▸ h)
+  sum_eq_iSup_lift hι (lift_id #ι ▸ h)
 
 end ciSup
 
