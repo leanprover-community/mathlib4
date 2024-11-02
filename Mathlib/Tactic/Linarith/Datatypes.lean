@@ -266,40 +266,10 @@ structure CertificateOracle : Type where
   produceCertificate (hyps : List Comp) (max_var : Nat) : MetaM (Std.HashMap Nat Nat)
 
 /-!
-### Auxiliary functions
+### Auxiliary function
 
-These functions are used by multiple modules, so we put them here for accessibility.
+This functions is used by multiple modules, so we put it here for accessibility.
 -/
-
-/--
-`getRelSides e` returns the left and right hand sides of `e` if `e` is a comparison,
-and fails otherwise.
-This function is more naturally in the `Option` monad, but it is convenient to put in `MetaM`
-for compositionality.
- -/
-def getRelSides (e : Expr) : MetaM (Expr × Expr) := do
-  let e ← instantiateMVars e
-  match e.getAppFnArgs with
-  | (``LT.lt, #[_, _, a, b]) => return (a, b)
-  | (``LE.le, #[_, _, a, b]) => return (a, b)
-  | (``Eq, #[_, a, b]) => return (a, b)
-  | (``GE.ge, #[_, _, a, b]) => return (a, b)
-  | (``GT.gt, #[_, _, a, b]) => return (a, b)
-  | _ => throwError "Not a comparison (getRelSides) : {e}"
-
-/--
-`parseCompAndExpr e` checks if `e` is of the form `t < 0`, `t ≤ 0`, or `t = 0`.
-If it is, it returns the comparison along with `t`.
--/
-def parseCompAndExpr (e : Expr) : MetaM (Ineq × Expr) := do
-  let e ← instantiateMVars e
-  match e.getAppFnArgs with
-  | (``LT.lt, #[_, _, e, z]) => if z.zero? then return (Ineq.lt, e) else throwNotZero z
-  | (``LE.le, #[_, _, e, z]) => if z.zero? then return (Ineq.le, e) else throwNotZero z
-  | (``Eq, #[_, e, z]) => if z.zero? then return (Ineq.eq, e) else throwNotZero z
-  | _ => throwError "invalid comparison: {e}"
-  where /-- helper function for error message -/
-  throwNotZero (z : Expr) := throwError "invalid comparison, rhs not zero: {z}"
 
 /--
 `mkSingleCompZeroOf c h` assumes that `h` is a proof of `t R 0`.

@@ -121,15 +121,6 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
       let (nm, niq) := addIneq c iq
       return (niq, ← mkAppM nm #[pf, h'])
 
-/-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
-def leftOfIneqProof (prf : Expr) : MetaM Expr := do
-  let (t, _) ← getRelSides (← inferType prf)
-  return t
-
-/-- If `prf` is a proof of `t R s`, `typeOfIneqProof prf` returns the type of `t`. -/
-def typeOfIneqProof (prf : Expr) : MetaM Expr := do
-  inferType (← leftOfIneqProof prf)
-
 /--
 `mkNegOneLtZeroProof tp` returns a proof of `-1 < 0`,
 where the numerals are natively of type `tp`.
