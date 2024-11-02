@@ -86,8 +86,8 @@ lemma ι_lanObjObjIsoColimit_hom (X : D) (f : CostructuredArrow L X) :
 
 omit [∀ (F : C ⥤ H), HasLeftKanExtension L F]
 
-@[local instance]
-private theorem lanObjIsoFiberwiseColimit_inst₁ {X Y : D} (f : X ⟶ Y) :
+@[instance]
+theorem hasColimit_map_comp_ι_comp_grotendieckProj {X Y : D} (f : X ⟶ Y) :
     HasColimit ((functor L).map f ⋙ Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ⋙ F) :=
   hasColimitOfIso (isoWhiskerRight (mapCompιCompGrothendieckProj L f) F)
 
@@ -167,22 +167,46 @@ noncomputable def lanCompColimIso [HasColimitsOfShape C H] [HasColimitsOfShape D
       congr 1
       exact congr_app (L.lanUnit.naturality f) i))
 
+variable [HasColimitsOfShape D H]
+
+variable (G : C ⥤ H) [L.HasPointwiseLeftKanExtension G]
+
+omit [∀ (F : C ⥤ H), L.HasLeftKanExtension F]
+
 @[local instance]
-private theorem foo (X : D) : HasColimitsOfShape ↑((CostructuredArrow.functor L).obj X) H := by
-  simp only [CostructuredArrow.functor_obj, Cat.of_α]
-  sorry
-  --infer_instance
+private theorem colimitIsoColimitGrothendieck_inst₁ :
+    HasColimit (CostructuredArrow.grothendieckProj L ⋙ G) :=
+  hasColimitOfHasFiberwiseColimitOfHasBaseColimit _
+
+variable [HasColimitsOfShape C H]
 
 /-- If `G : C ⥤ H` is a left Kan extension of a functor `L : C ⥤ D` and `H` has colimits of shape
 `C`, `D`, and `CostructuredArrow L X` for all `X : D`, then the colimit of `G` is isomorphic to
 the colimit of a canonical functor `Grothendieck (CostructuredArrow.functor L) ⥤ H` induced by
 `L` and `G`. -/
-noncomputable def colimitIsoColimitGrothendieck (G : C ⥤ H) [HasColimitsOfShape C H]
-    [HasColimitsOfShape D H] [L.HasPointwiseLeftKanExtension G] :
+@[simps!]
+noncomputable def colimitIsoColimitGrothendieck :
     colimit G ≅ colimit (CostructuredArrow.grothendieckProj L ⋙ G) :=
   ((lanCompColimIso L).app G).symm ≪≫
   HasColimit.isoOfNatIso (lanObjIsoFiberwiseColimit L G) ≪≫
   colimitFiberwiseColimitIso _
+
+variable [∀ (F : C ⥤ H), L.HasLeftKanExtension F]
+
+lemma ι_colimitIsoColimitGrothendieck_inv (X : Grothendieck (CostructuredArrow.functor L)) :
+    colimit.ι (CostructuredArrow.grothendieckProj L ⋙ G) X ≫
+      (colimitIsoColimitGrothendieck L G).inv =
+    colimit.ι G ((CostructuredArrow.proj L X.base).obj X.fiber) := by
+  simp
+
+lemma ι_colimitIsoColimitGrothendieck_hom (X : C) :
+    colimit.ι G X ≫ (colimitIsoColimitGrothendieck L G).hom =
+    colimit.ι (CostructuredArrow.grothendieckProj L ⋙ G) ⟨L.obj X, .mk (𝟙 _)⟩ := by
+  rw [← Iso.eq_comp_inv]
+  have := (ι_colimitIsoColimitGrothendieck_inv L G ⟨L.obj X, .mk (𝟙 _)⟩).symm
+  dsimp only [comp_obj, CostructuredArrow.grothendieckProj_obj, CostructuredArrow.mk_left,
+    CostructuredArrow.proj_obj] at this
+  exact this
 
 end
 
