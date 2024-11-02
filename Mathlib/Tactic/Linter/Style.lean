@@ -29,18 +29,15 @@ register_option linter.style.setOption : Bool := {
 namespace Style.setOption
 
 /-- Whether a syntax element is a `set_option` command, tactic or term:
-Return the name and value of the option being set, if any.
+If true, return the syntax for the option name and the value of the option being set.
 -/
-def parse_set_option : Syntax → Option (Name × TSyntax [`str, `num])
+def parse_set_option : Syntax → Option (Syntax × TSyntax [`str, `num])
   -- This handles all four possibilities of `val`: a string, number, `true` and `false`.
-  | `(command|set_option $name:ident $val) => some (name.getId, val)
-  | `(set_option $name:ident $val in $_x) => some (name.getId, val)
-  | `(tactic|set_option $name:ident $val in $_x) => some (name.getId, val)
+  | `(command|set_option $name:ident $val) => some (name, val)
+  | `(set_option $name:ident $val in $_x) => some (name, val)
+  | `(tactic|set_option $name:ident $val in $_x) => some (name, val)
   | _ => none
 
-/-- Whether a given piece of syntax is a `set_option` command, tactic or term. -/
-def is_set_option : Syntax → Bool :=
-  fun stx ↦ parse_set_option stx matches some _nameval
 
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `pp`, `profiler` or `trace` option.
@@ -55,25 +52,25 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    if let some head := stx.find? is_set_option then
-      if let some (name, val) := parse_set_option head then
-        if name == `autoImplicit && val.raw matches .atom _ "true" then
-          -- We do not lint mathlib's test directory (but do lint this linter's test).
-          let mod := ← getMainModule
-          if mod.getRoot == `test && mod != `test.LintStyle then
-            return
-          Linter.logLint linter.style.setOption head
-            m!"Using `autoImplicit true` is deprecated in mathlib: \
-            please try to rewrite your code to avoid it. \n\
-            (If using this option makes the code much better and you conciously prefer to \
-            use autoImplicit,\nplease add a comment why you are disabling this linter.)"
-        let forbidden := [`debug, `pp, `profiler, `trace]
-        if forbidden.contains name.getRoot then
-          Linter.logLint linter.style.setOption head
-            m!"Setting options starting with '{"', '".intercalate (forbidden.map (·.toString))}' \
-               is only intended for development and not for final code. \
-               If you intend to submit this contribution to the Mathlib project, \
-               please remove 'set_option {name}'."
+    if let some (opt, val) := parse_set_option stx then
+      let name := opt.getId
+      if name == `autoImplicit && val.raw matches .atom _ "true" then
+        -- We do not lint mathlib's test directory (but do lint this linter's test).
+        let mod := ← getMainModule
+        if mod.getRoot == `test && mod != `test.LintStyle then
+          return
+        Linter.logLint linter.style.setOption opt
+          m!"Using `autoImplicit true` is deprecated in mathlib: \
+          please try to rewrite your code to avoid it. \n\
+          (If using this option makes the code much better and you conciously prefer to \
+          use autoImplicit,\nplease add a comment why you are disabling this linter.)"
+      let forbidden := [`debug, `pp, `profiler, `trace]
+      if forbidden.contains name.getRoot then
+        Linter.logLint linter.style.setOption opt
+          m!"Setting options starting with '{"', '".intercalate (forbidden.map (·.toString))}' \
+             is only intended for development and not for final code. \
+             If you intend to submit this contribution to the Mathlib project, \
+             please remove 'set_option {name}'."
 
 initialize addLinter setOptionLinter
 
