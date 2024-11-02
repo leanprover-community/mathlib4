@@ -412,6 +412,8 @@ protected abbrev Elliptic := Invertible W.Δ
 variable [W.Elliptic]
 
 variable {W} in
+/-- If two Weierstrass curves are equal, one is an elliptic curve, then another one is also
+an elliptic curve. -/
 abbrev Elliptic.copy (W' : WeierstrassCurve R) (h : W' = W) : W'.Elliptic :=
   Invertible.copy ‹Invertible W.Δ› W'.Δ (by rw [h])
 
