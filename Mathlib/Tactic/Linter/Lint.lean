@@ -5,9 +5,6 @@ Authors: Floris van Doorn
 -/
 import Batteries.Tactic.Lint
 import Mathlib.Tactic.DeclarationNames
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
 
 /-!
 # Linters for Mathlib
