@@ -114,13 +114,16 @@ lemma closure_sUnion (S : Set (Set α)) : closure (⋃₀ S) = ⋃ s ∈ S, clos
 
 end AlexandrovDiscrete
 
-lemma Inducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β → α} (h : Inducing f) :
+lemma IsInducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β → α} (h : IsInducing f) :
     AlexandrovDiscrete β where
   isOpen_sInter S hS := by
     simp_rw [h.isOpen_iff] at hS ⊢
     choose U hU htU using hS
     refine ⟨_, isOpen_iInter₂ hU, ?_⟩
     simp_rw [preimage_iInter, htU, sInter_eq_biInter]
+
+@[deprecated (since := "2024-10-28")]
+alias Inducing.alexandrovDiscrete := IsInducing.alexandrovDiscrete
 
 end
 
@@ -139,7 +142,7 @@ lemma alexandrovDiscrete_iSup {t : ι → TopologicalSpace α} (_ : ∀ i, @Alex
 
 section
 variable [TopologicalSpace α] [TopologicalSpace β] [AlexandrovDiscrete α] [AlexandrovDiscrete β]
-  {s t : Set α} {a x y : α}
+  {s t : Set α} {a : α}
 
 @[simp] lemma isOpen_exterior : IsOpen (exterior s) := by
   rw [exterior_def]; exact isOpen_sInter fun _ ↦ And.left
@@ -186,7 +189,7 @@ instance AlexandrovDiscrete.toLocallyCompactSpace : LocallyCompactSpace α where
       exterior_singleton_subset_iff_mem_nhds.2 hU, isCompact_singleton.exterior⟩
 
 instance Subtype.instAlexandrovDiscrete {p : α → Prop} : AlexandrovDiscrete {a // p a} :=
-  inducing_subtype_val.alexandrovDiscrete
+  IsInducing.subtypeVal.alexandrovDiscrete
 
 instance Quotient.instAlexandrovDiscrete {s : Setoid α} : AlexandrovDiscrete (Quotient s) :=
   alexandrovDiscrete_coinduced

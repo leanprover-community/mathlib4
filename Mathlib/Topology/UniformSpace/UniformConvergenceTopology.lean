@@ -197,7 +197,7 @@ open UniformConvergence
 namespace UniformFun
 
 variable (α β : Type*) {γ ι : Type*}
-variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
+variable {p : Filter ι}
 
 /-- Basis sets for the uniformity of uniform convergence: `gen α β V` is the set of pairs `(f, g)`
 of functions `α →ᵤ β` such that `∀ x, (f x, g x) ∈ V`. -/
@@ -555,7 +555,7 @@ end UniformFun
 namespace UniformOnFun
 
 variable {α β : Type*} {γ ι : Type*}
-variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
+variable {s : Set α} {p : Filter ι}
 
 local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u
 

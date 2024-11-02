@@ -29,7 +29,7 @@ Related files are:
 -/
 
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 namespace Prod.Lex
 

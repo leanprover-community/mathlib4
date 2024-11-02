@@ -79,7 +79,7 @@ theorem pderiv_one {i : σ} : pderiv i (1 : MvPolynomial σ R) = 0 := pderiv_C
 
 @[simp]
 theorem pderiv_X [DecidableEq σ] (i j : σ) :
-    pderiv i (X j : MvPolynomial σ R) = Pi.single (f := fun j => _) i 1 j := by
+    pderiv i (X j : MvPolynomial σ R) = Pi.single (f := fun _ => _) i 1 j := by
   rw [pderiv_def, mkDerivation_X]
 
 @[simp]
@@ -104,7 +104,6 @@ theorem pderiv_pow {i : σ} {f : MvPolynomial σ R} {n : ℕ} :
     pderiv i (f ^ n) = n * f ^ (n - 1) * pderiv i f := by
   rw [(pderiv i).leibniz_pow f n, nsmul_eq_mul, smul_eq_mul, mul_assoc]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a * pderiv i f := by
   rw [C_mul', Derivation.map_smul, C_mul']
 

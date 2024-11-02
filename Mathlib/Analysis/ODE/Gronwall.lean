@@ -30,8 +30,7 @@ Sec. 4.5][HubbardWest-ode], where `norm_le_gronwallBound_of_norm_deriv_right_le`
 open Metric Set Asymptotics Filter Real
 open scoped Topology NNReal
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
-  [NormedSpace ℝ F]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-! ### Technical lemmas about `gronwallBound` -/
 
@@ -312,20 +311,20 @@ theorem ODE_solution_unique_of_mem_Ioo
   · have hss : Icc t' t₀ ⊆ Ioo a b :=
       fun _ ht'' ↦ ⟨lt_of_lt_of_le ht'.1 ht''.1, lt_of_le_of_lt ht''.2 ht.2⟩
     exact ODE_solution_unique_of_mem_Icc_left hv
-      (ContinuousAt.continuousOn fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
+      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
       (fun _ ht'' ↦ (hf _ <| hss <| Ioc_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hf _ <| hss <| Ioc_subset_Icc_self ht'').2)
-      (ContinuousAt.continuousOn fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
+      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
       (fun _ ht'' ↦ (hg _ <| hss <| Ioc_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hg _ <| hss <| Ioc_subset_Icc_self ht'').2) heq
       ⟨le_rfl, le_of_lt h⟩
   · have hss : Icc t₀ t' ⊆ Ioo a b :=
       fun _ ht'' ↦ ⟨lt_of_lt_of_le ht.1 ht''.1, lt_of_le_of_lt ht''.2 ht'.2⟩
     exact ODE_solution_unique_of_mem_Icc_right hv
-      (ContinuousAt.continuousOn fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
+      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
       (fun _ ht'' ↦ (hf _ <| hss <| Ico_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hf _ <| hss <| Ico_subset_Icc_self ht'').2)
-      (ContinuousAt.continuousOn fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
+      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
       (fun _ ht'' ↦ (hg _ <| hss <| Ico_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hg _ <| hss <| Ico_subset_Icc_self ht'').2) heq
       ⟨h, le_rfl⟩

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Order.Filter.AtTopBot.BigOperators
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # Infinite sum and product over a topological monoid

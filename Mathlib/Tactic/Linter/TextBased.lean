@@ -52,17 +52,9 @@ deriving BEq
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
 inductive StyleError where
-  /-- Missing or malformed copyright header.
-  Unlike in the python script, we may provide some context on the actual error. -/
-  | copyright (context : Option String)
-  /-- Malformed authors line in the copyright header -/
-  | authors
   /-- The bare string "Adaptation note" (or variants thereof): instead, the
   #adaptation_note command should be used. -/
   | adaptationNote
-  /-- Lint against "too broad" imports, such as `Mathlib.Tactic` or any module in `Lake`
-  (unless carefully measured) -/
-  | broadImport (module : BroadImports)
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding
   | duplicateImport (importStatement: String) (alreadyImportedLine: ℕ)
@@ -82,18 +74,8 @@ inductive ErrorFormat
 
 /-- Create the underlying error message for a given `StyleError`. -/
 def StyleError.errorMessage (err : StyleError) : String := match err with
-  | StyleError.copyright (some context) => s!"Malformed or missing copyright header: {context}"
-  | StyleError.copyright none => "Malformed or missing copyright header"
-  | StyleError.authors =>
-    "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'"
   | StyleError.adaptationNote =>
     "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
-  | StyleError.broadImport BroadImports.TacticFolder =>
-    "Files in mathlib cannot import the whole tactic folder"
-  | StyleError.broadImport BroadImports.Lake =>
-      "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see \
-      e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to \
-      benchmark it. If this is fine, feel free to allow this linter."
   | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
     endings (\n) instead"
   | StyleError.duplicateImport (importStatement) (alreadyImportedLine) =>
@@ -103,10 +85,7 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
 -- in principle, we could also print something more readable.
 def StyleError.errorCode (err : StyleError) : String := match err with
-  | StyleError.copyright _ => "ERR_COP"
-  | StyleError.authors => "ERR_AUT"
   | StyleError.adaptationNote => "ERR_ADN"
-  | StyleError.broadImport _ => "ERR_IMP"
   | StyleError.windowsLineEnding => "ERR_WIN"
   | StyleError.duplicateImport _ _ => "ERR_DIMP"
 
@@ -144,11 +123,11 @@ def compare (existing new : ErrorContext) : ComparisonResult :=
   -- We entirely ignore their line numbers: not sure if this is best.
 
   -- NB: keep the following in sync with `parse?_errorContext` below.
-  -- Generally, comparable errors must have equal `StyleError`s, but there are some exceptions.
+  -- Generally, comparable errors must have equal `StyleError`s.
   else match (existing.error, new.error) with
-  -- We do *not* care about the *kind* of wrong copyright,
-  -- nor about the particular length of a too long line.
-  | (StyleError.copyright _, StyleError.copyright _) => ComparisonResult.Comparable true
+  -- We do *not* care about the kind or line number of a duplicate import.
+  | (StyleError.duplicateImport _ _, StyleError.duplicateImport _ _) =>
+    ComparisonResult.Comparable true
   -- In all other cases, `StyleErrors` must compare equal.
   | (a, b) => if a == b then ComparisonResult.Comparable true else ComparisonResult.Different
 
@@ -181,7 +160,7 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.split (· == ' ')
   match parts with
-    | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: errorMessage =>
+    | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: _errorMessage =>
       -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
       -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
       -- component contains any path separator.
@@ -191,17 +170,9 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
       let err : Option StyleError := match errorCode with
         -- Use default values for parameters which are ignored for comparing style exceptions.
         -- NB: keep this in sync with `compare` above!
-        | "ERR_COP" => some (StyleError.copyright none)
-        | "ERR_AUT" => some (StyleError.authors)
         | "ERR_ADN" => some (StyleError.adaptationNote)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
         | "ERR_DIMP" => some (StyleError.duplicateImport "" 0)
-        | "ERR_IMP" =>
-          -- XXX tweak exceptions messages to ease parsing?
-          if (errorMessage.get! 0).containsSubstr "tactic" then
-            some (StyleError.broadImport BroadImports.TacticFolder)
-          else
-            some (StyleError.broadImport BroadImports.Lake)
         | _ => none
       match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
@@ -234,52 +205,6 @@ abbrev TextbasedLinter := Array String → Array (StyleError × ℕ) × (Option 
 /-! Definitions of the actual text-based linters. -/
 section
 
-/-- Return if `line` looks like a correct authors line in a copyright header. -/
-def isCorrectAuthorsLine (line : String) : Bool :=
-  -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
-  -- the file starting wrong, double spaces, using ' and ' between names,
-  -- and ending the line with a period.
-  line.startsWith "Authors: " && (!line.containsSubstr "  ")
-    && (!line.containsSubstr " and ") && (!line.endsWith ".")
-
-/-- Lint a collection of input lines if they are missing an appropriate copyright header.
-
-A copyright header should start at the very beginning of the file and contain precisely five lines,
-including the copy year and holder, the license and main author(s) of the file (in this order).
--/
-def copyrightHeaderLinter : TextbasedLinter := fun lines ↦ Id.run do
-  -- Unlike the Python script, we just emit one warning.
-  let start := lines.extract 0 4
-  -- The header should start and end with blank comments.
-  let _ := match (start.get? 0, start.get? 4) with
-  | (some "/-", some "-/") => none
-  | (some "/-", _) => return #[(StyleError.copyright none, 4)]
-  | _ => return #[(StyleError.copyright none, 0)]
-
-  -- If this is given, we go over the individual lines one by one,
-  -- and provide some context on what is mis-formatted (if anything).
-  let mut output := Array.mkEmpty 0
-  -- By hypotheses above, start has at least five lines, so the `none` cases below are never hit.
-  -- The first real line should state the copyright.
-  if let some copy := start.get? 1 then
-    if !(copy.startsWith "Copyright (c) 20" && copy.endsWith ". All rights reserved.") then
-      output := output.push (StyleError.copyright "Copyright line is malformed", 2)
-  -- The second line should be standard.
-  let expectedSecondLine := "Released under Apache 2.0 license as described in the file LICENSE."
-  if start.get? 2 != some expectedSecondLine then
-    output := output.push (StyleError.copyright
-      s!"Second line should be \"{expectedSecondLine}\"", 3)
-  -- The third line should contain authors.
-  if let some line := start.get? 3 then
-    if !line.containsSubstr "Author" then
-      output := output.push (StyleError.copyright
-        "The third line should describe the file's main authors", 4)
-    else
-      -- If it does, we check the authors line is formatted correctly.
-      if !isCorrectAuthorsLine line then
-        output := output.push (StyleError.authors, 4)
-  return (output, none)
-
 /-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
 def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
@@ -311,35 +236,6 @@ def duplicateImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
     lineNumber := lineNumber + 1
   return (errors, none)
 
-/-- Lint a collection of input strings if one of them contains an unnecessarily broad import. -/
-def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
-  let mut errors := Array.mkEmpty 0
-  -- All import statements must be placed "at the beginning" of the file:
-  -- we can have any number of blank lines, imports and single or multi-line comments.
-  -- Doc comments, however, are not allowed: there is no item they could document.
-  let mut inDocComment : Bool := False
-  let mut lineNumber := 1
-  for line in lines do
-    if inDocComment then
-      if line.endsWith "-/" then
-        inDocComment := False
-    else
-      -- If `line` is just a single-line comment (starts with "--"), we just continue.
-      if line.startsWith "/-" then
-        inDocComment := True
-      else if let some (rest) := line.dropPrefix? "import " then
-          -- If there is any in-line or beginning doc comment on that line, trim that.
-          -- Small hack: just split the string on space, "/" and "-":
-          -- none of these occur in module names, so this is safe.
-          if let some name := ((toString rest).split (" /-".contains ·)).head? then
-            if name == "Mathlib.Tactic" then
-              errors := errors.push (StyleError.broadImport BroadImports.TacticFolder, lineNumber)
-            else if name == "Lake" || name.startsWith "Lake." then
-              errors := errors.push (StyleError.broadImport BroadImports.Lake, lineNumber)
-      lineNumber := lineNumber + 1
-  return (errors, none)
-
-
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
 def isImportsOnlyFile (lines : Array String) : Bool :=
@@ -351,7 +247,7 @@ end
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, duplicateImportsLinter
+    adaptationNoteLinter, duplicateImportsLinter
   ]
 
 
