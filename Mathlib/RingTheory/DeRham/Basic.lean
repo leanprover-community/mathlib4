@@ -64,6 +64,14 @@ lemma finInsert_zero : finInsert x f 0 = x := rfl
 @[simp]
 lemma finInsert_succ (i : Fin n) : finInsert x f i.succ = f i := rfl
 
+lemma comp_finInsert {β : Type*} (g : α → β) :
+    g.comp (finInsert x f) = finInsert (g x) (g.comp f) := by
+  ext ⟨(_ | _), _⟩ <;> rfl
+
+lemma finInsert_eq_update_finInsert_zero [Zero α]:
+    finInsert x f = Function.update (finInsert 0 f) 0 x := by
+  ext ⟨(_ | _), _⟩ <;> rfl
+
 end
 
 
@@ -130,8 +138,28 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
   (presentationDifferentialsDown A B n).desc
     { var := fun ⟨g, b₀⟩ ↦
         ((presentationDifferentialsDown A B (n + 1)).var ⟨finInsert b₀ g, (1 : B)⟩)
-      linearCombination_var_relation := by sorry }
+      linearCombination_var_relation := by
+        rintro (⟨g, r⟩ | _)
+        · induction r  with
+          | add b₁ b₂ =>
+              dsimp
+              simp only [presentationDifferentialsDown_relation,
+                Finsupp.linearCombination_embDomain, map_sub, map_add,
+                Finsupp.linearCombination_single, Function.comp_apply,
+                Function.Embedding.sigmaMk_apply, one_smul]
+              rw [presentationDifferentialsDown_var,
+                presentationDifferentialsDown_var,
+                presentationDifferentialsDown_var]
+              simp only [comp_finInsert, one_smul, map_add, sub_eq_zero]
+              rw [finInsert_eq_update_finInsert_zero]
+              nth_rw 2 [finInsert_eq_update_finInsert_zero]
+              nth_rw 3 [finInsert_eq_update_finInsert_zero]
+              rw [AlternatingMap.map_add]
+          | smul a b => sorry
+        · sorry
+        }
 
+#exit
 @[simp]
 lemma d_apply (b₀ : B) {n : ℕ} (g : Fin n → B) :
     d A B n ((presentationDifferentialsDown A B n).var ⟨g, b₀⟩) =
