@@ -272,7 +272,7 @@ end BaseChange
 
 /-! ## Variable changes of elliptic curves -/
 
-variable [W.Elliptic]
+variable [W.Elliptic] (C : VariableChange R)
 
 section VariableChange
 
