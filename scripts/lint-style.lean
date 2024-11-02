@@ -103,12 +103,12 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     | false => ErrorFormat.humanReadable
   let fix := args.hasFlag "fix"
   -- Read all module names to lint.
-  let mut allModules := #[]
+  let mut allModuleNames := #[]
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    allModules := allModules.append ((← IO.FS.lines s).map (·.stripPrefix "import "))
-  -- Note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually.
-  allModules := allModules.erase "Batteries"
-  let mut numberErrors ← lintModules allModules style fix
+    allModuleNames := allModuleNames.append (← findImports s)
+  -- Note: since "Batteries" is added explicitly to "Mathlib.lean", we remove it here manually.
+  allModuleNames := allModuleNames.erase `Batteries
+  let mut numberErrors ← lintModules allModuleNames style fix
   if ← checkInitImports then numberErrors := numberErrors + 1
   if !(← allScriptsDocumented) then numberErrors := numberErrors + 1
   -- If run with the `--fix` argument, return a zero exit code.
