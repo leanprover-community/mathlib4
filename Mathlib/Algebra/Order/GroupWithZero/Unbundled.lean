@@ -863,7 +863,7 @@ theorem lt_mul_of_lt_of_one_le_of_nonneg [PosMulMono α] (h : b < c) (ha : 1 ≤
   h.trans_le <| le_mul_of_one_le_right hc ha
 
 /-- Assumes left covariance. -/
-@[deprecated Left.one_le_mul₀ (since := "2024-10-10")]
+@[deprecated one_le_mul₀ (since := "2024-10-10")]
 theorem Left.one_le_mul_of_le_of_le [PosMulMono α] (ha : 1 ≤ a) (hb : 1 ≤ b) (a0 : 0 ≤ a) :
     1 ≤ a * b :=
   ha.trans <| le_mul_of_one_le_right a0 hb
@@ -977,7 +977,7 @@ theorem Right.one_lt_mul_of_lt_of_le_of_pos [MulPosStrictMono α] (ha : 1 < a) (
   hb.trans_lt <| lt_mul_of_one_lt_left b0 ha
 
 /-- Assumes right covariance. -/
-@[deprecated Right.one_lt_mul_of_le_of_lt₀ (since := "2024-10-10")]
+@[deprecated one_lt_mul_of_le_of_lt₀ (since := "2024-10-10")]
 theorem Right.one_lt_mul_of_le_of_lt_of_nonneg [MulPosMono α] (ha : 1 ≤ a) (hb : 1 < b)
     (b0 : 0 ≤ b) : 1 < a * b :=
   hb.trans_le <| le_mul_of_one_le_left b0 ha
