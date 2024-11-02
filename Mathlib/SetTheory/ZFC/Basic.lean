@@ -534,7 +534,7 @@ class Definable (n) (f : (Fin n → ZFSet.{u}) → ZFSet.{u}) where
   /-- Turns a definable function into an n-ary `PSet` function. -/
   out : (Fin n → PSet.{u}) → PSet.{u}
   /-- A set function `f` is the image of `Definable.out f`. -/
-  mk_out : ∀ xs, mk (out xs) = f (mk <| xs ·) := by simp
+  mk_out xs : mk (out xs) = f (mk <| xs ·) := by simp
 
 attribute [simp] Definable.mk_out
 
