@@ -1041,7 +1041,6 @@ theorem not_small_cardinal : ¬ Small.{u} Cardinal.{max u v} := by
 instance : Uncountable Cardinal.{u} :=
   Uncountable.of_not_small not_small_cardinal.{u}
 
-#exit
 /-! ### Bounds on suprema -/
 
 theorem sum_le_iSup_lift {ι : Type u}
