@@ -333,7 +333,34 @@ theorem map_fg (f : M ↪[L] N) {g : M ≃ₚ[L] M} (g_fg : g.dom.FG) : (g.map f
 
 theorem exists_preimage_map_iff (f : M ↪[L] N) (g : N ≃ₚ[L] N) :
     (∃ (g' : M ≃ₚ[L] M), g'.map f = g) ↔ g.dom ⊔ g.cod ≤ f.toHom.range := by
-  sorry
+  constructor
+  · intro ⟨g', g'_map⟩
+    have : g'.dom.map f.toHom ≤ f.toHom.range := Hom.map_le_range
+    have : g'.cod.map f.toHom ≤ f.toHom.range := Hom.map_le_range
+    apply sup_le <;> simpa [←g'_map, map_dom, map_cod]
+  · intro dom_cod_le_range
+    rw [sup_le_iff] at dom_cod_le_range
+    let ⟨dom_le_range, cod_le_range⟩ := dom_cod_le_range
+    let dom' := g.dom.comap f.toHom
+    let cod' := g.cod.comap f.toHom
+    have dom'_map : dom'.map f.toHom = g.dom := by
+      unfold_let dom'
+      rwa [Substructure.map_comap, inf_eq_left]
+    have cod'_map : cod'.map f.toHom = g.cod := by
+      unfold_let dom'
+      rwa [Substructure.map_comap, inf_eq_left]
+    clear_value dom' cod'
+    rcases g with ⟨dom, cod, g⟩
+    simp at *
+    cases cod'_map
+    cases dom'_map
+    let g' : M ≃ₚ[L] M := ⟨dom',
+      cod',
+      (f.substructureEquivMap cod').symm.comp (g.comp (f.substructureEquivMap dom'))⟩
+    use g'
+    simp only [map, mk.injEq, heq_eq_eq, true_and]
+    ext x
+    simp only [Equiv.comp_apply, Equiv.apply_symm_apply]
 
 def is_extended_by (f : M ≃ₚ[L] M) (g : M ↪[L] N) : Prop :=
   ∃ f', f.map g ≤ f' ∧ g.toHom.range ≤ f'.dom

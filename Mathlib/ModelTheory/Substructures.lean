@@ -805,6 +805,23 @@ theorem eq_of_eqOn_dense (hs : closure L s = ⊤) {f g : M →[L] N} (h : s.EqOn
 
 end Hom
 
+namespace Substructure
+
+theorem map_comap (S : L.Substructure N) (f : M →[L] N) :
+    ((S.comap) f).map f = S ⊓ f.range := by
+  rw [le_antisymm_iff]
+  constructor
+  · exact le_inf map_comap_le Hom.map_le_range
+  · intro x ⟨x_in_S, x_in_range⟩
+    rw [mem_map]
+    rw [SetLike.mem_coe, Hom.mem_range] at x_in_range
+    let ⟨y, hy⟩ := x_in_range
+    use y
+    rw [mem_comap, hy]
+    trivial
+
+end Substructure
+
 namespace Embedding
 
 /-- The restriction of a first-order embedding to a substructure `s ⊆ M` gives an embedding `s → N`.
