@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
+import Lean.Elab.ParseImportsFast
 import Batteries.Data.String.Basic
 import Mathlib.Tactic.Linter.TextBased
 import Cli.Basic
@@ -21,6 +22,13 @@ In addition, this checks that
 
 open Cli Mathlib.Linter.TextBased System.FilePath
 
+/-- Parse all imports in a text file at `path` and return just their names:
+this is just a thin wrapper around `Lean.parseImports'`. -/
+def findImports (path : System.FilePath) : IO (Array Lean.Name) := do
+  return (← Lean.parseImports' (← IO.FS.readFile path) path.toString)
+    |>.map fun imp ↦ imp.module
+
+
 /-- Check that `Mathlib.Init` is transitively imported in all of Mathlib.
 
 Every file imported in `Mathlib.Init` should in turn import the `Header` linter
@@ -29,31 +37,27 @@ Return `true` iff there was an error.
 -/
 def checkInitImports : IO Bool := do
   -- Find any file in the Mathlib directory which does not contain any Mathlib import.
-  -- The current check (for any line starting with "import Mathlib") is not perfect
-  -- (for instance, it would detect a multi-line comment containing the line import Mathlib),
-  -- but is good enough in practice.
+  -- We simply parse `Mathlib.lean`, as CI ensures this file is up to date.
+  let allModuleNames := (← findImports "Mathlib.lean").erase `Batteries
   let mut modulesWithoutMathlibImports := #[]
   let mut importsHeaderLinter := #[]
-  -- We simply parse `Mathlib.lean`; this removes the need for external tools like grep.
-  let allModules := (← IO.FS.lines "Mathlib.lean").map (·.stripPrefix "import ")
-    |>.filter (·.startsWith "Mathlib")
-  for module in allModules do
-    let path := (System.mkFilePath (module.split (· == '.'))).addExtension "lean"
-    let hasMathlibImport := (← IO.FS.lines path).any fun s ↦ s.startsWith "import Mathlib"
-    if !hasMathlibImport then
+  for module in allModuleNames do
+    let path := System.mkFilePath (module.components.map fun n ↦ n.toString)|>.addExtension "lean"
+    let imports := ← findImports path
+    let hasNoMathlibImport := imports.all fun name ↦ name.getRoot != `Mathlib
+    if hasNoMathlibImport then
       modulesWithoutMathlibImports := modulesWithoutMathlibImports.push module
-    if (← IO.FS.lines path).contains "import Mathlib.Tactic.Linter.Header" then
+    if imports.contains `Mathlib.Tactic.Linter.Header then
       importsHeaderLinter := importsHeaderLinter.push module
 
   -- Every file importing the `header` linter should be imported in `Mathlib/Init.lean` itself.
   -- (Downstream files should import `Mathlib.Init` and not the header linter.)
   -- The only exception are auto-generated import-only files.
-  let initImports := (← IO.FS.lines ("Mathlib" / "Init.lean")).filter (·.startsWith "import ")
-    |>.map (·.stripPrefix "import ")
+  let initImports := ← findImports ("Mathlib" / "Init.lean")
   let mismatch := importsHeaderLinter.filter (fun mod ↦
-    !["Mathlib", "Mathlib.Tactic", "Mathlib.Init"].contains mod && !initImports.contains mod)
+    ![`Mathlib, `Mathlib.Tactic, `Mathlib.Init].contains mod && !initImports.contains mod)
     -- This file is transitively imported by Mathlib.Init.
-    |>.erase "Mathlib.Tactic.DeclarationNames"
+    |>.erase `Mathlib.Tactic.DeclarationNames
   if mismatch.size > 0 then
     IO.eprintln s!"error: the following {mismatch.size} module(s) import the `header` linter \
       directly, but should import Mathlib.Init instead: {mismatch}\n\
@@ -63,7 +67,7 @@ def checkInitImports : IO Bool := do
 
   -- Now, it only remains to check that every module (except for the Header linter itself)
   -- imports some file in Mathlib.
-  let missing := modulesWithoutMathlibImports.erase "Mathlib.Tactic.Linter.Header"
+  let missing := modulesWithoutMathlibImports.erase `Mathlib.Tactic.Linter.Header
   if missing.size > 0 then
     IO.eprintln s!"error: the following {missing.size} module(s) do not import Mathlib.Init: \
       {missing}"
