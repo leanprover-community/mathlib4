@@ -635,3 +635,48 @@ theorem exists_isSubordinate_of_locallyFinite_t2space [LocallyCompactSpace X] [T
     isClosed_closure <| closure_mono (f.support_toPartitionOfUnity_subset i)⟩
 
 end PartitionOfUnity
+
+example [T2Space X] [LocallyCompactSpace X]
+    {n : ℕ} {t : Set X} {s : Fin n → Set X} (hs : ∀ (i : Fin n), IsOpen (s i)) (htcp : IsCompact t)
+    (hst : t ⊆ ⋃ i, s i) : ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧
+    EqOn (∑ i, f i) 1 t ∧ (∀ (i : Fin n), ∀ (x : X), f i x ∈ Icc (0 : ℝ) 1) ∧ (∀ (i : Fin n),
+    HasCompactSupport (f i)) := by
+  have hlf : LocallyFinite s := by
+    intro x
+    use univ
+    refine ⟨univ_mem, ?_⟩
+    exact toFinite {i | (s i ∩ univ).Nonempty}
+  obtain ⟨f, hfsub, hfcp⟩ := PartitionOfUnity.exists_isSubordinate_of_locallyFinite_t2space htcp s
+    hs hlf hst
+  use f.toFun
+  refine ⟨fun i ↦ hfsub i, ?_, ?_, fun i => hfcp i⟩
+  · intro t ht
+    simp only [Finset.sum_apply, Pi.one_apply]
+    have h := f.sum_eq_one' t ht
+    simp at h
+    rw [finsum_eq_sum (fun i => (f.toFun i) t)
+      (Finite.subset finite_univ (subset_univ (support fun i ↦ (f.toFun i) t)))] at h
+    simp only [Finite.toFinset_setOf, ne_eq] at h
+    rw [← h, ← Finset.sum_subset]
+    · exact Finset.filter_subset (fun x ↦ ¬(f.toFun x) t = 0) Finset.univ
+    · intro x _ hnx
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and, Decidable.not_not] at hnx
+      exact hnx
+  · intro i x
+    constructor
+    · exact f.nonneg' i x
+    · by_cases h0 : (f.toFun i) x = 0
+      · rw [h0]
+        exact zero_le_one' ℝ
+      · rw [← Finset.sum_singleton (fun i => ((f.toFun i) x)) i]
+        apply le_trans _ (f.sum_le_one' x)
+        rw [finsum_eq_sum (fun i => (f.toFun i) x)
+          (Finite.subset finite_univ (subset_univ (support fun i ↦ (f.toFun i) x)))]
+        simp only [Finite.toFinset_setOf, ne_eq]
+        apply Finset.sum_le_sum_of_subset_of_nonneg
+        · intro z hz
+          rw [Finset.eq_of_mem_singleton hz]
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+          exact h0
+        · intro i _ _
+          exact f.nonneg' i x
