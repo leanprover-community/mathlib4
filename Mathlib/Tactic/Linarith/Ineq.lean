@@ -80,17 +80,6 @@ def _root_.Lean.Expr.ineq? (e : Expr) : MetaM (Ineq × Expr × Expr × Expr) := 
   | some p => return (Ineq.lt, p)
   | none => throwError "Not a comparison: {e}"
 
-/--
-`getRelSides e` returns the left and right hand sides of `e` if `e` is a comparison,
-and fails otherwise.
-
-This function is more naturally in the `Option` monad, but it is convenient to put in `MetaM`
-for compositionality.
- -/
-def getRelSides (e : Expr) : MetaM (Expr × Expr) := do
-  let (_, _, p) ← e.ineq?
-  return p
-
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do
   let e ← inferType prf

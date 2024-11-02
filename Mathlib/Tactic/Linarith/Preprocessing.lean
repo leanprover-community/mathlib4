@@ -179,7 +179,7 @@ def natToInt : GlobalBranchingPreprocessor where
         pure h
     let nonnegs ← l.foldlM (init := ∅) fun (es : RBSet (Expr × Expr) lexOrd.compare) h => do
       try
-        let (a, b) ← getRelSides (← inferType h)
+        let (_, _, a, b) ← (← inferType h).ineq?
         pure <| (es.insertMany (getNatComparisons a)).insertMany (getNatComparisons b)
       catch _ => pure es
     pure [(g, ((← nonnegs.toList.filterMapM mk_natCast_nonneg_prf) ++ l : List Expr))]
