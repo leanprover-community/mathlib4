@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Shattering families
@@ -28,7 +27,7 @@ This file defines the shattering property and VC-dimension of set families.
 open scoped FinsetFamily
 
 namespace Finset
-variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α} {n : ℕ}
+variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α}
 
 /-- A set family `𝒜` shatters a set `s` if all subsets of `s` can be obtained as the intersection
 of `s` and some element of the set family, and we denote this `𝒜.Shatters s`. We also say that `s`

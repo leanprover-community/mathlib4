@@ -29,7 +29,7 @@ assert_not_exists MonoidWithZero
 
 open Function (Injective Surjective)
 
-variable {M N G H α β γ δ : Type*}
+variable {M G α β : Type*}
 
 /-!
 ### (Pre)transitive action
@@ -74,8 +74,6 @@ instance Regular.isPretransitive [Group G] : IsPretransitive G G :=
 end MulAction
 
 namespace MulAction
-
-variable [Monoid M] [MulAction M α]
 
 variable (α)
 

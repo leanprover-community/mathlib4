@@ -36,6 +36,11 @@ It is proved that `Submodule R A` is a semiring, and also an algebra over `Set A
 Additionally, in the `Pointwise` locale we promote `Submodule.pointwiseDistribMulAction` to a
 `MulSemiringAction` as `Submodule.pointwiseMulSemiringAction`.
 
+When `R` is not necessarily commutative, and `A` is merely a `R`-module with a ring structure
+such that `IsScalarTower R A A` holds (equivalent to the data of a ring homomorphism `R →+* A`
+by `ringHomEquivModuleIsScalarTower`), we can still define `1 : Submodule R A` and
+`Mul (Submodule R A)`, but `1` is only a left identity, not necessarily a right one.
+
 ## Tags
 
 multiplication of submodules, division of submodules, submodule semiring
@@ -62,48 +67,56 @@ end SubMulAction
 
 namespace Submodule
 
-variable {ι : Sort uι}
-variable {R : Type u} [CommSemiring R]
+section Module
 
-section Ring
+variable {R : Type u} [Semiring R] {A : Type v} [Semiring A] [Module R A]
 
-variable {A : Type v} [Semiring A] [Algebra R A]
-variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
-
-/-- `1 : Submodule R A` is the submodule R of A. -/
+/-- `1 : Submodule R A` is the submodule `R ∙ 1` of A.
+TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
+once a version of `Algebra` without the `commutes'` field is introduced.
+See issue #18110.
+-/
 instance one : One (Submodule R A) :=
-  -- Porting note: `f.range` notation doesn't work
-  ⟨LinearMap.range (Algebra.linearMap R A)⟩
+  ⟨LinearMap.range (LinearMap.toSpanSingleton R A 1)⟩
 
-theorem one_eq_range : (1 : Submodule R A) = LinearMap.range (Algebra.linearMap R A) :=
-  rfl
+theorem one_eq_span : (1 : Submodule R A) = R ∙ 1 :=
+  (LinearMap.span_singleton_eq_range _ _ _).symm
 
 theorem le_one_toAddSubmonoid : 1 ≤ (1 : Submodule R A).toAddSubmonoid := by
   rintro x ⟨n, rfl⟩
-  exact ⟨n, map_natCast (algebraMap R A) n⟩
-
-theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) :=
-  LinearMap.mem_range_self (Algebra.linearMap R A) _
-
-@[simp]
-theorem mem_one {x : A} : x ∈ (1 : Submodule R A) ↔ ∃ y, algebraMap R A y = x :=
-  Iff.rfl
+  exact ⟨n, show (n : R) • (1 : A) = n by rw [Nat.cast_smul_eq_nsmul, nsmul_one]⟩
 
 @[simp]
 theorem toSubMulAction_one : (1 : Submodule R A).toSubMulAction = 1 :=
-  SetLike.ext fun _ => mem_one.trans SubMulAction.mem_one'.symm
-
-theorem one_eq_span : (1 : Submodule R A) = R ∙ 1 := by
-  apply Submodule.ext
-  intro a
-  simp only [mem_one, mem_span_singleton, Algebra.smul_def, mul_one]
+  SetLike.ext fun _ ↦ by rw [one_eq_span, SubMulAction.mem_one]; exact mem_span_singleton
 
 theorem one_eq_span_one_set : (1 : Submodule R A) = span R 1 :=
   one_eq_span
 
-theorem one_le : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
+theorem one_le {P : Submodule R A} : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
   -- Porting note: simpa no longer closes refl goals, so added `SetLike.mem_coe`
   simp only [one_eq_span, span_le, Set.singleton_subset_iff, SetLike.mem_coe]
+
+end Module
+
+variable {ι : Sort uι}
+variable {R : Type u} [CommSemiring R]
+
+section AlgebraSemiring
+
+variable {A : Type v} [Semiring A] [Algebra R A]
+variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
+
+theorem one_eq_range : (1 : Submodule R A) = LinearMap.range (Algebra.linearMap R A) := by
+  rw [one_eq_span, LinearMap.span_singleton_eq_range,
+    LinearMap.toSpanSingleton_eq_algebra_linearMap]
+
+theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) := by
+  rw [one_eq_range]; exact LinearMap.mem_range_self _ _
+
+@[simp]
+theorem mem_one {x : A} : x ∈ (1 : Submodule R A) ↔ ∃ y, algebraMap R A y = x := by
+  rw [one_eq_range]; rfl
 
 protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
     map f.toLinearMap (1 : Submodule R A) = 1 := by
@@ -423,7 +436,7 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
   induction n generalizing x with
   | zero =>
     rw [pow_zero] at hx
-    obtain ⟨r, rfl⟩ := hx
+    obtain ⟨r, rfl⟩ := mem_one.mp hx
     exact algebraMap r
   | succ n n_ih =>
     revert hx
@@ -444,7 +457,7 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
   induction n generalizing x with
   | zero =>
     rw [pow_zero] at hx
-    obtain ⟨r, rfl⟩ := hx
+    obtain ⟨r, rfl⟩ := mem_one.mp hx
     exact algebraMap r
   | succ n n_ih =>
     revert hx
@@ -549,9 +562,9 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseMulSemiringAction
 
 end
 
-end Ring
+end AlgebraSemiring
 
-section CommRing
+section AlgebraCommSemiring
 
 variable {A : Type v} [CommSemiring A] [Algebra R A]
 variable {M N : Submodule R A} {m n : A}
@@ -687,6 +700,6 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
 
 end Quotient
 
-end CommRing
+end AlgebraCommSemiring
 
 end Submodule

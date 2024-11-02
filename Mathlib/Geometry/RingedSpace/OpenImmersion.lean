@@ -265,7 +265,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
   have : IsIso f.c := NatIso.isIso_of_isIso_app _
 
   apply (config := { allowSynthFailures := true }) isIso_of_components
-  let t : X ≃ₜ Y := (Homeomorph.ofEmbedding _ H.base_open.toEmbedding).trans
+  let t : X ≃ₜ Y := (Homeomorph.ofIsEmbedding _ H.base_open.isEmbedding).trans
     { toFun := Subtype.val
       invFun := fun x =>
         ⟨x, by rw [Set.range_iff_surjective.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩
@@ -476,7 +476,7 @@ instance forgetPreservesLimitsOfRight : PreservesLimit (cospan g f) (forget C) :
 
 theorem pullback_snd_isIso_of_range_subset (H : Set.range g.base ⊆ Set.range f.base) :
     IsIso (pullback.snd f g) := by
-  haveI := TopCat.snd_iso_of_left_embedding_range_subset hf.base_open.toEmbedding g.base H
+  haveI := TopCat.snd_iso_of_left_embedding_range_subset hf.base_open.isEmbedding g.base H
   have : IsIso (pullback.snd f g).base := by
     delta pullback.snd
     rw [← limit.isoLimitCone_hom_π ⟨_, pullbackConeOfLeftIsLimit f g⟩ WalkingCospan.right]
@@ -688,7 +688,7 @@ instance sheafedSpace_hasPullback_of_right : HasPullback g f :=
 instance sheafedSpace_pullback_snd_of_left :
     SheafedSpace.IsOpenImmersion (pullback.snd f g) := by
   delta pullback.snd
-  have : _ = limit.π (cospan f g) right := preservesLimitsIso_hom_π forget (cospan f g) right
+  have : _ = limit.π (cospan f g) right := preservesLimitIso_hom_π forget (cospan f g) right
   rw [← this]
   have := HasLimit.isoOfNatIso_hom_π (diagramIsoCospan (cospan f g ⋙ forget)) right
   erw [Category.comp_id] at this
@@ -699,7 +699,7 @@ instance sheafedSpace_pullback_snd_of_left :
 instance sheafedSpace_pullback_fst_of_right :
     SheafedSpace.IsOpenImmersion (pullback.fst g f) := by
   delta pullback.fst
-  have : _ = limit.π (cospan g f) left := preservesLimitsIso_hom_π forget (cospan g f) left
+  have : _ = limit.π (cospan g f) left := preservesLimitIso_hom_π forget (cospan g f) left
   rw [← this]
   have := HasLimit.isoOfNatIso_hom_π (diagramIsoCospan (cospan g f ⋙ forget)) left
   erw [Category.comp_id] at this
@@ -840,7 +840,7 @@ variable [HasLimits C] {ι : Type v} (F : Discrete ι ⥤ SheafedSpace.{_, v, v}
   (i : Discrete ι)
 
 theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).base := by
-  rw [← show _ = (colimit.ι F i).base from ι_preservesColimitsIso_inv (SheafedSpace.forget C) F i]
+  rw [← show _ = (colimit.ι F i).base from ι_preservesColimitIso_inv (SheafedSpace.forget C) F i]
   have : _ = _ ≫ colimit.ι (Discrete.functor ((F ⋙ SheafedSpace.forget C).obj ∘ Discrete.mk)) i :=
     HasColimit.isoOfNatIso_ι_hom Discrete.natIsoFunctor i
   rw [← Iso.eq_comp_inv] at this
@@ -871,12 +871,12 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
   replace eq := ConcreteCategory.congr_arg (preservesColimitIso (SheafedSpace.forget C) F ≪≫
     HasColimit.isoOfNatIso Discrete.natIsoFunctor ≪≫ TopCat.sigmaIsoSigma.{v, v} _).hom eq
   simp_rw [CategoryTheory.Iso.trans_hom, ← TopCat.comp_app, ← PresheafedSpace.comp_base] at eq
-  rw [ι_preservesColimitsIso_inv] at eq
+  rw [ι_preservesColimitIso_inv] at eq
   change
     ((SheafedSpace.forget C).map (colimit.ι F i) ≫ _) y =
       ((SheafedSpace.forget C).map (colimit.ι F j) ≫ _) x at eq
   cases i; cases j
-  rw [ι_preservesColimitsIso_hom_assoc, ι_preservesColimitsIso_hom_assoc,
+  rw [ι_preservesColimitIso_hom_assoc, ι_preservesColimitIso_hom_assoc,
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     TopCat.sigmaIsoSigma_hom_ι, TopCat.sigmaIsoSigma_hom_ι] at eq
   exact h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
@@ -886,7 +886,7 @@ instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
   base_open := sigma_ι_isOpenEmbedding F i
   c_iso U := by
     have e : colimit.ι F i = _ :=
-      (ι_preservesColimitsIso_inv SheafedSpace.forgetToPresheafedSpace F i).symm
+      (ι_preservesColimitIso_inv SheafedSpace.forgetToPresheafedSpace F i).symm
     have H :
       IsOpenEmbedding
         (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫

@@ -27,8 +27,7 @@ universe u v w
 
 namespace SimpleGraph
 
-variable {V : Type u} {V' : Type v} {V'' : Type w}
-variable (G : SimpleGraph V) (G' : SimpleGraph V') (G'' : SimpleGraph V'')
+variable {V : Type u} (G : SimpleGraph V)
 
 /-! ### Walks of a given length -/
 
