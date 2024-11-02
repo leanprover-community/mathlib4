@@ -185,7 +185,7 @@ theorem nonneg [Nontrivial α] {t : Ico (0 : α) 1} : 0 ≤ t :=
 
 instance mul : Mul (Ico (0 : α) 1) where
   mul p q :=
-    ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, mul_lt_one_of_le_of_lt_right₀ p.2.2.le q.2.2 q.2.1⟩⟩
+    ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, mul_lt_one_of_nonneg_of_lt_one_right p.2.2.le q.2.1 q.2.2⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ico (0 : α) 1) : ↑(x * y) = (x * y : α) :=
@@ -290,7 +290,7 @@ theorem lt_one (x : Ioo (0 : α) 1) : (x : α) < 1 :=
 
 instance mul : Mul (Ioo (0 : α) 1) where
   mul p q :=
-    ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, mul_lt_one_of_le_of_lt_right₀ p.2.2.le q.2.2 q.2.1.le⟩⟩
+    ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, mul_lt_one_of_nonneg_of_lt_one_right p.2.2.le q.2.1.le q.2.2⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ioo (0 : α) 1) : ↑(x * y) = (x * y : α) :=

@@ -378,7 +378,7 @@ theorem mem_closure_of_gauge_le_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : 
     filter_upwards [Ico_mem_nhdsWithin_Iio' one_pos] with r ⟨hr₀, hr₁⟩
     apply gauge_lt_one_subset_self hc hs₀ ha
     rw [mem_setOf_eq, gauge_smul_of_nonneg hr₀]
-    exact mul_lt_one_of_lt_of_le_left₀ hr₁ h hr₀
+    exact mul_lt_one_of_nonneg_of_lt_one_left hr₀ hr₁ h
   refine mem_closure_of_tendsto ?_ this
   exact Filter.Tendsto.mono_left (Continuous.tendsto' (by fun_prop) _ _ (one_smul _ _))
     inf_le_left

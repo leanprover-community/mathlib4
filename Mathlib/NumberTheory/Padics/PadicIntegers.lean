@@ -411,7 +411,7 @@ theorem norm_lt_one_add {z1 z2 : ℤ_[p]} (hz1 : ‖z1‖ < 1) (hz2 : ‖z2‖ <
 theorem norm_lt_one_mul {z1 z2 : ℤ_[p]} (hz2 : ‖z2‖ < 1) : ‖z1 * z2‖ < 1 :=
   calc
     ‖z1 * z2‖ = ‖z1‖ * ‖z2‖ := by simp
-    _ < 1 := mul_lt_one_of_le_of_lt_right₀ (norm_le_one _) hz2 (norm_nonneg _)
+    _ < 1 := mul_lt_one_of_nonneg_of_lt_one_right (norm_le_one _) (norm_nonneg _) hz2
 
 -- @[simp] -- Porting note: not in simpNF
 theorem mem_nonunits {z : ℤ_[p]} : z ∈ nonunits ℤ_[p] ↔ ‖z‖ < 1 := by

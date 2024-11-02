@@ -723,7 +723,7 @@ theorem Wbtw.trans_left_right {w x y z : P} (h₁ : Wbtw R w y z) (h₂ : Wbtw R
     suffices t₁ = 1 by simp [this]
     exact
       eq_of_le_of_not_lt ht₁.2 fun ht₁lt =>
-        (mul_lt_one_of_le_of_lt_right₀ ht₂.2 ht₁lt ht₁.1).ne h
+        (mul_lt_one_of_nonneg_of_lt_one_right ht₂.2 ht₁.1 ht₁lt).ne h
   · rw [div_self h]
     ring_nf
 
