@@ -426,6 +426,7 @@ lemma Δ'_eq_of_eq (W' : WeierstrassCurve R) [W'.Elliptic] (h : W = W') : W.Δ' 
 
 /-- The discriminant `Δ'` of an elliptic curve is equal to the
 discriminant `Δ` of it as a Weierstrass curve. -/
+@[simp]
 lemma coe_Δ' : W.Δ' = W.Δ := rfl
 
 /-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`. -/
@@ -536,7 +537,7 @@ instance Elliptic.ofJ1728 [Invertible (2 : R)] : (ofJ1728 R).Elliptic :=
   (invertibleNeg (2 ^ 6 : R)).copy _ (by rw [ofJ1728_Δ R]; norm_num1)
 
 lemma ofJ1728_j [Invertible (2 : R)] : (ofJ1728 R).j = 1728 := by
-  field_simp [j, ofJ1728_c₄, coe_Δ', ofJ1728_Δ]
+  field_simp [j, ofJ1728_c₄, ofJ1728_Δ]
   norm_num1
 
 variable {R}
@@ -550,7 +551,7 @@ instance Elliptic.ofJNe0Or1728 (j : R) [Invertible j] [Invertible (j - 1728)] :
 
 lemma ofJNe0Or1728_j (j : R) [Invertible j] [Invertible (j - 1728)] :
     (ofJNe0Or1728 j).j = j := by
-  field_simp [WeierstrassCurve.j, ofJNe0Or1728_c₄, coe_Δ', ofJNe0Or1728_Δ]
+  field_simp [WeierstrassCurve.j, ofJNe0Or1728_c₄, ofJNe0Or1728_Δ]
   ring1
 
 variable {F : Type u} [Field F] (j : F)
