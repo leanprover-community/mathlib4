@@ -808,7 +808,6 @@ lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
     (W.baseChange A).toAffine.polynomial.map (mapRingHom f) := by
   rw [← map_polynomial, map_baseChange]
 
-variable {g} in
 lemma baseChange_equation (hf : Function.Injective f) (x y : A) :
     (W.baseChange B).toAffine.Equation (f x) (f y) ↔ (W.baseChange A).toAffine.Equation x y := by
   erw [← map_equation _ hf, map_baseChange]

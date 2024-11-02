@@ -295,7 +295,7 @@ def linearIsometryBoundedOfCompact : C(α, E) ≃ₗᵢ[𝕜] α →ᵇ E :=
     map_smul' := fun c f => by
       ext
       norm_cast
-    norm_map' := fun f => rfl }
+    norm_map' := fun _ => rfl }
 
 variable {α E}
 
@@ -417,57 +417,6 @@ end CompLeft
 
 namespace ContinuousMap
 
-/-!
-We now setup variations on `compRight* f`, where `f : C(X, Y)`
-(that is, precomposition by a continuous map),
-as a morphism `C(Y, T) → C(X, T)`, respecting various types of structure.
-
-In particular:
-* `compRightContinuousMap`, the bundled continuous map (for this we need `X Y` compact).
-* `compRightHomeomorph`, when we precompose by a homeomorphism.
-* `compRightAlgHom`, when `T = R` is a topological ring.
--/
-
-
-section CompRight
-
-/-- Precomposition by a continuous map is itself a continuous map between spaces of continuous maps.
--/
-def compRightContinuousMap {X Y : Type*} (T : Type*) [TopologicalSpace X] [CompactSpace X]
-    [TopologicalSpace Y] [CompactSpace Y] [PseudoMetricSpace T] (f : C(X, Y)) :
-    C(C(Y, T), C(X, T)) where
-  toFun g := g.comp f
-  continuous_toFun := by
-    refine Metric.continuous_iff.mpr ?_
-    intro g ε ε_pos
-    refine ⟨ε, ε_pos, fun g' h => ?_⟩
-    rw [ContinuousMap.dist_lt_iff ε_pos] at h ⊢
-    exact fun x => h (f x)
-
-@[simp]
-theorem compRightContinuousMap_apply {X Y : Type*} (T : Type*) [TopologicalSpace X]
-    [CompactSpace X] [TopologicalSpace Y] [CompactSpace Y] [PseudoMetricSpace T] (f : C(X, Y))
-    (g : C(Y, T)) : (compRightContinuousMap T f) g = g.comp f :=
-  rfl
-
-/-- Precomposition by a homeomorphism is itself a homeomorphism between spaces of continuous maps.
--/
-def compRightHomeomorph {X Y : Type*} (T : Type*) [TopologicalSpace X] [CompactSpace X]
-    [TopologicalSpace Y] [CompactSpace Y] [PseudoMetricSpace T] (f : X ≃ₜ Y) :
-    C(Y, T) ≃ₜ C(X, T) where
-  toFun := compRightContinuousMap T f.toContinuousMap
-  invFun := compRightContinuousMap T f.symm.toContinuousMap
-  left_inv g := ext fun _ => congr_arg g (f.apply_symm_apply _)
-  right_inv g := ext fun _ => congr_arg g (f.symm_apply_apply _)
-
-theorem compRightAlgHom_continuous {X Y : Type*} (R A : Type*) [TopologicalSpace X]
-    [CompactSpace X] [TopologicalSpace Y] [CompactSpace Y] [CommSemiring R] [Semiring A]
-    [PseudoMetricSpace A] [TopologicalSemiring A] [Algebra R A] (f : C(X, Y)) :
-    Continuous (compRightAlgHom R A f) :=
-  map_continuous (compRightContinuousMap A f)
-
-end CompRight
-
 section LocalNormalConvergence
 
 /-! ### Local normal convergence
@@ -475,7 +424,6 @@ section LocalNormalConvergence
 A sum of continuous functions (on a locally compact space) is "locally normally convergent" if the
 sum of its sup-norms on any compact subset is summable. This implies convergence in the topology
 of `C(X, E)` (i.e. locally uniform convergence). -/
-
 
 open TopologicalSpace
 
@@ -527,9 +475,9 @@ end NormedSpace
 section CStarRing
 
 variable {α : Type*} {β : Type*}
-variable [TopologicalSpace α] [NonUnitalNormedRing β] [StarRing β]
+variable [TopologicalSpace α] [CompactSpace α]
 
-instance [CompactSpace α] [CStarRing β] : CStarRing C(α, β) where
+instance [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : CStarRing C(α, β) where
   norm_mul_self_le f := by
     rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _),
       ContinuousMap.norm_le _ (Real.sqrt_nonneg _)]

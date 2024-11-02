@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Range
+import Mathlib.Data.List.Perm.Basic
 
 /-! # sublists
 
@@ -205,7 +205,7 @@ theorem sublistsLenAux_append :
     ∀ (n : ℕ) (l : List α) (f : List α → β) (g : β → γ) (r : List β) (s : List γ),
       sublistsLenAux n l (g ∘ f) (r.map g ++ s) = (sublistsLenAux n l f r).map g ++ s
   | 0, l, f, g, r, s => by unfold sublistsLenAux; simp
-  | n + 1, [], f, g, r, s => rfl
+  | _ + 1, [], _, _, _, _ => rfl
   | n + 1, a :: l, f, g, r, s => by
     unfold sublistsLenAux
     simp only [show (g ∘ f) ∘ List.cons a = g ∘ f ∘ List.cons a by rfl, sublistsLenAux_append,
@@ -327,12 +327,9 @@ theorem nodup_sublists {l : List α} : Nodup (sublists l) ↔ Nodup l :=
 theorem nodup_sublists' {l : List α} : Nodup (sublists' l) ↔ Nodup l := by
   rw [sublists'_eq_sublists, nodup_map_iff reverse_injective, nodup_sublists, nodup_reverse]
 
-alias ⟨nodup.of_sublists, nodup.sublists⟩ := nodup_sublists
+protected alias ⟨Nodup.of_sublists, Nodup.sublists⟩ := nodup_sublists
 
-alias ⟨nodup.of_sublists', nodup.sublists'⟩ := nodup_sublists'
-
--- Porting note: commented out
---attribute [protected] nodup.sublists nodup.sublists'
+protected alias ⟨Nodup.of_sublists', _⟩ := nodup_sublists'
 
 theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n l).Nodup := by
   have : Pairwise (· ≠ ·) l.sublists' := Pairwise.imp
@@ -378,7 +375,7 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
   · intro l₁ l₂ h
     rw [sublists_concat, reverse_append, zip_append (by simp), ← map_reverse, zip_map_right,
       zip_map_left] at *
-    simp only [Prod.mk.inj_iff, mem_map, mem_append, Prod.map_mk, Prod.exists] at h
+    simp only [Prod.mk.inj_iff, mem_map, mem_append, Prod.map_apply, Prod.exists] at h
     rcases h with (⟨l₁, l₂', h, rfl, rfl⟩ | ⟨l₁', l₂, h, rfl, rfl⟩)
     · rw [← append_assoc]
       exact (ih _ _ h).append_right _

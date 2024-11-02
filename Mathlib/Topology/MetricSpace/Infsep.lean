@@ -246,7 +246,7 @@ theorem einfsep_pos_of_finite [Finite s] : 0 < s.einfsep := by
   · rcases hs.einfsep_exists_of_finite with ⟨x, _hx, y, _hy, hxy, hxy'⟩
     exact hxy'.symm ▸ edist_pos.2 hxy
   · rw [not_nontrivial_iff] at hs
-    exact hs.einfsep.symm ▸ WithTop.zero_lt_top
+    exact hs.einfsep.symm ▸ WithTop.top_pos
 
 theorem relatively_discrete_of_finite [Finite s] :
     ∃ C > 0, ∀ x ∈ s, ∀ y ∈ s, x ≠ y → C ≤ edist x y := by
