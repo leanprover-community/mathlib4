@@ -60,8 +60,17 @@ namespace RootPairing
 
 variable {ι R M N S : Type*}
 
+lemma zero_of_rank_zero [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
+    [IsReflexive R M] (N : Submodule R M) (h : Module.rank R N = 0) : N = ⊥ := by
+  refine (Submodule.eq_bot_iff N).mpr fun x hx => ?_
+  rw [rank_eq_zero_iff] at h
+  obtain ⟨r, ⟨h1, h2⟩⟩ := h ⟨x, hx⟩
+  exact torsion_free_of_reflexive ((AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp h2) h1
+
 variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
 [Module R N] (P : RootPairing ι R M N)
+
+
 
 lemma span_root_finite : Module.Finite R (span R (range P.root)) :=
   Finite.span_of_finite R <| finite_range P.root
@@ -163,6 +172,9 @@ lemma polarization_kernel_finrank_zero : Module.finrank R (LinearMap.ker (Linear
     Nat.add_eq_left] at h
   exact h
 
+-- pull out universe manipulations, and make a linear algebra lemma here?
+-- combine `Submodule.rank_quotient_add_rank` with `LinearMap.quotKerEquivRange`, so
+-- for `M → N`, with range rank equals rank `M`, both finite, then kernel rank is zero.
 lemma polarization_domRestrict_kernel_rank_zero : Module.rank R (LinearMap.ker
     (LinearMap.domRestrict P.Polarization (span R (range P.root)))) = 0 := by
   have h := Submodule.rank_quotient_add_rank
@@ -194,27 +206,34 @@ lemma polarization_domRestrict_injective :
     exact torsion_free_of_reflexive (by simp_all [y]) h1
   exact Submodule.coe_eq_zero.mp this
 
+lemma mem_span_root_zero_of_coroot {x : span R (range P.root)} (hx : ∀ i, P.coroot' i x = 0) :
+    x = 0 := by
+  apply polarization_domRestrict_injective
+  rw [LinearMap.map_zero, LinearMap.domRestrict_apply, Polarization_apply]
+  exact Fintype.sum_eq_zero (fun i ↦ (P.coroot' i) x.1 • P.coroot i) fun i => (by simp [hx i])
+
+lemma mem_span_root_eq_zero_of_rootForm {x : M} (hx : x ∈ span R (range P.root))
+    (h : P.RootForm x x = 0) : x = 0 := by
+  rw [rootForm_self_zero_iff] at h
+  let y : span R (range P.root) := ⟨x, hx⟩
+  have : y = 0 := mem_span_root_zero_of_coroot P h
+  exact (AddSubmonoid.mk_eq_zero (span R (range P.root)).toAddSubmonoid).mp this
+
+-- combine with `rootForm_self_non_neg` to get positive-definiteness
+
+lemma polInner_nondegenerate_on_span {x : span R (range P.root)}
+    (hx : ∀ y : span R (range P.root), RootForm P x y = 0) : x = 0 :=
+  Eq.symm (SetLike.coe_eq_coe.mp (Eq.symm (mem_span_root_eq_zero_of_rootForm P
+    (Submodule.coe_mem x) (hx x))))
+
+
 
 
 --lemma coxeter_weight_leq_4 (i j : ι) : coxeterWeight i j ≤ 4 := by sorry
 
--- Then, P.toPerfectPairing is nondegenerate on the span of roots, since (c,r) = 0 for all c implies
--- p(r) = 0.
--- Finally, PolInner is also nondegenerate on the span of roots, since
--- it is a composition with a spanning injection.
-
--- I need base change to be an injection on weight spaces, and this uses reflexivity and flatness.
-
 
 /-!
-lemma positive_definite_polInner {x : M} (hx : x ∈ span R (range P.root)) (h : P.PolInner x x = 0) :
-    x = 0 := by
-  rw [mem_span_range_iff_exists_fun] at hx
-  obtain ⟨c, hc⟩ := hx
-  rw [← hc] at h
-  simp at h
 
-  sorry
 
 For any bilinear form over a commutative ring,
 `|(x,y) • x - (x,x) • y|^2 = |x|^2(|x|^2 * |y|^2 - (x,y)^2)` (easy cancellation)
