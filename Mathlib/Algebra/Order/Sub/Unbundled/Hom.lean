@@ -16,7 +16,7 @@ variable {α β : Type*}
 
 section Add
 
-variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [Preorder α] [Add α] [Sub α] [OrderedSub α]
 
 theorem AddHom.le_map_tsub [Preorder β] [Add β] [Sub β] [OrderedSub β] (f : AddHom α β)
     (hf : Monotone f) (a b : α) : f a - f b ≤ f (a - b) := by
@@ -24,11 +24,11 @@ theorem AddHom.le_map_tsub [Preorder β] [Add β] [Sub β] [OrderedSub β] (f : 
   exact hf le_tsub_add
 
 theorem le_mul_tsub {R : Type*} [Distrib R] [Preorder R] [Sub R] [OrderedSub R]
-    [CovariantClass R R (· * ·) (· ≤ ·)] {a b c : R} : a * b - a * c ≤ a * (b - c) :=
+    [MulLeftMono R] {a b c : R} : a * b - a * c ≤ a * (b - c) :=
   (AddHom.mulLeft a).le_map_tsub (monotone_id.const_mul' a) _ _
 
 theorem le_tsub_mul {R : Type*} [CommSemiring R] [Preorder R] [Sub R] [OrderedSub R]
-    [CovariantClass R R (· * ·) (· ≤ ·)] {a b c : R} : a * c - b * c ≤ (a - b) * c := by
+    [MulLeftMono R] {a b c : R} : a * c - b * c ≤ (a - b) * c := by
   simpa only [mul_comm _ c] using le_mul_tsub
 
 end Add
@@ -49,7 +49,7 @@ theorem OrderIso.map_tsub {M N : Type*} [Preorder M] [Add M] [Sub M] [OrderedSub
 section Preorder
 
 variable [Preorder α]
-variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [AddCommMonoid α] [Sub α] [OrderedSub α]
 
 theorem AddMonoidHom.le_map_tsub [Preorder β] [AddCommMonoid β] [Sub β] [OrderedSub β] (f : α →+ β)
     (hf : Monotone f) (a b : α) : f a - f b ≤ f (a - b) :=

@@ -21,8 +21,6 @@ namespace Function
 -- Porting note: fix the universe of `ζ`, it used to be `u₁`
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
-attribute [eqns comp_def] comp
-
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
 #adaptation_note /-- nightly-2024-03-16
@@ -203,3 +201,16 @@ protected theorem RightInverse.id {g : β → α} {f : α → β} (h : RightInve
 def IsFixedPt (f : α → α) (x : α) := f x = x
 
 end Function
+
+namespace Pi
+
+variable {ι : Sort*} {α β : ι → Sort*}
+
+/-- Sends a dependent function `a : ∀ i, α i` to a dependent function `Pi.map f a : ∀ i, β i`
+by applying `f i` to `i`-th component. -/
+protected def map (f : ∀ i, α i → β i) : (∀ i, α i) → (∀ i, β i) := fun a i ↦ f i (a i)
+
+@[simp]
+lemma map_apply (f : ∀ i, α i → β i) (a : ∀ i, α i) (i : ι) : Pi.map f a i = f i (a i) := rfl
+
+end Pi

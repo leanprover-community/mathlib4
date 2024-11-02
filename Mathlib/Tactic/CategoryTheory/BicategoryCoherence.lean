@@ -27,7 +27,7 @@ open CategoryTheory CategoryTheory.FreeBicategory
 
 open scoped Bicategory
 
-variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
+variable {B : Type u} [Bicategory.{w, v} B] {a b c d : B}
 
 namespace Mathlib.Tactic.BicategoryCoherence
 

@@ -30,49 +30,45 @@ variable (F A B C D E : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [Comm
 /-- The type of continuous additive monoid homomorphisms from `A` to `B`.
 
 When possible, instead of parametrizing results over `(f : ContinuousAddMonoidHom A B)`,
-you should parametrize over `(F : Type*) [ContinuousAddMonoidHomClass F A B] (f : F)`.
+you should parametrize
+over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [AddMonoidHomClass F A B] (f : F)`.
 
-When you extend this structure, make sure to extend `ContinuousAddMonoidHomClass`. -/
+When you extend this structure,
+make sure to extend `ContinuousMapClass` and/or `AddMonoidHomClass`, if needed. -/
 structure ContinuousAddMonoidHom (A B : Type*) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
-  [TopologicalSpace B] extends A →+ B where
-  /-- Proof of continuity of the Hom. -/
-  continuous_toFun : @Continuous A B _ _ toFun
+  [TopologicalSpace B] extends A →+ B, C(A, B)
 
 /-- The type of continuous monoid homomorphisms from `A` to `B`.
 
 When possible, instead of parametrizing results over `(f : ContinuousMonoidHom A B)`,
-you should parametrize over `(F : Type*) [ContinuousMonoidHomClass F A B] (f : F)`.
+you should parametrize
+over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [MonoidHomClass F A B] (f : F)`.
 
-When you extend this structure, make sure to extend `ContinuousAddMonoidHomClass`. -/
+When you extend this structure,
+make sure to extend `ContinuousMapClass` and/or `MonoidHomClass`, if needed. -/
 @[to_additive "The type of continuous additive monoid homomorphisms from `A` to `B`."]
-structure ContinuousMonoidHom extends A →* B where
-  /-- Proof of continuity of the Hom. -/
-  continuous_toFun : @Continuous A B _ _ toFun
+structure ContinuousMonoidHom extends A →* B, C(A, B)
 
 section
 
 /-- `ContinuousAddMonoidHomClass F A B` states that `F` is a type of continuous additive monoid
 homomorphisms.
 
-You should also extend this typeclass when you extend `ContinuousAddMonoidHom`. -/
--- Porting note: Changed A B to outParam to help synthesizing order
-class ContinuousAddMonoidHomClass (A B : outParam Type*) [AddMonoid A] [AddMonoid B]
+Deprecated and changed from a `class` to a `structure`.
+Use `[AddMonoidHomClass F A B] [ContinuousMapClass F A B]` instead. -/
+structure ContinuousAddMonoidHomClass (A B : outParam Type*) [AddMonoid A] [AddMonoid B]
     [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
-    extends AddMonoidHomClass F A B : Prop where
-  /-- Proof of the continuity of the map. -/
-  map_continuous (f : F) : Continuous f
+    extends AddMonoidHomClass F A B, ContinuousMapClass F A B : Prop
 
 /-- `ContinuousMonoidHomClass F A B` states that `F` is a type of continuous monoid
 homomorphisms.
 
-You should also extend this typeclass when you extend `ContinuousMonoidHom`. -/
--- Porting note: Changed A B to outParam to help synthesizing order
-@[to_additive]
-class ContinuousMonoidHomClass (A B : outParam Type*) [Monoid A] [Monoid B]
+Deprecated and changed from a `class` to a `structure`.
+Use `[MonoidHomClass F A B] [ContinuousMapClass F A B]` instead. -/
+@[to_additive (attr := deprecated (since := "2024-10-08"))]
+structure ContinuousMonoidHomClass (A B : outParam Type*) [Monoid A] [Monoid B]
     [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
-    extends MonoidHomClass F A B : Prop where
-  /-- Proof of the continuity of the map. -/
-  map_continuous (f : F) : Continuous f
+    extends MonoidHomClass F A B, ContinuousMapClass F A B : Prop
 
 end
 
@@ -82,18 +78,18 @@ add_decl_doc ContinuousMonoidHom.toMonoidHom
 /-- Reinterpret a `ContinuousAddMonoidHom` as an `AddMonoidHom`. -/
 add_decl_doc ContinuousAddMonoidHom.toAddMonoidHom
 
--- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) ContinuousMonoidHomClass.toContinuousMapClass
-    [FunLike F A B] [ContinuousMonoidHomClass F A B] : ContinuousMapClass F A B :=
-  { ‹ContinuousMonoidHomClass F A B› with }
+/-- Reinterpret a `ContinuousMonoidHom` as a `ContinuousMap`. -/
+add_decl_doc ContinuousMonoidHom.toContinuousMap
+
+/-- Reinterpret a `ContinuousAddMonoidHom` as a `ContinuousMap`. -/
+add_decl_doc ContinuousAddMonoidHom.toContinuousMap
 
 namespace ContinuousMonoidHom
 
 variable {A B C D E}
 
 @[to_additive]
-instance funLike : FunLike (ContinuousMonoidHom A B) A B where
+instance instFunLike : FunLike (ContinuousMonoidHom A B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨ _ , _ ⟩, _⟩, _⟩ := f
@@ -101,53 +97,61 @@ instance funLike : FunLike (ContinuousMonoidHom A B) A B where
     congr
 
 @[to_additive]
-instance ContinuousMonoidHomClass : ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
+instance instMonoidHomClass : MonoidHomClass (ContinuousMonoidHom A B) A B where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
+
+@[to_additive]
+instance instContinuousMapClass : ContinuousMapClass (ContinuousMonoidHom A B) A B where
   map_continuous f := f.continuous_toFun
 
 @[to_additive (attr := ext)]
 theorem ext {f g : ContinuousMonoidHom A B} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
-/-- Reinterpret a `ContinuousMonoidHom` as a `ContinuousMap`. -/
-@[to_additive "Reinterpret a `ContinuousAddMonoidHom` as a `ContinuousMap`."]
-def toContinuousMap (f : ContinuousMonoidHom A B) : C(A, B) :=
-  { f with }
-
 @[to_additive]
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
   ext <| by convert DFunLike.ext_iff.1 h
 
--- Porting note: Removed simps because given definition is not a constructor application
-/-- Construct a `ContinuousMonoidHom` from a `Continuous` `MonoidHom`. -/
-@[to_additive "Construct a `ContinuousAddMonoidHom` from a `Continuous` `AddMonoidHom`."]
-def mk' (f : A →* B) (hf : Continuous f) : ContinuousMonoidHom A B :=
-  { f with continuous_toFun := (hf : Continuous f.toFun)}
+@[deprecated (since := "2024-10-08")] protected alias mk' := mk
+
+@[deprecated (since := "2024-10-08")]
+protected alias _root_.ContinuousAddMonoidHom.mk' := ContinuousAddMonoidHom.mk
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] ContinuousMonoidHom.mk'
 
 /-- Composition of two continuous homomorphisms. -/
 @[to_additive (attr := simps!) "Composition of two continuous homomorphisms."]
 def comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) : ContinuousMonoidHom A C :=
-  mk' (g.toMonoidHom.comp f.toMonoidHom) (g.continuous_toFun.comp f.continuous_toFun)
+  ⟨g.toMonoidHom.comp f.toMonoidHom, (map_continuous g).comp (map_continuous f)⟩
 
 /-- Product of two continuous homomorphisms on the same space. -/
-@[to_additive (attr := simps!) "Product of two continuous homomorphisms on the same space."]
+@[to_additive (attr := simps!) prod "Product of two continuous homomorphisms on the same space."]
 def prod (f : ContinuousMonoidHom A B) (g : ContinuousMonoidHom A C) :
     ContinuousMonoidHom A (B × C) :=
-  mk' (f.toMonoidHom.prod g.toMonoidHom) (f.continuous_toFun.prod_mk g.continuous_toFun)
+  ⟨f.toMonoidHom.prod g.toMonoidHom, f.continuous_toFun.prod_mk g.continuous_toFun⟩
 
 /-- Product of two continuous homomorphisms on different spaces. -/
-@[to_additive (attr := simps!) "Product of two continuous homomorphisms on different spaces."]
-def prod_map (f : ContinuousMonoidHom A C) (g : ContinuousMonoidHom B D) :
+@[to_additive (attr := simps!) prodMap
+  "Product of two continuous homomorphisms on different spaces."]
+def prodMap (f : ContinuousMonoidHom A C) (g : ContinuousMonoidHom B D) :
     ContinuousMonoidHom (A × B) (C × D) :=
-  mk' (f.toMonoidHom.prodMap g.toMonoidHom) (f.continuous_toFun.prod_map g.continuous_toFun)
+  ⟨f.toMonoidHom.prodMap g.toMonoidHom, f.continuous_toFun.prodMap g.continuous_toFun⟩
+
+@[deprecated (since := "2024-10-05")] alias prod_map := prodMap
+@[deprecated (since := "2024-10-05")]
+alias _root_.ContinuousAddMonoidHom.sum_map := ContinuousAddMonoidHom.prodMap
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] prod_map
 
 variable (A B C D E)
 
 /-- The trivial continuous homomorphism. -/
 @[to_additive (attr := simps!) "The trivial continuous homomorphism."]
 def one : ContinuousMonoidHom A B :=
-  mk' 1 continuous_const
+  ⟨1, continuous_const⟩
 
 @[to_additive]
 instance : Inhabited (ContinuousMonoidHom A B) :=
@@ -156,19 +160,19 @@ instance : Inhabited (ContinuousMonoidHom A B) :=
 /-- The identity continuous homomorphism. -/
 @[to_additive (attr := simps!) "The identity continuous homomorphism."]
 def id : ContinuousMonoidHom A A :=
-  mk' (MonoidHom.id A) continuous_id
+  ⟨.id A, continuous_id⟩
 
 /-- The continuous homomorphism given by projection onto the first factor. -/
 @[to_additive (attr := simps!)
   "The continuous homomorphism given by projection onto the first factor."]
 def fst : ContinuousMonoidHom (A × B) A :=
-  mk' (MonoidHom.fst A B) continuous_fst
+  ⟨MonoidHom.fst A B, continuous_fst⟩
 
 /-- The continuous homomorphism given by projection onto the second factor. -/
 @[to_additive (attr := simps!)
   "The continuous homomorphism given by projection onto the second factor."]
 def snd : ContinuousMonoidHom (A × B) B :=
-  mk' (MonoidHom.snd A B) continuous_snd
+  ⟨MonoidHom.snd A B, continuous_snd⟩
 
 /-- The continuous homomorphism given by inclusion of the first factor. -/
 @[to_additive (attr := simps!)
@@ -195,12 +199,12 @@ def swap : ContinuousMonoidHom (A × B) (B × A) :=
 /-- The continuous homomorphism given by multiplication. -/
 @[to_additive (attr := simps!) "The continuous homomorphism given by addition."]
 def mul : ContinuousMonoidHom (E × E) E :=
-  mk' mulMonoidHom continuous_mul
+  ⟨mulMonoidHom, continuous_mul⟩
 
 /-- The continuous homomorphism given by inversion. -/
 @[to_additive (attr := simps!) "The continuous homomorphism given by negation."]
 def inv : ContinuousMonoidHom E E :=
-  mk' invMonoidHom continuous_inv
+  ⟨invMonoidHom, continuous_inv⟩
 
 variable {A B C D E}
 
@@ -208,7 +212,7 @@ variable {A B C D E}
 @[to_additive (attr := simps!) "Coproduct of two continuous homomorphisms to the same space."]
 def coprod (f : ContinuousMonoidHom A E) (g : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (A × B) E :=
-  (mul E).comp (f.prod_map g)
+  (mul E).comp (f.prodMap g)
 
 @[to_additive]
 instance : CommGroup (ContinuousMonoidHom A E) where
@@ -228,13 +232,27 @@ instance : TopologicalSpace (ContinuousMonoidHom A B) :=
 variable (A B C D E)
 
 @[to_additive]
-theorem inducing_toContinuousMap : Inducing (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
-  ⟨rfl⟩
+theorem isInducing_toContinuousMap :
+    IsInducing (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) := ⟨rfl⟩
+
+@[deprecated (since := "2024-10-28")] alias inducing_toContinuousMap := isInducing_toContinuousMap
 
 @[to_additive]
-theorem embedding_toContinuousMap :
-    Embedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
-  ⟨inducing_toContinuousMap A B, toContinuousMap_injective⟩
+theorem isEmbedding_toContinuousMap :
+    IsEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
+  ⟨isInducing_toContinuousMap A B, toContinuousMap_injective⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_toContinuousMap := isEmbedding_toContinuousMap
+
+@[to_additive]
+instance instContinuousEvalConst : ContinuousEvalConst (ContinuousMonoidHom A B) A B :=
+  .of_continuous_forget (isInducing_toContinuousMap A B).continuous
+
+@[to_additive]
+instance instContinuousEval [LocallyCompactPair A B] :
+    ContinuousEval (ContinuousMonoidHom A B) A B :=
+  .of_continuous_forget (isInducing_toContinuousMap A B).continuous
 
 @[to_additive]
 lemma range_toContinuousMap :
@@ -245,54 +263,57 @@ lemma range_toContinuousMap :
   exact ⟨{ f with map_one' := h1, map_mul' := hmul }, rfl⟩
 
 @[to_additive]
-theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
-    ClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
-  toEmbedding := embedding_toContinuousMap A B
+theorem isClosedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
+    IsClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
+  toIsEmbedding := isEmbedding_toContinuousMap A B
   isClosed_range := by
     simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
-    refine .inter (isClosed_singleton.preimage (ContinuousMap.continuous_eval_const 1)) <|
+    refine .inter (isClosed_singleton.preimage (continuous_eval_const 1)) <|
       isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ ?_
-    exact isClosed_eq (ContinuousMap.continuous_eval_const (x * y)) <|
-      .mul (ContinuousMap.continuous_eval_const x) (ContinuousMap.continuous_eval_const y)
+    exact isClosed_eq (continuous_eval_const (x * y)) <|
+      .mul (continuous_eval_const x) (continuous_eval_const y)
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_toContinuousMap := isClosedEmbedding_toContinuousMap
 
 variable {A B C D E}
 
 @[to_additive]
 instance [T2Space B] : T2Space (ContinuousMonoidHom A B) :=
-  (embedding_toContinuousMap A B).t2Space
+  (isEmbedding_toContinuousMap A B).t2Space
 
 @[to_additive]
 instance : TopologicalGroup (ContinuousMonoidHom A E) :=
-  let hi := inducing_toContinuousMap A E
+  let hi := isInducing_toContinuousMap A E
   let hc := hi.continuous
-  { continuous_mul := hi.continuous_iff.mpr (continuous_mul.comp (Continuous.prod_map hc hc))
+  { continuous_mul := hi.continuous_iff.mpr (continuous_mul.comp (Continuous.prodMap hc hc))
     continuous_inv := hi.continuous_iff.mpr (continuous_inv.comp hc) }
 
 @[to_additive]
 theorem continuous_of_continuous_uncurry {A : Type*} [TopologicalSpace A]
     (f : A → ContinuousMonoidHom B C) (h : Continuous (Function.uncurry fun x y => f x y)) :
     Continuous f :=
-  (inducing_toContinuousMap _ _).continuous_iff.mpr
+  (isInducing_toContinuousMap _ _).continuous_iff.mpr
     (ContinuousMap.continuous_of_continuous_uncurry _ h)
 
 @[to_additive]
 theorem continuous_comp [LocallyCompactSpace B] :
     Continuous fun f : ContinuousMonoidHom A B × ContinuousMonoidHom B C => f.2.comp f.1 :=
-  (inducing_toContinuousMap A C).continuous_iff.2 <|
+  (isInducing_toContinuousMap A C).continuous_iff.2 <|
     ContinuousMap.continuous_comp'.comp
-      ((inducing_toContinuousMap A B).prod_map (inducing_toContinuousMap B C)).continuous
+      ((isInducing_toContinuousMap A B).prodMap (isInducing_toContinuousMap B C)).continuous
 
 @[to_additive]
 theorem continuous_comp_left (f : ContinuousMonoidHom A B) :
     Continuous fun g : ContinuousMonoidHom B C => g.comp f :=
-  (inducing_toContinuousMap A C).continuous_iff.2 <|
-    f.toContinuousMap.continuous_comp_left.comp (inducing_toContinuousMap B C).continuous
+  (isInducing_toContinuousMap A C).continuous_iff.2 <|
+    f.toContinuousMap.continuous_precomp.comp (isInducing_toContinuousMap B C).continuous
 
 @[to_additive]
 theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
     Continuous fun g : ContinuousMonoidHom A B => f.comp g :=
-  (inducing_toContinuousMap A C).continuous_iff.2 <|
-    f.toContinuousMap.continuous_comp.comp (inducing_toContinuousMap A B).continuous
+  (isInducing_toContinuousMap A C).continuous_iff.2 <|
+    f.toContinuousMap.continuous_postcomp.comp (isInducing_toContinuousMap A B).continuous
 
 variable (E)
 
@@ -357,7 +378,7 @@ theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)
     have h3 : IsOpen T := isOpen_induced (ContinuousMap.isOpen_setOf_mapsTo hU isOpen_interior)
     exact h1.mono (interior_maximal h2 h3)
   exact TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
-    ⟨⟨S2, (inducing_toContinuousMap X Y).isCompact_iff.mpr
+    ⟨⟨S2, (isInducing_toContinuousMap X Y).isCompact_iff.mpr
       (ArzelaAscoli.isCompact_of_equicontinuous S3 hS4.isCompact h)⟩, hS2⟩
 
 variable [LocallyCompactSpace X]

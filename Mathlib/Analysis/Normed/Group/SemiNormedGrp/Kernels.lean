@@ -78,7 +78,7 @@ instance : HasCokernels SemiNormedGrp₁.{u} where
               simp
               -- This used to be the end of the proof before leanprover/lean4#2644
               erw [zero_apply])
-            fun s m w =>
+            fun _ _ w =>
             Subtype.eq
               (NormedAddGroupHom.lift_unique f.1.range _ _ _ (congr_arg Subtype.val w : _)) }
 
@@ -123,7 +123,7 @@ instance hasLimit_parallelPair {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) :
               NormedAddGroupHom.ker.lift (Fork.ι c) _ <|
                 show NormedAddGroupHom.compHom (f - g) c.ι = 0 by
                   rw [AddMonoidHom.map_sub, AddMonoidHom.sub_apply, sub_eq_zero]; exact c.condition)
-            (fun c => NormedAddGroupHom.ker.incl_comp_lift _ _ _) fun c g h => by
+            (fun _ => NormedAddGroupHom.ker.incl_comp_lift _ _ _) fun c g h => by
         -- Porting note: the `simp_rw` was `rw [← h]` but motive is not type correct in mathlib4
               ext x; dsimp; simp_rw [← h]; rfl}
 
@@ -145,14 +145,12 @@ def cokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) : Cofork f 0 :=
       ext a
       simp only [comp_apply, Limits.zero_comp]
       -- Porting note: `simp` not firing on the below
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [comp_apply, NormedAddGroupHom.zero_apply]
+      rw [comp_apply, NormedAddGroupHom.zero_apply]
       -- Porting note: Lean 3 didn't need this instance
       letI : SeminormedAddCommGroup ((forget SemiNormedGrp).obj Y) :=
         (inferInstance : SeminormedAddCommGroup Y)
       -- Porting note: again simp doesn't seem to be firing in the below line
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [← NormedAddGroupHom.mem_ker, f.range.ker_normedMk, f.mem_range]
+      rw [← NormedAddGroupHom.mem_ker, f.range.ker_normedMk, f.mem_range]
     -- This used to be `simp only [exists_apply_eq_apply]` before leanprover/lean4#2644
       convert exists_apply_eq_apply f a)
 
@@ -181,7 +179,7 @@ def isColimitCokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
       simp
       -- This used to be the end of the proof before leanprover/lean4#2644
       erw [zero_apply])
-    fun s m w => NormedAddGroupHom.lift_unique f.range _ _ _ w
+    fun _ _ w => NormedAddGroupHom.lift_unique f.range _ _ _ w
 
 instance : HasCokernels SemiNormedGrp.{u} where
   has_colimit f :=
@@ -351,8 +349,8 @@ theorem ExplicitCoker.map_desc {A B C D B' D' : SemiNormedGrp.{u}}
     (h' : fbb' ≫ g = fbd ≫ fdd') :
     explicitCokernelDesc condb ≫ g = explicitCokernel.map h ≫ explicitCokernelDesc condd := by
   delta explicitCokernel.map
-  simp [← cancel_epi (explicitCokernelπ fab), ← Category.assoc, Category.assoc,
-    explicitCokernelπ_desc, h']
+  simp only [← Category.assoc, ← cancel_epi (explicitCokernelπ fab)]
+  simp [Category.assoc, explicitCokernelπ_desc, h']
 
 end ExplicitCokernel
 
