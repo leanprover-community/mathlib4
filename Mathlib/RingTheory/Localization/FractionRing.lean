@@ -311,3 +311,21 @@ instance [Algebra R A] [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R (Fraction
     (NoZeroSMulDivisors.algebraMap_injective R A)
 
 end FractionRing
+
+section algebraMap_injective
+
+theorem algebraMap_injective_of_field_isFractionRing (K L : Type*) [Field K] [Semiring L]
+    [Nontrivial L] [Algebra R K] [IsFractionRing R K] [Algebra S L] [Algebra K L]
+    [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] :
+    Function.Injective (algebraMap R S) := by
+  refine Function.Injective.of_comp (f := algebraMap S L) ?_
+  rw [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R K L]
+  exact (algebraMap K L).injective.comp (IsFractionRing.injective R K)
+
+theorem NoZeroSMulDivisors.of_field_isFractionRing [NoZeroDivisors S] (K L : Type*) [Field K]
+    [Semiring L] [Nontrivial L] [Algebra R K] [IsFractionRing R K] [Algebra S L] [Algebra K L]
+    [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] :
+    NoZeroSMulDivisors R S :=
+  of_algebraMap_injective (algebraMap_injective_of_field_isFractionRing R S K L)
+
+end algebraMap_injective

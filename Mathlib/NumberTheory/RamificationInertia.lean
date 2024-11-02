@@ -357,7 +357,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
       have : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective hRL
       rw [← IsFractionRing.isAlgebraic_iff' R S]
       infer_instance
-    refine IsFractionRing.ideal_span_singleton_map_subset R hRL span_d hx
+    exact IsFractionRing.ideal_span_singleton_map_subset R hRL span_d hx
 
 variable (K)
 variable [hRK : IsFractionRing R K]
@@ -781,19 +781,12 @@ is maximal.
 theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDomain R]
     [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [Module.Finite R S]
-    [IsIntegralClosure S R L] [p.IsMaximal] (hp0 : p ≠ ⊥) :
+    [p.IsMaximal] (hp0 : p ≠ ⊥) :
     (∑ P ∈ (factors (map (algebraMap R S) p)).toFinset,
         ramificationIdx (algebraMap R S) p P * inertiaDeg (algebraMap R S) p P) =
       finrank K L := by
   set e := ramificationIdx (algebraMap R S) p
   set f := inertiaDeg (algebraMap R S) p
-  have inj_RL : Function.Injective (algebraMap R L) := by
-    rw [IsScalarTower.algebraMap_eq R K L, RingHom.coe_comp]
-    exact (RingHom.injective _).comp (IsFractionRing.injective R K)
-  have inj_RS : Function.Injective (algebraMap R S) := by
-    refine Function.Injective.of_comp (show Function.Injective (algebraMap S L ∘ _) from ?_)
-    rw [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq]
-    exact inj_RL
   calc
     (∑ P ∈ (factors (map (algebraMap R S) p)).toFinset, e P * f P) =
         ∑ P ∈ (factors (map (algebraMap R S) p)).toFinset.attach,
@@ -807,8 +800,8 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
     refine Finset.sum_congr rfl fun P _ => ?_
     rw [Factors.finrank_pow_ramificationIdx]
   · refine LinearEquiv.finrank_eq (Factors.piQuotientLinearEquiv S p ?_).symm
-    rwa [Ne, Ideal.map_eq_bot_iff_le_ker, (RingHom.injective_iff_ker_eq_bot _).mp inj_RS,
-      le_bot_iff]
+    rwa [Ne, Ideal.map_eq_bot_iff_le_ker, (RingHom.injective_iff_ker_eq_bot _).mp <|
+      algebraMap_injective_of_field_isFractionRing R S K L, le_bot_iff]
   · exact finrank_quotient_map p K L
 
 end FactorsMap
@@ -840,7 +833,6 @@ theorem ramificationIdx_tower [IsDedekindDomain S] [IsDedekindDomain T] {f : R �
   exact add_right_eq_self.mpr <| Decidable.byContradiction fun h ↦ hntq <| hcp.trans_le <|
     sup_le hg <| le_of_dvd <| dvd_of_mem_normalizedFactors <| Multiset.count_ne_zero.mp h
 
-attribute [local instance] Quotient.field in
 theorem inertiaDeg_tower {f : R →+* S} {g : S →+* T} {p : Ideal R} {P : Ideal S} {I : Ideal T}
     [p.IsMaximal] [P.IsMaximal] (hp : p = comap f P) (hP : P = comap g I) :
     inertiaDeg (g.comp f) p I = inertiaDeg f p P * inertiaDeg g P I := by
