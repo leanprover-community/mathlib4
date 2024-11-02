@@ -900,12 +900,12 @@ theorem lt_mul_of_le_of_one_lt' [PosMulStrictMono α] (bc : b ≤ c) (ha : 1 < a
     (_a0 : 0 ≤ a) (b0 : 0 < b) : b < c * a :=
   bc.trans_lt <| lt_mul_of_one_lt_right (b0.trans_le bc) ha
 
-@[deprecated le_mul_of_one_le_right (since := "2024-10-10")]
+@[deprecated le_mul_of_one_le_right (since := "2024-10-10"), nolint unusedArguments]
 theorem lt_mul_of_lt_of_one_le' [PosMulMono α] (bc : b < c) (ha : 1 ≤ a)
     (_a0 : 0 < a) (b0 : 0 ≤ b) : b < c * a :=
   bc.trans_le <| le_mul_of_one_le_right (b0.trans bc.le) ha
 
-@[deprecated lt_mul_of_one_lt_right (since := "2024-10-10")]
+@[deprecated lt_mul_of_one_lt_right (since := "2024-10-10"), nolint unusedArguments]
 theorem lt_mul_of_lt_of_one_lt_of_pos [PosMulStrictMono α] (bc : b < c)
     (ha : 1 < a) (_a0 : 0 < a) (b0 : 0 < b) : b < c * a :=
   bc.trans <| lt_mul_of_one_lt_right (b0.trans bc) ha
