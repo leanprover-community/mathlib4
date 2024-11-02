@@ -52,19 +52,19 @@ theorem join_splitLengths (h : l.length ≤ sz.sum) : (sz.splitLengths l).join =
     rw [ih, take_append_drop]
     simpa [add_comm] using h
 
-theorem splitLengths_map_length (h : l.length = sz.sum) :
+theorem splitLengths_map_length (h : sz.sum ≤ l.length) :
     (sz.splitLengths l).map length = sz := by
   induction sz generalizing l
   · simp_all [splitLengths]
   case cons head tail ih =>
     simp only [sum_cons] at h
-    simp only [splitLengths, splitAt_eq, map_cons, length_take, h, Nat.le_add_right, min_eq_left,
-      cons.injEq, true_and]
+    simp only [splitLengths, splitAt_eq, map_cons, length_take, cons.injEq, min_eq_left_iff]
     rw [ih]
-    simp [h]
+    · simp [Nat.le_of_add_right_le h]
+    · simp [Nat.le_sub_of_add_le' h]
 
 theorem splitLengths_length_getElem {α : Type*} (l : List α) (sz : List ℕ)
-    (h : l.length = sz.sum) (i : ℕ) (hi : i < (sz.splitLengths l).length) :
+    (h : sz.sum ≤ l.length) (i : ℕ) (hi : i < (sz.splitLengths l).length) :
     (sz.splitLengths l)[i].length = sz[i]'(by simpa using hi) := by
   have := splitLengths_map_length l sz h
   rw [← List.getElem_map List.length]
@@ -73,12 +73,10 @@ theorem splitLengths_length_getElem {α : Type*} (l : List α) (sz : List ℕ)
 
 theorem length_mem_splitLengths {α : Type*} (l : List α) (sz : List ℕ) (b : ℕ)
     (h : ∀ n ∈ sz, n ≤ b) : ∀ l₂ ∈ sz.splitLengths l, l₂.length ≤ b := by
-  induction sz generalizing l
-  · simp [splitLengths]
-  case cons _ _ ih =>
-    simp only [mem_cons, forall_eq_or_imp] at h
-    simp only [splitLengths, splitAt_eq, mem_cons, forall_eq_or_imp, length_take, min_le_iff, h,
-      true_or, true_and]
-    apply ih _ h.2
+  rw [← List.forall_getElem]
+  intro i hi
+  have := length_splitLengths_getElem l sz (hi := hi)
+  have := h (sz[i]'(by simpa using hi)) (getElem_mem ..)
+  omega
 
 end List
