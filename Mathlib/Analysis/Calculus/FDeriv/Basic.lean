@@ -574,14 +574,6 @@ theorem differentiableWithinAt_congr_nhds {t : Set E} (hst : 𝓝[s] x = 𝓝[t]
     DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
   ⟨fun h => h.congr_nhds hst, fun h => h.congr_nhds hst.symm⟩
 
-theorem DifferentiableWithinAt.congr_nhds (h : DifferentiableWithinAt 𝕜 f s x) {t : Set E}
-    (hst : 𝓝[s] x = 𝓝[t] x) : DifferentiableWithinAt 𝕜 f t x :=
-  h.mono_of_mem <| hst ▸ self_mem_nhdsWithin
-
-theorem differentiableWithinAt_congr_nhds {t : Set E} (hst : 𝓝[s] x = 𝓝[t] x) :
-    DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
-  ⟨fun h => h.congr_nhds hst, fun h => h.congr_nhds hst.symm⟩
-
 theorem differentiableWithinAt_univ :
     DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x := by
   simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
