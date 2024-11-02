@@ -584,7 +584,7 @@ variable [Fintype α]
 
 lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
   rw [bddAbove_def]
-  refine Exists.intro (Fintype.card α) ?_
+  use Fintype.card α
   rintro y ⟨sy, syc⟩
   rw [isNClique_iff, ← And.right syc] at *
   exact Finset.card_le_card (Finset.subset_univ sy)
