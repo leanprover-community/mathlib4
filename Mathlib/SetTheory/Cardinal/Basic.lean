@@ -1594,8 +1594,8 @@ theorem aleph0_lt_mk_iff : ℵ₀ < #α ↔ Uncountable α := by
   rw [← not_le, ← not_countable_iff, not_iff_not, mk_le_aleph0_iff]
 
 @[simp]
-theorem aleph0_lt_mk [Uncountable α] : ℵ₀ < #a :=
-  aleph0_lt_mk_iff.mpr <_>
+theorem aleph0_lt_mk [Uncountable α] : ℵ₀ < #α :=
+  aleph0_lt_mk_iff.mpr ‹_›
 
 instance canLiftCardinalNat : CanLift Cardinal ℕ (↑) fun x => x < ℵ₀ :=
   ⟨fun _ hx =>
