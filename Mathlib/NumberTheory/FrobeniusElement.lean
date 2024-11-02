@@ -199,11 +199,10 @@ theorem isIntegral : Algebra.IsIntegral A B := by
 
 end Algebra.IsInvariant
 
-section transitivity
+namespace Algebra.IsInvariant
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
-  [hinv : Algebra.IsInvariant A B G]
+variable (A B G : Type*) [CommRing A] [CommRing B] [Algebra A B]
+  [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B] [IsInvariant A B G]
 
 /-- If `G` is finite, then `G` acts transitively on primes of `B` above the same prime of `A`. -/
 theorem exists_smul_of_comap_eq
@@ -219,7 +218,7 @@ theorem exists_smul_of_comap_eq
     suffices h : ∃ g ∈ Finset.univ, g • b ∈ P by
       obtain ⟨g, -, hg⟩ := h
       apply Set.mem_biUnion (Finset.mem_univ g⁻¹) (Ideal.mem_inv_pointwise_smul_iff.mpr hg)
-    obtain ⟨a, ha⟩ := hinv.isInvariant (∏ g : G, g • b) (Finset.smul_prod_perm b)
+    obtain ⟨a, ha⟩ := isInvariant (A := A) (∏ g : G, g • b) (Finset.smul_prod_perm b)
     rw [← hP.prod_mem_iff, ← ha, ← P.mem_comap, ← P.under_def A,
       hPQ, Q.mem_comap, ha, hQ.prod_mem_iff]
     exact ⟨1, Finset.mem_univ 1, (one_smul G b).symm ▸ hb⟩
@@ -228,7 +227,7 @@ theorem exists_smul_of_comap_eq
   obtain ⟨g', -, hg'⟩ := this Q (g • P) ((P.under_smul A g).trans hPQ).symm
   exact ⟨g, le_antisymm hg (smul_eq_of_le_smul (hg.trans hg') ▸ hg')⟩
 
-end transitivity
+end Algebra.IsInvariant
 
 section stabilizerAction
 
@@ -353,8 +352,7 @@ section redo_part_b
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
-  (P : Ideal A) (Q : Ideal B) [Q.IsPrime]
-  [Q.LiesOver P]
+  (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
   variable (K L : Type*) [Field K] [Field L]
   [Algebra (A ⧸ P) K]
   [Algebra (B ⧸ Q) L] [NoZeroSMulDivisors (B ⧸ Q) L]
