@@ -389,9 +389,14 @@ instance piSetoid {ι : Sort*} {α : ι → Sort*} [∀ i, Setoid (α i)] : Seto
 
 /-- Given a class of functions `q : @Quotient (∀ i, α i) _`, returns the class of `i`-th projection
 `Quotient (S i)`. -/
-def Quotient.eval {ι : Type*} {α : ι → Sort*} [S : ∀ i, Setoid (α i)]
+def Quotient.eval {ι : Type*} {α : ι → Sort*} {S : ∀ i, Setoid (α i)}
     (q : @Quotient (∀ i, α i) (by infer_instance)) (i : ι) : Quotient (S i) :=
   q.map (· i) fun _ _ h ↦ by exact h i
+
+@[simp]
+theorem Quotient.eval_mk {ι : Type*} {α : ι → Type*} {S : ∀ i, Setoid (α i)} (f : ∀ i, α i) :
+    Quotient.eval (S := S) ⟦f⟧ = fun i ↦ ⟦f i⟧ :=
+  rfl
 
 /-- Given a function `f : Π i, Quotient (S i)`, returns the class of functions `Π i, α i` sending
 each `i` to an element of the class `f i`. -/
