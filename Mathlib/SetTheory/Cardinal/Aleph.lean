@@ -221,6 +221,9 @@ theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
   rw [← omega_zero, omega_le_omega]
   exact Ordinal.zero_le o
 
+theorem omega_pos (o : Ordinal) : 0 < ω_ o :=
+  omega0_pos.trans_le (omega0_le_omega o)
+
 theorem omega0_lt_omega1 : ω < ω₁ := by
   rw [← omega_zero, omega_lt_omega]
   exact zero_lt_one
@@ -306,6 +309,11 @@ theorem lift_preAleph (o : Ordinal.{u}) : lift.{v} (preAleph o) = preAleph (Ordi
   ((InitialSeg.ofIso preAleph.toRelIsoLT).trans liftInitialSeg).eq
     (Ordinal.liftInitialSeg.trans (InitialSeg.ofIso preAleph.toRelIsoLT)) o
 
+@[simp]
+theorem _root_.Ordinal.lift_preOmega (o : Ordinal.{u}) :
+    Ordinal.lift.{v} (preOmega o) = preOmega (Ordinal.lift.{v} o) := by
+  rw [← ord_preAleph, lift_ord, lift_preAleph, ord_preAleph]
+
 theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
     preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
   ⟨fun h o' h' => (preAleph_le_preAleph.2 <| h'.le).trans h, fun h => by
@@ -383,6 +391,11 @@ theorem aleph_zero : ℵ_ 0 = ℵ₀ := by rw [aleph_eq_preAleph, add_zero, preA
 theorem lift_aleph (o : Ordinal.{u}) : lift.{v} (aleph o) = aleph (Ordinal.lift.{v} o) := by
   simp [aleph_eq_preAleph]
 
+@[simp]
+theorem _root_.Ordinal.lift_omega (o : Ordinal.{u}) :
+    Ordinal.lift.{v} (ω_ o) = ω_ (Ordinal.lift.{v} o) := by
+  simp [omega_eq_preOmega]
+
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
   apply le_antisymm _ (ciSup_le' _)
   · rw [aleph_eq_preAleph, preAleph_limit (ho.add _)]
@@ -414,6 +427,11 @@ instance nonempty_toType_aleph (o : Ordinal) : Nonempty (ℵ_ o).ord.toType := b
   rw [toType_nonempty_iff_ne_zero, ← ord_zero]
   exact fun h => (ord_injective h).not_gt (aleph_pos o)
 
+theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) := by
+  rw [← ord_aleph]
+  exact isLimit_ord (aleph0_le_aleph _)
+
+@[deprecated isLimit_omega (since := "2024-10-24")]
 theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
   isLimit_ord <| aleph0_le_aleph _
 
