@@ -845,13 +845,10 @@ theorem Equiv.of_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, x.moveLeft i ≈ y.moveLeft (L i))
     (hr : ∀ j, x.moveRight j ≈ y.moveRight (R j)) : x ≈ y := by
   apply Equiv.of_exists <;> intro i
-  · exact ⟨_, hl i⟩
-  · exact ⟨_, hr i⟩
-  · use L.symm i
-    simpa using hl (L.symm i)
-  · use R.symm i
-    simpa using hr (R.symm i)
+  exacts [⟨_, hl i⟩, ⟨_, hr i⟩,
+    ⟨_, by simpa using hl (L.symm i)⟩, ⟨_, by simpa using hr (R.symm i)⟩]
 
+#exit
 @[deprecated (since := "2024-09-26")] alias equiv_of_mk_equiv := Equiv.of_equiv
 
 /-- The fuzzy, confused, or incomparable relation on pre-games.
