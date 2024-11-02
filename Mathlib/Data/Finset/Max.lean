@@ -87,9 +87,7 @@ theorem le_max_of_eq {s : Finset α} {a b : α} (h₁ : a ∈ s) (h₂ : s.max =
 theorem not_mem_of_max_lt {s : Finset α} {a b : α} (h₁ : b < a) (h₂ : s.max = ↑b) : a ∉ s :=
   Finset.not_mem_of_max_lt_coe <| h₂.trans_lt <| WithBot.coe_lt_coe.mpr h₁
 
-theorem max_union {s t : Finset α} : (s ∪ t).max = s.max ⊔ t.max := by
-  unfold Finset.max
-  rw [Finset.sup_union]
+theorem max_union {s t : Finset α} : (s ∪ t).max = s.max ⊔ t.max := sup_union
 
 @[gcongr]
 theorem max_mono {s t : Finset α} (st : s ⊆ t) : s.max ≤ t.max :=
