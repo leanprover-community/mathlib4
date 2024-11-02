@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.FieldTheory.Perfect
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.AnnihilatingPolynomial
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.RingTheory.Artinian
-import Mathlib.RingTheory.QuotientNilpotent
+import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 import Mathlib.RingTheory.SimpleModule
 
 /-!
