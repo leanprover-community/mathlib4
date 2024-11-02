@@ -333,6 +333,7 @@ lemma differentialsSolution_isPresentation :
 
 /-- The presentation of the `S`-module `Ω[S⁄R]` deduced from a presentation
 of `S` as a `R`-algebra. -/
+@[simps!]
 noncomputable def differentials : Module.Presentation S (Ω[S⁄R]) where
   toSolution := differentialsSolution pres
   toIsPresentation := pres.differentialsSolution_isPresentation
