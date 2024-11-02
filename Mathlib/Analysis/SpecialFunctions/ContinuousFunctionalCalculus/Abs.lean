@@ -24,9 +24,9 @@ import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
 
 namespace CFC
 
-variable {A : Type*} [NonUnitalRing A] [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
-variable [StarRing A] [TopologicalSpace A]
-variable [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+variable {A : Type*}  [PartialOrder A] [NonUnitalNormedRing A] [StarRing A] [Module NNReal A]
+variable [SMulCommClass NNReal A A] [IsScalarTower NNReal A A]
+variable [NonUnitalContinuousFunctionalCalculus NNReal fun (a : A) ↦ 0 ≤ a]
 
 /-- The absolute value of an operator, using the nonunital continuous functional calculus. -/
 noncomputable def abs (a : A) := sqrt (star a * a)
