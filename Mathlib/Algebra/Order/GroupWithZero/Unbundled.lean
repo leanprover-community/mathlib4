@@ -1115,7 +1115,7 @@ lemma pow_le_of_le_one [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀]
 lemma sq_le [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀] (h₀ : 0 ≤ a) (h₁ : a ≤ 1) :
     a ^ 2 ≤ a := pow_le_of_le_one h₀ h₁ two_ne_zero
 
-@[deprecated (since := "2024-11-02")] alias one_le_mul_of_one_le_of_one_le := one_le_mul₀
+alias one_le_mul_of_one_le_of_one_le := one_le_mul₀
 
 lemma mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) :
     a * b < 1 := (mul_le_of_le_one_right ha₀ hb).trans_lt ha
