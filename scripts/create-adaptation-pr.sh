@@ -15,7 +15,7 @@ set -e # abort whenever a command in the script fails
 {
 
 # Default values
-AUTO="no"
+AUTO="yes"
 
 # Function to display usage
 usage() {
@@ -25,7 +25,7 @@ usage() {
   echo "BUMPVERSION: The upcoming release that we are targeting, e.g., 'v4.10.0'"
   echo "NIGHTLYDATE: The date of the nightly toolchain currently used on 'nightly-testing'"
   echo "NIGHTLYSHA: The SHA of the nightly toolchain that we want to adapt to"
-  echo "AUTO: Optional flag to specify automatic mode, default is 'no'"
+  echo "AUTO: Optional flag to specify automatic mode, default is 'yes'"
   exit 1
 }
 
@@ -90,7 +90,7 @@ echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from 
 
 git checkout "bump/$BUMPVERSION"
 git pull
-git merge origin/master || true # ignore error if there are conflicts
+git merge --no-edit origin/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -135,7 +135,7 @@ echo
 echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from 'origin/nightly-testing'"
 
 git checkout -b "bump/nightly-$NIGHTLYDATE"
-git merge $NIGHTLYSHA || true # ignore error if there are conflicts
+git merge --no-edit $NIGHTLYSHA || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -204,7 +204,7 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
   echo "### [auto/user] post a link to the PR on Zulip"
   
   zulip_title="#$pr_number adaptations for nightly-$NIGHTLYDATE"
-  zulip_body="> $pr_title #$pr_number"
+  zulip_body="> $pr_title #$pr_number\\\n\\\nPlease review this PR. At the end of the month this diff will land in \\\`master\\\`."
   
   echo "Post the link to the PR in a new thread on the #nightly-testing channel on Zulip"
   echo "Here is a suggested message:"
@@ -252,7 +252,7 @@ echo "### [auto] checkout the 'nightly-testing' branch and merge the new branch 
 
 git checkout nightly-testing
 git pull
-git merge "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
+git merge --no-edit "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then

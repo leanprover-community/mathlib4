@@ -214,7 +214,6 @@ theorem get_zero : ∀ v : Vector α n.succ, get v 0 = head v
 theorem head_ofFn {n : ℕ} (f : Fin n.succ → α) : head (ofFn f) = f 0 := by
   rw [← get_zero, get_ofFn]
 
---@[simp] Porting note (#10618): simp can prove it
 theorem get_cons_zero (a : α) (v : Vector α n) : get (a ::ᵥ v) 0 = a := by simp [get_zero]
 
 /-- Accessing the nth element of a vector made up
