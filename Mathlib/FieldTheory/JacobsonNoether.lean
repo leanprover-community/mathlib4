@@ -136,11 +136,10 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
     · have := @Nat.find_min (H := exist) _ _ t ?_
       · exact (@Nat.sub_add_cancel (Nat.find exist) 1 (by omega) ▸ ht ▸ not_and.1 this) choice
       · exact Nat.sub_one_lt <| ne_of_gt (Nat.find_spec exist).1
-    · rw [not_lt, Nat.le_zero] at choice
-      have := Nat.eq_add_of_sub_eq (Nat.find_spec exist).1 ht.symm
-      simp only [gt_iff_lt, choice, Nat.succ_eq_add_one, zero_add] at this
-      rw [this, pow_one]
-      exact hb1
+    · suffices h_find: Nat.find exist = 1 by
+        rwa [h_find, pow_one]
+      rw [not_lt, Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at choice
+      linarith [(Nat.find_spec exist).1]
     -- We define `c` to be the value that we proved above to be non-zero.
   set c := ((δ a) ^ n) b with hc_def
   letI : Invertible c := ⟨c⁻¹, inv_mul_cancel₀ (hb.1), mul_inv_cancel₀ (hb.1)⟩
