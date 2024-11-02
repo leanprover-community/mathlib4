@@ -76,12 +76,12 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
       x₀ := by
   have h4f : ContinuousAt (fun x => f x (g x)) x₀ :=
     ContinuousAt.comp_of_eq hf.continuousAt (continuousAt_id.prod hg.continuousAt) rfl
-  have h4f := h4f.preimage_mem_nhds (extChartAt_source_mem_nhds I' (f x₀ (g x₀)))
+  have h4f := h4f.preimage_mem_nhds (extChartAt_source_mem_nhds (I := I') (f x₀ (g x₀)))
   have h3f := contMDiffAt_iff_contMDiffAt_nhds.mp (hf.of_le <| (self_le_add_left 1 m).trans hmn)
   have h2f : ∀ᶠ x₂ in 𝓝 x₀, ContMDiffAt I I' 1 (f x₂) (g x₂) := by
     refine ((continuousAt_id.prod hg.continuousAt).tendsto.eventually h3f).mono fun x hx => ?_
     exact hx.comp (g x) (contMDiffAt_const.prod_mk contMDiffAt_id)
-  have h2g := hg.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds I (g x₀))
+  have h2g := hg.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds (I := I) (g x₀))
   have :
     ContDiffWithinAt 𝕜 m
       (fun x =>
@@ -130,9 +130,9 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
       rw [(extChartAt I (g x₂)).left_inv hx, (extChartAt I' (f x₂ (g x₂))).left_inv h2x]
     refine Filter.EventuallyEq.fderivWithin_eq_nhds ?_
     refine eventually_of_mem (inter_mem ?_ ?_) this
-    · exact extChartAt_preimage_mem_nhds' _ hx₂ (extChartAt_source_mem_nhds I (g x₂))
-    · refine extChartAt_preimage_mem_nhds' _ hx₂ ?_
-      exact h2x₂.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds _ _)
+    · exact extChartAt_preimage_mem_nhds' hx₂ (extChartAt_source_mem_nhds (g x₂))
+    · refine extChartAt_preimage_mem_nhds' hx₂ ?_
+      exact h2x₂.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds _)
   /- The conclusion is equal to the following, when unfolding coord_change of
       `tangentBundleCore` -/
   -- Porting note: added
@@ -153,19 +153,19 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
     intro x₂ hx₂ h2x₂ h3x₂
     symm
     rw [(h2x₂.mdifferentiableAt le_rfl).mfderiv]
-    have hI := (contDiffWithinAt_ext_coord_change I (g x₂) (g x₀) <|
+    have hI := (contDiffWithinAt_ext_coord_change (I := I) (g x₂) (g x₀) <|
       PartialEquiv.mem_symm_trans_source _ hx₂ <|
-        mem_extChartAt_source I (g x₂)).differentiableWithinAt le_top
+        mem_extChartAt_source (g x₂)).differentiableWithinAt le_top
     have hI' :=
-      (contDiffWithinAt_ext_coord_change I' (f x₀ (g x₀)) (f x₂ (g x₂)) <|
-            PartialEquiv.mem_symm_trans_source _ (mem_extChartAt_source I' (f x₂ (g x₂)))
+      (contDiffWithinAt_ext_coord_change (f x₀ (g x₀)) (f x₂ (g x₂)) <|
+            PartialEquiv.mem_symm_trans_source _ (mem_extChartAt_source (f x₂ (g x₂)))
               h3x₂).differentiableWithinAt le_top
     have h3f := (h2x₂.mdifferentiableAt le_rfl).differentiableWithinAt_writtenInExtChartAt
     refine fderivWithin.comp₃ _ hI' h3f hI ?_ ?_ ?_ ?_ (I.uniqueDiffOn _ <| mem_range_self _)
     · exact fun x _ => mem_range_self _
     · exact fun x _ => mem_range_self _
     · simp_rw [writtenInExtChartAt, Function.comp_apply,
-        (extChartAt I (g x₂)).left_inv (mem_extChartAt_source I (g x₂))]
+        (extChartAt I (g x₂)).left_inv (mem_extChartAt_source (g x₂))]
     · simp_rw [Function.comp_apply, (extChartAt I (g x₀)).left_inv hx₂]
   refine this.congr_of_eventuallyEq ?_
   filter_upwards [h2g, h4f] with x hx h2x
@@ -223,12 +223,12 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
         (f p.fst,
           (fderivWithin 𝕜 (writtenInExtChartAt I I' p.fst f) (I.symm ⁻¹' s ∩ range I)
                 ((extChartAt I p.fst) p.fst) : E →L[𝕜] E') p.snd)) (Prod.fst ⁻¹' s) by
-    have A := (tangentBundleModelSpaceHomeomorph H I).continuous
+    have A := (tangentBundleModelSpaceHomeomorph I).continuous
     rw [continuous_iff_continuousOn_univ] at A
     have B :=
-      ((tangentBundleModelSpaceHomeomorph H' I').symm.continuous.comp_continuousOn h).comp' A
+      ((tangentBundleModelSpaceHomeomorph I').symm.continuous.comp_continuousOn h).comp_inter A
     have :
-      univ ∩ tangentBundleModelSpaceHomeomorph H I ⁻¹' (Prod.fst ⁻¹' s) =
+      univ ∩ tangentBundleModelSpaceHomeomorph I ⁻¹' (Prod.fst ⁻¹' s) =
         π E (TangentSpace I) ⁻¹' s := by
       ext ⟨x, v⟩; simp only [mfld_simps]
     rw [this] at B
@@ -390,7 +390,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
     apply UniqueMDiffOn.inter _ l.open_source
     rw [ho, inter_comm]
     exact hs.inter o_open
-  have U'l : UniqueMDiffOn I s'l := U'.uniqueMDiffOn_preimage (mdifferentiable_chart _ _)
+  have U'l : UniqueMDiffOn I s'l := U'.uniqueMDiffOn_preimage (mdifferentiable_chart _)
   have diff_f : ContMDiffOn I I' n f s' := hf.mono (by unfold_let s'; mfld_set_tac)
   have diff_r : ContMDiffOn I' I' n r r.source := contMDiffOn_chart
   have diff_rf : ContMDiffOn I I' n (r ∘ f) s' := by
@@ -461,7 +461,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
           tangentMap I I l.symm (il.symm (Dl q)) := by
         refine tangentMapWithin_eq_tangentMap U'lq ?_
         -- Porting note: the arguments below were underscores.
-        refine mdifferentiableAt_atlas_symm I (chart_mem_atlas H (TotalSpace.proj p)) ?_
+        refine mdifferentiableAt_atlas_symm (chart_mem_atlas H (TotalSpace.proj p)) ?_
         simp only [Dl, il, hq, mfld_simps]
       rw [this, tangentMap_chart_symm, hDl]
       · simp only [il, hq, mfld_simps]
@@ -487,7 +487,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
         apply tangentMapWithin_eq_tangentMap
         · apply r.open_source.uniqueMDiffWithinAt _
           simp [hq]
-        · exact mdifferentiableAt_atlas I' (chart_mem_atlas H' (f p.proj)) hq.1.1
+        · exact mdifferentiableAt_atlas (chart_mem_atlas H' (f p.proj)) hq.1.1
       have : f p.proj = (tangentMapWithin I I' f s p).1 := rfl
       rw [A]
       dsimp [Dr, ir, s', r, l]
@@ -537,8 +537,6 @@ theorem ContMDiff.continuous_tangentMap (hf : ContMDiff I I' n f) (hmn : 1 ≤ n
 end tangentMap
 
 namespace TangentBundle
-
-variable (I M)
 
 open Bundle
 

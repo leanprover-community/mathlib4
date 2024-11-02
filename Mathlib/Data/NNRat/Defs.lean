@@ -14,7 +14,8 @@ import Mathlib.Algebra.Ring.Rat
 This file defines the nonnegative rationals as a subtype of `Rat` and provides its basic algebraic
 order structure.
 
-Note that `NNRat` is not declared as a `Field` here. See `Data.NNRat.Lemmas` for that instance.
+Note that `NNRat` is not declared as a `Semifield` here. See `Mathlib.Algebra.Field.Rat` for that
+instance.
 
 We also define an instance `CanLift ℚ ℚ≥0`. This instance can be used by the `lift` tactic to
 replace `x : ℚ` and `hx : 0 ≤ x` in the proof context with `x : ℚ≥0` while replacing all occurrences
@@ -63,7 +64,15 @@ namespace NNRat
 
 variable {p q : ℚ≥0}
 
+instance instNontrivial : Nontrivial ℚ≥0 where exists_pair_ne := ⟨1, 0, by decide⟩
+instance instOrderBot : OrderBot ℚ≥0 where
+  bot := 0
+  bot_le q := q.2
+
 @[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
+
+instance instCharZero : CharZero ℚ≥0 where
+  cast_injective a b hab := by simpa using congr_arg num hab
 
 instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
   prf q hq := ⟨⟨q, hq⟩, rfl⟩
@@ -138,11 +147,11 @@ theorem coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by norm_cast
 theorem coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
   coe_eq_zero.not
 
-@[norm_cast] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem coe_le_coe : (p : ℚ) ≤ q ↔ p ≤ q :=
   Iff.rfl
 
-@[norm_cast] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 
@@ -399,3 +408,12 @@ theorem le_def {p q : ℚ≥0} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := 
   rw [← NNRat.coe_le_coe, Rat.le_def]; norm_cast
 
 end NNRat
+
+namespace Mathlib.Tactic.Qify
+
+@[qify_simps] lemma nnratCast_eq (a b : ℚ≥0) : a = b ↔ (a : ℚ) = (b : ℚ) := NNRat.coe_inj.symm
+@[qify_simps] lemma nnratCast_le (a b : ℚ≥0) : a ≤ b ↔ (a : ℚ) ≤ (b : ℚ) := NNRat.coe_le_coe.symm
+@[qify_simps] lemma nnratCast_lt (a b : ℚ≥0) : a < b ↔ (a : ℚ) < (b : ℚ) := NNRat.coe_lt_coe.symm
+@[qify_simps] lemma nnratCast_ne (a b : ℚ≥0) : a ≠ b ↔ (a : ℚ) ≠ (b : ℚ) := NNRat.ne_iff.symm
+
+end Mathlib.Tactic.Qify

@@ -10,7 +10,6 @@ import Mathlib.Data.Finite.Powerset
 import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Finite.Sigma
 import Mathlib.Data.Finite.Vector
-import Mathlib.Data.Finite.Basic
 import Mathlib.Logic.Embedding.Set
 
 /-!
@@ -198,12 +197,9 @@ protected theorem toFinset_subset_toFinset : hs.toFinset ⊆ ht.toFinset ↔ s �
 protected theorem toFinset_ssubset_toFinset : hs.toFinset ⊂ ht.toFinset ↔ s ⊂ t := by
   simp only [← Finset.coe_ssubset, Finite.coe_toFinset]
 
-alias ⟨_, toFinset_mono⟩ := Finite.toFinset_subset_toFinset
+protected alias ⟨_, toFinset_mono⟩ := Finite.toFinset_subset_toFinset
 
-alias ⟨_, toFinset_strictMono⟩ := Finite.toFinset_ssubset_toFinset
-
--- Porting note: attribute [protected] doesn't work
--- attribute [protected] toFinset_mono toFinset_strictMono
+protected alias ⟨_, toFinset_strictMono⟩ := Finite.toFinset_ssubset_toFinset
 
 -- Porting note: `simp` can simplify LHS but then it simplifies something
 -- in the generated `Fintype {x | p x}` instance and fails to apply `Set.toFinset_setOf`
@@ -266,8 +262,6 @@ protected theorem toFinset_image [DecidableEq β] (f : α → β) (hs : s.Finite
   ext
   simp
 
--- Porting note (#10618): now `simp` can prove it but it needs the `fintypeRange` instance
--- from the next section
 protected theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) (h : (range f).Finite) :
     h.toFinset = Finset.univ.image f := by
   ext
@@ -482,7 +476,6 @@ This is a wrapper around `Set.toFinite`. -/
 theorem finite_toSet (s : Finset α) : (s : Set α).Finite :=
   Set.toFinite _
 
--- Porting note (#10618): was @[simp], now `simp` can prove it
 theorem finite_toSet_toFinset (s : Finset α) : s.finite_toSet.toFinset = s := by
   rw [toFinite_toFinset, toFinset_coe]
 
@@ -1217,10 +1210,7 @@ theorem infinite_range_iff {f : α → β} (hi : Injective f) :
     (range f).Infinite ↔ Infinite α := by
   rw [← image_univ, infinite_image_iff hi.injOn, infinite_univ_iff]
 
-alias ⟨_, Infinite.image⟩ := infinite_image_iff
-
--- Porting note: attribute [protected] doesn't work
--- attribute [protected] infinite.image
+protected alias ⟨_, Infinite.image⟩ := infinite_image_iff
 
 section Image2
 
