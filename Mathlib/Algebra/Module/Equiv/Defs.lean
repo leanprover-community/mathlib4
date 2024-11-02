@@ -168,15 +168,6 @@ instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   left_inv := LinearEquiv.left_inv
   right_inv := LinearEquiv.right_inv
 
-/-- Helper instance for when inference gets stuck on following the normal chain
-`EquivLike → FunLike`.
-
-TODO: this instance doesn't appear to be necessary: remove it (after benchmarking?)
--/
-instance : FunLike (M ≃ₛₗ[σ] M₂) M M₂ where
-  coe := DFunLike.coe
-  coe_injective' := DFunLike.coe_injective
-
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   map_add := (·.map_add') --map_add' Porting note (#11215): TODO why did I need to change this?
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note (#11215): TODO why did I need to change this?
@@ -399,6 +390,18 @@ theorem toLinearMap_symm_comp_eq (f : M₃ →ₛₗ[σ₃₁] M₁) (g : M₃ �
   constructor <;> intro H <;> ext
   · simp [← H, ← e₁₂.toEquiv.symm_comp_eq f g]
   · simp [H, e₁₂.toEquiv.symm_comp_eq f g]
+
+@[simp]
+theorem comp_toLinearMap_eq_iff (f g : M₃ →ₛₗ[σ₃₁] M₁) :
+    e₁₂.toLinearMap.comp f = e₁₂.toLinearMap.comp g ↔ f = g := by
+  refine ⟨fun h => ?_, congrArg e₁₂.comp⟩
+  rw [← (toLinearMap_symm_comp_eq g (e₁₂.toLinearMap.comp f)).mpr h, eq_toLinearMap_symm_comp]
+
+@[simp]
+theorem eq_comp_toLinearMap_iff (f g : M₂ →ₛₗ[σ₂₃] M₃) :
+    f.comp e₁₂.toLinearMap = g.comp e₁₂.toLinearMap ↔ f = g := by
+  refine ⟨fun h => ?_, fun a ↦ congrFun (congrArg LinearMap.comp a) e₁₂.toLinearMap⟩
+  rw [(eq_comp_toLinearMap_symm g (f.comp e₁₂.toLinearMap)).mpr h.symm, eq_comp_toLinearMap_symm]
 
 @[simp]
 theorem refl_symm [Module R M] : (refl R M).symm = LinearEquiv.refl R M :=

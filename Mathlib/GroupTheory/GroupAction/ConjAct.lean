@@ -5,8 +5,10 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Subgroup.ZPowers
+import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Data.Fintype.Card
+import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Conjugation action of a group on itself
@@ -246,7 +248,7 @@ theorem fixedPoints_eq_center : fixedPoints (ConjAct G) G = center G := by
 theorem mem_orbit_conjAct {g h : G} : g ∈ orbit (ConjAct G) h ↔ IsConj g h := by
   rw [isConj_comm, isConj_iff, mem_orbit_iff]; rfl
 
-theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
+theorem orbitRel_conjAct : ⇑(orbitRel (ConjAct G) G) = IsConj :=
   funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
 
 theorem orbit_eq_carrier_conjClasses (g : G) :

@@ -16,15 +16,15 @@ of ring homs. For `P` a property of ring homs, we have two ways of defining a pr
 morphisms:
 
 Let `f : X ⟶ Y`,
-- `targetAffineLocally (affine_and P)`: the preimage of an affine open `U = Spec A` is affine
-  (`= Spec B`) and `A ⟶ B` satisfies `P`. (TODO)
+- `targetAffineLocally (affineAnd P)`: the preimage of an affine open `U = Spec A` is affine
+  (`= Spec B`) and `A ⟶ B` satisfies `P`. (in `Mathlib/AlgebraicGeometry/Morphisms/AffineAnd.lean`)
 - `affineLocally P`: For each pair of affine open `U = Spec A ⊆ X` and `V = Spec B ⊆ f ⁻¹' U`,
   the ring hom `A ⟶ B` satisfies `P`.
 
 For these notions to be well defined, we require `P` be a sufficient local property. For the former,
 `P` should be local on the source (`RingHom.RespectsIso P`, `RingHom.LocalizationPreserves P`,
 `RingHom.OfLocalizationSpan`), and `targetAffineLocally (affine_and P)` will be local on
-the target. (TODO)
+the target.
 
 For the latter `P` should be local on the target (`RingHom.PropertyIsLocal P`), and
 `affineLocally P` will be local on both the source and the target.
@@ -444,18 +444,18 @@ private lemma respects_isOpenImmersion_aux {X Y : Scheme.{u}} [IsAffine Y] {U : 
   · obtain ⟨(Us : Set Y.Opens), hUs, heq⟩ := Opens.isBasis_iff_cover.mp (isBasis_basicOpen Y) U
     let V (s : Us) : X.Opens := f ⁻¹ᵁ U.ι ⁻¹ᵁ s
     rw [IsLocalAtSource.iff_of_iSup_eq_top (P := P) V]
-    intro s
-    let f' : (V s).toScheme ⟶ U.ι ⁻¹ᵁ s := f ∣_ U.ι ⁻¹ᵁ s
-    have hf' : P f' := IsLocalAtTarget.restrict hf _
-    let e : (U.ι ⁻¹ᵁ s).toScheme ≅ s := IsOpenImmersion.isoOfRangeEq ((U.ι ⁻¹ᵁ s).ι ≫ U.ι) s.1.ι
-      (by simpa [Set.range_comp, Set.image_preimage_eq_iff, heq] using le_sSup s.2)
-    have heq : (V s).ι ≫ f ≫ U.ι = f' ≫ e.hom ≫ s.1.ι := by
-      simp only [IsOpenImmersion.isoOfRangeEq_hom_fac, f', e, morphismRestrict_ι_assoc]
-    rw [heq, ← Category.assoc]
-    refine this _ ?_ ?_
-    · rwa [P.cancel_right_of_respectsIso]
-    · obtain ⟨a, ha⟩ := hUs s.2
-      use a, ha.symm
+    · intro s
+      let f' : (V s).toScheme ⟶ U.ι ⁻¹ᵁ s := f ∣_ U.ι ⁻¹ᵁ s
+      have hf' : P f' := IsLocalAtTarget.restrict hf _
+      let e : (U.ι ⁻¹ᵁ s).toScheme ≅ s := IsOpenImmersion.isoOfRangeEq ((U.ι ⁻¹ᵁ s).ι ≫ U.ι) s.1.ι
+        (by simpa [Set.range_comp, Set.image_preimage_eq_iff, heq] using le_sSup s.2)
+      have heq : (V s).ι ≫ f ≫ U.ι = f' ≫ e.hom ≫ s.1.ι := by
+        simp only [IsOpenImmersion.isoOfRangeEq_hom_fac, f', e, morphismRestrict_ι_assoc]
+      rw [heq, ← Category.assoc]
+      refine this _ ?_ ?_
+      · rwa [P.cancel_right_of_respectsIso]
+      · obtain ⟨a, ha⟩ := hUs s.2
+        use a, ha.symm
     · apply f.preimage_iSup_eq_top
       apply U.ι.image_injective
       simp only [U.ι.image_iSup, U.ι.image_preimage_eq_opensRange_inter, Scheme.Opens.opensRange_ι]

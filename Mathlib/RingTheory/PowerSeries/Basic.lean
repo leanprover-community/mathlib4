@@ -327,13 +327,11 @@ theorem constantCoeff_C (a : R) : constantCoeff R (C R a) = a :=
 theorem constantCoeff_comp_C : (constantCoeff R).comp (C R) = RingHom.id R :=
   rfl
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem constantCoeff_zero : constantCoeff R 0 = 0 :=
   rfl
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem constantCoeff_one : constantCoeff R 1 = 1 :=
   rfl
 
@@ -760,17 +758,19 @@ namespace Polynomial
 
 open Finsupp Polynomial
 
-variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : R[X])
+variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from polynomials into formal power series. -/
 @[coe]
-def ToPowerSeries : R[X] → (PowerSeries R) := fun φ =>
+def toPowerSeries : R[X] → (PowerSeries R) := fun φ =>
   PowerSeries.mk fun n => coeff φ n
+
+@[deprecated (since := "2024-10-27")] alias ToPowerSeries := toPowerSeries
 
 /-- The natural inclusion from polynomials into formal power series. -/
 instance coeToPowerSeries : Coe R[X] (PowerSeries R) :=
-  ⟨ToPowerSeries⟩
+  ⟨toPowerSeries⟩
 
 theorem coe_def : (φ : PowerSeries R) = PowerSeries.mk (coeff φ) :=
   rfl
