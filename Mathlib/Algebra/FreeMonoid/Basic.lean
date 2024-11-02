@@ -418,6 +418,20 @@ def congr_iso : FreeMonoid α ≃* FreeMonoid β :=
   MulEquiv.mk' ⟨FreeMonoid.map e.toFun, FreeMonoid.map e.invFun, fun x => by simp [map_map],
     fun x => by simp [map_map]⟩ (by simp [map_mul])
 
+/-- given an isomorphism between α and β, convert a relation predicate on FreeMonoid α to
+have an underlying type of β -/
+@[to_additive "given an isomorphism between α and β, convert a relation predicate to
+have an underlying type of β"]
+def map_rel (rel : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid β → FreeMonoid β  → Prop :=
+  fun a b ↦ rel (.congr_iso e.symm a) (.congr_iso e.symm b)
+
+/-- given an isomorphism between α and β, pull back a relation predicate with underlying type β to
+one with underlying type α -/
+@[to_additive "given an isomorphism between α and β, pull back a relation predicate with underlying
+type β to one with underlying type α "]
+def comap_rel (rel : FreeMonoid β → FreeMonoid β → Prop) : FreeMonoid α → FreeMonoid α → Prop :=
+  fun a b ↦ rel (.congr_iso e a) (.congr_iso e b)
+
 end IsomorphicTypes
 
 end FreeMonoid
