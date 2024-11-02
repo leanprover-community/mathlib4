@@ -38,7 +38,9 @@ Return `true` iff there was an error.
 def checkInitImports : IO Bool := do
   -- Find any file in the Mathlib directory which does not contain any Mathlib import.
   -- We simply parse `Mathlib.lean`, as CI ensures this file is up to date.
-  let allModuleNames := (← findImports "Mathlib.lean").erase `Batteries
+  -- For some reason, this also returns a module `Init (related to the Lean prelude);
+  -- we erase it as it is not relevant for us.
+  let allModuleNames := (← findImports "Mathlib.lean").erase `Batteries |>.erase `Init
   let mut modulesWithoutMathlibImports := #[]
   let mut importsHeaderLinter := #[]
   for module in allModuleNames do
@@ -105,7 +107,9 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- Read all module names to lint.
   let mut allModuleNames := #[]
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    allModuleNames := allModuleNames.append (← findImports s)
+    -- XXX. For some reason, `findImports` always returns an `Init module (related to the Lean
+    -- prelude?). We remove it as not relevant. Mathlib.Init etc. *are* still included.
+    allModuleNames := allModuleNames.append (← findImports s)|>.erase `Init
   -- Note: since "Batteries" is added explicitly to "Mathlib.lean", we remove it here manually.
   allModuleNames := allModuleNames.erase `Batteries
   let mut numberErrors ← lintModules allModuleNames style fix
