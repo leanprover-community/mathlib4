@@ -483,7 +483,8 @@ partial def reduceCoefficientwise {R : Q(Type u)} {_ : Q(AddCommMonoid $M)} {_ :
     let pf : Q(NF.eval $(l₁.toNF) = NF.eval $(l₁.toNF)) := q(rfl)
     pure ([], pf)
   /- if one of the lists is empty and the other one is not, recurse down the nonempty one,
-    forming goals that each of the listed coefficents is equal to zero -/
+    forming goals that each of the listed coefficients is equal to
+    zero -/
   | [], ((a, x), _) ::ᵣ L =>
     let mvar : Q((0:$R) = $a) ← mkFreshExprMVar q((0:$R) = $a)
     let (mvars, pf) ← reduceCoefficientwise iRM [] L
@@ -562,8 +563,8 @@ def algebraMapThms : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
 /-- Postprocessing for the scalar goals constructed in the `match_scalars` and `module` tactics.
 These goals feature a proliferation of `algebraMap` operations (because the scalars start in `ℕ` and
 get successively bumped up by `algebraMap`s as new semirings are encountered), so we reinterpret the
-most commonly occuring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into their standard forms (`ℕ`,
-`ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas. -/
+most commonly occurring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into their standard forms
+(`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas. -/
 def postprocess (mvarId : MVarId) : MetaM MVarId := do
   -- collect the available `push_cast` lemmas
   let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems

@@ -29,20 +29,18 @@ namespace AlgebraicGeometry
 
 variable (X : Scheme)
 
-instance : T0Space X := by
-  refine T0Space.of_open_cover fun x => ?_
-  obtain ⟨U, R, ⟨e⟩⟩ := X.local_affine x
-  let e' : U.1 ≃ₜ PrimeSpectrum R :=
-    homeoOfIso ((LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).mapIso e)
-  exact ⟨U.1.1, U.2, U.1.2, e'.embedding.t0Space⟩
+instance : T0Space X :=
+  T0Space.of_open_cover fun x => ⟨_, X.affineCover.covers x,
+    (X.affineCover.map x).opensRange.2, IsEmbedding.t0Space (Y := PrimeSpectrum _)
+    (isAffineOpen_opensRange (X.affineCover.map x)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
 
 instance : QuasiSober X := by
   apply (config := { allowSynthFailures := true })
-    quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).1.base)
+    quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).base)
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.IsOpen i).base_open.isOpen_range
   · rintro ⟨_, i, rfl⟩
-    exact @OpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofEmbedding _
-      (X.affineCover.IsOpen i).base_open.toEmbedding).symm.openEmbedding PrimeSpectrum.quasiSober
+    exact @IsOpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofIsEmbedding _
+      (X.affineCover.IsOpen i).base_open.isEmbedding).symm.isOpenEmbedding PrimeSpectrum.quasiSober
   · rw [Set.top_eq_univ, Set.sUnion_range, Set.eq_univ_iff_forall]
     intro x; exact ⟨_, ⟨_, rfl⟩, X.affineCover.covers x⟩
 
@@ -56,9 +54,9 @@ theorem isReduced_of_isReduced_stalk [∀ x : X, _root_.IsReduced (X.presheaf.st
     IsReduced X := by
   refine ⟨fun U => ⟨fun s hs => ?_⟩⟩
   apply Presheaf.section_ext X.sheaf U s 0
-  intro x
+  intro x hx
   rw [RingHom.map_zero]
-  change X.presheaf.germ x s = 0
+  change X.presheaf.germ U x hx s = 0
   exact (hs.map _).eq_zero
 
 instance isReduced_stalk_of_isReduced [IsReduced X] (x : X) :
@@ -66,12 +64,11 @@ instance isReduced_stalk_of_isReduced [IsReduced X] (x : X) :
   constructor
   rintro g ⟨n, e⟩
   obtain ⟨U, hxU, s, rfl⟩ := X.presheaf.germ_exist x g
-  rw [← map_pow, ← map_zero (X.presheaf.germ ⟨x, hxU⟩)] at e
+  rw [← map_pow, ← map_zero (X.presheaf.germ _ x hxU)] at e
   obtain ⟨V, hxV, iU, iV, e'⟩ := X.presheaf.germ_eq x hxU hxU _ 0 e
   rw [map_pow, map_zero] at e'
   replace e' := (IsNilpotent.mk _ _ e').eq_zero (R := Γ(X, V))
-  erw [← ConcreteCategory.congr_hom (X.presheaf.germ_res iU ⟨x, hxV⟩) s]
-  rw [comp_apply, e', map_zero]
+  rw [← X.presheaf.germ_res iU x hxV, comp_apply, e', map_zero]
 
 theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
     [IsReduced Y] : IsReduced X := by
@@ -114,8 +111,7 @@ theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : X.Opens), Prop)
     (h₁ : ∀ (X : Scheme) (U : X.Opens),
       (∀ x : U, ∃ (V : _) (_ : x.1 ∈ V) (_ : V ⟶ U), P V) → P U)
     (h₂ : ∀ (X Y) (f : X ⟶ Y) [hf : IsOpenImmersion f],
-      ∃ (U : Set X) (V : Set Y) (hU : U = ⊤) (hV : V = Set.range f.1.base),
-        P ⟨U, hU.symm ▸ isOpen_univ⟩ → P ⟨V, hV.symm ▸ hf.base_open.isOpen_range⟩)
+      ∃ (U : X.Opens) (V : Y.Opens), U = ⊤ ∧ V = f.opensRange ∧ (P U → P V))
     (h₃ : ∀ R : CommRingCat, P (X := Spec R) ⊤) : P U := by
   apply h₁
   intro x
@@ -130,7 +126,7 @@ theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : X.Opens), Prop)
 
 theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
     (h₁ : ∀ R x, P (Spec R) x)
-    (h₂ : ∀ {X Y} (f : X ⟶ Y) [IsOpenImmersion f] (x : X), P X x → P Y (f.1.base x)) :
+    (h₂ : ∀ {X Y} (f : X ⟶ Y) [IsOpenImmersion f] (x : X), P X x → P Y (f.base x)) :
     ∀ (X : Scheme) (x : X), P X x := by
   intro X x
   obtain ⟨y, e⟩ := X.affineCover.covers x
@@ -141,28 +137,26 @@ theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
 theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens}
     (s : Γ(X, U)) (hs : X.basicOpen s = ⊥) : s = 0 := by
   apply TopCat.Presheaf.section_ext X.sheaf U
-  intro x
+  intro x hx
   rw [RingHom.map_zero]
+  show X.presheaf.germ U x hx s = 0
   induction U using reduce_to_affine_global generalizing hX with
-  | h₁ X U hx =>
-    obtain ⟨V, hx, i, H⟩ := hx x
+  | h₁ X U H =>
+    obtain ⟨V, hx, i, H⟩ := H ⟨x, hx⟩
     specialize H (X.presheaf.map i.op s)
-    erw [Scheme.basicOpen_res] at H
-    rw [hs] at H
-    specialize H (inf_bot_eq _) ⟨x, hx⟩
-    erw [TopCat.Presheaf.germ_res_apply] at H
+    rw [Scheme.basicOpen_res, hs] at H
+    specialize H (inf_bot_eq _) x hx
+    rw [TopCat.Presheaf.germ_res_apply] at H
     exact H
   | h₂ X Y f =>
-    have e : f.val.base ⁻¹' Set.range ↑f.val.base = Set.univ := by
-      rw [← Set.image_univ, Set.preimage_image_eq _ ‹IsOpenImmersion f›.base_open.inj]
-    refine ⟨_, _, e, rfl, ?_⟩
-    rintro H hX s hs ⟨_, x, rfl⟩
+    refine ⟨f ⁻¹ᵁ f.opensRange, f.opensRange, by ext1; simp, rfl, ?_⟩
+    rintro H hX s hs _ ⟨x, rfl⟩
     haveI := isReduced_of_isOpenImmersion f
-    specialize H (f.app _ s) _ ⟨x, by rw [Opens.mem_mk, e]; trivial⟩
+    specialize H (f.app _ s) _ x ⟨x, rfl⟩
     · rw [← Scheme.preimage_basicOpen, hs]; ext1; simp [Opens.map]
-    · erw [← PresheafedSpace.stalkMap_germ_apply f.1 ⟨_, _⟩ ⟨x, _⟩] at H
+    · rw [← Scheme.stalkMap_germ_apply f ⟨_, _⟩ x] at H
       apply_fun inv <| f.stalkMap x at H
-      erw [CategoryTheory.IsIso.hom_inv_id_apply, map_zero] at H
+      rw [CategoryTheory.IsIso.hom_inv_id_apply, map_zero] at H
       exact H
   | h₃ R =>
     rw [basicOpen_eq_of_affine', PrimeSpectrum.basicOpen_eq_bot_iff] at hs
@@ -239,13 +233,11 @@ theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : Irreducib
     refine ⟨fun {a b} e => ?_⟩
     simp_rw [← basicOpen_eq_bot_iff, ← Opens.not_nonempty_iff_eq_bot]
     by_contra! h
-    obtain ⟨_, ⟨x, hx₁, rfl⟩, ⟨x, hx₂, e'⟩⟩ :=
+    obtain ⟨x, ⟨hxU, hx₁⟩, _, hx₂⟩ :=
       nonempty_preirreducible_inter (X.basicOpen a).2 (X.basicOpen b).2 h.1 h.2
-    replace e' := Subtype.eq e'
-    subst e'
-    replace e := congr_arg (X.presheaf.germ x) e
+    replace e := congr_arg (X.presheaf.germ U x hxU) e
     rw [RingHom.map_mul, RingHom.map_zero] at e
-    refine zero_ne_one' (X.presheaf.stalk x.1) (isUnit_zero_iff.1 ?_)
+    refine zero_ne_one' (X.presheaf.stalk x) (isUnit_zero_iff.1 ?_)
     convert hx₁.mul hx₂
     exact e.symm
   exact NoZeroDivisors.to_isDomain _

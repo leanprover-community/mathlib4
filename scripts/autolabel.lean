@@ -24,7 +24,7 @@ needs to be updated here if necessary:
 ## lake exe autolabel
 
 `lake exe autolabel` uses `git diff --name-only origin/master...HEAD` to determine which
-files have been modifed and then finds all labels which should be added based on these changes.
+files have been modified and then finds all labels which should be added based on these changes.
 These are printed for testing purposes.
 
 `lake exe autolabel [NUMBER]` will further try to add the applicable labels

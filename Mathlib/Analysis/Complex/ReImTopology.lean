@@ -18,7 +18,7 @@ Each statement about `Complex.re` listed below has a counterpart about `Complex.
 
 * `Complex.isHomeomorphicTrivialFiberBundle_re`: `Complex.re` turns `ℂ` into a trivial
   topological fiber bundle over `ℝ`;
-* `Complex.isOpenMap_re`, `Complex.quotientMap_re`: in particular, `Complex.re` is an open map
+* `Complex.isOpenMap_re`, `Complex.isQuotientMap_re`: in particular, `Complex.re` is an open map
   and is a quotient map;
 * `Complex.interior_preimage_re`, `Complex.closure_preimage_re`, `Complex.frontier_preimage_re`:
   formulas for `interior (Complex.re ⁻¹' s)` etc;
@@ -52,11 +52,17 @@ theorem isOpenMap_re : IsOpenMap re :=
 theorem isOpenMap_im : IsOpenMap im :=
   isHomeomorphicTrivialFiberBundle_im.isOpenMap_proj
 
-theorem quotientMap_re : QuotientMap re :=
-  isHomeomorphicTrivialFiberBundle_re.quotientMap_proj
+theorem isQuotientMap_re : IsQuotientMap re :=
+  isHomeomorphicTrivialFiberBundle_re.isQuotientMap_proj
 
-theorem quotientMap_im : QuotientMap im :=
-  isHomeomorphicTrivialFiberBundle_im.quotientMap_proj
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_re := isQuotientMap_re
+
+theorem isQuotientMap_im : IsQuotientMap im :=
+  isHomeomorphicTrivialFiberBundle_im.isQuotientMap_proj
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_im := isQuotientMap_im
 
 theorem interior_preimage_re (s : Set ℝ) : interior (re ⁻¹' s) = re ⁻¹' interior s :=
   (isOpenMap_re.preimage_interior_eq_interior_preimage continuous_re _).symm

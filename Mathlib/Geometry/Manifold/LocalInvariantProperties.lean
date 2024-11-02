@@ -399,13 +399,16 @@ theorem liftPropOn_congr_iff (h₁ : ∀ y ∈ s, g' y = g y) : LiftPropOn P g' 
 
 end
 
-theorem liftPropWithinAt_mono_of_mem
-    (mono_of_mem : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, s ∈ 𝓝[t] x → P f s x → P f t x)
+theorem liftPropWithinAt_mono_of_mem_nhdsWithin
+    (mono_of_mem_nhdsWithin : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, s ∈ 𝓝[t] x → P f s x → P f t x)
     (h : LiftPropWithinAt P g s x) (hst : s ∈ 𝓝[t] x) : LiftPropWithinAt P g t x := by
   simp only [liftPropWithinAt_iff'] at h ⊢
-  refine ⟨h.1.mono_of_mem hst, mono_of_mem ?_ h.2⟩
+  refine ⟨h.1.mono_of_mem_nhdsWithin hst, mono_of_mem_nhdsWithin ?_ h.2⟩
   simp_rw [← mem_map, (chartAt H x).symm.map_nhdsWithin_preimage_eq (mem_chart_target H x),
     (chartAt H x).left_inv (mem_chart_source H x), hst]
+
+@[deprecated (since := "2024-10-31")]
+alias liftPropWithinAt_mono_of_mem := liftPropWithinAt_mono_of_mem_nhdsWithin
 
 theorem liftPropWithinAt_mono (mono : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, t ⊆ s → P f s x → P f t x)
     (h : LiftPropWithinAt P g s x) (hts : t ⊆ s) : LiftPropWithinAt P g t x := by
@@ -490,7 +493,7 @@ theorem liftPropAt_iff_comp_subtype_val (hG : LocalInvariantProp G G' P) {U : Op
     LiftPropAt P f x ↔ LiftPropAt P (f ∘ Subtype.val) x := by
   simp only [LiftPropAt, liftPropWithinAt_iff']
   congrm ?_ ∧ ?_
-  · simp_rw [continuousWithinAt_univ, U.openEmbedding'.continuousAt_iff]
+  · simp_rw [continuousWithinAt_univ, U.isOpenEmbedding'.continuousAt_iff]
   · apply hG.congr_iff
     exact (U.chartAt_subtype_val_symm_eventuallyEq).fun_comp (chartAt H' (f x) ∘ f)
 
@@ -500,7 +503,7 @@ theorem liftPropAt_iff_comp_inclusion (hG : LocalInvariantProp G G' P) {U V : Op
   simp only [LiftPropAt, liftPropWithinAt_iff']
   congrm ?_ ∧ ?_
   · simp_rw [continuousWithinAt_univ,
-      (TopologicalSpace.Opens.openEmbedding_of_le hUV).continuousAt_iff]
+      (TopologicalSpace.Opens.isOpenEmbedding_of_le hUV).continuousAt_iff]
   · apply hG.congr_iff
     exact (TopologicalSpace.Opens.chartAt_inclusion_symm_eventuallyEq hUV).fun_comp
       (chartAt H' (f (Set.inclusion hUV x)) ∘ f)
