@@ -87,7 +87,7 @@ theorem Transcendental.of_aeval {r : A} {f : R[X]}
   exact H p (by rw [← aeval_comp, comp_eq_aeval, hp, map_zero])
 
 theorem IsAlgebraic.of_aeval_of_transcendental {r : A} {f : R[X]}
-    (hf : Transcendental R f) (H : IsAlgebraic R (aeval r f)) : IsAlgebraic R r := by
+    (H : IsAlgebraic R (aeval r f)) (hf : Transcendental R f) : IsAlgebraic R r := by
   contrapose H
   exact Transcendental.aeval_of_transcendental H hf
 
@@ -249,32 +249,38 @@ theorem isAlgebraic_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f)
 section RingHom
 
 omit [Algebra R S] [Algebra S A] [IsScalarTower R S A] [Algebra R B]
-variable [Algebra S B]
+variable [Algebra S B] {FRS FAB : Type*} [FunLike FAB A B] [RingHomClass FAB A B]
 
-protected theorem IsAlgebraic.ringHom (f : R →+* S) (g : A →+* B)
+protected theorem IsAlgebraic.ringHom_of_comp_eq [FunLike FRS R S] [RingHomClass FRS R S]
+    (f : FRS) (g : FAB) {a : A} (halg : IsAlgebraic R a)
     (hf : Function.Injective f)
-    (h : (algebraMap S B).comp f = g.comp (algebraMap R A)) {a : A}
-    (halg : IsAlgebraic R a) : IsAlgebraic S (g a) := by
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    IsAlgebraic S (g a) := by
   obtain ⟨p, h1, h2⟩ := halg
   refine ⟨p.map f, (Polynomial.map_ne_zero_iff hf).2 h1, ?_⟩
+  change aeval ((g : A →+* B) a) _ = 0
   rw [← map_aeval_eq_aeval_map h, h2, map_zero]
 
-theorem IsAlgebraic.of_ringHom (f : R →+* S) (g : A →+* B)
+theorem IsAlgebraic.of_ringHom_of_comp_eq [FunLike FRS R S] [RingHomClass FRS R S]
+    (f : FRS) (g : FAB) {a : A} (halg : IsAlgebraic S (g a))
     (hf : Function.Surjective f) (hg : Function.Injective g)
-    (h : (algebraMap S B).comp f = g.comp (algebraMap R A)) {a : A}
-    (halg : IsAlgebraic S (g a)) : IsAlgebraic R a := by
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    IsAlgebraic R a := by
   obtain ⟨p, h1, h2⟩ := halg
   obtain ⟨q, rfl⟩ : ∃ q : R[X], q.map f = p := by
     rw [← mem_lifts, lifts_iff_coeff_lifts]
     simp [hf.range_eq]
   refine ⟨q, fun h' ↦ by simp [h'] at h1, hg ?_⟩
+  change aeval ((g : A →+* B) a) _ = 0 at h2
+  change (g : A →+* B) _ = _
   rw [map_zero, map_aeval_eq_aeval_map h, h2]
 
-theorem isAlgebraic_ringHom_iff (f : R ≃+* S) (g : A →+* B)
-    (hg : Function.Injective g)
-    (h : (algebraMap S B).comp f = g.comp (algebraMap R A)) {a : A} :
+theorem isAlgebraic_ringHom_iff_of_comp_eq [EquivLike FRS R S] [RingEquivClass FRS R S]
+    (f : FRS) (g : FAB) (hg : Function.Injective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) {a : A} :
     IsAlgebraic S (g a) ↔ IsAlgebraic R a :=
-  ⟨fun H ↦ H.of_ringHom f g f.surjective hg h, fun H ↦ H.ringHom f g f.injective h⟩
+  ⟨fun H ↦ H.of_ringHom_of_comp_eq f g (EquivLike.surjective f) hg h,
+    fun H ↦ H.ringHom_of_comp_eq f g (EquivLike.injective f) h⟩
 
 end RingHom
 
@@ -363,6 +369,7 @@ theorem Algebra.IsAlgebraic.of_isIntegralClosure (B C : Type*)
 /-- If `K` is a field, `r : A` and `f : K[X]`, then `Polynomial.aeval r f` is
 transcendental over `K` if and only if `r` and `f` are both transcendental over `K`.
 See also `Transcendental.aeval_of_transcendental` and `Transcendental.of_aeval`. -/
+@[simp]
 theorem transcendental_aeval_iff {r : A} {f : K[X]} :
     Transcendental K (Polynomial.aeval r f) ↔ Transcendental K r ∧ Transcendental K f := by
   refine ⟨fun h ↦ ⟨?_, h.of_aeval⟩, fun ⟨h1, h2⟩ ↦ h1.aeval_of_transcendental h2⟩
@@ -725,8 +732,8 @@ theorem transcendental_supported_X {i : σ} {s : Set σ} (h : i ∉ s) :
 theorem transcendental_X (i : σ) : Transcendental R (X i : MvPolynomial σ R) := by
   have := transcendental_supported_X R (Set.not_mem_empty i)
   let f := (Algebra.botEquivOfInjective (MvPolynomial.C_injective σ R)).symm.trans
-    (Subalgebra.equivOfEq _ _ supported_empty).symm |>.toRingEquiv
-  rwa [Transcendental, ← isAlgebraic_ringHom_iff f (RingHom.id (MvPolynomial σ R))
+    (Subalgebra.equivOfEq _ _ supported_empty).symm
+  rwa [Transcendental, ← isAlgebraic_ringHom_iff_of_comp_eq f (RingHom.id (MvPolynomial σ R))
     Function.injective_id (by ext1; rfl), RingHom.id_apply, ← Transcendental]
 
 theorem transcendental_supported_X_iff [Nontrivial R] {i : σ} {s : Set σ} :
