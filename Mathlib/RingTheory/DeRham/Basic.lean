@@ -133,14 +133,18 @@ lemma presentationDifferentialsDown_var (b₀ : B) {n : ℕ} (g : Fin n → B) :
       b₀ • exteriorProduct _ _ _ (KaehlerDifferential.D A B ∘ g) := by
   sorry
 
+lemma smul_def (M : Type*) [AddCommGroup M] [Module A M] [Module B M]
+    [IsScalarTower A B M] (m : M) (a : A) : a • m = (algebraMap A B a) • m := by
+  exact algebra_compatible_smul B a m
+
 noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →ₗ[A]
     exteriorPower B (n + 1) (KaehlerDifferential A B) :=
   (presentationDifferentialsDown A B n).desc
     { var := fun ⟨g, b₀⟩ ↦
         ((presentationDifferentialsDown A B (n + 1)).var ⟨finInsert b₀ g, (1 : B)⟩)
       linearCombination_var_relation := by
-        rintro (⟨g, r⟩ | _)
-        · induction r  with
+        rintro (⟨g, r⟩ | ⟨b₀, r⟩)
+        · induction r with
           | add b₁ b₂ =>
               dsimp
               simp only [presentationDifferentialsDown_relation,
@@ -155,11 +159,36 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
               nth_rw 2 [finInsert_eq_update_finInsert_zero]
               nth_rw 3 [finInsert_eq_update_finInsert_zero]
               rw [AlternatingMap.map_add]
-          | smul a b => sorry
-        · sorry
+          | smul a b =>
+              dsimp
+              simp only [presentationDifferentialsDown_relation,
+                Finsupp.linearCombination_embDomain, map_sub, Finsupp.linearCombination_single,
+                Function.comp_apply, Function.Embedding.sigmaMk_apply, one_smul]
+              rw [presentationDifferentialsDown_var,
+                presentationDifferentialsDown_var]
+              simp only [one_smul, comp_finInsert, Derivation.map_smul, sub_eq_zero]
+              rw [finInsert_eq_update_finInsert_zero]
+              nth_rw 2 [finInsert_eq_update_finInsert_zero]
+              rw [algebra_compatible_smul B a, algebra_compatible_smul B a,
+                AlternatingMap.map_smul]
+        · dsimp at b₀
+          induction r with
+          | piTensor i r g =>
+              induction r with
+              | add b₁ b₂ =>
+                  dsimp
+                  sorry
+              | mul b₁ b₂ =>
+                  dsimp
+                  sorry
+              | algebraMap a =>
+                  dsimp
+                  sorry
+          | antisymmetry g i j hij => sorry
+          | alternate g i j hg hij => sorry
         }
 
-#exit
+
 @[simp]
 lemma d_apply (b₀ : B) {n : ℕ} (g : Fin n → B) :
     d A B n ((presentationDifferentialsDown A B n).var ⟨g, b₀⟩) =
