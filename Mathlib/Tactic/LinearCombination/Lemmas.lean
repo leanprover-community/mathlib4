@@ -3,6 +3,7 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
+import Mathlib.Tactic.Linarith.Ineq
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Algebra.Order.Field.Basic
 
@@ -12,8 +13,9 @@ import Mathlib.Algebra.Order.Field.Basic
 These should not be used directly in user code.
 -/
 
-namespace Mathlib.Tactic.LinearCombination
 open Lean
+
+namespace Mathlib.Tactic.LinearCombination
 
 variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}
 
@@ -134,81 +136,78 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
+end Mathlib.Tactic.LinearCombination
+
 /-! ### Lookup functions for lemmas by operation and relation(s) -/
 
-/-- The type of a relation appearing in the `linear_combination` tactic: `=`, `≤` or `<`. -/
-inductive RelType
-  | Eq
-  | Le
-  | Lt
-  deriving Repr, ToExpr
-
-export RelType (Eq Le Lt)
+open Mathlib.Tactic.LinearCombination
 
 /-- Given an expression `e`, parse it as a `=`, `≤` or `<`, and return this relation (as a
-`Mathlib.Tactic.LinearCombination.RelType`) together with the type in which the (in)equality occurs.
+`Linarith.Ineq`) together with the type in which the (in)equality occurs.
 -/
-def _root_.Lean.Expr.relType (e : Expr) : Option (RelType × Expr) :=
+def Lean.Expr.ineq? (e : Expr) : Option (Linarith.Ineq × Expr) :=
   match e.eq? with
-  | some (ty, _, _) => (Eq, ty)
+  | some (ty, _, _) => (Linarith.Ineq.eq, ty)
   | none =>
   match e.le? with
-  | some (ty, _, _) => (Le, ty)
+  | some (ty, _, _) => (Linarith.Ineq.le, ty)
   | none =>
   match e.lt? with
-  | some (ty, _, _) => (Lt, ty)
+  | some (ty, _, _) => (Linarith.Ineq.lt, ty)
   | none => none
 
+namespace Linarith.Ineq
+
 /-- Given two (in)equalities, look up the lemma to add them and the relation in the result. -/
-def RelType.addRelRelData : RelType → RelType → RelType × Name
-  | Eq, Eq => (Eq, ``add_eq_eq)
-  | Eq, Le => (Le, ``add_eq_le)
-  | Eq, Lt => (Lt, ``add_eq_lt)
-  | Le, Eq => (Le, ``add_le_eq)
-  | Le, Le => (Le, ``add_le_add)
-  | Le, Lt => (Lt, ``add_lt_add_of_le_of_lt)
-  | Lt, Eq => (Lt, ``add_lt_eq)
-  | Lt, Le => (Lt, ``add_lt_add_of_lt_of_le)
-  | Lt, Lt => (Lt, ``add_lt_add)
+def addRelRelData : Ineq → Ineq → Ineq × Name
+  | eq, eq => (eq, ``add_eq_eq)
+  | eq, le => (le, ``add_eq_le)
+  | eq, lt => (lt, ``add_eq_lt)
+  | le, eq => (le, ``add_le_eq)
+  | le, le => (le, ``add_le_add)
+  | le, lt => (lt, ``add_lt_add_of_le_of_lt)
+  | lt, eq => (lt, ``add_lt_eq)
+  | lt, le => (lt, ``add_lt_add_of_lt_of_le)
+  | lt, lt => (lt, ``add_lt_add)
 
 /-- Given an (in)equality, look up the lemma to left-multiply it by a constant and the relation in
 the result. -/
-def RelType.mulConstRelData : RelType → RelType × Name
-  | Eq => (Eq, ``mul_const_eq)
-  | Le => (Le, ``mul_const_le)
-  | Lt => (Lt, ``mul_const_lt)
+def mulConstRelData : Ineq → Ineq × Name
+  | eq => (eq, ``mul_const_eq)
+  | le => (le, ``mul_const_le)
+  | lt => (lt, ``mul_const_lt)
 
 /-- Given an (in)equality, look up the lemma to right-multiply it by a constant and the relation in
 the result. -/
-def RelType.mulRelConstData : RelType → RelType × Name
-  | Eq => (Eq, ``mul_eq_const)
-  | Le => (Le, ``mul_le_const)
-  | Lt => (Lt, ``mul_lt_const)
+def mulRelConstData : Ineq → Ineq × Name
+  | eq => (eq, ``mul_eq_const)
+  | le => (le, ``mul_le_const)
+  | lt => (lt, ``mul_lt_const)
 
 /-- Given an (in)equality, look up the lemma to divide it by a constant and the relation in the
 result. -/
-def RelType.divRelConstData : RelType → RelType × Name
-  | Eq => (Eq, ``div_eq_const)
-  | Le => (Le, ``div_le_const)
-  | Lt => (Lt, ``div_lt_const)
+def divRelConstData : Ineq → Ineq × Name
+  | eq => (eq, ``div_eq_const)
+  | le => (le, ``div_le_const)
+  | lt => (lt, ``div_lt_const)
 
 /-- Given two (in)equalities `P` and `Q`, look up the lemma to deduce `Q` from `P`, and the relation
 appearing in the side condition produced by this lemma. -/
-def RelType.relImpRelData : RelType → RelType → Option (Name × RelType)
-  | Eq, Eq => some (``eq_of_eq, Eq)
-  | Eq, Le => some (``le_of_eq, Le)
-  | Eq, Lt => some (``lt_of_eq, Lt)
-  | Le, Eq => none
-  | Le, Le => some (``le_of_le, Le)
-  | Le, Lt => some (``lt_of_le, Lt)
-  | Lt, Eq => none
-  | Lt, Le => some (``le_of_lt, Le)
-  | Lt, Lt => some (``lt_of_lt, Le)
+def relImpRelData : Ineq → Ineq → Option (Name × Ineq)
+  | eq, eq => some (``eq_of_eq, eq)
+  | eq, le => some (``Mathlib.Tactic.LinearCombination.le_of_eq, le)
+  | eq, lt => some (``lt_of_eq, lt)
+  | le, eq => none
+  | le, le => some (``le_of_le, le)
+  | le, lt => some (``lt_of_le, lt)
+  | lt, eq => none
+  | lt, le => some (``Mathlib.Tactic.LinearCombination.le_of_lt, le)
+  | lt, lt => some (``lt_of_lt, le)
 
 /-- Given an (in)equality, look up the lemma to move everything to the LHS. -/
-def RelType.rearrangeData : RelType → Name
-  | Eq => ``eq_rearrange
-  | Le => ``le_rearrange
-  | Lt => ``lt_rearrange
+def rearrangeData : Ineq → Name
+  | eq => ``eq_rearrange
+  | le => ``le_rearrange
+  | lt => ``lt_rearrange
 
-end Mathlib.Tactic.LinearCombination
+end Linarith.Ineq

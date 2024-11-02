@@ -36,23 +36,23 @@ Lastly, calls a normalization tactic on this target.
 
 namespace Mathlib.Tactic.LinearCombination
 open Lean hiding Rat
-open Elab Meta Term
+open Elab Meta Term Linarith Ineq
 
 /-- Result of `expandLinearCombo`, either an equality/inequality proof or a value. -/
 inductive Expanded
-  /-- A proof of `a = b`, `a ≤ b`, or `a < b` (according to the value of `RelType`). -/
-  | proof (rel : RelType) (pf : Syntax.Term)
+  /-- A proof of `a = b`, `a ≤ b`, or `a < b` (according to the value of `Ineq`). -/
+  | proof (rel : Ineq) (pf : Syntax.Term)
   /-- A value, equivalently a proof of `c = c`. -/
   | const (c : Syntax.Term)
 
 /--
 Performs macro expansion of a linear combination expression,
 using `+`/`-`/`*`/`/` on equations and values.
-* `.proof Eq p` means that `p` is a syntax corresponding to a proof of an equation.
+* `.proof eq p` means that `p` is a syntax corresponding to a proof of an equation.
   For example, if `h : a = b` then `expandLinearCombo (2 * h)` returns `.proof (c_add_pf 2 h)`
   which is a proof of `2 * a = 2 * b`.
-  Similarly, `.proof Le p` means that `p` is a syntax corresponding to a proof of a non-strict
-  inequality, and `.proof Lt p` means that `p` is a syntax corresponding to a proof of a strict
+  Similarly, `.proof le p` means that `p` is a syntax corresponding to a proof of a non-strict
+  inequality, and `.proof lt p` means that `p` is a syntax corresponding to a proof of a strict
   inequality.
 * `.const c` means that the input expression is not an equation but a value.
 -/
@@ -80,15 +80,15 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
       logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
         from the term"
       .proof rel <$> ``(Eq.symm $p)
-    | .proof rel₁ p₁, .proof Eq p₂ =>
-      let (rel, n) := rel₁.addRelRelData Eq
+    | .proof rel₁ p₁, .proof eq p₂ =>
+      let (rel, n) := rel₁.addRelRelData eq
       .proof rel <$> ``($(mkIdent n) $p₁ (Eq.symm $p₂))
     | .proof _ _, .proof _ _ =>
       throwError "coefficients of inequalities in 'linear_combination' must be nonnegative"
   | `(-$e) => do
       match ← expandLinearCombo ty e with
       | .const c => .const <$> `(-$c)
-      | .proof Eq p => .proof Eq <$> ``(Eq.symm $p)
+      | .proof eq p => .proof eq <$> ``(Eq.symm $p)
       | .proof _ _ =>
         throwError "coefficients of inequalities in 'linear_combination' must be nonnegative"
   | `($e₁ *%$tk $e₂) => do
@@ -115,7 +115,7 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
       -- It is OK to use `ty` as the expected type even if `e` is a proof.
       -- The expected type is just a hint.
       let c ← withSynthesizeLight <| Term.elabTerm e ty
-      match (← whnfR (← inferType c)).relType with
+      match (← whnfR (← inferType c)).ineq? with
       | some (rel, _) => .proof rel <$> c.toSyntax
       | none => .const <$> c.toSyntax
 
@@ -124,20 +124,20 @@ def elabLinearCombination (tk : Syntax)
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
     Tactic.TacticM Unit := Tactic.withMainContext <| Tactic.focus do
   let eType ← withReducible <| (← Tactic.getMainGoal).getType'
-  let some (goalRel, ty) := eType.relType |
+  let some (goalRel, ty) := eType.ineq? |
     throwError "'linear_combination' only proves equalities and inequalities"
   -- build the specified linear combination of the hypotheses
   let (hypRel, p) ← match input with
-  | none => Prod.mk Eq <$>  `(Eq.refl 0)
+  | none => Prod.mk eq <$>  `(Eq.refl 0)
   | some e =>
     match ← expandLinearCombo ty e with
     | .const c =>
       logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
         from the term"
-      Prod.mk Eq <$> `(Eq.refl 0)
+      Prod.mk eq <$> `(Eq.refl 0)
     | .proof hypRel p => pure (hypRel, p)
   -- look up the lemma for the central `refine` in `linear_combination`
-  let (reduceLem, newGoalRel) : Name × RelType := ← do
+  let (reduceLem, newGoalRel) : Name × Ineq := ← do
     match hypRel.relImpRelData goalRel with
     | none => throwError "cannot prove an equality from inequality hypotheses"
     | some n => pure n
@@ -149,7 +149,7 @@ def elabLinearCombination (tk : Syntax)
         `($(mkIdent reduceLem) $p ?a)
       else
         match hypRel with
-        | Eq => `(eq_of_add_pow $n $p ?a)
+        | eq => `(eq_of_add_pow $n $p ?a)
         | _ => throwError
           "linear_combination tactic not implemented for exponentiation of inequality goals"
     | _ => `($(mkIdent reduceLem) $p ?a)
@@ -168,9 +168,9 @@ def elabLinearCombination (tk : Syntax)
     -- for an equality task the default normalization tactic is (the internals of) `ring1` (but we
     -- use `.instances` transparency, which is arguably more robust in algebraic settings than the
     -- choice `.reducible` made in `ring1`)
-    | Eq => fun g ↦ AtomM.run .instances <| Ring.proveEq g
-    | Le => Ring.proveLE
-    | Lt => Ring.proveLT
+    | eq => fun g ↦ AtomM.run .instances <| Ring.proveEq g
+    | le => Ring.proveLE
+    | lt => Ring.proveLT
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
