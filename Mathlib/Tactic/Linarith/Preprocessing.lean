@@ -190,23 +190,13 @@ section strengthenStrictInt
 
 /--
 If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
-`mkNonstrictIntProof pf` returns a proof of `a + 1 ≤ b`,
-and similarly if `pf` proves a negated weak inequality.
+`mkNonstrictIntProof pf` returns a proof of `a + 1 ≤ b`.
 -/
 def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
-  match (← instantiateMVars (← inferType pf)).getAppFnArgs with
-  | (``LT.lt, #[.const ``Int [], _, a, b]) =>
+  match ← (← inferType pf).ineq? with
+  | (Ineq.lt, ty, a, b) =>
+    unless ty == .const ``Int [] do return none
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
-  | (``GT.gt, #[.const ``Int [], _, a, b]) =>
-    return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]]) pf
-  | (``Not, #[P]) => match P.getAppFnArgs with
-    | (``LE.le, #[.const ``Int [], _, a, b]) =>
-      return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]])
-        (← mkAppM ``lt_of_not_ge #[pf])
-    | (``GE.ge, #[.const ``Int [], _, a, b]) =>
-      return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]])
-        (← mkAppM ``lt_of_not_ge #[pf])
-    | _ => return none
   | _ => return none
 
 /-- `strengthenStrictInt h` turns a proof `h` of a strict integer inequality `t1 < t2`
