@@ -3,8 +3,7 @@ Copyright (c) 2024 Wanyi He. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Huanyu Zheng
 -/
-import Mathlib.Algebra.CharP.Subring
-
+import Mathlib.Algebra.CharP.Algebra
 /-!
 # Characteristic of the ring of linear Maps
 

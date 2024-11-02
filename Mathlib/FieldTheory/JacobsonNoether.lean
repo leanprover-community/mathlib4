@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Weichen Jiao, Yi Yuan
 -/
 import Mathlib.Algebra.CharP.LinearMaps
+import Mathlib.Algebra.CharP.Subring
 import Mathlib.Algebra.Field.Power
 import Mathlib.FieldTheory.PurelyInseparable
 
