@@ -8,6 +8,7 @@ import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.Directed
 import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Finite sets
@@ -751,6 +752,13 @@ theorem mem_cons_self (a : α) (s : Finset α) {h} : a ∈ cons a s h :=
 theorem cons_val (h : a ∉ s) : (cons a s h).1 = a ::ₘ s.1 :=
   rfl
 
+theorem eq_of_mem_cons_of_not_mem (has : a ∉ s) (h : b ∈ cons a s has) (hb : b ∉ s) : b = a :=
+  (mem_cons.1 h).resolve_right hb
+
+theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} {has} {i : α}
+    (hi : i ∈ cons a s has) (hia : i ≠ a) : i ∈ s :=
+  (mem_cons.1 hi).resolve_left hia
+
 theorem forall_mem_cons (h : a ∉ s) (p : α → Prop) :
     (∀ x, x ∈ cons a s h → p x) ↔ p a ∧ ∀ x, x ∈ s → p x := by
   simp only [mem_cons, or_imp, forall_and, forall_eq]
@@ -807,6 +815,36 @@ theorem cons_swap (hb : b ∉ s) (ha : a ∉ s.cons b hb) :
     (s.cons b hb).cons a ha = (s.cons a fun h ↦ ha (mem_cons.mpr (.inr h))).cons b fun h ↦
       ha (mem_cons.mpr (.inl ((mem_cons.mp h).elim symm (fun h ↦ False.elim (hb h))))) :=
   eq_of_veq <| Multiset.cons_swap a b s.val
+
+/-- Split the added element of cons off a Pi type. -/
+@[simps!]
+def consPiProd (f : α → Type*) (has : a ∉ s) (x : Π i ∈ cons a s has, f i) : f a × Π i ∈ s, f i :=
+  (x a (mem_cons_self a s), fun i hi => x i (mem_cons_of_mem hi))
+
+/-- Combine a product with a pi type to pi of cons. -/
+def prodPiCons [DecidableEq α] (f : α → Type*) {a : α} (has : a ∉ s) (x : f a × Π i ∈ s, f i) :
+    (Π i ∈ cons a s has, f i) :=
+  fun i hi =>
+    if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_cons_of_ne hi h)
+
+/-- The equivalence between pi types on cons and the product. -/
+def consPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+    (Π i ∈ cons a s has, f i) ≃ f a × Π i ∈ s, f i where
+  toFun := consPiProd f has
+  invFun := prodPiCons f has
+  left_inv _ := by
+    ext i _
+    dsimp only [prodPiCons, consPiProd]
+    by_cases h : i = a
+    · rw [dif_pos h]
+      subst h
+      simp_all only [cast_eq]
+    · rw [dif_neg h]
+  right_inv _ := by
+    ext _ hi
+    · simp [prodPiCons]
+    · simp only [consPiProd_snd]
+      exact dif_neg (ne_of_mem_of_not_mem hi has)
 
 end Cons
 
@@ -955,7 +993,7 @@ theorem mem_insert_of_mem (h : a ∈ s) : a ∈ insert b s :=
 theorem mem_of_mem_insert_of_ne (h : b ∈ insert a s) : b ≠ a → b ∈ s :=
   (mem_insert.1 h).resolve_left
 
-theorem eq_of_not_mem_of_mem_insert (ha : b ∈ insert a s) (hb : b ∉ s) : b = a :=
+theorem eq_of_mem_insert_of_not_mem (ha : b ∈ insert a s) (hb : b ∉ s) : b = a :=
   (mem_insert.1 ha).resolve_right hb
 
 /-- A version of `LawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
@@ -1039,7 +1077,7 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
   simp_rw [← coe_subset]; simp [-coe_subset, ha]
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_not_mem_of_mem_insert (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
+  ⟨fun h => eq_of_mem_insert_of_not_mem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
 
 theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) sᶜ := fun _ h _ _ =>
   (insert_inj h).1
@@ -1136,6 +1174,35 @@ theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint 
 @[simp]
 theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t :=
   disjoint_comm.trans <| by rw [disjoint_insert_left, _root_.disjoint_comm]
+
+/-- Split the added element of insert off a Pi type. -/
+@[simps!]
+def insertPiProd (f : α → Type*) (x : Π i ∈ insert a s, f i) : f a × Π i ∈ s, f i :=
+  (x a (mem_insert_self a s), fun i hi => x i (mem_insert_of_mem hi))
+
+/-- Combine a product with a pi type to pi of insert. -/
+def prodPiInsert (f : α → Type*) {a : α} (x : f a × Π i ∈ s, f i) : (Π i ∈ insert a s, f i) :=
+  fun i hi =>
+    if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_insert_of_ne hi h)
+
+/-- The equivalence between pi types on insert and the product. -/
+def insertPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+    (Π i ∈ insert a s, f i) ≃ f a × Π i ∈ s, f i where
+  toFun := insertPiProd f
+  invFun := prodPiInsert f
+  left_inv _ := by
+    ext i _
+    dsimp only [prodPiInsert, insertPiProd]
+    by_cases h : i = a
+    · rw [dif_pos h]
+      subst h
+      simp_all only [cast_eq]
+    · rw [dif_neg h]
+  right_inv _ := by
+    ext _ hi
+    · simp [prodPiInsert]
+    · simp only [insertPiProd_snd]
+      exact dif_neg (ne_of_mem_of_not_mem hi has)
 
 end Insert
 

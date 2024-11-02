@@ -3,7 +3,7 @@ Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Ralf Stephan
 -/
-import Mathlib.Data.Nat.Nth
+import Mathlib.Data.Nat.Prime.Nth
 import Mathlib.Data.Nat.Totient
 import Mathlib.NumberTheory.SmoothNumbers
 
@@ -70,12 +70,9 @@ theorem monotone_primeCounting : Monotone primeCounting :=
 theorem primeCounting'_nth_eq (n : ℕ) : π' (nth Prime n) = n :=
   count_nth_of_infinite infinite_setOf_prime _
 
-@[simp]
-theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
-
 /-- The `n`th prime is greater or equal to `n + 2`. -/
 theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
-  zeroth_prime_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
+  nth_prime_zero_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
 
 theorem surjective_primeCounting' : Function.Surjective π' :=
   Nat.surjective_count_of_infinite_setOf infinite_setOf_prime
@@ -98,6 +95,22 @@ theorem tensto_primeCounting : Tendsto π atTop atTop :=
 @[simp]
 theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _
+
+@[simp]
+lemma primeCounting'_eq_zero_iff {n : ℕ} : n.primeCounting' = 0 ↔ n ≤ 2 := by
+  rw [primeCounting', Nat.count_eq_zero ⟨_, Nat.prime_two⟩, Nat.nth_prime_zero_eq_two]
+
+@[simp]
+lemma primeCounting_eq_zero_iff {n : ℕ} : n.primeCounting = 0 ↔ n ≤ 1 := by
+  simp [primeCounting]
+
+@[simp]
+lemma primeCounting_zero : primeCounting 0 = 0 :=
+  primeCounting_eq_zero_iff.mpr zero_le_one
+
+@[simp]
+lemma primeCounting_one : primeCounting 1 = 0 :=
+  primeCounting_eq_zero_iff.mpr le_rfl
 
 /-- The cardinality of the finset `primesBelow n` equals the counting function
 `primeCounting'` at `n`. -/
