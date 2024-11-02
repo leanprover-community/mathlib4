@@ -589,7 +589,7 @@ instance (n) (i) : Definable n (fun s ↦ s i) where
 lemma Definable.out_equiv {n} (f : (Fin n → ZFSet.{u}) → ZFSet.{u}) [Definable n f]
     {xs ys : Fin n → PSet} (h : ∀ i, xs i ≈ ys i) :
     out f xs ≈ out f ys := by
-  rw [← Quotient.eq, mk_eq, mk_eq, mk_out, mk_out]
+  rw [← Quotient.eq_iff_equiv, mk_eq, mk_eq, mk_out, mk_out]
   exact congrArg _ (funext fun i ↦ Quotient.sound (h i))
 
 lemma Definable₁.out_equiv (f : ZFSet.{u} → ZFSet.{u}) [Definable₁ f]
@@ -832,11 +832,12 @@ theorem eq_empty (x : ZFSet.{u}) : x = ∅ ↔ ∀ y : ZFSet.{u}, y ∉ x := by
 theorem eq_empty_or_nonempty (u : ZFSet) : u = ∅ ∨ u.Nonempty := by
   rw [eq_empty, ← not_exists]
   apply em'
-
+-- ∀ (a₁ b₁ a₂ b₂ : PSet), a₁ ≈ a₂ → b₁ ≈ b₂ →
+--(fun x1 x2 ↦ ⟦x1.insert x2⟧) a₁ b₁ = (fun x1 x2 ↦ ⟦x1.insert x2⟧) a₂ b₂
 /-- `Insert x y` is the set `{x} ∪ y` -/
 protected def Insert : ZFSet → ZFSet → ZFSet :=
-  Quotient.lift₂ (⟦PSet.insert · ·⟧)
-    fun _ ⟨_, _⟩ _ ⟨_, _⟩ uv ⟨αβ, βα⟩ => Quotient.sound
+  Quotient.map₂ (PSet.insert · ·)
+    fun _ _ uv ⟨_, _⟩ ⟨_, _⟩ ⟨αβ, βα⟩ =>
       ⟨fun o =>
         match o with
         | some a =>
@@ -911,8 +912,8 @@ theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
 
 /-- `{x ∈ a | p x}` is the set of elements in `a` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
-  Quotient.lift (⟦(PSet.sep fun y => p (mk y)) ·⟧)
-    fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ => Quotient.sound
+  Quotient.map ((PSet.sep fun y => p (mk y)) ·)
+    fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun ⟨a, pa⟩ =>
         let ⟨b, hb⟩ := αβ a
         ⟨⟨b, by simpa only [mk_func, ← ZFSet.sound hb]⟩, hb⟩,
@@ -942,8 +943,8 @@ theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
 
 /-- The powerset operation, the collection of subsets of a ZFC set -/
 def powerset : ZFSet → ZFSet :=
-  Quotient.lift (⟦PSet.powerset ·⟧)
-    fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ => Quotient.sound
+  Quotient.map (PSet.powerset ·)
+    fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun p =>
         ⟨{ b | ∃ a, p a ∧ Equiv (A a) (B b) }, fun ⟨a, pa⟩ =>
           let ⟨b, ab⟩ := αβ a
@@ -975,8 +976,8 @@ theorem sUnion_lem {α β : Type u} (A : α → PSet) (B : β → PSet) (αβ : 
 
 /-- The union operator, the collection of elements of elements of a ZFC set -/
 def sUnion : ZFSet → ZFSet :=
-  Quotient.lift (⟦PSet.sUnion ·⟧)
-    fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ => Quotient.sound
+  Quotient.map (PSet.sUnion ·)
+    fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
       ⟨sUnion_lem A B αβ, fun a =>
         Exists.elim
           (sUnion_lem B A (fun b => Exists.elim (βα b) fun c hc => ⟨c, PSet.Equiv.symm hc⟩) a)
@@ -1136,8 +1137,8 @@ theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ 
 /-- The image of a (definable) ZFC set function -/
 def image (f : ZFSet → ZFSet) [Definable₁ f] : ZFSet → ZFSet :=
   let r := Definable₁.out f
-  Quotient.lift (⟦PSet.image r ·⟧)
-    fun _ _ e => Quotient.sound <|
+  Quotient.map (PSet.image r ·)
+    fun _ _ e =>
       Mem.ext fun _ =>
         (mem_image (fun _ _ ↦ Definable₁.out_equiv _)).trans <|
           Iff.trans
