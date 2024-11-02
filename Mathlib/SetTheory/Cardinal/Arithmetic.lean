@@ -837,7 +837,7 @@ lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
 
 end Cardinal
 
-@[deprecated mk_iUnion_Ordinal_le_of_le (since := "2024-08-30")]
+@[deprecated mk_iUnion_Ordinal_le_of_le (since := "2024-11-02")]
 alias Ordinal.Cardinal.mk_iUnion_Ordinal_le_of_le := mk_iUnion_Ordinal_le_of_le
 
 /-! ### Cardinality of ordinals -/
