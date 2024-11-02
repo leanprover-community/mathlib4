@@ -268,20 +268,23 @@ instance : CoeOut (r ≺i s) (r ↪r s) :=
 instance : CoeFun (r ≺i s) fun _ => α → β :=
   ⟨fun f => f⟩
 
-instance [IsIrrefl β s] [IsTrichotomous β s] : FunLike (r ≺i s) α β where
-  coe f := f.toFun
-  coe_injective' := by
-    rintro ⟨f, a, hf⟩ ⟨g, b, hg⟩ h
-    cases (DFunLike.coe_injective h : f = g)
-    congr
-    refine extensional_of_trichotomous_of_irrefl s fun x ↦ ?_
-    rw [← hf, hg]
+theorem toRelEmbedding_injective [IsIrrefl β s] [IsTrichotomous β s] :
+    Function.Injective (@toRelEmbedding α β r s) := by
+  rintro ⟨f, a, hf⟩ ⟨g, b, hg⟩ rfl
+  congr
+  refine extensional_of_trichotomous_of_irrefl s fun x ↦ ?_
+  rw [← hf, hg]
 
-instance [IsIrrefl β s] [IsTrichotomous β s] : EmbeddingLike (r ≺i s) α β where
-  injective' f := f.inj'
+@[simp]
+theorem toRelEmbedding_inj [IsIrrefl β s] [IsTrichotomous β s] {f g : r ≺i s} :
+    f.toRelEmbedding = g.toRelEmbedding ↔ f = g :=
+  toRelEmbedding_injective.eq_iff
 
-instance [IsIrrefl β s] [IsTrichotomous β s] : RelHomClass (r ≺i s) r s where
-  map_rel f := f.map_rel_iff.2
+@[ext]
+theorem ext [IsIrrefl β s] [IsTrichotomous β s] {f g : r ≺i s} (h : ∀ x, f x = g x) : f = g := by
+  rw [← toRelEmbedding_inj]
+  ext
+  exact h _
 
 @[simp]
 theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α → β) = f :=
@@ -394,7 +397,7 @@ theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
 
 /-- Given a well order `s`, there is a most one principal segment embedding of `r` into `s`. -/
 instance [IsWellOrder β s] : Subsingleton (r ≺i s) where
-  allEq f g := DFunLike.ext f g ((f : r ≼i s).eq g)
+  allEq f g := ext ((f : r ≼i s).eq g)
 
 protected theorem eq [IsWellOrder β s] (f g : r ≺i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
