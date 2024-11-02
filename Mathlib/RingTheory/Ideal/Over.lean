@@ -3,6 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.RingTheory.Ideal.Pointwise
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Integral
 
@@ -28,11 +29,9 @@ variable {R : Type*} [CommRing R]
 
 namespace Ideal
 
-open Polynomial
+open Polynomial Submodule
 
-open Polynomial
-
-open Submodule
+open scoped Pointwise
 
 section CommRing
 
@@ -442,6 +441,12 @@ theorem under_def : P.under A = Ideal.comap (algebraMap A B) P := rfl
 
 instance IsPrime.under [hP : P.IsPrime] : (P.under A).IsPrime :=
   hP.comap (algebraMap A B)
+
+@[simp]
+lemma under_smul {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B] (g : G) :
+    (g • P : Ideal B).under A = P.under A := by
+  ext a
+  rw [mem_comap, mem_comap, mem_pointwise_smul_iff_inv_smul_mem, smul_algebraMap]
 
 variable {A}
 

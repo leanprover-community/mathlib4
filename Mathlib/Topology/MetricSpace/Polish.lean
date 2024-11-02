@@ -166,7 +166,7 @@ instance (priority := 50) polish_of_countable [TopologicalSpace α]
 theorem _root_.Equiv.polishSpace_induced [t : TopologicalSpace β] [PolishSpace β] (f : α ≃ β) :
     @PolishSpace α (t.induced f) :=
   letI : TopologicalSpace α := t.induced f
-  (f.toHomeomorphOfInducing ⟨rfl⟩).isClosedEmbedding.polishSpace
+  (f.toHomeomorphOfIsInducing ⟨rfl⟩).isClosedEmbedding.polishSpace
 
 /-- A closed subset of a Polish space is also Polish. -/
 theorem _root_.IsClosed.polishSpace [TopologicalSpace α] [PolishSpace α] {s : Set α}

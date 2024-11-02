@@ -58,10 +58,12 @@ def formatTable (headers : Array String) (table : Array (Array String))
     "| "
     ++ String.intercalate " | "
         (((widths.zip alignments).map fun ⟨w, a⟩ =>
-              match a with
-              | Alignment.left => ":" ++ String.replicate (w-1) '-'
-              | Alignment.right => String.replicate (w-1) '-' ++ ":"
-              | Alignment.center => ":" ++ String.replicate (w-2) '-' ++ ":"
+              match w, a with
+              | 0, _ => ""
+              | 1, _ => "-"
+              | _ + 2, Alignment.left => ":" ++ String.replicate (w-1) '-'
+              | _ + 2, Alignment.right => String.replicate (w-1) '-' ++ ":"
+              | _ + 2, Alignment.center => ":" ++ String.replicate (w-2) '-' ++ ":"
               ).toList)
     ++ " |"
   let rowLines := paddedTable.map (fun row => "| " ++ String.intercalate " | " (row.toList) ++ " |")
