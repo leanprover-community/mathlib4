@@ -47,7 +47,7 @@ variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F
 
 @[local instance]
 private lemma hasColimitFiber : ∀ X, HasColimit (Grothendieck.ι F X ⋙ G) :=
-  fun X => hasColimitOfIso (F := F.map (𝟙 _) ⋙ Grothendieck.ι F X ⋙ G) <|
+  fun X => hasColimitOfIso <|
     (Functor.leftUnitor (Grothendieck.ι F X ⋙ G)).symm ≪≫
     (isoWhiskerRight (eqToIso (F.map_id X).symm) (Grothendieck.ι F X ⋙ G))
 

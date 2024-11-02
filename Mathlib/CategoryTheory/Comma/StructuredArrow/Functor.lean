@@ -94,6 +94,13 @@ def ιCompGrothendieckProj (X : D) :
     Grothendieck.ι (functor L) X ⋙ grothendieckProj L ≅ proj L X :=
   ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 _) X
 
+/-- Functors between costructured arrow categories induced by morphisms in the base category
+composed with fibers of `grothendieckProj L` are isomorphic to the projection `proj L X`. -/
+@[simps!]
+def mapCompιCompGrothendieckProj {X Y : D} (f : X ⟶ Y) :
+    CostructuredArrow.map f ⋙ Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ≅ proj L X :=
+  isoWhiskerLeft (CostructuredArrow.map f) (ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 _) Y)
+
 end CostructuredArrow
 
 end CategoryTheory

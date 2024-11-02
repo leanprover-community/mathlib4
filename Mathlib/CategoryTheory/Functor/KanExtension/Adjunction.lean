@@ -84,21 +84,18 @@ lemma ι_lanObjObjIsoColimit_hom (X : D) (f : CostructuredArrow L X) :
   LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
     (isPointwiseLeftKanExtensionLanUnit L F X) f
 
-omit [∀ (F : C ⥤ H), HasLeftKanExtension L F] [HasPointwiseLeftKanExtension L F]
-
-variable [∀ X, HasColimitsOfShape (CostructuredArrow L X) H]
+omit [∀ (F : C ⥤ H), HasLeftKanExtension L F]
 
 @[local instance]
-private theorem lanObjIsoFiberwiseColimit_inst_1 {X Y : D} (f : X ⟶ Y) :
-    HasColimit ((functor L).map f ⋙ Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ⋙ F) := by
-  simp only [functor_obj, Cat.of_α, functor_map]
-  infer_instance
+private theorem lanObjIsoFiberwiseColimit_inst₁ {X Y : D} (f : X ⟶ Y) :
+    HasColimit ((functor L).map f ⋙ Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ⋙ F) :=
+  hasColimitOfIso (isoWhiskerRight (mapCompιCompGrothendieckProj L f) F)
 
 @[local instance]
-private theorem lanObjIsoFiberwiseColimit_inst_2 (X : D) :
-    HasColimit (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F) := by
-  simp only [functor_obj, Cat.of_α]
-  infer_instance
+private theorem lanObjIsoFiberwiseColimit_inst₂ (X : D) :
+    HasColimit (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F) :=
+  hasColimitOfIso <| Iso.symm <| isoWhiskerRight (eqToIso ((functor L).map_id X)) _ ≪≫
+    Functor.leftUnitor (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F)
 
 /-- The left Kan extension of `F : C ⥤ H` along a functor `L : C ⥤ D` is isomorphic to the
 fiberwise colimit of the projection functor on the Grothendieck construction of the costructured
@@ -170,14 +167,11 @@ noncomputable def lanCompColimIso [HasColimitsOfShape C H] [HasColimitsOfShape D
       congr 1
       exact congr_app (L.lanUnit.naturality f) i))
 
-omit [∀ (F : C ⥤ H), L.HasLeftKanExtension F]
-
-variable [∀ X, HasColimitsOfShape (CostructuredArrow L X) H]
-
 @[local instance]
 private theorem foo (X : D) : HasColimitsOfShape ↑((CostructuredArrow.functor L).obj X) H := by
   simp only [CostructuredArrow.functor_obj, Cat.of_α]
-  infer_instance
+  sorry
+  --infer_instance
 
 /-- If `G : C ⥤ H` is a left Kan extension of a functor `L : C ⥤ D` and `H` has colimits of shape
 `C`, `D`, and `CostructuredArrow L X` for all `X : D`, then the colimit of `G` is isomorphic to
