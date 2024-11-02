@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
@@ -1028,6 +1029,15 @@ theorem bddAbove_range_comp {ι : Type u} {f : ι → Cardinal.{v}} (hf : BddAbo
     (g : Cardinal.{v} → Cardinal.{max v w}) : BddAbove (range (g ∘ f)) := by
   rw [range_comp]
   exact bddAbove_image g hf
+
+/-- The type of cardinals in universe `u` is not `Small.{u}`. This is a version of the Burali-Forti
+paradox. -/
+theorem not_small_cardinal : ¬ Small.{u} Cardinal.{u} := by
+  rw [← small_univ_iff, ← bddAbove_iff_small]
+  exact not_bddAbove_univ
+
+instance : Uncountable Cardinal.{u} :=
+  Uncountable.of_not_small not_small_cardinal
 
 /-! ### Bounds on suprema -/
 
