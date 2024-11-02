@@ -59,7 +59,7 @@ noncomputable section
 
 universe u
 
-open Function Set Submodule
+open Function Set Submodule Finsupp
 
 variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
 variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
@@ -134,36 +134,42 @@ theorem repr_self_apply (j) [Decidable (i = j)] : b.repr (b i) j = if i = j then
   rw [repr_self, Finsupp.single_apply]
 
 @[simp]
-theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.total R b v :=
+theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.linearCombination R b v :=
   calc
     b.repr.symm v = b.repr.symm (v.sum Finsupp.single) := by simp
     _ = v.sum fun i vi => b.repr.symm (Finsupp.single i vi) := map_finsupp_sum ..
-    _ = Finsupp.total R b v := by simp only [repr_symm_single, Finsupp.total_apply]
+    _ = Finsupp.linearCombination R b v := by simp only [repr_symm_single,
+                                                         Finsupp.linearCombination_apply]
 
 @[simp]
-theorem coe_repr_symm : ↑b.repr.symm = Finsupp.total R b :=
+theorem coe_repr_symm : ↑b.repr.symm = Finsupp.linearCombination R b :=
   LinearMap.ext fun v => b.repr_symm_apply v
 
 @[simp]
-theorem repr_total (v) : b.repr (Finsupp.total _ b v) = v := by
+theorem repr_linearCombination (v) : b.repr (Finsupp.linearCombination _ b v) = v := by
   rw [← b.coe_repr_symm]
   exact b.repr.apply_symm_apply v
 
+@[deprecated (since := "2024-08-29")] alias repr_total := repr_linearCombination
+
 @[simp]
-theorem total_repr : Finsupp.total _ b (b.repr x) = x := by
+theorem linearCombination_repr : Finsupp.linearCombination _ b (b.repr x) = x := by
   rw [← b.coe_repr_symm]
   exact b.repr.symm_apply_apply x
+
+@[deprecated (since := "2024-08-29")] alias total_repr := linearCombination_repr
 
 theorem repr_range : LinearMap.range (b.repr : M →ₗ[R] ι →₀ R) = Finsupp.supported R R univ := by
   rw [LinearEquiv.range, Finsupp.supported_univ]
 
 theorem mem_span_repr_support (m : M) : m ∈ span R (b '' (b.repr m).support) :=
-  (Finsupp.mem_span_image_iff_total _).2 ⟨b.repr m, by simp [Finsupp.mem_supported_support]⟩
+  (Finsupp.mem_span_image_iff_linearCombination _).2
+    ⟨b.repr m, by simp [Finsupp.mem_supported_support]⟩
 
 theorem repr_support_subset_of_mem_span (s : Set ι) {m : M}
     (hm : m ∈ span R (b '' s)) : ↑(b.repr m).support ⊆ s := by
-  rcases (Finsupp.mem_span_image_iff_total _).1 hm with ⟨l, hl, rfl⟩
-  rwa [repr_total, ← Finsupp.mem_supported R l]
+  rcases (Finsupp.mem_span_image_iff_linearCombination _).1 hm with ⟨l, hl, rfl⟩
+  rwa [repr_linearCombination, ← Finsupp.mem_supported R l]
 
 theorem mem_span_image {m : M} {s : Set ι} : m ∈ span R (b '' s) ↔ ↑(b.repr m).support ⊆ s :=
   ⟨repr_support_subset_of_mem_span _ _, fun h ↦
@@ -219,7 +225,7 @@ theorem dvd_coord_smul (i : ι) (m : M) (r : R) : r ∣ b.coord i (r • m) :=
 
 theorem coord_repr_symm (b : Basis ι R M) (i : ι) (f : ι →₀ R) :
     b.coord i (b.repr.symm f) = f i := by
-  simp only [repr_symm_apply, coord_apply, repr_total]
+  simp only [repr_symm_apply, coord_apply, repr_linearCombination]
 
 end Coord
 
@@ -232,13 +238,13 @@ variable {M₁ : Type*} [AddCommMonoid M₁] [Module R₁ M₁]
 /-- Two linear maps are equal if they are equal on basis vectors. -/
 theorem ext {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
-  rw [← b.total_repr x, Finsupp.total_apply, Finsupp.sum]
+  rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
   simp only [map_sum, LinearMap.map_smulₛₗ, h]
 
 /-- Two linear equivs are equal if they are equal on basis vectors. -/
 theorem ext' {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
-  rw [← b.total_repr x, Finsupp.total_apply, Finsupp.sum]
+  rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
   simp only [map_sum, LinearEquiv.map_smulₛₗ, h]
 
 /-- Two elements are equal iff their coordinates are equal. -/
@@ -532,8 +538,8 @@ theorem mem_submodule_iff {P : Submodule R M} (b : Basis ι R P) {x : M} :
     x ∈ P ↔ ∃ c : ι →₀ R, x = Finsupp.sum c fun i x => x • (b i : M) := by
   conv_lhs =>
     rw [← P.range_subtype, ← Submodule.map_top, ← b.span_eq, Submodule.map_span, ← Set.range_comp,
-        ← Finsupp.range_total]
-  simp [@eq_comm _ x, Function.comp, Finsupp.total_apply]
+        ← Finsupp.range_linearCombination]
+  simp [@eq_comm _ x, Function.comp, Finsupp.linearCombination_apply]
 
 section Constr
 
@@ -551,7 +557,7 @@ you can recover an `AddEquiv` by setting `S := ℕ`.
 See library note [bundled maps over different rings].
 -/
 def constr : (ι → M') ≃ₗ[S] M →ₗ[R] M' where
-  toFun f := (Finsupp.total R id).comp <| Finsupp.lmapDomain R R f ∘ₗ ↑b.repr
+  toFun f := (Finsupp.linearCombination R id).comp <| Finsupp.lmapDomain R R f ∘ₗ ↑b.repr
   invFun f i := f (b i)
   left_inv f := by
     ext
@@ -567,12 +573,12 @@ def constr : (ι → M') ≃ₗ[S] M →ₗ[R] M' where
     simp
 
 theorem constr_def (f : ι → M') :
-    constr (M' := M') b S f = Finsupp.total R id ∘ₗ Finsupp.lmapDomain R R f ∘ₗ ↑b.repr :=
+    constr (M' := M') b S f = linearCombination R id ∘ₗ Finsupp.lmapDomain R R f ∘ₗ ↑b.repr :=
   rfl
 
 theorem constr_apply (f : ι → M') (x : M) :
     constr (M' := M') b S f x = (b.repr x).sum fun b a => a • f b := by
-  simp only [constr_def, LinearMap.comp_apply, Finsupp.lmapDomain_apply, Finsupp.total_apply]
+  simp only [constr_def, LinearMap.comp_apply, lmapDomain_apply, linearCombination_apply]
   rw [Finsupp.sum_mapDomain_index] <;> simp [add_smul]
 
 @[simp]
@@ -590,7 +596,7 @@ theorem constr_range {f : ι → M'} :
     LinearMap.range (constr (M' := M') b S f) = span R (range f) := by
   rw [b.constr_def S f, LinearMap.range_comp, LinearMap.range_comp, LinearEquiv.range, ←
     Finsupp.supported_univ, Finsupp.lmapDomain_supported, ← Set.image_univ, ←
-    Finsupp.span_image_eq_map_total, Set.image_id]
+    Finsupp.span_image_eq_map_linearCombination, Set.image_id]
 
 @[simp]
 theorem constr_comp (f : M' →ₗ[R] M') (v : ι → M') :
@@ -704,7 +710,7 @@ a function `x : ι → R` to the linear combination `∑_i x i • v i`. -/
 @[simp]
 theorem Basis.equivFun_symm_apply [Fintype ι] (b : Basis ι R M) (x : ι → R) :
     b.equivFun.symm x = ∑ i, x i • b i := by
-  simp [Basis.equivFun, Finsupp.total_apply, Finsupp.sum_fintype, Finsupp.equivFunOnFinite]
+  simp [Basis.equivFun, Finsupp.linearCombination_apply, sum_fintype, equivFunOnFinite]
 
 @[simp]
 theorem Basis.equivFun_apply [Finite ι] (b : Basis ι R M) (u : M) : b.equivFun u = b.repr u :=

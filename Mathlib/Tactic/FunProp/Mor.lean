@@ -3,7 +3,6 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Lean
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Tactic.FunProp.ToBatteries
 
@@ -89,7 +88,7 @@ Weak normal head form of an expression involving morphism applications.
 
 For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
  -/
-def whnf (e : Expr)  (cfg : WhnfCoreConfig := {}) : MetaM Expr :=
+def whnf (e : Expr) (cfg : WhnfCoreConfig := {}) : MetaM Expr :=
   whnfPred e (fun _ => return false) cfg
 
 
@@ -120,6 +119,14 @@ where
         go f (as.push { coe := c, expr := x})
       else
         go (.app c f) (as.push { expr := x})
+    | .app (.proj n i f) x, as => do
+      -- convert proj back to function application
+      let env ← getEnv
+      let info := getStructureInfo? env n |>.get!
+      let projFn := getProjFnForField? env n (info.fieldNames[i]!) |>.get!
+      let .app c f ← mkAppM projFn #[f] | panic! "bug in Mor.withApp"
+
+      go (.app (.app c f) x) as
     | .app f a, as =>
       go f (as.push { expr := a })
     | f        , as => k f as.reverse

@@ -153,11 +153,11 @@ theorem seminormFromBounded_eq_zero_iff (f_nonneg : 0 ≤ f)
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have hf := seminormFromBounded_ge f_nonneg f_mul x
     rw [h, mul_zero] at hf
-    exact hf.antisymm  (f_nonneg _)
+    exact hf.antisymm (f_nonneg _)
   · have hf : seminormFromBounded' f x ≤ c * f x :=
       seminormFromBounded_le f_nonneg f_mul x
     rw [h, mul_zero] at hf
-    exact hf.antisymm  (seminormFromBounded_nonneg f_nonneg f_mul x)
+    exact hf.antisymm (seminormFromBounded_nonneg f_nonneg f_mul x)
 
 /-- If `f` is invariant under negation of `x`, then so is `seminormFromBounded'`.-/
 theorem seminormFromBounded_neg (f_neg : ∀ x : R, f (-x) = f x) (x : R) :

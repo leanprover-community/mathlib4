@@ -16,7 +16,7 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
-/-- The category of quadratic modules; modules with an associated quadratic form-/
+/-- The category of quadratic modules; modules with an associated quadratic form -/
 structure QuadraticModuleCat extends ModuleCat.{v} R where
   /-- The quadratic form associated with the module. -/
   form : QuadraticForm R carrier
@@ -43,7 +43,7 @@ def of {X : Type v} [AddCommGroup X] [Module R X] (Q : QuadraticForm R X) :
 /-- A type alias for `QuadraticForm.LinearIsometry` to avoid confusion between the categorical and
 algebraic spellings of composition. -/
 @[ext]
-structure Hom (V W : QuadraticModuleCat.{v} R) :=
+structure Hom (V W : QuadraticModuleCat.{v} R) where
   /-- The underlying isometry -/
   toIsometry : V.form →qᵢ W.form
 
@@ -84,7 +84,7 @@ instance concreteCategory : ConcreteCategory.{v} (QuadraticModuleCat.{v} R) wher
     { obj := fun M => M
       map := fun f => f.toIsometry }
   forget_faithful :=
-    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toIsometry_injective _ _ }
+    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toIsometry_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) where
   forget₂ :=
