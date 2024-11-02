@@ -697,7 +697,7 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClose [T2Space X] [Lo
           (∑ j in { j : Fin (Nat.succ n) | j ≤ ⟨n, (lt_add_one n)⟩ }.toFinset, f j) x
           = (1 - (∏ j in { j : Fin (Nat.succ n) | j ≤ ⟨n, (lt_add_one n)⟩ }.toFinset, (1 - g j)))
           x := by
-        apply Function.funext_iff.mp
+        apply funext_iff.mp
         ext z
         exact congrFun (congrArg DFunLike.coe (hsumf n (lt_add_one n))) z
       simp only [Nat.zero_eq, mem_setOf_eq, toFinset_setOf, ContinuousMap.coe_sum, Finset.sum_apply,
