@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen
 -/
 import Mathlib.Analysis.Calculus.FirstDerivativeTest
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 /-!
 # The Second-Derivative Test
 
@@ -140,19 +141,15 @@ theorem isLocalMin_of_deriv_deriv_pos {f : ℝ → ℝ}  {x₀ : ℝ}
   obtain ⟨p,hp⟩    := eventually_differentiable_of_deriv_nonzero hε
   obtain ⟨l,u,hlu⟩ := mem_nhds_iff_exists_Ioo_subset.mp hp.1
   let δ := min (x₀ - l) (u - x₀)
-  let ζ := (1/2) * min δ ε
-  have hζ : ζ > 0 := by aesop
-  have hζ₀ : x₀ - ζ < x₀ := by linarith
-  have hζ₁ : x₀ < x₀ + ζ := by linarith
-  have hεζ : x₀ - ε ≤ x₀ - ζ := by
-    show x₀ - ε ≤ x₀ - (1/2) * min δ ε
+  have hζ : (1/2) * min δ ε > 0 := by aesop
+  have hζ₀ : x₀ - (1/2) * min δ ε < x₀ := by linarith
+  have hζ₁ : x₀ < x₀ + (1/2) * min δ ε := by linarith
+  have hεζ : x₀ - ε ≤ x₀ - (1/2) * min δ ε := by
     suffices x₀ ≤ x₀ + (1/2) * (ε - min δ ε) by linarith
     aesop
-  have hu :  x₀ + ζ ≤ u := by
-    show x₀ + (1/2) * min δ ε ≤ u
+  have hu :  x₀ + (1/2) * min δ ε ≤ u := by
     linarith[min_le_left δ ε, min_le_right (x₀ - l) (u - x₀), hlu.1.2]
-  have hl : l ≤ x₀ - ζ := by
-    show l ≤ x₀ - 1 / 2 * min δ ε
+  have hl : l ≤ x₀ - (1/2) * min δ ε := by
     linarith[min_le_left δ ε, min_le_left (x₀ - l) (u - x₀), hlu.1.1]
   exact isLocalMin_of_deriv_Ioo hζ₀ hζ₁ hc
     ((differentiableOn_left hp.2 hlu.1 hlu.2).mono <| Ioo_subset_Ioo_left <| by linarith)
