@@ -407,4 +407,17 @@ theorem length_reverse {a : FreeMonoid α} : a.reverse.length = a.length :=
 
 end Reverse
 
+section IsomorphicTypes
+
+variable {α β : Type*} (e : α ≃ β)
+
+/-- free monoids over isomorphic types are isomorphic -/
+@[to_additive "if two types are isomorphic, the additive free monoids over those types are
+isomorphic"]
+def congr_iso : FreeMonoid α ≃* FreeMonoid β :=
+  MulEquiv.mk' ⟨FreeMonoid.map e.toFun, FreeMonoid.map e.invFun, fun x => by simp [map_map],
+    fun x => by simp [map_map]⟩ (by simp [map_mul])
+
+end IsomorphicTypes
+
 end FreeMonoid
