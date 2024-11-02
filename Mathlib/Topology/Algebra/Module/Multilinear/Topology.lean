@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 import Mathlib.Topology.Algebra.Module.UniformConvergence
+import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Hom.ContinuousEvalConst
 
 /-!
@@ -66,16 +67,24 @@ section UniformAddGroup
 
 variable [UniformSpace F] [UniformAddGroup F]
 
+lemma isUniformInducing_toUniformOnFun :
+    IsUniformInducing (toUniformOnFun :
+      ContinuousMultilinearMap 𝕜 E F → ((Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F)) := ⟨rfl⟩
+
 lemma isUniformEmbedding_toUniformOnFun :
-    IsUniformEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) where
-  inj := DFunLike.coe_injective
-  comap_uniformity := rfl
+    IsUniformEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
+  ⟨isUniformInducing_toUniformOnFun, DFunLike.coe_injective⟩
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_toUniformOnFun := isUniformEmbedding_toUniformOnFun
 
-lemma embedding_toUniformOnFun : Embedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
-  isUniformEmbedding_toUniformOnFun.embedding
+lemma isEmbedding_toUniformOnFun :
+    IsEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F →
+      ((Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F)) :=
+  isUniformEmbedding_toUniformOnFun.isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_toUniformOnFun := isEmbedding_toUniformOnFun
 
 theorem uniformContinuous_coe_fun [∀ i, ContinuousSMul 𝕜 (E i)] :
     UniformContinuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (Π i, E i) → F) :=
@@ -97,19 +106,33 @@ instance instUniformContinuousConstSMul {M : Type*}
   haveI := uniformContinuousConstSMul_of_continuousConstSMul M F
   isUniformEmbedding_toUniformOnFun.uniformContinuousConstSMul fun _ _ ↦ rfl
 
+theorem isUniformInducing_postcomp
+    {G : Type*} [AddCommGroup G] [UniformSpace G] [UniformAddGroup G] [Module 𝕜 G]
+    (g : F →L[𝕜] G) (hg : IsUniformInducing g) :
+    IsUniformInducing (g.compContinuousMultilinearMap :
+      ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜 E G) := by
+  rw [← isUniformInducing_toUniformOnFun.of_comp_iff]
+  exact (UniformOnFun.postcomp_isUniformInducing hg).comp isUniformInducing_toUniformOnFun
+
 section CompleteSpace
 
-variable [∀ i, ContinuousSMul 𝕜 (E i)] [ContinuousConstSMul 𝕜 F] [CompleteSpace F] [T2Space F]
+variable [∀ i, ContinuousSMul 𝕜 (E i)] [ContinuousConstSMul 𝕜 F] [CompleteSpace F]
 
 open UniformOnFun in
 theorem completeSpace (h : RestrictGenTopology {s : Set (Π i, E i) | IsVonNBounded 𝕜 s}) :
     CompleteSpace (ContinuousMultilinearMap 𝕜 E F) := by
   classical
+  wlog hF : T2Space F generalizing F
+  · rw [(isUniformInducing_postcomp (SeparationQuotient.mkCLM _ _)
+      SeparationQuotient.isUniformInducing_mk).completeSpace_congr]
+    · exact this inferInstance
+    · intro f
+      use (SeparationQuotient.outCLM _ _).compContinuousMultilinearMap f
+      simp [DFunLike.ext_iff]
   have H : ∀ {m : Π i, E i},
       Continuous fun f : (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F ↦ toFun _ f m :=
     (uniformContinuous_eval (isVonNBounded_covers) _).continuous
-  rw [completeSpace_iff_isComplete_range isUniformEmbedding_toUniformOnFun.isUniformInducing,
-    range_toUniformOnFun]
+  rw [completeSpace_iff_isComplete_range isUniformInducing_toUniformOnFun, range_toUniformOnFun]
   simp only [setOf_and, setOf_forall]
   apply_rules [IsClosed.isComplete, IsClosed.inter]
   · exact UniformOnFun.isClosed_setOf_continuous h
@@ -172,7 +195,7 @@ instance instContinuousSMul [ContinuousSMul 𝕜 F] :
   let φ : ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] (Π i, E i) → F :=
     { toFun := (↑), map_add' := fun _ _ ↦ rfl, map_smul' := fun _ _ ↦ rfl }
   UniformOnFun.continuousSMul_induced_of_image_bounded _ _ _ _ φ
-    embedding_toUniformOnFun.toInducing fun _ _ hu ↦ hu.image_multilinear _
+    isEmbedding_toUniformOnFun.isInducing fun _ _ hu ↦ hu.image_multilinear _
 
 theorem hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → Set F}
     (h : (𝓝 (0 : F)).HasBasis p b) :
@@ -215,18 +238,21 @@ section RestrictScalars
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [∀ i, Module 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
-theorem embedding_restrictScalars :
-    Embedding
+theorem isEmbedding_restrictScalars :
+    IsEmbedding
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  (isUniformEmbedding_restrictScalars _).embedding
+  (isUniformEmbedding_restrictScalars _).isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_restrictScalars := isEmbedding_restrictScalars
 
 @[continuity, fun_prop]
 theorem continuous_restrictScalars :
     Continuous
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
-   embedding_restrictScalars.continuous
+   isEmbedding_restrictScalars.continuous
 
 variable (𝕜') in
 /-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/

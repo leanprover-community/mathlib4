@@ -1031,6 +1031,17 @@ theorem AccPt.mono {F G : Filter X} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G 
 theorem AccPt.clusterPt (x : X) (F : Filter X) (h : AccPt x F) : ClusterPt x F :=
   ((acc_iff_cluster x F).mp h).mono inf_le_right
 
+theorem clusterPt_principal {x : X} {C : Set X} :
+    ClusterPt x (𝓟 C) ↔ x ∈ C ∨ AccPt x (𝓟 C) := by
+  constructor
+  · intro h
+    by_contra! hc
+    rw [acc_principal_iff_cluster] at hc
+    simp_all only [not_false_eq_true, diff_singleton_eq_self, not_true_eq_false, hc.1]
+  · rintro (h | h)
+    · exact clusterPt_principal_iff.mpr fun _ mem ↦ ⟨x, ⟨mem_of_mem_nhds mem, h⟩⟩
+    · exact h.clusterPt
+
 /-!
 ### Interior, closure and frontier in terms of neighborhoods
 -/
@@ -1144,7 +1155,6 @@ theorem dense_compl_singleton (x : X) [NeBot (𝓝[≠] x)] : Dense ({x}ᶜ : Se
 
 /-- If `x` is not an isolated point of a topological space, then the closure of `{x}ᶜ` is the whole
 space. -/
--- Porting note (#10618): was a `@[simp]` lemma but `simp` can prove it
 theorem closure_compl_singleton (x : X) [NeBot (𝓝[≠] x)] : closure {x}ᶜ = (univ : Set X) :=
   (dense_compl_singleton x).closure_eq
 

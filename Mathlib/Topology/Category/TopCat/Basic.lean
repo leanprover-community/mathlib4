@@ -53,10 +53,10 @@ instance instFunLike (X Y : TopCat) : FunLike (X ⟶ Y) X Y :=
 instance instContinuousMapClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
   inferInstanceAs <| ContinuousMapClass C(X, Y) X Y
 
--- Porting note (#10618): simp can prove this; removed simp
+@[simp]
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
 
--- Porting note (#10618): simp can prove this; removed simp
+@[simp]
 theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X → Z) x = g (f x) := rfl
 

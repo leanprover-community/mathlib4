@@ -9,6 +9,8 @@ import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.UnitInterval
+import Mathlib.Topology.GDelta.Basic
+
 
 /-!
 # Urysohn's lemma

@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
 
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Algebra.Module.End
 import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
