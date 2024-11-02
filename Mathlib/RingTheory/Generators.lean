@@ -106,6 +106,18 @@ def ofSurjective {vars} (val : vars → S) (h : Function.Surjective (aeval (R :=
   σ' x := (h x).choose
   aeval_val_σ' x := (h x).choose_spec
 
+/-- If `algebraMap R S` is surjective, the empty type generates `S`. -/
+noncomputable def ofSurjectiveAlgebraMap (h : Function.Surjective (algebraMap R S)) :
+    Generators.{w} R S :=
+  ofSurjective PEmpty.elim <| fun s ↦ by
+    use C (h s).choose
+    simp [(h s).choose_spec]
+
+/-- The canonical generators for `R` as an `R`-algebra. -/
+noncomputable def id : Generators.{w} R R := ofSurjectiveAlgebraMap <| by
+  rw [id.map_eq_id]
+  exact RingHomSurjective.is_surjective
+
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
 noncomputable
 def ofAlgHom {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) :

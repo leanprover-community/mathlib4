@@ -3,9 +3,8 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Batteries.Tactic.Init
+import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Defs
-import Mathlib.Order.Defs
 
 /-!
 # Booleans
@@ -228,7 +227,10 @@ theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
 theorem injective_iff {α : Sort*} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
   ⟨fun Hinj Heq ↦ false_ne_true (Hinj Heq), fun H x y hxy ↦ by
     cases x <;> cases y
-    exacts [rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
+    · rfl
+    · exact (H hxy).elim
+    · exact (H hxy.symm).elim
+    · rfl⟩
 
 /-- **Kaminski's Equation** -/
 theorem apply_apply_apply (f : Bool → Bool) (x : Bool) : f (f (f x)) = f x := by

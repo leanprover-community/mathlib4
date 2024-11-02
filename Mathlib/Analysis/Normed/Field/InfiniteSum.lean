@@ -3,7 +3,7 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 
@@ -164,3 +164,10 @@ theorem hasSum_sum_range_mul_of_summable_norm' {f g : ℕ → R}
   exact tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm' hf h'f hg h'g
 
 end Nat
+
+lemma summable_of_absolute_convergence_real {f : ℕ → ℝ} :
+    (∃ r, Tendsto (fun n ↦ ∑ i ∈ range n, |f i|) atTop (𝓝 r)) → Summable f
+  | ⟨r, hr⟩ => by
+    refine .of_norm ⟨r, (hasSum_iff_tendsto_nat_of_nonneg ?_ _).2 ?_⟩
+    · exact fun i ↦ norm_nonneg _
+    · simpa only using hr

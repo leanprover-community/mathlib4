@@ -188,7 +188,7 @@ The theorem `Measurable.apply_continuousLinearMap` states measurability in `f` i
 form.
 -/
 
-set_option linter.longLine false in
+set_option linter.style.longLine false in
 attribute [fun_prop]
   ContinuousLinearMap.measurable       -- Measurable fun (x : E) => DFunLike.coe L x
   ContinuousLinearMap.measurable_comp  -- Measurable φ → Measurable fun (x : E) => DFunLike.coe L (φ x)
@@ -203,7 +203,7 @@ A silly example that everything together works as expected
 example (f : ℝ → ℝ → (ℝ →L[ℝ] ℝ)) (hf : Continuous (fun (x,y) => f x y)) :
     Measurable fun x => (f (x / x) (x * x) 1 + x) := by fun_prop
 
-set_option linter.longLine false in
+set_option linter.style.longLine false in
 /-!
 In the current state of `fun_prop`, morphism theorems **have to** be stated in compositional form.
 Sometimes they might work in uncurried form but `fun_prop` is not designed that way right now.

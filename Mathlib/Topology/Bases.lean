@@ -142,7 +142,7 @@ theorem isTopologicalBasis_of_isOpen_of_nhds {s : Set (Set α)} (h_open : ∀ u 
     IsTopologicalBasis s :=
   .of_hasBasis_nhds <| fun a ↦
     (nhds_basis_opens a).to_hasBasis' (by simpa [and_assoc] using h_nhds a)
-      fun t ⟨hts, hat⟩ ↦ (h_open _ hts).mem_nhds hat
+      fun _ ⟨hts, hat⟩ ↦ (h_open _ hts).mem_nhds hat
 
 /-- A set `s` is in the neighbourhood of `a` iff there is some basis set `t`, which
 contains `a` and is itself contained in `s`. -/
@@ -236,16 +236,19 @@ theorem IsTopologicalBasis.exists_nonempty_subset {B : Set (Set α)} (hb : IsTop
 theorem isTopologicalBasis_opens : IsTopologicalBasis { U : Set α | IsOpen U } :=
   isTopologicalBasis_of_isOpen_of_nhds (by tauto) (by tauto)
 
-protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α → β} {T : Set (Set β)}
-    (hf : Inducing f) (h : IsTopologicalBasis T) : IsTopologicalBasis ((preimage f) '' T) :=
+protected lemma IsTopologicalBasis.isInducing {β} [TopologicalSpace β] {f : α → β} {T : Set (Set β)}
+    (hf : IsInducing f) (h : IsTopologicalBasis T) : IsTopologicalBasis ((preimage f) '' T) :=
   .of_hasBasis_nhds fun a ↦ by
     convert (hf.basis_nhds (h.nhds_hasBasis (a := f a))).to_image_id with s
     aesop
 
+@[deprecated (since := "2024-10-28")]
+alias IsTopologicalBasis.inducing := IsTopologicalBasis.isInducing
+
 protected theorem IsTopologicalBasis.induced {α} [s : TopologicalSpace β] (f : α → β)
     {T : Set (Set β)} (h : IsTopologicalBasis T) :
     IsTopologicalBasis (t := induced f s) ((preimage f) '' T) :=
-  h.inducing (t := induced f s) (inducing_induced f)
+  h.isInducing (t := induced f s) (.induced f)
 
 protected theorem IsTopologicalBasis.inf {t₁ t₂ : TopologicalSpace β} {B₁ B₂ : Set (Set β)}
     (h₁ : IsTopologicalBasis (t := t₁) B₁) (h₂ : IsTopologicalBasis (t := t₂) B₂) :
@@ -285,11 +288,6 @@ protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpa
     {B : Set (Set β)} (hB : IsTopologicalBasis B) {f : α → β} :
     Continuous f ↔ ∀ s ∈ B, IsOpen (f ⁻¹' s) := by
   rw [hB.eq_generateFrom, continuous_generateFrom_iff]
-
-@[deprecated (since := "2023-12-24")]
-protected theorem IsTopologicalBasis.continuous {β : Type*} [TopologicalSpace β] {B : Set (Set β)}
-    (hB : IsTopologicalBasis B) (f : α → β) (hf : ∀ s ∈ B, IsOpen (f ⁻¹' s)) : Continuous f :=
-  hB.continuous_iff.2 hf
 
 variable (α)
 
@@ -357,9 +355,12 @@ protected theorem _root_.DenseRange.separableSpace [SeparableSpace α] [Topologi
   let ⟨s, s_cnt, s_dense⟩ := exists_countable_dense α
   ⟨⟨f '' s, Countable.image s_cnt f, h.dense_image h' s_dense⟩⟩
 
-theorem _root_.QuotientMap.separableSpace [SeparableSpace α] [TopologicalSpace β] {f : α → β}
-    (hf : QuotientMap f) : SeparableSpace β :=
+theorem _root_.IsQuotientMap.separableSpace [SeparableSpace α] [TopologicalSpace β] {f : α → β}
+    (hf : IsQuotientMap f) : SeparableSpace β :=
   hf.surjective.denseRange.separableSpace hf.continuous
+
+@[deprecated (since := "2024-10-22")]
+alias _root_.QuotientMap.separableSpace := _root_.IsQuotientMap.separableSpace
 
 /-- The product of two separable spaces is a separable space. -/
 instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α × β) := by
@@ -387,10 +388,10 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
     exact hyu ⟨i, _⟩
 
 instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) :=
-  quotientMap_quot_mk.separableSpace
+  isQuotientMap_quot_mk.separableSpace
 
 instance [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) :=
-  quotientMap_quot_mk.separableSpace
+  isQuotientMap_quot_mk.separableSpace
 
 /-- A topological space with discrete topology is separable iff it is countable. -/
 theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α ↔ Countable α := by
@@ -578,7 +579,7 @@ theorem isTopologicalBasis_subtype
     {α : Type*} [TopologicalSpace α] {B : Set (Set α)}
     (h : TopologicalSpace.IsTopologicalBasis B) (p : α → Prop) :
     IsTopologicalBasis (Set.preimage (Subtype.val (p := p)) '' B) :=
-  h.inducing ⟨rfl⟩
+  h.isInducing ⟨rfl⟩
 
 section
 variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
@@ -661,16 +662,22 @@ instance Subtype.firstCountableTopology (s : Set α) [FirstCountableTopology α]
     FirstCountableTopology s :=
   firstCountableTopology_induced s α (↑)
 
-protected theorem _root_.Inducing.firstCountableTopology {β : Type*}
-    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : Inducing f) :
+protected theorem _root_.IsInducing.firstCountableTopology {β : Type*}
+    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : IsInducing f) :
     FirstCountableTopology α := by
   rw [hf.1]
   exact firstCountableTopology_induced α β f
 
-protected theorem _root_.Embedding.firstCountableTopology {β : Type*}
-    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : Embedding f) :
+@[deprecated (since := "2024-10-28")]
+alias _root_.Inducing.firstCountableTopology := _root_.IsInducing.firstCountableTopology
+
+protected theorem _root_.IsEmbedding.firstCountableTopology {β : Type*}
+    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : IsEmbedding f) :
     FirstCountableTopology α :=
   hf.1.firstCountableTopology
+
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.firstCountableTopology := IsEmbedding.firstCountableTopology
 
 namespace FirstCountableTopology
 
@@ -892,8 +899,8 @@ theorem IsTopologicalBasis.sum {s : Set (Set α)} (hs : IsTopologicalBasis s) {t
     IsTopologicalBasis ((fun u => Sum.inl '' u) '' s ∪ (fun u => Sum.inr '' u) '' t) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro u (⟨w, hw, rfl⟩ | ⟨w, hw, rfl⟩)
-    · exact openEmbedding_inl.isOpenMap w (hs.isOpen hw)
-    · exact openEmbedding_inr.isOpenMap w (ht.isOpen hw)
+    · exact isOpenEmbedding_inl.isOpenMap w (hs.isOpen hw)
+    · exact isOpenEmbedding_inr.isOpenMap w (ht.isOpen hw)
   · rintro (x | x) u hxu u_open
     · obtain ⟨v, vs, xv, vu⟩ : ∃ v ∈ s, x ∈ v ∧ v ⊆ Sum.inl ⁻¹' u :=
         hs.exists_subset_of_mem_open hxu (isOpen_sum_iff.1 u_open).1
@@ -922,8 +929,8 @@ section Quotient
 variable {X : Type*} [TopologicalSpace X] {Y : Type*} [TopologicalSpace Y] {π : X → Y}
 
 /-- The image of a topological basis under an open quotient map is a topological basis. -/
-theorem IsTopologicalBasis.quotientMap {V : Set (Set X)} (hV : IsTopologicalBasis V)
-    (h' : QuotientMap π) (h : IsOpenMap π) : IsTopologicalBasis (Set.image π '' V) := by
+theorem IsTopologicalBasis.isQuotientMap {V : Set (Set X)} (hV : IsTopologicalBasis V)
+    (h' : IsQuotientMap π) (h : IsOpenMap π) : IsTopologicalBasis (Set.image π '' V) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro - ⟨U, U_in_V, rfl⟩
     apply h U (hV.isOpen U_in_V)
@@ -936,13 +943,19 @@ theorem IsTopologicalBasis.quotientMap {V : Set (Set X)} (hV : IsTopologicalBasi
     have πZ_in_U : π '' Z ⊆ U := (Set.image_subset _ Z_in_W).trans (image_preimage_subset π U)
     exact ⟨π '' Z, ⟨Z, Z_in_V, rfl⟩, ⟨x, x_in_Z, rfl⟩, πZ_in_U⟩
 
+@[deprecated (since := "2024-10-22")]
+alias IsTopologicalBasis.quotientMap := IsTopologicalBasis.isQuotientMap
+
 /-- A second countable space is mapped by an open quotient map to a second countable space. -/
-theorem _root_.QuotientMap.secondCountableTopology [SecondCountableTopology X] (h' : QuotientMap π)
-    (h : IsOpenMap π) : SecondCountableTopology Y where
+theorem _root_.IsQuotientMap.secondCountableTopology [SecondCountableTopology X]
+    (h' : IsQuotientMap π) (h : IsOpenMap π) : SecondCountableTopology Y where
   is_open_generated_countable := by
     obtain ⟨V, V_countable, -, V_generates⟩ := exists_countable_basis X
     exact ⟨Set.image π '' V, V_countable.image (Set.image π),
-      (V_generates.quotientMap h' h).eq_generateFrom⟩
+      (V_generates.isQuotientMap h' h).eq_generateFrom⟩
+
+@[deprecated (since := "2024-10-22")]
+alias _root_.QuotientMap.secondCountableTopology := _root_.IsQuotientMap.secondCountableTopology
 
 variable {S : Setoid X}
 
@@ -950,12 +963,12 @@ variable {S : Setoid X}
 theorem IsTopologicalBasis.quotient {V : Set (Set X)} (hV : IsTopologicalBasis V)
     (h : IsOpenMap (Quotient.mk' : X → Quotient S)) :
     IsTopologicalBasis (Set.image (Quotient.mk' : X → Quotient S) '' V) :=
-  hV.quotientMap quotientMap_quotient_mk' h
+  hV.isQuotientMap isQuotientMap_quotient_mk' h
 
 /-- An open quotient of a second countable space is second countable. -/
 theorem Quotient.secondCountableTopology [SecondCountableTopology X]
     (h : IsOpenMap (Quotient.mk' : X → Quotient S)) : SecondCountableTopology (Quotient S) :=
-  quotientMap_quotient_mk'.secondCountableTopology h
+  isQuotientMap_quotient_mk'.secondCountableTopology h
 
 end Quotient
 
@@ -965,18 +978,21 @@ open TopologicalSpace
 
 variable {α β : Type*} [TopologicalSpace α] {f : α → β}
 
-protected theorem Inducing.secondCountableTopology [TopologicalSpace β] [SecondCountableTopology β]
-    (hf : Inducing f) : SecondCountableTopology α := by
+protected theorem IsInducing.secondCountableTopology [TopologicalSpace β]
+    [SecondCountableTopology β] (hf : IsInducing f) : SecondCountableTopology α := by
   rw [hf.1]
   exact secondCountableTopology_induced α β f
 
-protected theorem Embedding.secondCountableTopology
+@[deprecated (since := "2024-10-28")]
+alias Inducing.secondCountableTopology := IsInducing.secondCountableTopology
+
+protected theorem IsEmbedding.secondCountableTopology
     [TopologicalSpace β] [SecondCountableTopology β]
-    (hf : Embedding f) : SecondCountableTopology α :=
+    (hf : IsEmbedding f) : SecondCountableTopology α :=
   hf.1.secondCountableTopology
 
-protected theorem Embedding.separableSpace
-    [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : Embedding f) :
+protected theorem IsEmbedding.separableSpace
+    [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : IsEmbedding f) :
     TopologicalSpace.SeparableSpace α := by
   have := hf.secondCountableTopology
   exact SecondCountableTopology.to_separableSpace

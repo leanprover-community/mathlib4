@@ -54,7 +54,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     obtain ⟨U : Opens M, hxU, f : C^∞⟮IM, U; 𝓘(𝕜), 𝕜⟯, rfl⟩ := S.germ_exist x f
     have hf' : f ⟨x, hxU⟩ ≠ 0 := by
       convert hf
-      exact (smoothSheafCommRing.eval_germ U ⟨x, hxU⟩ f).symm
+      exact (smoothSheafCommRing.eval_germ U x hxU f).symm
     -- In fact, by continuity, `f` is nonzero on a neighbourhood `V` of `x`
     have H :  ∀ᶠ (z : U) in 𝓝 ⟨x, hxU⟩, f z ≠ 0 := f.2.continuous.continuousAt.eventually_ne hf'
     rw [eventually_nhds_iff] at H
@@ -77,8 +77,8 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     -- Let `g` be the pointwise inverse of `f` on `V`, which is smooth since `f` is nonzero there
     let g : C^∞⟮IM, V; 𝓘(𝕜), 𝕜⟯ := ⟨(f ∘ Set.inclusion hUV)⁻¹, ?_⟩
     -- The germ of `g` is inverse to the germ of `f`, so `f` is a unit
-    · refine ⟨⟨S.germ ⟨x, hxV⟩ (SmoothMap.restrictRingHom IM 𝓘(𝕜) 𝕜 hUV f), S.germ ⟨x, hxV⟩ g,
-        ?_, ?_⟩, S.germ_res_apply hUV.hom ⟨x, hxV⟩ f⟩
+    · refine ⟨⟨S.germ _ x (hxV) (SmoothMap.restrictRingHom IM 𝓘(𝕜) 𝕜 hUV f), S.germ _ x hxV g,
+        ?_, ?_⟩, S.germ_res_apply hUV.hom x hxV f⟩
       · rw [← map_mul]
         -- Qualified the name to avoid Lean not finding a `OneHomClass` #8386
         convert RingHom.map_one _
@@ -94,12 +94,6 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
         apply inv_mul_cancel₀
         exact hVf y
     · intro y
-      #adaptation_note
-      /--
-      After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-      See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-      -/
-      letI : ChartedSpace HM V := V.instChartedSpace
       exact ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
         (f.smooth.comp (smooth_inclusion hUV)).smoothAt
 
