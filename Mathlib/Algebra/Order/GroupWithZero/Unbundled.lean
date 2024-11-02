@@ -708,42 +708,42 @@ theorem lt_mul_of_one_lt_right [PosMulStrictMono α] (ha : 0 < a) (h : 1 < b) : 
 /-! Lemmas of the form `a ≤ 1 → b ≤ 1 → a * b ≤ 1`. -/
 
 /-- Assumes left covariance. -/
-theorem mul_le_one_left [PosMulMono α]
+theorem mul_le_one_left₀ [PosMulMono α]
     (ha : a ≤ 1) (hb : b ≤ 1) (a0 : 0 ≤ a) : a * b ≤ 1 :=
   (mul_le_of_le_one_right a0 hb).trans ha
 
 /-- Assumes left covariance. -/
-theorem mul_lt_one_of_le_of_lt_left [PosMulStrictMono α]
+theorem mul_lt_one_of_le_of_lt_left₀ [PosMulStrictMono α]
     (ha : a ≤ 1) (hb : b < 1) (a0 : 0 < a) : a * b < 1 :=
   (mul_lt_of_lt_one_right a0 hb).trans_le ha
 
 /-- Assumes left covariance. -/
-theorem mul_lt_one_of_lt_of_le_left [PosMulMono α]
+theorem mul_lt_one_of_lt_of_le_left₀ [PosMulMono α]
     (ha : a < 1) (hb : b ≤ 1) (a0 : 0 ≤ a) : a * b < 1 :=
   (mul_le_of_le_one_right a0 hb).trans_lt ha
 
 /-- Assumes left covariance. -/
-theorem mul_lt_one_left [PosMulStrictMono α]
+theorem mul_lt_one_left₀ [PosMulStrictMono α]
     (ha : a < 1) (hb : b < 1) (a0 : 0 < a) : a * b < 1 :=
   (mul_lt_of_lt_one_right a0 hb).trans ha
 
 /-- Assumes right covariance. -/
-theorem mul_le_one_right [MulPosMono α]
+theorem mul_le_one_right₀ [MulPosMono α]
     (ha : a ≤ 1) (hb : b ≤ 1) (b0 : 0 ≤ b) : a * b ≤ 1 :=
   (mul_le_of_le_one_left b0 ha).trans hb
 
 /-- Assumes right covariance. -/
-theorem mul_lt_one_of_lt_of_le_right [MulPosStrictMono α]
+theorem mul_lt_one_of_lt_of_le_right₀ [MulPosStrictMono α]
     (ha : a < 1) (hb : b ≤ 1) (b0 : 0 < b) : a * b < 1 :=
   (mul_lt_of_lt_one_left b0 ha).trans_le hb
 
 /-- Assumes right covariance. -/
-theorem mul_lt_one_of_le_of_lt_right [MulPosMono α]
+theorem mul_lt_one_of_le_of_lt_right₀ [MulPosMono α]
     (ha : a ≤ 1) (hb : b < 1) (b0 : 0 ≤ b) : a * b < 1 :=
   (mul_le_of_le_one_left b0 ha).trans_lt hb
 
 /-- Assumes right covariance. -/
-theorem mul_lt_one_right [MulPosStrictMono α]
+theorem mul_lt_one_right₀ [MulPosStrictMono α]
     (ha : a < 1) (hb : b < 1) (b0 : 0 < b) : a * b < 1 :=
   (mul_lt_of_lt_one_left b0 ha).trans hb
 
@@ -785,10 +785,11 @@ theorem Right.one_lt_mul₀ [MulPosStrictMono α] [ZeroLEOneClass α]
     (ha : 1 < a) (hb : 1 < b) : 1 < a * b :=
   hb.trans (lt_mul_of_one_lt_left (zero_le_one.trans_lt hb) ha)
 
-alias one_le_mul_of_le_of_le := Left.one_le_mul₀
+alias one_le_mul₀ := Left.one_le_mul₀
 alias one_lt_mul_of_le_of_lt := Right.one_lt_mul_of_le_of_lt₀
 alias one_lt_mul_of_lt_of_le := Left.one_lt_mul_of_lt_of_le₀
-alias one_lt_mul_of_lt_of_lt := Left.one_lt_mul₀
+alias one_lt_mul₀ := Left.one_lt_mul₀
+alias one_lt_mul := one_lt_mul_of_le_of_lt
 
 /-! Lemmas of the form `b ≤ c → a ≤ 1 → b * a ≤ c`. -/
 
@@ -1065,8 +1066,6 @@ lemma sq_le [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀] (h₀ : 0 
 
 lemma one_le_mul_of_one_le_of_one_le [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 ≤ a) (hb : 1 ≤ b) :
     (1 : M₀) ≤ a * b := Left.one_le_mul_of_le_of_le ha hb <| zero_le_one.trans ha
-
-alias one_lt_mul := one_lt_mul_of_le_of_lt
 
 lemma mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) :
     a * b < 1 := (mul_le_of_le_one_right ha₀ hb).trans_lt ha
@@ -1749,4 +1748,4 @@ lemma div_lt_comm₀ (hb : 0 < b) (hc : 0 < c) : a / b < c ↔ a / c < b := by
 end PosMulStrictMono
 end CommGroupWithZero
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900
