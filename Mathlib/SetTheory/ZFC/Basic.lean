@@ -835,7 +835,7 @@ theorem eq_empty_or_nonempty (u : ZFSet) : u = ∅ ∨ u.Nonempty := by
 
 /-- `Insert x y` is the set `{x} ∪ y` -/
 protected def Insert : ZFSet → ZFSet → ZFSet :=
-  Quotient.map₂ (PSet.insert · ·)
+  Quotient.map₂ PSet.insert
     fun _ _ uv ⟨_, _⟩ ⟨_, _⟩ ⟨αβ, βα⟩ =>
       ⟨fun o =>
         match o with
@@ -911,7 +911,7 @@ theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
 
 /-- `{x ∈ a | p x}` is the set of elements in `a` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
-  Quotient.map ((PSet.sep fun y => p (mk y)) ·)
+  Quotient.map (PSet.sep fun y => p (mk y))
     fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun ⟨a, pa⟩ =>
         let ⟨b, hb⟩ := αβ a
@@ -942,7 +942,7 @@ theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
 
 /-- The powerset operation, the collection of subsets of a ZFC set -/
 def powerset : ZFSet → ZFSet :=
-  Quotient.map (PSet.powerset ·)
+  Quotient.map PSet.powerset
     fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun p =>
         ⟨{ b | ∃ a, p a ∧ Equiv (A a) (B b) }, fun ⟨a, pa⟩ =>
@@ -975,7 +975,7 @@ theorem sUnion_lem {α β : Type u} (A : α → PSet) (B : β → PSet) (αβ : 
 
 /-- The union operator, the collection of elements of elements of a ZFC set -/
 def sUnion : ZFSet → ZFSet :=
-  Quotient.map (PSet.sUnion ·)
+  Quotient.map PSet.sUnion
     fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
       ⟨sUnion_lem A B αβ, fun a =>
         Exists.elim
@@ -1136,7 +1136,7 @@ theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ 
 /-- The image of a (definable) ZFC set function -/
 def image (f : ZFSet → ZFSet) [Definable₁ f] : ZFSet → ZFSet :=
   let r := Definable₁.out f
-  Quotient.map (PSet.image r ·)
+  Quotient.map (PSet.image r)
     fun _ _ e =>
       Mem.ext fun _ =>
         (mem_image (fun _ _ ↦ Definable₁.out_equiv _)).trans <|
