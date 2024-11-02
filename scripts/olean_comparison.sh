@@ -31,7 +31,7 @@ exceeds the threshold.
 
 ## Check
 
-When bors merges a batch into master, running this code show the net effect of the new code over
+When bors merges a batch into master, running this code shows the net effect of the new code over
 the old one on the `.olean`s.
 Do the logs for the corresponding commit to `master` reproduce this data?
 
