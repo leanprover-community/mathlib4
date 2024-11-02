@@ -45,7 +45,7 @@ namespace FormalMultilinearSeries
 
 section
 
-variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
+variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r : ℝ≥0}
 
 /-- A term of `FormalMultilinearSeries.changeOriginSeries`.
 
@@ -236,7 +236,7 @@ end
 
 -- From this point on, assume that the space is complete, to make sure that series that converge
 -- in norm also converge in `F`.
-variable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
+variable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x y : E}
 
 theorem hasFPowerSeriesOnBall_changeOrigin (k : ℕ) (hr : 0 < p.radius) :
     HasFPowerSeriesOnBall (fun x => p.changeOrigin x k) (p.changeOriginSeries k) 0 p.radius :=

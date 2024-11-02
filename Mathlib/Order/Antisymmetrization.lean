@@ -218,7 +218,7 @@ def OrderIso.dualAntisymmetrization :
   invFun := (Quotient.map' id) fun _ _ => And.symm
   left_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
   right_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
-  map_rel_iff' := @fun a b => Quotient.inductionOn₂' a b fun a b => Iff.rfl
+  map_rel_iff' := @fun a b => Quotient.inductionOn₂' a b fun _ _ => Iff.rfl
 
 @[simp]
 theorem OrderIso.dualAntisymmetrization_apply (a : α) :
