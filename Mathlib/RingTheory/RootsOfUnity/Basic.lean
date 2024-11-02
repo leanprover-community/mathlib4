@@ -144,8 +144,7 @@ def restrictRootsOfUnity [MonoidHomClass F R S] (σ : F) (n : ℕ) :
       ext1; simp only [Subgroup.coe_mul, map_mul, MulMemClass.mk_mul_mk] }
 
 @[simp]
-theorem restrictRootsOfUnity_coe_apply [MonoidHomClass F R S] (σ : F)
-    (ζ : rootsOfUnity k R) :
+theorem restrictRootsOfUnity_coe_apply [MonoidHomClass F R S] (σ : F) (ζ : rootsOfUnity k R) :
     (restrictRootsOfUnity σ k ζ : Sˣ) = σ (ζ : Rˣ) :=
   rfl
 
@@ -154,8 +153,8 @@ nonrec def MulEquiv.restrictRootsOfUnity (σ : R ≃* S) (n : ℕ) :
     rootsOfUnity n R ≃* rootsOfUnity n S where
   toFun := restrictRootsOfUnity σ n
   invFun := restrictRootsOfUnity σ.symm n
-  left_inv ξ := by ext; simp only [restrictRootsOfUnity_coe_apply, symm_apply_apply]
-  right_inv ξ := by ext; simp only [restrictRootsOfUnity_coe_apply, apply_symm_apply]
+  left_inv ξ := by ext; exact σ.symm_apply_apply _
+  right_inv ξ := by ext; exact σ.apply_symm_apply _
   map_mul' := (restrictRootsOfUnity _ n).map_mul
 
 @[simp]
@@ -729,20 +728,9 @@ theorem eq_pow_of_mem_rootsOfUnity {k : ℕ} [NeZero k] {ζ ξ : Rˣ} (h : IsPri
   · rw [← zpow_natCast, hi₀, ← Int.emod_add_ediv n k, zpow_add, zpow_mul, h.zpow_eq_one, one_zpow,
       mul_one]
 
-/- /-- A version of `IsPrimitiveRoot.eq_pow_of_mem_rootsOfUnity` that takes a natural number `k`
-as argument instead of a `PNat` (and `ζ : R` instead of `ζ : Rˣ`). -/
-lemma eq_pow_of_mem_rootsOfUnity' {k : ℕ} (hk : 0 < k) {ζ : R} (hζ : IsPrimitiveRoot ζ k) {ξ : Rˣ}
-    (hξ : ξ ∈ rootsOfUnity k R) :
-    ∃ i < k, ζ ^ i = ξ := by
-  have hζ' : IsPrimitiveRoot (hζ.isUnit hk).unit (⟨k, hk⟩ : ℕ+) := isUnit_unit hk hζ
-  obtain ⟨i, hi₁, hi₂⟩ := hζ'.eq_pow_of_mem_rootsOfUnity hξ
-  simpa only [Units.val_pow_eq_pow_val, IsUnit.unit_spec]
-    using ⟨i, hi₁, congrArg ((↑) : Rˣ → R) hi₂⟩
- -/
-
 theorem eq_pow_of_pow_eq_one {k : ℕ} [NeZero k] {ζ ξ : R} (h : IsPrimitiveRoot ζ k)
     (hξ : ξ ^ k = 1) :
-  ∃ i < k, ζ ^ i = ξ := by
+    ∃ i < k, ζ ^ i = ξ := by
   lift ζ to Rˣ using h.isUnit <| NeZero.pos k
   lift ξ to Rˣ using isUnit_ofPowEqOne hξ <| NeZero.ne k
   simp only [← Units.val_pow_eq_pow_val, ← Units.ext_iff]
