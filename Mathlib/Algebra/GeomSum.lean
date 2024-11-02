@@ -428,7 +428,7 @@ theorem geom_sum_pos_and_lt_one [StrictOrderedRing α] (hx : x < 0) (hx' : 0 < x
   intro n _ ihn
   rw [geom_sum_succ, add_lt_iff_neg_right, ← neg_lt_iff_pos_add', neg_mul_eq_neg_mul]
   exact
-    ⟨mul_lt_one_of_nonneg_of_lt_one_left (neg_nonneg.2 hx.le) (neg_lt_iff_pos_add'.2 hx') ihn.2.le,
+    ⟨mul_lt_one_of_lt_of_le_left₀ (neg_lt_iff_pos_add'.2 hx') ihn.2.le (neg_nonneg.2 hx.le),
       mul_neg_of_neg_of_pos hx ihn.1⟩
 
 theorem geom_sum_alternating_of_le_neg_one [StrictOrderedRing α] (hx : x + 1 ≤ 0) (n : ℕ) :
