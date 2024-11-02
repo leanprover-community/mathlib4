@@ -18,8 +18,8 @@ by a finite type.
   class of functions `Π i, α i` sending each `i` to an element of the class `f i`.
 * `Quotient.finChoiceEquiv`: A finite family of quotients is equivalent to a quotient of
   finite families.
-* `Quotient.finLiftOn`: Given a fintype `ι`. A function on `Π i : ι, α i` which respects
-  setoid `S i` for each `i` can be lifted to a function on `Π i : ι, Quotient (S i)`.
+* `Quotient.finLiftOn`: Given a fintype `ι`. A function on `Π i, α i` which respects
+  setoid `S i` for each `i` can be lifted to a function on `Π i, Quotient (S i)`.
 * `Quotient.finRecOn`: Recursion principle for quotients indexed by a finite type. It is the
   dependent version of `Quotient.finLiftOn`.
 
@@ -74,7 +74,7 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι] {α : ι → Sort*} [S : ∀
 @[elab_as_elim]
 lemma fin_ind {C : (∀ i, Quotient (S i)) → Prop}
     (f : ∀ a : ∀ i, α i, C (⟦a ·⟧)) (q : ∀ i, Quotient (S i)) : C q := by
-  have : ∀ {m : Multiset ι} (C : (∀ i ∈ m, Quotient (S i)) → Prop)
+  have {m : Multiset ι} (C : (∀ i ∈ m, Quotient (S i)) → Prop) :
       (_ : ∀ a : ∀ i ∈ m, α i, C (⟦a · ·⟧)) (q : ∀ i ∈ m, Quotient (S i)), C q := by
     intro m C
     induction m using Quotient.ind
@@ -97,7 +97,7 @@ def finChoice (q : ∀ i, Quotient (S i)) :
   let e := Equiv.subtypeQuotientEquivQuotientSubtype (fun l : List ι ↦ ∀ i, i ∈ l)
     (fun s : Multiset ι ↦ ∀ i, i ∈ s) (fun i ↦ Iff.rfl) (fun _ _ ↦ Iff.rfl) ⟨_, Finset.mem_univ⟩
   refine e.liftOn
-    (fun l ↦ (listChoice (fun i _ ↦ q i)).map (fun a i ↦ a i (l.2 i)) ?_) ?_
+    (fun l ↦ (listChoice fun i _ ↦ q i).map (fun a i ↦ a i (l.2 i)) ?_) ?_
   · exact fun _ _ h i ↦ h i _
   intro _ _ _
   refine fin_ind (fun a ↦ ?_) q
