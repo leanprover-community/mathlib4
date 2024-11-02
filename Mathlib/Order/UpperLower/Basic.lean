@@ -47,7 +47,7 @@ attribute [aesop norm unfold] IsUpperSet IsLowerSet
 
 section LE
 
-variable [LE α] [LE β] {s t : Set α} {a : α}
+variable [LE α] {s t : Set α} {a : α}
 
 theorem isUpperSet_empty : IsUpperSet (∅ : Set α) := fun _ _ _ => id
 
@@ -949,7 +949,7 @@ end UpperSet
 
 namespace LowerSet
 
-variable {f : α ≃o β} {s t : LowerSet α} {a : α} {b : β}
+variable {f : α ≃o β} {s t : LowerSet α} {a : α}
 
 /-- An order isomorphism of Preorders induces an order isomorphism of their lower sets. -/
 def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
@@ -1567,7 +1567,7 @@ variable [Preorder α] [Preorder β]
 
 section
 
-variable {s : Set α} {t : Set β} {x : α × β}
+variable {s : Set α} {t : Set β}
 
 theorem IsUpperSet.prod (hs : IsUpperSet s) (ht : IsUpperSet t) : IsUpperSet (s ×ˢ t) :=
   fun _ _ h ha => ⟨hs h.1 ha.1, ht h.2 ha.2⟩
