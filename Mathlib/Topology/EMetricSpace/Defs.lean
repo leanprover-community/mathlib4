@@ -548,7 +548,7 @@ theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : Is
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
   lift t to Set s using hts
   refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
-  rwa [inducing_subtype_val.dense_iff, Subtype.forall]
+  rwa [IsInducing.subtypeVal.dense_iff, Subtype.forall]
 
 end Compact
 

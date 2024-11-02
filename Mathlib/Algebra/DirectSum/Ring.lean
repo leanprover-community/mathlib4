@@ -553,7 +553,6 @@ def toSemiring (f : ∀ i, A i →+ R) (hone : f _ GradedMonoid.GOne.one = 1)
       simp_rw [of_mul_of, toAddMonoid_of]
       exact hmul _ _ }
 
--- Porting note (#10618): removed @[simp] as simp can prove this
 theorem toSemiring_of (f : ∀ i, A i →+ R) (hone hmul) (i : ι) (x : A i) :
     toSemiring f hone hmul (of _ i x) = f _ x :=
   toAddMonoid_of f i x

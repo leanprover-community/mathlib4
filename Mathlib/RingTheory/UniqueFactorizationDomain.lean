@@ -195,7 +195,6 @@ class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] exten
     IsWellFounded α DvdNotUnit : Prop where
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 
-/-- Can't be an instance because it would cause a loop `ufm → WfDvdMonoid → ufm → ...`. -/
 instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid
     [CancelCommMonoidWithZero α] [WfDvdMonoid α] [DecompositionMonoid α] :
     UniqueFactorizationMonoid α :=

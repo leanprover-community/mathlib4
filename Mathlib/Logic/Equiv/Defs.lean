@@ -599,7 +599,7 @@ theorem psigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Sort*}
 theorem psigmaCongrRight_symm {α} {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) :
     (psigmaCongrRight F).symm = psigmaCongrRight fun a => (F a).symm := rfl
 
--- Porting note (#10618): simp can now prove this, so I have removed `@[simp]`
+@[simp]
 theorem psigmaCongrRight_refl {α} {β : α → Sort*} :
     (psigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ' a, β a) := rfl
 
@@ -620,7 +620,7 @@ theorem sigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Type*}
 theorem sigmaCongrRight_symm {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁ a ≃ β₂ a) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm := rfl
 
--- Porting note (#10618): simp can now prove this, so I have removed `@[simp]`
+@[simp]
 theorem sigmaCongrRight_refl {α} {β : α → Type*} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) := rfl
 
