@@ -713,7 +713,7 @@ theorem mul_le_one_left₀ [PosMulMono α]
   (mul_le_of_le_one_right a0 hb).trans ha
 
 /-- Assumes left covariance. -/
-theorem mul_lt_one_of_le_of_lt_left₀ [PosMulStrictMono α]
+theorem mul_lt_one_of_le_of_lt_of_pos_left [PosMulStrictMono α]
     (ha : a ≤ 1) (hb : b < 1) (a0 : 0 < a) : a * b < 1 :=
   (mul_lt_of_lt_one_right a0 hb).trans_le ha
 
@@ -722,18 +722,13 @@ theorem mul_lt_one_of_lt_of_le_left₀ [PosMulMono α]
     (ha : a < 1) (hb : b ≤ 1) (a0 : 0 ≤ a) : a * b < 1 :=
   (mul_le_of_le_one_right a0 hb).trans_lt ha
 
-/-- Assumes left covariance. -/
-theorem mul_lt_one_left₀ [PosMulStrictMono α]
-    (ha : a < 1) (hb : b < 1) (a0 : 0 < a) : a * b < 1 :=
-  (mul_lt_of_lt_one_right a0 hb).trans ha
-
 /-- Assumes right covariance. -/
 theorem mul_le_one_right₀ [MulPosMono α]
     (ha : a ≤ 1) (hb : b ≤ 1) (b0 : 0 ≤ b) : a * b ≤ 1 :=
   (mul_le_of_le_one_left b0 ha).trans hb
 
 /-- Assumes right covariance. -/
-theorem mul_lt_one_of_lt_of_le_right₀ [MulPosStrictMono α]
+theorem mul_lt_one_of_lt_of_le_of_pos_right [MulPosStrictMono α]
     (ha : a < 1) (hb : b ≤ 1) (b0 : 0 < b) : a * b < 1 :=
   (mul_lt_of_lt_one_left b0 ha).trans_le hb
 
@@ -741,11 +736,6 @@ theorem mul_lt_one_of_lt_of_le_right₀ [MulPosStrictMono α]
 theorem mul_lt_one_of_le_of_lt_right₀ [MulPosMono α]
     (ha : a ≤ 1) (hb : b < 1) (b0 : 0 ≤ b) : a * b < 1 :=
   (mul_le_of_le_one_left b0 ha).trans_lt hb
-
-/-- Assumes right covariance. -/
-theorem mul_lt_one_right₀ [MulPosStrictMono α]
-    (ha : a < 1) (hb : b < 1) (b0 : 0 < b) : a * b < 1 :=
-  (mul_lt_of_lt_one_left b0 ha).trans hb
 
 /-! Lemmas of the form `1 ≤ a → 1 ≤ b → 1 ≤ a * b`. -/
 
@@ -1008,6 +998,16 @@ end Preorder
 section PartialOrder
 
 variable [PartialOrder α]
+
+/-- Assumes left covariance. -/
+theorem mul_lt_one_of_le_of_lt₀ [PosMulMono α]
+    (ha : a ≤ 1) (hb : b < 1) (a0 : 0 ≤ a) : a * b < 1 :=
+  ha.eq_or_lt.elim (fun ha ↦ by simpa [ha]) (fun ha ↦ mul_lt_one_of_lt_of_le_left₀ ha hb.le a0)
+
+/-- Assumes right covariance. -/
+theorem mul_lt_one_of_lt_of_le₀ [MulPosMono α]
+    (ha : a < 1) (hb : b ≤ 1) (b0 : 0 ≤ b) : a * b < 1 :=
+  hb.eq_or_lt.elim (fun hb ↦ by simpa [hb]) (fun hb ↦ mul_lt_one_of_le_of_lt_right₀ ha.le hb b0)
 
 /-- Assumes left covariance. -/
 theorem Left.one_lt_mul_of_le_of_lt₀ [PosMulStrictMono α] [ZeroLEOneClass α] [NeZero (1 : α)]
