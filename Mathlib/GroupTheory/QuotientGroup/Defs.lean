@@ -55,10 +55,10 @@ instance Quotient.group : Group (G ⧸ N) :=
 /-- The group homomorphism from `G` to `G/N`. -/
 @[to_additive "The additive group homomorphism from `G` to `G/N`."]
 def mk' : G →* G ⧸ N :=
-  MonoidHom.mk' QuotientGroup.mk fun _ _ => rfl
+  MonoidHom.mk' mkQ fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem coe_mk' : (mk' N : G → G ⧸ N) = mk :=
+theorem coe_mk' : (mk' N : G → G ⧸ N) = mkQ :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -112,7 +112,7 @@ theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
 @[to_additive]
 instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) :=
   { toGroup := have := N.normal_of_comm; QuotientGroup.Quotient.group N
-    mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b) }
+    mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mkQ (mul_comm a b) }
 
 local notation " Q " => G ⧸ N
 
@@ -159,7 +159,7 @@ theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : 
   rfl
 
 @[to_additive (attr := simp)]
-theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mk g : Q) = φ g :=
+theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mkQ g : Q) = φ g :=
   rfl
 -- TODO: replace `mk` with `mk'`)
 
@@ -263,7 +263,7 @@ def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
         MulEquiv.coe_monoidHom_refl, map_id_apply] }
 
 @[simp]
-theorem congr_mk (e : G ≃* H) (he : G'.map ↑e = H') (x) : congr G' H' e he (mk x) = e x :=
+theorem congr_mk (e : G ≃* H) (he : G'.map ↑e = H') (x) : congr G' H' e he ⟦x⟧ = e x :=
   rfl
 
 theorem congr_mk' (e : G ≃* H) (he : G'.map ↑e = H') (x) :
