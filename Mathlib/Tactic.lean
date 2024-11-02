@@ -65,6 +65,7 @@ import Mathlib.Tactic.Core
 import Mathlib.Tactic.DeclarationNames
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.DeprecateMe
+import Mathlib.Tactic.DeriveEncodable
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.DeriveTraversable
