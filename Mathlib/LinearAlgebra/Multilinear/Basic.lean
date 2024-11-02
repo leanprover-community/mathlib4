@@ -158,6 +158,16 @@ theorem map_coord_zero {m : ∀ i, M₁ i} (i : ι) (h : m i = 0) : f m = 0 := b
 theorem map_update_zero [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : f (update m i 0) = 0 :=
   f.map_coord_zero i (update_same i 0 m)
 
+lemma map_of_eq_zero (m : ∀ i, M₁ i) (i : ι) (hi : m i = 0) : f m = 0 := by
+  have := Classical.decEq ι
+  rw [← f.map_update_zero m i]
+  congr
+  ext j
+  by_cases hj : j = i
+  · subst hj
+    simp [hi]
+  · rw [update_noteq hj]
+
 @[simp]
 theorem map_zero [Nonempty ι] : f 0 = 0 := by
   obtain ⟨i, _⟩ : ∃ i : ι, i ∈ Set.univ := Set.exists_mem_of_nonempty ι
