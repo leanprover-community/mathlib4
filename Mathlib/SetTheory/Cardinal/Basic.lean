@@ -1038,7 +1038,7 @@ theorem not_small_cardinal : ¬ Small.{u} Cardinal.{max u v} := by
   rw [← small_univ_iff, ← bddAbove_iff_small] at this
   exact not_bddAbove_univ this
 
-instance : Uncountable Cardinal.{u} :=
+instance uncountable : Uncountable Cardinal.{u} :=
   Uncountable.of_not_small not_small_cardinal.{u}
 
 /-! ### Bounds on suprema -/

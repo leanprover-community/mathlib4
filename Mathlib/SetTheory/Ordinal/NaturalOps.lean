@@ -58,8 +58,8 @@ instance NatOrdinal.instSuccOrder : SuccOrder NatOrdinal := {Ordinal.instSuccOrd
 instance NatOrdinal.orderBot : OrderBot NatOrdinal := {Ordinal.orderBot with}
 instance NatOrdinal.noMaxOrder : NoMaxOrder NatOrdinal := {Ordinal.noMaxOrder with}
 
-instance : Uncountable NatOrdinal :=
-  Ordinal.instUncountable
+instance uncountable : Uncountable NatOrdinal :=
+  Ordinal.uncountable
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
