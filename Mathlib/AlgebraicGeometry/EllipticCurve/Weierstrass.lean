@@ -496,13 +496,16 @@ variable {A : Type v} [CommRing A] (φ : R →+* A)
 
 instance Elliptic.map : (W.map φ).Elliptic := (Invertible.map φ W.Δ).copy _ (W.map_Δ _)
 
+set_option linter.docPrime false in
 lemma coe_map_Δ' : (W.map φ).Δ' = φ W.Δ' := by
   simp_rw [coe_Δ', map_Δ]
 
+set_option linter.docPrime false in
 @[simp]
 lemma map_Δ' : (W.map φ).Δ' = (Units.map ↑φ) W.Δ' := by
   ext; exact W.coe_map_Δ' φ
 
+set_option linter.docPrime false in
 lemma coe_inv_map_Δ' : (W.map φ).Δ'⁻¹ = φ ↑W.Δ'⁻¹ :=
   rfl
 
