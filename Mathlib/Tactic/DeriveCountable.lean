@@ -246,7 +246,7 @@ private def mkCountableCmds (indVal : InductiveVal) (declNames : Array Name) :
 
 open Command
 
-/-!
+/--
 The deriving handler for the `Countable` class.
 Handles non-nested non-reflexive inductive types.
 They can be mutual too — in that case, there is an optimization to re-use all the generated
