@@ -8,7 +8,6 @@ import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Nat.Lattice
 
-
 /-!
 # Graph cliques
 
@@ -26,7 +25,6 @@ A clique is a set of vertices that are pairwise adjacent.
 
 * Dualise all the API to get independent sets
 -/
-
 
 open Finset Fintype Function SimpleGraph.Walk
 
@@ -541,7 +539,6 @@ theorem cliqueSet_map_of_equiv (G : SimpleGraph α) (e : α ≃ β) (n : ℕ) :
 
 end CliqueSet
 
-
 /-! ### Clique number -/
 
 
@@ -574,7 +571,6 @@ lemma maximal_of_maximum (s : Finset α) (M : G.IsMaximumClique s) : G.IsMaximal
 
 end CliqueNumber
 
-
 /-! ### Finset of cliques -/
 
 
@@ -582,28 +578,28 @@ section CliqueFinset
 
 variable [Fintype α]
 
-lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
+private lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
   use Fintype.card α
   rintro y ⟨s, syc⟩
   rw [isNClique_iff] at syc
   rw [← syc.right]
   exact Finset.card_le_card (Finset.subset_univ s)
 
-lemma clique_card_le_cliqueNum (t : Finset α) (tc : G.IsClique t) : #t ≤ G.cliqueNum :=
+lemma IsClique.card_le_cliqueNum {t : Finset α} {tc : G.IsClique t} : #t ≤ G.cliqueNum :=
   le_csSup G.fintype_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
 
-lemma cliqueNum_attained : G.cliqueNum ∈ {n | ∃ s, G.IsNClique n s} :=
+lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s :=
     Nat.sSup_mem ⟨0, by simp[isNClique_empty.mpr rfl]⟩ G.fintype_cliqueNum_bddAbove
 
 lemma maximumClique_card_eq_cliqueNum (s : Finset α) (sm : G.IsMaximumClique s) :
     #s = G.cliqueNum := by
   obtain ⟨sc, sm⟩ := sm
-  obtain ⟨t, tc, tcard⟩ := G.cliqueNum_attained
-  exact eq_of_le_of_not_lt (G.clique_card_le_cliqueNum s sc) (by simp [← tcard, sm t tc])
+  obtain ⟨t, tc, tcard⟩ := G.exists_isNClique_cliqueNum
+  exact eq_of_le_of_not_lt sc.card_le_cliqueNum (by simp [← tcard, sm t tc])
 
 lemma maximumClique_exists : ∃ (s : Finset α), G.IsMaximumClique s := by
-  obtain ⟨s, snc⟩ := G.cliqueNum_attained
-  exact ⟨s, ⟨snc.clique, fun t ht => snc.card_eq.symm ▸ G.clique_card_le_cliqueNum t ht⟩⟩
+  obtain ⟨s, snc⟩ := G.exists_isNClique_cliqueNum
+  exact ⟨s, ⟨snc.clique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
 
 variable [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {a b c : α} {s : Finset α}
 
