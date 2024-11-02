@@ -102,7 +102,7 @@ def expSeries : FormalMultilinearSeries 𝕂 𝔸 𝔸 := fun n =>
   (n !⁻¹ : 𝕂) • ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸
 
 /-- The exponential series as an `ofScalars` series. -/
-theorem expSeries_ofScalars : expSeries 𝕂 𝔸 = ofScalars 𝔸 fun n ↦ (n !⁻¹ : 𝕂) := by
+theorem expSeries_eq_ofScalars : expSeries 𝕂 𝔸 = ofScalars 𝔸 fun n ↦ (n !⁻¹ : 𝕂) := by
   simp_rw [FormalMultilinearSeries.ext_iff, expSeries, ofScalars, implies_true]
 
 variable {𝔸}
@@ -132,7 +132,7 @@ theorem exp_eq_tsum : exp 𝕂 = fun x : 𝔸 => ∑' n : ℕ, (n !⁻¹ : 𝕂)
   funext expSeries_sum_eq
 
 /-- The exponential sum as an `ofScalarsSum`. -/
-theorem exp_ofScalars : exp 𝕂 = ofScalarsSum (E := 𝔸) fun n ↦ (n !⁻¹ : 𝕂) := by
+theorem exp_eq_ofScalarsSum : exp 𝕂 = ofScalarsSum (E := 𝔸) fun n ↦ (n !⁻¹ : 𝕂) := by
   rw [exp_eq_tsum, ofScalarsSum_eq_tsum]
 
 theorem expSeries_apply_zero (n : ℕ) :
@@ -384,7 +384,7 @@ variable [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔹]
 has an infinite radius of convergence. -/
 theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
   have {n : ℕ} : (Nat.factorial n : 𝕂) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero n)
-  apply expSeries_ofScalars 𝕂 𝔸 ▸ ofScalars_radius_eq_top_of_tendsto 𝔸 _ (Eventually.of_forall ?_)
+  apply expSeries_eq_ofScalars 𝕂 𝔸 ▸ ofScalars_radius_eq_top_of_tendsto 𝔸 _ (Eventually.of_forall ?_)
   · simp_rw [← norm_div, Nat.factorial_succ, Nat.cast_mul, mul_inv_rev, mul_div_right_comm,
       inv_div_inv, norm_mul, div_self this, norm_one, one_mul]
     apply norm_zero (E := 𝕂) ▸ Filter.Tendsto.norm

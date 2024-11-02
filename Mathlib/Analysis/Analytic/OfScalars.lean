@@ -174,17 +174,17 @@ theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
   rw [coe_lt_coe, NNReal.lt_inv_iff_mul_lt hr] at hr'
   by_cases hrz : r' = 0
   · simp [hrz]
-  · apply FormalMultilinearSeries.le_radius_of_summable_norm
-    refine Summable.of_norm_bounded_eventually (fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
-    · refine summable_of_ratio_test_tendsto_lt_one hr' ?_ ?_
-      · refine (hc.eventually_ne (NNReal.coe_ne_zero.mpr hr)).mp (Eventually.of_forall ?_)
-        aesop
-      · simp_rw [norm_norm]
-        exact tendsto_succ_norm_div_norm c hrz hc
-    · filter_upwards [eventually_cofinite_ne 0] with n hn
-      simp only [norm_mul, norm_norm, norm_pow, NNReal.norm_eq]
-      gcongr
-      exact ofScalars_norm_le E c n (Nat.pos_iff_ne_zero.mpr hn)
+  apply FormalMultilinearSeries.le_radius_of_summable_norm
+  refine Summable.of_norm_bounded_eventually (fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
+  · refine summable_of_ratio_test_tendsto_lt_one hr' ?_ ?_
+    · refine (hc.eventually_ne (NNReal.coe_ne_zero.mpr hr)).mp (Eventually.of_forall ?_)
+      aesop
+    · simp_rw [norm_norm]
+      exact tendsto_succ_norm_div_norm c hrz hc
+  · filter_upwards [eventually_cofinite_ne 0] with n hn
+    simp only [norm_mul, norm_norm, norm_pow, NNReal.norm_eq]
+    gcongr
+    exact ofScalars_norm_le E c n (Nat.pos_iff_ne_zero.mpr hn)
 
 /-- The radius of convergence of a scalar series is the inverse of the non-zero limit
 `fun n ↦ ‖c n.succ‖ / ‖c n‖`. -/
