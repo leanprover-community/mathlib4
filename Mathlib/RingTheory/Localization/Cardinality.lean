@@ -51,3 +51,7 @@ theorem card (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) : #R = #L 
   (Cardinal.mk_le_of_injective (IsLocalization.injective L hS)).antisymm (card_le S)
 
 end IsLocalization
+
+@[simp]
+theorem Cardinal.mk_fractionRing (R : Type u) [CommRing R] : #(FractionRing R) = #R :=
+  IsLocalization.card (FractionRing R) R⁰ le_rfl |>.symm

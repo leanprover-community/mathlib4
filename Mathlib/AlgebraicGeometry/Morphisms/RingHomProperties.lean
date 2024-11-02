@@ -16,15 +16,15 @@ of ring homs. For `P` a property of ring homs, we have two ways of defining a pr
 morphisms:
 
 Let `f : X ⟶ Y`,
-- `targetAffineLocally (affine_and P)`: the preimage of an affine open `U = Spec A` is affine
-  (`= Spec B`) and `A ⟶ B` satisfies `P`. (TODO)
+- `targetAffineLocally (affineAnd P)`: the preimage of an affine open `U = Spec A` is affine
+  (`= Spec B`) and `A ⟶ B` satisfies `P`. (in `Mathlib/AlgebraicGeometry/Morphisms/AffineAnd.lean`)
 - `affineLocally P`: For each pair of affine open `U = Spec A ⊆ X` and `V = Spec B ⊆ f ⁻¹' U`,
   the ring hom `A ⟶ B` satisfies `P`.
 
 For these notions to be well defined, we require `P` be a sufficient local property. For the former,
 `P` should be local on the source (`RingHom.RespectsIso P`, `RingHom.LocalizationPreserves P`,
 `RingHom.OfLocalizationSpan`), and `targetAffineLocally (affine_and P)` will be local on
-the target. (TODO)
+the target.
 
 For the latter `P` should be local on the target (`RingHom.PropertyIsLocal P`), and
 `affineLocally P` will be local on both the source and the target.
