@@ -163,7 +163,7 @@ end Nimber
 theorem not_small_nimber : ¬ Small.{u} Nimber.{max u v} :=
   not_small_ordinal
 
-instance uncountable : Uncountable Nimber :=
+instance Nimber.uncountable : Uncountable Nimber :=
   Ordinal.uncountable
 
 open Nimber
