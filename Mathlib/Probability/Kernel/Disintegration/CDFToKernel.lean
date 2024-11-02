@@ -345,7 +345,7 @@ lemma IsRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : IsRatCondKernelCDFAux f
 lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ]
     {s : Set α} (hs : MeasurableSet s) (t : ℚ) :
     ⨅ r : { r' : ℚ // t < r' }, ρ (s ×ˢ Iic (r : ℝ)) = ρ (s ×ˢ Iic (t : ℝ)) := by
-  rw [← measure_iInter_eq_iInf]
+  rw [← Monotone.measure_iInter]
   · rw [← prod_iInter]
     congr with x : 1
     simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
@@ -353,10 +353,8 @@ lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ
     · refine le_of_forall_lt_rat_imp_le fun q htq ↦ h q ?_
       exact mod_cast htq
     · exact mod_cast hta.le
+  · exact fun r r' hrr' ↦ prod_mono_right <| by gcongr
   · exact fun _ => (hs.prod measurableSet_Iic).nullMeasurableSet
-  · refine Monotone.directed_ge fun r r' hrr' ↦ prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, ?_⟩)
-    refine Iic_subset_Iic.mpr ?_
-    exact mod_cast hrr'
   · exact ⟨⟨t + 1, lt_add_one _⟩, measure_ne_top ρ _⟩
 
 lemma IsRatCondKernelCDFAux.setIntegral_iInf_rat_gt (hf : IsRatCondKernelCDFAux f κ ν)
