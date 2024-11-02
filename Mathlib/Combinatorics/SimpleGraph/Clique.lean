@@ -583,11 +583,11 @@ section CliqueFinset
 variable [Fintype α]
 
 lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
-  rw [bddAbove_def]
   use Fintype.card α
-  rintro y ⟨sy, syc⟩
-  rw [isNClique_iff, ← And.right syc] at *
-  exact Finset.card_le_card (Finset.subset_univ sy)
+  rintro y ⟨s, syc⟩
+  rw [isNClique_iff] at syc
+  rw [← syc.right]
+  exact Finset.card_le_card (Finset.subset_univ s)
 
 lemma clique_card_le_cliqueNum (t : Finset α) (tc : G.IsClique t) : #t ≤ G.cliqueNum :=
   le_csSup G.fintype_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
@@ -602,9 +602,8 @@ lemma maximumClique_card_eq_cliqueNum (s : Finset α) (sm : G.IsMaximumClique s)
   exact eq_of_le_of_not_lt (G.clique_card_le_cliqueNum s sc) (by simp [← tcard, sm t tc])
 
 lemma maximumClique_exists : ∃ (s : Finset α), G.IsMaximumClique s := by
-  have ⟨s, hs⟩ := G.cliqueNum_attained
-  use s
-  exact ⟨hs.clique, fun t ht => hs.card_eq.symm ▸ G.clique_card_le_cliqueNum t ht⟩
+  obtain ⟨s, snc⟩ := G.cliqueNum_attained
+  exact ⟨s, ⟨snc.clique, fun t ht => snc.card_eq.symm ▸ G.clique_card_le_cliqueNum t ht⟩⟩ 
 
 variable [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {a b c : α} {s : Finset α}
 
