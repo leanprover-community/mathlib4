@@ -11,6 +11,31 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 
 -/
 
+namespace Function
+
+variable {ι α : Type*} [DecidableEq ι]
+
+def swapValues (f : ι → α) (i j : ι) (k : ι) : α :=
+  if k = i then f j else if k = j then f i else f k
+
+variable (f : ι → α) (i j : ι) (k : ι)
+
+@[simp] lemma swapValues_fst : swapValues f i j i = f j := if_pos rfl
+
+@[simp] lemma swapValues_snd : swapValues f i j j = f i := by
+  by_cases hij : i = j
+  · subst hij
+    rw [swapValues_fst]
+  · dsimp [swapValues]
+    rw [if_neg (Ne.symm hij), if_pos rfl]
+
+lemma swapValues_apply (hi : k ≠ i) (hj : k ≠ j) :
+    swapValues f i j k = f k := by
+  dsimp [swapValues]
+  rw [if_neg hi, if_neg hj]
+
+end Function
+
 open Function
 
 namespace ExteriorAlgebra
@@ -104,9 +129,62 @@ variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 
 namespace Relations
 
-variable (relation : Presentation R M)
+variable {R}
+variable (relation : Relations R) (n : ℕ)
 
+namespace exteriorPower
+
+inductive Rels
+  | piTensor (i₀ : Fin n) (r : relation.R) (g : ∀ (i : Fin n) (_ : i ≠ i₀), relation.G)
+  | antisymmetry (g : Fin n → relation.G) (i j : Fin n) (hg : i ≠ j)
+  | alternate (g : Fin n → relation.G) (i j : Fin n) (hg : g i = g j) (hij : i ≠ j)
+
+end exteriorPower
+
+@[simps]
+noncomputable def exteriorPower : Relations R where
+  G := Fin n → relation.G
+  R := exteriorPower.Rels relation n
+  relation x := match x with
+    | .piTensor i₀ r g => (piTensor (fun _ ↦ relation)).relation
+          (⟨i₀, r, fun ⟨a, ha⟩ ↦ g a ha⟩)
+    | .antisymmetry g i j _ => Finsupp.single (swapValues g i j) 1 - Finsupp.single g 1
+    | .alternate g _ _ _ _ => Finsupp.single g 1
+
+namespace Solution
+
+variable {relation} {N : Type*} [AddCommGroup N] [Module R N]
+  (s : relation.Solution N) (n : ℕ)
+
+def exteriorPower : (relation.exteriorPower n).Solution
+    (ExteriorAlgebra.exteriorPower R n N) where
+  var g := ExteriorAlgebra.exteriorProduct R n N (s.var ∘ g)
+  linearCombination_var_relation := sorry
+
+namespace IsPresentation
+
+variable {s} (h : s.IsPresentation)
+
+include h in
+lemma exteriorPower : (s.exteriorPower n).IsPresentation := by
+  have := h
+  sorry
+
+end IsPresentation
+
+end Solution
 
 end Relations
+
+namespace Presentation
+
+variable {R M} (pres : Presentation R M) (n : ℕ)
+
+@[simps!]
+noncomputable def exteriorPower : Presentation R (ExteriorAlgebra.exteriorPower R n M) where
+  toSolution := pres.toSolution.exteriorPower n
+  toIsPresentation := pres.toIsPresentation.exteriorPower n
+
+end Presentation
 
 end Module
