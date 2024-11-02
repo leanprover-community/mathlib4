@@ -87,3 +87,5 @@ lemma toSimpleGraphStrict_bot : (⊥ : Digraph V).toSimpleGraphStrict = ⊥ := b
   ext; exact ⟨fun ⟨_, h⟩ ↦ by tauto, False.elim⟩
 
 end toSimpleGraph
+
+end Digraph
