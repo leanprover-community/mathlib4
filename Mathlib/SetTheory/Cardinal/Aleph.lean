@@ -305,8 +305,7 @@ theorem preAleph_pos {o : Ordinal} : 0 < preAleph o ↔ 0 < o := by
   rw [← preAleph_zero, preAleph_lt_preAleph]
 
 @[simp]
-theorem lift_preAleph (o : Ordinal.{u}) :
-    lift.{v} (preAleph o) = preAleph (Ordinal.lift.{v} o) :=
+theorem lift_preAleph (o : Ordinal.{u}) : lift.{v} (preAleph o) = preAleph (Ordinal.lift.{v} o) :=
   ((InitialSeg.ofIso preAleph.toRelIsoLT).trans liftInitialSeg).eq
     (Ordinal.liftInitialSeg.trans (InitialSeg.ofIso preAleph.toRelIsoLT)) o
 
@@ -389,8 +388,7 @@ theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) := by
 theorem aleph_zero : ℵ_ 0 = ℵ₀ := by rw [aleph_eq_preAleph, add_zero, preAleph_omega0]
 
 @[simp]
-theorem lift_aleph (o : Ordinal.{u}) :
-    lift.{v} (aleph o) = aleph (Ordinal.lift.{v} o) := by
+theorem lift_aleph (o : Ordinal.{u}) : lift.{v} (aleph o) = aleph (Ordinal.lift.{v} o) := by
   simp [aleph_eq_preAleph]
 
 @[simp]
