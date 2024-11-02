@@ -69,7 +69,7 @@ This function is more naturally in the `Option` monad, but it is convenient to p
 for compositionality.
 -/
 def _root_.Lean.Expr.ineq? (e : Expr) : MetaM (Ineq × Expr × Expr × Expr) := do
-  let e ← whnfR (← instantiateMVars e)
+  let e ← instantiateMVars e
   match e.eq? with
   | some p => return (Ineq.eq, p)
   | none =>
