@@ -1117,15 +1117,14 @@ lemma sq_le [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀] (h₀ : 0 
 
 @[deprecated (since := "2024-11-02")] alias one_le_mul_of_one_le_of_one_le := one_le_mul₀
 
-@[deprecated mul_lt_one_of_lt_of_le_left₀ (since := "2024-11-02")]
-theorem mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono M₀]
-    (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=
-  mul_lt_one_of_lt_of_le_left₀ ha hb ha₀
+lemma mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) :
+    a * b < 1 := (mul_le_of_le_one_right ha₀ hb).trans_lt ha
 
-@[deprecated mul_lt_one_of_le_of_lt_right₀ (since := "2024-11-02")]
-theorem mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono M₀]
-    (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) : a * b < 1 :=
-  mul_lt_one_of_le_of_lt_right₀ ha hb hb₀
+lemma mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) :
+    a * b < 1 := (mul_le_of_le_one_right ha₀ hb).trans_lt ha
+
+lemma mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono M₀] (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) :
+    a * b < 1 := (mul_le_of_le_one_left hb₀ ha).trans_lt hb
 
 section
 variable [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀]
