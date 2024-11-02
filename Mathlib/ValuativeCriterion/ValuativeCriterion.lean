@@ -82,7 +82,7 @@ Uses `bijective_rangeRestrict_comp_of_valuationRing` and `stalkClosedPointTo`
 https://stacks.math.columbia.edu/tag/01KE first half
 -/
 lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
-      ValuativeCriterion.Existence f := by
+    ValuativeCriterion.Existence f := by
   rintro ⟨R, K, i₁, i₂, ⟨w⟩⟩
   haveI : IsDomain (CommRingCat.of R) := ‹_›
   haveI : ValuationRing (CommRingCat.of R) := ‹_›

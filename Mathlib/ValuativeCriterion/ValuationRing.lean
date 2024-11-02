@@ -87,5 +87,5 @@ lemma bijective_rangeRestrict_comp_of_valuationRing {R S K : Type*} [CommRing R]
 /-- Repackaging of `exists_valuation_subring_dominates`.
 Reduce to `R ⊆ K` by `LocalRing.of_surjective'`. -/
 lemma exists_factor_valuationRing {R : Type*} [CommRing R] [LocalRing R] {K : Type*} [Field K]
-  (f : R →+* K) :
+    (f : R →+* K) :
     ∃ (A : ValuationSubring K) (h : _), IsLocalHom (f.codRestrict A.toSubring h) := by sorry
