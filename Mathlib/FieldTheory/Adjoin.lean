@@ -1341,7 +1341,7 @@ theorem fg_iSup {ι : Sort*} [Finite ι] {S : ι → IntermediateField F E} (h :
     (⨆ i, S i).FG := by
   choose s hs using h
   simp_rw [← hs, ← adjoin_iUnion]
-  exact fg_adjoin_finite (Set.finite_iUnion fun _ ↦ Finset.finite_toSet _)
+  exact fg_adjoin_of_finite (Set.finite_iUnion fun _ ↦ Finset.finite_toSet _)
 
 theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG) : S.FG := by
   cases' h with t ht
