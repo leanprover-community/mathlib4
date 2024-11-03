@@ -18,10 +18,10 @@ namespace Rat
 open Denumerable List
 
 instance : Denumerable FiniteContFract :=
-  Denumerable.ofEquiv (ℤ × List ℕ+)
+  Denumerable.ofEquiv (List ℕ+ × ℤ)
     { toFun := fun ⟨z, l, _⟩ =>
-        ⟨z, l.reverse.modifyHead (· - 1)⟩
-      invFun := fun ⟨z, l⟩ =>
+        ⟨l.reverse.modifyHead (· - 1), z⟩
+      invFun := fun ⟨l, z⟩ =>
         ⟨z, (l.modifyHead (· + 1)).reverse, by
           simp only [getLast?_reverse, Option.mem_def]
           cases l with
@@ -39,7 +39,7 @@ instance : Denumerable FiniteContFract :=
               true_and]
             rw [← l.reverse_reverse, h, PNat.sub_add_of_lt (lt_of_le_of_ne a.one_le (Ne.symm hl1))]
             simp
-      right_inv := fun ⟨z, l⟩ => by cases l <;> simp_all }
+      right_inv := fun ⟨l, z⟩ => by cases l <;> simp_all }
 
 /-- **Denumerability of the Rational Numbers** -/
 instance instDenumerable : Denumerable ℚ :=
