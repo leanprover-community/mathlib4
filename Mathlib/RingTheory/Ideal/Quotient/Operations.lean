@@ -6,7 +6,7 @@ Authors: Kenny Lau, Patrick Massot
 import Mathlib.Algebra.Algebra.Subalgebra.Operations
 import Mathlib.Algebra.Ring.Fin
 import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.Quotient.Basic
 
 /-!
 # More operations on modules and ideals related to quotients
