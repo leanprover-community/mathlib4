@@ -495,6 +495,8 @@ def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
   toSolution := solution
   toIsPresentation := h
 
+/-- The presentation of an `A`-module `N` that is deduced from a presentation of
+a module `M` and a linear equivalence `e : M ≃ₗ[A] N`. -/
 @[simps! toRelations toSolution]
 def Presentation.ofLinearEquiv (pres : Presentation.{w₀, w₁} A M)
     {N : Type v'} [AddCommGroup N] [Module A N] (e : M ≃ₗ[A] N) :
