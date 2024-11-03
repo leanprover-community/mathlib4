@@ -606,9 +606,14 @@ theorem lift_two_power (a : Cardinal) : lift.{v} (2 ^ a) = 2 ^ lift.{v} a := by
 
 /-! ### Order properties -/
 
-protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
-  rintro ⟨α⟩
-  exact ⟨Embedding.ofIsEmpty⟩
+instance : ZeroLEClass Cardinal.{u} where
+  zero_le {a} := by
+    rintro ⟨α⟩
+    exact ⟨Embedding.ofIsEmpty⟩
+
+@[deprecated _root_.zero_le (since := "2024-11-02")]
+protected theorem zero_le (a : Cardinal) : 0 ≤ a :=
+  zero_le
 
 private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → a + c ≤ b + d := by
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
@@ -632,7 +637,7 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
           exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
             Equiv.Set.sumCompl (range f)
         ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
-    le_self_add := fun a _ => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
+    le_self_add := fun a _ => (add_zero a).ge.trans <| add_le_add_left zero_le _
     eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
       inductionOn₂ a b fun α β => by
         simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id }
@@ -648,7 +653,7 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.linearOrder with
     mul_le_mul_left := @mul_le_mul_left' _ _ _ _
-    zero_le_one := zero_le _ }
+    zero_le_one := zero_le }
 
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoidWithZero Cardinal.{u} :=
@@ -663,7 +668,7 @@ theorem zero_power_le (c : Cardinal.{u}) : (0 : Cardinal.{u}) ^ c ≤ 1 := by
   by_cases h : c = 0
   · rw [h, power_zero]
   · rw [zero_power h]
-    apply zero_le
+    exact zero_le
 
 theorem power_le_power_left : ∀ {a b c : Cardinal}, a ≠ 0 → b ≤ c → a ^ b ≤ a ^ c := by
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ hα ⟨e⟩
@@ -672,7 +677,7 @@ theorem power_le_power_left : ∀ {a b c : Cardinal}, a ≠ 0 → b ≤ c → a 
 
 theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
-  · exact zero_le _
+  · exact zero_le
   · convert power_le_power_left ha hb
     exact (power_one a).symm
 
@@ -1700,7 +1705,7 @@ theorem aleph0_mul_aleph0 : ℵ₀ * ℵ₀ = ℵ₀ :=
 @[simp]
 theorem nat_mul_aleph0 {n : ℕ} (hn : n ≠ 0) : ↑n * ℵ₀ = ℵ₀ :=
   le_antisymm (lift_mk_fin n ▸ mk_le_aleph0) <|
-    le_mul_of_one_le_left (zero_le _) <| by
+    le_mul_of_one_le_left zero_le <| by
       rwa [← Nat.cast_one, Nat.cast_le, Nat.one_le_iff_ne_zero]
 
 @[simp]
@@ -2140,7 +2145,7 @@ theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 := by
 @[simp]
 theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
   convert Cardinal.iSup_of_empty _
-  exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_lt
+  exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr not_lt_zero
 
 end Cardinal
 
