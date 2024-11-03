@@ -194,8 +194,8 @@ and there is an algebra structure `R / p → S / P`.
 -/
 noncomputable def inertiaDeg : ℕ :=
   if hPp : comap f P = p then
-    @finrank (R ⧸ p) (S ⧸ P) _ _ <| @Algebra.toModule _ _ _ _ <|
-      Quotient.algebraQuotientOfLEComap (le_of_eq hPp.symm)
+    letI : Algebra (R ⧸ p) (S ⧸ P) := Quotient.algebraQuotientOfLEComap (le_of_eq hPp.symm)
+    finrank (R ⧸ p) (S ⧸ P)
   else 0
 
 -- Useful for the `nontriviality` tactic using `comap_eq_of_scalar_tower_quotient`.
