@@ -583,7 +583,6 @@ See also `IsSeparator`.
 class HasSeparator : Prop :=
   hasSeparator : ∃ G : E, IsSeparator G
 
-
 /--
 A category instantiates `HasCoseparator` if and only if it has a coseparator.
 See also `IsCoseparator`.
@@ -591,14 +590,12 @@ See also `IsCoseparator`.
 class HasCoseparator : Prop :=
   hasCoseparator : ∃ G : E, IsCoseparator G
 
-
 /--
 A category instantiates `HasDetector` if and only if it has a detector.
 See also `IsDetector`.
 -/
 class HasDetector : Prop :=
   hasDetector : ∃ G : E, IsDetector G
-
 
 /--
 A category instantiates `HasCodetector` if and only if it has a codetector.
