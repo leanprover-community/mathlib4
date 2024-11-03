@@ -1460,7 +1460,7 @@ def AbsolutelyContinuous {_m0 : MeasurableSpace α} (μ ν : Measure α) : Prop 
 scoped[MeasureTheory] infixl:50 " ≪ " => MeasureTheory.Measure.AbsolutelyContinuous
 
 theorem absolutelyContinuous_of_le (h : μ ≤ ν) : μ ≪ ν := fun s hs =>
-  (hs ▸ le_iff'.1 h s).eq_zero
+  nonpos_iff_eq_zero.1 <| hs ▸ le_iff'.1 h s
 
 alias _root_.LE.le.absolutelyContinuous := absolutelyContinuous_of_le
 

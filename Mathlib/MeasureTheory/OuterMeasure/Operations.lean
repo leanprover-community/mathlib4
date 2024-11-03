@@ -151,7 +151,7 @@ section Supremum
 instance instSupSet : SupSet (OuterMeasure α) :=
   ⟨fun ms =>
     { measureOf := fun s => ⨆ m ∈ ms, (m : OuterMeasure α) s
-      empty := eq_zero_of_le_zero <| iSup₂_le fun m _ => le_of_eq m.empty
+      empty := nonpos_iff_eq_zero.1 <| iSup₂_le fun m _ => le_of_eq m.empty
       mono := fun {_ _} hs => iSup₂_mono fun m _ => m.mono hs
       iUnion_nat := fun f _ =>
         iSup₂_le fun m hm =>

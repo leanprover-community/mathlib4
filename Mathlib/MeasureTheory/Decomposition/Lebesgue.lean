@@ -393,7 +393,7 @@ theorem eq_singularPart {s : Measure α} {f : α → ℝ≥0∞} (hf : Measurabl
   rw [hadd'] at hadd
   have hνinter : ν (S ∩ T)ᶜ = 0 := by
     rw [compl_inter]
-    refine ((measure_union_le _ _).trans ?_).eq_zero
+    refine nonpos_iff_eq_zero.1 (le_trans (measure_union_le _ _) ?_)
     rw [hT₃, hS₃, add_zero]
   have heq : s.restrict (S ∩ T)ᶜ = (μ.singularPart ν).restrict (S ∩ T)ᶜ := by
     ext1 A hA
@@ -496,7 +496,7 @@ theorem eq_withDensity_rnDeriv {s : Measure α} {f : α → ℝ≥0∞} (hf : Me
   rw [hadd'] at hadd
   have hνinter : ν (S ∩ T)ᶜ = 0 := by
     rw [compl_inter]
-    refine ((measure_union_le _ _).trans ?_).eq_zero
+    refine nonpos_iff_eq_zero.1 (le_trans (measure_union_le _ _) ?_)
     rw [hT₃, hS₃, add_zero]
   have heq :
     (ν.withDensity f).restrict (S ∩ T) = (ν.withDensity (μ.rnDeriv ν)).restrict (S ∩ T) := by

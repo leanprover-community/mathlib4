@@ -558,7 +558,7 @@ lemma withDensity_absolutelyContinuous' {μ : Measure α} {f : α → ℝ≥0∞
   simp only [Pi.zero_apply, Set.indicator_apply_eq_zero, not_forall, exists_prop] at hμs
   have hle : s ⊆ {a | a ∈ s ∧ ¬f a = 0} ∪ {a | f a = 0} :=
     fun x hx ↦ or_iff_not_imp_right.mpr <| fun hnx ↦ ⟨hx, hnx⟩
-  exact measure_mono_null hle <| eq_zero_of_le_zero <| le_trans (measure_union_le _ _)
+  exact measure_mono_null hle <| nonpos_iff_eq_zero.1 <| le_trans (measure_union_le _ _)
     <| hμs.symm ▸ zero_add _ |>.symm ▸ hf_ne_zero.le
 
 theorem withDensity_ae_eq {β : Type} {f g : α → β} {d : α → ℝ≥0∞}

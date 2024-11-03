@@ -533,8 +533,8 @@ theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometry (f n)) (x y : Σn, X n) 
       dist (leRecOn hx (f _) x.2 : X m) (leRecOn hy (f _) y.2 : X m)
   | 0, hx, hy => by
     cases' x with i x; cases' y with j y
-    obtain rfl : i = 0 := hx.eq_zero
-    obtain rfl : j = 0 := hy.eq_zero
+    obtain rfl : i = 0 := nonpos_iff_eq_zero.1 hx
+    obtain rfl : j = 0 := nonpos_iff_eq_zero.1 hy
     rfl
   | (m + 1), hx, hy => by
     by_cases h : max x.1 y.1 = (m + 1)

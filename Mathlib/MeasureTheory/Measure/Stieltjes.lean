@@ -172,7 +172,7 @@ def length (s : Set ℝ) : ℝ≥0∞ :=
 
 @[simp]
 theorem length_empty : f.length ∅ = 0 :=
-  eq_zero_of_le_zero <| iInf_le_of_le 0 <| iInf_le_of_le 0 <| by simp
+  nonpos_iff_eq_zero.1 <| iInf_le_of_le 0 <| iInf_le_of_le 0 <| by simp
 
 @[simp]
 theorem length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by

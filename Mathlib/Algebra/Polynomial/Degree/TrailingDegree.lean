@@ -190,7 +190,7 @@ theorem trailingDegree_one_le : (0 : ℕ∞) ≤ trailingDegree (1 : R[X]) := by
 
 @[simp]
 theorem natTrailingDegree_C (a : R) : natTrailingDegree (C a) = 0 :=
-  natTrailingDegree_monomial_le.eq_zero
+  nonpos_iff_eq_zero.1 natTrailingDegree_monomial_le
 
 @[simp]
 theorem natTrailingDegree_one : natTrailingDegree (1 : R[X]) = 0 :=

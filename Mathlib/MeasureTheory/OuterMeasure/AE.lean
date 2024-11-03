@@ -241,6 +241,6 @@ theorem measure_congr (H : s =ᵐ[μ] t) : μ s = μ t :=
 alias _root_.Filter.EventuallyEq.measure_eq := measure_congr
 
 theorem measure_mono_null_ae (H : s ≤ᵐ[μ] t) (ht : μ t = 0) : μ s = 0 :=
-  (ht ▸ H.measure_le).eq_zero
+  nonpos_iff_eq_zero.1 <| ht ▸ H.measure_le
 
 end MeasureTheory
