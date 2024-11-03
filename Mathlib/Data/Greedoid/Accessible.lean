@@ -40,7 +40,7 @@ namespace Accessible
 
 variable {Sys : Finset α → Prop} [Accessible Sys]
 
-theorem nonempty_contains_emptyset
+theorem nonempty_contains_empty
     {s : Finset α} (hs : Sys s) :
     Sys ∅ := by
   induction' h : s.card generalizing s
@@ -50,9 +50,9 @@ theorem nonempty_contains_emptyset
     exact ih h (by omega)
 
 @[simp]
-theorem nonempty_contains_emptyset_iff :
+theorem nonempty_contains_empty_iff :
     (∃ s, Sys s) ↔ Sys ∅ :=
-  ⟨fun ⟨_, hs⟩ => nonempty_contains_emptyset hs, fun h => ⟨∅, h⟩⟩
+  ⟨fun ⟨_, hs⟩ => nonempty_contains_empty hs, fun h => ⟨∅, h⟩⟩
 
 -- TODO: Find better name.
 -- TODO: Find a better way to inform `hS`.
@@ -78,7 +78,7 @@ theorem construction_on_accessible
     [DecidableEq α] {s : Finset α} (hs : Sys s) :
     ∃ l : List α, l.Nodup ∧ Multiset.ofList l = s.val ∧ ∀ l', l' <:+ l →
       ∃ s', Multiset.ofList l' = s'.val ∧ Sys s' := by
-  have hS := nonempty_contains_emptyset hs
+  have hS := nonempty_contains_empty hs
   induction hs using induction_on_accessible hS with
   | empty => use []; simp; use ∅; simp [hS]
   | insert hs hs₂ h₁ h₂ h₃ =>
