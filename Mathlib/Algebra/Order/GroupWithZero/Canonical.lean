@@ -130,20 +130,20 @@ theorem one_le_mul₀ (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b :=
 
 @[deprecated mul_le_mul_right (since := "2024-08-21")]
 theorem le_of_le_mul_right (h : c ≠ 0) (hab : a * c ≤ b * c) : a ≤ b :=
-  (mul_le_mul_right (pos_of_ne h)).1 hab
+  (mul_le_mul_right h.pos).1 hab
 
 @[deprecated le_mul_inv_iff₀ (since := "2024-08-21")]
 theorem le_mul_inv_of_mul_le (h : c ≠ 0) (hab : a * c ≤ b) : a ≤ b * c⁻¹ :=
-  (le_mul_inv_iff₀ (pos_of_ne h)).2 hab
+  (le_mul_inv_iff₀ h.pos).2 hab
 
 theorem mul_inv_le_of_le_mul (hab : a ≤ b * c) : a * c⁻¹ ≤ b := by
-  by_cases h : c = 0
-  · simp [h]
-  · exact (mul_le_mul_right (pos_of_ne h)).1 (by simpa [h] using hab)
+  obtain rfl | h := eq_or_ne c 0
+  · simp
+  · exact (mul_le_mul_right h.pos).1 (by simpa [h] using hab)
 
 @[simp]
 theorem Units.zero_lt (u : αˣ) : (0 : α) < u :=
-  pos_of_ne <| u.ne_zero
+  u.ne_zero.pos
 
 theorem mul_lt_mul_of_lt_of_le₀ (hab : a ≤ b) (hb : b ≠ 0) (hcd : c < d) : a * c < b * d :=
   have hd : d ≠ 0 := ne_zero_of_lt hcd
@@ -171,35 +171,34 @@ theorem inv_mul_lt_of_lt_mul₀ (h : a < b * c) : b⁻¹ * a < c := by
 
 @[deprecated mul_lt_mul_of_pos_right (since := "2024-08-21")]
 theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c :=
-  mul_lt_mul_of_pos_right h (pos_of_ne hc)
+  mul_lt_mul_of_pos_right h hc.pos
 
 theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a) : b < d := by
   have ha : a ≠ 0 := ne_of_gt (lt_of_lt_of_le hc hh)
-  rw [← inv_le_inv₀ (pos_of_ne ha) hc] at hh
+  rw [← inv_le_inv₀ ha.pos hc] at hh
   have := mul_lt_mul_of_lt_of_le₀ hh (inv_ne_zero (ne_of_gt hc)) h
   simpa [inv_mul_cancel_left₀ ha, inv_mul_cancel_left₀ (ne_of_gt hc)] using this
 
 @[deprecated mul_le_mul_right (since := "2024-08-21")]
 theorem mul_le_mul_right₀ (hc : c ≠ 0) : a * c ≤ b * c ↔ a ≤ b :=
-  mul_le_mul_right (pos_of_ne hc)
+  mul_le_mul_right hc.pos
 
 @[deprecated mul_le_mul_left (since := "2024-08-21")]
 theorem mul_le_mul_left₀ (ha : a ≠ 0) : a * b ≤ a * c ↔ b ≤ c :=
-  mul_le_mul_left (pos_of_ne ha)
+  mul_le_mul_left ha.pos
 
 theorem div_le_div_right₀ (hc : c ≠ 0) : a / c ≤ b / c ↔ a ≤ b := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, mul_le_mul_right (pos_of_ne (inv_ne_zero hc))]
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_le_mul_right (inv_ne_zero hc).pos]
 
 theorem div_le_div_left₀ (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) : a / b ≤ a / c ↔ c ≤ b := by
-  simp only [div_eq_mul_inv, mul_le_mul_left (pos_of_ne ha),
-    inv_le_inv₀ (pos_of_ne hb) (pos_of_ne hc)]
+  simp only [div_eq_mul_inv, mul_le_mul_left ha.pos, inv_le_inv₀ hb.pos hc.pos]
 
 /-- `Equiv.mulLeft₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
 
 Note that `OrderIso.mulLeft₀` refers to the `LinearOrderedField` version. -/
 @[simps! (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulLeft₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
-  { Equiv.mulLeft₀ a ha with map_rel_iff' := mul_le_mul_left (pos_of_ne ha) }
+  { Equiv.mulLeft₀ a ha with map_rel_iff' := mul_le_mul_left ha.pos }
 
 theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulLeft₀' ha).symm = OrderIso.mulLeft₀' (inv_ne_zero ha) := by
@@ -211,7 +210,7 @@ theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
 Note that `OrderIso.mulRight₀` refers to the `LinearOrderedField` version. -/
 @[simps! (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulRight₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
-  { Equiv.mulRight₀ a ha with map_rel_iff' := mul_le_mul_right (pos_of_ne ha) }
+  { Equiv.mulRight₀ a ha with map_rel_iff' := mul_le_mul_right ha.pos }
 
 theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulRight₀' ha).symm = OrderIso.mulRight₀' (inv_ne_zero ha) := by
