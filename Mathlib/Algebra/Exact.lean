@@ -423,8 +423,7 @@ an exact sequence `M → N → P → 0` of `R`-modules. -/
 @[simps! apply]
 noncomputable def Function.Exact.linearEquivOfSurjective (h : Function.Exact f g)
     (hg : Function.Surjective g) : (N ⧸ LinearMap.range f) ≃ₗ[R] P :=
-  LinearEquiv.ofBijective ((LinearMap.range f).liftQ g
-    (by simp only [h.linearMap_ker_eq, le_refl]))
+  LinearEquiv.ofBijective ((LinearMap.range f).liftQ g (h · |>.mpr))
       ⟨LinearMap.injective_range_liftQ_of_exact h,
         LinearMap.surjective_range_liftQ _ hg⟩
 
