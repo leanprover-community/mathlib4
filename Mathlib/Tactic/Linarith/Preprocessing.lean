@@ -166,8 +166,7 @@ def natToInt : GlobalBranchingPreprocessor where
         pure h
     let nonnegs ← l.foldlM (init := ∅) fun (es : RBSet (Expr × Expr) lexOrd.compare) h => do
       try
-        let e ← inferType h
-        let (_, _, a, b) ← e.ineq?
+        let (_, _, a, b) ← (← inferType h).ineq?
         pure <| (es.insertMany (getNatComparisons a)).insertMany (getNatComparisons b)
       catch _ => pure es
     pure [(g, ((← nonnegs.toList.filterMapM mk_natCast_nonneg_prf) ++ l : List Expr))]
@@ -181,8 +180,7 @@ If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
 `mkNonstrictIntProof pf` returns a proof of `a + 1 ≤ b`.
 -/
 def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
-  let e ← inferType pf
-  match ← e.ineq? with
+  match ← (← inferType pf).ineq? with
   | (Ineq.lt, .const ``Int [], a, b) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
   | _ => return none
