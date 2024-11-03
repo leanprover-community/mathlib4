@@ -83,7 +83,7 @@ theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 :=
 
 @[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : x ≤ 1 ↔ x = 1 :=
-  ⟨fun h ↦ h.antisymm one_le, fun h ↦ h ▸ le_rfl⟩
+  one_le.le_iff_eq
 
 alias le_zero_iff_eq_zero := nonpos_iff_eq_zero
 
@@ -95,7 +95,7 @@ alias LE.le.eq_zero := eq_zero_of_le_zero
 
 @[to_additive]
 theorem one_lt_iff_ne_one : 1 < x ↔ x ≠ 1 :=
-  ⟨ne_of_gt, fun h ↦ lt_of_le_of_ne one_le h.symm⟩
+  one_le.gt_iff_ne
 
 alias ⟨_, one_lt_of_ne⟩ := one_lt_iff_ne_one
 alias ⟨_, pos_of_ne⟩ := pos_iff_ne_zero
@@ -105,7 +105,7 @@ alias Ne.pos := pos_of_ne
 
 @[to_additive]
 theorem eq_one_or_one_lt (x : α) : x = 1 ∨ 1 < x :=
-  one_le.eq_or_lt.imp_left Eq.symm
+  one_le.eq_or_gt
 
 end PartialOrder
 
