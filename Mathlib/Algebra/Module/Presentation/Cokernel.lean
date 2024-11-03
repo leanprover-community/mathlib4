@@ -10,7 +10,7 @@ import Mathlib.Algebra.Module.Presentation.Basic
 
 If `f : M₁ →ₗ[A] M₂` is a linear map between modules, and
 `pres₂` is a presentation of `M₂` and `g₁ : ι → M₁` is
-a family of generators of `M₁` (which is expresses as
+a family of generators of `M₁` (which is expressed as
 `hg₁ : Submodule.span A (Set.range g₁) = ⊤`), then we
 provide a way to obtain a presentation of the cokernel of `f`.
 It requires an additional data `data : pres₂.CokernelData f g₁`,
@@ -19,9 +19,8 @@ the generators of `M₁` as linear combinations of the
 generators of `M₂`. Then, we obtain a presentation
 `pres₂.cokernel data hg₁ : Presentation A (M₂ ⧸ LinearMap.range f)`.
 
-## TODO
-* deduce that if we have an exact sequence `M₁ → M₂ → M₃ → 0`,
-then we also get a presentation of `M₃`
+More generally, if we have an exact sequence `M₁ → M₂ → M₃ → 0`,
+we obtain a presentation of `M₃`, see `Presentation.ofExact`.
 
 -/
 
@@ -116,7 +115,7 @@ variable {g₁ f} (data : pres₂.CokernelData f g₁)
 /-- The shape of the presentation by generators and relations of the cokernel
 of `f : M₁ →ₗ[A] M₂`. It consists of a generator for each generator of `M₂`, and
 there are two types of relations: one for each relation in the presentation in `M₂`,
-and for each generator of `M₁`. -/
+and one for each generator of `M₁`. -/
 @[simps]
 def cokernelRelations : Relations A where
   G := pres₂.G
@@ -173,7 +172,7 @@ end cokernelSolution
 
 /-- The presentation of the cokernel of a linear map `f : M₁ →ₗ[A] M₂` that is obtained
 from a presentation `pres₂` of `M₂`, a choice of generators `g₁ : ι → M₁` of `M₁`,
-and an additional `data : pres₂.CokernelData f g₁`. -/
+and an additional data in `pres₂.CokernelData f g₁`. -/
 @[simps!]
 def cokernel : Presentation A (M₂ ⧸ LinearMap.range f) :=
   ofIsPresentation (cokernelSolution.isPresentation pres₂ data hg₁)
@@ -192,6 +191,7 @@ variable {f : M₁ →ₗ[A] M₂} {g : M₂ →ₗ[A] M₃}
 /-- Given an exact sequence of `A`-modules `M₁ → M₂ → M₃ → 0`, this is the presentation
 of `M₃` that is obtained from a presentation `pres₂` of `M₂`, a choice of generators
 `g₁ : ι → M₁` of `M₁`, and an additional data in a `Presentation.CokernelData` structure. -/
+@[simps!]
 noncomputable def ofExact : Presentation A M₃ :=
   ofIsPresentation ((pres₂.cokernel data hg₁).ofLinearEquiv
     (LinearEquiv.ofExactOfSurjective hfg hg))
