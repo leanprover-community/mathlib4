@@ -51,7 +51,7 @@ theorem diam_le {d : ℝ≥0∞} (h : ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ d)
 
 /-- The diameter of a subsingleton vanishes. -/
 theorem diam_subsingleton (hs : s.Subsingleton) : diam s = 0 :=
-  nonpos_iff_eq_zero.1 <| diam_le fun _x hx y hy => (hs hx hy).symm ▸ edist_self y ▸ le_rfl
+  eq_zero_of_le_zero <| diam_le fun _x hx y hy => (hs hx hy).symm ▸ edist_self y ▸ le_rfl
 
 /-- The diameter of the empty set vanishes -/
 @[simp]

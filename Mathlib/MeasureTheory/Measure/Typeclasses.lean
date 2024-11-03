@@ -1293,7 +1293,7 @@ theorem exists_pos_measure_of_cover [Countable ι] {U : ι → Set α} (hU : ⋃
     (hμ : μ ≠ 0) : ∃ i, 0 < μ (U i) := by
   contrapose! hμ with H
   rw [← measure_univ_eq_zero, ← hU]
-  exact measure_iUnion_null fun i => nonpos_iff_eq_zero.1 (H i)
+  exact measure_iUnion_null fun i => (H i).eq_zero
 
 theorem exists_pos_preimage_ball [PseudoMetricSpace δ] (f : α → δ) (x : δ) (hμ : μ ≠ 0) :
     ∃ n : ℕ, 0 < μ (f ⁻¹' Metric.ball x n) :=

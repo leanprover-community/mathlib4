@@ -192,7 +192,7 @@ theorem restrict_apply_eq_zero (ht : MeasurableSet t) : μ.restrict s t = 0 ↔ 
   rw [restrict_apply ht]
 
 theorem measure_inter_eq_zero_of_restrict (h : μ.restrict s t = 0) : μ (t ∩ s) = 0 :=
-  nonpos_iff_eq_zero.1 (h ▸ le_restrict_apply _ _)
+  (h ▸ le_restrict_apply _ _).eq_zero
 
 theorem restrict_apply_eq_zero' (hs : MeasurableSet s) : μ.restrict s t = 0 ↔ μ (t ∩ s) = 0 := by
   rw [restrict_apply' hs]
@@ -595,7 +595,7 @@ theorem ae_restrict_of_ae_restrict_of_subset {s t : Set α} {p : α → Prop} (h
 
 theorem ae_of_ae_restrict_of_ae_restrict_compl (t : Set α) {p : α → Prop}
     (ht : ∀ᵐ x ∂μ.restrict t, p x) (htc : ∀ᵐ x ∂μ.restrict tᶜ, p x) : ∀ᵐ x ∂μ, p x :=
-  nonpos_iff_eq_zero.1 <|
+  eq_zero_of_le_zero <|
     calc
       μ { x | ¬p x } ≤ μ ({ x | ¬p x } ∩ t) + μ ({ x | ¬p x } ∩ tᶜ) :=
         measure_le_inter_add_diff _ _ _

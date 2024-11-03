@@ -99,7 +99,7 @@ theorem infEdist_le_edist_of_mem (h : y ∈ s) : infEdist x s ≤ edist x y :=
 
 /-- If a point `x` belongs to `s`, then its edist to `s` vanishes -/
 theorem infEdist_zero_of_mem (h : x ∈ s) : infEdist x s = 0 :=
-  nonpos_iff_eq_zero.1 <| @edist_self _ _ x ▸ infEdist_le_edist_of_mem h
+  eq_zero_of_le_zero <| @edist_self _ _ x ▸ infEdist_le_edist_of_mem h
 
 /-- The edist is antitone with respect to inclusion. -/
 theorem infEdist_anti (h : s ⊆ t) : infEdist x t ≤ infEdist x s :=

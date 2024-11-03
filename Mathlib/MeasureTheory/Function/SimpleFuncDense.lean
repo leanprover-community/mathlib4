@@ -94,7 +94,7 @@ theorem nearestPtInd_le (e : ℕ → α) (N : ℕ) (x : α) : nearestPtInd e N x
 theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
     edist (nearestPt e N x) x ≤ edist (e k) x := by
   induction' N with N ihN generalizing k
-  · simp [nonpos_iff_eq_zero.1 hk, le_refl]
+  · simp [hk.eq_zero, le_refl]
   · simp only [nearestPt, nearestPtInd_succ, map_apply]
     split_ifs with h
     · rcases hk.eq_or_lt with (rfl | hk)

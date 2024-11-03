@@ -236,7 +236,7 @@ theorem measure_union_eq_top_iff : μ (s ∪ t) = ∞ ↔ μ s = ∞ ∨ μ t = 
 theorem exists_measure_pos_of_not_measure_iUnion_null [Countable ι] {s : ι → Set α}
     (hs : μ (⋃ n, s n) ≠ 0) : ∃ n, 0 < μ (s n) := by
   contrapose! hs
-  exact measure_iUnion_null fun n => nonpos_iff_eq_zero.1 (hs n)
+  exact measure_iUnion_null fun n => (hs n).eq_zero
 
 theorem measure_lt_top_of_subset (hst : t ⊆ s) (hs : μ s ≠ ∞) : μ t < ∞ :=
   lt_of_le_of_lt (μ.mono hst) hs.lt_top
