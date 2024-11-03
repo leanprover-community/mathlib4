@@ -7,6 +7,7 @@ import Mathlib.Control.Basic
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+import Mathlib.Tactic.Ring.Basic
 
 /-!
 # `linarith`: solving linear arithmetic goals

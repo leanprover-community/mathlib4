@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Tactic.Linarith.Lemmas
-import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Util.SynthesizeUsing
 
 /-!

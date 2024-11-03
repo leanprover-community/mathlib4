@@ -8,6 +8,7 @@ import Mathlib.Tactic.Zify
 import Mathlib.Tactic.CancelDenoms.Core
 import Batteries.Data.RBMap.Basic
 import Mathlib.Control.Basic
+import Mathlib.Util.AtomM
 
 /-!
 # Linarith preprocessing
