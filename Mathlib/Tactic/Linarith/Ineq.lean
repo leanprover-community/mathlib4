@@ -71,7 +71,7 @@ This function is more naturally in the `Option` monad, but it is convenient to p
 for compositionality.
 -/
 def _root_.Lean.Expr.ineq? (e : Expr) : MetaM (Ineq × Expr × Expr × Expr) := do
-  let e ← instantiateMVars e
+  let e ← whnfR (← instantiateMVars e)
   match e.eq? with
   | some p => return (Ineq.eq, p)
   | none =>
@@ -91,10 +91,10 @@ for compositionality.
 -/
 def _root_.Lean.Expr.ineqOrNotIneq? (e : Expr) : MetaM (Bool × Ineq × Expr × Expr × Expr) := do
   try
-    return (true, ← (← whnfR e).ineq?)
+    return (true, ← e.ineq?)
   catch _ =>
     let some e' := e.not? | throwError "Not a comparison: {e}"
-    return (false, ← (← whnfR e').ineq?)
+    return (false, ← e'.ineq?)
 
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do

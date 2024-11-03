@@ -101,7 +101,7 @@ open Mathlib.Tactic.Zify
 `isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers.
 -/
 partial def isNatProp (e : Expr) : MetaM Bool := do
-  match ← (← whnfR e).ineq? with
+  match ← e.ineq? with
   | (_, .const ``Nat [], _, _) => return true
   | _ => return false
 
@@ -154,7 +154,7 @@ def natToInt : GlobalBranchingPreprocessor where
       if ← isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
           | throwError "zifyProof failed on {h}"
-        if ← succeeds (← whnfR t').ineq? then
+        if ← succeeds t'.ineq? then
           pure h'
         else
           -- `zifyProof` turned our comparison into something that wasn't a comparison
@@ -167,7 +167,7 @@ def natToInt : GlobalBranchingPreprocessor where
     let nonnegs ← l.foldlM (init := ∅) fun (es : RBSet (Expr × Expr) lexOrd.compare) h => do
       try
         let e ← inferType h
-        let (_, _, a, b) ← (← whnfR e).ineq?
+        let (_, _, a, b) ← e.ineq?
         pure <| (es.insertMany (getNatComparisons a)).insertMany (getNatComparisons b)
       catch _ => pure es
     pure [(g, ((← nonnegs.toList.filterMapM mk_natCast_nonneg_prf) ++ l : List Expr))]
@@ -182,7 +182,7 @@ If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
 -/
 def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
   let e ← inferType pf
-  match ← (← whnfR e).ineq? with
+  match ← e.ineq? with
   | (Ineq.lt, .const ``Int [], a, b) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
   | _ => return none
@@ -202,7 +202,7 @@ section compWithZero
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
  -/
 partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
-  match ← (← whnfR (← inferType e)).ineq? with
+  match ← (← inferType e).ineq? with
   | (Ineq.le, _) => try? <| mkAppM ``sub_nonpos_of_le #[e]
   | (Ineq.lt, _) => try? <| mkAppM ``sub_neg_of_lt #[e]
   | (Ineq.eq, _) => try? <| mkAppM ``sub_eq_zero_of_eq #[e]
