@@ -430,6 +430,13 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     Nat.mod_eq_of_lt (show ↑b < n from b.2)]
 --- Porting note: syntactically the same as the above
 
+theorem val_add_eq_mod {n : ℕ} (a b : Fin n) : (a + b).val = (a.val + b.val) % n := rfl
+
+theorem val_add_eq_of_sum_lt {n : ℕ} {a b : Fin n} (huv : a.val + b.val < n) :
+    (a + b).val = a.val + b.val := by
+  rw [val_add_eq_mod]
+  simp [Nat.mod_eq_of_lt huv]
+
 lemma intCast_val_sub_eq_sub_add_ite {n : ℕ} (a b : Fin n) :
     ((a - b).val : ℤ) = a.val - b.val + if b ≤ a then 0 else n := by
   split <;> fin_omega
@@ -450,6 +457,8 @@ alias val_nat_cast := val_natCast
 whose value is the original number. -/
 theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a :=
   Nat.mod_eq_of_lt h
+
+theorem one_val_cast {n : ℕ} [NeZero n] (h : 1 < n) : (1 : Fin n).val = 1 := val_cast_of_lt h
 
 /-- If `n` is non-zero, converting the value of a `Fin n` to `Fin n` results
 in the same value. -/
