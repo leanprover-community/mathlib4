@@ -32,7 +32,7 @@ variable {𝕜 B F₁ F₂ M : Type*} {E₁ : B → Type*} {E₂ : B → Type*} 
   {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B] [ChartedSpace HB B] {EM : Type*}
   [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
-  {n : ℕ∞} [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
+  [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
   [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂] {e₁ e₁' : Trivialization F₁ (π F₁ E₁)}
   {e₂ e₂' : Trivialization F₂ (π F₂ E₂)}
 
