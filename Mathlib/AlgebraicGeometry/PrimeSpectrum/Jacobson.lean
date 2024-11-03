@@ -22,11 +22,11 @@ import Mathlib.RingTheory.Jacobson
 
 open Ideal
 
-variable {R : Type*} [CommRing R] [IsJacobson R]
+variable {R : Type*} [CommRing R] [IsJacobsonRing R]
 
 namespace PrimeSpectrum
 
-lemma exists_isClosed_singleton_of_isJacobson
+lemma exists_isClosed_singleton_of_isJacobsonRing
     (s : (Set (PrimeSpectrum R))) (hs : IsOpen s) (hs' : s.Nonempty) :
     ∃ x ∈ s, IsClosed {x} := by
   simp_rw [isClosed_singleton_iff_isMaximal]
@@ -48,18 +48,18 @@ If `R` is both noetherian and jacobson, then the following are equivalent for `x
 3. `{x}` is both closed and stable under generalization
   (i.e. `x` is both a minimal prime and a maximal ideal)
 -/
-lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobson
+lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
     [IsNoetherianRing R] (x : PrimeSpectrum R) :
     List.TFAE [IsOpen {x}, IsClopen {x}, IsClosed {x} ∧ StableUnderGeneralization {x}] := by
   tfae_have 1 → 2
-  · intro h
-    obtain ⟨y, rfl : y = x, h'⟩ := exists_isClosed_singleton_of_isJacobson _ h
+  | h => by
+    obtain ⟨y, rfl : y = x, h'⟩ := exists_isClosed_singleton_of_isJacobsonRing _ h
       ⟨x, Set.mem_singleton x⟩
     exact ⟨h', h⟩
   tfae_have 2 → 3
-  · exact fun h ↦ ⟨h.isClosed, h.isOpen.stableUnderGeneralization⟩
+  | h => ⟨h.isClosed, h.isOpen.stableUnderGeneralization⟩
   tfae_have 3 → 1
-  · intro ⟨h₁, h₂⟩
+  | ⟨h₁, h₂⟩ => by
     rw [isClosed_singleton_iff_isMaximal, ← isMax_iff] at h₁
     suffices {x} = (⋃ p ∈ { p : PrimeSpectrum R | IsMin p ∧ p ≠ x }, closure {p})ᶜ by
       rw [this, isOpen_compl_iff]
