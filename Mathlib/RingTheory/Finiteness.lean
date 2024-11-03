@@ -409,7 +409,7 @@ theorem exists_fg_le_eq_rTensor_inclusion {R M N : Type*} [CommRing R] [AddCommG
       ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
         x = rTensor M (J.inclusion hle) y := by
   induction x with
-  | zero => exact ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
+  | zero => exact ⟨⊥, fg_bot, zero_le, 0, rfl⟩
   | tmul i m => exact ⟨R ∙ i.val, fg_span_singleton i.val,
       (span_singleton_le_iff_mem _ _).mpr i.property,
       ⟨i.val, mem_span_singleton_self _⟩ ⊗ₜ[R] m, rfl⟩
