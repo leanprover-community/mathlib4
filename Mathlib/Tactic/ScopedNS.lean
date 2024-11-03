@@ -32,26 +32,23 @@ scoped[Nat.Count] attribute [instance] CountSet.fintype
 syntax (name := scopedNS) (docComment)? (Parser.Term.attributes)?
   "scoped" "[" ident "] " command : command
 macro_rules
-  | `($[$doc]? $(attr)? scoped[$ns] notation $(prec)? $(n)? $(prio)? $sym* => $t) =>
-    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
-      $[$doc]? $(attr)? scoped notation $(prec)? $(n)? $(prio)? $sym* => $t)
-  | `($[$doc]? $(attr)? scoped[$ns] $mk:prefix $prec $(n)? $(prio)? $sym => $t) =>
-    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
-      $[$doc]? $(attr)? scoped $mk:prefix $prec $(n)? $(prio)? $sym => $t)
-  | `($[$doc]? $(attr)? scoped[$ns] $mk:infix $prec $(n)? $(prio)? $sym => $t) =>
-    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
-      $[$doc]? $(attr)? scoped $mk:infix $prec $(n)? $(prio)? $sym => $t)
-  | `($[$doc]? $(attr)? scoped[$ns] $mk:infixl $prec $(n)? $(prio)? $sym => $t) =>
-    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
-      $[$doc]? $(attr)? scoped $mk:infixl $prec $(n)? $(prio)? $sym => $t)
-  | `($[$doc]? $(attr)? scoped[$ns] $mk:infixr $prec $(n)? $(prio)? $sym => $t) =>
-    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
-      $[$doc]? $(attr)? scoped $mk:infixr $prec $(n)? $(prio)? $sym => $t)
-  | `($[$doc]? $(attr)? scoped[$ns] $mk:postfix $prec $(n)? $(prio)? $sym => $t) =>
-    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
-      $[$doc]? $(attr)? scoped $mk:postfix $prec $(n)? $(prio)? $sym => $t)
   | `(scoped[$ns] attribute [$[$attr:attr],*] $ids*) =>
     `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
       attribute [$[scoped $attr:attr],*] $ids*)
+  | `($[$doc]? $(attr)? scoped%$tk[$ns] $cmd) => do
+    let attrKindArg ← match cmd.raw.getKind with
+      | ``Parser.Command.notation
+      | ``Parser.Command.macro_rules
+      | ``Parser.Command.syntax
+      | ``Parser.Command.macro
+      | ``Parser.Command.elab_rules
+      | ``Parser.Command.elab
+      | ``Parser.Command.binderPredicate
+      | ``Parser.Command.mixfix => pure 2
+      | _ => Macro.throwErrorAt tk "can't use scoped[NS] on this kind of command"
+    let `(Parser.Term.attrKind|) := cmd.raw[attrKindArg]
+      | Macro.throwErrorAt cmd.raw[attrKindArg] "This scoping directive conflicts with scoped[NS]"
+    let cmd' := ⟨cmd.raw.setArg attrKindArg <| Unhygienic.run `(Parser.Term.attrKind| scoped)⟩
+    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId) $cmd':command)
 
 end Mathlib.Tactic
