@@ -4,31 +4,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.RatEquiv
-import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Denumerability of ℚ
 
-This file proves that ℚ is infinite, denumerable, and deduces that it has cardinality `omega`.
+This file proves that ℚ is denumerable, and deduces that it has cardinality `omega`.
 -/
 
 assert_not_exists Module
 
-open Cardinal
-#print Encodable
-
-instance : Countable ℚ := @Encodable.countable _ _
-
-
-theorem Cardinal.mkRat : #ℚ = ℵ₀ :=
-  le_antisymm _ _
-
 namespace Rat
 
 open Denumerable List
-
-instance : Infinite ℚ :=
-  Infinite.of_injective ((↑) : ℕ → ℚ) Nat.cast_injective
 
 instance : Denumerable FiniteContFract :=
   Denumerable.ofEquiv (ℤ × List ℕ+)
@@ -59,6 +46,3 @@ instance instDenumerable : Denumerable ℚ :=
   Denumerable.ofEquiv _ equivFiniteContFract
 
 end Rat
-
-#eval (Denumerable.eqv ℚ).symm 145903
-#eval Denumerable.eqv ℚ (55/42)
