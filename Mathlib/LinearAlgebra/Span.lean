@@ -240,6 +240,52 @@ theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = �
     span_induction (fun _ h ↦ subset_span h) (zero_mem _) (fun _ _ _ _ ↦ add_mem)
       (fun _ _ _ ↦ smul_mem _ _) hx'
 
+section
+
+variable {N : Type*} [AddCommMonoid N] [Module R N]
+
+lemma linearMap_eq_zero_iff_of_span_eq_top (f : M →ₗ[R] N)
+    {S : Set M} (hM : span R S = ⊤) :
+    f = 0 ↔ ∀ (s : S), f s = 0 := by
+  rw [← LinearMap.ker_eq_top, ← top_le_iff, ← hM, span_le]
+  aesop
+
+lemma linearMap_eq_zero_iff_of_eq_span {V : Submodule R M} (f : V →ₗ[R] N)
+    {S : Set M} (hV : V = span R S) :
+    f = 0 ↔ ∀ (s : S), f ⟨s, by simpa only [hV] using subset_span (by simp)⟩ = 0 := by
+  constructor
+  · rintro rfl s
+    rfl
+  · intro hf
+    rw [linearMap_eq_zero_iff_of_span_eq_top (S := (V.subtype ⁻¹' S))]
+    · subst hV
+      rintro ⟨⟨s, _⟩, hs⟩
+      exact hf ⟨s, hs⟩
+    · subst hV
+      simp only [coe_subtype, span_span_coe_preimage]
+
+end
+
+section
+
+variable {M' N' : Type*}  [AddCommGroup M'] [Module R M']
+  [AddCommGroup N'] [Module R N']
+
+lemma linearMap_eq_iff_of_span_eq_top (f g : M' →ₗ[R] N')
+    {S : Set M'} (hM : span R S = ⊤) :
+    f = g ↔ ∀ (s : S), f s = g s := by
+  rw [← sub_eq_zero, linearMap_eq_zero_iff_of_span_eq_top _ hM]
+  simp only [LinearMap.sub_apply, sub_eq_zero]
+
+lemma linearMap_eq_iff_of_eq_span {V : Submodule R M'} (f g : V →ₗ[R] N')
+    {S : Set M'} (hV : V = span R S) :
+    f = g ↔ ∀ (s : S), f ⟨s, by simpa only [hV] using subset_span (by simp)⟩ =
+      g ⟨s, by simpa only [hV] using subset_span (by simp)⟩ := by
+  rw [← sub_eq_zero, linearMap_eq_zero_iff_of_eq_span _ hV]
+  simp only [LinearMap.sub_apply, sub_eq_zero]
+
+end
+
 @[simp]
 lemma span_setOf_mem_eq_top :
     span R {x : span R s | (x : M) ∈ s} = ⊤ :=
