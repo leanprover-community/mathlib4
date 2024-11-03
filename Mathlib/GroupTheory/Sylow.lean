@@ -362,8 +362,8 @@ theorem card_sylow_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (index_dvd_of_le le_normalizer)
 
 /-- Auxilliary lemma for `Sylow.not_dvd_index` which is strictly stronger. -/
-theorem Sylow.not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [(P : Subgroup G).Normal]
-    [FiniteIndex (P : Subgroup G)] : ¬p ∣ (P : Subgroup G).index := by
+private theorem Sylow.not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
+    [P.FiniteIndex] : ¬p ∣ (P : Subgroup G).index := by
   intro h
   rw [index_eq_card (P : Subgroup G)] at h
   obtain ⟨x, hx⟩ := exists_prime_orderOf_dvd_card' (G := G ⧸ (P : Subgroup G)) p h
@@ -379,6 +379,9 @@ theorem Sylow.not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [(P : Subgro
     QuotientGroup.ker_mk'] at hp
   exact hp.ne' (P.3 hQ hp.le)
 
+@[deprecated (since := "2024-11-03")]
+alias not_dvd_index_sylow' := Sylow.not_dvd_index_aux
+
 /-- A Sylow p-subgroup has index indivisible by `p`, assuming [N(P) : P] < ∞. -/
 theorem Sylow.not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (hP : relindex ↑P (P : Subgroup G).normalizer ≠ 0) : ¬p ∣ (P : Subgroup G).index := by
@@ -386,12 +389,15 @@ theorem Sylow.not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow
   haveI : (P.subtype le_normalizer : Subgroup (P : Subgroup G).normalizer).Normal :=
     Subgroup.normal_in_normalizer
   haveI : FiniteIndex ↑(P.subtype le_normalizer : Subgroup (P : Subgroup G).normalizer) := ⟨hP⟩
-  replace hP := (P.subtype le_normalizer).not_dvd_index_aux
+  replace hP := not_dvd_index_aux (P.subtype le_normalizer)
   exact hp.1.not_dvd_mul hP (not_dvd_card_sylow p G)
 
+@[deprecated (since := "2024-11-03")]
+alias not_dvd_index_sylow := Sylow.not_dvd_index'
+
 /-- A Sylow p-subgroup has index indivisible by `p`. -/
-theorem Sylow.not_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
-    [FiniteIndex (P : Subgroup G)] : ¬p ∣ (P : Subgroup G).index :=
+theorem Sylow.not_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) [P.FiniteIndex] :
+    ¬ p ∣ P.index :=
   P.not_dvd_index' Nat.card_pos.ne'
 
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
