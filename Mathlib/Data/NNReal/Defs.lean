@@ -19,7 +19,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
 * `a + b` and `a * b` are the restrictions of addition and multiplication of real numbers to `ℝ≥0`;
   these operations together with `0 = ⟨0, _⟩` and `1 = ⟨1, _⟩` turn `ℝ≥0` into a conditionally
   complete linear ordered archimedean commutative semifield; we have no typeclass for this in
-  `mathlib` yet, so we define the following instances instead:
+  `Mathlib` yet, so we define the following instances instead:
 
   - `LinearOrderedSemiring ℝ≥0`;
   - `OrderedCommSemiring ℝ≥0`;
@@ -869,7 +869,8 @@ theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
 @[simp] lemma iSup_eq_zero (hf : BddAbove (range f)) : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 := by
   cases isEmpty_or_nonempty ι
   · simp
-  · simp [← le_zero_iff_eq_zero, ciSup_le_iff hf]
+  · rw [← le_zero_iff_eq_zero, ciSup_le_iff hf]
+    simp
 
 @[simp]
 theorem iInf_const_zero {α : Sort*} : ⨅ _ : α, (0 : ℝ≥0) = 0 := by

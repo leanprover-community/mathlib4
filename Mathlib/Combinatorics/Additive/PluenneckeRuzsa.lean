@@ -30,7 +30,7 @@ inequality.
 ## References
 
 * [Giorgis Petridis, *The Plünnecke-Ruzsa inequality: an overview*][petridis2014]
-* [Terrence Tao, Van Vu, *Additive Combinatorics][tao-vu]
+* [Terrence Tao, Van Vu, *Additive Combinatorics*][tao-vu]
 -/
 
 open MulOpposite Nat
@@ -179,7 +179,7 @@ theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset G) :
   refine (Nat.cast_le.2 <| card_le_card_mul_left _ hU.1).trans ?_
   refine le_trans ?_
     (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
-      (zero_le _) (zero_le _))
+      zero_le zero_le)
   rw [← mul_div_right_comm, ← mul_assoc]
   refine (le_div_iff₀ <| cast_pos.2 hU.1.card_pos).2 ?_
   exact mod_cast pluennecke_petridis_inequality_mul C (mul_aux hU.1 hU.2 hUA)

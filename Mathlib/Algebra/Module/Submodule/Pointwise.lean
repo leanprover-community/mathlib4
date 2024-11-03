@@ -455,7 +455,8 @@ lemma mem_set_smul (x : M) [SMulCommClass R R N] :
   · rintro rfl; exact Submodule.zero_mem _
 
 @[simp] lemma set_smul_bot : s • (⊥ : Submodule R M) = ⊥ :=
-  eq_bot_iff.mpr fun x hx ↦ by induction x, hx using set_smul_inductionOn <;> aesop
+  eq_bot_iff.mpr fun x hx ↦ by induction x, hx using set_smul_inductionOn <;>
+    aesop (erase bot_eq_zero)
 
 lemma singleton_set_smul [SMulCommClass S R M] (r : S) : ({r} : Set S) • N = r • N := by
   apply set_smul_eq_of_le
