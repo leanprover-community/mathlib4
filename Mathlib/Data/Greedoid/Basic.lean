@@ -18,12 +18,12 @@ exchange and accessible properties.
 /-- Greedoid is a nonempty (finite) set system satisfying both accessible and exchange property. -/
 structure Greedoid (α : Type*) where
   /-- The ground set which every element lies on. -/
-  ground_set : Finset α
+  groundSet : Finset α
   /-- The feasible set of the greedoid. -/
-  feasible : Finset α → Prop
-  contains_emptyset : feasible ∅
-  exchange_property : Greedoid.ExchangeProperty feasible
-  subset_ground : ∀ s, feasible s → s ⊆ ground_set
+  Feasible : Finset α → Prop
+  feasible_empty : Feasible ∅
+  exchange_property : Greedoid.ExchangeProperty Feasible
+  subset_ground : ∀ s, Feasible s → s ⊆ groundSet
 
 section Greedoid
 
@@ -31,7 +31,7 @@ variable {α : Type*}
 
 /-- Definition of `Finset` in `Greedoid`.
     This is often called 'feasible'· -/
-protected def Greedoid.mem (G : Greedoid α) (s : Finset α) := G.feasible s
+protected def Greedoid.mem (G : Greedoid α) (s : Finset α) := G.Feasible s
 
 instance : Membership (Finset α) (Greedoid α) :=
   ⟨Greedoid.mem⟩
@@ -45,36 +45,33 @@ variable {α : Type*}
 open Nat List Finset
 
 theorem eq_of_veq : ∀ {G₁ G₂ : Greedoid α},
-    G₁.ground_set = G₂.ground_set → G₁.feasible = G₂.feasible → G₁ = G₂
+    G₁.groundSet = G₂.groundSet → G₁.Feasible = G₂.Feasible → G₁ = G₂
   | ⟨_, _, _, _, _⟩, ⟨_, _, _, _, _⟩, h₁, h₂ => by cases h₁; cases h₂; rfl
 
 @[simp]
-theorem feasible_set_injective :
-    Function.Injective (fun G : Greedoid α => (G.ground_set, G.feasible)) :=
+theorem feasible_injective :
+    Function.Injective (fun G : Greedoid α => (G.groundSet, G.Feasible)) :=
   fun _ _ => by simp; exact eq_of_veq
 
 @[simp]
-theorem feasible_set_inj {G₁ G₂ : Greedoid α} :
-    G₁.ground_set = G₂.ground_set ∧ G₁.feasible = G₂.feasible ↔ G₁ = G₂ :=
+theorem feasible_inj {G₁ G₂ : Greedoid α} :
+    G₁.groundSet = G₂.groundSet ∧ G₁.Feasible = G₂.Feasible ↔ G₁ = G₂ :=
   ⟨fun h => by apply eq_of_veq <;> simp [h], fun h => by simp [h]⟩
 
-
-
 variable {G : Greedoid α}
-
 variable {s : Finset α}
 variable {s₁ : Finset α} (hs₁ : s₁ ∈ G)
 variable {s₂ : Finset α} (hs₂ : s₂ ∈ G)
 
 protected theorem accessible_property :
-    AccessibleProperty G.feasible := by
+    AccessibleProperty G.Feasible := by
   intro s hs₁ hs₂
   by_contra h'; simp at h'
   let F : Set (Finset α) :=
-    {t | G.feasible t ∧ t.card < s.card}
-  have hF : ∅ ∈ F := by simp [F, G.contains_emptyset, hs₂]
+    {t | G.Feasible t ∧ t.card < s.card}
+  have hF : ∅ ∈ F := by simp [F, G.feasible_empty, hs₂]
   let F' : Finset α → Prop := fun t ↦
-    t ∈ F ∧ ∀ t', G.feasible t' → t'.card < s.card → t'.card ≤ t.card
+    t ∈ F ∧ ∀ t', G.Feasible t' → t'.card < s.card → t'.card ≤ t.card
   have hF' : ∃ x, F' x := by
     by_contra h''; simp [F', F] at h''
     have h₁ : ∀ n, ∃ t, t ∈ F ∧ t.card = n := by
@@ -92,7 +89,7 @@ protected theorem accessible_property :
   rcases hF' with ⟨u, hu₁, hu₂⟩
   rcases hu₁ with ⟨_, hu₁⟩
   rcases ExchangeProperty.exists_superset_of_card_le
-    G.exchange_property hs₁ G.contains_emptyset (le_of_lt hu₁) (zero_le _)
+    G.exchange_property hs₁ G.feasible_empty (le_of_lt hu₁) (zero_le _)
     with ⟨t, ht₁, _, ht₂, ht₃⟩
   simp at ht₂
   rw [← ht₃] at hu₁
@@ -101,12 +98,14 @@ protected theorem accessible_property :
     by_contra h''; simp at h''; apply h' _ ht₂ _ ht₁; omega
   have := card_cons _ ▸ ht₃ ▸ hu₂ _ hx₂ h; omega
 
-instance : Accessible G.feasible := ⟨G.accessible_property⟩
+instance : Accessible G.Feasible :=
+  ⟨G.accessible_property⟩
 
 section Membership
 
 @[simp]
-theorem system_feasible_set_mem_mem : G.feasible s ↔ s ∈ G := by rfl
+theorem system_feasible_mem_mem : G.Feasible s ↔ s ∈ G := by
+  rfl
 
 theorem mem_accessible
     (hs₁ : s ∈ G) (hs₂ : s.Nonempty) :
@@ -114,14 +113,15 @@ theorem mem_accessible
   G.accessible_property hs₁ hs₂
 
 theorem mem_exchange
-    (hs₁ : G.feasible s₁) (hs₂ : G.feasible s₂) (hs : s₂.card < s₁.card) :
+    (hs₁ : G.Feasible s₁) (hs₂ : G.Feasible s₂) (hs : s₂.card < s₁.card) :
     ∃ x ∈ s₁, ∃ h : x ∉ s₂, cons x s₂ h ∈ G :=
   G.exchange_property hs₁ hs₂ hs
 
 end Membership
 
 @[simp]
-theorem emptyset_feasible : ∅ ∈ G := G.contains_emptyset
+theorem empty_mem : ∅ ∈ G :=
+  G.feasible_empty
 
 end Greedoid
 

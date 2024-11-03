@@ -112,21 +112,21 @@ def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bi
       mem_univ_val univ.2
 
 theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
-    @card { x // p x } (Fintype.subtype s H) = s.card :=
+    @card { x // p x } (Fintype.subtype s H) = #s :=
   Multiset.card_pmap _ _ _
 
 theorem card_of_subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x)
-    [Fintype { x // p x }] : card { x // p x } = s.card := by
+    [Fintype { x // p x }] : card { x // p x } = #s := by
   rw [← subtype_card s H]
   congr!
 
 @[simp]
 theorem card_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) :
-    @Fintype.card p (ofFinset s H) = s.card :=
+    @Fintype.card p (ofFinset s H) = #s :=
   Fintype.subtype_card s H
 
 theorem card_of_finset' {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) [Fintype p] :
-    Fintype.card p = s.card := by rw [← card_ofFinset s H]; congr!
+    Fintype.card p = #s := by rw [← card_ofFinset s H]; congr!
 
 end Fintype
 
@@ -223,50 +223,47 @@ theorem toFinset_card {α : Type*} (s : Set α) [Fintype s] : s.toFinset.card = 
 end Set
 
 @[simp]
-theorem Finset.card_univ [Fintype α] : (Finset.univ : Finset α).card = Fintype.card α :=
-  rfl
+theorem Finset.card_univ [Fintype α] : #(univ : Finset α) = Fintype.card α := rfl
 
-theorem Finset.eq_univ_of_card [Fintype α] (s : Finset α) (hs : s.card = Fintype.card α) :
+theorem Finset.eq_univ_of_card [Fintype α] (s : Finset α) (hs : #s = Fintype.card α) :
     s = univ :=
   eq_of_subset_of_card_le (subset_univ _) <| by rw [hs, Finset.card_univ]
 
-theorem Finset.card_eq_iff_eq_univ [Fintype α] (s : Finset α) :
-    s.card = Fintype.card α ↔ s = Finset.univ :=
+theorem Finset.card_eq_iff_eq_univ [Fintype α] (s : Finset α) : #s = Fintype.card α ↔ s = univ :=
   ⟨s.eq_univ_of_card, by
     rintro rfl
     exact Finset.card_univ⟩
 
-theorem Finset.card_le_univ [Fintype α] (s : Finset α) : s.card ≤ Fintype.card α :=
+theorem Finset.card_le_univ [Fintype α] (s : Finset α) : #s ≤ Fintype.card α :=
   card_le_card (subset_univ s)
 
 theorem Finset.card_lt_univ_of_not_mem [Fintype α] {s : Finset α} {x : α} (hx : x ∉ s) :
-    s.card < Fintype.card α :=
+    #s < Fintype.card α :=
   card_lt_card ⟨subset_univ s, not_forall.2 ⟨x, fun hx' => hx (hx' <| mem_univ x)⟩⟩
 
 theorem Finset.card_lt_iff_ne_univ [Fintype α] (s : Finset α) :
-    s.card < Fintype.card α ↔ s ≠ Finset.univ :=
+    #s < Fintype.card α ↔ s ≠ Finset.univ :=
   s.card_le_univ.lt_iff_ne.trans (not_congr s.card_eq_iff_eq_univ)
 
 theorem Finset.card_compl_lt_iff_nonempty [Fintype α] [DecidableEq α] (s : Finset α) :
-    sᶜ.card < Fintype.card α ↔ s.Nonempty :=
+    #sᶜ < Fintype.card α ↔ s.Nonempty :=
   sᶜ.card_lt_iff_ne_univ.trans s.compl_ne_univ_iff_nonempty
 
 theorem Finset.card_univ_diff [DecidableEq α] [Fintype α] (s : Finset α) :
-    (Finset.univ \ s).card = Fintype.card α - s.card :=
+    #(univ \ s) = Fintype.card α - #s :=
   Finset.card_sdiff (subset_univ s)
 
-theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
-    sᶜ.card = Fintype.card α - s.card :=
+theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) : #sᶜ = Fintype.card α - #s :=
   Finset.card_univ_diff s
 
 @[simp]
 theorem Finset.card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
-    s.card + sᶜ.card = Fintype.card α := by
+    #s + #sᶜ = Fintype.card α := by
   rw [Finset.card_compl, ← Nat.add_sub_assoc (card_le_univ s), Nat.add_sub_cancel_left]
 
 @[simp]
 theorem Finset.card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α) :
-    sᶜ.card + s.card = Fintype.card α := by
+    #sᶜ + #s = Fintype.card α := by
   rw [add_comm, card_add_card_compl]
 
 theorem Fintype.card_compl_set [Fintype α] (s : Set α) [Fintype s] [Fintype (↥sᶜ : Sort _)] :
@@ -286,7 +283,7 @@ theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
           left_inv := fun i ↦ rfl
           right_inv := fun i ↦ rfl }
 
-theorem Finset.card_fin (n : ℕ) : Finset.card (Finset.univ : Finset (Fin n)) = n := by simp
+theorem Finset.card_fin (n : ℕ) : #(univ : Finset (Fin n)) = n := by simp
 
 /-- `Fin` as a map from `ℕ` to `Type` is injective. Note that since this is a statement about
 equality of types, using it should be avoided if possible. -/
@@ -303,15 +300,13 @@ theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
   cases fin_injective h
   rfl
 
-theorem card_finset_fin_le {n : ℕ} (s : Finset (Fin n)) : s.card ≤ n := by
+theorem card_finset_fin_le {n : ℕ} (s : Finset (Fin n)) : #s ≤ n := by
   simpa only [Fintype.card_fin] using s.card_le_univ
 
---@[simp] Porting note (#10618): simp can prove it
 theorem Fintype.card_subtype_eq (y : α) [Fintype { x // x = y }] :
     Fintype.card { x // x = y } = 1 :=
   Fintype.card_unique
 
---@[simp] Porting note (#10618): simp can prove it
 theorem Fintype.card_subtype_eq' (y : α) [Fintype { x // y = x }] :
     Fintype.card { x // y = x } = 1 :=
   Fintype.card_unique
@@ -401,12 +396,27 @@ theorem Finite.of_injective {α β : Sort*} [Finite β] (f : α → β) (H : Inj
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e⟩⟩
   classical exact .of_equiv (Set.range (e ∘ f)) (Equiv.ofInjective _ (e.injective.comp H)).symm
 
+-- see Note [lower instance priority]
+instance (priority := 100) Finite.of_subsingleton {α : Sort*} [Subsingleton α] : Finite α :=
+  Finite.of_injective (Function.const α ()) <| Function.injective_of_subsingleton _
+
+-- Higher priority for `Prop`s
+-- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
+instance prop (p : Prop) : Finite p :=
+  Finite.of_subsingleton
+
 /-- This instance also provides `[Finite s]` for `s : Set α`. -/
 instance Subtype.finite {α : Sort*} [Finite α] {p : α → Prop} : Finite { x // p x } :=
   Finite.of_injective (↑) Subtype.coe_injective
 
 theorem Finite.of_surjective {α β : Sort*} [Finite α] (f : α → β) (H : Surjective f) : Finite β :=
   Finite.of_injective _ <| injective_surjInv H
+
+instance Quot.finite {α : Sort*} [Finite α] (r : α → α → Prop) : Finite (Quot r) :=
+  Finite.of_surjective _ (surjective_quot_mk r)
+
+instance Quotient.finite {α : Sort*} [Finite α] (s : Setoid α) : Finite (Quotient s) :=
+  Quot.finite _
 
 theorem Finite.exists_univ_list (α) [Finite α] : ∃ l : List α, l.Nodup ∧ ∀ x : α, x ∈ l := by
   cases nonempty_fintype α
@@ -531,7 +541,7 @@ theorem card_eq_one_of_forall_eq {i : α} (h : ∀ j, j = i) : card α = 1 :=
   Fintype.card_eq_one_iff.2 ⟨i, h⟩
 
 theorem exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
-    (∃! a : α, p a) ↔ (Finset.univ.filter p).card = 1 := by
+    (∃! a : α, p a) ↔ #{x | p x} = 1 := by
   rw [Finset.card_eq_one]
   refine exists_congr fun x => ?_
   simp only [forall_true_left, Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff,
@@ -650,36 +660,36 @@ def ofRightInverseOfCardLE (hαβ : card α ≤ card β) (f : α → β) (g : β
 end Equiv
 
 @[simp]
-theorem Fintype.card_coe (s : Finset α) [Fintype s] : Fintype.card s = s.card :=
+theorem Fintype.card_coe (s : Finset α) [Fintype s] : Fintype.card s = #s :=
   @Fintype.card_of_finset' _ _ _ (fun _ => Iff.rfl) (id _)
 
-/-- Noncomputable equivalence between a finset `s` coerced to a type and `Fin s.card`. -/
-noncomputable def Finset.equivFin (s : Finset α) : s ≃ Fin s.card :=
+/-- Noncomputable equivalence between a finset `s` coerced to a type and `Fin #s`. -/
+noncomputable def Finset.equivFin (s : Finset α) : s ≃ Fin #s :=
   Fintype.equivFinOfCardEq (Fintype.card_coe _)
 
 /-- Noncomputable equivalence between a finset `s` as a fintype and `Fin n`, when there is a
-proof that `s.card = n`. -/
-noncomputable def Finset.equivFinOfCardEq {s : Finset α} {n : ℕ} (h : s.card = n) : s ≃ Fin n :=
+proof that `#s = n`. -/
+noncomputable def Finset.equivFinOfCardEq {s : Finset α} {n : ℕ} (h : #s = n) : s ≃ Fin n :=
   Fintype.equivFinOfCardEq ((Fintype.card_coe _).trans h)
 
-theorem Finset.card_eq_of_equiv_fin {s : Finset α} {n : ℕ} (i : s ≃ Fin n) : s.card = n :=
+theorem Finset.card_eq_of_equiv_fin {s : Finset α} {n : ℕ} (i : s ≃ Fin n) : #s = n :=
   Fin.equiv_iff_eq.1 ⟨s.equivFin.symm.trans i⟩
 
 theorem Finset.card_eq_of_equiv_fintype {s : Finset α} [Fintype β] (i : s ≃ β) :
-    s.card = Fintype.card β := card_eq_of_equiv_fin <| i.trans <| Fintype.equivFin β
+    #s = Fintype.card β := card_eq_of_equiv_fin <| i.trans <| Fintype.equivFin β
 
 /-- Noncomputable equivalence between two finsets `s` and `t` as fintypes when there is a proof
-that `s.card = t.card`. -/
-noncomputable def Finset.equivOfCardEq {s : Finset α} {t : Finset β} (h : s.card = t.card) :
+that `#s = #t`. -/
+noncomputable def Finset.equivOfCardEq {s : Finset α} {t : Finset β} (h : #s = #t) :
     s ≃ t := Fintype.equivOfCardEq ((Fintype.card_coe _).trans (h.trans (Fintype.card_coe _).symm))
 
-theorem Finset.card_eq_of_equiv {s : Finset α} {t : Finset β} (i : s ≃ t) : s.card = t.card :=
+theorem Finset.card_eq_of_equiv {s : Finset α} {t : Finset β} (i : s ≃ t) : #s = #t :=
   (card_eq_of_equiv_fintype i).trans (Fintype.card_coe _)
 
 /-- We can inflate a set `s` to any bigger size. -/
-lemma Finset.exists_superset_card_eq [Fintype α] {n : ℕ} {s : Finset α} (hsn : s.card ≤ n)
+lemma Finset.exists_superset_card_eq [Fintype α] {n : ℕ} {s : Finset α} (hsn : #s ≤ n)
     (hnα : n ≤ Fintype.card α) :
-    ∃ t, s ⊆ t ∧ t.card = n := by simpa using exists_subsuperset_card_eq s.subset_univ hsn hnα
+    ∃ t, s ⊆ t ∧ #t = n := by simpa using exists_subsuperset_card_eq s.subset_univ hsn hnα
 
 @[simp]
 theorem Fintype.card_prop : Fintype.card Prop = 2 :=
@@ -730,7 +740,7 @@ theorem nonempty_iff_card_le [Fintype α] [Fintype β] :
     Nonempty (α ↪ β) ↔ Fintype.card α ≤ Fintype.card β :=
   ⟨fun ⟨e⟩ => Fintype.card_le_of_embedding e, nonempty_of_card_le⟩
 
-theorem exists_of_card_le_finset [Fintype α] {s : Finset β} (h : Fintype.card α ≤ s.card) :
+theorem exists_of_card_le_finset [Fintype α] {s : Finset β} (h : Fintype.card α ≤ #s) :
     ∃ f : α ↪ β, Set.range f ⊆ s := by
   rw [← Fintype.card_coe] at h
   rcases nonempty_of_card_le h with ⟨f⟩
@@ -762,7 +772,7 @@ theorem Fintype.card_subtype_lt [Fintype α] {p : α → Prop} [DecidablePred p]
     rwa [Subtype.range_coe_subtype]
 
 theorem Fintype.card_subtype [Fintype α] (p : α → Prop) [DecidablePred p] :
-    Fintype.card { x // p x } = ((Finset.univ : Finset α).filter p).card := by
+    Fintype.card { x // p x } = #{x | p x} := by
   refine Fintype.card_of_subtype _ ?_
   simp
 
@@ -812,9 +822,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
     WellFounded r := by
   classical
   cases nonempty_fintype α
-  have :
-    ∀ x y, r x y → (univ.filter fun z => r z x).card < (univ.filter fun z => r z y).card :=
-    fun x y hxy =>
+  have (x y) (hxy : r x y) : #{z | r z x} < #{z | r z y} :=
     Finset.card_lt_card <| by
       simp only [Finset.lt_iff_ssubset.symm, lt_iff_le_not_le, Finset.le_iff_subset,
           Finset.subset_iff, mem_filter, true_and, mem_univ, hxy]
@@ -886,7 +894,7 @@ theorem of_injective_to_set {s : Set α} (hs : s ≠ Set.univ) {f : α → s} (h
       refine lt_irrefl (Fintype.card α) ?_
       calc
         Fintype.card α ≤ Fintype.card s := Fintype.card_le_of_injective f hf
-        _ = s.toFinset.card := s.toFinset_card.symm
+        _ = #s.toFinset := s.toFinset_card.symm
         _ < Fintype.card α :=
           Finset.card_lt_card <| by rwa [Set.toFinset_ssubset_univ, Set.ssubset_univ_iff]
 
@@ -999,14 +1007,14 @@ noncomputable def natEmbedding (α : Type*) [Infinite α] : ℕ ↪ α :=
   ⟨_, natEmbeddingAux_injective α⟩
 
 /-- See `Infinite.exists_superset_card_eq` for a version that, for an `s : Finset α`,
-provides a superset `t : Finset α`, `s ⊆ t` such that `t.card` is fixed. -/
-theorem exists_subset_card_eq (α : Type*) [Infinite α] (n : ℕ) : ∃ s : Finset α, s.card = n :=
+provides a superset `t : Finset α`, `s ⊆ t` such that `#t` is fixed. -/
+theorem exists_subset_card_eq (α : Type*) [Infinite α] (n : ℕ) : ∃ s : Finset α, #s = n :=
   ⟨(range n).map (natEmbedding α), by rw [card_map, card_range]⟩
 
 /-- See `Infinite.exists_subset_card_eq` for a version that provides an arbitrary
 `s : Finset α` for any cardinality. -/
-theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : s.card ≤ n) :
-    ∃ t : Finset α, s ⊆ t ∧ t.card = n := by
+theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : #s ≤ n) :
+    ∃ t : Finset α, s ⊆ t ∧ #t = n := by
   induction' n with n IH generalizing s
   · exact ⟨s, subset_refl _, Nat.eq_zero_of_le_zero hn⟩
   · rcases hn.eq_or_lt with hn' | hn'
@@ -1019,7 +1027,7 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : s.
 end Infinite
 
 /-- If every finset in a type has bounded cardinality, that type is finite. -/
-noncomputable def fintypeOfFinsetCardLe {ι : Type*} (n : ℕ) (w : ∀ s : Finset ι, s.card ≤ n) :
+noncomputable def fintypeOfFinsetCardLe {ι : Type*} (n : ℕ) (w : ∀ s : Finset ι, #s ≤ n) :
     Fintype ι := by
   apply fintypeOfNotInfinite
   intro i

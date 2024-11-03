@@ -155,6 +155,36 @@ lemma range_fromSpecStalk {x : X} :
     rw [← Spec_map_stalkSpecializes_fromSpecStalk hy] at this
     exact ⟨_, this⟩
 
+/-- The canonical map `Spec 𝒪_{X, x} ⟶ U` given `x ∈ U ⊆ X`. -/
+noncomputable
+def Opens.fromSpecStalkOfMem {X : Scheme.{u}} (U : X.Opens) (x : X) (hxU : x ∈ U) :
+    Spec (X.presheaf.stalk x) ⟶ U :=
+  Spec.map (inv (U.ι.stalkMap ⟨x, hxU⟩)) ≫ U.toScheme.fromSpecStalk ⟨x, hxU⟩
+
+@[reassoc (attr := simp)]
+lemma Opens.fromSpecStalkOfMem_ι {X : Scheme.{u}} (U : X.Opens) (x : X) (hxU : x ∈ U) :
+    U.fromSpecStalkOfMem x hxU ≫ U.ι = X.fromSpecStalk x := by
+  simp only [Opens.fromSpecStalkOfMem, Spec.map_inv, Category.assoc, IsIso.inv_comp_eq]
+  exact (Scheme.Spec_map_stalkMap_fromSpecStalk U.ι (x := ⟨x, hxU⟩)).symm
+
+@[reassoc]
+lemma fromSpecStalk_toSpecΓ (X : Scheme.{u}) (x : X) :
+    X.fromSpecStalk x ≫ X.toSpecΓ = Spec.map (X.presheaf.germ ⊤ x trivial) := by
+  rw [Scheme.toSpecΓ_naturality, ← SpecMap_ΓSpecIso_hom, ← Spec.map_comp,
+    @Scheme.fromSpecStalk_app X ⊤ _ trivial]
+  simp
+
+@[reassoc (attr := simp)]
+lemma Opens.fromSpecStalkOfMem_toSpecΓ {X : Scheme.{u}} (U : X.Opens) (x : X) (hxU : x ∈ U) :
+    U.fromSpecStalkOfMem x hxU ≫ U.toSpecΓ = Spec.map (X.presheaf.germ U x hxU) := by
+  rw [fromSpecStalkOfMem, Opens.toSpecΓ, Category.assoc, fromSpecStalk_toSpecΓ_assoc,
+    ← Spec.map_comp, ← Spec.map_comp]
+  congr 1
+  rw [IsIso.comp_inv_eq, Iso.inv_comp_eq]
+  erw [stalkMap_germ U.ι U ⟨x, hxU⟩]
+  rw [Opens.ι_app, Opens.topIso_hom, ← Functor.map_comp_assoc]
+  exact (U.toScheme.presheaf.germ_res (homOfLE le_top) ⟨x, hxU⟩ (U := U.ι ⁻¹ᵁ U) hxU).symm
+
 end Scheme
 
 end fromSpecStalk

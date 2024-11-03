@@ -244,7 +244,7 @@ lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) 
   refine (rpow_logb (mod_cast pprime.pos) ?_ hp0).symm
   simp only [ne_eq, Nat.cast_eq_one,Nat.Prime.ne_one pprime, not_false_eq_true]
 
-/-! ## Non-archimedean case: end goal -/
+-- ## Non-archimedean case: end goal
 
 include hf_nontriv bdd in
 /-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
@@ -289,7 +289,10 @@ end Non_archimedean
 
 section Archimedean
 
-/-! ## Archimedean case -/
+/-! ## Archimedean case
+
+Every unbounded absolute value is equivalent to the standard absolute value
+-/
 
 /-- The usual absolute value on ℚ. -/
 def mulRingNorm_real : MulRingNorm ℚ :=
@@ -308,7 +311,7 @@ def mulRingNorm_real : MulRingNorm ℚ :=
   simp only [Rat.cast_abs]
   rfl
 
-/-! ## Preliminary result -/
+-- ## Preliminary result
 
 /-- Given an two integers `n, m` with `m > 1` the mulRingNorm of `n` is bounded by
 `m + m * f m + m * (f m) ^ 2 + ... + m * (f m) ^ d` where `d` is the number of digits of the
@@ -336,7 +339,7 @@ lemma mulRingNorm_apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
   simp only [zero_le, zero_add, tsub_zero, true_and] at hia
   exact (hcoef (List.mem_iff_get.mpr ⟨⟨i, hia.1⟩, hia.2.symm⟩)).le
 
-/-! ## Step 1: if f is a MulRingNorm and f n > 1 for some natural n, then f n > 1 for all n ≥ 2 -/
+-- ## Step 1: if f is a MulRingNorm and f n > 1 for some natural n, then f n > 1 for all n ≥ 2
 
 /-- If `f n > 1` for some `n` then `f n > 1` for all `n ≥ 2` -/
 lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (hn₀ : 1 < n₀) : 1 < f n₀ := by
@@ -391,7 +394,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
     tendsto_root_atTop_nhds_one (by positivity)
   exact hnlim.mul tendsto_nat_rpow_div
 
-/-! ## step 2: given m,n ≥ 2 and |m|=m^s, |n|=n^t for s,t > 0, we have t ≤ s -/
+-- ## Step 2: given m,n ≥ 2 and |m|=m^s, |n|=n^t for s,t > 0, we have t ≤ s
 
 variable {m n : ℕ} (hm : 1 < m) (hn : 1 < n) (notbdd : ¬ ∀ (n : ℕ), f n ≤ 1)
 
@@ -448,7 +451,7 @@ lemma mulRingNorm_le_mulRingNorm_pow_log : f n ≤ f m ^ logb m n := by
     fun b hb ↦ param_upperbound hm hn notbdd (not_eq_zero_of_lt hb)⟩))
 
 include hm hn notbdd in
-/-- Given m,n ≥ 2 and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
+/-- Given `m,n ≥ 2` and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
 lemma le_of_mulRingNorm_eq {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  : t ≤ s := by
     have hmn : f n ≤ f m ^ Real.logb m n := mulRingNorm_le_mulRingNorm_pow_log hm hn notbdd
     rw [← Real.rpow_le_rpow_left_iff (x:=n) (mod_cast hn), ← hfn]
@@ -462,7 +465,7 @@ private lemma symmetric_roles {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t
     le_antisymm (le_of_mulRingNorm_eq hn hm notbdd hfn hfm)
     (le_of_mulRingNorm_eq hm hn notbdd hfm hfn)
 
-/-! ## Archimedean case: end goal -/
+-- ## Archimedean case: end goal
 
 include notbdd in
 /-- If `f` is not bounded and not trivial, then it is equivalent to the standard absolute value on
@@ -507,7 +510,7 @@ theorem mulRingNorm_equiv_standard_of_unbounded : MulRingNorm.equiv f mulRingNor
 
 end Archimedean
 
-/-- Ostrowski's Theorem -/
+/-- **Ostrowski's Theorem** -/
 theorem mulRingNorm_equiv_standard_or_padic (f : MulRingNorm ℚ) (hf_nontriv : f ≠ 1) :
     (MulRingNorm.equiv f mulRingNorm_real) ∨
     ∃! p, ∃ (hp : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
