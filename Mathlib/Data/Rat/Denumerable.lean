@@ -8,7 +8,7 @@ import Mathlib.Algebra.ContinuedFractions.Computation.RatEquiv
 /-!
 # Denumerability of ℚ
 
-This file proves that ℚ is denumerable, and deduces that it has cardinality `omega`.
+This file proves that ℚ is denumerable.
 -/
 
 assert_not_exists Module

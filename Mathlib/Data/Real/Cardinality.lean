@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Data.Rat.Cardinal
 import Mathlib.Data.Set.Pointwise.Interval
 import Mathlib.SetTheory.Cardinal.Continuum
 
@@ -188,7 +189,7 @@ theorem mk_real : #ℝ = 𝔠 := by
   · rw [Real.equivCauchy.cardinal_eq]
     apply mk_quotient_le.trans
     apply (mk_subtype_le _).trans_eq
-    rw [← power_def, mk_nat, mk_eq_aleph0, aleph0_power_aleph0]
+    rw [← power_def, mk_nat, mkRat, aleph0_power_aleph0]
   · convert mk_le_of_injective (cantorFunction_injective _ _)
     · rw [← power_def, mk_bool, mk_nat, two_power_aleph0]
     · exact 1 / 3
