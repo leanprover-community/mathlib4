@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen
 -/
 import Mathlib.Analysis.Calculus.FirstDerivativeTest
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # The Second-Derivative Test
@@ -13,7 +14,7 @@ Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_s
 
 ## Main results
 
-* `isLocalMin_of_deriv_deriv_pos`: The second-derivative test.
+* `isLocalMin_of_deriv_deriv_pos`: The second-derivative test, minimum version.
 
 ## Tags
 
@@ -22,11 +23,11 @@ derivative test, calculus
 
 open Set Filter Topology
 
-/-- Insert a missing point between two adjacent open intervals. -/
-theorem insert_Ioo {x ε₀ ε₁ : ℝ} (hε₀ : ε₀ > 0) (hε₁ : ε₁ > 0):
-    insert x (Ioo (x - ε₀) x ∪ Ioo x (x + ε₁)) = Ioo (x - ε₀) (x + ε₁) := by
-  rw [← insert_union, Ioo_insert_right (by linarith)]
-  exact Ioc_union_Ioo_eq_Ioo (by linarith) (by linarith)
+
+/-- Insert a missing point between two adjacent open real intervals. -/
+theorem insert_Ioo₀ {x ε₀ ε₁ : ℝ} (hε₀ : ε₀ > 0) (hε₁ : ε₁ > 0):
+    insert x (Ioo (x - ε₀) x ∪ Ioo x (x + ε₁)) = Ioo (x - ε₀) (x + ε₁) :=
+  insert_Ioo ⟨by linarith,by linarith⟩
 
 
 section SecondDeriv
@@ -60,7 +61,7 @@ theorem eventually_differentiable_of_deriv_nonzero {ε : ℝ}
     (hε₁ : ∀ b ∈ Ioo x₀ (x₀ + ε), 0 < deriv f b) :
     ∀ᶠ x in 𝓝[≠] x₀, DifferentiableAt ℝ f x :=
   Eventually.mono
-    (eventually_mem_set.mpr <| insert_mem_nhds_iff.mp <| insert_Ioo hε hε ▸
+    (eventually_mem_set.mpr <| insert_mem_nhds_iff.mp <| insert_Ioo₀ hε hε ▸
     Ioo_mem_nhds (by linarith) (by linarith))
     fun _ hb => differentiableAt_of_deriv_ne_zero <| hb.elim
       (fun h => ne_of_lt <| hε₀ _ h)
@@ -74,7 +75,7 @@ lemma deriv_neg_of_deriv_deriv_pos (hf : deriv (deriv f) x₀ > 0)
     (show x₀ - 1 < x₀ by simp)).mp
       <| nhds_left'_le_nhds_ne x₀ <| (tendsto_nhds.mp <| hasDerivAt_iff_tendsto_slope.mp
         <| hasDerivAt_deriv_iff.mpr (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf))
-      (Set.Ioi 0) isOpen_Ioi hf
+      (Ioi 0) isOpen_Ioi hf
   exact ⟨u, hu.1.2, fun b hb => slopeSimpNeg hb.2 (hu.2 hb) hd⟩
 
 
@@ -84,7 +85,7 @@ lemma deriv_pos_of_deriv_deriv_pos (hf : deriv (deriv f) x₀ > 0)
   obtain ⟨u,hu⟩ := (mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset (show x₀ < x₀ + 1 by simp)).mp
     <| nhds_right'_le_nhds_ne x₀ <|(tendsto_nhds.mp <| hasDerivAt_iff_tendsto_slope.mp
     <| hasDerivAt_deriv_iff.mpr (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf))
-    (Set.Ioi 0) isOpen_Ioi hf
+    (Ioi 0) isOpen_Ioi hf
   exact ⟨u, hu.1.1, fun b hb => slopeSimpPos hb.1 (hu.2 hb) hd⟩
 
 /-- If `f''(x) > 0` then `f'` changes sign at `x`.
@@ -118,7 +119,7 @@ lemma deriv_neg_pos_of_deriv_deriv_pos
              _ < _                    := by rw[← mul_lt_mul_left zero_lt_two]; exact h₂⟩
 
 
-/-- The Second-Derivative Test from calculus. -/
+/-- The Second-Derivative Test from calculus, minimum version. -/
 theorem isLocalMin_of_deriv_deriv_pos
     (hf : deriv (deriv f) x₀ > 0) (hd : deriv f x₀ = 0)
     (hc : ContinuousAt f x₀) : IsLocalMin f x₀ := by

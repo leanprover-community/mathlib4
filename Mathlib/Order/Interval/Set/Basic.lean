@@ -1275,6 +1275,14 @@ theorem Ioc_union_Ioo_eq_Ioo (h₁ : a ≤ b) (h₂ : b < c) : Ioc a b ∪ Ioo b
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_lt h₂⟩) fun hx => ⟨h₁.trans_lt hx.1, hx.2⟩)
     Ioo_subset_Ioc_union_Ioo
 
+
+/-- Insert a missing point between two adjacent open intervals. -/
+theorem insert_Ioo (h : b ∈ Ioo a c) :
+    insert b (Ioo a b ∪ Ioo b c) = Ioo a c := by
+  rw [← insert_union, Ioo_insert_right h.1]
+  exact Ioc_union_Ioo_eq_Ioo (le_of_lt h.1) h.2
+
+
 theorem Ico_subset_Icc_union_Ioo : Ico a c ⊆ Icc a b ∪ Ioo b c := fun x hx =>
   (le_or_lt x b).elim (fun hxb => Or.inl ⟨hx.1, hxb⟩) fun hxb => Or.inr ⟨hxb, hx.2⟩
 
