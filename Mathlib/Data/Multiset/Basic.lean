@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Algebra.Order.ZeroLE
 import Mathlib.Data.List.Perm.Subperm
 import Mathlib.Data.Set.List
 import Mathlib.Order.Hom.Basic
@@ -484,18 +485,22 @@ theorem leInductionOn {C : Multiset α → Multiset α → Prop} {s t : Multiset
     (H : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → C l₁ l₂) : C s t :=
   Quotient.inductionOn₂ s t (fun l₁ _ ⟨l, p, s⟩ => (show ⟦l⟧ = ⟦l₁⟧ from Quot.sound p) ▸ H s) h
 
-theorem zero_le (s : Multiset α) : 0 ≤ s :=
-  Quot.inductionOn s fun l => (nil_sublist l).subperm
+instance : ZeroLEClass (Multiset α) where
+  zero_le s := Quot.inductionOn s fun l => (nil_sublist l).subperm
+
+@[deprecated _root_.zero_le (since := "2024-11-02")]
+protected theorem zero_le (s : Multiset α) : 0 ≤ s :=
+  zero_le
 
 instance : OrderBot (Multiset α) where
   bot := 0
-  bot_le := zero_le
+  bot_le := fun _ ↦ zero_le
 
-/-- This is a `rfl` and `simp` version of `bot_eq_zero`. -/
-@[simp]
-theorem bot_eq_zero : (⊥ : Multiset α) = 0 :=
+@[deprecated _root_.bot_eq_zero (since := "2024-11-02")]
+protected theorem bot_eq_zero : (⊥ : Multiset α) = 0 :=
   rfl
 
+@[deprecated le_zero_iff_eq_zero (since := "2024-11-02")]
 theorem le_zero : s ≤ 0 ↔ s = 0 :=
   le_bot_iff
 
@@ -548,7 +553,7 @@ theorem zero_ne_singleton (a : α) : 0 ≠ ({a} : Multiset α) := singleton_ne_z
 theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
   ⟨fun h => mem_of_le h (mem_singleton_self _), fun h =>
     let ⟨_t, e⟩ := exists_cons_of_mem h
-    e.symm ▸ cons_le_cons _ (zero_le _)⟩
+    e.symm ▸ cons_le_cons _ zero_le⟩
 
 @[simp] lemma le_singleton : s ≤ {a} ↔ s = 0 ∨ s = {a} :=
   Quot.induction_on s fun l ↦ by simp only [cons_zero, ← coe_singleton, quot_mk_to_coe'', coe_le,
@@ -609,9 +614,9 @@ instance instAddCommMonoid : AddCancelCommMonoid (Multiset α) where
     le_antisymm (Multiset.add_le_add_iff_left'.mp h.le) (Multiset.add_le_add_iff_left'.mp h.ge)
   nsmul := nsmulRec
 
-theorem le_add_right (s t : Multiset α) : s ≤ s + t := by simpa using add_le_add_left (zero_le t) s
+theorem le_add_right (s t : Multiset α) : s ≤ s + t := by simp
 
-theorem le_add_left (s t : Multiset α) : s ≤ t + s := by simpa using add_le_add_right (zero_le t) s
+theorem le_add_left (s t : Multiset α) : s ≤ t + s := by simp
 
 lemma subset_add_left {s t : Multiset α} : s ⊆ s + t := subset_of_le <| le_add_right s t
 
@@ -723,7 +728,7 @@ theorem lt_iff_cons_le {s t : Multiset α} : s < t ↔ ∃ a, a ::ₘ s ≤ t :=
 
 @[simp]
 theorem card_eq_zero {s : Multiset α} : card s = 0 ↔ s = 0 :=
-  ⟨fun h => (eq_of_le_of_card_le (zero_le _) (le_of_eq h)).symm, fun e => by simp [e]⟩
+  ⟨fun h => (eq_of_le_of_card_le zero_le (le_of_eq h)).symm, fun e => by simp [e]⟩
 
 theorem card_pos {s : Multiset α} : 0 < card s ↔ s ≠ 0 :=
   Nat.pos_iff_ne_zero.trans <| not_congr card_eq_zero
@@ -1590,7 +1595,7 @@ theorem inter_le_left (s t : Multiset α) : s ∩ t ≤ s :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => (bagInter_sublist_left _ _).subperm
 
 theorem inter_le_right (s : Multiset α) : ∀ t, s ∩ t ≤ t :=
-  Multiset.induction_on s (fun t => (zero_inter t).symm ▸ zero_le _) fun a s IH t =>
+  Multiset.induction_on s (fun t => (zero_inter t).symm ▸ zero_le) fun a s IH t =>
     if h : a ∈ t then by simpa [h] using cons_le_cons a (IH (t.erase a)) else by simp [h, IH]
 
 theorem le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
