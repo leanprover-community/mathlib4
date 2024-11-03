@@ -39,8 +39,8 @@ section Preorder
 
 variable [Preorder α] [One α] [OneLEClass α]
 
-@[to_additive (attr := simp)]
-theorem not_lt_zero : ¬ x < 1 :=
+@[to_additive (attr := simp) not_lt_zero]
+theorem not_lt_one : ¬ x < 1 :=
   not_lt_of_le one_le
 
 @[to_additive]
