@@ -153,8 +153,7 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 
 namespace ComputablePred
 
-variable {α : Type*} {σ : Type*}
-variable [Primcodable α] [Primcodable σ]
+variable {α : Type*} [Primcodable α]
 
 open Nat.Partrec (Code)
 
@@ -162,7 +161,7 @@ open Nat.Partrec.Code Computable
 
 theorem computable_iff {p : α → Prop} :
     ComputablePred p ↔ ∃ f : α → Bool, Computable f ∧ p = fun a => (f a : Prop) :=
-  ⟨fun ⟨D, h⟩ => ⟨_, h, funext fun a => propext (Bool.decide_iff _).symm⟩, by
+  ⟨fun ⟨_, h⟩ => ⟨_, h, funext fun _ => propext (Bool.decide_iff _).symm⟩, by
     rintro ⟨f, h, rfl⟩; exact ⟨by infer_instance, by simpa using h⟩⟩
 
 protected theorem not {p : α → Prop} (hp : ComputablePred p) : ComputablePred fun a => ¬p a := by
@@ -172,6 +171,15 @@ protected theorem not {p : α → Prop} (hp : ComputablePred p) : ComputablePred
       (cond hf (const false) (const true)).of_eq fun n => by
         simp only [Bool.not_eq_true]
         cases f n <;> rfl⟩
+
+/-- The computable functions are closed under if-then-else definitions
+with computable predicates. -/
+theorem ite {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computable f₂)
+    {c : ℕ → Prop} [DecidablePred c] (hc : ComputablePred c) :
+    Computable fun k ↦ if c k then f₁ k else f₂ k := by
+  simp_rw [← Bool.cond_decide]
+  obtain ⟨inst, hc⟩ := hc
+  convert hc.cond hf₁ hf₂
 
 theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
@@ -214,7 +222,7 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
                 (Partrec.nat_iff.1 <| eval_part.comp (const cg) Computable.id) ((hC _).1 fC),
         fun h => by {
           obtain rfl | rfl := h <;> simpa [ComputablePred, Set.mem_empty_iff_false] using
-            ⟨by infer_instance, Computable.const _⟩ }⟩
+            Computable.const _}⟩
 
 /-- The Halting problem is recursively enumerable -/
 theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
@@ -271,8 +279,6 @@ end Nat
 namespace Nat.Partrec'
 
 open Mathlib.Vector Partrec Computable
-
-open Nat (Partrec')
 
 open Nat.Partrec'
 

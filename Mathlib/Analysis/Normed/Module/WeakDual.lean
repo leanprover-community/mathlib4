@@ -5,6 +5,7 @@ Authors: Kalle Kytölä, Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
+import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # Weak dual of normed space
@@ -197,7 +198,7 @@ theorem isClosed_image_coe_of_bounded_of_closed {s : Set (WeakDual 𝕜 E)}
 
 theorem isCompact_of_bounded_of_closed [ProperSpace 𝕜] {s : Set (WeakDual 𝕜 E)}
     (hb : IsBounded (Dual.toWeakDual ⁻¹' s)) (hc : IsClosed s) : IsCompact s :=
-  (Embedding.isCompact_iff DFunLike.coe_injective.embedding_induced).mpr <|
+  DFunLike.coe_injective.isEmbedding_induced.isCompact_iff.mpr <|
     ContinuousLinearMap.isCompact_image_coe_of_bounded_of_closed_image hb <|
       isClosed_image_coe_of_bounded_of_closed hb hc
 

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Uni Marx
+Authors: Kim Morrison, Uni Marx
 -/
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.EssentialImage
@@ -37,7 +37,7 @@ instance RelCat.inhabited : Inhabited RelCat := by unfold RelCat; infer_instance
 /-- The category of types with binary relations as morphisms. -/
 instance rel : LargeCategory RelCat where
   Hom X Y := X → Y → Prop
-  id X x y := x = y
+  id _ x y := x = y
   comp f g x z := ∃ y, f x y ∧ g y z
 
 
@@ -121,7 +121,7 @@ open Opposite
 /-- The argument-swap isomorphism from `RelCat` to its opposite. -/
 def opFunctor : RelCat ⥤ RelCatᵒᵖ where
   obj X := op X
-  map {X Y} r := op (fun y x => r x y)
+  map {_ _} r := op (fun y x => r x y)
   map_id X := by
     congr
     simp only [unop_op, RelCat.Hom.rel_id]
@@ -137,7 +137,7 @@ def opFunctor : RelCat ⥤ RelCatᵒᵖ where
 /-- The other direction of `opFunctor`. -/
 def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
   obj X := unop X
-  map {X Y} r x y := unop r y x
+  map {_ _} r x y := unop r y x
   map_id X := by
     dsimp
     ext x y

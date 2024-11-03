@@ -60,7 +60,7 @@ theorem mk_lt_mk : mk a₁ a₂ < mk b₁ b₂ ↔ ↑b₂ * a₁ < a₂ * b₁ 
 instance partialOrder : PartialOrder (Localization s) where
   le := (· ≤ ·)
   lt := (· < ·)
-  le_refl a := Localization.induction_on a fun a => le_rfl
+  le_refl a := Localization.induction_on a fun _ => le_rfl
   le_trans a b c :=
     Localization.induction_on₃ a b c fun a b c hab hbc => by
       simp only [mk_le_mk] at hab hbc ⊢
@@ -76,7 +76,7 @@ instance partialOrder : PartialOrder (Localization s) where
       · simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
         exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
     all_goals rfl
-  lt_iff_le_not_le a b := Localization.induction_on₂ a b fun a b => lt_iff_le_not_le
+  lt_iff_le_not_le a b := Localization.induction_on₂ a b fun _ _ => lt_iff_le_not_le
 
 @[to_additive]
 instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) where
@@ -106,7 +106,7 @@ sending `a` to `a - b`."]
 def mkOrderEmbedding (b : s) : α ↪o Localization s where
   toFun a := mk a b
   inj' := mk_left_injective _
-  map_rel_iff' {a b} := by simp [-mk_eq_monoidOf_mk', mk_le_mk]
+  map_rel_iff' {a b} := by simp [mk_le_mk]
 
 end OrderedCancelCommMonoid
 

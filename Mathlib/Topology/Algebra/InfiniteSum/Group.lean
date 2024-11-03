@@ -5,7 +5,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 
 /-!
 # Infinite sums and products in topological groups
@@ -180,7 +181,7 @@ theorem cauchySeq_finset_iff_prod_vanishing :
       ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b ∈ t, f b) ∈ e := by
   classical
   simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
-    uniformity_eq_comap_nhds_one α, tendsto_comap_iff, (· ∘ ·), atTop_neBot, true_and]
+    uniformity_eq_comap_nhds_one α, tendsto_comap_iff, Function.comp_def, atTop_neBot, true_and]
   rw [tendsto_atTop']
   constructor
   · intro h e he
@@ -241,9 +242,9 @@ theorem Multipliable.multipliable_of_eq_one_or_self (hf : Multipliable f)
   exact multipliable_iff_vanishing.2 fun e he ↦
     let ⟨s, hs⟩ := multipliable_iff_vanishing.1 hf e he
     ⟨s, fun t ht ↦
-      have eq : ∏ b ∈ t.filter fun b ↦ g b = f b, f b = ∏ b ∈ t, g b :=
+      have eq : ∏ b ∈ t with g b = f b, f b = ∏ b ∈ t, g b :=
         calc
-          ∏ b ∈ t.filter fun b ↦ g b = f b, f b = ∏ b ∈ t.filter fun b ↦ g b = f b, g b :=
+          ∏ b ∈ t with g b = f b, f b = ∏ b ∈ t with g b = f b, g b :=
             Finset.prod_congr rfl fun b hb ↦ (Finset.mem_filter.1 hb).2.symm
           _ = ∏ b ∈ t, g b := by
            {refine Finset.prod_subset (Finset.filter_subset _ _) ?_

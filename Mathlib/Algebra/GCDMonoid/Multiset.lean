@@ -73,9 +73,9 @@ theorem normalize_lcm (s : Multiset α) : normalize s.lcm = s.lcm :=
 
 @[simp]
 nonrec theorem lcm_eq_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm = 0 ↔ (0 : α) ∈ s := by
-  induction' s using Multiset.induction_on with a s ihs
-  · simp only [lcm_zero, one_ne_zero, not_mem_zero]
-  · simp only [mem_cons, lcm_cons, lcm_eq_zero_iff, ihs, @eq_comm _ a]
+  induction s using Multiset.induction_on with
+  | empty => simp only [lcm_zero, one_ne_zero, not_mem_zero]
+  | cons a s ihs => simp only [mem_cons, lcm_cons, lcm_eq_zero_iff, ihs, @eq_comm _ a]
 
 variable [DecidableEq α]
 
@@ -199,9 +199,6 @@ theorem extract_gcd' (s t : Multiset α) (hs : ∃ x, x ∈ s ∧ x ≠ (0 : α)
     contrapose! hs
     exact s.gcd_eq_zero_iff.1 hs
 
-/- Porting note: Deprecated lemmas like `map_repeat` and `eq_repeat` weren't "officially"
-converted to `Multiset.replicate` format yet, so I made some ad hoc ones in `Data.Multiset.Basic`
-using the originals. -/
 /- Porting note: The old proof used a strange form
 `have := _, refine ⟨s.pmap @f (fun _ ↦ id), this, extract_gcd' s _ h this⟩,`
 so I rearranged the proof slightly. -/

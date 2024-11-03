@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Separation
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Order.Filter.AtTopBot.BigOperators
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # Infinite sum and product over a topological monoid
@@ -90,8 +91,10 @@ def Multipliable (f : β → α) : Prop :=
   ∃ a, HasProd f a
 
 open scoped Classical in
-/-- `∏' i, f i` is the product of `f` it exists, or 1 otherwise. -/
-@[to_additive "`∑' i, f i` is the sum of `f` it exists, or 0 otherwise."]
+/-- `∏' i, f i` is the product of `f` if it exists and is unconditionally convergent,
+or 1 otherwise. -/
+@[to_additive "`∑' i, f i` is the sum of `f` if it exists and is unconditionally convergent,
+or 0 otherwise."]
 noncomputable irreducible_def tprod {β} (f : β → α) :=
   if h : Multipliable f then
   /- Note that the product might not be uniquely defined if the topology is not separated.

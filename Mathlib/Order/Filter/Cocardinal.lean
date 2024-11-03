@@ -6,7 +6,7 @@ Authors: Josha Dekker
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.CardinalInter
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.Order.Filter.Bases
 
@@ -22,9 +22,7 @@ In this file we define `Filter.cocardinal hc`: the filter of sets with cardinali
 open Set Filter Cardinal
 
 universe u
-variable {ι : Type u} {α β : Type u}
-variable {c : Cardinal.{u}} {hreg : c.IsRegular}
-variable {l : Filter α}
+variable {α : Type u} {c : Cardinal.{u}} {hreg : c.IsRegular}
 
 namespace Filter
 

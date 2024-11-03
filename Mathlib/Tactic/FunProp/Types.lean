@@ -153,7 +153,7 @@ function property like continuity from another property like differentiability.
 The main reason is that if the user forgets to add a continuity theorem for function `foo` then
 `fun_prop` should report that there is a continuity theorem for `foo` missing. If we would log
 messages `transitionDepth > 0` then user will see messages saying that there is a missing theorem
-for differentiability, smoothness, ... for `foo`.  -/
+for differentiability, smoothness, ... for `foo`. -/
 def logError (msg : String) : FunPropM Unit := do
   if (← read).transitionDepth = 0 then
     modify fun s =>
