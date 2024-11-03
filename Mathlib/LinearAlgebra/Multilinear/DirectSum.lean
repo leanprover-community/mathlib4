@@ -59,7 +59,6 @@ def fromDirectSumEquiv :
 
 @[simp]
 theorem fromDirectSumEquiv_lof
-    [Π i (j : κ i) (x : M i j), Decidable (x ≠ 0)]
     (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) M')
     (p : Π i, κ i) (x : Π i, M i (p i)) :
     fromDirectSumEquiv R κ f (fun i => DirectSum.lof R (κ i) _ (p i) (x i)) = f p x := by
