@@ -1170,7 +1170,8 @@ theorem exists_mem_eq_inf [OrderTop α] (s : Finset ι) (h : s.Nonempty) (f : ι
 
 @[simp]
 theorem sup'_eq_zero [OrderBot α] [Zero α] [ZeroLEClass α] (hs) :
-  s.sup' hs f = 0 ↔ ∀ i ∈ s, f i = 0 := by simp [sup'_eq_sup]
+    s.sup' hs f = 0 ↔ ∀ i ∈ s, f i = 0 := by
+  simp [sup'_eq_sup]
 
 end LinearOrder
 
