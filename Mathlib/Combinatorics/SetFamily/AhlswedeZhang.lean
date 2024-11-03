@@ -100,8 +100,7 @@ variable {α β : Type*}
 /-! ### Truncated supremum, truncated infimum -/
 
 section SemilatticeSup
-variable [SemilatticeSup α] [SemilatticeSup β]
-  [BoundedOrder β] {s t : Finset α} {a b : α}
+variable [SemilatticeSup α] [SemilatticeSup β] [BoundedOrder β] {s t : Finset α} {a : α}
 
 private lemma sup_aux [@DecidableRel α (· ≤ ·)] : a ∈ lowerClosure s → {b ∈ s | a ≤ b}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
@@ -283,7 +282,7 @@ lemma truncatedInf_sups_of_not_mem (ha : a ∉ upperClosure s ⊔ upperClosure t
 end DistribLattice
 
 section BooleanAlgebra
-variable [BooleanAlgebra α] [@DecidableRel α (· ≤ ·)] {s : Finset α} {a : α}
+variable [BooleanAlgebra α] [@DecidableRel α (· ≤ ·)]
 
 @[simp] lemma compl_truncatedSup (s : Finset α) (a : α) :
     (truncatedSup s a)ᶜ = truncatedInf sᶜˢ aᶜ := map_truncatedSup (OrderIso.compl α) _ _
@@ -329,7 +328,7 @@ open Finset hiding card
 open Fintype Nat
 
 namespace AhlswedeZhang
-variable {α : Type*} [Fintype α] [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α}
+variable {α : Type*} [Fintype α] [DecidableEq α] {𝒜 : Finset (Finset α)} {s : Finset α}
 
 /-- Weighted sum of the size of the truncated infima of a set family. Relevant to the
 Ahlswede-Zhang identity. -/
