@@ -16,7 +16,7 @@ algebraic forms `0` and `1`.
 Instances of `ZeroLEClass` include natural numbers, cardinals, and ordinal numbers.
 -/
 
-variable {α : Type*} {x : α}
+variable {α : Type*} {x y : α}
 
 /-- A class for types whose bottom element is zero. Declaring this instance makes `0` the preferred
 form for `⊥`. -/
@@ -63,17 +63,26 @@ variable [PartialOrder α] [One α] [OneLEClass α]
 theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 :=
   isBot_one.eq_bot.symm
 
-@[to_additive (attr := simp)]
-theorem le_one_iff_one_eq : x ≤ 1 ↔ x = 1 :=
+@[to_additive (attr := simp) le_zero_iff_eq_zero]
+theorem le_one_iff_eq_one : x ≤ 1 ↔ x = 1 :=
   ⟨fun h ↦ h.antisymm one_le, fun h ↦ h ▸ le_rfl⟩
 
 @[to_additive]
 theorem one_lt_iff_ne_one : 1 < x ↔ x ≠ 1 :=
   ⟨ne_of_gt, fun h ↦ lt_of_le_of_ne one_le h.symm⟩
 
+alias ⟨_, one_lt_of_ne⟩ := one_lt_iff_ne_one
+alias ⟨_, pos_of_ne⟩ := pos_iff_ne_zero
+
+alias Ne.one_lt := one_lt_of_ne
+alias Ne.pos := pos_of_ne
+
 @[to_additive]
-theorem Ne.one_lt (h : x ≠ 1) : 1 < x :=
-  one_lt_iff_ne_one.2 h
+theorem ne_one_of_lt (h : x < y) : y ≠ 1 :=
+  (one_le.trans_lt h).ne'
+
+alias LT.lt.ne_one := ne_one_of_lt
+alias LT.lt.ne_zero := ne_zero_of_lt
 
 @[to_additive]
 theorem eq_one_or_one_lt (x : α) : x = 1 ∨ 1 < x :=
