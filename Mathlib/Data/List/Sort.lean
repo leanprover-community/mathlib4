@@ -103,6 +103,10 @@ protected theorem Sorted.nodup {r : α → α → Prop} [IsIrrefl α r] {l : Lis
     Nodup l :=
   Pairwise.nodup h
 
+protected theorem Sorted.filter {l : List α} (f : α → Bool) (h : Sorted r l) :
+    Sorted r (filter f l) :=
+  h.sublist (filter_sublist l)
+
 theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ ~ l₂) (hs₁ : Sorted r l₁)
     (hs₂ : Sorted r l₂) : l₁ = l₂ := by
   induction' hs₁ with a l₁ h₁ hs₁ IH generalizing l₂
