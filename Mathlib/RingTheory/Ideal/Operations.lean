@@ -277,7 +277,7 @@ theorem add_eq_sup {I J : Ideal R} : I + J = I ⊔ J :=
 
 -- dsimp loops when applying this lemma to its LHS,
 -- probably https://github.com/leanprover/lean4/pull/2867
-@[simp, nolint simpNF]
+-- this also loops with `bot_eq_zero`.
 theorem zero_eq_bot : (0 : Ideal R) = ⊥ :=
   rfl
 
@@ -555,9 +555,9 @@ theorem pow_sup_pow_eq_top {m n : ℕ} (h : I ⊔ J = ⊤) : I ^ m ⊔ J ^ n = �
 
 variable (I)
 
-theorem mul_bot : I * ⊥ = ⊥ := by simp
+theorem mul_bot : I * ⊥ = ⊥ := Submodule.mul_bot _
 
-theorem bot_mul : ⊥ * I = ⊥ := by simp
+theorem bot_mul : ⊥ * I = ⊥ := Submodule.bot_mul _
 
 @[simp]
 theorem mul_top : I * ⊤ = I :=
@@ -645,7 +645,7 @@ lemma multiset_prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (
 @[deprecated multiset_prod_eq_bot (since := "2023-12-26")]
 theorem prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
     s.prod = ⊥ ↔ ∃ I ∈ s, I = ⊥ := by
-  simp
+  simp [-bot_eq_zero]
 
 theorem span_pair_mul_span_pair (w x y z : R) :
     (span {w, x} : Ideal R) * span {y, z} = span {w * y, w * z, x * y, x * z} := by

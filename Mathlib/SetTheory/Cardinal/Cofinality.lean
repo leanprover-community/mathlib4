@@ -438,7 +438,7 @@ theorem bsup_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o
 
 @[simp]
 theorem cof_zero : cof 0 = 0 := by
-  refine LE.le.antisymm  ?_ (Cardinal.zero_le _)
+  apply eq_zero_of_le_zero
   rw [← card_zero]
   exact cof_le_card 0
 
@@ -467,7 +467,7 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
     · rw [Cardinal.mk_fintype, Set.card_singleton]
       simp
   · rw [← Cardinal.succ_zero, succ_le_iff]
-    simpa [lt_iff_le_and_ne, Cardinal.zero_le] using fun h =>
+    simpa [lt_iff_le_and_ne, zero_le_iff_ne_zero] using fun h =>
       succ_ne_zero o (cof_eq_zero.1 (Eq.symm h))
 
 @[simp]
@@ -630,9 +630,9 @@ theorem IsNormal.cof_eq {f} (hf : IsNormal f) {a} (ha : IsLimit a) : cof (f a) =
 theorem IsNormal.cof_le {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
   rcases zero_or_succ_or_limit a with (rfl | ⟨b, rfl⟩ | ha)
   · rw [cof_zero]
-    exact zero_le _
+    exact zero_le
   · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_ne_zero, ← pos_iff_ne_zero]
-    exact (Ordinal.zero_le (f b)).trans_lt (hf.1 b)
+    exact (hf.1 b).pos
   · rw [hf.cof_eq ha]
 
 @[simp]

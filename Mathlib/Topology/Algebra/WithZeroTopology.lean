@@ -172,7 +172,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
       refine ⟨γ / y, div_ne_zero hγ hy, fun x hx => ?_⟩
       calc x * y < γ / y * y := mul_lt_mul_of_pos_right hx hy.pos
       _ = γ := div_mul_cancel₀ _ hy
-    · have hy : y ≠ 0 := hle.ne_zero
+    · have hy : y ≠ 0 := (hx.pos.trans_le hle).ne'
       rw [nhds_prod_eq, nhds_of_ne_zero hx, nhds_of_ne_zero hy, prod_pure_pure]
       exact pure_le_nhds (x * y)
 

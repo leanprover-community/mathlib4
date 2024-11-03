@@ -142,7 +142,7 @@ theorem le_degrees_add {p q : MvPolynomial σ R} (h : p.degrees.Disjoint q.degre
   intro d hd
   rw [Multiset.disjoint_iff_ne] at h
   obtain rfl | h0 := eq_or_ne d 0
-  · rw [toMultiset_zero]; apply Multiset.zero_le
+  · rw [toMultiset_zero]; apply zero_le
   · refine Finset.le_sup_of_le (b := d) ?_ le_rfl
     rw [mem_support_iff, coeff_add]
     suffices q.coeff d = 0 by rwa [this, add_zero, coeff, ← Finsupp.mem_support_iff]
@@ -444,7 +444,7 @@ theorem totalDegree_finset_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolyn
 theorem totalDegree_finset_sum {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (s.sum f).totalDegree ≤ Finset.sup s fun i => (f i).totalDegree := by
   induction' s using Finset.cons_induction with a s has hind
-  · exact zero_le _
+  · exact zero_le
   · rw [Finset.sum_cons, Finset.sup_cons, sup_eq_max]
     exact (MvPolynomial.totalDegree_add _ _).trans (max_le_max le_rfl hind)
 

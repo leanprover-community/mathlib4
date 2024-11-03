@@ -57,7 +57,7 @@ theorem cardinal_mk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
     (by
       intro h
       rw [Cardinal.mk_eq_zero (WType β)]
-      exact zero_le _)
+      exact zero_le)
     fun hn =>
     let m := max (lift.{v} #α) ℵ₀
     cardinal_mk_le_of_le' <|
@@ -77,7 +77,7 @@ theorem cardinal_mk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
                   rw [← power_zero]
                   exact
                     power_le_power_left
-                      (pos_iff_ne_zero.1 (aleph0_pos.trans_le (le_max_right _ _))) (zero_le _))
+                      (pos_iff_ne_zero.1 (aleph0_pos.trans_le (le_max_right _ _))) zero_le
 
 variable {β : α → Type u}
 

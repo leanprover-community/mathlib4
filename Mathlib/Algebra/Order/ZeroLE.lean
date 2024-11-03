@@ -134,6 +134,14 @@ theorem min_one (a : α) : min a 1 = 1 :=
   min_eq_right one_le
 
 @[to_additive (attr := simp)]
+theorem one_max (a : α) : max 1 a = a :=
+  max_eq_right one_le
+
+@[to_additive (attr := simp)]
+theorem max_one (a : α) : max a 1 = a :=
+  max_eq_left one_le
+
+@[to_additive (attr := simp)]
 theorem max_eq_one_iff {a b : α} : max a b = 1 ↔ a = 1 ∧ b = 1 := by
   letI := OneLEClass.toOrderBot α
   exact max_eq_bot

@@ -98,10 +98,10 @@ theorem IsPrimePow.two_le : ∀ {n : ℕ}, IsPrimePow n → 2 ≤ n
   | 1, h => (not_isPrimePow_one h).elim
   | _n + 2, _ => le_add_self
 
-theorem IsPrimePow.pos {n : ℕ} (hn : IsPrimePow n) : 0 < n :=
-  hn.two_le.pos
-
 theorem IsPrimePow.one_lt {n : ℕ} (h : IsPrimePow n) : 1 < n :=
   h.two_le
+
+theorem IsPrimePow.pos {n : ℕ} (h : IsPrimePow n) : 0 < n :=
+  h.one_lt.pos
 
 end Nat

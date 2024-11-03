@@ -194,7 +194,7 @@ theorem le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
     · intro h₁
       refine ⟨0, le_antisymm ?_ h₁⟩
       rw [derivFamily_zero]
-      exact nfpFamily_le_fp (fun i => (H i).monotone) (Ordinal.zero_le _) ha
+      exact nfpFamily_le_fp (fun i => (H i).monotone) zero_le ha
     · intro h₁
       rcases le_or_lt a (derivFamily.{u, v} f o) with h | h
       · exact IH h
@@ -536,7 +536,7 @@ theorem nfp_zero_left (a) : nfp 0 a = a := by
   induction' n with n _
   · rfl
   · rw [Function.iterate_succ']
-    exact Ordinal.zero_le a
+    exact zero_le
 
 @[simp]
 theorem nfp_zero : nfp 0 = id := by
@@ -566,7 +566,7 @@ theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * ω := by
 theorem nfp_add_eq_mul_omega0 {a b} (hba : b ≤ a * ω) : nfp (a + ·) b = a * ω := by
   apply le_antisymm (nfp_le_fp (isNormal_add_right a).monotone hba _)
   · rw [← nfp_add_zero]
-    exact nfp_monotone (isNormal_add_right a).monotone (Ordinal.zero_le b)
+    exact nfp_monotone (isNormal_add_right a).monotone zero_le)
   · dsimp; rw [← mul_one_add, one_add_omega0]
 
 @[deprecated (since := "2024-09-30")]
@@ -577,7 +577,7 @@ theorem add_eq_right_iff_mul_omega0_le {a b : Ordinal} : a + b = b ↔ a * ω �
   · rw [← nfp_add_zero a, ← deriv_zero_right]
     cases' (isNormal_add_right a).fp_iff_deriv.1 h with c hc
     rw [← hc]
-    exact (isNormal_deriv _).monotone (Ordinal.zero_le _)
+    exact (isNormal_deriv _).monotone zero_le
   · have := Ordinal.add_sub_cancel_of_le h
     nth_rw 1 [← this]
     rwa [← add_assoc, ← mul_one_add, one_add_omega0]
@@ -641,7 +641,7 @@ theorem eq_zero_or_opow_omega0_le_of_mul_eq_right {a b : Ordinal} (hab : a * b =
     b = 0 ∨ (a ^ (ω : Ordinal.{u})) ≤ b := by
   rcases eq_zero_or_pos a with ha | ha
   · rw [ha, zero_opow omega0_ne_zero]
-    exact Or.inr (Ordinal.zero_le b)
+    exact Or.inr zero_le
   rw [or_iff_not_imp_left]
   intro hb
   rw [← nfp_mul_one ha]

@@ -315,7 +315,7 @@ theorem index_inf_ne_zero (hH : H.index ≠ 0) (hK : K.index ≠ 0) : (H ⊓ K).
 @[to_additive]
 theorem relindex_inf_le : (H ⊓ K).relindex L ≤ H.relindex L * K.relindex L := by
   by_cases h : H.relindex L = 0
-  · exact (le_of_eq (relindex_eq_zero_of_le_left inf_le_left h)).trans (zero_le _)
+  · exact (le_of_eq (relindex_eq_zero_of_le_left inf_le_left h)).trans zero_le
   rw [← inf_relindex_right, inf_assoc, ← relindex_mul_relindex _ _ L inf_le_right inf_le_right,
     inf_relindex_right, inf_relindex_right]
   exact mul_le_mul_right' (relindex_le_of_le_right inf_le_right h) (K.relindex L)
