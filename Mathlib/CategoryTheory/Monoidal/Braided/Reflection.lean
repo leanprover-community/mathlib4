@@ -87,7 +87,7 @@ theorem isIso_tfae : List.TFAE
     , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ▷ d'))
     , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d')))] := by
   tfae_have 3 → 4
-  · intro h
+  | h => by
     -- We can commute the tensor product in the condition that `L.map ((adj.unit.app d) ▷ d')` is
     -- an isomorphism:
     have h' : ∀ d d', IsIso (L.map (d ◁ (adj.unit.app d'))) := by
@@ -106,7 +106,7 @@ theorem isIso_tfae : List.TFAE
     rw [this, map_comp]
     infer_instance
   tfae_have 4 → 1
-  · intros
+  | _, _, _ => by
     -- It is enough to show that the unit is a split monomorphism, and the retraction is given
     -- by `adjRetraction` above.
     let _ : Reflective R := { L := L, adj := adj }
@@ -114,7 +114,7 @@ theorem isIso_tfae : List.TFAE
     erw [← adj.toMonad.isSplitMono_iff_isIso_unit]
     exact ⟨⟨adjRetraction adj _ _, adjRetraction_is_retraction adj _ _⟩⟩
   tfae_have 1 → 3
-  · intro h d d'
+  | h, d, d' => by
     rw [isIso_iff_isIso_coyoneda_map]
     intro c
     -- `w₁, w₃, w₄` are the three stacked commutative squares in the proof on nLab:
@@ -161,8 +161,8 @@ theorem isIso_tfae : List.TFAE
     have : f = R.map (R.preimage f) := by simp
     rw [this]
     simp [← map_comp, ← map_comp_assoc, -map_preimage]
-  tfae_have 2 ↔ 3
-  · conv => lhs; intro c d; rw [isIso_iff_isIso_yoneda_map]
+  tfae_have 2 ↔ 3 := by
+    conv => lhs; intro c d; rw [isIso_iff_isIso_yoneda_map]
     conv => rhs; intro d d'; rw [isIso_iff_isIso_coyoneda_map]
     -- bring the quantifiers out of the `↔`:
     rw [forall_swap]; apply forall_congr'; intro d
