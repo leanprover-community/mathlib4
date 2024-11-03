@@ -60,7 +60,7 @@ instance Nimber.linearOrder : LinearOrder Nimber := {Ordinal.linearOrder with}
 instance Nimber.succOrder : SuccOrder Nimber := {Ordinal.instSuccOrder with}
 instance Nimber.orderBot : OrderBot Nimber := {Ordinal.orderBot with}
 instance Nimber.noMaxOrder : NoMaxOrder Nimber := {Ordinal.noMaxOrder with}
-instance Nimber.zeroLEOneClass : ZeroLEOneClass Nimber := {Ordinal.zeroLEOneClass with}
+instance Nimber.zeroLEClass : ZeroLEClass Nimber := {Ordinal.instZeroLEClass with}
 
 /-- The identity function between `Ordinal` and `Nimber`. -/
 @[match_pattern]
@@ -139,14 +139,17 @@ protected def rec {β : Nimber → Sort*} (h : ∀ a, β (∗a)) : ∀ a, β a :
 theorem induction {p : Nimber → Prop} : ∀ (i) (_ : ∀ j, (∀ k, k < j → p k) → p j), p i :=
   Ordinal.induction
 
+@[deprecated le_zero_iff_eq_zero (since := "2024-11-02")]
 protected theorem le_zero {a : Nimber} : a ≤ 0 ↔ a = 0 :=
-  Ordinal.le_zero
+  le_zero_iff_eq_zero
 
+@[deprecated _root_.not_lt_zero (since := "2024-11-02")]
 protected theorem not_lt_zero (a : Nimber) : ¬ a < 0 :=
-  Ordinal.not_lt_zero a
+  not_lt_zero
 
+@[deprecated _root_.pos_iff_ne_zero (since := "2024-11-02")]
 protected theorem pos_iff_ne_zero {a : Nimber} : 0 < a ↔ a ≠ 0 :=
-  Ordinal.pos_iff_ne_zero
+  pos_iff_ne_zero
 
 theorem eq_nat_of_le_nat {a : Nimber} {b : ℕ} (h : a ≤ ∗b) : ∃ c : ℕ, a = ∗c :=
   Ordinal.lt_omega0.1 (h.trans_lt (nat_lt_omega0 b))
@@ -282,7 +285,7 @@ theorem add_eq_zero {a b : Nimber} : a + b = 0 ↔ a = b := by
     · rfl
     · have hb : b + b = 0 := add_eq_zero.2 rfl
       rwa [← hb, add_left_inj] at hab
-  · rw [← Nimber.le_zero]
+  · rw [← le_zero_iff_eq_zero]
     apply add_le_of_forall_ne <;>
     simp_rw [ne_eq] <;>
     intro x hx
@@ -320,7 +323,7 @@ protected theorem add_zero (a : Nimber) : a + 0 = a := by
       rw [Nimber.add_zero]
       exact ha.ne
     · intro _ h
-      exact (Nimber.not_lt_zero _ h).elim
+      exact (not_lt_zero h).elim
   · -- by_contra! doesn't work for whatever reason.
     by_contra h
     replace h := lt_of_not_le h
@@ -358,7 +361,7 @@ theorem add_cancel_left (a b : Nimber) : a + (a + b) = b := by
 
 theorem add_trichotomy {a b c : Nimber} (h : a + b + c ≠ 0) :
     b + c < a ∨ c + a < b ∨ a + b < c := by
-  rw [← Nimber.pos_iff_ne_zero] at h
+  rw [← pos_iff_ne_zero] at h
   obtain ⟨x, hx, hx'⟩ | ⟨x, hx, hx'⟩ := exists_of_lt_add h <;>
   rw [add_eq_zero] at hx'
   · obtain ⟨x, hx, hx'⟩ | ⟨x, hx, hx'⟩ := exists_of_lt_add (hx' ▸ hx)
