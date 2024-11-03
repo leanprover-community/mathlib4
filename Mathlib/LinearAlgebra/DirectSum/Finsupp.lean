@@ -380,7 +380,6 @@ variable (R : Type*) [CommSemiring R]
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 variable (κ : ι → Type*) [(i : ι) → DecidableEq (κ i)]
 variable (M : ι → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
-variable [(i : ι) → (x : M i) → Decidable (x ≠ 0)]
 
 /-- If `ι` is a `Fintype`, `κ i` is a family of types indexed by `ι` and `M i` is a family
 of modules indexed by `ι`, then the tensor product of the family `κ i →₀ M i` is linearly
@@ -401,7 +400,8 @@ theorem finsuppPiTensorProduct_tprod_single (p : (i : ι) → κ i) (m : (i : ι
 @[simp]
 theorem finsuppPiTensorProduct_apply (f : (i : ι) → (κ i →₀ M i)) (p : (i : ι) → κ i) :
     finsuppPiTensorProduct R κ M (⨂ₜ[R] i, f i) p = ⨂ₜ[R] i, f i (p i) := by
-  simp [finsuppPiTensorProduct, finsuppLEquivDirectSum]
+  classical
+  simp only [finsuppPiTensorProduct, finsuppLEquivDirectSum, LinearEquiv.trans_apply, congr_tprod]
   erw [directSum_tprod_apply R (M := fun i _ => M i) _ p]
   rfl
 
@@ -410,8 +410,6 @@ theorem finsuppPiTensorProduct_symm_single_tprod (p : (i : ι) → κ i) (m : (i
     (finsuppPiTensorProduct R κ M).symm (Finsupp.single p (⨂ₜ[R] i, m i)) =
     ⨂ₜ[R] i, Finsupp.single (p i) (m i) :=
   (LinearEquiv.symm_apply_eq _).2 (finsuppPiTensorProduct_tprod_single _ _ _ _ _).symm
-
-variable [(x : R) → Decidable (x ≠ 0)]
 
 /-- A variant of `finsuppPiTensorProduct` where all modules `M i` are the ground ring.
 -/
