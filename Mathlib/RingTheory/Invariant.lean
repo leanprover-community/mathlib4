@@ -24,15 +24,11 @@ namespace Algebra
 variable (A B G : Type*) [CommSemiring A] [Semiring B] [Algebra A B]
   [Group G] [MulSemiringAction G B]
 
-/-- An action of a group `G` on an extension of rings `B/A` is invariant if every fixed  -/
-class IsInvariant : Prop where
+/-- An action of a group `G` on an extension of rings `B/A` is invariant if every fixed point of
+`B` lies in the image of `A`. The converse statement that every point in the image of `A` is fixed
+by `G` is `smul_algebraMap` (assuming `SMulCommClass A B G`). -/
+@[mk_iff] class IsInvariant : Prop where
   isInvariant : ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, algebraMap A B a = b
-
-variable {A B G}
-
-theorem isInvariant_def :
-    IsInvariant A B G ↔ ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, algebraMap A B a = b :=
-  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 end Algebra
 
@@ -46,7 +42,7 @@ open Polynomial
 
 variable {B} [Fintype G]
 
-/-- Characteristic polynomial of a group action on a ring. -/
+/-- Characteristic polynomial of a finite group action on a ring. -/
 noncomputable def charpoly (b : B) : B[X] := ∏ g : G, (X - C (g • b))
 
 theorem charpoly_eq (b : B) : charpoly G b = ∏ g : G, (X - C (g • b)) := rfl
@@ -67,7 +63,7 @@ variable {G}
 theorem charpoly_smul (b : B) (g : G) : g • (charpoly G b) = charpoly G b := by
   rw [charpoly_eq_prod_smul, Finset.smul_prod_perm]
 
-private theorem charpoly_coeff_smul (b : B) (n : ℕ) (g : G) :
+theorem charpoly_coeff_smul (b : B) (n : ℕ) (g : G) :
     g • (charpoly G b).coeff n = (charpoly G b).coeff n := by
   rw [← coeff_smul, charpoly_smul]
 
