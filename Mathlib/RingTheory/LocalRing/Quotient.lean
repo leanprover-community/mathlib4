@@ -9,7 +9,6 @@ import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 
