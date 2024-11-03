@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+import Mathlib.Algebra.Order.ZeroLE
 import Mathlib.Algebra.NeZero
 import Mathlib.Order.BoundedOrder
 
@@ -103,30 +104,15 @@ theorem le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
 theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
   simp only [mul_comm _ a, le_iff_exists_mul]
 
-@[to_additive (attr := simp) zero_le]
-theorem one_le (a : α) : 1 ≤ a :=
-  le_iff_exists_mul.mpr ⟨a, (one_mul _).symm⟩
-
 @[to_additive]
-theorem bot_eq_one : (⊥ : α) = 1 :=
-  le_antisymm bot_le (one_le ⊥)
+instance (priority := 100) : OneLEClass α where
+  one_le := le_iff_exists_mul.mpr ⟨_, (one_mul _).symm⟩
 
 @[to_additive] instance CanonicallyOrderedCommMonoid.toUniqueUnits : Unique αˣ where
-  uniq a := Units.ext ((mul_eq_one_iff_of_one_le (α := α) (one_le _) <| one_le _).1 a.mul_inv).1
+  uniq a := Units.ext ((mul_eq_one_iff_of_one_le (α := α) one_le <| one_le).1 a.mul_inv).1
 
 @[deprecated (since := "2024-07-24")] alias mul_eq_one_iff := mul_eq_one
 @[deprecated (since := "2024-07-24")] alias add_eq_zero_iff := add_eq_zero
-
-@[to_additive (attr := simp)]
-theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
-  (one_le a).le_iff_eq
-
-@[to_additive]
-theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
-  (one_le a).lt_iff_ne.trans ne_comm
-
-@[to_additive]
-theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
 
 @[to_additive]
 lemma one_not_mem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
@@ -147,13 +133,13 @@ theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b
 theorem le_mul_left (h : a ≤ c) : a ≤ b * c :=
   calc
     a = 1 * a := by simp
-    _ ≤ b * c := mul_le_mul' (one_le _) h
+    _ ≤ b * c := mul_le_mul' one_le h
 
 @[to_additive]
 theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
   calc
     a = a * 1 := by simp
-    _ ≤ b * c := mul_le_mul' h (one_le _)
+    _ ≤ b * c := mul_le_mul' h one_le
 
 @[to_additive]
 theorem lt_iff_exists_mul [MulLeftStrictMono α] : a < b ↔ ∃ c > 1, b = a * c := by
@@ -173,12 +159,12 @@ theorem lt_iff_exists_mul [MulLeftStrictMono α] : a < b ↔ ∃ c > 1, b = a * 
 end CanonicallyOrderedCommMonoid
 
 theorem pos_of_gt {M : Type*} [CanonicallyOrderedAddCommMonoid M] {n m : M} (h : n < m) : 0 < m :=
-  lt_of_le_of_lt (zero_le _) h
+  lt_of_le_of_lt zero_le h
 
 namespace NeZero
 
 theorem pos {M} (a : M) [CanonicallyOrderedAddCommMonoid M] [NeZero a] : 0 < a :=
-  (zero_le a).lt_of_ne <| NeZero.out.symm
+  zero_le.lt_of_ne <| NeZero.out.symm
 
 theorem of_gt {M} [CanonicallyOrderedAddCommMonoid M] {x y : M} (h : x < y) : NeZero y :=
   of_pos <| pos_of_gt h
@@ -226,18 +212,7 @@ theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c)
 theorem min_mul_distrib' (a b c : α) : min (a * b) c = min (min a c * min b c) c := by
   simpa [min_comm _ c] using min_mul_distrib c a b
 
-@[to_additive]
-theorem one_min (a : α) : min 1 a = 1 :=
-  min_eq_left (one_le a)
-
-@[to_additive]
-theorem min_one (a : α) : min a 1 = 1 :=
-  min_eq_right (one_le a)
-
-/-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
-@[to_additive (attr := simp)
-  "In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma"]
-theorem bot_eq_one' : (⊥ : α) = 1 :=
-  bot_eq_one
+@[deprecated (since := "2024-11-02")] alias bot_eq_one' := bot_eq_one
+@[deprecated (since := "2024-11-02")] alias bot_eq_zero' := bot_eq_zero
 
 end CanonicallyLinearOrderedCommMonoid

@@ -32,17 +32,14 @@ variable {α : Type*}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends LinearOrderedCommMonoid α,
-  CommMonoidWithZero α where
-  /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
-  zero_le_one : (0 : α) ≤ 1
+  CommMonoidWithZero α, ZeroLeOneClass α where
 
 /-- A linearly ordered commutative group with a zero element. -/
 class LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoidWithZero α,
   CommGroupWithZero α
 
-instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
-    [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=
-  { ‹LinearOrderedCommMonoidWithZero α› with }
+-- see Note [lower instance priority]
+attribute [instance 100] LinearOrderedCommMonoidWithZero.toZeroLeOneClass
 
 instance (priority := 100) canonicallyOrderedAddCommMonoid.toZeroLeOneClass
     [CanonicallyOrderedAddCommMonoid α] [One α] : ZeroLEOneClass α :=
@@ -65,6 +62,8 @@ abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β]
     hf.commMonoidWithZero f zero one mul npow with
     zero_le_one :=
       show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one] }
+
+instance (priority := 100) : ZeroLeClass α
 
 @[simp] lemma zero_le' : 0 ≤ a := by
   simpa only [mul_zero, mul_one] using mul_le_mul_left' (zero_le_one' α) a
