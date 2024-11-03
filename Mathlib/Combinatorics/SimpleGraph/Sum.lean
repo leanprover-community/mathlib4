@@ -45,13 +45,13 @@ variable {G : SimpleGraph α} {H : SimpleGraph β}
 
 /-- The disjoint sum is commutative up to isomorphism. `Equiv.sumComm` as a graph isomorphism. -/
 @[simps!]
-def SumComm : G ⊎ H ≃g H ⊎ G := ⟨Equiv.sumComm α β, by
+def Iso.sumComm : G ⊎ H ≃g H ⊎ G := ⟨Equiv.sumComm α β, by
   intro u v
   cases u <;> cases v <;> simp⟩
 
 /-- The disjoint sum is associative up to isomorphism. `Equiv.sumAssoc` as a graph isomorphism. -/
 @[simps!]
-def SumAssoc {I : SimpleGraph γ} : (G ⊎ H) ⊎ I ≃g G ⊎ (H ⊎ I) := ⟨Equiv.sumAssoc α β γ, by
+def Iso.sumAssoc {I : SimpleGraph γ} : (G ⊎ H) ⊎ I ≃g G ⊎ (H ⊎ I) := ⟨Equiv.sumAssoc α β γ, by
   intro u v
   cases u <;> cases v <;> rename_i u v
   · cases u <;> cases v <;> simp
@@ -61,14 +61,14 @@ def SumAssoc {I : SimpleGraph γ} : (G ⊎ H) ⊎ I ≃g G ⊎ (H ⊎ I) := ⟨E
 
 /-- The embedding of `G` into `G ⊎ H`. -/
 @[simps]
-def SumInl : G ↪g G ⊎ H where
+def Embedding.sumInl : G ↪g G ⊎ H where
   toFun u := _root_.Sum.inl u
   inj' u v := by simp
   map_rel_iff' := by simp
 
 /-- The embedding of `H` into `G ⊎ H`. -/
 @[simps]
-def SumInr : H ↪g G ⊎ H where
+def Embedding.sumInr : H ↪g G ⊎ H where
   toFun u := _root_.Sum.inr u
   inj' u v := by simp
   map_rel_iff' := by simp
