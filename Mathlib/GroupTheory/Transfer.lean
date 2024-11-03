@@ -222,10 +222,7 @@ theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : S
 complement. -/
 theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker P := by
   have hf : Function.Bijective ((transferSylow P hP).restrict (P : Subgroup G)) :=
-    (transferSylow_restrict_eq_pow P hP).symm ▸
-      (P.2.powEquiv'
-          (not_dvd_index_sylow P
-            (mt index_eq_zero_of_relindex_eq_zero index_ne_zero_of_finite))).bijective
+    (transferSylow_restrict_eq_pow P hP).symm ▸ (P.2.powEquiv' P.not_dvd_index).bijective
   rw [Function.Bijective, ← range_top_iff_surjective, restrict_range] at hf
   have := range_top_iff_surjective.mp (top_le_iff.mp (hf.2.ge.trans
     (map_le_range (transferSylow P hP) P)))
@@ -235,8 +232,7 @@ theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker
   exact isComplement'_of_disjoint_and_mul_eq_univ (disjoint_iff.2 hf.1) hf.2
 
 theorem not_dvd_card_ker_transferSylow : ¬p ∣ Nat.card (transferSylow P hP).ker :=
-  (ker_transferSylow_isComplement' P hP).index_eq_card ▸ not_dvd_index_sylow P <|
-    mt index_eq_zero_of_relindex_eq_zero index_ne_zero_of_finite
+  (ker_transferSylow_isComplement' P hP).index_eq_card ▸ P.not_dvd_index
 
 theorem ker_transferSylow_disjoint (Q : Subgroup G) (hQ : IsPGroup p Q) :
     Disjoint (transferSylow P hP).ker Q :=
