@@ -72,16 +72,16 @@ instance instLattice      : Lattice (Fin n)      := inferInstance
 
 lemma top_eq_last (n : ℕ) : ⊤ = Fin.last n := rfl
 
-instance (n : ℕ) : ZeroLEClass (Fin (n + 1)) :=
+instance (n : ℕ) [NeZero n] : ZeroLEClass (Fin n) :=
   ⟨bot_le⟩
 
 @[deprecated _root_.bot_eq_zero (since := "2024-11-02")]
 protected lemma bot_eq_zero (n : ℕ) : ⊥ = (0 : Fin (n + 1)) := rfl
 
-theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
+@[simp] theorem rev_zero_eq_top (n : ℕ) [NeZero n] : rev (0 : Fin n) = ⊤ := rfl
 @[simp] theorem rev_top [NeZero n] : rev (⊤ : Fin n) = ⊥ := rev_rev _
 
-@[simp] theorem rev_zero_eq_top (n : ℕ) [NeZero n] : rev (0 : Fin n) = ⊤ := rfl
+theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
 theorem rev_last_eq_bot (n : ℕ) : rev (last n) = ⊥ := by rw [rev_last, bot_eq_zero]
 
 section ToFin
