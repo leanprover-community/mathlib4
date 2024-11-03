@@ -28,54 +28,6 @@ invariants.
 
 open scoped Pointwise
 
-section ForMathlib
-
--- PRed
-lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
-    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
-    (h : a ≤ g • a) (n : ℕ) : a ≤ g ^ n • a := by
-  induction' n with n hn
-  · rw [pow_zero, one_smul]
-  · rw [pow_succ', mul_smul]
-    exact h.trans (smul_mono_right g hn)
-
--- PRed
-instance {G : Type*} [Monoid G] {α : Type*} [Preorder α]
-    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le] :
-    CovariantClass G αᵒᵈ HSMul.hSMul LE.le :=
-  ⟨fun g _ _ h ↦ smul_mono_right (α := α) g h⟩
-
--- PRed
-lemma pow_smul_le {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
-    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
-    (h : g • a ≤ a) (n : ℕ) : g ^ n • a ≤ a := by
-  induction' n with n hn
-  · rw [pow_zero, one_smul]
-  · rw [pow_succ', mul_smul]
-    exact (smul_mono_right g hn).trans h
-
--- PRed
-lemma smul_eq_of_le_smul
-    {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
-    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
-    (h : a ≤ g • a) : g • a = a := by
-  have key := smul_mono_right g (le_pow_smul h (Nat.card G - 1))
-  rw [smul_smul, ← pow_succ',
-    Nat.sub_one_add_one_eq_of_pos Nat.card_pos, pow_card_eq_one', one_smul] at key
-  exact le_antisymm key h
-
--- PRed
-lemma smul_eq_of_smul_le
-    {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
-    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
-    (h : g • a ≤ a) : g • a = a := by
-  have key := smul_mono_right g (pow_smul_le h (Nat.card G - 1))
-  rw [smul_smul, ← _root_.pow_succ',
-    Nat.sub_one_add_one_eq_of_pos Nat.card_pos, pow_card_eq_one', one_smul] at key
-  exact le_antisymm h key
-
-end ForMathlib
-
 section integrallemma
 
 open Polynomial
@@ -119,6 +71,7 @@ theorem lem0 (A B K L : Type*) [CommRing A] [CommRing B] [IsDomain B] [Field K] 
 
 end integrallemma
 
+-- PRed
 namespace MulSemiringAction
 
 open Polynomial
@@ -152,6 +105,7 @@ private theorem charpoly_coeff_smul (b : B) (n : ℕ) (g : G) :
 
 end MulSemiringAction
 
+-- PRed
 namespace Algebra
 
 variable (A B G : Type*) [CommSemiring A] [Semiring B] [Algebra A B]
@@ -168,6 +122,7 @@ theorem isInvariant_def :
 
 end Algebra
 
+-- PRed
 namespace Algebra.IsInvariant
 
 open MulSemiringAction Polynomial
@@ -229,6 +184,7 @@ theorem exists_smul_of_comap_eq
 
 end Algebra.IsInvariant
 
+-- PRed
 section stabilizerAction
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
