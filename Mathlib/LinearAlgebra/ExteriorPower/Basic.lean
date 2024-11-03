@@ -17,28 +17,28 @@ We introduce the exterior powers of a module `M` over a commutative ring `R`.
 * `exteriorPower.ιMulti` is the canonical alternating map on `M` with values in `⋀[R]^n M`.
 
 * If `f` is a `R`-linear map from `M` to `N`, then `exteriorPower.map n f` is the linear map
-between `n`th exterior powers induced by `f`.
+  between `n`th exterior powers induced by `f`.
 
 * `exteriorPower.toTensorPower`: linear map from the `n`th exterior power to the `n`th
-tensor power (coming from `MultilinearMap.alternatization` via the universal property of
-exterior powers).
+  tensor power (coming from `MultilinearMap.alternatization` via the universal property of
+  exterior powers).
 
 ## Theorems
 
 * The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
 
 * `exteriorPower.liftAlternatingEquiv` (universal property of the `n`th exterior power of `M`):
-the linear equivalence between linear maps from `⋀[R]^n M` to a module `N` and `n`-fold
-alternating maps from `M` to `N`.
+  the linear equivalence between linear maps from `⋀[R]^n M` to a module `N` and `n`-fold
+  alternating maps from `M` to `N`.
 
 * `exteriorPower.map_injective_field`: If `f : M →ₗ[R] N` is injective and `R` is a field, then
-`exteriorPower.map n f` is injective.
+  `exteriorPower.map n f` is injective.
 
 * `exteriorPower.map_surjective`: If `f : M →ₗ[R] N` is surjective, then `exteriorPower.map n f`
-is surjective.
+  is surjective.
 
 * `exteriorPower.mem_exteriorPower_is_mem_finite`: Every element of `⋀[R]^n M` is in the image of
-`⋀[R]^n P` for some finitely generated submodule `P` of `M`.
+  `⋀[R]^n P` for some finitely generated submodule `P` of `M`.
 
 -/
 
@@ -60,7 +60,7 @@ variable {M}
 
 namespace exteriorPower
 
-/-! The canonical alternating from `Fin n → M` to `⋀[R]^n M`. -/
+/-! The canonical alternating map from `Fin n → M` to `⋀[R]^n M`. -/
 
 /-- `exteriorAlgebra.ιMulti` is the alternating map from `Fin n → M` to `⋀[r]^n M`
 induced by `exteriorAlgebra.ιMulti`, i.e. sending a family of vectors `m : Fin n → M` to the
