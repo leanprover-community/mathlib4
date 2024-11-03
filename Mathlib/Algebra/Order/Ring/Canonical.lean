@@ -64,7 +64,7 @@ instance (priority := 100) toOrderedCommMonoid : OrderedCommMonoid α where
 -- see Note [lower instance priority]
 instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
   { ‹CanonicallyOrderedCommSemiring α› with
-    zero_le_one := zero_le _,
+    zero_le_one := zero_le,
     mul_le_mul_of_nonneg_left := fun _ _ _ h _ => mul_le_mul_left' h _,
     mul_le_mul_of_nonneg_right := fun _ _ _ h _ => mul_le_mul_right' h _ }
 
@@ -80,8 +80,8 @@ protected lemma mul_lt_mul_of_lt_of_lt [PosMulStrictMono α] (hab : a < b) (hcd 
   have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
   obtain rfl | hc := eq_zero_or_pos c
   · rw [mul_zero]
-    exact mul_pos ((zero_le _).trans_lt hab) hcd
-  · exact mul_lt_mul_of_pos' hab hcd hc ((zero_le _).trans_lt hab)
+    exact mul_pos hab.pos hcd
+  · exact mul_lt_mul_of_pos' hab hcd hc hab.pos
 
 end CanonicallyOrderedCommSemiring
 end CanonicallyOrderedCommSemiring
