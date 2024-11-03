@@ -12,8 +12,6 @@ import Mathlib.Order.BoundedOrder
 We introduce `ZeroLEClass` and `OneLEClass` for types whose least element is also their zero or one
 element. The purpose of this is to transfer the order lemmas of `⊥` to the otherwise more useful
 algebraic forms `0` and `1`.
-
-Instances of `ZeroLEClass` include natural numbers, cardinals, and ordinal numbers.
 -/
 
 variable {α : Type*} {x y : α}
