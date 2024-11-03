@@ -41,7 +41,7 @@ We
 * show that `G` is a detector if and only if `coyoneda.obj (op G)` reflects isomorphisms (and the
   dual);
 * show that `C` is `WellPowered` if it admits small pullbacks and a detector;
-* define corresponding type classes `HasSeparator`, `HasCoseparator`, `HasDetector`
+* define corresponding typeclasses `HasSeparator`, `HasCoseparator`, `HasDetector`
 and `HasCodetector` on categories and prove analogous results for these.
 
 ## Future work
@@ -58,7 +58,6 @@ open CategoryTheory.Limits Opposite
 namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-  (E : Type u₃) [Category.{v₃} E]
 
 /-- We say that `𝒢` is a separating set if the functors `C(G, -)` for `G ∈ 𝒢` are collectively
     faithful, i.e., if `h ≫ f = h ≫ g` for all `h` with domain in `𝒢` implies `f = g`. -/
@@ -566,12 +565,16 @@ theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
     rwa [isIso_iff_bijective, Function.bijective_iff_existsUnique]
 
 theorem wellPowered_of_isDetector [HasPullbacks C] (G : C) (hG : IsDetector G) : WellPowered C :=
+  -- Porting note: added the following `haveI` to prevent universe issues
+  haveI := small_subsingleton ({G} : Set C)
   wellPowered_of_isDetecting hG
 
 theorem wellPowered_of_isSeparator [HasPullbacks C] [Balanced C] (G : C) (hG : IsSeparator G) :
     WellPowered C := wellPowered_of_isDetecting hG.isDetector
 
 section HasGenerator
+
+variable (E : Type u₃) [Category.{v₃} E]
 
 /--
 A category instantiates `HasSeparator` if and only if it has a separator.
@@ -627,8 +630,6 @@ theorem HasDetector.wellPowered [HasPullbacks C] [HasDetector C] : WellPowered C
 theorem HasSeparator.wellPowered [HasPullbacks C] [Balanced C] [HasSeparator C] :
     WellPowered C := HasSeparator.hasDetector.wellPowered
 
-end HasGenerator
-
 section Dual
 
 @[simp]
@@ -642,7 +643,7 @@ theorem hasCoseparator_op_iff : HasCoseparator Eᵒᵖ ↔ HasSeparator E :=
    fun ⟨G, hG⟩ => ⟨op G, (isCoseparator_op_iff G).mpr hG⟩⟩
 
 theorem HasSeparator.hasCoseparator_op [HasSeparator C] : HasCoseparator Cᵒᵖ := by simp [*]
-theorem HasSeparator.hasCoseparator_unop [HasSeparator Cᵒᵖ] : HasCoseparator C := by simp_all
+theorem HasSeparator.hasCoseparator_unop [h : HasSeparator Cᵒᵖ] : HasCoseparator C := by simp_all
 theorem HasCoseparator.hasSeparator_op [HasCoseparator C] : HasSeparator Cᵒᵖ := by simp [*]
 theorem HasCoseparator.hasSeparator_unop [HasCoseparator Cᵒᵖ] : HasSeparator C := by simp_all
 
@@ -662,5 +663,7 @@ theorem HasCodetector.hasDetector_op [HasCodetector C] : HasDetector Cᵒᵖ := 
 theorem HasCodetector.hasDetector_unop [HasCodetector Cᵒᵖ] : HasDetector C := by simp_all
 
 end Dual
+
+end HasGenerator
 
 end CategoryTheory
