@@ -8,7 +8,7 @@ import Mathlib.Algebra.Module.Presentation.Basic
 /-!
 # Presentation of a cokernel
 
-If `f : M₁ →ₗ[A] M₂` is a linear map between modules, and
+If `f : M₁ →ₗ[A] M₂` is a linear map between modules,
 `pres₂` is a presentation of `M₂` and `g₁ : ι → M₁` is
 a family of generators of `M₁` (which is expressed as
 `hg₁ : Submodule.span A (Set.range g₁) = ⊤`), then we
@@ -47,10 +47,6 @@ structure CokernelData where
   lift (i : ι) : pres₂.G →₀ A
   π_lift (i : ι) : pres₂.π (lift i) = f (g₁ i)
 
-instance nonempty_cokernelData :
-    Nonempty (pres₂.CokernelData f g₁) :=
-  ⟨_, fun i ↦ (pres₂.surjective_π (f (g₁ i))).choose_spec⟩
-
 /-- Constructor for `Presentation.CokernelData` in case we have a chosen set-theoretic
 section of the projection `(pres₂.G →₀ A) → M₂`. -/
 @[simps]
@@ -59,6 +55,11 @@ def CokernelData.ofSection (s : M₂ → (pres₂.G →₀ A))
     pres₂.CokernelData f g₁ where
   lift i := s (f (g₁ i))
   π_lift i := by simp [hs]
+
+instance nonempty_cokernelData :
+    Nonempty (pres₂.CokernelData f g₁) := by
+  obtain ⟨s, hs⟩ := pres₂.surjective_π.hasRightInverse
+  exact ⟨CokernelData.ofSection _ _ _ s hs⟩
 
 variable {g₁ f} (data : pres₂.CokernelData f g₁)
 
@@ -129,24 +130,18 @@ def cokernel : Presentation A (M₂ ⧸ LinearMap.range f) :=
 
 end Cokernel
 
-section OfExact
-
-variable {f : M₁ →ₗ[A] M₂} {g : M₂ →ₗ[A] M₃}
-  (pres₂ : Presentation.{w₂₀, w₂₁} A M₂)
-  {ι : Type w₁} {g₁ : ι → M₁}
-  (data : pres₂.CokernelData f g₁)
-  (hfg : Function.Exact f g) (hg : Function.Surjective g)
-  (hg₁ : Submodule.span A (Set.range g₁) = ⊤)
-
 /-- Given an exact sequence of `A`-modules `M₁ → M₂ → M₃ → 0`, this is the presentation
 of `M₃` that is obtained from a presentation `pres₂` of `M₂`, a choice of generators
 `g₁ : ι → M₁` of `M₁`, and an additional data in a `Presentation.CokernelData` structure. -/
 @[simps!]
-noncomputable def ofExact : Presentation A M₃ :=
+noncomputable def ofExact {f : M₁ →ₗ[A] M₂} {g : M₂ →ₗ[A] M₃}
+    (pres₂ : Presentation.{w₂₀, w₂₁} A M₂) {ι : Type w₁} {g₁ : ι → M₁}
+    (data : pres₂.CokernelData f g₁)
+    (hfg : Function.Exact f g) (hg : Function.Surjective g)
+    (hg₁ : Submodule.span A (Set.range g₁) = ⊤) :
+    Presentation A M₃ :=
   ofIsPresentation ((pres₂.cokernel data hg₁).ofLinearEquiv
     (hfg.linearEquivOfSurjective hg))
-
-end OfExact
 
 end Presentation
 
