@@ -466,9 +466,8 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
       rcases a with (a | ⟨⟨⟨⟩⟩⟩) <;> simp [EmptyRelation]
     · rw [Cardinal.mk_fintype, Set.card_singleton]
       simp
-  · rw [← Cardinal.succ_zero, succ_le_iff]
-    simpa [lt_iff_le_and_ne, zero_le_iff_ne_zero] using fun h =>
-      succ_ne_zero o (cof_eq_zero.1 (Eq.symm h))
+  · rw [← Cardinal.succ_zero, succ_le_iff, pos_iff_ne_zero]
+    exact fun h ↦ succ_ne_zero o (cof_eq_zero.1 h)
 
 @[simp]
 theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
