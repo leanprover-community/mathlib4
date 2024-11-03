@@ -40,8 +40,6 @@ variable {C : Type u₁} [Category.{u₂} C] {I : Type v₁} [Category.{v₂} I]
 
 section LimitOpColimit
 
-instance (F : I ⥤ C) [HasColimit F] : HasLimit F.op := hasLimit_op_of_hasColimit F
-
 /-- The limit of `F.op` is the opposite of `colimit F`. -/
 noncomputable def limitOpIsoOpColimit (F : I ⥤ C) [HasColimit F] :
     limit F.op ≅ op <| colimit F :=
