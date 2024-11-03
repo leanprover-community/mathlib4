@@ -413,7 +413,7 @@ lemma ker_eq_bot_range_liftQ_iff (h : range f ≤ ker g) :
     simpa using hfg x
 
 lemma injective_range_liftQ_of_exact (h : Function.Exact f g) :
-    Function.Injective ((range f).liftQ g (by simp only [h.linearMap_ker_eq, le_refl])) := by
+    Function.Injective ((range f).liftQ g (h · |>.mpr)) := by
   simpa only [← LinearMap.ker_eq_bot, ker_eq_bot_range_liftQ_iff, exact_iff] using h
 
 end LinearMap
