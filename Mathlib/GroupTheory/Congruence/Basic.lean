@@ -81,7 +81,7 @@ theorem le_comap_conGen {M N : Type*} [Mul M] [Mul N] (f : M → N)
   simp only [Con.comap_rel]
   exact .rec (fun x y h ↦ .of (f x) (f y) h) (fun x ↦ .refl (f x))
     (fun _ h ↦ .symm h) (fun _ _ h1 h2 ↦ h1.trans h2) (fun {w x y z} _ _ h1 h2 ↦
-    (congrArg (fun a ↦ (conGen rel) a (f (x * z))) (H w y)).mpr
+    (congrArg (fun a ↦ conGen rel a (f (x * z))) (H w y)).mpr
     (((congrArg (fun a ↦ conGen rel (f w * f y) a) (H x z))).mpr
     (.mul h1 h2))) h
 
