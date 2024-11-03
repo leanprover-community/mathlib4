@@ -154,7 +154,7 @@ def natToInt : GlobalBranchingPreprocessor where
       if ← isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
           | throwError "zifyProof failed on {h}"
-        if ← succeeds t'.ineqOrNotIneq? then
+        if ← succeeds (← whnfR t').ineq? then
           pure h'
         else
           -- `zifyProof` turned our comparison into something that wasn't a comparison
