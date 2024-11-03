@@ -5,12 +5,11 @@ Authors: Sophie Morel, Joël Riou
 -/
 import Mathlib.Algebra.Module.Presentation.Basic
 import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
-import Mathlib.LinearAlgebra.TensorPower
 
 /-!
 # Exterior powers
 
-We introduce the exterior powers of a module `M` over a commutative ring `R`.
+We study the exterior powers of a module `M` over a commutative ring `R`.
 
 ## Definitions
 
