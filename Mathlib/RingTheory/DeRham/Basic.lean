@@ -17,6 +17,8 @@ import Mathlib.RingTheory.Kaehler.Basic
 
 variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
 
+open Function
+
 namespace Algebra.Presentation
 
 inductive tautological.Rels
@@ -71,26 +73,26 @@ lemma comp_finInsert {β : Type*} (g : α → β) :
   ext ⟨(_ | _), _⟩ <;> rfl
 
 lemma finInsert_eq_update_finInsert_zero [Zero α]:
-    finInsert x f = Function.update (finInsert 0 f) 0 x := by
+    finInsert x f = update (finInsert 0 f) 0 x := by
   ext ⟨(_ | _), _⟩ <;> rfl
 
 lemma finInsert_update (i : Fin n) (a : α) :
-    finInsert x (Function.update f i a) = Function.update (finInsert x f) i.succ a := by
+    finInsert x (update f i a) = update (finInsert x f) i.succ a := by
   ext ⟨(_ | j), hi⟩
   · rfl
   · by_cases h : j = i
     · subst h
-      erw [Function.update_same]
+      erw [update_same]
       rw [finInsert_mk_succ _ _ _ (by omega)]
       simp
     · obtain ⟨i, hi'⟩ := i
-      rw [Function.update_noteq (by simpa using h), finInsert_mk_succ _ _ _ (by omega),
-        Function.update_noteq (by simpa using h), finInsert_mk_succ]
+      rw [update_noteq (by simpa using h), finInsert_mk_succ _ _ _ (by omega),
+        update_noteq (by simpa using h), finInsert_mk_succ]
 
 lemma finInsert_swapValues (i j : Fin n) :
-    finInsert x (Function.swapValues f i j) =
-      Function.swapValues (finInsert x f) i.succ j.succ := by
-  simp only [Function.swapValues_eq_update_update, finInsert_update, finInsert_succ]
+    finInsert x (swapValues f i j) =
+      swapValues (finInsert x f) i.succ j.succ := by
+  simp only [swapValues_eq_update_update, finInsert_update, finInsert_succ]
 
 end
 
@@ -114,9 +116,13 @@ noncomputable def differentialsRestrictScalarsData :
     (presentationDifferentialsUp A B n).RestrictScalarsData
       (Module.Presentation.tautological A B) where
   lift r := match r with
-    | ⟨b₀, .piTensor i₀ (.add b₁ b₂) g⟩ => by
-        dsimp at g ⊢
-        sorry
+    | ⟨b₀, .piTensor i₀ (.add b₁ b₂) g⟩ =>
+        Finsupp.single ⟨embedding (G := fun (i : Fin n) ↦ B) i₀
+          (fun j ↦ g j j.2) b₁, b₀⟩ 1 +
+          Finsupp.single ⟨embedding (G := fun (i : Fin n) ↦ B) i₀
+            (fun j ↦ g j j.2) b₂, b₀⟩ 1 -
+          Finsupp.single ⟨embedding (G := fun (i : Fin n) ↦ B) i₀
+            (fun j ↦ g j j.2) (b₁ + b₂), b₀⟩ 1
     | ⟨b₀, .piTensor i₀ (.mul _ _) g⟩ => by
         sorry
     | ⟨b₀, .piTensor i₀ (.algebraMap a) g⟩ =>
@@ -124,15 +130,23 @@ noncomputable def differentialsRestrictScalarsData :
           (algebraMap A B a), b₀⟩  1
     | ⟨b₀, .alternate g i j hg hij⟩ => Finsupp.single ⟨g, b₀⟩ 1
     | ⟨b₀, .antisymmetry g i j hg⟩ =>
-        Finsupp.single ⟨Function.swapValues g i j, b₀⟩ 1 + Finsupp.single ⟨g, b₀⟩ 1
+        Finsupp.single ⟨swapValues g i j, b₀⟩ 1 + Finsupp.single ⟨g, b₀⟩ 1
   π_lift r := match r with
-    | ⟨b₀, .piTensor i₀ (.add b₁ b₂) g⟩ => by
-        dsimp [presentationDifferentialsUp]
-        simp
-        sorry
+    | ⟨b₀, .piTensor i₀ (.add b₁ b₂) g⟩ => sorry /-by
+        dsimp
+        simp only [map_sub, map_add, map_smul]
+        erw [Module.Presentation.finsupp_π, Module.Presentation.finsupp_π,
+          Module.Presentation.finsupp_π, Module.Relations.map_single]
+        dsimp [KaehlerDifferential.presentation, Algebra.Presentation.tautological,
+          Algebra.Presentation.differentials]
+        simp only [map_sub, map_add, KaehlerDifferential.mvPolynomialBasis_repr_D_X]
+        rw [Finsupp.mapRange_sub (by simp), Finsupp.mapRange_add (by simp)]
+        simp only [Finsupp.mapRange_single, Algebra.Generators.algebraMap_apply, map_one,
+          Finsupp.embDomain_sub, Finsupp.embDomain_add, Finsupp.embDomain_single, smul_sub,
+          smul_add, Finsupp.smul_single, smul_eq_mul, mul_one]-/
     | ⟨b₀, .piTensor i₀ (.mul b₁ b₂) g⟩ => by
         sorry
-    | ⟨b₀, .piTensor i₀ (.algebraMap a) g⟩ => by
+    | ⟨b₀, .piTensor i₀ (.algebraMap a) g⟩ => sorry /-by
         dsimp
         rw [map_neg]
         erw [Module.Presentation.finsupp_π]
@@ -145,20 +159,20 @@ noncomputable def differentialsRestrictScalarsData :
         rw [Finsupp.mapRange_neg (by simp)]
         simp only [Finsupp.mapRange_single, Algebra.Generators.algebraMap_apply, map_one,
           Finsupp.embDomain_neg, Finsupp.embDomain_single, smul_neg, Finsupp.smul_single,
-          smul_eq_mul, mul_one]
-    | ⟨b₀, .antisymmetry g i j hg⟩ => by
+          smul_eq_mul, mul_one]-/
+    | ⟨b₀, .antisymmetry g i j hg⟩ => sorry /-by
         dsimp
         rw [map_add, map_smul]
         erw [Module.Presentation.finsupp_π, Module.Presentation.finsupp_π,
           Module.Relations.map_single]
         dsimp
-        simp only [smul_add, Finsupp.smul_single, smul_eq_mul, mul_one]
-    | ⟨b₀, .alternate g i j hg hij⟩ => by
+        simp only [smul_add, Finsupp.smul_single, smul_eq_mul, mul_one]-/
+    | ⟨b₀, .alternate g i j hg hij⟩ => sorry /-by
         dsimp
         rw [map_smul]
         erw [Module.Presentation.finsupp_π, Module.Relations.map_single]
         dsimp
-        rw [Finsupp.smul_single, smul_eq_mul, mul_one]
+        rw [Finsupp.smul_single, smul_eq_mul, mul_one]-/
 
 open Classical in
 @[simps! G R relation]
@@ -216,6 +230,12 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
               induction r with
               | add b₁ b₂ =>
                   dsimp
+                  simp only [presentationDifferentialsDown_relation, map_sub, map_add,
+                    Finsupp.linearCombination_single, one_smul, sub_eq_zero]
+                  rw [presentationDifferentialsDown_var, one_smul,
+                    presentationDifferentialsDown_var, one_smul,
+                    presentationDifferentialsDown_var, one_smul]
+                  simp only [comp_finInsert, comp_embedding, map_add]
                   sorry
               | mul b₁ b₂ =>
                   dsimp

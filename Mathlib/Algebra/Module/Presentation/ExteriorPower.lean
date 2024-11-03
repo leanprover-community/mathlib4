@@ -15,6 +15,14 @@ namespace Function
 
 variable {ι α : Type*} [DecidableEq ι]
 
+lemma update_comp (f : ι → α) (i : ι) (x : α) {β : Type*} (g : α → β) :
+    update (g ∘ f) i (g x) = g ∘ update f i x := by
+  ext j
+  by_cases h : j = i
+  · subst h
+    simp
+  · simp only [update_noteq h, comp_apply]
+
 lemma update_update (f : ι → α) (i j : ι) (a b : α) (hij : i ≠ j) :
     update (update f i a) j b = update (update f j b) i a := by
   ext x
@@ -50,9 +58,9 @@ lemma swapValues_apply (hi : k ≠ i) (hj : k ≠ j) :
   rw [swapValues_eq_update_update]
   rw [update_noteq hj, update_noteq hi]
 
-lemma comp_swapValues {β : Type*} (g : α → β) :
+lemma swapValues_comp {β : Type*} (g : α → β) :
     swapValues (g.comp f) i j = g ∘ swapValues f i j := by
-  sorry
+  simp only [swapValues_eq_update_update, comp_apply, ← update_comp]
 
 end Function
 

@@ -1293,4 +1293,9 @@ theorem update_eq_sub_add_single [AddGroup G] (f : α →₀ G) (a : α) (b : G)
     f.update a b = f - single a (f a) + single a b := by
   rw [update_eq_erase_add_single, erase_eq_sub_single]
 
+@[simp]
+theorem embDomain_sub [AddGroup G] (f : α ↪ β) (v w : α →₀ G) :
+    embDomain f (v - w) = embDomain f v - embDomain f w := by
+  rw [sub_eq_add_neg, embDomain_add, embDomain_neg, sub_eq_add_neg]
+
 end Finsupp
