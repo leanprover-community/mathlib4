@@ -66,8 +66,6 @@ lemma finInsert_zero : finInsert x f 0 = x := rfl
 @[simp]
 lemma finInsert_succ (i : Fin n) : finInsert x f i.succ = f i := rfl
 
-lemma finInsert_mk_succ (i : ℕ) (hi : i < n) : finInsert x f ⟨i + 1, by omega⟩ = f ⟨i, hi⟩ := rfl
-
 lemma comp_finInsert {β : Type*} (g : α → β) :
     g.comp (finInsert x f) = finInsert (g x) (g.comp f) := by
   ext ⟨(_ | _), _⟩ <;> rfl
@@ -78,21 +76,37 @@ lemma finInsert_eq_update_finInsert_zero [Zero α]:
 
 lemma finInsert_update (i : Fin n) (a : α) :
     finInsert x (update f i a) = update (finInsert x f) i.succ a := by
-  ext ⟨(_ | j), hi⟩
+  ext j
+  obtain rfl | ⟨j, rfl⟩ := Fin.eq_zero_or_eq_succ j
   · rfl
   · by_cases h : j = i
     · subst h
-      erw [update_same]
-      rw [finInsert_mk_succ _ _ _ (by omega)]
-      simp
-    · obtain ⟨i, hi'⟩ := i
-      rw [update_noteq (by simpa using h), finInsert_mk_succ _ _ _ (by omega),
-        update_noteq (by simpa using h), finInsert_mk_succ]
+      simp only [finInsert_succ, update_same]
+    · rw [update_noteq (by simpa using h), finInsert_succ, finInsert_succ,
+        update_noteq (by simpa using h)]
 
 lemma finInsert_swapValues (i j : Fin n) :
     finInsert x (swapValues f i j) =
       swapValues (finInsert x f) i.succ j.succ := by
   simp only [swapValues_eq_update_update, finInsert_update, finInsert_succ]
+
+lemma _root_.Fin.eq_zero_or_succ {n : ℕ} (i : Fin (n + 1)) :
+    i = 0 ∨ ∃ (j : Fin n), i = j.succ := by exact Fin.eq_zero_or_eq_succ i
+
+lemma swapValues_finInsert_embedding (i : Fin n)
+    (g : ((Set.singleton i)ᶜ : Set (Fin n)) → α) (x y : α) :
+    swapValues (finInsert y (embedding (G := fun (_ : Fin n) ↦ α) i g x)) 0 i.succ =
+      finInsert x (embedding (G := fun (_ : Fin n) ↦ α) i g y) := by
+  ext j
+  obtain rfl | ⟨j, rfl⟩ := Fin.eq_zero_or_eq_succ j
+  · simp only [swapValues_fst, finInsert_succ, embedding_apply_self, finInsert_zero]
+  · simp only [finInsert_succ]
+    by_cases h : j = i
+    · subst h
+      simp only [swapValues_snd, finInsert_zero, embedding_apply_self]
+    · rw [embedding_apply_of_neq _ _ _ _ _ h, swapValues_apply _ _ _ _
+          (by simp [Fin.ext_iff]) (by simpa using h),
+        finInsert_succ, embedding_apply_of_neq _ _ _ _ _ h]
 
 end
 
@@ -125,19 +139,24 @@ noncomputable def differentialsRestrictScalarsData :
       (Module.Presentation.tautological A B) where
   lift r := match r with
     | ⟨b₀, .piTensor i₀ (.add b₁ b₂) g⟩ =>
-        Finsupp.single ⟨embedding (G := fun (i : Fin n) ↦ B) i₀
+        Finsupp.single ⟨embedding (G := fun _ ↦ B) i₀
           (fun j ↦ g j j.2) b₁, b₀⟩ 1 +
-          Finsupp.single ⟨embedding (G := fun (i : Fin n) ↦ B) i₀
+          Finsupp.single ⟨embedding (G := fun _ ↦ B) i₀
             (fun j ↦ g j j.2) b₂, b₀⟩ 1 -
-          Finsupp.single ⟨embedding (G := fun (i : Fin n) ↦ B) i₀
+          Finsupp.single ⟨embedding (G := fun _ ↦ B) i₀
             (fun j ↦ g j j.2) (b₁ + b₂), b₀⟩ 1
-    | ⟨b₀, .piTensor i₀ (.mul _ _) g⟩ => by
-        sorry
+    | ⟨(b₀ : B), .piTensor i₀ (.mul (b₁ : B) (b₂ : B)) g⟩ =>
+        Finsupp.single ⟨embedding (G := fun _ ↦ B) i₀
+          (fun j ↦ g j j.2) b₂, b₀ * b₁⟩ 1 +
+          Finsupp.single ⟨embedding (G := fun _ ↦ B) i₀
+            (fun j ↦ g j j.2) b₁, b₀ * b₂⟩ 1 -
+          Finsupp.single ⟨embedding (G := fun _ ↦ B) i₀
+            (fun j ↦ g j j.2) (b₁ * b₂), b₀⟩ 1
     | ⟨b₀, .piTensor i₀ (.algebraMap a) g⟩ =>
-        -Finsupp.single ⟨embedding (G := fun (i : Fin n) ↦ B) i₀ (fun j ↦ g j j.2)
+        -Finsupp.single ⟨embedding (G := fun _ ↦ B) i₀ (fun j ↦ g j j.2)
           (algebraMap A B a), b₀⟩  1
-    | ⟨b₀, .alternate g i j hg hij⟩ => Finsupp.single ⟨g, b₀⟩ 1
-    | ⟨b₀, .antisymmetry g i j hg⟩ =>
+    | ⟨b₀, .alternate g _ _ _ _⟩ => Finsupp.single ⟨g, b₀⟩ 1
+    | ⟨b₀, .antisymmetry g i j _⟩ =>
         Finsupp.single ⟨swapValues g i j, b₀⟩ 1 + Finsupp.single ⟨g, b₀⟩ 1
   π_lift r := match r with
     | ⟨b₀, .piTensor i₀ (.add b₁ b₂) g⟩ => by
@@ -153,7 +172,19 @@ noncomputable def differentialsRestrictScalarsData :
           Finsupp.embDomain_sub, Finsupp.embDomain_add, Finsupp.embDomain_single, smul_sub,
           smul_add, Finsupp.smul_single, smul_eq_mul, mul_one]
     | ⟨b₀, .piTensor i₀ (.mul b₁ b₂) g⟩ => by
-        sorry
+        dsimp
+        simp only [map_sub, map_add, map_smul]
+        erw [Module.Presentation.finsupp_π, Module.Presentation.finsupp_π,
+          Module.Presentation.finsupp_π, Module.Relations.map_single]
+        dsimp [KaehlerDifferential.presentation, Algebra.Presentation.tautological,
+          Algebra.Presentation.differentials]
+        simp only [map_sub, Derivation.leibniz, map_add, map_smul,
+          KaehlerDifferential.mvPolynomialBasis_repr_D_X]
+        rw [Finsupp.mapRange_sub (by simp), Finsupp.mapRange_add (by simp)]
+        simp only [Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.mapRange_single,
+          Algebra.Generators.algebraMap_apply, MvPolynomial.aeval_X, id_eq, map_one,
+          Finsupp.embDomain_sub, Finsupp.embDomain_add, Finsupp.embDomain_single, smul_sub,
+          smul_add]
     | ⟨b₀, .piTensor i₀ (.algebraMap a) g⟩ => by
         dsimp
         rw [map_neg]
@@ -196,7 +227,7 @@ lemma presentationDifferentialsDown_var (b₀ : B) {n : ℕ} (g : Fin n → B) :
     Module.Presentation.ofExact]
   simp only [Module.Presentation.finsupp_var, Module.Presentation.tautological_var]
   erw [Module.Relations.Solution.π_single']
-  rw [presentationDifferentialsUp_var ]
+  rw [presentationDifferentialsUp_var]
 
 lemma smul_def (M : Type*) [AddCommGroup M] [Module A M] [Module B M]
     [IsScalarTower A B M] (m : M) (a : A) : a • m = (algebraMap A B a) • m := by
@@ -254,7 +285,37 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
                   simp only [finInsert_update, AlternatingMap.map_add]
               | mul b₁ b₂ =>
                   dsimp
-                  sorry
+                  simp only [presentationDifferentialsDown_relation, map_sub, map_add,
+                    Finsupp.linearCombination_single, one_smul, sub_eq_zero]
+                  rw [presentationDifferentialsDown_var, one_smul,
+                    presentationDifferentialsDown_var, one_smul,
+                    presentationDifferentialsDown_var, one_smul]
+                  simp only [comp_finInsert, comp_embedding]
+                  conv_rhs =>
+                    rw [Derivation.leibniz, embedding_eq_update_embedding_zero,
+                      finInsert_update, AlternatingMap.map_add, AlternatingMap.map_smul,
+                      AlternatingMap.map_smul, ← finInsert_update, ← finInsert_update,
+                      ← embedding_eq_update_embedding_zero,
+                      ← embedding_eq_update_embedding_zero]
+                  rw [finInsert_eq_update_finInsert_zero]
+                  nth_rw 2 [finInsert_eq_update_finInsert_zero]
+                  conv_lhs =>
+                    rw [Derivation.leibniz, AlternatingMap.map_add,
+                      AlternatingMap.map_smul, AlternatingMap.map_smul,
+                      ← finInsert_eq_update_finInsert_zero]
+                    rw [Derivation.leibniz, AlternatingMap.map_add,
+                      AlternatingMap.map_smul, AlternatingMap.map_smul,
+                      ← finInsert_eq_update_finInsert_zero,
+                      ← finInsert_eq_update_finInsert_zero,
+                      ← finInsert_eq_update_finInsert_zero]
+                  have : ∀ (x₁ x₂ x₃ x₄ : (⋀[B]^(n + 1) (Ω[B⁄A]))),
+                      x₁ = -x₃ → x₁ + x₂ + (x₃ + x₄) = x₂ + x₄ := by
+                    rintro x₁ x₂ x₃ x₄ rfl; abel
+                  apply this
+                  rw [← smul_neg]
+                  congr
+                  rw [← AlternatingMap.antisymmetry _ _ 0 i.succ (by simp [Fin.ext_iff]),
+                    swapValues_finInsert_embedding]
               | algebraMap a =>
                   dsimp
                   simp only [presentationDifferentialsDown_relation, map_neg,
@@ -277,8 +338,7 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
               rw [presentationDifferentialsDown_var, one_smul, comp_finInsert]
               apply AlternatingMap.map_eq_zero_of_eq (i := i.succ) (j := j.succ)
               · simp [hg]
-              · simpa using hij
-        }
+              · simpa using hij }
 
 @[simp]
 lemma d_apply (b₀ : B) {n : ℕ} (g : Fin n → B) :
@@ -301,4 +361,4 @@ end DeRhamComplex
 
 noncomputable def deRhamComplex : CochainComplex (ModuleCat A) ℕ :=
   CochainComplex.of (fun n ↦ ModuleCat.of A (exteriorPower B n (KaehlerDifferential A B)))
-    (DeRhamComplex.d A B) (by intro; ext; apply DeRhamComplex.d_d_apply)
+    (DeRhamComplex.d A B) (fun _ ↦ DeRhamComplex.d_d _ _ _)
