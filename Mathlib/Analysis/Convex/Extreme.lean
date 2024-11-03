@@ -156,7 +156,7 @@ end SMul
 section OrderedSemiring
 
 variable [OrderedSemiring 𝕜] [AddCommGroup E] [AddCommGroup F] [∀ i, AddCommGroup (π i)]
-  [Module 𝕜 E] [Module 𝕜 F] [∀ i, Module 𝕜 (π i)] {A B : Set E} {x : E}
+  [Module 𝕜 E] [Module 𝕜 F] [∀ i, Module 𝕜 (π i)] {A B : Set E}
 
 theorem IsExtreme.convex_diff (hA : Convex 𝕜 A) (hAB : IsExtreme 𝕜 A B) : Convex 𝕜 (A \ B) :=
   convex_iff_openSegment_subset.2 fun _ ⟨hx₁A, hx₁B⟩ _ ⟨hx₂A, _⟩ _ hx ↦
@@ -225,7 +225,7 @@ end OrderedRing
 section LinearOrderedRing
 
 variable [LinearOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A B : Set E} {x : E}
+variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A : Set E} {x : E}
 
 /-- A useful restatement using `segment`: `x` is an extreme point iff the only (closed) segments
 that contain it are those with `x` as one of their endpoints. -/

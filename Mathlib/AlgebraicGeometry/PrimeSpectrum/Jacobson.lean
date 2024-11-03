@@ -52,14 +52,14 @@ lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
     [IsNoetherianRing R] (x : PrimeSpectrum R) :
     List.TFAE [IsOpen {x}, IsClopen {x}, IsClosed {x} ∧ StableUnderGeneralization {x}] := by
   tfae_have 1 → 2
-  · intro h
+  | h => by
     obtain ⟨y, rfl : y = x, h'⟩ := exists_isClosed_singleton_of_isJacobsonRing _ h
       ⟨x, Set.mem_singleton x⟩
     exact ⟨h', h⟩
   tfae_have 2 → 3
-  · exact fun h ↦ ⟨h.isClosed, h.isOpen.stableUnderGeneralization⟩
+  | h => ⟨h.isClosed, h.isOpen.stableUnderGeneralization⟩
   tfae_have 3 → 1
-  · intro ⟨h₁, h₂⟩
+  | ⟨h₁, h₂⟩ => by
     rw [isClosed_singleton_iff_isMaximal, ← isMax_iff] at h₁
     suffices {x} = (⋃ p ∈ { p : PrimeSpectrum R | IsMin p ∧ p ≠ x }, closure {p})ᶜ by
       rw [this, isOpen_compl_iff]
