@@ -363,7 +363,7 @@ theorem card_sylow_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
 
 /-- Auxilliary lemma for `Sylow.not_dvd_index` which is strictly stronger. -/
 private theorem Sylow.not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
-    [P.FiniteIndex] : ¬p ∣ (P : Subgroup G).index := by
+    [P.FiniteIndex] : ¬ p ∣ (P : Subgroup G).index := by
   intro h
   rw [index_eq_card (P : Subgroup G)] at h
   obtain ⟨x, hx⟩ := exists_prime_orderOf_dvd_card' (G := G ⧸ (P : Subgroup G)) p h
@@ -384,7 +384,7 @@ alias not_dvd_index_sylow' := Sylow.not_dvd_index_aux
 
 /-- A Sylow p-subgroup has index indivisible by `p`, assuming [N(P) : P] < ∞. -/
 theorem Sylow.not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
-    (hP : relindex ↑P (P : Subgroup G).normalizer ≠ 0) : ¬p ∣ (P : Subgroup G).index := by
+    (hP : P.relindex P.normalizer ≠ 0) : ¬ p ∣ (P : Subgroup G).index := by
   rw [← relindex_mul_index le_normalizer, ← card_sylow_eq_index_normalizer]
   haveI : (P.subtype le_normalizer : Subgroup (P : Subgroup G).normalizer).Normal :=
     Subgroup.normal_in_normalizer
