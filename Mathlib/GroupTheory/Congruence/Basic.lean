@@ -253,8 +253,8 @@ lemma comapQuotientEquivOfSurj_mk (c : Con M) {f : N →* M} (hf : Function.Surj
     comapQuotientEquivOfSurj c f hf x = f x := rfl
 
 @[to_additive (attr := simp)]
-lemma comapQuotientEquivOfSurj_symm_mk (c : Con M) {f : N →* M} (hf : Function.Surjective f)
-    (x : N) : (comapQuotientEquivOfSurj c f hf).symm (f x) = x :=
+lemma comapQuotientEquivOfSurj_symm_mk (c : Con M) {f : N →* M} (hf) (x : N) :
+    (comapQuotientEquivOfSurj c f hf).symm (f x) = x :=
   (MulEquiv.symm_apply_eq (c.comapQuotientEquivOfSurj f hf)).mpr rfl
 
 /-- This version infers the surjectivity of the function from a MulEquiv function -/
