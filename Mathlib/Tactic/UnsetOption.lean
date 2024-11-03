@@ -3,6 +3,7 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
+import Mathlib.Init
 import Lean.Parser.Term
 import Lean.Parser.Do
 import Lean.Elab.Command
@@ -19,12 +20,9 @@ is cleaner not to write it explicitly, or for some options where the default
 behaviour is different from any user set value.
 -/
 
-set_option autoImplicit true
-
 namespace Lean.Elab
 
-variable [Monad m] [MonadOptions m] [MonadExceptOf Exception m] [MonadRef m]
-variable [AddErrorMessageContext m] [MonadLiftT (EIO Exception) m] [MonadInfoTree m]
+variable {m : Type → Type} [Monad m] [MonadOptions m] [MonadRef m] [MonadInfoTree m]
 
 /-- unset the option specified by id -/
 def elabUnsetOption (id : Syntax) : m Options := do

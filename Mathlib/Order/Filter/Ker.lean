@@ -21,9 +21,6 @@ namespace Filter
 
 variable {ι : Sort*} {α β : Type*} {f g : Filter α} {s : Set α} {a : α}
 
-/-- The *kernel* of a filter is the intersection of all its sets. -/
-def ker (f : Filter α) : Set α := ⋂₀ f.sets
-
 lemma ker_def (f : Filter α) : f.ker = ⋂ s ∈ f, s := sInter_eq_biInter
 
 @[simp] lemma mem_ker : a ∈ f.ker ↔ ∀ s ∈ f, a ∈ s := mem_sInter
@@ -41,9 +38,9 @@ lemma ker_surjective : Surjective (ker : Filter α → Set α) := gi_principal_k
 @[simp] lemma ker_top : ker (⊤ : Filter α) = univ := gi_principal_ker.gc.u_top
 @[simp] lemma ker_eq_univ : ker f = univ ↔ f = ⊤ := gi_principal_ker.gc.u_eq_top.trans <| by simp
 @[simp] lemma ker_inf (f g : Filter α) : ker (f ⊓ g) = ker f ∩ ker g := gi_principal_ker.gc.u_inf
-@[simp] lemma ker_iInf (f : ι → Filter α) : ker (⨅ i, f i) = ⨅ i, ker (f i) :=
+@[simp] lemma ker_iInf (f : ι → Filter α) : ker (⨅ i, f i) = ⋂ i, ker (f i) :=
   gi_principal_ker.gc.u_iInf
-@[simp] lemma ker_sInf (S : Set (Filter α)) : ker (sInf S) = ⨅ f ∈ S, ker f :=
+@[simp] lemma ker_sInf (S : Set (Filter α)) : ker (sInf S) = ⋂ f ∈ S, ker f :=
   gi_principal_ker.gc.u_sInf
 @[simp] lemma ker_principal (s : Set α) : ker (𝓟 s) = s := gi_principal_ker.u_l_eq _
 
@@ -54,5 +51,21 @@ lemma ker_surjective : Surjective (ker : Filter α → Set α) := gi_principal_k
   simp only [mem_ker, mem_comap, forall_exists_index, and_imp, @forall_swap (Set α), mem_preimage]
   exact forall₂_congr fun s _ ↦ ⟨fun h ↦ h _ Subset.rfl, fun ha t ht ↦ ht ha⟩
 
-end Filter
+@[simp]
+theorem ker_iSup (f : ι → Filter α) : ker (⨆ i, f i) = ⋃ i, ker (f i) := by
+  refine subset_antisymm (fun x hx ↦ ?_) ker_mono.le_map_iSup
+  simp only [mem_iUnion, mem_ker] at hx ⊢
+  contrapose! hx
+  choose s hsf hxs using hx
+  refine ⟨⋃ i, s i, ?_, by simpa⟩
+  exact mem_iSup.2 fun i ↦ mem_of_superset (hsf i) (subset_iUnion s i)
 
+@[simp]
+theorem ker_sSup (S : Set (Filter α)) : ker (sSup S) = ⋃ f ∈ S, ker f := by
+  simp [sSup_eq_iSup]
+
+@[simp]
+theorem ker_sup (f g : Filter α) : ker (f ⊔ g) = ker f ∪ ker g := by
+  rw [← sSup_pair, ker_sSup, biUnion_pair]
+
+end Filter

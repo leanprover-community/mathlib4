@@ -1,4 +1,5 @@
-import Mathlib.Data.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Module.ULift
 
 open Polynomial
 

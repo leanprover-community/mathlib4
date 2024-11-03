@@ -17,8 +17,12 @@ import Mathlib.LinearAlgebra.BilinearForm.Properties
 Properly develop the material in the context of lattices.
 -/
 
+open LinearMap (BilinForm)
+
 variable {R S M} [CommRing R] [Field S] [AddCommGroup M]
 variable [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+
+namespace LinearMap
 
 namespace BilinForm
 
@@ -31,7 +35,8 @@ def dualSubmodule (N : Submodule R M) : Submodule R M where
   zero_mem' y _ := by rw [B.zero_left]; exact zero_mem _
   smul_mem' r a ha y hy := by
     convert (1 : Submodule R S).smul_mem r (ha y hy)
-    rw [← IsScalarTower.algebraMap_smul S r a, bilin_smul_left, Algebra.smul_def]
+    rw [← IsScalarTower.algebraMap_smul S r a]
+    simp only [algebraMap_smul, map_smul_of_tower, LinearMap.smul_apply]
 
 lemma mem_dualSubmodule {N : Submodule R M} {x} :
     x ∈ B.dualSubmodule N ↔ ∀ y ∈ N, B x y ∈ (1 : Submodule R S) := Iff.rfl
@@ -46,12 +51,12 @@ lemma le_flip_dualSubmodule {N₁ N₂ : Submodule R M} :
 This is bundled as a bilinear map in `BilinForm.dualSubmoduleToDual`. -/
 noncomputable
 def dualSubmoduleParing {N : Submodule R M} (x : B.dualSubmodule N) (y : N) : R :=
-  (x.prop y y.prop).choose
+  (Submodule.mem_one.mp <| x.prop y y.prop).choose
 
 @[simp]
 lemma dualSubmoduleParing_spec {N : Submodule R M} (x : B.dualSubmodule N) (y : N) :
     algebraMap R S (B.dualSubmoduleParing x y) = B x y :=
-  (x.prop y y.prop).choose_spec
+  (Submodule.mem_one.mp <| x.prop y y.prop).choose_spec
 
 /-- The natural paring of `B.dualSubmodule N` and `N`. -/
 -- TODO: Show that this is perfect when `N` is a lattice and `B` is nondegenerate.
@@ -89,19 +94,20 @@ lemma dualSubmodule_span_of_basis {ι} [Finite ι] [DecidableEq ι]
     rw [← (B.dualBasis hB b).sum_repr x]
     apply sum_mem
     rintro i -
-    obtain ⟨r, hr⟩ := hx (b i) (Submodule.subset_span ⟨_, rfl⟩)
+    obtain ⟨r, hr⟩ := Submodule.mem_one.mp <| hx (b i) (Submodule.subset_span ⟨_, rfl⟩)
     simp only [dualBasis_repr_apply, ← hr, Algebra.linearMap_apply, algebraMap_smul]
     apply Submodule.smul_mem
     exact Submodule.subset_span ⟨_, rfl⟩
   · rw [Submodule.span_le]
     rintro _ ⟨i, rfl⟩ y hy
     obtain ⟨f, rfl⟩ := (mem_span_range_iff_exists_fun _).mp hy
-    simp only [sum_right, bilin_smul_right]
+    simp only [map_sum, map_smul]
     apply sum_mem
     rintro j -
-    rw [← IsScalarTower.algebraMap_smul S (f j), B.bilin_smul_right, apply_dualBasis_left,
-      mul_ite, mul_one, mul_zero, ← (algebraMap R S).map_zero, ← apply_ite]
-    exact ⟨_, rfl⟩
+    rw [← IsScalarTower.algebraMap_smul S (f j), map_smul]
+    simp_rw [apply_dualBasis_left]
+    rw [smul_eq_mul, mul_ite, mul_one, mul_zero, ← (algebraMap R S).map_zero, ← apply_ite]
+    exact Submodule.mem_one.mpr ⟨_, rfl⟩
 
 lemma dualSubmodule_dualSubmodule_flip_of_basis {ι : Type*} [Finite ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
@@ -129,3 +135,7 @@ lemma dualSubmodule_dualSubmodule_of_basis
   letI := FiniteDimensional.of_fintype_basis b
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis B hB,
     dualBasis_dualBasis B hB hB']
+
+end BilinForm
+
+end LinearMap

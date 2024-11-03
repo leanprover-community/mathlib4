@@ -3,10 +3,11 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Associated
-import Mathlib.Algebra.BigOperators.Basic
-
-#align_import ring_theory.prime from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
+import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Algebra.Prime.Defs
+import Mathlib.Algebra.Ring.Units
 
 /-!
 # Prime elements in rings
@@ -20,15 +21,13 @@ variable {R : Type*} [CancelCommMonoidWithZero R]
 
 open Finset
 
-open BigOperators
-
-/-- If `x * y = a * ∏ i in s, p i` where `p i` is always prime, then
+/-- If `x * y = a * ∏ i ∈ s, p i` where `p i` is always prime, then
   `x` and `y` can both be written as a divisor of `a` multiplied by
   a product over a subset of `s`  -/
 theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Finset α} {p : α → R}
-    (hp : ∀ i ∈ s, Prime (p i)) (hx : x * y = a * ∏ i in s, p i) :
+    (hp : ∀ i ∈ s, Prime (p i)) (hx : x * y = a * ∏ i ∈ s, p i) :
     ∃ (t u : Finset α) (b c : R),
-      t ∪ u = s ∧ Disjoint t u ∧ a = b * c ∧ (x = b * ∏ i in t, p i) ∧ y = c * ∏ i in u, p i := by
+      t ∪ u = s ∧ Disjoint t u ∧ a = b * c ∧ (x = b * ∏ i ∈ t, p i) ∧ y = c * ∏ i ∈ u, p i := by
   induction' s using Finset.induction with i s his ih generalizing x y a
   · exact ⟨∅, ∅, x, y, by simp [hx]⟩
   · rw [prod_insert his, ← mul_assoc] at hx
@@ -44,7 +43,6 @@ theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Fin
     · rw [← mul_assoc, mul_right_comm b, mul_left_inj' hpi.ne_zero] at hbc
       exact ⟨t, insert i u, b, d, by rw [union_insert, htus], disjoint_insert_right.2 ⟨hit, htu⟩, by
           simp [← hbc, prod_insert hiu, mul_assoc, mul_comm, mul_left_comm]⟩
-#align mul_eq_mul_prime_prod mul_eq_mul_prime_prod
 
 /-- If `x * y = a * p ^ n` where `p` is prime, then `x` and `y` can both be written
   as the product of a power of `p` and a divisor of `a`. -/
@@ -53,8 +51,7 @@ theorem mul_eq_mul_prime_pow {x y a p : R} {n : ℕ} (hp : Prime p) (hx : x * y 
   rcases mul_eq_mul_prime_prod (fun _ _ ↦ hp)
     (show x * y = a * (range n).prod fun _ ↦ p by simpa) with
       ⟨t, u, b, c, htus, htu, rfl, rfl, rfl⟩
-  exact ⟨t.card, u.card, b, c, by rw [← card_union_of_disjoint htu, htus, card_range], by simp⟩
-#align mul_eq_mul_prime_pow mul_eq_mul_prime_pow
+  exact ⟨#t, #u, b, c, by rw [← card_union_of_disjoint htu, htus, card_range], by simp⟩
 
 end CancelCommMonoidWithZero
 
@@ -65,12 +62,10 @@ variable {α : Type*} [CommRing α]
 theorem Prime.neg {p : α} (hp : Prime p) : Prime (-p) := by
   obtain ⟨h1, h2, h3⟩ := hp
   exact ⟨neg_ne_zero.mpr h1, by rwa [IsUnit.neg_iff], by simpa [neg_dvd] using h3⟩
-#align prime.neg Prime.neg
 
 theorem Prime.abs [LinearOrder α] {p : α} (hp : Prime p) : Prime (abs p) := by
   obtain h | h := abs_choice p <;> rw [h]
   · exact hp
   · exact hp.neg
-#align prime.abs Prime.abs
 
 end CommRing

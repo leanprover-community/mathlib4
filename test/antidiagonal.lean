@@ -1,5 +1,5 @@
+import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 
@@ -14,9 +14,9 @@ section
 
 -- `antidiagonalTuple` is faster than `finAntidiagonal` by a small constant factor
 /-- info: 23426 -/
-#guard_msgs in #eval (finAntidiagonal 4 50).card
+#guard_msgs in #eval #(finAntidiagonal 4 50)
 /-- info: 23426 -/
-#guard_msgs in #eval (Finset.Nat.antidiagonalTuple 4 50).card
+#guard_msgs in #eval #(Finset.Nat.antidiagonalTuple 4 50)
 
 end
 
@@ -33,4 +33,4 @@ info: {fun₀ | "C" => 3,
  fun₀ | "A" => 3}
 -/
 #guard_msgs in
-#eval piAntidiagonal {"A", "B", "C"} 3
+#eval finsuppAntidiag {"A", "B", "C"} 3

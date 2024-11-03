@@ -5,7 +5,8 @@ Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.SingleObj
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # (Co)limits of functors out of `SingleObj M`
@@ -41,8 +42,8 @@ instance (J : SingleObj M ⥤ Type u) : MulAction M (J.obj (SingleObj.star M)) w
   mul_smul g h x := by
     show J.map (g * h) x = (J.map h ≫ J.map g) x
     rw [← SingleObj.comp_as_mul]
-    simp only [FunctorToTypes.map_comp_apply, types_comp_apply]
-    rfl
+    · simp only [FunctorToTypes.map_comp_apply, types_comp_apply]
+      rfl
 
 section Limits
 
@@ -72,10 +73,10 @@ section Colimits
 variable {G : Type v} [Group G] (J : SingleObj G ⥤ Type u)
 
 /-- The relation used to construct colimits in types for `J : SingleObj G ⥤ Type u` is
-equivalent to the `MulAction.orbitRel` equivalence relation on `J.obj  (SingleObj.star G)`. -/
+equivalent to the `MulAction.orbitRel` equivalence relation on `J.obj (SingleObj.star G)`. -/
 lemma Types.Quot.Rel.iff_orbitRel (x y : J.obj (SingleObj.star G)) :
     Types.Quot.Rel J ⟨SingleObj.star G, x⟩ ⟨SingleObj.star G, y⟩
-    ↔ Setoid.Rel (MulAction.orbitRel G (J.obj (SingleObj.star G))) x y := by
+    ↔ MulAction.orbitRel G (J.obj (SingleObj.star G)) x y := by
   have h (g : G) : y = g • x ↔ g • x = y := ⟨symm, symm⟩
   conv => rhs; rw [Setoid.comm']
   show (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)
