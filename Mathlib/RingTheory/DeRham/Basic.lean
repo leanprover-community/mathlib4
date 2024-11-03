@@ -100,8 +100,9 @@ noncomputable def differentialsRestrictScalarsData :
         sorry
     | ⟨b₀, .piTensor i₀ (.mul _ _) g⟩ => by
         sorry
-    | ⟨b₀, .piTensor i₀ (.algebraMap a) g⟩ => by
-        sorry
+    | ⟨b₀, .piTensor i₀ (.algebraMap a) g⟩ =>
+        -Finsupp.single ⟨embedding (G := fun (i : Fin n) ↦ B) i₀ (fun j ↦ g j j.2)
+          (algebraMap A B a), b₀⟩  1
     | ⟨b₀, .alternate g i j hg hij⟩ => Finsupp.single ⟨g, b₀⟩ 1
     | ⟨b₀, .antisymmetry g i j hg⟩ => sorry
   π_lift r := match r with
@@ -112,14 +113,26 @@ noncomputable def differentialsRestrictScalarsData :
     | ⟨b₀, .piTensor i₀ (.mul b₁ b₂) g⟩ => by
         sorry
     | ⟨b₀, .piTensor i₀ (.algebraMap a) g⟩ => by
-        sorry
+        dsimp
+        rw [map_neg]
+        erw [Module.Presentation.finsupp_π]
+        rw [map_smul]
+        erw [Module.Relations.map_single]
+        dsimp [KaehlerDifferential.presentation, Algebra.Presentation.tautological,
+          Algebra.Presentation.differentials]
+        simp only [map_sub, Derivation.map_smul, Derivation.map_one_eq_zero, smul_zero, zero_sub,
+          map_neg, KaehlerDifferential.mvPolynomialBasis_repr_D_X]
+        rw [Finsupp.mapRange_neg (by simp)]
+        simp only [Finsupp.mapRange_single, Algebra.Generators.algebraMap_apply, map_one,
+          Finsupp.embDomain_neg, Finsupp.embDomain_single, smul_neg, Finsupp.smul_single,
+          smul_eq_mul, mul_one]
+    | ⟨b₀, .antisymmetry g i j hg⟩ => sorry
     | ⟨b₀, .alternate g i j hg hij⟩ => by
         dsimp
         rw [map_smul]
         erw [Module.Presentation.finsupp_π, Module.Relations.map_single]
         dsimp
         rw [Finsupp.smul_single, smul_eq_mul, mul_one]
-    | ⟨b₀, .antisymmetry g i j hg⟩ => sorry
 
 open Classical in
 @[simps! G R relation]
@@ -144,7 +157,7 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
         ((presentationDifferentialsDown A B (n + 1)).var ⟨finInsert b₀ g, (1 : B)⟩)
       linearCombination_var_relation := by
         rintro (⟨g, r⟩ | ⟨b₀, r⟩)
-        · induction r with
+        · sorry /-induction r with
           | add b₁ b₂ =>
               dsimp
               simp only [presentationDifferentialsDown_relation,
@@ -170,7 +183,7 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
               rw [finInsert_eq_update_finInsert_zero]
               nth_rw 2 [finInsert_eq_update_finInsert_zero]
               rw [algebra_compatible_smul B a, algebra_compatible_smul B a,
-                AlternatingMap.map_smul]
+                AlternatingMap.map_smul]-/
         · dsimp at b₀
           induction r with
           | piTensor i r g =>
@@ -183,11 +196,20 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
                   sorry
               | algebraMap a =>
                   dsimp
-                  sorry
+                  simp only [presentationDifferentialsDown_relation, map_neg,
+                    Finsupp.linearCombination_single, one_smul, neg_eq_zero]
+                  rw [presentationDifferentialsDown_var, one_smul]
+                  apply MultilinearMap.map_of_eq_zero _ _ i.succ (by simp)
           | antisymmetry g i j hij => sorry
-          | alternate g i j hg hij => sorry
+          | alternate g i j hg hij =>
+              dsimp
+              simp only [presentationDifferentialsDown_relation, Finsupp.linearCombination_single,
+                one_smul]
+              rw [presentationDifferentialsDown_var, one_smul, comp_finInsert]
+              apply AlternatingMap.map_eq_zero_of_eq (i := i.succ) (j := j.succ)
+              · simp [hg]
+              · simpa using hij
         }
-
 
 @[simp]
 lemma d_apply (b₀ : B) {n : ℕ} (g : Fin n → B) :

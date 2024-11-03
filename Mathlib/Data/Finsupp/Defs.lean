@@ -1218,6 +1218,15 @@ theorem mapRange_neg' [AddGroup G] [SubtractionMonoid H] [FunLike β G H] [AddMo
     mapRange f (map_zero f) (-v) = -mapRange f (map_zero f) v :=
   mapRange_neg (map_neg f) v
 
+@[simp]
+theorem embDomain_neg [NegZeroClass G](f : α ↪ β) (v : α →₀ G) :
+    embDomain f (-v) = -embDomain f v := by
+  ext x
+  by_cases h : x ∈ Set.range f
+  · obtain ⟨y, rfl⟩ := h
+    simp only [embDomain_apply, coe_neg, Pi.neg_apply]
+  · simp only [embDomain_notin_range _ _ _ h, coe_neg, Pi.neg_apply, neg_zero]
+
 instance instSub [SubNegZeroMonoid G] : Sub (α →₀ G) :=
   ⟨zipWith Sub.sub (sub_zero _)⟩
 
