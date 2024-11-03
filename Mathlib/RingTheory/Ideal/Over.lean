@@ -462,6 +462,10 @@ theorem mem_of_liesOver [P.LiesOver p] (x : A) : x ∈ p ↔ algebraMap A B x �
   rw [P.over_def p]
   rfl
 
+theorem eq_top_iff_liesOver_eq_top [P.LiesOver p] : P = ⊤ ↔ p = ⊤ := by
+  rw [P.over_def p]
+  exact comap_eq_top_iff.symm
+
 variable {P}
 
 theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
@@ -476,6 +480,16 @@ theorem LiesOver.of_eq_comap_equiv [Q.LiesOver p] {E : Type*} [EquivLike E B C]
     [AlgEquivClass E A B C] (σ : E) (h : P = Q.comap σ) : P.LiesOver p := by
   rw [← show _ = Q.comap σ from map_symm (σ : B ≃+* C)] at h
   exact of_eq_map_equiv p (σ : B ≃ₐ[A] C).symm h
+
+variable (P) (Q)
+
+instance map_equiv_liesOver [P.LiesOver p] {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C]
+    (σ : E) : (P.map σ).LiesOver p :=
+  LiesOver.of_eq_map_equiv p σ rfl
+
+instance comap_equiv_liesOver [Q.LiesOver p] {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C]
+    (σ : E) : (Q.comap σ).LiesOver p :=
+  LiesOver.of_eq_comap_equiv p σ rfl
 
 end Semiring
 
@@ -541,7 +555,14 @@ theorem algebraMap_injective_of_liesOver :
   exact Quotient.eq.mp hab
 
 instance [P.IsPrime] : NoZeroSMulDivisors (A ⧸ p) (B ⧸ P) :=
-  NoZeroSMulDivisors.of_algebraMap_injective (Quotient.algebraMap_injective_of_liesOver P p)
+  NoZeroSMulDivisors.of_algebraMap_injective (algebraMap_injective_of_liesOver P p)
+
+variable {p} in
+theorem nontrivial_of_liesOver_ne_top (hp : p ≠ ⊤) : Nontrivial (B ⧸ P) :=
+  Quotient.nontrivial ((eq_top_iff_liesOver_eq_top P p).mp.mt hp)
+
+theorem nontrivial_of_liesOver_isPrime [hp : p.IsPrime] : Nontrivial (B ⧸ P) :=
+  nontrivial_of_liesOver_ne_top P hp.ne_top
 
 variable {P}
 
