@@ -99,8 +99,7 @@ theorem comap_conGen_of_bijective {M N : Type*} [Mul M] [Mul N] (f : M → N)
     | of x y h =>
       intro _ _ fa fb
       apply ConGen.Rel.of
-      rw [fa, fb]
-      exact h
+      rwa [fa, fb]
     | refl x =>
       intro _ _ fc fd
       rw [hf.1 (fc.trans fd.symm)]
