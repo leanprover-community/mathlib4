@@ -51,7 +51,7 @@ lemma nndist_pi_le_iff {f g : ∀ b, π b} {r : ℝ≥0} :
 
 lemma nndist_pi_lt_iff {f g : ∀ b, π b} {r : ℝ≥0} (hr : 0 < r) :
     nndist f g < r ↔ ∀ b, nndist (f b) (g b) < r := by
-  rw [← bot_eq_zero'] at hr
+  rw [← bot_eq_zero] at hr
   simp [nndist_pi_def, Finset.sup_lt_iff hr]
 
 lemma nndist_pi_eq_iff {f g : ∀ b, π b} {r : ℝ≥0} (hr : 0 < r) :

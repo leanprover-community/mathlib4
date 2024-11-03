@@ -391,7 +391,7 @@ theorem preVal_add (x y : ModP K v O hv p) :
   rw [preVal_mk hx0, preVal_mk hy0, preVal_mk hxy0, RingHom.map_add]; exact v.map_add _ _
 
 theorem v_p_lt_preVal {x : ModP K v O hv p} : v p < preVal K v O hv p x ↔ x ≠ 0 := by
-  refine ⟨fun h hx => by rw [hx, preVal_zero] at h; exact not_lt_zero' h,
+  refine ⟨fun h hx => by rw [hx, preVal_zero] at h; exact not_lt_zero h,
     fun h => lt_of_not_le fun hp => h ?_⟩
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   rw [preVal_mk h, ← map_natCast (algebraMap O K) p, hv.le_iff_dvd] at hp
@@ -401,7 +401,7 @@ theorem preVal_eq_zero {x : ModP K v O hv p} : preVal K v O hv p x = 0 ↔ x = 0
   ⟨fun hvx =>
     by_contradiction fun hx0 : x ≠ 0 => by
       rw [← v_p_lt_preVal, hvx] at hx0
-      exact not_lt_zero' hx0,
+      exact not_lt_zero hx0,
     fun hx => hx.symm ▸ preVal_zero⟩
 
 variable (hv) -- Porting note: Originally `(hv hvp)`. Removed `(hvp)` because it caused an error.

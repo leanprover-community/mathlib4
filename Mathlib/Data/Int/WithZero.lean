@@ -81,9 +81,9 @@ theorem toNNReal_strictMono {e : NNReal} (he : 1 < e) :
   intro x y hxy
   simp only [toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs with hx hy hy
-  · simp only [hy, not_lt_zero'] at hxy
+  · simp only [hy, not_lt_zero] at hxy
   · exact zpow_pos he.bot_lt _
-  · simp only [hy, not_lt_zero'] at hxy
+  · simp only [hy, not_lt_zero] at hxy
   · rw [zpow_lt_zpow_iff_right₀ he, Multiplicative.toAdd_lt, ← coe_lt_coe, coe_unzero hx,
       WithZero.coe_unzero hy]
     exact hxy

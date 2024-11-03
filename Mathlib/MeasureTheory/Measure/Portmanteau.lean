@@ -406,7 +406,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
     (F : Set Ω) (F_closed : IsClosed F) :
     L.limsup (fun i ↦ μs i F) ≤ μ F := by
   rcases L.eq_or_neBot with rfl | _
-  · simp only [limsup_bot, bot_eq_zero', zero_le]
+  · simp only [limsup_bot, bot_eq_zero, zero_le]
   have ex := exists_null_frontiers_thickening μ F
   let rs := Classical.choose ex
   have rs_lim : Tendsto rs atTop (𝓝 0) := (Classical.choose_spec ex).1

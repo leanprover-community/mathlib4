@@ -155,7 +155,7 @@ lemma nontrivial_of_diam_ne_zero (h : G.diam ≠ 0) : Nontrivial α := by
 
 lemma diam_eq_zero_of_not_connected (h : ¬G.Connected) : G.diam = 0 := by
   cases isEmpty_or_nonempty α
-  · rw [diam, ediam, ciSup_of_empty, bot_eq_zero']; rfl
+  · rw [diam, ediam, ciSup_of_empty, bot_eq_zero]; rfl
   · rw [diam, ediam_eq_top_of_not_connected h, ENat.toNat_top]
 
 lemma diam_eq_zero_of_ediam_eq_top (h : G.ediam = ⊤) : G.diam = 0 := by

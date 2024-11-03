@@ -347,7 +347,7 @@ theorem totalDegree_le_of_support_subset (h : p.support ⊆ q.support) :
 
 @[simp]
 theorem totalDegree_C (a : R) : (C a : MvPolynomial σ R).totalDegree = 0 :=
-  (supDegree_single 0 a).trans <| by rw [sum_zero_index, bot_eq_zero', ite_self]
+  (supDegree_single 0 a).trans <| by rw [sum_zero_index, bot_eq_zero, ite_self]
 
 @[simp]
 theorem totalDegree_zero : (0 : MvPolynomial σ R).totalDegree = 0 := by

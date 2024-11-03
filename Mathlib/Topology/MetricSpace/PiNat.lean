@@ -76,7 +76,7 @@ theorem apply_eq_of_lt_firstDiff {x y : ∀ n, E n} {n : ℕ} (hn : n < firstDif
   split_ifs at hn with h
   · convert Nat.find_min (ne_iff.1 h) hn
     simp
-  · exact (not_lt_zero' hn).elim
+  · exact (not_lt_zero hn).elim
 
 theorem firstDiff_comm (x y : ∀ n, E n) : firstDiff x y = firstDiff y x := by
   classical

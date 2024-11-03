@@ -18,13 +18,13 @@ variable {α : Type*} {x y : α}
 
 /-- A class for types whose bottom element is zero. Declaring this instance makes `0` the preferred
 form for `⊥`. -/
-class ZeroLEClass (α : Type*) [LE α] [Zero α] where
+class ZeroLEClass (α : Type*) [LE α] [Zero α] : Prop where
   zero_le (x : α) : 0 ≤ x
 
 /-- A class for types whose bottom element is one. Declaring this instance makes `1` the preferred
 form for `⊥`. -/
 @[to_additive ZeroLEClass]
-class OneLEClass (α : Type*) [LE α] [One α] where
+class OneLEClass (α : Type*) [LE α] [One α] : Prop where
   one_le (x : α) : 1 ≤ x
 
 @[to_additive (attr := simp) zero_le]

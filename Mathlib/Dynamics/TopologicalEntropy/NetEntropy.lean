@@ -157,7 +157,7 @@ lemma netMaxcard_empty {T : X → X} {U : Set (X × X)} {n : ℕ} : netMaxcard T
   intro s s_net
   replace s_net := subset_empty_iff.1 s_net.1
   norm_cast at s_net
-  rw [s_net, Finset.card_empty, CharP.cast_eq_zero, bot_eq_zero']
+  rw [s_net, Finset.card_empty, CharP.cast_eq_zero, bot_eq_zero]
 
 lemma netMaxcard_eq_zero_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) :
     netMaxcard T F U n = 0 ↔ F = ∅ := by
