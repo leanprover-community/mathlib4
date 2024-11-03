@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
-import Mathlib.Algebra.Order.ZeroLEClass
+import Mathlib.Algebra.Order.ZeroLE
 import Mathlib.Algebra.Ring.Rat
 
 /-!
