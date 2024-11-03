@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.Module.UniformConvergence
-import Mathlib.Tactic.Peel
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Hom.ContinuousEvalConst
 
@@ -517,10 +516,8 @@ def compSL [TopologicalAddGroup F] [TopologicalAddGroup G]
       (ContinuousLinearMap.hasBasis_nhds_zero_of_basis
         ContinuousLinearMap.hasBasis_nhds_zero).tendsto_right_iff]
     rintro ⟨S, s, U⟩ ⟨hS, hs, hU⟩
-    filter_upwards [UniformConvergenceCLM.gen_mem_nhds_zero τ
-      (𝔖 := {s : Set F | Bornology.IsVonNBounded 𝕜₂ s})
-      (UniformConvergenceCLM.isVonNBounded_image2_apply hS hs) hU] with g hg f hf x hx
-    exact hg <| mem_image2_of_mem hf hx
+    filter_upwards [eventually_nhds_zero_mapsTo (isVonNBounded_image2_apply hS hs) hU]
+      with g hg f hf x hx using hg <| mem_image2_of_mem hf hx
 
 end BoundedSets
 
