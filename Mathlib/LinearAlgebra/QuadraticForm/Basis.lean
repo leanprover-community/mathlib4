@@ -109,21 +109,17 @@ lemma toBilin_symm_eq_Polar (Q : QuadraticMap R M N) (bm : Basis ι R M) :
   symm
   calc Q (a + b) - Q a - Q b = (Q.toBilin bm).toQuadraticMap (a + b) - Q a - Q b := by
         rw [ toQuadraticMap_toBilin Q]
-  _ = (Q.toBilin bm) (a + b) (a + b) - Q a - Q b := by rw [LinearMap.BilinMap.toQuadraticMap_apply]
-  _ = ((Q.toBilin bm) (a + b) a + (Q.toBilin bm) (a + b) b) - Q a - Q b := by rw [map_add]
   _ = (((Q.toBilin bm) a a + (Q.toBilin bm) b a) + (Q.toBilin bm) (a + b) b) - Q a - Q b := by
-    rw [map_add, LinearMap.add_apply]
+    rw [LinearMap.BilinMap.toQuadraticMap_apply, map_add, map_add, LinearMap.add_apply]
   _ = (((Q.toBilin bm).toQuadraticMap a + (Q.toBilin bm) b a) + (Q.toBilin bm) (a + b) b) - Q a
     - Q b := by rw [LinearMap.BilinMap.toQuadraticMap_apply]
   _ = ((Q a + (Q.toBilin bm) b a) + (Q.toBilin bm) (a + b) b) - Q a - Q b := by
     rw [ toQuadraticMap_toBilin Q]
-  _ = ((Q a + (Q.toBilin bm) b a) + ((Q.toBilin bm) a b + (Q.toBilin bm) b b)) - Q a - Q b := by
-    rw [map_add, LinearMap.add_apply]
   _ = ((Q a + (Q.toBilin bm) b a) + ((Q.toBilin bm) a b + (Q.toBilin bm).toQuadraticMap b)) - Q a
-    - Q b := by rw [LinearMap.BilinMap.toQuadraticMap_apply]
+    - Q b := by rw [map_add, LinearMap.add_apply,
+      LinearMap.BilinMap.toQuadraticMap_apply (Q.toBilin bm) b]
   _ = ((Q a + (Q.toBilin bm) b a) + ((Q.toBilin bm) a b + Q b)) - Q a - Q b := by
     rw [ toQuadraticMap_toBilin Q]
   _ = ((Q.toBilin bm) a) b + ((Q.toBilin bm) b) a := by abel
-
 
 end QuadraticMap
