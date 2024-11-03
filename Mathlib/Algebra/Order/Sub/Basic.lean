@@ -130,8 +130,7 @@ protected theorem tsub_lt_self (ha : AddLECancellable a) (h₁ : 0 < a) (h₂ : 
   exact h₂.not_le (ha.add_le_iff_nonpos_left.1 <| add_le_of_le_tsub_left_of_le h₁.le h.ge)
 
 protected theorem tsub_lt_self_iff (ha : AddLECancellable a) : a - b < a ↔ 0 < a ∧ 0 < b := by
-  refine
-    ⟨fun h => ⟨zero_le.trans_lt h, zero_le.lt_of_ne ?_⟩, fun h => ha.tsub_lt_self h.1 h.2⟩
+  refine ⟨fun h => ⟨h.pos, pos_of_ne ?_⟩, fun h => ha.tsub_lt_self h.1 h.2⟩
   rintro rfl
   rw [tsub_zero] at h
   exact h.false

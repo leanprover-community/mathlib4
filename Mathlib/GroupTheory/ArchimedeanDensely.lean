@@ -238,7 +238,7 @@ lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G�
     · lift y to G₀ˣ using h.ne'.isUnit
       obtain ⟨z, hz⟩ := exists_ne (1 : G₀ˣ)
       refine ⟨(y * |z|ₘ⁻¹ : G₀ˣ), ?_, ?_⟩
-      · simp [zero_lt_iff]
+      · simp [pos_iff_ne_zero]
       · rw [Units.val_lt_val]
         simp [hz]
     · obtain ⟨z, hz, hz'⟩ := H.dense (Units.mk0 x hx.ne') (Units.mk0 y (hx.trans h).ne')

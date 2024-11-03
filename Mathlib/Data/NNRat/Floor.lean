@@ -68,13 +68,13 @@ theorem intFloor_cast (x : ℚ≥0) : ⌊(x : K)⌋ = ⌊(x : ℚ)⌋ := by
   rw [Int.floor_eq_iff (α := K), ← coe_floor]
   norm_cast
   norm_cast
-  rw [Nat.cast_add_one, ← Nat.floor_eq_iff (zero_le _)]
+  rw [Nat.cast_add_one, ← Nat.floor_eq_iff zero_le]
 
 @[simp, norm_cast]
 theorem intCeil_cast (x : ℚ≥0) : ⌈(x : K)⌉ = ⌈(x : ℚ)⌉ := by
   rw [Int.ceil_eq_iff, ← coe_ceil, sub_lt_iff_lt_add]
   constructor
-  · have := NNRat.cast_strictMono (K := K) <| Nat.ceil_lt_add_one <| zero_le x
+  · have := NNRat.cast_strictMono (K := K) <| Nat.ceil_lt_add_one zero_le
     rw [NNRat.cast_add, NNRat.cast_one] at this
     refine Eq.trans_lt ?_ this
     norm_cast
