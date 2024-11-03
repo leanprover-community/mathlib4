@@ -584,7 +584,7 @@ namespace WeierstrassCurve.Affine.Point
 
 /-! ## Elliptic curves in affine coordinates -/
 
-variable {R : Type*} [Nontrivial R] [CommRing R] (E : WeierstrassCurve R) [E.Elliptic]
+variable {R : Type*} [Nontrivial R] [CommRing R] (E : WeierstrassCurve R) [E.IsElliptic]
 
 /-- An affine point on an elliptic curve `E` over `R`. -/
 def mk {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Point :=

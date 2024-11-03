@@ -26,13 +26,13 @@ variable {F : Type*} [Field F] [IsSepClosed F]
 
 namespace WeierstrassCurve
 
-variable (E E' : WeierstrassCurve F) [E.Elliptic] [E'.Elliptic]
+variable (E E' : WeierstrassCurve F) [E.IsElliptic] [E'.IsElliptic]
 
 section CharTwo
 
 variable [CharP F 2]
 
-omit [E.Elliptic] [E'.Elliptic] in
+omit [E.IsElliptic] [E'.IsElliptic] in
 private lemma exists_variableChange_of_char_two_of_j_ne_zero
     [E.IsCharTwoJNeZeroNF] [E'.IsCharTwoJNeZeroNF] (heq : E.a₆ = E'.a₆) :
     ∃ C : VariableChange F, E.variableChange C = E' := by

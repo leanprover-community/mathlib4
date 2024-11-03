@@ -239,7 +239,7 @@ theorem Δ_of_isShortNF_of_char_three : W.Δ = -W.a₄ ^ 3 := by
   rw [Δ_of_isShortNF]
   linear_combination (-21 * W.a₄ ^ 3 - 144 * W.a₆ ^ 2) * CharP.cast_eq_zero R 3
 
-variable (W : WeierstrassCurve F) [W.Elliptic] [W.IsShortNF]
+variable (W : WeierstrassCurve F) [W.IsElliptic] [W.IsShortNF]
 
 theorem j_of_isShortNF :
     W.j = 6912 * W.a₄ ^ 3 / (4 * W.a₄ ^ 3 + 27 * W.a₆ ^ 2) := by
@@ -344,7 +344,7 @@ theorem Δ_of_isCharThreeJNeZeroNF_of_char_three : W.Δ = -W.a₂ ^ 3 * W.a₆ :
   rw [Δ_of_isCharThreeJNeZeroNF]
   linear_combination (-21 * W.a₂ ^ 3 * W.a₆ - 144 * W.a₆ ^ 2) * CharP.cast_eq_zero R 3
 
-variable (W : WeierstrassCurve F) [W.Elliptic] [W.IsCharThreeJNeZeroNF] [CharP F 3]
+variable (W : WeierstrassCurve F) [W.IsElliptic] [W.IsCharThreeJNeZeroNF] [CharP F 3]
 
 @[simp]
 theorem j_of_isCharThreeJNeZeroNF_of_char_three : W.j = -W.a₂ ^ 3 / W.a₆ := by
@@ -529,7 +529,7 @@ theorem Δ_of_isCharTwoJNeZeroNF_of_char_two : W.Δ = W.a₆ := by
     b₆_of_isCharTwoJNeZeroNF_of_char_two, b₈_of_isCharTwoJNeZeroNF_of_char_two]
   linear_combination -W.a₆ * CharP.cast_eq_zero R 2
 
-variable (W : WeierstrassCurve F) [W.Elliptic] [W.IsCharTwoJNeZeroNF] [CharP F 2]
+variable (W : WeierstrassCurve F) [W.IsElliptic] [W.IsCharTwoJNeZeroNF] [CharP F 2]
 
 @[simp]
 theorem j_of_isCharTwoJNeZeroNF_of_char_two : W.j = 1 / W.a₆ := by
@@ -615,7 +615,7 @@ theorem Δ_of_isCharTwoJEqZeroNF_of_char_two : W.Δ = W.a₃ ^ 4 := by
   rw [Δ_of_isCharTwoJEqZeroNF, b₆_of_char_two]
   linear_combination (-32 * W.a₄ ^ 3 - 14 * W.a₃ ^ 4) * CharP.cast_eq_zero R 2
 
-variable (W : WeierstrassCurve F) [W.Elliptic] [W.IsCharTwoJEqZeroNF]
+variable (W : WeierstrassCurve F) [W.IsElliptic] [W.IsCharTwoJEqZeroNF]
 
 theorem j_of_isCharTwoJEqZeroNF : W.j = 110592 * W.a₄ ^ 3 / (64 * W.a₄ ^ 3 + 27 * W.b₆ ^ 2) := by
   have h := W.Δ'.ne_zero

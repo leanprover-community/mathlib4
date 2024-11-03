@@ -951,7 +951,7 @@ end BaseChange
 
 section EllipticCurve
 
-variable {R : Type u} [CommRing R] (E : WeierstrassCurve R) [E.Elliptic]
+variable {R : Type u} [CommRing R] (E : WeierstrassCurve R) [E.IsElliptic]
 
 lemma nonsingular [Nontrivial R] {x y : R} (h : E.toAffine.Equation x y) :
     E.toAffine.Nonsingular x y :=

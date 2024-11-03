@@ -272,13 +272,13 @@ end BaseChange
 
 /-! ## Variable changes of elliptic curves -/
 
-variable [W.Elliptic] (C : VariableChange R)
+variable [W.IsElliptic] (C : VariableChange R)
 
 section VariableChange
 
-instance Elliptic.variableChange : (W.variableChange C).Elliptic :=
-  Invertible.copy
-    ((@invertiblePow _ _ _ (Units.invertible _) 12).mul ‹Invertible W.Δ›) _ (W.variableChange_Δ C)
+instance IsElliptic.variableChange : (W.variableChange C).IsElliptic := by
+  rw [isElliptic_iff, variableChange_Δ]
+  exact (C.u⁻¹.isUnit.pow 12).mul W.isUnit_Δ
 
 set_option linter.docPrime false in
 @[simp]

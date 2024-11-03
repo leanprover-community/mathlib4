@@ -33,7 +33,7 @@ splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsi
  * `WeierstrassCurve.Δ`: the discriminant of a Weierstrass curve.
  * `WeierstrassCurve.map`: the Weierstrass curve mapped over a ring homomorphism.
  * `WeierstrassCurve.twoTorsionPolynomial`: the 2-torsion polynomial of a Weierstrass curve.
- * `WeierstrassCurve.Elliptic`: typeclass asserts that a Weierstrass curve is an elliptic curve.
+ * `WeierstrassCurve.IsElliptic`: typeclass asserts that a Weierstrass curve is an elliptic curve.
  * `WeierstrassCurve.j`: the j-invariant of an elliptic curve.
  * `WeierstrassCurve.ofJ0`: an elliptic curve whose j-invariant is 0.
  * `WeierstrassCurve.ofJ1728`: an elliptic curve whose j-invariant is 1728.
@@ -401,30 +401,20 @@ end ModelsWithJ
 
 /-! ## Elliptic curves -/
 
-/-- `WeierstrassCurve.Elliptic` is a typeclass which asserts that a Weierstrass curve is an
-elliptic curve, that is, its discriminant is invertible.
-It is a `Type` rather than `Prop` since it contains
-a (unique) choice of the inverse of the discriminant.
+/-- `WeierstrassCurve.IsElliptic` is a typeclass which asserts that a Weierstrass curve is an
+elliptic curve, that is, its discriminant is a unit.
 Note that this definition is only mathematically
 accurate for certain rings whose Picard group has trivial 12-torsion, such as a field or a PID. -/
-protected abbrev Elliptic := Invertible W.Δ
+@[mk_iff]
+protected class IsElliptic : Prop where
+  isUnit : IsUnit W.Δ
 
-variable [W.Elliptic]
+variable [W.IsElliptic]
 
-variable {W} in
-/-- If two Weierstrass curves are equal, one is an elliptic curve, then another one is also
-an elliptic curve. -/
-abbrev Elliptic.copy (W' : WeierstrassCurve R) (h : W' = W) : W'.Elliptic :=
-  Invertible.copy ‹Invertible W.Δ› W'.Δ (by rw [h])
+lemma isUnit_Δ : IsUnit W.Δ := IsElliptic.isUnit
 
 /-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`. -/
-def Δ' : Rˣ := unitOfInvertible W.Δ
-
-@[congr]
-lemma Δ'_eq_of_eq (W' : WeierstrassCurve R) [W'.Elliptic] (h : W = W') : W.Δ' = W'.Δ' := by
-  subst h
-  congr
-  apply Subsingleton.allEq
+noncomputable def Δ' : Rˣ := W.isUnit_Δ.unit
 
 /-- The discriminant `Δ'` of an elliptic curve is equal to the
 discriminant `Δ` of it as a Weierstrass curve. -/
@@ -432,12 +422,8 @@ discriminant `Δ` of it as a Weierstrass curve. -/
 lemma coe_Δ' : W.Δ' = W.Δ := rfl
 
 /-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`. -/
-def j : R :=
+noncomputable def j : R :=
   W.Δ'⁻¹ * W.c₄ ^ 3
-
-@[congr]
-lemma j_eq_of_eq (W' : WeierstrassCurve R) [W'.Elliptic] (h : W = W') : W.j = W'.j := by
-  simp_rw [j, Δ'_eq_of_eq _ _ h, h]
 
 /-- A variant of `WeierstrassCurve.j_eq_zero_iff` without assuming a reduced ring. -/
 lemma j_eq_zero_iff' : W.j = 0 ↔ W.c₄ ^ 3 = 0 := by
@@ -487,9 +473,9 @@ lemma j_eq_zero_iff_of_char_three [IsReduced R] : W.j = 0 ↔ W.b₂ = 0 := by
 
 end CharThree
 
-lemma twoTorsionPolynomial_disc_ne_zero_of_elliptic [Nontrivial R] [Invertible (2 : R)] :
+lemma twoTorsionPolynomial_disc_ne_zero_of_isElliptic [Nontrivial R] [Invertible (2 : R)] :
     W.twoTorsionPolynomial.disc ≠ 0 :=
-  W.twoTorsionPolynomial_disc_ne_zero (isUnit_of_invertible _)
+  W.twoTorsionPolynomial_disc_ne_zero W.isUnit_Δ
 
 section BaseChange
 
@@ -497,7 +483,9 @@ section BaseChange
 
 variable {A : Type v} [CommRing A] (φ : R →+* A)
 
-instance Elliptic.map : (W.map φ).Elliptic := (Invertible.map φ W.Δ).copy _ (W.map_Δ _)
+instance IsElliptic.map : (W.map φ).IsElliptic := by
+  rw [isElliptic_iff, map_Δ]
+  exact W.isUnit_Δ.map φ
 
 set_option linter.docPrime false in
 lemma coe_map_Δ' : (W.map φ).Δ' = φ W.Δ' := by
@@ -509,8 +497,8 @@ lemma map_Δ' : (W.map φ).Δ' = (Units.map ↑φ) W.Δ' := by
   ext; exact W.coe_map_Δ' φ
 
 set_option linter.docPrime false in
-lemma coe_inv_map_Δ' : (W.map φ).Δ'⁻¹ = φ ↑W.Δ'⁻¹ :=
-  rfl
+lemma coe_inv_map_Δ' : (W.map φ).Δ'⁻¹ = φ ↑W.Δ'⁻¹ := by
+  simp
 
 @[simp]
 lemma map_j : (W.map φ).j = φ W.j := by
@@ -526,8 +514,10 @@ variable (R)
 
 /-- When 3 is invertible, $Y^2 + Y = X^3$ is an elliptic curve.
 It is of j-invariant 0 (see `WeierstrassCurve.ofJ0_j`). -/
-instance Elliptic.ofJ0 [Invertible (3 : R)] : (ofJ0 R).Elliptic :=
-  (invertibleNeg (3 ^ 3 : R)).copy _ (by rw [ofJ0_Δ R]; norm_num1)
+instance IsElliptic.ofJ0 [Invertible (3 : R)] : (ofJ0 R).IsElliptic := by
+  rw [isElliptic_iff, ofJ0_Δ R]
+  convert @isUnit_of_invertible _ _ _ (invertibleNeg (3 ^ 3 : R))
+  norm_num1
 
 lemma ofJ0_j [Invertible (3 : R)] : (ofJ0 R).j = 0 := by
   simp only [j, ofJ0_c₄]
@@ -535,8 +525,10 @@ lemma ofJ0_j [Invertible (3 : R)] : (ofJ0 R).j = 0 := by
 
 /-- When 2 is invertible, $Y^2 = X^3 + X$ is an elliptic curve.
 It is of j-invariant 1728 (see `WeierstrassCurve.ofJ1728_j`). -/
-instance Elliptic.ofJ1728 [Invertible (2 : R)] : (ofJ1728 R).Elliptic :=
-  (invertibleNeg (2 ^ 6 : R)).copy _ (by rw [ofJ1728_Δ R]; norm_num1)
+instance IsElliptic.ofJ1728 [Invertible (2 : R)] : (ofJ1728 R).IsElliptic := by
+  rw [isElliptic_iff, ofJ1728_Δ R]
+  convert @isUnit_of_invertible _ _ _ (invertibleNeg (2 ^ 6 : R))
+  norm_num1
 
 lemma ofJ1728_j [Invertible (2 : R)] : (ofJ1728 R).j = 1728 := by
   field_simp [j, ofJ1728_c₄, ofJ1728_Δ]
@@ -547,9 +539,10 @@ variable {R}
 /-- When j and j - 1728 are both invertible,
 $Y^2 + (j - 1728)XY = X^3 - 36(j - 1728)^3X - (j - 1728)^5$ is an elliptic curve.
 It is of j-invariant j (see `WeierstrassCurve.ofJNe0Or1728_j`). -/
-instance Elliptic.ofJNe0Or1728 (j : R) [Invertible j] [Invertible (j - 1728)] :
-    (ofJNe0Or1728 j).Elliptic :=
-  (invertibleMul (j ^ 2) ((j - 1728) ^ 9)).copy _ (ofJNe0Or1728_Δ j)
+instance IsElliptic.ofJNe0Or1728 (j : R) [Invertible j] [Invertible (j - 1728)] :
+    (ofJNe0Or1728 j).IsElliptic := by
+  rw [isElliptic_iff, ofJNe0Or1728_Δ j]
+  exact @isUnit_of_invertible _ _ _ (invertibleMul (j ^ 2) ((j - 1728) ^ 9))
 
 lemma ofJNe0Or1728_j (j : R) [Invertible j] [Invertible (j - 1728)] :
     (ofJNe0Or1728 j).j = j := by
@@ -609,46 +602,48 @@ lemma ofJ_ne_0_ne_1728 (h0 : j ≠ 0) (h1728 : j ≠ 1728) : ofJ j =
     ofJNe0Or1728 j := by
   rw [ofJ, if_neg h0, if_neg h1728]
 
-instance Elliptic.ofJ : (ofJ j).Elliptic :=
-  if h0 : j = 0 then
-    if h3 : (3 : F) = 0 then
-      have h : (2 : F) * 2 = 1 := by linear_combination h3
+instance IsElliptic.ofJ : (ofJ j).IsElliptic := by
+  by_cases h0 : j = 0
+  · by_cases h3 : (3 : F) = 0
+    · have h : (2 : F) * 2 = 1 := by linear_combination h3
       letI : Invertible (2 : F) := ⟨2, h, h⟩
-      Elliptic.copy _ (h0 ▸ ofJ_0_of_three_eq_zero h3)
-    else
-      haveI := NeZero.mk h3
+      rw [h0, ofJ_0_of_three_eq_zero h3]
+      infer_instance
+    · haveI := NeZero.mk h3
       letI := invertibleOfNonzero h3
-      Elliptic.copy _ (h0 ▸ ofJ_0_of_three_ne_zero)
-  else if h1728 : j = 1728 then
-    have h2 : (2 : F) ≠ 0 := fun h ↦ h0 (by linear_combination h1728 + 864 * h)
-    haveI := NeZero.mk h2
-    letI := invertibleOfNonzero h2
-    Elliptic.copy _ (h1728 ▸ ofJ_1728_of_two_ne_zero)
-  else
-    letI := invertibleOfNonzero h0
-    letI := invertibleOfNonzero (sub_ne_zero.2 h1728)
-    Elliptic.copy _ (ofJ_ne_0_ne_1728 j h0 h1728)
+      rw [h0, ofJ_0_of_three_ne_zero]
+      infer_instance
+  · by_cases h1728 : j = 1728
+    · have h2 : (2 : F) ≠ 0 := fun h ↦ h0 (by linear_combination h1728 + 864 * h)
+      haveI := NeZero.mk h2
+      letI := invertibleOfNonzero h2
+      rw [h1728, ofJ_1728_of_two_ne_zero]
+      infer_instance
+    · letI := invertibleOfNonzero h0
+      letI := invertibleOfNonzero (sub_ne_zero.2 h1728)
+      rw [ofJ_ne_0_ne_1728 j h0 h1728]
+      infer_instance
 
 lemma ofJ_j : (ofJ j).j = j := by
   by_cases h0 : j = 0
   · by_cases h3 : (3 : F) = 0
     · have h : (2 : F) * 2 = 1 := by linear_combination h3
       letI : Invertible (2 : F) := ⟨2, h, h⟩
-      rw [j_eq_of_eq _ _ (h0 ▸ ofJ_0_of_three_eq_zero h3), ofJ1728_j, h0]
+      simp_rw [h0, ofJ_0_of_three_eq_zero h3, ofJ1728_j]
       linear_combination 576 * h3
     · haveI := NeZero.mk h3
       letI := invertibleOfNonzero h3
-      rw [j_eq_of_eq _ _ (h0 ▸ ofJ_0_of_three_ne_zero), ofJ0_j, h0]
+      simp_rw [h0, ofJ_0_of_three_ne_zero, ofJ0_j]
   · by_cases h1728 : j = 1728
     · have h2 : (2 : F) ≠ 0 := fun h ↦ h0 (by linear_combination h1728 + 864 * h)
       haveI := NeZero.mk h2
       letI := invertibleOfNonzero h2
-      rw [j_eq_of_eq _ _ (h1728 ▸ ofJ_1728_of_two_ne_zero), ofJ1728_j, h1728]
+      simp_rw [h1728, ofJ_1728_of_two_ne_zero, ofJ1728_j]
     · letI := invertibleOfNonzero h0
       letI := invertibleOfNonzero (sub_ne_zero.2 h1728)
-      rw [j_eq_of_eq _ _ (ofJ_ne_0_ne_1728 j h0 h1728), ofJNe0Or1728_j]
+      simp_rw [ofJ_ne_0_ne_1728 j h0 h1728, ofJNe0Or1728_j]
 
-instance instInhabitedElliptic : Inhabited ((W : WeierstrassCurve F) × W.Elliptic) :=
+instance instInhabitedIsElliptic : Inhabited { W : WeierstrassCurve F // W.IsElliptic } :=
   ⟨⟨ofJ 37, inferInstance⟩⟩
 
 end ModelsWithJ
