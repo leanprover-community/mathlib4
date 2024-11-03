@@ -215,11 +215,13 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
       haveI' w : decide ($n < 0) =Q true := ⟨⟩
       pure (.nonzero q(nz_of_isRat $p $w))
 
-/-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddCommMonoid`. -/
+/-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddCommMonoid`.
+
+TODO: take in a `ZeroLEClass` hypothesis instead. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
   let _i ← synthInstanceQ (q(CanonicallyOrderedAddCommMonoid $α) : Q(Type u))
   assumeInstancesCommute
-  pure (.nonnegative q(zero_le $e))
+  pure (.nonnegative q(zero_le (x := $e)))
 
 /-- A variation on `assumption` when the hypothesis is `lo ≤ e` where `lo` is a numeral. -/
 def compareHypLE (lo e : Q($α)) (p₂ : Q($lo ≤ $e)) : MetaM (Strictness zα pα e) := do

@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.Order.ZeroLE
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Order.WithBot
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
@@ -75,6 +75,12 @@ protected theorem map_one {β} (f : α → β) : (1 : WithTop α).map f = (f 1 :
 
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
+
+instance zeroLEClass [Zero α] [LE α] [ZeroLEClass α] : ZeroLEClass (WithTop α) where
+  zero_le x := by
+    cases x
+    · exact le_top
+    · exact coe_le_coe.2 zero_le
 
 end One
 

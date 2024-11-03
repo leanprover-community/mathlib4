@@ -35,6 +35,12 @@ instance (priority := 100) ZeroLEClass.toZeroLEOneClass [LE α] [Zero α] [One �
     ZeroLEOneClass α :=
   ⟨zero_le _⟩
 
+/-- Defines an `OrderBot` instance using `⊥ = 1`. -/
+@[to_additive "Defines an `OrderBot` instance using `⊥ = 0`."]
+def OneLEClass.toOrderBot (α : Type*) [LE α] [One α] [OneLEClass α] : OrderBot α := by
+  letI : Bot α := ⟨1⟩
+  exact ⟨one_le⟩
+
 section Preorder
 
 variable [Preorder α] [One α] [OneLEClass α]
@@ -118,6 +124,11 @@ theorem one_min (a : α) : min 1 a = 1 :=
 @[to_additive (attr := simp)]
 theorem min_one (a : α) : min a 1 = 1 :=
   min_eq_right one_le
+
+@[to_additive (attr := simp)]
+theorem max_eq_one_iff {a b : α} : max a b = 1 ↔ a = 1 ∧ b = 1 := by
+  letI := OneLEClass.toOrderBot α
+  rw [← bot_eq_one, max_eq_bot]
 
 end LinearOrder
 

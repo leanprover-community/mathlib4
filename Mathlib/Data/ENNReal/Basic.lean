@@ -106,6 +106,7 @@ namespace ENNReal
 instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
 instance : BoundedOrder ℝ≥0∞ := inferInstanceAs (BoundedOrder (WithTop ℝ≥0))
 instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
+instance : ZeroLEClass ℝ≥0∞ := inferInstanceAs (ZeroLEClass (WithTop ℝ≥0))
 
 noncomputable instance : CanonicallyOrderedCommSemiring ℝ≥0∞ :=
   inferInstanceAs (CanonicallyOrderedCommSemiring (WithTop ℝ≥0))
@@ -141,7 +142,7 @@ noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
   { inferInstanceAs (LinearOrderedAddCommMonoidWithTop ℝ≥0∞),
       inferInstanceAs (CommSemiring ℝ≥0∞) with
     mul_le_mul_left := fun _ _ => mul_le_mul_left'
-    zero_le_one := zero_le 1 }
+    zero_le_one := zero_le }
 
 noncomputable instance : Unique (AddUnits ℝ≥0∞) where
   default := 0
@@ -439,7 +440,8 @@ def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
 
 section Order
 
-theorem bot_eq_zero : (⊥ : ℝ≥0∞) = 0 := rfl
+@[deprecated _root_.bot_eq_zero (since := "2024-11-02")]
+protected theorem bot_eq_zero : (⊥ : ℝ≥0∞) = 0 := rfl
 
 -- `coe_lt_top` moved up
 
@@ -506,13 +508,16 @@ theorem toReal_le_coe_of_le_coe {a : ℝ≥0∞} {b : ℝ≥0} (h : a ≤ b) : a
   lift a to ℝ≥0 using ne_top_of_le_ne_top coe_ne_top h
   simpa using h
 
-@[simp] theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
+@[deprecated _root_.max_eq_zero_iff (since := "2024-11-02")]
+protected theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
 
+@[deprecated zero_max (since := "2024-11-02")]
 theorem max_zero_left : max 0 a = a :=
-  max_eq_right (zero_le a)
+  zero_max a
 
+@[deprecated max_zero (since := "2024-11-02")]
 theorem max_zero_right : max a 0 = a :=
-  max_eq_left (zero_le a)
+  max_zero a
 
 @[simp] theorem sup_eq_max : a ⊔ b = max a b := rfl
 
