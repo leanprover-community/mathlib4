@@ -133,8 +133,8 @@ theorem dfinsuppFamily_single [∀ i, DecidableEq (κ i)]
     apply (f q).map_coord_zero i
     simp_rw [DFinsupp.single_eq_of_ne hpqi]
 
-/-- When only one member of the family of linear maps is nonzero, the result consists only of the
-component from that member. -/
+/-- When only one member of the family of multilinear maps is nonzero, the result consists only of
+the component from that member. -/
 @[simp]
 theorem dfinsuppFamily_single_left_apply [∀ i, DecidableEq (κ i)]
     (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) (x):
