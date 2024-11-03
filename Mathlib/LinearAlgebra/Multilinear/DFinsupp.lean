@@ -95,14 +95,15 @@ def dfinsuppFamily
         push_neg at h
         refine ⟨fun i _ => p i, fun i => (s i).prop _ |>.resolve_right ?_, rfl⟩
         exact mt ((f p).map_coord_zero (m := fun i => x i _) i) h⟩}
-  map_add' {dec} m i x y := DFinsupp.ext fun p => by
+  map_update_add' {dec} m i x y := DFinsupp.ext fun p => by
     cases Subsingleton.elim dec (by infer_instance)
     dsimp
-    simp_rw [Function.apply_update (fun i m => m (p i)) m, DFinsupp.add_apply, (f p).map_add]
-  map_smul' {dec} m i c x := DFinsupp.ext fun p => by
+    simp_rw [Function.apply_update (fun i m => m (p i)) m, DFinsupp.add_apply, (f p).map_update_add]
+  map_update_smul' {dec} m i c x := DFinsupp.ext fun p => by
     cases Subsingleton.elim dec (by infer_instance)
     dsimp
-    simp_rw [Function.apply_update (fun i m => m (p i)) m, DFinsupp.smul_apply, (f p).map_smul]
+    simp_rw [Function.apply_update (fun i m => m (p i)) m, DFinsupp.smul_apply,
+      (f p).map_update_smul]
 
 theorem support_dfinsuppFamily_subset
     [∀ i, DecidableEq (κ i)]

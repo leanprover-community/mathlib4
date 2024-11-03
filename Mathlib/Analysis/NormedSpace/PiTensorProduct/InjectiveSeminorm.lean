@@ -418,15 +418,16 @@ open Function in
 protected theorem mapL_add [DecidableEq ι] (i : ι) (u v : E i →L[𝕜] E' i) :
     mapL (update f i (u + v)) = mapL (update f i u) + mapL (update f i v) := by
   ext x
-  simp only [mapL_apply, mapL_add_smul_aux, ContinuousLinearMap.coe_add, PiTensorProduct.map_add,
-    LinearMap.add_apply, ContinuousLinearMap.add_apply]
+  simp only [mapL_apply, mapL_add_smul_aux, ContinuousLinearMap.coe_add,
+    PiTensorProduct.map_update_add, LinearMap.add_apply, ContinuousLinearMap.add_apply]
 
 open Function in
 protected theorem mapL_smul [DecidableEq ι] (i : ι) (c : 𝕜) (u : E i →L[𝕜] E' i) :
     mapL (update f i (c • u)) = c • mapL (update f i u) := by
   ext x
-  simp only [mapL_apply, mapL_add_smul_aux, ContinuousLinearMap.coe_smul, PiTensorProduct.map_smul,
-    LinearMap.smul_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply]
+  simp only [mapL_apply, mapL_add_smul_aux, ContinuousLinearMap.coe_smul,
+    PiTensorProduct.map_update_smul, LinearMap.smul_apply, ContinuousLinearMap.coe_smul',
+    Pi.smul_apply]
 
 theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
   rw [ContinuousLinearMap.opNorm_le_iff (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
@@ -452,8 +453,8 @@ noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) 
     ((⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i) :=
   MultilinearMap.mkContinuous
   { toFun := mapL
-    map_smul' := fun _ _ _ _ ↦ PiTensorProduct.mapL_smul _ _ _ _
-    map_add' := fun _ _ _ _ ↦ PiTensorProduct.mapL_add _ _ _ _ }
+    map_update_smul' := fun _ _ _ _ ↦ PiTensorProduct.mapL_smul _ _ _ _
+    map_update_add' := fun _ _ _ _ ↦ PiTensorProduct.mapL_add _ _ _ _ }
   1 (fun f ↦ by rw [one_mul]; exact mapL_opNorm f)
 
 variable {𝕜 E E'}
