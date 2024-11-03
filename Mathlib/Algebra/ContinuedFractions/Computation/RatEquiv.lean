@@ -9,7 +9,7 @@ def toFiniteContFract (x : ℚ) : FiniteContFract :=
   let c := ContFract.of x
   ⟨c.h, c.s.toList ((ContFract.terminates_coe_iff (α := ℚ)).1 (by
     rw [coe_of, terminates_iff_rat]
-    exact ⟨x, rfl⟩))⟩
+    exact ⟨x, rfl⟩)), by simp [c.3]⟩
 
 @[simp]
 theorem coeContFract_toFiniteContFract (x : ℚ) :
@@ -27,5 +27,11 @@ theorem eval_toFiniteContFract (x : ℚ) : x.toFiniteContFract.eval = x := by
     coeGenContFract_toFiniteContFract, ← of_correctness_of_terminatedAt]
   simpa using (ContFract.terminatedAt_coe_iff (α := ℚ)).2
     (terminatedAt_toContFract (toFiniteContFract x))
+
+def equivFiniteContFract : ℚ ≃ FiniteContFract where
+  toFun := Rat.toFiniteContFract
+  invFun := eval
+  left_inv := eval_toFiniteContFract
+  right_inv := fun x => eval_injective (by rw [eval_toFiniteContFract])
 
 end Rat
