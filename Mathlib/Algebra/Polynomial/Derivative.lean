@@ -194,7 +194,7 @@ theorem iterate_derivative_eq_zero {p : R[X]} {x : ℕ} (hx : p.natDegree < x) :
     Polynomial.derivative^[x] p = 0 := by
   induction' h : p.natDegree using Nat.strong_induction_on with _ ih generalizing p x
   subst h
-  obtain ⟨t, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (pos_of_gt hx).ne'
+  obtain ⟨t, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hx.ne_zero
   rw [Function.iterate_succ_apply]
   by_cases hp : p.natDegree = 0
   · rw [derivative_of_natDegree_zero hp, iterate_derivative_zero]

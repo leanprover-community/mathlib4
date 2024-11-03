@@ -664,7 +664,7 @@ theorem beth_strictMono : StrictMono beth := by
   induction' b using Ordinal.induction with b IH generalizing a
   intro h
   rcases zero_or_succ_or_limit b with (rfl | ⟨c, rfl⟩ | hb)
-  · exact (not_lt_zero a h).elim
+  · exact (not_lt_zero h).elim
   · rw [lt_succ_iff] at h
     rw [beth_succ]
     apply lt_of_le_of_lt _ (cantor _)

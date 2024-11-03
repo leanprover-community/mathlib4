@@ -223,7 +223,7 @@ theorem multiplicity.Finite.not_pow_dvd_of_multiplicity_lt (hf : Finite a b) {m 
   norm_cast
 
 theorem multiplicity_pos_of_dvd (hdiv : a ∣ b) : 0 < multiplicity a b := by
-  refine zero_lt_iff.2 fun h => ?_
+  refine pos_of_ne fun h => ?_
   simpa [hdiv] using Finite.not_pow_dvd_of_multiplicity_lt
     (by by_contra! nh; simp [nh] at h) (lt_one_iff.mpr h)
 

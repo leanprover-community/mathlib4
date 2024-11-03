@@ -184,7 +184,7 @@ theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + 
     rw [← @Nat.cast_le Cardinal, Nat.cast_add, Finite.cast_card_eq_mk, Finite.cast_card_eq_mk,
       Finite.cast_card_eq_mk]
     exact Cardinal.mk_union_le s t
-  · exact Nat.card_eq_zero_of_infinite.trans_le (zero_le _)
+  · exact Nat.card_eq_zero_of_infinite.trans_le zero_le
 
 namespace Finite
 

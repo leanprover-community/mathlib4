@@ -44,7 +44,7 @@ scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
 
 theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ ≠ 0, 𝓟 (Iio γ)) := by
    rw [nhds_nhdsAdjoint, sup_of_le_right]
-   exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 <| zero_lt_iff.2 hγ
+   exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 <| hγ.pos
 
 /-!
 ### Neighbourhoods of zero
@@ -170,9 +170,9 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
     · rw [zero_mul, nhds_prod_eq, nhds_of_ne_zero hy, prod_pure, tendsto_map'_iff]
       refine (hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero).2 fun γ hγ => ?_
       refine ⟨γ / y, div_ne_zero hγ hy, fun x hx => ?_⟩
-      calc x * y < γ / y * y := mul_lt_mul_of_pos_right hx (zero_lt_iff.2 hy)
+      calc x * y < γ / y * y := mul_lt_mul_of_pos_right hx hy.pos
       _ = γ := div_mul_cancel₀ _ hy
-    · have hy : y ≠ 0 := ((zero_lt_iff.mpr hx).trans_le hle).ne'
+    · have hy : y ≠ 0 := hle.ne_zero
       rw [nhds_prod_eq, nhds_of_ne_zero hx, nhds_of_ne_zero hy, prod_pure_pure]
       exact pure_le_nhds (x * y)
 
