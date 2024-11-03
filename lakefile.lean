@@ -14,8 +14,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.44"
 require "leanprover-community" / "importGraph" @ git "nightly-testing"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
   from git "https://github.com/leanprover-community/LeanSearchClient" @ "main"
-require "leanprover-community" / "plausible" @ git "main"
-  from git "https://github.com/leanprover-community/plausible" @ "main"
+require "leanprover-community" / "plausible" @ git "nightly-testing"
 
 /-!
 ## Options for building mathlib

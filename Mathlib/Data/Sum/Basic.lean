@@ -19,6 +19,9 @@ variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type
 
 namespace Sum
 
+-- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
+attribute [simp] Sum.forall Sum.exists
+
 theorem exists_sum {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
     (∃ fab, p fab) ↔ (∃ fa fb, p (Sum.rec fa fb)) := by
   rw [← not_forall_not, forall_sum]

@@ -150,7 +150,7 @@ def bigOpBindersProd (processed : (Array (Term × Term))) :
   else if processed.size == 1 then
     return processed[0]!.2
   else
-    processed.foldrM (fun s p => `(SProd.sprod $(s.2) $p)) processed.back.2
+    processed.foldrM (fun s p => `(SProd.sprod $(s.2) $p)) processed.back!.2
       (start := processed.size - 1)
 
 /--
