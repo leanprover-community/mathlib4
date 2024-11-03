@@ -106,7 +106,7 @@ theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
 
 @[to_additive]
 instance (priority := 100) : OneLEClass α where
-  one_le := le_iff_exists_mul.mpr ⟨_, (one_mul _).symm⟩
+  one_le a := le_iff_exists_mul.mpr ⟨_, (one_mul a).symm⟩
 
 @[deprecated le_zero_iff_eq_zero (since := "2024-11-02")]
 alias nonpos_iff_eq_zero := le_zero_iff_eq_zero

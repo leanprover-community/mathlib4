@@ -607,7 +607,7 @@ theorem lift_two_power (a : Cardinal) : lift.{v} (2 ^ a) = 2 ^ lift.{v} a := by
 /-! ### Order properties -/
 
 instance : ZeroLEClass Cardinal.{u} where
-  zero_le {a} := by
+  zero_le := by
     rintro ⟨α⟩
     exact ⟨Embedding.ofIsEmpty⟩
 
@@ -628,7 +628,7 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
   { Cardinal.commSemiring,
     Cardinal.partialOrder with
     bot := 0
-    bot_le := Cardinal.zero_le
+    bot_le := fun _ ↦ zero_le
     add_le_add_left := fun _ _ => add_le_add_left
     exists_add_of_le := fun {a b} =>
       inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
@@ -1112,7 +1112,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
   refine (not_and_or.mp hc).elim (fun e ↦ ⟨hι.some, ?_⟩)
     (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccPrelimit.{u, v} f c · h)
   cases not_not.mp e
-  rw [← le_zero_iff] at h ⊢
+  rw [← le_zero_iff_eq_zero] at h ⊢
   exact (le_ciSup hf _).trans h
 
 set_option linter.deprecated false in

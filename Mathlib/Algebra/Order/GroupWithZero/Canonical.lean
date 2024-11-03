@@ -258,7 +258,7 @@ instance preorder : Preorder (WithZero α) := WithBot.preorder
 instance orderBot : OrderBot (WithZero α) := WithBot.orderBot
 
 instance : ZeroLEClass (WithZero α) :=
-  ⟨bot_le⟩
+  ⟨fun _ ↦ bot_le⟩
 
 @[deprecated _root_.zero_le (since := "2024-11-02")]
 protected lemma zero_le (a : WithZero α) : 0 ≤ a := bot_le

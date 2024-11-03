@@ -73,7 +73,7 @@ instance instLattice      : Lattice (Fin n)      := inferInstance
 lemma top_eq_last (n : ℕ) : ⊤ = Fin.last n := rfl
 
 instance (n : ℕ) [NeZero n] : ZeroLEClass (Fin n) :=
-  ⟨bot_le⟩
+  ⟨fun _ ↦ bot_le⟩
 
 @[deprecated _root_.bot_eq_zero (since := "2024-11-02")]
 protected lemma bot_eq_zero (n : ℕ) : ⊥ = (0 : Fin (n + 1)) := rfl

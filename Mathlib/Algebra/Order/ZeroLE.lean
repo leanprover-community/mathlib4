@@ -19,21 +19,21 @@ variable {α : Type*} {x y : α}
 /-- A class for types whose bottom element is zero. Declaring this instance makes `0` the preferred
 form for `⊥`. -/
 class ZeroLEClass (α : Type*) [LE α] [Zero α] where
-  zero_le {x : α} : 0 ≤ x
+  zero_le (x : α) : 0 ≤ x
 
 /-- A class for types whose bottom element is one. Declaring this instance makes `1` the preferred
 form for `⊥`. -/
 @[to_additive ZeroLEClass]
 class OneLEClass (α : Type*) [LE α] [One α] where
-  one_le {x : α} : 1 ≤ x
+  one_le (x : α) : 1 ≤ x
 
 @[to_additive (attr := simp) zero_le]
 theorem one_le [LE α] [One α] [OneLEClass α] : 1 ≤ x :=
-  OneLEClass.one_le
+  OneLEClass.one_le x
 
 instance (priority := 100) ZeroLEClass.toZeroLEOneClass [LE α] [Zero α] [One α] [ZeroLEClass α] :
     ZeroLEOneClass α :=
-  ⟨zero_le⟩
+  ⟨zero_le _⟩
 
 section Preorder
 
@@ -128,7 +128,7 @@ instance instOrderBot : OrderBot ℕ where
   bot_le := zero_le
 
 instance instZeroLEClass : ZeroLEClass ℕ where
-  zero_le := Nat.zero_le _
+  zero_le := Nat.zero_le
 
 instance instNoMaxOrder : NoMaxOrder ℕ where
   exists_gt n := ⟨n + 1, n.lt_succ_self⟩
