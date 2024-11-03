@@ -9,7 +9,7 @@ import Mathlib.Topology.Order.Basic
 /-!
 # Topology on filters of a space with order topology
 
-In this file we prove that `𝓝 (f x)` tends to `𝓝 Filter.atTop`provided that `f` tends to
+In this file we prove that `𝓝 (f x)` tends to `𝓝 Filter.atTop` provided that `f` tends to
 `Filter.atTop`, and similarly for `Filter.atBot`.
 -/
 
