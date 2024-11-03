@@ -31,8 +31,6 @@ import Mathlib.RingTheory.PiTensorProduct
 * `finsuppTensorFinsupp`, the tensor product of `ι →₀ M` and `κ →₀ N`
   is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`.
 
-* The tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`.
-
 * `finsuppPiTensorProduct`, the tensor product of the family `κ i →₀ M i` indexed by `ι` is linearly
   equivalent to `∏ i, κ i →₀ ⨂[R] i, M i`.
 
