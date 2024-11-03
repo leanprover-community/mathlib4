@@ -59,3 +59,7 @@ theorem discreteTopology_iff_orderTopology_of_pred_succ [LinearOrder α] [PredOr
 @[deprecated (since := "2024-11-02")]
 alias discreteTopology_iff_orderTopology_of_pred_succ' :=
   discreteTopology_iff_orderTopology_of_pred_succ
+
+instance OrderTopology.of_discreteTopology [LinearOrder α] [PredOrder α] [SuccOrder α]
+    [DiscreteTopology α] : OrderTopology α :=
+  discreteTopology_iff_orderTopology_of_pred_succ.mp ‹_›
