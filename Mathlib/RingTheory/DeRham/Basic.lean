@@ -64,6 +64,8 @@ lemma finInsert_zero : finInsert x f 0 = x := rfl
 @[simp]
 lemma finInsert_succ (i : Fin n) : finInsert x f i.succ = f i := rfl
 
+lemma finInsert_mk_succ (i : ℕ) (hi : i < n) : finInsert x f ⟨i + 1, by omega⟩ = f ⟨i, hi⟩ := rfl
+
 lemma comp_finInsert {β : Type*} (g : α → β) :
     g.comp (finInsert x f) = finInsert (g x) (g.comp f) := by
   ext ⟨(_ | _), _⟩ <;> rfl
@@ -72,8 +74,25 @@ lemma finInsert_eq_update_finInsert_zero [Zero α]:
     finInsert x f = Function.update (finInsert 0 f) 0 x := by
   ext ⟨(_ | _), _⟩ <;> rfl
 
-end
+lemma finInsert_update (i : Fin n) (a : α) :
+    finInsert x (Function.update f i a) = Function.update (finInsert x f) i.succ a := by
+  ext ⟨(_ | j), hi⟩
+  · rfl
+  · by_cases h : j = i
+    · subst h
+      erw [Function.update_same]
+      rw [finInsert_mk_succ _ _ _ (by omega)]
+      simp
+    · obtain ⟨i, hi'⟩ := i
+      rw [Function.update_noteq (by simpa using h), finInsert_mk_succ _ _ _ (by omega),
+        Function.update_noteq (by simpa using h), finInsert_mk_succ]
 
+lemma finInsert_swapValues (i j : Fin n) :
+    finInsert x (Function.swapValues f i j) =
+      Function.swapValues (finInsert x f) i.succ j.succ := by
+  simp only [Function.swapValues_eq_update_update, finInsert_update, finInsert_succ]
+
+end
 
 variable (n)
 
@@ -105,7 +124,7 @@ noncomputable def differentialsRestrictScalarsData :
           (algebraMap A B a), b₀⟩  1
     | ⟨b₀, .alternate g i j hg hij⟩ => Finsupp.single ⟨g, b₀⟩ 1
     | ⟨b₀, .antisymmetry g i j hg⟩ =>
-        Finsupp.single ⟨Function.swapValues g i j, b₀⟩ 1 - Finsupp.single ⟨g, b₀⟩ 1
+        Finsupp.single ⟨Function.swapValues g i j, b₀⟩ 1 + Finsupp.single ⟨g, b₀⟩ 1
   π_lift r := match r with
     | ⟨b₀, .piTensor i₀ (.add b₁ b₂) g⟩ => by
         dsimp [presentationDifferentialsUp]
@@ -129,11 +148,11 @@ noncomputable def differentialsRestrictScalarsData :
           smul_eq_mul, mul_one]
     | ⟨b₀, .antisymmetry g i j hg⟩ => by
         dsimp
-        rw [map_sub, map_smul]
+        rw [map_add, map_smul]
         erw [Module.Presentation.finsupp_π, Module.Presentation.finsupp_π,
           Module.Relations.map_single]
         dsimp
-        simp only [smul_sub, Finsupp.smul_single, smul_eq_mul, mul_one]
+        simp only [smul_add, Finsupp.smul_single, smul_eq_mul, mul_one]
     | ⟨b₀, .alternate g i j hg hij⟩ => by
         dsimp
         rw [map_smul]
@@ -202,26 +221,28 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
                   dsimp
                   sorry
               | algebraMap a =>
-                  dsimp
+                  sorry /-dsimp
                   simp only [presentationDifferentialsDown_relation, map_neg,
                     Finsupp.linearCombination_single, one_smul, neg_eq_zero]
                   rw [presentationDifferentialsDown_var, one_smul]
-                  apply MultilinearMap.map_of_eq_zero _ _ i.succ (by simp)
+                  apply MultilinearMap.map_of_eq_zero _ _ i.succ (by simp)-/
           | antisymmetry g i j hij =>
-              dsimp
-              simp only [presentationDifferentialsDown_relation, map_sub,
+              sorry /-dsimp
+              simp only [presentationDifferentialsDown_relation, map_add,
                 Finsupp.linearCombination_single, one_smul]
               rw [presentationDifferentialsDown_var, one_smul, comp_finInsert,
                 presentationDifferentialsDown_var, one_smul, comp_finInsert]
-              sorry
+              rw [← comp_finInsert, finInsert_swapValues,
+                ← Function.comp_swapValues, ← comp_finInsert,
+                AlternatingMap.antisymmetry _ _ _ _ (by simpa using hij), neg_add_cancel]-/
           | alternate g i j hg hij =>
-              dsimp
+              sorry /-dsimp
               simp only [presentationDifferentialsDown_relation, Finsupp.linearCombination_single,
                 one_smul]
               rw [presentationDifferentialsDown_var, one_smul, comp_finInsert]
               apply AlternatingMap.map_eq_zero_of_eq (i := i.succ) (j := j.succ)
               · simp [hg]
-              · simpa using hij
+              · simpa using hij-/
         }
 
 @[simp]

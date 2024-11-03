@@ -15,26 +15,7 @@ namespace Function
 
 variable {ι α : Type*} [DecidableEq ι]
 
-def swapValues (f : ι → α) (i j : ι) (k : ι) : α :=
-  if k = i then f j else if k = j then f i else f k
-
-variable (f : ι → α) (i j : ι) (k : ι)
-
-@[simp] lemma swapValues_fst : swapValues f i j i = f j := if_pos rfl
-
-@[simp] lemma swapValues_snd : swapValues f i j j = f i := by
-  by_cases hij : i = j
-  · subst hij
-    rw [swapValues_fst]
-  · dsimp [swapValues]
-    rw [if_neg (Ne.symm hij), if_pos rfl]
-
-lemma swapValues_apply (hi : k ≠ i) (hj : k ≠ j) :
-    swapValues f i j k = f k := by
-  dsimp [swapValues]
-  rw [if_neg hi, if_neg hj]
-
-lemma update_update (a b : α) (hij : i ≠ j) :
+lemma update_update (f : ι → α) (i j : ι) (a b : α) (hij : i ≠ j) :
     update (update f i a) j b = update (update f j b) i a := by
   ext x
   by_cases h : x = i
@@ -45,20 +26,33 @@ lemma update_update (a b : α) (hij : i ≠ j) :
       rw [update_same, update_noteq hij.symm, update_same]
     · rw [update_noteq h, update_noteq h', update_noteq h, update_noteq h']
 
+variable (f : ι → α) (i j : ι) (k : ι)
+
+def swapValues (f : ι → α) (i j : ι) : ι → α :=
+  update (update f i (f j)) j (f i)
+
 lemma swapValues_eq_update_update :
-    swapValues f i j = update (update f i (f j)) j (f i) := by
-  ext x
-  by_cases h : x = i
+    swapValues f i j = update (update f i (f j)) j (f i) :=
+  rfl
+
+@[simp] lemma swapValues_fst : swapValues f i j i = f j := by
+  rw [swapValues_eq_update_update]
+  by_cases h : i = j
   · subst h
-    rw [swapValues_fst]
-    by_cases h' : x = j
-    · subst h'
-      rw [update_eq_self, update_same]
-    · rw [update_noteq h', update_same]
-  · by_cases h' : x = j
-    · subst h'
-      rw [swapValues_snd, update_same]
-    · rw [update_noteq h', update_noteq h, swapValues_apply _ _ _ _ h h']
+    rw [update_eq_self, update_same]
+  · rw [update_update _ _ _ _ _ h, update_same]
+
+@[simp] lemma swapValues_snd : swapValues f i j j = f i := by
+  rw [swapValues_eq_update_update, update_same]
+
+lemma swapValues_apply (hi : k ≠ i) (hj : k ≠ j) :
+    swapValues f i j k = f k := by
+  rw [swapValues_eq_update_update]
+  rw [update_noteq hj, update_noteq hi]
+
+lemma comp_swapValues {β : Type*} (g : α → β) :
+    swapValues (g.comp f) i j = g ∘ swapValues f i j := by
+  sorry
 
 end Function
 
@@ -191,7 +185,7 @@ noncomputable def exteriorPower : Relations R where
   relation x := match x with
     | .piTensor i₀ r g => (piTensor (fun _ ↦ relation)).relation
           (⟨i₀, r, fun ⟨a, ha⟩ ↦ g a ha⟩)
-    | .antisymmetry g i j _ => Finsupp.single (swapValues g i j) 1 - Finsupp.single g 1
+    | .antisymmetry g i j _ => Finsupp.single (swapValues g i j) 1 + Finsupp.single g 1
     | .alternate g _ _ _ _ => Finsupp.single g 1
 
 namespace Solution
