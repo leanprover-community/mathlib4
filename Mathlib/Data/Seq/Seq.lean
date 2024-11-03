@@ -546,6 +546,7 @@ theorem get?_enum (s : Seq α) (n : ℕ) : get? (enum s) n = Option.map (Prod.mk
 theorem enum_nil : enum (nil : Seq α) = nil :=
   rfl
 
+/-- The length of a terminating sequence. -/
 def length (s : Seq α) (h : s.Terminates) : ℕ :=
   Nat.find h
 
@@ -625,6 +626,8 @@ theorem terminatedAt_zero_iff {s : Seq α} : s.TerminatedAt 0 ↔ s = nil := by
   · rintro rfl
     simp [TerminatedAt]
 
+/-- The statement of `length_le_iff'` does not assume that the sequence terminates. For a
+simpler statement of the theorem where the sequence is known to terminate see `length_le_iff` -/
 theorem length_le_iff' {s : Seq α} {n : ℕ} :
     (∃ h, s.length h ≤ n) ↔ s.TerminatedAt n := by
   simp only [length, Nat.find_le_iff, TerminatedAt, Terminates, exists_prop]
@@ -634,10 +637,14 @@ theorem length_le_iff' {s : Seq α} {n : ℕ} :
   · intro hn
     exact ⟨⟨n, hn⟩, ⟨n, le_rfl, hn⟩⟩
 
+/-- The statement of `length_le_iff` assumes that the sequence terminates. For a
+statement of the where the sequence is not known to terminate see `length_le_iff'` -/
 theorem length_le_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     s.length h ≤ n ↔ s.TerminatedAt n := by
   rw [← length_le_iff']; simp [h]
 
+/-- The statement of `lt_length_iff'` does not assume that the sequence terminates. For a
+simpler statement of the theorem where the sequence is known to terminate see `lt_length_iff` -/
 theorem lt_length_iff' {s : Seq α} {n : ℕ} :
     (∀ h : s.Terminates, n < s.length h) ↔ ∃ a, a ∈ s.get? n := by
   simp only [Terminates, TerminatedAt, length, Nat.lt_find_iff, forall_exists_index, Option.mem_def,
@@ -648,6 +655,8 @@ theorem lt_length_iff' {s : Seq α} {n : ℕ} :
   · intro hn _ _ k hkn hk
     exact hn <| le_stable s hkn hk
 
+/-- The statement of `length_le_iff` assumes that the sequence terminates. For a
+statement of the where the sequence is not known to terminate see `length_le_iff'` -/
 theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     n < s.length h ↔ ∃ a, a ∈ s.get? n := by
   rw [← lt_length_iff']; simp [h]
