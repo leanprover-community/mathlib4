@@ -81,9 +81,17 @@ variable [PartialOrder α] [One α] [OneLEClass α]
 theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 :=
   isBot_one.eq_bot.symm
 
-@[to_additive (attr := simp) le_zero_iff_eq_zero]
+@[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : x ≤ 1 ↔ x = 1 :=
   ⟨fun h ↦ h.antisymm one_le, fun h ↦ h ▸ le_rfl⟩
+
+alias le_zero_iff_eq_zero := nonpos_iff_eq_zero
+
+alias ⟨eq_one_of_le_one, _⟩ := le_one_iff_eq_one
+alias ⟨eq_zero_of_le_zero, _⟩ := le_zero_iff_eq_zero
+
+alias LE.le.eq_one := eq_one_of_le_one
+alias LE.le.eq_zero := eq_zero_of_le_zero
 
 @[to_additive]
 theorem one_lt_iff_ne_one : 1 < x ↔ x ≠ 1 :=
