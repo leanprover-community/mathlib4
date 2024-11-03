@@ -3,6 +3,8 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
+import Lean.Util.Recognizers
+import Mathlib.Control.Basic
 import Mathlib.Lean.Expr.Basic
 
 /-!
@@ -79,6 +81,16 @@ def _root_.Lean.Expr.ineq? (e : Expr) : MetaM (Ineq × Expr × Expr × Expr) := 
   match e.lt? with
   | some p => return (Ineq.lt, p)
   | none => throwError "Not a comparison: {e}"
+
+/-- Returnes true if an expression is an inequality, equality, or negation of an inequality.
+(In particular, negations of equalities are excluded.) -/
+def _root_.Lean.Expr.ineqOrNotIneq? (e : Expr) : MetaM Bool := do
+  if ← succeeds (← whnfR e).ineq? then return true
+  else try
+    let some e' := e.not? | return false
+    let (rel, _) ← (← whnfR e').ineq?
+    return (rel != Ineq.eq)
+  catch _ => return false
 
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do

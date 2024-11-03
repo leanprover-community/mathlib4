@@ -54,18 +54,8 @@ Removes any expressions that are not proofs of inequalities, equalities, or nega
 partial def filterComparisons : Preprocessor where
   name := "filter terms that are not proofs of comparisons"
   transform h := do
-    let tp ← whnfR (← instantiateMVars (← inferType h))
-    if (← isProp tp) && (← aux tp) then pure [h]
-    else pure []
-where
-  /-- Implementation of the `filterComparisons` preprocessor. -/
-  aux (e : Expr) : MetaM Bool := do
-  match e.getAppFnArgs with
-  | (``Eq, _) | (``LE.le, _) | (``LT.lt, _) => pure true
-  | (``Not, #[e]) => match (← whnfR e).getAppFnArgs with
-    | (``LE.le, _) | (``LT.lt, _) => pure true
-    | _ => pure false
-  | _ => pure false
+    let tp ← instantiateMVars (← inferType h)
+    if ← tp.ineqOrNotIneq? then pure [h] else pure []
 
 section removeNegations
 
@@ -104,19 +94,12 @@ section natToInt
 open Mathlib.Tactic.Zify
 
 /--
-`isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
-or the negation thereof.
+`isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers.
 -/
-partial def isNatProp (e : Expr) : Bool :=
-  match e.getAppFnArgs with
-  | (``Eq, #[.const ``Nat [], _, _]) => true
-  | (``LE.le, #[.const ``Nat [], _, _, _]) => true
-  | (``LT.lt, #[.const ``Nat [], _, _, _]) => true
-  | (``GE.ge, #[.const ``Nat [], _, _, _]) => true
-  | (``GT.gt, #[.const ``Nat [], _, _, _]) => true
-  | (``Not, #[e]) => isNatProp e
-  | _ => false
-
+partial def isNatProp (e : Expr) : MetaM Bool := do
+  match ← (← whnfR e).ineq? with
+  | (_, .const ``Nat [], _, _) => return true
+  | _ => return false
 
 /-- If `e` is of the form `((n : ℕ) : C)`, `isNatCoe e` returns `⟨n, C⟩`. -/
 def isNatCoe (e : Expr) : Option (Expr × Expr) :=
@@ -164,10 +147,10 @@ def natToInt : GlobalBranchingPreprocessor where
   transform g l := do
     let l ← l.mapM fun h => do
       let t ← whnfR (← instantiateMVars (← inferType h))
-      if isNatProp t then
+      if ← isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
           | throwError "zifyProof failed on {h}"
-        if ← filterComparisons.aux t' then
+        if ← t'.ineqOrNotIneq? then
           pure h'
         else
           -- `zifyProof` turned our comparison into something that wasn't a comparison
@@ -215,36 +198,10 @@ section compWithZero
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
  -/
 partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
-  aux e (← instantiateMVars (← inferType e))
-where
-  /-- Implementation of `rearrangeComparison`, after type inference. -/
-  aux (proof e : Expr) : MetaM (Option Expr) :=
-    let isZero (e : Expr) := e.getAppFnArgs matches (``OfNat.ofNat, #[_, .lit (.natVal 0), _])
-    match e.getAppFnArgs with
-    | (``LE.le, #[_, _, a, b]) => match isZero a, isZero b with
-      | _, true => return proof
-      | true, _ => try? <| mkAppM ``neg_nonpos_of_nonneg #[proof]
-      | _, _    => try? <| mkAppM ``sub_nonpos_of_le #[proof]
-    | (``LT.lt, #[_, _, a, b]) => match isZero a, isZero b with
-      | _, true => return proof
-      | true, _ => try? <| mkAppM ``neg_neg_of_pos #[proof]
-      | _, _    => try? <| mkAppM ``sub_neg_of_lt #[proof]
-    | (``Eq, #[_, a, b]) => match isZero a, isZero b with
-      | _, true => return proof
-      | true, _ => try? <| mkAppM ``Eq.symm #[proof]
-      | _, _    => try? <| mkAppM ``sub_eq_zero_of_eq #[proof]
-    | (``GT.gt, #[_, _, a, b]) => match isZero a, isZero b with
-      | _, true => try? <| mkAppM ``neg_neg_of_pos #[proof]
-      | true, _ => try? <| mkAppM ``lt_zero_of_zero_gt #[proof]
-      | _, _    => try? <| mkAppM ``sub_neg_of_lt #[proof]
-    | (``GE.ge, #[_, _, a, b]) => match isZero a, isZero b with
-      | _, true => try? <| mkAppM ``neg_nonpos_of_nonneg #[proof]
-      | true, _ => try? <| mkAppM ``le_zero_of_zero_ge #[proof]
-      | _, _    => try? <| mkAppM ``sub_nonpos_of_le #[proof]
-    | (``Not, #[a]) => do
-      let some nproof ← flipNegatedComparison proof a | return none
-      aux nproof (← inferType nproof)
-    | a => throwError "couldn't rearrange comparison {a}"
+  match ← (← whnfR (← inferType e)).ineq? with
+  | (Ineq.le, _) => try? <| mkAppM ``sub_nonpos_of_le #[e]
+  | (Ineq.lt, _) => try? <| mkAppM ``sub_neg_of_lt #[e]
+  | (Ineq.eq, _) => try? <| mkAppM ``sub_eq_zero_of_eq #[e]
 
 /--
 `compWithZero h` takes a proof `h` of an equality, inequality, or negation thereof,
