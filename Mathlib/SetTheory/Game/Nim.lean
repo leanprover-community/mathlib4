@@ -183,7 +183,7 @@ instance nim_impartial (o : Ordinal) : Impartial (nim o) := by
 
 theorem nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := by
   rw [Impartial.fuzzy_zero_iff_lf, lf_zero_le]
-  use toRightMovesNim ⟨0, Ordinal.pos_iff_ne_zero.2 ho⟩
+  use toRightMovesNim ⟨0, pos_iff_ne_zero.2 ho⟩
   simp
 
 @[simp]

@@ -134,7 +134,7 @@ theorem enumOrd_univ : enumOrd Set.univ = id := by
 @[simp]
 theorem enumOrd_zero : enumOrd s 0 = sInf s := by
   rw [enumOrd]
-  simp [Ordinal.not_lt_zero]
+  simp [not_lt_zero]
 
 /-- An order isomorphism between an unbounded set of ordinals and the ordinals. -/
 noncomputable def enumOrdOrderIso (s : Set Ordinal) (hs : ¬ BddAbove s) : Ordinal ≃o s :=

@@ -74,6 +74,9 @@ alias not_lt_zero' := not_lt_zero
 @[deprecated le_zero_iff_eq_zero (since := "2024-11-02")]
 alias le_zero_iff := le_zero_iff_eq_zero
 
+@[deprecated pos_iff_ne_zero (since := "2024-11-02")]
+alias zero_lt_iff := pos_iff_ne_zero
+
 instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
     LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
   { Additive.orderedAddCommMonoid, Additive.linearOrder with

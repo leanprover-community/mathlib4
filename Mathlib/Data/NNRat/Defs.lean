@@ -325,7 +325,7 @@ theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 
 @[simp] lemma num_ne_zero : q.num ≠ 0 ↔ q ≠ 0 := by simp [num]
 @[simp] lemma num_pos : 0 < q.num ↔ 0 < q := by
-  simpa [num, -nonpos_iff_eq_zero] using nonpos_iff_eq_zero _ |>.not.symm
+  simpa [num, -nonpos_iff_eq_zero] using nonpos_iff_eq_zero (α := ℚ≥0) |>.not.symm
 @[simp] lemma den_pos (q : ℚ≥0) : 0 < q.den := Rat.den_pos _
 @[simp] lemma den_ne_zero (q : ℚ≥0) : q.den ≠ 0 := Rat.den_ne_zero _
 
