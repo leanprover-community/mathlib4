@@ -891,7 +891,7 @@ theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤₘ₀ˣ) :
       coe_le_coe, ← Multiplicative.toAdd_le, toAdd_one] at h_neg
     obtain ⟨d, hd⟩ := Int.exists_eq_neg_ofNat h_neg
     use F.trunc (d + 1)
-    have : Valued.v ((ofPowerSeries ℤ K) (F - ↑(trunc (d + 1) F))) ≤
+    have : Valued.v ((ofPowerSeries ℤ K) (F - (trunc (d + 1) F))) ≤
       (Multiplicative.ofAdd (-(d + 1 : ℤ))) := by
       apply (intValuation_le_iff_coeff_lt_eq_zero K _).mpr
       simpa only [map_sub, sub_eq_zero, Polynomial.coeff_coe, coeff_trunc] using
