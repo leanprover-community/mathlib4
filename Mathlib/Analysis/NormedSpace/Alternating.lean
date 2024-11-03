@@ -39,12 +39,11 @@ variable {𝕜 : Type u} {n : ℕ}
   [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 /-- Applying a continuous alternating map to a vector is continuous in both coordinates. -/
-theorem ContinuousAlternatingMap.continuous_eval {𝕜 ι E F : Type*}
+theorem ContinuousAlternatingMap.instContinuousEval {𝕜 ι E F : Type*}
     [NormedField 𝕜] [Finite ι] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
     [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F] :
-    Continuous fun p : E [⋀^ι]→L[𝕜] F × (ι → E) => p.1 p.2 :=
-  .comp (ContinuousMultilinearMap.continuous_eval (𝕜 := 𝕜) (E := fun _ : ι ↦ E) (F := F))
-    (.prod_map continuous_toContinuousMultilinearMap continuous_id)
+    ContinuousEval (E [⋀^ι]→L[𝕜] F) (ι → E) F :=
+  .of_continuous_forget continuous_toContinuousMultilinearMap
 
 /-!
 ### Continuity properties of alternating maps
@@ -308,8 +307,7 @@ open filter
 /-- If the target space is complete, the space of continuous alternating maps with its norm is also
 complete. -/
 instance [CompleteSpace G] : CompleteSpace (E [⋀^ι]→L[𝕜] G) :=
-  (completeSpace_iff_isComplete_range uniformEmbedding_toContinuousMultilinearMap.1).2
-    isClosed_range_toContinuousMultilinearMap.isComplete
+  inferInstance
 
 end ContinuousAlternatingMap
 
@@ -446,13 +444,13 @@ def mkContinuousLinear (f : G →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G') (C : ℝ)
       exact (mkContinuous_norm_le' _ _).trans_eq <| by
         rw [max_mul_of_nonneg _ _ (norm_nonneg x), zero_mul]
 
-theorem mkContinuousLinear_norm_le' (f : G →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G') (C : ℝ)
+theorem mkContinuousLinear_norm_le_max (f : G →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G') (C : ℝ)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : ‖mkContinuousLinear f C H‖ ≤ max C 0 :=
   LinearMap.mkContinuous_norm_le _ (le_max_right _ _) _
 
 theorem mkContinuousLinear_norm_le (f : G →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G') {C : ℝ} (hC : 0 ≤ C)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : ‖mkContinuousLinear f C H‖ ≤ C :=
-  (mkContinuousLinear_norm_le' f C H).trans_eq (max_eq_left hC)
+  (mkContinuousLinear_norm_le_max f C H).trans_eq (max_eq_left hC)
 
 /-- Given a map `f : E [⋀^ι]→ₗ[𝕜] (E' [⋀^ι']→ₗ[𝕜] G)` and an estimate
 `H : ∀ m m', ‖f m m'‖ ≤ C * ∏ i, ‖m i‖ * ∏ i, ‖m' i‖`, upgrade all `AlternatingMap`s in the type to
@@ -485,7 +483,7 @@ theorem mkContinuousAlternating_apply (f : E [⋀^ι]→ₗ[𝕜] (E' [⋀^ι']�
     ⇑(mkContinuousAlternating f C H m) = f m :=
   rfl
 
-theorem mkContinuousAlternating_norm_le' (f : E [⋀^ι]→ₗ[𝕜]  (E' [⋀^ι']→ₗ[𝕜] G)) (C : ℝ)
+theorem mkContinuousAlternating_norm_le_max (f : E [⋀^ι]→ₗ[𝕜]  (E' [⋀^ι']→ₗ[𝕜] G)) (C : ℝ)
     (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
     ‖mkContinuousAlternating f C H‖ ≤ max C 0 := by
   dsimp only [mkContinuousAlternating]
@@ -494,7 +492,7 @@ theorem mkContinuousAlternating_norm_le' (f : E [⋀^ι]→ₗ[𝕜]  (E' [⋀^�
 theorem mkContinuousAlternating_norm_le (f : E [⋀^ι]→ₗ[𝕜] (E' [⋀^ι']→ₗ[𝕜] G)) {C : ℝ}
     (hC : 0 ≤ C) (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
     ‖mkContinuousAlternating f C H‖ ≤ C :=
-  (mkContinuousAlternating_norm_le' f C H).trans_eq (max_eq_left hC)
+  (mkContinuousAlternating_norm_le_max f C H).trans_eq (max_eq_left hC)
 
 end AlternatingMap
 
