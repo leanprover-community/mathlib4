@@ -28,7 +28,7 @@ theorem tsub_add_cancel_iff_le : b - a + a = b ↔ a ≤ b := by
 -- This was previously a `@[simp]` lemma, but it is not necessarily a good idea, e.g. in
 -- `example (h : n - m = 0) : a + (n - m) = a := by simp_all`
 theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
-  rw [← nonpos_iff_eq_zero, tsub_le_iff_left, add_zero]
+  rw [← le_zero_iff_eq_zero, tsub_le_iff_left, add_zero]
 
 alias ⟨_, tsub_eq_zero_of_le⟩ := tsub_eq_zero_iff_le
 
@@ -131,7 +131,7 @@ protected theorem tsub_lt_self (ha : AddLECancellable a) (h₁ : 0 < a) (h₂ : 
 
 protected theorem tsub_lt_self_iff (ha : AddLECancellable a) : a - b < a ↔ 0 < a ∧ 0 < b := by
   refine
-    ⟨fun h => ⟨(zero_le _).trans_lt h, (zero_le b).lt_of_ne ?_⟩, fun h => ha.tsub_lt_self h.1 h.2⟩
+    ⟨fun h => ⟨zero_le.trans_lt h, zero_le.lt_of_ne ?_⟩, fun h => ha.tsub_lt_self h.1 h.2⟩
   rintro rfl
   rw [tsub_zero] at h
   exact h.false
