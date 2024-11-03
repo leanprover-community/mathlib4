@@ -513,7 +513,7 @@ theorem exists_inv_nat_lt {a : ℝ≥0∞} (h : a ≠ 0) : ∃ n : ℕ, (n : ℝ
 
 theorem exists_nat_pos_mul_gt (ha : a ≠ 0) (hb : b ≠ ∞) : ∃ n > 0, b < (n : ℕ) * a :=
   let ⟨n, hn⟩ := ENNReal.exists_nat_gt (div_lt_top hb ha).ne
-  ⟨n, Nat.cast_pos.1 ((zero_le _).trans_lt hn), by
+  ⟨n, Nat.cast_pos.1 hn.pos, by
     rwa [← ENNReal.div_lt_iff (Or.inl ha) (Or.inr hb)]⟩
 
 theorem exists_nat_mul_gt (ha : a ≠ 0) (hb : b ≠ ∞) : ∃ n : ℕ, b < n * a :=

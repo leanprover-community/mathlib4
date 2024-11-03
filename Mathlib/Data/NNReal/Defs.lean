@@ -70,6 +70,8 @@ noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 noncomputable instance : CanonicallyLinearOrderedSemifield ℝ≥0 :=
   Nonneg.canonicallyLinearOrderedSemifield
 
+instance : ZeroLEClass ℝ≥0 := ⟨fun x ↦ x.2⟩
+
 /-- Coercion `ℝ≥0 → ℝ`. -/
 @[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
 
@@ -458,7 +460,8 @@ theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
         simp [Real.coe_toNNReal _ this, NNReal.coe_lt_coe.symm, haq, hqb]⟩)
     fun ⟨_, _, haq, hqb⟩ => lt_trans haq hqb
 
-theorem bot_eq_zero : (⊥ : ℝ≥0) = 0 := rfl
+@[deprecated _root_.bot_eq_zero (since := "2024-11-02")]
+protected theorem bot_eq_zero : (⊥ : ℝ≥0) = 0 := rfl
 
 theorem mul_sup (a b c : ℝ≥0) : a * (b ⊔ c) = a * b ⊔ a * c :=
   mul_max_of_nonneg _ _ zero_le
