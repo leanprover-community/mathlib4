@@ -912,7 +912,7 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤₘ₀ˣ) :
     ∃ Q : RatFunc K, Valued.v (f - Q) < γ := by
   set F := f.powerSeriesPart with hF
   by_cases ord_nonpos : f.order < 0
-  · set η : ℤₘ₀ˣ := Units.mk0 (Multiplicative.ofAdd f.order : Multiplicative ℤ) (coe_ne_zero)
+  · set η : ℤₘ₀ˣ := Units.mk0 (Multiplicative.ofAdd f.order : Multiplicative ℤ) coe_ne_zero
       with hη
     obtain ⟨P, hP⟩ := exists_Polynomial_intValuation_lt F (η * γ)
     use RatFunc.X ^ f.order * (P : RatFunc K)
