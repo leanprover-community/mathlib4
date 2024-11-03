@@ -3,6 +3,7 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
+import Mathlib.Algebra.Order.ZeroLE
 import Mathlib.Data.Fin.Basic
 import Mathlib.Order.Hom.Set
 
@@ -71,12 +72,16 @@ instance instLattice      : Lattice (Fin n)      := inferInstance
 
 lemma top_eq_last (n : ℕ) : ⊤ = Fin.last n := rfl
 
-lemma bot_eq_zero (n : ℕ) : ⊥ = (0 : Fin (n + 1)) := rfl
+instance (n : ℕ) : ZeroLEClass (Fin (n + 1)) :=
+  ⟨bot_le⟩
 
-@[simp] theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
+@[deprecated _root_.bot_eq_zero (since := "2024-11-02")]
+protected lemma bot_eq_zero (n : ℕ) : ⊥ = (0 : Fin (n + 1)) := rfl
+
+theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
 @[simp] theorem rev_top [NeZero n] : rev (⊤ : Fin n) = ⊥ := rev_rev _
 
-theorem rev_zero_eq_top (n : ℕ) [NeZero n] : rev (0 : Fin n) = ⊤ := rfl
+@[simp] theorem rev_zero_eq_top (n : ℕ) [NeZero n] : rev (0 : Fin n) = ⊤ := rfl
 theorem rev_last_eq_bot (n : ℕ) : rev (last n) = ⊥ := by rw [rev_last, bot_eq_zero]
 
 section ToFin
