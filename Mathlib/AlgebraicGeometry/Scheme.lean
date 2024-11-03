@@ -46,7 +46,7 @@ structure Scheme extends LocallyRingedSpace where
     ∀ x : toLocallyRingedSpace,
       ∃ (U : OpenNhds x) (R : CommRingCat),
         Nonempty
-          (toLocallyRingedSpace.restrict U.openEmbedding ≅ Spec.toLocallyRingedSpace.obj (op R))
+          (toLocallyRingedSpace.restrict U.isOpenEmbedding ≅ Spec.toLocallyRingedSpace.obj (op R))
 
 namespace Scheme
 

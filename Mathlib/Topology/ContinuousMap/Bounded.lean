@@ -239,16 +239,21 @@ theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f :
             (half_lt_self ε_pos))
 
 /-- The topology on `α →ᵇ β` is exactly the topology induced by the natural map to `α →ᵤ β`. -/
-theorem inducing_coeFn : Inducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) := by
-  rw [inducing_iff_nhds]
+theorem isInducing_coeFn : IsInducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) := by
+  rw [isInducing_iff_nhds]
   refine fun f => eq_of_forall_le_iff fun l => ?_
   rw [← tendsto_iff_comap, ← tendsto_id', tendsto_iff_tendstoUniformly,
     UniformFun.tendsto_iff_tendstoUniformly]
   simp [comp_def]
 
--- TODO: upgrade to a `IsUniformEmbedding`
-theorem embedding_coeFn : Embedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
-  ⟨inducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
+@[deprecated (since := "2024-10-28")] alias inducing_coeFn := isInducing_coeFn
+
+-- TODO: upgrade to `IsUniformEmbedding`
+theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
+  ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_coeFn := isEmbedding_coeFn
 
 variable (α)
 
@@ -440,6 +445,13 @@ theorem isometry_extend (f : α ↪ δ) (h : δ →ᵇ β) : Isometry fun g : α
   Isometry.of_dist_eq fun g₁ g₂ => by simp [dist_nonneg]
 
 end Extend
+
+/-- The indicator function of a clopen set, as a bounded continuous function. -/
+@[simps]
+noncomputable def indicator (s : Set α) (hs : IsClopen s) : BoundedContinuousFunction α ℝ where
+  toFun := s.indicator 1
+  continuous_toFun := continuous_indicator (by simp [hs]) <| continuous_const.continuousOn
+  map_bounded' := ⟨1, fun x y ↦ by by_cases hx : x ∈ s <;> by_cases hy : y ∈ s <;> simp [hx, hy]⟩
 
 end Basics
 
@@ -1013,6 +1025,16 @@ theorem coe_smul (c : 𝕜) (f : α →ᵇ β) : ⇑(c • f) = fun x => c • f
 
 theorem smul_apply (c : 𝕜) (f : α →ᵇ β) (x : α) : (c • f) x = c • f x := rfl
 
+instance instIsScalarTower {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'] [SMul 𝕜' β]
+    [BoundedSMul 𝕜' β] [SMul 𝕜' 𝕜] [IsScalarTower 𝕜' 𝕜 β] :
+    IsScalarTower 𝕜' 𝕜 (α →ᵇ β) where
+  smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
+
+instance instSMulCommClass {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'] [SMul 𝕜' β]
+    [BoundedSMul 𝕜' β] [SMulCommClass 𝕜' 𝕜 β] :
+    SMulCommClass 𝕜' 𝕜 (α →ᵇ β) where
+  smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
+
 instance instIsCentralScalar [SMul 𝕜ᵐᵒᵖ β] [IsCentralScalar 𝕜 β] : IsCentralScalar 𝕜 (α →ᵇ β) where
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
@@ -1162,9 +1184,17 @@ instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) :=
 
 end Seminormed
 
+instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing R] :
+    NonUnitalSeminormedCommRing (α →ᵇ R) where
+  mul_comm _ _ := ext fun _ ↦ mul_comm ..
+
 instance instNonUnitalNormedRing [NonUnitalNormedRing R] : NonUnitalNormedRing (α →ᵇ R) where
   __ := instNonUnitalSeminormedRing
   __ := instNormedAddCommGroup
+
+instance instNonUnitalNormedCommRing [NonUnitalNormedCommRing R] :
+    NonUnitalNormedCommRing (α →ᵇ R) where
+  mul_comm := mul_comm
 
 end NonUnital
 
@@ -1245,6 +1275,23 @@ instance instNormedCommRing [NormedCommRing R] : NormedCommRing (α →ᵇ R) wh
   norm_mul := norm_mul_le
 
 end NormedCommRing
+
+section NonUnitalAlgebra
+
+-- these hypotheses could be generalized if we generalize `BoundedSMul` to `Bornology`.
+variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [NonUnitalSeminormedRing β]
+variable [Zero 𝕜] [SMul 𝕜 β] [BoundedSMul 𝕜 β]
+
+instance [IsScalarTower 𝕜 β β] : IsScalarTower 𝕜 (α →ᵇ β) (α →ᵇ β) where
+  smul_assoc _ _ _ := ext fun _ ↦ smul_mul_assoc ..
+
+instance [SMulCommClass 𝕜 β β] : SMulCommClass 𝕜 (α →ᵇ β) (α →ᵇ β) where
+  smul_comm _ _ _ := ext fun _ ↦ (mul_smul_comm ..).symm
+
+instance [SMulCommClass 𝕜 β β] : SMulCommClass (α →ᵇ β) 𝕜 (α →ᵇ β) where
+  smul_comm _ _ _ := ext fun _ ↦ mul_smul_comm ..
+
+end NonUnitalAlgebra
 
 section NormedAlgebra
 

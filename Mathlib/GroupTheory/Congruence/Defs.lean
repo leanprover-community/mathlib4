@@ -166,7 +166,7 @@ theorem ext {c d : Con M} (H : ∀ x y, c x y ↔ d x y) : c = d :=
 @[to_additive "The map sending an additive congruence relation to its underlying equivalence
 relation is injective."]
 theorem toSetoid_inj {c d : Con M} (H : c.toSetoid = d.toSetoid) : c = d :=
-  ext <| ext_iff.1 H
+  ext <| Setoid.ext_iff.1 H
 
 /-- Two congruence relations are equal iff their underlying binary relations are equal. -/
 @[to_additive "Two additive congruence relations are equal iff their underlying binary relations
@@ -334,7 +334,7 @@ instance : InfSet (Con M) where
 @[to_additive "The infimum of a set of additive congruence relations is the same as the infimum of
 the set's image under the map to the underlying equivalence relation."]
 theorem sInf_toSetoid (S : Set (Con M)) : (sInf S).toSetoid = sInf (toSetoid '' S) :=
-  Setoid.ext' fun x y =>
+  Setoid.ext fun x y =>
     ⟨fun h r ⟨c, hS, hr⟩ => by rw [← hr]; exact h c hS, fun h c hS => h c.toSetoid ⟨c, hS, rfl⟩⟩
 
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
@@ -572,8 +572,8 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
     constructor
     · intros h x y hs
       rcases h ⟨x, y, rfl, rfl, hs⟩ with ⟨a, b, hx, hy, ht⟩
-      exact t.1.trans (t.1.symm <| t.2 <| Quotient.eq_rel.1 hx)
-        (t.1.trans ht (t.2 <| Quotient.eq_rel.1 hy))
+      exact t.1.trans (t.1.symm <| t.2 <| Quotient.eq'.1 hx)
+        (t.1.trans ht (t.2 <| Quotient.eq'.1 hy))
     · intros h _ _ hs
       rcases hs with ⟨a, b, hx, hy, Hs⟩
       exact ⟨a, b, hx, hy, h Hs⟩
