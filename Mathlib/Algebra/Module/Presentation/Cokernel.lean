@@ -26,56 +26,6 @@ we obtain a presentation of `M₃`, see `Presentation.ofExact`.
 
 universe w w₁ w₂₀ w₂₁ v₁ v₂ v₃ u
 
--- to be moved to Algebra.Exact
-section
-
-variable {A : Type u} [Ring A]
-variable {M₁ : Type v₁} {M₂ : Type v₂} {M₃ : Type v₃}
-
-variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
-  [Module A M₁] [Module A M₂] [Module A M₃]
-  {f : M₁ →ₗ[A] M₂} {g : M₂ →ₗ[A] M₃}
-
-namespace LinearMap
-
-lemma surjective_range_liftQ (h : range f ≤ ker g) (hg : Function.Surjective g) :
-    Function.Surjective ((range f).liftQ g h) := by
-  intro x₃
-  obtain ⟨x₂, rfl⟩ := hg x₃
-  exact ⟨Submodule.Quotient.mk x₂, rfl⟩
-
-lemma ker_eq_bot_range_liftQ_iff (h : range f ≤ ker g) :
-    ker ((range f).liftQ g h) = ⊥ ↔ ker g = range f := by
-  simp only [Submodule.ext_iff, mem_ker, Submodule.mem_bot, mem_range]
-  constructor
-  · intro hfg x
-    simpa using hfg (Submodule.Quotient.mk x)
-  · intro hfg x
-    obtain ⟨x, rfl⟩ := Submodule.Quotient.mk_surjective _ x
-    simpa using hfg x
-
-lemma injective_range_liftQ_of_exact (h : Function.Exact f g) :
-    Function.Injective ((range f).liftQ g (by simp only [h.linearMap_ker_eq, le_refl])) := by
-  simpa only [← LinearMap.ker_eq_bot, ker_eq_bot_range_liftQ_iff, exact_iff] using h
-
-end LinearMap
-
-namespace LinearEquiv
-
-/-- The linear equivalence `(M₂ ⧸ LinearMap.range f) ≃ₗ[A] M₃` associated to
-an exact sequence `M₁ → M₂ → M₃ → 0` of `A`-modules. -/
-@[simps! apply]
-noncomputable def ofExactOfSurjective (h : Function.Exact f g) (hg : Function.Surjective g) :
-    (M₂ ⧸ LinearMap.range f) ≃ₗ[A] M₃ :=
-  ofBijective ((LinearMap.range f).liftQ g
-    (by simp only [h.linearMap_ker_eq, le_refl]))
-      ⟨LinearMap.injective_range_liftQ_of_exact h,
-        LinearMap.surjective_range_liftQ _ hg⟩
-
-end LinearEquiv
-
-end
-
 namespace Module
 
 variable {A : Type u} [Ring A] {M₁ : Type v₁} {M₂ : Type v₂} {M₃ : Type v₃}
@@ -194,7 +144,7 @@ of `M₃` that is obtained from a presentation `pres₂` of `M₂`, a choice of 
 @[simps!]
 noncomputable def ofExact : Presentation A M₃ :=
   ofIsPresentation ((pres₂.cokernel data hg₁).ofLinearEquiv
-    (LinearEquiv.ofExactOfSurjective hfg hg))
+    (hfg.linearEquivOfSurjective hg))
 
 end OfExact
 
