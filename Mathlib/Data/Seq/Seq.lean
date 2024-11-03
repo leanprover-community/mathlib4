@@ -635,7 +635,7 @@ theorem length_le_iff' {s : Seq α} {n : ℕ} :
     exact ⟨⟨n, hn⟩, ⟨n, le_rfl, hn⟩⟩
 
 theorem length_le_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
-     s.length h ≤ n ↔ s.TerminatedAt n := by
+    s.length h ≤ n ↔ s.TerminatedAt n := by
   rw [← length_le_iff']; simp [h]
 
 theorem lt_length_iff' {s : Seq α} {n : ℕ} :
