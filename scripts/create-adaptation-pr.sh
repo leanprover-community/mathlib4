@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-set -e # abort whenever a command in the script fails
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
 
 # We need to make the script robust against changes on disk
 # that might have happened during the script execution, e.g. from switching branches.
@@ -15,7 +18,7 @@ set -e # abort whenever a command in the script fails
 {
 
 # Default values
-AUTO="no"
+AUTO="yes"
 
 # Function to display usage
 usage() {
@@ -25,7 +28,7 @@ usage() {
   echo "BUMPVERSION: The upcoming release that we are targeting, e.g., 'v4.10.0'"
   echo "NIGHTLYDATE: The date of the nightly toolchain currently used on 'nightly-testing'"
   echo "NIGHTLYSHA: The SHA of the nightly toolchain that we want to adapt to"
-  echo "AUTO: Optional flag to specify automatic mode, default is 'no'"
+  echo "AUTO: Optional flag to specify automatic mode, default is 'yes'"
   exit 1
 }
 
@@ -90,7 +93,7 @@ echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from 
 
 git checkout "bump/$BUMPVERSION"
 git pull
-git merge origin/master || true # ignore error if there are conflicts
+git merge --no-edit origin/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -100,7 +103,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### In this case, the newer branch is 'bump/$BUMPVERSION'"
   git checkout bump/$BUMPVERSION -- lean-toolchain lake-manifest.json
   git add lean-toolchain lake-manifest.json
-  
+
   # Check if there are more merge conflicts after auto-resolution
   if ! git diff --name-only --diff-filter=U | grep -q .; then
     # Auto-commit the resolved conflicts if no other conflicts remain
@@ -135,7 +138,7 @@ echo
 echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from 'origin/nightly-testing'"
 
 git checkout -b "bump/nightly-$NIGHTLYDATE"
-git merge $NIGHTLYSHA || true # ignore error if there are conflicts
+git merge --no-edit $NIGHTLYSHA || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -199,13 +202,13 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
   	# Extract the PR number from the output
   	pr_number=$(echo $gh_output | sed 's/.*\/pull\/\([0-9]*\).*/\1/')
   fi
-  
+
   echo
   echo "### [auto/user] post a link to the PR on Zulip"
-  
+
   zulip_title="#$pr_number adaptations for nightly-$NIGHTLYDATE"
   zulip_body="> $pr_title #$pr_number\\\n\\\nPlease review this PR. At the end of the month this diff will land in \\\`master\\\`."
-  
+
   echo "Post the link to the PR in a new thread on the #nightly-testing channel on Zulip"
   echo "Here is a suggested message:"
   echo "Title: $zulip_title"
@@ -215,7 +218,7 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
     zulip_command="zulip-send --stream nightly-testing --subject \"$zulip_title\" --message \"$zulip_body\""
     echo "Here is a suggested 'zulip-send' command to do this:"
     echo "> $zulip_command"
-  
+
     if [ "$AUTO" = "yes" ]; then
       echo "Auto mode enabled. Running the command..."
       answer="y"
@@ -223,7 +226,7 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
       echo "Shall I run this command for you? (y/n)"
       read answer
     fi
-  
+
     if [ "$answer" != "${answer#[Yy]}" ]; then
       eval $zulip_command
     fi
@@ -233,7 +236,7 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
       exit 1
     fi
   fi
-  
+
   if [ "$AUTO" != "yes" ]; then
     read -p "Press enter to continue"
   fi
@@ -252,7 +255,7 @@ echo "### [auto] checkout the 'nightly-testing' branch and merge the new branch 
 
 git checkout nightly-testing
 git pull
-git merge "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
+git merge --no-edit "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -262,7 +265,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### In this case, the newer branch is 'bump/nightly-$NIGHTLYDATE'"
   git checkout bump/nightly-$NIGHTLYDATE -- lean-toolchain lake-manifest.json
   git add lean-toolchain lake-manifest.json
-  
+
   # Check if there are more merge conflicts after auto-resolution
   if ! git diff --name-only --diff-filter=U | grep -q .; then
     # Auto-commit the resolved conflicts if no other conflicts remain
