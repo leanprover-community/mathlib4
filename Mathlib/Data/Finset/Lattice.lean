@@ -635,6 +635,9 @@ protected theorem sup_lt_iff (ha : ⊥ < a) : s.sup f < a ↔ ∀ b ∈ s, f b <
     Finset.cons_induction_on s (fun _ => ha) fun c t hc => by
       simpa only [sup_cons, sup_lt_iff, mem_cons, forall_eq_or_imp] using And.imp_right⟩
 
+@[simp] lemma sup_eq_zero [Zero α] [ZeroLEClass α] : s.sup f = 0 ↔ ∀ i ∈ s, f i = 0 := by
+  simp [← _root_.bot_eq_zero]
+
 end OrderBot
 
 section OrderTop
@@ -852,11 +855,11 @@ lemma sup'_comp_eq_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : s.N
     s.sup' hs (g ∘ f) = (s.map f).sup' (map_nonempty.2 hs) g :=
   .symm <| sup'_map _ _
 
-
 @[gcongr]
 theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
     s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f :=
   Finset.sup'_le h₁ _ (fun _ hb => le_sup' _ (h hb))
+
 end Sup'
 
 section Inf'
@@ -1163,6 +1166,9 @@ theorem exists_mem_eq_sup [OrderBot α] (s : Finset ι) (h : s.Nonempty) (f : ι
 theorem exists_mem_eq_inf [OrderTop α] (s : Finset ι) (h : s.Nonempty) (f : ι → α) :
     ∃ i, i ∈ s ∧ s.inf f = f i :=
   exists_mem_eq_sup (α := αᵒᵈ) s h f
+
+@[simp] lemma sup'_eq_zero [OrderBot α] [Zero α] [ZeroLEClass α] (hs) :
+  s.sup' hs f = 0 ↔ ∀ i ∈ s, f i = 0 := by simp [sup'_eq_sup]
 
 end LinearOrder
 
