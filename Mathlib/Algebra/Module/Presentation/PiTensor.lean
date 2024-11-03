@@ -93,8 +93,12 @@ lemma embedding_apply_of_neq (x : G i) (j : ι) (h : j ≠ i) :
 
 end
 
-lemma comp_embedding {ι : Type*} {α : Type*} [DecidableEq ι]
-  (i : ι) (y : (∀ (_ : ((Set.singleton i)ᶜ : Set ι)), α)) (x : α) {β : Type*} (g : α → β) :
+section
+
+variable {ι : Type*} {α : Type*} [DecidableEq ι]
+  (i : ι) (y : (∀ (_ : ((Set.singleton i)ᶜ : Set ι)), α)) (x : α)
+
+lemma comp_embedding {β : Type*} (g : α → β) :
     g.comp (embedding (fun _ ↦ α) i y x) =
       embedding (fun _ ↦ β) i (g.comp y) (g x) := by
   ext j
@@ -102,6 +106,16 @@ lemma comp_embedding {ι : Type*} {α : Type*} [DecidableEq ι]
   · subst h
     simp only [Function.comp_apply, embedding_apply_self]
   · simp [embedding_apply_of_neq _ _ _ _ _ h, Function.comp_apply]
+
+lemma embedding_eq_update_embedding_zero [Zero α] :
+    embedding (fun _ ↦ α) i y x = Function.update (embedding (fun _ ↦ α) i y 0) i x := by
+  ext j
+  by_cases h : j = i
+  · subst h
+    simp only [embedding_apply_self, Function.update_same]
+  · simp only [Function.update_noteq h, embedding_apply_of_neq _ _ _ _ _ h]
+
+end
 
 open PiTensorProduct
 namespace Module

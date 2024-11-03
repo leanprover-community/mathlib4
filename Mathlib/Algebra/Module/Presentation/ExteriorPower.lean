@@ -225,7 +225,7 @@ namespace Presentation
 
 variable {R M} (pres : Presentation R M) (n : ℕ)
 
-@[simps!]
+@[simps! R G relation var]
 noncomputable def exteriorPower : Presentation R (ExteriorAlgebra.exteriorPower R n M) where
   toSolution := pres.toSolution.exteriorPower n
   toIsPresentation := pres.toIsPresentation.exteriorPower n
