@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Antoine Chambert-Loir
+Authors: Johannes Hölzl, Antoine Chambert-Loir, Sophie Morel
 -/
 import Mathlib.Algebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.Finsupp
