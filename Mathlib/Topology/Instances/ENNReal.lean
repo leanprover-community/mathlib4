@@ -1433,6 +1433,58 @@ lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
   rw [key]
   rfl
 
+theorem _root_.NNReal.coe_limsup {u : ℕ → ℝ} (hu : 0 ≤ u) :
+    limsup u atTop = ((limsup (fun n ↦ (⟨u n, hu n⟩ : ℝ≥0)) atTop : ℝ≥0) : ℝ) := by
+  simp only [limsup_eq]
+  norm_cast
+  apply congr_arg
+  ext x
+  simp only [Set.mem_setOf_eq, Set.mem_image]
+  refine ⟨fun hx ↦ ?_, fun ⟨y, hy, hyx⟩ ↦ ?_⟩
+  · have hx' := hx
+    simp only [eventually_atTop, ge_iff_le] at hx'
+    obtain ⟨N, hN⟩ := hx'
+    have hx0 : 0 ≤ x := le_trans (hu N) (hN N (le_refl _))
+    exact ⟨⟨x, hx0⟩, hx, rfl⟩
+  · simp_rw [← NNReal.coe_le_coe, NNReal.coe_mk, hyx] at hy
+    exact hy
+
+theorem coe_limsup {u : ℕ → ℝ≥0} (hu : BddAbove (Set.range u)) :
+    ((limsup u atTop : ℝ≥0) : ℝ≥0∞) = limsup (fun n ↦ (u n : ℝ≥0∞)) atTop := by
+  simp only [limsup_eq, coe_sInf (NNReal.eventually_le_of_bddAbove' hu), sInf_eq_iInf]
+  simp only [eventually_atTop, ge_iff_le, Set.mem_setOf_eq, iInf_exists]
+  · apply le_antisymm
+    · apply le_iInf₂ _
+      intro x n
+      apply le_iInf _
+      intro h
+      rcases x with x | x
+      · simp only [none_eq_top, le_top]
+      · simp only [some_eq_coe, coe_le_coe] at h
+        exact iInf₂_le_of_le x n (iInf_le_of_le h (le_refl _))
+    · apply le_iInf₂ _
+      intro x n
+      apply le_iInf _
+      intro h
+      refine iInf₂_le_of_le x n ?_
+      simp_rw [coe_le_coe]
+      exact iInf_le_of_le h (le_refl _)
+
+/-- If `filter.limsup u at_top ≤ x`, then for all `ε > 0`, eventually we have `u a < x + ε`.  -/
+theorem eventually_lt_add_pos_of_limsup_le {α : Type _} [Preorder α] {x : ℝ} {u : α → ℝ}
+    (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x) {ε : ℝ} (hε : 0 < ε) :
+    ∀ᶠ a : α in atTop, u a < x + ε :=
+  eventually_lt_of_limsup_lt (lt_of_le_of_lt hu (lt_add_of_pos_right x hε)) hu_bdd
+
+/-- If `filter.limsup u at_top ≤ x`, then for all `ε > 0`, there exists a positive natural
+  number `n` such that `u n < x + ε`.  -/
+theorem exists_lt_of_limsup_le {x : ℝ} {u : ℕ → ℝ} (hu_bdd : IsBoundedUnder LE.le atTop u)
+    (hu : Filter.limsup u atTop ≤ x) {ε : ℝ} (hε : 0 < ε) : ∃ n : PNat, u n < x + ε := by
+  have h : ∀ᶠ a : ℕ in atTop, u a < x + ε := eventually_lt_add_pos_of_limsup_le hu_bdd hu hε
+  simp only [eventually_atTop, ge_iff_le] at h
+  obtain ⟨n, hn⟩ := h
+  exact ⟨⟨n + 1, Nat.succ_pos _⟩, hn (n + 1) (Nat.le_succ _)⟩
+
 end LimsupLiminf
 
 end ENNReal -- namespace
