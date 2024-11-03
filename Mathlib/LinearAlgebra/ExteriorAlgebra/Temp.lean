@@ -15,6 +15,7 @@ Documentation
 namespace exteriorPower
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {N : Type*} [AddCommGroup N] [Module R N]
 variable {I : Type*} [LinearOrder I] [Fintype I]
 variable {n : ℕ}
 
@@ -34,6 +35,11 @@ noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) :
 theorem ιMulti_family_of_basis (b : Basis I R M)
   (s : {a : Finset I // Finset.card a = n}) : b.exteriorPower s = ιMulti_family b s :=
   sorry
+
+/-- The linear map from `n`-fold alternating maps from `M` to `N` to linear maps from
+`⋀[R]^n M` to `N`-/
+def liftAlternating : (M [⋀^Fin n]→ₗ[R] N) →ₗ[R] ⋀[R]^n M →ₗ[R] N := sorry
+
 
 
 end exteriorPower
