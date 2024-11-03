@@ -43,3 +43,8 @@ theorem Nat.card_eq_card_units_add_one [GroupWithZero α] [Finite α] :
 theorem Fintype.card_units [GroupWithZero α] [Fintype α] [DecidableEq α] :
     Fintype.card αˣ = Fintype.card α - 1 := by
   rw [@Fintype.card_eq_card_units_add_one α, Nat.add_sub_cancel]
+
+instance ZMod.fintype_units (n : ℕ) : Fintype (ZMod n)ˣ := by
+  match n with
+  | 0 =>     exact UnitsInt.fintype
+  | m + 1 => infer_instance
