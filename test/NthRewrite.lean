@@ -14,7 +14,7 @@ example [AddZeroClass G] {a : G} (h : a = a): a = (a + 0) := by
 example [AddZeroClass G] {a : G} : a + a = a + (a + 0) := by
   nth_rw 2 [← add_zero a]
 
-structure F :=
+structure F where
   (a : ℕ)
   (v : Vector ℕ a)
   (p : v.val = [])
@@ -22,7 +22,7 @@ structure F :=
 example (f : F) : f.v.val = [] := by
   nth_rw 1 [f.p]
 
-structure Cat :=
+structure Cat where
   (O : Type)
   (H : O → O → Type)
   (i : (o : O) → H o o)

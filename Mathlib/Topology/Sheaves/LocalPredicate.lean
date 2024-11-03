@@ -73,7 +73,7 @@ variable (X)
 @[simps!]
 def continuousPrelocal (T : TopCat.{v}) : PrelocalPredicate fun _ : X => T where
   pred {_} f := Continuous f
-  res {_ _} i _ h := Continuous.comp h (Opens.openEmbedding_of_le i.le).continuous
+  res {_ _} i _ h := Continuous.comp h (Opens.isOpenEmbedding_of_le i.le).continuous
 
 /-- Satisfying the inhabited linter. -/
 instance inhabitedPrelocalPredicate (T : TopCat.{v}) :
@@ -114,7 +114,7 @@ def continuousLocal (T : TopCat.{v}) : LocalPredicate fun _ : X => T :=
       dsimp at w
       rw [continuous_iff_continuousAt] at w
       specialize w ⟨x, m⟩
-      simpa using (Opens.openEmbedding_of_le i.le).continuousAt_iff.1 w }
+      simpa using (Opens.isOpenEmbedding_of_le i.le).continuousAt_iff.1 w }
 
 /-- Satisfying the inhabited linter. -/
 instance inhabitedLocalPredicate (T : TopCat.{v}) : Inhabited (LocalPredicate fun _ : X => T) :=
@@ -148,7 +148,7 @@ theorem PrelocalPredicate.sheafifyOf {T : X → Type v} {P : PrelocalPredicate T
 @[simps!]
 def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf (Type v) X where
   obj U := { f : ∀ x : U.unop , T x // P.pred f }
-  map {U V} i f := ⟨fun x => f.1 (i.unop x), P.res i.unop f.1 f.2⟩
+  map {_ _} i f := ⟨fun x => f.1 (i.unop x), P.res i.unop f.1 f.2⟩
 
 namespace subpresheafToTypes
 
@@ -157,7 +157,7 @@ variable (P : PrelocalPredicate T)
 /-- The natural transformation including the subpresheaf of functions satisfying a local predicate
 into the presheaf of all functions.
 -/
-def subtype : subpresheafToTypes P ⟶ presheafToTypes X T where app U f := f.1
+def subtype : subpresheafToTypes P ⟶ presheafToTypes X T where app _ f := f.1
 
 open TopCat.Presheaf
 
@@ -217,11 +217,9 @@ def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.s
 
 -- Porting note (#11119): removed `simp` attribute,
 -- due to left hand side is not in simple normal form.
-theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : U) (f) :
-    stalkToFiber P x ((subsheafToTypes P).presheaf.germ x f) = f.1 x := by
-  dsimp [Presheaf.germ, stalkToFiber]
-  cases x
-  simp
+theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : X) (hx : x ∈ U) (f) :
+    stalkToFiber P x ((subsheafToTypes P).presheaf.germ U x hx f) = f.1 ⟨x, hx⟩ := by
+  simp [Presheaf.germ, stalkToFiber]
 
 /-- The `stalkToFiber` map is surjective at `x` if
 every point in the fiber `T x` has an allowed section passing through it.
@@ -231,8 +229,8 @@ theorem stalkToFiber_surjective (P : LocalPredicate T) (x : X)
     Function.Surjective (stalkToFiber P x) := fun t => by
   rcases w t with ⟨U, f, h, rfl⟩
   fconstructor
-  · exact (subsheafToTypes P).presheaf.germ ⟨x, U.2⟩ ⟨f, h⟩
-  · exact stalkToFiber_germ _ U.1 ⟨x, U.2⟩ ⟨f, h⟩
+  · exact (subsheafToTypes P).presheaf.germ _ x U.2 ⟨f, h⟩
+  · exact stalkToFiber_germ P U.1 x U.2 ⟨f, h⟩
 
 /-- The `stalkToFiber` map is injective at `x` if any two allowed sections which agree at `x`
 agree on some neighborhood of `x`.
@@ -247,8 +245,8 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
   -- We promise to provide all the ingredients of the proof later:
   let Q :
     ∃ (W : (OpenNhds x)ᵒᵖ) (s : ∀ w : (unop W).1, T w) (hW : P.pred s),
-      tU = (subsheafToTypes P).presheaf.germ ⟨x, (unop W).2⟩ ⟨s, hW⟩ ∧
-        tV = (subsheafToTypes P).presheaf.germ ⟨x, (unop W).2⟩ ⟨s, hW⟩ :=
+      tU = (subsheafToTypes P).presheaf.germ _ x (unop W).2 ⟨s, hW⟩ ∧
+        tV = (subsheafToTypes P).presheaf.germ _ x (unop W).2 ⟨s, hW⟩ :=
     ?_
   · choose W s hW e using Q
     exact e.1.trans e.2.symm

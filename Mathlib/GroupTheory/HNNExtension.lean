@@ -174,7 +174,7 @@ namespace NormalWord
 variable (G A B)
 /-- To put word in the HNN Extension into a normal form, we must choose an element of each right
 coset of both `A` and `B`, such that the chosen element of the subgroup itself is `1`. -/
-structure TransversalPair : Type _ :=
+structure TransversalPair : Type _ where
   /-- The transversal of each subgroup -/
   set : ℤˣ → Set G
   /-- We have exactly one element of each coset of the subgroup -/
@@ -187,7 +187,7 @@ instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
 /-- A reduced word is a `head`, which is an element of `G`, followed by the product list of pairs.
 There should also be no sequences of the form `t^u * g * t^-u`, where `g` is in
 `toSubgroup A B u` This is a less strict condition than required for `NormalWord`. -/
-structure ReducedWord : Type _ :=
+structure ReducedWord : Type _ where
   /-- Every `ReducedWord` is the product of an element of the group and a word made up
   of letters each of which is in the transversal. `head` is that element of the base group. -/
   head : G
@@ -215,7 +215,7 @@ The normal form is a `head`, which is an element of `G`, followed by the product
 `toSubgroup A B u`. There should also be no sequences of the form `t^u * g * t^-u`
 where `g ∈ toSubgroup A B u` -/
 structure _root_.HNNExtension.NormalWord (d : TransversalPair G A B)
-    extends ReducedWord G A B : Type _ :=
+    extends ReducedWord G A B : Type _ where
   /-- Every element `g : G` in the list is the chosen element of its coset -/
   mem_set : ∀ (u : ℤˣ) (g : G), (u, g) ∈ toList → g ∈ d.set u
 
@@ -356,7 +356,7 @@ def Cancels (u : ℤˣ) (w : NormalWord d) : Prop :=
 def unitsSMulWithCancel (u : ℤˣ) (w : NormalWord d) : Cancels u w → NormalWord d :=
   consRecOn w
     (by simp [Cancels, ofGroup]; tauto)
-    (fun g u' w h1 h2 _ can =>
+    (fun g _ w _ _ _ can =>
       (toSubgroupEquiv φ u ⟨g, can.1⟩ : G) • w)
 
 /-- Multiplying `t^u` by a `NormalWord`, `w` and putting the result in normal form. -/
@@ -595,7 +595,7 @@ theorem of_injective : Function.Injective (of : G → HNNExtension G A B φ) := 
     (f := ((· • ·) : HNNExtension G A B φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
-    by simp_all [Function.funext_iff, of_smul_eq_smul])
+    by simp_all [funext_iff, of_smul_eq_smul])
 
 namespace ReducedWord
 

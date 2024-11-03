@@ -124,6 +124,19 @@ theorem le_comap_pow_ramificationIdx : p ≤ comap f (P ^ ramificationIdx f p P)
 theorem le_comap_of_ramificationIdx_ne_zero (h : ramificationIdx f p P ≠ 0) : p ≤ comap f P :=
   Ideal.map_le_iff_le_comap.mp <| le_pow_ramificationIdx.trans <| Ideal.pow_le_self <| h
 
+variable {S₁: Type*} [CommRing S₁] [Algebra R S₁]
+
+lemma ramificationIdx_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
+    ramificationIdx (algebraMap R S) p (P.comap e) = ramificationIdx (algebraMap R S₁) p P := by
+  dsimp only [ramificationIdx]
+  congr
+  ext n
+  simp only [Set.mem_setOf_eq, Ideal.map_le_iff_le_comap]
+  rw [← comap_coe e, ← e.toRingEquiv_toRingHom, comap_coe, ← RingEquiv.symm_symm (e : S ≃+* S₁),
+    ← map_comap_of_equiv, ← Ideal.map_pow, map_comap_of_equiv, ← comap_coe (RingEquiv.symm _),
+    comap_comap, RingEquiv.symm_symm, e.toRingEquiv_toRingHom, ← e.toAlgHom_toRingHom,
+    AlgHom.comp_algebraMap]
+
 namespace IsDedekindDomain
 
 variable [IsDedekindDomain S]
@@ -201,6 +214,30 @@ theorem inertiaDeg_algebraMap [Algebra R S] [Algebra (R ⧸ p) (S ⧸ P)]
   change Ideal.Quotient.lift p _ _ (Ideal.Quotient.mk p x) = algebraMap _ _ (Ideal.Quotient.mk p x)
   rw [Ideal.Quotient.lift_mk, ← Ideal.Quotient.algebraMap_eq P, ← IsScalarTower.algebraMap_eq,
     ← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply]
+
+lemma inertiaDeg_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) [p.IsMaximal] :
+    inertiaDeg (algebraMap R S) p (P.comap e) = inertiaDeg (algebraMap R S₁) p P := by
+  dsimp only [Ideal.inertiaDeg]
+  have : (P.comap e).comap (algebraMap R S) = p ↔ P.comap (algebraMap R S₁) = p := by
+    rw [← comap_coe e, comap_comap, ← e.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
+  split
+  swap
+  · rw [dif_neg]; rwa [← this]
+  rw [dif_pos (this.mp ‹_›)]
+  apply (config := { allowSynthFailures := true }) LinearEquiv.finrank_eq
+  have E := quotientEquivAlg (P.comap e) P e (map_comap_of_surjective _ e.surjective P).symm
+  apply (config := {allowSynthFailures := true }) LinearEquiv.mk
+  case toLinearMap =>
+    apply (config := {allowSynthFailures := true }) LinearMap.mk
+    swap
+    · exact E.toLinearMap.toAddHom
+    · intro r x
+      show E (_ * _) = _ * (E x)
+      obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective r
+      simp only [Quotient.mk_comp_algebraMap, Quotient.lift_mk, _root_.map_mul, AlgEquiv.commutes,
+        RingHomCompTriple.comp_apply]
+  · exact E.left_inv
+  · exact E.right_inv
 
 end DecEq
 
@@ -476,7 +513,7 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
       (P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion f p P i) :=
   Quotient.map' (fun x : S => ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩)
     fun x y h => by
-    rw [Submodule.quotientRel_r_def] at h ⊢
+    rw [Submodule.quotientRel_def] at h ⊢
     simp only [_root_.map_mul, LinearMap.mem_range]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_mul a_mem h)⟩, ?_⟩
     ext
@@ -588,7 +625,7 @@ theorem rank_pow_quot_aux [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : 
   letI : Field (R ⧸ p) := Ideal.Quotient.field _
   rw [← rank_range_of_injective _ (powQuotSuccInclusion_injective f p P i),
     (quotientRangePowQuotSuccInclusionEquiv f p P hP0 hi).symm.rank_eq]
-  exact (rank_quotient_add_rank (LinearMap.range (powQuotSuccInclusion f p P i))).symm
+  exact (Submodule.rank_quotient_add_rank (LinearMap.range (powQuotSuccInclusion f p P i))).symm
 
 theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P ≠ ⊥)
     (i : ℕ) (hi : i ≤ e) :
@@ -639,7 +676,7 @@ theorem finrank_prime_pow_ramificationIdx [IsDedekindDomain S] (hP0 : P ≠ ⊥)
   by_cases hP : FiniteDimensional (R ⧸ p) (S ⧸ P)
   · haveI := hP
     haveI := (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mpr hP
-    refine Cardinal.natCast_injective ?_
+    apply @Nat.cast_injective Cardinal
     rw [finrank_eq_rank', Nat.cast_mul, finrank_eq_rank', hdim, nsmul_eq_mul]
   have hPe := mt (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mp hP
   simp only [finrank_of_infinite_dimensional hP, finrank_of_infinite_dimensional hPe,
@@ -797,11 +834,11 @@ section tower
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
-theorem ramificationIdx_tower [IsDedekindDomain S] [DecidableEq (Ideal S)]
-    [IsDedekindDomain T] [DecidableEq (Ideal T)]{f : R →+* S} {g : S →+* T}
+theorem ramificationIdx_tower [IsDedekindDomain S] [IsDedekindDomain T] {f : R →+* S} {g : S →+* T}
     {p : Ideal R} {P : Ideal S} {Q : Ideal T} [hpm : P.IsPrime] [hqm : Q.IsPrime]
     (hg0 : map g P ≠ ⊥) (hfg : map (g.comp f) p ≠ ⊥) (hg : map g P ≤ Q) :
     ramificationIdx (g.comp f) p Q = ramificationIdx f p P * ramificationIdx g P Q := by
+  classical
   have hf0 : map f p ≠ ⊥ :=
     ne_bot_of_map_ne_bot (Eq.mp (congrArg (fun I ↦ I ≠ ⊥) (map_map f g).symm) hfg)
   have hp0 : P ≠ ⊥ := ne_bot_of_map_ne_bot hg0
@@ -836,12 +873,13 @@ variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
 /-- Let `T / S / R` be a tower of algebras, `p, P, Q` be ideals in `R, S, T` respectively,
   and `P` and `Q` are prime. If `P = Q ∩ S`, then `e (Q | p) = e (P | p) * e (Q | P)`. -/
-theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [DecidableEq (Ideal S)]
-    [IsDedekindDomain T] [DecidableEq (Ideal T)] {p : Ideal R} {P : Ideal S} {Q : Ideal T}
-    [hpm : P.IsPrime] [hqm : Q.IsPrime] (hg0 : map (algebraMap S T) P ≠ ⊥)
+theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
+    {p : Ideal R} {P : Ideal S} {Q : Ideal T} [hpm : P.IsPrime] [hqm : Q.IsPrime]
+    (hg0 : map (algebraMap S T) P ≠ ⊥)
     (hfg : map (algebraMap R T) p ≠ ⊥) (hg : map (algebraMap S T) P ≤ Q) :
     ramificationIdx (algebraMap R T) p Q =
     ramificationIdx (algebraMap R S) p P * ramificationIdx (algebraMap S T) P Q := by
+  classical
   rw [IsScalarTower.algebraMap_eq R S T] at hfg ⊢
   exact ramificationIdx_tower hg0 hfg hg
 

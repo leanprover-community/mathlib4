@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith
 
@@ -179,7 +180,8 @@ example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
   linear_combination (norm := ring_nf) 1 / 6 * ha + 1 / 3 * hab
 
 example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
-  linear_combination (norm := simp) h1
+  linear_combination (norm := skip) h1
+  ring1
 
 /-! ### Cases that have linear_combination skip normalization -/
 
@@ -189,7 +191,7 @@ example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
 
 example (x y : ℤ) (h1 : x = -3) (_h2 : y = 10) : 2 * x = -6 := by
   linear_combination (norm := skip) 2 * h1
-  simp (config := {decide := true})
+  ring1
 
 /-! ### Cases without any arguments provided -/
 
@@ -202,7 +204,7 @@ example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination
 -- this interacts as expected with options
 example {x y z w : ℤ} (_h₁ : 3 * x = 4 + y) (_h₂ : x + 2 * y = 1) : z + w = w + z := by
   linear_combination (norm := skip)
-  guard_target = z + w - (w + z) - (0 - 0) = 0
+  guard_target = z + w + 0 - (w + z + 0) = 0
   simp [add_comm]
 
 example {x y z w : ℤ} (_h₁ : 3 * x = 4 + y) (_h₂ : x + 2 * y = 1) : z + w = w + z := by
@@ -228,6 +230,15 @@ example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y = -2 * y + 1 :
   linear_combination h1 - 2 * h2
 
 /-! ### Cases that should fail -/
+
+/--
+error: ring failed, ring expressions not equal
+a : ℤ
+ha : a = 1
+⊢ -1 = 0
+-/
+#guard_msgs in
+example (a : ℤ) (ha : a = 1) : a = 2 := by linear_combination ha
 
 /--
 error: ring failed, ring expressions not equal

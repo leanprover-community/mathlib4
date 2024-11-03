@@ -81,9 +81,9 @@ instance : Inhabited (PicardLindelof E) :=
   ⟨⟨0, 0, 0, ⟨0, le_rfl, le_rfl⟩, 0, 0, 0, 0,
       { ht₀ := by rw [Subtype.coe_mk, Icc_self]; exact mem_singleton _
         hR := le_rfl
-        lipschitz := fun t _ => (LipschitzWith.const 0).lipschitzOnWith
+        lipschitz := fun _ _ => (LipschitzWith.const 0).lipschitzOnWith
         cont := fun _ _ => by simpa only [Pi.zero_apply] using continuousOn_const
-        norm_le := fun t _ x _ => norm_zero.le
+        norm_le := fun _ _ _ _ => norm_zero.le
         C_mul_le_R := (zero_mul _).le }⟩⟩
 
 theorem tMin_le_tMax : v.tMin ≤ v.tMax :=
@@ -170,8 +170,11 @@ def toContinuousMap : v.FunSpace ↪ C(Icc v.tMin v.tMax, E) :=
 instance : MetricSpace v.FunSpace :=
   MetricSpace.induced toContinuousMap toContinuousMap.injective inferInstance
 
-theorem uniformInducing_toContinuousMap : UniformInducing (@toContinuousMap _ _ _ v) :=
+theorem isUniformInducing_toContinuousMap : IsUniformInducing (@toContinuousMap _ _ _ v) :=
   ⟨rfl⟩
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_toContinuousMap := isUniformInducing_toContinuousMap
 
 theorem range_toContinuousMap :
     range toContinuousMap =
@@ -217,13 +220,13 @@ theorem dist_le_of_forall {f₁ f₂ : FunSpace v} {d : ℝ} (h : ∀ t, dist (f
     v.nonempty_Icc.to_subtype).2 h
 
 instance [CompleteSpace E] : CompleteSpace v.FunSpace := by
-  refine (completeSpace_iff_isComplete_range uniformInducing_toContinuousMap).2
+  refine (completeSpace_iff_isComplete_range isUniformInducing_toContinuousMap).2
       (IsClosed.isComplete ?_)
   rw [range_toContinuousMap, setOf_and]
-  refine (isClosed_eq (ContinuousMap.continuous_eval_const _) continuous_const).inter ?_
+  refine (isClosed_eq (continuous_eval_const _) continuous_const).inter ?_
   have : IsClosed {f : Icc v.tMin v.tMax → E | LipschitzWith v.C f} :=
     isClosed_setOf_lipschitzWith v.C
-  exact this.preimage ContinuousMap.continuous_coe
+  exact this.preimage continuous_coeFun
 
 theorem intervalIntegrable_vComp (t₁ t₂ : ℝ) : IntervalIntegrable f.vComp volume t₁ t₂ :=
   f.continuous_vComp.intervalIntegrable _ _
