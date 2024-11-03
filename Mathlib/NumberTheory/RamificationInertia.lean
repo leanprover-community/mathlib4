@@ -217,10 +217,6 @@ theorem inertiaDeg_pos [p.IsMaximal] [Algebra R S] [Module.Finite R S]
   haveI : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_isPrime P p
   finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
 
-theorem inertiaDeg_ne_zero [p.IsMaximal] [Algebra R S] [Module.Finite R S]
-    [P.LiesOver p] : inertiaDeg (algebraMap R S) p P ≠ 0 :=
-  (inertiaDeg_pos p P).ne.symm
-
 lemma inertiaDeg_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) [p.IsMaximal] :
     inertiaDeg (algebraMap R S) p (P.comap e) = inertiaDeg (algebraMap R S₁) p P := by
   have he : (P.comap e).comap (algebraMap R S) = p ↔ P.comap (algebraMap R S₁) = p := by
@@ -726,7 +722,7 @@ instance Factors.finiteDimensional_quotient_pow [Module.Finite R S] [p.IsMaximal
     FiniteDimensional (R ⧸ p) (S ⧸ (P : Ideal S) ^ ramificationIdx (algebraMap R S) p P) := by
   refine .of_finrank_pos ?_
   rw [pos_iff_ne_zero, Factors.finrank_pow_ramificationIdx]
-  exact mul_ne_zero (Factors.ramificationIdx_ne_zero p P) (inertiaDeg_ne_zero p P.1)
+  exact mul_ne_zero (Factors.ramificationIdx_ne_zero p P) (inertiaDeg_pos p P.1).ne'
 
 universe w
 
