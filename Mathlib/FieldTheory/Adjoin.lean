@@ -1325,7 +1325,7 @@ theorem fg_adjoin_finset (t : Finset E) : (adjoin F (↑t : Set E)).FG :=
 theorem fg_def {S : IntermediateField F E} : S.FG ↔ ∃ t : Set E, Set.Finite t ∧ adjoin F t = S :=
   Iff.symm Set.exists_finite_iff_finset
 
-theorem fg_adjoin_finite {t : Set E} (h : Set.Finite t) : (adjoin F t).FG :=
+theorem fg_adjoin_of_finite {t : Set E} (h : Set.Finite t) : (adjoin F t).FG :=
   fg_def.mpr ⟨t, h, rfl⟩
 
 theorem fg_bot : (⊥ : IntermediateField F E).FG :=
@@ -1337,7 +1337,7 @@ theorem fg_sup {S T : IntermediateField F E} (hS : S.FG) (hT : T.FG) : (S ⊔ T)
   classical rw [← adjoin_union, ← Finset.coe_union]
   exact fg_adjoin_finset _
 
-theorem fg_iSup {ι} [Finite ι] {S : ι → IntermediateField F E} (h : ∀ i, (S i).FG) :
+theorem fg_iSup {ι : Sort*} [Finite ι] {S : ι → IntermediateField F E} (h : ∀ i, (S i).FG) :
     (⨆ i, S i).FG := by
   choose s hs using h
   simp_rw [← hs, ← adjoin_iUnion]
