@@ -189,7 +189,7 @@ lemma dens_filter_add_dens_filter_not_eq_dens {α : Type*} [Fintype α] {s : Fin
   rw [← dens_union_of_disjoint (disjoint_filter_filter_neg ..), filter_union_filter_neg_eq]
 
 lemma dens_union_le (s t : Finset α) : dens (s ∪ t) ≤ dens s + dens t :=
-  dens_union_add_dens_inter s t ▸ le_add_of_nonneg_right zero_le'
+  dens_union_add_dens_inter s t ▸ le_add_of_nonneg_right zero_le
 
 lemma dens_le_dens_sdiff_add_dens : dens s ≤ dens (s \ t) + dens t :=
   dens_sdiff_add_dens s _ ▸ dens_le_dens subset_union_left

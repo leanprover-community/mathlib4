@@ -222,7 +222,7 @@ theorem first_vote_pos :
       · norm_cast
         rw [mul_comm _ (p + 1), ← Nat.succ_eq_add_one p, Nat.succ_add, Nat.succ_mul_choose_eq,
           mul_comm]
-      all_goals simp [(Nat.choose_pos <| le_add_of_nonneg_right zero_le').ne']
+      all_goals simp [(Nat.choose_pos <| le_add_of_nonneg_right zero_le).ne']
     · simp
 
 theorem headI_mem_of_nonempty {α : Type*} [Inhabited α] : ∀ {l : List α} (_ : l ≠ []), l.headI ∈ l

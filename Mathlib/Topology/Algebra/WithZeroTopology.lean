@@ -139,7 +139,7 @@ scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ�
   isClosed_le' := by
     simp only [← isOpen_compl_iff, compl_setOf, not_le, isOpen_iff_mem_nhds]
     rintro ⟨a, b⟩ (hab : b < a)
-    rw [nhds_prod_eq, nhds_of_ne_zero (zero_le'.trans_lt hab).ne', pure_prod]
+    rw [nhds_prod_eq, nhds_of_ne_zero hab.ne_zero, pure_prod]
     exact Iio_mem_nhds hab
 
 /-- The topology on a linearly ordered group with zero element adjoined is T₅. -/

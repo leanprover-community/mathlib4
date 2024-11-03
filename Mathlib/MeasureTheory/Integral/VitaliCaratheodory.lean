@@ -322,7 +322,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
           SimpleFunc.coe_piecewise, le_zero_iff]
       · classical
         simp only [hc, Set.indicator_zero', lintegral_const, zero_mul, Pi.zero_apply,
-          SimpleFunc.const_zero, zero_add, zero_le', SimpleFunc.coe_zero,
+          SimpleFunc.const_zero, zero_add, zero_le, SimpleFunc.coe_zero,
           Set.piecewise_eq_indicator, ENNReal.coe_zero, SimpleFunc.coe_piecewise, zero_le]
     have μs_lt_top : μ s < ∞ := by
       classical

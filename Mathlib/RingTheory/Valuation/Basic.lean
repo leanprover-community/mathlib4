@@ -169,7 +169,7 @@ theorem map_add_lt {x y g} (hx : v x < g) (hy : v y < g) : v (x + y) < g :=
 theorem map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, v (f i) ≤ g) :
     v (∑ i ∈ s, f i) ≤ g := by
   refine
-    Finset.induction_on s (fun _ => v.map_zero ▸ zero_le')
+    Finset.induction_on s (fun _ => v.map_zero ▸ zero_le)
       (fun a s has ih hf => ?_) hf
   rw [Finset.forall_mem_insert] at hf; rw [Finset.sum_insert has]
   exact v.map_add_le hf.1 (ih hf.2)
@@ -338,7 +338,7 @@ theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} : v x = 1 ↔ v x⁻¹ = 
 
 theorem val_le_one_or_val_inv_lt_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ < 1 := by
   by_cases h : x = 0
-  · simp only [h, _root_.map_zero, zero_le', inv_zero, zero_lt_one, or_self]
+  · simp only [h, _root_.map_zero, zero_le, inv_zero, zero_lt_one, or_self]
   · simp only [← one_lt_val_iff v h, le_or_lt]
 
 /--
@@ -347,7 +347,7 @@ in `x` and `x⁻¹`.
 -/
 theorem val_le_one_or_val_inv_le_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ ≤ 1 := by
   by_cases h : x = 0
-  · simp only [h, _root_.map_zero, zero_le', inv_zero, or_self]
+  · simp only [h, _root_.map_zero, zero_le, inv_zero, or_self]
   · simp only [← one_le_val_iff v h, le_total]
 
 /-- The subgroup of elements whose valuation is less than a certain unit. -/

@@ -1003,7 +1003,7 @@ theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :
     ∑' x, f x = f i + ∑' x, ite (x = i) 0 (f x) := by
   refine tsum_eq_add_tsum_ite' i (NNReal.summable_of_le (fun i' => ?_) hf)
   rw [Function.update_apply]
-  split_ifs <;> simp only [zero_le', le_rfl]
+  split_ifs <;> simp only [zero_le, le_rfl]
 
 end NNReal
 

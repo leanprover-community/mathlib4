@@ -214,7 +214,7 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
     by_cases h0 : ν a (countablePartitionSet n x) = 0
     · suffices κ a (countablePartitionSet n x ×ˢ s) = 0 by simp [h0, this]
       have h0' : fst κ a (countablePartitionSet n x) = 0 :=
-        le_antisymm ((hκν a _).trans h0.le) zero_le'
+        le_antisymm ((hκν a _).trans h0.le) zero_le
       rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)] at h0'
       refine measure_mono_null (fun x ↦ ?_) h0'
       simp only [mem_prod, mem_setOf_eq, and_imp]
@@ -229,7 +229,7 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
   simp only [MeasureTheory.lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
   by_cases h0 : ν a u = 0
   · simp only [h0, mul_zero]
-    have h0' : fst κ a u = 0 := le_antisymm ((hκν a _).trans h0.le) zero_le'
+    have h0' : fst κ a u = 0 := le_antisymm ((hκν a _).trans h0.le) zero_le
     rw [fst_apply' _ _ hu_meas] at h0'
     refine (measure_mono_null ?_ h0').symm
     intro p
@@ -349,9 +349,9 @@ lemma densityProcess_antitone_kernel_right {ν' : Kernel α γ}
   have h_le : κ a (countablePartitionSet n x ×ˢ s) ≤ ν a (countablePartitionSet n x) :=
     meas_countablePartitionSet_le_of_fst_le hκν n a x s
   by_cases h0 : ν a (countablePartitionSet n x) = 0
-  · simp [le_antisymm (h_le.trans h0.le) zero_le', h0]
+  · simp [le_antisymm (h_le.trans h0.le) zero_le, h0]
   have h0' : ν' a (countablePartitionSet n x) ≠ 0 :=
-    fun h ↦ h0 (le_antisymm ((hνν' _ _).trans h.le) zero_le')
+    fun h ↦ h0 (le_antisymm ((hνν' _ _).trans h.le) zero_le)
   rw [ENNReal.toReal_le_toReal]
   · gcongr
     exact hνν' _ _
@@ -449,7 +449,7 @@ lemma tendsto_eLpNorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel �
       - (countableFiltration γ).limitProcess (fun n x ↦ densityProcess κ ν n a x s) (ν a))
       1 ((ν a).restrict A)) atTop (𝓝 0) :=
   tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-    (tendsto_eLpNorm_one_densityProcess_limitProcess hκν a hs) (fun _ ↦ zero_le')
+    (tendsto_eLpNorm_one_densityProcess_limitProcess hκν a hs) (fun _ ↦ zero_le)
     (fun _ ↦ eLpNorm_restrict_le _ _ _ _)
 
 @[deprecated (since := "2024-07-27")]

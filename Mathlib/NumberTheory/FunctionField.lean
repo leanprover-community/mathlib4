@@ -173,7 +173,7 @@ theorem InftyValuation.map_add_le_max' (x y : RatFunc Fq) :
       conv_rhs => rw [max_comm, inftyValuationDef, if_pos (Eq.refl _)]
       rw [max_eq_right (WithZero.zero_le (inftyValuationDef Fq x))]
     · by_cases hxy : x + y = 0
-      · rw [inftyValuationDef, if_pos hxy]; exact zero_le'
+      · rw [inftyValuationDef, if_pos hxy]; exact zero_le
       · rw [inftyValuationDef, inftyValuationDef, inftyValuationDef, if_neg hx, if_neg hy,
           if_neg hxy]
         rw [le_max_iff, WithZero.coe_le_coe, Multiplicative.ofAdd_le, WithZero.coe_le_coe,

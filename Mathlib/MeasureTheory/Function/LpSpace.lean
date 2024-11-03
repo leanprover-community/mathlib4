@@ -578,7 +578,7 @@ alias snorm_indicator_const' := eLpNorm_indicator_const'
 theorem eLpNorm_indicator_const_le (c : G) (p : ℝ≥0∞) :
     eLpNorm (s.indicator fun _ => c) p μ ≤ ‖c‖₊ * μ s ^ (1 / p.toReal) := by
   rcases eq_or_ne p 0 with (rfl | hp)
-  · simp only [eLpNorm_exponent_zero, zero_le']
+  · simp only [eLpNorm_exponent_zero, zero_le]
   rcases eq_or_ne p ∞ with (rfl | h'p)
   · simp only [eLpNorm_exponent_top, ENNReal.top_toReal, _root_.div_zero, ENNReal.rpow_zero,
       mul_one]

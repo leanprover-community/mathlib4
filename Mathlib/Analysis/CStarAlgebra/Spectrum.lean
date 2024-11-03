@@ -240,7 +240,7 @@ lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
   have h (ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B) (x : Unitization ℂ A) :
       ‖ψ x‖₊ ≤ ‖x‖₊ := by
     suffices ∀ {s}, IsSelfAdjoint s → ‖ψ s‖₊ ≤ ‖s‖₊ by
-      refine nonneg_le_nonneg_of_sq_le_sq zero_le' ?_
+      refine nonneg_le_nonneg_of_sq_le_sq zero_le ?_
       simp_rw [← nnnorm_star_mul_self, ← map_star, ← map_mul]
       exact this <| .star_mul_self x
     intro s hs

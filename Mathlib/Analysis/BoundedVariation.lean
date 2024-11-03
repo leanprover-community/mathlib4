@@ -317,7 +317,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         congr 1
         · congr 1
           · apply Finset.sum_congr rfl fun i hi => ?_
-            simp only [Finset.mem_Ico, zero_le', true_and] at hi
+            simp only [Finset.mem_Ico, zero_le, true_and] at hi
             dsimp only [w]
             have A : i + 1 < N := Nat.lt_pred_iff.1 hi
             have B : i < N := Nat.lt_of_succ_lt A
