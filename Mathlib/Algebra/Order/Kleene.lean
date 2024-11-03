@@ -217,7 +217,7 @@ theorem kstar_eq_one : a∗ = 1 ↔ a ≤ 1 :=
   ⟨le_kstar.trans_eq,
     fun h ↦ one_le_kstar.antisymm' <| kstar_le_of_mul_le_left le_rfl <| by rwa [one_mul]⟩
 
-@[simp] lemma kstar_zero : (0 : α)∗ = 1 := kstar_eq_one.2 (zero_le _)
+@[simp] lemma kstar_zero : (0 : α)∗ = 1 := kstar_eq_one.2 zero_le
 
 @[simp]
 theorem kstar_one : (1 : α)∗ = 1 :=

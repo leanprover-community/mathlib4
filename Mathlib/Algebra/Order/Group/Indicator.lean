@@ -200,25 +200,25 @@ lemma iSup_mulIndicator {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {
 
 end CompleteLattice
 
-section CanonicallyOrderedCommMonoid
+section OneLEClass
 
-variable [CanonicallyOrderedCommMonoid M]
+variable [Preorder M] [One M] [OneLEClass M]
 
 @[to_additive]
 lemma mulIndicator_le_self (s : Set α) (f : α → M) : mulIndicator s f ≤ f :=
-  mulIndicator_le_self' fun _ _ ↦ one_le _
+  mulIndicator_le_self' fun _ _ ↦ one_le
 
 @[to_additive]
 lemma mulIndicator_apply_le {a : α} {s : Set α} {f g : α → M} (hfg : a ∈ s → f a ≤ g a) :
     mulIndicator s f a ≤ g a :=
-  mulIndicator_apply_le' hfg fun _ ↦ one_le _
+  mulIndicator_apply_le' hfg fun _ ↦ one_le
 
 @[to_additive]
 lemma mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a ≤ g a) :
     mulIndicator s f ≤ g :=
-  mulIndicator_le' hfg fun _ _ ↦ one_le _
+  mulIndicator_le' hfg fun _ _ ↦ one_le
 
-end CanonicallyOrderedCommMonoid
+end OneLEClass
 
 section LinearOrderedCommGroup
 variable [LinearOrderedCommGroup M]

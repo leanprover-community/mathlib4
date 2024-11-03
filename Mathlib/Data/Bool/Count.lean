@@ -70,7 +70,7 @@ theorem count_false_eq_count_true (hl : Chain' (· ≠ ·) l) (h2 : Even (length
 theorem count_not_le_count_add_one (hl : Chain' (· ≠ ·) l) (b : Bool) :
     count (!b) l ≤ count b l + 1 := by
   cases' l with x l
-  · exact zero_le _
+  · exact zero_le
   obtain rfl | rfl : b = x ∨ b = !x := by simp only [Bool.eq_not_iff, em]
   · rw [count_cons_of_ne b.not_ne_self, count_cons_self, hl.count_not, add_assoc]
     exact add_le_add_left (Nat.mod_lt _ two_pos).le _
