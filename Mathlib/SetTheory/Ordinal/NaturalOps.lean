@@ -93,8 +93,8 @@ instance : IsWellOrder NatOrdinal (· < ·) :=
 instance : ConditionallyCompleteLinearOrderBot NatOrdinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
-@[simp]
-theorem bot_eq_zero : ⊥ = 0 :=
+@[deprecated _root_.bot_eq_zero (since := "2024-11-02")]
+protected theorem bot_eq_zero : ⊥ = 0 :=
   rfl
 
 @[simp]
