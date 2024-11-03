@@ -90,4 +90,40 @@ noncomputable def toBilinHom (bm : Basis ι R M) : QuadraticMap R M N →ₗ[S] 
   map_add' := add_toBilin bm
   map_smul' := smul_toBilin S bm
 
+theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
+    Q x = (∑ i ∈ (bm.repr x).support, ((bm.repr x) i) •((bm.repr x) i) • Q (bm i)) +
+    ∑ p ∈ Finset.filter (fun p ↦ p.1 < p.2) (bm.repr x).support.offDiag,
+      ((bm.repr x) p.1) • ((bm.repr x) p.2) • (polar Q) (bm p.1) (bm p.2) := by
+  conv_lhs => rw [← toQuadraticMap_toBilin Q bm, LinearMap.BilinMap.toQuadraticMap_apply,
+    ← bm.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
+  simp_rw [LinearMap.map_sum₂, map_sum, LinearMap.map_smul₂, _root_.map_smul, toBilin_apply,
+    smul_ite, smul_zero, ← Finset.sum_product', ← Finset.diag_union_offDiag,
+    Finset.sum_union (Finset.disjoint_diag_offDiag _), Finset.sum_diag, if_true]
+  rw [Finset.sum_ite_of_false, ← Finset.sum_filter]
+  intro x_1 a
+  simp_all only [Finset.mem_offDiag, Finsupp.mem_support_iff, ne_eq, not_false_eq_true]
+
+lemma toBilin_symm_eq_Polar (Q : QuadraticMap R M N) (bm : Basis ι R M) :
+    (Q.toBilin bm) + (Q.toBilin bm).flip = polarBilin Q := by
+  ext a b
+  symm
+  calc Q (a + b) - Q a - Q b = (Q.toBilin bm).toQuadraticMap (a + b) - Q a - Q b := by
+        rw [ toQuadraticMap_toBilin Q]
+  _ = (Q.toBilin bm) (a + b) (a + b) - Q a - Q b := by rw [LinearMap.BilinMap.toQuadraticMap_apply]
+  _ = ((Q.toBilin bm) (a + b) a + (Q.toBilin bm) (a + b) b) - Q a - Q b := by rw [map_add]
+  _ = (((Q.toBilin bm) a a + (Q.toBilin bm) b a) + (Q.toBilin bm) (a + b) b) - Q a - Q b := by
+    rw [map_add, LinearMap.add_apply]
+  _ = (((Q.toBilin bm).toQuadraticMap a + (Q.toBilin bm) b a) + (Q.toBilin bm) (a + b) b) - Q a
+    - Q b := by rw [LinearMap.BilinMap.toQuadraticMap_apply]
+  _ = ((Q a + (Q.toBilin bm) b a) + (Q.toBilin bm) (a + b) b) - Q a - Q b := by
+    rw [ toQuadraticMap_toBilin Q]
+  _ = ((Q a + (Q.toBilin bm) b a) + ((Q.toBilin bm) a b + (Q.toBilin bm) b b)) - Q a - Q b := by
+    rw [map_add, LinearMap.add_apply]
+  _ = ((Q a + (Q.toBilin bm) b a) + ((Q.toBilin bm) a b + (Q.toBilin bm).toQuadraticMap b)) - Q a
+    - Q b := by rw [LinearMap.BilinMap.toQuadraticMap_apply]
+  _ = ((Q a + (Q.toBilin bm) b a) + ((Q.toBilin bm) a b + Q b)) - Q a - Q b := by
+    rw [ toQuadraticMap_toBilin Q]
+  _ = ((Q.toBilin bm) a) b + ((Q.toBilin bm) b) a := by abel
+
+
 end QuadraticMap
