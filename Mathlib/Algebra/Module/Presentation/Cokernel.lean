@@ -140,8 +140,7 @@ noncomputable def ofExact {f : M₁ →ₗ[A] M₂} {g : M₂ →ₗ[A] M₃}
     (hfg : Function.Exact f g) (hg : Function.Surjective g)
     (hg₁ : Submodule.span A (Set.range g₁) = ⊤) :
     Presentation A M₃ :=
-  ofIsPresentation ((pres₂.cokernel data hg₁).ofLinearEquiv
-    (hfg.linearEquivOfSurjective hg))
+  (pres₂.cokernel data hg₁).ofLinearEquiv (hfg.linearEquivOfSurjective hg)
 
 end Presentation
 
