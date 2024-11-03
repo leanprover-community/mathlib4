@@ -106,7 +106,7 @@ theorem Basis.piTensorProduct_apply (b : Π i, Basis (κ i) R (M i)) (p : Π i, 
   apply LinearEquiv.injective (PiTensorProduct.congr (fun i ↦ (b i).repr))
   simp only [LinearEquiv.apply_symm_apply, congr_tprod, repr_self]
   apply LinearEquiv.injective (finsuppPiTensorProduct R κ fun _ ↦ R)
-  simp only [LinearEquiv.apply_symm_apply, finsuppPiTensorProduct_single]
+  simp only [LinearEquiv.apply_symm_apply, finsuppPiTensorProduct_tprod_single]
   rfl
 
 end PiTensorProduct

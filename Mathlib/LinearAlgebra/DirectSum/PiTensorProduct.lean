@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Sophie Morel. All rights reserved.
+Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sophie Morel
+Authors: Sophie Morel, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.Algebra.DirectSum.Module
@@ -15,7 +15,7 @@ This file shows that taking `PiTensorProduct`s commutes with taking `DirectSum`s
 ## Main results
 
 * `PiTensorProduct.directSum`: the linear equivalence between a `PiTensorProduct` of `DirectSum`s
-and the `DirectSum` of the `PiTensorProduct`s.
+  and the `DirectSum` of the `PiTensorProduct`s.
 -/
 
 suppress_compilation
@@ -27,44 +27,59 @@ open PiTensorProduct DirectSum LinearMap
 open scoped TensorProduct
 
 variable (R : Type*) [CommSemiring R]
-
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
-
 variable {κ : ι → Type*} [(i : ι) → DecidableEq (κ i)]
-
 variable (M : (i : ι) → κ i → Type*) (M' : Type*)
-
 variable [Π i (j : κ i), AddCommMonoid (M i j)] [AddCommMonoid M']
-
 variable [Π i (j : κ i), Module R (M i j)] [Module R M']
+variable [Π i (j : κ i) (x : M i j), Decidable (x ≠ 0)]
 
-variable [Π i (j : κ i) (x : M i j),  Decidable (x ≠ 0)]
-
-/-- The linear equivalence `⨂[R] i, (⨁ j : κ i, M i j) ≃ ⨁ p : (i : ι) → κ i, ⨂[R] i, M i (p i)`,
- i.e. "tensor product distributes over direct sum". -/
+/-- The n-ary tensor product distributes over m-ary direct sums. -/
 protected def directSum :
-    (⨂[R] i, (⨁ j : κ i, M i j)) ≃ₗ[R] ⨁ p : Π i, κ i, ⨂[R] i, M i (p i) := by
-  refine LinearEquiv.ofLinear (R := R) (R₂ := R) ?toFun ?invFun ?left ?right
-  · exact lift (MultilinearMap.fromDirectSumEquiv R (κ := κ) (M := M)
-      fun p ↦ (DirectSum.lof R _ _ p).compMultilinearMap (PiTensorProduct.tprod R))
-  · exact DirectSum.toModule R _ _ (fun p ↦ lift (LinearMap.compMultilinearMap
-      (PiTensorProduct.map (fun i ↦ DirectSum.lof R _ _ (p i))) (tprod R)))
-  · ext p x
-    simp only [compMultilinearMap_apply, coe_comp, Function.comp_apply, toModule_lof, lift.tprod,
-      map_tprod, MultilinearMap.fromDirectSumEquiv_apply, id_comp]
-    rw [Finset.sum_subset (piFinset_support_lof_sub R κ p x)]
-    · rw [Finset.sum_singleton]
-      simp only [lof_apply]
-    · simp only [Finset.mem_singleton, Fintype.mem_piFinset, DFinsupp.mem_support_toFun, ne_eq,
-        not_forall, not_not, forall_exists_index, forall_eq, lof_apply]
-      intro i hi
-      rw [(tprod R).map_coord_zero i hi, LinearMap.map_zero]
-  · ext x
-    simp only [compMultilinearMap_apply, coe_comp, Function.comp_apply, lift.tprod,
-      MultilinearMap.fromDirectSumEquiv_apply, map_sum, toModule_lof, map_tprod, id_coe, id_eq]
-    change _ = tprod R (fun i ↦ x i)
-    nth_rewrite 3 [funext (fun i ↦ Eq.symm (DirectSum.sum_support_of (x i)))]
-    rw [MultilinearMap.map_sum_finset]
-    rfl
+    (⨂[R] i, (⨁ j : κ i, M i j)) ≃ₗ[R] ⨁ p : Π i, κ i, ⨂[R] i, M i (p i) :=
+  LinearEquiv.ofLinear (R := R) (R₂ := R)
+    (lift <| MultilinearMap.fromDirectSumEquiv R (κ := κ) (M := M)
+      fun p ↦ (DirectSum.lof R _ _ p).compMultilinearMap (tprod R))
+    (DirectSum.toModule R _ _ fun p ↦ lift <|
+      (PiTensorProduct.map fun i ↦ DirectSum.lof R _ _ (p i)).compMultilinearMap (tprod R))
+    (by ext p x; simp)
+    (by ext x; simp)
+
+@[simp]
+theorem directSum_tprod_lof (p : Π i, κ i) (x : Π i, M i (p i)) :
+    PiTensorProduct.directSum R M (⨂ₜ[R] i, DirectSum.lof R _ _ (p i) (x i)) =
+      DirectSum.lof R _ _ p (⨂ₜ[R] i, x i) := by
+  simp [PiTensorProduct.directSum]
+
+@[simp]
+theorem directSum_symm_lof_tprod (p : Π i, κ i) (x : Π i, M i (p i)) :
+    (PiTensorProduct.directSum R M).symm (DirectSum.lof R _ _ p (tprod R x)) =
+      (⨂ₜ[R] i, DirectSum.lof R _ _ (p i) (x i)) := by
+  simp [PiTensorProduct.directSum]
+
+@[simp]
+theorem directSum_tprod_apply (x : Π i, ⨁ j, M i j) (p : Π i, κ i):
+    PiTensorProduct.directSum R M (tprod R x) p =
+      ⨂ₜ[R] i, x i (p i) := by
+  -- restate with bundled morphisms, to let `ext` fire
+  let appLHS := DFinsupp.lapply (R := R) (M := fun p : Π i, κ i => ⨂[R] i, M i (p i)) p
+  let appRHS (i : ι) : (⨁ j, M i j) →ₗ[R] M i (p i) := DFinsupp.lapply (R := R) (p i)
+  suffices
+      (appLHS ∘ₗ (PiTensorProduct.directSum R M).toLinearMap).compMultilinearMap (tprod R) =
+      (tprod R).compLinearMap appRHS by
+    exact congr($this x)
+  ext p' x
+  -- clean up
+  simp only [MultilinearMap.compLinearMap_apply, compMultilinearMap_apply, coe_comp,
+    Function.comp_apply, DFinsupp.lapply_apply, appLHS, appRHS]
+  erw [directSum_tprod_lof R M _ x]
+  simp only [DFinsupp.lapply, coe_mk, AddHom.coe_mk]
+  obtain rfl | hp := eq_or_ne p' p
+  · simp only [lof_apply]
+  · obtain ⟨i, hi⟩ := Function.ne_iff.1 hp
+    erw [DFinsupp.single_eq_of_ne hp]
+    refine (MultilinearMap.map_coord_zero _ i ?_).symm
+    erw [DFinsupp.single_eq_of_ne hi]
+
 
 end PiTensorProduct
