@@ -109,8 +109,8 @@ fi |
   }'
 )
 
-set +e ## TODO, bisect the error...
-set +x ## for debugging
+# Keeping set -e causes errors further below. TODO understand why and fix this!
+set +e
 
 ## report may be empty, if every declaration is accounted for.
 report="$(if [ "${short}" == "0" ]
@@ -154,6 +154,8 @@ else
   ## add backticks at the beginning and at the end of the line
   grep '\(+\|-\)' | sed 's=^ *1 =`=; s=^[^`]=`=; s=$=`='
 fi)"
+
+set -e ## try again
 
 if [ -n "${report}" ]
 then
