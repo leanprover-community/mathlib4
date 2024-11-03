@@ -155,7 +155,7 @@ else
   grep '\(+\|-\)' | sed 's=^ *1 =`=; s=^[^`]=`=; s=$=`='
 fi)"
 
-set -e ## try again
+set -e
 
 if [ -n "${report}" ]
 then
