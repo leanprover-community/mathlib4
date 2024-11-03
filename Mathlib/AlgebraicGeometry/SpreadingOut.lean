@@ -60,7 +60,7 @@ lemma injective_germ_basicOpen (U : X.Opens) (hU : IsAffineOpen U)
     (x : X) (hx : x ∈ U) (f : Γ(X, U))
     (hf : x ∈ X.basicOpen f)
     (H : Function.Injective (X.presheaf.germ U x hx)) :
-      Function.Injective (X.presheaf.germ (X.basicOpen f) x hf) := by
+    Function.Injective (X.presheaf.germ (X.basicOpen f) x hf) := by
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero] at H ⊢
   intros t ht
   have := hU.isLocalization_basicOpen f
@@ -72,13 +72,13 @@ lemma injective_germ_basicOpen (U : X.Opens) (hU : IsAffineOpen U)
 
 lemma Scheme.exists_germ_injective (X : Scheme.{u}) (x : X) [X.IsGermInjectiveAt x] :
     ∃ (U : X.Opens) (hx : x ∈ U),
-        IsAffineOpen U ∧ Function.Injective (X.presheaf.germ U x hx) :=
+      IsAffineOpen U ∧ Function.Injective (X.presheaf.germ U x hx) :=
   Scheme.IsGermInjectiveAt.cond
 
 lemma Scheme.exists_le_and_germ_injective (X : Scheme.{u}) (x : X) [X.IsGermInjectiveAt x]
     (V : X.Opens) (hxV : x ∈ V) :
     ∃ (U : X.Opens) (hx : x ∈ U),
-        IsAffineOpen U ∧ U ≤ V ∧ Function.Injective (X.presheaf.germ U x hx) := by
+      IsAffineOpen U ∧ U ≤ V ∧ Function.Injective (X.presheaf.germ U x hx) := by
   obtain ⟨U, hx, hU, H⟩ := Scheme.IsGermInjectiveAt.cond (x := x)
   obtain ⟨f, hf, hxf⟩ := hU.exists_basicOpen_le ⟨x, hxV⟩ hx
   exact ⟨X.basicOpen f, hxf, hU.basicOpen f, hf, injective_germ_basicOpen U hU x hx f hxf H⟩
@@ -94,7 +94,7 @@ instance (x : X) [X.IsGermInjectiveAt x] [IsOpenImmersion f] :
   simpa
 
 variable {f} in
-lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f]:
+lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f] :
     Y.IsGermInjectiveAt (f.base x) ↔ X.IsGermInjectiveAt x := by
   refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
   obtain ⟨U, hxU, hU, hU', H⟩ :=
@@ -126,8 +126,9 @@ lemma Scheme.IsGermInjective.of_openCover
 
 protected
 lemma Scheme.IsGermInjective.Spec
-    (H : ∀ I : Ideal R, I.IsPrime → ∃ f : R, f ∉ I ∧ ∀ (x y : R)
-        (_ : y * x = 0) (_ : y ∉ I), ∃ n, f ^ n * x = 0) : (Spec R).IsGermInjective := by
+    (H : ∀ I : Ideal R, I.IsPrime →
+      ∃ f : R, f ∉ I ∧ ∀ (x y : R), y * x = 0 → y ∉ I → ∃ n, f ^ n * x = 0) :
+    (Spec R).IsGermInjective := by
   refine fun p ↦ ⟨?_⟩
   obtain ⟨f, hf, H⟩ := H p.asIdeal p.2
   refine ⟨PrimeSpectrum.basicOpen f, hf, ?_, ?_⟩
