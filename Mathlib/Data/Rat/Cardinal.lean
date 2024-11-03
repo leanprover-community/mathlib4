@@ -1,27 +1,22 @@
 /-
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes
+Authors: Chris Hughes, Floris Van Doorn
 -/
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.Ring.Rat
 import Mathlib.Data.Rat.Encodable
-import Mathlib.Logic.Denumerable
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
-# Denumerability of ℚ
+# Cardinality of ℚ
 
-This file proves that ℚ is denumerable.
+This file proves that the Cardinality of ℚ is ℵ₀
 -/
 
 assert_not_exists Module
 assert_not_exists Field
 
-namespace Rat
+open Cardinal
 
-open Denumerable
-
-/-- **Denumerability of the Rational Numbers** -/
-instance instDenumerable : Denumerable ℚ := ofEncodableOfInfinite ℚ
-
-end Rat
+theorem Cardinal.mkRat : #ℚ = ℵ₀ := mk_eq_aleph0 ℚ
