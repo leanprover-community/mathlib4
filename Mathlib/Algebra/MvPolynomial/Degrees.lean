@@ -92,7 +92,7 @@ theorem degrees_monomial_eq (s : σ →₀ ℕ) (a : R) (ha : a ≠ 0) :
     exact (supDegree_single s a).trans (if_neg ha)
 
 theorem degrees_C (a : R) : degrees (C a : MvPolynomial σ R) = 0 :=
-  Multiset.le_zero.1 <| degrees_monomial _ _
+  (degrees_monomial _ _).eq_zero
 
 theorem degrees_X' (n : σ) : degrees (X n : MvPolynomial σ R) ≤ {n} :=
   le_trans (degrees_monomial _ _) <| le_of_eq <| toMultiset_single _ _

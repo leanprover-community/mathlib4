@@ -566,7 +566,7 @@ theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * ω := by
 theorem nfp_add_eq_mul_omega0 {a b} (hba : b ≤ a * ω) : nfp (a + ·) b = a * ω := by
   apply le_antisymm (nfp_le_fp (isNormal_add_right a).monotone hba _)
   · rw [← nfp_add_zero]
-    exact nfp_monotone (isNormal_add_right a).monotone zero_le)
+    exact nfp_monotone (isNormal_add_right a).monotone zero_le
   · dsimp; rw [← mul_one_add, one_add_omega0]
 
 @[deprecated (since := "2024-09-30")]

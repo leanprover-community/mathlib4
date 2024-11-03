@@ -440,7 +440,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
     rw [orderOf_pow' t (pow_ne_zero k hp.ne_zero), Nat.gcd_eq_right hpk]
   obtain ⟨a, ha⟩ := Nat.exists_eq_add_of_lt hpe
   have hcoprime : (orderOf (t ^ p ^ k)).Coprime (orderOf g) := by
-    rw [hg, Nat.coprime_pow_right_iff (pos_of_gt hpe), Nat.coprime_comm]
+    rw [hg, Nat.coprime_pow_right_iff hpe.pos, Nat.coprime_comm]
     apply Or.resolve_right (Nat.coprime_or_dvd_of_prime hp _)
     nth_rw 1 [← pow_one p]
     have : 1 = (Nat.factorization (orderOf (t ^ p ^ k))) p + 1 := by

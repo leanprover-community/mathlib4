@@ -56,7 +56,7 @@ theorem totient_le (n : ℕ) : φ n ≤ n :=
   ((range n).card_filter_le _).trans_eq (card_range n)
 
 theorem totient_lt (n : ℕ) (hn : 1 < n) : φ n < n :=
-  (card_lt_card (filter_ssubset.2 ⟨0, by simp [hn.ne', pos_of_gt hn]⟩)).trans_eq (card_range n)
+  (card_lt_card (filter_ssubset.2 ⟨0, by simp [hn.ne', hn.pos]⟩)).trans_eq (card_range n)
 
 @[simp]
 theorem totient_eq_zero : ∀ {n : ℕ}, φ n = 0 ↔ n = 0
@@ -115,7 +115,7 @@ theorem _root_.ZMod.card_units_eq_totient (n : ℕ) [NeZero n] [Fintype (ZMod n)
 
 theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
   haveI : Fact (1 < n) := ⟨one_lt_two.trans hn⟩
-  haveI : NeZero n := NeZero.of_gt hn
+  haveI : NeZero n := NeZero.of_lt hn
   suffices 2 = orderOf (-1 : (ZMod n)ˣ) by
     rw [← ZMod.card_units_eq_totient, even_iff_two_dvd, this]
     exact orderOf_dvd_card
@@ -223,7 +223,7 @@ theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Pr
 
 theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
     Fintype.card (ZMod p)ˣ ≤ p - 1 := by
-  haveI : NeZero p := ⟨(pos_of_gt hp).ne'⟩
+  haveI : NeZero p := ⟨hp.ne_zero⟩
   rw [ZMod.card_units_eq_totient p]
   exact Nat.le_sub_one_of_lt (Nat.totient_lt p hp)
 
@@ -264,7 +264,7 @@ theorem totient_eq_prod_factorization {n : ℕ} (hn : n ≠ 0) :
   rw [multiplicative_factorization φ (@totient_mul) totient_one hn]
   apply Finsupp.prod_congr _
   intro p hp
-  have h := zero_lt_iff.mpr (Finsupp.mem_support_iff.mp hp)
+  have h := (Finsupp.mem_support_iff.mp hp).pos
   rw [totient_prime_pow (prime_of_mem_primeFactors hp) h]
 
 /-- Euler's product formula for the totient function. -/
@@ -275,7 +275,7 @@ theorem totient_mul_prod_primeFactors (n : ℕ) :
   nth_rw 3 [← factorization_prod_pow_eq_self hn]
   simp only [prod_primeFactors_prod_factorization, ← Finsupp.prod_mul]
   refine Finsupp.prod_congr (M := ℕ) (N := ℕ) fun p hp => ?_
-  rw [Finsupp.mem_support_iff, ← zero_lt_iff] at hp
+  rw [Finsupp.mem_support_iff, ← pos_iff_ne_zero] at hp
   rw [mul_comm, ← mul_assoc, ← pow_succ', Nat.sub_one, Nat.succ_pred_eq_of_pos hp]
 
 /-- Euler's product formula for the totient function. -/
@@ -292,7 +292,7 @@ theorem totient_eq_mul_prod_factors (n : ℕ) :
   · simp [hn]
   have hn' : (n : ℚ) ≠ 0 := by simp [hn]
   have hpQ : (∏ p ∈ n.primeFactors, (p : ℚ)) ≠ 0 := by
-    rw [← cast_prod, cast_ne_zero, ← zero_lt_iff, prod_primeFactors_prod_factorization]
+    rw [← cast_prod, cast_ne_zero, ← pos_iff_ne_zero, prod_primeFactors_prod_factorization]
     exact prod_pos fun p hp => pos_of_mem_primeFactors hp
   simp only [totient_eq_div_primeFactors_mul n, prod_primeFactors_dvd n, cast_mul, cast_prod,
     cast_div_charZero, mul_comm_div, mul_right_inj' hn', div_eq_iff hpQ, ← prod_mul_distrib]

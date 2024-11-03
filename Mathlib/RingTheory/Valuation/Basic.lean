@@ -177,7 +177,7 @@ theorem map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf :
 theorem map_sum_lt {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ 0)
     (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g := by
   refine
-    Finset.induction_on s (fun _ => v.map_zero ▸ (zero_lt_iff.2 hg))
+    Finset.induction_on s (fun _ => v.map_zero ▸ hg.pos)
       (fun a s has ih hf => ?_) hf
   rw [Finset.forall_mem_insert] at hf; rw [Finset.sum_insert has]
   exact v.map_add_lt hf.1 (ih hf.2)
@@ -203,7 +203,7 @@ theorem ne_zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x ≠
   map_ne_zero v
 
 lemma pos_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : 0 < v x ↔ x ≠ 0 := by
-  rw [zero_lt_iff, ne_zero_iff]
+  rw [pos_iff_ne_zero, ne_zero_iff]
 
 theorem unit_map_eq (u : Rˣ) : (Units.map (v : R →* Γ₀) u : Γ₀) = v u :=
   rfl
@@ -424,7 +424,7 @@ theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
   obtain rfl | hy := eq_or_ne y 0
   · simp
   · rw [← div_le_one₀, ← v.map_div, h, v'.map_div, div_le_one₀] <;>
-      rwa [zero_lt_iff, ne_zero_iff]
+      rwa [pos_iff_ne_zero, ne_zero_iff]
 
 theorem isEquiv_iff_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
@@ -532,10 +532,10 @@ variable [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R �
 def supp : Ideal R where
   carrier := { x | v x = 0 }
   zero_mem' := map_zero v
-  add_mem' {x y} hx hy := le_zero_iff.mp <|
+  add_mem' {x y} hx hy := eq_zero_of_le_zero <|
     calc
       v (x + y) ≤ max (v x) (v y) := v.map_add x y
-      _ ≤ 0 := max_le (le_zero_iff.mpr hx) (le_zero_iff.mpr hy)
+      _ ≤ 0 := max_le hx.le hy.le
   smul_mem' c x hx :=
     calc
       v (c * x) = v c * v x := map_mul v c x
