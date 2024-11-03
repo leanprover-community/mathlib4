@@ -51,6 +51,20 @@ theorem isBot_one : IsBot (1 : α) :=
 theorem isMin_one : IsMin (1 : α) :=
   isBot_one.isMin
 
+@[to_additive]
+theorem one_lt_of_lt (h : x < y) : 1 < y :=
+  one_le.trans_lt h
+
+alias LT.lt.one_lt := one_lt_of_lt
+alias LT.lt.pos := pos_of_lt
+
+@[to_additive]
+theorem ne_one_of_lt (h : x < y) : y ≠ 1 :=
+  (one_lt_of_lt h).ne'
+
+alias LT.lt.ne_one := ne_one_of_lt
+alias LT.lt.ne_zero := ne_zero_of_lt
+
 end Preorder
 
 section PartialOrder
@@ -76,17 +90,22 @@ alias Ne.one_lt := one_lt_of_ne
 alias Ne.pos := pos_of_ne
 
 @[to_additive]
-theorem ne_one_of_lt (h : x < y) : y ≠ 1 :=
-  (one_le.trans_lt h).ne'
-
-alias LT.lt.ne_one := ne_one_of_lt
-alias LT.lt.ne_zero := ne_zero_of_lt
-
-@[to_additive]
 theorem eq_one_or_one_lt (x : α) : x = 1 ∨ 1 < x :=
   one_le.eq_or_lt.imp_left Eq.symm
 
 end PartialOrder
+
+namespace NeZero
+
+variable [PartialOrder α] [Zero α] [ZeroLEClass α]
+
+theorem pos (x : α) [NeZero x] : 0 < x :=
+  pos_of_ne NeZero.out
+
+theorem of_lt (h : x < y) : NeZero y :=
+  ⟨h.ne_zero⟩
+
+end NeZero
 
 section LinearOrder
 

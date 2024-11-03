@@ -108,6 +108,9 @@ theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
 instance (priority := 100) : OneLEClass α where
   one_le := le_iff_exists_mul.mpr ⟨_, (one_mul _).symm⟩
 
+@[deprecated le_zero_iff_eq_zero (since := "2024-11-02")]
+alias nonpos_iff_eq_zero := le_zero_iff_eq_zero
+
 @[to_additive] instance CanonicallyOrderedCommMonoid.toUniqueUnits : Unique αˣ where
   uniq a := Units.ext ((mul_eq_one_iff_of_one_le (α := α) one_le <| one_le).1 a.mul_inv).1
 
@@ -158,23 +161,22 @@ theorem lt_iff_exists_mul [MulLeftStrictMono α] : a < b ↔ ∃ c > 1, b = a * 
 
 end CanonicallyOrderedCommMonoid
 
+@[deprecated pos_of_lt (since := "2024-11-02")]
 theorem pos_of_gt {M : Type*} [CanonicallyOrderedAddCommMonoid M] {n m : M} (h : n < m) : 0 < m :=
-  lt_of_le_of_lt zero_le h
+  pos_of_lt h
 
 namespace NeZero
 
-theorem pos {M} (a : M) [CanonicallyOrderedAddCommMonoid M] [NeZero a] : 0 < a :=
-  zero_le.lt_of_ne <| NeZero.out.symm
-
+@[deprecated of_lt (since := "2024-11-02")]
 theorem of_gt {M} [CanonicallyOrderedAddCommMonoid M] {x y : M} (h : x < y) : NeZero y :=
-  of_pos <| pos_of_gt h
+  of_pos <| pos_of_lt h
 
 -- 1 < p is still an often-used `Fact`, due to `Nat.Prime` implying it, and it implying `Nontrivial`
 -- on `ZMod`'s ring structure. We cannot just set this to be any `x < y`, else that becomes a
 -- metavariable and it will hugely slow down typeclass inference.
 instance (priority := 10) of_gt' {M : Type*} [CanonicallyOrderedAddCommMonoid M] [One M] {y : M}
   -- Porting note: Fact.out has different type signature from mathlib3
-  [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
+  [Fact (1 < y)] : NeZero y := of_lt <| @Fact.out (1 < y) _
 
 end NeZero
 

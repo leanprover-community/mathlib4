@@ -39,7 +39,7 @@ theorem tsub_le_self : a - b ≤ a :=
   tsub_le_iff_left.mpr <| le_add_left le_rfl
 
 theorem zero_tsub (a : α) : 0 - a = 0 :=
-  tsub_eq_zero_of_le <| zero_le a
+  tsub_eq_zero_of_le zero_le
 
 theorem tsub_self_add (a b : α) : a - (a + b) = 0 :=
   tsub_eq_zero_of_le <| self_le_add_right _ _
