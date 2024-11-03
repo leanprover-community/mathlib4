@@ -104,7 +104,8 @@ noncomputable def differentialsRestrictScalarsData :
         -Finsupp.single ⟨embedding (G := fun (i : Fin n) ↦ B) i₀ (fun j ↦ g j j.2)
           (algebraMap A B a), b₀⟩  1
     | ⟨b₀, .alternate g i j hg hij⟩ => Finsupp.single ⟨g, b₀⟩ 1
-    | ⟨b₀, .antisymmetry g i j hg⟩ => sorry
+    | ⟨b₀, .antisymmetry g i j hg⟩ =>
+        Finsupp.single ⟨Function.swapValues g i j, b₀⟩ 1 - Finsupp.single ⟨g, b₀⟩ 1
   π_lift r := match r with
     | ⟨b₀, .piTensor i₀ (.add b₁ b₂) g⟩ => by
         dsimp [presentationDifferentialsUp]
@@ -126,7 +127,13 @@ noncomputable def differentialsRestrictScalarsData :
         simp only [Finsupp.mapRange_single, Algebra.Generators.algebraMap_apply, map_one,
           Finsupp.embDomain_neg, Finsupp.embDomain_single, smul_neg, Finsupp.smul_single,
           smul_eq_mul, mul_one]
-    | ⟨b₀, .antisymmetry g i j hg⟩ => sorry
+    | ⟨b₀, .antisymmetry g i j hg⟩ => by
+        dsimp
+        rw [map_sub, map_smul]
+        erw [Module.Presentation.finsupp_π, Module.Presentation.finsupp_π,
+          Module.Relations.map_single]
+        dsimp
+        simp only [smul_sub, Finsupp.smul_single, smul_eq_mul, mul_one]
     | ⟨b₀, .alternate g i j hg hij⟩ => by
         dsimp
         rw [map_smul]
@@ -200,7 +207,13 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
                     Finsupp.linearCombination_single, one_smul, neg_eq_zero]
                   rw [presentationDifferentialsDown_var, one_smul]
                   apply MultilinearMap.map_of_eq_zero _ _ i.succ (by simp)
-          | antisymmetry g i j hij => sorry
+          | antisymmetry g i j hij =>
+              dsimp
+              simp only [presentationDifferentialsDown_relation, map_sub,
+                Finsupp.linearCombination_single, one_smul]
+              rw [presentationDifferentialsDown_var, one_smul, comp_finInsert,
+                presentationDifferentialsDown_var, one_smul, comp_finInsert]
+              sorry
           | alternate g i j hg hij =>
               dsimp
               simp only [presentationDifferentialsDown_relation, Finsupp.linearCombination_single,

@@ -34,9 +34,52 @@ lemma swapValues_apply (hi : k ≠ i) (hj : k ≠ j) :
   dsimp [swapValues]
   rw [if_neg hi, if_neg hj]
 
+lemma update_update (a b : α) (hij : i ≠ j) :
+    update (update f i a) j b = update (update f j b) i a := by
+  ext x
+  by_cases h : x = i
+  · subst h
+    rw [update_same, update_noteq hij, update_same]
+  · by_cases h' : x = j
+    · subst h'
+      rw [update_same, update_noteq hij.symm, update_same]
+    · rw [update_noteq h, update_noteq h', update_noteq h, update_noteq h']
+
+lemma swapValues_eq_update_update :
+    swapValues f i j = update (update f i (f j)) j (f i) := by
+  ext x
+  by_cases h : x = i
+  · subst h
+    rw [swapValues_fst]
+    by_cases h' : x = j
+    · subst h'
+      rw [update_eq_self, update_same]
+    · rw [update_noteq h', update_same]
+  · by_cases h' : x = j
+    · subst h'
+      rw [swapValues_snd, update_same]
+    · rw [update_noteq h', update_noteq h, swapValues_apply _ _ _ _ h h']
+
 end Function
 
 open Function
+
+lemma AlternatingMap.antisymmetry {R M N ι : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] [DecidableEq ι]
+    (f : AlternatingMap R M N ι) (x : ι → M) (i j : ι) (hij : i ≠ j) :
+    f (Function.swapValues x i j) = - f x := by
+  have := f.map_eq_zero_of_eq
+    (Function.update (Function.update x i (x i + x j)) j (x i + x j))
+    (by simp [update_noteq hij]) hij
+  rw [map_add, update_update _ _ _ _ _ hij, map_add,
+    update_update _ _ _ _ _ hij, map_add] at this
+  nth_rw 1 [f.map_eq_zero_of_eq (hij := hij)] at this; swap
+  · rw [update_same, update_update _ _ _ _ _ hij.symm, update_same]
+  nth_rw 3 [f.map_eq_zero_of_eq (hij := hij)] at this; swap
+  · rw [update_same, update_update _ _ _ _ _ hij.symm, update_same]
+  rw [zero_add, add_zero, ← eq_neg_iff_add_eq_zero, update_eq_self, update_eq_self] at this
+  rw [swapValues_eq_update_update, update_update _ _ _ _ _ hij]
+  exact this
 
 namespace ExteriorAlgebra
 
