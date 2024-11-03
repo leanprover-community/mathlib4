@@ -32,7 +32,7 @@ variable {α : Type*}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends LinearOrderedCommMonoid α,
-    CommMonoidWithZero α where
+  CommMonoidWithZero α where
   /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
   zero_le_one : (0 : α) ≤ 1
 
