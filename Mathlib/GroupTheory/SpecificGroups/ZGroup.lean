@@ -22,6 +22,7 @@ and `G/G'` are cyclic of coprime orders.
 
 variable (G G' : Type*) [Group G] [Group G'] (f : G →* G')
 
+/-- A Z-group is a group whose Sylow subgroups are all cyclic. -/
 class IsZGroup : Prop where
   isZGroup : ∀ p : ℕ, p.Prime → ∀ P : Sylow p G, IsCyclic P
 
