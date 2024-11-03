@@ -145,7 +145,6 @@ theorem limit.π_comp_eqToHom (F : J ⥤ C) [HasLimit F] {j j' : J} (hj : j = j'
   subst hj
   simp
 
-
 @[simp]
 theorem limit.cone_x {F : J ⥤ C} [HasLimit F] : (limit.cone F).pt = limit F :=
   rfl
