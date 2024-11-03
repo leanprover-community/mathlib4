@@ -71,20 +71,14 @@ end CommSemiring
 
 section PiTensorProduct
 
-open PiTensorProduct BigOperators
-
 attribute [local ext] PiTensorProduct.ext
 
-open LinearMap
-
+open LinearMap PiTensorProduct
 open scoped TensorProduct
 
 variable {ι R : Type*} [CommSemiring R]
-
 variable {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
-
 variable {κ : ι → Type*}
-
 variable [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)] [(x : R) → Decidable (x ≠ 0)]
 
 /-- Let `ι` be a `Fintype` and `M` be a family of modules indexed by `ι`. If `b i : κ i → M i`

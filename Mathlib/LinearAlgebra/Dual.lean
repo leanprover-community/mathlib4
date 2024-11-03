@@ -91,18 +91,18 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
     splitting of `V₁`.
 * Tensor products:
   * `TensorProduct.dualDistrib`: The canonical linear map from `Dual M ⊗ Dual N` to
-  `Dual (M ⊗ N)`, sending `f ⊗ g` to the composition of `TensorProduct.map f g` with the
-  natural isomorphism `R ⊗ R ≃ R`.
+    `Dual (M ⊗ N)`, sending `f ⊗ g` to the composition of `TensorProduct.map f g` with the
+    natural isomorphism `R ⊗ R ≃ R`.
   * `TensorProduct.dualDistribEquiv`: A linear equivalence between `Dual M ⊗ Dual N` and
-  `Dual (M ⊗ N)` when `M` and `N` are finite free modules. It sends `f ⊗ g` to the composition
-  of `TensorProduct.map f g` with the natural isomorphism `R ⊗ R ≃ R`.
+    `Dual (M ⊗ N)` when `M` and `N` are finite free modules. It sends `f ⊗ g` to the composition
+    of `TensorProduct.map f g` with the natural isomorphism `R ⊗ R ≃ R`.
   * `PiTensorProduct.dualDistrib`: The canonical linear map from `⨂[R] i, Dual R (M i)` to
-  `Dual R (⨂[R] i, M i)`, sending `⨂ₜ[R] i, f i` to the composition of
-  `PiTensorProduct.map f` with the linear equivalence `⨂[R] i, R →ₗ R` given by multiplication.
+    `Dual R (⨂[R] i, M i)`, sending `⨂ₜ[R] i, f i` to the composition of
+    `PiTensorProduct.map f` with the linear equivalence `⨂[R] i, R →ₗ R` given by multiplication.
   * `PiTensorProduct.dualDistribEquiv`: A linear equivalence between `⨂[R] i, Dual R (M i)`
-  and `Dual R (⨂[R] i, M i)` when all `M i` are finite free modules. If
-  `f : (i : ι) → Dual R (M i)`, then this equivalence sends `⨂ₜ[R] i, f i` to the composition of
-  `PiTensorProduct.map f` with the natural isomorphism `⨂[R] i, R ≃ R` given by multiplication.
+    and `Dual R (⨂[R] i, M i)` when all `M i` are finite free modules. If
+    `f : (i : ι) → Dual R (M i)`, then this equivalence sends `⨂ₜ[R] i, f i` to the composition of
+    `PiTensorProduct.map f` with the natural isomorphism `⨂[R] i, R ≃ R` given by multiplication.
 -/
 
 open Module Submodule
