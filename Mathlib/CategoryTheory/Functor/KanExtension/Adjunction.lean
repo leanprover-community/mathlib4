@@ -176,7 +176,7 @@ omit [∀ (F : C ⥤ H), L.HasLeftKanExtension F]
 @[local instance]
 private theorem colimitIsoColimitGrothendieck_inst₁ :
     HasColimit (CostructuredArrow.grothendieckProj L ⋙ G) :=
-  hasColimitOfHasFiberwiseColimitOfHasBaseColimit _
+  hasColimit_of_hasColimit_fiberwiseColimit_of_hasColimit _
 
 variable [HasColimitsOfShape C H]
 
