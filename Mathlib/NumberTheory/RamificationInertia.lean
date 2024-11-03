@@ -212,21 +212,21 @@ theorem inertiaDeg_algebraMap [Algebra R S] [P.LiesOver p] [p.IsMaximal] :
   nontriviality S ⧸ P using inertiaDeg_of_subsingleton, finrank_zero_of_subsingleton
   rw [inertiaDeg, dif_pos (over_def P p).symm]
 
-theorem inertiaDeg_pos [p.IsMaximal] [Nontrivial (S ⧸ P)] [Algebra R S] [Module.Finite R S]
+theorem inertiaDeg_pos [p.IsMaximal] [Algebra R S] [Module.Finite R S]
     [P.LiesOver p] : 0 < inertiaDeg (algebraMap R S) p P :=
+  haveI : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_isPrime P p
   finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
 
-theorem inertiaDeg_ne_zero [p.IsMaximal] [Nontrivial (S ⧸ P)] [Algebra R S] [Module.Finite R S]
+theorem inertiaDeg_ne_zero [p.IsMaximal] [Algebra R S] [Module.Finite R S]
     [P.LiesOver p] : inertiaDeg (algebraMap R S) p P ≠ 0 :=
-  Nat.not_eq_zero_of_lt (inertiaDeg_pos p P)
+  (inertiaDeg_pos p P).ne.symm
 
 lemma inertiaDeg_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) [p.IsMaximal] :
     inertiaDeg (algebraMap R S) p (P.comap e) = inertiaDeg (algebraMap R S₁) p P := by
   have he : (P.comap e).comap (algebraMap R S) = p ↔ P.comap (algebraMap R S₁) = p := by
     rw [← comap_coe e, comap_comap, ← e.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
   by_cases h : P.LiesOver p
-  · letI : (P.comap e).LiesOver p := LiesOver.of_eq_comap_equiv p e rfl
-    rw [inertiaDeg_algebraMap, inertiaDeg_algebraMap]
+  · rw [inertiaDeg_algebraMap, inertiaDeg_algebraMap]
     exact (Quotient.algEquivOfEqComap p e rfl).toLinearEquiv.finrank_eq
   · rw [inertiaDeg, dif_neg (fun eq => h ⟨(he.mp eq).symm⟩)]
     rw [inertiaDeg, dif_neg (fun eq => h ⟨eq.symm⟩)]
