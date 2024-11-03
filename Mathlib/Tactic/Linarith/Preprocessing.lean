@@ -56,7 +56,10 @@ partial def filterComparisons : Preprocessor where
   name := "filter terms that are not proofs of comparisons"
   transform h := do
     let tp ← instantiateMVars (← inferType h)
-    if ← tp.ineqOrNotIneq? then pure [h] else pure []
+    try
+      let (b, rel, _) ← tp.ineqOrNotIneq?
+      if b || rel != Ineq.eq then pure [h] else pure []
+    catch _ => pure []
 
 section removeNegations
 
@@ -151,7 +154,7 @@ def natToInt : GlobalBranchingPreprocessor where
       if ← isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
           | throwError "zifyProof failed on {h}"
-        if ← t'.ineqOrNotIneq? then
+        if ← succeeds t'.ineqOrNotIneq? then
           pure h'
         else
           -- `zifyProof` turned our comparison into something that wasn't a comparison

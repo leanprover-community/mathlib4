@@ -82,15 +82,19 @@ def _root_.Lean.Expr.ineq? (e : Expr) : MetaM (Ineq × Expr × Expr × Expr) := 
   | some p => return (Ineq.lt, p)
   | none => throwError "Not a comparison: {e}"
 
-/-- Returnes true if an expression is an inequality, equality, or negation of an inequality.
-(In particular, negations of equalities are excluded.) -/
-def _root_.Lean.Expr.ineqOrNotIneq? (e : Expr) : MetaM Bool := do
-  if ← succeeds (← whnfR e).ineq? then return true
-  else try
-    let some e' := e.not? | return false
-    let (rel, _) ← (← whnfR e').ineq?
-    return (rel != Ineq.eq)
-  catch _ => return false
+/-- Given an expression `e`, parse it as a `=`, `≤` or `<`, or the negation of such, and return this
+relation (as a `Linarith.Ineq`) together with the type in which the (in)equality occurs, the two
+sides of the (in)equality, and a boolean flag indicating the presence or absence of the `¬`.
+
+This function is more naturally in the `Option` monad, but it is convenient to put in `MetaM`
+for compositionality.
+-/
+def _root_.Lean.Expr.ineqOrNotIneq? (e : Expr) : MetaM (Bool × Ineq × Expr × Expr × Expr) := do
+  try
+    return (true, ← (← whnfR e).ineq?)
+  catch _ =>
+    let some e' := e.not? | throwError "Not a comparison: {e}"
+    return (false, ← (← whnfR e').ineq?)
 
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do
