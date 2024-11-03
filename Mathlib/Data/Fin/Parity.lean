@@ -4,14 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Ring.Parity
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Nat.Cast.Defs
-import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.ZMod.Defs
-import Mathlib.Logic.Basic
 
 /-!
 # Parity in `Fin n`
@@ -80,7 +74,7 @@ lemma odd_val_iff {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : Odd k.val ↔
       rw [@val_add_eq_of_sum_lt (n + n) (l + l) 1]
       · simp
         apply (Nat.one_mod_eq_one.mpr n.add_self_ne_one).symm
-      · rw [one_val_cast (Nat.one_le_of_ne_zero_and_even (NeZero.ne (n + n)) (even_add_self n))]
+      · rw [one_val_cast (Nat.one_lt_of_ne_zero_and_even (NeZero.ne (n + n)) (even_add_self n))]
         apply Nat.add_one_lt_of_even_and_even_and_lt
           ((even_val_iff (even_add_self n)).mpr (even_add_self l)) (even_add_self n) ?_
         fin_omega
