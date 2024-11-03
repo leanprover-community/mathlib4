@@ -84,7 +84,7 @@ theorem Squarefree.eq_zero_or_one_of_pow_of_not_isUnit [Monoid R] {x : R} {n : �
   have : x * x ∣ x ^ n := by rw [← sq]; exact pow_dvd_pow x h'
   exact h.squarefree_of_dvd this x (refl _)
 
-theorem _root_.Squarefree.pow_dvd_of_pow_dvd [Monoid R] {x y : R} {n : ℕ}
+theorem Squarefree.pow_dvd_of_pow_dvd [Monoid R] {x y : R} {n : ℕ}
     (hx : Squarefree y) (h : x ^ n ∣ y) : x ^ n ∣ x := by
   by_cases hu : IsUnit x
   · exact (hu.pow n).dvd
