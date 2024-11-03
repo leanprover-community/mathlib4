@@ -292,7 +292,7 @@ instance mulLeftMono [Mul α] [MulLeftMono α] :
   rw [← coe_mul _ c, ← coe_mul, coe_le_coe]
   exact mul_le_mul_left' hbc' _
 
-protected lemma addLeftMono [AddZeroClass α] [AddLeftMono α] [ZeroLEClass α] :
+instance addLeftMono [AddZeroClass α] [AddLeftMono α] [ZeroLEClass α] :
     AddLeftMono (WithZero α) := by
   refine ⟨fun a b c hbc => ?_⟩
   induction a
