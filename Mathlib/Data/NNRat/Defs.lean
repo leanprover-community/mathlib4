@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+import Mathlib.Algebra.Order.ZeroLEClass
 import Mathlib.Algebra.Ring.Rat
 
 /-!
@@ -65,9 +66,8 @@ namespace NNRat
 variable {p q : ℚ≥0}
 
 instance instNontrivial : Nontrivial ℚ≥0 where exists_pair_ne := ⟨1, 0, by decide⟩
-instance instOrderBot : OrderBot ℚ≥0 where
-  bot := 0
-  bot_le q := q.2
+instance instZeroLEClass : ZeroLEClass ℚ≥0 := ⟨fun q ↦ q.2⟩
+instance instOrderBot : OrderBot ℚ≥0 := ZeroLEClass.toOrderBot _
 
 @[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
 
@@ -229,9 +229,8 @@ theorem sub_def (p q : ℚ≥0) : p - q = toNNRat (p - q) :=
 theorem abs_coe (q : ℚ≥0) : |(q : ℚ)| = q :=
   abs_of_nonneg q.2
 
--- See note [specialised high priority simp lemma]
-@[simp high]
-theorem nonpos_iff_eq_zero (q : ℚ≥0) : q ≤ 0 ↔ q = 0 :=
+@[deprecated _root_.nonpos_iff_eq_zero (since := "2024-11-02")]
+protected theorem nonpos_iff_eq_zero (q : ℚ≥0) : q ≤ 0 ↔ q = 0 :=
   ⟨fun h => le_antisymm h q.2, fun h => h.symm ▸ q.2⟩
 
 end NNRat

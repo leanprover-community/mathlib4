@@ -55,7 +55,7 @@ theorem Iio_eq_range : Iio = range := by
   rw [mem_Iio, mem_range]
 
 @[simp]
-theorem Ico_zero_eq_range : Ico 0 = range := by rw [← Nat.bot_eq_zero, ← Iio_eq_Ico, Iio_eq_range]
+theorem Ico_zero_eq_range : Ico 0 = range := by rw [← bot_eq_zero, ← Iio_eq_Ico, Iio_eq_range]
 
 lemma range_eq_Icc_zero_sub_one (n : ℕ) (hn : n ≠ 0) : range n = Icc 0 (n - 1) := by
   ext b
@@ -75,10 +75,10 @@ theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 :=
   (card_Icc _ _).trans <| by rw [← Int.natCast_inj, sup_eq_max, inf_eq_min, Int.ofNat_sub] <;> omega
 
 @[simp]
-lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zero, Nat.sub_zero]
+lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, bot_eq_zero, Nat.sub_zero]
 
 @[simp]
-theorem card_Iio : #(Iio b) = b := by rw [Iio_eq_Ico, card_Ico, Nat.bot_eq_zero, Nat.sub_zero]
+theorem card_Iio : #(Iio b) = b := by rw [Iio_eq_Ico, card_Ico, bot_eq_zero, Nat.sub_zero]
 
 theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by
   rw [Fintype.card_ofFinset, card_Icc]

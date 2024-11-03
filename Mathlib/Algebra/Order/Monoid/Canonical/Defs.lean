@@ -108,9 +108,6 @@ theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
 instance (priority := 100) : OneLEClass α where
   one_le a := le_iff_exists_mul.mpr ⟨_, (one_mul a).symm⟩
 
-@[deprecated le_zero_iff_eq_zero (since := "2024-11-02")]
-alias nonpos_iff_eq_zero := le_zero_iff_eq_zero
-
 @[to_additive] instance CanonicallyOrderedCommMonoid.toUniqueUnits : Unique αˣ where
   uniq a := Units.ext ((mul_eq_one_iff_of_one_le (α := α) one_le <| one_le).1 a.mul_inv).1
 
