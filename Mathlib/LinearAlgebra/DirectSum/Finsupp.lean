@@ -394,13 +394,11 @@ def finsuppPiTensorProduct : (⨂[R] i, κ i →₀ M i) ≃ₗ[R] ((i : ι) →
 theorem finsuppPiTensorProduct_tprod_single (p : (i : ι) → κ i) (m : (i : ι) → M i) :
     finsuppPiTensorProduct R κ M (⨂ₜ[R] i, Finsupp.single (p i) (m i)) =
     Finsupp.single p (⨂ₜ[R] i, m i) := by
-  classical
   simp [finsuppPiTensorProduct]
 
 @[simp]
 theorem finsuppPiTensorProduct_apply (f : (i : ι) → (κ i →₀ M i)) (p : (i : ι) → κ i) :
     finsuppPiTensorProduct R κ M (⨂ₜ[R] i, f i) p = ⨂ₜ[R] i, f i (p i) := by
-  classical
   simp only [finsuppPiTensorProduct, finsuppLEquivDirectSum, LinearEquiv.trans_apply, congr_tprod]
   erw [directSum_tprod_apply R (M := fun i _ => M i) _ p]
   rfl
