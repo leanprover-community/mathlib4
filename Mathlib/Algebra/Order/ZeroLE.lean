@@ -128,18 +128,17 @@ theorem min_one (a : α) : min a 1 = 1 :=
 @[to_additive (attr := simp)]
 theorem max_eq_one_iff {a b : α} : max a b = 1 ↔ a = 1 ∧ b = 1 := by
   letI := OneLEClass.toOrderBot α
-  rw [← bot_eq_one, max_eq_bot]
+  exact max_eq_bot
 
 end LinearOrder
 
 namespace Nat
 
-instance instOrderBot : OrderBot ℕ where
-  bot := 0
-  bot_le := zero_le
-
 instance instZeroLEClass : ZeroLEClass ℕ where
-  zero_le := Nat.zero_le
+  zero_le := zero_le
+
+instance instOrderBot : OrderBot ℕ :=
+  ZeroLEClass.toOrderBot ℕ
 
 instance instNoMaxOrder : NoMaxOrder ℕ where
   exists_gt n := ⟨n + 1, n.lt_succ_self⟩
