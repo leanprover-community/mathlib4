@@ -130,6 +130,13 @@ theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp
 theorem sorted_singleton (a : α) : Sorted r [a] :=
   pairwise_singleton _ _
 
+theorem sorted_lt_range (n : ℕ) : Sorted (· < ·) (range n) := by
+  rw [Sorted, pairwise_iff_get]
+  simp
+
+theorem sorted_le_range (n : ℕ) : Sorted (· ≤ ·) (range n) :=
+  (sorted_lt_range n).le_of_lt
+
 theorem Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length} (hab : a < b) :
     r (l.get a) (l.get b) :=
   List.pairwise_iff_get.1 h _ _ hab
