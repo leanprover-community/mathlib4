@@ -327,7 +327,7 @@ instance partialOrder : PartialOrder (WithZero α) := WithBot.partialOrder
 instance mulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
     MulLeftReflectLT (WithZero α) := by
   refine ⟨fun a b c h => ?_⟩
-  have := (zero_le.trans_lt h).ne'
+  have := h.ne_zero
   induction a
   · simp at this
   induction c
