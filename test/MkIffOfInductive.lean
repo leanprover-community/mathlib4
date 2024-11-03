@@ -15,6 +15,12 @@ info: test.chain_iff.{u_1} {α : Type u_1} (R : α → α → Prop) :
 #guard_msgs in
 #check test.chain_iff
 
+attribute [mk_eq] List.Chain
+
+/-- info: List.chain_eq.{u_1} : @List.Chain = fun {α} R a a_1 => a_1 = [] ∨ ∃ b l, R a b ∧ List.Chain R b l ∧ a_1 = b :: l -/
+#guard_msgs in
+#check List.chain_eq
+
 mk_iff_of_inductive_prop False    test.false_iff
 example : False ↔ False := test.false_iff
 
