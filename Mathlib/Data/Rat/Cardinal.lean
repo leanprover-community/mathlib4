@@ -16,4 +16,4 @@ This file proves that the Cardinality of ℚ is ℵ₀
 
 open Cardinal
 
-theorem Cardinal.mkRat : #ℚ = ℵ₀ := Cardinal.mk_eq_aleph0 ℚ
+theorem Cardinal.mkRat : #ℚ = ℵ₀ := mk_eq_aleph0 ℚ
