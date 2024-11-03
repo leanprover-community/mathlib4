@@ -192,6 +192,10 @@ theorem Ici_mem_nhds (h : a < b) : Ici a ∈ 𝓝 b :=
 
 theorem eventually_ge_nhds (hab : b < a) : ∀ᶠ x in 𝓝 a, b ≤ x := Ici_mem_nhds hab
 
+@[deprecated (since := "2024-11-02")] alias isOpen_lt' := isOpen_Ioi
+@[deprecated (since := "2024-11-02")] alias lt_mem_nhds := eventually_gt_nhds
+@[deprecated (since := "2024-11-02")] alias le_mem_nhds := eventually_ge_nhds
+
 theorem eventually_gt_of_tendsto_gt {l : Filter γ} {f : γ → α} {u v : α} (hv : u < v)
     (h : Filter.Tendsto f l (𝓝 v)) : ∀ᶠ a in l, u < f a :=
   h.eventually <| eventually_gt_nhds hv
@@ -403,6 +407,10 @@ theorem Iic_mem_nhds (h : a < b) : Iic b ∈ 𝓝 a :=
   mem_of_superset (Iio_mem_nhds h) Iio_subset_Iic_self
 
 theorem eventually_le_nhds (hab : a < b) : ∀ᶠ x in 𝓝 a, x ≤ b := Iic_mem_nhds hab
+
+@[deprecated (since := "2024-11-02")] alias isOpen_gt' := isOpen_Iio
+@[deprecated (since := "2024-11-02")] alias gt_mem_nhds := eventually_lt_nhds
+@[deprecated (since := "2024-11-02")] alias ge_mem_nhds := eventually_le_nhds
 
 theorem eventually_lt_of_tendsto_lt {l : Filter γ} {f : γ → α} {u v : α} (hv : v < u)
     (h : Filter.Tendsto f l (𝓝 v)) : ∀ᶠ a in l, f a < u :=
