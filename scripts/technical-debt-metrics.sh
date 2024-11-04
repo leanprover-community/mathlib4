@@ -68,7 +68,7 @@ titlesPathsAndRegexes=(
   "disabled simpNF lints"          "*"      "nolint simpNF"
   "disabled deprecation lints"     "*"      "set_option linter.deprecated false"
   "erw"                            "*"      "erw \["
-  "maxHeartBeats modifications"    ":^test" "^ *set_option .*maxHeartbeats"
+  "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats"
 )
 
 for i in ${!titlesPathsAndRegexes[@]}; do
@@ -86,7 +86,7 @@ for i in ${!titlesPathsAndRegexes[@]}; do
 done
 
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
-# We count the number of large files, making sure to avoid counting the test file `test/Lint.lean`.
+# We count the number of large files, making sure to avoid counting the test file `MathlibTest/Lint.lean`.
 printf '%s|%s\n' "$(git grep '^set_option linter.style.longFile [0-9]*' Mathlib | wc -l)" "large files"
 printf '%s|%s\n' "$(git grep "^open .*Classical" | grep -v " in$" -c)" "bare open (scoped) Classical"
 
