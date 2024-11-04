@@ -17,6 +17,10 @@ to learn about it as well!
 **Tool for manual maintenance**
 - `fix_unused.py`
   Bulk processing of unused variable warnings, replacing them with `_`.
+- `add_deprecations.sh` is a text-based script that automatically adds deprecation statements.
+  It assumes that the only difference between master and the current status of the PR consists
+  of renames. More precisely, any change on a line that contains a declaration name
+  and is not a rename, will likely confuse the script.
 
 **Analyzing Mathlib's import structure**
 - `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
