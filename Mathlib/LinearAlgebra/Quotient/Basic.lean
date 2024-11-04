@@ -54,26 +54,26 @@ def restrictScalarsEquiv [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
 @[simp]
 theorem restrictScalarsEquiv_mk [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) (x : M) :
-    restrictScalarsEquiv S P (mk x) = mk x :=
+    restrictScalarsEquiv S P ⟦x⟧_P = ⟦x⟧_P :=
   rfl
 
 @[simp]
 theorem restrictScalarsEquiv_symm_mk [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) (x : M) :
-    (restrictScalarsEquiv S P).symm (mk x) = mk x :=
+    (restrictScalarsEquiv S P).symm ⟦x⟧_P = ⟦x⟧_P :=
   rfl
 
 end Module
 
 theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
   obtain ⟨x, _, not_mem_s⟩ := SetLike.exists_of_lt h
-  refine ⟨⟨mk x, 0, ?_⟩⟩
+  refine ⟨⟨⟦x⟧, 0, ?_⟩⟩
   simpa using not_mem_s
 
 end Quotient
 
 instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=
-  Infinite.of_injective Submodule.Quotient.mk fun _x _y h =>
+  Infinite.of_injective mkQ_(⊥ : Submodule R M) fun _x _y h =>
     sub_eq_zero.mp <| (Submodule.Quotient.eq ⊥).mp h
 
 instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M)) where
@@ -128,7 +128,7 @@ def liftQ (f : M →ₛₗ[τ₁₂] M₂) (h : p ≤ ker f) : M ⧸ p →ₛₗ
     map_smul' := by rintro a ⟨x⟩; exact f.map_smulₛₗ a x }
 
 @[simp]
-theorem liftQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) : p.liftQ f h (Quotient.mk x) = f x :=
+theorem liftQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) : p.liftQ f h ⟦x⟧ = f x :=
   rfl
 
 @[simp]
@@ -149,7 +149,7 @@ def liftQSpanSingleton (x : M) (f : M →ₛₗ[τ₁₂] M₂) (h : f x = 0) : 
 
 @[simp]
 theorem liftQSpanSingleton_apply (x : M) (f : M →ₛₗ[τ₁₂] M₂) (h : f x = 0) (y : M) :
-    liftQSpanSingleton x f h (Quotient.mk y) = f y :=
+    liftQSpanSingleton x f h ⟦y⟧ = f y :=
   rfl
 
 @[simp]
@@ -184,7 +184,7 @@ def mapQ (f : M →ₛₗ[τ₁₂] M₂) (h : p ≤ comap f q) : M ⧸ p →ₛ
 
 @[simp]
 theorem mapQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) :
-    mapQ p q f h (Quotient.mk x) = Quotient.mk (f x) :=
+    mapQ p q f h ⟦x⟧_p = ⟦f x⟧_q :=
   rfl
 
 theorem mapQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) {h} : (mapQ p q f h).comp p.mkQ = q.mkQ.comp f := by
@@ -232,7 +232,7 @@ theorem comap_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : q.comap (p.liftQ f h)
 theorem map_liftQ [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (h) (q : Submodule R (M ⧸ p)) :
     q.map (p.liftQ f h) = (q.comap p.mkQ).map f :=
   le_antisymm (by rintro _ ⟨⟨x⟩, hxq, rfl⟩; exact ⟨x, hxq, rfl⟩)
-    (by rintro _ ⟨x, hxq, rfl⟩; exact ⟨Quotient.mk x, hxq, rfl⟩)
+    (by rintro _ ⟨x, hxq, rfl⟩; exact ⟨⟦x⟧, hxq, rfl⟩)
 
 theorem ker_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : ker (p.liftQ f h) = (ker f).map (mkQ p) :=
   comap_liftQ _ _ _ _
@@ -363,12 +363,12 @@ def quotEquivOfEqBot (hp : p = ⊥) : (M ⧸ p) ≃ₗ[R] M :=
 
 @[simp]
 theorem quotEquivOfEqBot_apply_mk (hp : p = ⊥) (x : M) :
-    p.quotEquivOfEqBot hp (Quotient.mk x) = x :=
+    p.quotEquivOfEqBot hp (⟦x⟧_ p) = x :=
   rfl
 
 @[simp]
 theorem quotEquivOfEqBot_symm_apply (hp : p = ⊥) (x : M) :
-    (p.quotEquivOfEqBot hp).symm x = (Quotient.mk x) :=
+    (p.quotEquivOfEqBot hp).symm x = (⟦x⟧_ p) :=
   rfl
 
 @[simp]

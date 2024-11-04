@@ -70,6 +70,11 @@ protected def setoid (M : Type*) [Monoid M] :
   r := Associated
   iseqv := ⟨Associated.refl, Associated.symm, Associated.trans⟩
 
+instance [Monoid M] : IsEquiv M Associated where
+  refl := refl
+  symm _ _ := symm
+  trans _ _ _ := .trans
+
 theorem map {M N : Type*} [Monoid M] [Monoid N] {F : Type*} [FunLike F M N] [MonoidHomClass F M N]
     (f : F) {x y : M} (ha : Associated x y) : Associated (f x) (f y) := by
   obtain ⟨u, ha⟩ := ha
@@ -402,7 +407,7 @@ end UniqueUnits₀
 /-- The quotient of a monoid by the `Associated` relation. Two elements `x` and `y`
   are associated iff there is a unit `u` such that `x * u = y`. There is a natural
   monoid structure on `Associates M`. -/
-abbrev Associates (M : Type*) [Monoid M] : Type _ :=
+def Associates (M : Type*) [Monoid M] : Type _ :=
   Quotient (Associated.setoid M)
 
 namespace Associates
@@ -410,47 +415,53 @@ namespace Associates
 open Associated
 
 /-- The canonical quotient map from a monoid `M` into the `Associates` of `M` -/
+@[deprecated (since := "2024-09-04")]
 protected abbrev mk {M : Type*} [Monoid M] (a : M) : Associates M :=
-  ⟦a⟧
+  Quotient.mk _ a
+
+instance [Monoid M] : QuotLike (Associates M) M Associated where
+scoped instance [Monoid M] : QuotLike.HasQuot (Associates M) M Associated where
 
 instance [Monoid M] : Inhabited (Associates M) :=
   ⟨⟦1⟧⟩
 
-theorem mk_eq_mk_iff_associated [Monoid M] {a b : M} : Associates.mk a = Associates.mk b ↔ a ~ᵤ b :=
-  Iff.intro Quotient.exact Quot.sound
+theorem mk_eq_mk_iff_associated [Monoid M] {a b : M} : ⟦a⟧' = ⟦b⟧' ↔ a ~ᵤ b :=
+  Iff.intro QuotLike.exact Quot.sound
 
-theorem quotient_mk_eq_mk [Monoid M] (a : M) : ⟦a⟧ = Associates.mk a :=
+@[deprecated (since := "2024-09-03")]
+theorem quotient_mk_eq_mk [Monoid M] (a : M) : Quotient.mk _ a = ⟦a⟧' :=
   rfl
 
-theorem quot_mk_eq_mk [Monoid M] (a : M) : Quot.mk Setoid.r a = Associates.mk a :=
+@[deprecated (since := "2024-09-03")]
+theorem quot_mk_eq_mk [Monoid M] (a : M) : Quot.mk Setoid.r a = ⟦a⟧' :=
   rfl
 
 @[simp]
-theorem quot_out [Monoid M] (a : Associates M) : Associates.mk (Quot.out a) = a := by
-  rw [← quot_mk_eq_mk, Quot.out_eq]
+theorem quot_out [Monoid M] (a : Associates M) : ⟦QuotLike.out a⟧ = a := by
+  rw [QuotLike.mkQ_out]
 
-theorem mk_quot_out [Monoid M] (a : M) : Quot.out (Associates.mk a) ~ᵤ a := by
+theorem mk_quot_out [Monoid M] (a : M) : QuotLike.out ⟦a⟧' ~ᵤ a := by
   rw [← Associates.mk_eq_mk_iff_associated, Associates.quot_out]
 
 theorem forall_associated [Monoid M] {p : Associates M → Prop} :
-    (∀ a, p a) ↔ ∀ a, p (Associates.mk a) :=
-  Iff.intro (fun h _ => h _) fun h a => Quotient.inductionOn a h
+    (∀ a, p a) ↔ ∀ a, p ⟦a⟧ :=
+  Iff.intro (fun h _ => h _) fun h a => QuotLike.inductionOn a h
 
-theorem mk_surjective [Monoid M] : Function.Surjective (@Associates.mk M _) :=
+theorem mk_surjective [Monoid M] : Function.Surjective (mkQ (Q := Associates M)) :=
   forall_associated.2 fun a => ⟨a, rfl⟩
 
 instance [Monoid M] : One (Associates M) :=
   ⟨⟦1⟧⟩
 
 @[simp]
-theorem mk_one [Monoid M] : Associates.mk (1 : M) = 1 :=
+theorem mk_one [Monoid M] : ⟦1 : M⟧' = 1 :=
   rfl
 
-theorem one_eq_mk_one [Monoid M] : (1 : Associates M) = Associates.mk 1 :=
+theorem one_eq_mk_one [Monoid M] : (1 : Associates M) = ⟦1⟧ :=
   rfl
 
 @[simp]
-theorem mk_eq_one [Monoid M] {a : M} : Associates.mk a = 1 ↔ IsUnit a := by
+theorem mk_eq_one [Monoid M] {a : M} : ⟦a⟧' = 1 ↔ IsUnit a := by
   rw [← mk_one, mk_eq_mk_iff_associated, associated_one_iff_isUnit]
 
 instance [Monoid M] : Bot (Associates M) :=
@@ -459,7 +470,7 @@ instance [Monoid M] : Bot (Associates M) :=
 theorem bot_eq_one [Monoid M] : (⊥ : Associates M) = 1 :=
   rfl
 
-theorem exists_rep [Monoid M] (a : Associates M) : ∃ a0 : M, Associates.mk a0 = a :=
+theorem exists_rep [Monoid M] (a : Associates M) : ∃ a0 : M, ⟦a0⟧' = a :=
   Quot.exists_rep a
 
 instance [Monoid M] [Subsingleton M] :
@@ -467,7 +478,7 @@ instance [Monoid M] [Subsingleton M] :
   default := 1
   uniq := forall_associated.2 fun _ ↦ mk_eq_one.2 <| isUnit_of_subsingleton _
 
-theorem mk_injective [Monoid M] [Subsingleton Mˣ] : Function.Injective (@Associates.mk M _) :=
+theorem mk_injective [Monoid M] [Unique (Units M)] : Function.Injective (mkQ (Q := Associates M)) :=
   fun _ _ h => associated_iff_eq.mp (Associates.mk_eq_mk_iff_associated.mp h)
 
 section CommMonoid
@@ -477,19 +488,19 @@ variable [CommMonoid M]
 instance instMul : Mul (Associates M) :=
   ⟨Quotient.map₂ (· * ·) fun _ _ h₁ _ _ h₂ ↦ h₁.mul_mul h₂⟩
 
-theorem mk_mul_mk {x y : M} : Associates.mk x * Associates.mk y = Associates.mk (x * y) :=
+theorem mk_mul_mk {x y : M} : ⟦x⟧' * ⟦y⟧' = ⟦x * y⟧' :=
   rfl
 
 instance instCommMonoid : CommMonoid (Associates M) where
   one := 1
   mul := (· * ·)
-  mul_one a' := Quotient.inductionOn a' fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
-  one_mul a' := Quotient.inductionOn a' fun a => show ⟦1 * a⟧ = ⟦a⟧ by simp
+  mul_one a' := Quotient.inductionOn a' fun a => show ⟦a * 1⟧ = ⟦a⟧' by simp
+  one_mul a' := Quotient.inductionOn a' fun a => show ⟦1 * a⟧ = ⟦a⟧' by simp
   mul_assoc a' b' c' :=
     Quotient.inductionOn₃ a' b' c' fun a b c =>
-      show ⟦a * b * c⟧ = ⟦a * (b * c)⟧ by rw [mul_assoc]
+      show ⟦a * b * c⟧ = ⟦a * (b * c)⟧' by rw [mul_assoc]
   mul_comm a' b' :=
-    Quotient.inductionOn₂ a' b' fun a b => show ⟦a * b⟧ = ⟦b * a⟧ by rw [mul_comm]
+    Quotient.inductionOn₂ a' b' fun a b => show ⟦a * b⟧ = ⟦b * a⟧' by rw [mul_comm]
 
 instance instPreorder : Preorder (Associates M) where
   le := Dvd.dvd
@@ -498,19 +509,19 @@ instance instPreorder : Preorder (Associates M) where
 
 /-- `Associates.mk` as a `MonoidHom`. -/
 protected def mkMonoidHom : M →* Associates M where
-  toFun := Associates.mk
+  toFun := mkQ
   map_one' := mk_one
   map_mul' _ _ := mk_mul_mk
 
 @[simp]
-theorem mkMonoidHom_apply (a : M) : Associates.mkMonoidHom a = Associates.mk a :=
+theorem mkMonoidHom_apply (a : M) : Associates.mkMonoidHom a = ⟦a⟧ :=
   rfl
 
-theorem associated_map_mk {f : Associates M →* M} (hinv : Function.RightInverse f Associates.mk)
-    (a : M) : a ~ᵤ f (Associates.mk a) :=
-  Associates.mk_eq_mk_iff_associated.1 (hinv (Associates.mk a)).symm
+theorem associated_map_mk {f : Associates M →* M} (hinv : Function.RightInverse f mkQ)
+    (a : M) : a ~ᵤ f ⟦a⟧ :=
+  Associates.mk_eq_mk_iff_associated.1 (hinv ⟦a⟧).symm
 
-theorem mk_pow (a : M) (n : ℕ) : Associates.mk (a ^ n) = Associates.mk a ^ n := by
+theorem mk_pow (a : M) (n : ℕ) : ⟦a ^ n⟧' = ⟦a⟧' ^ n := by
   induction n <;> simp [*, pow_succ, Associates.mk_mul_mk.symm]
 
 theorem dvd_eq_le : ((· ∣ ·) : Associates M → Associates M → Prop) = (· ≤ ·) :=
@@ -536,9 +547,9 @@ theorem isUnit_iff_eq_one (a : Associates M) : IsUnit a ↔ a = 1 :=
 theorem isUnit_iff_eq_bot {a : Associates M} : IsUnit a ↔ a = ⊥ := by
   rw [Associates.isUnit_iff_eq_one, bot_eq_one]
 
-theorem isUnit_mk {a : M} : IsUnit (Associates.mk a) ↔ IsUnit a :=
+theorem isUnit_mk {a : M} : IsUnit ⟦a⟧' ↔ IsUnit a :=
   calc
-    IsUnit (Associates.mk a) ↔ a ~ᵤ 1 := by
+    IsUnit ⟦a⟧' ↔ a ~ᵤ 1 := by
       rw [isUnit_iff_eq_one, one_eq_mk_one, mk_eq_mk_iff_associated]
     _ ↔ IsUnit a := associated_one_iff_isUnit
 
@@ -564,7 +575,7 @@ instance instOrderBot : OrderBot (Associates M) where
 end Order
 
 @[simp]
-theorem mk_dvd_mk {a b : M} : Associates.mk a ∣ Associates.mk b ↔ a ∣ b := by
+theorem mk_dvd_mk {a b : M} : ⟦a⟧' ∣ ⟦b⟧' ↔ a ∣ b := by
   simp only [dvd_def, mk_surjective.exists, mk_mul_mk, mk_eq_mk_iff_associated,
     Associated.comm (x := b)]
   constructor
@@ -573,18 +584,18 @@ theorem mk_dvd_mk {a b : M} : Associates.mk a ∣ Associates.mk b ↔ a ∣ b :=
   · rintro ⟨c, rfl⟩
     use c
 
-theorem dvd_of_mk_le_mk {a b : M} : Associates.mk a ≤ Associates.mk b → a ∣ b :=
+theorem dvd_of_mk_le_mk {a b : M} : ⟦a⟧' ≤ ⟦b⟧' → a ∣ b :=
   mk_dvd_mk.mp
 
-theorem mk_le_mk_of_dvd {a b : M} : a ∣ b → Associates.mk a ≤ Associates.mk b :=
+theorem mk_le_mk_of_dvd {a b : M} : a ∣ b → ⟦a⟧' ≤ ⟦b⟧' :=
   mk_dvd_mk.mpr
 
-theorem mk_le_mk_iff_dvd {a b : M} : Associates.mk a ≤ Associates.mk b ↔ a ∣ b := mk_dvd_mk
+theorem mk_le_mk_iff_dvd {a b : M} : ⟦a⟧' ≤ ⟦b⟧' ↔ a ∣ b := mk_dvd_mk
 
 @[deprecated (since := "2024-03-16")] alias mk_le_mk_iff_dvd_iff := mk_le_mk_iff_dvd
 
 @[simp]
-theorem isPrimal_mk {a : M} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
+theorem isPrimal_mk {a : M} : IsPrimal ⟦a⟧' ↔ IsPrimal a := by
   simp_rw [IsPrimal, forall_associated, mk_surjective.exists, mk_mul_mk, mk_dvd_mk]
   constructor <;> intro h b c dvd <;> obtain ⟨a₁, a₂, h₁, h₂, eq⟩ := @h b c dvd
   · obtain ⟨u, rfl⟩ := mk_eq_mk_iff_associated.mp eq.symm
@@ -602,7 +613,7 @@ instance instDecompositionMonoid [DecompositionMonoid M] : DecompositionMonoid (
 
 @[simp]
 theorem mk_isRelPrime_iff {a b : M} :
-    IsRelPrime (Associates.mk a) (Associates.mk b) ↔ IsRelPrime a b := by
+    IsRelPrime ⟦a⟧' ⟦b⟧' ↔ IsRelPrime a b := by
   simp_rw [IsRelPrime, forall_associated, mk_dvd_mk, isUnit_mk]
 
 end CommMonoid
@@ -613,26 +624,26 @@ instance [Zero M] [Monoid M] : Zero (Associates M) :=
 instance [Zero M] [Monoid M] : Top (Associates M) :=
   ⟨0⟩
 
-@[simp] theorem mk_zero [Zero M] [Monoid M] : Associates.mk (0 : M) = 0 := rfl
+@[simp] theorem mk_zero [Zero M] [Monoid M] : ⟦0 : M⟧' = 0 := rfl
 
 section MonoidWithZero
 
 variable [MonoidWithZero M]
 
 @[simp]
-theorem mk_eq_zero {a : M} : Associates.mk a = 0 ↔ a = 0 :=
+theorem mk_eq_zero {a : M} : ⟦a⟧' = 0 ↔ a = 0 :=
   ⟨fun h => (associated_zero_iff_eq_zero a).1 <| Quotient.exact h, fun h => h.symm ▸ rfl⟩
 
 @[simp]
-theorem quot_out_zero : Quot.out (0 : Associates M) = 0 := by rw [← mk_eq_zero, quot_out]
+theorem quot_out_zero : QuotLike.out (0 : Associates M) = 0 := by rw [← mk_eq_zero, quot_out]
 
-theorem mk_ne_zero {a : M} : Associates.mk a ≠ 0 ↔ a ≠ 0 :=
+theorem mk_ne_zero {a : M} : ⟦a⟧' ≠ 0 ↔ a ≠ 0 :=
   not_congr mk_eq_zero
 
 instance [Nontrivial M] : Nontrivial (Associates M) :=
   ⟨⟨1, 0, mk_ne_zero.2 one_ne_zero⟩⟩
 
-theorem exists_non_zero_rep {a : Associates M} : a ≠ 0 → ∃ a0 : M, a0 ≠ 0 ∧ Associates.mk a0 = a :=
+theorem exists_non_zero_rep {a : Associates M} : a ≠ 0 → ∃ a0 : M, a0 ≠ 0 ∧ ⟦a0⟧ = a :=
   Quotient.inductionOn a fun b nz => ⟨b, mt (congr_arg Quotient.mk'') nz, rfl⟩
 
 end MonoidWithZero
@@ -662,12 +673,12 @@ theorem Prime.le_or_le {p : Associates M} (hp : Prime p) {a b : Associates M} (h
   hp.2.2 a b h
 
 @[simp]
-theorem prime_mk {p : M} : Prime (Associates.mk p) ↔ Prime p := by
+theorem prime_mk {p : M} : Prime ⟦p⟧' ↔ Prime p := by
   rw [Prime, _root_.Prime, forall_associated]
   simp only [forall_associated, mk_ne_zero, isUnit_mk, mk_mul_mk, mk_dvd_mk]
 
 @[simp]
-theorem irreducible_mk {a : M} : Irreducible (Associates.mk a) ↔ Irreducible a := by
+theorem irreducible_mk {a : M} : Irreducible ⟦a⟧' ↔ Irreducible a := by
   simp only [irreducible_iff, isUnit_mk, forall_associated, isUnit_mk, mk_mul_mk,
     mk_eq_mk_iff_associated, Associated.comm (x := a)]
   apply Iff.rfl.and
@@ -679,7 +690,7 @@ theorem irreducible_mk {a : M} : Irreducible (Associates.mk a) ↔ Irreducible a
 
 @[simp]
 theorem mk_dvdNotUnit_mk_iff {a b : M} :
-    DvdNotUnit (Associates.mk a) (Associates.mk b) ↔ DvdNotUnit a b := by
+    DvdNotUnit ⟦a⟧' ⟦b⟧' ↔ DvdNotUnit a b := by
   simp only [DvdNotUnit, mk_ne_zero, mk_surjective.exists, isUnit_mk, mk_mul_mk,
     mk_eq_mk_iff_associated, Associated.comm (x := b)]
   refine Iff.rfl.and ?_

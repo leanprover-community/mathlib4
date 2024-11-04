@@ -25,6 +25,8 @@ by a finite type.
 
 -/
 
+@[inherit_doc Quotient.mk]
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
 
 namespace Quotient
 

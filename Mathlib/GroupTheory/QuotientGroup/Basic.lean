@@ -77,7 +77,7 @@ theorem kerLift_mk (g : G) : (kerLift φ) g = φ g :=
   lift_mk _ _ _
 
 @[to_additive (attr := simp)]
-theorem kerLift_mk' (g : G) : (kerLift φ) (mk g) = φ g :=
+theorem kerLift_mk' (g : G) : (kerLift φ) ⟦g⟧ = φ g :=
   lift_mk' _ _ _
 
 @[to_additive]
@@ -102,7 +102,7 @@ theorem rangeKerLift_injective : Injective (rangeKerLift φ) := fun a b =>
 @[to_additive]
 theorem rangeKerLift_surjective : Surjective (rangeKerLift φ) := by
   rintro ⟨_, g, rfl⟩
-  use mk g
+  use ⟦g⟧
   rfl
 
 /-- **Noether's first isomorphism theorem** (a definition): the canonical isomorphism between
@@ -119,7 +119,7 @@ with a right inverse `ψ : H → G`. -/
 def quotientKerEquivOfRightInverse (ψ : H → G) (hφ : RightInverse ψ φ) : G ⧸ ker φ ≃* H :=
   { kerLift φ with
     toFun := kerLift φ
-    invFun := mk ∘ ψ
+    invFun := mkQ ∘ ψ
     left_inv := fun x => kerLift_injective φ (by rw [Function.comp_apply, kerLift_mk', hφ])
     right_inv := hφ }
 
@@ -147,7 +147,7 @@ def quotientMulEquivOfEq {M N : Subgroup G} [M.Normal] [N.Normal] (h : M = N) : 
 
 @[to_additive (attr := simp)]
 theorem quotientMulEquivOfEq_mk {M N : Subgroup G} [M.Normal] [N.Normal] (h : M = N) (x : G) :
-    QuotientGroup.quotientMulEquivOfEq h (QuotientGroup.mk x) = QuotientGroup.mk x :=
+    QuotientGroup.quotientMulEquivOfEq h ⟦x⟧ = ⟦x⟧ :=
   rfl
 
 /-- Let `A', A, B', B` be subgroups of `G`. If `A' ≤ B'` and `A ≤ B`,

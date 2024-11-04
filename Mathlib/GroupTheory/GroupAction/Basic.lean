@@ -167,9 +167,9 @@ variable {G α}
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : IsPretransitive G x.orbit where
   exists_smul_eq := by
-    induction x using Quotient.inductionOn'
+    induction x using QuotLike.inductionOn
     rintro ⟨y, yh⟩ ⟨z, zh⟩
-    rw [orbitRel.Quotient.mem_orbit, Quotient.eq''] at yh zh
+    rw [orbitRel.Quotient.mem_orbit, QuotLike.eq] at yh zh
     rcases yh with ⟨g, rfl⟩
     rcases zh with ⟨h, rfl⟩
     refine ⟨h * g⁻¹, ?_⟩
