@@ -94,10 +94,6 @@ theorem restrict_mono_set {_ : MeasurableSpace α} (μ : Measure α) {s t : Set 
 theorem restrict_mono_ae (h : s ≤ᵐ[μ] t) : μ.restrict s ≤ μ.restrict t :=
   restrict_mono' h (le_refl μ)
 
-@[gcongr]
-theorem restrict_mono_set (h : s ⊆ t) : μ.restrict s ≤ μ.restrict t :=
-  restrict_mono_ae <| ae_of_all _ h
-
 theorem restrict_congr_set (h : s =ᵐ[μ] t) : μ.restrict s = μ.restrict t :=
   le_antisymm (restrict_mono_ae h.le) (restrict_mono_ae h.symm.le)
 
