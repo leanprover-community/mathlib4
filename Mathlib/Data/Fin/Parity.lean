@@ -44,14 +44,14 @@ lemma odd_of_odd {n : ℕ} [NeZero n] (hn : Odd n) (k : Fin n) : Odd k := by
   · intro hk
     exact odd_of_val hk
 
-lemma even_val_iff {n : ℕ} (hn : Even n) {k : Fin n} : Even k.val ↔ Even k := by
+lemma even_val_iff_of_even {n : ℕ} (hn : Even n) {k : Fin n} : Even k.val ↔ Even k := by
   rcases hn with ⟨n, rfl⟩
   refine ⟨even_of_val, ?_⟩
   rintro ⟨l, rfl⟩
   rw [val_add_eq_ite]
   split_ifs with h <;> simp [Nat.even_sub, *]
 
-lemma odd_val_iff {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : Odd k.val ↔ Odd k := by
+lemma odd_val_iff_of_even {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : Odd k.val ↔ Odd k := by
   rcases hn with ⟨n, rfl⟩
   refine ⟨odd_of_val, ?_⟩
   rintro ⟨l, rfl⟩
@@ -66,28 +66,40 @@ lemma odd_val_iff {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : Odd k.val ↔
     let x : ℕ := l.val - n
     have hxxll : x + x = (l + l).val := by
       rw [val_add_eq_ite]
-      simp [Nat.add_le_add hl hl]
+      simp only [Nat.add_le_add hl hl, reduceIte]
       omega
+    have hnn : Even (n + n) := even_add_self n
     have hxl : 2 * x + 1 = (2 * l + 1).val := by
-      rw [two_mul l, two_mul x]
-      rw [hxxll]
-      rw [@val_add_eq_of_sum_lt (n + n) (l + l) 1]
-      · simp
-        apply (Nat.one_mod_eq_one.mpr n.add_self_ne_one).symm
-      · rw [one_val_cast (Nat.one_lt_of_ne_zero_and_even (NeZero.ne (n + n)) (even_add_self n))]
-        apply Nat.add_one_lt_of_even_and_even_and_lt
-          ((even_val_iff (even_add_self n)).mpr (even_add_self l)) (even_add_self n) ?_
+      rw [two_mul l, two_mul x, hxxll, @val_add_eq_of_sum_lt (n + n) (l + l) 1]
+      · simp only [add_right_inj]
+        exact (Nat.one_mod_eq_one.mpr n.add_self_ne_one).symm
+      · rw [one_val_cast (Nat.one_lt_of_ne_zero_and_even (NeZero.ne (n + n)) hnn)]
+        refine Nat.add_one_lt_of_even_and_even_and_lt
+          ((even_val_iff_of_even hnn).mpr (even_add_self l)) hnn ?_
         fin_omega
     rw [← hxl]
     exact odd_two_mul_add_one x
 
 /-- In `Fin n`, all elements are even for odd `n`,
 otherwise an element is even iff its `Fin.val` value is even. -/
-lemma even_iff {n : ℕ} {k : Fin n} : Even k ↔ Odd n ∨ Even k.val := by
-  refine ⟨fun hk ↦ ?_, or_imp.2 ⟨(even_of_odd · k), even_of_val⟩⟩
+lemma even_iff {n : ℕ} {k : Fin n} : Even k ↔ (Odd n ∨ Even k.val) := by
+  refine ⟨fun hk ↦ ?_, or_imp.mpr ⟨(even_of_odd · k), even_of_val⟩⟩
   rw [← Nat.not_even_iff_odd, ← imp_iff_not_or]
-  exact fun hn ↦ (even_val_iff hn).2 hk
+  exact fun hn ↦ (even_val_iff_of_even hn).mpr hk
 
--- lemma odd_iff {n : ℕ} [NeZero n] {k : Fin n} : Odd k ↔ Odd n ∨ Odd k.val := by
+lemma even_iff' {n : ℕ} {k : Fin n} : Even k ↔ (Even n → Even k.val) := by
+  rw [imp_iff_not_or, Nat.not_even_iff_odd]
+  exact even_iff
+
+/-- In `Fin n`, all elements are odd for odd `n`,
+otherwise an element is off iff its `Fin.val` value is off. -/
+lemma odd_iff {n : ℕ} [NeZero n] {k : Fin n} : Odd k ↔ Odd n ∨ Odd k.val := by
+  refine ⟨fun hk ↦ ?_, or_imp.mpr ⟨(odd_of_odd · k), odd_of_val⟩⟩
+  rw [← Nat.not_even_iff_odd, ← imp_iff_not_or]
+  exact fun hn ↦ (odd_val_iff_of_even hn).mpr hk
+
+lemma odd_iff' {n : ℕ} [NeZero n] {k : Fin n} : Odd k ↔ (Even n → Odd k.val) := by
+  rw [imp_iff_not_or, Nat.not_even_iff_odd]
+  exact odd_iff
 
 end Fin
