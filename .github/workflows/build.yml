@@ -265,7 +265,7 @@ jobs:
       - name: build everything
         # make sure everything is available for test/import_all.lean
         run: |
-          lake build Batteries Qq Aesop ProofWidgets
+          lake build Batteries Qq Aesop ProofWidgets Plausible
 
       - name: test mathlib
         id: test
@@ -304,7 +304,7 @@ jobs:
           BUILD_OUTCOME: ${{ steps.build.outcome }}
           NOISY_OUTCOME: ${{ steps.noisy.outcome }}
           ARCHIVE_OUTCOME: ${{ steps.archive.outcome }}
-          COUNTEREXAMPLE_OUTCOME: ${{ steps.counterexamples.outcome }}
+          COUNTEREXAMPLES_OUTCOME: ${{ steps.counterexamples.outcome }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
         run: |

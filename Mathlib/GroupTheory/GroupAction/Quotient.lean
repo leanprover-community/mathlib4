@@ -307,7 +307,7 @@ instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α
         rw [mem_orbit_iff]
         exact ⟨⟨g₁ * g₂⁻¹, r⟩, by simp [mul_smul]⟩
     exact Finite.of_surjective f ((Quotient.surjective_liftOn' _).2
-      (Quotient.surjective_Quotient_mk''.comp (MulAction.surjective_smul _ _)))
+      (Quotient.mk''_surjective.comp (MulAction.surjective_smul _ _)))
 
 variable {β}
 
