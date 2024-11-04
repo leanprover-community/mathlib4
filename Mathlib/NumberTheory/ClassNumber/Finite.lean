@@ -238,7 +238,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
 theorem exists_mem_finset_approx' [Algebra.IsAlgebraic R L] (a : S) {b : S} (hb : b ≠ 0) :
     ∃ q : S,
       ∃ r ∈ finsetApprox bS adm, abv (Algebra.norm R (r • a - q * b)) < abv (Algebra.norm R b) := by
-  obtain ⟨a', b', hb', h⟩ := IsIntegralClosure.exists_smul_eq_mul S L a hb
+  obtain ⟨a', b', hb', h⟩ := IsIntegralClosure.exists_smul_eq_mul R L a hb
   obtain ⟨q, r, hr, hqr⟩ := exists_mem_finsetApprox bS adm a' hb'
   refine ⟨q, r, hr, ?_⟩
   refine
