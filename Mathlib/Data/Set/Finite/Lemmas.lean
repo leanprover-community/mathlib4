@@ -85,6 +85,9 @@ instance fintypeBind' {α β} [DecidableEq β] (s : Set α) [Fintype s] (f : α 
 
 end monad
 
+instance fintypePure : ∀ a : α, Fintype (pure a : Set α) :=
+  Set.fintypeSingleton
+
 instance fintypeRange [DecidableEq α] (f : ι → α) [Fintype (PLift ι)] : Fintype (range f) :=
   Fintype.ofFinset (Finset.univ.image <| f ∘ PLift.down) <| by simp
 
@@ -129,6 +132,9 @@ Some set instances do not appear here since they are consequences of others, for
 namespace Finite.Set
 
 open scoped Classical
+
+theorem finite_pure (a : α) : (pure a : Set α).Finite :=
+  toFinite _
 
 instance finite_range (f : ι → α) [Finite ι] : Finite (range f) := by
   haveI := Fintype.ofFinite (PLift ι)
