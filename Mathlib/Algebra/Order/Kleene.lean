@@ -10,7 +10,6 @@ import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Tactic.Monotonicity.Attr
 
-
 /-!
 # Kleene Algebras
 
