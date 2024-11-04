@@ -137,4 +137,8 @@ jobs:
                 gsub(/ *note: this linter.*/, "")
                 currMax=$0
                 max=$3+0
+            }' |
+            awk -F: '{
+              gsub(/\.\//, "")
+              printf("%s: %s %s on line %s\n", $2, $5, $6, $3)
             }'
