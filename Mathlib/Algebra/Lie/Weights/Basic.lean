@@ -308,7 +308,7 @@ theorem exists_genWeightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L 
   intro m hm
   replace hm : m ∈ (toEnd R L M x).maxGenEigenspace (χ x) :=
     genWeightSpace_le_genWeightSpaceOf M x χ hm
-  rwa [Module.End.maxGenEigenspace_eq, Module.End.genEigenspace_def] at hm
+  rwa [Module.End.maxGenEigenspace_eq, Module.End.genEigenspace_nat] at hm
 
 variable (R) in
 theorem exists_genWeightSpace_zero_le_ker_of_isNoetherian
@@ -631,7 +631,7 @@ lemma disjoint_genWeightSpaceOf [NoZeroSMulDivisors R M] {x : L} {φ₁ φ₂ : 
     Disjoint (genWeightSpaceOf M φ₁ x) (genWeightSpaceOf M φ₂ x) := by
   rw [LieSubmodule.disjoint_iff_coe_toSubmodule]
   dsimp [genWeightSpaceOf]
-  exact Module.End.disjoint_unifEigenspace _ h _ _
+  exact Module.End.disjoint_genEigenspace _ h _ _
 
 lemma disjoint_genWeightSpace [NoZeroSMulDivisors R M] {χ₁ χ₂ : L → R} (h : χ₁ ≠ χ₂) :
     Disjoint (genWeightSpace M χ₁) (genWeightSpace M χ₂) := by
@@ -664,7 +664,7 @@ lemma independent_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
     CompleteLattice.Independent fun (χ : R) ↦ genWeightSpaceOf M χ x := by
   rw [LieSubmodule.independent_iff_coe_toSubmodule]
   dsimp [genWeightSpaceOf]
-  exact (toEnd R L M x).independent_unifEigenspace _
+  exact (toEnd R L M x).independent_genEigenspace _
 
 lemma finite_genWeightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
     {χ : R | genWeightSpaceOf M χ x ≠ ⊥}.Finite :=
@@ -733,7 +733,7 @@ instance instIsTriangularizableOfIsAlgClosed [IsAlgClosed K] : IsTriangularizabl
 instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizable K L N := by
   refine ⟨fun y ↦ ?_⟩
   rw [← N.toEnd_restrict_eq_toEnd y]
-  exact Module.End.unifEigenspace_restrict_eq_top _ (IsTriangularizable.maxGenEigenspace_eq_top y)
+  exact Module.End.genEigenspace_restrict_eq_top _ (IsTriangularizable.maxGenEigenspace_eq_top y)
 
 /-- For a triangularizable Lie module in finite dimensions, the weight spaces span the entire space.
 
