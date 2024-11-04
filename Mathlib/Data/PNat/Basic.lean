@@ -263,6 +263,13 @@ theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
       rw [add_coe, sub_coe, if_pos h]
       exact add_tsub_cancel_of_le h.le
 
+theorem sub_add_of_lt {a b : ℕ+} (h : b < a) : a - b + b = a := by
+  rw [add_comm, add_sub_of_lt h]
+
+@[simp]
+theorem add_sub {a b : ℕ+} : a + b - b = a :=
+  add_right_cancel (sub_add_of_lt (lt_add_left _ _))
+
 /-- If `n : ℕ+` is different from `1`, then it is the successor of some `k : ℕ+`. -/
 theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n = k + 1
   | ⟨1, _⟩, h₁ => False.elim <| h₁ rfl

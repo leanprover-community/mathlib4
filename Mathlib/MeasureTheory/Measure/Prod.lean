@@ -61,12 +61,10 @@ open TopologicalSpace hiding generateFrom
 
 open Filter hiding prod_eq map
 
-variable {α α' β β' γ E : Type*}
+variable {α β γ : Type*}
 
-variable [MeasurableSpace α] [MeasurableSpace α'] [MeasurableSpace β] [MeasurableSpace β']
-variable [MeasurableSpace γ]
+variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
-variable [NormedAddCommGroup E]
 
 /-- If `ν` is a finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }` is
   a measurable function. `measurable_measure_prod_mk_left` is strictly more general. -/

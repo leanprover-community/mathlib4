@@ -85,7 +85,7 @@ instance [IsImmersion f] : IsDominant f.coborderRange.ι := by
   exact dense_coborder
 
 lemma isImmersion_eq_inf : @IsImmersion = (@IsPreimmersion ⊓
-    topologically fun {X Y} _ _ f ↦ IsLocallyClosed (Set.range f) : MorphismProperty Scheme) := by
+    topologically fun {_ _} _ _ f ↦ IsLocallyClosed (Set.range f) : MorphismProperty Scheme) := by
   ext; exact isImmersion_iff _
 
 namespace IsImmersion
@@ -104,7 +104,7 @@ instance : IsLocalAtTarget @IsImmersion := by
       replace hi : IsIso i := hi
       show IsLocallyClosed _
       simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp]
-      refine hf.image i.homeomorph.inducing ?_
+      refine hf.image i.homeomorph.isInducing ?_
       rw [Set.range_iff_surjective.mpr i.surjective]
       exact isOpen_univ.isLocallyClosed
   · simp_rw [Set.range_restrictPreimage]
@@ -121,7 +121,7 @@ instance : MorphismProperty.IsMultiplicative @IsImmersion where
   comp_mem {X Y Z} f g hf hg := by
     refine { __ := inferInstanceAs (IsPreimmersion (f ≫ g)), isLocallyClosed_range := ?_ }
     simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp]
-    exact f.isLocallyClosed_range.image g.isEmbedding.toInducing g.isLocallyClosed_range
+    exact f.isLocallyClosed_range.image g.isEmbedding.isInducing g.isLocallyClosed_range
 
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion f]
     [IsImmersion g] : IsImmersion (f ≫ g) :=

@@ -106,7 +106,7 @@ instance vanishingIdeal_singleton_isMaximal {x : σ → k} :
         refine
           ⟨(injective_iff_map_eq_zero _).mpr fun p hp => ?_, fun z =>
             ⟨(Ideal.Quotient.mk (vanishingIdeal {x} : Ideal (MvPolynomial σ k))) (C z), by simp⟩⟩
-        obtain ⟨q, rfl⟩ := Quotient.mk_surjective p
+        obtain ⟨q, rfl⟩ := Ideal.Quotient.mk_surjective p
         rwa [Ideal.Quotient.lift_mk, ← mem_vanishingIdeal_singleton_iff,
           ← Quotient.eq_zero_iff_mem] at hp)
   rw [← bot_quotient_isMaximal_iff, RingEquiv.bot_maximal_iff this]
@@ -162,7 +162,7 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
   have hϕ : Function.Bijective ϕ :=
     ⟨quotient_mk_comp_C_injective _ _ I hI.ne_top,
       IsAlgClosed.algebraMap_surjective_of_isIntegral' ϕ
-        (MvPolynomial.comp_C_integral_of_surjective_of_jacobson _ Quotient.mk_surjective)⟩
+        (MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing _ Quotient.mk_surjective)⟩
   obtain ⟨φ, hφ⟩ := Function.Surjective.hasRightInverse hϕ.2
   let x : σ → k := fun s => φ ((Ideal.Quotient.mk I) (X s))
   have hx : ∀ s : σ, ϕ (x s) = (Ideal.Quotient.mk I) (X s) := fun s =>
