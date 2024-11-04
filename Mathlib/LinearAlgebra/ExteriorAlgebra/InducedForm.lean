@@ -37,8 +37,12 @@ private def BilinFormAux :
       map_add' := by
         intro _ w j' x y
         dsimp
-        rw [aux B v w x y j']
-
+        convert_to ((Matrix.of fun i j => (B (v i)) (w j)).updateColumn j'
+          fun i => (B (v i)) (x + y)).det = _
+        · congr 1
+          convert aux B v w x y j'
+        --rw [aux B v w x y j']
+        --rw [Matrix.det_updateColumn_add]
         sorry
       map_smul' := sorry
       map_eq_zero_of_eq' := sorry }
@@ -47,9 +51,8 @@ private def BilinFormAux :
   map_eq_zero_of_eq' := sorry
 
 protected def BilinForm : LinearMap.BilinForm R (⋀[R]^k M) :=
-  liftAlternating ∘ₗ liftAlternating (BilinFormAux B)
-
-
+  (liftAlternating R M R k) ∘ₗ
+  (liftAlternating R M (M [⋀^Fin k]→ₗ[R] R) k (BilinFormAux B))
 
 end inducedForm
 
