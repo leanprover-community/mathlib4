@@ -151,17 +151,6 @@ protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsCl
     (G.map f).IsClique (s.map f) := by
   simpa
 
-lemma isClique_compl_map_iff_isClique_map_compl {f : α ↪ β} {s : Set α} :
-    (SimpleGraph.map f G)ᶜ.IsClique (f '' s) ↔ (SimpleGraph.map f Gᶜ).IsClique (f '' s) := by
-  repeat rw [isClique_iff, Set.Pairwise]
-  rw [forall₂_congr]; intro a ha
-  rw [forall₂_congr]; intro b hb
-  rw [← imp_congr_right]; intro hab
-  obtain ⟨a', _, ha'a⟩ := ha
-  obtain ⟨b', _, hb'b⟩ := hb
-  subst ha'a hb'b
-  simp only [map_adj_apply, compl_adj, ne_eq, EmbeddingLike.apply_eq_iff_eq]
-
 end Clique
 
 /-! ### `n`-cliques -/
