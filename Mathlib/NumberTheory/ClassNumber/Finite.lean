@@ -266,7 +266,7 @@ theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
 
 /-- Each class in the class group contains an ideal `J`
 such that `M := Π m ∈ finsetApprox` is in `J`. -/
-theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R L] (I : (Ideal S)⁰) :
+theorem exists_mk0_eq_mk0 [IsDedekindDomain S] (I : (Ideal S)⁰) :
     ∃ J : (Ideal S)⁰,
       ClassGroup.mk0 I = ClassGroup.mk0 J ∧
         algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ (J : Ideal S) := by
