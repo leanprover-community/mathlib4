@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tobias Leichtfried
 -/
 import Mathlib.Computability.ContextFreeGrammar
-import Mathlib.Tactic
 
 /-!
 # Leftmost Deriviations in Context-Free Gammars
@@ -79,10 +78,10 @@ theorem RewritesLeftmost.rewrite_terminal (r : ContextFreeRule T N) (w : List T)
   rw [rewrites_leftmost_iff] at h
   obtain ⟨p,q,h₁,_⟩ := h
   symm at h₁
-  rw [List.append_eq_map] at h₁
+  rw [List.append_eq_map_iff] at h₁
   obtain ⟨l₁,_,_,h,_⟩ := h₁
   symm at h
-  rw [List.append_eq_map] at h
+  rw [List.append_eq_map_iff] at h
   obtain ⟨_,l₂,_,_,h⟩ := h
   rcases l₂ with _|⟨x, xs⟩ <;> simp at h
 
@@ -373,7 +372,7 @@ theorem derives_leftmost_iff {w : List T} {α : List (Symbol T g.NT)} :
       obtain ⟨v₁,v₂,hv⟩ := first
       rw [hv.2, List.append_assoc] at ih
       obtain ⟨u₁,hu⟩|⟨w₁,u₂,hu⟩ := derives_leftmost_append ih
-      · obtain ⟨w₁₁, w₂₂, hw⟩ := (List.map_eq_append _).mp hu.1
+      · obtain ⟨w₁₁, w₂₂, hw⟩ := List.map_eq_append_iff.mp hu.1
         have d₁ : g.DerivesLeftmost ([nonterminal r.input] ++ v₂) (r.output ++ v₂) := by
           apply ProducesLeftmost.single
           use r, hr
