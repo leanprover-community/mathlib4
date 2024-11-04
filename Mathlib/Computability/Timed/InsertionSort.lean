@@ -26,12 +26,14 @@ universe u
 variable {α : Type u} (r : α → α → Prop) [DecidableRel r]
 local infixl:50 " ≼ " => r
 
+/-- The redesigned version of `orderedInsert`, which also returns the number of comparisons performed. -/
 @[simp] def orderedInsert (a : α) : List α → (List α × Nat)
   | []      => ([a], 0)
   | b :: l => if a ≼ b then (a :: b :: l, 1)
               else let (l', n) := orderedInsert a l
                    (b :: l', n + 1)
 
+/-- The redesigned version of `insertionSort`, which also returns the number of comparisons performed. -/
 @[simp] def insertionSort : List α → (List α × Nat)
   | [] => ([], 0)
   | (h :: t) => let (l', n)  := insertionSort t
