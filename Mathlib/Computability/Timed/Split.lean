@@ -25,8 +25,8 @@ universe u
 
 variable {α : Type u}
 
-lemma div_two (b a : ℕ) : 2 * a ≤ b → a ≤ b / 2 :=
-  by simp_rw [Nat.le_div_iff_mul_le zero_lt_two, mul_comm, imp_self]
+lemma div_two (b a : ℕ) : 2 * a ≤ b → a ≤ b / 2 := by
+  simp_rw [Nat.le_div_iff_mul_le zero_lt_two, mul_comm, imp_self]
 
 lemma split_halves_length_aux : ∀ {l l₁ l₂ : List α},
   List.split l = (l₁, l₂) →
