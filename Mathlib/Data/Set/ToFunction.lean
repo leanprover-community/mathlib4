@@ -77,5 +77,6 @@ def Rel.toSet (R : Rel α β) : Set (α × β) := fun ⟨a, b⟩ => R a b
 theorem Function.graph_isFun (f : α → β) : f.graph.toSet.IsFun :=
   fun x => ⟨f x, rfl, fun _ => Eq.symm⟩
 
-theorem Function.graph_toSet_asFun (f : α → β) : Set.asFun f.graph_is_fun = f :=
+@[simp]
+theorem Function.asFun_graph (f : α → β) : Set.asFun f.graph_is_fun = f :=
   funext (fun _ => Set.asFun_eq f.graph_is_fun rfl)
