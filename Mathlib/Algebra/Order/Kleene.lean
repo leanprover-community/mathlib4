@@ -133,7 +133,7 @@ theorem add_eq_sup (a b : α) : a + b = a ⊔ b :=
 --               So, this theorem should be scoped.
 scoped[Computability] attribute [simp] add_eq_sup
 
-/-- As explained in the definition, an idempotent semiring has an idempotent addition -/
+/-- An idempotent semiring has idempotent addition -/
 instance : IsIdemAddSemigroup α where add_idem := by simp
 
 theorem nsmul_eq_self : ∀ {n : ℕ} (_ : n ≠ 0) (a : α), n • a = a
