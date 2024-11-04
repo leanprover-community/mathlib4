@@ -45,14 +45,12 @@ lemma isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
         exact hA k f g h.1 h.2
     else
       left
-      unfold Function.Injective at h
-      rw [not_and_or] at h
-      push_neg at h
+      simp only [Function.Injective, not_and_or, not_forall, ← ne_eq] at h
       obtain ⟨i, j, hqij, hij⟩ | ⟨i, j, hqij, hij⟩ := h
-      · rw [← Matrix.det_transpose, Matrix.transpose_submatrix]
-        apply Matrix.det_zero_of_column_eq hij.symm
+      · rw [← det_transpose, transpose_submatrix]
+        apply det_zero_of_column_eq hij.symm
         simp [hqij]
-      · apply Matrix.det_zero_of_column_eq hij
+      · apply det_zero_of_column_eq hij
         simp [hqij]
   · intro _ _ _ _ _
     apply hA
@@ -69,21 +67,21 @@ lemma IsTotallyUnimodular.submatrix {A : Matrix m n R} (hA : A.IsTotallyUnimodul
     (f : Fin k → m) (g : Fin k → n) :
     (A.submatrix f g).IsTotallyUnimodular := by
   intro _ _ _ _ _
-  rw [Matrix.submatrix_submatrix]
-  rw [Matrix.isTotallyUnimodular_iff] at hA
+  rw [submatrix_submatrix]
+  rw [isTotallyUnimodular_iff] at hA
   apply hA
 
 lemma IsTotallyUnimodular.transpose {A : Matrix m n R} (hA : A.IsTotallyUnimodular) :
     Aᵀ.IsTotallyUnimodular := by
   intro _ _ _ _ _
-  simp only [← Matrix.transpose_submatrix, Matrix.det_transpose]
+  simp only [← transpose_submatrix, det_transpose]
   apply hA <;> assumption
 
 lemma mapEquiv_IsTotallyUnimodular {X' Y' : Type*} (A : Matrix m n R) (eX : X' ≃ m) (eY : Y' ≃ n) :
-    Matrix.IsTotallyUnimodular ((A · ∘ eY) ∘ eX) ↔ A.IsTotallyUnimodular := by
-  rw [Matrix.isTotallyUnimodular_iff, Matrix.isTotallyUnimodular_iff]
+    IsTotallyUnimodular ((A · ∘ eY) ∘ eX) ↔ A.IsTotallyUnimodular := by
+  rw [isTotallyUnimodular_iff, isTotallyUnimodular_iff]
   constructor <;> intro hA k f g
-  · simpa [Matrix.submatrix] using hA k (eX.symm ∘ f) (eY.symm ∘ g)
-  · simpa [Matrix.submatrix] using hA k (eX ∘ f) (eY ∘ g)
+  · simpa [submatrix] using hA k (eX.symm ∘ f) (eY.symm ∘ g)
+  · simpa [submatrix] using hA k (eX ∘ f) (eY ∘ g)
 
 end Matrix
