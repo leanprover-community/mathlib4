@@ -345,7 +345,7 @@ def coeEmb : Finset α ↪o Set α :=
 theorem coe_coeEmb : ⇑(coeEmb : Finset α ↪o Set α) = ((↑) : Finset α → Set α) :=
   rfl
 
-/-! ### Assorted results 
+/-! ### Assorted results
 
 These results can be defined using the current imports, but deserve to be given a nicer home.
 -/
