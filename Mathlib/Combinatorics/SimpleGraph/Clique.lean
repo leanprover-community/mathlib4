@@ -8,7 +8,6 @@ import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Nat.Lattice
 
-
 /-!
 # Graph cliques
 
@@ -24,10 +23,8 @@ A clique is a set of vertices that are pairwise adjacent.
 
 ## TODO
 
-* Clique numbers
 * Dualise all the API to get independent sets
 -/
-
 
 open Finset Fintype Function SimpleGraph.Walk
 
@@ -426,7 +423,7 @@ protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
 end CliqueFree
 
 section CliqueFreeOn
-variable {s s₁ s₂ : Set α} {t : Finset α} {a b : α} {m n : ℕ}
+variable {s s₁ s₂ : Set α} {a : α} {m n : ℕ}
 
 /-- `G.CliqueFreeOn s n` means that `G` has no `n`-cliques contained in `s`. -/
 def CliqueFreeOn (G : SimpleGraph α) (s : Set α) (n : ℕ) : Prop :=
@@ -488,7 +485,7 @@ end CliqueFreeOn
 
 section CliqueSet
 
-variable {n : ℕ} {a b c : α} {s : Finset α}
+variable {n : ℕ} {s : Finset α}
 
 /-- The `n`-cliques in a graph as a set. -/
 def cliqueSet (n : ℕ) : Set (Finset α) :=
@@ -553,12 +550,69 @@ theorem cliqueSet_map_of_equiv (G : SimpleGraph α) (e : α ≃ β) (n : ℕ) :
 
 end CliqueSet
 
+/-! ### Clique number -/
+
+
+section CliqueNumber
+
+variable {α : Type*} {G : SimpleGraph α}
+
+/-- The maximal number of vertices in a graph `G`. -/
+noncomputable def cliqueNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNClique n s}
+
+/-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
+structure IsMaximumClique (G : SimpleGraph α) (s : Finset α) : Prop where
+  (clique : G.IsClique s)
+  (maximum : ∀ t : Finset α, G.IsClique t → #t ≤ #s)
+
+/-- A maximal clique in a graph `G` is a clique that cannot be extended by adding more vertices. -/
+structure IsMaximalClique (G : SimpleGraph α) (s : Finset α) : Prop where
+  (clique : G.IsClique s)
+  (maximal : ∀ t : Finset α, G.IsClique t → s ⊆ t → t = s)
+
+lemma maximal_of_maximum (s : Finset α) (M : G.IsMaximumClique s) : G.IsMaximalClique s :=
+  { clique := M.clique,
+    maximal := fun t ht hsub => by
+      by_contra hc
+      push_neg at hc
+      have hlt : #s < #t := card_lt_card (HasSubset.Subset.ssubset_of_ne hsub hc.symm)
+      have hle : #t ≤ #s := M.maximum t ht
+      exact lt_irrefl _ (lt_of_lt_of_le hlt hle)
+  }
+
+end CliqueNumber
+
 /-! ### Finset of cliques -/
 
 
 section CliqueFinset
 
-variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {a b c : α} {s : Finset α}
+variable [Fintype α]
+
+private lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
+  use Fintype.card α
+  rintro y ⟨s, syc⟩
+  rw [isNClique_iff] at syc
+  rw [← syc.right]
+  exact Finset.card_le_card (Finset.subset_univ s)
+
+lemma IsClique.card_le_cliqueNum {t : Finset α} {tc : G.IsClique t} : #t ≤ G.cliqueNum :=
+  le_csSup G.fintype_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
+
+lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s :=
+    Nat.sSup_mem ⟨0, by simp[isNClique_empty.mpr rfl]⟩ G.fintype_cliqueNum_bddAbove
+
+lemma maximumClique_card_eq_cliqueNum (s : Finset α) (sm : G.IsMaximumClique s) :
+    #s = G.cliqueNum := by
+  obtain ⟨sc, sm⟩ := sm
+  obtain ⟨t, tc, tcard⟩ := G.exists_isNClique_cliqueNum
+  exact eq_of_le_of_not_lt sc.card_le_cliqueNum (by simp [← tcard, sm t tc])
+
+lemma maximumClique_exists : ∃ (s : Finset α), G.IsMaximumClique s := by
+  obtain ⟨s, snc⟩ := G.exists_isNClique_cliqueNum
+  exact ⟨s, ⟨snc.clique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
+
+variable [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {a b c : α} {s : Finset α}
 
 /-- The `n`-cliques in a graph as a finset. -/
 def cliqueFinset (n : ℕ) : Finset (Finset α) := {s | G.IsNClique n s}
@@ -606,64 +660,5 @@ theorem cliqueFinset_map_of_equiv (e : α ≃ β) (n : ℕ) :
   coe_injective <| by push_cast; exact cliqueSet_map_of_equiv _ _ _
 
 end CliqueFinset
-
-/-! ### Clique number -/
-
-
-section CliqueNumber
-
-variable {α : Type*} {G : SimpleGraph α}
-
-/-- The maximal number of vertices in a graph `G`. -/
-noncomputable def cliqueNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNClique n s}
-
-/-- A clique in a graph `G` such that there is no clique with more vertices. -/
-def isMaximumClique (G : SimpleGraph α) (s : Finset α) : Prop :=
-  G.IsClique s ∧ ∀ (t : Finset α), G.IsClique t → #t ≤ #s
-
-/-- A clique in a graph `G` that cannot be extended by adding vertices. -/
-def isMaximalClique (G : SimpleGraph α) (s : Finset α) : Prop :=
-  G.IsClique s ∧ ¬ ∃ (t : Finset α), G.IsClique t ∧ s ⊂ t
-
-lemma maximalClique_if_maximumClique {s : Finset α} (smax : G.isMaximumClique s) :
-    G.isMaximalClique s := by
-  rw [isMaximalClique, isMaximumClique] at *
-  by_contra h
-  simp_all only [not_exists, not_and, not_forall, Classical.not_imp, not_not, true_implies]
-  let ⟨t, tc, tsub⟩ := h
-  let ⟨_ , smaxf⟩ := smax
-  exact (not_and_self_iff (#t ≤ #s)).mp ⟨not_le_of_lt (card_lt_card tsub), smaxf t tc⟩
-
-variable [fin : Fintype α]
-
-lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
-  rw [bddAbove_def]
-  refine Exists.intro (Fintype.card α) ?_
-  rintro y ⟨sy, syc⟩
-  rw [isNClique_iff, ← And.right syc] at *
-  exact Finset.card_le_card (Finset.subset_univ sy)
-
-theorem clique_card_le_cliqueNum (t : Finset α) (tc : G.IsClique t) : #t ≤ G.cliqueNum :=
-  le_csSup fintype_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
-
-lemma cliqueNum_attained : G.cliqueNum ∈ {n | ∃ s, G.IsNClique n s} :=
-    Nat.sSup_mem ⟨0, by simp[isNClique_empty.mpr rfl]⟩ fintype_cliqueNum_bddAbove
-
-theorem maximumClique_card_eq_cliqueNum (t : Finset α) (tmc : G.isMaximumClique t) :
-    #t = G.cliqueNum := by
-  let ⟨tclique, tmax⟩ := tmc
-  refine eq_of_le_of_not_lt (clique_card_le_cliqueNum _ tclique) ?_
-  have ⟨s, sclique, scn⟩ := G.cliqueNum_attained
-  rw [← scn]
-  exact LE.le.not_lt (tmax s sclique)
-
-theorem maximumClique_exists : ∃ s , G.isMaximumClique s := by
-  have ⟨s, smax⟩ := G.cliqueNum_attained
-  simp_all [isMaximumClique]
-  refine Exists.intro s ⟨smax.clique , ?_⟩
-  rw [smax.card_eq]
-  exact clique_card_le_cliqueNum
-
-end CliqueNumber
 
 end SimpleGraph
