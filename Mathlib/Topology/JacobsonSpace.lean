@@ -49,7 +49,7 @@ lemma IsClosedEmbedding.preimage_closedPoints (hf : IsClosedEmbedding f) :
   ext x
   simp [mem_closedPoints_iff, ← Set.image_singleton, hf.closed_iff_image_closed]
 
-lemma closedPoints_eq_univ [T2Space X] :
+lemma closedPoints_eq_univ [T1Space X] :
     closedPoints X = Set.univ :=
   Set.eq_univ_iff_forall.mpr fun _ ↦ isClosed_singleton
 
@@ -144,7 +144,7 @@ lemma JacobsonSpace.discreteTopology [JacobsonSpace X]
 instance (priority := 100) [Finite X] [JacobsonSpace X] : DiscreteTopology X :=
   JacobsonSpace.discreteTopology (Set.toFinite _)
 
-instance (priority := 100) [T2Space X] : JacobsonSpace X :=
+instance (priority := 100) [T1Space X] : JacobsonSpace X :=
   ⟨by simp [closedPoints_eq_univ, closure_eq_iff_isClosed]⟩
 
 open TopologicalSpace in
