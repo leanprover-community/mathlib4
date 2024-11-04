@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-!
 # The "docPrime" linter
@@ -50,7 +53,7 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
     else
       stx[1][1]
   -- The name of the current declaration, with namespaces resolved.
-  let declName :=
+  let declName : Name :=
     if let `_root_ :: rest := declId[0].getId.components then
       rest.foldl (· ++ ·) default
     else (← getCurrNamespace) ++ declId[0].getId

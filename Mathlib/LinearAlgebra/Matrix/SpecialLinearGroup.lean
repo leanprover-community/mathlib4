@@ -266,14 +266,16 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
     simpa only [coe_mul, ← hr] using (scalar_commute (n := n) r (Commute.all r) B).symm
 
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity. -/
+-- replaced `(Fintype.card n).mkPNat'` by `Fintype.card n` (note `n` is nonempty here)
 @[simps]
 def center_equiv_rootsOfUnity' (i : n) :
-    center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R where
-  toFun A := rootsOfUnity.mkOfPowEq (↑ₘA i i) <| by
-    have : Nonempty n := ⟨i⟩
-    obtain ⟨r, hr, hr'⟩ := mem_center_iff.mp A.property
-    replace hr' : A.val i i = r := by simp [← hr']
-    simp [hr, hr']
+    center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n) R where
+  toFun A :=
+    haveI : Nonempty n := ⟨i⟩
+    rootsOfUnity.mkOfPowEq (↑ₘA i i) <| by
+      obtain ⟨r, hr, hr'⟩ := mem_center_iff.mp A.property
+      replace hr' : A.val i i = r := by simp only [← hr', scalar_apply, diagonal_apply_eq]
+      simp only [hr', hr]
   invFun a := ⟨⟨a • (1 : Matrix n n R), by aesop⟩,
     Subgroup.mem_center_iff.mpr fun B ↦ Subtype.val_injective <| by simp [coe_mul]⟩
   left_inv A := by
@@ -294,13 +296,17 @@ open scoped Classical in
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity.
 
 See also `center_equiv_rootsOfUnity'`. -/
+-- replaced `(Fintype.card n).mkPNat'` by what it means, avoiding `PNat`s.
 noncomputable def center_equiv_rootsOfUnity :
-    center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R :=
+    center (SpecialLinearGroup n R) ≃* rootsOfUnity (max (Fintype.card n) 1) R :=
   (isEmpty_or_nonempty n).by_cases
   (fun hn ↦ by
-    rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, Nat.toPNat'_zero, rootsOfUnity_one]
+    rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, max_eq_right_of_lt zero_lt_one,
+      rootsOfUnity_one]
     exact MulEquiv.mulEquivOfUnique)
-  (fun _ ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
+  (fun _ ↦
+    (max_eq_left (NeZero.one_le : 1 ≤ Fintype.card n)).symm ▸
+      center_equiv_rootsOfUnity' (Classical.arbitrary n))
 
 end center
 

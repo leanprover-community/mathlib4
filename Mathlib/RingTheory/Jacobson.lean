@@ -335,7 +335,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
         rw [sub_eq_zero, ← φ'.comp_apply]
         simp only [IsLocalization.map_comp _]
         rfl
-  · obtain ⟨p, rfl⟩ := Quotient.mk_surjective p'
+  · obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective p'
     rw [← RingHom.comp_apply]
     apply Subring.mem_closure_image_of
     apply Polynomial.mem_closure_X_union_C
@@ -559,7 +559,7 @@ theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
       (fun h => absurd (_root_.trans (h ▸ hPJ : P = comap f ⊤) comap_top : P = ⊤) hP.ne_top) id
   apply quotient_mk_comp_C_isIntegral_of_jacobson' _ ?_ (fun x hx => ?_)
   any_goals exact isJacobsonRing_quotient
-  obtain ⟨z, rfl⟩ := Quotient.mk_surjective x
+  obtain ⟨z, rfl⟩ := Ideal.Quotient.mk_surjective x
   rwa [Quotient.eq_zero_iff_mem, mem_comap, hPJ, mem_comap, coe_mapRingHom, map_C]
 
 theorem isMaximal_comap_C_of_isJacobsonRing : (P.comap (C : R →+* R[X])).IsMaximal := by

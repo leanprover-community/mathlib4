@@ -347,7 +347,7 @@ end FormalMultilinearSeries
 
 section
 
-variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {s t : Set E} {x : E} {r r' : ℝ≥0∞}
+variable {f g : E → F} {p pf : FormalMultilinearSeries 𝕜 E F} {s t : Set E} {x : E} {r r' : ℝ≥0∞}
 
 /-- Given a function `f : E → F` and a formal multilinear series `p`, we say that `f` has `p` as
 a power series on the ball of radius `r > 0` around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `‖y‖ < r`.
@@ -603,7 +603,7 @@ lemma HasFPowerSeriesAt.hasFPowerSeriesWithinAt (hf : HasFPowerSeriesAt f p x) :
   rw [← hasFPowerSeriesWithinAt_univ] at hf
   apply hf.mono (subset_univ _)
 
-theorem HasFPowerSeriesWithinAt.mono_of_mem
+theorem HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin
     (h : HasFPowerSeriesWithinAt f p s x) (hst : s ∈ 𝓝[t] x) :
     HasFPowerSeriesWithinAt f p t x := by
   rcases h with ⟨r, hr⟩
@@ -620,6 +620,9 @@ theorem HasFPowerSeriesWithinAt.mono_of_mem
     add_sub_cancel_left, hy, and_true] at h'y ⊢
   exact h'y.2
 
+@[deprecated (since := "2024-10-31")]
+alias HasFPowerSeriesWithinAt.mono_of_mem := HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin
+
 @[simp] lemma hasFPowerSeriesWithinOnBall_insert_self :
     HasFPowerSeriesWithinOnBall f p (insert x s) x r ↔ HasFPowerSeriesWithinOnBall f p s x r := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩  <;>
@@ -630,7 +633,7 @@ theorem HasFPowerSeriesWithinAt.mono_of_mem
   rcases eq_or_ne x y with rfl | hy
   · simp [HasFPowerSeriesWithinAt]
   · refine ⟨fun h ↦ h.mono (subset_insert _ _), fun h ↦ ?_⟩
-    apply HasFPowerSeriesWithinAt.mono_of_mem h
+    apply HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin h
     rw [nhdsWithin_insert_of_ne hy]
     exact self_mem_nhdsWithin
 
@@ -750,10 +753,13 @@ theorem analyticOnNhd_congr (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOnNhd �
 @[deprecated (since := "2024-09-26")]
 alias analyticOn_congr := analyticOnNhd_congr
 
-theorem AnalyticWithinAt.mono_of_mem
+theorem AnalyticWithinAt.mono_of_mem_nhdsWithin
     (h : AnalyticWithinAt 𝕜 f s x) (hst : s ∈ 𝓝[t] x) : AnalyticWithinAt 𝕜 f t x := by
   rcases h with ⟨p, hp⟩
-  exact ⟨p, hp.mono_of_mem hst⟩
+  exact ⟨p, hp.mono_of_mem_nhdsWithin hst⟩
+
+@[deprecated (since := "2024-10-31")]
+alias AnalyticWithinAt.mono_of_mem := AnalyticWithinAt.mono_of_mem_nhdsWithin
 
 lemma AnalyticOn.mono {f : E → F} {s t : Set E} (h : AnalyticOn 𝕜 f t)
     (hs : s ⊆ t) : AnalyticOn 𝕜 f s :=
