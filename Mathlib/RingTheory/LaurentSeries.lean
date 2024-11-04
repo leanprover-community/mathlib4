@@ -1132,7 +1132,7 @@ abbrev powerSeriesEquivSubring : K⟦X⟧ ≃+* powerSeries_as_subring K := by
 completion of `RatFunc K`. -/
 theorem mem_integers_of_powerSeries (F : K⟦X⟧) :
     (LaurentSeriesRingEquiv K) F ∈ (Polynomial.idealX K).adicCompletionIntegers (RatFunc K) := by
-    (LaurentSeriesRingEquiv K) F ∈ (idealX K).adicCompletionIntegers (RatFunc K) := by
+  have : (LaurentSeriesRingEquiv K) F =
     (LaurentSeriesPkg K).compare ratfuncAdicComplPkg (F : K⸨X⸩) := rfl
   simp only [Subring.mem_map, exists_prop, ValuationSubring.mem_toSubring,
     mem_adicCompletionIntegers, this,  valuation_compare, val_le_one_iff_eq_coe]
