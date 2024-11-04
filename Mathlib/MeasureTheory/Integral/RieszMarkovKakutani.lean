@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jesse Reimann, Kalle Kytölä
 -/
 import Mathlib.Topology.ContinuousMap.Bounded
+import Mathlib.Topology.ContinuousMap.CompactlySupported
+import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Sets.Compacts
 
 /-!
@@ -25,12 +27,11 @@ compact subsets of the space X, rather than the usual construction of open sets 
 
 noncomputable section
 
-open BoundedContinuousFunction NNReal ENNReal
+open scoped Classical BoundedContinuousFunction NNReal ENNReal
+open Set Function TopologicalSpace CompactlySupported
 
-open Set Function TopologicalSpace
-
-variable {X : Type*} [TopologicalSpace X]
-variable (Λ : (X →ᵇ ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
+variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X] [T2Space X]
+variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
 /-! ### Construction of the content: -/
 
@@ -39,18 +40,44 @@ variable (Λ : (X →ᵇ ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 `λ(K) = inf {Λf | 1≤f on K}`. When X is a compact Hausdorff space, this will be shown to be a
 content, and will be shown to agree with the Riesz measure on the compact subsets `K ⊆ X`. -/
 def rieszContentAux : Compacts X → ℝ≥0 := fun K =>
-  sInf (Λ '' { f : X →ᵇ ℝ≥0 | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x })
+  sInf (Λ '' { f : C_c(X, ℝ≥0) | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x })
 
 section RieszMonotone
 
 /-- For any compact subset `K ⊆ X`, there exist some bounded continuous nonnegative
 functions f on X such that `f ≥ 1` on K. -/
 theorem rieszContentAux_image_nonempty (K : Compacts X) :
-    (Λ '' { f : X →ᵇ ℝ≥0 | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x }).Nonempty := by
+    (Λ '' { f : C_c(X, ℝ≥0) | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x }).Nonempty := by
   rw [image_nonempty]
-  use (1 : X →ᵇ ℝ≥0)
-  intro x _
-  simp only [BoundedContinuousFunction.coe_one, Pi.one_apply]; rfl
+  obtain ⟨V, hVcp, hKsubintV⟩ := exists_compact_superset K.2
+  have hIsCompact_closure_interior : IsCompact (closure (interior V)) := by
+    apply IsCompact.of_isClosed_subset hVcp isClosed_closure
+    nth_rw 2 [← closure_eq_iff_isClosed.mpr (IsCompact.isClosed hVcp)]
+    exact closure_mono interior_subset
+  obtain ⟨f, hf⟩ := exists_tsupport_one_of_isOpen_isClosed isOpen_interior
+    hIsCompact_closure_interior (IsCompact.isClosed K.2) hKsubintV
+  have hfHasCompactSupport : HasCompactSupport f :=
+    IsCompact.of_isClosed_subset hVcp (isClosed_tsupport f) (Set.Subset.trans hf.1 interior_subset)
+-- use .nnrealPart for an element in X →ᵇ ℝ≥0
+  set fc := (⟨f, hfHasCompactSupport⟩ : C_c(X, ℝ)) with hfc
+  simp only at hfc
+  let fcb := (fc : X →ᵇ ℝ)
+  simp only at fcb
+  refine ⟨⟨(fc : X →ᵇ ℝ).nnrealPart, hfHasCompactSupport⟩, ?_, ?_⟩
+  simp only [mem_setOf_eq]
+  constructor
+  · exact IsCompact.of_isClosed_subset hV.1 (isClosed_tsupport f)
+      (_root_.subset_trans hf.1 interior_subset)
+  constructor
+  · intro x
+    exact (Set.mem_Icc.mp (hf.2.2 x)).1
+  · intro x hx
+    apply le_of_eq
+    rw [← ContinuousMap.one_apply x]
+    exact (hf.2.1 hx).symm
+  -- use (1 : X →ᵇ ℝ≥0)
+  -- intro x _
+  -- simp only [BoundedContinuousFunction.coe_one, Pi.one_apply]; rfl
 
 /-- Riesz content λ (associated with a positive linear functional Λ) is
 monotone: if `K₁ ⊆ K₂` are compact subsets in X, then `λ(K₁) ≤ λ(K₂)`. -/
