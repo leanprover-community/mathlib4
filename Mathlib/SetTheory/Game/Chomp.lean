@@ -75,21 +75,21 @@ which is the max number in the Finset.
 abbrev Board := Subtype validDivisorSet
 
 theorem max_is_some (b : Board) : b.val.max.isSome = true := by
-  have p := b.property
-  unfold validDivisorSet at p
+  obtain ⟨_, property⟩ := b
+  unfold validDivisorSet at property
   by_contra k
   simp only [ne_eq, Bool.not_eq_true, Option.not_isSome, Option.isNone_iff_eq_none] at k
-  simp only [k] at p
+  simp only [k] at property
 
 theorem never_empty (b : Board) : b.val.Nonempty := by
-  have p := b.property
-  unfold validDivisorSet at p
+  obtain ⟨val, property⟩ := b
+  unfold validDivisorSet at property
   by_contra k
   simp only [Finset.not_nonempty_iff_eq_empty] at k
-  have y : b.val.max = ⊥ := by
+  have y : val.max = ⊥ := by
     rw [k]
     exact Finset.max_empty
-  simp only [y] at p
+  simp only [y] at property
 
 def controlling (b : Board) : ℕ := b.val.max.get (max_is_some b)
 
@@ -124,13 +124,13 @@ theorem move_not_in_board (b : Board) (m : ℕ) (h : m ∈ moves b) : m ∉ b.va
   unfold moves at h
   simp only [Finset.mem_filter, Nat.mem_properDivisors] at h
   have x := h.left
-  simp [Finset.mem_sdiff] at x
+  simp only [Finset.mem_sdiff] at x
   exact x.right
 
 theorem move_smaller_than_controller (b : Board) (m : ℕ) (h : m ∈ moves b) : m < controlling b := by
   unfold moves at h
-  -- Nat.mem_properDivisors
-  sorry
+  simp [Nat.mem_properDivisors] at h
+  exact h.left.left.right
 
 theorem move_is_set (b : Board) (m : ℕ) (h : m ∈ moves b) : (move b m h).val = b.val ∪ {m} := by
   unfold move
@@ -146,6 +146,7 @@ theorem unchanging_controller (b : Board) (m : ℕ) (h : m ∈ moves b) :
   simp only
   have s := move_smaller_than_controller b m h
   unfold controlling at s
+  -- TODO: max'_union
   sorry
 
 theorem move_card {b : Board} {m : ℕ} (h : m ∈ moves b) :
@@ -159,13 +160,10 @@ theorem game_move_count (b : Board) :
     b.val.card - 1 ≤ (controlling b).properDivisors.card := by
   have p := b.property
   unfold validDivisorSet validMentionableDivisors at p
-  have s : controlling b = b.val.max := controlling_is_max b
-  simp only [← s, Nat.cast_id] at p
-  have u := Finset.card_le_card p.left
+  simp only [← controlling_is_max b, Nat.cast_id] at p
   have y := Finset.card_erase_add_one (controlling_in_board b)
-  have j := Nat.eq_sub_of_add_eq y
-  rw [← j]
-  exact u
+  rw [← Nat.eq_sub_of_add_eq y]
+  exact Finset.card_le_card p.left
 
 theorem unfinished_game_has_moves (b : Board) (h : moves b ≠ ∅) :
     b.val.card - 1 < (controlling b).properDivisors.card := by
