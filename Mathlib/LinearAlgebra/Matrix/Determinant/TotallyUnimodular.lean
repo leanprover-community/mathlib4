@@ -17,7 +17,7 @@ This file defines totally unimodular matrices and provides basic API for them.
 
 ## Main results
 
- - `Matrix.IsTotallyUnimodular_iff`: a matrix is totally unimodular iff every square submatrix
+ - `Matrix.isTotallyUnimodular_iff`: a matrix is totally unimodular iff every square submatrix
     (possibly with repeated rows and/or repeated columns) has determinant `0` or `1` or `-1`.
  - `Matrix.IsTotallyUnimodular.apply`: entry in a totally unimodular matrix is `0` or `1` or `-1`.
 
