@@ -5,7 +5,7 @@ Authors: Alain Verberkmoes
 -/
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # IMO 2011 Q5

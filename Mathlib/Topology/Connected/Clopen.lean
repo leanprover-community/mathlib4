@@ -99,7 +99,7 @@ theorem Continuous.exists_lift_sigma [ConnectedSpace α] [∀ i, TopologicalSpac
     exact ⟨i, hs.trans_subset (image_subset_range _ _)⟩
   rcases range_subset_range_iff_exists_comp.1 hi with ⟨g, rfl⟩
   refine ⟨i, g, ?_, rfl⟩
-  rwa [← embedding_sigmaMk.continuous_iff] at hf
+  rwa [← IsEmbedding.sigmaMk.continuous_iff] at hf
 
 theorem nonempty_inter [PreconnectedSpace α] {s t : Set α} :
     IsOpen s → IsOpen t → s ∪ t = univ → s.Nonempty → t.Nonempty → (s ∩ t).Nonempty := by
@@ -509,7 +509,7 @@ instance : TopologicalSpace (ConnectedComponents α) :=
   inferInstanceAs (TopologicalSpace (Quotient _))
 
 theorem surjective_coe : Surjective (mk : α → ConnectedComponents α) :=
-  surjective_quot_mk _
+  Quot.mk_surjective
 
 theorem isQuotientMap_coe : IsQuotientMap (mk : α → ConnectedComponents α) :=
   isQuotientMap_quot_mk

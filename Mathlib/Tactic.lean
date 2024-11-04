@@ -82,6 +82,8 @@ import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.Finiteness
+import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.FunProp
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.FunProp.ContDiff
@@ -107,7 +109,6 @@ import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.HaveI
-import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.Hint
 import Mathlib.Tactic.ITauto
@@ -224,7 +225,6 @@ import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
-import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.StacksAttribute

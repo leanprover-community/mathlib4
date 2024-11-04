@@ -8,6 +8,7 @@ import Mathlib.Tactic.Use
 import Batteries.Tactic.Congr
 import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.Basic
+import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Images and preimages of sets
@@ -816,12 +817,12 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
-  (surjective_quot_mk r).range_eq
+  Quot.mk_surjective.range_eq
 
 @[simp]
 theorem range_quot_lift {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = f y) :
     range (Quot.lift f hf) = range f :=
-  ext fun _ => (surjective_quot_mk _).exists
+  ext fun _ => Quot.mk_surjective.exists
 
 @[simp]
 theorem range_quotient_mk {s : Setoid α} : range (Quotient.mk s) = univ :=

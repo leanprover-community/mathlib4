@@ -3,8 +3,9 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Order.CompleteLattice
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Results about `SMulLeftMono G α`
@@ -22,7 +23,7 @@ class SMulLeftMono (M α : Type*) [SMul M α] [LE α] : Prop where
   protected elim : Covariant M α (· • ·) (· ≤ ·)
 
 /-- TODO -/
-class SMulStrictMono (M α : Type*) [SMul M α] [LT α] : Prop where
+class SMulLeftStrictMono (M α : Type*) [SMul M α] [LT α] : Prop where
   /-- TODO -/
   protected elim : Covariant M α (· • ·) (· < ·)
 
@@ -46,6 +47,22 @@ theorem smul_iInf_le [SMul M α] [CompleteLattice α] [SMulLeftMono M α]
     m • iInf t ≤ ⨅ i, m • t i :=
   le_iInf fun _ => smul_mono_right _ (iInf_le _ _)
 
-theorem smul_strictMono_right [SMul M α] [Preorder α] [SMulStrictMono M α]
+theorem smul_strictMono_right [SMul M α] [Preorder α] [SMulLeftStrictMono M α]
     (m : M) : StrictMono (HSMul.hSMul m : α → α) :=
-  fun _ _ => SMulStrictMono.elim _
+  fun _ _ => SMulLeftStrictMono.elim _
+
+lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
+    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
+    (h : a ≤ g • a) (n : ℕ) : a ≤ g ^ n • a := by
+  induction' n with n hn
+  · rw [pow_zero, one_smul]
+  · rw [pow_succ', mul_smul]
+    exact h.trans (smul_mono_right g hn)
+
+lemma pow_smul_le {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
+    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
+    (h : g • a ≤ a) (n : ℕ) : g ^ n • a ≤ a := by
+  induction' n with n hn
+  · rw [pow_zero, one_smul]
+  · rw [pow_succ', mul_smul]
+    exact (smul_mono_right g hn).trans h
