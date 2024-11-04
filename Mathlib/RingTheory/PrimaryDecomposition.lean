@@ -42,7 +42,7 @@ lemma noZeroDivisors_or_valuationRing_of_zero_divisors_mem_jacobson [IsPrincipal
   obtain ⟨s, hs⟩ := IsPrincipalIdealRing.principal JR
   rcases eq_or_ne s 0 with rfl|hsn
   · refine Or.inl ⟨fun h ↦ (em _).imp_right fun ha ↦ ?_⟩
-    simpa [hs] using h0 ⟨_, ha, h⟩
+    simpa [Set.singleton_zero, hs] using h0 ⟨_, ha, h⟩
   rw [submodule_span_eq] at hs
   by_cases hsu : IsUnit s
   · simp only [span_singleton_eq_top.mpr hsu, jacobson_eq_top_iff] at hs
@@ -219,7 +219,7 @@ lemma PreValuationRing.of_isMaximal_of_isNilpotent_of_isPrincipal {M : Ideal R}
       · contrapose! H'
         obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt H'
         simp only [hk, add_assoc, pow_add, pow_one]
-        simp [hs, span_singleton_pow, hn, hx0]
+        simp [hs, span_singleton_pow, hn, hx0, Set.singleton_zero]
     exact ⟨_, hru.unit, hr.symm⟩
   rw [PreValuationRing.iff_dvd_total]
   constructor
@@ -269,7 +269,7 @@ lemma eq_pow_of_isMaximal_of_isNilpotent_of_isPrincipal {M : Ideal R}
       · contrapose! H'
         obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt H'
         simp only [hk, add_assoc, pow_add, pow_one]
-        simp [hs, span_singleton_pow, hn, hx0]
+        simp [hs, span_singleton_pow, hn, hx0, Set.singleton_zero]
     exact ⟨_, hru.unit, hr.symm⟩
   obtain ⟨m, hm⟩ := id hN
   rcases eq_or_ne I ⊥ with rfl|hIb
@@ -316,7 +316,7 @@ lemma span_singleton_eq_top_of_isPrincipalIdealRing_quotient_noZeroDivisors_zero
   rw [hd, eq_comm, ← sub_eq_zero, mul_left_comm, ← mul_sub_one] at ha'
   by_cases ha0 : Quotient.mk J a = 0
   · refine absurd ?_ hIJ
-    simpa [ha0, map_eq_bot_iff_le_ker] using haJ
+    simpa [ha0, map_eq_bot_iff_le_ker, Set.singleton_zero] using haJ
   · have := isUnit_of_sub_one_mem_jacobson_bot _ (hJ0 ⟨_, ha0, ha'⟩)
     rw [IsUnit.mul_iff] at this
     have : span {Quotient.mk J c} = ⊤ := eq_top_of_isUnit_mem _ (mem_span_singleton_self _)
@@ -507,7 +507,7 @@ lemma IsPrincipalIdealRing.of_isNoetherian_of_isPrincipal_maximal_of_zero_diviso
       rw [← dvd_def, ← mem_span_singleton]
       exact hc' (mem_sup_right (by simp [mem_span_singleton]))
     rcases eq_or_ne a 0 with rfl|ha0
-    · simpa using ⟨b, rfl⟩
+    · simpa [Set.singleton_zero] using ⟨b, rfl⟩
     have ha' : span {a} < span {a'} := by
       rw [ha]
       refine ⟨span_singleton_le_span_singleton.mpr (dvd_mul_left _ c), ?_⟩
