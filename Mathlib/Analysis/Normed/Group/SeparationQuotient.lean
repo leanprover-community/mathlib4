@@ -74,7 +74,7 @@ lemma eq_of_inseparable (f : NormedAddGroupHom M N) (hf : ∀ x, ‖x‖ = 0 →
 @[simps]
 noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) : NormedAddGroupHom (SeparationQuotient M) N :=
-  { SeparationQuotient.liftContinuousAddMonoidHom ⟨f.toAddMonoidHom, f.continuous⟩
+  { SeparationQuotient.liftContinuousAddMonoidHom f
       <| eq_of_inseparable f hf with
     bound' := by
       use ‖f‖

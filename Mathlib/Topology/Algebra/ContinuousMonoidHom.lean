@@ -333,6 +333,11 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B
   map_mul' g h := ext fun a => map_mul f (g a) (h a)
   continuous_toFun := f.continuous_comp_right
 
+@[to_additive]
+instance toContinuousMonoidHom (F : Type*) [FunLike F A B] [ContinuousMapClass F A B]
+    [MonoidHomClass F A B] : CoeTC F (ContinuousMonoidHom A B) where
+  coe := fun f => ⟨MonoidHomClass.toMonoidHom f, (_root_.toContinuousMap f).continuous⟩
+
 section LocallyCompact
 
 variable {X Y : Type*} [TopologicalSpace X] [Group X] [TopologicalGroup X]
