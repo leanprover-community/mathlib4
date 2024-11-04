@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Properties of the module `α →₀ M`

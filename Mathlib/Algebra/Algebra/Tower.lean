@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Towers of algebras
