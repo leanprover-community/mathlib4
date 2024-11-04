@@ -219,8 +219,6 @@ theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F
     ∀ n : ℤ, f n = n :=
   DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_intCastAddHom h₁
 
-@[simp] lemma zsmul_one [AddGroupWithOne α] (n : ℤ) : n • (1 : α) = n := by cases n <;> simp
-
 @[simp]
 theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
   ((AddMonoidHom.id ℤ).eq_intCastAddHom rfl).symm

@@ -129,7 +129,6 @@ variable {F}
 theorem quadraticChar_eq_zero_iff {a : F} : quadraticChar F a = 0 ↔ a = 0 :=
   quadraticCharFun_eq_zero_iff
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem quadraticChar_zero : quadraticChar F 0 = 0 := by
   simp only [quadraticChar_apply, quadraticCharFun_zero]
 

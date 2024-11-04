@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
 import Mathlib.Data.Setoid.Partition
-import Mathlib.Topology.Separation
 import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
@@ -105,7 +104,7 @@ theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = setOf (S.toSetoid x) :=
   Set.ext fun _ => eq_comm.trans Quotient.eq''
 
 theorem proj_surjective : Function.Surjective S.proj :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.mk''_surjective
 
 theorem proj_isQuotientMap : IsQuotientMap S.proj :=
   isQuotientMap_quot_mk

@@ -5,10 +5,8 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.Flat.FaithfullyFlat
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Constructions of (co)limits in `CommRingCat`

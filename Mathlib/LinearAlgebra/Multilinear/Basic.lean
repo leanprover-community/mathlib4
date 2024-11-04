@@ -127,7 +127,7 @@ nonrec theorem congr_arg (f : MultilinearMap R M₁ M₂) {x y : ∀ i, M₁ i} 
 theorem coe_injective : Injective ((↑) : MultilinearMap R M₁ M₂ → (∀ i, M₁ i) → M₂) :=
   DFunLike.coe_injective
 
-@[norm_cast] -- Porting note (#10618): Removed simp attribute, simp can prove this
+@[norm_cast]
 theorem coe_inj {f g : MultilinearMap R M₁ M₂} : (f : (∀ i, M₁ i) → M₂) = g ↔ f = g :=
   DFunLike.coe_fn_eq
 

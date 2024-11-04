@@ -381,7 +381,7 @@ theorem coe_injective [T0Space α] : Function.Injective ((↑) : α → Completi
 variable {α}
 
 theorem isDenseInducing_coe : IsDenseInducing ((↑) : α → Completion α) :=
-  { (isUniformInducing_coe α).inducing with dense := denseRange_coe }
+  { (isUniformInducing_coe α).isInducing with dense := denseRange_coe }
 
 /-- The uniform bijection between a complete space and its uniform completion. -/
 def UniformCompletion.completeEquivSelf [CompleteSpace α] [T0Space α] : Completion α ≃ᵤ α :=

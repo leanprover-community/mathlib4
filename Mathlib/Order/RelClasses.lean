@@ -128,15 +128,13 @@ theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = EmptyRelat
 instance : IsIrrefl α EmptyRelation :=
   ⟨fun _ => id⟩
 
-theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α} :
-    ¬r b a → r b c → r a c := by
-  intro h₁ h₂
+theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+    (h₁ : ¬r b a) (h₂ : r b c) : r a c := by
   rcases trichotomous_of r a b with (h₃ | rfl | h₃)
   exacts [_root_.trans h₃ h₂, h₂, absurd h₃ h₁]
 
-theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α} :
-    r a b → ¬r c b → r a c := by
-  intro h₁ h₂
+theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+    (h₁ : r a b) (h₂ : ¬r c b) : r a c := by
   rcases trichotomous_of r b c with (h₃ | rfl | h₃)
   exacts [_root_.trans h₁ h₃, h₁, absurd h₃ h₂]
 
@@ -172,11 +170,10 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.
 
 See note [reducible non-instances]. -/
-abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] : LinearOrder α :=
-  let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y =>
-      decidable_of_iff (¬r y x)
-        ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
-          h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
+abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearOrder α :=
+  let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y => decidable_of_iff (¬r y x)
+    ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
+      h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
   { __ := partialOrderOfSO r
     le_total := fun x y =>
       match y, trichotomous_of r x y with
@@ -417,9 +414,9 @@ def toWellFoundedRelation : WellFoundedRelation α :=
 
 end WellFoundedGT
 
+open Classical in
 /-- Construct a decidable linear order from a well-founded linear order. -/
 noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
-  letI := fun x y => Classical.dec ¬r x y
   linearOrderOfSTO r
 
 /-- Derive a `WellFoundedRelation` instance from an `IsWellOrder` instance. -/
