@@ -111,6 +111,8 @@ jobs:
 
       - name: add minImport linter option
         run: |
+          git status
+          git branch
           git checkout origin/master
           sed -i '/⟨`linter.style.missingEnd, true⟩,/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
           git add -u
