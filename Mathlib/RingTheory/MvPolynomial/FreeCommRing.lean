@@ -11,7 +11,8 @@ import Mathlib.RingTheory.FreeCommRing
 # Constructing Ring terms from MvPolynomial
 
 This file provides tools for constructing ring terms that can be evaluated to particular
-`MvPolynomial`s.
+`MvPolynomial`s. The main motivation is in model theory. It can be used to construct first order
+formulas whose realization is a property of an `MvPolynomial`
 
 ## Main definitions
 
@@ -68,7 +69,6 @@ theorem MvPolynomialSupportLEEquiv_symm_apply_coeff [DecidableEq κ] [CommRing R
       (fun i => (p i.1).coeff i.2.1) = ⟨p, fun _ => Finset.Subset.refl _⟩ :=
   (mvPolynomialSupportLEEquiv (R := R) (fun i : ι => (p i).support)).symm_apply_apply
     ⟨p, fun _ => Finset.Subset.refl _⟩
-
 
 @[simp]
 theorem lift_genericPolyMap [DecidableEq κ] [CommRing R]
