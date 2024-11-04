@@ -132,7 +132,7 @@ private def CacheM.getContext : IO CacheM.Context := do
     ("Mathlib", root),
     ("Archive", root),
     ("Counterexamples", root),
-    ("MathlibTest", root / "MathlibTest"),
+    ("MathlibTest", root),
     ("Aesop", LAKEPACKAGESDIR / "aesop"),
     ("Batteries", LAKEPACKAGESDIR / "batteries"),
     ("Cli", LAKEPACKAGESDIR / "Cli"),
