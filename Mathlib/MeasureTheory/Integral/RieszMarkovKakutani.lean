@@ -44,6 +44,16 @@ def rieszContentAux : Compacts X → ℝ≥0 := fun K =>
 
 section RieszMonotone
 
+def nnrealPartCompactlySupported (f : C_c(X, ℝ)) : C_c(X, ℝ≥0) where
+  toFun := Real.toNNReal.comp f.toFun
+  continuous_toFun := Continuous.comp continuous_real_toNNReal f.continuous
+  hasCompactSupport' := by
+    apply HasCompactSupport.comp_left f.hasCompactSupport' Real.toNNReal_zero
+
+@[simp]
+lemma nnrealPartCompactlySupported_apply (f : C_c(X, ℝ)) (x : X) :
+  (nnrealPartCompactlySupported f) x = Real.toNNReal (f x) := rfl
+
 /-- For any compact subset `K ⊆ X`, there exist some bounded continuous nonnegative
 functions f on X such that `f ≥ 1` on K. -/
 theorem rieszContentAux_image_nonempty (K : Compacts X) :
@@ -54,30 +64,19 @@ theorem rieszContentAux_image_nonempty (K : Compacts X) :
     apply IsCompact.of_isClosed_subset hVcp isClosed_closure
     nth_rw 2 [← closure_eq_iff_isClosed.mpr (IsCompact.isClosed hVcp)]
     exact closure_mono interior_subset
-  obtain ⟨f, hf⟩ := exists_tsupport_one_of_isOpen_isClosed isOpen_interior
-    hIsCompact_closure_interior (IsCompact.isClosed K.2) hKsubintV
+  obtain ⟨f, hsuppfsubV, hfeq1onK, hfinicc⟩ :=
+    exists_tsupport_one_of_isOpen_isClosed isOpen_interior hIsCompact_closure_interior
+      (IsCompact.isClosed K.2) hKsubintV
   have hfHasCompactSupport : HasCompactSupport f :=
-    IsCompact.of_isClosed_subset hVcp (isClosed_tsupport f) (Set.Subset.trans hf.1 interior_subset)
--- use .nnrealPart for an element in X →ᵇ ℝ≥0
-  set fc := (⟨f, hfHasCompactSupport⟩ : C_c(X, ℝ)) with hfc
-  simp only at hfc
-  let fcb := (fc : X →ᵇ ℝ)
-  simp only at fcb
-  refine ⟨⟨(fc : X →ᵇ ℝ).nnrealPart, hfHasCompactSupport⟩, ?_, ?_⟩
-  simp only [mem_setOf_eq]
-  constructor
-  · exact IsCompact.of_isClosed_subset hV.1 (isClosed_tsupport f)
-      (_root_.subset_trans hf.1 interior_subset)
-  constructor
-  · intro x
-    exact (Set.mem_Icc.mp (hf.2.2 x)).1
-  · intro x hx
-    apply le_of_eq
-    rw [← ContinuousMap.one_apply x]
-    exact (hf.2.1 hx).symm
-  -- use (1 : X →ᵇ ℝ≥0)
-  -- intro x _
-  -- simp only [BoundedContinuousFunction.coe_one, Pi.one_apply]; rfl
+    IsCompact.of_isClosed_subset hVcp (isClosed_tsupport f)
+      (Set.Subset.trans hsuppfsubV interior_subset)
+  use nnrealPartCompactlySupported ⟨f, hfHasCompactSupport⟩
+  intro x hx
+  apply le_of_eq
+  simp only [nnrealPartCompactlySupported_apply, CompactlySupportedContinuousMap.coe_mk]
+  rw [← Real.toNNReal_one]
+  rw [Real.toNNReal_eq_toNNReal_iff (zero_le_one' ℝ) (hfinicc x).1]
+  exact (EqOn.symm hfeq1onK) hx
 
 /-- Riesz content λ (associated with a positive linear functional Λ) is
 monotone: if `K₁ ⊆ K₂` are compact subsets in X, then `λ(K₁) ≤ λ(K₂)`. -/
