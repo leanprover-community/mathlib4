@@ -307,14 +307,14 @@ theorem algEquivOfCompEqX_symm (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(a * X + b)`,
   with inverse `p(X) ↦ p(a⁻¹ * (X - b))`. -/
 @[simps!]
-def algEquivOfCMulXAddC {R} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
+def algEquivCMulXAddC {R} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (C a * X + C b) (C ⅟ a * (X - C b))
       (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
 
-theorem algEquivOfCMulXAddC_symm_eq {R} [CommRing R] (a b : R) [Invertible a] :
-    (algEquivOfCMulXAddC a b).symm =  algEquivOfCMulXAddC (⅟ a) (- ⅟ a * b) := by
+theorem algEquivCMulXAddC_symm_eq {R} [CommRing R] (a b : R) [Invertible a] :
+    (algEquivCMulXAddC a b).symm =  algEquivCMulXAddC (⅟ a) (- ⅟ a * b) := by
   ext p : 1
-  simp only [algEquivOfCMulXAddC_symm_apply, neg_mul, algEquivOfCMulXAddC_apply, map_neg, map_mul]
+  simp only [algEquivCMulXAddC_symm_apply, neg_mul, algEquivCMulXAddC_apply, map_neg, map_mul]
   congr
   simp [mul_add, sub_eq_add_neg]
 
@@ -593,7 +593,7 @@ lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_ad
 
 lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
     p ∣ q.comp (C a * X + C b) ↔ p.comp (C ⅟ a * (X - C b)) ∣ q := by
-  convert map_dvd_iff <| algEquivOfCMulXAddC a b using 2
+  convert map_dvd_iff <| algEquivCMulXAddC a b using 2
   simp [← comp_eq_aeval, comp_assoc, ← mul_assoc, ← C_mul]
 
 lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :

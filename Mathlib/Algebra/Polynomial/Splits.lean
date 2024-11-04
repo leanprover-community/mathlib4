@@ -160,9 +160,9 @@ theorem Splits.comp_of_map_degree_le_one {f : K[X]} {p : K[X]} (hd : (p.map i).d
       let _ := invertibleOfNonzero (leadingCoeff_ne_zero.mpr
           (ne_zero_of_degree_gt (n := ⊥) (by rw [hd]; decide)))
       rw [eq_X_add_C_of_degree_eq_one hd, dvd_comp_C_mul_X_add_C_iff _ _] at dvd
-      have := h (irr.map (algEquivOfCMulXAddC _ _).symm) dvd
+      have := h (irr.map (algEquivCMulXAddC _ _).symm) dvd
       rw [degree_eq_natDegree irr.ne_zero]
-      rwa [algEquivOfCMulXAddC_symm_apply, ← comp_eq_aeval,
+      rwa [algEquivCMulXAddC_symm_apply, ← comp_eq_aeval,
         degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
         natDegree_comp, natDegree_C_mul (invertibleInvOf.ne_zero),
         natDegree_X_sub_C, mul_one] at this
