@@ -178,15 +178,16 @@ lemma _root_.ContDiff.lieBracket_vectorField {m n : ℕ∞} (hV : ContDiff 𝕜 
     ContDiff 𝕜 m (lieBracket 𝕜 V W) :=
   contDiff_iff_contDiffAt.2 (fun _ ↦ hV.contDiffAt.lieBracket_vectorField hW.contDiffAt hmn)
 
-theorem lieBracketWithin_of_mem (st : t ∈ 𝓝[s] x) (hs : UniqueDiffWithinAt 𝕜 s x)
+theorem lieBracketWithin_of_mem_nhdsWithin (st : t ∈ 𝓝[s] x) (hs : UniqueDiffWithinAt 𝕜 s x)
     (hV : DifferentiableWithinAt 𝕜 V t x) (hW : DifferentiableWithinAt 𝕜 W t x) :
     lieBracketWithin 𝕜 V W s x = lieBracketWithin 𝕜 V W t x := by
-  simp [lieBracketWithin, fderivWithin_of_mem st hs hV, fderivWithin_of_mem st hs hW]
+  simp [lieBracketWithin, fderivWithin_of_mem_nhdsWithin st hs hV,
+    fderivWithin_of_mem_nhdsWithin st hs hW]
 
 theorem lieBracketWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (hV : DifferentiableWithinAt 𝕜 V t x) (hW : DifferentiableWithinAt 𝕜 W t x) :
     lieBracketWithin 𝕜 V W s x = lieBracketWithin 𝕜 V W t x :=
-  lieBracketWithin_of_mem (nhdsWithin_mono _ st self_mem_nhdsWithin) ht hV hW
+  lieBracketWithin_of_mem_nhdsWithin (nhdsWithin_mono _ st self_mem_nhdsWithin) ht hV hW
 
 theorem lieBracketWithin_inter (ht : t ∈ 𝓝 x) :
     lieBracketWithin 𝕜 V W (s ∩ t) x = lieBracketWithin 𝕜 V W s x := by
@@ -527,8 +528,8 @@ lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt
   have Af : DifferentiableWithinAt 𝕜 f s x := h'f.differentiableWithinAt one_le_two
   simp only [lieBracketWithin_eq, pullbackWithin_eq_of_fderivWithin_eq hMx, map_sub, AV, AW]
   rw [fderivWithin_clm_apply, fderivWithin_clm_apply]
-  · simp [fderivWithin.comp' x hW Af hst (hu x hx), ← hMx,
-      fderivWithin.comp' x hV Af hst (hu x hx), M_diff, hf.eq]
+  · simp [fderivWithin_comp' x hW Af hst (hu x hx), ← hMx,
+      fderivWithin_comp' x hV Af hst (hu x hx), M_diff, hf.eq]
   · exact hu x hx
   · exact M_symm_smooth.differentiableWithinAt le_rfl
   · exact hV.comp x Af hst

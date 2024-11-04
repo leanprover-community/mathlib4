@@ -494,24 +494,24 @@ protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_preimage_of_eq
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, but with full pullback. -/
-protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_of_mem
+protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_of_mem_nhdsWithin
     (hV : ContMDiffWithinAt I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x₀))
     (hf : ContMDiffAt I I' n f x₀) (hf' : (mfderiv I I' f x₀).IsInvertible) (hmn : m + 1 ≤ n)
     (hst : f ⁻¹' t ∈ 𝓝[s] x₀) :
     ContMDiffWithinAt I I.tangent m
       (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) s x₀ :=
-  (ContMDiffWithinAt.mpullback_vectorField_preimage hV hf hf' hmn).mono_of_mem hst
+  (ContMDiffWithinAt.mpullback_vectorField_preimage hV hf hf' hmn).mono_of_mem_nhdsWithin hst
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, but with full pullback. -/
-protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_of_mem_of_eq
+protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_of_mem_nhdsWithin_of_eq
     (hV : ContMDiffWithinAt I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t y₀)
     (hf : ContMDiffAt I I' n f x₀) (hf' : (mfderiv I I' f x₀).IsInvertible) (hmn : m + 1 ≤ n)
     (hst : f ⁻¹' t ∈ 𝓝[s] x₀) (hy₀ : y₀ = f x₀) :
     ContMDiffWithinAt I I.tangent m
       (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) s x₀ := by
   subst hy₀
-  exact ContMDiffWithinAt.mpullback_vectorField_of_mem hV hf hf' hmn hst
+  exact ContMDiffWithinAt.mpullback_vectorField_of_mem_nhdsWithin hV hf hf' hmn hst
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version on a set, but with full pullback -/
@@ -885,14 +885,14 @@ lemma mlieBracket_add_right
   simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hW hW₁ ⊢
   exact mlieBracketWithin_add_right hW hW₁ (uniqueMDiffWithinAt_univ _)
 
-theorem mlieBracketWithin_of_mem
+theorem mlieBracketWithin_of_mem_nhdsWithin
     (st : t ∈ 𝓝[s] x) (hs : UniqueMDiffWithinAt I s x)
     (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) t x)
     (hW : MDifferentiableWithinAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) t x) :
     mlieBracketWithin I V W s x = mlieBracketWithin I V W t x := by
   simp only [mlieBracketWithin_apply]
   congr 1
-  rw [lieBracketWithin_of_mem]
+  rw [lieBracketWithin_of_mem_nhdsWithin]
   · apply Filter.inter_mem
     · apply nhdsWithin_mono _ inter_subset_left
       exact (continuousAt_extChartAt_symm x).continuousWithinAt.preimage_mem_nhdsWithin''
@@ -906,7 +906,7 @@ theorem mlieBracketWithin_subset (st : s ⊆ t) (ht : UniqueMDiffWithinAt I s x)
     (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) t x)
     (hW : MDifferentiableWithinAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) t x) :
     mlieBracketWithin I V W s x = mlieBracketWithin I V W t x :=
-  mlieBracketWithin_of_mem (nhdsWithin_mono _ st self_mem_nhdsWithin) ht hV hW
+  mlieBracketWithin_of_mem_nhdsWithin (nhdsWithin_mono _ st self_mem_nhdsWithin) ht hV hW
 
 theorem mlieBracketWithin_eq_mlieBracket (hs : UniqueMDiffWithinAt I s x)
     (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x)
@@ -1331,7 +1331,7 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField {m n : �
   have C : ContMDiffWithinAt I I.tangent m' (fun y ↦ (mpullback I 𝓘(𝕜, E) (extChartAt I x)
       ((mlieBracketWithin 𝓘(𝕜, E) U' V'
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s))) y : TangentBundle I M)) s x :=
-    ContMDiffWithinAt.mpullback_vectorField_of_mem_of_eq B contMDiffAt_extChartAt
+    ContMDiffWithinAt.mpullback_vectorField_of_mem_nhdsWithin_of_eq B contMDiffAt_extChartAt
       (isInvertible_mfderiv_extChartAt (mem_extChartAt_source x)) le_top pre_mem rfl
   apply C.congr_of_eventuallyEq_of_mem _ hx
   filter_upwards [eventually_eventually_nhdsWithin.2 pre_mem,
