@@ -486,9 +486,19 @@ theorem IsAlgebraic.exists_smul_eq_mul
   obtain ⟨r, hr, s, h⟩ := IsAlgebraic.exists_nonzero_dvd (R := R) (S := S) hRb hb
   exact ⟨s * a, r, hr, by rw [Algebra.smul_def, h, mul_assoc]⟩
 
+variable (R)
+
+/-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
+if `b` is algebraic over `R`. -/
+theorem Algebra.IsAlgebraic.exists_smul_eq_mul [IsDomain S] [Algebra.IsAlgebraic R S]
+    (a : S) {b : S} (hb : b ≠ 0) :
+    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c := by
+  exact _root_.IsAlgebraic.exists_smul_eq_mul a (Algebra.IsAlgebraic.isAlgebraic b)
+    (mem_nonZeroDivisors_iff_ne_zero.mpr hb)
+
 end
 
-variable {R S L : Type*} [CommRing R] [IsDomain R] [CommRing S] [CommRing L] [IsDomain L]
+variable {R S : Type*} [CommRing R] [IsDomain R] [CommRing S]
 
 theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     (inj : ∀ x, algebraMap R S x = 0 → x = 0) :
@@ -500,18 +510,6 @@ theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     ⟨p.integralNormalization, monic_integralNormalization p_ne_zero,
       integralNormalization_aeval_eq_zero px inj⟩
   exact ⟨⟨_, x_integral⟩, a, a_ne_zero, rfl⟩
-
-variable (R L)
-
-/-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
-if `S` is the integral closure of `R` in an algebraic extension `L` of `R`. -/
-theorem IsIntegralClosure.exists_smul_eq_mul [Algebra R S] [Algebra S L] [Algebra R L]
-    [IsScalarTower R S L] [IsIntegralClosure S R L] (a : S) {b : S} (hb : b ≠ 0) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c := by
-  refine (IsIntegralClosure.isIntegral R L b).isAlgebraic.exists_smul_eq_mul a ?_
-  have := NoZeroSMulDivisors.of_algebraMap_injective (IsIntegralClosure.algebraMap_injective S R L)
-  simp only [mem_nonZeroDivisors_iff, ← NoZeroSMulDivisors.algebraMap_eq_zero_iff S L]
-  simp [hb]
 
 section Field
 
