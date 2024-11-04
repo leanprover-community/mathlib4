@@ -90,6 +90,13 @@ theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r �
     erw [hr.unit.inv_val]
     rw [one_smul]
 
+/-- We can regard `coe_iSup_of_chain` as the statement that `(↑) : (Submodule R M) → Set M` is
+Scott continuous for the ω-complete partial order induced by the complete lattice structures. -/
+theorem coe_scott_continuous :
+    OmegaCompletePartialOrder.ωScottContinuous ((↑) : Submodule R M → Set M) :=
+  OmegaCompletePartialOrder.ωScottContinuous.of_monotone_map_ωSup
+    ⟨SetLike.coe_mono, coe_iSup_of_chain⟩
+
 theorem disjoint_span_singleton {K E : Type*} [DivisionRing K] [AddCommGroup E] [Module K E]
     {s : Submodule K E} {x : E} : Disjoint s (K ∙ x) ↔ x ∈ s → x = 0 := by
   refine disjoint_def.trans ⟨fun H hx => H x hx <| subset_span <| mem_singleton x, ?_⟩
