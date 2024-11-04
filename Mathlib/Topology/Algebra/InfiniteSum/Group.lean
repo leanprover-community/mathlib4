@@ -126,14 +126,18 @@ theorem hasProd_ite_div_hasProd [DecidableEq β] (hf : HasProd f a) (b : β) :
     rw [Function.update_apply]
   · rw [div_mul_eq_mul_div, one_mul]
 
-/-- A more general version of `Multipliable.congr`. -/
-@[to_additive "A more general version of `Summable.congr`"]
-theorem Multipliable.congr_cofinite (hf : Multipliable f) (hfg :f =ᶠ[cofinite] g) :
+/-- A more general version of `Multipliable.congr`, allowing the functions to
+disagree on a finite set. -/
+@[to_additive "A more general version of `Summable.congr`, allowing the functions to
+disagree on a finite set."]
+theorem Multipliable.congr_cofinite (hf : Multipliable f) (hfg : f =ᶠ[cofinite] g) :
     Multipliable g :=
   hfg.multipliable_compl_iff.mp <| (hfg.multipliable_compl_iff.mpr hf).congr (by simp)
 
-/-- A more general version of `multipliable_congr`. -/
-@[to_additive "A more general version of `summable_congr`"]
+/-- A more general version of `multipliable_congr`, allowing the functions to
+disagree on a finite set. -/
+@[to_additive "A more general version of `summable_congr`, allowing the functions to
+disagree on a finite set."]
 theorem multipliable_congr_cofinite (hfg : f =ᶠ[cofinite] g) :
     Multipliable f ↔ Multipliable g :=
   ⟨fun h ↦ h.congr_cofinite hfg, fun h ↦ h.congr_cofinite (hfg.mono fun _ h' ↦ h'.symm)⟩
