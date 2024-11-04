@@ -15,7 +15,7 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 
 -/
 
-open Set ChartedSpace
+open Set ChartedSpace SmoothManifoldWithCorners
 open scoped Topology Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -23,15 +23,27 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  -- declare normed spaces `E'`, `F`, `F'`, `F₁`, `F₂`, `F₃`, `F₄`.
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  -- declare a smooth manifold `M'` over the pair `(E', H')`.
+  {E' : Type*}
+  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  [SmoothManifoldWithCorners I' M']
+  -- declare a smooth manifold `N` over the pair `(F, G)`.
+  {F : Type*}
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
+  [SmoothManifoldWithCorners J N]
+  -- declare a smooth manifold `N'` over the pair `(F', G')`.
+  {F' : Type*}
+  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
+  {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
+  [SmoothManifoldWithCorners J' N']
+  -- F₁, F₂, F₃, F₄ are normed spaces
   {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
   [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
   [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
-  {s : Set M} {x : M} {n : ℕ∞}
+  {f f₁ : M → M'} {s t : Set M} {x : M} {m n : ℕ∞}
 
 section Module
 
@@ -176,8 +188,6 @@ theorem ContMDiff.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L
     (hg : ContMDiff I 𝓘(𝕜, F₁ →L[𝕜] F₃) n g) (hf : ContMDiff I 𝓘(𝕜, F₂ →L[𝕜] F₁) n f) :
     ContMDiff I 𝓘(𝕜, F₂ →L[𝕜] F₃) n fun x => (g x).comp (f x) := fun x => (hg x).clm_comp (hf x)
 
-/-- Applying a linear map to a vector is smooth within a set. Version in vector spaces. For a
-version in nontrivial vector bundles, see `ContMDiffWithinAt.clm_apply_of_inCoordinates`. -/
 theorem ContMDiffWithinAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {s : Set M} {x : M}
     (hg : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n g s x)
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁) n f s x) :
@@ -187,8 +197,6 @@ theorem ContMDiffWithinAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → 
     (by apply ContDiff.contDiffAt; exact contDiff_fst.clm_apply contDiff_snd) (hg.prod_mk_space hf)
     (by simp_rw [preimage_univ, subset_univ])
 
-/-- Applying a linear map to a vector is smooth. Version in vector spaces. For a
-version in nontrivial vector bundles, see `ContMDiffAt.clm_apply_of_inCoordinates`. -/
 nonrec theorem ContMDiffAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {x : M}
     (hg : ContMDiffAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n g x) (hf : ContMDiffAt I 𝓘(𝕜, F₁) n f x) :
     ContMDiffAt I 𝓘(𝕜, F₂) n (fun x => g x (f x)) x :=
