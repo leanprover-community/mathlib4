@@ -138,7 +138,9 @@ jobs:
                 currMax=$0
                 max=$3+0
             }' |
-            awk -F: '{
+            awk -F: 'BEGIN{printf("|File|Import increase|New imports|Line|\n|:-|:-:|:-|-:|\n")} {
               gsub(/\.\//, "")
-              printf("%s: %s %s on line %s\n", $2, $5, $6, $3)
+              gsub(/ *Imports increased by */, "")
+              gsub(/ *New imports */, "")
+              printf("| %s | %s | %s | %s |\n", $2, $5, $6, $3)
             }'
