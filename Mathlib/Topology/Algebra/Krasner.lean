@@ -11,6 +11,7 @@ import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.IntermediateField
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Analysis.Normed.Algebra.Norm
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.IntermediateField.Algebraic
@@ -92,14 +93,64 @@ def uniqueNormExtension (K L : Type*) [NormedCommRing K] [Field L] [Algebra K L]
     [Algebra.IsAlgebraic K L] :=
   ∃! (_ : NormedField L), ∀ (x : K), ‖x‖ = ‖algebraMap K L x‖
 
-theorem IsConjRoot.norm_eq_of_uniqueNormExtension (K L) [NormedField K] [NormedField L]
+-- def uniqueNormExtension' (K L : Type*) [NormedCommRing K] [Field L] [Algebra K L]
+--     [Algebra.IsAlgebraic K L] :=
+--   Singleton (MulAlgebraNorm K L)
+
+-- variable (K L) [NormedField K] [Nm_L : NormedField L]
+--     [Algebra K L]
+-- #check RingHomClass.toNonUnitalRingHomClass
+-- #synth RingEquivClass (L ≃ₐ[K] L) L L
+-- #synth NonUnitalRingHomClass (L ≃ₐ[K] L) L L
+theorem IsConjRoot.norm_eq_of_uniqueNormExtension (K L) [NormedField K] [Nm_L : NormedField L]
     [Algebra K L]
     [Algebra.IsAlgebraic K L] (x y: L) (uniq : uniqueNormExtension K L)
-    (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖)
+    (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) (sp : (minpoly K x).Splits (algebraMap K L))
     (h : IsConjRoot K x y) : ‖x‖ = ‖y‖ := by
-  obtain ⟨_, _, heq⟩ := uniq
+  obtain ⟨σ, hσ⟩ := IsConjRoot.exists_algEquiv_of_minpoly_split h sp
+  symm
   calc
-    ‖x‖ = 
+    ‖y‖ = (NormedField.induced L L σ σ.injective).norm y := by
+      apply congrArg (a₁ := Nm_L) (a₂ := (NormedField.induced L L σ σ.injective))
+      exact uniq.unique extd fun _ => congrArg Nm_L.norm (σ.commutes _).symm ▸ extd _
+    _ = ‖x‖ := hσ ▸ rfl
+
+-- #check Algebra.smul_def
+-- #synth UniformContinuousConstSMul K L
+-- instance uniformContinuousConstSMul:
+--   UniformContinuousConstSMul K L:= uniformContinuousConstSMul_of_continuousConstSMul K L
+
+-- #synth UniformContinuousConstSMul K L
+
+-- theorem boundedSMul_of_extd (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) : BoundedSMul K L :=
+--   BoundedSMul.of_norm_smul_le
+--     (fun r x => Algebra.smul_def r x ▸ extd r ▸ NonUnitalSeminormedRing.norm_mul _ x)
+
+-- def NormedField.mulAlgebraNorm (K L : Type*) [NormedField K] [NormedField L] [Algebra K L]
+--     (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) : MulAlgebraNorm K L where
+--       toFun := (‖·‖)
+--       map_zero' := norm_zero
+--       add_le' := norm_add_le
+--       neg' := norm_neg
+--       map_one' := norm_one
+--       map_mul' := norm_mul
+--       eq_zero_of_map_eq_zero' _ := norm_eq_zero.mp
+--       smul' := norm_smul
+
+-- theorem IsConjRoot.norm_eq_of_uniqueNormExtension (K L) [NormedField K]
+--     [Nm_L : MulAlgebraNorm K L]
+--     [Algebra K L]
+--     [Algebra.IsAlgebraic K L] (x y: L) (uniq : uniqueNormExtension' K L)
+--     (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) (sp : (minpoly K x).Splits (algebraMap K L))
+--     (h : IsConjRoot K x y) : ‖x‖ = ‖y‖ := by
+--   obtain ⟨σ, hσ⟩ := IsConjRoot.exists_algEquiv_of_minpoly_split h sp
+--   symm
+--   calc
+--     ‖y‖ = (NormedField.induced L L σ σ.injective).norm y := by
+--       apply congrArg (a₁ := Nm_L) (a₂ := (NormedField.induced L L σ σ.injective))
+--       exact uniq.unique extd fun _ => congrArg Nm_L.norm (σ.commutes _).symm ▸ extd _
+--     _ = ‖x‖ := hσ ▸ rfl
+
 
 
 open IntermediateField Valued
@@ -143,11 +194,9 @@ theorem of_completeSpace {K L : Type*} [Nm_K : NontriviallyNormedField K] [Compl
   by_contra hz
   have : z ∈ K⟮y⟯ ↔ z ∈ (⊥ : Subalgebra M L) := by simp [Algebra.mem_bot]
   rw [this.not] at hz
-  -- need + algebra map split and split tower.
   obtain ⟨z', hne, h1⟩ := (not_mem_iff_exists_ne_and_isConjRoot zsep
       (minpoly_sub_algebraMap_splits ⟨y, hy⟩ (IsIntegral.minpoly_splits_tower_top
         xsep.isIntegral sp))).mp hz
-  -- this is where the separablity is used.
   simp only [ne_eq, Subtype.mk.injEq] at hne
 
   -- have eq_spnM : (norm : M → ℝ) = spectralNorm K M :=
@@ -189,7 +238,8 @@ theorem of_completeSpace {K L : Type*} [Nm_K : NontriviallyNormedField K] [Compl
       _ ≤ max ‖z‖ ‖z'‖ := by
         simpa only [norm_neg, sub_eq_add_neg] using (is_na.norm_extension extd z (- z'))
       _ ≤ ‖x - y‖ := by
-        rw [h1.norm_eq_of_uniqueNormExtension M L z z' uniqM extdM]
+        rw [h1.norm_eq_of_uniqueNormExtension M L z z' uniqM extdM
+              (minpoly_sub_algebraMap_splits ⟨y, hy⟩ (xsep.isIntegral.minpoly_splits_tower_top sp))]
         simp only [max_self, le_refl]
       _ < ‖x - (z' + y)‖ := by
         apply kr (z' + y)
