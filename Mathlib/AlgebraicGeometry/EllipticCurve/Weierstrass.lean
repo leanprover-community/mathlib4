@@ -417,7 +417,9 @@ variable [W.IsElliptic]
 
 lemma isUnit_Δ : IsUnit W.Δ := IsElliptic.isUnit
 
-/-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`. -/
+/-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`.
+Note that to prove two equal elliptic curves have the same `Δ'`, you need to use `simp_rw`,
+as `rw` cannot transfer instance `WeierstrassCurve.IsElliptic` automatically. -/
 noncomputable def Δ' : Rˣ := W.isUnit_Δ.unit
 
 /-- The discriminant `Δ'` of an elliptic curve is equal to the
@@ -425,7 +427,9 @@ discriminant `Δ` of it as a Weierstrass curve. -/
 @[simp]
 lemma coe_Δ' : W.Δ' = W.Δ := rfl
 
-/-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`. -/
+/-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`.
+Note that to prove two equal elliptic curves have the same `j`, you need to use `simp_rw`,
+as `rw` cannot transfer instance `WeierstrassCurve.IsElliptic` automatically. -/
 noncomputable def j : R :=
   W.Δ'⁻¹ * W.c₄ ^ 3
 
