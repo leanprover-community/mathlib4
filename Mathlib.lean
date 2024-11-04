@@ -4001,6 +4001,8 @@ import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.Adjoin.Field
 import Mathlib.RingTheory.Adjoin.PowerBasis
 import Mathlib.RingTheory.Adjoin.Tower
+import Mathlib.RingTheory.AdjoinRoot.Basic
+import Mathlib.RingTheory.AdjoinRoot.Defs
 import Mathlib.RingTheory.AdjoinRoot.PowerBasis
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.RingTheory.Algebraic
