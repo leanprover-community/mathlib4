@@ -604,6 +604,28 @@ def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
     (evalEquiv R M).symm.dualMap = Dual.eval R (Dual R M) := by
   ext; simp
 
+@[simp] lemma Dual.eval_comp_comp_evalEquiv_eq
+    {M' : Type*} [AddCommGroup M'] [Module R M'] {f : M →ₗ[R] M'} :
+    Dual.eval R M' ∘ₗ f ∘ₗ (evalEquiv R M).symm = f.dualMap.dualMap := by
+  ext x g
+  simp only [dualMap_apply, coe_comp, LinearEquiv.coe_coe, Function.comp_apply, Dual.eval_apply]
+  rw [← apply_evalEquiv_symm_apply, dualMap_apply]
+
+lemma dualMap_dualMap_eq_iff_of_injective
+    {M' : Type*} [AddCommGroup M'] [Module R M'] {f g : M →ₗ[R] M'}
+    (h : Injective (Dual.eval R M')) :
+    f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g := by
+  simp only [← Dual.eval_comp_comp_evalEquiv_eq]
+  refine ⟨ fun hfg => ?_, fun a ↦ congrArg (Dual.eval R M').comp
+    (congrFun (congrArg LinearMap.comp a) (evalEquiv R M).symm.toLinearMap) ⟩
+  rw [propext (cancel_left h), LinearEquiv.eq_comp_toLinearMap_iff] at hfg
+  exact hfg
+
+@[simp] lemma dualMap_dualMap_eq_iff
+    {M' : Type*} [AddCommGroup M'] [Module R M'] [IsReflexive R M'] {f g : M →ₗ[R] M'} :
+    f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g :=
+  dualMap_dualMap_eq_iff_of_injective _ _ (bijective_dual_eval R M').injective
+
 /-- The dual of a reflexive module is reflexive. -/
 instance Dual.instIsReflecive : IsReflexive R (Dual R M) :=
   ⟨by simpa only [← symm_dualMap_evalEquiv] using (evalEquiv R M).dualMap.symm.bijective⟩
@@ -689,6 +711,20 @@ theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p))
   obtain ⟨x, hx⟩ : ∃ x : M, x ∉ p := by rw [lt_top_iff_ne_top] at hp; contrapose! hp; ext; simp [hp]
   obtain ⟨f, hf, hf'⟩ := p.exists_dual_map_eq_bot_of_nmem hx hp'
   exact ⟨f, by aesop, hf'⟩
+
+/-- Consider a reflexive module and a set `s` of linear forms. If for any `z ≠ 0` there exists
+`f ∈ s` such that `f z ≠ 0`, then `s` spans the whole dual space. -/
+theorem span_eq_top_of_ne_zero [IsReflexive R M]
+    {s : Set (M →ₗ[R] R)} [Free R ((M →ₗ[R] R) ⧸ (span R s))]
+    (h : ∀ z ≠ 0, ∃ f ∈ s, f z ≠ 0) : span R s = ⊤ := by
+  by_contra! hn
+  obtain ⟨φ, φne, hφ⟩ := exists_dual_map_eq_bot_of_lt_top hn.lt_top inferInstance
+  let φs := (evalEquiv R M).symm φ
+  have this f (hf : f ∈ s) : f φs = 0 := by
+    rw [← mem_bot R, ← hφ, mem_map]
+    exact ⟨f, subset_span hf, (apply_evalEquiv_symm_apply R M f φ).symm⟩
+  obtain ⟨x, xs, hx⟩ := h φs (by simp [φne, φs])
+  exact hx <| this x xs
 
 variable {ι 𝕜 E : Type*} [Field 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
@@ -1228,7 +1264,7 @@ instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
   coe φ := φ.val
   coe_injective' φ ψ h := by
     ext
-    simp only [Function.funext_iff] at h
+    simp only [funext_iff] at h
     exact h _
 
 @[simp]

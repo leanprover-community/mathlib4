@@ -194,7 +194,7 @@ theorem ext (f g : F) (h : ∀ x : α, f x = g x) : f = g :=
   DFunLike.coe_injective' (funext h)
 
 theorem ext_iff {f g : F} : f = g ↔ ∀ x, f x = g x :=
-  coe_fn_eq.symm.trans Function.funext_iff
+  coe_fn_eq.symm.trans funext_iff
 
 protected theorem congr_fun {f g : F} (h₁ : f = g) (x : α) : f x = g x :=
   congr_fun (congr_arg _ h₁) x

@@ -3,12 +3,13 @@ Copyright (c) 2021 Alex Kontorovich, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Homeomorph
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Support
 import Mathlib.Algebra.Module.ULift
+import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Bases
+import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Support
 
 /-!
 # Monoid actions continuous in the second variable
@@ -142,11 +143,14 @@ theorem Inseparable.const_smul {x y : α} (h : Inseparable x y) (c : M) :
   h.map (continuous_const_smul c)
 
 @[to_additive]
-theorem Inducing.continuousConstSMul {N β : Type*} [SMul N β] [TopologicalSpace β]
-    {g : β → α} (hg : Inducing g) (f : N → M) (hf : ∀ {c : N} {x : β}, g (c • x) = f c • g x) :
+theorem IsInducing.continuousConstSMul {N β : Type*} [SMul N β] [TopologicalSpace β]
+    {g : β → α} (hg : IsInducing g) (f : N → M) (hf : ∀ {c : N} {x : β}, g (c • x) = f c • g x) :
     ContinuousConstSMul N β where
   continuous_const_smul c := by
     simpa only [Function.comp_def, hf, hg.continuous_iff] using hg.continuous.const_smul (f c)
+
+@[deprecated (since := "2024-10-28")]
+alias Inducing.continuousConstSMul := IsInducing.continuousConstSMul
 
 end SMul
 
@@ -258,7 +262,7 @@ theorem subset_interior_smul_right {s : Set G} {t : Set α} : s • interior t �
 
 @[to_additive (attr := simp)]
 theorem smul_mem_nhds_smul_iff {t : Set α} (g : G) {a : α} : g • t ∈ 𝓝 (g • a) ↔ t ∈ 𝓝 a :=
-  (Homeomorph.smul g).openEmbedding.image_mem_nhds
+  (Homeomorph.smul g).isOpenEmbedding.image_mem_nhds
 
 @[to_additive] alias ⟨_, smul_mem_nhds_smul⟩ := smul_mem_nhds_smul_iff
 
@@ -454,7 +458,7 @@ theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
 @[to_additive]
 theorem MulAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
     IsOpenQuotientMap (Quotient.mk (MulAction.orbitRel Γ T)) :=
-  ⟨surjective_quot_mk _, continuous_quot_mk, isOpenMap_quotient_mk'_mul⟩
+  ⟨Quot.mk_surjective, continuous_quot_mk, isOpenMap_quotient_mk'_mul⟩
 
 /-- The quotient by a discontinuous group action of a locally compact t2 space is t2. -/
 @[to_additive "The quotient by a discontinuous group action of a locally compact t2
