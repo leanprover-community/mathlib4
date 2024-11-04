@@ -702,20 +702,19 @@ section ComapAnyMeasure
 theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasurableSet s μ)
     (ht : MeasurableSet t) : NullMeasurableSet ((↑) '' t) μ := by
   rw [Subtype.instMeasurableSpace, comap_eq_generateFrom] at ht
-  refine
-    generateFrom_induction (p := fun t : Set s => NullMeasurableSet ((↑) '' t) μ)
-      { t : Set s | ∃ s' : Set α, MeasurableSet s' ∧ (↑) ⁻¹' s' = t } ?_ ?_ ?_ ?_ ht
-  · rintro t' ⟨s', hs', rfl⟩
+  induction t, ht using generateFrom_induction with
+  | hC t' ht' =>
+    obtain ⟨s', hs', rfl⟩ := ht'
     rw [Subtype.image_preimage_coe]
     exact hs.inter (hs'.nullMeasurableSet)
-  · simp only [image_empty, nullMeasurableSet_empty]
-  · intro t'
+  | empty => simp only [image_empty, nullMeasurableSet_empty]
+  | compl t' _ ht' =>
     simp only [← range_diff_image Subtype.coe_injective, Subtype.range_coe_subtype, setOf_mem_eq]
-    exact hs.diff
-  · intro f
+    exact hs.diff ht'
+  | iUnion f _ hf =>
     dsimp only []
     rw [image_iUnion]
-    exact NullMeasurableSet.iUnion
+    exact .iUnion hf
 
 theorem NullMeasurableSet.subtype_coe {t : Set s} (hs : NullMeasurableSet s μ)
     (ht : NullMeasurableSet t (μ.comap Subtype.val)) : NullMeasurableSet (((↑) : s → α) '' t) μ :=

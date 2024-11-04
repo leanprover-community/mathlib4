@@ -172,7 +172,7 @@ theorem valuation_eq_iff (x y : K) : A.valuation x = A.valuation y ↔ ∃ a : A
 theorem valuation_le_iff (x y : K) : A.valuation x ≤ A.valuation y ↔ ∃ a : A, (a : K) * y = x :=
   Iff.rfl
 
-theorem valuation_surjective : Function.Surjective A.valuation := surjective_quot_mk _
+theorem valuation_surjective : Function.Surjective A.valuation := Quot.mk_surjective
 
 theorem valuation_unit (a : Aˣ) : A.valuation a = 1 := by
   rw [← A.valuation.map_one, valuation_eq_iff]; use a; simp

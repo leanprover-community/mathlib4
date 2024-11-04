@@ -3,6 +3,7 @@ Copyright (c) 2024 Jineon Baek, Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
+import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
 /-!
@@ -23,6 +24,16 @@ This is different from the radical of an ideal.
 - `radical_pow`: `radical (a ^ n) = radical a` for any `n ≥ 1`
 - `radical_of_prime`: Radical of a prime element is equal to its normalization
 - `radical_pow_of_prime`: Radical of a power of prime element is equal to its normalization
+
+### For unique factorization domains
+
+- `radical_mul`: Radical is multiplicative for coprime elements.
+
+### For Euclidean domains
+
+- `EuclideanDomain.divRadical`: For an element `a` in an Euclidean domain, `a / radical a`.
+- `EuclideanDomain.divRadical_mul`: `divRadical` of a product is the product of `divRadical`s.
+- `IsCoprime.divRadical`: `divRadical` of coprime elements are coprime.
 
 ## TODO
 
@@ -127,7 +138,8 @@ variable {R : Type*} [CommRing R] [IsDomain R] [NormalizationMonoid R]
 
 /-- Coprime elements have disjoint prime factors (as multisets). -/
 theorem disjoint_normalizedFactors {a b : R} (hc : IsCoprime a b) :
-    (normalizedFactors a).Disjoint (normalizedFactors b) := by
+    Disjoint (normalizedFactors a) (normalizedFactors b) := by
+  rw [Multiset.disjoint_left]
   intro x hxa hxb
   have x_dvd_a := dvd_of_mem_normalizedFactors hxa
   have x_dvd_b := dvd_of_mem_normalizedFactors hxb
@@ -153,7 +165,7 @@ theorem radical_neg_one : radical (-1 : R) = 1 :=
 
 /-- Radical is multiplicative for coprime elements. -/
 theorem radical_mul {a b : R} (hc : IsCoprime a b) :
-    radical (a * b) = (radical a) * (radical b) := by
+    radical (a * b) = radical a * radical b := by
   by_cases ha : a = 0
   · subst ha; rw [isCoprime_zero_left] at hc
     simp only [zero_mul, radical_zero_eq, one_mul, radical_unit_eq_one hc]
@@ -168,3 +180,49 @@ theorem radical_neg {a : R} : radical (-a) = radical a :=
   radical_eq_of_associated Associated.rfl.neg_left
 
 end UniqueFactorizationDomain
+
+open UniqueFactorizationDomain
+namespace EuclideanDomain
+
+variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactorizationMonoid E]
+
+/-- Division of an element by its radical in an Euclidean domain. -/
+def divRadical (a : E) : E := a / radical a
+
+theorem radical_mul_divRadical (a : E) : radical a * divRadical a = a := by
+  rw [divRadical]
+  rw [← EuclideanDomain.mul_div_assoc]
+  ·refine mul_div_cancel_left₀ _ (radical_ne_zero a)
+  exact radical_dvd_self a
+
+theorem divRadical_mul_radical (a : E) : divRadical a * radical a = a := by
+  rw [mul_comm]
+  exact radical_mul_divRadical a
+
+theorem divRadical_ne_zero {a : E} (ha : a ≠ 0) : divRadical a ≠ 0 := by
+  rw [← radical_mul_divRadical a] at ha
+  exact right_ne_zero_of_mul ha
+
+theorem divRadical_isUnit {u : E} (hu : IsUnit u) : IsUnit (divRadical u) := by
+  rwa [divRadical, radical_unit_eq_one hu, EuclideanDomain.div_one]
+
+theorem eq_divRadical {a x : E} (h : radical a * x = a) : x = divRadical a := by
+  apply EuclideanDomain.eq_div_of_mul_eq_left (radical_ne_zero a)
+  rwa [mul_comm]
+
+theorem divRadical_mul {a b : E} (hab : IsCoprime a b) :
+    divRadical (a * b) = divRadical a * divRadical b := by
+  symm; apply eq_divRadical
+  rw [radical_mul hab]
+  rw [mul_mul_mul_comm, radical_mul_divRadical, radical_mul_divRadical]
+
+theorem divRadical_dvd_self (a : E) : divRadical a ∣ a := by
+  exact Dvd.intro (radical a) (divRadical_mul_radical a)
+
+theorem _root_.IsCoprime.divRadical {a b : E} (h : IsCoprime a b) :
+    IsCoprime (divRadical a) (divRadical b) := by
+  rw [← radical_mul_divRadical a] at h
+  rw [← radical_mul_divRadical b] at h
+  exact h.of_mul_left_right.of_mul_right_right
+
+end EuclideanDomain
