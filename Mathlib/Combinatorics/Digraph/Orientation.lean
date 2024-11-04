@@ -10,9 +10,8 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 
 # Graph Orientation
 
-This module introduces conversion operations between `Digraph`s and `SimpleGraph`s, by either
-forgetting the edge orientations of `Digraph`, or adding such orientations on a `SimpleGraph`. It
-also introduces oriented graphs.
+This module introduces conversion operations between `Digraph`s and `SimpleGraph`s, by forgetting
+the edge orientations of `Digraph`.
 
 ## Main Definitions
 
@@ -20,15 +19,13 @@ also introduces oriented graphs.
   undirected edge if either orientation exists in the digraph.
 - `Digraph.toSimpleGraphStrict`: Converts a `Digraph` to a `SimpleGraph` by creating an undirected
   edge only if both orientations exist in the digraph.
-- `Digraph.IsOriented`: A predicate that determines whether a digraph is oriented (no self-loops and
-  no bidirectional edges).
-- `SimpleGraph.toDigraph`: Converts a `SimpleGraph` to a `Digraph` by creating edges in both
-  directions for each undirected edge.
 
 ## TODO
 
 - Show that there is an isomorphism between loopless complete digraphs and oriented graphs.
 - Define more ways to orient a `SimpleGraph`.
+- Provide lemmas on how `toSimpleGraphInclusive` and `toSimpleGraphStrict` relate to other lattice
+  structures on `SimpleGraph`s and `Digraph`s.
 
 ## Tags
 
@@ -74,15 +71,19 @@ lemma toSimpleGraphInclusive_mono : Monotone (toSimpleGraphInclusive : _ → Sim
 lemma toSimpleGraphStrict_mono : Monotone (toSimpleGraphStrict : _ → SimpleGraph V) :=
   fun _ _ h₁ _ _ h₂ ↦ And.intro h₂.1 <| And.intro (h₁ h₂.2.1) (h₁ h₂.2.2)
 
+@[simp]
 lemma toSimpleGraphInclusive_top : (⊤ : Digraph V).toSimpleGraphInclusive = ⊤ := by
   ext; exact ⟨And.left, fun h ↦ ⟨h.ne, Or.inl trivial⟩⟩
 
+@[simp]
 lemma toSimpleGraphStrict_top : (⊤ : Digraph V).toSimpleGraphStrict = ⊤ := by
   ext; exact ⟨And.left, fun h ↦ ⟨h.ne, trivial, trivial⟩⟩
 
+@[simp]
 lemma toSimpleGraphInclusive_bot : (⊥ : Digraph V).toSimpleGraphInclusive = ⊥ := by
   ext; exact ⟨fun ⟨_, h⟩ ↦ by tauto, False.elim⟩
 
+@[simp]
 lemma toSimpleGraphStrict_bot : (⊥ : Digraph V).toSimpleGraphStrict = ⊥ := by
   ext; exact ⟨fun ⟨_, h⟩ ↦ by tauto, False.elim⟩
 
