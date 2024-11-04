@@ -29,13 +29,13 @@ example : True := .intro
 example : True := .intro
 
 /-- error: <input>:1:3: Stacks tags must be exactly 4 characters -/
-#guard_exceptions in Mathlib.Stacks.stacksTagFn "A05"
+#guard_msgs in #parse Mathlib.Stacks.stacksTagFn => "A05"
 
 /-- error: <input>:1:4: Stacks tags must consist only of digits and uppercase letters. -/
-#guard_exceptions in Mathlib.Stacks.stacksTagFn "A05b"
+#guard_msgs in #parse Mathlib.Stacks.stacksTagFn => "A05b"
 
 /-- info: 0BD5 -/
-#guard_exceptions in Mathlib.Stacks.stacksTagFn "0BD5"
+#guard_msgs in #parse Mathlib.Stacks.stacksTagFn => "0BD5"
 
 /--
 info:

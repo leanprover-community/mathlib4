@@ -14,7 +14,10 @@ namespace Mathlib.GuardExceptions
 
 open Lean Parser Elab Command
 /-- `captureException env s input` uses the given `Environment` `env` to parse the `String` `input`
-using the `ParserFn` `s`. -/
+using the `ParserFn` `s`.
+
+This is a variation of `Lean.Parser.runParserCategory`.
+-/
 def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
   let ictx := mkInputContext input "<input>"
   let s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
@@ -25,28 +28,28 @@ def captureException (env : Environment) (s : ParserFn) (input : String) : Excep
   else
     .error ((s.mkError "end of input").toErrorMsg ictx)
 
-/-- `#guard_exceptions in` is based on `#guard_msgs in`, except that it captures parsing exceptions.
+/-- `#parse parserFnId => str` allows to capture parsing exceptions.
+`parserFnId` is the identifier of a `parserFn` and `str` is the string that `parserFn` will parse.
 
-Typing `#guard_exceptions in parserFn input` uses `parserFn` to parse `input` and reports
-either an error or
+If the parse is successful, then the output is logged;
+if the parse is successful, then the output is captured in an exception.
 
-You can use it as follows
+In either case, `#guard_msgs` can then be used to capture the resulting parsing errors.
+
+For instance, `#parse` can be used as follows
 ```lean
 /-- error: <input>:1:3: Stacks tags must be exactly 4 characters -/
-#guard_exceptions in Mathlib.Stacks.stacksTagFn "A05"
+#guard_msgs in #parse Mathlib.Stacks.stacksTagFn => "A05"
 ```
 -/
-syntax (name := guardExceptionsCmd)
-  (docComment)? "#guard_exceptions" (ppSpace guardMsgsSpec)? " in" ppLine
-  ident ppSpace str : command
+syntax (name := parseCmd) "#parse " ident " => " str : command
 
-@[inherit_doc guardExceptionsCmd]
+@[inherit_doc parseCmd]
 elab_rules : command
-  | `(command| $[$d:docComment]? #guard_exceptions $[$spec]? in $parser $str) => do
+  | `(command| #parse $parserFnId => $str) => do
     elabCommand <| ← `(command|
-      $[$d:docComment]? #guard_msgs $[$spec]? in
       run_cmd do
-        let exc ← Lean.ofExcept <| captureException (← getEnv) $parser $str
+        let exc ← Lean.ofExcept <| captureException (← getEnv) $parserFnId $str
         logInfo $str)
 
 end Mathlib.GuardExceptions
