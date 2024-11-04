@@ -120,7 +120,7 @@ proof_wanted iSup_mul (f : ι → ℕ∞) (a : ℕ∞) : (⨆ i, f i) * a = ⨆ 
 proof_wanted mul_sSup : a * sSup s = ⨆ b ∈ s, a * b
 proof_wanted sSup_mul : sSup s * a = ⨆ b ∈ s, b * a
 
-proof_wanted mul_iInf' (_hinfty : a = ⊤ → ⨅ i, f i = 0 → ∃ i, f i = 0) (_h₀ : a = 0 → Nonempty ι) :
+proof_wanted mul_iInf' (_h₀ : a = 0 → Nonempty ι) :
     a * ⨅ i, f i = ⨅ i, a * f i
 
 proof_wanted iInf_mul' (_hinfty : a = ⊤ → ⨅ i, f i = 0 → ∃ i, f i = 0) (_h₀ : a = 0 → Nonempty ι) :
