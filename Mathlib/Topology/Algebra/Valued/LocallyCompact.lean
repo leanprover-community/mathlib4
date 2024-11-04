@@ -163,7 +163,7 @@ lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [DiscreteValuation
     exact @Finite.of_equiv _ _ h
       ((Ideal.quotEquivPowQuotPowSuccEquiv (IsPrincipalIdealRing.principal 𝓂[K])
         (DiscreteValuationRing.not_a_field _) n).trans
-        (Ideal.powQuotPowSuccEquivMapMkPowSuccPowEquiv _ n))
+        (Ideal.powQuotPowSuccEquivMapMkPowSuccPow _ n))
 
 lemma totallyBounded_iff_finite_residueField [DiscreteValuationRing 𝒪[K]] :
     TotallyBounded (Set.univ (α := 𝒪[K])) ↔ Finite 𝓀[K] := by
