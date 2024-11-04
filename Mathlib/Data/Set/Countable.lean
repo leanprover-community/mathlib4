@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Countable.Basic
-import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Logic.Equiv.List
 
