@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Int.Basic
+import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Data.Set.Basic
 
 /-!

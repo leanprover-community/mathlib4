@@ -7,9 +7,7 @@ import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
-# Miscellaneous lemmas on the ring structure for `ℤ`.
-
-This file contains the commutative ring instance on `ℤ`.
+# Basic parity lemmas for the ring `ℤ`
 
 See note [foundational algebra order theory].
 -/
@@ -18,14 +16,6 @@ assert_not_exists DenselyOrdered
 assert_not_exists Set.Subsingleton
 
 namespace Int
-
-/-! #### Units -/
-
-lemma units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
-  simpa only [Units.ext_iff] using isUnit_eq_one_or u.isUnit
-
-lemma units_ne_iff_eq_neg {u v : ℤˣ} : u ≠ v ↔ u = -v := by
-  simpa only [Ne, Units.ext_iff] using isUnit_ne_iff_eq_neg u.isUnit v.isUnit
 
 /-! #### Parity -/
 
