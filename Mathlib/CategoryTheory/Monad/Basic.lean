@@ -353,4 +353,32 @@ def transport {F : C ⥤ C} (T : Comonad C) (i : (T : C ⥤ C) ≅ F) : Comonad 
 
 end Comonad
 
+namespace Monad
+
+lemma map_unit_app (T : Monad C) (X : C) [IsIso T.μ] :
+    T.map (T.η.app X) = T.η.app (T.obj X) := by
+  simp [← cancel_mono (T.μ.app _)]
+
+lemma isSplitMono_iff_isIso_unit (T : Monad C) (X : C) [IsIso T.μ] :
+    IsSplitMono (T.η.app X) ↔ IsIso (T.η.app X) := by
+  refine ⟨fun _ ↦ ⟨retraction (T.η.app X), by simp, ?_⟩, fun _ ↦ inferInstance⟩
+  erw [← map_id, ← IsSplitMono.id (T.η.app X), map_comp, T.map_unit_app X, T.η.naturality]
+  rfl
+
+end Monad
+
+namespace Comonad
+
+lemma map_counit_app (T : Comonad C) (X : C) [IsIso T.δ] :
+    T.map (T.ε.app X) = T.ε.app (T.obj X) := by
+  simp [← cancel_epi (T.δ.app _)]
+
+lemma isSplitEpi_iff_isIso_counit (T : Comonad C) (X : C) [IsIso T.δ] :
+    IsSplitEpi (T.ε.app X) ↔ IsIso (T.ε.app X) := by
+  refine ⟨fun _ ↦ ⟨section_ (T.ε.app X), ?_, by simp⟩, fun _ ↦ inferInstance⟩
+  erw [← map_id, ← IsSplitEpi.id (T.ε.app X), map_comp, T.map_counit_app X, T.ε.naturality]
+  rfl
+
+end Comonad
+
 end CategoryTheory

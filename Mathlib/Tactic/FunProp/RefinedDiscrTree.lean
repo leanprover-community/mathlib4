@@ -864,8 +864,6 @@ def mkDTExprs (e : Expr) (config : WhnfCoreConfig) (onlySpecific : Bool)
 
 /-! ## Inserting intro a RefinedDiscrTree -/
 
-variable {α : Type}
-
 /-- If `vs` contains an element `v'` such that `v == v'`, then replace `v'` with `v`.
 Otherwise, push `v`.
 See issue #2155

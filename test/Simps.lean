@@ -101,7 +101,7 @@ infix:25 (priority := default+1) " ≃ " => Equiv'
 
 /- Since `prod` and `PProd` are a special case for `@[simps]`, we define a new structure to test
   the basic functionality.-/
-structure MyProd (α β : Type _) := (fst : α) (snd : β)
+structure MyProd (α β : Type _) where (fst : α) (snd : β)
 
 def MyProd.map {α α' β β'} (f : α → α') (g : β → β') (x : MyProd α β) : MyProd α' β' :=
   ⟨f x.1, g x.2⟩

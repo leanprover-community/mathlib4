@@ -3,13 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Data.Rat.Lemmas
+import Mathlib.Order.Nat
 
 /-!
 # Casts for Rational Numbers
@@ -23,6 +22,8 @@ casting lemmas showing the well-behavedness of this injection.
 
 rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, casting
 -/
+
+assert_not_exists OrderedAddCommMonoid
 
 variable {F ι α β : Type*}
 

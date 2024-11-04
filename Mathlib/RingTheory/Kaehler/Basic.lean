@@ -229,14 +229,14 @@ theorem KaehlerDifferential.span_range_derivation :
   suffices ∃ hx, (KaehlerDifferential.ideal R S).toCotangent ⟨x, hx⟩ ∈
       Submodule.span S (Set.range <| KaehlerDifferential.D R S) by
     exact this.choose_spec
-  refine Submodule.span_induction this ?_ ?_ ?_ ?_
+  refine Submodule.span_induction ?_ ?_ ?_ ?_ this
   · rintro _ ⟨x, rfl⟩
     refine ⟨KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R x, ?_⟩
     apply Submodule.subset_span
     exact ⟨x, KaehlerDifferential.DLinearMap_apply R S x⟩
   · exact ⟨zero_mem _, Submodule.zero_mem _⟩
-  · rintro x y ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩; exact ⟨add_mem hx₁ hy₁, Submodule.add_mem _ hx₂ hy₂⟩
-  · rintro r x ⟨hx₁, hx₂⟩
+  · rintro x y - - ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩; exact ⟨add_mem hx₁ hy₁, Submodule.add_mem _ hx₂ hy₂⟩
+  · rintro r x - ⟨hx₁, hx₂⟩
     exact ⟨((KaehlerDifferential.ideal R S).restrictScalars S).smul_mem r hx₁,
       Submodule.smul_mem _ r hx₂⟩
 
@@ -291,11 +291,11 @@ theorem Derivation.liftKaehlerDifferential_unique (f f' : Ω[S⁄R] →ₗ[S] M)
   intro x
   have : x ∈ Submodule.span S (Set.range <| KaehlerDifferential.D R S) := by
     rw [KaehlerDifferential.span_range_derivation]; trivial
-  refine Submodule.span_induction this ?_ ?_ ?_ ?_
+  refine Submodule.span_induction ?_ ?_ ?_ ?_ this
   · rintro _ ⟨x, rfl⟩; exact congr_arg (fun D : Derivation R S M => D x) hf
   · rw [map_zero, map_zero]
-  · intro x y hx hy; rw [map_add, map_add, hx, hy]
-  · intro a x e; simp [e]
+  · intro x y _ _ hx hy; rw [map_add, map_add, hx, hy]
+  · intro a x _ e; simp [e]
 
 variable (R S)
 
@@ -471,11 +471,11 @@ instance KaehlerDifferential.finite [EssFiniteType R S] :
   have : ∀ x ∈ adjoin R (EssFiniteType.finset R S).toSet,
       .D _ _ x ∈ Submodule.span S s.toSet := by
     intro x hx
-    refine adjoin_induction hx ?_ ?_ ?_ ?_
+    refine adjoin_induction ?_ ?_ ?_ ?_ hx
     · exact fun x hx ↦ Submodule.subset_span (Finset.mem_image_of_mem _ hx)
     · simp
-    · exact fun x y hx hy ↦ (D R S).map_add x y ▸ add_mem hx hy
-    · intro x y hx hy
+    · exact fun x y _ _ hx hy ↦ (D R S).map_add x y ▸ add_mem hx hy
+    · intro x y _ _ hx hy
       simp only [Derivation.leibniz]
       exact add_mem (Submodule.smul_mem _ _ hy) (Submodule.smul_mem _ _ hx)
   obtain ⟨t, ht, ht', hxt⟩ := (essFiniteType_cond_iff R S (EssFiniteType.finset R S)).mp
@@ -545,8 +545,8 @@ theorem KaehlerDifferential.kerTotal_mkQ_single_smul (r : R) (x y) : (y𝖣r •
 noncomputable def KaehlerDifferential.derivationQuotKerTotal :
     Derivation R S ((S →₀ S) ⧸ KaehlerDifferential.kerTotal R S) where
   toFun x := 1𝖣x
-  map_add' x y := KaehlerDifferential.kerTotal_mkQ_single_add _ _ _ _ _
-  map_smul' r s := KaehlerDifferential.kerTotal_mkQ_single_smul _ _ _ _ _
+  map_add' _ _ := KaehlerDifferential.kerTotal_mkQ_single_add _ _ _ _ _
+  map_smul' _ _ := KaehlerDifferential.kerTotal_mkQ_single_smul _ _ _ _ _
   map_one_eq_zero' := KaehlerDifferential.kerTotal_mkQ_single_algebraMap_one _ _ _
   leibniz' a b :=
     (KaehlerDifferential.kerTotal_mkQ_single_mul _ _ _ _ _).trans
@@ -799,7 +799,7 @@ lemma KaehlerDifferential.exact_mapBaseChange_map :
 
 end
 
-/-- The map `I → B ⊗[A] B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
+/-- The map `I → B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
 @[simps]
 noncomputable
 def KaehlerDifferential.kerToTensor :
@@ -811,7 +811,7 @@ def KaehlerDifferential.kerToTensor :
     algebraMap_eq_smul_one, RingHom.mem_ker.mp x.prop, TensorProduct.zero_tmul, add_zero,
     RingHom.id_apply]
 
-/-- The map `I/I² → B ⊗[A] B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
+/-- The map `I/I² → B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
 noncomputable
 def KaehlerDifferential.kerCotangentToTensor :
     (RingHom.ker (algebraMap A B)).Cotangent →ₗ[A] B ⊗[A] Ω[A⁄R] :=
