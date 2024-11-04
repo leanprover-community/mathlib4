@@ -3,6 +3,8 @@ import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 open CategoryTheory Mathlib.Tactic BicategoryLike
 open Bicategory
 
+namespace CategoryTheory.Bicategory
+
 /-- `normalize% η` is the normalization of the 2-morphism `η`.
 1. The normalized 2-morphism is of the form `α₀ ≫ η₀ ≫ α₁ ≫ η₁ ≫ ... αₘ ≫ ηₘ ≫ αₘ₊₁` where
   each `αᵢ` is a structural 2-morphism (consisting of associators and unitors),
@@ -52,3 +54,5 @@ variable {f : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d} in
 #guard_expr normalize% (α_ f g h).inv = ((α_ f g h).symm).hom
 variable {f : a ⟶ b} {g : b ⟶ c} in
 #guard_expr normalize% 𝟙 (f ≫ g) = (Iso.refl (f ≫ g)).hom
+
+end CategoryTheory.Bicategory

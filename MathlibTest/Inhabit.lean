@@ -1,5 +1,7 @@
 import Mathlib.Tactic.Inhabit
 
+namespace InhabitTests
+
 universe u
 
 -- Most basic test (prop)
@@ -53,3 +55,5 @@ instance : Nonempty α := Nonempty.intro a
 noncomputable example : Inhabited α := by
   inhabit α
   assumption
+
+end InhabitTests
