@@ -38,7 +38,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 
 theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
-  refine ⟨by simp, WithTop.zero_lt_top, fun _ => hasSum_single 0 fun n hn => ?_⟩
+  refine ⟨by simp, WithTop.top_pos, fun _ => hasSum_single 0 fun n hn => ?_⟩
   simp [constFormalMultilinearSeries_apply hn]
 
 theorem hasFPowerSeriesAt_const {c : F} {e : E} :
@@ -456,7 +456,7 @@ lemma HasFPowerSeriesWithinOnBall.pi
     apply FormalMultilinearSeries.le_radius_pi (fun i ↦ ?_)
     exact (hf i).r_le
   r_pos := hr
-  hasSum {y} m hy := Pi.hasSum.2 (fun i ↦ (hf i).hasSum m hy)
+  hasSum {_} m hy := Pi.hasSum.2 (fun i ↦ (hf i).hasSum m hy)
 
 lemma hasFPowerSeriesWithinOnBall_pi_iff (hr : 0 < r) :
     HasFPowerSeriesWithinOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e r

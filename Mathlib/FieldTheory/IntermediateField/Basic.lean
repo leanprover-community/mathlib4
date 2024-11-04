@@ -6,7 +6,6 @@ Authors: Anne Baanen
 import Mathlib.Algebra.Field.Subfield
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
 /-!
 # Intermediate fields
@@ -112,10 +111,8 @@ theorem mem_toSubfield (s : IntermediateField K L) (x : L) : x ∈ s.toSubfield 
 definitional equalities. -/
 protected def copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) :
     IntermediateField K L where
-  toSubalgebra := S.toSubalgebra.copy s (hs : s = S.toSubalgebra.carrier)
-  inv_mem' :=
-    have hs' : (S.toSubalgebra.copy s hs).carrier = S.toSubalgebra.carrier := hs
-    hs'.symm ▸ S.inv_mem'
+  toSubalgebra := S.toSubalgebra.copy s hs
+  inv_mem' := hs.symm ▸ S.inv_mem'
 
 @[simp]
 theorem coe_copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) :
@@ -252,7 +249,7 @@ theorem toSubalgebra_toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x �
 
 @[simp]
 theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
-    (S.toSubalgebra.toIntermediateField fun x => S.inv_mem) = S := by
+    (S.toSubalgebra.toIntermediateField fun _ => S.inv_mem) = S := by
   ext
   rfl
 
@@ -291,19 +288,80 @@ namespace IntermediateField
 instance toField : Field S :=
   S.toSubfield.toField
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) := by
   classical
     induction' (Finset.univ : Finset ι) using Finset.induction_on with i s hi H
     · simp
     · rw [Finset.sum_insert hi, AddMemClass.coe_add, H, Finset.sum_insert hi]
 
-@[norm_cast] --Porting note (#10618): `simp` can prove it
+@[norm_cast]
 theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) := by
   classical
     induction' (Finset.univ : Finset ι) using Finset.induction_on with i s hi H
     · simp
     · rw [Finset.prod_insert hi, MulMemClass.coe_mul, H, Finset.prod_insert hi]
+
+/-!
+`IntermediateField`s inherit structure from their `Subfield` coercions.
+-/
+
+variable {X Y}
+
+/-- The action by an intermediate field is the action by the underlying field. -/
+instance [SMul L X] (F : IntermediateField K L) : SMul F X :=
+  inferInstanceAs (SMul F.toSubfield X)
+
+theorem smul_def [SMul L X] {F : IntermediateField K L} (g : F) (m : X) : g • m = (g : L) • m :=
+  rfl
+
+instance smulCommClass_left [SMul L Y] [SMul X Y] [SMulCommClass L X Y]
+    (F : IntermediateField K L) : SMulCommClass F X Y :=
+  inferInstanceAs (SMulCommClass F.toSubfield X Y)
+
+instance smulCommClass_right [SMul X Y] [SMul L Y] [SMulCommClass X L Y]
+    (F : IntermediateField K L) : SMulCommClass X F Y :=
+  inferInstanceAs (SMulCommClass X F.toSubfield Y)
+
+--note: setting this istance the default priority may trigger trouble to synthize instance
+--for field extension with more than one intermedaite field, example : in a field extension `F/E`,
+--`K₁ ≤ K₂` are of type `intermediatefield F E`, the instance `IsScalarTower K₁ K₂ E`
+/-- Note that this provides `IsScalarTower F K K` which is needed by `smul_mul_assoc`. -/
+instance (priority := 900) [SMul X Y] [SMul L X] [SMul L Y] [IsScalarTower L X Y]
+    (F : IntermediateField K L) : IsScalarTower F X Y :=
+  inferInstanceAs (IsScalarTower F.toSubfield X Y)
+
+instance [SMul L X] [FaithfulSMul L X] (F : IntermediateField K L) : FaithfulSMul F X :=
+  inferInstanceAs (FaithfulSMul F.toSubfield X)
+
+/-- The action by an intermediate field is the action by the underlying field. -/
+instance [MulAction L X] (F : IntermediateField K L) : MulAction F X :=
+  inferInstanceAs (MulAction F.toSubfield X)
+
+/-- The action by an intermediate field is the action by the underlying field. -/
+instance [AddMonoid X] [DistribMulAction L X] (F : IntermediateField K L) : DistribMulAction F X :=
+  inferInstanceAs (DistribMulAction F.toSubfield X)
+
+/-- The action by an intermediate field is the action by the underlying field. -/
+instance [Monoid X] [MulDistribMulAction L X] (F : IntermediateField K L) :
+    MulDistribMulAction F X :=
+  inferInstanceAs (MulDistribMulAction F.toSubfield X)
+
+/-- The action by an intermediate field is the action by the underlying field. -/
+instance [Zero X] [SMulWithZero L X] (F : IntermediateField K L) : SMulWithZero F X :=
+  inferInstanceAs (SMulWithZero F.toSubfield X)
+
+/-- The action by an intermediate field is the action by the underlying field. -/
+instance [Zero X] [MulActionWithZero L X] (F : IntermediateField K L) : MulActionWithZero F X :=
+  inferInstanceAs (MulActionWithZero F.toSubfield X)
+
+/-- The action by an intermediate field is the action by the underlying field. -/
+instance [AddCommMonoid X] [Module L X] (F : IntermediateField K L) : Module F X :=
+  inferInstanceAs (Module F.toSubfield X)
+
+/-- The action by an intermediate field is the action by the underlying field. -/
+instance [Semiring X] [MulSemiringAction L X] (F : IntermediateField K L) : MulSemiringAction F X :=
+  inferInstanceAs (MulSemiringAction F.toSubfield X)
 
 /-! `IntermediateField`s inherit structure from their `Subalgebra` coercions. -/
 
@@ -341,7 +399,7 @@ instance isScalarTower_mid {R : Type*} [Semiring R] [Algebra L R] [Algebra K R]
 
 /-- Specialize `is_scalar_tower_mid` to the common case where the top field is `L` -/
 instance isScalarTower_mid' : IsScalarTower K S L :=
-  S.isScalarTower_mid
+  inferInstance
 
 instance {E} [Semiring E] [Algebra L E] : Algebra S E := inferInstanceAs (Algebra S.toSubalgebra E)
 
@@ -468,25 +526,8 @@ instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
   ⟨S.val⟩
 
 theorem aeval_coe {R : Type*} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
-    (x : S) (P : R[X]) : aeval (x : L) P = aeval x P := by
-  refine Polynomial.induction_on' P (fun f g hf hg => ?_) fun n r => ?_
-  · rw [aeval_add, aeval_add, AddMemClass.coe_add, hf, hg]
-  · simp only [MulMemClass.coe_mul, aeval_monomial, SubmonoidClass.coe_pow, mul_eq_mul_right_iff]
-    left
-    rfl
-
-theorem coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
-    [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · obtain ⟨P, hPmo, hProot⟩ := h
-    refine ⟨P, hPmo, (injective_iff_map_eq_zero _).1 (algebraMap (↥S) L).injective _ ?_⟩
-    letI : IsScalarTower R S L := IsScalarTower.of_algebraMap_eq (congr_fun rfl)
-    rw [eval₂_eq_eval_map, ← eval₂_at_apply, eval₂_eq_eval_map, Polynomial.map_map, ←
-      IsScalarTower.algebraMap_eq, ← eval₂_eq_eval_map]
-    exact hProot
-  · obtain ⟨P, hPmo, hProot⟩ := h
-    refine ⟨P, hPmo, ?_⟩
-    rw [← aeval_def, aeval_coe, aeval_def, hProot, ZeroMemClass.coe_zero]
+    (x : S) (P : R[X]) : aeval (x : L) P = aeval x P :=
+  aeval_algHom_apply (S.val.restrictScalars R) x P
 
 /-- The map `E → F` when `E` is an intermediate field contained in the intermediate field `F`.
 
@@ -514,14 +555,17 @@ theorem coe_inclusion {E F : IntermediateField K L} (hEF : E ≤ F) (e : E) :
 
 variable {S}
 
-theorem toSubalgebra_injective :
-    Function.Injective (IntermediateField.toSubalgebra : IntermediateField K L → _) := by
-  intro S S' h
+theorem toSubalgebra_injective : Function.Injective (toSubalgebra : IntermediateField K L → _) := by
+  intro _ _ h
   ext
-  rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
+  simp_rw [← mem_toSubalgebra, h]
 
-theorem map_injective (f : L →ₐ[K] L') :
-    Function.Injective (map f) := by
+theorem toSubfield_injective : Function.Injective (toSubfield : IntermediateField K L → _) := by
+  intro _ _ h
+  ext
+  simp_rw [← mem_toSubfield, h]
+
+theorem map_injective (f : L →ₐ[K] L') : Function.Injective (map f) := by
   intro _ _ h
   rwa [← toSubalgebra_injective.eq_iff, toSubalgebra_map, toSubalgebra_map,
     (Subalgebra.map_injective f.injective).eq_iff, toSubalgebra_injective.eq_iff] at h
@@ -650,8 +694,8 @@ def extendScalars.orderIso :
     { E : Subfield L // F ≤ E } ≃o IntermediateField F L where
   toFun E := extendScalars E.2
   invFun E := ⟨E.toSubfield, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
-  left_inv E := rfl
-  right_inv E := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _
@@ -702,8 +746,8 @@ into an order isomorphism from
 def extendScalars.orderIso : { E : IntermediateField K L // F ≤ E } ≃o IntermediateField F L where
   toFun E := extendScalars E.2
   invFun E := ⟨E.restrictScalars K, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
-  left_inv E := rfl
-  right_inv E := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _

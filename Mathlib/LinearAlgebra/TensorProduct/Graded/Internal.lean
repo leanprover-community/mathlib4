@@ -184,7 +184,7 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
       (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ᵍ⊗ₜ (b₁ * b₂ : B)) := by
   dsimp only [mul_def, mulHom_apply, of_symm_of]
   dsimp [auxEquiv, tmul]
-  erw [decompose_coe, decompose_coe]
+  rw [decompose_coe, decompose_coe]
   simp_rw [← lof_eq_of R]
   rw [tmul_of_gradedMul_of_tmul]
   simp_rw [lof_eq_of R]

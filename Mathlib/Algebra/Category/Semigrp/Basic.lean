@@ -44,7 +44,6 @@ namespace MagmaCat
 @[to_additive]
 instance bundledHom : BundledHom @MulHom :=
   ⟨@MulHom.toFun, @MulHom.id, @MulHom.comp,
-    -- Porting note: was `@MulHom.coe_inj` which is deprecated
     by intros; apply @DFunLike.coe_injective, by aesop_cat, by aesop_cat⟩
 
 -- Porting note: deriving failed for `ConcreteCategory`,

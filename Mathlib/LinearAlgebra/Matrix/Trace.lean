@@ -103,8 +103,9 @@ theorem trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
     trace (∑ i ∈ s, f i) = ∑ i ∈ s, trace (f i) :=
   map_sum (traceAddMonoidHom n R) f s
 
-theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] (f : R →+ S) (A : Matrix n n R) :
-    f (trace A)  = trace (f.mapMatrix A) :=
+theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] {F : Type*} [FunLike F R S]
+    [AddMonoidHomClass F R S] (f : F) (A : Matrix n n R) :
+    f (trace A) = trace ((f : R →+ S).mapMatrix A) :=
   map_sum f (fun i => diag A i) Finset.univ
 
 lemma trace_blockDiagonal [DecidableEq p] (M : p → Matrix n n R) :

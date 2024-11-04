@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Topology.Algebra.SeparationQuotient
 
 /-!
 # Compatibility of algebraic operations with metric space structures
@@ -186,21 +186,21 @@ instance Pi.instBoundedSMul {α : Type*} {β : ι → Type*} [PseudoMetricSpace 
     [∀ i, PseudoMetricSpace (β i)] [Zero α] [∀ i, Zero (β i)] [∀ i, SMul α (β i)]
     [∀ i, BoundedSMul α (β i)] : BoundedSMul α (∀ i, β i) where
   dist_smul_pair' x y₁ y₂ :=
-    (dist_pi_le_iff <| by positivity).2 fun i ↦
+    (dist_pi_le_iff <| by positivity).2 fun _ ↦
       (dist_smul_pair _ _ _).trans <| mul_le_mul_of_nonneg_left (dist_le_pi_dist _ _ _) dist_nonneg
   dist_pair_smul' x₁ x₂ y :=
-    (dist_pi_le_iff <| by positivity).2 fun i ↦
+    (dist_pi_le_iff <| by positivity).2 fun _ ↦
       (dist_pair_smul _ _ _).trans <| mul_le_mul_of_nonneg_left (dist_le_pi_dist _ 0 _) dist_nonneg
 
 instance Pi.instBoundedSMul' {α β : ι → Type*} [∀ i, PseudoMetricSpace (α i)]
     [∀ i, PseudoMetricSpace (β i)] [∀ i, Zero (α i)] [∀ i, Zero (β i)] [∀ i, SMul (α i) (β i)]
     [∀ i, BoundedSMul (α i) (β i)] : BoundedSMul (∀ i, α i) (∀ i, β i) where
   dist_smul_pair' x y₁ y₂ :=
-    (dist_pi_le_iff <| by positivity).2 fun i ↦
+    (dist_pi_le_iff <| by positivity).2 fun _ ↦
       (dist_smul_pair _ _ _).trans <|
         mul_le_mul (dist_le_pi_dist _ 0 _) (dist_le_pi_dist _ _ _) dist_nonneg dist_nonneg
   dist_pair_smul' x₁ x₂ y :=
-    (dist_pi_le_iff <| by positivity).2 fun i ↦
+    (dist_pi_le_iff <| by positivity).2 fun _ ↦
       (dist_pair_smul _ _ _).trans <|
         mul_le_mul (dist_le_pi_dist _ _ _) (dist_le_pi_dist _ 0 _) dist_nonneg dist_nonneg
 

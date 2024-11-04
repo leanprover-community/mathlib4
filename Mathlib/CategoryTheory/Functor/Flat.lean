@@ -125,7 +125,7 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
     (F.map <|
       hc.lift <|
         (Cones.postcompose
-              ({ app := fun X => 𝟙 _ } :
+              ({ app := fun _ => 𝟙 _ } :
                 (s.toStructuredArrow ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
           (StructuredArrow.proj s.pt F).mapCone s')
 
@@ -275,7 +275,7 @@ noncomputable instance lanPreservesFiniteLimitsOfPreservesFiniteLimits (F : C �
 
 theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
-  ⟨fun H => inferInstance, fun H => by
+  ⟨fun _ => inferInstance, fun H => by
     haveI := preservesFiniteLimitsOfFlat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁)
     haveI : PreservesFiniteLimits F := by
       apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}

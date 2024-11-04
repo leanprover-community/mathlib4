@@ -150,19 +150,25 @@ variable {P : TopCat.{u} → Prop} [HasExplicitFiniteCoproducts.{0} P]
 example : HasFiniteCoproducts (CompHausLike.{u} P) := inferInstance
 
 /-- The inclusion maps into the explicit finite coproduct are open embeddings. -/
-lemma finiteCoproduct.openEmbedding_ι (a : α) :
-    OpenEmbedding (finiteCoproduct.ι X a) :=
-  openEmbedding_sigmaMk (σ := fun a ↦ (X a))
+lemma finiteCoproduct.isOpenEmbedding_ι (a : α) :
+    IsOpenEmbedding (finiteCoproduct.ι X a) :=
+  isOpenEmbedding_sigmaMk (σ := fun a ↦ (X a))
+
+@[deprecated (since := "2024-10-18")]
+alias finiteCoproduct.openEmbedding_ι := finiteCoproduct.isOpenEmbedding_ι
 
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
-lemma Sigma.openEmbedding_ι (a : α) :
-    OpenEmbedding (Sigma.ι X a) := by
-  refine OpenEmbedding.of_comp _ (homeoOfIso ((colimit.isColimit _).coconePointUniqueUpToIso
-    (finiteCoproduct.isColimit X))).openEmbedding ?_
-  convert finiteCoproduct.openEmbedding_ι X a
+lemma Sigma.isOpenEmbedding_ι (a : α) :
+    IsOpenEmbedding (Sigma.ι X a) := by
+  refine IsOpenEmbedding.of_comp _ (homeoOfIso ((colimit.isColimit _).coconePointUniqueUpToIso
+    (finiteCoproduct.isColimit X))).isOpenEmbedding ?_
+  convert finiteCoproduct.isOpenEmbedding_ι X a
   ext x
   change (Sigma.ι X a ≫ _) x = _
   simp
+
+@[deprecated (since := "2024-10-18")]
+alias Sigma.openEmbedding_ι := Sigma.isOpenEmbedding_ι
 
 /-- The functor to `TopCat` preserves finite coproducts if they exist. -/
 instance (P) [HasExplicitFiniteCoproducts.{0} P] :
@@ -332,12 +338,12 @@ instance [HasExplicitPullbacksOfInclusions P] : HasPullbacksOfInclusions (CompHa
 
 theorem hasPullbacksOfInclusions
     (hP' : ∀ ⦃X Y B : CompHausLike.{u} P⦄ (f : X ⟶ B) (g : Y ⟶ B)
-      (_ : OpenEmbedding f), HasExplicitPullback f g) :
+      (_ : IsOpenEmbedding f), HasExplicitPullback f g) :
     HasExplicitPullbacksOfInclusions P :=
   { hasProp := by
       intro _ _ _ f
       apply hP'
-      exact Sigma.openEmbedding_ι _ _ }
+      exact Sigma.isOpenEmbedding_ι _ _ }
 
 /-- The functor to `TopCat` preserves pullbacks of inclusions if they exist. -/
 noncomputable instance [HasExplicitPullbacksOfInclusions P] :
@@ -350,7 +356,7 @@ instance [HasExplicitPullbacksOfInclusions P] : FinitaryExtensive (CompHausLike 
   finitaryExtensive_of_preserves_and_reflects (compHausLikeToTop P)
 
 theorem finitaryExtensive (hP' : ∀ ⦃X Y B : CompHausLike.{u} P⦄ (f : X ⟶ B) (g : Y ⟶ B)
-    (_ : OpenEmbedding f), HasExplicitPullback f g) :
+    (_ : IsOpenEmbedding f), HasExplicitPullback f g) :
       FinitaryExtensive (CompHausLike P) :=
   have := hasPullbacksOfInclusions hP'
   finitaryExtensive_of_preserves_and_reflects (compHausLikeToTop P)
