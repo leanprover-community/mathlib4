@@ -10,11 +10,18 @@ import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Cauchy's bound on polynomial roots.
+
+The bound is given by `Polynomial.cauchyBound`, which for `a_n x^n + a_(n-1) x^(n - 1) + ⋯ + a_0` is
+is `1 + max_(0 ≤ i < n) a_i / a_n`.
+
+The theorem that this gives a bound to polynomial roots is `Polynomial.IsRoot.norm_lt_cauchyBound`.
 -/
 
 variable {K : Type*} [NormedDivisionRing K]
 
-open Polynomial Finset NNReal
+namespace Polynomial
+
+open Finset NNReal
 
 /--
 Cauchy's bound on the roots of a given polynomial.
@@ -60,7 +67,7 @@ lemma cauchyBound_smul {x : K} (hx : x ≠ 0) (p : K[X]) : cauchyBound (x • p)
 /--
 `cauchyBound` is a bound on the norm of polynomial roots.
 -/
-theorem Polynomial.IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} (h : p.IsRoot a) :
+theorem IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} (h : p.IsRoot a) :
     ‖a‖₊ < cauchyBound p := by
   rw [IsRoot.def, eval_eq_sum_range, range_add_one] at h
   simp only [mem_range, lt_self_iff_false, not_false_eq_true, sum_insert, coeff_natDegree,
@@ -69,11 +76,10 @@ theorem Polynomial.IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} 
   simp only [nnnorm_mul, nnnorm_pow, nnnorm_neg] at h
   suffices ‖a‖₊ ^ p.natDegree ≤ (cauchyBound p - 1) * ∑ x ∈ range p.natDegree, ‖a‖₊ ^ x by
     rcases eq_or_ne ‖a‖₊ 1 with ha | ha
-    · simp only [ha, one_pow, sum_const, card_range, nsmul_eq_mul, mul_one, lt_add_iff_pos_left,
-        gt_iff_lt] at this ⊢
+    · simp only [ha, one_pow, sum_const, card_range, nsmul_eq_mul, mul_one, gt_iff_lt] at this ⊢
       apply lt_of_le_of_ne (by simp)
       intro nh
-      simp [← nh] at this
+      simp [← nh, tsub_self] at this
     rcases lt_or_gt_of_ne ha with ha | ha
     · apply ha.trans_le
       simp
@@ -118,3 +124,5 @@ theorem Polynomial.IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} 
       simp only [← mul_sum]
       field_simp
       ring
+
+end Polynomial
