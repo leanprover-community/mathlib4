@@ -599,30 +599,38 @@ theorem isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) :
 theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
   @range_diag X ▸ isLindelof_range (continuous_id.prod_mk continuous_id)
 
-/-- If `f : X → Y` is an `Inducing` map, the image `f '' s` of a set `s` is Lindelöf
+/-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is Lindelöf
   if and only if `s` is compact. -/
-theorem Inducing.isLindelof_iff {f : X → Y} (hf : Inducing f) :
+theorem IsInducing.isLindelof_iff {f : X → Y} (hf : IsInducing f) :
     IsLindelof s ↔ IsLindelof (f '' s) := by
   refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot _ F_le => ?_⟩
   obtain ⟨_, ⟨x, x_in : x ∈ s, rfl⟩, hx : ClusterPt (f x) (map f F)⟩ :=
     hs ((map_mono F_le).trans_eq map_principal)
   exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩
 
+@[deprecated (since := "2024-10-28")] alias Inducing.isLindelof_iff := IsInducing.isLindelof_iff
+
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is Lindelöf
   if and only if `s` is Lindelöf. -/
-theorem Embedding.isLindelof_iff {f : X → Y} (hf : Embedding f) :
-    IsLindelof s ↔ IsLindelof (f '' s) := hf.toInducing.isLindelof_iff
+theorem IsEmbedding.isLindelof_iff {f : X → Y} (hf : IsEmbedding f) :
+    IsLindelof s ↔ IsLindelof (f '' s) := hf.isInducing.isLindelof_iff
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isLindelof_iff := IsEmbedding.isLindelof_iff
 
 /-- The preimage of a Lindelöf set under an inducing map is a Lindelöf set. -/
-theorem Inducing.isLindelof_preimage {f : X → Y} (hf : Inducing f) (hf' : IsClosed (range f))
-    {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) := by
+theorem IsInducing.isLindelof_preimage {f : X → Y} (hf : IsInducing f)
+    (hf' : IsClosed (range f)) {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) := by
   replace hK := hK.inter_right hf'
   rwa [hf.isLindelof_iff, image_preimage_eq_inter_range]
+
+@[deprecated (since := "2024-10-28")]
+alias Inducing.isLindelof_preimage := IsInducing.isLindelof_preimage
 
 /-- The preimage of a Lindelöf set under a closed embedding is a Lindelöf set. -/
 theorem IsClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : IsClosedEmbedding f)
     {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) :=
-  hf.toInducing.isLindelof_preimage (hf.isClosed_range) hK
+  hf.isInducing.isLindelof_preimage (hf.isClosed_range) hK
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.isLindelof_preimage := IsClosedEmbedding.isLindelof_preimage
@@ -641,7 +649,7 @@ alias ClosedEmbedding.tendsto_coLindelof := IsClosedEmbedding.tendsto_coLindelof
 /-- Sets of subtype are Lindelöf iff the image under a coercion is. -/
 theorem Subtype.isLindelof_iff {p : X → Prop} {s : Set { x // p x }} :
     IsLindelof s ↔ IsLindelof ((↑) '' s : Set X) :=
-  embedding_subtype_val.isLindelof_iff
+  IsEmbedding.subtypeVal.isLindelof_iff
 
 theorem isLindelof_iff_isLindelof_univ : IsLindelof s ↔ IsLindelof (univ : Set s) := by
   rw [Subtype.isLindelof_iff, image_univ, Subtype.range_coe]
@@ -664,7 +672,7 @@ alias ClosedEmbedding.nonLindelofSpace := IsClosedEmbedding.nonLindelofSpace
 
 protected theorem IsClosedEmbedding.LindelofSpace [h : LindelofSpace Y] {f : X → Y}
     (hf : IsClosedEmbedding f) : LindelofSpace X :=
-  ⟨by rw [hf.toInducing.isLindelof_iff, image_univ]; exact hf.isClosed_range.isLindelof⟩
+  ⟨by rw [hf.isInducing.isLindelof_iff, image_univ]; exact hf.isClosed_range.isLindelof⟩
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.LindelofSpace := IsClosedEmbedding.LindelofSpace

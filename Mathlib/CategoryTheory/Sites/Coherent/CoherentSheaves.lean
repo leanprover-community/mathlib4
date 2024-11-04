@@ -59,8 +59,8 @@ theorem isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (coherentTopology C) (yone
 
 variable (C) in
 /-- The coherent topology on a precoherent category is subcanonical. -/
-theorem subcanonical : Sheaf.Subcanonical (coherentTopology C) :=
-  Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
+instance subcanonical : (coherentTopology C).Subcanonical :=
+  GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ isSheaf_yoneda_obj
 
 end coherentTopology
 

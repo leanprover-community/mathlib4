@@ -225,10 +225,10 @@ def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) : 
   refine ⟨standardSimplex.edge n a b hab, ?range⟩
   case range =>
     suffices ∃ x, ¬i = x ∧ ¬a = x ∧ ¬b = x by
-      simpa only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.Hom.toOrderHom_mk,
-        Set.union_singleton, ne_eq, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ,
-        Set.mem_insert_iff, @eq_comm _ _ i, Set.mem_range, forall_true_left, not_forall, not_or,
-        not_exists, Fin.forall_fin_two]
+      simpa only [unop_op, len_mk, Nat.reduceAdd, asOrderHom, yoneda_obj_obj, Set.union_singleton,
+        ne_eq, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ, Set.mem_insert_iff,
+        @eq_comm _ _ i, Set.mem_range, forall_const, not_forall, not_or, not_exists,
+        Fin.forall_fin_two, Fin.isValue]
     contrapose! H
     replace H : univ ⊆ {i, a, b} :=
       fun x _ ↦ by simpa [or_iff_not_imp_left, eq_comm] using H x
