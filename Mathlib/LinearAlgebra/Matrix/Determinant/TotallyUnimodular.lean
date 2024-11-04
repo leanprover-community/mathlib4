@@ -34,7 +34,7 @@ def Matrix.IsTotallyUnimodular (A : Matrix m n R) : Prop :=
     (A.submatrix f g).det = 1 ∨
     (A.submatrix f g).det = -1
 
-lemma Matrix.IsTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
+lemma Matrix.isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
     ∀ k : ℕ, ∀ f : Fin k → m, ∀ g : Fin k → n,
       (A.submatrix f g).det = 0 ∨
       (A.submatrix f g).det = 1 ∨
@@ -77,7 +77,7 @@ lemma Matrix.IsTotallyUnimodular.submatrix {A : Matrix m n R} (hA : A.IsTotallyU
     (A.submatrix f g).IsTotallyUnimodular := by
   intro _ _ _ _ _
   rw [Matrix.submatrix_submatrix]
-  rw [Matrix.IsTotallyUnimodular_iff] at hA
+  rw [Matrix.isTotallyUnimodular_iff] at hA
   apply hA
 
 lemma Matrix.IsTotallyUnimodular.transpose {A : Matrix m n R} (hA : A.IsTotallyUnimodular) :
@@ -89,7 +89,7 @@ lemma Matrix.IsTotallyUnimodular.transpose {A : Matrix m n R} (hA : A.IsTotallyU
 lemma Matrix.mapEquiv_IsTotallyUnimodular {X' Y' : Type*}
     (A : Matrix m n R) (eX : X' ≃ m) (eY : Y' ≃ n) :
     Matrix.IsTotallyUnimodular ((A · ∘ eY) ∘ eX) ↔ A.IsTotallyUnimodular := by
-  rw [Matrix.IsTotallyUnimodular_iff, Matrix.IsTotallyUnimodular_iff]
+  rw [Matrix.isTotallyUnimodular_iff, Matrix.isTotallyUnimodular_iff]
   constructor <;> intro hA k f g
   · simpa [Matrix.submatrix] using hA k (eX.symm ∘ f) (eY.symm ∘ g)
   · simpa [Matrix.submatrix] using hA k (eX ∘ f) (eY ∘ g)
