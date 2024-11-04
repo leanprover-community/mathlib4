@@ -461,7 +461,7 @@ section
 
 variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
-theorem IsAlgebraic.exists_nonzero_aeval
+theorem IsAlgebraic.exists_nonzero_coeff_aeval
     {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
     ∃ (q : Polynomial R), q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
   obtain ⟨p, hp0, hp⟩ := hRs
@@ -473,7 +473,7 @@ theorem IsAlgebraic.exists_nonzero_aeval
 theorem IsAlgebraic.exists_nonzero_dvd
     {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
     ∃ r : R, r ≠ 0 ∧ s ∣ (algebraMap R S) r := by
-  obtain ⟨q, hq0, hq⟩ := hRs.exists_nonzero_aeval hs
+  obtain ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_aeval hs
   have key := map_dvd (Polynomial.aeval s) (Polynomial.X_dvd_sub_C (p := q))
   rw [map_sub, hq, zero_sub, dvd_neg, Polynomial.aeval_X, Polynomial.aeval_C] at key
   exact ⟨q.coeff 0, hq0, key⟩
