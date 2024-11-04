@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Function.Defs
 import Batteries.Tactic.Init
+import Mathlib.Logic.Function.Defs
 
 /-!
 # Binary map of options
@@ -45,7 +45,7 @@ theorem map₂_def {α β γ : Type u} (f : α → β → γ) (a : Option α) (b
     map₂ f a b = f <$> a <*> b := by
   cases a <;> rfl
 
--- Porting note (#10618): In Lean3, was `@[simp]` but now `simp` can prove it
+@[simp]
 theorem map₂_some_some (f : α → β → γ) (a : α) (b : β) : map₂ f (some a) (some b) = f a b := rfl
 
 theorem map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl

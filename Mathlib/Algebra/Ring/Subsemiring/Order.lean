@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.Algebra.Ring.Subsemiring.Basic
+import Mathlib.Algebra.Ring.Subsemiring.Defs
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # `Order`ed instances for `SubsemiringClass` and `Subsemiring`.

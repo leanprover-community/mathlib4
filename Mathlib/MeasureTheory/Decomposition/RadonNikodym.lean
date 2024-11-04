@@ -88,7 +88,7 @@ lemma rnDeriv_pos' [HaveLebesgueDecomposition ν μ] [SigmaFinite μ] (hμν : �
 
 section rnDeriv_withDensity_leftRight
 
-variable {μ ν : Measure α} {f : α → ℝ≥0∞}
+variable {f : α → ℝ≥0∞}
 
 /-- Auxiliary lemma for `rnDeriv_withDensity_left`. -/
 lemma rnDeriv_withDensity_withDensity_rnDeriv_left (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
@@ -304,6 +304,9 @@ lemma setLIntegral_rnDeriv_le (s : Set α) :
 
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_rnDeriv_le := setLIntegral_rnDeriv_le
+
+lemma lintegral_rnDeriv_le : ∫⁻ x, μ.rnDeriv ν x ∂ν ≤ μ Set.univ :=
+  (setLIntegral_univ _).symm ▸ Measure.setLIntegral_rnDeriv_le Set.univ
 
 lemma setLIntegral_rnDeriv' [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) {s : Set α}
     (hs : MeasurableSet s) :

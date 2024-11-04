@@ -154,7 +154,7 @@ def free : Type u ⥤ AlgebraCat.{u} R where
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X A => (FreeAlgebra.lift _).symm
+    { homEquiv := fun _ _ => (FreeAlgebra.lift _).symm
       -- Relying on `obviously` to fill out these proofs is very slow :(
       homEquiv_naturality_left_symm := by
         -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
