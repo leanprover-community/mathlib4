@@ -315,19 +315,17 @@ theorem eqOn_closedBall_of_isMaxOn_norm {f : E → F} {z : E} {r : ℝ}
 /-- If `f` is differentiable on the open unit ball `{z : ℂ | ‖z‖ < 1}`, and `‖f‖` attains a maximum
 in this open ball, then `f` is constant.-/
 lemma eq_const_of_exists_max {f : E → F} {b : ℝ} (h_an : DifferentiableOn ℂ f (ball 0 b))
-    {v : E} (hv : v ∈ (ball 0 b)) (hv_max : IsMaxOn (norm ∘ f) (ball 0 b) v) :
-    Set.EqOn f (Function.const E (f v)) (ball 0 b) := by
-  refine Complex.eqOn_of_isPreconnected_of_isMaxOn_norm ?_ ?_ h_an hv hv_max
-  · apply Convex.isPreconnected
-    simpa only [ball_zero_eq] using convex_ball (0 : E) b
-  · simpa only [← ball_zero_eq] using Metric.isOpen_ball
+    {v : E} (hv : v ∈ ball 0 b) (hv_max : IsMaxOn (norm ∘ f) (ball 0 b) v) :
+    Set.EqOn f (Function.const E (f v)) (ball 0 b) :=
+  Complex.eqOn_of_isPreconnected_of_isMaxOn_norm (convex_ball 0 b).isPreconnected
+    isOpen_ball h_an hv hv_max
 
 /-- If `f` is a function differentiable on the open unit ball, and there exists an `r < 1` such that
 any value of `‖f‖` on the open ball is bounded above by some value on the closed ball of radius `r`,
 then `f` is constant. -/
 lemma eq_const_of_exists_le {f : ℂ → F} {r b : ℝ} (h_an : DifferentiableOn ℂ f (ball 0 b))
     (hr_nn : 0 ≤ r) (hr_lt : r < b)
-    (hr : ∀ z, z ∈ (ball 0 b) → ∃ w, w ∈ closedBall 0 r ∧ ‖f z‖ ≤ ‖f w‖) :
+    (hr : ∀ z ∈ ball 0 b, ∃ w ∈ closedBall 0 r, ‖f z‖ ≤ ‖f w‖) :
     Set.EqOn f (Function.const ℂ (f 0)) (ball 0 b) := by
   let V : Set ℂ := closedBall 0 r
   have hVc : IsCompact V := isCompact_closedBall (0 : ℂ) r
