@@ -204,15 +204,15 @@ variable [CanonicallyOrderedCommMonoid α] [TopologicalSpace α] [OrderClosedTop
 
 @[to_additive]
 theorem le_hasProd' (hf : HasProd f a) (i : ι) : f i ≤ a :=
-  le_hasProd hf i fun _ _ ↦ one_le _
+  le_hasProd hf i fun _ _ ↦ one_le
 
 @[to_additive]
 theorem le_tprod' (hf : Multipliable f) (i : ι) : f i ≤ ∏' i, f i :=
-  le_tprod hf i fun _ _ ↦ one_le _
+  le_tprod hf i fun _ _ ↦ one_le
 
 @[to_additive]
 theorem hasProd_one_iff : HasProd f 1 ↔ ∀ x, f x = 1 :=
-  (hasProd_one_iff_of_one_le fun _ ↦ one_le _).trans funext_iff
+  (hasProd_one_iff_of_one_le fun _ ↦ one_le).trans funext_iff
 
 @[to_additive]
 theorem tprod_eq_one_iff (hf : Multipliable f) : ∏' i, f i = 1 ↔ ∀ x, f x = 1 := by

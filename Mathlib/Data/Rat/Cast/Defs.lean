@@ -6,9 +6,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.Order.ZeroLE
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Rat.Lemmas
-import Mathlib.Order.Nat
 
 /-!
 # Casts for Rational Numbers

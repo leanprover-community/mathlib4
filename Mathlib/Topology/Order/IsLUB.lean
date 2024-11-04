@@ -225,7 +225,7 @@ theorem exists_seq_strictAnti_strictMono_tendsto [DenselyOrdered α] [FirstCount
   rcases exists_seq_strictMono_tendsto' (hu_mem 0).2 with ⟨v, hv_mono, hv_mem, hvy⟩
   exact
     ⟨u, v, hu_anti, hv_mono, hu_mem, fun l => ⟨(hu_mem 0).1.trans (hv_mem l).1, (hv_mem l).2⟩,
-      fun k l => (hu_anti.antitone (zero_le k)).trans_lt (hv_mem l).1, hux, hvy⟩
+      fun k l => (hu_anti.antitone zero_le).trans_lt (hv_mem l).1, hux, hvy⟩
 
 theorem exists_seq_tendsto_sInf {α : Type*} [ConditionallyCompleteLinearOrder α]
     [TopologicalSpace α] [OrderTopology α] [FirstCountableTopology α] {S : Set α} (hS : S.Nonempty)

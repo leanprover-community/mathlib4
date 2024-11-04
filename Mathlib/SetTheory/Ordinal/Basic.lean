@@ -232,6 +232,9 @@ theorem ne_zero_of_out_nonempty (o : Ordinal) [h : Nonempty o.toType] : o ≠ 0 
 protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
   type_ne_zero_of_nonempty _
 
+instance NeZero.one : NeZero (1 : Ordinal) :=
+  ⟨Ordinal.one_ne_zero⟩
+
 instance nontrivial : Nontrivial Ordinal.{u} :=
   ⟨⟨1, 0, Ordinal.one_ne_zero⟩⟩
 
@@ -333,28 +336,28 @@ instance orderBot : OrderBot Ordinal where
   bot := 0
   bot_le := Ordinal.zero_le
 
-@[simp]
-theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
+instance : ZeroLEClass Ordinal :=
+  ⟨fun _ ↦ bot_le⟩
+
+@[deprecated _root_.bot_eq_zero (since := "2024-11-02")]
+protected theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
   rfl
 
-@[simp]
+@[deprecated le_zero_iff_eq_zero (since := "2024-11-02")]
 protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
   le_bot_iff
 
+@[deprecated _root_.pos_iff_ne_zero (since := "2024-11-02")]
 protected theorem pos_iff_ne_zero {o : Ordinal} : 0 < o ↔ o ≠ 0 :=
   bot_lt_iff_ne_bot
 
+@[deprecated _root_.not_lt_zero (since := "2024-11-02")]
 protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
   not_lt_bot
 
-theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a :=
+@[deprecated _root_.eq_zero_or_pos (since := "2024-11-02")]
+protected theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a :=
   eq_bot_or_bot_lt
-
-instance zeroLEOneClass : ZeroLEOneClass Ordinal :=
-  ⟨Ordinal.zero_le _⟩
-
-instance NeZero.one : NeZero (1 : Ordinal) :=
-  ⟨Ordinal.one_ne_zero⟩
 
 /-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
 `α.toType` into `β.toType`. -/
@@ -854,8 +857,10 @@ theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :
 protected theorem one_le_iff_pos {o : Ordinal} : 1 ≤ o ↔ 0 < o :=
   Order.one_le_iff_pos
 
+-- TODO: the next few theorems can be generalized to `SuccAddOrder + ZeroLEClass`
+
 theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 := by
-  rw [Order.one_le_iff_pos, Ordinal.pos_iff_ne_zero]
+  rw [Order.one_le_iff_pos, pos_iff_ne_zero]
 
 theorem succ_pos (o : Ordinal) : 0 < succ o :=
   bot_lt_succ o

@@ -225,8 +225,7 @@ theorem add_eq_zero_iff (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := 
 
 theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
   ⟨fun h s _hs => h s, fun h s => by
-    classical exact
-        if H : s ∈ f.support then h s (hf H) else (not_mem_support_iff.1 H).symm ▸ zero_le (g s)⟩
+    classical exact if H : s ∈ f.support then h s (hf H) else not_mem_support_iff.1 H ▸ zero_le⟩
 
 theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' f g <| Subset.refl _

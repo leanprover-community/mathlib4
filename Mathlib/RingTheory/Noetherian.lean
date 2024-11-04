@@ -396,7 +396,7 @@ theorem IsNoetherian.injective_of_surjective_of_injective (i f : N →ₗ[R] M)
     (hi : Injective i) (hf : Surjective f) : Injective f := by
   haveI := isNoetherian_of_injective i hi
   obtain ⟨n, H⟩ := monotone_stabilizes_iff_noetherian.2 ‹_›
-    ⟨_, monotone_nat_of_le_succ <| f.iterateMapComap_le_succ i ⊥ (by simp)⟩
+    ⟨_, monotone_nat_of_le_succ <| f.iterateMapComap_le_succ i ⊥ (by simp [-bot_eq_zero])⟩
   exact LinearMap.ker_eq_bot.1 <| bot_unique <|
     f.ker_le_of_iterateMapComap_eq_succ i ⊥ n (H _ (Nat.le_succ _)) hf hi
 

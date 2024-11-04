@@ -341,6 +341,8 @@ section CanonicallyOrderedCommMonoid
 
 variable [CanonicallyOrderedCommMonoid M] {f : ι → M} {s t : Finset ι}
 
+-- TODO: can this be generalized to `OneLEClass`?
+
 /-- In a canonically-ordered monoid, a product bounds each of its terms.
 
 See also `Finset.single_le_prod'`. -/
@@ -349,15 +351,15 @@ See also `Finset.single_le_prod'`. -/
 See also `Finset.single_le_sum`."]
 lemma _root_.CanonicallyOrderedCommMonoid.single_le_prod {i : ι} (hi : i ∈ s) :
     f i ≤ ∏ j ∈ s, f j :=
-  single_le_prod' (fun _ _ ↦ one_le _) hi
+  single_le_prod' (fun _ _ ↦ one_le) hi
 
 @[to_additive (attr := simp) sum_eq_zero_iff]
 theorem prod_eq_one_iff' : ∏ x ∈ s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
-  prod_eq_one_iff_of_one_le' fun x _ ↦ one_le (f x)
+  prod_eq_one_iff_of_one_le' fun _ _ ↦ one_le
 
 @[to_additive sum_le_sum_of_subset]
 theorem prod_le_prod_of_subset' (h : s ⊆ t) : ∏ x ∈ s, f x ≤ ∏ x ∈ t, f x :=
-  prod_le_prod_of_subset_of_one_le' h fun _ _ _ ↦ one_le _
+  prod_le_prod_of_subset_of_one_le' h fun _ _ _ ↦ one_le
 
 @[to_additive sum_mono_set]
 theorem prod_mono_set' (f : ι → M) : Monotone fun s ↦ ∏ x ∈ s, f x := fun _ _ hs ↦

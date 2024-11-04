@@ -104,7 +104,7 @@ lemma IsDynCoverOf.nonempty {T : X → X} {F : Set X} (h : F.Nonempty) {U : Set 
 
 lemma isDynCoverOf_zero (T : X → X) (F : Set X) (U : Set (X × X)) {s : Set X} (h : s.Nonempty) :
     IsDynCoverOf T F U 0 s := by
-  simp only [IsDynCoverOf, ball, dynEntourage, not_lt_zero', Prod.map_iterate, iInter_of_empty,
+  simp only [IsDynCoverOf, ball, dynEntourage, not_lt_zero, Prod.map_iterate, iInter_of_empty,
     iInter_univ, preimage_univ]
   rcases h with ⟨x, x_s⟩
   exact subset_iUnion₂_of_subset x x_s (subset_univ F)

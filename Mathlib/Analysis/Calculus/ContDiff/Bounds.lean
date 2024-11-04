@@ -365,7 +365,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
   have M : (n : ℕ∞) < n.succ := Nat.cast_lt.2 n.lt_succ_self
   have Cnonneg : 0 ≤ C := (norm_nonneg _).trans (hC 0 bot_le)
   have Dnonneg : 0 ≤ D := by
-    have : 1 ≤ n + 1 := by simp only [le_add_iff_nonneg_left, zero_le']
+    have : 1 ≤ n + 1 := by simp only [le_add_iff_nonneg_left, zero_le]
     simpa only [pow_one] using (norm_nonneg _).trans (hD 1 le_rfl this)
   -- use the inductive assumption to bound the derivatives of `g' ∘ f`.
   have I : ∀ i ∈ Finset.range (n + 1),
@@ -394,7 +394,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
       rw [iteratedFDerivWithin_succ_eq_comp_right hs hx, comp_apply, LinearIsometryEquiv.norm_map]
     rw [this]
     apply hD
-    · simp only [le_add_iff_nonneg_left, zero_le']
+    · simp only [le_add_iff_nonneg_left, zero_le]
     · apply Nat.succ_le_succ tsub_le_self
   -- Now put these together: first, notice that we have to bound `D^n (g' ∘ f ⬝ f')`.
   calc

@@ -39,7 +39,7 @@ instance : OrderTopology Ordinal.{u} := ⟨rfl⟩
 theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a := by
   refine ⟨fun h ⟨h₀, hsucc⟩ => ?_, fun ha => ?_⟩
   · obtain ⟨b, c, hbc, hbc'⟩ :=
-      (mem_nhds_iff_exists_Ioo_subset' ⟨0, Ordinal.pos_iff_ne_zero.2 h₀⟩ ⟨_, lt_succ a⟩).1
+      (mem_nhds_iff_exists_Ioo_subset' ⟨0, pos_iff_ne_zero.2 h₀⟩ ⟨_, lt_succ a⟩).1
         (h.mem_nhds rfl)
     have hba := hsucc b hbc.1
     exact hba.ne (hbc' ⟨lt_succ b, hba.trans hbc.2⟩)
@@ -276,7 +276,7 @@ theorem isAcc_iff (o : Ordinal) (S : Set Ordinal) : o.IsAcc S ↔
       rwa [← succ_eq_add_one, lt_succ_iff] at this
   · rw [accPt_iff_nhds]
     intro h u umem
-    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds umem ⟨0, Ordinal.pos_iff_ne_zero.mpr h.1⟩
+    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds umem ⟨0, pos_iff_ne_zero.mpr h.1⟩
     obtain ⟨x, hx⟩ := h.2 l hl.1
     use x
     exact ⟨⟨hl.2 ⟨hx.2.1, hx.2.2.le⟩, hx.1⟩, hx.2.2.ne⟩
@@ -285,7 +285,7 @@ theorem IsAcc.forall_lt {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
     ∀ p < o, (S ∩ Ioo p o).Nonempty := ((isAcc_iff _ _).mp h).2
 
 theorem IsAcc.pos {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
-    0 < o := Ordinal.pos_iff_ne_zero.mpr ((isAcc_iff _ _).mp h).1
+    0 < o := pos_iff_ne_zero.mpr ((isAcc_iff _ _).mp h).1
 
 theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsLimit o := by
   rw [isAcc_iff] at h
@@ -348,7 +348,7 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
       have : ↑x < o := x.2
       simp_rw [hp, zero_add, lt_one_iff_zero] at this
       exact hx.2 (SetCoe.ext this)
-    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨0, Ordinal.pos_iff_ne_zero.mpr ppos⟩
+    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨0, pos_iff_ne_zero.mpr ppos⟩
     obtain ⟨x, hx⟩ := h (Ioi ⟨l, hl.1.trans hpo⟩) (Ioi_mem_nhds hl.1)
     use x
     refine ⟨⟨hl.2 ⟨hx.1.1, ?_⟩, hx.1.2⟩, fun h ↦ hx.2 (SetCoe.ext h)⟩

@@ -41,6 +41,6 @@ theorem isIdempotentElem_iff_eq_bot_or_top {R : Type*} [CommRing R] [IsDomain R]
     apply Or.imp id _ (IsIdempotentElem.iff_eq_zero_or_one.mp he)
     rintro rfl
     simp
-  · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
+  · rintro (rfl | rfl) <;> simp [-bot_eq_zero, IsIdempotentElem]
 
 end Ideal

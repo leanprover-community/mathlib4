@@ -176,7 +176,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
   · simp only [not_le] at h
     rw [tsub_eq_zero_iff_le.mpr (Nat.le_sub_one_of_lt h), eq_zero_of_lt R h]
-    simp [pos_iff_ne_zero.mp (pos_of_gt h)]
+    simp [pos_iff_ne_zero.mp h.pos]
 
 theorem iterate_derivative_at_0_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
     (Polynomial.derivative^[ν] (bernsteinPolynomial R n ν)).eval 0 ≠ 0 := by
@@ -198,7 +198,7 @@ we use the symmetry of the Bernstein polynomials.
 theorem iterate_derivative_at_1_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
     k < n - ν → (Polynomial.derivative^[k] (bernsteinPolynomial R n ν)).eval 1 = 0 := by
   intro w
-  rw [flip' _ _ _ (tsub_pos_iff_lt.mp (pos_of_gt w)).le]
+  rw [flip' _ _ _ (tsub_pos_iff_lt.mp w.pos).le]
   simp [Polynomial.eval_comp, iterate_derivative_at_0_eq_zero_of_lt R n w]
 
 @[simp]

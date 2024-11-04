@@ -167,7 +167,7 @@ def nest : DyckWord where
     rw [take_of_length_le (show [U].length ≤ i by rwa [length_singleton]), count_singleton']
     simp only [reduceCtorEq, ite_true, ite_false]
     rw [add_comm]
-    exact add_le_add (zero_le _) ((count_le_length _ _).trans (by simp))
+    exact add_le_add zero_le ((count_le_length _ _).trans (by simp))
 
 @[simp] lemma nest_ne_zero : p.nest ≠ 0 := by simp [← toList_ne_nil, nest]
 
@@ -416,7 +416,15 @@ lemma le_add_self (p q : DyckWord) : q ≤ p + q := by
       (Relation.ReflTransGen.single (Or.inr (outsidePart_add h).symm))
 termination_by p.semilength
 
-variable (p) in protected lemma zero_le : 0 ≤ p := add_zero p ▸ le_add_self p 0
+instance : ZeroLEClass DyckWord where
+  zero_le p := add_zero p ▸ le_add_self p 0
+
+instance : OrderBot DyckWord :=
+  ZeroLEClass.toOrderBot _
+
+variable (p) in
+@[deprecated _root_.zero_le (since := "2024-11-03")]
+protected lemma zero_le : 0 ≤ p := add_zero p ▸ le_add_self p 0
 
 lemma infix_of_le (h : p ≤ q) : p.toList <:+: q.toList := by
   induction h with
@@ -457,9 +465,9 @@ instance : PartialOrder DyckWord where
     have h₂ := infix_of_le qp
     exact DyckWord.ext <| h₁.eq_of_length <| h₁.length_le.antisymm h₂.length_le
 
-protected lemma pos_iff_ne_zero : 0 < p ↔ p ≠ 0 := by
-  rw [ne_comm, iff_comm, ne_iff_lt_iff_le]
-  exact DyckWord.zero_le p
+@[deprecated _root_.pos_iff_ne_zero (since := "2024-11-03")]
+protected lemma pos_iff_ne_zero : 0 < p ↔ p ≠ 0 :=
+  pos_iff_ne_zero
 
 lemma monotone_semilength : Monotone semilength := fun p q pq ↦ by
   induction pq with

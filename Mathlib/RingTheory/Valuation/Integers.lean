@@ -29,7 +29,7 @@ def integer : Subring R where
   carrier := { x | v x ≤ 1 }
   one_mem' := le_of_eq v.map_one
   mul_mem' {x y} hx hy := by simp only [Set.mem_setOf_eq, _root_.map_mul, mul_le_one' hx hy]
-  zero_mem' := by simp only [Set.mem_setOf_eq, _root_.map_zero, zero_le']
+  zero_mem' := by simp only [Set.mem_setOf_eq, _root_.map_zero, zero_le]
   add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
   neg_mem' {x} hx := by simp only [Set.mem_setOf_eq] at hx; simpa only [Set.mem_setOf_eq, map_neg]
 
@@ -112,9 +112,8 @@ theorem dvd_of_le (hv : Integers v O) {x y : O}
   by_cases
     (fun hy : algebraMap O F y = 0 =>
       have hx : x = 0 :=
-        hv.1 <|
-          (algebraMap O F).map_zero.symm ▸ (v.zero_iff.1 <| le_zero_iff.1 (v.map_zero ▸ hy ▸ h))
-      hx.symm ▸ dvd_zero y)
+        hv.1 <| (algebraMap O F).map_zero ▸ (v.zero_iff.1 (v.map_zero ▸ hy ▸ h).eq_zero)
+      hx ▸ dvd_zero y)
     fun hy : algebraMap O F y ≠ 0 =>
     have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
       rw [← v.map_one, ← inv_mul_cancel₀ hy, v.map_mul, v.map_mul]

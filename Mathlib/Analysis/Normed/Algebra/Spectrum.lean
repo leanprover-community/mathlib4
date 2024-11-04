@@ -219,7 +219,7 @@ theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
     spectralRadius 𝕜 a ≤ atTop.liminf fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
   refine ENNReal.le_of_forall_lt_one_mul_le fun ε hε => ?_
   by_cases h : ε = 0
-  · simp only [h, zero_mul, zero_le']
+  · simp only [h, zero_mul, zero_le]
   simp only [ENNReal.mul_le_iff_le_inv h (hε.trans_le le_top).ne, mul_comm ε⁻¹,
     liminf_eq_iSup_iInf_of_nat', ENNReal.iSup_mul]
   conv_rhs => arg 1; intro i; rw [ENNReal.iInf_mul (by simp [h])]
@@ -300,7 +300,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
           le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) ?_)
             (le_max_left _ _)
         by_cases h : ‖a‖₊ = 0
-        · simp only [h, zero_mul, zero_le', pow_succ']
+        · simp only [h, zero_mul, zero_le, pow_succ']
         · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
           simpa only [← mul_pow, mul_comm] using pow_le_one' hr.le n.succ
     r_pos := ENNReal.inv_pos.mpr coe_ne_top

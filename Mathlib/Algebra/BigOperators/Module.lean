@@ -29,7 +29,7 @@ theorem sum_Ico_by_parts (hmn : m < n) :
     (∑ i ∈ Ico (m + 1) n, f i • G (i + 1)) =
       (∑ i ∈ Ico m (n - 1), f i • G (i + 1)) + f (n - 1) • G n - f m • G (m + 1) := by
     rw [← sum_Ico_sub_bot _ hmn, ← sum_Ico_succ_sub_top _ (Nat.le_sub_one_of_lt hmn),
-      Nat.sub_add_cancel (pos_of_gt hmn), sub_add_cancel]
+      Nat.sub_add_cancel hmn.pos, sub_add_cancel]
   rw [sum_eq_sum_Ico_succ_bot hmn]
   conv in (occs := 3) (f _ • g _) => rw [← sum_range_succ_sub_sum g]
   simp_rw [smul_sub, sum_sub_distrib, h₂, h₁]

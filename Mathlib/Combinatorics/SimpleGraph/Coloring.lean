@@ -240,7 +240,7 @@ theorem colorable_set_nonempty_of_colorable {n : ℕ} (hc : G.Colorable n) :
   ⟨n, hc⟩
 
 theorem chromaticNumber_bddBelow : BddBelow { n : ℕ | G.Colorable n } :=
-  ⟨0, fun _ _ => zero_le _⟩
+  ⟨0, fun _ _ => zero_le⟩
 
 theorem Colorable.chromaticNumber_le {n : ℕ} (hc : G.Colorable n) : G.chromaticNumber ≤ n := by
   rw [hc.chromaticNumber_eq_sInf]

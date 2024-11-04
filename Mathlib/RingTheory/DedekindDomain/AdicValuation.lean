@@ -150,7 +150,7 @@ theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
     v.intValuationDef r ≤ Multiplicative.ofAdd (-(n : ℤ)) ↔ v.asIdeal ^ n ∣ Ideal.span {r} := by
   rw [intValuationDef]
   split_ifs with hr
-  · simp_rw [hr, Ideal.dvd_span_singleton, zero_le', Submodule.zero_mem]
+  · simp_rw [hr, Ideal.dvd_span_singleton, zero_le, Submodule.zero_mem]
   · rw [WithZero.coe_le_coe, ofAdd_le, neg_le_neg_iff, Int.ofNat_le, Ideal.dvd_span_singleton, ←
       Associates.le_singleton_iff,
       Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hr)
@@ -215,7 +215,7 @@ theorem intValuation.map_add_le_max' (x y : R) :
       conv_rhs => rw [max_comm, intValuationDef, if_pos (Eq.refl _)]
       rw [max_eq_right (WithZero.zero_le (v.intValuationDef x))]
     · by_cases hxy : x + y = 0
-      · rw [intValuationDef, if_pos hxy]; exact zero_le'
+      · rw [intValuationDef, if_pos hxy]; exact zero_le
       · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx, v.intValuationDef_if_neg hy,
           WithZero.le_max_iff, intValuation.le_max_iff_min_le]
         set nmin :=

@@ -196,13 +196,13 @@ theorem is_bot_adic_iff {A : Type*} [CommRing A] [TopologicalSpace A] [Topologic
   constructor
   · rintro ⟨h, _h'⟩
     rw [discreteTopology_iff_isOpen_singleton_zero]
-    simpa using h 1
+    simpa [-bot_eq_zero] using h 1
   · intros
     constructor
-    · simp
+    · simp [-bot_eq_zero]
     · intro U U_nhds
       use 1
-      simp [mem_of_mem_nhds U_nhds]
+      simp [-bot_eq_zero, mem_of_mem_nhds U_nhds]
 
 end IsAdic
 

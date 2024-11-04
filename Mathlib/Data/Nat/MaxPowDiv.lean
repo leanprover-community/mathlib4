@@ -82,7 +82,7 @@ theorem base_pow_mul {p n exp : ℕ} (hp : 1 < p) (hn : 0 < n) :
     rw [Nat.pow_succ, mul_assoc, mul_comm, mul_assoc, base_mul_eq_succ hp, mul_comm,
       base_pow_mul hp hn]
     · ac_rfl
-    · apply Nat.mul_pos hn <| pow_pos (pos_of_gt hp) e
+    · exact Nat.mul_pos hn <| pow_pos hp.pos e
 
 theorem pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
   dsimp [maxPowDiv]

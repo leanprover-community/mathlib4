@@ -92,7 +92,7 @@ theorem degrees_monomial_eq (s : σ →₀ ℕ) (a : R) (ha : a ≠ 0) :
     exact (supDegree_single s a).trans (if_neg ha)
 
 theorem degrees_C (a : R) : degrees (C a : MvPolynomial σ R) = 0 :=
-  Multiset.le_zero.1 <| degrees_monomial _ _
+  (degrees_monomial _ _).eq_zero
 
 theorem degrees_X' (n : σ) : degrees (X n : MvPolynomial σ R) ≤ {n} :=
   le_trans (degrees_monomial _ _) <| le_of_eq <| toMultiset_single _ _
@@ -142,7 +142,7 @@ theorem le_degrees_add {p q : MvPolynomial σ R} (h : p.degrees.Disjoint q.degre
   intro d hd
   rw [Multiset.disjoint_iff_ne] at h
   obtain rfl | h0 := eq_or_ne d 0
-  · rw [toMultiset_zero]; apply Multiset.zero_le
+  · rw [toMultiset_zero]; apply zero_le
   · refine Finset.le_sup_of_le (b := d) ?_ le_rfl
     rw [mem_support_iff, coeff_add]
     suffices q.coeff d = 0 by rwa [this, add_zero, coeff, ← Finsupp.mem_support_iff]
@@ -347,7 +347,7 @@ theorem totalDegree_le_of_support_subset (h : p.support ⊆ q.support) :
 
 @[simp]
 theorem totalDegree_C (a : R) : (C a : MvPolynomial σ R).totalDegree = 0 :=
-  (supDegree_single 0 a).trans <| by rw [sum_zero_index, bot_eq_zero', ite_self]
+  (supDegree_single 0 a).trans <| by rw [sum_zero_index, bot_eq_zero, ite_self]
 
 @[simp]
 theorem totalDegree_zero : (0 : MvPolynomial σ R).totalDegree = 0 := by
@@ -444,7 +444,7 @@ theorem totalDegree_finset_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolyn
 theorem totalDegree_finset_sum {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (s.sum f).totalDegree ≤ Finset.sup s fun i => (f i).totalDegree := by
   induction' s using Finset.cons_induction with a s has hind
-  · exact zero_le _
+  · exact zero_le
   · rw [Finset.sum_cons, Finset.sup_cons, sup_eq_max]
     exact (MvPolynomial.totalDegree_add _ _).trans (max_le_max le_rfl hind)
 
@@ -453,8 +453,8 @@ lemma totalDegree_finsetSum_le {ι : Type*} {s : Finset ι} {f : ι → MvPolyno
   (totalDegree_finset_sum ..).trans <| Finset.sup_le hf
 
 lemma degreeOf_le_totalDegree (f : MvPolynomial σ R) (i : σ) : f.degreeOf i ≤ f.totalDegree :=
-  degreeOf_le_iff.mpr fun d hd ↦ (eq_or_ne (d i) 0).elim (·.trans_le zero_le') fun h ↦
-    (Finset.single_le_sum (fun _ _ ↦ zero_le') <| Finsupp.mem_support_iff.mpr h).trans
+  degreeOf_le_iff.mpr fun d hd ↦ (eq_or_ne (d i) 0).elim (·.trans_le zero_le) fun h ↦
+    (Finset.single_le_sum (fun _ _ ↦ zero_le) <| Finsupp.mem_support_iff.mpr h).trans
     (le_totalDegree hd)
 
 theorem exists_degree_lt [Fintype σ] (f : MvPolynomial σ R) (n : ℕ)

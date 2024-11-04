@@ -1055,7 +1055,7 @@ theorem Products.limitOrdinal (l : Products I) : l.isGood (π C (ord I · < o)) 
     ∃ (o' : Ordinal), o' < o ∧ l.isGood (π C (ord I · < o')) := by
   refine ⟨fun h ↦ ?_, fun ⟨o', ⟨ho', hl⟩⟩ ↦ isGood_mono C (le_of_lt ho') hl⟩
   use Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a))
-  have ha : ⊥ < o := by rw [Ordinal.bot_eq_zero, Ordinal.pos_iff_ne_zero]; exact ho.1
+  have ha : ⊥ < o := by rw [Ordinal.bot_eq_zero, pos_iff_ne_zero]; exact ho.1
   have hslt : Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a)) < o := by
     simp only [Finset.sup_lt_iff ha, List.mem_toFinset]
     exact fun b hb ↦ ho.2 _ (prop_of_isGood C (ord I · < o) h b hb)
@@ -1736,7 +1736,7 @@ We also define
 
 theorem GoodProducts.P0 : P I 0 := fun _ C _ hsC ↦ by
   have : C ⊆ {(fun _ ↦ false)} := fun c hc ↦ by
-    ext x; exact Bool.eq_false_iff.mpr (fun ht ↦ (Ordinal.not_lt_zero (ord I x)) (hsC c hc x ht))
+    ext x; exact Bool.eq_false_iff.mpr (fun ht ↦ (not_lt_zero (ord I x)) (hsC c hc x ht))
   rw [Set.subset_singleton_iff_eq] at this
   cases this
   · subst C

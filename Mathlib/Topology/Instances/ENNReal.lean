@@ -1003,7 +1003,7 @@ theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :
     ∑' x, f x = f i + ∑' x, ite (x = i) 0 (f x) := by
   refine tsum_eq_add_tsum_ite' i (NNReal.summable_of_le (fun i' => ?_) hf)
   rw [Function.update_apply]
-  split_ifs <;> simp only [zero_le', le_rfl]
+  split_ifs <;> simp only [zero_le, le_rfl]
 
 end NNReal
 
@@ -1346,7 +1346,7 @@ variable {ι : Type*}
 lemma limsup_sub_const (F : Filter ι) (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
     Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c := by
   rcases F.eq_or_neBot with rfl | _
-  · simp only [limsup_bot, bot_eq_zero', zero_le, tsub_eq_zero_of_le]
+  · simp only [limsup_bot, bot_eq_zero, zero_le, tsub_eq_zero_of_le]
   · exact (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ x - c)
     (fun _ _ h ↦ tsub_le_tsub_right h c) (continuous_sub_right c).continuousAt).symm
 
@@ -1358,7 +1358,7 @@ lemma liminf_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : �
 lemma limsup_const_sub (F : Filter ι) (f : ι → ℝ≥0∞) {c : ℝ≥0∞} (c_ne_top : c ≠ ∞) :
     Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F := by
   rcases F.eq_or_neBot with rfl | _
-  · simp only [limsup_bot, bot_eq_zero', liminf_bot, le_top, tsub_eq_zero_of_le]
+  · simp only [limsup_bot, bot_eq_zero, liminf_bot, le_top, tsub_eq_zero_of_le]
   · exact (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 

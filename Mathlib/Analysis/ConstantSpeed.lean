@@ -159,7 +159,7 @@ theorem hasConstantSpeedOnWith_zero_iff :
     · rw [edist_comm] at hxy
       exact hxy (h ys xs y ⟨ys, le_rfl, yx⟩ x ⟨xs, yx, le_rfl⟩)
   · rintro h x _ y _
-    refine le_antisymm ?_ zero_le'
+    refine le_antisymm ?_ zero_le
     rw [← h]
     exact eVariationOn.mono f inter_subset_left
 

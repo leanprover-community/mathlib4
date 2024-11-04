@@ -202,7 +202,7 @@ the sum."]
 lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
     ‖∏ i ∈ s, f i‖₊ ≤ s.sup (‖f ·‖₊) := by
   rcases s.eq_empty_or_nonempty with rfl|hs
-  · simp only [Finset.prod_empty, nnnorm_one', Finset.sup_empty, bot_eq_zero', le_refl]
+  · simp only [Finset.prod_empty, nnnorm_one', Finset.sup_empty, bot_eq_zero, le_refl]
   · simpa only [← Finset.sup'_eq_sup hs, Finset.le_sup'_iff, coe_le_coe, coe_nnnorm']
       using hs.norm_prod_le_sup'_norm f
 

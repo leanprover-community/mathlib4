@@ -234,11 +234,11 @@ lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G�
   constructor
   · intro H
     refine ⟨fun x y h ↦ ?_⟩
-    rcases (zero_le' (a := x)).eq_or_lt with rfl|hx
+    rcases (zero_le (x := x)).eq_or_lt with rfl|hx
     · lift y to G₀ˣ using h.ne'.isUnit
       obtain ⟨z, hz⟩ := exists_ne (1 : G₀ˣ)
       refine ⟨(y * |z|ₘ⁻¹ : G₀ˣ), ?_, ?_⟩
-      · simp [zero_lt_iff]
+      · simp [pos_iff_ne_zero]
       · rw [Units.val_lt_val]
         simp [hz]
     · obtain ⟨z, hz, hz'⟩ := H.dense (Units.mk0 x hx.ne') (Units.mk0 y (hx.trans h).ne')
@@ -248,7 +248,7 @@ lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G�
   · intro H
     refine ⟨fun x y h ↦ ?_⟩
     obtain ⟨z, hz⟩ := exists_between (Units.val_lt_val.mpr h)
-    rcases (zero_le' (a := z)).eq_or_lt with rfl|hz'
+    rcases (zero_le (x := z)).eq_or_lt with rfl|hz'
     · simp at hz
     refine ⟨Units.mk0 z hz'.ne', ?_⟩
     simp [← Units.val_lt_val, hz]

@@ -499,7 +499,7 @@ theorem ncard_dvd_card (hB : IsBlock G B) (hB_ne : B.Nonempty) :
 theorem eq_univ_of_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) :
     B = Set.univ := by
   rcases Set.eq_empty_or_nonempty B with rfl | hB_ne
-  · simp only [Set.ncard_empty, zero_mul, not_lt_zero'] at hB'
+  · simp only [Set.ncard_empty, zero_mul, not_lt_zero] at hB'
   have key := hB.ncard_block_mul_ncard_orbit_eq hB_ne
   rw [← key, mul_lt_mul_iff_of_pos_left (by rwa [Set.ncard_pos])] at hB'
   interval_cases (orbit G B).ncard

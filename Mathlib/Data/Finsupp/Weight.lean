@@ -111,7 +111,7 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
     exact Nat.zero_lt_of_ne_zero hs
   · simp only [not_mem_support_iff] at h
     rw [h]
-    apply zero_le
+    exact zero_le
 
 variable [OrderedAddCommMonoid M] (w : σ → M)
 
@@ -141,7 +141,7 @@ variable {M : Type*} [CanonicallyOrderedAddCommMonoid M] (w : σ → M)
 
 theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f :=
-  le_weight_of_ne_zero (fun _ ↦ zero_le _) hs
+  le_weight_of_ne_zero (fun _ ↦ zero_le) hs
 
 /-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then `weight f` is zero iff `f=0. -/
 theorem weight_eq_zero_iff_eq_zero

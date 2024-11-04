@@ -207,7 +207,7 @@ theorem toZ_of_lt (hi : i < i0) :
 theorem toZ_of_eq : toZ i0 i0 = 0 := by
   rw [toZ_of_ge le_rfl]
   norm_cast
-  refine le_antisymm (Nat.find_le ?_) (zero_le _)
+  refine le_antisymm (Nat.find_le ?_) zero_le
   rw [Function.iterate_zero, id]
 
 theorem iterate_succ_toZ (i : ι) (hi : i0 ≤ i) : succ^[(toZ i0 i).toNat] i0 = i := by
