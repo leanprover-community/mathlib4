@@ -117,9 +117,8 @@ def compare (existing new : ErrorContext) : ComparisonResult :=
 
   -- NB: keep the following in sync with `parse?_errorContext` below.
   -- Generally, comparable errors must have equal `StyleError`s.
-  else match (existing.error, new.error) with
-  -- In all other cases, `StyleErrors` must compare equal.
-  | (a, b) => if a == b then ComparisonResult.Comparable else ComparisonResult.Different
+  else
+    if existing.error == new.error then ComparisonResult.Comparable else ComparisonResult.Different
 
 /-- Find the first style exception in `exceptions` (if any) which covers a style exception `e`. -/
 def ErrorContext.find?_comparable (e : ErrorContext) (exceptions : Array ErrorContext) :
