@@ -124,11 +124,11 @@ jobs:
         with:
           linters: gcc
           run: |
-            lake build Mathlib.Data.Nat.Choose.Basic
+            lake build
 
       - name: Full report
         run: |
-          lake build Mathlib.Data.Nat.Choose.Basic | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
+          lake build | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
             awk -F: 'BEGIN{max=0}
               /^⚠/{ print currMax; max=0 }
               (max < $3) {
