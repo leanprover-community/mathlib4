@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
-import Batteries.Data.Sum.Lemmas
 
 /-!
 # Additional lemmas about sum types
@@ -19,6 +18,9 @@ universe u v w x
 variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}
 
 namespace Sum
+
+-- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
+attribute [simp] Sum.forall Sum.exists
 
 theorem exists_sum {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
     (∃ fab, p fab) ↔ (∃ fa fb, p (Sum.rec fa fb)) := by
@@ -35,7 +37,7 @@ theorem sum_rec_congr (P : α ⊕ β → Sort*) (f : ∀ i, P (inl i)) (g : ∀ 
 
 section get
 
-variable {x y : α ⊕ β}
+variable {x : α ⊕ β}
 
 theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
   cases x <;> simp

@@ -292,7 +292,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         apply Finset.sum_congr rfl fun i _hi => ?_
         dsimp only [w]
         simp only [← Npos, Nat.not_lt_zero, Nat.add_succ_sub_one, add_zero, if_false,
-          add_eq_zero, Nat.one_ne_zero, false_and_iff, Nat.succ_add_sub_one, zero_add]
+          add_eq_zero, Nat.one_ne_zero, false_and, Nat.succ_add_sub_one, zero_add]
         rw [add_comm 1 i]
       _ = ∑ i ∈ Finset.Ico 1 (n + 1), edist (f (w (i + 1))) (f (w i)) := by
         rw [Finset.range_eq_Ico]
@@ -317,7 +317,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         congr 1
         · congr 1
           · apply Finset.sum_congr rfl fun i hi => ?_
-            simp only [Finset.mem_Ico, zero_le', true_and_iff] at hi
+            simp only [Finset.mem_Ico, zero_le', true_and] at hi
             dsimp only [w]
             have A : i + 1 < N := Nat.lt_pred_iff.1 hi
             have B : i < N := Nat.lt_of_succ_lt A

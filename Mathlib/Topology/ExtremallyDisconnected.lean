@@ -45,7 +45,7 @@ class ExtremallyDisconnected : Prop where
 theorem extremallyDisconnected_of_homeo {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     [ExtremallyDisconnected X] (e : X ≃ₜ Y) : ExtremallyDisconnected Y where
   open_closure U hU := by
-    rw [e.symm.inducing.closure_eq_preimage_closure_image, Homeomorph.isOpen_preimage]
+    rw [e.symm.isInducing.closure_eq_preimage_closure_image, Homeomorph.isOpen_preimage]
     exact ExtremallyDisconnected.open_closure _ (e.symm.isOpen_image.mpr hU)
 
 section TotallySeparated
@@ -88,7 +88,7 @@ theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneC
   let h : StoneCech X → Y := stoneCechExtend ht
   have hh : Continuous h := continuous_stoneCechExtend ht
   refine ⟨h, hh, denseRange_stoneCechUnit.equalizer (hg.comp hh) hf ?_⟩
-  rw [comp.assoc, stoneCechExtend_extends ht, ← comp.assoc, hs, id_comp]
+  rw [comp_assoc, stoneCechExtend_extends ht, ← comp_assoc, hs, id_comp]
 
 protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [T2Space X]
     (h : CompactT2.Projective X) : ExtremallyDisconnected X := by
@@ -271,7 +271,7 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   have π₂_cont : Continuous π₂ := continuous_snd.comp continuous_subtype_val
   refine ⟨E.restrict π₂ ∘ ρ'.symm, ⟨π₂_cont.continuousOn.restrict.comp ρ'.symm.continuous, ?_⟩⟩
   suffices f ∘ E.restrict π₂ = φ ∘ ρ' by
-    rw [← comp.assoc, this, comp.assoc, Homeomorph.self_comp_symm, comp_id]
+    rw [← comp_assoc, this, comp_assoc, Homeomorph.self_comp_symm, comp_id]
   ext x
   exact x.val.mem.symm
 

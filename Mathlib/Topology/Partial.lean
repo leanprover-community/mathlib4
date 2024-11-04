@@ -51,7 +51,7 @@ theorem open_dom_of_pcontinuous {f : X →. Y} (h : PContinuous f) : IsOpen f.Do
   rw [← PFun.preimage_univ]; exact h _ isOpen_univ
 
 theorem pcontinuous_iff' {f : X →. Y} :
-    PContinuous f ↔ ∀ {x y} (h : y ∈ f x), PTendsto' f (𝓝 x) (𝓝 y) := by
+    PContinuous f ↔ ∀ {x y} (_ : y ∈ f x), PTendsto' f (𝓝 x) (𝓝 y) := by
   constructor
   · intro h x y h'
     simp only [ptendsto'_def, mem_nhds_iff]

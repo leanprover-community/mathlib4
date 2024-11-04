@@ -3,9 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Data.Set.Basic
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -28,7 +28,7 @@ boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set, a
 
 A typical subobject should be declared as:
 ```
-structure MySubobject (X : Type*) [ObjectTypeclass X] :=
+structure MySubobject (X : Type*) [ObjectTypeclass X] where
   (carrier : Set X)
   (op_mem' : ∀ {x : X}, x ∈ carrier → sorry ∈ carrier)
 
@@ -60,7 +60,7 @@ end MySubobject
 
 An alternative to `SetLike` could have been an extensional `Membership` typeclass:
 ```
-class ExtMembership (α : out_param <| Type u) (β : Type v) extends Membership α β :=
+class ExtMembership (α : out_param <| Type u) (β : Type v) extends Membership α β where
   (ext_iff : ∀ {s t : β}, s = t ↔ ∀ (x : α), x ∈ s ↔ x ∈ t)
 ```
 While this is equivalent, `SetLike` conveniently uses a carrier set projection directly.
@@ -121,9 +121,9 @@ uses the `SetLike.instMembership` instance. -/
 def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
   let #[_, .lam n _ body _] := (← getExpr).getAppArgs | failure
   guard <| body.isAppOf ``Membership.mem
-  let #[_, _, inst, .bvar 0, _] := body.getAppArgs | failure
+  let #[_, _, inst, _, .bvar 0] := body.getAppArgs | failure
   guard <| inst.isAppOfArity ``instMembership 3
-  let S ← withAppArg <| withBindingBody n <| withNaryArg 4 delab
+  let S ← withAppArg <| withBindingBody n <| withNaryArg 3 delab
   `(↥$S)
 
 end Delab
@@ -184,6 +184,8 @@ lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p 
 -- Porting note: removed `@[simp]` because `simpNF` linter complained
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 
+@[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
+
 instance (priority := 100) instPartialOrder : PartialOrder A :=
   { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
     le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K }
@@ -191,16 +193,14 @@ instance (priority := 100) instPartialOrder : PartialOrder A :=
 theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T :=
   Iff.rfl
 
-@[simp, norm_cast]
-theorem coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
-  Iff.rfl
+@[simp, norm_cast] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T := .rfl
+@[simp, norm_cast] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := .rfl
+
+@[gcongr] protected alias ⟨_, GCongr.coe_subset_coe⟩ := coe_subset_coe
+@[gcongr] protected alias ⟨_, GCongr.coe_ssubset_coe⟩ := coe_ssubset_coe
 
 @[mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
-
-@[simp, norm_cast]
-theorem coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T :=
-  Iff.rfl
 
 @[mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
