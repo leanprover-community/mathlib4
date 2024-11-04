@@ -49,7 +49,7 @@ instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) where
 
 @[norm_cast]
 theorem coe_prod {ι : Type*} (f : ι → ℕ+) (s : Finset ι) :
-    ↑(∏ i in s, f i) = (∏ i in s, f i : ℕ) :=
+    ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : ℕ) :=
   map_prod coeMonoidHom _ _
 
 end PNat
@@ -180,7 +180,7 @@ lemma finMulAntidiagonal_exists_unique_prime_dvd {d n p : ℕ} (hn : Squarefree 
 
 private def primeFactorsPiBij (d n : ℕ) :
     ∀ f ∈ (n.primeFactors.pi fun _ => (univ : Finset <| Fin d)), Fin d → ℕ :=
-  fun f _ i => ∏ p in Finset.filter (fun p => f p.1 p.2 = i) n.primeFactors.attach, p
+  fun f _ i => ∏ p ∈ Finset.filter (fun p => f p.1 p.2 = i) n.primeFactors.attach, p
 
 private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
   (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
@@ -227,7 +227,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
     exact fun a h => mem_univ (f a h)
   funext i
   have : t i ∣ n := dvd_of_mem_finMulAntidiagonal ht _
-  trans (∏ p in n.primeFactors.attach, if p.1 ∣ t i then p else 1)
+  trans (∏ p ∈ n.primeFactors.attach, if p.1 ∣ t i then p else 1)
   · rw [Nat.primeFactorsPiBij, ← prod_filter]
     congr
     ext ⟨p, hp⟩
