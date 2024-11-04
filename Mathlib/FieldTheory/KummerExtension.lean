@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.RootsOfUnity.Basic
-import Mathlib.RingTheory.AdjoinRoot
+import Mathlib.RingTheory.AdjoinRoot.PowerBasis
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.RingTheory.Norm.Basic

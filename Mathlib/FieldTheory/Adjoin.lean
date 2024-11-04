@@ -9,6 +9,7 @@ import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.RingTheory.AdjoinRoot.PowerBasis
 
 /-!
 # Adjoining Elements to Fields

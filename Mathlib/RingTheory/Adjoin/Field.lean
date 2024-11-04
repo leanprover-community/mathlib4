@@ -5,7 +5,8 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.AdjoinRoot
+import Mathlib.RingTheory.AdjoinRoot.Basic
+import Mathlib.FieldTheory.Minpoly.Field
 
 /-!
 # Adjoining elements to a field

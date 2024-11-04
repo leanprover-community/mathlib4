@@ -6,6 +6,7 @@ Authors: David Kurniadi Angdinata
 import Mathlib.Algebra.Polynomial.Bivariate
 import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Affine coordinates for Weierstrass curves

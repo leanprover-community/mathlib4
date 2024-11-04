@@ -5,7 +5,7 @@ Authors: Junyan Xu
 -/
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.Norm.Defs
-import Mathlib.RingTheory.AdjoinRoot
+import Mathlib.RingTheory.AdjoinRoot.PowerBasis
 
 /-!
 # Norms on free modules over principal ideal domains

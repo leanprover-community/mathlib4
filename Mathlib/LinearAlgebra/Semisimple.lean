@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 import Mathlib.RingTheory.SimpleModule
+import Mathlib.RingTheory.AdjoinRoot.PowerBasis
 
 /-!
 # Semisimple linear endomorphisms
