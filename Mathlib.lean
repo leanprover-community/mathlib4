@@ -3366,7 +3366,8 @@ import Mathlib.LinearAlgebra.RootSystem.RootPositive
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.LinearAlgebra.Semisimple
 import Mathlib.LinearAlgebra.SesquilinearForm
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.LinearAlgebra.Span.Defs
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.SymplecticGroup
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
