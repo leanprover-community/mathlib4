@@ -121,7 +121,7 @@ namespace Quantale
 variable {α : Type _}
 variable [Semigroup α] [Quantale α]
 
-/-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
+/-- Left- and right-residuation operators on an additive quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
 I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
