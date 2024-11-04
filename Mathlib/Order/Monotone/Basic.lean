@@ -303,6 +303,24 @@ alias ⟨_, StrictAntiOn.dual⟩ := strictAntiOn_dual_iff
 
 end OrderDual
 
+section WellFounded
+
+variable [Preorder α] [Preorder β] {f : α → β}
+
+theorem StrictMono.wellFoundedLT [WellFoundedLT β] (hf : StrictMono f) : WellFoundedLT α :=
+  Subrelation.isWellFounded (InvImage (· < ·) f) @hf
+
+theorem StrictAnti.wellFoundedLT [WellFoundedGT β] (hf : StrictAnti f) : WellFoundedLT α :=
+  StrictMono.wellFoundedLT (β := βᵒᵈ) hf
+
+theorem StrictMono.wellFoundedGT [WellFoundedGT β] (hf : StrictMono f) : WellFoundedGT α :=
+  StrictMono.wellFoundedLT (α := αᵒᵈ) (β := βᵒᵈ) (fun _ _ h ↦ hf h)
+
+theorem StrictAnti.wellFoundedGT [WellFoundedLT β] (hf : StrictAnti f) : WellFoundedGT α :=
+  StrictMono.wellFoundedLT (α := αᵒᵈ) (fun _ _ h ↦ hf h)
+
+end WellFounded
+
 /-! ### Monotonicity in function spaces -/
 
 
