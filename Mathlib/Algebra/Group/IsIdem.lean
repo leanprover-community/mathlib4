@@ -6,7 +6,7 @@ Authors: Pieter Cuijpers
 import Mathlib.Algebra.Group.Defs
 
 /-!
-# Mixing for Idempotent Semigroups
+# Idempotent Semigroups
 
 An idempotent semigroup is a semigroup that satisfies `x * x = x`.
 
