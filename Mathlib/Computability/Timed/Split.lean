@@ -56,7 +56,7 @@ lemma split_halves_length_aux : ∀ {l l₁ l₂ : List α},
         simp [ih₁]
 
 theorem split_halves_length : ∀ {l l₁ l₂ : List α},
-  List.split l = (l₁, l₂) →
+    List.split l = (l₁, l₂) →
     List.length l₁ ≤ (List.length l + 1) / 2 ∧
     List.length l₂ ≤ (List.length l) / 2 := by
   intros l l₁ l₂ h
