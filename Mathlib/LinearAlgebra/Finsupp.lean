@@ -636,9 +636,14 @@ theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
 
 variable {α M}
 
+theorem linearCombination_linear_comp (f : M →ₗ[R] M') :
+    linearCombination R (f ∘ v) = f ∘ₗ linearCombination R v := by
+  ext
+  simp [linearCombination_apply]
+
 theorem apply_linearCombination (f : M →ₗ[R] M') (v) (l : α →₀ R) :
-    f (linearCombination R v l) = linearCombination R (f ∘ v) l := by
-  apply Finsupp.induction_linear l <;> simp (config := { contextual := true })
+    f (linearCombination R v l) = linearCombination R (f ∘ v) l :=
+  congr($(linearCombination_linear_comp R f) l).symm
 
 @[deprecated (since := "2024-08-29")] alias apply_total := apply_linearCombination
 
@@ -889,7 +894,6 @@ theorem domLCongr_symm {α₁ α₂ : Type*} (f : α₁ ≃ α₂) :
     ((Finsupp.domLCongr f).symm : (_ →₀ M) ≃ₗ[R] _) = Finsupp.domLCongr f.symm :=
   LinearEquiv.ext fun _ => rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem domLCongr_single {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (i : α₁) (m : M) :
     (Finsupp.domLCongr e : _ ≃ₗ[R] _) (Finsupp.single i m) = Finsupp.single (e i) m := by
   simp
@@ -1226,10 +1230,8 @@ protected theorem Submodule.finsupp_sum_mem {ι β : Type*} [Zero β] (S : Submo
   AddSubmonoidClass.finsupp_sum_mem S f g h
 
 theorem LinearMap.map_finsupp_linearCombination (f : M →ₗ[R] N) {ι : Type*} {g : ι → M}
-    (l : ι →₀ R) : f (linearCombination R g l) = linearCombination R (f ∘ g) l := by
-  -- Porting note: `(· ∘ ·)` is required.
-  simp only [linearCombination_apply, linearCombination_apply, Finsupp.sum, map_sum, map_smul,
-             (· ∘ ·)]
+    (l : ι →₀ R) : f (linearCombination R g l) = linearCombination R (f ∘ g) l :=
+  apply_linearCombination _ _ _ _
 
 @[deprecated (since := "2024-08-29")] alias LinearMap.map_finsupp_total :=
   LinearMap.map_finsupp_linearCombination
