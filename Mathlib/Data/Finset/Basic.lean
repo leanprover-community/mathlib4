@@ -8,7 +8,7 @@ import Mathlib.Data.Finset.Disjoint
 import Mathlib.Data.Finset.Erase
 import Mathlib.Data.Finset.Filter
 import Mathlib.Data.Finset.Range
-import Mathlib.Data.Finset.SymmDiff
+import Mathlib.Data.Finset.SDiff
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.Directed
 import Mathlib.Order.Interval.Set.Defs
