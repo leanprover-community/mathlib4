@@ -129,7 +129,7 @@ I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 the Heyting operator on complete lattices, but for a non-commutative logic.
 I.e. `x ⇨ₗ y = sSup { z | z + x ≤ y }`.
 "]
-def leftResiduation (x y : α) := sSup { z | z * x ≤ y }
+def leftResiduation (x y : α) := sSup {z | z * x ≤ y}
 
 /-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
