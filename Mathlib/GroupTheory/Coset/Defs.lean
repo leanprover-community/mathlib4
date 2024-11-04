@@ -157,7 +157,7 @@ abbrev mk (a : α) : α ⧸ s :=
 
 @[to_additive]
 theorem mk_surjective : Function.Surjective <| @mk _ _ s :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.mk''_surjective
 
 @[to_additive (attr := simp)]
 lemma range_mk : range (QuotientGroup.mk (s := s)) = univ := range_iff_surjective.mpr mk_surjective
