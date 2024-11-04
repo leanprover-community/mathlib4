@@ -823,7 +823,7 @@ theorem contMDiffWithinAt_iff_contMDiffWithinAt_nhdsWithin
   rw [contMDiffWithinAt_iff_contMDiffOn_nhds]
   rintro ⟨u, hu, h⟩
   filter_upwards [hu, eventually_mem_nhdsWithin_iff.mpr hu] with x' h'x' hx'
-  apply (h x' h'x').mono_of_mem
+  apply (h x' h'x').mono_of_mem_nhdsWithin
   exact nhdsWithin_mono _ (subset_insert x s) hx'
 
 /-! ### Congruence lemmas -/

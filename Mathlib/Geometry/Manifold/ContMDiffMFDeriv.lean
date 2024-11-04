@@ -77,7 +77,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
   suffices ContMDiffWithinAt J 𝓘(𝕜, E →L[𝕜] E') m
       (inTangentCoordinates I I' g (fun x ↦ f x (g x))
         (fun x ↦ mfderivWithin I I' (f x) u (g x)) x₀) t' x₀ by
-    apply ContMDiffWithinAt.mono_of_mem this
+    apply ContMDiffWithinAt.mono_of_mem_nhdsWithin this
     apply inter_mem self_mem_nhdsWithin
     exact hg.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (g x₀))
   have hx₀gx₀ : (x₀, g x₀) ∈ t ×ˢ u := by simp [hx₀, hu hx₀]
@@ -535,8 +535,8 @@ lemma smooth_equivTangentBundleProd_symm :
     rw [DifferentiableWithinAt.fderivWithin_prod (by exact D _) (by exact D') (U _)]
     change fderivWithin 𝕜 (φ ∘ Prod.fst) _ _ _ = fderivWithin 𝕜 (φ ∘ Prod.fst) _ _ _
     rw [Set.range_prod_map] at U ⊢
-    rw [fderivWithin.comp _ (by exact D0) differentiableWithinAt_fst mapsTo_fst_prod (U _),
-      fderivWithin.comp _ (by exact D0) differentiableWithinAt_fst mapsTo_fst_prod (U _)]
+    rw [fderivWithin_comp _ (by exact D0) differentiableWithinAt_fst mapsTo_fst_prod (U _),
+      fderivWithin_comp _ (by exact D0) differentiableWithinAt_fst mapsTo_fst_prod (U _)]
     simp [fderivWithin_fst, U]
   · -- check that, in the fiber, the second projection is smooth in charts
     -- for this, write down a map which is obviously smooth (`C` below) and then check that the two
@@ -612,8 +612,8 @@ lemma smooth_equivTangentBundleProd_symm :
     rw [DifferentiableWithinAt.fderivWithin_prod (by exact D') (by exact D a) (U _)]
     change fderivWithin 𝕜 (φ ∘ Prod.snd) _ _ _ = fderivWithin 𝕜 (φ ∘ Prod.snd) _ _ _
     rw [Set.range_prod_map] at U ⊢
-    rw [fderivWithin.comp _ (by exact D0) differentiableWithinAt_snd mapsTo_snd_prod (U _),
-      fderivWithin.comp _ (by exact D0) differentiableWithinAt_snd mapsTo_snd_prod (U _)]
+    rw [fderivWithin_comp _ (by exact D0) differentiableWithinAt_snd mapsTo_snd_prod (U _),
+      fderivWithin_comp _ (by exact D0) differentiableWithinAt_snd mapsTo_snd_prod (U _)]
     simp [fderivWithin_snd, U]
 
 end EquivTangentBundleProd

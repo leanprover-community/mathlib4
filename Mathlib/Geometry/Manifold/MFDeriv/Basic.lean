@@ -656,13 +656,14 @@ theorem mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt :
   rintro ⟨f', hf'⟩
   exact hf'.mdifferentiableWithinAt
 
-theorem MDifferentiableWithinAt.mono_of_mem (h : MDifferentiableWithinAt I I' f s x) {t : Set M}
+theorem MDifferentiableWithinAt.mono_of_mem_nhdsWithin
+    (h : MDifferentiableWithinAt I I' f s x) {t : Set M}
     (hst : s ∈ 𝓝[t] x) : MDifferentiableWithinAt I I' f t x :=
-  (h.hasMFDerivWithinAt.mono_of_mem hst).mdifferentiableWithinAt
+  (h.hasMFDerivWithinAt.mono_of_mem_nhdsWithin hst).mdifferentiableWithinAt
 
 theorem MDifferentiableWithinAt.congr_nhds (h : MDifferentiableWithinAt I I' f s x) {t : Set M}
     (hst : 𝓝[s] x = 𝓝[t] x) : MDifferentiableWithinAt I I' f t x :=
-  h.mono_of_mem <| hst ▸ self_mem_nhdsWithin
+  h.mono_of_mem_nhdsWithin <| hst ▸ self_mem_nhdsWithin
 
 theorem mdifferentiableWithinAt_congr_nhds {t : Set M} (hst : 𝓝[s] x = 𝓝[t] x) :
     MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f t x :=
@@ -740,7 +741,7 @@ theorem hasMFDerivWithinAt_insert {y : M} :
       have : x ∈ (extChartAt I x).source := mem_extChartAt_source x
       exact (((extChartAt I x).eq_symm_apply this h'z).1 xz.symm).symm
     · exact Or.inr ⟨h'z, h2z⟩
-  · apply hf.mono_of_mem ?_
+  · apply hf.mono_of_mem_nhdsWithin ?_
     simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
 
 alias ⟨HasMFDerivWithinAt.of_insert, HasMFDerivWithinAt.insert'⟩ := hasMFDerivWithinAt_insert
@@ -977,10 +978,10 @@ theorem MDifferentiableWithinAt.mfderivWithin_mono (h : MDifferentiableWithinAt 
     mfderivWithin I I' f t x = mfderivWithin I I' f s x :=
   h.mfderivWithin_congr_mono (fun _ _ ↦ rfl) rfl hxt h₁
 
-theorem MDifferentiableWithinAt.mfderivWithin_mono_of_mem (h : MDifferentiableWithinAt I I' f s x)
-    (hxt : UniqueMDiffWithinAt I t x) (h₁ : s ∈ 𝓝[t] x) :
+theorem MDifferentiableWithinAt.mfderivWithin_mono_of_mem_nhdsWithin
+    (h : MDifferentiableWithinAt I I' f s x) (hxt : UniqueMDiffWithinAt I t x) (h₁ : s ∈ 𝓝[t] x) :
     mfderivWithin I I' f t x = mfderivWithin I I' f s x :=
-  (HasMFDerivWithinAt.mono_of_mem h.hasMFDerivWithinAt h₁).mfderivWithin hxt
+  (HasMFDerivWithinAt.mono_of_mem_nhdsWithin h.hasMFDerivWithinAt h₁).mfderivWithin hxt
 
 theorem Filter.EventuallyEq.mfderivWithin_eq (hs : UniqueMDiffWithinAt I s x) (hL : f₁ =ᶠ[𝓝[s] x] f)
     (hx : f₁ x = f x) : mfderivWithin I I' f₁ s x = mfderivWithin I I' f s x := by
@@ -1074,17 +1075,18 @@ theorem MDifferentiableWithinAt.comp_of_eq {y : M'} (hg : MDifferentiableWithinA
     MDifferentiableWithinAt I I'' (g ∘ f) s x := by
   subst hy; exact hg.comp _ hf h
 
-theorem MDifferentiableWithinAt.comp_of_mem (hg : MDifferentiableWithinAt I' I'' g u (f x))
+theorem MDifferentiableWithinAt.comp_of_mem_nhdsWithin
+    (hg : MDifferentiableWithinAt I' I'' g u (f x))
     (hf : MDifferentiableWithinAt I I' f s x) (h : f ⁻¹' u ∈ 𝓝[s] x) :
     MDifferentiableWithinAt I I'' (g ∘ f) s x :=
-  (hg.comp _ (hf.mono inter_subset_right) inter_subset_left).mono_of_mem
+  (hg.comp _ (hf.mono inter_subset_right) inter_subset_left).mono_of_mem_nhdsWithin
     (Filter.inter_mem h self_mem_nhdsWithin)
 
-theorem MDifferentiableWithinAt.comp_of_mem_of_eq {y : M'}
+theorem MDifferentiableWithinAt.comp_of_mem_nhdsWithin_of_eq {y : M'}
     (hg : MDifferentiableWithinAt I' I'' g u y)
     (hf : MDifferentiableWithinAt I I' f s x) (h : f ⁻¹' u ∈ 𝓝[s] x) (hy : f x = y) :
     MDifferentiableWithinAt I I'' (g ∘ f) s x := by
-  subst hy; exact MDifferentiableWithinAt.comp_of_mem _ hg hf h
+  subst hy; exact MDifferentiableWithinAt.comp_of_mem_nhdsWithin _ hg hf h
 
 theorem MDifferentiableAt.comp (hg : MDifferentiableAt I' I'' g (f x))
     (hf : MDifferentiableAt I I' f x) : MDifferentiableAt I I'' (g ∘ f) x :=
@@ -1119,26 +1121,27 @@ theorem mfderivWithin_comp_of_eq {x : M} {y : M'} (hg : MDifferentiableWithinAt 
       (mfderivWithin I' I'' g u y).comp (mfderivWithin I I' f s x) := by
   subst hy; exact mfderivWithin_comp x hg hf h hxs
 
-theorem mfderivWithin_comp_of_mem (hg : MDifferentiableWithinAt I' I'' g u (f x))
+theorem mfderivWithin_comp_of_mem_nhdsWithin (hg : MDifferentiableWithinAt I' I'' g u (f x))
     (hf : MDifferentiableWithinAt I I' f s x) (h : f ⁻¹' u ∈ 𝓝[s] x)
     (hxs : UniqueMDiffWithinAt I s x) :
     mfderivWithin I I'' (g ∘ f) s x =
       (mfderivWithin I' I'' g u (f x)).comp (mfderivWithin I I' f s x) := by
   have A : s ∩ f ⁻¹' u ∈ 𝓝[s] x := Filter.inter_mem self_mem_nhdsWithin h
   have B : mfderivWithin I I'' (g ∘ f) s x = mfderivWithin I I'' (g ∘ f) (s ∩ f ⁻¹' u) x := by
-    apply MDifferentiableWithinAt.mfderivWithin_mono_of_mem _ hxs A
+    apply MDifferentiableWithinAt.mfderivWithin_mono_of_mem_nhdsWithin _ hxs A
     exact hg.comp _ (hf.mono inter_subset_left) inter_subset_right
   have C : mfderivWithin I I' f s x = mfderivWithin I I' f (s ∩ f ⁻¹' u) x :=
-    MDifferentiableWithinAt.mfderivWithin_mono_of_mem (hf.mono inter_subset_left) hxs A
+    MDifferentiableWithinAt.mfderivWithin_mono_of_mem_nhdsWithin (hf.mono inter_subset_left) hxs A
   rw [B, C]
   exact mfderivWithin_comp _ hg (hf.mono inter_subset_left) inter_subset_right (hxs.inter' h)
 
-theorem mfderivWithin_comp_of_mem_of_eq {y : M'} (hg : MDifferentiableWithinAt I' I'' g u y)
+theorem mfderivWithin_comp_of_mem_nhdsWithin_of_eq {y : M'}
+    (hg : MDifferentiableWithinAt I' I'' g u y)
     (hf : MDifferentiableWithinAt I I' f s x) (h : f ⁻¹' u ∈ 𝓝[s] x)
     (hxs : UniqueMDiffWithinAt I s x) (hy : f x = y) :
     mfderivWithin I I'' (g ∘ f) s x =
       (mfderivWithin I' I'' g u y).comp (mfderivWithin I I' f s x) := by
-  subst hy; exact mfderivWithin_comp_of_mem _ hg hf h hxs
+  subst hy; exact mfderivWithin_comp_of_mem_nhdsWithin _ hg hf h hxs
 
 theorem mfderiv_comp_mfderivWithin (hg : MDifferentiableAt I' I'' g (f x))
     (hf : MDifferentiableWithinAt I I' f s x) (hxs : UniqueMDiffWithinAt I s x) :

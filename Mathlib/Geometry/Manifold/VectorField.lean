@@ -384,7 +384,8 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_mem
     (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (hst : f ⁻¹' t ∈ 𝓝[s] x₀) :
     ContMDiffWithinAt I I.tangent m
       (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) s x₀ := by
-  apply (ContMDiffWithinAt.mpullbackWithin_vectorField_inter hV hf hf' hx₀ hs hmn).mono_of_mem
+  apply (ContMDiffWithinAt.mpullbackWithin_vectorField_inter
+    hV hf hf' hx₀ hs hmn).mono_of_mem_nhdsWithin
   exact Filter.inter_mem self_mem_nhdsWithin hst
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
