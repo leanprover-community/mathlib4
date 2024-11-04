@@ -54,7 +54,7 @@ stars and bars, multichoose
 
 open Finset Fintype Function Sum Nat
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Sym
 

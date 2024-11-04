@@ -549,7 +549,7 @@ where
             return ← loop mvar.mvarId!
         if let some patt ← CongrMetaM.nextPattern then
           let gs ← Term.TermElabM.run' <| Lean.Elab.Tactic.RCases.rintro #[patt] none mvarId
-          List.join <$> gs.mapM loop
+          List.flatten <$> gs.mapM loop
         else
           let (_, mvarId) ← mvarId.intro1
           loop mvarId
