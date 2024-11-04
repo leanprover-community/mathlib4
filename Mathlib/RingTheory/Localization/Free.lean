@@ -18,7 +18,7 @@ import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
   then `Mᵣ` is already free over `Rᵣ` for some `r ∈ S`.
 
 ## Future projects
-- Show that finitely presented flat module has locally constant dimension.
+- Show that a finitely presented flat module has locally constant dimension.
 - Show that the flat locus of a finitely presented module is open.
 
 -/
