@@ -77,7 +77,7 @@ theorem generated_by (rels : Set (FreeGroup α)) (H : Subgroup (PresentedGroup r
   change QuotientGroup.mk _ ∈ H.carrier
   rw [QuotientGroup.mk_mul]
   exact Subgroup.mul_mem _ h1 h2
-  
+
 section ToGroup
 
 /-
