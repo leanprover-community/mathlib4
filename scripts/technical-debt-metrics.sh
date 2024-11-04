@@ -25,7 +25,9 @@ IFS=$'\n\t'
 # the script takes two optional arguments `<optCurrCommit> <optReferenceCommit>`
 # and tallies the same technical debts on `<optCurrCommit>` using `<optReferenceCommit>`
 # as a reference.
+# If $1 is supplied, we use it; otherwise, we fall back to $(git rev-parse HEAD).
 currCommit="${1:-"$(git rev-parse HEAD)"}"
+# Similarly for the second argument.
 refCommit="${2:-"$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"}"
 
 ## `computeDiff input` assumes that input consists of lines of the form `value|description`

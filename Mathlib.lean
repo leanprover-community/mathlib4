@@ -292,6 +292,7 @@ import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Group.Subgroup.MulOpposite
+import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
 import Mathlib.Algebra.Group.Subgroup.Order
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Group.Subgroup.ZPowers
@@ -512,12 +513,14 @@ import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Presentation.Basic
+import Mathlib.Algebra.Module.Presentation.Finite
 import Mathlib.Algebra.Module.Presentation.Free
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Submodule.Invariant
@@ -834,6 +837,7 @@ import Mathlib.Algebra.Ring.Subring.Order
 import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.Algebra.Ring.Subring.Units
 import Mathlib.Algebra.Ring.Subsemiring.Basic
+import Mathlib.Algebra.Ring.Subsemiring.Defs
 import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 import Mathlib.Algebra.Ring.Subsemiring.Order
 import Mathlib.Algebra.Ring.Subsemiring.Pointwise
@@ -1241,6 +1245,7 @@ import Mathlib.Analysis.InnerProductSpace.Positive
 import Mathlib.Analysis.InnerProductSpace.ProdL2
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.InnerProductSpace.Rayleigh
+import Mathlib.Analysis.InnerProductSpace.Semisimple
 import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Analysis.InnerProductSpace.StarOrder
 import Mathlib.Analysis.InnerProductSpace.Symmetric
@@ -1256,6 +1261,7 @@ import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.LocallyConvex.StrongTopology
 import Mathlib.Analysis.LocallyConvex.WeakDual
+import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 import Mathlib.Analysis.LocallyConvex.WeakSpace
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Matrix
@@ -1330,7 +1336,6 @@ import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 import Mathlib.Analysis.Normed.Operator.Compact
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.Analysis.Normed.Operator.WeakOperatorTopology
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.Normed.Order.UpperLower
@@ -1754,6 +1759,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Shapes.FunctorToTypes
+import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
@@ -2000,6 +2006,7 @@ import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Sites.Spaces
+import Mathlib.CategoryTheory.Sites.Subcanonical
 import Mathlib.CategoryTheory.Sites.Subsheaf
 import Mathlib.CategoryTheory.Sites.Types
 import Mathlib.CategoryTheory.Sites.Whiskering
@@ -4077,6 +4084,7 @@ import Mathlib.RingTheory.HopfAlgebra
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Basis
+import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.Defs
@@ -4183,6 +4191,7 @@ import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.NonUnitalSubring.Basic
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 import Mathlib.RingTheory.Norm.Basic
 import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.NormTrace
@@ -4464,7 +4473,6 @@ import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.HaveI
-import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.Hint
 import Mathlib.Tactic.ITauto
@@ -4819,6 +4827,7 @@ import Mathlib.Topology.Defs.Basic
 import Mathlib.Topology.Defs.Filter
 import Mathlib.Topology.Defs.Induced
 import Mathlib.Topology.Defs.Sequences
+import Mathlib.Topology.Defs.Ultrafilter
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.DerivedSet
 import Mathlib.Topology.DiscreteQuotient
@@ -5025,6 +5034,7 @@ import Mathlib.Topology.Spectral.Hom
 import Mathlib.Topology.StoneCech
 import Mathlib.Topology.Support
 import Mathlib.Topology.TietzeExtension
+import Mathlib.Topology.Ultrafilter
 import Mathlib.Topology.UniformSpace.AbsoluteValue
 import Mathlib.Topology.UniformSpace.AbstractCompletion
 import Mathlib.Topology.UniformSpace.Ascoli
