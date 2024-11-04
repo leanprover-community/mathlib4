@@ -16,7 +16,7 @@ In this file, we define the categories of bundled left exact, right exact and ex
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory.Limits
 
@@ -210,6 +210,106 @@ noncomputable instance (F : C ⥤ₑ D) : PreservesFiniteLimits F.obj :=
 
 noncomputable instance (F : C ⥤ₑ D) : PreservesFiniteColimits F.obj :=
   F.property.2.some
+
+variable {E : Type u₃} [Category.{v₃} E]
+
+section
+
+variable (C D E)
+
+/-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
+@[simps!]
+def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤ₗ E) where
+  obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringLeft C D E).obj F.obj)
+    (fun G => ⟨by dsimp; exact compPreservesFiniteLimits _ _⟩)
+  map {F G} η :=
+    { app := fun H => ((CategoryTheory.whiskeringLeft C D E).map η).app H.obj
+      naturality := fun _ _ f => ((CategoryTheory.whiskeringLeft C D E).map η).naturality f }
+  map_id X := by
+    rw [FullSubcategory.id_def]
+    aesop_cat
+  map_comp f g := by
+    rw [FullSubcategory.comp_def]
+    aesop_cat
+
+/-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
+@[simps!]
+def LeftExactFunctor.whiskeringRight : (D ⥤ₗ E) ⥤ (C ⥤ₗ D) ⥤ (C ⥤ₗ E) where
+  obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringRight C D E).obj F.obj)
+    (fun G => ⟨by dsimp; exact compPreservesFiniteLimits _ _⟩)
+  map {F G} η :=
+    { app := fun H => ((CategoryTheory.whiskeringRight C D E).map η).app H.obj
+      naturality := fun _ _ f => ((CategoryTheory.whiskeringRight C D E).map η).naturality f }
+  map_id X := by
+    rw [FullSubcategory.id_def]
+    aesop_cat
+  map_comp f g := by
+    rw [FullSubcategory.comp_def]
+    aesop_cat
+
+/-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
+@[simps!]
+def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤ᵣ E) where
+  obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringLeft C D E).obj F.obj)
+    (fun G => ⟨by dsimp; exact compPreservesFiniteColimits _ _⟩)
+  map {F G} η :=
+    { app := fun H => ((CategoryTheory.whiskeringLeft C D E).map η).app H.obj
+      naturality := fun _ _ f => ((CategoryTheory.whiskeringLeft C D E).map η).naturality f }
+  map_id X := by
+    rw [FullSubcategory.id_def]
+    aesop_cat
+  map_comp f g := by
+    rw [FullSubcategory.comp_def]
+    aesop_cat
+
+/-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
+@[simps!]
+def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤ᵣ E) where
+  obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringRight C D E).obj F.obj)
+    (fun G => ⟨by dsimp; exact compPreservesFiniteColimits _ _⟩)
+  map {F G} η :=
+    { app := fun H => ((CategoryTheory.whiskeringRight C D E).map η).app H.obj
+      naturality := fun _ _ f => ((CategoryTheory.whiskeringRight C D E).map η).naturality f }
+  map_id X := by
+    rw [FullSubcategory.id_def]
+    aesop_cat
+  map_comp f g := by
+    rw [FullSubcategory.comp_def]
+    aesop_cat
+
+/-- Whiskering an exact functor by an exact functor yields an exact functor. -/
+@[simps!]
+def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E) where
+  obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringLeft C D E).obj F.obj)
+    (fun G => ⟨⟨by dsimp; exact compPreservesFiniteLimits _ _⟩,
+      ⟨by dsimp; exact compPreservesFiniteColimits _ _⟩⟩)
+  map {F G} η :=
+    { app := fun H => ((CategoryTheory.whiskeringLeft C D E).map η).app H.obj
+      naturality := fun _ _ f => ((CategoryTheory.whiskeringLeft C D E).map η).naturality f }
+  map_id X := by
+    rw [FullSubcategory.id_def]
+    aesop_cat
+  map_comp f g := by
+    rw [FullSubcategory.comp_def]
+    aesop_cat
+
+/-- Whiskering an exact functor by an exact functor yields an exact functor. -/
+@[simps!]
+def ExactFunctor.whiskeringRight : (D ⥤ₑ E) ⥤ (C ⥤ₑ D) ⥤ (C ⥤ₑ E) where
+  obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringRight C D E).obj F.obj)
+    (fun G => ⟨⟨by dsimp; exact compPreservesFiniteLimits _ _⟩,
+      ⟨by dsimp; exact compPreservesFiniteColimits _ _⟩⟩)
+  map {F G} η :=
+    { app := fun H => ((CategoryTheory.whiskeringRight C D E).map η).app H.obj
+      naturality := fun _ _ f => ((CategoryTheory.whiskeringRight C D E).map η).naturality f }
+  map_id X := by
+    rw [FullSubcategory.id_def]
+    aesop_cat
+  map_comp f g := by
+    rw [FullSubcategory.comp_def]
+    aesop_cat
+
+end
 
 end
 

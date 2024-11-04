@@ -30,15 +30,14 @@ namespace Multiset
 
 /-! ### Join -/
 
-
 /-- `join S`, where `S` is a multiset of multisets, is the lift of the list join
   operation, that is, the union of all the sets.
      join {{1, 2}, {1, 2}, {0, 1}} = {0, 1, 1, 1, 2, 2} -/
 def join : Multiset (Multiset α) → Multiset α :=
   sum
 
-theorem coe_join :
-    ∀ L : List (List α), join (L.map ((↑) : List α → Multiset α) : Multiset (Multiset α)) = L.join
+theorem coe_join : ∀ L : List (List α), join (L.map ((↑) : List α → Multiset α) :
+    Multiset (Multiset α)) = L.flatten
   | [] => rfl
   | l :: L => by
       exact congr_arg (fun s : Multiset α => ↑l + s) (coe_join L)
@@ -100,8 +99,8 @@ def bind (s : Multiset α) (f : α → Multiset β) : Multiset β :=
   (s.map f).join
 
 @[simp]
-theorem coe_bind (l : List α) (f : α → List β) : (@bind α β l fun a => f a) = l.bind f := by
-  rw [List.bind, ← coe_join, List.map_map]
+theorem coe_bind (l : List α) (f : α → List β) : (@bind α β l fun a => f a) = l.flatMap f := by
+  rw [List.flatMap, ← coe_join, List.map_map]
   rfl
 
 @[simp]
@@ -208,7 +207,7 @@ variable {f s t}
   choose f' h' using this
   have : f = fun a ↦ ofList (f' a) := funext h'
   have hd : Symmetric fun a b ↦ List.Disjoint (f' a) (f' b) := fun a b h ↦ h.symm
-  exact Quot.induction_on s <| by simp [this, List.nodup_bind, pairwise_coe_iff_pairwise hd]
+  exact Quot.induction_on s <| by simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise hd]
 
 @[simp]
 lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :
@@ -267,7 +266,7 @@ theorem add_product (s t : Multiset α) (u : Multiset β) : (s + t) ×ˢ u = s �
 
 @[simp]
 theorem product_add (s : Multiset α) : ∀ t u : Multiset β, s ×ˢ (t + u) = s ×ˢ t + s ×ˢ u :=
-  Multiset.induction_on s (fun t u => rfl) fun a s IH t u => by
+  Multiset.induction_on s (fun _ _ => rfl) fun a s IH t u => by
     rw [cons_product, IH]
     simp [add_comm, add_left_comm, add_assoc]
 
@@ -322,7 +321,7 @@ theorem add_sigma (s t : Multiset α) (u : ∀ a, Multiset (σ a)) :
 @[simp]
 theorem sigma_add :
     ∀ t u : ∀ a, Multiset (σ a), (s.sigma fun a => t a + u a) = s.sigma t + s.sigma u :=
-  Multiset.induction_on s (fun t u => rfl) fun a s IH t u => by
+  Multiset.induction_on s (fun _ _ => rfl) fun a s IH t u => by
     rw [cons_sigma, IH]
     simp [add_comm, add_left_comm, add_assoc]
 
