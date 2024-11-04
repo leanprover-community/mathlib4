@@ -219,6 +219,11 @@ theorem derivFamily_eq_enumOrd [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
   rw [Set.mem_iInter] at ha
   rwa [← fp_iff_derivFamily H]
 
+theorem derivFamily_strictMono [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
+    StrictMono (derivFamily f) := by
+  rw [derivFamily_eq_enumOrd H]
+  exact enumOrd_strictMono (not_bddAbove_fp_family H)
+
 end
 
 /-! ### Fixed points of ordinal-indexed families of ordinals -/
@@ -539,6 +544,9 @@ theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoi
 
 theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) : deriv f = id :=
   (IsNormal.eq_iff_zero_and_succ (isNormal_deriv _) IsNormal.refl).2 <| by simp [h]
+
+theorem deriv_strictMono {f} (H : IsNormal f) : StrictMono (deriv f) :=
+  derivFamily_strictMono fun _ ↦ H
 
 theorem nfp_zero_left (a) : nfp 0 a = a := by
   rw [← iSup_iterate_eq_nfp]
