@@ -78,5 +78,5 @@ theorem Function.graph_isFun (f : α → β) : f.graph.toSet.IsFun :=
   fun x => ⟨f x, rfl, fun _ => Eq.symm⟩
 
 @[simp]
-theorem Function.asFun_graph (f : α → β) : Set.asFun f.graph_is_fun = f :=
-  funext (fun _ => Set.asFun_eq f.graph_is_fun rfl)
+theorem Function.asFun_graph (f : α → β) : Set.asFun f.graph_isFun = f :=
+  funext (fun _ => Set.asFun_eq f.graph_isFun rfl)
