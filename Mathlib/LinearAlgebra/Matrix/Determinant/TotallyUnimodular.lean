@@ -41,26 +41,19 @@ lemma isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
       (A.submatrix f g).det = -1 := by
   constructor <;> intro hA
   · intro k f g
-    if hf : f.Injective then
-      if hg : g.Injective then
-        exact hA k f g hf hg
-      else
-        left
-        unfold Function.Injective at hg
-        push_neg at hg
-        obtain ⟨i, j, hqij, hij⟩ := hg
-        apply Matrix.det_zero_of_column_eq hij
-        intro
-        simp [hqij]
+    if h : f.Injective ∧ g.Injective then
+        exact hA k f g h.1 h.2
     else
       left
-      unfold Function.Injective at hf
-      push_neg at hf
-      obtain ⟨i, j, hpij, hij⟩ := hf
-      apply Matrix.det_zero_of_row_eq
-      · exact hij
-      show (A (f i)) ∘ (g ·) = (A (f j)) ∘ (g ·)
-      rw [hpij]
+      unfold Function.Injective at h
+      rw [not_and_or] at h
+      push_neg at h
+      obtain ⟨i, j, hqij, hij⟩ | ⟨i, j, hqij, hij⟩ := h
+      · rw [← Matrix.det_transpose, Matrix.transpose_submatrix]
+        apply Matrix.det_zero_of_column_eq hij.symm
+        simp [hqij]
+      · apply Matrix.det_zero_of_column_eq hij
+        simp [hqij]
   · intro _ _ _ _ _
     apply hA
 
