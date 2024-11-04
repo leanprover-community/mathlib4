@@ -138,6 +138,7 @@ jobs:
                 currMax=$0
                 max=$3+0
             }' |
+            sort --field-separator=: -k3 -nr |
             awk -F: 'BEGIN{printf("|File|Import increase|New imports|Line|\n|:-|:-:|:-|-:|\n")} {
               gsub(/\.\//, "")
               gsub(/ *Imports increased by */, "")
