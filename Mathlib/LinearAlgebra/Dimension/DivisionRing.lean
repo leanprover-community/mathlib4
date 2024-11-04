@@ -2,7 +2,7 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen,
-Scott Morrison, Chris Hughes, Anne Baanen, Junyan Xu
+Kim Morrison, Chris Hughes, Anne Baanen, Junyan Xu
 -/
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Dimension.Finite
@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Dimension.RankNullity
 /-!
 # Dimension of vector spaces
 
-In this file we provide results about `Module.rank` and `FiniteDimensional.finrank` of vector spaces
+In this file we provide results about `Module.rank` and `Module.finrank` of vector spaces
 over division rings.
 
 ## Main statements
@@ -112,7 +112,7 @@ end Module
 
 section Basis
 
-open FiniteDimensional
+open Module
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 

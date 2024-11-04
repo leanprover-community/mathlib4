@@ -333,7 +333,7 @@ def recIterModByRegularWithRing
     {R : Type u} → [CommRing R] → {M : Type v} → [AddCommGroup M] →
     [Module R M] → {rs : List R} → (h : IsWeaklyRegular M rs) → motive R M rs h
   | R, _, M, _, _, [], _ => nil R M
-  | R, _, M, _, _, r :: rs, h =>
+  | _, _, M, _, _, r :: rs, h =>
     let ⟨h1, h2⟩ := (isWeaklyRegular_cons_iff' M r rs).mp h
     cons r rs h1 h2 (recIterModByRegularWithRing nil cons h2)
   termination_by _ _ _ _ _ rs => List.length rs

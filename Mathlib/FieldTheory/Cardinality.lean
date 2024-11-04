@@ -43,8 +43,8 @@ theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimeP
   let b := IsNoetherian.finsetBasis (ZMod p) α
   rw [Module.card_fintype b, ZMod.card, isPrimePow_pow_iff]
   · exact hp.1.isPrimePow
-  rw [← FiniteDimensional.finrank_eq_card_basis b]
-  exact FiniteDimensional.finrank_pos.ne'
+  rw [← Module.finrank_eq_card_basis b]
+  exact Module.finrank_pos.ne'
 
 /-- A `Fintype` can be given a field structure iff its cardinality is a prime power. -/
 theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ IsPrimePow ‖α‖ := by
@@ -59,21 +59,14 @@ theorem Fintype.not_isField_of_card_not_prime_pow {α} [Fintype α] [Ring α] :
 
 /-- Any infinite type can be endowed a field structure. -/
 theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α) := by
-  letI K := FractionRing (MvPolynomial α <| ULift.{u} ℚ)
-  suffices #α = #K by
-    obtain ⟨e⟩ := Cardinal.eq.1 this
-    exact ⟨e.field⟩
-  rw [← IsLocalization.card K (MvPolynomial α <| ULift.{u} ℚ)⁰ le_rfl]
-  apply le_antisymm
-  · refine
-      ⟨⟨fun a => MvPolynomial.monomial (Finsupp.single a 1) (1 : ULift.{u} ℚ), fun x y h => ?_⟩⟩
-    simpa [MvPolynomial.monomial_eq_monomial_iff, Finsupp.single_eq_single_iff] using h
-  · simp
+  suffices #α = #(FractionRing (MvPolynomial α <| ULift.{u} ℚ)) from
+    (Cardinal.eq.1 this).map (·.field)
+  simp
 
 /-- There is a field structure on type if and only if its cardinality is a prime power. -/
 theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #α := by
   rw [Cardinal.isPrimePow_iff]
   cases' fintypeOrInfinite α with h h
   · simpa only [Cardinal.mk_fintype, Nat.cast_inj, exists_eq_left',
-      (Cardinal.nat_lt_aleph0 _).not_le, false_or_iff] using Fintype.nonempty_field_iff
-  · simpa only [← Cardinal.infinite_iff, h, true_or_iff, iff_true_iff] using Infinite.nonempty_field
+      (Cardinal.nat_lt_aleph0 _).not_le, false_or] using Fintype.nonempty_field_iff
+  · simpa only [← Cardinal.infinite_iff, h, true_or, iff_true] using Infinite.nonempty_field

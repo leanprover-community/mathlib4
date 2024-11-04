@@ -29,7 +29,50 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
+
+open scoped Mon_Class Comon_Class
+
+/--
+A bimonoid object in a braided category `C` is a object that is simultaneously monoid and comonoid
+objects, and structure morphisms of them satisfy appropriate consistency conditions.
+-/
+class Bimon_Class (M : C) extends Mon_Class M, Comon_Class M where
+  /- For the names of the conditions below, the unprimed names are reserved for the version where
+  the argument `M` is explicit. -/
+  mul_comul' : μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ[M] ⊗ μ[M]) := by aesop_cat
+  one_comul' : η[M] ≫ Δ[M] = η[M ⊗ M] := by aesop_cat
+  mul_counit' : μ[M] ≫ ε[M] = ε[M ⊗ M] := by aesop_cat
+  one_counit' : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := by aesop_cat
+
+namespace Bimon_Class
+
+/- The simp attribute is reserved for the unprimed versions. -/
+attribute [reassoc] mul_comul' one_comul' mul_counit' one_counit'
+
+variable (M : C) [Bimon_Class M]
+
+@[reassoc (attr := simp)]
+theorem mul_comul (M : C) [Bimon_Class M] :
+    μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ[M] ⊗ μ[M]) :=
+  mul_comul'
+
+@[reassoc (attr := simp)]
+theorem one_comul (M : C) [Bimon_Class M] : η[M] ≫ Δ[M] = η[M ⊗ M] := one_comul'
+
+@[reassoc (attr := simp)]
+theorem mul_counit (M : C) [Bimon_Class M] : μ[M] ≫ ε[M] = ε[M ⊗ M] := mul_counit'
+
+@[reassoc (attr := simp)]
+theorem one_counit (M : C) [Bimon_Class M] : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := one_counit'
+
+end Bimon_Class
+
+/-- The property that a morphism between bimonoid objects is a bimonoid morphism. -/
+class IsBimon_Hom {M N : C} [Bimon_Class M] [Bimon_Class N] (f : M ⟶ N) extends
+    IsMon_Hom f, IsComon_Hom f : Prop
+
+variable (C)
 
 /--
 A bimonoid object in a braided category `C` is a comonoid object in the (monoidal)
@@ -66,10 +109,6 @@ def toComon_ : Bimon_ C ⥤ Comon_ C := (Mon_.forgetMonoidal C).toOplaxMonoidalF
 @[simp]
 theorem toComon_forget : toComon_ C ⋙ Comon_.forget C = forget C := rfl
 
--- TODO: the `set_option` is not strictly necessary, but the declaration is just a heartbeat
--- away from using too many heartbeats.  Squeezing `(d)simp` improves the situation, but pulls
--- out too many lemmas
-set_option maxHeartbeats 400000 in
 /-- The object level part of the forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 def toMon_Comon_obj (M : Bimon_ C) : Mon_ (Comon_ C) where
   X := (toComon_ C).obj M
