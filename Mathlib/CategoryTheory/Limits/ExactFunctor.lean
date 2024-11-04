@@ -213,7 +213,10 @@ noncomputable instance (F : C ⥤ₑ D) : PreservesFiniteColimits F.obj :=
 
 variable {E : Type u₃} [Category.{v₃} E]
 
-variable (C D E) in
+section
+
+variable (C D E)
+
 /-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
 @[simps!]
 def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤ₗ E) where
@@ -229,7 +232,6 @@ def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤�
     rw [FullSubcategory.comp_def]
     aesop_cat
 
-variable (C D E) in
 /-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
 @[simps!]
 def LeftExactFunctor.whiskeringRight : (D ⥤ₗ E) ⥤ (C ⥤ₗ D) ⥤ (C ⥤ₗ E) where
@@ -245,7 +247,6 @@ def LeftExactFunctor.whiskeringRight : (D ⥤ₗ E) ⥤ (C ⥤ₗ D) ⥤ (C ⥤�
     rw [FullSubcategory.comp_def]
     aesop_cat
 
-variable (C D E) in
 /-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
 @[simps!]
 def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤ᵣ E) where
@@ -261,7 +262,6 @@ def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤�
     rw [FullSubcategory.comp_def]
     aesop_cat
 
-variable (C D E) in
 /-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
 @[simps!]
 def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤ᵣ E) where
@@ -277,7 +277,6 @@ def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤
     rw [FullSubcategory.comp_def]
     aesop_cat
 
-variable (C D E) in
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
 @[simps!]
 def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E) where
@@ -294,7 +293,6 @@ def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E)
     rw [FullSubcategory.comp_def]
     aesop_cat
 
-variable (C D E) in
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
 @[simps!]
 def ExactFunctor.whiskeringRight : (D ⥤ₑ E) ⥤ (C ⥤ₑ D) ⥤ (C ⥤ₑ E) where
@@ -310,6 +308,8 @@ def ExactFunctor.whiskeringRight : (D ⥤ₑ E) ⥤ (C ⥤ₑ D) ⥤ (C ⥤ₑ E
   map_comp f g := by
     rw [FullSubcategory.comp_def]
     aesop_cat
+
+end
 
 end
 
