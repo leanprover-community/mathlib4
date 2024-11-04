@@ -17,27 +17,26 @@ We also show that the upper half plane embeds into the integer complement.
 open UpperHalfPlane
 
 /--The complement of the integers in `ℂ`. -/
-abbrev Complex.IntegerComplement := (Set.range ((↑) : ℤ → ℂ))ᶜ
+abbrev Complex.integerComplement := (Set.range ((↑) : ℤ → ℂ))ᶜ
 
 namespace Complex
 
-local notation "ℂ_ℤ " => IntegerComplement
+local notation "ℂ_ℤ " => integerComplement
 
-lemma IntegerComplement_eq : ℂ_ℤ = {z : ℂ | ¬ ∃ (n : ℤ), z = ↑n} := by
-  rw [IntegerComplement]
-  aesop
+lemma IntegerComplement_eq : ℂ_ℤ = {z : ℂ | ¬ ∃ (n : ℤ), n = z} := rfl
 
-lemma IntegerComplement_not_exist {x : ℂ} (hx : x ∈ ℂ_ℤ) : ¬ ∃ (n : ℤ), x = ↑n := by
+lemma IntegerComplement_not_exist {x : ℂ} (hx : x ∈ ℂ_ℤ) : ¬ ∃ (n : ℤ), n = x := by
   rw [IntegerComplement_eq] at hx
   exact hx
 
-lemma IntegerComplement_mk {x : ℂ} (hx : ¬ ∃ (n : ℤ), x = ↑n) : x ∈ ℂ_ℤ := by
+lemma IntegerComplement_mk {x : ℂ} (hx : ¬ ∃ (n : ℤ), n = x) : x ∈ ℂ_ℤ := by
   rw [IntegerComplement_eq]
   exact hx
 
 lemma UpperHalfPlane.coe_mem_integerComplement (z : ℍ) : ↑z ∈ ℂ_ℤ := by
- rw [IntegerComplement_eq]
- simpa using UpperHalfPlane.ne_int z
+ apply IntegerComplement_mk
+ simp only [not_exists]
+ exact fun x a ↦ (UpperHalfPlane.ne_int z)  x (id (Eq.symm a))
 
 lemma IntegerComplement_add_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (a : ℤ) : x + (a : ℂ)  ≠ 0 := by
   intro h
