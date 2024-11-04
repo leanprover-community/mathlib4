@@ -767,13 +767,10 @@ noncomputable def Factors.piQuotientLinearEquiv (p : Ideal R) (hp : map (algebra
         RingHomCompTriple.comp_apply, Pi.mul_apply, Pi.algebraMap_apply]
       congr }
 
-variable {S}
-
 /-- The **fundamental identity** of ramification index `e` and inertia degree `f`:
 for `P` ranging over the primes lying over `p`, `∑ P, e P * f P = [Frac(S) : Frac(R)]`;
 here `S` is a finite `R`-module (and thus `Frac(S) : Frac(R)` is a finite extension) and `p`
-is maximal.
--/
+is maximal. -/
 theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDomain R]
     [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [Module.Finite R S]
