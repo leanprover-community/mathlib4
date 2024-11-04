@@ -43,6 +43,14 @@ mapped to the equivalence class of the image of `x` in `FreeGroup α`. -/
 def of {rels : Set (FreeGroup α)} (x : α) : PresentedGroup rels :=
   QuotientGroup.mk (FreeGroup.of x)
 
+/-- The canonical map from a free group `α` to a presented group with generators `x : α` `x` is
+mapped to its equivalence class under the given set of relations `rels`-/
+abbrev mk (rels : Set (FreeGroup α)) (a : FreeGroup α) : PresentedGroup rels :=
+  QuotientGroup.mk a
+
+theorem mk_surjective (rels : Set (FreeGroup α)) : Function.Surjective <| mk rels :=
+  QuotientGroup.mk_surjective
+
 /-- The generators of a presented group generate the presented group. That is, the subgroup closure
 of the set of generators equals `⊤`. -/
 @[simp]
@@ -53,6 +61,23 @@ theorem closure_range_of (rels : Set (FreeGroup α)) :
     FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
   exact MonoidHom.range_top_of_surjective _ (QuotientGroup.mk'_surjective _)
 
+@[induction_eliminator]
+theorem induction_on {rels : Set (FreeGroup α)}  {C : PresentedGroup rels → Prop}
+    (x : PresentedGroup rels) (H : ∀ z, C (mk rels z)) : C x :=
+  Quotient.inductionOn' x H
+
+theorem generated_by (rels : Set (FreeGroup α)) (H : Subgroup (PresentedGroup rels))
+    (h : ∀ j : α, PresentedGroup.of j ∈ H) : ∀ x : (PresentedGroup rels), x ∈ H := by
+  intro x
+  apply induction_on x
+  intro z
+  apply FreeGroup.induction_on (C := fun z => ⟦z⟧ ∈ H) _ (one_mem H) (fun _ => h _)
+    fun _ => (Subgroup.inv_mem_iff H).mpr
+  intro _ _ h1 h2
+  change QuotientGroup.mk _ ∈ H.carrier
+  rw [QuotientGroup.mk_mul]
+  exact Subgroup.mul_mem _ h1 h2
+  
 section ToGroup
 
 /-
