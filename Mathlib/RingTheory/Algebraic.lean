@@ -488,7 +488,7 @@ theorem IsAlgebraic.exists_smul_eq_mul
 
 end
 
-variable {R S : Type*} [CommRing R] [IsDomain R] [CommRing S]
+variable {R S L : Type*} [CommRing R] [IsDomain R] [CommRing S] [CommRing L] [IsDomain L]
 
 theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     (inj : ∀ x, algebraMap R S x = 0 → x = 0) :
@@ -501,12 +501,12 @@ theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
       integralNormalization_aeval_eq_zero px inj⟩
   exact ⟨⟨_, x_integral⟩, a, a_ne_zero, rfl⟩
 
+variable (R L)
+
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `S` is the integral closure of `R` in an algebraic extension `L` of `R`. -/
-theorem IsIntegralClosure.exists_smul_eq_mul
-    {L : Type*} [CommRing L] [IsDomain L] [Algebra R S] [Algebra S L]
-    [Algebra R L] [IsScalarTower R S L] [IsIntegralClosure S R L]
-    (a : S) {b : S} (hb : b ≠ 0) :
+theorem IsIntegralClosure.exists_smul_eq_mul [Algebra R S] [Algebra S L] [Algebra R L]
+    [IsScalarTower R S L] [IsIntegralClosure S R L] (a : S) {b : S} (hb : b ≠ 0) :
     ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c := by
   refine (IsIntegralClosure.isIntegral R L b).isAlgebraic.exists_smul_eq_mul a ?_
   have := NoZeroSMulDivisors.of_algebraMap_injective (IsIntegralClosure.algebraMap_injective S R L)
