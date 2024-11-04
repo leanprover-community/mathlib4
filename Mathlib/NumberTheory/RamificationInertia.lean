@@ -794,7 +794,7 @@ is maximal.
 theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDomain R]
     [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [IsNoetherian R S]
-    [IsIntegralClosure S R L] [p.IsMaximal] (hp0 : p ≠ ⊥) :
+    [p.IsMaximal] (hp0 : p ≠ ⊥) :
     (∑ P ∈ (factors (map (algebraMap R S) p)).toFinset,
         ramificationIdx (algebraMap R S) p P * inertiaDeg (algebraMap R S) p P) =
       finrank K L := by
