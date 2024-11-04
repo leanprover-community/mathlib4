@@ -565,8 +565,7 @@ theorem nontrivial_of_liesOver_ne_top (hp : p ≠ ⊤) : Nontrivial (B ⧸ P) :=
 theorem nontrivial_of_liesOver_isPrime [hp : p.IsPrime] : Nontrivial (B ⧸ P) :=
   nontrivial_of_liesOver_ne_top P hp.ne_top
 
-variable {P}
-
+variable {P} in
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
   isomorphism between `B` and `C`, where `Q = σ P`. -/
 def algEquivOfEqMap {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
@@ -577,6 +576,7 @@ def algEquivOfEqMap {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : 
     exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
 }
 
+variable {P} in
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
   isomorphism between `B` and `C`, where `P = σ⁻¹ Q`. -/
 def algEquivOfEqComap {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
@@ -584,19 +584,15 @@ def algEquivOfEqComap {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ 
   rw [← show _ = Q.comap σ from map_symm (σ : B ≃+* C)] at h
   exact (algEquivOfEqMap p (σ : B ≃ₐ[A] C).symm h).symm
 
-/-- If `P` lies over `p`, then the stabilizer of `P` acts on the extension `(B ⧸ P) / (A ⧸ p). -/
+/-- If `P` lies over `p`, then the stabilizer of `P` acts on the extension `(B ⧸ P) / (A ⧸ p)`. -/
 def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B ⧸ P)) where
-  toFun g :=
-  { __ := Ideal.quotientEquiv P P (MulSemiringAction.toRingEquiv G B g) g.2.symm
-    commutes' := fun q ↦ by
-      obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective q
-      simp [← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply] }
-  map_one' := AlgEquiv.ext (fun q ↦ by
-    obtain ⟨b, rfl⟩ := Ideal.Quotient.mk_surjective q
-    simp)
-  map_mul' g h := AlgEquiv.ext (fun q ↦ by
-    obtain ⟨b, rfl⟩ := Ideal.Quotient.mk_surjective q
-    simp [mul_smul])
+  toFun g := algEquivOfEqMap p (MulSemiringAction.toAlgEquiv A B g) g.2.symm
+  map_one' := by
+    ext ⟨x⟩
+    exact congrArg (Ideal.Quotient.mk P) (one_smul G x)
+  map_mul' g h := by
+    ext ⟨x⟩
+    exact congrArg (Ideal.Quotient.mk P) (mul_smul g h x)
 
 @[simp] theorem stabilizerHom_apply (g : MulAction.stabilizer G P) (b : B) :
     stabilizerHom P p G g b = ↑(g • b) :=
