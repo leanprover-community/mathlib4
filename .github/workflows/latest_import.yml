@@ -109,13 +109,19 @@ jobs:
           lean --version
           lake --version
 
+      - name: add minImport linter option
+        run: |
+          sed -i '/⟨`linter.style.missingEnd, true⟩,/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
+          git add -u
+          git diff
+
       - name: build mathlib
         id: build
         uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: gcc
           run: |
-            lake build --wfail -KCI -Kweak.linter.minImports=true
+            lake build
 
       - name: report maxes
         run: |
