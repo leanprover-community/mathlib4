@@ -156,7 +156,7 @@ lemma isClique_compl_map_iff_isClique_map_compl {f : α ↪ β} {s : Set α} :
   repeat rw [isClique_iff, Set.Pairwise]
   rw [forall₂_congr]; intro a ha
   rw [forall₂_congr]; intro b hb
-  rw [←imp_congr_right]; intro hab
+  rw [← imp_congr_right]; intro hab
   obtain ⟨a', _, ha'a⟩ := ha
   obtain ⟨b', _, hb'b⟩ := hb
   subst ha'a hb'b
