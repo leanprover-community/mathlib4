@@ -28,7 +28,7 @@ namespace SimpleGraph
 
 /-- Disjoint sum of `G` and `H`. -/
 @[simps!]
-protected def Sum (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α ⊕ β) where
+protected def sum (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α ⊕ β) where
   Adj u v := match u, v with
     | Sum.inl u, Sum.inl v => G.Adj u v
     | Sum.inr u, Sum.inr v => H.Adj u v
@@ -39,7 +39,7 @@ protected def Sum (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α �
     | Sum.inl _, Sum.inr _ | Sum.inr _, Sum.inl _ => id
   loopless u := by cases u <;> simp
 
-@[inherit_doc] infixl:60 " ⊕g " => SimpleGraph.Sum
+@[inherit_doc] infixl:60 " ⊕g " => SimpleGraph.sum
 
 variable {G : SimpleGraph α} {H : SimpleGraph β}
 
