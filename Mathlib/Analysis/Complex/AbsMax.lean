@@ -325,22 +325,16 @@ lemma eq_const_of_exists_max {f : E → F} {b : ℝ} (h_an : DifferentiableOn �
 /-- If `f` is a function differentiable on the open unit ball, and there exists an `r < 1` such that
 any value of `‖f‖` on the open ball is bounded above by some value on the closed ball of radius `r`,
 then `f` is constant. -/
-lemma eq_const_of_exists_le {f : ℂ → F} {r b : ℝ} (h_an : DifferentiableOn ℂ f (ball 0 b))
+lemma eq_const_of_exists_le [ProperSpace E] {f : E → F} {r b : ℝ} (h_an : DifferentiableOn ℂ f (ball 0 b))
     (hr_nn : 0 ≤ r) (hr_lt : r < b)
     (hr : ∀ z, z ∈ (ball 0 b) → ∃ w, w ∈ closedBall 0 r ∧ ‖f z‖ ≤ ‖f w‖) :
-    Set.EqOn f (Function.const ℂ (f 0)) (ball 0 b) := by
-  let V : Set ℂ := closedBall 0 r
-  have hVc : IsCompact V := isCompact_closedBall (0 : ℂ) r
-  have : ContinuousOn f V := by
-    apply h_an.continuousOn.mono
-    simpa only [V] using fun _ ha ↦ ha.trans_lt hr_lt
-  obtain ⟨x, hx_mem, hx_max⟩ := hVc.exists_isMaxOn (nonempty_closedBall.mpr hr_nn) this.norm
-  suffices Set.EqOn f (Function.const ℂ (f x)) (ball 0 b) by
-    refine this.trans fun y _ ↦ ?_
-    simp only [Function.const_apply]
-    have h0 : (0 : ℂ) ∈ ball 0 b := by simp only [mem_ball, dist_self, zero_lt_one]; linarith
-    simpa using (this h0).symm
-  apply eq_const_of_exists_max h_an (lt_of_le_of_lt hx_mem hr_lt) (fun z hz ↦ ?_)
+    Set.EqOn f (Function.const E (f 0)) (ball 0 b) := by
+  obtain ⟨x, hx_mem, hx_max⟩ := isCompact_closedBall (0 : E) r |>.exists_isMaxOn
+    (nonempty_closedBall.mpr hr_nn) 
+    (h_an.continuousOn.mono <| closedBall_subset_ball hr_lt).norm
+  suffices Set.EqOn f (Function.const E (f x)) (ball 0 b) by
+    rwa [this (mem_ball_self (hr_nn.trans_lt hr_lt))]
+  apply eq_const_of_exists_max h_an (closedBall_subset_ball hr_lt hx_mem) (fun z hz ↦ ?_)↦ ?_)
   obtain ⟨w, hw, hw'⟩ := hr z hz
   exact hw'.trans (hx_max hw)
 
