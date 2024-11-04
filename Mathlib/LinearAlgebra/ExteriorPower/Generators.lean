@@ -26,7 +26,7 @@ versions in the exterior algebra and in the exterior power.)
 * `exteriorPower.finrank_eq`: If `R` satisfies the strong rank condition and `M` is
 finite free of rank `r`, then the `n`th exterior power of `M` is of finrank `Nat.choose r n`.
 
-* `exteriorPower.ιMulti_family_linearIndependent_field`: If `R` is a field, and if `v` is a
+* `exteriorPower.ιMultiFamily_linearIndependent_field`: If `R` is a field, and if `v` is a
 linearly independent family of vectors (indexed by a linearly ordered type), then the family of
 `n`-fold exterior products of elements of `v` is also linearly independent.
 
@@ -64,7 +64,7 @@ lemma span_top_of_span_top {I : Type*} [LinearOrder I] {v : I → M}
   apply le_antisymm
   · rw [Submodule.span_le, Set.range_subset_iff]
     intro
-    rw [SetLike.mem_coe, ιMulti_family_coe, Submodule.coeSubtype, Function.comp_apply]
+    rw [SetLike.mem_coe, ιMultiFamily_coe, Submodule.coe_subtype, Function.comp_apply]
     exact Submodule.coe_mem _
   · unfold ExteriorAlgebra.exteriorPower
     rw [LinearMap.range_eq_map, ← hv, Submodule.map_span, Submodule.span_pow, Submodule.span_le]
@@ -124,12 +124,12 @@ lemma span_top_of_span_top {I : Type*} [LinearOrder I] {v : I → M}
 work in the exterior power and not the exterior algebra. -/
 lemma span_top_of_span_top' {I : Type*} [LinearOrder I]
     {v : I → M} (hv : Submodule.span R (Set.range v) = ⊤) :
-    Submodule.span R (Set.range (ιMulti_family R n v)) = ⊤ := by
+    Submodule.span R (Set.range (ιMultiFamily R n v)) = ⊤ := by
   rw [eq_top_iff]
   rintro ⟨u, hu⟩ -
-  have ⟨w, hw, huw⟩ : ∃ x ∈ Submodule.span R (Set.range (ιMulti_family R n v)), ↑x = u := by
-    rw [← Submodule.coeSubtype, ← Submodule.mem_map, Submodule.map_span, ← Set.range_comp,
-      ← ιMulti_family_coe, span_top_of_span_top R n hv]
+  have ⟨w, hw, huw⟩ : ∃ x ∈ Submodule.span R (Set.range (ιMultiFamily R n v)), ↑x = u := by
+    rw [← Submodule.coe_subtype, ← Submodule.mem_map, Submodule.map_span, ← Set.range_comp,
+      ← ιMultiFamily_coe, span_top_of_span_top R n hv]
     exact hu
   have heq : w = ⟨u, hu⟩ := SetCoe.ext huw
   rw [← heq]
@@ -141,7 +141,7 @@ of elements of `v`, is the image of the map of exterior powers induced by the in
 the span of `v` into `M`. -/
 lemma span_of_span {I : Type*} [LinearOrder I] (v : I → M) :
     LinearMap.range (map n (Submodule.subtype (Submodule.span R (Set.range v)))) =
-    Submodule.span R (Set.range (ιMulti_family R n v)) := by
+    Submodule.span R (Set.range (ιMultiFamily R n v)) := by
   have ⟨f, hf⟩ : ∃ f : I → Submodule.span R (Set.range v), Submodule.subtype _ ∘ f = v :=
     ⟨fun i ↦ ⟨v i, Submodule.subset_span (Set.mem_range_self i)⟩, rfl⟩
   have htop : Submodule.span R (Set.range f) = ⊤ := by
@@ -150,7 +150,7 @@ lemma span_of_span {I : Type*} [LinearOrder I] (v : I → M) :
     rw [← Submodule.map_coe, ← Submodule.span_image, ← Set.range_comp, hf,
       ← Submodule.map_coe, ← LinearMap.range_eq_map, Submodule.range_subtype]
   rw [LinearMap.range_eq_map (M := ⋀[R]^n _), ← span_top_of_span_top' _ _ htop,
-    Submodule.map_span, ← Set.range_comp, map_ιMulti_family, hf]
+    Submodule.map_span, ← Set.range_comp, map_ιMultiFamily, hf]
 
 /-! We construct a basis of `⋀[R]^n M` from a basis of `M`. -/
 
@@ -178,11 +178,11 @@ of cardinality `n`. If we apply the linear form on `⋀[R]^n M` defined by `b` a
 to the exterior product of the `b i` for `i ∈ s`, then we get `1`. -/
 lemma linearFormOfBasis_apply_diag {I : Type*} [LinearOrder I] (b : Basis I R M)
     {s : Finset I} (hs : Finset.card s = n) :
-    linearFormOfBasis R n b hs (ιMulti_family R n b ⟨s, hs⟩) = 1 := by
+    linearFormOfBasis R n b hs (ιMultiFamily R n b ⟨s, hs⟩) = 1 := by
   trans ∑ σ : Fin n ≃ Fin n,
     TensorPower.linearFormOfFamily R n (fun i ↦ b.coord (Finset.orderIsoOfFin s hs i))
       (Equiv.Perm.sign σ • ⨂ₜ[R] i : Fin n, b (Finset.orderIsoOfFin s hs (σ i)))
-  · rw [ιMulti_family, linearFormOfBasis_apply_ιMulti]
+  · rw [ιMultiFamily, linearFormOfBasis_apply_ιMulti]
     congr
     ext σ
     rw [LinearMap.map_smul_of_tower, TensorPower.linearFormOfFamily_apply_tprod]
@@ -194,7 +194,7 @@ lemma linearFormOfBasis_apply_diag {I : Type*} [LinearOrder I] (b : Basis I R M)
       obtain ⟨i, hi⟩ := hσ
       rw [LinearMap.map_smul_of_tower, smul_eq_zero_iff_eq,
         TensorPower.linearFormOfFamily_apply_tprod]
-      apply Finset.prod_eq_zero (Finset.mem_univ _) (a := i)
+      apply Finset.prod_eq_zero (Finset.mem_univ _) (i := i)
       rw [Finset.coe_orderIsoOfFin_apply, Basis.coord_apply, Basis.repr_self_apply,
         Finset.coe_orderIsoOfFin_apply, ite_eq_right_iff, OrderEmbedding.eq_iff_eq]
       exact fun a ↦ absurd a hi
@@ -225,8 +225,8 @@ the linear form on `⋀[R]^n M` defined by `b` and `s` to the exterior product o
 `b i` for `i ∈ t`, then we get `0`. -/
 lemma linearFormOfBasis_apply_nondiag {I : Type*} [LinearOrder I] (b : Basis I R M)
     {s t : Finset I} (hs : Finset.card s = n) (ht : Finset.card t = n) (hst : s ≠ t) :
-    linearFormOfBasis R n b hs (ιMulti_family R n b ⟨t, ht⟩) = 0 := by
-  simp only [ιMulti_family]
+    linearFormOfBasis R n b hs (ιMultiFamily R n b ⟨t, ht⟩) = 0 := by
+  simp only [ιMultiFamily]
   rw [linearFormOfBasis_apply_ιMulti]
   apply Finset.sum_eq_zero
   intro σ _
@@ -239,7 +239,7 @@ lemma linearFormOfBasis_apply_nondiag {I : Type*} [LinearOrder I] (b : Basis I R
 `exteriorPower.ιMulti R n b` of the `n`-fold exterior products of its elements is linearly
 independent in the `n`th exterior power of `M`. -/
 lemma ιMulti_family_linearIndependent_ofBasis {I : Type*} [LinearOrder I] (b : Basis I R M) :
-    LinearIndependent R (ιMulti_family R n b) :=
+    LinearIndependent R (ιMultiFamily R n b) :=
   linearIndependent_of_dualFamily _ (fun s ↦ linearFormOfBasis R n b s.2)
   (fun ⟨_, _⟩ ⟨_, _⟩ hst ↦ by
     rw [ne_eq, Subtype.mk.injEq] at hst
@@ -255,13 +255,13 @@ noncomputable def _root_.Basis.exteriorPower {I : Type*} [LinearOrder I] (b : Ba
 
 @[simp]
 lemma coe_basis {I : Type*} [LinearOrder I] (b : Basis I R M) :
-    DFunLike.coe (Basis.exteriorPower R n b) = ιMulti_family R n b :=
+    DFunLike.coe (Basis.exteriorPower R n b) = ιMultiFamily R n b :=
   Basis.coe_mk _ _
 
 @[simp]
 lemma basis_apply {I : Type*} [LinearOrder I] (b : Basis I R M)
     {s : Finset I} (hs : Finset.card s = n) :
-    Basis.exteriorPower R n b ⟨s, hs⟩ = ιMulti_family R n b ⟨s, hs⟩ := by
+    Basis.exteriorPower R n b ⟨s, hs⟩ = ιMultiFamily R n b ⟨s, hs⟩ := by
   rw [coe_basis]
 
 /-- If `b` is a basis of `M` indexed by a linearly ordered type `I` and `B` is the corresponding
@@ -286,7 +286,7 @@ lemma basis_coord {I : Type*} [LinearOrder I] (b : Basis I R M)
 /-- If `M` is a free module, then so is its `n`th exterior power. -/
 instance instFree [hfree : Module.Free R M] : Module.Free R (⋀[R]^n M) :=
   have ⟨I, b⟩ := hfree.exists_basis
-  letI : LinearOrder I := WellFounded.wellOrderExtension emptyWf.wf
+  letI : LinearOrder I := IsWellFounded.wellOrderExtension emptyWf.rel
   Module.Free.of_basis (Basis.exteriorPower R n b)
 
 variable [StrongRankCondition R]
@@ -294,32 +294,32 @@ variable [StrongRankCondition R]
 /-- If `R` satisfies the strong rank condition and `M` is finite free of rank `r`, then
 the `n`th exterior power of `M` is of finrank `Nat.choose r n`. -/
 lemma finrank_eq [hfree : Module.Free R M] [Module.Finite R M] :
-    FiniteDimensional.finrank R (⋀[R]^n M) =
-    Nat.choose (FiniteDimensional.finrank R M) n := by
-  letI : LinearOrder hfree.ChooseBasisIndex := WellFounded.wellOrderExtension emptyWf.wf
+    Module.finrank R (⋀[R]^n M) =
+    Nat.choose (Module.finrank R M) n := by
+  letI : LinearOrder hfree.ChooseBasisIndex := IsWellFounded.wellOrderExtension emptyWf.rel
   let B := Basis.exteriorPower R n hfree.chooseBasis
-  rw [FiniteDimensional.finrank_eq_card_basis hfree.chooseBasis,
-    FiniteDimensional.finrank_eq_card_basis B, Fintype.card_finset_len]
+  rw [Module.finrank_eq_card_basis hfree.chooseBasis,
+    Module.finrank_eq_card_basis B, Fintype.card_finset_len]
 
 /-! Results that only hold over a field. -/
 
 /-- If `v` is a linearly independent family of vectors (indexed by a linearly ordered type),
 then the family of its `n`-fold exterior products is also linearly independent. -/
-lemma ιMulti_family_linearIndependent_field {I : Type*} [LinearOrder I] {v : I → E}
-    (hv : LinearIndependent K v) : LinearIndependent K (ιMulti_family K n v) := by
+lemma ιMultiFamily_linearIndependent_field {I : Type*} [LinearOrder I] {v : I → E}
+    (hv : LinearIndependent K v) : LinearIndependent K (ιMultiFamily K n v) := by
   let W := Submodule.span K (Set.range v)
   let v' : I → W := fun i ↦ ⟨v i, Submodule.subset_span <| exists_apply_eq_apply _ _⟩
   have h : v = W.subtype ∘ v' :=
-    funext (fun _ ↦ by simp only [Submodule.coeSubtype, Function.comp_apply])
-  rw [h, ← map_ιMulti_family]
+    funext (fun _ ↦ by simp only [Submodule.coe_subtype, Function.comp_apply])
+  rw [h, ← map_ιMultiFamily]
   refine LinearIndependent.map' ?_ (map n W.subtype)
     (LinearMap.ker_eq_bot.mpr (map_injective_field n (Submodule.ker_subtype _)))
   have hv'span : ⊤ ≤ Submodule.span K (Set.range v') := by
     rintro x -
     rw [← Submodule.apply_mem_span_image_iff_mem_span (Submodule.injective_subtype W),
-      ← Set.range_comp, ← h, Submodule.coeSubtype]
+      ← Set.range_comp, ← h, Submodule.coe_subtype]
     exact SetLike.coe_mem _
-  have heq : ιMulti_family K n v' =
+  have heq : ιMultiFamily K n v' =
       Basis.exteriorPower K n (Basis.mk (.of_comp W.subtype (h ▸ hv)) hv'span) := by
     rw [coe_basis, Basis.coe_mk]
   rw [heq]
@@ -328,6 +328,6 @@ lemma ιMulti_family_linearIndependent_field {I : Type*} [LinearOrder I] {v : I 
 instance instNonempty {I : Type*} [LinearOrder I] [Nonempty {v : I → E // LinearIndependent K v}] :
     Nonempty {v : {s : Finset I // Finset.card s = n} → (⋀[K]^n) E // LinearIndependent K v} :=
   Nonempty.map (fun v : {v : I → E // LinearIndependent K v} ↦
-    ⟨ιMulti_family K n v, ιMulti_family_linearIndependent_field n v.2⟩) ‹_›
+    ⟨ιMultiFamily K n v, ιMultiFamily_linearIndependent_field n v.2⟩) ‹_›
 
 end exteriorPower
