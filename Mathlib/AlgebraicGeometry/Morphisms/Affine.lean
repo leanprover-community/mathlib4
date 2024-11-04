@@ -45,12 +45,6 @@ the preimage of any affine open subset of `Y` is affine. -/
 class IsAffineHom {X Y : Scheme} (f : X ⟶ Y) : Prop where
   isAffine_preimage : ∀ U : Y.Opens, IsAffineOpen U → IsAffineOpen (f ⁻¹ᵁ U)
 
-/-- Alternative of `isAffineHom_iff` with bundled affine opens. -/
-lemma isAffineHom_iff' {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    IsAffineHom f ↔ ∀ (U : Y.affineOpens), IsAffineOpen (f ⁻¹ᵁ U) := by
-  rw [isAffineHom_iff, Subtype.forall]
-  rfl
-
 lemma IsAffineOpen.preimage {X Y : Scheme} {U : Y.Opens} (hU : IsAffineOpen U)
     (f : X ⟶ Y) [IsAffineHom f] :
     IsAffineOpen (f ⁻¹ᵁ U) :=
