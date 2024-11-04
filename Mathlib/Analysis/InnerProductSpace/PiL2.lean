@@ -59,7 +59,6 @@ noncomputable section
 
 variable {ι ι' 𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
