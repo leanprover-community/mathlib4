@@ -43,7 +43,7 @@ noncomputable def freeYonedaEquiv {M : PresheafOfModules.{v} R} {X : C} :
     ((free R).obj (yoneda.obj X) ⟶ M) ≃ M.obj (Opposite.op X) :=
   freeHomEquiv.trans yonedaEquiv
 
-lemma freeYonedaEquiv_symm_apply (M : PresheafOfModules.{v} R) (X : C)
+lemma freeYonedaEquiv_symm_app (M : PresheafOfModules.{v} R) (X : C)
     (x : M.obj (Opposite.op X)) :
     (freeYonedaEquiv.symm x).app (Opposite.op X) (ModuleCat.freeMk (𝟙 _)) = x := by
   dsimp [freeYonedaEquiv, freeHomEquiv, yonedaEquiv]
