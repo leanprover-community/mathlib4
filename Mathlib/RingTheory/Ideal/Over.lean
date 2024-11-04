@@ -562,7 +562,7 @@ variable {p} in
 theorem nontrivial_of_liesOver_of_ne_top (hp : p ≠ ⊤) : Nontrivial (B ⧸ P) :=
   Quotient.nontrivial ((eq_top_iff_liesOver_eq_top P p).mp.mt hp)
 
-theorem nontrivial_of_liesOver_isPrime [hp : p.IsPrime] : Nontrivial (B ⧸ P) :=
+theorem nontrivial_of_liesOver_of_isPrime [hp : p.IsPrime] : Nontrivial (B ⧸ P) :=
   nontrivial_of_liesOver_ne_top P hp.ne_top
 
 variable {P} in
