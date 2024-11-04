@@ -328,9 +328,8 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
   emb := by
     intro m
     by_cases h : m = k
-    · have : update c.partSize k (c.partSize k + 1) m = c.partSize k + 1 := by
-        rw [h]; simp
-      exact (Fin.cases 0 (succ ∘ (c.emb k))) ∘ (Fin.cast this)
+    · have : update c.partSize k (c.partSize k + 1) m = c.partSize k + 1 := by rw [h]; simp
+      exact Fin.cases 0 (succ ∘ c.emb k) ∘ Fin.cast this
     · have : update c.partSize k (c.partSize k + 1) m = c.partSize m := by simp [h]
       exact succ ∘ c.emb m ∘ Fin.cast this
   emb_strictMono := by
