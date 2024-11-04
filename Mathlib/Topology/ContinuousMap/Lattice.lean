@@ -6,6 +6,7 @@ Authors: Kim Morrison, Nicolò Cavalleri
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Order.Group.Lattice
 import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.Topology.ContinuousMap.Ordered
 
 /-!
 # Continuous maps as a lattice ordered group

@@ -9,7 +9,6 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
