@@ -407,7 +407,7 @@ variable (L)
 /-- If `p` is a maximal ideal of `R`, and `S` is the integral closure of `R` in `L`,
 then the dimension `[S/pS : R/p]` is equal to `[Frac(S) : Frac(R)]`. -/
 theorem finrank_quotient_map [IsDomain S] [IsDedekindDomain R] [Algebra K L]
-    [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L] [IsIntegralClosure S R L]
+    [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L]
     [hp : p.IsMaximal] [IsNoetherian R S] :
     finrank (R ⧸ p) (S ⧸ map (algebraMap R S) p) = finrank K L := by
   -- Choose an arbitrary basis `b` for `[S/pS : R/p]`.
