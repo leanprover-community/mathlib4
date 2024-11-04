@@ -468,7 +468,7 @@ theorem eq_top_iff_of_liesOver [P.LiesOver p] : P = ⊤ ↔ p = ⊤ := by
 
 variable {P}
 
-theorem LiesOver.of_eq_comap_equiv [Q.LiesOver p] {F : Type*} [FunLike F B C]
+theorem LiesOver.of_eq_comap [Q.LiesOver p] {F : Type*} [FunLike F B C]
     [AlgHomClass F A B C] (f : F) (h : P = Q.comap f) : P.LiesOver p where
   over := by
     rw [h]
@@ -478,13 +478,13 @@ theorem LiesOver.of_eq_comap_equiv [Q.LiesOver p] {F : Type*} [FunLike F B C]
 theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
     [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p := by
   rw [← show _ = P.map σ from comap_symm (σ : B ≃+* C)] at h
-  exact of_eq_comap_equiv p (σ : B ≃ₐ[A] C).symm h
+  exact of_eq_comap p (σ : B ≃ₐ[A] C).symm h
 
 variable (P) (Q)
 
-instance comap_equiv_liesOver [Q.LiesOver p] {F : Type*} [FunLike F B C] [AlgHomClass F A B C]
+instance comap_liesOver [Q.LiesOver p] {F : Type*} [FunLike F B C] [AlgHomClass F A B C]
     (f : F) : (Q.comap f).LiesOver p :=
-  LiesOver.of_eq_comap_equiv p f rfl
+  LiesOver.of_eq_comap p f rfl
 
 instance map_equiv_liesOver [P.LiesOver p] {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C]
     (σ : E) : (P.map σ).LiesOver p :=
