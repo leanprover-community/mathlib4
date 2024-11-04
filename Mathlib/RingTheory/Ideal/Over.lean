@@ -547,8 +547,7 @@ instance algebra_finiteType_of_liesOver [Algebra.FiniteType A B] :
 instance isNoetherian_of_liesOver [IsNoetherian A B] : IsNoetherian (A ⧸ p) (B ⧸ P) :=
   isNoetherian_of_tower A inferInstance
 
-theorem algebraMap_injective_of_liesOver :
-    Function.Injective (algebraMap (A ⧸ p) (B ⧸ P)) := by
+theorem algebraMap_injective_of_liesOver : Function.Injective (algebraMap (A ⧸ p) (B ⧸ P)) := by
   rintro ⟨a⟩ ⟨b⟩ hab
   apply Quotient.eq.mpr ((mem_of_liesOver P p (a - b)).mpr _)
   rw [RingHom.map_sub]
@@ -583,7 +582,7 @@ theorem algEquivOfEqMap_apply (h : Q = P.map σ) (x : B) : algEquivOfEqMap p σ 
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
   isomorphism between `B` and `C`, where `P = σ⁻¹ Q`. -/
 def algEquivOfEqComap (h : P = Q.comap σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) :=
-  (algEquivOfEqMap p (σ : B ≃ₐ[A] C).symm (h.trans (map_symm (σ : B ≃+* C)).symm)).symm
+  algEquivOfEqMap p σ ((congrArg (map σ) h).trans (Q.map_comap_eq_self_of_equiv σ)).symm
 
 @[simp]
 theorem algEquivOfEqComap_apply (h : P = Q.comap σ) (x : B) : algEquivOfEqComap p σ h x = σ x :=
