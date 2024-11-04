@@ -815,7 +815,7 @@ instance instSMul' : SMul C(α, R) C(α, M) :=
 
 /-- Evaluation of a scalar-valued continuous map multiplying a vector-valued one
 (as opposed to `ContinuousMap.smul_apply` which is multiplication by a constant scalar). -/
--- (this doesn't need to be @[simp] since it can be derived from `coe_smul'` and `Pi.smul_apply`)
+-- (this doesn't need to be @[simp] since it can be derived from `coe_smul'` and `Pi.smul_apply'`)
 lemma smul_apply' (f : C(α, R)) (g : C(α, M)) (x : α) :
     (f • g) x = f x • g x :=
   rfl
