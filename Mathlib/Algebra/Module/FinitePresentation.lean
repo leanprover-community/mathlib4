@@ -433,4 +433,8 @@ instance Module.FinitePresentation.isLocalizedModule_mapExtendScalars
       IsLocalizedModule S (IsLocalizedModule.mapExtendScalars S f g Rₛ) :=
   IsLocalizedModule.of_linearEquiv _ _ _
 
+instance [Module.FinitePresentation R M] :
+    IsLocalizedModule S (LocalizedModule.map S (M := M) (N := N)) :=
+  Module.FinitePresentation.isLocalizedModule_mapExtendScalars _ _ _ _
+
 end CommRing
