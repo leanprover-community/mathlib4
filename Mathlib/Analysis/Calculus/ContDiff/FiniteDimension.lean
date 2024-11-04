@@ -14,11 +14,12 @@ import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 noncomputable section
 
-universe uD uE uF uG
+universe uD uE uF
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddCommGroup D]
-  [NormedSpace 𝕜 D] {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {D : Type uD} [NormedAddCommGroup D] [NormedSpace 𝕜 D]
+  {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-! ### Finite dimensional results -/
 
@@ -35,10 +36,10 @@ theorem contDiffOn_clm_apply {n : WithTop ℕ∞}
     {f : E → F →L[𝕜] G} {s : Set E} [FiniteDimensional 𝕜 F] :
     ContDiffOn 𝕜 n f s ↔ ∀ y, ContDiffOn 𝕜 n (fun x => f x y) s := by
   refine ⟨fun h y => h.clm_apply contDiffOn_const, fun h => ?_⟩
-  let d := finrank 𝕜 F
+  let d := finrank 𝕜 E
   have hd : d = finrank 𝕜 (Fin d → 𝕜) := (finrank_fin_fun 𝕜).symm
   let e₁ := ContinuousLinearEquiv.ofFinrankEq hd
-  let e₂ := (e₁.arrowCongr (1 : G ≃L[𝕜] G)).trans (ContinuousLinearEquiv.piRing (Fin d))
+  let e₂ := (e₁.arrowCongr (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing (Fin d))
   rw [← id_comp f, ← e₂.symm_comp_self]
   exact e₂.symm.contDiff.comp_contDiffOn (contDiffOn_pi.mpr fun i => h _)
 

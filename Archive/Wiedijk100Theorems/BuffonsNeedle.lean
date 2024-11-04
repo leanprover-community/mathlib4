@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
 
-import Mathlib.Probability.Density
-import Mathlib.Probability.Notation
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Uniform
+import Mathlib.Probability.Notation
 
 /-!
 
@@ -201,7 +201,7 @@ include hd hB hBₘ in
 lemma buffon_integral :
     𝔼[N l B] = (d * π) ⁻¹ *
       ∫ (θ : ℝ) in Set.Icc 0 π,
-      ∫ (x : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1 := by
+      ∫ (_ : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1 := by
   simp_rw [N, Function.comp_apply]
   rw [
     ← MeasureTheory.integral_map hBₘ.aemeasurable

@@ -11,34 +11,44 @@ import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 # Faa di Bruno formula
 
 The Faa di Bruno formula gives the iterated derivative of `g ∘ f` in terms of those of
-`g` and `f`. It is expressed in terms of partitions `I` of `{0, ..., n}`. For such a
-partition, denote by `k` its number of parts, write the parts as `I₁, ..., Iₖ` ordered so
-that `max I₁ < ... < max Iₖ`, and let `iₘ` be the number of elements of `Iₘ`. Then
-`D^n (g ∘ f) (x) (v_1, ..., v_n) =
-  ∑_{I partition of {1, ..., n}} D^k g (f x) (D^{i₁} f (x) (v_{I₁}), ..., D^{iₖ} f (x) (v_{Iₖ}))`
-where by `v_{Iₘ}` we mean the vectors `vᵢ` with indices in `Iₘ`.
+`g` and `f`. It is expressed in terms of partitions `I` of `{0, ..., n-1}`. For such a
+partition, denote by `k` its number of parts, write the parts as `I₀, ..., Iₖ₋₁` ordered so
+that `max I₀ < ... < max Iₖ₋₁`, and let `iₘ` be the number of elements of `Iₘ`. Then
+`D^n (g ∘ f) (x) (v_0, ..., v_{n-1}) =
+  ∑_{I partition of {0, ..., n-1}}
+    D^k g (f x) (D^{i₀} f (x) (v_{I₀}), ..., D^{iₖ₋₁} f (x) (v_{Iₖ₋₁}))`
+where by `v_{Iₘ}` we mean the vectors `vᵢ` with indices in `Iₘ`, i.e., the composition of `v`
+with the increasing embedding of `Fin iₘ` into `Fin n` with range `Iₘ`.
 
-For instance, for `n = 2`, there are 2 partitions of `{1, 2}`, given by `{1} {2}` and `{1, 2}`,
+For instance, for `n = 2`, there are 2 partitions of `{0, 1}`, given by `{0}, {1}` and `{0, 1}`,
 and therefore
-`D^2(g ∘ f) (x) (v₁, v₂) = D^2 g (f x) (Df (x) v₁, Df (x) v₂) + Dg (f x) (D^2f (x) (v₁, v₂))`.
+`D^2(g ∘ f) (x) (v₀, v₁) = D^2 g (f x) (Df (x) v₀, Df (x) v₁) + Dg (f x) (D^2f (x) (v₀, v₁))`.
 
 The formula is straightforward to prove by induction, as differentiating
-`D^k g (f x) (D^{i₁} f (x) (v_{I₁}), ..., D^{i_k} f (x) (v_{Iₖ}))` gives a sum with `k + 1` terms
-where one differentiates either `D^k g (f x)`, or one of the `D^{iₘ} f (x)`, amounting to
-adding to the partition `I` either a new atom `{0}` to its left, or extending `Iₘ` by adding `0`
-to it. In this way, one obtains bijectively all partitions of `{0, ..., n}`, and the proof can
-go on (up to relabelling).
+`D^k g (f x) (D^{i₀} f (x) (v_{I₀}), ..., D^{iₖ₋₁} f (x) (v_{Iₖ₋₁}))` gives a sum
+with `k + 1` terms where one differentiates either `D^k g (f x)`, or one of the `D^{iₘ} f (x)`,
+amounting to adding to the partition `I` either a new atom `{-1}` to its left, or extending `Iₘ`
+by adding `-1` to it. In this way, one obtains bijectively all partitions of `{-1, ..., n}`,
+and the proof can go on (up to relabelling).
 
-The main difficulty is to write down things in a precise language, namely to write
-`D^k g (f x) (D^{i₁} f (x) (v_{I₁}), ..., D^{iₖ} f (x) (v_{Iₖ}))` as a continuous multilinear maps
-of the `vᵢ`. For this, instead of working with partitions of `{1, ..., n}` and ordering their
+The main difficulty is to write things down in a precise language, namely to write
+`D^k g (f x) (D^{i₀} f (x) (v_{I₀}), ..., D^{iₖ₋₁} f (x) (v_{Iₖ₋₁}))` as a continuous multilinear
+map of the `vᵢ`. For this, instead of working with partitions of `{0, ..., n-1}` and ordering their
 parts, we work with partitions in which the ordering is part of the data -- this is equivalent,
 but much more convenient to implement. We call these `OrderedFinpartition n`.
+
+Note that the implementation of `OrderedFinpartition` is very specific to the Faa di Bruno formula:
+as testified by the formula above, what matters is really the embedding of the parts in `Fin n`,
+and moreover the parts have to be ordered by `max I₀ < ... < max Iₖ₋₁` for the formula to hold
+in the general case where the iterated differential might not be symmetric. The defeqs with respect
+to `Fin.cons` are also important when doing the induction. For this reason, we do not expect this
+class to be useful beyond the Faa di Bruno formula, which is why it is in this file instead
+of a dedicated file in the `Combinatorics` folder.
 
 ## Main results
 
 Given `c : OrderedFinpartition n` and two formal multilinear series `q` and `p`, we
-define `c. q p` as an `n`-multilinear map given by the formula above,
+define `c.compAlongOrderedFinpartition q p` as an `n`-multilinear map given by the formula above,
 i.e., `(v₁, ..., vₙ) ↦ qₖ (p_{i₁} (v_{I₁}), ..., p_{iₖ} (v_{Iₖ}))`.
 
 Then, we define `q.taylorComp p` as a formal multilinear series whose `n`-th term is
@@ -59,25 +69,26 @@ Then, one has to show that the ordered finpartitions thus
 obtained give exactly all ordered finpartitions of order `n+1`. For this, we define the inverse
 process (shrinking a finpartition of `n+1` by erasing `0`, either as an atom or from the part
 that contains it), and we show that these processes are inverse to each other, yielding an
-equivalence between `((c : OrderedFinpartition n) × Option (Fin c.length))`
+equivalence between `(c : OrderedFinpartition n) × Option (Fin c.length)`
 and `OrderedFinpartition (n + 1)`. This equivalence shows up prominently in the inductive proof
 of Faa di Bruno formula to identify the sums that show up.
+
+## Current state
+
+For now, the file only contains the combinatorial construction, i.e., the definition of
+`OrderedFinpartition n` and the equivalence between
+`(c : OrderedFinpartition n) × Option (Fin c.length)` and `OrderedFinpartition (n + 1)`.
+The application to the proof of the Faa di Bruno formula will be PRed in a second step.
 -/
 
 noncomputable section
 
-open Set Fin Filter Function
-
-universe u uE uF uG uX
-
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG}
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {s : Set E} {t : Set F}
-  {q : F → FormalMultilinearSeries 𝕜 F G} {p : E → FormalMultilinearSeries 𝕜 E F}
+open Set Fin Function
 
 /-- A partition of `Fin n` into finitely many nonempty subsets, given by the increasing
-parameterization of these subsets. We order the subsets by increasing greatest element. -/
+parameterization of these subsets. We order the subsets by increasing greatest element.
+This definition is tailored-made for the Faa di Bruno formula, and probably not useful elsewhere,
+because of the specific parameterization by `Fin n` and the peculiar ordering. -/
 @[ext]
 structure OrderedFinpartition (n : ℕ) where
   /-- The number of parts in the partition -/
@@ -90,11 +101,11 @@ structure OrderedFinpartition (n : ℕ) where
   emb_strictMono : ∀ m, StrictMono (emb m)
   /-- The parts are ordered by increasing greatest element. -/
   parts_strictMono :
-    StrictMono (fun m ↦ emb m ⟨partSize m - 1, Nat.sub_one_lt_of_lt (partSize_pos m)⟩)
+    StrictMono fun m ↦ emb m ⟨partSize m - 1, Nat.sub_one_lt_of_lt (partSize_pos m)⟩
   /-- The parts are disjoint -/
-  disjoint : PairwiseDisjoint univ (fun m ↦ range (emb m))
+  disjoint : PairwiseDisjoint univ fun m ↦ range (emb m)
   /-- The parts cover everything -/
-  cover : ⋃ m, range (emb m) = univ
+  cover x : ∃ m, x ∈ range (emb m)
 
 namespace OrderedFinpartition
 
@@ -109,7 +120,7 @@ namespace OrderedFinpartition
   emb_strictMono _ := Subsingleton.strictMono _
   parts_strictMono := strictMono_id
   disjoint _ _ _ _ h := by simpa using h
-  cover := eq_univ_of_forall (fun m ↦ by simp)
+  cover m := by simp
 
 variable {n : ℕ} (c : OrderedFinpartition n)
 
@@ -150,9 +161,7 @@ instance : Unique (OrderedFinpartition 0) := by
 
 lemma exists_inverse {n : ℕ} (c : OrderedFinpartition n) (j : Fin n) :
     ∃ p : Σ m, Fin (c.partSize m), c.emb p.1 p.2 = j := by
-  have : j ∈ ⋃ m, range (c.emb m) := by rw [OrderedFinpartition.cover]; exact mem_univ _
-  simp only [mem_iUnion, mem_range] at this
-  rcases this with ⟨m, r, hmr⟩
+  rcases c.cover j with ⟨m, r, hmr⟩
   exact ⟨⟨m, r⟩, hmr⟩
 
 lemma emb_injective : Injective (fun (p : Σ m, Fin (c.partSize m)) ↦ c.emb p.1 p.2) := by
@@ -197,11 +206,11 @@ noncomputable def equivSigma : ((i : Fin c.length) × Fin (c.partSize i)) ≃ Fi
 
 lemma length_pos (h : 0 < n) : 0 < c.length := Nat.zero_lt_of_lt (c.index ⟨0, h⟩).2
 
-lemma neZero_length [NeZero n] (c : OrderedFinpartition n) : NeZero (c.length) :=
-  ⟨Nat.not_eq_zero_of_lt (c.length_pos size_pos')⟩
+lemma neZero_length [NeZero n] (c : OrderedFinpartition n) : NeZero c.length :=
+  ⟨(c.length_pos size_pos').ne'⟩
 
 lemma neZero_partSize (c : OrderedFinpartition n) (i : Fin c.length) : NeZero (c.partSize i) :=
-  NeZero.of_pos (c.partSize_pos i)
+  .of_pos (c.partSize_pos i)
 
 attribute [local instance] neZero_length neZero_partSize
 
@@ -255,7 +264,7 @@ stays the same).
 
 These operations are inverse to each other, giving rise to an equivalence between
 `((c : OrderedFinpartition n) × Option (Fin c.length))` and `OrderedFinpartition (n + 1)`
-called `OrderedFinPartion.extendEquiv`.
+called `OrderedFinPartition.extendEquiv`.
 -/
 
 /-- Extend an ordered partition of `n` entries, by adding a new singleton part to the left. -/
@@ -263,7 +272,7 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
   length := c.length + 1
   partSize := Fin.cons 1 c.partSize
   partSize_pos := Fin.cases (by simp) (by simp [c.partSize_pos])
-  emb := Fin.cases (fun _ ↦ 0) (fun m ↦ Fin.succ ∘ (c.emb m))
+  emb := Fin.cases (fun _ ↦ 0) (fun m ↦ Fin.succ ∘ c.emb m)
   emb_strictMono := by
     refine Fin.cases ?_ (fun i ↦ ?_)
     · exact @Subsingleton.strictMono _ _ _ _ (by simp; infer_instance) _
@@ -278,7 +287,7 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
         exact c.parts_strictMono (by simpa using hij)
   disjoint i hi j hj hij := by
     wlog h : j < i generalizing i j
-    · exact Disjoint.symm
+    · exact .symm
         (this j (mem_univ j) i (mem_univ i) hij.symm (lt_of_le_of_ne (le_of_not_lt h) hij))
     induction i using Fin.induction with
     | zero => simp at h
@@ -298,7 +307,6 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
         intro a b
         apply c.emb_ne_emb_of_ne (by simpa using hij)
   cover := by
-    apply eq_univ_of_forall
     refine Fin.cases ?_ (fun i ↦ ?_)
     · simp only [mem_iUnion, mem_range]
       exact ⟨0, ⟨0, by simp⟩, by simp⟩
@@ -315,19 +323,17 @@ left. -/
 def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpartition (n + 1) where
   length := c.length
   partSize := update c.partSize k (c.partSize k + 1)
-  partSize_pos := by
-    intro m
+  partSize_pos m := by
     rcases eq_or_ne m k with rfl | hm
     · simp
     · simpa [hm] using c.partSize_pos m
   emb := by
     intro m
     by_cases h : m = k
-    · have : update c.partSize k (c.partSize k + 1) m = c.partSize k + 1 := by
-        rw [h]; simp
-      exact (Fin.cases 0 (succ ∘ (c.emb k))) ∘ (Fin.cast this)
+    · have : update c.partSize k (c.partSize k + 1) m = c.partSize k + 1 := by rw [h]; simp
+      exact Fin.cases 0 (succ ∘ c.emb k) ∘ Fin.cast this
     · have : update c.partSize k (c.partSize k + 1) m = c.partSize m := by simp [h]
-      exact succ ∘ (c.emb m) ∘ (Fin.cast this)
+      exact succ ∘ c.emb m ∘ Fin.cast this
   emb_strictMono := by
     intro m
     rcases eq_or_ne m k with rfl | hm
@@ -388,7 +394,6 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
       intro a b
       apply c.emb_ne_emb_of_ne hij
   cover := by
-    apply eq_univ_of_forall
     refine Fin.cases ?_ (fun i ↦ ?_)
     · simp only [mem_iUnion, mem_range]
       exact ⟨k, ⟨0, by simp⟩, by simp⟩
@@ -401,14 +406,14 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
           simp [hi]
         exact ⟨c.index i, cast A.symm (c.invEmbedding i), by simp [hi]⟩
 
-lemma index_extendMiddle_zero (c : OrderedFinpartition n) (i : Fin c.length):
+lemma index_extendMiddle_zero (c : OrderedFinpartition n) (i : Fin c.length) :
     (c.extendMiddle i).index 0 = i := by
   have : (c.extendMiddle i).emb i 0 = 0 := by simp [extendMiddle]
   conv_rhs at this => rw [← (c.extendMiddle i).emb_invEmbedding 0]
   contrapose! this
   exact (c.extendMiddle i).emb_ne_emb_of_ne (Ne.symm this)
 
-lemma range_extendMiddle_emb_ne_singleton_zero (c : OrderedFinpartition n) (i j : Fin c.length) :
+lemma range_emb_extendMiddle_ne_singleton_zero (c : OrderedFinpartition n) (i j : Fin c.length) :
     range ((c.extendMiddle i).emb j) ≠ {0} := by
   intro h
   rcases eq_or_ne j i with rfl | hij
@@ -459,8 +464,7 @@ def eraseLeft (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) = {0}) :
     simp only [mem_range, ne_eq, forall_exists_index, forall_apply_eq_imp_iff, pred_inj]
     intro a b
     exact c.emb_ne_emb_of_ne ((cast_injective _).ne (by simpa using hij))
-  cover := by
-    apply eq_univ_of_forall (fun x ↦ ?_)
+  cover x := by
     simp only [mem_iUnion, mem_range]
     obtain ⟨i, j, hij⟩ : ∃ (i : Fin c.length), ∃ (j : Fin (c.partSize i)), c.emb i j = succ x :=
       ⟨c.index (succ x), c.invEmbedding (succ x), by simp⟩
@@ -561,8 +565,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
       simp only [mem_range, ne_eq, forall_exists_index, forall_apply_eq_imp_iff, pred_inj]
       intro a b
       exact c.emb_ne_emb_of_ne hij
-  cover := by
-    apply eq_univ_of_forall (fun x ↦ ?_)
+  cover x := by
     simp only [mem_iUnion, mem_range]
     obtain ⟨i, j, hij⟩ : ∃ (i : Fin c.length), ∃ (j : Fin (c.partSize i)), c.emb i j = succ x :=
       ⟨c.index (succ x), c.invEmbedding (succ x), by simp⟩
@@ -607,7 +610,7 @@ def extendEquiv (n : ℕ) :
         and_true]
       rfl
     | some i =>
-      simp only [extend, range_extendMiddle_emb_ne_singleton_zero, ↓reduceDIte,
+      simp only [extend, range_emb_extendMiddle_ne_singleton_zero, ↓reduceDIte,
         Sigma.mk.inj_iff, heq_eq_eq, and_true, eraseMiddle, Nat.succ_eq_add_one,
         index_extendMiddle_zero]
       ext
