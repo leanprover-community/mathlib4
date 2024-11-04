@@ -559,7 +559,7 @@ instance [P.IsPrime] : NoZeroSMulDivisors (A ⧸ p) (B ⧸ P) :=
   NoZeroSMulDivisors.of_algebraMap_injective (algebraMap_injective_of_liesOver P p)
 
 variable {p} in
-theorem nontrivial_of_liesOver_ne_top (hp : p ≠ ⊤) : Nontrivial (B ⧸ P) :=
+theorem nontrivial_of_liesOver_of_ne_top (hp : p ≠ ⊤) : Nontrivial (B ⧸ P) :=
   Quotient.nontrivial ((eq_top_iff_liesOver_eq_top P p).mp.mt hp)
 
 theorem nontrivial_of_liesOver_isPrime [hp : p.IsPrime] : Nontrivial (B ⧸ P) :=
