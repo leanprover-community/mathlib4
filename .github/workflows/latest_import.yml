@@ -147,6 +147,6 @@ jobs:
                 max=$3+0
             }' |
             sort --field-separator=: -k3 -nr |
-            awk -F: 'BEGIN{printf("|File|Import increase|New imports|Line|\n|:-|:-:|:-|-:|\n")} {
-              printf("| %s | %s | %s | %s |\n", $2, $5, $6, $3)
+            awk -F: 'BEGIN{printf("|File|Line|Import increase|New imports|\n|:-|-:|-:|:-|\n")} {
+              printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
             }'
