@@ -714,10 +714,8 @@ variable {σ : Type*} (R : Type*) [CommRing R]
 private theorem rename_polynomial_aeval_X
     {σ τ R : Type*} [CommSemiring R] (f : σ → τ) (i : σ) (p : R[X]) :
     rename f (Polynomial.aeval (X i) p) = Polynomial.aeval (X (f i) : MvPolynomial τ R) p := by
-  have : (rename f).comp (Polynomial.aeval (X i)) =
-      Polynomial.aeval (X (f i) : MvPolynomial τ R) := by
-    ext1; simp
-  exact congr($(this) p)
+  rw [← AlgHom.comp_apply]
+  congr 1; ext1; simp
 
 theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i ∉ s)
     {f : R[X]} (hf : Transcendental R f) :
@@ -762,7 +760,7 @@ theorem transcendental_polynomial_aeval_X (i : σ) {f : R[X]} (hf : Transcendent
   rwa [Transcendental, ← isAlgebraic_ringHom_iff_of_comp_eq g (RingHom.id (MvPolynomial σ R))
     Function.injective_id (by ext1; rfl), RingHom.id_apply, ← Transcendental]
 
-theorem transcendental_polynomial_aeval_X_iff [Nontrivial R] (i : σ) {f : R[X]} :
+theorem transcendental_polynomial_aeval_X_iff (i : σ) {f : R[X]} :
     Transcendental R (Polynomial.aeval (X i : MvPolynomial σ R) f) ↔ Transcendental R f := by
   refine ⟨?_, transcendental_polynomial_aeval_X R i⟩
   simp_rw [Transcendental, not_imp_not]
