@@ -812,7 +812,6 @@ theorem tangentMapWithin_proj {p : TangentBundle I M} :
 theorem tangentMap_proj {p : TangentBundle I M} : (tangentMap I I' f p).proj = f p.proj :=
   rfl
 
-
 /-- If two sets coincide locally around `x`, except maybe at a point `y`, then their
 preimage under `extChartAt x` coincide locally, except maybe at `extChartAt I x x`. -/
 theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
@@ -867,7 +866,6 @@ theorem mdifferentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f t x := by
   simp only [mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt]
   exact exists_congr fun _ => hasMFDerivWithinAt_congr_set h
-
 
 /-- If two sets coincide locally, except maybe at a point, then derivatives within these sets
 are the same. -/
