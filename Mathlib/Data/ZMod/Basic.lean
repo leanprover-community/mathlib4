@@ -3,13 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Fintype.Units
-
 
 /-!
 # Integers mod `n`
@@ -34,7 +35,7 @@ This is a ring hom if the ring has characteristic dividing `n`
 
 assert_not_exists Submodule
 
-open Function
+open Function ZMod
 
 namespace ZMod
 
@@ -129,7 +130,6 @@ theorem ringChar_zmod_n (n : ℕ) : ringChar (ZMod n) = n := by
   rw [ringChar.eq_iff]
   exact ZMod.charP n
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem natCast_self (n : ℕ) : (n : ZMod n) = 0 :=
   CharP.cast_eq_zero (ZMod n) n
 
@@ -519,7 +519,7 @@ variable {m n : ℕ}
 
 @[simp]
 theorem val_eq_zero : ∀ {n : ℕ} (a : ZMod n), a.val = 0 ↔ a = 0
-  | 0, a => Int.natAbs_eq_zero
+  | 0, _ => Int.natAbs_eq_zero
   | n + 1, a => by
     rw [Fin.ext_iff]
     exact Iff.rfl
@@ -780,7 +780,6 @@ def inv : ∀ n : ℕ, ZMod n → ZMod n
 instance (n : ℕ) : Inv (ZMod n) :=
   ⟨inv n⟩
 
-@[nolint unusedHavesSuffices]
 theorem inv_zero : ∀ n : ℕ, (0 : ZMod n)⁻¹ = 0
   | 0 => Int.sign_zero
   | n + 1 =>
@@ -1016,7 +1015,7 @@ theorem val_eq_one : ∀ {n : ℕ} (_ : 1 < n) (a : ZMod n), a.val = 1 ↔ a = 1
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
   cases n
-  · erw [@mul_eq_zero ℤ, @mul_eq_zero ℕ, val_eq_zero]
+  · rw [@mul_eq_zero ℤ, @mul_eq_zero ℕ, val_eq_zero]
     exact
       ⟨fun h => h.elim (by simp) Or.inl, fun h =>
         Or.inr (h.elim id fun h => h.elim (by simp) id)⟩
@@ -1025,7 +1024,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
   constructor
   · rintro ⟨m, he⟩
     cases' m with m
-    · erw [mul_zero, mul_eq_zero] at he
+    · rw [mul_zero, mul_eq_zero] at he
       rcases he with (⟨⟨⟩⟩ | he)
       exact Or.inl (a.val_eq_zero.1 he)
     cases m
@@ -1139,7 +1138,7 @@ theorem valMinAbs_def_pos {n : ℕ} [NeZero n] (x : ZMod n) :
 
 @[simp, norm_cast]
 theorem coe_valMinAbs : ∀ {n : ℕ} (x : ZMod n), (x.valMinAbs : ZMod n) = x
-  | 0, x => Int.cast_id
+  | 0, _ => Int.cast_id
   | k@(n + 1), x => by
     rw [valMinAbs_def_pos]
     split_ifs
@@ -1218,7 +1217,7 @@ theorem valMinAbs_eq_zero {n : ℕ} (x : ZMod n) : x.valMinAbs = 0 ↔ x = 0 := 
 theorem natCast_natAbs_valMinAbs {n : ℕ} [NeZero n] (a : ZMod n) :
     (a.valMinAbs.natAbs : ZMod n) = if a.val ≤ (n : ℕ) / 2 then a else -a := by
   have : (a.val : ℤ) - n ≤ 0 := by
-    erw [sub_nonpos, Int.ofNat_le]
+    rw [sub_nonpos, Int.ofNat_le]
     exact a.val_le
   rw [valMinAbs_def_pos]
   split_ifs
@@ -1331,9 +1330,9 @@ instance instField : Field (ZMod p) where
   mul_inv_cancel := mul_inv_cancel_aux p
   inv_zero := inv_zero p
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun a x => rfl
+  qsmul_def := fun _ _ => rfl
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
 instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
@@ -1432,9 +1431,26 @@ end lift
 
 end ZMod
 
+/-!
+### Groups of bounded torsion
+
+For `G` a group and `n` a natural number, `G` having torsion dividing `n`
+(`∀ x : G, n • x = 0`) can be derived from `Module R G` where `R` has characteristic dividing `n`.
+
+It is however painful to have the API for such groups `G` stated in this generality, as `R` does not
+appear anywhere in the lemmas' return type. Instead of writing the API in terms of a general `R`, we
+therefore specialise to the canonical ring of order `n`, namely `ZMod n`.
+
+This spelling `Module (ZMod n) G` has the extra advantage of providing the canonical action by
+`ZMod n`. It is however Type-valued, so we might want to acquire a Prop-valued version in the
+future.
+-/
+
 section Module
-variable {S G : Type*} [AddCommGroup G] {n : ℕ} [Module (ZMod n) G] [SetLike S G]
-  [AddSubgroupClass S G] {K : S} {x : G}
+variable {n : ℕ} {S G : Type*} [AddCommGroup G] [SetLike S G] [AddSubgroupClass S G] {K : S} {x : G}
+
+section general
+variable [Module (ZMod n) G] {x : G}
 
 lemma zmod_smul_mem (hx : x ∈ K) : ∀ a : ZMod n, a • x ∈ K := by
   simpa [ZMod.forall, Int.cast_smul_eq_zsmul] using zsmul_mem hx
@@ -1453,6 +1469,44 @@ instance instZModModule : Module (ZMod n) K :=
   Subtype.coe_injective.module _ (AddSubmonoidClass.subtype K) coe_zmod_smul
 
 end AddSubgroupClass
+
+variable (n)
+
+lemma ZModModule.char_nsmul_eq_zero (x : G) : n • x = 0 := by
+  simp [← Nat.cast_smul_eq_nsmul (ZMod n)]
+
+variable (G) in
+lemma ZModModule.char_ne_one [Nontrivial G] : n ≠ 1 := by
+  rintro rfl
+  obtain ⟨x, hx⟩ := exists_ne (0 : G)
+  exact hx <| by simpa using char_nsmul_eq_zero 1 x
+
+variable (G) in
+lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
+  have := NeZero.ne n
+  have := char_ne_one n G
+  omega
+
+lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
+  Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by
+    simpa [char_nsmul_eq_zero, IsPeriodicPt] using isFixedPt_id _⟩
+
+end general
+
+section two
+variable [Module (ZMod 2) G]
+
+lemma ZModModule.add_self (x : G) : x + x = 0 := by
+  simpa [two_nsmul] using char_nsmul_eq_zero 2 x
+
+lemma ZModModule.neg_eq_self (x : G) : -x = x := by simp [add_self, eq_comm, ← sub_eq_zero]
+
+lemma ZModModule.sub_eq_add (x y : G) : x - y = x + y := by simp [neg_eq_self, sub_eq_add_neg]
+
+lemma ZModModule.add_add_add_cancel (x y z : G) : (x + y) + (y + z) = x + z := by
+  simpa [sub_eq_add] using sub_add_sub_cancel x y z
+
+end two
 end Module
 
 section AddGroup

@@ -201,18 +201,17 @@ theorem weightedSMul_null {s : Set α} (h_zero : μ s = 0) : (weightedSMul μ s 
   ext1 x; rw [weightedSMul_apply, h_zero]; simp
 
 theorem weightedSMul_union' (s t : Set α) (ht : MeasurableSet t) (hs_finite : μ s ≠ ∞)
-    (ht_finite : μ t ≠ ∞) (h_inter : s ∩ t = ∅) :
+    (ht_finite : μ t ≠ ∞) (hdisj : Disjoint s t) :
     (weightedSMul μ (s ∪ t) : F →L[ℝ] F) = weightedSMul μ s + weightedSMul μ t := by
   ext1 x
-  simp_rw [add_apply, weightedSMul_apply,
-    measure_union (Set.disjoint_iff_inter_eq_empty.mpr h_inter) ht,
+  simp_rw [add_apply, weightedSMul_apply, measure_union hdisj ht,
     ENNReal.toReal_add hs_finite ht_finite, add_smul]
 
 @[nolint unusedArguments]
 theorem weightedSMul_union (s t : Set α) (_hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hs_finite : μ s ≠ ∞) (ht_finite : μ t ≠ ∞) (h_inter : s ∩ t = ∅) :
+    (hs_finite : μ s ≠ ∞) (ht_finite : μ t ≠ ∞) (hdisj : Disjoint s t) :
     (weightedSMul μ (s ∪ t) : F →L[ℝ] F) = weightedSMul μ s + weightedSMul μ t :=
-  weightedSMul_union' s t ht hs_finite ht_finite h_inter
+  weightedSMul_union' s t ht hs_finite ht_finite hdisj
 
 theorem weightedSMul_smul [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜)
     (s : Set α) (x : F) : weightedSMul μ s (c • x) = c • weightedSMul μ s x := by
@@ -279,9 +278,8 @@ and prove basic property of this integral.
 
 open Finset
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F] {p : ℝ≥0∞} {G F' : Type*}
-  [NormedAddCommGroup G] [NormedAddCommGroup F'] [NormedSpace ℝ F'] {m : MeasurableSpace α}
-  {μ : Measure α}
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {m : MeasurableSpace α} {μ : Measure α}
 
 /-- Bochner integral of simple functions whose codomain is a real `NormedSpace`.
 This is equal to `∑ x ∈ f.range, (μ (f ⁻¹' {x})).toReal • x` (see `integral_eq`). -/
@@ -297,12 +295,12 @@ theorem integral_eq {m : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F)
 
 theorem integral_eq_sum_filter [DecidablePred fun x : F => x ≠ 0] {m : MeasurableSpace α}
     (f : α →ₛ F) (μ : Measure α) :
-    f.integral μ = ∑ x ∈ f.range.filter fun x => x ≠ 0, (μ (f ⁻¹' {x})).toReal • x := by
+    f.integral μ = ∑ x ∈ {x ∈ f.range | x ≠ 0}, (μ (f ⁻¹' {x})).toReal • x := by
   simp_rw [integral_def, setToSimpleFunc_eq_sum_filter, weightedSMul_apply]
 
 /-- The Bochner integral is equal to a sum over any set that includes `f.range` (except `0`). -/
 theorem integral_eq_sum_of_subset [DecidablePred fun x : F => x ≠ 0] {f : α →ₛ F} {s : Finset F}
-    (hs : (f.range.filter fun x => x ≠ 0) ⊆ s) :
+    (hs : {x ∈ f.range | x ≠ 0} ⊆ s) :
     f.integral μ = ∑ x ∈ s, (μ (f ⁻¹' {x})).toReal • x := by
   rw [SimpleFunc.integral_eq_sum_filter, Finset.sum_subset hs]
   rintro x - hx; rw [Finset.mem_filter, not_and_or, Ne, Classical.not_not] at hx
@@ -423,7 +421,7 @@ namespace L1
 
 open AEEqFun Lp.simpleFunc Lp
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] {m : MeasurableSpace α} {μ : Measure α}
+variable [NormedAddCommGroup E] {m : MeasurableSpace α} {μ : Measure α}
 
 namespace SimpleFunc
 
@@ -464,8 +462,7 @@ Define the Bochner integral on `α →₁ₛ[μ] E` by extension from the simple
 and prove basic properties of this integral. -/
 
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E] {F' : Type*}
-  [NormedAddCommGroup F'] [NormedSpace ℝ F']
+variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
 
 attribute [local instance] simpleFunc.normedSpace
 
@@ -495,7 +492,6 @@ theorem norm_integral_le_norm (f : α →₁ₛ[μ] E) : ‖integral f‖ ≤ �
   rw [integral, norm_eq_integral]
   exact (toSimpleFunc f).norm_integral_le_integral_norm (SimpleFunc.integrable f)
 
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedSpace 𝕜 E']
 variable (α E μ 𝕜)
 
 /-- The Bochner integral over simple functions in L1 space as a continuous linear map. -/
@@ -575,7 +571,7 @@ open SimpleFunc
 local notation "Integral" => @integralCLM α E _ _ _ _ _ μ _
 
 variable [NormedSpace ℝ E] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-  [NormedSpace ℝ F] [CompleteSpace E]
+  [CompleteSpace E]
 
 section IntegrationInL1
 
@@ -588,7 +584,7 @@ variable (𝕜)
 /-- The Bochner integral in L1 space as a continuous linear map. -/
 nonrec def integralCLM' : (α →₁[μ] E) →L[𝕜] E :=
   (integralCLM' α E 𝕜 μ).extend (coeToLp α E 𝕜) (simpleFunc.denseRange one_ne_top)
-    simpleFunc.uniformInducing
+    simpleFunc.isUniformInducing
 
 variable {𝕜}
 
@@ -700,7 +696,7 @@ functions, and 0 otherwise; prove its basic properties.
 -/
 
 variable [NormedAddCommGroup E] [hE : CompleteSpace E] [NontriviallyNormedField 𝕜]
-  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 open Classical in
@@ -730,8 +726,8 @@ section Properties
 
 open ContinuousLinearMap MeasureTheory.SimpleFunc
 
-variable [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
-variable {f g : α → E} {m : MeasurableSpace α} {μ : Measure α}
+variable [NormedSpace ℝ E]
+variable {f : α → E} {m : MeasurableSpace α} {μ : Measure α}
 
 theorem integral_eq (f : α → E) (hf : Integrable f μ) : ∫ a, f a ∂μ = L1.integral (hf.toL1 f) := by
   simp [integral, hE, hf]
@@ -1578,10 +1574,13 @@ theorem _root_.MeasurableEmbedding.integral_map {β} {_ : MeasurableSpace β} {f
   · rw [integral_non_aestronglyMeasurable hgm, integral_non_aestronglyMeasurable]
     exact fun hgf => hgm (hf.aestronglyMeasurable_map_iff.2 hgf)
 
-theorem _root_.ClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelSpace α]
-    [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] {φ : α → β} (hφ : ClosedEmbedding φ)
+theorem _root_.IsClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelSpace α]
+    [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] {φ : α → β} (hφ : IsClosedEmbedding φ)
     (f : β → G) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ :=
   hφ.measurableEmbedding.integral_map _
+
+@[deprecated (since := "2024-10-20")]
+alias _root_.ClosedEmbedding.integral_map := _root_.IsClosedEmbedding.integral_map
 
 theorem integral_map_equiv {β} [MeasurableSpace β] (e : α ≃ᵐ β) (f : β → G) :
     ∫ y, f y ∂Measure.map e μ = ∫ x, f (e x) ∂μ :=
@@ -1788,7 +1787,7 @@ end Properties
 
 section IntegralTrim
 
-variable {H β γ : Type*} [NormedAddCommGroup H] {m m0 : MeasurableSpace β} {μ : Measure β}
+variable {β γ : Type*} {m m0 : MeasurableSpace β} {μ : Measure β}
 
 /-- Simple function seen as simple function of a larger `MeasurableSpace`. -/
 def SimpleFunc.toLargerSpace (hm : m ≤ m0) (f : @SimpleFunc β m γ) : SimpleFunc β γ :=

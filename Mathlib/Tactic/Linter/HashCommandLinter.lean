@@ -5,7 +5,9 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
-import Batteries.Lean.HashSet
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-!
 # `#`-command linter

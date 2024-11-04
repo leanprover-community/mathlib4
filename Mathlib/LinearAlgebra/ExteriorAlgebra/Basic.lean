@@ -82,14 +82,12 @@ end exteriorPower
 variable {R}
 
 /-- As well as being linear, `ι m` squares to zero. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem ι_sq_zero (m : M) : ι R m * ι R m = 0 :=
   (CliffordAlgebra.ι_sq_scalar _ m).trans <| map_zero _
 
 section
 variable {A : Type*} [Semiring A] [Algebra R A]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem comp_ι_sq_zero (g : ExteriorAlgebra R M →ₐ[R] A) (m : M) : g (ι R m) * g (ι R m) = 0 := by
   rw [← map_mul, ι_sq_zero, map_zero]
 
@@ -164,6 +162,13 @@ theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 
 theorem algebraMap_eq_one_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 
+@[instance]
+theorem isLocalHom_algebraMap : IsLocalHom (algebraMap R (ExteriorAlgebra R M)) :=
+  isLocalHom_of_leftInverse _ (algebraMap_leftInverse M)
+
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_algebraMap := isLocalHom_algebraMap
+
 theorem isUnit_algebraMap (r : R) : IsUnit (algebraMap R (ExteriorAlgebra R M) r) ↔ IsUnit r :=
   isUnit_map_of_leftInverse _ (algebraMap_leftInverse M)
 
@@ -234,7 +239,8 @@ theorem ι_range_disjoint_one :
     Disjoint (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M))
       (1 : Submodule R (ExteriorAlgebra R M)) := by
   rw [Submodule.disjoint_def]
-  rintro _ ⟨x, hx⟩ ⟨r, rfl : algebraMap R (ExteriorAlgebra R M) r = _⟩
+  rintro _ ⟨x, hx⟩ h
+  obtain ⟨r, rfl : algebraMap R (ExteriorAlgebra R M) r = _⟩ := Submodule.mem_one.mp h
   rw [ι_eq_algebraMap_iff x] at hx
   rw [hx.2, RingHom.map_zero]
 

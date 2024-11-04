@@ -102,17 +102,13 @@ theorem nodup_iff_get?_ne_get? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by
   simp [nodup_iff_getElem?_ne_getElem?]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by
   induction' l with hd tl hl
   · simp
   · specialize hl h.of_cons
     by_cases hx : tl = [x]
-    · simpa [hx, _root_.and_comm, and_or_left] using h
+    · simpa [hx, and_comm, and_or_left] using h
     · rw [← Ne, hl] at hx
       rcases hx with (rfl | ⟨y, hy, hx⟩)
       · simp
@@ -178,13 +174,9 @@ theorem Nodup.append (d₁ : Nodup l₁) (d₂ : Nodup l₂) (dj : Disjoint l₁
 theorem nodup_append_comm {l₁ l₂ : List α} : Nodup (l₁ ++ l₂) ↔ Nodup (l₂ ++ l₁) := by
   simp only [nodup_append, and_left_comm, disjoint_comm]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem nodup_middle {a : α} {l₁ l₂ : List α} :
     Nodup (l₁ ++ a :: l₂) ↔ Nodup (a :: (l₁ ++ l₂)) := by
-  simp only [nodup_append, not_or, and_left_comm, _root_.and_assoc, nodup_cons, mem_append,
+  simp only [nodup_append, not_or, and_left_comm, and_assoc, nodup_cons, mem_append,
     disjoint_cons_right]
 
 theorem Nodup.of_map (f : α → β) {l : List α} : Nodup (map f l) → Nodup l :=
@@ -221,10 +213,7 @@ theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
   ⟨fun h => attach_map_subtype_val l ▸ h.map fun _ _ => Subtype.eq, fun h =>
     Nodup.of_map Subtype.val ((attach_map_subtype_val l).symm ▸ h)⟩
 
-alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
-
--- Porting note: commented out
---attribute [protected] nodup.attach
+protected alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
 
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
@@ -232,7 +221,7 @@ theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
   exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr; exact hf a (H _ ha) b (H _ hb) h
 
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
-  simpa using Pairwise.filter (fun a ↦ p a)
+  simpa using Pairwise.filter p
 
 @[simp]
 theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
@@ -262,26 +251,25 @@ theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) (i : Fin l
 theorem Nodup.diff [DecidableEq α] : l₁.Nodup → (l₁.diff l₂).Nodup :=
   Nodup.sublist <| diff_sublist _ _
 
+theorem nodup_flatten {L : List (List α)} :
+    Nodup (flatten L) ↔ (∀ l ∈ L, Nodup l) ∧ Pairwise Disjoint L := by
+  simp only [Nodup, pairwise_flatten, disjoint_left.symm, forall_mem_ne]
 
-theorem nodup_join {L : List (List α)} :
-    Nodup (join L) ↔ (∀ l ∈ L, Nodup l) ∧ Pairwise Disjoint L := by
-  simp only [Nodup, pairwise_join, disjoint_left.symm, forall_mem_ne]
+@[deprecated (since := "2025-10-15")] alias nodup_join := nodup_flatten
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
-theorem nodup_bind {l₁ : List α} {f : α → List β} :
-    Nodup (l₁.bind f) ↔
+theorem nodup_flatMap {l₁ : List α} {f : α → List β} :
+    Nodup (l₁.flatMap f) ↔
       (∀ x ∈ l₁, Nodup (f x)) ∧ Pairwise (fun a b : α => Disjoint (f a) (f b)) l₁ := by
-  simp only [List.bind, nodup_join, pairwise_map, _root_.and_comm, and_left_comm, mem_map,
+  simp only [List.flatMap, nodup_flatten, pairwise_map, and_comm, and_left_comm, mem_map,
     exists_imp, and_imp]
   rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
       from forall_swap.trans <| forall_congr' fun _ => forall_eq']
 
+@[deprecated (since := "2025-10-16")] alias nodup_bind := nodup_flatMap
+
 protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l₂.Nodup) :
     (l₁ ×ˢ l₂).Nodup :=
-  nodup_bind.2
+  nodup_flatMap.2
     ⟨fun a _ => d₂.map <| LeftInverse.injective fun b => (rfl : (a, b).2 = b),
       d₁.imp fun {a₁ a₂} n x h₁ h₂ => by
         rcases mem_map.1 h₁ with ⟨b₁, _, rfl⟩
@@ -290,7 +278,7 @@ protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l�
 
 theorem Nodup.sigma {σ : α → Type*} {l₂ : ∀ a , List (σ a)} (d₁ : Nodup l₁)
     (d₂ : ∀ a , Nodup (l₂ a)) : (l₁.sigma l₂).Nodup :=
-  nodup_bind.2
+  nodup_flatMap.2
     ⟨fun a _ => (d₂ a).map fun b b' h => by injection h with _ h,
       d₁.imp fun {a₁ a₂} n x h₁ h₂ => by
         rcases mem_map.1 h₁ with ⟨b₁, _, rfl⟩

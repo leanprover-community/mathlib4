@@ -145,7 +145,7 @@ theorem HasFPowerSeriesWithinOnBall.differentiableOn [CompleteSpace F]
   have Z := (h.analyticWithinAt_of_mem hy).differentiableWithinAt
   rcases eq_or_ne y x with rfl | hy
   · exact Z.mono inter_subset_left
-  · apply (Z.mono (subset_insert _ _)).mono_of_mem
+  · apply (Z.mono (subset_insert _ _)).mono_of_mem_nhdsWithin
     suffices s ∈ 𝓝[insert x s] y from nhdsWithin_mono _ inter_subset_left this
     rw [nhdsWithin_insert_of_ne hy]
     exact self_mem_nhdsWithin
@@ -169,7 +169,7 @@ theorem HasFPowerSeriesWithinOnBall.hasFDerivWithinAt [CompleteSpace F]
   · convert (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
     simp
   · have Z := (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
-    apply (Z.mono (subset_insert _ _)).mono_of_mem
+    apply (Z.mono (subset_insert _ _)).mono_of_mem_nhdsWithin
     rw [nhdsWithin_insert_of_ne]
     · exact self_mem_nhdsWithin
     · simpa using h''y
@@ -333,7 +333,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   let F' := UniformSpace.Completion F
   let a : F →L[𝕜] F' := UniformSpace.Completion.toComplL
   let b : (E →L[𝕜] F) →ₗᵢ[𝕜] (E →L[𝕜] F') := UniformSpace.Completion.toComplₗᵢ.postcomp
-  rw [← b.embedding.hasSum_iff]
+  rw [← b.isEmbedding.hasSum_iff]
   have : HasFPowerSeriesWithinOnBall (a ∘ f) (a.compFormalMultilinearSeries p) s x r :=
     a.comp_hasFPowerSeriesWithinOnBall h
   have Z := (this.fderivWithin hu).hasSum h'y (by simpa [edist_eq_coe_nnnorm] using hy)
@@ -361,9 +361,9 @@ protected theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : Unique
   refine ⟨p.derivSeries, r, ?_⟩
   refine ⟨hr.r_le.trans p.radius_le_radius_derivSeries, hr.r_pos, fun {y} hy h'y ↦ ?_⟩
   apply hr.hasSum_derivSeries_of_hasFDerivWithinAt (by simpa [edist_eq_coe_nnnorm] using h'y) hy
-  rw [insert_eq_of_mem hx] at hy ⊢
-  apply DifferentiableWithinAt.hasFDerivWithinAt
-  · exact h.differentiableOn _ hy
+  · rw [insert_eq_of_mem hx] at hy ⊢
+    apply DifferentiableWithinAt.hasFDerivWithinAt
+    exact h.differentiableOn _ hy
   · rwa [insert_eq_of_mem hx]
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative within this
@@ -619,7 +619,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
       rw [card_compl, Fintype.card_fin, Finset.card_singleton, Nat.add_sub_cancel_left]⟩)
   · use fun _ _ ↦ (singleton_injective <| compl_injective <| Subtype.ext_iff.mp ·)
     intro ⟨s, hs⟩
-    have h : sᶜ.card = 1 := by rw [card_compl, hs, Fintype.card_fin, Nat.add_sub_cancel]
+    have h : #sᶜ = 1 := by rw [card_compl, hs, Fintype.card_fin, Nat.add_sub_cancel]
     obtain ⟨a, ha⟩ := card_eq_one.mp h
     exact ⟨a, Subtype.ext (compl_eq_comm.mp ha)⟩
   rw [Function.comp_apply, Subtype.coe_mk, compl_singleton, piecewise_erase_univ,

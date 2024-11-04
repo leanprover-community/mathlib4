@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.LinearAlgebra.Prod
 
 /-!
@@ -40,7 +40,7 @@ theorem ker_id_sub_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) :
     ker (id - p.subtype.comp f) = p := by
   ext x
   simp only [comp_apply, mem_ker, subtype_apply, sub_apply, id_apply, sub_eq_zero]
-  exact ⟨fun h => h.symm ▸ Submodule.coe_mem _, fun hx => by erw [hf ⟨x, hx⟩, Subtype.coe_mk]⟩
+  exact ⟨fun h => h.symm ▸ Submodule.coe_mem _, fun hx => by rw [hf ⟨x, hx⟩, Subtype.coe_mk]⟩
 
 theorem range_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : range f = ⊤ :=
   range_eq_top.2 fun x => ⟨x, hf x⟩
@@ -49,7 +49,7 @@ theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl 
   constructor
   · rw [disjoint_iff_inf_le]
     rintro x ⟨hpx, hfx⟩
-    erw [SetLike.mem_coe, mem_ker, hf ⟨x, hpx⟩, mk_eq_zero] at hfx
+    rw [SetLike.mem_coe, mem_ker, hf ⟨x, hpx⟩, mk_eq_zero] at hfx
     simp only [hfx, SetLike.mem_coe, zero_mem]
   · rw [codisjoint_iff_le_sup]
     intro x _

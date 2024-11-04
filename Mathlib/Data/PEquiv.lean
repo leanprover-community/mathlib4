@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Data.Option.Basic
-import Mathlib.Data.Set.Basic
 import Batteries.Tactic.Congr
+import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Contrapose
 
 /-!
 
@@ -362,7 +363,7 @@ section Order
 instance instPartialOrderPEquiv : PartialOrder (α ≃. β) where
   le f g := ∀ (a : α) (b : β), b ∈ f a → b ∈ g a
   le_refl _ _ _ := id
-  le_trans f g h fg gh a b := gh a b ∘ fg a b
+  le_trans _ _ _ fg gh a b := gh a b ∘ fg a b
   le_antisymm f g fg gf :=
     ext
       (by
