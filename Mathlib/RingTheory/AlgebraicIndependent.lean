@@ -488,6 +488,29 @@ theorem algebraicIndependent_of_finite_type'
   rwa [Set.image_preimage_eq_inter_range, Set.inter_eq_self_of_subset_left ht,
     Equiv.apply_ofInjective_symm hx] at this
 
+namespace MvPolynomial
+
+theorem algebraicIndependent_polynomial_aeval_X
+    (f : ι → Polynomial R) (hf : ∀ i, Transcendental R (f i)) :
+    AlgebraicIndependent R fun i ↦ Polynomial.aeval (X i : MvPolynomial ι R) (f i) := by
+  set x := fun i ↦ Polynomial.aeval (X i : MvPolynomial ι R) (f i)
+  refine algebraicIndependent_of_finite_type' (C_injective _ _) fun t _ i hi ↦ ?_
+  have hle : adjoin R (x '' t) ≤ supported R t := by
+    rw [Algebra.adjoin_le_iff, Set.image_subset_iff]
+    intro _ h
+    rw [Set.mem_preimage]
+    refine Algebra.adjoin_mono ?_ (Polynomial.aeval_mem_adjoin_singleton R _)
+    simp_rw [singleton_subset_iff, Set.mem_image_of_mem _ h]
+  letI : Algebra (adjoin R (x '' t)) (supported R t) := (Subalgebra.inclusion hle).toAlgebra
+  letI : Module (adjoin R (x '' t)) (supported R t) := Algebra.toModule
+  letI : SMul (adjoin R (x '' t)) (supported R t) := Algebra.toSMul
+  haveI : IsScalarTower (adjoin R (x '' t)) (supported R t) (MvPolynomial ι R) :=
+    .of_algebraMap_eq fun _ ↦ rfl
+  exact (transcendental_supported_polynomial_aeval_X R hi (hf i)).of_tower_top_of_injective
+    (Subalgebra.inclusion_injective hle)
+
+end MvPolynomial
+
 variable (R)
 
 /-- A family is a transcendence basis if it is a maximal algebraically independent subset. -/
