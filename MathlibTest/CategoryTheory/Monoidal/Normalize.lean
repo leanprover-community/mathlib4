@@ -3,6 +3,8 @@ import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 open CategoryTheory Mathlib.Tactic BicategoryLike
 open MonoidalCategory
 
+namespace CategoryTheory.MonoidalCategory
+
 /-- `normalize% η` is the normalization of the 2-morphism `η`.
 1. The normalized 2-morphism is of the form `α₀ ≫ η₀ ≫ α₁ ≫ η₁ ≫ ... αₘ ≫ ηₘ ≫ αₘ₊₁` where
   each `αᵢ` is a structural 2-morphism (consisting of associators and unitors),
@@ -39,3 +41,5 @@ variable {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z)
 #guard_expr normalize% f ⊗ g = _ ≫ (f ⊗ g) ≫ _
 variable {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) in
 #guard_expr normalize% R V₁ V₂ ▷ V₃ ⊗≫ V₂ ◁ R V₁ V₃ = _ ≫ R V₁ V₂ ▷ V₃ ≫ _ ≫ V₂ ◁ R V₁ V₃ ≫ _
+
+end CategoryTheory.MonoidalCategory

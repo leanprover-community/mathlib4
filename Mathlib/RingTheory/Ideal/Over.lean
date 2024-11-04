@@ -493,6 +493,7 @@ namespace Quotient
 
 variable (R : Type*) [CommSemiring R] {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   [Algebra R A] [Algebra R B] [IsScalarTower R A B] (P : Ideal B) (p : Ideal A) [P.LiesOver p]
+  (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
 /-- If `P` lies over `p`, then canonically `B ⧸ P` is a `A ⧸ p`-algebra. -/
 instance algebraOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
@@ -526,6 +527,24 @@ theorem algebraMap_injective_of_liesOver :
 
 instance [P.IsPrime] : NoZeroSMulDivisors (A ⧸ p) (B ⧸ P) :=
   NoZeroSMulDivisors.of_algebraMap_injective (Quotient.algebraMap_injective_of_liesOver P p)
+
+/-- If `P` lies over `p`, then the stabilizer of `P` acts on the extension `(B ⧸ P) / (A ⧸ p). -/
+def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B ⧸ P)) where
+  toFun g :=
+  { __ := Ideal.quotientEquiv P P (MulSemiringAction.toRingEquiv G B g) g.2.symm
+    commutes' := fun q ↦ by
+      obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective q
+      simp [← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply] }
+  map_one' := AlgEquiv.ext (fun q ↦ by
+    obtain ⟨b, rfl⟩ := Ideal.Quotient.mk_surjective q
+    simp)
+  map_mul' g h := AlgEquiv.ext (fun q ↦ by
+    obtain ⟨b, rfl⟩ := Ideal.Quotient.mk_surjective q
+    simp [mul_smul])
+
+@[simp] theorem stabilizerHom_apply (g : MulAction.stabilizer G P) (b : B) :
+    stabilizerHom P p G g b = ↑(g • b) :=
+  rfl
 
 end Quotient
 

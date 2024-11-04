@@ -1,6 +1,6 @@
 import Mathlib.Tactic.DeriveToExpr
 
-namespace tests
+namespace DeriveToExprTests
 open Lean
 
 -- set_option trace.Elab.Deriving.toExpr true
@@ -104,4 +104,4 @@ deriving instance ToExpr for Expr
 run_cmd Elab.Command.liftTermElabM do
   Meta.check <| toExpr <| toExpr [1,2,3]
 
-end tests
+end DeriveToExprTests

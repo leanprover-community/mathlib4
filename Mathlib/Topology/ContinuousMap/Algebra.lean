@@ -797,17 +797,31 @@ section ModuleOverContinuousFunctions
 If `M` is a module over `R`, then we show that the space of continuous functions from `α` to `M`
 is naturally a module over the ring of continuous functions from `α` to `R`. -/
 
-
 namespace ContinuousMap
 
-instance instSMul' {α : Type*} [TopologicalSpace α] {R : Type*} [Semiring R] [TopologicalSpace R]
-    {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousSMul R M] :
-    SMul C(α, R) C(α, M) :=
+variable
+  {α : Type*} [TopologicalSpace α]
+  {R : Type*} [Semiring R] [TopologicalSpace R]
+  {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousSMul R M]
+
+instance instSMul' : SMul C(α, R) C(α, M) :=
   ⟨fun f g => ⟨fun x => f x • g x, Continuous.smul f.2 g.2⟩⟩
 
-instance module' {α : Type*} [TopologicalSpace α] (R : Type*) [Semiring R] [TopologicalSpace R]
-    [TopologicalSemiring R] (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [ContinuousAdd M]
-    [Module R M] [ContinuousSMul R M] : Module C(α, R) C(α, M) where
+/-- Coercion to a function for a scalar-valued continuous map multiplying a vector-valued one
+(as opposed to `ContinuousMap.coe_smul` which is multiplication by a constant scalar). -/
+@[simp] lemma coe_smul' (f : C(α, R)) (g : C(α, M)) :
+    ⇑(f • g) = ⇑f • ⇑g :=
+  rfl
+
+/-- Evaluation of a scalar-valued continuous map multiplying a vector-valued one
+(as opposed to `ContinuousMap.smul_apply` which is multiplication by a constant scalar). -/
+-- (this doesn't need to be @[simp] since it can be derived from `coe_smul'` and `Pi.smul_apply'`)
+lemma smul_apply' (f : C(α, R)) (g : C(α, M)) (x : α) :
+    (f • g) x = f x • g x :=
+  rfl
+
+instance module' [TopologicalSemiring R] [ContinuousAdd M] :
+    Module C(α, R) C(α, M) where
   smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)
