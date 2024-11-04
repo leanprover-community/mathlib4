@@ -69,7 +69,7 @@ theorem veblenWith_veblenWith_of_lt (hf : IsNormal f) (h : a < b) (c : Ordinal) 
     veblenWith f a (veblenWith f b c) = veblenWith f b c := by
   let x : {a // a < b} := ⟨a, h⟩
   rw [veblenWith_of_ne_zero f h.bot_lt.ne',
-    derivFamily_fp (f := fun x : Set.Iio b ↦ veblenWith f x.1) (i := x)]
+    derivFamily_fp (f := fun y : Set.Iio b ↦ veblenWith f y.1) (i := x)]
   exact isNormal_veblenWith hf x
 
 theorem veblenWith_succ (hf : IsNormal f) (o : Ordinal) :
