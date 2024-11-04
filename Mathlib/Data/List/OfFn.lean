@@ -181,12 +181,13 @@ theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (Fin.rightInverse_cast (length_ofFn f)).surjective.forall, Fin.forall_iff, Fin.cast_mk,
     Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
 
-lemma head_ofFn {n} (hn : n ≠ 0) (f : Fin n → α) :
-    (ofFn f).head (mt ofFn_eq_nil_iff.1 hn) = f ⟨0, Nat.pos_of_ne_zero hn⟩ := by
-  rw [← getElem_zero (length_ofFn _ ▸ Nat.pos_of_ne_zero hn), List.getElem_ofFn]
+lemma head_ofFn {n} (f : Fin n → α) (h : ofFn f ≠ []) :
+    (ofFn f).head h = f ⟨0, Nat.pos_of_ne_zero (mt ofFn_eq_nil_iff.2 h)⟩ := by
+  rw [← getElem_zero (length_ofFn _ ▸ Nat.pos_of_ne_zero (mt ofFn_eq_nil_iff.2 h)),
+    List.getElem_ofFn]
 
-lemma getLast_ofFn {n} (hn : n ≠ 0) (f : Fin n → α) :
-    (ofFn f).getLast (mt ofFn_eq_nil_iff.1 hn) = f ⟨n - 1, Nat.sub_one_lt hn⟩ := by
+lemma getLast_ofFn {n} (f : Fin n → α) (h : ofFn f ≠ []) :
+    (ofFn f).getLast h = f ⟨n - 1, Nat.sub_one_lt (mt ofFn_eq_nil_iff.2 h)⟩ := by
   simp_rw [getLast_eq_getElem, length_ofFn, List.getElem_ofFn]
 
 lemma ofFn_cons {n} (a : α) (f : Fin n → α) : ofFn (Fin.cons a f) = a :: ofFn f := by
