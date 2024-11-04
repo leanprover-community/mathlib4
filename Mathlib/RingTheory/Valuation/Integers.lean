@@ -139,11 +139,11 @@ theorem isUnit_of_one' (hv : Integers v O) {x : O} (hvx : v (algebraMap O F x) =
   refine isUnit_of_one hv (IsUnit.mk0 _ ?_) hvx
   simp only [← v.ne_zero_iff, hvx, ne_eq, one_ne_zero, not_false_eq_true]
 
-lemma isUnit_iff_v_eq_one (hv : Integers v O) {x : O} :
+lemma isUnit_iff_valuation_eq_one (hv : Integers v O) {x : O} :
     IsUnit x ↔ v (algebraMap O F x) = 1 :=
   ⟨hv.one_of_isUnit, hv.isUnit_of_one'⟩
 
-lemma pos_v_iff_ne_zero (hv : Integers v O) {x : O} :
+lemma valuation_pos_iff_ne_zero (hv : Integers v O) {x : O} :
     0 < v (algebraMap O F x) ↔ x ≠ 0 := by
   rw [← not_le]
   refine not_congr ?_
@@ -155,12 +155,12 @@ theorem dvdNotUnit_iff_lt (hv : Integers v O) {x y : O} :
   refine ⟨?_, And.elim dvdNotUnit_of_dvd_of_not_dvd⟩
   rintro ⟨hx0, d, hdu, rfl⟩
   refine ⟨⟨d, rfl⟩, ?_⟩
-  rw [hv.isUnit_iff_v_eq_one, ← ne_eq, ne_iff_lt_iff_le.mpr (hv.map_le_one d)] at hdu
+  rw [hv.isUnit_iff_valuation_eq_one, ← ne_eq, ne_iff_lt_iff_le.mpr (hv.map_le_one d)] at hdu
   rw [dvd_iff_le hv]
   simp only [_root_.map_mul, not_le]
   contrapose! hdu
   refine one_le_of_le_mul_left₀ ?_ hdu
-  simp [hv.pos_v_iff_ne_zero, hx0]
+  simp [hv.valuation_pos_iff_ne_zero, hx0]
 
 theorem eq_algebraMap_or_inv_eq_algebraMap (hv : Integers v O) (x : F) :
     ∃ a : O, x = algebraMap O F a ∨ x⁻¹ = algebraMap O F a := by
@@ -190,13 +190,11 @@ lemma isPrincipal_iff_exists_eq_setOf_valuation_le (hv : Integers v O) {I : Idea
   rw [isPrincipal_iff_exists_isGreatest hv]
   constructor <;> rintro ⟨x, hx⟩
   · obtain ⟨a, ha, rfl⟩ : ∃ a ∈ I, (v ∘ algebraMap O F) a = x := by simpa using hx.left
-    have := hx.right
-    simp at this
     refine ⟨a, ?_⟩
     ext b
     simp only [SetLike.mem_coe, mem_setOf_eq]
     constructor <;> intro h
-    · exact this (Set.mem_image_of_mem _ h)
+    · exact hx.right (Set.mem_image_of_mem _ h)
     · rw [le_iff_dvd hv] at h
       exact Ideal.mem_of_dvd I h ha
   · refine ⟨v (algebraMap O F x), Set.mem_image_of_mem _ ?_, ?_⟩
