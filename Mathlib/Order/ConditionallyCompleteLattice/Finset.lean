@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 
 /-!
 # Conditionally complete lattices and finite sets.

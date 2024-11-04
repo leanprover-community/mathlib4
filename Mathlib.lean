@@ -2764,7 +2764,9 @@ import Mathlib.Data.Set.Countable
 import Mathlib.Data.Set.Defs
 import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Equitable
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Finite.Defs
+import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image

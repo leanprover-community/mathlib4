@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Star.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 
 /-!
 # Pointwise star operation on sets

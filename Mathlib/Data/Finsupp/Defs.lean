@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 
 /-!
 # Type of functions with finite support
