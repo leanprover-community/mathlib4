@@ -25,30 +25,23 @@ local notation "ℂ_ℤ " => integerComplement
 
 lemma IntegerComplement_eq : ℂ_ℤ = {z : ℂ | ¬ ∃ (n : ℤ), n = z} := rfl
 
-lemma IntegerComplement_not_exist {x : ℂ} (hx : x ∈ ℂ_ℤ) : ¬ ∃ (n : ℤ), n = x := by
-  rw [IntegerComplement_eq] at hx
-  exact hx
-
-lemma IntegerComplement_mk {x : ℂ} (hx : ¬ ∃ (n : ℤ), n = x) : x ∈ ℂ_ℤ := by
-  rw [IntegerComplement_eq]
-  exact hx
+lemma integerComplement.mem_iff {x : ℂ} : x ∈ ℂ_ℤ ↔ ¬ ∃ (n : ℤ), n = x := Iff.rfl
 
 lemma UpperHalfPlane.coe_mem_integerComplement (z : ℍ) : ↑z ∈ ℂ_ℤ := by
- apply IntegerComplement_mk
+ rw [integerComplement.mem_iff]
  simp only [not_exists]
  exact fun x a ↦ (UpperHalfPlane.ne_int z)  x (id (Eq.symm a))
 
-lemma IntegerComplement_add_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (a : ℤ) : x + (a : ℂ)  ≠ 0 := by
+lemma integerComplement_add_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (a : ℤ) : x + (a : ℂ)  ≠ 0 := by
   intro h
   rw [add_eq_zero_iff_eq_neg] at h
   have := not_exists.mp hx (-a)
   aesop
 
-lemma IntegerComplement_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 0 := by
-  simpa using IntegerComplement_add_ne_zero hx 0
+lemma integerComplement.ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 0 :=
+  fun hx' ↦ hx ⟨0, by exact_mod_cast hx'.symm⟩
 
-lemma IntegerComplement_ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ): x ≠ 1 := by
-  have := IntegerComplement_add_ne_zero hx (-1 : ℤ)
-  aesop
+lemma integerComplement.ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ): x ≠ 1 :=
+  fun hx' ↦ hx ⟨1, by exact_mod_cast hx'.symm⟩
 
 end Complex
