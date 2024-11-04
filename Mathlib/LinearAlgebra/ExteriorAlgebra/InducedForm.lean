@@ -23,7 +23,12 @@ variable {k : ℕ}
 
 section inducedForm
 
-#check Matrix.updateColumn.eq_1
+theorem aux (v w : Fin k → M) (x y : M) (j': Fin k) :
+  (Matrix.of fun i j ↦ (B (v i)) (Function.update w j' (x + y) j)) =
+  (Matrix.of fun i j ↦ (B (v i)) (w j)).updateColumn j' (fun i ↦ B (v i) (x + y)) := by
+  ext i j
+  rw [Matrix.of_apply, Matrix.updateColumn_apply, Function.update_apply, apply_ite (B (v i))]
+  rfl
 
 private def BilinFormAux :
     M [⋀^Fin k]→ₗ[R] M [⋀^Fin k]→ₗ[R] R where
@@ -32,8 +37,7 @@ private def BilinFormAux :
       map_add' := by
         intro _ w j' x y
         dsimp
-        simp only [Function.update_apply, apply_ite]
-
+        rw [aux B v w x y j']
 
         sorry
       map_smul' := sorry
