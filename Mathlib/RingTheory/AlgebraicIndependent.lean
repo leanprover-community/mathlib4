@@ -501,13 +501,7 @@ theorem algebraicIndependent_polynomial_aeval_X
     rw [Set.mem_preimage]
     refine Algebra.adjoin_mono ?_ (Polynomial.aeval_mem_adjoin_singleton R _)
     simp_rw [singleton_subset_iff, Set.mem_image_of_mem _ h]
-  letI : Algebra (adjoin R (x '' t)) (supported R t) := (Subalgebra.inclusion hle).toAlgebra
-  letI : Module (adjoin R (x '' t)) (supported R t) := Algebra.toModule
-  letI : SMul (adjoin R (x '' t)) (supported R t) := Algebra.toSMul
-  haveI : IsScalarTower (adjoin R (x '' t)) (supported R t) (MvPolynomial ι R) :=
-    .of_algebraMap_eq fun _ ↦ rfl
-  exact (transcendental_supported_polynomial_aeval_X R hi (hf i)).of_tower_top_of_injective
-    (Subalgebra.inclusion_injective hle)
+  exact (transcendental_supported_polynomial_aeval_X R hi (hf i)).of_tower_top_of_subalgebra_le hle
 
 end MvPolynomial
 

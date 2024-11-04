@@ -400,12 +400,28 @@ theorem IsAlgebraic.tower_top_of_injective
   ⟨p.map (algebraMap _ _), by
     rwa [Ne, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
 
+/-- A special case of `IsAlgebraic.tower_top_of_injective`. This is extracted as a theorem
+  because in some cases `IsAlgebraic.tower_top_of_injective` will just runs out of memory. -/
+theorem IsAlgebraic.tower_top_of_subalgebra_le
+    {A B : Subalgebra R S} (hle : A ≤ B) {x : S}
+    (h : IsAlgebraic A x) : IsAlgebraic B x := by
+  letI : Algebra A B := (Subalgebra.inclusion hle).toAlgebra
+  haveI : IsScalarTower A B S := .of_algebraMap_eq fun _ ↦ rfl
+  exact h.tower_top_of_injective (Subalgebra.inclusion_injective hle)
+
 /-- If `x` is transcendental over `S`, then `x` is transcendental over `R` when `S` is an extension
   of `R`, and the map from `R` to `S` is injective. -/
 theorem Transcendental.of_tower_top_of_injective
     (hinj : Function.Injective (algebraMap R S)) {x : A}
     (h : Transcendental S x) : Transcendental R x :=
   fun H ↦ h (H.tower_top_of_injective hinj)
+
+/-- A special case of `Transcendental.of_tower_top_of_injective`. This is extracted as a theorem
+  because in some cases `Transcendental.of_tower_top_of_injective` will just runs out of memory. -/
+theorem Transcendental.of_tower_top_of_subalgebra_le
+    {A B : Subalgebra R S} (hle : A ≤ B) {x : S}
+    (h : Transcendental B x) : Transcendental A x :=
+  fun H ↦ h (H.tower_top_of_subalgebra_le hle)
 
 /-- If A is an algebraic algebra over R, then A is algebraic over S when S is an extension of R,
   and the map from `R` to `S` is injective. -/
