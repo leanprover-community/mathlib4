@@ -394,6 +394,7 @@ example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by p
 set_option linter.unusedVariables false in
 example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑ n ∈ Finset.range 10, f n := by positivity
 
+set_option linter.unusedVariables false in
 example (n : ℕ) : ∏ j ∈ range n, (-1) ≠ 0 := by positivity
 example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∏ j ∈ range n, a j^2 := by positivity
 example (a : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∏ j ∈ s, a j^2 := by positivity

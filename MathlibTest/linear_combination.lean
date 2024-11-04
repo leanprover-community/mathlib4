@@ -267,6 +267,7 @@ but is expected to have type
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 := by
   linear_combination h1 + (0 : ℝ) * h2
 
+set_option linter.unusedVariables false in
 example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := by
   fail_if_success linear_combination 2 * hab
   linear_combination 2 * hxy

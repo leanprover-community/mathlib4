@@ -11,7 +11,7 @@ example : True := by
 example : True ∧ True := by
   constructor <;> trivial;
 
-set_option linter.unusedTactic false
+set_option linter.unusedTactic true
 /--
 warning: 'congr' tactic does nothing
 note: this linter can be disabled with `set_option linter.unusedTactic false`
@@ -20,7 +20,6 @@ warning: 'done' tactic does nothing
 note: this linter can be disabled with `set_option linter.unusedTactic false`
 -/
 #guard_msgs in
-set_option linter.unusedTactic true in
 -- the linter notices that `congr` is unused
 example : True := by
   congr
@@ -32,7 +31,6 @@ section allowing_more_unused_tactics
 #allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
 
 #guard_msgs in
-set_option linter.unusedTactic true in
 example : True := by
   skip
   constructor

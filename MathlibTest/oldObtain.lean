@@ -7,7 +7,7 @@ import Mathlib.Tactic.Linter.OldObtain
 
 /-! Tests for the `oldObtain` linter. -/
 
-set_option linter.oldObtain false
+set_option linter.oldObtain true
 
 -- These cases are fine.
 theorem foo : True := by
@@ -24,7 +24,6 @@ warning: Please remove stream-of-conciousness `obtain` syntax
 note: this linter can be disabled with `set_option linter.oldObtain false`
 -/
 #guard_msgs in
-set_option linter.oldObtain true in
 theorem foo' : True := by
   obtain : True
   · trivial
@@ -35,7 +34,6 @@ warning: Please remove stream-of-conciousness `obtain` syntax
 note: this linter can be disabled with `set_option linter.oldObtain false`
 -/
 #guard_msgs in
-set_option linter.oldObtain true in
 theorem foo'' : True := by
   obtain h : True
   · trivial

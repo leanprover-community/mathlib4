@@ -7,6 +7,8 @@ Authors: Moritz Doll, Robert Y. Lewis
 import Mathlib.Tactic.Zify
 import Mathlib.Algebra.Ring.Int
 
+set_option linter.unusedVariables false
+
 private axiom test_sorry : ∀ {α}, α
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   zify

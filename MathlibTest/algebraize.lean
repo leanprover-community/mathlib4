@@ -1,5 +1,7 @@
 import Mathlib.Tactic.Algebraize
 
+set_option linter.unusedVariables false
+
 section example_definitions
 
 /-- Test property for when `RingHom` and `Algebra` properties are definitionally the same,
