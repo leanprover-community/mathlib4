@@ -68,7 +68,7 @@ noncomputable def isPresentationCoreTensor :
         { var := fun g₂ ↦ s.var ⟨g₁, g₂⟩
           linearCombination_var_relation := fun r₂ ↦ by
             erw [← Finsupp.linearCombination_embDomain A
-              (Function.Embedding.sectr g₁ relations₂.G) ]
+              (Function.Embedding.sectr g₁ relations₂.G)]
             exact s.linearCombination_var_relation (.inr ⟨g₁, r₂⟩) }
       linearCombination_var_relation := fun r₁ ↦ h₂.postcomp_injective (by
         ext g₂
