@@ -7,9 +7,9 @@ import Mathlib.Data.List.Sort
 import Mathlib.Tactic.Linarith
 /-!
 # Timed Insertion Sort
-  This file defines a new version of Insertion Sort that, besides sorting the input list, counts the
-  number of comparisons made through the execution of the algorithm. Also, it presents proofs of
-  its time complexity and its equivalence to the one defined in Data/List/Sort.lean
+  This file defines a new version of Insertion Sort that, besides sorting the input list, counts
+  the number of comparisons made through the execution of the algorithm. Also, it presents proofs
+  of its time complexity and its equivalence to the one defined in Data/List/Sort.lean
  ## Main Definition
   - Timed.insertion_sort : list α → (list α × ℕ)
 ## Main Results
@@ -26,14 +26,16 @@ universe u
 variable {α : Type u} (r : α → α → Prop) [DecidableRel r]
 local infixl:50 " ≼ " => r
 
-/-- The redesigned version of `orderedInsert`, which also returns the number of comparisons performed. -/
+/-- The redesigned version of `orderedInsert`, which also returns the number of comparisons
+    performed. -/
 @[simp] def orderedInsert (a : α) : List α → (List α × Nat)
   | []      => ([a], 0)
   | b :: l => if a ≼ b then (a :: b :: l, 1)
               else let (l', n) := orderedInsert a l
                    (b :: l', n + 1)
 
-/-- The redesigned version of `insertionSort`, which also returns the number of comparisons performed. -/
+/-- The redesigned version of `insertionSort`, which also returns the number of comparisons
+    performed. -/
 @[simp] def insertionSort : List α → (List α × Nat)
   | [] => ([], 0)
   | (h :: t) => let (l', n)  := insertionSort t
