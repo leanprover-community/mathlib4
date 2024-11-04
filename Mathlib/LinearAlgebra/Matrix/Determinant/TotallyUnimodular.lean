@@ -23,18 +23,18 @@ This file defines totally unimodular matrices and provides basic API for them.
 
 -/
 
-open scoped Matrix
+namespace Matrix
 
 variable {m n R : Type*} [CommRing R]
 
 /-- Is the matrix `A` totally unimodular? -/
-def Matrix.IsTotallyUnimodular (A : Matrix m n R) : Prop :=
+def IsTotallyUnimodular (A : Matrix m n R) : Prop :=
   ∀ k : ℕ, ∀ f : Fin k → m, ∀ g : Fin k → n, f.Injective → g.Injective →
     (A.submatrix f g).det = 0 ∨
     (A.submatrix f g).det = 1 ∨
     (A.submatrix f g).det = -1
 
-lemma Matrix.isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
+lemma isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
     ∀ k : ℕ, ∀ f : Fin k → m, ∀ g : Fin k → n,
       (A.submatrix f g).det = 0 ∨
       (A.submatrix f g).det = 1 ∨
@@ -64,7 +64,7 @@ lemma Matrix.isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular 
   · intro _ _ _ _ _
     apply hA
 
-lemma Matrix.IsTotallyUnimodular.apply {A : Matrix m n R} (hA : A.IsTotallyUnimodular)
+lemma IsTotallyUnimodular.apply {A : Matrix m n R} (hA : A.IsTotallyUnimodular)
     (i : m) (j : n) :
     A i j = 0 ∨ A i j = 1 ∨ A i j = -1 := by
   let f : Fin 1 → m := (fun _ => i)
@@ -72,7 +72,7 @@ lemma Matrix.IsTotallyUnimodular.apply {A : Matrix m n R} (hA : A.IsTotallyUnimo
   convert hA 1 f g (Function.injective_of_subsingleton f) (Function.injective_of_subsingleton g) <;>
   exact (det_fin_one (A.submatrix f g)).symm
 
-lemma Matrix.IsTotallyUnimodular.submatrix {A : Matrix m n R} (hA : A.IsTotallyUnimodular) {k : ℕ}
+lemma IsTotallyUnimodular.submatrix {A : Matrix m n R} (hA : A.IsTotallyUnimodular) {k : ℕ}
     (f : Fin k → m) (g : Fin k → n) :
     (A.submatrix f g).IsTotallyUnimodular := by
   intro _ _ _ _ _
@@ -80,16 +80,17 @@ lemma Matrix.IsTotallyUnimodular.submatrix {A : Matrix m n R} (hA : A.IsTotallyU
   rw [Matrix.isTotallyUnimodular_iff] at hA
   apply hA
 
-lemma Matrix.IsTotallyUnimodular.transpose {A : Matrix m n R} (hA : A.IsTotallyUnimodular) :
+lemma IsTotallyUnimodular.transpose {A : Matrix m n R} (hA : A.IsTotallyUnimodular) :
     Aᵀ.IsTotallyUnimodular := by
   intro _ _ _ _ _
   simp only [← Matrix.transpose_submatrix, Matrix.det_transpose]
   apply hA <;> assumption
 
-lemma Matrix.mapEquiv_IsTotallyUnimodular {X' Y' : Type*}
-    (A : Matrix m n R) (eX : X' ≃ m) (eY : Y' ≃ n) :
+lemma mapEquiv_IsTotallyUnimodular {X' Y' : Type*} (A : Matrix m n R) (eX : X' ≃ m) (eY : Y' ≃ n) :
     Matrix.IsTotallyUnimodular ((A · ∘ eY) ∘ eX) ↔ A.IsTotallyUnimodular := by
   rw [Matrix.isTotallyUnimodular_iff, Matrix.isTotallyUnimodular_iff]
   constructor <;> intro hA k f g
   · simpa [Matrix.submatrix] using hA k (eX.symm ∘ f) (eY.symm ∘ g)
   · simpa [Matrix.submatrix] using hA k (eX ∘ f) (eY ∘ g)
+
+end Matrix
