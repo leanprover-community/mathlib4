@@ -176,13 +176,8 @@ lemma even_mul_pred_self (n : ℤ) : Even (n * (n - 1)) := by
 lemma natAbs_odd : Odd n.natAbs ↔ Odd n := by
   rw [← not_even_iff_odd, ← Nat.not_even_iff_odd, natAbs_even]
 
-alias ⟨_, _root_.Even.natAbs⟩ := natAbs_even
-
-alias ⟨_, _root_.Odd.natAbs⟩ := natAbs_odd
-
--- Porting note: "protected"-attribute not implemented yet.
--- mathlib3 had:
--- `attribute [protected] Even.natAbs Odd.natAbs`
+protected alias ⟨_, _root_.Even.natAbs⟩ := natAbs_even
+protected alias ⟨_, _root_.Odd.natAbs⟩ := natAbs_odd
 
 lemma four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
     4 ∣ a + b ∨ 4 ∣ a - b := by

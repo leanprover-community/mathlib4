@@ -257,8 +257,8 @@ lemma isSheaf_yoneda_obj [Preregular C] (W : C)  :
   · exact fun y hy ↦ t_uniq y <| Presieve.isAmalgamation_sieveExtend x y hy
 
 /-- The regular topology on any preregular category is subcanonical. -/
-theorem subcanonical [Preregular C] : Sheaf.Subcanonical (regularTopology C) :=
-  Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
+instance subcanonical [Preregular C] : (regularTopology C).Subcanonical :=
+  GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ isSheaf_yoneda_obj
 
 end regularTopology
 

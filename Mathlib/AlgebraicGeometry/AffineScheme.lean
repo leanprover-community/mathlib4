@@ -574,6 +574,35 @@ lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (hU : IsA
     RingHom.algebraMap_toAlgebra, RingHom.algebraMap_toAlgebra, ← CommRingCat.comp_eq_ring_hom_comp,
     Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
 
+lemma app_basicOpen_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
+    (hU : IsAffineOpen U) (h : IsAffineOpen (f ⁻¹ᵁ U)) (r : Γ(Y, U)) :
+    haveI := hU.isLocalization_basicOpen r
+    haveI := h.isLocalization_basicOpen (f.app U r)
+    f.app (Y.basicOpen r) =
+      IsLocalization.Away.map Γ(Y, Y.basicOpen r) Γ(X, X.basicOpen (f.app U r)) (f.app U) r ≫
+        X.presheaf.map (eqToHom (by simp)).op := by
+  haveI := hU.isLocalization_basicOpen r
+  haveI := h.isLocalization_basicOpen (f.app U r)
+  apply IsLocalization.ringHom_ext (.powers r)
+  rw [← CommRingCat.comp_eq_ring_hom_comp, ← CommRingCat.comp_eq_ring_hom_comp,
+    IsLocalization.Away.map, ← Category.assoc]
+  nth_rw 3 [CommRingCat.comp_eq_ring_hom_comp]
+  rw [IsLocalization.map_comp, RingHom.algebraMap_toAlgebra, ← CommRingCat.comp_eq_ring_hom_comp,
+    RingHom.algebraMap_toAlgebra, Category.assoc, ← X.presheaf.map_comp]
+  simp
+
+/-- `f.app (Y.basicOpen r)` is isomorphic to map induced on localizations
+`Γ(Y, Y.basicOpen r) ⟶ Γ(X, X.basicOpen (f.app U r))` -/
+def appBasicOpenIsoAwayMap {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
+    (hU : IsAffineOpen U) (h : IsAffineOpen (f ⁻¹ᵁ U)) (r : Γ(Y, U)) :
+    haveI := hU.isLocalization_basicOpen r
+    haveI := h.isLocalization_basicOpen (f.app U r)
+    Arrow.mk (f.app (Y.basicOpen r)) ≅
+      Arrow.mk (IsLocalization.Away.map Γ(Y, Y.basicOpen r)
+        Γ(X, X.basicOpen (f.app U r)) (f.app U) r) :=
+  Arrow.isoMk (Iso.refl _) (X.presheaf.mapIso (eqToIso (by simp)).op) <| by
+    simp [hU.app_basicOpen_eq_away_map f h]
+
 include hU in
 theorem isLocalization_of_eq_basicOpen {V : X.Opens} (i : V ⟶ U) (e : V = X.basicOpen f) :
     @IsLocalization.Away _ _ f Γ(X, V) _ (X.presheaf.map i.op).toAlgebra := by
