@@ -468,28 +468,27 @@ theorem eq_top_iff_of_liesOver [P.LiesOver p] : P = ⊤ ↔ p = ⊤ := by
 
 variable {P}
 
-theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
-    [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p where
+theorem LiesOver.of_eq_comap_equiv [Q.LiesOver p] {F : Type*} [FunLike F B C]
+    [AlgHomClass F A B C] (f : F) (h : P = Q.comap f) : P.LiesOver p where
   over := by
-    ext x
-    rw [mem_comap, h, over_def P p, mem_comap, ← show _ = map σ P from comap_symm (σ : B ≃+* C)]
-    rw [mem_comap, ← (AlgEquiv.commutes (σ : B ≃ₐ[A] C).symm x)]
-    rfl
+    rw [h]
+    exact (over_def Q p).trans <|
+      congrFun (congrFun (congrArg comap ((f : B →ₐ[A] C).comp_algebraMap.symm)) _) Q
 
-theorem LiesOver.of_eq_comap_equiv [Q.LiesOver p] {E : Type*} [EquivLike E B C]
-    [AlgEquivClass E A B C] (σ : E) (h : P = Q.comap σ) : P.LiesOver p := by
-  rw [← show _ = Q.comap σ from map_symm (σ : B ≃+* C)] at h
-  exact of_eq_map_equiv p (σ : B ≃ₐ[A] C).symm h
+theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
+    [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p := by
+  rw [← show _ = P.map σ from comap_symm (σ : B ≃+* C)] at h
+  exact of_eq_comap_equiv p (σ : B ≃ₐ[A] C).symm h
 
 variable (P) (Q)
+
+instance comap_equiv_liesOver [Q.LiesOver p] {F : Type*} [FunLike F B C] [AlgHomClass F A B C]
+    (f : F) : (Q.comap f).LiesOver p :=
+  LiesOver.of_eq_comap_equiv p f rfl
 
 instance map_equiv_liesOver [P.LiesOver p] {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C]
     (σ : E) : (P.map σ).LiesOver p :=
   LiesOver.of_eq_map_equiv p σ rfl
-
-instance comap_equiv_liesOver [Q.LiesOver p] {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C]
-    (σ : E) : (Q.comap σ).LiesOver p :=
-  LiesOver.of_eq_comap_equiv p σ rfl
 
 end Semiring
 
@@ -565,23 +564,32 @@ theorem nontrivial_of_liesOver_of_ne_top (hp : p ≠ ⊤) : Nontrivial (B ⧸ P)
 theorem nontrivial_of_liesOver_of_isPrime [hp : p.IsPrime] : Nontrivial (B ⧸ P) :=
   nontrivial_of_liesOver_of_ne_top P hp.ne_top
 
-variable {P} in
+section algEquiv
+
+variable {P} {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
+
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
   isomorphism between `B` and `C`, where `Q = σ P`. -/
-def algEquivOfEqMap {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
-    (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) where
+def algEquivOfEqMap (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) where
   __ := quotientEquiv P Q σ h
   commutes' := by
     rintro ⟨x⟩
     exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
 
-variable {P} in
+@[simp]
+theorem algEquivOfEqMap_apply (h : Q = P.map σ) (x : B) : algEquivOfEqMap p σ h x = σ x :=
+  rfl
+
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
   isomorphism between `B` and `C`, where `P = σ⁻¹ Q`. -/
-def algEquivOfEqComap {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
-    (h : P = Q.comap σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) := by
-  rw [← show _ = Q.comap σ from map_symm (σ : B ≃+* C)] at h
-  exact (algEquivOfEqMap p (σ : B ≃ₐ[A] C).symm h).symm
+def algEquivOfEqComap (h : P = Q.comap σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) :=
+  (algEquivOfEqMap p (σ : B ≃ₐ[A] C).symm (h.trans (map_symm (σ : B ≃+* C)).symm)).symm
+
+@[simp]
+theorem algEquivOfEqComap_apply (h : P = Q.comap σ) (x : B) : algEquivOfEqComap p σ h x = σ x :=
+  rfl
+
+end algEquiv
 
 /-- If `P` lies over `p`, then the stabilizer of `P` acts on the extension `(B ⧸ P) / (A ⧸ p)`. -/
 def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B ⧸ P)) where
