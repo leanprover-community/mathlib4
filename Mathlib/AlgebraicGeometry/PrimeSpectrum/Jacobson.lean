@@ -54,7 +54,7 @@ instance [IsJacobsonRing R] : JacobsonSpace (PrimeSpectrum R) := by
   rintro x ⟨hJx, hx⟩
   exact @hS ⟨x, hx.isPrime⟩ ⟨hJx, (isClosed_singleton_iff_isMaximal _).mpr hx⟩
 
-lemma is_jacobson_iff_jacobsonSpace :
+lemma isJacobsonRing_iff_jacobsonSpace :
     IsJacobsonRing R ↔ JacobsonSpace (PrimeSpectrum R) := by
   refine ⟨fun _ ↦ inferInstance, fun H ↦ ⟨fun I hI ↦ le_antisymm ?_ Ideal.le_jacobson⟩⟩
   rw [← I.isRadical_jacobson.radical]
