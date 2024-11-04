@@ -65,8 +65,20 @@ variable {K L : Type*} [Nm_K : NontriviallyNormedField K] [CompleteSpace K]
 [Nm_L : NormedField L] [Algebra K L]
 (is_na : IsNonarchimedean (‖·‖ : K → ℝ)) [Algebra.IsAlgebraic K L]
 (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) (M : IntermediateField K L)
-
+#synth Algebra ℕ K
 #synth NormedField M
+
+theorem IsNonarchimedean.of_res_on_Nat {R} [NormedDivisionRing R]
+  (is_na : IsNonarchimedean (‖algebraMap ℕ R ·‖ : ℕ → ℝ)) : IsNonarchimedean (‖·‖ : R → ℝ) := by
+  suffices ∀ r : R, ‖r + 1‖ ≤ max ‖r‖ 1 by
+    intro x y
+    by_cases hy : y = 0
+    · simp? [hy]
+    calc
+      ‖x + y‖ = ‖x*y⁻¹ + 1‖ * ‖y‖ := by simp [add_mul]
+      _ ≤ (max ‖x*y⁻¹‖ 1) * ‖y‖ := by congr 1; apply this
+      _ = max ‖x‖ ‖y‖ := by simp
+  
 
 theorem IsNonarchimedean.norm_extension (is_na : IsNonarchimedean (‖·‖ : K → ℝ))
     (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) : IsNonarchimedean (‖·‖ : L → ℝ) := by
