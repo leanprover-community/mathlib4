@@ -293,7 +293,7 @@ lemma Filter.EventuallyEq.mem_interior {x : α} {s t : Set α} (hst : s =ᶠ[�
   rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
   simpa [mem_interior_iff_mem_nhds, ← nhdsWithin_eq_nhds, hst] using h
 
-lemma EventuallyEq.mem_interior_iff {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t) :
+lemma Filter.EventuallyEq.mem_interior_iff {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t) :
     x ∈ interior s ↔ x ∈ interior t :=
   ⟨fun h ↦ hst.mem_interior h, fun h ↦ hst.symm.mem_interior h⟩
 

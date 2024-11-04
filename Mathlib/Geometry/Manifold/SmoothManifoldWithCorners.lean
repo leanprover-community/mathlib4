@@ -1200,18 +1200,6 @@ theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I
   simp_rw [extChartAt_target, I.range_eq_univ, inter_univ]
   exact (PartialHomeomorph.open_target _).preimage I.continuous_symm
 
-
-lemma _root_.Filter.EventuallyEq.mem_interior {α : Type*} [TopologicalSpace α]
-    {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t) (h : x ∈ interior s) :
-    x ∈ interior t := by
-  rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
-  simpa [mem_interior_iff_mem_nhds, ← nhdsWithin_eq_nhds, hst] using h
-
-lemma _root_.Filter.EventuallyEq.mem_interior_iff {α : Type*} [TopologicalSpace α]
-    {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t) :
-    x ∈ interior s ↔ x ∈ interior t :=
-  ⟨fun h ↦ hst.mem_interior h, fun h ↦ hst.symm.mem_interior h⟩
-
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of the key point -/
 theorem extChartAt_target_mem_nhds [I.Boundaryless] (x : M) :
     (extChartAt I x).target ∈ 𝓝 (extChartAt I x x) := by
