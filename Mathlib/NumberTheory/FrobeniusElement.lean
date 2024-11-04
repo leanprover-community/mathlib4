@@ -34,6 +34,7 @@ open Polynomial
 
 variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
+-- PRed
 theorem IsAlgebraic.def_of_mem_nonZeroDivisors
     {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
     ∃ (q : Polynomial R), q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
@@ -43,6 +44,7 @@ theorem IsAlgebraic.def_of_mem_nonZeroDivisors
   rw [hpq, map_mul, aeval_X_pow] at hp
   exact ⟨q, hq, (nonZeroDivisors S).pow_mem hs (rootMultiplicity 0 p) (aeval s q) hp⟩
 
+-- PRed
 theorem IsAlgebraic.exists_nonzero_dvd
     {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
     ∃ r : R, r ≠ 0 ∧ s ∣ (algebraMap R S) r := by
@@ -184,28 +186,6 @@ theorem exists_smul_of_comap_eq
 
 end Algebra.IsInvariant
 
--- PRed
-section stabilizerAction
-
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
-  (P : Ideal A) (Q : Ideal B) [Q.LiesOver P]
-
-def stabilizerAction : MulAction.stabilizer G Q →* ((B ⧸ Q) ≃ₐ[A ⧸ P] (B ⧸ Q)) where
-  toFun g :=
-  { __ := Ideal.quotientEquiv Q Q (MulSemiringAction.toRingEquiv G B g) g.2.symm
-    commutes' := fun q ↦ by
-      obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective q
-      simp [← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply] }
-  map_one' := AlgEquiv.ext (fun q ↦ by
-    obtain ⟨b, rfl⟩ := Ideal.Quotient.mk_surjective q
-    simp)
-  map_mul' g h := AlgEquiv.ext (fun q ↦ by
-    obtain ⟨b, rfl⟩ := Ideal.Quotient.mk_surjective q
-    simp [mul_smul])
-
-end stabilizerAction
-
 section CRT
 
 variable {B : Type*} [CommRing B] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
@@ -318,7 +298,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 open IsScalarTower Polynomial in
 theorem lem4 [Algebra.IsInvariant A B G]
     (f : L ≃ₐ[K] L) (b : B ⧸ Q)
-    (hx : ∀ g : MulAction.stabilizer G Q, stabilizerAction G P Q g b = b) :
+    (hx : ∀ g : MulAction.stabilizer G Q, Ideal.Quotient.stabilizerHom Q P G g b = b) :
     f (algebraMap (B ⧸ Q) L b) = (algebraMap (B ⧸ Q) L b) := by
   classical
   cases nonempty_fintype G
@@ -367,7 +347,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 
 noncomputable def fullHom : MulAction.stabilizer G Q →* (L ≃ₐ[K] L) :=
   have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under A Q
-  MonoidHom.comp (IsFractionRing.fieldEquivOfAlgEquivHom K L) (stabilizerAction G P Q)
+  MonoidHom.comp (IsFractionRing.fieldEquivOfAlgEquivHom K L) (Ideal.Quotient.stabilizerHom Q P G)
 
 theorem fullHom_surjective1
     [Algebra.IsInvariant A B G]
@@ -385,7 +365,7 @@ theorem fullHom_surjective1
   simp only [← IsScalarTower.algebraMap_apply (A ⧸ P) K L, div_left_inj' ha] at hx ⊢
   refine lem4 G P Q K L f b (fun g ↦ IsFractionRing.injective (B ⧸ Q) L ?_)
   exact (IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L
-    (stabilizerAction G P Q g) b).symm.trans (hx g)
+    (Ideal.Quotient.stabilizerHom Q P G g) b).symm.trans (hx g)
 
 theorem fullHom_surjective
     [Algebra.IsInvariant A B G] :
