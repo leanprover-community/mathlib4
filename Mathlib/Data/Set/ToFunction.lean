@@ -55,7 +55,7 @@ section set_as_total_function
 def IsFun (s : Set (α × β)) : Prop :=
   ∀ x : α, ∃! y : β, (x, y) ∈ s
 
-theorem isFun.isPartialFun {s : Set (α × β)} (hs : IsFun s) : IsPartialFun s :=
+theorem IsFun.isPartialFun {s : Set (α × β)} (hs : IsFun s) : IsPartialFun s :=
   fun x y hxy z hxz => ((hs x).choose_spec.2 y hxy).trans ((hs x).choose_spec.2 z hxz).symm
 
 /-- Turns `s : Set (α × α)` into a total function. Each `x : α` is mapped to the unique `y : β`
