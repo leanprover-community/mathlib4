@@ -73,54 +73,62 @@ inequality) to explicit subsets, many proofs are easily closed by `aesop` or `om
 * [N. Bourbaki, *General Topology*, Chapter II][bourbaki1966]
 -/
 
-
 open Set Function Filter Metric
 
 /- We remove the "usual" instances of (discrete) topological space and of (discrete) uniform space
 from `ℕ`-/
 attribute [-instance] instTopologicalSpaceNat instUniformSpaceNat
 
-noncomputable instance : PseudoMetricSpace ℕ where
+section Metric
+
+noncomputable local instance : PseudoMetricSpace ℕ where
   dist := fun n m ↦ |2 ^ (- n : ℤ) - 2 ^ (- m : ℤ)|
   dist_self := by simp only [zpow_neg, zpow_natCast, sub_self, abs_zero, implies_true]
-  dist_comm := fun _ _ ↦ abs_sub_comm _ _
+  dist_comm := fun _ _ ↦ abs_sub_comm ..
   dist_triangle := fun _ _ _ ↦ abs_sub_le ..
 
 @[simp]
 lemma dist_def {n m : ℕ} : dist n m = |2 ^ (-n : ℤ) - 2 ^ (-m : ℤ)| := rfl
 
+theorem TopIsDiscrete : DiscreteTopology ℕ := by
+  rw [← singletons_open_iff_discrete]
+  intro n
+  have := @continuous_dist ℕ _
+  rw [continuous_def] at this
+  specialize this (Ioo (-n -1 : ℤ) (-n + 1: ℤ)) isOpen_Ioo
+  -- simp at this
+  -- have ff : {(n, n)} = (fun p ↦ dist p.1 p.2) ⁻¹' (Ioo (-(n : ℤ) - 1) ((-n : ℤ) + 1)) := sorry
+  -- simp at ff
+  rw [isOpen_prod_iff] at this
+  simp at this
+  -- omega at this
+  -- have ff : {(n, n)} = ((fun p ↦ dist p.1 p.2) ⁻¹' Ioo (-↑n - 1) (-↑n + 1))
+
+
+
+
+
 lemma idIsCauchy : CauchySeq (id : ℕ → ℕ) := by
   rw [Metric.cauchySeq_iff]
-  intro ε hε
-  -- have := @cauchySeq_of_le_geometric_two ℝ _ 1 (fun n ↦ 2 ^(-n : ℤ)) ?_
-  obtain ⟨N, hN⟩ := Metric.cauchySeq_iff.mp
-    (@cauchySeq_of_le_geometric_two ℝ _ 1 (fun n ↦ 2 ^(-n : ℤ)) _) ε hε
-  use N
-  intro m hm n hn
-  · exact hN m hm n hn
-  · intro n
-    simp only [zpow_natCast, Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg, one_div]
-    rw [Real.dist_eq, zpow_add' <| Or.intro_left _ two_ne_zero]
-    · calc
-      |2 ^ (- n : ℤ) - 2 ^ (-1 : ℤ) * 2 ^ (- n : ℤ)| =
+  refine fun ε ↦ Metric.cauchySeq_iff.mp
+    (@cauchySeq_of_le_geometric_two ℝ _ 1 (fun n ↦ 2 ^(-n : ℤ)) fun n ↦ ?_) ε
+  simp only [zpow_natCast, Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg, one_div]
+  rw [Real.dist_eq, zpow_add' <| Or.intro_left _ two_ne_zero]
+  calc |2 ^ (- n : ℤ) - 2 ^ (-1 : ℤ) * 2 ^ (- n : ℤ)| =
         |(1 - (2 : ℝ)⁻¹) * 2 ^ (- n : ℤ)| := by rw [← one_sub_mul, zpow_neg_one]
-        _ = |2⁻¹ * 2 ^ (-(n : ℤ))| := by congr; rw [inv_eq_one_div 2, sub_half 1]
-        _ = (2 : ℝ)⁻¹ / 2 ^ n := by rw [zpow_neg, abs_mul, abs_inv, abs_inv, inv_eq_one_div,
+      _ = |2⁻¹ * 2 ^ (-(n : ℤ))| := by congr; rw [inv_eq_one_div 2, sub_half 1]
+      _ = 2⁻¹ / 2 ^ n := by rw [zpow_neg, abs_mul, abs_inv, abs_inv, inv_eq_one_div,
           Nat.abs_ofNat, one_div, zpow_natCast, abs_pow, ← div_eq_mul_inv, Nat.abs_ofNat]
-      rfl
+  rfl
 
-  -- · exact hN
-  -- ·
-  -- · simp
-    --rw [Real.dist_eq]
-  -- apply this
-  -- simp_rw [dist_def]
+end Metric
 
+section SetPointUniformity
 
-
-
-
-
+/- As the `instance PseudoMetricSpace ℕ` declared in the previous section was local, `ℕ` has no
+topology at this point. We are going to define a non-discrete uniform structure (just using the
+filter-based definition), that will endow it with a topology that we will eventually show to be
+discrete. -/
 
 /-- The fundamental entourages (index by `n : ℕ`) used to construct a basis of the uniformity: for
 each `n`, the set `fundamentalEntourage n : Set (ℕ × ℕ)` consists of the `n+1` points
@@ -229,9 +237,9 @@ lemma HasBasis_counterUniformity :
   refine ⟨fun ⟨s, ⟨⟨r, hr⟩, hs⟩⟩ ↦ ⟨r, subset_of_eq_of_subset hr hs⟩ , fun ⟨n, hn⟩ ↦ ?_⟩
   exact (@FilterBasis.mem_filter_iff _ counterBasis T).mpr ⟨fundamentalEntourage n, by simp, hn⟩
 
-/- A proof that the topology on `ℕ` induced by the "crude" uniformity `counterCoreUniformity` (or by
-`counterUniformity` tout-court, since they are `defeq`) is discrete. -/
-theorem TopIsDiscrete : DiscreteTopology ℕ := by
+/-- A proof that the topology on `ℕ` induced by the "crude" uniformity `counterCoreUniformity`
+(or by `counterUniformity` tout-court, since they are `defeq`) is discrete.-/
+theorem TopIsDiscrete' : DiscreteTopology ℕ := by
   rw [discreteTopology_iff_nhds]
   intro n
   rw [nhds_eq_comap_uniformity']
@@ -265,3 +273,5 @@ lemma atTopIsCauchy : Cauchy (atTop : Filter ℕ) := by
 /-- We find the same result about the identity map found in `idIsCauchy`, without using any metric
 structure. -/
 lemma idIsCauchy' : CauchySeq (id : ℕ → _) := ⟨map_neBot, cauchy_iff_le.mp atTopIsCauchy⟩
+
+end SetPointUniformity
