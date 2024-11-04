@@ -32,14 +32,24 @@ lemma UpperHalfPlane.coe_mem_integerComplement (z : ℍ) : ↑z ∈ ℂ_ℤ := b
  simp only [not_exists]
  exact fun x a ↦ (UpperHalfPlane.ne_int z)  x (id (Eq.symm a))
 
-lemma integerComplement_add_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (a : ℤ) : x + (a : ℂ)  ≠ 0 := by
-  intro h
-  rw [add_eq_zero_iff_eq_neg] at h
-  have := not_exists.mp hx (-a)
-  aesop
+lemma integerComplement.add_coe_int_mem {x : ℂ} (a : ℤ) : x + (a : ℂ) ∈ ℂ_ℤ ↔ x ∈ ℂ_ℤ := by
+  constructor
+  · contrapose
+    simp only [Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, Decidable.not_not,
+      forall_exists_index]
+    intro b hb
+    refine ⟨b + a, by simp only [Int.cast_add, hb]⟩
+  · contrapose
+    simp only [Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, Decidable.not_not,
+      forall_exists_index]
+    intro b hb
+    refine ⟨b - a, by simp only [Int.cast_sub, hb, add_sub_cancel_right]⟩
 
 lemma integerComplement.ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 0 :=
   fun hx' ↦ hx ⟨0, by exact_mod_cast hx'.symm⟩
+
+lemma integerComplement_add_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (a : ℤ) : x + (a : ℂ)  ≠ 0 :=
+  integerComplement.ne_zero ((integerComplement.add_coe_int_mem a).mpr hx)
 
 lemma integerComplement.ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ): x ≠ 1 :=
   fun hx' ↦ hx ⟨1, by exact_mod_cast hx'.symm⟩
