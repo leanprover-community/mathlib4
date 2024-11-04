@@ -140,13 +140,13 @@ jobs:
                 gsub(/ *Now redun.*/, "")
                 gsub(/ to \[[^]]*\]/, "")
                 gsub(/ *note: this linter.*/, "")
+                gsub(/\.\//, "")
+                gsub(/ *Imports increased by */, "")
+                gsub(/ *New imports */, "")
                 currMax=$0
                 max=$3+0
             }' |
             sort --field-separator=: -k3 -nr |
             awk -F: 'BEGIN{printf("|File|Import increase|New imports|Line|\n|:-|:-:|:-|-:|\n")} {
-              gsub(/\.\//, "")
-              gsub(/ *Imports increased by */, "")
-              gsub(/ *New imports */, "")
               printf("| %s | %s | %s | %s |\n", $2, $5, $6, $3)
             }'
