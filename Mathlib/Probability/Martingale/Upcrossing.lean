@@ -148,7 +148,7 @@ noncomputable def lowerCrossingTime [Preorder ι] [OrderBot ι] [InfSet ι] (a b
 section
 
 variable [Preorder ι] [OrderBot ι] [InfSet ι]
-variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n m : ℕ} {ω : Ω}
+variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n : ℕ} {ω : Ω}
 
 @[simp]
 theorem upperCrossingTime_zero : upperCrossingTime a b f N 0 = ⊥ :=
@@ -389,7 +389,7 @@ theorem Submartingale.sum_mul_upcrossingStrat_le [IsFiniteMeasure μ] (hf : Subm
   have h₁ : (0 : ℝ) ≤
       μ[∑ k ∈ Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)] := by
     have := (hf.sum_sub_upcrossingStrat_mul a b N).setIntegral_le (zero_le n) MeasurableSet.univ
-    rw [integral_univ, integral_univ] at this
+    rw [setIntegral_univ, setIntegral_univ] at this
     refine le_trans ?_ this
     simp only [Finset.range_zero, Finset.sum_empty, integral_zero', le_refl]
   have h₂ : μ[∑ k ∈ Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)] =
@@ -430,7 +430,7 @@ theorem upperCrossingTime_lt_of_le_upcrossingsBefore (hN : 0 < N) (hab : a < b)
 theorem upperCrossingTime_eq_of_upcrossingsBefore_lt (hab : a < b)
     (hn : upcrossingsBefore a b f N ω < n) : upperCrossingTime a b f N n ω = N := by
   refine le_antisymm upperCrossingTime_le (not_lt.1 ?_)
-  convert not_mem_of_csSup_lt hn (upperCrossingTime_lt_bddAbove hab)
+  convert not_mem_of_csSup_lt hn (upperCrossingTime_lt_bddAbove hab) using 1
 
 theorem upcrossingsBefore_le (f : ℕ → Ω → ℝ) (ω : Ω) (hab : a < b) :
     upcrossingsBefore a b f N ω ≤ N := by
@@ -449,7 +449,7 @@ theorem crossing_eq_crossing_of_lowerCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
     lt_of_le_of_lt upperCrossingTime_le_lowerCrossingTime h
   induction' n with k ih
   · simp only [upperCrossingTime_zero, bot_eq_zero', eq_self_iff_true,
-      lowerCrossingTime_zero, true_and_iff, eq_comm]
+      lowerCrossingTime_zero, true_and, eq_comm]
     refine hitting_eq_hitting_of_exists hNM ?_
     rw [lowerCrossingTime, hitting_lt_iff] at h
     · obtain ⟨j, hj₁, hj₂⟩ := h
@@ -762,7 +762,7 @@ noncomputable def upcrossings [Preorder ι] [OrderBot ι] [InfSet ι] (a b : ℝ
 
 theorem Adapted.measurable_upcrossings (hf : Adapted ℱ f) (hab : a < b) :
     Measurable (upcrossings a b f) :=
-  measurable_iSup fun _ => measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)
+  .iSup fun _ => measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)
 
 theorem upcrossings_lt_top_iff :
     upcrossings a b f ω < ∞ ↔ ∃ k, ∀ N, upcrossingsBefore a b f N ω ≤ k := by

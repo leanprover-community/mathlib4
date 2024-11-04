@@ -266,7 +266,7 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < log (b i 
   exact h.eventually_gt_atTop 0
 
 @[aesop safe apply] lemma T_pos (n : ℕ) : 0 < T n := by
-  induction n using Nat.strongInductionOn with
+  induction n using Nat.strongRecOn with
   | ind n h_ind =>
     cases lt_or_le n R.n₀ with
     | inl hn => exact R.T_gt_zero' n hn -- n < R.n₀
@@ -644,9 +644,9 @@ lemma eventually_atTop_sumTransform_le :
                           _ ≤ u := by exact_mod_cast hu'.1
          _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
                   gcongr with u hu; rw [Finset.mem_Ico] at hu; exact hu.1
-         _ ≤ n ^ (p a b) * (Finset.Ico (r i n) n).card • (c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
+         _ ≤ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / r i n ^ (p a b + 1)) := by
                   gcongr; exact Finset.sum_le_card_nsmul _ _ _ (fun x _ => by rfl)
-         _ = n ^ (p a b) * (Finset.Ico (r i n) n).card * (c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
+         _ = n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / r i n ^ (p a b + 1)) := by
                   rw [nsmul_eq_mul, mul_assoc]
          _ = n ^ (p a b) * (n - r i n) * (c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
                   congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
@@ -682,9 +682,9 @@ lemma eventually_atTop_sumTransform_le :
                   _ ≤ u := by exact hu.1
                 exact rpow_le_rpow_of_exponent_nonpos (by positivity)
                   (by exact_mod_cast (le_of_lt hu.2)) (le_of_lt hp)
-         _ ≤ n ^ (p a b) * (Finset.Ico (r i n) n).card • (c₂ * g n / n ^ ((p a b) + 1)) := by
+         _ ≤ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / n ^ (p a b + 1)) := by
                   gcongr; exact Finset.sum_le_card_nsmul _ _ _ (fun x _ => by rfl)
-         _ = n ^ (p a b) * (Finset.Ico (r i n) n).card * (c₂ * g n / n ^ ((p a b) + 1)) := by
+         _ = n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / n ^ (p a b + 1)) := by
                   rw [nsmul_eq_mul, mul_assoc]
          _ = n ^ (p a b) * (n - r i n) * (c₂ * g n / n ^ ((p a b) + 1)) := by
                   congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
@@ -729,9 +729,9 @@ lemma eventually_atTop_sumTransform_ge :
                   positivity
                 · rw [Finset.mem_Ico] at hu
                   exact le_of_lt hu.2
-         _ ≥ n ^ (p a b) * (Finset.Ico (r i n) n).card • (c₂ * g n / n ^ ((p a b) + 1)) := by
+         _ ≥ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / n ^ (p a b + 1)) := by
                 gcongr; exact Finset.card_nsmul_le_sum _ _ _ (fun x _ => by rfl)
-         _ = n ^ (p a b) * (Finset.Ico (r i n) n).card * (c₂ * g n / n ^ ((p a b) + 1)) := by
+         _ = n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / n ^ (p a b + 1)) := by
                 rw [nsmul_eq_mul, mul_assoc]
          _ = n ^ (p a b) * (n - r i n) * (c₂ * g n / n ^ ((p a b) + 1)) := by
                 congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
@@ -764,12 +764,12 @@ lemma eventually_atTop_sumTransform_ge :
              · rw [Finset.mem_Ico] at hu
                exact rpow_le_rpow_of_exponent_nonpos (by positivity)
                  (by exact_mod_cast hu.1) (le_of_lt hp)
-      _ ≥ n ^ (p a b) * (Finset.Ico (r i n) n).card • (c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
+      _ ≥ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / r i n ^ (p a b + 1)) := by
              gcongr; exact Finset.card_nsmul_le_sum _ _ _ (fun x _ => by rfl)
-      _ = n ^ (p a b) * (Finset.Ico (r i n) n).card * (c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
+      _ = n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / r i n ^ (p a b + 1)) := by
              rw [nsmul_eq_mul, mul_assoc]
-      _ ≥ n ^ (p a b) * (Finset.Ico (r i n) n).card * (c₂ * g n / (c₁ * n) ^ ((p a b) + 1)) := by
-             gcongr n^(p a b) * (Finset.Ico (r i n) n).card * (c₂ * g n / ?_)
+      _ ≥ n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / (c₁ * n) ^ (p a b + 1)) := by
+             gcongr n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / ?_)
              exact rpow_le_rpow_of_exponent_nonpos (by positivity) (hn₁ i) (le_of_lt hp)
       _ = n ^ (p a b) * (n - r i n) * (c₂ * g n / (c₁ * n) ^ ((p a b) + 1)) := by
              congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
@@ -1231,7 +1231,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
   have h_one_sub_smoothingFn_pos' : 0 < 1 - ε n := h_smoothing_pos n hn
   rw [Real.norm_of_nonneg (R.T_nonneg n), Real.norm_of_nonneg (by positivity)]
   -- We now prove all other cases by induction
-  induction n using Nat.strongInductionOn with
+  induction n using Nat.strongRecOn with
   | ind n h_ind =>
     have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
       exact_mod_cast calc ⌊b' * (n₀ : ℝ)⌋₊ ≤ b' * n₀ := Nat.floor_le <| by positivity
@@ -1380,7 +1380,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
   have h_one_sub_smoothingFn_pos' : 0 < 1 + ε n := h_smoothing_pos n hn
   rw [Real.norm_of_nonneg (R.T_nonneg n), Real.norm_of_nonneg (by positivity)]
   -- We now prove all other cases by induction
-  induction n using Nat.strongInductionOn with
+  induction n using Nat.strongRecOn with
   | ind n h_ind =>
     have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
       exact_mod_cast calc ⌊b' * ↑n₀⌋₊ ≤ b' * n₀ := Nat.floor_le <| by positivity

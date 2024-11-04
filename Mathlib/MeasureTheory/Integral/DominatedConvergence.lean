@@ -43,7 +43,7 @@ namespace MeasureTheory
 variable {α E G : Type*}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  {f g : α → E} {m : MeasurableSpace α} {μ : Measure α}
+  {m : MeasurableSpace α} {μ : Measure α}
 
 /-- **Lebesgue dominated convergence theorem** provides sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their integrals.
@@ -194,7 +194,7 @@ namespace intervalIntegral
 
 section DCT
 
-variable {ι 𝕜 E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {a b : ℝ} {f : ℝ → E} {μ : Measure ℝ}
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/

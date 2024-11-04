@@ -1,11 +1,10 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kenny Lau, Scott Morrison
+Authors: Mario Carneiro, Kenny Lau, Kim Morrison
 -/
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Pairwise
 
 /-!
 # Ranges of naturals as lists
@@ -35,18 +34,13 @@ theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
   induction' n with n hn
   · simp
   · rw [range_succ]
-    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton,
-      and_true_iff]
+    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton, and_true]
     rw [hn, forall_lt_succ]
 
 theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
     Chain r a (range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ := by
   rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
-
-/-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
-def finRange (n : ℕ) : List (Fin n) :=
-  (range n).pmap Fin.mk fun _ => List.mem_range.1
 
 @[simp]
 theorem finRange_zero : finRange 0 = [] :=
@@ -143,20 +137,21 @@ theorem ranges_length (l : List ℕ) :
     intro s _
     simp only [Function.comp_apply, length_map]
 
-/-- See `List.ranges_join` for the version about `List.sum`. -/
-lemma ranges_join' : ∀ l : List ℕ, l.ranges.join = range (Nat.sum l)
+set_option linter.deprecated false in
+/-- See `List.ranges_flatten` for the version about `List.sum`. -/
+@[deprecated "Use `List.ranges_flatten`." (since := "2024-10-17")]
+lemma ranges_flatten' : ∀ l : List ℕ, l.ranges.flatten = range (Nat.sum l)
   | [] => rfl
-  | a :: l => by simp only [sum_cons, join, ← map_join, ranges_join', range_add]
+  | a :: l => by simp only [Nat.sum_cons, flatten, ← map_flatten, ranges_flatten', range_add]
 
+@[deprecated (since := "2024-10-15")] alias ranges_join' := ranges_flatten'
+
+set_option linter.deprecated false in
 /-- Any entry of any member of `l.ranges` is strictly smaller than `Nat.sum l`.
 See `List.mem_mem_ranges_iff_lt_sum` for the version about `List.sum`. -/
 lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < Nat.sum l := by
-  rw [← mem_range, ← ranges_join', mem_join]
-
-/-- The members of `l.ranges` have no duplicate -/
-theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
-  (List.pairwise_join.mp <| by rw [ranges_join']; exact nodup_range _).1 s hs
+  rw [← mem_range, ← ranges_flatten', mem_flatten]
 
 end Ranges
 

@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
-import Batteries.Data.Sum.Lemmas
 
 /-!
 # Additional lemmas about sum types
@@ -19,6 +18,9 @@ universe u v w x
 variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}
 
 namespace Sum
+
+-- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
+attribute [simp] Sum.forall Sum.exists
 
 theorem exists_sum {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
     (∃ fab, p fab) ↔ (∃ fa fb, p (Sum.rec fa fb)) := by
@@ -35,7 +37,7 @@ theorem sum_rec_congr (P : α ⊕ β → Sort*) (f : ∀ i, P (inl i)) (g : ∀ 
 
 section get
 
-variable {x y : α ⊕ β}
+variable {x : α ⊕ β}
 
 theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
   cases x <;> simp
@@ -133,7 +135,7 @@ theorem isRight_right (h : LiftRel r s (inr b) y) : y.isRight := by cases h; rfl
 theorem exists_of_isLeft_left (h₁ : LiftRel r s x y) (h₂ : x.isLeft) :
     ∃ a c, r a c ∧ x = inl a ∧ y = inl c := by
   rcases isLeft_iff.mp h₂ with ⟨_, rfl⟩
-  simp only [liftRel_iff, false_and, and_false, exists_false, or_false] at h₁
+  simp only [liftRel_iff, false_and, and_false, exists_false, or_false, reduceCtorEq] at h₁
   exact h₁
 
 theorem exists_of_isLeft_right (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
@@ -142,7 +144,7 @@ theorem exists_of_isLeft_right (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
 theorem exists_of_isRight_left (h₁ : LiftRel r s x y) (h₂ : x.isRight) :
     ∃ b d, s b d ∧ x = inr b ∧ y = inr d := by
   rcases isRight_iff.mp h₂ with ⟨_, rfl⟩
-  simp only [liftRel_iff, false_and, and_false, exists_false, false_or] at h₁
+  simp only [liftRel_iff, false_and, and_false, exists_false, false_or, reduceCtorEq] at h₁
   exact h₁
 
 theorem exists_of_isRight_right (h₁ : LiftRel r s x y) (h₂ : y.isRight) :

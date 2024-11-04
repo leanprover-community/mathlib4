@@ -21,9 +21,9 @@ The reason is that we did not want to change existing names in the library.
 -/
 
 /-
-`NeZero` should not be needed at this point in the ordered algebraic hierarchy.
+`NeZero` theory should not be needed at this point in the ordered algebraic hierarchy.
 -/
-assert_not_exists NeZero
+assert_not_imported Mathlib.Algebra.NeZero
 
 open Function
 
@@ -46,18 +46,18 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
 attribute [to_additive] OrderedCommGroup
 
 @[to_additive]
-instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    CovariantClass α α (· * ·) (· ≤ ·) where
+instance OrderedCommGroup.toMulLeftMono (α : Type u) [OrderedCommGroup α] :
+    MulLeftMono α where
       elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
 
 -- See note [lower instance priority]
 @[to_additive OrderedAddCommGroup.toOrderedCancelAddCommMonoid]
 instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCommGroup α] :
     OrderedCancelCommMonoid α :=
-{ ‹OrderedCommGroup α› with le_of_mul_le_mul_left := fun a b c ↦ le_of_mul_le_mul_left' }
+{ ‹OrderedCommGroup α› with le_of_mul_le_mul_left := fun _ _ _ ↦ le_of_mul_le_mul_left' }
 
-example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· + ·)) (· < ·) :=
-  IsRightCancelAdd.covariant_swap_add_lt_of_covariant_swap_add_le α
+example (α : Type u) [OrderedAddCommGroup α] : AddRightStrictMono α :=
+  inferInstance
 
 -- Porting note: this instance is not used,
 -- and causes timeouts after lean4#2210.
@@ -65,17 +65,17 @@ example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· 
 -- but without the motivation clearly explained.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    ContravariantClass α α (· * ·) (· ≤ ·) where
+theorem OrderedCommGroup.toMulLeftReflectLE (α : Type u) [OrderedCommGroup α] :
+    MulLeftReflectLE α where
       elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
 
 -- Porting note: this instance is not used,
 -- and causes timeouts after lean4#2210.
--- See further explanation on `OrderedCommGroup.to_contravariantClass_left_le`.
+-- See further explanation on `OrderedCommGroup.toMulLeftReflectLE`.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-theorem OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
-    ContravariantClass α α (swap (· * ·)) (· ≤ ·) where
+theorem OrderedCommGroup.toMulRightReflectLE (α : Type u) [OrderedCommGroup α] :
+    MulRightReflectLE α where
       elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
 
 alias OrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_left'
@@ -109,7 +109,7 @@ class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOr
 
 section LinearOrderedCommGroup
 
-variable [LinearOrderedCommGroup α] {a b c : α}
+variable [LinearOrderedCommGroup α] {a : α}
 
 @[to_additive LinearOrderedAddCommGroup.add_lt_add_left]
 theorem LinearOrderedCommGroup.mul_lt_mul_left' (a b : α) (h : a < b) (c : α) : c * a < c * b :=
@@ -175,13 +175,11 @@ variable [OrderedCommGroup α] {a b : α}
 
 @[to_additive (attr := gcongr) neg_le_neg]
 theorem inv_le_inv' : a ≤ b → b⁻¹ ≤ a⁻¹ :=
-  -- Porting note: explicit type annotation was not needed before.
-  (@inv_le_inv_iff α ..).mpr
+  inv_le_inv_iff.mpr
 
 @[to_additive (attr := gcongr) neg_lt_neg]
 theorem inv_lt_inv' : a < b → b⁻¹ < a⁻¹ :=
-  -- Porting note: explicit type annotation was not needed before.
-  (@inv_lt_inv_iff α ..).mpr
+  inv_lt_inv_iff.mpr
 
 --  The additive version is also a `linarith` lemma.
 @[to_additive]

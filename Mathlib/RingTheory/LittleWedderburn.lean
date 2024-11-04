@@ -48,7 +48,7 @@ private def InductionHyp : Prop :=
 
 namespace InductionHyp
 
-open FiniteDimensional Polynomial
+open Module Polynomial
 
 variable {D}
 
@@ -149,7 +149,7 @@ private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   rw [IH (Fintype.card R) _ R inferInstance rfl]
   · trivial
   rw [← hn, ← Subring.card_top D]
-  exact Set.card_lt_card hR
+  convert Set.card_lt_card hR
 
 end LittleWedderburn
 
