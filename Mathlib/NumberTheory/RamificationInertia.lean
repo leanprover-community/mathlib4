@@ -361,7 +361,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
       have : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective hRL
       rw [← IsFractionRing.isAlgebraic_iff' R S]
       infer_instance
-    refine IsFractionRing.ideal_span_singleton_map_subset R hRL span_d hx
+    refine IsFractionRing.ideal_span_singleton_map_subset R span_d hx
 
 variable (K)
 variable [hRK : IsFractionRing R K]
