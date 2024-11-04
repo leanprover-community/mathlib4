@@ -5,7 +5,8 @@ Authors: Moritz Doll, Robert Y. Lewis
 -/
 
 import Mathlib.Tactic.Zify
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Algebra.Ring.Int.Units
 
 set_option linter.unusedVariables false
 
