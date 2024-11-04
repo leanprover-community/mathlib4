@@ -68,7 +68,7 @@ theorem nil_not_mem_groupBy (r : α → α → Bool) (l : List α) : [] ∉ l.gr
   | nil => not_mem_nil _
   | cons _ _ => nil_not_mem_groupByLoop
 
-theorem ne_nil_of_mem_groupBy (r : α → α → Bool) {l : List α} (h : m ∈ l.groupBy r) : m ≠ [] := by
+theorem ne_nil_of_mem_groupBy {r : α → α → Bool} {l : List α} (h : m ∈ l.groupBy r) : m ≠ [] := by
   rintro rfl
   exact nil_not_mem_groupBy r l h
 
