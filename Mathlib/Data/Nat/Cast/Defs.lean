@@ -83,7 +83,7 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
   /-- The canonical map `ℕ → R` is a homomorphism. -/
   natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1 := by intros; rfl
 
-/-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`.  -/
+/-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`. -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 
 library_note "coercion into rings"
@@ -149,8 +149,7 @@ protected def binCast [Zero R] [One R] [Add R] : ℕ → R
 @[simp]
 theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
     (Nat.binCast n : R) = ((n : ℕ) : R) := by
-  apply Nat.strongInductionOn n
-  intros k hk
+  induction n using Nat.strongRecOn with | ind k hk => ?_
   cases k with
   | zero => rw [Nat.binCast, Nat.cast_zero]
   | succ k =>
@@ -200,3 +199,15 @@ theorem three_add_one_eq_four [AddMonoidWithOne R] : 3 + 1 = (4 : R) := by
     ← Nat.cast_add, ← Nat.cast_add, ← Nat.cast_add]
   apply congrArg
   decide
+
+theorem two_add_two_eq_four [AddMonoidWithOne R] : 2 + 2 = (4 : R) := by
+  simp [← one_add_one_eq_two, ← Nat.cast_one, ← three_add_one_eq_four,
+    ← two_add_one_eq_three, add_assoc]
+
+section nsmul
+
+@[simp] lemma nsmul_one {A} [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n
+  | 0 => by simp [zero_nsmul]
+  | n + 1 => by simp [succ_nsmul, nsmul_one n]
+
+end nsmul

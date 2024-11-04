@@ -48,8 +48,7 @@ instance : Inhabited (Bicone J) :=
 instance finBicone [Fintype J] : Fintype (Bicone J) where
   elems := [Bicone.left, Bicone.right].toFinset ∪ Finset.image Bicone.diagram Fintype.elems
   complete j := by
-    cases j <;> simp
-    apply Fintype.complete
+    cases j <;> simp [Fintype.complete]
 
 variable [Category.{v₁} J]
 
@@ -65,7 +64,7 @@ instance : Inhabited (BiconeHom J Bicone.left Bicone.left) :=
   ⟨BiconeHom.left_id⟩
 
 instance BiconeHom.decidableEq {j k : Bicone J} : DecidableEq (BiconeHom J j k) := fun f g => by
-  cases f <;> cases g <;> simp <;> infer_instance
+  cases f <;> cases g <;> simp only [diagram.injEq] <;> infer_instance
 
 @[simps]
 instance biconeCategoryStruct : CategoryStruct (Bicone J) where

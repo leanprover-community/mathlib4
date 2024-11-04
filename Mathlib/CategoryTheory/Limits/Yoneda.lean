@@ -1,9 +1,9 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.Util.AssertExists
 
@@ -15,6 +15,8 @@ We calculate the colimit of `Y ↦ (X ⟶ Y)`, which is just `PUnit`.
 
 We also show the (co)yoneda embeddings preserve limits and jointly reflect them.
 -/
+
+assert_not_exists AddCommMonoid
 
 open Opposite CategoryTheory Limits
 
@@ -107,6 +109,15 @@ def yonedaJointlyReflectsLimits (F : J ⥤ Cᵒᵖ) (c : Cone F)
     dsimp [Types.isLimitEquivSections, Types.sectionOfCone]
     rw [eq, Category.comp_id, ← hm, unop_comp])
 
+/-- A cocone is colimit iff it becomes limit after the
+application of `yoneda.obj X` for all `X : C`. -/
+noncomputable def Limits.Cocone.isColimitYonedaEquiv {F : J ⥤ C} (c : Cocone F) :
+    IsColimit c ≃ ∀ (X : C), IsLimit ((yoneda.obj X).mapCone c.op) where
+  toFun h _ := isLimitOfPreserves _ h.op
+  invFun h := IsLimit.unop (yonedaJointlyReflectsLimits _ _ h)
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := by ext; apply Subsingleton.elim
+
 /-- The cone of `F` corresponding to an element in `(F ⋙ coyoneda.obj X).sections`. -/
 @[simps]
 def Limits.coneOfSectionCompCoyoneda (F : J ⥤ C) (X : Cᵒᵖ)
@@ -139,6 +150,14 @@ def coyonedaJointlyReflectsLimits (F : J ⥤ C) (c : Cone F)
     have eq := congr_fun ((hc (op s.pt)).fac ((coyoneda.obj (op s.pt)).mapCone s) j) (𝟙 _)
     dsimp at eq
     rw [eq, Category.id_comp, ← hm]
+
+/-- A cone is limit iff it is so after the application of `coyoneda.obj X` for all `X : Cᵒᵖ`. -/
+noncomputable def Limits.Cone.isLimitCoyonedaEquiv {F : J ⥤ C} (c : Cone F) :
+    IsLimit c ≃ ∀ (X : Cᵒᵖ), IsLimit ((coyoneda.obj X).mapCone c) where
+  toFun h _ := isLimitOfPreserves _ h
+  invFun h := coyonedaJointlyReflectsLimits _ _ h
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := by ext; apply Subsingleton.elim
 
 end
 
@@ -174,7 +193,7 @@ namespace Functor
 
 section Representable
 
-variable (F : Cᵒᵖ ⥤ Type v) [F.Representable] {J : Type*} [Category J]
+variable (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] {J : Type*} [Category J]
 
 noncomputable instance representablePreservesLimit (G : J ⥤ Cᵒᵖ) :
     PreservesLimit G F :=
@@ -191,7 +210,7 @@ end Representable
 
 section Corepresentable
 
-variable (F : C ⥤ Type v) [F.Corepresentable] {J : Type*} [Category J]
+variable (F : C ⥤ Type v) [F.IsCorepresentable] {J : Type*} [Category J]
 
 noncomputable instance corepresentablePreservesLimit (G : J ⥤ C) :
     PreservesLimit G F :=
@@ -209,5 +228,3 @@ end Corepresentable
 end Functor
 
 end CategoryTheory
-
-assert_not_exists AddCommMonoid

@@ -3,13 +3,15 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
-import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
-import Mathlib.GroupTheory.Commutator
-import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.Algebra.Group.Subgroup.Actions
+import Mathlib.Data.Finite.Prod
 
 /-!
 # Properties of group actions involving quotient groups
@@ -19,7 +21,6 @@ This file proves properties of group actions which use the quotient group constr
 * the class formula `card_eq_sum_card_group_div_card_stabilizer'`
 * Burnside's lemma `sum_card_fixedBy_eq_card_orbits_mul_card_group`
 -/
-
 
 universe u v w
 
@@ -99,7 +100,7 @@ theorem Quotient.coe_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) : �
 
 theorem _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
     q.out'⁻¹ * a ^ Function.minimalPeriod (a • ·) q * q.out' ∈ H := by
-  rw [mul_assoc, ← QuotientGroup.eq', QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out',
+  rw [mul_assoc, ← QuotientGroup.eq, QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out',
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
 
 end QuotientAction
@@ -119,8 +120,8 @@ theorem _root_.MulActionHom.toQuotient_apply (H : Subgroup α) (g : α) :
 instance mulLeftCosetsCompSubtypeVal (H I : Subgroup α) : MulAction I (α ⧸ H) :=
   MulAction.compHom (α ⧸ H) (Subgroup.subtype I)
 
--- Porting note: Needed to insert [Group α] here
-variable (α) [Group α] [MulAction α β] (x : β)
+variable (α)
+variable [MulAction α β] (x : β)
 
 /-- The canonical map from the quotient of the stabilizer to the set. -/
 @[to_additive "The canonical map from the quotient of the stabilizer to the set. "]
@@ -158,16 +159,16 @@ noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ 
   Equiv.symm <|
     Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer α b g, ofQuotientStabilizer_mem_orbit α b g⟩)
       ⟨fun x y hxy => injective_ofQuotientStabilizer α b (by convert congr_arg Subtype.val hxy),
-        fun ⟨b, ⟨g, hgb⟩⟩ => ⟨g, Subtype.eq hgb⟩⟩
+        fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.eq hgb⟩⟩
 
 /-- Orbit-stabilizer theorem. -/
-@[to_additive "Orbit-stabilizer theorem."]
+@[to_additive AddAction.orbitProdStabilizerEquivAddGroup "Orbit-stabilizer theorem."]
 noncomputable def orbitProdStabilizerEquivGroup (b : β) : orbit α b × stabilizer α b ≃ α :=
   (Equiv.prodCongr (orbitEquivQuotientStabilizer α _) (Equiv.refl _)).trans
     Subgroup.groupEquivQuotientProdSubgroup.symm
 
 /-- Orbit-stabilizer theorem. -/
-@[to_additive "Orbit-stabilizer theorem."]
+@[to_additive AddAction.card_orbit_mul_card_stabilizer_eq_card_addGroup "Orbit-stabilizer theorem."]
 theorem card_orbit_mul_card_stabilizer_eq_card_group (b : β) [Fintype α] [Fintype <| orbit α b]
     [Fintype <| stabilizer α b] :
     Fintype.card (orbit α b) * Fintype.card (stabilizer α b) = Fintype.card α := by
@@ -247,7 +248,7 @@ theorem card_eq_sum_card_group_div_card_stabilizer [Fintype α] [Fintype β] [Fi
 /-- **Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
 `{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × X/G`, where `G` is a group acting on `X` and
 `X/G` denotes the quotient of `X` by the relation `orbitRel G X`. -/
-@[to_additive
+@[to_additive AddAction.sigmaFixedByEquivOrbitsProdAddGroup
       "**Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
       `{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × X/G`, where `G` is an additive group
       acting on `X` and `X/G`denotes the quotient of `X` by the relation `orbitRel G X`. "]
@@ -272,7 +273,7 @@ noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σa : α, fixedBy β a) �
 
 /-- **Burnside's lemma** : given a finite group `G` acting on a set `X`, the average number of
 elements fixed by each `g ∈ G` is the number of orbits. -/
-@[to_additive
+@[to_additive AddAction.sum_card_fixedBy_eq_card_orbits_mul_card_addGroup
       "**Burnside's lemma** : given a finite additive group `G` acting on a set `X`,
       the average number of elements fixed by each `g ∈ G` is the number of orbits. "]
 theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a : α, Fintype <| fixedBy β a]
@@ -285,7 +286,7 @@ instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransiti
   exists_smul_eq := by
     { rintro ⟨x⟩ ⟨y⟩
       refine ⟨y * x⁻¹, QuotientGroup.eq.mpr ?_⟩
-      simp only [smul_eq_mul, H.one_mem, mul_left_inv, inv_mul_cancel_right]}
+      simp only [smul_eq_mul, H.one_mem, inv_mul_cancel, inv_mul_cancel_right]}
 
 variable {α}
 
@@ -306,7 +307,7 @@ instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α
         rw [mem_orbit_iff]
         exact ⟨⟨g₁ * g₂⁻¹, r⟩, by simp [mul_smul]⟩
     exact Finite.of_surjective f ((Quotient.surjective_liftOn' _).2
-      (Quotient.surjective_Quotient_mk''.comp (MulAction.surjective_smul _ _)))
+      (Quotient.mk''_surjective.comp (MulAction.surjective_smul _ _)))
 
 variable {β}
 
@@ -320,17 +321,16 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
   toFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     have hx := x.property
-    rwa [orbitRel.Quotient.mem_orbit, @Quotient.mk''_eq_mk] at hx⟩⟧) fun a b h ↦ by
-      simp only [← Quotient.eq'', Quotient.mk''_eq_mk,
+    rwa [orbitRel.Quotient.mem_orbit] at hx⟩⟧) fun a b h ↦ by
+      simp only [← Quotient.eq,
                  orbitRel.Quotient.subgroup_quotient_eq_iff] at h
-      simp only [← Quotient.mk''_eq_mk, Quotient.eq''] at h ⊢
+      simp only [Quotient.eq] at h ⊢
       exact h
   invFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
     have hx := x.property
     simp only [Set.mem_preimage, Set.mem_singleton_iff] at hx
     rwa [orbitRel.Quotient.mem_orbit, @Quotient.mk''_eq_mk]⟩⟧) fun a b h ↦ by
-      change Setoid.Rel _ _ _ at h
-      rw [Setoid.comap_rel, Setoid.Rel, ← Quotient.eq'', @Quotient.mk''_eq_mk] at h
+      rw [Setoid.comap_rel, ← Quotient.eq'', @Quotient.mk''_eq_mk] at h
       simp only [orbitRel.Quotient.subgroup_quotient_eq_iff]
       exact h
   left_inv := by
@@ -363,6 +363,48 @@ instance finite_quotient_of_finite_quotient_of_finite_quotient {H : Subgroup α}
     Finite <| orbitRel.Quotient H β := by
   rw [(equivSubgroupOrbits β H).finite_iff]
   infer_instance
+
+/-- Given a group acting freely and transitively, an equivalence between the orbits under the
+action of a subgroup and the quotient group. -/
+@[to_additive "Given an additive group acting freely and transitively, an equivalence between the
+orbits under the action of an additive subgroup and the quotient group."]
+noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
+    (free : ∀ y : β, MulAction.stabilizer α y = ⊥) (H : Subgroup α) :
+    orbitRel.Quotient H β ≃ α ⧸ H where
+  toFun := fun q ↦ q.liftOn' (fun y ↦ (exists_smul_eq α y x).choose) (by
+    intro y₁ y₂ h
+    rw [orbitRel_apply] at h
+    rw [Quotient.eq'', leftRel_eq]
+    dsimp only
+    rcases h with ⟨g, rfl⟩
+    dsimp only
+    suffices (exists_smul_eq α (g • y₂) x).choose = (exists_smul_eq α y₂ x).choose * g⁻¹ by
+      simp [this]
+    rw [← inv_mul_eq_one, ← Subgroup.mem_bot, ← free ((g : α) • y₂)]
+    simp only [mem_stabilizer_iff, smul_smul, mul_assoc, InvMemClass.coe_inv, inv_mul_cancel,
+               mul_one]
+    rw [← smul_smul, (exists_smul_eq α y₂ x).choose_spec, inv_smul_eq_iff,
+        (exists_smul_eq α ((g : α) • y₂) x).choose_spec])
+  invFun := fun q ↦ q.liftOn' (fun g ↦ ⟦g⁻¹ • x⟧) (by
+    intro g₁ g₂ h
+    rw [leftRel_eq] at h
+    simp only
+    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
+    exact ⟨⟨_, h⟩, by simp [mul_smul]⟩)
+  left_inv := fun y ↦ by
+    induction' y using Quotient.inductionOn' with y
+    simp only [Quotient.liftOn'_mk'']
+    rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
+    convert mem_orbit_self _
+    rw [inv_smul_eq_iff, (exists_smul_eq α y x).choose_spec]
+  right_inv := fun g ↦ by
+    induction' g using Quotient.inductionOn' with g
+    simp only [Quotient.liftOn'_mk'', Quotient.liftOn'_mk, QuotientGroup.mk]
+    rw [Quotient.eq'', leftRel_eq]
+    simp only
+    convert one_mem H
+    · rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot, ← free (g⁻¹ • x),
+        mem_stabilizer_iff, mul_smul, (exists_smul_eq α (g⁻¹ • x) x).choose_spec]
 
 end MulAction
 
@@ -422,24 +464,3 @@ theorem quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G)
   rfl
 
 end Subgroup
-
-section conjClasses
-
-open Fintype
-
-theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
-    Nat.card { p : G × G // Commute p.1 p.2 } = Nat.card (ConjClasses G) * Nat.card G := by
-  classical
-  rcases fintypeOrInfinite G; swap
-  · rw [mul_comm, Nat.card_eq_zero_of_infinite, Nat.card_eq_zero_of_infinite, zero_mul]
-  simp only [Nat.card_eq_fintype_card]
-  -- Porting note: Changed `calc` proof into a `rw` proof.
-  rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype Commute), card_sigma,
-    sum_equiv ConjAct.toConjAct.toEquiv (fun a ↦ card { b // Commute a b })
-      (fun g ↦ card (MulAction.fixedBy G g))
-      fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.eq,
-    MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group]
-  congr 1; apply card_congr'; congr; ext
-  exact (Setoid.comm' _).trans isConj_iff.symm
-
-end conjClasses

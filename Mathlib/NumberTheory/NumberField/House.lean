@@ -15,7 +15,7 @@ the largest of the modulus of its conjugates.
 
 ## References
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [Keng, H. L, *Introduction to number theory*][keng1982house]
+* [Hua, L.-K., *Introduction to number theory*][hua1982house]
 
 ## Tagshouse
 number field, algebraic number, house
@@ -27,7 +27,7 @@ namespace NumberField
 
 noncomputable section
 
-open Module.Free FiniteDimensional canonicalEmbedding Matrix Finset
+open Module.Free Module canonicalEmbedding Matrix Finset
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
@@ -62,11 +62,13 @@ noncomputable section
 
 variable (K)
 
-variable [DecidableEq (K →+* ℂ)]
-
-open Module.Free FiniteDimensional canonicalEmbedding Matrix Finset
+open Module.Free Module canonicalEmbedding Matrix Finset
 
 attribute [local instance] Matrix.seminormedAddCommGroup
+
+section DecidableEq
+
+variable [DecidableEq (K →+* ℂ)]
 
 /-- `c` is defined as the product of the maximum absolute
   value of the entries of the inverse of the matrix `basisMatrix` and  `finrank ℚ K`. -/
@@ -107,13 +109,13 @@ private def newBasis := (RingOfIntegers.basis K).reindex (equivReindex K).symm
 private def supOfBasis : ℝ := univ.sup' univ_nonempty
   fun r ↦ house (algebraMap (𝓞 K) K (newBasis K r))
 
+end DecidableEq
+
 private theorem supOfBasis_nonneg : 0 ≤ supOfBasis K := by
   simp only [supOfBasis, le_sup'_iff, mem_univ, and_self,
     exists_const, house_nonneg]
 
-variable {α : Type*} {β : Type*} [Fintype α] [Fintype β] [DecidableEq β] [DecidableEq α]
-
-variable (a : Matrix α β (𝓞 K))
+variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
 
 /-- `a' K a` returns the integer coefficients of the basis vector in the
   expansion of the product of an algebraic integer and a basis vectors. -/
@@ -126,10 +128,11 @@ private def asiegel : Matrix (α × (K →+* ℂ)) (β × (K →+* ℂ)) ℤ := 
 
 variable (ha : a ≠ 0)
 
+include ha in
 private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
   simp (config := { unfoldPartialApp := true }) only [asiegel, a']
   simp only [ne_eq]
-  rw [Function.funext_iff]; intros hs
+  rw [funext_iff]; intros hs
   simp only [Prod.forall] at hs;
   apply ha
   rw [← Matrix.ext_iff]; intros k' l
@@ -138,28 +141,23 @@ private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
   have := ((newBasis K).repr.map_eq_zero_iff (x := (a k' l * (newBasis K) b))).1 <| by
     ext b'
     specialize hs b'
-    rw [Function.funext_iff] at hs
+    rw [funext_iff] at hs
     simp only [Prod.forall] at hs
     apply hs
   simp only [mul_eq_zero] at this
   exact this.resolve_right (Basis.ne_zero (newBasis K) b)
 
-variable {p q : ℕ}
-  (cardα : Fintype.card α = p) (cardβ : Fintype.card β = q)
-  (h0p : 0 < p) (hpq : p < q)
-  (x : β × (K →+* ℂ) → ℤ)
-  (hxl : x ≠ 0)
-  (hmulvec0 : asiegel K a *ᵥ x = 0)
-  (hxbound : ‖x‖ ≤ (q * finrank ℚ K * ‖asiegel K a‖) ^ ((p : ℝ) / (q - p)))
+variable {p q : ℕ} (h0p : 0 < p) (hpq : p < q) (x : β × (K →+* ℂ) → ℤ) (hxl : x ≠ 0)
 
-/-- `ξ` is the the product of `x (l, r)` and the `r`-th basis element of the newBasis of `K`. -/
+/-- `ξ` is the product of `x (l, r)` and the `r`-th basis element of the newBasis of `K`. -/
 private def ξ : β → 𝓞 K := fun l => ∑ r : K →+* ℂ, x (l, r) * (newBasis K r)
 
+include hxl in
 private theorem ξ_ne_0 : ξ K x ≠ 0 := by
   intro H
   apply hxl
   ext ⟨l, r⟩
-  rw [Function.funext_iff] at H
+  rw [funext_iff] at H
   have hblin := Basis.linearIndependent (newBasis K)
   simp only [zsmul_eq_mul, Fintype.linearIndependent_iff] at hblin
   exact hblin (fun r ↦ x (l,r)) (H _) r
@@ -168,15 +166,18 @@ private theorem lin_1 (l k r) : a k l * (newBasis K) r =
     ∑ u, (a' K a k l r u) * (newBasis K) u := by
   simp only [Basis.sum_repr (newBasis K) (a k l * (newBasis K) r), a', ← zsmul_eq_mul]
 
+variable [Fintype β] (cardβ : Fintype.card β = q) (hmulvec0 : asiegel K a *ᵥ x = 0)
+
+include hxl hmulvec0 in
 private theorem ξ_mulVec_eq_0 : a *ᵥ ξ K x = 0 := by
   funext k; simp only [Pi.zero_apply]; rw [eq_comm]
 
   have lin_0 : ∀ u, ∑ r, ∑ l, (a' K a k l r u * x (l, r) : 𝓞 K) = 0 := by
     intros u
     have hξ := ξ_ne_0 K x hxl
-    rw [Ne, Function.funext_iff, not_forall] at hξ
+    rw [Ne, funext_iff, not_forall] at hξ
     rcases hξ with ⟨l, hξ⟩
-    rw [Function.funext_iff] at hmulvec0
+    rw [funext_iff] at hmulvec0
     specialize hmulvec0 ⟨k, u⟩
     simp only [Fintype.sum_prod_type, mulVec, dotProduct, asiegel] at hmulvec0
     rw [sum_comm] at hmulvec0
@@ -200,14 +201,18 @@ private theorem ξ_mulVec_eq_0 : a *ᵥ ξ K x = 0 := by
 
 variable {A : ℝ} (habs : ∀ k l, (house ((algebraMap (𝓞 K) K) (a k l))) ≤ A)
 
+variable [DecidableEq (K →+* ℂ)]
+
 /-- `c₂` is the product of the maximum of `1` and `c`, and `supOfBasis`. -/
 private abbrev c₂ := max 1 (c K) * (supOfBasis K)
 
 private theorem c₂_nonneg : 0 ≤ c₂ K :=
   mul_nonneg (le_trans zero_le_one (le_max_left ..)) (supOfBasis_nonneg _)
 
-variable (Apos : 0 ≤ A)
+variable [Fintype α] (cardα : Fintype.card α = p) (Apos : 0 ≤ A)
+  (hxbound : ‖x‖ ≤ (q * finrank ℚ K * ‖asiegel K a‖) ^ ((p : ℝ) / (q - p)))
 
+include habs Apos in
 private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
   rw [Matrix.norm_le_iff]
   · intro kr lu
@@ -243,6 +248,7 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
 /-- `c₁ K` is the product of `finrank ℚ K` and  `c₂ K` and depends on `K`. -/
 private def c₁ := finrank ℚ K * c₂ K
 
+include habs Apos hxbound hpq in
 private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     ((c₁ K * q * A)^((p : ℝ) / (q - p))) := by
   let h := finrank ℚ K
@@ -282,11 +288,13 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
         (supOfBasis_nonneg _))
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
 
+include hpq h0p cardα cardβ ha habs in
 /-- There exists a "small" non-zero algebraic integral solution of an
  non-trivial underdetermined system of linear equations with algebraic integer coefficients.-/
 theorem exists_ne_zero_int_vec_house_le :
     ∃ (ξ : β → 𝓞 K), ξ ≠ 0 ∧ a *ᵥ ξ = 0 ∧
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
+  classical
   let h := finrank ℚ K
   have hphqh : p * h < q * h := mul_lt_mul_of_pos_right hpq finrank_pos
   have h0ph : 0 < p * h := by rw [mul_pos_iff]; constructor; exact ⟨h0p, finrank_pos⟩
@@ -304,7 +312,7 @@ theorem exists_ne_zero_int_vec_house_le :
     have ⟨l⟩ := Fintype.card_pos_iff.1 (cardβ ▸ h0p.trans hpq)
     exact le_trans (house_nonneg _) (habs k l)
   use ξ K x, ξ_ne_0 K x hxl, ξ_mulVec_eq_0 K a x hxl hmulvec0,
-    house_le_bound K a hpq x hxbound habs Apos
+    house_le_bound K a hpq x habs Apos hxbound
 
 end
 

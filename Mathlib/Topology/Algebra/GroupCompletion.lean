@@ -3,7 +3,6 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.UniformSpace.Completion
 
@@ -136,8 +135,8 @@ instance : SubNegMonoid (Completion α) :=
     zsmul_succ' := fun n a ↦
       Completion.induction_on a
         (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦
-          show Int.ofNat n.succ • (a : Completion α) = _ by
-            rw [← coe_smul, show Int.ofNat n.succ • a = Int.ofNat n • a + a from
+          show (n.succ : ℤ) • (a : Completion α) = _ by
+            rw [← coe_smul, show (n.succ : ℤ) • a = (n : ℤ) • a + a from
               SubNegMonoid.zsmul_succ' n a, coe_add, coe_smul]
     zsmul_neg' := fun n a ↦
       Completion.induction_on a
@@ -148,12 +147,12 @@ instance : SubNegMonoid (Completion α) :=
 
 instance addGroup : AddGroup (Completion α) :=
   { (inferInstance : SubNegMonoid <| Completion α) with
-    add_left_neg := fun a ↦
+    neg_add_cancel := fun a ↦
       Completion.induction_on a
         (isClosed_eq (continuous_map₂ Completion.continuous_map continuous_id) continuous_const)
         fun a ↦
         show -(a : Completion α) + a = 0 by
-          rw_mod_cast [add_left_neg]
+          rw_mod_cast [neg_add_cancel]
           rfl }
 
 instance uniformAddGroup : UniformAddGroup (Completion α) :=
@@ -181,8 +180,8 @@ theorem continuous_toCompl : Continuous (toCompl : α → Completion α) :=
 
 variable (α)
 
-theorem denseInducing_toCompl : DenseInducing (toCompl : α → Completion α) :=
-  denseInducing_coe
+theorem isDenseInducing_toCompl : IsDenseInducing (toCompl : α → Completion α) :=
+  isDenseInducing_coe
 
 variable {α}
 

@@ -3,7 +3,8 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean
+import Lean.Elab.Tactic.Simp
+import Mathlib.Init
 
 /-! # `simp_intro` tactic -/
 
@@ -61,10 +62,10 @@ example : x + 0 = y → x = z := by
   sorry
 ```
 -/
-elab "simp_intro" cfg:(config)? disch:(discharger)?
+elab "simp_intro" cfg:optConfig disch:(discharger)?
     ids:(ppSpace colGt binderIdent)* more:" .."? only:(&" only")? args:(simpArgs)? : tactic => do
   let args := args.map fun args ↦ ⟨args.raw[1].getArgs⟩
-  let stx ← `(tactic| simp $(cfg)? $(disch)? $[only%$only]? $[[$args,*]]?)
+  let stx ← `(tactic| simp $cfg:optConfig $(disch)? $[only%$only]? $[[$args,*]]?)
   let { ctx, simprocs, dischargeWrapper } ←
     withMainContext <| mkSimpContext stx (eraseLocal := false)
   dischargeWrapper.with fun discharge? ↦ do
@@ -73,3 +74,5 @@ elab "simp_intro" cfg:(config)? disch:(discharger)?
     g.withContext do
       let g? ← simpIntroCore g ctx (simprocs := simprocs) discharge? more.isSome ids.toList
       replaceMainGoal <| if let some g := g? then [g] else []
+
+end Mathlib.Tactic

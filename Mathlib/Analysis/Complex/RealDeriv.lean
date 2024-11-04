@@ -149,7 +149,7 @@ theorem DifferentiableAt.conformalAt (h : DifferentiableAt ℂ f z) (hf' : deriv
     ConformalAt f z := by
   rw [conformalAt_iff_isConformalMap_fderiv, (h.hasFDerivAt.restrictScalars ℝ).fderiv]
   apply isConformalMap_complex_linear
-  simpa only [Ne, ext_ring_iff]
+  simpa only [Ne, ContinuousLinearMap.ext_ring_iff]
 
 /-- A complex function is conformal if and only if the function is holomorphic or antiholomorphic
     with a nonvanishing differential. -/
@@ -167,6 +167,6 @@ theorem conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj {f : ℂ 
   rw [differentiableAt_iff_restrictScalars ℝ (h_diff.comp _ conjCLE.differentiableAt)]
   refine exists_congr fun g => rfl.congr ?_
   have : fderiv ℝ conj (conj z) = _ := conjCLE.fderiv
-  simp [fderiv.comp _ h_diff conjCLE.differentiableAt, this, conj_conj]
+  simp [fderiv_comp _ h_diff conjCLE.differentiableAt, this, conj_conj]
 
 end Conformality

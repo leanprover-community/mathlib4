@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Nat.Sqrt
 
 /-!
 # Naturals pairing function
@@ -92,13 +93,14 @@ theorem unpair_zero : unpair 0 = 0 := by
 
 theorem unpair_left_le : ∀ n : ℕ, (unpair n).1 ≤ n
   | 0 => by simp
-  | n + 1 => le_of_lt (unpair_lt (Nat.succ_pos _))
+  | _ + 1 => le_of_lt (unpair_lt (Nat.succ_pos _))
 
 theorem left_le_pair (a b : ℕ) : a ≤ pair a b := by simpa using unpair_left_le (pair a b)
 
 theorem right_le_pair (a b : ℕ) : b ≤ pair a b := by
-  by_cases h : a < b <;> simp [pair, h]
-  exact le_trans (le_mul_self _) (Nat.le_add_right _ _)
+  by_cases h : a < b
+  · simpa [pair, h] using le_trans (le_mul_self _) (Nat.le_add_right _ _)
+  · simp [pair, h]
 
 theorem unpair_right_le (n : ℕ) : (unpair n).2 ≤ n := by
   simpa using right_le_pair n.unpair.1 n.unpair.2
