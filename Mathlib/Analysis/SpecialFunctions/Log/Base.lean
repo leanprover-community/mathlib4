@@ -47,11 +47,13 @@ theorem logb_zero : logb b 0 = 0 := by simp [logb]
 @[simp]
 theorem logb_one : logb b 1 = 0 := by simp [logb]
 
-@[simp]
 theorem logb_zero_left : logb 0 x = 0 := by simp only [← log_div_log, log_zero, div_zero]
 
-@[simp]
+@[simp] theorem logb_zero_left_eq_zero : logb 0 = 0 := by ext; rw [logb_zero_left, Pi.zero_apply]
+
 theorem logb_one_left : logb 1 x = 0 := by simp only [← log_div_log, log_one, div_zero]
+
+@[simp] theorem logb_one_left_eq_zero : logb 1 = 0 := by ext; rw [logb_one_left, Pi.zero_apply]
 
 @[simp]
 lemma logb_self_eq_one (hb : 1 < b) : logb b b = 1 :=
