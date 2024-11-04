@@ -214,7 +214,7 @@ theorem inertiaDeg_algebraMap [Algebra R S] [P.LiesOver p] [p.IsMaximal] :
 
 theorem inertiaDeg_pos [p.IsMaximal] [Algebra R S] [Module.Finite R S]
     [P.LiesOver p] : 0 < inertiaDeg (algebraMap R S) p P :=
-  haveI : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_isPrime P p
+  haveI : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
   finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
 
 lemma inertiaDeg_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) [p.IsMaximal] :
