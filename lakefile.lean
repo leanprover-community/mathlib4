@@ -10,10 +10,11 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.43"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.46"
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
   from git "https://github.com/leanprover-community/LeanSearchClient" @ "main"
+require "leanprover-community" / "plausible" @ git "main"
 
 /-!
 ## Options for building mathlib
@@ -49,11 +50,7 @@ abbrev mathlibLeanOptions := #[
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
 package mathlib where
-  leanOptions := mathlibLeanOptions
-  -- Mathlib also enforces these linter options, which are not active by default.
-  moreServerOptions := mathlibOnlyLinters
-  -- Use Batteries' test driver for `lake test`
-  testDriver := "batteries/test"
+  testDriver := "MathlibTest"
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
@@ -65,12 +62,18 @@ package mathlib where
 -/
 
 @[default_target]
-lean_lib Mathlib
+lean_lib Mathlib where
+  leanOptions := mathlibLeanOptions
+  -- Mathlib also enforces these linter options, which are not active by default.
+  moreServerOptions := mathlibOnlyLinters
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
 lean_lib Cache
 lean_lib LongestPole
+
+lean_lib MathlibTest where
+  globs := #[.submodules `MathlibTest]
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
@@ -130,6 +133,22 @@ and then calculates the longest pole
 -/
 lean_exe pole where
   root := `LongestPole.Main
+  supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
+
+/--
+`lake exe unused module_1 ... module_n` will analyze unused transitive imports in a given sequence.
+The script expects the sequence to be in "reverse order", i.e. files imported later in `Mathlib` should
+come earlier in the sequence.
+
+Outputs a markdown file (called  `unused.md` by default) and a number of `lake exe graph` commands
+highlighting particular ranges of transitively unused imports.
+
+Typically this should be run via `scripts/unused_in_pole.sh`.
+-/
+lean_exe unused where
+  root := `LongestPole.Unused
   supportInterpreter := true
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]

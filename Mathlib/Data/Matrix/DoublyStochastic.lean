@@ -105,7 +105,7 @@ end OrderedSemiring
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield R] {M : Matrix n n R}
+variable [LinearOrderedSemifield R]
 
 /--
 A matrix is `s` times a doubly stochastic matrix iff all entries are nonnegative, and all row and

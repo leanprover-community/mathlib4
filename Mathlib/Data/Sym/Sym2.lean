@@ -147,11 +147,11 @@ protected abbrev recOnSubsingleton {motive : Sym2 α → Sort*}
 
 protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f s(x, y) :=
-  (surjective_quot_mk _).exists.trans Prod.exists
+  Quot.mk_surjective.exists.trans Prod.exists
 
 protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
     (∀ x : Sym2 α, f x) ↔ ∀ x y, f s(x, y) :=
-  (surjective_quot_mk _).forall.trans Prod.forall
+  Quot.mk_surjective.forall.trans Prod.forall
 
 theorem eq_swap {a b : α} : s(a, b) = s(b, a) := Quot.sound (Rel.swap _ _)
 
