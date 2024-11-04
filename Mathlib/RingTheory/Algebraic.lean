@@ -710,37 +710,89 @@ namespace MvPolynomial
 
 variable {σ : Type*} (R : Type*) [CommRing R]
 
-theorem transcendental_supported_X {i : σ} {s : Set σ} (h : i ∉ s) :
-    Transcendental (supported R s) (X i : MvPolynomial σ R) := by
-  rw [transcendental_iff_injective]
-  let f := (Subalgebra.val _).comp ((optionEquivLeft R s).symm |>.trans
-    (renameEquiv R (Set.subtypeInsertEquivOption h)).symm |>.trans
-    (supportedEquivMvPolynomial _).symm).toAlgHom
-  let g := ((Polynomial.aeval (R := supported R s) (X i : MvPolynomial σ R)).restrictScalars R).comp
-    (Polynomial.mapAlgEquiv (supportedEquivMvPolynomial s).symm).toAlgHom
-  have hinj : Function.Injective f := by
-    simp only [f, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, Subalgebra.coe_val,
-      EquivLike.injective_comp, Subtype.val_injective]
-  have hfg : f = g := by
+-- TODO: move to suitable place
+private theorem rename_polynomial_aeval_X
+    {σ τ R : Type*} [CommSemiring R] (f : σ → τ) (i : σ) (p : R[X]) :
+    rename f (Polynomial.aeval (X i) p) = Polynomial.aeval (X (f i) : MvPolynomial τ R) p := by
+  have : (rename f).comp (Polynomial.aeval (X i)) =
+      Polynomial.aeval (X (f i) : MvPolynomial τ R) := by
+    ext1; simp
+  exact congr($(this) p)
+
+theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i ∉ s)
+    {f : R[X]} (hf : Transcendental R f) :
+    Transcendental (supported R s) (Polynomial.aeval (X i : MvPolynomial σ R) f) := by
+  rw [transcendental_iff_injective] at hf ⊢
+  let g := MvPolynomial.mapAlgHom (R := R) (σ := s) (Polynomial.aeval (R := R) f)
+  replace hf : Function.Injective g := MvPolynomial.map_injective _ hf
+  let u := (Subalgebra.val _).comp
+    ((optionEquivRight R s).symm |>.trans
+      (renameEquiv R (Set.subtypeInsertEquivOption h).symm) |>.trans
+      (supportedEquivMvPolynomial _).symm).toAlgHom |>.comp
+    g |>.comp
+    ((optionEquivLeft R s).symm.trans (optionEquivRight R s)).toAlgHom
+  let v := ((Polynomial.aeval (R := supported R s)
+    (Polynomial.aeval (X i : MvPolynomial σ R) f)).restrictScalars R).comp
+      (Polynomial.mapAlgEquiv (supportedEquivMvPolynomial s).symm).toAlgHom
+  replace hf : Function.Injective u := by
+    simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, Subalgebra.coe_val,
+      AlgHom.coe_coe, AlgEquiv.coe_trans, Function.comp_assoc, u]
+    apply Subtype.val_injective.comp
+    simp only [EquivLike.comp_injective]
+    apply hf.comp
+    simp only [EquivLike.comp_injective, EquivLike.injective]
+  have h1 : Polynomial.aeval (X i : MvPolynomial σ R) = ((Subalgebra.val _).comp
+      (supportedEquivMvPolynomial _).symm.toAlgHom |>.comp
+      (Polynomial.aeval (X ⟨i, s.mem_insert i⟩ : MvPolynomial ↑(insert i s) R))) := by
+    ext1; simp
+  have h2 : u = v := by
+    simp only [u, v, g]
     ext1
     · ext1
-      simp [f, g, Set.subtypeInsertEquivOption, Subalgebra.algebraMap_eq]
-    · simp [f, g, Set.subtypeInsertEquivOption]
-  simpa only [hfg, g, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
-    EquivLike.injective_comp, AlgHom.coe_restrictScalars'] using hinj
+      simp [Set.subtypeInsertEquivOption, Subalgebra.algebraMap_eq]
+    · simp [Set.subtypeInsertEquivOption, rename_polynomial_aeval_X, h1]
+  simpa only [h2, v, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
+    EquivLike.injective_comp, AlgHom.coe_restrictScalars'] using hf
+
+theorem transcendental_polynomial_aeval_X (i : σ) {f : R[X]} (hf : Transcendental R f) :
+    Transcendental R (Polynomial.aeval (X i : MvPolynomial σ R) f) := by
+  have := transcendental_supported_polynomial_aeval_X R (Set.not_mem_empty i) hf
+  let g := (Algebra.botEquivOfInjective (MvPolynomial.C_injective σ R)).symm.trans
+    (Subalgebra.equivOfEq _ _ supported_empty).symm
+  rwa [Transcendental, ← isAlgebraic_ringHom_iff_of_comp_eq g (RingHom.id (MvPolynomial σ R))
+    Function.injective_id (by ext1; rfl), RingHom.id_apply, ← Transcendental]
+
+theorem transcendental_polynomial_aeval_X_iff [Nontrivial R] (i : σ) {f : R[X]} :
+    Transcendental R (Polynomial.aeval (X i : MvPolynomial σ R) f) ↔ Transcendental R f := by
+  refine ⟨?_, transcendental_polynomial_aeval_X R i⟩
+  simp_rw [Transcendental, not_imp_not]
+  exact fun h ↦ h.algHom _
+
+theorem transcendental_supported_polynomial_aeval_X_iff
+    [Nontrivial R] {i : σ} {s : Set σ} {f : R[X]} :
+    Transcendental (supported R s) (Polynomial.aeval (X i : MvPolynomial σ R) f) ↔
+    i ∉ s ∧ Transcendental R f := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h, hf⟩ ↦ transcendental_supported_polynomial_aeval_X R h hf⟩
+  · rw [Transcendental] at h
+    contrapose! h
+    refine isAlgebraic_algebraMap (⟨Polynomial.aeval (X i) f, ?_⟩ : supported R s)
+    exact Algebra.adjoin_mono (Set.singleton_subset_iff.2 (Set.mem_image_of_mem _ h))
+      (Polynomial.aeval_mem_adjoin_singleton _ _)
+  · rw [← transcendental_polynomial_aeval_X_iff R i]
+    refine h.of_tower_top_of_injective fun _ _ heq ↦ MvPolynomial.C_injective σ R ?_
+    simp_rw [← MvPolynomial.algebraMap_eq]
+    exact congr($(heq).1)
+
+theorem transcendental_supported_X {i : σ} {s : Set σ} (h : i ∉ s) :
+    Transcendental (supported R s) (X i : MvPolynomial σ R) := by
+  simpa using transcendental_supported_polynomial_aeval_X R h (Polynomial.transcendental_X R)
 
 theorem transcendental_X (i : σ) : Transcendental R (X i : MvPolynomial σ R) := by
-  have := transcendental_supported_X R (Set.not_mem_empty i)
-  let f := (Algebra.botEquivOfInjective (MvPolynomial.C_injective σ R)).symm.trans
-    (Subalgebra.equivOfEq _ _ supported_empty).symm
-  rwa [Transcendental, ← isAlgebraic_ringHom_iff_of_comp_eq f (RingHom.id (MvPolynomial σ R))
-    Function.injective_id (by ext1; rfl), RingHom.id_apply, ← Transcendental]
+  simpa using transcendental_polynomial_aeval_X R i (Polynomial.transcendental_X R)
 
 theorem transcendental_supported_X_iff [Nontrivial R] {i : σ} {s : Set σ} :
     Transcendental (supported R s) (X i : MvPolynomial σ R) ↔ i ∉ s := by
-  refine ⟨?_, transcendental_supported_X R⟩
-  rw [Transcendental, not_imp_not]
-  exact fun h ↦ isAlgebraic_algebraMap
-    (⟨X i, Algebra.subset_adjoin (Set.mem_image_of_mem _ h)⟩ : supported R s)
+  simpa [Polynomial.transcendental_X] using
+    transcendental_supported_polynomial_aeval_X_iff R (i := i) (s := s) (f := Polynomial.X)
 
 end MvPolynomial
