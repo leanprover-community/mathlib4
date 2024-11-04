@@ -58,8 +58,8 @@ open scoped FinsetFamily
 variable {α β : Type*}
 
 section Finset
-variable [DecidableEq α] [LinearOrderedCommSemiring β] {𝒜 ℬ : Finset (Finset α)}
-  {a : α} {f f₁ f₂ f₃ f₄ g μ : Finset α → β} {s t u : Finset α}
+variable [DecidableEq α] [LinearOrderedCommSemiring β] {𝒜 : Finset (Finset α)}
+  {a : α} {f f₁ f₂ f₃ f₄ : Finset α → β} {s t u : Finset α}
 
 /-- The `n = 1` case of the Ahlswede-Daykin inequality. Note that we can't just expand everything
 out and bound termwise since `c₀ * d₁` appears twice on the RHS of the assumptions while `c₁ * d₀`

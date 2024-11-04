@@ -348,3 +348,12 @@ theorem commutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : ∀ a b : G,
 end P2comm
 
 end IsPGroup
+
+namespace ZModModule
+variable {n : ℕ} {G : Type*} [AddCommGroup G] [Module (ZMod n) G]
+
+lemma isPGroup_multiplicative : IsPGroup n (Multiplicative G) := by
+  simpa [IsPGroup, Multiplicative.forall] using
+    fun _ ↦ ⟨1, by simp [← ofAdd_nsmul, ZModModule.char_nsmul_eq_zero]⟩
+
+end ZModModule
