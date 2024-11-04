@@ -366,6 +366,7 @@
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Data.PEquiv": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
+  "Mathlib.Data.Ordering.Dickson": ["Mathlib.Data.Finsupp.WellFounded"],
   "Mathlib.Data.Option.NAry": ["Batteries.Tactic.Init"],
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],

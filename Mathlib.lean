@@ -2595,6 +2595,7 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Ordering.Basic
+import Mathlib.Data.Ordering.Dickson
 import Mathlib.Data.Ordering.Lemmas
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Data.Ordmap.Ordset
