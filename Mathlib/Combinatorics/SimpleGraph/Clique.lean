@@ -20,10 +20,6 @@ A clique is a set of vertices that are pairwise adjacent.
 * `SimpleGraph.IsNClique`: Predicate for a set of vertices to be an `n`-clique.
 * `SimpleGraph.cliqueFinset`: Finset of `n`-cliques of a graph.
 * `SimpleGraph.CliqueFree`: Predicate for a graph to have no `n`-cliques.
-
-## TODO
-
-* Dualise all the API to get independent sets
 -/
 
 open Finset Fintype Function SimpleGraph.Walk
