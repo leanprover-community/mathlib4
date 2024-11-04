@@ -74,7 +74,7 @@ end Set
 /-- Convert `Rel` to a `Set` (like uncurry). -/
 def Rel.toSet (R : Rel α β) : Set (α × β) := fun ⟨a, b⟩ => R a b
 
-theorem Function.graph_is_fun (f : α → β) : f.graph.toSet.IsFun :=
+theorem Function.graph_isFun (f : α → β) : f.graph.toSet.IsFun :=
   fun x => ⟨f x, rfl, fun _ => Eq.symm⟩
 
 theorem Function.graph_toSet_asFun (f : α → β) : Set.asFun f.graph_is_fun = f :=
