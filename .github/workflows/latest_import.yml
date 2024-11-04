@@ -113,9 +113,10 @@ jobs:
 
       - name: add minImport linter option
         run: |
-          sed -i $'/⟨`linter.style.missingEnd, true⟩,/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
+          sed -i '/⟨`linter.style.missingEnd, true⟩,/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
+          sed -i -z 's=^=import Mathlib.Tactic.Linter.MinImports\n=' Mathlib/Init.lean
           git add -u
-          git diff HEAD lakefile.lean
+          git diff HEAD lakefile.lean Mathlib/Init.lean
 
       - name: build mathlib
         id: build
