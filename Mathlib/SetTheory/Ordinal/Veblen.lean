@@ -93,7 +93,7 @@ theorem veblenWith_right_strictMono (hf : IsNormal f) (o : Ordinal) :
   · rw [veblenWith_zero]
     exact hf.strictMono
   · rw [veblenWith_of_ne_zero f h]
-    exact strictMono_derivFamily (fun a ↦ isNormal_veblenWith hf a)
+    exact derivFamily_strictMono fun a ↦ isNormal_veblenWith hf a
 
 theorem veblenWith_right_monotone (hf : IsNormal f) (o : Ordinal) :
     Monotone (veblenWith f o) :=
