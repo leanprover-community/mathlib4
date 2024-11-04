@@ -6,6 +6,7 @@ Authors: Devon Tuma
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.RingTheory.Artinian
 
 /-!
 # Jacobson Rings
@@ -91,11 +92,9 @@ theorem Ideal.radical_eq_jacobson [H : IsJacobsonRing R] (I : Ideal R) : I.radic
   le_antisymm (le_sInf fun _J ⟨hJ, hJ_max⟩ => (IsPrime.radical_le_iff hJ_max.isPrime).mpr hJ)
     (H.out (radical_isRadical I) ▸ jacobson_mono le_radical)
 
-/-- Fields have only two ideals, and the condition holds for both of them. -/
-instance (priority := 100) isJacobsonRing_field {K : Type*} [Field K] : IsJacobsonRing K :=
-  ⟨fun I _ => Or.recOn (eq_bot_or_top I)
-    (fun h => le_antisymm (sInf_le ⟨le_rfl, h.symm ▸ bot_isMaximal⟩) (h.symm ▸ bot_le)) fun h =>
-      by rw [h, jacobson_eq_top_iff]⟩
+instance (priority := 100) [IsArtinianRing R] : IsJacobsonRing R :=
+  isJacobsonRing_iff_prime_eq.mpr fun P _ ↦
+    jacobson_eq_self_of_isMaximal (H := IsArtinianRing.isMaximal_of_isPrime P)
 
 theorem isJacobsonRing_of_surjective [H : IsJacobsonRing R] :
     (∃ f : R →+* S, Function.Surjective ↑f) → IsJacobsonRing S := by
