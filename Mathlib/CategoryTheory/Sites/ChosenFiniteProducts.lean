@@ -42,8 +42,7 @@ lemma tensorUnit_isSheaf : Presheaf.IsSheaf J (𝟙_ (Cᵒᵖ ⥤ A)) := by
 
 /-- Any `ChosenFiniteProducts` on `A` induce a `ChosenFiniteProducts` structures on `A`-valued
 sheaves. -/
-@[simps! product_cone_pt_val product_cone_pt_val_obj product_cone_pt_val_map
-  terminal_cone_pt_val_obj terminal_cone_pt_val_map]
+@[simps! product_cone_pt_val terminal_cone_pt_val_obj terminal_cone_pt_val_map]
 noncomputable instance : ChosenFiniteProducts (Sheaf J A) where
   product X Y :=
     { cone := BinaryFan.mk
