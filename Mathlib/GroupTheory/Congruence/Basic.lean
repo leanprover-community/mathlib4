@@ -86,10 +86,9 @@ theorem le_comap_conGen {M N : Type*} [Mul M] [Mul N] (f : M → N)
     (.mul h1 h2))) h
 
 @[to_additive]
-theorem comap_conGen_of_bijective {M N : Type*} [Mul M] [Mul N] (f : M → N)
-    (hf : Function.Bijective f) (H : ∀ (x y : M), f (x * y) = f x * f y) (rel : N → N → Prop) :
-    Con.comap f H (conGen rel) = conGen (fun x y ↦ rel (f x) (f y)) := by
-  apply le_antisymm _ (le_comap_conGen f H rel)
+theorem comap_conGen_equiv {M N : Type*} [Mul M] [Mul N] (f : MulEquiv M N) (rel : N → N → Prop) :
+    Con.comap f (map_mul f) (conGen rel) = conGen (fun x y ↦ rel (f x) (f y)) := by
+  apply le_antisymm _ (le_comap_conGen f (map_mul f) rel)
   intro a b h
   simp only [Con.comap_rel] at h
   have H : ∀ n1 n2, (conGen rel) n1 n2 → ∀ a b, f a = n1 → f b = n2 →
@@ -102,30 +101,26 @@ theorem comap_conGen_of_bijective {M N : Type*} [Mul M] [Mul N] (f : M → N)
       rwa [fa, fb]
     | refl x =>
       intro _ _ fc fd
-      rw [hf.1 (fc.trans fd.symm)]
+      rw [f.injective (fc.trans fd.symm)]
       exact ConGen.Rel.refl _
     | symm _ h => exact fun a b fs fb ↦ ConGen.Rel.symm (h b a fb fs)
     | trans _ _ ih ih1 =>
-      exact fun a b fa fb ↦ Exists.casesOn (hf.right _) fun c' hc' ↦
+      exact fun a b fa fb ↦ Exists.casesOn (f.surjective _) fun c' hc' ↦
       ConGen.Rel.trans (ih a c' fa hc') (ih1 c' b hc' fb)
     | mul _ _ ih ih1 =>
       rename_i w x y z _ _
       intro a b fa fb
-      rcases Function.bijective_iff_has_inverse.mp hf with ⟨f', is_inv⟩
-      have Ha : a = f' w * f' y := by
-        rw [← is_inv.1 a, fa]
-        have H : f (f' (w * y)) = f (f' w * f' y) := by
-          rw [is_inv.2 (w * y), H, is_inv.2 w, is_inv.2 y]
-        exact hf.1 H
-      have Hb : b = f' x * f' z := by
-        rw [← is_inv.1 b, fb]
-        have H : f (f' (x * z)) = f (f' x * f' z) := by
-          rw [is_inv.2 (x * z), H, is_inv.2 x, is_inv.2 z]
-        exact hf.1 H
-      rw [Ha, Hb]
-      exact ConGen.Rel.mul (ih (f' w) (f' x) (is_inv.right w) (is_inv.right x))
-        (ih1 (f' y) (f' z) (is_inv.right y) (is_inv.right z))
+      rw [← f.eq_symm_apply, map_mul] at fa fb
+      rw [fa, fb]
+      exact ConGen.Rel.mul (ih (f.symm w) (f.symm x) (by simp) (by simp))
+        (ih1 (f.symm y) (f.symm z) (by simp) (by simp))
   exact H (f a) (f b) h a b (refl _) (refl _)
+
+@[to_additive]
+theorem comap_conGen_of_bijective {M N : Type*} [Mul M] [Mul N] (f : M → N)
+    (hf : Function.Bijective f) (H : ∀ (x y : M), f (x * y) = f x * f y) (rel : N → N → Prop) :
+    Con.comap f H (conGen rel) = conGen (fun x y ↦ rel (f x) (f y)) :=
+  comap_conGen_equiv (MulEquiv.ofBijective (MulHom.mk f H) hf) rel
 
 end
 
