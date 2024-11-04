@@ -87,7 +87,7 @@ theorem mem_finMulAntidiagonal {d n : ℕ} {f : (Fin d) → ℕ} :
     simp only [h, not_mem_empty, ne_eq, not_true_eq_false, and_false]
 
 @[simp]
-theorem finMulAntidiagonal_zero (d : ℕ) :
+theorem finMulAntidiagonal_zero_right (d : ℕ) :
     finMulAntidiagonal d 0 = ∅ := rfl
 
 theorem finMulAntidiagonal_one {d : ℕ} :
@@ -100,7 +100,7 @@ theorem finMulAntidiagonal_one {d : ℕ} :
   · rintro rfl; simp only [prod_const_one, implies_true, ne_eq, one_ne_zero, not_false_eq_true,
     and_self]
 
-theorem finMulAntidiagonal_empty_of_ne_one {n : ℕ} (hn : n ≠ 1) :
+theorem finMulAntidiagonal_zero_left {n : ℕ} (hn : n ≠ 1) :
     finMulAntidiagonal 0 n = ∅ := by
   ext; simp [hn.symm]
 
@@ -120,7 +120,7 @@ theorem prod_eq_of_mem_finMulAntidiagonal {d n : ℕ} {f : Fin d → ℕ}
 
 theorem finMulAntidiagonal_eq_piFinset_divisors_filter {d m n : ℕ} (hmn : m ∣ n) (hn : n ≠ 0) :
     finMulAntidiagonal d m =
-      (Fintype.piFinset fun _ : Fin d => n.divisors).filter fun f => ∏ i, f i = m := by
+      {f ∈ Fintype.piFinset fun _ : Fin d => n.divisors | ∏ i, f i = m} := by
   ext f
   simp only [mem_univ, not_true, IsEmpty.forall_iff, implies_true, ne_eq, true_and,
     Fintype.mem_piFinset, mem_divisors, Nat.isUnit_iff, mem_filter]
@@ -180,7 +180,7 @@ lemma finMulAntidiagonal_exists_unique_prime_dvd {d n p : ℕ} (hn : Squarefree 
 
 private def primeFactorsPiBij (d n : ℕ) :
     ∀ f ∈ (n.primeFactors.pi fun _ => (univ : Finset <| Fin d)), Fin d → ℕ :=
-  fun f _ i => ∏ p ∈ Finset.filter (fun p => f p.1 p.2 = i) n.primeFactors.attach, p
+  fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.1 p.2 = i} , p
 
 private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
   (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
