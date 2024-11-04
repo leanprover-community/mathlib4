@@ -288,7 +288,7 @@ theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x
 
 instance mulLeftMono [Mul α] [MulLeftMono α] :
     MulLeftMono (WithZero α) := by
-  refine ⟨fun a b c hbc => ?_⟩
+  refine ⟨fun a b c hbc => ?_⟩; dsimp
   induction a; · exact zero_le _
   induction b; · exact zero_le _
   rcases WithZero.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
@@ -297,7 +297,7 @@ instance mulLeftMono [Mul α] [MulLeftMono α] :
 
 protected lemma addLeftMono [AddZeroClass α] [AddLeftMono α]
     (h : ∀ a : α, 0 ≤ a) : AddLeftMono (WithZero α) := by
-  refine ⟨fun a b c hbc => ?_⟩
+  refine ⟨fun a b c hbc => ?_⟩; dsimp
   induction a
   · rwa [zero_add, zero_add]
   induction b

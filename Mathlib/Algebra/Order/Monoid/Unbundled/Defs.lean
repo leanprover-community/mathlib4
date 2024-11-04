@@ -86,88 +86,88 @@ def Contravariant : Prop :=
 /-- TODO -/
 class MulLeftMono [Mul M] [LE M] : Prop where
   /-- TODO -/
-  protected elim : Covariant M M (· * ·) (· ≤ ·)
+  protected elim : Covariant M M (· * ·) LE.le
 
 /-- TODO -/
 class MulRightMono [Mul M] [LE M] : Prop where
   /-- TODO -/
-  protected elim : Covariant M M (swap (· * ·)) (· ≤ ·)
+  protected elim : Covariant M M (swap (· * ·)) LE.le
 
 /-- TODO -/
 class AddLeftMono [Add M] [LE M] : Prop where
   /-- TODO -/
-  protected elim : Covariant M M (· + ·) (· ≤ ·)
+  protected elim : Covariant M M (· + ·) LE.le
 
 /-- TODO -/
 class AddRightMono [Add M] [LE M] : Prop where
   /-- TODO -/
-  protected elim : Covariant M M (swap (· + ·)) (· ≤ ·)
+  protected elim : Covariant M M (swap (· + ·)) LE.le
 
 attribute [to_additive] MulLeftMono MulRightMono
 
 /-- TODO -/
 class MulLeftStrictMono [Mul M] [LT M] : Prop where
   /-- TODO -/
-  protected elim : Covariant M M (· * ·) (· < ·)
+  protected elim : Covariant M M (· * ·) LT.lt
 
 /-- TODO -/
 class MulRightStrictMono [Mul M] [LT M] : Prop where
   /-- TODO -/
-  protected elim : Covariant M M (swap (· * ·)) (· < ·)
+  protected elim : Covariant M M (swap (· * ·)) LT.lt
 
 /-- TODO -/
 class AddLeftStrictMono [Add M] [LT M] : Prop where
   /-- TODO -/
-  protected elim : Covariant M M (· + ·) (· < ·)
+  protected elim : Covariant M M (· + ·) LT.lt
 
 /-- TODO -/
 class AddRightStrictMono [Add M] [LT M] : Prop where
   /-- TODO -/
-  protected elim : Covariant M M (swap (· + ·)) (· < ·)
+  protected elim : Covariant M M (swap (· + ·)) LT.lt
 
 attribute [to_additive] MulLeftStrictMono MulRightStrictMono
 
 /-- TODO -/
 class MulLeftReflectLE [Mul M] [LE M] : Prop where
   /-- TODO -/
-  protected elim : Contravariant M M (· * ·) (· ≤ ·)
+  protected elim : Contravariant M M (· * ·) LE.le
 
 /-- TODO -/
 class MulRightReflectLE [Mul M] [LE M] : Prop where
   /-- TODO -/
-  protected elim : Contravariant M M (swap (· * ·)) (· ≤ ·)
+  protected elim : Contravariant M M (swap (· * ·)) LE.le
 
 /-- TODO -/
 class AddLeftReflectLE [Add M] [LE M] : Prop where
   /-- TODO -/
-  protected elim : Contravariant M M (· + ·) (· ≤ ·)
+  protected elim : Contravariant M M (· + ·) LE.le
 
 /-- TODO -/
 class AddRightReflectLE [Add M] [LE M] : Prop where
   /-- TODO -/
-  protected elim : Contravariant M M (swap (· + ·)) (· ≤ ·)
+  protected elim : Contravariant M M (swap (· + ·)) LE.le
 
 attribute [to_additive] MulLeftReflectLE MulRightReflectLE
 
 /-- TODO -/
 class MulLeftReflectLT [Mul M] [LT M] : Prop where
   /-- TODO -/
-  protected elim : Contravariant M M (· * ·) (· < ·)
+  protected elim : Contravariant M M (· * ·) LT.lt
 
 /-- TODO -/
 class MulRightReflectLT [Mul M] [LT M] : Prop where
   /-- TODO -/
-  protected elim : Contravariant M M (swap (· * ·)) (· < ·)
+  protected elim : Contravariant M M (swap (· * ·)) LT.lt
 
 /-- TODO -/
 class AddLeftReflectLT [Add M] [LT M] : Prop where
   /-- TODO -/
-  protected elim : Contravariant M M (· + ·) (· < ·)
+  protected elim : Contravariant M M (· + ·) LT.lt
 
 /-- TODO -/
 class AddRightReflectLT [Add M] [LT M] : Prop where
   /-- TODO -/
-  protected elim : Contravariant M M (swap (· + ·)) (· < ·)
+  protected elim : Contravariant M M (swap (· + ·)) LT.lt
 
 attribute [to_additive] MulLeftReflectLT MulRightReflectLT
 

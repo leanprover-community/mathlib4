@@ -107,7 +107,7 @@ You should usually not use this very granular typeclass directly, but rather a t
 `OrderedSemiring`. -/
 @[mk_iff]
 class PosMulMono : Prop where
-  protected elim : Covariant α≥0 α (fun x y ↦ x * y) (· ≤ ·)
+  protected elim : Covariant α≥0 α (fun x y ↦ x * y) LE.le
 
 /-- Typeclass for monotonicity of multiplication by nonnegative elements on the right,
 namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b` if `0 ≤ b`.
@@ -116,7 +116,7 @@ You should usually not use this very granular typeclass directly, but rather a t
 `OrderedSemiring`. -/
 @[mk_iff]
 class MulPosMono : Prop where
-  protected elim : Covariant α≥0 α (fun x y ↦ y * x) (· ≤ ·)
+  protected elim : Covariant α≥0 α (fun x y ↦ y * x) LE.le
 
 /-- Typeclass for strict monotonicity of multiplication by positive elements on the left,
 namely `b₁ < b₂ → a * b₁ < a * b₂` if `0 < a`.
@@ -125,7 +125,7 @@ You should usually not use this very granular typeclass directly, but rather a t
 `StrictOrderedSemiring`. -/
 @[mk_iff]
 class PosMulStrictMono : Prop where
-  protected elim : Covariant α>0 α (fun x y ↦ x * y) (· < ·)
+  protected elim : Covariant α>0 α (fun x y ↦ x * y) LT.lt
 
 /-- Typeclass for strict monotonicity of multiplication by positive elements on the right,
 namely `a₁ < a₂ → a₁ * b < a₂ * b` if `0 < b`.
@@ -134,7 +134,7 @@ You should usually not use this very granular typeclass directly, but rather a t
 `StrictOrderedSemiring`. -/
 @[mk_iff]
 class MulPosStrictMono : Prop where
-  protected elim : Covariant α>0 α (fun x y ↦ y * x) (· < ·)
+  protected elim : Covariant α>0 α (fun x y ↦ y * x) LT.lt
 
 /-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
 the left, namely `a * b₁ < a * b₂ → b₁ < b₂` if `0 ≤ a`.
@@ -143,7 +143,7 @@ You should usually not use this very granular typeclass directly, but rather a t
 `LinearOrderedSemiring`. -/
 @[mk_iff]
 class PosMulReflectLT : Prop where
-  protected elim : Contravariant α≥0 α (fun x y ↦ x * y) (· < ·)
+  protected elim : Contravariant α≥0 α (fun x y ↦ x * y) LT.lt
 
 /-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
 the right, namely `a₁ * b < a₂ * b → a₁ < a₂` if `0 ≤ b`.
@@ -152,7 +152,7 @@ You should usually not use this very granular typeclass directly, but rather a t
 `LinearOrderedSemiring`. -/
 @[mk_iff]
 class MulPosReflectLT : Prop where
-  protected elim : Contravariant α≥0 α (fun x y ↦ y * x) (· < ·)
+  protected elim : Contravariant α≥0 α (fun x y ↦ y * x) LT.lt
 
 /-- Typeclass for reverse monotonicity of multiplication by positive elements on the left,
 namely `a * b₁ ≤ a * b₂ → b₁ ≤ b₂` if `0 < a`.
@@ -161,7 +161,7 @@ You should usually not use this very granular typeclass directly, but rather a t
 `LinearOrderedSemiring`. -/
 @[mk_iff]
 class PosMulReflectLE : Prop where
-  protected elim : Contravariant α>0 α (fun x y ↦ x * y) (· ≤ ·)
+  protected elim : Contravariant α>0 α (fun x y ↦ x * y) LE.le
 
 /-- Typeclass for reverse monotonicity of multiplication by positive elements on the right,
 namely `a₁ * b ≤ a₂ * b → a₁ ≤ a₂` if `0 < b`.
@@ -170,7 +170,7 @@ You should usually not use this very granular typeclass directly, but rather a t
 `LinearOrderedSemiring`. -/
 @[mk_iff]
 class MulPosReflectLE : Prop where
-  protected elim : Contravariant α>0 α (fun x y ↦ y * x) (· ≤ ·)
+  protected elim : Contravariant α>0 α (fun x y ↦ y * x) LE.le
 
 end Abbreviations
 
