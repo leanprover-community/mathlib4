@@ -350,6 +350,14 @@ theorem map_comp (g : β → γ) (f : α → β) : map (g ∘ f) = (map g).comp 
 @[to_additive (attr := simp)]
 theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦ rfl
 
+@[to_additive]
+theorem map_invFun_map_toFun_eq {x : FreeMonoid α} (e : α ≃ β) :
+    (map e.invFun) (map e.toFun x) = x := by simp [map_map]
+
+@[to_additive]
+theorem map_toFun_map_invFun_eq {x : FreeMonoid β} (e : α ≃ β) :
+    (map e.toFun) (map e.invFun x) = x := by simp [map_map]
+
 /-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
 @[to_additive]
 instance uniqueUnits : Unique (FreeMonoid α)ˣ where
@@ -415,8 +423,8 @@ variable {α β : Type*} (e : α ≃ β)
 @[to_additive "if two types are isomorphic, the additive free monoids over those types are
 isomorphic"]
 def congr_iso : FreeMonoid α ≃* FreeMonoid β :=
-  MulEquiv.mk' ⟨FreeMonoid.map e.toFun, FreeMonoid.map e.invFun, fun x => by simp [map_map],
-    fun x => by simp [map_map]⟩ (by simp [map_mul])
+  MulEquiv.mk' ⟨FreeMonoid.map e.toFun, FreeMonoid.map e.invFun, fun _ => map_invFun_map_toFun_eq e,
+    fun _ => map_toFun_map_invFun_eq e⟩ (by simp [map_mul])
 
 /-- given an isomorphism between α and β, convert a relation predicate on FreeMonoid α to
 have an underlying type of β -/
