@@ -34,7 +34,7 @@ the preimage of any affine open subset of `Y` is affine and the induced ring
 hom is finite. -/
 @[mk_iff]
 class IsFinite {X Y : Scheme} (f : X ⟶ Y) extends IsAffineHom f : Prop where
-  finite_app (U : Y.affineOpens) : (f.app U).Finite
+  finite_app (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).Finite
 
 namespace IsFinite
 
@@ -44,15 +44,16 @@ instance : HasAffineProperty @IsFinite (affineAnd RingHom.Finite) := by
   simp [isFinite_iff]
 
 instance : IsStableUnderComposition @IsFinite :=
-  HasAffineProperty.affineAnd_isStableUnderComposition RingHom.finite_stableUnderComposition
+  HasAffineProperty.affineAnd_isStableUnderComposition inferInstance
+    RingHom.finite_stableUnderComposition
 
 lemma stableUnderBaseChange : StableUnderBaseChange @IsFinite :=
-  HasAffineProperty.affineAnd_stableUnderBaseChange
+  HasAffineProperty.affineAnd_stableUnderBaseChange inferInstance
     RingHom.finite_respectsIso RingHom.finite_stableUnderBaseChange
 
 instance : ContainsIdentities @IsFinite :=
-  HasAffineProperty.affineAnd_containsIdentities RingHom.finite_respectsIso
-    RingHom.finite_containsIdentities
+  HasAffineProperty.affineAnd_containsIdentities inferInstance
+    RingHom.finite_respectsIso RingHom.finite_containsIdentities
 
 instance : IsMultiplicative @IsFinite where
 
@@ -64,16 +65,14 @@ instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsFinite f] [IsFinite g] : IsFinite (f 
   IsStableUnderComposition.comp_mem f g ‹IsFinite f› ‹IsFinite g›
 
 instance (priority := 900) [hf : IsFinite f] : LocallyOfFiniteType f := by
-  wlog hY : IsAffine Y
-  · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
-      (iSup_affineOpens_eq_top _)]
-    intro U
-    haveI hfU : IsFinite (f ∣_ U) := IsLocalAtTarget.restrict hf U
-    apply this _ U.2
-  rw [HasAffineProperty.iff_of_isAffine (P := @IsFinite)] at hf
-  obtain ⟨hX, hf⟩ := hf
-  rw [HasRingHomProperty.iff_of_isAffine (P := @LocallyOfFiniteType)]
-  exact RingHom.FiniteType.of_finite hf
+  have : targetAffineLocally (affineAnd @RingHom.FiniteType) f := by
+    rw [HasAffineProperty.eq_targetAffineLocally (P := @IsFinite)] at hf
+    apply targetAffineLocally_affineAnd_le RingHom.Finite.finiteType
+    exact hf
+  rw [targetAffineLocally_affineAnd_eq_affineLocally
+    (HasRingHomProperty.isLocal_ringHomProperty @LocallyOfFiniteType)] at this
+  rw [HasRingHomProperty.eq_affineLocally (P := @LocallyOfFiniteType)]
+  exact this.2
 
 end IsFinite
 

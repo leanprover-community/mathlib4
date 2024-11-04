@@ -110,6 +110,56 @@ lemma targetAffineLocally_affineAnd_iff (hQi : RingHom.RespectsIso Q)
     rw [Scheme.Opens.ι_image_top]
     exact (h U U.2).2
 
+/-- Variant of `targetAffineLocally_affineAnd_iff` where `IsAffineHom` is bundled. -/
+lemma targetAffineLocally_affineAnd_iff' (hQi : RingHom.RespectsIso Q)
+    {X Y : Scheme.{u}} (f : X ⟶ Y) :
+    targetAffineLocally (affineAnd Q) f ↔
+      IsAffineHom f ∧ ∀ U : Y.Opens, IsAffineOpen U → Q (f.app U) := by
+  rw [targetAffineLocally_affineAnd_iff hQi, isAffineHom_iff]
+  aesop
+
+lemma targetAffineLocally_affineAnd_iff_affineLocally (hQ : RingHom.PropertyIsLocal Q)
+    {X Y : Scheme.{u}} (f : X ⟶ Y) :
+    targetAffineLocally (affineAnd Q) f ↔ IsAffineHom f ∧ affineLocally Q f := by
+  haveI : HasRingHomProperty (affineLocally Q) Q := ⟨hQ, rfl⟩
+  rw [targetAffineLocally_affineAnd_iff' hQ.respectsIso]
+  simp only [and_congr_right_iff]
+  intro hf
+  constructor
+  · wlog hY : IsAffine Y
+    · intro h
+      rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := affineLocally Q)
+        _ (iSup_affineOpens_eq_top _)]
+      intro U
+      have : IsAffine (f ⁻¹ᵁ U) := hf.isAffine_preimage U U.2
+      rw [HasRingHomProperty.iff_of_isAffine (P := affineLocally Q),
+        morphismRestrict_app, hQ.respectsIso.cancel_right_isIso]
+      apply h
+      rw [Scheme.Opens.ι_image_top]
+      exact U.2
+    intro h
+    have : IsAffine X := isAffine_of_isAffineHom f
+    rw [HasRingHomProperty.iff_of_isAffine (P := affineLocally Q)]
+    exact h ⊤ (isAffineOpen_top Y)
+  · intro h U hU
+    rw [affineLocally_iff_affineOpens_le] at h
+    rw [f.app_eq_appLE]
+    exact h ⟨U, hU⟩ ⟨f ⁻¹ᵁ U, hf.isAffine_preimage U hU⟩ (by simp)
+
+lemma targetAffineLocally_affineAnd_eq_affineLocally (hQ : RingHom.PropertyIsLocal Q) :
+    targetAffineLocally (affineAnd Q) =
+      (@IsAffineHom ⊓ @affineLocally Q : MorphismProperty Scheme.{u}) := by
+  ext X Y f
+  exact targetAffineLocally_affineAnd_iff_affineLocally hQ f
+
+variable {W : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+
+lemma targetAffineLocally_affineAnd_le
+    (hQW : ∀ {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}, Q f → W f) :
+    targetAffineLocally (affineAnd Q) ≤ targetAffineLocally (affineAnd W) := by
+  intro X Y f h U
+  exact ⟨(h U).1, hQW (h U).2⟩
+
 end
 
 section
@@ -181,6 +231,24 @@ lemma HasAffineProperty.affineAnd_le_isAffineHom (P : MorphismProperty Scheme.{u
   rw [HasAffineProperty.iff_of_isAffine (P := P) (Q := (affineAnd Q))] at hf
   rw [HasAffineProperty.iff_of_isAffine (P := @IsAffineHom)]
   exact hf.1
+
+lemma HasAffineProperty.affineAnd_eq_of_propertyIsLocal {P P' : MorphismProperty Scheme.{u}}
+    (hP : HasAffineProperty P (affineAnd Q)) [HasRingHomProperty P' Q] :
+    P = (@IsAffineHom ⊓ P' : MorphismProperty Scheme.{u}) := by
+  rw [HasAffineProperty.eq_targetAffineLocally (P := P),
+    targetAffineLocally_affineAnd_eq_affineLocally,
+    HasRingHomProperty.eq_affineLocally (P := P')]
+  exact HasRingHomProperty.isLocal_ringHomProperty P'
+
+variable {Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+
+lemma HasAffineProperty.affineAnd_le_affineAnd {P P' : MorphismProperty Scheme.{u}}
+    (hP : HasAffineProperty P (affineAnd Q)) (hP' : HasAffineProperty P' (affineAnd Q'))
+    (hQQ' : ∀ {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}, Q f → Q' f) :
+    P ≤ P' := by
+  rw [HasAffineProperty.eq_targetAffineLocally (P := P),
+    HasAffineProperty.eq_targetAffineLocally (P := P')]
+  exact targetAffineLocally_affineAnd_le hQQ'
 
 end
 
