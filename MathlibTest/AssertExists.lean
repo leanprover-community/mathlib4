@@ -12,7 +12,7 @@ theorem Nats : True := .intro
 
 /--
 info:
-✅️ 'Nats' (declaration) asserted in 'test.AssertExists'.
+✅️ 'Nats' (declaration) asserted in 'MathlibTest.AssertExists'.
 ---
 ✅️ means the declaration or import exists.
 ❌️ means the declaration or import does not exist.
@@ -31,9 +31,9 @@ assert_not_imported
 
 /--
 warning:
-✅️ 'Nats' (declaration) asserted in 'test.AssertExists'.
-❌️ 'I_do_not_exist' (module) asserted in 'test.AssertExists'.
-❌️ 'Mathlib.Tactic.Common' (module) asserted in 'test.AssertExists'.
+✅️ 'Nats' (declaration) asserted in 'MathlibTest.AssertExists'.
+❌️ 'I_do_not_exist' (module) asserted in 'MathlibTest.AssertExists'.
+❌️ 'Mathlib.Tactic.Common' (module) asserted in 'MathlibTest.AssertExists'.
 ---
 ✅️ means the declaration or import exists.
 ❌️ means the declaration or import does not exist.
@@ -43,8 +43,8 @@ warning:
 
 /--
 warning:
-❌️ 'I_do_not_exist' (module) asserted in 'test.AssertExists'.
-❌️ 'Mathlib.Tactic.Common' (module) asserted in 'test.AssertExists'.
+❌️ 'I_do_not_exist' (module) asserted in 'MathlibTest.AssertExists'.
+❌️ 'Mathlib.Tactic.Common' (module) asserted in 'MathlibTest.AssertExists'.
 ---
 ✅️ means the declaration or import exists.
 ❌️ means the declaration or import does not exist.

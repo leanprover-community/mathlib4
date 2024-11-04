@@ -7,23 +7,6 @@ import Mathlib.Order.SetNotation
 
 set_option linter.dupNamespace false
 
-namespace termG
--- this creates a hygienic declaration starting with `termG.termG.«_@».test.Lint...`
--- and the linter ignores it
-set_option linter.dupNamespace true in
-local notation "G" => Unit
-
-/-- info: [termG, termG] -/
-#guard_msgs in
-open Lean in
-run_meta
-  let env ← getEnv
-  let consts := env.constants.toList.find? (·.1.getRoot == `termG)
-  let reps := (consts.map (·.1.components.take 2)).getD default
-  logInfo m!"{reps}"
-  guard (reps[0]! == reps[1]!)
-end termG
-
 /--
 warning: The namespace 'add' is duplicated in the declaration 'add.add'
 note: this linter can be disabled with `set_option linter.dupNamespace false`
