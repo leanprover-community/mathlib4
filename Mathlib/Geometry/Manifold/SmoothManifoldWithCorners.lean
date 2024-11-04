@@ -3,6 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
@@ -163,7 +164,7 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
   target_subset_closure_interior : toPartialEquiv.target ⊆ closure (interior toPartialEquiv.target)
   /-- For real or complex models, the interior of the model's range is convex. -/
-  convex_interior_range : IsRCLikeNormedField 𝕜 → Convex (interior (range I))
+  convex_interior_range : IsRCLikeNormedField 𝕜 → Convex ℝ (interior (range toPartialEquiv))
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
@@ -171,7 +172,7 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
 def ModelWithCorners.mk_of_IsRCLikeNormedField {𝕜 E H : Type*}
     [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
     (hK : IsRCLikeNormedField 𝕜) (e : PartialEquiv H E) (hsource : e.source = univ)
-    (hcont : Continuous e) (hinv : Continuous e.symm) (hconvex : Convex (interior (range I))) :
+    (hcont : Continuous e) (hinv : Continuous e.symm) (hconvex : Convex ℝ (interior (range e))) :
     ModelWithCorners 𝕜 E H where --:= sorry
   __ := e
   source_eq := hsource
