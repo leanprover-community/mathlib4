@@ -462,7 +462,7 @@ theorem mem_of_liesOver [P.LiesOver p] (x : A) : x ∈ p ↔ algebraMap A B x �
   rw [P.over_def p]
   rfl
 
-theorem eq_top_iff_liesOver_eq_top [P.LiesOver p] : P = ⊤ ↔ p = ⊤ := by
+theorem eq_top_iff_of_liesOver [P.LiesOver p] : P = ⊤ ↔ p = ⊤ := by
   rw [P.over_def p]
   exact comap_eq_top_iff.symm
 
