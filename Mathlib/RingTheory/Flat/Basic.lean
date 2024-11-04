@@ -151,14 +151,14 @@ lemma equiv_iff (e : M ≃ₗ[R] N) : Flat R M ↔ Flat R N :=
 instance ulift [Module.Flat R M] : Module.Flat R (ULift.{v'} M) :=
   of_linearEquiv R M (ULift.{v'} M) ULift.moduleEquiv
 
--- Making this an instance cases an infinite sequence `M → ULift M → ULift (ULift M) → ...`.
+-- Making this an instance causes an infinite sequence `M → ULift M → ULift (ULift M) → ...`.
 lemma of_ulift [Module.Flat R (ULift.{v'} M)] : Module.Flat R M :=
   of_linearEquiv R (ULift.{v'} M) M ULift.moduleEquiv.symm
 
 instance shrink [Small.{v'} M] [Module.Flat R M] : Module.Flat R (Shrink.{v'} M) :=
   of_linearEquiv R M (Shrink.{v'} M) (Shrink.linearEquiv M R)
 
--- Making this an instance cases an infinite sequence `M → Shrink M → Shrink (Shrink M) → ...`.
+-- Making this an instance causes an infinite sequence `M → Shrink M → Shrink (Shrink M) → ...`.
 lemma of_shrink [Small.{v'} M] [Module.Flat R (Shrink.{v'} M)] :
     Module.Flat R M :=
   of_linearEquiv R (Shrink.{v'} M) M (Shrink.linearEquiv M R).symm

@@ -109,20 +109,20 @@ theorem ofFn_fin_append {m n} (a : Fin m → α) (b : Fin n → α) :
 
 /-- This breaks a list of `m*n` items into `m` groups each containing `n` elements. -/
 theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
-    List.ofFn f = List.join (List.ofFn fun i : Fin m => List.ofFn fun j : Fin n => f ⟨i * n + j,
+    List.ofFn f = List.flatten (List.ofFn fun i : Fin m => List.ofFn fun j : Fin n => f ⟨i * n + j,
     calc
       ↑i * n + j < (i + 1) * n :=
         (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.add_mul, Nat.one_mul])
       _ ≤ _ := Nat.mul_le_mul_right _ i.prop⟩) := by
   induction' m with m IH
-  · simp [ofFn_zero, Nat.zero_mul, ofFn_zero, join]
+  · simp [ofFn_zero, Nat.zero_mul, ofFn_zero, flatten]
   · simp_rw [ofFn_succ', succ_mul]
-    simp [join_concat, ofFn_add, IH]
+    simp [flatten_concat, ofFn_add, IH]
     rfl
 
 /-- This breaks a list of `m*n` items into `n` groups each containing `m` elements. -/
 theorem ofFn_mul' {m n} (f : Fin (m * n) → α) :
-    List.ofFn f = List.join (List.ofFn fun i : Fin n => List.ofFn fun j : Fin m => f ⟨m * i + j,
+    List.ofFn f = List.flatten (List.ofFn fun i : Fin n => List.ofFn fun j : Fin m => f ⟨m * i + j,
     calc
       m * i + j < m * (i + 1) :=
         (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.mul_add, Nat.mul_one])
@@ -170,7 +170,7 @@ theorem ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replica
 
 @[simp]
 theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
-    List.ofFn (Fin.repeat n a) = (List.replicate n (List.ofFn a)).join := by
+    List.ofFn (Fin.repeat n a) = (List.replicate n (List.ofFn a)).flatten := by
   simp_rw [ofFn_mul, ← ofFn_const, Fin.repeat, Fin.modNat, Nat.add_comm,
     Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt (Fin.is_lt _)]
 
