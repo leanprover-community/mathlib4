@@ -117,7 +117,7 @@ jobs:
           git branch
           sed -i '/⟨`linter.style.missingEnd, true⟩,/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
           git add -u
-          git diff master..HEAD
+          git diff HEAD lakefile.lean
 
       - name: build mathlib
         id: build
