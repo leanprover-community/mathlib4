@@ -17,7 +17,7 @@ An idempotent semigroup is a semigroup that satisfies `x * x = x`.
 -/
 
 /-- An idempotent additive semigroup is a type with an associative idempotent addition. -/
-class IsIdemAddSemigroup (G : Type _) [AddSemigroup G] : Prop where
+class IsIdemAddSemigroup (G : Type*) [AddSemigroup G] : Prop where
   /-- Idempotence: `x + x = x` -/
   protected add_idem (x : G) : x + x = x
 
