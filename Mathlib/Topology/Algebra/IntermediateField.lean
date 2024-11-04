@@ -23,5 +23,5 @@ instance IntermediateField.continuousSMul (M : IntermediateField K L) : Continuo
 
 instance IntermediateField.botContinuousSMul (M : IntermediateField K L) :
     ContinuousSMul (⊥ : IntermediateField K L) M :=
-  Inducing.continuousSMul (X := L) (N := (⊥ : IntermediateField K L)) (Y := M)
-    (M := (⊥ : IntermediateField K L)) inducing_subtype_val continuous_id rfl
+  IsInducing.continuousSMul (X := L) (N := (⊥ : IntermediateField K L)) (Y := M)
+    (M := (⊥ : IntermediateField K L)) IsInducing.subtypeVal continuous_id rfl
