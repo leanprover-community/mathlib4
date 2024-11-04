@@ -192,15 +192,6 @@ theorem induce_spanningCoe {s : Set V} {G : SimpleGraph s} : G.spanningCoe.induc
 theorem spanningCoe_induce_le (s : Set V) : (G.induce s).spanningCoe ≤ G :=
   map_comap_le _ _
 
-theorem induce_compl_eq_compl_induce {s : Set V} : induce s Gᶜ = (induce s G)ᶜ := by
-  ext u v
-  simp only [comap_adj, Embedding.coe_subtype, compl_adj, ne_eq, and_congr_left_iff]
-  intro a
-  obtain ⟨valu, _⟩ := u
-  obtain ⟨valv, _⟩ := v
-  rw [Subtype.mk.injEq]
-
-
 /-! ## Homomorphisms, embeddings and isomorphisms -/
 
 
