@@ -492,9 +492,8 @@ variable (R)
 if `b` is algebraic over `R`. -/
 theorem Algebra.IsAlgebraic.exists_smul_eq_mul [IsDomain S] [Algebra.IsAlgebraic R S]
     (a : S) {b : S} (hb : b ≠ 0) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c := by
-  exact _root_.IsAlgebraic.exists_smul_eq_mul a (Algebra.IsAlgebraic.isAlgebraic b)
-    (mem_nonZeroDivisors_iff_ne_zero.mpr hb)
+    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
+  (Algebra.IsAlgebraic.isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_iff_ne_zero.mpr hb)
 
 end
 
