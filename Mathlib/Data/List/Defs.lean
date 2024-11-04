@@ -210,7 +210,7 @@ but are equal up to permutation, as shown by `List.permutations_perm_permutation
 @[simp]
 def permutations' : List α → List (List α)
   | [] => [[]]
-  | t :: ts => (permutations' ts).bind <| permutations'Aux t
+  | t :: ts => (permutations' ts).flatMap <| permutations'Aux t
 
 end Permutations
 
@@ -384,7 +384,7 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
 /-- Asynchronous version of `List.map`.
 -/
 def mapAsyncChunked {α β} (f : α → β) (xs : List α) (chunk_size := 1024) : List β :=
-  ((xs.toChunks chunk_size).map fun xs => Task.spawn fun _ => List.map f xs).bind Task.get
+  ((xs.toChunks chunk_size).map fun xs => Task.spawn fun _ => List.map f xs).flatMap Task.get
 
 
 /-!
