@@ -23,7 +23,7 @@ class IsIdemAddSemigroup (G : Type*) [AddSemigroup G] : Prop where
 
 /-- An idempotent semigroup is a type with an associative idempotent `(*)`. -/
 @[to_additive]
-class IsIdemSemigroup (G : Type _) [Semigroup G] : Prop where
+class IsIdemSemigroup (G : Type*) [Semigroup G] : Prop where
   /-- Idempotence: `x * x = x` -/
   protected mul_idem (x : G) : x * x = x
 
