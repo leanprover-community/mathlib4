@@ -245,9 +245,10 @@ lemma topologically_isLocalAtTarget'
     IsLocalAtTarget (topologically P) := by
   refine topologically_isLocalAtTarget P ?_ (fun f _ U hU hU' ↦ (hP f U hU hU').mpr)
   introv hf hs H
-  refine by simpa using (hP f (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ?_ hf).mp H ⟨1⟩
-  rw [← top_le_iff]
-  exact le_iSup (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ⟨0⟩
+  have := (hP f (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ?_ hf).mp H ⟨1⟩
+  · simpa using this
+  · rw [← top_le_iff]
+    exact le_iSup (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ⟨0⟩
 
 end Topologically
 

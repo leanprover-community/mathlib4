@@ -8,7 +8,6 @@ import Mathlib.Tactic.Core
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Logic.Basic
 import Qq
-import Batteries.Tactic.Classical
 
 /-!
 The `tauto` tactic.

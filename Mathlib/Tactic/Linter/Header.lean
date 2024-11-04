@@ -277,7 +277,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let md := (getMainModuleDoc (← getEnv)).toArray
   -- The end of the first module doc-string, or the end of the file if there is none.
   let firstDocModPos := match md[0]? with
-                          | none     => fm.positions.back
+                          | none     => fm.positions.back!
                           | some doc => fm.ofPosition doc.declarationRange.endPos
   unless stx.getTailPos? == some firstDocModPos do
     return
