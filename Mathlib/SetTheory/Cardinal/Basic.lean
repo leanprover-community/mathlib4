@@ -1032,7 +1032,7 @@ theorem bddAbove_range_comp {ι : Type u} {f : ι → Cardinal.{v}} (hf : BddAbo
 
 /-- The type of cardinals in universe `u` is not `Small.{u}`. This is a version of the Burali-Forti
 paradox. -/
-theorem not_small_cardinal : ¬ Small.{u} Cardinal.{max u v} := by
+theorem _root_.not_small_cardinal : ¬ Small.{u} Cardinal.{max u v} := by
   intro h
   have := small_lift.{_, v} Cardinal.{max u v}
   rw [← small_univ_iff, ← bddAbove_iff_small] at this
