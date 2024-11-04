@@ -12,6 +12,7 @@ import Mathlib.Data.Finset.Insert
 
 * `Disjoint`: defined via the lattice structure on finsets; two sets are disjoint if their
   intersection is empty.
+* `Finset.disjUnion`: the union of the finite sets `s` and `t`, given a proof `Disjoint s t`
 
 ## Tags
 
