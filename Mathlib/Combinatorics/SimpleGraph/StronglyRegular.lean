@@ -6,7 +6,7 @@ Authors: Alena Gusakov, Jeremy Tan
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 
 /-!
 # Strongly regular graphs

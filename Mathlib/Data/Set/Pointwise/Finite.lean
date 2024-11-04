@@ -5,7 +5,7 @@ Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
 

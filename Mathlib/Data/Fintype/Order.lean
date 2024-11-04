@@ -5,7 +5,7 @@ Authors: Peter Nelson, Yaël Dillies
 -/
 import Mathlib.Data.Finset.Order
 import Mathlib.Order.Atoms
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Order.Minimal
 
 /-!

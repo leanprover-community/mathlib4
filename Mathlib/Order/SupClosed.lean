@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Order.Closure
 
 /-!

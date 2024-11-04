@@ -11,7 +11,7 @@ import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Fintype.Quotient
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
