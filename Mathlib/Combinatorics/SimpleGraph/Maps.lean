@@ -478,7 +478,7 @@ theorem symm_toHom_comp_toHom : f.symm.toHom.comp f.toHom = Hom.id := by
     RelIso.symm_apply_apply, RelHom.id_apply]
 
 @[simp]
-theorem symm_toHom_comp_symm_toHom : f.toHom.comp f.symm.toHom = Hom.id := by
+theorem toHom_comp_symm_toHom : f.toHom.comp f.symm.toHom = Hom.id := by
   ext v
   simp only [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
     RelIso.apply_symm_apply, RelHom.id_apply]
