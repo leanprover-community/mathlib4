@@ -1015,26 +1015,4 @@ lemma rec_update₂ [DecidableEq ι₁] [DecidableEq ι₂] (i₂ : ι₂) (y : 
 
 end
 
-@[simp]
-theorem update_inl_comp_inl_apply {γ : ι₁ ⊕ ι₂ → Type*}
-    [DecidableEq ι₁] [DecidableEq (ι₁ ⊕ ι₂)] {f : (i : ι₁ ⊕ ι₂) → γ i} {i : ι₁}
-    {x : γ (.inl i)} (j : ι₁) :
-    update f (.inl i) x (Sum.inl j) =
-      update (fun j ↦ f (.inl j)) i x j := by
-  by_cases h : j = i
-  · subst h
-    simp
-  · rw [update_noteq (by simpa using h), update_noteq h]
-
-@[simp]
-theorem update_inr_comp_inr_apply {γ : ι₁ ⊕ ι₂ → Type*}
-    [DecidableEq ι₂] [DecidableEq (ι₁ ⊕ ι₂)] {f : (i : ι₁ ⊕ ι₂) → γ i} {i : ι₂}
-    {x : γ (.inr i)} (j : ι₂) :
-    update f (.inr i) x (Sum.inr j) =
-      update (fun j ↦ f (.inr j)) i x j := by
-  by_cases h : j = i
-  · subst h
-    simp
-  · rw [update_noteq (by simpa using h), update_noteq h]
-
 end Sum
