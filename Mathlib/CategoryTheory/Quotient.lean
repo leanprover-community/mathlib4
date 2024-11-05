@@ -28,9 +28,19 @@ instance (C) [Quiver C] : Inhabited (HomRel C) where
 
 namespace CategoryTheory
 
+section
+
+variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D) 
+
 /-- A functor induces a `HomRel` on its domain, relating those maps that have the same image. -/
-def Functor.homRel {C D : Type*} [Category C] [Category D] (F : C ⥤ D) : HomRel C :=
+def Functor.homRel : HomRel C :=
   fun _ _ f g ↦ F.map f = F.map g
+
+@[simp]
+lemma Functor.homRel_iff {X Y : C} (f g : X ⟶ Y) :
+    F.homRel f g ↔ F.map f = F.map g := Iff.rfl
+
+end
 
 variable {C : Type _} [Category C] (r : HomRel C)
 
