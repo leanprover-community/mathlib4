@@ -730,12 +730,8 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
     constructor
     · intro (H : IsOpen (s ×ˢ t))
       refine Or.inl ⟨?_, ?_⟩
-      · show IsOpen s
-        rw [← fst_image_prod s st.2]
-        exact isOpenMap_fst _ H
-      · show IsOpen t
-        rw [← snd_image_prod st.1 t]
-        exact isOpenMap_snd _ H
+      · simpa only [fst_image_prod _ st.2] using isOpenMap_fst _ H
+      · simpa only [snd_image_prod st.1 t] using isOpenMap_snd _ H
     · intro H
       simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false] at H
       exact H.1.prod H.2
@@ -1285,8 +1281,25 @@ theorem Filter.Tendsto.apply_nhds {l : Filter Y} {f : Y → ∀ i, π i} {x : �
     (h : Tendsto f l (𝓝 x)) (i : ι) : Tendsto (fun a => f a i) l (𝓝 <| x i) :=
   (continuousAt_apply i _).tendsto.comp h
 
+@[fun_prop]
+protected theorem Continuous.piMap {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]
+    {f : ∀ i, π i → Y i} (hf : ∀ i, Continuous (f i)) : Continuous (Pi.map f) :=
+  continuous_pi fun i ↦ (hf i).comp (continuous_apply i)
+
 theorem nhds_pi {a : ∀ i, π i} : 𝓝 a = pi fun i => 𝓝 (a i) := by
   simp only [nhds_iInf, nhds_induced, Filter.pi]
+
+protected theorem IsOpenMap.piMap {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] {f : ∀ i, π i → Y i}
+    (hfo : ∀ i, IsOpenMap (f i)) (hsurj : ∀ᶠ i in cofinite, Surjective (f i)) :
+    IsOpenMap (Pi.map f) := by
+  refine IsOpenMap.of_nhds_le fun x ↦ ?_
+  rw [nhds_pi, nhds_pi, map_piMap_pi hsurj]
+  exact Filter.pi_mono fun i ↦ (hfo i).nhds_le _
+
+protected theorem IsOpenQuotientMap.piMap {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]
+    {f : ∀ i, π i → Y i} (hf : ∀ i, IsOpenQuotientMap (f i)) : IsOpenQuotientMap (Pi.map f) :=
+  ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2, .piMap (fun i ↦ (hf i).3) <|
+    .of_forall fun i ↦ (hf i).1⟩
 
 theorem tendsto_pi_nhds {f : Y → ∀ i, π i} {g : ∀ i, π i} {u : Filter Y} :
     Tendsto f u (𝓝 g) ↔ ∀ x, Tendsto (fun i => f i x) u (𝓝 (g x)) := by
@@ -1300,6 +1313,12 @@ theorem continuousAt_pi {f : X → ∀ i, π i} {x : X} :
 theorem continuousAt_pi' {f : X → ∀ i, π i} {x : X} (hf : ∀ i, ContinuousAt (fun y => f y i) x) :
     ContinuousAt f x :=
   continuousAt_pi.2 hf
+
+@[fun_prop]
+protected theorem ContinuousAt.piMap {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]
+    {f : ∀ i, π i → Y i} {x : ∀ i, π i} (hf : ∀ i, ContinuousAt (f i) (x i)) :
+    ContinuousAt (Pi.map f) x :=
+  continuousAt_pi.2 fun i ↦ (hf i).comp (continuousAt_apply i x)
 
 theorem Pi.continuous_precomp' {ι' : Type*} (φ : ι' → ι) :
     Continuous (fun (f : (∀ i, π i)) (j : ι') ↦ f (φ j)) :=
