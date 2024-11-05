@@ -576,7 +576,7 @@ theorem strictMono_subseq_of_id_le {u : ℕ → ℕ} (hu : ∀ n, n ≤ u n) :
 theorem _root_.StrictMono.tendsto_atTop {φ : ℕ → ℕ} (h : StrictMono φ) : Tendsto φ atTop atTop :=
   tendsto_atTop_mono h.id_le tendsto_id
 
-/-- If `f` is a monotone funciton and `g` tends to `atTop` along a nontrivial filter.
+/-- If `f` is a monotone function and `g` tends to `atTop` along a nontrivial filter.
 then the upper bounds of the range of `f ∘ g`
 are the same as the upper bounds of the range of `f`.
 
@@ -592,7 +592,7 @@ theorem upperBounds_range_comp_of_monotone_of_tendsto_atTop [Preorder β] [Preor
   obtain ⟨a, ha⟩ : ∃ a, b ≤ g a := (hg.eventually_ge_atTop b).exists
   exact (hf ha).trans <| hc <| mem_range_self _
 
-/-- If `f` is a monotone funciton with bounded range
+/-- If `f` is a monotone function with bounded range
 and `g` tends to `atTop` along a nontrivial filter,
 then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`.
 
@@ -611,7 +611,7 @@ theorem ciSup_monotone_comp_tendsto_atTop [Preorder β] [ConditionallyCompleteLa
     ← upperBounds_range_comp_of_monotone_of_tendsto_atTop hf hg, Function.comp_def]
   exacts [hb, hb.mono <| range_comp_subset_range _ _]
 
-/-- If `f` is a monotone funciton taking values in a conditionally complete linear order
+/-- If `f` is a monotone function taking values in a conditionally complete linear order
 and `g` tends to `atTop` along a nontrivial filter,
 then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`.
 
@@ -629,7 +629,7 @@ theorem ciSup_monotone_comp_tendsto_atTop_of_linearOrder [Preorder β]
     rwa [BddAbove, ← Function.comp_def f g,
       upperBounds_range_comp_of_monotone_of_tendsto_atTop hf hg]
 
-/-- If `f` is a monotone funciton taking values in a complete lattice
+/-- If `f` is a monotone function taking values in a complete lattice
 and `g` tends to `atTop` along a nontrivial filter,
 then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`.
 
