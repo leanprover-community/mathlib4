@@ -158,16 +158,25 @@ namespace Interval
 
 variable (s t : Interval α)
 
-@[to_additive (attr := simp)]
 theorem bot_mul : ⊥ * t = ⊥ :=
   rfl
 
-@[to_additive]
 theorem mul_bot : s * ⊥ = ⊥ :=
   Option.map₂_none_right _ _
 
--- Porting note: simp can prove `add_bot`
-attribute [simp] mul_bot
+instance {α : Type*} [Preorder α] [Add α] [AddLeftMono α] [AddRightMono α] :
+    IsBotAbsorbing (Interval α) where
+  bot_add _ := rfl
+  add_bot _ := Option.map₂_none_right _ _
+
+protected theorem bot_add {α : Type*} [Preorder α] [Add α] [AddLeftMono α] [AddRightMono α]
+    {g : Interval α} : ⊥ + g = ⊥ := by simp
+
+protected theorem add_bot {α : Type*} [Preorder α] [Add α] [AddLeftMono α] [AddRightMono α]
+    {g : Interval α} : g + ⊥ = ⊥ := by simp
+
+attribute [to_additive existing] bot_mul mul_bot
+attribute [simp] bot_mul mul_bot
 
 end Interval
 
