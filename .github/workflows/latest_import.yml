@@ -5,6 +5,9 @@ on:
     - cron: '0 4 * * 1'  # Run at 04:00 UTC every Monday
   workflow_dispatch:
 
+env:
+  TOP_MODULE: Mathlib
+
 jobs:
   late-importers:
     name: Build
@@ -67,67 +70,16 @@ jobs:
       with:
         linters: gcc
         run: |
-          lake build
+          lake build "${TOP_MODULE}"
 
     - name: Full report
       run: |
-        # TODO
-        # If a merged PR touched one of the files in the most recent report, trigger the workflow again.
-        # Show the diff relative to the last report. (Using zulip/github as the persistent state?)
-
-        lake build | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
-          awk -F: 'BEGIN{max=0}
-            /^⚠/{ print currMax; max=0 }
-            (max < $3) {
-              gsub(/ *Now redun.*/, "")
-              gsub(/ to \[[^]]*\]/, "")
-              gsub(/ *note: this linter.*/, "")
-              gsub(/\.\//, "")
-              gsub(/ *Imports increased by */, "")
-              gsub(/ *New imports */, "")
-              currMax=$0
-              max=$3+0
-          }' |
-          sort --field-separator=: -k3 -nr |
-          awk -F: 'BEGIN{printf("| File | Line | Import increase | New imports |\n| :- | -: | -: | :- |\n")} {
-            printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
-          }'
+        ./scripts/late_importers.sh "${TOP_MODULE}" 0 0
 
     - name: Zulip report
       id: late_importers
       run: |
-        baseURL='https://github.com/leanprover-community/mathlib4/commit'
-        refCommit=${{ github.sha }}
-
-        printf $'summary<<EOF\n%s\nEOF' "$(
-          lake build | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
-            awk -F: 'BEGIN{max=0}
-              /^⚠/{ print currMax; max=0 }
-              (max < $3) {
-                gsub(/ *Now redun.*/, "")
-                gsub(/ to \[[^]]*\]/, "")
-                gsub(/ *note: this linter.*/, "")
-                gsub(/\.\//, "")
-                gsub(/ *Imports increased by */, "")
-                gsub(/ *New imports */, "")
-                currMax=$0
-                max=$3+0
-            }' |
-            sort --field-separator=: -k3 -nr |
-            awk -F: 'BEGIN{
-              printf("|File|Line|Import increase|New imports|\n|:-|-:|-:|:-|\n")
-              con=1
-            }
-              ((con <= 15) && (10 <= $5+0)) {
-                con++
-                fileHtml=$2
-                gsub(/\.lean$/, ".html", fileHtml)
-                gsub(/ /, "", fileHtml)
-                printf("| [%s](https://leanprover-community.github.io/mathlib4_docs/%s) | %s | %s | %s |\n", $2, fileHtml, $3, $5, $6)
-            }'
-          printf '\n\n---\n\nReference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
-          printf '[Full report](https://github.com/%s/actions/runs/%s)\n' "${{ github.repository }}" "${{ github.run_id }}"
-        )" | tee "$GITHUB_OUTPUT"
+        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh "${TOP_MODULE}" 15 10)" | tee "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip
       uses: zulip/github-actions-zulip/send-message@v1
