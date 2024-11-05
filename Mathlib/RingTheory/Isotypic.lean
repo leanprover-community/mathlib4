@@ -221,7 +221,7 @@ variable [IsSimpleModule R C]
 /-- The isotypic component of an isotypic component using its own generator
   is the top submodule. -/
 lemma isotypic_of_isotypic_eq_top :
-  isotypic R ((isotypic R M C)) C = ⊤ := by
+    isotypic R ((isotypic R M C)) C = ⊤ := by
   let cmap := (⨆ (i : C →ₗ[R] M), LinearMap.range i).subtype
   have hc : Function.Injective cmap := Subtype.coe_injective
   have htop := Submodule.comap_subtype_self (isotypic R M C)
