@@ -24,7 +24,6 @@ open Meta
 
 namespace Meta.NormNum
 open Qq
-attribute [local instance] monadLiftOptionMetaM_mathlib
 
 variable {a b c : ℕ}
 
@@ -170,6 +169,7 @@ theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} 
   rw [← Nat.cast_pow] at this
   use this; simp [invOf_pow, Commute.mul_pow]
 
+attribute [local instance] monadLiftOptionMetaM_mathlib in
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
 @[norm_num _ ^ (_ : ℕ)]

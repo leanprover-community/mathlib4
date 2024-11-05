@@ -20,8 +20,6 @@ namespace Mathlib.Meta.Positivity
 
 open Qq Lean Meta Finset
 
-attribute [local instance] NormNum.monadLiftOptionMetaM_mathlib
-
 /-- Extension for `Finset.card`. `#s` is positive if `s` is nonempty.
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
@@ -56,6 +54,7 @@ def evalFinsetDens : PositivityExt where eval {u 𝕜} _ _ e := do
     return .positive q(@Nonempty.dens_pos $α $instα $s $ps)
   | _, _, _ => throwError "not Finset.dens"
 
+attribute [local instance] NormNum.monadLiftOptionMetaM_mathlib in
 /-- The `positivity` extension which proves that `∑ i ∈ s, f i` is nonnegative if `f` is, and
 positive if each `f i` is and `s` is nonempty.
 
