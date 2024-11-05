@@ -420,6 +420,17 @@ theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
 instance (o : Ordinal) : NoMaxOrder (ℵ_ o).ord.toType :=
   toType_noMax_of_succ_lt (ord_aleph_isLimit o).2
 
+@[simp]
+theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
+  ext c
+  refine ⟨fun ⟨o, e⟩ => e ▸ aleph0_le_aleph _, fun hc ↦ ⟨preAleph.symm c - ω, ?_⟩⟩
+  rw [aleph_eq_preAleph, Ordinal.add_sub_cancel_of_le, preAleph.apply_symm_apply]
+  rwa [← aleph0_le_preAleph, preAleph.apply_symm_apply]
+
+theorem mem_range_aleph_iff {c : Cardinal} : c ∈ range aleph ↔ ℵ₀ ≤ c := by
+  rw [range_aleph, mem_Ici]
+
+@[deprecated mem_range_aleph_iff (since := "2024-10-24")]
 theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = ℵ_ o :=
   ⟨fun h =>
     ⟨preAleph.symm c - ω, by
