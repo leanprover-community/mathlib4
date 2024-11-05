@@ -250,8 +250,10 @@ def reCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 
-lemma uniformlyContinous_re : UniformContinuous re :=
+lemma uniformlyContinuous_re : UniformContinuous re :=
   reCLM.uniformContinuous
+
+@[deprecated (since := "2024-11-04")] alias uniformlyContinous_re := uniformlyContinuous_re
 
 @[simp]
 theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
@@ -269,8 +271,10 @@ def imCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 
-lemma uniformlyContinous_im : UniformContinuous im :=
+lemma uniformlyContinuous_im : UniformContinuous im :=
   imCLM.uniformContinuous
+
+@[deprecated (since := "2024-11-04")] alias uniformlyContinous_im := uniformlyContinuous_im
 
 @[simp]
 theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
