@@ -114,13 +114,13 @@ theorem zero_eq_map_natCast_iff {α : Type*} (n : ℕ∞) [AddMonoidWithOne α] 
     0 = WithTop.map (Nat.cast : ℕ → α) n ↔ 0 = n :=
   (Eq.comm.trans (map_natCast_eq_zero_iff n)).trans Eq.comm
 
-lemma vp_coe_pos_iff (a : R) :
+lemma adicValuation_coe_pos_iff (a : R) :
     0 < adicValuation p (algebraMap R K a) ↔ p ∣ a := by
   simp [lt_iff_le_and_ne, emultiplicity_eq_zero, eq_comm]
 
 open IsFractionRing
 
-lemma vp_pos_iff (a : K) :
+lemma adicValuation_pos_iff (a : K) :
     0 < adicValuation p a ↔ p ∣ num R a := by
   nth_rw 1 [← mk'_num_den' (A := R) a]
   simp only [map_div, adicValuation_coe, sub_pos', WithTop.map_eq_top_iff]
@@ -134,12 +134,12 @@ lemma vp_pos_iff (a : K) :
     convert emultiplicity_pos_of_dvd h
     exact emultiplicity_eq_zero.mpr <| hp.out.not_unit ∘ num_den_reduced _ _ h
 
-lemma vp_neg_iff (a : K) :
+lemma adicValuation_neg_iff (a : K) :
     adicValuation p a < 0 ↔ p ∣ den R a := by
   by_cases ha : a = 0
   · simp only [ha, map_zero, not_top_lt, false_iff]
     exact hp.out.not_unit ∘ (isUnit_of_dvd_unit · isUnit_den_zero)
-  convert vp_pos_iff p a⁻¹ using 1
+  convert adicValuation_pos_iff p a⁻¹ using 1
   · simp only [map_inv]
     cases h : adicValuation p a
     · simp [ha] at h
