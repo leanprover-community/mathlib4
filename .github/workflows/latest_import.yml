@@ -98,7 +98,7 @@ jobs:
       id: late_importers
       run: |
         baseURL='https://github.com/leanprover-community/mathlib4/commit'
-        refCommit="$(git rev-parse HEAD)"
+        refCommit=${{ github.sha }}
 
         {
         printf $'summary<<EOF\n%s\nEOF' "$(
@@ -126,6 +126,7 @@ jobs:
             }'
           )"
         printf '\n\nReference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
+        printf '[Full report](https://github.com/%s/actions/runs/%s)\n' "${{ github.repository }}" "${{ github.run_id }}"
         } | tee "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip
