@@ -324,6 +324,16 @@ https://stacks.math.columbia.edu/tag/04E7
 def colimitIso [HasColimit G] : colimit (F ⋙ G) ≅ colimit G :=
   asIso (colimit.pre G F)
 
+@[reassoc (attr := simp)]
+theorem ι_colimitIso_hom [HasColimit G] (X : C) :
+    colimit.ι (F ⋙ G) X ≫ (colimitIso F G).hom = colimit.ι G (F.obj X) := by
+  simp [colimitIso]
+
+@[reassoc (attr := simp)]
+theorem ι_colimitIso_inv [HasColimit G] (X : C) :
+    colimit.ι G (F.obj X) ≫ (colimitIso F G).inv = colimit.ι (F ⋙ G) X := by
+  simp [colimitIso]
+
 /-- A pointfree version of `colimitIso`, stating that whiskering by `F` followed by taking the
 colimit is isomorpic to taking the colimit on the codomain of `F`. -/
 def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
