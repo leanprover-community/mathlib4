@@ -150,7 +150,9 @@ section MulEquiv
 
 /-- The canonical isomorphism between the monoid of homomorphisms from a finite product of
 commutative monoids to another commutative monoid and the product of the homomorphism monoids. -/
-@[to_additive]
+@[to_additive "The canonical isomorphism between the additive monoid of homomorphisms from
+a finite product of additive commutative monoids to another additive commutative monoid and
+the product of the homomorphism monoids."]
 def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → Type*)
     [(i : ι) → CommMonoid (M i)] (M' : Type*) [CommMonoid M'] :
     (((i : ι) → M i) →* M') ≃* ((i : ι) → (M i →* M')) where
