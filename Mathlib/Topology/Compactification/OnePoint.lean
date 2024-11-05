@@ -164,6 +164,19 @@ theorem coe_preimage_infty : ((↑) : X → OnePoint X) ⁻¹' {∞} = ∅ := by
   ext
   simp
 
+/-- Extend a map `f : X → Y` to a map `OnePoint X → OnePoint Y`
+by sending infinity to infinity. -/
+protected def map (f : X → Y) : OnePoint X → OnePoint Y :=
+  Option.map f
+
+@[simp] theorem map_infty (f : X → Y) : OnePoint.map f ∞ = ∞ := rfl
+@[simp] theorem map_some (f : X → Y) (x : X) : (x : OnePoint X).map f = f x := rfl
+@[simp] theorem map_id : OnePoint.map (id : X → X) = id := Option.map_id
+
+theorem map_comp {Z : Type*} (f : Y → Z) (g : X → Y) :
+    OnePoint.map (f ∘ g) = OnePoint.map f ∘ OnePoint.map g :=
+  (Option.map_comp_map _ _).symm
+
 /-!
 ### Topological space structure on `OnePoint X`
 
@@ -364,9 +377,7 @@ the underlying space and a limit value at infinity.
 -/
 def continuousMapMk {Y : Type*} [TopologicalSpace Y] (f : C(X, Y)) (y : Y)
     (h : Tendsto f (coclosedCompact X) (𝓝 y)) : C(OnePoint X, Y) where
-  toFun
-    | ∞ => y
-    | some x => f x
+  toFun x := x.elim y f
   continuous_toFun := by
     rw [continuous_iff]
     refine ⟨h, f.continuous⟩
@@ -468,6 +479,18 @@ theorem inseparable_iff {x y : OnePoint X} :
   induction x using OnePoint.rec <;> induction y using OnePoint.rec <;>
     simp [not_inseparable_infty_coe, not_inseparable_coe_infty, coe_eq_coe, Inseparable.refl]
 
+theorem continuous_map_iff [TopologicalSpace Y] {f : X → Y} :
+    Continuous (OnePoint.map f) ↔
+      Continuous f ∧ Tendsto f (coclosedCompact X) (coclosedCompact Y) := by
+  simp_rw [continuous_iff, map_some, ← comap_coe_nhds_infty, tendsto_comap_iff, map_infty,
+    isOpenEmbedding_coe.isInducing.continuous_iff (Y := Y)]
+  exact and_comm
+
+theorem continuous_map [TopologicalSpace Y] {f : X → Y} (hc : Continuous f)
+    (h : Tendsto f (coclosedCompact X) (coclosedCompact Y)) :
+    Continuous (OnePoint.map f) :=
+  continuous_map_iff.mpr ⟨hc, h⟩
+
 /-!
 ### Compactness and separation properties
 
@@ -478,7 +501,6 @@ Hausdorff space, then `OnePoint X` is a normal (hence, T₃ and Hausdorff) space
 Finally, if the original space `X` is *not* compact and is a preconnected space, then
 `OnePoint X` is a connected space.
 -/
-
 
 /-- For any topological space `X`, its one point compactification is a compact space. -/
 instance : CompactSpace (OnePoint X) where
@@ -598,6 +620,24 @@ lemma equivOfIsEmbeddingOfRangeEq_apply_infty :
 end Uniqueness
 
 end OnePoint
+
+namespace Homeomorph
+
+variable [TopologicalSpace X] [TopologicalSpace Y]
+
+open OnePoint
+
+/-- Extend a homeomorphism of topological spaces
+to the homeomorphism of their one point compactifications. -/
+@[simps]
+def onePointCongr (h : X ≃ₜ Y) : OnePoint X ≃ₜ OnePoint Y where
+  __ := h.toEquiv.optionCongr
+  toFun := OnePoint.map h
+  invFun := OnePoint.map h.symm
+  continuous_toFun := continuous_map (map_continuous h) h.map_coclosedCompact.le
+  continuous_invFun := continuous_map (map_continuous h.symm) h.symm.map_coclosedCompact.le
+
+end Homeomorph
 
 /-- A concrete counterexample shows that `Continuous.homeoOfEquivCompactToT2`
 cannot be generalized from `T2Space` to `T1Space`.
