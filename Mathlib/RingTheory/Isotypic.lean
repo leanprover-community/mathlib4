@@ -105,7 +105,7 @@ end DefinitionUnification
 section IndependentOfSimple
 
 theorem isotypic_mapsTo_isotypic (N)
-[AddCommGroup N] [Module R N] (f : M →ₗ[R] N) :
+    [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) :
    Submodule.map f (isotypic R M C) ≤ isotypic R N C := by
   rw[isotypic, isotypic, Submodule.map_iSup, iSup, iSup]
   apply sSup_le_sSup_of_forall_exists_le
