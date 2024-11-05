@@ -602,5 +602,3 @@ end LinearDisjoint
 end FieldAndCommRing
 
 end Subalgebra
-
-#min_imports
