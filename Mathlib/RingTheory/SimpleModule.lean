@@ -421,7 +421,7 @@ lemma IsSimpleModule.mapsTo_equiv_or_zero
 
 /-- The image of a homomorphism from a simple module is either simple or zero. -/
 lemma IsSimpleModule.mapsTo_simple_or_zero
-[IsSimpleModule R N] (l : N →ₗ[R] M) :
+    [IsSimpleModule R N] (l : N →ₗ[R] M) :
   IsSimpleModule R (LinearMap.range l) ∨ (LinearMap.range l) = 0 := by
   cases (IsSimpleModule.mapsTo_equiv_or_zero R M S l) with
   | inl h =>
