@@ -640,25 +640,13 @@ theorem factorize_with_map_step {m n : ℕ} (h : m ≤ n) :
     maps_system K_fraisse (h.trans (Nat.le_add_right n 1)) =
       (map_step K_fraisse n).comp (maps_system K_fraisse h) := by
   rw [map_step]
-  simp [maps_system]
+  simp only [maps_system]
   rw [init_system_map_decomposition, init_system_map_decomposition]
   case h => trivial
   case h => assumption
   rw [maps_system_same_step', Embedding.eq_embed_trans]
-  ext x
-  simp only [PartialEquiv.map_dom, Embedding.comp_apply]
-  let f := (extend_and_join K_fraisse (ess_surj_sequence K_fraisse (n + 1))
-            (f := ((FGEquiv_extended K_fraisse n).1.map
-        ((init_system K_fraisse n).2 (Nat.unpair n).1).2))
-            (FG.map ((init_system K_fraisse n).snd (Nat.unpair n).1).snd.toHom
-              (FGEquiv_extended K_fraisse n).property)).snd
-  show (f.comp (((init_system K_fraisse n).snd m).snd.comp (Embedding.eq_embed _))) _ = (f.comp _) _
-  simp
-  show _ = Embedding.eq_embed _ (Embedding.eq_embed _ _)
-  simp
-  show _ = Embedding.refl L (system K_fraisse n) _
-  rw [Embedding.refl_apply]
-  rfl
+  simp only [PartialEquiv.map_dom, Embedding.comp_assoc, Embedding.eq_embed_trans,
+    Embedding.refl_eq_embed, Embedding.comp_refl]
 
 theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
     (maps_system K_fraisse h').comp (maps_system K_fraisse h) =
