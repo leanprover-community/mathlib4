@@ -750,4 +750,3 @@ theorem autToPow_spec [NeZero n] (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : 
 end Automorphisms
 
 end IsPrimitiveRoot
-#min_imports
