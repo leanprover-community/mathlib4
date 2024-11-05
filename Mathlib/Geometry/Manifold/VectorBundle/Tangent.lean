@@ -49,7 +49,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [SmoothManifoldWithCorners I M] {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   [SmoothManifoldWithCorners I' M'] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-
 /-- Auxiliary lemma for tangent spaces: the derivative of a coordinate change between two charts is
   smooth on its source. -/
 theorem contDiffOn_fderiv_coord_change (i j : atlas H M) :
@@ -60,10 +59,9 @@ theorem contDiffOn_fderiv_coord_change (i j : atlas H M) :
   intro x hx
   refine (ContDiffWithinAt.fderivWithin_right ?_ I.uniqueDiffOn (n := ∞) (by exact_mod_cast le_top)
     <| h hx).mono h
-  refine (PartialHomeomorph.contDiffOn_extend_coord_change I (subset_maximalAtlas I j.2)
-    (subset_maximalAtlas I i.2) x hx).mono_of_mem ?_
-  exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 I hx
-
+  refine (PartialHomeomorph.contDiffOn_extend_coord_change (subset_maximalAtlas j.2)
+    (subset_maximalAtlas i.2) x hx).mono_of_mem_nhdsWithin ?_
+  exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 hx
 
 open SmoothManifoldWithCorners
 
@@ -103,11 +101,11 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
     · have := i.1.extend_preimage_mem_nhds (I := I) hxi (j.1.extend_source_mem_nhds (I := I) hxj)
       filter_upwards [nhdsWithin_le_nhds this] with y hy
       simp_rw [Function.comp_apply, (j.1.extend I).left_inv hy]
-    · simp_rw [Function.comp_apply, i.1.extend_left_inv I hxi, j.1.extend_left_inv I hxj]
-    · exact (contDiffWithinAt_extend_coord_change' I (subset_maximalAtlas I k.2)
-        (subset_maximalAtlas I j.2) hxk hxj).differentiableWithinAt (by exact_mod_cast le_top)
-    · exact (contDiffWithinAt_extend_coord_change' I (subset_maximalAtlas I j.2)
-        (subset_maximalAtlas I i.2) hxj hxi).differentiableWithinAt (by exact_mod_cast le_top)
+    · simp_rw [Function.comp_apply, i.1.extend_left_inv hxi, j.1.extend_left_inv hxj]
+    · exact (contDiffWithinAt_extend_coord_change' (subset_maximalAtlas k.2)
+        (subset_maximalAtlas j.2) hxk hxj).differentiableWithinAt (by exact_mod_cast le_top)
+    · exact (contDiffWithinAt_extend_coord_change' (subset_maximalAtlas j.2)
+        (subset_maximalAtlas i.2) hxj hxi).differentiableWithinAt (by exact_mod_cast le_top)
     · intro x _; exact mem_range_self _
     · exact I.uniqueDiffWithinAt_image
     · rw [Function.comp_apply, i.1.extend_left_inv hxi]

@@ -155,8 +155,8 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
       PartialEquiv.mem_symm_trans_source _ hx₂ <|
         mem_extChartAt_source (g x₂)).differentiableWithinAt (by exact_mod_cast le_top)
     have hI' :=
-      (contDiffWithinAt_ext_coord_change I' (f x₀ (g x₀)) (f x₂ (g x₂)) <|
-            PartialEquiv.mem_symm_trans_source _ (mem_extChartAt_source I' (f x₂ (g x₂)))
+      (contDiffWithinAt_ext_coord_change (f x₀ (g x₀)) (f x₂ (g x₂)) <|
+            PartialEquiv.mem_symm_trans_source _ (mem_extChartAt_source (f x₂ (g x₂)))
               h3x₂).differentiableWithinAt (by exact_mod_cast le_top)
     have h3f := (h2x₂.mdifferentiableAt le_rfl).differentiableWithinAt_writtenInExtChartAt
     refine fderivWithin_comp₃ _ hI' h3f hI ?_ ?_ ?_ ?_ (I.uniqueDiffOn _ <| mem_range_self _)
