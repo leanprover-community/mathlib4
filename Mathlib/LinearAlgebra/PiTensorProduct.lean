@@ -876,7 +876,7 @@ def tmulEquivDep :
 lemma tmulEquivDep_apply (a : (i₁ : ι) → N (.inl i₁))
     (b : (i₂ : ι₂) → N (.inr i₂)) :
       tmulEquivDep R N ((⨂ₜ[R] i₁, a i₁) ⊗ₜ (⨂ₜ[R] i₂, b i₂)) =
-        (⨂ₜ[R] i, Sum.desc a b i) := by
+        (⨂ₜ[R] i, Sum.rec a b i) := by
   simp [tmulEquivDep]
 
 @[simp]
@@ -900,7 +900,8 @@ def tmulEquiv :
 @[simp]
 theorem tmulEquiv_apply (a : ι → M) (b : ι₂ → M) :
     tmulEquiv R M ((⨂ₜ[R] i, a i) ⊗ₜ[R] ⨂ₜ[R] i, b i) = ⨂ₜ[R] i, Sum.elim a b i := by
-  simp [tmulEquiv, Sum.desc_eq_elim]
+  simp [tmulEquiv]
+  rfl
 
 @[simp]
 theorem tmulEquiv_symm_apply (a : ι ⊕ ι₂ → M) :
