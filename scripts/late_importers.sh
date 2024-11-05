@@ -19,8 +19,9 @@ significantDifference=${3:-0}
 >&2 printf 'Report only the top %s exceptions\n' "${lineLimit}"
 >&2 printf 'Consider a file an exception if the last import increase exceeds %s imports\n\n' "${significantDifference}"
 
-baseURL='https://github.com/leanprover-community/mathlib4/commit'
-refCommit=${{ github.sha }}
+#baseURL='https://github.com/leanprover-community/mathlib4/commit'
+baseURL='https://github.com/leanprover-community/mathlib4'
+refCommit="$(git rev-parse HEAD)" #${{ github.sha }}
 
 # build the selected target and collapse all `linter.minImports` warning to a single line per warning
 lake build "${root}" | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
@@ -57,5 +58,5 @@ lake build "${root}" | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
       gsub(/ /, "", fileHtml)
       printf("| [%s](https://leanprover-community.github.io/mathlib4_docs/%s) | %s | %s | %s |\n", $2, fileHtml, $3, $5, $6)
   }'
-printf '\n\n---\n\nReference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
-printf '[Full report](https://github.com/%s/actions/runs/%s)\n' "${{ github.repository }}" "${{ github.run_id }}"
+printf '\n\n---\n\nReference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/commit/${refCommit}"
+printf '[Full report](%s/actions/runs/%s)\n' "${baseURL}" "${jobID}" #"${{ github.repository }}" "${{ github.run_id }}"
