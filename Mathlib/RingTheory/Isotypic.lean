@@ -63,7 +63,7 @@ abbrev isotypic' : (Submodule R M) :=
 /-- We define isotypic to be an indexed supremum to be more compatible
   with other theorems down the line. -/
 def isotypic :
-Submodule R M := (⨆ (i : C →ₗ[R] M), LinearMap.range i)
+    Submodule R M := (⨆ (i : C →ₗ[R] M), LinearMap.range i)
 
 /-- A convenient form to turn isotypic into a non-indexed supremum, for when that is needed. -/
 lemma isotypic_eq_sSup_isoset : isotypic R M C = sSup (isoset R M C) := by
