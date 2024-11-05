@@ -144,7 +144,7 @@ lemma acc_cons_of_acc [DecidableEq α] [Preorder α] (a : α)
   | intro x wfH wfh2 =>
     apply acc_cons
     · simpa
-    · constructor ; simpa only
+    · constructor; simpa only
     · simpa only
 
 lemma acc_cons_of_acc_of_lt [DecidableEq α] [Preorder α] :
