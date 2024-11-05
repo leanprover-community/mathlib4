@@ -9,6 +9,7 @@ import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.UrysohnsLemma
+import Mathlib.Topology.ContinuousMap.Ordered
 
 /-!
 # Continuous partition of unity

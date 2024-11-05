@@ -1218,8 +1218,6 @@ theorem cmp_compares : ∀ a b : NONote, (cmp a b).Compares a b
 instance : LinearOrder NONote :=
   linearOrderOfCompares cmp cmp_compares
 
-instance : IsWellOrder NONote (· < ·) where
-
 /-- Asserts that `repr a < ω ^ repr b`. Used in `NONote.recOn`. -/
 def below (a b : NONote) : Prop :=
   NFBelow a.1 (repr b)
