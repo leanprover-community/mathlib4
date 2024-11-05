@@ -74,6 +74,7 @@ def Embedding.sumInr : H ↪g G ⊕g H where
   inj' u v := by simp
   map_rel_iff' := by simp
 
+/-- Color `G ⊕g H` with colorings of `G` and `H` -/
 def Coloring.sum (cG : G.Coloring γ) (cH : H.Coloring γ) : (G ⊕g H).Coloring γ := Coloring.mk
   (Sum.elim cG cH) <| by
   intro u v
@@ -81,14 +82,18 @@ def Coloring.sum (cG : G.Coloring γ) (cH : H.Coloring γ) : (G ⊕g H).Coloring
   · exact cG.valid
   · exact cH.valid
 
+/-- Get coloring of `G` from coloring of `G ⊕g H` -/
 def Coloring.sum_left (c : (G ⊕g H).Coloring γ) : G.Coloring γ := Coloring.mk (c ∘ Sum.inl) <| by
   intro u v h
   exact c.valid h
 
+/-- Get coloring of `H` from coloring of `G ⊕g H` -/
 def Coloring.sum_right (c : (G ⊕g H).Coloring γ) : H.Coloring γ := Coloring.mk (c ∘ Sum.inr) <| by
   intro u v h
   exact c.valid h
 
+/-- Color `G ⊕g H` with `Fin (n + m)` given a coloring of `G` with `Fin n` and a coloring of `H`
+with `Fin m` -/
 def Coloring.sum_fin {n m : ℕ} (cG : G.Coloring (Fin n)) (cH : H.Coloring (Fin m)) :
     (G ⊕g H).Coloring (Fin (max n m)) := Coloring.mk
   (Sum.elim (Fin.castMax m ∘ cG) (Fin.castMax' n ∘ cH)) <| by
@@ -99,17 +104,20 @@ def Coloring.sum_fin {n m : ℕ} (cG : G.Coloring (Fin n)) (cH : H.Coloring (Fin
   · rw [Fin.castMax'_val, Fin.castMax'_val, ← Fin.ext_iff]
     exact cH.valid
 
+theorem Colorable.sum_fin {n m : ℕ} (hG : G.Colorable n) (hH : H.Colorable m) :
+    (G ⊕g H).Colorable (max n m) := Nonempty.intro (hG.some.sum_fin hH.some)
+
+theorem Colorable.sum_left {n : ℕ} (h : (G ⊕g H).Colorable n) : G.Colorable n :=
+  Nonempty.intro (h.some.sum_left)
+
+theorem Colorable.sum_right {n : ℕ} (h : (G ⊕g H).Colorable n) : H.Colorable n :=
+  Nonempty.intro (h.some.sum_right)
+
 theorem ChromaticNumber.left_le_sum : G.chromaticNumber ≤ (G ⊕g H).chromaticNumber := by
-  refine chromaticNumber_le_of_forall_imp ?_
-  intro n h
-  let c : (G ⊕g H).Coloring (Fin n) := h.some
-  exact Nonempty.intro c.sum_left
+  refine chromaticNumber_le_of_forall_imp (fun n h ↦ h.sum_left)
 
 theorem ChromaticNumber.right_le_sum : H.chromaticNumber ≤ (G ⊕g H).chromaticNumber := by
-  refine chromaticNumber_le_of_forall_imp ?_
-  intro n h
-  let c : (G ⊕g H).Coloring (Fin n) := h.some
-  exact Nonempty.intro c.sum_right
+  refine chromaticNumber_le_of_forall_imp (fun n h ↦ h.sum_right)
 
 theorem ChromaticNumber.sum_eq :
     (G ⊕g H).chromaticNumber = max G.chromaticNumber H.chromaticNumber := by
