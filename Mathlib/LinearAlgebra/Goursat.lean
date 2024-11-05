@@ -3,8 +3,9 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.LinearAlgebra.Quotient.Basic
+
 
 /-!
 # Goursat's lemma on submodules of a product
@@ -114,7 +115,7 @@ there are submodules `A'' ⊆ A' ⊆ A` and `B'' ⊆ B' ⊆ B`, and an equivalen
 `A' × B'` of `graph f ⊆ (A' / A'') × (B' / B'')`.
 -/
 theorem exists_equiv_fstMod_sndMod (V : Submodule R (A × B)) :
-    ∃ (A' A'' : Submodule R A) (B' B'' : Submodule R B) (ha : A'' ≤ A') (hb : B'' ≤ B')
+    ∃ (A' A'' : Submodule R A) (B' B'' : Submodule R B) (_ : A'' ≤ A') (_ : B'' ≤ B')
     (f : (A' ⧸ (A''.comap A'.subtype)) ≃ₗ[R] B' ⧸ (B''.comap B'.subtype)),
     V = (f.graph.comap ((mkQ _).prodMap (mkQ _))).map (A'.subtype.prodMap B'.subtype) := by
   -- set up notation to reduce to case when subspace surjects onto factors
