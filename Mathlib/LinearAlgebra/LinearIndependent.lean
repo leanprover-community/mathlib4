@@ -282,18 +282,14 @@ theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
       at hf_inj
   rw [linearIndependent_iff_ker] at hv ⊢
   rw [hv, le_bot_iff] at hf_inj
-  haveI : Inhabited M := ⟨0⟩
-  rw [Finsupp.linearCombination_comp, Finsupp.lmapDomain_linearCombination _ _ f,
-      LinearMap.ker_comp, hf_inj]
-  exact fun _ => rfl
+  rw [Finsupp.linearCombination_linear_comp, LinearMap.ker_comp, hf_inj]
 
 /-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
     spans a submodule disjoint from the kernel of `f` -/
 theorem Submodule.range_ker_disjoint {f : M →ₗ[R] M'}
     (hv : LinearIndependent R (f ∘ v)) :
     Disjoint (span R (range v)) (LinearMap.ker f) := by
-  rw [linearIndependent_iff_ker, Finsupp.linearCombination_comp,
-      Finsupp.lmapDomain_linearCombination R _ f (fun _ ↦ rfl), LinearMap.ker_comp] at hv
+  rw [linearIndependent_iff_ker, Finsupp.linearCombination_linear_comp, LinearMap.ker_comp] at hv
   rw [disjoint_iff_inf_le, ← Set.image_univ, Finsupp.span_image_eq_map_linearCombination,
     map_inf_eq_map_inf_comap, hv, inf_bot_eq, map_bot]
 

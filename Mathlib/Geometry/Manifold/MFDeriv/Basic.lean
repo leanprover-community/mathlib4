@@ -62,9 +62,12 @@ nonrec theorem UniqueMDiffWithinAt.mono_nhds {s t : Set M} {x : M} (hs : UniqueM
     (ht : 𝓝[s] x ≤ 𝓝[t] x) : UniqueMDiffWithinAt I t x :=
   hs.mono_nhds <| by simpa only [← map_extChartAt_nhdsWithin] using Filter.map_mono ht
 
-theorem UniqueMDiffWithinAt.mono_of_mem {s t : Set M} {x : M} (hs : UniqueMDiffWithinAt I s x)
-    (ht : t ∈ 𝓝[s] x) : UniqueMDiffWithinAt I t x :=
+theorem UniqueMDiffWithinAt.mono_of_mem_nhdsWithin {s t : Set M} {x : M}
+    (hs : UniqueMDiffWithinAt I s x) (ht : t ∈ 𝓝[s] x) : UniqueMDiffWithinAt I t x :=
   hs.mono_nhds (nhdsWithin_le_iff.2 ht)
+
+@[deprecated (since := "2024-10-31")]
+alias UniqueMDiffWithinAt.mono_of_mem := UniqueMDiffWithinAt.mono_of_mem_nhdsWithin
 
 theorem UniqueMDiffWithinAt.mono (h : UniqueMDiffWithinAt I s x) (st : s ⊆ t) :
     UniqueMDiffWithinAt I t x :=
@@ -72,14 +75,14 @@ theorem UniqueMDiffWithinAt.mono (h : UniqueMDiffWithinAt I s x) (st : s ⊆ t) 
 
 theorem UniqueMDiffWithinAt.inter' (hs : UniqueMDiffWithinAt I s x) (ht : t ∈ 𝓝[s] x) :
     UniqueMDiffWithinAt I (s ∩ t) x :=
-  hs.mono_of_mem (Filter.inter_mem self_mem_nhdsWithin ht)
+  hs.mono_of_mem_nhdsWithin (Filter.inter_mem self_mem_nhdsWithin ht)
 
 theorem UniqueMDiffWithinAt.inter (hs : UniqueMDiffWithinAt I s x) (ht : t ∈ 𝓝 x) :
     UniqueMDiffWithinAt I (s ∩ t) x :=
   hs.inter' (nhdsWithin_le_nhds ht)
 
 theorem IsOpen.uniqueMDiffWithinAt (hs : IsOpen s) (xs : x ∈ s) : UniqueMDiffWithinAt I s x :=
-  (uniqueMDiffWithinAt_univ I).mono_of_mem <| nhdsWithin_le_nhds <| hs.mem_nhds xs
+  (uniqueMDiffWithinAt_univ I).mono_of_mem_nhdsWithin <| nhdsWithin_le_nhds <| hs.mem_nhds xs
 
 theorem UniqueMDiffOn.inter (hs : UniqueMDiffOn I s) (ht : IsOpen t) : UniqueMDiffOn I (s ∩ t) :=
   fun _x hx => UniqueMDiffWithinAt.inter (hs _ hx.1) (ht.mem_nhds hx.2)
@@ -345,9 +348,13 @@ theorem HasMFDerivWithinAt.union (hs : HasMFDerivWithinAt I I' f s x f')
   · convert HasFDerivWithinAt.union hs.2 ht.2 using 1
     simp only [union_inter_distrib_right, preimage_union]
 
-theorem HasMFDerivWithinAt.mono_of_mem (h : HasMFDerivWithinAt I I' f s x f') (ht : s ∈ 𝓝[t] x) :
+theorem HasMFDerivWithinAt.mono_of_mem_nhdsWithin
+    (h : HasMFDerivWithinAt I I' f s x f') (ht : s ∈ 𝓝[t] x) :
     HasMFDerivWithinAt I I' f t x f' :=
   (hasMFDerivWithinAt_inter' ht).1 (h.mono inter_subset_right)
+
+@[deprecated (since := "2024-10-31")]
+alias HasMFDerivWithinAt.mono_of_mem := HasMFDerivWithinAt.mono_of_mem_nhdsWithin
 
 theorem HasMFDerivWithinAt.hasMFDerivAt (h : HasMFDerivWithinAt I I' f s x f') (hs : s ∈ 𝓝 x) :
     HasMFDerivAt I I' f x f' := by
