@@ -184,7 +184,7 @@ lemma ext_of_span_eq_top
         exact hg _
       · intro j
         classical
-        simp
+        simp only [lift.equiv_symm_apply]
         convert h (Function.extendComplSingleton i₀ j g₀) using 1
         all_goals
         · simp only [equivTensorPiTensorComplSingleton_tprod,
