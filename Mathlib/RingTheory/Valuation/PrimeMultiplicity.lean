@@ -4,9 +4,48 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
 import Mathlib.RingTheory.Multiplicity
+import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.Algebra.Squarefree.Basic
+
+lemma injective_add_ne_top {R : Type*} [LinearOrderedAddCommGroupWithTop R]
+    (b : R) (h : b ≠ ⊤) :
+    Function.Injective (fun x ↦ x + b) := by
+  intro x y h2
+  apply_fun (· + -b) at h2
+  simp only [add_assoc, LinearOrderedAddCommGroupWithTop.add_neg_cancel _ h, add_zero] at h2
+  exact h2
+
+lemma StrictMono.add_ne_top {R : Type*} [LinearOrderedAddCommGroupWithTop R]
+    (b : R) (h : b ≠ ⊤) :
+    StrictMono (fun x ↦ x + b) := by
+  apply Monotone.strictMono_of_injective
+  · apply Monotone.add_const monotone_id
+  · apply injective_add_ne_top _ h
+
+lemma sub_pos' (R : Type*) [LinearOrderedAddCommGroupWithTop R] (a b : R) :
+    0 < a - b ↔ b < a ∨ b = ⊤ := by
+  constructor
+  · intro h
+    by_cases h2 : b = ⊤
+    · exact .inr h2
+    · left
+      apply StrictMono.add_ne_top _ h2 at h
+      simp only [zero_add] at h
+      rw [sub_eq_add_neg, add_assoc, add_comm (-b),
+        LinearOrderedAddCommGroupWithTop.add_neg_cancel _ h2, add_zero] at h
+      exact h
+  · intro h
+    rcases h with h | h
+    · convert StrictMono.add_ne_top (-b) (by sorry) h using 1
+      simp [LinearOrderedAddCommGroupWithTop.add_neg_cancel _ h.ne_top]
+      simp [sub_eq_add_neg]
+    · rw [h]
+      simp only [sub_eq_add_neg, LinearOrderedAddCommGroupWithTop.neg_top, add_top]
+      apply lt_of_le_of_ne
+      simp
+      exact Ne.symm sorry
 
 /-!
 # `multiplicity` of a prime in an integral domain as an additive valuation
@@ -26,7 +65,7 @@ theorem multiplicity_apply {hp : Prime p} {r : R} :
     multiplicity hp r = emultiplicity p r :=
   rfl
 
-variable (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K] [UniqueFactorizationMonoid R]
+variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] [UniqueFactorizationMonoid R]
 variable (p : R) [hp : Fact (Prime p)]
 
 noncomputable def adicValuation : AddValuation K (WithTop ℤ) :=
@@ -48,18 +87,65 @@ noncomputable def adicValuation : AddValuation K (WithTop ℤ) :=
 
 @[simp]
 theorem adicValuation_coe (r : R) :
-    adicValuation K p (algebraMap R K r) = (emultiplicity p r).map (↑) := by
+    adicValuation p (algebraMap R K r) = (emultiplicity p r).map (↑) := by
   simp [adicValuation]
   rfl
 
 @[simp]
-theorem adicValuation_coe_nonneg (r : R) :
-    0 ≤ adicValuation K p (algebraMap R K r) := by
-  simp
-  cases emultiplicity p r
+theorem map_natCast_nonneg {α : Type*} (n : ℕ∞) [AddMonoidWithOne α] [PartialOrder α]
+    [AddLeftMono α] [ZeroLEOneClass α] : 0 ≤ WithTop.map (Nat.cast : ℕ → α) n := by
+  cases n
   · rw [WithTop.map_top]
     simp
-  · erw [WithTop.map_coe]
+  · rw [← ENat.some_eq_coe, WithTop.map_coe]
     simp
+
+@[simp]
+theorem map_natCast_eq_zero_iff {α : Type*} (n : ℕ∞) [AddMonoidWithOne α] [CharZero α] :
+    WithTop.map (Nat.cast : ℕ → α) n = 0 ↔ n = 0 := by
+  cases n
+  · rw [WithTop.map_top]
+    simp
+  · rw [← ENat.some_eq_coe, WithTop.map_coe]
+    simp
+
+@[simp]
+theorem zero_eq_map_natCast_iff {α : Type*} (n : ℕ∞) [AddMonoidWithOne α] [CharZero α] :
+    0 = WithTop.map (Nat.cast : ℕ → α) n ↔ 0 = n :=
+  (Eq.comm.trans (map_natCast_eq_zero_iff n)).trans Eq.comm
+
+lemma vp_coe_pos_iff (a : R) :
+    0 < adicValuation p (algebraMap R K a) ↔ p ∣ a := by
+  simp [lt_iff_le_and_ne, emultiplicity_eq_zero, eq_comm]
+
+open IsFractionRing
+
+lemma vp_pos_iff (a : K) :
+    0 < adicValuation p a ↔ p ∣ num R a := by
+  nth_rw 1 [← mk'_num_den' (A := R) a]
+  simp only [map_div, adicValuation_coe, sub_pos', WithTop.map_eq_top_iff]
+  rw [emultiplicity_eq_top]
+  have : multiplicity.Finite p (den R a) := multiplicity.finite_prime_left hp.out (by simp)
+  simp only [this, not_true_eq_false, or_false]
+  rw [(WithTop.strictMono_map_iff.mpr Nat.strictMono_cast).lt_iff_lt]
+  constructor
+  · exact fun h ↦ emultiplicity_ne_zero.mp (ENat.not_lt_zero _ <| · ▸ h)
+  · intro h
+    convert emultiplicity_pos_of_dvd h
+    exact emultiplicity_eq_zero.mpr <| hp.out.not_unit ∘ num_den_reduced _ _ h
+
+lemma vp_neg_iff (a : K) :
+    adicValuation p a < 0 ↔ p ∣ den R a := by
+  by_cases ha : a = 0
+  · simp only [ha, map_zero, not_top_lt, false_iff]
+    exact hp.out.not_unit ∘ (isUnit_of_dvd_unit · isUnit_den_zero)
+  convert vp_pos_iff p a⁻¹ using 1
+  · simp only [map_inv]
+    cases h : adicValuation p a
+    · simp [ha] at h
+    norm_cast
+    simp only [Left.neg_pos_iff]
+  · apply Associated.dvd_iff_dvd_right
+    exact IsFractionRing.associated_den_num_inv a ha
 
 end AddValuation
