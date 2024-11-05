@@ -184,10 +184,16 @@ lemma algEquiv_deriv (f : R ≃ₐ[A] R') (x : R) (h : IsSeparable A x) :
 
 variable [Algebra.IsSeparable A R]
 
+/--
+`algHom_deriv` in a separable algebra
+-/
 lemma algHom_deriv' (f : R →ₐ[A] R') (hf : Function.Injective f) (x : R) :
     f (x′) = (f x)′ := algHom_deriv f hf x (Algebra.IsSeparable.isSeparable' x)
 
 omit [Nontrivial R] in
+/--
+`algEquiv_deriv` in a separable algebra
+-/
 lemma algEquiv_deriv' (f : R ≃ₐ[A] R') (x : R) :
     f (x′) = (f x)′ :=
   haveI := f.nontrivial
