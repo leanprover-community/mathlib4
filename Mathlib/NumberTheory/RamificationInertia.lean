@@ -262,7 +262,7 @@ Here,
 
 More precisely, we avoid quotients in this statement and instead require that `b ∪ pS` spans `S`.
 -/
-theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [IsNoetherian R S]
+theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [Module.Finite R S]
     [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [Algebra.IsAlgebraic R S]
     [NoZeroSMulDivisors R K] (hp : p ≠ ⊤) (b : Set S)
     (hb' : Submodule.span R b ⊔ (p.map (algebraMap R S)).restrictScalars R = ⊤) :
