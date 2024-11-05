@@ -576,6 +576,84 @@ theorem strictMono_subseq_of_id_le {u : ℕ → ℕ} (hu : ∀ n, n ≤ u n) :
 theorem _root_.StrictMono.tendsto_atTop {φ : ℕ → ℕ} (h : StrictMono φ) : Tendsto φ atTop atTop :=
   tendsto_atTop_mono h.id_le tendsto_id
 
+/-- If `f` is a monotone funciton and `g` tends to `atTop` along a nontrivial filter.
+then the upper bounds of the range of `f ∘ g`
+are the same as the upper bounds of the range of `f`.
+
+This lemma together with `exists_seq_monotone_tendsto_atTop_atTop` below
+is useful to reduce a statement
+about a monotone family indexed by a type with countably generated `atTop` (e.g., `ℝ`)
+to the case of a family indexed by natural numbers. -/
+theorem upperBounds_range_comp_of_monotone_of_tendsto_atTop [Preorder β] [Preorder γ]
+    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f) {g : α → β} (hg : Tendsto g l atTop) :
+    upperBounds (range (f ∘ g)) = upperBounds (range f) := by
+  refine Subset.antisymm ?_ (upperBounds_mono_set <| range_comp_subset_range _ _)
+  rintro c hc _ ⟨b, rfl⟩
+  obtain ⟨a, ha⟩ : ∃ a, b ≤ g a := (hg.eventually_ge_atTop b).exists
+  exact (hf ha).trans <| hc <| mem_range_self _
+
+/-- If `f` is a monotone funciton with bounded range
+and `g` tends to `atTop` along a nontrivial filter,
+then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`.
+
+See also the next two lemmas for the cases when the assumption `BddAbove (range f)` can be omitted.
+
+This lemma together with `exists_seq_monotone_tendsto_atTop_atTop` below
+is useful to reduce a statement
+about a monotone family indexed by a type with countably generated `atTop` (e.g., `ℝ`)
+to the case of a family indexed by natural numbers. -/
+theorem ciSup_monotone_comp_tendsto_atTop [Preorder β] [ConditionallyCompleteLattice γ]
+    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f) (hb : BddAbove (range f))
+    {g : α → β} (hg : Tendsto g l atTop) : ⨆ a, f (g a) = ⨆ b, f b := by
+  have : Nonempty α := nonempty_of_neBot l
+  have : Nonempty β := .map g ‹_›
+  rw [← csInf_upperBounds_range, ← csInf_upperBounds_range,
+    ← upperBounds_range_comp_of_monotone_of_tendsto_atTop hf hg, Function.comp_def]
+  exacts [hb, hb.mono <| range_comp_subset_range _ _]
+
+/-- If `f` is a monotone funciton taking values in a conditionally complete linear order
+and `g` tends to `atTop` along a nontrivial filter,
+then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`.
+
+This lemma together with `exists_seq_monotone_tendsto_atTop_atTop` below
+is useful to reduce a statement
+about a monotone family indexed by a type with countably generated `atTop` (e.g., `ℝ`)
+to the case of a family indexed by natural numbers. -/
+theorem ciSup_monotone_comp_tendsto_atTop_of_linearOrder [Preorder β]
+    [ConditionallyCompleteLinearOrder γ] {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f)
+    {g : α → β} (hg : Tendsto g l atTop) : ⨆ a, f (g a) = ⨆ b, f b := by
+  if hb : BddAbove (range f) then
+    exact ciSup_monotone_comp_tendsto_atTop hf hb hg
+  else
+    rw [iSup, iSup, csSup_of_not_bddAbove, csSup_of_not_bddAbove hb]
+    rwa [BddAbove, ← Function.comp_def f g,
+      upperBounds_range_comp_of_monotone_of_tendsto_atTop hf hg]
+
+/-- If `f` is a monotone funciton taking values in a complete lattice
+and `g` tends to `atTop` along a nontrivial filter,
+then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`.
+
+This lemma together with `exists_seq_monotone_tendsto_atTop_atTop` below
+is useful to reduce a statement
+about a monotone family indexed by a type with countably generated `atTop` (e.g., `ℝ`)
+to the case of a family indexed by natural numbers. -/
+theorem iSup_monotone_comp_tendsto_atTop [Preorder β] [ConditionallyCompleteLattice γ] [OrderTop γ]
+    {l : Filter α} [l.NeBot]{f : β → γ} (hf : Monotone f) {g : α → β} (hg : Tendsto g l atTop) :
+    ⨆ a, f (g a) = ⨆ b, f b :=
+  ciSup_monotone_comp_tendsto_atTop hf (OrderTop.bddAbove _) hg
+
+/-- If `s` is a monotone family of sets and `f` tends to `atTop` along a nontrivial filter,
+then the indexed union of `s ∘ f` is equal to the indexed union of `s`.
+
+This lemma together with `exists_seq_monotone_tendsto_atTop_atTop` below
+is useful to reduce a statement
+about a monotone family indexed by a type with countably generated `atTop` (e.g., `ℝ`)
+to the case of a family indexed by natural numbers. -/
+theorem iUnion_monotone_comp_tendsto_atTop [Preorder β] {l : Filter α} [l.NeBot]
+    {s : β → Set γ} (hs : Monotone s) {f : α → β} (hf : Tendsto f l atTop) :
+    ⋃ a, s (f a) = ⋃ b, s b :=
+  iSup_monotone_comp_tendsto_atTop hs hf
+
 theorem tendsto_atTop_atTop_of_monotone [Preorder α] [Preorder β] {f : α → β} (hf : Monotone f)
     (h : ∀ b, ∃ a, b ≤ f a) : Tendsto f atTop atTop :=
   tendsto_iInf.2 fun b =>
