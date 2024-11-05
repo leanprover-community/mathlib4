@@ -255,7 +255,7 @@ lemma sSup_of_isoset'_of_isotypic_eq_top :
 
 /-- Isotypic components are semisimple modules. -/
 theorem iso_semisimple :
-  IsSemisimpleModule R (isotypic R M C) := by
+    IsSemisimpleModule R (isotypic R M C) := by
   rw[<- sSup_simples_eq_top_iff_isSemisimpleModule]
   have hS : isoset R (isotypic R M C) C ⊆ {m | IsSimpleModule R m} ∪ {0} := by
     intro x mx; simp; rw[isoset] at mx; rw[Set.mem_setOf] at mx
