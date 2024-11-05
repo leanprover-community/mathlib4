@@ -828,10 +828,10 @@ theorem compAlongOrderedFinpartition_apply {n : ℕ} (q : FormalMultilinearSerie
 
 /-- Taylor formal composition of two formal multilinear series. The `n`-th coefficient in the
 composition is defined to be the sum of `q.compAlongOrderedFinpartition p c` over all
-ordered partitions of `n`. In other words, this term (as a multilinear function applied to
-`v₀, ..., vₙ₋₁`) is
+ordered partitions of `n`.
+In other words, this term (as a multilinear function applied to `v₀, ..., vₙ₋₁`) is
 `∑'_{k} ∑'_{I₀ ⊔ ... ⊔ Iₖ₋₁ = {0, ..., n-1}} qₖ (p_{i₀} (...), ..., p_{iₖ₋₁} (...))`, where
-`i_m` is the size of `I_m` and one puts all variables of `I_m` as arguments to `p_{iₘ}`, in
+`iₘ` is the size of `Iₘ` and one puts all variables of `Iₘ` as arguments to `p_{iₘ}`, in
 increasing order. The sets `I₀, ..., Iₖ₋₁` are ordered so that `max I₀ < max I₁ < ... < max Iₖ₋₁`.
 
 This definition is chosen so that the `n`-th derivative of `g ∘ f` is the Taylor composition of
@@ -868,7 +868,7 @@ new atom to the left corresponds to applying `p 1` on the first coordinates, and
 ordered partition on the other coordinates.
 This is one of the terms that appears when differentiating in the Faa di Bruno
 formula, going from step `m` to step `m + 1`. -/
-lemma faaDiBruno_aux1 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
+private lemma faaDiBruno_aux1 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : OrderedFinpartition m) :
     (q.compAlongOrderedFinpartition p (c.extend none)).curryLeft =
     ((c.compAlongOrderedFinpartitionL 𝕜 E F G).flipMultilinear fun i ↦ p (c.partSize i)).comp
@@ -889,7 +889,7 @@ to an already existing atom of index `i` corresponds to updating the `i`th block
 using `p (c.partSize i + 1)` instead of `p (c.partSize i)` there.
 This is one of the terms that appears when differentiating in the Faa di Bruno
 formula, going from step `m` to step `m + 1`. -/
-lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
+private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : OrderedFinpartition m) (i : Fin c.length) :
     (q.compAlongOrderedFinpartition p (c.extend (some i))).curryLeft =
     ((c.compAlongOrderedFinpartitionL 𝕜 E F G (q c.length)).toContinuousLinearMap
