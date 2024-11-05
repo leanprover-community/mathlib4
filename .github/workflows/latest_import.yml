@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  TOP_MODULE: Mathlib
+  TOP_MODULE: Mathlib.Data.Nat.Choose.Basic
 
 jobs:
   late-importers:
