@@ -24,7 +24,7 @@ import Mathlib.RingTheory.Localization.Basic
 
 ## Implementation notes
 
-See `RingTheory/Localization/Basic.lean` for a design overview.
+See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
@@ -214,23 +214,50 @@ noncomputable def map {A B K L : Type*} [CommRing A] [CommRing B] [IsDomain B] [
     (show nonZeroDivisors A ≤ (nonZeroDivisors B).comap j from
       nonZeroDivisors_le_comap_nonZeroDivisors_of_injective j hj)
 
-/-- Given integral domains `A, B` and localization maps to their fields of fractions
-`f : A →+* K, g : B →+* L`, an isomorphism `j : A ≃+* B` induces an isomorphism of
-fields of fractions `K ≃+* L`. -/
-noncomputable def fieldEquivOfRingEquiv [Algebra B L] [IsFractionRing B L] (h : A ≃+* B) :
-    K ≃+* L :=
-  ringEquivOfRingEquiv (M := nonZeroDivisors A) K (T := nonZeroDivisors B) L h
-    (by
-      ext b
-      show b ∈ h.toEquiv '' _ ↔ _
-      erw [h.toEquiv.image_eq_preimage, Set.preimage, Set.mem_setOf_eq,
-        mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero]
-      exact h.symm.map_ne_zero_iff)
+section ringEquivOfRingEquiv
+
+variable {A K B L : Type*} [CommRing A] [CommRing B] [CommRing K] [CommRing L]
+  [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L]
+  (h : A ≃+* B)
+
+/-- Given rings `A, B` and localization maps to their fraction rings
+`f : A →+* K, g : B →+* L`, an isomorphism `h : A ≃+* B` induces an isomorphism of
+fraction rings `K ≃+* L`. -/
+noncomputable def ringEquivOfRingEquiv : K ≃+* L :=
+  IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
+
+@[deprecated (since := "2014-11-05")]
+alias fieldEquivOfRingEquiv := ringEquivOfRingEquiv
 
 @[simp]
-lemma fieldEquivOfRingEquiv_algebraMap [Algebra B L] [IsFractionRing B L] (h : A ≃+* B)
-    (a : A) : fieldEquivOfRingEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
-  simp [fieldEquivOfRingEquiv]
+lemma ringEquivOfRingEquiv_algebraMap
+    (a : A) : ringEquivOfRingEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
+  simp [ringEquivOfRingEquiv]
+
+@[deprecated (since := "2014-11-05")]
+alias fieldEquivOfRingEquiv_algebraMap := ringEquivOfRingEquiv_algebraMap
+
+end ringEquivOfRingEquiv
+
+section algEquivOfAlgEquiv
+
+variable {R A K B L : Type*} [CommSemiring R] [CommRing A] [CommRing B] [CommRing K] [CommRing L]
+  [Algebra R A] [Algebra R K] [Algebra A K] [IsFractionRing A K] [IsScalarTower R A K]
+  [Algebra R B] [Algebra R L] [Algebra B L] [IsFractionRing B L] [IsScalarTower R B L]
+  (h : A ≃ₐ[R] B)
+
+/-- Given `R`-algebras `A, B` and localization maps to their fraction rings
+`f : A →ₐ[R] K, g : B →ₐ[R] L`, an isomorphism `h : A ≃ₐ[R] B` induces an isomorphism of
+fraction rings `K ≃ₐ[R] L`. -/
+noncomputable def algEquivOfAlgEquiv : K ≃ₐ[R] L :=
+  IsLocalization.algEquivOfAlgEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
+
+@[simp]
+lemma algEquivOfAlgEquiv_algebraMap
+    (a : A) : algEquivOfAlgEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
+  simp [algEquivOfAlgEquiv]
+
+end algEquivOfAlgEquiv
 
 section fieldEquivOfAlgEquiv
 
@@ -250,18 +277,24 @@ variable {A B C D : Type*}
 
 /-- An algebra isomorphism of rings induces an algebra isomorphism of fraction fields. -/
 noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : FB ≃ₐ[FA] FC where
-  __ := IsFractionRing.fieldEquivOfRingEquiv f.toRingEquiv
+  __ := IsFractionRing.ringEquivOfRingEquiv f.toRingEquiv
   commutes' x := by
     obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
     simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B FB]
     simp [← IsScalarTower.algebraMap_apply A C FC]
 
+omit [IsDomain B] [IsDomain C] in
+lemma restrictScalars_fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) :
+    (fieldEquivOfAlgEquiv FA FB FC f).restrictScalars A = algEquivOfAlgEquiv f := by
+  ext; rfl
+
+omit [IsDomain B] [IsDomain C] in
 /-- This says that `fieldEquivOfAlgEquiv f` is an extension of `f` (i.e., it agrees with `f` on
 `B`). Whereas `(fieldEquivOfAlgEquiv f).commutes` says that `fieldEquivOfAlgEquiv f` fixes `K`. -/
 @[simp]
 lemma fieldEquivOfAlgEquiv_algebraMap (f : B ≃ₐ[A] C) (b : B) :
     fieldEquivOfAlgEquiv FA FB FC f (algebraMap B FB b) = algebraMap C FC (f b) :=
-  fieldEquivOfRingEquiv_algebraMap f.toRingEquiv b
+  ringEquivOfRingEquiv_algebraMap f.toRingEquiv b
 
 variable (A B) in
 @[simp]
@@ -271,6 +304,7 @@ lemma fieldEquivOfAlgEquiv_refl :
   obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := B) x
   simp
 
+omit [IsDomain C] [IsDomain D] in
 lemma fieldEquivOfAlgEquiv_trans (f : B ≃ₐ[A] C) (g : C ≃ₐ[A] D) :
     fieldEquivOfAlgEquiv FA FB FD (f.trans g) =
       (fieldEquivOfAlgEquiv FA FB FC f).trans (fieldEquivOfAlgEquiv FA FC FD g) := by
@@ -389,10 +423,10 @@ instance isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [NoZeroS
   exact IsScalarTower.of_algebraMap_eq fun x =>
     (IsFractionRing.lift_algebraMap (NoZeroSMulDivisors.algebraMap_injective R K) x).symm
 
-/-- Given an integral domain `A` and a localization map to a field of fractions
-`f : A →+* K`, we get an `A`-isomorphism between the field of fractions of `A` as a quotient
+/-- Given a ring `A` and a localization map to a fraction ring
+`f : A →+* K`, we get an `A`-isomorphism between the fraction ring of `A` as a quotient
 type and `K`. -/
-noncomputable def algEquiv (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K] :
+noncomputable def algEquiv (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K] :
     FractionRing A ≃ₐ[A] K :=
   Localization.algEquiv (nonZeroDivisors A) K
 
