@@ -323,8 +323,8 @@ instance smulCommClass_right [SMul X Y] [SMul L Y] [SMulCommClass X L Y]
     (F : IntermediateField K L) : SMulCommClass X F Y :=
   inferInstanceAs (SMulCommClass X F.toSubfield Y)
 
---note: giving this instance the default priority may trigger trouble with synthesizing instances
---for field extensions with more than one intermediate field. For example, in a field extension
+-- note: giving this instance the default priority may trigger trouble with synthesizing instances
+-- for field extensions with more than one intermediate field. For example, in a field extension
 -- `F/E`, and with `K₁ ≤ K₂` of type `IntermediateField F E`, this instance will cause a search
 -- for `IsScalarTower K₁ K₂ E` to trigger a search for `IsScalarTower E K₂ E` which may
 -- take a long time to fail.
