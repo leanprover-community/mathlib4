@@ -68,6 +68,9 @@ def CanonicallyOverClass.Simps.over (X S : C) [CanonicallyOverClass X S] : X ⟶
 initialize_simps_projections CanonicallyOverClass (hom → over)
 
 @[simps]
+instance (priority := 100) : OverClass X X := ⟨𝟙 _⟩
+
+@[simps]
 instance [CanonicallyOverClass X Y] [OverClass Y S] : OverClass X S := ⟨X ↘ Y ≫ Y ↘ S⟩
 
 /-- Given `OverClass X S` and `OverClass Y S` and `f : X ⟶ Y`,
