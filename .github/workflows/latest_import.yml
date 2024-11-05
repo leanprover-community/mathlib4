@@ -29,10 +29,6 @@ jobs:
             : # Do nothing on failure, but suppress errors
         fi
 
-    # The Hoskinson runners may not have jq installed, so do that now.
-    - name: 'Setup jq'
-      uses: dcarbone/install-jq-action@v2.1.0
-
     - name: install elan
       run: |
         set -o pipefail
