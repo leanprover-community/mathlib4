@@ -506,8 +506,8 @@ import Mathlib.Algebra.Module.LinearMap.Polynomial
 import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Algebra.Module.LinearMap.Star
-import Mathlib.Algebra.Module.LocalizedModule
-import Mathlib.Algebra.Module.LocalizedModuleIntegers
+import Mathlib.Algebra.Module.LocalizedModule.Basic
+import Mathlib.Algebra.Module.LocalizedModule.Basic.Int
 import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Module.PID
