@@ -513,7 +513,7 @@ end Archimedean
 /-- **Ostrowski's Theorem** -/
 theorem mulRingNorm_equiv_standard_or_padic (f : MulRingNorm ℚ) (hf_nontriv : f ≠ 1) :
     (MulRingNorm.equiv f mulRingNorm_real) ∨
-    ∃! p, ∃ (hp : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
+    ∃! p, ∃ (_ : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
   by_cases bdd : ∀ n : ℕ, f n ≤ 1
   · right
     exact mulRingNorm_equiv_padic_of_bounded hf_nontriv bdd

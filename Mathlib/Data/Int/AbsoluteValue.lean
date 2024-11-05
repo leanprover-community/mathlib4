@@ -6,6 +6,7 @@ Authors: Anne Baanen
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
