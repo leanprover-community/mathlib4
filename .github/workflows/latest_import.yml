@@ -1,9 +1,16 @@
 name: Late importers report
 
 on:
-  schedule:
-    - cron: '0 4 * * 1'  # Run at 04:00 UTC every Monday
-  workflow_dispatch:
+  push:
+    branches-ignore:
+      # ignore tmp branches used by bors
+      - 'staging.tmp*'
+      - 'trying.tmp*'
+      - 'staging*.tmp'
+      - 'nolints'
+      # ignore staging branch used by bors, this is handled by bors.yml
+      - 'staging'
+  merge_group:
 
 env:
   TOP_MODULE: Mathlib.Data.Nat.Choose.Basic
