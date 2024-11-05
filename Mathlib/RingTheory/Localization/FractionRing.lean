@@ -389,10 +389,10 @@ instance isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [NoZeroS
   exact IsScalarTower.of_algebraMap_eq fun x =>
     (IsFractionRing.lift_algebraMap (NoZeroSMulDivisors.algebraMap_injective R K) x).symm
 
-/-- Given an integral domain `A` and a localization map to a field of fractions
-`f : A →+* K`, we get an `A`-isomorphism between the field of fractions of `A` as a quotient
+/-- Given a ring `A` and a localization map to a fraction ring
+`f : A →+* K`, we get an `A`-isomorphism between the fraction ring of `A` as a quotient
 type and `K`. -/
-noncomputable def algEquiv (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K] :
+noncomputable def algEquiv (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K] :
     FractionRing A ≃ₐ[A] K :=
   Localization.algEquiv (nonZeroDivisors A) K
 

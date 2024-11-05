@@ -134,6 +134,30 @@ protected lemma bijective (f : S →+* Q) (hf : f.comp (algebraMap R S) = algebr
 
 end AlgEquiv
 
+section AlgEquivOfAlgEquiv
+
+variable {A : Type*} [CommSemiring A]
+  {R : Type*} [CommSemiring R] [Algebra A R] {M : Submonoid R} (S : Type*)
+  [CommSemiring S] [Algebra A S] [Algebra R S] [IsScalarTower A R S] [IsLocalization M S]
+  {P : Type*} [CommSemiring P] [Algebra A P] {T : Submonoid P} (Q : Type*)
+  [CommSemiring Q] [Algebra A Q] [Algebra P Q] [IsScalarTower A P Q] [IsLocalization T Q]
+  (h : R ≃ₐ[A] P) (H : Submonoid.map h M = T)
+
+include H
+
+/-- If `S`, `Q` are localizations of `R` and `P` at submonoids `M`, `T` respectively,
+an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism of localizations
+`S ≃ₐ[A] Q`. -/
+@[simps!]
+noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q :=
+  {
+    ringEquivOfRingEquiv S Q h.toRingEquiv H with
+    commutes' := fun _ ↦ by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
+      RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
+  }
+
+end AlgEquivOfAlgEquiv
+
 section at_units
 
 variable (R M)
