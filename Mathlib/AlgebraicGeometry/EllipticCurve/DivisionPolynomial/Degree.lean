@@ -14,29 +14,29 @@ Weierstrass curves defined in `Mathlib.AlgebraicGeometry.EllipticCurve.DivisionP
 
 ## Mathematical background
 
-Let $W$ be a Weierstrass curve over a commutative ring $R$. By strong induction,
- * $\tilde{\Psi}_n = \tfrac{n}{2}X^{\tfrac{n^2 - 4}{2}} + \dots$ if $n$ is even,
- * $\tilde{\Psi}_n = nX^{\tfrac{n^2 - 1}{2}} + \dots$ if $n$ is odd,
- * $\Psi_n^{[2]} = n^2X^{n^2 - 1} + \dots$, and
- * $\Phi_n = X^{n^2} + \dots$.
+Let `W` be a Weierstrass curve over a commutative ring `R`. By strong induction,
+ * `preΨₙ` has leading coefficient `n / 2` and degree `(n² - 4) / 2` if `n` is even,
+ * `preΨₙ` has leading coefficient `n` and degree `(n² - 1) / 2` if `n` is odd,
+ * `ΨSqₙ` has leading coefficient `n²` and degree `n² - 1`, and
+ * `Φₙ` has leading coefficient `1` and degree `n²`.
 
-In particular, when $R$ is an integral domain of characteristic different from $n$, the univariate
-polynomials $\tilde{\Psi}_n$, $\Psi_n^{[2]}$, and $\Phi_n$ all have their expected leading terms.
+In particular, when `R` is an integral domain of characteristic different from `n`, the univariate
+polynomials `preΨₙ`, `ΨSqₙ`, and `Φₙ` all have their expected leading terms.
 
 ## Main statements
 
- * `WeierstrassCurve.natDegree_preΨ_le`: the expected degree of $\tilde{\Psi}_n$.
- * `WeierstrassCurve.coeff_preΨ`: the expected leading coefficient of $\tilde{\Psi}_n$.
- * `WeierstrassCurve.natDegree_preΨ`: the degree of $\tilde{\Psi}_n$ when $n \ne 0$.
- * `WeierstrassCurve.leadingCoeff_preΨ`: the leading coefficient of $\tilde{\Psi}_n$ when $n \ne 0$.
- * `WeierstrassCurve.natDegree_ΨSq_le`: the expected degree of $\Psi_n^{[2]}$.
- * `WeierstrassCurve.coeff_ΨSq`: the expected leading coefficient of $\Psi_n^{[2]}$.
- * `WeierstrassCurve.natDegree_ΨSq`: the degree of $\Psi_n^{[2]}$ when $n \ne 0$.
- * `WeierstrassCurve.leadingCoeff_ΨSq`: the leading coefficient of $\Psi_n^{[2]}$ when $n \ne 0$.
- * `WeierstrassCurve.natDegree_Φ_le`: the expected degree of $\Phi_n$.
- * `WeierstrassCurve.coeff_Φ`: the expected leading coefficient of $\Phi_n$.
- * `WeierstrassCurve.natDegree_Φ`: the degree of $\Phi_n$ when $n \ne 0$.
- * `WeierstrassCurve.leadingCoeff_Φ`: the leading coefficient of $\Phi_n$ when $n \ne 0$.
+ * `WeierstrassCurve.natDegree_preΨ_le`: the expected degree of `preΨₙ`.
+ * `WeierstrassCurve.coeff_preΨ`: the expected leading coefficient of `preΨₙ`.
+ * `WeierstrassCurve.natDegree_preΨ`: the degree of `preΨₙ` when `n ≠ 0`.
+ * `WeierstrassCurve.leadingCoeff_preΨ`: the leading coefficient of `preΨₙ` when `n ≠ 0`.
+ * `WeierstrassCurve.natDegree_ΨSq_le`: the expected degree of `ΨSqₙ`.
+ * `WeierstrassCurve.coeff_ΨSq`: the expected leading coefficient of `ΨSqₙ`.
+ * `WeierstrassCurve.natDegree_ΨSq`: the degree of `ΨSqₙ` when `n ≠ 0`.
+ * `WeierstrassCurve.leadingCoeff_ΨSq`: the leading coefficient of `ΨSqₙ` when `n ≠ 0`.
+ * `WeierstrassCurve.natDegree_Φ_le`: the expected degree of `Φₙ`.
+ * `WeierstrassCurve.coeff_Φ`: the expected leading coefficient of `Φₙ`.
+ * `WeierstrassCurve.natDegree_Φ`: the degree of `Φₙ` when `n ≠ 0`.
+ * `WeierstrassCurve.leadingCoeff_Φ`: the leading coefficient of `Φₙ` when `n ≠ 0`.
 
 ## References
 

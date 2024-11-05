@@ -14,10 +14,10 @@ This file defines the type of an elliptic divisibility sequence (EDS) and a few 
 
 ## Mathematical background
 
-Let $R$ be a commutative ring. An elliptic sequence is a sequence $W : \mathbb{Z} \to R$ satisfying
-$$ W(m + n)W(m - n)W(r)^2 = W(m + r)W(m - r)W(n)^2 - W(n + r)W(n - r)W(m)^2, $$
-for any $m, n, r \in \mathbb{Z}$. A divisibility sequence is a sequence $W : \mathbb{Z} \to R$
-satisfying $W(m) \mid W(n)$ for any $m, n \in \mathbb{Z}$ such that $m \mid n$.
+Let `R` be a commutative ring. An elliptic sequence is a sequence `W : ℤ → R` satisfying
+`W(m + n)W(m - n)W(r)² = W(m + r)W(m - r)W(n)² - W(n + r)W(n - r)W(m)²`
+for any `m, n, r ∈ ℤ`. A divisibility sequence is a sequence `W : ℤ → R` satisfying `W(m) ∣ W(n)`
+for any `m, n ∈ ℤ` such that `m ∣ n`.
 
 Some examples of EDSs include
  * the identity sequence,
@@ -50,8 +50,8 @@ One reason is to avoid the necessity for ring division by `b` in the inductive d
 `normEDS b c d (2 * (m + 3))`. The idea is that, it can be shown that `normEDS b c d (2 * (m + 3))`
 always contains a factor of `b`, so it is possible to remove a factor of `b` *a posteriori*, but
 stating this lemma requires first defining `normEDS b c d (2 * (m + 3))`, which requires having this
-factor of `b` *a priori*. Another reason is to allow the definition of univariate $n$-division
-polynomials of elliptic curves, omitting a factor of the bivariate $2$-division polynomial.
+factor of `b` *a priori*. Another reason is to allow the definition of univariate `n`-division
+polynomials of elliptic curves, omitting a factor of the bivariate `2`-division polynomial.
 
 ## References
 
@@ -229,13 +229,13 @@ lemma preNormEDS_three : preNormEDS b c d 3 = c := by
 lemma preNormEDS_four : preNormEDS b c d 4 = d := by
   erw [preNormEDS_ofNat, preNormEDS'_four]
 
-lemma preNormEDS_even' (m : ℕ) : preNormEDS b c d (2 * (m + 3)) =
+lemma preNormEDS_even_ofNat (m : ℕ) : preNormEDS b c d (2 * (m + 3)) =
     preNormEDS b c d (m + 2) ^ 2 * preNormEDS b c d (m + 3) * preNormEDS b c d (m + 5) -
       preNormEDS b c d (m + 1) * preNormEDS b c d (m + 3) * preNormEDS b c d (m + 4) ^ 2 := by
   repeat erw [preNormEDS_ofNat]
   exact preNormEDS'_even ..
 
-lemma preNormEDS_odd' (m : ℕ) : preNormEDS b c d (2 * (m + 2) + 1) =
+lemma preNormEDS_odd_ofNat (m : ℕ) : preNormEDS b c d (2 * (m + 2) + 1) =
     preNormEDS b c d (m + 4) * preNormEDS b c d (m + 2) ^ 3 * (if Even m then b else 1) -
       preNormEDS b c d (m + 1) * preNormEDS b c d (m + 3) ^ 3 * (if Even m then 1 else b) := by
   repeat erw [preNormEDS_ofNat]
@@ -253,7 +253,7 @@ lemma preNormEDS_even (m : ℤ) : preNormEDS b c d (2 * m) =
     rcases m with _ | _ | _ | m; simp; simp; simp
     simp only [Int.natCast_add, Nat.cast_one]
     rw [Int.add_sub_cancel, show (m : ℤ) + 1 + 1 + 1 = m + 1 + 2 by rfl, Int.add_sub_cancel]
-    exact preNormEDS_even' ..
+    exact preNormEDS_even_ofNat ..
   | neg h m =>
     simp_rw [show 2 * -(m : ℤ) = -(2 * m) by omega, show -(m : ℤ) - 1 = -(m + 1) by omega,
       show -(m : ℤ) + 2 = -(m - 2) by omega, show -(m : ℤ) - 2 = -(m + 2) by omega,
@@ -268,7 +268,7 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
     rcases m with _ | _ | m; simp; simp
     simp only [Int.natCast_add, Nat.cast_one, Int.even_add_one, not_not, Int.even_coe_nat]
     rw [Int.add_sub_cancel]
-    exact preNormEDS_odd' ..
+    exact preNormEDS_odd_ofNat ..
   | neg h m =>
     rcases m with _ | m; simp
     simp_rw [Int.natCast_add, Nat.cast_one, show 2 * -(m + 1 : ℤ) + 1 = -(2 * m + 1) by rfl,
@@ -312,14 +312,14 @@ lemma normEDS_three : normEDS b c d 3 = c := by
 lemma normEDS_four : normEDS b c d 4 = d * b := by
   erw [normEDS_ofNat, preNormEDS'_four, if_pos <| by decide]
 
-lemma normEDS_even' (m : ℕ) : normEDS b c d (2 * (m + 3)) * b =
+lemma normEDS_even_ofNat (m : ℕ) : normEDS b c d (2 * (m + 3)) * b =
     normEDS b c d (m + 2) ^ 2 * normEDS b c d (m + 3) * normEDS b c d (m + 5) -
       normEDS b c d (m + 1) * normEDS b c d (m + 3) * normEDS b c d (m + 4) ^ 2 := by
   repeat erw [normEDS_ofNat]
   simp only [preNormEDS'_even, if_pos <| even_two_mul _, Nat.even_add_one, ite_not]
   split_ifs <;> ring1
 
-lemma normEDS_odd' (m : ℕ) : normEDS b c d (2 * (m + 2) + 1) =
+lemma normEDS_odd_ofNat (m : ℕ) : normEDS b c d (2 * (m + 2) + 1) =
     normEDS b c d (m + 4) * normEDS b c d (m + 2) ^ 3 -
       normEDS b c d (m + 1) * normEDS b c d (m + 3) ^ 3 := by
   repeat erw [normEDS_ofNat]
