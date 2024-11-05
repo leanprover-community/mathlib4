@@ -1284,7 +1284,7 @@ protected theorem iUnion_of_monotone_of_frequently
     {ι : Type*} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
     (hsm : Monotone s) (hs : ∃ᶠ i in atTop, MeasurableSet (s i)) : MeasurableSet (⋃ i, s i) := by
   rcases exists_seq_forall_of_frequently hs with ⟨x, hx, hxm⟩
-  rw [← iUnion_monotone_comp_tendsto_atTop hsm hx]
+  rw [← hsm.iUnion_comp_tendsto_atTop hx]
   exact .iUnion hxm
 
 protected theorem iInter_of_antitone_of_frequently

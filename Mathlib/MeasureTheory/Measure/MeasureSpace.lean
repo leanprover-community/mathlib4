@@ -468,7 +468,7 @@ theorem _root_.Monotone.measure_iUnion [Preorder ι] [IsDirected ι (· ≤ ·)]
   | inl _ => simp
   | inr _ =>
     rcases exists_seq_monotone_tendsto_atTop_atTop ι with ⟨x, hxm, hx⟩
-    rw [← iUnion_monotone_comp_tendsto_atTop hs hx, ← iSup_monotone_comp_tendsto_atTop _ hx]
+    rw [← hs.iUnion_comp_tendsto_atTop hx, ← Monotone.iSup_comp_tendsto_atTop _ hx]
     exacts [(hs.comp hxm).directed_le.measure_iUnion, fun _ _ h ↦ measure_mono (hs h)]
 
 theorem _root_.Antitone.measure_iUnion [Preorder ι] [IsDirected ι (· ≥ ·)]
