@@ -28,6 +28,9 @@ variable {N : Type uN}
 namespace ContextFreeRule
 open Symbol
 
+/-- Inductive definition of a single application of a given context-free rule `r` to a string `u`;
+`r.RewritesLeftmost u v` means that the `r` sends `u` to `v` by replacing the leftmost nonterminal
+symbol -/
 inductive RewritesLeftmost (r : ContextFreeRule T N) : List (Symbol T N) → List (Symbol T N) → Prop
   /-- The replaced nonterminal is the leftmost symbol -/
   | head (s : List (Symbol T N)) :
@@ -61,6 +64,10 @@ theorem RewritesLeftmost.rewrites_leftmost_of_exists_parts (r : ContextFreeRule 
     rw [List.map_cons]
     exact cons x ih
 
+
+/-- Rule `r` rewrites string `u` is to string `v` iff the share a prefix of terminal
+symbols, a postfix of terminal and nonterminal symbols, and the remaining parts
+are `r.input` and `r.output` respectively-/
 theorem RewritesLeftmost.rewrites_leftmost_iff {r : ContextFreeRule T N} {u v : List (Symbol T N)} :
     r.RewritesLeftmost u v ↔
     ∃ (p : List T) (q : List (Symbol T N)),
@@ -72,6 +79,7 @@ theorem RewritesLeftmost.rewrites_leftmost_iff {r : ContextFreeRule T N} {u v : 
     rw [hu, hv]
     exact rewrites_leftmost_of_exists_parts r p q
 
+/-- No rule can rewrite a string only consisting of terminals-/
 theorem RewritesLeftmost.rewrite_terminal (r : ContextFreeRule T N) (w : List T)
     (u : List (Symbol T N)): ¬ RewritesLeftmost r (w.map terminal) u := by
   intro h
@@ -117,6 +125,9 @@ theorem rewrites_leftmost_cons {r : ContextFreeRule T N} {x : Symbol T N} {v u :
   · right
     exact ⟨[x], s₂, by simp, by simp, hrs⟩
 
+/-- If `r` rewrites `v₁++v₂` to `u`, than one of two options is the case:
+Either the rewrite happens in `v₁` and `v₂` remains unchanged or `v₁` consist only
+of terminal symbols and the rewrite happens in `v₂`-/
 theorem rewrites_leftmost_append {r : ContextFreeRule T N} {v₁ v₂ u : List (Symbol T N)}
     (h : r.RewritesLeftmost (v₁ ++ v₂) u) :
     (∃ (u₁ u₂ : List (Symbol T N)), u = u₁ ++ u₂ ∧ (r.RewritesLeftmost v₁ u₁ ∧ u₂ = v₂)) ∨
@@ -167,6 +178,8 @@ theorem rewrites_cons {r : ContextFreeRule T N} {x : Symbol T N} {v u : List (Sy
     · right
       exact ⟨hrs, rfl⟩
 
+/-- If `r` rewrites `v₁++v₂` to `u`, than one of two options is the case:
+Either the rewrite happens in `v₁` and `v₂` remains unchanged or vice versa. -/
 theorem rewrites_append {r : ContextFreeRule T N}{v₁ v₂ u : List (Symbol T N)}
     (h : r.Rewrites (v₁ ++ v₂) u) :
     ∃ (u₁ u₂ : List (Symbol T N)), u = u₁ ++ u₂ ∧
