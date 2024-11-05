@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
@@ -105,22 +106,52 @@ variable (i : D ⥤ C)
 theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
     Limits.HasFiniteProducts D := ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
 
+open CartesianClosed MonoidalCategory ChosenFiniteProducts
+
+open Limits in
 /-- Given a reflective subcategory `D` of a category with chosen finite products `C`, `D` admits
 finite chosen products. -/
+-- Note: This is not an instance as one might already have a (different) `ChosenFiniteProducts`
+-- instance on `D` (as for example with sheaves).
 def reflectiveChosenFiniteProducts [ChosenFiniteProducts C] [Reflective i] :
     ChosenFiniteProducts D where
-  product X Y := letI := monadicCreatesLimits.{0, 0} i
-    { cone := _ ,
-      isLimit := liftedLimitIsLimit (F:=i) <|
-        (Limits.IsLimit.postcomposeInvEquiv (Limits.pairComp X Y i) _).invFun
-          (ChosenFiniteProducts.product (i.obj X) (i.obj Y)).isLimit }
-  terminal := letI := monadicCreatesLimits.{0, 0} i
-    { cone := _ ,
-      isLimit :=  liftedLimitIsLimit (F:=i) <|
-        (Limits.IsLimit.postcomposeInvEquiv (Functor.emptyExt _ (Functor.empty C)) _).invFun
-          ChosenFiniteProducts.terminal.isLimit }
-
-open CartesianClosed MonoidalCategory ChosenFiniteProducts
+  product X Y :=
+    { cone := BinaryFan.mk
+        ((reflector i).map (fst (i.obj X) (i.obj Y)) ≫ (reflectorAdjunction i).counit.app _)
+        ((reflector i).map (snd (i.obj X) (i.obj Y)) ≫ (reflectorAdjunction i).counit.app _)
+      isLimit := by
+        apply (by infer_instance : ReflectsLimit _ i).reflects
+        apply IsLimit.equivOfNatIsoOfIso (pairComp X Y _) _ _ _|>.invFun
+          (product (i.obj X) (i.obj Y)).isLimit
+        fapply BinaryFan.ext
+        · change (reflector i ⋙ i).obj (i.obj X ⊗ i.obj Y) ≅ (𝟭 C).obj (i.obj X ⊗ i.obj Y)
+          letI : IsIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y)) := by
+            apply Functor.essImage.unit_isIso
+            haveI := reflective_products i
+            use Limits.prod X Y
+            constructor
+            apply Limits.PreservesLimitPair.iso i _ _|>.trans
+            refine Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit (pair (i.obj X) (i.obj Y)))
+              (ChosenFiniteProducts.product _ _).isLimit
+          exact asIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y))|>.symm
+        · simp only [BinaryFan.fst, Cones.postcompose, pairComp]
+          simp [← Functor.comp_map, ← NatTrans.naturality_assoc, fst]
+        · simp only [BinaryFan.snd, Cones.postcompose, pairComp]
+          simp [← Functor.comp_map, ← NatTrans.naturality_assoc, snd] }
+  terminal :=
+    { cone := Limits.asEmptyCone <| (reflector i).obj (𝟙_ C)
+      isLimit := by
+        apply (by infer_instance : ReflectsLimit _ i).reflects
+        apply isLimitChangeEmptyCone _ ChosenFiniteProducts.terminal.isLimit
+        letI : IsIso ((reflectorAdjunction i).unit.app (𝟙_ C)) := by
+          apply Functor.essImage.unit_isIso
+          haveI := reflective_products i
+          use Limits.terminal D
+          constructor
+          apply Limits.PreservesTerminal.iso i|>.trans
+          refine Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit _)
+            (ChosenFiniteProducts.terminal).isLimit
+        exact asIso ((reflectorAdjunction i).unit.app (𝟙_ C)) }
 
 variable [ChosenFiniteProducts C] [Reflective i] [CartesianClosed C] [ChosenFiniteProducts D]
 

@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson
 import Mathlib.CategoryTheory.Closed.Ideal
 import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.ChosenFiniteProducts
 /-!
 
 # Sheaf categories are cartesian closed
@@ -19,9 +20,6 @@ noncomputable section
 open CategoryTheory Limits
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C) (A : Type*) [Category A]
-
-instance [HasSheafify J A] [ChosenFiniteProducts A] : ChosenFiniteProducts (Sheaf J A) :=
-  reflectiveChosenFiniteProducts (sheafToPresheaf _ _)
 
 instance [HasSheafify J A] [ChosenFiniteProducts A] [CartesianClosed (Cᵒᵖ ⥤ A)] :
     CartesianClosed (Sheaf J A) :=
