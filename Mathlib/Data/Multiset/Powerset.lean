@@ -262,15 +262,15 @@ theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α
   · cases n <;> simp [ih, map_comp_cons]
 
 theorem pairwise_disjoint_powersetCard (s : Multiset α) :
-    _root_.Pairwise fun i j => Multiset.Disjoint (s.powersetCard i) (s.powersetCard j) :=
-  fun _ _ h _ hi hj =>
-  h (Eq.trans (Multiset.mem_powersetCard.mp hi).right.symm (Multiset.mem_powersetCard.mp hj).right)
+    _root_.Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) :=
+  fun _ _ h ↦ disjoint_left.mpr fun hi hj ↦
+    h ((Multiset.mem_powersetCard.mp hi).2.symm.trans (Multiset.mem_powersetCard.mp hj).2)
 
 theorem bind_powerset_len {α : Type*} (S : Multiset α) :
     (bind (Multiset.range (card S + 1)) fun k => S.powersetCard k) = S.powerset := by
   induction S using Quotient.inductionOn
-  simp_rw [quot_mk_to_coe, powerset_coe', powersetCard_coe, ← coe_range, coe_bind, ← List.map_bind,
-    coe_card]
+  simp_rw [quot_mk_to_coe, powerset_coe', powersetCard_coe, ← coe_range, coe_bind,
+    ← List.map_flatMap, coe_card]
   exact coe_eq_coe.mpr ((List.range_bind_sublistsLen_perm _).map _)
 
 @[simp]

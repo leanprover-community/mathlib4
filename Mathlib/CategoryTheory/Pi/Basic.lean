@@ -6,7 +6,6 @@ Authors: Simon Hudon, Kim Morrison
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.Products.Basic
-import Batteries.Data.Sum.Basic
 
 /-!
 # Categories of indexed families of objects.

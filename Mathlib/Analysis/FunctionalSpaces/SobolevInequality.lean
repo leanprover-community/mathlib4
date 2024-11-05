@@ -340,7 +340,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
   · exact Measure.restrict_le_self
   -- bound the derivative which appears
   calc ‖deriv (u ∘ update x i) y‖₊ = ‖fderiv ℝ u (update x i y) (deriv (update x i) y)‖₊ := by
-        rw [fderiv.comp_deriv _ (hu.differentiable le_rfl).differentiableAt
+        rw [fderiv_comp_deriv _ (hu.differentiable le_rfl).differentiableAt
           (hasDerivAt_update x i y).differentiableAt]
     _ ≤ ‖fderiv ℝ u (update x i y)‖₊ * ‖deriv (update x i) y‖₊ :=
         ContinuousLinearMap.le_opNNNorm ..
@@ -409,7 +409,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
         lintegral_pow_le_pow_lintegral_fderiv_aux hp hv h2v
     _ = (∫⁻ y, ‖(fderiv ℝ u (e.symm y)).comp (fderiv ℝ e.symm y)‖₊) ^ p := by
         congr! with y
-        apply fderiv.comp _ (hu.differentiable le_rfl _)
+        apply fderiv_comp _ (hu.differentiable le_rfl _)
         exact e.symm.differentiableAt
     _ ≤ (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊ * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊) ^ p := by
         gcongr with y
@@ -629,7 +629,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
   have h4v : ∀ x, ‖fderiv ℝ v x‖ ≤ C₂ * ‖fderiv ℝ u x‖ := fun x ↦ calc
     ‖fderiv ℝ v x‖
       = ‖(fderiv ℝ e (u x)).comp (fderiv ℝ u x)‖ := by
-      rw [fderiv.comp x e.differentiableAt (hu.differentiable le_rfl x)]
+      rw [fderiv_comp x e.differentiableAt (hu.differentiable le_rfl x)]
     _ ≤ ‖fderiv ℝ e (u x)‖ * ‖fderiv ℝ u x‖ :=
       (fderiv ℝ e (u x)).opNorm_comp_le (fderiv ℝ u x)
     _ = C₂ * ‖fderiv ℝ u x‖ := by simp_rw [e.fderiv, C₂, coe_nnnorm]
