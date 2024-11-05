@@ -157,10 +157,9 @@ theorem map_piMap_pi {α β : ι → Type*} {f : ∀ i, α i → β i}
   classical
   rw [← univ_pi_piecewise_univ, piMap_image_univ_pi]
   refine univ_pi_mem_pi (fun i ↦ ?_) ?_
-  · if hi : i ∈ I then
-      simpa [hi] using image_mem_map (hs i hi)
-    else
-      simp [hi]
+  · by_cases hi : i ∈ I
+    · simpa [hi] using image_mem_map (hs i hi)
+    · simp [hi]
   · filter_upwards [hf, hI.compl_mem_cofinite] with i hsurj (hiI : i ∉ I)
     simp [hiI, hsurj.range_eq]
 
