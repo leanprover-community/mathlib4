@@ -120,4 +120,36 @@ lemma toBilin_symm_eq_Polar (Q : QuadraticMap R M N) (bm : Basis ι R M) :
     rw [ toQuadraticMap_toBilin Q]
   _ = ((Q.toBilin bm) a) b + ((Q.toBilin bm) b) a := by abel
 
+lemma polar_toQuadraticMap (B : BilinMap R M N) (x y : M) :
+    polar B.toQuadraticMap x y = B x y + B y x := by
+  simp only [polar, BilinMap.toQuadraticMap_apply, map_add, LinearMap.add_apply]
+  abel
+
+lemma polarBilin_toQuadraticMap (B : BilinMap R M N) :
+    polarBilin B.toQuadraticMap = B + B.flip := by
+  ext x y
+  simp only [polarBilin_apply_apply, polar_toQuadraticMap, LinearMap.add_apply,
+    LinearMap.flip_apply]
+
+theorem toBilin_toQuadraticMap (B : BilinMap R M N) (bm : Basis ι R M) :
+    B.toQuadraticMap.toBilin bm = B := by
+  ext x y
+  rw [toBilin]
+  simp_rw [polar_toQuadraticMap]
+  simp_rw [BilinMap.toQuadraticMap_apply]
+  let s := (bm.repr x).support ∪ (bm.repr y).support
+  have h1 : (bm.repr x).support ⊆ s := Finset.subset_union_left
+  have h2 : (bm.repr y).support ⊆ s := Finset.subset_union_right
+  rw [← bm.linearCombination_repr x,
+      Finsupp.linearCombination_apply, Finsupp.sum_of_support_subset _ h1]
+  rw [← bm.linearCombination_repr y,
+      Finsupp.linearCombination_apply, Finsupp.sum_of_support_subset _ h2]
+  simp_rw [LinearMap.map_sum₂, map_sum, LinearMap.map_smul₂, _root_.map_smul,
+     ← Finset.sum_product']
+  simp_rw [← Finset.diag_union_offDiag]
+  simp_rw [Finset.sum_union (Finset.disjoint_diag_offDiag _), Finset.sum_diag]
+  simp only [Basis.constr_basis, ↓reduceIte, smul_ite, smul_add, smul_zero, add_right_inj]
+  rw [Finset.sum_ite_of_false]
+  sorry
+
 end QuadraticMap
