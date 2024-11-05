@@ -20,6 +20,7 @@ n : Nat
     "not that message
 ⊢ True"
 
+set_option linter.unusedVariables false in
 example (n : Nat) : True := by
   success_if_fail_with_msg (err true) rw [Nat.le_succ n]
   trivial
@@ -54,8 +55,5 @@ def doesntFail : MetaM Unit := do
   try successIfFailWithMessage "I failed!" alwaysFails
   catch _ => throwError "I *really* failed."
 
-/--
-info:
--/
 #guard_msgs in
 #eval doesntFail

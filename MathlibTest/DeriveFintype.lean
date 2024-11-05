@@ -57,7 +57,7 @@ info: instFintypeC
 
 example : (Finset.univ : Finset (C Bool)) = Finset.univ.image .c := rfl
 
-inductive C' (P : Prop) | c (h : P)
+inductive C' (P : Prop) : Type | c (h : P)
   deriving Fintype
 
 /-- info: instFintypeC'OfDecidable -/
@@ -81,7 +81,7 @@ info: instFintypeC
 #synth Fintype (C α)
 end
 
-inductive D (p : Prop) | d (h : p)
+inductive D (p : Prop) : Type | d (h : p)
   deriving Fintype
 
 section

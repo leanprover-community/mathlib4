@@ -36,7 +36,7 @@ example {R : Type} [OrderedRing R] : 0 ≤ (2 : R) := by
   fail_if_success nontriviality PUnit
   exact zero_le_two
 
-example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 2 ∣ 4 := by
+example {R : Type} [OrderedRing R] {a : R} (_ : 0 < a) : 2 ∣ 4 := by
   nontriviality R
   rename_i inst; guard_hyp inst : Nontrivial R
   decide
