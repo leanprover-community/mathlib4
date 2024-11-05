@@ -3,6 +3,7 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro
 -/
+import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Ring
 
 /-!
@@ -32,13 +33,6 @@ Lastly, calls a normalization tactic on this target.
 namespace Mathlib.Tactic.LinearCombination
 open Lean hiding Rat
 open Elab Meta Term
-
-variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}
-
-theorem add_pf [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
-theorem pf_mul_c [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
-theorem c_mul_pf [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
-theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
 
 /-- Result of `expandLinearCombo`, either an equality proof or a value. -/
 inductive Expanded
@@ -106,17 +100,6 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
       else
         .const <$> c.toSyntax
 
-theorem eq_of_sub [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
-  rw [← sub_eq_zero] at p ⊢; rwa [sub_eq_zero, p] at H
-
-theorem eq_of_add [Add α] [IsRightCancelAdd α] (p : (a:α) = b) (H : a' + b = b' + a) : a' = b' := by
-  rw [p] at H
-  exact add_right_cancel H
-
-theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
-    (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
-  rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
-
 /-- Implementation of `linear_combination`. -/
 def elabLinearCombination (tk : Syntax)
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
@@ -132,24 +115,29 @@ def elabLinearCombination (tk : Syntax)
         from the term"
       `(Eq.refl 0)
     | .proof p => pure p
-  let norm := norm?.getD (Unhygienic.run <| withRef tk `(tactic| ring1))
-  let lem : Ident ← mkIdent <$> do
-    try
-      -- if we are in a "true" ring, with well-behaved negation, it is better to present the
-      -- normalization tactic with a goal of the form `[stuff] = 0`, because this gives more useful
-      -- error messages on failure
-      let _ ← synthInstance (← mkAppM ``Neg #[ty])
-      pure ``eq_of_sub
-    catch _ =>
-      -- but otherwise (for example over `ℕ` or `ℝ≥0`) we can solve the problem by presenting the
-      -- normalization tactic with a goal of the form `[stuff] = [stuff]`
-      pure ``eq_of_add
-  Term.withoutErrToSorry <| Tactic.evalTactic <| ← withFreshMacroScope <|
-  match exp? with
-  | some n =>
-    if n.getNat = 1 then `(tactic| (refine $lem $p ?a; case' a => $norm:tactic))
-    else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
-  | _ => `(tactic| (refine $lem $p ?a; case' a => $norm:tactic))
+  -- build the term for the central `refine` in `linear_combination`
+  let p' ← do
+    match exp? with
+    | some n =>
+      if n.getNat = 1 then
+        `(eq_of_add $p ?a)
+      else
+        `(eq_of_add_pow $n $p ?a)
+    | _ => `(eq_of_add $p ?a)
+  -- run the central `refine` in `linear_combination`
+  Term.withoutErrToSorry <| Tactic.refineCore p' `refine false
+  -- if we are in a "true" ring, with well-behaved negation, we rearrange from the form
+  -- `[stuff] = [stuff]` to the form `[stuff] = 0`,
+  -- because this gives more useful error messages on failure
+  let _ ← Tactic.tryTactic <| Tactic.liftMetaTactic fun g ↦ g.applyConst ``eq_rearrange
+  match norm? with
+  -- now run the normalization tactic provided
+  | some norm => Tactic.evalTactic norm
+  -- or the default normalization tactic (the internals of `ring1`) if none is provided
+  -- (but we use `.instances` transparency, which is arguably more robust in algebraic settings than
+  -- the choice `.reducible` made in `ring1`)
+  | none => withRef tk <| Tactic.liftMetaFinishingTactic <|
+    fun g ↦ AtomM.run .instances <| Ring.proveEq g
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for

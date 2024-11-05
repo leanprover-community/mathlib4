@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Data.Finset.Preimage
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.Prod
 import Mathlib.Order.Interval.Set.Disjoint
+import Mathlib.Order.Interval.Set.OrderIso
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on preorders, monoids and groups.
@@ -256,6 +258,15 @@ variable [Nonempty α]
 
 @[instance]
 lemma atTop_neBot : NeBot (atTop : Filter α) := atTop_basis.neBot_iff.2 fun _ => nonempty_Ici
+
+theorem atTop_neBot_iff {α : Type*} [Preorder α] :
+    (atTop : Filter α).NeBot ↔ Nonempty α ∧ IsDirected α (· ≤ ·) := by
+  refine ⟨fun h ↦ ⟨nonempty_of_neBot atTop, ⟨fun x y ↦ ?_⟩⟩, fun ⟨h₁, h₂⟩ ↦ atTop_neBot⟩
+  exact ((eventually_ge_atTop x).and (eventually_ge_atTop y)).exists
+
+theorem atBot_neBot_iff {α : Type*} [Preorder α] :
+    (atBot : Filter α).NeBot ↔ Nonempty α ∧ IsDirected α (· ≥ ·) :=
+  atTop_neBot_iff (α := αᵒᵈ)
 
 @[simp] lemma mem_atTop_sets {s : Set α} : s ∈ (atTop : Filter α) ↔ ∃ a : α, ∀ b ≥ a, b ∈ s :=
   atTop_basis.mem_iff.trans <| exists_congr fun _ => iff_of_eq (true_and _)
@@ -967,12 +978,12 @@ theorem tendsto_comp_val_Iic_atBot [Preorder α] [IsDirected α (· ≥ ·)]
   tendsto_comp_val_Ici_atTop (α := αᵒᵈ)
 
 theorem map_add_atTop_eq_nat (k : ℕ) : map (fun a => a + k) atTop = atTop :=
-  map_atTop_eq_of_gc (· - k) k (fun a b h => Nat.add_le_add_right h k)
-    (fun a b h => (Nat.le_sub_iff_add_le h).symm) fun a h => by rw [Nat.sub_add_cancel h]
+  map_atTop_eq_of_gc (· - k) k (fun _ _ h => Nat.add_le_add_right h k)
+    (fun _ _ h => (Nat.le_sub_iff_add_le h).symm) fun a h => by rw [Nat.sub_add_cancel h]
 
 theorem map_sub_atTop_eq_nat (k : ℕ) : map (fun a => a - k) atTop = atTop :=
-  map_atTop_eq_of_gc (· + k) 0 (fun a b h => Nat.sub_le_sub_right h _)
-    (fun a b _ => Nat.sub_le_iff_le_add) fun b _ => by rw [Nat.add_sub_cancel_right]
+  map_atTop_eq_of_gc (· + k) 0 (fun _ _ h => Nat.sub_le_sub_right h _)
+    (fun _ _ _ => Nat.sub_le_iff_le_add) fun b _ => by rw [Nat.add_sub_cancel_right]
 
 theorem tendsto_add_atTop_nat (k : ℕ) : Tendsto (fun a => a + k) atTop atTop :=
   le_of_eq (map_add_atTop_eq_nat k)
@@ -986,7 +997,7 @@ theorem tendsto_add_atTop_iff_nat {f : ℕ → α} {l : Filter α} (k : ℕ) :
     rw [← tendsto_map'_iff, map_add_atTop_eq_nat]
 
 theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a => a / k) atTop = atTop :=
-  map_atTop_eq_of_gc (fun b => k * b + (k - 1)) 1 (fun a b h => Nat.div_le_div_right h)
+  map_atTop_eq_of_gc (fun b => k * b + (k - 1)) 1 (fun _ _ h => Nat.div_le_div_right h)
     -- Porting note: there was a parse error in `calc`, use `simp` instead
     (fun a b _ => by rw [Nat.div_le_iff_le_mul_add_pred hk])
     fun b _ => by rw [Nat.mul_add_div hk, Nat.div_eq_of_lt, add_zero]; omega
@@ -1215,3 +1226,45 @@ theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type*} [Preorder ι
   convert ← (compl_anti.comp hs).piecewise_eventually_eq_iUnion g f a using 3
   · convert congr_fun (Set.piecewise_compl (s _) g f) a
   · simp only [(· ∘ ·), ← compl_iInter, Set.piecewise_compl]
+
+namespace Nat
+
+theorem eventually_pow_lt_factorial_sub (c d : ℕ) : ∀ᶠ n in atTop, c ^ n < (n - d)! := by
+  rw [eventually_atTop]
+  refine ⟨2 * (c ^ 2 + d + 1), ?_⟩
+  intro n hn
+  obtain ⟨d', rfl⟩ := Nat.exists_eq_add_of_le hn
+  obtain (rfl | c0) := c.eq_zero_or_pos
+  · simp [Nat.two_mul, ← Nat.add_assoc, Nat.add_right_comm _ 1, Nat.factorial_pos]
+  refine (Nat.le_mul_of_pos_right _ (Nat.pow_pos (n := d') c0)).trans_lt ?_
+  convert_to (c ^ 2) ^ (c ^ 2 + d' + d + 1) < (c ^ 2 + (c ^ 2 + d' + d + 1) + 1)!
+  · rw [← pow_mul, ← pow_add]
+    congr 1
+    omega
+  · congr 1
+    omega
+  refine (lt_of_lt_of_le ?_ Nat.factorial_mul_pow_le_factorial).trans_le <|
+    (factorial_le (Nat.le_succ _))
+  rw [← one_mul (_ ^ _ : ℕ)]
+  apply Nat.mul_lt_mul_of_le_of_lt
+  · exact Nat.one_le_of_lt (Nat.factorial_pos _)
+  · exact Nat.pow_lt_pow_left (Nat.lt_succ_self _) (Nat.succ_ne_zero _)
+  · exact (Nat.factorial_pos _)
+
+theorem eventually_mul_pow_lt_factorial_sub (a c d : ℕ) :
+    ∀ᶠ n in atTop, a * c ^ n < (n - d)! := by
+  filter_upwards [Nat.eventually_pow_lt_factorial_sub (a * c) d, Filter.eventually_gt_atTop 0]
+    with n hn hn0
+  rw [mul_pow] at hn
+  exact (Nat.mul_le_mul_right _ (Nat.le_self_pow hn0.ne' _)).trans_lt hn
+
+@[deprecated eventually_pow_lt_factorial_sub (since := "2024-09-25")]
+theorem exists_pow_lt_factorial (c : ℕ) : ∃ n0 > 1, ∀ n ≥ n0, c ^ n < (n - 1)! :=
+  let ⟨n0, h⟩ := (eventually_pow_lt_factorial_sub c 1).exists_forall_of_atTop
+  ⟨max n0 2, by omega, fun n hn ↦ h n (by omega)⟩
+
+@[deprecated eventually_mul_pow_lt_factorial_sub (since := "2024-09-25")]
+theorem exists_mul_pow_lt_factorial (a : ℕ) (c : ℕ) : ∃ n0, ∀ n ≥ n0, a * c ^ n < (n - 1)! :=
+  (eventually_mul_pow_lt_factorial_sub a c 1).exists_forall_of_atTop
+
+end Nat

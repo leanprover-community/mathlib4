@@ -119,7 +119,7 @@ end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 variable [LinearOrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
-  [PosSMulReflectLE α β] [FloorDiv α β] [CeilDiv α β] {a : α} {b c : β}
+  [PosSMulReflectLE α β] [FloorDiv α β] [CeilDiv α β] {a : α} {b : β}
 
 lemma floorDiv_le_ceilDiv : b ⌊/⌋ a ≤ b ⌈/⌉ a := by
   obtain ha | ha := le_or_lt a 0

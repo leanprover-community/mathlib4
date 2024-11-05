@@ -60,12 +60,12 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α] {a b c d : α}
+variable [LinearOrderedAddCommGroup α] {a b c : α}
 
 -- Porting note:
 -- Lean can perfectly well find this instance,
 -- but in the rewrites below it is going looking for it without having fixed `α`.
-example : CovariantClass α α (swap fun x y ↦ x + y) fun x y ↦ x ≤ y := inferInstance
+example : AddRightMono α := inferInstance
 
 theorem abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, @neg_le α]
 
@@ -79,14 +79,14 @@ theorem le_of_abs_le (h : |a| ≤ b) : a ≤ b :=
 
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le' {β : Type*} [MulOneClass β] [Preorder β]
-    [CovariantClass β β (· * ·) (· ≤ ·)] [CovariantClass β β (swap (· * ·)) (· ≤ ·)] {f : α → β}
+    [MulLeftMono β] [MulRightMono β] {f : α → β}
     {a : α} (h₁ : 1 ≤ f a) (h₂ : 1 ≤ f (-a)) : f |a| ≤ f a * f (-a) :=
   (le_total a 0).rec (fun ha => (abs_of_nonpos ha).symm ▸ le_mul_of_one_le_left' h₁) fun ha =>
     (abs_of_nonneg ha).symm ▸ le_mul_of_one_le_right' h₂
 
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le {β : Type*} [MulOneClass β] [Preorder β]
-    [CovariantClass β β (· * ·) (· ≤ ·)] [CovariantClass β β (swap (· * ·)) (· ≤ ·)] {f : α → β}
+    [MulLeftMono β] [MulRightMono β] {f : α → β}
     (h : ∀ x, 1 ≤ f x) (a : α) : f |a| ≤ f a * f (-a) :=
   apply_abs_le_mul_of_one_le' (h _) (h _)
 
@@ -94,7 +94,7 @@ theorem apply_abs_le_mul_of_one_le {β : Type*} [MulOneClass β] [Preorder β]
 theorem abs_add (a b : α) : |a + b| ≤ |a| + |b| :=
   abs_le.2
     ⟨(neg_add |a| |b|).symm ▸
-        add_le_add ((@neg_le α ..).2 <| neg_le_abs _) ((@neg_le α ..).2 <| neg_le_abs _),
+        add_le_add (neg_le.2 <| neg_le_abs _) (neg_le.2 <| neg_le_abs _),
       add_le_add (le_abs_self _) (le_abs_self _)⟩
 
 theorem abs_add' (a b : α) : |a| ≤ |b| + |b + a| := by simpa using abs_add (-b) (b + a)
@@ -122,7 +122,7 @@ theorem sub_lt_of_abs_sub_lt_right (h : |a - b| < c) : a - c < b :=
   sub_lt_of_abs_sub_lt_left (abs_sub_comm a b ▸ h)
 
 theorem abs_sub_abs_le_abs_sub (a b : α) : |a| - |b| ≤ |a - b| :=
-  (@sub_le_iff_le_add α ..).2 <|
+  sub_le_iff_le_add.2 <|
     calc
       |a| = |a - b + b| := by rw [sub_add_cancel]
       _ ≤ |a - b| + |b| := abs_add _ _

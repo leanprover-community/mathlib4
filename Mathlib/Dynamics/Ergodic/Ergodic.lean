@@ -80,7 +80,7 @@ end PreErgodic
 
 namespace MeasureTheory.MeasurePreserving
 
-variable {β : Type*} {m' : MeasurableSpace β} {μ' : Measure β} {s' : Set β} {g : α → β}
+variable {β : Type*} {m' : MeasurableSpace β} {μ' : Measure β} {g : α → β}
 
 theorem preErgodic_of_preErgodic_conjugate (hg : MeasurePreserving g μ μ') (hf : PreErgodic f μ)
     {f' : β → β} (h_comm : Semiconj g f f') : PreErgodic f' μ' where

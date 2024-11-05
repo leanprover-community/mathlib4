@@ -67,7 +67,7 @@ namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ) where
   -- Porting note (#11215): TODO: figure out how to do this correctly
-  coe := fun y => y.cells
+  coe y := y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
 @[simp]
@@ -153,7 +153,6 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
   rfl
 
 -- Porting note: removed `↑`, added `.cells` and changed proof
--- @[simp] -- Porting note (#10618): simp can prove this
 @[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
   refine Set.eq_of_subset_of_subset ?_ ?_
@@ -436,7 +435,7 @@ theorem rowLens_length_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpo
     (ofRowLens w hw).rowLens.length = w.length := by
   simp only [length_rowLens, colLen, Nat.find_eq_iff, mem_cells, mem_ofRowLens,
     lt_self_iff_false, IsEmpty.exists_iff, Classical.not_not]
-  exact ⟨not_false, fun n hn => ⟨hn, hpos _ (List.getElem_mem _ _ hn)⟩⟩
+  exact ⟨not_false, fun n hn => ⟨hn, hpos _ (List.getElem_mem hn)⟩⟩
 
 /-- The length of the `i`th row in `ofRowLens w hw` is the `i`th entry of `w` -/
 theorem rowLen_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (i : Fin w.length) :

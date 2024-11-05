@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Data.List.Pairwise
+import Batteries.Data.List.OfFn
 import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
@@ -16,7 +16,6 @@ of length `n`.
 
 The main statements pertain to lists generated using `List.ofFn`
 
-- `List.length_ofFn`, which tells us the length of such a list
 - `List.get?_ofFn`, which tells us the nth element of such a list
 - `List.equivSigmaTuple`, which is an `Equiv` between lists and the functions that generate them
   via `List.ofFn`.
@@ -32,43 +31,8 @@ open Nat
 
 namespace List
 
-@[simp]
-theorem length_ofFn_go {n} (f : Fin n → α) (i j h) : length (ofFn.go f i j h) = i := by
-  induction i generalizing j <;> simp_all [ofFn.go]
-
-/-- The length of a list converted from a function is the size of the domain. -/
-@[simp]
-theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
-  simp [ofFn, length_ofFn_go]
-
-theorem getElem_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk : k < (ofFn.go f i j h).length) :
-    (ofFn.go f i j h)[k] = f ⟨j + k, by simp at hk; omega⟩ := by
-  let i+1 := i
-  cases k <;> simp [ofFn.go, getElem_ofFn_go (i := i)]
-  congr 2; omega
-
-theorem get_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
-    get (ofFn.go f i j h) ⟨k, hk⟩ = f ⟨j + k, by simp at hk; omega⟩ := by
-  simp [getElem_ofFn_go]
-
-@[simp]
-theorem getElem_ofFn {n} (f : Fin n → α) (i : Nat) (h : i < (ofFn f).length) :
-    (ofFn f)[i] = f ⟨i, by simp_all⟩ := by
-  simp [ofFn, getElem_ofFn_go]
-
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   simp; congr
-
-/-- The `n`th element of a list -/
-@[simp]
-theorem getElem?_ofFn {n} (f : Fin n → α) (i) : (ofFn f)[i]? = ofFnNthVal f i :=
-  if h : i < (ofFn f).length
-  then by
-    rw [getElem?_eq_getElem h, getElem_ofFn]
-    · simp only [length_ofFn] at h; simp [ofFnNthVal, h]
-  else by
-    rw [ofFnNthVal, dif_neg] <;>
-    simpa using h
 
 /-- The `n`th element of a list -/
 theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i := by
@@ -145,20 +109,20 @@ theorem ofFn_fin_append {m n} (a : Fin m → α) (b : Fin n → α) :
 
 /-- This breaks a list of `m*n` items into `m` groups each containing `n` elements. -/
 theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
-    List.ofFn f = List.join (List.ofFn fun i : Fin m => List.ofFn fun j : Fin n => f ⟨i * n + j,
+    List.ofFn f = List.flatten (List.ofFn fun i : Fin m => List.ofFn fun j : Fin n => f ⟨i * n + j,
     calc
       ↑i * n + j < (i + 1) * n :=
         (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.add_mul, Nat.one_mul])
       _ ≤ _ := Nat.mul_le_mul_right _ i.prop⟩) := by
   induction' m with m IH
-  · simp [ofFn_zero, Nat.zero_mul, ofFn_zero, join]
+  · simp [ofFn_zero, Nat.zero_mul, ofFn_zero, flatten]
   · simp_rw [ofFn_succ', succ_mul]
-    simp [join_concat, ofFn_add, IH]
+    simp [flatten_concat, ofFn_add, IH]
     rfl
 
 /-- This breaks a list of `m*n` items into `n` groups each containing `m` elements. -/
 theorem ofFn_mul' {m n} (f : Fin (m * n) → α) :
-    List.ofFn f = List.join (List.ofFn fun i : Fin n => List.ofFn fun j : Fin m => f ⟨m * i + j,
+    List.ofFn f = List.flatten (List.ofFn fun i : Fin n => List.ofFn fun j : Fin m => f ⟨m * i + j,
     calc
       m * i + j < m * (i + 1) :=
         (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.mul_add, Nat.mul_one])
@@ -206,15 +170,16 @@ theorem ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replica
 
 @[simp]
 theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
-    List.ofFn (Fin.repeat n a) = (List.replicate n (List.ofFn a)).join := by
+    List.ofFn (Fin.repeat n a) = (List.replicate n (List.ofFn a)).flatten := by
   simp_rw [ofFn_mul, ← ofFn_const, Fin.repeat, Fin.modNat, Nat.add_comm,
     Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt (Fin.is_lt _)]
 
 @[simp]
 theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
-  simp only [pairwise_iff_get, (Fin.rightInverse_cast (length_ofFn f)).surjective.forall, get_ofFn,
-    ← Fin.not_le, Fin.cast_le_cast]
+  simp only [pairwise_iff_getElem, length_ofFn, List.getElem_ofFn,
+    (Fin.rightInverse_cast (length_ofFn f)).surjective.forall, Fin.forall_iff, Fin.cast_mk,
+    Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
 
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/
 @[simps]
@@ -235,14 +200,8 @@ def ofFnRec {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofF
 
 @[simp]
 theorem ofFnRec_ofFn {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) {n : ℕ}
-    (f : Fin n → α) : @ofFnRec _ C h (List.ofFn f) = h _ f := by
-  -- Porting note: Old proof was
-  -- equivSigmaTuple.rightInverse_symm.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
-  have := (@equivSigmaTuple α).rightInverse_symm
-  dsimp [equivSigmaTuple] at this
-  have := this.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
-  dsimp only at this
-  rw [ofFnRec, ← this]
+    (f : Fin n → α) : @ofFnRec _ C h (List.ofFn f) = h _ f :=
+  equivSigmaTuple.rightInverse_symm.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
 
 theorem exists_iff_exists_tuple {P : List α → Prop} :
     (∃ l : List α, P l) ↔ ∃ (n : _) (f : Fin n → α), P (List.ofFn f) :=

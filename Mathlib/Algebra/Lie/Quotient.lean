@@ -111,7 +111,7 @@ instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
     apply Quotient.liftOn₂' x y fun x' y' => mk ⁅x', y'⁆
     intro x₁ x₂ y₁ y₂ h₁ h₂
     apply (Submodule.Quotient.eq I.toSubmodule).2
-    rw [Submodule.quotientRel_r_def] at h₁ h₂
+    rw [Submodule.quotientRel_def] at h₁ h₂
     have h : ⁅x₁, x₂⁆ - ⁅y₁, y₂⁆ = ⁅x₁, x₂ - y₂⁆ + ⁅x₁ - y₁, y₂⁆ := by
       simp [-lie_skew, sub_eq_add_neg, add_assoc]
     rw [h]
@@ -171,7 +171,7 @@ def mk' : M →ₗ⁅R,L⁆ M ⧸ N :=
     map_lie' := fun {_ _} => rfl }
 
 @[simp]
-theorem surjective_mk' : Function.Surjective (mk' N) := surjective_quot_mk _
+theorem surjective_mk' : Function.Surjective (mk' N) := Quot.mk_surjective
 
 @[simp]
 theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by simp [LieModuleHom.range_eq_top]
