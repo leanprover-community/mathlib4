@@ -9,7 +9,6 @@ import Mathlib.Analysis.Convex.Combination
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 import Mathlib.Topology.Order.Monotone
-import Mathlib.Data.Real.Pi.Irrational
 
 /-!
 # Points in sight
