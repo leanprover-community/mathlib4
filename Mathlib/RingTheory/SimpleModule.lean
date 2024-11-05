@@ -399,7 +399,7 @@ theorem bijective_of_ne_zero [IsSimpleModule R M] [IsSimpleModule R N] {f : M �
 /-- The image of a homomorphism from a simple module is either isomorphic
   to the simple module or is zero. -/
 lemma IsSimpleModule.mapsTo_equiv_or_zero
-[IsSimpleModule R N] (l : N →ₗ[R] M) :
+    [IsSimpleModule R N] (l : N →ₗ[R] M) :
   Nonempty (N ≃ₗ[R] (LinearMap.range l)) ∨ (LinearMap.range l) = 0 := by
   have hl := LinearMap.injective_or_eq_zero l
   cases hl with
