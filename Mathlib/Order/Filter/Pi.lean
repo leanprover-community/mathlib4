@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich
 -/
 import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.Tendsto
 
 /-!
 # (Co)product of a family of filters
@@ -152,7 +153,7 @@ theorem pi_inf_principal_pi_neBot [∀ i, NeBot (f i)] {I : Set ι} :
 instance PiInfPrincipalPi.neBot [h : ∀ i, NeBot (f i ⊓ 𝓟 (s i))] {I : Set ι} :
     NeBot (pi f ⊓ 𝓟 (I.pi s)) :=
   (pi_inf_principal_univ_pi_neBot.2 ‹_›).mono <|
-    inf_le_inf_left _ <| principal_mono.2 fun x hx i _ => hx i trivial
+    inf_le_inf_left _ <| principal_mono.2 fun _ hx i _ => hx i trivial
 
 @[simp]
 theorem pi_eq_bot : pi f = ⊥ ↔ ∃ i, f i = ⊥ := by

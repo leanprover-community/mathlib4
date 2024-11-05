@@ -3,7 +3,6 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Eric Wieser
 -/
-import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.Tactic.AdaptationNote
 
@@ -226,14 +225,14 @@ protected theorem smul_add (r : R₁) (x y : ⨂[R] i, s i) : r • (x + y) = r 
 
 instance distribMulAction' : DistribMulAction R₁ (⨂[R] i, s i) where
   smul := (· • ·)
-  smul_add r x y := AddMonoidHom.map_add _ _ _
+  smul_add _ _ _ := AddMonoidHom.map_add _ _ _
   mul_smul r r' x :=
     PiTensorProduct.induction_on' x (fun {r'' f} ↦ by simp [smul_tprodCoeff', smul_smul])
       fun {x y} ihx ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihx, ihy]
   one_smul x :=
     PiTensorProduct.induction_on' x (fun {r f} ↦ by rw [smul_tprodCoeff', one_smul])
       fun {z y} ihz ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihz, ihy]
-  smul_zero r := AddMonoidHom.map_zero _
+  smul_zero _ := AddMonoidHom.map_zero _
 
 instance smulCommClass' [SMulCommClass R₁ R₂ R] : SMulCommClass R₁ R₂ (⨂[R] i, s i) :=
   ⟨fun {r' r''} x ↦
@@ -411,7 +410,7 @@ theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (
   -- show _ • _ = _
   -- rw [one_smul]
   erw [AddCon.lift_coe]
-  erw [FreeAddMonoid.of]
+  rw [FreeAddMonoid.of]
   dsimp [FreeAddMonoid.ofList]
   rw [← one_smul R (φ f)]
   erw [Equiv.refl_apply]

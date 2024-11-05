@@ -21,6 +21,14 @@ left adjoints of `Nat.pow b`. See `pow_le_iff_le_log` and `le_pow_iff_clog_le`.
 
 namespace Nat
 
+#adaptation_note
+/--
+After leanprover/lean4#5338 we just unused argument warnings,
+but these are used in the decreasing by blocks.
+If instead we inline the `have` blocks, the unusedHavesSuffices linter triggers.
+-/
+set_option linter.unusedVariables false
+
 /-! ### Floor logarithm -/
 
 
@@ -124,8 +132,8 @@ theorem lt_pow_succ_log_self {b : ℕ} (hb : 1 < b) (x : ℕ) : x < b ^ (log b x
 theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
     log b n = m ↔ b ^ m ≤ n ∧ n < b ^ (m + 1) := by
   rcases em (1 < b ∧ n ≠ 0) with (⟨hb, hn⟩ | hbn)
-  · rw [le_antisymm_iff, ← Nat.lt_succ_iff, ← pow_le_iff_le_log, ← lt_pow_iff_log_lt, and_comm] <;>
-      assumption
+  · rw [le_antisymm_iff, ← Nat.lt_succ_iff, ← pow_le_iff_le_log, ← lt_pow_iff_log_lt,
+      and_comm] <;> assumption
   have hm : m ≠ 0 := h.resolve_right hbn
   rw [not_and_or, not_lt, Ne, not_not] at hbn
   rcases hbn with (hb | rfl)

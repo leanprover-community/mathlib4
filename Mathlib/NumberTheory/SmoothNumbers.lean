@@ -233,7 +233,7 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
       refine prod_eq <|
         (filter _ <| perm_primeFactorsList_mul (pow_ne_zero e hp.ne_zero) hm₀).trans ?_
       rw [filter_append, hp.primeFactorsList_pow,
-          filter_eq_nil.mpr fun q hq ↦ by rw [mem_replicate] at hq; simp [hq.2, hs],
+          filter_eq_nil_iff.mpr fun q hq ↦ by rw [mem_replicate] at hq; simp [hq.2, hs],
           nil_append, filter_eq_self.mpr fun q hq ↦ by simp only [hm q hq, decide_True]]
   right_inv := by
     rintro ⟨m, hm₀, hm⟩

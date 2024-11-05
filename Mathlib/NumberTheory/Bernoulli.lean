@@ -3,12 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kevin Buzzard
 -/
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.GeomSum
-import Mathlib.Data.Fintype.BigOperators
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.WellKnown
-import Mathlib.Tactic.FieldSimp
 
 /-!
 # Bernoulli numbers
@@ -185,7 +181,7 @@ def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
 
 theorem bernoulli'_eq_bernoulli (n : ℕ) : bernoulli' n = (-1) ^ n * bernoulli n := by
-  simp [bernoulli, ← mul_assoc, ← sq, ← pow_mul, mul_comm n 2, pow_mul]
+  simp [bernoulli, ← mul_assoc, ← sq, ← pow_mul, mul_comm n 2]
 
 @[simp]
 theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
@@ -257,7 +253,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   simp only [bernoulliPowerSeries, coeff_mul, coeff_X, sum_antidiagonal_succ', one_div, coeff_mk,
     coeff_one, coeff_exp, LinearMap.map_sub, factorial, if_pos, cast_succ, cast_one, cast_mul,
     sub_zero, RingHom.map_one, add_eq_zero, if_false, _root_.inv_one, zero_add, one_ne_zero,
-    mul_zero, and_false_iff, sub_self, ← RingHom.map_mul, ← map_sum]
+    mul_zero, and_false, sub_self, ← RingHom.map_mul, ← map_sum]
   cases' n with n
   · simp
   rw [if_neg n.succ_succ_ne_one]

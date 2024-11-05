@@ -3,13 +3,13 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
+import Mathlib.Algebra.GroupWithZero.Invertible
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Algebra.Ring.Int
-import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.Tactic.ClearExclamation
-import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 ## `norm_num` basic plugins
@@ -24,6 +24,14 @@ See other files in this directory for many more plugins.
 -/
 
 universe u
+
+#adaptation_note
+/--
+Since https://github.com/leanprover/lean4/pull/5338,
+the unused variable linter can not see usages of variables in
+`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
+-/
+set_option linter.unusedVariables false
 
 namespace Mathlib
 open Lean hiding Rat mkRat
@@ -196,11 +204,11 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
   have h₁ := congr_arg (↑· * (⅟↑da * ⅟↑db : α)) h₁
   simp only [Int.cast_add, Int.cast_mul, Int.cast_natCast, ← mul_assoc,
-    add_mul, mul_mul_invOf_self_cancel] at h₁
+    add_mul, mul_invOf_cancel_right] at h₁
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
-  simp only [H, mul_mul_invOf_self_cancel', Nat.cast_mul, ← mul_assoc] at h₁ h₂
+  simp only [H, mul_invOf_cancel_right', Nat.cast_mul, ← mul_assoc] at h₁ h₂
   rw [h₁, h₂, Nat.cast_commute]
-  simp only [mul_mul_invOf_self_cancel,
+  simp only [mul_invOf_cancel_right,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
@@ -382,8 +390,8 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   simp only [← mul_assoc, (Nat.cast_commute (α := α) da nb).invOf_left.right_comm, h₁]
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
   simp only [Nat.cast_mul, ← mul_assoc] at h₂; rw [H] at h₂
-  simp only [mul_mul_invOf_self_cancel'] at h₂; rw [h₂, Nat.cast_commute]
-  simp only [mul_mul_invOf_self_cancel,
+  simp only [mul_invOf_cancel_right'] at h₂; rw [h₂, Nat.cast_commute]
+  simp only [mul_invOf_cancel_right,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 

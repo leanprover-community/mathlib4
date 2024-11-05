@@ -6,10 +6,8 @@ Authors: Yaël Dillies, Vladimir Ivanov
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Sups
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Ring
 
 /-!
@@ -71,11 +69,11 @@ private lemma binomial_sum_eq (h : n < m) :
   ring
 
 private lemma Fintype.sum_div_mul_card_choose_card :
-    ∑ s : Finset α, (card α / ((card α - s.card) * (card α).choose s.card) : ℚ) =
+    ∑ s : Finset α, (card α / ((card α - #s) * (card α).choose #s) : ℚ) =
       card α * ∑ k ∈ range (card α), (↑k)⁻¹ + 1 := by
   rw [← powerset_univ, powerset_card_disjiUnion, sum_disjiUnion]
   have : ∀ {x : ℕ}, ∀ s ∈ powersetCard x (univ : Finset α),
-    (card α / ((card α - Finset.card s) * (card α).choose (Finset.card s)) : ℚ) =
+    (card α / ((card α - #s) * (card α).choose #s) : ℚ) =
       card α / ((card α - x) * (card α).choose x) := by
     intros n s hs
     rw [mem_powersetCard_univ.1 hs]
@@ -102,11 +100,9 @@ variable {α β : Type*}
 /-! ### Truncated supremum, truncated infimum -/
 
 section SemilatticeSup
-variable [SemilatticeSup α] [SemilatticeSup β]
-  [BoundedOrder β] {s t : Finset α} {a b : α}
+variable [SemilatticeSup α] [SemilatticeSup β] [BoundedOrder β] {s t : Finset α} {a : α}
 
-private lemma sup_aux [@DecidableRel α (· ≤ ·)] :
-    a ∈ lowerClosure s → (s.filter fun b ↦ a ≤ b).Nonempty :=
+private lemma sup_aux [@DecidableRel α (· ≤ ·)] : a ∈ lowerClosure s → {b ∈ s | a ≤ b}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
 private lemma lower_aux [DecidableEq α] :
@@ -117,10 +113,10 @@ variable [@DecidableRel α (· ≤ ·)] [OrderTop α]
 
 /-- The supremum of the elements of `s` less than `a` if there are some, otherwise `⊤`. -/
 def truncatedSup (s : Finset α) (a : α) : α :=
-  if h : a ∈ lowerClosure s then (s.filter fun b ↦ a ≤ b).sup' (sup_aux h) id else ⊤
+  if h : a ∈ lowerClosure s then {b ∈ s | a ≤ b}.sup' (sup_aux h) id else ⊤
 
 lemma truncatedSup_of_mem (h : a ∈ lowerClosure s) :
-    truncatedSup s a = (s.filter fun b ↦ a ≤ b).sup' (sup_aux h) id := dif_pos h
+    truncatedSup s a = {b ∈ s | a ≤ b}.sup' (sup_aux h) id := dif_pos h
 
 lemma truncatedSup_of_not_mem (h : a ∉ lowerClosure s) : truncatedSup s a = ⊤ := dif_neg h
 
@@ -179,7 +175,7 @@ section SemilatticeInf
 variable [SemilatticeInf α] [SemilatticeInf β]
   [BoundedOrder β] [@DecidableRel β (· ≤ ·)] {s t : Finset α} {a : α}
 
-private lemma inf_aux [@DecidableRel α (· ≤ ·)]: a ∈ upperClosure s → (s.filter (· ≤ a)).Nonempty :=
+private lemma inf_aux [@DecidableRel α (· ≤ ·)]: a ∈ upperClosure s → {b ∈ s | b ≤ a}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
 private lemma upper_aux [DecidableEq α] :
@@ -190,10 +186,10 @@ variable [@DecidableRel α (· ≤ ·)] [BoundedOrder α]
 
 /-- The infimum of the elements of `s` less than `a` if there are some, otherwise `⊥`. -/
 def truncatedInf (s : Finset α) (a : α) : α :=
-  if h : a ∈ upperClosure s then (s.filter (· ≤ a)).inf' (inf_aux h) id else ⊥
+  if h : a ∈ upperClosure s then {b ∈ s | b ≤ a}.inf' (inf_aux h) id else ⊥
 
 lemma truncatedInf_of_mem (h : a ∈ upperClosure s) :
-    truncatedInf s a = (s.filter (· ≤ a)).inf' (inf_aux h) id := dif_pos h
+    truncatedInf s a = {b ∈ s | b ≤ a}.inf' (inf_aux h) id := dif_pos h
 
 lemma truncatedInf_of_not_mem (h : a ∉ upperClosure s) : truncatedInf s a = ⊥ := dif_neg h
 
@@ -286,7 +282,7 @@ lemma truncatedInf_sups_of_not_mem (ha : a ∉ upperClosure s ⊔ upperClosure t
 end DistribLattice
 
 section BooleanAlgebra
-variable [BooleanAlgebra α] [@DecidableRel α (· ≤ ·)] {s : Finset α} {a : α}
+variable [BooleanAlgebra α] [@DecidableRel α (· ≤ ·)]
 
 @[simp] lemma compl_truncatedSup (s : Finset α) (a : α) :
     (truncatedSup s a)ᶜ = truncatedInf sᶜˢ aᶜ := map_truncatedSup (OrderIso.compl α) _ _
@@ -299,8 +295,8 @@ end BooleanAlgebra
 variable [DecidableEq α] [Fintype α]
 
 lemma card_truncatedSup_union_add_card_truncatedSup_infs (𝒜 ℬ : Finset (Finset α)) (s : Finset α) :
-    (truncatedSup (𝒜 ∪ ℬ) s).card + (truncatedSup (𝒜 ⊼ ℬ) s).card =
-      (truncatedSup 𝒜 s).card + (truncatedSup ℬ s).card := by
+    #(truncatedSup (𝒜 ∪ ℬ) s) + #(truncatedSup (𝒜 ⊼ ℬ) s) =
+      #(truncatedSup 𝒜 s) + #(truncatedSup ℬ s) := by
   by_cases h𝒜 : s ∈ lowerClosure (𝒜 : Set <| Finset α) <;>
     by_cases hℬ : s ∈ lowerClosure (ℬ : Set <| Finset α)
   · rw [truncatedSup_union h𝒜 hℬ, truncatedSup_infs h𝒜 hℬ]
@@ -313,8 +309,8 @@ lemma card_truncatedSup_union_add_card_truncatedSup_infs (𝒜 ℬ : Finset (Fin
       truncatedSup_union_of_not_mem h𝒜 hℬ, truncatedSup_infs_of_not_mem fun h ↦ h𝒜 h.1]
 
 lemma card_truncatedInf_union_add_card_truncatedInf_sups (𝒜 ℬ : Finset (Finset α)) (s : Finset α) :
-    (truncatedInf (𝒜 ∪ ℬ) s).card + (truncatedInf (𝒜 ⊻ ℬ) s).card =
-      (truncatedInf 𝒜 s).card + (truncatedInf ℬ s).card := by
+    #(truncatedInf (𝒜 ∪ ℬ) s) + #(truncatedInf (𝒜 ⊻ ℬ) s) =
+      #(truncatedInf 𝒜 s) + #(truncatedInf ℬ s) := by
   by_cases h𝒜 : s ∈ upperClosure (𝒜 : Set <| Finset α) <;>
     by_cases hℬ : s ∈ upperClosure (ℬ : Set <| Finset α)
   · rw [truncatedInf_union h𝒜 hℬ, truncatedInf_sups h𝒜 hℬ]
@@ -332,17 +328,17 @@ open Finset hiding card
 open Fintype Nat
 
 namespace AhlswedeZhang
-variable {α : Type*} [Fintype α] [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α}
+variable {α : Type*} [Fintype α] [DecidableEq α] {𝒜 : Finset (Finset α)} {s : Finset α}
 
 /-- Weighted sum of the size of the truncated infima of a set family. Relevant to the
 Ahlswede-Zhang identity. -/
 def infSum (𝒜 : Finset (Finset α)) : ℚ :=
-  ∑ s, (truncatedInf 𝒜 s).card / (s.card * (card α).choose s.card)
+  ∑ s, #(truncatedInf 𝒜 s) / (#s * (card α).choose #s)
 
 /-- Weighted sum of the size of the truncated suprema of a set family. Relevant to the
 Ahlswede-Zhang identity. -/
 def supSum (𝒜 : Finset (Finset α)) : ℚ :=
-  ∑ s, (truncatedSup 𝒜 s).card / ((card α - s.card) * (card α).choose s.card)
+  ∑ s, #(truncatedSup 𝒜 s) / ((card α - #s) * (card α).choose #s)
 
 lemma supSum_union_add_supSum_infs (𝒜 ℬ : Finset (Finset α)) :
     supSum (𝒜 ∪ ℬ) + supSum (𝒜 ⊼ ℬ) = supSum 𝒜 + supSum ℬ := by
@@ -359,9 +355,9 @@ lemma infSum_union_add_infSum_sups (𝒜 ℬ : Finset (Finset α)) :
   simp
 
 lemma IsAntichain.le_infSum (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) (h𝒜₀ : ∅ ∉ 𝒜) :
-    ∑ s ∈ 𝒜, ((card α).choose s.card : ℚ)⁻¹ ≤ infSum 𝒜 := by
+    ∑ s ∈ 𝒜, ((card α).choose #s : ℚ)⁻¹ ≤ infSum 𝒜 := by
   calc
-    _ = ∑ s ∈ 𝒜, (truncatedInf 𝒜 s).card / (s.card * (card α).choose s.card : ℚ) := ?_
+    _ = ∑ s ∈ 𝒜, #(truncatedInf 𝒜 s) / (#s * (card α).choose #s : ℚ) := ?_
     _ ≤ _ := sum_le_univ_sum_of_nonneg fun s ↦ by positivity
   refine sum_congr rfl fun s hs ↦ ?_
   rw [truncatedInf_of_isAntichain h𝒜 hs, div_mul_cancel_left₀]
@@ -373,8 +369,8 @@ variable [Nonempty α]
 @[simp] lemma supSum_singleton (hs : s ≠ univ) :
     supSum ({s} : Finset (Finset α)) = card α * ∑ k ∈ range (card α), (k : ℚ)⁻¹ := by
   have : ∀ t : Finset α,
-    (card α - (truncatedSup {s} t).card : ℚ) / ((card α - t.card) * (card α).choose t.card) =
-    if t ⊆ s then (card α - s.card : ℚ) / ((card α - t.card) * (card α).choose t.card) else 0 := by
+    (card α - #(truncatedSup {s} t) : ℚ) / ((card α - #t) * (card α).choose #t) =
+    if t ⊆ s then (card α - #s : ℚ) / ((card α - #t) * (card α).choose #t) else 0 := by
     rintro t
     simp_rw [truncatedSup_singleton, le_iff_subset]
     split_ifs <;> simp [card_univ]
@@ -384,7 +380,7 @@ variable [Nonempty α]
     sum_powerset, ← binomial_sum_eq ((card_lt_iff_ne_univ _).2 hs), eq_comm]
   refine sum_congr rfl fun n _ ↦ ?_
   rw [mul_div_assoc, ← nsmul_eq_mul]
-  exact sum_powersetCard n s fun m ↦ (card α - s.card : ℚ) / ((card α - m) * (card α).choose m)
+  exact sum_powersetCard n s fun m ↦ (card α - #s : ℚ) / ((card α - m) * (card α).choose m)
 
 /-- The **Ahlswede-Zhang Identity**. -/
 lemma infSum_compls_add_supSum (𝒜 : Finset (Finset α)) :

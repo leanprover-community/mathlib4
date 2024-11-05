@@ -97,10 +97,10 @@ lemma IsSigmaCompact.image_of_continuousOn {f : X → Y} {s : Set X} (hs : IsSig
 lemma IsSigmaCompact.image {f : X → Y} (hf : Continuous f) {s : Set X} (hs : IsSigmaCompact s) :
     IsSigmaCompact (f '' s) := hs.image_of_continuousOn hf.continuousOn
 
-/-- If `f : X → Y` is `Inducing`, the image `f '' s` of a set `s` is σ-compact
+/-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is σ-compact
   if and only `s` is σ-compact. -/
-lemma Inducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
-    (hf : Inducing f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
+lemma IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
+    (hf : IsInducing f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
   constructor
   · exact fun h ↦ h.image hf.continuous
   · rintro ⟨L, hcomp, hcov⟩
@@ -118,16 +118,22 @@ lemma Inducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
         _ = f ⁻¹' (f '' s) ∩ s := by rw [hcov]
         _ = s := inter_eq_right.mpr (subset_preimage_image _ _)
 
+@[deprecated (since := "2024-10-28")]
+alias Inducing.isSigmaCompact_iff := IsInducing.isSigmaCompact_iff
+
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
   if and only `s` is σ-compact. -/
-lemma Embedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
-    (hf : Embedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
-  hf.toInducing.isSigmaCompact_iff
+lemma IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
+    (hf : IsEmbedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
+  hf.isInducing.isSigmaCompact_iff
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isSigmaCompact_iff := IsEmbedding.isSigmaCompact_iff
 
 /-- Sets of subtype are σ-compact iff the image under a coercion is. -/
 lemma Subtype.isSigmaCompact_iff {p : X → Prop} {s : Set { a // p a }} :
     IsSigmaCompact s ↔ IsSigmaCompact ((↑) '' s : Set X) :=
-  embedding_subtype_val.isSigmaCompact_iff
+  IsEmbedding.subtypeVal.isSigmaCompact_iff
 
 /-- A σ-compact space is a space that is the union of a countable collection of compact subspaces.
   Note that a locally compact separable T₂ space need not be σ-compact.
@@ -249,17 +255,20 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
       refine ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ ?_⟩
       exact compactCovering_subset _ (le_max_right _ _) hn
 
-protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEmbedding e) :
+protected theorem IsClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : IsClosedEmbedding e) :
     SigmaCompactSpace Y :=
-  ⟨⟨fun n => e ⁻¹' compactCovering X n, fun n =>
+  ⟨⟨fun n => e ⁻¹' compactCovering X n, fun _ =>
       he.isCompact_preimage (isCompact_compactCovering _ _), by
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
 
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.sigmaCompactSpace := IsClosedEmbedding.sigmaCompactSpace
+
 theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
-  (closedEmbedding_subtype_val hs).sigmaCompactSpace
+  hs.isClosedEmbedding_subtypeVal.sigmaCompactSpace
 
 instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
-  ULift.closedEmbedding_down.sigmaCompactSpace
+  ULift.isClosedEmbedding_down.sigmaCompactSpace
 
 /-- If `X` is a `σ`-compact space, then a locally finite family of nonempty sets of `X` can have
 only countably many elements, `Set.Countable` version. -/

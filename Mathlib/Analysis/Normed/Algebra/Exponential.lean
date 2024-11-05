@@ -3,12 +3,9 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
 -/
-import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.ChangeOrigin
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Data.Finset.NoncommProd
-import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Exponential in a Banach algebra
@@ -389,7 +386,7 @@ theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
 
 theorem expSeries_radius_pos : 0 < (expSeries 𝕂 𝔸).radius := by
   rw [expSeries_radius_eq_top]
-  exact WithTop.zero_lt_top
+  exact WithTop.top_pos
 
 variable {𝕂 𝔸 𝔹}
 
@@ -473,7 +470,7 @@ commute then `NormedSpace.exp 𝕂 (∑ i, f i) = ∏ i, NormedSpace.exp 𝕂 (f
 theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     (h : (s : Set ι).Pairwise fun i j => Commute (f i) (f j)) :
     exp 𝕂 (∑ i ∈ s, f i) =
-      s.noncommProd (fun i => exp 𝕂 (f i)) fun i hi j hj _ => (h.of_refl hi hj).exp 𝕂 := by
+      s.noncommProd (fun i => exp 𝕂 (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp 𝕂 := by
   classical
     induction' s using Finset.induction_on with a s ha ih
     · simp

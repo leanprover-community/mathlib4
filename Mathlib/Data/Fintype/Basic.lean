@@ -93,7 +93,7 @@ theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
 theorem univ_nonempty_iff : (univ : Finset α).Nonempty ↔ Nonempty α := by
   rw [← coe_nonempty, coe_univ, Set.nonempty_iff_univ_nonempty]
 
-@[aesop unsafe apply (rule_sets := [finsetNonempty])]
+@[simp, aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem univ_nonempty [Nonempty α] : (univ : Finset α).Nonempty :=
   univ_nonempty_iff.2 ‹_›
 
@@ -270,7 +270,7 @@ theorem compl_erase : (s.erase a)ᶜ = insert a sᶜ := by
 @[simp]
 theorem compl_insert : (insert a s)ᶜ = sᶜ.erase a := by
   ext
-  simp only [not_or, mem_insert, iff_self_iff, mem_compl, mem_erase]
+  simp only [not_or, mem_insert, mem_compl, mem_erase]
 
 theorem insert_compl_insert (ha : a ∉ s) : insert a (insert a s)ᶜ = sᶜ := by
   simp_rw [compl_insert, insert_erase (mem_compl.2 ha)]
@@ -376,7 +376,7 @@ namespace Fintype
 instance decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
     DecidableEq (∀ a, β a) := fun f g =>
   decidable_of_iff (∀ a ∈ @Fintype.elems α _, f a = g a)
-    (by simp [Function.funext_iff, Fintype.complete])
+    (by simp [funext_iff, Fintype.complete])
 
 instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=
@@ -492,7 +492,7 @@ This function computes by checking all terms `a : α` to find the `f a = b`, so 
 -/
 def invOfMemRange : Set.range f → α := fun b =>
   Finset.choose (fun a => f a = b) Finset.univ
-    ((existsUnique_congr (by simp)).mp (hf.exists_unique_of_mem_range b.property))
+    ((existsUnique_congr (by simp)).mp (hf.existsUnique_of_mem_range b.property))
 
 theorem left_inv_of_invOfMemRange (b : Set.range f) : f (hf.invOfMemRange b) = b :=
   (Finset.choose_spec (fun a => f a = b) _ _).right
@@ -621,9 +621,12 @@ def decidableMemOfFintype [DecidableEq α] (s : Set α) [Fintype s] (a) : Decida
 theorem coe_toFinset (s : Set α) [Fintype s] : (↑s.toFinset : Set α) = s :=
   Set.ext fun _ => mem_toFinset
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem toFinset_nonempty {s : Set α} [Fintype s] : s.toFinset.Nonempty ↔ s.Nonempty := by
   rw [← Finset.coe_nonempty, coe_toFinset]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.toFinset_nonempty_of_nonempty⟩ := toFinset_nonempty
 
 @[simp]
 theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toFinset ↔ s = t :=
@@ -986,7 +989,7 @@ end Fintype
 
 instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     Fintype (Quotient s) :=
-  Fintype.ofSurjective Quotient.mk'' Quotient.surjective_Quotient_mk''
+  Fintype.ofSurjective Quotient.mk'' Quotient.mk''_surjective
 
 instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
     Fintype (Σ'a, β a) :=
