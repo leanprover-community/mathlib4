@@ -7,7 +7,7 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Tactic.Ring.RingNF
 
-/-! # Two lemmas on choose 
+/-! # Two lemmas on choose
 
 The proofs of these lemmas use the `ring` tactic
 and can't be given in `Mathlib.Data.Nat.Choose.Basic`
