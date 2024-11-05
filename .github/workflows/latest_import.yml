@@ -92,6 +92,10 @@ jobs:
     - name: Zulip report
       id: late_importers
       run: |
+        baseURL='https://github.com/leanprover-community/mathlib4/commit'
+        refCommit=${{ github.sha }}
+
+        {
         printf $'summary<<EOF\n%s\nEOF' "$(
           lake build | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
             awk -F: 'BEGIN{max=0}
@@ -116,6 +120,9 @@ jobs:
                 printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
             }'
           )"
+        printf '\n\nReference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
+        printf '[Full report](https://github.com/%s/actions/runs/%s)\n' "${{ github.repository }}" "${{ github.run_id }}"
+        } | tee "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip
       uses: zulip/github-actions-zulip/send-message@v1
