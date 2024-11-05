@@ -7,6 +7,7 @@ import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.Topology.Algebra.Valued.ValuedField
+import Mathlib.Topology.Algebra.Valued.WithValuation
 import Mathlib.Algebra.Order.Group.TypeTags
 
 /-!
@@ -349,45 +350,12 @@ Given a Dedekind domain `R` with field of fractions `K` and a maximal ideal `v` 
 the completion of `K` with respect to its `v`-adic valuation, denoted `v.adicCompletion`, and its
 ring of integers, denoted `v.adicCompletionIntegers`. -/
 
-
-variable {K}
-
-/-- `K` as a valued field with the `v`-adic valuation. -/
-def adicValued : Valued K ℤₘ₀ :=
-  Valued.mk' v.valuation
-
-theorem adicValued_apply {x : K} : (v.adicValued.v : _) x = v.valuation x :=
-  rfl
-
-variable (K)
-
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
-abbrev adicCompletion :=
-  @UniformSpace.Completion K v.adicValued.toUniformSpace
-
-instance : Field (v.adicCompletion K) :=
-  @UniformSpace.Completion.instField K _ v.adicValued.toUniformSpace _ _
-    v.adicValued.toUniformAddGroup
-
-instance : Inhabited (v.adicCompletion K) :=
-  ⟨0⟩
-
-instance valuedAdicCompletion : Valued (v.adicCompletion K) ℤₘ₀ :=
-  @Valued.valuedCompletion _ _ _ _ v.adicValued
+abbrev adicCompletion := (v.valuation : Valuation K ℤₘ₀).completion
 
 theorem valuedAdicCompletion_def {x : v.adicCompletion K} :
-    Valued.v x = @Valued.extension K _ _ _ (adicValued v) x :=
+    Valued.v x = Valued.extension x :=
   rfl
-
-instance adicCompletion_completeSpace : CompleteSpace (v.adicCompletion K) :=
-  @UniformSpace.Completion.completeSpace K v.adicValued.toUniformSpace
-
--- Porting note: replaced by `Coe`
--- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=
---   (inferInstance : HasLiftT K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
-
-instance adicCompletion.instCoe : Coe K (v.adicCompletion K) :=
-  (inferInstance : Coe K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
 
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
@@ -410,23 +378,24 @@ theorem not_mem_adicCompletionIntegers {x : v.adicCompletion K} :
 section AlgebraInstances
 
 instance (priority := 100) adicValued.has_uniform_continuous_const_smul' :
-    @UniformContinuousConstSMul R K v.adicValued.toUniformSpace _ :=
-  @uniformContinuousConstSMul_of_continuousConstSMul R K _ _ _ v.adicValued.toUniformSpace _ _
+    UniformContinuousConstSMul R (WithValuation (v.valuation : Valuation K ℤₘ₀)) :=
+  uniformContinuousConstSMul_of_continuousConstSMul R
+    (WithValuation (v.valuation : Valuation K ℤₘ₀))
 
 instance adicValued.uniformContinuousConstSMul :
-    @UniformContinuousConstSMul K K v.adicValued.toUniformSpace _ :=
-  @Ring.uniformContinuousConstSMul K _ v.adicValued.toUniformSpace _ _
+    let K' := (WithValuation (v.valuation : Valuation K ℤₘ₀))
+    UniformContinuousConstSMul K' K'  :=
+  Ring.uniformContinuousConstSMul (WithValuation (v.valuation : Valuation K ℤₘ₀))
 
 instance adicCompletion.algebra' : Algebra R (v.adicCompletion K) :=
-  @UniformSpace.Completion.algebra K _ v.adicValued.toUniformSpace _ _ R _ _
-    (adicValued.has_uniform_continuous_const_smul' R K v)
+  UniformSpace.Completion.algebra (WithValuation v.valuation) R
 
-theorem coe_smul_adicCompletion (r : R) (x : K) :
+theorem coe_smul_adicCompletion (r : R) (x : (WithValuation (v.valuation : Valuation K ℤₘ₀))) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=
-  @UniformSpace.Completion.coe_smul R K v.adicValued.toUniformSpace _ _ r x
+  UniformSpace.Completion.coe_smul r x
 
 instance : Algebra K (v.adicCompletion K) :=
-  @UniformSpace.Completion.algebra' K _ v.adicValued.toUniformSpace _ _
+  UniformSpace.Completion.algebra' (WithValuation v.valuation)
 
 theorem algebraMap_adicCompletion' :
     ⇑(algebraMap R <| v.adicCompletion K) = (↑) ∘ algebraMap R K :=
@@ -437,8 +406,8 @@ theorem algebraMap_adicCompletion :
   rfl
 
 instance : IsScalarTower R K (v.adicCompletion K) :=
-  @UniformSpace.Completion.instIsScalarTower R K K v.adicValued.toUniformSpace _ _ _
-    (adicValued.has_uniform_continuous_const_smul' R K v) _ _
+  let K' := (WithValuation (v.valuation : Valuation K ℤₘ₀))
+  UniformSpace.Completion.instIsScalarTower R K' K'
 
 instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
@@ -448,7 +417,6 @@ instance : Algebra R (v.adicCompletionIntegers K) where
       rw [Algebra.smul_def]
       refine ValuationSubring.mul_mem _ _ _ ?_ x.2
       --porting note (#10754): added instance
-      letI : Valued K ℤₘ₀ := adicValued v
       rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   toFun r :=
@@ -501,10 +469,9 @@ instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
   eq_zero_or_eq_zero_of_smul_eq_zero {c x} hcx := by
     rw [Algebra.smul_def, mul_eq_zero] at hcx
     refine hcx.imp_left fun hc => ?_
-    letI : UniformSpace K := v.adicValued.toUniformSpace
     rw [← map_zero (algebraMap R (v.adicCompletionIntegers K))] at hc
     exact
-      IsFractionRing.injective R K (UniformSpace.Completion.coe_injective K (Subtype.ext_iff.mp hc))
+      IsFractionRing.injective R _ (UniformSpace.Completion.coe_injective _ (Subtype.ext_iff.mp hc))
 
 instance adicCompletion.instIsScalarTower' :
     IsScalarTower R (v.adicCompletionIntegers K) (v.adicCompletion K) where
