@@ -78,7 +78,7 @@ jobs:
 
     - name: Full report
       run: |
-        ./scripts/late_importers.sh Mathlib.Logic.Function.Defs 0 0
+        ./scripts/late_importers.sh Mathlib.Logic.Function.Defs 0 0 "${{ github.run_id }}"
 
     - name: Zulip report
       id: late_importers
