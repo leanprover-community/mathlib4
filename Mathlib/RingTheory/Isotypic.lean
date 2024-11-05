@@ -81,7 +81,7 @@ lemma isoset_le_insert_zero_isoset' :
   exact Or.symm (IsSimpleModule.mapsTo_equiv_or_zero R M C w)
 
 lemma isoset'_le_isoset :
-  isoset' R M C ⊆ isoset R M C := by
+    isoset' R M C ⊆ isoset R M C := by
   rw[isoset, isoset']; intro x f; rw[Set.mem_setOf] at f
   apply Classical.choice at f; rw[Set.mem_setOf]
   use (x.subtype ∘ₗ f)
