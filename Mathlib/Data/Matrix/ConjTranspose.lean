@@ -56,6 +56,15 @@ theorem diagonal_conjTranspose [AddMonoid α] [StarAddMonoid α] (v : n → α) 
 
 end Diagonal
 
+section Diag
+
+@[simp]
+theorem diag_conjTranspose [AddMonoid α] [StarAddMonoid α] (A : Matrix n n α) :
+    diag Aᴴ = star (diag A) :=
+  rfl
+
+end Diag
+
 section DotProduct
 
 variable [Fintype m] [Fintype n]
