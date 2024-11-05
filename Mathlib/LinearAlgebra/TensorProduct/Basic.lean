@@ -38,6 +38,8 @@ map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in th
 bilinear, tensor, tensor product
 -/
 
+set_option linter.style.longFile 1600
+
 suppress_compilation
 
 section Semiring
@@ -426,6 +428,16 @@ theorem ite_tmul (x₁ : M) (x₂ : N) (P : Prop) [Decidable P] :
 
 theorem tmul_ite (x₁ : M) (x₂ : N) (P : Prop) [Decidable P] :
     (x₁ ⊗ₜ[R] if P then x₂ else 0) = if P then x₁ ⊗ₜ x₂ else 0 := by split_ifs <;> simp
+
+lemma tmul_single {ι : Type*} [DecidableEq ι] {M : ι → Type*} [∀ i, AddCommMonoid (M i)]
+    [∀ i, Module R (M i)] (i : ι) (x : N) (m : M i) (j : ι) :
+    x ⊗ₜ[R] Pi.single i m j = (Pi.single i (x ⊗ₜ[R] m) : ∀ i, N ⊗[R] M i) j := by
+  by_cases h : i = j <;> aesop
+
+lemma single_tmul {ι : Type*} [DecidableEq ι] {M : ι → Type*} [∀ i, AddCommMonoid (M i)]
+    [∀ i, Module R (M i)] (i : ι) (x : N) (m : M i) (j : ι) :
+    Pi.single i m j ⊗ₜ[R] x = (Pi.single i (m ⊗ₜ[R] x) : ∀ i, M i ⊗[R] N) j := by
+  by_cases h : i = j <;> aesop
 
 section
 
@@ -1045,6 +1057,20 @@ theorem tensorTensorTensorAssoc_tmul (m : M) (n : N) (p : P) (q : Q) :
 theorem tensorTensorTensorAssoc_symm_tmul (m : M) (n : N) (p : P) (q : Q) :
     (tensorTensorTensorAssoc R M N P Q).symm (m ⊗ₜ (n ⊗ₜ p) ⊗ₜ q) = m ⊗ₜ n ⊗ₜ (p ⊗ₜ q) :=
   rfl
+
+variable (M) in
+/-- For fixed `m`, this is the map `N →ₗ[R] N ⊗[R] M` given by `n ↦ n ⊗ₜ m`. -/
+@[simps] def includeLeft (m : M) : N →ₗ[R] N ⊗[R] M where
+  toFun n := n ⊗ₜ m
+  map_add' x y := by simp [add_tmul]
+  map_smul' x y := rfl
+
+variable (M) in
+/-- For fixed `n`, this is the map `M →ₗ[R] N ⊗[R] M` given by `m ↦ n ⊗ₜ m`. -/
+@[simps] def includeRight (n : N) : M →ₗ[R] N ⊗[R] M where
+  toFun m := n ⊗ₜ m
+  map_add' x y := by simp [tmul_add]
+  map_smul' x y := by simp
 
 end TensorProduct
 
