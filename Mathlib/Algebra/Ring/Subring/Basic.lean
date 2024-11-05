@@ -6,7 +6,7 @@ Authors: Ashvni Narayanan
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.RingTheory.NonUnitalSubring.Basic
+import Mathlib.RingTheory.NonUnitalSubring.Defs
 
 /-!
 # Subrings

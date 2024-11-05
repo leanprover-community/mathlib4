@@ -1590,6 +1590,9 @@ theorem bsup_eq_of_brange_eq {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Or
     (h : brange o f = brange o' g) : bsup.{u, max v w} o f = bsup.{v, max u w} o' g :=
   (bsup_le_of_brange_subset.{u, v, w} h.le).antisymm (bsup_le_of_brange_subset.{v, u, w} h.ge)
 
+theorem iSup_eq_bsup {o} {f : ∀ a < o, Ordinal} : ⨆ a : Iio o, f a.1 a.2 = bsup o f := by
+  simp_rw [Iio, bsup, sup, iSup, range_familyOfBFamily, brange, range, Subtype.exists, mem_setOf]
+
 end bsup
 
 -- TODO: bring the lsub API in line with the sSup / iSup API, or deprecate it altogether.

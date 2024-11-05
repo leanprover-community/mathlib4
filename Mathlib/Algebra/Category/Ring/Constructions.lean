@@ -3,11 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Category.Ring.Instances
+import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
