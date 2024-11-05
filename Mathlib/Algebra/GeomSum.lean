@@ -37,8 +37,6 @@ variable {α : Type u}
 
 open Finset MulOpposite
 
--- #check CanonicallyLinearOrderedSemifield
-
 section Semiring
 
 variable [Semiring α]
