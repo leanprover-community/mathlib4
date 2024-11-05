@@ -37,7 +37,7 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
 -/
 
 
-universe u v w
+universe u v
 
 noncomputable section
 
@@ -47,15 +47,15 @@ open DirectSum TensorProduct
 
 open Set LinearMap Submodule
 
-variable {R : Type u} {M : Type v} {N : Type w}
-  [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type u} {N : Type v} [CommSemiring R]
 
-variable {σ : Type*} [DecidableEq σ]
+variable {σ : Type*}
 
 variable {S : Type*} [CommSemiring S] [Algebra R S]
 
 section Module
 
+variable [DecidableEq σ]
 variable [AddCommMonoid N] [Module R N]
 
 /-- The tensor product of a polynomial ring by a module is
@@ -100,15 +100,15 @@ lemma scalarRTensor_apply_tmul (p : MvPolynomial σ R) (n : N) :
     scalarRTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m • n)) :=
   TensorProduct.finsuppScalarLeft_apply_tmul p n
 
-lemma scalarRTensor_apply_tmul_apply (p : MvPolynomial σ R) (n : N) (d : σ →₀ ℕ):
+lemma scalarRTensor_apply_tmul_apply (p : MvPolynomial σ R) (n : N) (d : σ →₀ ℕ) :
     scalarRTensor (p ⊗ₜ[R] n) d = coeff d p • n :=
   TensorProduct.finsuppScalarLeft_apply_tmul_apply p n d
 
-lemma scalarRTensor_apply_monomial_tmul (e : σ →₀ ℕ) (r : R) (n : N) (d : σ →₀ ℕ):
+lemma scalarRTensor_apply_monomial_tmul (e : σ →₀ ℕ) (r : R) (n : N) (d : σ →₀ ℕ) :
     scalarRTensor (monomial e r ⊗ₜ[R] n) d = if e = d then r • n else 0 := by
   rw [scalarRTensor_apply_tmul_apply, coeff_monomial, ite_smul, zero_smul]
 
- lemma scalarRTensor_apply_X_tmul_apply (s : σ) (n : N) (d : σ →₀ ℕ):
+lemma scalarRTensor_apply_X_tmul_apply (s : σ) (n : N) (d : σ →₀ ℕ) :
     scalarRTensor (X s ⊗ₜ[R] n) d = if Finsupp.single s 1 = d then n else 0 := by
   rw [scalarRTensor_apply_tmul_apply, coeff_X', ite_smul, one_smul, zero_smul]
 
@@ -140,6 +140,9 @@ lemma coeff_rTensorAlgHom_tmul
     Algebra.TensorProduct.includeRight_apply]
   rw [algebraMap_eq, mul_comm, coeff_C_mul]
   simp [mapAlgHom, coeff_map]
+
+section DecidableEq
+variable [DecidableEq σ]
 
 lemma coeff_rTensorAlgHom_monomial_tmul
     (e : σ →₀ ℕ) (s : S) (n : N) (d : σ →₀ ℕ) :
@@ -186,6 +189,8 @@ noncomputable def scalarRTensorAlgEquiv :
     MvPolynomial σ R ⊗[R] N ≃ₐ[R] MvPolynomial σ N :=
   rTensorAlgEquiv.trans (mapAlgEquiv σ (Algebra.TensorProduct.lid R N))
 
+end DecidableEq
+
 variable (R)
 variable (A : Type*) [CommSemiring A] [Algebra R A]
 
@@ -203,8 +208,7 @@ noncomputable def algebraTensorAlgEquiv :
 @[simp]
 lemma algebraTensorAlgEquiv_tmul (a : A) (p : MvPolynomial σ R) :
     algebraTensorAlgEquiv R A (a ⊗ₜ p) = a • MvPolynomial.map (algebraMap R A) p := by
-  simp [algebraTensorAlgEquiv]
-  rw [Algebra.smul_def]
+  simp [algebraTensorAlgEquiv, Algebra.smul_def]
   rfl
 
 @[simp]
@@ -223,6 +227,15 @@ lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
       Algebra.TensorProduct.tmul_pow, one_pow, hfa]
     nth_rw 2 [← mul_one a]
     rw [Algebra.TensorProduct.tmul_mul_tmul]
+
+lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
+    (aeval fun x ↦ (1 ⊗ₜ[R] f x : N ⊗[R] S)) p = 1 ⊗ₜ[R] (aeval f) p := by
+  induction' p using MvPolynomial.induction_on with a p q hp hq p i h
+  · simp only [map_C, algHom_C, Algebra.TensorProduct.algebraMap_apply,
+      RingHomCompTriple.comp_apply]
+    rw [← mul_one ((algebraMap R N) a), ← Algebra.smul_def, smul_tmul, Algebra.smul_def, mul_one]
+  · simp [hp, hq, tmul_add]
+  · simp [h]
 
 end Algebra
 

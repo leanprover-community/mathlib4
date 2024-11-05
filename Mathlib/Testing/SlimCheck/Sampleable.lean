@@ -3,11 +3,10 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
+import Batteries.Data.Rat.Basic
 import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Init.Data.List.Instances
+import Mathlib.Data.List.Monad
 import Mathlib.Testing.SlimCheck.Gen
-
-#align_import testing.slim_check.sampleable from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
 /-!
 # `SampleableExt` Class
@@ -20,15 +19,15 @@ controlling the size of those values using the `Gen` monad.
 This class helps minimize examples by creating smaller versions of
 given values.
 
-When testing a proposition like `∀ n : ℕ, prime n → n ≤ 100`,
+When testing a proposition like `∀ n : ℕ, Prime n → n ≤ 100`,
 `SlimCheck` requires that `ℕ` have an instance of `SampleableExt` and for
-`prime n` to be decidable.  `SlimCheck` will then use the instance of
+`Prime n` to be decidable.  `SlimCheck` will then use the instance of
 `SampleableExt` to generate small examples of ℕ and progressively increase
-in size. For each example `n`, `prime n` is tested. If it is false,
+in size. For each example `n`, `Prime n` is tested. If it is false,
 the example will be rejected (not a test success nor a failure) and
-`SlimCheck` will move on to other examples. If `prime n` is true,
+`SlimCheck` will move on to other examples. If `Prime n` is true,
 `n ≤ 100` will be tested. If it is false, `n` is a counter-example of
-`∀ n : ℕ, prime n → n ≤ 100` and the test fails. If `n ≤ 100` is true,
+`∀ n : ℕ, Prime n → n ≤ 100` and the test fails. If `n ≤ 100` is true,
 the test passes and `SlimCheck` moves on to trying more examples.
 
 This is a port of the Haskell QuickCheck library.
@@ -86,11 +85,12 @@ random testing
 
 -/
 
-set_option autoImplicit true
-
 namespace SlimCheck
 
 open Random Gen
+
+universe u v
+variable {α β : Type*}
 
 /-- Given an example `x : α`, `Shrinkable α` gives us a way to shrink it
 and suggest simpler examples. -/
@@ -221,7 +221,7 @@ instance Bool.sampleableExt : SampleableExt Bool :=
 
 /-- This can be specialized into customized `SampleableExt Char` instances.
 The resulting instance has `1 / length` chances of making an unrestricted choice of characters
-and it otherwise chooses a character from `chars` with uniform probabilities.  -/
+and it otherwise chooses a character from `chars` with uniform probabilities. -/
 def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) :
     SampleableExt Char :=
   mkSelfContained do
@@ -257,7 +257,7 @@ instance List.sampleableExt [SampleableExt α] : SampleableExt (List α) where
 
 end Samplers
 
-/-- An annotation for values that should never get shrinked. -/
+/-- An annotation for values that should never get shrunk. -/
 def NoShrink (α : Type u) := α
 
 namespace NoShrink

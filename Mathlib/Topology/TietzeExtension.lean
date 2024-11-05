@@ -1,14 +1,12 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Interval.Set.IsoIoo
 import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.UrysohnsBounded
-
-#align_import topology.tietze_extension from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Tietze extension theorem
@@ -54,23 +52,23 @@ class TietzeExtension (Y : Type v) [TopologicalSpace Y] : Prop where
     (hs : IsClosed s) (f : C(s, Y)) : ∃ (g : C(X, Y)), g.restrict s = f
 
 variable {X₁ : Type u₁} [TopologicalSpace X₁]
-variable {X : Type u} [TopologicalSpace X] [NormalSpace X] {s : Set X} (hs : IsClosed s)
-variable {e : X₁ → X} (he : ClosedEmbedding e)
+variable {X : Type u} [TopologicalSpace X] [NormalSpace X] {s : Set X}
+variable {e : X₁ → X}
 variable {Y : Type v} [TopologicalSpace Y] [TietzeExtension.{u, v} Y]
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces, a version for a closed set. Let
 `s` be a closed set in a normal topological space `X`. Let `f` be a continuous function
 on `s` with values in a `TietzeExtension` space `Y`. Then there exists a continuous function
 `g : C(X, Y)` such that `g.restrict s = f`. -/
-theorem ContinuousMap.exists_restrict_eq (f : C(s, Y)) : ∃ (g : C(X, Y)), g.restrict s = f :=
+theorem ContinuousMap.exists_restrict_eq (hs : IsClosed s) (f : C(s, Y)) :
+    ∃ (g : C(X, Y)), g.restrict s = f :=
   TietzeExtension.exists_restrict_eq' s hs f
-#align continuous_map.exists_restrict_eq_of_closed ContinuousMap.exists_restrict_eq
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
 nonempty topological space `X₁` into a normal topological space `X`. Let `f` be a continuous
 function on `X₁` with values in a `TietzeExtension` space `Y`. Then there exists a
 continuous function `g : C(X, Y)` such that `g ∘ e = f`. -/
-theorem ContinuousMap.exists_extension (f : C(X₁, Y)) :
+theorem ContinuousMap.exists_extension (he : ClosedEmbedding e) (f : C(X₁, Y)) :
     ∃ (g : C(X, Y)), g.comp ⟨e, he.continuous⟩ = f := by
   let e' : X₁ ≃ₜ Set.range e := Homeomorph.ofEmbedding _ he.toEmbedding
   obtain ⟨g, hg⟩ := (f.comp e'.symm).exists_restrict_eq he.isClosed_range
@@ -83,9 +81,9 @@ continuous function `g : C(X, Y)` such that `g ∘ e = f`.
 
 This version is provided for convenience and backwards compatibility. Here the composition is
 phrased in terms of bare functions. -/
-theorem ContinuousMap.exists_extension' (f : C(X₁, Y)) : ∃ (g : C(X, Y)), g ∘ e = f :=
+theorem ContinuousMap.exists_extension' (he : ClosedEmbedding e) (f : C(X₁, Y)) :
+    ∃ (g : C(X, Y)), g ∘ e = f :=
   f.exists_extension he |>.imp fun g hg ↦ by ext x; congrm($(hg) x)
-#align continuous_map.exists_extension_of_closed_embedding ContinuousMap.exists_extension'
 
 /-- This theorem is not intended to be used directly because it is rare for a set alone to
 satisfy `[TietzeExtension t]`. For example, `Metric.ball` in `ℝ` only satisfies it when
@@ -93,7 +91,8 @@ the radius is strictly positive, so finding this as an instance will fail.
 
 Instead, it is intended to be used as a constructor for theorems about sets which *do* satisfy
 `[TietzeExtension t]` under some hypotheses. -/
-theorem ContinuousMap.exists_forall_mem_restrict_eq {Y : Type v} [TopologicalSpace Y] (f : C(s, Y))
+theorem ContinuousMap.exists_forall_mem_restrict_eq (hs : IsClosed s)
+    {Y : Type v} [TopologicalSpace Y] (f : C(s, Y))
     {t : Set Y} (hf : ∀ x, f x ∈ t) [ht : TietzeExtension.{u, v} t] :
     ∃ (g : C(X, Y)), (∀ x, g x ∈ t) ∧ g.restrict s = f := by
   obtain ⟨g, hg⟩ := mk _ (map_continuous f |>.codRestrict hf) |>.exists_restrict_eq hs
@@ -105,14 +104,15 @@ the radius is strictly positive, so finding this as an instance will fail.
 
 Instead, it is intended to be used as a constructor for theorems about sets which *do* satisfy
 `[TietzeExtension t]` under some hypotheses. -/
-theorem ContinuousMap.exists_extension_forall_mem {Y : Type v} [TopologicalSpace Y] (f : C(X₁, Y))
+theorem ContinuousMap.exists_extension_forall_mem (he : ClosedEmbedding e)
+    {Y : Type v} [TopologicalSpace Y] (f : C(X₁, Y))
     {t : Set Y} (hf : ∀ x, f x ∈ t) [ht : TietzeExtension.{u, v} t] :
     ∃ (g : C(X, Y)), (∀ x, g x ∈ t) ∧ g.comp ⟨e, he.continuous⟩ = f := by
   obtain ⟨g, hg⟩ := mk _ (map_continuous f |>.codRestrict hf) |>.exists_extension he
   exact ⟨comp ⟨Subtype.val, by continuity⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
 
 instance Pi.instTietzeExtension {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
-    [∀ i, TietzeExtension (Y i)] : TietzeExtension (∀ i, Y i) where
+    [∀ i, TietzeExtension.{u} (Y i)] : TietzeExtension.{u} (∀ i, Y i) where
   exists_restrict_eq' s hs f := by
     obtain ⟨g', hg'⟩ := Classical.skolem.mp <| fun i ↦
       ContinuousMap.exists_restrict_eq hs (ContinuousMap.piEquiv _ _ |>.symm f i)
@@ -120,15 +120,15 @@ instance Pi.instTietzeExtension {ι : Type*} {Y : ι → Type v} [∀ i, Topolog
 
 instance Prod.instTietzeExtension {Y : Type v} {Z : Type w} [TopologicalSpace Y]
     [TietzeExtension.{u, v} Y] [TopologicalSpace Z] [TietzeExtension.{u, w} Z] :
-    TietzeExtension (Y × Z) where
+    TietzeExtension.{u, max w v} (Y × Z) where
   exists_restrict_eq' s hs f := by
     obtain ⟨g₁, hg₁⟩ := (ContinuousMap.fst.comp f).exists_restrict_eq hs
     obtain ⟨g₂, hg₂⟩ := (ContinuousMap.snd.comp f).exists_restrict_eq hs
     exact ⟨g₁.prodMk g₂, by ext1 x; congrm(($(hg₁) x), $(hg₂) x)⟩
 
-instance Unique.instTietzeExtension {Y : Type v} [TopologicalSpace Y] [Unique Y] :
-    TietzeExtension.{u, v} Y where
-  exists_restrict_eq' _ _ f := ⟨.const _ default, by ext x; exact Subsingleton.elim _ _⟩
+instance Unique.instTietzeExtension {Y : Type v} [TopologicalSpace Y]
+    [Nonempty Y] [Subsingleton Y] : TietzeExtension.{u, v} Y where
+  exists_restrict_eq' _ _ f := ‹Nonempty Y›.elim fun y ↦ ⟨.const _ y, by ext; subsingleton⟩
 
 /-- Any retract of a `TietzeExtension` space is one itself. -/
 theorem TietzeExtension.of_retract {Y : Type v} {Z : Type w} [TopologicalSpace Y]
@@ -211,7 +211,6 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : ClosedEmbed
             rw [hg₂ (mem_image_of_mem _ hle₂), abs_sub_comm, Function.const_apply,
               abs_of_nonneg (sub_nonneg.2 hle₂)]
           _ ≤ 2 / 3 * ‖f‖ := by linarith
-#align bounded_continuous_function.tietze_extension_step BoundedContinuousFunction.tietze_extension_step
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version with a closed
 embedding and bundled composition. If `e : C(X, Y)` is a closed embedding of a topological space
@@ -228,9 +227,10 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
     Function.iterate_succ_apply' _ _ _
   have hgf : ∀ n, dist ((g n).compContinuous e) f ≤ (2 / 3) ^ n * ‖f‖ := by
     intro n
-    induction' n with n ihn
-    · simp [g0]
-    · rw [g_succ n, add_compContinuous, ← dist_sub_right, add_sub_cancel_left, pow_succ', mul_assoc]
+    induction n with
+    | zero => simp [g0]
+    | succ n ihn =>
+      rw [g_succ n, add_compContinuous, ← dist_sub_right, add_sub_cancel_left, pow_succ', mul_assoc]
       refine (hF_dist _).trans (mul_le_mul_of_nonneg_left ?_ (by norm_num1))
       rwa [← dist_eq_norm']
   have hg_dist : ∀ n, dist (g n) (g (n + 1)) ≤ 1 / 3 * ‖f‖ * (2 / 3) ^ n := by
@@ -260,7 +260,6 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
     field_simp [show (3 - 2 : ℝ) = 1 by norm_num1]
   · rw [← hge]
     exact norm_compContinuous_le _ _
-#align bounded_continuous_function.exists_extension_norm_eq_of_closed_embedding' BoundedContinuousFunction.exists_extension_norm_eq_of_closedEmbedding'
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version with a closed
 embedding and unbundled composition. If `e : C(X, Y)` is a closed embedding of a topological space
@@ -270,7 +269,6 @@ theorem exists_extension_norm_eq_of_closedEmbedding (f : X →ᵇ ℝ) {e : X �
     (he : ClosedEmbedding e) : ∃ g : Y →ᵇ ℝ, ‖g‖ = ‖f‖ ∧ g ∘ e = f := by
   rcases exists_extension_norm_eq_of_closedEmbedding' f ⟨e, he.continuous⟩ he with ⟨g, hg, rfl⟩
   exact ⟨g, hg, rfl⟩
-#align bounded_continuous_function.exists_extension_norm_eq_of_closed_embedding BoundedContinuousFunction.exists_extension_norm_eq_of_closedEmbedding
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
 set. If `f` is a bounded continuous real-valued function defined on a closed set in a normal
@@ -280,7 +278,6 @@ theorem exists_norm_eq_restrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (hs 
     ∃ g : Y →ᵇ ℝ, ‖g‖ = ‖f‖ ∧ g.restrict s = f :=
   exists_extension_norm_eq_of_closedEmbedding' f ((ContinuousMap.id _).restrict s)
     (closedEmbedding_subtype_val hs)
-#align bounded_continuous_function.exists_norm_eq_restrict_eq_of_closed BoundedContinuousFunction.exists_norm_eq_restrict_eq_of_closed
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
 embedding and a bounded continuous function that takes values in a non-trivial closed interval.
@@ -304,13 +301,12 @@ theorem exists_extension_forall_mem_Icc_of_closedEmbedding (f : X →ᵇ ℝ) {a
   · ext x
     have : g (e x) = f x - (a + b) / 2 := congr_fun hge x
     simp [this]
-#align bounded_continuous_function.exists_extension_forall_mem_Icc_of_closed_embedding BoundedContinuousFunction.exists_extension_forall_mem_Icc_of_closedEmbedding
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
 embedding. Let `e` be a closed embedding of a nonempty topological space `X` into a normal
 topological space `Y`. Let `f` be a bounded continuous real-valued function on `X`. Then there
 exists a bounded continuous function `g : Y →ᵇ ℝ` such that `g ∘ e = f` and each value `g y` belongs
-to a closed interval `[f x₁, f x₂]` for some `x₁` and `x₂`.  -/
+to a closed interval `[f x₁, f x₂]` for some `x₁` and `x₂`. -/
 theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f : X →ᵇ ℝ)
     {e : X → Y} (he : ClosedEmbedding e) :
     ∃ g : Y →ᵇ ℝ, (∀ y, ∃ x₁ x₂, g y ∈ Icc (f x₁) (f x₂)) ∧ g ∘ e = f := by
@@ -325,7 +321,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
   rcases hle.eq_or_lt with (rfl | hlt)
   · have : ∀ x, f x = a := by simpa using hmem
     use const Y a
-    simp [this, Function.funext_iff]
+    simp [this, funext_iff]
   -- Put `c = (a + b) / 2`. Then `a < c < b` and `c - a = b - c`.
   set c := (a + b) / 2
   have hac : a < c := left_lt_add_div_two.2 hlt
@@ -344,7 +340,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
     · exact ⟨g, fun y => ⟨x, hg_mem _⟩, hgf⟩
     /- Otherwise, `g ⁻¹' {a}` is disjoint with `range e ∪ g ⁻¹' (Ici c)`, hence there exists a
         function `dg : Y → ℝ` such that `dg ∘ e = 0`, `dg y = 0` whenever `c ≤ g y`, `dg y = c - a`
-        whenever `g y = a`, and `0 ≤ dg y ≤ c - a` for all `y`.  -/
+        whenever `g y = a`, and `0 ≤ dg y ≤ c - a` for all `y`. -/
     have hd : Disjoint (range e ∪ g ⁻¹' Ici c) (g ⁻¹' {a}) := by
       refine disjoint_union_left.2 ⟨?_, Disjoint.preimage _ ?_⟩
       · rw [Set.disjoint_left]
@@ -415,7 +411,6 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
       exact ⟨x, xu, hxy.le, hyxu.le⟩
   · refine ⟨xl y, xu, ?_, hyxu.le⟩
     simp [dg0 (Or.inr hc), hxl]
-#align bounded_continuous_function.exists_extension_forall_exists_le_ge_of_closed_embedding BoundedContinuousFunction.exists_extension_forall_exists_le_ge_of_closedEmbedding
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
 embedding. Let `e` be a closed embedding of a nonempty topological space `X` into a normal
@@ -434,7 +429,6 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : X →ᵇ ℝ) {t : S
   refine ⟨g, fun y => ?_, hgf⟩
   rcases hg y with ⟨xl, xu, h⟩
   exact hs.out (hf _) (hf _) h
-#align bounded_continuous_function.exists_extension_forall_mem_of_closed_embedding BoundedContinuousFunction.exists_extension_forall_mem_of_closedEmbedding
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
 set. Let `s` be a closed set in a normal topological space `Y`. Let `f` be a bounded continuous
@@ -449,7 +443,6 @@ theorem exists_forall_mem_restrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (
       (closedEmbedding_subtype_val hs) with
     ⟨g, hg, hgf⟩
   exact ⟨g, hg, DFunLike.coe_injective hgf⟩
-#align bounded_continuous_function.exists_forall_mem_restrict_eq_of_closed BoundedContinuousFunction.exists_forall_mem_restrict_eq_of_closed
 
 end BoundedContinuousFunction
 
@@ -493,7 +486,6 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : C(X, ℝ)) {t : Set 
     exact hgG.2 hay.symm
   · ext x
     exact hgG.2 (congr_fun hGF _)
-#align continuous_map.exists_extension_forall_mem_of_closed_embedding ContinuousMap.exists_extension_forall_mem_of_closedEmbedding
 
 @[deprecated (since := "2024-01-16")]
 alias exists_extension_of_closedEmbedding := exists_extension'
@@ -510,7 +502,6 @@ theorem exists_restrict_eq_forall_mem_of_closed {s : Set Y} (f : C(s, ℝ)) {t :
   let ⟨g, hgt, hgf⟩ :=
     exists_extension_forall_mem_of_closedEmbedding f ht hne (closedEmbedding_subtype_val hs)
   ⟨g, hgt, coe_injective hgf⟩
-#align continuous_map.exists_restrict_eq_forall_mem_of_closed ContinuousMap.exists_restrict_eq_forall_mem_of_closed
 
 @[deprecated (since := "2024-01-16")] alias exists_restrict_eq_of_closed := exists_restrict_eq
 

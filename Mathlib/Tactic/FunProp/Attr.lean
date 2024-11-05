@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Tomas Skrivan. All rights reserved.
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tomas Skrivan
+Authors: Tomáš Skřivan
 -/
 import Lean
 
@@ -12,18 +12,13 @@ import Mathlib.Tactic.FunProp.Theorems
 ## `funProp` attribute
 -/
 
-
 namespace Mathlib
 open Lean Meta
 
 namespace Meta.FunProp
 
--- TODO: add support for specifying priority and discharger
--- open Lean.Parser.Tactic
--- syntax (name:=Attr.funProp) "funProp" (prio)? (discharger)? : attr
-
 private def funPropHelpString : String :=
-"`funProp` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap`"
+"`fun_prop` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap`"
 
 /-- Initialization of `funProp` attribute -/
 initialize funPropAttr : Unit ←
@@ -43,3 +38,7 @@ initialize funPropAttr : Unit ←
     erase := fun _declName =>
       throwError "can't remove `funProp` attribute (not implemented yet)"
   }
+
+end Meta.FunProp
+
+end Mathlib

@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Data.Real.Pi.Bounds
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
+import Mathlib.Tactic.Rify
 
 /-!
 # Number field discriminant
@@ -31,7 +32,7 @@ number field, discriminant
 
 namespace NumberField
 
-open FiniteDimensional NumberField NumberField.InfinitePlace Matrix
+open Module NumberField NumberField.InfinitePlace Matrix
 
 open scoped Classical Real nonZeroDivisors
 
@@ -65,7 +66,7 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
     Basis.map_apply]
   rfl
 
-open MeasureTheory MeasureTheory.Measure Zspan NumberField.mixedEmbedding
+open MeasureTheory MeasureTheory.Measure ZSpan NumberField.mixedEmbedding
   NumberField.InfinitePlace ENNReal NNReal Complex
 
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
@@ -77,7 +78,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
   let M := (mixedEmbedding.stdBasis K).toMatrix ((latticeBasis K).reindex e.symm)
   let N := Algebra.embeddingsMatrixReindex ℚ ℂ (integralBasis K ∘ f.symm)
     RingHom.equivRatAlgHom
-  suffices M.map Complex.ofReal = (matrixToStdBasis K) *
+  suffices M.map ofRealHom = matrixToStdBasis K *
       (Matrix.reindex (indexEquiv K).symm (indexEquiv K).symm N).transpose by
     calc volume (fundamentalDomain (latticeBasis K))
       _ = ‖((mixedEmbedding.stdBasis K).toMatrix ((latticeBasis K).reindex e.symm)).det‖₊ := by
@@ -85,7 +86,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
           ((latticeBasis K).reindex e.symm), volume_fundamentalDomain_stdBasis, mul_one]
         rfl
       _ = ‖(matrixToStdBasis K).det * N.det‖₊ := by
-        rw [← nnnorm_real, ← ofReal_eq_coe, RingHom.map_det, RingHom.mapMatrix_apply, this,
+        rw [← nnnorm_real, ← ofRealHom_eq_coe, RingHom.map_det, RingHom.mapMatrix_apply, this,
           det_mul, det_transpose, det_reindex_self]
       _ = (2 : ℝ≥0∞)⁻¹ ^ Fintype.card {w : InfinitePlace K // IsComplex w} * sqrt ‖N.det ^ 2‖₊ := by
         have : ‖Complex.I‖₊ = 1 := by rw [← norm_toNNReal, norm_eq_abs, abs_I, Real.toNNReal_one]
@@ -94,17 +95,17 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
           coe_inv two_ne_zero, coe_ofNat, nnnorm_pow, NNReal.sqrt_sq]
       _ = (2 : ℝ≥0∞)⁻¹ ^ Fintype.card { w // IsComplex w } * NNReal.sqrt ‖discr K‖₊ := by
         rw [← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, Algebra.discr_reindex,
-          ← coe_discr, map_intCast, ← Complex.nnnorm_int]
+          ← coe_discr, map_intCast, ← Complex.nnnorm_intCast]
   ext : 2
   dsimp only [M]
   rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp_apply,
-    Equiv.symm_symm, latticeBasis_apply, ← commMap_canonical_eq_mixed, Complex.ofReal_eq_coe,
+    Equiv.symm_symm, latticeBasis_apply, ← commMap_canonical_eq_mixed, Complex.ofRealHom_eq_coe,
     stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
   rfl
 
 theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
-      |Algebra.norm ℚ (a:K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K *
+      |Algebra.norm ℚ (a : K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K *
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
   -- The smallest possible value for `exists_ne_zero_mem_ideal_of_norm_le`
   let B := (minkowskiBound K I * (convexBodySumFactor K)⁻¹).toReal ^ (1 / (finrank ℚ K : ℝ))
@@ -112,7 +113,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
     refine le_of_eq ?_
     rw [convexBodySum_volume, ← ENNReal.ofReal_pow (by positivity), ← Real.rpow_natCast,
       ← Real.rpow_mul toReal_nonneg, div_mul_cancel₀, Real.rpow_one, ofReal_toReal, mul_comm,
-      mul_assoc, ← coe_mul, inv_mul_cancel (convexBodySumFactor_ne_zero K), ENNReal.coe_one,
+      mul_assoc, ← coe_mul, inv_mul_cancel₀ (convexBodySumFactor_ne_zero K), ENNReal.coe_one,
       mul_one]
     · exact mul_ne_top (ne_of_lt (minkowskiBound_lt_top K I)) coe_ne_top
     · exact (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos))
@@ -172,7 +173,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
     rw [← Algebra.coe_norm_int, ← Int.cast_one, ← Int.cast_abs, Rat.cast_intCast, Int.cast_le]
     exact Int.one_le_abs (Algebra.norm_ne_zero_iff.mpr h_nz)
   replace h_bd := le_trans h_nm h_bd
-  rw [← inv_mul_le_iff (by positivity), inv_div, mul_one, Real.le_sqrt (by positivity)
+  rw [← inv_mul_le_iff₀ (by positivity), inv_div, mul_one, Real.le_sqrt (by positivity)
     (by positivity), ← Int.cast_abs, div_pow, mul_pow, ← pow_mul, ← pow_mul] at h_bd
   refine le_trans ?_ h_bd
   -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction an uniform
@@ -193,7 +194,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
         convert_to _ ≤ (a m) * (1 + 1 / m : ℝ) ^ (2 * m) / (4 / π)
         · simp_rw [a, add_mul, one_mul, pow_succ, Nat.factorial_succ]
           field_simp; ring
-        · rw [_root_.le_div_iff (by positivity), pow_succ]
+        · rw [_root_.le_div_iff₀ (by positivity), pow_succ]
           convert (mul_le_mul h_m this (by positivity) (by positivity)) using 1
           field_simp; ring
       refine le_trans (le_of_eq (by field_simp; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
@@ -201,22 +202,15 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
 
 /-- **Hermite-Minkowski Theorem**. A nontrivial number field has discriminant greater than `2`. -/
 theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
-  have h₁ : 1 ≤ 3 * π / 4 := by
-    rw [_root_.le_div_iff (by positivity), ← _root_.div_le_iff' (by positivity), one_mul]
-    linarith [Real.pi_gt_three]
-  have h₂ : (9 : ℝ) < π ^ 2 := by
-    rw [ ← Real.sqrt_lt (by positivity) (by positivity), show Real.sqrt (9 : ℝ) = 3 from
-    (Real.sqrt_eq_iff_sq_eq (by positivity) (by positivity)).mpr (by norm_num)]
-    exact Real.pi_gt_three
-  refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
-  rw [← _root_.div_lt_iff' (by positivity), Int.cast_ofNat]
-  refine lt_of_lt_of_le ?_ (pow_le_pow_right (n := 2) h₁ h)
-  rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow,
-    show (2 : ℝ) / (4 / 9) * 4 ^ 2 = 72 by norm_num,
-    show (3 : ℝ) ^ 2 = 9 by norm_num,
-    ← _root_.div_lt_iff' (by positivity),
-    show (72 : ℝ) / 9 = 8 by norm_num]
-  linarith [h₂]
+  rw [← Nat.succ_le_iff] at h
+  rify
+  calc
+    (2 : ℝ) < (4 / 9) * (3 * π / 4) ^ 2 := by
+      nlinarith [Real.pi_gt_three]
+    _ ≤ (4 / 9 : ℝ) * (3 * π / 4) ^ finrank ℚ K := by
+      gcongr
+      linarith [Real.pi_gt_three]
+    _ ≤ |(discr K : ℝ)| := mod_cast abs_discr_ge h
 
 /-!
 ### Hermite Theorem
@@ -239,7 +233,7 @@ Thus it follows from `mixedEmbedding.exists_primitive_element_lt_of_isComplex` a
 `x` of `K` such that `K = ℚ(x)` and the conjugates of `x` are all bounded by some quantity
 depending only on `N`.
 
-Since the primitive element `x` is constructed differently depending on wether `K` has a infinite
+Since the primitive element `x` is constructed differently depending on whether `K` has a infinite
 real place or not, the theorem is proved in two parts.
 -/
 
@@ -271,10 +265,11 @@ noncomputable abbrev rankOfDiscrBdd : ℕ :=
 
 /-- An upper bound on the Minkowski bound of a number field `K` with `|discr K| ≤ N`;
 see `minkowskiBound_lt_boundOfDiscBdd`. -/
-noncomputable abbrev boundOfDiscBdd : ℝ≥0 := sqrt N * (2:ℝ≥0) ^ rankOfDiscrBdd N + 1
+noncomputable abbrev boundOfDiscBdd : ℝ≥0 := sqrt N * (2 : ℝ≥0) ^ rankOfDiscrBdd N + 1
 
 variable {N} (hK : |discr K| ≤ N)
 
+include hK in
 /-- If `|discr K| ≤ N` then the degree of `K` is at most `rankOfDiscrBdd`. -/
 theorem rank_le_rankOfDiscrBdd :
     finrank ℚ K ≤ rankOfDiscrBdd N := by
@@ -282,7 +277,7 @@ theorem rank_le_rankOfDiscrBdd :
     refine fun h ↦ discr_ne_zero K ?_
     rwa [h, Nat.cast_zero, abs_nonpos_iff] at hK
   have h₂ : 1 < 3 * π / 4 := by
-    rw [_root_.lt_div_iff (by positivity), ← _root_.div_lt_iff' (by positivity), one_mul]
+    rw [_root_.lt_div_iff₀ (by positivity), ← _root_.div_lt_iff₀' (by positivity), one_mul]
     linarith [Real.pi_gt_three]
   obtain h | h := lt_or_le 1 (finrank ℚ K)
   · apply le_max_of_le_right
@@ -292,15 +287,16 @@ theorem rank_le_rankOfDiscrBdd :
       rw [← Real.rpow_natCast]
       rw [Real.log_div_log] at h
       refine lt_of_le_of_lt ?_ (mul_lt_mul_of_pos_left
-        (Real.rpow_lt_rpow_of_exponent_lt h₂ h) (by positivity : (0:ℝ) < 4 / 9))
+        (Real.rpow_lt_rpow_of_exponent_lt h₂ h) (by positivity : (0 : ℝ) < 4 / 9))
       rw [Real.rpow_logb (lt_trans zero_lt_one h₂) (ne_of_gt h₂) (by positivity), ← mul_assoc,
-            ← inv_div, inv_mul_cancel (by norm_num), one_mul, Int.cast_natCast]
+            ← inv_div, inv_mul_cancel₀ (by norm_num), one_mul, Int.cast_natCast]
     · refine div_nonneg (Real.log_nonneg ?_) (Real.log_nonneg (le_of_lt h₂))
-      rw [mul_comm, ← mul_div_assoc, _root_.le_div_iff (by positivity), one_mul,
-        ← _root_.div_le_iff (by positivity)]
+      rw [mul_comm, ← mul_div_assoc, _root_.le_div_iff₀ (by positivity), one_mul,
+        ← _root_.div_le_iff₀ (by positivity)]
       exact le_trans (by norm_num) (Nat.one_le_cast.mpr (Nat.one_le_iff_ne_zero.mpr h_nz))
   · exact le_max_of_le_left h
 
+include hK in
 /-- If `|discr K| ≤ N` then the Minkowski bound of `K` is less than `boundOfDiscrBdd`. -/
 theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBdd N := by
   have : boundOfDiscBdd N - 1 < boundOfDiscBdd N := by
@@ -309,14 +305,15 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
   rw [minkowskiBound, volume_fundamentalDomain_fractionalIdealLatticeBasis, boundOfDiscBdd,
     add_tsub_cancel_right, Units.val_one, FractionalIdeal.absNorm_one, Rat.cast_one,
     ENNReal.ofReal_one, one_mul, mixedEmbedding.finrank, volume_fundamentalDomain_latticeBasis,
-    coe_mul, ENNReal.coe_pow, coe_ofNat, show sqrt N = (1:ℝ≥0∞) * sqrt N by rw [one_mul]]
+    coe_mul, ENNReal.coe_pow, coe_ofNat, show sqrt N = (1 : ℝ≥0∞) * sqrt N by rw [one_mul]]
   gcongr
-  · exact pow_le_one _ (by positivity) (by norm_num)
-  · rwa [sqrt_le_sqrt, ← NNReal.coe_le_coe, coe_nnnorm, Int.norm_eq_abs, ← Int.cast_abs,
+  · exact pow_le_one₀ (by positivity) (by norm_num)
+  · rwa [← NNReal.coe_le_coe, coe_nnnorm, Int.norm_eq_abs, ← Int.cast_abs,
       NNReal.coe_natCast, ← Int.cast_natCast, Int.cast_le]
   · exact one_le_two
   · exact rank_le_rankOfDiscrBdd hK
 
+include hK in
 theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
     natDegree (minpoly ℤ (a : K)) ≤ rankOfDiscrBdd N := by
   rw [Field.primitive_element_iff_minpoly_natDegree_eq,
@@ -340,6 +337,8 @@ theorem finite_of_discr_bdd_of_isReal :
       (Set.finite_Icc (-C : ℤ) C)) (fun ⟨K, hK₀⟩ ⟨hK₁, hK₂⟩ ↦ ?_)
   -- We now need to prove that each field is generated by an element of the union of the rootset
   simp_rw [Set.mem_iUnion]
+  -- this is purely an optimization
+  have : CharZero K := SubsemiringClass.instCharZero K
   haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
   obtain ⟨w₀, hw₀⟩ := hK₁
   suffices minkowskiBound K ↑1 < (convexBodyLTFactor K) * B by
@@ -353,7 +352,7 @@ theorem finite_of_discr_bdd_of_isReal :
       · rw [minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hx, coeff_map, eq_intCast,
           Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
       · refine le_trans ?_ (Nat.le_ceil _)
-        rw [show max ↑(max (B:ℝ≥0) 1) (1:ℝ) = max (B:ℝ) 1 by simp, val_eq_coe, NNReal.coe_mul,
+        rw [show max ↑(max (B : ℝ≥0) 1) (1 : ℝ) = max (B : ℝ) 1 by simp, val_eq_coe, NNReal.coe_mul,
           NNReal.coe_pow, NNReal.coe_max, NNReal.coe_one, NNReal.coe_natCast]
         gcongr
         · exact le_max_right _ 1
@@ -363,11 +362,14 @@ theorem finite_of_discr_bdd_of_isReal :
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
       exact (aeval_algebraMap_eq_zero_iff _ _ _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
-      convert hx₁ <;> simp
+      convert hx₁
+      · simp only [IntermediateField.lift_top]
+      · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
   have := one_le_convexBodyLTFactor K
   convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
     (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
   simp_rw [ENNReal.coe_one, one_mul]
+
 
 theorem finite_of_discr_bdd_of_isComplex :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
@@ -383,6 +385,8 @@ theorem finite_of_discr_bdd_of_isComplex :
       (Set.finite_Icc (-C : ℤ) C)) (fun ⟨K, hK₀⟩ ⟨hK₁, hK₂⟩ ↦ ?_)
   -- We now need to prove that each field is generated by an element of the union of the rootset
   simp_rw [Set.mem_iUnion]
+  -- this is purely an optimization
+  have : CharZero K := SubsemiringClass.instCharZero K
   haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
   obtain ⟨w₀, hw₀⟩ := hK₁
   suffices minkowskiBound K ↑1 < (convexBodyLT'Factor K) * boundOfDiscBdd N by
@@ -407,7 +411,9 @@ theorem finite_of_discr_bdd_of_isComplex :
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
       exact (aeval_algebraMap_eq_zero_iff _ _ _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
-      convert hx₁ <;> simp
+      convert hx₁
+      · simp only [IntermediateField.lift_top]
+      · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
   have := one_le_convexBodyLT'Factor K
   convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
     (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
@@ -422,6 +428,8 @@ theorem _root_.NumberField.finite_of_discr_bdd :
   refine Set.Finite.subset (Set.Finite.union (finite_of_discr_bdd_of_isReal A N)
     (finite_of_discr_bdd_of_isComplex A N)) ?_
   rintro ⟨K, hK₀⟩ hK₁
+  -- this is purely an optimization
+  have : CharZero K := SubsemiringClass.instCharZero K
   haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
   obtain ⟨w₀⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw₀ : IsReal w₀
@@ -491,4 +499,3 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
   cases' Int.isUnit_iff.1 hunit with hp hm
   · simp [hp]
   · simp [hm]
-#align algebra.discr_eq_discr_of_to_matrix_coeff_is_integral Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral

@@ -21,7 +21,7 @@ universe u
 
 namespace IsCyclotomicExtension.Rat
 
-open NumberField InfinitePlace FiniteDimensional Complex Nat Polynomial
+open NumberField InfinitePlace Module Complex Nat Polynomial
 
 variable {n : ℕ+} (K : Type u) [Field K] [CharZero K]
 

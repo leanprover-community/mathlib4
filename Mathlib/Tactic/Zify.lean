@@ -117,3 +117,7 @@ variable {R : Type*} [AddGroupWithOne R]
 
 @[norm_cast] theorem Nat.cast_sub_of_lt {m n} (h : m < n) :
     ((n - m : ℕ) : R) = n - m := Nat.cast_sub h.le
+
+end Zify
+
+end Mathlib.Tactic

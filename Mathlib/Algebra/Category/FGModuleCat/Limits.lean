@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Limits
@@ -10,8 +10,6 @@ import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-
-#align_import algebra.category.fgModule.limits from "leanprover-community/mathlib"@"19a70dceb9dff0994b92d2dd049de7d84d28112b"
 
 /-!
 # `forget₂ (FGModuleCat K) (ModuleCat K)` creates all finite limits.
@@ -30,9 +28,7 @@ noncomputable section
 
 universe v u
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 namespace FGModuleCat
 
@@ -61,8 +57,6 @@ def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
   createsLimitOfFullyFaithfulOfIso
     ⟨(limit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k), inferInstance⟩
     (Iso.refl _)
-set_option linter.uppercaseLean3 false in
-#align fgModule.forget₂_creates_limit FGModuleCat.forget₂CreatesLimit
 
 instance : CreatesLimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
   CreatesLimit {F} := forget₂CreatesLimit F

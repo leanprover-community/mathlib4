@@ -10,6 +10,8 @@ example : Foo where
   x := sorry
 
 /--
+error: could not synthesize default value for field 'w' of 'Foo' using tactics
+---
 error: tactic 'aesop' failed, failed to prove the goal after exhaustive search.
 Initial goal:
   ⊢ 35 = 37

@@ -7,8 +7,6 @@ import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.List.FinRange
 
-#align_import algebra.big_operators.norm_num from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # `norm_num` plugin for big operators
 
@@ -30,7 +28,7 @@ This plugin is noticeably less powerful than the equivalent version in Mathlib 3
 In particular, we can't use the plugin on sums containing variables.
 (See also the TODO note "To support variables".)
 
-## TODOs
+## TODO
 
  * Support intervals: `Finset.Ico`, `Finset.Icc`, ...
  * To support variables, like in Mathlib 3, turn this into a standalone tactic that unfolds
@@ -38,13 +36,13 @@ In particular, we can't use the plugin on sums containing variables.
    normalization?)
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Meta
 
 open Lean hiding Rat mkRat
 open Meta
 open Qq
+
+variable {u v : Level}
 
 /-- This represents the result of trying to determine whether the given expression `n : Q(ℕ)`
 is either `zero` or `succ`. -/
@@ -109,7 +107,7 @@ set_option linter.unusedVariables false in
 
 Fails if we cannot determine which of the alternatives apply to the expression.
 -/
-partial def List.proveNilOrCons {α : Q(Type u)} (s : Q(List $α)) :
+partial def List.proveNilOrCons {u : Level} {α : Q(Type u)} (s : Q(List $α)) :
     MetaM (List.ProveNilOrConsResult s) :=
   s.withApp fun e a =>
   match (e, e.constName, a) with
@@ -354,7 +352,7 @@ If your finset is not supported, you can add it to the match in `Finset.proveEmp
 -/
 @[norm_num @Finset.prod _ _ _ _ _]
 partial def evalFinsetProd : NormNumExt where eval {u β} e := do
-  let .app (.app (.app (.app (.app (.const `Finset.prod [_, v]) α) β') _) s) f ←
+  let .app (.app (.app (.app (.app (.const ``Finset.prod [v, _]) α) β') _) s) f ←
     whnfR e | failure
   guard <| ← withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
@@ -383,7 +381,7 @@ If your finset is not supported, you can add it to the match in `Finset.proveEmp
 -/
 @[norm_num @Finset.sum _ _ _ _ _]
 partial def evalFinsetSum : NormNumExt where eval {u β} e := do
-  let .app (.app (.app (.app (.app (.const `Finset.sum [_, v]) α) β') _) s) f ←
+  let .app (.app (.app (.app (.app (.const ``Finset.sum [v, _]) α) β') _) s) f ←
     whnfR e | failure
   guard <| ← withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
@@ -402,3 +400,9 @@ partial def evalFinsetSum : NormNumExt where eval {u β} e := do
         q(Finset.sum_cons $h)
       pure <| res.eq_trans eq)
     s
+
+end NormNum
+
+end Meta
+
+end Mathlib

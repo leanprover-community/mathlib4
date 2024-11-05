@@ -66,10 +66,10 @@ instance instTop : Top L where
   top := ⟨⊤, by simpa using L.sInfClosed' <| empty_subset _⟩
 
 instance instSupSet : SupSet L where
-  sSup s := ⟨sSup s, L.sSupClosed' image_val_subset⟩
+  sSup s := ⟨sSup <| (↑) '' s, L.sSupClosed' image_val_subset⟩
 
 instance instInfSet : InfSet L where
-  sInf s := ⟨sInf s, L.sInfClosed' image_val_subset⟩
+  sInf s := ⟨sInf <| (↑) '' s, L.sInfClosed' image_val_subset⟩
 
 theorem sSupClosed {s : Set α} (h : s ⊆ L) : sSup s ∈ L := L.sSupClosed' h
 
@@ -88,6 +88,10 @@ theorem coe_sSup' (S : Set L) : (↑(sSup S) : α) = ⨆ N ∈ S, (N : α) := by
 
 theorem coe_sInf' (S : Set L) : (↑(sInf S) : α) = ⨅ N ∈ S, (N : α) := by
   rw [coe_sInf, ← Set.image, sInf_image]
+
+-- Redeclaring to get proper keys for these instances
+instance : Sup {x // x ∈ L} := Sublattice.instSupCoe
+instance : Inf {x // x ∈ L} := Sublattice.instInfCoe
 
 instance instCompleteLattice : CompleteLattice L :=
   Subtype.coe_injective.completeLattice _

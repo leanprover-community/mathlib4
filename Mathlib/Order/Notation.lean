@@ -3,9 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Simps.NotationClass
-import Mathlib.Mathport.Rename
 
 /-!
 # Notation classes for lattice operations
@@ -33,7 +32,6 @@ In this file we introduce typeclasses and definitions for lattice operations.
 class HasCompl (α : Type*) where
   /-- Set / lattice complement -/
   compl : α → α
-#align has_compl HasCompl
 
 export HasCompl (compl)
 
@@ -47,14 +45,12 @@ postfix:1024 "ᶜ" => compl
 class Sup (α : Type*) where
   /-- Least upper bound (`\lub` notation) -/
   sup : α → α → α
-#align has_sup Sup
 
 /-- Typeclass for the `⊓` (`\glb`) notation -/
 @[notation_class, ext]
 class Inf (α : Type*) where
   /-- Greatest lower bound (`\glb` notation) -/
   inf : α → α → α
-#align has_inf Inf
 
 @[inherit_doc]
 infixl:68 " ⊔ " => Sup.sup
@@ -67,7 +63,6 @@ infixl:69 " ⊓ " => Inf.inf
 class HImp (α : Type*) where
   /-- Heyting implication `⇨` -/
   himp : α → α → α
-#align has_himp HImp
 
 /-- Syntax typeclass for Heyting negation `￢`.
 
@@ -80,7 +75,6 @@ See `hnot_eq_compl`.
 class HNot (α : Type*) where
   /-- Heyting negation `￢` -/
   hnot : α → α
-#align has_hnot HNot
 
 export HImp (himp)
 export SDiff (sdiff)
@@ -98,14 +92,12 @@ prefix:72 "￢" => hnot
 class Top (α : Type*) where
   /-- The top (`⊤`, `\top`) element -/
   top : α
-#align has_top Top
 
 /-- Typeclass for the `⊥` (`\bot`) notation -/
 @[notation_class, ext]
 class Bot (α : Type*) where
   /-- The bot (`⊥`, `\bot`) element -/
   bot : α
-#align has_bot Bot
 
 /-- The top (`⊤`, `\top`) element -/
 notation "⊤" => Top.top
@@ -115,10 +107,8 @@ notation "⊥" => Bot.bot
 
 instance (priority := 100) top_nonempty (α : Type*) [Top α] : Nonempty α :=
   ⟨⊤⟩
-#align has_top_nonempty top_nonempty
 
 instance (priority := 100) bot_nonempty (α : Type*) [Bot α] : Nonempty α :=
   ⟨⊥⟩
-#align has_bot_nonempty bot_nonempty
 
 attribute [match_pattern] Bot.bot Top.top

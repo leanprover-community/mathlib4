@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.Analysis.Normed.Field.Basic
-
-#align_import number_theory.legendre_symbol.gauss_eisenstein_lemmas from "leanprover-community/mathlib"@"8818fdefc78642a7e6afcd20be5c184f3c7d9699"
+import Mathlib.Analysis.Normed.Field.Lemmas
 
 /-!
 # Lemmas of Gauss and Eisenstein
@@ -36,7 +34,7 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     lt_of_le_of_lt (he hx).2 (Nat.div_lt_self hp.1.pos (by decide))
   have hpe : ∀ {x}, x ∈ Ico 1 (p / 2).succ → ¬p ∣ x := fun hx hpx =>
     not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero (he hx).1) hpx) (hep hx)
-  have hmem : ∀ (x : ℕ) (hx : x ∈ Ico 1 (p / 2).succ),
+  have hmem : ∀ (x : ℕ) (_ : x ∈ Ico 1 (p / 2).succ),
       (a * x : ZMod p).valMinAbs.natAbs ∈ Ico 1 (p / 2).succ := by
     intro x hx
     simp [hap, CharP.cast_eq_zero_iff (ZMod p) p, hpe hx, Nat.lt_succ_iff, succ_le_iff,
@@ -51,14 +49,13 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     · apply lt_succ_of_le; apply natAbs_valMinAbs_le
     · rw [natCast_natAbs_valMinAbs]
       split_ifs
-      · erw [mul_div_cancel₀ _ hap, valMinAbs_def_pos, val_cast_of_lt (hep hb),
+      · rw [mul_div_cancel₀ _ hap, valMinAbs_def_pos, val_cast_of_lt (hep hb),
           if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
-      · erw [mul_neg, mul_div_cancel₀ _ hap, natAbs_valMinAbs_neg, valMinAbs_def_pos,
+      · rw [mul_neg, mul_div_cancel₀ _ hap, natAbs_valMinAbs_neg, valMinAbs_def_pos,
           val_cast_of_lt (hep hb), if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
   exact Multiset.map_eq_map_of_bij_of_nodup _ _ (Finset.nodup _) (Finset.nodup _)
     (fun x _ => (a * x : ZMod p).valMinAbs.natAbs) hmem
     (inj_on_of_surj_on_of_card_le _ hmem hsurj le_rfl) hsurj (fun _ _ => rfl)
-#align zmod.Ico_map_val_min_abs_nat_abs_eq_Ico_map_id ZMod.Ico_map_valMinAbs_natAbs_eq_Ico_map_id
 
 private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
     (hap : (a : ZMod p) ≠ 0) : (a ^ (p / 2) * (p / 2)! : ZMod p) =
@@ -98,7 +95,6 @@ theorem gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] {a : ℤ}
     rw [Ne, CharP.cast_eq_zero_iff (ZMod p) p, hp.1.dvd_factorial, not_le]
     exact Nat.div_lt_self hp.1.pos (by decide))).1 <| by
       simpa using gauss_lemma_aux₁ p hap
-#align zmod.gauss_lemma_aux ZMod.gauss_lemma_aux
 
 /-- **Gauss' lemma**. The Legendre symbol can be computed by considering the number of naturals less
   than `p/2` such that `(a * x) % p > p / 2`. -/
@@ -113,7 +109,6 @@ theorem gauss_lemma {p : ℕ} [h : Fact p.Prime] {a : ℤ} (hp : p ≠ 2) (ha0 :
   cases neg_one_pow_eq_or ℤ
     ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card <;>
   simp_all [ne_neg_self hp one_ne_zero, (ne_neg_self hp one_ne_zero).symm]
-#align zmod.gauss_lemma ZMod.gauss_lemma
 
 private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p % 2 = 1)] {a : ℕ}
     (hap : (a : ZMod p) ≠ 0) : ((∑ x ∈ Ico 1 (p / 2).succ, a * x : ℕ) : ZMod 2) =
@@ -152,7 +147,6 @@ theorem eisenstein_lemma_aux (p : ℕ) [Fact p.Prime] [Fact (p % 2 = 1)] {a : �
     simpa [add_left_comm, sub_eq_add_neg, ← mul_sum, mul_comm, ha2, Nat.cast_sum,
       add_neg_eq_iff_eq_add.symm, neg_eq_self_mod_two, add_assoc] using
       Eq.symm (eisenstein_lemma_aux₁ p hap)
-#align zmod.eisenstein_lemma_aux ZMod.eisenstein_lemma_aux
 
 theorem div_eq_filter_card {a b c : ℕ} (hb0 : 0 < b) (hc : a / b ≤ c) :
     a / b = ((Ico 1 c.succ).filter fun x => x * b ≤ a).card :=
@@ -162,7 +156,6 @@ theorem div_eq_filter_card {a b c : ℕ} (hb0 : 0 < b) (hc : a / b ≤ c) :
       congr_arg _ <| Finset.ext fun x => by
         have : x * b ≤ a → x ≤ c := fun h => le_trans (by rwa [le_div_iff_mul_le hb0]) hc
         simp [Nat.lt_succ_iff, le_div_iff_mul_le hb0]; tauto
-#align zmod.div_eq_filter_card ZMod.div_eq_filter_card
 
 /-- The given sum is the number of integer points in the triangle formed by the diagonal of the
   rectangle `(0, p/2) × (0, q/2)`. -/
@@ -212,7 +205,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       simpa [hq0] using congr_arg ((↑) : ℕ → ZMod p) (le_antisymm hpq hqp)
     apply_fun ZMod.val at this
     rw [val_cast_of_lt hxp, val_zero] at this
-    simp only [this, nonpos_iff_eq_zero, mem_Ico, one_ne_zero, false_and_iff, mem_product] at hx
+    simp only [this, nonpos_iff_eq_zero, mem_Ico, one_ne_zero, false_and, mem_product] at hx
   have hunion :
       (((Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ).filter fun x : ℕ × ℕ => x.2 * p ≤ x.1 * q) ∪
         (Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ).filter fun x : ℕ × ℕ => x.1 * q ≤ x.2 * p) =
@@ -224,7 +217,6 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
   rw [sum_Ico_eq_card_lt, sum_Ico_eq_card_lt, hswap, ← card_union_of_disjoint hdisj, hunion,
     card_product]
   simp only [card_Ico, tsub_zero, succ_sub_succ_eq_sub]
-#align zmod.sum_mul_div_add_sum_mul_div_eq_mul ZMod.sum_mul_div_add_sum_mul_div_eq_mul
 
 /-- **Eisenstein's lemma** -/
 theorem eisenstein_lemma {p : ℕ} [Fact p.Prime] (hp : p ≠ 2) {a : ℕ} (ha1 : a % 2 = 1)
@@ -234,7 +226,6 @@ theorem eisenstein_lemma {p : ℕ} [Fact p.Prime] (hp : p ≠ 2) {a : ℕ} (ha1 
   rw [neg_one_pow_eq_pow_mod_two, gauss_lemma hp ha0', neg_one_pow_eq_pow_mod_two,
     (by norm_cast : ((a : ℤ) : ZMod p) = (a : ZMod p)),
     show _ = _ from eisenstein_lemma_aux p ha1 ha0]
-#align zmod.eisenstein_lemma ZMod.eisenstein_lemma
 
 end ZMod
 

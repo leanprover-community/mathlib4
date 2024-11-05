@@ -14,7 +14,8 @@ When https://github.com/leanprover/lean4/issues/4121
 is resolved, this file can be replaced with a line in `lakefile.lean`.
 -/
 def main (args : List String) : IO Unit := do
-  -- ProofWidgets may not have been built by `lake build` yet, but it is needed by some tests.
-  _ ← (← spawn { cmd := "lake", args := #["build", "ProofWidgets"] }).wait
+  -- ProofWidgets and Batteries may not have been completely built by `lake build` yet,
+  -- but they are needed by some tests.
+  _ ← (← spawn { cmd := "lake", args := #["build", "ProofWidgets", "Batteries"] }).wait
   let exitcode ← (← spawn { cmd := "lake", args := #["exe", "batteries/test"] ++ args }).wait
   exit exitcode.toUInt8

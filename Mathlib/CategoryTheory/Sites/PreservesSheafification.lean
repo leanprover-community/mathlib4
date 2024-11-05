@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Sites.Sheafification
 
-/-! # Functors which preserves sheafification
+/-! # Functors which preserve sheafification
 
 In this file, given a Grothendieck topology `J` on `C` and `F : A ⥤ B`,
 we define a type class `J.PreservesSheafification F`. We say that `F` preserves
@@ -20,7 +20,7 @@ this property for the map from any presheaf `P` to its associated sheaf, see
 
 In general, we define `Sheaf.composeAndSheafify J F : Sheaf J A ⥤ Sheaf J B` as the functor
 which sends a sheaf `G` to the sheafification of the composition `G.val ⋙ F`.
-It `J.PreservesSheafification F`, we show that this functor can also be thought
+If `J.PreservesSheafification F`, we show that this functor can also be thought of
 as the localization of the functor `_ ⋙ F` on presheaves: we construct an isomorphism
 `presheafToSheafCompComposeAndSheafifyIso` between
 `presheafToSheaf J A ⋙ Sheaf.composeAndSheafify J F` and
@@ -29,7 +29,7 @@ as the localization of the functor `_ ⋙ F` on presheaves: we construct an isom
 Moreover, if we assume `J.HasSheafCompose F`, we obtain an isomorphism
 `sheafifyComposeIso J F P : sheafify J (P ⋙ F) ≅ sheafify J P ⋙ F`.
 
-We show that under suitable assumptions, the forget functor from a concrete
+We show that under suitable assumptions, the forgetful functor from a concrete
 category preserves sheafification; this holds more generally for
 functors between such concrete categories which commute both with
 suitable limits and colimits.
@@ -83,8 +83,6 @@ variable [HasWeakSheafify J B]
 of `X.val ⋙ F`. -/
 noncomputable abbrev Sheaf.composeAndSheafify : Sheaf J A ⥤ Sheaf J B :=
   sheafToPresheaf J A ⋙ (whiskeringRight _ _ _).obj F ⋙ presheafToSheaf J B
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.compose_and_sheafify CategoryTheory.Sheaf.composeAndSheafify
 
 variable [HasWeakSheafify J A]
 
@@ -125,9 +123,10 @@ end
 section
 
 variable {G₁ : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj₁ : G₁ ⊣ sheafToPresheaf J A)
-  {G₂ : (Cᵒᵖ ⥤ B) ⥤ Sheaf J B} (adj₂ : G₂ ⊣ sheafToPresheaf J B)
+  {G₂ : (Cᵒᵖ ⥤ B) ⥤ Sheaf J B}
 
-lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions :
+lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions
+    (adj₂ : G₂ ⊣ sheafToPresheaf J B) :
     J.PreservesSheafification F ↔ ∀ (P : Cᵒᵖ ⥤ A),
       IsIso (G₂.map (whiskerRight (adj₁.unit.app P) F)) := by
   simp only [← J.W_iff_isIso_map_of_adjunction adj₂]
@@ -149,7 +148,7 @@ lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions :
 
 section HasSheafCompose
 
-variable [J.HasSheafCompose F]
+variable (adj₂ : G₂ ⊣ sheafToPresheaf J B) [J.HasSheafCompose F]
 
 /-- The canonical natural transformation
 `(whiskeringRight Cᵒᵖ A B).obj F ⋙ G₂ ⟶ G₁ ⋙ sheafCompose J F`
@@ -158,7 +157,7 @@ left adjoints to the forget functors `sheafToPresheaf`. -/
 def sheafComposeNatTrans :
     (whiskeringRight Cᵒᵖ A B).obj F ⋙ G₂ ⟶ G₁ ⋙ sheafCompose J F where
   app P := (adj₂.homEquiv _ _).symm (whiskerRight (adj₁.unit.app P) F)
-  naturality {P Q} f:= by
+  naturality {P Q} f := by
     dsimp
     erw [← adj₂.homEquiv_naturality_left_symm,
       ← adj₂.homEquiv_naturality_right_symm]
@@ -171,9 +170,7 @@ lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
     adj₂.unit.app (P ⋙ F) ≫
       (sheafToPresheaf J B).map ((sheafComposeNatTrans J F adj₁ adj₂).app P) =
         whiskerRight (adj₁.unit.app P) F  := by
-  dsimp only [sheafComposeNatTrans]
-  erw [Adjunction.homEquiv_counit, Adjunction.unit_naturality_assoc,
-    adj₂.right_triangle_components, comp_id]
+  simp [sheafComposeNatTrans, -sheafToPresheaf_obj, -sheafToPresheaf_map]
 
 lemma sheafComposeNatTrans_app_uniq (P : Cᵒᵖ ⥤ A)
     (α : G₂.obj (P ⋙ F) ⟶ (sheafCompose J F).obj (G₁.obj P))

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Keeley Hoek, Patrick Massot, Scott Morrison
+Authors: Keeley Hoek, Patrick Massot, Kim Morrison
 -/
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Order.Monotone.Basic
@@ -214,3 +214,5 @@ elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
     (atTarget := withMainContext do
       replaceMainGoal <| ← applyFunTarget f P (← getMainGoal))
     (failed := fun _ ↦ throwError "apply_fun failed")
+
+end Mathlib.Tactic

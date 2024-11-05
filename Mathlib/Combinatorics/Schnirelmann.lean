@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -68,7 +68,7 @@ lemma schnirelmannDensity_mul_le_card_filter {n : ℕ} :
     schnirelmannDensity A * n ≤ ((Ioc 0 n).filter (· ∈ A)).card := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp
-  exact (le_div_iff (by positivity)).1 (schnirelmannDensity_le_div hn)
+  exact (le_div_iff₀ (by positivity)).1 (schnirelmannDensity_le_div hn)
 
 /--
 To show the Schnirelmann density is upper bounded by `x`, it suffices to show
@@ -108,7 +108,7 @@ lemma schnirelmannDensity_eq_zero_of_one_not_mem (h : 1 ∉ A) : schnirelmannDen
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
     schnirelmannDensity A ≤ schnirelmannDensity B :=
   ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by
-    gcongr; exact monotone_filter_right _ h
+    gcongr; exact h
 
 /-- The Schnirelmann density of `A` is `1` if and only if `A` contains all the positive naturals. -/
 lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ A := by
@@ -196,7 +196,7 @@ lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 :=
   let n : ℕ := ⌊A.card / ε⌋₊ + 1
   have hn : 0 < n := Nat.succ_pos _
   use n, hn
-  rw [div_lt_iff (Nat.cast_pos.2 hn), ← div_lt_iff' hε, Nat.cast_add_one]
+  rw [div_lt_iff₀ (Nat.cast_pos.2 hn), ← div_lt_iff₀' hε, Nat.cast_add_one]
   exact (Nat.lt_floor_add_one _).trans_le' <| by gcongr; simp [subset_iff]
 
 /-- The Schnirelmann density of any finite set is `0`. -/
@@ -243,9 +243,9 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
     simp only [Nat.mul_add_mod', Nat.mod_eq_of_lt hm, add_pos_iff, or_true, and_true, true_and,
       ← Nat.le_sub_iff_add_le hn, zero_lt_one]
     exact Nat.mul_le_of_le_div _ _ _ hy'
-  rw [le_div_iff (Nat.cast_pos.2 hn), mul_comm, ← div_eq_mul_inv]
+  rw [le_div_iff₀ (Nat.cast_pos.2 hn), mul_comm, ← div_eq_mul_inv]
   apply (Nat.cast_le.2 (card_le_card this)).trans'
-  rw [card_image_of_injective, Nat.card_Icc, Nat.sub_zero, div_le_iff (Nat.cast_pos.2 hm'),
+  rw [card_image_of_injective, Nat.card_Icc, Nat.sub_zero, div_le_iff₀ (Nat.cast_pos.2 hm'),
     ← Nat.cast_mul, Nat.cast_le, add_one_mul (α := ℕ)]
   · have := @Nat.lt_div_mul_add n.pred m hm'
     rwa [← Nat.succ_le, Nat.succ_pred hn.ne'] at this
@@ -259,7 +259,7 @@ lemma schnirelmannDensity_setOf_modeq_one {m : ℕ} :
   rw [← schnirelmannDensity_setOf_mod_eq_one hm]
   apply schnirelmannDensity_congr
   ext n
-  simp only [Set.mem_setOf_eq, Nat.ModEq, Nat.one_mod_of_ne_one hm]
+  simp only [Set.mem_setOf_eq, Nat.ModEq, Nat.one_mod_eq_one.mpr hm]
 
 lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ := by
   have h : setOf Odd = {n | n % 2 = 1} := Set.ext fun _ => Nat.odd_iff

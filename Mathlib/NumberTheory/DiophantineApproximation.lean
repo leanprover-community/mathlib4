@@ -9,8 +9,6 @@ import Mathlib.Data.Real.Irrational
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.Tactic.Basic
 
-#align_import number_theory.diophantine_approximation from "leanprover-community/mathlib"@"e25a317463bd37d88e33da164465d8c47922b1cd"
-
 /-!
 # Diophantine Approximation
 
@@ -49,8 +47,8 @@ Both statements are combined to give an equivalence,
 
 There are two versions of Legendre's Theorem. One, `Real.exists_rat_eq_convergent`, uses
 `Real.convergent`, a simple recursive definition of the convergents that is also defined
-in this file, whereas the other, `Real.exists_continued_fraction_convergent_eq_rat`, uses
-`GeneralizedContinuedFraction.convergents` of `GeneralizedContinuedFraction.of ξ`.
+in this file, whereas the other, `Real.exists_convs_eq_rat`, uses
+`GenContFract.convs` of `GenContFract.of ξ`.
 
 ## Implementation notes
 
@@ -95,7 +93,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   let f : ℤ → ℤ := fun m => ⌊fract (ξ * m) * (n + 1)⌋
   have hn : 0 < (n : ℝ) + 1 := mod_cast Nat.succ_pos _
   have hfu := fun m : ℤ => mul_lt_of_lt_one_left hn <| fract_lt_one (ξ * ↑m)
-  conv in |_| ≤ _ => rw [mul_comm, le_div_iff hn, ← abs_of_pos hn, ← abs_mul]
+  conv in |_| ≤ _ => rw [mul_comm, le_div_iff₀ hn, ← abs_of_pos hn, ← abs_mul]
   let D := Icc (0 : ℤ) n
   by_cases H : ∃ m ∈ D, f m = n
   · obtain ⟨m, hm, hf⟩ := H
@@ -130,7 +128,6 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     convert_to |fract (ξ * y) * (n + 1) - fract (ξ * x) * (n + 1)| ≤ 1
     · congr; push_cast; simp only [fract]; ring
     exact (abs_sub_lt_one_of_floor_eq_floor hxy.symm).le
-#align real.exists_int_int_abs_mul_sub_le Real.exists_int_int_abs_mul_sub_le
 
 /-- *Dirichlet's approximation theorem:*
 For any real number `ξ` and positive natural `n`, there is a natural number `k`,
@@ -142,7 +139,6 @@ theorem exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   have hk := toNat_of_nonneg hk₀.le
   rw [← hk] at hk₀ hk₁ h
   exact ⟨k.toNat, natCast_pos.mp hk₀, Nat.cast_le.mp hk₁, (round_le (↑k.toNat * ξ) j).trans h⟩
-#align real.exists_nat_abs_mul_sub_round_le Real.exists_nat_abs_mul_sub_round_le
 
 /-- *Dirichlet's approximation theorem:*
 For any real number `ξ` and positive natural `n`, there is a fraction `q`
@@ -157,11 +153,10 @@ theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     convert le_of_dvd hk₀ (Rat.den_dvd j k)
     exact Rat.intCast_div_eq_divInt _ _
   refine ⟨j / k, ?_, Nat.cast_le.mp (hden.trans hk₁)⟩
-  rw [← div_div, le_div_iff (Nat.cast_pos.mpr <| Rat.pos _ : (0 : ℝ) < _)]
+  rw [← div_div, le_div_iff₀ (Nat.cast_pos.mpr <| Rat.pos _ : (0 : ℝ) < _)]
   refine (mul_le_mul_of_nonneg_left (Int.cast_le.mpr hden : _ ≤ (k : ℝ)) (abs_nonneg _)).trans ?_
   rwa [← abs_of_pos hk₀', Rat.cast_div, Rat.cast_intCast, Rat.cast_intCast, ← abs_mul, sub_mul,
     div_mul_cancel₀ _ hk₀'.ne', mul_comm]
-#align real.exists_rat_abs_sub_le_and_denom_le Real.exists_rat_abs_sub_le_and_den_le
 
 end Dirichlet
 
@@ -197,7 +192,6 @@ theorem exists_rat_abs_sub_lt_and_lt_of_irrational {ξ : ℝ} (hξ : Irrational 
                 mod_cast (q'.pos : 1 ≤ q'.den)⟩
   rw [sq, one_div_lt_one_div md_pos (mul_pos den_pos den_pos), mul_lt_mul_right den_pos]
   exact lt_add_of_le_of_pos (Nat.cast_le.mpr hden) zero_lt_one
-#align real.exists_rat_abs_sub_lt_and_lt_of_irrational Real.exists_rat_abs_sub_lt_and_lt_of_irrational
 
 /-- If `ξ` is an irrational real number, then there are infinitely many good
 rational approximations to `ξ`. -/
@@ -209,7 +203,6 @@ theorem infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational {ξ : ℝ} (hξ : I
       ⟨⌊ξ⌋, by simp [abs_of_nonneg, Int.fract_lt_one]⟩
   obtain ⟨q', hmem, hbetter⟩ := exists_rat_abs_sub_lt_and_lt_of_irrational hξ q
   exact lt_irrefl _ (lt_of_le_of_lt (hq q' hmem) hbetter)
-#align real.infinite_rat_abs_sub_lt_one_div_denom_sq_of_irrational Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational
 
 end RatApprox
 
@@ -242,7 +235,7 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
     · exact le_rfl
     · have hξ₀ : (0 : ℚ) < ξ.den := Nat.cast_pos.mpr ξ.pos
       rw [← Rat.num_div_den ξ, div_mul_eq_mul_div, div_sub' _ _ _ hξ₀.ne', abs_div, abs_of_pos hξ₀,
-        div_lt_iff hξ₀, div_mul_comm, mul_one] at h
+        div_lt_iff₀ hξ₀, div_mul_comm, mul_one] at h
       refine Nat.cast_le.mp ((one_lt_div hq₀).mp <| lt_of_le_of_lt ?_ h).le
       norm_cast
       rw [mul_comm _ q.num]
@@ -256,7 +249,6 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
     norm_cast at h₁ h₂
     exact
       ⟨sub_le_iff_le_add.mpr (Int.ceil_le.mpr h₁.le), sub_le_iff_le_add.mp (Int.le_floor.mpr h₂.le)⟩
-#align rat.denom_le_and_le_num_le_of_sub_lt_one_div_denom_sq Rat.den_le_and_le_num_le_of_sub_lt_one_div_den_sq
 
 /-- A rational number has only finitely many good rational approximations. -/
 theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
@@ -278,7 +270,6 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
     exact ⟨q.num, hn, hq₂⟩
   refine (Finite.subset ?_ H).of_finite_image hinj.injOn
   exact Finite.biUnion (finite_Ioc _ _) fun x _ => Finite.prod (finite_Icc _ _) (finite_singleton _)
-#align rat.finite_rat_abs_sub_lt_one_div_denom_sq Rat.finite_rat_abs_sub_lt_one_div_den_sq
 
 end Rat
 
@@ -292,7 +283,6 @@ theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
   convert Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
   rw [H, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]
   norm_cast
-#align real.infinite_rat_abs_sub_lt_one_div_denom_sq_iff_irrational Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational
 
 /-!
 ### Legendre's Theorem on Rational Approximation
@@ -322,25 +312,22 @@ open Int
 
 /-- We give a direct recursive definition of the convergents of the continued fraction
 expansion of a real number `ξ`. The main reason for that is that we want to have the
-convergents as rational numbers; the versions
-`(GeneralizedContinuedFraction.of ξ).convergents` and
-`(GeneralizedContinuedFraction.of ξ).convergents'` always give something of the
-same type as `ξ`. We can then also use dot notation `ξ.convergent n`.
+convergents as rational numbers; the versions `(GenContFract.of ξ).convs` and
+`(GenContFract.of ξ).convs'` always give something of the same type as `ξ`.
+We can then also use dot notation `ξ.convergent n`.
 Another minor reason is that this demonstrates that the proof
 of Legendre's theorem does not need anything beyond this definition.
 We provide a proof that this definition agrees with the other one;
-see `Real.continued_fraction_convergent_eq_convergent`.
+see `Real.convs_eq_convergent`.
 (Note that we use the fact that `1/0 = 0` here to make it work for rational `ξ`.) -/
 noncomputable def convergent : ℝ → ℕ → ℚ
   | ξ, 0 => ⌊ξ⌋
   | ξ, n + 1 => ⌊ξ⌋ + (convergent (fract ξ)⁻¹ n)⁻¹
-#align real.convergent Real.convergent
 
 /-- The zeroth convergent of `ξ` is `⌊ξ⌋`. -/
 @[simp]
 theorem convergent_zero (ξ : ℝ) : ξ.convergent 0 = ⌊ξ⌋ :=
   rfl
-#align real.convergent_zero Real.convergent_zero
 
 /-- The `(n+1)`th convergent of `ξ` is the `n`th convergent of `1/(fract ξ)`. -/
 @[simp]
@@ -349,42 +336,36 @@ theorem convergent_succ (ξ : ℝ) (n : ℕ) :
   -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026): was
   -- by simp only [convergent]
   rfl
-#align real.convergent_succ Real.convergent_succ
 
 /-- All convergents of `0` are zero. -/
 @[simp]
 theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, convergent_zero, floor_zero, cast_zero]
+  · simp only [convergent_zero, floor_zero, cast_zero]
   · simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
-#align real.convergent_of_zero Real.convergent_of_zero
 
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
 theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
   cases n
-  · simp only [Nat.zero_eq, convergent_zero, floor_intCast]
+  · simp only [convergent_zero, floor_intCast]
   · simp only [convergent_succ, floor_intCast, fract_intCast, convergent_of_zero, add_zero,
       inv_zero]
-#align real.convergent_of_int Real.convergent_of_int
 
 /-!
-Our `convergent`s agree with `GeneralizedContinuedFraction.convergents`.
+Our `convergent`s agree with `GenContFract.convs`.
 -/
 
 
-open GeneralizedContinuedFraction
+open GenContFract
 
-/-- The `n`th convergent of the `GeneralizedContinuedFraction.of ξ`
-agrees with `ξ.convergent n`. -/
-theorem continued_fraction_convergent_eq_convergent (ξ : ℝ) (n : ℕ) :
-    (GeneralizedContinuedFraction.of ξ).convergents n = ξ.convergent n := by
+/-- The `n`th convergent of the `GenContFract.of ξ` agrees with `ξ.convergent n`. -/
+theorem convs_eq_convergent (ξ : ℝ) (n : ℕ) :
+    (GenContFract.of ξ).convs n = ξ.convergent n := by
   induction' n with n ih generalizing ξ
-  · simp only [Nat.zero_eq, zeroth_convergent_eq_h, of_h_eq_floor, convergent_zero,
-      Rat.cast_intCast]
-  · rw [convergents_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
+  · simp only [zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
+  · rw [convs_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
     norm_cast
-#align real.continued_fraction_convergent_eq_convergent Real.continued_fraction_convergent_eq_convergent
 
 end Real
 
@@ -404,7 +385,6 @@ open Int
 def ContfracLegendre.Ass (ξ : ℝ) (u v : ℤ) : Prop :=
   IsCoprime u v ∧ (v = 1 → (-(1 / 2) : ℝ) < ξ - u) ∧
     |ξ - u / v| < ((v : ℝ) * (2 * v - 1))⁻¹
-#align real.contfrac_legendre.ass Real.ContfracLegendre.Ass
 
 -- ### Auxiliary lemmas
 -- This saves a few lines below, as it is frequently needed.
@@ -412,7 +392,11 @@ private theorem aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 
   ⟨cast_pos.mpr hv, by norm_cast; omega⟩
 
 -- In the following, we assume that `ass ξ u v` holds and `v ≥ 2`.
-variable {ξ : ℝ} {u v : ℤ} (hv : 2 ≤ v) (h : ContfracLegendre.Ass ξ u v)
+variable {ξ : ℝ} {u v : ℤ}
+
+section
+variable (hv : 2 ≤ v) (h : ContfracLegendre.Ass ξ u v)
+include hv h
 
 -- The fractional part of `ξ` is positive.
 private theorem aux₁ : 0 < fract ξ := by
@@ -422,8 +406,7 @@ private theorem aux₁ : 0 < fract ξ := by
   refine fract_pos.mpr fun hf => ?_
   rw [hf] at h
   have H : (2 * v - 1 : ℝ) < 1 := by
-    refine
-      (mul_lt_iff_lt_one_right hv₀).mp ((inv_lt_inv hv₀ (mul_pos hv₁ hv₂)).mp (lt_of_le_of_lt ?_ h))
+    refine (mul_lt_iff_lt_one_right hv₀).1 ((inv_lt_inv₀ hv₀ (mul_pos hv₁ hv₂)).1 (h.trans_le' ?_))
     have h' : (⌊ξ⌋ : ℝ) - u / v = (⌊ξ⌋ * v - u) / v := by field_simp
     rw [h', abs_div, abs_of_pos hv₀, ← one_div, div_le_div_right hv₀]
     norm_cast
@@ -438,9 +421,9 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   obtain ⟨hcop, _, h⟩ := h
   obtain ⟨hv₀, hv₀'⟩ := aux₀ (zero_lt_two.trans_le hv)
   have hv₁ : 0 < 2 * v - 1 := by linarith only [hv]
-  rw [← one_div, lt_div_iff (mul_pos hv₀ hv₀'), ← abs_of_pos (mul_pos hv₀ hv₀'), ← abs_mul, sub_mul,
-    ← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ hv₀.ne', abs_sub_comm, abs_lt, lt_sub_iff_add_lt,
-    sub_lt_iff_lt_add, mul_assoc] at h
+  rw [← one_div, lt_div_iff₀ (mul_pos hv₀ hv₀'), ← abs_of_pos (mul_pos hv₀ hv₀'), ← abs_mul,
+    sub_mul, ← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ hv₀.ne', abs_sub_comm, abs_lt,
+    lt_sub_iff_add_lt, sub_lt_iff_lt_add, mul_assoc] at h
   have hu₀ : 0 ≤ u - ⌊ξ⌋ * v := by
     -- Porting note: this abused the definitional equality `-1 + 1 = 0`
     -- refine' (mul_nonneg_iff_of_pos_right hv₁).mp ((lt_iff_add_one_le (-1 : ℤ) _).mp _)
@@ -506,7 +489,7 @@ private theorem aux₃ :
     _ < ((v : ℝ) * (2 * v - 1))⁻¹ * (v / u' / fract ξ) := (mul_lt_mul_right H₁).mpr h'
     _ = (u' * (2 * v - 1) * fract ξ)⁻¹ := help₂ hξ₀.ne' Hv.ne' Hv'.ne' Hu.ne'
     _ ≤ ((u' : ℝ) * (2 * u' - 1))⁻¹ := by
-      rwa [inv_le_inv (mul_pos (mul_pos Hu Hv') hξ₀) <| mul_pos Hu Hu', mul_assoc,
+      rwa [inv_le_inv₀ (mul_pos (mul_pos Hu Hv') hξ₀) <| mul_pos Hu Hu', mul_assoc,
         mul_le_mul_left Hu]
 
 -- The conditions `ass ξ u v` persist in the inductive step.
@@ -522,7 +505,9 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
     have h' := (abs_sub_lt_iff.mp h.2.2).1
     rw [Huv, ← sub_sub, sub_lt_iff_lt_add, self_sub_floor, Hv] at h'
     rwa [lt_sub_iff_add_lt', (by ring : (v : ℝ) + -(1 / 2) = (2 * v - 1) / 2),
-      lt_inv (div_pos hv₀' zero_lt_two) (aux₁ hv h), inv_div]
+      lt_inv_comm₀ (div_pos hv₀' zero_lt_two) (aux₁ hv h), inv_div]
+
+end
 
 /-!
 ### The main result
@@ -530,10 +515,8 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
 
 
 /-- The technical version of *Legendre's Theorem*. -/
-theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
+theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     ∃ n, (u / v : ℚ) = ξ.convergent n := by
-  -- Porting note: `induction` got in trouble because of the irrelevant hypothesis `h`
-  clear h; have h := h'; clear h'
   induction v using Nat.strong_induction_on generalizing ξ u with | h v ih => ?_
   rcases lt_trichotomy v 1 with (ht | rfl | ht)
   · replace h := h.2.2
@@ -554,8 +537,8 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
       · rw [Hξ, hξ₁, cast_sub, cast_one, ← sub_eq_add_neg, sub_lt_sub_iff_left] at h₁
         exact False.elim (lt_irrefl _ <| h₁.trans one_half_lt_one)
       · have hξ₂ : ⌊(fract ξ)⁻¹⌋ = 1 := by
-          rw [floor_eq_iff, cast_one, le_inv zero_lt_one (fract_pos.mpr Hξ), inv_one,
-            one_add_one_eq_two, inv_lt (fract_pos.mpr Hξ) zero_lt_two]
+          rw [floor_eq_iff, cast_one, le_inv_comm₀ zero_lt_one (fract_pos.mpr Hξ), inv_one,
+            one_add_one_eq_two, inv_lt_comm₀ (fract_pos.mpr Hξ) zero_lt_two]
           refine ⟨(fract_lt_one ξ).le, ?_⟩
           rw [fract, hξ₁, cast_sub, cast_one, lt_sub_iff_add_lt', sub_add]
           convert h₁ using 1
@@ -574,7 +557,6 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
     rw [convergent_succ, ← hn,
       (mod_cast toNat_of_nonneg huv₀.le : ((u - ⌊ξ⌋ * v).toNat : ℚ) = u - ⌊ξ⌋ * v),
       cast_natCast, inv_div, sub_div, mul_div_cancel_right₀ _ Hv, add_sub_cancel]
-#align real.exists_rat_eq_convergent' Real.exists_rat_eq_convergent'
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
@@ -592,17 +574,14 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
     rw [cast_natCast] at *
     rw [(by norm_cast : (q.num / q.den : ℝ) = (q.num / q.den : ℚ)), Rat.num_div_den]
     exact h.trans (by rw [← one_div, sq, one_div_lt_one_div hq₂ hq₁, ← sub_pos]; ring_nf; exact hq₀)
-#align real.exists_rat_eq_convergent Real.exists_rat_eq_convergent
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
-This is the version using `generalized_contined_fraction.convergents`. -/
-theorem exists_continued_fraction_convergent_eq_rat {q : ℚ}
-    (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
-    ∃ n, (GeneralizedContinuedFraction.of ξ).convergents n = q := by
+This is the version using `GenContFract.convs`. -/
+theorem exists_convs_eq_rat {q : ℚ}
+    (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) : ∃ n, (GenContFract.of ξ).convs n = q := by
   obtain ⟨n, hn⟩ := exists_rat_eq_convergent h
-  exact ⟨n, hn.symm ▸ continued_fraction_convergent_eq_convergent ξ n⟩
-#align real.exists_continued_fraction_convergent_eq_rat Real.exists_continued_fraction_convergent_eq_rat
+  exact ⟨n, hn.symm ▸ convs_eq_convergent ξ n⟩
 
 end Real

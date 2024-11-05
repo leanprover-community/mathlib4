@@ -3,7 +3,6 @@ Copyright (c) 2022 Dhruv Bhatia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Bhatia, Eric Wieser, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -55,12 +54,10 @@ remember to force recompilation of any files that call `polyrith`.
 * See the book [*Ideals, Varieties, and Algorithms*][coxlittleOshea1997] by David Cox, John Little,
   and Donal O'Shea for the background theory on Groebner bases
 * This code was heavily inspired by the code for the tactic `linarith`, which was written by
-  Robert Lewis, who advised me on this project as part of a Computer Science independent study
+  Robert Y. Lewis, who advised me on this project as part of a Computer Science independent study
   at Brown University.
 
 -/
-
-set_option autoImplicit true
 
 namespace Mathlib.Tactic.Polyrith
 open Lean hiding Rat
@@ -131,7 +128,7 @@ def Poly.toSyntax : Poly → Unhygienic Syntax.Term
   | .neg p => do `(-$(← p.toSyntax))
 
 /-- Reifies a ring expression of type `α` as a `Poly`. -/
-partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+partial def parse {u : Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (c : Ring.Cache sα) (e : Q($α)) : AtomM Poly := do
   let els := do
     try pure <| Poly.const (← (← NormNum.derive e).toRat)
@@ -244,7 +241,7 @@ def Poly.pow' : ℕ → ℕ → Poly
   | i, k => .pow (.var i) (.const k)
 
 /-- Constructs a sum from a monadic function supplying the monomials. -/
-def Poly.sumM [Monad m] (a : Array α) (f : α → m Poly) : m Poly :=
+def Poly.sumM {m : Type → Type*} {α : Type*} [Monad m] (a : Array α) (f : α → m Poly) : m Poly :=
   a.foldlM (init := .const 0) fun p a => return p.add' (← f a)
 
 instance : FromJson Poly where
@@ -394,7 +391,6 @@ Notes:
   Many thanks to the Sage team and organization for allowing this use.
 * This tactic assumes that the user has `python3` installed and available on the path.
   (Test by opening a terminal and executing `python3 --version`.)
-  It also assumes that the `requests` library is installed: `python3 -m pip install requests`.
 
 Examples:
 
@@ -427,3 +423,5 @@ elab_rules : tactic
       replaceMainGoal []
       if !traceMe then Lean.Meta.Tactic.TryThis.addSuggestion tk stx
     | .error g => replaceMainGoal [g]
+
+end Mathlib.Tactic.Polyrith

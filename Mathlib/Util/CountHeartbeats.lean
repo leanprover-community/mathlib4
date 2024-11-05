@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
+import Mathlib.Init
 import Lean.Util.Heartbeats
 import Lean.Meta.Tactic.TryThis
 
@@ -42,8 +43,8 @@ def runTacForHeartbeats (tac : TSyntax `Lean.Parser.Tactic.tacticSeq) (revert : 
 Given a `List Nat`, return the minimum, maximum, and standard deviation.
 -/
 def variation (counts : List Nat) : List Nat :=
-  let min := counts.minimum?.getD 0
-  let max := counts.maximum?.getD 0
+  let min := counts.min?.getD 0
+  let max := counts.max?.getD 0
   let toFloat (n : Nat) := n.toUInt64.toFloat
   let toNat (f : Float) := f.toUInt64.toNat
   let counts' := counts.map toFloat
@@ -146,3 +147,7 @@ elab "count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
   -- Then run once more, keeping the state.
   let counts := (← elabForHeartbeats cmd (revert := false)) :: counts
   logVariation counts
+
+end CountHeartbeats
+
+end Mathlib

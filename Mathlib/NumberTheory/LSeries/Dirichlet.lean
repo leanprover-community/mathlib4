@@ -92,11 +92,11 @@ lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [Semiring R] {n : ℕ} (h
     (1 : ℕ → R) n = (ζ ·) n := by
   simp only [Pi.one_apply, zeta_apply, hn, ↓reduceIte, cast_one]
 
-lemma LSeries.one_convolution_eq_zeta_convolution {R : Type*} [Semiring R] (f : ℕ → R):
+lemma LSeries.one_convolution_eq_zeta_convolution {R : Type*} [Semiring R] (f : ℕ → R) :
     (1 : ℕ → R) ⍟ f = ((ArithmeticFunction.zeta ·) : ℕ → R) ⍟ f :=
   convolution_congr ArithmeticFunction.const_one_eq_zeta fun _ ↦ rfl
 
-lemma LSeries.convolution_one_eq_convolution_zeta {R : Type*} [Semiring R] (f : ℕ → R):
+lemma LSeries.convolution_one_eq_convolution_zeta {R : Type*} [Semiring R] (f : ℕ → R) :
     f ⍟ (1 : ℕ → R) = f ⍟ ((ArithmeticFunction.zeta ·) : ℕ → R) :=
   convolution_congr (fun _ ↦ rfl) ArithmeticFunction.const_one_eq_zeta
 
@@ -137,7 +137,7 @@ lemma convolution_mul_moebius {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ 
 lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
   ext n
   rcases eq_or_ne n 0 with rfl | hn
-  · simp_rw [cast_zero, χ.map_nonunit not_isUnit_zero, delta, if_false]
+  · simp_rw [cast_zero, χ.map_nonunit not_isUnit_zero, delta, reduceCtorEq, if_false]
   rcases eq_or_ne n 1 with rfl | hn'
   · simp only [cast_one, map_one, delta, ↓reduceIte]
   have : ¬ IsUnit (n : ZMod 0) := fun h ↦ hn' <| ZMod.eq_one_of_isUnit_natCast h
@@ -248,7 +248,6 @@ lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
 `re s > 1`. -/
 theorem LSeriesSummable_zeta_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re :=
   (LSeriesSummable_congr s const_one_eq_zeta).symm.trans <| LSeriesSummable_one_iff
-#align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re ArithmeticFunction.LSeriesSummable_zeta_iff
 
 @[deprecated (since := "2024-03-29")]
 alias zeta_LSeriesSummable_iff_one_lt_re := LSeriesSummable_zeta_iff
@@ -330,7 +329,7 @@ lemma convolution_vonMangoldt_zeta : ↗Λ ⍟ ↗ζ = ↗Complex.log := by
   ext n
   simpa only [zeta_apply, apply_ite, cast_zero, cast_one, LSeries.convolution_def, mul_zero,
     mul_one, mul_apply, natCoe_apply, ofReal_sum, ofReal_zero, log_apply, ofReal_log n.cast_nonneg]
-    using congr_arg (ofReal' <| · n) vonMangoldt_mul_zeta
+    using congr_arg (ofReal <| · n) vonMangoldt_mul_zeta
 
 lemma convolution_vonMangoldt_const_one : ↗Λ ⍟ 1 = ↗Complex.log :=
   (convolution_one_eq_convolution_zeta _).trans convolution_vonMangoldt_zeta
@@ -401,3 +400,7 @@ lemma LSeries_vonMangoldt_eq_deriv_riemannZeta_div {s : ℂ} (hs : 1 < s.re) :
   refine Filter.EventuallyEq.deriv_eq <| Filter.eventuallyEq_iff_exists_mem.mpr ?_
   exact ⟨{z | 1 < z.re}, (isOpen_lt continuous_const continuous_re).mem_nhds hs,
     fun _ ↦ LSeries_one_eq_riemannZeta⟩
+
+end ArithmeticFunction
+
+end vonMangoldt
