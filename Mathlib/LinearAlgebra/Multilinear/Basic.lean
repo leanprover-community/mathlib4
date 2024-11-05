@@ -1585,70 +1585,6 @@ def multilinearCurryRightEquiv :
 
 namespace MultilinearMap
 
-section
-
-variable {ι₁ ι₂ : Type*} {α : ι₁ ⊕ ι₂ → Type*}
-  (f : ∀ i₁, α (.inl i₁)) (g : ∀ i₂, α (.inr i₂))
-
-def _root_.Sum.desc : (i : ι₁ ⊕ ι₂) → α i
-  | .inl i₁ => f i₁
-  | .inr i₂ => g i₂
-
-@[simp] lemma _root_.Sum.desc_inl (i₁ : ι₁) : Sum.desc f g (.inl i₁) = f i₁ := rfl
-@[simp] lemma _root_.Sum.desc_inr (i₂ : ι₂) : Sum.desc f g (.inr i₂) = g i₂ := rfl
-
-lemma _root_.Sum.desc_eq_elim (β : Type*) (f : ι₁ → β) (g : ι₂ → β) :
-    Sum.desc (α := fun _ ↦ β) f g = Sum.elim f g := by
-  ext (_ | _) <;> rfl
-
-@[simp]
-lemma _root_.Sum.desc_update₁ [DecidableEq ι₁] [DecidableEq ι₂] (i₁ : ι₁) (x : α (.inl i₁)) :
-    Sum.desc (update f i₁ x) g =
-      update (Sum.desc f g) (.inl i₁) x := by
-  ext (j₁ | _)
-  · rw [Sum.desc_inl]
-    by_cases h : j₁ = i₁
-    · subst h
-      simp
-    · rw [Function.update_noteq h, Function.update_noteq (by simpa using h), Sum.desc_inl]
-  · rfl
-
-@[simp]
-lemma _root_.Sum.desc_update₂ [DecidableEq ι₁] [DecidableEq ι₂] (i₂ : ι₂) (y : α (.inr i₂)) :
-    Sum.desc f (Function.update g i₂ y) =
-      update (Sum.desc f g) (.inr i₂) y := by
-  ext (_ | j₂)
-  · rfl
-  · rw [Sum.desc_inr]
-    by_cases h : j₂ = i₂
-    · subst h
-      simp
-    · rw [update_noteq h, update_noteq (by simpa using h), Sum.desc_inr]
-
-end
-
-@[simp]
-theorem _root_.Sum.update_inl_comp_inl_apply {α β : Type*} {γ : α ⊕ β → Type*}
-    [DecidableEq α] [DecidableEq (α ⊕ β)] {f : (i : α ⊕ β) → γ i} {i : α}
-    {x : γ (.inl i)} (j : α) :
-    update f (.inl i) x (Sum.inl j) =
-      update (fun j ↦ f (.inl j)) i x j := by
-  by_cases h : j = i
-  · subst h
-    simp
-  · rw [update_noteq (by simpa using h), update_noteq h]
-
-@[simp]
-theorem _root_.Sum.update_inr_comp_inr_apply {α β : Type*} {γ : α ⊕ β → Type*}
-    [DecidableEq β] [DecidableEq (α ⊕ β)] {f : (i : α ⊕ β) → γ i} {i : β}
-    {x : γ (.inr i)} (j : β) :
-    update f (.inr i) x (Sum.inr j) =
-      update (fun j ↦ f (.inr j)) i x j := by
-  by_cases h : j = i
-  · subst h
-    simp
-  · rw [update_noteq (by simpa using h), update_noteq h]
-
 variable {ι' : Type*} {N : (ι ⊕ ι') → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
 variable {R M₂}
 
@@ -1660,7 +1596,7 @@ def currySumEquiv : MultilinearMap R N M₂ ≃ₗ[R]
       (MultilinearMap R (fun (i : ι') ↦ N (.inr i)) M₂) where
   toFun f :=
     { toFun := fun u ↦
-        { toFun := fun v ↦ f (Sum.desc u v)
+        { toFun := fun v ↦ f (Sum.rec u v)
           map_add' := by intros; letI := Classical.decEq ι; simp
           map_smul' := by intros; letI := Classical.decEq ι; simp }
       map_add' := by intros; letI := Classical.decEq ι'; aesop
@@ -1687,7 +1623,7 @@ def currySumEquiv : MultilinearMap R N M₂ ≃ₗ[R]
 @[simp]
 theorem currySumEquiv_apply (f : MultilinearMap R N M₂)
     (u : (i : ι) → N (Sum.inl i)) (v : (i : ι') → N (Sum.inr i)) :
-    currySumEquiv f u v = f (Sum.desc u v) := rfl
+    currySumEquiv f u v = f (Sum.rec u v) := rfl
 
 @[simp]
 theorem currySumEquiv_symm_apply
@@ -1718,10 +1654,7 @@ variable {R M₂ M'}
 theorem curryFinFinset_apply {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l)
     (f : MultilinearMap R (fun _ : Fin n => M') M₂) (mk : Fin k → M') (ml : Fin l → M') :
     curryFinFinset R M₂ M' hk hl f mk ml =
-      f (fun i ↦ Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i)) := by
-  dsimp [curryFinFinset]
-  simp only [Sum.desc_eq_elim]
-
+      f (fun i ↦ Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i)) := rfl
 
 @[simp]
 theorem curryFinFinset_symm_apply {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
