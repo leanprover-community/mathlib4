@@ -25,7 +25,7 @@ the indicator function of `closedBall 0 1` with a function as above with `s = ba
 
 noncomputable section
 
-open Set Metric TopologicalSpace Function Asymptotics MeasureTheory FiniteDimensional
+open Set Metric TopologicalSpace Function Asymptotics MeasureTheory Module
   ContinuousLinearMap Filter MeasureTheory.Measure Bornology
 
 open scoped Pointwise Topology NNReal Convolution

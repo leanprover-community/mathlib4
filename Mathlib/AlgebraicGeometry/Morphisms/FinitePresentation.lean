@@ -49,6 +49,10 @@ instance : HasRingHomProperty @LocallyOfFinitePresentation RingHom.FinitePresent
 instance (priority := 900) locallyOfFinitePresentation_of_isOpenImmersion [IsOpenImmersion f] :
     LocallyOfFinitePresentation f :=
   HasRingHomProperty.of_isOpenImmersion
+    RingHom.finitePresentation_holdsForLocalizationAway.containsIdentities
+
+instance : MorphismProperty.IsStableUnderComposition @LocallyOfFinitePresentation :=
+  HasRingHomProperty.stableUnderComposition RingHom.finitePresentation_stableUnderComposition
 
 instance locallyOfFinitePresentation_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : LocallyOfFinitePresentation f] [hg : LocallyOfFinitePresentation g] :

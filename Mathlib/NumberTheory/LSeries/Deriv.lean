@@ -20,7 +20,7 @@ import Mathlib.Analysis.Complex.HalfPlane
 * We prove similar results for iterated derivatives (`LSeries.iteratedDeriv`).
 
 * We use this to show that `LSeries f` is holomorphic on the right half-plane of
-  absolute convergence (`LSeries.analyticOn`).
+  absolute convergence (`LSeries.analyticOnNhd`).
 
 ## Implementation notes
 
@@ -151,6 +151,10 @@ lemma LSeries_differentiableOn (f : ℕ → ℂ) :
   fun _ hz ↦ (LSeries_hasDerivAt hz).differentiableAt.differentiableWithinAt
 
 /-- The L-series of `f` is holomorphic on its open half-plane of absolute convergence. -/
+lemma LSeries_analyticOnNhd (f : ℕ → ℂ) :
+    AnalyticOnNhd ℂ (LSeries f) {s | abscissaOfAbsConv f < s.re} :=
+  (LSeries_differentiableOn f).analyticOnNhd <| isOpen_re_gt_EReal _
+
 lemma LSeries_analyticOn (f : ℕ → ℂ) :
     AnalyticOn ℂ (LSeries f) {s | abscissaOfAbsConv f < s.re} :=
-  (LSeries_differentiableOn f).analyticOn <| isOpen_re_gt_EReal _
+  (LSeries_analyticOnNhd f).analyticOn
