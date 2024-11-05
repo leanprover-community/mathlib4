@@ -20,6 +20,8 @@ namespace Mathlib.Meta.Positivity
 
 open Qq Lean Meta Finset
 
+attribute [local instance] NormNum.monadLiftOptionMetaM_mathlib
+
 /-- Extension for `Finset.card`. `#s` is positive if `s` is nonempty.
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/

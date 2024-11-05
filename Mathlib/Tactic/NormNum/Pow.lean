@@ -24,6 +24,7 @@ open Meta
 
 namespace Meta.NormNum
 open Qq
+attribute [local instance] monadLiftOptionMetaM_mathlib
 
 variable {a b c : ℕ}
 

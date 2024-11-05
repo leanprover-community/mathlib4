@@ -25,6 +25,8 @@ namespace Mathlib.Meta.NormNum
 
 open Lean.Meta Qq
 
+attribute [local instance] monadLiftOptionMetaM_mathlib
+
 /-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`. -/
 def inferCharZeroOfRing {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
     MetaM Q(CharZero $α) :=

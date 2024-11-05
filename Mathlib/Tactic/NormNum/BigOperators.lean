@@ -42,6 +42,8 @@ open Lean hiding Rat mkRat
 open Meta
 open Qq
 
+attribute [local instance] NormNum.monadLiftOptionMetaM_mathlib
+
 variable {u v : Level}
 
 /-- This represents the result of trying to determine whether the given expression `n : Q(ℕ)`
