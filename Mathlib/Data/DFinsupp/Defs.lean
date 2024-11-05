@@ -3,16 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.GroupWithZero.Action.Pi
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Data.Finset.Preimage
-import Mathlib.Data.Fintype.Quotient
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Dependent functions with finite support
@@ -47,6 +38,8 @@ the `Add` instance as noncomputable. This design difference is independent of th
 definitions, or introduce two more definitions for the other combinations of decisions.
 -/
 
+assert_not_exists Finset.prod
+assert_not_exists Submonoid
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
@@ -237,14 +230,17 @@ def coeFnAddMonoidHom [∀ i, AddZeroClass (β i)] : (Π₀ i, β i) →+ ∀ i,
   map_zero' := coe_zero
   map_add' := coe_add
 
+/-
 /-- Evaluation at a point is an `AddMonoidHom`. This is the finitely-supported version of
 `Pi.evalAddMonoidHom`. -/
 def evalAddMonoidHom [∀ i, AddZeroClass (β i)] (i : ι) : (Π₀ i, β i) →+ β i :=
   (Pi.evalAddMonoidHom β i).comp coeFnAddMonoidHom
+-/
 
 instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
+/-
 @[simp, norm_cast]
 theorem coe_finset_sum {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) :
     ⇑(∑ a ∈ s, g a) = ∑ a ∈ s, ⇑(g a) :=
@@ -254,6 +250,7 @@ theorem coe_finset_sum {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : �
 theorem finset_sum_apply {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) (i : ι) :
     (∑ a ∈ s, g a) i = ∑ a ∈ s, g a i :=
   map_sum (evalAddMonoidHom i) g s
+-/
 
 instance [∀ i, AddGroup (β i)] : Neg (Π₀ i, β i) :=
   ⟨fun f => f.mapRange (fun _ => Neg.neg) fun _ => neg_zero⟩
@@ -293,6 +290,7 @@ instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
+/-
 /-- Dependent functions with finite support inherit a semiring action from an action on each
 coordinate. -/
 instance [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] : SMul γ (Π₀ i, β i) :=
@@ -335,7 +333,7 @@ instance module [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (�
   { inferInstanceAs (DistribMulAction γ (Π₀ i, β i)) with
     zero_smul := fun c => ext fun i => by simp only [smul_apply, zero_smul, zero_apply]
     add_smul := fun c x y => ext fun i => by simp only [add_apply, smul_apply, add_smul] }
-
+-/
 
 end Algebra
 
@@ -375,11 +373,13 @@ theorem filter_add [∀ i, AddZeroClass (β i)] (p : ι → Prop) [DecidablePred
   ext
   simp [ite_add_zero]
 
+/-
 @[simp]
 theorem filter_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] (p : ι → Prop)
     [DecidablePred p] (r : γ) (f : Π₀ i, β i) : (r • f).filter p = r • f.filter p := by
   ext
   simp [smul_apply, smul_ite]
+-/
 
 variable (γ β)
 
@@ -391,6 +391,7 @@ def filterAddMonoidHom [∀ i, AddZeroClass (β i)] (p : ι → Prop) [Decidable
   map_zero' := filter_zero p
   map_add' := filter_add p
 
+/-
 /-- `DFinsupp.filter` as a `LinearMap`. -/
 @[simps]
 def filterLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] (p : ι → Prop)
@@ -398,6 +399,7 @@ def filterLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module �
   toFun := filter p
   map_add' := filter_add p
   map_smul' := filter_smul p
+-/
 
 variable {γ β}
 
@@ -437,11 +439,13 @@ theorem subtypeDomain_add [∀ i, AddZeroClass (β i)] {p : ι → Prop} [Decida
     (v v' : Π₀ i, β i) : (v + v').subtypeDomain p = v.subtypeDomain p + v'.subtypeDomain p :=
   DFunLike.coe_injective rfl
 
+/-
 @[simp]
 theorem subtypeDomain_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
     {p : ι → Prop} [DecidablePred p] (r : γ) (f : Π₀ i, β i) :
     (r • f).subtypeDomain p = r • f.subtypeDomain p :=
   DFunLike.coe_injective rfl
+-/
 
 variable (γ β)
 
@@ -453,6 +457,7 @@ def subtypeDomainAddMonoidHom [∀ i, AddZeroClass (β i)] (p : ι → Prop) [De
   map_zero' := subtypeDomain_zero
   map_add' := subtypeDomain_add
 
+/-
 /-- `DFinsupp.subtypeDomain` as a `LinearMap`. -/
 @[simps]
 def subtypeDomainLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)]
@@ -460,6 +465,7 @@ def subtypeDomainLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, M
   toFun := subtypeDomain p
   map_add' := subtypeDomain_add
   map_smul' := subtypeDomain_smul
+-/
 
 variable {γ β}
 
@@ -867,6 +873,7 @@ theorem induction₂ {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 
       · simp [H]
     Eq.recOn h4 <| ha i b f h1 h2 h3
 
+/-
 @[simp]
 theorem add_closure_iUnion_range_single :
     AddSubmonoid.closure (⋃ i : ι, Set.range (single i : β i → Π₀ i, β i)) = ⊤ :=
@@ -876,7 +883,9 @@ theorem add_closure_iUnion_range_single :
     exact fun a b f _ _ hf =>
       AddSubmonoid.add_mem _
         (AddSubmonoid.subset_closure <| Set.mem_iUnion.2 ⟨a, Set.mem_range_self _⟩) hf
+-/
 
+/-
 /-- If two additive homomorphisms from `Π₀ i, β i` are equal on each `single a b`, then
 they are equal. -/
 theorem addHom_ext {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+ γ⦄
@@ -885,7 +894,9 @@ theorem addHom_ext {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+
   simp only [Set.mem_iUnion, Set.mem_range] at hf
   rcases hf with ⟨x, y, rfl⟩
   apply H
+-/
 
+/-
 /-- If two additive homomorphisms from `Π₀ i, β i` are equal on each `single a b`, then
 they are equal.
 
@@ -894,6 +905,7 @@ See note [partially-applied ext lemmas]. -/
 theorem addHom_ext' {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+ γ⦄
     (H : ∀ x, f.comp (singleAddHom β x) = g.comp (singleAddHom β x)) : f = g :=
   addHom_ext fun x => DFunLike.congr_fun (H x)
+-/
 
 end AddMonoid
 
@@ -924,6 +936,7 @@ def mkAddGroupHom [∀ i, AddGroup (β i)] (s : Finset ι) :
   map_zero' := mk_zero
   map_add' _ _ := mk_add
 
+/-
 section
 
 variable [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
@@ -942,6 +955,7 @@ theorem single_smul {i : ι} (c : γ) (x : β i) : single i (c • x) = c • si
     · rw [smul_zero]
 
 end
+-/
 
 section SupportBasic
 
@@ -1143,10 +1157,12 @@ theorem support_add [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decidable 
 theorem support_neg [∀ i, AddGroup (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] {f : Π₀ i, β i} :
     support (-f) = support f := by ext i; simp
 
+/-
 theorem support_smul {γ : Type w} [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)]
     [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (b : γ) (v : Π₀ i, β i) :
     (b • v).support ⊆ v.support :=
   support_mapRange
+-/
 
 instance [∀ i, Zero (β i)] [∀ i, DecidableEq (β i)] : DecidableEq (Π₀ i, β i) := fun f g =>
   decidable_of_iff (f.support = g.support ∧ ∀ i ∈ f.support, f i = g i)
@@ -1190,12 +1206,14 @@ theorem comapDomain_add [∀ i, AddZeroClass (β i)] (h : κ → ι) (hh : Funct
   ext
   rw [add_apply, comapDomain_apply, comapDomain_apply, comapDomain_apply, add_apply]
 
+/-
 @[simp]
 theorem comapDomain_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
     (h : κ → ι) (hh : Function.Injective h) (r : γ) (f : Π₀ i, β i) :
     comapDomain h hh (r • f) = r • comapDomain h hh f := by
   ext
   rw [smul_apply, comapDomain_apply, smul_apply, comapDomain_apply]
+-/
 
 @[simp]
 theorem comapDomain_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i)] (h : κ → ι)
@@ -1234,12 +1252,14 @@ theorem comapDomain'_add [∀ i, AddZeroClass (β i)] (h : κ → ι) {h' : ι �
   ext
   rw [add_apply, comapDomain'_apply, comapDomain'_apply, comapDomain'_apply, add_apply]
 
+/-
 @[simp]
 theorem comapDomain'_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
     (h : κ → ι) {h' : ι → κ} (hh' : Function.LeftInverse h' h) (r : γ) (f : Π₀ i, β i) :
     comapDomain' h hh' (r • f) = r • comapDomain' h hh' f := by
   ext
   rw [smul_apply, comapDomain'_apply, smul_apply, comapDomain'_apply]
+-/
 
 @[simp]
 theorem comapDomain'_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i)] (h : κ → ι)
@@ -1287,12 +1307,15 @@ instance addMonoid₂ [∀ i j, AddMonoid (δ i j)] : AddMonoid (Π₀ (i : ι) 
   inferInstance
   -- @DFinsupp.addMonoid ι (fun i => Π₀ j, δ i j) _
 
+/-
 instance distribMulAction₂ [Monoid γ] [∀ i j, AddMonoid (δ i j)]
     [∀ i j, DistribMulAction γ (δ i j)] : DistribMulAction γ (Π₀ (i : ι) (j : α i), δ i j) :=
   @DFinsupp.distribMulAction ι _ (fun i => Π₀ j, δ i j) _ _ _
+-/
 
 variable [DecidableEq ι]
 
+/-
 /-- The natural map between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`. -/
 def sigmaCurry [∀ i j, Zero (δ i j)] (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
     Π₀ (i) (j), δ i j where
@@ -1321,12 +1344,14 @@ theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i : Σ _, 
   ext (i j)
   rfl
 
+/-
 @[simp]
 theorem sigmaCurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)] [∀ i j, DistribMulAction γ (δ i j)]
     (r : γ) (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
     sigmaCurry (r • f) = r • sigmaCurry f := by
   ext (i j)
   rfl
+-/
 
 @[simp]
 theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
@@ -1387,12 +1412,14 @@ theorem sigmaUncurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i) (j), 
     sigmaUncurry (f + g) = sigmaUncurry f + sigmaUncurry g :=
   DFunLike.coe_injective rfl
 
+/-
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem sigmaUncurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)]
     [∀ i j, DistribMulAction γ (δ i j)]
     (r : γ) (f : Π₀ (i) (j), δ i j) : sigmaUncurry (r • f) = r • sigmaUncurry f :=
   DFunLike.coe_injective rfl
+-/
 
 @[simp]
 theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] [∀ i, DecidableEq (α i)]
@@ -1424,6 +1451,7 @@ def sigmaCurryEquiv [∀ i j, Zero (δ i j)] [DecidableEq ι] :
   right_inv f := by
     ext i j
     rw [sigmaCurry_apply, sigmaUncurry_apply]
+-/
 
 end SigmaCurry
 
@@ -1491,12 +1519,15 @@ theorem equivProdDFinsupp_add [∀ i, AddZeroClass (α i)] (f g : Π₀ i, α i)
     equivProdDFinsupp (f + g) = equivProdDFinsupp f + equivProdDFinsupp g :=
   Prod.ext (add_apply _ _ _) (comapDomain_add _ (Option.some_injective _) _ _)
 
+/-
 theorem equivProdDFinsupp_smul [Monoid γ] [∀ i, AddMonoid (α i)] [∀ i, DistribMulAction γ (α i)]
     (r : γ) (f : Π₀ i, α i) : equivProdDFinsupp (r • f) = r • equivProdDFinsupp f :=
   Prod.ext (smul_apply _ _ _) (comapDomain_smul _ (Option.some_injective _) _ _)
+-/
 
 end Equiv
 
+/-
 section ProdAndSum
 
 variable [DecidableEq ι]
@@ -1560,13 +1591,16 @@ theorem prod_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ : ι�
       f₂.prod fun i₂ x₂ => f₁.prod fun i₁ x₁ => h i₁ x₁ i₂ x₂ :=
   Finset.prod_comm
 
+/-
 @[simp]
 theorem sum_apply {ι} {β : ι → Type v} {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁}
     [∀ i₁, Zero (β₁ i₁)] [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ i, AddCommMonoid (β i)]
     {f : Π₀ i₁, β₁ i₁} {g : ∀ i₁, β₁ i₁ → Π₀ i, β i} {i₂ : ι} :
     (f.sum g) i₂ = f.sum fun i₁ b => g i₁ b i₂ :=
   map_sum (evalAddMonoidHom i₂) _ f.support
+-/
 
+/-
 theorem support_sum {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]
     [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ i, AddCommMonoid (β i)]
     [∀ (i) (x : β i), Decidable (x ≠ 0)] {f : Π₀ i₁, β₁ i₁} {g : ∀ i₁, β₁ i₁ → Π₀ i, β i} :
@@ -1578,6 +1612,7 @@ theorem support_sum {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → T
     let ⟨i, hi, Ne⟩ := Finset.exists_ne_zero_of_sum_ne_zero h
     ⟨i, mem_support_iff.1 hi, Ne⟩
   simpa [Finset.subset_iff, mem_support_iff, Finset.mem_biUnion, sum_apply] using this
+-/
 
 @[to_additive (attr := simp)]
 theorem prod_one [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
@@ -1790,6 +1825,7 @@ theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ :
     AddMonoidHom.flip_apply, Trunc.lift, toFun_eq_coe, ZeroHom.coe_mk, coe_mk']
   exact Finset.sum_comm
 
+/-
 /-- The `DFinsupp` version of `Finsupp.liftAddHom`,-/
 @[simps apply symm_apply]
 def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
@@ -1850,6 +1886,7 @@ theorem sum_sub_index [∀ i, AddGroup (β i)] [∀ (i) (x : β i), Decidable (x
   have := (liftAddHom (β := β) fun a => AddMonoidHom.ofMapSub (h a) (h_sub a)).map_sub f g
   rw [liftAddHom_apply, sumAddHom_apply, sumAddHom_apply, sumAddHom_apply] at this
   exact this
+-/
 
 @[to_additive]
 theorem prod_finset_sum_index {γ : Type w} {α : Type x} [∀ i, AddCommMonoid (β i)]
@@ -1870,12 +1907,14 @@ theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ �
     (f.sum g).prod h = f.prod fun i b => (g i b).prod h :=
   (prod_finset_sum_index h_zero h_add).symm
 
+/-
 @[simp]
 theorem sum_single [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] {f : Π₀ i, β i} :
     f.sum single = f := by
   have := DFunLike.congr_fun (liftAddHom_singleAddHom (β := β)) f
   rw [liftAddHom_apply, sumAddHom_apply] at this
   exact this
+-/
 
 @[to_additive]
 theorem prod_subtypeDomain_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
@@ -1896,6 +1935,7 @@ theorem subtypeDomain_finsupp_sum {ι} {β : ι → Type v} {δ : γ → Type x}
   subtypeDomain_sum
 
 end ProdAndSum
+-/
 
 /-! ### Bundled versions of `DFinsupp.mapRange`
 
@@ -1983,6 +2023,7 @@ Lemmas for `LinearMap` and `LinearEquiv` are in another file.
 -/
 
 
+/-
 section
 
 variable [DecidableEq ι]
@@ -2013,6 +2054,7 @@ variable {R S : Type*}
 
 open DFinsupp
 
+/-
 @[simp]
 theorem map_dfinsupp_sumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R →+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
@@ -2029,6 +2071,7 @@ theorem coe_dfinsupp_sumAddHom [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZer
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) :
     ⇑(sumAddHom g f) = sumAddHom (fun i => (coeFn R S).comp (g i)) f :=
   map_dfinsupp_sumAddHom (coeFn R S) f g
+-/
 
 end AddMonoidHom
 
@@ -2038,11 +2081,13 @@ variable {R S : Type*}
 
 open DFinsupp
 
+/-
 @[simp]
 theorem map_dfinsupp_sumAddHom [NonAssocSemiring R] [NonAssocSemiring S] [∀ i, AddZeroClass (β i)]
     (h : R →+* S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
+-/
 
 end RingHom
 
@@ -2052,16 +2097,20 @@ variable {R S : Type*}
 
 open DFinsupp
 
+/-
 @[simp]
 theorem map_dfinsupp_sumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R ≃+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
+-/
 
 end AddEquiv
 
 end
+-/
 
+/-
 section FiniteInfinite
 
 instance DFinsupp.fintype {ι : Sort _} {π : ι → Sort _} [DecidableEq ι] [∀ i, Zero (π i)]
@@ -2086,5 +2135,6 @@ instance DFinsupp.infinite_of_right {ι : Sort _} {π : ι → Sort _} [∀ i, I
   DFinsupp.infinite_of_exists_right (Classical.arbitrary ι)
 
 end FiniteInfinite
+-/
 
 set_option linter.style.longFile 2200
