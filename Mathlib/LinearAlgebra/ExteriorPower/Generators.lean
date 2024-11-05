@@ -17,7 +17,6 @@ This result also hold if we consider only families `x : Fin n → ι` which corr
 to injective maps, and in case `ι` has a linear order, we may also consider
 only order embeddings `x : Fin n → ι`.
 
-
 -/
 
 variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M] (n : ℕ)
