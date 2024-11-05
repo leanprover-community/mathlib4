@@ -19,6 +19,32 @@ are finitely generated, then so is `⨂[R] i, M i`.
 
 -/
 
+namespace Equiv
+
+/-- The bijection `Unit ⊕ (({i₀})ᶜ : Set ι) ≃ ι` for any `i₀ : ι` -/
+noncomputable def sumSingletonComplEquiv {ι : Type*} (i₀ : ι) :
+    Unit ⊕ (({i₀})ᶜ : Set ι) ≃ ι :=
+  .ofBijective
+    (fun x ↦ match x with
+      | .inl _ => i₀
+      | .inr ⟨i, _⟩ => i) (by
+  constructor
+  · rintro (_ | _) (_ | _) <;> aesop
+  · intro i
+    by_cases h : i = i₀
+    · exact ⟨.inl Unit.unit, h.symm⟩
+    · exact ⟨.inr ⟨i, by simpa using h⟩, rfl⟩)
+
+@[simp]
+lemma sumSingletonComplEquiv_inl {ι : Type*} (i₀ : ι) (u : Unit):
+    sumSingletonComplEquiv i₀ (.inl u) = i₀ := rfl
+
+@[simp]
+lemma sumSingletonComplEquiv_inr {ι : Type*} (i₀ : ι) (i : ({i₀}ᶜ : Set ι)) :
+    sumSingletonComplEquiv i₀ (.inr i) = i := rfl
+
+end Equiv
+
 -- to be moved
 lemma Nat.card_compl_add_card {ι : Type*} (S : Set ι) [Finite ι] :
     Nat.card (Sᶜ : Set ι) + Nat.card S = Nat.card ι := by
@@ -71,21 +97,33 @@ variable (R : Type*) [CommRing R]
 
 section equivTensorPiTensorComplSingleto
 
-variable {ι : Type*} [DecidableEq ι] (M : ι → Type*)
+variable {ι : Type*} (M : ι → Type*)
   [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
 
 /-- The linear equivalence between `⨂[R] i, M i` and the tensor product of `M i₀`
 (for some `i₀ : ι`) and the pi tensor product indexed by the complement of `{i₀}`. -/
-def equivTensorPiTensorComplSingleton (i₀ : ι) :
-    (⨂[R] i, M i) ≃ₗ[R] (M i₀ ⊗[R] ⨂[R] (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) := sorry
+noncomputable def equivTensorPiTensorComplSingleton (i₀ : ι) :
+    (⨂[R] i, M i) ≃ₗ[R] (M i₀ ⊗[R] ⨂[R] (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) :=
+  ((reindex R (s := M) (e := (Equiv.sumSingletonComplEquiv i₀).symm)).trans
+    (tmulEquivDep R
+        (fun i => M (Equiv.sumSingletonComplEquiv i₀ i))).symm).trans
+      (LinearEquiv.rTensor _ (subsingletonEquiv (R := R) (M := M i₀) Unit.unit))
+
+variable (i₀ : ι)
 
 @[simp]
 lemma equivTensorPiTensorComplSingleton_tprod (i₀ : ι) (m : ∀ i, M i) :
     equivTensorPiTensorComplSingleton R M i₀ (⨂ₜ[R] i, m i) =
-      m i₀ ⊗ₜ (⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j) := sorry
+      m i₀ ⊗ₜ (⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j) := by
+  dsimp [equivTensorPiTensorComplSingleton]
+  erw [reindex_tprod (R := R) (s := M), tmulEquivDep_symm_apply]
+  erw [LinearEquiv.rTensor_tmul]
+  simp only [Equiv.sumSingletonComplEquiv_inl, Equiv.symm_symm, subsingletonEquiv_apply_tprod,
+    Equiv.sumSingletonComplEquiv_inr]
+  rfl
 
 @[simp]
-lemma equivTensorPiTensorComplSingleton_symm_tmul (i₀ : ι)
+lemma equivTensorPiTensorComplSingleton_symm_tmul [DecidableEq ι] (i₀ : ι)
     (x : M i₀) (m : ∀ (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) :
     (equivTensorPiTensorComplSingleton R M i₀).symm
       (x ⊗ₜ (⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j)) =
