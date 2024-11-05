@@ -2261,7 +2261,6 @@ import Mathlib.Data.Complex.Orientation
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Countable.Small
-import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.DFinsupp.BigOperators
 import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.DFinsupp.Encodable
