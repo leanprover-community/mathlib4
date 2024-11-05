@@ -83,8 +83,8 @@ class IsSplitEpi {X Y : C} (f : X ⟶ Y) : Prop where
   /-- There is a splitting -/
   exists_splitEpi : Nonempty (SplitEpi f)
 
-@[simps]
 /-- A composition of `SplitEpi` is a split `SplitEpi`. --/
+@[simps]
 def SplitEpi.comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (sef : SplitEpi f) (seg : SplitEpi g) :
     SplitEpi (f ≫ g) where
   section_ := seg.section_ ≫ sef.section_
