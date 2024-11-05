@@ -123,14 +123,12 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
 
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do
-  let e ← inferType prf
-  let (_, _, t, _) ← e.ineq?
+  let (_, _, t, _) ← (← inferType prf).ineq?
   return t
 
 /-- If `prf` is a proof of `t R s`, `typeOfIneqProof prf` returns the type of `t`. -/
 def typeOfIneqProof (prf : Expr) : MetaM Expr := do
-  let e ← inferType prf
-  let (_, ty, _) ← e.ineq?
+  let (_, ty, _) ← (← inferType prf).ineq?
   return ty
 
 /--
