@@ -123,7 +123,7 @@ lemma IsVisible.eq_of_mem_interior (hsxy : IsVisible 𝕜 s x y) (hy : y ∈ int
 /-- One cannot see any point of an open set. -/
 lemma IsOpen.eq_of_isVisible_of_left_mem (hs : IsOpen s) (hsxy : IsVisible 𝕜 s x y) (hy : y ∈ s) :
     x = y :=
-  hsxy.eq_of_mem_interior (by simpa [hs])
+  hsxy.eq_of_mem_interior (by simpa [hs.interior_eq])
 
 end Module
 
