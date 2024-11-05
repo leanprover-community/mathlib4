@@ -43,7 +43,6 @@ instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
 instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
 instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
 instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
-instance : IsWellOrder ℕ∞ (· < ·) where
 
 variable {m n : ℕ∞}
 
@@ -283,5 +282,14 @@ lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} :
     1 ≤ n ↔ n ≠ 0 :=
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
     fun h ↦ add_one_nat_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
+
+lemma add_one_pos : 0 < n + 1 :=
+  succ_def n ▸ Order.bot_lt_succ n
+
+lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < m :=
+  WithTop.add_lt_add_iff_right h
+
+lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
+  WithTop.add_lt_add_iff_left h
 
 end ENat

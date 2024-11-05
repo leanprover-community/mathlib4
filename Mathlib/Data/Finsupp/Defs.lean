@@ -171,7 +171,7 @@ theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
 theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 := by
   simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne]
 
-theorem card_support_eq_zero {f : α →₀ M} : card f.support = 0 ↔ f = 0 := by simp
+theorem card_support_eq_zero {f : α →₀ M} : #f.support = 0 ↔ f = 0 := by simp
 
 instance instDecidableEq [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
   decidable_of_iff (f.support = g.support ∧ ∀ a ∈ f.support, f a = g a) ext_iff'.symm
@@ -388,11 +388,11 @@ theorem support_eq_singleton' {f : α →₀ M} {a : α} :
     fun ⟨_b, hb, hf⟩ => hf.symm ▸ support_single_ne_zero _ hb⟩
 
 theorem card_support_eq_one {f : α →₀ M} :
-    card f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) := by
+    #f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) := by
   simp only [card_eq_one, support_eq_singleton]
 
 theorem card_support_eq_one' {f : α →₀ M} :
-    card f.support = 1 ↔ ∃ a, ∃ b ≠ 0, f = single a b := by
+    #f.support = 1 ↔ ∃ a, ∃ b ≠ 0, f = single a b := by
   simp only [card_eq_one, support_eq_singleton']
 
 theorem support_subset_singleton {f : α →₀ M} {a : α} : f.support ⊆ {a} ↔ f = single a (f a) :=
@@ -403,11 +403,11 @@ theorem support_subset_singleton' {f : α →₀ M} {a : α} : f.support ⊆ {a}
     rw [hb, support_subset_singleton, single_eq_same]⟩
 
 theorem card_support_le_one [Nonempty α] {f : α →₀ M} :
-    card f.support ≤ 1 ↔ ∃ a, f = single a (f a) := by
+    #f.support ≤ 1 ↔ ∃ a, f = single a (f a) := by
   simp only [card_le_one_iff_subset_singleton, support_subset_singleton]
 
 theorem card_support_le_one' [Nonempty α] {f : α →₀ M} :
-    card f.support ≤ 1 ↔ ∃ a b, f = single a b := by
+    #f.support ≤ 1 ↔ ∃ a b, f = single a b := by
   simp only [card_le_one_iff_subset_singleton, support_subset_singleton']
 
 @[simp]
@@ -622,7 +622,7 @@ otherwise a better set representation is often available. -/
 def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) : α →₀ M where
   support :=
     haveI := Classical.decEq M
-    s.filter (f · ≠ 0)
+    {a ∈ s | f a ≠ 0}
   toFun := f
   mem_support_toFun := by classical simpa
 
@@ -637,14 +637,13 @@ theorem support_onFinset_subset {s : Finset α} {f : α → M} {hf} :
     (onFinset s f hf).support ⊆ s := by
   classical convert filter_subset (f · ≠ 0) s
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_support_onFinset {s : Finset α} {f : α → M} (hf : ∀ a : α, f a ≠ 0 → a ∈ s) {a : α} :
     a ∈ (Finsupp.onFinset s f hf).support ↔ f a ≠ 0 := by
   rw [Finsupp.mem_support_iff, Finsupp.onFinset_apply]
 
 theorem support_onFinset [DecidableEq M] {s : Finset α} {f : α → M}
     (hf : ∀ a : α, f a ≠ 0 → a ∈ s) :
-    (Finsupp.onFinset s f hf).support = s.filter fun a => f a ≠ 0 := by
+    (Finsupp.onFinset s f hf).support = {a ∈ s | f a ≠ 0} := by
   dsimp [onFinset]; congr
 
 end OnFinset

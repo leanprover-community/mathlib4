@@ -5,8 +5,10 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Subgroup.ZPowers
+import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Data.Fintype.Card
+import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Conjugation action of a group on itself

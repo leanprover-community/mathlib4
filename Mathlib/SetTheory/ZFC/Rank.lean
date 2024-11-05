@@ -3,7 +3,7 @@ Copyright (c) 2024 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Rank
 import Mathlib.SetTheory.ZFC.Basic
 
 /-!
@@ -116,7 +116,7 @@ theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = IsWellFounded.rank (α := PS
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
   apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le _) <;> intro h
   · rw [lt_lift_iff]
-    rintro ⟨o, rfl, h⟩
+    rintro ⟨o, h, rfl⟩
     simpa [Ordinal.lt_iSup] using lt_rank_iff.1 h
   · simpa using rank_lt_of_mem h.2
 
@@ -202,7 +202,7 @@ theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = IsWellFounded.rank (α := ZF
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
   apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le _) <;> intro h
   · rw [lt_lift_iff]
-    rintro ⟨o, rfl, h⟩
+    rintro ⟨o, h, rfl⟩
     simpa [Ordinal.lt_iSup] using lt_rank_iff.1 h
   · simpa using rank_lt_of_mem h.2
 

@@ -93,6 +93,8 @@ lemma coe_eq_one : (s : Set α) = 1 ↔ s = 1 := coe_eq_singleton
 theorem one_subset : (1 : Finset α) ⊆ s ↔ (1 : α) ∈ s :=
   singleton_subset_iff
 
+-- TODO: This would be a good simp lemma scoped to `Pointwise`, but it seems `@[simp]` can't be
+-- scoped
 @[to_additive]
 theorem singleton_one : ({1} : Finset α) = 1 :=
   rfl
@@ -168,6 +170,12 @@ lemma max'_one [LinearOrder α] : (1 : Finset α).max' one_nonempty = 1 := rfl
 
 @[to_additive (attr := simp)]
 lemma min'_one [LinearOrder α] : (1 : Finset α).min' one_nonempty = 1 := rfl
+
+@[to_additive (attr := simp)]
+lemma image_op_one [DecidableEq α] : (1 : Finset α).image op = 1 := rfl
+
+@[to_additive (attr := simp)]
+lemma map_op_one : (1 : Finset α).map opEquiv.toEmbedding = 1 := rfl
 
 end One
 
@@ -254,6 +262,10 @@ lemma inf'_inv [SemilatticeInf β] {s : Finset α} (hs : s⁻¹.Nonempty) (f : �
 
 @[to_additive] lemma image_op_inv (s : Finset α) : s⁻¹.image op = (s.image op)⁻¹ :=
   image_comm op_inv
+
+@[to_additive]
+lemma map_op_inv (s : Finset α) : s⁻¹.map opEquiv.toEmbedding = (s.map opEquiv.toEmbedding)⁻¹ := by
+  simp [map_eq_image, image_op_inv]
 
 end Inv
 
@@ -579,6 +591,15 @@ theorem subset_mul {s t : Set α} :
 theorem image_mul [DecidableEq β] : (s * t).image (f : α → β) = s.image f * t.image f :=
   image_image₂_distrib <| map_mul f
 
+@[to_additive]
+lemma image_op_mul (s t : Finset α) : (s * t).image op = t.image op * s.image op :=
+  image_image₂_antidistrib op_mul
+
+@[to_additive]
+lemma map_op_mul (s t : Finset α) :
+    (s * t).map opEquiv.toEmbedding = t.map opEquiv.toEmbedding * s.map opEquiv.toEmbedding := by
+  simp [map_eq_image, image_op_mul]
+
 /-- The singleton operation as a `MulHom`. -/
 @[to_additive "The singleton operation as an `AddHom`."]
 def singletonMulHom : α →ₙ* Finset α where
@@ -706,8 +727,6 @@ theorem div_singleton (a : α) : s / {a} = s.image (· / a) :=
 theorem singleton_div (a : α) : {a} / s = s.image (a / ·) :=
   image₂_singleton_left
 
--- @[to_additive (attr := simp)]
--- Porting note (#10618): simp can prove this & the additive version
 @[to_additive]
 theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :=
   image₂_singleton
@@ -963,13 +982,23 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
-  -- Also compiles without the option, but much slower.
-  set_option tactic.skipAssignedInstances false in
   simp [← mem_coe, coe_pow, Set.mem_pow]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) nsmul_empty]
 theorem empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by
   rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', empty_mul]
+
+@[deprecated (since := "2024-10-21")] alias empty_nsmul := nsmul_empty
+
+@[to_additive (attr := simp) nsmul_singleton]
+lemma singleton_pow (a : α) : ∀ n, ({a} : Finset α) ^ n = {a ^ n}
+  | 0 => by simp [singleton_one]
+  | n + 1 => by simp [pow_succ, singleton_pow _ n]
+
+@[to_additive]
+lemma card_pow_le : ∀ {n}, (s ^ n).card ≤ s.card ^ n
+  | 0 => by simp
+  | n + 1 => by rw [pow_succ, pow_succ]; refine card_mul_le.trans (by gcongr; exact card_pow_le)
 
 @[to_additive]
 theorem mul_univ_of_one_mem [Fintype α] (hs : (1 : α) ∈ s) : s * univ = univ :=
@@ -1015,7 +1044,7 @@ open Pointwise
 
 section DivisionMonoid
 
-variable [DivisionMonoid α] {s t : Finset α}
+variable [DivisionMonoid α] {s t : Finset α} {n : ℤ}
 
 @[to_additive (attr := simp)]
 theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
@@ -1059,6 +1088,12 @@ lemma univ_div_univ [Fintype α] : (univ / univ : Finset α) = univ := by simp [
 
 @[to_additive] lemma inv_subset_div_right (hs : 1 ∈ s) : t⁻¹ ⊆ s / t := by
   rw [div_eq_mul_inv]; exact subset_mul_right _ hs
+
+@[to_additive (attr := simp) zsmul_empty]
+lemma empty_zpow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by cases n <;> aesop
+
+@[to_additive (attr := simp) zsmul_singleton]
+lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Finset α) ^ n = {a ^ n} := by cases n <;> simp
 
 end DivisionMonoid
 
@@ -1170,7 +1205,6 @@ end Group
 
 section VSub
 
--- Porting note: Reordered [VSub α β] and [DecidableEq α] to make vsub less dangerous. Bad?
 variable [VSub α β] [DecidableEq α] {s s₁ s₂ t t₁ t₂ : Finset β} {u : Finset α} {a : α} {b c : β}
 
 /-- The pointwise subtraction of two finsets `s` and `t`: `s -ᵥ t = {x -ᵥ y | x ∈ s, y ∈ t}`. -/
@@ -1232,7 +1266,6 @@ theorem vsub_singleton (b : β) : s -ᵥ ({b} : Finset β) = s.image (· -ᵥ b)
 theorem singleton_vsub (a : β) : ({a} : Finset β) -ᵥ t = t.image (a -ᵥ ·) :=
   image₂_singleton_left
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem singleton_vsub_singleton (a b : β) : ({a} : Finset β) -ᵥ {b} = {a -ᵥ b} :=
   image₂_singleton
 
@@ -1454,6 +1487,27 @@ theorem card_le_card_mul_self' {s : Finset α} : s.card ≤ (s * s).card := by
   cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_right, *]
 
 end
+
+section CancelMonoid
+variable [DecidableEq α] [CancelMonoid α] {s : Finset α} {m n : ℕ}
+
+/-- See `Finset.card_pow_mono` for a version that works for the empty set. -/
+@[to_additive "See `Finset.card_nsmul_mono` for a version that works for the empty set."]
+protected lemma Nonempty.card_pow_mono (hs : s.Nonempty) : Monotone fun n : ℕ ↦ (s ^ n).card :=
+  monotone_nat_of_le_succ fun n ↦ by rw [pow_succ]; exact card_le_card_mul_right _ hs
+
+/-- See `Finset.Nonempty.card_pow_mono` for a version that works for zero powers. -/
+@[to_additive "See `Finset.Nonempty.card_nsmul_mono` for a version that works for zero scalars."]
+lemma card_pow_mono (hm : m ≠ 0) (hmn : m ≤ n) : (s ^ m).card ≤ (s ^ n).card := by
+  obtain rfl | hs := s.eq_empty_or_nonempty
+  · simp [hm]
+  · exact hs.card_pow_mono hmn
+
+@[to_additive]
+lemma card_le_card_pow (hn : n ≠ 0) : s.card ≤ (s ^ n).card := by
+  simpa using card_pow_mono (s := s) one_ne_zero (Nat.one_le_iff_ne_zero.2 hn)
+
+end CancelMonoid
 
 section Group
 variable [Group α] [DecidableEq α] {s t : Finset α}

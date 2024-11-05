@@ -188,7 +188,7 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
 
 end Falling
 
-variable {𝒜 : Finset (Finset α)} {s : Finset α} {k : ℕ}
+variable {𝒜 : Finset (Finset α)}
 
 /-- The **Lubell-Yamamoto-Meshalkin inequality**. If `𝒜` is an antichain, then the sum of the
 proportion of elements it takes from each layer is less than `1`. -/

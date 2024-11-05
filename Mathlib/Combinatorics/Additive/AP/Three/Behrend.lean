@@ -72,7 +72,7 @@ lemma threeAPFree_sphere {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 namespace Behrend
 
-variable {α β : Type*} {n d k N : ℕ} {x : Fin n → ℕ}
+variable {n d k N : ℕ} {x : Fin n → ℕ}
 
 /-!
 ### Turning the sphere into 3AP-free set
@@ -127,7 +127,6 @@ def map (d : ℕ) : (Fin n → ℕ) →+ ℕ where
   map_zero' := by simp_rw [Pi.zero_apply, zero_mul, sum_const_zero]
   map_add' a b := by simp_rw [Pi.add_apply, add_mul, sum_add_distrib]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_zero (d : ℕ) (a : Fin 0 → ℕ) : map d a = 0 := by simp [map]
 
 theorem map_succ (a : Fin (n + 1) → ℕ) :

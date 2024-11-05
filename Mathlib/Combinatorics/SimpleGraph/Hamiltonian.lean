@@ -52,7 +52,7 @@ lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w �
   ⟨(·.mem_support), hp.isHamiltonian_of_mem⟩
 
 section
-variable [Fintype α] [Fintype β]
+variable [Fintype α]
 
 /-- The support of a hamiltonian walk is the entire vertex set. -/
 lemma IsHamiltonian.support_toFinset (hp : p.IsHamiltonian) : p.support.toFinset = Finset.univ := by
