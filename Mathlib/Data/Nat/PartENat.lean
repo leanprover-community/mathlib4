@@ -729,8 +729,6 @@ theorem lt_wf : @WellFounded PartENat (· < ·) := by
 instance : WellFoundedLT PartENat :=
   ⟨lt_wf⟩
 
-instance isWellOrder : IsWellOrder PartENat (· < ·) := {}
-
 instance wellFoundedRelation : WellFoundedRelation PartENat :=
   ⟨(· < ·), lt_wf⟩
 

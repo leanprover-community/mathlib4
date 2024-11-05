@@ -173,10 +173,6 @@ theorem algebraicIndependent_X : AlgebraicIndependent R (X (R := R) (σ := σ)) 
   rw [AlgebraicIndependent, aeval_X_left]
   exact injective_id
 
-variable {σ} in
-theorem transcendental_X (i : σ) : Transcendental R (X (R := R) i) :=
-  (algebraicIndependent_X σ R).transcendental i
-
 end MvPolynomial
 
 open AlgebraicIndependent
@@ -467,6 +463,47 @@ theorem algebraicIndependent_of_finite' (s : Set A)
     a (hts ha) ha').comp _ (Set.subtypeInsertEquivOption ha').injective
   ext x
   by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
+
+/-- `Type` version of `algebraicIndependent_of_finite'`. -/
+theorem algebraicIndependent_of_finite_type'
+    (hinj : Injective (algebraMap R A))
+    (H : ∀ t : Set ι, t.Finite → ∀ i : ι, i ∉ t → Transcendental (adjoin R (x '' t)) (x i)) :
+    AlgebraicIndependent R x := by
+  nontriviality R
+  haveI := hinj.nontrivial
+  have hx : Injective x := by
+    simp_rw [Transcendental] at H
+    contrapose! H
+    obtain ⟨i, j, h1, h2⟩ := not_injective_iff.1 H
+    refine ⟨{j}, by simp, i, by simp [h2], ?_⟩
+    rw [h1, Set.image_singleton]
+    exact isAlgebraic_algebraMap (⟨x j, Algebra.self_mem_adjoin_singleton R _⟩ : adjoin R {x j})
+  rw [← Set.coe_comp_rangeFactorization x]
+  refine .comp (algebraicIndependent_of_finite' _ hinj fun t ht hfin a ha ha' ↦ ?_) _
+    (Set.rightInverse_rangeSplitting hx).injective
+  change Finite t at hfin
+  have := H (x ⁻¹' t) (Finite.of_injective _ (hx.restrictPreimage t))
+    ((Equiv.ofInjective _ hx).symm ⟨_, ha⟩)
+    (by rwa [Set.mem_preimage, Equiv.apply_ofInjective_symm hx])
+  rwa [Set.image_preimage_eq_inter_range, Set.inter_eq_self_of_subset_left ht,
+    Equiv.apply_ofInjective_symm hx] at this
+
+namespace MvPolynomial
+
+theorem algebraicIndependent_polynomial_aeval_X
+    (f : ι → Polynomial R) (hf : ∀ i, Transcendental R (f i)) :
+    AlgebraicIndependent R fun i ↦ Polynomial.aeval (X i : MvPolynomial ι R) (f i) := by
+  set x := fun i ↦ Polynomial.aeval (X i : MvPolynomial ι R) (f i)
+  refine algebraicIndependent_of_finite_type' (C_injective _ _) fun t _ i hi ↦ ?_
+  have hle : adjoin R (x '' t) ≤ supported R t := by
+    rw [Algebra.adjoin_le_iff, Set.image_subset_iff]
+    intro _ h
+    rw [Set.mem_preimage]
+    refine Algebra.adjoin_mono ?_ (Polynomial.aeval_mem_adjoin_singleton R _)
+    simp_rw [singleton_subset_iff, Set.mem_image_of_mem _ h]
+  exact (transcendental_supported_polynomial_aeval_X R hi (hf i)).of_tower_top_of_subalgebra_le hle
+
+end MvPolynomial
 
 variable (R)
 

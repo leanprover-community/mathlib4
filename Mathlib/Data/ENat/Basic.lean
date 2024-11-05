@@ -45,7 +45,6 @@ instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
 instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
 instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
 instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
-instance : IsWellOrder ℕ∞ (· < ·) where
 
 variable {m n : ℕ∞}
 

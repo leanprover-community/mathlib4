@@ -137,20 +137,21 @@ theorem ranges_length (l : List ℕ) :
     intro s _
     simp only [Function.comp_apply, length_map]
 
-/-- See `List.ranges_join` for the version about `List.sum`. -/
-lemma ranges_join' : ∀ l : List ℕ, l.ranges.join = range (Nat.sum l)
+set_option linter.deprecated false in
+/-- See `List.ranges_flatten` for the version about `List.sum`. -/
+@[deprecated "Use `List.ranges_flatten`." (since := "2024-10-17")]
+lemma ranges_flatten' : ∀ l : List ℕ, l.ranges.flatten = range (Nat.sum l)
   | [] => rfl
-  | a :: l => by simp only [sum_cons, join, ← map_join, ranges_join', range_add]
+  | a :: l => by simp only [Nat.sum_cons, flatten, ← map_flatten, ranges_flatten', range_add]
 
+@[deprecated (since := "2024-10-15")] alias ranges_join' := ranges_flatten'
+
+set_option linter.deprecated false in
 /-- Any entry of any member of `l.ranges` is strictly smaller than `Nat.sum l`.
 See `List.mem_mem_ranges_iff_lt_sum` for the version about `List.sum`. -/
 lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < Nat.sum l := by
-  rw [← mem_range, ← ranges_join', mem_join]
-
-/-- The members of `l.ranges` have no duplicate -/
-theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
-  (List.pairwise_join.mp <| by rw [ranges_join']; exact nodup_range _).1 s hs
+  rw [← mem_range, ← ranges_flatten', mem_flatten]
 
 end Ranges
 
