@@ -3,9 +3,7 @@ import Mathlib
 open LocalRing
 open Set
 
-section CommRing
-
-variable {R S : Type*} [Ring R] [Ring S]
+variable {R S : Type*} [CommRing R] [CommRing S]
 
 -- TODO(jlcontreras): maybe genralizable to [Ring R] [Ring S]
 instance [Nontrivial S] (f : R →+* S) (𝓡 : Subring R) [LocalRing 𝓡] : LocalRing <| 𝓡.map f where
@@ -21,85 +19,67 @@ instance [Nontrivial S] (f : R →+* S) (𝓡 : Subring R) [LocalRing 𝓡] : Lo
       apply LocalRing.of_surjective' f_rest is_restriction_surj
     exact isUnit_or_isUnit_of_add_one h
 
-instance topislocal [LocalRing R] : LocalRing (⊤ : Subring R) := Subring.topEquiv.symm.localRing
+instance localRing_top [LocalRing R] : LocalRing (⊤ : Subring R) :=
+  Subring.topEquiv.symm.localRing
 
-#check LocalRing.of_surjective' f_rest is_restriction_surj
+variable (R) in
+structure LocalSubring where
+  toSubring : Subring R
+  [localRing : LocalRing toSubring]
 
-end CommRing
+namespace LocalSubring
 
-#exit
+instance (S : LocalSubring R) : LocalRing S.1 := S.2
 
-variable {K : Type*} [Ring K]
+@[simps! toSubring]
+def map [Nontrivial S] (f : R →+* S) (s : LocalSubring R) : LocalSubring S := mk (s.1.map f)
 
-def LocalSubring (K : Type*) [Ring K] : Type _ :=
-  { s : Subring K // LocalRing s }
+@[simps! toSubring]
+def range [LocalRing R] [Nontrivial S] (f : R →+* S) : LocalSubring S := map f (mk ⊤)
 
-def LocalSubring.of {K : Type*} [Ring K] (s : Subring K) [h : LocalRing s] : LocalSubring K := ⟨s, h⟩
-
-instance (S : LocalSubring K) : LocalRing S.1 := S.2
-
-def LocalSubring.map {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Nontrivial S]
-    (f : R →+* S) (s : LocalSubring R) : LocalSubring S := LocalSubring.of (Subring.map f s.1)
-
-
-def LocalSubring.range {R : Type*} {S : Type*} [CommRing R] [LocalRing R]
-  [CommRing S] [Nontrivial S] (f : R →+* S) : LocalSubring S :=
-  LocalSubring.map f (LocalSubring.of ⊤)
-
-lemma LocalSubring.range_eq_range {R : Type*} {S : Type*} [CommRing R] [LocalRing R] [CommRing S] [Nontrivial S]
-    (f : R →+* S) : (LocalSubring.range f).1 = Subring.map f ⊤ := by
-  exact rfl
-
-instance {K : Type*} [Ring K] (_ : LocalSubring K) : SetLike (LocalSubring K) K where
+/-
+instance : SetLike (LocalSubring R) R where
   coe A := A.1
   coe_injective' := by
-    intro ⟨_, _⟩ ⟨_, _⟩ h
-    replace h := SetLike.coe_injective' h
+    rintro ⟨_, _⟩ ⟨_, _⟩ h
+    apply SetLike.coe_injective' at h
     congr
 
-variable {K : Type u} [CommRing K]
+attribute [local -instance] SetLike.instPartialOrder
+-/
 
-/-- https://stacks.math.columbia.edu/tag/00I9 -/
-instance : PartialOrder (LocalSubring K) where
+@[stacks 00I9]
+instance : PartialOrder (LocalSubring R) where
   le A B := ∃ h : A.1 ≤ B.1, IsLocalHom (Subring.inclusion h)
   le_refl := by
-    intro ⟨a,x⟩
+    rintro ⟨a, x⟩
     dsimp
     use le_rfl
     exact (isLocalHom_iff_comap_closedPoint (Subring.inclusion (le_refl a))).mpr rfl
   le_trans := by
-    intro ⟨a, x⟩ ⟨b, y⟩ ⟨c, z⟩ ⟨hab, hab_local⟩ ⟨hbc, hbc_local⟩
+    rintro ⟨a, x⟩ ⟨b, y⟩ ⟨c, z⟩ ⟨hab, hab_local⟩ ⟨hbc, hbc_local⟩
     let f := Subring.inclusion hab
     let g := Subring.inclusion hbc
     use le_trans hab hbc
     apply RingHom.isLocalHom_comp g f
   le_antisymm := by
-    intro ⟨a, x⟩ ⟨b, y⟩ ⟨hab, hab_loc⟩ ⟨hba, hba_loc⟩
+    rintro ⟨a, x⟩ ⟨b, y⟩ ⟨hab, hab_loc⟩ ⟨hba, hba_loc⟩
     have hab_eq : a = b := le_antisymm hab hba
     subst hab_eq
     rfl
 
-instance : CoeSort (LocalSubring K) (Type u) := ⟨fun s ↦ s.1⟩
+variable {T : Type*} [CommRing T]
 
-instance : Membership K (LocalSubring K) := ⟨fun x k ↦ k ∈ x.1⟩
+variable {K : Type*} [Field K]
 
-instance LocalSubring.localRing (A : LocalSubring K) : LocalRing A := A.2
-
-lemma domination_preserved_by_range {R : Type*} {S : Type*} {K : Type*}
-    [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing K] [Nontrivial K]
-      (f : R →+* S) [IsLocalHom f] (g : S →+* K):
-        (LocalSubring.range (g.comp f)) ≤ (LocalSubring.range g) := by
-  sorry
-
-variable {K : Type u} [Field K]
-
-def ValuationSubring.toLocalSubring (A : ValuationSubring K) : LocalSubring K :=
-  ⟨A.toSubring, show LocalRing A by infer_instance⟩
+def ValuationSubring.toLocalSubring (A : ValuationSubring K) : LocalSubring K where
+  toSubring := A.toSubring
+  localRing := A.localRing
 
 -- by def
 lemma ValuationSubring.toLocalSubring_injective :
     Function.Injective (ValuationSubring.toLocalSubring (K := K)) := by
-  sorry
+  sorry -- TODO(jlcontreras)
 
 def maximalLocalSubrings (K : Type*) [Field K] : Set (LocalSubring K) :=
   {R | Maximal (fun _ => True) R}
