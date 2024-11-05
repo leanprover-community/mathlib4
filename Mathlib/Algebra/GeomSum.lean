@@ -227,12 +227,12 @@ theorem geom_sum_mul [Ring α] (x : α) (n : ℕ) : (∑ i ∈ range n, x ^ i) *
   rw [one_pow, geom_sum₂_with_one] at this
   exact this
 
-theorem geom_sum_mul_of_one_lt [CommSemiring α] [PartialOrder α] [AddLeftReflectLE α]
+theorem geom_sum_mul_of_one_le [CommSemiring α] [PartialOrder α] [AddLeftReflectLE α]
     [AddLeftMono α] [ExistsAddOfLE α] [Sub α] [OrderedSub α] {x : α} (hx : 1 ≤ x) (n : ℕ) :
     (∑ i ∈ range n, x ^ i) * (x - 1) = x ^ n - 1 := by
   simpa using geom_sum₂_mul_of_ge hx n
 
-theorem geom_sum_mul_of_lt_one [CommSemiring α] [PartialOrder α] [AddLeftReflectLE α]
+theorem geom_sum_mul_of_le_one [CommSemiring α] [PartialOrder α] [AddLeftReflectLE α]
     [AddLeftMono α] [ExistsAddOfLE α] [Sub α] [OrderedSub α] {x : α} (hx : x ≤ 1) (n : ℕ) :
     (∑ i ∈ range n, x ^ i) * (1 - x) = 1 - x ^ n := by
   simpa using geom_sum₂_mul_of_le hx n
@@ -289,12 +289,12 @@ theorem geom_sum_eq [DivisionRing α] {x : α} (h : x ≠ 1) (n : ℕ) :
 lemma geom_sum_of_one_lt {x : α} [CanonicallyLinearOrderedSemifield α] [Sub α] [OrderedSub α]
     (h : 1 < x) (n : ℕ) :
     ∑ i ∈ Finset.range n, x ^ i = (x ^ n - 1) / (x - 1) :=
-  eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum_mul_of_one_lt h.le n)
+  eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum_mul_of_one_le h.le n)
 
 lemma geom_sum_of_lt_one {x : α} [CanonicallyLinearOrderedSemifield α] [Sub α] [OrderedSub α]
     (h : x < 1) (n : ℕ) :
     ∑ i ∈ Finset.range n, x ^ i = (1 - x ^ n) / (1 - x) :=
-  eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum_mul_of_lt_one h.le n)
+  eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum_mul_of_le_one h.le n)
 
 protected theorem Commute.mul_geom_sum₂_Ico [Ring α] {x y : α} (h : Commute x y) {m n : ℕ}
     (hmn : m ≤ n) :
