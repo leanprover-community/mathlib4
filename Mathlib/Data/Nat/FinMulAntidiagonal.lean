@@ -189,8 +189,8 @@ private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
   refine ⟨?_, hn.ne_zero⟩
   unfold Nat.primeFactorsPiBij
   rw [prod_fiberwise_of_maps_to, prod_attach (f := fun x => x)]
-  apply prod_primeFactors_of_squarefree hn
-  apply fun _ _ => mem_univ _
+  · apply prod_primeFactors_of_squarefree hn
+  · apply fun _ _ => mem_univ _
 
 private theorem primeFactorsPiBij_inj (d n : ℕ)
     (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ)
@@ -237,13 +237,13 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   exact prod_primeFactors_of_squarefree <| hn.squarefree_of_dvd this
 
 theorem card_finMulAntidiagonal_pi (d n : ℕ) (hn : Squarefree n) :
-    (n.primeFactors.pi (fun _ => (univ : Finset <| Fin d))).card =
-      (finMulAntidiagonal d n).card := by
+    #(n.primeFactors.pi (fun _ => (univ : Finset <| Fin d))) =
+      #(finMulAntidiagonal d n) := by
   apply Finset.card_bij (Nat.primeFactorsPiBij d n) (primeFactorsPiBij_img d n hn)
     (primeFactorsPiBij_inj d n) (primeFactorsPiBij_surj d n hn)
 
 theorem card_finMulAntidiagonal_of_squarefree {d n : ℕ} (hn : Squarefree n) :
-    (finMulAntidiagonal d n).card = d ^ ω n := by
+    #(finMulAntidiagonal d n) = d ^ ω n := by
   rw [← card_finMulAntidiagonal_pi d n hn, Finset.card_pi, Finset.prod_const,
     ArithmeticFunction.cardDistinctFactors_apply, ← List.card_toFinset, toFinset_factors,
     Finset.card_fin]
