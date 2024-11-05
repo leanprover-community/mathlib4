@@ -15,7 +15,8 @@ import Mathlib.Analysis.Normed.Algebra.Norm
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.IntermediateField.Algebraic
-
+-- import Mathlib.Analysis.Calculus.LHopital
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 /-!
 # Krasner's Lemma
 
@@ -68,21 +69,124 @@ variable {K L : Type*} [Nm_K : NontriviallyNormedField K] [CompleteSpace K]
 #synth Algebra ℕ K
 #synth NormedField M
 
-theorem IsNonarchimedean.of_res_on_Nat {R} [NormedDivisionRing R]
+open Polynomial Filter Topology
+#check nhds
+
+
+theorem Polynomial.tendsto_log_eval_div_zero {p : ℝ[X]} (hp : p.leadingCoeff > 0) : Filter.Tendsto (fun x => Real.log (p.eval x) / x : ℝ → ℝ) atTop (𝓝 0) := by
+  -- induction' h : p.natDegree
+  sorry -- need LHospital infinity case
+
+
+-- leading coeff char zero
+-- Mathlib.Analysis.SpecialFunctions.Polynomials
+-- tendsto_rpow_div first generalize to n polynomial.induction polynomial add
+theorem Polynomial.tendsto_pow_one_div_atTop {p : ℝ[X]} (hp : p.leadingCoeff > 0) : Filter.Tendsto (fun x => (p.eval x) ^ (1 / x) : ℝ → ℝ) atTop (𝓝 1) := by
+  sorry
+
+theorem IsNonarchimedean.map_le_map_one {f : ℕ → ℝ} (h0 : f 0 ≤ f 1)
+    (h : IsNonarchimedean f) (n : ℕ) : f n ≤ f 1 := by
+  induction n with
+  | zero => exact h0
+  | succ n hn =>
+    apply (h n 1).trans
+    simp only [hn, max_eq_right, le_refl]
+#leansearch "If f : ℝ → ℝ tends to F at filter G, then f(n) : ℕ → ℝ tends to F as filter pullback of G."
+#leansearch "For every c : ℝ, c^(1/n) tends to 1 as n tends to infinity."
+#check Filter.tendsto_map'_iff
+#check Filter.tendsto_comap'_iff
+#check Filter.tendsto_iff_seq_tendsto
+theorem IsNonarchimedean.of_algebraMap_nat {R} [NormedDivisionRing R]
   (is_na : IsNonarchimedean (‖algebraMap ℕ R ·‖ : ℕ → ℝ)) : IsNonarchimedean (‖·‖ : R → ℝ) := by
+  -- It suffices to show that for all r : R, ‖r + 1‖ ≤ max ‖r‖ 1.
   suffices ∀ r : R, ‖r + 1‖ ≤ max ‖r‖ 1 by
     intro x y
     by_cases hy : y = 0
-    · simp? [hy]
+    · simp [hy]
     calc
-      ‖x + y‖ = ‖x*y⁻¹ + 1‖ * ‖y‖ := by simp [add_mul]
-      _ ≤ (max ‖x*y⁻¹‖ 1) * ‖y‖ := by congr 1; apply this
-      _ = max ‖x‖ ‖y‖ := by simp
-  
+      ‖x + y‖ = ‖x*y⁻¹ + 1‖ * ‖y‖ := by simp [← norm_mul, add_mul, hy]
+      _ ≤ (max ‖x*y⁻¹‖ 1) * ‖y‖ := mul_le_mul_of_nonneg_right (this _) (norm_nonneg y)
+      _ = max ‖x‖ ‖y‖ := by simp [max_mul_of_nonneg _ 1 (norm_nonneg y), hy]
+  intro r
+  suffices ∀ n : ℕ, ‖r + 1‖ ^ n ≤ (n + 1) * max (‖r‖ ^ n) 1 by
+    -- Take ^ (1 / n : ℝ) for both side and take limit n → ∞ to prove the goal.
+    apply le_of_tendsto_of_tendsto' (f := fun n : ℕ => (‖r + 1‖ ^ n : ℝ) ^ (1 / n : ℝ))
+        (g := fun n => (n + 1 : ℝ) ^ (1 / n : ℝ) * max ‖r‖ 1) (b := atTop)
+    -- The limit of (‖r + 1‖ ^ n) ^ (1 / ↑n) is ‖r + 1‖
+    · refine tendsto_atTop_of_eventually_const (i₀ := 1) (fun i hi => ?_)
+      simp [Real.pow_rpow_inv_natCast (norm_nonneg (r + 1)) (by linarith)]
+    -- The limit of (n + 1) ^ (1 / ↑n) * max ‖r‖ 1 is max ‖r‖ 1.
+    · nth_rw 2 [← one_mul (max ‖r‖ 1)]
+      -- It suffices to show the limit of (n + 1) ^ (1 / ↑n) is 1.
+      apply Filter.Tendsto.mul_const (max ‖r‖ 1)
+      -- We use sandwich theorem, n ^ (1 / n) ≤ (n + 1) ^ (1 / ↑n) ≤ (n * n) ^ (1 / n) for n ≥ 1.
+      apply tendsto_of_tendsto_of_tendsto_of_le_of_le'
+          (f := (fun k : ℕ ↦ ((k : ℝ) + 1) ^ (1 / k : ℝ))) (g := fun n => n ^ (1 / n : ℝ))
+          (h := fun n => (n * n) ^ (1 / n : ℝ)) (b := atTop) (a := 1)
+      -- n ^ (1 / n) tends to 1.
+      · exact tendsto_rpow_div.comp tendsto_natCast_atTop_atTop
+      -- (n * n) ^ (1 / n) tends to 1.
+      · have : (fun n : ℕ => (n * n : ℝ) ^ (1 / n : ℝ)) =
+            (fun n : ℕ => (n : ℝ) ^ (1 / n : ℝ) * (n : ℝ) ^ (1 / n : ℝ)) := by
+          funext x
+          rw [Real.mul_rpow (by simp) (by simp)]
+        rw [this]
+        nth_rw 3 [← mul_one 1]
+        apply Filter.Tendsto.mul <;>
+        exact tendsto_rpow_div.comp tendsto_natCast_atTop_atTop
+      -- n ^ (1 / n) ≤ (n + 1) ^ (1 / ↑n)
+      · simp only [eventually_atTop]
+        exact ⟨0, fun _ _ => Real.rpow_le_rpow (by linarith)
+            (by linarith) (Nat.one_div_cast_nonneg _)⟩
+      -- (n + 1) ^ (1 / ↑n) ≤ (n * n) ^ (1 / n).
+      · simp only [eventually_atTop]
+        refine ⟨2, fun n hn => Real.rpow_le_rpow (by linarith)
+            ?_ (Nat.one_div_cast_nonneg _)⟩
+        norm_cast
+        calc
+          n + 1 ≤ 2 * n := by linarith
+          _ ≤ n * n := Nat.mul_le_mul_right n hn
+    -- Given ∀ n : ℕ, ‖r + 1‖ ^ n ≤ (n + 1) * max (‖r‖ ^ n) 1, we show that
+    -- (‖r + 1‖ ^ n) ^ (1 / ↑n) < (n + 1) ^ (1 / ↑n) * max ‖r‖ 1 holds for all n.
+    · intro n
+      by_cases hn : n = 0
+      · simp [hn]
+      calc
+        (‖r + 1‖ ^ n) ^ (1 / n : ℝ) ≤  ((n + 1) * max (‖r‖ ^ n) 1) ^ (1 / n : ℝ) := by
+          apply Real.rpow_le_rpow (pow_nonneg (norm_nonneg _) _)
+              (this n) (Nat.one_div_cast_nonneg n)
+        _ =  (n + 1) ^ (1 / n : ℝ) * max (‖r‖ ^ n) 1 ^ (1 / n : ℝ) := by
+          rw [Real.mul_rpow (by linarith) (by simp)]
+        _ = (n + 1) ^ (1 / n : ℝ) * max ‖r‖ 1 := by
+          simp only [Set.mem_Ici, norm_nonneg, pow_nonneg, zero_le_one,
+              (Real.monotoneOn_rpow_Ici_of_exponent_nonneg (Nat.one_div_cast_nonneg n)).map_max]
+          simp [Real.pow_rpow_inv_natCast (norm_nonneg r) hn]
+  -- Finally, we show that ‖r + 1‖ ^ n ≤ (n + 1) * max (‖r‖ ^ n) 1 for all n.
+  intro n
+  calc
+    ‖r + 1‖ ^ n = ‖(r + 1) ^ n‖ := by simp
+    _ = ‖∑ m ∈ Finset.range (n + 1), r ^ m * (n.choose m)‖ := by
+      simp [(Commute.one_right r).add_pow]
+    _ ≤ ∑ m ∈ Finset.range (n + 1), ‖r ^ m‖ := by
+      refine norm_sum_le_of_le _ (fun m hm => (norm_mul_le (r ^ m) (n.choose m)).trans ?_)
+      apply mul_le_of_le_one_right (norm_nonneg _)
+      simpa using is_na.map_le_map_one (n := n.choose m)
+    _ ≤ ∑ m ∈ Finset.range (n + 1), max ‖r ^ n‖ 1 := by
+      refine Finset.sum_le_sum (fun i ha => ?_)
+      by_cases hr : ‖r‖ ≤ 1 <;>
+      simp only [norm_pow, le_max_iff]
+      · exact Or.inr <| pow_le_one₀ (norm_nonneg r) hr
+      · exact Or.inl <| (pow_le_pow_iff_right (by linarith)).mpr (Finset.mem_range_succ_iff.mp ha)
+    _ = (n + 1) * max (‖r‖ ^ n) 1 := by simp
 
+/-- K : field L : division ring-/
 theorem IsNonarchimedean.norm_extension (is_na : IsNonarchimedean (‖·‖ : K → ℝ))
     (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) : IsNonarchimedean (‖·‖ : L → ℝ) := by
-  sorry
+  apply IsNonarchimedean.of_algebraMap_nat
+  intro x y
+  simp only [IsScalarTower.algebraMap_apply ℕ K L, ← extd]
+  exact map_add ((algebraMap ℕ K)) _ _ ▸ is_na _ _
+
 -- this is another PR, showing that fron any divisionring, nonarch is equiv to nonarch
 -- pullback to natural numbers
 
