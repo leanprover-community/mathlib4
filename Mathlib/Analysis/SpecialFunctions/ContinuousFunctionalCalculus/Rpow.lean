@@ -205,6 +205,8 @@ end sqrt
 
 section abs
 
+variable [StarOrderedRing A]
+
 /-- The absolute value of an operator, using the nonunital continuous functional calculus. -/
 noncomputable def abs (a : A) := sqrt (star a * a)
 
