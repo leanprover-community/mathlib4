@@ -248,7 +248,7 @@ lemma isotypic_of_isotypic_eq_top :
 
 /-- In particular, a subset of the atoms of `isotypic R M S` have supremum equal to `⊤`. -/
 lemma sSup_of_isoset'_of_isotypic_eq_top :
-  sSup (isoset' R ((isotypic R M C)) C) = ⊤ := by
+    sSup (isoset' R ((isotypic R M C)) C) = ⊤ := by
   rw[<-isotypic', <-isotypic_eq_isotypic']
   · exact isotypic_of_isotypic_eq_top R M C
 
