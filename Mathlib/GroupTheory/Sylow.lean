@@ -76,6 +76,28 @@ instance : SubgroupClass (Sylow p G) G where
   one_mem _ := Subgroup.one_mem _
   inv_mem := Subgroup.inv_mem _
 
+/-- A `p`-subgroup with index indivisible by `p` is a Sylow subgroup. -/
+def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G}
+    (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) : Sylow p G :=
+  { P with
+    isPGroup' := hP1
+    is_maximal' := by
+      intro Q hQ hPQ
+      have : P.FiniteIndex := ⟨fun h ↦ hP2 (h ▸ (dvd_zero p))⟩
+      obtain ⟨k, hk⟩ := (hQ.to_quotient (P.normalCore.subgroupOf Q)).exists_card_eq
+      have h := hk ▸ Nat.Prime.coprime_pow_of_not_dvd (m := k) Fact.out hP2
+      exact le_antisymm (Subgroup.relindex_eq_one.mp
+        (Nat.eq_one_of_dvd_coprimes h (Subgroup.relindex_dvd_index_of_le hPQ)
+        (Subgroup.relindex_dvd_of_le_left Q P.normalCore_le))) hPQ }
+
+@[simp] theorem _root_.IsPGroup.toSylow_coe [Fact p.Prime] {P : Subgroup G}
+    (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) : (hP1.toSylow hP2) = P :=
+  rfl
+
+@[simp] theorem _root_.IsPGroup.mem_toSylow [Fact p.Prime] {P : Subgroup G}
+    (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) {g : G} : g ∈ hP1.toSylow hP2 ↔ g ∈ P :=
+  .rfl
+
 variable (P : Sylow p G)
 
 /-- The action by a Sylow subgroup is the action by the underlying group. -/

@@ -48,13 +48,18 @@ theorem adjoin_toSubfield :
 
 variable {S}
 
+theorem mem_adjoin_range_iff {ι : Type*} (i : ι → E) (x : E) :
+    x ∈ adjoin F (Set.range i) ↔ ∃ r s : MvPolynomial ι F,
+      x = MvPolynomial.aeval i r / MvPolynomial.aeval i s := by
+  simp_rw [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
+    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
+    Algebra.adjoin_range_eq_range_aeval, AlgHom.mem_range, exists_exists_eq_and]
+  tauto
+
 theorem mem_adjoin_iff (x : E) :
     x ∈ adjoin F S ↔ ∃ r s : MvPolynomial S F,
       x = MvPolynomial.aeval Subtype.val r / MvPolynomial.aeval Subtype.val s := by
-  simp only [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
-    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
-    Algebra.adjoin_eq_range, AlgHom.mem_range, exists_exists_eq_and]
-  tauto
+  rw [← mem_adjoin_range_iff, Subtype.range_coe]
 
 theorem mem_adjoin_simple_iff {α : E} (x : E) :
     x ∈ adjoin F {α} ↔ ∃ r s : F[X], x = aeval α r / aeval α s := by

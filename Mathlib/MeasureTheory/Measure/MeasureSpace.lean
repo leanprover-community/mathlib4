@@ -1189,6 +1189,8 @@ theorem map_id : map id μ = μ :=
 theorem map_id' : map (fun x => x) μ = μ :=
   map_id
 
+/-- Mapping a measure twice is the same as mapping the measure with the composition. This version is
+for measurable functions. See `map_map_of_aemeasurable` when they are just ae measurable. -/
 theorem map_map {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     (μ.map f).map g = μ.map (g ∘ f) :=
   ext fun s hs => by simp [hf, hg, hs, hg hs, hg.comp hf, ← preimage_comp]

@@ -18,7 +18,7 @@ IFS=$'\n\t'
 {
 
 # Default values
-AUTO="yes"
+AUTO="no"
 
 # Function to display usage
 usage() {
@@ -28,7 +28,7 @@ usage() {
   echo "BUMPVERSION: The upcoming release that we are targeting, e.g., 'v4.10.0'"
   echo "NIGHTLYDATE: The date of the nightly toolchain currently used on 'nightly-testing'"
   echo "NIGHTLYSHA: The SHA of the nightly toolchain that we want to adapt to"
-  echo "AUTO: Optional flag to specify automatic mode, default is 'yes'"
+  echo "AUTO: Optional flag to specify automatic mode, default is 'no'"
   exit 1
 }
 
@@ -185,60 +185,39 @@ git push --set-upstream origin "bump/nightly-$NIGHTLYDATE"
 if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .; then
 
   echo
-  echo "### [auto/user] create a PR for the new branch"
-  echo "Create a pull request. Set the base of the PR to 'bump/$BUMPVERSION'"
-  echo "Here is a suggested 'gh' command to do this:"
+  echo "### [auto] create a PR for the new branch"
+  echo "Creating a pull request. Setting the base of the PR to 'bump/$BUMPVERSION'"
+  echo "Running the following 'gh' command to do this:"
   gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION"
   echo "> $gh_command"
-  if [ "$AUTO" = "yes" ]; then
-    echo "Auto mode enabled. Running the command..."
-    answer="y"
-  else
-    echo "Shall I run this command for you? (y/n)"
-    read answer
-  fi
-  if [ "$answer" != "${answer#[Yy]}" ]; then
-  	gh_output=$(eval $gh_command)
-  	# Extract the PR number from the output
-  	pr_number=$(echo $gh_output | sed 's/.*\/pull\/\([0-9]*\).*/\1/')
-  fi
+  gh_output=$(eval $gh_command)
+  # Extract the PR number from the output
+  pr_number=$(echo $gh_output | sed 's/.*\/pull\/\([0-9]*\).*/\1/')
 
   echo
-  echo "### [auto/user] post a link to the PR on Zulip"
+  echo "### [auto] post a link to the PR on Zulip"
 
   zulip_title="#$pr_number adaptations for nightly-$NIGHTLYDATE"
   zulip_body="> $pr_title #$pr_number\\\n\\\nPlease review this PR. At the end of the month this diff will land in \\\`master\\\`."
 
-  echo "Post the link to the PR in a new thread on the #nightly-testing channel on Zulip"
-  echo "Here is a suggested message:"
+  echo "Posting the link to the PR in a new thread on the #nightly-testing channel on Zulip"
+  echo "Here is the message:"
   echo "Title: $zulip_title"
   echo " Body: $zulip_body"
 
   if command -v zulip-send >/dev/null 2>&1; then
     zulip_command="zulip-send --stream nightly-testing --subject \"$zulip_title\" --message \"$zulip_body\""
-    echo "Here is a suggested 'zulip-send' command to do this:"
+    echo "Running the following 'zulip-send' command to do this:"
     echo "> $zulip_command"
-
-    if [ "$AUTO" = "yes" ]; then
-      echo "Auto mode enabled. Running the command..."
-      answer="y"
-    else
-      echo "Shall I run this command for you? (y/n)"
-      read answer
-    fi
-
-    if [ "$answer" != "${answer#[Yy]}" ]; then
-      eval $zulip_command
-    fi
+    eval $zulip_command
   else
-    echo "Zulip CLI is not installed. Please install it to send messages automatically."
+    echo "Zulip CLI is not installed. Install it to send messages automatically."
     if [ "$AUTO" = "yes" ]; then
       exit 1
+    else
+      echo "Please send the message manually."
+      read -p "Press enter to continue"
     fi
-  fi
-
-  if [ "$AUTO" != "yes" ]; then
-    read -p "Press enter to continue"
   fi
 
 # else, let the user know that no PR is needed

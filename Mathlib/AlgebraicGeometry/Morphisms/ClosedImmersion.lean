@@ -268,7 +268,7 @@ instance IsClosedImmersion.isLocalAtTarget : IsLocalAtTarget @IsClosedImmersion 
 /-- On morphisms with affine target, being a closed immersion is precisely having affine source
 and being surjective on global sections. -/
 instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmersion
-    (fun X Y f ↦ IsAffine X ∧ Function.Surjective (f.app ⊤)) := by
+    (fun X _ f ↦ IsAffine X ∧ Function.Surjective (f.app ⊤)) := by
   convert HasAffineProperty.of_isLocalAtTarget @IsClosedImmersion
   refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
 
