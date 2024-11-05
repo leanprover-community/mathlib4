@@ -212,10 +212,12 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
-instance : MonadLift Option MetaM where
+def monadLiftOptionMetaM_mathlib : MonadLift Option MetaM where
   monadLift
   | none => failure
   | some e => pure e
+
+attribute [local instance] monadLiftOptionMetaM_mathlib
 
 /-- The `norm_num` extension which identifies expressions of the form `a + b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
