@@ -266,7 +266,7 @@ theorem continuous_coe : Continuous ((↑) : X → OnePoint X) :=
 theorem isOpenMap_coe : IsOpenMap ((↑) : X → OnePoint X) := fun _ => isOpen_image_coe.2
 
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : X → OnePoint X) :=
-  isOpenEmbedding_of_continuous_injective_open continuous_coe coe_injective isOpenMap_coe
+  .of_continuous_injective_isOpenMap continuous_coe coe_injective isOpenMap_coe
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_coe := isOpenEmbedding_coe
@@ -546,7 +546,7 @@ example [WeaklyLocallyCompactSpace X] [T2Space X] : T4Space (OnePoint X) := infe
 
 /-- If `X` is not a compact space, then `OnePoint X` is a connected space. -/
 instance [PreconnectedSpace X] [NoncompactSpace X] : ConnectedSpace (OnePoint X) where
-  toPreconnectedSpace := isDenseEmbedding_coe.toIsDenseInducing.preconnectedSpace
+  toPreconnectedSpace := isDenseEmbedding_coe.isDenseInducing.preconnectedSpace
   toNonempty := inferInstance
 
 /-- If `X` is an infinite type with discrete topology (e.g., `ℕ`), then the identity map from

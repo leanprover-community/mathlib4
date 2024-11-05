@@ -1093,7 +1093,7 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' :
     simpa only [continuous_iff_continuousOn_univ, h'] using e.continuousOn_symm
 
 theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.restrict e) := by
-  refine isOpenEmbedding_of_continuous_injective_open (e.continuousOn.comp_continuous
+  refine .of_continuous_injective_isOpenMap (e.continuousOn.comp_continuous
     continuous_subtype_val Subtype.prop) e.injOn.injective fun V hV ↦ ?_
   rw [Set.restrict_eq, Set.image_comp]
   exact e.isOpen_image_of_subset_source (e.open_source.isOpenMap_subtype_val V hV)

@@ -197,7 +197,7 @@ alias denseEmbedding_pureCauchy := isDenseEmbedding_pureCauchy
 
 theorem nonempty_cauchyFilter_iff : Nonempty (CauchyFilter α) ↔ Nonempty α := by
   constructor <;> rintro ⟨c⟩
-  · have := eq_univ_iff_forall.1 isDenseEmbedding_pureCauchy.toIsDenseInducing.closure_range c
+  · have := eq_univ_iff_forall.1 isDenseEmbedding_pureCauchy.isDenseInducing.closure_range c
     obtain ⟨_, ⟨_, a, _⟩⟩ := mem_closure_iff.1 this _ isOpen_univ trivial
     exact ⟨a⟩
   · exact ⟨pureCauchy c⟩

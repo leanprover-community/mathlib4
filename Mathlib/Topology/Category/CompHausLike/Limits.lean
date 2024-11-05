@@ -152,7 +152,7 @@ example : HasFiniteCoproducts (CompHausLike.{u} P) := inferInstance
 /-- The inclusion maps into the explicit finite coproduct are open embeddings. -/
 lemma finiteCoproduct.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (finiteCoproduct.ι X a) :=
-  isOpenEmbedding_sigmaMk (σ := fun a ↦ (X a))
+  .sigmaMk (σ := fun a ↦ X a)
 
 @[deprecated (since := "2024-10-18")]
 alias finiteCoproduct.openEmbedding_ι := finiteCoproduct.isOpenEmbedding_ι
