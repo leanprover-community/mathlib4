@@ -61,11 +61,11 @@ theorem length_splitLengths_getElem_le {i : ℕ} {hi : i < (sz.splitLengths l).l
     · simp only [getElem_cons_succ]
       apply tail_ih
 
-theorem join_splitLengths (h : l.length ≤ sz.sum) : (sz.splitLengths l).join = l := by
+theorem flatten_splitLengths (h : l.length ≤ sz.sum) : (sz.splitLengths l).flatten = l := by
   induction sz generalizing l
   · simp_all
   case cons head tail ih =>
-    simp only [splitLengths_cons, join_cons]
+    simp only [splitLengths_cons, flatten_cons]
     rw [ih, take_append_drop]
     simpa [add_comm] using h
 
