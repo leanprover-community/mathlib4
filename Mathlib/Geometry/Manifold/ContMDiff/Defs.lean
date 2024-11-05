@@ -131,11 +131,15 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     · ext y; simp only [mfld_simps]
     · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1
 
-theorem contDiffWithinAtProp_mono_of_mem (n : ℕ∞) ⦃s x t⦄ ⦃f : H → H'⦄ (hts : s ∈ 𝓝[t] x)
+theorem contDiffWithinAtProp_mono_of_mem_nhdsWithin
+    (n : ℕ∞) ⦃s x t⦄ ⦃f : H → H'⦄ (hts : s ∈ 𝓝[t] x)
     (h : ContDiffWithinAtProp I I' n f s x) : ContDiffWithinAtProp I I' n f t x := by
   refine h.mono_of_mem_nhdsWithin ?_
   refine inter_mem ?_ (mem_of_superset self_mem_nhdsWithin inter_subset_right)
   rwa [← Filter.mem_map, ← I.image_eq, I.symm_map_nhdsWithin_image]
+
+@[deprecated (since := "2024-10-31")]
+alias contDiffWithinAtProp_mono_of_mem := contDiffWithinAtProp_mono_of_mem_nhdsWithin
 
 theorem contDiffWithinAtProp_id (x : H) : ContDiffWithinAtProp I I n id univ x := by
   simp only [ContDiffWithinAtProp, id_comp, preimage_univ, univ_inter]
@@ -637,19 +641,23 @@ theorem contMDiffWithinAt_iff_nat :
 
 /-! ### Restriction to a smaller set -/
 
-theorem ContMDiffWithinAt.mono_of_mem (hf : ContMDiffWithinAt I I' n f s x) (hts : s ∈ 𝓝[t] x) :
+theorem ContMDiffWithinAt.mono_of_mem_nhdsWithin
+    (hf : ContMDiffWithinAt I I' n f s x) (hts : s ∈ 𝓝[t] x) :
     ContMDiffWithinAt I I' n f t x :=
-  StructureGroupoid.LocalInvariantProp.liftPropWithinAt_mono_of_mem
-    (contDiffWithinAtProp_mono_of_mem n) hf hts
+  StructureGroupoid.LocalInvariantProp.liftPropWithinAt_mono_of_mem_nhdsWithin
+    (contDiffWithinAtProp_mono_of_mem_nhdsWithin n) hf hts
+
+@[deprecated (since := "2024-10-31")]
+alias ContMDiffWithinAt.mono_of_mem := ContMDiffWithinAt.mono_of_mem_nhdsWithin
 
 theorem ContMDiffWithinAt.mono (hf : ContMDiffWithinAt I I' n f s x) (hts : t ⊆ s) :
     ContMDiffWithinAt I I' n f t x :=
-  hf.mono_of_mem <| mem_of_superset self_mem_nhdsWithin hts
+  hf.mono_of_mem_nhdsWithin <| mem_of_superset self_mem_nhdsWithin hts
 
 theorem contMDiffWithinAt_congr_nhds (hst : 𝓝[s] x = 𝓝[t] x) :
     ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x :=
-  ⟨fun h => h.mono_of_mem <| hst ▸ self_mem_nhdsWithin, fun h =>
-    h.mono_of_mem <| hst.symm ▸ self_mem_nhdsWithin⟩
+  ⟨fun h => h.mono_of_mem_nhdsWithin <| hst ▸ self_mem_nhdsWithin, fun h =>
+    h.mono_of_mem_nhdsWithin <| hst.symm ▸ self_mem_nhdsWithin⟩
 
 theorem contMDiffWithinAt_insert_self :
     ContMDiffWithinAt I I' n f (insert x s) x ↔ ContMDiffWithinAt I I' n f s x := by
@@ -726,7 +734,8 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds
   · rw [← contMDiffWithinAt_insert_self, this (mem_insert _ _), insert_idem]
   rw [insert_eq_of_mem hxs]
   -- The `←` implication is trivial
-  refine ⟨fun h ↦ ?_, fun ⟨u, hmem, hu⟩ ↦ (hu _ (mem_of_mem_nhdsWithin hxs hmem)).mono_of_mem hmem⟩
+  refine ⟨fun h ↦ ?_, fun ⟨u, hmem, hu⟩ ↦
+    (hu _ (mem_of_mem_nhdsWithin hxs hmem)).mono_of_mem_nhdsWithin hmem⟩
   -- The property is true in charts. Let `v` be a good neighborhood in the chart where the function
   -- is smooth.
   rcases (contMDiffWithinAt_iff'.1 h).2.contDiffOn le_rfl with ⟨v, hmem, hsub, hv⟩

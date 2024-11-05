@@ -135,7 +135,7 @@ theorem mem_degrees {p : MvPolynomial σ R} {i : σ} :
   classical
   simp only [degrees_def, Multiset.mem_sup, ← mem_support_iff, Finsupp.mem_toMultiset, exists_prop]
 
-theorem le_degrees_add {p q : MvPolynomial σ R} (h : p.degrees.Disjoint q.degrees) :
+theorem le_degrees_add {p q : MvPolynomial σ R} (h : Disjoint p.degrees q.degrees) :
     p.degrees ≤ (p + q).degrees := by
   classical
   apply Finset.sup_le
@@ -154,7 +154,7 @@ theorem le_degrees_add {p q : MvPolynomial σ R} (h : p.degrees.Disjoint q.degre
     all_goals rw [mem_degrees]; refine ⟨d, ?_, hj⟩; assumption
 
 theorem degrees_add_of_disjoint [DecidableEq σ] {p q : MvPolynomial σ R}
-    (h : Multiset.Disjoint p.degrees q.degrees) : (p + q).degrees = p.degrees ∪ q.degrees := by
+    (h : Disjoint p.degrees q.degrees) : (p + q).degrees = p.degrees ∪ q.degrees := by
   apply le_antisymm
   · apply degrees_add
   · apply Multiset.union_le

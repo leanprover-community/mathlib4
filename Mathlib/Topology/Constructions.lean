@@ -7,6 +7,7 @@ import Mathlib.Data.Finset.Piecewise
 import Mathlib.Order.Filter.Curry
 import Mathlib.Topology.Maps.Basic
 import Mathlib.Topology.NhdsSet
+import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -166,12 +167,12 @@ theorem Quotient.preimage_mem_nhds [TopologicalSpace X] [s : Setoid X] {V : Set 
 /-- The image of a dense set under `Quotient.mk'` is a dense set. -/
 theorem Dense.quotient [Setoid X] [TopologicalSpace X] {s : Set X} (H : Dense s) :
     Dense (Quotient.mk' '' s) :=
-  Quotient.surjective_Quotient_mk''.denseRange.dense_image continuous_coinduced_rng H
+  Quotient.mk''_surjective.denseRange.dense_image continuous_coinduced_rng H
 
 /-- The composition of `Quotient.mk'` and a function with dense range has dense range. -/
 theorem DenseRange.quotient [Setoid X] [TopologicalSpace X] {f : Y → X} (hf : DenseRange f) :
     DenseRange (Quotient.mk' ∘ f) :=
-  Quotient.surjective_Quotient_mk''.denseRange.comp hf continuous_coinduced_rng
+  Quotient.mk''_surjective.denseRange.comp hf continuous_coinduced_rng
 
 theorem continuous_map_of_le {α : Type*} [TopologicalSpace α]
     {s t : Setoid α} (h : s ≤ t) : Continuous (Setoid.map_of_le h) :=

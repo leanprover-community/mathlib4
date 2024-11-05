@@ -85,7 +85,7 @@ instance [IsImmersion f] : IsDominant f.coborderRange.ι := by
   exact dense_coborder
 
 lemma isImmersion_eq_inf : @IsImmersion = (@IsPreimmersion ⊓
-    topologically fun {X Y} _ _ f ↦ IsLocallyClosed (Set.range f) : MorphismProperty Scheme) := by
+    topologically fun {_ _} _ _ f ↦ IsLocallyClosed (Set.range f) : MorphismProperty Scheme) := by
   ext; exact isImmersion_iff _
 
 namespace IsImmersion
