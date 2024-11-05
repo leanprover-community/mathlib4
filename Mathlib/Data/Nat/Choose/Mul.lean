@@ -9,8 +9,8 @@ import Mathlib.Tactic.Ring.RingNF
 
 /-! # Two lemmas on choose 
 
-The proofs of these lemmas use the `ring` tactic 
-and can't be given in `Mathlib.Data.Nat.Choose.Basic` 
+The proofs of these lemmas use the `ring` tactic
+and can't be given in `Mathlib.Data.Nat.Choose.Basic`
 
 -/
 
