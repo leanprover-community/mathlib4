@@ -57,6 +57,7 @@ import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.BigOperators.Ring.Multiset
 import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.Algebra.BigOperators.RingEquiv
+import Mathlib.Algebra.BigOperators.Sym
 import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.AlgebraCat.Limits
@@ -934,6 +935,7 @@ import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
 import Mathlib.AlgebraicGeometry.Properties
+import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.RationalMap
 import Mathlib.AlgebraicGeometry.ResidueField

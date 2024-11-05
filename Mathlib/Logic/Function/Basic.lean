@@ -979,3 +979,62 @@ instance {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x
 instance {α β : Type*} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
   Decidable (curry r a b) :=
 ‹Decidable _›
+
+namespace Sum
+
+variable {ι₁ ι₂ : Type*} {α : ι₁ ⊕ ι₂ → Type*}
+
+section
+
+variable
+  (f : ∀ i₁, α (.inl i₁)) (g : ∀ i₂, α (.inr i₂))
+
+@[simp]
+lemma rec_update₁ [DecidableEq ι₁] [DecidableEq ι₂] (i₁ : ι₁) (x : α (.inl i₁)) :
+    Sum.rec (update f i₁ x) g =
+      update (Sum.rec f g) (.inl i₁) x := by
+  ext (j₁ | _)
+  · simp only
+    by_cases h : j₁ = i₁
+    · subst h
+      simp only [update_same]
+    · rw [Function.update_noteq h, Function.update_noteq (by simpa using h)]
+  · rfl
+
+@[simp]
+lemma rec_update₂ [DecidableEq ι₁] [DecidableEq ι₂] (i₂ : ι₂) (y : α (.inr i₂)) :
+    Sum.rec f (Function.update g i₂ y) =
+      update (Sum.rec f g) (.inr i₂) y := by
+  ext (_ | j₂)
+  · rfl
+  · by_cases h : j₂ = i₂
+    · subst h
+      simp only [update_same]
+    · simp
+      rw [update_noteq h, update_noteq (by simpa using h)]
+
+end
+
+@[simp]
+theorem update_inl_comp_inl_apply {γ : ι₁ ⊕ ι₂ → Type*}
+    [DecidableEq ι₁] [DecidableEq (ι₁ ⊕ ι₂)] {f : (i : ι₁ ⊕ ι₂) → γ i} {i : ι₁}
+    {x : γ (.inl i)} (j : ι₁) :
+    update f (.inl i) x (Sum.inl j) =
+      update (fun j ↦ f (.inl j)) i x j := by
+  by_cases h : j = i
+  · subst h
+    simp
+  · rw [update_noteq (by simpa using h), update_noteq h]
+
+@[simp]
+theorem update_inr_comp_inr_apply {γ : ι₁ ⊕ ι₂ → Type*}
+    [DecidableEq ι₂] [DecidableEq (ι₁ ⊕ ι₂)] {f : (i : ι₁ ⊕ ι₂) → γ i} {i : ι₂}
+    {x : γ (.inr i)} (j : ι₂) :
+    update f (.inr i) x (Sum.inr j) =
+      update (fun j ↦ f (.inr j)) i x j := by
+  by_cases h : j = i
+  · subst h
+    simp
+  · rw [update_noteq (by simpa using h), update_noteq h]
+
+end Sum
