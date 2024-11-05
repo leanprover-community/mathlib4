@@ -30,7 +30,7 @@ namespace CategoryTheory
 
 section
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D) 
+variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
 
 /-- A functor induces a `HomRel` on its domain, relating those maps that have the same image. -/
 def Functor.homRel : HomRel C :=
