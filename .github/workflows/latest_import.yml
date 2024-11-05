@@ -6,59 +6,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  # Cancels previous runs of jobs in this file
-  cancel:
-    if: github.repository == 'leanprover-community/mathlib4'
-    name: 'Cancel Previous Runs (CI)'
-    runs-on: ubuntu-latest
-    # timeout-minutes: 3
-    steps:
-      - uses: styfle/cancel-workflow-action@0.12.1
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
-
-  style_lint:
-    if: github.repository == 'leanprover-community/mathlib4'
-    name: Lint style
-    runs-on: ubuntu-latest
-    steps:
-      - name: cleanup
-        run: |
-          find . -name . -o -prune -exec rm -rf -- {} +
-
-      - uses: actions/checkout@v4
-
-      # Run the case checker action
-      - name: Check Case Sensitivity
-        uses: credfeto/action-case-checker@v1.3.0
-
-      - name: Look for ignored files
-        uses: credfeto/action-no-ignored-files@v1.2.0
-
-      - name: "Check for Lean files with the executable bit set"
-        shell: bash
-        run: |
-          executable_files="$(find . -name '*.lean' -type f \( -perm -u=x -o -perm -g=x -o -perm -o=x \))"
-          if [[ -n "$executable_files" ]]
-          then
-            echo "ERROR: The following Lean files have the executable bit set."
-            echo "$executable_files"
-            exit 1
-          fi
-
-      - name: install Python
-        if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.8
-
-      - name: install elan
-        run: |
-          set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
   build:
     if: github.repository == 'leanprover-community/mathlib4'
@@ -145,7 +92,7 @@ jobs:
             }'
 
       - name: Zulip report
-      id: late_importers
+        id: late_importers
         run: |
           printf $'summary<<EOF\n%s\nEOF' "$(
             lake build | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
