@@ -260,7 +260,6 @@ end Category
 
 end FreeMagma
 
--- Porting note: changed String to Lean.Format
 #adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
 instead of `x * y`. -/
 /-- Representation of an element of a free magma. -/

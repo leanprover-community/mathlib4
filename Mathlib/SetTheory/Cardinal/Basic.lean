@@ -8,6 +8,7 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
+import Mathlib.Logic.UnivLE
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.CompleteLinearOrder
@@ -141,7 +142,8 @@ theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
-@[simp]
+/-- Avoid using `Quotient.mk` to construct a `Cardinal` directly -/
+@[deprecated (since := "2024-10-24")]
 theorem mk'_def (α : Type u) : @Eq Cardinal ⟦α⟧ #α :=
   rfl
 
@@ -266,6 +268,10 @@ theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
 theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
   inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
+theorem out_lift_equiv (a : Cardinal.{u}) : Nonempty ((lift.{v} a).out ≃ a.out) := by
+  rw [← mk_out a, ← mk_uLift, mk_out]
+  exact ⟨outMkEquiv.trans Equiv.ulift⟩
+
 @[simp]
 lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
   rw [← mk_uLift, Cardinal.eq]
@@ -276,9 +282,7 @@ lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s)
   exact Equiv.ofBijective f this
 
 theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
-  trans
-  · rw [← Quotient.out_eq c, ← Quotient.out_eq c']
-  · rw [mk'_def, mk'_def, le_def]
+  conv_lhs => rw [← Cardinal.mk_out c, ← Cardinal.mk_out c', le_def]
 
 theorem lift_mk_le {α : Type v} {β : Type w} :
     lift.{max u w} #α ≤ lift.{max u v} #β ↔ Nonempty (α ↪ β) :=
@@ -610,10 +614,10 @@ protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
 private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → a + c ≤ b + d := by
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
 
-instance add_covariantClass : CovariantClass Cardinal Cardinal (· + ·) (· ≤ ·) :=
+instance addLeftMono : AddLeftMono Cardinal :=
   ⟨fun _ _ _ => add_le_add' le_rfl⟩
 
-instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + ·)) (· ≤ ·) :=
+instance addRightMono : AddRightMono Cardinal :=
   ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
 
 instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
@@ -718,8 +722,6 @@ instance : WellFoundedRelation Cardinal.{u} :=
 -- Porting note: this no longer is automatically inferred.
 instance : WellFoundedLT Cardinal.{u} :=
   ⟨Cardinal.lt_wf⟩
-
-instance wo : @IsWellOrder Cardinal.{u} (· < ·) where
 
 instance : ConditionallyCompleteLinearOrderBot Cardinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
@@ -981,13 +983,6 @@ theorem exists_wellOrder : ∃ (_ : LinearOrder α), WellFoundedLT α := by
 
 namespace Cardinal
 
-/-- The range of an indexed cardinal function, whose outputs live in a higher universe than the
-    inputs, is always bounded above. -/
-theorem bddAbove_range {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove (Set.range f) :=
-  ⟨sum f, by
-    rintro a ⟨i, rfl⟩
-    exact le_sum f i⟩
-
 instance small_Iic (a : Cardinal.{u}) : Small.{u} (Iic a) := by
   rw [← mk_out a]
   apply @small_of_surjective (Set a.out) (Iic #a.out) _ fun x => ⟨#x, mk_set_le x⟩
@@ -1004,17 +999,15 @@ instance small_Ioo (a b : Cardinal.{u}) : Small.{u} (Ioo a b) := small_subset Io
 theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :=
   ⟨fun ⟨a, ha⟩ => @small_subset _ (Iic a) s (fun _ h => ha h) _, by
     rintro ⟨ι, ⟨e⟩⟩
-    suffices (range fun x : ι => (e.symm x).1) = s by
-      rw [← this]
-      apply bddAbove_range.{u, u}
-    ext x
-    refine ⟨?_, fun hx => ⟨e ⟨x, hx⟩, ?_⟩⟩
-    · rintro ⟨a, rfl⟩
-      exact (e.symm a).2
-    · simp_rw [Equiv.symm_apply_apply]⟩
+    use sum.{u, u} fun x ↦ e.symm x
+    intro a ha
+    simpa using le_sum (fun x ↦ e.symm x) (e ⟨a, ha⟩)⟩
 
 theorem bddAbove_of_small (s : Set Cardinal.{u}) [h : Small.{u} s] : BddAbove s :=
   bddAbove_iff_small.2 h
+
+theorem bddAbove_range {ι : Type*} [Small.{u} ι] (f : ι → Cardinal.{u}) : BddAbove (Set.range f) :=
+  bddAbove_of_small _
 
 theorem bddAbove_image (f : Cardinal.{u} → Cardinal.{max u v}) {s : Set Cardinal.{u}}
     (hs : BddAbove s) : BddAbove (f '' s) := by
@@ -1031,7 +1024,7 @@ theorem bddAbove_range_comp {ι : Type u} {f : ι → Cardinal.{v}} (hf : BddAbo
 theorem sum_le_iSup_lift {ι : Type u}
     (f : ι → Cardinal.{max u v}) : sum f ≤ Cardinal.lift #ι * iSup f := by
   rw [← (iSup f).lift_id, ← lift_umax, lift_umax.{max u v, u}, ← sum_const]
-  exact sum_le_sum _ _ (le_ciSup <| bddAbove_range f)
+  exact sum_le_sum _ _ (le_ciSup <| bddAbove_of_small _)
 
 theorem sum_le_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iSup f := by
   rw [← lift_id #ι]
@@ -1474,6 +1467,7 @@ theorem nat_lt_aleph0 (n : ℕ) : (n : Cardinal.{u}) < ℵ₀ :=
 @[simp]
 theorem one_lt_aleph0 : 1 < ℵ₀ := by simpa using nat_lt_aleph0 1
 
+@[simp]
 theorem one_le_aleph0 : 1 ≤ ℵ₀ :=
   one_lt_aleph0.le
 
@@ -1585,6 +1579,13 @@ alias ⟨_, _root_.Set.Countable.le_aleph0⟩ := le_aleph0_iff_set_countable
 theorem le_aleph0_iff_subtype_countable {p : α → Prop} :
     #{ x // p x } ≤ ℵ₀ ↔ { x | p x }.Countable :=
   le_aleph0_iff_set_countable
+
+theorem aleph0_lt_mk_iff : ℵ₀ < #α ↔ Uncountable α := by
+  rw [← not_le, ← not_countable_iff, not_iff_not, mk_le_aleph0_iff]
+
+@[simp]
+theorem aleph0_lt_mk [Uncountable α] : ℵ₀ < #α :=
+  aleph0_lt_mk_iff.mpr ‹_›
 
 instance canLiftCardinalNat : CanLift Cardinal ℕ (↑) fun x => x < ℵ₀ :=
   ⟨fun _ hx =>
@@ -1757,6 +1758,13 @@ theorem mk_punit : #PUnit = 1 :=
 
 theorem mk_unit : #Unit = 1 :=
   mk_punit
+
+@[simp] theorem mk_additive : #(Additive α) = #α := rfl
+
+@[simp] theorem mk_multiplicative : #(Multiplicative α) = #α := rfl
+
+@[to_additive (attr := simp)] theorem mk_mulOpposite : #(MulOpposite α) = #α :=
+  mk_congr MulOpposite.opEquiv.symm
 
 theorem mk_singleton {α : Type u} (x : α) : #({x} : Set α) = 1 :=
   mk_eq_one _

@@ -112,9 +112,12 @@ alias UniformEmbedding.comapMetricSpace := IsUniformEmbedding.comapMetricSpace
 
 /-- Pull back a metric space structure by an embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `TopologicalSpace` structure. -/
-abbrev Embedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β] (f : α → β)
-    (h : Embedding f) : MetricSpace α :=
-  .replaceTopology (.induced f h.inj m) h.induced
+abbrev IsEmbedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β]
+    (f : α → β) (h : IsEmbedding f) : MetricSpace α :=
+  .replaceTopology (.induced f h.inj m) h.eq_induced
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.comapMetricSpace := IsEmbedding.comapMetricSpace
 
 instance Subtype.metricSpace {α : Type*} {p : α → Prop} [MetricSpace α] :
     MetricSpace (Subtype p) :=

@@ -56,7 +56,7 @@ namespace ContinuousMap
 noncomputable def toNNReal (f : C(X, ℝ)) : C(X, ℝ≥0) := .realToNNReal |>.comp f
 
 @[fun_prop]
-lemma continuous_toNNReal : Continuous (toNNReal (X := X)) := continuous_comp _
+lemma continuous_toNNReal : Continuous (toNNReal (X := X)) := continuous_postcomp _
 
 @[simp]
 lemma toNNReal_apply (f : C(X, ℝ)) (x : X) : f.toNNReal x = (f x).toNNReal := rfl
@@ -187,7 +187,7 @@ instance NNReal.instUniqueContinuousFunctionalCalculus [UniqueContinuousFunction
         Continuous ξ' ∧ ξ' (.restrict s' <| .id ℝ) = ξ (.restrict s <| .id ℝ≥0)) := by
       intro ξ'
       refine ⟨ξ.continuous_realContinuousMapOfNNReal hξ |>.comp <|
-        ContinuousMap.continuous_comp_left _, ?_⟩
+        ContinuousMap.continuous_precomp _, ?_⟩
       exact ξ.realContinuousMapOfNNReal_apply_comp_toReal (.restrict s <| .id ℝ≥0)
     obtain ⟨hφ', hφ_id⟩ := this φ hφ
     obtain ⟨hψ', hψ_id⟩ := this ψ hψ
@@ -249,7 +249,7 @@ lemma toNNReal_apply (f : C(X, ℝ)₀) (x : X) : f.toNNReal x = Real.toNNReal (
 lemma continuous_toNNReal : Continuous (toNNReal (X := X)) := by
   rw [continuous_induced_rng]
   convert_to Continuous (ContinuousMap.toNNReal ∘ ((↑) : C(X, ℝ)₀ → C(X, ℝ))) using 1
-  exact ContinuousMap.continuous_comp _ |>.comp continuous_induced_dom
+  exact ContinuousMap.continuous_postcomp _ |>.comp continuous_induced_dom
 
 lemma toContinuousMapHom_toNNReal (f : C(X, ℝ)₀) :
     (toContinuousMapHom (X := X) (R := ℝ) f).toNNReal =
@@ -401,7 +401,7 @@ instance NNReal.instUniqueNonUnitalContinuousFunctionalCalculus
       intro ξ'
       refine ⟨ξ.continuous_realContinuousMapZeroOfNNReal hξ |>.comp <| ?_, ?_⟩
       · rw [continuous_induced_rng]
-        exact ContinuousMap.continuous_comp_left _ |>.comp continuous_induced_dom
+        exact ContinuousMap.continuous_precomp _ |>.comp continuous_induced_dom
       · exact ξ.realContinuousMapZeroOfNNReal_apply_comp_toReal (.id h0)
     obtain ⟨hφ', hφ_id⟩ := this φ hφ
     obtain ⟨hψ', hψ_id⟩ := this ψ hψ

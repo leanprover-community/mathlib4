@@ -245,15 +245,12 @@ theorem coe_mulHom_mk (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) :
 protected theorem map_smul (f : A →ₛₙₐ[φ] B) (c : R) (x : A) : f (c • x) = (φ c) • f x :=
   map_smulₛₗ _ _ _
 
--- @[simp] -- Porting note (#10618) : simp can prove this
 protected theorem map_add (f : A →ₛₙₐ[φ] B) (x y : A) : f (x + y) = f x + f y :=
   map_add _ _ _
 
--- @[simp] -- Porting note (#10618) : simp can prove this
 protected theorem map_mul (f : A →ₛₙₐ[φ] B) (x y : A) : f (x * y) = f x * f y :=
   map_mul _ _ _
 
--- @[simp] -- Porting note (#10618) : simp can prove this
 protected theorem map_zero (f : A →ₛₙₐ[φ] B) : f 0 = 0 :=
   map_zero _
 

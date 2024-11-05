@@ -17,10 +17,10 @@ This file proves Theorem 70 from the [100 Theorems List](https://www.cs.ru.nl/~f
 The theorem characterizes even perfect numbers.
 
 Euclid proved that if `2 ^ (k + 1) - 1` is prime (these primes are known as Mersenne primes),
-  then `2 ^ k * 2 ^ (k + 1) - 1` is perfect.
+  then `2 ^ k * (2 ^ (k + 1) - 1)` is perfect.
 
 Euler proved the converse, that if `n` is even and perfect, then there exists `k` such that
-  `n = 2 ^ k * 2 ^ (k + 1) - 1` and `2 ^ (k + 1) - 1` is prime.
+  `n = 2 ^ k * (2 ^ (k + 1) - 1)` and `2 ^ (k + 1) - 1` is prime.
 
 ## References
 https://en.wikipedia.org/wiki/Euclid%E2%80%93Euler_theorem
