@@ -47,7 +47,7 @@ lemma preimage_closedPoints_subset (hf : Function.Injective f) (hf' : Continuous
 lemma IsClosedEmbedding.preimage_closedPoints (hf : IsClosedEmbedding f) :
     f ⁻¹' closedPoints Y = closedPoints X := by
   ext x
-  simp [mem_closedPoints_iff, ← Set.image_singleton, hf.closed_iff_image_closed]
+  simp [mem_closedPoints_iff, ← Set.image_singleton, hf.isClosed_iff_image_isClosed]
 
 lemma closedPoints_eq_univ [T1Space X] :
     closedPoints X = Set.univ :=
