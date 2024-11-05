@@ -145,26 +145,40 @@ jobs:
             }'
 
       - name: Zulip report
+      id: late_importers
         run: |
-          lake build | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
-            awk -F: 'BEGIN{max=0}
-              /^⚠/{ print currMax; max=0 }
-              (max < $3) {
-                gsub(/ *Now redun.*/, "")
-                gsub(/ to \[[^]]*\]/, "")
-                gsub(/ *note: this linter.*/, "")
-                gsub(/\.\//, "")
-                gsub(/ *Imports increased by */, "")
-                gsub(/ *New imports */, "")
-                currMax=$0
-                max=$3+0
-            }' |
-            sort --field-separator=: -k3 -nr |
-            awk -F: 'BEGIN{
-              printf("|File|Line|Import increase|New imports|\n|:-|-:|-:|:-|\n")
-              con=1
-            }
-              ((con <= 15) && (10 <= $5+0)) {
-                con++
-                printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
-            }'
+          printf $'summary<<EOF\n%s\nEOF' "$(
+            lake build | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
+              awk -F: 'BEGIN{max=0}
+                /^⚠/{ print currMax; max=0 }
+                (max < $3) {
+                  gsub(/ *Now redun.*/, "")
+                  gsub(/ to \[[^]]*\]/, "")
+                  gsub(/ *note: this linter.*/, "")
+                  gsub(/\.\//, "")
+                  gsub(/ *Imports increased by */, "")
+                  gsub(/ *New imports */, "")
+                  currMax=$0
+                  max=$3+0
+              }' |
+              sort --field-separator=: -k3 -nr |
+              awk -F: 'BEGIN{
+                printf("|File|Line|Import increase|New imports|\n|:-|-:|-:|:-|\n")
+                con=1
+              }
+                ((con <= 15) && (10 <= $5+0)) {
+                  con++
+                  printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
+              }'
+            )"
+
+    - name: Post output to Zulip
+      uses: zulip/github-actions-zulip/send-message@v1
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'mathlib4'
+        type: 'stream'
+        topic: Late importers report
+        content: ${{ steps.late_importers.outputs.summary }}
