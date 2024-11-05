@@ -211,7 +211,7 @@ lemma sSup_IsSimpleModule.set_submodule_eq_sSup_set_submodule_isotypic :
 
 /-- A semisimple module is the supremum of all its isotypic components. -/
 theorem IsSemisimpleModule.sSup_isotypics_eq_top
-(h : IsSemisimpleModule R M) :
+    (h : IsSemisimpleModule R M) :
   sSup (set_submodule_isotypic R M) = ⊤ := by
   rw[<-sSup_IsSimpleModule.set_submodule_eq_sSup_set_submodule_isotypic, IsSimpleModule.set_submodule]
   exact IsSemisimpleModule.sSup_simples_eq_top
