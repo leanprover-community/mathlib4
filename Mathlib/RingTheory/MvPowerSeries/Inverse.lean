@@ -228,8 +228,7 @@ theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff σ
 theorem zero_inv : (0 : MvPowerSeries σ k)⁻¹ = 0 := by
   rw [inv_eq_zero, constantCoeff_zero]
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem invOfUnit_eq (φ : MvPowerSeries σ k) (h : constantCoeff σ k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
   rfl

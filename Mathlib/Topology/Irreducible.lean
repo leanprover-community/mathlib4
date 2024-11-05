@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Order.Minimal
+import Mathlib.Order.Zorn
 /-!
 # Irreducibility in topological spaces
 
@@ -297,7 +298,7 @@ theorem IsPreirreducible.interior (ht : IsPreirreducible t) : IsPreirreducible (
   ht.open_subset isOpen_interior interior_subset
 
 theorem IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
-    (hf : OpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
+    (hf : IsOpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
   rintro U V hU hV ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
   obtain ⟨_, h₁, ⟨y, h₂, rfl⟩, ⟨y', h₃, h₄⟩⟩ :=
     ht _ _ (hf.isOpenMap _ hU) (hf.isOpenMap _ hV) ⟨f x, hx, Set.mem_image_of_mem f hx'⟩

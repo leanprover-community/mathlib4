@@ -719,7 +719,6 @@ variable {f g}
 noncomputable abbrev equalizer.lift {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) : W ⟶ equalizer f g :=
   limit.lift (parallelPair f g) (Fork.ofι k h)
 
--- Porting note (#10618): removed simp since simp can prove this and the reassoc version
 @[reassoc]
 theorem equalizer.lift_ι {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
     equalizer.lift k h ≫ equalizer.ι f g = k :=
@@ -850,7 +849,6 @@ noncomputable abbrev coequalizer.cofork : Cofork f g :=
 theorem coequalizer.cofork_π : (coequalizer.cofork f g).π = coequalizer.π f g :=
   rfl
 
--- Porting note (#10618): simp can prove this, simp removed
 theorem coequalizer.cofork_ι_app_one : (coequalizer.cofork f g).ι.app one = coequalizer.π f g :=
   rfl
 
@@ -871,7 +869,6 @@ noncomputable abbrev coequalizer.desc {W : C} (k : Y ⟶ W) (h : f ≫ k = g ≫
     coequalizer f g ⟶ W :=
   colimit.desc (parallelPair f g) (Cofork.ofπ k h)
 
--- Porting note (#10618): removing simp since simp can prove this and reassoc version
 @[reassoc]
 theorem coequalizer.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = g ≫ k) :
     coequalizer.π f g ≫ coequalizer.desc k h = k :=

@@ -997,6 +997,13 @@ lemma abs_cpow_inv_two_im (x : ℂ) : |(x ^ (2⁻¹ : ℂ)).im| = sqrt ((abs x -
     ← Real.sqrt_eq_rpow, _root_.abs_mul, _root_.abs_of_nonneg (sqrt_nonneg _), abs_sin_half,
     ← sqrt_mul (abs.nonneg _), ← mul_div_assoc, mul_sub, mul_one, abs_mul_cos_arg]
 
+open scoped ComplexOrder in
+lemma inv_natCast_cpow_ofReal_pos {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
+    0 < ((n : ℂ) ^ (x : ℂ))⁻¹ := by
+  refine RCLike.inv_pos_of_pos ?_
+  rw [show (n : ℂ) ^ (x : ℂ) = (n : ℝ) ^ (x : ℂ) from rfl, ← ofReal_cpow n.cast_nonneg']
+  positivity
+
 end Complex
 
 section Tactics

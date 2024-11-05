@@ -68,6 +68,10 @@ theorem one_counit (M : C) [Bimon_Class M] : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) :=
 
 end Bimon_Class
 
+/-- The property that a morphism between bimonoid objects is a bimonoid morphism. -/
+class IsBimon_Hom {M N : C} [Bimon_Class M] [Bimon_Class N] (f : M ⟶ N) extends
+    IsMon_Hom f, IsComon_Hom f : Prop
+
 variable (C)
 
 /--
@@ -105,10 +109,6 @@ def toComon_ : Bimon_ C ⥤ Comon_ C := (Mon_.forgetMonoidal C).toOplaxMonoidalF
 @[simp]
 theorem toComon_forget : toComon_ C ⋙ Comon_.forget C = forget C := rfl
 
--- TODO: the `set_option` is not strictly necessary, but the declaration is just a heartbeat
--- away from using too many heartbeats.  Squeezing `(d)simp` improves the situation, but pulls
--- out too many lemmas
-set_option maxHeartbeats 400000 in
 /-- The object level part of the forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 def toMon_Comon_obj (M : Bimon_ C) : Mon_ (Comon_ C) where
   X := (toComon_ C).obj M

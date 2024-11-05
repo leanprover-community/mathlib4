@@ -318,7 +318,7 @@ def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.mapGlueData F).ι i := by
   haveI : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
-  erw [ι_preservesColimitsIso_hom_assoc]
+  erw [ι_preservesColimitIso_hom_assoc]
   rw [HasColimit.isoOfNatIso_ι_hom]
   erw [Category.id_comp]
   rfl

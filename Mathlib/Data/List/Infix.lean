@@ -70,6 +70,7 @@ theorem mem_of_mem_dropLast (h : a ∈ l.dropLast) : a ∈ l :=
   dropLast_subset l h
 
 attribute [gcongr] Sublist.drop
+attribute [refl] prefix_refl suffix_refl infix_refl
 
 theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
     x ++ [y.get ⟨x.length, hl⟩] <+: y := by

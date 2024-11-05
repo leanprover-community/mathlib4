@@ -39,8 +39,8 @@ We then show the pair of labels must be unique. Now if there is no increasing se
 which is a contradiction if there are more than `r * s` elements.
 -/
 theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : Injective f) :
-    (∃ t : Finset (Fin n), r < t.card ∧ StrictMonoOn f ↑t) ∨
-      ∃ t : Finset (Fin n), s < t.card ∧ StrictAntiOn f ↑t := by
+    (∃ t : Finset (Fin n), r < #t ∧ StrictMonoOn f ↑t) ∨
+      ∃ t : Finset (Fin n), s < #t ∧ StrictAntiOn f ↑t := by
   -- Given an index `i`, produce the set of increasing (resp., decreasing) subsequences which ends
   -- at `i`.
   let inc_sequences_ending_in : Fin n → Finset (Finset (Fin n)) := fun i =>
