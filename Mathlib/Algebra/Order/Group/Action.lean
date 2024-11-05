@@ -17,16 +17,6 @@ Notably these are relevant for pointwise actions on set-like objects.
 
 variable {ι : Sort*} {M α : Type*}
 
-/-- TODO -/
-class SMulLeftMono (M α : Type*) [SMul M α] [LE α] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M α (· • ·) (· ≤ ·)
-
-/-- TODO -/
-class SMulLeftStrictMono (M α : Type*) [SMul M α] [LT α] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M α (· • ·) (· < ·)
-
 theorem smul_mono_right [SMul M α] [Preorder α] [SMulLeftMono M α]
     (m : M) : Monotone (HSMul.hSMul m : α → α) :=
   fun _ _ => SMulLeftMono.elim _
@@ -52,7 +42,7 @@ theorem smul_strictMono_right [SMul M α] [Preorder α] [SMulLeftStrictMono M α
   fun _ _ => SMulLeftStrictMono.elim _
 
 lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
-    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
+    [MulAction G α] [SMulLeftMono G α]
     (h : a ≤ g • a) (n : ℕ) : a ≤ g ^ n • a := by
   induction' n with n hn
   · rw [pow_zero, one_smul]
@@ -60,7 +50,7 @@ lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a :
     exact h.trans (smul_mono_right g hn)
 
 lemma pow_smul_le {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
-    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
+    [MulAction G α] [SMulLeftMono G α]
     (h : g • a ≤ a) (n : ℕ) : g ^ n • a ≤ a := by
   induction' n with n hn
   · rw [pow_zero, one_smul]

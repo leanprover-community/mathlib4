@@ -171,6 +171,28 @@ class AddRightReflectLT [Add M] [LT M] : Prop where
 
 attribute [to_additive] MulLeftReflectLT MulRightReflectLT
 
+/-- TODO -/
+class SMulLeftMono [SMul M N] [LE N] : Prop where
+  /-- TODO -/
+  protected elim : Covariant M N (· • ·) LE.le
+
+/-- TODO -/
+class SMulLeftStrictMono [SMul M N] [LT N] : Prop where
+  /-- TODO -/
+  protected elim : Covariant M N (· • ·) LT.lt
+
+/-- TODO -/
+class VAddLeftMono [VAdd M N] [LE N] : Prop where
+  /-- TODO -/
+  protected elim : Covariant M N (· +ᵥ ·) LE.le
+
+/-- TODO -/
+class VAddLeftStrictMono [VAdd M N] [LT N] : Prop where
+  /-- TODO -/
+  protected elim : Covariant M N (· +ᵥ ·) LT.lt
+
+attribute [to_additive] SMulLeftMono SMulLeftStrictMono
+
 variable {M N μ r}
 
 theorem rel_iff_cov (co : Covariant M N μ r) (contra : Contravariant M N μ r)
