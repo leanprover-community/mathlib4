@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.PrimeSpectrum
-import Mathlib.Algebra.Module.LocalizedModule.Basic
+import Mathlib.Algebra.Module.LocalizedModule.Exact
 import Mathlib.RingTheory.Localization.AtPrime
 
 /-!
