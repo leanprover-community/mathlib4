@@ -1654,7 +1654,8 @@ variable {R M₂ M'}
 theorem curryFinFinset_apply {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l)
     (f : MultilinearMap R (fun _ : Fin n => M') M₂) (mk : Fin k → M') (ml : Fin l → M') :
     curryFinFinset R M₂ M' hk hl f mk ml =
-      f (fun i ↦ Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i)) := rfl
+      f (fun i ↦ Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i)) :=
+  rfl
 
 @[simp]
 theorem curryFinFinset_symm_apply {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
