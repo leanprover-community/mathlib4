@@ -29,6 +29,8 @@ universe u
 variable {α : Type u} (s : α → α → Bool)
 local infixl:50 " ≼ " => s
 
+/-- The redesigned version of `merge`, which also returns the number of comparisons
+performed. -/
 def merge (xs ys : List α) (le : α → α → Bool := by exact fun a b => a ≤ b) : List α × ℕ :=
   match xs, ys with
   | [], ys => (ys, 0)
