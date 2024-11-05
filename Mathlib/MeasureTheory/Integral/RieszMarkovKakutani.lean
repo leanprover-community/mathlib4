@@ -162,20 +162,32 @@ lemma exists_sum_one_of_isCompact_nnreal
 
 end Urysohn
 
-lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X} (disj : Disjoint (K₁ : Set X) K₂) :
+lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
+    (disj : Disjoint (K₁ : Set X) K₂) :
     rieszContentAux Λ (K₁ ⊔ K₂) = rieszContentAux Λ K₁ + rieszContentAux Λ K₂ := by
   refine le_antisymm (rieszContentAux_sup_le Λ K₁ K₂) ?_
   refine le_csInf (rieszContentAux_image_nonempty Λ (K₁ ⊔ K₂)) ?_
   intro b ⟨f, ⟨hf, Λf_eq_b⟩⟩
-  have hsuppf : ∀ x ∈ K₁ ⊔ K₂, x ∈ support f := by sorry
+  have hsuppf : ∀ x ∈ K₁ ⊔ K₂, x ∈ support f := by
+    intro x hx
+    rw [mem_support]
+    exact Ne.symm (ne_of_lt <| lt_of_lt_of_le (zero_lt_one' ℝ≥0) (hf x hx))
   have hsubsuppf : (K₁ : Set X) ∪ (K₂ : Set X) ⊆ tsupport f := subset_trans hsuppf subset_closure
   obtain ⟨g₁, g₂, hg₁, hg₂, sum_g⟩ := exists_sum_one_of_isCompact_nnreal K₁.isCompact K₂.isCompact
     f.hasCompactSupport'.isCompact disj hsubsuppf
   have f_eq_sum : f = g₁ * f + g₂ * f := by
     ext x
     simp only [CompactlySupportedContinuousMap.coe_add, CompactlySupportedContinuousMap.coe_mul,
-      Pi.add_apply, Pi.mul_apply, NNReal.coe_add, NNReal.coe_mul]
-    sorry
+      Pi.add_apply, Pi.mul_apply, NNReal.coe_add, NNReal.coe_mul,
+      Eq.symm (RightDistribClass.right_distrib _ _ _), ← NNReal.coe_add, ← Pi.add_apply]
+    by_cases h : f x = 0
+    · rw [h]
+      simp only [NNReal.coe_zero, NNReal.coe_add, mul_zero]
+    · push_neg at h
+      simp only [CompactlySupportedContinuousMap.coe_add, ContinuousMap.toFun_eq_coe,
+        CompactlySupportedContinuousMap.coe_toContinuousMap] at sum_g
+      rw [sum_g (mem_of_subset_of_mem subset_closure (mem_support.mpr h))]
+      simp only [Pi.one_apply, NNReal.coe_one, one_mul]
   rw [← Λf_eq_b, f_eq_sum, map_add]
   have aux₁ : ∀ x ∈ K₁, 1 ≤ (g₁ * f) x := by
     intro x x_in_K₁
