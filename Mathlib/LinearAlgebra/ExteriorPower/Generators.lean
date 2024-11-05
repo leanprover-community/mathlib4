@@ -74,6 +74,23 @@ lemma span_ιMulti_orderEmbedding_of_span_eq_top [LinearOrder ι]
     (hg : Submodule.span R (Set.range g) = ⊤) (n : ℕ) :
     Submodule.span R (Set.range (fun (x : Fin n ↪o ι) ↦ ιMulti R _ (g ∘ x))) = ⊤ := by
   rw [← top_le_iff, ← span_ιMulti_embedding_of_span_eq_top hg, Submodule.span_le]
-  sorry
+  rintro _ ⟨x, rfl⟩
+  dsimp
+  obtain ⟨σ, hσ⟩ : ∃ (σ : Equiv.Perm (Fin n)), Monotone (x ∘ σ) := by
+    sorry
+  rw [(ιMulti R n).map_congr_perm (g ∘ x) σ,
+    ← one_smul (M := R) (b := (ιMulti R n _)), ← smul_assoc]
+  have := x.injective.comp σ.injective
+  refine Submodule.smul_mem _ _ (Submodule.subset_span
+    ⟨⟨⟨x ∘ σ, this⟩, fun {i j} ↦ ⟨fun hij ↦ ?_, fun hij ↦ hσ hij⟩⟩, rfl⟩)
+  by_contra h
+  simp only [not_le] at h
+  rw [← not_lt] at hij
+  apply hij
+  simp
+  obtain (h' | h') := (hσ h.le).lt_or_eq
+  · exact h'
+  · obtain rfl := this h'
+    simp only [lt_self_iff_false] at h
 
 end exteriorPower
