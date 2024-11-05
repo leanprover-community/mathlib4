@@ -98,11 +98,12 @@ section natToInt
 open Mathlib.Tactic.Zify
 
 /--
-`isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers.
+`isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
+or the negation thereof.
 -/
 partial def isNatProp (e : Expr) : MetaM Bool := do
-  match ← e.ineq? with
-  | (_, .const ``Nat [], _, _) => return true
+  match ← e.ineqOrNotIneq? with
+  | (_, _, .const ``Nat [], _, _) => return true
   | _ => return false
 
 /-- If `e` is of the form `((n : ℕ) : C)`, `isNatCoe e` returns `⟨n, C⟩`. -/
@@ -177,12 +178,16 @@ section strengthenStrictInt
 
 /--
 If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
-`mkNonstrictIntProof pf` returns a proof of `a + 1 ≤ b`.
+`mkNonstrictIntProof pf` returns a proof of `a + 1 ≤ b`,
+and similarly if `pf` proves a negated weak inequality.
 -/
 def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
-  match ← (← inferType pf).ineq? with
-  | (Ineq.lt, .const ``Int [], a, b) =>
+  match ← (← inferType pf).ineqOrNotIneq? with
+  | (true, Ineq.lt, .const ``Int [], a, b) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
+  | (false, Ineq.le, .const ``Int [], a, b) =>
+    return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]])
+      (← mkAppM ``lt_of_not_ge #[pf])
   | _ => return none
 
 /-- `strengthenStrictInt h` turns a proof `h` of a strict integer inequality `t1 < t2`
