@@ -82,13 +82,13 @@ section TypeCat
 
 /-- The sheaf of smooth functions from `M` to `N`, as a sheaf of types. -/
 def smoothSheaf : TopCat.Sheaf (Type u) (TopCat.of M) :=
-  (contDiffWithinAt_localInvariantProp IM I ⊤).sheaf M N
+  (contDiffWithinAt_localInvariantProp (I := IM) (I' := I) ⊤).sheaf M N
 
 variable {M}
 
 instance smoothSheaf.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
     CoeFun ((smoothSheaf IM I M N).presheaf.obj U) (fun _ ↦ ↑(unop U) → N) :=
-  (contDiffWithinAt_localInvariantProp IM I ⊤).sheafHasCoeToFun _ _ _
+  (contDiffWithinAt_localInvariantProp ⊤).sheafHasCoeToFun _ _ _
 
 open Manifold in
 /-- The object of `smoothSheaf IM I M N` for the open set `U` in `M` is
@@ -132,15 +132,15 @@ instance [Nontrivial N] (x : M) : Nontrivial ((smoothSheaf IM I M N).presheaf.st
 
 variable {IM I N}
 
-@[simp] lemma smoothSheaf.eval_germ (U : Opens M) (x : U)
+@[simp] lemma smoothSheaf.eval_germ (U : Opens M) (x : M) (hx : x ∈ U)
     (f : (smoothSheaf IM I M N).presheaf.obj (op U)) :
-    smoothSheaf.eval IM I N (x : M) ((smoothSheaf IM I M N).presheaf.germ x f) = f x :=
-  TopCat.stalkToFiber_germ ((contDiffWithinAt_localInvariantProp IM I ⊤).localPredicate M N) _ _ _
+    smoothSheaf.eval IM I N (x : M) ((smoothSheaf IM I M N).presheaf.germ U x hx f) = f ⟨x, hx⟩ :=
+  TopCat.stalkToFiber_germ ((contDiffWithinAt_localInvariantProp ⊤).localPredicate M N) _ _ _ _
 
 lemma smoothSheaf.smooth_section {U : (Opens (TopCat.of M))ᵒᵖ}
     (f : (smoothSheaf IM I M N).presheaf.obj U) :
     Smooth IM I f :=
-  (contDiffWithinAt_localInvariantProp IM I ⊤).section_spec _ _ _ _
+  (contDiffWithinAt_localInvariantProp ⊤).section_spec _ _ _ _
 
 end TypeCat
 
@@ -278,7 +278,7 @@ example : (CategoryTheory.sheafCompose _ (CategoryTheory.forget CommRingCat.{u})
 
 instance smoothSheafCommRing.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
     CoeFun ((smoothSheafCommRing IM I M R).presheaf.obj U) (fun _ ↦ ↑(unop U) → R) :=
-  (contDiffWithinAt_localInvariantProp IM I ⊤).sheafHasCoeToFun _ _ _
+  (contDiffWithinAt_localInvariantProp ⊤).sheafHasCoeToFun _ _ _
 
 open CategoryTheory Limits
 
@@ -298,7 +298,7 @@ def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
         (colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheafCommRing IM I M R).presheaf) U))
       (forgetStalk IM I M R x).hom =
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M R).presheaf) U :=
-  ι_preservesColimitsIso_hom _ _ _
+  ι_preservesColimitIso_hom _ _ _
 
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_inv (x : TopCat.of M) (U) :
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M R).presheaf) U ≫
@@ -333,12 +333,12 @@ def smoothSheafCommRing.eval (x : M) : (smoothSheafCommRing IM I M R).presheaf.s
     smoothSheafCommRing.evalAt _ _ _ _ _ _ :=
   colimit.ι_desc _ _
 
-@[simp] lemma smoothSheafCommRing.evalHom_germ (U : Opens (TopCat.of M)) (x : U)
+@[simp] lemma smoothSheafCommRing.evalHom_germ (U : Opens (TopCat.of M)) (x : M) (hx : x ∈ U)
     (f : (smoothSheafCommRing IM I M R).presheaf.obj (op U)) :
     smoothSheafCommRing.evalHom IM I M R (x : TopCat.of M)
-      ((smoothSheafCommRing IM I M R).presheaf.germ x f)
-    = f x :=
-  congr_arg (fun a ↦ a f) <| smoothSheafCommRing.ι_evalHom IM I M R x ⟨U, x.2⟩
+      ((smoothSheafCommRing IM I M R).presheaf.germ U x hx f)
+    = f ⟨x, hx⟩ :=
+  congr_arg (fun a ↦ a f) <| smoothSheafCommRing.ι_evalHom IM I M R x ⟨U, hx⟩
 
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.forgetStalk_inv_comp_eval
     (x : TopCat.of M) :
@@ -372,10 +372,10 @@ instance [Nontrivial R] (x : M) : Nontrivial ((smoothSheafCommRing IM I M R).pre
 
 variable {IM I M R}
 
-@[simp] lemma smoothSheafCommRing.eval_germ (U : Opens M) (x : U)
+@[simp] lemma smoothSheafCommRing.eval_germ (U : Opens M) (x : M) (hx : x ∈ U)
     (f : (smoothSheafCommRing IM I M R).presheaf.obj (op U)) :
-    smoothSheafCommRing.eval IM I M R x ((smoothSheafCommRing IM I M R).presheaf.germ x f)
-    = f x :=
-  smoothSheafCommRing.evalHom_germ IM I M R U x f
+    smoothSheafCommRing.eval IM I M R x ((smoothSheafCommRing IM I M R).presheaf.germ U x hx f)
+    = f ⟨x, hx⟩ :=
+  smoothSheafCommRing.evalHom_germ IM I M R U x hx f
 
 end SmoothCommRing

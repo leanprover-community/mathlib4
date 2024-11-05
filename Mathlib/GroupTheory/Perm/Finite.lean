@@ -8,6 +8,7 @@ import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fintype
+import Mathlib.Data.Finite.Sum
 
 /-!
 # Permutations on `Fintype`s
@@ -183,9 +184,9 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
     have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
     refine isConj_of_support_equiv ?_ ?_
     · refine
-          ((Equiv.Set.ofEq hd1').trans (Equiv.Set.union hd1''.le_bot)).trans
+          ((Equiv.Set.ofEq hd1').trans (Equiv.Set.union hd1'')).trans
             ((Equiv.sumCongr (subtypeEquiv f fun a => ?_) (subtypeEquiv g fun a => ?_)).trans
-              ((Equiv.Set.ofEq hd2').trans (Equiv.Set.union hd2''.le_bot)).symm) <;>
+              ((Equiv.Set.ofEq hd2').trans (Equiv.Set.union hd2'')).symm) <;>
       · simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
           apply_eq_iff_eq]
     · intro x hx
@@ -194,7 +195,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
       rw [hd1', Set.mem_union] at hx
       cases' hx with hxσ hxτ
       · rw [mem_coe, mem_support] at hxσ
-        rw [Set.union_apply_left hd1''.le_bot _, Set.union_apply_left hd1''.le_bot _]
+        rw [Set.union_apply_left, Set.union_apply_left]
         · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,
             Set.union_symm_apply_left, Subtype.coe_mk, apply_eq_iff_eq]
           have h := (hd2 (f x)).resolve_left ?_
@@ -205,7 +206,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
         · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 x).resolve_left hxσ, mem_coe,
             apply_mem_support, mem_support]
       · rw [mem_coe, ← apply_mem_support, mem_support] at hxτ
-        rw [Set.union_apply_right hd1''.le_bot _, Set.union_apply_right hd1''.le_bot _]
+        rw [Set.union_apply_right, Set.union_apply_right]
         · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
             Set.union_symm_apply_right, Subtype.coe_mk, apply_eq_iff_eq]
           have h := (hd2 (g (τ x))).resolve_right ?_

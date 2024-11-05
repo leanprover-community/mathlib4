@@ -17,7 +17,7 @@ import Mathlib.Data.Nat.Cast.Order.Ring
 variable {α : Type*}
 
 section LinearOrderedAddCommGroup
-variable [LinearOrderedCommGroup α] {a b : α}
+variable [LinearOrderedCommGroup α]
 
 @[to_additive] lemma mabs_zpow (n : ℤ) (a : α) : |a ^ n|ₘ = |a|ₘ ^ |n| := by
   obtain n0 | n0 := le_total 0 n
@@ -34,7 +34,7 @@ lemma odd_abs [LinearOrder α] [Ring α] {a : α} : Odd (abs a) ↔ Odd a := by
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α] {n : ℕ} {a b c : α}
+variable [LinearOrderedRing α] {n : ℕ} {a b : α}
 
 @[simp] lemma abs_one : |(1 : α)| = 1 := abs_of_pos zero_lt_one
 
@@ -43,7 +43,7 @@ lemma abs_two : |(2 : α)| = 2 := abs_of_pos zero_lt_two
 lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by
   rw [abs_eq (mul_nonneg (abs_nonneg a) (abs_nonneg b))]
   rcases le_total a 0 with ha | ha <;> rcases le_total b 0 with hb | hb <;>
-    simp only [abs_of_nonpos, abs_of_nonneg, true_or_iff, or_true_iff, eq_self_iff_true, neg_mul,
+    simp only [abs_of_nonpos, abs_of_nonneg, true_or, or_true, eq_self_iff_true, neg_mul,
       mul_neg, neg_neg, *]
 
 /-- `abs` as a `MonoidWithZeroHom`. -/
@@ -141,7 +141,7 @@ end LinearOrderedRing
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing α] {a b c d : α}
+variable [LinearOrderedCommRing α]
 
 theorem abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a * b := by
   rw [abs_mul_abs_self]
@@ -152,7 +152,7 @@ end LinearOrderedCommRing
 
 section
 
-variable [Ring α] [LinearOrder α] {a b : α}
+variable [Ring α] [LinearOrder α]
 
 @[simp]
 theorem abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by

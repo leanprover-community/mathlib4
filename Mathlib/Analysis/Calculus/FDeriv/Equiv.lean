@@ -87,7 +87,7 @@ theorem comp_differentiableWithinAt_iff {f : G → E} {s : Set G} {x : G} :
     ⟨fun H => ?_, fun H => iso.differentiable.differentiableAt.comp_differentiableWithinAt x H⟩
   have : DifferentiableWithinAt 𝕜 (iso.symm ∘ iso ∘ f) s x :=
     iso.symm.differentiable.differentiableAt.comp_differentiableWithinAt x H
-  rwa [← Function.comp.assoc iso.symm iso f, iso.symm_comp_self] at this
+  rwa [← Function.comp_assoc iso.symm iso f, iso.symm_comp_self] at this
 
 theorem comp_differentiableAt_iff {f : G → E} {x : G} :
     DifferentiableAt 𝕜 (iso ∘ f) x ↔ DifferentiableAt 𝕜 f x := by
@@ -107,7 +107,7 @@ theorem comp_hasFDerivWithinAt_iff {f : G → E} {s : Set G} {x : G} {f' : G →
     HasFDerivWithinAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') s x ↔ HasFDerivWithinAt f f' s x := by
   refine ⟨fun H => ?_, fun H => iso.hasFDerivAt.comp_hasFDerivWithinAt x H⟩
   have A : f = iso.symm ∘ iso ∘ f := by
-    rw [← Function.comp.assoc, iso.symm_comp_self]
+    rw [← Function.comp_assoc, iso.symm_comp_self]
     rfl
   have B : f' = (iso.symm : F →L[𝕜] E).comp ((iso : E →L[𝕜] F).comp f') := by
     rw [← ContinuousLinearMap.comp_assoc, iso.coe_symm_comp_coe, ContinuousLinearMap.id_comp]
@@ -137,7 +137,7 @@ theorem comp_hasFDerivAt_iff' {f : G → E} {x : G} {f' : G →L[𝕜] F} :
 theorem comp_fderivWithin {f : G → E} {s : Set G} {x : G} (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (iso ∘ f) s x = (iso : E →L[𝕜] F).comp (fderivWithin 𝕜 f s x) := by
   by_cases h : DifferentiableWithinAt 𝕜 f s x
-  · rw [fderiv.comp_fderivWithin x iso.differentiableAt h hxs, iso.fderiv]
+  · rw [fderiv_comp_fderivWithin x iso.differentiableAt h hxs, iso.fderiv]
   · have : ¬DifferentiableWithinAt 𝕜 (iso ∘ f) s x := mt iso.comp_differentiableWithinAt_iff.1 h
     rw [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt this, ContinuousLinearMap.comp_zero]
@@ -174,7 +174,7 @@ theorem comp_right_differentiableWithinAt_iff {f : F → G} {s : Set F} {x : E} 
     apply H.comp (iso x) iso.symm.differentiableWithinAt
     intro y hy
     simpa only [mem_preimage, apply_symm_apply] using hy
-  rwa [Function.comp.assoc, iso.self_comp_symm] at this
+  rwa [Function.comp_assoc, iso.self_comp_symm] at this
 
 theorem comp_right_differentiableAt_iff {f : F → G} {x : E} :
     DifferentiableAt 𝕜 (f ∘ iso) x ↔ DifferentiableAt 𝕜 f (iso x) := by
@@ -198,7 +198,7 @@ theorem comp_right_hasFDerivWithinAt_iff {f : F → G} {s : Set F} {x : E} {f' :
   refine ⟨fun H => ?_, fun H => H.comp x iso.hasFDerivWithinAt (mapsTo_preimage _ s)⟩
   rw [← iso.symm_apply_apply x] at H
   have A : f = (f ∘ iso) ∘ iso.symm := by
-    rw [Function.comp.assoc, iso.self_comp_symm]
+    rw [Function.comp_assoc, iso.self_comp_symm]
     rfl
   have B : f' = (f'.comp (iso : E →L[𝕜] F)).comp (iso.symm : F →L[𝕜] E) := by
     rw [ContinuousLinearMap.comp_assoc, iso.coe_comp_coe_symm, ContinuousLinearMap.comp_id]
@@ -339,7 +339,7 @@ inverse function. -/
 theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g : F → E} {a : F}
     (hg : ContinuousAt g a) (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) (g a))
     (hfg : ∀ᶠ y in 𝓝 a, f (g y) = y) : HasStrictFDerivAt g (f'.symm : F →L[𝕜] E) a := by
-  replace hg := hg.prod_map' hg
+  replace hg := hg.prodMap' hg
   replace hfg := hfg.prod_mk_nhds hfg
   have :
     (fun p : F × F => g p.1 - g p.2 - f'.symm (p.1 - p.2)) =O[𝓝 (a, a)] fun p : F × F =>
@@ -355,7 +355,7 @@ theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜]
   · refine (hf.isBigO_sub_rev.comp_tendsto hg).congr' (Eventually.of_forall fun _ => rfl)
       (hfg.mono ?_)
     rintro p ⟨hp1, hp2⟩
-    simp only [(· ∘ ·), hp1, hp2]
+    simp only [(· ∘ ·), hp1, hp2, Prod.map]
 
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
 invertible derivative `f'` at `g a`, then `g` has the derivative `f'⁻¹` at `a`.

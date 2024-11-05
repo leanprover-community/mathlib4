@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mitchell Rowett, Scott Morrison, Johan Commelin, Mario Carneiro,
+Authors: Johannes Hölzl, Mitchell Rowett, Kim Morrison, Johan Commelin, Mario Carneiro,
   Michael Howes
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
@@ -32,7 +32,7 @@ subgroup, subgroups, IsSubgroup
 
 open Set Function
 
-variable {G : Type*} {H : Type*} {A : Type*} {a a₁ a₂ b c : G}
+variable {G : Type*} {H : Type*} {A : Type*} {a b : G}
 
 section Group
 
@@ -453,10 +453,11 @@ theorem closure_subgroup {s : Set G} (hs : IsSubgroup s) : closure s = s :=
 @[to_additive]
 theorem exists_list_of_mem_closure {s : Set G} {a : G} (h : a ∈ closure s) :
     ∃ l : List G, (∀ x ∈ l, x ∈ s ∨ x⁻¹ ∈ s) ∧ l.prod = a :=
-  InClosure.recOn h (fun {x} hxs => ⟨[x], List.forall_mem_singleton.2 <| Or.inl hxs, one_mul _⟩)
+  InClosure.recOn h
+    (fun {x} hxs => ⟨[x], List.forall_mem_singleton.2 <| Or.inl hxs, List.prod_singleton⟩)
     ⟨[], List.forall_mem_nil _, rfl⟩
-    (fun {x} _ ⟨L, HL1, HL2⟩ =>
-      ⟨L.reverse.map Inv.inv, fun x hx =>
+    (fun {_} _ ⟨L, HL1, HL2⟩ =>
+      ⟨L.reverse.map Inv.inv, fun _ hx =>
         let ⟨y, hy1, hy2⟩ := List.exists_of_mem_map hx
         hy2 ▸ Or.imp id (by rw [inv_inv]; exact id) (HL1 _ <| List.mem_reverse.1 hy1).symm,
         HL2 ▸
