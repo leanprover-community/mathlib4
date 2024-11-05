@@ -205,6 +205,7 @@ open Qq Lean Meta Finset
 
 private alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
 
+attribute [local instance] NormNum.monadLiftOptionMetaM_mathlib in
 /-- The `positivity` extension which proves that `∏ i ∈ s, f i` is nonnegative if `f` is, and
 positive if each `f i` is.
 
