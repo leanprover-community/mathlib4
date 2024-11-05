@@ -198,6 +198,35 @@ lemma colimitCoyonedaHomIsoLimit_π_apply (f : colimit (D.rightOp ⋙ coyoneda) 
 
 end ProCoyonedaContravariant
 
+section ProCoyonedaContravariantRightOp
+
+variable (D : I ⥤ Cᵒᵖ) (F : C ⥤ Type u₂)
+variable [HasColimit (D ⋙ coyoneda)] [HasLimitsOfShape Iᵒᵖ (Type (max u₁ u₂))]
+
+/-- Pro-Coyoneda lemma: morphisms from colimit of coyoneda of diagram `D` to `F` is limit
+of `F` evaluated at `D`. This variant is for contravariant diagrams, see
+`colimitCoyonedaHomIsoLimit'` for a covariant version. -/
+noncomputable def colimitCoyonedaHomIsoLimitLeftOp :
+    (colimit (D ⋙ coyoneda) ⟶ F) ≅ limit (D.leftOp ⋙ F ⋙ uliftFunctor.{u₁}) :=
+  colimitHomIsoLimitYoneda _ F ≪≫
+    HasLimit.isoOfNatIso (isoWhiskerLeft (D.leftOp ⋙ Prod.sectl C F) (coyonedaLemma C))
+
+@[simp]
+lemma colimitCoyonedaHomIsoLimitLeftOp_π_apply (f : colimit (D ⋙ coyoneda) ⟶ F) (i : I) :
+    limit.π (D.leftOp ⋙ F ⋙ uliftFunctor.{u₁}) (op i) ((colimitCoyonedaHomIsoLimitLeftOp D F).hom f)
+      = ⟨f.app (D.obj i).unop ((colimit.ι (D ⋙ coyoneda) i).app (D.obj i).unop
+          (𝟙 (D.obj i).unop))⟩ := by
+  change ((colimitCoyonedaHomIsoLimitLeftOp D F).hom ≫
+    (limit.π (D.leftOp ⋙ F ⋙ uliftFunctor.{u₁}) (op i))) f = _
+  simp only [colimitCoyonedaHomIsoLimitLeftOp, Iso.trans_hom, Category.assoc,
+    HasLimit.isoOfNatIso_hom_π]
+  rw [← Category.assoc, colimitHomIsoLimitYoneda_hom_comp_π]
+  dsimp [coyonedaLemma, types_comp_apply]
+  erw [coyonedaEquiv_comp, coyonedaEquiv_apply]
+  rfl
+
+end ProCoyonedaContravariantRightOp
+
 section IndYonedaCovariant
 
 variable (D : Iᵒᵖ ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ Type u₂)
@@ -225,6 +254,33 @@ lemma colimitYonedaHomIsoLimit_π_apply (f : colimit (D.unop ⋙ yoneda) ⟶ F) 
 
 end IndYonedaCovariant
 
+section IndYonedaCovariantOp
+
+variable (D : I ⥤ C) (F : Cᵒᵖ ⥤ Type u₂)
+variable [HasColimit (D ⋙ yoneda)] [HasLimitsOfShape Iᵒᵖ (Type (max u₁ u₂))]
+
+/-- Ind-Yoneda lemma: morphisms from colimit of yoneda of diagram `D` to `F` is limit of `F`
+evaluated at `D`. This version is for covariant diagrams, see `colimitYonedaHomIsoLimit'` for a
+contravariant version. -/
+noncomputable def colimitYonedaHomIsoLimitOp :
+      (colimit (D ⋙ yoneda) ⟶ F) ≅ limit (D.op ⋙ F ⋙ uliftFunctor.{u₁}) :=
+  colimitHomIsoLimitYoneda _ _ ≪≫
+    HasLimit.isoOfNatIso (isoWhiskerLeft (D.op ⋙ Prod.sectl _ _) (yonedaLemma C))
+
+@[simp]
+lemma colimitYonedaHomIsoLimitOp_π_apply (f : colimit (D ⋙ yoneda) ⟶ F) (i : Iᵒᵖ) :
+    limit.π (D.op ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitYonedaHomIsoLimitOp D F).hom f) =
+      ⟨f.app (op (D.obj i.unop))
+        ((colimit.ι (D ⋙ yoneda) i.unop).app (op (D.obj i.unop)) (𝟙 (D.obj i.unop)))⟩ := by
+  change ((colimitYonedaHomIsoLimitOp D F).hom ≫ (limit.π (D.op ⋙ F ⋙ uliftFunctor.{u₁}) i)) f = _
+  simp only [colimitYonedaHomIsoLimitOp, Iso.trans_hom, Category.assoc, HasLimit.isoOfNatIso_hom_π]
+  rw [← Category.assoc, colimitHomIsoLimitYoneda_hom_comp_π]
+  dsimp [yonedaLemma]
+  erw [yonedaEquiv_comp, yonedaEquiv_apply]
+  rfl
+
+end IndYonedaCovariantOp
+
 section ProCoyonedaCovariant
 
 variable (D : I ⥤ C) (F : C ⥤ Type u₂)
@@ -250,6 +306,35 @@ lemma colimitCoyonedaHomIsoLimit'_π_apply (f : colimit (D.op ⋙ coyoneda) ⟶ 
   rfl
 
 end ProCoyonedaCovariant
+
+section ProCoyonedaCovariantUnop
+
+variable (D : Iᵒᵖ ⥤ Cᵒᵖ) (F : C ⥤ Type u₂)
+variable [HasColimit (D ⋙ coyoneda)] [HasLimitsOfShape I (Type (max u₁ u₂))]
+
+/-- Pro-Coyoneda lemma: morphisms from colimit of coyoneda of diagram `D` to `F` is limit
+of `F` evaluated at `D`. This variant is for covariant diagrams, see
+`colimitCoyonedaHomIsoLimit` for a covariant version. -/
+noncomputable def colimitCoyonedaHomIsoLimitUnop :
+    (colimit (D ⋙ coyoneda) ⟶ F) ≅ limit (D.unop ⋙ F ⋙ uliftFunctor.{u₁}) :=
+  colimitHomIsoLimitYoneda' _ F ≪≫
+    HasLimit.isoOfNatIso (isoWhiskerLeft (D.unop ⋙ Prod.sectl C F) (coyonedaLemma C))
+
+@[simp]
+lemma colimitCoyonedaHomIsoLimitUnop_π_apply (f : colimit (D ⋙ coyoneda) ⟶ F) (i : I) :
+    limit.π (D.unop ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitCoyonedaHomIsoLimitUnop D F).hom f)
+      = ⟨f.app (D.obj (op i)).unop
+          ((colimit.ι (D ⋙ coyoneda) ⟨i⟩).app (D.obj (op i)).unop (𝟙 (D.obj (op i)).unop))⟩ := by
+  change ((colimitCoyonedaHomIsoLimitUnop D F).hom ≫
+    (limit.π (D.unop ⋙ F ⋙ uliftFunctor.{u₁}) i)) f = _
+  simp only [colimitCoyonedaHomIsoLimitUnop, Iso.trans_hom, Category.assoc,
+    HasLimit.isoOfNatIso_hom_π]
+  rw [← Category.assoc, colimitHomIsoLimitYoneda'_hom_comp_π]
+  dsimp [coyonedaLemma]
+  erw [coyonedaEquiv_comp, coyonedaEquiv_apply]
+  rfl
+
+end ProCoyonedaCovariantUnop
 
 section IndYonedaContravariant
 
@@ -277,6 +362,35 @@ lemma colimitYonedaHomIsoLimit'_π_apply (f : colimit (D.leftOp ⋙ yoneda) ⟶ 
   rfl
 
 end IndYonedaContravariant
+
+section IndYonedaContravariantRightOp
+
+variable (D : Iᵒᵖ ⥤ C) (F : Cᵒᵖ ⥤ Type u₂)
+variable [HasColimit (D ⋙ yoneda)] [HasLimitsOfShape I (Type (max u₁ u₂))]
+
+/-- Ind-Yoneda lemma: morphisms from colimit of yoneda of diagram `D` to `F` is limit of `F`
+evaluated at `D`. This version is for contravariant diagrams, see `colimitYonedaHomIsoLimit` for a
+covariant version. -/
+noncomputable def colimitYonedaHomIsoLimitRightOp :
+    (colimit (D ⋙ yoneda) ⟶ F) ≅ limit (D.rightOp ⋙ F ⋙ uliftFunctor.{u₁}) :=
+  colimitHomIsoLimitYoneda' _ F ≪≫
+    HasLimit.isoOfNatIso (isoWhiskerLeft (D.rightOp ⋙ Prod.sectl _ _) (yonedaLemma C))
+
+@[simp]
+lemma colimitYonedaHomIsoLimitRightOp_π_apply (f : colimit (D ⋙ yoneda) ⟶ F) (i : I) :
+    limit.π (D.rightOp ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitYonedaHomIsoLimitRightOp D F).hom f) =
+      ⟨f.app (op (D.obj (op i)))
+        ((colimit.ι (D ⋙ yoneda) (op i)).app (op (D.obj (op i))) (𝟙 (D.obj (op i))))⟩ := by
+  change ((colimitYonedaHomIsoLimitRightOp D F).hom ≫
+    (limit.π (D.rightOp ⋙ F ⋙ uliftFunctor.{u₁}) i)) f = _
+  simp only [colimitYonedaHomIsoLimitRightOp, Iso.trans_hom, Category.assoc,
+    HasLimit.isoOfNatIso_hom_π]
+  rw [← Category.assoc, colimitHomIsoLimitYoneda'_hom_comp_π]
+  dsimp [yonedaLemma]
+  erw [yonedaEquiv_comp, yonedaEquiv_apply]
+  rfl
+
+end IndYonedaContravariantRightOp
 
 end Limits
 
