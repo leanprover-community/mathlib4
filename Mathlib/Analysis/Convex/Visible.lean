@@ -110,13 +110,14 @@ lemma IsVisible.of_convexHull_of_pos {ι : Type*} {t : Finset ι} {a : ι → V}
 variable [TopologicalSpace 𝕜] [OrderTopology 𝕜] [TopologicalSpace V] [TopologicalAddGroup V]
   [ContinuousSMul 𝕜 V]
 
+/-- One cannot see any point in the interior of a set. -/
 lemma IsVisible.eq_of_mem_interior (hsxy : IsVisible 𝕜 s x y) (hy : y ∈ interior s) :
     x = y := by
   by_contra! hxy
+  suffices h : ∀ᶠ (_δ : 𝕜) in 𝓝[>] 0, False by obtain ⟨_, ⟨⟩⟩ := h.exists
   have hmem : ∀ᶠ (δ : 𝕜) in 𝓝[>] 0, lineMap y x δ ∈ s :=
     lineMap_continuous.continuousWithinAt.eventually_mem
       (by simpa using mem_interior_iff_mem_nhds.1 hy)
-  suffices h : ∀ᶠ (_δ : 𝕜) in 𝓝[>] 0, False by obtain ⟨_, ⟨⟩⟩ := h.exists
   filter_upwards [hmem, Ioo_mem_nhdsWithin_Ioi' zero_lt_one] with δ hmem hsbt
     using hsxy.symm hmem (by aesop)
 
