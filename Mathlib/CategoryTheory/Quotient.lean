@@ -55,8 +55,8 @@ class Congruence : Prop where
   compRight : ∀ {X Y Z} {f f' : X ⟶ Y} (g : Y ⟶ Z), r f f' → r (f ≫ g) (f' ≫ g)
 
 /-- For `F : C ⥤ D`, `F.homRel` is a congruence.-/
-theorem Functor.homRelCongruence {C D : Type*} [Category C] [Category D] (F : C ⥤ D) :
-    Congruence (F.homRel) where
+instance Functor.congruence_homRel {C D : Type*} [Category C] [Category D] (F : C ⥤ D) :
+    Congruence F.homRel where
   equivalence := by
     intro X Y
     unfold homRel
