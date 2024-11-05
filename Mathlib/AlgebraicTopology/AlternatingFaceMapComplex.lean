@@ -80,7 +80,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   apply Finset.sum_bij φ
   · -- φ(S) is contained in Sᶜ
     intro ij hij
-    simp only [S, Finset.mem_univ, Finset.compl_filter, Finset.mem_filter, true_and_iff,
+    simp only [S, Finset.mem_univ, Finset.compl_filter, Finset.mem_filter, true_and,
       Fin.val_succ, Fin.coe_castLT] at hij ⊢
     linarith
   · -- φ : S → Sᶜ is injective
@@ -255,7 +255,7 @@ def inclusionOfMooreComplexMap (X : SimplicialObject A) :
   rw [Fin.sum_univ_succ, Fintype.sum_eq_zero]
   swap
   · intro j
-    rw [NormalizedMooreComplex.objX, comp_zsmul,
+    rw [NormalizedMooreComplex.objX_add_one, comp_zsmul,
       ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ _ (Finset.mem_univ j)),
       Category.assoc, kernelSubobject_arrow_comp, comp_zero, smul_zero]
   -- finally, we study the remaining term which is induced by X.δ 0

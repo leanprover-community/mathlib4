@@ -5,8 +5,10 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fin
@@ -72,7 +74,7 @@ def swapFactorsAux :
       ⟨swap x (f x)::m.1, by
         rw [List.prod_cons, m.2.1, ← mul_assoc, mul_def (swap x (f x)), swap_swap, ← one_def,
           one_mul],
-        fun {g} hg => ((List.mem_cons).1 hg).elim (fun h => ⟨x, f x, hfx, h⟩) (m.2.2 _)⟩
+        fun {_} hg => ((List.mem_cons).1 hg).elim (fun h => ⟨x, f x, hfx, h⟩) (m.2.2 _)⟩
 
 /-- `swapFactors` represents a permutation as a product of a list of transpositions.
 The representation is non unique and depends on the linear order structure.
@@ -159,7 +161,7 @@ def finPairsLT (n : ℕ) : Finset (Σ_ : Fin n, Fin n) :=
   (univ : Finset (Fin n)).sigma fun a => (range a).attachFin fun _ hm => (mem_range.1 hm).trans a.2
 
 theorem mem_finPairsLT {n : ℕ} {a : Σ_ : Fin n, Fin n} : a ∈ finPairsLT n ↔ a.2 < a.1 := by
-  simp only [finPairsLT, Fin.lt_iff_val_lt_val, true_and_iff, mem_attachFin, mem_range, mem_univ,
+  simp only [finPairsLT, Fin.lt_iff_val_lt_val, true_and, mem_attachFin, mem_range, mem_univ,
     mem_sigma]
 
 /-- `signAux σ` is the sign of a permutation on `Fin n`, defined as the parity of the number of
@@ -245,7 +247,7 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
       rfl
 
 private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2)) 1) = -1 :=
-  show _ = ∏ x ∈ {(⟨1, 0⟩ : Σ a : Fin (n + 2), Fin (n + 2))},
+  show _ = ∏ x ∈ {(⟨1, 0⟩ : Σ _ : Fin (n + 2), Fin (n + 2))},
       if (Equiv.swap 0 1) x.1 ≤ swap 0 1 x.2 then (-1 : ℤˣ) else 1 by
     refine Eq.symm (prod_subset (fun ⟨x₁, x₂⟩ => by
       simp (config := { contextual := true }) [mem_finPairsLT, Fin.one_pos]) fun a ha₁ ha₂ => ?_)
@@ -255,7 +257,7 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
     rcases a₁.zero_le.eq_or_lt with (rfl | H)
     · exact absurd a₂.zero_le ha₁.not_le
     rcases a₂.zero_le.eq_or_lt with (rfl | H')
-    · simp only [and_true_iff, eq_self_iff_true, heq_iff_eq, mem_singleton, Sigma.mk.inj_iff] at ha₂
+    · simp only [and_true, eq_self_iff_true, heq_iff_eq, mem_singleton, Sigma.mk.inj_iff] at ha₂
       have : 1 < a₁ := lt_of_le_of_ne (Nat.succ_le_of_lt ha₁)
         (Ne.symm (by intro h; apply ha₂; simp [h]))
       have h01 : Equiv.swap (0 : Fin (n + 2)) 1 0 = 1 := by simp
@@ -369,7 +371,7 @@ section SignType.sign
 
 variable [Fintype α]
 
---@[simp] Porting note (#10618): simp can prove
+@[simp]
 theorem sign_mul (f g : Perm α) : sign (f * g) = sign f * sign g :=
   MonoidHom.map_mul sign f g
 
@@ -377,7 +379,7 @@ theorem sign_mul (f g : Perm α) : sign (f * g) = sign f * sign g :=
 theorem sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
   rw [← mul_def, sign_mul]
 
---@[simp] Porting note (#10618): simp can prove
+@[simp]
 theorem sign_one : sign (1 : Perm α) = 1 :=
   MonoidHom.map_one sign
 
@@ -385,7 +387,7 @@ theorem sign_one : sign (1 : Perm α) = 1 :=
 theorem sign_refl : sign (Equiv.refl α) = 1 :=
   MonoidHom.map_one sign
 
---@[simp] Porting note (#10618): simp can prove
+@[simp]
 theorem sign_inv (f : Perm α) : sign f⁻¹ = sign f := by
   rw [MonoidHom.map_inv sign f, Int.units_inv_eq_self]
 
@@ -417,7 +419,7 @@ theorem sign_trans_trans_symm [DecidableEq β] [Fintype β] (f : Perm β) (e : �
 theorem sign_prod_list_swap {l : List (Perm α)} (hl : ∀ g ∈ l, IsSwap g) :
     sign l.prod = (-1) ^ l.length := by
   have h₁ : l.map sign = List.replicate l.length (-1) :=
-    List.eq_replicate.2
+    List.eq_replicate_iff.2
       ⟨by simp, fun u hu =>
         let ⟨g, hg⟩ := List.mem_map.1 hu
         hg.2 ▸ (hl _ hg.1).sign_eq⟩
@@ -495,7 +497,7 @@ theorem sign_bij [DecidableEq β] [Fintype β] {f : Perm α} {g : Perm β} (i : 
                 rw [← h _ x.2 this]
                 exact mt (hi _ _ this x.2) x.2⟩ :
               { y // g y ≠ y }))
-          ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ h => Subtype.eq (hi _ _ _ _ (Subtype.mk.inj h)), fun ⟨y, hy⟩ =>
+          ⟨fun ⟨_, _⟩ ⟨_, _⟩ h => Subtype.eq (hi _ _ _ _ (Subtype.mk.inj h)), fun ⟨y, hy⟩ =>
             let ⟨x, hfx, hx⟩ := hg y hy
             ⟨⟨x, hfx⟩, Subtype.eq hx⟩⟩)
         fun ⟨x, _⟩ => Subtype.eq (h x _ _)
@@ -526,7 +528,7 @@ theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β)
   · rw [← ha'] at *
     refine Or.inl ⟨l.mem_cons_self a, ?_⟩
     rw [prodExtendRight_apply_eq]
-  · refine Or.inr ⟨fun h => not_or_of_not ha' not_mem_l ((List.mem_cons).mp h), ?_⟩
+  · refine Or.inr ⟨fun h => not_or_intro ha' not_mem_l ((List.mem_cons).mp h), ?_⟩
     rw [prodExtendRight_apply_ne _ ha']
 
 section congr

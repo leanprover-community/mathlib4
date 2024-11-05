@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Lean.Meta.Tactic.Rewrites
 import Mathlib.Algebra.Order.Group.Nat
@@ -85,7 +85,7 @@ Tokenize a string at whitespace, and then pull off delimiters.
 -- this makes it "cheap" to change one identifier for another.
 def tokenize (e : Expr) : MetaM (List String) := do
   let s := (← ppExpr e).pretty
-  return s.splitOn.map splitDelimiters |>.join
+  return s.splitOn.map splitDelimiters |>.flatten
 
 /--
 Data structure containing the history of a rewrite search.

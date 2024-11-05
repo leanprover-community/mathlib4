@@ -31,32 +31,14 @@ def cmpLE {α} [LE α] [@DecidableRel α (· ≤ ·)] (x y : α) : Ordering :=
 theorem cmpLE_swap {α} [LE α] [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (x y : α) :
     (cmpLE x y).swap = cmpLE y x := by
   by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, *, Ordering.swap]
-  cases not_or_of_not xy yx (total_of _ _ _)
+  cases not_or_intro xy yx (total_of _ _ _)
 
 theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)]
     [@DecidableRel α (· < ·)] (x y : α) : cmpLE x y = cmp x y := by
   by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, lt_iff_le_not_le, *, cmp, cmpUsing]
-  cases not_or_of_not xy yx (total_of _ _ _)
+  cases not_or_intro xy yx (total_of _ _ _)
 
 namespace Ordering
-
-/-- `Compares o a b` means that `a` and `b` have the ordering relation `o` between them, assuming
-that the relation `a < b` is defined. -/
--- Porting note: we have removed `@[simp]` here in favour of separate simp lemmas,
--- otherwise this definition will unfold to a match.
-def Compares [LT α] : Ordering → α → α → Prop
-  | lt, a, b => a < b
-  | eq, a, b => a = b
-  | gt, a, b => a > b
-
-@[simp]
-lemma compares_lt [LT α] (a b : α) : Compares lt a b = (a < b) := rfl
-
-@[simp]
-lemma compares_eq [LT α] (a b : α) : Compares eq a b = (a = b) := rfl
-
-@[simp]
-lemma compares_gt [LT α] (a b : α) : Compares gt a b = (a > b) := rfl
 
 theorem compares_swap [LT α] {a b : α} {o : Ordering} : o.swap.Compares a b ↔ o.Compares b a := by
   cases o
@@ -70,18 +52,18 @@ theorem swap_eq_iff_eq_swap {o o' : Ordering} : o.swap = o' ↔ o = o'.swap := b
   rw [← swap_inj, swap_swap]
 
 theorem Compares.eq_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o = lt ↔ a < b)
-  | lt, a, b, h => ⟨fun _ => h, fun _ => rfl⟩
+  | lt, _, _, h => ⟨fun _ => h, fun _ => rfl⟩
   | eq, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_lt h' h).elim⟩
   | gt, a, b, h => ⟨fun h => by injection h, fun h' => (lt_asymm h h').elim⟩
 
 theorem Compares.ne_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o ≠ lt ↔ b ≤ a)
-  | lt, a, b, h => ⟨absurd rfl, fun h' => (not_le_of_lt h h').elim⟩
-  | eq, a, b, h => ⟨fun _ => ge_of_eq h, fun _ h => by injection h⟩
-  | gt, a, b, h => ⟨fun _ => le_of_lt h, fun _ h => by injection h⟩
+  | lt, _, _, h => ⟨absurd rfl, fun h' => (not_le_of_lt h h').elim⟩
+  | eq, _, _, h => ⟨fun _ => ge_of_eq h, fun _ h => by injection h⟩
+  | gt, _, _, h => ⟨fun _ => le_of_lt h, fun _ h => by injection h⟩
 
 theorem Compares.eq_eq [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o = eq ↔ a = b)
   | lt, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_lt h h').elim⟩
-  | eq, a, b, h => ⟨fun _ => h, fun _ => rfl⟩
+  | eq, _, _, h => ⟨fun _ => h, fun _ => rfl⟩
   | gt, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_gt h h').elim⟩
 
 theorem Compares.eq_gt [Preorder α] {o} {a b : α} (h : Compares o a b) : o = gt ↔ b < a :=
@@ -118,11 +100,13 @@ theorem compares_iff_of_compares_impl [LinearOrder α] [Preorder β] {a b : α} 
   · have hab : Compares Ordering.gt a b := hab
     rwa [ho.inj (h hab)]
 
-theorem swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o₂.swap := by
-  cases o₁ <;> rfl
+set_option linter.deprecated false in
+@[deprecated swap_then (since := "2024-09-13")]
+theorem swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o₂.swap := swap_then ..
 
-theorem orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := by
-  cases o₁ <;> cases o₂ <;> decide
+set_option linter.deprecated false in
+@[deprecated then_eq_lt (since := "2024-09-13")]
+theorem orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := then_eq_lt ..
 
 end Ordering
 
