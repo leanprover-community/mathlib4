@@ -164,24 +164,9 @@ theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
   rw [Equivalence.quot_mk_eq_iff, compClosure_eq_self r]
   simpa only [compClosure_eq_self r] using h.equivalence
 
-theorem functorHomRel_eq_compClosureEqvGen {X Y : C} (f g : X ⟶ Y) :
-    (functor r).homRel f g ↔ Relation.EqvGen (@CompClosure C _ r X Y) f g where
-  mp := fun a ↦ Quot.eqvGen_exact a
-  mpr := by
-    have : Relation.EqvGen (Functor.homRel (functor r) (X := X) (Y := Y)) =
-      Functor.homRel (functor r) (X := X) (Y := Y) :=
-        Equivalence.eqvGen_eq
-        ((Functor.homRelCongruence (functor r)).equivalence (X := X) (Y := Y))
-    rw [← this]
-    apply Relation.EqvGen.mono
-    intro f g rel
-    induction rel
-    unfold Functor.homRel
-    apply (Functor.homRelCongruence (functor r)).compLeft
-    apply (Functor.homRelCongruence (functor r)).compRight
-    unfold Functor.homRel
-    apply Quotient.sound
-    assumption
+theorem functor_homRel_eq_compClosure_eqvGen {X Y : C} (f g : X ⟶ Y) :
+    (functor r).homRel f g ↔ Relation.EqvGen (@CompClosure C _ r X Y) f g :=
+  Quot.eq
 
 theorem compClosure.congruence :
     Congruence fun X Y => Relation.EqvGen (@CompClosure C _ r X Y) := by
