@@ -36,7 +36,7 @@ namespace Multiset
 variable {α : Type*}
 
 /-- The standard Dershowitz–Manna ordering: -/
-def DMLT [DecidableEq α] [Preorder α] (M N : Multiset α) : Prop :=
+def DMLT [Preorder α] (M N : Multiset α) : Prop :=
   ∃ (X Y Z : Multiset α),
       Z ≠ ∅
     ∧ M = X + Y
@@ -45,7 +45,7 @@ def DMLT [DecidableEq α] [Preorder α] (M N : Multiset α) : Prop :=
 
 /-- A special case of DMLT. The transitive closure of it is used to define
     an equivalent (proved later) version of the ordering. -/
-def DMLT_singleton [DecidableEq α] [LT α] (M N : Multiset α) : Prop :=
+def DMLT_singleton [LT α] (M N : Multiset α) : Prop :=
   ∃ (X Y : Multiset α) (a : α) ,
       (M = X + Y)
     ∧ (N = X + {a})
@@ -55,11 +55,11 @@ open Relation
 
 /-- The transitive closure of DMLT_singleton and is equivalent to DMLT
     (proved later). -/
-def TransLT [DecidableEq α] [LT α] : Multiset α → Multiset α → Prop :=
+def TransLT [LT α] : Multiset α → Multiset α → Prop :=
     TransGen DMLT_singleton
 
 /- A special case of DMLT. -/
-theorem dmlt_of_DMLT_singleton [DecidableEq α] [Preorder α] (M N : Multiset α)
+theorem dmlt_of_DMLT_singleton [Preorder α] (M N : Multiset α)
     (h : DMLT_singleton M N) : DMLT M N := by
   rcases h with ⟨X, Y, a, M_def, N_def, ys_lt_a⟩
   use X, Y, {a}, by simp, M_def, N_def
@@ -192,7 +192,7 @@ lemma DMLT_singleton_wf [DecidableEq α] [Preorder α]
   assumption
 
 -- `DMLT` is transitive.
-lemma dmlt_trans {α} [pre : Preorder α] [dec : DecidableEq α]:
+lemma dmlt_trans {α} [pre : Preorder α] [dec : DecidableEq α] :
     ∀ (M N P : Multiset α) , DMLT N M → DMLT P N → DMLT P M := by
   intros M N P LTNM LTPN
   rcases LTNM with ⟨X1, Y1, Z1, Z1_ne, N1_def, M1_def, Ord1⟩
@@ -400,6 +400,6 @@ theorem DMLT.wf [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α) (y : 
 
 instance instWellFoundedDMLT [DecidableEq α] [Preorder α]
     [DecidableRel (fun (x : α) (y : α) => x < y)] (wf_lt :  WellFoundedLT α) :
-    WellFounded (@DMLT α _ _) := DMLT.wf wf_lt
+    WellFounded (@DMLT α _) := DMLT.wf wf_lt
 
 end Multiset
