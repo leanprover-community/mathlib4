@@ -37,34 +37,6 @@ Prove that it actually counts the number of partitions as indicated.
 
 open Multiset Nat
 
-theorem Nat.choose_mul_add (m) {n : ℕ} (hn : n ≠ 0) :
-    (m * n + n).choose n = (m + 1) * (m * n + n - 1).choose (n - 1) := by
-  rw [← mul_left_inj' (mul_ne_zero (factorial_ne_zero (m * n)) (factorial_ne_zero n))]
-  set p := n - 1
-  have hp : n = p + 1 := (succ_pred_eq_of_ne_zero hn).symm
-  simp only [hp, add_succ_sub_one]
-  calc
-    (m * (p + 1) + (p + 1)).choose (p + 1) * ((m * (p+1))! * (p+1)!)
-      = (m * (p + 1) + (p + 1)).choose (p + 1) * (m * (p+1))! * (p+1)! := by ring
-    _ = (m * (p+ 1) + (p + 1))! := by rw [add_choose_mul_factorial_mul_factorial]
-    _ = ((m * (p+ 1) + p) + 1)! := by ring_nf
-    _ = ((m * (p + 1) + p) + 1) * (m * (p + 1) + p)! := by rw [factorial_succ]
-    _ = (m * (p + 1) + p)! * ((p + 1) * (m + 1)) := by ring
-    _ = ((m * (p + 1) + p).choose p * (m * (p+1))! * (p)!) * ((p + 1) * (m + 1)) := by
-      rw [add_choose_mul_factorial_mul_factorial]
-    _ = (m * (p + 1) + p).choose p * (m * (p+1))! * (((p + 1) * (p)!) * (m + 1)) := by ring
-    _ = (m * (p + 1) + p).choose p * (m * (p+1))! * ((p + 1)! * (m + 1)) := by rw [factorial_succ]
-    _ = (m + 1) * (m * (p + 1) + p).choose p * ((m * (p + 1))! * (p + 1)!) := by ring
-
-theorem Nat.choose_mul_right (m) {n : ℕ} (hn : n ≠ 0) :
-    (m * n).choose n = m * (m * n - 1).choose (n - 1) := by
-  by_cases hm : m = 0
-  · simp only [hm, zero_mul, choose_eq_zero_iff]
-    exact Nat.pos_of_ne_zero hn
-  · set p := m - 1; have hp : m = p + 1 := (succ_pred_eq_of_ne_zero hm).symm
-    simp only [hp]
-    rw [add_mul, one_mul, choose_mul_add _ hn]
-
 namespace Multiset
 
 /-- Number of partitions of a set of cardinality `m.sum`
@@ -105,7 +77,7 @@ private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) (c : ℕ) :
 
 theorem bell_mul_eq (m : Multiset ℕ) :
     m.bell * (m.map (fun j ↦ j !)).prod *
-      Π j ∈ (m.toFinset.erase 0) (m.count j)! = m.sum ! := by
+    ∏ j ∈ (m.toFinset.erase 0), (m.count j)! = m.sum ! := by
   unfold bell
   rw [← Nat.mul_right_inj]
   · simp only [← mul_assoc]
@@ -138,7 +110,7 @@ theorem bell_mul_eq (m : Multiset ℕ) :
 
 theorem bell_eq (m : Multiset ℕ) :
     m.bell = m.sum ! / ((m.map (fun j ↦ j !)).prod *
-      Π j ∈ (m.toFinset.erase 0) (m.count j)!) := by
+      ∏ j ∈ (m.toFinset.erase 0), (m.count j)!) := by
   rw [← Nat.mul_left_inj, Nat.div_mul_cancel _]
   · rw [← mul_assoc]
     exact bell_mul_eq m
@@ -161,9 +133,9 @@ of `n`-element subsets. -/
 def uniformBell (m n : ℕ) : ℕ := bell (replicate m n)
 
 theorem uniformBell_eq (m n : ℕ) : m.uniformBell n =
-    Π p ∈ (Finset.range m), Nat.choose (p * n + n - 1) (n - 1) := by
+    ∏ p ∈ (Finset.range m), Nat.choose (p * n + n - 1) (n - 1) := by
   unfold uniformBell bell
-  rw [replicate_toFinset]
+  rw [toFinset_replicate]
   split_ifs with hm
   · simp  [hm]
   · by_cases hn : n = 0
@@ -193,7 +165,7 @@ theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     uniformBell m n * n.factorial ^ m * m.factorial = (m * n).factorial := by
   convert bell_mul_eq (replicate m n)
   · simp only [map_replicate, prod_replicate]
-  · simp only [replicate_toFinset]
+  · simp only [toFinset_replicate]
     split_ifs with hm
     · rw [hm, factorial_zero, eq_comm]
       rw [show (∅ : Finset ℕ).erase 0 = ∅ from rfl,  Finset.prod_empty]
