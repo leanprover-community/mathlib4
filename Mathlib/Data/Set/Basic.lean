@@ -1948,6 +1948,17 @@ open Function
 
 namespace Set
 
+section
+variable {α β : Type*} {a : α} {b : β}
+
+lemma preimage_fst_singleton_eq_range : (Prod.fst ⁻¹' {a} : Set (α × β)) = range (a, ·) := by
+  aesop
+
+lemma preimage_snd_singleton_eq_range : (Prod.snd ⁻¹' {b} : Set (α × β)) = range (·, b) := by
+  aesop
+
+end
+
 /-! ### Lemmas about `inclusion`, the injection of subtypes induced by `⊆` -/
 
 
