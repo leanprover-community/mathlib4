@@ -28,7 +28,7 @@ refCommit="$(git rev-parse HEAD)" #${{ github.sha }}
 # build the selected target and collapse all `linter.minImports` warning to a single line per warning
 lake build "${root}" | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
   # the `gsub`s clear all unnecessary text, leaving lines of the form
-  # `warning: [filename]:[line]:[column]:[importIncrease]: [newImports]`
+  # `warning:[filename]:[line]:[column]:[importIncrease]: [newImports]`
   # in awk-speak, $2=[filename], $3=[line], $5=[importIncrease], $6=[newImports]
   awk -F: 'BEGIN{max=0}
     # only print `currMax` when we reach the report for the next file (are we missing the last report?)
@@ -37,7 +37,7 @@ lake build "${root}" | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
       gsub(/ *Now redun.*/, "")
       gsub(/ to \[[^]]*\]/, "")
       gsub(/ *note: this linter.*/, "")
-      gsub(/\.\//, "")
+      gsub(/ \.\//, "")
       gsub(/ *Imports increased by */, "")
       gsub(/ *New imports */, "")
       currMax=$0
@@ -57,7 +57,6 @@ lake build "${root}" | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
       if (!(lineLimit == 0)) { con++ }
       fileHtml=$2
       gsub(/\.lean$/, ".html", fileHtml)
-      gsub(/ /, "", fileHtml)
       printf("| [%s](https://leanprover-community.github.io/mathlib4_docs/%s) | %s | %s | %s |\n", $2, fileHtml, $3, $5, $6)
   }'
 printf '\n\n---\n\nReference commit [%s](%s)\n' "${refCommit:0:10}" "${baseURL}/commit/${refCommit}"
