@@ -156,6 +156,22 @@ noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q :=
       RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
   }
 
+variable {S Q h}
+
+theorem algEquivOfAlgEquiv_eq_map :
+    (algEquivOfAlgEquiv S Q h H : S →+* Q) =
+      map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) :=
+  rfl
+
+theorem algEquivOfAlgEquiv_eq (x : R) :
+    algEquivOfAlgEquiv S Q h H ((algebraMap R S) x) = algebraMap P Q (h x) := by
+  simp
+
+theorem algEquivOfAlgEquiv_mk' (x : R) (y : M) :
+    algEquivOfAlgEquiv S Q h H (mk' S x y) =
+      mk' Q (h x) ⟨h y, show h y ∈ T from H ▸ Set.mem_image_of_mem h y.2⟩ := by
+  simp [map_mk']
+
 end AlgEquivOfAlgEquiv
 
 section at_units
