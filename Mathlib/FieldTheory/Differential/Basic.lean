@@ -6,6 +6,8 @@ Authors: Daniel Weber
 import Mathlib.RingTheory.Derivation.MapCoeffs
 import Mathlib.FieldTheory.PrimitiveElement
 
+set_option linter.minImports true
+
 /-!
 # Differential Fields
 
@@ -132,9 +134,8 @@ instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     rfl
 
 variable {K : Type*} [Field K] [Algebra F K]
-variable [FiniteDimensional F K]
 
-noncomputable def differentialOfAdjoinEqTop
+noncomputable def differentialOfAdjoinEqTop [FiniteDimensional F K]
     (k : K) (h : F⟮k⟯ = ⊤) : Differential K :=
   have : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
   have : Fact (Irreducible (minpoly F k)) :=
@@ -143,7 +144,7 @@ noncomputable def differentialOfAdjoinEqTop
     (IsAlgebraic.of_finite F k).isIntegral |>.trans (IntermediateField.equivOfEq h) |>.trans
     IntermediateField.topEquiv).symm.toRingEquiv
 
-lemma differentialAlgebraOfAdjoinEqTop (k : K) (h : F⟮k⟯ = ⊤) :
+lemma differentialAlgebraOfAdjoinEqTop [FiniteDimensional F K] (k : K) (h : F⟮k⟯ = ⊤) :
     letI := differentialOfAdjoinEqTop k h
     DifferentialAlgebra F K := by
   have : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩

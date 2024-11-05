@@ -7,7 +7,7 @@ import Mathlib.Algebra.Algebra.Field
 import Mathlib.FieldTheory.Differential.Basic
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.FieldTheory.NormalClosure
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Liouville's theorem
@@ -56,13 +56,13 @@ lemma IsLiouville.trans {A : Type*} [Field A] [Algebra K A] [Algebra F A]
     have hc (x : ι'') := mem_range_of_deriv_eq_zero F (hc' x)
     choose c' hc using hc
     apply inst1.is_liouville a ι'' c' _ u'' v'
-    rw [h']
-    · simp [hc]
+    · rw [h']
+      simp [hc]
     · intro
       apply_fun ((↑) : F → K)
-      simp only [Function.comp_apply, coe_deriv, hc, algebraMap.coe_zero]
-      apply hc'
-      apply NoZeroSMulDivisors.algebraMap_injective
+      · simp only [Function.comp_apply, coe_deriv, hc, algebraMap.coe_zero]
+        apply hc'
+      · apply NoZeroSMulDivisors.algebraMap_injective
 
 section Algebraic
 /-
