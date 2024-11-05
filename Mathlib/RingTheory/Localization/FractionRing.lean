@@ -284,6 +284,11 @@ noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : FB ≃ₐ[FA] FC wh
     simp [← IsScalarTower.algebraMap_apply A C FC]
 
 omit [IsDomain B] [IsDomain C] in
+lemma restrictScalars_fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) :
+    (fieldEquivOfAlgEquiv FA FB FC f).restrictScalars A = algEquivOfAlgEquiv f := by
+  ext; rfl
+
+omit [IsDomain B] [IsDomain C] in
 /-- This says that `fieldEquivOfAlgEquiv f` is an extension of `f` (i.e., it agrees with `f` on
 `B`). Whereas `(fieldEquivOfAlgEquiv f).commutes` says that `fieldEquivOfAlgEquiv f` fixes `K`. -/
 @[simp]

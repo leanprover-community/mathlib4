@@ -167,6 +167,7 @@ theorem algEquivOfAlgEquiv_eq (x : R) :
     algEquivOfAlgEquiv S Q h H ((algebraMap R S) x) = algebraMap P Q (h x) := by
   simp
 
+set_option linter.docPrime false in
 theorem algEquivOfAlgEquiv_mk' (x : R) (y : M) :
     algEquivOfAlgEquiv S Q h H (mk' S x y) =
       mk' Q (h x) ⟨h y, show h y ∈ T from H ▸ Set.mem_image_of_mem h y.2⟩ := by
