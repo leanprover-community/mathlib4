@@ -29,7 +29,7 @@ The definition presents it as an integer.
     `uniformBell m n * n.factorial ^ m * m.factorial = (m * n).factorial`
 
 * `Nat.uniformBell_zero`, `Nat.uniformBell_zero'`, `Nat.uniformBell_one`, `Nat.uniformBell_one':
-compute `Nat.uniformBell` when one of the parameters is `0` or `1`
+  compute `Nat.uniformBell` when one of the parameters is `0` or `1`
 
 * `Nat.uniformBell_succ` computes `Nat.uniformBell (m + 1) n` from `Nat.uniformBell m n`
 
@@ -76,11 +76,10 @@ namespace Multiset
 whose parts have cardinalities given by `m` -/
 def bell (m : Multiset ℕ) : ℕ :=
   Nat.multinomial m.toFinset (fun k ↦ k * m.count k) *
-    (m.toFinset.erase 0).prod
-      (fun k ↦ Finset.prod (Finset.range (m.count k)) fun j ↦ (j * k + k - 1).choose (k-1))
+    ∏ k ∈ m.toFinset.erase 0, ∏ j ∈ .range (m.count k), (j * k + k - 1).choose (k - 1)
 
 @[simp]
-theorem bell_zero : bell 0 = 1 := by unfold bell; simp
+theorem bell_zero : bell 0 = 1 := rfl
 
 private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) (c : ℕ) :
     x ! ^ c * c ! * ∏ j ∈ Finset.range c, (j * x + x - 1).choose (x - 1) = (x * c)! := by
@@ -177,10 +176,10 @@ theorem uniformBell_eq (m n : ℕ) : m.uniformBell n =
     · rw [show ({n} : Finset ℕ).erase 0 = {n} by simp [Ne.symm hn]]
       simp [count_replicate]
 
-theorem uniformBell_zero (n : ℕ) : uniformBell 0 n = 1 := by
+theorem uniformBell_zero_left (n : ℕ) : uniformBell 0 n = 1 := by
   simp [uniformBell_eq]
 
-theorem uniformBell_zero' (m : ℕ) : uniformBell m 0 = 1 := by
+theorem uniformBell_zero_right (m : ℕ) : uniformBell m 0 = 1 := by
   simp [uniformBell_eq]
 
 theorem uniformBell_succ (m n : ℕ) :
@@ -208,7 +207,7 @@ theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
   · simp
 
 theorem uniformBell_eq_div (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    uniformBell m n = (m * n).factorial / (n.factorial ^ m * m.factorial) := by
+    uniformBell m n = (m * n) ! / (n ! ^ m * m !) := by
   rw [eq_comm]
   apply Nat.div_eq_of_eq_mul_left
   · exact Nat.mul_pos (Nat.pow_pos (Nat.factorial_pos n)) m.factorial_pos
