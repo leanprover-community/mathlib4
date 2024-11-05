@@ -6,8 +6,6 @@ Authors: Daniel Weber
 import Mathlib.RingTheory.Derivation.MapCoeffs
 import Mathlib.FieldTheory.PrimitiveElement
 
-set_option linter.minImports true
-
 /-!
 # Differential Fields
 
