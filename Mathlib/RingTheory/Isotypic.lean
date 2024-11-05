@@ -90,7 +90,7 @@ lemma isoset'_le_isoset :
 
 
 theorem isotypic_eq_isotypic' :
-  isotypic R M C = isotypic' R M C := by
+    isotypic R M C = isotypic' R M C := by
   rw[isotypic_eq_sSup_isoset,isotypic']
   apply le_antisymm
   · have h : sSup (isoset' R M C) = sSup (isoset' R M C ∪ {0}) := by
