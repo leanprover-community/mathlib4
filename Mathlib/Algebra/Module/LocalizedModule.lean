@@ -1058,7 +1058,7 @@ lemma liftOfLE_comp : (liftOfLE S₁ S₂ h f₁ f₂).comp f₁ = f₂ := lift_
 
 @[simp] lemma liftOfLE_apply (x) : liftOfLE S₁ S₂ h f₁ f₂ (f₁ x) = f₂ x := lift_apply ..
 
-set_option linter.docPrime false in
+/-- The image of `m/s` under `liftOfLE` is `m/s`. -/
 @[simp]
 lemma liftOfLE_mk' (m : M) (s : S₁) :
     liftOfLE S₁ S₂ h f₁ f₂ (mk' f₁ m s) = mk' f₂ m ⟨s.1, h s.2⟩ := by
