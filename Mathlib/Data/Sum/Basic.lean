@@ -111,7 +111,7 @@ theorem update_inr_apply_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α 
 
 @[simp]
 theorem update_inl_comp_inl_apply [DecidableEq α] [DecidableEq (α ⊕ β)] {γ : α ⊕ β → Type*}
-      {f : (i : α ⊕ β) → γ i} {i : α}
+    {f : (i : α ⊕ β) → γ i} {i : α}
     {x : γ (.inl i)} (j : α) :
     update f (.inl i) x (Sum.inl j) =
       update (fun j ↦ f (.inl j)) i x j := by
