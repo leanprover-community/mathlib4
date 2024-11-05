@@ -88,13 +88,9 @@ attribute [local trans] Subset.trans Superset.trans
 
 /-! ### Lattice structure -/
 
-
 section Lattice
 
 variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a b : α}
-
-instance decidableDisjoint (U V : Finset α) : Decidable (Disjoint U V) :=
-  decidable_of_iff _ disjoint_left.symm
 
 /-! #### union -/
 

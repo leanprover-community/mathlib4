@@ -107,6 +107,11 @@ theorem pairwiseDisjoint_coe {ι : Type*} {s : Set ι} {f : ι → Finset α} :
     s.PairwiseDisjoint (fun i => f i : ι → Set α) ↔ s.PairwiseDisjoint f :=
   forall₅_congr fun _ _ _ _ _ => disjoint_coe
 
+variable [DecidableEq α]
+
+instance decidableDisjoint (U V : Finset α) : Decidable (Disjoint U V) :=
+  decidable_of_iff _ disjoint_left.symm
+
 end Disjoint
 
 /-! ### disjoint union -/
