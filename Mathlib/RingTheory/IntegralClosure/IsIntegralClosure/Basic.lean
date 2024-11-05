@@ -356,7 +356,7 @@ theorem isIntegral_leadingCoeff_smul [Algebra R S] (h : aeval x p = 0) :
 
 end
 
-lemma Polynomial.Monic.quotient_isIntegralElem_of_monic {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
+lemma Polynomial.Monic.quotient_isIntegralElem {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
     (h : g ∈ I) :
     ((Ideal.Quotient.mk I).comp (algebraMap S S[X])).IsIntegralElem (Ideal.Quotient.mk I X) := by
   exact ⟨g, mon, by
@@ -366,7 +366,7 @@ lemma Polynomial.Monic.quotient_isIntegralElem_of_monic {g : S[X]} (mon : g.Moni
 
 /- If `I` is an ideal of the polynomial ring `S[X]` and contains a monic polynomial `f`,
 then `S[X]/I` is integral over `S`. -/
-lemma Polynomial.Monic.quotient_isIntegral_of_monic {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
+lemma Polynomial.Monic.quotient_isIntegral {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
     (h : g ∈ I) :
       ((Ideal.Quotient.mkₐ S I).comp (Algebra.ofId S S[X])).IsIntegral := by
   have eq_top : Algebra.adjoin S {(Ideal.Quotient.mkₐ S I) X} = ⊤ := by
@@ -380,7 +380,7 @@ lemma Polynomial.Monic.quotient_isIntegral_of_monic {g : S[X]} (mon : g.Monic) {
           as_sum_range_C_mul_X_pow g', map_sum]
         simp only [Polynomial.C_mul', ← map_pow, map_smul]
       exact this ▸ (aeval_mem_adjoin_singleton S ((Ideal.Quotient.mk I) Polynomial.X))
-  exact fun a ↦ (eq_top ▸ (adjoin_le_integralClosure ( mon.quotient_isIntegralElem_of_monic h)))
+  exact fun a ↦ (eq_top ▸ (adjoin_le_integralClosure ( mon.quotient_isIntegralElem h)))
     Algebra.mem_top
 
 end
