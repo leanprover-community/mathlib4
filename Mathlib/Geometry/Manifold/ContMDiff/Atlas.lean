@@ -46,18 +46,14 @@ theorem contMDiffOn_model_symm : ContMDiffOn 𝓘(𝕜, E) I n I.symm (range I) 
 
 /-- An atlas member is `C^n` for any `n`. -/
 theorem contMDiffOn_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) : ContMDiffOn I I n e e.source :=
-  ContMDiffOn.of_le
-    ((contDiffWithinAt_localInvariantProp ⊤).liftPropOn_of_mem_maximalAtlas
-      (contDiffWithinAtProp_id I) h)
-    le_top
+  ContMDiffOn.of_le ((contDiffWithinAt_localInvariantProp ⊤).liftPropOn_of_mem_maximalAtlas
+      contDiffWithinAtProp_id h) le_top
 
 /-- The inverse of an atlas member is `C^n` for any `n`. -/
 theorem contMDiffOn_symm_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) :
     ContMDiffOn I I n e.symm e.target :=
-  ContMDiffOn.of_le
-    ((contDiffWithinAt_localInvariantProp ⊤).liftPropOn_symm_of_mem_maximalAtlas
-      (contDiffWithinAtProp_id I) h)
-    le_top
+  ContMDiffOn.of_le ((contDiffWithinAt_localInvariantProp ⊤).liftPropOn_symm_of_mem_maximalAtlas
+      contDiffWithinAtProp_id h) le_top
 
 theorem contMDiffAt_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) (hx : x ∈ e.source) :
     ContMDiffAt I I n e x :=

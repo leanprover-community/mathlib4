@@ -110,7 +110,8 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     rw [this] at h
     have : I (e x) ∈ I.symm ⁻¹' e.target ∩ range I := by simp only [hx, mfld_simps]
     have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
-    convert (h.comp' _ (this.of_le (by exact_mod_cast le_top))).mono_of_mem_nhdsWithin _ using 1
+    convert (h.comp_inter _ (this.of_le (by exact_mod_cast le_top))).mono_of_mem_nhdsWithin _
+      using 1
     · ext y; simp only [mfld_simps]
     refine mem_nhdsWithin.mpr
       ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
