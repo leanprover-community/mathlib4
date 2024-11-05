@@ -737,7 +737,7 @@ theorem applyOrderedFinpartition_update_left (p : ∀ (i : Fin c.length), E[×c.
   · simp [h, applyOrderedFinpartition]
 
 /-- Given a an ordered finite partition `c` of `n`, a continuous multilinear map `f` in `c.length`
-variable, and for each `m` a continuous multilinear map `p m` in `c.partSize m` variables,
+variables, and for each `m` a continuous multilinear map `p m` in `c.partSize m` variables,
 one can form a continuous multilinear map in `n`
 variables by applying `p m` to each part of the partition, and then
 applying `f` to the resulting vector. It is called `c.compAlongOrderedFinpartition f p`. -/
@@ -865,7 +865,7 @@ open OrderedFinpartition
 
 /-- Composing two formal multilinear series `q` and `p` along an ordered partition extended by a
 new atom to the left corresponds to applying `p 1` on the first coordinates, and the initial
-ordered partition on the other corodinates.
+ordered partition on the other coordinates.
 This is one of the terms that appears when differentiating in the Faa di Bruno
 formula, going from step `m` to step `m + 1`. -/
 lemma faaDiBruno_aux1 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
