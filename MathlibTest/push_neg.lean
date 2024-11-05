@@ -80,6 +80,7 @@ example (x y : β) (h : y < x) : ¬¬¬ (x ≤ y) := by
   guard_target = y < x
   exact h
 
+set_option linter.unusedVariables false in
 example (x y : β) (h₁ : ¬¬¬(x < y)) (h₂ : ¬∃ (x y : Nat), x = y) : ¬ ∀(x y : Nat), x = y := by
   push_neg at *
   guard_target = ∃ (x y : Nat), x ≠ y
@@ -87,6 +88,7 @@ example (x y : β) (h₁ : ¬¬¬(x < y)) (h₂ : ¬∃ (x y : Nat), x = y) : ¬
   guard_hyp h₂ : ∀ (x y : Nat), x ≠ y
   exact ⟨0, 1, by simp⟩
 
+set_option linter.unusedVariables false in
 example (x y : β) (h₁ : ¬¬¬(x < y)) (h₂ : ¬∃ (x y : Nat), x = y) : ¬ ∀(x y : Nat), x = y := by
   push_neg at h₁ h₂ ⊢
   guard_target = ∃ (x y : Nat), x ≠ y
@@ -104,11 +106,13 @@ example (a : β) : ¬ ∀ x : β, x < a → ∃ y : β, (y < a) ∧ ∀ z : β, 
   guard_target = ∃ x, x < a ∧ ∀ (y : β), y < a → ∃ z, x ≠ z
   exact test_sorry
 
+set_option linter.unusedVariables false in
 example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m ≤ k)) (h₂ : m ≤ n) : m ≤ n := by
   push_neg at h
   guard_hyp h : ∀ k, ¬(m ≤ k)
   exact h₂
 
+set_option linter.unusedVariables false in
 example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m < k)) (h₂ : m ≤ n) : m ≤ n := by
   push_neg at h
   guard_hyp h : ∀ k, ¬(m < k)

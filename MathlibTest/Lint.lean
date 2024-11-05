@@ -2,17 +2,11 @@ import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Order.SetNotation
 
--- TODO: the linter also runs on the #guard_msg, so disable it once
--- See https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/.23guard_msgs.20doesn't.20silence.20warnings/near/423534679
-
-set_option linter.dupNamespace false
-
 /--
 warning: The namespace 'add' is duplicated in the declaration 'add.add'
 note: this linter can be disabled with `set_option linter.dupNamespace false`
 -/
 #guard_msgs in
-set_option linter.dupNamespace true in
 def add.add := True
 
 namespace Foo
@@ -22,7 +16,6 @@ warning: The namespace 'Foo' is duplicated in the declaration 'Foo.Foo.foo'
 note: this linter can be disabled with `set_option linter.dupNamespace false`
 -/
 #guard_msgs in
-set_option linter.dupNamespace true in
 def Foo.foo := True
 
 /--
@@ -45,7 +38,6 @@ warning: The namespace 'Nat' is duplicated in the declaration 'Foo.Nat.Nat.Nats'
 note: this linter can be disabled with `set_option linter.dupNamespace false`
 -/
 #guard_msgs in
-set_option linter.dupNamespace true in
 alias Nat.Nats := Nat
 
 end Nat
@@ -61,14 +53,12 @@ warning: The namespace 'add' is duplicated in the declaration 'add.add'
 note: this linter can be disabled with `set_option linter.dupNamespace false`
 -/
 #guard_msgs in
-set_option linter.dupNamespace true in
 export Nat (add add_comm add)
 
 end add
 
 section cdotLinter
-
-set_option linter.style.cdot false
+set_option linter.style.cdot true
 
 set_option linter.globalAttributeIn false in
 /--
@@ -82,7 +72,6 @@ warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
-set_option linter.style.cdot true in
 attribute [instance] Int.add in
 instance : Inhabited Nat where
   default := by
@@ -90,13 +79,11 @@ instance : Inhabited Nat where
       · have : Nat → Nat → Nat := (· + .)
         . exact 0
 
-set_option linter.style.cdot false in
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
-set_option linter.style.cdot true in
 example : Add Nat where add := (. + ·)
 
 /--
@@ -104,7 +91,6 @@ warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
-set_option linter.style.cdot true in
 example : Add Nat where add := (. + ·)
 
 /--
@@ -116,7 +102,6 @@ warning: This central dot `·` is isolated; please merge it with the next line.
 warning: This central dot `·` is isolated; please merge it with the next line.
 -/
 #guard_msgs in
-set_option linter.style.cdot true in
 example : Nat := by
   have : Nat := by
     ·
@@ -130,7 +115,6 @@ example : Nat := by
   exact 0
 
 #guard_msgs in
-set_option linter.style.cdot true in
 example : True := by
   have : Nat := by
     -- This is how code should look: no error.
@@ -139,9 +123,9 @@ example : True := by
   trivial
 
 end cdotLinter
+set_option linter.style.dollarSyntax true
 
 set_option linter.globalAttributeIn false in
-set_option linter.style.dollarSyntax false in
 /--
 warning: Please use '<|' instead of '$' for the pipe operator.
 note: this linter can be disabled with `set_option linter.style.dollarSyntax false`
@@ -150,7 +134,6 @@ warning: Please use '<|' instead of '$' for the pipe operator.
 note: this linter can be disabled with `set_option linter.style.dollarSyntax false`
 -/
 #guard_msgs in
-set_option linter.style.dollarSyntax true in
 attribute [instance] Int.add in
 instance (f g : Nat → Nat) : Inhabited Nat where
   default := by
@@ -160,7 +143,7 @@ instance (f g : Nat → Nat) : Inhabited Nat where
 
 section lambdaSyntaxLinter
 
-set_option linter.style.lambdaSyntax false
+set_option linter.style.lambdaSyntax true
 
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
@@ -168,7 +151,6 @@ The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
-set_option linter.style.lambdaSyntax true in
 example : ℕ → ℕ := λ _ ↦ 0
 
 /--
@@ -177,7 +159,6 @@ The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
-set_option linter.style.lambdaSyntax true in
 def foo : Bool := by
   let _f : ℕ → ℕ := λ _ ↦ 0
   exact true
@@ -190,7 +171,6 @@ The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
-set_option linter.style.lambdaSyntax true in
 example : ℕ → ℕ := by exact λ n ↦ 3 * n + 1
 
 /--
@@ -209,7 +189,6 @@ The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
-set_option linter.style.lambdaSyntax true in
 example : ℕ → ℕ → ℕ → ℕ := by
   have (n : ℕ) : True := trivial
   have : (Set.univ : Set ℕ) = ⋃ (i : ℕ), (Set.iUnion λ j ↦ ({0, j} : Set ℕ)) := sorry
@@ -230,7 +209,6 @@ The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
-set_option linter.style.lambdaSyntax true in
 example : True := by
   have : 0 = 0 ∧ 0 = 0 ∧ 1 + 3 = 4 := by
     refine ⟨by trivial, by
@@ -252,27 +230,24 @@ The 'λ' syntax is deprecated in mathlib4.
 note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
-set_option linter.style.lambdaSyntax true in
-example : ℕ → ℕ := set_option linter.style.lambdaSyntax false in λ _ ↦ 0
+example : ℕ → ℕ := λ _ ↦ 0
 
 set_option linter.style.lambdaSyntax false
 #guard_msgs in
-example : ℕ → ℕ := set_option linter.style.lambdaSyntax true in λ _ ↦ 0
+example : ℕ → ℕ := λ _ ↦ 0
 
 end lambdaSyntaxLinter
 
-set_option linter.style.longLine false
+set_option linter.style.longLine true
 /--
 warning: This line exceeds the 100 character limit, please shorten it!
 note: this linter can be disabled with `set_option linter.style.longLine false`
 -/
 #guard_msgs in
-set_option linter.style.longLine true in
 /-!                                                                                                -/
 
 #guard_msgs in
 -- Lines with more than 100 characters containing URLs are allowed.
-set_option linter.style.longLine true in
 /-!  http                                                                                          -/
 
 set_option linter.style.longLine true
@@ -299,5 +274,4 @@ You can use "string gaps" to format long strings: within a string quotation, usi
 note: this linter can be disabled with `set_option linter.style.longLine false`
 -/
 #guard_msgs in
-set_option linter.style.longLine true in
 #check "                              \"                                                            "

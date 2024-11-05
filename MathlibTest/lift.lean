@@ -76,7 +76,7 @@ example (α : Type _) (f : α → ℤ) (hf : ∀ a, 0 ≤ f a) (hf' : ∀ a, f a
   guard_hyp hf' : ∀ a, ((fun i : α ↦ (f i : ℤ)) a) < 1
   constructor
 
-example (α : Type _) (f : α → ℤ) (hf : ∀ a, 0 ≤ f a) (hf' : ∀ a, f a < 1) (a : α) :
+example (α : Type _) (f : α → ℤ) (hf : ∀ a, 0 ≤ f a) (_ : ∀ a, f a < 1) (a : α) :
     0 ≤ 2 * f a := by
   lift f to α → ℕ using hf with g hg
   guard_target =ₛ 0 ≤ 2 * (g a : Int)
@@ -101,11 +101,13 @@ example (h : False) : let n : ℤ := 3; n = 3 := by
 
 instance canLift_unit : CanLift Unit Unit id (fun _ ↦ true) := ⟨fun x _ ↦ ⟨x, rfl⟩⟩
 
+set_option linter.unusedVariables false in
 example (n : ℤ) (hn : 0 < n) : True := by
   fail_if_success lift n to ℕ using hn
   fail_if_success lift (n : Option ℤ) to ℕ
   trivial
 
+set_option linter.unusedVariables false in
 example (n : ℤ) : ℕ := by
   fail_if_success lift n to ℕ
   exact 0

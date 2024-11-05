@@ -189,11 +189,11 @@ example : Matrix.col _ ![1, 1] = !![1; 1] := by
   ext i j
   fin_cases i <;> simp
 
-example (ι : Type*) [Inhabited ι] : Matrix.row ι (fun (n : Fin 3) => 0) = 0 := by
+example (ι : Type*) [Inhabited ι] : Matrix.row ι (fun (_ : Fin 3) => 0) = 0 := by
   simp_all
   rfl
 
-example (ι : Type*) [Inhabited ι] : Matrix.col ι (fun (n : Fin 3) => 0) = 0 := by
+example (ι : Type*) [Inhabited ι] : Matrix.col ι (fun (_ : Fin 3) => 0) = 0 := by
   simp_all
   rfl
 

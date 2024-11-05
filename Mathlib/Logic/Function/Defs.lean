@@ -175,22 +175,6 @@ namespace Function
 
 variable {α : Type u₁} {β : Type u₂} {φ : Type u₃}
 
-/-- Interpret a function on `α × β` as a function with two arguments. -/
-@[inline]
-def curry : (α × β → φ) → α → β → φ := fun f a b => f (a, b)
-
-/-- Interpret a function with two arguments as a function on `α × β` -/
-@[inline]
-def uncurry : (α → β → φ) → α × β → φ := fun f a => f a.1 a.2
-
-@[simp]
-theorem curry_uncurry (f : α → β → φ) : curry (uncurry f) = f :=
-  rfl
-
-@[simp]
-theorem uncurry_curry (f : α × β → φ) : uncurry (curry f) = f :=
-  funext fun ⟨_a, _b⟩ => rfl
-
 protected theorem LeftInverse.id {g : β → α} {f : α → β} (h : LeftInverse g f) : g ∘ f = id :=
   funext h
 
