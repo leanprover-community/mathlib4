@@ -496,13 +496,12 @@ maps with variables indexed by `ι'`. -/
 def currySum (f : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G') :
     ContinuousMultilinearMap 𝕜 (fun _ : ι => G) (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G') :=
   MultilinearMap.mkContinuousMultilinear (MultilinearMap.currySumEquiv f.toMultilinearMap) ‖f‖
-    fun m m' => by simpa [Sum.desc_eq_elim, mul_assoc] using f.le_opNorm (Sum.elim m m')
+    fun m m' => by simpa [mul_assoc] using f.le_opNorm (Sum.elim m m')
 
 @[simp]
 theorem currySum_apply (f : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G') (m : ι → G)
-    (m' : ι' → G) : f.currySum m m' = f (Sum.elim m m') := by
-  dsimp [currySum]
-  rw [Sum.desc_eq_elim]
+    (m' : ι' → G) : f.currySum m m' = f (Sum.elim m m') :=
+  rfl
 
 /-- A continuous multilinear map with variables indexed by `ι` taking values in the space of
 continuous multilinear maps with variables indexed by `ι'` defines a continuous multilinear map with
@@ -544,7 +543,7 @@ def currySumEquiv : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' �
         rfl
       left_inv := fun f => by
         ext m
-        simp only [uncurrySum_apply, currySum_apply, Sum.elim_comp_inl_inr]
+        exact congr_arg f (Sum.elim_comp_inl_inr m)
       right_inv := fun f => by
         ext m₁ m₂
         rfl }
@@ -573,7 +572,7 @@ variable {𝕜 G G'}
 theorem curryFinFinset_apply (hk : #s = k) (hl : #sᶜ = l) (f : G[×n]→L[𝕜] G')
     (mk : Fin k → G) (ml : Fin l → G) : curryFinFinset 𝕜 G G' hk hl f mk ml =
       f fun i => Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i) :=
-  congr_arg f (by simp only [Sum.desc_eq_elim])
+  congr_arg f (by aesop)
 
 @[simp]
 theorem curryFinFinset_symm_apply (hk : #s = k) (hl : #sᶜ = l)
