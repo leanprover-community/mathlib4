@@ -95,18 +95,6 @@ def _root_.Lean.Expr.ineqOrNotIneq? (e : Expr) : MetaM (Bool × Ineq × Expr × 
     let some e' := e.not? | throwError "Not a comparison: {e}"
     return (false, ← e'.ineq?)
 
-/-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
-def leftOfIneqProof (prf : Expr) : MetaM Expr := do
-  let e ← inferType prf
-  let (_, _, t, _) ← e.ineq?
-  return t
-
-/-- If `prf` is a proof of `t R s`, `typeOfIneqProof prf` returns the type of `t`. -/
-def typeOfIneqProof (prf : Expr) : MetaM Expr := do
-  let e ← inferType prf
-  let (_, ty, _) ← e.ineq?
-  return ty
-
 /--
 `parseCompAndExpr e` checks if `e` is of the form `t < 0`, `t ≤ 0`, or `t = 0`.
 If it is, it returns the comparison along with `t`.
