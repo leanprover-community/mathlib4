@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.MvPolynomial.Supported
+import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Algebraic
@@ -162,6 +163,28 @@ theorem transcendental (i : ι) : Transcendental R (x i) := by
   have := hx.comp ![i] (Function.injective_of_subsingleton _)
   have : AlgebraicIndependent R ![x i] := by rwa [← FinVec.map_eq] at this
   rwa [← algebraicIndependent_iff_transcendental]
+
+/-- If `x = {x_i : A | i : ι}` and `f = {f_i : MvPolynomial ι R | i : ι}` are algebraically
+independent over `R`, then `{f_i(x) | i : ι}` is also algebraically independent over `R`.
+For the partial converse, see `AlgebraicIndependent.of_aeval`. -/
+theorem aeval_of_algebraicIndependent
+    {f : ι → MvPolynomial ι R} (hf : AlgebraicIndependent R f) :
+    AlgebraicIndependent R fun i ↦ aeval x (f i) := by
+  rw [algebraicIndependent_iff] at hx hf ⊢
+  intro p hp
+  exact hf _ (hx _ (by rwa [← aeval_comp_bind₁, AlgHom.comp_apply] at hp))
+
+omit hx in
+/-- If `{f_i(x) | i : ι}` is algebraically independent over `R`, then
+`{f_i : MvPolynomial ι R | i : ι}` is also algebraically independent over `R`.
+In fact, the `x = {x_i : A | i : ι}` is also transcendental over `R` provided that `R`
+is a field and `ι` is finite; the proof needs transcendence degree. -/
+theorem of_aeval {f : ι → MvPolynomial ι R}
+    (H : AlgebraicIndependent R fun i ↦ aeval x (f i)) :
+    AlgebraicIndependent R f := by
+  rw [algebraicIndependent_iff] at H ⊢
+  intro p hp
+  exact H p (by rw [← aeval_comp_bind₁, AlgHom.comp_apply, bind₁, hp, map_zero])
 
 end AlgebraicIndependent
 
@@ -504,6 +527,17 @@ theorem algebraicIndependent_polynomial_aeval_X
   exact (transcendental_supported_polynomial_aeval_X R hi (hf i)).of_tower_top_of_subalgebra_le hle
 
 end MvPolynomial
+
+/-- If `{x_i : A | i : ι}` is algebraically independent over `R`, and for each `i`,
+`f_i : R[X]` is transcendental over `R`, then `{f_i(x_i) | i : ι}` is also
+algebraically independent over `R`. -/
+theorem AlgebraicIndependent.polynomial_aeval_of_transcendental
+    (hx : AlgebraicIndependent R x)
+    {f : ι → Polynomial R} (hf : ∀ i, Transcendental R (f i)) :
+    AlgebraicIndependent R fun i ↦ Polynomial.aeval (x i) (f i) := by
+  convert aeval_of_algebraicIndependent hx (algebraicIndependent_polynomial_aeval_X _ hf)
+  rw [← AlgHom.comp_apply]
+  congr 1; ext1; simp
 
 variable (R)
 
