@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
 
 import Mathlib.Data.Nat.Choose.Multinomial
+import Mathlib.Data.Nat.Choose.Mul
 
 /-! # Bell numbers for multisets
 
