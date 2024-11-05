@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Data.List.OfFn
 import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
@@ -36,7 +35,7 @@ theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by s
 
 /-- The `n`th element of a list -/
 theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i := by
-  simp
+  simp [ofFnNthVal]
 
 @[simp]
 theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
