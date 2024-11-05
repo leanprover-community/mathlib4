@@ -126,7 +126,7 @@ theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
     derivative (∑ b ∈ s, f b) = ∑ b ∈ s, derivative (f b) :=
   map_sum ..
 
-theorem iterate_derivative_sum {s : Finset ι} {f : ι → R[X]} {k : ℕ} :
+theorem iterate_derivative_sum (k : ℕ) (s : Finset ι) (f : ι → R[X]) :
     derivative^[k] (∑ b ∈ s, f b) = ∑ b ∈ s, derivative^[k] (f b) := by
   simp_rw [← LinearMap.pow_apply, map_sum]
 
