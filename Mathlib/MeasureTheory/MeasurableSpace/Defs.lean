@@ -327,12 +327,14 @@ theorem measurableSet_generateFrom {s : Set (Set α)} {t : Set α} (ht : t ∈ s
   .basic t ht
 
 @[elab_as_elim]
-theorem generateFrom_induction (p : Set α → Prop) (C : Set (Set α)) (hC : ∀ t ∈ C, p t)
-    (h_empty : p ∅) (h_compl : ∀ t, p t → p tᶜ)
-    (h_Union : ∀ f : ℕ → Set α, (∀ n, p (f n)) → p (⋃ i, f i)) {s : Set α}
-    (hs : MeasurableSet[generateFrom C] s) : p s := by
+theorem generateFrom_induction (C : Set (Set α))
+    (p : ∀ s : Set α, MeasurableSet[generateFrom C] s → Prop) (hC : ∀ t ∈ C, ∀ ht, p t ht)
+    (empty : p ∅ (measurableSet_empty _)) (compl : ∀ t ht, p t ht → p tᶜ ht.compl)
+    (iUnion : ∀ (s : ℕ → Set α) (hs : ∀ n, MeasurableSet[generateFrom C] (s n)),
+      (∀ n, p (s n) (hs n)) → p (⋃ i, s i) (.iUnion hs)) (s : Set α)
+    (hs : MeasurableSet[generateFrom C] s) : p s hs := by
   induction hs
-  exacts [hC _ ‹_›, h_empty, h_compl _ ‹_›, h_Union ‹_› ‹_›]
+  exacts [hC _ ‹_› _, empty, compl _ ‹_› ‹_›, iUnion ‹_› ‹_› ‹_›]
 
 theorem generateFrom_le {s : Set (Set α)} {m : MeasurableSpace α}
     (h : ∀ t ∈ s, MeasurableSet[m] t) : generateFrom s ≤ m :=
@@ -352,10 +354,10 @@ theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
     (∀ s, MeasurableSet[generateFrom S] s → (x ∈ s ↔ y ∈ s)) ↔ (∀ s ∈ S, x ∈ s ↔ y ∈ s) := by
   refine ⟨fun H s hs ↦ H s (.basic s hs), fun H s ↦ ?_⟩
   apply generateFrom_induction
-  · exact H
+  · exact fun s hs _ ↦ H s hs
   · rfl
-  · exact fun _ ↦ Iff.not
-  · intro f hf
+  · exact fun _ _ ↦ Iff.not
+  · intro f _ hf
     simp only [mem_iUnion, hf]
 
 /-- If `g` is a collection of subsets of `α` such that the `σ`-algebra generated from `g` contains

@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.13"
+  "0.1.14"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -138,7 +138,8 @@ private def CacheM.getContext : IO CacheM.Context := do
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
     ("Qq", LAKEPACKAGESDIR / "Qq"),
     ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
-    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient")
+    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
+    ("Plausible", LAKEPACKAGESDIR / "plausible")
   ]⟩
 
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)

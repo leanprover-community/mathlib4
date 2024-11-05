@@ -110,7 +110,7 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     rw [this] at h
     have : I (e x) ∈ I.symm ⁻¹' e.target ∩ range I := by simp only [hx, mfld_simps]
     have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
-    convert (h.comp_inter _ (this.of_le le_top)).mono_of_mem _ using 1
+    convert (h.comp_inter _ (this.of_le le_top)).mono_of_mem_nhdsWithin _ using 1
     · ext y; simp only [mfld_simps]
     refine mem_nhdsWithin.mpr
       ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
@@ -131,11 +131,15 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     · ext y; simp only [mfld_simps]
     · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1
 
-theorem contDiffWithinAtProp_mono_of_mem (n : ℕ∞) ⦃s x t⦄ ⦃f : H → H'⦄ (hts : s ∈ 𝓝[t] x)
+theorem contDiffWithinAtProp_mono_of_mem_nhdsWithin
+    (n : ℕ∞) ⦃s x t⦄ ⦃f : H → H'⦄ (hts : s ∈ 𝓝[t] x)
     (h : ContDiffWithinAtProp I I' n f s x) : ContDiffWithinAtProp I I' n f t x := by
-  refine h.mono_of_mem ?_
+  refine h.mono_of_mem_nhdsWithin ?_
   refine inter_mem ?_ (mem_of_superset self_mem_nhdsWithin inter_subset_right)
   rwa [← Filter.mem_map, ← I.image_eq, I.symm_map_nhdsWithin_image]
+
+@[deprecated (since := "2024-10-31")]
+alias contDiffWithinAtProp_mono_of_mem := contDiffWithinAtProp_mono_of_mem_nhdsWithin
 
 theorem contDiffWithinAtProp_id (x : H) : ContDiffWithinAtProp I I n id univ x := by
   simp only [ContDiffWithinAtProp, id_comp, preimage_univ, univ_inter]
@@ -293,8 +297,8 @@ theorem contMDiffWithinAt_iff' :
             (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source))
           (extChartAt I x x) := by
   simp only [ContMDiffWithinAt, liftPropWithinAt_iff']
-  exact and_congr_right fun hc => contDiffWithinAt_congr_nhds <|
-    hc.nhdsWithin_extChartAt_symm_preimage_inter_range
+  exact and_congr_right fun hc => contDiffWithinAt_congr_set <|
+    hc.extChartAt_symm_preimage_inter_range_eventuallyEq
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
 point, and smoothness in the corresponding extended chart in the target. -/
@@ -401,8 +405,8 @@ theorem contMDiffWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I M)
         ContDiffWithinAt 𝕜 n (e'.extend I' ∘ f ∘ (e.extend I).symm) (e.extend I '' s)
           (e.extend I x) := by
   rw [contMDiffWithinAt_iff_of_mem_maximalAtlas he he' hx hy, and_congr_right_iff]
-  refine fun _ => contDiffWithinAt_congr_nhds ?_
-  simp_rw [nhdsWithin_eq_iff_eventuallyEq, e.extend_symm_preimage_inter_range_eventuallyEq hs hx]
+  refine fun _ => contDiffWithinAt_congr_set ?_
+  simp_rw [e.extend_symm_preimage_inter_range_eventuallyEq hs hx]
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
 point, and smoothness in any chart containing that point. -/
@@ -427,8 +431,9 @@ theorem contMDiffWithinAt_iff_of_mem_source' {x' : M} {y : M'} (hx : x' ∈ (cha
   rw [← extChartAt_source I'] at hy
   rw [and_congr_right_iff]
   set e := extChartAt I x; set e' := extChartAt I' (f x)
-  refine fun hc => contDiffWithinAt_congr_nhds ?_
-  rw [← e.image_source_inter_eq', ← map_extChartAt_nhdsWithin_eq_image' hx,
+  refine fun hc => contDiffWithinAt_congr_set ?_
+  rw [← nhdsWithin_eq_iff_eventuallyEq, ← e.image_source_inter_eq',
+    ← map_extChartAt_nhdsWithin_eq_image' hx,
     ← map_extChartAt_nhdsWithin' hx, inter_comm, nhdsWithin_inter_of_mem]
   exact hc (extChartAt_source_mem_nhds' hy)
 
@@ -636,25 +641,30 @@ theorem contMDiffWithinAt_iff_nat :
 
 /-! ### Restriction to a smaller set -/
 
-theorem ContMDiffWithinAt.mono_of_mem (hf : ContMDiffWithinAt I I' n f s x) (hts : s ∈ 𝓝[t] x) :
+theorem ContMDiffWithinAt.mono_of_mem_nhdsWithin
+    (hf : ContMDiffWithinAt I I' n f s x) (hts : s ∈ 𝓝[t] x) :
     ContMDiffWithinAt I I' n f t x :=
-  StructureGroupoid.LocalInvariantProp.liftPropWithinAt_mono_of_mem
-    (contDiffWithinAtProp_mono_of_mem n) hf hts
+  StructureGroupoid.LocalInvariantProp.liftPropWithinAt_mono_of_mem_nhdsWithin
+    (contDiffWithinAtProp_mono_of_mem_nhdsWithin n) hf hts
+
+@[deprecated (since := "2024-10-31")]
+alias ContMDiffWithinAt.mono_of_mem := ContMDiffWithinAt.mono_of_mem_nhdsWithin
 
 theorem ContMDiffWithinAt.mono (hf : ContMDiffWithinAt I I' n f s x) (hts : t ⊆ s) :
     ContMDiffWithinAt I I' n f t x :=
-  hf.mono_of_mem <| mem_of_superset self_mem_nhdsWithin hts
+  hf.mono_of_mem_nhdsWithin <| mem_of_superset self_mem_nhdsWithin hts
 
 theorem contMDiffWithinAt_congr_nhds (hst : 𝓝[s] x = 𝓝[t] x) :
     ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x :=
-  ⟨fun h => h.mono_of_mem <| hst ▸ self_mem_nhdsWithin, fun h =>
-    h.mono_of_mem <| hst.symm ▸ self_mem_nhdsWithin⟩
+  ⟨fun h => h.mono_of_mem_nhdsWithin <| hst ▸ self_mem_nhdsWithin, fun h =>
+    h.mono_of_mem_nhdsWithin <| hst.symm ▸ self_mem_nhdsWithin⟩
 
 theorem contMDiffWithinAt_insert_self :
     ContMDiffWithinAt I I' n f (insert x s) x ↔ ContMDiffWithinAt I I' n f s x := by
   simp only [contMDiffWithinAt_iff, continuousWithinAt_insert_self]
-  refine Iff.rfl.and <| (contDiffWithinAt_congr_nhds ?_).trans contDiffWithinAt_insert_self
-  simp only [← map_extChartAt_nhdsWithin, nhdsWithin_insert, Filter.map_sup, Filter.map_pure]
+  refine Iff.rfl.and <| (contDiffWithinAt_congr_set ?_).trans contDiffWithinAt_insert_self
+  simp only [← map_extChartAt_nhdsWithin, nhdsWithin_insert, Filter.map_sup, Filter.map_pure,
+    ← nhdsWithin_eq_iff_eventuallyEq]
 
 alias ⟨ContMDiffWithinAt.of_insert, _⟩ := contMDiffWithinAt_insert_self
 
@@ -724,7 +734,8 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds
   · rw [← contMDiffWithinAt_insert_self, this (mem_insert _ _), insert_idem]
   rw [insert_eq_of_mem hxs]
   -- The `←` implication is trivial
-  refine ⟨fun h ↦ ?_, fun ⟨u, hmem, hu⟩ ↦ (hu _ (mem_of_mem_nhdsWithin hxs hmem)).mono_of_mem hmem⟩
+  refine ⟨fun h ↦ ?_, fun ⟨u, hmem, hu⟩ ↦
+    (hu _ (mem_of_mem_nhdsWithin hxs hmem)).mono_of_mem_nhdsWithin hmem⟩
   -- The property is true in charts. Let `v` be a good neighborhood in the chart where the function
   -- is smooth.
   rcases (contMDiffWithinAt_iff'.1 h).2.contDiffOn le_rfl with ⟨v, hmem, hsub, hv⟩

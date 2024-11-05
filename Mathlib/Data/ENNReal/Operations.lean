@@ -250,7 +250,7 @@ theorem coe_finset_prod {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a ∈ s, 
 end OperationsAndInfty
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
-@[gcongr] theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d := by
+@[gcongr] protected theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d := by
   lift a to ℝ≥0 using ac.ne_top
   lift b to ℝ≥0 using bd.ne_top
   cases c; · simp
@@ -414,14 +414,14 @@ theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc :
   (cancel_of_ne ha).tsub_right_inj (cancel_of_ne <| ne_top_of_le_ne_top ha hb)
     (cancel_of_ne <| ne_top_of_le_ne_top ha hc) hb hc
 
-theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
+protected theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
   rcases le_or_lt a b with hab | hab; · simp [hab, mul_right_mono hab, tsub_eq_zero_of_le]
   rcases eq_or_lt_of_le (zero_le b) with (rfl | hb); · simp
   exact (cancel_of_ne <| mul_ne_top hab.ne_top (h hb hab)).tsub_mul
 
-theorem mul_sub (h : 0 < c → c < b → a ≠ ∞) : a * (b - c) = a * b - a * c := by
+protected theorem mul_sub (h : 0 < c → c < b → a ≠ ∞) : a * (b - c) = a * b - a * c := by
   simp only [mul_comm a]
-  exact sub_mul h
+  exact ENNReal.sub_mul h
 
 theorem sub_le_sub_iff_left (h : c ≤ a) (h' : a ≠ ∞) :
     (a - b ≤ a - c) ↔ c ≤ b :=
