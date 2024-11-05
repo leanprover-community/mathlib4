@@ -71,6 +71,10 @@ jobs:
 
     - name: Full report
       run: |
+        # TODO
+        # If a merged PR touched one of the files in the most recent report, trigger the workflow again.
+        # Show the diff relative to the last report. (Using zulip/github as the persistent state?)
+
         lake build | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
           awk -F: 'BEGIN{max=0}
             /^⚠/{ print currMax; max=0 }
