@@ -215,6 +215,13 @@ theorem eq_embed_trans (h : M = N) (h' : N = P) :
   cases h'
   rfl
 
+@[simp]
+theorem eq_embed_trans_apply (h : M = N) (h' : N = P) (m : M) :
+    (eq_embed h') (eq_embed h m) = eq_embed (h.trans h') m := by
+  cases h
+  cases h'
+  rfl
+
 end Embedding
 
 namespace Equiv

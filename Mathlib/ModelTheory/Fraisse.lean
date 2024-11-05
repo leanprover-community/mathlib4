@@ -600,47 +600,19 @@ theorem maps_system_same_step (m : ℕ) : maps_system K_fraisse (le_refl m)
     Embedding.eq_embed_trans]
   rfl
 
-noncomputable def map_step (m : ℕ) : system K_fraisse m ↪[L] system K_fraisse (m+1) :=
-  maps_system K_fraisse (Nat.le_add_right m 1)
-
-theorem factorize_with_map_step {m n : ℕ} (h : m ≤ n) :
-    maps_system K_fraisse (h.trans (Nat.le_add_right n 1)) =
-      (map_step K_fraisse n).comp (maps_system K_fraisse h) := by
-  sorry /-nth_rw 1 [maps_system]
-  simp only [init_system]
-  simp only [map_step, maps_system]
-  rw [if_then_else_left]
-  let f := ((init_system K_fraisse n).snd m).snd.comp (Embedding.eq_embed (system_eq' K_fraisse h))
-  simp only [Embedding.comp_assoc, Embedding.eq_embed_trans]
-  nth_rw 2 [←Embedding.comp_assoc]
-  show Embedding.comp _ f = Embedding.comp _ f
-  apply congrFun (a := f)
-  apply congr_arg (f := Embedding.comp)
+theorem maps_system_same_step' (m : ℕ) : ((init_system K_fraisse m).2 m).2 =
+    Embedding.eq_embed (system_eq' K_fraisse (le_refl m)).symm := by
+  cases m
+  rfl
+  rename_i m
+  simp_rw [init_system]
+  have u : ∀ (n : ℕ), ((n+1 ≤ n) = False) := by intro n; simp
   conv =>
-    rhs
-    simp only [init_system]
-    skip
-  rw [if_then_else_left]
-  simp only [Embedding.comp_assoc, Embedding.eq_embed_trans]
-  show _ = Embedding.comp _ (maps_system K_fraisse (le_refl n))
-  simp only [maps_system_same_step K_fraisse n, Embedding.comp_refl]
-  exact eq_true (le_refl n)
-  exact eq_true h -/
-
-theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
-    (maps_system K_fraisse h').comp (maps_system K_fraisse h) =
-      maps_system K_fraisse (h.trans h') := by
-  match k with
-  | 0 =>
-      cases h'
-      cases h
-      rfl
-  | k+1 =>
-      cases h'
-      · simp [maps_system_same_step]
-      · rename_i h'
-        rw [factorize_with_map_step, map_step, Embedding.comp_assoc,
-            transitive_maps_system h h', ←map_step, ←factorize_with_map_step]
+    lhs
+    rw [if_then_else_right]
+    simp
+    · skip
+    · exact u m
 
 noncomputable def FGEquiv_extended (n : ℕ) :
     FGEquiv L ((init_system K_fraisse n).2 (Nat.unpair n).1).1
@@ -660,6 +632,48 @@ theorem init_system_map_decomposition {k r : ℕ} (h : k ≤ r) :
           (system_eq' K_fraisse h)))) := by
   apply if_then_else_left
   simp only [h]
+
+noncomputable def map_step (m : ℕ) : system K_fraisse m ↪[L] system K_fraisse (m+1) :=
+  maps_system K_fraisse (Nat.le_add_right m 1)
+
+theorem factorize_with_map_step {m n : ℕ} (h : m ≤ n) :
+    maps_system K_fraisse (h.trans (Nat.le_add_right n 1)) =
+      (map_step K_fraisse n).comp (maps_system K_fraisse h) := by
+  rw [map_step]
+  simp [maps_system]
+  rw [init_system_map_decomposition, init_system_map_decomposition]
+  case h => trivial
+  case h => assumption
+  rw [maps_system_same_step', Embedding.eq_embed_trans]
+  ext x
+  simp only [PartialEquiv.map_dom, Embedding.comp_apply]
+  let f := (extend_and_join K_fraisse (ess_surj_sequence K_fraisse (n + 1))
+            (f := ((FGEquiv_extended K_fraisse n).1.map
+        ((init_system K_fraisse n).2 (Nat.unpair n).1).2))
+            (FG.map ((init_system K_fraisse n).snd (Nat.unpair n).1).snd.toHom
+              (FGEquiv_extended K_fraisse n).property)).snd
+  show (f.comp (((init_system K_fraisse n).snd m).snd.comp (Embedding.eq_embed _))) _ = (f.comp _) _
+  simp
+  show _ = Embedding.eq_embed _ (Embedding.eq_embed _ _)
+  simp
+  show _ = Embedding.refl L (system K_fraisse n) _
+  rw [Embedding.refl_apply]
+  rfl
+
+theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
+    (maps_system K_fraisse h').comp (maps_system K_fraisse h) =
+      maps_system K_fraisse (h.trans h') := by
+  match k with
+  | 0 =>
+      cases h'
+      cases h
+      rfl
+  | k+1 =>
+      cases h'
+      · simp [maps_system_same_step]
+      · rename_i h'
+        rw [factorize_with_map_step, map_step, Embedding.comp_assoc,
+            transitive_maps_system h h', ←map_step, ←factorize_with_map_step]
 
 theorem map_step_is_extend_and_join (r : ℕ) :
     map_step K_fraisse r = ((extend_and_join K_fraisse (ess_surj_sequence K_fraisse (r+1))
