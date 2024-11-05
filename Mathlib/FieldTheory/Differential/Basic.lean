@@ -121,7 +121,7 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
       · intro nh
         simp [natDegree_eq_zero_of_derivative_eq_zero nh] at this
       apply natDegree_derivative_lt
-      omega
+      exact Nat.not_eq_zero_of_lt this
     )
 
 instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
