@@ -285,8 +285,8 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
     return (Ineq.eq, e')
   else if c = 1 then return (iq, h)
   else do
-    let (_, ty, _) ← tp.ineq?
-    let cpos : Q(Prop) ← mkAppM ``GT.gt #[(← ty.ofNat c), (← ty.ofNat 0)]
+    let (_, tp, _) ← tp.ineq?
+    let cpos : Q(Prop) ← mkAppM ``GT.gt #[(← tp.ofNat c), (← tp.ofNat 0)]
     let ex ← synthesizeUsingTactic' cpos (← `(tactic| norm_num))
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')
