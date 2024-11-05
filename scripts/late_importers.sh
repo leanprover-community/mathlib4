@@ -37,7 +37,7 @@ lake build "${root}" | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
       gsub(/ *Now redun.*/, "")
       gsub(/ to \[[^]]*\]/, "")
       gsub(/ *note: this linter.*/, "")
-      gsub(/ \.\//, "")
+      gsub(/ *\.\//, "")
       gsub(/ *Imports increased by */, "")
       gsub(/ *New imports */, "")
       currMax=$0
