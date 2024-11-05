@@ -422,6 +422,9 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
   refine isClosed_eq ?_ ?_ |>.inter <| isClosed_le ?_ ?_
   all_goals fun_prop
 
+instance : OrderClosedTopology A where
+  isClosed_le' := isClosed_le_of_isClosed_nonneg isClosed_nonneg
+
 end CStarAlgebra
 
 end CStar_nonunital
