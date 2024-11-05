@@ -43,15 +43,15 @@ jobs:
         lean --version
         lake --version
 
-    - name: add minImport linter option
+    - name: add minImports linter option
       run: |
-        # set `linter.minImport option` to true in `lakefile`
+        # set `linter.minImports option` to true in `lakefile`
         sed -i -- '/^  -- '\`'latest_import.yml'\`' uses this comment/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
 
-        # import the `minImport` linter in `Mathlib.Init`
+        # import the `minImports` linter in `Mathlib.Init`
         sed -i -z 's=^=import Mathlib.Tactic.Linter.MinImports\n=' Mathlib/Init.lean
 
-        # remove the `Mathlib.Init` import from the `minImport` command to avoid a loop
+        # remove the `Mathlib.Init` import from the `minImports` command to avoid a loop
         sed -i '/import Mathlib.Init/d' Mathlib/Tactic/MinImports.lean
 
         # stage the changes in git so that `git diff` can confirm what changed
