@@ -109,6 +109,10 @@ theorem edgeFinset_card : #G.edgeFinset = Fintype.card G.edgeSet :=
 theorem edgeSet_univ_card : #(univ : Finset G.edgeSet) = #G.edgeFinset :=
   Fintype.card_of_subtype G.edgeFinset fun _ => mem_edgeFinset
 
+lemma card_toFinset_of_mem_edgeFinset [DecidableEq V] (e : Sym2 V) (he : e ∈ G.edgeFinset) :
+    (e : Finset V).card = 2 :=
+  Sym2.card_toFinset_of_not_isDiag (not_isDiag_of_mem_edgeSet _ (mem_edgeFinset.mp he))
+
 variable [Fintype V]
 
 @[simp]
@@ -127,10 +131,6 @@ theorem card_edgeFinset_le_card_choose_two : #G.edgeFinset ≤ (Fintype.card V).
   exact card_le_card (edgeFinset_mono le_top)
 
 variable [DecidableEq V]
-
-lemma card_toFinset_of_mem_edgeFinset (e : Sym2 V) (he : e ∈ G.edgeFinset) :
-    (e : Finset V).card = 2 :=
-  Sym2.card_toFinset_of_not_isDiag (not_isDiag_of_mem_edgeSet _ (mem_edgeFinset.mp he))
 
 lemma card_filter_mem_of_mem_edgeFinset (e : Sym2 V) (he : e ∈ G.edgeFinset) :
     Finset.card {v | v ∈ e} = 2 := by
