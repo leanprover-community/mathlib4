@@ -694,7 +694,6 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Monovary
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
-import Mathlib.Algebra.Order.Nonneg.GeomSum
 import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Order.Pi

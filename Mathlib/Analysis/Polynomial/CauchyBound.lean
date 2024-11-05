@@ -3,7 +3,7 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Algebra.Order.Nonneg.GeomSum
+import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Analysis.Normed.Field.Basic
@@ -83,7 +83,7 @@ theorem IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} (h : p.IsRo
     rcases lt_or_gt_of_ne ha with ha | ha
     · apply ha.trans_le
       simp
-    · rw [Nonneg.geom_sum_of_one_lt ha] at this
+    · rw [geom_sum_of_one_lt ha] at this
       calc
         ‖a‖₊ = ‖a‖₊ - 1 + 1 := (tsub_add_cancel_of_le ha.le).symm
         _ = ‖a‖₊ ^ p.natDegree * (‖a‖₊ - 1) / ‖a‖₊ ^ p.natDegree + 1 := by
