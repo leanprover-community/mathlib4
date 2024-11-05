@@ -74,7 +74,7 @@ section DefinitionUnification
 variable [IsSimpleModule R C]
 
 lemma isoset_le_insert_zero_isoset' :
-  isoset R M C ⊆ isoset' R M C ∪ {0} := by
+    isoset R M C ⊆ isoset' R M C ∪ {0} := by
   rw[isoset, isoset']; intro x hx; rw[Set.mem_setOf] at hx
   obtain ⟨w, hw⟩ := hx
   simp; rw[<-hw]
