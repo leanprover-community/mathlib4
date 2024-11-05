@@ -55,7 +55,7 @@ jobs:
     - name: add minImport linter option
       run: |
         # set `linter.minImport option` to true in `lakefile`
-        sed -i '/^  -- `latest_import.yml` uses this comment/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
+        sed -i -- '/^  -- `latest_import.yml` uses this comment/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
 
         # import the `minImport` linter in `Mathlib.Init`
         sed -i -z 's=^=import Mathlib.Tactic.Linter.MinImports\n=' Mathlib/Init.lean
