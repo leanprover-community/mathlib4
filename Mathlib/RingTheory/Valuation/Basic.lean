@@ -625,11 +625,35 @@ theorem of_apply : (of f h0 h1 hadd hmul) r = f r := rfl
 
 /-- The `Valuation` associated to an `AddValuation` (useful if the latter is constructed using
 `AddValuation.of`). -/
-def valuation : Valuation R (Multiplicative Γ₀ᵒᵈ) :=
-  v
+def toValuation : AddValuation R Γ₀ ≃ Valuation R (Multiplicative Γ₀ᵒᵈ) :=
+  Equiv.refl _
+
+/-- The `AddValuation` associated to a `Valuation`.
+-/
+def ofValuation : Valuation R (Multiplicative Γ₀ᵒᵈ) ≃ AddValuation R Γ₀ :=
+  Equiv.refl _
 
 @[simp]
-theorem valuation_apply (r : R) : v.valuation r = Multiplicative.ofAdd (OrderDual.toDual (v r)) :=
+lemma ofValuation_symm_eq : ofValuation.symm = toValuation (R := R) (Γ₀ := Γ₀) := rfl
+
+@[simp]
+lemma toValuation_symm_eq : toValuation.symm = ofValuation (R := R) (Γ₀ := Γ₀) := rfl
+
+@[simp]
+lemma ofValuation_toValuation : ofValuation (toValuation v) = v := rfl
+
+@[simp]
+lemma toValuation_ofValuation (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) :
+  toValuation (ofValuation v) = v := rfl
+
+@[simp]
+theorem toValuation_apply (r : R) :
+    toValuation v r = Multiplicative.ofAdd (OrderDual.toDual (v r)) :=
+  rfl
+
+@[simp]
+theorem addValuation_apply (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) (r : R) :
+    ofValuation v r = OrderDual.ofDual (Multiplicative.toAdd (v r)) :=
   rfl
 
 end
@@ -724,6 +748,10 @@ def map (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddVal
       map_one' := f.map_zero
       map_zero' := ht } (fun _ _ h => hf h) v
 
+@[simp]
+lemma map_apply (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddValuation R Γ₀) (r : R) :
+    v.map f ht hf r = f (v r) := rfl
+
 /-- Two additive valuations on `R` are defined to be equivalent if they induce the same
   preorder on `R`. -/
 def IsEquiv (v₁ : AddValuation R Γ₀) (v₂ : AddValuation R Γ'₀) : Prop :=
@@ -737,11 +765,11 @@ variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R �
 
 @[simp]
 theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
-  map_inv₀ v.valuation x
+  map_inv₀ (toValuation v) x
 
 @[simp]
 theorem map_div (v : AddValuation K Γ₀) {x y : K} : v (x / y) = v x - v y :=
-  map_div₀ v.valuation x y
+  map_div₀ (toValuation v) x y
 
 @[simp]
 theorem map_neg (x : R) : v (-x) = v x :=

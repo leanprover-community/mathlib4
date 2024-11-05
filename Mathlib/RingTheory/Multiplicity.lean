@@ -60,7 +60,7 @@ theorem emultiplicity_lt_top {a b : α} : emultiplicity a b < ⊤ ↔ Finite a b
 theorem finite_iff_emultiplicity_ne_top :
     Finite a b ↔ emultiplicity a b ≠ ⊤ := by simp
 
-alias ⟨Finite.emultiplicity_ne_top, _⟩ := finite_iff_emultiplicity_ne_top
+alias ⟨multiplicity.Finite.emultiplicity_ne_top, _⟩ := finite_iff_emultiplicity_ne_top
 
 theorem finite_of_emultiplicity_eq_natCast {n : ℕ} (h : emultiplicity a b = n) :
     Finite a b := by

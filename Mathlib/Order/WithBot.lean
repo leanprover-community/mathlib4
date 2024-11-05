@@ -658,6 +658,10 @@ theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ 
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) : map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
   Option.map_comm h _
 
+@[simp]
+theorem map_eq_top_iff (f : α → β) (a : WithTop α) : map f a = ⊤ ↔ a = ⊤ :=
+  Option.map_eq_none_iff
+
 /-- The image of a binary function `f : α → β → γ` as a function
 `WithTop α → WithTop β → WithTop γ`.
 
