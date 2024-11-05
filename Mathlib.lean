@@ -819,7 +819,9 @@ import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Algebra.Ring.Identities
 import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Algebra.Ring.Invertible
 import Mathlib.Algebra.Ring.MinimalAxioms
 import Mathlib.Algebra.Ring.Nat
@@ -2066,6 +2068,7 @@ import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Combinatorics.Derangements.Exponential
 import Mathlib.Combinatorics.Derangements.Finite
 import Mathlib.Combinatorics.Digraph.Basic
+import Mathlib.Combinatorics.Digraph.Orientation
 import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.Combinatorics.Enumerative.Composition
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
@@ -2141,6 +2144,7 @@ import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
 import Mathlib.Combinatorics.SimpleGraph.StronglyRegular
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.Combinatorics.SimpleGraph.Sum
 import Mathlib.Combinatorics.SimpleGraph.Trails
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
@@ -2466,6 +2470,7 @@ import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.CharP
 import Mathlib.Data.Matrix.ColumnRowPartitioned
 import Mathlib.Data.Matrix.Composition
+import Mathlib.Data.Matrix.ConjTranspose
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Matrix.DoublyStochastic
 import Mathlib.Data.Matrix.DualNumber
@@ -4180,6 +4185,7 @@ import Mathlib.RingTheory.MatrixAlgebra
 import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.MvPolynomial.Ideal
 import Mathlib.RingTheory.MvPolynomial.Localization
