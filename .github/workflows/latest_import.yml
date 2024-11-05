@@ -1,4 +1,4 @@
-name: Weekly late importers
+name: Late importers report
 
 on:
   schedule:
@@ -22,10 +22,6 @@ jobs:
             : # Do nothing on failure, but suppress errors
         fi
 
-    # The Hoskinson runners may not have jq installed, so do that now.
-    - name: 'Setup jq'
-      uses: dcarbone/install-jq-action@v2.1.0
-
     - name: install elan
       run: |
         set -o pipefail
@@ -34,8 +30,6 @@ jobs:
         echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
     - uses: actions/checkout@v4
-      with:
-        ref: 'master'
 
     - name: If using a lean-pr-release toolchain, uninstall
       run: |
@@ -49,17 +43,23 @@ jobs:
         lean --version
         lake --version
 
-    - name: add minImport linter option
+    - name: add minImports linter option
       run: |
-        # set `linter.minImport option` to true in `lakefile`
-        sed -i '/⟨'\`'linter.style.missingEnd, true⟩,/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
-        # import the `minImport` linter in `Mathlib.Init`
+        # set `linter.minImports option` to true in `lakefile`
+        sed -i -- '/^  -- '\`'latest_import.yml'\`' uses this comment/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
+
+        # import the `minImports` linter in `Mathlib.Init`
         sed -i -z 's=^=import Mathlib.Tactic.Linter.MinImports\n=' Mathlib/Init.lean
-        # remove the `Mathlib.Init` import from the `minImport` command to avoid a loop
+
+        # remove the `Mathlib.Init` import from the `minImports` command to avoid a loop
         sed -i '/import Mathlib.Init/d' Mathlib/Tactic/MinImports.lean
+
         # stage the changes in git so that `git diff` can confirm what changed
         git add -u
-        git diff HEAD #lakefile.lean Mathlib/Init.lean Mathlib/Init.lean Mathlib/Tactic/MinImports.lean
+        git diff HEAD #lakefile.lean Mathlib/Init.lean Mathlib/Tactic/MinImports.lean
+
+        printf $'\n\nRunning a test %slake build` to verify, for instance, the absence of import loops\n' $'`'
+        lake build Mathlib.Init
 
     - name: build mathlib
       id: build
@@ -85,7 +85,7 @@ jobs:
               max=$3+0
           }' |
           sort --field-separator=: -k3 -nr |
-          awk -F: 'BEGIN{printf("|File|Line|Import increase|New imports|\n|:-|-:|-:|:-|\n")} {
+          awk -F: 'BEGIN{printf("| File | Line | Import increase | New imports |\n| :- | -: | -: | :- |\n")} {
             printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
           }'
 
@@ -95,7 +95,6 @@ jobs:
         baseURL='https://github.com/leanprover-community/mathlib4/commit'
         refCommit=${{ github.sha }}
 
-        {
         printf $'summary<<EOF\n%s\nEOF' "$(
           lake build | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
             awk -F: 'BEGIN{max=0}
@@ -119,10 +118,9 @@ jobs:
                 con++
                 printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
             }'
-          )"
-        printf '\n\nReference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
-        printf '[Full report](https://github.com/%s/actions/runs/%s)\n' "${{ github.repository }}" "${{ github.run_id }}"
-        } | tee "$GITHUB_OUTPUT"
+          printf '\n\n---\n\nReference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
+          printf '[Full report](https://github.com/%s/actions/runs/%s)\n' "${{ github.repository }}" "${{ github.run_id }}"
+        )" | tee "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip
       uses: zulip/github-actions-zulip/send-message@v1
