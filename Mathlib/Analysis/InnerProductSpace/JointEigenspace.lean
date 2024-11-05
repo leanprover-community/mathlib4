@@ -8,7 +8,7 @@ import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Order.CompleteLattice
 import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+import Mathlib.LinearAlgebra.Eigenspace.Pi
 import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 import Mathlib.Analysis.InnerProductSpace.Semisimple
 
