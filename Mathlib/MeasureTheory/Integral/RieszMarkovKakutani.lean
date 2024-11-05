@@ -3,10 +3,9 @@ Copyright (c) 2022 Jesse Reimann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jesse Reimann, Kalle Kytölä
 -/
-import Mathlib.Topology.ContinuousMap.Bounded
+import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.Topology.ContinuousMap.CompactlySupported
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.Sets.Compacts
+import Mathlib.Topology.UrysohnsBounded
 
 /-!
 #  Riesz–Markov–Kakutani representation theorem
@@ -28,9 +27,9 @@ compact subsets of the space X, rather than the usual construction of open sets 
 noncomputable section
 
 open scoped Classical BoundedContinuousFunction NNReal ENNReal
-open Set Function TopologicalSpace CompactlySupported
+open Set Function TopologicalSpace CompactlySupported MeasureTheory
 
-variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X] [T2Space X]
+variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X]
 variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
 /-! ### Construction of the content: -/
@@ -131,3 +130,63 @@ theorem rieszContentAux_sup_le (K1 K2 : Compacts X) :
   rw [add_assoc, add_comm (ε / 2), add_assoc, add_halves ε, add_assoc]
 
 end RieszSubadditive
+
+
+section Urysohn
+
+lemma exists_bounded_zero_one_of_closed_nnreal
+    {s t : Set X} (s_closed : IsClosed s) (t_closed : IsClosed t) (disj : Disjoint s t) :
+    ∃ (f : C_c(X, ℝ≥0)), EqOn f 0 s ∧ EqOn f 1 t ∧ ⇑f ≤ 1 := by
+  sorry
+  -- obtain ⟨g, g_zero_on_s, g_one_on_t, g_bdd⟩ := exists_bounded_zero_one_of_closed s_closed t_closed disj
+  -- refine ⟨g.nnrealPartCompactlySupported, ?_, ?_, ?_⟩
+  -- · intro x x_in_s; simp [g_zero_on_s x_in_s]
+  -- · intro x x_in_t; simp [g_one_on_t x_in_t]
+  -- · intro x; simp [(g_bdd x).2]
+
+lemma exists_sum_one_of_isCompact_nnreal
+    {s₁ s₂ t : Set X} (s₁_compact : IsCompact s₁) (s₂_compact : IsCompact s₂)
+    (t_compact : IsCompact t) (disj : Disjoint s₁ s₂) (hst : s₁ ∪ s₂ ⊆ t) :
+    ∃ (f₁ f₂ : C_c(X, ℝ≥0)), EqOn f₁ 1 s₁ ∧ EqOn f₂ 1 s₂ ∧ EqOn (f₁ + f₂) 1 t := by
+  sorry
+  -- obtain ⟨f, f_zero_on_s, f_one_on_t, f_bdd⟩ := exists_bounded_zero_one_of_closed_nnreal s_closed t_closed disj
+  -- refine ⟨1 - f, f, ?_, ?_, ?_⟩
+  -- · intro x x_in_s; simp [f_zero_on_s x_in_s]
+  -- · intro x x_in_t; simp [f_one_on_t x_in_t]
+  -- · ext x
+  --   simp only [BoundedContinuousFunction.coe_add, BoundedContinuousFunction.coe_sub,
+  --              BoundedContinuousFunction.coe_one, Pi.add_apply, Pi.sub_apply, Pi.one_apply, NNReal.coe_add,
+  --              NNReal.coe_one]
+  --   norm_cast
+  --   exact tsub_add_cancel_of_le (f_bdd x)
+
+end Urysohn
+
+lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X} (disj : Disjoint (K₁ : Set X) K₂) :
+    rieszContentAux Λ (K₁ ⊔ K₂) = rieszContentAux Λ K₁ + rieszContentAux Λ K₂ := by
+  refine le_antisymm (rieszContentAux_sup_le Λ K₁ K₂) ?_
+  refine le_csInf (rieszContentAux_image_nonempty Λ (K₁ ⊔ K₂)) ?_
+  intro b ⟨f, ⟨hf, Λf_eq_b⟩⟩
+  have hsuppf : ∀ x ∈ K₁ ⊔ K₂, x ∈ support f := by sorry
+  have hsubsuppf : (K₁ : Set X) ∪ (K₂ : Set X) ⊆ tsupport f := subset_trans hsuppf subset_closure
+  obtain ⟨g₁, g₂, hg₁, hg₂, sum_g⟩ := exists_sum_one_of_isCompact_nnreal K₁.isCompact K₂.isCompact
+    f.hasCompactSupport'.isCompact disj hsubsuppf
+  have f_eq_sum : f = g₁ * f + g₂ * f := by
+    ext x
+    simp only [CompactlySupportedContinuousMap.coe_add, CompactlySupportedContinuousMap.coe_mul,
+      Pi.add_apply, Pi.mul_apply, NNReal.coe_add, NNReal.coe_mul]
+    sorry
+  rw [← Λf_eq_b, f_eq_sum, map_add]
+  have aux₁ : ∀ x ∈ K₁, 1 ≤ (g₁ * f) x := by
+    intro x x_in_K₁
+    simp [hg₁ x_in_K₁, hf x (mem_union_left _ x_in_K₁)]
+  have aux₂ : ∀ x ∈ K₂, 1 ≤ (g₂ * f) x := by
+    intro x x_in_K₂
+    simp [hg₂ x_in_K₂, hf x (mem_union_right _ x_in_K₂)]
+  exact add_le_add (rieszContentAux_le Λ aux₁) (rieszContentAux_le Λ aux₂)
+
+noncomputable def rieszContent (Λ : (C_c(X, ℝ≥0)) →ₗ[ℝ≥0] ℝ≥0) : Content X where
+  toFun := rieszContentAux Λ
+  mono' := fun _ _ ↦ rieszContentAux_mono Λ
+  sup_disjoint' := fun _ _ disj _ _ ↦ rieszContentAux_union Λ disj
+  sup_le' := rieszContentAux_sup_le Λ
