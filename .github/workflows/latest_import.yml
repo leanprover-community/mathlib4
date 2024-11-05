@@ -84,7 +84,7 @@ jobs:
       id: late_importers
       run: |
         jobID="${{ github.run_id }}"
-        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib.Logic.Function.Defs 15 10)" |
+        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib.Logic.Function.Defs 15 10 "${jobID}")" |
           tee "$GITHUB_OUTPUT"
 
     #- name: Post output to Zulip

@@ -15,9 +15,12 @@ lineLimit=${2:-0}
 # the script reports the module
 significantDifference=${3:-0}
 
+jobID="${4}"
+
 >&2 printf 'Building %s\n' "${root}"
 >&2 printf 'Report only the top %s exceptions\n' "${lineLimit}"
 >&2 printf 'Consider a file an exception if the last import increase exceeds %s imports\n\n' "${significantDifference}"
+>&2 printf 'GitHub job id: `%s`\n\n' "${jobID}"
 
 #baseURL='https://github.com/leanprover-community/mathlib4/commit'
 baseURL='https://github.com/leanprover-community/mathlib4'
