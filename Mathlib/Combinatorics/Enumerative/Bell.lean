@@ -17,21 +17,16 @@ The definition presents it as an integer.
 
 * `Multiset.bell`: number of partitions of a set whose parts have cardinalities a given multiset
 
-* `Multiset.bell_zero`: `Multiset.bell 0 = 1`
-
 * `Nat.uniformBell m n` : short name for `Multiset.bell (replicate m n)`
 
 * `Multiset.bell_mul_eq` shows that
     `m.bell * (m.map (fun j ↦ j !)).prod *
-      Finset.prod (m.toFinset.erase 0) (fun j ↦ (m.count j)!) = m.sum !`
+      Π j ∈ (m.toFinset.erase 0), (m.count j)! = m.sum !`
 
 * `Nat.uniformBell_mul_eq`  shows that
-    `uniformBell m n * n.factorial ^ m * m.factorial = (m * n).factorial`
+    `uniformBell m n * n ! ^ m * m ! = (m * n)!`
 
-* `Nat.uniformBell_zero`, `Nat.uniformBell_zero'`, `Nat.uniformBell_one`, `Nat.uniformBell_one':
-  compute `Nat.uniformBell` when one of the parameters is `0` or `1`
-
-* `Nat.uniformBell_succ` computes `Nat.uniformBell (m + 1) n` from `Nat.uniformBell m n`
+* `Nat.uniformBell_succ_left` computes `Nat.uniformBell (m + 1) n` from `Nat.uniformBell m n`
 
 ## TODO
 
@@ -110,7 +105,7 @@ private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) (c : ℕ) :
 
 theorem bell_mul_eq (m : Multiset ℕ) :
     m.bell * (m.map (fun j ↦ j !)).prod *
-      Finset.prod (m.toFinset.erase 0) (fun j ↦ (m.count j)!) = m.sum ! := by
+      Π j ∈ (m.toFinset.erase 0) (m.count j)! = m.sum ! := by
   unfold bell
   rw [← Nat.mul_right_inj]
   · simp only [← mul_assoc]
@@ -143,7 +138,7 @@ theorem bell_mul_eq (m : Multiset ℕ) :
 
 theorem bell_eq (m : Multiset ℕ) :
     m.bell = m.sum ! / ((m.map (fun j ↦ j !)).prod *
-      Finset.prod (m.toFinset.erase 0) (fun j ↦ (m.count j)!)) := by
+      Π j ∈ (m.toFinset.erase 0) (m.count j)!) := by
   rw [← Nat.mul_left_inj, Nat.div_mul_cancel _]
   · rw [← mul_assoc]
     exact bell_mul_eq m
@@ -166,7 +161,7 @@ of `n`-element subsets. -/
 def uniformBell (m n : ℕ) : ℕ := bell (replicate m n)
 
 theorem uniformBell_eq (m n : ℕ) : m.uniformBell n =
-    Finset.prod (Finset.range m) fun p => Nat.choose (p * n + n - 1) (n - 1) := by
+    Π p ∈ (Finset.range m), Nat.choose (p * n + n - 1) (n - 1) := by
   unfold uniformBell bell
   rw [replicate_toFinset]
   split_ifs with hm
@@ -182,15 +177,15 @@ theorem uniformBell_zero_left (n : ℕ) : uniformBell 0 n = 1 := by
 theorem uniformBell_zero_right (m : ℕ) : uniformBell m 0 = 1 := by
   simp [uniformBell_eq]
 
-theorem uniformBell_succ (m n : ℕ) :
+theorem uniformBell_succ_left (m n : ℕ) :
     uniformBell (m+1) n = choose (m * n + n - 1) (n - 1) * uniformBell m n := by
   simp only [uniformBell_eq, Finset.prod_range_succ, mul_comm]
 
-theorem uniformBell_one (n : ℕ) : uniformBell 1 n = 1 := by
+theorem uniformBell_one_left (n : ℕ) : uniformBell 1 n = 1 := by
   simp only [uniformBell_eq, Finset.range_one, Finset.prod_singleton, zero_mul,
     zero_add, choose_self]
 
-theorem uniformBell_one' (m : ℕ) : uniformBell m 1 = 1 := by
+theorem uniformBell_one_right (m : ℕ) : uniformBell m 1 = 1 := by
   simp only [uniformBell_eq, mul_one, add_tsub_cancel_right, ge_iff_le, le_refl,
     tsub_eq_zero_of_le, choose_zero_right, Finset.prod_const_one]
 
