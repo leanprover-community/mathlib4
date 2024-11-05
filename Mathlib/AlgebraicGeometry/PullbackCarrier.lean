@@ -14,7 +14,7 @@ topological space of `pullback f g`, i.e. the fiber product `X ×[S] Y`.
 
 ## Main results
 
-- `AlgebraicGeomerty.Scheme.Pullback.carrierEquiv`: The bijective correspondence between the points
+- `AlgebraicGeometry.Scheme.Pullback.carrierEquiv`: The bijective correspondence between the points
   of `X ×[S] Y` and pairs `(z, p)` of triples `z = (x, y, s)` with `f x = s = g y` and
   prime ideals `q` of `κ(x) ⊗[κ(s)] κ(y)`.
 - `AlgebraicGeometry.Scheme.Pullback.exists_preimage`: For every triple `(x, y, s)` with
@@ -32,11 +32,9 @@ namespace AlgebraicGeometry.Scheme.Pullback
 
 universe u
 
-variable {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S)
-
 /-- A `Triplet` over `f : X ⟶ S` and `g : Y ⟶ S` is a triple of points `x : X`, `y : Y`,
 `s : S` such that `f x = s = f y`. -/
-structure Triplet where
+structure Triplet {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) where
   /-- The point of `X`. -/
   x : X
   /-- The point of `Y`. -/
@@ -46,7 +44,7 @@ structure Triplet where
   hx : f.base x = s
   hy : g.base y = s
 
-variable {f g}
+variable {X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S}
 
 namespace Triplet
 
@@ -63,10 +61,8 @@ def mk' (x : X) (y : Y) (h : f.base x = g.base y) : Triplet f g where
   hx := h
   hy := rfl
 
-variable (T : Triplet f g)
-
 /-- Given `x : X` and `y : Y` such that `f x = s = g y`, this is `κ(x) ⊗[κ(s)] κ(y)`. -/
-def tensor : CommRingCat :=
+def tensor (T : Triplet f g) : CommRingCat :=
   pushout ((S.residueFieldCongr T.hx).inv ≫ f.residueFieldMap T.x)
     ((S.residueFieldCongr T.hy).inv ≫ g.residueFieldMap T.y)
 
@@ -76,11 +72,11 @@ instance (T : Triplet f g) : Nontrivial T.tensor :=
 
 /-- Given `x : X` and `y : Y` such that `f x = s = g y`, this is the
 canonical map `κ(x) ⟶ κ(x) ⊗[κ(s)] κ(y)`. -/
-def tensorInl : X.residueField T.x ⟶ T.tensor := pushout.inl _ _
+def tensorInl (T : Triplet f g) : X.residueField T.x ⟶ T.tensor := pushout.inl _ _
 
 /-- Given `x : X` and `y : Y` such that `f x = s = g y`, this is the
 canonical map `κ(y) ⟶ κ(x) ⊗[κ(s)] κ(y)`. -/
-def tensorInr : Y.residueField T.y ⟶ T.tensor := pushout.inr _ _
+def tensorInr (T : Triplet f g) : Y.residueField T.y ⟶ T.tensor := pushout.inr _ _
 
 lemma Spec_map_tensor_isPullback (T : Triplet f g) : CategoryTheory.IsPullback
     (Spec.map T.tensorInl) (Spec.map T.tensorInr)
@@ -123,6 +119,8 @@ lemma tensorCongr_trans_hom {x y z : Triplet f g} (e : x = y) (e' : y = z) :
   rfl
 
 end Congr
+
+variable (T : Triplet f g)
 
 lemma Spec_map_tensorInl_fromSpecResidueField :
     (Spec.map T.tensorInl ≫ X.fromSpecResidueField T.x) ≫ f =
