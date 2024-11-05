@@ -1041,6 +1041,52 @@ theorem mk'_surjective : Function.Surjective (Function.uncurry <| mk' f : M × S
   obtain ⟨⟨m, s⟩, e : s • x = f m⟩ := IsLocalizedModule.surj S f x
   exact ⟨⟨m, s⟩, mk'_eq_iff.mpr e.symm⟩
 
+section liftOfLE
+
+variable {M₁ M₂} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
+variable (S₁ S₂ : Submonoid R) (h : S₁ ≤ S₂) (f₁ : M →ₗ[R] M₁) (f₂ : M →ₗ[R] M₂)
+variable [IsLocalizedModule S₁ f₁] [IsLocalizedModule S₂ f₂]
+
+/-- The natural map `Mₛ →ₗ[R] Mₜ` if `s ≤ t` (in `Submonoid R`). -/
+noncomputable
+def liftOfLE : M₁ →ₗ[R] M₂ :=
+  lift S₁ f₁ f₂ fun x ↦ map_units f₂ ⟨x.1, h x.2⟩
+
+/-- The natural map `Mₛ →ₗ[R] Mₜ` if `s ≤ t` (in `Submonoid R`). -/
+noncomputable
+abbrev _root_.LocalizedModule.liftOfLE : LocalizedModule S₁ M →ₗ[R] LocalizedModule S₂ M :=
+  IsLocalizedModule.liftOfLE S₁ S₂ h
+    (LocalizedModule.mkLinearMap S₁ M) (LocalizedModule.mkLinearMap S₂ M)
+
+lemma liftOfLE_comp : (liftOfLE S₁ S₂ h f₁ f₂).comp f₁ = f₂ := lift_comp ..
+
+@[simp] lemma liftOfLE_apply (x) : liftOfLE S₁ S₂ h f₁ f₂ (f₁ x) = f₂ x := lift_apply ..
+
+/-- The image of `m/s` under `liftOfLE` is `m/s`. -/
+@[simp]
+lemma liftOfLE_mk' (m : M) (s : S₁) :
+    liftOfLE S₁ S₂ h f₁ f₂ (mk' f₁ m s) = mk' f₂ m ⟨s.1, h s.2⟩ := by
+  apply ((Module.End_isUnit_iff _).mp (map_units f₂ ⟨s, h s.2⟩)).1
+  simp only [Module.algebraMap_end_apply, ← map_smul, ← Submonoid.smul_def, mk'_cancel']
+  rw [liftOfLE, lift_apply]
+  exact (mk'_cancel' (S := S₂) f₂ m ⟨s.1, h s.2⟩).symm
+
+instance : IsLocalizedModule S₂ (liftOfLE S₁ S₂ h f₁ f₂) where
+  map_units := map_units f₂
+  surj' y := by
+    obtain ⟨⟨y', s⟩, e⟩ := IsLocalizedModule.surj S₂ f₂ y
+    exact ⟨⟨f₁ y', s⟩, by simpa⟩
+  exists_of_eq := by
+    intros x₁ x₂ e
+    obtain ⟨x₁, s₁, rfl⟩ := mk'_surjective S₁ f₁ x₁
+    obtain ⟨x₂, s₂, rfl⟩ := mk'_surjective S₁ f₁ x₂
+    simp only [Function.uncurry, liftOfLE_mk', mk'_eq_mk'_iff, Submonoid.mk_smul,
+      Submonoid.smul_def, ← mk'_smul] at e ⊢
+    obtain ⟨c, e⟩ := e
+    exact ⟨c, 1, by simpa [← smul_comm c.1]⟩
+
+end liftOfLE
+
 variable {N N'} [AddCommMonoid N] [AddCommMonoid N'] [Module R N] [Module R N']
 variable (g : N →ₗ[R] N') [IsLocalizedModule S g]
 
