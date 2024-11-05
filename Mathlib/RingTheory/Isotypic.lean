@@ -171,7 +171,7 @@ lemma sUnion_of_set_submodule_isoset_le_IsSimpleModule.set_submodule :
     exact Or.inl hf
 
 lemma IsSimpleModule.set_submodule_le_sUnion_of_set_submodule_isoset :
-  (IsSimpleModule.set_submodule R M) ⊆ ⋃₀ (set_submodule_isoset R M) := by
+    (IsSimpleModule.set_submodule R M) ⊆ ⋃₀ (set_submodule_isoset R M) := by
   rw[Set.sUnion, set_submodule_isoset, IsSimpleModule.set_submodule]
   simp; intro y hy; rw[Set.mem_setOf] at hy; simp; use y
   apply And.intro; exact hy
