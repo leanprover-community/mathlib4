@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Neil Strickland, Daniel Weber
+Authors: Neil Strickland
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring
