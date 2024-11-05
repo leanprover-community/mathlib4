@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.AlgebraicTopology.ExtraDegeneracy
 import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.RepresentationTheory.Rep
+import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 # The structure of the `k[G]`-module `k[Gⁿ]`
