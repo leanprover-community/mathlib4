@@ -23,6 +23,8 @@ open Lean Meta Qq
 
 namespace Mathlib.Meta.NormNum
 
+attribute [local instance] monadLiftOptionMetaM_mathlib
+
 theorem isNat_eq_false [AddMonoidWithOne α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.beq a' b' = false → ¬a = b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simpa using Nat.ne_of_beq_eq_false h
