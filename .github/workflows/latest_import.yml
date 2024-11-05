@@ -83,7 +83,8 @@ jobs:
     - name: Zulip report
       id: late_importers
       run: |
-        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib.Data.Nat.Choose.Basic 15 10)" | tee "$GITHUB_OUTPUT"
+        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib.Data.Nat.Choose.Basic 15 10)" |
+          tee "$GITHUB_OUTPUT"
 
     #- name: Post output to Zulip
     #  uses: zulip/github-actions-zulip/send-message@v1
