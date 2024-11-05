@@ -38,7 +38,7 @@ and outputs a set of orthogonal vectors which have the same span.
 open Finset Submodule Module
 
 variable (𝕜 : Type*) {E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [IsWellOrder ι (· < ·)]
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
 
 attribute [local instance] IsWellOrder.toHasWellFounded
 
@@ -46,7 +46,7 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 /-- The Gram-Schmidt process takes a set of vectors as input
 and outputs a set of orthogonal vectors which have the same span. -/
-noncomputable def gramSchmidt [IsWellOrder ι (· < ·)] (f : ι → E) (n : ι) : E :=
+noncomputable def gramSchmidt [WellFoundedLT ι] (f : ι → E) (n : ι) : E :=
   f n - ∑ i : Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt f i) (f n)
 termination_by n
 decreasing_by exact mem_Iio.1 i.2
@@ -68,7 +68,7 @@ theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
 
 @[simp]
 theorem gramSchmidt_zero {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
-    [IsWellOrder ι (· < ·)] (f : ι → E) : gramSchmidt 𝕜 f ⊥ = f ⊥ := by
+    [WellFoundedLT ι] (f : ι → E) : gramSchmidt 𝕜 f ⊥ = f ⊥ := by
   rw [gramSchmidt_def, Iio_eq_Ico, Finset.Ico_self, Finset.sum_empty, sub_zero]
 
 /-- **Gram-Schmidt Orthogonalisation**:
