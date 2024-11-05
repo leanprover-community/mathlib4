@@ -23,8 +23,6 @@ open Lean Meta Qq
 
 namespace Mathlib.Meta.NormNum
 
-attribute [local instance] monadLiftOptionMetaM_mathlib
-
 theorem isNat_eq_false [AddMonoidWithOne α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.beq a' b' = false → ¬a = b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simpa using Nat.ne_of_beq_eq_false h
@@ -44,6 +42,7 @@ theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} �
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
     rw [Rat.invOf_denom_swap]; exact mod_cast of_decide_eq_false h
 
+attribute [local instance] monadLiftOptionMetaM_mathlib in
 /-- The `norm_num` extension which identifies expressions of the form `a = b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ = _] def evalEq : NormNumExt where eval {v β} e := do
