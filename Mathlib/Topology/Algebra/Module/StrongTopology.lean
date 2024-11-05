@@ -59,6 +59,9 @@ uniform convergence, bounded convergence
 open scoped Topology UniformConvergence Uniformity
 open Filter Set Function Bornology
 
+suppress_compilation
+noncomputable section
+
 section General
 
 /-! ### 𝔖-Topologies -/
