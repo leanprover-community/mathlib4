@@ -3,7 +3,7 @@ Copyright (c) 2023 Andrew Yang, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
