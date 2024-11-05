@@ -131,13 +131,13 @@ jobs:
           printf '[Full report](https://github.com/%s/actions/runs/%s)\n' "${{ github.repository }}" "${{ github.run_id }}"
         )" | tee "$GITHUB_OUTPUT"
 
-    #- name: Post output to Zulip
-    #  uses: zulip/github-actions-zulip/send-message@v1
-    #  with:
-    #    api-key: ${{ secrets.ZULIP_API_KEY }}
-    #    email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-    #    organization-url: 'https://leanprover.zulipchat.com'
-    #    to: 'mathlib4'
-    #    type: 'stream'
-    #    topic: Late importers report
-    #    content: ${{ steps.late_importers.outputs.summary }}
+    - name: Post output to Zulip
+      uses: zulip/github-actions-zulip/send-message@v1
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'mathlib4'
+        type: 'stream'
+        topic: Late importers report
+        content: ${{ steps.late_importers.outputs.summary }}
