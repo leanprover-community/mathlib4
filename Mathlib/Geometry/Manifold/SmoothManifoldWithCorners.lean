@@ -526,7 +526,7 @@ section contDiffGroupoid
 
 variable {m n : WithTop ℕ∞} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M]
+  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
 
 variable (n I) in
 /-- Given a model with corners `(E, H)`, we define the pregroupoid of `C^n` transformations of `H`
@@ -1067,7 +1067,7 @@ theorem contDiffOn_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtl
 theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
     (hf' : f' ∈ maximalAtlas I M) {x : E} (hx : x ∈ ((f'.extend I).symm ≫ f.extend I).source) :
     ContDiffWithinAt 𝕜 ∞ (f.extend I ∘ (f'.extend I).symm) (range I) x := by
-  apply (contDiffOn_extend_coord_change I hf hf' x hx).mono_of_mem
+  apply (contDiffOn_extend_coord_change hf hf' x hx).mono_of_mem_nhdsWithin
   rw [extend_coord_change_source] at hx ⊢
   obtain ⟨z, hz, rfl⟩ := hx
   exact I.image_mem_nhdsWithin ((PartialHomeomorph.open_source _).mem_nhds hz)
@@ -1075,7 +1075,7 @@ theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maxi
 theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
     (hf' : f' ∈ maximalAtlas I M) {x : M} (hxf : x ∈ f.source) (hxf' : x ∈ f'.source) :
     ContDiffWithinAt 𝕜 ∞ (f.extend I ∘ (f'.extend I).symm) (range I) (f'.extend I x) := by
-  refine contDiffWithinAt_extend_coord_change I hf hf' ?_
+  refine contDiffWithinAt_extend_coord_change hf hf' ?_
   rw [← extend_image_source_inter]
   exact mem_image_of_mem _ ⟨hxf', hxf⟩
 
@@ -1410,8 +1410,7 @@ theorem contDiffOn_ext_coord_change [SmoothManifoldWithCorners I M] (x x' : M) :
 theorem contDiffWithinAt_ext_coord_change [SmoothManifoldWithCorners I M] (x x' : M) {y : E}
     (hy : y ∈ ((extChartAt I x').symm ≫ extChartAt I x).source) :
     ContDiffWithinAt 𝕜 ∞ (extChartAt I x ∘ (extChartAt I x').symm) (range I) y :=
-  contDiffWithinAt_extend_coord_change I (chart_mem_maximalAtlas I x) (chart_mem_maximalAtlas I x')
-    hy
+  contDiffWithinAt_extend_coord_change (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x') hy
 
 variable (I I') in
 /-- Conjugating a function to write it in the preferred charts around `x`.
