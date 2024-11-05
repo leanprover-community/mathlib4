@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# TODO
+# If a merged PR touched one of the files in the most recent report, trigger the workflow again.
+# Show the diff relative to the last report. (Using zulip/github as the persistent state?)
+
 # `root` is the module name that the script builds
 root=${1:-Mathlib}
 
