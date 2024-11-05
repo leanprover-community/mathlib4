@@ -30,14 +30,11 @@ theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
 /-! ### `succ` and `pred` -/
 
 
--- Porting note (#10618): simp can prove this @[simp]
 theorem succ_natCast_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
   lt_add_one_iff.mpr (by simp)
 
 /-! ### `natAbs` -/
 
-
-variable {a b : ℤ} {n : ℕ}
 
 theorem natAbs_eq_iff_sq_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a ^ 2 = b ^ 2 := by
   rw [sq, sq]

@@ -37,8 +37,11 @@ theorem isUniformEmbedding_coe_real : IsUniformEmbedding ((↑) : ℕ → ℝ) :
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_coe_real := isUniformEmbedding_coe_real
 
-theorem closedEmbedding_coe_real : ClosedEmbedding ((↑) : ℕ → ℝ) :=
-  closedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
+theorem isClosedEmbedding_coe_real : IsClosedEmbedding ((↑) : ℕ → ℝ) :=
+  isClosedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_coe_real := isClosedEmbedding_coe_real
 
 instance : MetricSpace ℕ := Nat.isUniformEmbedding_coe_real.comapMetricSpace _
 

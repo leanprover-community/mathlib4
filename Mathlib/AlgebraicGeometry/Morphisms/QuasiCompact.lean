@@ -272,6 +272,13 @@ lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme.{u}}
   rw [mul_one] at hn
   use n
 
+/-- A global section of a quasi-compact scheme is nilpotent if and only if its associated
+basic open is empty. -/
+lemma Scheme.isNilpotent_iff_basicOpen_eq_bot {X : Scheme.{u}}
+    [CompactSpace X] (f : Γ(X, ⊤)) :
+    IsNilpotent f ↔ X.basicOpen f = ⊥ :=
+  isNilpotent_iff_basicOpen_eq_bot_of_isCompact (U := ⊤) (CompactSpace.isCompact_univ) f
+
 /-- The zero locus of a set of sections over a compact open of a scheme is `X` if and only if
 `s` is contained in the nilradical of `Γ(X, U)`. -/
 lemma Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact {X : Scheme.{u}} {U : X.Opens}
@@ -279,5 +286,12 @@ lemma Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact {X : Scheme.{u}
     X.zeroLocus s = ⊤ ↔ s ⊆ nilradical Γ(X, U) := by
   simp [Scheme.zeroLocus_def, ← Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact hU,
     ← mem_nilradical, Set.subset_def]
+
+/-- The zero locus of a set of sections over a compact open of a scheme is `X` if and only if
+`s` is contained in the nilradical of `Γ(X, U)`. -/
+lemma Scheme.zeroLocus_eq_top_iff_subset_nilradical {X : Scheme.{u}}
+    [CompactSpace X] (s : Set Γ(X, ⊤)) :
+    X.zeroLocus s = ⊤ ↔ s ⊆ nilradical Γ(X, ⊤) :=
+  zeroLocus_eq_top_iff_subset_nilradical_of_isCompact (U := ⊤) (CompactSpace.isCompact_univ) s
 
 end AlgebraicGeometry

@@ -80,16 +80,19 @@ variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
     [NormedField 𝕜] [Finite ι] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
     [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F]
 
-/-- Applying a multilinear map to a vector is continuous in both coordinates. -/
-theorem ContinuousMultilinearMap.continuous_eval :
-    Continuous fun p : ContinuousMultilinearMap 𝕜 E F × ∀ i, E i => p.1 p.2 := by
-  cases nonempty_fintype ι
-  let _ := TopologicalAddGroup.toUniformSpace F
-  have := comm_topologicalAddGroup_is_uniform (G := F)
-  refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
-    (embedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
-  exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
-    ball_mem_nhds _ one_pos⟩
+instance ContinuousMultilinearMap.instContinuousEval :
+    ContinuousEval (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F where
+  continuous_eval := by
+    cases nonempty_fintype ι
+    let _ := TopologicalAddGroup.toUniformSpace F
+    have := comm_topologicalAddGroup_is_uniform (G := F)
+    refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
+      (isEmbedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
+    exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
+      ball_mem_nhds _ one_pos⟩
+
+@[deprecated (since := "2024-10-05")]
+protected alias ContinuousMultilinearMap.continuous_eval := continuous_eval
 
 namespace ContinuousLinearMap
 
@@ -97,8 +100,8 @@ variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [Cont
   (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F)
 
 lemma continuous_uncurry_of_multilinear :
-    Continuous (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) :=
-  ContinuousMultilinearMap.continuous_eval.comp <| .prodMap (map_continuous f) continuous_id
+    Continuous (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) := by
+  fun_prop
 
 lemma continuousOn_uncurry_of_multilinear {s} :
     ContinuousOn (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) s :=
@@ -304,7 +307,7 @@ theorem coe_mkContinuous (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i�
 the other coordinates, then the resulting restricted function satisfies an inequality
 `‖f.restr v‖ ≤ C * ‖z‖^(n-k) * Π ‖v i‖` if the original function satisfies `‖f v‖ ≤ C * Π ‖v i‖`. -/
 theorem restr_norm_le {k n : ℕ} (f : (MultilinearMap 𝕜 (fun _ : Fin n => G) G' : _))
-    (s : Finset (Fin n)) (hk : s.card = k) (z : G) {C : ℝ} (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖)
+    (s : Finset (Fin n)) (hk : #s = k) (z : G) {C : ℝ} (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (v : Fin k → G) : ‖f.restr s hk z v‖ ≤ C * ‖z‖ ^ (n - k) * ∏ i, ‖v i‖ := by
   rw [mul_right_comm, mul_assoc]
   convert H _ using 2
@@ -729,12 +732,12 @@ namespace ContinuousMultilinearMap
 these variables, and fixing the other ones equal to a given value `z`. It is denoted by
 `f.restr s hk z`, where `hk` is a proof that the cardinality of `s` is `k`. The implicit
 identification between `Fin k` and `s` that we use is the canonical (increasing) bijection. -/
-def restr {k n : ℕ} (f : (G[×n]→L[𝕜] G' : _)) (s : Finset (Fin n)) (hk : s.card = k) (z : G) :
+def restr {k n : ℕ} (f : (G[×n]→L[𝕜] G' : _)) (s : Finset (Fin n)) (hk : #s = k) (z : G) :
     G[×k]→L[𝕜] G' :=
   (f.toMultilinearMap.restr s hk z).mkContinuous (‖f‖ * ‖z‖ ^ (n - k)) fun _ =>
     MultilinearMap.restr_norm_le _ _ _ _ f.le_opNorm _
 
-theorem norm_restr {k n : ℕ} (f : G[×n]→L[𝕜] G') (s : Finset (Fin n)) (hk : s.card = k) (z : G) :
+theorem norm_restr {k n : ℕ} (f : G[×n]→L[𝕜] G') (s : Finset (Fin n)) (hk : #s = k) (z : G) :
     ‖f.restr s hk z‖ ≤ ‖f‖ * ‖z‖ ^ (n - k) := by
   apply MultilinearMap.mkContinuous_norm_le
   exact mul_nonneg (norm_nonneg _) (pow_nonneg (norm_nonneg _) _)

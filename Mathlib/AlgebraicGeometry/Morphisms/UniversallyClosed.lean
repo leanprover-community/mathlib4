@@ -3,7 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Constructors
+import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.Topology.LocalAtTarget
 
 /-!
@@ -40,6 +40,13 @@ class UniversallyClosed (f : X ⟶ Y) : Prop where
 theorem universallyClosed_eq : @UniversallyClosed = universally (topologically @IsClosedMap) := by
   ext X Y f; rw [universallyClosed_iff]
 
+instance (priority := 900) [IsClosedImmersion f] : UniversallyClosed f := by
+  rw [universallyClosed_eq]
+  intro X' Y' i₁ i₂ f' hf
+  have hf' : IsClosedImmersion f' :=
+    IsClosedImmersion.stableUnderBaseChange hf.flip inferInstance
+  exact hf'.base_closed.isClosedMap
+
 theorem universallyClosed_respectsIso : RespectsIso @UniversallyClosed :=
   universallyClosed_eq.symm ▸ universally_respectsIso (topologically @IsClosedMap)
 
@@ -58,6 +65,9 @@ instance universallyClosed_isStableUnderComposition :
 instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : UniversallyClosed f] [hg : UniversallyClosed g] : UniversallyClosed (f ≫ g) :=
   comp_mem _ _ _ hf hg
+
+instance : MorphismProperty.IsMultiplicative @UniversallyClosed where
+  id_mem _ := inferInstance
 
 instance universallyClosed_fst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
     UniversallyClosed (pullback.fst f g) :=

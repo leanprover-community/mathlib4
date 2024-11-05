@@ -68,6 +68,12 @@ lemma evaluation_ne_zero_iff_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f ≠ 0 ↔ x.val ∈ X.toRingedSpace.basicOpen f := by
   simp
 
+lemma basicOpen_eq_bot_iff_forall_evaluation_eq_zero (f : X.presheaf.obj (op U)) :
+    X.toRingedSpace.basicOpen f = ⊥ ↔ ∀ (x : U), X.evaluation x f = 0 := by
+  simp only [evaluation_eq_zero_iff_not_mem_basicOpen, Subtype.forall]
+  exact ⟨fun h ↦ h ▸ fun a _ hc ↦ hc,
+    fun h ↦ eq_bot_iff.mpr <| fun a ha ↦ h a (X.toRingedSpace.basicOpen_le f ha) ha⟩
+
 @[simp]
 lemma Γevaluation_eq_zero_iff_not_mem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤)) :
     X.Γevaluation x f = 0 ↔ x ∉ X.toRingedSpace.basicOpen f :=
@@ -78,14 +84,6 @@ lemma Γevaluation_ne_zero_iff_mem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤
   evaluation_ne_zero_iff_mem_basicOpen X ⟨x, show x ∈ ⊤ by trivial⟩ f
 
 variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X)
-
--- TODO: This instance is found before #6045.
--- We need this strange instance for `residueFieldMap`, the type of `F` must be fixed
--- like this. The instance `IsLocalRingHom (f.stalkMap x)` already exists, but does not work for
--- `residueFieldMap`.
-instance : IsLocalRingHom (F := Y.presheaf.stalk (f.base x) →+* X.presheaf.stalk x)
-    (f.stalkMap x) :=
-  f.2 x
 
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
@@ -108,9 +106,6 @@ lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
     residueFieldMap (f ≫ g) x = residueFieldMap g (f.base x) ≫ residueFieldMap f x := by
   simp only [comp_toShHom, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap]
   simp_rw [stalkMap_comp]
-  haveI : IsLocalRingHom (g.stalkMap (f.base x)) := inferInstance
-  -- TODO: This instance is found before #6045.
-  haveI : IsLocalRingHom (f.stalkMap x) := inferInstance
   apply LocalRing.ResidueField.map_comp
 
 @[reassoc]

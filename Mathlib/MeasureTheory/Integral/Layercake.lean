@@ -91,7 +91,7 @@ end
 
 section Layercake
 
-variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ} {s : Set α}
+variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ}
 
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
@@ -458,9 +458,8 @@ end Layercake
 
 section LayercakeLT
 
-variable {α : Type*} [MeasurableSpace α] (μ : Measure α)
-variable {β : Type*} [MeasurableSpace β] [MeasurableSingletonClass β]
-variable {f : α → ℝ} {g : ℝ → ℝ} {s : Set α}
+variable {α : Type*} [MeasurableSpace α]
+variable {f : α → ℝ} {g : ℝ → ℝ}
 
 /-- The layer cake formula / Cavalieri's principle / tail probability formula:
 

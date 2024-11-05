@@ -22,8 +22,7 @@ behaviour is different from any user set value.
 
 namespace Lean.Elab
 
-variable {m : Type → Type} [Monad m] [MonadOptions m] [MonadExceptOf Exception m] [MonadRef m]
-variable [AddErrorMessageContext m] [MonadLiftT (EIO Exception) m] [MonadInfoTree m]
+variable {m : Type → Type} [Monad m] [MonadOptions m] [MonadRef m] [MonadInfoTree m]
 
 /-- unset the option specified by id -/
 def elabUnsetOption (id : Syntax) : m Options := do

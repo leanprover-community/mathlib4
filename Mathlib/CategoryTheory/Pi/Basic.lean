@@ -6,7 +6,6 @@ Authors: Simon Hudon, Kim Morrison
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.Products.Basic
-import Batteries.Data.Sum.Basic
 
 /-!
 # Categories of indexed families of objects.
@@ -49,7 +48,6 @@ theorem comp_apply {X Y Z : ∀ i, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (i) :
     (f ≫ g : ∀ i, X i ⟶ Z i) i = f i ≫ g i :=
   rfl
 
--- Porting note (#5229): need to add an additional `ext` lemma.
 @[ext]
 lemma ext {X Y : ∀ i, C i} {f g : X ⟶ Y} (w : ∀ i, f i = g i) : f = g :=
   funext (w ·)

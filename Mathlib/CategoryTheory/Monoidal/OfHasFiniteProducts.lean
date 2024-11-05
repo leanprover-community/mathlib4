@@ -73,7 +73,7 @@ open scoped MonoidalCategory
 
 @[ext] theorem tensor_ext {X Y Z : C} (f g : X ⟶ Y ⊗ Z)
     (w₁ : f ≫ prod.fst = g ≫ prod.fst) (w₂ : f ≫ prod.snd = g ≫ prod.snd) : f = g :=
-  prod.hom_ext w₁ w₂
+  Limits.prod.hom_ext w₁ w₂
 
 @[simp] theorem tensorUnit : 𝟙_ C = ⊤_ C := rfl
 

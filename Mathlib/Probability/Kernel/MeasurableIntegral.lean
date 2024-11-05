@@ -152,7 +152,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
     · exact fun n => (F n).measurable.comp measurable_prod_mk_left
     · exact fun i j hij b => SimpleFunc.monotone_eapprox (uncurry f) hij _
   simp_rw [this]
-  refine measurable_iSup fun n => ?_
+  refine .iSup fun n => ?_
   refine SimpleFunc.induction
     (P := fun f => Measurable (fun (a : α) => ∫⁻ (b : β), f (a, b) ∂κ a)) ?_ ?_ (F n)
   · intro c t ht
@@ -166,7 +166,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
         (fun a => ∫⁻ b, g₁ (a, b) ∂κ a) + fun a => ∫⁻ b, g₂ (a, b) ∂κ a := by
       ext1 a
       rw [Pi.add_apply]
-      -- Porting note (#10691): was `rw` (`Function.comp` reducibility)
+      -- Porting note (#11224): was `rw` (`Function.comp` reducibility)
       erw [lintegral_add_left (g₁.measurable.comp measurable_prod_mk_left)]
       simp_rw [Function.comp_apply]
     rw [h_add]
@@ -231,7 +231,7 @@ alias _root_.Measurable.set_lintegral_kernel := _root_.Measurable.setLIntegral_k
 
 end Lintegral
 
-variable {E : Type*} [NormedAddCommGroup E] [IsSFiniteKernel κ] [IsSFiniteKernel η]
+variable {E : Type*} [NormedAddCommGroup E] [IsSFiniteKernel κ]
 
 theorem measurableSet_kernel_integrable ⦃f : α → β → E⦄ (hf : StronglyMeasurable (uncurry f)) :
     MeasurableSet {x | Integrable (f x) (κ x)} := by

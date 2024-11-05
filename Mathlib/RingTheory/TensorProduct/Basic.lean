@@ -576,12 +576,22 @@ instance instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
     mul_comm := mul_comm }
 
+end CommRing
+
 section RightAlgebra
+
+variable [CommSemiring R]
+variable [Semiring A] [Algebra R A]
+variable [CommSemiring B] [Algebra R B]
 
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
 abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
-  (Algebra.TensorProduct.includeRight.toRingHom : B →+* A ⊗[R] B).toAlgebra
+  includeRight.toRingHom.toAlgebra' fun b x => by
+    suffices LinearMap.mulLeft R (includeRight b) = LinearMap.mulRight R (includeRight b) from
+      congr($this x)
+    ext xa xb
+    simp [mul_comm]
 
 attribute [local instance] TensorProduct.rightAlgebra
 
@@ -589,8 +599,6 @@ instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
 
 end RightAlgebra
-
-end CommRing
 
 /-- Verify that typeclass search finds the ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely rings, by treating both as `ℤ`-algebras.
@@ -947,6 +955,55 @@ theorem congr_trans [Algebra S C] [IsScalarTower R S C]
   AlgEquiv.coe_algHom_injective <| map_comp f₂.toAlgHom f₁.toAlgHom g₂.toAlgHom g₁.toAlgHom
 
 theorem congr_symm (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) : congr f.symm g.symm = (congr f g).symm := rfl
+
+variable (R A B C) in
+/-- Tensor product of algebras analogue of `mul_left_comm`.
+
+This is the algebra version of `TensorProduct.leftComm`. -/
+def leftComm : A ⊗[R] B ⊗[R] C ≃ₐ[R] B ⊗[R] A ⊗[R] C :=
+  let e₁ := (Algebra.TensorProduct.assoc R A B C).symm
+  let e₂ := congr (Algebra.TensorProduct.comm R A B) (1 : C ≃ₐ[R] C)
+  let e₃ := Algebra.TensorProduct.assoc R B A C
+  e₁.trans (e₂.trans e₃)
+
+@[simp]
+theorem leftComm_tmul (m : A) (n : B) (p : C) :
+    leftComm R A B C (m ⊗ₜ (n ⊗ₜ p)) = n ⊗ₜ (m ⊗ₜ p) :=
+  rfl
+
+@[simp]
+theorem leftComm_symm_tmul (m : A) (n : B) (p : C) :
+    (leftComm R A B C).symm (n ⊗ₜ (m ⊗ₜ p)) = m ⊗ₜ (n ⊗ₜ p) :=
+  rfl
+
+@[simp]
+theorem leftComm_toLinearEquiv :
+    (leftComm R A B C : _ ≃ₗ[R] _) = _root_.TensorProduct.leftComm R A B C := rfl
+
+variable (R A B C D) in
+/-- Tensor product of algebras analogue of `mul_mul_mul_comm`.
+
+This is the algebra version of `TensorProduct.tensorTensorTensorComm`. -/
+def tensorTensorTensorComm : (A ⊗[R] B) ⊗[R] C ⊗[R] D ≃ₐ[R] (A ⊗[R] C) ⊗[R] B ⊗[R] D :=
+  let e₁ := Algebra.TensorProduct.assoc R A B (C ⊗[R] D)
+  let e₂ := congr (1 : A ≃ₐ[R] A) (leftComm R B C D)
+  let e₃ := (Algebra.TensorProduct.assoc R A C (B ⊗[R] D)).symm
+  e₁.trans (e₂.trans e₃)
+
+@[simp]
+theorem tensorTensorTensorComm_tmul (m : A) (n : B) (p : C) (q : D) :
+    tensorTensorTensorComm R A B C D (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
+  rfl
+
+@[simp]
+theorem tensorTensorTensorComm_symm :
+    (tensorTensorTensorComm R A B C D).symm = tensorTensorTensorComm R A C B D := by
+  ext; rfl
+
+@[simp]
+theorem tensorTensorTensorComm_toLinearEquiv :
+    (tensorTensorTensorComm R A B C D : _ ≃ₗ[R] _) =
+      _root_.TensorProduct.tensorTensorTensorComm R A B C D := rfl
 
 end
 

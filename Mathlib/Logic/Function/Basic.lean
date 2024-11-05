@@ -65,6 +65,11 @@ lemma funext_iff_of_subsingleton [Subsingleton α] {g : α → β} (x y : α) :
   · rwa [Subsingleton.elim x z, Subsingleton.elim y z] at h
   · rw [h, Subsingleton.elim x y]
 
+theorem swap_lt {α} [Preorder α] : swap (· < · : α → α → _) = (· > ·) := rfl
+theorem swap_le {α} [Preorder α] : swap (· ≤ · : α → α → _) = (· ≥ ·) := rfl
+theorem swap_gt {α} [Preorder α] : swap (· > · : α → α → _) = (· < ·) := rfl
+theorem swap_ge {α} [Preorder α] : swap (· ≥ · : α → α → _) = (· ≤ ·) := rfl
+
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
 
@@ -708,14 +713,6 @@ theorem comp_right {α β γ δ : Sort*} {f : α → β} {g : α → γ} (h : Fa
 end FactorsThrough
 
 theorem uncurry_def {α β γ} (f : α → β → γ) : uncurry f = fun p ↦ f p.1 p.2 :=
-  rfl
-
-@[simp]
-theorem uncurry_apply_pair {α β γ} (f : α → β → γ) (x : α) (y : β) : uncurry f (x, y) = f x y :=
-  rfl
-
-@[simp]
-theorem curry_apply {α β γ} (f : α × β → γ) (x : α) (y : β) : curry f x y = f (x, y) :=
   rfl
 
 section Bicomp

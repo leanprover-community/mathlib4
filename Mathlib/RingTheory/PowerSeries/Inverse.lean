@@ -150,8 +150,7 @@ theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff k φ = 0 :=
 theorem zero_inv : (0 : k⟦X⟧)⁻¹ = 0 :=
   MvPowerSeries.zero_inv
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem invOfUnit_eq (φ : k⟦X⟧) (h : constantCoeff k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
   MvPowerSeries.invOfUnit_eq _ _
@@ -266,12 +265,16 @@ end Field
 
 section LocalRing
 
-variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
+variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
 
-instance map.isLocalRingHom : IsLocalRingHom (map f) :=
-  MvPowerSeries.map.isLocalRingHom f
+@[instance]
+theorem map.isLocalHom : IsLocalHom (map f) :=
+  MvPowerSeries.map.isLocalHom f
 
-variable [LocalRing R] [LocalRing S]
+@[deprecated (since := "2024-10-10")]
+alias map.isLocalRingHom := map.isLocalHom
+
+variable [LocalRing R]
 
 instance : LocalRing R⟦X⟧ :=
   { inferInstanceAs <| LocalRing <| MvPowerSeries Unit R with }

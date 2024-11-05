@@ -23,9 +23,9 @@ This allows us to define a `k[G]`-basis on `k[Gⁿ⁺¹]`, by mapping the natura
 
 We then define the standard resolution of `k` as a trivial representation, by
 taking the alternating face map complex associated to an appropriate simplicial `k`-linear
-`G`-representation. This simplicial object is the `linearization` of the simplicial `G`-set given
-by the universal cover of the classifying space of `G`, `EG`. We prove this simplicial `G`-set `EG`
-is isomorphic to the Čech nerve of the natural arrow of `G`-sets `G ⟶ {pt}`.
+`G`-representation. This simplicial object is the `Rep.linearization` of the simplicial `G`-set
+given by the universal cover of the classifying space of `G`, `EG`. We prove this simplicial
+`G`-set `EG` is isomorphic to the Čech nerve of the natural arrow of `G`-sets `G ⟶ {pt}`.
 
 We then use this isomorphism to deduce that as a complex of `k`-modules, the standard resolution
 of `k` as a trivial `G`-representation is homotopy equivalent to the complex with `k` at 0 and 0
@@ -563,8 +563,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
   · dsimp only [HomotopyEquiv.ofIso, compForgetAugmentedIso]
     simp only [Iso.symm_hom, eqToIso.inv, HomologicalComplex.eqToHom_f, eqToHom_refl]
   trans (linearCombination _ fun _ => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _))
-  · dsimp
-    erw [Finsupp.lmapDomain_linearCombination (α := Fin 1 → G) (R := k) (α' := ⊤_ Type u)
+  · erw [Finsupp.lmapDomain_linearCombination (α := Fin 1 → G) (R := k) (α' := ⊤_ Type u)
         (v := fun _ => (1 : k)) (v' := fun _ => (1 : k))
         (terminal.from
           ((classifyingSpaceUniversalCover G).obj (Opposite.op (SimplexCategory.mk 0))).V)

@@ -73,7 +73,7 @@ variable (X)
 @[simps!]
 def continuousPrelocal (T : TopCat.{v}) : PrelocalPredicate fun _ : X => T where
   pred {_} f := Continuous f
-  res {_ _} i _ h := Continuous.comp h (Opens.openEmbedding_of_le i.le).continuous
+  res {_ _} i _ h := Continuous.comp h (Opens.isOpenEmbedding_of_le i.le).continuous
 
 /-- Satisfying the inhabited linter. -/
 instance inhabitedPrelocalPredicate (T : TopCat.{v}) :
@@ -114,7 +114,7 @@ def continuousLocal (T : TopCat.{v}) : LocalPredicate fun _ : X => T :=
       dsimp at w
       rw [continuous_iff_continuousAt] at w
       specialize w ⟨x, m⟩
-      simpa using (Opens.openEmbedding_of_le i.le).continuousAt_iff.1 w }
+      simpa using (Opens.isOpenEmbedding_of_le i.le).continuousAt_iff.1 w }
 
 /-- Satisfying the inhabited linter. -/
 instance inhabitedLocalPredicate (T : TopCat.{v}) : Inhabited (LocalPredicate fun _ : X => T) :=

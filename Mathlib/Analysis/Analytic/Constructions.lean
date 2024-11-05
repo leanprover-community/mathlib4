@@ -38,7 +38,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 
 theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
-  refine ⟨by simp, WithTop.zero_lt_top, fun _ => hasSum_single 0 fun n hn => ?_⟩
+  refine ⟨by simp, WithTop.top_pos, fun _ => hasSum_single 0 fun n hn => ?_⟩
   simp [constFormalMultilinearSeries_apply hn]
 
 theorem hasFPowerSeriesAt_const {c : F} {e : E} :

@@ -28,7 +28,7 @@ This file gathers various results about finite modules over a local ring `(R, ğ
   `l` is a split injection if and only if `k âŠ— l` is a (split) injection.
 -/
 
-variable {R S} [CommRing R] [CommRing S] [Algebra R S]
+variable {R} [CommRing R]
 
 section
 

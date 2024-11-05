@@ -35,7 +35,7 @@ open scoped NNReal ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
-variable {α β F F' G G' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
+variable {α F F' G G' 𝕜 : Type*} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F for a Lp submodule
   [NormedAddCommGroup F]
@@ -135,7 +135,7 @@ theorem norm_condexpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x 
   exact lintegral_nnnorm_condexpIndSMul_le hm hs hμs x
 
 theorem condexpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
-    (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (x : G) :
+    (hμt : μ t ≠ ∞) (hst : Disjoint s t) (x : G) :
     condexpIndL1Fin hm (hs.union ht) ((measure_union_le s t).trans_lt
       (lt_top_iff_ne_top.mpr (ENNReal.add_ne_top.mpr ⟨hμs, hμt⟩))).ne x =
     condexpIndL1Fin hm hs hμs x + condexpIndL1Fin hm ht hμt x := by
@@ -224,7 +224,7 @@ theorem continuous_condexpIndL1 : Continuous fun x : G => condexpIndL1 hm μ s x
   continuous_of_linear_of_bound condexpIndL1_add condexpIndL1_smul norm_condexpIndL1_le
 
 theorem condexpIndL1_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
-    (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (x : G) :
+    (hμt : μ t ≠ ∞) (hst : Disjoint s t) (x : G) :
     condexpIndL1 hm μ (s ∪ t) x = condexpIndL1 hm μ s x + condexpIndL1 hm μ t x := by
   have hμst : μ (s ∪ t) ≠ ∞ :=
     ((measure_union_le s t).trans_lt (lt_top_iff_ne_top.mpr (ENNReal.add_ne_top.mpr ⟨hμs, hμt⟩))).ne
@@ -283,12 +283,12 @@ theorem norm_condexpInd_le : ‖(condexpInd G hm μ s : G →L[ℝ] α →₁[μ
   ContinuousLinearMap.opNorm_le_bound _ ENNReal.toReal_nonneg norm_condexpInd_apply_le
 
 theorem condexpInd_disjoint_union_apply (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (x : G) :
+    (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (hst : Disjoint s t) (x : G) :
     condexpInd G hm μ (s ∪ t) x = condexpInd G hm μ s x + condexpInd G hm μ t x :=
   condexpIndL1_disjoint_union hs ht hμs hμt hst x
 
 theorem condexpInd_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
-    (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) : (condexpInd G hm μ (s ∪ t) : G →L[ℝ] α →₁[μ] G) =
+    (hμt : μ t ≠ ∞) (hst : Disjoint s t) : (condexpInd G hm μ (s ∪ t) : G →L[ℝ] α →₁[μ] G) =
     condexpInd G hm μ s + condexpInd G hm μ t := by
   ext1 x; push_cast; exact condexpInd_disjoint_union_apply hs ht hμs hμt hst x
 
