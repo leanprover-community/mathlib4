@@ -254,12 +254,63 @@ theorem Module.End.genEigenspace_restrict_eq_top
     ← Submodule.map_iSup, Submodule.comap_map_eq_of_injective h_inj] at this
   exact this.symm
 
-/-- In finite dimensions, if the generalized eigenspaces of a linear endomorphism span the whole
-space then the same is true of its restriction to any invariant submodule. -/
-@[deprecated Module.End.genEigenspace_restrict_eq_top (since := "2024-10-11")]
-theorem Module.End.iSup_genEigenspace_restrict_eq_top
-    {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V]
-    (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, ⨆ k : ℕ, f.genEigenspace μ k = ⊤) :
-    ⨆ μ, ⨆ k : ℕ, Module.End.genEigenspace (LinearMap.restrict f h) μ k = ⊤ := by
-  simp_rw [iSup_genEigenspace_eq] at h' ⊢
-  apply Module.End.genEigenspace_restrict_eq_top h h'
+/-- Given a family of endomorphisms `i ↦ f i` which are compatible in the sense that every maximal
+generalised eigenspace of `f i` is invariant wrt `f j`, if each `f i` is triangularizable, the
+family is simultaneously triangularizable. -/
+lemma Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo
+    {ι : Type*} [FiniteDimensional K V]
+    (f : ι → End K V)
+    (h : ∀ i j φ, MapsTo (f i) ((f j).maxGenEigenspace φ) ((f j).maxGenEigenspace φ))
+    (h' : ∀ i, ⨆ μ, (f i).maxGenEigenspace μ = ⊤) :
+    ⨆ χ : ι → K, ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by
+  generalize h_dim : finrank K V = n
+  induction n using Nat.strongRecOn generalizing V with | ind n ih => ?_
+  obtain this | ⟨i : ι, hy : ¬ ∃ φ, (f i).maxGenEigenspace φ = ⊤⟩ :=
+    forall_or_exists_not (fun j : ι ↦ ∃ φ : K, (f j).maxGenEigenspace φ = ⊤)
+  · choose χ hχ using this
+    replace hχ : ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by simpa
+    simp_rw [eq_top_iff] at hχ ⊢
+    exact le_trans hχ <| le_iSup (fun χ : ι → K ↦ ⨅ i, (f i).maxGenEigenspace (χ i)) χ
+  · replace hy : ∀ φ, finrank K ((f i).maxGenEigenspace φ) < n := fun φ ↦ by
+      simp_rw [not_exists, ← lt_top_iff_ne_top] at hy; exact h_dim ▸ Submodule.finrank_lt (hy φ)
+    have hi (j : ι) (φ : K) :
+        MapsTo (f j) ((f i).maxGenEigenspace φ) ((f i).maxGenEigenspace φ) := by
+      exact h j i φ
+    replace ih (φ : K) :
+        ⨆ χ : ι → K, ⨅ j, maxGenEigenspace ((f j).restrict (hi j φ)) (χ j) = ⊤ := by
+      apply ih _ (hy φ)
+      · intro j k μ
+        exact mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo (f j) (f k) _ _ (h j k μ)
+      · simp_rw [maxGenEigenspace_def] at h' ⊢
+        exact fun j ↦ Module.End.iSup_genEigenspace_restrict_eq_top _ (h' j)
+      · rfl
+    replace ih (φ : K) :
+        ⨆ (χ : ι → K) (_ : χ i = φ), ⨅ j, maxGenEigenspace ((f j).restrict (hi j φ)) (χ j) = ⊤ := by
+      suffices ∀ χ : ι → K, χ i ≠ φ → ⨅ j, maxGenEigenspace ((f j).restrict (hi j φ)) (χ j) = ⊥ by
+        specialize ih φ; rw [iSup_split, biSup_congr this] at ih; simpa using ih
+      intro χ hχ
+      rw [eq_bot_iff, ← ((f i).maxGenEigenspace φ).ker_subtype, LinearMap.ker,
+        ← Submodule.map_le_iff_le_comap, ← Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo,
+        ← disjoint_iff_inf_le]
+      simp_rw [maxGenEigenspace_def]
+      exact ((f i).disjoint_iSup_genEigenspace hχ.symm).mono_right (iInf_le _ i)
+    replace ih (φ : K) :
+        ⨆ (χ : ι → K) (_ : χ i = φ), ⨅ j, maxGenEigenspace (f j) (χ j) =
+        maxGenEigenspace (f i) φ := by
+      have (χ : ι → K) (hχ : χ i = φ) : ⨅ j, maxGenEigenspace (f j) (χ j) =
+          (⨅ j, maxGenEigenspace ((f j).restrict (hi j φ)) (χ j)).map
+            ((f i).maxGenEigenspace φ).subtype := by
+        rw [← hχ, iInf_maxGenEigenspace_restrict_map_subtype_eq]
+      simp_rw [biSup_congr this, ← Submodule.map_iSup, ih, Submodule.map_top,
+        Submodule.range_subtype]
+    simpa only [← ih, iSup_comm (ι := K), iSup_iSup_eq_right] using h' i
+
+/-- A commuting family of triangularizable endomorphisms is simultaneously triangularizable. -/
+theorem iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
+    [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
+    (f : ι → Module.End K V) (h : Pairwise fun i j ↦ Commute (f i) (f j))
+    (h' : ∀ i, ⨆ μ, (f i).maxGenEigenspace μ = ⊤) :
+    ⨆ χ : ι → K, ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by
+  refine Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo _
+    (fun i j ↦ Module.End.mapsTo_maxGenEigenspace_of_comm ?_) h'
+  rcases eq_or_ne j i with rfl | hij <;> tauto

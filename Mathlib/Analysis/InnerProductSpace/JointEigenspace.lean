@@ -123,17 +123,17 @@ theorem iSup_iInf_eq_top_of_comm {ι : Type*} {T : ι → E →ₗ[𝕜] E}
   calc
   _ = ⨆ χ : ι → 𝕜, ⨅ i, maxGenEigenspace (T i) (χ i) :=
     congr(⨆ χ : ι → 𝕜, ⨅ i,
-      $(maxGenEigenspace_eq_eigenspace (isFinitelySemisimple <| hT i) (χ _))).symm
+      $(maxGenEigenspace_eq_eigenspace (isFinitelySemisimple <| hT _) (χ _))).symm
   _ = ⊤ :=
     iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute T h fun _ ↦ by
     rw [← orthogonal_eq_bot_iff, congr(⨆ μ,
-      $(IsSemisimple.maxGenEigenspace_eq_eigenspace (IsSymmetric.isSemisimple (hT _)) μ)),
+      $(maxGenEigenspace_eq_eigenspace (isFinitelySemisimple <| hT _) μ)),
       (hT _).orthogonalComplement_iSup_eigenspaces_eq_bot]
 
 /-- In finite dimensions, given a commuting family of symmetric linear operators, the inner
 product space on which they act decomposes as an internal direct sum of joint eigenspaces. -/
 theorem LinearMap.IsSymmetric.directSum_isInternal_of_comm_of_fintype [Fintype n]
-    (hT :∀ i, (T i).IsSymmetric) (hC : ∀ i j, Commute (T i) (T j)) :
+    (hT : ∀ i, (T i).IsSymmetric) (hC : ∀ i j, Commute (T i) (T j)) :
     DirectSum.IsInternal (fun α : n → 𝕜 ↦ ⨅ j, eigenspace (T j) (α j)) := by
   rw [OrthogonalFamily.isInternal_iff]
   · rw [iSup_iInf_eq_top_of_comm hT fun ⦃_ _⦄ _ ↦ hC _ _, top_orthogonal_eq_bot]
