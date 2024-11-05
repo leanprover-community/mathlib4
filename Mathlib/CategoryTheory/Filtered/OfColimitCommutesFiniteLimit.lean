@@ -28,8 +28,8 @@ theorem isFiltered_of_nonempty_limit_colimit_to_colimit_limit
     obtain ⟨X, y, -⟩ := Types.jointly_surjective' (this.map (h (F.op ⋙ coyoneda)).some).some
     exact ⟨X, ⟨(limitObjIsoLimitCompEvaluation (F.op ⋙ coyoneda) _).hom y⟩⟩
   let _ (j : Jᵒᵖ) : Unique ((colimit (F.op ⋙ coyoneda).flip).obj j) :=
-    ((colimitObjIsoColimitCompEvaluation (F.op ⋙ coyoneda).flip _
-      ≪≫ Coyoneda.colimitCoyonedaIso _)).toEquiv.unique
+    ((colimitObjIsoColimitCompEvaluation (F.op ⋙ coyoneda).flip _ ≪≫
+      Coyoneda.colimitCoyonedaIso _)).toEquiv.unique
   exact ⟨Types.Limit.mk (colimit (F.op ⋙ coyoneda).flip) (fun j => default) (by subsingleton)⟩
 
 end CategoryTheory
