@@ -116,7 +116,7 @@ variable {V}
 Project the Frobenius automorphism from an isocrystal. Denoted by `Φ(p, k)` when V can be inferred.
 -/
 def Isocrystal.frobenius : V ≃ᶠˡ[p, k] V :=
-  @Isocrystal.frob p _ k _ _ _ _ _ _ _
+  Isocrystal.frob (p := p) (k := k) (V := V)
 
 variable (V)
 
