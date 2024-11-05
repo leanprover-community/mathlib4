@@ -54,7 +54,7 @@ def isoset' : Set (Submodule R M) :=
   {N : Submodule R M | Nonempty (C ≃ₗ[R] N)}
 
 def isoset :
-Set (Submodule R M) :=
+    Set (Submodule R M) :=
   {LinearMap.range i | (i : C →ₗ[R] M)}
 
 abbrev isotypic' : (Submodule R M) :=
