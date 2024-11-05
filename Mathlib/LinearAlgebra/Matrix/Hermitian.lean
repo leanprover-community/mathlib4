@@ -5,6 +5,7 @@ Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.LinearAlgebra.Matrix.ZPow
+import Mathlib.Data.Matrix.ConjTranspose
 
 /-! # Hermitian matrices
 
