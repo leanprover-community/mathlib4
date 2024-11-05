@@ -20,11 +20,8 @@ variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
 variable {a b c : α} [Fact (a ≤ b)] [Fact (b ≤ c)]
 variable {E : Type*} [TopologicalSpace E]
 
-/-- Register the `OrderBot (Icc a b)` instance assuming `[Fact (a ≤ b)] -/
-local instance : OrderBot (Icc a b) := Set.Icc.orderBot Fact.out
-
-/-- Register the `OrderTop (Icc a b)` instance assuming `[Fact (a ≤ b)] -/
-local instance : OrderTop (Icc a b) := Set.Icc.orderTop Fact.out
+/-- Register the `BoundedOrder (Icc a b)` instance assuming `[Fact (a ≤ b)] -/
+local instance : BoundedOrder (Icc a b) := Set.Icc.boundedOrder Fact.out
 
 /-- The embedding into an interval from a sub-interval lying on the left, as a `ContinuousMap`. -/
 def subinterval_left : C(Icc a b, Icc a c) where
