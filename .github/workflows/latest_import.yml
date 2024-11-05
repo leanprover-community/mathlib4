@@ -127,7 +127,7 @@ jobs:
                 con++
                 printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
             }'
-          printf '\n\nReference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
+          printf '\n\n---\n\nReference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
           printf '[Full report](https://github.com/%s/actions/runs/%s)\n' "${{ github.repository }}" "${{ github.run_id }}"
         )" | tee "$GITHUB_OUTPUT"
 
