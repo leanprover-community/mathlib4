@@ -712,6 +712,10 @@ instance [DecidableEq α] : DecidableEq (Sym2 α) :=
 
 section
 
+/--
+Interpret an unordered pair `z` as a multiset containing its elements.
+This function is registered as a coercion from `Sym2 α` to `Multiset α`.
+-/
 @[coe]
 protected def toMultiset (z : Sym2 α) : Multiset α :=
   Sym2.lift ⟨fun x y => {x, y}, Multiset.pair_comm⟩ z
@@ -722,6 +726,10 @@ instance : Coe (Sym2 α) (Multiset α) := ⟨Sym2.toMultiset⟩
 
 variable [DecidableEq α]
 
+/--
+Interpret an unordered pair `z` as a finset containing its elements.
+This function is registered as a coercion from `Sym2 α` to `Finset α`.
+-/
 @[coe]
 protected def toFinset (z : Sym2 α) : Finset α := Multiset.toFinset z
 
