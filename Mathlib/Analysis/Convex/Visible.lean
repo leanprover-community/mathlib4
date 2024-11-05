@@ -9,6 +9,7 @@ import Mathlib.Analysis.Convex.Combination
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 import Mathlib.Topology.Order.Monotone
+import Mathlib.Data.Real.Pi.Irrational
 
 /-!
 # Points in sight
@@ -104,19 +105,20 @@ lemma IsVisible.of_convexHull_of_pos {ι : Type*} {t : Finset ι} {a : ι → V}
 variable [TopologicalSpace 𝕜] [OrderTopology 𝕜] [TopologicalSpace V] [TopologicalAddGroup V]
   [ContinuousSMul 𝕜 V]
 
-/-- One cannot see any point of an open set. -/
-lemma IsOpen.eq_of_isVisible_of_left_mem (hs : IsOpen s) (hsxy : IsVisible 𝕜 s x y) (hx : x ∈ s) :
+lemma IsVisible.eq_of_mem_interior (hsxy : IsVisible 𝕜 s x y) (hy : y ∈ interior s) :
     x = y := by
   by_contra! hxy
-  have hmem : ∀ᶠ (δ : 𝕜) in 𝓝[>] 0, lineMap x y δ ∈ s :=
-    lineMap_continuous.continuousWithinAt.eventually_mem (hs.mem_nhds (by simpa))
-  have hsbtw : ∀ᶠ (δ : 𝕜) in 𝓝[>] 0, Sbtw 𝕜 x (lineMap x y δ) y := by
-    simpa [sbtw_lineMap_iff, eventually_and, hxy] using
-      ⟨eventually_nhdsWithin_of_forall fun δ hδ ↦ hδ,
-        eventually_lt_of_tendsto_lt zero_lt_one nhdsWithin_le_nhds⟩
+  have hmem : ∀ᶠ (δ : 𝕜) in 𝓝[>] 0, lineMap y x δ ∈ s :=
+    lineMap_continuous.continuousWithinAt.eventually_mem
+      (by simpa using mem_interior_iff_mem_nhds.1 hy)
   suffices h : ∀ᶠ (_δ : 𝕜) in 𝓝[>] 0, False by obtain ⟨_, ⟨⟩⟩ := h.exists
-  filter_upwards [hmem, hsbtw] with δ hmem hsbtw
-  exact hsxy hmem hsbtw
+  filter_upwards [hmem, Ioo_mem_nhdsWithin_Ioi' zero_lt_one] with δ hmem hsbt
+    using hsxy.symm hmem (by aesop)
+
+/-- One cannot see any point of an open set. -/
+lemma IsOpen.eq_of_isVisible_of_left_mem (hs : IsOpen s) (hsxy : IsVisible 𝕜 s x y) (hy : y ∈ s) :
+    x = y :=
+  hsxy.eq_of_mem_interior (by simpa [hs])
 
 end Module
 

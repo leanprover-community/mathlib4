@@ -232,7 +232,7 @@ theorem interior_subset : interior s ⊆ s :=
 theorem interior_maximal (h₁ : t ⊆ s) (h₂ : IsOpen t) : t ⊆ interior s :=
   subset_sUnion_of_mem ⟨h₂, h₁⟩
 
-theorem IsOpen.interior_eq (h : IsOpen s) : interior s = s :=
+@[simp] theorem IsOpen.interior_eq (h : IsOpen s) : interior s = s :=
   interior_subset.antisymm (interior_maximal (Subset.refl s) h)
 
 theorem interior_eq_iff_isOpen : interior s = s ↔ IsOpen s :=
@@ -368,7 +368,7 @@ theorem Disjoint.closure_right (hd : Disjoint s t) (hs : IsOpen s) :
     Disjoint s (closure t) :=
   (hd.symm.closure_left hs).symm
 
-theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
+@[simp] theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
   Subset.antisymm (closure_minimal (Subset.refl s) h) subset_closure
 
 theorem IsClosed.closure_subset (hs : IsClosed s) : closure s ⊆ s :=
