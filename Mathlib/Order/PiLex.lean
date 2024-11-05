@@ -94,14 +94,14 @@ instance [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Lex (∀ 
   partialOrderOfSO (· < ·)
 
 /-- `Πₗ i, α i` is a linear order if the original order is well-founded. -/
-noncomputable instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, LinearOrder (β a)] :
+noncomputable instance [LinearOrder ι] [WellFoundedLT ι] [∀ a, LinearOrder (β a)] :
     LinearOrder (Lex (∀ i, β i)) :=
   @linearOrderOfSTO (Πₗ i, β i) (· < ·)
     { trichotomous := (isTrichotomous_lex _ _ IsWellFounded.wf).1 } (Classical.decRel _)
 
 section PartialOrder
 
-variable [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ i, PartialOrder (β i)] {x : ∀ i, β i} {i : ι}
+variable [LinearOrder ι] [WellFoundedLT ι] [∀ i, PartialOrder (β i)] {x : ∀ i, β i} {i : ι}
   {a : β i}
 
 open Function
@@ -153,17 +153,17 @@ theorem toLex_update_le_self_iff : toLex (update x i a) ≤ toLex x ↔ a ≤ x 
 
 end PartialOrder
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, PartialOrder (β a)] [∀ a, OrderBot (β a)] :
+instance [LinearOrder ι] [WellFoundedLT ι] [∀ a, PartialOrder (β a)] [∀ a, OrderBot (β a)] :
     OrderBot (Lex (∀ a, β a)) where
   bot := toLex ⊥
   bot_le _ := toLex_monotone bot_le
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, PartialOrder (β a)] [∀ a, OrderTop (β a)] :
+instance [LinearOrder ι] [WellFoundedLT ι] [∀ a, PartialOrder (β a)] [∀ a, OrderTop (β a)] :
     OrderTop (Lex (∀ a, β a)) where
   top := toLex ⊤
   le_top _ := toLex_monotone le_top
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, PartialOrder (β a)]
+instance [LinearOrder ι] [WellFoundedLT ι] [∀ a, PartialOrder (β a)]
     [∀ a, BoundedOrder (β a)] : BoundedOrder (Lex (∀ a, β a)) :=
   { }
 
@@ -189,13 +189,13 @@ theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (�
     exact ⟨Function.update a i b, i, fun j hj =>
       (Function.update_noteq hj.ne b a).symm, by rwa [Function.update_same i b]⟩⟩
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, PartialOrder (β i)]
+instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMaxOrder (β i)] : NoMaxOrder (Lex (∀ i, β i)) :=
   ⟨fun a =>
     let ⟨_, hb⟩ := exists_gt (ofLex a)
     ⟨_, toLex_strictMono hb⟩⟩
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, PartialOrder (β i)]
+instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMinOrder (β i)] : NoMinOrder (Lex (∀ i, β i)) :=
   ⟨fun a =>
     let ⟨_, hb⟩ := exists_lt (ofLex a)

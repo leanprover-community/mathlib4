@@ -125,13 +125,6 @@ theorem map_ofNat' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F
     (f : F) (h : f 1 = 1) (n : ℕ) [n.AtLeastTwo] : f (OfNat.ofNat n) = OfNat.ofNat n :=
   map_natCast' f h n
 
-@[simp] lemma nsmul_one {A} [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n := by
-  let f : ℕ →+ A :=
-  { toFun := fun n ↦ n • (1 : A)
-    map_zero' := zero_nsmul _
-    map_add' := add_nsmul _ }
-  exact eq_natCast' f <| by simp [f]
-
 end AddMonoidHomClass
 
 section MonoidWithZeroHomClass

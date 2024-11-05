@@ -113,7 +113,7 @@ def mapCoeffs : Derivation ℤ A[X] A[X] :=
   PolynomialModule.equivPolynomialSelf.compDer Differential.deriv.mapCoeffs
 
 @[simp]
-lemma mapCoeffs_apply (p : A[X]) (i) :
+lemma coeff_mapCoeffs (p : A[X]) (i) :
     coeff (mapCoeffs p) i = (coeff p i)′ := rfl
 
 @[simp]
@@ -154,27 +154,6 @@ lemma implicitDeriv_C (v : A[X]) (b : A) :
 lemma implicitDeriv_X (v : A[X]) :
     implicitDeriv v X = v := by
   simp [implicitDeriv]
-
-/--
-`implicitDeriv` as a `Differential`.
--/
-abbrev implicitDifferential (v : A[X]) : Differential A[X] := ⟨implicitDeriv v⟩
-
-lemma implicitDifferentialAlgebra (v : A[X]) :
-    letI := implicitDifferential v
-    DifferentialAlgebra A A[X] :=
-  letI := implicitDifferential v
-  ⟨implicitDeriv_C v⟩
-
-@[simp]
-lemma implicitDifferential_C (v : A[X]) (b : A) :
-    letI := implicitDifferential v
-    (C b)′ = C b′ := implicitDeriv_C v b
-
-@[simp]
-lemma implicitDifferential_X (v : A[X]) :
-    letI := implicitDifferential v
-    X′ = v := implicitDeriv_X v
 
 lemma deriv_aeval_eq_implicitDeriv (x : R) (v : A[X]) (h : x′ = aeval x v) (p : A[X]) :
     (aeval x p)′ = aeval x (implicitDeriv v p) := by
