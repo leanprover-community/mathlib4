@@ -7,6 +7,7 @@ import Mathlib.Data.Finset.Piecewise
 import Mathlib.Order.Filter.Curry
 import Mathlib.Topology.Maps.Basic
 import Mathlib.Topology.NhdsSet
+import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -166,12 +167,12 @@ theorem Quotient.preimage_mem_nhds [TopologicalSpace X] [s : Setoid X] {V : Set 
 /-- The image of a dense set under `Quotient.mk'` is a dense set. -/
 theorem Dense.quotient [Setoid X] [TopologicalSpace X] {s : Set X} (H : Dense s) :
     Dense (Quotient.mk' '' s) :=
-  Quotient.surjective_Quotient_mk''.denseRange.dense_image continuous_coinduced_rng H
+  Quotient.mk''_surjective.denseRange.dense_image continuous_coinduced_rng H
 
 /-- The composition of `Quotient.mk'` and a function with dense range has dense range. -/
 theorem DenseRange.quotient [Setoid X] [TopologicalSpace X] {f : Y → X} (hf : DenseRange f) :
     DenseRange (Quotient.mk' ∘ f) :=
-  Quotient.surjective_Quotient_mk''.denseRange.comp hf continuous_coinduced_rng
+  Quotient.mk''_surjective.denseRange.comp hf continuous_coinduced_rng
 
 theorem continuous_map_of_le {α : Type*} [TopologicalSpace α]
     {s t : Setoid α} (h : s ≤ t) : Continuous (Setoid.map_of_le h) :=
@@ -796,27 +797,35 @@ theorem DenseRange.prodMap {ι : Type*} {κ : Type*} {f : ι → Y} {g : κ → 
 
 @[deprecated (since := "2024-10-05")] alias DenseRange.prod_map := DenseRange.prodMap
 
-theorem Inducing.prodMap {f : X → Y} {g : Z → W} (hf : Inducing f) (hg : Inducing g) :
-    Inducing (Prod.map f g) :=
-  inducing_iff_nhds.2 fun (x, z) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
+lemma IsInducing.prodMap {f : X → Y} {g : Z → W} (hf : IsInducing f) (hg : IsInducing g) :
+    IsInducing (Prod.map f g) :=
+  isInducing_iff_nhds.2 fun (x, z) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
     hg.nhds_eq_comap, prod_comap_comap_eq]
 
-@[deprecated (since := "2024-10-05")] alias Inducing.prod_map := Inducing.prodMap
+@[deprecated (since := "2024-10-28")] alias Inducing.prodMap := IsInducing.prodMap
+
+@[deprecated (since := "2024-10-05")] alias Inducing.prod_map := IsInducing.prodMap
 
 @[simp]
-theorem inducing_const_prod {x : X} {f : Y → Z} : (Inducing fun x' => (x, f x')) ↔ Inducing f := by
-  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp_def,
-    induced_const, top_inf_eq]
+lemma isInducing_const_prod {x : X} {f : Y → Z} :
+    IsInducing (fun x' => (x, f x')) ↔ IsInducing f := by
+  simp_rw [isInducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose,
+    Function.comp_def, induced_const, top_inf_eq]
+
+@[deprecated (since := "2024-10-28")] alias inducing_const_prod := isInducing_const_prod
 
 @[simp]
-theorem inducing_prod_const {y : Y} {f : X → Z} : (Inducing fun x => (f x, y)) ↔ Inducing f := by
-  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp_def,
-    induced_const, inf_top_eq]
+lemma isInducing_prod_const {y : Y} {f : X → Z} :
+    IsInducing (fun x => (f x, y)) ↔ IsInducing f := by
+  simp_rw [isInducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose,
+    Function.comp_def, induced_const, inf_top_eq]
 
-theorem IsEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsEmbedding f) (hg : IsEmbedding g) :
-    IsEmbedding (Prod.map f g) :=
-  { hf.toInducing.prodMap hg.toInducing with
-    inj := fun ⟨x₁, z₁⟩ ⟨x₂, z₂⟩ => by simp [hf.inj.eq_iff, hg.inj.eq_iff] }
+@[deprecated (since := "2024-10-28")] alias inducing_prod_const := isInducing_prod_const
+
+lemma IsEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsEmbedding f)
+    (hg : IsEmbedding g) : IsEmbedding (Prod.map f g) where
+  toIsInducing := hf.isInducing.prodMap hg.isInducing
+  inj := hf.inj.prodMap hg.inj
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.prodMap := IsEmbedding.prodMap
@@ -1015,14 +1024,17 @@ section Subtype
 
 variable [TopologicalSpace X] [TopologicalSpace Y] {p : X → Prop}
 
-theorem inducing_subtype_val {t : Set Y} : Inducing ((↑) : t → Y) := ⟨rfl⟩
+lemma IsInducing.subtypeVal {t : Set Y} : IsInducing ((↑) : t → Y) := ⟨rfl⟩
 
-theorem Inducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, f x ∈ t)
-    (h : Inducing (t.codRestrict f ht)) : Inducing f :=
-  inducing_subtype_val.comp h
+@[deprecated (since := "2024-10-28")] alias inducing_subtype_val := IsInducing.subtypeVal
+
+lemma IsInducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, f x ∈ t)
+    (h : IsInducing (t.codRestrict f ht)) : IsInducing f := subtypeVal.comp h
+
+@[deprecated (since := "2024-10-28")] alias Inducing.of_codRestrict := IsInducing.of_codRestrict
 
 lemma IsEmbedding.subtypeVal : IsEmbedding ((↑) : Subtype p → X) :=
-  ⟨inducing_subtype_val, Subtype.coe_injective⟩
+  ⟨.subtypeVal, Subtype.coe_injective⟩
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_subtype_val := IsEmbedding.subtypeVal
@@ -1083,11 +1095,11 @@ theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
   continuous_subtype_val.continuousAt
 
 theorem Subtype.dense_iff {s : Set X} {t : Set s} : Dense t ↔ s ⊆ closure ((↑) '' t) := by
-  rw [inducing_subtype_val.dense_iff, SetCoe.forall]
+  rw [IsInducing.subtypeVal.dense_iff, SetCoe.forall]
   rfl
 
 theorem map_nhds_subtype_val {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
-  rw [inducing_subtype_val.map_nhds_eq, Subtype.range_val]
+  rw [IsInducing.subtypeVal.map_nhds_eq, Subtype.range_val]
 
 theorem map_nhds_subtype_coe_eq_nhds {x : X} (hx : p x) (h : ∀ᶠ x in 𝓝 x, p x) :
     map ((↑) : Subtype p → X) (𝓝 ⟨x, hx⟩) = 𝓝 x :=
@@ -1107,7 +1119,7 @@ theorem closure_subtype {x : { a // p a }} {s : Set { a // p a }} :
 @[simp]
 theorem continuousAt_codRestrict_iff {f : X → Y} {t : Set Y} (h1 : ∀ x, f x ∈ t) {x : X} :
     ContinuousAt (codRestrict f t h1) x ↔ ContinuousAt f x :=
-  inducing_subtype_val.continuousAt_iff
+  IsInducing.subtypeVal.continuousAt_iff
 
 alias ⟨_, ContinuousAt.codRestrict⟩ := continuousAt_codRestrict_iff
 
@@ -1134,9 +1146,11 @@ theorem Continuous.restrictPreimage {f : X → Y} {s : Set Y} (h : Continuous f)
     Continuous (s.restrictPreimage f) :=
   h.restrict _
 
-theorem Inducing.codRestrict {e : X → Y} (he : Inducing e) {s : Set Y} (hs : ∀ x, e x ∈ s) :
-    Inducing (codRestrict e s hs) :=
-  inducing_of_inducing_compose (he.continuous.codRestrict hs) continuous_subtype_val he
+theorem IsInducing.codRestrict {e : X → Y} (he : IsInducing e) {s : Set Y}
+    (hs : ∀ x, e x ∈ s) : IsInducing (codRestrict e s hs) :=
+  he.of_comp (he.continuous.codRestrict hs) continuous_subtype_val
+
+@[deprecated (since := "2024-10-28")] alias Inducing.codRestrict := IsInducing.codRestrict
 
 protected lemma IsEmbedding.codRestrict {e : X → Y} (he : IsEmbedding e) (s : Set Y)
     (hs : ∀ x, e x ∈ s) : IsEmbedding (codRestrict e s hs) :=
@@ -1529,7 +1543,7 @@ map `g : X → Π i, π i`. This lemma shows that infimum of the topologies on `
 the `f i` as `i : ι` varies is simply the topology on `X` induced by `g : X → Π i, π i`
 where `Π i, π i` is endowed with the usual product topology. -/
 theorem inducing_iInf_to_pi {X : Type*} (f : ∀ i, X → π i) :
-    @Inducing X (∀ i, π i) (⨅ i, induced (f i) inferInstance) _ fun x i => f i x :=
+    @IsInducing X (∀ i, π i) (⨅ i, induced (f i) inferInstance) _ fun x i => f i x :=
   letI := ⨅ i, induced (f i) inferInstance; ⟨(induced_to_pi _).symm⟩
 
 variable [Finite ι] [∀ i, DiscreteTopology (π i)]
@@ -1637,13 +1651,13 @@ theorem continuous_sigma {f : Sigma σ → X} (hf : ∀ i, Continuous fun a => f
 spaces) is inducing iff its restriction to each component is inducing and each the image of each
 component under `f` can be separated from the images of all other components by an open set. -/
 theorem inducing_sigma {f : Sigma σ → X} :
-    Inducing f ↔ (∀ i, Inducing (f ∘ Sigma.mk i)) ∧
+    IsInducing f ↔ (∀ i, IsInducing (f ∘ Sigma.mk i)) ∧
       (∀ i, ∃ U, IsOpen U ∧ ∀ x, f x ∈ U ↔ x.1 = i) := by
   refine ⟨fun h ↦ ⟨fun i ↦ h.comp IsEmbedding.sigmaMk.1, fun i ↦ ?_⟩, ?_⟩
   · rcases h.isOpen_iff.1 (isOpen_range_sigmaMk (i := i)) with ⟨U, hUo, hU⟩
     refine ⟨U, hUo, ?_⟩
     simpa [Set.ext_iff] using hU
-  · refine fun ⟨h₁, h₂⟩ ↦ inducing_iff_nhds.2 fun ⟨i, x⟩ ↦ ?_
+  · refine fun ⟨h₁, h₂⟩ ↦ isInducing_iff_nhds.2 fun ⟨i, x⟩ ↦ ?_
     rw [Sigma.nhds_mk, (h₁ i).nhds_eq_comap, comp_apply, ← comap_comap, map_comap_of_mem]
     rcases h₂ i with ⟨U, hUo, hU⟩
     filter_upwards [preimage_mem_comap <| hUo.mem_nhds <| (hU _).2 rfl] with y hy
@@ -1668,14 +1682,16 @@ theorem isOpenMap_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ 
   isOpenMap_sigma.trans <|
     forall_congr' fun i => (@isOpenEmbedding_sigmaMk _ _ _ (f₁ i)).isOpenMap_iff.symm
 
-theorem inducing_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} (h₁ : Injective f₁) :
-    Inducing (Sigma.map f₁ f₂) ↔ ∀ i, Inducing (f₂ i) := by
-  simp only [inducing_iff_nhds, Sigma.forall, Sigma.nhds_mk, Sigma.map_mk, ← map_sigma_mk_comap h₁,
-    map_inj sigma_mk_injective]
+lemma isInducing_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)}
+    (h₁ : Injective f₁) : IsInducing (Sigma.map f₁ f₂) ↔ ∀ i, IsInducing (f₂ i) := by
+  simp only [isInducing_iff_nhds, Sigma.forall, Sigma.nhds_mk, Sigma.map_mk,
+    ← map_sigma_mk_comap h₁, map_inj sigma_mk_injective]
+
+@[deprecated (since := "2024-10-28")] alias inducing_sigma_map := isInducing_sigmaMap
 
 lemma isEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)}
     (h : Injective f₁) : IsEmbedding (Sigma.map f₁ f₂) ↔ ∀ i, IsEmbedding (f₂ i) := by
-  simp only [isEmbedding_iff, Injective.sigma_map, inducing_sigma_map h, forall_and,
+  simp only [isEmbedding_iff, Injective.sigma_map, isInducing_sigmaMap h, forall_and,
     h.sigma_map_iff]
 
 @[deprecated (since := "2024-10-26")]

@@ -26,9 +26,9 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 - `IsBlock.ncard_block_mul_ncard_orbit_eq` : The cardinality of a block
 multiplied by the number of its translates is the cardinal of the ambient type
 
-- `IsBlock.is_univ_of_large_block` : a too large block is equal to `Set.univ`
+- `IsBlock.eq_univ_of_card_lt` : a too large block is equal to `Set.univ`
 
-- `IsBlock.is_subsingleton` : a too small block is a subsingleton
+- `IsBlock.subsingleton_of_card_lt` : a too small block is a subsingleton
 
 - `IsBlock.of_subset` : the intersections of the translates of a finite subset
 that contain a given point is a block
@@ -348,7 +348,7 @@ theorem IsBlockSystem.of_normal {N : Subgroup G} [N.Normal] :
     exact .orbit_of_normal a
 
 section Group
-variable {S H : Type*} [Group H] [SetLike S H] [SubgroupClass S H] {s : S} {a b : G}
+variable {S H : Type*} [Group H] [SetLike S H] [SubgroupClass S H] {s : S} {a : G}
 
 /-!
 Annoyingly, it seems like the following two lemmas cannot be unified.
@@ -496,7 +496,7 @@ theorem ncard_dvd_card (hB : IsBlock G B) (hB_ne : B.Nonempty) :
   Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)
 
 /-- A too large block is equal to `univ` -/
-theorem eq_univ_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) :
+theorem eq_univ_of_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) :
     B = Set.univ := by
   rcases Set.eq_empty_or_nonempty B with rfl | hB_ne
   · simp only [Set.ncard_empty, zero_mul, not_lt_zero'] at hB'
@@ -507,6 +507,8 @@ theorem eq_univ_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < S
     exact (IsEmpty.exists_iff.mp hB_ne).elim
   · rw [mul_one, ← Set.ncard_univ] at key
     rw [Set.eq_of_subset_of_ncard_le (Set.subset_univ B) key.ge]
+
+@[deprecated (since := "2024-10-29")] alias eq_univ_card_lt := eq_univ_of_card_lt
 
 /-- If a block has too many translates, then it is a (sub)singleton  -/
 theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
@@ -529,10 +531,9 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
    For G = ℤ acting on itself, a = 0 and B = ℕ, the translates `k • B` of the statement
    are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block.
    (Remark by Thomas Browning) -/
--- Note : add {B} because otherwise Lean includes `hB : IsBlock G B`
 /-- The intersection of the translates of a *finite* subset which contain a given point
 is a block (Wielandt, th. 7.3 )-/
-theorem of_subset {B : Set X} (a : X) (hfB : B.Finite) :
+theorem of_subset (a : X) (hfB : B.Finite) :
     IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
   let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B
   cases' Set.eq_empty_or_nonempty B with hfB_e hfB_ne

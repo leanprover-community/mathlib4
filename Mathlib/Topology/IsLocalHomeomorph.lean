@@ -117,7 +117,7 @@ protected theorem continuousAt (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x �
   (hf.map_nhds_eq hx).le
 
 protected theorem continuousOn (hf : IsLocalHomeomorphOn f s) : ContinuousOn f s :=
-  ContinuousAt.continuousOn fun _x ↦ hf.continuousAt
+  continuousOn_of_forall_continuousAt fun _x ↦ hf.continuousAt
 
 protected theorem comp (hg : IsLocalHomeomorphOn g t) (hf : IsLocalHomeomorphOn f s)
     (h : Set.MapsTo f s t) : IsLocalHomeomorphOn (g ∘ f) s := by
