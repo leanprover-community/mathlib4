@@ -83,7 +83,14 @@ The application to the proof of the Faa di Bruno formula will be PRed in a secon
 
 noncomputable section
 
-open Set Fin Function
+open Set Fin Filter Function
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  {s : Set E} {t : Set F}
+  {q : F → FormalMultilinearSeries 𝕜 F G} {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-- A partition of `Fin n` into finitely many nonempty subsets, given by the increasing
 parameterization of these subsets. We order the subsets by increasing greatest element.

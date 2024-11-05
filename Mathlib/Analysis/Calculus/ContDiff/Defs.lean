@@ -158,7 +158,7 @@ lemma ContDiffWithinAt.analyticWithinAt (h : ContDiffWithinAt 𝕜 ω f s x) :
     AnalyticWithinAt 𝕜 f s x := by
   obtain ⟨u, hu, hf⟩ := h.analyticOn
   have xu : x ∈ u := mem_of_mem_nhdsWithin (by simp) hu
-  exact (hf x xu).mono_of_mem (nhdsWithin_mono _ (subset_insert _ _) hu)
+  exact (hf x xu).mono_of_mem_nhdsWithin (nhdsWithin_mono _ (subset_insert _ _) hu)
 
 theorem contDiffWithinAt_omega_iff_analyticWithinAt [CompleteSpace F] :
     ContDiffWithinAt 𝕜 ω f s x ↔ AnalyticWithinAt 𝕜 f s x := by
@@ -345,7 +345,7 @@ theorem contDiffWithinAt_insert {y : E} :
   rcases eq_or_ne x y with (rfl | hx)
   · exact contDiffWithinAt_insert_self
   refine ⟨fun h ↦ h.mono (subset_insert _ _), fun h ↦ ?_⟩
-  apply h.mono_of_mem
+  apply h.mono_of_mem_nhdsWithin
   simp [nhdsWithin_insert_of_ne hx, self_mem_nhdsWithin]
 
 alias ⟨ContDiffWithinAt.of_insert, ContDiffWithinAt.insert'⟩ := contDiffWithinAt_insert
@@ -462,10 +462,10 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' (hn : n ≠ ∞) :
       fun y hy => ?_, ?_⟩
     · intro h
       apply (f_an h).mono hwu
-    · refine ((huf' y <| hwu hy).mono hwu).mono_of_mem ?_
+    · refine ((huf' y <| hwu hy).mono hwu).mono_of_mem_nhdsWithin ?_
       refine mem_of_superset ?_ (inter_subset_inter_left _ (subset_insert _ _))
       exact inter_mem_nhdsWithin _ (hw.mem_nhds hy.2)
-    · exact hf'.mono_of_mem (nhdsWithin_mono _ (subset_insert _ _) hu)
+    · exact hf'.mono_of_mem_nhdsWithin (nhdsWithin_mono _ (subset_insert _ _) hu)
   · rw [← contDiffWithinAt_insert, contDiffWithinAt_succ_iff_hasFDerivWithinAt hn,
       insert_eq_of_mem (mem_insert _ _)]
     rintro ⟨u, hu, hus, f_an, f', huf', hf'⟩
@@ -530,10 +530,10 @@ theorem ContDiffOn.analyticOn (h : ContDiffOn 𝕜 ω f s) : AnalyticOn 𝕜 f s
 
 /-- A function is `C^n` within a set at a point, for `n : ℕ`, if and only if it is `C^n` on
 a neighborhood of this point. -/
-theorem contDiffWithinAt_iff_contDiffOn_nhds {n : ℕ} :
+theorem contDiffWithinAt_iff_contDiffOn_nhds (hn : n ≠ ∞) :
     ContDiffWithinAt 𝕜 n f s x ↔ ∃ u ∈ 𝓝[insert x s] x, ContDiffOn 𝕜 n f u := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rcases h.contDiffOn le_rfl with ⟨u, hu, h'u⟩
+  · rcases h.contDiffOn le_rfl (by simp [hn]) with ⟨u, hu, h'u⟩
     exact ⟨u, hu, h'u.2⟩
   · rcases h with ⟨u, u_mem, hu⟩
     have : x ∈ u := mem_of_mem_nhdsWithin (mem_insert x s) u_mem
@@ -836,7 +836,7 @@ theorem contDiffOn_succ_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
     rw [inter_comm, insert_eq_of_mem hx] at ho
     have := hf'.mono ho
     rw [contDiffWithinAt_inter' (mem_nhdsWithin_of_mem_nhds (IsOpen.mem_nhds o_open xo))] at this
-    apply this.congr_of_eventually_eq' _ hx
+    apply this.congr_of_eventuallyEq_of_mem _ hx
     have : o ∩ s ∈ 𝓝[s] x := mem_nhdsWithin.2 ⟨o, o_open, xo, Subset.refl _⟩
     rw [inter_comm] at this
     refine Filter.eventuallyEq_of_mem this fun y hy => ?_
@@ -856,7 +856,7 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt_of_uniqueDiffOn (hs : UniqueDiffOn
     fun x hx => (h.1 x hx).hasFDerivWithinAt⟩, fun ⟨f_an, h⟩ => ?_⟩
   rcases h with ⟨f', h1, h2⟩
   refine ⟨fun x hx => (h2 x hx).differentiableWithinAt, f_an, fun x hx => ?_⟩
-  exact (h1 x hx).congr' (fun y hy => (h2 y hy).fderivWithin (hs y hy)) hx
+  exact (h1 x hx).congr_of_mem (fun y hy => (h2 y hy).fderivWithin (hs y hy)) hx
 
 /-- A function is `C^(n + 1)` on an open domain if and only if it is
 differentiable there, and its derivative (expressed with `fderiv`) is `C^n`. -/
