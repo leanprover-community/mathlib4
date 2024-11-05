@@ -22,13 +22,9 @@ modular form.
 
 open Complex UpperHalfPlane
 
-open scoped Topology Manifold UpperHalfPlane
+open scoped Topology Manifold MatrixGroups
 
 noncomputable section
-
-local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
-
-local notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
 
 section ModularForm
 

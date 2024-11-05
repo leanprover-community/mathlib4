@@ -610,6 +610,10 @@ lemma isLocalizedModule_iff_isLocalization' (R') [CommSemiring R'] [Algebra R R'
   convert isLocalizedModule_iff_isLocalization (S := S) (A := R) (Aₛ := R')
   exact (Submonoid.map_id S).symm
 
+instance {A} [CommRing A] [Algebra R A] [IsLocalization S A] :
+    IsLocalizedModule S (Algebra.linearMap R A) :=
+  (isLocalizedModule_iff_isLocalization' S _).mpr inferInstance
+
 namespace LocalizedModule
 
 /--
