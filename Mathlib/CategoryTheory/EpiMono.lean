@@ -53,9 +53,10 @@ class IsSplitMono {X Y : C} (f : X ⟶ Y) : Prop where
   exists_splitMono : Nonempty (SplitMono f)
 
 /-- A composition of `SplitMono` is a `SplitMono`. --/
-def SplitMono.comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (sef : SplitMono f) (seg : SplitMono g) :
+@[simps]
+def SplitMono.comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (smf : SplitMono f) (smg : SplitMono g) :
     SplitMono (f ≫ g) where
-  retraction := seg.retraction ≫ sef.retraction
+  retraction := smg.retraction ≫ smf.retraction
 
 /-- A constructor for `IsSplitMono f` taking a `SplitMono f` as an argument -/
 theorem IsSplitMono.mk' {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : IsSplitMono f :=
@@ -82,6 +83,7 @@ class IsSplitEpi {X Y : C} (f : X ⟶ Y) : Prop where
   /-- There is a splitting -/
   exists_splitEpi : Nonempty (SplitEpi f)
 
+@[simps]
 /-- A composition of `SplitEpi` is a split `SplitEpi`. --/
 def SplitEpi.comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (sef : SplitEpi f) (seg : SplitEpi g) :
     SplitEpi (f ≫ g) where
