@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.RingTheory.TensorProduct.Free
+import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Right-exactness properties of tensor product
 
