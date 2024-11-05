@@ -4284,6 +4284,8 @@ import Mathlib.RingTheory.Smooth.StandardSmooth
 import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.SurjectiveOnStalks
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.RingTheory.TensorProduct.Free
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
 import Mathlib.RingTheory.Trace.Basic
 import Mathlib.RingTheory.Trace.Defs
