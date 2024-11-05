@@ -67,6 +67,9 @@ jobs:
         git add -u
         git diff HEAD #lakefile.lean Mathlib/Init.lean Mathlib/Tactic/MinImports.lean
 
+        printf $'\n\nRunning a test `lake build` to verify, for instance, the absence of import loops\n'
+        lake build Mathlib.Init
+
     - name: build mathlib
       id: build
       uses: liskin/gh-problem-matcher-wrap@v3
