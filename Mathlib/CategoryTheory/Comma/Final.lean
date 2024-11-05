@@ -15,29 +15,29 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits Functor CostructuredArrow
 
-variable {A : Type (max u₂ u₃ v₁ v₂ v₃)} [Category.{max u₂ u₃ v₁ v₂ v₃} A]
-variable {B : Type u₂} [Category.{v₂} B]
-variable {T : Type u₃} [Category.{v₃} T]
+variable {A : Type v₁} [Category.{v₁} A]
+variable {B : Type v₁} [Category.{v₁} B]
+variable {T : Type v₁} [Category.{v₁} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
+
+variable [HasColimitsOfShape (Comma L R) A]
 
 example [R.Final] : (Comma.fst L R).Final := by
   rw  [Functor.final_iff_isIso_colimit_pre]
   intro G
-  have hR : (Grothendieck.pre G R).Final :=
-    sorry
-  let i : colimit (Comma.fst L R ⋙ G) ≅ colimit G :=
-    sorry
-    ≪≫ (colimitIsoColimitGrothendieck L G).symm
-  have hi : colimit.pre G (Comma.fst L R) = i.hom :=
-    sorry
-  rw [hi]
-  exact Iso.isIso_hom i
-
-example (X X' Y : B) (i : X ≅ Y) (f : X ⟶ Y) (h : f = i.hom) :
-    IsIso f := by sorry
-
-#check Functor.colimitIsoColimitGrothendieck
+  let R' := Grothendieck.pre (functor L) R
+  have := Final.colimitIso (grothendieckPrecompFunctorEquivalence L R).functor
+    (Comma.fst L R ⋙ G)
+  let i : colimit G ≅ colimit (Comma.fst L R ⋙ G) :=
+    colimitIsoColimitGrothendieck L G ≪≫
+    (Final.colimitIso R' (grothendieckProj L ⋙ G)).symm ≪≫
+    Final.colimitIso (grothendieckPrecompFunctorEquivalence L R).functor (Comma.fst L R ⋙ G)
+  convert i.isIso_inv
+  apply colimit.hom_ext
+  rintro ⟨l, r, f⟩
+  simp [i]
+  sorry
 
 end CategoryTheory
