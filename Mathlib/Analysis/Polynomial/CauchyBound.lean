@@ -25,6 +25,7 @@ open Finset NNReal
 
 /--
 Cauchy's bound on the roots of a given polynomial.
+See `IsRoot.norm_lt_cauchyBound` for the proof that the roots satisfy this bound.
 -/
 noncomputable def cauchyBound (p : K[X]) : ℝ≥0 :=
   sup (range p.natDegree) (‖p.coeff ·‖₊) / ‖p.leadingCoeff‖₊ + 1
