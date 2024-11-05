@@ -74,16 +74,17 @@ jobs:
       with:
         linters: gcc
         run: |
-          lake build Mathlib.Data.Nat.Choose.Basic
+          lake build Mathlib.Logic.Function.Defs
 
     - name: Full report
       run: |
-        ./scripts/late_importers.sh Mathlib.Data.Nat.Choose.Basic 0 0
+        ./scripts/late_importers.sh Mathlib.Logic.Function.Defs 0 0
 
     - name: Zulip report
       id: late_importers
       run: |
-        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib.Data.Nat.Choose.Basic 15 10)" |
+        jobID="${{ github.run_id }}"
+        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib.Logic.Function.Defs 15 10)" |
           tee "$GITHUB_OUTPUT"
 
     #- name: Post output to Zulip
