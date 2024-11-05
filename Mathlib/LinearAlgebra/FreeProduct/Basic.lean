@@ -132,8 +132,8 @@ theorem PowerAlgebra.ofDirectSum_ι :
     ofDirectSum.toLinearMap ∘ₗ PowerAlgebra.ι R A = TensorAlgebra.ι R := by
   ext i a
   simp_rw [ι, LinearMap.comp_apply, lof_eq_of, MultilinearMap.ofSubsingleton_symm_apply_apply,
-            ofDirectSum.toLinearMap_apply, ofDirectSum_of_tprod, tprod_apply,
-           List.ofFn_const, List.replicate_one, List.prod_singleton]
+    ofDirectSum.toLinearMap_apply, ofDirectSum_of_tprod, tprod_apply, List.ofFn_const,
+    List.replicate_one, List.prod_singleton]
 
 /--The generating equivalence relation for elements of the free tensor algebra
 that are identified in the free product.-/
