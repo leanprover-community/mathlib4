@@ -148,6 +148,8 @@ class DivisionRing (K : Type*)
   Do not use this lemma directly. Use `Rat.cast_def` instead. -/
   protected qsmul_def (a : ℚ) (x : K) : qsmul a x = Rat.cast a * x := by intros; rfl
 
+attribute [instance 100] DivisionRing.toRing
+
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing K] : DivisionSemiring K :=
   { ‹DivisionRing K› with }
