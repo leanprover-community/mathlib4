@@ -7,8 +7,9 @@ import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Topology.ContinuousMap.Ordered
 
 /-!
 # The continuous functional calculus

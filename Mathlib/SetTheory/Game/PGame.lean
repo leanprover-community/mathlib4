@@ -827,12 +827,26 @@ theorem equiv_congr_right {x₁ x₂ : PGame} : (x₁ ≈ x₂) ↔ ∀ y₁, (x
   ⟨fun h _ => ⟨fun h' => Equiv.trans (Equiv.symm h) h', fun h' => Equiv.trans h h'⟩,
    fun h => (h x₂).2 <| equiv_rfl⟩
 
+theorem Equiv.of_exists {x y : PGame}
+    (hl₁ : ∀ i, ∃ j, x.moveLeft i ≈ y.moveLeft j) (hr₁ : ∀ i, ∃ j, x.moveRight i ≈ y.moveRight j)
+    (hl₂ : ∀ j, ∃ i, x.moveLeft i ≈ y.moveLeft j) (hr₂ : ∀ j, ∃ i, x.moveRight i ≈ y.moveRight j) :
+    x ≈ y := by
+  constructor <;> refine le_def.2 ⟨?_, ?_⟩ <;> intro i
+  · obtain ⟨j, hj⟩ := hl₁ i
+    exact Or.inl ⟨j, Equiv.le hj⟩
+  · obtain ⟨j, hj⟩ := hr₂ i
+    exact Or.inr ⟨j, Equiv.le hj⟩
+  · obtain ⟨j, hj⟩ := hl₂ i
+    exact Or.inl ⟨j, Equiv.ge hj⟩
+  · obtain ⟨j, hj⟩ := hr₁ i
+    exact Or.inr ⟨j, Equiv.ge hj⟩
+
 theorem Equiv.of_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, x.moveLeft i ≈ y.moveLeft (L i))
     (hr : ∀ j, x.moveRight j ≈ y.moveRight (R j)) : x ≈ y := by
-  constructor <;> rw [le_def]
-  · exact ⟨fun i => Or.inl ⟨_, (hl i).1⟩, fun j => Or.inr ⟨_, by simpa using (hr (R.symm j)).1⟩⟩
-  · exact ⟨fun i => Or.inl ⟨_, by simpa using (hl (L.symm i)).2⟩, fun j => Or.inr ⟨_, (hr j).2⟩⟩
+  apply Equiv.of_exists <;> intro i
+  exacts [⟨_, hl i⟩, ⟨_, hr i⟩,
+    ⟨_, by simpa using hl (L.symm i)⟩, ⟨_, by simpa using hr (R.symm i)⟩]
 
 @[deprecated (since := "2024-09-26")] alias equiv_of_mk_equiv := Equiv.of_equiv
 

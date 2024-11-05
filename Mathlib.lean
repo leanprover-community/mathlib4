@@ -57,6 +57,7 @@ import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.BigOperators.Ring.Multiset
 import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.Algebra.BigOperators.RingEquiv
+import Mathlib.Algebra.BigOperators.Sym
 import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.AlgebraCat.Limits
@@ -148,6 +149,7 @@ import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
+import Mathlib.Algebra.Category.Ring.LinearAlgebra
 import Mathlib.Algebra.Category.Semigrp.Basic
 import Mathlib.Algebra.Central.Basic
 import Mathlib.Algebra.Central.Defs
@@ -818,7 +820,9 @@ import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Algebra.Ring.Identities
 import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Algebra.Ring.Invertible
 import Mathlib.Algebra.Ring.MinimalAxioms
 import Mathlib.Algebra.Ring.Nat
@@ -834,6 +838,7 @@ import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Semireal.Defs
 import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Defs
 import Mathlib.Algebra.Ring.Subring.IntPolynomial
 import Mathlib.Algebra.Ring.Subring.MulOpposite
 import Mathlib.Algebra.Ring.Subring.Order
@@ -931,6 +936,7 @@ import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
 import Mathlib.AlgebraicGeometry.Properties
+import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.RationalMap
 import Mathlib.AlgebraicGeometry.ResidueField
@@ -1054,6 +1060,7 @@ import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
+import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.RCLike
 import Mathlib.Analysis.Calculus.ContDiff.WithLp
@@ -2064,6 +2071,7 @@ import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Combinatorics.Derangements.Exponential
 import Mathlib.Combinatorics.Derangements.Finite
 import Mathlib.Combinatorics.Digraph.Basic
+import Mathlib.Combinatorics.Digraph.Orientation
 import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.Combinatorics.Enumerative.Composition
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
@@ -2139,6 +2147,7 @@ import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
 import Mathlib.Combinatorics.SimpleGraph.StronglyRegular
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.Combinatorics.SimpleGraph.Sum
 import Mathlib.Combinatorics.SimpleGraph.Trails
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
@@ -2464,6 +2473,7 @@ import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.CharP
 import Mathlib.Data.Matrix.ColumnRowPartitioned
 import Mathlib.Data.Matrix.Composition
+import Mathlib.Data.Matrix.ConjTranspose
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Matrix.DoublyStochastic
 import Mathlib.Data.Matrix.DualNumber
@@ -3186,6 +3196,7 @@ import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
 import Mathlib.LinearAlgebra.Matrix.Circulant
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
+import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Matrix.Dual
@@ -4139,7 +4150,9 @@ import Mathlib.RingTheory.LinearDisjoint
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
+import Mathlib.RingTheory.LocalProperties.Projective
 import Mathlib.RingTheory.LocalProperties.Reduced
+import Mathlib.RingTheory.LocalProperties.Submodule
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.LocalRing.Defs
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
@@ -4175,6 +4188,7 @@ import Mathlib.RingTheory.MatrixAlgebra
 import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.MvPolynomial.Ideal
 import Mathlib.RingTheory.MvPolynomial.Localization
@@ -4275,6 +4289,8 @@ import Mathlib.RingTheory.Smooth.StandardSmooth
 import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.SurjectiveOnStalks
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.RingTheory.TensorProduct.Free
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
 import Mathlib.RingTheory.Trace.Basic
 import Mathlib.RingTheory.Trace.Defs
@@ -4816,10 +4832,13 @@ import Mathlib.Topology.ContinuousMap.CompactlySupported
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Topology.ContinuousMap.Defs
 import Mathlib.Topology.ContinuousMap.Ideals
+import Mathlib.Topology.ContinuousMap.Lattice
 import Mathlib.Topology.ContinuousMap.LocallyConstant
 import Mathlib.Topology.ContinuousMap.Ordered
+import Mathlib.Topology.ContinuousMap.Periodic
 import Mathlib.Topology.ContinuousMap.Polynomial
 import Mathlib.Topology.ContinuousMap.Sigma
+import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Topology.ContinuousMap.StarOrdered
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 import Mathlib.Topology.ContinuousMap.T0Sierpinski

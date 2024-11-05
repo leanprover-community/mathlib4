@@ -147,7 +147,7 @@ variable {S : Type*}
 -- TODO: leanprover-community/mathlib4#7432
 instance mulAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : MulAction S (M ⧸ P) :=
-  { Function.Surjective.mulAction mk (surjective_quot_mk _) <| Submodule.Quotient.mk_smul P with
+  { Function.Surjective.mulAction mk Quot.mk_surjective <| Submodule.Quotient.mk_smul P with
     toSMul := instSMul' _ }
 
 -- Porting note: should this be marked as a `@[default_instance]`?
@@ -167,7 +167,7 @@ instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
 instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Submodule R M) :
     DistribSMul S (M ⧸ P) :=
   { Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
+    Quot.mk_surjective (Submodule.Quotient.mk_smul P) with
     toSMulZeroClass := smulZeroClass' _ }
 
 -- Porting note: should this be marked as a `@[default_instance]`?
@@ -179,7 +179,7 @@ instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
 instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : DistribMulAction S (M ⧸ P) :=
   { Function.Surjective.distribMulAction {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
+    Quot.mk_surjective (Submodule.Quotient.mk_smul P) with
     toMulAction := mulAction' _ }
 
 -- Porting note: should this be marked as a `@[default_instance]`?
@@ -191,7 +191,7 @@ instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P : Submodule R M) :
     Module S (M ⧸ P) :=
   { Function.Surjective.module _ {toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
+    Quot.mk_surjective (Submodule.Quotient.mk_smul P) with
     toDistribMulAction := distribMulAction' _ }
 
 -- Porting note: should this be marked as a `@[default_instance]`?
