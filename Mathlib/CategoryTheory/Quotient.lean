@@ -57,21 +57,12 @@ class Congruence : Prop where
 /-- For `F : C ⥤ D`, `F.homRel` is a congruence.-/
 instance Functor.congruence_homRel {C D : Type*} [Category C] [Category D] (F : C ⥤ D) :
     Congruence F.homRel where
-  equivalence := by
-    intro X Y
-    unfold homRel
-    exact {
-      refl := fun _ => rfl
+  equivalence :=
+    { refl := fun _ ↦ rfl
       symm := by aesop
-      trans := by aesop
-    }
-  compLeft f g g' := by
-    unfold homRel
-    aesop
-  compRight := by
-    intro _ _ _ f f' g
-    unfold homRel
-    aesop
+      trans := by aesop }
+  compLeft := by aesop
+  compRight := by aesop
 
 /-- A type synonym for `C`, thought of as the objects of the quotient category. -/
 @[ext]
