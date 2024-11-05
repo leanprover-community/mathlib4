@@ -22,6 +22,9 @@ lemma Nonneg.geom_sum_mul_of_one_lt {x : α} (h : 1 < x) (n : ℕ) :
     (∑ i ∈ Finset.range n, x ^ i) * (x - 1) = x ^ n - 1 := by
   convert geom₂_sum_mul h n <;> simp
 
+/--
+`Nonneg.geom₂_sum_mul'` for `x > y` (the names of `x`, `y`, are swapped here)
+-/
 lemma Nonneg.geom₂_sum_mul' {x y : α} (h : x < y) (n : ℕ) :
     (∑ i ∈ Finset.range n, x ^ i * y ^ (n - 1 - i)) * (y - x) = y ^ n - x ^ n := by
   rw [← Finset.sum_range_reflect]
@@ -39,6 +42,9 @@ lemma Nonneg.geom₂_sum_of_lt {x y : α} (h : x < y) (n : ℕ) :
     ∑ i ∈ Finset.range n, y ^ i * x ^ (n - 1 - i) = (y ^ n - x ^ n) / (y - x) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom₂_sum_mul h n)
 
+/--
+`Nonneg.geom₂_sum_of_lt` for `x > y` (the names of `x`, `y`, are swapped here)
+-/
 lemma Nonneg.geom₂_sum_of_lt' {x y : α} (h : x < y) (n : ℕ) :
     ∑ i ∈ Finset.range n, x ^ i * y ^ (n - 1 - i) = (y ^ n - x ^ n) / (y - x) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom₂_sum_mul' h n)
