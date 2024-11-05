@@ -1,16 +1,9 @@
-on:
-  push:
-    branches-ignore:
-      # ignore tmp branches used by bors
-      - 'staging.tmp*'
-      - 'trying.tmp*'
-      - 'staging*.tmp'
-      - 'nolints'
-      # ignore staging branch used by bors, this is handled by bors.yml
-      - 'staging'
-  merge_group:
+name: Weekly late importers
 
-name: Check latest imports
+on:
+  schedule:
+    - cron: '0 4 * * 1'  # Run at 04:00 UTC every Monday
+  workflow_dispatch:
 
 jobs:
   # Cancels previous runs of jobs in this file
