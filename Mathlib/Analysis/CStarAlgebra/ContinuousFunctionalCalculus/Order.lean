@@ -386,6 +386,10 @@ lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab :
   rw [cfc_le_iff id (fun _ => ‖b‖) a] at h₂
   exact h₂ ‖a‖ <| norm_mem_spectrum_of_nonneg ha
 
+theorem nnnorm_le_nnnorm_of_nonneg_of_le {a : A} {b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
+    ‖a‖₊ ≤ ‖b‖₊ :=
+  norm_le_norm_of_nonneg_of_le ha hab
+
 lemma conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
   suffices ∀ a b : A⁺¹, IsSelfAdjoint b → star a * b * a ≤ ‖b‖ • (star a * a) by
@@ -407,7 +411,7 @@ lemma conjugate_le_norm_smul' {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
 /-- The set of nonnegative elements in a C⋆-algebra is closed. -/
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
   suffices IsClosed {a : A⁺¹ | 0 ≤ a} by
-    rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.closed_iff_image_closed]
+    rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.isClosed_iff_image_isClosed]
     convert this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).isClosedEmbedding.isClosed_range
     ext a
     simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_inter_iff, Set.mem_range, ← exists_and_left]
@@ -421,3 +425,35 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
 end CStarAlgebra
 
 end CStar_nonunital
+
+section Pow
+
+namespace CStarAlgebra
+
+variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+
+lemma pow_nonneg {a : A} (ha : 0 ≤ a := by cfc_tac) (n : ℕ) : 0 ≤ a ^ n := by
+  rw [← cfc_pow_id (R := ℝ≥0) a]
+  exact cfc_nonneg_of_predicate
+
+lemma pow_monotone {a : A} (ha : 1 ≤ a) : Monotone (a ^ · : ℕ → A) := by
+  have ha' : 0 ≤ a := zero_le_one.trans ha
+  intro n m hnm
+  simp only
+  rw [← cfc_pow_id (R := ℝ) a, ← cfc_pow_id (R := ℝ) a, cfc_le_iff ..]
+  rw [CFC.one_le_iff (R := ℝ) a] at ha
+  peel ha with x hx _
+  exact pow_le_pow_right₀ (ha x hx) hnm
+
+lemma pow_antitone {a : A} (ha₀ : 0 ≤ a := by cfc_tac) (ha₁ : a ≤ 1) :
+    Antitone (a ^ · : ℕ → A) := by
+  intro n m hnm
+  simp only
+  rw [← cfc_pow_id (R := ℝ) a, ← cfc_pow_id (R := ℝ) a, cfc_le_iff ..]
+  rw [CFC.le_one_iff (R := ℝ) a] at ha₁
+  peel ha₁ with x hx _
+  exact pow_le_pow_of_le_one (spectrum_nonneg_of_nonneg ha₀ hx) (ha₁ x hx) hnm
+
+end CStarAlgebra
+
+end Pow

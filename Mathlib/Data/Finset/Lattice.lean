@@ -130,6 +130,7 @@ theorem sup_ite (p : β → Prop) [DecidablePred p] :
     (s.sup fun i => ite (p i) (f i) (g i)) = (s.filter p).sup f ⊔ (s.filter fun i => ¬p i).sup g :=
   fold_ite _
 
+@[gcongr]
 theorem sup_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.sup f ≤ s.sup g :=
   Finset.sup_le fun b hb => le_trans (h b hb) (le_sup hb)
 
@@ -354,6 +355,7 @@ theorem inf_ite (p : β → Prop) [DecidablePred p] :
     (s.inf fun i ↦ ite (p i) (f i) (g i)) = (s.filter p).inf f ⊓ (s.filter fun i ↦ ¬ p i).inf g :=
   fold_ite _
 
+@[gcongr]
 theorem inf_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.inf f ≤ s.inf g :=
   Finset.le_inf fun b hb => le_trans (inf_le hb) (h b hb)
 
