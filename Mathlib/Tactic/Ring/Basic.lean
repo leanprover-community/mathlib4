@@ -81,7 +81,7 @@ namespace Ring
 
 open Mathlib.Meta Qq NormNum Lean.Meta AtomM
 
-attribute [local instance] monadLiftOptionMetaM_mathlib
+attribute [local instance] monadLiftOptionMetaM
 
 open Lean (MetaM Expr mkRawNatLit)
 
