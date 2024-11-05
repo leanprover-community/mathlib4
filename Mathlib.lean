@@ -3552,7 +3552,6 @@ import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.ModelTheory.Algebra.Ring.Definability
 import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
-import Mathlib.ModelTheory.Algebra.Ring.MvPolynomial
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Complexity
