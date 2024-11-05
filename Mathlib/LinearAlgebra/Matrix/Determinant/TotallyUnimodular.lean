@@ -67,7 +67,7 @@ lemma IsTotallyUnimodular.submatrix {A : Matrix m n R} (hA : A.IsTotallyUnimodul
     (f : Fin k → m) (g : Fin k → n) :
     (A.submatrix f g).IsTotallyUnimodular := by
   simp only [isTotallyUnimodular_iff, submatrix_submatrix] at hA ⊢
-  intro _ _ _ 
+  intro _ _ _
   apply hA
 
 lemma IsTotallyUnimodular.transpose {A : Matrix m n R} (hA : A.IsTotallyUnimodular) :
