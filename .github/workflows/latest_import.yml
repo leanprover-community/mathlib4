@@ -10,6 +10,8 @@ on:
       - 'staging'
   merge_group:
 
+name: Late importers report
+
 jobs:
   late-importers:
     name: Build
