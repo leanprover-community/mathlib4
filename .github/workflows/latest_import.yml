@@ -7,71 +7,92 @@ on:
 
 jobs:
   late-importers:
-    if: github.repository == 'leanprover-community/mathlib4'
     name: Build
     runs-on: pr
     steps:
-      - name: cleanup
+    - name: cleanup
+      run: |
+        find . -name . -o -prune -exec rm -rf -- {} +
+        # Delete all but the 5 most recent toolchains.
+        # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
+        # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
+        if cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"'; then
+            : # Do nothing on success
+        else
+            : # Do nothing on failure, but suppress errors
+        fi
+
+    # The Hoskinson runners may not have jq installed, so do that now.
+    - name: 'Setup jq'
+      uses: dcarbone/install-jq-action@v2.1.0
+
+    - name: install elan
+      run: |
+        set -o pipefail
+        curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+        ./elan-init -y --default-toolchain none
+        echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+    - uses: actions/checkout@v4
+      with:
+        ref: 'master'
+
+    - name: If using a lean-pr-release toolchain, uninstall
+      run: |
+        if [[ $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+          printf 'Uninstalling transient toolchain %s\n' "$(cat lean-toolchain)"
+          elan toolchain uninstall "$(cat lean-toolchain)"
+        fi
+
+    - name: print lean and lake versions
+      run: |
+        lean --version
+        lake --version
+
+    - name: add minImport linter option
+      run: |
+        # set `linter.minImport option` to true in `lakefile`
+        sed -i '/⟨'\`'linter.style.missingEnd, true⟩,/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
+        # import the `minImport` linter in `Mathlib.Init`
+        sed -i -z 's=^=import Mathlib.Tactic.Linter.MinImports\n=' Mathlib/Init.lean
+        # remove the `Mathlib.Init` import from the `minImport` command to avoid a loop
+        sed -i '/import Mathlib.Init/d' Mathlib/Tactic/MinImports.lean
+        # stage the changes in git so that `git diff` can confirm what changed
+        git add -u
+        git diff HEAD #lakefile.lean Mathlib/Init.lean Mathlib/Init.lean Mathlib/Tactic/MinImports.lean
+
+    - name: build mathlib
+      id: build
+      uses: liskin/gh-problem-matcher-wrap@v3
+      with:
+        linters: gcc
         run: |
-          find . -name . -o -prune -exec rm -rf -- {} +
-          # Delete all but the 5 most recent toolchains.
-          # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
-          # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
-          if cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"'; then
-              : # Do nothing on success
-          else
-              : # Do nothing on failure, but suppress errors
-          fi
+          lake build
 
-      # The Hoskinson runners may not have jq installed, so do that now.
-      - name: 'Setup jq'
-        uses: dcarbone/install-jq-action@v2.1.0
+    - name: Full report
+      run: |
+        lake build | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
+          awk -F: 'BEGIN{max=0}
+            /^⚠/{ print currMax; max=0 }
+            (max < $3) {
+              gsub(/ *Now redun.*/, "")
+              gsub(/ to \[[^]]*\]/, "")
+              gsub(/ *note: this linter.*/, "")
+              gsub(/\.\//, "")
+              gsub(/ *Imports increased by */, "")
+              gsub(/ *New imports */, "")
+              currMax=$0
+              max=$3+0
+          }' |
+          sort --field-separator=: -k3 -nr |
+          awk -F: 'BEGIN{printf("|File|Line|Import increase|New imports|\n|:-|-:|-:|:-|\n")} {
+            printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
+          }'
 
-      - name: install elan
-        run: |
-          set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
-
-      - uses: actions/checkout@v4
-        with:
-          ref: 'master'
-
-      - name: If using a lean-pr-release toolchain, uninstall
-        run: |
-          if [[ $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            printf 'Uninstalling transient toolchain %s\n' "$(cat lean-toolchain)"
-            elan toolchain uninstall "$(cat lean-toolchain)"
-          fi
-
-      - name: print lean and lake versions
-        run: |
-          lean --version
-          lake --version
-
-      - name: add minImport linter option
-        run: |
-          # set `linter.minImport option` to true in `lakefile`
-          sed -i '/⟨'\`'linter.style.missingEnd, true⟩,/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
-          # import the `minImport` linter in `Mathlib.Init`
-          sed -i -z 's=^=import Mathlib.Tactic.Linter.MinImports\n=' Mathlib/Init.lean
-          # remove the `Mathlib.Init` import from the `minImport` command to avoid a loop
-          sed -i '/import Mathlib.Init/d' Mathlib/Tactic/MinImports.lean
-          # stage the changes in git so that `git diff` can confirm what changed
-          git add -u
-          git diff HEAD #lakefile.lean Mathlib/Init.lean Mathlib/Init.lean Mathlib/Tactic/MinImports.lean
-
-      - name: build mathlib
-        id: build
-        uses: liskin/gh-problem-matcher-wrap@v3
-        with:
-          linters: gcc
-          run: |
-            lake build
-
-      - name: Full report
-        run: |
+    - name: Zulip report
+      id: late_importers
+      run: |
+        printf $'summary<<EOF\n%s\nEOF' "$(
           lake build | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
             awk -F: 'BEGIN{max=0}
               /^⚠/{ print currMax; max=0 }
@@ -86,37 +107,15 @@ jobs:
                 max=$3+0
             }' |
             sort --field-separator=: -k3 -nr |
-            awk -F: 'BEGIN{printf("|File|Line|Import increase|New imports|\n|:-|-:|-:|:-|\n")} {
-              printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
+            awk -F: 'BEGIN{
+              printf("|File|Line|Import increase|New imports|\n|:-|-:|-:|:-|\n")
+              con=1
+            }
+              ((con <= 15) && (10 <= $5+0)) {
+                con++
+                printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
             }'
-
-      - name: Zulip report
-        id: late_importers
-        run: |
-          printf $'summary<<EOF\n%s\nEOF' "$(
-            lake build | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
-              awk -F: 'BEGIN{max=0}
-                /^⚠/{ print currMax; max=0 }
-                (max < $3) {
-                  gsub(/ *Now redun.*/, "")
-                  gsub(/ to \[[^]]*\]/, "")
-                  gsub(/ *note: this linter.*/, "")
-                  gsub(/\.\//, "")
-                  gsub(/ *Imports increased by */, "")
-                  gsub(/ *New imports */, "")
-                  currMax=$0
-                  max=$3+0
-              }' |
-              sort --field-separator=: -k3 -nr |
-              awk -F: 'BEGIN{
-                printf("|File|Line|Import increase|New imports|\n|:-|-:|-:|:-|\n")
-                con=1
-              }
-                ((con <= 15) && (10 <= $5+0)) {
-                  con++
-                  printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
-              }'
-            )"
+          )"
 
     - name: Post output to Zulip
       uses: zulip/github-actions-zulip/send-message@v1
