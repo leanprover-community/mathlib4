@@ -144,20 +144,20 @@ theorem rewrites_leftmost_append {r : ContextFreeRule T N} {v₁ v₂ u : List (
     · left
       use u₁++v₁', v₂
       refine ⟨by simp_all, ?_, rfl⟩
-      rw [←List.singleton_append]
+      rw [← List.singleton_append]
       apply RewritesLeftmost.append_right
       exact h.2.1
     · obtain ⟨u₂₁,u₂₂,hu⟩|⟨w₂₁,u₂₂,hu⟩ := ih h.2.2
       · left
         use w₁.map terminal ++ u₂₁, v₂
         refine ⟨by simp_all, ?_, rfl⟩
-        rw [←List.singleton_append,h.2.1]
+        rw [← List.singleton_append,h.2.1]
         apply RewritesLeftmost.append_left
         exact hu.2.1
       · right
         use (w₁++w₂₁), u₂₂
         refine ⟨by simp_all, ?_, hu.2.2⟩
-        · rw [←List.singleton_append, h.2.1, hu.2.1]
+        · rw [← List.singleton_append, h.2.1, hu.2.1]
           simp
 
 theorem rewrites_cons {r : ContextFreeRule T N} {x : Symbol T N} {v u : List (Symbol T N)}
@@ -198,12 +198,12 @@ theorem rewrites_append {r : ContextFreeRule T N}{v₁ v₂ u : List (Symbol T N
     · obtain ⟨s₁,s₂,hs,hs'⟩ := ih hu'.1
       rcases hs' with hs'|hs'
       · refine ⟨x::s₁, s₂, ?_, ?_⟩
-        · rw [List.cons_append,←hs, ←List.singleton_append,hu'.2]
+        · rw [List.cons_append,← hs, ← List.singleton_append,hu'.2]
           exact hu.1
         · left
           exact ⟨hs'.1.append_left [x], hs'.2⟩
       · refine ⟨x::s₁, s₂, ?_, ?_⟩
-        · rw [List.cons_append,←hs, ←List.singleton_append,hu'.2]
+        · rw [List.cons_append,← hs, ← List.singleton_append,hu'.2]
           exact hu.1
         · right
           exact ⟨hs'.1, congr_arg _ hs'.2⟩
@@ -289,7 +289,7 @@ lemma DerivesLeftmost.append_right {v w : List (Symbol T g.NT)}
   | tail _ last ih => exact ih.trans_produces <| last.append_right p
 
 theorem produces_of_produces_leftmost {u v : List (Symbol T g.NT)} (h : g.ProducesLeftmost u v):
-      g.Produces u v := by
+    g.Produces u v := by
   obtain ⟨r,hr⟩ := h
   use r, hr.1
   apply ContextFreeRule.RewritesLeftmost.rewrites_of_rewrites_leftmost
