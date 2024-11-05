@@ -1588,6 +1588,8 @@ namespace MultilinearMap
 variable {ι' : Type*} {N : (ι ⊕ ι') → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
 variable {R M₂}
 
+attribute [local simp] Sum.update_inl_comp_inl_apply Sum.update_inr_comp_inr_apply
+
 /-- Multilinear maps on `N : (ι ⊕ ι') → Type*` identify to multilinear maps
 from `(fun (i : ι) ↦ N (.inl i))` taking values in the space of
 linear maps on `(fun (i : ι') ↦ N (.inr i))`. -/
