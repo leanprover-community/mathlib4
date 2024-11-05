@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.RingTheory.HahnSeries.PowerSeries
-import Mathlib.RingTheory.HahnSeries.Units
+import Mathlib.RingTheory.HahnSeries.HEval
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.RingTheory.Binomial
 
@@ -38,7 +38,7 @@ open BigOperators Pointwise
 
 suppress_compilation
 
-variable {Γ : Type*} {R : Type*}
+variable {Γ R A : Type*}
 
 namespace HahnSeries
 
@@ -94,12 +94,20 @@ def onePlusPosOrderTop (Γ) (R) [LinearOrderedCancelAddCommMonoid Γ] [CommRing 
       simp
   one_mem' := by simp
 
--- Need to generalize to comm. algebra over binomial ring.
+@[simp]
+theorem mem_onePlusPosOrderTop_iff [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+    (x : HahnSeries Γ R) : x ∈ onePlusPosOrderTop Γ R ↔ 0 < (x - 1).orderTop := by
+  exact Eq.to_iff rfl
+
+-- Need to generalize to comm. algebra over binomial ring - PowerSeriesFamily should allow algebras.
 /-- A summable family of Hahn series given by `Ring.choose r n • (x-1)^n`. It is a formal expansion
 of `x^r` as `(1 + (x-1))^r`. -/
 def binomialSeries [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
-    [BinomialRing R] (x : onePlusPosOrderTop Γ R) (r : R) : SummableFamily Γ R ℕ :=
-  SummableFamily.PowerSeriesFamily x.2 (PowerSeries.mk (fun n => Ring.choose r n))
+    [BinomialRing R] [CommRing A] [Algebra R A] {x : HahnSeries Γ A}
+    (hx : x ∈ onePlusPosOrderTop Γ A) (r : R) : SummableFamily Γ A ℕ :=
+  SummableFamily.powerSeriesFamily ((mem_onePlusPosOrderTop_iff x).mp hx)
+    (PowerSeries.mk (fun n => Ring.choose r n))
+
 /-!
 theorem binomialSeries_hsum_in_onePlusPosOrderTop [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
     [BinomialRing R] (x : onePlusPosOrderTop Γ R) (r : R) :
@@ -306,11 +314,12 @@ theorem coeff_mul_one_sub_single {x : HahnSeries Γ R} {g g' : Γ} {r : R} :
     (x * (1 - single g r)).coeff (g + g') = x.coeff (g + g') - r * x.coeff g' := by
   rw [mul_one_sub, sub_coeff, Pi.sub_apply, sub_right_inj, add_comm, mul_single_coeff_add, mul_comm]
 
+/-!
 theorem support_one_sub_single_npow_zero {g : Γ} {r : R} {n : ℕ} :
     ((1 - single g r) ^ n).support ⊆ AddSubmonoid.closure {0, g} :=
   (support_pow_subset_closure (1 - (single g) r) n).trans
     (AddSubmonoid.closure_mono (supp_one_sub_single r))
-
+-/
 theorem _root_.AddSubmonoid.closure_insert_zero {Γ} [AddZeroClass Γ] {g : Γ} :
     AddSubmonoid.closure ({0, g} : Set Γ) ≤ AddSubmonoid.closure ({g} : Set Γ) :=
   AddSubmonoid.closure_le.mpr <| Set.insert_subset_iff.mpr
@@ -322,9 +331,11 @@ theorem _root_.AddSubmonoid.closure_insert_zero_eq {Γ} [AddZeroClass Γ] {g : �
   le_antisymm AddSubmonoid.closure_insert_zero (AddSubmonoid.closure_mono (Set.subset_insert 0 {g}))
 --#find_home! AddSubmonoid.closure_insert_zero_eq
 
+/-!
 theorem support_one_sub_single_npow (g : Γ) (r : R) {n : ℕ} :
     ((1 - single g r) ^ n).support ⊆ AddSubmonoid.closure {g} :=
   support_one_sub_single_npow_zero.trans AddSubmonoid.closure_insert_zero
+-/
 
 theorem _root_.AddSubmonoid.neg_not_in_closure {Γ} [OrderedAddCommMonoid Γ] {g g' : Γ} (hg : 0 ≤ g)
     (hg' : g' < 0) : ¬ g' ∈ AddSubmonoid.closure {g} := by
@@ -336,6 +347,7 @@ theorem _root_.AddSubmonoid.neg_not_in_closure {Γ} [OrderedAddCommMonoid Γ] {g
   exact (lt_self_iff_false 0).mp (lt_of_le_of_lt hgk hg')
 --#find_home AddSubmonoid.neg_not_in_closure --[Mathlib.GroupTheory.Submonoid.Membership]
 
+/-!
 theorem coeff_one_sub_single_pow_of_neg {g g' : Γ} (hg : 0 ≤ g) (hg' : g' < 0) {r : R} {n : ℕ} :
     ((1 - single g r) ^ n).coeff g' = 0 := by
   by_contra h
@@ -349,7 +361,7 @@ theorem coeff_one_sub_single_pow_of_add_eq_zero {g g' : Γ} (hg : 0 < g) (hgg' :
     rw [← hgg']
     exact (lt_add_iff_pos_left g').mpr hg
   exact coeff_one_sub_single_pow_of_neg (le_of_lt hg) hg'
-
+-/
 theorem coeff_single_mul_of_no_add {x : HahnSeries Γ R} {a b : Γ} {r : R} (hab : ¬∃c, c + a = b) :
     (x * single a r).coeff b = 0 := by
   rw [mul_coeff]
@@ -359,7 +371,7 @@ theorem coeff_single_mul_of_no_add {x : HahnSeries Γ R} {a b : Γ} {r : R} (hab
     simp_all [mem_addAntidiagonal, single_coeff]
   · exact rfl
 --#find_home! coeff_single_mul_of_no_add --[Mathlib.RingTheory.HahnSeries.Multiplication]
-
+/-!
 theorem coeff_zero_one_sub_single_npow {g : Γ} (hg : 0 < g) {r : R} {n : ℕ} :
     ((1 - single g r) ^ n).coeff 0 = 1 := by
   by_cases hr : r = 0; · rw [hr, single_eq_zero, sub_zero, one_pow, one_coeff, if_pos rfl]
@@ -418,7 +430,6 @@ theorem coeff_one_sub_single_inv {g : Γ} (hg : 0 < g) {r : R} {k : ℕ} :
   | inl hik => exact Ne.symm (ne_of_lt (nsmul_lt_nsmul_left hg hik))
   | inr hki => exact ne_of_lt (nsmul_lt_nsmul_left hg hki)
 
-/-!
 theorem coeff_one_sub_single_neg_pow {g : Γ} (hg : 0 < g) {r : R} {n k : ℕ} :
     ((IsUnit.unit (isUnit_one_sub_single hg r)) ^ (-n : ℤ)).val.coeff (k • g) =
     Nat.choose (n + k - 1) k • (-r) ^ k := by
