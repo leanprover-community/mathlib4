@@ -42,16 +42,16 @@ lemma isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
   constructor <;> intro hA
   · intro k f g
     if h : f.Injective ∧ g.Injective then
-        exact hA k f g h.1 h.2
+      exact hA k f g h.1 h.2
     else
       left
       simp only [Function.Injective, not_and_or, not_forall, ← ne_eq] at h
-      obtain ⟨i, j, hqij, hij⟩ | ⟨i, j, hqij, hij⟩ := h
+      obtain ⟨i, j, hfij, hij⟩ | ⟨i, j, hrij, hij⟩ := h
       · rw [← det_transpose, transpose_submatrix]
         apply det_zero_of_column_eq hij.symm
-        simp [hqij]
+        simp [hfij]
       · apply det_zero_of_column_eq hij
-        simp [hqij]
+        simp [hrij]
   · intro _ _ _ _ _
     apply hA
 
@@ -66,16 +66,15 @@ lemma IsTotallyUnimodular.apply {A : Matrix m n R} (hA : A.IsTotallyUnimodular)
 lemma IsTotallyUnimodular.submatrix {A : Matrix m n R} (hA : A.IsTotallyUnimodular) {k : ℕ}
     (f : Fin k → m) (g : Fin k → n) :
     (A.submatrix f g).IsTotallyUnimodular := by
-  intro _ _ _ _ _
-  rw [submatrix_submatrix]
-  rw [isTotallyUnimodular_iff] at hA
+  simp only [isTotallyUnimodular_iff, submatrix_submatrix] at hA ⊢
+  intro _ _ _ 
   apply hA
 
 lemma IsTotallyUnimodular.transpose {A : Matrix m n R} (hA : A.IsTotallyUnimodular) :
     Aᵀ.IsTotallyUnimodular := by
-  intro _ _ _ _ _
-  simp only [← transpose_submatrix, det_transpose]
-  apply hA <;> assumption
+  simp only [isTotallyUnimodular_iff, ← transpose_submatrix, det_transpose] at hA ⊢
+  intro _ _ _
+  apply hA
 
 lemma mapEquiv_IsTotallyUnimodular {X' Y' : Type*} (A : Matrix m n R) (eX : X' ≃ m) (eY : Y' ≃ n) :
     IsTotallyUnimodular ((A · ∘ eY) ∘ eX) ↔ A.IsTotallyUnimodular := by
