@@ -47,11 +47,6 @@ instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) where
     simp_rw [Additive.ofMul.surjective.forall, ← ofMul_mul, Additive.ofMul.injective.eq_iff]
     simp
 
-@[norm_cast]
-theorem coe_prod {ι : Type*} (f : ι → ℕ+) (s : Finset ι) :
-    ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : ℕ) :=
-  map_prod coeMonoidHom _ _
-
 end PNat
 
 namespace Nat

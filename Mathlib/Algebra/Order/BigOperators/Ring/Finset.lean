@@ -148,6 +148,11 @@ lemma abs_prod [LinearOrderedCommRing R] (s : Finset ι) (f : ι → R) :
     |∏ x ∈ s, f x| = ∏ x ∈ s, |f x| :=
   map_prod absHom _ _
 
+@[norm_cast]
+theorem PNat.coe_prod {ι : Type*} (f : ι → ℕ+) (s : Finset ι) :
+    ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : ℕ) :=
+  map_prod PNat.coeMonoidHom _ _
+
 section CanonicallyOrderedCommSemiring
 variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
 
