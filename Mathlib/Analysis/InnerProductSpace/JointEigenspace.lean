@@ -125,7 +125,7 @@ theorem iSup_iInf_eq_top_of_comm {ι : Type*} {T : ι → E →ₗ[𝕜] E}
     congr(⨆ χ : ι → 𝕜, ⨅ i,
       $(maxGenEigenspace_eq_eigenspace (isFinitelySemisimple <| hT _) (χ _))).symm
   _ = ⊤ :=
-    iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute T h fun _ ↦ by
+    iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_comm T h fun _ ↦ by
     rw [← orthogonal_eq_bot_iff, congr(⨆ μ,
       $(maxGenEigenspace_eq_eigenspace (isFinitelySemisimple <| hT _) μ)),
       (hT _).orthogonalComplement_iSup_eigenspaces_eq_bot]
