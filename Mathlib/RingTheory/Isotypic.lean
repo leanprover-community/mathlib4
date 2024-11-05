@@ -146,7 +146,7 @@ def set_submodule_isotypic : Set (Submodule R M) :=
   {isotypic R M S | S : IsSimpleModule.set_submodule R M}
 
 lemma sUnion_of_set_submodule_isoset_le_IsSimpleModule.set_submodule :
-  ⋃₀ (set_submodule_isoset R M) ⊆ (IsSimpleModule.set_submodule R M) ∪ {0} := by
+    ⋃₀ (set_submodule_isoset R M) ⊆ (IsSimpleModule.set_submodule R M) ∪ {0} := by
   rw[Set.sUnion, set_submodule_isoset, IsSimpleModule.set_submodule]
   apply sSup_le
   intro y hy
