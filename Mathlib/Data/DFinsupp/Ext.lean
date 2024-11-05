@@ -6,8 +6,6 @@ Authors: Johannes Hölzl, Kenny Lau
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Data.DFinsupp.Defs
 
-set_option linter.minImports true
-
 /-!
 # Extensionality principles for `DFinsupp`
 
