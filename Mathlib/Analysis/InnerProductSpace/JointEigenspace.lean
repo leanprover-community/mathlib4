@@ -10,6 +10,7 @@ import Mathlib.Order.CompleteLattice
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+import Mathlib.Analysis.InnerProductSpace.Semisimple
 
 /-! # Joint eigenspaces of commuting symmetric operators
 
@@ -82,15 +83,17 @@ theorem orthogonalFamily_iInf_eigenspaces
 
 variable [FiniteDimensional 𝕜 E]
 
+open IsFinitelySemisimple
+
 /-- If A and B are commuting symmetric operators on a finite dimensional inner product space
 then the eigenspaces of the restriction of B to any eigenspace of A exhaust that eigenspace. -/
 theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric) (hAB : Commute A B) :
     (⨆ γ, eigenspace A α ⊓ eigenspace B γ) = eigenspace A α := by
   conv_rhs => rw [← (eigenspace A α).map_subtype_top]
-  simp only [← genEigenspace_one_eq_eigenspace (f := B), ← Submodule.map_iSup,
+  simp only [← genEigenspace_eq_eigenspace (f := B), ← Submodule.map_iSup,
     (eigenspace A α).inf_genEigenspace _ (mapsTo_genEigenspace_of_comm hAB α 1)]
   congr 1
-  simpa only [genEigenspace_one_eq_eigenspace, Submodule.orthogonal_eq_bot_iff]
+  simpa only [genEigenspace_eq_eigenspace, Submodule.orthogonal_eq_bot_iff]
     using orthogonalComplement_iSup_eigenspaces_eq_bot <|
       hB.restrict_invariant <| mapsTo_genEigenspace_of_comm hAB α 1
 
@@ -120,7 +123,7 @@ theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
   calc
   _ = ⨆ χ : ι → 𝕜, ⨅ i, maxGenEigenspace (T i) (χ i) :=
     congr(⨆ χ : ι → 𝕜, ⨅ i,
-      $(IsSemisimple.maxGenEigenspace_eq_eigenspace (IsSymmetric.isSemisimple (hT _)) (χ _))).symm
+      $(maxGenEigenspace_eq_eigenspace (isFinitelySemisimple <| hT i) (χ _))).symm
   _ = ⊤ :=
     iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute T h fun _ ↦ by
     rw [← orthogonal_eq_bot_iff, congr(⨆ μ,
