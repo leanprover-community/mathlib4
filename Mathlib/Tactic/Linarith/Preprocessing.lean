@@ -101,10 +101,8 @@ open Mathlib.Tactic.Zify
 `isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
 or the negation thereof.
 -/
-partial def isNatProp (e : Expr) : MetaM Bool := do
-  match ← e.ineqOrNotIneq? with
-  | (_, _, .const ``Nat [], _, _) => return true
-  | _ => return false
+partial def isNatProp (e : Expr) : MetaM Bool := succeeds <| do
+  let (_, _, .const ``Nat [], _, _) ← e.ineqOrNotIneq? | failure
 
 /-- If `e` is of the form `((n : ℕ) : C)`, `isNatCoe e` returns `⟨n, C⟩`. -/
 def isNatCoe (e : Expr) : Option (Expr × Expr) :=
@@ -155,7 +153,7 @@ def natToInt : GlobalBranchingPreprocessor where
       if ← isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
           | throwError "zifyProof failed on {h}"
-        if ← succeeds t'.ineq? then
+        if ← succeeds t'.ineqOrNotIneq? then
           pure h'
         else
           -- `zifyProof` turned our comparison into something that wasn't a comparison
