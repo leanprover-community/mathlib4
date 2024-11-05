@@ -193,7 +193,7 @@ lemma sSup_sUnion_of_set_submodule_isoset_eq_sSup_IsSimpleModule.set_submodule :
     exact IsSimpleModule.set_submodule_le_sUnion_of_set_submodule_isoset R M
 
 lemma sSup_IsSimpleModule.set_submodule_eq_sSup_set_submodule_isotypic :
-  sSup (IsSimpleModule.set_submodule R M) = sSup (set_submodule_isotypic R M) := by
+    sSup (IsSimpleModule.set_submodule R M) = sSup (set_submodule_isotypic R M) := by
   rw[<- sSup_sUnion_of_set_submodule_isoset_eq_sSup_IsSimpleModule.set_submodule, sSup_sUnion, set_submodule_isotypic]
   apply le_antisymm
   · apply iSup_le
