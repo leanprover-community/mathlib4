@@ -48,6 +48,11 @@ lemma isVisible_comm : IsVisible 𝕜 s x y ↔ IsVisible 𝕜 s y x := by simp 
 lemma IsVisible.mono (hst : s ⊆ t) (ht : IsVisible 𝕜 t x y) : IsVisible 𝕜 s x y :=
   fun _z hz ↦ ht <| hst hz
 
+lemma isVisible_iff_lineMap (hxy : x ≠ y) :
+    IsVisible 𝕜 s x y ↔ ∀ δ ∈ Set.Ioo (0 : 𝕜) 1, lineMap x y δ ∉ s := by
+  simp [IsVisible, sbtw_iff_mem_image_Ioo_and_ne, hxy]
+  aesop
+
 end AddTorsor
 
 section Module
