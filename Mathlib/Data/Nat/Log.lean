@@ -20,6 +20,7 @@ These are interesting because, for `1 < b`, `Nat.log b` and `Nat.clog b` are res
 left adjoints of `Nat.pow b`. See `pow_le_iff_le_log` and `le_pow_iff_clog_le`.
 -/
 
+assert_not_exists OrderTop
 
 namespace Nat
 
