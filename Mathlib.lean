@@ -3554,7 +3554,7 @@ import Mathlib.ModelTheory.Algebra.Ring.Definability
 import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Basic
-import Mathlib.ModelTheory.Complexity
+import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Definability
 import Mathlib.ModelTheory.DirectLimit
 import Mathlib.ModelTheory.ElementaryMaps
