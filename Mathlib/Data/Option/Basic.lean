@@ -128,10 +128,6 @@ theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ 
     (a : α) :
     (Option.map f₁ a).map g₁ = (Option.map f₂ a).map g₂ := by rw [map_map, h, ← map_map]
 
-@[simp]
-theorem map_eq_none_iff {f : α → β} {a : Option α} : Option.map f a = none ↔ a = none := by
-  cases a <;> simp
-
 section pmap
 
 variable {p : α → Prop} (f : ∀ a : α, p a → β) (x : Option α)
