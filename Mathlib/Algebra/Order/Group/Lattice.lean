@@ -126,3 +126,4 @@ def CommGroup.toDistribLattice (α : Type*) [Lattice α] [CommGroup α]
       exact mul_le_mul' (inf_le_inf_left _ inf_le_left) inf_le_left
     · rw [inv_mul_le_iff_le_mul, ← inf_mul_sup x z]
       exact mul_le_mul' (inf_le_inf_left _ inf_le_right) inf_le_right
+
