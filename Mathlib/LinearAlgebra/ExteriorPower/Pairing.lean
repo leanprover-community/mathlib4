@@ -6,7 +6,6 @@ Authors: Joël Riou, Sophie Morel
 
 import Mathlib.LinearAlgebra.ExteriorPower.Basic
 import Mathlib.LinearAlgebra.TensorPower.Pairing
-import Mathlib.LinearAlgebra.Determinant
 
 /-!
 # The pairing between the exterior power of the dual and the exterior power
