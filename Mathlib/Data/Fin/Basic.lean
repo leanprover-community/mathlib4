@@ -105,6 +105,17 @@ lemma size_positive' [Nonempty (Fin n)] : 0 < n :=
 protected theorem prop (a : Fin n) : a.val < n :=
   a.2
 
+/-- `caseMax m a` embeds `a : Fin n` in `Fin (max n m)` -/
+def castMax {n : ℕ} (m : ℕ) (a : Fin n) : Fin (max n m) := ⟨a.val, a.val_lt_of_le (n.le_max_left m)⟩
+
+/-- `caseMax n a` embeds `a : Fin m` in `Fin (max n m)` -/
+def castMax' (n : ℕ) {m : ℕ} (a : Fin m) : Fin (max n m) :=
+  ⟨a.val, a.val_lt_of_le (n.le_max_right m)⟩
+
+@[simp]
+lemma castMax_val {n : ℕ} (m : ℕ) (a : Fin n) : (castMax m a).val = a.val := rfl
+lemma castMax'_val (n : ℕ) {m : ℕ} (a : Fin m) : (castMax' n a).val = a.val := rfl
+
 section Order
 variable {a b c : Fin n}
 

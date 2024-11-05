@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
@@ -72,5 +73,53 @@ def Embedding.sumInr : H ↪g G ⊕g H where
   toFun u := _root_.Sum.inr u
   inj' u v := by simp
   map_rel_iff' := by simp
+
+def Coloring.sum (cG : G.Coloring γ) (cH : H.Coloring γ) : (G ⊕g H).Coloring γ := Coloring.mk
+  (Sum.elim cG cH) <| by
+  intro u v
+  cases u <;> cases v <;> simp
+  · exact cG.valid
+  · exact cH.valid
+
+def Coloring.sum_left (c : (G ⊕g H).Coloring γ) : G.Coloring γ := Coloring.mk (c ∘ Sum.inl) <| by
+  intro u v h
+  exact c.valid h
+
+def Coloring.sum_right (c : (G ⊕g H).Coloring γ) : H.Coloring γ := Coloring.mk (c ∘ Sum.inr) <| by
+  intro u v h
+  exact c.valid h
+
+def Coloring.sum_fin {n m : ℕ} (cG : G.Coloring (Fin n)) (cH : H.Coloring (Fin m)) :
+    (G ⊕g H).Coloring (Fin (max n m)) := Coloring.mk
+  (Sum.elim (Fin.castMax m ∘ cG) (Fin.castMax' n ∘ cH)) <| by
+  intro u v
+  cases u <;> cases v <;> rename_i u v <;> simp <;> rw [Fin.ext_iff]
+  · rw [Fin.castMax_val, Fin.castMax_val, ← Fin.ext_iff]
+    exact cG.valid
+  · rw [Fin.castMax'_val, Fin.castMax'_val, ← Fin.ext_iff]
+    exact cH.valid
+
+theorem ChromaticNumber.left_le_sum : G.chromaticNumber ≤ (G ⊕g H).chromaticNumber := by
+  refine chromaticNumber_le_of_forall_imp ?_
+  intro n h
+  let c : (G ⊕g H).Coloring (Fin n) := h.some
+  exact Nonempty.intro c.sum_left
+
+theorem ChromaticNumber.right_le_sum : H.chromaticNumber ≤ (G ⊕g H).chromaticNumber := by
+  refine chromaticNumber_le_of_forall_imp ?_
+  intro n h
+  let c : (G ⊕g H).Coloring (Fin n) := h.some
+  exact Nonempty.intro c.sum_right
+
+theorem ChromaticNumber.sum_eq :
+    (G ⊕g H).chromaticNumber = max G.chromaticNumber H.chromaticNumber := by
+  refine eq_max ChromaticNumber.left_le_sum ChromaticNumber.right_le_sum ?_
+  intro n hG hH
+  cases n
+  · simp
+  · rename_i n
+    let cG : G.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hG).some
+    let cH : H.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hH).some
+    exact chromaticNumber_le_iff_colorable.mpr (Nonempty.intro (cG.sum cH))
 
 end SimpleGraph
