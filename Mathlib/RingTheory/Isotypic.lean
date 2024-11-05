@@ -182,7 +182,7 @@ lemma IsSimpleModule.set_submodule_le_sUnion_of_set_submodule_isoset :
     intro x; simp
 
 lemma sSup_sUnion_of_set_submodule_isoset_eq_sSup_IsSimpleModule.set_submodule :
-  sSup (⋃₀ (set_submodule_isoset R M)) = sSup (IsSimpleModule.set_submodule R M) := by
+    sSup (⋃₀ (set_submodule_isoset R M)) = sSup (IsSimpleModule.set_submodule R M) := by
   apply le_antisymm
   · have h : sSup (IsSimpleModule.set_submodule R M) = sSup (IsSimpleModule.set_submodule R M ∪ {0}) := by
       rw[sSup_union]; simp
