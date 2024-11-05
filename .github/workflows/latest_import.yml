@@ -150,3 +150,28 @@ jobs:
             awk -F: 'BEGIN{printf("|File|Line|Import increase|New imports|\n|:-|-:|-:|:-|\n")} {
               printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
             }'
+
+      - name: Zulip report
+        run: |
+          lake build | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
+            awk -F: 'BEGIN{max=0}
+              /^⚠/{ print currMax; max=0 }
+              (max < $3) {
+                gsub(/ *Now redun.*/, "")
+                gsub(/ to \[[^]]*\]/, "")
+                gsub(/ *note: this linter.*/, "")
+                gsub(/\.\//, "")
+                gsub(/ *Imports increased by */, "")
+                gsub(/ *New imports */, "")
+                currMax=$0
+                max=$3+0
+            }' |
+            sort --field-separator=: -k3 -nr |
+            awk -F: 'BEGIN{
+              printf("|File|Line|Import increase|New imports|\n|:-|-:|-:|:-|\n")
+              con=0
+            }
+              ((con <= 15) && (10 <= $5)) {
+                con++
+                printf("| %s | %s | %s | %s |\n", $2, $3, $5, $6)
+            }'
