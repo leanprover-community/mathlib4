@@ -203,6 +203,13 @@ lemma sqrt_eq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc
 
 end sqrt
 
+section abs
+
+/-- The absolute value of an operator, using the nonunital continuous functional calculus. -/
+noncomputable def abs (a : A) := sqrt (star a * a)
+
+end abs
+
 end NonUnital
 
 section Unital
