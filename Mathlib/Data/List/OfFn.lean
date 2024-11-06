@@ -181,6 +181,64 @@ theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (Fin.rightInverse_cast (length_ofFn f)).surjective.forall, Fin.forall_iff, Fin.cast_mk,
     Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
 
+lemma head_ofFn {n} (f : Fin n → α) (h : ofFn f ≠ []) :
+    (ofFn f).head h = f ⟨0, Nat.pos_of_ne_zero (mt ofFn_eq_nil_iff.2 h)⟩ := by
+  rw [← getElem_zero (length_ofFn _ ▸ Nat.pos_of_ne_zero (mt ofFn_eq_nil_iff.2 h)),
+    List.getElem_ofFn]
+
+lemma getLast_ofFn {n} (f : Fin n → α) (h : ofFn f ≠ []) :
+    (ofFn f).getLast h = f ⟨n - 1, Nat.sub_one_lt (mt ofFn_eq_nil_iff.2 h)⟩ := by
+  simp_rw [getLast_eq_getElem, length_ofFn, List.getElem_ofFn]
+
+lemma ofFn_cons {n} (a : α) (f : Fin n → α) : ofFn (Fin.cons a f) = a :: ofFn f := by
+  rw [ofFn_succ]
+  rfl
+
+lemma find?_ofFn_eq_some {n} {f : Fin n → α} {p : α → Bool} {b : α} :
+    (ofFn f).find? p = some b ↔ p b = true ∧ ∃ i, f i = b ∧ ∀ j < i, ¬(p (f j) = true) := by
+  induction f using Fin.consInduction
+  case h0 => simp
+  case h n a f hi =>
+    rw [ofFn_cons, find?_cons_eq_some]
+    by_cases h : p a = true
+    · simp only [h, true_and, Bool.not_true, Bool.false_eq_true, false_and, or_false,
+        Bool.not_eq_true]
+      refine ⟨?_, ?_⟩
+      · rintro rfl
+        exact ⟨h, 0, by simp⟩
+      · rintro ⟨-, i, hib, hij⟩
+        by_cases hi : i = 0
+        · subst hi
+          exact hib
+        · replace hij := hij 0 (Fin.pos_of_ne_zero hi)
+          simp [h] at hij
+    · simp only [h, Bool.false_eq_true, false_and, Bool.not_false, hi, Bool.not_eq_true,
+        true_and, false_or, and_congr_right_iff]
+      intro hb
+      refine ⟨?_, ?_⟩
+      · rintro ⟨i, rfl, hij⟩
+        refine ⟨i.succ, Fin.cons_succ _ _ _, ?_⟩
+        intro j
+        refine Fin.cases ?_ ?_ j
+        · simp [h]
+        · intro k hk
+          rw [Fin.succ_lt_succ_iff] at hk
+          exact hij k hk
+      · rintro ⟨i, rfl, hij⟩
+        revert hb hij
+        refine Fin.cases ?_ ?_ i
+        · simp [h]
+        · rintro i' hij -
+          refine ⟨i', rfl, ?_⟩
+          intro j hj
+          rw [← Fin.succ_lt_succ_iff] at hj
+          exact hij j.succ hj
+
+lemma find?_ofFn_eq_some_of_injective {n} {f : Fin n → α} {p : α → Bool} {i : Fin n}
+    (h : Function.Injective f) :
+    (ofFn f).find? p = some (f i) ↔ p (f i) = true ∧ ∀ j < i, ¬(p (f j) = true) := by
+  simp only [find?_ofFn_eq_some, h.eq_iff, Bool.not_eq_true, exists_eq_left]
+
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/
 @[simps]
 def equivSigmaTuple : List α ≃ Σn, Fin n → α where
