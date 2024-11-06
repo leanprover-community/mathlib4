@@ -130,6 +130,7 @@ theorem sup_ite (p : β → Prop) [DecidablePred p] :
     (s.sup fun i => ite (p i) (f i) (g i)) = (s.filter p).sup f ⊔ (s.filter fun i => ¬p i).sup g :=
   fold_ite _
 
+@[gcongr]
 theorem sup_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.sup f ≤ s.sup g :=
   Finset.sup_le fun b hb => le_trans (h b hb) (le_sup hb)
 
@@ -354,6 +355,7 @@ theorem inf_ite (p : β → Prop) [DecidablePred p] :
     (s.inf fun i ↦ ite (p i) (f i) (g i)) = (s.filter p).inf f ⊓ (s.filter fun i ↦ ¬ p i).inf g :=
   fold_ite _
 
+@[gcongr]
 theorem inf_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.inf f ≤ s.inf g :=
   Finset.le_inf fun b hb => le_trans (inf_le hb) (h b hb)
 
@@ -732,6 +734,10 @@ theorem le_sup' {b : β} (h : b ∈ s) : f b ≤ s.sup' ⟨b, h⟩ f :=
 theorem le_sup'_of_le {a : α} {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup' ⟨b, hb⟩ f :=
   h.trans <| le_sup' _ hb
 
+lemma sup'_eq_of_forall {a : α} (h : ∀ b ∈ s, f b = a) : s.sup' H f = a :=
+  le_antisymm (sup'_le _ _ (fun _ hb ↦ (h _ hb).le))
+    (le_sup'_of_le _ H.choose_spec (h _ H.choose_spec).ge)
+
 @[simp]
 theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a := by
   apply le_antisymm
@@ -899,6 +905,9 @@ theorem inf'_le {b : β} (h : b ∈ s) : s.inf' ⟨b, h⟩ f ≤ f b :=
 
 theorem inf'_le_of_le {a : α} {b : β} (hb : b ∈ s) (h : f b ≤ a) :
     s.inf' ⟨b, hb⟩ f ≤ a := (inf'_le _ hb).trans h
+
+lemma inf'_eq_of_forall {a : α} (h : ∀ b ∈ s, f b = a) : s.inf' H f = a :=
+  sup'_eq_of_forall (α := αᵒᵈ) H f h
 
 @[simp]
 theorem inf'_const (a : α) : (s.inf' H fun _ => a) = a :=

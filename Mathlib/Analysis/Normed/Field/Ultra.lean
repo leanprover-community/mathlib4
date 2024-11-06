@@ -5,6 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Ultra
+import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 ## Sufficient conditions to have an ultrametric norm on a division ring

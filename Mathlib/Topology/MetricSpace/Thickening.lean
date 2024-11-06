@@ -34,7 +34,7 @@ open NNReal ENNReal Topology Set Filter Bornology
 
 universe u v w
 
-variable {ι : Sort*} {α : Type u} {β : Type v}
+variable {ι : Sort*} {α : Type u}
 
 namespace Metric
 

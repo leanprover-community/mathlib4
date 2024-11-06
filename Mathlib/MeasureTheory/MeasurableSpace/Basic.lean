@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Prod.TProd
+import Mathlib.Data.Set.UnionLift
+import Mathlib.GroupTheory.Coset.Defs
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
-import Mathlib.Order.LiminfLimsup
-import Mathlib.Data.Set.UnionLift
 import Mathlib.Order.Filter.SmallSets
-import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.Order.LiminfLimsup
 
 /-!
 # Measurable spaces and measurable functions
@@ -1277,11 +1278,37 @@ lemma IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsCou
 
 namespace MeasurableSet
 
+variable [MeasurableSpace α]
+
+protected theorem iUnion_of_monotone_of_frequently
+    {ι : Type*} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
+    (hsm : Monotone s) (hs : ∃ᶠ i in atTop, MeasurableSet (s i)) : MeasurableSet (⋃ i, s i) := by
+  rcases exists_seq_forall_of_frequently hs with ⟨x, hx, hxm⟩
+  rw [← hsm.iUnion_comp_tendsto_atTop hx]
+  exact .iUnion hxm
+
+protected theorem iInter_of_antitone_of_frequently
+    {ι : Type*} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
+    (hsm : Antitone s) (hs : ∃ᶠ i in atTop, MeasurableSet (s i)) : MeasurableSet (⋂ i, s i) := by
+  rw [← compl_iff, compl_iInter]
+  exact .iUnion_of_monotone_of_frequently (compl_anti.comp hsm) <| hs.mono fun _ ↦ .compl
+
+protected theorem iUnion_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
+    (hsm : Monotone s) (hs : ∀ i, MeasurableSet (s i)) : MeasurableSet (⋃ i, s i) := by
+  cases isEmpty_or_nonempty ι with
+  | inl _ => simp
+  | inr _ => exact .iUnion_of_monotone_of_frequently hsm <| .of_forall hs
+
+protected theorem iInter_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
+    (hsm : Antitone s) (hs : ∀ i, MeasurableSet (s i)) : MeasurableSet (⋂ i, s i) := by
+  rw [← compl_iff, compl_iInter]
+  exact .iUnion_of_monotone (compl_anti.comp hsm) fun i ↦ (hs i).compl
+
 /-!
 ### Typeclasses on `Subtype MeasurableSet`
 -/
-
-variable [MeasurableSpace α]
 
 instance Subtype.instMembership : Membership α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun s a => a ∈ (s : Set α)⟩

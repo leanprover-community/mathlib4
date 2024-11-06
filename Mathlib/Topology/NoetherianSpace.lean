@@ -62,14 +62,16 @@ protected theorem NoetherianSpace.isCompact [NoetherianSpace α] (s : Set α) : 
     hUo Set.Subset.rfl with ⟨t, ht⟩
   exact ⟨t, hs.trans ht⟩
 
--- Porting note: fixed NS
-protected theorem _root_.Inducing.noetherianSpace [NoetherianSpace α] {i : β → α}
-    (hi : Inducing i) : NoetherianSpace β :=
+protected theorem _root_.IsInducing.noetherianSpace [NoetherianSpace α] {i : β → α}
+    (hi : IsInducing i) : NoetherianSpace β :=
   (noetherianSpace_iff_opens _).2 fun _ => hi.isCompact_iff.2 (NoetherianSpace.isCompact _)
+
+@[deprecated (since := "2024-10-28")]
+alias _root_.Inducing.noetherianSpace := _root_.IsInducing.noetherianSpace
 
 /-- [Stacks: Lemma 0052 (1)](https://stacks.math.columbia.edu/tag/0052)-/
 instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s :=
-  inducing_subtype_val.noetherianSpace
+  IsInducing.subtypeVal.noetherianSpace
 
 variable (α)
 

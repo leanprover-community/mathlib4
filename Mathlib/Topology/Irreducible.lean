@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Order.Minimal
+import Mathlib.Order.Zorn
 /-!
 # Irreducibility in topological spaces
 

@@ -53,10 +53,10 @@ theorem not_isSuccPrelimit_iff_exists_covBy (a : α) : ¬IsSuccPrelimit a ↔ �
 alias not_isSuccLimit_iff_exists_covBy := not_isSuccPrelimit_iff_exists_covBy
 
 @[simp]
-theorem isSuccPrelimit_of_dense [DenselyOrdered α] (a : α) : IsSuccPrelimit a := fun _ => not_covBy
+theorem IsSuccPrelimit.of_dense [DenselyOrdered α] (a : α) : IsSuccPrelimit a := fun _ => not_covBy
 
-@[deprecated isSuccPrelimit_of_dense (since := "2024-09-05")]
-alias isSuccLimit_of_dense := isSuccPrelimit_of_dense
+@[deprecated (since := "2024-09-30")] alias isSuccPrelimit_of_dense := IsSuccPrelimit.of_dense
+@[deprecated (since := "2024-09-05")] alias isSuccLimit_of_dense := IsSuccPrelimit.of_dense
 
 end LT
 
@@ -327,10 +327,11 @@ theorem not_isPredPrelimit_iff_exists_covBy (a : α) : ¬IsPredPrelimit a ↔ �
 @[deprecated not_isPredPrelimit_iff_exists_covBy (since := "2024-09-05")]
 alias not_isPredLimit_iff_exists_covBy := not_isPredPrelimit_iff_exists_covBy
 
-theorem isPredPrelimit_of_dense [DenselyOrdered α] (a : α) : IsPredPrelimit a := fun _ => not_covBy
+@[simp]
+theorem IsPredPrelimit.of_dense [DenselyOrdered α] (a : α) : IsPredPrelimit a := fun _ => not_covBy
 
-@[deprecated isPredPrelimit_of_dense (since := "2024-09-05")]
-alias isPredLimit_of_dense := isPredPrelimit_of_dense
+@[deprecated (since := "2024-09-30")] alias isPredPrelimit_of_dense := IsPredPrelimit.of_dense
+@[deprecated (since := "2024-09-05")] alias isPredLimit_of_dense := IsPredPrelimit.of_dense
 
 @[simp]
 theorem isSuccPrelimit_toDual_iff : IsSuccPrelimit (toDual a) ↔ IsPredPrelimit a := by
