@@ -284,7 +284,7 @@ instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersi
   exact (IsClosedImmersion.isAffine_surjective_of_isAffine f).1
 
 /-- Being a closed immersion is stable under base change. -/
-lemma IsClosedImmersion.stableUnderBaseChange :
+instance IsClosedImmersion.stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @IsClosedImmersion := by
   apply HasAffineProperty.stableUnderBaseChange
   haveI := HasAffineProperty.isLocal_affineProperty @IsClosedImmersion
@@ -314,7 +314,7 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
   · refine (IsLocalAtTarget.iff_of_openCover (P := .isomorphisms Scheme) Y.affineCover).mpr ?_
     intro i
     apply (config := { allowSynthFailures := true }) this
-    · exact IsClosedImmersion.stableUnderBaseChange.snd _ _ inferInstance
+    · exact MorphismProperty.pullback_snd _ _ inferInstance
     · exact IsLocalAtTarget.of_isPullback (.of_hasPullback f (Y.affineCover.map i)) ‹_›
     · exact isReduced_of_isOpenImmersion (Y.affineCover.map i)
     · infer_instance

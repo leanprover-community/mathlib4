@@ -593,7 +593,7 @@ private theorem pullback_fst_of_right (hP' : Q.StableUnderBaseChange)
 
 theorem stableUnderBaseChange (hP' : Q.StableUnderBaseChange) :
     P.StableUnderBaseChange :=
-  MorphismProperty.StableUnderBaseChange.mk
+  MorphismProperty.StableUnderBaseChange.mk'
     (fun X Y S f g H => by
       rw [IsLocalAtTarget.iff_of_openCover (P := P) (S.affineCover.pullbackCover f)]
       intro i

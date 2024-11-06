@@ -149,18 +149,19 @@ theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
     IsImmersion (f ≫ g) ↔ IsImmersion f :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
-lemma stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @IsImmersion := by
-  intros X Y Y' S f g f' g' H hg
-  let Z := Limits.pullback f g.coborderRange.ι
-  let e : Y' ⟶ Z := Limits.pullback.lift g' (f' ≫ g.liftCoborder) (by simpa using H.w.symm)
-  have : IsClosedImmersion e := by
-    have := (IsPullback.paste_horiz_iff (.of_hasPullback f g.coborderRange.ι)
-      (show e ≫ Limits.pullback.snd _ _ = _ from Limits.pullback.lift_snd _ _ _)).mp ?_
-    · exact IsClosedImmersion.stableUnderBaseChange this.flip inferInstance
-    · simpa [e] using H.flip
-  rw [← Limits.pullback.lift_fst (f := f) (g := g.coborderRange.ι) g' (f' ≫ g.liftCoborder)
-    (by simpa using H.w.symm)]
-  infer_instance
+instance stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @IsImmersion where
+  of_isPullback := by
+    intros X Y Y' S f g f' g' H hg
+    let Z := Limits.pullback f g.coborderRange.ι
+    let e : Y' ⟶ Z := Limits.pullback.lift g' (f' ≫ g.liftCoborder) (by simpa using H.w.symm)
+    have : IsClosedImmersion e := by
+      have := (IsPullback.paste_horiz_iff (.of_hasPullback f g.coborderRange.ι)
+        (show e ≫ Limits.pullback.snd _ _ = _ from Limits.pullback.lift_snd _ _ _)).mp ?_
+      · exact MorphismProperty.of_isPullback this.flip inferInstance
+      · simpa [e] using H.flip
+    rw [← Limits.pullback.lift_fst (f := f) (g := g.coborderRange.ι) g' (f' ≫ g.liftCoborder)
+      (by simpa using H.w.symm)]
+    infer_instance
 
 end IsImmersion
 

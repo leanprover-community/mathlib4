@@ -156,7 +156,7 @@ instance quasiCompact_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiCompact where
   comp_mem _ _ _ _ := inferInstance
 
-theorem quasiCompact_stableUnderBaseChange :
+instance quasiCompact_stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @QuasiCompact := by
   letI := HasAffineProperty.isLocal_affineProperty @QuasiCompact
   apply HasAffineProperty.stableUnderBaseChange
@@ -170,10 +170,10 @@ theorem quasiCompact_stableUnderBaseChange :
 variable {Z : Scheme.{u}}
 
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] : QuasiCompact (pullback.fst f g) :=
-  quasiCompact_stableUnderBaseChange.fst f g inferInstance
+  MorphismProperty.pullback_fst f g inferInstance
 
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.snd f g) :=
-  quasiCompact_stableUnderBaseChange.snd f g inferInstance
+  MorphismProperty.pullback_snd f g inferInstance
 
 @[elab_as_elim]
 theorem compact_open_induction_on {P : X.Opens → Prop} (S : X.Opens)

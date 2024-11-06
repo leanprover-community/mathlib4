@@ -63,7 +63,7 @@ instance : MorphismProperty.IsMultiplicative @LocallyOfFiniteType where
   id_mem _ := inferInstance
 
 open scoped TensorProduct in
-lemma locallyOfFiniteType_stableUnderBaseChange :
+instance locallyOfFiniteType_stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @LocallyOfFiniteType :=
   HasRingHomProperty.stableUnderBaseChange RingHom.finiteType_stableUnderBaseChange
 

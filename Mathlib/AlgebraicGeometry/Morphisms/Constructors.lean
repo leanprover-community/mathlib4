@@ -159,7 +159,7 @@ theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
     (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Y.Opens)
       (_ : iSup U = ⊤), (∀ i, P (f ∣_ U i)) → P f) : IsLocalAtTarget P.universally := by
   apply IsLocalAtTarget.mk'
-  · exact fun {X Y} f U => P.universally_stableUnderBaseChange
+  · exact fun {X Y} f U => P.universally.of_isPullback
       (isPullback_morphismRestrict f U).flip
   · intros X Y f ι U hU H X' Y' i₁ i₂ f' h
     apply hP₂ _ (fun i ↦ i₂ ⁻¹ᵁ U i)
