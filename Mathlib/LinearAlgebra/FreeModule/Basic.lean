@@ -207,7 +207,7 @@ lemma TensorProduct.sum_tmul_basis_right_eq_zero [Free R M]
           refine Finset.sum_congr rfl fun _ _ => ?_
           rw [TensorProduct.smul_tmul']
       _ = ∑ i ∈ b.support, ∑ k ∈ I, (ℬ.repr (b i)) k • (ℬ k ⊗ₜ[R] 𝒞 i) := by
-          refine Finset.sum_congr rfl fun j h => ?_
+          congr! with j h
           apply Finset.sum_subset
           · intro i hi
             simp only [Finsupp.mem_support_iff, ne_eq, Finset.mem_biUnion, I] at h hi ⊢
