@@ -73,12 +73,12 @@ variable (ℬ : Basis ι R M) (𝒞 : Basis κ R N) (x : M ⊗[R] N)
 /-- Elements in `M ⊗ N` can be represented by sum of elements in `M` tensor elements of basis of
 `N`. -/
 lemma TensorProduct.eq_repr_basis_right :
-    ∃ b : κ →₀ M, b.sum (fun i m => m ⊗ₜ 𝒞 i) = x := by
+    ∃ b : κ →₀ M, b.sum (fun i m ↦ m ⊗ₜ 𝒞 i) = x := by
   classical
   induction x using TensorProduct.induction_on with
   | zero => exact ⟨0, by simp⟩
   | tmul m n =>
-    use 𝒞.repr n |>.mapRange (fun (r : R) => r • m) (by simp)
+    use (𝒞.repr n).mapRange (· • m) (by simp)
     simp only [Finsupp.mapRange, zero_tmul, implies_true, Finsupp.onFinset_sum, Function.comp_apply,
       smul_tmul]
     rw [← tmul_sum]
@@ -88,44 +88,39 @@ lemma TensorProduct.eq_repr_basis_right :
   | add x y hx hy =>
     rcases hx with ⟨x, rfl⟩
     rcases hy with ⟨y, rfl⟩
-    use x + y
-    rw [Finsupp.sum_add_index]
-    · simp
-    · intro i _; simp [add_tmul]
+    exact ⟨x + y, Finsupp.sum_add_index (by simp) fun _ _ => by simp [add_tmul]⟩
 
 /-- Elements in `M ⊗ N` can be represented by sum of elements of basis of `M` tensor elements of
   `N`.-/
 lemma TensorProduct.eq_repr_basis_left :
-    ∃ (c : ι →₀ N), (c.sum fun i n => ℬ i ⊗ₜ n) = x := by
+    ∃ (c : ι →₀ N), (c.sum fun i n ↦ ℬ i ⊗ₜ n) = x := by
   obtain ⟨c, hc⟩ := TensorProduct.eq_repr_basis_right ℬ (TensorProduct.comm R M N x)
-  refine ⟨c, ?_⟩
-  apply_fun TensorProduct.comm R M N using (TensorProduct.comm R M N).injective
-  simp only [Finsupp.sum, map_sum, comm_tmul, ← hc]
+  exact ⟨c, (TensorProduct.comm R M N).injective <| by simp [Finsupp.sum, ← hc]⟩
 
 lemma TensorProduct.sum_tmul_basis_left_injective :
-    Function.Injective <| Finsupp.lsum R fun i => (TensorProduct.mk R M N) (ℬ i) := by
-  intro b b' h
+    Function.Injective <| Finsupp.lsum R fun i ↦ (TensorProduct.mk R M N) (ℬ i) := by
   classical
+  intro b b' h
   refine (TensorProduct.congr ℬ.repr (LinearEquiv.refl R N) ≪≫ₗ
     (finsuppScalarLeft R N ι)).symm.injective ?_
   rw [← b.sum_single, ← b'.sum_single, Finsupp.sum, map_sum, Finsupp.sum, map_sum]
   simpa
 
 lemma TensorProduct.sum_tmul_basis_left_eq_zero
-    (b : ι →₀ N) (h : (b.sum fun i n => ℬ i ⊗ₜ[R] n) = 0) : b = 0 :=
+    (b : ι →₀ N) (h : (b.sum fun i n ↦ ℬ i ⊗ₜ[R] n) = 0) : b = 0 :=
   TensorProduct.sum_tmul_basis_left_injective ℬ (a₁ := b) (a₂ := 0) (h.trans (by simp))
 
 lemma TensorProduct.sum_tmul_basis_right_injective :
-    Function.Injective <| Finsupp.lsum R fun i => (TensorProduct.mk R M N).flip (𝒞 i):= by
-  intro b b' h
+    Function.Injective <| Finsupp.lsum R fun i ↦ (TensorProduct.mk R M N).flip (𝒞 i):= by
   classical
+  intro b b' h
   refine (TensorProduct.congr (LinearEquiv.refl R M) 𝒞.repr ≪≫ₗ
     (finsuppScalarRight R M κ)).symm.injective ?_
   rw [← b.sum_single, ← b'.sum_single, Finsupp.sum, map_sum, Finsupp.sum, map_sum]
   simpa
 
 lemma TensorProduct.sum_tmul_basis_right_eq_zero
-    (b : κ →₀ M) (h : (b.sum fun i m => m ⊗ₜ[R] 𝒞 i) = 0) : b = 0 :=
+    (b : κ →₀ M) (h : (b.sum fun i m ↦ m ⊗ₜ[R] 𝒞 i) = 0) : b = 0 :=
   TensorProduct.sum_tmul_basis_right_injective 𝒞 (a₁ := b) (a₂ := 0) (h.trans (by simp))
 
 
