@@ -1946,6 +1946,7 @@ namespace Mathlib.Meta.Positivity
 
 open Qq Lean Meta MeasureTheory
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- Positivity extension for integrals.
 
 This extension only proves non-negativity, strict positivity is more delicate for integration and
