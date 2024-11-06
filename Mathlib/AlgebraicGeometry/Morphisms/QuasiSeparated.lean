@@ -119,8 +119,8 @@ instance quasiSeparated_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ inferInstance
 
-instance quasiSeparated_stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange @QuasiSeparated :=
+instance quasiSeparated_isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ inferInstance
 
 instance quasiSeparatedComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f]

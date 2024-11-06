@@ -50,8 +50,8 @@ instance (priority := 900) [IsClosedImmersion f] : UniversallyClosed f := by
 theorem universallyClosed_respectsIso : RespectsIso @UniversallyClosed :=
   universallyClosed_eq.symm ▸ universally_respectsIso (topologically @IsClosedMap)
 
-instance universallyClosed_stableUnderBaseChange : StableUnderBaseChange @UniversallyClosed :=
-  universallyClosed_eq.symm ▸ universally_stableUnderBaseChange (topologically @IsClosedMap)
+instance universallyClosed_isStableUnderBaseChange : IsStableUnderBaseChange @UniversallyClosed :=
+  universallyClosed_eq.symm ▸ universally_isStableUnderBaseChange (topologically @IsClosedMap)
 
 instance isClosedMap_isStableUnderComposition :
     IsStableUnderComposition (topologically @IsClosedMap) where

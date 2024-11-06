@@ -149,7 +149,7 @@ theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
     IsImmersion (f ≫ g) ↔ IsImmersion f :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
-instance stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @IsImmersion where
+instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsImmersion where
   of_isPullback := by
     intros X Y Y' S f g f' g' H hg
     let Z := Limits.pullback f g.coborderRange.ι

@@ -88,7 +88,7 @@ the subcategory of `Over X` defined by `P` is closed under pullbacks.
 Without the cancellation property, this does not in general. Consider for example
 `P = Function.Surjective` on `Type`. -/
 lemma Over.closedUnderLimitsOfShape_pullback [HasPullbacks T]
-    [P.IsStableUnderComposition] [P.StableUnderBaseChange]
+    [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
     (of_postcomp : ∀ {X Y Z : T} {f : X ⟶ Y} (g : Y ⟶ Z), P g → P (f ≫ g) → P f) :
     ClosedUnderLimitsOfShape WalkingCospan (fun f : Over X ↦ P f.hom) := by
   intro D c hc hf
@@ -136,7 +136,7 @@ instance [P.ContainsIdentities] : HasTerminal (P.Over ⊤ X) :=
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,
 `Over.forget P ⊤ X` creates pullbacks. -/
 noncomputable def createsLimitsOfShape_walkingCospan [HasPullbacks T]
-    [P.IsStableUnderComposition] [P.StableUnderBaseChange]
+    [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
     (of_postcomp : ∀ {X Y Z : T} {f : X ⟶ Y} (g : Y ⟶ Z), P g → P (f ≫ g) → P f) :
     CreatesLimitsOfShape WalkingCospan (Over.forget P ⊤ X) :=
   haveI : HasLimitsOfShape WalkingCospan (Comma (𝟭 T) (Functor.fromPUnit X)) :=
@@ -146,7 +146,7 @@ noncomputable def createsLimitsOfShape_walkingCospan [HasPullbacks T]
 
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,
 `P.Over ⊤ X` has pullbacks -/
-lemma hasPullbacks [HasPullbacks T] [P.IsStableUnderComposition] [P.StableUnderBaseChange]
+lemma hasPullbacks [HasPullbacks T] [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
     (of_postcomp : ∀ {X Y Z : T} {f : X ⟶ Y} (g : Y ⟶ Z), P g → P (f ≫ g) → P f) :
     HasPullbacks (P.Over ⊤ X) :=
   haveI : HasLimitsOfShape WalkingCospan (Comma (𝟭 T) (Functor.fromPUnit X)) :=

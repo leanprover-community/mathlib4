@@ -68,7 +68,7 @@ instance [IsSeparated f] [IsSeparated g] : IsSeparated (f ≫ g) :=
 instance : MorphismProperty.IsMultiplicative @IsSeparated where
   id_mem _ := inferInstance
 
-instance stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @IsSeparated := by
+instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
   infer_instance
 
