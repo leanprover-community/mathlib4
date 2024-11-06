@@ -190,7 +190,7 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo [FiniteDimensional K M]
     simpa only [← ih, iSup_comm (ι := K), iSup_iSup_eq_right] using h' i
 
 /-- A commuting family of triangularizable endomorphisms is simultaneously triangularizable. -/
-theorem iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_comm {ι K V : Type*}
+theorem iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
     [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
     (f : ι → Module.End K V) (h : Pairwise fun i j ↦ Commute (f i) (f j))
     (h' : ∀ i, ⨆ μ, (f i).maxGenEigenspace μ = ⊤) :
