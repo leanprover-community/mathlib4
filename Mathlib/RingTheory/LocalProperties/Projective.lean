@@ -8,7 +8,8 @@ import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.RingTheory.LocalProperties.Submodule
 import Mathlib.RingTheory.Localization.BaseChange
-
+import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 /-!
 
 # Being projective is a local property
@@ -25,8 +26,39 @@ import Mathlib.RingTheory.Localization.BaseChange
 
 -/
 
-variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-variable [AddCommGroup N'] [Module R N'] (S : Submonoid R)
+universe uM
+
+variable {R N N' : Type*} {M : Type uM} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+variable [Module R N] [AddCommGroup N'] [Module R N'] (S : Submonoid R)
+
+theorem Module.free_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module R Mₛ]
+    [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]
+    (S) (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M] :
+      Module.Free Rₛ Mₛ :=
+    Free.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
+
+universe uR' uM' in
+theorem Module.lift_rank_of_isLocalizedModule_of_free
+    (Rₛ : Type uR') {Mₛ : Type uM'} [AddCommGroup Mₛ] [Module R Mₛ]
+    [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ] (S : Submonoid R)
+    (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M]
+    [Nontrivial Rₛ] :
+      Cardinal.lift.{uM} (Module.rank Rₛ Mₛ) = Cardinal.lift.{uM'} (Module.rank R M) := by
+  apply Cardinal.lift_injective.{max uM' uR'}
+  have := (algebraMap R Rₛ).domain_nontrivial
+  have := (IsLocalizedModule.isBaseChange S Rₛ f).equiv.lift_rank_eq.symm
+  simp only [rank_tensorProduct, rank_self,
+    Cardinal.lift_one, one_mul, Cardinal.lift_lift] at this ⊢
+  convert this
+  exact Cardinal.lift_umax
+
+universe uR' uM' inank_of_isLocalizedModule_of_free
+    (Rₛ Mₛ : Type*} [AddCommGroup Mₛ] [Module R Mₛ]
+    [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ] (S : Submonoid R)
+    (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M]
+    [Nontrivial Rₛ] :
+      Module.finrank Rₛ Mₛ = Module.finrank R M := by
+  simpa using congr(Cardinal.toNat $(Module.lift_rank_of_isLocalizedModule_of_free Rₛ S f))
 
 theorem Module.projective_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module R Mₛ]
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]

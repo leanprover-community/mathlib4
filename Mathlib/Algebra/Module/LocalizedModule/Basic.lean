@@ -703,6 +703,40 @@ instance localizedModuleIsLocalizedModule :
         LocalizedModule.mk_cancel t]
   exists_of_eq eq1 := by simpa only [eq_comm, one_smul] using LocalizedModule.mk_eq.mp eq1
 
+
+lemma IsLocalizedModule.of_restrictScalars (S : Submonoid R)
+    {N : Type*} [AddCommGroup N] [Module R N] [Module A M] [Module A N]
+    [IsScalarTower R A M] [IsScalarTower R A N]
+    (f : M →ₗ[A] N) [IsLocalizedModule S (f.restrictScalars R)] :
+    IsLocalizedModule (Algebra.algebraMapSubmonoid A S) f where
+  map_units x := by
+    obtain ⟨_, x, hx, rfl⟩ := x
+    have := IsLocalizedModule.map_units (f.restrictScalars R) ⟨x, hx⟩
+    simp only [← IsScalarTower.algebraMap_apply, Module.End_isUnit_iff] at this ⊢
+    exact this
+  surj' y := by
+    obtain ⟨⟨x, t⟩, e⟩ := IsLocalizedModule.surj S (f.restrictScalars R) y
+    exact ⟨⟨x, ⟨_, t, t.2, rfl⟩⟩, by simpa [Submonoid.smul_def] using e⟩
+  exists_of_eq {x₁ x₂} e := by
+    obtain ⟨c, hc⟩ := IsLocalizedModule.exists_of_eq (S := S) (f := f.restrictScalars R) e
+    refine ⟨⟨_, c, c.2, rfl⟩, by simpa [Submonoid.smul_def]⟩
+
+lemma IsLocalizedModule.of_exists_mul_mem {N : Type*} [AddCommGroup N] [Module R N]
+    (S T : Submonoid R) (h : S ≤ T) (h' : ∀ x : T, ∃ m : R, m * x ∈ S)
+    (f : M →ₗ[R] N) [IsLocalizedModule S f] :
+    IsLocalizedModule T f where
+  map_units x := by
+    obtain ⟨m, mx⟩ := h' x
+    have := IsLocalizedModule.map_units f ⟨_, mx⟩
+    rw [map_mul, (Algebra.commute_algebraMap_left _ _).isUnit_mul_iff] at this
+    exact this.2
+  surj' y := by
+    obtain ⟨⟨x, t⟩, e⟩ := IsLocalizedModule.surj S f y
+    exact ⟨⟨x, ⟨t, h t.2⟩⟩, e⟩
+  exists_of_eq {x₁ x₂} e := by
+    obtain ⟨c, hc⟩ := IsLocalizedModule.exists_of_eq (S := S) (f := f) e
+    exact ⟨⟨c, h c.2⟩, hc⟩
+
 namespace IsLocalizedModule
 
 variable [IsLocalizedModule S f]
