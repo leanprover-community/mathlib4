@@ -1633,6 +1633,10 @@ theorem disjoint_or_nonempty_inter (s t : Finset α) : Disjoint s t ∨ (s ∩ t
   rw [← not_disjoint_iff_nonempty_inter]
   exact em _
 
+theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
+    Disjoint s t ↔ s = ∅ := by
+  rw [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
+
 end Lattice
 
 instance isDirected_le : IsDirected (Finset α) (· ≤ ·) := by classical infer_instance
