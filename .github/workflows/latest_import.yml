@@ -94,7 +94,8 @@ jobs:
             sed -n '/\.html/{s=^[^[]*\[\(Mathlib[^]]*\).lean].*=`\1,=p}' | sed -z 's=\n=\\n  =g; s=,\\n* *$=='
           )"
         printf '%s\n' "$files"
-        sed "s=-- insert module names here=$files=" scripts/downstream_counts.lean
+        sed -i "s=-- insert module names here=$files=" scripts/downstream_counts.lean
+        lake env lean scripts/downstream_counts.lean
     #- name: Post output to Zulip
     #  uses: zulip/github-actions-zulip/send-message@v1
     #  with:
