@@ -839,10 +839,6 @@ instance (priority := 100) to_wellFoundedLT [Preorder α] : WellFoundedLT α :=
 instance (priority := 100) to_wellFoundedGT [Preorder α] : WellFoundedGT α :=
   ⟨wellFounded_of_trans_of_irrefl _⟩
 
-instance (priority := 10) LinearOrder.isWellOrder_lt [LinearOrder α] : IsWellOrder α (· < ·) := {}
-
-instance (priority := 10) LinearOrder.isWellOrder_gt [LinearOrder α] : IsWellOrder α (· > ·) := {}
-
 end Finite
 
 -- @[nolint fintype_finite] -- Porting note: do we need this?
