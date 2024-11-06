@@ -22,7 +22,6 @@ The machinery around `vanishingIdeal` and `zeroLocus` is also minimal, I only ad
   directly needed in this proof, since I'm not sure if they are the right approach.
 -/
 
-
 open Ideal
 
 noncomputable section
