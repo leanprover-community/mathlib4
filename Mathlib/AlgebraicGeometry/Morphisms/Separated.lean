@@ -60,7 +60,7 @@ instance (priority := 900) [IsSeparated f] : QuasiSeparated f where
 
 instance stableUnderComposition : MorphismProperty.IsStableUnderComposition @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
-  exact MorphismProperty.diagonal_isStableUnderComposition IsClosedImmersion.stableUnderBaseChange
+  infer_instance
 
 instance [IsSeparated f] [IsSeparated g] : IsSeparated (f ≫ g) :=
   stableUnderComposition.comp_mem f g inferInstance inferInstance
@@ -68,9 +68,9 @@ instance [IsSeparated f] [IsSeparated g] : IsSeparated (f ≫ g) :=
 instance : MorphismProperty.IsMultiplicative @IsSeparated where
   id_mem _ := inferInstance
 
-lemma stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @IsSeparated := by
+instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
-  exact MorphismProperty.StableUnderBaseChange.diagonal IsClosedImmersion.stableUnderBaseChange
+  infer_instance
 
 instance : IsLocalAtTarget @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
@@ -98,7 +98,7 @@ lemma of_isAffineHom [h : IsAffineHom f] : IsSeparated f := by
 
 instance {S T : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) [IsSeparated i] :
     IsClosedImmersion (pullback.mapDesc f g i) :=
-  IsClosedImmersion.stableUnderBaseChange (pullback_map_diagonal_isPullback f g i)
+  MorphismProperty.of_isPullback (pullback_map_diagonal_isPullback f g i)
     inferInstance
 
 /-- Given `f : X ⟶ Y` and `g : Y ⟶ Z` such that `g` is separated, the induced map
@@ -116,7 +116,7 @@ end IsSeparated
 lemma IsClosedImmersion.of_comp [IsClosedImmersion (f ≫ g)] [IsSeparated g] :
     IsClosedImmersion f := by
   rw [← pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
-  have := IsClosedImmersion.stableUnderBaseChange.snd (f ≫ g) g inferInstance
+  have := MorphismProperty.pullback_snd (P := @IsClosedImmersion) (f ≫ g) g inferInstance
   infer_instance
 
 lemma IsSeparated.of_comp [IsSeparated (f ≫ g)] : IsSeparated f := by
@@ -130,7 +130,7 @@ lemma IsSeparated.comp_iff [IsSeparated g] : IsSeparated (f ≫ g) ↔ IsSeparat
 @[stacks 01KM]
 instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSeparated Y.hom]
     (f g : X ⟶ Y) : IsClosedImmersion (equalizer.ι f g).left := by
-  refine IsClosedImmersion.stableUnderBaseChange
+  refine MorphismProperty.of_isPullback
     ((Limits.isPullback_equalizer_prod f g).map (Over.forget _)).flip ?_
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion _
     (Over.prodLeftIsoPullback Y Y).hom]
@@ -188,7 +188,7 @@ instance (priority := 900) [X.IsSeparated] : IsSeparated f := by
   infer_instance
 
 instance (f g : X ⟶ Y) [Y.IsSeparated] : IsClosedImmersion (Limits.equalizer.ι f g) :=
-  IsClosedImmersion.stableUnderBaseChange (isPullback_equalizer_prod f g).flip inferInstance
+  MorphismProperty.of_isPullback (isPullback_equalizer_prod f g).flip inferInstance
 
 end Scheme
 

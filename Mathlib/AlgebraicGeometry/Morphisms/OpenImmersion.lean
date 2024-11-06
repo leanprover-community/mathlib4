@@ -62,9 +62,9 @@ instance : IsLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) := by
 instance isOpenImmersion_isLocalAtTarget : IsLocalAtTarget @IsOpenImmersion :=
   isOpenImmersion_eq_inf ▸ inferInstance
 
-theorem isOpenImmersion_stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange @IsOpenImmersion :=
-  MorphismProperty.StableUnderBaseChange.mk <| by
+instance isOpenImmersion_isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange @IsOpenImmersion :=
+  MorphismProperty.IsStableUnderBaseChange.mk' <| by
     intro X Y Z f g H; infer_instance
 
 end AlgebraicGeometry

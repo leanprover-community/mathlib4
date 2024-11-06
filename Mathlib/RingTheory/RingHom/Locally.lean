@@ -28,7 +28,7 @@ composition, base change, etc., so is `Locally P`.
 - `RingHom.locally_ofLocalizationSpanTarget`: `Locally P` is local on the target.
 - `RingHom.locally_holdsForLocalizationAway`: `Locally P` holds for localization away maps
   if `P` does.
-- `RingHom.locally_stableUnderBaseChange`: `Locally P` is stable under base change if `P` is.
+- `RingHom.locally_isStableUnderBaseChange`: `Locally P` is stable under base change if `P` is.
 - `RingHom.locally_stableUnderComposition`: `Locally P` is stable under composition
   if `P` is and `P` is preserved under localizations.
 - `RingHom.locally_stableUnderCompositionWithLocalizationAway`: `Locally P` is stable under
@@ -256,9 +256,9 @@ lemma locally_stableUnderCompositionWithLocalizationAway
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- If `P` is stable under base change, then so is `Locally P`. -/
-lemma locally_stableUnderBaseChange (hPi : RespectsIso P) (hPb : StableUnderBaseChange P) :
-    StableUnderBaseChange (Locally P) := by
-  apply StableUnderBaseChange.mk _ (locally_respectsIso hPi)
+lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnderBaseChange P) :
+    IsStableUnderBaseChange (Locally P) := by
+  apply IsStableUnderBaseChange.mk _ (locally_respectsIso hPi)
   introv hf
   obtain ⟨s, hsone, hs⟩ := hf
   rw [locally_iff_exists hPi]

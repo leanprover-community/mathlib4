@@ -37,8 +37,8 @@ theorem finite_respectsIso : RespectsIso @Finite := by
   intros
   exact Finite.of_surjective _ (RingEquiv.toEquiv _).surjective
 
-theorem finite_stableUnderBaseChange : StableUnderBaseChange @Finite := by
-  refine StableUnderBaseChange.mk _ finite_respectsIso ?_
+theorem finite_isStableUnderBaseChange : IsStableUnderBaseChange @Finite := by
+  refine IsStableUnderBaseChange.mk _ finite_respectsIso ?_
   classical
   introv h
   replace h : Module.Finite R T := by
