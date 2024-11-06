@@ -339,7 +339,7 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun X => IsCompact (closur
 
 /-- **Shrinking lemma** . A point-finite open cover of a compact subset of a `T2Space`
 `LocallyCompactSpace` can be "shrunk" to a new open cover so that the closure of each new open set
-is contained in the corresponding original open set.-/
+is contained in the corresponding original open set. -/
 theorem exists_subset_iUnion_closure_subset_t2space (hs : IsCompact s) (uo : ∀ i, IsOpen (u i))
     (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsOpen (v i)) ∧ (∀ i, closure (v i) ⊆ u i)
