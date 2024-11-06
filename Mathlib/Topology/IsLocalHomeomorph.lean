@@ -48,7 +48,7 @@ theorem isLocalHomeomorphOn_iff_isOpenEmbedding_restrict {f : X → Y} :
     have : IsOpenEmbedding ((interior U).restrict f) := by
       refine emb.comp ⟨.inclusion interior_subset, ?_⟩
       rw [Set.range_inclusion]; exact isOpen_induced isOpen_interior
-    obtain ⟨cont, inj, openMap⟩ := isOpenEmbedding_iff_continuous_injective_open.mp this
+    obtain ⟨cont, inj, openMap⟩ := isOpenEmbedding_iff_continuous_injective_isOpenMap.mp this
     haveI : Nonempty X := ⟨x⟩
     exact ⟨PartialHomeomorph.ofContinuousOpenRestrict
       (Set.injOn_iff_injective.mpr inj).toPartialEquiv
@@ -206,7 +206,7 @@ protected theorem comp (hg : IsLocalHomeomorph g) (hf : IsLocalHomeomorph f) :
 /-- An injective local homeomorphism is an open embedding. -/
 theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injective) :
     IsOpenEmbedding f :=
-  isOpenEmbedding_of_continuous_injective_open hf.continuous hi hf.isOpenMap
+  .of_continuous_injective_isOpenMap hf.continuous hi hf.isOpenMap
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_of_injective := isOpenEmbedding_of_injective

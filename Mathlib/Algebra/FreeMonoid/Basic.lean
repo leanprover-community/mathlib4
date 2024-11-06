@@ -83,12 +83,16 @@ theorem toList_mul (xs ys : FreeMonoid α) : toList (xs * ys) = toList xs ++ toL
 theorem ofList_append (xs ys : List α) : ofList (xs ++ ys) = ofList xs * ofList ys := rfl
 
 @[to_additive (attr := simp)]
-theorem toList_prod (xs : List (FreeMonoid α)) : toList xs.prod = (xs.map toList).join := by
-  induction xs <;> simp [*, List.join]
+theorem toList_prod (xs : List (FreeMonoid α)) : toList xs.prod = (xs.map toList).flatten := by
+  induction xs <;> simp [*, List.flatten]
 
 @[to_additive (attr := simp)]
-theorem ofList_join (xs : List (List α)) : ofList xs.join = (xs.map ofList).prod :=
+theorem ofList_flatten (xs : List (List α)) : ofList xs.flatten = (xs.map ofList).prod :=
   toList.injective <| by simp
+
+@[deprecated (since := "2024-10-15")] alias ofList_join := ofList_flatten
+@[deprecated (since := "2024-10-15")]
+alias _root_.FreeAddMonoid.ofList_join := _root_.FreeAddMonoid.ofList_flatten
 
 /-- Embeds an element of `α` into `FreeMonoid α` as a singleton list. -/
 @[to_additive "Embeds an element of `α` into `FreeAddMonoid α` as a singleton list."]
