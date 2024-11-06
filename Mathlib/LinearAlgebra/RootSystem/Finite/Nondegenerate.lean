@@ -125,24 +125,18 @@ lemma polarization_kernel_finrank_zero : Module.finrank R (LinearMap.ker (Linear
     Nat.add_eq_left] at h
   exact h
 
--- pull out universe manipulations, and make a linear algebra lemma here?
--- combine `Submodule.rank_quotient_add_rank` with `LinearMap.quotKerEquivRange`, so
--- for `M → N`, with range rank equals rank `M`, both finite, then kernel rank is zero.
 lemma polarization_domRestrict_kernel_rank_zero : Module.rank R (LinearMap.ker
     (LinearMap.domRestrict P.Polarization (span R (range P.root)))) = 0 := by
-  have h := Submodule.rank_quotient_add_rank
-    (LinearMap.ker (LinearMap.domRestrict P.Polarization (span R (range P.root))))
-  have h3 := congrArg Cardinal.lift.{u_4, u_3} h
-  rw [Cardinal.lift_add, LinearEquiv.lift_rank_eq ((P.Polarization.domRestrict (span R
-    (range P.root))).quotKerEquivRange), show (Module.rank R (LinearMap.range
-    (P.Polarization.domRestrict (span R (range P.root))))) = LinearMap.rank
-    (P.Polarization.domRestrict (span R (range P.root))) by rfl,
-    rank_polarization_domRestrict_eq_rank_span_coroot, ← finrank_eq_rank_span_coroot,
-    ← finrank_eq_rank_span_root, finrank_span_root_eq] at h3
-  refine Cardinal.lift_injective.{u_4, u_3} ?_
-  have h6 : Cardinal.lift.{u_4,u_3} (finrank R ↥(span R (range ⇑P.root))) < Cardinal.aleph0 :=
-    Cardinal.lift_lt_aleph0.mpr (Cardinal.nat_lt_aleph0 (finrank R ↥(span R (range ⇑P.root))))
-  exact Cardinal.eq_of_add_eq_add_left (by simpa using h3) h6
+  let n := finrank R (span R (range P.root))
+  have hm : Module.rank R (span R (range P.root)) = n := by rw [finrank_eq_rank_span_root]
+  have hn : Module.rank R (LinearMap.range
+      (LinearMap.domRestrict P.Polarization (span R (range P.root)))) = n := by
+    rw [show (Module.rank R (LinearMap.range (P.Polarization.domRestrict
+      (span R (range P.root))))) = LinearMap.rank (P.Polarization.domRestrict (span R
+      (range P.root))) by rfl, rank_polarization_domRestrict_eq_rank_span_coroot,
+      ← finrank_eq_rank_span_coroot, finrank_span_root_eq]
+  simp [LinearMap.rank_ker_of_nat (LinearMap.domRestrict P.Polarization
+    (span R (range P.root))) hm hn]
 
 -- I would like to use `Module.bot_of_rank_zero` here, but `y` lies in a submodule of a submodule.
 lemma polarization_domRestrict_injective :
@@ -171,11 +165,11 @@ lemma mem_span_root_eq_zero_of_rootForm {x : M} (hx : x ∈ span R (range P.root
   have : y = 0 := mem_span_root_zero_of_coroot P h
   exact (AddSubmonoid.mk_eq_zero (span R (range P.root)).toAddSubmonoid).mp this
 
--- combine with `rootForm_self_non_neg` to get positive-definiteness
+-- combine above with `rootForm_self_non_neg` to get positive-definiteness; use #18559
 
+-- rewrite with #18559
 lemma rootForm_nondegenerate_on_span {x : span R (range P.root)}
     (hx : ∀ y : span R (range P.root), RootForm P x y = 0) : x = 0 :=
-  Eq.symm (SetLike.coe_eq_coe.mp (Eq.symm (mem_span_root_eq_zero_of_rootForm P
-    (Submodule.coe_mem x) (hx x))))
+  SetLike.coe_eq_coe.mp (mem_span_root_eq_zero_of_rootForm P (Submodule.coe_mem x) (hx x))
 
 end RootPairing

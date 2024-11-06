@@ -87,6 +87,19 @@ theorem LinearMap.rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f
     Module.rank R M = Module.rank R M₁ + Module.rank R (LinearMap.ker f) := by
   rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 
+lemma LinearMap.rank_ker_of_nat (f : M →ₗ[R] M') {m n : ℕ} (hm : Module.rank R M = m)
+    (hn : Module.rank R (LinearMap.range f) = n) : Module.rank R (LinearMap.ker f) = m - n := by
+  have hle : Cardinal.lift.{u, v} (Module.rank R (LinearMap.range f)) ≤
+    Cardinal.lift.{v, u} (Module.rank R M) := lift_rank_range_le f
+  have hnm : n ≤ m := by simp_all
+  have h3 := congrArg Cardinal.lift.{v, u} (Submodule.rank_quotient_add_rank (LinearMap.ker f))
+  rw [Cardinal.lift_add, LinearEquiv.lift_rank_eq (f).quotKerEquivRange, hm, hn] at h3
+  refine Cardinal.lift_injective.{v, u} ?_
+  rw [show m = n + (m - n) by omega, Nat.cast_add, Cardinal.lift_add] at h3
+  have h6 : Cardinal.lift.{v,u} n < Cardinal.aleph0 :=
+    Cardinal.lift_lt_aleph0.mpr (Cardinal.nat_lt_aleph0 n)
+  exact Cardinal.eq_of_add_eq_add_left (by simpa [Cardinal.lift_natCast] using h3) h6
+
 theorem exists_linearIndependent_of_lt_rank [StrongRankCondition R]
     {s : Set M} (hs : LinearIndependent (ι := s) R Subtype.val) :
     ∃ t, s ⊆ t ∧ #t = Module.rank R M ∧ LinearIndependent (ι := t) R Subtype.val := by
