@@ -29,32 +29,6 @@ open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDom
 
 variable {k : Type*} [Field k]
 
-
-/-- Auxiliary theorems for `max₃ a b c = max (max a b) c`. -/
-def max₃ (a b c : Nat) : Nat :=
-  max (max a b) c
-
-theorem max₃_mul_distrib_left (a b c d : Nat) : a * max₃ b c d = max₃ (a * b) (a * c) (a * d) := by
-  rw [max₃, max₃, Nat.mul_max_mul_left, Nat.mul_max_mul_left]
-
-theorem max₃_add_distrib_right (a b c d : Nat) : max₃ a b c + d = max₃ (a + d) (b + d) (c + d) := by
-  rw [max₃, max₃, Nat.add_max_add_right, Nat.add_max_add_right]
-
-theorem le_max₃_left (a b c : Nat) : a ≤ max₃ a b c :=
-  Nat.le_trans (Nat.le_max_left a b) (Nat.le_max_left _ _)
-
-theorem le_max₃_middle (a b c : Nat) : b ≤ max₃ a b c :=
-  Nat.le_trans (Nat.le_max_right a b) (Nat.le_max_left _ _)
-
-theorem le_max₃_right (a b c : Nat) : c ≤ max₃ a b c :=
-  Nat.le_max_right _ c
-
-theorem max₃_lt {a b c d : Nat} : max₃ a b c < d ↔ a < d ∧ b < d ∧ c < d := by
-  rw [max₃, Nat.max_lt, Nat.max_lt, and_assoc]
-
-theorem max₃_le {a b c d : Nat} : max₃ a b c ≤ d ↔ a ≤ d ∧ b ≤ d ∧ c ≤ d := by
-  rw [max₃, Nat.max_le, Nat.max_le, and_assoc]
-
 private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian a b) (ha : a ≠ 0)
     (hb : b ≠ 0) (hc : c ≠ 0) (abc_dr_dvd_w : divRadical (a * b * c) ∣ w) :
       c.natDegree + 1 ≤ (radical (a * b * c)).natDegree := by
@@ -83,7 +57,11 @@ private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian
 /-- **Polynomial ABC theorem.** -/
 theorem Polynomial.abc {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b)
     (hbc : IsCoprime b c) (hca : IsCoprime c a) (hsum : a + b + c = 0) :
-    max₃ (natDegree a) (natDegree b) (natDegree c) + 1 ≤ (radical (a * b * c)).natDegree ∨
+    (
+      natDegree a + 1 ≤ (radical (a * b * c)).natDegree ∧
+      natDegree b + 1 ≤ (radical (a * b * c)).natDegree ∧
+      natDegree c + 1 ≤ (radical (a * b * c)).natDegree
+    ) ∨
       derivative a = 0 ∧ derivative b = 0 ∧ derivative c = 0 := by
   -- Utility assertions
   have wbc := wronskian_eq_of_sum_zero hsum
@@ -115,7 +93,6 @@ theorem Polynomial.abc {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 
     cases' hbc.wronskian_eq_zero_iff.mp wbc.symm with _ gc
     exact ⟨ga, gb, gc⟩
   · left
-    rw [max₃_add_distrib_right, max₃_le]
     refine ⟨?_, ?_, ?_⟩
     · rw [mul_rotate] at abc_dr_dvd_w ⊢
       apply abc_subcall wbc <;> assumption
