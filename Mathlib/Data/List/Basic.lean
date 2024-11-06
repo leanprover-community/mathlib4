@@ -1031,7 +1031,7 @@ theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as 
 @[simp] lemma drop_take_append_drop' (x : List α) (m n : ℕ) :
     (x.drop m).take n ++ x.drop (m + n) = x.drop m := by rw [Nat.add_comm, drop_take_append_drop]
 
-/--take_concat_get in simp normal form-/
+/-- `take_concat_get` in simp normal form -/
 @[simp] lemma take_concat_get' (l : List α) (i : ℕ) (h : i < l.length) :
   l.take i ++ [l[i]] = l.take (i + 1) := by simpa using take_concat_get l i h
 
