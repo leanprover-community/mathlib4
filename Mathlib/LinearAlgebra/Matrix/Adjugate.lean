@@ -122,7 +122,7 @@ theorem cramer_one : cramer (1 : Matrix n n α) = 1 := by
 
 theorem cramer_smul (r : α) (A : Matrix n n α) :
     cramer (r • A) = r ^ (Fintype.card n - 1) • cramer A :=
-  LinearMap.ext fun _ => funext fun _ => det_updateColumn_smul' _ _ _ _
+  LinearMap.ext fun _ => funext fun _ => det_updateColumn_smul_left _ _ _ _
 
 @[simp]
 theorem cramer_subsingleton_apply [Subsingleton n] (A : Matrix n n α) (b : n → α) (i : n) :
