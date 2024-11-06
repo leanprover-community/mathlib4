@@ -115,6 +115,20 @@ lemma ker_eq_bot : ker f = ⊥ ↔ Function.Injective f :=
 
 end NonUnitalNonAssocRing
 
+section NonAssocRing
+
+variable {R : Type*} [NonAssocRing R]
+
+/--
+The kernel of the ring homomorphism `R → R⧸I` is `I`.
+-/
+lemma ker_ringCon_mk' (I : TwoSidedIdeal R) : ker I.ringCon.mk' = I :=
+  le_antisymm
+    (fun _ h => by simpa using I.rel_iff _ _ |>.1 (Quotient.eq'.1 h))
+    (fun _ h => Quotient.sound' <| I.rel_iff _ _ |>.2 (by simpa using h))
+
+end NonAssocRing
+
 section NonUnitalRing
 
 variable {R : Type*} [NonUnitalRing R]
