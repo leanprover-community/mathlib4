@@ -91,7 +91,7 @@ jobs:
       run: |
         files="$(
           printf '%s\n' "${{ steps.late_importers.outputs.summary }}" |
-            sed -n '/\.html/{s=^[^[]*\[\(Mathlib[^]]*\).lean].*=`\1,=p}' | sed -z 's=\n=\\n=g; s=,\n*$=='
+            sed -n '/\.html/{s=^[^[]*\[\(Mathlib[^]]*\).lean].*=`\1,=p}' | sed -z 's=\n=\\n  =g; s=,\\n* *$=='
           )"
         printf '%s\n' "$files"
         sed "s=-- insert module names here=$files=" scripts/downstream_counts.lean
