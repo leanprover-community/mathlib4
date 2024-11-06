@@ -93,6 +93,7 @@ jobs:
           printf '%s\n' "${{ steps.late_importers.outputs.summary }}" |
             sed -n '/\.html/{s=^[^[]*\[\(Mathlib[^]]*\).lean].*=`\1,=p}' | sed -z 's=,\n*$=='
           )"
+        printf '%s\n' "$files"
         sed "s=-- insert module names here=$files=" scripts/downstream_counts.lean
     #- name: Post output to Zulip
     #  uses: zulip/github-actions-zulip/send-message@v1
