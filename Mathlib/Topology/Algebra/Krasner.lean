@@ -101,11 +101,7 @@ theorem IsNonarchimedean.map_le_map_one {α : Type*} [Semiring α] {f : α → �
     push_cast
     apply (h n 1).trans
     simp only [hn, max_eq_right, le_refl]
-#leansearch "If f : ℝ → ℝ tends to F at filter G, then f(n) : ℕ → ℝ tends to F as filter pullback of G."
-#leansearch "For every c : ℝ, c^(1/n) tends to 1 as n tends to infinity."
-#check Filter.tendsto_map'_iff
-#check Filter.tendsto_comap'_iff
-#check Filter.tendsto_iff_seq_tendsto
+
 theorem IsNonarchimedean.of_algebraMap_nat {R} [NormedDivisionRing R]
   (is_na : IsNonarchimedean (‖algebraMap ℕ R ·‖ : ℕ → ℝ)) : IsNonarchimedean (‖·‖ : R → ℝ) := by
   -- It suffices to show that for all r : R, ‖r + 1‖ ≤ max ‖r‖ 1.
@@ -211,7 +207,7 @@ theorem IsNonarchimedean.norm_extension (is_na : IsNonarchimedean (‖·‖ : K 
     (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) : IsNonarchimedean (‖·‖ : L → ℝ) := by
   refine @IsUltrametricDist.isNonarchimedean L _ ?_
   rw [IsUltrametricDist.isUltrametricDist_iff_forall_norm_natCast_le_one]
-  
+
   apply IsNonarchimedean.of_algebraMap_nat
   intro x y
   simp only [IsScalarTower.algebraMap_apply ℕ K L, ← extd]
