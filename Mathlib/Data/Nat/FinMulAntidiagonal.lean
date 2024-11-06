@@ -51,7 +51,7 @@ namespace Nat
 
 /-- The `Finset` of all `d`-tuples of natural numbers whose product is `n`. Defined to be `∅` when
 `n = 0`. -/
-def finMulAntidiagonal (d : ℕ) (n : ℕ) : Finset (Fin d → ℕ) :=
+def finMulAntidiag (d : ℕ) (n : ℕ) : Finset (Fin d → ℕ) :=
   if hn : 0 < n then
     (Finset.finAntidiagonal d (Additive.ofMul (α := ℕ+) ⟨n, hn⟩)).map <|
       .arrowCongrRight <| Additive.toMul.toEmbedding.trans <| ⟨PNat.val, PNat.coe_injective⟩
@@ -59,9 +59,9 @@ def finMulAntidiagonal (d : ℕ) (n : ℕ) : Finset (Fin d → ℕ) :=
     ∅
 
 @[simp]
-theorem mem_finMulAntidiagonal {d n : ℕ} {f : Fin d → ℕ} :
-    f ∈ finMulAntidiagonal d n ↔ ∏ i, f i = n ∧ n ≠ 0 := by
-  unfold finMulAntidiagonal
+theorem mem_finMulAntidiag {d n : ℕ} {f : Fin d → ℕ} :
+    f ∈ finMulAntidiag d n ↔ ∏ i, f i = n ∧ n ≠ 0 := by
+  unfold finMulAntidiag
   split_ifs with h
   · simp_rw [mem_map, mem_finAntidiagonal, Function.Embedding.arrowCongrRight_apply,
       Function.comp_def, Function.Embedding.trans_apply, Equiv.coe_toEmbedding,
@@ -80,13 +80,13 @@ theorem mem_finMulAntidiagonal {d n : ℕ} {f : Fin d → ℕ} :
     simp only [h, not_mem_empty, ne_eq, not_true_eq_false, and_false]
 
 @[simp]
-theorem finMulAntidiagonal_zero_right (d : ℕ) :
-    finMulAntidiagonal d 0 = ∅ := rfl
+theorem finMulAntidiag_zero_right (d : ℕ) :
+    finMulAntidiag d 0 = ∅ := rfl
 
-theorem finMulAntidiagonal_one {d : ℕ} :
-    finMulAntidiagonal d 1 = {fun _ => 1} := by
+theorem finMulAntidiag_one {d : ℕ} :
+    finMulAntidiag d 1 = {fun _ => 1} := by
   ext f
-  simp only [mem_finMulAntidiagonal, and_true, mem_singleton]
+  simp only [mem_finMulAntidiag, and_true, mem_singleton]
   constructor
   · intro ⟨hf, _⟩; ext i
     rw [← Nat.dvd_one, ← hf]
@@ -95,46 +95,46 @@ theorem finMulAntidiagonal_one {d : ℕ} :
     simp only [prod_const_one, implies_true, ne_eq, one_ne_zero, not_false_eq_true,
     and_self]
 
-theorem finMulAntidiagonal_zero_left {n : ℕ} (hn : n ≠ 1) :
-    finMulAntidiagonal 0 n = ∅ := by
+theorem finMulAntidiag_zero_left {n : ℕ} (hn : n ≠ 1) :
+    finMulAntidiag 0 n = ∅ := by
   ext
   simp [hn.symm]
 
-theorem dvd_of_mem_finMulAntidiagonal {n d : ℕ} {f : Fin d → ℕ} (hf : f ∈ finMulAntidiagonal d n)
+theorem dvd_of_mem_finMulAntidiag {n d : ℕ} {f : Fin d → ℕ} (hf : f ∈ finMulAntidiag d n)
     (i : Fin d) : f i ∣ n := by
-  rw [mem_finMulAntidiagonal] at hf
+  rw [mem_finMulAntidiag] at hf
   rw [← hf.1]
   exact dvd_prod_of_mem f (mem_univ i)
 
-theorem ne_zero_of_mem_finMulAntidiagonal {d n : ℕ} {f : Fin d → ℕ}
-    (hf : f ∈ finMulAntidiagonal d n) (i : Fin d) : f i ≠ 0 :=
-  ne_zero_of_dvd_ne_zero (mem_finMulAntidiagonal.mp hf).2 (dvd_of_mem_finMulAntidiagonal hf i)
+theorem ne_zero_of_mem_finMulAntidiag {d n : ℕ} {f : Fin d → ℕ}
+    (hf : f ∈ finMulAntidiag d n) (i : Fin d) : f i ≠ 0 :=
+  ne_zero_of_dvd_ne_zero (mem_finMulAntidiag.mp hf).2 (dvd_of_mem_finMulAntidiag hf i)
 
-theorem prod_eq_of_mem_finMulAntidiagonal {d n : ℕ} {f : Fin d → ℕ}
-    (hf : f ∈ finMulAntidiagonal d n) : ∏ i, f i = n :=
-  (mem_finMulAntidiagonal.mp hf).1
+theorem prod_eq_of_mem_finMulAntidiag {d n : ℕ} {f : Fin d → ℕ}
+    (hf : f ∈ finMulAntidiag d n) : ∏ i, f i = n :=
+  (mem_finMulAntidiag.mp hf).1
 
-theorem finMulAntidiagonal_eq_piFinset_divisors_filter {d m n : ℕ} (hmn : m ∣ n) (hn : n ≠ 0) :
-    finMulAntidiagonal d m =
+theorem finMulAntidiag_eq_piFinset_divisors_filter {d m n : ℕ} (hmn : m ∣ n) (hn : n ≠ 0) :
+    finMulAntidiag d m =
       {f ∈ Fintype.piFinset fun _ : Fin d => n.divisors | ∏ i, f i = m} := by
   ext f
   simp only [mem_univ, not_true, IsEmpty.forall_iff, implies_true, ne_eq, true_and,
     Fintype.mem_piFinset, mem_divisors, Nat.isUnit_iff, mem_filter]
   constructor
   · intro hf
-    refine ⟨?_, prod_eq_of_mem_finMulAntidiagonal hf⟩
-    exact fun i => ⟨(dvd_of_mem_finMulAntidiagonal hf i).trans hmn, hn⟩
-  · rw [mem_finMulAntidiagonal]
+    refine ⟨?_, prod_eq_of_mem_finMulAntidiag hf⟩
+    exact fun i => ⟨(dvd_of_mem_finMulAntidiag hf i).trans hmn, hn⟩
+  · rw [mem_finMulAntidiag]
     exact fun ⟨_, hprod⟩ => ⟨hprod, ne_zero_of_dvd_ne_zero hn hmn⟩
 
-lemma image_apply_finMulAntidiagonal {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
-    (finMulAntidiagonal d n).image (fun f => f i) = divisors n := by
+lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
+    (finMulAntidiag d n).image (fun f => f i) = divisors n := by
   ext k
   simp only [mem_image, ne_eq, mem_divisors, Nat.isUnit_iff]
   constructor
   · rintro ⟨f, hf, rfl⟩
-    exact ⟨dvd_of_mem_finMulAntidiagonal hf _, (mem_finMulAntidiagonal.mp hf).2⟩
-  · simp_rw [mem_finMulAntidiagonal]
+    exact ⟨dvd_of_mem_finMulAntidiag hf _, (mem_finMulAntidiag.mp hf).2⟩
+  · simp_rw [mem_finMulAntidiag]
     rintro ⟨⟨r, rfl⟩, hn⟩
     have hs : Nontrivial (Fin d) := by
       rw [Fin.nontrivial_iff_two_le]
@@ -154,14 +154,14 @@ lemma image_apply_finMulAntidiagonal {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
     exact mem_erase.mpr ⟨hi_ne, mem_univ _⟩
 
 lemma image_piFinTwoEquiv {n : ℕ} :
-    (finMulAntidiagonal 2 n).image (piFinTwoEquiv <| fun _ => ℕ) = divisorsAntidiagonal n := by
+    (finMulAntidiag 2 n).image (piFinTwoEquiv <| fun _ => ℕ) = divisorsAntidiagonal n := by
   ext x
   simp [(piFinTwoEquiv <| fun _ => ℕ).symm.surjective.exists]
 
-lemma finMulAntidiagonal_exists_unique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
-    (hp : p ∈ n.primeFactorsList) (f : Fin d → ℕ) (hf : f ∈ finMulAntidiagonal d n) :
+lemma finMulAntidiag_exists_unique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
+    (hp : p ∈ n.primeFactorsList) (f : Fin d → ℕ) (hf : f ∈ finMulAntidiag d n) :
     ∃! i, p ∣ f i := by
-  rw [mem_finMulAntidiagonal] at hf
+  rw [mem_finMulAntidiag] at hf
   rw [mem_primeFactorsList hf.2, ← hf.1, hp.1.prime.dvd_finset_prod_iff] at hp
   obtain ⟨i, his, hi⟩ := hp.2
   refine ⟨i, hi, ?_⟩
@@ -180,8 +180,8 @@ private def primeFactorsPiBij (d n : ℕ) :
 
 private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
   (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
-    Nat.primeFactorsPiBij d n f hf ∈ finMulAntidiagonal d n := by
-  rw [mem_finMulAntidiagonal]
+    Nat.primeFactorsPiBij d n f hf ∈ finMulAntidiag d n := by
+  rw [mem_finMulAntidiag]
   refine ⟨?_, hn.ne_zero⟩
   unfold Nat.primeFactorsPiBij
   rw [prod_fiberwise_of_maps_to, prod_attach (f := fun x => x)]
@@ -212,17 +212,17 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
     exact hfg rfl
 
 private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
-    (t : Fin d → ℕ) (ht : t ∈ finMulAntidiagonal d n) : ∃ (g : _)
+    (t : Fin d → ℕ) (ht : t ∈ finMulAntidiag d n) : ∃ (g : _)
     (hg : g ∈ pi n.primeFactors fun _ => univ), Nat.primeFactorsPiBij d n g hg = t := by
   have exists_unique := fun (p : ℕ) (hp : p ∈ n.primeFactors) =>
-    (finMulAntidiagonal_exists_unique_prime_dvd hn
+    (finMulAntidiag_exists_unique_prime_dvd hn
       (mem_primeFactors_iff_mem_primeFactorsList.mp hp) t ht)
   choose f hf hf_unique using exists_unique
   refine ⟨f, ?_, ?_⟩
   · simp only [mem_pi]
     exact fun a h => mem_univ (f a h)
   funext i
-  have : t i ∣ n := dvd_of_mem_finMulAntidiagonal ht _
+  have : t i ∣ n := dvd_of_mem_finMulAntidiag ht _
   trans (∏ p ∈ n.primeFactors.attach, if p.1 ∣ t i then p else 1)
   · rw [Nat.primeFactorsPiBij, ← prod_filter]
     congr
@@ -232,15 +232,15 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   rw [primeFactors_filter_dvd_of_dvd hn.ne_zero this]
   exact prod_primeFactors_of_squarefree <| hn.squarefree_of_dvd this
 
-theorem card_finMulAntidiagonal_pi (d n : ℕ) (hn : Squarefree n) :
+theorem card_finMulAntidiag_pi (d n : ℕ) (hn : Squarefree n) :
     #(n.primeFactors.pi (fun _ => (univ : Finset <| Fin d))) =
-      #(finMulAntidiagonal d n) := by
+      #(finMulAntidiag d n) := by
   apply Finset.card_bij (Nat.primeFactorsPiBij d n) (primeFactorsPiBij_img d n hn)
     (primeFactorsPiBij_inj d n) (primeFactorsPiBij_surj d n hn)
 
-theorem card_finMulAntidiagonal_of_squarefree {d n : ℕ} (hn : Squarefree n) :
-    #(finMulAntidiagonal d n) = d ^ ω n := by
-  rw [← card_finMulAntidiagonal_pi d n hn, Finset.card_pi, Finset.prod_const,
+theorem card_finMulAntidiag_of_squarefree {d n : ℕ} (hn : Squarefree n) :
+    #(finMulAntidiag d n) = d ^ ω n := by
+  rw [← card_finMulAntidiag_pi d n hn, Finset.card_pi, Finset.prod_const,
     ArithmeticFunction.cardDistinctFactors_apply, ← List.card_toFinset, toFinset_factors,
     Finset.card_fin]
 
