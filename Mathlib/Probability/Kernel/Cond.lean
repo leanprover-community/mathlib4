@@ -18,29 +18,59 @@ lemma ae_restrict_le (μ : Measure Ω) (hs : MeasurableSet s) : ae (μ.restrict 
   exact inf_le_left
 
 lemma _root_.MeasureTheory.MeasurableSpace.generateFrom_singleton_le (hs : MeasurableSet s) :
-    MeasurableSpace.generateFrom {s} ≤ mΩ := sorry
+    MeasurableSpace.generateFrom {s} ≤ mΩ :=
+  generateFrom_le (fun _ ht ↦ mem_singleton_iff.1 ht ▸ hs)
 
 theorem measurableSet_generateFrom_singleton_iff {s t : Set Ω} :
-    MeasurableSet[generateFrom {s}] t ↔ t = ∅ ∨ t = s ∨ t = sᶜ ∨ t = Set.univ := by
-  sorry
-  -- simp_rw [generateFrom_singleton]
-  -- change t ∈ {t | _} ↔ _
-  -- simp_rw [measurableSet_top, true_and, mem_setOf_eq]
-  -- constructor
-  -- · rintro ⟨x, hx⟩
-  --   have : Multiset.ofList [True, False] = {True, False} := rfl
-  --   fin_cases x
-  --   · simp [Finset.coeEmb] at hx
-  --     simp [hx]
-  --   · simp [Finset.coeEmb] at hx
-
-  -- · rintro (rfl | rfl | rfl | rfl)
-  --   on_goal 1 => use ∅
-  --   on_goal 2 => use {True}
-  --   on_goal 3 => use {False}
-  --   on_goal 4 => use Set.univ
-  --   all_goals
-  --     simp [compl_def]
+    MeasurableSet[generateFrom {s}] t ↔ t = ∅ ∨ t = s ∨ t = sᶜ ∨ t = univ := by
+  simp_rw [generateFrom_singleton]
+  change t ∈ {t | _} ↔ _
+  simp_rw [measurableSet_top, true_and, mem_setOf_eq]
+  constructor
+  · rintro ⟨x, rfl⟩
+    by_cases hT : True ∈ x
+    · by_cases hF : False ∈ x
+      · refine Or.inr <| Or.inr <| Or.inr <| subset_antisymm (subset_univ _) ?_
+        suffices x = univ by simp only [this, preimage_univ, subset_refl]
+        refine subset_antisymm (subset_univ _) ?_
+        rw [univ_eq_true_false]
+        rintro - (rfl | rfl)
+        · assumption
+        · assumption
+      · have hx : x = {True} := by
+          ext p
+          refine ⟨fun hp ↦ mem_singleton_iff.2 ?_, fun hp ↦ hp ▸ hT⟩
+          by_contra hpneg
+          rw [eq_iff_iff, iff_true, ← false_iff_iff] at hpneg
+          exact hF (by convert hp)
+        simp [hx]
+    · by_cases hF : False ∈ x
+      · have hx : x = {False} := by
+          ext p
+          refine ⟨fun hp ↦ mem_singleton_iff.2 ?_, fun hp ↦ hp ▸ hF⟩
+          by_contra hpneg
+          simp only [eq_iff_iff, iff_false, not_not] at hpneg
+          refine hT ?_
+          convert hp
+          simpa
+        refine Or.inr <| Or.inr <| Or.inl <| ?_
+        simp [hx]
+        rfl
+      · refine Or.inl <| subset_antisymm ?_ <| empty_subset _
+        suffices x ⊆ ∅ by
+          rw [subset_empty_iff] at this
+          simp only [this, preimage_empty, subset_refl]
+        intro p hp
+        fin_cases p
+        · contradiction
+        · contradiction
+  · rintro (rfl | rfl | rfl | rfl)
+    on_goal 1 => use ∅
+    on_goal 2 => use {True}
+    on_goal 3 => use {False}
+    on_goal 4 => use Set.univ
+    all_goals
+      simp [compl_def]
 
 variable [IsFiniteMeasure μ]
 
