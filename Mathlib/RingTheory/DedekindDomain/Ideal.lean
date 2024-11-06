@@ -1182,7 +1182,7 @@ theorem Ideal.count_normalizedFactors_eq {p x : Ideal R} [hp : p.IsPrime] {n : �
   when regarding at these ideals as associated elements of the monoid of ideals.-/
 theorem count_associates_factors_eq [DecidableEq (Ideal R)] [DecidableEq <| Associates (Ideal R)]
     [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
-    (I J : Ideal R) (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
+    {I J : Ideal R} (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
     (Associates.mk J).count (Associates.mk I).factors = Multiset.count J (normalizedFactors I) := by
   replace hI : Associates.mk I ≠ 0 := Associates.mk_ne_zero.mpr hI
   have hJ' : Irreducible (Associates.mk J) := by
