@@ -100,35 +100,35 @@ variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosMono : MulPosMono α where
-  elim _a _b _c hbc := mul_le_mul_right' hbc _
+  elim _a _ _b _c hbc := mul_le_mul_right' hbc _
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulMono : PosMulMono α where
-  elim _a _b _c hbc := mul_le_mul_left' hbc _
+  elim _a _ _b _c hbc := mul_le_mul_left' hbc _
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLE :
     PosMulReflectLE α where
-  elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_left' hbc a⁻¹
+  elim a ha b c hbc := by simpa [ha.ne'] using mul_le_mul_left' hbc a⁻¹
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosReflectLE :
     MulPosReflectLE α where
-  elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_right' hbc a⁻¹
+  elim a ha b c hbc := by simpa [ha.ne'] using mul_le_mul_right' hbc a⁻¹
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLT :
-    PosMulReflectLT α where elim _a _b _c := lt_of_mul_lt_mul_left'
+    PosMulReflectLT α where elim _a _ _b _c := lt_of_mul_lt_mul_left'
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulStrictMono :
     PosMulStrictMono α where
-  elim a b c hbc := by by_contra! h; exact hbc.not_le <| (mul_le_mul_left a.2).1 h
+  elim a ha b c hbc := by by_contra! h; exact hbc.not_le <| (mul_le_mul_left ha).1 h
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
     MulPosStrictMono α where
-  elim a b c hbc := by by_contra! h; exact hbc.not_le <| (mul_le_mul_right a.2).1 h
+  elim a ha b c hbc := by by_contra! h; exact hbc.not_le <| (mul_le_mul_right ha).1 h
 
 /-- Alias of `one_le_mul'` for unification. -/
 @[deprecated one_le_mul (since := "2024-08-21")]
