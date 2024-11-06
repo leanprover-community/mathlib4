@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
 import Mathlib.Algebra.Quotient
+import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Subgroup.MulOpposite
 import Mathlib.GroupTheory.GroupAction.Defs
 
@@ -156,7 +157,7 @@ abbrev mk (a : α) : α ⧸ s :=
 
 @[to_additive]
 theorem mk_surjective : Function.Surjective <| @mk _ _ s :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.mk''_surjective
 
 @[to_additive (attr := simp)]
 lemma range_mk : range (QuotientGroup.mk (s := s)) = univ := range_iff_surjective.mpr mk_surjective

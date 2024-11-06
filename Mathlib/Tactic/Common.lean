@@ -14,6 +14,7 @@ import ImportGraph.Imports
 -- Import common Batteries tactics and commands
 import Batteries.Tactic.Where
 import Batteries.Tactic.Basic
+import Batteries.Tactic.HelpCmd
 
 -- Import syntax for leansearch
 import LeanSearchClient
@@ -58,7 +59,6 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
-import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.Hint
 import Mathlib.Tactic.InferParam

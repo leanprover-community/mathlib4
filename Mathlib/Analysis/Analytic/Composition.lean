@@ -1019,9 +1019,9 @@ def gather (a : Composition n) (b : Composition a.length) : Composition n where
       _ ≤ j.sum := length_le_sum_of_one_le _ H
     intro i hi
     apply a.one_le_blocks
-    rw [← a.blocks.join_splitWrtComposition b]
-    exact mem_join_of_mem hj hi
-  blocks_sum := by rw [← sum_join, join_splitWrtComposition, a.blocks_sum]
+    rw [← a.blocks.flatten_splitWrtComposition b]
+    exact mem_flatten_of_mem hj hi
+  blocks_sum := by rw [← sum_flatten, flatten_splitWrtComposition, a.blocks_sum]
 
 theorem length_gather (a : Composition n) (b : Composition a.length) :
     length (a.gather b) = b.length :=
@@ -1040,8 +1040,8 @@ def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
   blocks_pos {i} hi :=
     a.blocks_pos
       (by
-        rw [← a.blocks.join_splitWrtComposition b]
-        exact mem_join_of_mem (List.getElem_mem _) hi)
+        rw [← a.blocks.flatten_splitWrtComposition b]
+        exact mem_flatten_of_mem (List.getElem_mem _) hi)
   blocks_sum := by simp [Composition.blocksFun, getElem_map, Composition.gather]
 
 theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
@@ -1128,9 +1128,9 @@ def sigmaEquivSigmaPi (n : ℕ) :
       Σ c : Composition n, ∀ i : Fin c.length, Composition (c.blocksFun i) where
   toFun i := ⟨i.1.gather i.2, i.1.sigmaCompositionAux i.2⟩
   invFun i :=
-    ⟨{  blocks := (ofFn fun j => (i.2 j).blocks).join
+    ⟨{  blocks := (ofFn fun j => (i.2 j).blocks).flatten
         blocks_pos := by
-          simp only [and_imp, List.mem_join, exists_imp, forall_mem_ofFn_iff]
+          simp only [and_imp, List.mem_flatten, exists_imp, forall_mem_ofFn_iff]
           exact @fun i j hj => Composition.blocks_pos _ hj
         blocks_sum := by simp [sum_ofFn, Composition.blocks_sum, Composition.sum_blocksFun] },
       { blocks := ofFn fun j => (i.2 j).length
@@ -1147,7 +1147,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
     dsimp
     constructor
     · conv_rhs =>
-        rw [← join_splitWrtComposition a.blocks b, ← ofFn_get (splitWrtComposition a.blocks b)]
+        rw [← flatten_splitWrtComposition a.blocks b, ← ofFn_get (splitWrtComposition a.blocks b)]
       have A : length (gather a b) = List.length (splitWrtComposition a.blocks b) := by
         simp only [length, gather, length_map, length_splitWrtComposition]
       congr! 2
@@ -1171,13 +1171,13 @@ def sigmaEquivSigmaPi (n : ℕ) :
     · congr
       ext1
       dsimp [Composition.gather]
-      rwa [splitWrtComposition_join]
+      rwa [splitWrtComposition_flatten]
       simp only [map_ofFn]
       rfl
     · rw [Fin.heq_fun_iff]
       · intro i
         dsimp [Composition.sigmaCompositionAux]
-        rw [getElem_of_eq (splitWrtComposition_join _ _ _)]
+        rw [getElem_of_eq (splitWrtComposition_flatten _ _ _)]
         · simp only [List.getElem_ofFn]
         · simp only [map_ofFn]
           rfl

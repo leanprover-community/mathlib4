@@ -330,7 +330,7 @@ lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
     rw [show g = ι.comp π from rfl, lTensor_comp]
     exact exact1.comp_injective _ (lTensor_preserves_injective_linearMap ι <| by
       simpa [ι] using Subtype.val_injective) (map_zero _)
-  exact _root_.lTensor_exact _ (fun x => by simp [π]) Quotient.surjective_Quotient_mk''
+  exact _root_.lTensor_exact _ (fun x => by simp [π]) Quotient.mk''_surjective
 
 variable (M) in
 /-- If `M` is flat then `- ⊗ M` is an exact functor. -/
@@ -347,7 +347,7 @@ lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
     rw [show g = ι.comp π from rfl, rTensor_comp]
     exact exact1.comp_injective _ (rTensor_preserves_injective_linearMap ι <| by
       simpa [ι] using Subtype.val_injective) (map_zero _)
-  exact _root_.rTensor_exact M (fun x => by simp [π]) Quotient.surjective_Quotient_mk''
+  exact _root_.rTensor_exact M (fun x => by simp [π]) Quotient.mk''_surjective
 
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor. See
   `Module.Flat.iff_lTensor_exact` to specialize the universe of `N, N', N''` to `Type (max u v)`. -/

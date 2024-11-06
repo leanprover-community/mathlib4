@@ -76,6 +76,10 @@ theorem sort_insert [DecidableEq α] {a : α} {s : Finset α} (h₁ : ∀ b ∈ 
     sort r (insert a s) = a :: sort r s := by
   rw [← cons_eq_insert _ _ h₂, sort_cons r h₁]
 
+@[simp]
+theorem sort_range (n : ℕ) : sort (· ≤ ·) (range n) = List.range n :=
+  Multiset.sort_range n
+
 open scoped List in
 theorem sort_perm_toList (s : Finset α) : sort r s ~ s.toList := by
   rw [← Multiset.coe_eq_coe]
