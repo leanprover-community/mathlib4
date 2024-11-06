@@ -52,9 +52,9 @@ jobs:
       #    topic: ${{ steps.determine_topic.outputs.topic }}
       #    content: |
       #      ${{ format('{0} requested a maintainer merge from comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}
-#
+
       #      > ${{ github.event.issue.title }}
-#
+
       - name: Add comment to PR
         uses: GrantBirki/comment@v2
         with:
