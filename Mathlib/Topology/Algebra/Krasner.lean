@@ -17,6 +17,8 @@ import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.IntermediateField.Algebraic
 -- import Mathlib.Analysis.Calculus.LHopital
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.Analysis.Normed.Field.Ultra
+import Mathlib.Analysis.Normed.Ring.Ultra
 /-!
 # Krasner's Lemma
 
@@ -84,11 +86,19 @@ theorem Polynomial.tendsto_log_eval_div_zero {p : ℝ[X]} (hp : p.leadingCoeff >
 theorem Polynomial.tendsto_pow_one_div_atTop {p : ℝ[X]} (hp : p.leadingCoeff > 0) : Filter.Tendsto (fun x => (p.eval x) ^ (1 / x) : ℝ → ℝ) atTop (𝓝 1) := by
   sorry
 
-theorem IsNonarchimedean.map_le_map_one {f : ℕ → ℝ} (h0 : f 0 ≤ f 1)
+-- theorem IsNonarchimedean.map_le_map_one {f : ℕ → ℝ} (h0 : f 0 ≤ f 1)
+--     (h : IsNonarchimedean f) (n : ℕ) : f n ≤ f 1 := by
+--   induction n with
+--   | zero => exact h0
+--   | succ n hn =>
+--     apply (h n 1).trans
+--     simp only [hn, max_eq_right, le_refl]
+theorem IsNonarchimedean.map_le_map_one {α : Type*} [Semiring α] {f : α → ℝ} (h0 : f 0 ≤ f 1)
     (h : IsNonarchimedean f) (n : ℕ) : f n ≤ f 1 := by
   induction n with
-  | zero => exact h0
+  | zero => simpa using h0
   | succ n hn =>
+    push_cast
     apply (h n 1).trans
     simp only [hn, max_eq_right, le_refl]
 #leansearch "If f : ℝ → ℝ tends to F at filter G, then f(n) : ℕ → ℝ tends to F as filter pullback of G."
@@ -179,9 +189,29 @@ theorem IsNonarchimedean.of_algebraMap_nat {R} [NormedDivisionRing R]
       · exact Or.inl <| (pow_le_pow_iff_right (by linarith)).mpr (Finset.mem_range_succ_iff.mp ha)
     _ = (n + 1) * max (‖r‖ ^ n) 1 := by simp
 
+theorem IsUltrametricDist.isNonarchimedean {R} [NormedRing R] [IsUltrametricDist R] :
+    IsNonarchimedean (‖·‖ : R → ℝ) := by
+  intro x y
+  convert dist_triangle_max 0 x (x+y) using 1
+  · simp
+  · congr <;> simp
+
+theorem isUltrametricDist_iff_isNonarchimedean {R} [NormedRing R] :
+    IsUltrametricDist R ↔ IsNonarchimedean (‖·‖ : R → ℝ) := by
+
+#check IsUltrametricDist.isUltrametricDist_of_forall_norm_natCast_le_one
+
+theorem IsUltrametricDist.isUltrametricDist_iff_forall_norm_natCast_le_one {R : Type*}
+    [NormedDivisionRing R] : IsUltrametricDist R ↔ ∀ n : ℕ, ‖(n : R)‖ ≤ 1 :=
+  ⟨fun _ => IsUltrametricDist.norm_natCast_le_one R,
+      isUltrametricDist_of_forall_norm_natCast_le_one⟩
+
 /-- K : field L : division ring-/
 theorem IsNonarchimedean.norm_extension (is_na : IsNonarchimedean (‖·‖ : K → ℝ))
     (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) : IsNonarchimedean (‖·‖ : L → ℝ) := by
+  refine @IsUltrametricDist.isNonarchimedean L _ ?_
+  rw [IsUltrametricDist.isUltrametricDist_iff_forall_norm_natCast_le_one]
+  
   apply IsNonarchimedean.of_algebraMap_nat
   intro x y
   simp only [IsScalarTower.algebraMap_apply ℕ K L, ← extd]
@@ -189,7 +219,6 @@ theorem IsNonarchimedean.norm_extension (is_na : IsNonarchimedean (‖·‖ : K 
 
 -- this is another PR, showing that fron any divisionring, nonarch is equiv to nonarch
 -- pullback to natural numbers
-
 
 open IntermediateField
 theorem IsConjRoot.exists_algEquiv_of_minpoly_split {K L} [Field K] [Field L] [Algebra K L]
