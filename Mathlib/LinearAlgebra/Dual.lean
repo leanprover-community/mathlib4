@@ -700,12 +700,6 @@ instance [IsDomain R] : NoZeroSMulDivisors R M := by
   suffices r • n m = 0 by exact eq_zero_of_ne_zero_of_mul_left_eq_zero hr this
   rw [← LinearMap.map_smul_of_tower, hrm, LinearMap.map_zero]
 
-lemma bot_of_rank_zero [IsDomain R] (N : Submodule R M) (h : Module.rank R N = 0) : N = ⊥ := by
-  refine (Submodule.eq_bot_iff N).mpr fun x hx => ?_
-  rw [rank_eq_zero_iff] at h
-  obtain ⟨r, ⟨h1, h2⟩⟩ := h ⟨x, hx⟩
-  simpa [h1] using (AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp h2
-
 end IsReflexive
 
 end Module
