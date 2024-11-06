@@ -136,29 +136,20 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
 protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g G')
     (hf : Bijective f) (hM : M.IsMatching) : (M.map f).IsMatching := by
   rintro _ ⟨v, hv, rfl⟩
-  obtain ⟨v', hv'⟩ := hM hv.1
-  dsimp at *
+  obtain ⟨v', hv'⟩ := hM hv
   use f v'
-  refine ⟨by
-    dsimp
-    rw [Relation.map_apply]
-    use v, v'
-    exact ⟨hv'.1, hv.2, rfl⟩, ?_⟩
+  refine ⟨by simp only [Relation.map_apply]; exact ⟨v, ⟨v', ⟨hv'.1, rfl, rfl⟩⟩⟩, ?_⟩
   intro y hy
   obtain ⟨w', hw'⟩ := hf.existsUnique y
-  rw [← hv.2, ← hw'.1, Relation.map_apply_apply hf.injective hf.injective] at hy
+  rw [map_adj, ← hw'.1, Relation.map_apply_apply hf.injective hf.injective] at hy
   rw [← hv'.2 w' hy]
   exact hw'.1.symm
 
 @[simp]
 lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : G ≃g G') :
     (M.map f.toHom).IsMatching ↔ M.IsMatching := by
-  exact ⟨fun h ↦ by simpa using h.map f.symm.toHom f.symm.bijective, .map f.toHom f.bijective⟩
-  intro h
-  rw [show M = (M.map f.toHom).map f.symm.toHom from
-    by rw [← map_comp]; simp only [Iso.symm_toHom_comp_toHom, map_id]]
-  exact IsMatching.map f.symm.toHom (by
-    simp only [RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, RelIso.bijective]) h
+  exact ⟨fun h ↦
+    by simpa [← map_comp] using h.map f.symm.toHom f.symm.bijective, .map f.toHom f.bijective⟩
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
