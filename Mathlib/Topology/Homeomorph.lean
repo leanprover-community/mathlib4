@@ -1048,3 +1048,33 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
     [∀ i, TopologicalSpace (Y i)] {f : (i : ι) → X i → Y i} (h : ∀ i, IsHomeomorph (f i)) :
     IsHomeomorph (fun (x : ∀ i, X i) i ↦ f i (x i)) :=
   (Homeomorph.piCongrRight fun i ↦ (h i).homeomorph (f i)).isHomeomorph
+
+/-- `HomeomorphClass F A B` states that `F` is a type of two-sided continuous morphisms.-/
+class HomeomorphClass (F : Type*) (A B : outParam Type*)
+    [TopologicalSpace A] [TopologicalSpace B] [h : EquivLike F A B] : Prop where
+  continuous_toFun : ∀ (f : F), Continuous (h.coe f)
+  continuous_invFun : ∀ (f : F), Continuous (h.inv f)
+
+namespace HomeomorphClass
+
+variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLike F α β]
+
+/-- Turn an element of a type `F` satisfying `MulEquivClass F α β` into an actual
+`MulEquiv`. This is declared as the default coercion from `F` to `α ≃* β`. -/
+def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :={
+  (f : α ≃ β) with
+  continuous_toFun := h.continuous_toFun f
+  continuous_invFun := h.continuous_invFun f
+  }
+
+instance [HomeomorphClass F α β] : CoeTC F (α ≃ₜ β) :=
+  ⟨HomeomorphClass.toHomeomorph⟩
+
+theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((↑) : F → α ≃ₜ β) :=
+  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ β ↦ e.toFun a) e
+
+instance : HomeomorphClass (α ≃ₜ β) α β where
+  continuous_toFun e := e.continuous_toFun
+  continuous_invFun e := e.continuous_invFun
+
+end HomeomorphClass
