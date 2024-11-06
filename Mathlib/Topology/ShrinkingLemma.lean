@@ -262,7 +262,7 @@ open ShrinkingLemma
 
 variable {u : ι → Set X} {s : Set X} [T2Space X] [LocallyCompactSpace X]
 
-/-- In `LocallyCompactSpace X` `T2Space X`, if `s` is a compacct set, `v` is a partial refinement,
+/-- In a locally compact Hausdorff space `X`, if `s` is a compact set, `v` is a partial refinement,
 and `i` is an index such that `i ∉ v.carrier`, then there exists a partial refinement that is
 strictly greater than `v`. -/
 theorem exists_gt_t2space (v : PartialRefinement u s (fun X => IsCompact (closure X)))
