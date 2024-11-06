@@ -26,6 +26,26 @@ invariants.
 
 -/
 
+section fieldEquivOfAlgEquivHom
+
+open IsFractionRing
+
+variable {A B : Type*} [CommRing A] [CommRing B] [IsDomain A] [IsDomain B] [Algebra A B]
+  (K L : Type*) [Field K] [Field L]
+  [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
+  [Algebra A L] [IsScalarTower A B L] [Algebra K L] [IsScalarTower A K L]
+
+variable (A B)
+
+@[simp]
+lemma fieldEquivOfAlgEquivHom_injective :
+    Function.Injective (fieldEquivOfAlgEquivHom K L : (B ≃ₐ[A] B) →* (L ≃ₐ[K] L)) := by
+  intro f g h
+  ext b
+  simpa using AlgEquiv.ext_iff.mp h (algebraMap B L b)
+
+end fieldEquivOfAlgEquivHom
+
 open scoped Pointwise
 
 -- PRed
@@ -42,7 +62,7 @@ by `G` is `smul_algebraMap` (assuming `SMulCommClass A B G`). -/
 
 end Algebra
 
-section IsIntegral
+section transitivity
 
 variable (A B G : Type*) [CommRing A] [CommRing B] [Algebra A B] [Group G] [MulSemiringAction G B]
 
@@ -134,18 +154,25 @@ theorem exists_smul_of_under_eq [Finite G] [SMulCommClass G A B]
 
 end Algebra.IsInvariant
 
-end IsIntegral
+end transitivity
 
-section CRT
+section surjectivity
 
-variable {B : Type*} [CommRing B] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
-  (Q : Ideal B) [Q.IsPrime]
+open IsScalarTower NoZeroSMulDivisors Polynomial
 
--- technical CRT lemma
-theorem lem1 [DecidableEq (Ideal B)] :
-    ∃ a b : B, (∀ g : G, g • a = a) ∧ (a ∉ Q) ∧
-    (∀ g : G, algebraMap B (B ⧸ Q) (g • b) =
-      algebraMap B (B ⧸ Q) (if g • Q = Q then a else 0)) := by
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
+  (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
+  variable (K L : Type*) [Field K] [Field L]
+  [Algebra (A ⧸ P) K] [Algebra (B ⧸ Q) L]
+  [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L]
+  [Algebra K L] [IsScalarTower (A ⧸ P) K L]
+  [Algebra.IsInvariant A B G]
+
+/-- A technical lemma for `fixed_of_fixed1`. -/
+private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
+    ∃ a b : B, (∀ g : G, g • a = a) ∧ a ∉ Q ∧
+    ∀ g : G, algebraMap B (B ⧸ Q) (g • b) = algebraMap B (B ⧸ Q) (if g • Q = Q then a else 0) := by
   obtain ⟨_⟩ := nonempty_fintype G
   let P := ((Finset.univ : Finset G).filter (fun g ↦ g • Q ≠ Q)).inf (fun g ↦ g • Q)
   have h1 : ¬ P ≤ Q := by
@@ -198,12 +225,13 @@ theorem lem1 [DecidableEq (Ideal B)] :
     · rw [smul_zero, sub_zero]
       exact hr' h⁻¹ hh
 
-theorem lem2 [DecidableEq (Ideal B)] (b₀ : B)
+/-- A technical lemma for `fixed_of_fixed1`. -/
+private theorem fixed_of_fixed1_aux2 [DecidableEq (Ideal B)] (b₀ : B)
     (hx : ∀ g : G, g • Q = Q → algebraMap B (B ⧸ Q) (g • b₀) = algebraMap B (B ⧸ Q) b₀) :
-    ∃ a b : B, (∀ g : G, g • a = a) ∧ (a ∉ Q) ∧
+    ∃ a b : B, (∀ g : G, g • a = a) ∧ a ∉ Q ∧
     (∀ g : G, algebraMap B (B ⧸ Q) (g • b) =
       algebraMap B (B ⧸ Q) (if g • Q = Q then a * b₀ else 0)) := by
-  obtain ⟨a, b, ha1, ha2, hb⟩ := lem1 G Q
+  obtain ⟨a, b, ha1, ha2, hb⟩ := fixed_of_fixed1_aux1 G Q
   refine ⟨a, b * b₀, ha1, ha2, fun g ↦ ?_⟩
   rw [smul_mul', map_mul, hb]
   specialize hb g
@@ -211,43 +239,21 @@ theorem lem2 [DecidableEq (Ideal B)] (b₀ : B)
   · rw [map_mul, hx g hg]
   · rw [map_zero, zero_mul]
 
-end CRT
-
-section polylemma
-
-open Polynomial
-
-theorem lem3 {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [NoZeroDivisors S]
-    {a : S} {i j : ℕ} {p : Polynomial R} (h : p.map (algebraMap R S) = (X - C a) ^ i * X ^ j)
-    (f : S ≃ₐ[R] S) (hi : i ≠ 0) :
-    f a = a := by
-  by_cases ha : a = 0
+/-- A technical lemma for `fixed_of_fixed1`. -/
+private theorem fixed_of_fixed1_aux3 [NoZeroDivisors B] {b : B} {i j : ℕ} {p : Polynomial A}
+    (h : p.map (algebraMap A B) = (X - C b) ^ i * X ^ j) (f : B ≃ₐ[A] B) (hi : i ≠ 0) :
+    f b = b := by
+  by_cases ha : b = 0
   · rw [ha, map_zero]
-  have hf := congrArg (eval a) (congrArg (Polynomial.mapAlgHom f.toAlgHom) h)
+  have hf := congrArg (eval b) (congrArg (Polynomial.mapAlgHom f.toAlgHom) h)
   rw [coe_mapAlgHom, map_map, f.toAlgHom.comp_algebraMap, h] at hf
   simp_rw [Polynomial.map_mul, Polynomial.map_pow, Polynomial.map_sub, map_X, map_C,
     eval_mul, eval_pow, eval_sub, eval_X, eval_C, sub_self, zero_pow hi, zero_mul,
     zero_eq_mul, or_iff_left (pow_ne_zero j ha), pow_eq_zero_iff hi, sub_eq_zero] at hf
   exact hf.symm
 
-end polylemma
-
-section part_b
-
-section redo_part_b
-
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
-  (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
-  variable (K L : Type*) [Field K] [Field L]
-  [Algebra (A ⧸ P) K]
-  [Algebra (B ⧸ Q) L] [NoZeroSMulDivisors (B ⧸ Q) L]
-  [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L]
-  [Algebra K L] [IsScalarTower (A ⧸ P) K L]
-
-open IsScalarTower Polynomial in
-theorem lem4 [Algebra.IsInvariant A B G]
-    (f : L ≃ₐ[K] L) (b : B ⧸ Q)
+/-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
+private theorem fixed_of_fixed1 [NoZeroSMulDivisors (B ⧸ Q) L] (f : L ≃ₐ[K] L) (b : B ⧸ Q)
     (hx : ∀ g : MulAction.stabilizer G Q, Ideal.Quotient.stabilizerHom Q P G g b = b) :
     f (algebraMap (B ⧸ Q) L b) = (algebraMap (B ⧸ Q) L b) := by
   classical
@@ -256,7 +262,7 @@ theorem lem4 [Algebra.IsInvariant A B G]
   obtain ⟨b₀, rfl⟩ := Ideal.Quotient.mk_surjective b
   intro hx
   rw [← Ideal.Quotient.algebraMap_eq]
-  obtain ⟨a, b, ha1, ha2, hb⟩ := lem2 G Q b₀ (fun g hg ↦ hx ⟨g, hg⟩)
+  obtain ⟨a, b, ha1, ha2, hb⟩ := fixed_of_fixed1_aux2 G Q b₀ (fun g hg ↦ hx ⟨g, hg⟩)
   obtain ⟨M, _, key⟩ := Algebra.IsInvariant.exists_map_eq_charpoly A B G b
   replace key := congrArg (map (algebraMap B (B ⧸ Q))) key
   rw [map_map, ← algebraMap_eq, algebraMap_eq A (A ⧸ P) (B ⧸ Q),
@@ -273,35 +279,25 @@ theorem lem4 [Algebra.IsInvariant A B G]
   rw [map_map, ← algebraMap_eq, algebraMap_eq (A ⧸ P) K L,
       ← map_map, Polynomial.map_mul, Polynomial.map_pow, Polynomial.map_pow, Polynomial.map_sub,
       map_X, map_C] at key
-  replace key := lem3 key f (Finset.card_ne_zero_of_mem (Finset.mem_filter.mpr
-    ⟨Finset.mem_univ 1, one_smul G Q⟩))
+  replace key := fixed_of_fixed1_aux3 key f (Finset.card_ne_zero_of_mem
+    (Finset.mem_filter.mpr ⟨Finset.mem_univ 1, one_smul G Q⟩))
   simp only [map_mul] at key
   obtain ⟨a, rfl⟩ := Algebra.IsInvariant.isInvariant (A := A) a ha1
   rwa [← algebraMap_apply A B (B ⧸ Q), algebraMap_apply A (A ⧸ P) (B ⧸ Q),
       ← algebraMap_apply, algebraMap_apply (A ⧸ P) K L, f.commutes, mul_right_inj'] at key
   rwa [← algebraMap_apply, algebraMap_apply (A ⧸ P) (B ⧸ Q) L,
       ← algebraMap_apply A (A ⧸ P) (B ⧸ Q), algebraMap_apply A B (B ⧸ Q),
-      Ne, NoZeroSMulDivisors.algebraMap_eq_zero_iff, Ideal.Quotient.algebraMap_eq,
-      Ideal.Quotient.eq_zero_iff_mem]
+      Ne, algebraMap_eq_zero_iff, Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem]
 
-end redo_part_b
+variable [IsFractionRing (A ⧸ P) K] [IsFractionRing (B ⧸ Q) L]
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
-  (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
-  variable (K L : Type*) [Field K] [Field L]
-  [Algebra (A ⧸ P) K] [IsFractionRing (A ⧸ P) K]
-  [Algebra (B ⧸ Q) L] [IsFractionRing (B ⧸ Q) L]
-  [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L]
-  [Algebra K L] [IsScalarTower (A ⧸ P) K L]
-
-noncomputable def fullHom : MulAction.stabilizer G Q →* (L ≃ₐ[K] L) :=
+noncomputable def IsFractionRing.stabilizerHom : MulAction.stabilizer G Q →* (L ≃ₐ[K] L) :=
   have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under A Q
   MonoidHom.comp (IsFractionRing.fieldEquivOfAlgEquivHom K L) (Ideal.Quotient.stabilizerHom Q P G)
 
-theorem fullHom_surjective1
-    [Algebra.IsInvariant A B G]
-    (f : L ≃ₐ[K] L) (x : L) (hx : ∀ g : MulAction.stabilizer G Q, fullHom G P Q K L g x = x) :
+/-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
+private theorem fixed_of_fixed2 (f : L ≃ₐ[K] L) (x : L)
+    (hx : ∀ g : MulAction.stabilizer G Q, IsFractionRing.stabilizerHom G P Q K L g x = x) :
     f x = x := by
   obtain ⟨_⟩ := nonempty_fintype G
   have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under A Q
@@ -309,29 +305,35 @@ theorem fullHom_surjective1
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := B ⧸ Q) x
   obtain ⟨b, a, ha, h⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A ⧸ P) y).exists_smul_eq_mul x hy
   replace ha : algebraMap (A ⧸ P) L a ≠ 0 := by
-    rwa [Ne, IsScalarTower.algebraMap_apply (A ⧸ P) K L,
-      NoZeroSMulDivisors.algebraMap_eq_zero_iff, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
+    rwa [Ne, algebraMap_apply (A ⧸ P) K L, algebraMap_eq_zero_iff, algebraMap_eq_zero_iff]
   replace hy : algebraMap (B ⧸ Q) L y ≠ 0 :=
-    mt (NoZeroSMulDivisors.algebraMap_eq_zero_iff (B ⧸ Q) L).mp (nonZeroDivisors.ne_zero hy)
+    mt (algebraMap_eq_zero_iff (B ⧸ Q) L).mp (nonZeroDivisors.ne_zero hy)
   replace h : algebraMap (B ⧸ Q) L x / algebraMap (B ⧸ Q) L y =
       algebraMap (B ⧸ Q) L b / algebraMap (A ⧸ P) L a := by
     rw [mul_comm, Algebra.smul_def, mul_comm] at h
-    rw [div_eq_div_iff hy ha, ← map_mul, ← h, map_mul, ← IsScalarTower.algebraMap_apply]
-  simp only [h, map_div₀, IsScalarTower.algebraMap_apply (A ⧸ P) K L, AlgEquiv.commutes] at hx ⊢
-  simp only [← IsScalarTower.algebraMap_apply, div_left_inj' ha] at hx ⊢
-  exact lem4 G P Q K L f b (fun g ↦ IsFractionRing.injective (B ⧸ Q) L
+    rw [div_eq_div_iff hy ha, ← map_mul, ← h, map_mul, ← algebraMap_apply]
+  simp only [h, map_div₀, algebraMap_apply (A ⧸ P) K L, AlgEquiv.commutes] at hx ⊢
+  simp only [← algebraMap_apply, div_left_inj' ha] at hx ⊢
+  exact fixed_of_fixed1 G P Q K L f b (fun g ↦ IsFractionRing.injective (B ⧸ Q) L
     ((IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L
       (Ideal.Quotient.stabilizerHom Q P G g) b).symm.trans (hx g)))
 
-theorem fullHom_surjective
-    [Algebra.IsInvariant A B G] :
-    Function.Surjective (fullHom G P Q K L : MulAction.stabilizer G Q →* (L ≃ₐ[K] L)) := by
-  let action : MulSemiringAction (MulAction.stabilizer G Q) L :=
-    MulSemiringAction.compHom _
-      (fullHom G P Q K L : MulAction.stabilizer G Q →* (L ≃ₐ[K] L))
+theorem IsFractionRing.stabilizerHom_surjective :
+    Function.Surjective (stabilizerHom G P Q K L) := by
+  let _ := MulSemiringAction.compHom L (stabilizerHom G P Q K L)
   intro f
   obtain ⟨g, hg⟩ := FixedPoints.toAlgAut_surjective (MulAction.stabilizer G Q) L
-    (AlgEquiv.ofRingEquiv (f := f) (fun x ↦ fullHom_surjective1 G P Q K L f x x.2))
+    (AlgEquiv.ofRingEquiv (f := f) (fun x ↦ fixed_of_fixed2 G P Q K L f x x.2))
   exact ⟨g, by rwa [AlgEquiv.ext_iff] at hg ⊢⟩
 
-end part_b
+theorem Ideal.Quotient.stabilizerHom_surjective :
+    Function.Surjective (Ideal.Quotient.stabilizerHom Q P G) := by
+  have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under A Q
+  let _ := FractionRing.liftAlgebra (A ⧸ P) (FractionRing (B ⧸ Q))
+  have key := IsFractionRing.stabilizerHom_surjective G P Q
+    (FractionRing (A ⧸ P)) (FractionRing (B ⧸ Q))
+  rw [IsFractionRing.stabilizerHom, MonoidHom.coe_comp] at key
+  exact key.of_comp_left (fieldEquivOfAlgEquivHom_injective (A ⧸ P) (B ⧸ Q)
+    (FractionRing (A ⧸ P)) (FractionRing (B ⧸ Q)))
+
+end surjectivity
