@@ -144,16 +144,12 @@ theorem _root_.Subalgebra.fg_bot_toSubmodule {R A : Type*} [CommSemiring R] [Sem
 
 theorem fg_unit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (I : (Submodule R A)ˣ) :
     (I : Submodule R A).FG := by
-  have : (1 : A) ∈ (I * ↑I⁻¹ : Submodule R A) := by
-    rw [I.mul_inv]
-    exact one_le.mp le_rfl
-  obtain ⟨T, T', hT, hT', one_mem⟩ := mem_span_mul_finite_of_mem_mul this
+  obtain ⟨T, T', hT, hT', one_mem⟩ := mem_span_mul_finite_of_mem_mul (I.mul_inv ▸ one_le.mp le_rfl)
   refine ⟨T, span_eq_of_le _ hT ?_⟩
   rw [← one_mul I, ← mul_one (span R (T : Set A))]
   conv_rhs => rw [← I.inv_mul, ← mul_assoc]
   refine mul_le_mul_left (le_trans ?_ <| mul_le_mul_right <| span_le.mpr hT')
-  simp only [Units.val_one, span_mul_span]
-  rwa [one_le]
+  rwa [Units.val_one, span_mul_span, one_le]
 
 theorem fg_of_isUnit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] {I : Submodule R A}
     (hI : IsUnit I) : I.FG :=
