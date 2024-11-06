@@ -34,8 +34,6 @@ theorem toBilin_apply (Q : QuadraticMap R M N) (bm : Basis ι R M) (i j : ι) :
       if i = j then Q (bm i) else if i < j then polar Q (bm i) (bm j) else 0 := by
   simp [toBilin]
 
-#check  Finset.sum_sym2_filter_not_isDiag
-
 theorem toQuadraticMap_toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
     (Q.toBilin bm).toQuadraticMap = Q := by
   ext x
