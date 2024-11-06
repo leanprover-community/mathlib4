@@ -1211,7 +1211,7 @@ theorem measurableSet_generateFrom_singleton_iff {s t : Set α} :
           ext p
           refine ⟨fun hp ↦ mem_singleton_iff.2 ?_, fun hp ↦ hp ▸ hT⟩
           by_contra hpneg
-          rw [eq_iff_iff, iff_true, ← false_iff_iff] at hpneg
+          rw [eq_iff_iff, iff_true, ← false_iff] at hpneg
           exact hF (by convert hp)
         simp [hx]
     · by_cases hF : False ∈ x
