@@ -416,7 +416,7 @@ lemma le_div_iff_mul_le' (hb : 0 < b) : a ≤ c / b ↔ a * b ≤ c := le_div_if
 
 lemma le_div_iff_mul_le_comm (hb : 0 < b) : a ≤ c / b ↔ b * a ≤ c :=  by
    rw [Nat.mul_comm]
-   exact Nat.le_div_iff_mul_le' hb
+   exact le_div_iff_mul_le' hb
 
 lemma div_lt_iff_lt_mul' (hb : 0 < b) : a / b < c ↔ a < c * b := by
   simp only [← Nat.not_le, le_div_iff_mul_le' hb]
