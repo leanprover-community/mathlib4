@@ -5,6 +5,7 @@ Authors: Jireh Loreaux, Jon Bannon
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.Analysis.CStarAlgebra.Unitization
+import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
@@ -363,7 +364,7 @@ instance instAlgebra : Algebra 𝕜 𝓜(𝕜, A) where
         simp_rw [Prod.algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_apply, one_apply,
           mul_smul_comm, smul_mul_assoc] }
   map_one' := ext (𝕜 := 𝕜) (A := A) _ _ <| map_one <| algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))
-  map_mul' k₁ k₂ :=
+  map_mul' _ _ :=
     ext (𝕜 := 𝕜) (A := A) _ _ <|
       Prod.ext (map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _)
         ((map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _).trans (Algebra.commutes _ _))
@@ -534,11 +535,15 @@ instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) :=
 instance instNormedAlgebra : NormedAlgebra 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instAlgebra, DoubleCentralizer.instNormedSpace with }
 
-theorem uniformEmbedding_toProdMulOpposite : UniformEmbedding (@toProdMulOpposite 𝕜 A _ _ _ _ _) :=
-  uniformEmbedding_comap toProdMulOpposite_injective
+theorem isUniformEmbedding_toProdMulOpposite :
+    IsUniformEmbedding (toProdMulOpposite (𝕜 := 𝕜) (A := A)) :=
+  isUniformEmbedding_comap toProdMulOpposite_injective
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_toProdMulOpposite := isUniformEmbedding_toProdMulOpposite
 
 instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
-  rw [completeSpace_iff_isComplete_range uniformEmbedding_toProdMulOpposite.toUniformInducing]
+  rw [completeSpace_iff_isComplete_range isUniformEmbedding_toProdMulOpposite.isUniformInducing]
   apply IsClosed.isComplete
   simp only [range_toProdMulOpposite, Set.setOf_forall]
   refine isClosed_iInter fun x => isClosed_iInter fun y => isClosed_eq ?_ ?_
@@ -662,5 +667,7 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
             using pow_lt_pow_left hxr zero_le' two_ne_zero
 
 end DenselyNormed
+
+noncomputable instance {A : Type*} [NonUnitalCStarAlgebra A] : CStarAlgebra 𝓜(ℂ, A) where
 
 end DoubleCentralizer

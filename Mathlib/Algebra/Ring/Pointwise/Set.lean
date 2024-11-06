@@ -3,7 +3,7 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Pointwise.Set
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Ring.Defs
 
 /-!
@@ -32,8 +32,7 @@ protected noncomputable def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistr
   neg_mul _ _ := by simp_rw [← image_neg]; exact image2_image_left_comm neg_mul
   mul_neg _ _ := by simp_rw [← image_neg]; exact image_image2_right_comm mul_neg
 
-scoped[Pointwise]
-  attribute [instance] Set.divisionCommMonoid Set.subtractionCommMonoid Set.hasDistribNeg
+scoped[Pointwise] attribute [instance] Set.hasDistribNeg
 
 section Distrib
 variable [Distrib α] (s t u : Set α)

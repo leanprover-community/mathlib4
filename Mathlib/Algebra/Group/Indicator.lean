@@ -5,6 +5,7 @@ Authors: Zhouhang Zhou
 -/
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Support
+import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Indicator function
@@ -33,7 +34,7 @@ assert_not_exists MonoidWithZero
 
 open Function
 
-variable {α β ι M N : Type*}
+variable {α β M N : Type*}
 
 namespace Set
 
@@ -94,7 +95,7 @@ theorem mulIndicator_apply_eq_one : mulIndicator s f a = 1 ↔ a ∈ s → f a =
   ite_eq_right_iff
 
 @[to_additive (attr := simp)]
-theorem mulIndicator_eq_one : (mulIndicator s f = fun x => 1) ↔ Disjoint (mulSupport f) s := by
+theorem mulIndicator_eq_one : (mulIndicator s f = fun _ => 1) ↔ Disjoint (mulSupport f) s := by
   simp only [funext_iff, mulIndicator_apply_eq_one, Set.disjoint_left, mem_mulSupport,
     not_imp_not]
 
@@ -262,7 +263,7 @@ end One
 
 section Monoid
 
-variable [MulOneClass M] {s t : Set α} {f g : α → M} {a : α}
+variable [MulOneClass M] {s t : Set α} {a : α}
 
 @[to_additive]
 theorem mulIndicator_union_mul_inter_apply (f : α → M) (s t : Set α) (a : α) :
@@ -360,7 +361,7 @@ end Monoid
 
 section Group
 
-variable {G : Type*} [Group G] {s t : Set α} {f g : α → G} {a : α}
+variable {G : Type*} [Group G] {s t : Set α}
 
 @[to_additive]
 theorem mulIndicator_inv' (s : Set α) (f : α → G) : mulIndicator s f⁻¹ = (mulIndicator s f)⁻¹ :=

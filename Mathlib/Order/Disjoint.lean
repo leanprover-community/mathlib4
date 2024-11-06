@@ -108,7 +108,7 @@ end PartialBoundedOrder
 
 section SemilatticeInfBot
 
-variable [SemilatticeInf α] [OrderBot α] {a b c d : α}
+variable [SemilatticeInf α] [OrderBot α] {a b c : α}
 
 theorem disjoint_iff_inf_le : Disjoint a b ↔ a ⊓ b ≤ ⊥ :=
   ⟨fun hd ↦ hd inf_le_left inf_le_right, fun h _ ha hb ↦ (le_inf ha hb).trans h⟩
@@ -154,6 +154,10 @@ theorem Disjoint.of_disjoint_inf_of_le' (h : Disjoint (a ⊓ b) c) (hle : b ≤ 
   disjoint_iff.2 <| h.eq_bot_of_le <| inf_le_of_right_le hle
 
 end SemilatticeInfBot
+
+theorem Disjoint.right_lt_sup_of_left_ne_bot [SemilatticeSup α] [OrderBot α] {a b : α}
+    (h : Disjoint a b) (ha : a ≠ ⊥) : b < a ⊔ b :=
+  le_sup_right.lt_of_ne fun eq ↦ ha (le_bot_iff.mp <| h le_rfl <| sup_eq_right.mp eq.symm)
 
 section DistribLatticeBot
 
@@ -267,7 +271,7 @@ end PartialBoundedOrder
 
 section SemilatticeSupTop
 
-variable [SemilatticeSup α] [OrderTop α] {a b c d : α}
+variable [SemilatticeSup α] [OrderTop α] {a b c : α}
 
 theorem codisjoint_iff_le_sup : Codisjoint a b ↔ ⊤ ≤ a ⊔ b :=
   @disjoint_iff_inf_le αᵒᵈ _ _ _ _
@@ -401,7 +405,7 @@ namespace IsCompl
 
 section BoundedPartialOrder
 
-variable [PartialOrder α] [BoundedOrder α] {x y z : α}
+variable [PartialOrder α] [BoundedOrder α] {x y : α}
 
 @[symm]
 protected theorem symm (h : IsCompl x y) : IsCompl y x :=
@@ -419,7 +423,7 @@ end BoundedPartialOrder
 
 section BoundedLattice
 
-variable [Lattice α] [BoundedOrder α] {x y z : α}
+variable [Lattice α] [BoundedOrder α] {x y : α}
 
 theorem of_le (h₁ : x ⊓ y ≤ ⊥) (h₂ : ⊤ ≤ x ⊔ y) : IsCompl x y :=
   ⟨disjoint_iff_inf_le.mpr h₁, codisjoint_iff_le_sup.mpr h₂⟩
@@ -581,6 +585,10 @@ complement. -/
 class ComplementedLattice (α) [Lattice α] [BoundedOrder α] : Prop where
   /-- In a `ComplementedLattice`, every element admits a complement. -/
   exists_isCompl : ∀ a : α, ∃ b : α, IsCompl a b
+
+lemma complementedLattice_iff (α) [Lattice α] [BoundedOrder α] :
+    ComplementedLattice α ↔ ∀ a : α, ∃ b : α, IsCompl a b :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 export ComplementedLattice (exists_isCompl)
 

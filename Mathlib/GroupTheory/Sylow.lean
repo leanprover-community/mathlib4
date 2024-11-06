@@ -76,6 +76,41 @@ instance : SubgroupClass (Sylow p G) G where
   one_mem _ := Subgroup.one_mem _
   inv_mem := Subgroup.inv_mem _
 
+/-- A `p`-subgroup with index indivisible by `p` is a Sylow subgroup. -/
+def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G}
+    (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) : Sylow p G :=
+  { P with
+    isPGroup' := hP1
+    is_maximal' := by
+      intro Q hQ hPQ
+      have : P.FiniteIndex := ⟨fun h ↦ hP2 (h ▸ (dvd_zero p))⟩
+      obtain ⟨k, hk⟩ := (hQ.to_quotient (P.normalCore.subgroupOf Q)).exists_card_eq
+      have h := hk ▸ Nat.Prime.coprime_pow_of_not_dvd (m := k) Fact.out hP2
+      exact le_antisymm (Subgroup.relindex_eq_one.mp
+        (Nat.eq_one_of_dvd_coprimes h (Subgroup.relindex_dvd_index_of_le hPQ)
+        (Subgroup.relindex_dvd_of_le_left Q P.normalCore_le))) hPQ }
+
+@[simp] theorem _root_.IsPGroup.toSylow_coe [Fact p.Prime] {P : Subgroup G}
+    (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) : (hP1.toSylow hP2) = P :=
+  rfl
+
+@[simp] theorem _root_.IsPGroup.mem_toSylow [Fact p.Prime] {P : Subgroup G}
+    (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) {g : G} : g ∈ hP1.toSylow hP2 ↔ g ∈ P :=
+  .rfl
+
+/-- A subgroup with cardinality `p ^ n` is a Sylow subgroup
+ where `n` is the multiplicity of `p` in the group order. -/
+def ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
+    (card_eq : Nat.card H = p ^ (Nat.card G).factorization p) : Sylow p G :=
+  (IsPGroup.of_card card_eq).toSylow (by
+    rw [← mul_dvd_mul_iff_left (Nat.card_pos (α := H)).ne', card_mul_index, card_eq, ← pow_succ]
+    exact Nat.pow_succ_factorization_not_dvd Nat.card_pos.ne' Fact.out)
+
+@[simp, norm_cast]
+theorem coe_ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
+    (card_eq : Nat.card H = p ^ (Nat.card G).factorization p) : ↑(ofCard H card_eq) = H :=
+  rfl
+
 variable (P : Sylow p G)
 
 /-- The action by a Sylow subgroup is the action by the underlying group. -/
@@ -130,13 +165,13 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
       (fun c hc1 hc2 Q hQ =>
         ⟨{  carrier := ⋃ R : c, R
             one_mem' := ⟨Q, ⟨⟨Q, hQ⟩, rfl⟩, Q.one_mem⟩
-            inv_mem' := fun {g} ⟨_, ⟨R, rfl⟩, hg⟩ => ⟨R, ⟨R, rfl⟩, R.1.inv_mem hg⟩
-            mul_mem' := fun {g} h ⟨_, ⟨R, rfl⟩, hg⟩ ⟨_, ⟨S, rfl⟩, hh⟩ =>
+            inv_mem' := fun {_} ⟨_, ⟨R, rfl⟩, hg⟩ => ⟨R, ⟨R, rfl⟩, R.1.inv_mem hg⟩
+            mul_mem' := fun {_} _ ⟨_, ⟨R, rfl⟩, hg⟩ ⟨_, ⟨S, rfl⟩, hh⟩ =>
               (hc2.total R.2 S.2).elim (fun T => ⟨S, ⟨S, rfl⟩, S.1.mul_mem (T hg) hh⟩) fun T =>
                 ⟨R, ⟨R, rfl⟩, R.1.mul_mem hg (T hh)⟩ },
           fun ⟨g, _, ⟨S, rfl⟩, hg⟩ => by
           refine Exists.imp (fun k hk => ?_) (hc1 S.2 ⟨g, hg⟩)
-          rwa [Subtype.ext_iff, coe_pow] at hk ⊢, fun M hM g hg => ⟨M, ⟨⟨M, hM⟩, rfl⟩, hg⟩⟩)
+          rwa [Subtype.ext_iff, coe_pow] at hk ⊢, fun M hM _ hg => ⟨M, ⟨⟨M, hM⟩, rfl⟩, hg⟩⟩)
       P hP)
     fun {Q} h => ⟨⟨Q, h.2.prop, h.2.eq_of_ge⟩, h.1⟩
 
@@ -414,9 +449,9 @@ end InfiniteSylow
 
 open Equiv Equiv.Perm Finset Function List QuotientGroup
 
-universe u v w
+universe u
 
-variable {G : Type u} {α : Type v} {β : Type w} [Group G]
+variable {G : Type u} [Group G]
 
 theorem QuotientGroup.card_preimage_mk (s : Subgroup G) (t : Set (G ⧸ s)) :
     Nat.card (QuotientGroup.mk ⁻¹' t) = Nat.card s * Nat.card t := by
@@ -451,7 +486,7 @@ def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] 
       normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H :=
   @subtypeQuotientEquivQuotientSubtype G (normalizer H : Set G) (_) (_)
     (MulAction.fixedPoints H (G ⧸ H))
-    (fun a => (@mem_fixedPoints_mul_left_cosets_iff_mem_normalizer _ _ _ ‹_› _).symm)
+    (fun _ => (@mem_fixedPoints_mul_left_cosets_iff_mem_normalizer _ _ _ ‹_› _).symm)
     (by
       intros
       unfold_projs
@@ -479,7 +514,7 @@ theorem card_normalizer_modEq_card [Finite G] {p : ℕ} {n : ℕ} [hp : Fact p.P
 
 /-- If `H` is a `p`-subgroup but not a Sylow `p`-subgroup, then `p` divides the
   index of `H` inside its normalizer. -/
-theorem prime_dvd_card_quotient_normalizer [Finite G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime]
+theorem prime_dvd_card_quotient_normalizer [Finite G] {p : ℕ} {n : ℕ} [Fact p.Prime]
     (hdvd : p ^ (n + 1) ∣ Nat.card G) {H : Subgroup G} (hH : Nat.card H = p ^ n) :
     p ∣ Nat.card (normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H) :=
   let ⟨s, hs⟩ := exists_eq_mul_left_of_dvd hdvd
@@ -627,25 +662,9 @@ theorem ne_bot_of_dvd_card [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p
 theorem card_eq_multiplicity [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G) :
     Nat.card P = p ^ Nat.factorization (Nat.card G) p := by
   obtain ⟨n, heq : Nat.card P = _⟩ := IsPGroup.iff_card.mp P.isPGroup'
-  refine Nat.dvd_antisymm ?_ (P.pow_dvd_card_of_pow_dvd_card (Nat.ord_proj_dvd _ p))
-  rw [heq, ← hp.out.pow_dvd_iff_dvd_ord_proj (show Nat.card G ≠ 0 from Nat.card_pos.ne'), ← heq]
+  refine Nat.dvd_antisymm ?_ (P.pow_dvd_card_of_pow_dvd_card (Nat.ordProj_dvd _ p))
+  rw [heq, ← hp.out.pow_dvd_iff_dvd_ordProj (show Nat.card G ≠ 0 from Nat.card_pos.ne'), ← heq]
   exact P.1.card_subgroup_dvd_card
-
-/-- A subgroup with cardinality `p ^ n` is a Sylow subgroup
- where `n` is the multiplicity of `p` in the group order. -/
-def ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
-    (card_eq : Nat.card H = p ^ (Nat.card G).factorization p) : Sylow p G where
-  toSubgroup := H
-  isPGroup' := IsPGroup.of_card card_eq
-  is_maximal' := by
-    obtain ⟨P, hHP⟩ := (IsPGroup.of_card card_eq).exists_le_sylow
-    exact SetLike.ext' (Set.Finite.eq_of_subset_of_card_le (inferInstanceAs (Finite P)) hHP
-      (P.card_eq_multiplicity.trans card_eq.symm).le).symm ▸ P.3
-
-@[simp, norm_cast]
-theorem coe_ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
-    (card_eq : Nat.card H = p ^ (Nat.card G).factorization p) : ↑(ofCard H card_eq) = H :=
-  rfl
 
 /-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
 noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)

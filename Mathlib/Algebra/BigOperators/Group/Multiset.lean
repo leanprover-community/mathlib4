@@ -36,21 +36,20 @@ variable [CommMonoid α] [CommMonoid β] {s t : Multiset α} {a : α} {m : Multi
       "Sum of a multiset given a commutative additive monoid structure on `α`.
       `sum {a, b, c} = a + b + c`"]
 def prod : Multiset α → α :=
-  foldr (· * ·) (fun x y z => by simp [mul_left_comm]) 1
+  foldr (· * ·) 1
 
 @[to_additive]
 theorem prod_eq_foldr (s : Multiset α) :
-    prod s = foldr (· * ·) (fun x y z => by simp [mul_left_comm]) 1 s :=
+    prod s = foldr (· * ·) 1 s :=
   rfl
 
 @[to_additive]
 theorem prod_eq_foldl (s : Multiset α) :
-    prod s = foldl (· * ·) (fun x y z => by simp [mul_right_comm]) 1 s :=
-  (foldr_swap _ _ _ _).trans (by simp [mul_comm])
+    prod s = foldl (· * ·) 1 s :=
+  (foldr_swap _ _ _).trans (by simp [mul_comm])
 
 @[to_additive (attr := simp, norm_cast)]
-theorem prod_coe (l : List α) : prod ↑l = l.prod :=
-  prod_eq_foldl _
+theorem prod_coe (l : List α) : prod ↑l = l.prod := rfl
 
 @[to_additive (attr := simp)]
 theorem prod_toList (s : Multiset α) : s.toList.prod = s.prod := by
@@ -63,7 +62,7 @@ theorem prod_zero : @prod α _ 0 = 1 :=
 
 @[to_additive (attr := simp)]
 theorem prod_cons (a : α) (s) : prod (a ::ₘ s) = a * prod s :=
-  foldr_cons _ _ _ _ _
+  foldr_cons _ _ _ _
 
 @[to_additive (attr := simp)]
 theorem prod_erase [DecidableEq α] (h : a ∈ s) : a * (s.erase a).prod = s.prod := by
@@ -183,7 +182,7 @@ theorem prod_map_prod_map (m : Multiset β') (n : Multiset γ) {f : β' → γ �
 theorem prod_induction (p : α → Prop) (s : Multiset α) (p_mul : ∀ a b, p a → p b → p (a * b))
     (p_one : p 1) (p_s : ∀ a ∈ s, p a) : p s.prod := by
   rw [prod_eq_foldr]
-  exact foldr_induction (· * ·) (fun x y z => by simp [mul_left_comm]) 1 p s p_mul p_one p_s
+  exact foldr_induction (· * ·) 1 p s p_mul p_one p_s
 
 @[to_additive]
 theorem prod_induction_nonempty (p : α → Prop) (p_mul : ∀ a b, p a → p b → p (a * b)) (hs : s ≠ ∅)
@@ -293,5 +292,18 @@ theorem sum_int_mod (s : Multiset ℤ) (n : ℤ) : s.sum % n = (s.map (· % n)).
 
 theorem prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (· % n)).prod % n := by
   induction s using Multiset.induction <;> simp [Int.mul_emod, *]
+
+section OrderedSub
+
+theorem sum_map_tsub [AddCommMonoid α] [PartialOrder α] [ExistsAddOfLE α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)] [Sub α]
+    [OrderedSub α] (l : Multiset ι) {f g : ι → α} (hfg : ∀ x ∈ l, g x ≤ f x) :
+    (l.map fun x ↦ f x - g x).sum = (l.map f).sum - (l.map g).sum :=
+  eq_tsub_of_add_eq <| by
+    rw [← sum_map_add]
+    congr 1
+    exact map_congr rfl fun x hx => tsub_add_cancel_of_le <| hfg _ hx
+
+end OrderedSub
 
 end Multiset
