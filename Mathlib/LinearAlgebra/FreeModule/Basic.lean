@@ -179,3 +179,5 @@ instance tensor : Module.Free S (M ⊗[R] N) :=
   of_basis (bM.2.tensorProduct bN.2)
 
 end CommSemiring
+
+end Module.Free
