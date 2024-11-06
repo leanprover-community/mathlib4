@@ -379,12 +379,11 @@ theorem restrictNormalHomContinuous (L : IntermediateField k K) [Normal k L] :
   rw [krullTopology_mem_nhds_one] at hN
   obtain ⟨L', _, hO⟩ := hN
   letI : FiniteDimensional k L' :=
-    Module.Finite.equiv <| AlgEquiv.toLinearEquiv <| IntermediateField.lift_algEquiv L L'
+    Module.Finite.equiv <| AlgEquiv.toLinearEquiv <| IntermediateField.liftAlgEquiv L'
   apply mem_nhds_iff.mpr
   use (IntermediateField.lift L').fixingSubgroup
   constructor
   · intro x hx
-    rw [Set.mem_preimage]
     apply hO
     simp only [SetLike.mem_coe] at hx ⊢
     rw [IntermediateField.mem_fixingSubgroup_iff] at hx ⊢
@@ -393,7 +392,7 @@ theorem restrictNormalHomContinuous (L : IntermediateField k K) [Normal k L] :
     dsimp at this
     rw [hx y.1 ((IntermediateField.mem_lift y).mpr hy)] at this
     exact SetLike.coe_eq_coe.mp this
-  · exact ⟨by apply IntermediateField.fixingSubgroup_isOpen, congrFun rfl⟩
+  · exact ⟨IntermediateField.fixingSubgroup_isOpen (IntermediateField.lift L') , congrFun rfl⟩
 
 end InfiniteGalois
 
