@@ -74,17 +74,17 @@ jobs:
       with:
         linters: gcc
         run: |
-          lake build Mathlib.Data.Nat.Defs ImportGraph.Imports
+          lake build Mathlib ImportGraph.Imports
 
     - name: Full report
       run: |
-        ./scripts/late_importers.sh Mathlib.Data.Nat.Defs 0 0 "${{ github.run_id }}"
+        ./scripts/late_importers.sh Mathlib 0 0 "${{ github.run_id }}"
 
     - name: Zulip report
       id: late_importers
       run: |
         jobID="${{ github.run_id }}"
-        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib.Data.Nat.Defs 15 10 "${jobID}")" |
+        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib 15 10 "${jobID}")" |
           tee "$GITHUB_OUTPUT"
 
     - name: downstream imports
@@ -102,13 +102,13 @@ jobs:
             awk 'BEGIN{FS="|"; OFS="|"} (1 < NF) {print $1, $2, $3, $4, $6, $5, $7} (NF <= 1) {print $0}'
           )" | tee "$GITHUB_OUTPUT"
 
-    #- name: Post output to Zulip
-    #  uses: zulip/github-actions-zulip/send-message@v1
-    #  with:
-    #    api-key: ${{ secrets.ZULIP_API_KEY }}
-    #    email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-    #    organization-url: 'https://leanprover.zulipchat.com'
-    #    to: 'mathlib4'
-    #    type: 'stream'
-    #    topic: Late importers report
-    #    content: ${{ steps.report_really.outputs.summary }}
+    - name: Post output to Zulip
+      uses: zulip/github-actions-zulip/send-message@v1
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'mathlib4'
+        type: 'stream'
+        topic: Late importers report
+        content: ${{ steps.report_really.outputs.summary }}
