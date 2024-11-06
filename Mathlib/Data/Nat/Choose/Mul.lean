@@ -44,5 +44,4 @@ theorem choose_mul_right (m) {n : ℕ} (hn : n ≠ 0) :
     simp only [hp]
     rw [add_mul, one_mul, choose_mul_add _ hn]
 
-
 end Nat

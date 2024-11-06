@@ -3120,7 +3120,6 @@ theorem disjoint_toFinset {m1 m2 : Multiset α} :
 lemma toFinset_replicate (n : ℕ) (a : α) :
     (replicate n a).toFinset = if n = 0 then ∅ else {a} := by
   ext x
-  simp only [mem_toFinset, Finset.mem_singleton, mem_replicate]
   split_ifs with hn <;> simp [hn]
 
 end Multiset

@@ -14,7 +14,7 @@ Here, we define a refinement of these numbers, that count, for any `m : Multiset
 the number of partitions of a set of cardinality `m.sum` whose parts have cardinalities
 given by `m`.
 
-The definition presents it as an integer.
+The definition presents it as a natural number.
 
 * `Multiset.bell`: number of partitions of a set whose parts have cardinalities a given multiset
 
@@ -49,11 +49,10 @@ def bell (m : Multiset ℕ) : ℕ :=
 @[simp]
 theorem bell_zero : bell 0 = 1 := rfl
 
-private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) (c : ℕ) :
-    x ! ^ c * c ! * ∏ j ∈ Finset.range c, (j * x + x - 1).choose (x - 1) = (x * c)! := by
-  induction c with
-  | zero => simp
-  | succ c hrec =>
+private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) :
+    ∀ c, x ! ^ c * c ! * ∏ j ∈ Finset.range c, (j * x + x - 1).choose (x - 1) = (x * c)!
+  | 0 => by simp
+  | c + 1 =>
     suffices  x ! ^ (c + 1) * (c + 1) ! = x ! * (c + 1) * (x ! ^ c * c !) by
       rw [this]
       rw [← mul_assoc]
@@ -77,8 +76,8 @@ private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) (c : ℕ) :
     ring_nf
 
 theorem bell_mul_eq (m : Multiset ℕ) :
-    m.bell * (m.map (fun j ↦ j !)).prod *
-    ∏ j ∈ (m.toFinset.erase 0), (m.count j)! = m.sum ! := by
+    m.bell * (m.map (fun j ↦ j !)).prod * ∏ j ∈ (m.toFinset.erase 0), (m.count j)!
+      = m.sum ! := by
   unfold bell
   rw [← Nat.mul_right_inj]
   · simp only [← mul_assoc]
