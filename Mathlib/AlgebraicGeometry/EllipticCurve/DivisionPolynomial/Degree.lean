@@ -328,14 +328,14 @@ private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
   have hd : (n + 1) ^ 2 - 1 = 2 * expDegree (n + 1) + if Even (n + 1) then 3 else 0 := by
     push_cast [← @Nat.cast_inj ℤ, add_sq, expDegree_cast (by omega : n + 1 ≠ 0)]
     split_ifs <;> ring1
-  have hc : (n + 1) ^ 2 = expCoeff (n + 1) ^ 2 * if Even (n + 1) then 4 else 1 := by
+  have hc : (n + 1 : ℕ) ^ 2 = expCoeff (n + 1) ^ 2 * if Even (n + 1) then 4 else 1 := by
     push_cast [← @Int.cast_inj ℚ, expCoeff_cast]
     split_ifs <;> ring1
   rw [ΨSq_ofNat, hd]
   constructor
   · refine natDegree_mul_le_of_le (dp h.1) ?_
     split_ifs <;> simp only [apply_ite natDegree, natDegree_one.le, W.natDegree_Ψ₂Sq_le]
-  · erw [coeff_mul_of_natDegree_le (dp h.1), coeff_pow_of_natDegree_le h.1, h.2, apply_ite₂ coeff,
+  · rw [coeff_mul_of_natDegree_le (dp h.1), coeff_pow_of_natDegree_le h.1, h.2, apply_ite₂ coeff,
       coeff_Ψ₂Sq, coeff_one_zero, hc]
     · norm_cast
     split_ifs <;> simp only [apply_ite natDegree, natDegree_one.le, W.natDegree_Ψ₂Sq_le]
@@ -405,7 +405,7 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
       expCoeff (n + 3) * expCoeff (n + 1) * (if Even (n + 1) then 4 else 1) := by
     push_cast [← @Int.cast_inj ℚ, expCoeff_cast, Nat.even_add_one, ite_not]
     split_ifs <;> ring1
-  erw [Φ_ofNat]
+  rw [Nat.cast_add, Nat.cast_one, Φ_ofNat]
   constructor
   · nth_rw 1 [← max_self <| (_ + _) ^ 2, hd, hd']
     refine natDegree_sub_le_of_le (dm (dm natDegree_X_le (dp h.1)) ?_) (dm (dm h.1 h.1) ?_)
