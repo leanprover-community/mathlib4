@@ -96,7 +96,8 @@ jobs:
         printf '%s\n' "$files"
         sed -i "s=-- insert module names here=$files=" scripts/downstream_counts.lean
         paste -d' ' <(echo "${{ steps.late_importers.outputs.summary }}") <(
-          printf $'Downstream files |\n:- |\n%s' "$(lake env lean scripts/downstream_counts.lean | sed 's=$= |=')")
+          printf $'Downstream files |\n-: |\n%s' "$(lake env lean scripts/downstream_counts.lean | sed 's=$= |=')") |
+          awk 'BEGIN{FS="|"; OFS="|"} {print $1, $2, $3, $4, $6, $5, $7}'
     #- name: Post output to Zulip
     #  uses: zulip/github-actions-zulip/send-message@v1
     #  with:
