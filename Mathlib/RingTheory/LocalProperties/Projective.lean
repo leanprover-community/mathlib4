@@ -177,4 +177,3 @@ theorem Module.projective_of_localization_maximal'
     dsimp
     simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
       IsLocalization.map_id_mk']
-#min_imports

@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.RingTheory.Flat.Stability
 import Mathlib.RingTheory.LocalProperties.Projective
@@ -6,13 +11,31 @@ import Mathlib.RingTheory.Localization.Free
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.Topology.LocallyConstant.Basic
 
+/-!
+
+# The free locus of a module
+
+## Main definitions and results
+
+Let `M` be a finitely presented `R`-module.
+- `Module.freeLocus`: The set of points `x` in `Spec R` such that `Mₓ` is free over `Rₓ`.
+- `Module.freeLocus_eq_univ_iff`:
+  The free locus is the whole `Spec R` if and only if `M` is projective.
+- `Module.basicOpen_subset_freeLocus_iff`: `D(f)` is contained in the free locus if and only if
+  `M_f` is projective over `R_f`.
+- `Module.rankAtStalk`: The function `Spec R → ℕ` sending `x` to `rank_{Rₓ} Mₓ`.
+- `Module.isLocallyConstant_rankAtStalk`:
+  If `M` is flat over `R`, then `rankAtStalk` is locally constant.
+
+-/
+
 universe uR uM
 
 variable (R : Type uR) (M : Type uM) [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace Module
 
-open PrimeSpectrum
+open PrimeSpectrum TensorProduct
 
 def freeLocus : Set (PrimeSpectrum R) :=
   { p | Module.Free (Localization.AtPrime p.asIdeal) (LocalizedModule p.asIdeal.primeCompl M) }
@@ -20,7 +43,8 @@ def freeLocus : Set (PrimeSpectrum R) :=
 variable {R M}
 
 lemma mem_freeLocus {p} : p ∈ freeLocus R M ↔
-  Module.Free (Localization.AtPrime p.asIdeal) (LocalizedModule p.asIdeal.primeCompl M) := Iff.rfl
+    Module.Free (Localization.AtPrime p.asIdeal) (LocalizedModule p.asIdeal.primeCompl M) :=
+  Iff.rfl
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
@@ -41,58 +65,89 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
   simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
     IsLocalization.map_id_mk']
 
-lemma freeLocus_localizationAway [Module.FinitePresentation R M] {f : R} :
-    freeLocus (Localization.Away f) (LocalizedModule (.powers f) M) =
+attribute [local instance] RingHomInvPair.of_ringEquiv in
+lemma mem_freeLocus_iff_tensor (p : PrimeSpectrum R)
+    (Rₚ) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p.asIdeal] :
+    p ∈ freeLocus R M ↔ Module.Free Rₚ (Rₚ ⊗[R] M) := by
+  have := (isLocalizedModule_iff_isBaseChange p.asIdeal.primeCompl _ _).mpr
+    (TensorProduct.isBaseChange R M Rₚ)
+  exact mem_freeLocus_of_isLocalization p Rₚ (f := TensorProduct.mk R Rₚ M 1)
+
+lemma freeLocus_congr {M'} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
+    freeLocus R M = freeLocus R M' := by
+  ext p
+  have : IsLocalizedModule p.asIdeal.primeCompl
+      (LocalizedModule.mkLinearMap p.asIdeal.primeCompl M' ∘ₗ e.toLinearMap) := by
+    apply IsLocalizedModule.of_linearEquiv
+  exact mem_freeLocus_of_isLocalization _ _ _
+    (LocalizedModule.mkLinearMap p.asIdeal.primeCompl M' ∘ₗ e.toLinearMap)
+
+open TensorProduct in
+lemma comap_freeLocus_le {A} [CommRing A] [Algebra R A] :
+    comap (algebraMap R A) ⁻¹' freeLocus R M ≤ freeLocus A (A ⊗[R] M) := by
+  intro p hp
+  let Rₚ := Localization.AtPrime (comap (algebraMap R A) p).asIdeal
+  let Aₚ := Localization.AtPrime p.asIdeal
+  rw [Set.mem_preimage, mem_freeLocus_iff_tensor _ Rₚ] at hp
+  rw [mem_freeLocus_iff_tensor _ Aₚ]
+  letI : Algebra Rₚ Aₚ := (Localization.localRingHom
+    (comap (algebraMap R A) p).asIdeal p.asIdeal (algebraMap R A) rfl).toAlgebra
+  have : IsScalarTower R Rₚ Aₚ := IsScalarTower.of_algebraMap_eq'
+    (by simp [RingHom.algebraMap_toAlgebra, Localization.localRingHom,
+        ← IsScalarTower.algebraMap_eq])
+  let e := AlgebraTensorModule.cancelBaseChange R Rₚ Aₚ Aₚ M ≪≫ₗ
+    (AlgebraTensorModule.cancelBaseChange R A Aₚ Aₚ M).symm
+  exact .of_equiv e
+
+lemma freeLocus_localization (S : Submonoid R) :
+    freeLocus (Localization S) (LocalizedModule S M) =
       comap (algebraMap R _) ⁻¹' freeLocus R M := by
   ext p
   simp only [Set.mem_preimage]
-  have hp : algebraMap R (Localization.Away f) f ∉ p.asIdeal :=
-    fun H ↦ p.isPrime.ne_top (Ideal.eq_top_of_isUnit_mem _ H
-      (IsLocalization.Away.algebraMap_isUnit f))
   let p' := p.asIdeal.comap (algebraMap R _)
-  have hp' : Submonoid.powers f ≤ p'.primeCompl := by
-    simpa [Submonoid.powers_le, p', Ideal.primeCompl]
+  have hp' : S ≤ p'.primeCompl := fun x hx H ↦
+    p.isPrime.ne_top (Ideal.eq_top_of_isUnit_mem _ H (IsLocalization.map_units _ ⟨x, hx⟩))
   let Rₚ := Localization.AtPrime p'
   let Mₚ := LocalizedModule p'.primeCompl M
-  letI : Algebra (Localization.Away f) Rₚ :=
-    IsLocalization.localizationAlgebraOfSubmonoidLe _ _ (.powers f) p'.primeCompl hp'
-  have : IsScalarTower R (Localization.Away f) Rₚ :=
+  letI : Algebra (Localization S) Rₚ :=
+    IsLocalization.localizationAlgebraOfSubmonoidLe _ _ S p'.primeCompl hp'
+  have : IsScalarTower R (Localization S) Rₚ :=
     IsLocalization.localization_isScalarTower_of_submonoid_le ..
   have : IsLocalization.AtPrime Rₚ p.asIdeal := by
-    have := IsLocalization.isLocalization_of_submonoid_le (Localization.Away f) Rₚ _ _ hp'
+    have := IsLocalization.isLocalization_of_submonoid_le (Localization S) Rₚ _ _ hp'
     apply IsLocalization.isLocalization_of_is_exists_mul_mem _
-      (Submonoid.map (algebraMap R (Localization.Away f)) p'.primeCompl)
+      (Submonoid.map (algebraMap R (Localization S)) p'.primeCompl)
     · rintro _ ⟨x, hx, rfl⟩; exact hx
     · rintro ⟨x, hx⟩
-      obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective (.powers f) x
+      obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective S x
       refine ⟨algebraMap _ _ s.1, x, fun H ↦ hx ?_, by simp⟩
       rw [IsLocalization.mk'_eq_mul_mk'_one]
       exact Ideal.mul_mem_right _ _ H
-  letI : Module (Localization.Away f) Mₚ := Module.compHom Mₚ (algebraMap _ Rₚ)
-  have : IsScalarTower R (Localization.Away f) Mₚ :=
+  letI : Module (Localization S) Mₚ := Module.compHom Mₚ (algebraMap _ Rₚ)
+  have : IsScalarTower R (Localization S) Mₚ :=
     ⟨fun r r' m ↦ show algebraMap _ Rₚ (r • r') • m = _ by
       simp [Algebra.smul_def, ← IsScalarTower.algebraMap_apply, mul_smul]; rfl⟩
-  have : IsScalarTower (Localization.Away f) Rₚ Mₚ :=
+  have : IsScalarTower (Localization S) Rₚ Mₚ :=
     ⟨fun r r' m ↦ show _ = algebraMap _ Rₚ r • _ by rw [← mul_smul, ← Algebra.smul_def]⟩
-  let l := (IsLocalizedModule.liftOfLE _ _ hp' (LocalizedModule.mkLinearMap (.powers f) M)
-    (LocalizedModule.mkLinearMap p'.primeCompl M)).extendScalarsOfIsLocalization (.powers f)
-    (Localization.Away f)
+  let l := (IsLocalizedModule.liftOfLE _ _ hp' (LocalizedModule.mkLinearMap S M)
+    (LocalizedModule.mkLinearMap p'.primeCompl M)).extendScalarsOfIsLocalization S
+    (Localization S)
   have : IsLocalizedModule p.asIdeal.primeCompl l := by
     have : IsLocalizedModule p'.primeCompl (l.restrictScalars R) :=
       inferInstanceAs (IsLocalizedModule p'.primeCompl
-        (IsLocalizedModule.liftOfLE _ _ hp' (LocalizedModule.mkLinearMap (.powers f) M)
+        (IsLocalizedModule.liftOfLE _ _ hp' (LocalizedModule.mkLinearMap S M)
         (LocalizedModule.mkLinearMap p'.primeCompl M)))
-    have : IsLocalizedModule (Algebra.algebraMapSubmonoid (Localization.Away f) p'.primeCompl) l :=
+    have : IsLocalizedModule (Algebra.algebraMapSubmonoid (Localization S) p'.primeCompl) l :=
       IsLocalizedModule.of_restrictScalars p'.primeCompl ..
     apply IsLocalizedModule.of_exists_mul_mem
-      (Algebra.algebraMapSubmonoid (Localization.Away f) p'.primeCompl)
+      (Algebra.algebraMapSubmonoid (Localization S) p'.primeCompl)
     · rintro _ ⟨x, hx, rfl⟩; exact hx
     · rintro ⟨x, hx⟩
-      obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective (.powers f) x
+      obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective S x
       refine ⟨algebraMap _ _ s.1, x, fun H ↦ hx ?_, by simp⟩
       rw [IsLocalization.mk'_eq_mul_mk'_one]
       exact Ideal.mul_mem_right _ _ H
-  rw [mem_freeLocus_of_isLocalization (R := Localization.Away f) p Rₚ Mₚ l]
+  rw [mem_freeLocus_of_isLocalization (R := Localization S) p Rₚ Mₚ l]
   rfl
 
 lemma freeLocus_eq_univ_iff [Module.FinitePresentation R M] :
@@ -101,10 +156,15 @@ lemma freeLocus_eq_univ_iff [Module.FinitePresentation R M] :
   exact ⟨fun H ↦ Module.projective_of_localization_maximal fun I hI ↦
     have := H ⟨I, hI.isPrime⟩; .of_free, fun H x ↦ Module.free_of_flat_of_localRing⟩
 
+lemma freeLocus_eq_univ [Module.FinitePresentation R M] [Module.Flat R M] :
+    freeLocus R M = Set.univ := by
+  simp_rw [Set.eq_univ_iff_forall, mem_freeLocus]
+  exact fun x ↦ Module.free_of_flat_of_localRing
+
 lemma basicOpen_subset_freeLocus_iff [Module.FinitePresentation R M] {f : R} :
     (basicOpen f : Set (PrimeSpectrum R)) ⊆ freeLocus R M ↔
       Module.Projective (Localization.Away f) (LocalizedModule (.powers f) M) := by
-  rw [← freeLocus_eq_univ_iff, freeLocus_localizationAway,
+  rw [← freeLocus_eq_univ_iff, freeLocus_localization,
     Set.preimage_eq_univ_iff, localization_away_comap_range _ f]
 
 lemma isOpen_freeLocus [Module.FinitePresentation R M] :
@@ -159,11 +219,10 @@ lemma isLocallyConstant_rankAtStalk_freeLocus [Module.FinitePresentation R M] :
   have := Module.finrank_of_isLocalizedModule_of_free Rₚ p' l
   simp [rankAtStalk, this, hf'']
 
-lemma isLocallyConstant_rankAtStalk [Module.FinitePresentation R M] [Module.Projective R M] :
+lemma isLocallyConstant_rankAtStalk [Module.FinitePresentation R M] [Module.Flat R M] :
     IsLocallyConstant (rankAtStalk (R := R) M) := by
   let e : freeLocus R M ≃ₜ PrimeSpectrum R :=
-    (Homeomorph.setCongr (freeLocus_eq_univ_iff.mpr inferInstance)).trans
-      (Homeomorph.Set.univ (PrimeSpectrum R))
+    (Homeomorph.setCongr freeLocus_eq_univ).trans (Homeomorph.Set.univ (PrimeSpectrum R))
   convert isLocallyConstant_rankAtStalk_freeLocus.comp_continuous e.symm.continuous
 
 end Module

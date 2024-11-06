@@ -560,7 +560,7 @@ lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :
     simp_rw [f.map_smul_of_tower, Submonoid.smul_def, ← Module.algebraMap_end_apply R R] at h
     exact ((Module.End_isUnit_iff _).mp <| map_units f c).1 h
 
-theorem IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalizedModule S f] :
+instance IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalizedModule S f] :
     IsLocalizedModule S (e ∘ₗ f : M →ₗ[R] M'') where
   map_units s := by
     rw [show algebraMap R (Module.End R M'') s = e ∘ₗ (algebraMap R (Module.End R M') s) ∘ₗ e.symm
@@ -575,6 +575,18 @@ theorem IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalize
     simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
       EmbeddingLike.apply_eq_iff_eq] at h
     exact hf.exists_of_eq h
+
+instance IsLocalizedModule.of_linearEquiv_right (e : M'' ≃ₗ[R] M) [hf : IsLocalizedModule S f] :
+    IsLocalizedModule S (f ∘ₗ e : M'' →ₗ[R] M') where
+  map_units s := hf.map_units s
+  surj' x := by
+    obtain ⟨⟨p, s⟩, h⟩ := hf.surj' x
+    exact ⟨⟨e.symm p, s⟩, by simpa using h⟩
+  exists_of_eq h := by
+    simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply] at h
+    obtain ⟨c, hc⟩ := hf.exists_of_eq h
+    exact ⟨c, by simpa only [Submonoid.smul_def, map_smul, e.symm_apply_apply]
+      using congr(e.symm $hc)⟩
 
 variable (M) in
 lemma isLocalizedModule_id (R') [CommSemiring R'] [Algebra R R'] [IsLocalization S R'] [Module R' M]
