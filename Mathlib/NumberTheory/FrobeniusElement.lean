@@ -28,51 +28,6 @@ invariants.
 
 open scoped Pointwise
 
-section integrallemma
-
-open Polynomial
-
-variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
-
--- PRed
-theorem IsAlgebraic.def_of_mem_nonZeroDivisors
-    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
-    ∃ (q : Polynomial R), q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
-  obtain ⟨p, hp0, hp⟩ := hRs
-  obtain ⟨q, hpq, hq⟩ := Polynomial.exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp0 0
-  simp only [C_0, sub_zero, X_pow_mul, X_dvd_iff] at hpq hq
-  rw [hpq, map_mul, aeval_X_pow] at hp
-  exact ⟨q, hq, (nonZeroDivisors S).pow_mem hs (rootMultiplicity 0 p) (aeval s q) hp⟩
-
--- PRed
-theorem IsAlgebraic.exists_nonzero_dvd
-    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
-    ∃ r : R, r ≠ 0 ∧ s ∣ (algebraMap R S) r := by
-  obtain ⟨q, hq0, hq⟩ := hRs.def_of_mem_nonZeroDivisors hs
-  have key := map_dvd (Polynomial.aeval s) (Polynomial.X_dvd_sub_C (p := q))
-  rw [map_sub, hq, zero_sub, dvd_neg, Polynomial.aeval_X, Polynomial.aeval_C] at key
-  exact ⟨q.coeff 0, hq0, key⟩
-
-theorem lem0 (A B K L : Type*) [CommRing A] [CommRing B] [IsDomain B] [Field K] [Field L]
-    [Algebra A K] [IsFractionRing A K]
-    [Algebra B L] [IsFractionRing B L]
-    [Algebra A L] [Algebra A B] [h : Algebra.IsAlgebraic A B] [Algebra K L]
-    [IsScalarTower A B L] [IsScalarTower A K L]
-    (x : L) :
-    ∃ (b : B) (a : A), a ≠ 0 ∧ x = algebraMap B L b / algebraMap A L a := by
-  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := B) x
-  obtain ⟨a, ha, b, h⟩ := (h.isAlgebraic y).exists_nonzero_dvd hy
-  refine ⟨x * b, a, ha, ?_⟩
-  rw [IsScalarTower.algebraMap_apply A B L, h, map_mul, map_mul, mul_div_mul_right]
-  rw [Ne, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
-  contrapose! ha
-  rw [ha, mul_zero] at h
-  replace ha := congrArg (algebraMap B L) h
-  rwa [map_zero, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A K L,
-    NoZeroSMulDivisors.algebraMap_eq_zero_iff, NoZeroSMulDivisors.algebraMap_eq_zero_iff] at ha
-
-end integrallemma
-
 -- PRed
 namespace MulSemiringAction
 
@@ -356,16 +311,22 @@ theorem fullHom_surjective1
   obtain ⟨_⟩ := nonempty_fintype G
   have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under A Q
   have : Algebra.IsIntegral A B := Algebra.IsInvariant.isIntegral A B G
-  have := Ideal.Quotient.algebra_isIntegral_of_liesOver Q P
-  obtain ⟨b, a, ha, rfl⟩ := lem0 (A ⧸ P) (B ⧸ Q) K L x
-  simp only [map_div₀, IsScalarTower.algebraMap_apply (A ⧸ P) K L, AlgEquiv.commutes] at hx ⊢
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := B ⧸ Q) x
+  obtain ⟨b, a, ha, h⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A ⧸ P) y).exists_smul_eq_mul x hy
   replace ha : algebraMap (A ⧸ P) L a ≠ 0 := by
     rwa [Ne, IsScalarTower.algebraMap_apply (A ⧸ P) K L,
       NoZeroSMulDivisors.algebraMap_eq_zero_iff, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
-  simp only [← IsScalarTower.algebraMap_apply (A ⧸ P) K L, div_left_inj' ha] at hx ⊢
-  refine lem4 G P Q K L f b (fun g ↦ IsFractionRing.injective (B ⧸ Q) L ?_)
-  exact (IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L
-    (Ideal.Quotient.stabilizerHom Q P G g) b).symm.trans (hx g)
+  replace hy : algebraMap (B ⧸ Q) L y ≠ 0 :=
+    mt (NoZeroSMulDivisors.algebraMap_eq_zero_iff (B ⧸ Q) L).mp (nonZeroDivisors.ne_zero hy)
+  replace h : algebraMap (B ⧸ Q) L x / algebraMap (B ⧸ Q) L y =
+      algebraMap (B ⧸ Q) L b / algebraMap (A ⧸ P) L a := by
+    rw [mul_comm, Algebra.smul_def, mul_comm] at h
+    rw [div_eq_div_iff hy ha, ← map_mul, ← h, map_mul, ← IsScalarTower.algebraMap_apply]
+  simp only [h, map_div₀, IsScalarTower.algebraMap_apply (A ⧸ P) K L, AlgEquiv.commutes] at hx ⊢
+  simp only [← IsScalarTower.algebraMap_apply, div_left_inj' ha] at hx ⊢
+  exact lem4 G P Q K L f b (fun g ↦ IsFractionRing.injective (B ⧸ Q) L
+    ((IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L
+      (Ideal.Quotient.stabilizerHom Q P G g) b).symm.trans (hx g)))
 
 theorem fullHom_surjective
     [Algebra.IsInvariant A B G] :
