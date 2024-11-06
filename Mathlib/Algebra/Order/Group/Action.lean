@@ -19,7 +19,7 @@ variable {ι : Sort*} {M α : Type*}
 
 theorem smul_mono_right [SMul M α] [Preorder α] [SMulLeftMono M α]
     (m : M) : Monotone (HSMul.hSMul m : α → α) :=
-  fun _ _ => SMulLeftMono.elim _
+  fun _ _ => smul_le_smul_left _
 
 theorem smul_inf_le [SMul M α] [SemilatticeInf α] [SMulLeftMono M α]
     (m : M) (a₁ a₂ : α) : m • (a₁ ⊓ a₂) ≤ m • a₁ ⊓ m • a₂ :=
@@ -32,7 +32,7 @@ theorem smul_iInf_le [SMul M α] [CompleteLattice α] [SMulLeftMono M α]
 
 theorem smul_strictMono_right [SMul M α] [Preorder α] [SMulLeftStrictMono M α]
     (m : M) : StrictMono (HSMul.hSMul m : α → α) :=
-  fun _ _ => SMulLeftStrictMono.elim _
+  fun _ _ => smul_lt_smul_left _
 
 lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
     [MulAction G α] [SMulLeftMono G α]
