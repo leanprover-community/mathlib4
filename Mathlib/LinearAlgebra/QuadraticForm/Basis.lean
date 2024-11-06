@@ -46,11 +46,7 @@ theorem toQuadraticMap_toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
   rw [Finset.sum_ite_of_false, QuadraticMap.map_sum, ← Finset.sum_filter]
   · simp_rw [← polar_smul_right _ (bm.repr x <| Prod.snd _),
       ← polar_smul_left _ (bm.repr x <| Prod.fst _)]
-    simp_rw [QuadraticMap.map_smul, mul_smul]
-    --simp
-    rw [Finset.sum_sym2_filter_not_isDiag _
-      fun p => Sym2.lift ⟨fun i j ↦  polar (⇑Q) ((bm.repr x) i •(bm i)) ((bm.repr x) j •(bm j)),
-        _⟩ p]
+    simp_rw [QuadraticMap.map_smul, mul_smul, Finset.sum_sym2_filter_not_isDiag]
     rfl
   · intro x hx
     rw [Finset.mem_offDiag] at hx
