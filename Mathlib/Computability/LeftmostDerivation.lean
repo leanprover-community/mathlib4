@@ -290,7 +290,7 @@ theorem produces_of_produces_leftmost {u v : List (Symbol T g.NT)} (h : g.Produc
   apply ContextFreeRule.rewrites_of_rewritesLeftmost
   exact hr.2
 
-theorem derives_of_derivesLeftmost {u v : List (Symbol T g.NT)}(h:g.DerivesLeftmost u v) :
+theorem derives_of_derivesLeftmost {u v : List (Symbol T g.NT)} (h : g.DerivesLeftmost u v) :
     g.Derives u v := by
   induction h using Relation.ReflTransGen.head_induction_on with
   | refl => rfl
