@@ -399,6 +399,15 @@ theorem nhds_eq_comap (h : X ≃ₜ Y) (x : X) : 𝓝 x = comap h (𝓝 (h x)) :
 theorem comap_nhds_eq (h : X ≃ₜ Y) (y : Y) : comap h (𝓝 y) = 𝓝 (h.symm y) := by
   rw [h.nhds_eq_comap, h.apply_symm_apply]
 
+@[simp]
+theorem comap_coclosedCompact (h : X ≃ₜ Y) : comap h (coclosedCompact Y) = coclosedCompact X :=
+  (hasBasis_coclosedCompact.comap h).eq_of_same_basis <| by
+    simpa [comp_def] using hasBasis_coclosedCompact.comp_surjective h.injective.preimage_surjective
+
+@[simp]
+theorem map_coclosedCompact (h : X ≃ₜ Y) : map h (coclosedCompact X) = coclosedCompact Y := by
+  rw [← h.comap_coclosedCompact, map_comap_of_surjective h.surjective]
+
 /-- If the codomain of a homeomorphism is a locally connected space, then the domain is also
 a locally connected space. -/
 theorem locallyConnectedSpace [i : LocallyConnectedSpace Y] (h : X ≃ₜ Y) :
@@ -1044,3 +1053,33 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
     [∀ i, TopologicalSpace (Y i)] {f : (i : ι) → X i → Y i} (h : ∀ i, IsHomeomorph (f i)) :
     IsHomeomorph (fun (x : ∀ i, X i) i ↦ f i (x i)) :=
   (Homeomorph.piCongrRight fun i ↦ (h i).homeomorph (f i)).isHomeomorph
+
+/-- `HomeomorphClass F A B` states that `F` is a type of two-sided continuous morphisms.-/
+class HomeomorphClass (F : Type*) (A B : outParam Type*)
+    [TopologicalSpace A] [TopologicalSpace B] [h : EquivLike F A B] : Prop where
+  continuous_toFun : ∀ (f : F), Continuous (h.coe f)
+  continuous_invFun : ∀ (f : F), Continuous (h.inv f)
+
+namespace HomeomorphClass
+
+variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLike F α β]
+
+/-- Turn an element of a type `F` satisfying `HomeomorphClass F α β` into an actual
+`Homeomorph`. This is declared as the default coercion from `F` to `α ≃ₜ β`. -/
+def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :={
+  (f : α ≃ β) with
+  continuous_toFun := h.continuous_toFun f
+  continuous_invFun := h.continuous_invFun f
+  }
+
+instance [HomeomorphClass F α β] : CoeTC F (α ≃ₜ β) :=
+  ⟨HomeomorphClass.toHomeomorph⟩
+
+theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((↑) : F → α ≃ₜ β) :=
+  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ β ↦ e.toFun a) e
+
+instance : HomeomorphClass (α ≃ₜ β) α β where
+  continuous_toFun e := e.continuous_toFun
+  continuous_invFun e := e.continuous_invFun
+
+end HomeomorphClass
