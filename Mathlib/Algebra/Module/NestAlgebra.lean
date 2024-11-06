@@ -27,8 +27,7 @@ structure Nest (N : CompleteSublattice (Submodule R M)) [LinearOrder N] where
 -/
 
 
-def NestAlg (N : CompleteSublattice (Submodule R M)) [LinearOrder N] :
-    Subalgebra R (M →ₗ[R] M) where
+def NestAlg (N : CompleteSublattice (Submodule R M)) : Subalgebra R (M →ₗ[R] M) where
   carrier := { T | ∀ (n : N), T '' n ⊆ n}
   add_mem' S T := by
     intro n x hx
