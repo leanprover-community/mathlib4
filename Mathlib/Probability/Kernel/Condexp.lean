@@ -216,6 +216,8 @@ theorem condexp_ae_eq_integral_condexpKernel [NormedAddCommGroup F] {f : Ω → 
 
 section Cond
 
+/-! ### Relation between conditional expectation, conditional kernel and the conditional measure. -/
+
 variable {s t : Set Ω} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 
 omit [StandardBorelSpace Ω]
