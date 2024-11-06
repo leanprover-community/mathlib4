@@ -375,11 +375,7 @@ theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompac
   · intro x
     simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, mem_Icc, sub_nonneg,
       tsub_le_iff_right, le_add_iff_nonneg_right]
-    simp only [mem_Icc] at hicc
-    have : 0 ≤ g x ∧ g x ≤ 1 := hicc x
-    refine ⟨?_, ?_⟩
-    · linarith
-    · linarith
+    constructor <;> linarith
 
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous compactly supported
