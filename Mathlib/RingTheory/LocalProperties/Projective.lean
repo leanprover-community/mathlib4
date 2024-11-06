@@ -5,11 +5,10 @@ Authors: Andrew Yang, David Swinarski
 -/
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.RingTheory.LocalProperties.Submodule
-import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.RingTheory.LocalProperties.Submodule
+
 /-!
 
 # Being projective is a local property
@@ -178,3 +177,4 @@ theorem Module.projective_of_localization_maximal'
     dsimp
     simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
       IsLocalization.map_id_mk']
+#min_imports
