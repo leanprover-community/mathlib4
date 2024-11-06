@@ -117,9 +117,8 @@ theorem natDegree_wronskian_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
 variable {k : Type*} [Field k]
 
 @[simp]
-theorem dvd_derivative_iff {a : k[X]} : a ∣ derivative a ↔ derivative a = 0 := by
-  constructor
-  · intro h
+theorem dvd_derivative_iff {a : k[X]} : a ∣ derivative a ↔ derivative a = 0 where
+  mp h := by
     by_cases a_nz : a = 0
     · rw [a_nz]; simp only [derivative_zero]
     by_contra deriv_nz
@@ -127,16 +126,15 @@ theorem dvd_derivative_iff {a : k[X]} : a ∣ derivative a ↔ derivative a = 0 
     have le_deriv := Polynomial.degree_le_of_dvd h deriv_nz
     have lt_self := le_deriv.trans_lt deriv_lt
     simp only [lt_self_iff_false] at lt_self
-  intro h; rw [h]; simp
+  mpr h := by simp [h]
 
 /--
 For coprime polynomials `a` and `b`, their Wronskian is zero
 if and only if their derivatives are constants.
 -/
 theorem IsCoprime.wronskian_eq_zero_iff {a b : k[X]} (hc : IsCoprime a b) :
-    wronskian a b = 0 ↔ derivative a = 0 ∧ derivative b = 0 := by
-  constructor
-  · intro hw
+    wronskian a b = 0 ↔ derivative a = 0 ∧ derivative b = 0 where
+  mp hw := by
     rw [wronskian, sub_eq_iff_eq_add, zero_add] at hw
     constructor
     · rw [← dvd_derivative_iff]
@@ -145,9 +143,9 @@ theorem IsCoprime.wronskian_eq_zero_iff {a b : k[X]} (hc : IsCoprime a b) :
     · rw [← dvd_derivative_iff]
       apply hc.symm.dvd_of_dvd_mul_left
       rw [hw]; exact dvd_mul_left _ _
-  intro hdab
-  cases' hdab with hda hdb
-  rw [wronskian]
-  rw [hda, hdb]; simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, sub_self]
+  mpr hdab := by
+    cases' hdab with hda hdb
+    rw [wronskian]
+    rw [hda, hdb]; simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, sub_self]
 
 end Polynomial
