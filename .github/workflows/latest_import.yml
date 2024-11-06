@@ -89,8 +89,10 @@ jobs:
 
     - name: downstream imports
       run: |
+        #files="$(
         printf '%s\n' "${{ steps.late_importers.outputs.summary }}" |
-          sed '/\.html/{s=\[\(Mathlib[^]]*\).lean].*=`\1,=}'
+          sed -n '/\.html/{s=^[^[]*\[\(Mathlib[^]]*\).lean].*=`\1,=}' | sed -z 's=,$=='
+          #)"
     #- name: Post output to Zulip
     #  uses: zulip/github-actions-zulip/send-message@v1
     #  with:
