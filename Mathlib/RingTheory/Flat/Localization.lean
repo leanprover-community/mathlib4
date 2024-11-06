@@ -22,7 +22,6 @@ variable (p : Submonoid R) [IsLocalization p S]
 include p in
 theorem IsLocalization.flat : Module.Flat R S :=
   (Module.Flat.iff_lTensor_injective' _ _).mpr fun I ↦ by
-    have := (isLocalizedModule_iff_isLocalization' p S).mpr ‹_›
     have h := (I.isLocalizedModule S p (Algebra.linearMap R S)).isBaseChange _ S _
     have : I.subtype.lTensor S = (TensorProduct.rid R S).symm.comp
         ((Submodule.subtype _ ∘ₗ h.equiv.toLinearMap).restrictScalars R) := by
