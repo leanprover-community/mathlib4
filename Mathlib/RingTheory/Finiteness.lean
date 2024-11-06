@@ -577,6 +577,7 @@ lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[
   refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
   rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
 
+variable (R M) in
 theorem exists_comp_eq_id_of_projective [Module.Finite R M] [Projective R M] :
     ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M) (g : M →ₗ[R] Fin n → R),
       Function.Surjective f ∧ Function.Injective g ∧ f ∘ₗ g = .id :=
