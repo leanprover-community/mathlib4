@@ -738,9 +738,9 @@ lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
   · intro h
     classical
     choose f h using h
-    use onFinset g.support (fun i ↦ if i ∈ g.support then f i else 0) (by aesop)
+    use onFinset g.support (Set.indicator g.support f) (by aesop)
     ext i
-    simp only [mem_support_iff, ne_eq, eq_mp_eq_cast, id_eq, mapRange_apply, onFinset_apply]
+    simp only [mapRange_apply, onFinset_apply, Set.indicator_apply]
     split_ifs <;> simp_all
 
 /-- `Finsupp.mapRange` of a injective function is injective. -/
