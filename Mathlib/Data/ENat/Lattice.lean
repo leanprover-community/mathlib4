@@ -3,9 +3,8 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.ENat.Basic
 import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.ENat.Basic
 
 /-!
 # Extended natural numbers form a complete linear order
@@ -190,20 +189,6 @@ lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSu
 lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → ℕ∞}
     (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
   iSup_add_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
-
-lemma sum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℕ∞}
-    (hf : ∀ i j, ∃ k, ∀ a, f a i ≤ f a k ∧ f a j ≤ f a k) :
-    ∑ a ∈ s, ⨆ i, f a i = ⨆ i, ∑ a ∈ s, f a i := by
-  induction' s using Finset.cons_induction with a s ha ihs
-  · simp
-  simp_rw [Finset.sum_cons, ihs]
-  refine iSup_add_iSup fun i j ↦ (hf i j).imp fun k hk ↦ ?_
-  gcongr
-  exacts [(hk a).1, (hk _).2]
-
-lemma sum_iSup_of_monotone {α ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {s : Finset α}
-    {f : α → ι → ℕ∞} (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
-  sum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
 
 proof_wanted smul_iSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (f : ι → ℕ∞) (c : R) :
     c • ⨆ i, f i = ⨆ i, c • f i
