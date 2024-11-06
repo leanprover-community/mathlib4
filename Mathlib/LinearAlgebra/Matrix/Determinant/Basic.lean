@@ -339,7 +339,7 @@ end DetZero
 
 theorem det_updateRow_add (M : Matrix n n R) (j : n) (u v : n → R) :
     det (updateRow M j <| u + v) = det (updateRow M j u) + det (updateRow M j v) :=
-  (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_add M j u v
+  (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_update_add M j u v
 
 theorem det_updateColumn_add (M : Matrix n n R) (j : n) (u v : n → R) :
     det (updateColumn M j <| u + v) = det (updateColumn M j u) + det (updateColumn M j v) := by
@@ -348,21 +348,25 @@ theorem det_updateColumn_add (M : Matrix n n R) (j : n) (u v : n → R) :
 
 theorem det_updateRow_smul (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateRow M j <| s • u) = s * det (updateRow M j u) :=
-  (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_smul M j s u
+  (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_update_smul M j s u
 
 theorem det_updateColumn_smul (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateColumn M j <| s • u) = s * det (updateColumn M j u) := by
   rw [← det_transpose, ← updateRow_transpose, det_updateRow_smul]
   simp [updateRow_transpose, det_transpose]
 
-theorem det_updateRow_smul' (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
+theorem det_updateRow_smul_left (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateRow (s • M) j u) = s ^ (Fintype.card n - 1) * det (updateRow M j u) :=
-  MultilinearMap.map_update_smul _ M j s u
+  MultilinearMap.map_update_smul_left _ M j s u
 
-theorem det_updateColumn_smul' (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
+@[deprecated (since := "2024-11-03")] alias det_updateRow_smul' := det_updateRow_smul_left
+
+theorem det_updateColumn_smul_left (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateColumn (s • M) j u) = s ^ (Fintype.card n - 1) * det (updateColumn M j u) := by
-  rw [← det_transpose, ← updateRow_transpose, transpose_smul, det_updateRow_smul']
+  rw [← det_transpose, ← updateRow_transpose, transpose_smul, det_updateRow_smul_left]
   simp [updateRow_transpose, det_transpose]
+
+@[deprecated (since := "2024-11-03")] alias det_updateColumn_smul' := det_updateColumn_smul_left
 
 theorem det_updateRow_sum_aux (M : Matrix n n R) {j : n} (s : Finset n) (hj : j ∉ s) (c : n → R)
     (a : R) :
