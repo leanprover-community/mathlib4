@@ -43,13 +43,15 @@ instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
 instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
 instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
 instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
-instance : IsWellOrder ℕ∞ (· < ·) where
 
 variable {m n : ℕ∞}
 
 /-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
 `ℕ → ℕ∞` is `Nat.cast`. -/
 @[simp] theorem some_eq_coe : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
+
+instance : SuccAddOrder ℕ∞ where
+  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
 
 -- Porting note: `simp` and `norm_cast` can prove it
 --@[simp, norm_cast]
@@ -172,8 +174,11 @@ theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - (no_index (OfN
   top_sub_coe a
 
 @[simp]
-theorem zero_lt_top : (0 : ℕ∞) < ⊤ :=
-  WithTop.zero_lt_top
+theorem top_pos : (0 : ℕ∞) < ⊤ :=
+  WithTop.top_pos
+
+@[deprecated ENat.top_pos (since := "2024-10-22")]
+alias zero_lt_top := top_pos
 
 theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
   WithTop.sub_top
@@ -210,32 +215,32 @@ lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤
   toNat_le_of_le_coe <| h.trans_eq (coe_toNat hn).symm
 
 @[simp]
-theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 := by
-  cases m
-  · rfl
-  · change ite .. = _
-    simp
+theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
+  Order.succ_eq_add_one m
 
+@[deprecated Order.add_one_le_of_lt (since := "2024-09-04")]
 theorem add_one_le_of_lt (h : m < n) : m + 1 ≤ n :=
-  m.succ_def ▸ Order.succ_le_of_lt h
+  Order.add_one_le_of_lt h
 
 theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
-  m.succ_def ▸ (Order.succ_le_iff_of_not_isMax <| by rwa [isMax_iff_eq_top])
+  Order.add_one_le_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
+@[deprecated Order.one_le_iff_pos (since := "2024-09-04")]
 theorem one_le_iff_pos : 1 ≤ n ↔ 0 < n :=
-  add_one_le_iff WithTop.zero_ne_top
+  Order.one_le_iff_pos
 
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
-  one_le_iff_pos.trans pos_iff_ne_zero
+  Order.one_le_iff_pos.trans pos_iff_ne_zero
 
 lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
   not_le.symm.trans one_le_iff_ne_zero.not_left
 
+@[deprecated Order.le_of_lt_add_one (since := "2024-09-04")]
 theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
-  Order.le_of_lt_succ <| n.succ_def.symm ▸ h
+  Order.le_of_lt_add_one h
 
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
-  n.succ_def ▸ Order.lt_succ_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
+  Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
@@ -255,5 +260,36 @@ theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ 
   cases a
   · exact htop A
   · exact A _
+
+lemma add_one_nat_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : (m + 1 : ℕ) ≤ n := by
+  match n with
+  | ⊤ => exact le_top
+  | (⊤ : ℕ∞) => exact WithTop.coe_le_coe.2 (OrderTop.le_top _)
+  | (n : ℕ) => simpa only [Nat.cast_le, ge_iff_le, Nat.cast_lt] using h
+
+@[simp] lemma coe_top_add_one : ((⊤ : ℕ∞) : WithTop ℕ∞) + 1 = (⊤ : ℕ∞) := rfl
+
+@[simp] lemma add_one_eq_coe_top_iff (n : WithTop ℕ∞) :
+    n + 1 = (⊤ : ℕ∞) ↔ n = (⊤ : ℕ∞) := by
+  match n with
+  | ⊤ => exact Iff.rfl
+  | (⊤ : ℕ∞) => exact Iff.rfl
+  | (n : ℕ) => norm_cast; simp only [coe_ne_top, iff_false, ne_eq]
+
+@[simp] lemma nat_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := ne_of_beq_false rfl
+
+lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} :
+    1 ≤ n ↔ n ≠ 0 :=
+  ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
+    fun h ↦ add_one_nat_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
+
+lemma add_one_pos : 0 < n + 1 :=
+  succ_def n ▸ Order.bot_lt_succ n
+
+lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < m :=
+  WithTop.add_lt_add_iff_right h
+
+lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
+  WithTop.add_lt_add_iff_left h
 
 end ENat

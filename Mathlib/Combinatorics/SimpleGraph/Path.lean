@@ -488,7 +488,7 @@ end Walk
 namespace Walk
 
 variable {G G' G''}
-variable (f : G →g G') (f' : G' →g G'') {u v u' v' : V} (p : G.Walk u v)
+variable (f : G →g G') {u v : V} (p : G.Walk u v)
 variable {p f}
 
 theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) :
@@ -589,8 +589,8 @@ end Path
 
 namespace Walk
 
-variable {G} {p} {u v : V} {H : SimpleGraph V}
-variable (p : G.Walk u v)
+variable {G} {u v : V} {H : SimpleGraph V}
+variable {p : G.Walk u v}
 
 protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
     (p.transfer H hp).IsPath := by
@@ -857,11 +857,11 @@ protected theorem lift_mk {β : Sort*} {f : V → β}
 
 protected theorem «exists» {p : G.ConnectedComponent → Prop} :
     (∃ c : G.ConnectedComponent, p c) ↔ ∃ v, p (G.connectedComponentMk v) :=
-  (surjective_quot_mk G.Reachable).exists
+  Quot.mk_surjective.exists
 
 protected theorem «forall» {p : G.ConnectedComponent → Prop} :
     (∀ c : G.ConnectedComponent, p c) ↔ ∀ v, p (G.connectedComponentMk v) :=
-  (surjective_quot_mk G.Reachable).forall
+  Quot.mk_surjective.forall
 
 theorem _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent (h : G.Preconnected) :
     Subsingleton G.ConnectedComponent :=
@@ -1124,7 +1124,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
       rw [Sym2.eq_swap]
       intro h
       cases hp (Walk.edges_toPath_subset p h)
-    · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or_iff]
+    · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or]
   · rintro ⟨u, c, hc, he⟩
     refine ⟨c.adj_of_mem_edges he, ?_⟩
     by_contra! hb
@@ -1143,7 +1143,7 @@ theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} : G.IsBridge s(v, w)
   rw [← not_iff_not]
   push_neg
   rw [← adj_and_reachable_delete_edges_iff_exists_cycle]
-  simp only [h, true_and_iff]
+  simp only [h, true_and]
 
 theorem isBridge_iff_mem_and_forall_cycle_not_mem {e : Sym2 V} :
     G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=

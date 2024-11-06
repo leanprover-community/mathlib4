@@ -3,11 +3,12 @@ Copyright (c) 2019 Kenny Lau, Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 -/
-import Mathlib.Data.Finset.Order
 import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Data.Finset.Order
+import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -203,7 +204,7 @@ def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j 
   lift_of _ _ _
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
-    map (fun i ↦ LinearMap.id) (fun _ _ _ ↦ rfl) = LinearMap.id (R := R) (M := DirectLimit G f) :=
+    map (fun _ ↦ LinearMap.id) (fun _ _ _ ↦ rfl) = LinearMap.id (R := R) (M := DirectLimit G f) :=
   DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (by subsingleton) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
@@ -292,7 +293,7 @@ theorem of.zero_exact_aux [∀ i (k : G i), Decidable (k ≠ 0)] [Nonempty ι] [
       (∀ k ∈ x.support, k ≤ j) ∧
         DirectSum.toModule R ι (G j) (fun i => totalize G f i j) x = (0 : G j) :=
   Nonempty.elim (by infer_instance) fun ind : ι =>
-    span_induction ((Quotient.mk_eq_zero _).1 H)
+    span_induction (hx := (Quotient.mk_eq_zero _).1 H)
       (fun x ⟨i, j, hij, y, hxy⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, by
@@ -311,18 +312,14 @@ theorem of.zero_exact_aux [∀ i (k : G i), Decidable (k ≠ 0)] [Nonempty ι] [
           simp [LinearMap.map_sub, totalize_of_le, hik, hjk, DirectedSystem.map_map,
             DirectSum.apply_eq_component, DirectSum.component.of]⟩)
       ⟨ind, fun _ h => (Finset.not_mem_empty _ h).elim, LinearMap.map_zero _⟩
-      (fun x y ⟨i, hi, hxi⟩ ⟨j, hj, hyj⟩ =>
+      (fun x y _ _ ⟨i, hi, hxi⟩ ⟨j, hj, hyj⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
-        ⟨k, fun l hl =>
+        ⟨k, fun _ hl =>
           (Finset.mem_union.1 (DFinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
             fun hl => le_trans (hj _ hl) hjk, by
-          -- Porting note: this had been
-          -- simp [LinearMap.map_add, hxi, hyj, toModule_totalize_of_le hik hi,
-          --   toModule_totalize_of_le hjk hj]
-          simp only [map_add]
-          rw [toModule_totalize_of_le hik hi, toModule_totalize_of_le hjk hj]
-          simp [hxi, hyj]⟩)
-      fun a x ⟨i, hi, hxi⟩ =>
+          simp [LinearMap.map_add, hxi, hyj, toModule_totalize_of_le hik hi,
+             toModule_totalize_of_le hjk hj]⟩)
+      fun a x _ ⟨i, hi, hxi⟩ =>
       ⟨i, fun k hk => hi k (DirectSum.support_smul _ _ hk), by simp [LinearMap.map_smul, hxi]⟩
 
 open Classical in
@@ -462,7 +459,7 @@ def map (g : (i : ι) → G i →+ G' i)
   lift_of _ _ _ _ _
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
-    map (fun i ↦ AddMonoidHom.id _) (fun _ _ _ ↦ rfl) = AddMonoidHom.id (DirectLimit G f) :=
+    map (fun _ ↦ AddMonoidHom.id _) (fun _ _ _ ↦ rfl) = AddMonoidHom.id (DirectLimit G f) :=
   DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (by subsingleton) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
@@ -668,7 +665,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           ∀ [DecidablePred (· ∈ s)],
             lift (fun ix : s => f' ix.1.1 j (H ix ix.2) ix.1.2) (restriction s x) = (0 : G j) := by
   have := Classical.decEq
-  refine span_induction (Ideal.Quotient.eq_zero_iff_mem.1 H) ?_ ?_ ?_ ?_
+  refine span_induction ?_ ?_ ?_ ?_ (Ideal.Quotient.eq_zero_iff_mem.1 H)
   · rintro x (⟨i, j, hij, x, rfl⟩ | ⟨i, rfl⟩ | ⟨i, x, y, rfl⟩ | ⟨i, x, y, rfl⟩)
     · refine
         ⟨j, {⟨i, x⟩, ⟨j, f' i j hij x⟩}, ?_,
@@ -721,14 +718,11 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           dsimp only
           rw [(f' i i _).map_mul]
           · exact sub_self _
-        all_goals tauto
-        -- Porting note: was
-        --exacts [sub_self _, Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
+        exacts [Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
   · refine Nonempty.elim (by infer_instance) fun ind : ι => ?_
     refine ⟨ind, ∅, fun _ => False.elim, isSupported_zero, fun [_] => ?_⟩
-    -- Porting note: `RingHom.map_zero` was `(restriction _).map_zero`
-    rw [RingHom.map_zero, (FreeCommRing.lift _).map_zero]
-  · intro x y ⟨i, s, hi, hxs, ihs⟩ ⟨j, t, hj, hyt, iht⟩
+    rw [(restriction _).map_zero, (FreeCommRing.lift _).map_zero]
+  · intro x y _ _ ⟨i, s, hi, hxs, ihs⟩ ⟨j, t, hj, hyt, iht⟩
     obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
     have : ∀ z : Σi, G i, z ∈ s ∪ t → z.1 ≤ k := by
       rintro z (hz | hz)
@@ -738,12 +732,11 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       ⟨k, s ∪ t, this,
         isSupported_add (isSupported_upwards hxs Set.subset_union_left)
           (isSupported_upwards hyt Set.subset_union_right), fun [_] => ?_⟩
-    -- Porting note: was `(restriction _).map_add`
-    classical rw [RingHom.map_add, (FreeCommRing.lift _).map_add, ←
+    classical rw [(restriction _).map_add, (FreeCommRing.lift _).map_add, ←
       of.zero_exact_aux2 G f' hxs hi this hik Set.subset_union_left, ←
       of.zero_exact_aux2 G f' hyt hj this hjk Set.subset_union_right, ihs,
       (f' i k hik).map_zero, iht, (f' j k hjk).map_zero, zero_add]
-  · rintro x y ⟨j, t, hj, hyt, iht⟩
+  · rintro x y - ⟨j, t, hj, hyt, iht⟩
     rw [smul_eq_mul]
     rcases exists_finset_support x with ⟨s, hxs⟩
     rcases (s.image Sigma.fst).exists_le with ⟨i, hi⟩
@@ -867,7 +860,7 @@ def map (g : (i : ι) → G i →+* G' i)
 variable [Nonempty ι]
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
-    map (fun i ↦ RingHom.id _) (fun _ _ _ ↦ rfl) =
+    map (fun _ ↦ RingHom.id _) (fun _ _ _ ↦ rfl) =
     RingHom.id (DirectLimit G fun _ _ h ↦ f _ _ h) :=
   DFunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ by simp
 
@@ -944,7 +937,7 @@ instance nontrivial [DirectedSystem G fun i j h => f' i j h] :
 theorem exists_inv {p : Ring.DirectLimit G f} : p ≠ 0 → ∃ y, p * y = 1 :=
   Ring.DirectLimit.induction_on p fun i x H =>
     ⟨Ring.DirectLimit.of G f i x⁻¹, by
-      erw [← (Ring.DirectLimit.of _ _ _).map_mul,
+      rw [← (Ring.DirectLimit.of _ _ _).map_mul,
         mul_inv_cancel₀ fun h : x = 0 => H <| by rw [h, (Ring.DirectLimit.of _ _ _).map_zero],
         (Ring.DirectLimit.of _ _ _).map_one]⟩
 
@@ -969,12 +962,12 @@ protected noncomputable abbrev field [DirectedSystem G fun i j h => f' i j h] :
   -- This used to include the parent CommRing and Nontrivial instances,
   -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
   inv := inv G fun i j h => f' i j h
-  mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
+  mul_inv_cancel := fun _ => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
   inv_zero := dif_pos rfl
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 end
 

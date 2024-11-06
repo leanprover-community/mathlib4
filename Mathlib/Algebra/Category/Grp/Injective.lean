@@ -3,9 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Module.Injective
+import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Topology.Instances.AddCircle
 
@@ -39,7 +41,6 @@ open Pointwise
 universe u
 
 variable (A : Type u) [AddCommGroup A]
-
 
 theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun I g ↦ by
   rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩

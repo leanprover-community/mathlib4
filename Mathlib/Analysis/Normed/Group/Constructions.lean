@@ -362,7 +362,7 @@ lemma Pi.sum_norm_apply_le_norm' : ∑ i, ‖f i‖ ≤ Fintype.card ι • ‖f
 @[to_additive Pi.sum_nnnorm_apply_le_nnnorm "The $L^1$ norm is less than the $L^\\infty$ norm
 scaled by the cardinality."]
 lemma Pi.sum_nnnorm_apply_le_nnnorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι • ‖f‖₊ :=
-  NNReal.coe_sum.trans_le <| Pi.sum_norm_apply_le_norm' _
+  (NNReal.coe_sum ..).trans_le <| Pi.sum_norm_apply_le_norm' _
 
 end SeminormedGroup
 

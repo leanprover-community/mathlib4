@@ -148,7 +148,7 @@ lemma equiv_directSum_zmod_of_finite' (G : Type*) [AddCommGroup G] [Finite G] :
   refine ⟨{i : ι // n i ≠ 0}, inferInstance, fun i ↦ p i ^ n i, ?_,
     ⟨e.trans (directSumNeZeroMulEquiv ι _ _).symm⟩⟩
   rintro ⟨i, hi⟩
-  exact one_lt_pow (hp _).one_lt hi
+  exact one_lt_pow₀ (hp _).one_lt hi
 
 theorem finite_of_fg_torsion [hG' : AddGroup.FG G] (hG : AddMonoid.IsTorsion G) : Finite G :=
   @Module.finite_of_fg_torsion _ _ _ (Module.Finite.iff_addGroup_fg.mpr hG') <|
@@ -160,5 +160,14 @@ namespace CommGroup
 
 theorem finite_of_fg_torsion [CommGroup G] [Group.FG G] (hG : Monoid.IsTorsion G) : Finite G :=
   @Finite.of_equiv _ _ (AddCommGroup.finite_of_fg_torsion (Additive G) hG) Multiplicative.ofAdd
+
+/-- The **Classification Theorem For Finite Abelian Groups** in a multiplicative version:
+A finite commutative group `G` is isomorphic to a finite product of finite cyclic groups. -/
+theorem equiv_prod_multiplicative_zmod (G : Type*) [CommGroup G] [Finite G] :
+    ∃ (ι : Type) (_ : Fintype ι) (n : ι → ℕ),
+       (∀ (i : ι), 1 < n i) ∧ Nonempty (G ≃* ((i : ι) → Multiplicative (ZMod (n i)))) := by
+  obtain ⟨ι, inst, n, h₁, h₂⟩ := AddCommGroup.equiv_directSum_zmod_of_finite' (Additive G)
+  exact ⟨ι, inst, n, h₁, ⟨MulEquiv.toAdditive.symm <| h₂.some.trans <|
+    (DirectSum.addEquivProd _).trans <| MulEquiv.toAdditive'' <| MulEquiv.piMultiplicative _⟩⟩
 
 end CommGroup

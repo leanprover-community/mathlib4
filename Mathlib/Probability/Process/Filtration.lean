@@ -3,6 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
+import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 
 /-!
@@ -156,19 +157,19 @@ theorem sInf_def (s : Set (Filtration ι m)) (i : ι) :
 
 noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) where
   le := (· ≤ ·)
-  le_refl f i := le_rfl
-  le_trans f g h h_fg h_gh i := (h_fg i).trans (h_gh i)
-  le_antisymm f g h_fg h_gf := Filtration.ext <| funext fun i => (h_fg i).antisymm (h_gf i)
+  le_refl _ _ := le_rfl
+  le_trans _ _ _ h_fg h_gh i := (h_fg i).trans (h_gh i)
+  le_antisymm _ _ h_fg h_gf := Filtration.ext <| funext fun i => (h_fg i).antisymm (h_gf i)
   sup := (· ⊔ ·)
-  le_sup_left f g i := le_sup_left
-  le_sup_right f g i := le_sup_right
-  sup_le f g h h_fh h_gh i := sup_le (h_fh i) (h_gh _)
+  le_sup_left _ _ _ := le_sup_left
+  le_sup_right _ _ _ := le_sup_right
+  sup_le _ _ _ h_fh h_gh i := sup_le (h_fh i) (h_gh _)
   inf := (· ⊓ ·)
-  inf_le_left f g i := inf_le_left
-  inf_le_right f g i := inf_le_right
-  le_inf f g h h_fg h_fh i := le_inf (h_fg i) (h_fh i)
+  inf_le_left _ _ _ := inf_le_left
+  inf_le_right _ _ _ := inf_le_right
+  le_inf _ _ _ h_fg h_fh i := le_inf (h_fg i) (h_fh i)
   sSup := sSup
-  le_sSup s f hf_mem i := le_sSup ⟨f, hf_mem, rfl⟩
+  le_sSup _ f hf_mem _ := le_sSup ⟨f, hf_mem, rfl⟩
   sSup_le s f h_forall i :=
     sSup_le fun m' hm' => by
       obtain ⟨g, hg_mem, hfm'⟩ := hm'
@@ -188,7 +189,7 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
   top := ⊤
   bot := ⊥
   le_top f i := f.le' i
-  bot_le f i := bot_le
+  bot_le _ _ := bot_le
 
 end Filtration
 
@@ -247,7 +248,7 @@ of σ-algebras such that that sequence of functions is measurable with respect t
 the filtration. -/
 def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Filtration ι m where
   seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) mβ
-  mono' i j hij := biSup_mono fun k => ge_trans hij
+  mono' _ _ hij := biSup_mono fun _ => ge_trans hij
   le' i := by
     refine iSup₂_le ?_
     rintro j _ s ⟨t, ht, rfl⟩
@@ -327,6 +328,14 @@ theorem memℒp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : 
 alias memℒp_limitProcess_of_snorm_bdd := memℒp_limitProcess_of_eLpNorm_bdd
 
 end Limit
+
+variable {α : Type*}
+
+/-- The exterior σ-algebras of finite sets of `α` form a cofiltration indexed by `Finset α`. -/
+def cylinderEventsCompl : Filtration (Finset α)ᵒᵈ (.pi (π := fun _ : α ↦ Ω)) where
+  seq Λ := cylinderEvents (↑(OrderDual.ofDual Λ))ᶜ
+  mono' _ _ h := cylinderEvents_mono <| Set.compl_subset_compl_of_subset h
+  le' _  := cylinderEvents_le_pi
 
 end Filtration
 

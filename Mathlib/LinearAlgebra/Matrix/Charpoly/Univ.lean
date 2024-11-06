@@ -71,7 +71,6 @@ variable (R)
 
 lemma univ_monic : (univ R n).Monic := charpoly_monic (mvPolynomialX n n R)
 
--- Porting note (#10618): no @[simp], since simp can prove this
 lemma univ_natDegree [Nontrivial R] : (univ R n).natDegree = Fintype.card n :=
   charpoly_natDegree_eq_dim (mvPolynomialX n n R)
 

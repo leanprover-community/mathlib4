@@ -30,14 +30,20 @@ instance : OrderTopology ℕ∞ := ⟨rfl⟩
 @[simp] theorem range_natCast : range ((↑) : ℕ → ℕ∞) = Iio ⊤ :=
   WithTop.range_coe
 
-theorem embedding_natCast : Embedding ((↑) : ℕ → ℕ∞) :=
-  Nat.strictMono_cast.embedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
+theorem isEmbedding_natCast : IsEmbedding ((↑) : ℕ → ℕ∞) :=
+  Nat.strictMono_cast.isEmbedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
 
-theorem openEmbedding_natCast : OpenEmbedding ((↑) : ℕ → ℕ∞) :=
-  ⟨embedding_natCast, range_natCast ▸ isOpen_Iio⟩
+@[deprecated (since := "2024-10-26")]
+alias embedding_natCast := isEmbedding_natCast
+
+theorem isOpenEmbedding_natCast : IsOpenEmbedding ((↑) : ℕ → ℕ∞) :=
+  ⟨isEmbedding_natCast, range_natCast ▸ isOpen_Iio⟩
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_natCast := isOpenEmbedding_natCast
 
 theorem nhds_natCast (n : ℕ) : 𝓝 (n : ℕ∞) = pure (n : ℕ∞) := by
-  simp [← openEmbedding_natCast.map_nhds_eq]
+  simp [← isOpenEmbedding_natCast.map_nhds_eq]
 
 @[simp]
 protected theorem nhds_eq_pure {n : ℕ∞} (h : n ≠ ⊤) : 𝓝 n = pure n := by
@@ -73,7 +79,7 @@ instance : ContinuousMul ℕ∞ where
       · simp only [ContinuousAt, Function.uncurry, mul_top ha.ne']
         refine tendsto_nhds_top_mono continuousAt_snd ?_
         filter_upwards [continuousAt_fst (lt_mem_nhds ha)] with (x, y) (hx : 0 < x)
-        exact le_mul_of_one_le_left (zero_le y) (ENat.one_le_iff_pos.2 hx)
+        exact le_mul_of_one_le_left (zero_le y) (Order.one_le_iff_pos.2 hx)
     continuous_iff_continuousAt.2 <| Prod.forall.2 fun
       | (a : ℕ∞), ⊤ => key a
       | ⊤, (b : ℕ∞) =>
@@ -89,7 +95,7 @@ protected theorem continuousAt_sub {a b : ℕ∞} (h : a ≠ ⊤ ∨ b ≠ ⊤) 
     simpa [ContinuousAt, nhds_prod_eq] using tendsto_pure_nhds _ _
   | (a : ℕ), ⊤, _ =>
     suffices ∀ᶠ b in 𝓝 ⊤, (a - b : ℕ∞) = 0 by
-      simpa [ContinuousAt, nhds_prod_eq]
+      simpa [ContinuousAt, nhds_prod_eq, tsub_eq_zero_of_le]
     filter_upwards [le_mem_nhds (WithTop.coe_lt_top a)] with b using tsub_eq_zero_of_le
   | ⊤, (b : ℕ), _ =>
     suffices ∀ n : ℕ, ∀ᶠ a : ℕ∞ in 𝓝 ⊤, b + n < a by

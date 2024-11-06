@@ -554,3 +554,21 @@ is often used for composition, without affecting the behavior of the function it
 instance Multiplicative.coeToFun {α : Type*} {β : α → Sort*} [CoeFun α β] :
     CoeFun (Multiplicative α) fun a => β (toAdd a) :=
   ⟨fun a => CoeFun.coe (toAdd a)⟩
+
+lemma Pi.mulSingle_multiplicativeOfAdd_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*}
+    [(i : ι) → AddMonoid (M i)] (i : ι) (a : M i) (j : ι) :
+    Pi.mulSingle (f := fun i ↦ Multiplicative (M i)) i (Multiplicative.ofAdd a) j =
+      Multiplicative.ofAdd ((Pi.single i a) j) := by
+  rcases eq_or_ne j i with rfl | h
+  · simp only [mulSingle_eq_same, single_eq_same]
+  · simp only [mulSingle, ne_eq, h, not_false_eq_true, Function.update_noteq, one_apply, single,
+      zero_apply, ofAdd_zero]
+
+lemma Pi.single_additiveOfMul_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*}
+    [(i : ι) → Monoid (M i)] (i : ι) (a : M i) (j : ι) :
+    Pi.single (f := fun i ↦ Additive (M i)) i (Additive.ofMul a) j =
+      Additive.ofMul ((Pi.mulSingle i a) j) := by
+  rcases eq_or_ne j i with rfl | h
+  · simp only [mulSingle_eq_same, single_eq_same]
+  · simp only [single, ne_eq, h, not_false_eq_true, Function.update_noteq, zero_apply, mulSingle,
+      one_apply, ofMul_one]
