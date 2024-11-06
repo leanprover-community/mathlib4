@@ -219,9 +219,15 @@ instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A] [StarRing A
     CompleteSpace (elemental R x) :=
   isClosed_closure.completeSpace_coe
 
+variable {R} in
 theorem le_of_mem {S : StarSubalgebra R A} (hS : IsClosed (S : Set A)) {x : A}
     (hx : x ∈ S) : elemental R x ≤ S :=
   topologicalClosure_minimal (adjoin_le <| Set.singleton_subset_iff.2 hx) hS
+
+variable {R} in
+theorem le_iff_mem {x : A} {s : StarSubalgebra R A} (hs : IsClosed (s : Set A)) :
+    elemental R x ≤ s ↔ x ∈ s :=
+  ⟨fun h ↦ h (self_mem R x), fun h ↦ le_of_mem hs h⟩
 
 @[deprecated (since := "2024-11-05")]
 alias _root_.elementalStarAlgebra.le_of_isClosed_of_mem := le_of_mem
