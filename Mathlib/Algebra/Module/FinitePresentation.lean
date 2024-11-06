@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.Algebra.Module.Projective
+import Mathlib.Algebra.Module.Dual
 /-!
 
 # Finitely Presented Modules
@@ -133,7 +133,7 @@ lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.
 variable (R M) in
 lemma Module.finitePresentation_of_projective [Projective R M] [Module.Finite R M] :
     FinitePresentation R M :=
-  have ⟨n, f, g, surj, _, hfg⟩ := Projective.exists_comp_eq_id R M
+  have ⟨n, f, g, surj, _, hfg⟩ := Projective.exists_comp_eq_id_of_finite R M
   Module.finitePresentation_of_surjective _ surj
     (Finite.iff_fg.mp <| LinearMap.ker_eq_range_of_comp_eq_id hfg ▸ inferInstance)
 
