@@ -7,7 +7,6 @@ import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 /-!
 
 # Finitely Presented Modules

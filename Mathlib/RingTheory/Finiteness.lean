@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Module.Projective
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.LinearAlgebra.Quotient.Defs
@@ -575,6 +576,13 @@ lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[
   have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
   refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
   rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
+
+theorem exists_comp_eq_id_of_projective [Module.Finite R M] [Projective R M] :
+    ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M) (g : M →ₗ[R] Fin n → R),
+      Function.Surjective f ∧ Function.Injective g ∧ f ∘ₗ g = .id :=
+  have ⟨n, f, surj⟩ := exists_fin' R M
+  have ⟨g, hfg⟩ := Module.projective_lifting_property f .id surj
+  ⟨n, f, g, surj, LinearMap.injective_of_comp_eq_id _ _ hfg, hfg⟩
 
 variable (R) in
 lemma _root_.Module.finite_of_finite [Finite R] [Module.Finite R M] : Finite M := by
