@@ -5,6 +5,8 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Localization.Module
 
 /-!
@@ -110,6 +112,19 @@ instance Submodule.isLocalizedModule : IsLocalizedModule p (M'.toLocalized' S p 
     exact ⟨⟨⟨x, hx⟩, s⟩, by ext; simp⟩
   exists_of_eq e := by simpa [Subtype.ext_iff] using
       IsLocalizedModule.exists_of_eq (S := p) (f := f) (congr_arg Subtype.val e)
+
+include p in
+theorem IsLocalization.flat : Module.Flat R S :=
+  (Module.Flat.iff_lTensor_injective' _ _).mpr fun I ↦ by
+    have := (isLocalizedModule_iff_isLocalization' p S).mpr ‹_›
+    have h := (I.isLocalizedModule S p (Algebra.linearMap R S)).isBaseChange _ S _
+    have : I.subtype.lTensor S = (TensorProduct.rid R S).symm.comp
+        ((Submodule.subtype _ ∘ₗ h.equiv.toLinearMap).restrictScalars R) := by
+      rw [LinearEquiv.eq_toLinearMap_symm_comp]; ext
+      simp [h.equiv_tmul, Algebra.smul_def, mul_comm, Algebra.ofId_apply]
+    simpa [this] using Subtype.val_injective
+
+instance Localization.flat : Module.Flat R (Localization p) := IsLocalization.flat _ p
 
 /-- The localization map of a quotient module. -/
 def Submodule.toLocalizedQuotient' : M ⧸ M' →ₗ[R] N ⧸ M'.localized' S p f :=
