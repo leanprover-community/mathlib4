@@ -454,64 +454,7 @@ infixl:25 " ≃ₜ+ " => ContinuousAddEquiv
 
 section
 
-/-- `ContinuousAddEquivClass F A B` states that `F` is a type of two-sided continuous additive
-isomomorphisms.-/
-class ContinuousAddEquivClass (F : Type*) (A B : outParam Type*) [Add A] [Add B]
-    [h : EquivLike F A B] [TopologicalSpace A] [TopologicalSpace B] extends AddEquivClass F A B :
-    Prop where
-    map_continuous (f : F) : Continuous (h.coe f)
-    inv_map_continuous (f : F) : Continuous (h.inv f)
-
-/-- `ContinuousMulEquivClass F A B` states that `F` is a type of two-sided continuous multiplicative
-isomomorphisms.-/
-@[to_additive]
-class ContinuousMulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B]
-    [h : EquivLike F A B] [TopologicalSpace A] [TopologicalSpace B] extends MulEquivClass F A B :
-    Prop where
-    map_continuous (f : F) : Continuous (h.coe f)
-    inv_map_continuous (f : F) : Continuous (h.inv f)
-
-namespace ContinuousMulEquivClass
-
-variable {F M N : Type*} [TopologicalSpace M] [TopologicalSpace N]
-
-@[to_additive]
-theorem map_eq_one_iff [MulOneClass M] [MulOneClass N] [EquivLike F M N]
-    [ContinuousMulEquivClass F M N] (h : F) {x : M} :
-    h x = 1 ↔ x = 1 := _root_.map_eq_one_iff h (EquivLike.injective h)
-
-@[to_additive]
-theorem map_ne_one_iff [MulOneClass M] [MulOneClass N] [EquivLike F M N]
-    [ContinuousMulEquivClass F M N] (h : F) {x : M} :
-    h x ≠ 1 ↔ x ≠ 1 := _root_.map_ne_one_iff h (EquivLike.injective h)
-
-end ContinuousMulEquivClass
-
 variable {F α β : Type*}[EquivLike F α β] [TopologicalSpace α] [TopologicalSpace β]
-
-/-- Turn an element of a type `F` satisfying `ContinuousMulEquivClass F α β` into an actual
-`ContinuousMulEquiv`. This is declared as the default coercion from `F` to `α ≃* β`. -/
-@[to_additive (attr := coe)
-"Turn an element of a type `F` satisfying `ContinuousAddEquivClass F α β` into an actual
-`ContinuousAddEquiv`. This is declared as the default coercion from `F` to `α ≃+ β`."]
-def ContinuousMulEquivClass.toContinuousMulEquiv [Mul α] [Mul β] [h : ContinuousMulEquivClass F α β]
-    (f : F) : α ≃ₜ* β := {
-    (f : α ≃* β) with
-    continuous_toFun := h.map_continuous f
-    continuous_invFun := h.inv_map_continuous f }
-
-/-- Any type satisfying `MulEquivClass` can be cast into `MulEquiv` via
-`MulEquivClass.toMulEquiv`. -/
-@[to_additive "Any type satisfying `AddEquivClass` can be cast into `AddEquiv` via
-`AddEquivClass.toAddEquiv`. "]
-instance [Mul α] [Mul β] [ContinuousMulEquivClass F α β] : CoeTC F (α ≃ₜ* β) :=
-  ⟨ContinuousMulEquivClass.toContinuousMulEquiv⟩
-
-
-@[to_additive]
-theorem ContinuousMulEquivClass.toContinuousMulEquiv_injective [Mul α] [Mul β]
-    [ContinuousMulEquivClass F α β] : Function.Injective ((↑) : F → α ≃ₜ* β) :=
-  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ* β ↦ e.toFun a) e
 
 namespace ContinuousMulEquiv
 
@@ -531,15 +474,13 @@ instance : EquivLike (M ≃ₜ* N) M N where
     congr
     exact MulEquiv.ext_iff.mpr (congrFun h₁)
 
+@[to_additive]
+instance : MulEquivClass (M ≃ₜ* N) M N where
+  map_mul f := f.map_mul'
+
 @[to_additive] -- shortcut instance that doesn't generate any subgoals
 instance : CoeFun (M ≃ₜ* N) fun _ ↦ M → N where
   coe f := f
-
-@[to_additive]
-instance : ContinuousMulEquivClass (M ≃ₜ* N) M N where
-  map_mul f := f.map_mul'
-  map_continuous f := f.continuous_toFun
-  inv_map_continuous f := f.continuous_invFun
 
 /-- Two continuous multiplicative isomorphisms agree if they are defined by the
 same underlying function. -/
@@ -564,10 +505,6 @@ theorem coe_mk (f : M ≃* N) (hf1 : Continuous f.toFun) (hf2 : Continuous f.inv
 theorem toEquiv_eq_coe (f : M ≃ₜ* N) : f.toEquiv = f :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem toMulEquiv_eq_coe (f : M ≃ₜ* N) : f.toMulEquiv = f :=
-  rfl
-
 /-- Makes a continuous multiplicative isomorphism from
 a homeomorphism which preserves multiplication. -/
 @[to_additive "Makes an continuous additive isomorphism from
@@ -584,11 +521,6 @@ theorem isHomeomorph (f : M ≃ₜ* N) : IsHomeomorph f :=
 end coe
 
 section map
-
-/-- A continuous multiplicative isomorphism preserves multiplication. -/
-@[to_additive "A continuous additive isomorphism preserves addition."]
-protected theorem map_mul (f : M ≃ₜ* N) : ∀ x y, f (x * y) = f x * f y :=
-  map_mul f
 
 protected lemma isClosedMap (f : M ≃ₜ* N) : IsClosedMap f := f.toHomeomorph.isClosedMap
 lemma isInducing (f : M ≃ₜ* N) : IsInducing f := f.toHomeomorph.isInducing
@@ -657,16 +589,10 @@ def symm (cme : M ≃ₜ* N) : N ≃ₜ* M := {
 theorem invFun_eq_symm {f : M ≃ₜ* N} : f.invFun = f.symm := rfl
 
 @[to_additive]
-theorem coe_toMulEquiv_symm (f : M ≃ₜ* N) : (f : M ≃* N).symm = f.symm := rfl
-
-@[to_additive]
 theorem coe_toHomeomorph_symm (f : M ≃ₜ* N) : f.toHomeomorph.symm = f.symm.toHomeomorph := rfl
 
 @[to_additive]
 theorem equivLike_inv_eq_symm (f : M ≃ₜ* N) : EquivLike.inv f = f.symm := rfl
-
-@[to_additive]
-theorem toMulEquiv_symm (f : M ≃ₜ* N) : (f.symm : N ≃* M) = (f : M ≃* N).symm := rfl
 
 @[to_additive]
 theorem symm_symm (f : M ≃ₜ* N) : f.symm.symm = f := rfl
