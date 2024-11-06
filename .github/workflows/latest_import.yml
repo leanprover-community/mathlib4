@@ -12,12 +12,12 @@ on:
       - 'staging'
   merge_group:
 
-env:
-  TOP_MODULE: 'Mathlib.Logic.Function.Basic'
 jobs:
   late-importers:
     name: Build
     runs-on: pr
+    env:
+      TOP_MODULE: 'Mathlib.Logic.Function.Basic'
     steps:
     - name: cleanup
       run: |
@@ -76,8 +76,17 @@ jobs:
       with:
         linters: gcc
         run: |
+          echo "${TOP_MODULE}"
+          echo ${TOP_MODULE}
           echo "$TOP_MODULE"
+          echo $TOP_MODULE
           tm="$TOP_MODULE"
+          echo "now tk:"
+          echo "${tm}"
+          echo ${tm}
+          echo "$tm"
+          echo $tm
+          echo "Finally we build"
           lake build "${tm}"
 
     - name: Full report
