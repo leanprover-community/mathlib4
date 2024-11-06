@@ -153,7 +153,7 @@ lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
       rw [if_neg hj.1, if_neg hj.2]
     exact mem_erase.mpr ⟨hi_ne, mem_univ _⟩
 
-lemma image_piFinTwoEquiv {n : ℕ} :
+lemma image_piFinTwoEquiv_finMulAntidiag {n : ℕ} :
     (finMulAntidiag 2 n).image (piFinTwoEquiv <| fun _ => ℕ) = divisorsAntidiagonal n := by
   ext x
   simp [(piFinTwoEquiv <| fun _ => ℕ).symm.surjective.exists]
