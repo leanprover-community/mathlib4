@@ -61,7 +61,7 @@ def finMulAntidiagonal (d : ℕ) (n : ℕ) : Finset (Fin d → ℕ) :=
     ∅
 
 @[simp]
-theorem mem_finMulAntidiagonal {d n : ℕ} {f : (Fin d) → ℕ} :
+theorem mem_finMulAntidiagonal {d n : ℕ} {f : Fin d → ℕ} :
     f ∈ finMulAntidiagonal d n ↔ ∏ i, f i = n ∧ n ≠ 0 := by
   unfold finMulAntidiagonal
   split_ifs with h
@@ -87,17 +87,20 @@ theorem finMulAntidiagonal_zero_right (d : ℕ) :
 
 theorem finMulAntidiagonal_one {d : ℕ} :
     finMulAntidiagonal d 1 = {fun _ => 1} := by
-  ext f; simp only [mem_finMulAntidiagonal, and_true, mem_singleton]
+  ext f
+  simp only [mem_finMulAntidiagonal, and_true, mem_singleton]
   constructor
-  · intro ⟨hf, _⟩; ext i;
-    rw [← Nat.dvd_one, ← hf];
+  · intro ⟨hf, _⟩; ext i
+    rw [← Nat.dvd_one, ← hf]
     exact dvd_prod_of_mem f (mem_univ _)
-  · rintro rfl; simp only [prod_const_one, implies_true, ne_eq, one_ne_zero, not_false_eq_true,
+  · rintro rfl
+    simp only [prod_const_one, implies_true, ne_eq, one_ne_zero, not_false_eq_true,
     and_self]
 
 theorem finMulAntidiagonal_zero_left {n : ℕ} (hn : n ≠ 1) :
     finMulAntidiagonal 0 n = ∅ := by
-  ext; simp [hn.symm]
+  ext
+  simp [hn.symm]
 
 theorem dvd_of_mem_finMulAntidiagonal {n d : ℕ} {f : Fin d → ℕ} (hf : f ∈ finMulAntidiagonal d n)
     (i : Fin d) : f i ∣ n := by
@@ -206,7 +209,7 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
     intro q hq
     rw [Nat.prime_dvd_prime_iff_eq hp.1 (Nat.prime_of_mem_primeFactorsList
       <| List.mem_toFinset.mp q.2)]
-    intro hpq; subst hpq
+    rintro rfl
     rw [(mem_filter.mp hq).2] at hfg
     exact hfg rfl
 
