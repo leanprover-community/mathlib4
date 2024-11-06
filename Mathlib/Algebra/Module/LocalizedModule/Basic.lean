@@ -702,8 +702,6 @@ instance localizedModuleIsLocalizedModule :
       erw [LocalizedModule.smul'_mk, LocalizedModule.mkLinearMap_apply, Submonoid.coe_subtype,
         LocalizedModule.mk_cancel t]
   exists_of_eq eq1 := by simpa only [eq_comm, one_smul] using LocalizedModule.mk_eq.mp eq1
-
-
 lemma IsLocalizedModule.of_restrictScalars (S : Submonoid R)
     {N : Type*} [AddCommGroup N] [Module R N] [Module A M] [Module A N]
     [IsScalarTower R A M] [IsScalarTower R A N]
