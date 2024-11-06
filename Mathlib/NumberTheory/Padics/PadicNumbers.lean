@@ -3,10 +3,11 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.NumberTheory.Padics.PadicNorm
-import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.Tactic.Peel
+import Mathlib.Topology.MetricSpace.Cauchy
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!

@@ -462,7 +462,6 @@ def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
     · exact trivial
     · -- Porting note: need more hand holding here because Lean knows that
       -- `CommRing.ofHom ...` is iso, but without `ofHom` Lean does not know what to do
-      change Epi (Spec.map (CommRingCat.ofHom (algebraMap _ _))).base
       infer_instance
   IsOpen x := AlgebraicGeometry.Scheme.basic_open_isOpenImmersion x
 

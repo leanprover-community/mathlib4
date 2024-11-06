@@ -50,6 +50,7 @@ attribute [instance 0] AddGroupWithOne.toSub
 class AddCommGroupWithOne (R : Type u)
   extends AddCommGroup R, AddGroupWithOne R, AddCommMonoidWithOne R
 
+attribute [instance 90] AddCommGroupWithOne.toAddGroupWithOne
 attribute [instance 50] AddCommGroupWithOne.toAddCommGroup
 attribute [instance 0] AddCommGroupWithOne.toNatCast
 attribute [instance 0] AddCommGroupWithOne.toOne
