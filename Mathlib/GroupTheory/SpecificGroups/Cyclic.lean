@@ -270,6 +270,16 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
         ⟨fun h => by simp at *; tauto, fun h => by rw [Subgroup.mem_bot.1 h]; exact H.one_mem⟩
     subst this; infer_instance
 
+@[to_additive]
+lemma Subgroup.isCyclic_of_le {G : Type*} [Group G] {H H' : Subgroup G} (h : H ≤ H')
+    [IsCyclic H'] :
+    IsCyclic H := by
+  let e := Subgroup.subgroupOfEquivOfLe h
+  obtain ⟨g, hg⟩ := Subgroup.isCyclic <| H.subgroupOf H'
+  refine ⟨e g, fun x ↦ ?_⟩
+  obtain ⟨n, hn⟩ := hg (e.symm x)
+  exact ⟨n, by simp only at hn ⊢; rw [← map_zpow, hn, MulEquiv.apply_symm_apply]⟩
+
 open Finset Nat
 
 section Classical
