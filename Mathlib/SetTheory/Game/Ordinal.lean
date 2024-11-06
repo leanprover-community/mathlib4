@@ -162,7 +162,7 @@ noncomputable abbrev toGame (o : Ordinal) : Game := ⟦o.toPGame⟧
 noncomputable def toGameEmbedding : Ordinal.{u} ↪o Game.{u} where
   toFun := Ordinal.toGame
   inj' a b := by simp
-  map_rel_iff' := @toPGame_le_iff
+  map_rel_iff' := toPGame_le_iff
 
 @[simp]
 theorem toGame_zero : toGame 0 = 0 :=
