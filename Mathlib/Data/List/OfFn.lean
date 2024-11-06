@@ -83,15 +83,6 @@ theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
 theorem ofFn_eq_nil_iff {n : ℕ} {f : Fin n → α} : ofFn f = [] ↔ n = 0 := by
   cases n <;> simp only [ofFn_zero, ofFn_succ, eq_self_iff_true, Nat.succ_ne_zero, reduceCtorEq]
 
-theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
-    (hn : n - 1 < n := Nat.pred_lt <| ofFn_eq_nil_iff.not.mp h) :
-    getLast (ofFn f) h = f ⟨n - 1, hn⟩ := by simp [getLast_eq_getElem]
-
-theorem last_ofFn_succ {n : ℕ} (f : Fin n.succ → α)
-    (h : ofFn f ≠ [] := mt ofFn_eq_nil_iff.mp (Nat.succ_ne_zero _)) :
-    getLast (ofFn f) h = f (Fin.last _) :=
-  last_ofFn f h
-
 /-- Note this matches the convention of `List.ofFn_succ'`, putting the `Fin m` elements first. -/
 theorem ofFn_add {m n} (f : Fin (m + n) → α) :
     List.ofFn f =
@@ -188,7 +179,22 @@ lemma head_ofFn {n} (f : Fin n → α) (h : ofFn f ≠ []) :
 
 lemma getLast_ofFn {n} (f : Fin n → α) (h : ofFn f ≠ []) :
     (ofFn f).getLast h = f ⟨n - 1, Nat.sub_one_lt (mt ofFn_eq_nil_iff.2 h)⟩ := by
-  simp_rw [getLast_eq_getElem, length_ofFn, List.getElem_ofFn]
+  simp [getLast_eq_getElem]
+
+lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :
+    (ofFn f).getLast (mt ofFn_eq_nil_iff.1 (Nat.succ_ne_zero _)) = f (Fin.last _) :=
+  getLast_ofFn f _
+
+@[deprecated getLast_ofFn (since := "2024-11-06")]
+theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
+    (hn : n - 1 < n := Nat.pred_lt <| ofFn_eq_nil_iff.not.mp h) :
+    getLast (ofFn f) h = f ⟨n - 1, hn⟩ := by simp [getLast_eq_getElem]
+
+@[deprecated getLast_ofFn_succ (since := "2024-11-06")]
+theorem last_ofFn_succ {n : ℕ} (f : Fin n.succ → α)
+    (h : ofFn f ≠ [] := mt ofFn_eq_nil_iff.mp (Nat.succ_ne_zero _)) :
+    getLast (ofFn f) h = f (Fin.last _) :=
+  getLast_ofFn_succ _
 
 lemma ofFn_cons {n} (a : α) (f : Fin n → α) : ofFn (Fin.cons a f) = a :: ofFn f := by
   rw [ofFn_succ]
