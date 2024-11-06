@@ -70,7 +70,16 @@ lemma pairingDual_ιMulti_ιMulti {n : ℕ} (f : (_ : Fin n) → Module.Dual R M
       Matrix.det (n := Fin n) (.of (fun i j ↦ f j (v i))) := by
   simp [pairingDual]
 
+
 section
+
+/-! If a `R`-module `M` has a family of vectors `x : ι → M` and linear maps `f : ι → M`
+such that `f i (x j)` is `1` or `0` depending on `i = j` or `i ≠ j`, then if `ι` has
+a linear order, then a similar property regarding `pairingDual R M n`
+applies to the family of vectors indexed
+by `Fin n ↪o ι` in `⋀[R]^n M` and in `⋀[R]^n (Module.Dual R M)` that are obtained
+by taking exterior products of the `x i` and the `f j`. (This shall be used in order
+to construct a basis of `⋀[R]^n M` when `M` is a free module.) -/
 
 variable {R M} {ι : Type*} [LinearOrder ι]
   (x : ι → M) (f : ι → Module.Dual R M)
