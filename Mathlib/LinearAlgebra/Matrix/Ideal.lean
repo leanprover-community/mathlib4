@@ -253,7 +253,7 @@ open Matrix
 
 variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
 
-lemma jacobson_matricesOver_le (I : TwoSidedIdeal R) :
+private lemma jacobson_matricesOver_le (I : TwoSidedIdeal R) :
     (I.matricesOver n).jacobson ≤ I.jacobson.matricesOver n := by
   -- Proof generalized from example 8 in
   -- https://ysharifi.wordpress.com/2022/08/16/the-jacobson-radical-basic-examples/
