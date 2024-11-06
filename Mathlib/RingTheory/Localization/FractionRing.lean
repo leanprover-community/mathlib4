@@ -34,7 +34,7 @@ commutative ring, field of fractions
 
 variable (R : Type*) [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
 variable [Algebra R S] {P : Type*} [CommRing P]
-variable {A : Type*} [CommRing A] [IsDomain A] (K : Type*)
+variable {A : Type*} [CommRing A] (K : Type*)
 
 -- TODO: should this extend `Algebra` instead of assuming it?
 /-- `IsFractionRing R K` states `K` is the field of fractions of an integral domain `R`. -/
@@ -92,7 +92,7 @@ protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] {x : R}
     (hx : x ∈ nonZeroDivisors R) : algebraMap R K x ≠ 0 :=
   IsLocalization.to_map_ne_zero_of_mem_nonZeroDivisors _ le_rfl hx
 
-variable (A)
+variable (A) [IsDomain A]
 
 include A in
 /-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is an
@@ -144,9 +144,19 @@ end CommRing
 variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [Algebra A K]
   [IsFractionRing A K] {g : A →+* L}
 
+private lemma nontrivial_of_ringHom_nontrivial
+  {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) [Nontrivial B] : Nontrivial A := by
+  rcases subsingleton_or_nontrivial A with _ | h
+  · have : (1 : A) = 0 := Subsingleton.elim _ _
+    apply_fun f at this
+    rw [map_one, map_zero] at this
+    exact False.elim (one_ne_zero this)
+  exact h
+
 theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
-    mk' K r ⟨s, hs⟩ = algebraMap A K r / algebraMap A K s :=
-  mk'_eq_iff_eq_mul.2 <|
+    mk' K r ⟨s, hs⟩ = algebraMap A K r / algebraMap A K s := by
+  haveI := nontrivial_of_ringHom_nontrivial (algebraMap A K)
+  exact mk'_eq_iff_eq_mul.2 <|
     (div_mul_cancel₀ (algebraMap A K r)
         (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hs)).symm
 
@@ -160,18 +170,18 @@ theorem div_surjective (z : K) :
   ⟨x, y, hy, by rwa [mk'_eq_div] at h⟩
 
 theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors A) :
-    IsUnit (g y) :=
-  IsUnit.mk0 (g y) <|
+    IsUnit (g y) := by
+  haveI := nontrivial_of_ringHom_nontrivial g
+  exact IsUnit.mk0 (g y) <|
     show g.toMonoidWithZeroHom y ≠ 0 from map_ne_zero_of_mem_nonZeroDivisors g hg y.2
 
-@[simp]
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
-  refine ⟨fun hxy => ?_, fun h => by rw [h, mk'_zero]⟩
-  simp_rw [mk'_eq_zero_iff, mul_left_coe_nonZeroDivisors_eq_zero_iff] at hxy
-  exact (exists_const _).mp hxy
+  haveI := nontrivial_of_ringHom_nontrivial (algebraMap R K)
+  simp [nonZeroDivisors.ne_zero]
 
 theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y := by
+  haveI := nontrivial_of_ringHom_nontrivial (algebraMap A K)
   refine ⟨?_, fun hxy => by rw [hxy, mk'_self']⟩
   intro hxy
   have hy : (algebraMap A K) ↑y ≠ (0 : K) :=
@@ -226,7 +236,7 @@ fraction rings `K ≃+* L`. -/
 noncomputable def ringEquivOfRingEquiv : K ≃+* L :=
   IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
-@[deprecated (since := "2014-11-05")]
+@[deprecated (since := "2024-11-05")]
 alias fieldEquivOfRingEquiv := ringEquivOfRingEquiv
 
 @[simp]
@@ -234,7 +244,7 @@ lemma ringEquivOfRingEquiv_algebraMap
     (a : A) : ringEquivOfRingEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
   simp [ringEquivOfRingEquiv]
 
-@[deprecated (since := "2014-11-05")]
+@[deprecated (since := "2024-11-05")]
 alias fieldEquivOfRingEquiv_algebraMap := ringEquivOfRingEquiv_algebraMap
 
 end ringEquivOfRingEquiv
@@ -263,7 +273,6 @@ section fieldEquivOfAlgEquiv
 
 variable {A B C D : Type*}
   [CommRing A] [CommRing B] [CommRing C] [CommRing D]
-  [IsDomain A] [IsDomain B] [IsDomain C] [IsDomain D]
   [Algebra A B] [Algebra A C] [Algebra A D]
   (FA FB FC FD : Type*) [Field FA] [Field FB] [Field FC] [Field FD]
   [Algebra A FA] [Algebra B FB] [Algebra C FC] [Algebra D FD]
@@ -283,12 +292,10 @@ noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : FB ≃ₐ[FA] FC wh
     simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B FB]
     simp [← IsScalarTower.algebraMap_apply A C FC]
 
-omit [IsDomain B] [IsDomain C] in
 lemma restrictScalars_fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) :
     (fieldEquivOfAlgEquiv FA FB FC f).restrictScalars A = algEquivOfAlgEquiv f := by
   ext; rfl
 
-omit [IsDomain B] [IsDomain C] in
 /-- This says that `fieldEquivOfAlgEquiv f` is an extension of `f` (i.e., it agrees with `f` on
 `B`). Whereas `(fieldEquivOfAlgEquiv f).commutes` says that `fieldEquivOfAlgEquiv f` fixes `K`. -/
 @[simp]
@@ -304,7 +311,6 @@ lemma fieldEquivOfAlgEquiv_refl :
   obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := B) x
   simp
 
-omit [IsDomain C] [IsDomain D] in
 lemma fieldEquivOfAlgEquiv_trans (f : B ≃ₐ[A] C) (g : C ≃ₐ[A] D) :
     fieldEquivOfAlgEquiv FA FB FD (f.trans g) =
       (fieldEquivOfAlgEquiv FA FB FC f).trans (fieldEquivOfAlgEquiv FA FC FD g) := by
@@ -316,7 +322,7 @@ end fieldEquivOfAlgEquiv
 
 section fieldEquivOfAlgEquivHom
 
-variable {A B : Type*} [CommRing A] [CommRing B] [IsDomain A] [IsDomain B] [Algebra A B]
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (K L : Type*) [Field K] [Field L]
   [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
   [Algebra A L] [IsScalarTower A B L] [Algebra K L] [IsScalarTower A K L]
@@ -398,6 +404,8 @@ namespace FractionRing
 instance unique [Subsingleton R] : Unique (FractionRing R) := inferInstance
 
 instance [Nontrivial R] : Nontrivial (FractionRing R) := inferInstance
+
+variable [IsDomain A]
 
 /-- Porting note: if the fields of this instance are explicitly defined as they were
 in mathlib3, the last instance in this file suffers a TC timeout -/
