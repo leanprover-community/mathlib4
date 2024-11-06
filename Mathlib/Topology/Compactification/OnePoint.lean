@@ -106,11 +106,11 @@ theorem infty_ne_coe (x : X) : ∞ ≠ (x : OnePoint X) :=
   nofun
 
 /-- Recursor for `OnePoint` using the preferred forms `∞` and `↑x`. -/
-@[elab_as_elim]
-protected def rec {C : OnePoint X → Sort*} (h₁ : C ∞) (h₂ : ∀ x : X, C x) :
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+protected def rec {C : OnePoint X → Sort*} (infty : C ∞) (coe : ∀ x : X, C x) :
     ∀ z : OnePoint X, C z
-  | ∞ => h₁
-  | (x : X) => h₂ x
+  | ∞ => infty
+  | (x : X) => coe x
 
 /-- An elimination principle for `OnePoint`. -/
 @[inline] protected def elim : OnePoint X → Y → (X → Y) → Y := Option.elim
@@ -266,7 +266,7 @@ theorem continuous_coe : Continuous ((↑) : X → OnePoint X) :=
 theorem isOpenMap_coe : IsOpenMap ((↑) : X → OnePoint X) := fun _ => isOpen_image_coe.2
 
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : X → OnePoint X) :=
-  isOpenEmbedding_of_continuous_injective_open continuous_coe coe_injective isOpenMap_coe
+  .of_continuous_injective_isOpenMap continuous_coe coe_injective isOpenMap_coe
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_coe := isOpenEmbedding_coe
@@ -546,7 +546,7 @@ example [WeaklyLocallyCompactSpace X] [T2Space X] : T4Space (OnePoint X) := infe
 
 /-- If `X` is not a compact space, then `OnePoint X` is a connected space. -/
 instance [PreconnectedSpace X] [NoncompactSpace X] : ConnectedSpace (OnePoint X) where
-  toPreconnectedSpace := isDenseEmbedding_coe.toIsDenseInducing.preconnectedSpace
+  toPreconnectedSpace := isDenseEmbedding_coe.isDenseInducing.preconnectedSpace
   toNonempty := inferInstance
 
 /-- If `X` is an infinite type with discrete topology (e.g., `ℕ`), then the identity map from
@@ -563,12 +563,12 @@ instance (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
     TotallySeparatedSpace (OnePoint X) where
   isTotallySeparated_univ x _ y _ hxy := by
     cases x with
-    | none =>
+    | infty =>
       refine ⟨{y}ᶜ, {y}, isOpen_compl_singleton, ?_, hxy, rfl, (compl_union_self _).symm.subset,
         disjoint_compl_left⟩
       rw [OnePoint.isOpen_iff_of_not_mem]
       exacts [isOpen_discrete _, hxy]
-    | some val =>
+    | coe val =>
       refine ⟨{some val}, {some val}ᶜ, ?_, isOpen_compl_singleton, rfl, hxy.symm, by simp,
         disjoint_compl_right⟩
       rw [OnePoint.isOpen_iff_of_not_mem]
