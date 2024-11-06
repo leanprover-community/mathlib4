@@ -28,7 +28,7 @@ jobs:
         with:
           ref: master
       - name: Determine Zulip topic
-        id: determine_topic
+      id: determine_topic
         run: |
           ./scripts/get_tlabel.sh "${PR}" >> "$GITHUB_OUTPUT"
         env:
@@ -37,8 +37,10 @@ jobs:
 
       - name: Form the message
         id: merge_or_delegate
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
         run: |
-          echo "${{ github.event.comment.body }}"
+          echo "${TITLE}"
       #- name: Send message on Zulip
       #  uses: zulip/github-actions-zulip/send-message@v1
       #  with:
