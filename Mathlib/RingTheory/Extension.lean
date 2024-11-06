@@ -224,7 +224,6 @@ noncomputable def Hom.comp (f : Hom P' P'') (g : Hom P P') : Hom P P'' where
   toRingHom_algebraMap := by simp [← IsScalarTower.algebraMap_apply]
   algebraMap_toRingHom := by simp [← IsScalarTower.algebraMap_apply]
 
-
 @[simp]
 lemma Hom.comp_id (f : Hom P P') : f.comp (Hom.id P) = f := by ext; simp
 
