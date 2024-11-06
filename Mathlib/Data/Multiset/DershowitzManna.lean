@@ -11,16 +11,17 @@ import Mathlib.Logic.Relation
 # Dershowitz-Manna ordering
 
 In this file we define the _Dershowitz-Manna ordering_ on multisets. Specifically, for two multisets
-M and N over an underlying set S, M is smaller than N in the Dershowitz-Manna ordering if M can be
-obtained from N by replacing one or more elements in N by some finite number of elements from S,
-each of which is smaller (in the underling ordering over S) than one of the replaced elements from
-N. We prove that, given a well-founded partial order on the underlying set, the Dershowitz-Manna
-ordering defined over multisets is also well-founded.
+`M` and `N` in a partial order `(S, <)`, `M` is smaller than `N` in the Dershowitz-Manna ordering if
+`M` can be obtained from `N` by replacing one or more elements in `N` by some finite number of
+elements from `S`, each of which is smaller (in the underling ordering over `S`) than one of the
+replaced elements from `N`. We prove that, given a well-founded partial order on the underlying set,
+the Dershowitz-Manna ordering defined over multisets is also well-founded.
 
 ## Main results
 
-- `Multiset.DMLT` : the standard definition fo the `Dershowitz-Manna ordering`.
-- `Multiset.DMLT.wf` : the main theorem about the `Dershowitz-Manna ordering` being well-founded.
+- `Multiset.IsDershowitzMannaLT` : the standard definition fo the `Dershowitz-Manna ordering`.
+- `Multiset.IsDershowitzMannaLT.wf` : the main theorem about the `Dershowitz-Manna ordering`
+being well-founded.
 - `Multiset.TransLT_eq_DMLT` : two definitions of the `Dershowitz-Manna ordering` are equivalent.
 
 ## References
@@ -39,14 +40,14 @@ namespace Multiset
 variable {α : Type*}
 
 /-- The standard Dershowitz–Manna ordering. -/
-def DMLT [Preorder α] (M N : Multiset α) : Prop :=
+def IsDershowitzMannaLT [Preorder α] (M N : Multiset α) : Prop :=
   ∃ (X Y Z : Multiset α),
       Z ≠ ∅
     ∧ M = X + Y
     ∧ N = X + Z
     ∧ (∀ y ∈ Y, ∃ z ∈ Z, y < z)
 
-/-- A special case of DMLT. The transitive closure of it is used to define
+/-- A special case of `IsDershowitzMannaLT`. The transitive closure of it is used to define
 an equivalent (proved later) version of the ordering. -/
 private def DMLTSingleton [LT α] (M N : Multiset α) : Prop :=
   ∃ X Y a,
@@ -56,12 +57,13 @@ private def DMLTSingleton [LT α] (M N : Multiset α) : Prop :=
 
 open Relation
 
-/-- The transitive closure of DMLTSingleton and is equivalent to DMLT (proved later). -/
+/-- The transitive closure of `DMLTSingleton` and is equivalent to `IsDershowitzMannaLT`
+(proved later). -/
 private def TransLT [LT α] : Multiset α → Multiset α → Prop := TransGen DMLTSingleton
 
-/-- A special case of DMLT. -/
+/-- A special case of `IsDershowitzMannaLT`. -/
 private lemma dmlt_of_DMLT_singleton [Preorder α] (M N : Multiset α)
-    (h : DMLTSingleton M N) : DMLT M N := by
+    (h : DMLTSingleton M N) : IsDershowitzMannaLT M N := by
   rcases h with ⟨X, Y, a, M_def, N_def, ys_lt_a⟩
   use X, Y, {a}, by simp, M_def, N_def
   · simpa
@@ -157,7 +159,7 @@ private lemma acc_cons_of_acc_of_lt [DecidableEq α] [Preorder α] :
       apply @acc_cons_of_acc α _ _ _ _ _ accM1
       simp_all
 
-/-- If all elements of a multiset `M` are accessible with `LT.lt`, then the multiset M is
+/-- If all elements of a multiset `M` are accessible with `LT.lt`, then the multiset `M` is
 accessible given the `DMLTSingleton` relation. -/
 private lemma acc_of_acc_lt [DecidableEq α] [Preorder α] :
     ∀ (M : Multiset α), (∀x, x ∈ M → Acc LT.lt x) → Acc DMLTSingleton M  := by
@@ -192,9 +194,10 @@ private lemma DMLT_singleton_wf [DecidableEq α] [Preorder α]
   apply Acc.intro y
   assumption
 
-/-- `DMLT` is transitive. -/
+/-- `IsDershowitzMannaLT` is transitive. -/
 private lemma dmlt_trans {α} [pre : Preorder α] [dec : DecidableEq α] :
-    ∀ (M N P : Multiset α) , DMLT N M → DMLT P N → DMLT P M := by
+    ∀ (M N P : Multiset α) ,
+    IsDershowitzMannaLT N M → IsDershowitzMannaLT P N → IsDershowitzMannaLT P M := by
   intros M N P LTNM LTPN
   rcases LTNM with ⟨X1, Y1, Z1, Z1_ne, N1_def, M1_def, Ord1⟩
   rcases LTPN with ⟨X2, Y2, Z2, _, P2_def, N2_def, Ord2⟩
@@ -255,8 +258,8 @@ private lemma dmlt_trans {α} [pre : Preorder α] [dec : DecidableEq α] :
       tauto
 
 private lemma transLT_of_dmLT [dec : DecidableEq α] [Preorder α]
-    [DecidableRel (fun (x : α) (y : α) => x < y)] (M N : Multiset α) (DMLTMN : DMLT M N) :
-    TransLT M N := by
+    [DecidableRel (fun (x : α) (y : α) => x < y)] (M N : Multiset α)
+    (DMLTMN : IsDershowitzMannaLT M N) : TransLT M N := by
   rcases DMLTMN with ⟨X, Y, Z, Z_not_empty, MXY, NXZ, h⟩
   unfold TransLT
   revert X Y M N
@@ -307,7 +310,7 @@ private lemma transLT_of_dmLT [dec : DecidableEq α] [Preorder α]
       let f : α → Multiset α := fun z => Y.filter (fun y => y < z) -- DecidableRel
       let N' := X + newZ + f z
       apply @transitive_transGen _ _ _ N'
-      -- step from N' to M
+      -- step from `N'` to `M`
       · apply IH newZ newZ_sub_Z newZ_nonEmpty
         change M = (X + f z) + (Y - f z)
         · ext a
@@ -359,7 +362,7 @@ private lemma transLT_of_dmLT [dec : DecidableEq α] [Preorder α]
                 simp_all only [mem_filter]
               exact y_notin_Yfz y_in
           · exact y_lt_t
-      -- single step N to N'
+      -- single step `N` to `N'`
       · have : DMLTSingleton N' N := by
           refine ⟨X + newZ, f z, z, ?_, ?_, ?_ ⟩
           · rfl
@@ -373,10 +376,11 @@ private lemma transLT_of_dmLT [dec : DecidableEq α] [Preorder α]
         apply TransGen.single
         exact this
 
-/-- TransLT and DMLT are equivalent. -/
+/-- `TransLT` and `IsDershowitzMannaLT` are equivalent. -/
 private lemma transLT_eq_dmLT [DecidableEq α] [Preorder α]
     [DecidableRel (fun (x : α) (y: α) => x < y)] :
-    (TransLT : Multiset α → Multiset α → Prop) = (DMLT : Multiset α → Multiset α → Prop) := by
+    (TransLT : Multiset α → Multiset α → Prop) =
+    (IsDershowitzMannaLT : Multiset α → Multiset α → Prop) := by
   funext X Y
   apply propext
   constructor
@@ -392,15 +396,16 @@ private lemma transLT_eq_dmLT [DecidableEq α] [Preorder α]
       assumption
   · apply transLT_of_dmLT
 
-/-- The desired theorem: If `LT.lt` is well-founded, then `DMLT` is well-founded. -/
-theorem DMLT.wf [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α) (y : α) => x < y)]
-    (wf_lt :  WellFoundedLT α) : WellFounded (DMLT : Multiset α → Multiset α → Prop) := by
+/-- The desired theorem: If `LT.lt` is well-founded, then `IsDershowitzMannaLT` is well-founded. -/
+theorem IsDershowitzMannaLT.wf [DecidableEq α] [Preorder α]
+    [DecidableRel (fun (x : α) (y : α) => x < y)] (wf_lt :  WellFoundedLT α) :
+    WellFounded (IsDershowitzMannaLT : Multiset α → Multiset α → Prop) := by
   rw [← transLT_eq_dmLT]
   apply WellFounded.transGen
   exact (DMLT_singleton_wf wf_lt)
 
 instance instWellFoundedDMLT [DecidableEq α] [Preorder α] [wf_lt : WellFoundedLT α]
     [DecidableRel (fun (x : α) (y : α) => x < y)]  :
-    WellFoundedRelation (Multiset α) := ⟨DMLT, DMLT.wf wf_lt⟩
+    WellFoundedRelation (Multiset α) := ⟨IsDershowitzMannaLT, IsDershowitzMannaLT.wf wf_lt⟩
 
 end Multiset
