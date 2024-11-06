@@ -117,7 +117,7 @@ convert (config := {transparency := .default}) h
 ```
 These are passed to `congr!`. See `Congr!.Config` for options.
 -/
-syntax (name := convert) "convert" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
+syntax (name := convert) "convert" Parser.Tactic.optConfig " ←"? ppSpace term (" using " num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 /--
@@ -137,9 +137,9 @@ def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
       return t
 
 elab_rules : tactic
-| `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
+| `(tactic| convert $cfg:optConfig $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
-    let config ← Congr!.elabConfig (mkOptionalNode cfg)
+    let config ← Congr!.elabConfig cfg
     let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ← elabTermForConvert term expectedType
@@ -174,14 +174,14 @@ the syntax for `convert_to` is the same as for `convert`, and it has variations 
 Note that `convert_to ty at h` may leave a copy of `h` if a later local hypotheses or the target
 depends on it, just like in `rw` or `simp`.
 -/
-syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
+syntax (name := convertTo) "convert_to" Parser.Tactic.optConfig " ←"? ppSpace term (" using " num)?
   (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
 
 elab_rules : tactic
-| `(tactic| convert_to $[$cfg:config]? $[←%$sym]? $newType $[using $n]?
+| `(tactic| convert_to $cfg:optConfig $[←%$sym]? $newType $[using $n]?
     $[with $ps?*]? $[$loc?:location]?) => do
   let n : ℕ := n |>.map (·.getNat) |>.getD 1
-  let config ← Congr!.elabConfig (mkOptionalNode cfg)
+  let config ← Congr!.elabConfig cfg
   let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
   withLocation (expandOptLocation (mkOptionalNode loc?))
     (atLocal := fun fvarId ↦ do
