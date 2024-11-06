@@ -244,19 +244,19 @@ def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElab
     | `Mathlib.Tactic.Replace =>
       if mainModule != `Mathlib.Tactic then
         Linter.logLint linter.style.header i
-          "Mathlib.Tactic.Replace defines a deprecated form of the 'replace' tactic; \
+          "'Mathlib.Tactic.Replace' defines a deprecated form of the 'replace' tactic; \
           please do not use it in mathlib."
     | `Mathlib.Tactic.Have =>
       if ![`Mathlib.Tactic, `Mathlib.Tactic.Replace].contains mainModule then
         Linter.logLint linter.style.header i
-          "Mathlib.Tactic.Have defines a deprecated form of the 'have' tactic; \
+          "'Mathlib.Tactic.Have' defines a deprecated form of the 'have' tactic; \
           please do not use it in mathlib."
     | modName =>
       if modName.getRoot == `Lake then
       Linter.logLint linter.style.header i
         "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
         (see e.g. mathlib4#13779). Please consider carefully if this import is useful and \
-        make sure to benchmark it. If this is fine, feel free to allow this linter."
+        make sure to benchmark it. If this is fine, feel free to silence this linter."
       else if (`Mathlib.Deprecated).isPrefixOf modName &&
           !(`Mathlib.Deprecated).isPrefixOf mainModule then
         -- We do not complain about files in the `Deprecated` directory importing one another.
