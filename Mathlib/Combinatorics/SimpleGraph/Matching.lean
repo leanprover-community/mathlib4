@@ -138,7 +138,7 @@ protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g
   rintro _ ⟨v, hv, rfl⟩
   obtain ⟨v', hv'⟩ := hM hv
   use f v'
-  refine ⟨by simp only [Relation.map_apply]; exact ⟨v, ⟨v', ⟨hv'.1, rfl, rfl⟩⟩⟩, ?_⟩
+  refine ⟨by simp only [Relation.map_apply]; exact ⟨v, v', hv'.1, rfl, rfl⟩, ?_⟩
   intro y hy
   obtain ⟨w', hw'⟩ := hf.existsUnique y
   rw [map_adj, ← hw'.1, Relation.map_apply_apply hf.injective hf.injective] at hy
@@ -147,9 +147,9 @@ protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g
 
 @[simp]
 lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : G ≃g G') :
-    (M.map f.toHom).IsMatching ↔ M.IsMatching := by
-  exact ⟨fun h ↦
-    by simpa [← map_comp] using h.map f.symm.toHom f.symm.bijective, .map f.toHom f.bijective⟩
+    (M.map f.toHom).IsMatching ↔ M.IsMatching where
+   mp h := by simpa [← map_comp] using h.map f.symm.toHom f.symm.bijective
+   mpr := .map f.toHom f.bijective
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
