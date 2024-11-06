@@ -166,13 +166,6 @@ theorem dualProdDualEquivDual_apply (φ : Module.Dual R M) (ψ : Module.Dual R M
 
 end Prod
 
-theorem Projective.exists_comp_eq_id_of_finite [Module.Finite R M] [Projective R M] :
-    ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M) (g : M →ₗ[R] Fin n → R),
-      Function.Surjective f ∧ Function.Injective g ∧ f ∘ₗ g = .id :=
-  have ⟨n, f, surj⟩ := Finite.exists_fin' R M
-  have ⟨g, hfg⟩ := Module.projective_lifting_property f .id surj
-  ⟨n, f, g, surj, LinearMap.injective_of_comp_eq_id _ _ hfg, hfg⟩
-
 end Module
 
 section DualMap
