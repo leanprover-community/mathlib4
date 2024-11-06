@@ -3,9 +3,7 @@ Copyright (c) 2024 Jineon Baek and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.RingTheory.Polynomial.Wronskian
-import Mathlib.RingTheory.Radical
+import Mathlib.RingTheory.Polynomial.Radical
 
 /-!
 # Mason-Stothers theorem
@@ -27,7 +25,7 @@ noncomputable section
 
 open scoped Classical
 
-open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain
+open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
 
 variable {k : Type*} [Field k]
 
@@ -57,123 +55,6 @@ theorem max₃_lt {a b c d : Nat} : max₃ a b c < d ↔ a < d ∧ b < d ∧ c <
 theorem max₃_le {a b c d : Nat} : max₃ a b c ≤ d ↔ a ≤ d ∧ b ≤ d ∧ c ≤ d := by
   rw [max₃, Nat.max_le, Nat.max_le, and_assoc]
 
-
-/-- For a given polynomial `a`, `divRadical a` is `a` divided by its radical `radical a`.-/
-def divRadical (a : k[X]) : k[X] := a / radical a
-
-
-theorem mul_radical_divRadical (a : k[X]) : radical a * divRadical a = a := by
-  rw [divRadical]
-  rw [← EuclideanDomain.mul_div_assoc]
-  ·refine mul_div_cancel_left₀ _ (radical_ne_zero a)
-  exact radical_dvd_self a
-
-theorem divRadical_ne_zero {a : k[X]} (ha : a ≠ 0) : divRadical a ≠ 0 := by
-  rw [← mul_radical_divRadical a] at ha
-  exact right_ne_zero_of_mul ha
-
-theorem divRadical_isUnit {u : k[X]} (hu : IsUnit u) : IsUnit (divRadical u) := by
-  rwa [divRadical, radical_unit_eq_one hu, EuclideanDomain.div_one]
-
-theorem eq_divRadical {a x : k[X]} (h : radical a * x = a) : x = divRadical a := by
-  apply EuclideanDomain.eq_div_of_mul_eq_left (radical_ne_zero a)
-  rwa [mul_comm]
-
-theorem divRadical_mul {a b : k[X]} (hc : IsCoprime a b) :
-    divRadical (a * b) = divRadical a * divRadical b := by
-  by_cases ha : a = 0
-  · rw [ha, MulZeroClass.zero_mul, divRadical, EuclideanDomain.zero_div, MulZeroClass.zero_mul]
-  by_cases hb : b = 0
-  · rw [hb, MulZeroClass.mul_zero, divRadical, EuclideanDomain.zero_div, MulZeroClass.mul_zero]
-  symm; apply eq_divRadical
-  rw [radical_mul hc]
-  rw [mul_mul_mul_comm, mul_radical_divRadical, mul_radical_divRadical]
-
-theorem divRadical_dvd_self (a : k[X]) : divRadical a ∣ a := by
-  rw [divRadical]
-  apply EuclideanDomain.div_dvd_of_dvd
-  exact radical_dvd_self a
-
-/-
-Main lemma: `divRadical a` divides `a'`.
-Proof uses `induction_on_coprime` of `UniqueFactorizationDomain`.
--/
-theorem divRadical_dvd_derivative (a : k[X]) : (divRadical a) ∣ (derivative a) := by
-  induction a using induction_on_coprime
-  · case h0 =>
-    rw [derivative_zero]
-    apply dvd_zero
-  · case h1 a ha =>
-    exact (divRadical_isUnit ha).dvd
-  · case hpr p i hp =>
-    cases i
-    · rw [pow_zero, derivative_one]
-      apply dvd_zero
-    · case succ i =>
-      rw [← mul_dvd_mul_iff_left (radical_ne_zero (p ^ i.succ)), mul_radical_divRadical,
-        radical_pow_of_prime hp i.succ_pos, derivative_pow_succ, ← mul_assoc]
-      apply dvd_mul_of_dvd_left
-      rw [mul_comm, mul_assoc]
-      apply dvd_mul_of_dvd_right
-      rw [pow_succ, mul_dvd_mul_iff_left (pow_ne_zero i hp.ne_zero), dvd_normalize_iff]
-  · -- If it holds for coprime pair a and b, then it also holds for a * b.
-    case hcp x y hpxy hx hy =>
-    have hc : IsCoprime x y :=
-      EuclideanDomain.isCoprime_of_dvd
-        (fun ⟨hx, hy⟩ => not_isUnit_zero (hpxy (zero_dvd_iff.mpr hx) (zero_dvd_iff.mpr hy)))
-        fun p hp _ hpx hpy => hp (hpxy hpx hpy)
-    rw [divRadical_mul hc, derivative_mul]
-    exact dvd_add (mul_dvd_mul hx (divRadical_dvd_self y)) (mul_dvd_mul (divRadical_dvd_self x) hy)
-
-theorem divRadical_dvd_wronskian_left (a b : k[X]) : (divRadical a) ∣ wronskian a b := by
-  rw [wronskian]
-  apply dvd_sub
-  · apply dvd_mul_of_dvd_left
-    exact divRadical_dvd_self a
-  · apply dvd_mul_of_dvd_left
-    exact divRadical_dvd_derivative a
-
-theorem divRadical_dvd_wronskian_right (a b : k[X]) : (divRadical b) ∣ wronskian a b := by
-  rw [← wronskian_neg_eq, dvd_neg]
-  exact divRadical_dvd_wronskian_left _ _
-
-@[simp]
-theorem dvd_derivative_iff {a : k[X]} : a ∣ derivative a ↔ derivative a = 0 := by
-  constructor
-  · intro h
-    by_cases a_nz : a = 0
-    · rw [a_nz]; simp only [derivative_zero]
-    by_contra deriv_nz
-    have deriv_lt := degree_derivative_lt a_nz
-    have le_deriv := Polynomial.degree_le_of_dvd h deriv_nz
-    have lt_self := le_deriv.trans_lt deriv_lt
-    simp only [lt_self_iff_false] at lt_self
-  intro h; rw [h]; simp
-
-theorem IsCoprime.wronskian_eq_zero_iff {a b : k[X]} (hc : IsCoprime a b) :
-    wronskian a b = 0 ↔ derivative a = 0 ∧ derivative b = 0 := by
-  constructor
-  · intro hw
-    rw [wronskian, sub_eq_iff_eq_add, zero_add] at hw
-    constructor
-    · rw [← dvd_derivative_iff]
-      apply hc.dvd_of_dvd_mul_right
-      rw [← hw]; exact dvd_mul_right _ _
-    · rw [← dvd_derivative_iff]
-      apply hc.symm.dvd_of_dvd_mul_left
-      rw [hw]; exact dvd_mul_left _ _
-  intro hdab
-  cases' hdab with hda hdb
-  rw [wronskian]
-  rw [hda, hdb]; simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, sub_self]
-
-
-protected theorem IsCoprime.divRadical {a b : k[X]} (h : IsCoprime a b) :
-    IsCoprime (divRadical a) (divRadical b) := by
-  rw [← mul_radical_divRadical a] at h
-  rw [← mul_radical_divRadical b] at h
-  exact h.of_mul_left_right.of_mul_right_right
-
 private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian a b) (ha : a ≠ 0)
     (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b) (hbc : IsCoprime b c) (hca : IsCoprime c a)
     (abc_dr_dvd_w : divRadical (a * b * c) ∣ w) :
@@ -194,7 +75,7 @@ private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian
         rw [←
           Polynomial.natDegree_mul (divRadical_ne_zero habc) (radical_ne_zero (a * b * c))]
       _ = (a * b * c).natDegree := by
-        rw [mul_comm _ (radical _)]; rw [mul_radical_divRadical (a * b * c)]
+        rw [mul_comm _ (radical _)]; rw [radical_mul_divRadical (a * b * c)]
       _ = a.natDegree + b.natDegree + c.natDegree := by
         rw [Polynomial.natDegree_mul hab hc, Polynomial.natDegree_mul ha hb]
   rw [t3] at t4
