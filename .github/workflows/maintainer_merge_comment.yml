@@ -28,7 +28,7 @@ jobs:
         with:
           ref: master
       - name: Determine Zulip topic
-      id: determine_topic
+        id: determine_topic
         run: |
           ./scripts/get_tlabel.sh "${PR}" >> "$GITHUB_OUTPUT"
         env:
