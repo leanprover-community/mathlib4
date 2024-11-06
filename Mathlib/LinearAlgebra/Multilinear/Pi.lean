@@ -73,14 +73,14 @@ from each selection of indices (with domain `Π i, κ i`).
 def piFamily (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
     MultilinearMap R (fun i => Π j : κ i, M i j) (Π t : Π i, κ i, N t) where
   toFun x := fun p => f p (fun i => x i (p i))
-  map_add' {dec} m i x y := funext fun p => by
+  map_update_add' {dec} m i x y := funext fun p => by
     cases Subsingleton.elim dec (by infer_instance)
     dsimp
-    simp_rw [Function.apply_update (fun i m => m (p i)) m, Pi.add_apply, (f p).map_add]
-  map_smul' {dec} m i c x := funext fun p => by
+    simp_rw [Function.apply_update (fun i m => m (p i)) m, Pi.add_apply, (f p).map_update_add]
+  map_update_smul' {dec} m i c x := funext fun p => by
     cases Subsingleton.elim dec (by infer_instance)
     dsimp
-    simp_rw [Function.apply_update (fun i m => m (p i)) m, Pi.smul_apply, (f p).map_smul]
+    simp_rw [Function.apply_update (fun i m => m (p i)) m, Pi.smul_apply, (f p).map_update_smul]
 
 /-- When applied to a family of finitely-supported functions each supported on a single element,
 `piFamily` is itself supported on a single element, with value equal to the map `f` applied
