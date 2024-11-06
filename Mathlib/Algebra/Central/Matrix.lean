@@ -19,7 +19,7 @@ variable (K D : Type*) [CommSemiring K] [Semiring D] [Algebra K D] [IsCentral K 
 open Matrix in
 instance matrix (ι : Type*) [Fintype ι] [DecidableEq ι] :
     Algebra.IsCentral K (Matrix ι ι D) where
-  out := fun m h => by
+  out m h := by
     refine isEmpty_or_nonempty ι |>.recOn
       (fun h => Algebra.mem_bot.2 ⟨0, Matrix.ext fun i _ => h.elim i⟩) fun ⟨i⟩ => ?_
     obtain ⟨d, rfl⟩ := mem_range_scalar_of_commute_stdBasisMatrix (M := m) (fun _ _ _ =>
