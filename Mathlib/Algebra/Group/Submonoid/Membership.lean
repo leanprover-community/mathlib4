@@ -6,7 +6,6 @@ Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
-import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Int.Defs
