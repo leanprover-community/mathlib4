@@ -275,4 +275,8 @@ theorem jacobson_matricesOver (I : TwoSidedIdeal R) :
   · show asIdeal (I.matricesOver n).jacobson ≥ asIdeal (I.jacobson.matricesOver n)
     simp [asIdeal_jacobson, asIdeal_matricesOver, Ideal.matricesOver_jacobson_le]
 
+theorem matricesOver_jacobson_bot :
+    (⊥ : TwoSidedIdeal R).jacobson.matricesOver n = (⊥ : TwoSidedIdeal (Matrix n n R)).jacobson :=
+  matricesOver_bot n (R := R) ▸ (jacobson_matricesOver _).symm
+
 end TwoSidedIdeal
