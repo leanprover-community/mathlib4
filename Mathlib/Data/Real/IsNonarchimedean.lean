@@ -26,6 +26,17 @@ theorem add_le {α : Type*} [Add α] {f : α → ℝ} (hf : ∀ x : α, 0 ≤ f 
   rw [max_le_iff, le_add_iff_nonneg_right, le_add_iff_nonneg_left]
   exact ⟨hf _, hf _⟩
 
+/-- If `f` is a nonarchimedean function on a semiring `α`, and `f 0 ≤ f 1`, then for
+every `n`, we have `f n ≤ f 1`.-/
+theorem map_le_map_one {α : Type*} [Semiring α] {f : α → ℝ} (h0 : f 0 ≤ f 1)
+    (h : IsNonarchimedean f) (n : ℕ) : f n ≤ f 1 := by
+  induction n with
+  | zero => simpa using h0
+  | succ n hn =>
+    push_cast
+    apply (h n 1).trans
+    simp only [hn, max_eq_right, le_refl]
+
 /-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
   we have `f (n • a) ≤ (f a)`. -/
 theorem nsmul_le {F α : Type*} [AddGroup α] [FunLike F α ℝ]
