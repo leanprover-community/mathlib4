@@ -88,6 +88,7 @@ jobs:
           tee "$GITHUB_OUTPUT"
 
     - name: downstream imports
+      id: report_really
       run: |
         files="$(
           printf '%s\n' "${{ steps.late_importers.outputs.summary }}" |
@@ -95,9 +96,12 @@ jobs:
           )"
         printf '%s\n' "$files"
         sed -i "s=-- insert module names here=$files=" scripts/downstream_counts.lean
-        paste -d' ' <(echo "${{ steps.late_importers.outputs.summary }}") <(
-          printf $'Downstream files |\n-: |\n%s' "$(lake env lean scripts/downstream_counts.lean | sed 's=$= |=')") |
-          awk 'BEGIN{FS="|"; OFS="|"} (1 < NF) {print $1, $2, $3, $4, $6, $5, $7} (NF <= 1) {print $0}'
+        printf $'summary<<EOF\n%s\nEOF' "$(
+          paste -d' ' <(echo "${{ steps.late_importers.outputs.summary }}") <(
+            printf $'Downstream files |\n-: |\n%s' "$(lake env lean scripts/downstream_counts.lean | sed 's=$= |=')") |
+            awk 'BEGIN{FS="|"; OFS="|"} (1 < NF) {print $1, $2, $3, $4, $6, $5, $7} (NF <= 1) {print $0}'
+          )" | tee "$GITHUB_OUTPUT"
+
     #- name: Post output to Zulip
     #  uses: zulip/github-actions-zulip/send-message@v1
     #  with:
@@ -107,4 +111,4 @@ jobs:
     #    to: 'mathlib4'
     #    type: 'stream'
     #    topic: Late importers report
-    #    content: ${{ steps.late_importers.outputs.summary }}
+    #    content: ${{ steps.report_really.outputs.summary }}
