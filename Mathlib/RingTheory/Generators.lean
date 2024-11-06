@@ -403,4 +403,10 @@ lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
 
 end Hom
 
+/-- The kernel of a presentation. -/
+noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
+
+lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) :=
+  rfl
+
 end Algebra.Generators
