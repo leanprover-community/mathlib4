@@ -74,17 +74,17 @@ jobs:
       with:
         linters: gcc
         run: |
-          lake build Mathlib.Logic.Function.Basic
+          lake build Mathlib.Tactic.Simps.Basic
 
     - name: Full report
       run: |
-        ./scripts/late_importers.sh Mathlib.Logic.Function.Basic 0 0 "${{ github.run_id }}"
+        ./scripts/late_importers.sh Mathlib.Tactic.Simps.Basic 0 0 "${{ github.run_id }}"
 
     - name: Zulip report
       id: late_importers
       run: |
         jobID="${{ github.run_id }}"
-        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib.Logic.Function.Basic 15 10 "${jobID}")" |
+        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib.Tactic.Simps.Basic 15 10 "${jobID}")" |
           tee "$GITHUB_OUTPUT" | column -s'|' -o'|' -t
 
     - name: downstream imports
