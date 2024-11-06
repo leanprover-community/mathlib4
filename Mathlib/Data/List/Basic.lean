@@ -1816,6 +1816,40 @@ theorem takeWhile_takeWhile (p q : α → Bool) (l : List α) :
 theorem takeWhile_idem : takeWhile p (takeWhile p l) = takeWhile p l := by
   simp_rw [takeWhile_takeWhile, and_self_iff, Bool.decide_coe]
 
+variable (p) (l)
+
+lemma find?_eq_head?_dropWhile_not :
+    l.find? p = (l.dropWhile (fun x ↦ ! (p x))).head? := by
+  induction l
+  case nil => simp
+  case cons head tail hi =>
+    set ph := p head with phh
+    rcases ph with rfl | rfl
+    · have phh' : ¬(p head = true) := by simp [phh.symm]
+      rw [find?_cons_of_neg _ phh', dropWhile_cons_of_pos]
+      · exact hi
+      · simpa using phh
+    · rw [find?_cons_of_pos _ phh.symm, dropWhile_cons_of_neg]
+      · simp
+      · simpa using phh
+
+lemma find?_not_eq_head?_dropWhile :
+    l.find? (fun x ↦ ! (p x)) = (l.dropWhile p).head? := by
+  convert l.find?_eq_head?_dropWhile_not ?_
+  simp
+
+variable {p} {l}
+
+lemma find?_eq_head_dropWhile_not (h : l.dropWhile (fun x ↦ ! (p x)) ≠ []) :
+    l.find? p = some ((l.dropWhile (fun x ↦ ! (p x))).head h) := by
+  rw [l.find?_eq_head?_dropWhile_not p, ← head_eq_iff_head?_eq_some]
+
+lemma find?_not_eq_head_dropWhile (h : l.dropWhile p ≠ []) :
+    l.find? (fun x ↦ ! (p x)) = some ((l.dropWhile p).head h) := by
+  convert l.find?_eq_head_dropWhile_not ?_
+  · simp
+  · simpa using h
+
 end Filter
 
 /-! ### erasep -/
