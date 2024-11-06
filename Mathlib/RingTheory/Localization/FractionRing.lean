@@ -226,7 +226,7 @@ fraction rings `K ≃+* L`. -/
 noncomputable def ringEquivOfRingEquiv : K ≃+* L :=
   IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
-@[deprecated (since := "2014-11-05")]
+@[deprecated (since := "2024-11-05")]
 alias fieldEquivOfRingEquiv := ringEquivOfRingEquiv
 
 @[simp]
@@ -234,7 +234,7 @@ lemma ringEquivOfRingEquiv_algebraMap
     (a : A) : ringEquivOfRingEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
   simp [ringEquivOfRingEquiv]
 
-@[deprecated (since := "2014-11-05")]
+@[deprecated (since := "2024-11-05")]
 alias fieldEquivOfRingEquiv_algebraMap := ringEquivOfRingEquiv_algebraMap
 
 end ringEquivOfRingEquiv
