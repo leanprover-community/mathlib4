@@ -5,9 +5,10 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.CharP.Reduced
 import Mathlib.RingTheory.IntegralDomain
+-- TODO: remove Mathlib.Algebra.CharP.Reduced and move the last two lemmas to Lemmas
 
 /-!
-# Roots of unity and primitive roots of unity
+# Roots of unity
 
 We define roots of unity in the context of an arbitrary commutative monoid,
 as a subgroup of the group of units.
@@ -101,6 +102,18 @@ theorem map_rootsOfUnity (f : Mˣ →* Nˣ) (k : ℕ) : (rootsOfUnity k M).map f
 theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
     (((ζ ^ m :) : Rˣ) : R) = ((ζ : Rˣ) : R) ^ m := by
   rw [Subgroup.coe_pow, Units.val_pow_eq_pow_val]
+
+/-- The canonical isomorphism from the `n`th roots of unity in `Mˣ`
+to the `n`th roots of unity in `M`. -/
+def rootsOfUnityUnitsMulEquiv (M : Type*) [CommMonoid M] (n : ℕ) :
+    rootsOfUnity n Mˣ ≃* rootsOfUnity n M where
+  toFun ζ := ⟨ζ.val, (mem_rootsOfUnity ..).mpr <| (mem_rootsOfUnity' ..).mp ζ.prop⟩
+  invFun ζ := ⟨toUnits ζ.val, by
+    simp only [mem_rootsOfUnity, ← map_pow, MulEquivClass.map_eq_one_iff]
+    exact (mem_rootsOfUnity ..).mp ζ.prop⟩
+  left_inv ζ := by simp only [toUnits_val_apply, Subtype.coe_eta]
+  right_inv ζ := by simp only [val_toUnits_apply, Subtype.coe_eta]
+  map_mul' ζ ζ' := by simp only [Subgroup.coe_mul, Units.val_mul, MulMemClass.mk_mul_mk]
 
 section CommMonoid
 
