@@ -138,53 +138,32 @@ lemma polarBilin_toQuadraticMap (B : BilinMap R M N) :
     LinearMap.flip_apply]
 
 theorem toBilin_toQuadraticMap (B : BilinMap R M N) (bm : Basis ι R M) (x y : M) :
+    let s := (bm.repr x).support ∪ (bm.repr y).support
     B.toQuadraticMap.toBilin bm x y =
-      (∑ i ∈ (bm.repr x).support, ((bm.repr y) i) •((bm.repr x) i) • B (bm i) (bm i)) +
-      ∑ p ∈ Finset.filter (fun p ↦ p.1 < p.2) (bm.repr x).support.offDiag,
+      (∑ i ∈ s,
+        ((bm.repr x) i) •((bm.repr y) i) • B (bm i) (bm i)) +
+      ∑ p ∈ Finset.filter (fun p ↦ p.1 < p.2) s.offDiag,
         ((bm.repr x) p.1) • ((bm.repr y) p.2) • (B + B.flip) (bm p.1) (bm p.2) := by
   rw [toBilin]
   simp_rw [polar_toQuadraticMap]
   simp_rw [BilinMap.toQuadraticMap_apply]
   let s := (bm.repr x).support ∪ (bm.repr y).support
+
   have h1 : (bm.repr x).support ⊆ s := Finset.subset_union_left
   have h2 : (bm.repr y).support ⊆ s := Finset.subset_union_right
-  rw [← bm.linearCombination_repr x,
-      Finsupp.linearCombination_apply, Finsupp.sum_of_support_subset _ h1]
-  rw [← bm.linearCombination_repr y,
-      Finsupp.linearCombination_apply, Finsupp.sum_of_support_subset _ h2]
+  conv_lhs => rw [← bm.linearCombination_repr x,
+      Finsupp.linearCombination_apply]
+  rw [Finsupp.sum_of_support_subset _ h1 _ (fun i _ ↦ zero_smul R (bm i))]
+  conv_lhs =>  rw [← bm.linearCombination_repr y,
+      Finsupp.linearCombination_apply]
+  rw [Finsupp.sum_of_support_subset _ h2 _ (fun i _ ↦ zero_smul R (bm i))]
   simp_rw [LinearMap.map_sum₂, map_sum, LinearMap.map_smul₂, _root_.map_smul,
      ← Finset.sum_product']
-  simp_rw [← Finset.diag_union_offDiag]
+  simp_rw [← Finset.diag_union_offDiag s]
   simp_rw [Finset.sum_union (Finset.disjoint_diag_offDiag _), Finset.sum_diag]
   simp only [Basis.constr_basis, ↓reduceIte, smul_ite, smul_add, smul_zero, add_right_inj]
-  rw [Finset.sum_ite_of_false]
+  rw [Finset.sum_ite_of_false (by aesop) _ _ ]
   rw [← Finset.sum_filter]
-  sorry
-  sorry
-  sorry
-/-
-  have t1 : ∀ (a₁ a₂ : ι), (fun i j ↦ (bm.repr x) i • (bm.repr y) j • (B (bm i)) (bm j) + (bm.repr x) i • (bm.repr y) j • (B (bm j)) (bm i)) a₁
-      a₂ =
-    (fun i j ↦ (bm.repr x) i • (bm.repr y) j • (B (bm i)) (bm j) + (bm.repr x) i • (bm.repr y) j • (B (bm j)) (bm i)) a₂
-      a₁ := by
-    intro i j
-    simp only
-
-
-  have e1 : ∑ a ∈ Finset.filter (fun a ↦ a.1 < a.2) s.offDiag,
-    ((bm.repr x) a.1 • (bm.repr y) a.2 • (B (bm a.1)) (bm a.2) +
-      (bm.repr x) a.1 • (bm.repr y) a.2 • (B (bm a.2)) (bm a.1)) =
-    ∑ i ∈ s.offDiag with i.1 < i.2, (fun p => Sym2.lift ⟨fun i j ↦ (bm.repr x) i • (bm.repr y) j • (B (bm i)) (bm j) +
-        (bm.repr x) i • (bm.repr y) j • (B (bm j)) (bm i), t1⟩ p) s(i.1, i.2) := by
-    simp_all only [Prod.mk.eta, s]
-    rfl
-  rw [e1]
-  rw [←  Finset.sum_sym2_filter_not_isDiag s
-      fun p => Sym2.lift ⟨fun i j ↦ (bm.repr x) i • (bm.repr y) j • (B (bm i)) (bm j) +
-        (bm.repr x) i • (bm.repr y) j • (B (bm j)) (bm i), sorry⟩ p]
-  rw [← Finset.sum_sym2_filter_not_isDiag]
-  --have e1: ∑ x_1 ∈ s.offDiag, (bm.repr x) x_1.1 • (bm.repr y) x_1.2 • (B (bm x_1.1)) (bm x_1.2) =
--/
-
+  aesop
 
 end QuadraticMap
