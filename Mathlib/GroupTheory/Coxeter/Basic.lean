@@ -224,8 +224,7 @@ theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
   have : (PresentedGroup.mk _ ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : M.Group) = 1 :=
     (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
   unfold simple
-  rw [← map_mul, ← map_pow, PresentedGroup.of, PresentedGroup.of,
-      ← PresentedGroup.mk_mul, ← PresentedGroup.mk_pow]
+  rw [← map_mul, ← map_pow]
   exact (MulEquiv.map_eq_one_iff cs.mulEquiv.symm).mpr this
 
 @[simp] theorem simple_mul_simple_pow' (i i' : B) : (s i' * s i) ^ M i i' = 1 :=
