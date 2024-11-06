@@ -47,13 +47,6 @@ namespace DoubleImports
 
 open Mathlib.Command.MinImports
 
-/-- `importsBelow tc ms` takes as input a `NameMap NameSet` `tc`, representing the
-`transitiveClosure` of the imports of the current module, and a `NameSet` of module names `ms`.
-It returns the modules that are transitively imported by `ms`, using the data in `tc`.
--/
-def importsBelow (tc : NameMap NameSet) (ms : NameSet) : NameSet :=
-  ms.fold (·.append <| tc.findD · default) ms
-
 @[inherit_doc Mathlib.Linter.linter.doubleImports]
 def doubleImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.doubleImports (← getOptions) do
@@ -63,9 +56,8 @@ def doubleImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     if stx == (← `(command| set_option $(mkIdent `linter.doubleImports) true)) then return
     let env ← getEnv
     let id ← getId stx
-    let newImports := getIrredundantImports env (← getAllImports stx id)
-
     if id != .missing then
+      let newImports := getIrredundantImports env (← getAllImports stx id)
       dbg_trace "imports for '{id}': {newImports.toArray.qsort (·.toString < ·.toString)}"
 
 initialize addLinter doubleImportsLinter
