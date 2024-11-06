@@ -298,7 +298,7 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun X => IsCompact (closur
     exact hj
   obtain ⟨vi, hvi⟩ := exists_open_between_and_isCompact_closure hsic (v.isOpen i) this
   classical
-  refine ⟨⟨update v i vi, insert i v.carrier, ?_, ?Set.mem_iInter₂_, ?_, ?_, ?_⟩, ⟨?_, ?_⟩, ?_⟩
+  refine ⟨⟨update v i vi, insert i v.carrier, ?_, ?_, ?_, ?_, ?_⟩, ⟨?_, ?_⟩, ?_⟩
   · intro j
     rcases eq_or_ne j i with (rfl| hne) <;> simp [*, v.isOpen]
   · refine fun x hx => mem_iUnion.2 ?_
