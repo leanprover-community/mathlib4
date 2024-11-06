@@ -9,7 +9,6 @@ import Mathlib.Analysis.InnerProductSpace.Symmetric
 import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.LinearAlgebra.Semisimple
 
 /-!
 # The orthogonal projection
