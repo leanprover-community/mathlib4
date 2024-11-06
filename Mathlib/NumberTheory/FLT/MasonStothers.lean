@@ -56,8 +56,7 @@ theorem max₃_le {a b c d : Nat} : max₃ a b c ≤ d ↔ a ≤ d ∧ b ≤ d �
   rw [max₃, Nat.max_le, Nat.max_le, and_assoc]
 
 private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian a b) (ha : a ≠ 0)
-    (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b) (hbc : IsCoprime b c) (hca : IsCoprime c a)
-    (abc_dr_dvd_w : divRadical (a * b * c) ∣ w) :
+    (hb : b ≠ 0) (hc : c ≠ 0) (abc_dr_dvd_w : divRadical (a * b * c) ∣ w) :
       c.natDegree + 1 ≤ (radical (a * b * c)).natDegree := by
   have hab := mul_ne_zero ha hb
   have habc := mul_ne_zero hab hc
