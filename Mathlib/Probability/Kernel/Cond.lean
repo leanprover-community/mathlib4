@@ -54,7 +54,7 @@ lemma condexpKernel_ae_eq_cond [StandardBorelSpace Ω] (hs : MeasurableSet s)
       condexpKernel μ (MeasurableSpace.generateFrom {s}) ω t = μ[t|s] := by
   have : (fun ω ↦ (condexpKernel μ (MeasurableSpace.generateFrom {s}) ω t).toReal) =ᵐ[μ.restrict s]
       μ⟦t | MeasurableSpace.generateFrom {s}⟧ :=
-    ae_restrict_le μ hs <| condexpKernel_ae_eq_condexp
+    ae_restrict_le hs <| condexpKernel_ae_eq_condexp
       (MeasurableSpace.generateFrom_singleton_le hs) ht
   filter_upwards [condexp_set_generateFrom_singleton hs ht, this] with ω hω₁ hω₂
   rwa [hω₁, ENNReal.toReal_eq_toReal (measure_ne_top _ t) (measure_ne_top _ t)] at hω₂
