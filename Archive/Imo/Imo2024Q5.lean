@@ -747,9 +747,9 @@ def path2 (hN : 2 ≤ N) (c₁ : Fin (N + 1)) (r : Fin (N + 2)) : Path N :=
 
 /-- A strategy that wins in three attempts. -/
 def winningStrategy (hN : 2 ≤ N) : Strategy N
-| 0 => fun _ ↦ path0 hN
-| 1 => fun r => path1 hN ((r 0).getD 0).2
-| _ + 2 => fun r => path2 hN ((r 0).getD 0).2 ((r 1).getD 0).1
+  | 0 => fun _ ↦ path0 hN
+  | 1 => fun r => path1 hN ((r 0).getD 0).2
+  | _ + 2 => fun r => path2 hN ((r 0).getD 0).2 ((r 1).getD 0).1
 
 lemma path0_firstMonster_eq_apply_row1 (hN : 2 ≤ N) (m : MonsterData N) :
     (path0 hN).firstMonster m = some ((1, m (row1 hN))) := by
