@@ -58,7 +58,7 @@ open Relation
 def TransLT [LT α] : Multiset α → Multiset α → Prop :=
     TransGen DMLT_singleton
 
-/- A special case of DMLT. -/
+/-- A special case of DMLT. -/
 theorem dmlt_of_DMLT_singleton [Preorder α] (M N : Multiset α)
     (h : DMLT_singleton M N) : DMLT M N := by
   rcases h with ⟨X, Y, a, M_def, N_def, ys_lt_a⟩
@@ -156,7 +156,7 @@ lemma acc_cons_of_acc_of_lt [DecidableEq α] [Preorder α] :
       apply @acc_cons_of_acc α _ _ _ _ _ accM1
       simp_all
 
-/- If all elements of a multiset `M` are accessible with `LT.lt`, then the multiset M is
+/-- If all elements of a multiset `M` are accessible with `LT.lt`, then the multiset M is
 accessible given the `DMLT_singleton` relation. -/
 lemma acc_of_acc_lt [DecidableEq α] [Preorder α] :
     ∀ (M : Multiset α), (∀x, x ∈ M → Acc LT.lt x) → Acc DMLT_singleton M  := by
@@ -179,7 +179,7 @@ lemma acc_of_acc_lt [DecidableEq α] [Preorder α] :
       apply wf_el
       simp_all
 
-/- If `LT.lt` is well-founded, then `DMLT_singleton` is well-founded. -/
+/-- If `LT.lt` is well-founded, then `DMLT_singleton` is well-founded. -/
 lemma DMLT_singleton_wf [DecidableEq α] [Preorder α]
     (wf_lt : WellFoundedLT α) : WellFounded (DMLT_singleton : Multiset α → Multiset α → Prop) := by
   constructor
@@ -191,7 +191,7 @@ lemma DMLT_singleton_wf [DecidableEq α] [Preorder α]
   apply Acc.intro y
   assumption
 
--- `DMLT` is transitive.
+/-- `DMLT` is transitive. -/
 lemma dmlt_trans {α} [pre : Preorder α] [dec : DecidableEq α] :
     ∀ (M N P : Multiset α) , DMLT N M → DMLT P N → DMLT P M := by
   intros M N P LTNM LTPN
@@ -372,7 +372,7 @@ lemma transLT_of_dmLT [dec : DecidableEq α] [Preorder α]
         apply TransGen.single
         exact this
 
-/- TransLT and DMLT are equivalent. -/
+/-- TransLT and DMLT are equivalent. -/
 lemma transLT_eq_dmLT [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α) (y: α) => x < y)]:
     (TransLT : Multiset α → Multiset α → Prop) =
     (DMLT : Multiset α → Multiset α → Prop) := by
@@ -391,15 +391,15 @@ lemma transLT_eq_dmLT [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α)
       assumption
   · apply transLT_of_dmLT
 
-/- The desired theorem: If `LT.lt` is well-founded, then `DMLT` is well-founded. -/
+/-- The desired theorem: If `LT.lt` is well-founded, then `DMLT` is well-founded. -/
 theorem DMLT.wf [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α) (y : α) => x < y)]
     (wf_lt :  WellFoundedLT α) : WellFounded (DMLT : Multiset α → Multiset α → Prop) := by
   rw [← transLT_eq_dmLT]
   apply WellFounded.transGen
   exact (DMLT_singleton_wf wf_lt)
 
-instance instWellFoundedDMLT [DecidableEq α] [Preorder α]
-    [DecidableRel (fun (x : α) (y : α) => x < y)] (wf_lt :  WellFoundedLT α) :
-    WellFounded (@DMLT α _) := DMLT.wf wf_lt
+instance instWellFoundedDMLT [DecidableEq α] [Preorder α] [wf_lt : WellFoundedLT α]
+    [DecidableRel (fun (x : α) (y : α) => x < y)]  :
+    WellFoundedRelation (Multiset α) := ⟨DMLT, DMLT.wf wf_lt⟩
 
 end Multiset
