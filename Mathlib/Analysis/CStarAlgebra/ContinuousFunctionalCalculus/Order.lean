@@ -411,7 +411,7 @@ lemma conjugate_le_norm_smul' {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
 /-- The set of nonnegative elements in a C⋆-algebra is closed. -/
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
   suffices IsClosed {a : A⁺¹ | 0 ≤ a} by
-    rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.closed_iff_image_closed]
+    rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.isClosed_iff_image_isClosed]
     convert this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).isClosedEmbedding.isClosed_range
     ext a
     simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_inter_iff, Set.mem_range, ← exists_and_left]
@@ -421,6 +421,9 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
     and_congr_right (SpectrumRestricts.nnreal_iff_nnnorm · le_rfl), Set.setOf_and]
   refine isClosed_eq ?_ ?_ |>.inter <| isClosed_le ?_ ?_
   all_goals fun_prop
+
+instance : OrderClosedTopology A where
+  isClosed_le' := isClosed_le_of_isClosed_nonneg isClosed_nonneg
 
 end CStarAlgebra
 
