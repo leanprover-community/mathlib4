@@ -78,11 +78,17 @@ lemma ι_lanObjObjIsoColimit_inv (X : D) (f : CostructuredArrow L X) :
   simp [lanObjObjIsoColimit, lanUnit]
 
 @[reassoc (attr := simp)]
-lemma ι_lanObjObjIsoColimit_hom (X : D) (f : CostructuredArrow L X) :
+lemma lanUnit_lanMap_lanObjObjIsoColimit_hom (X : D) (f : CostructuredArrow L X) :
     (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom ≫ (L.lanObjObjIsoColimit F X).hom =
     Limits.colimit.ι (proj L X ⋙ F) f :=
   LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
     (isPointwiseLeftKanExtensionLanUnit L F X) f
+
+@[reassoc (attr := simp)]
+lemma lanUnit_lanObjObjIsoColimit_hom (X : C) :
+    (L.lanUnit.app F).app X ≫ (L.lanObjObjIsoColimit F (L.obj X)).hom =
+    Limits.colimit.ι (proj L (L.obj X) ⋙ F) (CostructuredArrow.mk (𝟙 _)) := by
+  simpa using lanUnit_lanMap_lanObjObjIsoColimit_hom L F (L.obj X) (CostructuredArrow.mk (𝟙 _))
 
 omit [∀ (F : C ⥤ H), HasLeftKanExtension L F]
 

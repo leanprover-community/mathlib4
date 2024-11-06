@@ -34,15 +34,16 @@ lemma final_fst [R.Final] : (fst L R).Final := by
   convert i.isIso_inv
   apply colimit.hom_ext
   intro ⟨l, r, f⟩
-  simp [i]
+  simp only [comp_obj, fst_obj, colimit.ι_pre, grothendieckPrecompFunctorEquivalence_functor,
+    Iso.trans_inv, Iso.symm_inv, colimitIsoColimitGrothendieck_inv, Category.assoc, i]
   simp only [← Category.assoc, ← Iso.comp_inv_eq, Iso.eq_comp_inv]
-  have : (L.lanUnit.app G).app l ≫ (L.lanObjObjIsoColimit G (L.obj l)).hom =
-      colimit.ι (proj L (L.obj l) ⋙ G) (CostructuredArrow.mk (𝟙 _)) := by
-    rw [← ι_lanObjObjIsoColimit_hom]
-    simp
-  simp [reassoc_of% this]
+  simp only [ι_colimitIsoOfIsLeftKanExtension_inv, comp_obj, Category.assoc,
+    HasColimit.isoOfNatIso_ι_hom, fiberwiseColimit_obj, functor_obj, Cat.of_α,
+    lanObjIsoFiberwiseColimit_hom_app, lanUnit_lanObjObjIsoColimit_hom_assoc,
+    HasColimit.isoOfNatIso_ι_inv_assoc, proj_obj, mk_left, Grothendieck.ι_obj, grothendieckProj_obj,
+    isoWhiskerRight_inv, whiskerRight_app, ιCompGrothendieckProj_inv_app, Functor.map_id,
+    Category.id_comp]
   rw [ι_colimitFiberwiseColimitIso_hom_assoc]
-  simp
   sorry
 
 end Comma
