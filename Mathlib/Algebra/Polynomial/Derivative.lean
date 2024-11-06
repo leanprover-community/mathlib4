@@ -642,6 +642,20 @@ theorem iterate_derivative_X_sub_pow_self (n : ℕ) (c : R) :
 
 end CommRing
 
+section NoZeroDivisors
+
+variable [Semiring R] [NoZeroDivisors R]
+
+@[simp]
+theorem dvd_derivative_iff  {a : R[X]} : a ∣ derivative a ↔ derivative a = 0 where
+  mp h := by
+    by_cases a_nz : a = 0
+    · simp only [a_nz, derivative_zero]
+    exact eq_zero_of_dvd_of_degree_lt h (degree_derivative_lt a_nz)
+  mpr h := by simp [h]
+
+end NoZeroDivisors
+
 end Derivative
 
 end Polynomial
