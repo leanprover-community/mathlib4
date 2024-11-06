@@ -1,8 +1,32 @@
 #!/usr/bin/env bash
 
-# TODO
-# If a merged PR touched one of the files in the most recent report, trigger the workflow again.
-# Show the diff relative to the last report. (Using zulip/github as the persistent state?)
+ : <<'BASH_MODULE_DOCS'
+
+This script formats the `linter.minImports` output, returning a table of the form
+
+| File           | Line | Import increase | New imports            |
+| :-             | -:   | -:              | :-                     |
+| Mathlib/X.lean | 1123 | 75              | [Mathlib.Y, Mathlib.Z] |
+
+where the column
+* `File` consists of doc-gen links,
+* `Line` is the position of the last import bump in the file,
+* `Import increase` is the number of extra imports implied by the last bump,
+* `New imports` is the list of new imports needed for the last bump.
+
+The table is sorted by descending order of `Line` column.
+
+The script that takes 4 arguments:
+1. the module name that should be built (`Mathlib` by default);
+2. the number of module names of output that the script returns (all by default);
+3. the threshold difference in imports above which the script reports a module (all by default);
+4. the GitHub jod-ID of the workflow run.
+
+TODO
+* If a merged PR touched one of the files in the most recent report, trigger the workflow again.
+* Show the diff relative to the last report. (Using zulip/github as the persistent state?)
+
+BASH_MODULE_DOCS
 
 # `root` is the module name that the script builds
 root=${1:-Mathlib}
