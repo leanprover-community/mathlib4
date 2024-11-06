@@ -629,12 +629,12 @@ protected theorem Finsupp.inner_sum {ι : Type*} (l : ι →₀ 𝕜) (v : ι �
 protected theorem DFinsupp.sum_inner {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪l.sum f, x⟫ = l.sum fun i a => ⟪f i a, x⟫ := by
-  simp (config := { contextual := true }) only [DFinsupp.sum, sum_inner, smul_eq_mul]
+  simp +contextual only [DFinsupp.sum, sum_inner, smul_eq_mul]
 
 protected theorem DFinsupp.inner_sum {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪x, l.sum f⟫ = l.sum fun i a => ⟪x, f i a⟫ := by
-  simp (config := { contextual := true }) only [DFinsupp.sum, inner_sum, smul_eq_mul]
+  simp +contextual only [DFinsupp.sum, inner_sum, smul_eq_mul]
 
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by

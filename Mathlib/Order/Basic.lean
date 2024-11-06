@@ -774,7 +774,7 @@ instance Pi.preorder [∀ i, Preorder (π i)] : Preorder (∀ i, π i) where
 
 theorem Pi.lt_def [∀ i, Preorder (π i)] {x y : ∀ i, π i} :
     x < y ↔ x ≤ y ∧ ∃ i, x i < y i := by
-  simp (config := { contextual := true }) [lt_iff_le_not_le, Pi.le_def]
+  simp +contextual [lt_iff_le_not_le, Pi.le_def]
 
 instance Pi.partialOrder [∀ i, PartialOrder (π i)] : PartialOrder (∀ i, π i) where
   __ := Pi.preorder
@@ -844,7 +844,7 @@ theorem update_le_iff : Function.update x i a ≤ y ↔ a ≤ y i ∧ ∀ (j) (_
 
 theorem update_le_update_iff :
     Function.update x i a ≤ Function.update y i b ↔ a ≤ b ∧ ∀ (j) (_ : j ≠ i), x j ≤ y j := by
-  simp (config := { contextual := true }) [update_le_iff]
+  simp +contextual [update_le_iff]
 
 @[simp]
 theorem update_le_update_iff' : update x i a ≤ update x i b ↔ a ≤ b := by

@@ -600,12 +600,12 @@ theorem fromEdgeSet_union (s t : Set (Sym2 V)) :
 theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
     fromEdgeSet (s \ t) = fromEdgeSet s \ fromEdgeSet t := by
   ext v w
-  constructor <;> simp (config := { contextual := true })
+  constructor <;> simp +contextual
 
 @[mono]
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
   rintro v w
-  simp (config := { contextual := true }) only [fromEdgeSet_adj, Ne, not_false_iff,
+  simp +contextual only [fromEdgeSet_adj, Ne, not_false_iff,
     and_true, and_imp]
   exact fun vws _ => h vws
 
@@ -829,7 +829,7 @@ lemma deleteEdges_mono (h : G ≤ H) : G.deleteEdges s ≤ H.deleteEdges s := sd
 theorem deleteEdges_eq_inter_edgeSet (s : Set (Sym2 V)) :
     G.deleteEdges s = G.deleteEdges (s ∩ G.edgeSet) := by
   ext
-  simp (config := { contextual := true }) [imp_false]
+  simp +contextual [imp_false]
 
 theorem deleteEdges_sdiff_eq_of_le {H : SimpleGraph V} (h : H ≤ G) :
     G.deleteEdges (G.edgeSet \ H.edgeSet) = H := by

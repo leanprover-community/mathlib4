@@ -1017,7 +1017,7 @@ theorem not_mem_support_iff {f : Π₀ i, β i} {i : ι} : i ∉ f.support ↔ f
 
 @[simp]
 theorem support_eq_empty {f : Π₀ i, β i} : f.support = ∅ ↔ f = 0 :=
-  ⟨fun H => ext <| by simpa [Finset.ext_iff] using H, by simp (config := { contextual := true })⟩
+  ⟨fun H => ext <| by simpa [Finset.ext_iff] using H, by simp +contextual⟩
 
 instance decidableZero [∀ (i) (x : β i), Decidable (x = 0)] (f : Π₀ i, β i) : Decidable (f = 0) :=
   f.support'.recOnSubsingleton <| fun s =>
@@ -1611,14 +1611,14 @@ theorem prod_add_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decida
     (h_add : ∀ i b₁ b₂, h i (b₁ + b₂) = h i b₁ * h i b₂) : (f + g).prod h = f.prod h * g.prod h :=
   have f_eq : (∏ i ∈ f.support ∪ g.support, h i (f i)) = f.prod h :=
     (Finset.prod_subset Finset.subset_union_left <| by
-        simp (config := { contextual := true }) [mem_support_iff, h_zero]).symm
+        simp +contextual [mem_support_iff, h_zero]).symm
   have g_eq : (∏ i ∈ f.support ∪ g.support, h i (g i)) = g.prod h :=
     (Finset.prod_subset Finset.subset_union_right <| by
-        simp (config := { contextual := true }) [mem_support_iff, h_zero]).symm
+        simp +contextual [mem_support_iff, h_zero]).symm
   calc
     (∏ i ∈ (f + g).support, h i ((f + g) i)) = ∏ i ∈ f.support ∪ g.support, h i ((f + g) i) :=
       Finset.prod_subset support_add <| by
-        simp (config := { contextual := true }) [mem_support_iff, h_zero]
+        simp +contextual [mem_support_iff, h_zero]
     _ = (∏ i ∈ f.support ∪ g.support, h i (f i)) * ∏ i ∈ f.support ∪ g.support, h i (g i) := by
       { simp [h_add, Finset.prod_mul_distrib] }
     _ = _ := by rw [f_eq, g_eq]
@@ -1859,7 +1859,7 @@ theorem prod_finset_sum_index {γ : Type w} {α : Type x} [∀ i, AddCommMonoid 
     (∏ i ∈ s, (g i).prod h) = (∑ i ∈ s, g i).prod h := by
   classical
   exact Finset.induction_on s (by simp [prod_zero_index])
-        (by simp (config := { contextual := true }) [prod_add_index, h_zero, h_add])
+        (by simp +contextual [prod_add_index, h_zero, h_add])
 
 @[to_additive]
 theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]

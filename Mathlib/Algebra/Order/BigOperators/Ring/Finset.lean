@@ -112,7 +112,7 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
   · rw [right_distrib]
     refine add_le_add ?_ ?_ <;>
     · refine mul_le_mul_of_nonneg_left ?_ ?_
-      · refine prod_le_prod ?_ ?_ <;> simp (config := { contextual := true }) [*]
+      · refine prod_le_prod ?_ ?_ <;> simp +contextual [*]
       · try apply_assumption
         try assumption
   · apply prod_nonneg

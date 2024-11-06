@@ -334,7 +334,7 @@ theorem Measurable.measurable_of_countable_ne [MeasurableSingletonClass α] (hf 
   refine (h.mono inter_subset_right).measurableSet.union ?_
   have : g ⁻¹' t ∩ { x : α | f x = g x } = f ⁻¹' t ∩ { x : α | f x = g x } := by
     ext x
-    simp (config := { contextual := true })
+    simp +contextual
   rw [this]
   exact (hf ht).inter h.measurableSet.of_compl
 
@@ -600,7 +600,7 @@ def measurableAtom (x : β) : Set β :=
   ⋂ (s : Set β) (_h's : x ∈ s) (_hs : MeasurableSet s), s
 
 @[simp] lemma mem_measurableAtom_self (x : β) : x ∈ measurableAtom x := by
-  simp (config := {contextual := true}) [measurableAtom]
+  simp +contextual [measurableAtom]
 
 lemma mem_of_mem_measurableAtom {x y : β} (h : y ∈ measurableAtom x) {s : Set β}
     (hs : MeasurableSet s) (hxs : x ∈ s) : y ∈ s := by
@@ -759,7 +759,7 @@ theorem measurable_from_prod_countable' [Countable β]
 theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass β]
     {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
     Measurable f :=
-  measurable_from_prod_countable' hf (by simp (config := {contextual := true}))
+  measurable_from_prod_countable' hf (by simp +contextual)
 
 /-- A piecewise function on countably many pieces is measurable if all the data is measurable. -/
 @[measurability]
