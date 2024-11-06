@@ -90,10 +90,10 @@ theorem stdBasisMatrix_mem_jacobson_matricesOver (I : Ideal R) :
   use N
   intro i j
   obtain rfl | qj := eq_or_ne q j
-  · by_cases ij : i = j
-    · simp [ij, N, zMx, stdBasisMatrix, mul_apply, sum_apply, ite_and, sub_mul]
+  · by_cases iq : i = q
+    · simp [iq, N, zMx, stdBasisMatrix, mul_apply, sum_apply, ite_and, sub_mul]
     · convert I.mul_mem_left (-M i p * x) zMx
-      simp [ij, N, zMx, stdBasisMatrix, mul_apply, sum_apply, ite_and, sub_mul]
+      simp [iq, N, zMx, stdBasisMatrix, mul_apply, sum_apply, ite_and, sub_mul]
       simp [sub_add, mul_add, mul_sub, mul_assoc]
   · simp [N, qj, sum_apply, mul_apply]
 
