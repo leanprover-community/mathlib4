@@ -85,7 +85,6 @@ group of units of a ring `M` with all roots of unity is isomorphic to `G` -/
 lemma monoidHom_equiv_self (G M : Type*) [CommGroup G] [Finite G]
     [IsCyclic G] [CommMonoid M] [HasEnoughRootsOfUnity M (Nat.card G)] :
     Nonempty ((G →* Mˣ) ≃* G) := by
-  have : Fintype G := Fintype.ofFinite G
   have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
   have hord := HasEnoughRootsOfUnity.natCard_rootsOfUnity M (Nat.card G)
   let e := (IsCyclic.monoidHom_mulEquiv_rootsOfUnity G Mˣ).some
