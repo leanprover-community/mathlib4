@@ -73,7 +73,7 @@ variable (ℬ : Basis ι R M) (𝒞 : Basis κ R N) (x : M ⊗[R] N)
 /-- Elements in `M ⊗ N` can be represented by sum of elements in `M` tensor elements of basis of
 `N`. -/
 lemma TensorProduct.eq_repr_basis_right :
-    ∃ (b : κ →₀ M), (b.sum fun i m => m ⊗ₜ 𝒞 i) = x := by
+    ∃ b : κ →₀ M, b.sum (fun i m => m ⊗ₜ 𝒞 i) = x := by
   classical
   induction x using TensorProduct.induction_on with
   | zero => exact ⟨0, by simp⟩
