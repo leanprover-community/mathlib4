@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Comma.Over
 This is only a sensible approach when the morphism is considered as a structure on `X`,
 typically in algebraic geometry.
 
-This is analogous to to how we view ringhoms as structure via the `Algebra` typeclass.
+This is analogous to to how we view ringhoms as structures via the `Algebra` typeclass.
 
 For other applications use unbundled arrows or `CategoryTheory.Over`.
 
@@ -71,7 +71,8 @@ initialize_simps_projections CanonicallyOverClass (hom → over)
 instance (priority := 100) : OverClass X X := ⟨𝟙 _⟩
 
 @[simps]
-instance [CanonicallyOverClass X Y] [OverClass Y S] : OverClass X S := ⟨X ↘ Y ≫ Y ↘ S⟩
+instance (priority := 900) [CanonicallyOverClass X Y] [OverClass Y S] : OverClass X S :=
+  ⟨X ↘ Y ≫ Y ↘ S⟩
 
 /-- Given `OverClass X S` and `OverClass Y S` and `f : X ⟶ Y`,
 `HomIsOver f S` is the typeclass asserting `f` commutes with the structure morphisms. -/
