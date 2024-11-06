@@ -232,8 +232,10 @@ lemma card_singleton_prod (a : α) (t : Set β) : Nat.card ({a} ×ˢ t) = Nat.ca
 lemma card_prod_singleton (s : Set α) (b : β) : Nat.card (s ×ˢ {b}) = Nat.card s := by
   rw [prod_singleton, Nat.card_image_of_injective (Prod.mk.inj_right b)]
 
-lemma Nonempty.natCard_pos (hs : s.Nonempty) (hs' : s.Finite) : 0 < Nat.card s := by
-  have := hs.to_subtype; have := hs'.to_subtype; exact Nat.card_pos
+theorem natCard_pos (hs : s.Finite) : 0 < Nat.card s ↔ s.Nonempty := by
+  simp [pos_iff_ne_zero, Nat.card_eq_zero, hs.to_subtype, Set.nonempty_def, nonempty_iff_ne_empty]
+
+protected alias ⟨_, Nonempty.natCard_pos⟩ := natCard_pos
 
 @[simp] lemma natCard_graphOn (s : Set α) (f : α → β) : Nat.card (s.graphOn f) = Nat.card s := by
   rw [← Nat.card_image_of_injOn fst_injOn_graph, image_fst_graphOn]
