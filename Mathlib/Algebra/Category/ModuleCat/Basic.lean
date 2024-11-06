@@ -151,18 +151,6 @@ theorem forget₂_map (X Y : ModuleCat R) (f : X ⟶ Y) :
     (forget₂ (ModuleCat R) AddCommGrp).map f = LinearMap.toAddMonoidHom f :=
   rfl
 
--- Porting note (#11215): TODO: `ofHom` and `asHom` are duplicates!
-
-/-- Typecheck a `LinearMap` as a morphism in `Module R`. -/
-def ofHom {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
-    [Module R Y] (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
-  f
-
-@[simp 1100]
-theorem ofHom_apply {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X]
-    [AddCommGroup Y] [Module R Y] (f : X →ₗ[R] Y) (x : X) : ofHom f x = f x :=
-  rfl
-
 instance : Inhabited (ModuleCat R) :=
   ⟨of R PUnit⟩
 
@@ -218,13 +206,24 @@ end ModuleCat
 variable {R}
 variable {X₁ X₂ : Type v}
 
+open ModuleCat
+
 /-- Reinterpreting a linear map in the category of `R`-modules. -/
 def ModuleCat.asHom [AddCommGroup X₁] [Module R X₁] [AddCommGroup X₂] [Module R X₂] :
     (X₁ →ₗ[R] X₂) → (ModuleCat.of R X₁ ⟶ ModuleCat.of R X₂) :=
   id
 
+@[deprecated (since := "2024-10-06")] alias ModuleCat.ofHom := ModuleCat.asHom
+
 /-- Reinterpreting a linear map in the category of `R`-modules -/
 scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.asHom f
+
+@[simp 1100]
+theorem ModuleCat.asHom_apply {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X]
+    [AddCommGroup Y] [Module R Y] (f : X →ₗ[R] Y) (x : X) : (↟ f) x = f x :=
+  rfl
+
+@[deprecated (since := "2024-10-06")] alias ModuleCat.ofHom_apply := ModuleCat.asHom_apply
 
 /-- Reinterpreting a linear map in the category of `R`-modules. -/
 def ModuleCat.asHomRight [AddCommGroup X₁] [Module R X₁] {X₂ : ModuleCat.{v} R} :
@@ -304,7 +303,7 @@ section
 variable {S : Type u} [CommRing S]
 
 instance : Linear S (ModuleCat.{v} S) where
-  homModule X Y := LinearMap.module
+  homModule _ _ := LinearMap.module
   smul_comp := by
     intros
     ext
@@ -441,8 +440,9 @@ end ModuleCat
 @[simp] theorem LinearMap.comp_id_moduleCat
     {R} [Ring R] {G : ModuleCat.{u} R} {H : Type u} [AddCommGroup H] [Module R H] (f : G →ₗ[R] H) :
     f.comp (𝟙 G) = f :=
-  Category.id_comp (ModuleCat.ofHom f)
+  Category.id_comp (ModuleCat.asHom f)
 @[simp] theorem LinearMap.id_moduleCat_comp
     {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H) f = f :=
-  Category.comp_id (ModuleCat.ofHom f)
+  Category.comp_id (ModuleCat.asHom f)
+

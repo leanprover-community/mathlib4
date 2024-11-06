@@ -9,8 +9,6 @@ import Qq
 /-! # Helpers to invoke functions involving algebra at tactic time
 
 This file provides instances on `x y : Q($α)` such that `x + y = q($x + $y)`.
-
-Porting note: This has been rewritten to use `Qq` instead of `Expr`.
 -/
 open Qq
 

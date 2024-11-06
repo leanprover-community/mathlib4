@@ -3,7 +3,7 @@ Copyright (c) 2019 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 -/
-import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.ConjTranspose
 
 /-!
 # Row and column matrices
@@ -134,6 +134,16 @@ theorem col_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α
 theorem row_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : n → α) :
     Matrix.row ι (M *ᵥ v) = (M * Matrix.col ι v)ᵀ := by
   ext
+  rfl
+
+theorem row_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α]  (v w : m → α) :
+    Matrix.row ι v *ᵥ w = Function.const _ (v ⬝ᵥ w) := rfl
+
+theorem mulVec_col_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
+    v ᵥ* Matrix.col ι w = Function.const _ (v ⬝ᵥ w) := rfl
+
+theorem row_mul_col [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) :
+    row ι v * col ι w = of fun _ _ => v ⬝ᵥ w :=
   rfl
 
 @[simp]
