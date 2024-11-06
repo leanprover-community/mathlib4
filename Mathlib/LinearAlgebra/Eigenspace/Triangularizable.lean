@@ -253,3 +253,13 @@ theorem Module.End.genEigenspace_restrict_eq_top
   simp_rw [Submodule.inf_genEigenspace f p h, Submodule.comap_subtype_self,
     ← Submodule.map_iSup, Submodule.comap_map_eq_of_injective h_inj] at this
   exact this.symm
+
+/-- In finite dimensions, if the generalized eigenspaces of a linear endomorphism span the whole
+space then the same is true of its restriction to any invariant submodule. -/
+@[deprecated Module.End.genEigenspace_restrict_eq_top (since := "2024-10-11")]
+theorem Module.End.iSup_genEigenspace_restrict_eq_top
+    {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V]
+    (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, ⨆ k : ℕ, f.genEigenspace μ k = ⊤) :
+    ⨆ μ, ⨆ k : ℕ, Module.End.genEigenspace (LinearMap.restrict f h) μ k = ⊤ := by
+  simp_rw [iSup_genEigenspace_eq] at h' ⊢
+  apply Module.End.genEigenspace_restrict_eq_top h h'
