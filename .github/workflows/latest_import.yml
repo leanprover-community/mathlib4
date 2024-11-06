@@ -70,16 +70,18 @@ jobs:
       with:
         linters: gcc
         run: |
-          lake build "${TOP_MODULE}"
+          lake build
 
     - name: Full report
       run: |
-        ./scripts/late_importers.sh "${TOP_MODULE}" 0 0
+        ./scripts/late_importers.sh Mathlib 0 0 "${{ github.run_id }}"
 
     - name: Zulip report
       id: late_importers
       run: |
-        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh "${TOP_MODULE}" 15 10)" | tee "$GITHUB_OUTPUT"
+        jobID="${{ github.run_id }}"
+        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib 15 10 "${jobID}")" |
+          tee "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip
       uses: zulip/github-actions-zulip/send-message@v1
