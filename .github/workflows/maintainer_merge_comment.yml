@@ -1,8 +1,8 @@
 name: Maintainer merge (comment)
 
 on:
-  pull_request: #issue_comment:
-    types: [opened, edited] #[created, edited]
+  push: #issue_comment:
+    #types: [created, edited]
 
 jobs:
   ping_zulip:
