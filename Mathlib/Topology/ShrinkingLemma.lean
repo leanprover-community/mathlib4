@@ -359,7 +359,6 @@ theorem exists_subset_iUnion_closure_subset_t2space (hs : IsCompact s) (uo : ∀
     rcases exists_gt_t2space v hs i hi with ⟨v', hlt, _⟩
     exact hv.not_lt hlt
 
-
 /-- **Shrinking lemma**. A point-finite open cover of a compact subset of a locally compact T2 space
 can be "shrunk" to a new closed cover so that each new closed set is contained in the corresponding
 original open set. See also `exists_subset_iUnion_closure_subset_t2space` for a stronger statement.
