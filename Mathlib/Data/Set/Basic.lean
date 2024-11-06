@@ -6,10 +6,11 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
-import Mathlib.Order.SymmDiff
+import Mathlib.Order.BooleanAlgebra
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
 import Mathlib.Util.Delaborators
+import Mathlib.Tactic.Lift
 
 /-!
 # Basic properties of sets
@@ -985,6 +986,24 @@ theorem forall_mem_insert {P : α → Prop} {a : α} {s : Set α} :
   forall₂_or_left.trans <| and_congr_left' forall_eq
 @[deprecated (since := "2024-03-23")] alias ball_insert_iff := forall_mem_insert
 
+/-- Inserting an element to a set is equivalent to the option type. -/
+def subtypeInsertEquivOption
+    [DecidableEq α] {t : Set α} {x : α} (h : x ∉ t) :
+    { i // i ∈ insert x t } ≃ Option { i // i ∈ t } where
+  toFun y := if h : ↑y = x then none else some ⟨y, (mem_insert_iff.mp y.2).resolve_left h⟩
+  invFun y := (y.elim ⟨x, mem_insert _ _⟩) fun z => ⟨z, mem_insert_of_mem _ z.2⟩
+  left_inv y := by
+    by_cases h : ↑y = x
+    · simp only [Subtype.ext_iff, h, Option.elim, dif_pos, Subtype.coe_mk]
+    · simp only [h, Option.elim, dif_neg, not_false_iff, Subtype.coe_eta, Subtype.coe_mk]
+  right_inv := by
+    rintro (_ | y)
+    · simp only [Option.elim, dif_pos]
+    · have : ↑y ≠ x := by
+        rintro ⟨⟩
+        exact h y.2
+      simp only [this, Option.elim, Subtype.eta, dif_neg, not_false_iff, Subtype.coe_mk]
+
 /-! ### Lemmas about singletons -/
 
 /- porting note: instance was in core in Lean3 -/
@@ -1695,43 +1714,6 @@ theorem Nonempty.subset_pair_iff_eq (hs : s.Nonempty) :
     s ⊆ {a, b} ↔ s = {a} ∨ s = {b} ∨ s = {a, b} := by
   rw [Set.subset_pair_iff_eq, or_iff_right]; exact hs.ne_empty
 
-/-! ### Symmetric difference -/
-
-section
-
-open scoped symmDiff
-
-theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s :=
-  Iff.rfl
-
-protected theorem symmDiff_def (s t : Set α) : s ∆ t = s \ t ∪ t \ s :=
-  rfl
-
-theorem symmDiff_subset_union : s ∆ t ⊆ s ∪ t :=
-  @symmDiff_le_sup (Set α) _ _ _
-
-@[simp]
-theorem symmDiff_eq_empty : s ∆ t = ∅ ↔ s = t :=
-  symmDiff_eq_bot
-
-@[simp]
-theorem symmDiff_nonempty : (s ∆ t).Nonempty ↔ s ≠ t :=
-  nonempty_iff_ne_empty.trans symmDiff_eq_empty.not
-
-theorem inter_symmDiff_distrib_left (s t u : Set α) : s ∩ t ∆ u = (s ∩ t) ∆ (s ∩ u) :=
-  inf_symmDiff_distrib_left _ _ _
-
-theorem inter_symmDiff_distrib_right (s t u : Set α) : s ∆ t ∩ u = (s ∩ u) ∆ (t ∩ u) :=
-  inf_symmDiff_distrib_right _ _ _
-
-theorem subset_symmDiff_union_symmDiff_left (h : Disjoint s t) : u ⊆ s ∆ u ∪ t ∆ u :=
-  h.le_symmDiff_sup_symmDiff_left
-
-theorem subset_symmDiff_union_symmDiff_right (h : Disjoint t u) : s ⊆ s ∆ t ∪ s ∆ u :=
-  h.le_symmDiff_sup_symmDiff_right
-
-end
-
 /-! ### Powerset -/
 
 theorem mem_powerset {x s : Set α} (h : x ⊆ s) : x ∈ 𝒫 s := @h
@@ -1965,6 +1947,17 @@ end Function
 open Function
 
 namespace Set
+
+section
+variable {α β : Type*} {a : α} {b : β}
+
+lemma preimage_fst_singleton_eq_range : (Prod.fst ⁻¹' {a} : Set (α × β)) = range (a, ·) := by
+  aesop
+
+lemma preimage_snd_singleton_eq_range : (Prod.snd ⁻¹' {b} : Set (α × β)) = range (·, b) := by
+  aesop
+
+end
 
 /-! ### Lemmas about `inclusion`, the injection of subtypes induced by `⊆` -/
 

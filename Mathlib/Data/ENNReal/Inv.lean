@@ -123,6 +123,9 @@ instance : InvolutiveInv ℝ≥0∞ where
 
 theorem inv_ne_top : a⁻¹ ≠ ∞ ↔ a ≠ 0 := by simp
 
+@[aesop (rule_sets := [finiteness]) safe apply]
+protected alias ⟨_, Finiteness.inv_ne_top⟩ := ENNReal.inv_ne_top
+
 @[simp]
 theorem inv_lt_top {x : ℝ≥0∞} : x⁻¹ < ∞ ↔ 0 < x := by
   simp only [lt_top_iff_ne_top, inv_ne_top, pos_iff_ne_zero]

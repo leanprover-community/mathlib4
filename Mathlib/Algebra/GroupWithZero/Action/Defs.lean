@@ -169,7 +169,7 @@ abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
 /-- Each element of the scalars defines an additive monoid homomorphism. -/
 @[simps]
 def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
-  { SMulZeroClass.toZeroHom A x with toFun := (· • ·) x, map_add' := smul_add x }
+  { SMulZeroClass.toZeroHom A x with toFun := (x • ·), map_add' := smul_add x }
 
 end DistribSMul
 

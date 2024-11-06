@@ -7,8 +7,9 @@ import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Topology.ContinuousMap.Ordered
 
 /-!
 # The continuous functional calculus
@@ -1034,3 +1035,32 @@ lemma CFC.one_le_iff (a : A) (ha : p a := by cfc_tac) :
 end Ring
 
 end Order
+
+/-! ### `cfcHom` on a superset of the spectrum -/
+
+section Superset
+
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
+    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+    [TopologicalSpace A] [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
+
+/-- The composition of `cfcHom` with the natural embedding `C(s, R) → C(spectrum R a, R)`
+whenever `spectrum R a ⊆ s`.
+
+This is sometimes necessary in order to consider the same continuous functions applied to multiple
+distinct elements, with the added constraint that `cfc` does not suffice. This can occur, for
+example, if it is necessary to use uniqueness of this continuous functional calculus. -/
+@[simps!]
+noncomputable def cfcHomSuperset {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
+    C(s, R) →⋆ₐ[R] A :=
+  cfcHom ha |>.comp <| ContinuousMap.compStarAlgHom' R R <| ⟨_, continuous_id.subtype_map hs⟩
+
+lemma cfcHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
+    Continuous (cfcHomSuperset ha hs) :=
+  (cfcHom_continuous ha).comp <| ContinuousMap.continuous_precomp _
+
+lemma cfcHomSuperset_id {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
+    cfcHomSuperset ha hs (.restrict s <| .id R) = a :=
+  cfcHom_id ha
+
+end Superset

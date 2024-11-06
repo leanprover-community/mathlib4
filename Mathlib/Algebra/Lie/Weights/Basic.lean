@@ -52,6 +52,17 @@ namespace LieModule
 
 open Set Function TensorProduct LieModule
 
+variable (M) in
+/-- If `M` is a representation of a Lie algebra `L` and `χ : L → R` is a family of scalars,
+then `weightSpace M χ` is the intersection of the `χ x`-eigenspaces
+of the action of `x` on `M` as `x` ranges over `L`. -/
+def weightSpace (χ : L → R) : LieSubmodule R L M where
+  __ := ⨅ x : L, (toEnd R L M x).eigenspace (χ x)
+  lie_mem {x m} hm := by simp_all [smul_comm (χ x)]
+
+lemma mem_weightSpace (χ : L → R) (m : M) : m ∈ weightSpace M χ ↔ ∀ x, ⁅x, m⁆ = χ x • m := by
+  simp [weightSpace]
+
 section notation_genWeightSpaceOf
 
 /-- Until we define `LieModule.genWeightSpaceOf`, it is useful to have some notation as follows: -/
@@ -184,6 +195,14 @@ lemma genWeightSpace_le_genWeightSpaceOf (x : L) (χ : L → R) :
     genWeightSpace M χ ≤ genWeightSpaceOf M (χ x) x :=
   iInf_le _ x
 
+lemma weightSpace_le_genWeightSpace (χ : L → R) :
+    weightSpace M χ ≤ genWeightSpace M χ := by
+  apply le_iInf
+  intro x
+  rw [← (LieSubmodule.toSubmodule_orderEmbedding R L M).le_iff_le]
+  apply (iInf_le _ x).trans
+  exact ((toEnd R L M x).genEigenspace (χ x)).monotone le_top
+
 variable (R L) in
 /-- A weight of a Lie module is a map `L → R` such that the corresponding weight space is
 non-trivial. -/
@@ -308,7 +327,7 @@ theorem exists_genWeightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L 
   intro m hm
   replace hm : m ∈ (toEnd R L M x).maxGenEigenspace (χ x) :=
     genWeightSpace_le_genWeightSpaceOf M x χ hm
-  rwa [Module.End.maxGenEigenspace_eq, Module.End.genEigenspace_def] at hm
+  rwa [Module.End.maxGenEigenspace_eq, Module.End.genEigenspace_nat] at hm
 
 variable (R) in
 theorem exists_genWeightSpace_zero_le_ker_of_isNoetherian
@@ -631,7 +650,7 @@ lemma disjoint_genWeightSpaceOf [NoZeroSMulDivisors R M] {x : L} {φ₁ φ₂ : 
     Disjoint (genWeightSpaceOf M φ₁ x) (genWeightSpaceOf M φ₂ x) := by
   rw [LieSubmodule.disjoint_iff_coe_toSubmodule]
   dsimp [genWeightSpaceOf]
-  exact Module.End.disjoint_unifEigenspace _ h _ _
+  exact Module.End.disjoint_genEigenspace _ h _ _
 
 lemma disjoint_genWeightSpace [NoZeroSMulDivisors R M] {χ₁ χ₂ : L → R} (h : χ₁ ≠ χ₂) :
     Disjoint (genWeightSpace M χ₁) (genWeightSpace M χ₂) := by
@@ -664,7 +683,7 @@ lemma independent_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
     CompleteLattice.Independent fun (χ : R) ↦ genWeightSpaceOf M χ x := by
   rw [LieSubmodule.independent_iff_coe_toSubmodule]
   dsimp [genWeightSpaceOf]
-  exact (toEnd R L M x).independent_unifEigenspace _
+  exact (toEnd R L M x).independent_genEigenspace _
 
 lemma finite_genWeightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
     {χ : R | genWeightSpaceOf M χ x ≠ ⊥}.Finite :=
@@ -733,7 +752,7 @@ instance instIsTriangularizableOfIsAlgClosed [IsAlgClosed K] : IsTriangularizabl
 instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizable K L N := by
   refine ⟨fun y ↦ ?_⟩
   rw [← N.toEnd_restrict_eq_toEnd y]
-  exact Module.End.unifEigenspace_restrict_eq_top _ (IsTriangularizable.maxGenEigenspace_eq_top y)
+  exact Module.End.genEigenspace_restrict_eq_top _ (IsTriangularizable.maxGenEigenspace_eq_top y)
 
 /-- For a triangularizable Lie module in finite dimensions, the weight spaces span the entire space.
 

@@ -15,7 +15,7 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 open Module
 
-variable {K : Type*} {L : Type*} [Field K] [Field L] [Algebra K L]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
   {S : IntermediateField K L}
 
 theorem IntermediateField.coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
@@ -33,12 +33,13 @@ def Subalgebra.IsAlgebraic.toIntermediateField {S : Subalgebra K L} (hS : S.IsAl
 abbrev Algebra.IsAlgebraic.toIntermediateField (S : Subalgebra K L) [Algebra.IsAlgebraic K S] :
     IntermediateField K L := (S.isAlgebraic_iff.mpr ‹_›).toIntermediateField
 
-/-- The algebraic closure of a field `K` in an extension `L`, the subalgebra `integralClosure K L`
-upgraded to an intermediate field (when `K` and `L` are both fields). -/
-def algebraicClosure : IntermediateField K L :=
-  Algebra.IsAlgebraic.toIntermediateField (integralClosure K L)
-
 namespace IntermediateField
+
+instance isAlgebraic_tower_bot [Algebra.IsAlgebraic K L] : Algebra.IsAlgebraic K S :=
+  Algebra.IsAlgebraic.of_injective S.val S.val.injective
+
+instance isAlgebraic_tower_top [Algebra.IsAlgebraic K L] : Algebra.IsAlgebraic S L :=
+  Algebra.IsAlgebraic.tower_top (K := K) S
 
 section FiniteDimensional
 

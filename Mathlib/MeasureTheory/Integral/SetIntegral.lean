@@ -233,14 +233,17 @@ theorem integral_piecewise [DecidablePred (· ∈ s)] (hs : MeasurableSet s) (hf
     integral_add' (hf.integrable_indicator hs) (hg.integrable_indicator hs.compl),
     integral_indicator hs, integral_indicator hs.compl]
 
-theorem tendsto_setIntegral_of_monotone {ι : Type*} [Countable ι] [SemilatticeSup ι]
+theorem tendsto_setIntegral_of_monotone
+    {ι : Type*} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated]
     {s : ι → Set X} (hsm : ∀ i, MeasurableSet (s i)) (h_mono : Monotone s)
     (hfi : IntegrableOn f (⋃ n, s n) μ) :
     Tendsto (fun i => ∫ x in s i, f x ∂μ) atTop (𝓝 (∫ x in ⋃ n, s n, f x ∂μ)) := by
+  refine .of_neBot_imp fun hne ↦ ?_
+  have := (atTop_neBot_iff.mp hne).2
   have hfi' : ∫⁻ x in ⋃ n, s n, ‖f x‖₊ ∂μ < ∞ := hfi.2
   set S := ⋃ i, s i
-  have hSm : MeasurableSet S := MeasurableSet.iUnion hsm
-  have hsub : ∀ {i}, s i ⊆ S := @(subset_iUnion s)
+  have hSm : MeasurableSet S := MeasurableSet.iUnion_of_monotone h_mono hsm
+  have hsub {i} : s i ⊆ S := subset_iUnion s i
   rw [← withDensity_apply _ hSm] at hfi'
   set ν := μ.withDensity fun x => ‖f x‖₊ with hν
   refine Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε ε0 => ?_
@@ -258,30 +261,25 @@ theorem tendsto_setIntegral_of_monotone {ι : Type*} [Countable ι] [Semilattice
 @[deprecated (since := "2024-04-17")]
 alias tendsto_set_integral_of_monotone := tendsto_setIntegral_of_monotone
 
-theorem tendsto_setIntegral_of_antitone {ι : Type*} [Countable ι] [SemilatticeSup ι]
+theorem tendsto_setIntegral_of_antitone
+    {ι : Type*} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated]
     {s : ι → Set X} (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
     (hfi : ∃ i, IntegrableOn f (s i) μ) :
     Tendsto (fun i ↦ ∫ x in s i, f x ∂μ) atTop (𝓝 (∫ x in ⋂ n, s n, f x ∂μ)) := by
-  set S := ⋂ i, s i
-  have hSm : MeasurableSet S := MeasurableSet.iInter hsm
-  have hsub i : S ⊆ s i := iInter_subset _ _
-  set ν := μ.withDensity fun x => ‖f x‖₊ with hν
-  refine Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε ε0 => ?_
-  lift ε to ℝ≥0 using ε0.le
+  refine .of_neBot_imp fun hne ↦ ?_
+  have := (atTop_neBot_iff.mp hne).2
   rcases hfi with ⟨i₀, hi₀⟩
-  have νi₀ : ν (s i₀) ≠ ∞ := by
-    simpa [hsm i₀, ν, ENNReal.ofReal, norm_toNNReal] using hi₀.norm.lintegral_lt_top.ne
-  have νS : ν S ≠ ∞ := ((measure_mono (hsub i₀)).trans_lt νi₀.lt_top).ne
-  have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) := by
-    apply tendsto_measure_iInter (fun i ↦ (hsm i).nullMeasurableSet) h_anti ⟨i₀, νi₀⟩
-    apply ENNReal.Icc_mem_nhds νS (ENNReal.coe_pos.2 ε0).ne'
-  filter_upwards [this, Ici_mem_atTop i₀] with i hi h'i
-  rw [mem_closedBall_iff_norm, ← integral_diff hSm (hi₀.mono_set (h_anti h'i)) (hsub i),
-    ← coe_nnnorm, NNReal.coe_le_coe, ← ENNReal.coe_le_coe]
-  refine (ennnorm_integral_le_lintegral_ennnorm _).trans ?_
-  rw [← withDensity_apply _ ((hsm _).diff hSm), ← hν,
-    measure_diff_le_iff_le_add hSm.nullMeasurableSet (hsub i) νS]
-  exact hi.2
+  suffices Tendsto (∫ x in s i₀, f x ∂μ - ∫ x in s i₀ \ s ·, f x ∂μ) atTop
+      (𝓝 (∫ x in s i₀, f x ∂μ - ∫ x in ⋃ i, s i₀ \ s i, f x ∂μ)) by
+    convert this.congr' <| (eventually_ge_atTop i₀).mono fun i hi ↦ ?_
+    · rw [← diff_iInter, integral_diff _ hi₀ (iInter_subset _ _), sub_sub_cancel]
+      exact .iInter_of_antitone h_anti hsm
+    · rw [integral_diff (hsm i) hi₀ (h_anti hi), sub_sub_cancel]
+  apply tendsto_const_nhds.sub
+  refine tendsto_setIntegral_of_monotone (by measurability) ?_ ?_
+  · exact fun i j h ↦ diff_subset_diff_right (h_anti h)
+  · rw [← diff_iInter]
+    exact hi₀.mono_set diff_subset
 
 @[deprecated (since := "2024-04-17")]
 alias tendsto_set_integral_of_antitone := tendsto_setIntegral_of_antitone

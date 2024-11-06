@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Junyan Xu
 -/
 import Mathlib.Data.Set.Finite
+import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.FixedPoints
 import Mathlib.GroupTheory.Perm.Support
 

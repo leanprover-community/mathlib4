@@ -44,8 +44,8 @@ open scoped Pointwise Classical
 
 universe u
 
-variable {R S : Type u} [CommRing R] [CommRing S] (M : Submonoid R) (f : R →+* S)
-variable (N : Submonoid S) (R' S' : Type u) [CommRing R'] [CommRing S']
+variable {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
+variable (R' S' : Type u) [CommRing R'] [CommRing S']
 variable [Algebra R R'] [Algebra S S']
 
 section Properties
@@ -247,6 +247,47 @@ theorem RingHom.PropertyIsLocal.ofLocalizationSpan (hP : RingHom.PropertyIsLocal
     (T := Submonoid.powers (f r))]
   · apply hP.StableUnderCompositionWithLocalizationAway.right _ r
     exact hs' ⟨r, hr⟩
+
+lemma RingHom.OfLocalizationSpan.ofIsLocalization
+    (hP : RingHom.OfLocalizationSpan P) (hPi : RingHom.RespectsIso P)
+    {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (s : Set R) (hs : Ideal.span s = ⊤)
+    (hT : ∀ r : s, ∃ (Rᵣ Sᵣ : Type u) (_ : CommRing Rᵣ) (_ : CommRing Sᵣ)
+      (_ : Algebra R Rᵣ) (_ : Algebra S Sᵣ) (_ : IsLocalization.Away r.val Rᵣ)
+      (_ : IsLocalization.Away (f r.val) Sᵣ) (fᵣ : Rᵣ →+* Sᵣ)
+      (_ : fᵣ.comp (algebraMap R Rᵣ) = (algebraMap S Sᵣ).comp f),
+        P fᵣ) : P f := by
+  apply hP _ s hs
+  intro r
+  obtain ⟨Rᵣ, Sᵣ, _, _, _, _, _, _, fᵣ, hfᵣ, hf⟩ := hT r
+  let e₁ := (Localization.algEquiv (.powers r.val) Rᵣ).toRingEquiv
+  let e₂ := (IsLocalization.algEquiv (.powers (f r.val))
+    (Localization (.powers (f r.val))) Sᵣ).symm.toRingEquiv
+  have : Localization.awayMap f r.val =
+      (e₂.toRingHom.comp fᵣ).comp e₁.toRingHom := by
+    apply IsLocalization.ringHom_ext (.powers r.val)
+    ext x
+    have : fᵣ ((algebraMap R Rᵣ) x) = algebraMap S Sᵣ (f x) := by
+      rw [← RingHom.comp_apply, hfᵣ, RingHom.comp_apply]
+    simp [-AlgEquiv.symm_toRingEquiv, e₂, e₁, Localization.awayMap, IsLocalization.Away.map, this]
+  rw [this]
+  apply hPi.right
+  apply hPi.left
+  exact hf
+
+/-- Variant of `RingHom.OfLocalizationSpan.ofIsLocalization` where
+`fᵣ = IsLocalization.Away.map`. -/
+lemma RingHom.OfLocalizationSpan.ofIsLocalization'
+    (hP : RingHom.OfLocalizationSpan P) (hPi : RingHom.RespectsIso P)
+    {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (s : Set R) (hs : Ideal.span s = ⊤)
+    (hT : ∀ r : s, ∃ (Rᵣ Sᵣ : Type u) (_ : CommRing Rᵣ) (_ : CommRing Sᵣ)
+      (_ : Algebra R Rᵣ) (_ : Algebra S Sᵣ) (_ : IsLocalization.Away r.val Rᵣ)
+      (_ : IsLocalization.Away (f r.val) Sᵣ),
+        P (IsLocalization.Away.map Rᵣ Sᵣ f r)) : P f := by
+  apply hP.ofIsLocalization hPi _ s hs
+  intro r
+  obtain ⟨Rᵣ, Sᵣ, _, _, _, _, _, _, hf⟩ := hT r
+  exact ⟨Rᵣ, Sᵣ, inferInstance, inferInstance, inferInstance, inferInstance,
+    inferInstance, inferInstance, IsLocalization.Away.map Rᵣ Sᵣ f r, IsLocalization.map_comp _, hf⟩
 
 lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
     (hP : RingHom.OfLocalizationSpanTarget P) (hP' : RingHom.RespectsIso P)

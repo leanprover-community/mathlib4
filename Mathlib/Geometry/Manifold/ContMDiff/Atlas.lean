@@ -21,13 +21,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
-  -- declare a smooth manifold `M'` over the pair `(E', H')`.
-  {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M']
+  -- declare a topological space `M'`.
+  {M' : Type*} [TopologicalSpace M']
   -- declare functions, sets, points and smoothness indices
-  {e : PartialHomeomorph M H} {x : M} {m n : ℕ∞}
+  {e : PartialHomeomorph M H} {x : M} {n : ℕ∞}
 
 /-! ### Atlas members are smooth -/
 
