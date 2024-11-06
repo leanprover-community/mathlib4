@@ -1031,25 +1031,6 @@ theorem orthogonalProjection_isSymmetric [HasOrthogonalProjection K] :
     (K.subtypeL ∘L orthogonalProjection K : E →ₗ[𝕜] E).IsSymmetric :=
   inner_orthogonalProjection_left_eq_right K
 
-/-- The orthogonal complement of an invariant submodule is invariant. -/
-lemma orthogonalComplement_le_comap_self {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {p : Submodule 𝕜 E}
-    (hp : p ≤ Submodule.comap T p) : pᗮ ≤ Submodule.comap T pᗮ := by
-  intro x hx
-  simp only [Submodule.mem_comap, Submodule.mem_orthogonal] at hx ⊢
-  intro y hy
-  rw [← hT y x]
-  exact hx (T y) (hp hy)
-
-/-- Every symmetric operator on a finite-dimensional inner product space is semisimple. -/
-theorem IsSymmetric.isSemisimple {T : Module.End 𝕜 E} [FiniteDimensional 𝕜 E] (hT : T.IsSymmetric) :
-    T.IsSemisimple := by
-  refine Module.End.isSemisimple_iff.mpr fun p hp ↦ ⟨pᗮ, fun x hx ↦ ?_, IsCompl.mk ?_ ?_⟩
-  · exact orthogonalComplement_le_comap_self hT hp hx
-  · rw [_root_.disjoint_iff]
-    exact Submodule.inf_orthogonal_eq_bot p
-  · rw [codisjoint_iff]
-    exact Submodule.sup_orthogonal_of_completeSpace
-
 open Module
 
 /-- Given a finite-dimensional subspace `K₂`, and a subspace `K₁`
