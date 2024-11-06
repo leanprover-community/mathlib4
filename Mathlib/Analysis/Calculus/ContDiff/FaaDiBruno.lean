@@ -746,12 +746,12 @@ def compAlongOrderedFinpartition
     (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F) :
     E[×n]→L[𝕜] G where
   toFun v := f (c.applyOrderedFinpartition p v)
-  map_add' v i x y := by
+  map_update_add' v i x y := by
     cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_add]
-  map_smul' v i c x := by
+    simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_update_add]
+  map_update_smul' v i c x := by
     cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_smul]
+    simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_update_smul]
   cont := by
     apply f.cont.comp
     change Continuous (fun v m ↦ p m (v ∘ c.emb m))
@@ -769,12 +769,12 @@ def compAlongOrderedFinpartitionₗ :
       MultilinearMap 𝕜 (fun i : Fin c.length ↦ (E[×c.partSize i]→L[𝕜] F)) (E[×n]→L[𝕜] G) where
   toFun f :=
     { toFun := fun p ↦ c.compAlongOrderedFinpartition f p
-      map_add' := by
+      map_update_add' := by
         intro inst p m q q'
         cases Subsingleton.elim ‹_› (instDecidableEqFin _)
         ext v
         simp [applyOrderedFinpartition_update_left]
-      map_smul' := by
+      map_update_smul' := by
         intro inst p m a q
         cases Subsingleton.elim ‹_› (instDecidableEqFin _)
         ext v
