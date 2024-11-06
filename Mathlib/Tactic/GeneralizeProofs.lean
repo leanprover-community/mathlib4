@@ -6,6 +6,7 @@ Authors: Alex J. Best, Kyle Miller
 import Lean.Elab.Tactic.Config
 import Lean.Elab.Tactic.Location
 import Mathlib.Lean.Expr.Basic
+import Batteries.Lean.Expr
 
 /-!
 # The `generalize_proofs` tactic
