@@ -83,117 +83,296 @@ See the `ContravariantClass` doc-string for its meaning. -/
 def Contravariant : Prop :=
   ∀ (m) {n₁ n₂}, r (μ m n₁) (μ m n₂) → r n₁ n₂
 
-/-- TODO -/
+/-- Typeclass for monotonicity of multiplication on the left,
+namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCommMonoid`. -/
 class MulLeftMono [Mul M] [LE M] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M M (· * ·) LE.le
+  /-- Do not use this. Use `mul_le_mul_left'` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (hb : b₁ ≤ b₂) : a * b₁ ≤ a * b₂
 
-/-- TODO -/
+/-- Typeclass for monotonicity of multiplication on the right,
+namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCommMonoid`. -/
 class MulRightMono [Mul M] [LE M] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M M (swap (· * ·)) LE.le
+  /-- Do not use this. Use `mul_le_mul_right'` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ ≤ a₂) : a₁ * b ≤ a₂ * b
 
-/-- TODO -/
+/-- Typeclass for monotonicity of addition on the left,
+namely `b₁ ≤ b₂ → a + b₁ ≤ a + b₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedAddCommMonoid`. -/
 class AddLeftMono [Add M] [LE M] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M M (· + ·) LE.le
+  /-- Do not use this. Use `add_le_add_left` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (hb : b₁ ≤ b₂) : a + b₁ ≤ a + b₂
 
-/-- TODO -/
+/-- Typeclass for monotonicity of addition on the right,
+namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedAddCommMonoid`. -/
 class AddRightMono [Add M] [LE M] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M M (swap (· + ·)) LE.le
+  /-- Do not use this. Use `add_le_add_right` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ ≤ a₂) : a₁ + b ≤ a₂ + b
 
 attribute [to_additive] MulLeftMono MulRightMono
 
-/-- TODO -/
+/-- Typeclass for monotonicity of addition on the right,
+namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedAddCommMonoid`. -/
 class MulLeftStrictMono [Mul M] [LT M] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M M (· * ·) LT.lt
+  /-- Do not use this. Use `mul_lt_mul_left'` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (hb : b₁ < b₂) : a * b₁ < a * b₂
 
-/-- TODO -/
+/-- Typeclass for monotonicity of multiplication on the right,
+namely `a₁ < a₂ → a₁ * b < a₂ * b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCommGroup`. -/
 class MulRightStrictMono [Mul M] [LT M] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M M (swap (· * ·)) LT.lt
+  /-- Do not use this. Use `mul_lt_mul_right'` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ < a₂) : a₁ * b < a₂ * b
 
-/-- TODO -/
+/-- Typeclass for monotonicity of addition on the left,
+namely `b₁ < b₂ → a + b₁ < a + b₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedAddCommGroup`. -/
 class AddLeftStrictMono [Add M] [LT M] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M M (· + ·) LT.lt
+  /-- Do not use this. Use `add_lt_add_left` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (hb : b₁ < b₂) : a + b₁ < a + b₂
 
-/-- TODO -/
+/-- Typeclass for monotonicity of addition on the right,
+namely `a₁ < a₂ → a₁ + b < a₂ + b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedAddCommGroup`. -/
 class AddRightStrictMono [Add M] [LT M] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M M (swap (· + ·)) LT.lt
+  /-- Do not use this. Use `add_lt_add_right` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ < a₂) : a₁ + b < a₂ + b
 
 attribute [to_additive] MulLeftStrictMono MulRightStrictMono
 
-/-- TODO -/
-class MulLeftReflectLE [Mul M] [LE M] : Prop where
-  /-- TODO -/
-  protected elim : Contravariant M M (· * ·) LE.le
+/-- Typeclass for strict reverse monotonicity of multiplication on the left,
+namely `a * b₁ < a * b₂ → b₁ < b₂`.
 
-/-- TODO -/
-class MulRightReflectLE [Mul M] [LE M] : Prop where
-  /-- TODO -/
-  protected elim : Contravariant M M (swap (· * ·)) LE.le
-
-/-- TODO -/
-class AddLeftReflectLE [Add M] [LE M] : Prop where
-  /-- TODO -/
-  protected elim : Contravariant M M (· + ·) LE.le
-
-/-- TODO -/
-class AddRightReflectLE [Add M] [LE M] : Prop where
-  /-- TODO -/
-  protected elim : Contravariant M M (swap (· + ·)) LE.le
-
-attribute [to_additive] MulLeftReflectLE MulRightReflectLE
-
-/-- TODO -/
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCommGroup`. -/
 class MulLeftReflectLT [Mul M] [LT M] : Prop where
-  /-- TODO -/
-  protected elim : Contravariant M M (· * ·) LT.lt
+  /-- Do not use this. Use `lt_of_mul_lt_mul_left'` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (h : a * b₁ < a * b₂) : b₁ < b₂
 
-/-- TODO -/
+/-- Typeclass for strict reverse monotonicity of multiplication on the right,
+namely `a₁ * b < a₂ * b → a₁ < a₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCommGroup`. -/
 class MulRightReflectLT [Mul M] [LT M] : Prop where
-  /-- TODO -/
-  protected elim : Contravariant M M (swap (· * ·)) LT.lt
+  /-- Do not use this. Use `lt_of_mul_lt_mul_right'` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (h : a₁ * b < a₂ * b) : a₁ < a₂
 
-/-- TODO -/
+/-- Typeclass for strict reverse monotonicity of addition on the left,
+namely `a + b₁ < a + b₂ → b₁ < b₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedAddCommGroup`. -/
 class AddLeftReflectLT [Add M] [LT M] : Prop where
-  /-- TODO -/
-  protected elim : Contravariant M M (· + ·) LT.lt
+  /-- Do not use this. Use `lt_of_add_lt_add_left` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (h : a + b₁ < a + b₂) : b₁ < b₂
 
-/-- TODO -/
+/-- Typeclass for strict reverse monotonicity of addition on the right,
+namely `a₁ * b < a₂ * b → a₁ < a₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedAddCommGroup`. -/
 class AddRightReflectLT [Add M] [LT M] : Prop where
-  /-- TODO -/
-  protected elim : Contravariant M M (swap (· + ·)) LT.lt
+  /-- Do not use this. Use `lt_of_add_lt_add_right` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (h : a₁ + b < a₂ + b) : a₁ < a₂
 
 attribute [to_additive] MulLeftReflectLT MulRightReflectLT
 
-/-- TODO -/
+/-- Typeclass for reverse monotonicity of multiplication on the left,
+namely `a * b₁ ≤ a * b₂ → b₁ ≤ b₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCancelCommMonoid`. -/
+class MulLeftReflectLE [Mul M] [LE M] : Prop where
+  /-- Do not use this. Use `le_of_mul_le_mul_left'` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (h : a * b₁ ≤ a * b₂) : b₁ ≤ b₂
+
+/-- Typeclass for reverse monotonicity of multiplication on the right,
+namely `a₁ * b ≤ a₂ * b → a₁ ≤ a₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCancelCommMonoid`. -/
+class MulRightReflectLE [Mul M] [LE M] : Prop where
+  /-- Do not use this. Use `le_of_mul_le_mul_right'` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (h : a₁ * b ≤ a₂ * b) : a₁ ≤ a₂
+
+/-- Typeclass for reverse monotonicity of addition on the left,
+namely `a + b₁ ≤ a + b₂ → b₁ ≤ b₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCancelAddCommMonoid`. -/
+class AddLeftReflectLE [Add M] [LE M] : Prop where
+  /-- Do not use this. Use `le_of_add_le_add_left` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (h : a + b₁ ≤ a + b₂) : b₁ ≤ b₂
+
+/-- Typeclass for reverse monotonicity of addition on the right,
+namely `a₁ + b ≤ a₂ + b → a₁ ≤ a₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCancelAddCommMonoid`. -/
+class AddRightReflectLE [Add M] [LE M] : Prop where
+  /-- Do not use this. Use `le_of_add_le_add_right` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (h : a₁ + b ≤ a₂ + b) : a₁ ≤ a₂
+
+attribute [to_additive] MulLeftReflectLE MulRightReflectLE
+
+/-- Typeclass for monotonicity of scalar multiplication on the left,
+namely `b₁ ≤ b₂ → a • b₁ ≤ a • b₂`. -/
 class SMulLeftMono [SMul M N] [LE N] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M N (· • ·) LE.le
+  /-- Do not use this. Use `smul_le_smul_left` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : N⦄ (hb : b₁ ≤ b₂) : a • b₁ ≤ a • b₂
 
-/-- TODO -/
+/-- Typeclass for strict monotonicity of scalar multiplication on the left,
+namely `b₁ < b₂ → a • b₁ < a • b₂`. -/
 class SMulLeftStrictMono [SMul M N] [LT N] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M N (· • ·) LT.lt
+  /-- Do not use this. Use `smul_lt_smul_left` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : N⦄ (hb : b₁ < b₂) : a • b₁ < a • b₂
 
-/-- TODO -/
+/-- Typeclass for monotonicity of vector addition on the left,
+namely `b₁ ≤ b₂ → a +ᵥ b₁ ≤ a +ᵥ b₂`. -/
 class VAddLeftMono [VAdd M N] [LE N] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M N (· +ᵥ ·) LE.le
+  /-- Do not use this. Use `vadd_le_vadd_left` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : N⦄ (hb : b₁ ≤ b₂) : a +ᵥ b₁ ≤ a +ᵥ b₂
 
-/-- TODO -/
+/-- Typeclass for strict monotonicity of vector addition on the left,
+namely `b₁ < b₂ → a +ᵥ b₁ < a +ᵥ b₂`. -/
 class VAddLeftStrictMono [VAdd M N] [LT N] : Prop where
-  /-- TODO -/
-  protected elim : Covariant M N (· +ᵥ ·) LT.lt
+  /-- Do not use this. Use `vadd_lt_vadd_left` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : N⦄ (hb : b₁ < b₂) : a +ᵥ b₁ < a +ᵥ b₂
 
 attribute [to_additive] SMulLeftMono SMulLeftStrictMono
 
 variable {M N μ r}
+
+@[to_additive]
+theorem covariant_mul_le [Mul M] [LE M] [MulLeftMono M] :
+    Covariant M M (· * ·) (· ≤ ·) :=
+  MulLeftMono.elim
+
+@[to_additive]
+theorem covariant_swap_mul_le [Mul M] [LE M] [MulRightMono M] :
+    Covariant M M (swap (· * ·)) (· ≤ ·) :=
+  MulRightMono.elim
+
+@[to_additive]
+theorem covariant_mul_lt [Mul M] [LT M] [MulLeftStrictMono M] :
+    Covariant M M (· * ·) (· < ·) :=
+  MulLeftStrictMono.elim
+
+@[to_additive]
+theorem covariant_swap_mul_lt [Mul M] [LT M] [MulRightStrictMono M] :
+    Covariant M M (swap (· * ·)) (· < ·) :=
+  MulRightStrictMono.elim
+
+@[to_additive]
+theorem contravariant_mul_lt [Mul M] [LT M] [MulLeftReflectLT M] :
+    Contravariant M M (· * ·) (· < ·) :=
+  MulLeftReflectLT.elim
+
+@[to_additive]
+theorem contravariant_swap_mul_lt [Mul M] [LT M] [MulRightReflectLT M] :
+    Contravariant M M (swap (· * ·)) (· < ·) :=
+  MulRightReflectLT.elim
+
+@[to_additive]
+theorem contravariant_mul_le [Mul M] [LE M] [MulLeftReflectLE M] :
+    Contravariant M M (· * ·) (· ≤ ·) :=
+  MulLeftReflectLE.elim
+
+@[to_additive]
+theorem contravariant_swap_mul_le [Mul M] [LE M] [MulRightReflectLE M] :
+    Contravariant M M (swap (· * ·)) (· ≤ ·) :=
+  MulRightReflectLE.elim
+
+@[to_additive]
+theorem covariant_smul_le [SMul M N] [LE N] [SMulLeftMono M N] :
+    Covariant M N (· • ·) (· ≤ ·) :=
+  SMulLeftMono.elim
+
+@[to_additive]
+theorem covariant_smul_lt [SMul M N] [LT N] [SMulLeftStrictMono M N] :
+    Covariant M N (· • ·) (· < ·) :=
+  SMulLeftStrictMono.elim
+
+/- The prime on this lemma is present only on the multiplicative version.  The unprimed version
+is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
+@[to_additive (attr := gcongr) add_le_add_left]
+theorem mul_le_mul_left' [Mul M] [LE M] [MulLeftMono M] {b c : M} (bc : b ≤ c) (a : M) :
+    a * b ≤ a * c :=
+  MulLeftMono.elim a bc
+
+/- The prime on this lemma is present only on the multiplicative version.  The unprimed version
+is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
+@[to_additive (attr := gcongr) add_le_add_right]
+theorem mul_le_mul_right' [Mul M] [LE M] [MulRightMono M] {b c : M} (bc : b ≤ c) (a : M) :
+    b * a ≤ c * a :=
+  MulRightMono.elim a bc
+
+@[to_additive (attr := gcongr) add_lt_add_left]
+theorem mul_lt_mul_left' [Mul M] [LT M] [MulLeftStrictMono M] {b c : M} (bc : b < c) (a : M) :
+    a * b < a * c :=
+  MulLeftStrictMono.elim a bc
+
+@[to_additive (attr := gcongr) add_lt_add_right]
+theorem mul_lt_mul_right' [Mul M] [LT M] [MulRightStrictMono M] {b c : M} (bc : b < c)
+    (a : M) :
+    b * a < c * a :=
+  MulRightStrictMono.elim a bc
+
+@[to_additive lt_of_add_lt_add_left]
+theorem lt_of_mul_lt_mul_left' [Mul M] [LT M] [MulLeftReflectLT M] {a b c : M}
+    (bc : a * b < a * c) :
+    b < c :=
+  MulLeftReflectLT.elim a bc
+
+@[to_additive lt_of_add_lt_add_right]
+theorem lt_of_mul_lt_mul_right' [Mul M] [LT M] [MulRightReflectLT M] {a b c : M}
+    (bc : b * a < c * a) :
+    b < c :=
+  MulRightReflectLT.elim a bc
+
+@[to_additive le_of_add_le_add_left]
+theorem le_of_mul_le_mul_left' [Mul M] [LE M] [MulLeftReflectLE M] {a b c : M}
+    (bc : a * b ≤ a * c) :
+    b ≤ c :=
+  MulLeftReflectLE.elim a bc
+
+@[to_additive le_of_add_le_add_right]
+theorem le_of_mul_le_mul_right' [Mul M] [LE M] [MulRightReflectLE M] {a b c : M}
+    (bc : b * a ≤ c * a) :
+    b ≤ c :=
+  MulRightReflectLE.elim a bc
+
+@[to_additive (attr := gcongr)]
+theorem smul_le_smul_left [SMul M N] [LE N] [SMulLeftMono M N]
+    (m : M) {a b : N} (h : a ≤ b) :
+    m • a ≤ m • b :=
+  SMulLeftMono.elim m h
+
+@[to_additive (attr := gcongr)]
+theorem smul_lt_smul_left [SMul M N] [LT N] [SMulLeftStrictMono M N]
+    (m : M) {a b : N} (h : a < b) :
+    m • a < m • b :=
+  SMulLeftStrictMono.elim m h
 
 theorem rel_iff_cov (co : Covariant M N μ r) (contra : Contravariant M N μ r)
     (m : M) {a b : N} :

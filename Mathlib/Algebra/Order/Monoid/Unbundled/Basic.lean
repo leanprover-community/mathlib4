@@ -57,33 +57,6 @@ section LE
 
 variable [LE α]
 
-/- The prime on this lemma is present only on the multiplicative version.  The unprimed version
-is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
-@[to_additive (attr := gcongr) add_le_add_left]
-theorem mul_le_mul_left' [MulLeftMono α] {b c : α} (bc : b ≤ c) (a : α) :
-    a * b ≤ a * c :=
-  MulLeftMono.elim _ bc
-
-@[to_additive le_of_add_le_add_left]
-theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α}
-    (bc : a * b ≤ a * c) :
-    b ≤ c :=
-  MulLeftReflectLE.elim _ bc
-
-/- The prime on this lemma is present only on the multiplicative version.  The unprimed version
-is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
-@[to_additive (attr := gcongr) add_le_add_right]
-theorem mul_le_mul_right' [i : MulRightMono α] {b c : α} (bc : b ≤ c)
-    (a : α) :
-    b * a ≤ c * a :=
-  i.elim a bc
-
-@[to_additive le_of_add_le_add_right]
-theorem le_of_mul_le_mul_right' [i : MulRightReflectLE α] {a b c : α}
-    (bc : b * a ≤ c * a) :
-    b ≤ c :=
-  i.elim a bc
-
 @[to_additive (attr := simp)]
 theorem mul_le_mul_iff_left [MulLeftMono α]
     [MulLeftReflectLE α] (a : α) {b c : α} :
@@ -113,29 +86,6 @@ theorem mul_lt_mul_iff_right [MulRightStrictMono α]
     [MulRightReflectLT α] (a : α) {b c : α} :
     b * a < c * a ↔ b < c :=
   rel_iff_cov MulRightStrictMono.elim MulRightReflectLT.elim a
-
-@[to_additive (attr := gcongr) add_lt_add_left]
-theorem mul_lt_mul_left' [MulLeftStrictMono α] {b c : α} (bc : b < c) (a : α) :
-    a * b < a * c :=
-  MulLeftStrictMono.elim _ bc
-
-@[to_additive lt_of_add_lt_add_left]
-theorem lt_of_mul_lt_mul_left' [MulLeftReflectLT α] {a b c : α}
-    (bc : a * b < a * c) :
-    b < c :=
-  MulLeftReflectLT.elim _ bc
-
-@[to_additive (attr := gcongr) add_lt_add_right]
-theorem mul_lt_mul_right' [i : MulRightStrictMono α] {b c : α} (bc : b < c)
-    (a : α) :
-    b * a < c * a :=
-  i.elim a bc
-
-@[to_additive lt_of_add_lt_add_right]
-theorem lt_of_mul_lt_mul_right' [i : MulRightReflectLT α] {a b c : α}
-    (bc : b * a < c * a) :
-    b < c :=
-  i.elim a bc
 
 end LT
 
@@ -203,7 +153,7 @@ theorem mul_lt_of_mul_lt_left [MulLeftMono α] {a b c d : α} (h : a * b < c)
 theorem mul_le_of_mul_le_left [MulLeftMono α] {a b c d : α} (h : a * b ≤ c)
     (hle : d ≤ b) :
     a * d ≤ c :=
-  MulLeftMono.elim.act_rel_of_rel_of_act_rel a hle h
+  covariant_mul_le.act_rel_of_rel_of_act_rel a hle h
 
 @[to_additive]
 theorem mul_lt_of_mul_lt_right [MulRightMono α] {a b c d : α}
@@ -227,7 +177,7 @@ theorem lt_mul_of_lt_mul_left [MulLeftMono α] {a b c d : α} (h : a < b * c)
 theorem le_mul_of_le_mul_left [MulLeftMono α] {a b c d : α} (h : a ≤ b * c)
     (hle : c ≤ d) :
     a ≤ b * d :=
-  MulLeftMono.elim.rel_act_of_rel_of_rel_act b hle h
+  covariant_mul_le.rel_act_of_rel_of_rel_act b hle h
 
 @[to_additive]
 theorem lt_mul_of_lt_mul_right [MulRightMono α] {a b c d : α}
