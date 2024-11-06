@@ -562,6 +562,46 @@ end Field
 
 end
 
+section
+
+variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
+
+theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
+    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
+    ∃ (q : Polynomial R), q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
+  obtain ⟨p, hp0, hp⟩ := hRs
+  obtain ⟨q, hpq, hq⟩ := Polynomial.exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp0 0
+  simp only [C_0, sub_zero, X_pow_mul, X_dvd_iff] at hpq hq
+  rw [hpq, map_mul, aeval_X_pow] at hp
+  exact ⟨q, hq, (nonZeroDivisors S).pow_mem hs (rootMultiplicity 0 p) (aeval s q) hp⟩
+
+theorem IsAlgebraic.exists_nonzero_dvd
+    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
+    ∃ r : R, r ≠ 0 ∧ s ∣ (algebraMap R S) r := by
+  obtain ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
+  have key := map_dvd (Polynomial.aeval s) (Polynomial.X_dvd_sub_C (p := q))
+  rw [map_sub, hq, zero_sub, dvd_neg, Polynomial.aeval_X, Polynomial.aeval_C] at key
+  exact ⟨q.coeff 0, hq0, key⟩
+
+/-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
+if `b` is algebraic over `R`. -/
+theorem IsAlgebraic.exists_smul_eq_mul
+    (a : S) {b : S} (hRb : IsAlgebraic R b) (hb : b ∈ nonZeroDivisors S) :
+    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c := by
+  obtain ⟨r, hr, s, h⟩ := IsAlgebraic.exists_nonzero_dvd (R := R) (S := S) hRb hb
+  exact ⟨s * a, r, hr, by rw [Algebra.smul_def, h, mul_assoc]⟩
+
+variable (R)
+
+/-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
+if `b` is algebraic over `R`. -/
+theorem Algebra.IsAlgebraic.exists_smul_eq_mul [IsDomain S] [Algebra.IsAlgebraic R S]
+    (a : S) {b : S} (hb : b ≠ 0) :
+    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
+  (Algebra.IsAlgebraic.isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_iff_ne_zero.mpr hb)
+
+end
+
 variable {R S : Type*} [CommRing R] [IsDomain R] [CommRing S]
 
 theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
@@ -574,22 +614,6 @@ theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     ⟨p.integralNormalization, monic_integralNormalization p_ne_zero,
       integralNormalization_aeval_eq_zero px inj⟩
   exact ⟨⟨_, x_integral⟩, a, a_ne_zero, rfl⟩
-
-/-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
-if `S` is the integral closure of `R` in an algebraic extension `L` of `R`. -/
-theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S] [Algebra S L]
-    [Algebra R L] [IsScalarTower R S L] [IsIntegralClosure S R L] [Algebra.IsAlgebraic R L]
-    (inj : Function.Injective (algebraMap R L)) (a : S) {b : S} (hb : b ≠ 0) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c := by
-  obtain ⟨c, d, d_ne, hx⟩ :=
-    exists_integral_multiple (Algebra.IsAlgebraic.isAlgebraic (algebraMap _ L a / algebraMap _ L b))
-      ((injective_iff_map_eq_zero _).mp inj)
-  refine
-    ⟨IsIntegralClosure.mk' S (c : L) c.2, d, d_ne, IsIntegralClosure.algebraMap_injective S R L ?_⟩
-  simp only [Algebra.smul_def, RingHom.map_mul, IsIntegralClosure.algebraMap_mk', ← hx, ←
-    IsScalarTower.algebraMap_apply]
-  rw [← mul_assoc _ (_ / _), mul_div_cancel₀ (algebraMap S L a), mul_comm]
-  exact mt ((injective_iff_map_eq_zero _).mp (IsIntegralClosure.algebraMap_injective S R L) _) hb
 
 section Field
 
