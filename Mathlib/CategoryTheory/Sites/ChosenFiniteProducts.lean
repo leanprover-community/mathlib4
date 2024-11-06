@@ -49,23 +49,29 @@ noncomputable instance : ChosenFiniteProducts (Sheaf J A) where
           (P := { val := X.val ⊗ Y.val
                   cond := tensorProd_isSheaf J X Y})
           ⟨(ChosenFiniteProducts.fst _ _)⟩ ⟨(ChosenFiniteProducts.snd _ _)⟩
-      isLimit := by
-        apply (by infer_instance : ReflectsLimit (pair X Y) (sheafToPresheaf J A)).reflects
-        apply IsLimit.equivOfNatIsoOfIso (pairComp X Y _) _ _ _ |>.invFun
-            (ChosenFiniteProducts.product X.val Y.val).isLimit
-        fapply Cones.ext
-        · exact Iso.refl _
-        · rintro ⟨⟨⟩⟩ <;> simp [pairComp, ChosenFiniteProducts.fst, ChosenFiniteProducts.snd] }
+      isLimit :=
+        { lift := fun f ↦ ⟨ChosenFiniteProducts.lift (BinaryFan.fst f).val (BinaryFan.snd f).val⟩
+          fac := by rintro s ⟨⟨j⟩⟩ <;> apply Sheaf.hom_ext <;> simp
+          uniq := by
+            intro x f h
+            apply Sheaf.hom_ext
+            apply ChosenFiniteProducts.hom_ext
+            · specialize h ⟨WalkingPair.left⟩
+              rw [Sheaf.hom_ext_iff] at h
+              simpa using h
+            · specialize h ⟨WalkingPair.right⟩
+              rw [Sheaf.hom_ext_iff] at h
+              simpa using h } }
   terminal :=
     { cone := asEmptyCone { val := 𝟙_ (Cᵒᵖ ⥤ A)
                             cond := tensorUnit_isSheaf _}
-      isLimit := by
-        apply (by infer_instance : ReflectsLimit (Functor.empty _) (sheafToPresheaf J A)).reflects
-        apply IsLimit.equivOfNatIsoOfIso (Functor.emptyExt _ _) _ _ _ |>.invFun
-            ChosenFiniteProducts.terminal.isLimit
-        fapply Cones.ext
-        · exact Iso.refl _
-        · simp }
+      isLimit :=
+        { lift := fun f ↦ ⟨ChosenFiniteProducts.toUnit f.pt.val⟩
+          fac := by intro s ⟨e⟩; cases e
+          uniq := by
+            intro x f h
+            apply Sheaf.hom_ext
+            exact ChosenFiniteProducts.toUnit_unique f.val _} }
 
 @[simp]
 lemma fst_val : (ChosenFiniteProducts.fst X Y).val = ChosenFiniteProducts.fst X.val Y.val := rfl
@@ -77,28 +83,12 @@ variable {X Y}
 variable {W : Sheaf J A} (f : W ⟶ X) (g : W ⟶ Y)
 
 @[simp]
-lemma lift_val : (ChosenFiniteProducts.lift f g).val = ChosenFiniteProducts.lift f.val g.val := by
-  apply ChosenFiniteProducts.hom_ext
-  · change (ChosenFiniteProducts.lift f g ≫ ChosenFiniteProducts.fst _ _).val = _
-    simp
-  · change (ChosenFiniteProducts.lift f g ≫ ChosenFiniteProducts.snd _ _).val = _
-    simp
+lemma lift_val : (ChosenFiniteProducts.lift f g).val = ChosenFiniteProducts.lift f.val g.val := rfl
 
 @[simp]
-lemma whiskerLeft_val : (X ◁ f).val = (X.val ◁ f.val) := by
-  apply ChosenFiniteProducts.hom_ext
-  · change ((X ◁ f) ≫ ChosenFiniteProducts.fst _ _).val = _
-    simp
-  · change ((X ◁ f) ≫ ChosenFiniteProducts.snd _ _).val = _
-    simp
-
+lemma whiskerLeft_val : (X ◁ f).val = (X.val ◁ f.val) := rfl
 @[simp]
-lemma whiskerRight_val : (f ▷ X).val = (f.val ▷ X.val) := by
-  apply ChosenFiniteProducts.hom_ext
-  · change ((f ▷ X) ≫ ChosenFiniteProducts.fst _ _).val = _
-    simp
-  · change ((f ▷ X) ≫ ChosenFiniteProducts.snd _ _).val = _
-    simp
+lemma whiskerRight_val : (f ▷ X).val = (f.val ▷ X.val) := rfl
 
 /-- The inclusion from sheaves to presheaves is monoidal with respect to the cartesian monoidal
 structures. -/
