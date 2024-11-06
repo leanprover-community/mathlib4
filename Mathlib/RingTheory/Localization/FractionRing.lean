@@ -175,7 +175,6 @@ theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors
   exact IsUnit.mk0 (g y) <|
     show g.toMonoidWithZeroHom y ≠ 0 from map_ne_zero_of_mem_nonZeroDivisors g hg y.2
 
-@[simp high]
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
   haveI := nontrivial_of_ringHom_nontrivial (algebraMap R K)
