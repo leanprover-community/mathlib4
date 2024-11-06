@@ -49,7 +49,7 @@ theorem mk_mul {rels : Set (FreeGroup α)} (a b : FreeGroup α) : mk rels (a * b
 
 @[simp]
 theorem mk_pow {rels : Set (FreeGroup α)} (a : FreeGroup α) (n : ℕ) : mk rels a ^ n =
-  (mk rels a) ^ n := rfl
+    (mk rels a) ^ n := rfl
 
 theorem mk_surjective (rels : Set (FreeGroup α)) : Function.Surjective <| mk rels :=
   QuotientGroup.mk_surjective
