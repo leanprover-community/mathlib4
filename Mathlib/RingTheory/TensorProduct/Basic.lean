@@ -8,7 +8,6 @@ import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Finiteness
-import Mathlib.Algebra.Algebra.RestrictScalars
 
 /-!
 # The tensor product of R-algebras
