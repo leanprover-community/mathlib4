@@ -568,7 +568,7 @@ theorem isMaximalClique_iff {s : Finset α} :
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 lemma maximal_of_maximum (s : Finset α) (M : G.IsMaximumClique s) : G.IsMaximalClique s :=
-  { clique := M.clique,
+  { clique := M.isClique,
     maximal := fun t ht hsub => by
       by_contra hc
       push_neg at hc
