@@ -556,7 +556,7 @@ section refl
 variable (M)
 
 /-- The identity map is a continuous multiplicative isomorphism. -/
-@[to_additive (attr := refl) "The identity map is an additive isomorphism."]
+@[to_additive (attr := refl) "The identity map is a continuous additive isomorphism."]
 def refl : M ≃ₜ* M := {
   MulEquiv.refl _ with
   continuous_toFun := by continuity
