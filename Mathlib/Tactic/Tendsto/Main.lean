@@ -1,5 +1,4 @@
 import Mathlib.Tactic.Tendsto.TendstoM
-import Mathlib.Tactic.Tendsto.SignOracle
 import Mathlib.Tactic.Tendsto.Multiseries.Basic
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
 import Mathlib.Tactic.Tendsto.Multiseries.Term

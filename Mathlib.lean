@@ -4289,6 +4289,7 @@ import Mathlib.Tactic.SuppressCompilation
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.Tendsto.LazyComp.Test
 import Mathlib.Tactic.Tendsto.Main
 import Mathlib.Tactic.Tendsto.Multiseries.Basic
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
@@ -4303,7 +4304,6 @@ import Mathlib.Tactic.Tendsto.Multiseries.Operations.Powser
 import Mathlib.Tactic.Tendsto.Multiseries.SeqLemmas
 import Mathlib.Tactic.Tendsto.Multiseries.Term
 import Mathlib.Tactic.Tendsto.Multiseries.Trimming
-import Mathlib.Tactic.Tendsto.SignOracle
 import Mathlib.Tactic.Tendsto.TendstoM
 import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToAdditive

@@ -212,20 +212,20 @@ theorem MS.IsEquivalent_leadingTerm (ms : MS) (h_basis : MS.WellOrderedBasis ms.
     (h_trimmed : ms.Trimmed) : ms.F ~[atTop] ms.leadingTerm.toFun ms.basis := by
   apply PreMS.IsEquivalent_leadingTerm ms.h_wo ms.h_approx h_trimmed h_basis
 
-def MS.findLimitTrimmed (ms : MS) (h_basis : MS.WellOrderedBasis ms.basis)
+noncomputable def MS.findLimitTrimmed (ms : MS) (h_basis : MS.WellOrderedBasis ms.basis)
     (h_trimmed : ms.Trimmed) :
-    TendstoM <| FindLimitResult ms.F := do
-  let r ← ms.leadingTerm.findLimit (basis := ms.basis) (by apply MS.leadingTerm_length) h_basis
+    FindLimitResult ms.F :=
+  let r := ms.leadingTerm.findLimit (basis := ms.basis) (by apply MS.leadingTerm_length) h_basis
   match r with
-  | .top p => return .top (by {
+  | .top p => .top (by {
       exact (IsEquivalent.tendsto_atTop_iff
         (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed)).mpr p
     })
-  | .bot p => return .bot (by {
+  | .bot p => .bot (by {
       exact (IsEquivalent.tendsto_atBot_iff
         (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed)).mpr p
     })
-  | .fin c p => return .fin c (by {
+  | .fin c p => .fin c (by {
       exact IsEquivalent.tendsto_nhds (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed).symm p
     })
 
