@@ -404,13 +404,9 @@ theorem nonempty_equiv : Nonempty (M ≃[L] N) := by
 end IsFraisseLimit
 
 variable {K} {N : Type w} [L.Structure N]
-variable [Countable (Σ l, L.Functions l)] [Countable M] [Countable N]
 
 instance [K_fraisse : IsFraisse K] : Nonempty ↑(Quotient.mk' '' K) :=
   (K_fraisse.is_nonempty.image Quotient.mk').coe_sort
-
-instance [K_fraisse : IsFraisse K] : ∀ S : K, Countable S :=
-  fun S ↦ Structure.cg_iff_countable.mp (K_fraisse.FG _ S.prop).cg
 
 variable (K_fraisse : IsFraisse K)
 
@@ -442,16 +438,6 @@ theorem ess_surj_sequence_spec : ∀ V : K, ∃ n,
   apply Quotient.exact
   convert (congr_arg (Subtype.val) n_prop).symm
   apply Quot.out_eq
-
-noncomputable def sequence_FGEquiv (A : K) (n : ℕ) : FGEquiv L A A :=
-  (countable_iff_exists_surjective.1 (countable_self_fgequiv_of_countable (L := L))).choose n
-
-theorem sequence_FGEquiv_spec {A : K} (f : FGEquiv L A A) :
-    ∃ n, f = sequence_FGEquiv K_fraisse A n := by
-  let ⟨m, hm⟩ := (countable_iff_exists_surjective.1
-    (countable_self_fgequiv_of_countable (L := L))).choose_spec f
-  use m
-  exact hm.symm
 
 include K_fraisse in
 
@@ -506,6 +492,52 @@ theorem extend_and_join_spec_1 {A : K} (B : K) {f : A ≃ₚ[L] A} (f_fg : f.dom
 theorem extend_and_join_spec_2 (A B : K) {f : A ≃ₚ[L] A} (f_fg : f.dom.FG) :
     Nonempty (B ↪[L] (extend_and_join K_fraisse B f_fg).1) := ⟨(join K_fraisse _ B).2.2⟩
 
+theorem map_from_eq_dep_pair {C : K} {P Q : (B : K) × (B ↪[L] C)} (h : P = Q) :
+    P.2 = Q.2.comp (Embedding.eq_embed (congr_arg _ (congr_arg Sigma.fst h))) := by
+  cases h
+  rfl
+
+theorem if_then_else_left_struct {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
+    (g : B ↪[L] C) (h : P = True) :
+      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).1 = A := by
+  simp only [h, ↓reduceIte]
+
+theorem if_then_else_left {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
+    (g : B ↪[L] C) (h : P = True) :
+      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).2 =
+        f.comp (Embedding.eq_embed (congr_arg _ (if_then_else_left_struct f g h))):= by
+  have h' : (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩) = ⟨A, f⟩ := by
+    simp [h]
+  apply map_from_eq_dep_pair h'
+
+theorem if_then_else_right_struct {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
+    (g : B ↪[L] C) (h : P = False) :
+      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).1 = B := by
+  simp only [h, ↓reduceIte]
+
+theorem if_then_else_right {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
+    (g : B ↪[L] C) (h : P = False) :
+      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).2 =
+        g.comp (Embedding.eq_embed (congr_arg _ (if_then_else_right_struct f g h))):= by
+  have h' : (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩) = ⟨B, g⟩ := by
+    simp [h]
+  apply map_from_eq_dep_pair h'
+
+variable [Countable (Σ l, L.Functions l)] [Countable M] [Countable N]
+
+instance [K_fraisse : IsFraisse K] : ∀ S : K, Countable S :=
+  fun S ↦ Structure.cg_iff_countable.mp (K_fraisse.FG _ S.prop).cg
+
+noncomputable def sequence_FGEquiv (A : K) (n : ℕ) : FGEquiv L A A :=
+  (countable_iff_exists_surjective.1 (countable_self_fgequiv_of_countable (L := L))).choose n
+
+theorem sequence_FGEquiv_spec {A : K} (f : FGEquiv L A A) :
+    ∃ n, f = sequence_FGEquiv K_fraisse A n := by
+  let ⟨m, hm⟩ := (countable_iff_exists_surjective.1
+    (countable_self_fgequiv_of_countable (L := L))).choose_spec f
+  use m
+  exact hm.symm
+
 noncomputable def init_system : (n : ℕ) →
     (A : K) × (ℕ → (B : K) × (B ↪[L] A))
   | 0 => ⟨ess_surj_sequence K_fraisse 0,
@@ -549,37 +581,6 @@ theorem system_eq' {n : ℕ} {m : ℕ} (h : m ≤ n) :
 
 noncomputable def maps_system {m n : ℕ} (h : m ≤ n): system K_fraisse m ↪[L] system K_fraisse n :=
   ((init_system K_fraisse n).2 m).2.comp (Embedding.eq_embed (system_eq' K_fraisse h))
-
-theorem map_from_eq_dep_pair {C : K} {P Q : (B : K) × (B ↪[L] C)} (h : P = Q) :
-    P.2 = Q.2.comp (Embedding.eq_embed (congr_arg _ (congr_arg Sigma.fst h))) := by
-  cases h
-  rfl
-
-theorem if_then_else_left_struct {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
-    (g : B ↪[L] C) (h : P = True) :
-      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).1 = A := by
-  simp only [h, ↓reduceIte]
-
-theorem if_then_else_left {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
-    (g : B ↪[L] C) (h : P = True) :
-      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).2 =
-        f.comp (Embedding.eq_embed (congr_arg _ (if_then_else_left_struct f g h))):= by
-  have h' : (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩) = ⟨A, f⟩ := by
-    simp [h]
-  apply map_from_eq_dep_pair h'
-
-theorem if_then_else_right_struct {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
-    (g : B ↪[L] C) (h : P = False) :
-      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).1 = B := by
-  simp only [h, ↓reduceIte]
-
-theorem if_then_else_right {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
-    (g : B ↪[L] C) (h : P = False) :
-      (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).2 =
-        g.comp (Embedding.eq_embed (congr_arg _ (if_then_else_right_struct f g h))):= by
-  have h' : (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩) = ⟨B, g⟩ := by
-    simp [h]
-  apply map_from_eq_dep_pair h'
 
 theorem maps_system_same_step (m : ℕ) : maps_system K_fraisse (le_refl m)
     = Embedding.refl L _ := by
@@ -737,7 +738,7 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
     intro i j k hij hjk x
     simp [←Embedding.comp_apply, transitive_maps_system]
   let M := DirectLimit (L := L) (Bundled.α ∘ Subtype.val ∘ system K_fraisse)
-    (@maps_system _ _ _ K_fraisse)
+    (@maps_system _ _ K_fraisse _)
   use ⟨M, DirectLimit.instStructureDirectLimit ..⟩
   have M_c : Countable M := by
     rw [←Structure.cg_iff_countable (L := L)]
