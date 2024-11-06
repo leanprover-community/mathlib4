@@ -92,7 +92,7 @@ lemma hasSum_mellin_pi_mul₀ {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ
   let a' i := if p i = 0 then 0 else a i
   have hp' i : a' i = 0 ∨ 0 < p i := by
     simp only [a']
-    split_ifs with h <;> tauto
+    split_ifs with h <;> try tauto
     exact Or.inr (lt_of_le_of_ne (hp i) (Ne.symm h))
   have (i t) : (if p i = 0 then 0 else a i * rexp (-π * p i * t)) =
       a' i * rexp (-π * p i * t) := by

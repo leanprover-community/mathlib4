@@ -8,6 +8,7 @@ import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Topology.ContinuousMap.Weierstrass
+import Mathlib.Topology.ContinuousMap.Lattice
 
 /-!
 # The Stone-Weierstrass theorem
@@ -491,12 +492,6 @@ open NonUnitalStarAlgebra Submodule
 
 namespace ContinuousMap
 
-/-
-`set_option maxSynthPendingDepth 2` after https://github.com/leanprover/lean4/pull/4119
-allows use to remove some shortcut instances.
--/
-set_option maxSynthPendingDepth 2
-
 lemma adjoin_id_eq_span_one_union (s : Set 𝕜) :
     ((StarAlgebra.adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))}) : Set C(s, 𝕜)) =
       span 𝕜 ({(1 : C(s, 𝕜))} ∪ (adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))})) := by
@@ -631,5 +626,35 @@ theorem ContinuousMapZero.induction_on_of_compact {s : Set 𝕜} [Zero s] (h0 : 
   refine f.induction_on h0 zero id star_id add mul smul fun h f ↦ frequently f ?_
   have := (ContinuousMapZero.adjoin_id_dense h0).closure_eq ▸ Set.mem_univ (x := f)
   exact mem_closure_iff_frequently.mp this |>.mp <| .of_forall h
+
+lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
+    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [TopologicalSemiring A]
+    [T2Space A] [Module 𝕜 A] [IsScalarTower 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
+    (h0 : (0 : s) = (0 : 𝕜)) (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : φ (.id h0) * a = 0)
+    (hmul_star_id : φ (star (.id h0)) * a = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :
+    φ f * a = 0 := by
+  induction f using ContinuousMapZero.induction_on_of_compact h0 with
+  | zero => simp [map_zero]
+  | id => exact hmul_id
+  | star_id => exact hmul_star_id
+  | add _ _ h₁ h₂ => simp only [map_add, add_mul, h₁, h₂, zero_add]
+  | mul _ _ _ h => simp only [map_mul, mul_assoc, h, mul_zero]
+  | smul _ _ h => rw [map_smul, smul_mul_assoc, h, smul_zero]
+  | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
+
+lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
+    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [TopologicalSemiring A]
+    [T2Space A] [Module 𝕜 A] [SMulCommClass 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
+    (h0 : (0 : s) = (0 : 𝕜)) (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : a * φ (.id h0) = 0)
+    (hmul_star_id : a * φ (star (.id h0)) = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :
+    a * φ f = 0 := by
+  induction f using ContinuousMapZero.induction_on_of_compact h0 with
+  | zero => simp [map_zero]
+  | id => exact hmul_id
+  | star_id => exact hmul_star_id
+  | add _ _ h₁ h₂ => simp only [map_add, mul_add, h₁, h₂, zero_add]
+  | mul _ _ h _ => simp only [map_mul, ← mul_assoc, h, zero_mul]
+  | smul _ _ h => rw [map_smul, mul_smul_comm, h, smul_zero]
+  | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
 
 end ContinuousMapZero
