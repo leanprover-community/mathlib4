@@ -55,12 +55,12 @@ jobs:
 #
       #      > ${{ github.event.issue.title }}
 #
-      #- name: Add comment to PR
-      #  uses: GrantBirki/comment@v2
-      #  with:
-      #    issue-number: ${{ github.event.issue.number }}
-      #    body: |
-      #      🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}.
+      - name: Add comment to PR
+        uses: GrantBirki/comment@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}.
       #- name: Add label to PR
       #  uses: actions/github-script@v7
       #  with:
