@@ -6,15 +6,6 @@ Authors: Bjørn Kjos-Hanssen
 import Mathlib.Topology.Compactification.OnePointEquiv
 import Mathlib.Topology.Compactification.OnePointRealLemmas
 import Mathlib.Geometry.Manifold.Instances.Sphere
--- abs_le_inv, open_nonzero, symmetrize, dist_cone_pos, dist_cone_neg, pos_or_neg
--- import Mathlib.Data.Real.Sqrt
--- import Mathlib.Topology.Instances.Real
--- import Mathlib.Algebra.Order.Group.Unbundled.Abs
--- import Mathlib.Topology.UniformSpace.Basic
--- import Mathlib.Algebra.EuclideanDomain.Field
--- import Mathlib.Algebra.EuclideanDomain.Basic
--- import Mathlib.Analysis.RCLike.Basic
--- import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Homeomorphism between one-point compactification and projective space
@@ -411,6 +402,10 @@ lemma nonzero_of_dist_one {n : ℕ} (p : {v : Fin n → ℝ // dist v 0 = 1}) :
 def lift_unit_circle {n:ℕ} (v : {v : Fin n → ℝ // dist v 0 = 1}) : ℙ ℝ (Fin n → ℝ) :=
     mk' ℝ ⟨v.1, nonzero_of_dist_one _⟩
 
+def liftUnitCircle {n:ℕ} (v : Metric.sphere (0: Fin n → ℝ) (1:ℝ)) :
+    ℙ ℝ (Fin n → ℝ) :=
+    mk' ℝ ⟨v.1, nonzero_of_dist_one _⟩
+
 
 /-- List from unit circle to projectivization is surjective. -/
 lemma surjective_lift_unit_circle {n:ℕ} :
@@ -427,7 +422,7 @@ lemma surjective_lift_unit_circle {n:ℕ} :
   )
 
 instance {n : ℕ}: Setoid {v : Fin n → ℝ // v ≠ 0} :=
-    @projectivizationSetoid ℝ (Fin n → ℝ) _ _ _
+    projectivizationSetoid (K := ℝ) (V := (Fin n → ℝ))
 
 
 /-- Lift from (part of) unit circle to projectivization is injective. -/
@@ -478,7 +473,7 @@ lemma injective_lift_unit_circle {n : ℕ} : Function.Injective
     have : c.1 = 1 ∨ c.1 = -1 := by
         clear hQ hp hq g₀ h₁ hc this h p q
         have :  ‖c.1‖₊ = |c.1| := by exact rfl
-        aesop
+        simp_all only [NNReal.coe_one]
         exact eq_or_eq_neg_of_abs_eq rfl
     cases this with
     | inl h =>
@@ -525,8 +520,8 @@ noncomputable def OnePointHomeo : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoint
 /-- The real projective line is a Hausdorff space. -/
 instance :  T2Space (ℙ ℝ (Fin 2 → ℝ)) := Homeomorph.t2Space OnePointHomeo.symm
 
-/-- Nonvertical map has range missing one point. -/
-theorem nonVertical_hasRange :
+/-- Horizontal map has range missing one point. -/
+theorem horizontal_hasRange :
     Set.range (fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ)))
                      = {⟦⟨![1, 0], by simp⟩⟧}ᶜ := Set.ext <| Quotient.ind <| fun p => by
   simp only [ne_eq, Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
@@ -573,8 +568,8 @@ theorem nonVertical_hasRange :
         Units.smul_mk_apply, smul_eq_mul, Matrix.cons_val_one, Matrix.head_cons]
         aesop
 
-/-- Nonvertical map is injective. -/
-theorem nonVertical_isInjective :
+/-- Horizontal map is injective. -/
+theorem horizontal_isInjective :
     Function.Injective fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ)) := by
   intro x y h
   obtain ⟨c,hc⟩ := Quotient.eq.mp h
@@ -584,21 +579,21 @@ theorem nonVertical_isInjective :
   have := congrFun hc 0
   simp_all
 
-/-- Nonvertical map is inducing. -/
-theorem nonVertical_isInducing : IsInducing fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ)) := by
-  have If : IsOpenMap (fun r : ℝ => div_slope_equiv r) := IsOpenMap.comp (fun S =>
+lemma div_slope_equiv_open : IsOpenMap (fun r : ℝ => div_slope_equiv r) :=
+    IsOpenMap.comp (fun S =>
     (show ⇑div_slope_equiv '' S = OnePointHomeo.toFun ⁻¹' S by aesop)
     ▸ OnePointHomeo.continuous_toFun.isOpen_preimage S) OnePoint.isOpenMap_coe
-  have h₀ : Continuous (fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ))) := by
+
+lemma horizontalContinuous : Continuous (fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ))) := by
     apply Continuous.comp' continuous_quotient_mk'
     apply Continuous.subtype_mk <| continuous_pi fun i => by
-      fin_cases i; exact continuous_id'; exact continuous_const
+      fin_cases i
+      · exact continuous_id'
+      · exact continuous_const
 
-
-
-
-  exact isInducing_iff_nhds.mpr <| by
-    intro x
+/-- Horizontal map is inducing. -/
+theorem horizontal_isInducing : IsInducing fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ)) :=
+    isInducing_iff_nhds.mpr <| fun x => by
     ext s
     simp only [ne_eq, Filter.mem_comap]
     rw [mem_nhds_iff_exists_Ioo_subset ]
@@ -609,7 +604,8 @@ theorem nonVertical_isInducing : IsInducing fun r ↦ (⟦⟨![r, 1], by simp⟩
       let f := fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ))
       use f '' (Set.Ioo l u)
       constructor
-      · exact ⟨f '' (Set.Ioo l u), fun _ => id, ⟨If _ isOpen_Ioo, x, hu.1, rfl⟩⟩
+      · exact ⟨f '' (Set.Ioo l u), fun _ => id,
+          ⟨div_slope_equiv_open _ isOpen_Ioo, x, hu.1, rfl⟩⟩
       · exact fun a ha => hu.2 <| by
           obtain ⟨y,hy⟩ := ha
           have := hy.2
@@ -630,14 +626,14 @@ theorem nonVertical_isInducing : IsInducing fun r ↦ (⟦⟨![r, 1], by simp⟩
       obtain ⟨t,ht⟩ := h
       obtain ⟨t₁,ht₁⟩ := ht.1
       have h₁ : IsOpen <|(fun r ↦ ⟦⟨![r, 1], by simp⟩⟧) ⁻¹' t₁ :=
-          h₀.isOpen_preimage t₁ ht₁.2.1
+          horizontalContinuous.isOpen_preimage t₁ ht₁.2.1
       rw [← mem_nhds_iff_exists_Ioo_subset]
       exact Filter.mem_of_superset (IsOpen.mem_nhds h₁ (by aesop))
         fun _ hz => ht.2 <| ht₁.1 hz
 
 /-- Uniqueness-based proof that
   the real projective line ℙ ℝ (Fin 2 → ℝ) and OnePoint ℝ are homeomorphic. -/
-noncomputable def OnePointHomeo' : Homeomorph (OnePoint ℝ) (ℙ ℝ (Fin 2 → ℝ)) :=
+noncomputable def OnePointReal_homeo_proj_Katz : Homeomorph (OnePoint ℝ) (ℙ ℝ (Fin 2 → ℝ)) :=
   OnePoint.equivOfIsEmbeddingOfRangeEq (Y := ℙ ℝ (Fin 2 → ℝ))
   ⟦ ⟨![1,0],by simp⟩ ⟧ (fun r => ⟦ ⟨![r,1],by simp⟩ ⟧)
-  ⟨nonVertical_isInducing, nonVertical_isInjective⟩ nonVertical_hasRange
+  ⟨horizontal_isInducing, horizontal_isInjective⟩ horizontal_hasRange
