@@ -1,4 +1,6 @@
-import Mathlib
+import Lean
+import ImportGraph.Imports
+import Mathlib.Logic.Function.Defs
 
 open Lean
 

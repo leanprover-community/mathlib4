@@ -74,7 +74,7 @@ jobs:
       with:
         linters: gcc
         run: |
-          lake build Mathlib.Logic.Function.Defs
+          lake build Mathlib.Logic.Function.Defs ImportGraph.Imports
 
     - name: Full report
       run: |
