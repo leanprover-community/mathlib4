@@ -275,6 +275,15 @@ theorem mem_centralizer_iff {s : Set A} {z : A} :
 theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ centralizer R s :=
   Set.centralizer_subset (Set.union_subset_union h <| Set.preimage_mono h)
 
+theorem centralizer_toSubalgebra (s : Set A) :
+    (centralizer R s).toSubalgebra = Subalgebra.centralizer R (s ∪ star s):=
+  rfl
+
+theorem coe_centralizer_centralizer (s : Set A) :
+    (centralizer R (centralizer R s : Set A)) = (s ∪ star s).centralizer.centralizer := by
+  simp only [coe_centralizer, Set.instInvolutiveStar]
+  rw [← coe_centralizer (R := R) s, StarMemClass.star_coe_eq, Set.union_self]
+
 end Centralizer
 
 end StarSubalgebra
@@ -503,28 +512,32 @@ theorem adjoin_induction_subtype {s : Set A} {p : adjoin R s → Prop} (a : adjo
 
 variable (R)
 
+lemma adjoin_le_centralizer_centralizer (s : Set A) :
+    adjoin R s ≤ centralizer R (centralizer R s) := by
+  rw [← toSubalgebra_le_iff, centralizer_toSubalgebra, adjoin_toSubalgebra]
+  convert Algebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
+  rw [StarMemClass.star_coe_eq]
+  simp
+
 /-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
 `star s`, then `StarSubalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/
 abbrev adjoinCommSemiringOfComm {s : Set A}
-    (hcomm : ∀ a : A, a ∈ s → ∀ b : A, b ∈ s → a * b = b * a)
-    (hcomm_star : ∀ a : A, a ∈ s → ∀ b : A, b ∈ s → a * star b = star b * a) :
+    (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a)
+    (hcomm_star : ∀ a ∈ s, ∀ b ∈ s, a * star b = star b * a) :
     CommSemiring (adjoin R s) :=
-  { (adjoin R s).toSubalgebra.toSemiring with
-    mul_comm := by
-      rintro ⟨x, hx⟩ ⟨y, hy⟩
-      ext
-      simp only [MulMemClass.mk_mul_mk]
-      rw [← mem_toSubalgebra, adjoin_toSubalgebra] at hx hy
-      letI : CommSemiring (Algebra.adjoin R (s ∪ star s)) :=
-        Algebra.adjoinCommSemiringOfComm R
-          (by
-            intro a ha b hb
-            cases' ha with ha ha <;> cases' hb with hb hb
-            · exact hcomm _ ha _ hb
-            · exact star_star b ▸ hcomm_star _ ha _ hb
-            · exact star_star a ▸ (hcomm_star _ hb _ ha).symm
-            · simpa only [star_mul, star_star] using congr_arg star (hcomm _ hb _ ha))
-      exact congr_arg Subtype.val (mul_comm (⟨x, hx⟩ : Algebra.adjoin R (s ∪ star s)) ⟨y, hy⟩) }
+  { (adjoin R s).toSemiring with
+    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦ by
+      have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦ by
+        obtain (ha | ha) := ha <;> obtain (hb | hb) := hb
+        · exact hcomm a ha b hb
+        · exact star_star b ▸ hcomm_star _ ha _ hb
+        · exact star_star a ▸ (hcomm_star _ hb _ ha).symm
+        · simpa only [star_mul, star_star] using congr_arg star (hcomm _ hb _ ha)
+      have := adjoin_le_centralizer_centralizer R s
+      apply this at h₁
+      apply this at h₂
+      rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
+      exact Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ h₁ _ h₂ }
 
 /-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
 `star s`, then `StarSubalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/

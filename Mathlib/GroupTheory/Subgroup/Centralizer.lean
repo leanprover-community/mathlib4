@@ -71,4 +71,21 @@ variable (H)
 theorem le_centralizer [h : H.IsCommutative] : H ≤ centralizer H :=
   le_centralizer_iff_isCommutative.mpr h
 
+variable {H} in
+@[to_additive]
+lemma closure_le_centralizer_centralizer (s : Set G) :
+    closure s ≤ centralizer (centralizer s) :=
+  closure_le _ |>.mpr Set.subset_centralizer_centralizer
+
+/-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
+@[to_additive
+      "If all the elements of a set `s` commute, then `closure s` is an additive
+      commutative group."]
+abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
+    CommGroup (closure k) :=
+  { (closure k).toGroup with
+    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
+      have := closure_le_centralizer_centralizer k
+      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
+
 end Subgroup
