@@ -174,7 +174,6 @@ lemma partialSups_eq_biUnion_range (s : ℕ → Set α) (n : ℕ) :
 
 variable [CompleteLattice α]
 
--- Porting note (#10618): simp can prove this @[simp]
 theorem iSup_partialSups_eq (f : ℕ → α) : ⨆ n, partialSups f n = ⨆ n, f n :=
   ciSup_partialSups_eq <| OrderTop.bddAbove _
 

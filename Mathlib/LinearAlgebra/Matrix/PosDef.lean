@@ -150,7 +150,7 @@ protected lemma zpow [StarOrderedRing R] [DecidableEq n]
   · simpa using hM.pow n
   · simpa using (hM.pow n).inv
 
-protected lemma add [CovariantClass R R (· + ·) (· ≤ · )] {A : Matrix m m R} {B : Matrix m m R}
+protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosSemidef) (hB : B.PosSemidef) : (A + B).PosSemidef :=
   ⟨hA.isHermitian.add hB.isHermitian, fun x => by
     rw [add_mulVec, dotProduct_add]
@@ -406,21 +406,21 @@ theorem _root_.Matrix.posDef_intCast_iff [StarOrderedRing R] [DecidableEq n] [No
     PosDef (d : Matrix n n R) ↔ 0 < d :=
   posDef_diagonal_iff.trans <| by simp
 
-protected lemma add_posSemidef [CovariantClass R R (· + ·) (· ≤ · )]
+protected lemma add_posSemidef [AddLeftMono R]
     {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosSemidef) : (A + B).PosDef :=
   ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
     rw [add_mulVec, dotProduct_add]
     exact add_pos_of_pos_of_nonneg (hA.2 x hx) (hB.2 x)⟩
 
-protected lemma posSemidef_add [CovariantClass R R (· + ·) (· ≤ · )]
+protected lemma posSemidef_add [AddLeftMono R]
     {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosSemidef) (hB : B.PosDef) : (A + B).PosDef :=
   ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
     rw [add_mulVec, dotProduct_add]
     exact add_pos_of_nonneg_of_pos (hA.2 x) (hB.2 x hx)⟩
 
-protected lemma add [CovariantClass R R (· + ·) (· ≤ · )] {A : Matrix m m R} {B : Matrix m m R}
+protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
   hA.add_posSemidef hB.posSemidef
 

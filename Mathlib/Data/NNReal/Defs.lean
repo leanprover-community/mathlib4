@@ -440,9 +440,9 @@ theorem coe_iInf {ι : Sort*} (s : ι → ℝ≥0) : (↑(⨅ i, s i) : ℝ) = �
   rw [iInf, iInf, coe_sInf, ← Set.range_comp]; rfl
 
 -- Short-circuit instance search
-instance instCovariantClassAddLE : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := inferInstance
-instance instContravariantClassAddLT : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < ·) := inferInstance
-instance instCovariantClassMulLE : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
+instance addLeftMono : AddLeftMono ℝ≥0 := inferInstance
+instance addLeftReflectLT : AddLeftReflectLT ℝ≥0 := inferInstance
+instance mulLeftMono : MulLeftMono ℝ≥0 := inferInstance
 
 @[deprecated le_of_forall_pos_le_add (since := "2024-10-17")]
 protected theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=

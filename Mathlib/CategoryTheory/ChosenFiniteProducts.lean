@@ -5,6 +5,7 @@ Authors: Adam Topaz, Robin Carlier
 -/
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 /-!
 # Categories with chosen finite products
@@ -483,5 +484,54 @@ end prodComparison
 end ChosenFiniteProductsComparison
 
 end ChosenFiniteProducts
+
+open Limits MonoidalCategory ChosenFiniteProducts
+
+variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
+  {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F : C ⥤ D)
+
+/-- Any functor between categories with chosen finite products induces an oplax monoial functor. -/
+@[simps]
+def Functor.toOplaxMonoidalFunctorOfChosenFiniteProducts : OplaxMonoidalFunctor C D where
+  toFunctor := F
+  η := terminalComparison F
+  δ X Y := prodComparison F X Y
+  δ_natural_left {X Y} f X' := by
+    symm; simpa using ChosenFiniteProducts.prodComparison_natural F f (𝟙 X')
+  δ_natural_right {X Y} X' g := by
+    symm; simpa using ChosenFiniteProducts.prodComparison_natural F (𝟙 X') g
+  associativity X Y Z := by
+    apply hom_ext
+    case' h_snd => apply hom_ext
+    all_goals simp [← Functor.map_comp]
+  left_unitality X := by
+    apply hom_ext
+    · exact toUnit_unique _ _
+    · simp only [leftUnitor_inv_snd, Category.assoc, whiskerRight_snd,
+        ChosenFiniteProducts.prodComparison_snd, ← F.map_comp, F.map_id]
+  right_unitality X := by
+    apply hom_ext
+    · simp only [rightUnitor_inv_fst, Category.assoc, whiskerLeft_fst,
+        ChosenFiniteProducts.prodComparison_fst, ← F.map_comp, F.map_id]
+    · exact toUnit_unique _ _
+
+variable [PreservesLimit (Functor.empty.{0} C) F]
+  [PreservesLimitsOfShape (Discrete WalkingPair) F]
+
+instance : IsIso F.toOplaxMonoidalFunctorOfChosenFiniteProducts.η :=
+  terminalComparison_isIso_of_preservesLimits F
+
+instance (A B : C) : IsIso (F.toOplaxMonoidalFunctorOfChosenFiniteProducts.δ A B) :=
+  isIso_prodComparison_of_preservesLimit_pair F A B
+
+/-- If `F` preserves finite products, the oplax monoidal functor
+`F.toOplaxMonoidalFunctorOfChosenFiniteProducts` can be promoted to a strong monoidal functor. -/
+@[simps!]
+noncomputable def Functor.toMonoidalFunctorOfChosenFiniteProducts : MonoidalFunctor C D :=
+  MonoidalFunctor.fromOplaxMonoidalFunctor
+    (toOplaxMonoidalFunctorOfChosenFiniteProducts F)
+
+instance [F.IsEquivalence] : F.toMonoidalFunctorOfChosenFiniteProducts.IsEquivalence := by
+  assumption
 
 end CategoryTheory

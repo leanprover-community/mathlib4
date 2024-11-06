@@ -120,36 +120,20 @@ theorem Ioc_eq_empty_of_le (h : b ≤ a) : Ioc a b = ∅ :=
 theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
   Ioo_eq_empty h.not_lt
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, true_and, le_rfl]
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp only [mem_Ico, true_and, le_refl]
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, and_true, le_rfl]
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp only [mem_Ioc, and_true, le_rfl]
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem left_not_mem_Ioc : a ∉ Ioc a b := fun h => lt_irrefl _ (mem_Ioc.1 h).1
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem left_not_mem_Ioo : a ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).1
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem right_not_mem_Ico : b ∉ Ico a b := fun h => lt_irrefl _ (mem_Ico.1 h).2
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem right_not_mem_Ioo : b ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).2
 
 theorem Icc_subset_Icc (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Icc a₂ b₂ := by
@@ -244,18 +228,12 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
 
 variable (a)
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem Ico_self : Ico a a = ∅ :=
   Ico_eq_empty <| lt_irrefl _
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem Ioc_self : Ioc a a = ∅ :=
   Ioc_eq_empty <| lt_irrefl _
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem Ioo_self : Ioo a a = ∅ :=
   Ioo_eq_empty <| lt_irrefl _
 
@@ -592,8 +570,6 @@ theorem Ioi_insert [DecidableEq α] (a : α) : insert a (Ioi a) = Ici a := by
   ext
   simp_rw [Finset.mem_insert, mem_Ici, mem_Ioi, le_iff_lt_or_eq, or_comm, eq_comm]
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem not_mem_Ioi_self {b : α} : b ∉ Ioi b := fun h => lt_irrefl _ (mem_Ioi.1 h)
 
 -- Purposefully written the other way around
@@ -620,8 +596,6 @@ theorem Iio_insert [DecidableEq α] (b : α) : insert b (Iio b) = Iic b := by
   ext
   simp_rw [Finset.mem_insert, mem_Iic, mem_Iio, le_iff_lt_or_eq, or_comm]
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem not_mem_Iio_self {b : α} : b ∉ Iio b := fun h => lt_irrefl _ (mem_Iio.1 h)
 
 -- Purposefully written the other way around
@@ -788,8 +762,6 @@ theorem uIcc_of_ge (h : b ≤ a) : [[a, b]] = Icc b a := by
 theorem uIcc_comm (a b : α) : [[a, b]] = [[b, a]] := by
   rw [uIcc, uIcc, inf_comm, sup_comm]
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem uIcc_self : [[a, a]] = {a} := by simp [uIcc]
 
 @[simp]
@@ -802,13 +774,9 @@ theorem Icc_subset_uIcc : Icc a b ⊆ [[a, b]] :=
 theorem Icc_subset_uIcc' : Icc b a ⊆ [[a, b]] :=
   Icc_subset_Icc inf_le_right le_sup_left
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem left_mem_uIcc : a ∈ [[a, b]] :=
   mem_Icc.2 ⟨inf_le_left, le_sup_left⟩
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem right_mem_uIcc : b ∈ [[a, b]] :=
   mem_Icc.2 ⟨inf_le_right, le_sup_right⟩
 

@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
-import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!
@@ -33,7 +32,7 @@ open scoped AlgebraicGeometry
 
 namespace AlgebraicGeometry
 
-variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
+variable {W X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 /-- A morphism is separated if the diagonal map is a closed immersion. -/
 @[mk_iff]
@@ -61,7 +60,7 @@ instance (priority := 900) [IsSeparated f] : QuasiSeparated f where
 
 instance stableUnderComposition : MorphismProperty.IsStableUnderComposition @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
-  exact MorphismProperty.diagonal_isStableUnderComposition IsClosedImmersion.stableUnderBaseChange
+  infer_instance
 
 instance [IsSeparated f] [IsSeparated g] : IsSeparated (f ≫ g) :=
   stableUnderComposition.comp_mem f g inferInstance inferInstance
@@ -69,9 +68,9 @@ instance [IsSeparated f] [IsSeparated g] : IsSeparated (f ≫ g) :=
 instance : MorphismProperty.IsMultiplicative @IsSeparated where
   id_mem _ := inferInstance
 
-lemma stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @IsSeparated := by
+instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
-  exact MorphismProperty.StableUnderBaseChange.diagonal IsClosedImmersion.stableUnderBaseChange
+  infer_instance
 
 instance : IsLocalAtTarget @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
@@ -85,8 +84,8 @@ instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
   exact .spec_of_surjective _ fun x ↦ ⟨.tmul R 1 x,
     (Algebra.TensorProduct.lmul'_apply_tmul (R := R) (S := S) 1 x).trans (one_mul x)⟩
 
-instance (priority := 100) [h : IsAffineHom f] : IsSeparated f := by
-  clear g Z
+@[instance 100]
+lemma of_isAffineHom [h : IsAffineHom f] : IsSeparated f := by
   wlog hY : IsAffine Y
   · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsSeparated) _
       (iSup_affineOpens_eq_top Y)]
@@ -99,7 +98,7 @@ instance (priority := 100) [h : IsAffineHom f] : IsSeparated f := by
 
 instance {S T : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) [IsSeparated i] :
     IsClosedImmersion (pullback.mapDesc f g i) :=
-  IsClosedImmersion.stableUnderBaseChange (pullback_map_diagonal_isPullback f g i)
+  MorphismProperty.of_isPullback (pullback_map_diagonal_isPullback f g i)
     inferInstance
 
 /-- Given `f : X ⟶ Y` and `g : Y ⟶ Z` such that `g` is separated, the induced map
@@ -117,7 +116,7 @@ end IsSeparated
 lemma IsClosedImmersion.of_comp [IsClosedImmersion (f ≫ g)] [IsSeparated g] :
     IsClosedImmersion f := by
   rw [← pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
-  have := IsClosedImmersion.stableUnderBaseChange.snd (f ≫ g) g inferInstance
+  have := MorphismProperty.pullback_snd (P := @IsClosedImmersion) (f ≫ g) g inferInstance
   infer_instance
 
 lemma IsSeparated.of_comp [IsSeparated (f ≫ g)] : IsSeparated f := by
@@ -127,6 +126,40 @@ lemma IsSeparated.of_comp [IsSeparated (f ≫ g)] : IsSeparated f := by
 
 lemma IsSeparated.comp_iff [IsSeparated g] : IsSeparated (f ≫ g) ↔ IsSeparated f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
+
+@[stacks 01KM]
+instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSeparated Y.hom]
+    (f g : X ⟶ Y) : IsClosedImmersion (equalizer.ι f g).left := by
+  refine MorphismProperty.of_isPullback
+    ((Limits.isPullback_equalizer_prod f g).map (Over.forget _)).flip ?_
+  rw [← MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion _
+    (Over.prodLeftIsoPullback Y Y).hom]
+  convert (inferInstanceAs (IsClosedImmersion (pullback.diagonal Y.hom)))
+  ext1 <;> simp [← Over.comp_left]
+
+/--
+Suppose `X` is a reduced scheme and that `f g : X ⟶ Y` agree over some separated `Y ⟶ Z`.
+Then `f = g` if `ι ≫ f = ι ≫ g` for some dominant `ι`.
+-/
+lemma ext_of_isDominant_of_isSeparated [IsReduced X] {f g : X ⟶ Y}
+    (s : Y ⟶ Z) [IsSeparated s] (h : f ≫ s = g ≫ s)
+    (ι : W ⟶ X) [IsDominant ι] (hU : ι ≫ f = ι ≫ g) : f = g := by
+  let X' : Over Z := Over.mk (f ≫ s)
+  let Y' : Over Z := Over.mk s
+  let U' : Over Z := Over.mk (ι ≫ f ≫ s)
+  let f' : X' ⟶ Y' := Over.homMk f
+  let g' : X' ⟶ Y' := Over.homMk g
+  let ι' : U' ⟶ X' := Over.homMk ι
+  have : IsSeparated Y'.hom := ‹_›
+  have : IsDominant (equalizer.ι f' g').left := by
+    apply (config := { allowSynthFailures := true }) IsDominant.of_comp (equalizer.lift ι' ?_).left
+    · rwa [← Over.comp_left, equalizer.lift_ι]
+    · ext1; exact hU
+  have : Surjective (equalizer.ι f' g').left :=
+    surjective_of_isDominant_of_isClosed_range _ IsClosedImmersion.base_closed.2
+  have := isIso_of_isClosedImmersion_of_surjective (Y := X) (equalizer.ι f' g').left
+  rw [← cancel_epi (equalizer.ι f' g').left]
+  exact congr($(equalizer.condition f' g').left)
 
 namespace Scheme
 
@@ -155,7 +188,7 @@ instance (priority := 900) [X.IsSeparated] : IsSeparated f := by
   infer_instance
 
 instance (f g : X ⟶ Y) [Y.IsSeparated] : IsClosedImmersion (Limits.equalizer.ι f g) :=
-  IsClosedImmersion.stableUnderBaseChange (isPullback_equalizer_prod f g).flip inferInstance
+  MorphismProperty.of_isPullback (isPullback_equalizer_prod f g).flip inferInstance
 
 end Scheme
 
@@ -164,5 +197,15 @@ instance IsSeparated.hasAffineProperty :
   convert HasAffineProperty.of_isLocalAtTarget @IsSeparated with X Y f hY
   rw [Scheme.isSeparated_iff, ← terminal.comp_from f, IsSeparated.comp_iff]
   rfl
+
+/--
+Suppose `f g : X ⟶ Y` where `X` is a reduced scheme and `Y` is a separated scheme.
+Then `f = g` if `ι ≫ f = ι ≫ g` for some dominant `ι`.
+
+Also see `ext_of_isDominant_of_isSeparated` for the general version over arbitrary bases.
+-/
+lemma ext_of_isDominant [IsReduced X] {f g : X ⟶ Y} [Y.IsSeparated]
+    (ι : W ⟶ X) [IsDominant ι] (hU : ι ≫ f = ι ≫ g) : f = g :=
+  ext_of_isDominant_of_isSeparated (Limits.terminal.from _) (Limits.terminal.hom_ext _ _) ι hU
 
 end AlgebraicGeometry

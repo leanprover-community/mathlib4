@@ -1,30 +1,32 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
+Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Order.Bounded
 import Mathlib.SetTheory.Cardinal.PartENat
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Enum
 
 /-!
-# Aleph and beth functions
+# Omega, aleph, and beth functions
 
-* The function `Cardinal.preAleph` gives the cardinals listed by their ordinal index.
-  `preAleph n = n`, `preAleph ω = ℵ₀`, `preAleph (ω + 1) = succ ℵ₀`, etc.
-  It is an order isomorphism between ordinals and cardinals.
-* The function `Cardinal.aleph` gives the infinite cardinals listed by their
-  ordinal index. `aleph 0 = ℵ₀`, `aleph 1 = succ ℵ₀` is the first
-  uncountable cardinal, and so on. The notation `ω_` combines the latter with `Cardinal.ord`,
-  giving an enumeration of (infinite) initial ordinals.
-  Thus `ω_ 0 = ω` and `ω₁ = ω_ 1` is the first uncountable ordinal.
+* The function `Ordinal.preOmega` enumerates the initial ordinals, i.e. the smallest ordinals with
+  any given cardinality. Thus `preOmega n = n`, `preOmega ω = ω`, `preOmega (ω + 1) = ω₁`, etc.
+  `Ordinal.omega` is the more standard function which skips over finite ordinals.
+* The function `Cardinal.preAleph` is an order isomorphism between ordinals and cardinals. Thus
+  `preAleph n = n`, `preAleph ω = ℵ₀`, `preAleph (ω + 1) = ℵ₁`, etc. `Cardinal.aleph` is the more
+  standard function which skips over finite ordinals.
 * The function `Cardinal.beth` enumerates the Beth cardinals. `beth 0 = ℵ₀`,
   `beth (succ o) = 2 ^ beth o`, and for a limit ordinal `o`, `beth o` is the supremum of `beth a`
   for `a < o`.
 
 ## Notation
 
-The following notation is scoped to the `Cardinal` namespace.
+The following notations are scoped to the `Ordinal` namespace.
+
+- `ω_ o` is notation for `Ordinal.omega o`. `ω₁` is notation for `ω_ 1`.
+
+The following notations are scoped to the `Cardinal` namespace.
 
 - `ℵ_ o` is notation for `aleph o`. `ℵ₁` is notation for `ℵ_ 1`.
 - `ℶ_ o` is notation for `beth o`. The value `ℶ_ 1` equals the continuum `𝔠`, which is defined in
@@ -91,8 +93,158 @@ def isInitialIso : {x // IsInitial x} ≃o Cardinal where
   right_inv x := card_ord x
   map_rel_iff' {a _} := a.2.card_le_card
 
--- TODO: define `omega` as the enumerator function of `IsInitial`, and redefine
--- `aleph x = (omega x).card`.
+/-- The "pre-omega" function gives the initial ordinals listed by their ordinal index.
+`preOmega n = n`, `preOmega ω = ω`, `preOmega (ω + 1) = ω₁`, etc.
+
+For the more common omega function skipping over finite ordinals, see `Ordinal.omega`. -/
+def preOmega : Ordinal.{u} ↪o Ordinal.{u} where
+  toFun := enumOrd {x | IsInitial x}
+  inj' _ _ h := enumOrd_injective not_bddAbove_isInitial h
+  map_rel_iff' := enumOrd_le_enumOrd not_bddAbove_isInitial
+
+theorem coe_preOmega : preOmega = enumOrd {x | IsInitial x} :=
+  rfl
+
+theorem preOmega_strictMono : StrictMono preOmega :=
+  preOmega.strictMono
+
+theorem preOmega_lt_preOmega {o₁ o₂ : Ordinal} : preOmega o₁ < preOmega o₂ ↔ o₁ < o₂ :=
+  preOmega.lt_iff_lt
+
+theorem preOmega_le_preOmega {o₁ o₂ : Ordinal} : preOmega o₁ ≤ preOmega o₂ ↔ o₁ ≤ o₂ :=
+  preOmega.le_iff_le
+
+theorem preOmega_max (o₁ o₂ : Ordinal) : preOmega (max o₁ o₂) = max (preOmega o₁) (preOmega o₂) :=
+  preOmega.monotone.map_max
+
+theorem isInitial_preOmega (o : Ordinal) : IsInitial (preOmega o) :=
+  enumOrd_mem not_bddAbove_isInitial o
+
+theorem le_preOmega_self (o : Ordinal) : o ≤ preOmega o :=
+  preOmega_strictMono.le_apply
+
+@[simp]
+theorem preOmega_zero : preOmega 0 = 0 := by
+  rw [coe_preOmega, enumOrd_zero]
+  exact csInf_eq_bot_of_bot_mem isInitial_zero
+
+@[simp]
+theorem preOmega_natCast (n : ℕ) : preOmega n = n := by
+  induction n with
+  | zero => exact preOmega_zero
+  | succ n IH =>
+    apply (le_preOmega_self _).antisymm'
+    apply enumOrd_succ_le not_bddAbove_isInitial (isInitial_natCast _) (IH.trans_lt _)
+    rw [Nat.cast_lt]
+    exact lt_succ n
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem preOmega_ofNat (n : ℕ) [n.AtLeastTwo] : preOmega (no_index (OfNat.ofNat n)) = n :=
+  preOmega_natCast n
+
+theorem preOmega_le_of_forall_lt {o a : Ordinal} (ha : IsInitial a) (H : ∀ b < o, preOmega b < a) :
+    preOmega o ≤ a :=
+  enumOrd_le_of_forall_lt ha H
+
+theorem isNormal_preOmega : IsNormal preOmega := by
+  rw [isNormal_iff_strictMono_limit]
+  refine ⟨preOmega_strictMono, fun o ho a ha ↦
+    (preOmega_le_of_forall_lt (isInitial_ord _) fun b hb ↦ ?_).trans (ord_card_le a)⟩
+  rw [← (isInitial_ord _).card_lt_card, card_ord]
+  apply lt_of_lt_of_le _ (card_le_card <| ha _ (ho.succ_lt hb))
+  rw [(isInitial_preOmega _).card_lt_card, preOmega_lt_preOmega]
+  exact lt_succ b
+
+@[simp]
+theorem range_preOmega : range preOmega = {x | IsInitial x} :=
+  range_enumOrd not_bddAbove_isInitial
+
+theorem mem_range_preOmega_iff {x : Ordinal} : x ∈ range preOmega ↔ IsInitial x := by
+  rw [range_preOmega, mem_setOf]
+
+alias ⟨_, IsInitial.mem_range_preOmega⟩ := mem_range_preOmega_iff
+
+@[simp]
+theorem preOmega_omega0 : preOmega ω = ω := by
+  simp_rw [← isNormal_preOmega.apply_omega0, preOmega_natCast, iSup_natCast]
+
+@[simp]
+theorem omega0_le_preOmega_iff {x : Ordinal} : ω ≤ preOmega x ↔ ω ≤ x := by
+  conv_lhs => rw [← preOmega_omega0, preOmega_le_preOmega]
+
+@[simp]
+theorem omega0_lt_preOmega_iff {x : Ordinal} : ω < preOmega x ↔ ω < x := by
+  conv_lhs => rw [← preOmega_omega0, preOmega_lt_preOmega]
+
+/-- The `omega` function gives the infinite initial ordinals listed by their ordinal index.
+`omega 0 = ω`, `omega 1 = ω₁` is the first uncountable ordinal, and so on.
+
+This is not to be confused with the first infinite ordinal `Ordinal.omega0`.
+
+For a version including finite ordinals, see `Ordinal.preOmega`. -/
+def omega : Ordinal ↪o Ordinal :=
+  (OrderEmbedding.addLeft ω).trans preOmega
+
+@[inherit_doc]
+scoped notation "ω_ " => omega
+
+/-- `ω₁` is the first uncountable ordinal. -/
+scoped notation "ω₁" => ω_ 1
+
+theorem omega_eq_preOmega (o : Ordinal) : ω_ o = preOmega (ω + o) :=
+  rfl
+
+theorem omega_strictMono : StrictMono omega :=
+  omega.strictMono
+
+theorem omega_lt_omega {o₁ o₂ : Ordinal} : ω_ o₁ < ω_ o₂ ↔ o₁ < o₂ :=
+  omega.lt_iff_lt
+
+theorem omega_le_omega {o₁ o₂ : Ordinal} : ω_ o₁ ≤ ω_ o₂ ↔ o₁ ≤ o₂ :=
+  omega.le_iff_le
+
+theorem omega_max (o₁ o₂ : Ordinal) : ω_ (max o₁ o₂) = max (ω_ o₁) (ω_ o₂) :=
+  omega.monotone.map_max
+
+theorem isInitial_omega (o : Ordinal) : IsInitial (omega o) :=
+  isInitial_preOmega _
+
+theorem le_omega_self (o : Ordinal) : o ≤ omega o :=
+  omega_strictMono.le_apply
+
+@[simp]
+theorem omega_zero : ω_ 0 = ω := by
+  rw [omega_eq_preOmega, add_zero, preOmega_omega0]
+
+theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
+  rw [← omega_zero, omega_le_omega]
+  exact Ordinal.zero_le o
+
+theorem omega0_lt_omega1 : ω < ω₁ := by
+  rw [← omega_zero, omega_lt_omega]
+  exact zero_lt_one
+
+@[deprecated omega0_lt_omega1 (since := "2024-10-11")]
+alias omega_lt_omega1 := omega0_lt_omega1
+
+theorem isNormal_omega : IsNormal omega :=
+  isNormal_preOmega.trans (isNormal_add_right _)
+
+@[simp]
+theorem range_omega : range omega = {x | ω ≤ x ∧ IsInitial x} := by
+  ext x
+  constructor
+  · rintro ⟨a, rfl⟩
+    exact ⟨omega0_le_omega a, isInitial_omega a⟩
+  · rintro ⟨ha', ha⟩
+    obtain ⟨a, rfl⟩ := ha.mem_range_preOmega
+    use a - ω
+    rw [omega0_le_preOmega_iff] at ha'
+    rw [omega_eq_preOmega, Ordinal.add_sub_cancel_of_le ha']
+
+theorem mem_range_omega_iff {x : Ordinal} : x ∈ range omega ↔ ω ≤ x ∧ IsInitial x := by
+  rw [range_omega, mem_setOf]
 
 end Ordinal
 
@@ -104,21 +256,16 @@ namespace Cardinal
 `preAleph ω = ℵ₀`, `preAleph (ω + 1) = succ ℵ₀`, etc.
 
 For the more common aleph function skipping over finite cardinals, see `Cardinal.aleph`. -/
-def preAleph : Ordinal.{u} ≃o Cardinal.{u} := by
-  let f := RelEmbedding.collapse Cardinal.ord.orderEmbedding.ltEmbedding.{u}
-  refine (OrderIso.ofRelIsoLT <| RelIso.ofSurjective f ?_).symm
-  apply f.eq_or_principal.resolve_right
-  rintro ⟨o, e⟩
-  have : ∀ c, f c < o := fun c => (e _).1 ⟨_, rfl⟩
-  refine Ordinal.inductionOn o ?_ this
-  intro α r _ h
-  let s := ⨆ a, invFun f (Ordinal.typein r a)
-  apply (lt_succ s).not_le
-  have I : Injective f := f.toEmbedding.injective
-  simpa only [typein_enum, leftInverse_invFun I (succ s)] using
-    le_ciSup
-      (Cardinal.bddAbove_range.{u, u} fun a : α => invFun f (Ordinal.typein r a))
-      (Ordinal.enum r ⟨_, h (succ s)⟩)
+def preAleph : Ordinal.{u} ≃o Cardinal.{u} :=
+  (enumOrdOrderIso _ not_bddAbove_isInitial).trans isInitialIso
+
+@[simp]
+theorem _root_.Ordinal.card_preOmega (o : Ordinal) : (preOmega o).card = preAleph o :=
+  rfl
+
+@[simp]
+theorem ord_preAleph (o : Ordinal) : (preAleph o).ord = preOmega o := by
+  rw [← o.card_preOmega, (isInitial_preOmega o).ord_card]
 
 @[simp]
 theorem type_cardinal : @type Cardinal (· < ·) _ = Ordinal.univ.{u, u + 1} := by
@@ -192,11 +339,19 @@ def aleph : Ordinal ↪o Cardinal :=
 @[inherit_doc]
 scoped notation "ℵ_ " => aleph
 
-/-- `ℵ₁` is the first uncountable ordinal. -/
+/-- `ℵ₁` is the first uncountable cardinal. -/
 scoped notation "ℵ₁" => ℵ_ 1
 
 theorem aleph_eq_preAleph (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
   rfl
+
+@[simp]
+theorem _root_.Ordinal.card_omega (o : Ordinal) : (ω_ o).card = ℵ_ o :=
+  rfl
+
+@[simp]
+theorem ord_aleph (o : Ordinal) : (ℵ_ o).ord = ω_ o :=
+  ord_preAleph _
 
 theorem aleph_lt_aleph {o₁ o₂ : Ordinal} : ℵ_ o₁ < ℵ_ o₂ ↔ o₁ < o₂ :=
   aleph.lt_iff_lt
@@ -265,6 +420,17 @@ theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
 instance (o : Ordinal) : NoMaxOrder (ℵ_ o).ord.toType :=
   toType_noMax_of_succ_lt (ord_aleph_isLimit o).2
 
+@[simp]
+theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
+  ext c
+  refine ⟨fun ⟨o, e⟩ => e ▸ aleph0_le_aleph _, fun hc ↦ ⟨preAleph.symm c - ω, ?_⟩⟩
+  rw [aleph_eq_preAleph, Ordinal.add_sub_cancel_of_le, preAleph.apply_symm_apply]
+  rwa [← aleph0_le_preAleph, preAleph.apply_symm_apply]
+
+theorem mem_range_aleph_iff {c : Cardinal} : c ∈ range aleph ↔ ℵ₀ ≤ c := by
+  rw [range_aleph, mem_Ici]
+
+@[deprecated mem_range_aleph_iff (since := "2024-10-24")]
 theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = ℵ_ o :=
   ⟨fun h =>
     ⟨preAleph.symm c - ω, by
@@ -272,14 +438,19 @@ theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = ℵ_ o :=
       rwa [← aleph0_le_preAleph, preAleph.apply_symm_apply]⟩,
     fun ⟨o, e⟩ => e.symm ▸ aleph0_le_aleph _⟩
 
-theorem preAleph_isNormal : IsNormal (ord ∘ preAleph) :=
-  ⟨fun o => ord_lt_ord.2 <| preAleph_lt_preAleph.2 <| lt_succ o, fun o l a => by
-    simp [ord_le, preAleph_le_of_isLimit l]⟩
+@[deprecated isNormal_preOmega (since := "2024-10-11")]
+theorem preAleph_isNormal : IsNormal (ord ∘ preAleph) := by
+  convert isNormal_preOmega
+  exact funext ord_preAleph
 
-theorem aleph_isNormal : IsNormal (ord ∘ aleph) :=
-  preAleph_isNormal.trans <| isNormal_add_right ω
+@[deprecated isNormal_omega (since := "2024-10-11")]
+theorem aleph_isNormal : IsNormal (ord ∘ aleph) := by
+  convert isNormal_omega
+  exact funext ord_aleph
 
-theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
+@[simp]
+theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by
+  rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
 
 theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by
   rw [← succ_aleph0]
@@ -351,22 +522,6 @@ def alephIdx.relIso : @RelIso Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) :=
 @[deprecated aleph' (since := "2024-08-28")]
 def alephIdx : Cardinal → Ordinal :=
   aleph'.symm
-
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx.initialSeg_coe : (alephIdx.initialSeg : Cardinal → Ordinal) = alephIdx :=
-  rfl
-
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx_lt {a b} : alephIdx a < alephIdx b ↔ a < b :=
-  alephIdx.initialSeg.toRelEmbedding.map_rel_iff
-
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx_le {a b} : alephIdx a ≤ alephIdx b ↔ a ≤ b := by
-  rw [← not_lt, ← not_lt, alephIdx_lt]
-
-@[deprecated (since := "2024-08-28")]
-theorem alephIdx.init {a b} : b < alephIdx a → ∃ c, alephIdx c = b :=
-  alephIdx.initialSeg.init
 
 @[deprecated (since := "2024-08-28")]
 theorem alephIdx.relIso_coe : (alephIdx.relIso : Cardinal → Ordinal) = alephIdx :=
@@ -572,22 +727,3 @@ theorem beth_normal : IsNormal.{u} fun o => (beth o).ord :=
   isNormal_beth
 
 end Cardinal
-
-/-! ### Omega ordinals -/
-
-namespace Ordinal
-
-/--
-`ω_ o` is a notation for the *initial ordinal* of cardinality
-`aleph o`. Thus, for example `ω_ 0 = ω`.
--/
-scoped notation "ω_" o => ord <| aleph o
-
-/--
-`ω₁` is the first uncountable ordinal.
--/
-scoped notation "ω₁" => ord <| aleph 1
-
-lemma omega_lt_omega1 : ω < ω₁ := ord_aleph0.symm.trans_lt (ord_lt_ord.mpr (aleph0_lt_aleph_one))
-
-end Ordinal
