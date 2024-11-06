@@ -3,6 +3,13 @@ import Mathlib
 open LocalRing
 open Set
 
+open Polynomial in
+/-- useful lemma. move me -/
+lemma Algebra.mem_ideal_map_adjoin {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (x : S) (I : Ideal R) {y : adjoin R ({x} : Set S)} :
+    y ∈ I.map (algebraMap R (adjoin R ({x} : Set S))) ↔
+      ∃ p : R[X], (∀ i, p.coeff i ∈ I) ∧ Polynomial.aeval x p = y := sorry
+
 variable {R S : Type*} [CommRing R] [CommRing S]
 
 -- TODO(jlcontreras): maybe genralizable to [Ring R] [Ring S]
@@ -37,17 +44,6 @@ def map [Nontrivial S] (f : R →+* S) (s : LocalSubring R) : LocalSubring S := 
 @[simps! toSubring]
 def range [LocalRing R] [Nontrivial S] (f : R →+* S) : LocalSubring S := map f (mk ⊤)
 
-/-
-instance : SetLike (LocalSubring R) R where
-  coe A := A.1
-  coe_injective' := by
-    rintro ⟨_, _⟩ ⟨_, _⟩ h
-    apply SetLike.coe_injective' at h
-    congr
-
-attribute [local -instance] SetLike.instPartialOrder
--/
-
 @[stacks 00I9]
 instance : PartialOrder (LocalSubring R) where
   le A B := ∃ h : A.1 ≤ B.1, IsLocalHom (Subring.inclusion h)
@@ -68,21 +64,23 @@ instance : PartialOrder (LocalSubring R) where
     subst hab_eq
     rfl
 
-variable {T : Type*} [CommRing T]
-
 variable {K : Type*} [Field K]
 
-def ValuationSubring.toLocalSubring (A : ValuationSubring K) : LocalSubring K where
+def _root_.ValuationSubring.toLocalSubring (A : ValuationSubring K) : LocalSubring K where
   toSubring := A.toSubring
   localRing := A.localRing
 
 -- by def
-lemma ValuationSubring.toLocalSubring_injective :
+lemma _root_.ValuationSubring.toLocalSubring_injective :
     Function.Injective (ValuationSubring.toLocalSubring (K := K)) := by
-  sorry -- TODO(jlcontreras)
+  intro a b h
+  ext x
+  apply_fun (fun a ↦ x ∈ a.toSubring) at h
+  rw [eq_iff_iff] at h
+  exact h
 
 def maximalLocalSubrings (K : Type*) [Field K] : Set (LocalSubring K) :=
-  {R | Maximal (fun _ => True) R}
+  { R | IsMax R }
 
 /--
 If not, then it is contained in some maximal ideal. The localization of that maximal ideal is
@@ -90,15 +88,21 @@ a local subring that dominates `R`, contradicting the maximality of `R`.
 -/
 lemma map_maximalIdeal_eq_top_of_mem_maximalLocalSubrings {R : LocalSubring K}
     (hR : R ∈ maximalLocalSubrings K) {S : Subring K} (hS : R.1 < S) :
-    (maximalIdeal R).map (Subring.inclusion hS.le) = ⊤ := sorry
+    (maximalIdeal R.toSubring).map (Subring.inclusion hS.le) = ⊤ := by
+  by_contra h_is_not_top
+  obtain ⟨M, h_is_max, h_incl⟩ := Ideal.exists_le_maximal _ h_is_not_top
+  let Sₘ := Localization.AtPrime M
+  let funStoK : S →+* K := S.subtype
+  let funStoSₘ := algebraMap S Sₘ
+  have funStoK_invertible_goto_units : ∀ (y : M.primeCompl), IsUnit (funStoK y) := by
+    aesop
+  let funSₘtoK  : Sₘ →+* K := IsLocalization.lift funStoK_invertible_goto_units
+  let fSₘ: LocalSubring K := LocalSubring.range funSₘtoK
+  let funRtoSₘ : R ≤ fSₘ := by
+    sorry
+  sorry
 
 open scoped Polynomial
-
-/-- useful lemma. move me -/
-lemma Algebra.mem_ideal_map_adjoin {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (x : S) (I : Ideal R) {y : adjoin R ({x} : Set S)} :
-    y ∈ I.map (algebraMap R (adjoin R ({x} : Set S))) ↔
-      ∃ p : R[X], (∀ i, p.coeff i ∈ I) ∧ Polynomial.aeval x p = y := sorry
 
 /--
 Uses `map_maximalIdeal_eq_top_of_mem_maximalLocalSubrings`
@@ -106,7 +110,7 @@ Uses `map_maximalIdeal_eq_top_of_mem_maximalLocalSubrings`
 https://stacks.math.columbia.edu/tag/00IC
 -/
 lemma mem_of_mem_maximalLocalSubrings_of_isIntegral {R : LocalSubring K}
-    (hR : R ∈ maximalLocalSubrings K) {x : K} (hx : IsIntegral R x) : x ∈ R := sorry
+    (hR : R ∈ maximalLocalSubrings K) {x : K} (hx : IsIntegral R.toSubring x) : x ∈ R.toSubring := sorry
 
 /--
 Uses `map_maximalIdeal_eq_top_of_mem_maximalLocalSubrings` and `mem_of_mem_maximalLocalSubrings_of_isIntegral`.
@@ -136,75 +140,9 @@ lemma bijective_rangeRestrict_comp_of_valuationRing {R S K : Type*} [CommRing R]
     (f : R →+* S) (g : S →+* K) (h : g.comp f = algebraMap R K) [IsLocalHom f] :
     Function.Bijective (g.rangeRestrict.comp f) := sorry
 
-lemma exists_factor_valuationRing' {K : Type*} {R : Type*} [Field K] (R : LocalSubring K) :
-    ∃ (A : ValuationSubring K), R ≤ A.toLocalSubring := by
-  sorry
 
 /-- Repackaging of `exists_valuation_subring_dominates`.
 Reduce to `R ⊆ K` by `LocalRing.of_surjective'`. -/
 lemma exists_factor_valuationRing {R : Type*} [CommRing R] [LocalRing R] {K : Type*} [Field K]
     (f : R →+* K) :
-      ∃ (A : ValuationSubring K) (h : _), IsLocalHom (f.codRestrict A.toSubring h) := by sorry
-
-lemma val_ring_is_max {K : Type*} [Field K] (A : ValuationSubring K) (B : LocalSubring K)
-    (h : A.toLocalSubring ≤ B) : A.toLocalSubring = B := sorry
-
-lemma exists_factor_valuationRing'_is_base {K : Type*} {R : Type*} [Field K]
-    {R : ValuationSubring K} {A : ValuationSubring K}
-      (h : R.toLocalSubring ≤ A.toLocalSubring) : R = A := by
-  have : R.toLocalSubring = A.toLocalSubring := val_ring_is_max R A.toLocalSubring h
-  sorry
-
--- instance {K : Type*} [Field K] (A : ValuationSubring K) :
---     LocalRing A.subtype.range := by sorry
-
-def val_subriing_from_val_ring (R : Type*) [CommRing R] [IsDomain R] [valuationRing : ValuationRing R]
-    (K : Type*) [field : Field K] [algebra : Algebra R K] [isFractionRing : IsFractionRing R K] :
-      ValuationSubring K where
-  carrier := sorry
-  mul_mem' := sorry
-  one_mem' := sorry
-  add_mem' := sorry
-  zero_mem' := sorry
-  neg_mem' := sorry
-  mem_or_inv_mem' := sorry
-
-lemma range_of_local_ring_is_itself {K : Type*} [Field K] (A : LocalSubring K) :
-    LocalSubring.range A.1.subtype = A := by
-  sorry
-
-lemma range_of_val_ring_is_itself {K : Type*} [Field K] (A : ValuationSubring K) :
-    LocalSubring.range A.subtype = A.toLocalSubring := by
-  sorry
-
-lemma val_subriing_from_val_ring_eq_local_subring_inclusion (R : Type*) [CommRing R] [IsDomain R]
-    [valuationRing : ValuationRing R]
-      (K : Type*) [field : Field K] [algebra : Algebra R K] [isFractionRing : IsFractionRing R K] :
-        (val_subriing_from_val_ring R K).toLocalSubring = LocalSubring.range (algebraMap R K) := sorry
-
-lemma obivious {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R  →+* S) :
-    ∀ (x : R), f x ∈ Subring.map f ⊤ := by
-  intro _
-  simp only [Subring.mem_map, Subring.mem_top, true_and, exists_apply_eq_apply]
-
-noncomputable def map_to_injective_range {R : Type*} {S : Type*} {K : Type*}
-    [Ring R] [Ring S] [Ring K]
-      {f : R →+* K} (hf : Function.Injective f) {g : S →+* K}
-        (h : Subring.map f ⊤ = Subring.map g ⊤) :=
-  (Subring.subtype _).comp <|
-    (Subring.equivMapOfInjective ⊤ f hf).symm.toRingHom.comp <|
-      (Subring.inclusion <| le_of_eq h.symm).comp <|
-        g.codRestrict (Subring.map g ⊤) (obivious g)
-
-lemma map_to_injective_range_comm {R : Type*} {S : Type*} {K : Type*}
-    [Ring R] [Ring S][Ring K]
-      {f : R→+* K} (hf : Function.Injective f) {g : S →+* K}
-        (h : Subring.map f ⊤ = Subring.map g ⊤) :
-          (f.comp <| map_to_injective_range hf h) = g := sorry
-
-lemma map_to_injective_range_retract {R : Type*} {S : Type*} {K : Type*}
-    [Ring R] [Ring S][Ring K]
-      {f : R →+* K} (hf : Function.Injective f) {g : S →+* K}
-        (h : Subring.map f ⊤ = Subring.map g ⊤)
-          (ι : R →+* S) (is_comp : f = g.comp ι) :
-            (map_to_injective_range hf h).comp ι = 1 := sorry
+    ∃ (A : ValuationSubring K) (h : _), IsLocalHom (f.codRestrict A.toSubring h) := by sorry

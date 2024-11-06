@@ -4,7 +4,6 @@ import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.ValuativeCriterion.ValuationRing
 import Mathlib.ValuativeCriterion.Lemmas
 import Mathlib.ValuativeCriterion.UniversallyClosed
-set_option maxHeartbeats 0
 
 open CategoryTheory CategoryTheory.Limits
 
@@ -44,6 +43,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 namespace Existence
 
+open LocalRing in
 /--
 Uses `exists_factor_valuationRing` and `Scheme.fromSpecResidueField`.
 
@@ -52,261 +52,80 @@ https://stacks.math.columbia.edu/tag/01KE
 lemma specializingMap (H : ValuativeCriterion.Existence f) :
     SpecializingMap f.1.base := by
   intro x' y h
-  let y' := f.base x'
-  let ι_stalk_y := Y.fromSpecStalk y
-
-  let stalk_y_to_residue_x' : Y.presheaf.stalk y ⟶ (X.residueField x') :=
-    (Y.presheaf.stalkSpecializes h) ≫ (f.stalkMap x') ≫ (X.residue x')
-
-  let f₁ := Spec.map stalk_y_to_residue_x'
-  let f₂ := X.fromSpecResidueField x'
-
-  have comm₁ : f₁ ≫ ι_stalk_y = f₂ ≫ f := by
-    simp_all only [Spec.map_comp, Category.assoc, f₁, y', stalk_y_to_residue_x', ι_stalk_y, f₂]
-    rw [@Scheme.Spec_map_stalkSpecializes_fromSpecStalk]
-    rw [@Scheme.Spec_map_stalkMap_fromSpecStalk]
-    rfl
-
-  let A := (exists_factor_valuationRing stalk_y_to_residue_x').choose
-  let hA := (exists_factor_valuationRing stalk_y_to_residue_x').choose_spec.choose
-  let stalk_y_to_A_is_local :=
-    (exists_factor_valuationRing stalk_y_to_residue_x').choose_spec.choose_spec
-
-  let A_to_residue_x' := CommRingCat.ofHom A.subtype
-  let stalk_y_to_A := CommRingCat.ofHom <| stalk_y_to_residue_x'.codRestrict _ hA
-
-  have obivious : stalk_y_to_A ≫ A_to_residue_x' = stalk_y_to_residue_x' := rfl
-
-  have comm₂ : f₁ = Spec.map A_to_residue_x' ≫ Spec.map stalk_y_to_A := by
-    rw [← @Spec.map_comp]
-    simp_all only [f₁]
-
-  have w : f₂ ≫ f =
+  let stalk_y_to_residue_x' : Y.presheaf.stalk y ⟶ X.residueField x' :=
+    Y.presheaf.stalkSpecializes h ≫ f.stalkMap x' ≫ X.residue x'
+  obtain ⟨A, hA, hA_local⟩ := exists_factor_valuationRing stalk_y_to_residue_x'
+  let stalk_y_to_A : Y.presheaf.stalk y ⟶ .of A :=
+    CommRingCat.ofHom (stalk_y_to_residue_x'.codRestrict _ hA)
+  have w : X.fromSpecResidueField x' ≫ f =
       Spec.map (CommRingCat.ofHom (algebraMap A (X.residueField x'))) ≫
         Spec.map stalk_y_to_A ≫ Y.fromSpecStalk y := by
-    rw [← comm₁, comm₂]
-    simp_all only [Spec.map_comp, Category.assoc, CommRingCat.coe_comp_of, RingHom.coe_comp,
-      Function.comp_apply,
-      f₁, stalk_y_to_residue_x', ι_stalk_y, f₂, stalk_y_to_A, A_to_residue_x', A]
+    rw [Scheme.fromSpecResidueField, Category.assoc, ← Scheme.Spec_map_stalkMap_fromSpecStalk,
+      ← Scheme.Spec_map_stalkSpecializes_fromSpecStalk h]
+    simp_rw [← Spec.map_comp_assoc]
     rfl
-
-  let commSq : ValuativeCommSq f := {
-    R := A
-    commRing := inferInstance
-    domain := inferInstance
-    valuationRing := inferInstance
-    K := X.residueField x'
-    field := inferInstance
-    algebra := Algebra.ofSubring A.toSubring
-    isFractionRing := ValuationSubring.instIsFractionRingSubtypeMem A
-    i₁ := f₂
-    i₂ := Spec.map stalk_y_to_A ≫ Y.fromSpecStalk y
-    commSq := ⟨w⟩
-  }
-
-  let l := Classical.choice (H commSq).exists_lift
-  let x := l.l.base <| LocalRing.closedPoint A
-
-  have hx' : x' ⤳ x := by
-    have x'_eq_f₂_cls_pt : f₂.base (LocalRing.closedPoint <| X.residueField x') = x' :=
-      Scheme.fromSpecResidueField_apply x' (LocalRing.closedPoint (Scheme.residueField _ x'))
-
-    have that : (Spec.map A_to_residue_x').base (LocalRing.closedPoint <| X.residueField x')
-        ⤳ LocalRing.closedPoint A := by
-      have : LocalRing (CommRingCat.of A) := ValuationSubring.localRing A
-      apply LocalRing.specializes_closedPoint
-
-    rw [← x'_eq_f₂_cls_pt]
-    simp only [x]
-
-    have : f₂.base =
-        (Spec.map (CommRingCat.ofHom (algebraMap commSq.R commSq.K)) ≫ l.l).base := by
-      rw [l.fac_left]
-    rw [this]
-    apply that.map l.l.base.2
-
-  have hx : f.base x = y := by
-    simp only [x]
-    rw [← @Scheme.comp_base_apply]
-    rw [l.fac_right]
+  obtain ⟨l, hl₁, hl₂⟩ := (H { R := A, K := X.residueField x', commSq := ⟨w⟩ }).exists_lift
+  dsimp only at hl₁ hl₂
+  refine ⟨l.base (closedPoint A), ?_, ?_⟩
+  · simp_rw [← Scheme.fromSpecResidueField_apply x' (closedPoint (X.residueField x')), ← hl₁]
+    exact (specializes_closedPoint _).map l.base.2
+  · rw [← Scheme.comp_base_apply, hl₂]
     simp only [Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
-    have :
-        (Spec.map stalk_y_to_A).base (LocalRing.closedPoint A) =
-          LocalRing.closedPoint (Y.presheaf.stalk y) := by
-      have : LocalRing <| CommRingCat.of (Y.presheaf.stalk y) :=
-        Y.toLocallyRingedSpace.localRing y
-      have : LocalRing <| CommRingCat.of A := ValuationSubring.localRing A
-      have : IsLocalHom stalk_y_to_A := stalk_y_to_A_is_local
-      apply LocalRing.comap_closedPoint
-    change (Y.fromSpecStalk y).base
-      ((Spec.map stalk_y_to_A).base (LocalRing.closedPoint A)) = y
-    rw [this]
-    exact Y.fromSpecStalk_closedPoint
+    have : (Spec.map stalk_y_to_A).base (closedPoint A) = closedPoint (Y.presheaf.stalk y) :=
+      comap_closedPoint (S := A) (stalk_y_to_residue_x'.codRestrict A.toSubring hA)
+    rw [this, Y.fromSpecStalk_closedPoint]
 
-  use x
-  exact ⟨hx', hx⟩
-
+open LocalRing in
 /--
 Uses `bijective_rangeRestrict_comp_of_valuationRing` and `stalkClosedPointTo`
 
 https://stacks.math.columbia.edu/tag/01KE first half
 -/
-lemma of_specializingMap
-    (H : (AlgebraicGeometry.topologically @SpecializingMap).universally f) :
-      ValuativeCriterion.Existence f := by
-  intro c
-  rcases c with
-    @⟨R, commRing, domain, valuationRing, K, field, algebra, isFractionRing, i₁, i₂, commSq⟩
-  letI : IsDomain (CommRingCat.of R) := domain
-  letI : ValuationRing (CommRingCat.of R) := valuationRing
-  letI : LocalRing (CommRingCat.of R) := ValuationRing.localRing (CommRingCat.of R)
-  have H' := H (pullback.snd i₂ f) i₂ (pullback.fst i₂ f) (IsPullback.of_hasPullback i₂ f)
-
-  let lft := pullback.lift (Spec.map <| CommRingCat.ofHom <| algebraMap R K) i₁ commSq.w.symm
-
-  let XR := pullback i₂ f
-  let XR_to_Spec_R := pullback.fst i₂ f
-  let XR_to_X := pullback.snd i₂ f
-  let Spec_K_to_Spec_R := Spec.map <| CommRingCat.ofHom <| algebraMap R K
-
-  have comm₁ := pullback.lift_fst Spec_K_to_Spec_R i₁ commSq.w.symm
-  have comm₂ := pullback.lift_snd Spec_K_to_Spec_R i₁ commSq.w.symm
-
-  let x' := lft.base <| LocalRing.closedPoint K
-  let y' := (pullback.fst i₂ f).base x'
-  let y := LocalRing.closedPoint R
-  have y'_spec_to_y : y' ⤳ y := by apply LocalRing.specializes_closedPoint
-
-  obtain ⟨x, hx', hx⟩ := (H' y'_spec_to_y)
-  change x' ⤳ x at hx'
-
-  let image_x := (pullback.fst i₂ f).base x
-
-  let R_y_to_XR_x := XR_to_Spec_R.stalkMap x
-  let XR_x_to_XR_x' := TopCat.Presheaf.stalkSpecializes XR.presheaf hx'
-  let XR_x'_to_K := Scheme.stalkClosedPointTo lft
-
-  let R_to_K := CommRingCat.ofHom <| algebraMap R K
-  let XR_x_to_K := XR_x_to_XR_x' ≫ XR_x'_to_K
-  let R_y_to_R_x' := (Spec (.of R)).presheaf.stalkSpecializes (Inseparable.of_eq hx).specializes
-  let R_x'_to_R := stalkClosedPointIso <| CommRingCat.of R
-  let R_to_XR_x :=
-    R_x'_to_R.inv
-      ≫ R_y_to_R_x'
-        ≫ R_y_to_XR_x
-  let comp := R_to_XR_x ≫ XR_x_to_K
-
-  have comm : R_to_K = comp := by
-    apply Spec.map_inj.mp
-    simp only [
-      Category.assoc, Spec.map_comp,
-      comp, R_to_XR_x, XR_x_to_K,
-      R_y_to_XR_x, R_y_to_R_x', R_x'_to_R]
-
-    have : Spec.map (XR_to_Spec_R.stalkMap x)
-        ≫ (Spec (CommRingCat.of (CommRingCat.of R))).fromSpecStalk image_x
-          = XR.fromSpecStalk x
-            ≫ XR_to_Spec_R :=
-      Scheme.Spec_map_stalkMap_fromSpecStalk XR_to_Spec_R
-    rw [stalkClosedPointIso_inv, ← Scheme.Spec_fromSpecStalk']
-    erw [Scheme.Spec_map_stalkSpecializes_fromSpecStalk (Inseparable.of_eq hx).specializes]
-    erw [this]
-    rw [Scheme.Spec_map_stalkSpecializes_fromSpecStalk_assoc hx']
-    have : Spec.map R_to_K = lft ≫ XR_to_Spec_R := comm₁.symm
-    rw [this]
-    have : lft = Spec.map (Scheme.stalkClosedPointTo lft) ≫ XR.fromSpecStalk _ :=
-        (Scheme.Spec_stalkClosedPointTo_fromSpecStalk lft).symm
-    rw [this]
-    simp only [CommRingCat.coe_of, Category.assoc]
-
-  let R_in_K := LocalSubring.range R_to_K
-  let R_in_K_via_comp := LocalSubring.range comp
-  let R_in_K_as_val := val_subriing_from_val_ring R K
-  let XR_x_in_K := LocalSubring.range XR_x_to_K
-
-  haveI : IsLocalHom R_y_to_XR_x :=
-    inferInstanceAs <| IsLocalHom (LocallyRingedSpace.Hom.stalkMap _ _)
-  letI R_to_XR_x_is_local : IsLocalHom R_to_XR_x :=
-    CommRingCat.isLocalHom_comp (stalkClosedPointIso (CommRingCat.of R)).inv
-      (((Spec (CommRingCat.of R)).presheaf.stalkCongr (congrArg nhds hx)).inv ≫ R_y_to_XR_x)
-
-  have R_leq_XR_x : R_in_K_via_comp ≤ XR_x_in_K := by apply domination_preserved_by_range
-
-  have R_as_val_eq_R : R_in_K = R_in_K_as_val.toLocalSubring := by
-    rw [val_subriing_from_val_ring_eq_local_subring_inclusion]
-    rfl
-
-  have R_in_K_eq_R_in_K_via_comp : R_in_K = R_in_K_via_comp := congrArg LocalSubring.range comm
-
-  have R_as_val_leq_XR_x : R_in_K_as_val.toLocalSubring ≤ XR_x_in_K := by
-    rwa [← R_as_val_eq_R, R_in_K_eq_R_in_K_via_comp]
-
-  have R_as_val_eq_XR_x : R_in_K_as_val.toLocalSubring = XR_x_in_K :=
-    val_ring_is_max R_in_K_as_val XR_x_in_K R_as_val_leq_XR_x
-
-  have R_eq_XR_x_in_K : R_in_K = XR_x_in_K := by
-    rw [← R_as_val_eq_XR_x, R_as_val_eq_R]
-
-  let XR_x_to_R := CommRingCat.ofHom <|
-    map_to_injective_range
-      (NoZeroSMulDivisors.algebraMap_injective R K)
-        (congrArg Subtype.val R_eq_XR_x_in_K)
-
-  let Spec_R_to_XR := (Spec.map XR_x_to_R) ≫ XR.fromSpecStalk x
-  have that : XR_x_to_R ≫ R_to_K = XR_x_to_K :=
-    map_to_injective_range_comm
-      (NoZeroSMulDivisors.algebraMap_injective R K)
-        (congrArg Subtype.val R_eq_XR_x_in_K)
-  have sec : Spec_K_to_Spec_R ≫ Spec.map XR_x_to_R = Spec.map XR_x_to_K := by
-    calc
-      _ = Spec.map (XR_x_to_R ≫ R_to_K) := (Spec.map_comp XR_x_to_R R_to_K).symm
-      _ = Spec.map XR_x_to_K := congrArg Spec.map that
-
-  have that' := map_to_injective_range_retract
-    (NoZeroSMulDivisors.algebraMap_injective R K)
-      (congrArg Subtype.val R_eq_XR_x_in_K)
-        R_to_XR_x
-          comm
-  have : R_to_XR_x ≫ XR_x_to_R = 𝟙 _ := that'
-  have : Spec.map (R_to_XR_x ≫ XR_x_to_R) = 𝟙 _ := by
-    rw [this]
-    exact Spec.map_id (CommRingCat.of R)
-  have : Spec.map XR_x_to_R ≫ Spec.map R_to_XR_x = 𝟙 _ := by
-    rw [← this]
-    exact Eq.symm (Spec.map_comp R_to_XR_x XR_x_to_R)
-  have sec' : Spec_R_to_XR ≫ XR_to_Spec_R = 𝟙 _ := by
-    simp only [Spec_R_to_XR, XR_to_Spec_R]
-    have t : (XR.fromSpecStalk x) ≫ pullback.fst i₂ f = Spec.map R_to_XR_x := by
-      simp only [R_to_XR_x, R_x'_to_R, R_y_to_R_x', R_y_to_XR_x, Spec.map_comp, Category.assoc]
-      rw [← Scheme.Spec_map_stalkMap_fromSpecStalk]
-      rw [stalkClosedPointIso_inv, ← Scheme.Spec_fromSpecStalk']
-      erw [Scheme.Spec_map_stalkSpecializes_fromSpecStalk (Inseparable.of_eq hx).specializes]
-    rw [← this]
-    rw [← t]
-    rfl
-
-  let l := Spec_R_to_XR ≫ XR_to_X
-  have fac_left : Spec_K_to_Spec_R ≫ l = i₁ := by
-    simp only [l, Spec_R_to_XR,XR_x_to_R, Category.assoc]
-    change Spec_K_to_Spec_R ≫ Spec.map XR_x_to_R ≫ XR.fromSpecStalk x ≫ XR_to_X = i₁
-    rw [reassoc_of% sec]
-    rw [← comm₂]
-    simp only [XR_to_X]
-    have : Spec.map XR_x_to_K ≫ XR.fromSpecStalk x = lft := by
-      simp only [XR_x_to_K]
-      simp only [Spec.map_comp, Category.assoc, XR_x_to_XR_x', XR_x'_to_K]
-      rw [Scheme.Spec_map_stalkSpecializes_fromSpecStalk]
-      apply Scheme.Spec_stalkClosedPointTo_fromSpecStalk
-    rw [reassoc_of% this]
-  have fac_right : l ≫ f = i₂ := by
-    calc
-      _ = Spec_R_to_XR ≫ XR_to_X ≫ f := rfl
-      _ = Spec_R_to_XR ≫ XR_to_Spec_R ≫ i₂ :=
-        congrArg (CategoryStruct.comp Spec_R_to_XR) pullback.condition.symm
-      _ = (Spec_R_to_XR ≫ XR_to_Spec_R) ≫ i₂ := rfl
-      _ = i₂ := by simp only [sec', Category.id_comp]
-
-  exact ⟨⟨⟨l, fac_left, fac_right⟩⟩⟩
+lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
+    ValuativeCriterion.Existence f := by
+  rintro ⟨R, K, i₁, i₂, ⟨w⟩⟩
+  haveI : IsDomain (CommRingCat.of R) := ‹_›
+  haveI : ValuationRing (CommRingCat.of R) := ‹_›
+  letI : Field (CommRingCat.of K) := ‹_›
+  replace H := H (pullback.snd i₂ f) i₂ (pullback.fst i₂ f) (.of_hasPullback i₂ f)
+  let lft := pullback.lift (Spec.map (CommRingCat.ofHom (algebraMap R K))) i₁ w.symm
+  obtain ⟨x, h₁, h₂⟩ := @H (lft.base (closedPoint _)) _ (specializes_closedPoint (R := R) _)
+  let e : CommRingCat.of R ≅ (Spec (.of R)).presheaf.stalk ((pullback.fst i₂ f).base x) :=
+    (stalkClosedPointIso (.of R)).symm ≪≫
+      (Spec (.of R)).presheaf.stalkCongr (.of_eq h₂.symm)
+  let α := e.hom ≫ (pullback.fst i₂ f).stalkMap x
+  have : IsLocalHom α := inferInstance
+  let β := (pullback i₂ f).presheaf.stalkSpecializes h₁ ≫ Scheme.stalkClosedPointTo lft
+  have hαβ : α ≫ β = CommRingCat.ofHom (algebraMap R K) := by
+    simp only [CommRingCat.coe_of, Iso.trans_hom, Iso.symm_hom, TopCat.Presheaf.stalkCongr_hom,
+      Category.assoc, α, e, β, stalkClosedPointIso_inv, StructureSheaf.toStalk]
+    show (Scheme.ΓSpecIso (.of R)).inv ≫ (Spec (.of R)).presheaf.germ _ _ _ ≫ _ = _
+    simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.stalkMap_germ_assoc,
+      TopologicalSpace.Opens.map_top]
+    erw [Scheme.germ_stalkClosedPointTo lft ⊤ trivial,
+      ← Scheme.comp_app_assoc lft (pullback.fst i₂ f)]
+    rw [pullback.lift_fst]
+    simp
+  have hbij := (bijective_rangeRestrict_comp_of_valuationRing (R := R) (K := K) α β hαβ)
+  let φ : (pullback i₂ f).presheaf.stalk x ⟶ CommRingCat.of R :=
+    (RingEquiv.ofBijective _ hbij).symm.toRingHom.comp β.rangeRestrict
+  have hαφ : α ≫ φ = 𝟙 _ := by ext x; exact (RingEquiv.ofBijective _ hbij).symm_apply_apply x
+  have hαφ' : (pullback.fst i₂ f).stalkMap x ≫ φ = e.inv := by
+    rw [← cancel_epi e.hom, ← Category.assoc, hαφ, e.hom_inv_id]
+  have hφβ : φ ≫ CommRingCat.ofHom (algebraMap R K) = β :=
+    hαβ ▸ RingHom.ext fun x ↦ congr_arg Subtype.val
+      ((RingEquiv.ofBijective _ hbij).apply_symm_apply (β.rangeRestrict x))
+  refine ⟨⟨⟨Spec.map ((pullback.snd i₂ f).stalkMap x ≫ φ) ≫ X.fromSpecStalk _, ?_, ?_⟩⟩⟩
+  · simp only [← Spec.map_comp_assoc, Category.assoc, hφβ]
+    simp [β, Scheme.Spec_map_stalkSpecializes_fromSpecStalk_assoc, -CommRingCat.coe_of,
+      Scheme.Spec_stalkClosedPointTo_fromSpecStalk_assoc, lft]
+  · simp only [Spec.map_comp, Category.assoc, Scheme.Spec_map_stalkMap_fromSpecStalk,
+      ← pullback.condition]
+    rw [← Scheme.Spec_map_stalkMap_fromSpecStalk_assoc, ← Spec.map_comp_assoc, hαφ']
+    simp only [Iso.trans_inv, TopCat.Presheaf.stalkCongr_inv, Iso.symm_inv, Spec.map_comp,
+      Category.assoc, Scheme.Spec_map_stalkSpecializes_fromSpecStalk_assoc, e]
+    rw [← Spec_stalkClosedPointIso, ← Spec.map_comp_assoc,
+      Iso.inv_hom_id, Spec.map_id, Category.id_comp]
 
 /-- by def -/
 lemma stableUnderBaseChange :
@@ -343,7 +162,7 @@ lemma stableUnderBaseChange :
   have fac_left :
       Spec.map (CommRingCat.ofHom (algebraMap commSq.R commSq.K)) ≫ l = commSq.i₁ := by
     apply hP.hom_ext
-    · aesop
+    · simpa [l]
     · simp only [Category.assoc]
       rw [hP.lift_snd]
       rw [commSq.commSq.w]
@@ -402,7 +221,7 @@ lemma isSeparated_of_valuativeCriterion [QuasiSeparated f]
     suffices h : ValuativeCriterion.Existence (pullback.diagonal f) by
       have : QuasiCompact (pullback.diagonal f) :=
         AlgebraicGeometry.QuasiSeparated.diagonalQuasiCompact
-      apply IsClosedImmersion.of_isImmersion
+      apply IsClosedImmersion.of_isPreimmersion
       apply IsClosedMap.isClosed_range
       apply (topologically @IsClosedMap).universally_le
       exact (universallyClosed_of_valuativeCriterion (pullback.diagonal f) h).out
