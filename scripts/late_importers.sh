@@ -28,7 +28,7 @@ refCommit="$(git rev-parse HEAD)" #${{ github.sha }}
 # build the selected target and collapse all `linter.minImports` warning to a single line per warning
 lake build "${root}" | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
   # the `gsub`s clear all unnecessary text, leaving lines of the form
-  # `warning:[filename]:[line]:[column]:[importIncrease]: [newImports]`
+  # `warning:[filename]:[line]:[column]:[importIncrease]:[newImports]`
   # in awk-speak, $2=[filename], $3=[line], $5=[importIncrease], $6=[newImports]
   awk -F: 'BEGIN{max=0}
     # only print `currMax` when we reach the report for the next file (are we missing the last report?)
