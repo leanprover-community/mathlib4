@@ -381,24 +381,24 @@ theorem derivesLeftmost_iff {w : List T} {α : List (Symbol T g.NT)} :
       rw [hv.2, List.append_assoc] at ih
       obtain ⟨u₁, hu⟩|⟨w₁, u₂, hu⟩ := derivesLeftmost_append ih
       · obtain ⟨w₁₁, w₂₂, hw⟩ := List.map_eq_append_iff.mp hu.1
-        have d₁ : g.DerivesLeftmost ([nonterminal r.input] ++ v₂) (r.output ++ v₂) := by
+        have hderiv₁ : g.DerivesLeftmost ([nonterminal r.input] ++ v₂) (r.output ++ v₂) := by
           apply ProducesLeftmost.single
           use r, hr
           rw [ContextFreeRule.RewritesLeftmost.rewritesLeftmost_iff]
           use [], v₂
           simp
-        have d₂ := DerivesLeftmost.append_left d₁ w₁₁
-        rw [hw.2.1] at d₂
-        have d₃ :=  DerivesLeftmost.append_right hu.2 ([nonterminal r.input] ++ v₂)
-        convert DerivesLeftmost.trans d₃ d₂ <;> simp_all
-      · have d₁ : g.DerivesLeftmost ([nonterminal r.input] ++ v₂) (r.output ++ v₂) := by
+        have hderiv₂ := DerivesLeftmost.append_left hderiv₁ w₁₁
+        rw [hw.2.1] at hderiv₂
+        have hderiv₃ :=  DerivesLeftmost.append_right hu.2 ([nonterminal r.input] ++ v₂)
+        convert DerivesLeftmost.trans hderiv₃ hderiv₂ <;> simp_all
+      · have hderiv₁ : g.DerivesLeftmost ([nonterminal r.input] ++ v₂) (r.output ++ v₂) := by
           apply ProducesLeftmost.single
           use r, hr
           rw [ContextFreeRule.RewritesLeftmost.rewritesLeftmost_iff]
           use [], v₂
           simp
-        have d₂ := (d₁.trans hu.2.2).append_left w₁
-        have d₃ := hu.2.1.append_right ([nonterminal r.input] ++ v₂)
-        convert DerivesLeftmost.trans d₃ d₂ <;> simp_all
+        have hderiv₂ := (hderiv₁.trans hu.2.2).append_left w₁
+        have hderiv₃ := hu.2.1.append_right ([nonterminal r.input] ++ v₂)
+        convert DerivesLeftmost.trans hderiv₃ hderiv₂ <;> simp_all
 
 end ContextFreeGrammar
