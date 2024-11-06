@@ -33,8 +33,16 @@ lemma final_fst [R.Final] : (fst L R).Final := by
     Final.colimitIso (grothendieckPrecompFunctorEquivalence L R).functor (fst L R ⋙ G)
   convert i.isIso_inv
   apply colimit.hom_ext
-  rintro ⟨l, r, f⟩
+  intro ⟨l, r, f⟩
   simp [i]
+  simp only [← Category.assoc, ← Iso.comp_inv_eq, Iso.eq_comp_inv]
+  have : (L.lanUnit.app G).app l ≫ (L.lanObjObjIsoColimit G (L.obj l)).hom =
+      colimit.ι (proj L (L.obj l) ⋙ G) (CostructuredArrow.mk (𝟙 _)) := by
+    rw [← ι_lanObjObjIsoColimit_hom]
+    simp
+  simp [reassoc_of% this]
+  rw [ι_colimitFiberwiseColimitIso_hom_assoc]
+  simp
   sorry
 
 end Comma
