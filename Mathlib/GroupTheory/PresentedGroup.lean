@@ -40,8 +40,16 @@ instance (rels : Set (FreeGroup α)) : Group (PresentedGroup rels) :=
 
 /-- The canonical map from a free group `α` to a presented group with generators `x : α` `x` is
 mapped to its equivalence class under the given set of relations `rels`-/
-def mk (rels : Set (FreeGroup α)) (a : FreeGroup α) : PresentedGroup rels :=
-  QuotientGroup.mk a
+def mk (rels : Set (FreeGroup α)) : FreeGroup α →* PresentedGroup rels :=
+  ⟨⟨QuotientGroup.mk, rfl⟩, fun _ _ => rfl⟩
+
+@[simp]
+theorem mk_mul {rels : Set (FreeGroup α)} (a b : FreeGroup α) : mk rels (a * b) =
+  mk rels a * mk rels b := rfl
+
+@[simp]
+theorem mk_pow {rels : Set (FreeGroup α)} (a : FreeGroup α) (n : ℕ) : mk rels a ^ n =
+  (mk rels a) ^ n := rfl
 
 theorem mk_surjective (rels : Set (FreeGroup α)) : Function.Surjective <| mk rels :=
   QuotientGroup.mk_surjective
