@@ -111,8 +111,8 @@ variable {𝔸}
 It is defined as the sum of the `FormalMultilinearSeries` `expSeries 𝕂 𝔸`.
 
 Note that when `𝔸 = Matrix n n 𝕂`, this is the **Matrix Exponential**; see
-[`Analysis.Normed.Algebra.MatrixExponential`](./MatrixExponential) for lemmas specific to that
-case. -/
+[`MatrixExponential`](./Mathlib/Analysis/Normed/Algebra/MatrixExponential) for lemmas
+specific to that case. -/
 noncomputable def exp (x : 𝔸) : 𝔸 :=
   (expSeries 𝕂 𝔸).sum x
 
