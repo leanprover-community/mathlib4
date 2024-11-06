@@ -52,8 +52,8 @@ theorem Module.lift_rank_of_isLocalizedModule_of_free
   convert this
   exact Cardinal.lift_umax
 
-universe uR' uM' inank_of_isLocalizedModule_of_free
-    (Rₛ Mₛ : Type*} [AddCommGroup Mₛ] [Module R Mₛ]
+theorem Module.finnank_of_isLocalizedModule_of_free
+    (Rₛ : Type*) {Mₛ : Type*} [AddCommGroup Mₛ] [Module R Mₛ]
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ] (S : Submonoid R)
     (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M]
     [Nontrivial Rₛ] :
