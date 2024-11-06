@@ -386,8 +386,7 @@ theorem singleton_mul_subgroup {H : Subgroup G} {h : G} (hh : h ∈ H) : {h} * (
   suffices { x : G | x ∈ H } = ↑H by simpa [preimage, mul_mem_cancel_left (inv_mem hh)]
   rfl
 
-theorem Normal.conjAct {G : Type*} [Group G] {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) :
-    g • H = H :=
+theorem Normal.conjAct {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) : g • H = H :=
   have : ∀ g : ConjAct G, g • H ≤ H :=
     fun _ => map_le_iff_le_comap.2 fun _ h => hH.conj_mem _ h _
   (this g).antisymm <| (smul_inv_smul g H).symm.trans_le (map_mono <| this _)
@@ -396,8 +395,8 @@ theorem Normal.conjAct {G : Type*} [Group G] {H : Subgroup G} (hH : H.Normal) (g
 theorem smul_normal (g : G) (H : Subgroup G) [h : Normal H] : MulAut.conj g • H = H :=
   h.conjAct g
 
-theorem Normal.of_conjugate_fixed {G : Type*} [Group G] {H : Subgroup G}
-    (h : ∀ g : G, (MulAut.conj g) • H = H) : H.Normal := by
+theorem Normal.of_conjugate_fixed {H : Subgroup G} (h : ∀ g : G, (MulAut.conj g) • H = H) :
+    H.Normal := by
   constructor
   intro n hn g
   rw [← h g, Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv, MulAut.smul_def,
