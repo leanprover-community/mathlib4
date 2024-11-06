@@ -363,7 +363,7 @@ function `f : X → ℝ` such that
 theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompactSpace X]
     {s t : Set X} (hs : IsCompact s) (ht : IsClosed t) (hd : Disjoint s t) :
     ∃ f : C(X, ℝ), EqOn f 0 t ∧ EqOn f 1 s ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
-  obtain ⟨g, hgs, hgt, hicc⟩ := exists_continuous_zero_one_of_isCompact hs ht hd
+  obtain ⟨g, hgs, hgt, (hicc : 0 ≤ g x ∧ g x ≤ 1)⟩ := exists_continuous_zero_one_of_isCompact hs ht hd
   use 1 - g
   refine ⟨?_, ?_, ?_⟩
   · intro x hx
