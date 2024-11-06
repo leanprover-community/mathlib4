@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
  : <<'BASH_MODULE_DOCS'
 
 This script formats the `linter.minImports` output, returning a table of the form
@@ -39,7 +44,7 @@ lineLimit=${2:-0}
 # the script reports the module
 significantDifference=${3:-0}
 
-jobID="${4}"
+jobID="${4:-N/A}"
 
 >&2 printf $'Building \'%s\'\n' "${root}"
 >&2 printf $'Report only the top \'%s\' exceptions\n' "${lineLimit}"
