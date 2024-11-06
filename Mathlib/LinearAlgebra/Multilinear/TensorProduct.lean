@@ -38,11 +38,11 @@ def domCoprodDep (a : MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁)
     (b : MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂) :
     MultilinearMap R N (N₁ ⊗[R] N₂) where
   toFun v := a (fun i₁ ↦ v (.inl i₁)) ⊗ₜ b (fun i₂ ↦ v (.inr i₂))
-  map_add' := by
+  map_update_add' := by
     rintro _ _ (_ | _) _ _
     · letI := Classical.decEq ι₁; simp
     · letI := Classical.decEq ι₂; simp
-  map_smul' := by
+  map_update_smul' := by
     rintro _ m (i₁ | i₂) p q
     · letI := Classical.decEq ι₁; simp
     · letI := Classical.decEq ι₂; simp
