@@ -5,9 +5,6 @@ Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
 -/
 
 import Mathlib.Analysis.InnerProductSpace.Spectrum
-import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Order.CompleteLattice
-import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Pi
 import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 import Mathlib.Analysis.InnerProductSpace.Semisimple
@@ -60,7 +57,7 @@ variable {α : 𝕜} {A B : E →ₗ[𝕜] E} {T : n → E →ₗ[𝕜] E}
 `OrthogonalFamily`. -/
 theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.IsSymmetric) :
     OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) => (eigenspace A i.2 ⊓ eigenspace B i.1 : Submodule 𝕜 E))
-    (fun i => (eigenspace A i.2 ⊓ eigenspace B i.1).subtypeₗᵢ) :=
+      fun i => (eigenspace A i.2 ⊓ eigenspace B i.1).subtypeₗᵢ :=
      OrthogonalFamily.of_pairwise fun i j hij v ⟨hv1 , hv2⟩ ↦ by
     obtain (h₁ | h₂) : i.1 ≠ j.1 ∨ i.2 ≠ j.2 := by rwa [Ne.eq_def, Prod.ext_iff, not_and_or] at hij
     all_goals intro w ⟨hw1, hw2⟩
@@ -69,13 +66,12 @@ theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.
 
 /-- The joint eigenspaces of a family of commuting symmetric operators form an
 `OrthogonalFamily`. -/
-theorem orthogonalFamily_iInf_eigenspaces
-    (hT : ∀ i, (T i).IsSymmetric) :
+theorem orthogonalFamily_iInf_eigenspaces (hT : ∀ i, (T i).IsSymmetric) :
     OrthogonalFamily 𝕜 (fun γ : n → 𝕜 ↦ (⨅ j, eigenspace (T j) (γ j) : Submodule 𝕜 E))
       fun γ : n → 𝕜 ↦ (⨅ j, eigenspace (T j) (γ j)).subtypeₗᵢ := by
   intro f g hfg Ef Eg
   obtain ⟨a , ha⟩ := Function.ne_iff.mp hfg
-  have H := (orthogonalFamily_eigenspaces (hT a) ha)
+  have H := orthogonalFamily_eigenspaces (hT a) ha
   simp only [Submodule.coe_subtypeₗᵢ, Submodule.coe_subtype, Subtype.forall] at H
   apply H
   · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (f _)).mp Ef.2 _
@@ -108,7 +104,7 @@ theorem iSup_iSup_eigenspace_inf_eigenspace_eq_top (hA : A.IsSymmetric) (hB : B.
 /-- Given a commuting pair of symmetric linear operators on a finite dimensional inner product
 space, the space decomposes as an internal direct sum of simultaneous eigenspaces of these
 operators. -/
-theorem directSum_isInternal_of_comm (hA : A.IsSymmetric) (hB : B.IsSymmetric)
+theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric)
     (hAB : Commute A B) :
     DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace A i.2 ⊓ eigenspace B i.1)):= by
   apply (orthogonalFamily_eigenspace_inf_eigenspace hA hB).isInternal_iff.mpr
@@ -117,7 +113,7 @@ theorem directSum_isInternal_of_comm (hA : A.IsSymmetric) (hB : B.IsSymmetric)
 
 /-- In finite dimensions, the indexed supremum of the joint eigenspaces of a commuting family
 of symmetric linear operators equals `⊤`. -/
-theorem iSup_iInf_eq_top_of_comm {ι : Type*} {T : ι → E →ₗ[𝕜] E}
+theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
     (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise fun i j ↦ Commute (T i) (T j)):
     ⨆ χ : ι → 𝕜, ⨅ i, eigenspace (T i) (χ i) = ⊤ :=
   calc
@@ -126,8 +122,8 @@ theorem iSup_iInf_eq_top_of_comm {ι : Type*} {T : ι → E →ₗ[𝕜] E}
       $(maxGenEigenspace_eq_eigenspace (isFinitelySemisimple <| hT _) (χ _))).symm
   _ = ⊤ :=
     iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_comm T h fun _ ↦ by
-    rw [← orthogonal_eq_bot_iff, congr(⨆ μ,
-      $(maxGenEigenspace_eq_eigenspace (isFinitelySemisimple <| hT _) μ)),
+    rw [← orthogonal_eq_bot_iff,
+      congr(⨆ μ, $(maxGenEigenspace_eq_eigenspace (isFinitelySemisimple <| hT _) μ)),
       (hT _).orthogonalComplement_iSup_eigenspaces_eq_bot]
 
 /-- In finite dimensions, given a commuting family of symmetric linear operators, the inner
@@ -136,7 +132,7 @@ theorem LinearMap.IsSymmetric.directSum_isInternal_of_comm_of_fintype [Fintype n
     (hT : ∀ i, (T i).IsSymmetric) (hC : ∀ i j, Commute (T i) (T j)) :
     DirectSum.IsInternal (fun α : n → 𝕜 ↦ ⨅ j, eigenspace (T j) (α j)) := by
   rw [OrthogonalFamily.isInternal_iff]
-  · rw [iSup_iInf_eq_top_of_comm hT fun ⦃_ _⦄ _ ↦ hC _ _, top_orthogonal_eq_bot]
+  · rw [iSup_iInf_eq_top_of_commute hT fun ⦃_ _⦄ _ ↦ hC _ _, top_orthogonal_eq_bot]
   · exact orthogonalFamily_iInf_eigenspaces hT
 
 end RCLike
@@ -144,3 +140,5 @@ end RCLike
 end IsSymmetric
 
 end LinearMap
+
+#min_imports
