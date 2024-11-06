@@ -70,6 +70,7 @@ lemma span_ιMulti_embedding_of_span_eq_top (hg : Submodule.span R (Set.range g)
     obtain ⟨i, j, hx, hij⟩ := hx
     exact AlternatingMap.map_eq_zero_of_eq  _ _ (hij := hij) (by simp [hx])
 
+-- to be moved
 lemma _root_.Equiv.Perm.exists_orderEmbedding_of_finite
     {α β : Type*} [LinearOrder α] [LinearOrder β] [Finite α]
     (x : α ↪ β) : ∃ (σ : Equiv.Perm α) (f : α ↪o β), x ∘ σ = f := by
