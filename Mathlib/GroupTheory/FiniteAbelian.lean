@@ -161,4 +161,13 @@ namespace CommGroup
 theorem finite_of_fg_torsion [CommGroup G] [Group.FG G] (hG : Monoid.IsTorsion G) : Finite G :=
   @Finite.of_equiv _ _ (AddCommGroup.finite_of_fg_torsion (Additive G) hG) Multiplicative.ofAdd
 
+/-- The **Classification Theorem For Finite Abelian Groups** in a multiplicative version:
+A finite commutative group `G` is isomorphic to a finite product of finite cyclic groups. -/
+theorem equiv_prod_multiplicative_zmod (G : Type*) [CommGroup G] [Finite G] :
+    ∃ (ι : Type) (_ : Fintype ι) (n : ι → ℕ),
+       (∀ (i : ι), 1 < n i) ∧ Nonempty (G ≃* ((i : ι) → Multiplicative (ZMod (n i)))) := by
+  obtain ⟨ι, inst, n, h₁, h₂⟩ := AddCommGroup.equiv_directSum_zmod_of_finite' (Additive G)
+  exact ⟨ι, inst, n, h₁, ⟨MulEquiv.toAdditive.symm <| h₂.some.trans <|
+    (DirectSum.addEquivProd _).trans <| MulEquiv.toAdditive'' <| MulEquiv.piMultiplicative _⟩⟩
+
 end CommGroup
