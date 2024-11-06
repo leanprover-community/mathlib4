@@ -200,45 +200,39 @@ lemma ofFn_cons {n} (a : α) (f : Fin n → α) : ofFn (Fin.cons a f) = a :: ofF
   rw [ofFn_succ]
   rfl
 
+-- Temporary local copy of result from Lean commit 1e98fd7f2d965ab035dbf1099fb4a4ffde16b151.
+theorem find?_eq_some_iff_getElem {xs : List α} {p : α → Bool} {b : α} :
+    xs.find? p = some b ↔ p b ∧ ∃ i h, xs[i] = b ∧ ∀ j : Nat, (hj : j < i) → !p xs[j] := by
+  rw [find?_eq_some]
+  simp only [Bool.not_eq_eq_eq_not, Bool.not_true, exists_and_right, and_congr_right_iff]
+  intro w
+  constructor
+  · rintro ⟨as, ⟨bs, rfl⟩, h⟩
+    refine ⟨as.length, ⟨?_, ?_, ?_⟩⟩
+    · simp only [length_append, length_cons]
+      refine Nat.lt_add_of_pos_right (zero_lt_succ bs.length)
+    · rw [getElem_append_right (Nat.le_refl as.length)]
+      simp
+    · intro j h'
+      rw [getElem_append_left h']
+      exact h _ (getElem_mem h')
+  · rintro ⟨i, h, rfl, h'⟩
+    refine ⟨xs.take i, ⟨xs.drop (i+1), ?_⟩, ?_⟩
+    · rw [getElem_cons_drop, take_append_drop]
+    · intro a m
+      rw [mem_take_iff_getElem] at m
+      obtain ⟨j, h, rfl⟩ := m
+      apply h'
+      omega
+
 lemma find?_ofFn_eq_some {n} {f : Fin n → α} {p : α → Bool} {b : α} :
     (ofFn f).find? p = some b ↔ p b = true ∧ ∃ i, f i = b ∧ ∀ j < i, ¬(p (f j) = true) := by
-  induction f using Fin.consInduction
-  case h0 => simp
-  case h n a f hi =>
-    rw [ofFn_cons, find?_cons_eq_some]
-    by_cases h : p a = true
-    · simp only [h, true_and, Bool.not_true, Bool.false_eq_true, false_and, or_false,
-        Bool.not_eq_true]
-      refine ⟨?_, ?_⟩
-      · rintro rfl
-        exact ⟨h, 0, by simp⟩
-      · rintro ⟨-, i, hib, hij⟩
-        by_cases hi : i = 0
-        · subst hi
-          exact hib
-        · replace hij := hij 0 (Fin.pos_of_ne_zero hi)
-          simp [h] at hij
-    · simp only [h, Bool.false_eq_true, false_and, Bool.not_false, hi, Bool.not_eq_true,
-        true_and, false_or, and_congr_right_iff]
-      intro hb
-      refine ⟨?_, ?_⟩
-      · rintro ⟨i, rfl, hij⟩
-        refine ⟨i.succ, Fin.cons_succ _ _ _, ?_⟩
-        intro j
-        refine Fin.cases ?_ ?_ j
-        · simp [h]
-        · intro k hk
-          rw [Fin.succ_lt_succ_iff] at hk
-          exact hij k hk
-      · rintro ⟨i, rfl, hij⟩
-        revert hb hij
-        refine Fin.cases ?_ ?_ i
-        · simp [h]
-        · rintro i' hij -
-          refine ⟨i', rfl, ?_⟩
-          intro j hj
-          rw [← Fin.succ_lt_succ_iff] at hj
-          exact hij j.succ hj
+  rw [find?_eq_some_iff_getElem]
+  exact ⟨fun ⟨hpb, i, hi, hfb, h⟩ ↦
+      ⟨hpb, ⟨⟨i, (length_ofFn f) ▸ hi⟩, by simpa using hfb, fun j hj ↦ by simpa using h j hj⟩⟩,
+    fun ⟨hpb, i, hfb, h⟩ ↦
+      ⟨hpb, ⟨i, (length_ofFn f).symm ▸ i.isLt, by simpa using hfb,
+        fun j hj ↦ by simpa using h ⟨j, by omega⟩ (by simpa using hj)⟩⟩⟩
 
 lemma find?_ofFn_eq_some_of_injective {n} {f : Fin n → α} {p : α → Bool} {i : Fin n}
     (h : Function.Injective f) :
