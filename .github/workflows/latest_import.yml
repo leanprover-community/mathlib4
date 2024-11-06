@@ -87,6 +87,10 @@ jobs:
         printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib.Logic.Function.Defs 15 10 "${jobID}")" |
           tee "$GITHUB_OUTPUT"
 
+    - name: downstream imports
+      run: |
+        printf '%s\n' "${{ steps.late_importers.outputs.summary }}" |
+          sed '/\.html/{s=\[\(Mathlib[^]]*).lean].*=`\1,=}'
     #- name: Post output to Zulip
     #  uses: zulip/github-actions-zulip/send-message@v1
     #  with:
