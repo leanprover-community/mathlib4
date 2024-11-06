@@ -176,7 +176,7 @@ open Classical in
 /-- Complete lattice structure on `Set.Icc` -/
 noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     {a b : α} (h : a ≤ b) : CompleteLattice (Set.Icc a b) where
-  __ := Set.Icc.boundedOrder h
+  __ := (haveI : Fact (a ≤ b) := ⟨h⟩ ; inferInstance : BoundedOrder ↑(Icc a b))
   sSup S := if hS : S = ∅ then ⟨a, le_rfl, h⟩ else ⟨sSup ((↑) '' S), by
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
     refine ⟨?_, csSup_le (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
@@ -207,10 +207,11 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
         (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
 
 /-- Complete linear order structure on `Set.Icc` -/
-noncomputable def Set.Icc.completeLinearOrder [ConditionallyCompleteLinearOrder α]
-    {a b : α} (h : a ≤ b) : CompleteLinearOrder (Set.Icc a b) := by
-  let _ := completeLattice h
-  exact { completeLattice h, Subtype.instLinearOrder _, LinearOrder.toBiheytingAlgebra with }
+noncomputable instance [ConditionallyCompleteLinearOrder α]
+    {a b : α} [Fact (a ≤ b)] : CompleteLinearOrder (Set.Icc a b) := by
+  have h : a ≤ b := Fact.out
+  exact { Set.Icc.completeLattice h, Subtype.instLinearOrder _,
+    LinearOrder.toBiheytingAlgebra with }
 
 lemma Set.Icc.coe_sSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     {S : Set (Set.Icc a b)} (hS : S.Nonempty) : letI := Set.Icc.completeLattice h
