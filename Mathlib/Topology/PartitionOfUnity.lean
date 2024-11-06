@@ -661,21 +661,17 @@ example [T2Space X] [LocallyCompactSpace X]
     · intro x _ hnx
       simp only [Finset.mem_filter, Finset.mem_univ, true_and, Decidable.not_not] at hnx
       exact hnx
-  · intro i x
-    constructor
-    · exact f.nonneg' i x
-    · by_cases h0 : (f.toFun i) x = 0
-      · rw [h0]
-        exact zero_le_one' ℝ
-      · rw [← Finset.sum_singleton (fun i => ((f.toFun i) x)) i]
-        apply le_trans _ (f.sum_le_one' x)
-        rw [finsum_eq_sum (fun i => (f.toFun i) x)
-          (Finite.subset finite_univ (subset_univ (support fun i ↦ (f.toFun i) x)))]
-        simp only [Finite.toFinset_setOf, ne_eq]
-        apply Finset.sum_le_sum_of_subset_of_nonneg
-        · intro z hz
-          rw [Finset.eq_of_mem_singleton hz]
-          simp only [Finset.mem_filter, Finset.mem_univ, true_and]
-          exact h0
-        · intro i _ _
-          exact f.nonneg' i x
+  intro i x
+  constructor
+  · exact f.nonneg' i x
+  by_cases h0 : f i x = 0
+  · rw [h0]
+    exact zero_le_one
+  rw [← Finset.sum_singleton (f ·  x) i]
+  apply le_trans _ (f.sum_le_one' x)
+  rw [finsum_eq_sum (f ·  x) (by exact?)]
+  simp only [Finite.toFinset_setOf, ne_eq]
+  gcongr with z hz
+  rw [Finset.eq_of_mem_singleton hz]
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+  exact h0
