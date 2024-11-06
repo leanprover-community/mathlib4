@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Cover.Open
+import Mathlib.AlgebraicGeometry.Over
 
 /-!
 # Restriction of Schemes and Morphisms
@@ -50,6 +51,9 @@ instance : CoeOut X.Opens Scheme := ⟨toScheme⟩
 def ι : ↑U ⟶ X := X.ofRestrict _
 
 instance : IsOpenImmersion U.ι := inferInstanceAs (IsOpenImmersion (X.ofRestrict _))
+
+@[simps] instance : U.toScheme.Over X := ⟨U.ι⟩
+@[simps! over] instance : U.toScheme.CanonicallyOver X where
 
 lemma toScheme_carrier : (U : Type u) = (U : Set X) := rfl
 
