@@ -71,6 +71,13 @@ section Ring
 
 variable (R M N) [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
+theorem Module.Projective.finite_iff_finitePresentation [Projective R M] :
+    Module.Finite R M ↔ FinitePresentation R M := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  have ⟨n, f, g, surj, _, hfg⟩ := exists_comp_eq_id R M
+  exact Module.finitePresentation_of_surjective _ surj
+    (Finite.iff_fg.mp <| LinearMap.ker_eq_range_of_comp_eq_id hfg ▸ inferInstance)
+
 universe u in
 variable (R M : Type u) [Ring R] [AddCommGroup M] [Module R M] in
 /-- A finitely presented module is isomorphic to the quotient of a finite free module by a finitely
