@@ -89,14 +89,13 @@ theorem stdBasisMatrix_mem_jacobson_matricesOver (I : Ideal R) :
   let N : Matrix n n R := 1 - ∑ i, stdBasisMatrix i q (if i = q then 1 - z else (M i p)*x*z)
   use N
   intro i j
-  by_cases qj : q = j
+  obtain rfl | qj := eq_or_ne q j
   · by_cases ij : i = j
-    · rw [qj] at zMx
-      simp [qj, ij, N, zMx, stdBasisMatrix, mul_apply, sum_apply, ite_and, sub_mul]
+    · simp [ij, N, zMx, stdBasisMatrix, mul_apply, sum_apply, ite_and, sub_mul]
     · convert I.mul_mem_left (-M i p * x) zMx
-      simp [qj, ij, N, zMx, stdBasisMatrix, mul_apply, sum_apply, ite_and, sub_mul]
+      simp [ij, N, zMx, stdBasisMatrix, mul_apply, sum_apply, ite_and, sub_mul]
       simp [sub_add, mul_add, mul_sub, mul_assoc]
-  · simp [N, StdBasisMatrix.apply_of_col_ne _ _ qj, sum_apply, mul_apply]
+  · simp [N, qj, sum_apply, mul_apply]
 
 /-- For any left ideal $I ≤ R$, we have $Mₙ(J(I)) ≤ J(Mₙ(I))$. -/
 theorem matricesOver_jacobson_le (I : Ideal R) :
