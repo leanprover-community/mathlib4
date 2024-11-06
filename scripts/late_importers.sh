@@ -1,8 +1,32 @@
 #!/usr/bin/env bash
 
-# TODO
-# If a merged PR touched one of the files in the most recent report, trigger the workflow again.
-# Show the diff relative to the last report. (Using zulip/github as the persistent state?)
+ : <<'BASH_MODULE_DOCS'
+
+This script formats the `linter.minImports` output, returning a table of the form
+
+| File           | Line | Import increase | New imports            |
+| :-             | -:   | -:              | :-                     |
+| Mathlib/X.lean | 1123 | 75              | [Mathlib.Y, Mathlib.Z] |
+
+where the column
+* `File` consists of doc-gen links,
+* `Line` is the position of the last import bump in the file,
+* `Import increase` is the number of extra imports implied by the last bump,
+* `New imports` is the list of new imports needed for the last bump.
+
+The table is sorted by descending order of `Line` column.
+
+The script that takes 4 arguments:
+1. the module name that should be built (`Mathlib` by default);
+2. the number of module names of output that the script returns (all by default);
+3. the threshold difference in imports above which the script reports a module (all by default);
+4. the GitHub jod-ID of the workflow run.
+
+TODO
+* If a merged PR touched one of the files in the most recent report, trigger the workflow again.
+* Show the diff relative to the last report. (Using zulip/github as the persistent state?)
+
+BASH_MODULE_DOCS
 
 # `root` is the module name that the script builds
 root=${1:-Mathlib}
@@ -15,17 +39,20 @@ lineLimit=${2:-0}
 # the script reports the module
 significantDifference=${3:-0}
 
->&2 printf 'Building %s\n' "${root}"
->&2 printf 'Report only the top %s exceptions\n' "${lineLimit}"
->&2 printf 'Consider a file an exception if the last import increase exceeds %s imports\n\n' "${significantDifference}"
+jobID="${4}"
 
-baseURL='https://github.com/leanprover-community/mathlib4/commit'
-refCommit=${{ github.sha }}
+>&2 printf $'Building \'%s\'\n' "${root}"
+>&2 printf $'Report only the top \'%s\' exceptions\n' "${lineLimit}"
+>&2 printf $'Consider a file an exception if the last import increase exceeds \'%s\' imports\n\n' "${significantDifference}"
+>&2 printf $'GitHub job id: \'%s\'\n\n' "${jobID}"
+
+baseURL='https://github.com/leanprover-community/mathlib4'
+refCommit="$(git rev-parse HEAD)" #${{ github.sha }}
 
 # build the selected target and collapse all `linter.minImports` warning to a single line per warning
 lake build "${root}" | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
   # the `gsub`s clear all unnecessary text, leaving lines of the form
-  # `warning: [filename]:[line]:[column]:[importIncrease]: [newImports]`
+  # `warning:[filename]:[line]:[column]:[importIncrease]:[newImports]`
   # in awk-speak, $2=[filename], $3=[line], $5=[importIncrease], $6=[newImports]
   awk -F: 'BEGIN{max=0}
     # only print `currMax` when we reach the report for the next file (are we missing the last report?)
@@ -34,9 +61,9 @@ lake build "${root}" | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
       gsub(/ *Now redun.*/, "")
       gsub(/ to \[[^]]*\]/, "")
       gsub(/ *note: this linter.*/, "")
-      gsub(/\.\//, "")
+      gsub(/ *\.\//, "")
       gsub(/ *Imports increased by */, "")
-      gsub(/ *New imports */, "")
+      gsub(/ *New imports: */, ":")
       currMax=$0
       max=$3+0
   }' |
@@ -54,8 +81,7 @@ lake build "${root}" | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
       if (!(lineLimit == 0)) { con++ }
       fileHtml=$2
       gsub(/\.lean$/, ".html", fileHtml)
-      gsub(/ /, "", fileHtml)
       printf("| [%s](https://leanprover-community.github.io/mathlib4_docs/%s) | %s | %s | %s |\n", $2, fileHtml, $3, $5, $6)
   }'
-printf '\n\n---\n\nReference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
-printf '[Full report](https://github.com/%s/actions/runs/%s)\n' "${{ github.repository }}" "${{ github.run_id }}"
+printf '\n\n---\n\nReference commit [%s](%s)\n' "${refCommit:0:10}" "${baseURL}/commit/${refCommit}"
+printf '[Full report](%s/actions/runs/%s)\n' "${baseURL}" "${jobID}"
