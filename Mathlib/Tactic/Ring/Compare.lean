@@ -190,6 +190,7 @@ theorem lt_congr {α : Type*} [LT α] {a b c d : α} (h1 : a = b) (h2 : b < c) (
     a < d := by
   rwa [h1, h3]
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- Prove goals of the form `A ≤ B` in an ordered commutative semiring, if the ring-normal forms of
 `A` and `B` differ by a nonnegative (additive) constant. -/
 def proveLE (g : MVarId) : MetaM Unit := do
@@ -213,6 +214,7 @@ def proveLE (g : MVarId) : MetaM Unit := do
       throwError "ring failed, ring expressions not equal up to an additive constant\n{g'.mvarId!}"
     | tooSmall => throwError "comparison failed, LHS is larger\n{g'.mvarId!}"
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- Prove goals of the form `A < B` in an ordered commutative semiring, if the ring-normal forms of
 `A` and `B` differ by a positive (additive) constant. -/
 def proveLT (g : MVarId) : MetaM Unit := do
