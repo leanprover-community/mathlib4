@@ -174,7 +174,7 @@ section Icc
 
 open Classical in
 /-- Complete lattice structure on `Set.Icc` -/
-noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
+noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     {a b : α} (h : a ≤ b) : CompleteLattice (Set.Icc a b) where
   __ := (haveI : Fact (a ≤ b) := ⟨h⟩ ; inferInstance : BoundedOrder ↑(Icc a b))
   sSup S := if hS : S = ∅ then ⟨a, le_rfl, h⟩ else ⟨sSup ((↑) '' S), by
