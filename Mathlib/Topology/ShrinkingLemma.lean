@@ -282,7 +282,6 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun X => IsCompact (closur
   have : si ⊆ v i := by
     intro x hx
     have (j) (hj : j ≠ i) : x ∉ v j := by
-      intro j hj
       rw [hsi] at hx
       apply Set.not_mem_of_mem_compl
       have hsi' : x ∈ (⋂ i_1, ⋂ (_ : ¬i_1 = i), (v.toFun i_1)ᶜ) := Set.mem_of_mem_inter_right hx
@@ -294,7 +293,6 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun X => IsCompact (closur
     obtain rfl : j = i := by
       by_contra! h
       exact this j h hj
-    rw [← this]
     exact hj
   obtain ⟨vi, hvi⟩ := exists_open_between_and_isCompact_closure hsic (v.isOpen i) this
   classical

@@ -363,7 +363,8 @@ function `f : X → ℝ` such that
 theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompactSpace X]
     {s t : Set X} (hs : IsCompact s) (ht : IsClosed t) (hd : Disjoint s t) :
     ∃ f : C(X, ℝ), EqOn f 0 t ∧ EqOn f 1 s ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
-  obtain ⟨g, hgs, hgt, (hicc : 0 ≤ g x ∧ g x ≤ 1)⟩ := exists_continuous_zero_one_of_isCompact hs ht hd
+  obtain ⟨g, hgs, hgt, (hicc : ∀ x, 0 ≤ g x ∧ g x ≤ 1)⟩ := exists_continuous_zero_one_of_isCompact
+    hs ht hd
   use 1 - g
   refine ⟨?_, ?_, ?_⟩
   · intro x hx
@@ -375,7 +376,8 @@ theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompac
   · intro x
     simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, mem_Icc, sub_nonneg,
       tsub_le_iff_right, le_add_iff_nonneg_right]
-    constructor <;> linarith
+    refine ⟨(hicc x).2, (hicc x).1⟩
+
 
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous compactly supported

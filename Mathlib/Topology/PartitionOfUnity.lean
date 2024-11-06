@@ -635,7 +635,11 @@ theorem exists_isSubordinate_of_locallyFinite_t2space [LocallyCompactSpace X] [T
 
 end PartitionOfUnity
 
-example [T2Space X] [LocallyCompactSpace X]
+/-- A variation of Urysohn's lemma. In a locally compact T2 space `X`, for a compact set `t` and a
+finite family of open sets `{s i}_i` such that `t ⊆ ⋃ i, s i`, there is a family of compactly
+supported continuous functions `{f i}_i` supported in `s i`, `∑ i, f i x = 1` on `t` and
+`0 ≤ f i x ≤ 1`. -/
+theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompactSpace X]
     {n : ℕ} {t : Set X} {s : Fin n → Set X} (hs : ∀ (i : Fin n), IsOpen (s i)) (htcp : IsCompact t)
     (hst : t ⊆ ⋃ i, s i) : ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧
     EqOn (∑ i, f i) 1 t ∧ (∀ (i : Fin n), ∀ (x : X), f i x ∈ Icc (0 : ℝ) 1) ∧ (∀ (i : Fin n),
@@ -664,14 +668,14 @@ example [T2Space X] [LocallyCompactSpace X]
   intro i x
   constructor
   · exact f.nonneg' i x
-  by_cases h0 : f i x = 0
+  by_cases h0 : f.toFun i x = 0
   · rw [h0]
     exact zero_le_one
-  rw [← Finset.sum_singleton (f ·  x) i]
+  rw [← Finset.sum_singleton (f.toFun ·  x) i]
   apply le_trans _ (f.sum_le_one' x)
-  rw [finsum_eq_sum (f ·  x) (by exact?)]
+  rw [finsum_eq_sum (f.toFun ·  x) (by exact toFinite (support fun x_1 ↦ (f.toFun x_1) x))]
   simp only [Finite.toFinset_setOf, ne_eq]
   gcongr with z hz
-  rw [Finset.eq_of_mem_singleton hz]
-  simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+  · exact fun j _ _ => f.nonneg j x
+  simp only [Finset.singleton_subset_iff, Finset.mem_filter, Finset.mem_univ, true_and]
   exact h0
