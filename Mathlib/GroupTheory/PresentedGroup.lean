@@ -38,18 +38,18 @@ namespace PresentedGroup
 instance (rels : Set (FreeGroup α)) : Group (PresentedGroup rels) :=
   QuotientGroup.Quotient.group _
 
-/-- `of` is the canonical map from `α` to a presented group with generators `x : α`. The term `x` is
-mapped to the equivalence class of the image of `x` in `FreeGroup α`. -/
-def of {rels : Set (FreeGroup α)} (x : α) : PresentedGroup rels :=
-  QuotientGroup.mk (FreeGroup.of x)
-
 /-- The canonical map from a free group `α` to a presented group with generators `x : α` `x` is
 mapped to its equivalence class under the given set of relations `rels`-/
-abbrev mk (rels : Set (FreeGroup α)) (a : FreeGroup α) : PresentedGroup rels :=
+def mk (rels : Set (FreeGroup α)) (a : FreeGroup α) : PresentedGroup rels :=
   QuotientGroup.mk a
 
 theorem mk_surjective (rels : Set (FreeGroup α)) : Function.Surjective <| mk rels :=
   QuotientGroup.mk_surjective
+
+/-- `of` is the canonical map from `α` to a presented group with generators `x : α`. The term `x` is
+mapped to the equivalence class of the image of `x` in `FreeGroup α`. -/
+def of {rels : Set (FreeGroup α)} (x : α) : PresentedGroup rels :=
+  mk rels (FreeGroup.of x)
 
 /-- The generators of a presented group generate the presented group. That is, the subgroup closure
 of the set of generators equals `⊤`. -/
@@ -62,18 +62,18 @@ theorem closure_range_of (rels : Set (FreeGroup α)) :
   exact MonoidHom.range_top_of_surjective _ (QuotientGroup.mk'_surjective _)
 
 @[induction_eliminator]
-theorem induction_on {rels : Set (FreeGroup α)}  {C : PresentedGroup rels → Prop}
+theorem induction_on {rels : Set (FreeGroup α)} {C : PresentedGroup rels → Prop}
     (x : PresentedGroup rels) (H : ∀ z, C (mk rels z)) : C x :=
   Quotient.inductionOn' x H
 
 theorem generated_by (rels : Set (FreeGroup α)) (H : Subgroup (PresentedGroup rels))
-    (h : ∀ j : α, PresentedGroup.of j ∈ H) : ∀ x : (PresentedGroup rels), x ∈ H := by
-  intro x
-  apply induction_on x
-  intro z
-  apply FreeGroup.induction_on (C := fun z => ⟦z⟧ ∈ H) _ (one_mem H) (fun _ => h _)
-    fun _ => (Subgroup.inv_mem_iff H).mpr
-  intro _ _ h1 h2
+    (h : ∀ j : α, PresentedGroup.of j ∈ H) (x : PresentedGroup rels): x ∈ H := by
+  induction' x with z
+  induction z
+  · exact one_mem H
+  · exact h _
+  · exact (Subgroup.inv_mem_iff H).mpr (by assumption)
+  rename_i h1 h2
   change QuotientGroup.mk _ ∈ H.carrier
   rw [QuotientGroup.mk_mul]
   exact Subgroup.mul_mem _ h1 h2
