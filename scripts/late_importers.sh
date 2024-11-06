@@ -80,10 +80,10 @@ lake build "${root}" | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
       lineLimit=lineLimit+0
       significantDifference=significantDifference+0
       printf("| File | Line | Import increase | New imports |\n| :- | -: | -: | :- |\n")
-      con=0
+      con=1
   }
-    ((con <= lineLimit) && (significantDifference <= $5+0)) {
-      if (!(lineLimit == 0)) { con++ }
+    ( ((lineLimit == 0) || (con <= lineLimit)) && (significantDifference <= $5+0) ) {
+      con++
       fileHtml=$2
       gsub(/\.lean$/, ".html", fileHtml)
       printf("| [%s](https://leanprover-community.github.io/mathlib4_docs/%s) | %s | %s | %s |\n", $2, fileHtml, $3, $5, $6)
