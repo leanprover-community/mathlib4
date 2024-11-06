@@ -551,7 +551,7 @@ noncomputable def cliqueNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsN
 
 /-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
 structure IsMaximumClique (G : SimpleGraph α) (s : Finset α) : Prop where
-  (clique : G.IsClique s)
+  (isClique : G.IsClique s)
   (maximum : ∀ t : Finset α, G.IsClique t → #t ≤ #s)
 
 theorem isMaximumClique_iff {s : Finset α} :
