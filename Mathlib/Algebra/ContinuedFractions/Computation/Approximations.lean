@@ -46,6 +46,8 @@ in `Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
 
 -/
 
+open scoped AlgebraOrderInstances
+
 open GenContFract
 
 open GenContFract (of)

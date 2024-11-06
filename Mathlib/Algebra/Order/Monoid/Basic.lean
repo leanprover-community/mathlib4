@@ -13,6 +13,7 @@ import Mathlib.Order.Hom.Basic
 This file develops some additional material on ordered monoids.
 -/
 
+open scoped AlgebraOrderInstances
 
 open Function
 

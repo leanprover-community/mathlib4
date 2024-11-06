@@ -35,6 +35,8 @@ we get the more familiar semiring of formal power series with coefficients in `R
 
 open Finset Function Pointwise Polynomial
 
+open scoped AlgebraOrderInstances
+
 noncomputable section
 
 variable {Γ R : Type*}

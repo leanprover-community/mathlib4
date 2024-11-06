@@ -34,6 +34,7 @@ The strongest typeclass provided on each interval is:
   some arbitrary ordered semiring
 -/
 
+open scoped AlgebraOrderInstances
 
 open Set
 

@@ -12,6 +12,7 @@ import Mathlib.Algebra.Order.BigOperators.Ring.List
 This file contains the results concerning the interaction of multiset big operators with ordered
 rings.
 -/
+open scoped AlgebraOrderInstances
 
 @[simp]
 lemma CanonicallyOrderedCommSemiring.multiset_prod_pos {R : Type*}

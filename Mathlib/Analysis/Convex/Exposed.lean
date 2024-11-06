@@ -40,7 +40,7 @@ Prove lemmas relating exposed sets and points to the intrinsic frontier.
 -/
 
 
-open scoped Classical
+open scoped Classical AlgebraOrderInstances
 open Affine
 
 open Set

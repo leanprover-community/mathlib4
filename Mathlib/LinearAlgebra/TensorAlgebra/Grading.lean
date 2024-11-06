@@ -15,6 +15,8 @@ The main result is `TensorAlgebra.gradedAlgebra`, which says that the tensor alg
 
 suppress_compilation
 
+open scoped AlgebraOrderInstances
+
 namespace TensorAlgebra
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]

@@ -25,6 +25,8 @@ The reason is that we did not want to change existing names in the library.
 -/
 assert_not_imported Mathlib.Algebra.NeZero
 
+open scoped AlgebraOrderInstances
+
 open Function
 
 universe u
@@ -196,3 +198,14 @@ theorem one_le_inv_of_le_one : a ≤ 1 → 1 ≤ a⁻¹ :=
   one_le_inv'.mpr
 
 end NormNumLemmas
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] OrderedAddCommGroup.toAddCommGroup
+attribute [instance 50] OrderedCommGroup.toCommGroup
+-- attribute [instance 50] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
+
+-- add higer-priority versions in scope `AlgebraOrderInstances`
+namespace AlgebraOrderInstances
+attribute [scoped instance 1000] OrderedAddCommGroup.toAddCommGroup
+attribute [scoped instance 1000] OrderedCommGroup.toCommGroup
+-- attribute [scoped instance 1000] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
+end AlgebraOrderInstances

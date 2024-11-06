@@ -32,6 +32,8 @@ Here is the list of statements specific to these two types of filters:
 -/
 
 
+open scoped AlgebraOrderInstances
+
 universe u v w x
 
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x} [TopologicalSpace α]

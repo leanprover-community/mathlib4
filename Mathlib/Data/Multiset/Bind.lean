@@ -22,6 +22,8 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
 
+-- open scoped AlgebraOrderInstances
+
 universe v
 
 variable {α : Type*} {β : Type v} {γ δ : Type*}

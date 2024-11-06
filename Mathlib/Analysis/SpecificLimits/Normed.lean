@@ -25,6 +25,7 @@ well as such computations in `ℝ` when the natural proof passes through a fact 
 
 noncomputable section
 
+open scoped AlgebraOrderInstances
 open Set Function Filter Finset Metric Asymptotics Topology Nat NNReal ENNReal
 
 variable {α : Type*}

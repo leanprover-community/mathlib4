@@ -58,6 +58,9 @@ We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`
 
 -- Explicit universe annotations were used in this file to improve performance #12737
 
+
+open scoped AlgebraOrderInstances
+
 universe u
 
 open CategoryTheory Opposite TopologicalSpace CategoryTheory.Limits AlgebraicGeometry

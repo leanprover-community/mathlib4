@@ -21,6 +21,8 @@ We define the global infix notation `::ₘ` for `Multiset.cons`.
 -- No bundled ordered algebra should be required
 assert_not_exists OrderedCommMonoid
 
+-- open scoped AlgebraOrderInstances
+
 universe v
 
 open List Subtype Nat Function

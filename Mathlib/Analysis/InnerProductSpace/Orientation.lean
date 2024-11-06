@@ -40,7 +40,7 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 open Module
 
-open scoped RealInnerProductSpace
+open scoped RealInnerProductSpace AlgebraOrderInstances
 
 namespace OrthonormalBasis
 

@@ -15,6 +15,9 @@ promoted to an order isomorphism).
 
 -/
 
+
+open scoped AlgebraOrderInstances
+
 open Finset
 
 variable {α β ι : Type*}

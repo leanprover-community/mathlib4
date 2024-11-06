@@ -17,6 +17,8 @@ This file contains the results concerning the interaction of multiset big operat
 groups.
 -/
 
+open scoped AlgebraOrderInstances
+
 assert_not_exists MonoidWithZero
 
 variable {ι α β : Type*}

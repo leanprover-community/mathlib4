@@ -76,6 +76,8 @@ commutative monoid, grothendieck group
 assert_not_exists MonoidWithZero
 assert_not_exists Ring
 
+-- open scoped AlgebraOrderInstances
+
 open Function
 namespace AddSubmonoid
 

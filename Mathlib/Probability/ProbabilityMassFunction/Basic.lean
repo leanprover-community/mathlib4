@@ -34,7 +34,7 @@ noncomputable section
 
 variable {α : Type*}
 
-open scoped Classical
+open scoped Classical AlgebraOrderInstances
 open NNReal ENNReal MeasureTheory
 
 /-- A probability mass function, or discrete probability measures is a function `α → ℝ≥0∞` such

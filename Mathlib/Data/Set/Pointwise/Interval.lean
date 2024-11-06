@@ -19,6 +19,8 @@ lemmas about preimages and images of all intervals. We also prove a few lemmas a
 -/
 
 
+open scoped AlgebraOrderInstances
+
 open Interval Pointwise
 
 variable {α : Type*}

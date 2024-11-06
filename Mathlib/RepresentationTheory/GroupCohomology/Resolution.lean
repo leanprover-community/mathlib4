@@ -65,6 +65,8 @@ suppress_compilation
 
 noncomputable section
 
+open scoped AlgebraOrderInstances
+
 universe u v w
 
 variable {k G : Type u} [CommRing k] {n : ℕ}

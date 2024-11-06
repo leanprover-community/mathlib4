@@ -24,6 +24,9 @@ open Set
 variable {𝕜 E F : Type*}
 
 section LinearOrderedCommRing
+
+open scoped AlgebraOrderInstances
+
 variable [LinearOrderedCommRing 𝕜] [LinearOrderedCommRing E] [LinearOrderedAddCommGroup F]
   [Module 𝕜 E] [Module 𝕜 F] [Module E F] [IsScalarTower 𝕜 E F] [SMulCommClass 𝕜 E F]
   [OrderedSMul 𝕜 F] [OrderedSMul E F] {s : Set 𝕜} {f : 𝕜 → E} {g : 𝕜 → F}

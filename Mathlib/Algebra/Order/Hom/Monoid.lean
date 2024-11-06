@@ -58,6 +58,7 @@ making some definitions and lemmas irrelevant.
 ordered monoid, ordered group, monoid with zero
 -/
 
+open scoped AlgebraOrderInstances
 
 open Function
 

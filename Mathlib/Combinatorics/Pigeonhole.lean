@@ -60,6 +60,8 @@ pigeonhole principle
 -/
 
 
+open scoped AlgebraOrderInstances
+
 universe u v w
 
 variable {α : Type u} {β : Type v} {M : Type w} [DecidableEq β]

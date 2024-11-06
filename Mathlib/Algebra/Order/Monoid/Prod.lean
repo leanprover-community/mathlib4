@@ -12,6 +12,8 @@ import Mathlib.Data.Prod.Lex
 
 assert_not_exists MonoidWithZero
 
+open scoped AlgebraOrderInstances
+
 namespace Prod
 
 variable {α β : Type*}

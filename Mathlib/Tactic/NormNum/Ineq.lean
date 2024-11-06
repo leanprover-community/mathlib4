@@ -21,6 +21,8 @@ the unused variable linter can not see usages of variables in
 -/
 set_option linter.unusedVariables false
 
+open scoped AlgebraOrderInstances
+
 open Lean Meta Qq
 
 namespace Mathlib.Meta.NormNum

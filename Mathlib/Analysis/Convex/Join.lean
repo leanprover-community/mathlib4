@@ -14,6 +14,8 @@ convex hulls of finite sets.
 -/
 
 
+open scoped AlgebraOrderInstances
+
 open Set
 
 variable {ι : Sort*} {𝕜 E : Type*}

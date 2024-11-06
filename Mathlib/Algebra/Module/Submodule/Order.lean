@@ -10,6 +10,8 @@ import Mathlib.Algebra.Order.Group.InjSurj
 # Ordered instances on submodules
 -/
 
+open scoped AlgebraOrderInstances
+
 namespace Submodule
 variable {R M : Type*}
 

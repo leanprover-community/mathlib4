@@ -14,6 +14,8 @@ This file defines the lexicographic order on `Finsupp`.
 -/
 
 
+open scoped AlgebraOrderInstances
+
 variable {α N : Type*}
 
 namespace Finsupp

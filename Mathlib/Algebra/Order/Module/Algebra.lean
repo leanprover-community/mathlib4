@@ -16,6 +16,8 @@ This file proves properties of algebras where both rings are ordered compatibly.
 `positivity` extension for `algebraMap`
 -/
 
+open scoped AlgebraOrderInstances
+
 variable {α β : Type*} [OrderedCommSemiring α]
 
 section OrderedSemiring

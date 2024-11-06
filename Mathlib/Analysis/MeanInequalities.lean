@@ -105,8 +105,9 @@ less than or equal to the sum of the maximum values of the summands.
 
 universe u v
 
+open scoped BigOperators AlgebraOrderInstances
+
 open Finset NNReal ENNReal
-open scoped BigOperators
 
 noncomputable section
 

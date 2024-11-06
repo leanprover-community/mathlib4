@@ -19,6 +19,8 @@ The actual behavior is in `@[positivity]`-tagged definitions in `Tactic.Positivi
 and elsewhere.
 -/
 
+open scoped AlgebraOrderInstances
+
 open Lean hiding Rat
 open Lean.Meta Qq Lean.Elab Term
 

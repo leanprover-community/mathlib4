@@ -18,6 +18,8 @@ groups/monoids.
 
 assert_not_exists Ring
 
+open scoped AlgebraOrderInstances
+
 open Function
 
 variable {ι α β M N G k R : Type*}

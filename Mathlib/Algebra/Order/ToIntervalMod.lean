@@ -29,8 +29,9 @@ interval.
 * `toIocMod hp a b` (where `hp : 0 < p`): Reduce `b` to the interval `Ioc a (a + p)`.
 -/
 
-
 noncomputable section
+
+open scoped AlgebraOrderInstances
 
 section LinearOrderedAddCommGroup
 

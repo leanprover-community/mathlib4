@@ -28,6 +28,8 @@ whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
 -/
 
+open scoped AlgebraOrderInstances
+
 variable {α : Type*}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
@@ -412,3 +414,13 @@ scoped[Multiplicative] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
 scoped[Multiplicative] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
 
 end MultiplicativeNotation
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
+attribute [instance 50] LinearOrderedCommGroupWithZero.toCommGroupWithZero
+
+-- add higer-priority versions in scope `AlgebraOrderInstances`
+namespace AlgebraOrderInstances
+attribute [scoped instance 1000] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
+attribute [scoped instance 1000] LinearOrderedCommGroupWithZero.toCommGroupWithZero
+end AlgebraOrderInstances
