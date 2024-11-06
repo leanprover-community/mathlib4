@@ -723,8 +723,6 @@ instance : WellFoundedRelation Cardinal.{u} :=
 instance : WellFoundedLT Cardinal.{u} :=
   ⟨Cardinal.lt_wf⟩
 
-instance wo : @IsWellOrder Cardinal.{u} (· < ·) where
-
 instance : ConditionallyCompleteLinearOrderBot Cardinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
@@ -1581,6 +1579,13 @@ alias ⟨_, _root_.Set.Countable.le_aleph0⟩ := le_aleph0_iff_set_countable
 theorem le_aleph0_iff_subtype_countable {p : α → Prop} :
     #{ x // p x } ≤ ℵ₀ ↔ { x | p x }.Countable :=
   le_aleph0_iff_set_countable
+
+theorem aleph0_lt_mk_iff : ℵ₀ < #α ↔ Uncountable α := by
+  rw [← not_le, ← not_countable_iff, not_iff_not, mk_le_aleph0_iff]
+
+@[simp]
+theorem aleph0_lt_mk [Uncountable α] : ℵ₀ < #α :=
+  aleph0_lt_mk_iff.mpr ‹_›
 
 instance canLiftCardinalNat : CanLift Cardinal ℕ (↑) fun x => x < ℵ₀ :=
   ⟨fun _ hx =>
