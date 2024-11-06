@@ -7,7 +7,7 @@ import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.Directed
-import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Data.Set.SymmDiff
 
 /-!
@@ -867,8 +867,8 @@ theorem disjoint_iff_ne : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := 
   simp only [disjoint_left, imp_not_comm, forall_eq']
 
 @[simp]
-theorem disjoint_val : s.1.Disjoint t.1 ↔ Disjoint s t :=
-  disjoint_left.symm
+theorem disjoint_val : Disjoint s.1 t.1 ↔ Disjoint s t :=
+  Multiset.disjoint_left.trans disjoint_left.symm
 
 theorem _root_.Disjoint.forall_ne_finset (h : Disjoint s t) (ha : a ∈ s) (hb : b ∈ t) : a ≠ b :=
   disjoint_iff_ne.1 h _ ha _ hb
@@ -1632,6 +1632,10 @@ alias ⟨_, Nonempty.not_disjoint⟩ := not_disjoint_iff_nonempty_inter
 theorem disjoint_or_nonempty_inter (s t : Finset α) : Disjoint s t ∨ (s ∩ t).Nonempty := by
   rw [← not_disjoint_iff_nonempty_inter]
   exact em _
+
+theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
+    Disjoint s t ↔ s = ∅ := by
+  rw [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
 
 end Lattice
 
@@ -3111,15 +3115,10 @@ namespace Multiset
 
 variable [DecidableEq α]
 
+@[simp]
 theorem disjoint_toFinset {m1 m2 : Multiset α} :
-    _root_.Disjoint m1.toFinset m2.toFinset ↔ m1.Disjoint m2 := by
-  rw [Finset.disjoint_iff_ne]
-  refine ⟨fun h a ha1 ha2 => ?_, ?_⟩
-  · rw [← Multiset.mem_toFinset] at ha1 ha2
-    exact h _ ha1 _ ha2 rfl
-  · rintro h a ha b hb rfl
-    rw [Multiset.mem_toFinset] at ha hb
-    exact h ha hb
+    _root_.Disjoint m1.toFinset m2.toFinset ↔ Disjoint m1 m2 := by
+  simp [disjoint_left, Finset.disjoint_left]
 
 end Multiset
 
@@ -3127,8 +3126,9 @@ namespace List
 
 variable [DecidableEq α] {l l' : List α}
 
+@[simp]
 theorem disjoint_toFinset_iff_disjoint : _root_.Disjoint l.toFinset l'.toFinset ↔ l.Disjoint l' :=
-  Multiset.disjoint_toFinset
+  Multiset.disjoint_toFinset.trans (Multiset.coe_disjoint _ _)
 
 end List
 

@@ -106,14 +106,14 @@ def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type*}
     (relations R ι M).Solution N ≃ AlternatingMap R M N ι where
   toFun s :=
     { toFun := fun m ↦ s.var m
-      map_add' := fun m i x y ↦ by
+      map_update_add' := fun m i x y ↦ by
         have := s.linearCombination_var_relation (.add m i x y)
         dsimp at this ⊢
         rw [map_sub, map_add, Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, one_smul, sub_eq_zero] at this
         convert this.symm -- `convert` is necessary due to the implementation of `MultilinearMap`
-      map_smul' := fun m i r x ↦ by
+      map_update_smul' := fun m i r x ↦ by
         have := s.linearCombination_var_relation (.smul m i r x)
         dsimp at this ⊢
         rw [Finsupp.smul_single, smul_eq_mul, mul_one, map_sub,
