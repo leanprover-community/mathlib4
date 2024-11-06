@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.RingTheory.Finiteness
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!

@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.Finiteness
 import Mathlib.Algebra.Algebra.RestrictScalars
 
 /-!
@@ -1261,26 +1260,3 @@ theorem smul_def (a : A) (b : B) (m : M) : a ⊗ₜ[R] b • m = a • b • m :
   rfl
 
 end TensorProduct.Algebra
-
-lemma RingHom.surjective_of_tmul_eq_tmul_of_finite {R S}
-    [CommRing R] [CommRing S] [Algebra R S] [Module.Finite R S]
-    (h₁ : ∀ s : S, s ⊗ₜ[R] 1 = 1 ⊗ₜ s) : Function.Surjective (algebraMap R S) := by
-  let R' := LinearMap.range (Algebra.ofId R S).toLinearMap
-  cases' subsingleton_or_nontrivial (S ⧸ R') with h
-  · rwa [Submodule.subsingleton_quotient_iff_eq_top, LinearMap.range_eq_top] at h
-  have : Subsingleton ((S ⧸ R') ⊗[R] (S ⧸ R')) := by
-    refine subsingleton_of_forall_eq 0 fun y ↦ ?_
-    induction y with
-    | zero => rfl
-    | add a b e₁ e₂ => rwa [e₁, zero_add]
-    | tmul x y =>
-      obtain ⟨x, rfl⟩ := R'.mkQ_surjective x
-      obtain ⟨y, rfl⟩ := R'.mkQ_surjective y
-      obtain ⟨s, hs⟩ : ∃ s, 1 ⊗ₜ[R] s = x ⊗ₜ[R] y := by
-        use x * y
-        trans x ⊗ₜ 1 * 1 ⊗ₜ y
-        · simp [h₁]
-        · simp
-      have : R'.mkQ 1 = 0 := (Submodule.Quotient.mk_eq_zero R').mpr ⟨1, map_one (algebraMap R S)⟩
-      rw [← map_tmul R'.mkQ R'.mkQ, ← hs, map_tmul, this, zero_tmul]
-  cases false_of_nontrivial_of_subsingleton ((S ⧸ R') ⊗[R] (S ⧸ R'))
