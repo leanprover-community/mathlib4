@@ -10,9 +10,12 @@ import Mathlib.Logic.Relation
 /-!
 # Dershowitz-Manna ordering
 
-In this file we define the _Dershowitz-Manna ordering_ on multisets.
-We prove that, given a well-founded partial order on the underlying set,
-the Dershowitz-Manna ordering defined over multisets is also well-founded.
+In this file we define the _Dershowitz-Manna ordering_ on multisets. Specifically, for two multisets
+M and N over an underlying set S, M is smaller than N in the Dershowitz-Manna ordering if M can be
+obtained from N by replacing one or more elements in N by some finite number of elements from S,
+each of which is smaller (in the underling ordering over S) than one of the replaced elements from
+N. We prove that, given a well-founded partial order on the underlying set, the Dershowitz-Manna
+ordering defined over multisets is also well-founded.
 
 ## Main results
 
@@ -35,7 +38,7 @@ namespace Multiset
 
 variable {α : Type*}
 
-/-- The standard Dershowitz–Manna ordering: -/
+/-- The standard Dershowitz–Manna ordering. -/
 def DMLT [Preorder α] (M N : Multiset α) : Prop :=
   ∃ (X Y Z : Multiset α),
       Z ≠ ∅
@@ -44,30 +47,28 @@ def DMLT [Preorder α] (M N : Multiset α) : Prop :=
     ∧ (∀ y ∈ Y, ∃ z ∈ Z, y < z)
 
 /-- A special case of DMLT. The transitive closure of it is used to define
-    an equivalent (proved later) version of the ordering. -/
-def DMLT_singleton [LT α] (M N : Multiset α) : Prop :=
-  ∃ (X Y : Multiset α) (a : α) ,
-      (M = X + Y)
-    ∧ (N = X + {a})
-    ∧ (∀ y, y ∈ Y → y < a)
+an equivalent (proved later) version of the ordering. -/
+private def DMLTSingleton [LT α] (M N : Multiset α) : Prop :=
+  ∃ X Y a,
+      M = X + Y
+    ∧ N = X + {a}
+    ∧ ∀ y ∈ Y, y < a
 
 open Relation
 
-/-- The transitive closure of DMLT_singleton and is equivalent to DMLT
-    (proved later). -/
-def TransLT [LT α] : Multiset α → Multiset α → Prop :=
-    TransGen DMLT_singleton
+/-- The transitive closure of DMLTSingleton and is equivalent to DMLT (proved later). -/
+private def TransLT [LT α] : Multiset α → Multiset α → Prop := TransGen DMLTSingleton
 
 /-- A special case of DMLT. -/
-theorem dmlt_of_DMLT_singleton [Preorder α] (M N : Multiset α)
-    (h : DMLT_singleton M N) : DMLT M N := by
+private lemma dmlt_of_DMLT_singleton [Preorder α] (M N : Multiset α)
+    (h : DMLTSingleton M N) : DMLT M N := by
   rcases h with ⟨X, Y, a, M_def, N_def, ys_lt_a⟩
   use X, Y, {a}, by simp, M_def, N_def
   · simpa
 
-lemma DMLT_singleton_insert [DecidableEq α] [LT α] {a : α} {M N : Multiset α}
-    (h : DMLT_singleton N (a ::ₘ M)) :
-    ∃ M', N = (a ::ₘ M') ∧ (DMLT_singleton M' M) ∨ (N = M + M') ∧ (∀ x : α, x ∈ M' → x < a) := by
+private lemma DMLT_singleton_insert [DecidableEq α] [LT α] {a : α} {M N : Multiset α}
+    (h : DMLTSingleton N (a ::ₘ M)) :
+    ∃ M', N = a ::ₘ M' ∧ DMLTSingleton M' M ∨ N = M + M' ∧ ∀ x ∈ M', x < a := by
   rcases h with ⟨X, Y, a0, h1, h0, h2⟩
   by_cases hyp : a = a0
   · exists Y; right; apply And.intro
@@ -75,53 +76,53 @@ lemma DMLT_singleton_insert [DecidableEq α] [LT α] {a : α} {M N : Multiset α
       rw [add_comm, singleton_add] at h0
       simp_all
     · simp_all
-  · exists (Y + (M - {a0}))
-    left
-    constructor
-    · rw [h1]
-      have : X = (M - {a0} + {a}) := by
-        rw [add_comm, singleton_add] at *
-        ext b
-        simp only [ext, count_cons] at h0
-        by_cases h : b = a
-        · have := h0 b
-          simp_all only [ite_true, ite_false, add_zero, sub_singleton, count_cons_self, ne_eq,
-            not_false_eq_true, count_erase_of_ne]
-        · have := h0 b
-          simp [sub_singleton]
-          simp_all only [↓reduceIte, add_zero, ne_eq, not_false_eq_true, count_cons_of_ne]
-          split at this
-          next h_1 =>
-            simp_all only [count_erase_self, add_tsub_cancel_right]
-          next h_1 => simp_all only [add_zero, ne_eq, not_false_eq_true, count_erase_of_ne]
-      subst this
+  exists (Y + (M - {a0}))
+  left
+  constructor
+  · rw [h1]
+    have : X = (M - {a0} + {a}) := by
+      rw [add_comm, singleton_add] at *
+      ext b
+      simp only [ext, count_cons] at h0
+      by_cases h : b = a
+      · have := h0 b
+        simp_all only [ite_true, ite_false, add_zero, sub_singleton, count_cons_self, ne_eq,
+          not_false_eq_true, count_erase_of_ne]
+      have := h0 b
+      simp [sub_singleton]
+      simp_all only [↓reduceIte, add_zero, ne_eq, not_false_eq_true, count_cons_of_ne]
+      split at this
+      next h_1 =>
+        simp_all only [count_erase_self, add_tsub_cancel_right]
+      next h_1 => simp_all only [add_zero, ne_eq, not_false_eq_true, count_erase_of_ne]
+    subst this
+    rw [add_comm]
+    nth_rewrite 2 [add_comm]
+    rw [singleton_add, add_cons]
+  · unfold DMLTSingleton
+    refine ⟨M - {a0}, Y, a0, ?_, ?_, h2⟩
+    · change Y + (M - {a0}) = (M - {a0}) + Y
       rw [add_comm]
-      nth_rewrite 2 [add_comm]
-      rw [singleton_add, add_cons]
-    · unfold DMLT_singleton
-      refine ⟨M - {a0}, Y, a0, ?_, ?_, h2⟩
-      · change Y + (M - {a0}) = (M - {a0}) + Y
-        rw [add_comm]
-      · change M = M - {a0} + {a0}
-        have this0: M = X + {a0} - {a} := by
-          rw [← h0, sub_singleton, erase_cons_head]
-        have a0M: a0 ∈ M := by
-          rw [this0, sub_singleton, mem_erase_of_ne]
-          rw [mem_add, mem_singleton]
-          · apply Or.inr
-            rfl
-          · exact fun h ↦ hyp (Eq.symm h)
-        rw [add_comm]
-        simp_all [singleton_add]
+    · change M = M - {a0} + {a0}
+      have this0 : M = X + {a0} - {a} := by
+        rw [← h0, sub_singleton, erase_cons_head]
+      have a0M : a0 ∈ M := by
+        rw [this0, sub_singleton, mem_erase_of_ne]
+        rw [mem_add, mem_singleton]
+        · apply Or.inr
+          rfl
+        · exact fun h ↦ hyp (Eq.symm h)
+      rw [add_comm]
+      simp_all [singleton_add]
 
-lemma acc_cons [DecidableEq α] [Preorder α] (a : α) (M0 : Multiset α)
-    (_ : ∀ b M , LT.lt b a → Acc DMLT_singleton M → Acc DMLT_singleton (b ::ₘ M))
-    (_ : Acc DMLT_singleton M0)
-    (_ : ∀ M, DMLT_singleton M M0 → Acc DMLT_singleton (a ::ₘ M)) :
-    Acc DMLT_singleton (a ::ₘ M0) := by
+private lemma acc_cons [DecidableEq α] [Preorder α] (a : α) (M0 : Multiset α)
+    (_ : ∀ b M , LT.lt b a → Acc DMLTSingleton M → Acc DMLTSingleton (b ::ₘ M))
+    (_ : Acc DMLTSingleton M0)
+    (_ : ∀ M, DMLTSingleton M M0 → Acc DMLTSingleton (a ::ₘ M)) :
+    Acc DMLTSingleton (a ::ₘ M0) := by
   constructor
   intros N N_lt
-  change Acc DMLT_singleton N
+  change Acc DMLTSingleton N
   rcases (DMLT_singleton_insert N_lt) with ⟨x, H, h0⟩
   case h.intro.inr h =>
     rcases h with ⟨H, h0⟩
@@ -136,9 +137,9 @@ lemma acc_cons [DecidableEq α] [Preorder α] (a : α) (M0 : Multiset α)
   case h.intro.inl.intro =>
     simp_all
 
-lemma acc_cons_of_acc [DecidableEq α] [Preorder α] (a : α)
-    (H : ∀ (b : α), ∀ M, LT.lt b a → Acc DMLT_singleton M → Acc DMLT_singleton (b ::ₘ M)) :
-    ∀ M, Acc DMLT_singleton M → Acc DMLT_singleton (a ::ₘ M) := by
+private lemma acc_cons_of_acc [DecidableEq α] [Preorder α] (a : α)
+    (H : ∀ (b : α), ∀ M, LT.lt b a → Acc DMLTSingleton M → Acc DMLTSingleton (b ::ₘ M)) :
+    ∀ M, Acc DMLTSingleton M → Acc DMLTSingleton (a ::ₘ M) := by
   intros M h0
   induction h0 with
   | intro x wfH wfh2 =>
@@ -147,8 +148,8 @@ lemma acc_cons_of_acc [DecidableEq α] [Preorder α] (a : α)
     · constructor; simpa only
     · simpa only
 
-lemma acc_cons_of_acc_of_lt [DecidableEq α] [Preorder α] :
-    ∀ (a:α), Acc LT.lt a → ∀ M, Acc DMLT_singleton M → Acc DMLT_singleton (a ::ₘ M) := by
+private lemma acc_cons_of_acc_of_lt [DecidableEq α] [Preorder α] :
+    ∀ (a:α), Acc LT.lt a → ∀ M, Acc DMLTSingleton M → Acc DMLTSingleton (a ::ₘ M) := by
   intro w w_a
   induction w_a with
   | intro x _ ih =>
@@ -157,9 +158,9 @@ lemma acc_cons_of_acc_of_lt [DecidableEq α] [Preorder α] :
       simp_all
 
 /-- If all elements of a multiset `M` are accessible with `LT.lt`, then the multiset M is
-accessible given the `DMLT_singleton` relation. -/
-lemma acc_of_acc_lt [DecidableEq α] [Preorder α] :
-    ∀ (M : Multiset α), (∀x, x ∈ M → Acc LT.lt x) → Acc DMLT_singleton M  := by
+accessible given the `DMLTSingleton` relation. -/
+private lemma acc_of_acc_lt [DecidableEq α] [Preorder α] :
+    ∀ (M : Multiset α), (∀x, x ∈ M → Acc LT.lt x) → Acc DMLTSingleton M  := by
   intros M wf_el
   induction M using Multiset.induction_on with
   | empty =>
@@ -179,9 +180,9 @@ lemma acc_of_acc_lt [DecidableEq α] [Preorder α] :
       apply wf_el
       simp_all
 
-/-- If `LT.lt` is well-founded, then `DMLT_singleton` is well-founded. -/
-lemma DMLT_singleton_wf [DecidableEq α] [Preorder α]
-    (wf_lt : WellFoundedLT α) : WellFounded (DMLT_singleton : Multiset α → Multiset α → Prop) := by
+/-- If `LT.lt` is well-founded, then `DMLTSingleton` is well-founded. -/
+private lemma DMLT_singleton_wf [DecidableEq α] [Preorder α]
+    (wf_lt : WellFoundedLT α) : WellFounded (DMLTSingleton : Multiset α → Multiset α → Prop) := by
   constructor
   intros a
   apply acc_of_acc_lt
@@ -192,7 +193,7 @@ lemma DMLT_singleton_wf [DecidableEq α] [Preorder α]
   assumption
 
 /-- `DMLT` is transitive. -/
-lemma dmlt_trans {α} [pre : Preorder α] [dec : DecidableEq α] :
+private lemma dmlt_trans {α} [pre : Preorder α] [dec : DecidableEq α] :
     ∀ (M N P : Multiset α) , DMLT N M → DMLT P N → DMLT P M := by
   intros M N P LTNM LTPN
   rcases LTNM with ⟨X1, Y1, Z1, Z1_ne, N1_def, M1_def, Ord1⟩
@@ -253,7 +254,7 @@ lemma dmlt_trans {α} [pre : Preorder α] [dec : DecidableEq α] :
       use w
       tauto
 
-lemma transLT_of_dmLT [dec : DecidableEq α] [Preorder α]
+private lemma transLT_of_dmLT [dec : DecidableEq α] [Preorder α]
     [DecidableRel (fun (x : α) (y : α) => x < y)] (M N : Multiset α) (DMLTMN : DMLT M N) :
     TransLT M N := by
   rcases DMLTMN with ⟨X, Y, Z, Z_not_empty, MXY, NXZ, h⟩
@@ -359,7 +360,7 @@ lemma transLT_of_dmLT [dec : DecidableEq α] [Preorder α]
               exact y_notin_Yfz y_in
           · exact y_lt_t
       -- single step N to N'
-      · have : DMLT_singleton N' N := by
+      · have : DMLTSingleton N' N := by
           refine ⟨X + newZ, f z, z, ?_, ?_, ?_ ⟩
           · rfl
           · have newZ_z_Z: newZ + {z} = Z := by
@@ -373,9 +374,9 @@ lemma transLT_of_dmLT [dec : DecidableEq α] [Preorder α]
         exact this
 
 /-- TransLT and DMLT are equivalent. -/
-lemma transLT_eq_dmLT [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α) (y: α) => x < y)]:
-    (TransLT : Multiset α → Multiset α → Prop) =
-    (DMLT : Multiset α → Multiset α → Prop) := by
+private lemma transLT_eq_dmLT [DecidableEq α] [Preorder α]
+    [DecidableRel (fun (x : α) (y: α) => x < y)] :
+    (TransLT : Multiset α → Multiset α → Prop) = (DMLT : Multiset α → Multiset α → Prop) := by
   funext X Y
   apply propext
   constructor
