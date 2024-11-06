@@ -107,7 +107,7 @@ theorem Polynomial.abc {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 
     have abcdr_dvd_w := cop_abc_dr.mul_dvd abdr_dvd_w cdr_dvd_w
     convert abcdr_dvd_w using 1
     rw [← divRadical_mul hab]
-    rw [← divRadical_mul _]
+    rw [← divRadical_mul]
     exact hca.symm.mul_left hbc
   by_cases hw : w = 0
   · right
@@ -120,6 +120,6 @@ theorem Polynomial.abc {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 
     refine ⟨?_, ?_, ?_⟩
     · rw [mul_rotate] at abc_dr_dvd_w ⊢
       apply abc_subcall wbc <;> assumption
-    · rw [mul_rotate, mul_rotate] at abc_dr_dvd_w ⊢
+    · rw [← mul_rotate] at abc_dr_dvd_w ⊢
       apply abc_subcall wca <;> assumption
     · apply abc_subcall wab <;> assumption
