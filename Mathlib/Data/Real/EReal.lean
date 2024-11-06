@@ -715,21 +715,13 @@ def neTopBotEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ ℝ where
 
 /-! ### Addition -/
 
-@[simp]
-theorem add_bot (x : EReal) : x + ⊥ = ⊥ :=
-  WithBot.add_bot _
+instance : IsBotAbsorbing EReal := WithBot.isBotAbsorbing
 
-@[simp]
-theorem bot_add (x : EReal) : ⊥ + x = ⊥ :=
-  WithBot.bot_add _
+instance : NoTopSum EReal where
+  eq_top_or_eq_top_of_add_eq_top {a b h} := by cases a <;> cases b <;> simp_all [← coe_add]
 
-@[simp]
-theorem add_eq_bot_iff {x y : EReal} : x + y = ⊥ ↔ x = ⊥ ∨ y = ⊥ :=
-  WithBot.add_eq_bot
+instance : NoBotSum EReal := WithBot.noBotSum
 
-@[simp]
-theorem bot_lt_add_iff {x y : EReal} : ⊥ < x + y ↔ ⊥ < x ∧ ⊥ < y := by
-  simp [bot_lt_iff_ne_bot, not_or]
 
 @[simp]
 theorem top_add_top : (⊤ : EReal) + ⊤ = ⊤ :=
@@ -836,7 +828,7 @@ theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤
 the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
 instance : LinearOrderedAddCommMonoidWithTop ERealᵒᵈ where
   le_top := by simp
-  top_add' := by
+  top_add := by
     rw [OrderDual.forall]
     intro x
     rw [← OrderDual.toDual_bot, ← toDual_add, bot_add, OrderDual.toDual_bot]
@@ -953,7 +945,7 @@ lemma ge_of_forall_gt_iff_ge {x y : EReal} : (∀ z : ℝ, z < y → z ≤ x) �
 private lemma top_add_le_of_forall_add_le {a b : EReal} (h : ∀ c < ⊤, ∀ d < a, c + d ≤ b) :
     ⊤ + a ≤ b := by
   induction a with
-  | h_bot => exact add_bot ⊤ ▸ bot_le
+  | h_bot => exact add_bot (α := EReal) ⊤ ▸ bot_le
   | h_real a =>
     refine top_add_coe a ▸ le_of_forall_lt_iff_le.1 fun c b_c ↦ ?_
     specialize h (c - a + 1) (coe_lt_top (c - a + 1)) (a - 1)
@@ -1049,7 +1041,7 @@ theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
 
 lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
   induction a
-  · rw [bot_add b, bot_sub b]
+  · rw [bot_add (b : EReal), bot_sub b]
   · norm_cast; linarith
   · rw [top_add_of_ne_bot (coe_ne_bot b), top_sub_coe]
 

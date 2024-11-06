@@ -39,6 +39,8 @@ namespace ENat
 -- Porting note: instances that derive failed to find
 instance : OrderBot ℕ∞ := WithTop.orderBot
 instance : OrderTop ℕ∞ := WithTop.orderTop
+instance : NoTopSum ℕ∞ := WithTop.noTopSum
+instance : IsTopAbsorbing ℕ∞ := WithTop.isTopAbsorbing
 instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
 instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
 instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))

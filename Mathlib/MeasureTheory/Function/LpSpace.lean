@@ -697,7 +697,7 @@ protected lemma Memℒp.piecewise [DecidablePred (· ∈ s)] {g}
   · rw [eLpNorm_top_piecewise f g hs]
     exact max_lt hf.2 hg.2
   rw [eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp_zero hp_top, ← lintegral_add_compl _ hs,
-    ENNReal.add_lt_top]
+    add_lt_top]
   constructor
   · have h : ∀ᵐ (x : α) ∂μ, x ∈ s →
         (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖f x‖₊ : ℝ≥0∞) ^ p.toReal := by
@@ -1673,7 +1673,7 @@ theorem memℒp_of_cauchy_tendsto (hp : 1 ≤ p) {f : ℕ → α → E} (hf : �
   have h_add : f_lim = f_lim - f N + f N := by abel
   rw [h_add]
   refine lt_of_le_of_lt (eLpNorm_add_le (h_lim_meas.sub (hf N).1) (hf N).1 hp) ?_
-  rw [ENNReal.add_lt_top]
+  rw [add_lt_top]
   constructor
   · refine lt_of_le_of_lt ?_ ENNReal.one_lt_top
     have h_neg : f_lim - f N = -(f N - f_lim) := by simp

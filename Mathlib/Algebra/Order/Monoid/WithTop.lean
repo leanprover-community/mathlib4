@@ -15,6 +15,12 @@ variable {α : Type u}
 
 open Function
 
+/-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
+  Instances should include number systems with an infinite element adjoined. -/
+class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCommMonoid α,
+    OrderTop α, IsTopAbsorbing α where
+  add_top a := add_comm a ⊤ ▸ top_add a
+
 namespace WithTop
 
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithTop α) where
@@ -33,6 +39,11 @@ instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
 instance [CanonicallyLinearOrderedAddCommMonoid α] :
     CanonicallyLinearOrderedAddCommMonoid (WithTop α) :=
   { WithTop.canonicallyOrderedAddCommMonoid, WithTop.linearOrder with }
+
+instance linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
+    LinearOrderedAddCommMonoidWithTop (WithTop α) :=
+  { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid,
+    WithTop.isTopAbsorbing with }
 
 end WithTop
 

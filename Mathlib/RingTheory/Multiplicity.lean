@@ -682,7 +682,7 @@ theorem emultiplicity_mul {p a b : α} (hp : Prime p) :
       hfin.mul_right.emultiplicity_eq_multiplicity]
     norm_cast
     exact multiplicity_mul hp hfin
-  · rw [emultiplicity_eq_top.2 hfin, eq_comm, WithTop.add_eq_top, emultiplicity_eq_top,
+  · rw [emultiplicity_eq_top.2 hfin, eq_comm, add_eq_top, emultiplicity_eq_top,
       emultiplicity_eq_top]
     simpa only [Finite.mul_iff hp, not_and_or] using hfin
 

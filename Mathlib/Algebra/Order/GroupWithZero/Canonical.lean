@@ -6,7 +6,7 @@ Authors: Kenny Lau, Johan Commelin, Patrick Massot
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.WithZero
-import Mathlib.Algebra.Order.AddGroupWithTop
+import Mathlib.Algebra.Order.Group.WithTop
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
@@ -82,12 +82,14 @@ theorem zero_lt_iff : 0 < a ↔ a ≠ 0 :=
 
 theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 ↦ not_lt_zero' <| show b < 0 from h1 ▸ h
 
+instance instOrderTopAdditiveOrderDual : OrderTop (Additive αᵒᵈ) where
+  top := (0 : α)
+  le_top := fun _ ↦ zero_le'
+
 instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
     LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
   { Additive.orderedAddCommMonoid, Additive.linearOrder with
-    top := (0 : α)
-    top_add' := fun a ↦ zero_mul (Additive.toMul a)
-    le_top := fun _ ↦ zero_le' }
+    top_add := fun a ↦ zero_mul (Additive.toMul a) }
 
 variable [NoZeroDivisors α]
 
@@ -245,10 +247,10 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.orderedCommMonoid, Multiplicative.linearOrder with
     zero := Multiplicative.ofAdd (⊤ : α)
-    zero_mul := @top_add _ (_)
+    zero_mul := top_add (α := α)
     -- Porting note:  Here and elsewhere in the file, just `zero_mul` worked in Lean 3. See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
-    mul_zero := @add_top _ (_)
+    mul_zero := add_top (α := α)
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
 
 instance [LinearOrderedAddCommGroupWithTop α] :

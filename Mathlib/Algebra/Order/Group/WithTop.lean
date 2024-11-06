@@ -5,10 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Linearly ordered commutative additive groups and monoids with a top element adjoined
@@ -25,15 +21,6 @@ whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
 -/
 
-variable {α : Type*}
-
-/-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
-  Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCommMonoid α,
-    OrderTop α where
-  /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
-  protected top_add' : ∀ x : α, ⊤ + x = ⊤
-
 /-- A linearly ordered commutative group with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddCommMonoidWithTop α,
@@ -41,31 +28,11 @@ class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddComm
   protected neg_top : -(⊤ : α) = ⊤
   protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
 
-instance WithTop.linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
-    LinearOrderedAddCommMonoidWithTop (WithTop α) :=
-  { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid with
-    top_add' := WithTop.top_add }
-
-section LinearOrderedAddCommMonoidWithTop
-variable [LinearOrderedAddCommMonoidWithTop α]
-
-@[simp]
-theorem top_add (a : α) : ⊤ + a = ⊤ :=
-  LinearOrderedAddCommMonoidWithTop.top_add' a
-
-@[simp]
-theorem add_top (a : α) : a + ⊤ = ⊤ :=
-  Trans.trans (add_comm _ _) (top_add _)
-
-end LinearOrderedAddCommMonoidWithTop
-
 namespace WithTop
-
-open Function
 
 namespace LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α]
+variable {α : Type*} [LinearOrderedAddCommGroup α]
 
 instance instNeg : Neg (WithTop α) where neg := Option.map fun a : α => -a
 
@@ -103,10 +70,10 @@ lemma sub_eq_top_iff {a b : WithTop α} : a - b = ⊤ ↔ (a = ⊤ ∨ b = ⊤) 
 
 instance : LinearOrderedAddCommGroupWithTop (WithTop α) where
   __ := WithTop.linearOrderedAddCommMonoidWithTop
-  __ := Option.nontrivial
+  __ := WithTop.nontrivial
   sub_eq_add_neg a b := by
     cases a <;> cases b <;> simp [← coe_sub, ← coe_neg, sub_eq_add_neg]
-  neg_top := Option.map_none
+  neg_top := WithTop.map_top _
   zsmul := zsmulRec
   add_neg_cancel := by
     rintro (a | a) ha

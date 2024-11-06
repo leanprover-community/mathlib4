@@ -557,3 +557,53 @@ instance IsRightCancelMul.mulRightReflectLE_of_mulRightReflectLT
     ⟨ContravariantClass.elim, fun _ ↦ mul_right_cancel⟩
 
 end Variants
+
+section TopBot
+
+variable {α : Type*}
+
+/--
+Prop-valued mixin for the top element of an ordered additive monoid to be absorbing under addition.
+This is the additive equivalent of `MulZeroClass` for `Top`.
+-/
+class IsTopAbsorbing (α : Type*) [Add α] [Top α] : Prop where
+  /-- `⊤` is a left aborbing element for addition -/
+  top_add : ∀ a : α, ⊤ + a = ⊤
+  /-- `⊤` is a right aborbing element for addition -/
+  add_top : ∀ a : α, a + ⊤ = ⊤
+
+export IsTopAbsorbing (top_add add_top)
+attribute [simp] top_add add_top
+
+/--
+Prop-valued mixin for the bottom element of an ordered additive monoid to be absorbing
+under addition. This is the additive equivalent of `MulZeroClass` for `Bot`.
+-/
+class IsBotAbsorbing (α : Type*) [Add α] [Bot α] : Prop where
+  /-- `⊥` is a left aborbing element for addition -/
+  bot_add : ∀ a : α, ⊥ + a = ⊥
+  /-- `⊥` is a right aborbing element for addition -/
+  add_bot : ∀ a : α, a + ⊥ = ⊥
+
+export IsBotAbsorbing (bot_add add_bot)
+attribute [simp] bot_add add_bot
+
+/--
+Prop-valued mixin stating that if two elements sum to `⊤` then at least one of them is `⊤`.
+The additive equivalent of `NoZeroDivisors` for `Top`
+-/
+class NoTopSum (α : Type*) [Add α] [Top α] : Prop where
+  eq_top_or_eq_top_of_add_eq_top : ∀ {a b : α}, a + b = ⊤ → a = ⊤ ∨ b = ⊤
+
+export NoTopSum (eq_top_or_eq_top_of_add_eq_top)
+
+/--
+Prop-valued mixin stating that if two elements sum to `⊥` then at least one of them is `⊥`.
+The additive equivalent of `NoZeroDivisors` for `Bot`
+-/
+class NoBotSum (α : Type*) [Add α] [Bot α] : Prop where
+  eq_bot_or_eq_bot_of_add_eq_bot : ∀ {a b : α}, a + b = ⊥ → a = ⊥ ∨ b = ⊥
+
+export NoBotSum (eq_bot_or_eq_bot_of_add_eq_bot)
+
+end TopBot

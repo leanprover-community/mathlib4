@@ -155,12 +155,9 @@ protected theorem casesOn' {P : PartENat → Prop} :
 protected theorem casesOn {P : PartENat → Prop} : ∀ a : PartENat, P ⊤ → (∀ n : ℕ, P n) → P a := by
   exact PartENat.casesOn'
 
--- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
-theorem top_add (x : PartENat) : ⊤ + x = ⊤ :=
-  Part.ext' (iff_of_eq (false_and _)) fun h => h.left.elim
-
--- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
-theorem add_top (x : PartENat) : x + ⊤ = ⊤ := by rw [add_comm, top_add]
+instance : IsTopAbsorbing PartENat where
+  top_add _ := Part.ext' (iff_of_eq (false_and _)) fun h => h.left.elim
+  add_top _ := (add_comm _ _).trans <|Part.ext' (iff_of_eq (false_and _)) fun h => h.left.elim
 
 @[simp]
 theorem natCast_get {x : PartENat} (h : x.Dom) : (x.get h : PartENat) = x := by
@@ -652,9 +649,9 @@ open scoped Classical
 theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWithTop y := by
   refine PartENat.casesOn y ?_ ?_ <;> refine PartENat.casesOn x ?_ ?_
   -- Porting note: was `simp [← Nat.cast_add, ← ENat.coe_add]`
-  · simp only [add_top, toWithTop_top', _root_.add_top]
-  · simp only [add_top, toWithTop_top', toWithTop_natCast', _root_.add_top, forall_const]
-  · simp only [top_add, toWithTop_top', toWithTop_natCast', _root_.top_add, forall_const]
+  · simp only [add_top, toWithTop_top', add_top]
+  · simp only [add_top, toWithTop_top', toWithTop_natCast', add_top, forall_const]
+  · simp only [top_add, toWithTop_top', toWithTop_natCast', top_add, forall_const]
   · simp_rw [toWithTop_natCast', ← Nat.cast_add, toWithTop_natCast', forall_const]
 
 /-- `Equiv` between `PartENat` and `ℕ∞` (for the order isomorphism see
@@ -780,8 +777,7 @@ theorem find_eq_top_iff : find P = ⊤ ↔ ∀ n, ¬P n :=
 end Find
 
 noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
-  { PartENat.linearOrder, PartENat.orderedAddCommMonoid, PartENat.orderTop with
-    top_add' := top_add }
+  { PartENat.linearOrder, PartENat.orderedAddCommMonoid with }
 
 noncomputable instance : CompleteLinearOrder PartENat :=
   { lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,

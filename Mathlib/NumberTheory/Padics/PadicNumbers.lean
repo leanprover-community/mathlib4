@@ -1030,9 +1030,9 @@ theorem AddValuation.map_mul (x y : ℚ_[p]) :
     addValuationDef (x * y : ℚ_[p]) = addValuationDef x + addValuationDef y := by
   simp only [addValuationDef]
   by_cases hx : x = 0
-  · rw [hx, if_pos rfl, zero_mul, if_pos rfl, WithTop.top_add]
+  · rw [hx, if_pos rfl, zero_mul, if_pos rfl, top_add]
   · by_cases hy : y = 0
-    · rw [hy, if_pos rfl, mul_zero, if_pos rfl, WithTop.add_top]
+    · rw [hy, if_pos rfl, mul_zero, if_pos rfl, add_top]
     · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithTop.coe_add, WithTop.coe_eq_coe,
         valuation_map_mul hx hy]
 

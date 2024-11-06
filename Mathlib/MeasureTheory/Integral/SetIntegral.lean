@@ -256,7 +256,7 @@ theorem tendsto_setIntegral_of_monotone
   refine (ennnorm_integral_le_lintegral_ennnorm _).trans ?_
   rw [← withDensity_apply _ (hSm.diff (hsm _)), ← hν, measure_diff hsub (hsm _).nullMeasurableSet]
   exacts [tsub_le_iff_tsub_le.mp hi.1,
-    (hi.2.trans_lt <| ENNReal.add_lt_top.2 ⟨hfi', ENNReal.coe_lt_top⟩).ne]
+    (hi.2.trans_lt <| add_lt_top.2 ⟨hfi', ENNReal.coe_lt_top⟩).ne]
 
 @[deprecated (since := "2024-04-17")]
 alias tendsto_set_integral_of_monotone := tendsto_setIntegral_of_monotone

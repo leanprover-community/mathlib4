@@ -87,25 +87,15 @@ instance add : Add (WithTop α) :=
 
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithTop α) := rfl
 
-@[simp]
-theorem top_add (a : WithTop α) : ⊤ + a = ⊤ :=
-  rfl
+instance noTopSum : NoTopSum (WithTop α) where
+  eq_top_or_eq_top_of_add_eq_top {a b h} := match a, b with
+    | ⊤, _ => .inl rfl
+    | _, ⊤ => .inr rfl
+    | (a : α), (b : α) => by simp [← coe_add] at h
 
-@[simp]
-theorem add_top (a : WithTop α) : a + ⊤ = ⊤ := by cases a <;> rfl
-
-@[simp]
-theorem add_eq_top : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
-  match a, b with
-  | ⊤, _ => simp
-  | _, ⊤ => simp
-  | (a : α), (b : α) => simp only [← coe_add, coe_ne_top, or_false]
-
-theorem add_ne_top : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
-  add_eq_top.not.trans not_or
-
-theorem add_lt_top [LT α] {a b : WithTop α} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by
-  simp_rw [WithTop.lt_top_iff_ne_top, add_ne_top]
+instance isTopAbsorbing : IsTopAbsorbing (WithTop α) where
+  top_add a := rfl
+  add_top a := by cases a <;> rfl
 
 theorem add_eq_coe :
     ∀ {a b : WithTop α} {c : α}, a + b = c ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = c
@@ -518,22 +508,15 @@ variable [Add α] {a b c d : WithBot α} {x y : α}
 theorem coe_add (a b : α) : ((a + b : α) : WithBot α) = a + b :=
   rfl
 
-@[simp]
-theorem bot_add (a : WithBot α) : ⊥ + a = ⊥ :=
-  rfl
+instance isBotAbsorbing : IsBotAbsorbing (WithBot α) where
+  bot_add a := rfl
+  add_bot a := by cases a <;> rfl
 
-@[simp]
-theorem add_bot (a : WithBot α) : a + ⊥ = ⊥ := by cases a <;> rfl
-
-@[simp]
-theorem add_eq_bot : a + b = ⊥ ↔ a = ⊥ ∨ b = ⊥ :=
-  WithTop.add_eq_top
-
-theorem add_ne_bot : a + b ≠ ⊥ ↔ a ≠ ⊥ ∧ b ≠ ⊥ :=
-  WithTop.add_ne_top
-
-theorem bot_lt_add [LT α] {a b : WithBot α} : ⊥ < a + b ↔ ⊥ < a ∧ ⊥ < b :=
-  WithTop.add_lt_top (α := αᵒᵈ)
+instance noBotSum : NoBotSum (WithBot α) where
+  eq_bot_or_eq_bot_of_add_eq_bot {a b h} := by match a, b with
+  | ⊥, _ => simp
+  | _, ⊥ => simp
+  | (a : α), (b : α) => simp only [← coe_add, coe_ne_bot] at h
 
 theorem add_eq_coe : a + b = x ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = x :=
   WithTop.add_eq_coe

@@ -179,7 +179,7 @@ abbrev emetricSpace : EMetricSpace V where
 def finiteSubspace : Subspace 𝕜 V where
   carrier := { x | e x < ⊤ }
   zero_mem' := by simp
-  add_mem' {x y} hx hy := lt_of_le_of_lt (e.map_add_le x y) (ENNReal.add_lt_top.2 ⟨hx, hy⟩)
+  add_mem' {x y} hx hy := lt_of_le_of_lt (e.map_add_le x y) (add_lt_top.2 ⟨hx, hy⟩)
   smul_mem' c x (hx : _ < _) :=
     calc
       e (c • x) = ‖c‖₊ * e x := e.map_smul c x
@@ -191,7 +191,7 @@ instance metricSpace : MetricSpace e.finiteSubspace := by
   letI := e.emetricSpace
   refine EMetricSpace.toMetricSpace fun x y => ?_
   change e (x - y) ≠ ⊤
-  exact ne_top_of_le_ne_top (ENNReal.add_lt_top.2 ⟨x.2, y.2⟩).ne (e.map_sub_le x y)
+  exact ne_top_of_le_ne_top (add_lt_top.2 ⟨show e x < ⊤ from x.2, y.2⟩).ne (e.map_sub_le x y)
 
 theorem finite_dist_eq (x y : e.finiteSubspace) : dist x y = (e (x - y)).toReal :=
   rfl

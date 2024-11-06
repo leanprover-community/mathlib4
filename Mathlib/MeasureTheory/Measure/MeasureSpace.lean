@@ -884,7 +884,7 @@ theorem measure_toMeasurable_add_inter_left {s t : Set α} (hs : MeasurableSet s
       measure_eq_left_of_subset_of_measure_add_eq ?_ (subset_toMeasurable _ _)
         (measure_toMeasurable t).symm
     rwa [measure_toMeasurable t]
-  · simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at ht
+  · simp only [not_or, add_eq_top, Pi.add_apply, Ne, coe_add] at ht
     exact ht.1
 
 theorem measure_toMeasurable_add_inter_right {s t : Set α} (hs : MeasurableSet s)
@@ -994,13 +994,9 @@ theorem toOuterMeasure_top {_ : MeasurableSpace α} :
     (⊤ : Measure α).toOuterMeasure = (⊤ : OuterMeasure α) :=
   rfl
 
-@[simp]
-theorem top_add : ⊤ + μ = ⊤ :=
-  top_unique <| Measure.le_add_right le_rfl
-
-@[simp]
-theorem add_top : μ + ⊤ = ⊤ :=
-  top_unique <| Measure.le_add_left le_rfl
+instance : IsTopAbsorbing (Measure α) where
+  top_add _ := top_unique <| Measure.le_add_right le_rfl
+  add_top _ := top_unique <| Measure.le_add_left le_rfl
 
 protected theorem zero_le {_m0 : MeasurableSpace α} (μ : Measure α) : 0 ≤ μ :=
   bot_le
@@ -1737,7 +1733,7 @@ end Pointwise
 /-- The filter of sets `s` such that `sᶜ` has finite measure. -/
 def cofinite {m0 : MeasurableSpace α} (μ : Measure α) : Filter α :=
   comk (μ · < ∞) (by simp) (fun _ ht _ hs ↦ (measure_mono hs).trans_lt ht) fun s hs t ht ↦
-    (measure_union_le s t).trans_lt <| ENNReal.add_lt_top.2 ⟨hs, ht⟩
+    (measure_union_le s t).trans_lt <| add_lt_top.2 ⟨hs, ht⟩
 
 theorem mem_cofinite : s ∈ μ.cofinite ↔ μ sᶜ < ∞ :=
   Iff.rfl

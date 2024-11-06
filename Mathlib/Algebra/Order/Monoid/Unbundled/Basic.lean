@@ -7,6 +7,7 @@ Yuyang Zhao
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Order.MinMax
+import Mathlib.Order.BoundedOrder
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Use
 
@@ -1366,3 +1367,57 @@ end MulLECancellable
 lemma mulLECancellable_mul [LE α] [CommSemigroup α] [MulLeftMono α] {a b : α} :
     MulLECancellable (a * b) ↔ MulLECancellable a ∧ MulLECancellable b :=
   ⟨fun h ↦ ⟨h.of_mul_left, h.of_mul_right⟩, fun h ↦ h.1.mul h.2⟩
+
+section NoTopSum
+
+variable {α : Type*} [Add α] [Top α] [IsTopAbsorbing α] [NoTopSum α]
+
+@[simp]
+lemma add_eq_top {a b : α} :
+    a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ where
+  mp := eq_top_or_eq_top_of_add_eq_top
+  mpr h := by cases h <;> simp_all
+
+@[simp]
+lemma top_eq_add {a b : α} :
+    ⊤ = a + b ↔ a = ⊤ ∨ b = ⊤ := Eq.comm.trans add_eq_top
+
+lemma add_ne_top {a b : α} :
+    a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ := by simp
+
+lemma top_ne_add {a b : α} :
+    ⊤ ≠ a + b ↔ a ≠ ⊤ ∧ b ≠ ⊤ := by simp
+
+@[simp]
+lemma add_lt_top {α : Type*} [PartialOrder α] [OrderTop α] [Add α]
+    [IsTopAbsorbing α] [NoTopSum α] {a b : α} :
+    a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by simp [lt_top_iff_ne_top]
+
+end NoTopSum
+
+section NoBotSum
+
+variable {α : Type*} [Add α] [Bot α] [IsBotAbsorbing α] [NoBotSum α]
+
+@[simp]
+lemma add_eq_bot {a b : α} :
+    a + b = ⊥ ↔ a = ⊥ ∨ b = ⊥ where
+  mp := eq_bot_or_eq_bot_of_add_eq_bot
+  mpr h := by cases h <;> simp_all
+
+@[simp]
+lemma bot_eq_add {a b : α} :
+    ⊥ = a + b ↔ a = ⊥ ∨ b = ⊥ := Eq.comm.trans add_eq_bot
+
+lemma add_ne_bot {a b : α} :
+    a + b ≠ ⊥ ↔ a ≠ ⊥ ∧ b ≠ ⊥ := by simp
+
+lemma bot_ne_add {a b : α} :
+    ⊥ ≠ a + b ↔ a ≠ ⊥ ∧ b ≠ ⊥ := by simp
+
+@[simp]
+lemma bot_lt_add {α : Type*} [PartialOrder α] [OrderBot α] [Add α]
+    [IsBotAbsorbing α] [NoBotSum α] {a b : α} :
+    ⊥ < a + b ↔ ⊥ < a ∧ ⊥ < b := by simp [bot_lt_iff_ne_bot]
+
+end NoBotSum
