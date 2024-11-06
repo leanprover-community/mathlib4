@@ -14,7 +14,7 @@ The Faa di Bruno formula gives the iterated derivative of `g ∘ f` in terms of 
 `g` and `f`. It is expressed in terms of partitions `I` of `{0, ..., n-1}`. For such a
 partition, denote by `k` its number of parts, write the parts as `I₀, ..., Iₖ₋₁` ordered so
 that `max I₀ < ... < max Iₖ₋₁`, and let `iₘ` be the number of elements of `Iₘ`. Then
-`D^n (g ∘ f) (x) (v_0, ..., v_{n-1}) =
+`D^n (g ∘ f) (x) (v₀, ..., vₙ₋₁) =
   ∑_{I partition of {0, ..., n-1}}
     D^k g (f x) (D^{i₀} f (x) (v_{I₀}), ..., D^{iₖ₋₁} f (x) (v_{Iₖ₋₁}))`
 where by `v_{Iₘ}` we mean the vectors `vᵢ` with indices in `Iₘ`, i.e., the composition of `v`
@@ -72,13 +72,6 @@ that contains it), and we show that these processes are inverse to each other, y
 equivalence between `(c : OrderedFinpartition n) × Option (Fin c.length)`
 and `OrderedFinpartition (n + 1)`. This equivalence shows up prominently in the inductive proof
 of Faa di Bruno formula to identify the sums that show up.
-
-## Current state
-
-For now, the file only contains the combinatorial construction, i.e., the definition of
-`OrderedFinpartition n` and the equivalence between
-`(c : OrderedFinpartition n) × Option (Fin c.length)` and `OrderedFinpartition (n + 1)`.
-The application to the proof of the Faa di Bruno formula will be PRed in a second step.
 -/
 
 noncomputable section
@@ -744,7 +737,7 @@ theorem applyOrderedFinpartition_update_left (p : ∀ (i : Fin c.length), E[×c.
   · simp [h, applyOrderedFinpartition]
 
 /-- Given a an ordered finite partition `c` of `n`, a continuous multilinear map `f` in `c.length`
-variable, and for each `m` a continuous multilinear map `p m` in `c.partSize m` variables,
+variables, and for each `m` a continuous multilinear map `p m` in `c.partSize m` variables,
 one can form a continuous multilinear map in `n`
 variables by applying `p m` to each part of the partition, and then
 applying `f` to the resulting vector. It is called `c.compAlongOrderedFinpartition f p`. -/
@@ -753,12 +746,12 @@ def compAlongOrderedFinpartition
     (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F) :
     E[×n]→L[𝕜] G where
   toFun v := f (c.applyOrderedFinpartition p v)
-  map_add' v i x y := by
+  map_update_add' v i x y := by
     cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_add]
-  map_smul' v i c x := by
+    simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_update_add]
+  map_update_smul' v i c x := by
     cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_smul]
+    simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_update_smul]
   cont := by
     apply f.cont.comp
     change Continuous (fun v m ↦ p m (v ∘ c.emb m))
@@ -776,12 +769,12 @@ def compAlongOrderedFinpartitionₗ :
       MultilinearMap 𝕜 (fun i : Fin c.length ↦ (E[×c.partSize i]→L[𝕜] F)) (E[×n]→L[𝕜] G) where
   toFun f :=
     { toFun := fun p ↦ c.compAlongOrderedFinpartition f p
-      map_add' := by
+      map_update_add' := by
         intro inst p m q q'
         cases Subsingleton.elim ‹_› (instDecidableEqFin _)
         ext v
         simp [applyOrderedFinpartition_update_left]
-      map_smul' := by
+      map_update_smul' := by
         intro inst p m a q
         cases Subsingleton.elim ‹_› (instDecidableEqFin _)
         ext v
@@ -835,11 +828,11 @@ theorem compAlongOrderedFinpartition_apply {n : ℕ} (q : FormalMultilinearSerie
 
 /-- Taylor formal composition of two formal multilinear series. The `n`-th coefficient in the
 composition is defined to be the sum of `q.compAlongOrderedFinpartition p c` over all
-ordered partitions of `n`. In other words, this term (as a multilinear function applied to
-`v_0, ..., v_{n-1}`) is
-`∑'_{k} ∑'_{I_1 ⊔ ... ⊔ I_k = {0, ..., n-1}} qₖ (p_{i₁} (...), ..., p_{iₖ} (...))`, where
-`i_m` is the size of `I_m` and one puts all variables of `I_m` as arguments to `p_{iₘ}`, in
-increasing order. The sets `I_1, ..., I_k` are ordered so that `max I_1 < max I_2 < ... < max I_k`.
+ordered partitions of `n`.
+In other words, this term (as a multilinear function applied to `v₀, ..., vₙ₋₁`) is
+`∑'_{k} ∑'_{I₀ ⊔ ... ⊔ Iₖ₋₁ = {0, ..., n-1}} qₖ (p_{i₀} (...), ..., p_{iₖ₋₁} (...))`, where
+`iₘ` is the size of `Iₘ` and one puts all variables of `Iₘ` as arguments to `p_{iₘ}`, in
+increasing order. The sets `I₀, ..., Iₖ₋₁` are ordered so that `max I₀ < max I₁ < ... < max Iₖ₋₁`.
 
 This definition is chosen so that the `n`-th derivative of `g ∘ f` is the Taylor composition of
 the iterated derivatives of `g` and of `f`.
@@ -870,7 +863,12 @@ theorem analyticOn_taylorComp
 
 open OrderedFinpartition
 
-lemma faaDiBruno_aux1 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
+/-- Composing two formal multilinear series `q` and `p` along an ordered partition extended by a
+new atom to the left corresponds to applying `p 1` on the first coordinates, and the initial
+ordered partition on the other coordinates.
+This is one of the terms that appears when differentiating in the Faa di Bruno
+formula, going from step `m` to step `m + 1`. -/
+private lemma faaDiBruno_aux1 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : OrderedFinpartition m) :
     (q.compAlongOrderedFinpartition p (c.extend none)).curryLeft =
     ((c.compAlongOrderedFinpartitionL 𝕜 E F G).flipMultilinear fun i ↦ p (c.partSize i)).comp
@@ -886,7 +884,12 @@ lemma faaDiBruno_aux1 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
   ext j
   exact Fin.cases rfl (fun i ↦ rfl) j
 
-lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
+/-- Composing a formal multilinear series with an ordered partition extended by adding a left point
+to an already existing atom of index `i` corresponds to updating the `i`th block,
+using `p (c.partSize i + 1)` instead of `p (c.partSize i)` there.
+This is one of the terms that appears when differentiating in the Faa di Bruno
+formula, going from step `m` to step `m + 1`. -/
+private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : OrderedFinpartition m) (i : Fin c.length) :
     (q.compAlongOrderedFinpartition p (c.extend (some i))).curryLeft =
     ((c.compAlongOrderedFinpartitionL 𝕜 E F G (q c.length)).toContinuousLinearMap
@@ -917,6 +920,13 @@ lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
 theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E → F}
     (hg : HasFTaylorSeriesUpToOn n g q t) (hf : HasFTaylorSeriesUpToOn n f p s) (h : MapsTo f s t) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x ↦ (q (f x)).taylorComp (p x)) s := by
+  /- One has to check that the `m+1`-th term is the derivative of the `m`-th term. The `m`-th term
+  is a sum, that one can differentiate term by term. Each term is a linear map into continuous
+  multilinear maps, applied to parts of `p` and `q`. One knows how to differentiate such a map,
+  thanks to `HasFDerivWithinAt.linear_multilinear_comp`. The terms that show up are matched, using
+  `faaDiBruno_aux1` and `faaDiBruno_aux2`, with terms of the same form at order `m+1`. Then, one
+  needs to check that one gets each term once and exactly once, which is given by the bijection
+  `OrderedFinpartition.extendEquiv m`. -/
   classical
   constructor
   · intro x hx

@@ -559,6 +559,10 @@ theorem trans {a o o' : Ordinal.{u}} {f : ∀ b < o, Ordinal.{u}} (hf : IsFundam
     · exact hf.2.2
     · exact hg.2.2
 
+protected theorem lt {a o : Ordinal} {s : Π p < o, Ordinal}
+    (h : IsFundamentalSequence a o s) {p : Ordinal} (hp : p < o) : s p hp < a :=
+  h.blsub_eq ▸ lt_blsub s p hp
+
 end IsFundamentalSequence
 
 /-- Every ordinal has a fundamental sequence. -/
