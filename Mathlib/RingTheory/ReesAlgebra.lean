@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.FiniteType
 
 /-!
@@ -50,7 +51,7 @@ def reesAlgebra : Subalgebra R R[X] where
   add_mem' hf hg i := by
     rw [coeff_add]
     exact Ideal.add_mem _ (hf i) (hg i)
-  zero_mem' i := Ideal.zero_mem _
+  zero_mem' _ := Ideal.zero_mem _
   algebraMap_mem' r i := by
     rw [algebraMap_apply, coeff_C]
     split_ifs with h

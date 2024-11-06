@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.Calculus.ContDiff.RCLike
 import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
 # Complex and real exponential
@@ -23,6 +24,41 @@ open Filter Asymptotics Set Function
 open scoped Topology
 
 /-! ## `Complex.exp` -/
+
+section
+
+open Complex
+
+variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
+
+/-- `exp` is entire -/
+theorem analyticOnNhd_cexp : AnalyticOnNhd ℂ exp univ := by
+  rw [Complex.exp_eq_exp_ℂ]
+  exact fun x _ ↦ NormedSpace.exp_analytic x
+
+theorem analyticOn_cexp : AnalyticOn ℂ exp univ := analyticOnNhd_cexp.analyticOn
+
+/-- `exp` is analytic at any point -/
+theorem analyticAt_cexp : AnalyticAt ℂ exp z :=
+  analyticOnNhd_cexp z (mem_univ _)
+
+/-- `exp ∘ f` is analytic -/
+theorem AnalyticAt.cexp (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (fun z ↦ exp (f z)) x :=
+  analyticAt_cexp.comp fa
+
+theorem AnalyticWithinAt.cexp (fa : AnalyticWithinAt ℂ f s x) :
+    AnalyticWithinAt ℂ (fun z ↦ exp (f z)) s x :=
+  analyticAt_cexp.comp_analyticWithinAt fa
+
+/-- `exp ∘ f` is analytic -/
+theorem AnalyticOnNhd.cexp (fs : AnalyticOnNhd ℂ f s) : AnalyticOnNhd ℂ (fun z ↦ exp (f z)) s :=
+  fun z n ↦ analyticAt_cexp.comp (fs z n)
+
+theorem AnalyticOn.cexp (fs : AnalyticOn ℂ f s) : AnalyticOn ℂ (fun z ↦ exp (f z)) s :=
+  analyticOnNhd_cexp.comp_analyticOn fs (mapsTo_univ _ _)
+
+end
 
 namespace Complex
 
@@ -52,17 +88,8 @@ theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 
-theorem contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp := by
-  -- Porting note: added `@` due to `∀ {n}` weirdness above
-  refine @(contDiff_all_iff_nat.2 fun n => ?_)
-  have : ContDiff ℂ (↑n) exp := by
-    induction n with
-    | zero => exact contDiff_zero.2 continuous_exp
-    | succ n ihn =>
-      rw [contDiff_succ_iff_deriv]
-      use differentiable_exp
-      rwa [deriv_exp]
-  exact this.restrict_scalars 𝕜
+theorem contDiff_exp {n : ℕ∞} : ContDiff 𝕜 n exp :=
+  analyticOnNhd_cexp.restrictScalars.contDiff
 
 theorem hasStrictDerivAt_exp (x : ℂ) : HasStrictDerivAt exp (exp x) x :=
   contDiff_exp.contDiffAt.hasStrictDerivAt' (hasDerivAt_exp x) le_rfl
@@ -156,12 +183,44 @@ theorem iteratedDeriv_cexp_const_mul (n : ℕ) (c : ℂ) :
     (iteratedDeriv n fun s : ℂ => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
   rw [iteratedDeriv_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]
 
-
 /-! ## `Real.exp` -/
 
-namespace Real
+section
 
-variable {x y z : ℝ}
+open Real
+
+variable {x : ℝ} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E}
+
+/-- `exp` is entire -/
+theorem analyticOnNhd_rexp : AnalyticOnNhd ℝ exp univ := by
+  rw [Real.exp_eq_exp_ℝ]
+  exact fun x _ ↦ NormedSpace.exp_analytic x
+
+theorem analyticOn_rexp : AnalyticOn ℝ exp univ := analyticOnNhd_rexp.analyticOn
+
+/-- `exp` is analytic at any point -/
+theorem analyticAt_rexp : AnalyticAt ℝ exp x :=
+  analyticOnNhd_rexp x (mem_univ _)
+
+/-- `exp ∘ f` is analytic -/
+theorem AnalyticAt.rexp {x : E} (fa : AnalyticAt ℝ f x) : AnalyticAt ℝ (fun z ↦ exp (f z)) x :=
+  analyticAt_rexp.comp fa
+
+theorem AnalyticWithinAt.rexp {x : E} (fa : AnalyticWithinAt ℝ f s x) :
+    AnalyticWithinAt ℝ (fun z ↦ exp (f z)) s x :=
+  analyticAt_rexp.comp_analyticWithinAt fa
+
+/-- `exp ∘ f` is analytic -/
+theorem AnalyticOnNhd.rexp {s : Set E} (fs : AnalyticOnNhd ℝ f s) :
+    AnalyticOnNhd ℝ (fun z ↦ exp (f z)) s :=
+  fun z n ↦ analyticAt_rexp.comp (fs z n)
+
+theorem AnalyticOn.rexp (fs : AnalyticOn ℝ f s) : AnalyticOn ℝ (fun z ↦ exp (f z)) s :=
+  analyticOnNhd_rexp.comp_analyticOn fs (mapsTo_univ _ _)
+
+end
+
+namespace Real
 
 theorem hasStrictDerivAt_exp (x : ℝ) : HasStrictDerivAt exp (exp x) x :=
   (Complex.hasStrictDerivAt_exp x).real_of_complex
@@ -169,12 +228,12 @@ theorem hasStrictDerivAt_exp (x : ℝ) : HasStrictDerivAt exp (exp x) x :=
 theorem hasDerivAt_exp (x : ℝ) : HasDerivAt exp (exp x) x :=
   (Complex.hasDerivAt_exp x).real_of_complex
 
-theorem contDiff_exp {n} : ContDiff ℝ n exp :=
+theorem contDiff_exp {n : ℕ∞} : ContDiff ℝ n exp :=
   Complex.contDiff_exp.real_of_complex
 
 theorem differentiable_exp : Differentiable ℝ exp := fun x => (hasDerivAt_exp x).differentiableAt
 
-theorem differentiableAt_exp : DifferentiableAt ℝ exp x :=
+theorem differentiableAt_exp {x : ℝ} : DifferentiableAt ℝ exp x :=
   differentiable_exp x
 
 @[simp]

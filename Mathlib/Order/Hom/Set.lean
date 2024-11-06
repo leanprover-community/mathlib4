@@ -5,22 +5,25 @@ Authors: Johan Commelin
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Data.Set.Monotone
 import Mathlib.Data.Set.Image
+import Mathlib.Order.WellFounded
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Order homomorphisms and sets
 -/
 
 
-open OrderDual
+open OrderDual Set
 
-variable {F α β γ δ : Type*}
+variable {α β : Type*}
 
 namespace OrderIso
 
 section LE
 
-variable [LE α] [LE β] [LE γ]
+variable [LE α] [LE β]
 
 theorem range_eq (e : α ≃o β) : Set.range e = Set.univ :=
   e.surjective.range_eq
@@ -56,7 +59,7 @@ end LE
 
 open Set
 
-variable [Preorder α] [Preorder β] [Preorder γ]
+variable [Preorder α]
 
 /-- Order isomorphism between two equal sets. -/
 def setCongr (s t : Set α) (h : s = t) :
@@ -118,6 +121,76 @@ theorem orderIsoOfSurjective_self_symm_apply (b : β) :
   (orderIsoOfSurjective f h_mono h_surj).apply_symm_apply _
 
 end StrictMono
+
+/-- Two order embeddings on a well-order are equal provided that their ranges are equal. -/
+lemma OrderEmbedding.range_inj [LinearOrder α] [WellFoundedLT α] [Preorder β] {f g : α ↪o β} :
+    Set.range f = Set.range g ↔ f = g := by
+  rw [f.strictMono.range_inj g.strictMono, DFunLike.coe_fn_eq]
+
+namespace OrderIso
+
+-- These results are also true whenever β is well-founded instead of α.
+-- You can use `RelEmbedding.isWellFounded` to transfer the instance over.
+
+instance subsingleton_of_wellFoundedLT [LinearOrder α] [WellFoundedLT α] [Preorder β] :
+    Subsingleton (α ≃o β) := by
+  refine ⟨fun f g ↦ ?_⟩
+  rw [OrderIso.ext_iff, ← coe_toOrderEmbedding, ← coe_toOrderEmbedding, DFunLike.coe_fn_eq,
+    ← OrderEmbedding.range_inj, coe_toOrderEmbedding, coe_toOrderEmbedding, range_eq, range_eq]
+
+instance subsingleton_of_wellFoundedLT' [LinearOrder β] [WellFoundedLT β] [Preorder α] :
+    Subsingleton (α ≃o β) := by
+  refine ⟨fun f g ↦ ?_⟩
+  change f.symm.symm = g.symm.symm
+  rw [Subsingleton.elim f.symm]
+
+instance unique_of_wellFoundedLT [LinearOrder α] [WellFoundedLT α] : Unique (α ≃o α) := Unique.mk' _
+
+instance subsingleton_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] [Preorder β] :
+    Subsingleton (α ≃o β) := by
+  refine ⟨fun f g ↦ ?_⟩
+  change f.dual.dual = g.dual.dual
+  rw [Subsingleton.elim f.dual]
+
+instance subsingleton_of_wellFoundedGT' [LinearOrder β] [WellFoundedGT β] [Preorder α] :
+    Subsingleton (α ≃o β) := by
+  refine ⟨fun f g ↦ ?_⟩
+  change f.dual.dual = g.dual.dual
+  rw [Subsingleton.elim f.dual]
+
+instance unique_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] : Unique (α ≃o α) := Unique.mk' _
+
+/-- An order isomorphism between lattices induces an order isomorphism between corresponding
+interval sublattices. -/
+protected def Iic [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
+    Iic x ≃o Iic (e x) where
+  toFun y := ⟨e y, (map_le_map_iff _).mpr y.property⟩
+  invFun y := ⟨e.symm y, e.symm_apply_le.mpr y.property⟩
+  left_inv y := by simp
+  right_inv y := by simp
+  map_rel_iff' := by simp
+
+/-- An order isomorphism between lattices induces an order isomorphism between corresponding
+interval sublattices. -/
+protected def Ici [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
+    Ici x ≃o Ici (e x) where
+  toFun y := ⟨e y, (map_le_map_iff _).mpr y.property⟩
+  invFun y := ⟨e.symm y, e.le_symm_apply.mpr y.property⟩
+  left_inv y := by simp
+  right_inv y := by simp
+  map_rel_iff' := by simp
+
+/-- An order isomorphism between lattices induces an order isomorphism between corresponding
+interval sublattices. -/
+protected def Icc [Lattice α] [Lattice β] (e : α ≃o β) (x y : α) :
+    Icc x y ≃o Icc (e x) (e y) where
+  toFun z := ⟨e z, by simp only [mem_Icc, map_le_map_iff]; exact z.property⟩
+  invFun z := ⟨e.symm z, by simp only [mem_Icc, e.le_symm_apply, e.symm_apply_le]; exact z.property⟩
+  left_inv y := by simp
+  right_inv y := by simp
+  map_rel_iff' := by simp
+
+end OrderIso
 
 section BooleanAlgebra
 
