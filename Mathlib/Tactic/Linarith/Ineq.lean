@@ -58,9 +58,12 @@ instance : ToString Ineq := ⟨toString⟩
 
 instance : ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
 
-end Ineq
+end Linarith.Ineq
 
 /-! ### Parsing inequalities -/
+
+namespace Lean.Expr
+open Linarith
 
 /-- Given an expression `e`, parse it as a `=`, `≤` or `<`, and return this relation (as a
 `Linarith.Ineq`) together with the type in which the (in)equality occurs and the two sides of the
@@ -69,7 +72,7 @@ end Ineq
 This function is more naturally in the `Option` monad, but it is convenient to put in `MetaM`
 for compositionality.
 -/
-def _root_.Lean.Expr.ineq? (e : Expr) : MetaM (Ineq × Expr × Expr × Expr) := do
+def ineq? (e : Expr) : MetaM (Ineq × Expr × Expr × Expr) := do
   let e ← whnfR (← instantiateMVars e)
   match e.eq? with
   | some p => return (Ineq.eq, p)
@@ -88,19 +91,11 @@ sides of the (in)equality, and a boolean flag indicating the presence or absence
 This function is more naturally in the `Option` monad, but it is convenient to put in `MetaM`
 for compositionality.
 -/
-def _root_.Lean.Expr.ineqOrNotIneq? (e : Expr) : MetaM (Bool × Ineq × Expr × Expr × Expr) := do
+def ineqOrNotIneq? (e : Expr) : MetaM (Bool × Ineq × Expr × Expr × Expr) := do
   try
     return (true, ← e.ineq?)
   catch _ =>
     let some e' := e.not? | throwError "Not a comparison: {e}"
     return (false, ← e'.ineq?)
 
-/--
-`parseCompAndExpr e` checks if `e` is of the form `t < 0`, `t ≤ 0`, or `t = 0`.
-If it is, it returns the comparison along with `t`.
--/
-def parseCompAndExpr (e : Expr) : MetaM (Ineq × Expr) := do
-  let (rel, _, e, z) ← e.ineq?
-  if z.zero? then return (rel, e) else throwError "invalid comparison, rhs not zero: {z}"
-
-end Linarith
+end Lean.Expr
