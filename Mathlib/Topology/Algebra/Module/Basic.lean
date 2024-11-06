@@ -1947,7 +1947,7 @@ protected theorem _root_.LinearEquiv.isUniformEmbedding {E₁ E₂ : Type*} [Uni
 alias _root_.LinearEquiv.uniformEmbedding := _root_.LinearEquiv.isUniformEmbedding
 
 /-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
-inverse of each other. -/
+inverse of each other. See also `equivOfInverse'`. -/
 def equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁) (h₁ : Function.LeftInverse f₂ f₁)
     (h₂ : Function.RightInverse f₂ f₁) : M₁ ≃SL[σ₁₂] M₂ :=
   { f₁ with
@@ -1965,6 +1965,24 @@ theorem equivOfInverse_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂ 
 @[simp]
 theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
     (equivOfInverse f₁ f₂ h₁ h₂).symm = equivOfInverse f₂ f₁ h₂ h₁ :=
+  rfl
+
+/-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
+inverse of each other, in the `ContinuousLinearMap.comp` sense. See also `equivOfInverse`. -/
+def equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
+    (h₁ : f₁.comp f₂ = .id R₂ M₂) (h₂ : f₂.comp f₁ = .id R₁ M₁) : M₁ ≃SL[σ₁₂] M₂ :=
+  equivOfInverse f₁ f₂
+    (fun x ↦ by simpa using congr($(h₂) x)) (fun x ↦ by simpa using congr($(h₁) x))
+
+@[simp]
+theorem equivOfInverse'_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂ x) :
+    equivOfInverse' f₁ f₂ h₁ h₂ x = f₁ x :=
+  rfl
+
+/-- The inverse of `equivOfInverse'` is obtained by swapping the order of its parameters. -/
+@[simp]
+theorem symm_equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
+    (equivOfInverse' f₁ f₂ h₁ h₂).symm = equivOfInverse' f₂ f₁ h₂ h₁ :=
   rfl
 
 variable (M₁)
@@ -2327,35 +2345,13 @@ lemma IsInvertible.comp {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
 
 lemma IsInvertible.of_inverse {f : M →L[R] M₂} {g : M₂ →L[R] M}
     (hf : f ∘L g = id R M₂) (hg : g ∘L f = id R M) :
-    f.IsInvertible := by
-  let A : M ≃L[R] M₂ :=
-  { f with
-    invFun := g
-    left_inv := by
-      intro x
-      have : (g ∘L f) x = x := by simp [hg]
-      simpa using this
-    right_inv := by
-      intro x
-      have : (f ∘L g) x = x := by simp [hf]
-      simpa using this }
-  exact ⟨A, rfl⟩
+    f.IsInvertible :=
+  ⟨ContinuousLinearEquiv.equivOfInverse' _ _ hf hg, rfl⟩
 
 lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M} (hf : f ∘L g = id R M₂) (hg : g ∘L f = id R M) :
     f.inverse = g := by
-  let A : M ≃L[R] M₂ :=
-  { f with
-    invFun := g
-    left_inv := by
-      intro x
-      have : (g ∘L f) x = x := by simp [hg]
-      simpa using this
-    right_inv := by
-      intro x
-      have : (f ∘L g) x = x := by simp [hf]
-      simpa using this }
-  change (A : M →L[R] M₂).inverse = g
-  simp only [inverse_equiv]
+  have : f = ContinuousLinearEquiv.equivOfInverse' f g hf hg := rfl
+  rw [this, inverse_equiv]
   rfl
 
 lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf : f.IsInvertible) :

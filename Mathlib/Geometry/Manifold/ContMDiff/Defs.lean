@@ -771,7 +771,6 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds
     rwa [contMDiffOn_iff_of_subset_source' hv₁ hv₂, PartialEquiv.image_symm_image_of_subset_target]
     exact hsub.trans inter_subset_left
 
-
 /-- If a function is `C^m` within a set at a point, for some finite `m`, then it is `C^m` within
 this set on an open set around the basepoint.
 -/

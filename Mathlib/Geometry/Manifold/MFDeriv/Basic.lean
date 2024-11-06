@@ -812,7 +812,6 @@ theorem tangentMapWithin_proj {p : TangentBundle I M} :
 theorem tangentMap_proj {p : TangentBundle I M} : (tangentMap I I' f p).proj = f p.proj :=
   rfl
 
-
 /-- If two sets coincide locally around `x`, except maybe at a point `y`, then their
 preimage under `extChartAt x` coincide locally, except maybe at `extChartAt I x x`. -/
 theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
@@ -867,7 +866,6 @@ theorem mdifferentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f t x := by
   simp only [mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt]
   exact exists_congr fun _ => hasMFDerivWithinAt_congr_set h
-
 
 /-- If two sets coincide locally, except maybe at a point, then derivatives within these sets
 are the same. -/
@@ -1075,18 +1073,18 @@ theorem MDifferentiableWithinAt.comp_of_eq {y : M'} (hg : MDifferentiableWithinA
     MDifferentiableWithinAt I I'' (g ∘ f) s x := by
   subst hy; exact hg.comp _ hf h
 
-theorem MDifferentiableWithinAt.comp_of_mem_nhdsWithin
+theorem MDifferentiableWithinAt.comp_of_preimage_mem_nhdsWithin
     (hg : MDifferentiableWithinAt I' I'' g u (f x))
     (hf : MDifferentiableWithinAt I I' f s x) (h : f ⁻¹' u ∈ 𝓝[s] x) :
     MDifferentiableWithinAt I I'' (g ∘ f) s x :=
   (hg.comp _ (hf.mono inter_subset_right) inter_subset_left).mono_of_mem_nhdsWithin
     (Filter.inter_mem h self_mem_nhdsWithin)
 
-theorem MDifferentiableWithinAt.comp_of_mem_nhdsWithin_of_eq {y : M'}
+theorem MDifferentiableWithinAt.comp_of_preimage_mem_nhdsWithin_of_eq {y : M'}
     (hg : MDifferentiableWithinAt I' I'' g u y)
     (hf : MDifferentiableWithinAt I I' f s x) (h : f ⁻¹' u ∈ 𝓝[s] x) (hy : f x = y) :
     MDifferentiableWithinAt I I'' (g ∘ f) s x := by
-  subst hy; exact MDifferentiableWithinAt.comp_of_mem_nhdsWithin _ hg hf h
+  subst hy; exact MDifferentiableWithinAt.comp_of_preimage_mem_nhdsWithin _ hg hf h
 
 theorem MDifferentiableAt.comp (hg : MDifferentiableAt I' I'' g (f x))
     (hf : MDifferentiableAt I I' f x) : MDifferentiableAt I I'' (g ∘ f) x :=
@@ -1121,7 +1119,8 @@ theorem mfderivWithin_comp_of_eq {x : M} {y : M'} (hg : MDifferentiableWithinAt 
       (mfderivWithin I' I'' g u y).comp (mfderivWithin I I' f s x) := by
   subst hy; exact mfderivWithin_comp x hg hf h hxs
 
-theorem mfderivWithin_comp_of_mem_nhdsWithin (hg : MDifferentiableWithinAt I' I'' g u (f x))
+theorem mfderivWithin_comp_of_preimage_mem_nhdsWithin
+    (hg : MDifferentiableWithinAt I' I'' g u (f x))
     (hf : MDifferentiableWithinAt I I' f s x) (h : f ⁻¹' u ∈ 𝓝[s] x)
     (hxs : UniqueMDiffWithinAt I s x) :
     mfderivWithin I I'' (g ∘ f) s x =
@@ -1135,13 +1134,13 @@ theorem mfderivWithin_comp_of_mem_nhdsWithin (hg : MDifferentiableWithinAt I' I'
   rw [B, C]
   exact mfderivWithin_comp _ hg (hf.mono inter_subset_left) inter_subset_right (hxs.inter' h)
 
-theorem mfderivWithin_comp_of_mem_nhdsWithin_of_eq {y : M'}
+theorem mfderivWithin_comp_of_preimage_mem_nhdsWithin_of_eq {y : M'}
     (hg : MDifferentiableWithinAt I' I'' g u y)
     (hf : MDifferentiableWithinAt I I' f s x) (h : f ⁻¹' u ∈ 𝓝[s] x)
     (hxs : UniqueMDiffWithinAt I s x) (hy : f x = y) :
     mfderivWithin I I'' (g ∘ f) s x =
       (mfderivWithin I' I'' g u y).comp (mfderivWithin I I' f s x) := by
-  subst hy; exact mfderivWithin_comp_of_mem_nhdsWithin _ hg hf h hxs
+  subst hy; exact mfderivWithin_comp_of_preimage_mem_nhdsWithin _ hg hf h hxs
 
 theorem mfderiv_comp_mfderivWithin (hg : MDifferentiableAt I' I'' g (f x))
     (hf : MDifferentiableWithinAt I I' f s x) (hxs : UniqueMDiffWithinAt I s x) :
