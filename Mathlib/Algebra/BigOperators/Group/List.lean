@@ -389,10 +389,10 @@ lemma prod_map_ite (p : α → Prop) [DecidablePred p] (f g : α → M) (l : Lis
     rw [ih]
     clear ih
     by_cases hx : p x
-    · simp only [hx, ↓reduceIte, decide_not, decide_True, map_cons, prod_cons, not_true_eq_false,
-        decide_False, Bool.false_eq_true, mul_assoc]
-    · simp only [hx, ↓reduceIte, decide_not, decide_False, Bool.false_eq_true, not_false_eq_true,
-      decide_True, map_cons, prod_cons, mul_left_comm]
+    · simp only [hx, ↓reduceIte, decide_not, decide_true, map_cons, prod_cons, not_true_eq_false,
+        decide_false, Bool.false_eq_true, mul_assoc]
+    · simp only [hx, ↓reduceIte, decide_not, decide_false, Bool.false_eq_true, not_false_eq_true,
+      decide_true, map_cons, prod_cons, mul_left_comm]
 
 @[to_additive]
 lemma prod_map_filter_mul_prod_map_filter_not (p : α → Prop) [DecidablePred p] (f : α → M)
