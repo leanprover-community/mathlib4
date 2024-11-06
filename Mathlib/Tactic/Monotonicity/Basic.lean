@@ -47,11 +47,10 @@ elab_rules : tactic
   if let some h := h then throwErrorAt h (msg "'left'/'right'/'both'")
   if let some w := w then throwErrorAt w (msg "'with'")
   if let some u := u then throwErrorAt u (msg "'using'")
-  let cfg := {
+  let cfg := { { : Meta.SolveByElim.ApplyRulesConfig } with
     backtracking := false
     transparency := .reducible
-    exfalso := false
-  }
+    exfalso := false }
   liftMetaTactic fun g => do processSyntax cfg false false [] [] #[mkIdent `mono] [g]
 
 end Monotonicity
