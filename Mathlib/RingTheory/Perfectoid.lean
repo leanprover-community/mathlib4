@@ -14,12 +14,31 @@ import Mathlib.CategoryTheory.Preadditive.Basic
 -/
 
 open Valuation Valued Function NNReal CategoryTheory
+#check Valued.mk
+class PerfectoidField (p : outParam ℕ) [Fact p.Prime] (K : Type*) [Field K] [UniformSpace K]
+    extends UniformAddGroup K, TopologicalDivisionRing K, CompleteSpace K : Prop where
+  exists_val_top : ∃ v : Valuation K ℝ≥0, ∀ (s : Set K),
+      s ∈ nhds 0 ↔ ∃ (γ : ℝ≥0ˣ), {x : K | v x < γ} ⊆ s
+        -- This is wrong, wait for change of Valued.
+  exists_p_mem_span_pow_p :
+      let _ : Valued K ℝ≥0 := Valued.mk
+          (Classical.choose exists_val_top) (Classical.choose_spec exists_val_top)
+      ∃ π : 𝒪[K], ¬ IsUnit π ∧ (p : 𝒪[K]) ∈ Ideal.span {π ^ p}
+  exist_p_th_root :
+      let _ : Valued K ℝ≥0 := Valued.mk
+          (Classical.choose exists_val_top) (Classical.choose_spec exists_val_top)
+      ∀ x : 𝒪[K]⧸Ideal.span {(p : 𝒪[K])}, ∃ y : 𝒪[K]⧸Ideal.span {(p : 𝒪[K])} , x = y ^ p
+      -- Surjective <| frobenius (𝒪[K]⧸Ideal.span {(p : 𝒪[K])}) p
+
+-- This is for the definition of the category of perfectoid fields
+class PerfectoidFieldObj (p : outParam ℕ) [Fact p.Prime] (K : Type*) extends
+    Field K, UniformSpace K, PerfectoidField p K
 
 -- `Valuation is not a part of information it only require the topology comes from a valuation`
 
-class PerfectoidField (p : outParam ℕ) [Fact p.Prime] (K : Type*) [Field K]
+class PerfectoidValuedField (p : outParam ℕ) [Fact p.Prime] (K : Type*) [Field K]
     [val : Valued K ℝ≥0] extends CompleteSpace K : Prop
-    where -- `Valued inside or outside the structure?`
+    where
   exists_p_mem_span_pow_p : ∃ π : 𝒪[K], ¬ IsUnit π ∧ (p : 𝒪[K]) ∈ Ideal.span {π ^ p}
   exist_p_th_root : ∀ x : 𝒪[K]⧸Ideal.span {(p : 𝒪[K])},
       ∃ y : 𝒪[K]⧸Ideal.span {(p : 𝒪[K])} , x = y ^ p
@@ -31,6 +50,13 @@ namespace PerfectoidField
 variable (p : outParam ℕ) [Fact (p.Prime)] (K : Type*) {Γ : outParam Type*} [Field K]
     [LinearOrderedCommGroupWithZero Γ] [vK : Valued K ℝ≥0] [CompleteSpace K]
     [perf : PerfectoidField p K]
+
+def IsTopologicalNilpotent (x : K) : Prop := sorry
+-- Topological nilpotent elements
+
+-- Topological bounded elements forms a ring
+-- Topological Nilpotent elements forms an ideal
+
 
 theorem val_p_lt_1 : vK.v p < 1 := sorry
 
@@ -45,7 +71,7 @@ noncomputable instance : Field (Tilt p K) := inferInstanceAs <|
 variable (K : Type*) {Γ : outParam Type*} [Field K] [LinearOrderedCommGroupWithZero Γ]
     [vK : Valued K ℝ≥0] [CompleteSpace K] [perf : PerfectoidField p K]
 
--- `Should I define a PerfectoidField.Tilt?`
+
 -- This is not a proposition I need to proof in order to prove the final theorem.
 theorem PerfectoidField.isAlgClosed_iff_isAlgClosed_tilt (K : Type*) {Γ : outParam Type*}
     [Field K] [LinearOrderedCommGroupWithZero Γ]
@@ -63,7 +89,7 @@ def valuedRankOneValuationFiniteDimensional (K L : Type*) [Field K]
 instance ofFiniteDimensional (K L : Type*) [Field K]
     [vK : Valued K ℝ≥0] [CompleteSpace K] [PerfectoidField p K] [Field L]
     [Algebra K L] [FiniteDimensional K L] :
-    @PerfectoidField p _ L _ (valuedRankOneValuationFiniteDimensional K L) := sorry
+    PerfectoidField p L:= sorry -- unifrom space structure comes from K v.s.
 
 section FiniteExts
 
@@ -90,7 +116,9 @@ end FiniteExts
 -- 3. first define a structure perfectoid fields K and its boundled hom,
 --    then use CategoryTheory.Bundled.
 
-def PerfFieldCat := CategoryTheory.Bundled (PerfectoidField p) -- topological field only + some prop
+-- inorder to use Cat.bundled, One need to create a extending structure
+def PerfFieldCat := CategoryTheory.Bundled (PerfectoidFieldObj p)
+-- topological field only + some prop
 
 def PerfectoidFieldOver (K : Type*) [Field K]: Type* := sorry
 
@@ -102,3 +130,5 @@ def PerfectoidField.TiltingFunctor : (PerfectoidFieldOver K) ⥤
 
 def PerfectoidField.TiltingFinExt : FiniteExtension K ≌
     FiniteExtension (Tilt K vK.v 𝒪[K] (integer.integers vK.v) perf.p) := sorry
+
+end PerfectoidField
