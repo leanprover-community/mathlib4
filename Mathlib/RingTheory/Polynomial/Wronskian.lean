@@ -130,7 +130,7 @@ theorem dvd_derivative_iff {a : k[X]} : a ∣ derivative a ↔ derivative a = 0 
 
 /--
 For coprime polynomials `a` and `b`, their Wronskian is zero
-if and only if their derivatives are constants.
+if and only if their derivatives are zeros.
 -/
 theorem IsCoprime.wronskian_eq_zero_iff {a b : k[X]} (hc : IsCoprime a b) :
     wronskian a b = 0 ↔ derivative a = 0 ∧ derivative b = 0 where
