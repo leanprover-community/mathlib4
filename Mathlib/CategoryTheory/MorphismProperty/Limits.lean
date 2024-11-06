@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Composition
 The following predicates are introduces for morphism properties `P`:
 * `IsStableUnderBaseChange`: `P` is stable under base change if in all pullback
   squares, the left map satisfies `P` if the right map satisfies it.
-* `StableUnderCobaseChange`: `P` is stable under cobase change if in all pushout
+* `IsStableUnderCobaseChange`: `P` is stable under cobase change if in all pushout
   squares, the right map satisfies `P` if the left map satisfies it.
 
 We define `P.universally` for the class of morphisms which satisfy `P` after any base change.
@@ -39,9 +39,9 @@ class IsStableUnderBaseChange (P : MorphismProperty C) : Prop where
   of_isPullback {X Y Y' S : C} {f : X ⟶ S} {g : Y ⟶ S} {f' : Y' ⟶ Y} {g' : Y' ⟶ X}
     (sq : IsPullback f' g' g f) (hg : P g) : P g'
 
-/-- A morphism property is `StableUnderCobaseChange` if the cobase change of such a morphism
+/-- A morphism property is `IsStableUnderCobaseChange` if the cobase change of such a morphism
 still falls in the class. -/
-class StableUnderCobaseChange (P : MorphismProperty C) : Prop where
+class IsStableUnderCobaseChange (P : MorphismProperty C) : Prop where
   of_isPushout {A A' B B' : C} {f : A ⟶ A'} {g : A ⟶ B} {f' : B ⟶ B'} {g' : A' ⟶ B'}
     (sq : IsPushout g f f' g') (hf : P f) : P f'
 
@@ -133,23 +133,23 @@ theorem pullback_map [HasPullbacks C] {P : MorphismProperty C}
 
 @[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.pullback_map := pullback_map
 
-lemma of_isPushout {P : MorphismProperty C} [P.StableUnderCobaseChange]
+lemma of_isPushout {P : MorphismProperty C} [P.IsStableUnderCobaseChange]
     {A A' B B' : C} {f : A ⟶ A'} {g : A ⟶ B} {f' : B ⟶ B'} {g' : A' ⟶ B'}
     (sq : IsPushout g f f' g') (hf : P f) : P f' :=
-  StableUnderCobaseChange.of_isPushout sq hf
+  IsStableUnderCobaseChange.of_isPushout sq hf
 
-/-- An alternative constructor for `StableUnderCobaseChange`. -/
-theorem StableUnderCobaseChange.mk' {P : MorphismProperty C} [HasPushouts C] [RespectsIso P]
+/-- An alternative constructor for `IsStableUnderCobaseChange`. -/
+theorem IsStableUnderCobaseChange.mk' {P : MorphismProperty C} [HasPushouts C] [RespectsIso P]
     (hP₂ : ∀ (A B A' : C) (f : A ⟶ A') (g : A ⟶ B) (_ : P f), P (pushout.inr f g)) :
-    StableUnderCobaseChange P where
+    IsStableUnderCobaseChange P where
   of_isPushout {A A' B B' f g f' g'} sq hf := by
     let e := sq.flip.isoPushout
     rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
     exact hP₂ _ _ _ f g hf
 
 variable (C) in
-instance StableUnderCobaseChange.epimorphisms :
-    (epimorphisms C).StableUnderCobaseChange where
+instance IsStableUnderCobaseChange.epimorphisms :
+    (epimorphisms C).IsStableUnderCobaseChange where
   of_isPushout {X Y Y' S f g f' g'} h hf := by
     have : Epi f := hf
     constructor
@@ -160,38 +160,38 @@ instance StableUnderCobaseChange.epimorphisms :
       dsimp
       simp only [← reassoc_of% h.w, h₁₂]
 
-instance StableUnderCobaseChange.respectsIso {P : MorphismProperty C}
-    [StableUnderCobaseChange P] : RespectsIso P :=
+instance IsStableUnderCobaseChange.respectsIso {P : MorphismProperty C}
+    [IsStableUnderCobaseChange P] : RespectsIso P :=
   RespectsIso.of_respects_arrow_iso _ fun _ _ e ↦
     of_isPushout (IsPushout.of_horiz_isIso (CommSq.mk e.hom.w))
 
-theorem pushout_inl {P : MorphismProperty C} [StableUnderCobaseChange P]
+theorem pushout_inl {P : MorphismProperty C} [IsStableUnderCobaseChange P]
     {A B A' : C} (f : A ⟶ A') (g : A ⟶ B) [HasPushout f g] (H : P g) :
     P (pushout.inl f g) :=
   of_isPushout (IsPushout.of_hasPushout f g) H
 
 @[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.inl := pushout_inl
 
-theorem pushout_inr {P : MorphismProperty C} [StableUnderCobaseChange P]
+theorem pushout_inr {P : MorphismProperty C} [IsStableUnderCobaseChange P]
     {A B A' : C} (f : A ⟶ A') (g : A ⟶ B) [HasPushout f g] (H : P f) : P (pushout.inr f g) :=
   of_isPushout (IsPushout.of_hasPushout f g).flip H
 
 @[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.inr := pushout_inr
 
-instance StableUnderCobaseChange.op {P : MorphismProperty C} [StableUnderCobaseChange P] :
+instance IsStableUnderCobaseChange.op {P : MorphismProperty C} [IsStableUnderCobaseChange P] :
     IsStableUnderBaseChange P.op where
   of_isPullback sq hg := P.of_isPushout sq.unop hg
 
-instance StableUnderCobaseChange.unop {P : MorphismProperty Cᵒᵖ} [StableUnderCobaseChange P] :
+instance IsStableUnderCobaseChange.unop {P : MorphismProperty Cᵒᵖ} [IsStableUnderCobaseChange P] :
     IsStableUnderBaseChange P.unop where
   of_isPullback sq hg := P.of_isPushout sq.op hg
 
 instance IsStableUnderBaseChange.op {P : MorphismProperty C} [IsStableUnderBaseChange P] :
-    StableUnderCobaseChange P.op where
+    IsStableUnderCobaseChange P.op where
   of_isPushout sq hf := P.of_isPullback sq.unop hf
 
 instance IsStableUnderBaseChange.unop {P : MorphismProperty Cᵒᵖ} [IsStableUnderBaseChange P] :
-    StableUnderCobaseChange P.unop where
+    IsStableUnderCobaseChange P.unop where
   of_isPushout sq hf := P.of_isPullback sq.op hf
 
 instance IsStableUnderBaseChange.inf {P Q : MorphismProperty C} [IsStableUnderBaseChange P]
@@ -199,9 +199,9 @@ instance IsStableUnderBaseChange.inf {P Q : MorphismProperty C} [IsStableUnderBa
     IsStableUnderBaseChange (P ⊓ Q) where
   of_isPullback hp hg := ⟨of_isPullback hp hg.left, of_isPullback hp hg.right⟩
 
-instance StableUnderCobaseChange.inf {P Q : MorphismProperty C} [StableUnderCobaseChange P]
-    [StableUnderCobaseChange Q] :
-    StableUnderCobaseChange (P ⊓ Q) where
+instance IsStableUnderCobaseChange.inf {P Q : MorphismProperty C} [IsStableUnderCobaseChange P]
+    [IsStableUnderCobaseChange Q] :
+    IsStableUnderCobaseChange (P ⊓ Q) where
   of_isPushout hp hg := ⟨of_isPushout hp hg.left, of_isPushout hp hg.right⟩
 
 section
