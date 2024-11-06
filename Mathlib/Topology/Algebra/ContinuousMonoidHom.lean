@@ -476,6 +476,11 @@ instance : EquivLike (M ≃ₜ* N) M N where
 instance : MulEquivClass (M ≃ₜ* N) M N where
   map_mul f := f.map_mul'
 
+@[to_additive]
+instance : HomeomorphClass (M ≃ₜ* N) M N where
+  continuous_toFun f := f.continuous_toFun
+  continuous_invFun f := f.continuous_invFun
+
 @[to_additive] -- shortcut instance that doesn't generate any subgoals
 instance : CoeFun (M ≃ₜ* N) fun _ ↦ M → N where
   coe f := f
@@ -510,25 +515,7 @@ a homeomorphism which preserves addition."]
 def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
   ⟨⟨f.toEquiv,h⟩, f.continuous_toFun, f.continuous_invFun⟩
 
-instance : Coe (M ≃ₜ* N) (M ≃ₜ N) where
-  coe := toHomeomorph
-
-theorem isHomeomorph (f : M ≃ₜ* N) : IsHomeomorph f :=
-  Homeomorph.isHomeomorph f
-
 end coe
-
-section map
-
-protected lemma isClosedMap (f : M ≃ₜ* N) : IsClosedMap f := f.toHomeomorph.isClosedMap
-lemma isInducing (f : M ≃ₜ* N) : IsInducing f := f.toHomeomorph.isInducing
-lemma isQuotientMap (f : M ≃ₜ* N) : IsQuotientMap f := f.toHomeomorph.isQuotientMap
-lemma isEmbedding (f : M ≃ₜ* N) : IsEmbedding f := f.toHomeomorph.isEmbedding
-lemma isOpenEmbedding (f : M ≃ₜ* N) : IsOpenEmbedding f := f.toHomeomorph.isOpenEmbedding
-lemma isClosedEmbedding (f : M ≃ₜ* N) : IsClosedEmbedding f := f.toHomeomorph.isClosedEmbedding
-lemma isDenseEmbedding (f : M ≃ₜ* N) : IsDenseEmbedding f := f.toHomeomorph.isDenseEmbedding
-
-end map
 
 section bijective
 
@@ -556,7 +543,7 @@ section refl
 variable (M)
 
 /-- The identity map is a continuous multiplicative isomorphism. -/
-@[to_additive (attr := refl) "The identity map is an additive isomorphism."]
+@[to_additive (attr := refl) "The identity map is a continuous additive isomorphism."]
 def refl : M ≃ₜ* M := {
   MulEquiv.refl _ with
   continuous_toFun := by continuity
@@ -587,7 +574,7 @@ def symm (cme : M ≃ₜ* N) : N ≃ₜ* M := {
 theorem invFun_eq_symm {f : M ≃ₜ* N} : f.invFun = f.symm := rfl
 
 @[to_additive]
-theorem coe_toHomeomorph_symm (f : M ≃ₜ* N) : f.toHomeomorph.symm = f.symm.toHomeomorph := rfl
+theorem coe_toHomeomorph_symm (f : M ≃ₜ* N) : (f : M ≃ₜ N).symm = (f.symm : N ≃ₜ M) := rfl
 
 @[to_additive]
 theorem equivLike_inv_eq_symm (f : M ≃ₜ* N) : EquivLike.inv f = f.symm := rfl

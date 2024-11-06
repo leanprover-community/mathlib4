@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # Flatness is stable under composition and base change
