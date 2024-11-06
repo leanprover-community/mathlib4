@@ -357,7 +357,7 @@ theorem det_updateColumn_smul (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
 
 theorem det_updateRow_smul_left (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateRow (s • M) j u) = s ^ (Fintype.card n - 1) * det (updateRow M j u) :=
-  MultilinearMap.map_smul_update _ M j s u
+  MultilinearMap.map_update_smul_left _ M j s u
 
 @[deprecated (since := "2024-11-03")] alias det_updateRow_smul' := det_updateRow_smul_left
 

@@ -150,7 +150,7 @@ protected theorem map_update_add [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (
 @[deprecated (since := "2024-11-03")] protected alias map_add := MultilinearMap.map_update_add
 @[deprecated (since := "2024-11-03")] protected alias map_add' := MultilinearMap.map_update_add
 
-/-- Earlier, this name was used by what is now called `MultilinearMap.map_smul_update`. -/
+/-- Earlier, this name was used by what is now called `MultilinearMap.map_update_smul_left`. -/
 @[simp]
 protected theorem map_update_smul [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i) :
     f (update m i (c • x)) = c • f (update m i x) :=
@@ -1112,7 +1112,8 @@ theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ∀ i, M₁ i) :
   classical simpa using map_piecewise_smul f c m Finset.univ
 
 @[simp]
-theorem map_smul_update [DecidableEq ι] [Fintype ι] (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i) :
+theorem map_update_smul_left [DecidableEq ι] [Fintype ι]
+    (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i) :
     f (update (c • m) i x) = c ^ (Fintype.card ι - 1) • f (update m i x) := by
   have :
     f ((Finset.univ.erase i).piecewise (c • update m i x) (update m i x)) =
