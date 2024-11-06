@@ -190,7 +190,7 @@ instance StableUnderBaseChange.op {P : MorphismProperty C} [StableUnderBaseChang
     StableUnderCobaseChange P.op where
   of_isPushout sq hf := P.of_isPullback sq.unop hf
 
-instance StableUnderBaseChange.unop {P : MorphismProperty Cᵒᵖ} (hP : StableUnderBaseChange P) :
+instance StableUnderBaseChange.unop {P : MorphismProperty Cᵒᵖ} [StableUnderBaseChange P] :
     StableUnderCobaseChange P.unop where
   of_isPushout sq hf := P.of_isPullback sq.op hf
 
