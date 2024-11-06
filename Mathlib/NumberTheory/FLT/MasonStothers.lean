@@ -8,13 +8,13 @@ import Mathlib.RingTheory.Polynomial.Radical
 /-!
 # Mason-Stothers theorem
 
-This file states and proves the Mason-Stothers theorem, which is a polynomial version of the ABC conjecture.
-For (pairwise) coprime polynomials `a, b, c` (over a field) with `a + b + c = 0`, we have
-`max {deg(a), deg(b), deg(c)} + 1 ≤ deg(rad(abc))` or `a' = b' = c' = 0`.
+This file states and proves the Mason-Stothers theorem, which is a polynomial version of the
+ABC conjecture. For (pairwise) coprime polynomials `a, b, c` (over a field) with `a + b + c = 0`,
+we have `max {deg(a), deg(b), deg(c)} + 1 ≤ deg(rad(abc))` or `a' = b' = c' = 0`.
 
-Proof is based on this online note by Franz Lemmermeyer
-http://www.fen.bilkent.edu.tr/~franz/ag05/ag-02.pdf, which is essentially based on
-Noah Snyder's paper "An Alternative Proof of Mason's Theorem", but slightly different.
+Proof is based on this online note by Franz Lemmermeyer http://www.fen.bilkent.edu.tr/~franz/ag05/ag-02.pdf,
+which is essentially based on Noah Snyder's paper "An Alternative Proof of Mason's Theorem",
+but slightly different.
 
 ## TODO
 
