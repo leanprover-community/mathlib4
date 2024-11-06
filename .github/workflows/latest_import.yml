@@ -16,8 +16,6 @@ jobs:
   late-importers:
     name: Build
     runs-on: pr
-    env:
-      TOP_MODULE: 'Mathlib.Logic.Function.Basic'
     steps:
     - name: cleanup
       run: |
@@ -72,6 +70,8 @@ jobs:
 
     - name: build mathlib
       id: build
+      env:
+        TOP_MODULE: 'Mathlib.Logic.Function.Basic'
       uses: liskin/gh-problem-matcher-wrap@v3
       with:
         linters: gcc
