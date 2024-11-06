@@ -203,7 +203,7 @@ def Hom.toAlgHom [Algebra R S'] [IsScalarTower R R' S'] (f : Hom P P') :
 
 @[simp]
 lemma Hom.toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S'] (f : Hom P P') (x) :
-  f.toAlgHom x = f.toRingHom x := rfl
+    f.toAlgHom x = f.toRingHom x := rfl
 
 variable (P P')
 
