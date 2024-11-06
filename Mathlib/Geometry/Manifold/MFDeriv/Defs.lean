@@ -128,6 +128,22 @@ differentiable functions between manifolds. -/
 def DifferentiableWithinAtProp (f : H → H') (s : Set H) (x : H) : Prop :=
   DifferentiableWithinAt 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ Set.range I) (I x)
 
+open scoped Manifold
+
+theorem differentiableWithinAtProp_self_source {f : E → H'} {s : Set E} {x : E} :
+    DifferentiableWithinAtProp 𝓘(𝕜, E) I' f s x ↔ DifferentiableWithinAt 𝕜 (I' ∘ f) s x := by
+  simp_rw [DifferentiableWithinAtProp, modelWithCornersSelf_coe, range_id, inter_univ,
+    modelWithCornersSelf_coe_symm, CompTriple.comp_eq, preimage_id_eq, id_eq]
+
+theorem DifferentiableWithinAtProp_self {f : E → E'} {s : Set E} {x : E} :
+    DifferentiableWithinAtProp 𝓘(𝕜, E) 𝓘(𝕜, E') f s x ↔ DifferentiableWithinAt 𝕜 f s x :=
+  differentiableWithinAtProp_self_source
+
+theorem differentiableWithinAtProp_self_target {f : H → E'} {s : Set H} {x : H} :
+    DifferentiableWithinAtProp I 𝓘(𝕜, E') f s x ↔
+      DifferentiableWithinAt 𝕜 (f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x) :=
+  Iff.rfl
+
 /-- Being differentiable in the model space is a local property, invariant under smooth maps.
 Therefore, it will lift nicely to manifolds. -/
 theorem differentiableWithinAt_localInvariantProp :
