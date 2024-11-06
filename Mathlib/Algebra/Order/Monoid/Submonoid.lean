@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Ordered instances on submonoids
