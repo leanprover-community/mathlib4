@@ -130,7 +130,6 @@ lemma TensorProduct.eq_repr_basis_left :
   exact ⟨c, (TensorProduct.comm R M N).injective <| by
     simp [equivFinsuppOfBasisLeft, equivFinsuppOfBasisRight, Finsupp.sum]⟩
 
-
 lemma TensorProduct.sum_tmul_basis_right_eq_zero
     (b : κ →₀ M) (h : (b.sum fun i m ↦ m ⊗ₜ[R] 𝒞 i) = 0) : b = 0 :=
   (TensorProduct.equivFinsuppOfBasisRight 𝒞).symm.injective (a₂ := 0) (h.trans (by simp))
