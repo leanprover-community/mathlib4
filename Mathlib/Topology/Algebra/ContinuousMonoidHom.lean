@@ -574,7 +574,7 @@ def symm (cme : M ≃ₜ* N) : N ≃ₜ* M := {
 theorem invFun_eq_symm {f : M ≃ₜ* N} : f.invFun = f.symm := rfl
 
 @[to_additive]
-theorem coe_toHomeomorph_symm (f : M ≃ₜ* N) : f.toHomeomorph.symm = f.symm.toHomeomorph := rfl
+theorem coe_toHomeomorph_symm (f : M ≃ₜ* N) : (f : M ≃ₜ N).symm = (f.symm : N ≃ₜ M) := rfl
 
 @[to_additive]
 theorem equivLike_inv_eq_symm (f : M ≃ₜ* N) : EquivLike.inv f = f.symm := rfl
