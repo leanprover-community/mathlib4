@@ -493,7 +493,7 @@ theorem le_biUnion_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :
     rcases Hi J hJ this with ⟨Ji, hJi, hlei⟩
     exact ⟨Ji, π.mem_biUnion.2 ⟨J, hJ, hJi⟩, hlei⟩
 
-instance inf : Inf (Prepartition I) :=
+instance inf : Min (Prepartition I) :=
   ⟨fun π₁ π₂ => π₁.biUnion fun J => π₂.restrict J⟩
 
 theorem inf_def (π₁ π₂ : Prepartition I) : π₁ ⊓ π₂ = π₁.biUnion fun J => π₂.restrict J := rfl
@@ -508,9 +508,7 @@ theorem iUnion_inf (π₁ π₂ : Prepartition I) : (π₁ ⊓ π₂).iUnion = �
   simp only [inf_def, iUnion_biUnion, iUnion_restrict, ← iUnion_inter, ← iUnion_def]
 
 instance : SemilatticeInf (Prepartition I) :=
-  { Prepartition.inf,
-    Prepartition.partialOrder with
-    inf_le_left := fun π₁ _ => π₁.biUnion_le _
+  { inf_le_left := fun π₁ _ => π₁.biUnion_le _
     inf_le_right := fun _ _ => (biUnion_le_iff _).2 fun _ _ => le_rfl
     le_inf := fun _ π₁ _ h₁ h₂ => π₁.le_biUnion_iff.2 ⟨h₁, fun _ _ => restrict_mono h₂⟩ }
 

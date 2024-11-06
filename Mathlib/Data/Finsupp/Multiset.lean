@@ -104,12 +104,12 @@ theorem count_toMultiset [DecidableEq α] (f : α →₀ ℕ) (a : α) : (toMult
 theorem toMultiset_sup [DecidableEq α] (f g : α →₀ ℕ) :
     toMultiset (f ⊔ g) = toMultiset f ∪ toMultiset g := by
   ext
-  simp_rw [Multiset.count_union, Finsupp.count_toMultiset, Finsupp.sup_apply, sup_eq_max]
+  simp_rw [Multiset.count_union, Finsupp.count_toMultiset, Finsupp.sup_apply]
 
 theorem toMultiset_inf [DecidableEq α] (f g : α →₀ ℕ) :
     toMultiset (f ⊓ g) = toMultiset f ∩ toMultiset g := by
   ext
-  simp_rw [Multiset.count_inter, Finsupp.count_toMultiset, Finsupp.inf_apply, inf_eq_min]
+  simp_rw [Multiset.count_inter, Finsupp.count_toMultiset, Finsupp.inf_apply]
 
 @[simp]
 theorem mem_toMultiset (f : α →₀ ℕ) (i : α) : i ∈ toMultiset f ↔ i ∈ f.support := by

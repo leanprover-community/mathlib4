@@ -90,8 +90,8 @@ theorem coe_sInf' (S : Set L) : (↑(sInf S) : α) = ⨅ N ∈ S, (N : α) := by
   rw [coe_sInf, ← Set.image, sInf_image]
 
 -- Redeclaring to get proper keys for these instances
-instance : Sup {x // x ∈ L} := Sublattice.instSupCoe
-instance : Inf {x // x ∈ L} := Sublattice.instInfCoe
+instance : Max {x // x ∈ L} := Sublattice.instSupCoe
+instance : Min {x // x ∈ L} := Sublattice.instInfCoe
 
 instance instCompleteLattice : CompleteLattice L :=
   Subtype.coe_injective.completeLattice _

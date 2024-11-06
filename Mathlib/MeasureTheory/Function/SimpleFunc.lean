@@ -369,10 +369,10 @@ instance instDiv [Div β] : Div (α →ₛ β) :=
 instance instInv [Inv β] : Inv (α →ₛ β) :=
   ⟨fun f => f.map Inv.inv⟩
 
-instance instSup [Sup β] : Sup (α →ₛ β) :=
+instance instSup [Max β] : Max (α →ₛ β) :=
   ⟨fun f g => (f.map (· ⊔ ·)).seq g⟩
 
-instance instInf [Inf β] : Inf (α →ₛ β) :=
+instance instInf [Min β] : Min (α →ₛ β) :=
   ⟨fun f g => (f.map (· ⊓ ·)).seq g⟩
 
 instance instLE [LE β] : LE (α →ₛ β) :=
@@ -403,11 +403,11 @@ theorem coe_le [Preorder β] {f g : α →ₛ β} : (f : α → β) ≤ g ↔ f 
   Iff.rfl
 
 @[simp, norm_cast]
-theorem coe_sup [Sup β] (f g : α →ₛ β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
+theorem coe_sup [Max β] (f g : α →ₛ β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_inf [Inf β] (f g : α →ₛ β) : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
+theorem coe_inf [Min β] (f g : α →ₛ β) : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
   rfl
 
 @[to_additive]
@@ -422,10 +422,10 @@ theorem div_apply [Div β] (f g : α →ₛ β) (x : α) : (f / g) x = f x / g x
 theorem inv_apply [Inv β] (f : α →ₛ β) (x : α) : f⁻¹ x = (f x)⁻¹ :=
   rfl
 
-theorem sup_apply [Sup β] (f g : α →ₛ β) (a : α) : (f ⊔ g) a = f a ⊔ g a :=
+theorem sup_apply [Max β] (f g : α →ₛ β) (a : α) : (f ⊔ g) a = f a ⊔ g a :=
   rfl
 
-theorem inf_apply [Inf β] (f g : α →ₛ β) (a : α) : (f ⊓ g) a = f a ⊓ g a :=
+theorem inf_apply [Min β] (f g : α →ₛ β) (a : α) : (f ⊓ g) a = f a ⊓ g a :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -449,7 +449,7 @@ theorem eq_zero_of_mem_range_zero [Zero β] : ∀ {y : β}, y ∈ (0 : α →ₛ
 theorem mul_eq_map₂ [Mul β] (f g : α →ₛ β) : f * g = (pair f g).map fun p : β × β => p.1 * p.2 :=
   rfl
 
-theorem sup_eq_map₂ [Sup β] (f g : α →ₛ β) : f ⊔ g = (pair f g).map fun p : β × β => p.1 ⊔ p.2 :=
+theorem sup_eq_map₂ [Max β] (f g : α →ₛ β) : f ⊔ g = (pair f g).map fun p : β × β => p.1 ⊔ p.2 :=
   rfl
 
 @[to_additive]

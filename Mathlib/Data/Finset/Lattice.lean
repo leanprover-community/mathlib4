@@ -1179,7 +1179,6 @@ theorem count_finset_sup [DecidableEq β] (s : Finset α) (f : α → Multiset �
   · exact count_zero _
   · intro i s _ ih
     rw [Finset.sup_insert, sup_eq_union, count_union, Finset.sup_insert, ih]
-    rfl
 
 theorem mem_sup {α β} [DecidableEq β] {s : Finset α} {f : α → Multiset β} {x : β} :
     x ∈ s.sup f ↔ ∃ v ∈ s, x ∈ f v := by

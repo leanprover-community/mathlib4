@@ -505,7 +505,7 @@ namespace Subfield
 
 
 /-- The inf of two subfields is their intersection. -/
-instance : Inf (Subfield K) :=
+instance : Min (Subfield K) :=
   ⟨fun s t =>
     { s.toSubring ⊓ t.toSubring with
       inv_mem' := fun _ hx =>

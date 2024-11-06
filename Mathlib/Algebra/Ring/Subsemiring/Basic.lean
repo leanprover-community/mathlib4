@@ -479,7 +479,7 @@ theorem mem_bot {x : R} : x ∈ (⊥ : Subsemiring R) ↔ ∃ n : ℕ, ↑n = x 
   RingHom.mem_rangeS
 
 /-- The inf of two subsemirings is their intersection. -/
-instance : Inf (Subsemiring R) :=
+instance : Min (Subsemiring R) :=
   ⟨fun s t =>
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubmonoid ⊓ t.toAddSubmonoid with carrier := s ∩ t }⟩
 

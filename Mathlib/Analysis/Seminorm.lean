@@ -208,8 +208,8 @@ instance instModule [Semiring R] [Module R ℝ] [SMul R ℝ≥0] [IsScalarTower 
     Module R (Seminorm 𝕜 E) :=
   (coeFnAddMonoidHom_injective 𝕜 E).module R _ (by intros; rfl)
 
-instance instSup : Sup (Seminorm 𝕜 E) where
-  sup p q :=
+instance instSup : Max (Seminorm 𝕜 E) where
+  max p q :=
     { p.toAddGroupSeminorm ⊔ q.toAddGroupSeminorm with
       toFun := p ⊔ q
       smul' := fun x v =>
@@ -425,8 +425,8 @@ theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
     rintro _ ⟨x, rfl⟩
     dsimp; positivity⟩
 
-noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
-  inf p q :=
+noncomputable instance instInf : Min (Seminorm 𝕜 E) where
+  min p q :=
     { p.toAddGroupSeminorm ⊓ q.toAddGroupSeminorm with
       toFun := fun x => ⨅ u : E, p u + q (x - u)
       smul' := by

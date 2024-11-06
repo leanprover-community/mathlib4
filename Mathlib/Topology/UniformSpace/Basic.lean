@@ -1044,7 +1044,7 @@ instance : Bot (UniformSpace α) :=
         let _ : TopologicalSpace α := ⊥; have := discreteTopology_bot α
         simp [idRel] }⟩
 
-instance : Inf (UniformSpace α) :=
+instance : Min (UniformSpace α) :=
   ⟨fun u₁ u₂ =>
     { uniformity := 𝓤[u₁] ⊓ 𝓤[u₂]
       symm := u₁.symm.inf u₂.symm

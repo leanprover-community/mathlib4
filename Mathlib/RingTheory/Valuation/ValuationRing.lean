@@ -247,21 +247,32 @@ instance (priority := 100) localRing : LocalRing A :=
         apply isUnit_of_mul_eq_one _ (c + 1)
         simp [mul_add, h])
 
+lemma le_total_ideal (α β : Ideal A) : α ≤ β ∨ β ≤ α := by
+  by_cases h : α ≤ β; · exact Or.inl h
+  erw [not_forall] at h
+  push_neg at h
+  obtain ⟨a, h₁, h₂⟩ := h
+  right
+  intro b hb
+  obtain ⟨c, h | h⟩ := ValuationRing.cond a b
+  · rw [← h]
+    exact Ideal.mul_mem_right _ _ h₁
+  · exfalso; apply h₂; rw [← h]
+    apply Ideal.mul_mem_right _ _ hb
+
 instance [DecidableRel ((· ≤ ·) : Ideal A → Ideal A → Prop)] : LinearOrder (Ideal A) :=
   { (inferInstance : CompleteLattice (Ideal A)) with
-    le_total := by
-      intro α β
-      by_cases h : α ≤ β; · exact Or.inl h
-      erw [not_forall] at h
-      push_neg at h
-      obtain ⟨a, h₁, h₂⟩ := h
-      right
-      intro b hb
-      obtain ⟨c, h | h⟩ := ValuationRing.cond a b
-      · rw [← h]
-        exact Ideal.mul_mem_right _ _ h₁
-      · exfalso; apply h₂; rw [← h]
-        apply Ideal.mul_mem_right _ _ hb
+    min_def := by --TODO this could more generally be linearOrder_of_lattice_le_total
+      intro α β; split_ifs
+      · simp [*]
+      · have : β ≤ α := by have := le_total_ideal A α β; tauto
+        simp [*]
+    max_def := by
+      intro α β; split_ifs
+      · simp [*]
+      · have : β ≤ α := by have := le_total_ideal A α β; tauto
+        simp [*]
+    le_total := le_total_ideal A
     decidableLE := inferInstance }
 
 end

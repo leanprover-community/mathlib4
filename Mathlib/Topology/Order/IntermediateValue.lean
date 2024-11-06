@@ -243,7 +243,7 @@ theorem IsPreconnected.Iio_csSup_subset {s : Set α} (hs : IsPreconnected s) (hb
   IsPreconnected.Ioi_csInf_subset (α := αᵒᵈ) hs ha hb
 
 /-- A preconnected set in a conditionally complete linear order is either one of the intervals
-`[Inf s, Sup s]`, `[Inf s, Sup s)`, `(Inf s, Sup s]`, `(Inf s, Sup s)`, `[Inf s, +∞)`,
+` [Min s, Sup s]`, ` [Min s, Sup s)`, `(Inf s, Sup s]`, `(Inf s, Sup s)`, ` [Min s, +∞)`,
 `(Inf s, +∞)`, `(-∞, Sup s]`, `(-∞, Sup s)`, `(-∞, +∞)`, or `∅`. The converse statement requires
 `α` to be densely ordered. -/
 theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :

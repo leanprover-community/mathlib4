@@ -1233,11 +1233,11 @@ instance : Lattice (Finset α) :=
     inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2 }
 
 @[simp]
-theorem sup_eq_union : (Sup.sup : Finset α → Finset α → Finset α) = Union.union :=
+theorem sup_eq_union : (Max.max : Finset α → Finset α → Finset α) = Union.union :=
   rfl
 
 @[simp]
-theorem inf_eq_inter : (Inf.inf : Finset α → Finset α → Finset α) = Inter.inter :=
+theorem inf_eq_inter : (Min.min : Finset α → Finset α → Finset α) = Inter.inter :=
   rfl
 
 theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=

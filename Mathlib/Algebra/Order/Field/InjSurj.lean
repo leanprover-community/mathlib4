@@ -18,7 +18,7 @@ variable {α β : Type*}
 namespace Function.Injective
 variable [Zero β] [One β] [Add β] [Mul β] [Neg β] [Sub β] [Pow β ℕ] [SMul ℕ β] [SMul ℤ β]
   [SMul ℚ≥0 β] [SMul ℚ β] [NatCast β] [IntCast β] [NNRatCast β] [RatCast β] [Inv β] [Div β]
-  [Pow β ℤ] [Sup β] [Inf β] (f : β → α) (hf : Injective f)
+  [Pow β ℤ] [Max β] [Min β] (f : β → α) (hf : Injective f)
 
 /-- Pullback a `LinearOrderedSemifield` under an injective map. -/
 -- See note [reducible non-instances]
