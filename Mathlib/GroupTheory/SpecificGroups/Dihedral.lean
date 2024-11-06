@@ -6,6 +6,7 @@ Authors: Shing Tak Lam
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.GroupAction.CardCommute
+import Mathlib.Data.Finite.Sum
 
 /-!
 # Dihedral Groups

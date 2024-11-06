@@ -3,7 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Algebra.Order.Field.Basic
@@ -45,6 +45,9 @@ def castOrderEmbedding : ℚ ↪o K :=
 @[simp, norm_cast] lemma cast_le : (p : K) ≤ q ↔ p ≤ q := castOrderEmbedding.le_iff_le
 
 @[simp, norm_cast] lemma cast_lt : (p : K) < q ↔ p < q := cast_strictMono.lt_iff_lt
+
+@[gcongr] alias ⟨_, _root_.GCongr.ratCast_le_ratCast⟩ := cast_le
+@[gcongr] alias ⟨_, _root_.GCongr.ratCast_lt_ratCast⟩ := cast_lt
 
 @[simp] lemma cast_nonneg : 0 ≤ (q : K) ↔ 0 ≤ q := by norm_cast
 

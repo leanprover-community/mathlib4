@@ -39,13 +39,12 @@ variable {A B : Set (Finset α)} {s : Finset α} {r : ℕ}
 
 
 /-- `Sized r A` means that every Finset in `A` has size `r`. -/
-def Sized (r : ℕ) (A : Set (Finset α)) : Prop :=
-  ∀ ⦃x⦄, x ∈ A → card x = r
+def Sized (r : ℕ) (A : Set (Finset α)) : Prop := ∀ ⦃x⦄, x ∈ A → #x = r
 
 theorem Sized.mono (h : A ⊆ B) (hB : B.Sized r) : A.Sized r := fun _x hx => hB <| h hx
 
 @[simp] lemma sized_empty : (∅ : Set (Finset α)).Sized r := by simp [Sized]
-@[simp] lemma sized_singleton : ({s} : Set (Finset α)).Sized r ↔ s.card = r := by simp [Sized]
+@[simp] lemma sized_singleton : ({s} : Set (Finset α)).Sized r ↔ #s = r := by simp [Sized]
 
 theorem sized_union : (A ∪ B).Sized r ↔ A.Sized r ∧ B.Sized r :=
   ⟨fun hA => ⟨hA.mono subset_union_left, hA.mono subset_union_right⟩, fun hA _x hx =>
@@ -96,7 +95,7 @@ theorem subset_powersetCard_univ_iff : 𝒜 ⊆ powersetCard r univ ↔ (𝒜 : 
 alias ⟨_, _root_.Set.Sized.subset_powersetCard_univ⟩ := subset_powersetCard_univ_iff
 
 theorem _root_.Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
-    card 𝒜 ≤ (Fintype.card α).choose r := by
+    #𝒜 ≤ (Fintype.card α).choose r := by
   rw [Fintype.card, ← card_powersetCard]
   exact card_le_card (subset_powersetCard_univ_iff.mpr h𝒜)
 
@@ -110,15 +109,14 @@ section Slice
 variable {𝒜 : Finset (Finset α)} {A A₁ A₂ : Finset α} {r r₁ r₂ : ℕ}
 
 /-- The `r`-th slice of a set family is the subset of its elements which have cardinality `r`. -/
-def slice (𝒜 : Finset (Finset α)) (r : ℕ) : Finset (Finset α) :=
-  𝒜.filter fun i => i.card = r
+def slice (𝒜 : Finset (Finset α)) (r : ℕ) : Finset (Finset α) := {A ∈ 𝒜 | #A = r}
 
 -- Porting note: old code: scoped[FinsetFamily]
 @[inherit_doc]
 scoped[Finset] infixl:90 " # " => Finset.slice
 
 /-- `A` is in the `r`-th slice of `𝒜` iff it's in `𝒜` and has cardinality `r`. -/
-theorem mem_slice : A ∈ 𝒜 # r ↔ A ∈ 𝒜 ∧ A.card = r :=
+theorem mem_slice : A ∈ 𝒜 # r ↔ A ∈ 𝒜 ∧ #A = r :=
   mem_filter
 
 /-- The `r`-th slice of `𝒜` is a subset of `𝒜`. -/
@@ -143,10 +141,10 @@ variable [Fintype α] (𝒜)
 @[simp]
 theorem biUnion_slice [DecidableEq α] : (Iic <| Fintype.card α).biUnion 𝒜.slice = 𝒜 :=
   Subset.antisymm (biUnion_subset.2 fun _r _ => slice_subset) fun s hs =>
-    mem_biUnion.2 ⟨s.card, mem_Iic.2 <| s.card_le_univ, mem_slice.2 <| ⟨hs, rfl⟩⟩
+    mem_biUnion.2 ⟨#s, mem_Iic.2 <| s.card_le_univ, mem_slice.2 <| ⟨hs, rfl⟩⟩
 
 @[simp]
-theorem sum_card_slice : (∑ r ∈ Iic (Fintype.card α), (𝒜 # r).card) = 𝒜.card := by
+theorem sum_card_slice : ∑ r ∈ Iic (Fintype.card α), #(𝒜 # r) = #𝒜 := by
   letI := Classical.decEq α
   rw [← card_biUnion, biUnion_slice]
   exact Finset.pairwiseDisjoint_slice.subset (Set.subset_univ _)

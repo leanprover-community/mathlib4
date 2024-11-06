@@ -595,7 +595,7 @@ theorem of_injective : Function.Injective (of : G → HNNExtension G A B φ) := 
     (f := ((· • ·) : HNNExtension G A B φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
-    by simp_all [Function.funext_iff, of_smul_eq_smul])
+    by simp_all [funext_iff, of_smul_eq_smul])
 
 namespace ReducedWord
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Finite
+import Mathlib.Data.Finset.Sum
 
 /-!
 # Preimage of a `Finset` under an injective map.
@@ -93,6 +94,10 @@ theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, 
 theorem image_preimage_of_bij [DecidableEq β] (f : α → β) (s : Finset β)
     (hf : Set.BijOn f (f ⁻¹' ↑s) ↑s) : image f (preimage s f hf.injOn) = s :=
   Finset.coe_inj.1 <| by simpa using hf.image_eq
+
+lemma preimage_subset_of_subset_image [DecidableEq β] {f : α → β} {s : Finset β} {t : Finset α}
+    (hs : s ⊆ t.image f) {hf} : s.preimage f hf ⊆ t := by
+  rw [← coe_subset, coe_preimage]; exact Set.preimage_subset (mod_cast hs) hf
 
 theorem preimage_subset {f : α ↪ β} {s : Finset β} {t : Finset α} (hs : s ⊆ t.map f) :
     s.preimage f f.injective.injOn ⊆ t := fun _ h => (mem_map' f).1 (hs (mem_preimage.1 h))

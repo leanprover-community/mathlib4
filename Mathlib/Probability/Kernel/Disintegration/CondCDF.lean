@@ -42,7 +42,7 @@ open scoped NNReal ENNReal MeasureTheory Topology
 
 namespace MeasureTheory.Measure
 
-variable {α β : Type*} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
+variable {α : Type*} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
 
 /-- Measure on `α` such that for a measurable set `s`, `ρ.IicSnd r s = ρ (s ×ˢ Iic r)`. -/
 noncomputable def IicSnd (r : ℝ) : Measure α :=
@@ -112,7 +112,7 @@ open MeasureTheory
 
 namespace ProbabilityTheory
 
-variable {α β ι : Type*} {mα : MeasurableSpace α}
+variable {α : Type*} {mα : MeasurableSpace α}
 
 attribute [local instance] MeasureTheory.Measure.IsFiniteMeasure.IicSnd
 

@@ -7,6 +7,8 @@ import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
@@ -330,7 +332,7 @@ theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
   image_inter <| MulAction.injective a
 
 @[to_additive]
-theorem smul_set_iInter {ι : Type*}
+theorem smul_set_iInter {ι : Sort*}
     (a : α) (t : ι → Set β) : (a • ⋂ i, t i) = ⋂ i, a • t i :=
   image_iInter (MulAction.bijective a) t
 
@@ -401,10 +403,47 @@ lemma inv_op_smul_set_distrib (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹
   ext; simp [mem_smul_set_iff_inv_smul_mem]
 
 @[to_additive (attr := simp)]
-lemma smul_set_disjoint_iff : Disjoint (a • s) (a • t) ↔ Disjoint s t := by
-  simp [disjoint_iff, ← smul_set_inter]
+lemma disjoint_smul_set : Disjoint (a • s) (a • t) ↔ Disjoint s t :=
+  disjoint_image_iff <| MulAction.injective _
+
+@[to_additive]
+lemma disjoint_smul_set_left : Disjoint (a • s) t ↔ Disjoint s (a⁻¹ • t) := by
+  simpa using disjoint_smul_set (a := a) (t := a⁻¹ • t)
+
+@[to_additive]
+lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s) t := by
+  simpa using disjoint_smul_set (a := a) (s := a⁻¹ • s)
+
+@[to_additive (attr := deprecated (since := "2024-10-18"))]
+alias smul_set_disjoint_iff := disjoint_smul_set
 
 end Group
+
+section Group
+variable [Group α] [CommGroup β] [FunLike F α β] [MonoidHomClass F α β]
+
+@[to_additive]
+lemma smul_graphOn (x : α × β) (s : Set α) (f : F) :
+    x • s.graphOn f = (x.1 • s).graphOn fun a ↦ x.2 / f x.1 * f a := by
+  ext ⟨a, b⟩
+  simp [mem_smul_set_iff_inv_smul_mem, Prod.ext_iff, and_comm (a := _ = a), inv_mul_eq_iff_eq_mul,
+    mul_left_comm _ _⁻¹, eq_inv_mul_iff_mul_eq, ← mul_div_right_comm, div_eq_iff_eq_mul, mul_comm b]
+
+@[to_additive]
+lemma smul_graphOn_univ (x : α × β) (f : F) :
+    x • univ.graphOn f = univ.graphOn fun a ↦ x.2 / f x.1 * f a := by simp [smul_graphOn]
+
+end Group
+
+section CommGroup
+variable [CommGroup α]
+
+@[to_additive] lemma smul_div_smul_comm (a : α) (s : Set α) (b : α) (t : Set α) :
+    a • s / b • t = (a / b) • (s / t) := by
+  simp_rw [← image_smul, smul_eq_mul, ← singleton_mul, mul_div_mul_comm _ s,
+    singleton_div_singleton]
+
+end CommGroup
 
 section GroupWithZero
 

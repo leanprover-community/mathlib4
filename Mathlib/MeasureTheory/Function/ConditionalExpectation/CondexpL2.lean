@@ -203,7 +203,7 @@ theorem lintegral_nnnorm_condexpL2_indicator_le_real (hs : MeasurableSet s) (hμ
     classical
     simp_rw [Set.indicator_apply]
     split_ifs <;> simp
-  rw [h_eq, lintegral_indicator _ hs, lintegral_const, Measure.restrict_restrict hs]
+  rw [h_eq, lintegral_indicator hs, lintegral_const, Measure.restrict_restrict hs]
   simp only [one_mul, Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply]
 
 end Real

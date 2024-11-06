@@ -157,6 +157,9 @@ theorem opow_le_opow_left {a b : Ordinal} (c : Ordinal) (ab : a ≤ b) : a ^ c �
         (opow_le_of_limit a0 l).2 fun b' h =>
           (IH _ h).trans (opow_le_opow_right ((Ordinal.pos_iff_ne_zero.2 a0).trans_le ab) h.le)
 
+theorem opow_le_opow {a b c d : Ordinal} (hac : a ≤ c) (hbd : b ≤ d) (hc : 0 < c) : a ^ b ≤ c ^ d :=
+  (opow_le_opow_left b hac).trans (opow_le_opow_right hc hbd)
+
 theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ a ^ b := by
   nth_rw 1 [← opow_one a]
   cases' le_or_gt a 1 with a1 a1
@@ -167,8 +170,12 @@ theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ a ^ b := b
     rw [a1, one_opow, one_opow]
   rwa [opow_le_opow_iff_right a1, one_le_iff_pos]
 
+theorem left_lt_opow {a b : Ordinal} (ha : 1 < a) (hb : 1 < b) : a < a ^ b := by
+  conv_lhs => rw [← opow_one a]
+  rwa [opow_lt_opow_iff_right ha]
+
 theorem right_le_opow {a : Ordinal} (b : Ordinal) (a1 : 1 < a) : b ≤ a ^ b :=
-  (isNormal_opow a1).id_le _
+  (isNormal_opow a1).le_apply
 
 theorem opow_lt_opow_left_of_succ {a b c : Ordinal} (ab : a < b) : a ^ succ c < b ^ succ c := by
   rw [opow_succ, opow_succ]
@@ -479,6 +486,26 @@ theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y 
     exact mul_le_mul' (opow_log_le_self b hx) (opow_log_le_self b hy)
   · simpa only [log_of_left_le_one hb, zero_add] using le_rfl
 
+theorem omega0_opow_mul_nat_lt {a b : Ordinal} (h : a < b) (n : ℕ) : ω ^ a * n < ω ^ b := by
+  apply lt_of_lt_of_le _ (opow_le_opow_right omega0_pos (succ_le_of_lt h))
+  rw [opow_succ]
+  exact mul_lt_mul_of_pos_left (nat_lt_omega0 n) (opow_pos a omega0_pos)
+
+theorem lt_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
+    a < ω ^ b ↔ ∃ c < b, ∃ n : ℕ, a < ω ^ c * n := by
+  refine ⟨fun ha ↦ ⟨_, lt_log_of_lt_opow hb ha, ?_⟩,
+    fun ⟨c, hc, n, hn⟩ ↦ hn.trans (omega0_opow_mul_nat_lt hc n)⟩
+  obtain ⟨n, hn⟩ := lt_omega0.1 (div_opow_log_lt a one_lt_omega0)
+  use n.succ
+  rw [natCast_succ, ← hn]
+  exact lt_mul_succ_div a (opow_ne_zero _ omega0_ne_zero)
+
+theorem lt_omega0_opow_succ {a b : Ordinal} : a < ω ^ succ b ↔ ∃ n : ℕ, a < ω ^ b * n := by
+  refine ⟨fun ha ↦ ?_, fun ⟨n, hn⟩ ↦ hn.trans (omega0_opow_mul_nat_lt (lt_succ b) n)⟩
+  obtain ⟨c, hc, n, hn⟩ := (lt_omega0_opow (succ_ne_zero b)).1 ha
+  refine ⟨n, hn.trans_le (mul_le_mul_right' ?_ _)⟩
+  rwa [opow_le_opow_iff_right one_lt_omega0, ← lt_succ_iff]
+
 /-! ### Interaction with `Nat.cast` -/
 
 @[simp, norm_cast]
@@ -493,8 +520,7 @@ theorem iSup_pow {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ ω := by
   · exact (isNormal_opow ho₁).apply_omega0
   · rw [one_opow]
     refine le_antisymm (Ordinal.iSup_le fun n => by rw [one_opow]) ?_
-    convert Ordinal.le_iSup _ 0
-    rw [Nat.cast_zero, opow_zero]
+    exact_mod_cast Ordinal.le_iSup _ 0
 
 set_option linter.deprecated false in
 @[deprecated iSup_pow (since := "2024-08-27")]

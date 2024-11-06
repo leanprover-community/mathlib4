@@ -9,7 +9,6 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Tactic.Coe
@@ -1731,16 +1730,6 @@ instance [Std.Associative f] : Std.Associative (e.arrowCongr (e.arrowCongr e) f)
 
 instance [Std.IdempotentOp f] : Std.IdempotentOp (e.arrowCongr (e.arrowCongr e) f) :=
   (e.semiconj₂_conj f).isIdempotent_right e.surjective
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-09-11")]
-instance [IsLeftCancel α₁ f] : IsLeftCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
-  ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsLeftCancel.left_cancel _ f _ x y z⟩
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-09-11")]
-instance [IsRightCancel α₁ f] : IsRightCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
-  ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsRightCancel.right_cancel _ f _ x y z⟩
 
 end BinaryOp
 

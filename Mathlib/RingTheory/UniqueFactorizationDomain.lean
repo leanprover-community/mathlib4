@@ -195,7 +195,6 @@ class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] exten
     IsWellFounded α DvdNotUnit : Prop where
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 
-/-- Can't be an instance because it would cause a loop `ufm → WfDvdMonoid → ufm → ...`. -/
 instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid
     [CancelCommMonoidWithZero α] [WfDvdMonoid α] [DecompositionMonoid α] :
     UniqueFactorizationMonoid α :=
@@ -554,6 +553,13 @@ theorem factors_pow_count_prod [DecidableEq α] {x : α} (hx : x ≠ 0) :
   _ = prod (factors x) := by rw [toFinset_sum_count_nsmul_eq (factors x)]
   _ ~ᵤ x := factors_prod hx
 
+theorem factors_rel_of_associated {a b : α} (h : Associated a b) :
+    Multiset.Rel Associated (factors a) (factors b) := by
+  rcases iff_iff_and_or_not_and_not.mp h.eq_zero_iff with (⟨rfl, rfl⟩ | ⟨ha, hb⟩)
+  · simp
+  · refine factors_unique irreducible_of_factor irreducible_of_factor ?_
+    exact ((factors_prod ha).trans h).trans (factors_prod hb).symm
+
 end UniqueFactorizationMonoid
 
 namespace UniqueFactorizationMonoid
@@ -721,13 +727,17 @@ theorem dvd_iff_normalizedFactors_le_normalizedFactors {x y : α} (hx : x ≠ 0)
       (normalizedFactors_prod hy).dvd_iff_dvd_right]
     apply Multiset.prod_dvd_prod_of_le
 
+theorem _root_.Associated.normalizedFactors_eq {a b : α} (h : Associated a b) :
+    normalizedFactors a = normalizedFactors b := by
+  unfold normalizedFactors
+  have h' : ⇑(normalize (α := α)) = Associates.out ∘ Associates.mk := funext Associates.out_mk
+  rw [h', ← Multiset.map_map, ← Multiset.map_map,
+    Associates.rel_associated_iff_map_eq_map.mp (factors_rel_of_associated h)]
+
 theorem associated_iff_normalizedFactors_eq_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
-    x ~ᵤ y ↔ normalizedFactors x = normalizedFactors y := by
-  refine
-    ⟨fun h => ?_, fun h =>
-      (normalizedFactors_prod hx).symm.trans (_root_.trans (by rw [h]) (normalizedFactors_prod hy))⟩
-  apply le_antisymm <;> rw [← dvd_iff_normalizedFactors_le_normalizedFactors]
-  all_goals simp [*, h.dvd, h.symm.dvd]
+    x ~ᵤ y ↔ normalizedFactors x = normalizedFactors y :=
+  ⟨Associated.normalizedFactors_eq, fun h =>
+    (normalizedFactors_prod hx).symm.trans (_root_.trans (by rw [h]) (normalizedFactors_prod hy))⟩
 
 theorem normalizedFactors_of_irreducible_pow {p : α} (hp : Irreducible p) (k : ℕ) :
     normalizedFactors (p ^ k) = Multiset.replicate k (normalize p) := by
@@ -923,15 +933,14 @@ section multiplicity
 
 variable [NormalizationMonoid R]
 
-open multiplicity Multiset
+open Multiset
 
 section
-variable [DecidableRel (Dvd.dvd : R → R → Prop)]
 
-theorem le_multiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} (ha : Irreducible a)
+theorem le_emultiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} (ha : Irreducible a)
     (hb : b ≠ 0) :
-    ↑n ≤ multiplicity a b ↔ replicate n (normalize a) ≤ normalizedFactors b := by
-  rw [← pow_dvd_iff_le_multiplicity]
+    ↑n ≤ emultiplicity a b ↔ replicate n (normalize a) ≤ normalizedFactors b := by
+  rw [← pow_dvd_iff_le_emultiplicity]
   revert b
   induction' n with n ih; · simp
   intro b hb
@@ -952,14 +961,14 @@ the normalized factor occurs in the `normalizedFactors`.
 See also `count_normalizedFactors_eq` which expands the definition of `multiplicity`
 to produce a specification for `count (normalizedFactors _) _`..
 -/
-theorem multiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : Irreducible a)
-    (hb : b ≠ 0) : multiplicity a b = (normalizedFactors b).count (normalize a) := by
+theorem emultiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : Irreducible a)
+    (hb : b ≠ 0) : emultiplicity a b = (normalizedFactors b).count (normalize a) := by
   apply le_antisymm
-  · apply PartENat.le_of_lt_add_one
+  · apply Order.le_of_lt_add_one
     rw [← Nat.cast_one, ← Nat.cast_add, lt_iff_not_ge, ge_iff_le,
-      le_multiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
+      le_emultiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
     simp
-  rw [le_multiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
+  rw [le_emultiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
 
 end
 
@@ -970,14 +979,13 @@ See also `multiplicity_eq_count_normalizedFactors` if `n` is given by `multiplic
 -/
 theorem count_normalizedFactors_eq [DecidableEq R] {p x : R} (hp : Irreducible p)
     (hnorm : normalize p = p) {n : ℕ} (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
-    (normalizedFactors x).count p = n := by
-  letI : DecidableRel ((· ∣ ·) : R → R → Prop) := fun _ _ => Classical.propDecidable _
+    (normalizedFactors x).count p = n := by classical
   by_cases hx0 : x = 0
   · simp [hx0] at hlt
-  rw [← PartENat.natCast_inj]
-  convert (multiplicity_eq_count_normalizedFactors hp hx0).symm
+  apply Nat.cast_injective (R := ℕ∞)
+  convert (emultiplicity_eq_count_normalizedFactors hp hx0).symm
   · exact hnorm.symm
-  exact (multiplicity.eq_coe_iff.mpr ⟨hle, hlt⟩).symm
+  exact (emultiplicity_eq_coe.mpr ⟨hle, hlt⟩).symm
 
 /-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
 the number of times it divides `x`. This is a slightly more general version of

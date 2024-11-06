@@ -32,7 +32,7 @@ circulant, matrix
 -/
 
 
-variable {α β m n R : Type*}
+variable {α β n R : Type*}
 
 namespace Matrix
 

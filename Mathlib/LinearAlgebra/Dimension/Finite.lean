@@ -7,6 +7,7 @@ import Mathlib.Algebra.Module.Torsion
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
 # Conditions for rank to be finite
@@ -202,7 +203,7 @@ lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.ra
   have := nonempty_linearIndependent_set
   cases' hn.eq_or_lt with h h
   · obtain ⟨⟨s, hs⟩, hs'⟩ := Cardinal.exists_eq_natCast_of_iSup_eq _
-      (Cardinal.bddAbove_range.{v, v} _) _ (h.trans (Module.rank_def R M)).symm
+      (Cardinal.bddAbove_range _) _ (h.trans (Module.rank_def R M)).symm
     have : Finite s := lt_aleph0_iff_finite.mp (hs' ▸ nat_lt_aleph0 n)
     cases nonempty_fintype s
     exact ⟨s.toFinset, by simpa using hs', by convert hs using 3 <;> exact Set.mem_toFinset⟩
@@ -232,7 +233,7 @@ lemma exists_finset_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finran
   · rw [le_zero_iff.mp (hn.trans_eq h)]
     exact ⟨∅, rfl, by convert linearIndependent_empty R M using 2 <;> aesop⟩
   exact exists_finset_linearIndependent_of_le_rank
-    ((natCast_le.mpr hn).trans_eq (cast_toNat_of_lt_aleph0 (toNat_ne_zero.mp h).2))
+    ((Nat.cast_le.mpr hn).trans_eq (cast_toNat_of_lt_aleph0 (toNat_ne_zero.mp h).2))
 
 lemma exists_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finrank R M) :
     ∃ f : Fin n → M, LinearIndependent R f :=
@@ -426,6 +427,14 @@ theorem Module.finrank_zero_iff [NoZeroSMulDivisors R M] :
   rw [← rank_zero_iff (R := R), ← finrank_eq_rank]
   norm_cast
 
+/-- Similar to `rank_quotient_add_rank_le` but for `finrank` and a finite `M`. -/
+lemma Module.finrank_quotient_add_finrank_le (N : Submodule R M) :
+    finrank R (M ⧸ N) + finrank R N ≤ finrank R M := by
+  haveI := nontrivial_of_invariantBasisNumber R
+  have := rank_quotient_add_rank_le N
+  rw [← finrank_eq_rank R M, ← finrank_eq_rank R, ← N.finrank_eq_rank] at this
+  exact mod_cast this
+
 end StrongRankCondition
 
 theorem Module.finrank_eq_zero_of_rank_eq_zero (h : Module.rank R M = 0) :
@@ -454,7 +463,7 @@ theorem Submodule.rank_eq_zero [Nontrivial R] [NoZeroSMulDivisors R M] {S : Subm
 theorem Submodule.finrank_eq_zero [StrongRankCondition R] [NoZeroSMulDivisors R M]
     {S : Submodule R M} [Module.Finite R S] :
     finrank R S = 0 ↔ S = ⊥ := by
-  rw [← Submodule.rank_eq_zero, ← finrank_eq_rank, ← @Nat.cast_zero Cardinal, Cardinal.natCast_inj]
+  rw [← Submodule.rank_eq_zero, ← finrank_eq_rank, ← @Nat.cast_zero Cardinal, Nat.cast_inj]
 
 @[simp]
 lemma Submodule.one_le_finrank_iff [StrongRankCondition R] [NoZeroSMulDivisors R M]

@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Jireh Loreaux
 -/
 
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.RingTheory.Congruence.Opposite
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Order.GaloisConnection
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.RingTheory.Congruence.Opposite
+import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
 /-!
 # Operations on two-sided ideals
@@ -141,10 +141,10 @@ lemma mem_span_iff_mem_addSubgroup_closure_absorbing {s : Set R}
   induction principle for `AddSubgroup`, we must also have `z ∈ J`. -/
   case mem_ideal_of_subset =>
     simp only [I, SetLike.mem_coe, mem_mk'] at hz
-    induction hz using closure_induction' with
+    induction hz using closure_induction with
     | mem x hx => exact hJ hx
     | one => exact zero_mem _
-    | mul x _ y _ hx hy => exact J.add_mem hx hy
+    | mul x y _ _ hx hy => exact J.add_mem hx hy
     | inv x _ hx => exact J.neg_mem hx
 
 open Pointwise Set

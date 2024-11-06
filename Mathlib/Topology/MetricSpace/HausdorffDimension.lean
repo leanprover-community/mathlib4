@@ -254,7 +254,7 @@ end
 -/
 
 
-variable {C K r : ℝ≥0} {f : X → Y} {s t : Set X}
+variable {C K r : ℝ≥0} {f : X → Y} {s : Set X}
 
 /-- If `f` is a Hölder continuous map with exponent `r > 0`, then `dimH (f '' s) ≤ dimH s / r`. -/
 theorem HolderOnWith.dimH_image_le (h : HolderOnWith C r f s) (hr : 0 < r) :

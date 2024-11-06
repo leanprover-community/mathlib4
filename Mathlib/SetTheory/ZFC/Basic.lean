@@ -250,20 +250,17 @@ private theorem mem_wf_aux : ∀ {x y : PSet.{u}}, Equiv x y → Acc (· ∈ ·)
 theorem mem_wf : @WellFounded PSet (· ∈ ·) :=
   ⟨fun x => mem_wf_aux <| Equiv.refl x⟩
 
+instance : IsWellFounded PSet (· ∈ ·) :=
+  ⟨mem_wf⟩
+
 instance : WellFoundedRelation PSet :=
   ⟨_, mem_wf⟩
 
-instance : IsAsymm PSet (· ∈ ·) :=
-  mem_wf.isAsymm
-
-instance : IsIrrefl PSet (· ∈ ·) :=
-  mem_wf.isIrrefl
-
 theorem mem_asymm {x y : PSet} : x ∈ y → y ∉ x :=
-  asymm (r := (· ∈ ·))
+  asymm_of (· ∈ ·)
 
 theorem mem_irrefl (x : PSet) : x ∉ x :=
-  irrefl (r := (· ∈ ·)) x
+  irrefl_of (· ∈ ·) x
 
 /-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
@@ -1017,21 +1014,17 @@ theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
 theorem inductionOn {p : ZFSet → Prop} (x) (h : ∀ x, (∀ y ∈ x, p y) → p x) : p x :=
   mem_wf.induction x h
 
+instance : IsWellFounded ZFSet (· ∈ ·) :=
+  ⟨mem_wf⟩
+
 instance : WellFoundedRelation ZFSet :=
   ⟨_, mem_wf⟩
 
-instance : IsAsymm ZFSet (· ∈ ·) :=
-  mem_wf.isAsymm
-
--- Porting note: this can't be inferred automatically for some reason.
-instance : IsIrrefl ZFSet (· ∈ ·) :=
-  mem_wf.isIrrefl
-
 theorem mem_asymm {x y : ZFSet} : x ∈ y → y ∉ x :=
-  asymm (r := (· ∈ ·))
+  asymm_of (· ∈ ·)
 
 theorem mem_irrefl (x : ZFSet) : x ∉ x :=
-  irrefl (r := (· ∈ ·)) x
+  irrefl_of (· ∈ ·) x
 
 theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
   by_contradiction fun ne =>
@@ -1310,21 +1303,17 @@ theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
     rintro B ⟨x, rfl, _⟩
     exact H x⟩
 
+instance : IsWellFounded Class (· ∈ ·) :=
+  ⟨mem_wf⟩
+
 instance : WellFoundedRelation Class :=
   ⟨_, mem_wf⟩
 
-instance : IsAsymm Class (· ∈ ·) :=
-  mem_wf.isAsymm
-
--- Porting note: this can't be inferred automatically for some reason.
-instance : IsIrrefl Class (· ∈ ·) :=
-  mem_wf.isIrrefl
-
 theorem mem_asymm {x y : Class} : x ∈ y → y ∉ x :=
-  asymm (r := (· ∈ ·))
+  asymm_of (· ∈ ·)
 
 theorem mem_irrefl (x : Class) : x ∉ x :=
-  irrefl (r := (· ∈ ·)) x
+  irrefl_of (· ∈ ·) x
 
 /-- **There is no universal set.**
 This is stated as `univ ∉ univ`, meaning that `univ` (the class of all sets) is proper (does not

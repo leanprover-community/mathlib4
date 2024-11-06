@@ -141,30 +141,31 @@ is preserved under multiplication, then `p` holds for all elements of the closur
 @[to_additive (attr := elab_as_elim) "An induction principle for additive closure membership. If `p`
   holds for all elements of `s`, and is preserved under addition, then `p` holds for all
   elements of the additive closure of `s`."]
-theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
-    (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨p, mul _ _⟩).2 mem h
-
-/-- A dependent version of `Subsemigroup.closure_induction`. -/
-@[to_additive (attr := elab_as_elim) "A dependent version of `AddSubsemigroup.closure_induction`. "]
-theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
+theorem closure_induction {p : (x : M) → x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h))
-    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
-    p x hx := by
-  refine Exists.elim ?_ fun (hx : x ∈ closure s) (hc : p x hx) => hc
-  exact
-    closure_induction hx (fun x hx => ⟨_, mem x hx⟩) fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
-      ⟨_, mul _ _ _ _ hx hy⟩
+    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
+    p x hx :=
+  let S : Subsemigroup M :=
+    { carrier := { x | ∃ hx, p x hx }
+      mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩ }
+  closure_le (S := S) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
+
+@[deprecated closure_induction (since := "2024-10-09")]
+alias closure_induction' := closure_induction
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim) "An induction principle for additive closure membership for
   predicates with two arguments."]
-theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ closure s) (hy : y ∈ closure s)
-    (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y) (Hmul_left : ∀ x y z, p x z → p y z → p (x * y) z)
-    (Hmul_right : ∀ x y z, p z x → p z y → p z (x * y)) : p x y :=
-  closure_induction hx
-    (fun x xs => closure_induction hy (Hs x xs) fun z _ h₁ h₂ => Hmul_right z _ _ h₁ h₂)
-    fun _ _ h₁ h₂ => Hmul_left _ _ _ h₁ h₂
+theorem closure_induction₂ {p : (x y : M) → x ∈ closure s → y ∈ closure s → Prop}
+    (mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
+    (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ x y z hx hy hz, p z x hz hx → p z y hz hy → p z (x * y) hz (mul_mem hx hy))
+    {x y : M} (hx : x ∈ closure s) (hy : y ∈ closure s) : p x y hx hy := by
+  induction hx using closure_induction with
+  | mem z hz => induction hy using closure_induction with
+    | mem _ h => exact mem _ _ hz h
+    | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
+  | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ hy h₁ h₂
 
 /-- If `s` is a dense set in a magma `M`, `Subsemigroup.closure s = ⊤`, then in order to prove that
 some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`,
@@ -173,11 +174,24 @@ and verify that `p x` and `p y` imply `p (x * y)`. -/
   `AddSubsemigroup.closure s = ⊤`, then in order to prove that some predicate `p` holds
   for all `x : M` it suffices to verify `p x` for `x ∈ s`, and verify that `p x` and `p y` imply
   `p (x + y)`."]
-theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure s = ⊤)
-    (mem : ∀ x ∈ s, p x)
-    (mul : ∀ x y, p x → p y → p (x * y)) : p x := by
-  have : ∀ x ∈ closure s, p x := fun x hx => closure_induction hx mem mul
-  simpa [hs] using this x
+theorem dense_induction {p : M → Prop} (s : Set M) (closure : closure s = ⊤)
+    (mem : ∀ x ∈ s, p x) (mul : ∀ x y, p x → p y → p (x * y)) (x : M) :
+    p x := by
+  induction closure.symm ▸ mem_top x using closure_induction with
+  | mem _ h => exact mem _ h
+  | mul _ _ _ _ h₁ h₂ => exact mul _ _ h₁ h₂
+
+/- The argument `s : Set M` is explicit in `Subsemigroup.dense_induction` because the type of the
+induction variable, namely `x : M`, does not reference `x`. Making `s` explicit allows the user
+to apply the induction principle while deferring the proof of `closure s = ⊤` without creating
+metavariables, as in the following example. -/
+example {p : M → Prop} (s : Set M) (closure : closure s = ⊤)
+    (mem : ∀ x ∈ s, p x) (mul : ∀ x y, p x → p y → p (x * y)) (x : M) :
+    p x := by
+  induction x using dense_induction s with
+  | closure => exact closure
+  | mem x hx => exact mem x hx
+  | mul _ _ h₁ h₂ => exact mul _ _ h₁ h₂
 
 variable (M)
 
@@ -263,8 +277,8 @@ def ofDense {M N} [Semigroup M] [Semigroup N] {s : Set M} (f : M → N) (hs : cl
     M →ₙ* N where
   toFun := f
   map_mul' x y :=
-    dense_induction y hs (fun y hy x => hmul x y hy)
-      (fun y₁ y₂ h₁ h₂ x => by simp only [← mul_assoc, h₁, h₂]) x
+    dense_induction _ hs (fun y hy x => hmul x y hy)
+      (fun y₁ y₂ h₁ h₂ x => by simp only [← mul_assoc, h₁, h₂]) y x
 
 /-- Let `s` be a subset of an additive semigroup `M` such that the closure of `s` is the whole
 semigroup.  Then `AddHom.ofDense` defines an additive homomorphism from `M` asking for a proof

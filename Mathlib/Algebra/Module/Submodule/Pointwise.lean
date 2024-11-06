@@ -6,7 +6,8 @@ Authors: Eric Wieser, Jujian Zhang
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Group.Action
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.RingTheory.Ideal.Span
 
 /-! # Pointwise instances on `Submodule`s
 
@@ -530,7 +531,7 @@ lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module
     (Ideal.span s : Set R') • N = s • N :=
   set_smul_eq_of_le _ _ _
     (by rintro r n hr hn
-        induction hr using Submodule.span_induction' with
+        induction hr using Submodule.span_induction with
         | mem _ h => exact mem_set_smul_of_mem_mem h hn
         | zero => rw [zero_smul]; exact Submodule.zero_mem _
         | add _ _ _ _ ihr ihs => rw [add_smul]; exact Submodule.add_mem _ ihr ihs

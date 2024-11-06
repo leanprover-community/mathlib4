@@ -57,7 +57,6 @@ instance hasColimits : HasColimits SSet := by
   dsimp only [SSet]
   infer_instance
 
--- Porting note (#5229): added an `ext` lemma.
 @[ext]
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
   SimplicialObject.hom_ext _ _ w
@@ -222,15 +221,14 @@ def const (n : ℕ) (i k : Fin (n+3)) (m : SimplexCategoryᵒᵖ) : Λ[n+2, i].o
 
 This edge only exists if `{i, a, b}` has cardinality less than `n`. -/
 @[simps]
-def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : Finset.card {i, a, b} ≤ n) :
-    Λ[n, i] _[1] := by
+def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) : Λ[n, i] _[1] := by
   refine ⟨standardSimplex.edge n a b hab, ?range⟩
   case range =>
     suffices ∃ x, ¬i = x ∧ ¬a = x ∧ ¬b = x by
-      simpa only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.Hom.toOrderHom_mk,
-        Set.union_singleton, ne_eq, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ,
-        Set.mem_insert_iff, @eq_comm _ _ i, Set.mem_range, forall_true_left, not_forall, not_or,
-        not_exists, Fin.forall_fin_two]
+      simpa only [unop_op, len_mk, Nat.reduceAdd, asOrderHom, yoneda_obj_obj, Set.union_singleton,
+        ne_eq, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ, Set.mem_insert_iff,
+        @eq_comm _ _ i, Set.mem_range, forall_const, not_forall, not_or, not_exists,
+        Fin.forall_fin_two, Fin.isValue]
     contrapose! H
     replace H : univ ⊆ {i, a, b} :=
       fun x _ ↦ by simpa [or_iff_not_imp_left, eq_comm] using H x
@@ -354,7 +352,6 @@ simplicial sets. -/
 def Truncated.uliftFunctor (k : ℕ) : SSet.Truncated.{u} k ⥤ SSet.Truncated.{max u v} k :=
   (whiskeringRight _ _ _).obj CategoryTheory.uliftFunctor.{v, u}
 
--- Porting note (#5229): added an `ext` lemma.
 @[ext]
 lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
     f = g :=

@@ -85,7 +85,7 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsAf
     let g : pullback U.1.ι V.1.ι ⟶ X := pullback.fst _ _ ≫ U.1.ι
     -- Porting note: `inferInstance` does not work here
     have : IsOpenImmersion g := PresheafedSpace.IsOpenImmersion.comp _ _
-    have e := Homeomorph.ofEmbedding _ this.base_open.toEmbedding
+    have e := Homeomorph.ofIsEmbedding _ this.base_open.isEmbedding
     rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
     erw [Subtype.range_coe, Subtype.range_coe] at e
     rw [isCompact_iff_compactSpace]
@@ -94,7 +94,7 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsAf
     let g : pullback f₁ f₂ ⟶ X := pullback.fst _ _ ≫ f₁
     -- Porting note: `inferInstance` does not work here
     have : IsOpenImmersion g := PresheafedSpace.IsOpenImmersion.comp _ _
-    have e := Homeomorph.ofEmbedding _ this.base_open.toEmbedding
+    have e := Homeomorph.ofIsEmbedding _ this.base_open.isEmbedding
     rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
     simp_rw [isCompact_iff_compactSpace] at H
     exact
@@ -117,12 +117,11 @@ instance (priority := 900) quasiSeparatedOfMono {X Y : Scheme} (f : X ⟶ Y) [Mo
 
 instance quasiSeparated_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiSeparated :=
-  quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸
-    (MorphismProperty.diagonal_isStableUnderComposition quasiCompact_stableUnderBaseChange)
+  quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ inferInstance
 
-theorem quasiSeparated_stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange @QuasiSeparated :=
-  quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ quasiCompact_stableUnderBaseChange.diagonal
+instance quasiSeparated_isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange @QuasiSeparated :=
+  quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ inferInstance
 
 instance quasiSeparatedComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f]
     [QuasiSeparated g] : QuasiSeparated (f ≫ g) :=
@@ -138,11 +137,11 @@ theorem quasiSeparatedSpace_iff_quasiSeparated (X : Scheme) :
 
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated g] :
     QuasiSeparated (pullback.fst f g) :=
-  quasiSeparated_stableUnderBaseChange.fst f g inferInstance
+  MorphismProperty.pullback_fst f g inferInstance
 
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated f] :
     QuasiSeparated (pullback.snd f g) :=
-  quasiSeparated_stableUnderBaseChange.snd f g inferInstance
+  MorphismProperty.pullback_snd f g inferInstance
 
 theorem quasiSeparatedSpace_of_quasiSeparated {X Y : Scheme} (f : X ⟶ Y)
     [hY : QuasiSeparatedSpace Y] [QuasiSeparated f] : QuasiSeparatedSpace X := by
@@ -347,11 +346,37 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsCom
     refine ⟨⟨_, n, rfl⟩, ?_⟩
     simpa [mul_comm z] using e
 
+lemma exists_of_res_eq_of_qcqs {X : Scheme.{u}} {U : TopologicalSpace.Opens X}
+    (hU : IsCompact U.carrier) (hU' : IsQuasiSeparated U.carrier)
+    {f g s : Γ(X, U)} (hfg : f |_ X.basicOpen s = g |_ X.basicOpen s) :
+    ∃ n, s ^ n * f = s ^ n * g := by
+  obtain ⟨n, hc⟩ := (is_localization_basicOpen_of_qcqs hU hU' s).exists_of_eq s hfg
+  use n
+
+lemma exists_of_res_eq_of_qcqs_of_top {X : Scheme.{u}} [CompactSpace X] [QuasiSeparatedSpace X]
+    {f g s : Γ(X, ⊤)} (hfg : f |_ X.basicOpen s = g |_ X.basicOpen s) :
+    ∃ n, s ^ n * f = s ^ n * g :=
+  exists_of_res_eq_of_qcqs (U := ⊤) CompactSpace.isCompact_univ isQuasiSeparated_univ hfg
+
+lemma exists_of_res_zero_of_qcqs {X : Scheme.{u}} {U : TopologicalSpace.Opens X}
+    (hU : IsCompact U.carrier) (hU' : IsQuasiSeparated U.carrier)
+    {f s : Γ(X, U)} (hf : f |_ X.basicOpen s = 0) :
+    ∃ n, s ^ n * f = 0 := by
+  suffices h : ∃ n, s ^ n * f = s ^ n * 0 by
+    simpa using h
+  apply exists_of_res_eq_of_qcqs hU hU'
+  simpa
+
+lemma exists_of_res_zero_of_qcqs_of_top {X : Scheme} [CompactSpace X] [QuasiSeparatedSpace X]
+    {f s : Γ(X, ⊤)} (hf : f |_ X.basicOpen s = 0) :
+    ∃ n, s ^ n * f = 0 :=
+  exists_of_res_zero_of_qcqs (U := ⊤) CompactSpace.isCompact_univ isQuasiSeparated_univ hf
+
 /-- If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
 This is known as the **Qcqs lemma** in [R. Vakil, *The rising sea*][RisingSea]. -/
 theorem isIso_ΓSpec_adjunction_unit_app_basicOpen {X : Scheme} [CompactSpace X]
     [QuasiSeparatedSpace X] (f : X.presheaf.obj (op ⊤)) :
-    IsIso ((ΓSpec.adjunction.unit.app X).val.c.app (op (PrimeSpectrum.basicOpen f))) := by
+    IsIso ((ΓSpec.adjunction.unit.app X).c.app (op (PrimeSpectrum.basicOpen f))) := by
   refine @IsIso.of_isIso_comp_right _ _ _ _ _ _ (X.presheaf.map
     (eqToHom (Scheme.toSpecΓ_preimage_basicOpen _ _).symm).op) _ ?_
   rw [ConcreteCategory.isIso_iff_bijective, CommRingCat.forget_map]

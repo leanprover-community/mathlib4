@@ -41,8 +41,7 @@ theorem isConformalMap_conj : IsConformalMap (conjLIE : ℂ →L[ℝ] ℂ) :=
 
 section ConformalIntoComplexNormed
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace ℂ E] {z : ℂ}
-  {g : ℂ →L[ℝ] E} {f : ℂ → E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace ℂ E]
 
 theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
     IsConformalMap (map.restrictScalars ℝ) := by
@@ -70,7 +69,7 @@ section ConformalIntoComplexPlane
 
 open ContinuousLinearMap
 
-variable {f : ℂ → ℂ} {z : ℂ} {g : ℂ →L[ℝ] ℂ}
+variable {g : ℂ →L[ℝ] ℂ}
 
 theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
     (∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g) ∨

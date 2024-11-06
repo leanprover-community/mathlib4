@@ -833,16 +833,16 @@ theorem Indep.indepSet_of_measurableSet {m₁ m₂ _ : MeasurableSpace Ω} {κ :
     (ht : MeasurableSet[m₂] t) :
     IndepSet s t κ μ := by
   refine fun s' t' hs' ht' => h_indep s' t' ?_ ?_
-  · refine @generateFrom_induction _ (fun u => MeasurableSet[m₁] u) {s} ?_ ?_ ?_ ?_ _ hs'
-    · simp only [Set.mem_singleton_iff, forall_eq, hs]
-    · exact @MeasurableSet.empty _ m₁
-    · exact fun u hu => hu.compl
-    · exact fun f hf => MeasurableSet.iUnion hf
-  · refine @generateFrom_induction _ (fun u => MeasurableSet[m₂] u) {t} ?_ ?_ ?_ ?_ _ ht'
-    · simp only [Set.mem_singleton_iff, forall_eq, ht]
-    · exact @MeasurableSet.empty _ m₂
-    · exact fun u hu => hu.compl
-    · exact fun f hf => MeasurableSet.iUnion hf
+  · induction s', hs' using generateFrom_induction with
+    | hC t ht => exact ht ▸ hs
+    | empty => exact @MeasurableSet.empty _ m₁
+    | compl u _ hu => exact hu.compl
+    | iUnion f _ hf => exact .iUnion hf
+  · induction t', ht' using generateFrom_induction with
+    | hC s hs => exact hs ▸ ht
+    | empty => exact @MeasurableSet.empty _ m₂
+    | compl u _ hu => exact hu.compl
+    | iUnion f _ hf => exact .iUnion hf
 
 theorem indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {_m0 : MeasurableSpace Ω}
     (κ : Kernel α Ω) (μ : Measure α) :
@@ -906,6 +906,17 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
   rw [h_left_eq a, h_right_eq a, ha]
 
 alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
+
+lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+    {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}
+    (h : iIndepFun mβ f κ μ) (g : ∀ i, β i → γ i) (hg : ∀ i, Measurable (g i)) :
+    iIndepFun mγ (fun i ↦ g i ∘ f i) κ μ := by
+  rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at h ⊢
+  refine fun t s hs ↦ ?_
+  have := h t (sets := fun i ↦ g i ⁻¹' (s i)) (fun i a ↦ hg i (hs i a))
+  filter_upwards [this] with a ha
+  simp_rw [Set.preimage_comp]
+  exact ha
 
 theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsZeroOrMarkovKernel κ] (hf : Measurable f) (hg : Measurable g) :

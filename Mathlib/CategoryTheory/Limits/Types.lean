@@ -330,7 +330,7 @@ def Quot (F : J ⥤ Type u) : Type (max v u) :=
   _root_.Quot (Quot.Rel F)
 
 instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} (Quot F) :=
-  small_of_surjective (surjective_quot_mk _)
+  small_of_surjective Quot.mk_surjective
 
 /-- Inclusion into the quotient type implementing the colimit. -/
 def Quot.ι (F : J ⥤ Type u) (j : J) : F.obj j → Quot F :=
@@ -634,7 +634,7 @@ instance : HasImageMaps (Type u) where
         simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p
         rw [p, Classical.choose_spec x.2]⟩⟩) rfl
 
-variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F} (hc : IsLimit c)
+variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
   (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op))
 
 private noncomputable def limitOfSurjectionsSurjective.preimage

@@ -55,10 +55,10 @@ theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N)
     map₂ f (span R s) (span R t) = span R (Set.image2 (fun m n => f m n) s t) := by
   apply le_antisymm
   · rw [map₂_le]
-    apply @span_induction' R M _ _ _ s
+    apply @span_induction R M _ _ _ s
     on_goal 1 =>
       intro a ha
-      apply @span_induction' R N _ _ _ t
+      apply @span_induction R N _ _ _ t
       · intro b hb
         exact subset_span ⟨_, ‹_›, _, ‹_›, rfl⟩
     all_goals

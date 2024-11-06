@@ -45,7 +45,7 @@ namespace Units
 section Monoid
 variable [Monoid α]
 
-variable (a b c : αˣ) {u : αˣ}
+variable (b c : αˣ) {u : αˣ}
 
 @[to_additive (attr := simp)]
 theorem mul_inv_cancel_right (a : α) (b : αˣ) : a * b * ↑b⁻¹ = a := by
@@ -125,7 +125,7 @@ end Units
 
 section Monoid
 
-variable [Monoid α] {a : α}
+variable [Monoid α]
 
 @[simp]
 theorem divp_left_inj (u : αˣ) {a b : α} : a /ₚ u = b /ₚ u ↔ a = b :=
@@ -265,7 +265,7 @@ end CommMonoid
 
 section IsUnit
 
-variable {M : Type*} {N : Type*}
+variable {M : Type*}
 
 @[to_additive (attr := nontriviality)]
 theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
@@ -281,7 +281,7 @@ instance [Monoid M] [Subsingleton M] : Unique Mˣ where
   uniq _ := Units.val_eq_one.mp (by subsingleton)
 
 section Monoid
-variable [Monoid M] {a b : M}
+variable [Monoid M]
 
 theorem units_eq_one [Subsingleton Mˣ] (u : Mˣ) : u = 1 := by subsingleton
 

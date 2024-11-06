@@ -1038,6 +1038,14 @@ theorem eval_eq_zero_of_dvd_of_eval_eq_zero : p ∣ q → eval x p = 0 → eval 
 theorem eval_geom_sum {R} [CommSemiring R] {n : ℕ} {x : R} :
     eval x (∑ i ∈ range n, X ^ i) = ∑ i ∈ range n, x ^ i := by simp [eval_finset_sum]
 
+variable [NoZeroDivisors R]
+
+lemma root_mul : IsRoot (p * q) a ↔ IsRoot p a ∨ IsRoot q a := by
+  simp_rw [IsRoot, eval_mul, mul_eq_zero]
+
+lemma root_or_root_of_root_mul (h : IsRoot (p * q) a) : IsRoot p a ∨ IsRoot q a :=
+  root_mul.1 h
+
 end
 
 end Eval
@@ -1155,4 +1163,50 @@ alias mul_X_sub_int_cast_comp := mul_X_sub_intCast_comp
 
 end Ring
 
+section
+variable [Semiring R] [CommRing S] [IsDomain S] (φ : R →+* S) {f : R[X]}
+
+lemma isUnit_of_isUnit_leadingCoeff_of_isUnit_map (hf : IsUnit f.leadingCoeff)
+    (H : IsUnit (map φ f)) : IsUnit f := by
+  have dz := degree_eq_zero_of_isUnit H
+  rw [degree_map_eq_of_leadingCoeff_ne_zero] at dz
+  · rw [eq_C_of_degree_eq_zero dz]
+    refine IsUnit.map C ?_
+    convert hf
+    change coeff f 0 = coeff f (natDegree f)
+    rw [(degree_eq_iff_natDegree_eq _).1 dz]
+    · rfl
+    rintro rfl
+    simp at H
+  · intro h
+    have u : IsUnit (φ f.leadingCoeff) := IsUnit.map φ hf
+    rw [h] at u
+    simp at u
+
+end
+
+section
+variable [CommRing R] [IsDomain R] [CommRing S] [IsDomain S] (φ : R →+* S)
+
+/-- A polynomial over an integral domain `R` is irreducible if it is monic and
+irreducible after mapping into an integral domain `S`.
+
+A special case of this lemma is that a polynomial over `ℤ` is irreducible if
+it is monic and irreducible over `ℤ/pℤ` for some prime `p`.
+-/
+lemma Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
+    (h_irr : Irreducible (f.map φ)) : Irreducible f := by
+  refine ⟨h_irr.not_unit ∘ IsUnit.map (mapRingHom φ), fun a b h => ?_⟩
+  dsimp [Monic] at h_mon
+  have q := (leadingCoeff_mul a b).symm
+  rw [← h, h_mon] at q
+  refine (h_irr.isUnit_or_isUnit <|
+    (congr_arg (Polynomial.map φ) h).trans (Polynomial.map_mul φ)).imp ?_ ?_ <;>
+      apply isUnit_of_isUnit_leadingCoeff_of_isUnit_map <;>
+    apply isUnit_of_mul_eq_one
+  · exact q
+  · rw [mul_comm]
+    exact q
+
+end
 end Polynomial
