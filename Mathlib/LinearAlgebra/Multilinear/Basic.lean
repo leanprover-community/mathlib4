@@ -1617,17 +1617,17 @@ def currySumEquiv : MultilinearMap R N M₂ ≃ₗ[R]
   toFun f :=
     { toFun := fun u ↦
         { toFun := fun v ↦ f (Sum.rec u v)
-          map_add' := by intros; letI := Classical.decEq ι; simp
-          map_smul' := by intros; letI := Classical.decEq ι; simp }
-      map_add' := by intros; letI := Classical.decEq ι'; aesop
-      map_smul' := by intros; letI := Classical.decEq ι'; aesop }
+          map_update_add' := by intros; letI := Classical.decEq ι; simp
+          map_update_smul' := by intros; letI := Classical.decEq ι; simp }
+      map_update_add' := by intros; letI := Classical.decEq ι'; aesop
+      map_update_smul' := by intros; letI := Classical.decEq ι'; aesop }
   invFun g :=
     { toFun := fun u ↦ g (fun i ↦ u (.inl i)) (fun i' ↦ u (.inr i'))
-      map_add' := by
+      map_update_add' := by
         letI := Classical.decEq ι
         letI := Classical.decEq ι'
         rintro _ _ (_ | _) _ _ <;> simp
-      map_smul' := by
+      map_update_smul' := by
         letI := Classical.decEq ι
         letI := Classical.decEq ι'
         rintro _ _ (_ | _) _ _ <;> simp }
