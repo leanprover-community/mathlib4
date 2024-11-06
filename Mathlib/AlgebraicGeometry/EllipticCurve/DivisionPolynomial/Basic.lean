@@ -222,12 +222,12 @@ lemma preΨ_four : W.preΨ 4 = W.preΨ₄ :=
 lemma preΨ_even_ofNat (m : ℕ) : W.preΨ (2 * (m + 3)) =
     W.preΨ (m + 2) ^ 2 * W.preΨ (m + 3) * W.preΨ (m + 5) -
       W.preΨ (m + 1) * W.preΨ (m + 3) * W.preΨ (m + 4) ^ 2 :=
-  preNormEDS_even' ..
+  preNormEDS_even_ofNat ..
 
 lemma preΨ_odd_ofNat (m : ℕ) : W.preΨ (2 * (m + 2) + 1) =
     W.preΨ (m + 4) * W.preΨ (m + 2) ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
       W.preΨ (m + 1) * W.preΨ (m + 3) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2) :=
-  preNormEDS_odd' ..
+  preNormEDS_odd_ofNat ..
 
 @[simp]
 lemma preΨ_neg (n : ℤ) : W.preΨ (-n) = -W.preΨ n :=
@@ -465,11 +465,11 @@ lemma ψ_four : W.ψ 4 = C W.preΨ₄ * W.ψ₂ :=
 
 lemma ψ_even_ofNat (m : ℕ) : W.ψ (2 * (m + 3)) * W.ψ₂ =
     W.ψ (m + 2) ^ 2 * W.ψ (m + 3) * W.ψ (m + 5) - W.ψ (m + 1) * W.ψ (m + 3) * W.ψ (m + 4) ^ 2 :=
-  normEDS_even' ..
+  normEDS_even_ofNat ..
 
 lemma ψ_odd_ofNat (m : ℕ) : W.ψ (2 * (m + 2) + 1) =
     W.ψ (m + 4) * W.ψ (m + 2) ^ 3 - W.ψ (m + 1) * W.ψ (m + 3) ^ 3 :=
-  normEDS_odd' ..
+  normEDS_odd_ofNat ..
 
 @[simp]
 lemma ψ_neg (n : ℤ) : W.ψ (-n) = -W.ψ n :=

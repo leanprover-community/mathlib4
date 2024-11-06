@@ -250,10 +250,13 @@ lemma preNormEDS_even (m : ℤ) : preNormEDS b c d (2 * m) =
       preNormEDS b c d (m - 2) * preNormEDS b c d m * preNormEDS b c d (m + 1) ^ 2 := by
   induction m using Int.negInduction with
   | nat m =>
-    rcases m with _ | _ | _ | m; simp; simp; simp
-    simp only [Int.natCast_add, Nat.cast_one]
-    rw [Int.add_sub_cancel, show (m : ℤ) + 1 + 1 + 1 = m + 1 + 2 by rfl, Int.add_sub_cancel]
-    exact preNormEDS_even_ofNat ..
+    rcases m with _ | _ | _ | m;
+    · simp
+    · simp
+    · simp
+    · simp only [Int.natCast_add, Nat.cast_one]
+      rw [Int.add_sub_cancel, show (m : ℤ) + 1 + 1 + 1 = m + 1 + 2 by rfl, Int.add_sub_cancel]
+      exact preNormEDS_even_ofNat ..
   | neg h m =>
     simp_rw [show 2 * -(m : ℤ) = -(2 * m) by omega, show -(m : ℤ) - 1 = -(m + 1) by omega,
       show -(m : ℤ) + 2 = -(m - 2) by omega, show -(m : ℤ) - 2 = -(m + 2) by omega,
@@ -265,16 +268,20 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
       preNormEDS b c d (m - 1) * preNormEDS b c d (m + 1) ^ 3 * (if Even m then 1 else b) := by
   induction m using Int.negInduction with
   | nat m =>
-    rcases m with _ | _ | m; simp; simp
-    simp only [Int.natCast_add, Nat.cast_one, Int.even_add_one, not_not, Int.even_coe_nat]
-    rw [Int.add_sub_cancel]
-    exact preNormEDS_odd_ofNat ..
+    rcases m with _ | _ | m
+    · simp
+    · simp
+    · simp only [Int.natCast_add, Nat.cast_one, Int.even_add_one, not_not, Int.even_coe_nat]
+      rw [Int.add_sub_cancel]
+      exact preNormEDS_odd_ofNat ..
   | neg h m =>
-    rcases m with _ | m; simp
-    simp_rw [Int.natCast_add, Nat.cast_one, show 2 * -(m + 1 : ℤ) + 1 = -(2 * m + 1) by rfl,
-      show -(m + 1 : ℤ) + 2 = -(m - 1) by omega, show -(m + 1 : ℤ) - 1 = -(m + 2) by rfl,
-      show -(m + 1 : ℤ) + 1 = -m by omega, preNormEDS_neg, even_neg, Int.even_add_one, ite_not, h m]
-    ring1
+    rcases m with _ | m
+    · simp
+    · simp_rw [Int.natCast_add, Nat.cast_one, show 2 * -(m + 1 : ℤ) + 1 = -(2 * m + 1) by rfl,
+        show -(m + 1 : ℤ) + 2 = -(m - 1) by omega, show -(m + 1 : ℤ) - 1 = -(m + 2) by rfl,
+        show -(m + 1 : ℤ) + 1 = -m by omega, preNormEDS_neg, even_neg, Int.even_add_one, ite_not,
+        h m]
+      ring1
 
 end PreNormEDS
 
