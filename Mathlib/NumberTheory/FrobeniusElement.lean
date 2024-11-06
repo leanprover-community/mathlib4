@@ -21,7 +21,7 @@ This file proves the existence of Frobenius elements in a more general setting.
 Let `G` be a finite group acting on a commutative ring `B`, and let `A = B^G` be the ring of
 invariants.
 
-* `exists_smul_of_comap_eq`: `G` acts transitively on primes of `B` above the same prime of `A`.
+* `exists_smul_of_under_eq`: `G` acts transitively on primes of `B` above the same prime of `A`.
 
 
 -/
@@ -29,13 +29,31 @@ invariants.
 open scoped Pointwise
 
 -- PRed
+namespace Algebra
+
+variable (A B G : Type*) [CommSemiring A] [Semiring B] [Algebra A B]
+  [Group G] [MulSemiringAction G B]
+
+/-- An action of a group `G` on an extension of rings `B/A` is invariant if every fixed point of
+`B` lies in the image of `A`. The converse statement that every point in the image of `A` is fixed
+by `G` is `smul_algebraMap` (assuming `SMulCommClass A B G`). -/
+@[mk_iff] class IsInvariant : Prop where
+  isInvariant : ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, algebraMap A B a = b
+
+end Algebra
+
+section IsIntegral
+
+variable (A B G : Type*) [CommRing A] [CommRing B] [Algebra A B] [Group G] [MulSemiringAction G B]
+
+-- PRed
 namespace MulSemiringAction
 
 open Polynomial
 
-variable {B : Type*} [CommRing B] (G : Type*) [Group G] [Fintype G] [MulSemiringAction G B]
+variable {B} [Fintype G]
 
-/-- Characteristic polynomial of a group action on a ring. -/
+/-- Characteristic polynomial of a finite group action on a ring. -/
 noncomputable def charpoly (b : B) : B[X] := ∏ g : G, (X - C (g • b))
 
 theorem charpoly_eq (b : B) : charpoly G b = ∏ g : G, (X - C (g • b)) := rfl
@@ -56,38 +74,19 @@ variable {G}
 theorem charpoly_smul (b : B) (g : G) : g • (charpoly G b) = charpoly G b := by
   rw [charpoly_eq_prod_smul, Finset.smul_prod_perm]
 
-private theorem charpoly_coeff_smul (b : B) (n : ℕ) (g : G) :
+theorem charpoly_coeff_smul (b : B) (n : ℕ) (g : G) :
     g • (charpoly G b).coeff n = (charpoly G b).coeff n := by
   rw [← coeff_smul, charpoly_smul]
 
 end MulSemiringAction
 
--- PRed
-namespace Algebra
-
-variable (A B G : Type*) [CommSemiring A] [Semiring B] [Algebra A B]
-  [Group G] [MulSemiringAction G B]
-
-class IsInvariant : Prop where
-  isInvariant : ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, algebraMap A B a = b
-
-variable {A B G}
-
-theorem isInvariant_def :
-    IsInvariant A B G ↔ ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, algebraMap A B a = b :=
-  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
-
-end Algebra
-
--- PRed
 namespace Algebra.IsInvariant
 
 open MulSemiringAction Polynomial
 
-variable (A B G : Type*) [CommRing A] [CommRing B] [Algebra A B]
-  [Group G] [Fintype G] [MulSemiringAction G B] [IsInvariant A B G]
+variable [IsInvariant A B G]
 
-theorem exists_map_eq_charpoly (b : B) :
+theorem exists_map_eq_charpoly [Fintype G] (b : B) :
     ∃ M : A[X], M.Monic ∧ M.map (algebraMap A B) = charpoly G b := by
   have hinv k : ∃ a : A, algebraMap A B a = (charpoly G b).coeff k :=
     isInvariant ((charpoly G b).coeff k) (charpoly_coeff_smul b k)
@@ -103,21 +102,15 @@ theorem exists_map_eq_charpoly (b : B) :
     exact (charpoly_monic G b).as_sum.symm
 
 include G in
-theorem isIntegral : Algebra.IsIntegral A B := by
+theorem isIntegral [Finite G] : Algebra.IsIntegral A B := by
+  cases nonempty_fintype G
   refine ⟨fun b ↦ ?_⟩
   obtain ⟨f, hf1, hf2⟩ := exists_map_eq_charpoly A B G b
   refine ⟨f, hf1, ?_⟩
   rw [← eval_map, hf2, charpoly_eval]
 
-end Algebra.IsInvariant
-
-namespace Algebra.IsInvariant
-
-variable (A B G : Type*) [CommRing A] [CommRing B] [Algebra A B]
-  [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B] [IsInvariant A B G]
-
-/-- If `G` is finite, then `G` acts transitively on primes of `B` above the same prime of `A`. -/
-theorem exists_smul_of_comap_eq
+/-- `G` acts transitively on primes of `B` above the same prime of `A`. -/
+theorem exists_smul_of_under_eq [Finite G] [SMulCommClass G A B]
     (P Q : Ideal B) [hP : P.IsPrime] [hQ : Q.IsPrime]
     (hPQ : P.under A = Q.under A) :
     ∃ g : G, Q = g • P := by
@@ -140,6 +133,8 @@ theorem exists_smul_of_comap_eq
   exact ⟨g, le_antisymm hg (smul_eq_of_le_smul (hg.trans hg') ▸ hg')⟩
 
 end Algebra.IsInvariant
+
+end IsIntegral
 
 section CRT
 
