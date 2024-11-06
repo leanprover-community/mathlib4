@@ -22,10 +22,10 @@ This file defines linear independence in a module or vector space.
 
 It is inspired by Isabelle/HOL's linear algebra, and hence indirectly by HOL Light.
 
-We define `LinearIndependent R v` as `ker (Finsupp.linearCombination R v) = ⊥`. Here
+We define `LinearIndependent R v` as `Function.Injective (Finsupp.linearCombination R v)`. Here
 `Finsupp.linearCombination` is the linear map sending a function `f : ι →₀ R` with finite support to
 the linear combination of vectors from `v` with these coefficients. Then we prove that several other
-statements are equivalent to this one, including injectivity of `Finsupp.linearCombination R v` and
+statements are equivalent to this one, including `ker (Finsupp.linearCombination R v) = ⊥` and
 some versions with explicitly written linear combinations.
 
 ## Main definitions
@@ -70,6 +70,11 @@ If you want to use sets, use the family `(fun x ↦ x : s → M)` given a set `s
 `LinearIndependent.to_subtype_range` and `LinearIndependent.of_subtype_range` connect those two
 worlds.
 
+## TODO
+
+Rework proofs to hold in semirings, by avoiding the path through
+`ker (Finsupp.linearCombination R v) = ⊥`.
+
 ## Tags
 
 linearly dependent, linear dependence, linearly independent, linear independence
@@ -88,16 +93,16 @@ universe u' u
 variable {ι : Type u'} {ι' : Type*} {R : Type*} {K : Type*}
 variable {M : Type*} {M' : Type*} {V : Type u}
 
-section Module
+section Semiring
+
 
 variable {v : ι → M}
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M']
 variable [Module R M] [Module R M']
 variable (R) (v)
-
 /-- `LinearIndependent R v` states the family of vectors `v` is linearly independent over `R`. -/
 def LinearIndependent : Prop :=
-  LinearMap.ker (Finsupp.linearCombination R v) = ⊥
+  Function.Injective (Finsupp.linearCombination R v)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `LinearIndependent` that suggests pretty printing with type hints
@@ -119,11 +124,65 @@ def delabLinearIndependent : Delab :=
       withNaryArg 0 do return (← read).optionsPerPos.setBool (← getPos) `pp.analysis.namedArg true
     withTheReader Context ({· with optionsPerPos}) delab
 
-variable {R} {v}
+variable {R v}
+
+theorem linearIndependent_iff_injective_linearCombination :
+    LinearIndependent R v ↔ Function.Injective (Finsupp.linearCombination R v) := Iff.rfl
+
+alias ⟨LinearIndependent.injective_linearCombination, _⟩ :=
+  linearIndependent_iff_injective_linearCombination
+
+theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependent R v) :
+    v i ≠ 0 := by
+  intro h
+  have := @hv (Finsupp.single i 1 : ι →₀ R) 0 ?_
+  · simp at this
+  simpa using h
+
+
+theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
+  Function.injective_of_subsingleton _
+
+variable (R M) in
+theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M) → M) :=
+  linearIndependent_empty_type
+
+/-- A subfamily of a linearly independent family (i.e., a composition with an injective map) is a
+linearly independent family. -/
+theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf : Injective f) :
+    LinearIndependent R (v ∘ f) := by
+  simpa [Function.comp_def] using Function.Injective.comp h (Finsupp.mapDomain_injective hf)
+
+/-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
+independent over a subring `R` of `K`.
+The implementation uses minimal assumptions about the relationship between `R`, `K` and `M`.
+The version where `K` is an `R`-algebra is `LinearIndependent.restrict_scalars_algebras`.
+ -/
+theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Module K M]
+    [IsScalarTower R K M] (hinj : Function.Injective fun r : R => r • (1 : K))
+    (li : LinearIndependent K v) : LinearIndependent R v := by
+  intro x y hxy
+  let f := fun r : R => r • (1 : K)
+  have := @li (x.mapRange f (by simp [f])) (y.mapRange f (by simp [f])) ?_
+  · ext i
+    exact hinj congr($this i)
+  simpa [Finsupp.linearCombination, f, Finsupp.sum_mapRange_index]
+
+end Semiring
+
+section Module
+
+variable {v : ι → M}
+variable [Ring R] [AddCommGroup M] [AddCommGroup M']
+variable [Module R M] [Module R M']
+
+theorem linearIndependent_iff_ker :
+    LinearIndependent R v ↔ LinearMap.ker (Finsupp.linearCombination R v) = ⊥ :=
+  LinearMap.ker_eq_bot.symm
 
 theorem linearIndependent_iff :
     LinearIndependent R v ↔ ∀ l, Finsupp.linearCombination R v l = 0 → l = 0 := by
-  simp [LinearIndependent, LinearMap.ker_eq_bot']
+  simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot']
 
 theorem linearIndependent_iff' :
     LinearIndependent R v ↔
@@ -185,25 +244,11 @@ theorem Fintype.not_linearIndependent_iff [Fintype ι] :
     ¬LinearIndependent R v ↔ ∃ g : ι → R, ∑ i, g i • v i = 0 ∧ ∃ i, g i ≠ 0 := by
   simpa using not_iff_not.2 Fintype.linearIndependent_iff
 
-theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
-  linearIndependent_iff.mpr fun v _hv => Subsingleton.elim v 0
-
-theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependent R v) : v i ≠ 0 :=
-  fun h =>
-  zero_ne_one' R <|
-    Eq.symm
-      (by
-        suffices (Finsupp.single i 1 : ι →₀ R) i = 0 by simpa
-        rw [linearIndependent_iff.1 hv (Finsupp.single i 1)]
-        · simp
-        · simp [h])
-
 lemma LinearIndependent.eq_zero_of_pair {x y : M} (h : LinearIndependent R ![x, y])
     {s t : R} (h' : s • x + t • y = 0) : s = 0 ∧ t = 0 := by
-  have := linearIndependent_iff'.1 h Finset.univ ![s, t]
-  simp only [Fin.sum_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, h',
-    Finset.mem_univ, forall_true_left] at this
-  exact ⟨this 0, this 1⟩
+  replace h := @h (.single 0 s + .single 1 t) 0 ?_
+  · exact ⟨by simpa using congr($h 0), by simpa using congr($h 1)⟩
+  simpa
 
 /-- Also see `LinearIndependent.pair_iff'` for a simpler version over fields. -/
 lemma LinearIndependent.pair_iff {x y : M} :
@@ -215,18 +260,6 @@ lemma LinearIndependent.pair_iff {x y : M} :
   intro i
   fin_cases i
   exacts [(h _ _ hg).1, (h _ _ hg).2]
-
-/-- A subfamily of a linearly independent family (i.e., a composition with an injective map) is a
-linearly independent family. -/
-theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf : Injective f) :
-    LinearIndependent R (v ∘ f) := by
-  rw [linearIndependent_iff, Finsupp.linearCombination_comp]
-  intro l hl
-  have h_map_domain : ∀ x, (Finsupp.mapDomain f l) (f x) = 0 := by
-    rw [linearIndependent_iff.1 h (Finsupp.mapDomain f l) hl]; simp
-  ext x
-  convert h_map_domain x
-  rw [Finsupp.mapDomain_apply hf]
 
 /-- A family is linearly independent if and only if all of its finite subfamily is
 linearly independent. -/
@@ -247,20 +280,16 @@ theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
   rw [disjoint_iff_inf_le, ← Set.image_univ, Finsupp.span_image_eq_map_linearCombination,
     map_inf_eq_map_inf_comap, map_le_iff_le_comap, comap_bot, Finsupp.supported_univ, top_inf_eq]
       at hf_inj
-  unfold LinearIndependent at hv ⊢
+  rw [linearIndependent_iff_ker] at hv ⊢
   rw [hv, le_bot_iff] at hf_inj
-  haveI : Inhabited M := ⟨0⟩
-  rw [Finsupp.linearCombination_comp, Finsupp.lmapDomain_linearCombination _ _ f,
-      LinearMap.ker_comp, hf_inj]
-  exact fun _ => rfl
+  rw [Finsupp.linearCombination_linear_comp, LinearMap.ker_comp, hf_inj]
 
 /-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
     spans a submodule disjoint from the kernel of `f` -/
 theorem Submodule.range_ker_disjoint {f : M →ₗ[R] M'}
     (hv : LinearIndependent R (f ∘ v)) :
     Disjoint (span R (range v)) (LinearMap.ker f) := by
-  rw [LinearIndependent, Finsupp.linearCombination_comp,
-      Finsupp.lmapDomain_linearCombination R _ f (fun _ ↦ rfl), LinearMap.ker_comp] at hv
+  rw [linearIndependent_iff_ker, Finsupp.linearCombination_linear_comp, LinearMap.ker_comp] at hv
   rw [disjoint_iff_inf_le, ← Set.image_univ, Finsupp.span_image_eq_map_linearCombination,
     map_inf_eq_map_inf_comap, hv, inf_bot_eq, map_bot]
 
@@ -276,7 +305,7 @@ multiplications on `M` and `M'`, then `j` sends linearly independent families of
 linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/
 theorem LinearIndependent.map_of_injective_injective {R' : Type*} {M' : Type*}
-    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
+    [Ring R'] [AddCommGroup M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R' → R) (j : M →+ M') (hi : ∀ r, i r = 0 → r = 0) (hj : ∀ m, j m = 0 → m = 0)
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) : LinearIndependent R' (j ∘ v) := by
   rw [linearIndependent_iff'] at hv ⊢
@@ -290,7 +319,7 @@ scalar multiplications on `M` and `M'` are compatible, then `j` sends linearly i
 of vectors to linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/
 theorem LinearIndependent.map_of_surjective_injective {R' : Type*} {M' : Type*}
-    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
+    [Ring R'] [AddCommGroup M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : ZeroHom R R') (j : M →+ M') (hi : Surjective i) (hj : ∀ m, j m = 0 → m = 0)
     (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) : LinearIndependent R' (j ∘ v) := by
   obtain ⟨i', hi'⟩ := hi.hasRightInverse
@@ -354,20 +383,6 @@ theorem LinearIndependent.fin_cons' {m : ℕ} (x : M) (v : Fin m → M) (hli : L
     exact sum_mem fun i _ => smul_mem _ _ (subset_span ⟨i, rfl⟩)
   rw [this, zero_smul, zero_add] at total_eq
   exact Fin.cases this (hli _ total_eq) j
-
-/-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
-independent over a subring `R` of `K`.
-The implementation uses minimal assumptions about the relationship between `R`, `K` and `M`.
-The version where `K` is an `R`-algebra is `LinearIndependent.restrict_scalars_algebras`.
- -/
-theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Module K M]
-    [IsScalarTower R K M] (hinj : Function.Injective fun r : R => r • (1 : K))
-    (li : LinearIndependent K v) : LinearIndependent R v := by
-  refine linearIndependent_iff'.mpr fun s g hg i hi => hinj ?_
-  dsimp only; rw [zero_smul]
-  refine (linearIndependent_iff'.mp li : _) _ (g · • (1 : K)) ?_ i hi
-  simp_rw [smul_assoc, one_smul]
-  exact hg
 
 /-- Every finite subset of a linearly independent set is linearly independent. -/
 theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
@@ -461,13 +476,6 @@ theorem LinearIndependent.restrict_of_comp_subtype {s : Set ι}
     (hs : LinearIndependent R (v ∘ (↑) : s → M)) : LinearIndependent R (s.restrict v) :=
   hs
 
-variable (R M)
-
-theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M) → M) := by
-  simp [linearIndependent_subtype_disjoint]
-
-variable {R M}
-
 theorem LinearIndependent.mono {t s : Set M} (h : t ⊆ s) :
     LinearIndependent R (fun x => x : s → M) → LinearIndependent R (fun x => x : t → M) := by
   simp only [linearIndependent_subtype_disjoint]
@@ -517,31 +525,15 @@ variable {v : ι → M}
 variable [Ring R] [AddCommGroup M] [AddCommGroup M']
 variable [Module R M] [Module R M']
 
-theorem linearIndependent_iff_injective_linearCombination :
-    LinearIndependent R v ↔ Function.Injective (Finsupp.linearCombination R v) :=
-  linearIndependent_iff.trans
-    (injective_iff_map_eq_zero (Finsupp.linearCombination R v).toAddMonoidHom).symm
-
 @[deprecated (since := "2024-08-29")] alias linearIndependent_iff_injective_total :=
-  linearIndependent_iff_injective_linearCombination
-
-alias ⟨LinearIndependent.injective_linearCombination, _⟩ :=
-
   linearIndependent_iff_injective_linearCombination
 
 @[deprecated (since := "2024-08-29")] alias LinearIndependent.injective_total :=
   LinearIndependent.injective_linearCombination
 
 theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) : Injective v := by
-  intro i j hij
-  let l : ι →₀ R := Finsupp.single i (1 : R) - Finsupp.single j 1
-  have h_total : Finsupp.linearCombination R v l = 0 := by
-    simp_rw [l, LinearMap.map_sub, Finsupp.linearCombination_apply]
-    simp [hij]
-  have h_single_eq : Finsupp.single i (1 : R) = Finsupp.single j 1 := by
-    rw [linearIndependent_iff] at hv
-    simp [eq_add_of_sub_eq' (hv l h_total)]
-  simpa [Finsupp.single_eq_single_iff] using h_single_eq
+  simpa [Function.comp_def]
+    using Function.Injective.comp hv (Finsupp.single_left_injective one_ne_zero)
 
 theorem LinearIndependent.to_subtype_range {ι} {f : ι → M} (hf : LinearIndependent R f) :
     LinearIndependent R ((↑) : range f → M) := by
@@ -629,7 +621,7 @@ universe v w
 A linearly independent family is maximal if there is no strictly larger linearly independent family.
 -/
 @[nolint unusedArguments]
-def LinearIndependent.Maximal {ι : Type w} {R : Type u} [Semiring R] {M : Type v} [AddCommMonoid M]
+def LinearIndependent.Maximal {ι : Type w} {R : Type u} [Ring R] {M : Type v} [AddCommGroup M]
     [Module R M] {v : ι → M} (_i : LinearIndependent R v) : Prop :=
   ∀ (s : Set M) (_i' : LinearIndependent R ((↑) : s → M)) (_h : range v ≤ s), range v = s
 
@@ -817,7 +809,7 @@ def LinearIndependent.linearCombinationEquiv (hv : LinearIndependent R v) :
   apply LinearEquiv.ofBijective (LinearMap.codRestrict (span R (range v))
                                  (Finsupp.linearCombination R v) _)
   constructor
-  · rw [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
+  · rw [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict, ← linearIndependent_iff_ker]
     · apply hv
     · intro l
       rw [← Finsupp.range_linearCombination]
@@ -1010,7 +1002,7 @@ theorem surjective_of_linearIndependent_of_span [Nontrivial R] (hv : LinearIndep
   have h_total_eq : Finsupp.linearCombination R v l = Finsupp.linearCombination R v
        (Finsupp.single i 1) := by
     rw [h_total_l, Finsupp.linearCombination_single, one_smul]
-  have l_eq : l = _ := LinearMap.ker_eq_bot.1 hv h_total_eq
+  have l_eq : l = _ := hv h_total_eq
   dsimp only [l] at l_eq
   rw [← Finsupp.embDomain_eq_mapDomain] at l_eq
   rcases Finsupp.single_of_embDomain_single (repr ⟨v i, _⟩) f i (1 : R) zero_ne_one.symm l_eq with
@@ -1181,7 +1173,7 @@ end Module
 
 section Nontrivial
 
-variable [Semiring R] [Nontrivial R] [AddCommMonoid M]
+variable [Ring R] [Nontrivial R] [AddCommGroup M]
 variable [Module R M] [NoZeroSMulDivisors R M]
 variable {s t : Set M}
 
