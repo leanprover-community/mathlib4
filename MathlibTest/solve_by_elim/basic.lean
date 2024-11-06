@@ -6,9 +6,8 @@ Authors: Kim Morrison
 import Lean.Meta.Tactic.SolveByElim
 import Mathlib.Tactic.Constructor
 import Batteries.Tactic.PermuteGoals
-import Batteries.Test.Internal.DummyLabelAttr
+import MathlibTest.solve_by_elim.dummy_label_attr
 
-set_option autoImplicit true
 
 example (h : Nat) : Nat := by solve_by_elim
 example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim
