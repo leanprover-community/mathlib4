@@ -100,7 +100,7 @@ theorem Basis.map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [
 
 namespace MeasureTheory
 
-open Measure TopologicalSpace.PositiveCompacts FiniteDimensional
+open Measure TopologicalSpace.PositiveCompacts Module
 
 /-!
 ### The Lebesgue measure is a Haar measure on `ℝ` and on `ℝ^ι`.
@@ -223,8 +223,7 @@ theorem map_linearMap_addHaar_pi_eq_smul_addHaar {ι : Type*} [Finite ι] {f : (
     Real.map_linearMap_volume_pi_eq_smul_volume_pi hf, smul_comm]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
-  [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type*} [NormedAddCommGroup F]
-  [NormedSpace ℝ F] [CompleteSpace F]
+  [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
 
 theorem map_linearMap_addHaar_eq_smul_addHaar {f : E →ₗ[ℝ] E} (hf : LinearMap.det f ≠ 0) :
     Measure.map f μ = ENNReal.ofReal |(LinearMap.det f)⁻¹| • μ := by
@@ -512,8 +511,8 @@ theorem addHaar_singleton_add_smul_div_singleton_add_smul {r : ℝ} (hr : r ≠ 
           (μ s * (μ t)⁻¹) := by
       rw [ENNReal.mul_inv]
       · ring
-      · simp only [pow_pos (abs_pos.mpr hr), ENNReal.ofReal_eq_zero, not_le, Ne, true_or_iff]
-      · simp only [ENNReal.ofReal_ne_top, true_or_iff, Ne, not_false_iff]
+      · simp only [pow_pos (abs_pos.mpr hr), ENNReal.ofReal_eq_zero, not_le, Ne, true_or]
+      · simp only [ENNReal.ofReal_ne_top, true_or, Ne, not_false_iff]
     _ = μ s / μ t := by
       rw [ENNReal.mul_inv_cancel, one_mul, div_eq_mul_inv]
       · simp only [pow_pos (abs_pos.mpr hr), ENNReal.ofReal_eq_zero, not_le, Ne]
@@ -607,7 +606,6 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
     rintro r (rpos : 0 < r)
     rw [← affinity_unitClosedBall rpos.le, singleton_add, ← image_vadd]
     gcongr
-    exact smul_set_mono t_bound
   have B :
     Tendsto (fun r : ℝ => μ (closedBall x r) / μ ({x} + r • u)) (𝓝[>] 0)
       (𝓝 (μ (closedBall x 1) / μ ({x} + u))) := by
@@ -624,7 +622,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
       (𝓝[>] 0) (𝓝 (0 * (μ (closedBall x 1) / μ ({x} + u)))) := by
     apply ENNReal.Tendsto.mul A _ B (Or.inr ENNReal.zero_ne_top)
     simp only [ne_eq, not_true, singleton_add, image_add_left, measure_preimage_add, false_or,
-      ENNReal.div_eq_top, h'u, false_or_iff, not_and, and_false_iff]
+      ENNReal.div_eq_top, h'u, not_and, and_false]
     intro aux
     exact (measure_closedBall_lt_top.ne aux).elim
     -- Porting note: it used to be enough to pass `measure_closedBall_lt_top.ne` to `simp`
@@ -746,10 +744,8 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Meas
     rw [← ENNReal.sub_mul]; swap
     · simp only [uzero, ENNReal.inv_eq_top, imp_true_iff, Ne, not_false_iff]
     congr 1
-    apply
-      ENNReal.sub_eq_of_add_eq (ne_top_of_le_ne_top utop (measure_mono inter_subset_right))
-    rw [inter_comm _ u, inter_comm _ u]
-    exact measure_inter_add_diff u vmeas
+    rw [inter_comm _ u, inter_comm _ u, eq_comm]
+    exact ENNReal.eq_sub_of_add_eq' utop (measure_inter_add_diff u vmeas)
   have L : Tendsto (fun r => μ (sᶜ ∩ closedBall x r) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 0) := by
     have A : Tendsto (fun r => μ (closedBall x r) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 1) := by
       apply tendsto_const_nhds.congr' _
@@ -780,11 +776,10 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Meas
   rintro r (rpos : 0 < r)
   refine I ({x} + r • t) s ?_ ?_ hs
   · simp only [h't, abs_of_nonneg rpos.le, pow_pos rpos, addHaar_smul, image_add_left,
-      ENNReal.ofReal_eq_zero, not_le, or_false_iff, Ne, measure_preimage_add, abs_pow,
+      ENNReal.ofReal_eq_zero, not_le, or_false, Ne, measure_preimage_add, abs_pow,
       singleton_add, mul_eq_zero]
   · simp [h''t, ENNReal.ofReal_ne_top, addHaar_smul, image_add_left, ENNReal.mul_eq_top,
-      Ne, not_false_iff, measure_preimage_add, singleton_add, and_false_iff, false_and_iff,
-      or_self_iff]
+      Ne, not_false_iff, measure_preimage_add, singleton_add, or_self_iff]
 
 /-- Consider a point `x` at which a set `s` has density one, with respect to closed balls (i.e.,
 a Lebesgue density point of `s`). Then `s` has also density one at `x` with respect to any

@@ -23,7 +23,7 @@ trivial `simp` lemmas, and define the following operations on `RingHom`s and sim
 -/
 
 
-variable {α β R R' S S' T T' : Type*}
+variable {R R' S S' T : Type*}
 
 namespace Prod
 
@@ -314,7 +314,7 @@ def prodZeroRing : R ≃+* R × S where
   invFun := Prod.fst
   map_add' := by simp
   map_mul' := by simp
-  left_inv x := rfl
+  left_inv _ := rfl
   right_inv x := by cases x; simp [eq_iff_true_of_subsingleton]
 
 /-- A ring `R` is isomorphic to `S × R` when `S` is the zero ring -/
@@ -324,7 +324,7 @@ def zeroRingProd : R ≃+* S × R where
   invFun := Prod.snd
   map_add' := by simp
   map_mul' := by simp
-  left_inv x := rfl
+  left_inv _ := rfl
   right_inv x := by cases x; simp [eq_iff_true_of_subsingleton]
 
 end RingEquiv

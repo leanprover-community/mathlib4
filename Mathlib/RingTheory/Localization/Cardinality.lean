@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.RingTheory.Artinian
 
 /-!
@@ -36,7 +36,7 @@ theorem card_le (S : Submonoid R) [IsLocalization S L] : #L ≤ #R := by
   classical
     cases fintypeOrInfinite R
     · exact Cardinal.mk_le_of_surjective (IsArtinianRing.localization_surjective S _)
-    erw [← Cardinal.mul_eq_self <| Cardinal.aleph0_le_mk R]
+    rw [← Cardinal.mul_eq_self <| Cardinal.aleph0_le_mk R]
     set f : R × R → L := fun aa => IsLocalization.mk' _ aa.1 (if h : aa.2 ∈ S then ⟨aa.2, h⟩ else 1)
     refine @Cardinal.mk_le_of_surjective _ _ f fun a => ?_
     obtain ⟨x, y, h⟩ := IsLocalization.mk'_surjective S a
@@ -51,3 +51,7 @@ theorem card (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) : #R = #L 
   (Cardinal.mk_le_of_injective (IsLocalization.injective L hS)).antisymm (card_le S)
 
 end IsLocalization
+
+@[simp]
+theorem Cardinal.mk_fractionRing (R : Type u) [CommRing R] : #(FractionRing R) = #R :=
+  IsLocalization.card (FractionRing R) R⁰ le_rfl |>.symm

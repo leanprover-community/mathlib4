@@ -161,7 +161,7 @@ theorem setIntegral_le [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → ℝ} (h
 @[deprecated (since := "2024-04-17")]
 alias set_integral_le := setIntegral_le
 
-theorem add [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)] (hf : Supermartingale f ℱ μ)
+theorem add [Preorder E] [AddLeftMono E] (hf : Supermartingale f ℱ μ)
     (hg : Supermartingale g ℱ μ) : Supermartingale (f + g) ℱ μ := by
   refine ⟨hf.1.add hg.1, fun i j hij => ?_, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
   refine (condexp_add (hf.integrable j) (hg.integrable j)).le.trans ?_
@@ -169,11 +169,11 @@ theorem add [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)] (hf : Superm
   intros
   refine add_le_add ?_ ?_ <;> assumption
 
-theorem add_martingale [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)]
+theorem add_martingale [Preorder E] [AddLeftMono E]
     (hf : Supermartingale f ℱ μ) (hg : Martingale g ℱ μ) : Supermartingale (f + g) ℱ μ :=
   hf.add hg.supermartingale
 
-theorem neg [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)] (hf : Supermartingale f ℱ μ) :
+theorem neg [Preorder E] [AddLeftMono E] (hf : Supermartingale f ℱ μ) :
     Submartingale (-f) ℱ μ := by
   refine ⟨hf.1.neg, fun i j hij => ?_, fun i => (hf.2.2 i).neg⟩
   refine EventuallyLE.trans ?_ (condexp_neg (f j)).symm.le
@@ -198,7 +198,7 @@ theorem ae_le_condexp [LE E] (hf : Submartingale f ℱ μ) {i j : ι} (hij : i �
     f i ≤ᵐ[μ] μ[f j|ℱ i] :=
   hf.2.1 i j hij
 
-theorem add [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)] (hf : Submartingale f ℱ μ)
+theorem add [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) : Submartingale (f + g) ℱ μ := by
   refine ⟨hf.1.add hg.1, fun i j hij => ?_, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
   refine EventuallyLE.trans ?_ (condexp_add (hf.integrable j) (hg.integrable j)).symm.le
@@ -206,11 +206,11 @@ theorem add [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)] (hf : Submar
   intros
   refine add_le_add ?_ ?_ <;> assumption
 
-theorem add_martingale [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)] (hf : Submartingale f ℱ μ)
+theorem add_martingale [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
     (hg : Martingale g ℱ μ) : Submartingale (f + g) ℱ μ :=
   hf.add hg.submartingale
 
-theorem neg [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)] (hf : Submartingale f ℱ μ) :
+theorem neg [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ) :
     Supermartingale (-f) ℱ μ := by
   refine ⟨hf.1.neg, fun i j hij => (condexp_neg (f j)).le.trans ?_, fun i => (hf.2.2 i).neg⟩
   filter_upwards [hf.2.1 i j hij] with _ _
@@ -226,11 +226,11 @@ theorem setIntegral_le [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → ℝ} (h
 @[deprecated (since := "2024-04-17")]
 alias set_integral_le := setIntegral_le
 
-theorem sub_supermartingale [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)]
+theorem sub_supermartingale [Preorder E] [AddLeftMono E]
     (hf : Submartingale f ℱ μ) (hg : Supermartingale g ℱ μ) : Submartingale (f - g) ℱ μ := by
   rw [sub_eq_add_neg]; exact hf.add hg.neg
 
-theorem sub_martingale [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)] (hf : Submartingale f ℱ μ)
+theorem sub_martingale [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
     (hg : Martingale g ℱ μ) : Submartingale (f - g) ℱ μ :=
   hf.sub_supermartingale hg.supermartingale
 
@@ -299,11 +299,11 @@ end Submartingale
 
 namespace Supermartingale
 
-theorem sub_submartingale [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)]
+theorem sub_submartingale [Preorder E] [AddLeftMono E]
     (hf : Supermartingale f ℱ μ) (hg : Submartingale g ℱ μ) : Supermartingale (f - g) ℱ μ := by
   rw [sub_eq_add_neg]; exact hf.add hg.neg
 
-theorem sub_martingale [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)]
+theorem sub_martingale [Preorder E] [AddLeftMono E]
     (hf : Supermartingale f ℱ μ) (hg : Martingale g ℱ μ) : Supermartingale (f - g) ℱ μ :=
   hf.sub_submartingale hg.submartingale
 

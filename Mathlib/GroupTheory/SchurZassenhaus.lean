@@ -98,7 +98,7 @@ theorem exists_smul_eq (hH : Nat.Coprime (Nat.card H) H.index) (α β : H.Quotie
     ∃ h : H, h • α = β :=
   Quotient.inductionOn' α
     (Quotient.inductionOn' β fun β α =>
-      Exists.imp (fun n => Quotient.sound')
+      Exists.imp (fun _ => Quotient.sound')
         ⟨(powCoprime hH).symm (diff (MonoidHom.id H) β α),
           (diff_inv _ _ _).symm.trans
             (inv_eq_one.mpr
@@ -184,7 +184,7 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K = N := by
-  have : Function.Surjective (QuotientGroup.mk' K) := Quotient.surjective_Quotient_mk''
+  have : Function.Surjective (QuotientGroup.mk' K) := Quotient.mk''_surjective
   have h4 := step1 h1 h2 h3
   contrapose! h4
   have h5 : Nat.card (G ⧸ K) < Nat.card G := by

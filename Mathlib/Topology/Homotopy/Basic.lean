@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
 import Mathlib.Topology.Order.ProjIcc
-import Mathlib.Topology.ContinuousFunction.Ordered
+import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.UnitInterval
 

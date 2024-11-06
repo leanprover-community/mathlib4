@@ -82,7 +82,7 @@ for the inverse of `e`).
 
 open Set Matroid
 
-variable {α : Type*} {I B X : Set α}
+variable {α : Type*}
 
 section IndepMatroid
 
@@ -380,7 +380,7 @@ protected def ofFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop
     (E := E)
     (Indep := (fun I ↦ (∀ (J : Finset α), (J : Set α) ⊆ I → Indep J)))
     (indep_empty := by simpa [subset_empty_iff])
-    (indep_subset := ( fun I J hJ hIJ K hKI ↦ hJ _ (hKI.trans hIJ) ))
+    (indep_subset := ( fun _ _ hJ hIJ _ hKI ↦ hJ _ (hKI.trans hIJ) ))
     (indep_aug := by
       intro I J hI hIfin hJ hJfin hIJ
       rw [ncard_eq_toFinset_card _ hIfin, ncard_eq_toFinset_card _ hJfin] at hIJ
@@ -388,7 +388,7 @@ protected def ofFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop
       simp only [Finite.mem_toFinset] at aug
       obtain ⟨e, heJ, heI, hi⟩ := aug
       exact ⟨e, heJ, heI, fun K hK ↦ indep_subset hi <| Finset.coe_subset.1 (by simpa)⟩ )
-    (indep_compact := fun I h J hJ ↦ h _ hJ J.finite_toSet _ Subset.rfl )
+    (indep_compact := fun _ h J hJ ↦ h _ hJ J.finite_toSet _ Subset.rfl )
     (subset_ground := fun I hI x hxI ↦ by simpa using subset_ground <| hI {x} (by simpa) )
 
 @[simp] theorem ofFinset_E [DecidableEq α] (E : Set α) Indep indep_empty indep_subset indep_aug
