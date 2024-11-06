@@ -85,7 +85,7 @@ jobs:
       run: |
         jobID="${{ github.run_id }}"
         printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib.Tactic.Simps.Basic 15 10 "${jobID}")" |
-          tee "$GITHUB_OUTPUT" | column -s'|' -o'|' -t
+          tee "$GITHUB_OUTPUT"
 
     - name: downstream imports
       id: report_really

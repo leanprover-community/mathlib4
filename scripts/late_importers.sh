@@ -87,6 +87,6 @@ lake build "${root}" | sed -z 's=\n\n*\([^⚠w]\)= \1=g' |
       fileHtml=$2
       gsub(/\.lean$/, ".html", fileHtml)
       printf("| [%s](https://leanprover-community.github.io/mathlib4_docs/%s) | %s | %s | %s |\n", $2, fileHtml, $3, $5, $6)
-  }'
+  }' | column -s'|' -o'|' -t
 printf '\n\n---\n\nReference commit [%s](%s)\n' "${refCommit:0:10}" "${baseURL}/commit/${refCommit}"
 printf '[Full report](%s/actions/runs/%s)\n' "${baseURL}" "${jobID}"
