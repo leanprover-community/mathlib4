@@ -1059,8 +1059,8 @@ namespace HomeomorphClass
 
 variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLike F α β]
 
-/-- Turn an element of a type `F` satisfying `MulEquivClass F α β` into an actual
-`MulEquiv`. This is declared as the default coercion from `F` to `α ≃* β`. -/
+/-- Turn an element of a type `F` satisfying `HomeomorphClass F α β` into an actual
+`Homeomorph`. This is declared as the default coercion from `F` to `α ≃ₜ β`. -/
 def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :={
   (f : α ≃ β) with
   continuous_toFun := h.continuous_toFun f
