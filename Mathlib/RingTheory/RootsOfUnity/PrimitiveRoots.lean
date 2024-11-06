@@ -757,7 +757,7 @@ section cyclic
 then for each `a : G` with `a ≠ 1` there is a homomorphism `φ : G →* G'` such that `φ a ≠ 1`. -/
 lemma IsCyclic.exists_apply_ne_one {G G' : Type*} [CommGroup G] [IsCyclic G] [Finite G]
     [CommGroup G'] (hG' : ∃ ζ : G', IsPrimitiveRoot ζ (Nat.card G)) ⦃a : G⦄ (ha : a ≠ 1) :
-    ∃ φ  : G →* G', φ a ≠ 1 := by
+    ∃ φ : G →* G', φ a ≠ 1 := by
   let inst : Fintype G := Fintype.ofFinite _
   obtain ⟨ζ, hζ⟩ := hG'
   -- pick a generator `g` of `G`
