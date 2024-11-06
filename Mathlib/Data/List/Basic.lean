@@ -1035,7 +1035,7 @@ theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as 
 @[simp] lemma take_concat_get' (l : List α) (i : ℕ) (h : i < l.length) :
   l.take i ++ [l[i]] = l.take (i + 1) := by simpa using take_concat_get l i h
 
-/--eq_nil_or_concat in simp normal form-/
+/-- `eq_nil_or_concat` in simp normal form -/
 lemma eq_nil_or_concat' (l : List α) : l = [] ∨ ∃ L b, l = L ++ [b] := by
   simpa using l.eq_nil_or_concat
 
