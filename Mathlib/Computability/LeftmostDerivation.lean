@@ -85,7 +85,7 @@ theorem RewritesLeftmost.rewrite_terminal (r : ContextFreeRule T N) (w : List T)
   rw [rewritesLeftmost_iff] at h
   obtain ⟨p, q, h₁, _⟩ := h
   obtain ⟨l₁, _, _, h, _⟩ := List.append_eq_map_iff.mp h₁.symm
-  obtain ⟨_, l₂, _, _, h⟩ :=List.append_eq_map_iff.mp h.symm
+  obtain ⟨_, l₂, _, _, h⟩ := List.append_eq_map_iff.mp h.symm
   rcases l₂ with _|_ <;> simp_all
 
 theorem RewritesLeftmost.append_left {r : ContextFreeRule T N}
