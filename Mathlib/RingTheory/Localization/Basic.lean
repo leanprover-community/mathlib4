@@ -134,6 +134,29 @@ protected lemma bijective (f : S →+* Q) (hf : f.comp (algebraMap R S) = algebr
 
 end AlgEquiv
 
+section liftAlgHom
+
+variable {A : Type*} [CommSemiring A]
+  {R : Type*} [CommSemiring R] [Algebra A R] {M : Submonoid R}
+  {S : Type*} [CommSemiring S] [Algebra A S] [Algebra R S] [IsScalarTower A R S]
+  {P : Type*} [CommSemiring P] [Algebra A P] [IsLocalization M S]
+  {g : R →ₐ[A] P}
+
+/-- `AlgHom` version of `IsLocalization.lift`. -/
+@[simps toRingHom]
+noncomputable def liftAlgHom (hg : ∀ y : M, IsUnit (g y)) : S →ₐ[A] P :=
+  { lift hg with
+    commutes' := by
+      intro r
+      change lift hg (algebraMap A S r) = _
+      simp [IsScalarTower.algebraMap_apply A R S]
+  }
+
+@[simp]
+theorem liftAlgHom_apply (hg : ∀ y : M, IsUnit (g y)) (x : S) : liftAlgHom hg x = lift hg x := rfl
+
+end liftAlgHom
+
 section AlgEquivOfAlgEquiv
 
 variable {A : Type*} [CommSemiring A]

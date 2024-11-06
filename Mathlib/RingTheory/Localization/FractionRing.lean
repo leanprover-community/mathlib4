@@ -198,6 +198,25 @@ such that `z = f x * (f y)⁻¹`. -/
 noncomputable def lift (hg : Injective g) : K →+* L :=
   IsLocalization.lift fun y : nonZeroDivisors A => isUnit_map_of_injective hg y
 
+section liftAlgHom
+
+variable [Algebra R A] [Algebra R K] [IsScalarTower R A K] [Algebra R L] {g : A →ₐ[R] L}
+
+/-- `AlgHom` version of `IsFractionRing.lift`. -/
+@[simps toRingHom]
+noncomputable def liftAlgHom (hg : Injective g) : K →ₐ[R] L :=
+  { lift hg with
+    commutes' := by
+      intro r
+      change IsLocalization.lift _ (algebraMap R K r) = _
+      simp [IsScalarTower.algebraMap_apply R A K]
+  }
+
+@[simp]
+theorem liftAlgHom_apply (hg : Injective g) (x : K) : liftAlgHom hg x = lift hg x := rfl
+
+end liftAlgHom
+
 /-- Given an integral domain `A` with field of fractions `K`,
 and an injective ring hom `g : A →+* L` where `L` is a field,
 the field hom induced from `K` to `L` maps `x` to `g x` for all
