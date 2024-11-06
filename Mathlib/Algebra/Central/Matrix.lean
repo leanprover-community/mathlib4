@@ -8,9 +8,7 @@ import Mathlib.Algebra.Central.Basic
 import Mathlib.Data.Matrix.Basis
 
 /-!
-
-# Matrix algebra is a Central Algebra
-
+# The matrix algebra is a central algebra
 -/
 
 namespace Algebra.IsCentral
