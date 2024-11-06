@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Group.Ultra
+import Mathlib.Analysis.Normed.Ring.Ultra
 import Mathlib.Data.Nat.Choose.Sum
 
 /-!
-## Sufficient conditions to have an ultrametric norm on a division ring
+## Conditions to have an ultrametric norm on a division ring
 
 This file provides ways of constructing an instance of `IsUltrametricDist` based on
 facts about the existing norm.
@@ -17,6 +17,9 @@ facts about the existing norm.
 
 * `isUltrametricDist_of_forall_norm_natCast_le_one`: a norm in a division ring is ultrametric
   if the norm of the image of a natural is less than or equal to one
+
+* `isUltrametricDist_iff_forall_norm_natCast_le_one`: a norm in a division ring is ultrametric
+  if and only if the norm of the image of a natural is less than or equal to one
 
 ## Implementation details
 
@@ -130,3 +133,8 @@ lemma isUltrametricDist_of_forall_norm_natCast_le_one
 end sufficient
 
 end IsUltrametricDist
+
+theorem isUltrametricDist_iff_forall_norm_natCast_le_one {R : Type*}
+    [NormedDivisionRing R] : IsUltrametricDist R ↔ ∀ n : ℕ, ‖(n : R)‖ ≤ 1 :=
+  ⟨fun _ => IsUltrametricDist.norm_natCast_le_one R,
+      IsUltrametricDist.isUltrametricDist_of_forall_norm_natCast_le_one⟩
