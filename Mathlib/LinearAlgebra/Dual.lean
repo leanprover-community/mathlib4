@@ -461,11 +461,11 @@ instance dual_free [Free R M] : Free R (Dual R M) :=
   Free.of_basis (Free.chooseBasis R M).dualBasis
 
 instance dual_projective [Projective R M] : Projective R (Dual R M) :=
-  have ⟨_, f, g, _, _, hfg⟩ := Projective.exists_comp_eq_id_of_finite R M
+  have ⟨_, f, g, _, _, hfg⟩ := Finite.exists_comp_eq_id_of_projective R M
   .of_split f.dualMap g.dualMap (congr_arg dualMap hfg)
 
 instance dual_finite [Projective R M] : Module.Finite R (Dual R M) :=
-  have ⟨n, f, g, _, _, hfg⟩ := Projective.exists_comp_eq_id_of_finite R M
+  have ⟨n, f, g, _, _, hfg⟩ := Finite.exists_comp_eq_id_of_projective R M
   have := Finite.of_basis (Free.chooseBasis R <| Fin n → R).dualBasis
   .of_surjective _ (surjective_of_comp_eq_id f.dualMap g.dualMap <| congr_arg dualMap hfg)
 
