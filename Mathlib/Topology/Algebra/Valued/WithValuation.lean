@@ -23,8 +23,6 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 
 noncomputable section
 
-open scoped Multiplicative
-
 variable {R : Type*} {Γ₀ : outParam (Type*)} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
 
 def WithValuation : Valuation R Γ₀ → Type _ := fun _ => R

@@ -353,8 +353,7 @@ ring of integers, denoted `v.adicCompletionIntegers`. -/
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
 abbrev adicCompletion := (v.valuation : Valuation K ℤₘ₀).completion
 
-theorem valuedAdicCompletion_def {x : v.adicCompletion K} :
-    Valued.v x = Valued.extension x :=
+theorem valuedAdicCompletion_def {x : v.adicCompletion K} : Valued.v x = Valued.extension x :=
   rfl
 
 /-- The ring of integers of `adicCompletion`. -/
@@ -367,11 +366,11 @@ instance : Inhabited (adicCompletionIntegers K v) :=
 variable (R)
 
 theorem mem_adicCompletionIntegers {x : v.adicCompletion K} :
-    x ∈ v.adicCompletionIntegers K ↔ (Valued.v x : ℤₘ₀) ≤ 1 :=
+    x ∈ v.adicCompletionIntegers K ↔ Valued.v x ≤ 1 :=
   Iff.rfl
 
 theorem not_mem_adicCompletionIntegers {x : v.adicCompletion K} :
-    x ∉ v.adicCompletionIntegers K ↔ 1 < (Valued.v x : ℤₘ₀) := by
+    x ∉ v.adicCompletionIntegers K ↔ 1 < Valued.v x := by
   rw [not_congr <| mem_adicCompletionIntegers R K v]
   exact not_le
 
