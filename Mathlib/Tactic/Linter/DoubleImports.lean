@@ -58,7 +58,8 @@ def doubleImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let id ← getId stx
     if id != .missing then
       let newImports := getIrredundantImports env (← getAllImports stx id)
-      dbg_trace "imports for '{id}': {newImports.toArray.qsort (·.toString < ·.toString)}"
+      if newImports.size == 1 then
+        dbg_trace "imports for '{id}': {newImports.toArray.qsort (·.toString < ·.toString)}"
 
 initialize addLinter doubleImportsLinter
 
