@@ -22,30 +22,28 @@ open Finset
 open scoped BigOperators ArithmeticFunction
 namespace PNat
 
-/-- The set of divisors of a positive natural number.
+instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) :=
+  /- The set of divisors of a positive natural number.
 This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
-def divisorsAntidiagonal (n : ℕ+) : Finset (ℕ+ × ℕ+) :=
-  (Nat.divisorsAntidiagonal n).attach.map
-    ⟨fun x =>
-      (⟨x.val.1, Nat.pos_of_mem_divisors <| Nat.fst_mem_divisors_of_mem_antidiagonal x.prop⟩,
-      ⟨x.val.2, Nat.pos_of_mem_divisors <| Nat.snd_mem_divisors_of_mem_antidiagonal x.prop⟩),
-    fun _ _ h => Subtype.ext <| Prod.ext (congr_arg (·.1.val) h) (congr_arg (·.2.val) h)⟩
+  let divisorsAntidiagonal (n : ℕ+) : Finset (ℕ+ × ℕ+) :=
+    (Nat.divisorsAntidiagonal n).attach.map
+      ⟨fun x =>
+        (⟨x.val.1, Nat.pos_of_mem_divisors <| Nat.fst_mem_divisors_of_mem_antidiagonal x.prop⟩,
+        ⟨x.val.2, Nat.pos_of_mem_divisors <| Nat.snd_mem_divisors_of_mem_antidiagonal x.prop⟩),
+      fun _ _ h => Subtype.ext <| Prod.ext (congr_arg (·.1.val) h) (congr_arg (·.2.val) h)⟩
 
-@[simp]
-theorem mem_divisorsAntidiagonal {n : ℕ+} (x : ℕ+ × ℕ+) :
+  have mem_divisorsAntidiagonal {n : ℕ+} (x : ℕ+ × ℕ+) :
     x ∈ divisorsAntidiagonal n ↔ x.1 * x.2 = n := by
-  simp_rw [divisorsAntidiagonal, Finset.mem_map, Finset.mem_attach, Function.Embedding.coeFn_mk,
-    Prod.ext_iff, true_and, ← coe_inj, Subtype.exists]
-  aesop
-
-instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) where
-  antidiagonal n := divisorsAntidiagonal (Additive.toMul n) |>.map
-    (.prodMap (Additive.ofMul.toEmbedding) (Additive.ofMul.toEmbedding))
-  mem_antidiagonal {n a} := by
-    obtain ⟨a₁, a₂⟩ := a
-    revert n a₁ a₂
-    simp_rw [Additive.ofMul.surjective.forall, ← ofMul_mul, Additive.ofMul.injective.eq_iff]
-    simp
+    simp_rw [divisorsAntidiagonal, Finset.mem_map, Finset.mem_attach, Function.Embedding.coeFn_mk,
+      Prod.ext_iff, true_and, ← coe_inj, Subtype.exists]
+    aesop
+  { antidiagonal := fun n ↦ divisorsAntidiagonal (Additive.toMul n) |>.map
+      (.prodMap (Additive.ofMul.toEmbedding) (Additive.ofMul.toEmbedding))
+    mem_antidiagonal := fun {n a} ↦ by
+      obtain ⟨a₁, a₂⟩ := a
+      revert n a₁ a₂
+      simp_rw [Additive.ofMul.surjective.forall, ← ofMul_mul, Additive.ofMul.injective.eq_iff]
+      simp [mem_divisorsAntidiagonal] }
 
 end PNat
 
