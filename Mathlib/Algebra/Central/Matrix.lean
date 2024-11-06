@@ -12,8 +12,6 @@ import Mathlib.Data.Matrix.Basis
 
 namespace Algebra.IsCentral
 
-section MatrixAlgebra
-
 variable (K D : Type*) [CommSemiring K] [Semiring D] [Algebra K D] [IsCentral K D]
 
 open Matrix in
@@ -32,7 +30,5 @@ instance matrix (ι : Type*) [Fintype ι] [DecidableEq ι] :
     obtain ⟨r, rfl⟩ := mem
     rw [Algebra.mem_bot]
     exact ⟨r, rfl⟩
-
-end MatrixAlgebra
 
 end Algebra.IsCentral
