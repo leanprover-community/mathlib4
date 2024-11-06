@@ -2,7 +2,7 @@ name: Maintainer merge (comment)
 
 on:
   pull_request: #issue_comment:
-    types: [created, edited]
+    types: [opened, edited] #[created, edited]
 
 jobs:
   ping_zulip:
