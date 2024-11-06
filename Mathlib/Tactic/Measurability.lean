@@ -29,7 +29,7 @@ macro "measurability" : attr =>
 The tactic `measurability` solves goals of the form `Measurable f`, `AEMeasurable f`,
 `StronglyMeasurable f`, `AEStronglyMeasurable f μ`, or `MeasurableSet s` by applying lemmas tagged
 with the `measurability` user attribute. -/
-macro "measurability" _cfg:optConfig : tactic =>
+macro "measurability" : tactic =>
   `(tactic| aesop (config := { terminal := true })
     (rule_sets := [$(Lean.mkIdent `Measurable):ident]))
 
@@ -38,11 +38,11 @@ The tactic `measurability?` solves goals of the form `Measurable f`, `AEMeasurab
 `StronglyMeasurable f`, `AEStronglyMeasurable f μ`, or `MeasurableSet s` by applying lemmas tagged
 with the `measurability` user attribute, and suggests a faster proof script that can be substituted
 for the tactic call in case of success. -/
-macro "measurability?" _cfg:optConfig : tactic =>
+macro "measurability?" : tactic =>
   `(tactic| aesop? (config := { terminal := true })
     (rule_sets := [$(Lean.mkIdent `Measurable):ident]))
 
 -- Todo: implement `measurability!` and `measurability!?` and add configuration,
 -- original syntax was (same for the missing `measurability` variants):
-syntax (name := measurability!) "measurability!" optConfig : tactic
-syntax (name := measurability!?) "measurability!?" optConfig : tactic
+syntax (name := measurability!) "measurability!" : tactic
+syntax (name := measurability!?) "measurability!?" : tactic
