@@ -70,35 +70,22 @@ jobs:
 
     - name: build mathlib
       id: build
-      env:
-        TOP_MODULE: 'Mathlib.Logic.Function.Basic'
       uses: liskin/gh-problem-matcher-wrap@v3
       with:
         linters: gcc
         run: |
-          echo "${TOP_MODULE}"
-          echo ${TOP_MODULE}
-          echo "$TOP_MODULE"
-          echo $TOP_MODULE
-          tm="$TOP_MODULE"
-          echo "now tk:"
-          echo "${tm}"
-          echo ${tm}
-          echo "$tm"
-          echo $tm
-          echo "Finally we build"
-          lake build "${tm}"
+          lake build Mathlib.Logic.Function.Basic
 
     - name: Full report
       run: |
-        ./scripts/late_importers.sh "${tm}" 0 0 "${{ github.run_id }}"
+        ./scripts/late_importers.sh Mathlib.Logic.Function.Basic 0 0 "${{ github.run_id }}"
 
     - name: Zulip report
       id: late_importers
       run: |
         jobID="${{ github.run_id }}"
-        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh "${tm}" 15 10 "${jobID}")" |
-          tee "$GITHUB_OUTPUT"
+        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib.Logic.Function.Basic 15 10 "${jobID}")" |
+          tee "$GITHUB_OUTPUT" | column -s'|' -o'|' -t
 
     - name: downstream imports
       id: report_really
