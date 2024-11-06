@@ -201,6 +201,7 @@ variable {M N P : CategoryTheory.Bundled.{w} L.Structure}
 
 namespace Embedding
 
+/-- Embedding between equal structures.-/
 def eq_embed (h : M = N) : M ↪[L] N := by
   cases h
   exact refl L M
@@ -226,6 +227,7 @@ end Embedding
 
 namespace Equiv
 
+/-- Equivalence between equal structures.-/
 def eq_equiv (h : M = N) : M ≃[L] N := by
   cases h
   rfl
