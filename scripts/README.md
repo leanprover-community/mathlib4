@@ -97,6 +97,9 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   to the appropriate topic on zulip.
 - `count-trans-deps.py`, `import-graph-report.py` and `import_trans_difference.sh` produce various
   summaries of changes in transitive imports that the `PR_summary` message incorporates.
-- `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
-  the `linter.minImports` output, summarizing the data in a table.  See the module docs of
-  `late_importers.sh` for further details.
+- `downstream_counts.lean` and `late_importers.sh` are building blocks for the `latest_import.yml`
+  workflow.
+  `late_importers.sh` is the main shell script: it formats the `linter.minImports` output,
+  summarizing the data in a table.  See the module docs of `late_importers.sh` for further details.
+  `downstream_counts.lean` is used by `late_importers.sh` to retrieve the number of downstream
+  imports of the modules that the action reports on Zulip.
