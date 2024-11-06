@@ -44,7 +44,20 @@ lemma final_fst [R.Final] : (fst L R).Final := by
     isoWhiskerRight_inv, whiskerRight_app, ιCompGrothendieckProj_inv_app, Functor.map_id,
     Category.id_comp]
   rw [ι_colimitFiberwiseColimitIso_hom_assoc]
-  sorry
+  simp [Final.colimitIso]
+  have : colimit.ι (grothendieckProj L ⋙ G) ⟨L.obj l, CostructuredArrow.mk (𝟙 _)⟩
+      = (grothendieckProj L ⋙ G).map ⟨f, by { simp; exact 𝟙 _ }⟩ ≫
+      colimit.ι (grothendieckProj L ⋙ G)
+        ((Grothendieck.pre (functor L) R).obj ⟨r, CostructuredArrow.mk f⟩) :=
+    (colimit.w (grothendieckProj L ⋙ G) _).symm
+  rw [this]; clear this
+  have : colimit.ι (Grothendieck.pre (functor L) R ⋙ grothendieckProj L ⋙ G)
+    ⟨r, CostructuredArrow.mk f⟩
+      = colimit.ι (grothendieckPrecompFunctorToComma L R ⋙ (fst L R ⋙ G))
+    ⟨r, CostructuredArrow.mk f⟩ :=
+    rfl
+  simp [this]
+  rfl
 
 end Comma
 
