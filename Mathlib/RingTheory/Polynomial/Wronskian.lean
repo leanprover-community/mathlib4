@@ -120,12 +120,8 @@ variable {k : Type*} [Field k]
 theorem dvd_derivative_iff {a : k[X]} : a ∣ derivative a ↔ derivative a = 0 where
   mp h := by
     by_cases a_nz : a = 0
-    · rw [a_nz]; simp only [derivative_zero]
-    by_contra deriv_nz
-    have deriv_lt := degree_derivative_lt a_nz
-    have le_deriv := Polynomial.degree_le_of_dvd h deriv_nz
-    have lt_self := le_deriv.trans_lt deriv_lt
-    simp only [lt_self_iff_false] at lt_self
+    · simp only [a_nz, derivative_zero]
+    exact eq_zero_of_dvd_of_degree_lt h (degree_derivative_lt a_nz)
   mpr h := by simp [h]
 
 /--
