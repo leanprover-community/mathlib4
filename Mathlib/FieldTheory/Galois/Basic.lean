@@ -289,11 +289,10 @@ open IntermediateField
 
 open scoped Pointwise
 
-lemma AlgEquiv.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E]:
+lemma IntermediateField.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E]:
     (restrictNormalHom E).ker = E.fixingSubgroup := by
-  simp only [IntermediateField.fixingSubgroup, Subgroup.ext_iff, MonoidHom.mem_ker,
-    AlgEquiv.ext_iff, one_apply, Subtype.ext_iff, restrictNormalHom_apply, Subtype.forall,
-    mem_fixingSubgroup_iff, SetLike.mem_coe, AlgEquiv.smul_def, implies_true]
+  simp [fixingSubgroup, Subgroup.ext_iff, AlgEquiv.ext_iff, Subtype.ext_iff,
+    restrictNormalHom_apply, mem_fixingSubgroup_iff]
 
 namespace IsGalois
 
@@ -314,7 +313,7 @@ noncomputable def normalAutEquivQuotient [FiniteDimensional K L] [IsGalois K L]
     (H : Subgroup (L ≃ₐ[K] L)) [Subgroup.Normal H] :
     (L ≃ₐ[K] L) ⧸ H ≃* ((fixedField H) ≃ₐ[K] (fixedField H)) :=
   (QuotientGroup.quotientMulEquivOfEq ((fixingSubgroup_fixedField H).symm.trans
-  (AlgEquiv.restrictNormalHom_ker (fixedField H)).symm)).trans <|
+  (fixedField H).restrictNormalHom_ker.symm)).trans <|
   QuotientGroup.quotientKerEquivOfSurjective (restrictNormalHom (fixedField H)) <|
   restrictNormalHom_surjective L
 
@@ -325,7 +324,7 @@ lemma normalAutEquivQuotient_apply [FiniteDimensional K L] [IsGalois K L]
 open scoped Pointwise
 
 @[simp]
-theorem fixingSubgroup_conjugate_of_map (σ : L ≃ₐ[K] L) :
+theorem map_fixingSubgroup (σ : L ≃ₐ[K] L) :
     (E.map σ).fixingSubgroup = (MulAut.conj σ) • E.fixingSubgroup := by
   ext τ
   simp only [coe_map, AlgHom.coe_coe, Set.mem_image, SetLike.mem_coe, AlgEquiv.smul_def,
@@ -339,7 +338,7 @@ Galois extension, then `E.fixingSubgroup` is a normal subgroup of `Gal(L / K)`. 
 instance fixingSubgroup_normal_of_isGalois [IsGalois K L] [IsGalois K E] :
     E.fixingSubgroup.Normal := by
   apply Subgroup.Normal.of_conjugate_fixed (fun σ ↦ ?_)
-  rw [← fixingSubgroup_conjugate_of_map, normal_iff_forall_map_eq'.mp inferInstance σ]
+  rw [← map_fixingSubgroup, normal_iff_forall_map_eq'.mp inferInstance σ]
 
 end IsGalois
 
