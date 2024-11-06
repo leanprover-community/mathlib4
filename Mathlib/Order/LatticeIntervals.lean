@@ -188,29 +188,18 @@ instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (Icc a b) :=
 instance lattice [Lattice α] : Lattice (Icc a b) :=
   { Icc.semilatticeInf, Icc.semilatticeSup with }
 
-/-- `Icc a b` has a bottom element whenever `a ≤ b`. -/
-protected abbrev orderBot [Preorder α] (h : a ≤ b) : OrderBot (Icc a b) :=
-  (isLeast_Icc h).orderBot
+variable [Preorder α] [Fact (a ≤ b)]
 
-/-- `OrderBot` instance for `Icc a b`. -/
-instance [Preorder α] [Fact (a ≤ b)] : OrderBot (Icc a b) :=
-  Icc.orderBot Fact.out
+/-- `Icc a b` has a bottom element whenever `a ≤ b`. -/
+instance : OrderBot (Icc a b) :=
+  (isLeast_Icc Fact.out).orderBot
 
 /-- `Icc a b` has a top element whenever `a ≤ b`. -/
-protected abbrev orderTop [Preorder α] (h : a ≤ b) : OrderTop (Icc a b) :=
-  (isGreatest_Icc h).orderTop
-
-/-- `OrderTop` instance for `Icc a b`. -/
-instance [Preorder α] [Fact (a ≤ b)] : OrderTop (Icc a b) :=
-  Icc.orderTop Fact.out
+instance : OrderTop (Icc a b) :=
+  (isGreatest_Icc Fact.out).orderTop
 
 /-- `Icc a b` is a `BoundedOrder` whenever `a ≤ b`. -/
-protected abbrev boundedOrder [Preorder α] (h : a ≤ b) : BoundedOrder (Icc a b) :=
-  { Icc.orderTop h, Icc.orderBot h with }
-
-/-- `BoundedOrder` instance for `Icc a b`. -/
-instance [Preorder α] [Fact (a ≤ b)] : BoundedOrder (Icc a b) :=
-  Icc.boundedOrder Fact.out
+instance : BoundedOrder (Icc a b) where
 
 end Icc
 
