@@ -93,7 +93,8 @@ lemma TensorProduct.eq_repr_basis_right :
     · simp
     · intro i _; simp [add_tmul]
 
-/-- Elements in M ⊗ N can be represented by sum of elements of basis of M tensor elements of N.-/
+/-- Elements in `M ⊗ N` can be represented by sum of elements of basis of `M` tensor elements of
+  `N`.-/
 lemma TensorProduct.eq_repr_basis_left :
     ∃ (c : ι →₀ N), (c.sum fun i n => ℬ i ⊗ₜ n) = x := by
   obtain ⟨c, hc⟩ := TensorProduct.eq_repr_basis_right ℬ (TensorProduct.comm R M N x)
