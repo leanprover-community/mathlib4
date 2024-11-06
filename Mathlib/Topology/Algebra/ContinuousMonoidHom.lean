@@ -454,8 +454,6 @@ infixl:25 " ≃ₜ+ " => ContinuousAddEquiv
 
 section
 
-variable {F α β : Type*}[EquivLike F α β] [TopologicalSpace α] [TopologicalSpace β]
-
 namespace ContinuousMulEquiv
 
 variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N] [Mul M] [Mul N]
