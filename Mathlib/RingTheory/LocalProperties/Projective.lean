@@ -36,11 +36,11 @@ theorem Module.free_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module
       Module.Free Rₛ Mₛ :=
     Free.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
 
+universe uR' uM' in
 /--
 Also see `IsLocalizedModule.lift_rank_eq` for a version for non-free modules,
 but requires `S` to not contain any zero-divisors.
 -/
-universe uR' uM' in
 theorem Module.lift_rank_of_isLocalizedModule_of_free
     (Rₛ : Type uR') {Mₛ : Type uM'} [AddCommGroup Mₛ] [Module R Mₛ]
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ] (S : Submonoid R)
