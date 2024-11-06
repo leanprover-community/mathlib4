@@ -1,13 +1,13 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
+import Mathlib.Data.Set.Operations
+import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.RelClasses
-import Mathlib.Data.Set.Image
 import Mathlib.Order.Hom.Basic
 import Mathlib.Lean.Thunk
-import Mathlib.Data.Prod.Lex
 
 /-!
 # Improvable lower bounds.
@@ -32,8 +32,7 @@ An appropriate well-foundedness condition would then ensure that repeated improv
 the exact value.
 -/
 
-set_option autoImplicit true
-set_option relaxedAutoImplicit true
+variable {α ε : Type*}
 
 /--
 Given `[EstimatorData a ε]`
@@ -70,12 +69,12 @@ section trivial
 variable [Preorder α]
 
 /-- A trivial estimator, containing the actual value. -/
-abbrev Estimator.trivial (a : α) : Type* := { b : α // b = a }
+abbrev Estimator.trivial.{u} {α : Type u} (a : α) : Type u := { b : α // b = a }
 
-instance : Bot (Estimator.trivial a) := ⟨⟨a, rfl⟩⟩
+instance {a : α} : Bot (Estimator.trivial a) := ⟨⟨a, rfl⟩⟩
 
 instance : WellFoundedGT Unit where
-  wf := ⟨fun .unit => ⟨.unit, fun.⟩⟩
+  wf := ⟨fun .unit => ⟨.unit, nofun⟩⟩
 
 instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
   let f : Estimator.trivial a ≃o Unit := RelIso.relIsoOfUniqueOfRefl _ _
@@ -107,7 +106,7 @@ def Estimator.improveUntilAux
       | none, _ => .error <| if r then none else e
       | some e', _ =>
         improveUntilAux a p e' true
-termination_by Estimator.improveUntilAux p I e r => (⟨_, mem_range_self e⟩ : range (bound a))
+termination_by (⟨_, mem_range_self e⟩ : range (bound a))
 
 /--
 Improve an estimate until it satisfies a predicate,
@@ -117,7 +116,6 @@ def Estimator.improveUntil (a : Thunk α) (p : α → Bool)
     [Estimator a ε] [WellFoundedGT (range (bound a : ε → α))] (e : ε) :
     Except (Option ε) ε :=
   Estimator.improveUntilAux a p e false
-
 
 attribute [local instance] WellFoundedGT.toWellFoundedRelation in
 /--
@@ -140,7 +138,7 @@ theorem Estimator.improveUntilAux_spec (a : Thunk α) (p : α → Bool)
       exact Bool.bool_eq_false h
     | some e', _ =>
       exact Estimator.improveUntilAux_spec a p e' true
-termination_by Estimator.improveUntilAux_spec p I e r => (⟨_, mem_range_self e⟩ : range (bound a))
+termination_by (⟨_, mem_range_self e⟩ : range (bound a))
 
 /--
 If `Estimator.improveUntil a p e` returns `some e'`, then `bound a e'` satisfies `p`.
@@ -189,7 +187,7 @@ end add
 /-! Estimator for the first component of a pair. -/
 section fst
 
-variable [PartialOrder α] [PartialOrder β]
+variable {β : Type*} [PartialOrder α] [PartialOrder β]
 
 /--
 An estimator for `(a, b)` can be turned into an estimator for `a`,
@@ -204,7 +202,7 @@ structure Estimator.fst
 
 variable [∀ a : α, WellFoundedGT { x // x ≤ a }]
 
-instance [Estimator a ε] : WellFoundedGT (range (bound a : ε → α)) :=
+instance {a : Thunk α} [Estimator a ε] : WellFoundedGT (range (bound a : ε → α)) :=
   let f : range (bound a : ε → α) ↪o { x // x ≤ a.get } :=
     Subtype.orderEmbedding (by rintro _ ⟨e, rfl⟩; exact Estimator.bound_le e)
   f.wellFoundedGT
@@ -222,7 +220,7 @@ instance [DecidableRel ((· : α) < ·)] {a : Thunk α} {b : Thunk β}
 -- This isn't an instance as at the sole use case we need to provide
 -- the instance arguments by hand anyway.
 def Estimator.fstInst [DecidableRel ((· : α) < ·)] [∀ (p : α × β), WellFoundedGT { q // q ≤ p }]
-    (a : Thunk α) (b : Thunk β) {ε : Type*} (i : Estimator (a.prod b) ε) :
+    (a : Thunk α) (b : Thunk β) (i : Estimator (a.prod b) ε) :
     Estimator a (Estimator.fst (a.prod b) ε) where
   bound_le e := (Estimator.bound_le e.inner : bound (a.prod b) e.inner ≤ (a.get, b.get)).1
   improve_spec e := by

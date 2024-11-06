@@ -5,6 +5,7 @@ Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Localization.Module
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-!
 # Localized Module
@@ -19,7 +20,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 variable {R : Type*} [CommSemiring R] (S : Submonoid R)
   (A : Type*) [CommRing A] [Algebra R A] [IsLocalization S A]
-  {M : Type*} [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+  {M : Type*} [AddCommMonoid M] [Module R M]
   {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module A M'] [IsScalarTower R A M']
   (f : M →ₗ[R] M')
 
@@ -33,7 +34,7 @@ theorem IsLocalizedModule.isBaseChange [IsLocalizedModule S f] : IsBaseChange A 
     cases h₂ (LinearMap.restrictScalars R g'') h; rfl
 
 /-- The map `(f : M →ₗ[R] M')` is a localization of modules iff the map
-`(localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
+`(Localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
 bilinear map).
 In particular, there is an isomorphism between `LocalizedModule S M` and `(Localization S) ⊗[R] M`
 given by `m/s ↦ (1/s) ⊗ₜ m`.
@@ -47,3 +48,38 @@ theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseCha
   rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.restrictScalars_apply, LinearEquiv.trans_apply, IsBaseChange.equiv_symm_apply,
     IsBaseChange.equiv_tmul, one_smul]
+
+variable (T B : Type*) [CommSemiring T] [CommSemiring B]
+  [Algebra R T] [Algebra T B] [Algebra R B] [Algebra A B] [IsScalarTower R T B]
+  [IsScalarTower R A B]
+
+lemma Algebra.isPushout_of_isLocalization [IsLocalization (Algebra.algebraMapSubmonoid T S) B] :
+    Algebra.IsPushout R T A B := by
+  rw [Algebra.IsPushout.comm, Algebra.isPushout_iff]
+  apply IsLocalizedModule.isBaseChange S
+
+open TensorProduct in
+instance (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    {α} (S : Submonoid R) {Mₛ} [AddCommGroup Mₛ] [Module R Mₛ] (f : M →ₗ[R] Mₛ)
+    [IsLocalizedModule S f] : IsLocalizedModule S (Finsupp.mapRange.linearMap (α := α) f) := by
+  classical
+  let e : Localization S ⊗[R] M ≃ₗ[R] Mₛ :=
+    (IsLocalizedModule.isBaseChange S (Localization S)
+      (LocalizedModule.mkLinearMap S M)).equiv.restrictScalars R ≪≫ₗ IsLocalizedModule.iso S f
+  let e' : Localization S ⊗[R] (α →₀ M) ≃ₗ[R] (α →₀ Mₛ) :=
+    finsuppRight R (Localization S) M α ≪≫ₗ Finsupp.mapRange.linearEquiv e
+  suffices IsLocalizedModule S (e'.symm.toLinearMap ∘ₗ Finsupp.mapRange.linearMap f) by
+    convert this.of_linearEquiv (e := e')
+    ext
+    simp
+  rw [isLocalizedModule_iff_isBaseChange S (Localization S)]
+  convert TensorProduct.isBaseChange R (α →₀ M) (Localization S) using 1
+  ext a m
+  apply (finsuppRight R (Localization S) M α).injective
+  ext b
+  apply e.injective
+  suffices (if a = b then f m else 0) = e (1 ⊗ₜ[R] if a = b then m else 0) by
+    simpa [e', Finsupp.single_apply, -EmbeddingLike.apply_eq_iff_eq, apply_ite e]
+  split_ifs with h
+  swap; · simp
+  simp [e, IsBaseChange.equiv_tmul]
