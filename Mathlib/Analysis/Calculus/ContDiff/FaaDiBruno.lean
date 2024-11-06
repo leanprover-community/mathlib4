@@ -921,7 +921,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : ℕ∞} {g : F → G} {f : E → F}
     (hg : HasFTaylorSeriesUpToOn n g q t) (hf : HasFTaylorSeriesUpToOn n f p s) (h : MapsTo f s t) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x ↦ (q (f x)).taylorComp (p x)) s := by
   /- One has to check that the `m+1`-th term is the derivative of the `m`-th term. The `m`-th term
-  is a sum, that one can differentiate terms by terms. Each term is a linear map into continuous
+  is a sum, that one can differentiate term by term. Each term is a linear map into continuous
   multilinear maps, applied to parts of `p` and `q`. One knows how to differentiate such a map,
   thanks to `HasFDerivWithinAt.linear_multilinear_comp`. The terms that show up are matched, using
   `faaDiBruno_aux1` and `faaDiBruno_aux2`, with terms of the same form at order `m+1`. Then, one
