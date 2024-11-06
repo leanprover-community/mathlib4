@@ -379,9 +379,6 @@ private theorem Sylow.not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.N
     QuotientGroup.ker_mk'] at hp
   exact hp.ne' (P.3 hQ hp.le)
 
-@[deprecated (since := "2024-11-03")]
-alias not_dvd_index_sylow' := Sylow.not_dvd_index_aux
-
 /-- A Sylow p-subgroup has index indivisible by `p`, assuming [N(P) : P] < ∞. -/
 theorem Sylow.not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (hP : P.relindex P.normalizer ≠ 0) : ¬ p ∣ P.index := by
@@ -399,6 +396,9 @@ alias not_dvd_index_sylow := Sylow.not_dvd_index'
 theorem Sylow.not_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) [P.FiniteIndex] :
     ¬ p ∣ P.index :=
   P.not_dvd_index' Nat.card_pos.ne'
+
+@[deprecated (since := "2024-11-03")]
+alias not_dvd_index_sylow' := Sylow.not_dvd_index
 
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
   of `N`, then `N_G(P) ⊔ N = G`. -/
