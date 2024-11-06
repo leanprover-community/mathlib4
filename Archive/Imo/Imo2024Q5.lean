@@ -296,8 +296,6 @@ def Path.tail (p : Path N) : Path N where
     · exact List.Chain'.tail p.valid_move_seq
     · exact p.valid_move_seq
 
--- The linter wrongly reports p' as unused.
-set_option linter.unusedVariables false in
 lemma Path.tail_induction {motive : Path N → Prop} (ind : ∀ p, motive p.tail → motive p)
     (base : ∀ p, (p.cells[1]'p.one_lt_length_cells).1 ≠ 0 → motive p) (p : Path N) : motive p := by
   rcases p with ⟨cells, nonempty, head_first_row, last_last_row, valid_move_seq⟩
