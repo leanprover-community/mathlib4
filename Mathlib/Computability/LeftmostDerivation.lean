@@ -126,7 +126,7 @@ of terminal symbols and the rewrite happens in `v₂`.-/
 theorem rewritesLeftmost_append {r : ContextFreeRule T N} {v₁ v₂ u : List (Symbol T N)}
     (h : r.RewritesLeftmost (v₁ ++ v₂) u) :
     (∃ (u₁ u₂ : List (Symbol T N)), u = u₁ ++ u₂ ∧ (r.RewritesLeftmost v₁ u₁ ∧ u₂ = v₂)) ∨
-    (∃ (w₁ : List T)(u₂ : List (Symbol T N)),
+    (∃ (w₁ : List T) (u₂ : List (Symbol T N)),
       u = w₁.map terminal ++ u₂ ∧ (v₁ = w₁.map terminal ∧ r.RewritesLeftmost v₂ u₂)) := by
   induction v₁ generalizing u with
   | nil =>
