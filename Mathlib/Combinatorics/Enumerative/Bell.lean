@@ -49,64 +49,58 @@ def bell (m : Multiset ℕ) : ℕ :=
 @[simp]
 theorem bell_zero : bell 0 = 1 := rfl
 
-private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) :
-    ∀ c, x ! ^ c * c ! * ∏ j ∈ Finset.range c, (j * x + x - 1).choose (x - 1) = (x * c)!
-  | 0 => by simp
-  | c + 1 =>
-    suffices  x ! ^ (c + 1) * (c + 1) ! = x ! * (c + 1) * (x ! ^ c * c !) by
-      rw [this]
-      rw [← mul_assoc]
-      simp only [Finset.range_succ, Finset.mem_range, lt_self_iff_false, not_false_eq_true,
-        Finset.prod_insert]
-      simp only [mul_assoc]
-      rw [mul_comm ((c * x + x - 1).choose (x-1))]
-      rw [← mul_assoc]
-      rw [mul_comm]
-      simp only [← mul_assoc]
-      rw [hrec]
-      have : (x * c)! * ((c * x + x - 1).choose (x - 1)) * x ! * (c + 1)
-        = ((c + 1) * ((c * x + x - 1).choose (x - 1))) * (x * c)! *  x ! := by
+private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) (c : ℕ) :
+    x ! ^ c * c ! * ∏ j ∈ Finset.range c, (j * x + x - 1).choose (x - 1) = (x * c)! := by
+  induction c with
+  | zero => simp
+  | succ c hrec =>
+    have h : x ! ^ (c + 1) * (c + 1) ! = x ! * (c + 1) * x ! ^ c * c ! := by
+      rw [factorial_succ, pow_succ]; ring_nf
+    calc 
+      x ! ^ (c + 1) * (c + 1)! * ∏ j ∈ Finset.range (c + 1), (j * x + x - 1).choose (x - 1)  
+        = x ! * (c + 1) * x ! ^ c * c ! * 
+            ∏ j ∈ Finset.range (c + 1), (j * x + x - 1).choose (x - 1) := by rw [h]
+      _ = x ! * (c + 1) * x ! ^ c * c ! * (∏ j in Finset.range c, (j * x + x - 1).choose (x - 1)) * 
+            (c * x + x - 1).choose (x - 1) := by
+        rw [Finset.prod_range_succ]
+        simp only [mul_assoc]
+      _ = (x ! ^ c * c ! * ∏ j in Finset.range c, (j * x + x - 1).choose (x - 1)) * 
+            (c * x + x - 1).choose (x - 1) * x ! * (c + 1)  := by ring
+      _ = (x * c)! * (c * x + x - 1).choose (x - 1) * x ! * (c + 1) := by rw [hrec]
+      _ = (c + 1) * (c * x + x - 1).choose (x - 1) * (x * c)! * x ! := by ring
+      _ = (x * (c + 1))! := by 
+        rw [← Nat.choose_mul_add hx, mul_comm c x, Nat.add_choose_mul_factorial_mul_factorial]
         ring_nf
-      rw [this]
-      rw [← Nat.choose_mul_add c hx]
-      rw [mul_comm c x]
-      rw [Nat.add_choose_mul_factorial_mul_factorial (x * c) x]
-      rw [mul_add, mul_one]
-    rw [factorial_succ, pow_succ]
-    ring_nf
 
 theorem bell_mul_eq (m : Multiset ℕ) :
     m.bell * (m.map (fun j ↦ j !)).prod * ∏ j ∈ (m.toFinset.erase 0), (m.count j)!
       = m.sum ! := by
   unfold bell
-  rw [← Nat.mul_right_inj]
-  · simp only [← mul_assoc]
-    rw [Nat.multinomial_spec]
-    simp only [mul_assoc]
-    rw [mul_comm]
-    apply congr_arg₂
-    · rw [mul_comm, mul_assoc, ← Finset.prod_mul_distrib, Finset.prod_multiset_map_count]
-      suffices this : _ by
-        by_cases hm : 0 ∈ m.toFinset
-        · rw [← Finset.prod_erase_mul _ _ hm]
-          rw [← Finset.prod_erase_mul _ _ hm]
-          simp only [factorial_zero, one_pow, mul_one, zero_mul]
-          exact this
-        · nth_rewrite 1 [← Finset.erase_eq_of_not_mem hm]
-          nth_rewrite 3 [← Finset.erase_eq_of_not_mem hm]
-          exact this
-      rw [← Finset.prod_mul_distrib]
-      apply Finset.prod_congr rfl
-      intro x hx
-      rw [← mul_assoc, bell_mul_eq_lemma]
-      simp only [Finset.mem_erase, ne_eq, mem_toFinset] at hx
-      simp only [ne_eq, hx.1, not_false_eq_true]
-    · apply congr_arg
-      rw [Finset.sum_multiset_count]
-      simp only [smul_eq_mul, mul_comm]
-  · rw [← Nat.pos_iff_ne_zero]
-    apply Finset.prod_pos
-    exact fun _ _ ↦ Nat.factorial_pos _
+  rw [← Nat.mul_right_inj (a := ∏ i ∈ m.toFinset, (i * count i m)!) (by positivity)]
+  simp only [← mul_assoc]
+  rw [Nat.multinomial_spec]
+  simp only [mul_assoc]
+  rw [mul_comm]
+  apply congr_arg₂
+  · rw [mul_comm, mul_assoc, ← Finset.prod_mul_distrib, Finset.prod_multiset_map_count]
+    suffices this : _ by
+      by_cases hm : 0 ∈ m.toFinset
+      · rw [← Finset.prod_erase_mul _ _ hm]
+        rw [← Finset.prod_erase_mul _ _ hm]
+        simp only [factorial_zero, one_pow, mul_one, zero_mul]
+        exact this
+      · nth_rewrite 1 [← Finset.erase_eq_of_not_mem hm]
+        nth_rewrite 3 [← Finset.erase_eq_of_not_mem hm]
+        exact this
+    rw [← Finset.prod_mul_distrib]
+    apply Finset.prod_congr rfl
+    intro x hx
+    rw [← mul_assoc, bell_mul_eq_lemma]
+    simp only [Finset.mem_erase, ne_eq, mem_toFinset] at hx
+    simp only [ne_eq, hx.1, not_false_eq_true]
+  · apply congr_arg
+    rw [Finset.sum_multiset_count]
+    simp only [smul_eq_mul, mul_comm]
 
 theorem bell_eq (m : Multiset ℕ) :
     m.bell = m.sum ! / ((m.map (fun j ↦ j !)).prod *
@@ -162,7 +156,7 @@ theorem uniformBell_one_right (m : ℕ) : uniformBell m 1 = 1 := by
     tsub_eq_zero_of_le, choose_zero_right, Finset.prod_const_one]
 
 theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    uniformBell m n * n.factorial ^ m * m.factorial = (m * n).factorial := by
+    uniformBell m n * n ! ^ m * m ! = (m * n)! := by
   convert bell_mul_eq (replicate m n)
   · simp only [map_replicate, prod_replicate]
   · simp only [toFinset_replicate]
