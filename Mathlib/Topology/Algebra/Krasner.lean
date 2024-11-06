@@ -64,6 +64,18 @@ compatible with the one on `K`, then `IsKrasnerNorm K L` holds.
 
 section test
 
+#check norm_eq_zero
+-- def NormedAlgebra.toMulAlgebraNorm (K L : Type*) [NormedField K] [NormedDivisionRing L]
+--     [NormedAlgebra K L] : MulAlgebraNorm K L where
+--   toFun := (‖·‖)
+--   map_zero' := norm_zero
+--   add_le' := norm_add_le
+--   neg' := norm_neg
+--   map_one' := norm_one
+--   map_mul' := norm_mul
+--   eq_zero_of_map_eq_zero' _ := norm_eq_zero.mp
+--   smul' := norm_smul
+
 theorem IsUltrametricDist.isNonarchimedean {R} [NormedRing R] [IsUltrametricDist R] :
     IsNonarchimedean (‖·‖ : R → ℝ) := by
   intro x y
@@ -72,16 +84,20 @@ theorem IsUltrametricDist.isNonarchimedean {R} [NormedRing R] [IsUltrametricDist
   · congr <;> simp
 
 theorem isUltrametricDist_iff_isNonarchimedean {R} [NormedRing R] :
-    IsUltrametricDist R ↔ IsNonarchimedean (‖·‖ : R → ℝ) := by
-
-#check IsUltrametricDist.isUltrametricDist_of_forall_norm_natCast_le_one
+    IsUltrametricDist R ↔ IsNonarchimedean (‖·‖ : R → ℝ) :=
+  ⟨fun h => h.isNonarchimedean, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
 
 theorem IsUltrametricDist.isUltrametricDist_iff_forall_norm_natCast_le_one {R : Type*}
     [NormedDivisionRing R] : IsUltrametricDist R ↔ ∀ n : ℕ, ‖(n : R)‖ ≤ 1 :=
   ⟨fun _ => IsUltrametricDist.norm_natCast_le_one R,
       isUltrametricDist_of_forall_norm_natCast_le_one⟩
 
-theorem IsUltrametricDist.extension 
+theorem IsUltrametricDist.of_normedAlgebra (K : Type*) {L : Type*} [NormedField K]
+    [NormedDivisionRing L] [NormedAlgebra K L] [h : IsUltrametricDist K] : IsUltrametricDist L := by
+  rw [IsUltrametricDist.isUltrametricDist_iff_forall_norm_natCast_le_one] at h ⊢
+  intro n
+  specialize h n
+  exact (algebraMap.coe_natCast (R := K) (A := L) n) ▸ norm_algebraMap' L (n : K) ▸ h
 
 /-- K : field L : division ring-/
 theorem IsNonarchimedean.norm_extension (is_na : IsNonarchimedean (‖·‖ : K → ℝ))
