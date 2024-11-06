@@ -76,9 +76,6 @@ lemma mem_freeLocus_iff_tensor (p : PrimeSpectrum R)
 lemma freeLocus_congr {M'} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
     freeLocus R M = freeLocus R M' := by
   ext p
-  have : IsLocalizedModule p.asIdeal.primeCompl
-      (LocalizedModule.mkLinearMap p.asIdeal.primeCompl M' ∘ₗ e.toLinearMap) := by
-    apply IsLocalizedModule.of_linearEquiv
   exact mem_freeLocus_of_isLocalization _ _ _
     (LocalizedModule.mkLinearMap p.asIdeal.primeCompl M' ∘ₗ e.toLinearMap)
 
