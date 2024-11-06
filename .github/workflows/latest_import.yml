@@ -13,7 +13,7 @@ on:
   merge_group:
 
 env:
-  TOP_MODULE: Mathlib.Logic.Function.Basic
+  TOP_MODULE: 'Mathlib.Logic.Function.Basic'
 jobs:
   late-importers:
     name: Build
@@ -76,8 +76,8 @@ jobs:
       with:
         linters: gcc
         run: |
-          echo "${TOP_MODULE}"
-          tm="${TOP_MODULE}"
+          echo "$TOP_MODULE"
+          tm="$TOP_MODULE"
           lake build "${tm}"
 
     - name: Full report
