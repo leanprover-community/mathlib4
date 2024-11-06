@@ -96,6 +96,13 @@ theorem coe_toContinuousMap (f : C₀(α, β)) : (f.toContinuousMap : α → β)
 theorem ext {f g : C₀(α, β)} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
+@[simp]
+lemma coe_mk {f : α → β} (hf : Continuous f) (hf' : Tendsto f (cocompact α) (𝓝 0)) :
+    { toFun := f,
+      continuous_toFun := hf,
+      zero_at_infty' := hf' : ZeroAtInftyContinuousMap α β} = f :=
+  rfl
+
 /-- Copy of a `ZeroAtInftyContinuousMap` with a new `toFun` equal to the old one. Useful
 to fix definitional equalities. -/
 protected def copy (f : C₀(α, β)) (f' : α → β) (h : f' = f) : C₀(α, β) where
