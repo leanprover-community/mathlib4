@@ -265,12 +265,10 @@ def centralizer (s : Set A) : StarSubalgebra R A where
 theorem coe_centralizer (s : Set A) : (centralizer R s : Set A) = (s ∪ star s).centralizer :=
   rfl
 
-theorem mem_centralizer_iff {s : Set A} {z : A} :
+open Set in
+nonrec theorem mem_centralizer_iff {s : Set A} {z : A} :
     z ∈ centralizer R s ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g := by
-  show (∀ g ∈ s ∪ star s, g * z = z * g) ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g
-  simp only [Set.mem_union, or_imp, forall_and, and_congr_right_iff]
-  exact fun _ =>
-    ⟨fun hz a ha => hz _ (Set.star_mem_star.mpr ha), fun hz a ha => star_star a ▸ hz _ ha⟩
+  simp [← SetLike.mem_coe, centralizer_union, ← image_star, mem_centralizer_iff, forall_and]
 
 theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ centralizer R s :=
   Set.centralizer_subset (Set.union_subset_union h <| Set.preimage_mono h)
@@ -281,8 +279,7 @@ theorem centralizer_toSubalgebra (s : Set A) :
 
 theorem coe_centralizer_centralizer (s : Set A) :
     (centralizer R (centralizer R s : Set A)) = (s ∪ star s).centralizer.centralizer := by
-  simp only [coe_centralizer, Set.instInvolutiveStar]
-  rw [← coe_centralizer (R := R) s, StarMemClass.star_coe_eq, Set.union_self]
+  rw [coe_centralizer, StarMemClass.star_coe_eq, Set.union_self, coe_centralizer]
 
 end Centralizer
 
@@ -527,12 +524,9 @@ abbrev adjoinCommSemiringOfComm {s : Set A}
     CommSemiring (adjoin R s) :=
   { (adjoin R s).toSemiring with
     mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦ by
-      have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦ by
-        obtain (ha | ha) := ha <;> obtain (hb | hb) := hb
-        · exact hcomm a ha b hb
-        · exact star_star b ▸ hcomm_star _ ha _ hb
-        · exact star_star a ▸ (hcomm_star _ hb _ ha).symm
-        · simpa only [star_mul, star_star] using congr_arg star (hcomm _ hb _ ha)
+      have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦
+        Set.union_star_self_comm (fun _ ha _ hb ↦ hcomm _ hb _ ha)
+          (fun _ ha _ hb ↦ hcomm_star _ hb _ ha) b hb a ha
       have := adjoin_le_centralizer_centralizer R s
       apply this at h₁
       apply this at h₂
