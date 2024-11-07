@@ -294,8 +294,8 @@ def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
         rw [← hf, Submodule.mem_map] at hx
         obtain ⟨y, hy, rfl⟩ := hx
         simpa
-    left_inv := fun x => Submodule.Quotient.induction_on _ x (by simp [mk''_eq_mk])
-    right_inv := fun x => Submodule.Quotient.induction_on _ x (by simp [mk''_eq_mk]) }
+    left_inv := fun x => Submodule.Quotient.induction_on _ x (by simp)
+    right_inv := fun x => Submodule.Quotient.induction_on _ x (by simp) }
 
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]
