@@ -41,6 +41,11 @@ class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddComm
   protected neg_top : -(⊤ : α) = ⊤
   protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
 
+attribute [instance 10] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
+attribute [instance 0] LinearOrderedAddCommGroupWithTop.toNeg
+attribute [instance 0] LinearOrderedAddCommGroupWithTop.toSub
+attribute [instance 0] LinearOrderedAddCommGroupWithTop.toNontrivial
+
 instance WithTop.linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
     LinearOrderedAddCommMonoidWithTop (WithTop α) :=
   { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid with

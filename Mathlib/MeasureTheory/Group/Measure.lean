@@ -28,7 +28,7 @@ open scoped NNReal ENNReal Pointwise Topology
 
 open Inv Set Function MeasureTheory.Measure Filter
 
-variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H]
+variable {G H : Type*} [MeasurableSpace G] [MeasurableSpace H]
 
 namespace MeasureTheory
 

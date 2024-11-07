@@ -37,7 +37,11 @@ class CanonicallyOrderedCommSemiring (α : Type*) extends CanonicallyOrderedAddC
   /-- No zero divisors. -/
   protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0
 
+-- use `CanonicallyOrderedCommSemiring.toOrderedCommSemiring`
+attribute [instance 0] CanonicallyOrderedCommSemiring.toCommSemiring
 attribute [instance 0] CanonicallyOrderedCommSemiring.toMul
+attribute [instance 0] CanonicallyOrderedCommSemiring.toOne
+attribute [instance 0] CanonicallyOrderedCommSemiring.toNatCast
 
 section CanonicallyOrderedCommSemiring
 variable [CanonicallyOrderedCommSemiring α] {a b c d : α}

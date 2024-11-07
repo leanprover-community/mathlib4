@@ -172,7 +172,7 @@ theorem valuation_eq_iff (x y : K) : A.valuation x = A.valuation y ↔ ∃ a : A
 theorem valuation_le_iff (x y : K) : A.valuation x ≤ A.valuation y ↔ ∃ a : A, (a : K) * y = x :=
   Iff.rfl
 
-theorem valuation_surjective : Function.Surjective A.valuation := surjective_quot_mk _
+theorem valuation_surjective : Function.Surjective A.valuation := Quot.mk_surjective
 
 theorem valuation_unit (a : Aˣ) : A.valuation a = 1 := by
   rw [← A.valuation.map_one, valuation_eq_iff]; use a; simp
@@ -787,6 +787,6 @@ variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (
 
 -- @[simp] -- Porting note: not in simpNF
 theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
-  IsEquiv.eq_one_iff_eq_one (Valuation.isEquiv_valuation_valuationSubring _).symm
+  IsEquiv.eq_one_iff_eq_one (Valuation.isEquiv_valuation_valuationSubring v).symm
 
 end Valuation

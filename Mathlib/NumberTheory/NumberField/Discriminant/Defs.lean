@@ -9,7 +9,6 @@ import Init.Data.List.Nat.Pairwise
 import Init.Data.List.Nat.Range
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Localization.NormTrace
-import Mathlib.Analysis.Normed.Field.Lemmas
 
 /-!
 # Number field discriminant

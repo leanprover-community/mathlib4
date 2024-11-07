@@ -856,9 +856,13 @@ end Monoid
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 
+attribute [instance 90] AddCommMonoid.toAddMonoid
+
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
+
+attribute [instance 90] CommMonoid.toMonoid
 
 attribute [to_additive existing] CommMonoid.toCommSemigroup
 
@@ -1251,11 +1255,15 @@ end DivisionMonoid
 /-- Commutative `SubtractionMonoid`. -/
 class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMonoid G
 
+attribute [instance 90] SubtractionCommMonoid.toSubtractionMonoid
+
 /-- Commutative `DivisionMonoid`.
 
 This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
 @[to_additive SubtractionCommMonoid]
 class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
+
+attribute [instance 90] DivisionCommMonoid.toDivisionMonoid
 
 attribute [to_additive existing] DivisionCommMonoid.toCommMonoid
 
@@ -1343,9 +1351,13 @@ end Group
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
+attribute [instance 90] AddCommGroup.toAddGroup
+
 /-- A commutative group is a group with commutative `(*)`. -/
 @[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
+
+attribute [instance 90] CommGroup.toGroup
 
 attribute [to_additive existing] CommGroup.toCommMonoid
 

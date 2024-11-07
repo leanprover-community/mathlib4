@@ -105,6 +105,8 @@ class CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelM
 element, and `0` is left and right absorbing. -/
 class CommMonoidWithZero (M₀ : Type*) extends CommMonoid M₀, MonoidWithZero M₀
 
+attribute [instance 90] CommMonoidWithZero.toMonoidWithZero
+
 section CancelMonoidWithZero
 
 variable [CancelMonoidWithZero M₀] {a b c : M₀}

@@ -265,7 +265,7 @@ theorem normedMk.apply (S : AddSubgroup M) (m : M) : normedMk S m = QuotientAddG
 
 /-- `S.normedMk` is surjective. -/
 theorem surjective_normedMk (S : AddSubgroup M) : Function.Surjective (normedMk S) :=
-  surjective_quot_mk _
+  Quot.mk_surjective
 
 /-- The kernel of `S.normedMk` is `S`. -/
 theorem ker_normedMk (S : AddSubgroup M) : S.normedMk.ker = S :=

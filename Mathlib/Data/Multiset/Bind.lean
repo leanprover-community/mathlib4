@@ -30,15 +30,14 @@ namespace Multiset
 
 /-! ### Join -/
 
-
 /-- `join S`, where `S` is a multiset of multisets, is the lift of the list join
   operation, that is, the union of all the sets.
      join {{1, 2}, {1, 2}, {0, 1}} = {0, 1, 1, 1, 2, 2} -/
 def join : Multiset (Multiset α) → Multiset α :=
   sum
 
-theorem coe_join :
-    ∀ L : List (List α), join (L.map ((↑) : List α → Multiset α) : Multiset (Multiset α)) = L.join
+theorem coe_join : ∀ L : List (List α), join (L.map ((↑) : List α → Multiset α) :
+    Multiset (Multiset α)) = L.flatten
   | [] => rfl
   | l :: L => by
       exact congr_arg (fun s : Multiset α => ↑l + s) (coe_join L)
@@ -100,8 +99,8 @@ def bind (s : Multiset α) (f : α → Multiset β) : Multiset β :=
   (s.map f).join
 
 @[simp]
-theorem coe_bind (l : List α) (f : α → List β) : (@bind α β l fun a => f a) = l.bind f := by
-  rw [List.bind, ← coe_join, List.map_map]
+theorem coe_bind (l : List α) (f : α → List β) : (@bind α β l fun a => f a) = l.flatMap f := by
+  rw [List.flatMap, ← coe_join, List.map_map]
   rfl
 
 @[simp]
@@ -208,7 +207,7 @@ variable {f s t}
   choose f' h' using this
   have : f = fun a ↦ ofList (f' a) := funext h'
   have hd : Symmetric fun a b ↦ List.Disjoint (f' a) (f' b) := fun a b h ↦ h.symm
-  exact Quot.induction_on s <| by simp [this, List.nodup_bind, pairwise_coe_iff_pairwise hd]
+  exact Quot.induction_on s <| by simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise hd]
 
 @[simp]
 lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :
