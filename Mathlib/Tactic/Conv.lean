@@ -3,9 +3,9 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Mathlib.Tactic.RunCmd
+import Mathlib.Init
 import Lean.Elab.Tactic.Conv.Basic
-import Std.Lean.Parser
+import Lean.Elab.Command
 
 /-!
 Additional `conv` tactics.
@@ -73,7 +73,7 @@ open Elab Tactic
 /--
 The command `#conv tac => e` will run a conv tactic `tac` on `e`, and display the resulting
 expression (discarding the proof).
-For example, `#conv rw [true_and] => True ∧ False` displays `False`.
+For example, `#conv rw [true_and_iff] => True ∧ False` displays `False`.
 There are also shorthand commands for several common conv tactics:
 
 * `#whnf e` is short for `#conv whnf => e`
@@ -134,3 +134,5 @@ syntax "#simp" (&" only")? (simpArgs)? " =>"? ppSpace term : command
 macro_rules
   | `(#simp%$tk $[only%$o]? $[[$args,*]]? $[=>]? $e) =>
     `(#conv%$tk simp $[only%$o]? $[[$args,*]]? => $e)
+
+end Mathlib.Tactic.Conv

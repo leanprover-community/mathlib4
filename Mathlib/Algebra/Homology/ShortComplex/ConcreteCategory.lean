@@ -32,17 +32,20 @@ lemma ShortComplex.zero_apply
     [Limits.HasZeroMorphisms C] [(forget₂ C Ab).PreservesZeroMorphisms]
     (S : ShortComplex C) (x : (forget₂ C Ab).obj S.X₁) :
     ((forget₂ C Ab).map S.g) (((forget₂ C Ab).map S.f) x) = 0 := by
-  erw [← comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
+  rw [← comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
   rfl
 
 section preadditive
 
 variable [Preadditive C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
-  [HasZeroObject C] (S : ShortComplex C)
+  (S : ShortComplex C)
+
+section
+variable [HasZeroObject C]
 
 lemma Preadditive.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective ((forget₂ C Ab).map f) := by
-  rw [← AddCommGroupCat.mono_iff_injective]
+  rw [← AddCommGrp.mono_iff_injective]
   constructor
   · intro
     infer_instance
@@ -51,13 +54,13 @@ lemma Preadditive.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
 lemma Preadditive.mono_iff_injective' {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective ((forget C).map f) := by
   simp only [mono_iff_injective, ← CategoryTheory.mono_iff_injective]
-  apply (MorphismProperty.RespectsIso.monomorphisms (Type w)).arrow_mk_iso_iff
+  apply (MorphismProperty.monomorphisms (Type w)).arrow_mk_iso_iff
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
 
 lemma Preadditive.epi_iff_surjective {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective ((forget₂ C Ab).map f) := by
-  rw [← AddCommGroupCat.epi_iff_surjective]
+  rw [← AddCommGrp.epi_iff_surjective]
   constructor
   · intro
     infer_instance
@@ -66,9 +69,11 @@ lemma Preadditive.epi_iff_surjective {X Y : C} (f : X ⟶ Y) :
 lemma Preadditive.epi_iff_surjective' {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective ((forget C).map f) := by
   simp only [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective]
-  apply (MorphismProperty.RespectsIso.epimorphisms (Type w)).arrow_mk_iso_iff
+  apply (MorphismProperty.epimorphisms (Type w)).arrow_mk_iso_iff
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
+
+end
 
 namespace ShortComplex
 
@@ -84,12 +89,12 @@ lemma exact_iff_of_concreteCategory [S.HasHomology] :
 
 variable {S}
 
-lemma ShortExact.injective_f (hS : S.ShortExact) :
+lemma ShortExact.injective_f [HasZeroObject C] (hS : S.ShortExact) :
     Function.Injective ((forget₂ C Ab).map S.f) := by
   rw [← Preadditive.mono_iff_injective]
   exact hS.mono_f
 
-lemma ShortExact.surjective_g (hS : S.ShortExact) :
+lemma ShortExact.surjective_g [HasZeroObject C] (hS : S.ShortExact) :
     Function.Surjective ((forget₂ C Ab).map S.g) := by
   rw [← Preadditive.epi_iff_surjective]
   exact hS.epi_g
@@ -145,7 +150,7 @@ lemma δ_apply (x₃ : D.L₀.X₃) (x₂ : D.L₁.X₂) (x₁ : D.L₂.X₁)
   dsimp [DFunLike.coe] at eq₁ eq₂
   rw [Functor.map_comp, types_comp_apply, FunctorToTypes.map_comp_apply] at eq
   rw [eq₂] at eq
-  refine' eq.trans (congr_arg ((forget C).map D.v₂₃.τ₁) _)
+  refine eq.trans (congr_arg ((forget C).map D.v₂₃.τ₁) ?_)
   apply (Preadditive.mono_iff_injective' D.L₂.f).1 inferInstance
   rw [← FunctorToTypes.map_comp_apply, φ₁_L₂_f]
   dsimp [φ₂]

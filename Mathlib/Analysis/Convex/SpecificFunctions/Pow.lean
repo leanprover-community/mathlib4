@@ -33,32 +33,27 @@ namespace NNReal
 
 lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
     StrictConcaveOn ℝ≥0 univ fun x : ℝ≥0 ↦ x ^ p := by
-  have hp₀' : 0 < 1 / p := by positivity
+  have hp₀' : 0 < 1 / p := div_pos zero_lt_one hp₀
   have hp₁' : 1 < 1 / p := by rw [one_lt_div hp₀]; exact hp₁
   let f := NNReal.orderIsoRpow (1 / p) hp₀'
   have h₁ : StrictConvexOn ℝ≥0 univ f := by
     refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab => ?_⟩
-    exact (strictConvexOn_rpow hp₁').2 (by positivity : 0 ≤ x) (by positivity : 0 ≤ y)
-      (by simp [hxy]) ha hb (by simp; norm_cast)
-  have h₂ : ∀ x, f.symm x = x ^ p := by simp [NNReal.orderIsoRpow_symm_eq]
-  refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab => ?_⟩
+    exact (strictConvexOn_rpow hp₁').2 x.2 y.2 (by simp [hxy]) ha hb (by simp; norm_cast)
+  have h₂ : ∀ x, f.symm x = x ^ p := by simp [f, NNReal.orderIsoRpow_symm_eq]
+  refine ⟨convex_univ, fun x mx y my hxy a b ha hb hab => ?_⟩
   simp only [← h₂]
-  exact (f.strictConcaveOn_symm h₁).2 (Set.mem_univ x) (Set.mem_univ y) hxy ha hb hab
+  exact (f.strictConcaveOn_symm h₁).2 mx my hxy ha hb hab
 
 lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
     ConcaveOn ℝ≥0 univ fun x : ℝ≥0 ↦ x ^ p := by
-  if hp : p = 0 then
-    exact ⟨convex_univ, fun _ _ _ _ _ _ _ _ hab => by simp [hp, hab]⟩
-  else
-    push_neg at hp
-    if hp' : p = 1 then
-      exact ⟨convex_univ, by simp [hp']⟩
-    else
-      push_neg at hp'
-      exact (strictConcaveOn_rpow (by positivity) (lt_of_le_of_ne hp₁ hp')).concaveOn
+  rcases eq_or_lt_of_le hp₀ with (rfl | hp₀)
+  · simpa only [rpow_zero] using concaveOn_const (c := 1) convex_univ
+  rcases eq_or_lt_of_le hp₁ with (rfl | hp₁)
+  · simpa only [rpow_one] using concaveOn_id convex_univ
+  exact (strictConcaveOn_rpow hp₀ hp₁).concaveOn
 
 lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ≥0 univ NNReal.sqrt := by
-  have : NNReal.sqrt = fun (x:ℝ≥0) ↦ x ^ (1 / (2:ℝ)) := by
+  have : NNReal.sqrt = fun x : ℝ≥0 ↦ x ^ (1 / (2 : ℝ)) := by
     ext x; exact mod_cast NNReal.sqrt_eq_rpow x
   rw [this]
   exact strictConcaveOn_rpow (by positivity) (by linarith)
@@ -74,32 +69,23 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
   refine ⟨convex_Ici _, fun x hx y hy hxy a b ha hb hab => ?_⟩
   let x' : ℝ≥0 := ⟨x, hx⟩
   let y' : ℝ≥0 := ⟨y, hy⟩
-  let a' : ℝ≥0 := ⟨a, by positivity⟩
-  let b' : ℝ≥0 := ⟨b, by positivity⟩
-  have hx' : (fun z => z ^ p) x = (fun z => z ^ p) x' := rfl
-  have hy' : (fun z => z ^ p) y = (fun z => z ^ p) y' := rfl
-  have hxy' : x' ≠ y' := Subtype.ne_of_val_ne hxy
-  have hab' : a' + b' = 1 := by ext; simp [hab]
-  rw [hx', hy']
-  exact (NNReal.strictConcaveOn_rpow hp₀ hp₁).2 (Set.mem_univ x') (Set.mem_univ y')
+  let a' : ℝ≥0 := ⟨a, ha.le⟩
+  let b' : ℝ≥0 := ⟨b, hb.le⟩
+  have hxy' : x' ≠ y' := Subtype.coe_ne_coe.1 hxy
+  have hab' : a' + b' = 1 := by ext; simp [a', b', hab]
+  exact_mod_cast (NNReal.strictConcaveOn_rpow hp₀ hp₁).2 (Set.mem_univ x') (Set.mem_univ y')
     hxy' (mod_cast ha) (mod_cast hb) hab'
 
 lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
     ConcaveOn ℝ (Set.Ici 0) fun x : ℝ ↦ x ^ p := by
-  if hp : p = 0 then
-    exact ⟨convex_Ici 0, fun _ _ _ _ _ _ _ _ hab => by simp [hp, hab]⟩
-  else
-    push_neg at hp
-    if hp' : p = 1 then
-      exact ⟨convex_Ici 0, by simp [hp']⟩
-    else
-      push_neg at hp'
-      exact (strictConcaveOn_rpow (by positivity) (lt_of_le_of_ne hp₁ hp')).concaveOn
+  rcases eq_or_lt_of_le hp₀ with (rfl | hp₀)
+  · simpa only [rpow_zero] using concaveOn_const (c := 1) (convex_Ici _)
+  rcases eq_or_lt_of_le hp₁ with (rfl | hp₁)
+  · simpa only [rpow_one] using concaveOn_id (convex_Ici _)
+  exact (strictConcaveOn_rpow hp₀ hp₁).concaveOn
 
-lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ (Set.Ici 0) Real.sqrt := by
-  have : Real.sqrt = fun (x:ℝ) ↦ x ^ (1 / (2:ℝ)) := by
-    ext x; exact Real.sqrt_eq_rpow x
-  rw [this]
+lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ (Set.Ici 0) (√· : ℝ → ℝ) := by
+  rw [funext Real.sqrt_eq_rpow]
   exact strictConcaveOn_rpow (by positivity) (by linarith)
 
 end Real

@@ -1,0 +1,57 @@
+name: Monitor Dependency Update Failures
+
+on:
+  workflow_run:
+    workflows: ["continuous integration"]
+    types:
+      - completed
+    branches:
+      - 'update-dependencies-**'
+
+jobs:
+  monitor-failures:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+
+    steps:
+      - name: Construct message
+        uses: actions/github-script@v7
+        id: construct_message
+        with:
+          github-token: ${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}
+          result-encoding: string
+          script: |
+            const owner = context.repo.owner, repo = context.repo.repo;
+            let output = "❌ `lake update` [failed](" + context.payload.workflow_run.html_url + "). "
+            let prs = context.payload.workflow_run.pull_requests
+            if (prs.length) {
+              for (let pr of prs) {
+                const { data: pullRequest } = await github.rest.pulls.get({
+                  owner,
+                  repo,
+                  pull_number: pr.number,
+                });
+                output += "Found [PR " + pr.number + "](" + pullRequest.html_url + "). "
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number: pr.number,
+                  name: "auto-merge-after-CI",
+                });
+              }
+            } else {
+              output += "No PR found for this run! If you are feeling impatient and have write access, please go to the following page and click the "Run workflow" button!\nhttps://github.com/leanprover-community/mathlib4/actions/workflows/update_dependencies.yml";
+            }
+            return output;
+
+      - name: Send Zulip message
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib reviewers'
+          type: 'stream'
+          topic: 'Mathlib `lake update` failure'
+          content: |
+            ${{ steps.construct_message.outputs.result }}
