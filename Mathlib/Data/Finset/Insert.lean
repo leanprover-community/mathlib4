@@ -595,3 +595,98 @@ theorem forall_of_forall_insert {p : α → Prop} {a : α} {s : Finset α}
 end Insert
 
 end Finset
+
+namespace Multiset
+
+variable [DecidableEq α] {s t : Multiset α}
+
+@[simp]
+theorem toFinset_zero : toFinset (0 : Multiset α) = ∅ :=
+  rfl
+
+@[simp]
+theorem toFinset_cons (a : α) (s : Multiset α) : toFinset (a ::ₘ s) = insert a (toFinset s) :=
+  Finset.eq_of_veq dedup_cons
+
+@[simp]
+theorem toFinset_singleton (a : α) : toFinset ({a} : Multiset α) = {a} := by
+  rw [← cons_zero, toFinset_cons, toFinset_zero, LawfulSingleton.insert_emptyc_eq]
+
+end Multiset
+
+namespace List
+
+variable [DecidableEq α] {l l' : List α} {a : α} {f : α → β}
+  {s : Finset α} {t : Set β} {t' : Finset β}
+
+@[simp]
+theorem toFinset_nil : toFinset (@nil α) = ∅ :=
+  rfl
+
+@[simp]
+theorem toFinset_cons : toFinset (a :: l) = insert a (toFinset l) :=
+  Finset.eq_of_veq <| by by_cases h : a ∈ l <;> simp [Finset.insert_val', Multiset.dedup_cons, h]
+
+theorem toFinset_replicate_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
+    (List.replicate n a).toFinset = {a} := by
+  ext x
+  simp [hn, List.mem_replicate]
+
+@[simp]
+theorem toFinset_eq_empty_iff (l : List α) : l.toFinset = ∅ ↔ l = nil := by
+  cases l <;> simp
+
+@[simp]
+theorem toFinset_nonempty_iff (l : List α) : l.toFinset.Nonempty ↔ l ≠ [] := by
+  simp [Finset.nonempty_iff_ne_empty]
+
+end List
+
+namespace Finset
+
+section ToList
+
+@[simp]
+theorem toList_eq_singleton_iff {a : α} {s : Finset α} : s.toList = [a] ↔ s = {a} := by
+  rw [toList, Multiset.toList_eq_singleton_iff, val_eq_singleton_iff]
+
+@[simp]
+theorem toList_singleton : ∀ a, ({a} : Finset α).toList = [a] :=
+  Multiset.toList_singleton
+
+open scoped List in
+theorem toList_cons {a : α} {s : Finset α} (h : a ∉ s) : (cons a s h).toList ~ a :: s.toList :=
+  (List.perm_ext_iff_of_nodup (nodup_toList _) (by simp [h, nodup_toList s])).2 fun x => by
+    simp only [List.mem_cons, Finset.mem_toList, Finset.mem_cons]
+
+open scoped List in
+theorem toList_insert [DecidableEq α] {a : α} {s : Finset α} (h : a ∉ s) :
+    (insert a s).toList ~ a :: s.toList :=
+  cons_eq_insert _ _ h ▸ toList_cons _
+
+end ToList
+
+section Pairwise
+
+variable {s : Finset α}
+
+theorem pairwise_cons' {a : α} (ha : a ∉ s) (r : β → β → Prop) (f : α → β) :
+    Pairwise (r on fun a : s.cons a ha => f a) ↔
+    Pairwise (r on fun a : s => f a) ∧ ∀ b ∈ s, r (f a) (f b) ∧ r (f b) (f a) := by
+  simp only [pairwise_subtype_iff_pairwise_finset', Finset.coe_cons, Set.pairwise_insert,
+    Finset.mem_coe, and_congr_right_iff]
+  exact fun _ =>
+    ⟨fun h b hb =>
+      h b hb <| by
+        rintro rfl
+        contradiction,
+      fun h b hb _ => h b hb⟩
+
+theorem pairwise_cons {a : α} (ha : a ∉ s) (r : α → α → Prop) :
+    Pairwise (r on fun a : s.cons a ha => a) ↔
+      Pairwise (r on fun a : s => a) ∧ ∀ b ∈ s, r a b ∧ r b a :=
+  pairwise_cons' ha r id
+
+end Pairwise
+
+end Finset

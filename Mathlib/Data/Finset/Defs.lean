@@ -358,11 +358,51 @@ theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Finset α} (hx : x ∈
   refine lt_trans ?_ (Nat.lt_succ_self _)
   exact Multiset.sizeOf_lt_sizeOf_of_mem hx
 
+section DecidablePiExists
+
+variable {s : Finset α}
+
+instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
+    Decidable (∀ (a) (h : a ∈ s), p a h) :=
+  Multiset.decidableDforallMultiset
+
+-- Porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
+-- needed. In lean4 it seems this is not the case.
+instance instDecidableRelSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊆ ·) :=
+  fun _ _ ↦ decidableDforallFinset
+
+instance instDecidableRelSSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊂ ·) :=
+  fun _ _ ↦ instDecidableAnd
+
+instance instDecidableLE [DecidableEq α] : @DecidableRel (Finset α) (· ≤ ·) :=
+  instDecidableRelSubset
+
+instance instDecidableLT [DecidableEq α] : @DecidableRel (Finset α) (· < ·) :=
+  instDecidableRelSSubset
+
+instance decidableDExistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
+    Decidable (∃ (a : _) (h : a ∈ s), p a h) :=
+  Multiset.decidableDexistsMultiset
+
+instance decidableExistsAndFinset {p : α → Prop} [_hp : ∀ (a), Decidable (p a)] :
+    Decidable (∃ a ∈ s, p a) :=
+  decidable_of_iff (∃ (a : _) (_ : a ∈ s), p a) (by simp)
+
+instance decidableExistsAndFinsetCoe {p : α → Prop} [DecidablePred p] :
+    Decidable (∃ a ∈ (s : Set α), p a) := decidableExistsAndFinset
+
+/-- decidable equality for functions whose domain is bounded by finsets -/
+instance decidableEqPiFinset {β : α → Type*} [_h : ∀ a, DecidableEq (β a)] :
+    DecidableEq (∀ a ∈ s, β a) :=
+  Multiset.decidableEqPiMultiset
+
+end DecidablePiExists
+
 end Finset
 
 namespace List
 
-variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β}
+variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
 
 instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
   inferInstanceAs (Decidable (∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y))
@@ -370,4 +410,28 @@ instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
 instance [DecidablePred (· ∈ t)] : Decidable (Set.MapsTo f s t) :=
   inferInstanceAs (Decidable (∀ x ∈ s, f x ∈ t))
 
+instance [DecidableEq β] : Decidable (Set.SurjOn f s t') :=
+  inferInstanceAs (Decidable (∀ x ∈ t', ∃ y ∈ s, f y = x))
+
+instance [DecidableEq β] : Decidable (Set.BijOn f s t') :=
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
+
 end List
+
+namespace Finset
+
+section Pairwise
+
+variable {s : Finset α}
+
+theorem pairwise_subtype_iff_pairwise_finset' (r : β → β → Prop) (f : α → β) :
+    Pairwise (r on fun x : s => f x) ↔ (s : Set α).Pairwise (r on f) :=
+  pairwise_subtype_iff_pairwise_set (s : Set α) (r on f)
+
+theorem pairwise_subtype_iff_pairwise_finset (r : α → α → Prop) :
+    Pairwise (r on fun x : s => x) ↔ (s : Set α).Pairwise r :=
+  pairwise_subtype_iff_pairwise_finset' r id
+
+end Pairwise
+
+end Finset
