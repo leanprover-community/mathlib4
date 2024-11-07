@@ -170,27 +170,6 @@ instance : Bot (NonUnitalSubsemiring R) :=
 instance : Inhabited (NonUnitalSubsemiring R) :=
   ⟨⊥⟩
 
-theorem coe_bot : ((⊥ : NonUnitalSubsemiring R) : Set R) = {0} :=
-  rfl
-
-theorem mem_bot {x : R} : x ∈ (⊥ : NonUnitalSubsemiring R) ↔ x = 0 :=
-  Set.mem_singleton_iff
-
-/-- The inf of two non-unital subsemirings is their intersection. -/
-instance : Min (NonUnitalSubsemiring R) :=
-  ⟨fun s t =>
-    { s.toSubsemigroup ⊓ t.toSubsemigroup, s.toAddSubmonoid ⊓ t.toAddSubmonoid with
-      carrier := s ∩ t }⟩
-
-@[simp]
-theorem coe_inf (p p' : NonUnitalSubsemiring R) :
-    ((p ⊓ p' : NonUnitalSubsemiring R) : Set R) = (p : Set R) ∩ p' :=
-  rfl
-
-@[simp]
-theorem mem_inf {p p' : NonUnitalSubsemiring R} {x : R} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' :=
-  Iff.rfl
-
 instance : InfSet (NonUnitalSubsemiring R) :=
   ⟨fun s =>
     NonUnitalSubsemiring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, NonUnitalSubsemiring.toSubsemigroup t)
