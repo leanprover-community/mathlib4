@@ -210,7 +210,18 @@ variable [StarOrderedRing A]
 /-- The absolute value of an operator, using the nonunital continuous functional calculus. -/
 noncomputable def abs (a : A) := sqrt (star a * a)
 
+example (a : A) : abs a = 0 ↔ a = 0 := by
+  constructor
+  · intro h
+    sorry
+  · intro h
+    simp [abs]
+    rw [h]
+    simp only [star_zero, mul_zero, sqrt_zero]
+
 end abs
+
+#exit
 
 end NonUnital
 
