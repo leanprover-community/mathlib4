@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
@@ -20,14 +21,13 @@ noncomputable section
 
 open Set LinearMap Submodule
 
-namespace MvPolynomial
-
 universe u v
 
-variable {σ : Type u} {K : Type v}
-variable (σ K) [Field K]
+namespace MvPolynomial
 
-theorem quotient_mk_comp_C_injective (I : Ideal (MvPolynomial σ K)) (hI : I ≠ ⊤) :
+variable (σ : Type u) (K : Type v)
+
+theorem quotient_mk_comp_C_injective [Field K] (I : Ideal (MvPolynomial σ K)) (hI : I ≠ ⊤) :
     Function.Injective ((Ideal.Quotient.mk I).comp MvPolynomial.C) := by
   refine (injective_iff_map_eq_zero _).2 fun x hx => ?_
   rw [RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem] at hx
@@ -35,15 +35,15 @@ theorem quotient_mk_comp_C_injective (I : Ideal (MvPolynomial σ K)) (hI : I ≠
   have := I.mul_mem_left (MvPolynomial.C x⁻¹) hx
   rwa [← MvPolynomial.C.map_mul, inv_mul_cancel₀ hx0, MvPolynomial.C_1] at this
 
-end MvPolynomial
+variable {σ K} [CommRing K] [Nontrivial K]
+open Cardinal
 
-namespace MvPolynomial
+theorem rank_eq_lift : Module.rank K (MvPolynomial σ K) = lift.{v} #(σ →₀ ℕ) := by
+  rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank, lift_lift, lift_umax.{u,v}]
 
-universe u
-
-variable {σ : Type u} {K : Type u} [Field K]
-
-theorem rank_mvPolynomial : Module.rank K (MvPolynomial σ K) = Cardinal.mk (σ →₀ ℕ) := by
+theorem rank_eq {σ : Type v} : Module.rank K (MvPolynomial σ K) = #(σ →₀ ℕ) := by
   rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank]
+
+@[deprecated (since := "2024-11-07")] alias rank_mvPolynomial := rank_eq
 
 end MvPolynomial
