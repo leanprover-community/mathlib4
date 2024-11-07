@@ -236,16 +236,25 @@ notation:25 M " →L[" R "] " M₂ => ContinuousLinearMap (RingHom.id R) M M₂
 `σ`-semilinear maps `M → M₂`.  See also `ContinuousLinearMapClass F R M M₂` for the case where
 `σ` is the identity map on `R`.  A map `f` between an `R`-module and an `S`-module over a ring
 homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y`
-and `f (c • x) = (σ c) • f x`. -/
-class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
+and `f (c • x) = (σ c) • f x`.
+
+Deprecated and changed from a `class` to a `structure`.
+Use `[SemilinearMapClass F σ M M₂] [ContinuousMapClass F M M₂]` instead. -/
+@[deprecated (since := "2024-11-08")]
+structure ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
     (σ : outParam <| R →+* S) (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M]
     (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] [FunLike F M M₂]
     extends SemilinearMapClass F σ M M₂, ContinuousMapClass F M M₂ : Prop
 
+set_option linter.deprecated false in
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
 `R`-linear maps `M → M₂`.  This is an abbreviation for
-`ContinuousSemilinearMapClass F (RingHom.id R) M M₂`. -/
+`ContinuousSemilinearMapClass F (RingHom.id R) M M₂`.
+
+Deprecated and changed from a `class` to a `structure`.
+Use `[LinearMapClass F R M M₂] [ContinuousMapClass F M M₂]` instead. -/
+@[deprecated (since := "2024-11-08")]
 abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
     (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
@@ -258,12 +267,7 @@ topological semiring `R`. -/
 structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
-    [Module S M₂] extends M ≃ₛₗ[σ] M₂ where
-  continuous_toFun : Continuous toFun := by continuity
-  continuous_invFun : Continuous invFun := by continuity
-
-attribute [inherit_doc ContinuousLinearEquiv] ContinuousLinearEquiv.continuous_toFun
-ContinuousLinearEquiv.continuous_invFun
+    [Module S M₂] extends M ≃ₛₗ[σ] M₂, M ≃ₜ M₂ where
 
 @[inherit_doc]
 notation:50 M " ≃SL[" σ "] " M₂ => ContinuousLinearEquiv σ M M₂
@@ -271,12 +275,17 @@ notation:50 M " ≃SL[" σ "] " M₂ => ContinuousLinearEquiv σ M M₂
 @[inherit_doc]
 notation:50 M " ≃L[" R "] " M₂ => ContinuousLinearEquiv (RingHom.id R) M M₂
 
+set_option linter.deprecated false in
 /-- `ContinuousSemilinearEquivClass F σ M M₂` asserts `F` is a type of bundled continuous
 `σ`-semilinear equivs `M → M₂`.  See also `ContinuousLinearEquivClass F R M M₂` for the case
 where `σ` is the identity map on `R`.  A map `f` between an `R`-module and an `S`-module over a ring
 homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y`
-and `f (c • x) = (σ c) • f x`. -/
-class ContinuousSemilinearEquivClass (F : Type*) {R : outParam Type*} {S : outParam Type*}
+and `f (c • x) = (σ c) • f x`.
+
+Deprecated and changed from a `class` to a `structure`.
+Use `[SemilinearMapClass F σ M M₂] [HomeomorphClass F M M₂]` instead. -/
+@[deprecated (since := "2024-11-08")]
+structure ContinuousSemilinearEquivClass (F : Type*) {R : outParam Type*} {S : outParam Type*}
     [Semiring R] [Semiring S] (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R}
     [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : outParam Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
@@ -288,9 +297,14 @@ attribute [inherit_doc ContinuousSemilinearEquivClass]
 ContinuousSemilinearEquivClass.map_continuous
 ContinuousSemilinearEquivClass.inv_continuous
 
+set_option linter.deprecated false in
 /-- `ContinuousLinearEquivClass F σ M M₂` asserts `F` is a type of bundled continuous
 `R`-linear equivs `M → M₂`. This is an abbreviation for
-`ContinuousSemilinearEquivClass F (RingHom.id R) M M₂`. -/
+`ContinuousSemilinearEquivClass F (RingHom.id R) M M₂`.
+
+Deprecated and changed from a `class` to a `structure`.
+Use `[LinearMapClass F R M M₂] [HomeomorphClass F M M₂]` instead. -/
+@[deprecated (since := "2024-11-08")]
 abbrev ContinuousLinearEquivClass (F : Type*) (R : outParam Type*) [Semiring R]
     (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
@@ -303,11 +317,6 @@ variable (F : Type*) {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R �
   (M : Type*) [TopologicalSpace M] [AddCommMonoid M]
   (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂]
   [Module R M] [Module S M₂]
-
--- `σ'` becomes a metavariable, but it's OK since it's an outparam
-instance (priority := 100) continuousSemilinearMapClass [EquivLike F M M₂]
-    [s : ContinuousSemilinearEquivClass F σ M M₂] : ContinuousSemilinearMapClass F σ M M₂ :=
-  { s with }
 
 end ContinuousSemilinearEquivClass
 
@@ -370,11 +379,14 @@ instance funLike : FunLike (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toLinearMap
   coe_injective' _ _ h := coe_injective (DFunLike.coe_injective h)
 
-instance continuousSemilinearMapClass :
-    ContinuousSemilinearMapClass (M₁ →SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
+instance semilinearMapClass :
+    SemilinearMapClass (M₁ →SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
   map_add f := map_add f.toLinearMap
-  map_continuous f := f.2
   map_smulₛₗ f := f.toLinearMap.map_smul'
+
+instance continuousSemilinearMapClass :
+    ContinuousMapClass (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
+  map_continuous f := f.2
 
 theorem coe_mk (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ →ₛₗ[σ₁₂] M₂) = f :=
   rfl
@@ -866,26 +878,28 @@ theorem coe_inl [Module R₁ M₂] : (inl R₁ M₁ M₂ : M₁ →ₗ[R₁] M�
 theorem coe_inr [Module R₁ M₂] : (inr R₁ M₁ M₂ : M₂ →ₗ[R₁] M₁ × M₂) = LinearMap.inr R₁ M₁ M₂ :=
   rfl
 
-theorem isClosed_ker [T1Space M₂] [FunLike F M₁ M₂] [ContinuousSemilinearMapClass F σ₁₂ M₁ M₂]
+theorem isClosed_ker [T1Space M₂] [FunLike F M₁ M₂]
+    [SemilinearMapClass F σ₁₂ M₁ M₂] [ContinuousMapClass F M₁ M₂]
     (f : F) :
     IsClosed (ker f : Set M₁) :=
   continuous_iff_isClosed.1 (map_continuous f) _ isClosed_singleton
 
 theorem isComplete_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddCommMonoid M']
-    [Module R₁ M'] [T1Space M₂] [FunLike F M' M₂] [ContinuousSemilinearMapClass F σ₁₂ M' M₂]
+    [Module R₁ M'] [T1Space M₂] [FunLike F M' M₂]
+    [SemilinearMapClass F σ₁₂ M' M₂] [ContinuousMapClass F M' M₂]
     (f : F) :
     IsComplete (ker f : Set M') :=
   (isClosed_ker f).isComplete
 
 instance completeSpace_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     [AddCommMonoid M'] [Module R₁ M'] [T1Space M₂]
-    [FunLike F M' M₂] [ContinuousSemilinearMapClass F σ₁₂ M' M₂]
+    [FunLike F M' M₂] [SemilinearMapClass F σ₁₂ M' M₂] [ContinuousMapClass F M' M₂]
     (f : F) : CompleteSpace (ker f) :=
   (isComplete_ker f).completeSpace_coe
 
 instance completeSpace_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     [AddCommMonoid M'] [Module R₁ M'] [T2Space M₂]
-    [FunLike F M' M₂] [ContinuousSemilinearMapClass F σ₁₂ M' M₂]
+    [FunLike F M' M₂] [SemilinearMapClass F σ₁₂ M' M₂] [ContinuousMapClass F M' M₂]
     (f g : F) : CompleteSpace (LinearMap.eqLocus f g) :=
   IsClosed.completeSpace_coe <| isClosed_eq (map_continuous f) (map_continuous g)
 
@@ -1624,10 +1638,13 @@ instance equivLike :
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
-instance continuousSemilinearEquivClass :
-    ContinuousSemilinearEquivClass (M₁ ≃SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
+instance semilinearEquivClass :
+    SemilinearEquivClass (M₁ ≃SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
   map_add f := f.map_add'
   map_smulₛₗ f := f.map_smul'
+
+instance homeomorphClass :
+    HomeomorphClass (M₁ ≃SL[σ₁₂] M₂) M₁ M₂ where
   map_continuous := continuous_toFun
   inv_continuous := continuous_invFun
 
@@ -1657,10 +1674,6 @@ theorem coe_injective : Function.Injective ((↑) : (M₁ ≃SL[σ₁₂] M₂) 
 @[simp, norm_cast]
 theorem coe_inj {e e' : M₁ ≃SL[σ₁₂] M₂} : (e : M₁ →SL[σ₁₂] M₂) = e' ↔ e = e' :=
   coe_injective.eq_iff
-
-/-- A continuous linear equivalence induces a homeomorphism. -/
-def toHomeomorph (e : M₁ ≃SL[σ₁₂] M₂) : M₁ ≃ₜ M₂ :=
-  { e with toEquiv := e.toLinearEquiv.toEquiv }
 
 @[simp]
 theorem coe_toHomeomorph (e : M₁ ≃SL[σ₁₂] M₂) : ⇑e.toHomeomorph = e :=

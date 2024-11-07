@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.Topology.Connected.LocallyConnected
+import Mathlib.Topology.ContinuousMap.Defs
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.Support
-import Mathlib.Topology.Connected.LocallyConnected
 
 /-!
 # Homeomorphisms
@@ -1052,20 +1053,23 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
 /-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms.-/
 class HomeomorphClass (F : Type*) (A B : outParam Type*)
     [TopologicalSpace A] [TopologicalSpace B] [h : EquivLike F A B] : Prop where
-  continuous_toFun : ∀ (f : F), Continuous (h.coe f)
-  continuous_invFun : ∀ (f : F), Continuous (h.inv f)
+  map_continuous : ∀ (f : F), Continuous f
+  inv_continuous : ∀ (f : F), Continuous (h.inv f)
 
 namespace HomeomorphClass
 
 variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLike F α β]
+
+instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
+  map_continuous := map_continuous
 
 /-- Turn an element of a type `F` satisfying `HomeomorphClass F α β` into an actual
 `Homeomorph`. This is declared as the default coercion from `F` to `α ≃ₜ β`. -/
 @[coe]
 def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
   {(f : α ≃ β) with
-  continuous_toFun := h.continuous_toFun f
-  continuous_invFun := h.continuous_invFun f }
+  continuous_toFun := h.map_continuous f
+  continuous_invFun := h.inv_continuous f }
 
 @[simp]
 theorem coe_coe [h : HomeomorphClass F α β] (f : F) : ⇑(h.toHomeomorph f) = ⇑f := rfl
@@ -1077,7 +1081,7 @@ theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ β ↦ e.toFun a) e
 
 instance : HomeomorphClass (α ≃ₜ β) α β where
-  continuous_toFun e := e.continuous_toFun
-  continuous_invFun e := e.continuous_invFun
+  map_continuous e := e.continuous_toFun
+  inv_continuous e := e.continuous_invFun
 
 end HomeomorphClass

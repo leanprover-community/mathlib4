@@ -119,8 +119,8 @@ theorem diam_range [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
     Metric.diam (range f) = Metric.diam (univ : Set E) :=
   (SemilinearIsometryClass.isometry f).diam_range
 
-instance (priority := 100) toContinuousSemilinearMapClass
-    [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] : ContinuousSemilinearMapClass 𝓕 σ₁₂ E E₂ where
+instance (priority := 100) toSemilinearIsometryClass
+    [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] : ContinuousMapClass 𝓕 E E₂ where
   map_continuous := SemilinearIsometryClass.continuous
 
 end SemilinearIsometryClass
