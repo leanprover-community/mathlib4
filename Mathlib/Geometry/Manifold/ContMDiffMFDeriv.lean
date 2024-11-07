@@ -72,6 +72,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     ContMDiffWithinAt J 𝓘(𝕜, E →L[𝕜] E') m
       (inTangentCoordinates I I' g (fun x => f x (g x))
         (fun x => mfderivWithin I I' (f x) u (g x)) x₀) t x₀ := by
+  -- first localize the result to a smaller set, to make sure everything happens in chart domains
   let t' := t ∩ g ⁻¹' ((extChartAt I (g x₀)).source)
   have ht't : t' ⊆ t := inter_subset_left
   suffices ContMDiffWithinAt J 𝓘(𝕜, E →L[𝕜] E') m
@@ -80,6 +81,8 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     apply ContMDiffWithinAt.mono_of_mem_nhdsWithin this
     apply inter_mem self_mem_nhdsWithin
     exact hg.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (g x₀))
+  -- register a few basic facts that maps send suitable neighborhoods to suitable neighborhoods,
+  -- by continuity
   have hx₀gx₀ : (x₀, g x₀) ∈ t ×ˢ u := by simp [hx₀, hu hx₀]
   have h4f : ContinuousWithinAt (fun x => f x (g x)) t x₀ := by
     change ContinuousWithinAt ((Function.uncurry f) ∘ (fun x ↦ (x, g x))) t x₀
@@ -97,6 +100,9 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     exact fun y hy ↦ by simp [h'x, hy]
   have h2g : g ⁻¹' (extChartAt I (g x₀)).source ∈ 𝓝[t] x₀ :=
     hg.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (g x₀))
+  -- key point: the derivative of `f` composed with extended charts, at the point `g x` read in the
+  -- chart, is smooth in the vector space sense. This follows from `ContDiffWithinAt.fderivWithin`,
+  -- which is the vector space analogue of the result we are proving.
   have : ContDiffWithinAt 𝕜 m (fun x ↦ fderivWithin 𝕜
         (extChartAt I' (f x₀ (g x₀)) ∘ f ((extChartAt J x₀).symm x) ∘ (extChartAt I (g x₀)).symm)
         ((extChartAt I (g x₀)).target ∩ (extChartAt I (g x₀)).symm ⁻¹' u)
@@ -127,6 +133,8 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
       · simp
     · exact hg'.2
     · exact UniqueMDiffOn.uniqueDiffOn_target_inter h'u (g x₀)
+  -- reformulate the previous point as smoothness in the manifold sense (but still for a map between
+  -- vector spaces)
   have :
     ContMDiffWithinAt J 𝓘(𝕜, E →L[𝕜] E') m
       (fun x =>
@@ -136,6 +144,9 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     simp_rw [contMDiffWithinAt_iff_source_of_mem_source (mem_chart_source G x₀),
       contMDiffWithinAt_iff_contDiffWithinAt, Function.comp_def] at this ⊢
     exact this
+  -- finally, argue that the map we control in the previous point coincides locally with the map we
+  -- want to prove the smoothness of, so smoothness of the latter follows from smoothness of the
+  -- former.
   apply this.congr_of_eventuallyEq_of_mem _ (by simp [t', hx₀])
   apply nhdsWithin_mono _ ht't
   filter_upwards [h2f, h4f, h2g, self_mem_nhdsWithin] with x hx h'x h2 hxt
