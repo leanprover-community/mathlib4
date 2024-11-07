@@ -348,9 +348,12 @@ variable [Algebra A B] [IsScalarTower A B M]
 /-- `B`-linear equivalence between `M ⊗[A] (A ⊗[R] N)` and `M ⊗[R] N`.
 In particular useful with `B = A`. -/
 def cancelBaseChange : M ⊗[A] (A ⊗[R] N) ≃ₗ[B] M ⊗[R] N := by
-  letI g : (M ⊗[A] A) ⊗[R] N ≃ₗ[B] M ⊗[R] N :=
-    AlgebraTensorModule.congr (AlgebraTensorModule.rid A B M) (LinearEquiv.refl R N)
-  exact (AlgebraTensorModule.assoc R A B M A N).symm ≪≫ₗ g
+  letI g : (M ⊗[A] A) ⊗[R] N ≃ₗ[B] M ⊗[R] N := congr (AlgebraTensorModule.rid A B M) (.refl R N)
+  exact (assoc R A B M A N).symm ≪≫ₗ g
+
+/-- Base change distributes over tensor product. -/
+def distribBaseChange : A ⊗[R] (M ⊗[R] N) ≃ₗ[A] (A ⊗[R] M) ⊗[A] (A ⊗[R] N) :=
+  (cancelBaseChange _ _ _ _ _ ≪≫ₗ assoc _ _ _ _ _ _).symm
 
 variable {M P N Q}
 
