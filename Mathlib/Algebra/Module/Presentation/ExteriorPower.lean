@@ -88,6 +88,28 @@ lemma AlternatingMap.antisymmetry {R M N ι : Type*} [Ring R] [AddCommGroup M] [
   rw [swapValues_eq_update_update, update_update _ _ _ _ _ hij]
   exact this
 
+lemma LinearMap.alternating_of_generators {R M N : Type*} [CommRing R] [AddCommGroup M]
+    [Module R M] [AddCommGroup N] [Module R N] {ι : Type*} [DecidableEq ι]
+    (f : M →ₗ[R] M →ₗ[R] N) {γ : Type*} {g : γ → M}
+    (hg : Submodule.span R (Set.range g) = ⊤)
+    (hf₁ : ∀ i , f (g i) (g i) = 0) (hf₂ : ∀ i j, f (g j) (g i) = - f (g i) (g j))
+    (v : M) : f v v = 0 := by
+  have antisym (v w : M) : f w v = - f v w := by
+    suffices f.flip = -f from DFunLike.congr_fun (DFunLike.congr_fun this v) w
+    rw [Submodule.linearMap_eq_iff_of_span_eq_top (hM := hg)]
+    rintro ⟨_, ⟨i, rfl⟩⟩
+    rw [Submodule.linearMap_eq_iff_of_span_eq_top (hM := hg)]
+    rintro ⟨_, ⟨j, rfl⟩⟩
+    exact hf₂ i j
+  have hv : v ∈ Submodule.span R (Set.range g) := by simp only [hg, Submodule.mem_top]
+  induction hv using Submodule.span_induction with
+  | mem m hm =>
+      obtain ⟨v, rfl⟩ := hm
+      exact hf₁ v
+  | zero => simp
+  | add m₁ m₂ hm₁ hm₂ h₁ h₂ => simp [h₁, h₂, antisym m₁ m₂]
+  | smul a m hm h => simp [h]
+
 lemma MultilinearMap.map_eq_zero_of_eq_of_generators {R M N : Type*} [Ring R] [AddCommGroup M]
     [Module R M] [AddCommGroup N] [Module R N] {ι : Type*} [DecidableEq ι]
     (f : MultilinearMap R (fun (_ : ι) ↦ M) N) {γ : Type*} {g : γ → M}
