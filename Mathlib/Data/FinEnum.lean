@@ -115,7 +115,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
   induction xs generalizing s with
   | nil => simp [enum, eq_empty_iff_forall_not_mem]
   | cons x xs ih =>
-      simp only [enum, List.bind_eq_bind, List.mem_bind, List.mem_cons, List.mem_singleton,
+      simp only [enum, List.bind_eq_flatMap, List.mem_flatMap, List.mem_cons, List.mem_singleton,
         List.not_mem_nil, or_false, ih]
       refine ⟨by aesop, fun hs => ⟨s.erase x, ?_⟩⟩
       simp only [or_iff_not_imp_left] at hs
@@ -129,7 +129,7 @@ instance Subtype.finEnum [FinEnum α] (p : α → Prop) [DecidablePred p] : FinE
     (by rintro ⟨x, h⟩; simpa)
 
 instance (β : α → Type v) [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Sigma β) :=
-  ofList ((toList α).bind fun a => (toList (β a)).map <| Sigma.mk a)
+  ofList ((toList α).flatMap fun a => (toList (β a)).map <| Sigma.mk a)
     (by intro x; cases x; simp)
 
 instance PSigma.finEnum [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Σ'a, β a) :=
@@ -138,7 +138,7 @@ instance PSigma.finEnum [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Σ'a, β
 instance PSigma.finEnumPropLeft {α : Prop} {β : α → Type v} [∀ a, FinEnum (β a)] [Decidable α] :
     FinEnum (Σ'a, β a) :=
   if h : α then ofList ((toList (β h)).map <| PSigma.mk h) fun ⟨a, Ba⟩ => by simp
-  else ofList [] fun ⟨a, Ba⟩ => (h a).elim
+  else ofList [] fun ⟨a, _⟩ => (h a).elim
 
 instance PSigma.finEnumPropRight {β : α → Prop} [FinEnum α] [∀ a, Decidable (β a)] :
     FinEnum (Σ'a, β a) :=

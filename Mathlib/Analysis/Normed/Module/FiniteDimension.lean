@@ -519,8 +519,8 @@ lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E
   have : LocallyCompactSpace 𝕜 := by
     obtain ⟨v, hv⟩ : ∃ v : E, v ≠ 0 := exists_ne 0
     let L : 𝕜 → E := fun t ↦ t • v
-    have : ClosedEmbedding L := closedEmbedding_smul_left hv
-    apply ClosedEmbedding.locallyCompactSpace this
+    have : IsClosedEmbedding L := isClosedEmbedding_smul_left hv
+    apply IsClosedEmbedding.locallyCompactSpace this
   .of_locallyCompactSpace 𝕜
 
 @[deprecated (since := "2024-01-31")]

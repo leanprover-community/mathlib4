@@ -303,7 +303,7 @@ section
 variable {S : Type u} [CommRing S]
 
 instance : Linear S (ModuleCat.{v} S) where
-  homModule X Y := LinearMap.module
+  homModule _ _ := LinearMap.module
   smul_comp := by
     intros
     ext

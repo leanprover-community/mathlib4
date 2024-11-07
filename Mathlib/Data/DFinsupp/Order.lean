@@ -68,8 +68,8 @@ variable [∀ i, Preorder (α i)] {f g : Π₀ i, α i}
 
 instance : Preorder (Π₀ i, α i) :=
   { (inferInstance : LE (DFinsupp α)) with
-    le_refl := fun f i ↦ le_rfl
-    le_trans := fun f g h hfg hgh i ↦ (hfg i).trans (hgh i) }
+    le_refl := fun _ _ ↦ le_rfl
+    le_trans := fun _ _ _ hfg hgh i ↦ (hfg i).trans (hgh i) }
 
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
@@ -141,8 +141,8 @@ instance (α : ι → Type*) [∀ i, OrderedCancelAddCommMonoid (α i)] :
   { (inferInstance : OrderedAddCommMonoid (DFinsupp α)) with
     le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
 
-instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, ContravariantClass (α i) (α i) (· + ·) (· ≤ ·)] :
-    ContravariantClass (Π₀ i, α i) (Π₀ i, α i) (· + ·) (· ≤ ·) :=
+instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, AddLeftReflectLE (α i)] :
+    AddLeftReflectLE (Π₀ i, α i) :=
   ⟨fun _ _ _ H i ↦ le_of_add_le_add_left (H i)⟩
 
 section Module

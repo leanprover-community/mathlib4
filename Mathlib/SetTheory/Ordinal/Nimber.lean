@@ -93,9 +93,6 @@ theorem lt_wf : @WellFounded Nimber (· < ·) :=
 instance : WellFoundedLT Nimber :=
   Ordinal.wellFoundedLT
 
-instance : IsWellOrder Nimber (· < ·) :=
-  { }
-
 instance : ConditionallyCompleteLinearOrderBot Nimber :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
@@ -368,6 +365,10 @@ theorem add_trichotomy {a b c : Nimber} (h : a + b + c ≠ 0) :
       exact Or.inr <| Or.inl hx
   · rw [← hx'] at hx
     exact Or.inr <| Or.inr hx
+
+theorem lt_add_cases {a b c : Nimber} (h : a < b + c) : a + c < b ∨ a + b < c := by
+  obtain ha | hb | hc := add_trichotomy <| add_assoc a b c ▸ add_ne_zero_iff.2 h.ne
+  exacts [(h.asymm ha).elim, Or.inl <| add_comm c a ▸ hb, Or.inr hc]
 
 /-- Nimber addition of naturals corresponds to the bitwise XOR operation. -/
 theorem add_nat (a b : ℕ) : ∗a + ∗b = ∗(a ^^^ b) := by

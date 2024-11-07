@@ -125,12 +125,12 @@ theorem strongMono_of_strongMono [StrongMono (f ≫ g)] : StrongMono f :=
 /-- An isomorphism is in particular a strong epimorphism. -/
 instance (priority := 100) strongEpi_of_isIso [IsIso f] : StrongEpi f where
   epi := by infer_instance
-  llp {X Y} z := HasLiftingProperty.of_left_iso _ _
+  llp {_ _} _ := HasLiftingProperty.of_left_iso _ _
 
 /-- An isomorphism is in particular a strong monomorphism. -/
 instance (priority := 100) strongMono_of_isIso [IsIso f] : StrongMono f where
   mono := by infer_instance
-  rlp {X Y} z := HasLiftingProperty.of_right_iso _ _
+  rlp {_ _} _ := HasLiftingProperty.of_right_iso _ _
 
 theorem StrongEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : StrongEpi f] : StrongEpi g :=

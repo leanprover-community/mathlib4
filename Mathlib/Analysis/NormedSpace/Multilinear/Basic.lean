@@ -80,16 +80,19 @@ variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
     [NormedField 𝕜] [Finite ι] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
     [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F]
 
-/-- Applying a multilinear map to a vector is continuous in both coordinates. -/
-theorem ContinuousMultilinearMap.continuous_eval :
-    Continuous fun p : ContinuousMultilinearMap 𝕜 E F × ∀ i, E i => p.1 p.2 := by
-  cases nonempty_fintype ι
-  let _ := TopologicalAddGroup.toUniformSpace F
-  have := comm_topologicalAddGroup_is_uniform (G := F)
-  refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
-    (embedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
-  exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
-    ball_mem_nhds _ one_pos⟩
+instance ContinuousMultilinearMap.instContinuousEval :
+    ContinuousEval (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F where
+  continuous_eval := by
+    cases nonempty_fintype ι
+    let _ := TopologicalAddGroup.toUniformSpace F
+    have := comm_topologicalAddGroup_is_uniform (G := F)
+    refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
+      (isEmbedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
+    exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
+      ball_mem_nhds _ one_pos⟩
+
+@[deprecated (since := "2024-10-05")]
+protected alias ContinuousMultilinearMap.continuous_eval := continuous_eval
 
 namespace ContinuousLinearMap
 
@@ -97,8 +100,8 @@ variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [Cont
   (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F)
 
 lemma continuous_uncurry_of_multilinear :
-    Continuous (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) :=
-  ContinuousMultilinearMap.continuous_eval.comp <| .prodMap (map_continuous f) continuous_id
+    Continuous (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) := by
+  fun_prop
 
 lemma continuousOn_uncurry_of_multilinear {s} :
     ContinuousOn (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) s :=
@@ -215,7 +218,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
         s.piecewise_insert _ _ _
       have B : s.piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₁ i) := by
         simp [eq_update_iff, his]
-      rw [B, A, ← f.map_sub]
+      rw [B, A, ← f.map_update_sub]
       apply le_trans (H _)
       gcongr with j
       by_cases h : j = i
@@ -304,7 +307,7 @@ theorem coe_mkContinuous (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i�
 the other coordinates, then the resulting restricted function satisfies an inequality
 `‖f.restr v‖ ≤ C * ‖z‖^(n-k) * Π ‖v i‖` if the original function satisfies `‖f v‖ ≤ C * Π ‖v i‖`. -/
 theorem restr_norm_le {k n : ℕ} (f : (MultilinearMap 𝕜 (fun _ : Fin n => G) G' : _))
-    (s : Finset (Fin n)) (hk : s.card = k) (z : G) {C : ℝ} (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖)
+    (s : Finset (Fin n)) (hk : #s = k) (z : G) {C : ℝ} (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (v : Fin k → G) : ‖f.restr s hk z v‖ ≤ C * ‖z‖ ^ (n - k) * ∏ i, ‖v i‖ := by
   rw [mul_right_comm, mul_assoc]
   convert H _ using 2
@@ -648,8 +651,8 @@ def prodL :
   invFun f :=
     ((ContinuousLinearMap.fst 𝕜 G G').compContinuousMultilinearMap f,
       (ContinuousLinearMap.snd 𝕜 G G').compContinuousMultilinearMap f)
-  map_add' f g := rfl
-  map_smul' c f := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
   left_inv f := by ext <;> rfl
   right_inv f := by ext <;> rfl
   norm_map' f := opNorm_prod f.1 f.2
@@ -729,12 +732,12 @@ namespace ContinuousMultilinearMap
 these variables, and fixing the other ones equal to a given value `z`. It is denoted by
 `f.restr s hk z`, where `hk` is a proof that the cardinality of `s` is `k`. The implicit
 identification between `Fin k` and `s` that we use is the canonical (increasing) bijection. -/
-def restr {k n : ℕ} (f : (G[×n]→L[𝕜] G' : _)) (s : Finset (Fin n)) (hk : s.card = k) (z : G) :
+def restr {k n : ℕ} (f : (G[×n]→L[𝕜] G' : _)) (s : Finset (Fin n)) (hk : #s = k) (z : G) :
     G[×k]→L[𝕜] G' :=
   (f.toMultilinearMap.restr s hk z).mkContinuous (‖f‖ * ‖z‖ ^ (n - k)) fun _ =>
     MultilinearMap.restr_norm_le _ _ _ _ f.le_opNorm _
 
-theorem norm_restr {k n : ℕ} (f : G[×n]→L[𝕜] G') (s : Finset (Fin n)) (hk : s.card = k) (z : G) :
+theorem norm_restr {k n : ℕ} (f : G[×n]→L[𝕜] G') (s : Finset (Fin n)) (hk : #s = k) (z : G) :
     ‖f.restr s hk z‖ ≤ ‖f‖ * ‖z‖ ^ (n - k) := by
   apply MultilinearMap.mkContinuous_norm_le
   exact mul_nonneg (norm_nonneg _) (pow_nonneg (norm_nonneg _) _)
@@ -873,7 +876,7 @@ ones. We register this bijection as a linear isometry in
 `ContinuousMultilinearMap.piFieldEquiv`. -/
 protected def piFieldEquiv : G ≃ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι => 𝕜) G where
   toFun z := ContinuousMultilinearMap.mkPiRing 𝕜 ι z
-  invFun f := f fun i => 1
+  invFun f := f fun _ => 1
   map_add' z z' := by
     ext m
     simp [smul_add]
@@ -902,7 +905,7 @@ variable (𝕜 E G G')
 def compContinuousMultilinearMapL :
     (G →L[𝕜] G') →L[𝕜] ContinuousMultilinearMap 𝕜 E G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
   LinearMap.mkContinuous₂
-    (LinearMap.mk₂ 𝕜 compContinuousMultilinearMap (fun f₁ f₂ g => rfl) (fun c f g => rfl)
+    (LinearMap.mk₂ 𝕜 compContinuousMultilinearMap (fun _ _ _ => rfl) (fun _ _ _ => rfl)
       (fun f g₁ g₂ => by ext1; apply f.map_add)
       (fun c f g => by ext1; simp))
     1
@@ -957,13 +960,13 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
           (‖f‖ * ∏ i, ‖m i‖) fun x => by
           rw [mul_right_comm]
           exact (f x).le_of_opNorm_le _ (f.le_opNorm x)
-      map_add' := fun m i x y => by
+      map_update_add' := fun m i x y => by
         ext1
-        simp only [add_apply, ContinuousMultilinearMap.map_add, LinearMap.coe_mk,
+        simp only [add_apply, ContinuousMultilinearMap.map_update_add, LinearMap.coe_mk,
           LinearMap.mkContinuous_apply, AddHom.coe_mk]
-      map_smul' := fun m i c x => by
+      map_update_smul' := fun m i c x => by
         ext1
-        simp only [coe_smul', ContinuousMultilinearMap.map_smul, LinearMap.coe_mk,
+        simp only [coe_smul', ContinuousMultilinearMap.map_update_smul, LinearMap.coe_mk,
           LinearMap.mkContinuous_apply, Pi.smul_apply, AddHom.coe_mk] }
     ‖f‖ fun m => by
       dsimp only [MultilinearMap.coe_mk]
@@ -1026,10 +1029,10 @@ def mkContinuousMultilinear (f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G
     ContinuousMultilinearMap 𝕜 E (ContinuousMultilinearMap 𝕜 E' G) :=
   mkContinuous
     { toFun := fun m => mkContinuous (f m) (C * ∏ i, ‖m i‖) <| H m
-      map_add' := fun m i x y => by
+      map_update_add' := fun m i x y => by
         ext1
         simp
-      map_smul' := fun m i c x => by
+      map_update_smul' := fun m i c x => by
         ext1
         simp }
     (max C 0) fun m => by
@@ -1130,17 +1133,17 @@ def compContinuousLinearMapLRight (g : ContinuousMultilinearMap 𝕜 E₁ G) :
     ContinuousMultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i) (ContinuousMultilinearMap 𝕜 E G) :=
   MultilinearMap.mkContinuous
     { toFun := fun f => g.compContinuousLinearMap f
-      map_add' := by
+      map_update_add' := by
         intro h f i f₁ f₂
         ext x
         simp only [compContinuousLinearMap_apply, add_apply]
-        convert g.map_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
+        convert g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
           exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
-      map_smul' := by
+      map_update_smul' := by
         intro h f i a f₀
         ext x
         simp only [compContinuousLinearMap_apply, smul_apply]
-        convert g.map_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
+        convert g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
           exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _ }
     (‖g‖) (fun f ↦ by simp [norm_compContinuousLinearMap_le])
 
@@ -1165,16 +1168,16 @@ noncomputable def compContinuousLinearMapMultilinear :
     MultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i)
       ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) where
   toFun := compContinuousLinearMapL
-  map_add' f i f₁ f₂ := by
+  map_update_add' f i f₁ f₂ := by
     ext g x
     change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
         (g fun j ↦ update f i f₁ j <| x j) + g fun j ↦ update f i f₂ j (x j)
-    convert g.map_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
+    convert g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
       exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
-  map_smul' f i a f₀ := by
+  map_update_smul' f i a f₀ := by
     ext g x
     change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
-    convert g.map_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
+    convert g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
       exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
 
 /-- If `f` is a collection of continuous linear maps, then the construction

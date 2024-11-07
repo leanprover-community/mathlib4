@@ -95,10 +95,6 @@ protected theorem bijective_iff_injective_and_card [Finite β] (f : α → β) :
   rw [← and_congr_right_iff, ← Bijective,
     card_eq_fintype_card, card_eq_fintype_card, Fintype.bijective_iff_injective_and_card]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefixes below.
--/
 protected theorem bijective_iff_surjective_and_card [Finite α] (f : α → β) :
     Bijective f ↔ Surjective f ∧ Nat.card α = Nat.card β := by
   classical
@@ -107,7 +103,7 @@ protected theorem bijective_iff_surjective_and_card [Finite α] (f : α → β) 
   have := Fintype.ofFinite α
   have := Fintype.ofSurjective f h
   revert h
-  rw [← and_congr_left_iff, ← Bijective, ← _root_.and_comm,
+  rw [← and_congr_left_iff, ← Bijective, ← and_comm,
     card_eq_fintype_card, card_eq_fintype_card, Fintype.bijective_iff_surjective_and_card]
 
 theorem _root_.Function.Injective.bijective_of_nat_card_le [Finite β] {f : α → β}
@@ -177,12 +173,12 @@ theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by
   letI := Fintype.ofSubsingleton a
   rw [card_eq_fintype_card, Fintype.card_ofSubsingleton a]
 
--- @[simp] -- Porting note (#10618): simp can prove this
-theorem card_unique [Unique α] : Nat.card α = 1 :=
-  card_of_subsingleton default
-
 theorem card_eq_one_iff_unique : Nat.card α = 1 ↔ Subsingleton α ∧ Nonempty α :=
   Cardinal.toNat_eq_one_iff_unique
+
+@[simp]
+theorem card_unique [Nonempty α] [Subsingleton α] : Nat.card α = 1 := by
+  simp [card_eq_one_iff_unique, *]
 
 theorem card_eq_one_iff_exists : Nat.card α = 1 ↔ ∃ x : α, ∀ y : α, y = x := by
   rw [card_eq_one_iff_unique]

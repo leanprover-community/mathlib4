@@ -3,8 +3,9 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Jireh Loreaux
 -/
-import Mathlib.GroupTheory.Subsemigroup.Center
 import Mathlib.Algebra.Group.Center
+import Mathlib.Algebra.Group.Subsemigroup.Basic
+import Mathlib.GroupTheory.Subsemigroup.Center
 
 /-!
 # Centralizers in semigroups, as subsemigroups.

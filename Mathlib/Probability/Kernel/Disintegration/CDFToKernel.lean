@@ -223,7 +223,7 @@ lemma integral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondKerne
     (a : α) (x : ℝ) :
     ∫ b, stieltjesOfMeasurableRat f hf.measurable (a, b) x ∂(ν a)
       = (κ a (univ ×ˢ Iic x)).toReal := by
-  rw [← integral_univ, setIntegral_stieltjesOfMeasurableRat hf _ _ MeasurableSet.univ]
+  rw [← setIntegral_univ, setIntegral_stieltjesOfMeasurableRat hf _ _ MeasurableSet.univ]
 
 end stieltjesOfMeasurableRat
 
@@ -333,7 +333,7 @@ lemma IsRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : IsRatCondKernelCDFAux f
     [IsFiniteKernel ν] (a : α) (q : ℚ) :
     Integrable (fun t ↦ ⨅ r : Ioi q, f (a, t) r) (ν a) := by
   rw [← memℒp_one_iff_integrable]
-  refine ⟨(measurable_iInf fun i ↦ hf.measurable_right a _).aestronglyMeasurable, ?_⟩
+  refine ⟨(Measurable.iInf fun i ↦ hf.measurable_right a _).aestronglyMeasurable, ?_⟩
   refine (?_ : _ ≤ (ν a univ : ℝ≥0∞)).trans_lt (measure_lt_top _ _)
   refine (eLpNorm_le_of_ae_bound (C := 1) ?_).trans (by simp)
   filter_upwards [hf.bddBelow_range a, hf.nonneg a, hf.le_one a]
@@ -684,7 +684,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
 lemma compProd_toKernel [IsFiniteKernel κ] [IsSFiniteKernel ν] (hf : IsCondKernelCDF f κ ν) :
     ν ⊗ₖ hf.toKernel f = κ := by
   ext a s hs
-  rw [Kernel.compProd_apply _ _ _ hs, lintegral_toKernel_mem hf a hs]
+  rw [Kernel.compProd_apply hs, lintegral_toKernel_mem hf a hs]
 
 end
 

@@ -73,8 +73,8 @@ variable [Preorder α] {f g : ι →₀ α} {i : ι} {a b : α}
 
 instance preorder : Preorder (ι →₀ α) :=
   { Finsupp.instLEFinsupp with
-    le_refl := fun f i => le_rfl
-    le_trans := fun f g h hfg hgh i => (hfg i).trans (hgh i) }
+    le_refl := fun _ _ => le_rfl
+    le_trans := fun _ _ _ hfg hgh i => (hfg i).trans (hgh i) }
 
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
@@ -171,8 +171,8 @@ instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
   { Finsupp.orderedAddCommMonoid with
     le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
-instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α (· + ·) (· ≤ ·)] :
-    ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
+instance addLeftReflectLE [OrderedAddCommMonoid α] [AddLeftReflectLE α] :
+    AddLeftReflectLE (ι →₀ α) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
 section SMulZeroClass

@@ -5,9 +5,12 @@ Authors: Moritz Firsching
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.Linarith
+
 
 /-!
 # Fermat numbers
@@ -23,7 +26,6 @@ for all natural numbers `n`.
 namespace Nat
 
 open Finset
-open scoped BigOperators
 
 /-- Fermat numbers: the `n`-th Fermat number is defined as `2^(2^n) + 1`. -/
 def fermatNumber (n : ℕ) : ℕ := 2 ^ (2 ^ n) + 1
@@ -58,6 +60,36 @@ theorem fermatNumber_eq_prod_add_two (n : ℕ) :
   rw [fermatNumber_product, Nat.sub_add_cancel]
   exact le_of_lt <| two_lt_fermatNumber _
 
+theorem fermatNumber_succ (n : ℕ) : fermatNumber (n + 1) = (fermatNumber n - 1) ^ 2 + 1 := by
+  rw [fermatNumber, pow_succ, mul_comm, Nat.pow_mul']
+  rfl
+
+theorem two_mul_fermatNumber_sub_one_sq_le_fermatNumber_sq (n : ℕ) :
+    2 * (fermatNumber n - 1) ^ 2 ≤ (fermatNumber (n + 1)) ^ 2 := by
+  simp only [fermatNumber, add_tsub_cancel_right]
+  have : 0 ≤ 1 + 2 ^ (2 ^ n * 4) := le_add_left 0 (Nat.add 1 _)
+  ring_nf
+  linarith
+
+theorem fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq (n : ℕ) :
+    fermatNumber (n + 2) = (fermatNumber (n + 1)) ^ 2 - 2 * (fermatNumber n - 1) ^ 2 := by
+  simp only [fermatNumber, add_sub_self_right]
+  rw [← add_sub_self_right (2 ^ 2 ^ (n + 2) + 1) <| 2 * 2 ^ 2 ^ (n + 1)]
+  ring_nf
+
+end Nat
+
+open Nat
+
+theorem Int.fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq (n : ℕ) :
+    (fermatNumber (n + 2) : ℤ)  = (fermatNumber (n + 1)) ^ 2 - 2 * (fermatNumber n - 1) ^ 2 := by
+  rw [Nat.fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq,
+    Nat.cast_sub <| two_mul_fermatNumber_sub_one_sq_le_fermatNumber_sq n]
+  simp only [fermatNumber, push_cast, add_tsub_cancel_right]
+
+namespace Nat
+
+open Finset
 /--
 **Goldbach's theorem** : no two distinct Fermat numbers share a common factor greater than one.
 
@@ -74,4 +106,4 @@ theorem coprime_fermatNumber_fermatNumber {k n : ℕ} (h : k ≠ n) :
   refine ((dvd_prime prime_two).mp h_m).elim id (fun h_two ↦ ?_)
   exact ((odd_fermatNumber _).not_two_dvd_nat (h_two ▸ h_n)).elim
 
-  end Nat
+end Nat

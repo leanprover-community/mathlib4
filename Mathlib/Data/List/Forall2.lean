@@ -84,18 +84,14 @@ theorem forall₂_cons_right_iff {b l u} :
     match u, h with
     | _, ⟨_, _, h₁, h₂, rfl⟩ => Forall₂.cons h₁ h₂
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefixes below.
--/
 theorem forall₂_and_left {p : α → Prop} :
     ∀ l u, Forall₂ (fun a b => p a ∧ R a b) l u ↔ (∀ a ∈ l, p a) ∧ Forall₂ R l u
   | [], u => by
     simp only [forall₂_nil_left_iff, forall_prop_of_false (not_mem_nil _), imp_true_iff, true_and]
   | a :: l, u => by
-    simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, _root_.and_assoc,
+    simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
       @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
-    simp only [_root_.and_comm, _root_.and_assoc, and_left_comm, ← exists_and_right]
+    simp only [and_comm, and_assoc, and_left_comm, ← exists_and_right]
 
 @[simp]
 theorem forall₂_map_left_iff {f : γ → α} :
@@ -224,12 +220,16 @@ theorem forall₂_reverse_iff {l₁ l₂} : Forall₂ R (reverse l₁) (reverse 
       exact rel_reverse h)
     fun h => rel_reverse h
 
-theorem rel_join : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) join join
+theorem rel_flatten : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) flatten flatten
   | [], [], Forall₂.nil => Forall₂.nil
-  | _, _, Forall₂.cons h₁ h₂ => rel_append h₁ (rel_join h₂)
+  | _, _, Forall₂.cons h₁ h₂ => rel_append h₁ (rel_flatten h₂)
 
-theorem rel_bind : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P) List.bind List.bind :=
-  fun _ _ h₁ _ _ h₂ => rel_join (rel_map (@h₂) h₁)
+@[deprecated (since := "2025-10-15")] alias rel_join := rel_flatten
+
+theorem rel_flatMap : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P) List.flatMap List.flatMap :=
+  fun _ _ h₁ _ _ h₂ => rel_flatten (rel_map (@h₂) h₁)
+
+@[deprecated (since := "2025-10-16")] alias rel_bind := rel_flatMap
 
 theorem rel_foldl : ((P ⇒ R ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldl foldl
   | _, _, _, _, _, h, _, _, Forall₂.nil => h

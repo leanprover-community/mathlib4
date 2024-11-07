@@ -3,14 +3,14 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.LinearAlgebra.Quotient
-import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
+import Mathlib.LinearAlgebra.Basis.Cardinality
+import Mathlib.RingTheory.Ideal.Quotient.Basic
+import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.Tactic.Algebraize
 
 /-!
@@ -72,6 +72,21 @@ theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
     exact ⟨n, f, hS⟩
   · rintro ⟨n, s, hs⟩
     exact ⟨range s, finite_range s, hs⟩
+
+universe w v u in
+lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type v}
+    [AddCommMonoid M] [Module A M] {N : Submodule A M} :
+    N.FG ↔ ∃ (G : Type w) (_ : Finite G) (g : G → M), Submodule.span A (Set.range g) = N := by
+  constructor
+  · intro hN
+    obtain ⟨n, f, h⟩ := Submodule.fg_iff_exists_fin_generating_family.1 hN
+    refine ⟨ULift (Fin n), inferInstance, f ∘ ULift.down, ?_⟩
+    convert h
+    ext x
+    simp only [Set.mem_range, Function.comp_apply, ULift.exists]
+  · rintro ⟨G, _, g, hg⟩
+    have := Fintype.ofFinite (range g)
+    exact ⟨(range g).toFinset, by simpa using hg⟩
 
 /-- **Nakayama's Lemma**. Atiyah-Macdonald 2.5, Eisenbud 4.7, Matsumura 2.2,
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV) -/
@@ -194,7 +209,7 @@ variable {f}
 theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {N : Submodule R M}
     (hfn : (N.map f).FG) : N.FG :=
   let ⟨t, ht⟩ := hfn
-  ⟨t.preimage f fun x _ y _ h => hf h,
+  ⟨t.preimage f fun _ _ _ _ h => hf h,
     Submodule.map_injective_of_injective hf <| by
       rw [map_span, Finset.coe_preimage, Set.image_preimage_eq_inter_range,
         Set.inter_eq_self_of_subset_left, ht]
@@ -493,6 +508,34 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
       rw [add_comm, Nat.add_sub_assoc h.le]
       apply Nat.le_add_right
 
+theorem exists_pow_le_of_le_radical_of_fg_radical {R : Type*} [CommSemiring R] {I J : Ideal R}
+    (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
+    ∃ k : ℕ, I ^ k ≤ J := by
+  obtain ⟨k, hk⟩ := J.exists_radical_pow_le_of_fg hJ
+  use k
+  calc
+    I ^ k ≤ J.radical ^ k := Ideal.pow_right_mono hIJ _
+    _ ≤ J := hk
+
+@[deprecated (since := "2024-10-24")]
+alias exists_pow_le_of_le_radical_of_fG := exists_pow_le_of_le_radical_of_fg_radical
+
+lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Ideal R}
+    (h' : I ≤ J.radical) (h : I.FG) :
+    ∃ n : ℕ, I ^ n ≤ J := by
+  revert h'
+  apply Submodule.fg_induction _ _ _ _ _ I h
+  · intro x hJ
+    simp only [Ideal.submodule_span_eq, Ideal.span_le,
+      Set.singleton_subset_iff, SetLike.mem_coe] at hJ
+    obtain ⟨n, hn⟩ := hJ
+    refine ⟨n, by simpa [Ideal.span_singleton_pow, Ideal.span_le]⟩
+  · intros I₁ I₂ h₁ h₂ hJ
+    obtain ⟨n₁, hn₁⟩ := h₁ (le_sup_left.trans hJ)
+    obtain ⟨n₂, hn₂⟩ := h₂ (le_sup_right.trans hJ)
+    use n₁ + n₂
+    exact Ideal.sup_pow_add_le_pow_sup_pow.trans (sup_le hn₁ hn₂)
+
 end Ideal
 
 section ModuleAndAlgebra
@@ -536,6 +579,22 @@ lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[
   have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
   refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
   rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
+
+variable (R) in
+lemma _root_.Module.finite_of_finite [Finite R] [Module.Finite R M] : Finite M := by
+  obtain ⟨n, f, hf⟩ := exists_fin' R M; exact .of_surjective f hf
+
+@[deprecated (since := "2024-10-13")]
+alias _root_.FiniteDimensional.finite_of_finite := finite_of_finite
+
+-- See note [lower instance priority]
+instance (priority := 100) of_finite [Finite M] : Module.Finite R M := by
+  cases nonempty_fintype M
+  exact ⟨⟨Finset.univ, by rw [Finset.coe_univ]; exact Submodule.span_univ⟩⟩
+
+/-- A module over a finite ring has finite dimension iff it is finite. -/
+lemma _root_.Module.finite_iff_finite [Finite R] : Module.Finite R M ↔ Finite M :=
+  ⟨fun _ ↦ finite_of_finite R, fun _ ↦ .of_finite⟩
 
 theorem of_surjective [hM : Module.Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) :
     Module.Finite R N :=
@@ -620,6 +679,12 @@ instance span_singleton (x : M) : Module.Finite R (R ∙ x) :=
 instance span_finset (s : Finset M) : Module.Finite R (span R (s : Set M)) :=
   ⟨(Submodule.fg_top _).mpr ⟨s, rfl⟩⟩
 
+lemma _root_.Set.Finite.submoduleSpan [Finite R] {s : Set M} (hs : s.Finite) :
+    (Submodule.span R s : Set M).Finite := by
+  lift s to Finset M using hs
+  rw [Set.Finite, ← Module.finite_iff_finite (R := R)]
+  dsimp
+  infer_instance
 
 theorem Module.End.isNilpotent_iff_of_finite {R M : Type*} [CommSemiring R] [AddCommMonoid M]
     [Module R M] [Module.Finite R M] {f : End R M} :
@@ -630,7 +695,7 @@ theorem Module.End.isNilpotent_iff_of_finite {R M : Type*} [CommSemiring R] [Add
   use Finset.sup S g
   ext m
   have hm : m ∈ Submodule.span R S := by simp [hS]
-  induction hm using Submodule.span_induction' with
+  induction hm using Submodule.span_induction with
   | mem x hx => exact LinearMap.pow_map_zero_of_le (Finset.le_sup hx) (hg x)
   | zero => simp
   | add => simp_all
@@ -702,7 +767,7 @@ instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module 
   out := (TensorProduct.map₂_mk_top_top_eq_top R M N).subst (hM.out.map₂ _ hN.out)
 
 /-- If a free module is finite, then any arbitrary basis is finite. -/
-lemma Module.Finite.finite_basis {R M} [Semiring R] [Nontrivial R] [AddCommGroup M] [Module R M]
+lemma Module.Finite.finite_basis {R M} [Semiring R] [Nontrivial R] [AddCommMonoid M] [Module R M]
     {ι} [Module.Finite R M] (b : Basis ι R M) :
     _root_.Finite ι :=
   let ⟨s, hs⟩ := ‹Module.Finite R M›
@@ -825,3 +890,53 @@ end AlgHom
 
 instance Subalgebra.finite_bot {F E : Type*} [CommSemiring F] [Semiring E] [Algebra F E] :
     Module.Finite F (⊥ : Subalgebra F E) := Module.Finite.range (Algebra.linearMap F E)
+
+section NontrivialTensorProduct
+
+variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M] [Nontrivial M]
+
+lemma Module.exists_isPrincipal_quotient_of_finite  :
+    ∃ N : Submodule R M, N ≠ ⊤ ∧ Submodule.IsPrincipal (⊤ : Submodule R (M ⧸ N)) := by
+  obtain ⟨n, f, hf⟩ := @Module.Finite.exists_fin R M _ _ _ _
+  let s := { m : ℕ | Submodule.span R (f '' (Fin.val ⁻¹' (Set.Iio m))) ≠ ⊤ }
+  have hns : ∀ x ∈ s, x < n := by
+    refine fun x hx ↦ lt_iff_not_le.mpr fun e ↦ ?_
+    have : (Fin.val ⁻¹' Set.Iio x : Set (Fin n)) = Set.univ := by ext y; simpa using y.2.trans_le e
+    simp [s, this, hf] at hx
+  have hs₁ : s.Nonempty := ⟨0, by simp [s, show Set.Iio 0 = ∅ by ext; simp]⟩
+  have hs₂ : BddAbove s := ⟨n, fun x hx ↦ (hns x hx).le⟩
+  have hs := Nat.sSup_mem hs₁ hs₂
+  refine ⟨_, hs, ⟨⟨Submodule.mkQ _ (f ⟨_, hns _ hs⟩), ?_⟩⟩⟩
+  have := not_not.mp (not_mem_of_csSup_lt (Order.lt_succ _) hs₂)
+  rw [← Set.image_singleton, ← Submodule.map_span,
+    ← (Submodule.comap_injective_of_surjective (Submodule.mkQ_surjective _)).eq_iff,
+    Submodule.comap_map_eq, Submodule.ker_mkQ, Submodule.comap_top, ← this, ← Submodule.span_union,
+    Order.Iio_succ_eq_insert (sSup s), ← Set.union_singleton, Set.preimage_union, Set.image_union,
+    ← @Set.image_singleton _ _ f, Set.union_comm]
+  congr!
+  ext
+  simp [Fin.ext_iff]
+
+lemma Module.exists_surjective_quotient_of_finite :
+    ∃ (I : Ideal R) (f : M →ₗ[R] R ⧸ I), I ≠ ⊤ ∧ Function.Surjective f := by
+  obtain ⟨N, hN, ⟨x, hx⟩⟩ := Module.exists_isPrincipal_quotient_of_finite R M
+  let f := (LinearMap.toSpanSingleton R _ x).quotKerEquivOfSurjective
+    (by rw [← LinearMap.range_eq_top, ← LinearMap.span_singleton_eq_range, hx])
+  refine ⟨_, f.symm.toLinearMap.comp N.mkQ, fun e ↦ ?_, f.symm.surjective.comp N.mkQ_surjective⟩
+  obtain rfl : x = 0 := by simpa using LinearMap.congr_fun (LinearMap.ker_eq_top.mp e) 1
+  rw [ne_eq, ← Submodule.subsingleton_quotient_iff_eq_top, ← not_nontrivial_iff_subsingleton,
+    not_not] at hN
+  simp at hx
+
+open TensorProduct
+instance : Nontrivial (M ⊗[R] M) := by
+  obtain ⟨I, ϕ, hI, hϕ⟩ := Module.exists_surjective_quotient_of_finite R M
+  let ψ : M ⊗[R] M →ₗ[R] R ⧸ I :=
+    (LinearMap.mul' R (R ⧸ I)).comp (TensorProduct.map ϕ ϕ)
+  have : Nontrivial (R ⧸ I) := by
+    rwa [← not_subsingleton_iff_nontrivial, Submodule.subsingleton_quotient_iff_eq_top]
+  have : Function.Surjective ψ := by
+    intro x; obtain ⟨x, rfl⟩ := hϕ x; obtain ⟨y, hy⟩ := hϕ 1; exact ⟨x ⊗ₜ y, by simp [ψ, hy]⟩
+  exact this.nontrivial
+
+end NontrivialTensorProduct

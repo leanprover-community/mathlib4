@@ -259,10 +259,10 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     (convex_halfspace_re_gt 0).isPreconnected.eq_of_sq_eq ?_ ?_ (fun c hc => ?_) (fun {c} hc => ?_)
       (by simp : 0 < re (1 : ℂ)) ?_ hb
   · -- integral is continuous
-    exact ContinuousAt.continuousOn continuousAt_gaussian_integral
+    exact continuousOn_of_forall_continuousAt continuousAt_gaussian_integral
   · -- `(π / b) ^ (1 / 2 : ℂ)` is continuous
     refine
-      ContinuousAt.continuousOn fun b hb =>
+      continuousOn_of_forall_continuousAt fun b hb =>
         (continuousAt_cpow_const (Or.inl ?_)).comp (continuousAt_const.div continuousAt_id (nv hb))
     rw [div_re, ofReal_im, ofReal_re, zero_mul, zero_div, add_zero]
     exact div_pos (mul_pos pi_pos hb) (normSq_pos.mpr (nv hb))
@@ -335,7 +335,7 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
   rw [Gamma_eq_integral one_half_pos, ← integral_comp_rpow_Ioi_of_pos zero_lt_two]
   convert congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1) using 1
   · rw [← integral_mul_left]
-    refine setIntegral_congr measurableSet_Ioi fun x hx => ?_
+    refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
     dsimp only
     have : (x ^ (2 : ℝ)) ^ (1 / (2 : ℝ) - 1) = x⁻¹ := by
       rw [← rpow_mul (le_of_lt hx)]

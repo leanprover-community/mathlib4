@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Bool.Set
 import Mathlib.Data.Nat.Set
+import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
@@ -45,7 +46,7 @@ In lemma names,
 
 open Function OrderDual Set
 
-variable {α β β₂ γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
+variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
 
 @[simp] lemma iSup_ulift {ι : Type*} [SupSet α] (f : ULift ι → α) :
     ⨆ i : ULift ι, f i = ⨆ i, f (.up i) := by simp [iSup]; congr with x; simp
@@ -204,7 +205,7 @@ def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
     (isGLB_sInf : ∀ s : Set α, IsGLB s (sInf s)) : CompleteLattice α where
   __ := H1; __ := H2
   bot := sInf univ
-  bot_le x := (isGLB_sInf univ).1 trivial
+  bot_le _ := (isGLB_sInf univ).1 trivial
   top := sInf ∅
   le_top a := (isGLB_sInf ∅).2 <| by simp
   sup a b := sInf { x : α | a ≤ x ∧ b ≤ x }
@@ -212,16 +213,16 @@ def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
   le_inf a b c hab hac := by
     apply (isGLB_sInf _).2
     simp [*]
-  inf_le_right a b := (isGLB_sInf _).1 <| mem_insert_of_mem _ <| mem_singleton _
-  inf_le_left a b := (isGLB_sInf _).1 <| mem_insert _ _
+  inf_le_right _ _ := (isGLB_sInf _).1 <| mem_insert_of_mem _ <| mem_singleton _
+  inf_le_left _ _ := (isGLB_sInf _).1 <| mem_insert _ _
   sup_le a b c hac hbc := (isGLB_sInf _).1 <| by simp [*]
-  le_sup_left a b := (isGLB_sInf _).2 fun x => And.left
-  le_sup_right a b := (isGLB_sInf _).2 fun x => And.right
-  le_sInf s a ha := (isGLB_sInf s).2 ha
-  sInf_le s a ha := (isGLB_sInf s).1 ha
+  le_sup_left _ _ := (isGLB_sInf _).2 fun _ => And.left
+  le_sup_right _ _ := (isGLB_sInf _).2 fun _ => And.right
+  le_sInf s _ ha := (isGLB_sInf s).2 ha
+  sInf_le s _ ha := (isGLB_sInf s).1 ha
   sSup s := sInf (upperBounds s)
-  le_sSup s a ha := (isGLB_sInf (upperBounds s)).2 fun b hb => hb ha
-  sSup_le s a ha := (isGLB_sInf (upperBounds s)).1 ha
+  le_sSup s _ ha := (isGLB_sInf (upperBounds s)).2 fun _ hb => hb ha
+  sSup_le s _ ha := (isGLB_sInf (upperBounds s)).1 ha
 
 /-- Any `CompleteSemilatticeInf` is in fact a `CompleteLattice`.
 
@@ -251,22 +252,22 @@ def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
     (isLUB_sSup : ∀ s : Set α, IsLUB s (sSup s)) : CompleteLattice α where
   __ := H1; __ := H2
   top := sSup univ
-  le_top x := (isLUB_sSup univ).1 trivial
+  le_top _ := (isLUB_sSup univ).1 trivial
   bot := sSup ∅
   bot_le x := (isLUB_sSup ∅).2 <| by simp
   sup a b := sSup {a, b}
   sup_le a b c hac hbc := (isLUB_sSup _).2 (by simp [*])
-  le_sup_left a b := (isLUB_sSup _).1 <| mem_insert _ _
-  le_sup_right a b := (isLUB_sSup _).1 <| mem_insert_of_mem _ <| mem_singleton _
+  le_sup_left _ _ := (isLUB_sSup _).1 <| mem_insert _ _
+  le_sup_right _ _ := (isLUB_sSup _).1 <| mem_insert_of_mem _ <| mem_singleton _
   inf a b := sSup { x | x ≤ a ∧ x ≤ b }
   le_inf a b c hab hac := (isLUB_sSup _).1 <| by simp [*]
-  inf_le_left a b := (isLUB_sSup _).2 fun x => And.left
-  inf_le_right a b := (isLUB_sSup _).2 fun x => And.right
+  inf_le_left _ _ := (isLUB_sSup _).2 fun _ => And.left
+  inf_le_right _ _ := (isLUB_sSup _).2 fun _ => And.right
   sInf s := sSup (lowerBounds s)
-  sSup_le s a ha := (isLUB_sSup s).2 ha
-  le_sSup s a ha := (isLUB_sSup s).1 ha
-  sInf_le s a ha := (isLUB_sSup (lowerBounds s)).2 fun b hb => hb ha
-  le_sInf s a ha := (isLUB_sSup (lowerBounds s)).1 ha
+  sSup_le s _ ha := (isLUB_sSup s).2 ha
+  le_sSup s _ ha := (isLUB_sSup s).1 ha
+  sInf_le s _ ha := (isLUB_sSup (lowerBounds s)).2 fun _ hb => hb ha
+  le_sInf s _ ha := (isLUB_sSup (lowerBounds s)).1 ha
 
 /-- Any `CompleteSemilatticeSup` is in fact a `CompleteLattice`.
 
@@ -362,7 +363,7 @@ theorem ofDual_iInf [SupSet α] (f : ι → αᵒᵈ) : ofDual (⨅ i, f i) = �
 
 end OrderDual
 
-variable [CompleteLattice α] {s t : Set α} {a b : α}
+variable [CompleteLattice α] {s t : Set α} {b : α}
 
 theorem sInf_le_sSup (hs : s.Nonempty) : sInf s ≤ sSup s :=
   isGLB_le_isLUB (isGLB_sInf s) (isLUB_sSup s) hs
@@ -468,7 +469,7 @@ end
 
 section CompleteLinearOrder
 
-variable [CompleteLinearOrder α] {s t : Set α} {a b : α}
+variable [CompleteLinearOrder α] {s : Set α} {a b : α}
 
 theorem lt_sSup_iff : b < sSup s ↔ ∃ a ∈ s, b < a :=
   lt_isLUB_iff <| isLUB_sSup s
@@ -616,7 +617,7 @@ end InfSet
 
 section
 
-variable [CompleteLattice α] {f g s t : ι → α} {a b : α}
+variable [CompleteLattice α] {f g s : ι → α} {a b : α}
 
 theorem le_iSup (f : ι → α) (i : ι) : f i ≤ iSup f :=
   le_sSup ⟨i, rfl⟩
@@ -1072,6 +1073,41 @@ theorem inf_biInf {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i,
     (a ⊓ ⨅ (i) (h : p i), f i h) = ⨅ (i) (h : p i), a ⊓ f i h :=
   @sup_biSup αᵒᵈ ι _ p f _ h
 
+lemma biSup_lt_eq_iSup {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
+    ⨆ (i) (j < i), f j = ⨆ i, f i := by
+  apply le_antisymm
+  · exact iSup_le fun _ ↦ iSup₂_le fun _ _ ↦ le_iSup _ _
+  · refine iSup_le fun j ↦ ?_
+    obtain ⟨i, jlt⟩ := exists_gt j
+    exact le_iSup_of_le i (le_iSup₂_of_le j jlt le_rfl)
+
+lemma biSup_le_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} :
+    ⨆ (i) (j ≤ i), f j = ⨆ i, f i := by
+  apply le_antisymm
+  · exact iSup_le fun _ ↦ iSup₂_le fun _ _ ↦ le_iSup _ _
+  · exact iSup_le fun j ↦ le_iSup_of_le j (le_iSup₂_of_le j le_rfl le_rfl)
+
+lemma biInf_lt_eq_iInf {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
+    ⨅ (i) (j < i), f j = ⨅ i, f i :=
+  biSup_lt_eq_iSup (α := αᵒᵈ)
+
+lemma biInf_le_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≤ i), f j = ⨅ i, f i :=
+  biSup_le_eq_iSup (α := αᵒᵈ)
+
+lemma biSup_gt_eq_iSup {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
+    ⨆ (i) (j > i), f j = ⨆ i, f i :=
+  biSup_lt_eq_iSup (ι := ιᵒᵈ)
+
+lemma biSup_ge_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} : ⨆ (i) (j ≥ i), f j = ⨆ i, f i :=
+  biSup_le_eq_iSup (ι := ιᵒᵈ)
+
+lemma biInf_gt_eq_iInf {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
+    ⨅ (i) (j > i), f j = ⨅ i, f i :=
+  biInf_lt_eq_iInf (ι := ιᵒᵈ)
+
+lemma biInf_ge_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≥ i), f j = ⨅ i, f i :=
+  biInf_le_eq_iInf (ι := ιᵒᵈ)
+
 /-! ### `iSup` and `iInf` under `Prop` -/
 
 
@@ -1227,7 +1263,8 @@ theorem iInf_pair {f : β → α} {a b : β} : ⨅ x ∈ ({a, b} : Set β), f x 
   rw [iInf_insert, iInf_singleton]
 
 theorem iSup_image {γ} {f : β → γ} {g : γ → α} {t : Set β} :
-    ⨆ c ∈ f '' t, g c = ⨆ b ∈ t, g (f b) := by rw [← sSup_image, ← sSup_image, ← image_comp]; rfl
+    ⨆ c ∈ f '' t, g c = ⨆ b ∈ t, g (f b) := by
+  rw [← sSup_image, ← sSup_image, ← image_comp, comp_def]
 
 theorem iInf_image :
     ∀ {γ} {f : β → γ} {g : γ → α} {t : Set β}, ⨅ c ∈ f '' t, g c = ⨅ b ∈ t, g (f b) :=
@@ -1325,6 +1362,14 @@ theorem biSup_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
 theorem biInf_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
     ⨅ x ∈ s ×ˢ t, f x = ⨅ (a ∈ s) (b ∈ t), f (a, b) :=
   @biSup_prod αᵒᵈ _ _ _ _ _ _
+
+theorem iSup_image2 {γ δ} (f : β → γ → δ) (s : Set β) (t : Set γ) (g : δ → α) :
+    ⨆ d ∈ image2 f s t, g d = ⨆ b ∈ s, ⨆ c ∈ t, g (f b c) := by
+  rw [← image_prod, iSup_image, biSup_prod]
+
+theorem iInf_image2 {γ δ} (f : β → γ → δ) (s : Set β) (t : Set γ) (g : δ → α) :
+    ⨅ d ∈ image2 f s t, g d = ⨅ b ∈ s, ⨅ c ∈ t, g (f b c) :=
+  iSup_image2 f s t (toDual ∘ g)
 
 theorem iSup_sum {f : β ⊕ γ → α} : ⨆ x, f x = (⨆ i, f (Sum.inl i)) ⊔ ⨆ j, f (Sum.inr j) :=
   eq_of_forall_ge_iff fun c => by simp only [sup_le_iff, iSup_le_iff, Sum.forall]
@@ -1539,7 +1584,7 @@ theorem binary_relation_sInf_iff {α β : Type*} (s : Set (α → β → Prop)) 
 
 section CompleteLattice
 
-variable {ι : Sort*} [Preorder α] [CompleteLattice β] {s : Set (α → β)} {f : ι → α → β}
+variable [Preorder α] [CompleteLattice β] {s : Set (α → β)} {f : ι → α → β}
 
 protected lemma Monotone.sSup (hs : ∀ f ∈ s, Monotone f) : Monotone (sSup s) :=
   fun _ _ h ↦ iSup_mono fun f ↦ hs f f.2 h

@@ -3,8 +3,9 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Algebra.Module.Opposite
 import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 
 /-!
 # Multiplicative action on the completion of a uniform space

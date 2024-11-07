@@ -19,12 +19,12 @@ open Set Filter TopologicalSpace Topology Function
 
 open OrderDual (toDual ofDual)
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 section ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
-  [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderClosedTopology β] [Nonempty γ]
+  [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderClosedTopology β]
 
 /-- A monotone function continuous at the supremum of a nonempty set sends this supremum to
 the supremum of the image of this set. -/
@@ -150,7 +150,7 @@ end ConditionallyCompleteLinearOrder
 section CompleteLinearOrder
 
 variable [CompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] [CompleteLinearOrder β]
-  [TopologicalSpace β] [OrderClosedTopology β] [Nonempty γ]
+  [TopologicalSpace β] [OrderClosedTopology β]
 
 theorem sSup_mem_closure {s : Set α} (hs : s.Nonempty) : sSup s ∈ closure s :=
   (isLUB_sSup s).mem_closure hs
@@ -255,7 +255,6 @@ end CompleteLinearOrder
 section ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
-  [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderClosedTopology β] [Nonempty γ]
 
 theorem csSup_mem_closure {s : Set α} (hs : s.Nonempty) (B : BddAbove s) : sSup s ∈ closure s :=
   (isLUB_csSup hs B).mem_closure hs

@@ -564,9 +564,9 @@ theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F 
   obtain ⟨n, y, H, hp⟩ := hM.eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible q hI hD
   have hF := multiplicity_finite_of_degree_pos_of_monic (degree_pos_of_irreducible hI) hM hm.ne_zero
   classical
-  have hne := (multiplicity.pos_of_dvd hF hf).ne'
+  have hne := (multiplicity_pos_of_dvd hf).ne'
   refine ⟨_, n, y, hne, H, ?_⟩
-  obtain ⟨c, hf, H⟩ := multiplicity.exists_eq_pow_mul_and_not_dvd hF
+  obtain ⟨c, hf, H⟩ := hF.exists_eq_pow_mul_and_not_dvd
   rw [hf, natSepDegree_mul_of_isCoprime _ c <| IsCoprime.pow_left <|
     (hI.coprime_or_dvd c).resolve_right H, natSepDegree_pow_of_ne_zero _ hne, hD,
     add_right_eq_self, natSepDegree_eq_zero_iff] at h
@@ -639,10 +639,10 @@ theorem natSepDegree_eq_one_iff_eq_X_sub_C_pow : (minpoly F x).natSepDegree = 1 
     rw [minpoly.aeval, map_sub, map_pow, aeval_X, aeval_C, sub_eq_zero, eq_comm] at hx
     use n
     rw [h, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, hx, map_pow,
-      ← sub_pow_expChar_pow_of_commute E[X] X (C x) (commute_X _)]
+      ← sub_pow_expChar_pow_of_commute _ _ (commute_X _)]
   apply_fun constantCoeff at h
   simp_rw [map_pow, map_sub, constantCoeff_apply, coeff_map, coeff_X_zero, coeff_C_zero] at h
-  rw [zero_sub, neg_pow, ExpChar.neg_one_pow_expChar_pow] at h
+  rw [zero_sub, neg_pow, neg_one_pow_expChar_pow] at h
   exact ⟨n, -(minpoly F x).coeff 0, by rw [map_neg, h, neg_mul, one_mul, neg_neg]⟩
 
 end minpoly
