@@ -213,6 +213,8 @@ noncomputable def abs (a : A) := sqrt (star a * a)
 example (a : A) : abs a = 0 ↔ a = 0 := by
   constructor
   · intro h
+    simp only [abs] at h
+    --rw [Real.sqrt_eq_iff_eq_sq] at h (have to work with fcnl calculus!)
     sorry
   · exact fun h ↦ by simp only [h, abs, star_zero, mul_zero, sqrt_zero]
 
