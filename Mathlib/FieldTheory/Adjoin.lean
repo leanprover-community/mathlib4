@@ -1465,11 +1465,8 @@ open IntermediateField
 
 /-- If `y : L` is a root of `minpoly K x`, then `minpoly K y = minpoly K x`. -/
 theorem eq_of_root {x y : L} (hx : IsAlgebraic K x)
-    (h_ev : (Polynomial.aeval y) (minpoly K x) = 0) : minpoly K y = minpoly K x := by
-  have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, h_ev⟩
-  exact Polynomial.eq_of_monic_of_associated (monic hy.isIntegral) (monic hx.isIntegral)
-    (Irreducible.associated_of_dvd (irreducible hy.isIntegral)
-      (irreducible hx.isIntegral) (dvd K y h_ev))
+    (h_ev : Polynomial.aeval y (minpoly K x) = 0) : minpoly K y = minpoly K x :=
+  ((eq_iff_aeval_minpoly_eq_zero hx.isIntegral).mpr h_ev).symm
 
 /-- The canonical `algEquiv` between `K⟮x⟯`and `K⟮y⟯`, sending `x` to `y`, where `x` and `y` have
   the same minimal polynomial over `K`. -/
