@@ -15,6 +15,11 @@ import Mathlib.Tactic.Ring
 # Small tripling implies small powers
 
 This file shows that a set with small tripling has small powers, even in non-abelian groups.
+
+## See also
+
+In abelian groups, the Plünnecke-Ruzsa inequality is the stronger statement that small doubling
+implies small powers. See `Mathlib.Combinatorics.Additive.PluenneckeRuzsa`.
 -/
 
 open Fin
