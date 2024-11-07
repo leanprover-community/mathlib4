@@ -628,6 +628,9 @@ theorem of_apply : (of f h0 h1 hadd hmul) r = f r := rfl
 def toValuation : AddValuation R Γ₀ ≃ Valuation R (Multiplicative Γ₀ᵒᵈ) :=
   Equiv.refl _
 
+@[deprecated (since := "2024-11-07")]
+alias valuation := toValuation
+
 /-- The `AddValuation` associated to a `Valuation`.
 -/
 def ofValuation : Valuation R (Multiplicative Γ₀ᵒᵈ) ≃ AddValuation R Γ₀ :=

@@ -9,44 +9,6 @@ import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.Algebra.Squarefree.Basic
 
-lemma injective_add_ne_top {R : Type*} [LinearOrderedAddCommGroupWithTop R]
-    (b : R) (h : b ≠ ⊤) :
-    Function.Injective (fun x ↦ x + b) := by
-  intro x y h2
-  apply_fun (· + -b) at h2
-  simp only [add_assoc, LinearOrderedAddCommGroupWithTop.add_neg_cancel _ h, add_zero] at h2
-  exact h2
-
-lemma StrictMono.add_ne_top {R : Type*} [LinearOrderedAddCommGroupWithTop R]
-    (b : R) (h : b ≠ ⊤) :
-    StrictMono (fun x ↦ x + b) := by
-  apply Monotone.strictMono_of_injective
-  · apply Monotone.add_const monotone_id
-  · apply injective_add_ne_top _ h
-
-lemma sub_pos' (R : Type*) [LinearOrderedAddCommGroupWithTop R] (a b : R) :
-    0 < a - b ↔ b < a ∨ b = ⊤ := by
-  constructor
-  · intro h
-    by_cases h2 : b = ⊤
-    · exact .inr h2
-    · left
-      apply StrictMono.add_ne_top _ h2 at h
-      simp only [zero_add] at h
-      rw [sub_eq_add_neg, add_assoc, add_comm (-b),
-        LinearOrderedAddCommGroupWithTop.add_neg_cancel _ h2, add_zero] at h
-      exact h
-  · intro h
-    rcases h with h | h
-    · convert StrictMono.add_ne_top (-b) (by sorry) h using 1
-      simp [LinearOrderedAddCommGroupWithTop.add_neg_cancel _ h.ne_top]
-      simp [sub_eq_add_neg]
-    · rw [h]
-      simp only [sub_eq_add_neg, LinearOrderedAddCommGroupWithTop.neg_top, add_top]
-      apply lt_of_le_of_ne
-      simp
-      exact Ne.symm sorry
-
 /-!
 # `multiplicity` of a prime in an integral domain as an additive valuation
 -/
@@ -60,10 +22,16 @@ noncomputable def multiplicity (hp : Prime p) : AddValuation R ℕ∞ :=
   AddValuation.of (emultiplicity p) (emultiplicity_zero _) (emultiplicity_of_one_right hp.not_unit)
     (fun _ _ => min_le_emultiplicity_add) fun _ _ => emultiplicity_mul hp
 
+@[deprecated (since := "2024-11-07")]
+alias _root_.multiplicity_addValuation := multiplicity
+
 @[simp]
 theorem multiplicity_apply {hp : Prime p} {r : R} :
     multiplicity hp r = emultiplicity p r :=
   rfl
+
+@[deprecated (since := "2024-11-07")]
+alias _root_.multiplicity_addValuation_apply := multiplicity_apply
 
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] [UniqueFactorizationMonoid R]
 variable (p : R) [hp : Fact (Prime p)]
@@ -123,7 +91,8 @@ open IsFractionRing
 lemma adicValuation_pos_iff (a : K) :
     0 < adicValuation p a ↔ p ∣ num R a := by
   nth_rw 1 [← mk'_num_den' (A := R) a]
-  simp only [map_div, adicValuation_coe, sub_pos', WithTop.map_eq_top_iff]
+  simp only [map_div, adicValuation_coe, LinearOrderedAddCommGroupWithTop.sub_pos,
+    WithTop.map_eq_top_iff]
   rw [emultiplicity_eq_top]
   have : multiplicity.Finite p (den R a) := multiplicity.finite_prime_left hp.out (by simp)
   simp only [this, not_true_eq_false, or_false]
