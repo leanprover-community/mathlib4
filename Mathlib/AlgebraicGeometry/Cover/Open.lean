@@ -29,6 +29,7 @@ namespace AlgebraicGeometry
 
 namespace Scheme
 
+/-- An open cover of a scheme `X` is a cover where all component maps are open immersions. -/
 abbrev OpenCover (X : Scheme.{u}) : Type _ := Cover.{v} @IsOpenImmersion X
 
 @[deprecated (since := "2024-06-23")] alias OpenCover.Covers := Cover.covers
@@ -115,7 +116,7 @@ instance {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) (j : 𝒰.J) : IsOpenImmers
   𝒰.map_prop j
 
 /-- The open cover associated to an affine open cover. -/
-@[simps!]
+@[simps! J obj map f covers]
 def openCover {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) : X.OpenCover :=
   AffineCover.cover 𝒰
 
