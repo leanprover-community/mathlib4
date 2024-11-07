@@ -647,7 +647,7 @@ lemma ofValuation_toValuation : ofValuation (toValuation v) = v := rfl
 
 @[simp]
 lemma toValuation_ofValuation (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) :
-  toValuation (ofValuation v) = v := rfl
+    toValuation (ofValuation v) = v := rfl
 
 @[simp]
 theorem toValuation_apply (r : R) :
