@@ -3,12 +3,11 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
+import Mathlib.Algebra.Module.Submodule.IterateMapComap
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.Order.PartialSups
-import Mathlib.Algebra.Module.Submodule.IterateMapComap
 import Mathlib.RingTheory.OrzechProperty
-import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Noetherian rings and modules
@@ -539,11 +538,6 @@ instance isNoetherianRing_range {R} [Ring R] {S} [Ring S] (f : R →+* S) [IsNoe
 theorem isNoetherianRing_of_ringEquiv (R) [Ring R] {S} [Ring S] (f : R ≃+* S) [IsNoetherianRing R] :
     IsNoetherianRing S :=
   isNoetherianRing_of_surjective R S f.toRingHom f.toEquiv.surjective
-
-theorem IsNoetherianRing.isNilpotent_nilradical (R : Type*) [CommRing R] [IsNoetherianRing R] :
-    IsNilpotent (nilradical R) := by
-  obtain ⟨n, hn⟩ := Ideal.exists_radical_pow_le_of_fg (⊥ : Ideal R) (IsNoetherian.noetherian _)
-  exact ⟨n, eq_bot_iff.mpr hn⟩
 
 /-- Any Noetherian ring satisfies Orzech property.
 See also `IsNoetherian.injective_of_surjective_of_submodule` and
