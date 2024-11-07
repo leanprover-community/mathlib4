@@ -74,6 +74,10 @@ instance : NormedField v.completion :=
 instance : Algebra K v.completion :=
   inferInstanceAs <| Algebra (WithAbs v.1) v.1.completion
 
+/-- The completion of a number field at an infinite place is locally compact. -/
+instance locallyCompactSpace : LocallyCompactSpace (v.completion) :=
+  AbsoluteValue.Completion.locallyCompactSpace v.norm_embedding_eq
+
 /-- The embedding associated to an infinite place extended to an embedding `v.completion →+* ℂ`. -/
 def extensionEmbedding : v.completion →+* ℂ := extensionEmbedding_of_comp v.norm_embedding_eq
 
@@ -98,10 +102,6 @@ theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
 theorem isometry_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
     Isometry (extensionEmbedding_of_isReal hv) :=
   Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp <| v.norm_embedding_of_isReal hv)
-
-/-- The completion of a number field at an infinite place is locally compact. -/
-instance locallyCompactSpace : LocallyCompactSpace (v.completion) :=
-  AbsoluteValue.Completion.locallyCompactSpace v.norm_embedding_eq
 
 /-- The embedding `v.completion →+* ℂ` has closed image inside `ℂ`. -/
 theorem isClosed_image_extensionEmbedding : IsClosed (Set.range (extensionEmbedding v)) :=
