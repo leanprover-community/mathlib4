@@ -21,4 +21,6 @@ then
   GHevent=pull_request
 fi
 
-printf $'title<<EOF\n${{ format(\'{0} requested a maintainer %s from %s on PR [#{1}]({2}):\', github.event.%s.user.login, github.event.%s.number, github.event.%s.html_url ) }}\nEOF' "${mergeOrDelegate}" "${GHsource}" "${GHsource}" "${GHevent}" "${GHevent}"
+#printf $'title<<EOF\n${{ format(\'{0} requested a maintainer %s from %s on PR [#{1}]({2}):\', github.event.%s.user.login, github.event.%s.number, github.event.%s.html_url ) }}\nEOF' "${mergeOrDelegate}" "${GHsource}" "${GHsource}" "${GHevent}" "${GHevent}"
+
+printf $'title<<EOF\ntext merge or delegate: "%s", GHsource: "%s", GHevent: "%s"\nEOF' "${mergeOrDelegate}" "${GHsource}" "${GHevent}"
