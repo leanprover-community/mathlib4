@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 # Chosen finite products on sheaves
 
 In this file, we put a `ChosenFiniteProducts` instance on `A`-valued sheaves for a
-`GrothendieckTopology` whenever `A` has a ChosenFiniteProducts instance.
+`GrothendieckTopology` whenever `A` has a `ChosenFiniteProducts` instance.
 -/
 
 
