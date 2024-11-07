@@ -35,6 +35,7 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 -/
 
+assert_not_exists Matrix
 
 open Function (Surjective)
 open Finsupp
