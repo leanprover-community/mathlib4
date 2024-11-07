@@ -7,6 +7,7 @@ import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity.Finset
 import Mathlib.Tactic.Ring
@@ -60,14 +61,15 @@ private lemma inductive_claim (hm : 3 ≤ m)
       · exact ih (Fin.cons 1 <| tail <| tail ε) <| Fin.cons (by simp) (by simp [hε, Fin.tail])
     _ = #A * (k ^ m * #A) := by rw [← pow_sub_one_mul hm₀]; ring
 
-private lemma small_neg_pos_pos (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A ^ 2) ≤ K ^ 2 * #A := by
+private lemma small_neg_pos_pos (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A * A) ≤ K ^ 2 * #A := by
   obtain rfl | hA₀ := A.eq_empty_or_nonempty
   · simp
   have : 0 ≤ K := nonneg_of_mul_nonneg_left (hA.trans' <| by positivity) (by positivity)
   refine le_of_mul_le_mul_left ?_ (by positivity : (0 : ℝ) < #A)
   calc
-    (#A * #(A⁻¹ * A ^ 2) : ℝ) ≤ #(A * A) * #(A * A ^ 2) := by
-      norm_cast; exact ruzsa_triangle_inequality_invMul_mul_mul A A (A ^ 2)
+    (#A * #(A⁻¹ * A * A) : ℝ) = #A * #(A⁻¹ * (A * A)) := by rw [mul_assoc]
+    _ ≤ #(A * A) * #(A * (A * A)) := by
+      norm_cast; exact ruzsa_triangle_inequality_invMul_mul_mul A A (A * A)
     _ = #(A ^ 2) * #(A ^ 3) := by simp [pow_succ']
     _ ≤ (K * #A) * (K * #A) := by
       gcongr
@@ -76,19 +78,20 @@ private lemma small_neg_pos_pos (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A ^ 2) �
         _ ≤ K * #A := hA
     _ = #A * (K ^ 2 * #A) := by ring
 
-private lemma small_neg_neg_pos (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ ^ 2 * A) ≤ K ^ 2 * #A := by
+private lemma small_neg_neg_pos (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A⁻¹ * A) ≤ K ^ 2 * #A := by
   rw [← card_inv]
-  simpa using small_neg_pos_pos (A := A) (K := K) (by simpa)
+  simpa [mul_assoc] using small_neg_pos_pos (A := A) (K := K) (by simpa)
 
-private lemma small_pos_neg_neg (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ ^ 2) ≤ K ^ 2 * #A := by
+private lemma small_pos_neg_neg (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * A⁻¹) ≤ K ^ 2 * #A := by
   obtain rfl | hA₀ := A.eq_empty_or_nonempty
   · simp
   have : 0 ≤ K := nonneg_of_mul_nonneg_left (hA.trans' <| by positivity) (by positivity)
   refine le_of_mul_le_mul_left ?_ (by positivity : (0 : ℝ) < #A)
   calc
-    (#A * #(A * A⁻¹ ^ 2) : ℝ) ≤ #(A * A) * #(A ^ 2 * A) := by
+    (#A * #(A * A⁻¹ * A⁻¹) : ℝ) = (#A * #(A * (A⁻¹ * A⁻¹)) : ℝ) := by rw [mul_assoc]
+    _ ≤ #(A * A) * #(A * A * A) := by
       norm_cast
-      have := ruzsa_triangle_inequality_invMul_mul_mul A⁻¹ A⁻¹ (A⁻¹ ^ 2)
+      have := ruzsa_triangle_inequality_invMul_mul_mul A⁻¹ A⁻¹ (A⁻¹ * A⁻¹)
       simpa only [card_inv, inv_inv, inv_pow, ← mul_inv_rev] using this
     _ = #(A ^ 2) * #(A ^ 3) := by simp [pow_succ]
     _ ≤ (K * #A) * (K * #A) := by
@@ -98,9 +101,9 @@ private lemma small_pos_neg_neg (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ ^ 2) �
         _ ≤ K * #A := hA
     _ = #A * (K ^ 2 * #A) := by ring
 
-private lemma small_pos_pos_neg (hA : #(A ^ 3) ≤ K * #A) : #(A ^ 2 * A⁻¹) ≤ K ^ 2 * #A := by
+private lemma small_pos_pos_neg (hA : #(A ^ 3) ≤ K * #A) : #(A * A * A⁻¹) ≤ K ^ 2 * #A := by
   rw [← card_inv]
-  simpa using small_pos_neg_neg (A := A) (K := K) (by simpa)
+  simpa [mul_assoc] using small_pos_neg_neg (A := A) (K := K) (by simpa)
 
 private lemma small_pos_neg_pos (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * A) ≤ K ^ 3 * #A := by
   obtain rfl | hA₀ := A.eq_empty_or_nonempty
@@ -110,7 +113,7 @@ private lemma small_pos_neg_pos (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * A) �
   calc
     (#A * #(A * A⁻¹ * A) : ℝ) ≤ #(A * (A * A⁻¹)) * #(A * A) := by
       norm_cast; simpa using ruzsa_triangle_inequality_invMul_mul_mul (A * A⁻¹) A A
-    _ = #(A ^ 2 * A⁻¹) * #(A ^ 2) := by simp [pow_succ, mul_assoc]
+    _ = #(A  * A * A⁻¹) * #(A ^ 2) := by simp [pow_succ, mul_assoc]
     _ ≤ (K ^ 2 * #A) * (K * #A) := by
       gcongr
       · exact small_pos_pos_neg hA
@@ -145,48 +148,22 @@ lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ 
     succ_zero_eq_one, succ_one_eq_two, List.prod_cons, prod_nil, mul_one, ← mul_assoc]
   simp only [zero_le_one, abs_eq, Int.reduceNeg, forall_iff_succ, isValue, succ_zero_eq_one,
     succ_one_eq_two, IsEmpty.forall_iff, and_true] at hδ
-  have aux₁₃ : K * #A ≤ K ^ 3 * #A :=
-    calc
-      _ = K ^ 1 * #A := by simp
-      _ ≤ K ^ 3 * #A := by
-        gcongr
-        · exact hK₁
-        · norm_num
-  have aux₂₃ : K ^ 2 * #A ≤ K ^ 3 * #A := by
+  have : K ≤ K ^ 3 := le_self_pow₀ hK₁ (by omega)
+  have : K ^ 2 ≤ K ^ 3 := by
     gcongr
     · exact hK₁
     · norm_num
-  obtain ⟨hδ₀ | hδ₀, hδ₁ | hδ₁, hδ₂ | hδ₂⟩ := hδ
-  · calc
-      _ = (#(A ^ 3) : ℝ) := by simp [*, pow_succ]
-      _ ≤ K * #A := hA
-      _ ≤ K ^ 3 * #A := aux₁₃
-  · calc
-      _ = (#(A ^ 2 * A⁻¹) : ℝ) := by simp [*, sq]
-      _ ≤ K ^ 2 * #A := small_pos_pos_neg hA
-      _ ≤ K ^ 3 * #A := aux₂₃
-  · calc
-      _ = (#(A * A⁻¹ * A) : ℝ) := by simp [*]
-      _ ≤ K ^ 3 * #A := small_pos_neg_pos hA
-  · calc
-      _ = (#(A * A⁻¹ ^ 2) : ℝ) := by simp [*, sq, mul_assoc]
-      _ ≤ K ^ 2 * #A := small_pos_neg_neg hA
-      _ ≤ K ^ 3 * #A := aux₂₃
-  · calc
-      _ = (#(A⁻¹ * A ^ 2) : ℝ) := by simp [*, sq, mul_assoc]
-      _ ≤ K ^ 2 * #A := small_neg_pos_pos hA
-      _ ≤ K ^ 3 * #A := aux₂₃
-  · calc
-      _ = (#(A⁻¹ * A * A⁻¹) : ℝ) := by simp [*]
-      _ ≤ K ^ 3 * #A := small_neg_pos_neg hA
-  · calc
-      _ = (#(A⁻¹ ^ 2 * A) : ℝ) := by simp [*, sq]
-      _ ≤ K ^ 2 * #A := small_neg_neg_pos hA
-      _ ≤ K ^ 3 * #A := aux₂₃
-  · calc
-      _ = (#(A ^ 3) : ℝ) := by simp [*, pow_succ', ← mul_inv_rev]
-      _ ≤ K * #A := hA
-      _ ≤ K ^ 3 * #A := aux₁₃
+  obtain ⟨hδ₀ | hδ₀, hδ₁ | hδ₁, hδ₂ | hδ₂⟩ := hδ <;> simp [hδ₀, hδ₁, hδ₂]
+  · simp [pow_succ] at hA
+    nlinarith
+  · nlinarith [small_pos_pos_neg hA]
+  · nlinarith [small_pos_neg_pos hA]
+  · nlinarith [small_pos_neg_neg hA]
+  · nlinarith [small_neg_pos_pos hA]
+  · nlinarith [small_neg_pos_neg hA]
+  · nlinarith [small_neg_neg_pos hA]
+  · simp [*, pow_succ', ← mul_inv_rev] at hA ⊢
+    nlinarith
 
 /-- If `A` is symmetric (`A⁻¹ = A`) and has small tripling, then `A` has small powers,
 in the sense that `|A ^ m|` is at most `|A|` times a constant exponential in `m`.
