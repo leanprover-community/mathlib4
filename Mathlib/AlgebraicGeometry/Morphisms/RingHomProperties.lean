@@ -421,6 +421,14 @@ lemma of_isLocalAtSource_of_isLocalAtTarget [IsLocalAtTarget P] [IsLocalAtSource
     rw [HasRingHomProperty.Spec_iff (P := Q)]
     rfl
 
+lemma stalkwise {P} (hP : RingHom.RespectsIso P) :
+    HasRingHomProperty (stalkwise P) fun {_ S _ _} φ ↦
+      ∀ (p : Ideal S) (_ : p.IsPrime), P (Localization.localRingHom _ p φ rfl) := by
+  have := stalkwiseIsLocalAtTarget_of_respectsIso hP
+  have := stalkwise_isLocalAtSource_of_respectsIso hP
+  convert of_isLocalAtSource_of_isLocalAtTarget (P := AlgebraicGeometry.stalkwise P) with R S _ _ φ
+  exact (stalkwise_Spec_iff hP (CommRingCat.ofHom φ)).symm
+
 lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
     P.IsStableUnderComposition where
   comp_mem {X Y Z} f g hf hg := by

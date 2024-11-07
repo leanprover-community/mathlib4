@@ -294,8 +294,6 @@ lemma stalkwiseIsLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P) :
 /-- If `P` respects isos, then `stalkwise P` is local at the source. -/
 lemma stalkwise_isLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
     IsLocalAtSource (stalkwise P) := by
-  have hP' : (RingHom.toMorphismProperty P).RespectsIso :=
-    RingHom.toMorphismProperty_respectsIso_iff.mp hP
   letI := stalkwise_respectsIso hP
   apply IsLocalAtSource.mk'
   · intro X Y f U hf x
