@@ -34,14 +34,14 @@ This file defines partial isomorphisms between first-order structures.
 
 -/
 
-universe u v w w'
+universe u v w w' w''
 
 namespace FirstOrder
 
 namespace Language
 
-variable (L : Language.{u, v}) (M : Type w) (N : Type w')
-variable [L.Structure M] [L.Structure N]
+variable (L : Language.{u, v}) (M : Type w) (N : Type w') (P : Type w'')
+variable [L.Structure M] [L.Structure N] [L.Structure P]
 
 open FirstOrder Structure Substructure
 
@@ -58,7 +58,7 @@ structure PartialEquiv where
 scoped[FirstOrder] notation:25 M " ≃ₚ[" L "] " N =>
   FirstOrder.Language.PartialEquiv L M N
 
-variable {L M N}
+variable {L M N P}
 
 namespace PartialEquiv
 

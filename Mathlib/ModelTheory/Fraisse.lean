@@ -612,49 +612,49 @@ theorem system_eq {n : ℕ} {m : ℕ} (h : m ≤ n) :
           · apply system_eq
             assumption
           · cases h
-            rfl'
-            contradiction
+            · rfl'
+            · contradiction
 
-theorem system_eq' {n : ℕ} {m : ℕ} (h : m ≤ n) :
+theorem system_eq_as_structures {n : ℕ} {m : ℕ} (h : m ≤ n) :
     (system K_fraisse m : Bundled.{w} L.Structure) = ((init_system K_fraisse n).2 m).1 :=
     congr_arg _ (system_eq K_fraisse h)
 
 /-- Maps to have a directed system on the sequence given by `system`. -/
 noncomputable def maps_system {m n : ℕ} (h : m ≤ n): system K_fraisse m ↪[L] system K_fraisse n :=
-  ((init_system K_fraisse n).2 m).2.comp (Embedding.eq_embed (system_eq' K_fraisse h))
+  ((init_system K_fraisse n).2 m).2.comp (Embedding.eq_embed (system_eq_as_structures K_fraisse h))
 
 theorem maps_system_same_step (m : ℕ) : maps_system K_fraisse (le_refl m)
     = Embedding.refl L _ := by
   cases m
-  rfl'
-  rename_i m
-  unfold maps_system
-  simp_rw [init_system]
-  have u : ∀ (n : ℕ), ((n+1 ≤ n) = False) := by intro n; simp
-  conv =>
-    lhs
-    congr
-    rw [if_then_else_right]
-    simp
-    · skip
-    · exact u m
-  simp only [add_le_iff_nonpos_right, nonpos_iff_eq_zero, one_ne_zero,
-    Embedding.eq_embed_trans]
-  rfl
+  · rfl'
+  · rename_i m
+    unfold maps_system
+    simp_rw [init_system]
+    have u : ∀ (n : ℕ), ((n+1 ≤ n) = False) := by intro n; simp
+    conv =>
+      lhs
+      congr
+      rw [if_then_else_right]
+      simp
+      · skip
+      · exact u m
+    simp only [add_le_iff_nonpos_right, nonpos_iff_eq_zero, one_ne_zero,
+      Embedding.eq_embed_trans]
+    rfl
 
-theorem maps_system_same_step' (m : ℕ) : ((init_system K_fraisse m).2 m).2 =
-    Embedding.eq_embed (system_eq' K_fraisse (le_refl m)).symm := by
+theorem maps_init_system_same_step (m : ℕ) : ((init_system K_fraisse m).2 m).2 =
+    Embedding.eq_embed (system_eq_as_structures K_fraisse (le_refl m)).symm := by
   cases m
-  rfl
-  rename_i m
-  simp_rw [init_system]
-  have u : ∀ (n : ℕ), ((n+1 ≤ n) = False) := by intro n; simp
-  conv =>
-    lhs
-    rw [if_then_else_right]
-    simp
-    · skip
-    · exact u m
+  · rfl
+  · rename_i m
+    simp_rw [init_system]
+    have u : ∀ (n : ℕ), ((n+1 ≤ n) = False) := by intro n; simp
+    conv =>
+      lhs
+      rw [if_then_else_right]
+      simp
+      · skip
+      · exact u m
 
 /-- The `FGEquiv` which is extended at step `n+1` in `system`.-/
 noncomputable def FGEquiv_extended (n : ℕ) :
@@ -671,8 +671,9 @@ theorem init_system_map_decomposition {k r : ℕ} (h : k ≤ r) :
         (Nat.unpair r).1).2) _ ▸ FG.map _ (FGEquiv_extended K_fraisse r).2)).2
     ).comp
       (((init_system K_fraisse r).2 k).2.comp
-        (Embedding.eq_embed ((system_eq' K_fraisse (h.trans (Nat.le_add_right r 1))).symm.trans
-          (system_eq' K_fraisse h)))) := by
+        (Embedding.eq_embed
+          ((system_eq_as_structures K_fraisse (h.trans (Nat.le_add_right r 1))).symm.trans
+            (system_eq_as_structures K_fraisse h)))) := by
   apply if_then_else_left
   simp only [h]
 
@@ -687,7 +688,7 @@ theorem factorize_with_map_step {m n : ℕ} (h : m ≤ n) :
   rw [init_system_map_decomposition, init_system_map_decomposition]
   case h => trivial
   case h => assumption
-  simp only [maps_system_same_step', Embedding.eq_embed_trans, PartialEquiv.map_dom,
+  simp only [maps_init_system_same_step, Embedding.eq_embed_trans, PartialEquiv.map_dom,
     Embedding.comp_assoc, Embedding.refl_eq_embed, Embedding.comp_refl]
 
 theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
@@ -712,9 +713,9 @@ theorem map_step_is_extend_and_join (r : ℕ) :
       (PartialEquiv.map_dom (((init_system K_fraisse r).2
         (Nat.unpair r).1).2) _ ▸ FG.map _ (FGEquiv_extended K_fraisse r).2)).2) := by
   rw [map_step, maps_system, init_system_map_decomposition]
-  simp [Embedding.comp_assoc]
-  rw [←maps_system, maps_system_same_step, Embedding.comp_refl]
-  rfl
+  · simp [Embedding.comp_assoc]
+    rw [←maps_system, maps_system_same_step, Embedding.comp_refl]
+  · rfl
 
 theorem all_fgequiv_extend {m : ℕ} : ∀ f : L.FGEquiv (system _ m) (system _ m),
     ∃ n, ∃ h : m ≤ n, f.val.is_extended_by (maps_system K_fraisse h) := by
@@ -726,7 +727,7 @@ theorem all_fgequiv_extend {m : ℕ} : ∀ f : L.FGEquiv (system _ m) (system _ 
   let f'' := FGEquiv_extended K_fraisse r
   clear_value r
   cases h_unpair_m
-  let f' := f.1.map (Embedding.eq_embed (system_eq' K_fraisse (Nat.unpair_left_le r)))
+  let f' := f.1.map (Embedding.eq_embed (system_eq_as_structures K_fraisse (Nat.unpair_left_le r)))
   have f'_fg : f'.dom.FG := f.1.map_fg _ f.2
   cases h_unpair_n
   cases hn
@@ -790,7 +791,7 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
   let of : (n : ℕ) → (system K_fraisse n ↪[L] M) :=
     fun n ↦ DirectLimit.of L ℕ (Bundled.α ∘ Subtype.val ∘ system K_fraisse) _ n
   refine ⟨?_, ?_⟩
-  · rw [isUltrahomogeneous_iff_IsExtensionPair]
+  · rw [isUltrahomogeneous_iff_IsExtensionPair Structure.cg_of_countable]
     simp
     unfold IsExtensionPair
     intro ⟨f, f_fg⟩ m
@@ -832,7 +833,6 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
       apply subset_closure
       exact mem_union_right (f.dom ∪ (f.cod : Set M)) rfl
     use ⟨g, g_fg⟩
-    exact Structure.cg_of_countable
   · rw [age_directLimit]
     apply Set.ext
     intro S
