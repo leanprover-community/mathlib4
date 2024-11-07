@@ -548,6 +548,8 @@ theorem algebraicIndependent_of_finite_type'
 
 namespace MvPolynomial
 
+/-- If for each `i : ι`, `f_i : R[X]` is transcendental over `R`, then `{f_i(X_i) | i : ι}`
+in `MvPolynomial ι R` is algebraically independent over `R`. -/
 theorem algebraicIndependent_polynomial_aeval_X
     (f : ι → Polynomial R) (hf : ∀ i, Transcendental R (f i)) :
     AlgebraicIndependent R fun i ↦ Polynomial.aeval (X i : MvPolynomial ι R) (f i) := by
