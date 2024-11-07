@@ -50,7 +50,7 @@ type of linear trivializations is not even particularly well-behaved.
 open TopologicalSpace Filter Set Bundle Function
 open scoped Topology
 
-variable {ι : Type*} {B : Type*} (F : Type*) {E : B → Type*}
+variable {B : Type*} (F : Type*) {E : B → Type*}
 variable {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
 
 /-- This structure contains the information left for a local trivialization (which is implemented
@@ -194,7 +194,7 @@ theorem symm_trans_target_eq (e e' : Pretrivialization F proj) :
     (e.toPartialEquiv.symm.trans e'.toPartialEquiv).target = (e.baseSet ∩ e'.baseSet) ×ˢ univ := by
   rw [← PartialEquiv.symm_source, symm_trans_symm, symm_trans_source_eq, inter_comm]
 
-variable (e' : Pretrivialization F (π F E)) {x' : TotalSpace F E} {b : B} {y : E b}
+variable (e' : Pretrivialization F (π F E)) {b : B} {y : E b}
 
 @[simp]
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
@@ -502,7 +502,7 @@ theorem continuousAt_of_comp_left {X : Type*} [TopologicalSpace X] {f : X → Z}
   rw [e.source_eq, ← preimage_comp]
   exact hf_proj.preimage_mem_nhds (e.open_baseSet.mem_nhds he)
 
-variable (e' : Trivialization F (π F E)) {x' : TotalSpace F E} {b : B} {y : E b}
+variable (e' : Trivialization F (π F E)) {b : B} {y : E b}
 
 protected theorem continuousOn : ContinuousOn e' e'.source :=
   e'.continuousOn_toFun
@@ -642,8 +642,6 @@ protected def coordChangeHomeomorph (e₁ e₂ : Trivialization F proj) {b : B} 
 theorem coordChangeHomeomorph_coe (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈ e₁.baseSet)
     (h₂ : b ∈ e₂.baseSet) : ⇑(e₁.coordChangeHomeomorph e₂ h₁ h₂) = e₁.coordChange e₂ b :=
   rfl
-
-variable {B' : Type*} [TopologicalSpace B']
 
 theorem isImage_preimage_prod (e : Trivialization F proj) (s : Set B) :
     e.toPartialHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by simp [e.coe_fst', hx]

@@ -81,7 +81,7 @@ end DotNotation
 
 namespace EuclideanGeometry
 
-variable {a b c d x y z : F} {r R : ℝ}
+variable {c x : F} {R : ℝ}
 
 /-- Formula for the Fréchet derivative of `EuclideanGeometry.inversion c R`. -/
 theorem hasFDerivAt_inversion (hx : x ≠ c) :

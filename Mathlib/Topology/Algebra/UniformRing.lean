@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.Ring.Ideal
+import Mathlib.Topology.Algebra.UniformGroup.Basic
 
 /-!
 # Completion of topological rings:
@@ -161,7 +162,7 @@ def extensionHom [CompleteSpace β] [T0Space β] : Completion α →+* β :=
         fun a b => by
         simp_rw [← coe_mul, extension_coe hf, f.map_mul] }
 
-theorem extensionHom_coe [CompleteSpace β] [T0Space β] (a : α):
+theorem extensionHom_coe [CompleteSpace β] [T0Space β] (a : α) :
     Completion.extensionHom f hf a = f a := by
   simp only [Completion.extensionHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
     UniformSpace.Completion.extension_coe <| uniformContinuous_addMonoidHom_of_continuous hf]
@@ -264,11 +265,11 @@ def sepQuotRingEquivRingQuot (α) [CommRing α] [TopologicalSpace α] [Topologic
 instance topologicalRing [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
     TopologicalRing (SeparationQuotient α) where
   toContinuousAdd :=
-    Inducing.continuousAdd (sepQuotRingEquivRingQuot α) (sepQuotHomeomorphRingQuot α).inducing
+    (sepQuotHomeomorphRingQuot α).isInducing.continuousAdd (sepQuotRingEquivRingQuot α)
   toContinuousMul :=
-    Inducing.continuousMul (sepQuotRingEquivRingQuot α) (sepQuotHomeomorphRingQuot α).inducing
+    (sepQuotHomeomorphRingQuot α).isInducing.continuousMul (sepQuotRingEquivRingQuot α)
   toContinuousNeg :=
-    Inducing.continuousNeg (sepQuotHomeomorphRingQuot α).inducing <|
+    (sepQuotHomeomorphRingQuot α).isInducing.continuousNeg <|
       map_neg (sepQuotRingEquivRingQuot α)
 
 end UniformSpace

@@ -9,9 +9,9 @@ import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.FinitePresentation
 import Mathlib.RingTheory.FiniteType
+import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.RingTheory.QuotientNoetherian
 import Mathlib.RingTheory.Polynomial.Quotient
 
 /-!

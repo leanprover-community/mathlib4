@@ -107,7 +107,7 @@ def fourier (n : ℤ) : C(AddCircle T, ℂ) where
 theorem fourier_apply {n : ℤ} {x : AddCircle T} : fourier n x = toCircle (n • x :) :=
   rfl
 
--- @[simp] -- Porting note: simp normal form is `fourier_coe_apply'`
+-- simp normal form is `fourier_coe_apply'`
 theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
     fourier n (x : AddCircle T) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [fourier_apply, ← QuotientAddGroup.mk_zsmul, toCircle, Function.Periodic.lift_coe,
@@ -121,7 +121,7 @@ theorem fourier_coe_apply' {n : ℤ} {x : ℝ} :
     toCircle (n • (x : AddCircle T) :) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [← fourier_apply]; exact fourier_coe_apply
 
--- @[simp] -- Porting note: simp normal form is `fourier_zero'`
+-- simp normal form is `fourier_zero'`
 theorem fourier_zero {x : AddCircle T} : fourier 0 x = 1 := by
   induction x using QuotientAddGroup.induction_on
   simp only [fourier_coe_apply]
@@ -132,15 +132,14 @@ theorem fourier_zero' {x : AddCircle T} : @toCircle T 0 = (1 : ℂ) := by
   have : fourier 0 x = @toCircle T 0 := by rw [fourier_apply, zero_smul]
   rw [← this]; exact fourier_zero
 
--- @[simp] -- Porting note: simp normal form is *also* `fourier_zero'`
+-- simp normal form is *also* `fourier_zero'`
 theorem fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
   rw [← QuotientAddGroup.mk_zero, fourier_coe_apply, Complex.ofReal_zero, mul_zero,
     zero_div, Complex.exp_zero]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem fourier_one {x : AddCircle T} : fourier 1 x = toCircle x := by rw [fourier_apply, one_zsmul]
 
--- @[simp] -- Porting note: simp normal form is `fourier_neg'`
+-- simp normal form is `fourier_neg'`
 theorem fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier n x) := by
   induction x using QuotientAddGroup.induction_on
   simp_rw [fourier_apply, toCircle]
@@ -152,7 +151,7 @@ theorem fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier
 theorem fourier_neg' {n : ℤ} {x : AddCircle T} : @toCircle T (-(n • x)) = conj (fourier n x) := by
   rw [← neg_smul, ← fourier_apply]; exact fourier_neg
 
--- @[simp] -- Porting note: simp normal form is `fourier_add'`
+-- simp normal form is `fourier_add'`
 theorem fourier_add {m n : ℤ} {x : AddCircle T} : fourier (m+n) x = fourier m x * fourier n x := by
   simp_rw [fourier_apply, add_zsmul, toCircle_add, Circle.coe_mul]
 

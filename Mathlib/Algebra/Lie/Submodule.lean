@@ -83,7 +83,7 @@ instance (priority := mid) coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl
 
--- Porting note (#10618): `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
+-- `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
 -- but `dsimp` can't.
 @[simp, nolint simpNF]
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=

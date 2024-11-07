@@ -136,20 +136,17 @@ theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) :
 theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
   DFunLike.ext _ _ h
 
-variable (v : Valuation R Γ₀) {x y z : R}
+variable (v : Valuation R Γ₀)
 
 @[simp, norm_cast]
 theorem coe_coe : ⇑(v : R →*₀ Γ₀) = v := rfl
 
--- @[simp] Porting note (#10618): simp can prove this
 theorem map_zero : v 0 = 0 :=
   v.map_zero'
 
--- @[simp] Porting note (#10618): simp can prove this
 theorem map_one : v 1 = 1 :=
   v.map_one'
 
--- @[simp] Porting note (#10618): simp can prove this
 theorem map_mul : ∀ x y, v (x * y) = v x * v y :=
   v.map_mul'
 
@@ -189,7 +186,6 @@ theorem map_sum_lt' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg 
     (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g :=
   v.map_sum_lt (ne_of_gt hg) hf
 
--- @[simp] Porting note (#10618): simp can prove this
 theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
 
@@ -200,7 +196,6 @@ def toPreorder : Preorder R :=
   Preorder.lift v
 
 /-- If `v` is a valuation on a division ring then `v(x) = 0` iff `x = 0`. -/
--- @[simp] Porting note (#10618): simp can prove this
 theorem zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x = 0 ↔ x = 0 :=
   map_eq_zero v
 
@@ -257,7 +252,7 @@ end Monoid
 
 section Group
 
-variable [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) {x y z : R}
+variable [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) {x y : R}
 
 @[simp]
 theorem map_neg (x : R) : v (-x) = v x :=
@@ -305,6 +300,12 @@ theorem map_add_eq_of_lt_left (h : v y < v x) : v (x + y) = v x := by
 theorem map_sub_eq_of_lt_right (h : v x < v y) : v (x - y) = v y := by
   rw [sub_eq_add_neg, map_add_eq_of_lt_right, map_neg]
   rwa [map_neg]
+
+theorem map_sum_eq_of_lt {ι : Type*} {s : Finset ι} {f : ι → R} {j : ι}
+    (hj : j ∈ s) (h0 : v (f j) ≠ 0) (hf : ∀ i ∈ s \ {j}, v (f i) < v (f j)) :
+    v (∑ i ∈ s, f i) = v (f j) := by
+  rw [Finset.sum_eq_add_sum_diff_singleton hj]
+  exact map_add_eq_of_lt_left _ (map_sum_lt _ h0 hf)
 
 theorem map_sub_eq_of_lt_left (h : v y < v x) : v (x - y) = v x := by
   rw [sub_eq_add_neg, map_add_eq_of_lt_left]
@@ -520,20 +521,18 @@ theorem isEquiv_tfae [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGr
       ∀ {x}, v x = 1 ↔ v' x = 1,
       ∀ {x}, v x < 1 ↔ v' x < 1,
       ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1 ].TFAE := by
-  tfae_have 1 ↔ 2; · apply isEquiv_iff_val_lt_val
-  tfae_have 1 ↔ 3; · apply isEquiv_iff_val_le_one
-  tfae_have 1 ↔ 4; · apply isEquiv_iff_val_eq_one
-  tfae_have 1 ↔ 5; · apply isEquiv_iff_val_lt_one
-  tfae_have 1 ↔ 6; · apply isEquiv_iff_val_sub_one_lt_one
+  tfae_have 1 ↔ 2 := isEquiv_iff_val_lt_val
+  tfae_have 1 ↔ 3 := isEquiv_iff_val_le_one
+  tfae_have 1 ↔ 4 := isEquiv_iff_val_eq_one
+  tfae_have 1 ↔ 5 := isEquiv_iff_val_lt_one
+  tfae_have 1 ↔ 6 := isEquiv_iff_val_sub_one_lt_one
   tfae_finish
 
 end
 
 section Supp
 
-variable [CommRing R]
-variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
-variable (v : Valuation R Γ₀)
+variable [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀)
 
 /-- The support of a valuation `v : R → Γ₀` is the ideal of `R` where `v` vanishes. -/
 def supp : Ideal R where
@@ -610,7 +609,7 @@ instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
   coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
 
 variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
-  (v : AddValuation R Γ₀) {x y z : R}
+  (v : AddValuation R Γ₀)
 
 section
 
@@ -740,7 +739,7 @@ end Monoid
 
 section Group
 
-variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y z : R}
+variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y : R}
 
 @[simp]
 theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
@@ -835,9 +834,7 @@ end IsEquiv
 
 section Supp
 
-variable [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
-variable [CommRing R]
-variable (v : AddValuation R Γ₀)
+variable [LinearOrderedAddCommMonoidWithTop Γ₀] [CommRing R] (v : AddValuation R Γ₀)
 
 /-- The support of an additive valuation `v : R → Γ₀` is the ideal of `R` where `v x = ⊤` -/
 def supp : Ideal R :=
