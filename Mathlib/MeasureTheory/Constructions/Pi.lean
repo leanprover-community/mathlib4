@@ -3,8 +3,8 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Group.Measure
+import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.Topology.Constructions
 
 /-!
@@ -62,6 +62,9 @@ variable {ι ι' : Type*} {α : ι → Type*}
 
 /-! We start with some measurability properties -/
 
+lemma MeasurableSpace.pi_eq_generateFrom_projections {mα : ∀ i, MeasurableSpace (α i)} :
+    pi = generateFrom {B | ∃ (i : ι) (A : Set (α i)), MeasurableSet A ∧ eval i ⁻¹' A = B} := by
+  simp only [pi, ← generateFrom_iUnion_measurableSet, iUnion_setOf, measurableSet_comap]
 
 /-- Boxes formed by π-systems form a π-system. -/
 theorem IsPiSystem.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i)) :
@@ -211,8 +214,7 @@ variable {δ : Type*} {π : δ → Type*} [∀ x, MeasurableSpace (π x)]
 protected def tprod (l : List δ) (μ : ∀ i, Measure (π i)) : Measure (TProd π l) := by
   induction' l with i l ih
   · exact dirac PUnit.unit
-  · have := (μ i).prod (α := π i) ih
-    exact this
+  · exact (μ i).prod (α := π i) ih
 
 @[simp]
 theorem tprod_nil (μ : ∀ i, Measure (π i)) : Measure.tprod [] μ = dirac PUnit.unit :=
@@ -325,7 +327,7 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
       _ = ∏ i, μ i (toMeasurable (μ i) ((hμ i).set (e n i))) :=
         (pi_pi_aux μ _ fun i => measurableSet_toMeasurable _ _)
       _ = ∏ i, μ i ((hμ i).set (e n i)) := by simp only [measure_toMeasurable]
-      _ < ∞ := ENNReal.prod_lt_top fun i _ => ((hμ i).finite _).ne
+      _ < ∞ := ENNReal.prod_lt_top fun i _ => (hμ i).finite _
   · simp_rw [(surjective_decode_iget (ι → ℕ)).iUnion_comp fun x =>
         Set.pi univ fun i => (hμ i).set (x i),
       iUnion_univ_pi fun i => (hμ i).set, (hμ _).spanning, Set.pi_univ]
@@ -385,7 +387,7 @@ instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (v
 
 instance pi.instIsFiniteMeasure [∀ i, IsFiniteMeasure (μ i)] :
     IsFiniteMeasure (Measure.pi μ) :=
-  ⟨Measure.pi_univ μ ▸ ENNReal.prod_lt_top (fun i _ ↦ measure_ne_top (μ i) _)⟩
+  ⟨Measure.pi_univ μ ▸ ENNReal.prod_lt_top (fun i _ ↦ measure_lt_top (μ i) _)⟩
 
 instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, IsFiniteMeasure (volume : Measure (α i))] :
     IsFiniteMeasure (volume : Measure (∀ i, α i)) :=
@@ -570,7 +572,7 @@ instance pi.isLocallyFiniteMeasure
   choose s hxs ho hμ using fun i => (μ i).exists_isOpen_measure_lt_top (x i)
   refine ⟨pi univ s, set_pi_mem_nhds finite_univ fun i _ => IsOpen.mem_nhds (ho i) (hxs i), ?_⟩
   rw [pi_pi]
-  exact ENNReal.prod_lt_top fun i _ => (hμ i).ne
+  exact ENNReal.prod_lt_top fun i _ => hμ i
 
 instance {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace (X i)]
     [∀ i, SigmaFinite (volume : Measure (X i))]
@@ -648,7 +650,7 @@ instance pi.isFiniteMeasureOnCompacts [∀ i, TopologicalSpace (α i)]
     exact lt_of_le_of_lt (measure_mono (univ.subset_pi_eval_image K)) this
   rw [Measure.pi_pi]
   refine WithTop.prod_lt_top ?_
-  exact fun i _ => ne_of_lt (IsCompact.measure_lt_top (IsCompact.image hK (continuous_apply i)))
+  exact fun i _ => IsCompact.measure_lt_top (IsCompact.image hK (continuous_apply i))
 
 instance {X : ι → Type*} [∀ i, MeasureSpace (X i)] [∀ i, TopologicalSpace (X i)]
     [∀ i, SigmaFinite (volume : Measure (X i))]
@@ -837,7 +839,7 @@ theorem volume_preserving_piFinTwo (α : Fin 2 → Type u) [∀ i, MeasureSpace 
     MeasurePreserving (MeasurableEquiv.piFinTwo α) volume volume :=
   measurePreserving_piFinTwo _
 
-theorem measurePreserving_finTwoArrow_vec {α : Type u} {m : MeasurableSpace α} (μ ν : Measure α)
+theorem measurePreserving_finTwoArrow_vec {α : Type u} {_ : MeasurableSpace α} (μ ν : Measure α)
     [SigmaFinite μ] [SigmaFinite ν] :
     MeasurePreserving MeasurableEquiv.finTwoArrow (Measure.pi ![μ, ν]) (μ.prod ν) :=
   haveI : ∀ i, SigmaFinite (![μ, ν] i) := Fin.forall_fin_two.2 ⟨‹_›, ‹_›⟩

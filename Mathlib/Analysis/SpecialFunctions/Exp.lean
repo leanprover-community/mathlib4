@@ -162,7 +162,7 @@ lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
   have := (Complex.exp_sub_sum_range_isBigO_pow n).comp_tendsto
     (Complex.continuous_ofReal.tendsto' 0 0 rfl)
-  simp only [(· ∘ ·)] at this
+  simp only [Function.comp_def] at this
   norm_cast at this
 
 lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
@@ -213,7 +213,7 @@ namespace Real
 variable {α : Type*} {x y z : ℝ} {l : Filter α}
 
 theorem exp_half (x : ℝ) : exp (x / 2) = √(exp x) := by
-  rw [eq_comm, sqrt_eq_iff_sq_eq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
+  rw [eq_comm, sqrt_eq_iff_eq_sq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
 
 /-- The real exponential function tends to `+∞` at `+∞`. -/
 theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
@@ -263,11 +263,11 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
     eventually_atTop.1
       ((tendsto_pow_const_div_const_pow_of_one_lt n (one_lt_exp_iff.2 zero_lt_one)).eventually
         (gt_mem_nhds this))
-  simp only [← exp_nat_mul, mul_one, div_lt_iff, exp_pos, ← div_eq_inv_mul] at hN
+  simp only [← exp_nat_mul, mul_one, div_lt_iff₀, exp_pos, ← div_eq_inv_mul] at hN
   refine ⟨N, trivial, fun x hx => ?_⟩
   rw [Set.mem_Ioi] at hx
   have hx₀ : 0 < x := (Nat.cast_nonneg N).trans_lt hx
-  rw [Set.mem_Ici, le_div_iff (pow_pos hx₀ _), ← le_div_iff' hC₀]
+  rw [Set.mem_Ici, le_div_iff₀ (pow_pos hx₀ _), ← le_div_iff₀' hC₀]
   calc
     x ^ n ≤ ⌈x⌉₊ ^ n := mod_cast pow_le_pow_left hx₀.le (Nat.le_ceil _) _
     _ ≤ exp ⌈x⌉₊ / (exp 1 * C) := mod_cast (hN _ (Nat.lt_ceil.2 hx).le).le
@@ -315,8 +315,8 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
 def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
   StrictMono.orderIsoOfSurjective _ (exp_strictMono.codRestrict exp_pos) <|
     (continuous_exp.subtype_mk _).surjective
-      (by simp only [tendsto_Ioi_atTop, Subtype.coe_mk, tendsto_exp_atTop])
-      (by simp [tendsto_exp_atBot_nhdsWithin])
+      (by rw [tendsto_Ioi_atTop]; simp only [tendsto_exp_atTop])
+      (by rw [tendsto_Ioi_atBot]; simp only [tendsto_exp_atBot_nhdsWithin])
 
 @[simp]
 theorem coe_expOrderIso_apply (x : ℝ) : (expOrderIso x : ℝ) = exp x :=
@@ -369,16 +369,19 @@ theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto f l atBot := by
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]
 
-theorem openEmbedding_exp : OpenEmbedding exp :=
-  isOpen_Ioi.openEmbedding_subtype_val.comp expOrderIso.toHomeomorph.openEmbedding
+theorem isOpenEmbedding_exp : IsOpenEmbedding exp :=
+  isOpen_Ioi.isOpenEmbedding_subtypeVal.comp expOrderIso.toHomeomorph.isOpenEmbedding
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_exp := isOpenEmbedding_exp
 
 @[simp]
 theorem map_exp_nhds (x : ℝ) : map exp (𝓝 x) = 𝓝 (exp x) :=
-  openEmbedding_exp.map_nhds_eq x
+  isOpenEmbedding_exp.map_nhds_eq x
 
 @[simp]
 theorem comap_exp_nhds_exp (x : ℝ) : comap exp (𝓝 (exp x)) = 𝓝 x :=
-  (openEmbedding_exp.nhds_eq_comap x).symm
+  (isOpenEmbedding_exp.nhds_eq_comap x).symm
 
 theorem isLittleO_pow_exp_atTop {n : ℕ} : (fun x : ℝ => x ^ n) =o[atTop] Real.exp := by
   simpa [isLittleO_iff_tendsto fun x hx => ((exp_pos x).ne' hx).elim] using
@@ -387,7 +390,7 @@ theorem isLittleO_pow_exp_atTop {n : ℕ} : (fun x : ℝ => x ^ n) =o[atTop] Rea
 @[simp]
 theorem isBigO_exp_comp_exp_comp {f g : α → ℝ} :
     ((fun x => exp (f x)) =O[l] fun x => exp (g x)) ↔ IsBoundedUnder (· ≤ ·) l (f - g) :=
-  Iff.trans (isBigO_iff_isBoundedUnder_le_div <| Eventually.of_forall fun x => exp_ne_zero _) <| by
+  Iff.trans (isBigO_iff_isBoundedUnder_le_div <| Eventually.of_forall fun _ => exp_ne_zero _) <| by
     simp only [norm_eq_abs, abs_exp, ← exp_sub, isBoundedUnder_le_exp_comp, Pi.sub_def]
 
 @[simp]
@@ -403,8 +406,6 @@ theorem isLittleO_exp_comp_exp_comp {f g : α → ℝ} :
   simp only [isLittleO_iff_tendsto, exp_ne_zero, ← exp_sub, ← tendsto_neg_atTop_iff, false_imp_iff,
     imp_true_iff, tendsto_exp_comp_nhds_zero, neg_sub]
 
--- Porting note (#10618): @[simp] can prove:  by simp only [@Asymptotics.isLittleO_one_left_iff,
---   Real.norm_eq_abs, Real.abs_exp, @Real.tendsto_exp_comp_atTop]
 theorem isLittleO_one_exp_comp {f : α → ℝ} :
     ((fun _ => 1 : α → ℝ) =o[l] fun x => exp (f x)) ↔ Tendsto f l atTop := by
   simp only [← exp_zero, isLittleO_exp_comp_exp_comp, sub_zero]
@@ -456,14 +457,14 @@ namespace Complex
 theorem comap_exp_cobounded : comap exp (cobounded ℂ) = comap re atTop :=
   calc
     comap exp (cobounded ℂ) = comap re (comap Real.exp atTop) := by
-      simp only [← comap_norm_atTop, Complex.norm_eq_abs, comap_comap, (· ∘ ·), abs_exp]
+      simp only [← comap_norm_atTop, Complex.norm_eq_abs, comap_comap, Function.comp_def, abs_exp]
     _ = comap re atTop := by rw [Real.comap_exp_atTop]
 
 @[simp]
 theorem comap_exp_nhds_zero : comap exp (𝓝 0) = comap re atBot :=
   calc
     comap exp (𝓝 0) = comap re (comap Real.exp (𝓝 0)) := by
-      simp only [comap_comap, ← comap_abs_nhds_zero, (· ∘ ·), abs_exp]
+      simp only [comap_comap, ← comap_abs_nhds_zero, Function.comp_def, abs_exp]
     _ = comap re atBot := by rw [Real.comap_exp_nhds_zero]
 
 theorem comap_exp_nhdsWithin_zero : comap exp (𝓝[≠] 0) = comap re atBot := by

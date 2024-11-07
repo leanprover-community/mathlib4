@@ -549,7 +549,7 @@ where
             return ← loop mvar.mvarId!
         if let some patt ← CongrMetaM.nextPattern then
           let gs ← Term.TermElabM.run' <| Lean.Elab.Tactic.RCases.rintro #[patt] none mvarId
-          List.join <$> gs.mapM loop
+          List.flatten <$> gs.mapM loop
         else
           let (_, mvarId) ← mvarId.intro1
           loop mvarId
@@ -583,7 +583,7 @@ def Lean.MVarId.preCongr! (mvarId : MVarId) (tryClose : Bool) : MetaM (Option MV
     -- We allow synthetic opaque metavariables to be assigned to fill in `x = _` goals that might
     -- appear (for example, due to using `convert` with placeholders).
     try withAssignableSyntheticOpaque mvarId.refl; return none catch _ => pure ()
-    -- Now we go for (heterogenous) equality via subsingleton considerations
+    -- Now we go for (heterogeneous) equality via subsingleton considerations
     if ← Lean.Meta.fastSubsingletonElim mvarId then return none
     if ← mvarId.proofIrrelHeq then return none
   return some mvarId
@@ -733,12 +733,12 @@ This is somewhat like `congr`.
 
 See `Congr!.Config` for all options.
 -/
-syntax (name := congr!) "congr!" (Parser.Tactic.config)? (ppSpace num)?
+syntax (name := congr!) "congr!" Parser.Tactic.optConfig (ppSpace num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 elab_rules : tactic
-| `(tactic| congr! $[$cfg:config]? $[$n]? $[with $ps?*]?) => do
-  let config ← elabConfig (mkOptionalNode cfg)
+| `(tactic| congr! $cfg:optConfig $[$n]? $[with $ps?*]?) => do
+  let config ← elabConfig cfg
   let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
   liftMetaTactic fun g ↦
     let depth := n.map (·.getNat)

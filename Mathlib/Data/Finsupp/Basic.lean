@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Scott Morrison
+Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Group.Action.Basic
@@ -85,7 +85,8 @@ theorem not_mem_graph_snd_zero (a : α) (f : α →₀ M) : (a, (0 : M)) ∉ f.g
 
 @[simp]
 theorem image_fst_graph [DecidableEq α] (f : α →₀ M) : f.graph.image Prod.fst = f.support := by
-  classical simp only [graph, map_eq_image, image_image, Embedding.coeFn_mk, (· ∘ ·), image_id']
+  classical
+  simp only [graph, map_eq_image, image_image, Embedding.coeFn_mk, Function.comp_def, image_id']
 
 theorem graph_injective (α M) [Zero M] : Injective (@graph α M _) := by
   intro f g h
@@ -470,7 +471,7 @@ theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N �
 theorem mapDomain_support [DecidableEq β] {f : α → β} {s : α →₀ M} :
     (s.mapDomain f).support ⊆ s.support.image f :=
   Finset.Subset.trans support_sum <|
-    Finset.Subset.trans (Finset.biUnion_mono fun a _ => support_single_subset) <| by
+    Finset.Subset.trans (Finset.biUnion_mono fun _ _ => support_single_subset) <| by
       rw [Finset.biUnion_singleton]
 
 theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x.support : Set α) ⊆ S)
@@ -621,7 +622,7 @@ theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →�
 theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β →₀ M)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) : comapDomain f l hf.injOn = 0 → l = 0 := by
   rw [← support_eq_empty, ← support_eq_empty, comapDomain]
-  simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false_iff, mem_preimage]
+  simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false, mem_preimage]
   intro h a ha
   cases' hf.2.2 ha with b hb
   exact h b (hb.2.symm ▸ ha)
@@ -798,7 +799,7 @@ theorem filter_apply_pos {a : α} (h : p a) : f.filter p a = f a := if_pos h
 theorem filter_apply_neg {a : α} (h : ¬p a) : f.filter p a = 0 := if_neg h
 
 @[simp]
-theorem support_filter : (f.filter p).support = f.support.filter p := rfl
+theorem support_filter : (f.filter p).support = {x ∈ f.support | p x} := rfl
 
 theorem filter_zero : (0 : α →₀ M).filter p = 0 := by
   classical rw [← support_eq_empty, support_filter, support_zero, Finset.filter_empty]
@@ -1433,9 +1434,7 @@ instance noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Ty
       Finsupp.ext fun i => (smul_eq_zero.mp (DFunLike.ext_iff.mp h i)).resolve_left hc⟩
 
 section DistribMulActionSemiHom
-
-variable [Semiring R]
-variable [AddCommMonoid M] [AddCommMonoid N] [DistribMulAction R M] [DistribMulAction R N]
+variable [Monoid R] [AddMonoid M] [AddMonoid N] [DistribMulAction R M] [DistribMulAction R N]
 
 /-- `Finsupp.single` as a `DistribMulActionSemiHom`.
 
@@ -1668,7 +1667,7 @@ This is the `Finsupp` version of `Equiv.Pi_curry`. -/
 noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σj, ιs j) →₀ α) ≃ ∀ j, ιs j →₀ α where
   toFun := split
   invFun f :=
-    onFinset (Finset.univ.sigma fun j => (f j).support) (fun ji => f ji.1 ji.2) fun g hg =>
+    onFinset (Finset.univ.sigma fun j => (f j).support) (fun ji => f ji.1 ji.2) fun _ hg =>
       Finset.mem_sigma.mpr ⟨Finset.mem_univ _, mem_support_iff.mpr hg⟩
   left_inv f := by
     ext
@@ -1702,3 +1701,5 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 end Sigma
 
 end Finsupp
+
+set_option linter.style.longFile 1900

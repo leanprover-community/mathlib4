@@ -47,7 +47,7 @@ I document here what features are not in the original:
   For example, matching `(1 + 2) + 3` with `add_comm` gives a score of 2,
   since the pattern of commutativity is [⟨HAdd.hAdd, 6⟩, *0, *0, *0, *1, *2, *3],
   so matching `⟨HAdd.hAdd, 6⟩` gives 1 point,
-  and matching `*0` after its first appearence gives another point, but the third argument is an
+  and matching `*0` after its first appearance gives another point, but the third argument is an
   outParam, so this gets ignored. Similarly, matching it with `add_assoc` gives a score of 5.
 
 - Patterns that have the potential to be η-reduced are put into the `RefinedDiscrTree` under all
@@ -282,7 +282,7 @@ inductive DTExpr where
   | opaque : DTExpr
   /-- A constant. It stores the name and the arguments. -/
   | const : Name → Array DTExpr → DTExpr
-  /-- A free variable. It stores the `FVarId` and the argumenst -/
+  /-- A free variable. It stores the `FVarId` and the arguments -/
   | fvar : FVarId → Array DTExpr → DTExpr
   /-- A bound variable. It stores the De Bruijn index and the arguments -/
   | bvar : Nat → Array DTExpr → DTExpr
@@ -449,7 +449,7 @@ partial def reduce (e : Expr) (config : WhnfCoreConfig) : MetaM Expr := do
 /-- Repeatedly apply reduce while stripping lambda binders and introducing their variables -/
 @[specialize]
 partial def lambdaTelescopeReduce {m} [Monad m] [MonadLiftT MetaM m] [MonadControlT MetaM m]
-    [Inhabited α] (e : Expr) (fvars : List FVarId) (config : WhnfCoreConfig)
+    [Nonempty α] (e : Expr) (fvars : List FVarId) (config : WhnfCoreConfig)
     (k : Expr → List FVarId → m α) : m α := do
   match ← reduce e config with
   | .lam n d b bi =>
@@ -532,7 +532,7 @@ def etaExpand (args : Array Expr) (type : Expr) (lambdas : List FVarId) (goalAri
     k args lambdas
 
 
-/-- Normalize an application of a heterogenous binary operator like `HAdd.hAdd`, using:
+/-- Normalize an application of a heterogeneous binary operator like `HAdd.hAdd`, using:
 - `f = fun x => f x` to increase the arity to 6
 - `(f + g) a = f a + g a` to decrease the arity to 6
 - `(fun x => f x + g x) = f + g` to get rid of any lambdas in front -/
@@ -864,8 +864,6 @@ def mkDTExprs (e : Expr) (config : WhnfCoreConfig) (onlySpecific : Bool)
 
 /-! ## Inserting intro a RefinedDiscrTree -/
 
-variable {α : Type}
-
 /-- If `vs` contains an element `v'` such that `v == v'`, then replace `v'` with `v`.
 Otherwise, push `v`.
 See issue #2155
@@ -907,7 +905,7 @@ partial def insertInTrie [BEq α] (keys : Array Key) (v : α) (i : Nat) : Trie �
 
 /-- Insert the value `v` at index `keys : Array Key` in a `RefinedDiscrTree`.
 
-Warning: to accound for η-reduction, an entry may need to be added at multiple indexes,
+Warning: to account for η-reduction, an entry may need to be added at multiple indexes,
 so it is recommended to use `RefinedDiscrTree.insert` for insertion. -/
 def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Key) (v : α) :
     RefinedDiscrTree α :=
@@ -922,7 +920,7 @@ def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Ke
 
 /-- Insert the value `v` at index `e : DTExpr` in a `RefinedDiscrTree`.
 
-Warning: to accound for η-reduction, an entry may need to be added at multiple indexes,
+Warning: to account for η-reduction, an entry may need to be added at multiple indexes,
 so it is recommended to use `RefinedDiscrTree.insert` for insertion. -/
 def insertDTExpr [BEq α] (d : RefinedDiscrTree α) (e : DTExpr) (v : α) : RefinedDiscrTree α :=
   insertInRefinedDiscrTree d e.flatten v
