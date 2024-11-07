@@ -80,6 +80,16 @@ theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) :
 theorem rtake_concat_succ (x : α) : rtake (l ++ [x]) (n + 1) = rtake l n ++ [x] := by
   simp [rtake_eq_reverse_take_reverse]
 
+@[simp]
+lemma length_rtake {l : List α} {t : Nat} (ht : t ≤ l.length) : (l.rtake t).length = t := by
+  unfold List.rtake ; rw [List.length_drop] ; apply Nat.sub_sub_self ht
+
+@[simp]
+lemma rtake_cons_eq_self {l : List α} {x : α} {t : Nat} (ht : t ≤ l.length) :
+    ((x :: l).rtake t) = (l.rtake t) := by
+  unfold List.rtake ; rw [List.length_cons, Nat.succ_sub ht] ; rfl
+
+
 /-- Drop elements from the tail end of a list that satisfy `p : α → Bool`.
 Implemented naively via `List.reverse` -/
 def rdropWhile : List α :=
