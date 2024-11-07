@@ -20,10 +20,10 @@ symmetric operators on a finite-dimensional inner product space.
    if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `Commute A B` imply that
    `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
    `eigenspace B μ ⊓ eigenspace A ν`
-* `LinearMap.IsSymmetric.iSup_iInf_eq_top_of_commute` establishes that in finite dimensions,
-   the indexed supremum of the joint eigenspaces of a commuting tuple of symmetric linear operators
-   equals `⊤`
-* `LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype` establishes the
+* `LinearMap.IsSymmetric.iSup_iInf_eigenspace_eq_top_of_commute` establishes that in finite
+   dimensions, the indexed supremum of the joint eigenspaces of a commuting tuple of symmetric
+   linear operators equals `⊤`
+* `LinearMap.IsSymmetric.directSum_isInternal_of_pairwise_commute` establishes the
    analogous result to `LinearMap.IsSymmetric.directSum_isInternal_of_commute` for commuting
    tuples of symmetric operators.
 
@@ -111,8 +111,8 @@ theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
   exact iSup_iSup_eigenspace_inf_eigenspace_eq_top_of_commute hA hB hAB
 
-/-- In finite dimensions, the indexed supremum of the joint eigenspaces of a commuting family
-of symmetric linear operators equals `⊤`. -/
+/-- A commuting family of symmetric linear maps on a finite dimensional inner
+product space is simultaneously diagonalizable. -/
 theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
     (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise fun i j ↦ Commute (T i) (T j)):
     ⨆ χ : ι → 𝕜, ⨅ i, eigenspace (T i) (χ i) = ⊤ :=
@@ -128,11 +128,11 @@ theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
 
 /-- In finite dimensions, given a commuting family of symmetric linear operators, the inner
 product space on which they act decomposes as an internal direct sum of joint eigenspaces. -/
-theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Fintype n]
-    (hT : ∀ i, (T i).IsSymmetric) (hC : ∀ i j, Commute (T i) (T j)) :
+theorem LinearMap.IsSymmetric.directSum_isInternal_of_pairwise_commute [DecidableEq (n → 𝕜)]
+    (hT : ∀ i, (T i).IsSymmetric) (hC : Pairwise fun i j ↦ Commute (T i) (T j)) :
     DirectSum.IsInternal (fun α : n → 𝕜 ↦ ⨅ j, eigenspace (T j) (α j)) := by
   rw [OrthogonalFamily.isInternal_iff]
-  · rw [iSup_iInf_eq_top_of_commute hT fun ⦃_ _⦄ _ ↦ hC _ _, top_orthogonal_eq_bot]
+  · rw [iSup_iInf_eq_top_of_commute hT hC, top_orthogonal_eq_bot]
   · exact orthogonalFamily_iInf_eigenspaces hT
 
 end RCLike
