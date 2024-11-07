@@ -224,7 +224,7 @@ theorem ContinuousLinearMap.iteratedFDerivWithin_comp_left {f : E → F} (g : F 
     iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
       g.compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) :=
   (((hf.ftaylorSeriesWithin hs).continuousLinearMap_comp g).eq_iteratedFDerivWithin_of_uniqueDiffOn
-    (by exact_mod_cast hi) hs hx).symm
+    (mod_cast hi) hs hx).symm
 
 /-- The iterated derivative of the composition with a linear map on the left is
 obtained by applying the linear map to the iterated derivative. -/
@@ -375,7 +375,7 @@ theorem ContinuousLinearMap.iteratedFDerivWithin_comp_right {f : E → F} (g : G
     iteratedFDerivWithin 𝕜 i (f ∘ g) (g ⁻¹' s) x =
       (iteratedFDerivWithin 𝕜 i f s (g x)).compContinuousLinearMap fun _ => g :=
   (((hf.ftaylorSeriesWithin hs).compContinuousLinearMap g).eq_iteratedFDerivWithin_of_uniqueDiffOn
-    (by exact_mod_cast hi) h's hx).symm
+    (mod_cast hi) h's hx).symm
 
 /-- The iterated derivative within a set of the composition with a linear equiv on the right is
 obtained by composing the iterated derivative with the linear equiv. -/
