@@ -27,6 +27,8 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory.Adjunction
 
+attribute [local simp] homEquiv_unit homEquiv_counit
+
 /-- If `G.op` is adjoint to `F.op` then `F` is adjoint to `G`. -/
 @[simps! unit_app counit_app]
 def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G :=

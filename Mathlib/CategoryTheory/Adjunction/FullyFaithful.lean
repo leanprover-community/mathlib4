@@ -40,6 +40,8 @@ open Category
 
 open Opposite
 
+attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
+
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R)

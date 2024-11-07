@@ -298,7 +298,7 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure
     _ = ‖(f (x + ρ • w) - f (x + ρ • y)) + (ρ • L y - ρ • L w)
           + (f (x + ρ • y) - f x - ρ • L y)‖ := by congr; abel
     _ ≤ ‖f (x + ρ • w) - f (x + ρ • y)‖ + ‖ρ • L y - ρ • L w‖
-          + ‖f (x + ρ • y) - f x - ρ • L y‖ := norm_add₃_le _ _ _
+          + ‖f (x + ρ • y) - f x - ρ • L y‖ := norm_add₃_le
     _ ≤ C * ‖(x + ρ • w) - (x + ρ • y)‖ + ρ * (‖L‖ * ‖y - w‖) + δ * ρ := by
       gcongr
       · exact hf.norm_sub_le _ _

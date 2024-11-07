@@ -466,10 +466,8 @@ theorem realize_all_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : 
 
 end BoundedFormula
 
-
--- Porting note: no `protected` attribute in Lean4
+-- Porting note: in Lean 3 we used these unprotected above, and then protected them here.
 -- attribute [protected] bounded_formula.falsum bounded_formula.equal bounded_formula.rel
-
 -- attribute [protected] bounded_formula.imp bounded_formula.all
 
 namespace LHom
@@ -491,11 +489,6 @@ theorem realize_onBoundedFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpan
   | all _ ih3 => simp only [onBoundedFormula, ih3, realize_all]
 
 end LHom
-
--- Porting note: no `protected` attribute in Lean4
--- attribute [protected] bounded_formula.falsum bounded_formula.equal bounded_formula.rel
-
--- attribute [protected] bounded_formula.imp bounded_formula.all
 
 namespace Formula
 

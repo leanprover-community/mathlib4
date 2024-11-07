@@ -112,6 +112,10 @@ theorem isNoetherian_of_surjective (f : M →ₗ[R] P) (hf : LinearMap.range f =
 
 variable {M}
 
+instance isNoetherian_range (f : M →ₗ[R] P) [IsNoetherian R M] :
+    IsNoetherian R (LinearMap.range f) :=
+  isNoetherian_of_surjective _ _ f.range_rangeRestrict
+
 instance isNoetherian_quotient {A M : Type*} [Ring A] [AddCommGroup M] [SMul R A] [Module R M]
     [Module A M] [IsScalarTower R A M] (N : Submodule A M) [IsNoetherian R M] :
     IsNoetherian R (M ⧸ N) :=
@@ -124,10 +128,11 @@ alias Submodule.Quotient.isNoetherian := isNoetherian_quotient
 theorem isNoetherian_of_linearEquiv (f : M ≃ₗ[R] P) [IsNoetherian R M] : IsNoetherian R P :=
   isNoetherian_of_surjective _ f.toLinearMap f.range
 
-theorem isNoetherian_top_iff : IsNoetherian R (⊤ : Submodule R M) ↔ IsNoetherian R M := by
-  constructor <;> intro h
-  · exact isNoetherian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
-  · exact isNoetherian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl).symm
+theorem LinearEquiv.isNoetherian_iff (f : M ≃ₗ[R] P) : IsNoetherian R M ↔ IsNoetherian R P :=
+  ⟨fun _ ↦ isNoetherian_of_linearEquiv f, fun _ ↦ isNoetherian_of_linearEquiv f.symm⟩
+
+theorem isNoetherian_top_iff : IsNoetherian R (⊤ : Submodule R M) ↔ IsNoetherian R M :=
+  Submodule.topEquiv.isNoetherian_iff
 
 theorem isNoetherian_of_injective [IsNoetherian R P] (f : M →ₗ[R] P) (hf : Function.Injective f) :
     IsNoetherian R M :=
@@ -190,8 +195,15 @@ instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian 
         fun x ⟨_, hx2⟩ => ⟨x.1, Prod.ext rfl <| Eq.symm <| LinearMap.mem_ker.1 hx2⟩
       Submodule.map_comap_eq_self this ▸ (noetherian _).map _⟩
 
-instance isNoetherian_pi {R ι : Type*} [Finite ι] :
-    ∀ {M : ι → Type*} [Ring R] [∀ i, AddCommGroup (M i)]
+instance isNoetherian_sup (M₁ M₂ : Submodule R P) [IsNoetherian R M₁] [IsNoetherian R M₂] :
+    IsNoetherian R ↥(M₁ ⊔ M₂) := by
+  have := isNoetherian_range (M₁.subtype.coprod M₂.subtype)
+  rwa [LinearMap.range_coprod, Submodule.range_subtype, Submodule.range_subtype] at this
+
+variable {ι : Type*} [Finite ι]
+
+instance isNoetherian_pi :
+    ∀ {M : ι → Type*} [∀ i, AddCommGroup (M i)]
       [∀ i, Module R (M i)] [∀ i, IsNoetherian R (M i)], IsNoetherian R (∀ i, M i) := by
   apply Finite.induction_empty_option _ _ _ ι
   · exact fun e h ↦ isNoetherian_of_linearEquiv (LinearEquiv.piCongrLeft R _ e)
@@ -201,9 +213,15 @@ instance isNoetherian_pi {R ι : Type*} [Finite ι] :
 /-- A version of `isNoetherian_pi` for non-dependent functions. We need this instance because
 sometimes Lean fails to apply the dependent version in non-dependent settings (e.g., it fails to
 prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
-instance isNoetherian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
-    [IsNoetherian R M] : IsNoetherian R (ι → M) :=
+instance isNoetherian_pi' [IsNoetherian R M] : IsNoetherian R (ι → M) :=
   isNoetherian_pi
+
+instance isNoetherian_iSup :
+    ∀ {M : ι → Submodule R P} [∀ i, IsNoetherian R (M i)], IsNoetherian R ↥(⨆ i, M i) := by
+  apply Finite.induction_empty_option _ _ _ ι
+  · intro _ _ e h _ _; rw [← e.iSup_comp]; apply h
+  · intros; rw [iSup_of_empty]; infer_instance
+  · intro _ _ ih _ _; rw [iSup_option]; infer_instance
 
 end
 

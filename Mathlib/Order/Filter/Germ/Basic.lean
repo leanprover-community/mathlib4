@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Order.Filter.Basic
+import Mathlib.Order.Filter.Tendsto
 import Mathlib.Algebra.Module.Pi
 
 /-!
@@ -79,7 +79,6 @@ def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a
 
 /-- The filter product `(a : α) → ε a` at a filter `l`. This is a dependent version of
   `Filter.Germ`. -/
--- Porting note: removed @[protected]
 def Product (l : Filter α) (ε : α → Type*) : Type _ :=
   Quotient (productSetoid l ε)
 
@@ -396,7 +395,7 @@ theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : 
 -- TODO: #7432
 @[to_additive]
 instance instMonoid [Monoid M] : Monoid (Germ l M) :=
-  { Function.Surjective.monoid ofFun (surjective_quot_mk _) (by rfl)
+  { Function.Surjective.monoid ofFun Quot.mk_surjective (by rfl)
       (fun _ _ => by rfl) fun _ _ => by rfl with
     toSemigroup := instSemigroup
     toOne := instOne

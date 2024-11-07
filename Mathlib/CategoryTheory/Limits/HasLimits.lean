@@ -139,6 +139,12 @@ def limit (F : J ⥤ C) [HasLimit F] :=
 def limit.π (F : J ⥤ C) [HasLimit F] (j : J) : limit F ⟶ F.obj j :=
   (limit.cone F).π.app j
 
+@[reassoc]
+theorem limit.π_comp_eqToHom (F : J ⥤ C) [HasLimit F] {j j' : J} (hj : j = j') :
+    limit.π F j ≫ eqToHom (by subst hj; rfl) = limit.π F j' := by
+  subst hj
+  simp
+
 @[simp]
 theorem limit.cone_x {F : J ⥤ C} [HasLimit F] : (limit.cone F).pt = limit F :=
   rfl
@@ -539,7 +545,7 @@ def isLimitConeOfAdj (F : J ⥤ C) :
     have eq := NatTrans.congr_app (adj.counit.naturality s.π) j
     have eq' := NatTrans.congr_app (adj.left_triangle_components s.pt) j
     dsimp at eq eq' ⊢
-    rw [assoc, eq, reassoc_of% eq']
+    rw [adj.homEquiv_unit, assoc, eq, reassoc_of% eq']
   uniq s m hm := (adj.homEquiv _ _).symm.injective (by ext j; simpa using hm j)
 
 end Adjunction
@@ -643,6 +649,12 @@ def colimit (F : J ⥤ C) [HasColimit F] :=
 /-- The coprojection from a value of the functor to the colimit object. -/
 def colimit.ι (F : J ⥤ C) [HasColimit F] (j : J) : F.obj j ⟶ colimit F :=
   (colimit.cocone F).ι.app j
+
+@[reassoc]
+theorem colimit.eqToHom_comp_ι (F : J ⥤ C) [HasColimit F] {j j' : J} (hj : j = j') :
+    eqToHom (by subst hj; rfl) ≫ colimit.ι F j = colimit.ι F j'  := by
+  subst hj
+  simp
 
 @[simp]
 theorem colimit.cocone_ι {F : J ⥤ C} [HasColimit F] (j : J) :

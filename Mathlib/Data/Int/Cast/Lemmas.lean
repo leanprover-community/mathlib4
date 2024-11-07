@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Hom.Basic
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.Parity
 
 /-!
 # Cast of integers (additional theorems)
@@ -172,18 +173,8 @@ lemma intCast_mul_intCast_mul (h : Commute a b) (m n : ℤ) : Commute (m * a) (n
 
 variable (a) (m n : ℤ)
 
-/- Porting note (#10618): `simp` attribute removed as linter reports:
-simp can prove this:
-  by simp only [Commute.cast_int_right, Commute.refl, Commute.mul_right]
--/
--- @[simp]
 lemma self_intCast_mul : Commute a (n * a : α) := (Commute.refl a).intCast_mul_right n
 
-/- Porting note (#10618): `simp` attribute removed as linter reports:
-simp can prove this:
-  by simp only [Commute.cast_int_left, Commute.refl, Commute.mul_left]
--/
--- @[simp]
 lemma intCast_mul_self : Commute ((n : α) * a) a := (Commute.refl a).intCast_mul_left n
 
 lemma self_intCast_mul_intCast_mul : Commute (m * a : α) (n * a : α) :=
@@ -228,8 +219,6 @@ theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F
     (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
   DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_intCastAddHom h₁
-
-@[simp] lemma zsmul_one [AddGroupWithOne α] (n : ℤ) : n • (1 : α) = n := by cases n <;> simp
 
 @[simp]
 theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=

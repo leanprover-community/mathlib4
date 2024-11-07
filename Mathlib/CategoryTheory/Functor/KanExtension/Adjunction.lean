@@ -22,7 +22,7 @@ right Kan extension along `L`.
 
 namespace CategoryTheory
 
-open Category
+open Category Limits
 
 namespace Functor
 
@@ -121,6 +121,20 @@ lemma lanUnit_app_app_lanAdjunction_counit_app_app (G : D ⥤ H) (X : C) :
 lemma isIso_lanAdjunction_counit_app_iff (G : D ⥤ H) :
     IsIso ((L.lanAdjunction H).counit.app G) ↔ G.IsLeftKanExtension (𝟙 (L ⋙ G)) :=
   (isLeftKanExtension_iff_isIso _ (L.lanUnit.app (L ⋙ G)) _ (by simp)).symm
+
+/-- Composing the left Kan extension of `L : C ⥤ D` with `colim` on shapes `D` is isomorphic
+to `colim` on shapes `C`. -/
+@[simps!]
+noncomputable def lanCompColimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
+    [HasColimitsOfShape C H] [HasColimitsOfShape D H] : L.lan ⋙ colim ≅ colim (C := H) :=
+  Iso.symm <| NatIso.ofComponents
+    (fun G ↦ (colimitIsoOfIsLeftKanExtension _ (L.lanUnit.app G)).symm)
+    (fun f ↦ colimit.hom_ext (fun i ↦ by
+      dsimp
+      rw [ι_colimMap_assoc, ι_colimitIsoOfIsLeftKanExtension_inv,
+        ι_colimitIsoOfIsLeftKanExtension_inv_assoc, ι_colimMap, ← assoc, ← assoc]
+      congr 1
+      exact congr_app (L.lanUnit.naturality f) i))
 
 end
 
@@ -250,6 +264,20 @@ lemma ranCounit_app_app_ranAdjunction_unit_app_app (G : D ⥤ H) (X : C) :
 lemma isIso_ranAdjunction_unit_app_iff (G : D ⥤ H) :
     IsIso ((L.ranAdjunction H).unit.app G) ↔ G.IsRightKanExtension (𝟙 (L ⋙ G)) :=
   (isRightKanExtension_iff_isIso _ (L.ranCounit.app (L ⋙ G)) _ (by simp)).symm
+
+/-- Composing the right Kan extension of `L : C ⥤ D` with `lim` on shapes `D` is isomorphic
+to `lim` on shapes `C`. -/
+@[simps!]
+noncomputable def ranCompLimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasRightKanExtension G]
+    [HasLimitsOfShape C H] [HasLimitsOfShape D H] : L.ran ⋙ lim ≅ lim (C := H) :=
+  NatIso.ofComponents
+    (fun G ↦ limitIsoOfIsRightKanExtension _ (L.ranCounit.app G))
+    (fun f ↦ limit.hom_ext (fun i ↦ by
+      dsimp
+      rw [assoc, assoc, limMap_π, limitIsoOfIsRightKanExtension_hom_π_assoc,
+        limitIsoOfIsRightKanExtension_hom_π, limMap_π_assoc]
+      congr 1
+      exact congr_app (L.ranCounit.naturality f) i))
 
 end
 

@@ -3,12 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Trace.Defs
-import Mathlib.LinearAlgebra.Determinant
 import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Vandermonde
-import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.RingTheory.Trace.Defs
 
 /-!
 # Trace for (finite) ring extensions.
@@ -483,3 +484,22 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [Algebra.IsSepar
   ring
 
 end DetNeZero
+
+section isNilpotent
+
+namespace Algebra
+
+/-- The trace of a nilpotent element is nilpotent. -/
+lemma trace_isNilpotent_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
+    (hx : IsNilpotent x) : IsNilpotent (trace R S x) := by
+  by_cases hS : ∃ s : Finset S, Nonempty (Basis s R S)
+  · obtain ⟨s, ⟨b⟩⟩ := hS
+    have := Module.Finite.of_basis b
+    have := (Module.free_def R S).mpr ⟨s, ⟨b⟩⟩
+    apply LinearMap.isNilpotent_trace_of_isNilpotent (hx.map (lmul R S))
+  · rw [trace_eq_zero_of_not_exists_basis _ hS, LinearMap.zero_apply]
+    exact IsNilpotent.zero
+
+end Algebra
+
+end isNilpotent
