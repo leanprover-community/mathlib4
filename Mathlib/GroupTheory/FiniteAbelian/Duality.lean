@@ -63,7 +63,7 @@ theorem exists_apply_ne_one_of_hasEnoughRootsOfUnity {a : G} (ha : a ≠ 1) :
 /-- A finite commutative group `G` is (noncanonically) isomorphic to the group `G →* Mˣ`
 when `M` is a commutative monoid with enough `n`th roots of unity, where `n` is the exponent
 of `G`. -/
-theorem monoidHom_mulEquiv_self_of_hasEnoughRootsOfUnity : Nonempty (G ≃* (G →* Mˣ)) := by
+theorem mulEquiv_monoidHom_of_hasEnoughRootsOfUnity : Nonempty (G ≃* (G →* Mˣ)) := by
   classical -- to get `DecidableEq ι`
   obtain ⟨ι, _, n, ⟨h₁, h₂⟩⟩ := equiv_prod_multiplicative_zmod_of_finite G
   let e := h₂.some
