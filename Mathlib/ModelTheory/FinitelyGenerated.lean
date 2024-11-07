@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.ModelTheory.Substructures
-import Mathlib.Order.Ideal
 
 /-!
 # Finitely Generated First-Order Structures
@@ -181,8 +180,6 @@ theorem cg_iff_countable [Countable (Σl, L.Functions l)] {s : L.Substructure M}
 theorem cg_of_countable {s : L.Substructure M} [h : Countable s] : s.CG :=
   ⟨s, h.to_set, s.closure_eq⟩
 
-theorem cg_if_countable {s : L.Substructure M} [h : Countable s] : s.CG :=
-  ⟨s, h.to_set, s.closure_eq⟩
 end Substructure
 
 open Substructure
@@ -300,9 +297,6 @@ theorem cg_iff_countable [Countable (Σl, L.Functions l)] : CG L M ↔ Countable
 theorem cg_of_countable [Countable M] : CG L M := by
   simp only [cg_def, Substructure.cg_of_countable, topEquiv.toEquiv.countable_iff]
 
-theorem cg_if_countable [Countable M] : CG L M := by
-  simp only [cg_def, Substructure.cg_if_countable, topEquiv.toEquiv.countable_iff]
-
 theorem FG.cg (h : FG L M) : CG L M :=
   cg_def.2 (fg_def.1 h).cg
 
@@ -354,9 +348,6 @@ instance Substructure.instCountable_fg_substructures_of_countable [Countable M] 
     Countable { S : L.Substructure M // S.FG } :=
   countable_fg_substructures_of_countable
 
-theorem Substructure.SubEquivalence.fg_iff {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
-    f.sub_dom.FG ↔ f.sub_cod.FG := by
-  rw [Substructure.fg_iff_structure_fg, f.equiv.fg_iff, Substructure.fg_iff_structure_fg]
 end Language
 
 end FirstOrder
