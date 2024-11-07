@@ -216,11 +216,11 @@ lemma cliqueFinset_eq_image [NoAccidental t] : (graph t).cliqueFinset 3 = t.imag
 lemma cliqueFinset_eq_map [NoAccidental t] : (graph t).cliqueFinset 3 = t.map toTriangle := by
   simp [cliqueFinset_eq_image, map_eq_image]
 
-@[simp] lemma card_triangles [NoAccidental t] : ((graph t).cliqueFinset 3).card = t.card := by
+@[simp] lemma card_triangles [NoAccidental t] : #((graph t).cliqueFinset 3) = #t := by
   rw [cliqueFinset_eq_map, card_map]
 
 lemma farFromTriangleFree [ExplicitDisjoint t] {ε : 𝕜}
-    (ht : ε * ((Fintype.card α + Fintype.card β + Fintype.card γ) ^ 2 : ℕ) ≤ t.card) :
+    (ht : ε * ((Fintype.card α + Fintype.card β + Fintype.card γ) ^ 2 : ℕ) ≤ #t) :
     (graph t).FarFromTriangleFree ε :=
   farFromTriangleFree_of_disjoint_triangles (t.map toTriangle)
     (map_subset_iff_subset_preimage.2 fun x hx ↦ by simpa using toTriangle_is3Clique hx)

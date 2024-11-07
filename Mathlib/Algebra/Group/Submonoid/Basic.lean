@@ -266,7 +266,6 @@ theorem sup_eq_closure (N N' : Submonoid M) : N ⊔ N' = closure ((N : Set M) �
 theorem closure_iUnion {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
   (Submonoid.gi M).gc.l_iSup
 
--- Porting note (#10618): `simp` can now prove this, so we remove the `@[simp]` attribute
 @[to_additive]
 theorem closure_singleton_le_iff_mem (m : M) (p : Submonoid M) : closure {m} ≤ p ↔ m ∈ p := by
   rw [closure_le, singleton_subset_iff, SetLike.mem_coe]

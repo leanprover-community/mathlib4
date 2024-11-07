@@ -1890,7 +1890,7 @@ theorem isBigO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAd
 @[simp]
 theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
     {f : α → ∀ i, E' i} : f =o[l] g' ↔ ∀ i, (fun x => f x i) =o[l] g' := by
-  simp (config := { contextual := true }) only [IsLittleO_def, isBigOWith_pi, le_of_lt]
+  simp +contextual only [IsLittleO_def, isBigOWith_pi, le_of_lt]
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
 
 theorem IsBigO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
@@ -2047,5 +2047,13 @@ protected theorem isBigO_rev_principal (hf : ContinuousOn f s)
 end IsBigORev
 
 end ContinuousOn
+
+/-- The (scalar) product of a sequence that tends to zero with a bounded one also tends to zero. -/
+lemma NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 𝔸 : Type*}
+    [NormedDivisionRing 𝕜] [NormedAddCommGroup 𝔸] [Module 𝕜 𝔸] [BoundedSMul 𝕜 𝔸] {l : Filter ι}
+    {ε : ι → 𝕜} {f : ι → 𝔸} (hε : Tendsto ε l (𝓝 0)) (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) :
+    Tendsto (ε • f) l (𝓝 0) := by
+  rw [← isLittleO_one_iff 𝕜] at hε ⊢
+  simpa using IsLittleO.smul_isBigO hε (hf.isBigO_const (one_ne_zero : (1 : 𝕜) ≠ 0))
 
 set_option linter.style.longFile 2200

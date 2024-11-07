@@ -104,7 +104,6 @@ theorem preimage_symm_preimage {α β} (e : α ≃ β) (s : Set α) : e ⁻¹' (
 theorem preimage_subset {α β} (e : α ≃ β) (s t : Set β) : e ⁻¹' s ⊆ e ⁻¹' t ↔ s ⊆ t :=
   e.surjective.preimage_subset_preimage_iff
 
--- Porting note (#10618): removed `simp` attribute. `simp` can prove it.
 theorem image_subset {α β} (e : α ≃ β) (s t : Set α) : e '' s ⊆ e '' t ↔ s ⊆ t :=
   image_subset_image_iff e.injective
 
