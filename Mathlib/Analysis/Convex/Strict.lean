@@ -365,7 +365,7 @@ theorem strictConvex_iff_div :
 theorem StrictConvex.mem_smul_of_zero_mem (hs : StrictConvex 𝕜 s) (zero_mem : (0 : E) ∈ s)
     (hx : x ∈ s) (hx₀ : x ≠ 0) {t : 𝕜} (ht : 1 < t) : x ∈ t • interior s := by
   rw [mem_smul_set_iff_inv_smul_mem₀ (by positivity)]
-  exact hs.smul_mem_of_zero_mem zero_mem hx hx₀ (by positivity) (inv_lt_one ht)
+  exact hs.smul_mem_of_zero_mem zero_mem hx hx₀ (by positivity) (inv_lt_one_of_one_lt₀ ht)
 
 end AddCommGroup
 

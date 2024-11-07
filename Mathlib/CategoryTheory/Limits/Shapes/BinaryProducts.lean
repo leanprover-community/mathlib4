@@ -29,9 +29,7 @@ braiding and associating isomorphisms, and the product comparison morphism.
 -/
 
 
-noncomputable section
-
-universe v u u₂
+universe v v₁ u u₁ u₂
 
 open CategoryTheory
 
@@ -48,8 +46,12 @@ open WalkingPair
 /-- The equivalence swapping left and right.
 -/
 def WalkingPair.swap : WalkingPair ≃ WalkingPair where
-  toFun j := WalkingPair.recOn j right left
-  invFun j := WalkingPair.recOn j right left
+  toFun j := match j with
+    | left => right
+    | right => left
+  invFun j := match j with
+    | left => right
+    | right => left
   left_inv j := by cases j; repeat rfl
   right_inv j := by cases j; repeat rfl
 
@@ -72,7 +74,9 @@ theorem WalkingPair.swap_symm_apply_ff : WalkingPair.swap.symm right = left :=
 /-- An equivalence from `WalkingPair` to `Bool`, sometimes useful when reindexing limits.
 -/
 def WalkingPair.equivBool : WalkingPair ≃ Bool where
-  toFun j := WalkingPair.recOn j true false
+  toFun j := match j with
+    | left => true
+    | right => false
   -- to match equiv.sum_equiv_sigma_bool
   invFun b := Bool.recOn b right left
   left_inv j := by cases j; repeat rfl
@@ -132,7 +136,9 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
 /-- The natural transformation between two functors out of the
  walking pair, specified by its components. -/
 def mapPair : F ⟶ G where
-  app j := Discrete.recOn j fun j => WalkingPair.casesOn j f g
+  app j := match j with
+    | ⟨left⟩ => f
+    | ⟨right⟩ => g
   naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by aesop_cat
 
 @[simp]
@@ -147,7 +153,9 @@ theorem mapPair_right : (mapPair f g).app ⟨right⟩ = g :=
 components. -/
 @[simps!]
 def mapPairIso (f : F.obj ⟨left⟩ ≅ G.obj ⟨left⟩) (g : F.obj ⟨right⟩ ≅ G.obj ⟨right⟩) : F ≅ G :=
-  NatIso.ofComponents (fun j => Discrete.recOn j fun j => WalkingPair.casesOn j f g)
+  NatIso.ofComponents (fun j ↦ match j with
+    | ⟨left⟩ => f
+    | ⟨right⟩ => g)
     (fun ⟨⟨u⟩⟩ => by aesop_cat)
 
 end
@@ -160,7 +168,7 @@ def diagramIsoPair (F : Discrete WalkingPair ⥤ C) :
 
 section
 
-variable {D : Type u} [Category.{v} D]
+variable {D : Type u₁} [Category.{v₁} D]
 
 /-- The natural isomorphism between `pair X Y ⋙ F` and `pair (F.obj X) (F.obj Y)`. -/
 def pairComp (X Y : C) (F : C ⥤ D) : pair X Y ⋙ F ≅ pair (F.obj X) (F.obj Y) :=
@@ -188,6 +196,12 @@ theorem BinaryFan.π_app_left {X Y : C} (s : BinaryFan X Y) : s.π.app ⟨Walkin
 theorem BinaryFan.π_app_right {X Y : C} (s : BinaryFan X Y) : s.π.app ⟨WalkingPair.right⟩ = s.snd :=
   rfl
 
+/-- Constructs an isomorphism of `BinaryFan`s out of an isomorphism of the tips that commutes with
+the projections. -/
+def BinaryFan.ext {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
+    (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) : c ≅ c' :=
+  Cones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
+
 /-- A convenient way to show that a binary fan is a limit. -/
 def BinaryFan.IsLimit.mk {X Y : C} (s : BinaryFan X Y)
     (lift : ∀ {T : C} (_ : T ⟶ X) (_ : T ⟶ Y), T ⟶ s.pt)
@@ -202,7 +216,7 @@ def BinaryFan.IsLimit.mk {X Y : C} (s : BinaryFan X Y)
       rintro t (rfl | rfl)
       · exact hl₁ _ _
       · exact hl₂ _ _)
-    fun t m h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
+    fun _ _ h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
 
 theorem BinaryFan.IsLimit.hom_ext {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s) {f g : W ⟶ s.pt}
     (h₁ : f ≫ s.fst = g ≫ s.fst) (h₂ : f ≫ s.snd = g ≫ s.snd) : f = g :=
@@ -216,6 +230,12 @@ abbrev BinaryCofan.inl {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPai
 
 /-- The second inclusion of a binary cofan. -/
 abbrev BinaryCofan.inr {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPair.right⟩
+
+/-- Constructs an isomorphism of `BinaryCofan`s out of an isomorphism of the tips that commutes with
+the injections. -/
+def BinaryCofan.ext {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
+    (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) : c ≅ c' :=
+  Cocones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
 
 @[simp]
 theorem BinaryCofan.ι_app_left {X Y : C} (s : BinaryCofan X Y) :
@@ -239,7 +259,7 @@ def BinaryCofan.IsColimit.mk {X Y : C} (s : BinaryCofan X Y)
       rintro t (rfl | rfl)
       · exact hd₁ _ _
       · exact hd₂ _ _)
-    fun t m h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
+    fun _ _ h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
 
 theorem BinaryCofan.IsColimit.hom_ext {W X Y : C} {s : BinaryCofan X Y} (h : IsColimit s)
     {f g : s.pt ⟶ W} (h₁ : s.inl ≫ f = s.inl ≫ g) (h₂ : s.inr ≫ f = s.inr ≫ g) : f = g :=
@@ -461,12 +481,12 @@ abbrev HasBinaryCoproduct (X Y : C) :=
 
 /-- If we have a product of `X` and `Y`, we can access it using `prod X Y` or
     `X ⨯ Y`. -/
-abbrev prod (X Y : C) [HasBinaryProduct X Y] :=
+noncomputable abbrev prod (X Y : C) [HasBinaryProduct X Y] :=
   limit (pair X Y)
 
 /-- If we have a coproduct of `X` and `Y`, we can access it using `coprod X Y` or
     `X ⨿ Y`. -/
-abbrev coprod (X Y : C) [HasBinaryCoproduct X Y] :=
+noncomputable abbrev coprod (X Y : C) [HasBinaryCoproduct X Y] :=
   colimit (pair X Y)
 
 /-- Notation for the product -/
@@ -476,23 +496,23 @@ notation:20 X " ⨯ " Y:20 => prod X Y
 notation:20 X " ⨿ " Y:20 => coprod X Y
 
 /-- The projection map to the first component of the product. -/
-abbrev prod.fst {X Y : C} [HasBinaryProduct X Y] : X ⨯ Y ⟶ X :=
+noncomputable abbrev prod.fst {X Y : C} [HasBinaryProduct X Y] : X ⨯ Y ⟶ X :=
   limit.π (pair X Y) ⟨WalkingPair.left⟩
 
 /-- The projection map to the second component of the product. -/
-abbrev prod.snd {X Y : C} [HasBinaryProduct X Y] : X ⨯ Y ⟶ Y :=
+noncomputable abbrev prod.snd {X Y : C} [HasBinaryProduct X Y] : X ⨯ Y ⟶ Y :=
   limit.π (pair X Y) ⟨WalkingPair.right⟩
 
 /-- The inclusion map from the first component of the coproduct. -/
-abbrev coprod.inl {X Y : C} [HasBinaryCoproduct X Y] : X ⟶ X ⨿ Y :=
+noncomputable abbrev coprod.inl {X Y : C} [HasBinaryCoproduct X Y] : X ⟶ X ⨿ Y :=
   colimit.ι (pair X Y) ⟨WalkingPair.left⟩
 
 /-- The inclusion map from the second component of the coproduct. -/
-abbrev coprod.inr {X Y : C} [HasBinaryCoproduct X Y] : Y ⟶ X ⨿ Y :=
+noncomputable abbrev coprod.inr {X Y : C} [HasBinaryCoproduct X Y] : Y ⟶ X ⨿ Y :=
   colimit.ι (pair X Y) ⟨WalkingPair.right⟩
 
 /-- The binary fan constructed from the projection maps is a limit. -/
-def prodIsProd (X Y : C) [HasBinaryProduct X Y] :
+noncomputable def prodIsProd (X Y : C) [HasBinaryProduct X Y] :
     IsLimit (BinaryFan.mk (prod.fst : X ⨯ Y ⟶ X) prod.snd) :=
   (limit.isLimit _).ofIsoLimit (Cones.ext (Iso.refl _) (fun ⟨u⟩ => by
     cases u
@@ -501,7 +521,7 @@ def prodIsProd (X Y : C) [HasBinaryProduct X Y] :
   ))
 
 /-- The binary cofan constructed from the coprojection maps is a colimit. -/
-def coprodIsCoprod (X Y : C) [HasBinaryCoproduct X Y] :
+noncomputable def coprodIsCoprod (X Y : C) [HasBinaryCoproduct X Y] :
     IsColimit (BinaryCofan.mk (coprod.inl : X ⟶ X ⨿ Y) coprod.inr) :=
   (colimit.isColimit _).ofIsoColimit (Cocones.ext (Iso.refl _) (fun ⟨u⟩ => by
     cases u
@@ -521,29 +541,29 @@ theorem coprod.hom_ext {W X Y : C} [HasBinaryCoproduct X Y] {f g : X ⨿ Y ⟶ W
 
 /-- If the product of `X` and `Y` exists, then every pair of morphisms `f : W ⟶ X` and `g : W ⟶ Y`
     induces a morphism `prod.lift f g : W ⟶ X ⨯ Y`. -/
-abbrev prod.lift {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) : W ⟶ X ⨯ Y :=
+noncomputable abbrev prod.lift {W X Y : C} [HasBinaryProduct X Y]
+    (f : W ⟶ X) (g : W ⟶ Y) : W ⟶ X ⨯ Y :=
   limit.lift _ (BinaryFan.mk f g)
 
 /-- diagonal arrow of the binary product in the category `fam I` -/
-abbrev diag (X : C) [HasBinaryProduct X X] : X ⟶ X ⨯ X :=
+noncomputable abbrev diag (X : C) [HasBinaryProduct X X] : X ⟶ X ⨯ X :=
   prod.lift (𝟙 _) (𝟙 _)
 
 /-- If the coproduct of `X` and `Y` exists, then every pair of morphisms `f : X ⟶ W` and
     `g : Y ⟶ W` induces a morphism `coprod.desc f g : X ⨿ Y ⟶ W`. -/
-abbrev coprod.desc {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶ W) : X ⨿ Y ⟶ W :=
+noncomputable abbrev coprod.desc {W X Y : C} [HasBinaryCoproduct X Y]
+    (f : X ⟶ W) (g : Y ⟶ W) : X ⨿ Y ⟶ W :=
   colimit.desc _ (BinaryCofan.mk f g)
 
 /-- codiagonal arrow of the binary coproduct -/
-abbrev codiag (X : C) [HasBinaryCoproduct X X] : X ⨿ X ⟶ X :=
+noncomputable abbrev codiag (X : C) [HasBinaryCoproduct X X] : X ⨿ X ⟶ X :=
   coprod.desc (𝟙 _) (𝟙 _)
 
--- Porting note (#10618): simp removes as simp can prove this
 @[reassoc]
 theorem prod.lift_fst {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     prod.lift f g ≫ prod.fst = f :=
   limit.lift_π _ _
 
--- Porting note (#10618): simp removes as simp can prove this
 @[reassoc]
 theorem prod.lift_snd {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     prod.lift f g ≫ prod.snd = g :=
@@ -581,30 +601,30 @@ instance coprod.epi_desc_of_epi_right {W X Y : C} [HasBinaryCoproduct X Y] (f : 
 
 /-- If the product of `X` and `Y` exists, then every pair of morphisms `f : W ⟶ X` and `g : W ⟶ Y`
     induces a morphism `l : W ⟶ X ⨯ Y` satisfying `l ≫ Prod.fst = f` and `l ≫ Prod.snd = g`. -/
-def prod.lift' {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
+noncomputable def prod.lift' {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     { l : W ⟶ X ⨯ Y // l ≫ prod.fst = f ∧ l ≫ prod.snd = g } :=
   ⟨prod.lift f g, prod.lift_fst _ _, prod.lift_snd _ _⟩
 
 /-- If the coproduct of `X` and `Y` exists, then every pair of morphisms `f : X ⟶ W` and
     `g : Y ⟶ W` induces a morphism `l : X ⨿ Y ⟶ W` satisfying `coprod.inl ≫ l = f` and
     `coprod.inr ≫ l = g`. -/
-def coprod.desc' {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶ W) :
+noncomputable def coprod.desc' {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶ W) :
     { l : X ⨿ Y ⟶ W // coprod.inl ≫ l = f ∧ coprod.inr ≫ l = g } :=
   ⟨coprod.desc f g, coprod.inl_desc _ _, coprod.inr_desc _ _⟩
 
 /-- If the products `W ⨯ X` and `Y ⨯ Z` exist, then every pair of morphisms `f : W ⟶ Y` and
     `g : X ⟶ Z` induces a morphism `prod.map f g : W ⨯ X ⟶ Y ⨯ Z`. -/
-def prod.map {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ⟶ Y) (g : X ⟶ Z) :
-    W ⨯ X ⟶ Y ⨯ Z :=
+noncomputable def prod.map {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z]
+    (f : W ⟶ Y) (g : X ⟶ Z) : W ⨯ X ⟶ Y ⨯ Z :=
   limMap (mapPair f g)
 
 /-- If the coproducts `W ⨿ X` and `Y ⨿ Z` exist, then every pair of morphisms `f : W ⟶ Y` and
     `g : W ⟶ Z` induces a morphism `coprod.map f g : W ⨿ X ⟶ Y ⨿ Z`. -/
-def coprod.map {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] (f : W ⟶ Y)
-    (g : X ⟶ Z) : W ⨿ X ⟶ Y ⨿ Z :=
+noncomputable def coprod.map {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z]
+    (f : W ⟶ Y) (g : X ⟶ Z) : W ⨿ X ⟶ Y ⨿ Z :=
   colimMap (mapPair f g)
 
-section ProdLemmas
+noncomputable section ProdLemmas
 
 -- Making the reassoc version of this a simp lemma seems to be more harmful than helpful.
 @[reassoc, simp]
@@ -688,15 +708,15 @@ instance prod.map_mono {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g :
     · rw [← cancel_mono g]
       simpa using congr_arg (fun f => f ≫ prod.snd) h⟩
 
-@[reassoc] -- Porting note (#10618): simp can prove these
+@[reassoc]
 theorem prod.diag_map {X Y : C} (f : X ⟶ Y) [HasBinaryProduct X X] [HasBinaryProduct Y Y] :
     diag X ≫ prod.map f f = f ≫ diag Y := by simp
 
-@[reassoc] -- Porting note (#10618): simp can prove these
+@[reassoc]
 theorem prod.diag_map_fst_snd {X Y : C} [HasBinaryProduct X Y] [HasBinaryProduct (X ⨯ Y) (X ⨯ Y)] :
     diag (X ⨯ Y) ≫ prod.map prod.fst prod.snd = 𝟙 (X ⨯ Y) := by simp
 
-@[reassoc] -- Porting note (#10618): simp can prove these
+@[reassoc]
 theorem prod.diag_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
     (g : X ⟶ Y) (g' : X' ⟶ Y') :
     diag (X ⨯ X') ≫ prod.map (prod.fst ≫ g) (prod.snd ≫ g') = prod.map g g' := by simp
@@ -706,7 +726,7 @@ instance {X : C} [HasBinaryProduct X X] : IsSplitMono (diag X) :=
 
 end ProdLemmas
 
-section CoprodLemmas
+noncomputable section CoprodLemmas
 
 -- @[reassoc (attr := simp)]
 @[simp] -- Porting note: removing reassoc tag since result is not hygienic (two h's)
@@ -847,7 +867,7 @@ theorem hasBinaryCoproducts_of_hasColimit_pair [∀ {X Y : C}, HasColimit (pair 
     HasBinaryCoproducts C :=
   { has_colimit := fun F => hasColimitOfIso (diagramIsoPair F) }
 
-section
+noncomputable section
 
 variable {C}
 
@@ -938,7 +958,7 @@ theorem prod.triangle [HasBinaryProducts C] (X Y : C) :
 
 end
 
-section
+noncomputable section
 
 variable {C}
 variable [HasBinaryCoproducts C]
@@ -1001,7 +1021,7 @@ theorem coprod.triangle (X Y : C) :
 
 end
 
-section ProdFunctor
+noncomputable section ProdFunctor
 
 -- Porting note (#10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryProducts C]
@@ -1011,7 +1031,7 @@ variable {C} [Category.{v} C] [HasBinaryProducts C]
 def prod.functor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⨯ Y
-      map := fun {Y Z} => prod.map (𝟙 X) }
+      map := fun {_ _} => prod.map (𝟙 X) }
   map f :=
     { app := fun T => prod.map f (𝟙 T) }
 
@@ -1022,7 +1042,7 @@ def prod.functorLeftComp (X Y : C) :
 
 end ProdFunctor
 
-section CoprodFunctor
+noncomputable section CoprodFunctor
 
 -- Porting note (#10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
@@ -1032,7 +1052,7 @@ variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 def coprod.functor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⨿ Y
-      map := fun {Y Z} => coprod.map (𝟙 X) }
+      map := fun {_ _} => coprod.map (𝟙 X) }
   map f := { app := fun T => coprod.map f (𝟙 T) }
 
 /-- The coproduct functor can be decomposed. -/
@@ -1042,7 +1062,7 @@ def coprod.functorLeftComp (X Y : C) :
 
 end CoprodFunctor
 
-section ProdComparison
+noncomputable section ProdComparison
 
 universe w w' u₃
 
@@ -1126,7 +1146,7 @@ theorem prodComparison_comp :
 
 end ProdComparison
 
-section CoprodComparison
+noncomputable section CoprodComparison
 
 universe w
 
@@ -1208,13 +1228,15 @@ variable {C : Type u} [Category.{v} C]
 
 /-- Auxiliary definition for `Over.coprod`. -/
 @[simps]
-def Over.coprodObj [HasBinaryCoproducts C] {A : C} : Over A → Over A ⥤ Over A := fun f =>
+noncomputable def Over.coprodObj [HasBinaryCoproducts C] {A : C} :
+    Over A → Over A ⥤ Over A :=
+  fun f =>
   { obj := fun g => Over.mk (coprod.desc f.hom g.hom)
     map := fun k => Over.homMk (coprod.map (𝟙 _) k.left) }
 
 /-- A category with binary coproducts has a functorial `sup` operation on over categories. -/
 @[simps]
-def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over A ⥤ Over A where
+noncomputable def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over A ⥤ Over A where
   obj f := Over.coprodObj f
   map k :=
     { app := fun g => Over.homMk (coprod.map k.left (𝟙 _)) (by

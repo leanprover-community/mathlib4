@@ -3,9 +3,11 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
-import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Order.Lattice
+import Mathlib.Tactic.Contrapose
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Natural number logarithms
@@ -18,8 +20,17 @@ These are interesting because, for `1 < b`, `Nat.log b` and `Nat.clog b` are res
 left adjoints of `Nat.pow b`. See `pow_le_iff_le_log` and `le_pow_iff_clog_le`.
 -/
 
+assert_not_exists OrderTop
 
 namespace Nat
+
+#adaptation_note
+/--
+After leanprover/lean4#5338 we just unused argument warnings,
+but these are used in the decreasing by blocks.
+If instead we inline the `have` blocks, the unusedHavesSuffices linter triggers.
+-/
+set_option linter.unusedVariables false
 
 /-! ### Floor logarithm -/
 
@@ -121,15 +132,11 @@ lemma log_le_self (b x : ℕ) : log b x ≤ x :=
 theorem lt_pow_succ_log_self {b : ℕ} (hb : 1 < b) (x : ℕ) : x < b ^ (log b x).succ :=
   lt_pow_of_log_lt hb (lt_succ_self _)
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
     log b n = m ↔ b ^ m ≤ n ∧ n < b ^ (m + 1) := by
   rcases em (1 < b ∧ n ≠ 0) with (⟨hb, hn⟩ | hbn)
   · rw [le_antisymm_iff, ← Nat.lt_succ_iff, ← pow_le_iff_le_log, ← lt_pow_iff_log_lt,
-      _root_.and_comm] <;> assumption
+      and_comm] <;> assumption
   have hm : m ≠ 0 := h.resolve_right hbn
   rw [not_and_or, not_lt, Ne, not_not] at hbn
   rcases hbn with (hb | rfl)

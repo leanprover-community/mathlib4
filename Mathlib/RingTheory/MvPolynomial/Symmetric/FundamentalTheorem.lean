@@ -60,8 +60,8 @@ section accumulate
 
 /-- The `j`th entry of `accumulate n m t` is the sum of `t i` over all `i ≥ j`. -/
 @[simps] def accumulate (n m : ℕ) : (Fin n → ℕ) →+ (Fin m → ℕ) where
-  toFun t j := ∑ i in univ.filter (fun i : Fin n ↦ (j : ℕ) ≤ i), t i
-  map_zero' := funext <| fun j ↦ sum_eq_zero <| fun h _ ↦ rfl
+  toFun t j := ∑ i : Fin n with j.val ≤ i.val, t i
+  map_zero' := funext <| fun _ ↦ sum_eq_zero <| fun _ _ ↦ rfl
   map_add' t₁ t₂ := funext <| fun j ↦ by dsimp only; exact sum_add_distrib
 
 /-- The `i`th entry of `invAccumulate n m s` is `s i - s (i+1)`, where `s j = 0` if `j ≥ m`. -/
@@ -146,7 +146,7 @@ variable (σ) in
 noncomputable def esymmAlgHomMonomial (t : Fin n →₀ ℕ) (r : R) :
     MvPolynomial σ R := (esymmAlgHom σ R n <| monomial t r).val
 
-variable {i : Fin n} {j : Fin m} {r : R}
+variable {i : Fin n} {r : R}
 
 lemma isSymmetric_esymmAlgHomMonomial (t : Fin n →₀ ℕ) (r : R) :
     (esymmAlgHomMonomial σ t r).IsSymmetric := (esymmAlgHom _ _ _ _).2
@@ -178,7 +178,7 @@ private lemma supDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
       supDegree_single_ne_zero _ one_ne_zero, leadingCoeff_single toLex.injective] at this
   · exact mem_powersetCard.2 ⟨subset_univ _, Fin.card_Iic _⟩
   intro t ht hne
-  have ht' : t.card = (Iic (⟨i, him⟩ : Fin m)).card := by
+  have ht' : #t = #(Iic (⟨i, him⟩ : Fin m)) := by
     rw [(mem_powersetCard.1 ht).2, Fin.card_Iic]
   simp_rw [← single_eq_monomial, supDegree_single_ne_zero _ one_ne_zero,
     ← Finsupp.indicator_eq_sum_single]

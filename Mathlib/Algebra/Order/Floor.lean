@@ -222,21 +222,13 @@ theorem floor_eq_zero : ⌊a⌋₊ = 0 ↔ a < 1 := by
   rw [← lt_one_iff, ← @cast_one α]
   exact floor_lt' Nat.one_ne_zero
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem floor_eq_iff (ha : 0 ≤ a) : ⌊a⌋₊ = n ↔ ↑n ≤ a ∧ a < ↑n + 1 := by
   rw [← le_floor_iff ha, ← Nat.cast_one, ← Nat.cast_add, ← floor_lt ha, Nat.lt_add_one_iff,
-    le_antisymm_iff, _root_.and_comm]
+    le_antisymm_iff, and_comm]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem floor_eq_iff' (hn : n ≠ 0) : ⌊a⌋₊ = n ↔ ↑n ≤ a ∧ a < ↑n + 1 := by
   rw [← le_floor_iff' hn, ← Nat.cast_one, ← Nat.cast_add, ← floor_lt' (Nat.add_one_ne_zero n),
-    Nat.lt_add_one_iff, le_antisymm_iff, _root_.and_comm]
+    Nat.lt_add_one_iff, le_antisymm_iff, and_comm]
 
 theorem floor_eq_on_Ico (n : ℕ) : ∀ a ∈ (Set.Ico n (n + 1) : Set α), ⌊a⌋₊ = n := fun _ ⟨h₀, h₁⟩ =>
   (floor_eq_iff <| n.cast_nonneg.trans h₀).mpr ⟨h₀, h₁⟩
@@ -259,8 +251,6 @@ theorem preimage_floor_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
 theorem lt_ceil : n < ⌈a⌉₊ ↔ (n : α) < a :=
   lt_iff_lt_of_le_iff_le ceil_le
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem add_one_le_ceil_iff : n + 1 ≤ ⌈a⌉₊ ↔ (n : α) < a := by
   rw [← Nat.lt_ceil, Nat.add_one_le_iff]
 
@@ -328,14 +318,10 @@ theorem floor_lt_ceil_of_lt_of_pos {a b : α} (h : a < b) (h' : 0 < b) : ⌊a⌋
     exact h.trans_le (le_ceil _)
   · rwa [floor_of_nonpos ha.le, lt_ceil, Nat.cast_zero]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem ceil_eq_iff (hn : n ≠ 0) : ⌈a⌉₊ = n ↔ ↑(n - 1) < a ∧ a ≤ n := by
   rw [← ceil_le, ← not_le, ← ceil_le, not_le,
     tsub_lt_iff_right (Nat.add_one_le_iff.2 (pos_iff_ne_zero.2 hn)), Nat.lt_add_one_iff,
-    le_antisymm_iff, _root_.and_comm]
+    le_antisymm_iff, and_comm]
 
 @[simp]
 theorem preimage_ceil_zero : (Nat.ceil : α → ℕ) ⁻¹' {0} = Iic 0 :=
@@ -669,6 +655,9 @@ theorem floor_lt : ⌊a⌋ < z ↔ a < z :=
 theorem floor_le (a : α) : (⌊a⌋ : α) ≤ a :=
   gc_coe_floor.l_u_le a
 
+theorem floor_le_iff : ⌊a⌋ ≤ z ↔ a < z + 1 := by rw [← lt_add_one_iff, floor_lt]; norm_cast
+theorem lt_floor_iff : z < ⌊a⌋ ↔ z + 1 ≤ a := by rw [← add_one_le_iff, le_floor]; norm_cast
+
 theorem floor_nonneg : 0 ≤ ⌊a⌋ ↔ 0 ≤ a := by rw [le_floor, Int.cast_zero]
 
 @[simp]
@@ -936,8 +925,6 @@ theorem fract_ofNat (n : ℕ) [n.AtLeastTwo] :
     fract ((no_index (OfNat.ofNat n)) : α) = 0 :=
   fract_natCast n
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem fract_floor (a : α) : fract (⌊a⌋ : α) = 0 :=
   fract_intCast _
 
@@ -1273,7 +1260,7 @@ lemma ceil_div_ceil_inv_sub_one (ha : 1 ≤ a) : ⌈⌈(a - 1)⁻¹⌉ / a⌉ = 
   have : 0 < ⌈(a - 1)⁻¹⌉ := ceil_pos.2 <| by positivity
   refine le_antisymm (ceil_le.2 <| div_le_self (by positivity) ha.le) <| ?_
   rw [le_ceil_iff, sub_lt_comm, div_eq_mul_inv, ← mul_one_sub,
-      ← lt_div_iff₀ (sub_pos.2 <| inv_lt_one ha)]
+    ← lt_div_iff₀ (sub_pos.2 <| inv_lt_one_of_one_lt₀ ha)]
   convert ceil_lt_add_one _ using 1
   field_simp
 
@@ -1596,7 +1583,7 @@ variable [LinearOrderedRing α] [FloorRing α]
 instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α where
   floor a := ⌊a⌋.toNat
   ceil a := ⌈a⌉.toNat
-  floor_of_neg {a} ha := Int.toNat_of_nonpos (Int.floor_nonpos ha.le)
+  floor_of_neg {_} ha := Int.toNat_of_nonpos (Int.floor_nonpos ha.le)
   gc_floor {a n} ha := by rw [Int.le_toNat (Int.floor_nonneg.2 ha), Int.le_floor, Int.cast_natCast]
   gc_ceil a n := by rw [Int.toNat_le, Int.ceil_le, Int.cast_natCast]
 

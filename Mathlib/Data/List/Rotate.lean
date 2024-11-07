@@ -51,7 +51,7 @@ theorem rotate'_cons_succ (l : List α) (a : α) (n : ℕ) :
 @[simp]
 theorem length_rotate' : ∀ (l : List α) (n : ℕ), (l.rotate' n).length = l.length
   | [], _ => by simp
-  | a :: l, 0 => rfl
+  | _ :: _, 0 => rfl
   | a :: l, n + 1 => by rw [List.rotate', length_rotate' (l ++ [a]) n]; simp
 
 theorem rotate'_eq_drop_append_take :
@@ -104,15 +104,11 @@ theorem rotate_cons_succ (l : List α) (a : α) (n : ℕ) :
     (a :: l : List α).rotate (n + 1) = (l ++ [a]).rotate n := by
   rw [rotate_eq_rotate', rotate_eq_rotate', rotate'_cons_succ]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 @[simp]
 theorem mem_rotate : ∀ {l : List α} {a : α} {n : ℕ}, a ∈ l.rotate n ↔ a ∈ l
   | [], _, n => by simp
   | a :: l, _, 0 => by simp
-  | a :: l, _, n + 1 => by simp [rotate_cons_succ, mem_rotate, _root_.or_comm]
+  | a :: l, _, n + 1 => by simp [rotate_cons_succ, mem_rotate, or_comm]
 
 @[simp]
 theorem length_rotate (l : List α) (n : ℕ) : (l.rotate n).length = l.length := by
@@ -614,7 +610,7 @@ variable [DecidableEq α]
 instance isRotatedDecidable (l l' : List α) : Decidable (l ~r l') :=
   decidable_of_iff' _ isRotated_iff_mem_map_range
 
-instance {l l' : List α} : Decidable (@Setoid.r _ (IsRotated.setoid α) l l') :=
+instance {l l' : List α} : Decidable (IsRotated.setoid α l l') :=
   List.isRotatedDecidable _ _
 
 end Decidable

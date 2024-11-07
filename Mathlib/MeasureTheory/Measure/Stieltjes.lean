@@ -136,7 +136,7 @@ at `x` is a Stieltjes function, i.e., it is monotone and right-continuous. -/
 noncomputable def _root_.Monotone.stieltjesFunction {f : ℝ → ℝ} (hf : Monotone f) :
     StieltjesFunction where
   toFun := rightLim f
-  mono' x y hxy := hf.rightLim hxy
+  mono' _ _ hxy := hf.rightLim hxy
   right_continuous' := by
     intro x s hs
     obtain ⟨l, u, hlu, lus⟩ : ∃ l u : ℝ, rightLim f x ∈ Ioo l u ∧ Ioo l u ⊆ s :=
@@ -344,7 +344,7 @@ theorem outer_trim : f.outer.trim = f.outer := by
 theorem borel_le_measurable : borel ℝ ≤ f.outer.caratheodory := by
   rw [borel_eq_generateFrom_Ioi]
   refine MeasurableSpace.generateFrom_le ?_
-  simp (config := { contextual := true }) [f.measurableSet_Ioi]
+  simp +contextual [f.measurableSet_Ioi]
 
 /-! ### The measure associated to a Stieltjes function -/
 

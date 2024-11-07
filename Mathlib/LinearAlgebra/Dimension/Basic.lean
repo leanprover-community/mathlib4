@@ -76,7 +76,7 @@ theorem cardinal_lift_le_rank {ι : Type w} {v : ι → M}
     (hv : LinearIndependent R v) :
     Cardinal.lift.{v} #ι ≤ Cardinal.lift.{w} (Module.rank R M) := by
   rw [Module.rank]
-  refine le_trans ?_ (lift_le.mpr <| le_ciSup (bddAbove_range.{v, v} _) ⟨_, hv.coe_range⟩)
+  refine le_trans ?_ (lift_le.mpr <| le_ciSup (bddAbove_range _) ⟨_, hv.coe_range⟩)
   exact lift_mk_le'.mpr ⟨(Equiv.ofInjective _ hv.injective).toEmbedding⟩
 
 lemma aleph0_le_rank {ι : Type w} [Infinite ι] {v : ι → M}
@@ -92,15 +92,6 @@ theorem cardinal_le_rank' {s : Set M}
   hs.cardinal_le_rank
 
 end LinearIndependent
-
-@[deprecated (since := "2023-12-27")]
-alias cardinal_lift_le_rank_of_linearIndependent := LinearIndependent.cardinal_lift_le_rank
-@[deprecated (since := "2023-12-27")]
-alias cardinal_lift_le_rank_of_linearIndependent' := LinearIndependent.cardinal_lift_le_rank
-@[deprecated (since := "2023-12-27")]
-alias cardinal_le_rank_of_linearIndependent := LinearIndependent.cardinal_le_rank
-@[deprecated (since := "2023-12-27")]
-alias cardinal_le_rank_of_linearIndependent' := LinearIndependent.cardinal_le_rank'
 
 section SurjectiveInjective
 
@@ -119,8 +110,8 @@ theorem lift_rank_le_of_injective_injective (i : R' → R) (j : M →+ M')
     (hi : ∀ r, i r = 0 → r = 0) (hj : Injective j)
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
-  simp_rw [Module.rank, lift_iSup (bddAbove_range.{v', v'} _), lift_iSup (bddAbove_range.{v, v} _)]
-  exact ciSup_mono' (bddAbove_range.{v', v} _) fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
+  simp_rw [Module.rank, lift_iSup (bddAbove_range _)]
+  exact ciSup_mono' (bddAbove_range _) fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
     (h.map_of_injective_injective i j hi (fun _ _ ↦ hj <| by rwa [j.map_zero]) hc).image⟩,
       lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
 
@@ -263,13 +254,13 @@ theorem LinearMap.rank_le_of_injective (f : M →ₗ[R] M₁) (i : Injective f) 
 theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
     (Module.rank R (LinearMap.range f)) ≤ Cardinal.lift.{v'} (Module.rank R M) := by
   simp only [Module.rank_def]
-  rw [Cardinal.lift_iSup (Cardinal.bddAbove_range.{v', v'} _)]
+  rw [Cardinal.lift_iSup (Cardinal.bddAbove_range _)]
   apply ciSup_le'
   rintro ⟨s, li⟩
   apply le_trans
   swap
   · apply Cardinal.lift_le.mpr
-    refine le_ciSup (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, ?_⟩
+    refine le_ciSup (Cardinal.bddAbove_range _) ⟨rangeSplitting f '' s, ?_⟩
     apply LinearIndependent.of_comp f.rangeRestrict
     convert li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
   · exact (Cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge

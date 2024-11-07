@@ -107,7 +107,7 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
       π := Discrete.natTrans fun j => (LinearMap.proj j.as : (∀ j, f j) →ₗ[R] f j.as) }
   isLimit :=
     { lift := lift.{_, v} f
-      fac := fun s j => rfl
+      fac := fun _ _ => rfl
       uniq := fun s m w => by
         ext x
         funext j
@@ -152,8 +152,8 @@ of modules. -/
 noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function.Injective j)
     (exac : LinearMap.range j = LinearMap.ker g) (h : g.comp f = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfSection _
-    (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
-    (ModuleCat.ofHom g) exac) (asHom f) h
+    (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.asHom j)
+    (ModuleCat.asHom g) exac) (asHom f) h
     (by simpa only [ModuleCat.mono_iff_injective])).isoBinaryBiproduct ≪≫
     biprodIsoProd _ _ ).symm.toLinearEquiv
 
@@ -162,8 +162,8 @@ of modules. -/
 noncomputable def lequivProdOfLeftSplitExact {f : M →ₗ[R] A} (hg : Function.Surjective g)
     (exac : LinearMap.range j = LinearMap.ker g) (h : f.comp j = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfRetraction _
-    (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
-    (ModuleCat.ofHom g) exac) (ModuleCat.ofHom f) h
+    (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.asHom j)
+    (ModuleCat.asHom g) exac) (ModuleCat.asHom f) h
     (by simpa only [ModuleCat.epi_iff_surjective] using hg)).isoBinaryBiproduct ≪≫
     biprodIsoProd _ _).symm.toLinearEquiv
 

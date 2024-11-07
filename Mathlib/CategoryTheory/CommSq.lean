@@ -109,6 +109,19 @@ lemma vert_comp {W X Y Y' Z Z' : C} {f : W ⟶ X} {g : W ⟶ Y} {g' : Y ⟶ Y'} 
     CommSq f (g ≫ g') (h ≫ h') i' :=
   flip (horiz_comp (flip hsq₁) (flip hsq₂))
 
+
+section
+
+variable {W X Y : C}
+
+theorem eq_of_mono {f : W ⟶ X} {g : W ⟶ X} {i : X ⟶ Y} [Mono i] (sq : CommSq f g i i) : f = g :=
+  (cancel_mono i).1 sq.w
+
+theorem eq_of_epi {f : W ⟶ X} {h : X ⟶ Y} {i : X ⟶ Y} [Epi f] (sq : CommSq f f h i) : h = i :=
+  (cancel_epi f).1 sq.w
+
+end
+
 end CommSq
 
 namespace Functor

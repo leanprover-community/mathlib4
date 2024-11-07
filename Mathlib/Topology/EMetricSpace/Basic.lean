@@ -58,18 +58,21 @@ theorem edist_le_range_sum_of_edist_le {f : ℕ → α} (n : ℕ) {d : ℕ → �
 
 namespace EMetric
 
-theorem uniformInducing_iff [PseudoEMetricSpace β] {f : α → β} :
-    UniformInducing f ↔ UniformContinuous f ∧
+theorem isUniformInducing_iff [PseudoEMetricSpace β] {f : α → β} :
+    IsUniformInducing f ↔ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
-  uniformInducing_iff'.trans <| Iff.rfl.and <|
+  isUniformInducing_iff'.trans <| Iff.rfl.and <|
     ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).trans <| by
       simp only [subset_def, Prod.forall]; rfl
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_iff := isUniformInducing_iff
 
 /-- ε-δ characterization of uniform embeddings on pseudoemetric spaces -/
 nonrec theorem isUniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
     IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
-  (isUniformEmbedding_iff _).trans <| and_comm.trans <| Iff.rfl.and uniformInducing_iff
+  (isUniformEmbedding_iff _).trans <| and_comm.trans <| Iff.rfl.and isUniformInducing_iff
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_iff := isUniformEmbedding_iff
@@ -77,7 +80,7 @@ alias uniformEmbedding_iff := isUniformEmbedding_iff
 /-- If a map between pseudoemetric spaces is a uniform embedding then the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y`.
 
-In fact, this lemma holds for a `UniformInducing` map.
+In fact, this lemma holds for a `IsUniformInducing` map.
 TODO: generalize? -/
 theorem controlled_of_isUniformEmbedding [PseudoEMetricSpace β] {f : α → β}
     (h : IsUniformEmbedding f) :
@@ -242,7 +245,7 @@ theorem EMetric.isUniformEmbedding_iff' [EMetricSpace β] {f : γ → β} :
     IsUniformEmbedding f ↔
       (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, edist a b < δ → edist (f a) (f b) < ε) ∧
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ := by
-  rw [isUniformEmbedding_iff_uniformInducing, uniformInducing_iff, uniformContinuous_iff]
+  rw [isUniformEmbedding_iff_isUniformInducing, isUniformInducing_iff, uniformContinuous_iff]
 
 @[deprecated (since := "2024-10-01")]
 alias EMetric.uniformEmbedding_iff' := EMetric.isUniformEmbedding_iff'

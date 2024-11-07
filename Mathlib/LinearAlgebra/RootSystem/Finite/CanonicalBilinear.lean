@@ -78,11 +78,11 @@ lemma CoPolarization_eq : P.CoPolarization = P.flip.Polarization :=
 
 /-- An invariant inner product on the weight space. -/
 def RootForm : LinearMap.BilinForm R M :=
-  ∑ i, (LinearMap.lsmul R R).compl₁₂ (P.coroot' i) (P.coroot' i)
+  ∑ i, (P.coroot' i).smulRight (P.coroot' i)
 
 /-- An invariant inner product on the coweight space. -/
 def CorootForm : LinearMap.BilinForm R N :=
-  ∑ i, (LinearMap.lsmul R R).compl₁₂ (P.root' i) (P.root' i)
+  ∑ i, (P.root' i).smulRight (P.root' i)
 
 lemma rootForm_apply_apply (x y : M) : P.RootForm x y =
     ∑ (i : ι), P.coroot' i x * P.coroot' i y := by

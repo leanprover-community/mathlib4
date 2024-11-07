@@ -58,7 +58,7 @@ theorem contraction_of_isPowMul {α β : Type*} [SeminormedRing α] [SeminormedR
   contraction_of_isPowMul_of_boundedWrt (SeminormedRing.toRingSeminorm α) hβ hf x
 
 /-- Given two power-multiplicative ring seminorms `f, g` on `α`, if `f` is bounded by a positive
-  multiple of `g` and viceversa, then `f = g`. -/
+  multiple of `g` and vice versa, then `f = g`. -/
 theorem eq_seminorms {F : Type*} {α : outParam (Type*)} [Ring α] [FunLike F α ℝ]
     [RingSeminormClass F α ℝ] {f g : F} (hfpm : IsPowMul f) (hgpm : IsPowMul g)
     (hfg : ∃ (r : ℝ) (_ : 0 < r), ∀ a : α, f a ≤ r * g a)

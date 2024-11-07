@@ -109,7 +109,6 @@ protected def id : Code :=
 def curry (c : Code) (n : ℕ) : Code :=
   comp c (pair (Code.const n) Code.id)
 
--- Porting note: `bit0` and `bit1` are deprecated.
 /-- An encoding of a `Nat.Partrec.Code` as a ℕ. -/
 def encodeCode : Code → ℕ
   | zero => 0
@@ -492,7 +491,7 @@ instance : Membership (ℕ →. ℕ) Code :=
 
 @[simp]
 theorem eval_const : ∀ n m, eval (Code.const n) m = Part.some n
-  | 0, m => rfl
+  | 0, _ => rfl
   | n + 1, m => by simp! [eval_const n m]
 
 @[simp]

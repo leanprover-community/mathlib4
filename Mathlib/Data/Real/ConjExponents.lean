@@ -108,7 +108,7 @@ theorem inv_add_inv_conj_ennreal : (ENNReal.ofReal p)⁻¹ + (ENNReal.ofReal q)�
 end
 
 protected lemma inv_inv (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) : a⁻¹.IsConjExponent b⁻¹ :=
-  ⟨one_lt_inv ha <| by linarith, by simpa only [inv_inv]⟩
+  ⟨(one_lt_inv₀ ha).2 <| by linarith, by simpa only [inv_inv]⟩
 
 lemma inv_one_sub_inv (ha₀ : 0 < a) (ha₁ : a < 1) : a⁻¹.IsConjExponent (1 - a)⁻¹ :=
   .inv_inv ha₀ (sub_pos_of_lt ha₁) <| add_tsub_cancel_of_le ha₁.le
@@ -199,7 +199,7 @@ end
 
 protected lemma inv_inv (ha : a ≠ 0) (hb : b ≠ 0) (hab : a + b = 1) :
     a⁻¹.IsConjExponent b⁻¹ :=
-  ⟨one_lt_inv ha.bot_lt <| by rw [← hab]; exact lt_add_of_pos_right _ hb.bot_lt, by
+  ⟨(one_lt_inv₀ ha.bot_lt).2 <| by rw [← hab]; exact lt_add_of_pos_right _ hb.bot_lt, by
     simpa only [inv_inv] using hab⟩
 
 lemma inv_one_sub_inv (ha₀ : a ≠ 0) (ha₁ : a < 1) : a⁻¹.IsConjExponent (1 - a)⁻¹ :=
@@ -272,7 +272,7 @@ protected lemma conjExponent (hp : 1 ≤ p) : p.IsConjExponent (conjExponent p) 
   refine (AddLECancellable.eq_tsub_iff_add_eq_of_le (α := ℝ≥0∞) (by simpa) (by simpa)).1 ?_
   rw [inv_eq_iff_eq_inv]
   obtain rfl | hp₁ := hp.eq_or_lt
-  · simp
+  · simp [tsub_eq_zero_of_le]
   obtain rfl | hp := eq_or_ne p ∞
   · simp
   calc
@@ -317,7 +317,7 @@ lemma mul_eq_add : p * q = p + q := by
 
 lemma div_conj_eq_sub_one : p / q = p - 1 := by
   obtain rfl | hq := eq_or_ne q ∞
-  · simp [h.symm.conj_eq]
+  · simp [h.symm.conj_eq, tsub_eq_zero_of_le]
   refine ENNReal.eq_sub_of_add_eq one_ne_top ?_
   rw [← ENNReal.div_self h.symm.ne_zero hq, ← ENNReal.add_div, ← h.mul_eq_add, mul_div_assoc,
     ENNReal.div_self h.symm.ne_zero hq, mul_one]

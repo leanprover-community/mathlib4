@@ -119,7 +119,6 @@ theorem eq_of_empty [IsEmpty α] (f g : C_c(α, β)) : f = g :=
 def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(α, β) where
   toFun f :=
     { toFun := f
-      continuous_toFun := f.continuous
       hasCompactSupport' := HasCompactSupport.of_compactSpace f }
   invFun f := f
   left_inv _ := rfl
@@ -168,7 +167,7 @@ theorem mul_apply [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : (f 
 instance [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
     {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] : SMul F C_c(α, β) where
   smul f g :=
-    ⟨⟨fun x ↦ f x • g x, (map_continuous f).smul g.continuous⟩, g.hasCompactSupport'.smul_left⟩
+    ⟨⟨fun x ↦ f x • g x, (map_continuous f).smul (map_continuous g)⟩, g.hasCompactSupport.smul_left⟩
 
 @[simp]
 theorem coe_smulc [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
@@ -209,7 +208,7 @@ def coeFnMonoidHom [AddMonoid β] [ContinuousAdd β] : C_c(α, β) →+ α → �
 
 instance [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] :
     SMul R C_c(α, β) :=
-  ⟨fun r f => ⟨⟨r • ⇑f, Continuous.const_smul f.continuous r⟩, HasCompactSupport.smul_left f.2⟩⟩
+  ⟨fun r f => ⟨⟨r • ⇑f, (map_continuous f).const_smul r⟩, HasCompactSupport.smul_left f.2⟩⟩
 
 @[simp, norm_cast]
 theorem coe_smul [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] (r : R)
@@ -447,8 +446,6 @@ theorem zero_comp (g : β →co γ) : (0 : C_c(γ, δ)).comp g = 0 :=
   rfl
 
 end
-
-variable [T2Space γ]
 
 /-- Composition as an additive monoid homomorphism. -/
 def compAddMonoidHom [AddMonoid δ] [ContinuousAdd δ] (g : β →co γ) : C_c(γ, δ) →+ C_c(β, δ) where

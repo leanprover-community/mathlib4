@@ -28,7 +28,7 @@ Equiv, MulEquiv, AddEquiv
 
 open Function
 
-variable {F α β A B M N P Q G H : Type*}
+variable {F α β M N P G H : Type*}
 
 /-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
 @[to_additive (attr := simps)
@@ -168,7 +168,7 @@ theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α
 
 namespace MulEquiv
 section Mul
-variable [Mul M] [Mul N] [Mul P] [Mul Q]
+variable [Mul M] [Mul N] [Mul P]
 
 section coe
 
@@ -265,7 +265,6 @@ protected theorem injective (e : M ≃* N) : Function.Injective e :=
 protected theorem surjective (e : M ≃* N) : Function.Surjective e :=
   EquivLike.surjective e
 
--- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem apply_eq_iff_eq (e : M ≃* N) {x y : M} : e x = e y ↔ x = y :=
   e.injective.eq_iff
@@ -388,6 +387,18 @@ theorem symm_comp_eq {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
     e.symm ∘ g = f ↔ g = e ∘ f :=
   e.toEquiv.symm_comp_eq f g
 
+@[to_additive (attr := simp)]
+theorem _root_.MulEquivClass.apply_coe_symm_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
+    [MulEquivClass F α β] (e : F) (x : β) :
+    e ((e : α ≃* β).symm x) = x :=
+  (e : α ≃* β).right_inv x
+
+@[to_additive (attr := simp)]
+theorem _root_.MulEquivClass.coe_symm_apply_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
+    [MulEquivClass F α β] (e : F) (x : α) :
+    (e : α ≃* β).symm (e x) = x :=
+  (e : α ≃* β).left_inv x
+
 end symm
 
 section simps
@@ -460,11 +471,13 @@ end Mul
 section MulOneClass
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
--- Porting note (#10618): `simp` can prove this
+-- Porting note (#10618): `simp` can prove this but it is a valid `dsimp` lemma.
+-- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
 @[to_additive]
 theorem coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
 
--- Porting note (#10618): `simp` can prove this
+-- Porting note (#10618): `simp` can prove this but it is a valid `dsimp` lemma.
+-- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
 @[to_additive]
 lemma coe_monoidHom_trans (e₁ : M ≃* N) (e₂ : N ≃* P) :
     (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl

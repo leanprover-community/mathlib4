@@ -137,7 +137,7 @@ theorem comp_hasFDerivAt_iff' {f : G → E} {x : G} {f' : G →L[𝕜] F} :
 theorem comp_fderivWithin {f : G → E} {s : Set G} {x : G} (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (iso ∘ f) s x = (iso : E →L[𝕜] F).comp (fderivWithin 𝕜 f s x) := by
   by_cases h : DifferentiableWithinAt 𝕜 f s x
-  · rw [fderiv.comp_fderivWithin x iso.differentiableAt h hxs, iso.fderiv]
+  · rw [fderiv_comp_fderivWithin x iso.differentiableAt h hxs, iso.fderiv]
   · have : ¬DifferentiableWithinAt 𝕜 (iso ∘ f) s x := mt iso.comp_differentiableWithinAt_iff.1 h
     rw [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt this, ContinuousLinearMap.comp_zero]
@@ -339,7 +339,7 @@ inverse function. -/
 theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g : F → E} {a : F}
     (hg : ContinuousAt g a) (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) (g a))
     (hfg : ∀ᶠ y in 𝓝 a, f (g y) = y) : HasStrictFDerivAt g (f'.symm : F →L[𝕜] E) a := by
-  replace hg := hg.prod_map' hg
+  replace hg := hg.prodMap' hg
   replace hfg := hfg.prod_mk_nhds hfg
   have :
     (fun p : F × F => g p.1 - g p.2 - f'.symm (p.1 - p.2)) =O[𝓝 (a, a)] fun p : F × F =>
@@ -355,7 +355,7 @@ theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜]
   · refine (hf.isBigO_sub_rev.comp_tendsto hg).congr' (Eventually.of_forall fun _ => rfl)
       (hfg.mono ?_)
     rintro p ⟨hp1, hp2⟩
-    simp only [(· ∘ ·), hp1, hp2]
+    simp only [(· ∘ ·), hp1, hp2, Prod.map]
 
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
 invertible derivative `f'` at `g a`, then `g` has the derivative `f'⁻¹` at `a`.
@@ -454,7 +454,7 @@ theorem HasFDerivWithinAt.mapsTo_tangent_cone {x : E} (h : HasFDerivWithinAt f f
   rintro v ⟨c, d, dtop, clim, cdlim⟩
   refine
     ⟨c, fun n => f (x + d n) - f x, mem_of_superset dtop ?_, clim, h.lim atTop dtop clim cdlim⟩
-  simp (config := { contextual := true }) [-mem_image, mem_image_of_mem]
+  simp +contextual [-mem_image, mem_image_of_mem]
 
 /-- If a set has the unique differentiability property at a point x, then the image of this set
 under a map with onto derivative has also the unique differentiability property at the image point.

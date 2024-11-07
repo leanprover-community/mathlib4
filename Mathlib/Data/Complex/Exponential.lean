@@ -1061,13 +1061,12 @@ end Real
 namespace Complex
 
 theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (hn : 0 < n) :
-    (∑ m ∈ filter (fun k => n ≤ k) (range j),
-      (1 / m.factorial : α)) ≤ n.succ / (n.factorial * n) :=
+    (∑ m ∈ range j with n ≤ m, (1 / m.factorial : α)) ≤ n.succ / (n.factorial * n) :=
   calc
-    (∑ m ∈ filter (fun k => n ≤ k) (range j), (1 / m.factorial : α)) =
+    (∑ m ∈ range j with n ≤ m, (1 / m.factorial : α)) =
         ∑ m ∈ range (j - n), (1 / ((m + n).factorial : α)) := by
         refine sum_nbij' (· - n) (· + n) ?_ ?_ ?_ ?_ ?_ <;>
-          simp (config := { contextual := true }) [lt_tsub_iff_right, tsub_add_cancel_of_le]
+          simp +contextual [lt_tsub_iff_right, tsub_add_cancel_of_le]
     _ ≤ ∑ m ∈ range (j - n), ((n.factorial : α) * (n.succ : α) ^ m)⁻¹ := by
       simp_rw [one_div]
       gcongr
@@ -1098,20 +1097,19 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
       abs x ^ n * ((n.succ : ℝ) * (n.factorial * n : ℝ)⁻¹)
   rw [sum_range_sub_sum_range hj]
   calc
-    abs (∑ m ∈ (range j).filter fun k => n ≤ k, (x ^ m / m.factorial : ℂ)) =
-      abs (∑ m ∈ (range j).filter fun k => n ≤ k,
-        (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) := by
+    abs (∑ m ∈ range j with n ≤ m, (x ^ m / m.factorial : ℂ))
+      = abs (∑ m ∈ range j with n ≤ m, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) := by
       refine congr_arg abs (sum_congr rfl fun m hm => ?_)
       rw [mem_filter, mem_range] at hm
       rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
-    _ ≤ ∑ m ∈ filter (fun k => n ≤ k) (range j), abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
-      (IsAbsoluteValue.abv_sum Complex.abs _ _)
-    _ ≤ ∑ m ∈ filter (fun k => n ≤ k) (range j), abs x ^ n * (1 / m.factorial) := by
+    _ ≤ ∑ m ∈ range j with n ≤ m, abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
+      IsAbsoluteValue.abv_sum Complex.abs ..
+    _ ≤ ∑ m ∈ range j with n ≤ m, abs x ^ n * (1 / m.factorial) := by
       simp_rw [map_mul, map_pow, map_div₀, abs_natCast]
       gcongr
       rw [abv_pow abs]
       exact pow_le_one₀ (abs.nonneg _) hx
-    _ = abs x ^ n * ∑ m ∈ (range j).filter fun k => n ≤ k, (1 / m.factorial : ℝ) := by
+    _ = abs x ^ n * ∑ m ∈ range j with n ≤ m, (1 / m.factorial : ℝ) := by
       simp [abs_mul, abv_pow abs, abs_div, ← mul_sum]
     _ ≤ abs x ^ n * (n.succ * (n.factorial * n : ℝ)⁻¹) := by
       gcongr
@@ -1336,7 +1334,7 @@ theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
                   gcongr
                   · exact pow_le_one₀ (abs_nonneg _) hx
                   · rw [sq, ← abs_mul_self, abs_mul]
-                    exact mul_le_one hx (abs_nonneg _) hx
+                    exact mul_le_one₀ hx (abs_nonneg _) hx
             _ < 1 := by norm_num)
     _ ≤ cos x := sub_le_comm.1 (abs_sub_le_iff.1 (cos_bound hx)).2
 
@@ -1395,7 +1393,8 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- Porting note: was `norm_num [Finset.sum] <;> nlinarith`
       -- This proof should be restored after the norm_num plugin for big operators is ported.
       -- (It may also need the positivity extensions in #3907.)
-      repeat erw [Finset.sum_range_succ]
+      erw [Finset.sum_range_succ]
+      repeat rw [Finset.sum_range_succ]
       norm_num [Nat.factorial]
       nlinarith
     _ < 1 / (1 - x) := by rw [lt_div_iff₀] <;> nlinarith
@@ -1412,7 +1411,7 @@ theorem add_one_lt_exp {x : ℝ} (hx : x ≠ 0) : x + 1 < Real.exp x := by
   obtain h' | h' := le_or_lt 1 (-x)
   · linarith [x.exp_pos]
   have hx' : 0 < x + 1 := by linarith
-  simpa [add_comm, exp_neg, inv_lt_inv (exp_pos _) hx']
+  simpa [add_comm, exp_neg, inv_lt_inv₀ (exp_pos _) hx']
     using exp_bound_div_one_sub_of_interval' (neg_pos.2 hx) h'
 
 theorem add_one_le_exp (x : ℝ) : x + 1 ≤ Real.exp x := by

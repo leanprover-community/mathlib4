@@ -36,7 +36,7 @@ theorem isUniformEmbedding_iff' [MetricSpace β] {f : γ → β} :
     IsUniformEmbedding f ↔
       (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, dist a b < δ → dist (f a) (f b) < ε) ∧
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, dist (f a) (f b) < ε → dist a b < δ := by
-  rw [isUniformEmbedding_iff_uniformInducing, uniformInducing_iff, uniformContinuous_iff]
+  rw [isUniformEmbedding_iff_isUniformInducing, isUniformInducing_iff, uniformContinuous_iff]
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_iff' := isUniformEmbedding_iff'
@@ -56,10 +56,13 @@ theorem isClosed_of_pairwise_le_dist {s : Set γ} {ε : ℝ} (hε : 0 < ε)
     (hs : s.Pairwise fun x y => ε ≤ dist x y) : IsClosed s :=
   isClosed_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hs
 
-theorem closedEmbedding_of_pairwise_le_dist {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
+theorem isClosedEmbedding_of_pairwise_le_dist {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     {ε : ℝ} (hε : 0 < ε) {f : α → γ} (hf : Pairwise fun x y => ε ≤ dist (f x) (f y)) :
-    ClosedEmbedding f :=
-  closedEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
+    IsClosedEmbedding f :=
+  isClosedEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_of_pairwise_le_dist := isClosedEmbedding_of_pairwise_le_dist
 
 /-- If `f : β → α` sends any two distinct points to points at distance at least `ε > 0`, then
 `f` is a uniform embedding with respect to the discrete uniformity on `β`. -/
@@ -109,9 +112,12 @@ alias UniformEmbedding.comapMetricSpace := IsUniformEmbedding.comapMetricSpace
 
 /-- Pull back a metric space structure by an embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `TopologicalSpace` structure. -/
-abbrev Embedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β] (f : α → β)
-    (h : Embedding f) : MetricSpace α :=
-  .replaceTopology (.induced f h.inj m) h.induced
+abbrev IsEmbedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β]
+    (f : α → β) (h : IsEmbedding f) : MetricSpace α :=
+  .replaceTopology (.induced f h.inj m) h.eq_induced
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.comapMetricSpace := IsEmbedding.comapMetricSpace
 
 instance Subtype.metricSpace {α : Type*} {p : α → Prop} [MetricSpace α] :
     MetricSpace (Subtype p) :=

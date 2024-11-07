@@ -16,9 +16,7 @@ bounded bilinear maps.
 -/
 
 
-open Filter Asymptotics ContinuousLinearMap Set Metric
-open scoped Classical
-open Topology NNReal Asymptotics ENNReal
+open Asymptotics Topology
 
 noncomputable section
 
@@ -29,12 +27,6 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
-variable (e : E →L[𝕜] F)
-variable {x : E}
-variable {s t : Set E}
-variable {L L₁ L₂ : Filter E}
 
 section BilinearMap
 

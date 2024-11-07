@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.Module.Basic
 
 /-!
 # Partially defined linear maps
@@ -223,12 +222,12 @@ instance inhabited : Inhabited (E →ₗ.[R] F) :=
 
 instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
   le := (· ≤ ·)
-  le_refl f := ⟨le_refl f.domain, fun x y h => Subtype.eq h ▸ rfl⟩
-  le_trans := fun f g h ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩ =>
-    ⟨le_trans fg_le gh_le, fun x z hxz =>
+  le_refl f := ⟨le_refl f.domain, fun _ _ h => Subtype.eq h ▸ rfl⟩
+  le_trans := fun _ _ _ ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩ =>
+    ⟨le_trans fg_le gh_le, fun x _ hxz =>
       have hxy : (x : E) = inclusion fg_le x := rfl
       (fg_eq hxy).trans (gh_eq <| hxy.symm.trans hxz)⟩
-  le_antisymm f g fg gf := eq_of_le_of_domain_eq fg (le_antisymm fg.1 gf.1)
+  le_antisymm _ _ fg gf := eq_of_le_of_domain_eq fg (le_antisymm fg.1 gf.1)
   inf := (· ⊓ ·)
   -- Porting note: `by rintro` is required, or error of a metavariable happens.
   le_inf := by
@@ -240,9 +239,9 @@ instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
       fun x ⟨y, yg, hy⟩ h => by
         apply fg_eq
         exact h⟩
-  inf_le_left f g := ⟨fun x hx => hx.fst, fun x y h => congr_arg f <| Subtype.eq <| h⟩
-  inf_le_right f g :=
-    ⟨fun x hx => hx.snd.fst, fun ⟨x, xf, xg, hx⟩ y h => hx.trans <| congr_arg g <| Subtype.eq <| h⟩
+  inf_le_left f _ := ⟨fun _ hx => hx.fst, fun _ _ h => congr_arg f <| Subtype.eq <| h⟩
+  inf_le_right _ g :=
+    ⟨fun _ hx => hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h => hx.trans <| congr_arg g <| Subtype.eq <| h⟩
 
 instance orderBot : OrderBot (E →ₗ.[R] F) where
   bot := ⊥
@@ -676,7 +675,7 @@ theorem domRestrict_apply {f : E →ₗ.[R] F} {S : Submodule R E} ⦃x : ↥(S 
   exact LinearPMap.mk_apply _ _ _
 
 theorem domRestrict_le {f : E →ₗ.[R] F} {S : Submodule R E} : f.domRestrict S ≤ f :=
-  ⟨by simp, fun x y hxy => domRestrict_apply hxy⟩
+  ⟨by simp, fun _ _ hxy => domRestrict_apply hxy⟩
 
 /-! ### Graph -/
 

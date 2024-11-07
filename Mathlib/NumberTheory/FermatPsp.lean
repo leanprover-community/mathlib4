@@ -135,7 +135,7 @@ private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^
   calc
     2 * a + 1 ≤ a ^ 2 * a := by nlinarith
     _ = a ^ 3 := by rw [Nat.pow_succ a 2]
-    _ ≤ a ^ b := pow_le_pow_right (Nat.le_of_succ_le ha) hb
+    _ ≤ a ^ b := pow_right_mono₀ (Nat.le_of_succ_le ha) hb
 
 private theorem AB_id_helper (b p : ℕ) (_ : 2 ≤ b) (hp : Odd p) :
     (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1)) = (b ^ (2 * p) - 1) / (b ^ 2 - 1) := by

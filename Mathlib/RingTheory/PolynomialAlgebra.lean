@@ -251,7 +251,7 @@ theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
   · intro p q hp hq
     simp [hp, hq]
   · intro i' j' x
-    erw [matPolyEquiv_coeff_apply_aux_2]
+    rw [matPolyEquiv_coeff_apply_aux_2]
     dsimp [stdBasisMatrix]
     split_ifs <;> rename_i h
     · rcases h with ⟨rfl, rfl⟩

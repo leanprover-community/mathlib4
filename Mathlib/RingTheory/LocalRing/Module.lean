@@ -3,13 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Nakayama
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 # Finite modules over local rings
@@ -28,7 +28,7 @@ This file gathers various results about finite modules over a local ring `(R, ù
   `l` is a split injection if and only if `k ‚äó l` is a (split) injection.
 -/
 
-variable {R S} [CommRing R] [CommRing S] [Algebra R S]
+variable {R} [CommRing R]
 
 section
 

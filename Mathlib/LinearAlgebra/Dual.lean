@@ -580,6 +580,7 @@ class IsReflexive : Prop where
 lemma bijective_dual_eval [IsReflexive R M] : Bijective (Dual.eval R M) :=
   IsReflexive.bijective_dual_eval'
 
+/-- See also `Module.instFiniteDimensionalOfIsReflexive` for the converse over a field. -/
 instance IsReflexive.of_finite_of_free [Module.Finite R M] [Free R M] : IsReflexive R M where
   bijective_dual_eval' := ⟨LinearMap.ker_eq_bot.mp (Free.chooseBasis R M).eval_ker,
                            LinearMap.range_eq_top.mp (Free.chooseBasis R M).eval_range⟩
@@ -602,6 +603,28 @@ def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
 @[simp] lemma symm_dualMap_evalEquiv :
     (evalEquiv R M).symm.dualMap = Dual.eval R (Dual R M) := by
   ext; simp
+
+@[simp] lemma Dual.eval_comp_comp_evalEquiv_eq
+    {M' : Type*} [AddCommGroup M'] [Module R M'] {f : M →ₗ[R] M'} :
+    Dual.eval R M' ∘ₗ f ∘ₗ (evalEquiv R M).symm = f.dualMap.dualMap := by
+  ext x g
+  simp only [dualMap_apply, coe_comp, LinearEquiv.coe_coe, Function.comp_apply, Dual.eval_apply]
+  rw [← apply_evalEquiv_symm_apply, dualMap_apply]
+
+lemma dualMap_dualMap_eq_iff_of_injective
+    {M' : Type*} [AddCommGroup M'] [Module R M'] {f g : M →ₗ[R] M'}
+    (h : Injective (Dual.eval R M')) :
+    f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g := by
+  simp only [← Dual.eval_comp_comp_evalEquiv_eq]
+  refine ⟨ fun hfg => ?_, fun a ↦ congrArg (Dual.eval R M').comp
+    (congrFun (congrArg LinearMap.comp a) (evalEquiv R M).symm.toLinearMap) ⟩
+  rw [propext (cancel_left h), LinearEquiv.eq_comp_toLinearMap_iff] at hfg
+  exact hfg
+
+@[simp] lemma dualMap_dualMap_eq_iff
+    {M' : Type*} [AddCommGroup M'] [Module R M'] [IsReflexive R M'] {f g : M →ₗ[R] M'} :
+    f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g :=
+  dualMap_dualMap_eq_iff_of_injective _ _ (bijective_dual_eval R M').injective
 
 /-- The dual of a reflexive module is reflexive. -/
 instance Dual.instIsReflecive : IsReflexive R (Dual R M) :=
@@ -650,6 +673,22 @@ instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M
 instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
   equiv ULift.moduleEquiv.symm
 
+instance instFiniteDimensionalOfIsReflexive (K V : Type*)
+    [Field K] [AddCommGroup V] [Module K V] [IsReflexive K V] :
+    FiniteDimensional K V := by
+  rw [FiniteDimensional, ← rank_lt_aleph0_iff]
+  by_contra! contra
+  suffices lift (Module.rank K V) < Module.rank K (Dual K (Dual K V)) by
+    have heq := lift_rank_eq_of_equiv_equiv (R := K) (R' := K) (M := V) (M' := Dual K (Dual K V))
+      (ZeroHom.id K) (evalEquiv K V) bijective_id (fun r v ↦ (evalEquiv K V).map_smul _ _)
+    rw [← lift_umax, heq, lift_id'] at this
+    exact lt_irrefl _ this
+  have h₁ : lift (Module.rank K V) < Module.rank K (Dual K V) := lift_rank_lt_rank_dual contra
+  have h₂ : Module.rank K (Dual K V) < Module.rank K (Dual K (Dual K V)) := by
+    convert lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
+    rw [lift_id']
+  exact lt_trans h₁ h₂
+
 end IsReflexive
 
 end Module
@@ -672,6 +711,61 @@ theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p))
   obtain ⟨x, hx⟩ : ∃ x : M, x ∉ p := by rw [lt_top_iff_ne_top] at hp; contrapose! hp; ext; simp [hp]
   obtain ⟨f, hf, hf'⟩ := p.exists_dual_map_eq_bot_of_nmem hx hp'
   exact ⟨f, by aesop, hf'⟩
+
+/-- Consider a reflexive module and a set `s` of linear forms. If for any `z ≠ 0` there exists
+`f ∈ s` such that `f z ≠ 0`, then `s` spans the whole dual space. -/
+theorem span_eq_top_of_ne_zero [IsReflexive R M]
+    {s : Set (M →ₗ[R] R)} [Free R ((M →ₗ[R] R) ⧸ (span R s))]
+    (h : ∀ z ≠ 0, ∃ f ∈ s, f z ≠ 0) : span R s = ⊤ := by
+  by_contra! hn
+  obtain ⟨φ, φne, hφ⟩ := exists_dual_map_eq_bot_of_lt_top hn.lt_top inferInstance
+  let φs := (evalEquiv R M).symm φ
+  have this f (hf : f ∈ s) : f φs = 0 := by
+    rw [← mem_bot R, ← hφ, mem_map]
+    exact ⟨f, subset_span hf, (apply_evalEquiv_symm_apply R M f φ).symm⟩
+  obtain ⟨x, xs, hx⟩ := h φs (by simp [φne, φs])
+  exact hx <| this x xs
+
+variable {ι 𝕜 E : Type*} [Field 𝕜] [AddCommGroup E] [Module 𝕜 E]
+
+open LinearMap Set FiniteDimensional
+
+theorem _root_.FiniteDimensional.mem_span_of_iInf_ker_le_ker [FiniteDimensional 𝕜 E]
+    {L : ι → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
+    (h : ⨅ i, LinearMap.ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
+  by_contra hK
+  rcases exists_dual_map_eq_bot_of_nmem hK inferInstance with ⟨φ, φne, hφ⟩
+  let φs := (Module.evalEquiv 𝕜 E).symm φ
+  have : K φs = 0 := by
+    refine h <| (Submodule.mem_iInf _).2 fun i ↦ (mem_bot 𝕜).1 ?_
+    rw [← hφ, Submodule.mem_map]
+    exact ⟨L i, Submodule.subset_span ⟨i, rfl⟩, (apply_evalEquiv_symm_apply 𝕜 E _ φ).symm⟩
+  simp only [apply_evalEquiv_symm_apply, φs, φne] at this
+
+/-- Given some linear forms $L_1, ..., L_n, K$ over a vector space $E$, if
+$\bigcap_{i=1}^n \mathrm{ker}(L_i) \subseteq \mathrm{ker}(K)$, then $K$ is in the space generated
+by $L_1, ..., L_n$. -/
+theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
+    (h : ⨅ i, ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
+  have _ := Fintype.ofFinite ι
+  let φ : E →ₗ[𝕜] ι → 𝕜 := LinearMap.pi L
+  let p := ⨅ i, ker (L i)
+  have p_eq : p = ker φ := (ker_pi L).symm
+  let ψ : (E ⧸ p) →ₗ[𝕜] ι → 𝕜 := p.liftQ φ p_eq.le
+  have _ : FiniteDimensional 𝕜 (E ⧸ p) := of_injective ψ (ker_eq_bot.1 (ker_liftQ_eq_bot' p φ p_eq))
+  let L' i : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ (L i) (iInf_le _ i)
+  let K' : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ K h
+  have : ⨅ i, ker (L' i) ≤ ker K' := by
+    simp_rw [← ker_pi, L', pi_liftQ_eq_liftQ_pi, ker_liftQ_eq_bot' p φ p_eq]
+    exact bot_le
+  obtain ⟨c, hK'⟩ :=
+    (mem_span_range_iff_exists_fun 𝕜).1 (FiniteDimensional.mem_span_of_iInf_ker_le_ker this)
+  refine (mem_span_range_iff_exists_fun 𝕜).2 ⟨c, ?_⟩
+  conv_lhs => enter [2]; intro i; rw [← p.liftQ_mkQ (L i) (iInf_le _ i)]
+  rw [← p.liftQ_mkQ K h]
+  ext x
+  convert LinearMap.congr_fun hK' (p.mkQ x)
+  simp only [coeFn_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply, smul_eq_mul]
 
 end Submodule
 
@@ -1166,12 +1260,12 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
         exact (mem_dualAnnihilator φ).mp hφ w hw)
 
 -- Porting note: helper instance
-instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R :=
-  { coe := fun φ => φ.val,
-    coe_injective' := fun φ ψ h => by
-      ext
-      simp only [Function.funext_iff] at h
-      exact h _ }
+instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
+  coe φ := φ.val
+  coe_injective' φ ψ h := by
+    ext
+    simp only [funext_iff] at h
+    exact h _
 
 @[simp]
 theorem dualCopairing_apply {W : Submodule R M} (φ : W.dualAnnihilator) (x : M) :

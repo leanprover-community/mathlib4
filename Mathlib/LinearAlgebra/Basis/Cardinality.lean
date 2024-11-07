@@ -21,7 +21,7 @@ variable {R : Type u} {M : Type v}
 
 section Semiring
 
-variable [Semiring R] [AddCommGroup M] [Nontrivial R] [Module R M]
+variable [Semiring R] [AddCommMonoid M] [Nontrivial R] [Module R M]
 
 -- One might hope that a finite spanning set implies that any linearly independent set is finite.
 -- While this is true over a division ring

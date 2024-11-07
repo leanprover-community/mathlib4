@@ -3,12 +3,9 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
-import Mathlib.CategoryTheory.CommSq
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
+
 import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 
 /-!
@@ -23,7 +20,7 @@ We provide another API for pullbacks and pushouts.
  snd         f
   |          |
   v          v
-  Y ---g---> Zfst
+  Y ---g---> Z
 
 ```
 is a pullback square.
@@ -231,6 +228,13 @@ theorem of_isLimit' (w : CommSq fst snd f g) (h : Limits.IsLimit w.cone) :
     IsPullback fst snd f g :=
   of_isLimit h
 
+/-- Variant of `of_isLimit` for an arbitrary cone on a diagram `WalkingCospan ⥤ C`. -/
+lemma of_isLimit_cone {D : WalkingCospan ⥤ C} {c : Cone D} (hc : IsLimit c) :
+    IsPullback (c.π.app .left) (c.π.app .right) (D.map WalkingCospan.Hom.inl)
+      (D.map WalkingCospan.Hom.inr) where
+  w := by simp_rw [Cone.w]
+  isLimit' := ⟨IsLimit.equivOfNatIsoOfIso _ _ _ (PullbackCone.isoMk c) hc⟩
+
 /-- The pullback provided by `HasPullback f g` fits into an `IsPullback`. -/
 theorem of_hasPullback (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     IsPullback (pullback.fst f g) (pullback.snd f g) f g :=
@@ -270,7 +274,7 @@ theorem of_hasBinaryProduct [HasBinaryProduct X Y] [HasZeroObject C] [HasZeroMor
 
 section
 
-variable {P': C} {fst' : P' ⟶ X} {snd' : P' ⟶ Y}
+variable {P' : C} {fst' : P' ⟶ X} {snd' : P' ⟶ Y}
 
 /-- Any object at the top left of a pullback square is isomorphic to the object at the top left
 of any other pullback square with the same cospan. -/
@@ -362,6 +366,18 @@ lemma of_iso (h : IsPullback fst snd f g)
               rw [← reassoc_of% commfst, e₂.hom_inv_id, Category.comp_id]
             · change snd = e₁.hom ≫ snd' ≫ e₃.inv
               rw [← reassoc_of% commsnd, e₃.hom_inv_id, Category.comp_id]))⟩
+section
+
+variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
+
+lemma isIso_fst_of_mono (h : IsPullback fst snd f f) : IsIso fst :=
+  h.cone.isIso_fst_of_mono_of_isLimit h.isLimit
+
+lemma isIso_snd_iso_of_mono {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
+    (h : IsPullback fst snd f f) : IsIso snd :=
+  h.cone.isIso_snd_of_mono_of_isLimit h.isLimit
+
+end
 
 end IsPullback
 
@@ -418,6 +434,13 @@ theorem of_isColimit {c : PushoutCocone f g} (h : Limits.IsColimit c) : IsPushou
 theorem of_isColimit' (w : CommSq f g inl inr) (h : Limits.IsColimit w.cocone) :
     IsPushout f g inl inr :=
   of_isColimit h
+
+/-- Variant of `of_isColimit` for an arbitrary cocone on a diagram `WalkingSpan ⥤ C`. -/
+lemma of_isColimit_cocone {D : WalkingSpan ⥤ C} {c : Cocone D} (hc : IsColimit c) :
+    IsPushout (D.map WalkingSpan.Hom.fst) (D.map WalkingSpan.Hom.snd)
+      (c.ι.app .left) (c.ι.app .right) where
+  w := by simp_rw [Cocone.w]
+  isColimit' := ⟨IsColimit.equivOfNatIsoOfIso _ _ _ (PushoutCocone.isoMk c) hc⟩
 
 /-- The pushout provided by `HasPushout f g` fits into an `IsPushout`. -/
 theorem of_hasPushout (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g] :
@@ -540,6 +563,18 @@ lemma of_iso (h : IsPushout f g inl inr)
           (IsColimit.ofIsoColimit h.isColimit
             (PushoutCocone.ext e₄ comminl comminr))⟩
 
+section
+
+variable {P X Y : C} {inl : X ⟶ P} {inr : X ⟶ P} {f : Y ⟶ X} [Epi f]
+
+lemma isIso_inl_iso_of_epi (h : IsPushout f f inl inr) : IsIso inl :=
+  h.cocone.isIso_inl_of_epi_of_isColimit h.isColimit
+
+lemma isIso_inr_iso_of_epi (h : IsPushout f f inl inr) : IsIso inr :=
+  h.cocone.isIso_inr_of_epi_of_isColimit h.isColimit
+
+end
+
 end IsPushout
 
 namespace IsPullback
@@ -563,7 +598,7 @@ open ZeroObject
 theorem zero_left (X : C) : IsPullback (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X) (0 : 0 ⟶ X) :=
   { w := by simp
     isLimit' :=
-      ⟨{  lift := fun s => 0
+      ⟨{  lift := fun _ => 0
           fac := fun s => by
             simpa [eq_iff_true_of_subsingleton] using
               @PullbackCone.equalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _)
@@ -865,7 +900,7 @@ open ZeroObject
 theorem zero_right (X : C) : IsPushout (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0) (0 : X ⟶ 0) :=
   { w := by simp
     isColimit' :=
-      ⟨{  desc := fun s => 0
+      ⟨{  desc := fun _ => 0
           fac := fun s => by
             have c :=
               @PushoutCocone.coequalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _)

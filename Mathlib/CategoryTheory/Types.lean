@@ -41,7 +41,7 @@ universe v v' w u u'
 @[to_additive existing CategoryTheory.types]
 instance types : LargeCategory (Type u) where
   Hom a b := a → b
-  id a := id
+  id _ := id
   comp f g := g ∘ f
 
 theorem types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
@@ -117,7 +117,7 @@ lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
   s.property f
 
 lemma sections_ext_iff {F : J ⥤ Type w} {x y : F.sections} : x = y ↔ ∀ j, x.val j = y.val j :=
-  Subtype.ext_iff.trans Function.funext_iff
+  Subtype.ext_iff.trans funext_iff
 
 variable (J)
 
@@ -191,7 +191,7 @@ Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 @[pp_with_univ]
 def uliftFunctor : Type u ⥤ Type max u v where
   obj X := ULift.{v} X
-  map {X} {Y} f := fun x : ULift.{v} X => ULift.up (f x.down)
+  map {X} {_} f := fun x : ULift.{v} X => ULift.up (f x.down)
 
 @[simp]
 theorem uliftFunctor_obj {X : Type u} : uliftFunctor.obj.{v} X = ULift.{v} X :=
@@ -264,7 +264,7 @@ def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] :
   map_id := fun α => by funext X; apply id_map  /- Porting note: original proof is via
   `fun α => _root_.Functor.map_id` but I cannot get Lean to find this. Reproduced its
   original proof -/
-  map_comp f g := funext fun a => LawfulFunctor.comp_map f g _
+  map_comp f g := funext fun _ => LawfulFunctor.comp_map f g _
 
 variable (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m]
 

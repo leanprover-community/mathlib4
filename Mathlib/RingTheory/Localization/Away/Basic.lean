@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
+import Mathlib.GroupTheory.MonoidLocalization.Away
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Localization.Basic
 
@@ -231,6 +232,18 @@ lemma mul' (T : Type*) [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTow
     IsLocalization.Away (x * y) T :=
   mul_comm x y ▸ mul S T x y
 
+/-- Localizing the localization of `R` at `x` at the image of `y` is the same as localizing
+`R` at `y * x`. -/
+instance (x y : R) [IsLocalization.Away x S] :
+    IsLocalization.Away (y * x) (Localization.Away (algebraMap R S y)) :=
+  IsLocalization.Away.mul S (Localization.Away (algebraMap R S y)) _ _
+
+/-- Localizing the localization of `R` at `x` at the image of `y` is the same as localizing
+`R` at `x * y`. -/
+instance (x y : R) [IsLocalization.Away x S] :
+    IsLocalization.Away (x * y) (Localization.Away (algebraMap R S y)) :=
+  IsLocalization.Away.mul' S (Localization.Away (algebraMap R S y)) _ _
+
 /-- If `S₁` is the localization of `R` away from `f` and `S₂` is the localization away from `g`,
 then any localization `T` of `S₂` away from `f` is also a localization of `S₁` away from `g`. -/
 lemma commutes {R : Type*} [CommSemiring R] (S₁ S₂ T : Type*) [CommSemiring S₁]
@@ -275,7 +288,7 @@ theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommRing R] [CommRi
       obtain ⟨z', rfl⟩ := H.2 z
       exact ⟨⟨z', 1⟩, by simp⟩
     exists_of_eq := fun {x y} => by
-      erw [H.1.eq_iff]
+      rw [H.1.eq_iff]
       rintro rfl
       exact ⟨1, rfl⟩ }
 

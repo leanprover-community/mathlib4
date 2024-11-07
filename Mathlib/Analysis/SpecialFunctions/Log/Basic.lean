@@ -301,7 +301,7 @@ theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| 
     refine mul_nonneg ?_ h1.le
     rw [← log_inv]
     apply log_nonneg
-    rw [← le_inv h1 zero_lt_one, inv_one]
+    rw [← le_inv_comm₀ h1 zero_lt_one, inv_one]
     exact h2
   rw [← abs_of_nonneg aux, neg_mul, abs_neg] at this
   exact this

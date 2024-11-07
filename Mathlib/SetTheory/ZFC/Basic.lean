@@ -250,20 +250,17 @@ private theorem mem_wf_aux : ∀ {x y : PSet.{u}}, Equiv x y → Acc (· ∈ ·)
 theorem mem_wf : @WellFounded PSet (· ∈ ·) :=
   ⟨fun x => mem_wf_aux <| Equiv.refl x⟩
 
+instance : IsWellFounded PSet (· ∈ ·) :=
+  ⟨mem_wf⟩
+
 instance : WellFoundedRelation PSet :=
   ⟨_, mem_wf⟩
 
-instance : IsAsymm PSet (· ∈ ·) :=
-  mem_wf.isAsymm
-
-instance : IsIrrefl PSet (· ∈ ·) :=
-  mem_wf.isIrrefl
-
 theorem mem_asymm {x y : PSet} : x ∈ y → y ∉ x :=
-  asymm (r := (· ∈ ·))
+  asymm_of (· ∈ ·)
 
 theorem mem_irrefl (x : PSet) : x ∉ x :=
-  irrefl (r := (· ∈ ·)) x
+  irrefl_of (· ∈ ·) x
 
 /-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
@@ -367,7 +364,7 @@ theorem mem_insert_of_mem {y z : PSet} (x) (h : z ∈ y) : z ∈ insert x y :=
 @[simp]
 theorem mem_singleton {x y : PSet} : x ∈ ({y} : PSet) ↔ Equiv x y :=
   mem_insert_iff.trans
-    ⟨fun o => Or.rec (fun h => h) (fun n => absurd n (not_mem_empty _)) o, Or.inl⟩
+    ⟨fun o => Or.rec id (fun n => absurd n (not_mem_empty _)) o, Or.inl⟩
 
 theorem mem_pair {x y z : PSet} : x ∈ ({y, z} : PSet) ↔ Equiv x y ∨ Equiv x z := by
   simp
@@ -1017,21 +1014,17 @@ theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
 theorem inductionOn {p : ZFSet → Prop} (x) (h : ∀ x, (∀ y ∈ x, p y) → p x) : p x :=
   mem_wf.induction x h
 
+instance : IsWellFounded ZFSet (· ∈ ·) :=
+  ⟨mem_wf⟩
+
 instance : WellFoundedRelation ZFSet :=
   ⟨_, mem_wf⟩
 
-instance : IsAsymm ZFSet (· ∈ ·) :=
-  mem_wf.isAsymm
-
--- Porting note: this can't be inferred automatically for some reason.
-instance : IsIrrefl ZFSet (· ∈ ·) :=
-  mem_wf.isIrrefl
-
 theorem mem_asymm {x y : ZFSet} : x ∈ y → y ∉ x :=
-  asymm (r := (· ∈ ·))
+  asymm_of (· ∈ ·)
 
 theorem mem_irrefl (x : ZFSet) : x ∉ x :=
-  irrefl (r := (· ∈ ·)) x
+  irrefl_of (· ∈ ·) x
 
 theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
   by_contradiction fun ne =>
@@ -1310,21 +1303,17 @@ theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
     rintro B ⟨x, rfl, _⟩
     exact H x⟩
 
+instance : IsWellFounded Class (· ∈ ·) :=
+  ⟨mem_wf⟩
+
 instance : WellFoundedRelation Class :=
   ⟨_, mem_wf⟩
 
-instance : IsAsymm Class (· ∈ ·) :=
-  mem_wf.isAsymm
-
--- Porting note: this can't be inferred automatically for some reason.
-instance : IsIrrefl Class (· ∈ ·) :=
-  mem_wf.isIrrefl
-
 theorem mem_asymm {x y : Class} : x ∈ y → y ∉ x :=
-  asymm (r := (· ∈ ·))
+  asymm_of (· ∈ ·)
 
 theorem mem_irrefl (x : Class) : x ∉ x :=
-  irrefl (r := (· ∈ ·)) x
+  irrefl_of (· ∈ ·) x
 
 /-- **There is no universal set.**
 This is stated as `univ ∉ univ`, meaning that `univ` (the class of all sets) is proper (does not
@@ -1564,7 +1553,7 @@ private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
 @[simps apply_coe]
 noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
   toFun x := ⟨x.toSet, x.small_toSet⟩
-  invFun := fun ⟨s, h⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
+  invFun := fun ⟨s, _⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
   left_inv := Function.rightInverse_of_injective_of_leftInverse (by intros x y; simp)
     fun s ↦ Subtype.coe_injective <| toSet_equiv_aux s.2
   right_inv s := Subtype.coe_injective <| toSet_equiv_aux s.2

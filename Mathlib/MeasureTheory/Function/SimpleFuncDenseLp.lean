@@ -684,8 +684,11 @@ lemma isUniformEmbedding : IsUniformEmbedding ((↑) : Lp.simpleFunc E p μ → 
 
 @[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
-protected theorem uniformInducing : UniformInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  simpleFunc.isUniformEmbedding.toUniformInducing
+theorem isUniformInducing : IsUniformInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
+  simpleFunc.isUniformEmbedding.isUniformInducing
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing := isUniformInducing
 
 lemma isDenseEmbedding (hp_ne_top : p ≠ ∞) :
     IsDenseEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) := by
@@ -710,7 +713,7 @@ alias denseEmbedding := isDenseEmbedding
 
 protected theorem isDenseInducing (hp_ne_top : p ≠ ∞) :
     IsDenseInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  (simpleFunc.isDenseEmbedding hp_ne_top).toIsDenseInducing
+  (simpleFunc.isDenseEmbedding hp_ne_top).isDenseInducing
 
 protected theorem denseRange (hp_ne_top : p ≠ ∞) :
     DenseRange ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
@@ -739,8 +742,7 @@ variable {G : Type*} [NormedLatticeAddCommGroup G]
 theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
 
-instance instCovariantClassLE :
-    CovariantClass (Lp.simpleFunc G p μ) (Lp.simpleFunc G p μ) (· + ·) (· ≤ ·) := by
+instance instAddLeftMono : AddLeftMono (Lp.simpleFunc G p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
   rw [← Lp.simpleFunc.coeFn_le] at hg₁₂ ⊢
   have h_add_1 : ((f + g₁ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₁ := Lp.coeFn_add _ _

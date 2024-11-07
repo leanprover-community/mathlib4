@@ -867,7 +867,7 @@ instance : Monoid (Monoid.End M) where
   mul_one := MonoidHom.comp_id
   one_mul := MonoidHom.id_comp
   npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *] <;> rfl
-  npow_succ n f := DFunLike.coe_injective <| Function.iterate_succ _ _
+  npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 instance : Inhabited (Monoid.End M) := ⟨1⟩
 
@@ -908,7 +908,7 @@ instance monoid : Monoid (AddMonoid.End A) where
   mul_one := AddMonoidHom.comp_id
   one_mul := AddMonoidHom.id_comp
   npow n f := (npowRec n f).copy (Nat.iterate f n) <| by induction n <;> simp [npowRec, *] <;> rfl
-  npow_succ n f := DFunLike.coe_injective <| Function.iterate_succ _ _
+  npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 @[simp, norm_cast] lemma coe_pow (f : AddMonoid.End A) (n : ℕ) : (↑(f ^ n) : A → A) = f^[n] := rfl
 
@@ -958,8 +958,6 @@ instance [Mul M] [MulOneClass N] : Inhabited (M →ₙ* N) := ⟨1⟩
 instance [MulOneClass M] [MulOneClass N] : Inhabited (M →* N) := ⟨1⟩
 
 namespace MonoidHom
-
-variable [Group G] [CommGroup H]
 
 @[to_additive (attr := simp)]
 theorem one_comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : M →* N) :
