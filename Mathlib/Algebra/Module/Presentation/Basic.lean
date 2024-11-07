@@ -145,6 +145,7 @@ noncomputable def π : (relations.G →₀ A) →ₗ[A] M := Finsupp.linearCombi
 lemma π_single (g : relations.G) :
     solution.π (Finsupp.single g 1) = solution.var g := by simp [π]
 
+/-- Variant of `π_single` when the coefficient is any `a : A`. -/
 lemma π_single' (g : relations.G) (a : A) :
     solution.π (Finsupp.single g a) = a • solution.var g := by simp [π]
 

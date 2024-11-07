@@ -19,27 +19,96 @@ variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
 
 open Function
 
-namespace Algebra.Presentation
+namespace Algebra
 
-inductive tautological.Rels
-  | add (b b' : B)
-  | mul (b b' : B)
-  | algebraMap (a : A)
+namespace Generators
 
 @[simps]
-noncomputable def tautological : Algebra.Presentation A B where
+noncomputable def tautological : Algebra.Generators A B where
   vars := B
   val := _root_.id
   σ' := MvPolynomial.X
   aeval_val_σ' := by simp
-  rels := tautological.Rels A B
-  relation r := match r with
-    | .add b b' => .X b + .X b' - .X (b + b')
-    | .mul b b' => .X b * .X b' - .X (b * b')
-    | .algebraMap a => a • 1 - .X (algebraMap A B a)
-  span_range_relation_eq_ker := sorry
 
-end Algebra.Presentation
+end Generators
+
+namespace Presentation
+
+namespace tautological
+
+inductive Rels
+  | add (b b' : B)
+  | mul (b b' : B)
+  | algebraMap (a : A)
+
+@[simp]
+noncomputable def relation : Rels A B → (Generators.tautological A B).Ring
+  | .add b b' => .X b + .X b' - .X (b + b')
+  | .mul b b' => .X b * .X b' - .X (b * b')
+  | .algebraMap a => a • 1 - .X (algebraMap A B a)
+
+lemma le_ker : Ideal.span (Set.range (tautological.relation A B)) ≤
+    (Generators.tautological A B).ker := by
+  rw [Ideal.span_le]
+  rintro _ ⟨(⟨b, b'⟩ | ⟨b, b'⟩ | a), rfl⟩
+  · simp
+  · simp
+  · simp [Algebra.smul_def a (1 : B)]
+
+@[simps]
+noncomputable def toQuotient :
+    B →+* (Generators.tautological A B).Ring ⧸
+      Ideal.span (Set.range (tautological.relation A B)) where
+  toFun b := Submodule.Quotient.mk (.X b)
+  map_add' b b' := by
+    dsimp
+    symm
+    rw [← map_add, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    exact Ideal.subset_span ⟨.add b b', by simp⟩
+  map_mul' b b' := by
+    dsimp
+    symm
+    rw [← map_mul, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    exact Ideal.subset_span ⟨.mul b b', by simp⟩
+  map_one' := by
+    dsimp
+    symm
+    rw [← (Ideal.Quotient.mk _).map_one, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    exact Ideal.subset_span ⟨.algebraMap 1, by simp⟩
+  map_zero' := by
+    dsimp
+    rw [Ideal.Quotient.eq_zero_iff_mem]
+    exact Ideal.subset_span ⟨.add 0 0, by simp⟩
+
+lemma fac : (toQuotient A B).comp (algebraMap (Generators.tautological A B).Ring B) =
+    Ideal.Quotient.mk _ := by
+  ext x
+  · symm
+    erw [Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    refine Ideal.subset_span ⟨.algebraMap x, ?_⟩
+    dsimp
+    rw [MvPolynomial.algHom_C, MvPolynomial.C_eq_smul_one]
+  · dsimp
+    congr 1
+    simp [Algebra.Generators.algebraMap_eq]
+
+end tautological
+
+@[simps!]
+noncomputable def tautological : Algebra.Presentation A B where
+  toGenerators := .tautological A B
+  rels := tautological.Rels A B
+  relation := tautological.relation A B
+  span_range_relation_eq_ker := le_antisymm (tautological.le_ker A B) (by
+    rintro x hx
+    simp only [Generators.tautological_vars, RingHom.mem_ker] at hx
+    have := (DFunLike.congr_fun (tautological.fac A B) x).symm
+    simpa only [RingHom.coe_comp, comp_apply, hx, map_zero, Ideal.Quotient.eq_zero_iff_mem]
+      using (DFunLike.congr_fun (tautological.fac A B) x).symm)
+
+end Presentation
+
+end Algebra
 
 open ExteriorAlgebra
 
@@ -177,7 +246,7 @@ noncomputable def differentialsRestrictScalarsData :
         erw [Module.Presentation.finsupp_π, Module.Presentation.finsupp_π,
           Module.Presentation.finsupp_π, Module.Relations.map_single]
         dsimp [KaehlerDifferential.presentation, Algebra.Presentation.tautological,
-          Algebra.Presentation.differentials]
+          Algebra.Generators.tautological, Algebra.Presentation.differentials]
         simp only [map_sub, Derivation.leibniz, map_add, map_smul,
           KaehlerDifferential.mvPolynomialBasis_repr_D_X]
         rw [Finsupp.mapRange_sub (by simp), Finsupp.mapRange_add (by simp)]
