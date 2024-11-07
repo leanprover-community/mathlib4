@@ -188,24 +188,14 @@ section Monic
 of the same degree. -/
 theorem lifts_and_degree_eq_and_monic [Nontrivial S] {p : S[X]} (hlifts : p ∈ lifts f)
     (hp : p.Monic) : ∃ q : R[X], map f q = p ∧ q.degree = p.degree ∧ q.Monic := by
-  cases' subsingleton_or_nontrivial R with hR hR
-  · obtain ⟨q, hq⟩ := mem_lifts_and_degree_eq hlifts
-    exact ⟨q, hq.1, hq.2, monic_of_subsingleton _⟩
-  have H : erase p.natDegree p + X ^ p.natDegree = p := by
-    simpa only [hp.leadingCoeff, C_1, one_mul, eraseLead] using eraseLead_add_C_mul_X_pow p
-  by_cases h0 : erase p.natDegree p = 0
-  · rw [← H, h0, zero_add]
-    refine ⟨X ^ p.natDegree, ?_, ?_, monic_X_pow p.natDegree⟩
-    · rw [Polynomial.map_pow, map_X]
-    · rw [degree_X_pow, degree_X_pow]
-  obtain ⟨q, hq⟩ := mem_lifts_and_degree_eq (erase_mem_lifts p.natDegree hlifts)
-  have p_neq_0 : p ≠ 0 := by intro hp; apply h0; rw [hp]; simp only [natDegree_zero, erase_zero]
-  have hdeg : q.degree < ((X : R[X]) ^ p.natDegree).degree := by
-    rw [@degree_X_pow R, hq.2, ← degree_eq_natDegree p_neq_0]
-    exact degree_erase_lt p_neq_0
-  refine ⟨q + X ^ p.natDegree, ?_, ?_, (monic_X_pow _).add_of_right hdeg⟩
-  · rw [Polynomial.map_add, hq.1, Polynomial.map_pow, map_X, H]
-  · rw [degree_add_eq_right_of_degree_lt hdeg, degree_X_pow, degree_eq_natDegree hp.ne_zero]
+  rw [lifts_iff_coeff_lifts] at hlifts
+  let g : ℕ → R := fun k ↦ (hlifts k).choose
+  have hg : ∀ k, f (g k) = p.coeff k := fun k ↦ (hlifts k).choose_spec
+  let q : R[X] := X ^ p.natDegree + ∑ k ∈ Finset.range p.natDegree, C (g k) * X ^ k
+  have hq : map f q = p := by simp_rw [q, Polynomial.map_add, Polynomial.map_sum,
+    Polynomial.map_mul, Polynomial.map_pow, map_X, map_C, hg, ← hp.as_sum]
+  have h : q.Monic := monic_X_pow_add (by simp_rw [← Fin.sum_univ_eq_sum_range, degree_sum_fin_lt])
+  exact ⟨q, hq, hq ▸ (h.degree_map f).symm, h⟩
 
 theorem lifts_and_natDegree_eq_and_monic {p : S[X]} (hlifts : p ∈ lifts f) (hp : p.Monic) :
     ∃ q : R[X], map f q = p ∧ q.natDegree = p.natDegree ∧ q.Monic := by

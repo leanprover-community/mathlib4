@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.Polynomial.GroupRingAction
+import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 
 /-!
@@ -75,28 +76,17 @@ open MulSemiringAction Polynomial
 
 variable [IsInvariant A B G]
 
-theorem exists_map_eq_charpoly [Fintype G] (b : B) :
-    ∃ M : A[X], M.Monic ∧ M.map (algebraMap A B) = charpoly G b := by
-  have hinv k : ∃ a : A, algebraMap A B a = (charpoly G b).coeff k :=
-    isInvariant ((charpoly G b).coeff k) (charpoly_coeff_smul b k)
-  let f : ℕ → A := fun k ↦ (hinv k).choose
-  have hf : ∀ k, algebraMap A B (f k) = (charpoly G b).coeff k := fun k ↦ (hinv k).choose_spec
-  use X ^ (charpoly G b).natDegree + ∑ k ∈ Finset.range (charpoly G b).natDegree, C (f k) * X ^ k
-  constructor
-  · apply Polynomial.monic_X_pow_add
-    rw [← Fin.sum_univ_eq_sum_range]
-    apply Polynomial.degree_sum_fin_lt
-  · simp_rw [Polynomial.map_add, Polynomial.map_sum, Polynomial.map_mul, Polynomial.map_pow,
-      Polynomial.map_X, Polynomial.map_C, hf]
-    exact (charpoly_monic G b).as_sum.symm
+theorem charpoly_mem_lifts [Fintype G] (b : B) :
+    charpoly G b ∈ Polynomial.lifts (algebraMap A B) :=
+  (charpoly G b).lifts_iff_coeff_lifts.mpr fun n ↦ isInvariant _ (charpoly_coeff_smul b n)
 
 include G in
 theorem isIntegral [Finite G] : Algebra.IsIntegral A B := by
   cases nonempty_fintype G
   refine ⟨fun b ↦ ?_⟩
-  obtain ⟨f, hf1, hf2⟩ := exists_map_eq_charpoly A B G b
-  refine ⟨f, hf1, ?_⟩
-  rw [← eval_map, hf2, charpoly_eval]
+  obtain ⟨p, hp1, -, hp2⟩ := Polynomial.lifts_and_natDegree_eq_and_monic
+    (charpoly_mem_lifts A B G b) (charpoly_monic G b)
+  exact ⟨p, hp2, by rw [← eval_map, hp1, charpoly_eval]⟩
 
 end Algebra.IsInvariant
 
