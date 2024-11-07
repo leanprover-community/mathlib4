@@ -79,10 +79,15 @@ namespace elemental
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
 
-theorem le_of_mem {x : A} {s : NonUnitalSubalgebra R A} (hx : x ∈ s)
-    (hs : IsClosed (s : Set A)) :
+variable {R} in
+theorem le_of_mem {x : A} {s : NonUnitalSubalgebra R A} (hs : IsClosed (s : Set A)) (hx : x ∈ s) :
     elemental R x ≤ s :=
   topologicalClosure_minimal _ (adjoin_le <| by simpa using hx) hs
+
+variable {R} in
+theorem le_iff_mem {x : A} {s : NonUnitalSubalgebra R A} (hs : IsClosed (s : Set A)) :
+    elemental R x ≤ s ↔ x ∈ s :=
+  ⟨fun h ↦ h (self_mem R x), fun h ↦ le_of_mem hs h⟩
 
 instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_topologicalClosure _
