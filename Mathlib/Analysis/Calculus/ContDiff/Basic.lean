@@ -1720,7 +1720,7 @@ theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) :
     refine ⟨{ y : R | IsUnit y }, ?_, ?_⟩
     · simpa [nhdsWithin_univ] using x.nhds
     · use ftaylorSeriesWithin 𝕜 inverse univ
-      have : (m : WithTop ℕ∞) = 0 := mod_cast le_antisymm hm bot_le
+      have : (m : WithTop ℕ∞) = 0 := by exact_mod_cast le_antisymm hm bot_le
       rw [this, hasFTaylorSeriesUpToOn_zero_iff]
       constructor
       · rintro _ ⟨x', rfl⟩
