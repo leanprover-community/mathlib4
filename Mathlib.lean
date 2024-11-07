@@ -2084,6 +2084,7 @@ import Mathlib.Combinatorics.Derangements.Exponential
 import Mathlib.Combinatorics.Derangements.Finite
 import Mathlib.Combinatorics.Digraph.Basic
 import Mathlib.Combinatorics.Digraph.Orientation
+import Mathlib.Combinatorics.Enumerative.Bell
 import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.Combinatorics.Enumerative.Composition
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
@@ -2557,6 +2558,7 @@ import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Choose.Factorization
 import Mathlib.Data.Nat.Choose.Lucas
+import Mathlib.Data.Nat.Choose.Mul
 import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Choose.Vandermonde
