@@ -59,13 +59,13 @@ def formatPercent (reldiff : Float) : String :=
   s!"({sgn}{intDigs}.{if decDigs < 10 then "0" else ""}{decDigs}%)"
 
 /--
-info: [(+0.00%), (+14.28%), (+0.20%), (-0.60%), (-0.08%)]
+info: [(+0.00%), (+14.28%), (+0.20%), (-0.60%), (-0.08%), (+1.02%)]
 ---
 info: [+0.0⬝10⁹, +1.0⬝10⁹, +30.200⬝10⁹, -0.460⬝10⁹]
 -/
 #guard_msgs in
 run_cmd
-  let floats : Array Float := #[0, 1/7, 0.002, -0.006, -8.253600406145226E-4]
+  let floats : Array Float := #[0, 1/7, 0.002, -0.006, -8.253600406145226E-4, 0.0102]
   logInfo m!"{floats.map formatPercent}"
   let ints : Array Int := #[0, 10^9, 302*10^8, -460000000]
   logInfo m!"{ints.map formatDiff}"
