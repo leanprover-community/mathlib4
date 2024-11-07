@@ -406,8 +406,7 @@ end ModelsWithJ
 
 -- TODO: change to `protected abbrev IsElliptic := IsUnit W.Δ` once #17458 is merged
 /-- `WeierstrassCurve.IsElliptic` is a typeclass which asserts that a Weierstrass curve is an
-elliptic curve, that is, its discriminant is a unit.
-Note that this definition is only mathematically
+elliptic curve: that its discriminant is a unit. Note that this definition is only mathematically
 accurate for certain rings whose Picard group has trivial 12-torsion, such as a field or a PID. -/
 @[mk_iff]
 protected class IsElliptic : Prop where
@@ -494,17 +493,17 @@ section BaseChange
 variable {A : Type v} [CommRing A] (φ : R →+* A)
 
 instance IsElliptic.map : (W.map φ).IsElliptic := by
-  rw [isElliptic_iff, map_Δ]
-  exact W.isUnit_Δ.map φ
+  simp only [isElliptic_iff, map_Δ, W.isUnit_Δ.map]
 
 set_option linter.docPrime false in
 lemma coe_map_Δ' : (W.map φ).Δ' = φ W.Δ' := by
-  simp_rw [coe_Δ', map_Δ]
+  rw [coe_Δ', map_Δ, coe_Δ']
 
 set_option linter.docPrime false in
 @[simp]
-lemma map_Δ' : (W.map φ).Δ' = (Units.map ↑φ) W.Δ' := by
-  ext; exact W.coe_map_Δ' φ
+lemma map_Δ' : (W.map φ).Δ' = Units.map φ W.Δ' := by
+  ext
+  exact W.coe_map_Δ' φ
 
 set_option linter.docPrime false in
 lemma coe_inv_map_Δ' : (W.map φ).Δ'⁻¹ = φ ↑W.Δ'⁻¹ := by
@@ -512,7 +511,7 @@ lemma coe_inv_map_Δ' : (W.map φ).Δ'⁻¹ = φ ↑W.Δ'⁻¹ := by
 
 @[simp]
 lemma map_j : (W.map φ).j = φ W.j := by
-  simp_rw [j, map_c₄, coe_inv_map_Δ', map_mul, map_pow]
+  rw [j, coe_inv_map_Δ', map_c₄, j, map_mul, map_pow]
 
 end BaseChange
 
@@ -657,7 +656,7 @@ lemma ofJ_j : (ofJ j).j = j := by
       haveI := Fact.mk (sub_ne_zero.2 h1728).isUnit
       simp_rw [ofJ_ne_0_ne_1728 j h0 h1728, ofJNe0Or1728_j]
 
-instance instInhabitedIsElliptic : Inhabited { W : WeierstrassCurve F // W.IsElliptic } :=
+instance : Inhabited { W : WeierstrassCurve F // W.IsElliptic } :=
   ⟨⟨ofJ 37, inferInstance⟩⟩
 
 end ModelsWithJ
