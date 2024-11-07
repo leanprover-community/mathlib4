@@ -3251,7 +3251,9 @@ import Mathlib.LinearAlgebra.Orientation
 import Mathlib.LinearAlgebra.PID
 import Mathlib.LinearAlgebra.PerfectPairing
 import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.PiTensorProduct
+import Mathlib.LinearAlgebra.PiTensorProduct.Basic
+import Mathlib.LinearAlgebra.PiTensorProduct.Finite
+import Mathlib.LinearAlgebra.PiTensorProduct.Generators
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Projectivization.Basic
