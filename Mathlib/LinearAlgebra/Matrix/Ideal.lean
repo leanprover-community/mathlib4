@@ -103,9 +103,9 @@ theorem matricesOver_jacobson_le (I : Ideal R) :
     I.jacobson.matricesOver n ≤ (I.matricesOver n).jacobson := by
   intro M MI
   rw [matrix_eq_sum_stdBasisMatrix M]
-  apply Ideal.sum_mem
+  apply sum_mem
   intro i _
-  apply Ideal.sum_mem
+  apply sum_mem
   intro j _
   apply stdBasisMatrix_mem_jacobson_matricesOver I _ (MI i j)
 
