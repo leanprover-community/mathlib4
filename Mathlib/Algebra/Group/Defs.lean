@@ -313,11 +313,15 @@ class Semigroup (G : Type u) extends Mul G where
   /-- Multiplication is associative -/
   protected mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
 
+attribute [instance 150] Semigroup.toMul
+
 /-- An additive semigroup is a type with an associative `(+)`. -/
 @[ext]
 class AddSemigroup (G : Type u) extends Add G where
   /-- Addition is associative -/
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
+
+attribute [instance 150] AddSemigroup.toAdd
 
 attribute [to_additive] Semigroup
 
@@ -337,11 +341,15 @@ class AddCommMagma (G : Type u) extends Add G where
   /-- Addition is commutative in an commutative additive magma. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
+attribute [instance 50] AddCommMagma.toAdd
+
 /-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
 @[ext]
 class CommMagma (G : Type u) extends Mul G where
   /-- Multiplication is commutative in a commutative multiplicative magma. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
+
+attribute [instance 50] CommMagma.toMul
 
 attribute [to_additive] CommMagma
 
@@ -453,6 +461,8 @@ class MulOneClass (M : Type u) extends One M, Mul M where
   /-- One is a right neutral element for multiplication -/
   protected mul_one : ∀ a : M, a * 1 = a
 
+attribute [instance 50] MulOneClass.toMul
+
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
 class AddZeroClass (M : Type u) extends Zero M, Add M where
@@ -460,6 +470,8 @@ class AddZeroClass (M : Type u) extends Zero M, Add M where
   protected zero_add : ∀ a : M, 0 + a = a
   /-- Zero is a right neutral element for addition -/
   protected add_zero : ∀ a : M, a + 0 = a
+
+attribute [instance 50] AddZeroClass.toAdd
 
 attribute [to_additive] MulOneClass
 
@@ -752,9 +764,6 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
   protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
-
-attribute [instance 150] AddSemigroup.toAdd
-attribute [instance 50] AddZeroClass.toAdd
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
