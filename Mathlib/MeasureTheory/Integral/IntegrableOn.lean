@@ -193,7 +193,7 @@ lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFin
   simp [integrableOn_finset_iUnion, measure_lt_top]
 
 lemma IntegrableOn.of_finite [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
-   {s : Set α} (hs : s.Finite) {f : α → E} : IntegrableOn f s μ := by
+    {s : Set α} (hs : s.Finite) {f : α → E} : IntegrableOn f s μ := by
   simpa using IntegrableOn.finset (s := hs.toFinset)
 
 theorem IntegrableOn.add_measure (hμ : IntegrableOn f s μ) (hν : IntegrableOn f s ν) :
