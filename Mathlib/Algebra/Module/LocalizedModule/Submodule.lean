@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.Algebra.Module.LocalizedModule.Basic
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Localization.Module
 
@@ -12,9 +12,10 @@ import Mathlib.RingTheory.Localization.Module
 
 Results about localizations of submodules and quotient modules are provided in this file.
 
-## Main result
+## Main results
 - `Submodule.localized`:
   The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`.
+  A direct consequence of this is that `Rₚ` is flat over `R, see `IsLocalization.flat`.
 - `Submodule.toLocalized`:
   The localization map of a submodule `M' →ₗ[R] M'.localized p`.
 - `Submodule.toLocalizedQuotient`:
@@ -22,7 +23,6 @@ Results about localizations of submodules and quotient modules are provided in t
 
 ## TODO
 - Statements regarding the exactness of localization.
-- Connection with flatness.
 
 -/
 

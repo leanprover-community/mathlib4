@@ -586,7 +586,7 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
       List.forall_mem_map.2 fun j hj => List.forall_mem_cons.2 ⟨Or.inr rfl, hL.1 j hj⟩,
       hL.2 ▸
         List.recOn L (by simp)
-          (by simp (config := { contextual := true }) [List.map_cons, add_comm])⟩
+          (by simp +contextual [List.map_cons, add_comm])⟩
 
 variable (R)
 
