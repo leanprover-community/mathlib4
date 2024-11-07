@@ -32,7 +32,7 @@ jobs:
       - name: Make comment
         id: make_comment
         run: |
-          printf 'comment<<EEE\nHello\nmaintainer merge\nEEE' >> "$GITHUB_OUTPUT"
+          printf 'comment<<EEE\nHello\nmaintainer merge\nsomething else\nEEE' >> "$GITHUB_OUTPUT"
 
       - name: Determine Zulip topic
         id: determine_topic
