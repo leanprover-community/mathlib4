@@ -348,7 +348,7 @@ lemma H1Cotangent.map_eq (f g : Hom P P') : map f = map g := by
 @[simp] lemma H1Cotangent.map_id : map (.id P) = LinearMap.id := by ext; simp
 
 omit [IsScalarTower R S S'] in
-lemma H1Cotangent.map_comp [IsScalarTower R S S''] [IsScalarTower R' S' S'']
+lemma H1Cotangent.map_comp
     (f : Hom P P') (g : Hom P' P'') :
     map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
   ext; simp [Cotangent.map_comp]
@@ -366,14 +366,15 @@ def cotangentSpaceBasis : Basis P.vars S P.toExtension.CotangentSpace :=
 
 @[simp]
 lemma cotangentSpaceBasis_repr_tmul (r x i) :
-    P.cotangentSpaceBasis.repr (r ⊗ₜ .D _ _ x) i = r * aeval P.val (pderiv i x) := by
+    P.cotangentSpaceBasis.repr (r ⊗ₜ[P.Ring] KaehlerDifferential.D R P.Ring x : _) i =
+      r * aeval P.val (pderiv i x) := by
   classical
   simp only [cotangentSpaceBasis, Basis.baseChange_repr_tmul, mvPolynomialBasis_repr_apply,
     Algebra.smul_def, mul_comm r, algebraMap_apply, toExtension]
 
 lemma cotangentSpaceBasis_repr_one_tmul (x i) :
     P.cotangentSpaceBasis.repr (1 ⊗ₜ .D _ _ x) i = aeval P.val (pderiv i x) := by
-  rw [cotangentSpaceBasis_repr_tmul, one_mul]
+  simp
 
 lemma cotangentSpaceBasis_apply (i) :
     P.cotangentSpaceBasis i = 1 ⊗ₜ .D _ _ (.X i) := by

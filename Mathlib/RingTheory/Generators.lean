@@ -142,6 +142,7 @@ def self : Generators R S where
   σ' := X
   aeval_val_σ' := aeval_X _
 
+/-- The extension `R[X₁,...,Xₙ] → S` given a family of generators. -/
 @[simps]
 noncomputable
 def toExtension : Extension R S where
@@ -382,6 +383,7 @@ def toExtendScalars (P : Generators R T) : Hom P (P.extendScalars S) where
   aeval_val i := by simp
 
 variable {P P'} in
+/-- Reinterpret a hom between generators as a hom between extensions. -/
 @[simps]
 noncomputable
 def Hom.toExtensionHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
@@ -395,7 +397,7 @@ lemma Hom.toExtensionHom_id : Hom.toExtensionHom (.id P) = .id _ := by ext; simp
 
 @[simp]
 lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
-    [Algebra R R''] [Algebra R R''] [Algebra R S''] [IsScalarTower R R'' S'']
+    [Algebra R R''] [Algebra R S''] [IsScalarTower R R'' S'']
     [IsScalarTower R S S''] [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
     [IsScalarTower S S' S''] [IsScalarTower R R' R''] [IsScalarTower R R' S']
     (f : P'.Hom P'') (g : P.Hom P') :
