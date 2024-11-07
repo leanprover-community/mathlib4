@@ -51,7 +51,7 @@ namespace PerfectPairing
 
 /-- If the coefficients are a field, and one of the spaces is finite-dimensional, it is sufficient
 to check only injectivity instead of bijectivity of the bilinear form. -/
-def mkOfFiniteDimensional {K V W : Type*}
+def mkOfInjective {K V W : Type*}
     [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W] [FiniteDimensional K V]
     (B : V →ₗ[K] W →ₗ[K] K)
     (h : Injective B)
