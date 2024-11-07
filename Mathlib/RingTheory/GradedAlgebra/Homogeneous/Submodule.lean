@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
 import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.Algebra.Module.GradedModule
+import Mathlib.Algebra.GradedMulAction
 
 /-!
 # Homogeneous submodules of a graded module
