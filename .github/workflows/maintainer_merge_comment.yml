@@ -50,6 +50,7 @@ jobs:
             printf $'title<<EOF\n%s\nEOF' "This message was a merge" >> "${GITHUB_OUTPUT}"
           else
             printf $'title<<EOF\n%s\nEOF' "This message was a delegate" >> "${GITHUB_OUTPUT}"
+          fi
       #- name: Send message on Zulip
       #  uses: zulip/github-actions-zulip/send-message@v1
       #  with:
