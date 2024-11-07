@@ -602,10 +602,15 @@ lemma independent_genWeightSpace [NoZeroSMulDivisors R M] :
   exact Module.End.independent_iInf_maxGenEigenspace_of_forall_mapsTo (toEnd R L M)
     (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem)
 
+/-- The set of weights is equivalent to a subtype. -/
+def Weight.embeddingSetOf : Weight R L M ↪ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
+  toFun w := ⟨w.1, w.genWeightSpace_ne_bot _⟩
+  inj' := fun ⟨χ₁,_⟩ ⟨χ₂,_⟩ h ↦ by ext; simp_all
+
 lemma independent_genWeightSpace' [NoZeroSMulDivisors R M] :
     CompleteLattice.Independent fun χ : Weight R L M ↦ genWeightSpace M χ :=
   (independent_genWeightSpace R L M).comp <|
-    Subtype.val_injective.comp (Weight.equivSetOf R L M).injective
+    Subtype.val_injective.comp (Weight.embeddingSetOf R L M).injective
 
 lemma independent_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
     CompleteLattice.Independent fun (χ : R) ↦ genWeightSpaceOf M χ x := by
@@ -621,10 +626,17 @@ lemma finite_genWeightSpace_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     {χ : L → R | genWeightSpace M χ ≠ ⊥}.Finite :=
   CompleteLattice.WellFoundedGT.finite_ne_bot_of_independent (independent_genWeightSpace R L M)
 
+/-- The set of weights is equivalent to a subtype. -/
+def Weight.equivSetOf [NoZeroSMulDivisors R M] [IsNoetherian R M] :
+    Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
+  toFun w := ⟨w.1, w.genWeightSpace_ne_bot _⟩
+  invFun w := ⟨w.1, sorry⟩
+  left_inv w := by simp
+  right_inv w := by simp
+
 instance Weight.instFinite [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     Finite (Weight R L M) := by
-  have : Finite {χ : L → R | ∃ m : M, m ≠ 0 ∧ ∀ (x : L), ⁅x, m⁆ = χ x • m} := sorry
-  -- finite_genWeightSpace_ne_bot R L M
+  have : Finite {χ : L → R | genWeightSpace M χ ≠ ⊥} := finite_genWeightSpace_ne_bot R L M
   exact Finite.of_injective (equivSetOf R L M) (equivSetOf R L M).injective
 
 noncomputable instance Weight.instFintype [NoZeroSMulDivisors R M] [IsNoetherian R M] :

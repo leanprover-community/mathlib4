@@ -70,14 +70,6 @@ def IsZero (χ : Weight R L M) := (χ : L → R) = 0
 
 @[simp] lemma coe_eq_zero_iff (χ : Weight R L M) : (χ : L → R) = 0 ↔ χ.IsZero := Iff.rfl
 
-variable (R L M) in
-/-- The set of weights is equivalent to a subtype. -/
-def equivSetOf : Weight R L M ≃ {χ : L → R | ∃ m : M, m ≠ 0 ∧ ∀ x : L, ⁅x, m⁆ = χ x • m} where
-  toFun w := ⟨w.1, w.2⟩
-  invFun w := ⟨w.1, w.2⟩
-  left_inv w := by simp
-  right_inv w := by simp
-
 end Weight
 
 variable [LieAlgebra R L] [LieModule R L M]
