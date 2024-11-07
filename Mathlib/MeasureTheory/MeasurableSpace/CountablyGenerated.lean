@@ -512,7 +512,7 @@ lemma measurableSet_countablePartitionSet (n : ℕ) (a : α) :
 
 section CountableOrCountablyGenerated
 
-variable {γ : Type*} [MeasurableSpace β] [MeasurableSpace γ]
+variable {α γ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 
 /-- A class registering that either `α` is countable or `β` is a countably generated
 measurable space. -/
