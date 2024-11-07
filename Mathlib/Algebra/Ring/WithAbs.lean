@@ -108,8 +108,7 @@ variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ}
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 `f` is an isometry. -/
 theorem isometry_of_comp (h : ∀ x, ‖f x‖ = v x) : Isometry f :=
-  Isometry.of_dist_eq <| fun x y => by
-    simp only [‹NormedField L›.dist_eq, ← f.map_sub, h]; rfl
+  Isometry.of_dist_eq <| fun x y => by simp only [‹NormedField L›.dist_eq, ← f.map_sub, h]; rfl
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 the pseudo metric space associated to the absolute value is the same as the pseudo metric space
