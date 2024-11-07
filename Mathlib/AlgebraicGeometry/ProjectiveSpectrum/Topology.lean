@@ -57,6 +57,9 @@ attribute [instance] ProjectiveSpectrum.isPrime
 
 namespace ProjectiveSpectrum
 
+instance (x : ProjectiveSpectrum 𝒜) : Ideal.IsPrime x.asHomogeneousIdeal.toSubmodule :=
+  x.isPrime
+
 /-- The zero locus of a set `s` of elements of a commutative ring `A` is the set of all relevant
 homogeneous prime ideals of the ring that contain the set `s`.
 
