@@ -1745,7 +1745,7 @@ theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : 
     mul_comm]
 
 theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set α} (hs : s.Countable)
-    (hf : Integrable f (μ.restrict s)) :
+    (hf : IntegrableOn f s μ) :
     ∫ a in s, f a ∂μ = ∑' a : s, (μ {(a : α)}).toReal • f a := by
   have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
   have hf' : Integrable (fun (x : s) => f x) (Measure.comap Subtype.val μ) := by
