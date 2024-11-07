@@ -38,7 +38,7 @@ jobs:
       - name: set variable
         run: printf $'TITLE<<EEE\nthis is free text containing\nmyself merge\nEEE' >> "$GITHUB_ENV"
 
-        - name: Form the message
+      - name: Form the message
         id: merge_or_delegate
         #env:
         #  TITLE: $'this is free text containing\nmyself merge' #${{ github.event.pull_request.title }}
