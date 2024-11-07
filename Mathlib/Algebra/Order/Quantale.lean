@@ -46,13 +46,16 @@ overhead if a user does not need them.
 * next to these classes, we define the additive versions `AddQuantale`, `IsAddIntegral` in
   which the semigroup operation is denoted by addition instead of multiplication;
 
+* furthermore, we provide basic lemmas rewriting distributivity laws for sSup into iSup and sup,
+  monotonicity of the multiplication, and an equivalence for left- and right- residuation.
+
 ## Naming conventions
 
 ## Notation
 
-* `x ⇨ₗ y` : `sSup { z | z * x ≤ y }`, the leftResiduation of `y` over `x`;
+* `x ⇨ₗ y` : `sSup {z | z * x ≤ y}`, the `leftResiduation` of `y` over `x`;
 
-* `x ⇨ᵣ y` : `sSup { z | x * z ≤ y }`, the rightResiduation of `y` over `x`;
+* `x ⇨ᵣ y` : `sSup {z | x * z ≤ y}`, the `rightResiduation` of `y` over `x`;
 
 ## References
 
@@ -63,7 +66,7 @@ overhead if a user does not need them.
 -/
 
 /-- An additive quantale is an additive semigroup distributing over a complete lattice. -/
-class AddQuantale (α : Type _) [AddSemigroup α] extends CompleteLattice α where
+class AddQuantale (α : Type*) [AddSemigroup α] extends CompleteLattice α where
   /-- Addition is distributive over join in a quantale -/
   protected add_sSup_eq_iSup_add (x : α) (s : Set α) : x + sSup s = ⨆ y ∈ s, x + y
   /-- Addition is distributive over join in a quantale -/
@@ -71,44 +74,66 @@ class AddQuantale (α : Type _) [AddSemigroup α] extends CompleteLattice α whe
 
 /-- A quantale is a semigroup distributing over a complete lattice. -/
 @[to_additive]
-class Quantale (α : Type _) [Semigroup α] extends CompleteLattice α where
+class Quantale (α : Type*) [Semigroup α] extends CompleteLattice α where
   /-- Multiplication is distributive over join in a quantale -/
   protected mul_sSup_eq_iSup_mul (x : α) (s : Set α) : x * sSup s = ⨆ y ∈ s, x * y
   /-- Multiplication is distributive over join in a quantale -/
   protected sSup_mul_eq_iSup_mul (s : Set α) (y : α) : sSup s * y = ⨆ x ∈ s, x * y
 
 /-- An integral (or strictly two-sided) additive quantale is a quantale over an additive monoid
-    where top and unit coincide. -/
-class IsIntegralAddQuantale (α : Type _) [AddMonoid α] [AddQuantale α] : Prop where
-  /-- Top and unit coincide in an integral (or strictly two-sided) quantale -/
+`⊤` and `0` coincide. -/
+class IsIntegralAddQuantale (α : Type*) [AddMonoid α] [AddQuantale α] : Prop where
+  /-- `⊤` and `1` coincide in an integral (or strictly two-sided) quantale -/
   protected top_eq_zero : (⊤ : α) = 0
 
 /-- An integral (or strictly two-sided) quantale is a quantale over a monoid where
-    top and unit coincide. -/
+`⊤` and `1` coincide. -/
 @[to_additive]
-class IsIntegralQuantale (α : Type _) [Monoid α] [Quantale α] : Prop where
-  /-- Top and unit coincide in an integral (or strictly two-sided) quantale -/
+class IsIntegralQuantale (α : Type*) [Monoid α] [Quantale α] : Prop where
+  /-- `⊤` and `1` coincide in an integral (or strictly two-sided) quantale -/
   protected top_eq_one : (⊤ : α) = 1
 
 section Quantale
 
-variable (α : Type _)
+variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
 variable [Semigroup α] [Quantale α]
 
 @[to_additive]
-theorem mul_sSup_eq_iSup_mul : ∀ x : α, ∀ s : Set α, x * sSup s = ⨆ y ∈ s, x * y :=
-  Quantale.mul_sSup_eq_iSup_mul
+theorem mul_sSup_eq_iSup_mul : x * sSup s = ⨆ y ∈ s, x * y := Quantale.mul_sSup_eq_iSup_mul _ _
 
 @[to_additive]
-theorem sSup_mul_eq_iSup_mul : ∀ s : Set α, ∀ y : α, sSup s * y = ⨆ x ∈ s, x * y :=
-  Quantale.sSup_mul_eq_iSup_mul
+theorem sSup_mul_eq_iSup_mul : sSup s * x = ⨆ y ∈ s, y * x := Quantale.sSup_mul_eq_iSup_mul _ _
+
+@[to_additive]
+theorem mul_iSup_eq_iSup_mul : x * ⨆ i, f i = ⨆ i, x * f i := by
+  rw [iSup, mul_sSup_eq_iSup_mul, iSup_range]
+
+@[to_additive]
+theorem iSup_mul_eq_iSup_mul : (⨆ i, f i) * x = ⨆ i, f i * x := by
+  rw [iSup, sSup_mul_eq_iSup_mul, iSup_range]
+
+@[to_additive]
+theorem mul_sup_eq_sup_mul : x * (y ⊔ z) = (x * y) ⊔ (x * z) := by
+  rw [← iSup_pair, ← sSup_pair, mul_sSup_eq_iSup_mul]
+
+@[to_additive]
+theorem sup_mul_eq_sup_mul : (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
+  rw [← (@iSup_pair _ _ _ (fun _? => _? * z) _ _), ← sSup_pair, sSup_mul_eq_iSup_mul]
+
+@[to_additive]
+theorem mul_le_mul_left : x ≤ y → x * z ≤ y * z := by
+  intro h; rw [← left_eq_sup, ← sup_mul_eq_sup_mul, sup_of_le_left h]
+
+@[to_additive]
+theorem mul_le_mul_right : x ≤ y → z * x ≤ z * y := by
+  intro h; rw [← left_eq_sup, ← mul_sup_eq_sup_mul, sup_of_le_left h]
 
 end Quantale
 
 section IsIntegral
 open Quantale
 
-variable (α : Type _)
+variable {α : Type*}
 variable [Monoid α] [Quantale α] [IsIntegralQuantale α]
 
 @[to_additive]
@@ -118,28 +143,28 @@ end IsIntegral
 
 namespace Quantale
 
-variable {α : Type _}
+variable {α : Type*}
 variable [Semigroup α] [Quantale α]
 
-/-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
+/-- Left- and right-residuation operators on an additive quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
-I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
+I.e. `x ≤ y ⇨ₗ z ↔ x * y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
 @[to_additive "Left- and right- residuation operators on an additive quantale are similar to
 the Heyting operator on complete lattices, but for a non-commutative logic.
-I.e. `x ⇨ₗ y = sSup { z | z + x ≤ y }`.
+I.e. `x ≤ y ⇨ₗ z ↔ x + y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z + x ≤ y }`.
 "]
-def leftResiduation (x y : α) := sSup { z | z * x ≤ y }
+def leftResiduation (x y : α) := sSup {z | z * x ≤ y}
 
 /-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
-I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
+I.e. `x ≤ y ⇨ᵣ z ↔ y * x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x * z ≤ y }`.
 -/
 @[to_additive "Left- and right- residuation operators on an additive quantale are similar to
 the Heyting operator on complete lattices, but for a non-commutative logic.
-I.e. `x ⇨ᵣ y = sSup { z | x + z ≤ y }`.
+I.e. `x ≤ y ⇨ᵣ z ↔ y + x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x + z ≤ y }`.
 "]
-def rightResiduation (x y : α) := sSup { z | x * z ≤ y }
+def rightResiduation (x y : α) := sSup {z | x * z ≤ y}
 
 @[inherit_doc]
 scoped infixr:60 " ⇨ₗ " => leftResiduation
@@ -158,3 +183,32 @@ scoped infixr:60 " ⇨ₗ " => leftResiduation
 scoped infixr:60 " ⇨ᵣ " => rightResiduation
 
 end AddQuantale
+
+namespace Quantale
+
+variable {α : Type*} {x y z : α}
+variable [Semigroup α] [Quantale α]
+
+@[to_additive]
+theorem leftResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z := by
+  rw [leftResiduation];
+  constructor
+  · intro h1
+    apply le_trans (mul_le_mul_left h1)
+    simp_all only [sSup_mul_eq_iSup_mul, Set.mem_setOf_eq, iSup_le_iff, implies_true]
+  · intro h1
+    apply le_sSup
+    exact h1
+
+@[to_additive]
+theorem rightResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z := by
+  rw [rightResiduation];
+  constructor
+  · intro h1
+    apply le_trans (mul_le_mul_right h1)
+    simp_all only [mul_sSup_eq_iSup_mul, Set.mem_setOf_eq, iSup_le_iff, implies_true]
+  · intro h1
+    apply le_sSup
+    exact h1
+
+end Quantale

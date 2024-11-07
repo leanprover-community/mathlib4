@@ -6,7 +6,7 @@ Authors: Pieter Cuijpers
 import Mathlib.Algebra.Group.Defs
 
 /-!
-# Mixing for Idempotent Semigroups
+# Idempotent Semigroups
 
 An idempotent semigroup is a semigroup that satisfies `x * x = x`.
 
@@ -17,20 +17,19 @@ An idempotent semigroup is a semigroup that satisfies `x * x = x`.
 -/
 
 /-- An idempotent additive semigroup is a type with an associative idempotent addition. -/
-class IsIdemAddSemigroup (G : Type _) [AddSemigroup G] : Prop where
+class IsIdemAddSemigroup (G : Type*) [AddSemigroup G] : Prop where
   /-- Idempotence: `x + x = x` -/
   protected add_idem (x : G) : x + x = x
 
 /-- An idempotent semigroup is a type with an associative idempotent `(*)`. -/
 @[to_additive]
-class IsIdemSemigroup (G : Type _) [Semigroup G] : Prop where
+class IsIdemSemigroup (G : Type*) [Semigroup G] : Prop where
   /-- Idempotence: `x * x = x` -/
   protected mul_idem (x : G) : x * x = x
 
 section IsIdem
 
-variable (G : Type _)
-variable [Semigroup G] [IsIdemSemigroup G]
+variable {G : Type*} [Semigroup G] [IsIdemSemigroup G]
 
 @[to_additive]
 theorem mul_idem (x : G) : x * x = x := IsIdemSemigroup.mul_idem _

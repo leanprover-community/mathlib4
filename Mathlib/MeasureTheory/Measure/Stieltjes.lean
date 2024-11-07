@@ -344,7 +344,7 @@ theorem outer_trim : f.outer.trim = f.outer := by
 theorem borel_le_measurable : borel ℝ ≤ f.outer.caratheodory := by
   rw [borel_eq_generateFrom_Ioi]
   refine MeasurableSpace.generateFrom_le ?_
-  simp (config := { contextual := true }) [f.measurableSet_Ioi]
+  simp +contextual [f.measurableSet_Ioi]
 
 /-! ### The measure associated to a Stieltjes function -/
 
