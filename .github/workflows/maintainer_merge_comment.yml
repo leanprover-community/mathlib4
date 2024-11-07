@@ -39,7 +39,7 @@ jobs:
       - name: Form the message
         id: merge_or_delegate
         env:
-          BODY: ${{ github.event.comment.body }}
+          BODY: 'maintainer merge' #${{ github.event.comment.body }}
         run: |
           ./scripts/maintainer_merge_message.sh "${BODY}" comment >> "${GITHUB_OUTPUT}"
           #if printf '%s\n' "${BODY}" | grep "^maintainer merge"
@@ -70,7 +70,8 @@ jobs:
           issue-number: ${{ github.event.issue.number }}
           body: |
             🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}.
-
+            ${{ steps.merge_or_delegate.outputs.title }}
+            > ${{ github.event.issue.title }}
       #- name: Add label to PR
       #  uses: actions/github-script@v7
       #  with:
