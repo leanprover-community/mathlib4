@@ -92,9 +92,7 @@ lemma if_replicate₀ {b L : ℕ} {M : MonoPred b} [DecidablePred M.P] [Decidabl
     List.ofFn (fun a => ite (M.P (Gap_cons a w (Nat.not_add_one_le_zero L)).1
     ∧ M.Q (Gap_cons a w (Nat.not_add_one_le_zero L)).1) 1 0)
     = List.replicate b 0 :=
-  if_replicate _ _ (fun a => by
-    rw [not_and]
-    exact fun h => False.elim <|H <|still_holds h)
+  if_replicate _ _ (fun _ => not_and.mpr fun h => False.elim <|H <|still_holds h)
 
 /-- Simplifying a gap defined by a vacuous `ite` involving `num_by_backtracking`. -/
 lemma if_replicate₁ {b L : ℕ} {M : MonoPred b} [DecidablePred M.P] [DecidablePred M.Q]
@@ -297,10 +295,8 @@ theorem backtracking_verification {k b L:ℕ} (bound : k ≤ L.succ) (M:MonoPred
         (⟨w,⟨hs, List.suffix_rfl⟩⟩ : {v : Vector (Fin b) L.succ // (M.P v.1 ∧ M.Q v.1)
           ∧ w.1 <:+ v.1})
       exact Fintype.card_unique
-    · have : ∀ v: Vector (Fin b) L.succ ,¬ ((M.P v.1 ∧ M.Q v.1) ∧ w.1 <:+ v.1) := by
-        intro v hc
-        have : w = v := SetCoe.ext (Vector_eq_of_suffix_of_length_eq hc.2)
-        subst this; tauto
+    · have (v: Vector (Fin b) L.succ) : ¬ ((M.P v.1 ∧ M.Q v.1) ∧ w.1 <:+ v.1) :=
+        fun hc => hs <|SetCoe.ext (Vector_eq_of_suffix_of_length_eq hc.2) ▸ hc.1
       have := Subtype.isEmpty_of_false this
       exact Fintype.card_eq_zero
   | Nat.succ n => by
@@ -315,9 +311,7 @@ theorem backtracking_verification {k b L:ℕ} (bound : k ≤ L.succ) (M:MonoPred
     tauto
 
 /-- Gap has decidable equality. -/
-instance {b L:ℕ} : DecidableEq (Gap b (Nat.succ L) 0) := by
-  unfold Gap
-  exact Subtype.instDecidableEq
+instance {b L:ℕ} : DecidableEq (Gap b (Nat.succ L) 0) := Subtype.instDecidableEq
 
 
 /-- The lists with a given suffix satisfying conditions P (recursively) and Q. -/
@@ -371,11 +365,9 @@ theorem branch_out_set (b:ℕ) {n L : ℕ} {M : MonoPred b} [DecidablePred M.P]
           Finset.not_mem_empty, forall_exists_index, imp_false]
         intro hv
         obtain ⟨a,ha⟩ := hv
-        split_ifs at * with h₀
-        · have := still_holds h₀
-          tauto
-        · have := still_holds h₀
-          tauto
+        split_ifs at ha with h₀
+        · exact H <|still_holds h₀
+        · exact H <|still_holds h₀
         · simp at ha
       · simp
 
