@@ -148,8 +148,8 @@ lemma isPresentation_of_isEmpty [hι : IsEmpty ι] :
   IsPresentationCore.isPresentation
     { desc := fun s ↦ PiTensorProduct.lift
         { toFun := fun _ ↦ s.var (IsEmpty.elim hι)
-          map_add' := fun _ ↦ IsEmpty.elim hι
-          map_smul' := fun _ ↦ IsEmpty.elim hι }
+          map_update_add' := fun _ ↦ IsEmpty.elim hι
+          map_update_smul' := fun _ ↦ IsEmpty.elim hι }
       postcomp_desc := fun s ↦ by
         ext x
         dsimp
@@ -295,6 +295,7 @@ end Solution
 
 end Relations
 
+@[simps! G R var]
 noncomputable def Presentation.piTensor [Finite ι] (pres : ∀ i, Presentation R (M i)) :
     Presentation R (⨂[R] i, M i) where
   toSolution := .piTensor (fun i ↦ (pres i).toSolution)
