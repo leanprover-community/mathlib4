@@ -155,32 +155,57 @@ section hSMul
 variable {c₁ c₂ c₃ : J} (i₁ : c₁ ⟶ c₃) (i₂ : c₂ ⟶ c₃)
 variable (r : ℛ.obj c₁) (m : ℳ.obj c₂)
 
+omit [∀ (x y : 𝔄𝔟), AddMonoidHomClass (x ⟶ y) x y]
+  [HasColimit ℛ] [HasColimit ℳ]
+  [PreservesColimit ℛ (forget ℜ𝔦𝔫𝔤)] [PreservesColimit ℳ (forget 𝔄𝔟)]
+  compatible_smul [IsFiltered J] in
 @[simp]
 lemma one_hSMul :
     hSMul i₁ i₂ (1 : ℛ.obj c₁) m = (ℳ.map i₂ m) := by
   simp [hSMul]
 
+omit [∀ (x y : 𝔄𝔟), AddMonoidHomClass (x ⟶ y) x y]
+  [HasColimit ℛ] [HasColimit ℳ]
+  [PreservesColimit ℛ (forget ℜ𝔦𝔫𝔤)] [PreservesColimit ℳ (forget 𝔄𝔟)]
+  compatible_smul [IsFiltered J] in
 lemma mul_hSMul (r₁ r₂ : ℛ.obj c₁) : hSMul i₁ i₂ (r₁ * r₂) m =
     hSMul i₁ (𝟙 _) r₁ (hSMul i₁ i₂ r₂ m) := by
   simp only [hSMul, map_mul, mul_smul]
   rw [ℳ.map_id, id_apply]
 
+omit [∀ (x y : ℜ𝔦𝔫𝔤), RingHomClass (x ⟶ y) x y]
+  [HasColimit ℛ] [HasColimit ℳ]
+  [PreservesColimit ℛ (forget ℜ𝔦𝔫𝔤)] [PreservesColimit ℳ (forget 𝔄𝔟)]
+  compatible_smul [IsFiltered J] in
 @[simp]
 lemma hSMul_zero : hSMul (ℳ := ℳ) i₁ i₂ r 0 = 0 := by
   simp [hSMul]
 
+omit [∀ (x y : ℜ𝔦𝔫𝔤), RingHomClass (x ⟶ y) x y]
+  [HasColimit ℛ] [HasColimit ℳ]
+  [PreservesColimit ℛ (forget ℜ𝔦𝔫𝔤)] [PreservesColimit ℳ (forget 𝔄𝔟)]
+  compatible_smul [IsFiltered J] in
 lemma hSMul_add (m₁ m₂ : ℳ.obj c₂) : hSMul i₁ i₂ r (m₁ + m₂) =
     hSMul i₁ i₂ r m₁ + hSMul i₁ i₂ r m₂ := by
   simp [hSMul, smul_add]
 
+omit [∀ (x y : 𝔄𝔟), AddMonoidHomClass (x ⟶ y) x y]
+  [HasColimit ℛ] [HasColimit ℳ]
+  [PreservesColimit ℛ (forget ℜ𝔦𝔫𝔤)] [PreservesColimit ℳ (forget 𝔄𝔟)]
+  compatible_smul [IsFiltered J] in
 lemma add_hSMul (r₁ r₂ : ℛ.obj c₁) (m : ℳ.obj c₂) :
     hSMul i₁ i₂ (r₁ + r₂) m = hSMul i₁ i₂ r₁ m + hSMul i₁ i₂ r₂ m := by
   simp [hSMul, add_smul]
 
+omit [∀ (x y : 𝔄𝔟), AddMonoidHomClass (x ⟶ y) x y]
+  [HasColimit ℛ] [HasColimit ℳ]
+  [PreservesColimit ℛ (forget ℜ𝔦𝔫𝔤)] [PreservesColimit ℳ (forget 𝔄𝔟)]
+  compatible_smul [IsFiltered J] in
 @[simp]
 lemma zero_hSMul : hSMul i₁ i₂ (0 : ℛ.obj c₁) m = 0 := by
   simp [hSMul]
 
+omit [∀ (x y : ℜ𝔦𝔫𝔤), RingHomClass (x ⟶ y) x y] [∀ (x y : 𝔄𝔟), AddMonoidHomClass (x ⟶ y) x y] in
 lemma hSMul_respect_ι
     {c₁ c₂ c₃ : J} (i₁ : c₁ ⟶ c₃) (i₂ : c₂ ⟶ c₃)
     (r : ℛ.obj c₁) (x : ℳ.obj c₂)
@@ -261,6 +286,7 @@ noncomputable def smulColimit {c : J} (r : ℛ.obj c) (m : colimit (C := 𝔄�
 
 section smulColimit
 
+omit [∀ (x y : ℜ𝔦𝔫𝔤), RingHomClass (x ⟶ y) x y] [∀ (x y : 𝔄𝔟), AddMonoidHomClass (x ⟶ y) x y] in
 @[simp]
 lemma smulColimit_smul_rep (c₁ c₂ : J) (r : ℛ.obj c₁) (m : ℳ.obj c₂) :
     smulColimit r (colimit.ι ℳ c₂ m) =
@@ -270,12 +296,14 @@ lemma smulColimit_smul_rep (c₁ c₂ : J) (r : ℛ.obj c₁) (m : ℳ.obj c₂)
   · rfl
   · rw [Concrete.ι_repColimit_eq]
 
+omit [∀ (x y : 𝔄𝔟), AddMonoidHomClass (x ⟶ y) x y] in
 @[simp]
 lemma smulColimit_one_smul (c : J) (m : colimit (C := 𝔄𝔟) ℳ) :
     smulColimit (1 : ℛ.obj c) m = m := by
   rw [show m = colimit.ι ℳ (Concrete.indexRepColimit ℳ m) _ by
     rw [Concrete.ι_repColimit_eq], smulColimit_smul_rep, one_hSMul, colimit.w_apply]
 
+omit [∀ (x y : 𝔄𝔟), AddMonoidHomClass (x ⟶ y) x y] in
 lemma smulColimit_mul_smul (c : J) (r₁ r₂ : ℛ.obj c)
     (m : colimit (C := 𝔄𝔟) ℳ) :
     smulColimit (r₁ * r₂) m = smulColimit r₁ (smulColimit r₂ m) := by
@@ -287,11 +315,14 @@ lemma smulColimit_mul_smul (c : J) (r₁ r₂ : ℛ.obj c)
     · rfl
     · rw [Concrete.ι_repColimit_eq]
 
+
+omit [∀ (x y : ℜ𝔦𝔫𝔤), RingHomClass (x ⟶ y) x y] in
 @[simp]
 lemma smulColimit_smul_zero (c : J) (r : ℛ.obj c) : smulColimit (ℳ := ℳ) r 0 = 0 := by
   rw [show (0 : colimit (C := 𝔄𝔟) ℳ) = colimit.ι (C := 𝔄𝔟) ℳ c 0 by rw [map_zero],
     smulColimit_smul_rep, hSMul_zero, map_zero, map_zero]
 
+omit [∀ (x y : ℜ𝔦𝔫𝔤), RingHomClass (x ⟶ y) x y] in
 lemma smulColimit_smul_add (c : J) (r : ℛ.obj c) (m₁ m₂ : colimit (C := 𝔄𝔟) ℳ) :
     smulColimit r (m₁ + m₂) = smulColimit r m₁ + smulColimit r m₂ := by
   classical
@@ -300,14 +331,14 @@ lemma smulColimit_smul_add (c : J) (r : ℛ.obj c) (m₁ m₂ : colimit (C := �
   let j : J := IsFiltered.sup O ∅
 
   have eq₁ : m₁ = colimit.ι ℳ j
-      (ℳ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℳ m₁)) := by
+      (ℳ.map (IsFiltered.toSup O ∅ <| by simp [O]) (Concrete.repColimit ℳ m₁)) := by
     simp only [colimit.w_apply, Concrete.ι_repColimit_eq]
   have eq₂ : m₂ = colimit.ι ℳ j
-      (ℳ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℳ m₂)) := by
+      (ℳ.map (IsFiltered.toSup O ∅ <| by simp [O]) (Concrete.repColimit ℳ m₂)) := by
     simp only [colimit.w_apply, Concrete.ι_repColimit_eq]
   have eq₃ : m₁ + m₂ = colimit.ι ℳ j
-      (ℳ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℳ m₁) +
-       ℳ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℳ m₂)) := by
+      (ℳ.map (IsFiltered.toSup O ∅ <| by simp [O]) (Concrete.repColimit ℳ m₁) +
+       ℳ.map (IsFiltered.toSup O ∅ <| by simp [O]) (Concrete.repColimit ℳ m₂)) := by
     simp only [map_add, colimit.w_apply, Concrete.ι_repColimit_eq]
 
   rw [eq₃]
@@ -350,6 +381,7 @@ noncomputable def colimitsmulColimit (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m
 
 section colimitsmulColimit
 
+omit [∀ (x y : ℜ𝔦𝔫𝔤), RingHomClass (x ⟶ y) x y] [∀ (x y : 𝔄𝔟), AddMonoidHomClass (x ⟶ y) x y] in
 @[simp]
 lemma colimitsmulColimit_rep_smul {c : J} (r : ℛ.obj c) (m : colimit (C := 𝔄𝔟) ℳ) :
     colimitsmulColimit (colimit.ι ℛ c r) m = smulColimit r m := by
@@ -359,6 +391,7 @@ lemma colimitsmulColimit_rep_smul {c : J} (r : ℛ.obj c) (m : colimit (C := �
   · rw [Concrete.ι_repColimit_eq]
   · rw [Concrete.ι_repColimit_eq, Concrete.ι_repColimit_eq]
 
+omit [∀ (x y : 𝔄𝔟), AddMonoidHomClass (x ⟶ y) x y] in
 @[simp]
 lemma colimitsmulColimit_one_smul (m : colimit (C := 𝔄𝔟) ℳ) :
     colimitsmulColimit (1 : colimit (C := ℜ𝔦𝔫𝔤) ℛ) m = m := by
@@ -366,6 +399,7 @@ lemma colimitsmulColimit_one_smul (m : colimit (C := 𝔄𝔟) ℳ) :
   rw [show (1 : colimit (C := ℜ𝔦𝔫𝔤) ℛ) = colimit.ι ℛ c 1 by
     rw [map_one], colimitsmulColimit_rep_smul, smulColimit_one_smul]
 
+omit [∀ (x y : 𝔄𝔟), AddMonoidHomClass (x ⟶ y) x y] in
 lemma colimitsmulColimit_mul_smul
     (r₁ r₂ : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m : colimit (C := 𝔄𝔟) ℳ) :
     colimitsmulColimit (r₁ * r₂) m = colimitsmulColimit r₁ (colimitsmulColimit r₂ m) := by
@@ -389,12 +423,14 @@ lemma colimitsmulColimit_mul_smul
   rw [colimitsmulColimit_rep_smul, colimitsmulColimit_rep_smul, colimitsmulColimit_rep_smul,
     smulColimit_mul_smul]
 
+omit [∀ (x y : ℜ𝔦𝔫𝔤), RingHomClass (x ⟶ y) x y] in
 @[simp]
 lemma colimitsmulColimit_smul_zero (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) :
     colimitsmulColimit (ℳ := ℳ) r 0 = 0 := by
   rw [show r = colimit.ι ℛ (Concrete.indexRepColimit ℛ r) _ by
     rw [Concrete.ι_repColimit_eq], colimitsmulColimit_rep_smul, smulColimit_smul_zero]
 
+omit [∀ (x y : ℜ𝔦𝔫𝔤), RingHomClass (x ⟶ y) x y] in
 lemma colimitsmulColimit_smul_add (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m₁ m₂ : colimit (C := 𝔄𝔟) ℳ) :
     colimitsmulColimit r (m₁ + m₂) = colimitsmulColimit r m₁ + colimitsmulColimit r m₂ := by
   simp only [show r = colimit.ι ℛ (Concrete.indexRepColimit ℛ r) _ by
