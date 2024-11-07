@@ -105,8 +105,8 @@ end
 
 section
 
-set_option synthInstance.maxHeartbeats 6000 in
 open TensorProduct in
+set_option synthInstance.maxHeartbeats 6000 in
 example {R A S : Type*} [CommRing R] [CommRing A] [Algebra A R] [CommRing S] [Algebra A S]
     {S₀ : Subalgebra A S} {T₀ : Subalgebra A R} :
     AddHomClass (T₀ ⊗[A] S₀ →ₐ[A] R ⊗[A] S) (T₀ ⊗[A] S₀) (R ⊗[A] S) :=
