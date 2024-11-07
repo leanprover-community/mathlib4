@@ -18,6 +18,10 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 - `IsSimpleRing.nontrivial`: simple rings are non-trivial.
 - `DivisionRing.IsSimpleRing`: division rings are simple.
 - `IsSimpleRing.center_isField`: the center of a simple ring is a field.
+- `IsSimpleRing.injective_ringHom`: every ring homomorphism from a simple ring to a nontrivial ring
+  is injective.
+- `IsSimpleRing.iff_injective_ringHom`: a ring is simple iff every ring homomorphism to a nontrivial
+  ring is injective.
 
 -/
 
@@ -88,6 +92,8 @@ lemma injective_ringHom_or_subsingleton_codomain
       have mem : 1 ∈ TwoSidedIdeal.ker f := h.symm ▸ TwoSidedIdeal.mem_top _
       rwa [TwoSidedIdeal.mem_ker, map_one, eq_comm] at mem)
 
+-- Implementation note: the following lemma **cannot** replace `RingHom.Injective` even though all
+-- division rings are simple. For `RingHom.Injective` works when the target is a semiring.
 lemma injective_ringHom
     {R S : Type*} [NonAssocRing R] [IsSimpleRing R] [NonAssocRing S] [Nontrivial S]
     (f : R →+* S) : Function.Injective f :=
