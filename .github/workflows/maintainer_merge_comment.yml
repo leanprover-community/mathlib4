@@ -41,6 +41,7 @@ jobs:
         env:
           BODY: 'maintainer merge' #${{ github.event.comment.body }}
         run: |
+          ./scripts/maintainer_merge_message.sh "${BODY}" comment
           ./scripts/maintainer_merge_message.sh "${BODY}" comment >> "${GITHUB_OUTPUT}"
           #if printf '%s\n' "${BODY}" | grep "^maintainer merge"
           #then
