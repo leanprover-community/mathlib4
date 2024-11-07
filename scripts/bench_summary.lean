@@ -217,7 +217,8 @@ def addBenchSummaryComment (PR : Nat) (repo : String)
     { cmd := "jq"
       args := #["-c", "[{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]", tempFile] }
   dbg_trace "\n#running\n\
-    jq -c '[\{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]' {tempFile} > {tempFile}.2"
+    jq -c '[\{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]' {tempFile} > \
+      {tempFile}.2"
   let secondFilter ← IO.Process.run jq2
   IO.FS.writeFile tempFile secondFilter
   let jq3 : IO.Process.SpawnArgs :=
