@@ -579,48 +579,32 @@ with j-invariant equal to j (see `WeierstrassCurve.ofJ_j`).
 Its coefficients are given explicitly (see `WeierstrassCurve.ofJ0`, `WeierstrassCurve.ofJ1728`
 and `WeierstrassCurve.ofJNe0Or1728`). -/
 def ofJ : WeierstrassCurve F :=
-  if j = 0 then
-    if (3 : F) = 0 then
-      ofJ1728 F
-    else
-      ofJ0 F
-  else if j = 1728 then
-    ofJ1728 F
-  else
-    ofJNe0Or1728 j
+  if j = 0 then if (3 : F) = 0 then ofJ1728 F else ofJ0 F
+  else if j = 1728 then ofJ1728 F else ofJNe0Or1728 j
 
-lemma ofJ_0_of_three_ne_zero [h3 : NeZero (3 : F)] :
-    ofJ 0 = ofJ0 F := by
+lemma ofJ_0_of_three_ne_zero [h3 : NeZero (3 : F)] : ofJ 0 = ofJ0 F := by
   rw [ofJ, if_pos rfl, if_neg h3.out]
 
-lemma ofJ_0_of_three_eq_zero (h3 : (3 : F) = 0) :
-    ofJ 0 = ofJ1728 F := by
+lemma ofJ_0_of_three_eq_zero (h3 : (3 : F) = 0) : ofJ 0 = ofJ1728 F := by
   rw [ofJ, if_pos rfl, if_pos h3]
 
-lemma ofJ_0_of_two_eq_zero (h2 : (2 : F) = 0) :
-    ofJ 0 = ofJ0 F := by
+lemma ofJ_0_of_two_eq_zero (h2 : (2 : F) = 0) : ofJ 0 = ofJ0 F := by
   rw [ofJ, if_pos rfl, if_neg ((show (3 : F) = 1 by linear_combination h2) ▸ one_ne_zero)]
 
-lemma ofJ_1728_of_three_eq_zero (h3 : (3 : F) = 0) :
-    ofJ 1728 = ofJ1728 F := by
+lemma ofJ_1728_of_three_eq_zero (h3 : (3 : F) = 0) : ofJ 1728 = ofJ1728 F := by
   rw [ofJ, if_pos (show (1728 : F) = 0 by linear_combination 576 * h3), if_pos h3]
 
-lemma ofJ_1728_of_two_ne_zero [h2 : NeZero (2 : F)] :
-    ofJ 1728 = ofJ1728 F := by
+lemma ofJ_1728_of_two_ne_zero [h2 : NeZero (2 : F)] : ofJ 1728 = ofJ1728 F := by
   by_cases h3 : (3 : F) = 0
   · rw [ofJ, if_pos (show (1728 : F) = 0 by linear_combination 576 * h3), if_pos h3]
-  · have h : (1728 : F) ≠ 0 := fun h => or_iff_not_and_not.mp
-      (mul_eq_zero.mp <| by rwa [show 2 ^ 6 * 3 ^ 3 = (1728 : F) by norm_num1])
-      ⟨pow_ne_zero 6 h2.out, pow_ne_zero 3 h3⟩
-    rw [ofJ, if_neg h, if_pos rfl]
+  · rw [ofJ, if_neg ((show 2 ^ 6 * 3 ^ 3 = (1728 : F) by norm_num1) ▸ mul_ne_zero
+      (pow_ne_zero 6 h2.out) (pow_ne_zero 3 h3)), if_pos rfl]
 
-lemma ofJ_1728_of_two_eq_zero (h2 : (2 : F) = 0) :
-    ofJ 1728 = ofJ0 F := by
+lemma ofJ_1728_of_two_eq_zero (h2 : (2 : F) = 0) : ofJ 1728 = ofJ0 F := by
   rw [ofJ, if_pos (show (1728 : F) = 0 by linear_combination 864 * h2),
     if_neg ((show (3 : F) = 1 by linear_combination h2) ▸ one_ne_zero)]
 
-lemma ofJ_ne_0_ne_1728 (h0 : j ≠ 0) (h1728 : j ≠ 1728) : ofJ j =
-    ofJNe0Or1728 j := by
+lemma ofJ_ne_0_ne_1728 (h0 : j ≠ 0) (h1728 : j ≠ 1728) : ofJ j = ofJNe0Or1728 j := by
   rw [ofJ, if_neg h0, if_neg h1728]
 
 instance : (ofJ j).IsElliptic := by
@@ -662,8 +646,7 @@ lemma ofJ_j : (ofJ j).j = j := by
       haveI := Fact.mk (sub_ne_zero.2 h1728).isUnit
       simp_rw [ofJ_ne_0_ne_1728 j h0 h1728, ofJNe0Or1728_j]
 
-instance : Inhabited { W : WeierstrassCurve F // W.IsElliptic } :=
-  ⟨⟨ofJ 37, inferInstance⟩⟩
+instance : Inhabited { W : WeierstrassCurve F // W.IsElliptic } := ⟨⟨ofJ 37, inferInstance⟩⟩
 
 end ModelsWithJ
 
