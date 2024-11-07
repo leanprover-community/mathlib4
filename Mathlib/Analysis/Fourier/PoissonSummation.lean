@@ -8,6 +8,7 @@ import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+import Mathlib.Topology.ContinuousMap.Periodic
 
 /-!
 # Poisson's summation formula
