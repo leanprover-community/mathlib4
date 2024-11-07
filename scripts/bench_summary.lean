@@ -55,16 +55,17 @@ def formatPercent (reldiff : Float) : String :=
   let sgn : Int := if reldiff < 0 then -1 else 1
   let reldiff := (.ofInt sgn) * reldiff
   let (sgn, intDigs, decDigs) := intDecs (sgn * reldiff.toUInt32.val) 0 2
-  s!"({sgn}{intDigs}.{decDigs}%)"
+  -- the `if ... then ... else ...` makes sure that the output includes leading `0`s
+  s!"({sgn}{intDigs}.{if decDigs < 10 then "0" else ""}{decDigs}%)"
 
 /--
-info: [(+0.0%), (+14.28%), (+0.20%), (-0.60%)]
+info: [(+0.00%), (+14.28%), (+0.20%), (-0.60%), (-0.08%)]
 ---
 info: [+0.0⬝10⁹, +1.0⬝10⁹, +30.200⬝10⁹, -0.460⬝10⁹]
 -/
 #guard_msgs in
 run_cmd
-  let floats : Array Float := #[0, 1/7, 0.002, -0.006]
+  let floats : Array Float := #[0, 1/7, 0.002, -0.006, -8.253600406145226E-4]
   logInfo m!"{floats.map formatPercent}"
   let ints : Array Int := #[0, 10^9, 302*10^8, -460000000]
   logInfo m!"{ints.map formatDiff}"
@@ -161,10 +162,13 @@ Here is a summary of the steps:
 * process the final string to produce a summary (using `benchOutput`),
 * finally post the resulting output to the PR (using `gh pr comment ...`).
 -/
-def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "benchOutput.json") :
+def addBenchSummaryComment (PR : Nat) (repo : String)
+    (author : String := "leanprover-bot") (tempFile : String := "benchOutput.json") :
     CommandElabM Unit := do
   let PR := s!"{PR}"
-  let jq := ".comments | last | select(.author.login==\"leanprover-bot\") | .body"
+  let jq := s!".comments | last | select(.author.login==\"{author}\") | .body"
+
+  -- retrieve the relevant comment
   let gh_pr_comments : IO.Process.SpawnArgs :=
     { cmd := "gh", args := #["pr", "view", PR, "--repo", repo, "--json", "comments", "--jq", jq] }
   -- This is the content of the last comment made by `leanprover-bot` to the PR `PR`.
@@ -173,7 +177,6 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
   -- where source_sha and target_sha are the commit hashes of the revisions being benchmarked.
   -- The comment contains such a URL (and only one); parse the revisions from the comment.
   let frags := output.split (· == '/')
-  let compIdx := (frags.findIdx? (· == "compare")).getD default
   let some compIdx := frags.findIdx? (· == "compare") |
     logInfo "No 'compare' found in URL."
     return
@@ -183,6 +186,8 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
     logInfo m!"Found\nsource: '{source}'\ntarget: '{target}'\ninstead of two commit hashes."
     return
   dbg_trace s!"Using commits\nsource: '{source}'\ntarget: '{target}'\n"
+
+  -- retrieve the data from the speed-center
   let curlSpeedCenter : IO.Process.SpawnArgs :=
     { cmd := "curl"
       args := #[s!"http://speed.lean-fro.org/mathlib4/api/compare/{source}/to/{target}?all_values=true"] }
@@ -190,6 +195,7 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
     curl http://speed.lean-fro.org/mathlib4/api/compare/{source}/to/{target}?all_values=true > {tempFile}.src"
   let bench ← IO.Process.run curlSpeedCenter
   IO.FS.writeFile (tempFile ++ ".src") bench
+
   -- Extract all instruction changes whose magnitude is larger than `threshold`.
   let threshold := s!"{10 ^ 9}"
   let jq1 : IO.Process.SpawnArgs :=
@@ -217,7 +223,7 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
   let jq3 : IO.Process.SpawnArgs :=
     { cmd := "jq", args := #["-n", "reduce inputs as $in (null; . + $in)", tempFile] }
   dbg_trace "\n#running\n\
-    jq -n 'reduce inputs as $in (null; . + $in)' {tempFile}.2"
+    jq -n 'reduce inputs as $in (null; . + $in)' {tempFile}.2 > {tempFile}.3"
   let thirdFilter ← IO.Process.run jq3
   let report ← benchOutput thirdFilter
   IO.println report
