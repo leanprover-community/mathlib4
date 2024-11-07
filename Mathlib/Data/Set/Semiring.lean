@@ -208,6 +208,13 @@ instance [CommMonoid α] : CanonicallyOrderedCommSemiring (SetSemiring α) :=
     exists_add_of_le := fun {_ b} ab => ⟨b, (union_eq_right.2 ab).symm⟩
     le_self_add := fun _ _ => subset_union_left }
 
+/-- If `α` is a monoid, the map that sends `a : α` to
+the singleton set `{a}` is a monoid homomorphism. -/
+def singletonMonoidHom [Monoid α] : α →* SetSemiring α where
+  toFun a := up {a}
+  map_one' := rfl
+  map_mul' _ _ := image2_singleton.symm
+
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/
 def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α →+* SetSemiring β where

@@ -173,6 +173,21 @@ theorem isFractional_of_fg [IsLocalization S P] {I : Submodule R P} (hI : I.FG) 
   rw [isFractional_span_iff]
   exact ⟨s, hs1, hs⟩
 
+lemma _root_.Units.submodule_isFractional [IsLocalization S P] (I : (Submodule R P)ˣ) :
+    IsFractional S I.1 :=
+  FractionalIdeal.isFractional_of_fg (fg_unit _)
+
+/-- If P is a localization of R, invertible R-submodules of P are all fractional
+(expressed as an isomorphism of groups). -/
+def unitsMulEquivSubmodule [IsLocalization S P] :
+    (FractionalIdeal S P)ˣ ≃* (Submodule R P)ˣ where
+  __ := Units.map (coeSubmoduleHom S P)
+  invFun I := ⟨⟨I, I.submodule_isFractional⟩, ⟨↑I⁻¹, I⁻¹.submodule_isFractional⟩,
+    coeToSubmodule_inj.mp <| by rw [coe_mul, coe_one]; exact I.mul_inv,
+    coeToSubmodule_inj.mp <| by rw [coe_mul, coe_one]; exact I.inv_mul⟩
+  left_inv _ := by rfl
+  right_inv _ := by rfl
+
 theorem mem_span_mul_finite_of_mem_mul {I J : FractionalIdeal S P} {x : P} (hx : x ∈ I * J) :
     ∃ T T' : Finset P, (T : Set P) ⊆ I ∧ (T' : Set P) ⊆ J ∧ x ∈ span R (T * T' : Set P) :=
   Submodule.mem_span_mul_finite_of_mem_mul (by simpa using mem_coe.mpr hx)

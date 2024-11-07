@@ -543,6 +543,10 @@ def span.ringHom : SetSemiring A →+* Submodule R A where
     dsimp only -- Porting note: new, needed due to new-style structures
     rw [SetSemiring.down_mul, span_mul_span]
 
+/-- `(span {·})` as a monoid homomorphism. -/
+def spanSingleton : A →* Submodule R A :=
+  Submodule.span.ringHom.toMonoidHom.comp SetSemiring.singletonMonoidHom
+
 section
 
 variable {α : Type*} [Monoid α] [MulSemiringAction α A] [SMulCommClass α R A]

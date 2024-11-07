@@ -132,13 +132,14 @@ theorem range_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] :
 
 variable {f g}
 
+variable [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+
 /-- A linear map `f : M →ₗ[R] M₂` with a left-inverse `g : M₂ →ₗ[R] M` defines a linear
 equivalence between `M` and `f.range`.
 
 This is a computable alternative to `LinearEquiv.ofInjective`, and a bidirectional version of
 `LinearMap.rangeRestrict`. -/
-def ofLeftInverse [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {g : M₂ → M}
-    (h : Function.LeftInverse g f) : M ≃ₛₗ[σ₁₂] (LinearMap.range f) :=
+def ofLeftInverse {g : M₂ → M} (h : g.LeftInverse f) : M ≃ₛₗ[σ₁₂] (LinearMap.range f) :=
   { LinearMap.rangeRestrict f with
     toFun := LinearMap.rangeRestrict f
     invFun := g ∘ (LinearMap.range f).subtype
@@ -149,46 +150,43 @@ def ofLeftInverse [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ
         show f (g x) = x by rw [← hx', h x'] }
 
 @[simp]
-theorem ofLeftInverse_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
-    (h : Function.LeftInverse g f) (x : M) : ↑(ofLeftInverse h x) = f x :=
+theorem ofLeftInverse_apply {g : M₂ → M} (h : g.LeftInverse f) (x : M) :
+    ↑(ofLeftInverse h x) = f x :=
   rfl
 
 @[simp]
-theorem ofLeftInverse_symm_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
-    (h : Function.LeftInverse g f) (x : LinearMap.range f) : (ofLeftInverse h).symm x = g x :=
+theorem ofLeftInverse_symm_apply {g : M₂ → M} (h : g.LeftInverse f) (x : LinearMap.range f) :
+    (ofLeftInverse h).symm x = g x :=
   rfl
 
 variable (f)
 
 /-- An `Injective` linear map `f : M →ₗ[R] M₂` defines a linear equivalence
 between `M` and `f.range`. See also `LinearMap.ofLeftInverse`. -/
-noncomputable def ofInjective [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] (h : Injective f) :
-    M ≃ₛₗ[σ₁₂] LinearMap.range f :=
+noncomputable def ofInjective (h : Injective f) : M ≃ₛₗ[σ₁₂] LinearMap.range f :=
   ofLeftInverse <| Classical.choose_spec h.hasLeftInverse
 
 @[simp]
-theorem ofInjective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h : Injective f}
-    (x : M) : ↑(ofInjective f h x) = f x :=
+theorem ofInjective_apply {h} (x : M) : ↑(ofInjective f h x) = f x :=
   rfl
 
+theorem apply_ofInjective_symm {h} (x : LinearMap.range f) : f ((ofInjective f h).symm x) = x :=
+  congr_arg (·.1) ((ofInjective f h).apply_symm_apply x)
+
 /-- A bijective linear map is a linear equivalence. -/
-noncomputable def ofBijective [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] (hf : Bijective f) :
-    M ≃ₛₗ[σ₁₂] M₂ :=
+noncomputable def ofBijective (hf : Bijective f) : M ≃ₛₗ[σ₁₂] M₂ :=
   (ofInjective f hf.injective).trans (ofTop _ <| LinearMap.range_eq_top.2 hf.surjective)
 
 @[simp]
-theorem ofBijective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {hf} (x : M) :
-    ofBijective f hf x = f x :=
+theorem ofBijective_apply {hf} (x : M) : ofBijective f hf x = f x :=
   rfl
 
 @[simp]
-theorem ofBijective_symm_apply_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h} (x : M) :
-    (ofBijective f h).symm (f x) = x := by
+theorem ofBijective_symm_apply_apply {h} (x : M) : (ofBijective f h).symm (f x) = x := by
   simp [LinearEquiv.symm_apply_eq]
 
 @[simp]
-theorem apply_ofBijective_symm_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h}
-    (x : M₂) : f ((ofBijective f h).symm x) = x := by
+theorem apply_ofBijective_symm_apply {h} (x : M₂) : f ((ofBijective f h).symm x) = x := by
   rw [← ofBijective_apply f ((ofBijective f h).symm x), apply_symm_apply]
 
 end
