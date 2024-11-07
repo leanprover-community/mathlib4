@@ -276,7 +276,7 @@ variable [W.IsElliptic] (C : VariableChange R)
 
 section VariableChange
 
-instance IsElliptic.variableChange : (W.variableChange C).IsElliptic := by
+instance : (W.variableChange C).IsElliptic := by
   rw [isElliptic_iff, variableChange_Δ]
   exact (C.u⁻¹.isUnit.pow 12).mul W.isUnit_Δ
 

@@ -492,7 +492,7 @@ section BaseChange
 
 variable {A : Type v} [CommRing A] (φ : R →+* A)
 
-instance IsElliptic.map : (W.map φ).IsElliptic := by
+instance : (W.map φ).IsElliptic := by
   simp only [isElliptic_iff, map_Δ, W.isUnit_Δ.map]
 
 set_option linter.docPrime false in
@@ -509,6 +509,12 @@ set_option linter.docPrime false in
 lemma coe_inv_map_Δ' : (W.map φ).Δ'⁻¹ = φ ↑W.Δ'⁻¹ := by
   simp
 
+set_option linter.docPrime false in
+@[simp]
+lemma inv_map_Δ' : (W.map φ).Δ'⁻¹ = Units.map φ W.Δ'⁻¹ := by
+  ext
+  exact W.coe_inv_map_Δ' φ
+
 @[simp]
 lemma map_j : (W.map φ).j = φ W.j := by
   rw [j, coe_inv_map_Δ', map_c₄, j, map_mul, map_pow]
@@ -524,7 +530,7 @@ variable (R)
 -- TODO: change to `[IsUnit ...]` once #17458 is merged
 /-- When 3 is a unit, $Y^2 + Y = X^3$ is an elliptic curve.
 It is of j-invariant 0 (see `WeierstrassCurve.ofJ0_j`). -/
-instance IsElliptic.ofJ0 [hu : Fact (IsUnit (3 : R))] : (ofJ0 R).IsElliptic := by
+instance [hu : Fact (IsUnit (3 : R))] : (ofJ0 R).IsElliptic := by
   rw [isElliptic_iff, ofJ0_Δ R]
   convert (hu.out.pow 3).neg
   norm_num1
@@ -537,7 +543,7 @@ lemma ofJ0_j [Fact (IsUnit (3 : R))] : (ofJ0 R).j = 0 := by
 -- TODO: change to `[IsUnit ...]` once #17458 is merged
 /-- When 2 is a unit, $Y^2 = X^3 + X$ is an elliptic curve.
 It is of j-invariant 1728 (see `WeierstrassCurve.ofJ1728_j`). -/
-instance IsElliptic.ofJ1728 [hu : Fact (IsUnit (2 : R))] : (ofJ1728 R).IsElliptic := by
+instance [hu : Fact (IsUnit (2 : R))] : (ofJ1728 R).IsElliptic := by
   rw [isElliptic_iff, ofJ1728_Δ R]
   convert (hu.out.pow 6).neg
   norm_num1
@@ -553,7 +559,7 @@ variable {R}
 /-- When j and j - 1728 are both units,
 $Y^2 + (j - 1728)XY = X^3 - 36(j - 1728)^3X - (j - 1728)^5$ is an elliptic curve.
 It is of j-invariant j (see `WeierstrassCurve.ofJNe0Or1728_j`). -/
-instance IsElliptic.ofJNe0Or1728 (j : R) [h1 : Fact (IsUnit j)] [h2 : Fact (IsUnit (j - 1728))] :
+instance (j : R) [h1 : Fact (IsUnit j)] [h2 : Fact (IsUnit (j - 1728))] :
     (ofJNe0Or1728 j).IsElliptic := by
   rw [isElliptic_iff, ofJNe0Or1728_Δ j]
   exact (h1.out.pow 2).mul (h2.out.pow 9)
@@ -617,7 +623,7 @@ lemma ofJ_ne_0_ne_1728 (h0 : j ≠ 0) (h1728 : j ≠ 1728) : ofJ j =
     ofJNe0Or1728 j := by
   rw [ofJ, if_neg h0, if_neg h1728]
 
-instance IsElliptic.ofJ : (ofJ j).IsElliptic := by
+instance : (ofJ j).IsElliptic := by
   by_cases h0 : j = 0
   · by_cases h3 : (3 : F) = 0
     · haveI := Fact.mk (isUnit_of_mul_eq_one (2 : F) 2 (by linear_combination h3))
