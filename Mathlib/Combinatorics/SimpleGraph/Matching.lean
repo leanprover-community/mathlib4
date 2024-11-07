@@ -40,7 +40,7 @@ one edge, and the edges of the subgraph represent the paired vertices.
 open Function
 
 namespace SimpleGraph
-variable {V : Type*} {G G': SimpleGraph V} {M M' : Subgraph G} {v w : V}
+variable {V W : Type*} {G G': SimpleGraph V} {M M' : Subgraph G} {v w : V}
 
 namespace Subgraph
 
@@ -132,6 +132,22 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
     exact ⟨hv.2 ▸ v.2, hw.1⟩
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
+
+protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g G')
+    (hf : Injective f) (hM : M.IsMatching) : (M.map f).IsMatching := by
+  rintro _ ⟨v, hv, rfl⟩
+  obtain ⟨v', hv'⟩ := hM hv
+  use f v'
+  refine ⟨⟨v, v', hv'.1, rfl, rfl⟩, ?_⟩
+  rintro _ ⟨w, w', hw, hw', rfl⟩
+  cases hf hw'.symm
+  rw [hv'.2 w' hw]
+
+@[simp]
+lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : G ≃g G') :
+    (M.map f.toHom).IsMatching ↔ M.IsMatching where
+   mp h := by simpa [← map_comp] using h.map f.symm.toHom f.symm.injective
+   mpr := .map f.toHom f.injective
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is

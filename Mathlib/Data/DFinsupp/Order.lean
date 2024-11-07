@@ -281,11 +281,11 @@ theorem single_tsub : single i (a - b) = single i a - single i b := by
 variable [∀ (i) (x : α i), Decidable (x ≠ 0)]
 
 theorem support_tsub : (f - g).support ⊆ f.support := by
-  simp (config := { contextual := true }) only [subset_iff, tsub_eq_zero_iff_le, mem_support_iff,
+  simp +contextual only [subset_iff, tsub_eq_zero_iff_le, mem_support_iff,
     Ne, coe_tsub, Pi.sub_apply, not_imp_not, zero_le, imp_true_iff]
 
 theorem subset_support_tsub : f.support \ g.support ⊆ (f - g).support := by
-  simp (config := { contextual := true }) [subset_iff]
+  simp +contextual [subset_iff]
 
 end CanonicallyOrderedAddCommMonoid
 

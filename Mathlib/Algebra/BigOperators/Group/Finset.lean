@@ -6,8 +6,6 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Preimage
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Sym.Sym2.Order
 
 /-!
 # Big operators
@@ -150,7 +148,7 @@ def bigOpBindersProd (processed : (Array (Term × Term))) :
   else if processed.size == 1 then
     return processed[0]!.2
   else
-    processed.foldrM (fun s p => `(SProd.sprod $(s.2) $p)) processed.back.2
+    processed.foldrM (fun s p => `(SProd.sprod $(s.2) $p)) processed.back!.2
       (start := processed.size - 1)
 
 /--
@@ -2079,7 +2077,7 @@ end List
 namespace Multiset
 
 theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
-    Multiset.Disjoint l.sum a ↔ ∀ b ∈ l, Multiset.Disjoint b a := by
+    Disjoint l.sum a ↔ ∀ b ∈ l, Disjoint b a := by
   induction l with
   | nil =>
     simp only [zero_disjoint, List.not_mem_nil, IsEmpty.forall_iff, forall_const, List.sum_nil]
@@ -2088,26 +2086,26 @@ theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
     simp [and_congr_left_iff, ih]
 
 theorem disjoint_list_sum_right {a : Multiset α} {l : List (Multiset α)} :
-    Multiset.Disjoint a l.sum ↔ ∀ b ∈ l, Multiset.Disjoint a b := by
-  simpa only [@disjoint_comm _ a] using disjoint_list_sum_left
+    Disjoint a l.sum ↔ ∀ b ∈ l, Disjoint a b := by
+  simpa only [disjoint_comm (a := a)] using disjoint_list_sum_left
 
 theorem disjoint_sum_left {a : Multiset α} {i : Multiset (Multiset α)} :
-    Multiset.Disjoint i.sum a ↔ ∀ b ∈ i, Multiset.Disjoint b a :=
+    Disjoint i.sum a ↔ ∀ b ∈ i, Disjoint b a :=
   Quotient.inductionOn i fun l => by
     rw [quot_mk_to_coe, Multiset.sum_coe]
     exact disjoint_list_sum_left
 
 theorem disjoint_sum_right {a : Multiset α} {i : Multiset (Multiset α)} :
-    Multiset.Disjoint a i.sum ↔ ∀ b ∈ i, Multiset.Disjoint a b := by
-  simpa only [@disjoint_comm _ a] using disjoint_sum_left
+    Disjoint a i.sum ↔ ∀ b ∈ i, Disjoint a b := by
+  simpa only [disjoint_comm (a := a)] using disjoint_sum_left
 
 theorem disjoint_finset_sum_left {β : Type*} {i : Finset β} {f : β → Multiset α} {a : Multiset α} :
-    Multiset.Disjoint (i.sum f) a ↔ ∀ b ∈ i, Multiset.Disjoint (f b) a := by
+    Disjoint (i.sum f) a ↔ ∀ b ∈ i, Disjoint (f b) a := by
   convert @disjoint_sum_left _ a (map f i.val)
   simp [and_congr_left_iff]
 
 theorem disjoint_finset_sum_right {β : Type*} {i : Finset β} {f : β → Multiset α}
-    {a : Multiset α} : Multiset.Disjoint a (i.sum f) ↔ ∀ b ∈ i, Multiset.Disjoint a (f b) := by
+    {a : Multiset α} : Disjoint a (i.sum f) ↔ ∀ b ∈ i, Disjoint a (f b) := by
   simpa only [disjoint_comm] using disjoint_finset_sum_left
 
 @[simp]
@@ -2256,16 +2254,5 @@ theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
   rfl
 
 end AddCommMonoid
-
-theorem Finset.sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoid α]
-    (s : Finset ι) (p : Sym2 ι → α) :
-    ∑ i ∈ s.sym2 with ¬ i.IsDiag, p i = ∑ i ∈ s.offDiag with i.1 < i.2, p s(i.1, i.2) := by
-  rw [Finset.offDiag_filter_lt_eq_filter_le]
-  conv_rhs => rw [← Finset.sum_subtype_eq_sum_filter]
-  refine (Finset.sum_equiv Sym2.sortEquiv.symm ?_ ?_).symm
-  · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
-    simp [and_assoc]
-  · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
-    simp
 
 set_option linter.style.longFile 2400

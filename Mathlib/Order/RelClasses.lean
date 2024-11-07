@@ -3,7 +3,6 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Nat.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Order.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
@@ -468,23 +467,17 @@ theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] 
     (h : Subrelation s r) : IsWellFounded α s :=
   ⟨h.wf IsWellFounded.wf⟩
 
-instance Prod.wellFoundedLT [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
-    WellFoundedLT (α × β) where
-  wf := by
-    refine @Subrelation.wf (α × β) (Prod.Lex (· < ·) (· < ·)) (· < ·) ?_ IsWellFounded.wf
-    rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ w
-    simp only [Prod.mk_lt_mk] at w
-    rcases eq_or_ne a₁ a₂ with rfl | ha
-    · right
-      simpa using w
-    · left
-      rcases w with ⟨a_lt, _⟩ | ⟨a_le, _⟩
-      · assumption
-      · exact Ne.lt_of_le ha a_le
+/-- See `Prod.wellFoundedLT` for a version that only requires `Preorder α`. -/
+theorem Prod.wellFoundedLT' [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
+    WellFoundedLT (α × β) :=
+  Subrelation.isWellFounded (Prod.Lex (· < ·) (· < ·))
+    fun {x y} h ↦ (Prod.lt_iff.mp h).elim (fun h ↦ .left _ _ h.1)
+    fun h ↦ h.1.lt_or_eq.elim (.left _ _) <| by cases x; cases y; rintro rfl; exact .right _ h.2
 
-instance Prod.wellFoundedGT [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
+/-- See `Prod.wellFoundedGT` for a version that only requires `Preorder α`. -/
+theorem Prod.wellFoundedGT' [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
     WellFoundedGT (α × β) :=
-  @Prod.wellFoundedLT αᵒᵈ βᵒᵈ _ _ _ _
+  @Prod.wellFoundedLT' αᵒᵈ βᵒᵈ _ _ _ _
 
 namespace Set
 
@@ -810,8 +803,8 @@ instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal α�
 instance : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩
 
-instance Nat.lt.isWellOrder : IsWellOrder ℕ (· < ·) where
+instance (priority := 100) isWellOrder_lt [LinearOrder α] [WellFoundedLT α] :
+    IsWellOrder α (· < ·) where
 
-instance [LinearOrder α] [h : IsWellOrder α (· < ·)] : IsWellOrder αᵒᵈ (· > ·) := h
-
-instance [LinearOrder α] [h : IsWellOrder α (· > ·)] : IsWellOrder αᵒᵈ (· < ·) := h
+instance (priority := 100) isWellOrder_gt [LinearOrder α] [WellFoundedGT α] :
+    IsWellOrder α (· > ·) where
