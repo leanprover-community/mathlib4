@@ -65,7 +65,7 @@ theorem not_supIrred : ¬SupIrred a ↔ IsMin a ∨ ∃ b c, b ⊔ c = a ∧ b <
   rw [SupIrred, not_and_or]
   push_neg
   rw [exists₂_congr]
-  simp (config := { contextual := true }) [@eq_comm _ _ a]
+  simp +contextual [@eq_comm _ _ a]
 
 @[simp]
 theorem not_supPrime : ¬SupPrime a ↔ IsMin a ∨ ∃ b c, a ≤ b ⊔ c ∧ ¬a ≤ b ∧ ¬a ≤ c := by
