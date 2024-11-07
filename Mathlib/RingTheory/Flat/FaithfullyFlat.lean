@@ -465,23 +465,6 @@ end fixed_universe
 
 end linearMap
 
-/-- An `R`-module linearly equivalent to a faithfully flat `R`-module is faithfully flat. -/
-lemma of_linearEquiv [fl : FaithfullyFlat R M]
-    (M' : Type*) [AddCommGroup M'] [Module R M'] (e : M' ≃ₗ[R] M) :
-    FaithfullyFlat R M' := by
-  classical
-  haveI : Module.Flat R M' := Module.Flat.of_linearEquiv _ _ _ e
-  refine ⟨fun m hm rid => fl.2 hm ?_⟩
-  rw [eq_top_iff] at rid ⊢
-  rintro x -
-  specialize @rid (e.symm x) ⟨⟩
-  rw [← Submodule.coe_set_smul, Submodule.mem_set_smul] at rid
-  obtain ⟨c, hc, eq⟩ := rid
-  apply_fun e at eq
-  simp only [LinearEquiv.apply_symm_apply, Finsupp.sum, AddSubmonoidClass.coe_finset_sum,
-    SetLike.val_smul, map_sum, map_smul] at eq
-  exact eq ▸ Submodule.sum_mem _ fun i hi => Submodule.smul_mem_smul (hc hi) ⟨⟩
-
 section comp
 
 open TensorProduct LinearMap
