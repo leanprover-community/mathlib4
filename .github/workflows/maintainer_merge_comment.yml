@@ -50,7 +50,7 @@ jobs:
           echo "Topic: ${{ steps.determine_topic.outputs.topic }}"
           printf 'Comment: %s\nEnd comment\n' "${{ steps.make_comment.outputs.comment }}"
           printf 'title<<EOF\n%s\nEOF' "A simple message" #| tee
-          printf 'title<<EOF\n%s\nEOF' "A simple message" >> "$GITHUB_OUTPUT"
+          printf 'title<<EOF\n%s\nEOF' "$(./scripts/maintainer_merge_message.sh "${BODY}" comment)" >> "$GITHUB_OUTPUT"
 
       #- name: Send message on Zulip
       #  uses: zulip/github-actions-zulip/send-message@v1
