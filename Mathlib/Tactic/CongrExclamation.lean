@@ -733,12 +733,12 @@ This is somewhat like `congr`.
 
 See `Congr!.Config` for all options.
 -/
-syntax (name := congr!) "congr!" (Parser.Tactic.config)? (ppSpace num)?
+syntax (name := congr!) "congr!" Parser.Tactic.optConfig (ppSpace num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 elab_rules : tactic
-| `(tactic| congr! $[$cfg:config]? $[$n]? $[with $ps?*]?) => do
-  let config ← elabConfig (mkOptionalNode cfg)
+| `(tactic| congr! $cfg:optConfig $[$n]? $[with $ps?*]?) => do
+  let config ← elabConfig cfg
   let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
   liftMetaTactic fun g ↦
     let depth := n.map (·.getNat)
