@@ -157,7 +157,7 @@ variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 `L`, then we can extend that embedding to an embedding on the completion `v.completion →+* L`. -/
-def extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) : v.completion →+* L :=
+abbrev extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) : v.completion →+* L :=
   UniformSpace.Completion.extensionHom _
     (WithAbs.isUniformInducing_of_comp h).uniformContinuous.continuous
 
@@ -165,7 +165,6 @@ theorem extensionEmbedding_of_comp_coe (h : ∀ x, ‖f x‖ = v x) (x : K) :
     extensionEmbedding_of_comp h x = f x := by
   rw [← UniformSpace.Completion.extensionHom_coe f
     (WithAbs.isUniformInducing_of_comp h).uniformContinuous.continuous]
-  rfl
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.completion →+* L` preserves distances. -/
