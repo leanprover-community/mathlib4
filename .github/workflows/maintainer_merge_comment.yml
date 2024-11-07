@@ -47,10 +47,10 @@ jobs:
           printf '%s\n' "${TITLE}" | grep "^myself merge" || echo "not found"
           if printf '%s\n' "${TITLE}" | grep "^myself merge"
           then
-            printf $'title<<EOF\n%s\nEOF' "This message was a merge" >> "${GITHUB_OUTPUT}"
+            printf $'title<<EOF\n%s\nEOF' "${{ format('{0} requested a maintainer merge from comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}" >> "${GITHUB_OUTPUT}"
           elif printf '%s\n' "${TITLE}" | grep "^myself delegate"
           then
-            printf $'title<<EOF\n%s\nEOF' "This message was a delegate" >> "${GITHUB_OUTPUT}"
+            printf $'title<<EOF\n%s\nEOF' "${{ format('{0} requested a maintainer delegate from comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}" >> "${GITHUB_OUTPUT}"
           fi
       #- name: Send message on Zulip
       #  uses: zulip/github-actions-zulip/send-message@v1
