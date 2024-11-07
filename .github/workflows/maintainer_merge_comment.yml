@@ -47,10 +47,8 @@ jobs:
         env:
           BODY: ${{ steps.make_comment.outputs.comment }} #${{ github.event.comment.body }}
         run: |
-          echo "Topic: ${{ steps.determine_topic.outputs.topic }}"
-          printf 'Comment: %s\nEnd comment\n' "${{ steps.make_comment.outputs.comment }}"
-          printf 'title<<EOF\n%s\nEOF' "$(./scripts/maintainer_merge_message.sh "${BODY}" comment)" #| tee
-          printf 'title<<EOF\n%s\nEOF' "$(./scripts/maintainer_merge_message.sh "${BODY}" comment)" >> "$GITHUB_OUTPUT"
+          printf 'title<<EOF\n%s\nEOF' "$(./scripts/maintainer_merge_message.sh "author:${{github.event.comment.user.login}}:" "${BODY}" comment "${{ github.event.issue.number }}")"
+          printf 'title<<EOF\n%s\nEOF' "$(./scripts/maintainer_merge_message.sh "author:${{github.event.comment.user.login}}:" "${BODY}" comment)" >> "$GITHUB_OUTPUT"
 
       #- name: Send message on Zulip
       #  uses: zulip/github-actions-zulip/send-message@v1
@@ -71,8 +69,11 @@ jobs:
         with:
           issue-number: 18736 # ${{ github.event.issue.number }}
           body: |
-            🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}.    before        ${{ steps.merge_or_delegate.outputs.title }}   after
+            🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}.
+            ${{ steps.merge_or_delegate.outputs.title }}
+
             > feat: maintainer delegate everywhere #${{ github.event.issue.title }}
+
       #- name: Add label to PR
       #  uses: actions/github-script@v7
       #  with:

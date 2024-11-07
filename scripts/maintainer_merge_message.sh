@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-BODY="${1}"
-GHsource="${2}"
+AUTHOR="${1}"
+BODY="${2}"
+GHsource="${3}"
+PR="${4}"
 
 mergeOrDelegate="neither merge nor delegate"
 if printf '%s\n' "${BODY}" | grep "^maintainer merge"
@@ -23,4 +25,4 @@ fi
 
 #printf $'title<<EOF\n${{ format(\'{0} requested a maintainer %s from %s on PR [#{1}]({2}):\', github.event.%s.user.login, github.event.%s.number, github.event.%s.html_url ) }}\nEOF' "${mergeOrDelegate}" "${GHsource}" "${GHsource}" "${GHevent}" "${GHevent}"
 
-printf 'text merge or delegate: "%s", GHsource: "%s", GHevent: "%s"' "${mergeOrDelegate}" "${GHsource}" "${GHevent}"
+printf '%s requested a maintainer %s from %s on PR [#%s]({2}):\n> "%s", GHsource: "%s", GHevent: "%s"' "${author}" "${mergeOrDelegate}" "${PR}" "${GHsource}" "${GHevent}"
