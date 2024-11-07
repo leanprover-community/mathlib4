@@ -7,7 +7,7 @@ import Mathlib.FieldTheory.SeparableClosure
 import Mathlib.FieldTheory.PurelyInseparable
 import Mathlib.LinearAlgebra.FreeAlgebra
 import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Order.SuccPred.InverseSystem
+import Mathlib.Order.DirectedInverseSystem
 
 /-!
 # Number of embeddings of an infinite algebraic field extension into the algebraic closure
