@@ -36,6 +36,9 @@ alias _root_.multiplicity_addValuation_apply := multiplicity_apply
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] [UniqueFactorizationMonoid R]
 variable (p : R) [hp : Fact (Prime p)]
 
+/--
+The valuation on a fraction ring to `WithTop ℤ` given by a prime.
+-/
 noncomputable def adicValuation : AddValuation K (WithTop ℤ) :=
   ofValuation <|
     (toValuation <| (multiplicity hp.out).map (AddMonoidHom.withTopMap (Nat.castAddMonoidHom ℤ)) rfl
