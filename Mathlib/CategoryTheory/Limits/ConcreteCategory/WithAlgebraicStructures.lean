@@ -122,17 +122,17 @@ and `s` refines both `i` and `j`.
 
 variable {ℜ𝔦𝔫𝔤 : Type u} [Category.{u'} ℜ𝔦𝔫𝔤] [ConcreteCategory.{max uc₁ w} ℜ𝔦𝔫𝔤]
 variable {𝔄𝔟 : Type v} [Category.{v'} 𝔄𝔟] [ConcreteCategory.{max uc₂ w} 𝔄𝔟]
+variable (ℛ : J ⥤ ℜ𝔦𝔫𝔤) (ℳ : J ⥤ 𝔄𝔟)
 
 variable [∀ x : ℜ𝔦𝔫𝔤, Semiring x] [∀ x : 𝔄𝔟, AddCommMonoid x]
 variable [∀ x y : ℜ𝔦𝔫𝔤, RingHomClass (x ⟶ y) x y]
 variable [∀ x y : 𝔄𝔟, AddMonoidHomClass (x ⟶ y) x y]
 
-variable (ℛ : J ⥤ ℜ𝔦𝔫𝔤) (ℳ : J ⥤ 𝔄𝔟)
 variable [HasColimit ℛ] [HasColimit ℳ]
 variable [PreservesColimit ℛ (forget ℜ𝔦𝔫𝔤)] [PreservesColimit ℳ (forget 𝔄𝔟)]
 
 variable [∀ c, Module (ℛ.obj c) (ℳ.obj c)]
-variable [compatible_smul : Fact $ ∀ {c₁ c₂ : J} (i₁ : c₁ ⟶ c₂) (r : ℛ.obj c₁) (m : ℳ.obj c₁),
+variable [compatible_smul : Fact <| ∀ {c₁ c₂ : J} (i₁ : c₁ ⟶ c₂) (r : ℛ.obj c₁) (m : ℳ.obj c₁),
     ℳ.map i₁ (r • m) = ℛ.map i₁ r • ℳ.map i₁ m]
 
 variable [IsFiltered J]
@@ -374,14 +374,14 @@ lemma colimitsmulColimit_mul_smul
     {  Concrete.indexRepColimit ℛ r₁, Concrete.indexRepColimit ℛ r₂ }
   let j : J := IsFiltered.sup O ∅
   have eq₁ : r₁ = colimit.ι ℛ j
-      (ℛ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℛ r₁)) := by
+      (ℛ.map (IsFiltered.toSup O ∅ <| by simp [O]) (Concrete.repColimit ℛ r₁)) := by
     rw [colimit.w_apply, Concrete.ι_repColimit_eq]
   have eq₂ : r₂ = colimit.ι ℛ j
-      (ℛ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℛ r₂)) := by
+      (ℛ.map (IsFiltered.toSup O ∅ <| by simp [O]) (Concrete.repColimit ℛ r₂)) := by
     rw [colimit.w_apply, Concrete.ι_repColimit_eq]
   have eq₃ : r₁ * r₂ = colimit.ι ℛ j
-      (ℛ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℛ r₁) *
-       ℛ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℛ r₂)) := by
+      (ℛ.map (IsFiltered.toSup O ∅ <| by simp [O]) (Concrete.repColimit ℛ r₁) *
+       ℛ.map (IsFiltered.toSup O ∅ <| by simp [O]) (Concrete.repColimit ℛ r₂)) := by
     rw [map_mul, colimit.w_apply, colimit.w_apply, Concrete.ι_repColimit_eq,
       Concrete.ι_repColimit_eq]
   rw [eq₃]
@@ -408,14 +408,14 @@ lemma colimitsmulColimit_add_smul (r₁ r₂ : colimit (C := ℜ𝔦𝔫𝔤) �
     {  Concrete.indexRepColimit ℛ r₁, Concrete.indexRepColimit ℛ r₂ }
   let j : J := IsFiltered.sup O ∅
   have eq₁ : r₁ = colimit.ι ℛ j
-      (ℛ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℛ r₁)) := by
+      (ℛ.map (IsFiltered.toSup O ∅ <| by simp [O]) (Concrete.repColimit ℛ r₁)) := by
     rw [colimit.w_apply, Concrete.ι_repColimit_eq]
   have eq₂ : r₂ = colimit.ι ℛ j
-      (ℛ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℛ r₂)) := by
+      (ℛ.map (IsFiltered.toSup O ∅ <| by simp [O]) (Concrete.repColimit ℛ r₂)) := by
     rw [colimit.w_apply, Concrete.ι_repColimit_eq]
   have eq₃ : r₁ + r₂ = colimit.ι ℛ j
-      (ℛ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℛ r₁) +
-       ℛ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℛ r₂)) := by
+      (ℛ.map (IsFiltered.toSup O ∅ <| by simp [O]) (Concrete.repColimit ℛ r₁) +
+       ℛ.map (IsFiltered.toSup O ∅ <| by simp [O]) (Concrete.repColimit ℛ r₂)) := by
     rw [map_add]
     rw [colimit.w_apply, colimit.w_apply, Concrete.ι_repColimit_eq, Concrete.ι_repColimit_eq]
   rw [eq₃]
@@ -450,6 +450,9 @@ lemma smul_spec
     rw [colimitsmulColimit_rep_smul, smulColimit_smul_rep]
     apply hSMul_respect_ι <;> rfl
 
+/--
+an alternative to `Module.overFilteredColimits.smul_spec` that assumes the same index throughout.
+-/
 lemma smul_spec' {j : J} (s : ℛ.obj j) (t : ℳ.obj j) :
     colimit.ι ℛ j s • colimit.ι ℳ j t = colimit.ι ℳ j (s • t) := by
   simp only [smul_spec _ _ j j j (𝟙 _) (𝟙 _), CategoryTheory.Functor.map_id, id_apply]
