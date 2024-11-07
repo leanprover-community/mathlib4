@@ -334,9 +334,9 @@ theorem map_map (f : M ↪[L] N) (g : N ↪[L] P) (h : M ≃ₚ[L] M) :
   rw [Embedding.substructureEquivMap_apply, Embedding.comp_apply]
   simp only [Equiv.comp_apply, coeSubtype, Embedding.substructureEquivMap_apply,
     Embedding.comp_toHom, EmbeddingLike.apply_eq_iff_eq, SetLike.coe_eq_coe]
-  rw [←Equiv.comp_apply, ←Equiv.comp_symm]
+  rw [← Equiv.comp_apply, ← Equiv.comp_symm]
   have hi : h.dom.map (g.comp f).toHom = (h.dom.map f.toHom).map g.toHom := by
-    simp [←Substructure.map_map]
+    simp [← Substructure.map_map]
   have H : (g.substructureEquivMap (Substructure.map f.toHom h.dom)).comp
       (f.substructureEquivMap h.dom) =
         (Substructure.equiv_from_eq hi).comp ((g.comp f).substructureEquivMap h.dom) := by
@@ -357,7 +357,7 @@ theorem exists_preimage_map_iff (f : M ↪[L] N) (g : N ≃ₚ[L] N) :
   · intro ⟨g', g'_map⟩
     have : g'.dom.map f.toHom ≤ f.toHom.range := Hom.map_le_range
     have : g'.cod.map f.toHom ≤ f.toHom.range := Hom.map_le_range
-    apply sup_le <;> simpa [←g'_map, map_dom, map_cod]
+    apply sup_le <;> simpa [← g'_map, map_dom, map_cod]
   · intro dom_cod_le_range
     rw [sup_le_iff] at dom_cod_le_range
     let ⟨dom_le_range, cod_le_range⟩ := dom_cod_le_range
@@ -393,7 +393,7 @@ theorem is_extended_by_comp (f : M ≃ₚ[L] M) (g : M ↪[L] N) (g' : N ↪[L] 
   let ⟨h, ⟨le_h, le_h_dom⟩⟩ := H
   use h.map g'
   constructor
-  · rw [←map_map]
+  · rw [← map_map]
     exact map_monotone _ le_h
   · rw [map_dom, Embedding.comp_toHom, Hom.range_comp]
     exact Substructure.monotone_map le_h_dom
@@ -403,7 +403,7 @@ theorem comp_is_extended_by (f : M ≃ₚ[L] M) (g : M ↪[L] N) (g' : N ↪[L] 
   let ⟨h, ⟨le_h, le_h_dom⟩⟩ := H
   use h
   constructor
-  · rwa [←map_map]
+  · rwa [← map_map]
   · rw [Embedding.comp_toHom, Hom.range_comp]
     exact Hom.map_le_range.trans le_h_dom
 
