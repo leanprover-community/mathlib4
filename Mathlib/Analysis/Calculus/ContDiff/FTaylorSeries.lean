@@ -355,7 +355,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff_right (hN : ∞ ≤ N) :
       fun n ↦ (hasFTaylorSeriesUpToOn_succ_nat_iff_right.1 (h n)).2.2⟩
   · apply (hasFTaylorSeriesUpToOn_top_iff_add hN 1).2 (fun n ↦ ?_)
     rw [hasFTaylorSeriesUpToOn_succ_nat_iff_right]
-    exact ⟨h.1, h.2.1, (h.2.2).of_le (m := n) (nat_le_of_infty_le hN n)⟩
+    exact ⟨h.1, h.2.1, (h.2.2).of_le (m := n) (nat_le_of_infty_le_withTop hN n)⟩
 
 /-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
 for `p 1`, which is a derivative of `f`. Version for `n : WithTop ℕ∞`. -/
