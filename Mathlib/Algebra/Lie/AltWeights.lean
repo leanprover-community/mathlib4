@@ -56,20 +56,6 @@ variable (χ : A → R)
 
 abbrev T (w : A) : Module.End R V := (π w) - χ w • 1
 
-/-- The intersection of all eigenspaces of `V` of weight `χ : A → k`
-with respect to the action of all elements in a Lie ideal `A`.
-
-Notes:
-- This is a variant of `LieModule.weightSpace`.
-  The latter assumes a nilpotent Lie algebra and works with generalized eigenspaces.
-- This is a `LieSubmodule`, see `altWeightSpace`. -/
-private def altWeightSpace' : Submodule R V :=
-  (⨅ w : A, (LinearMap.ker (M := V) (T χ w))).copy {v | ∀ a : A, ⁅a, v⁆ = (χ a) • v} <| by
-  ext v
-  simp only [Subtype.forall, Set.mem_setOf_eq, T, Submodule.iInf_coe, Set.mem_iInter,
-    SetLike.mem_coe, LinearMap.mem_ker, LinearMap.sub_apply, LieModule.toEnd_apply_apply,
-    LinearMap.smul_apply, LinearMap.one_apply, sub_eq_zero]
-
 variable (z : L) (w : A) {v : V} (hv : ∀ w : A, ⁅w, v⁆ = (χ w) • v)
 
 open LinearMap.End
@@ -198,6 +184,16 @@ lemma chi_za_zero (a : A) (hv₀ : v ≠ 0) :
   apply Nat.ne_of_lt'
   apply Module.finrank_pos
 
+open LieModule
+
+lemma lie_stable (x : L) (v : V) (hv : v ∈ weightSpace V χ) : ⁅x, v⁆ ∈ weightSpace V χ := by
+  rw [mem_weightSpace] at hv ⊢
+  intro a
+  rcases eq_or_ne v 0 with (rfl | hv')
+  · simp only [lie_zero, smul_zero]
+  · rw [leibniz_lie', hv a, lie_smul, lie_swap_lie, hv,
+      chi_za_zero χ x hv a hv', zero_smul, neg_zero, zero_add]
+
 /--
 The intersection of all eigenspaces of `V` of weight `χ : A → k`
 with respect to the action of all elements in a Lie ideal `A`.
@@ -207,10 +203,5 @@ Note:
   The latter assumes a nilpotent Lie algebra and works with generalized eigenspaces.
 -/
 def altWeightSpace : LieSubmodule R L V where
-  toSubmodule := altWeightSpace' χ
-  lie_mem {z v} hv := by
-    intro a
-    rcases eq_or_ne v 0 with (rfl | hv')
-    · simp only [lie_zero, smul_zero]
-    · rw [leibniz_lie', hv a, lie_smul, lie_swap_lie, hv,
-        chi_za_zero χ z hv a hv', zero_smul, neg_zero, zero_add]
+  toSubmodule := weightSpace V χ
+  lie_mem {z v} hv := lie_stable χ z v hv

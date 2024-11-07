@@ -36,10 +36,14 @@ theorem extend_weight [LieModule.IsTriangularizable k L V]
 
   set Vχ₀ := altWeightSpace (L := L) (V := V) χ₀
   obtain ⟨c, hc⟩ : ∃ c, (toEnd k _ Vχ₀ z).HasEigenvalue c := by
-    have : Nontrivial Vχ₀ := nontrivial_of_ne ⟨v₀, hv₀A⟩ 0 <| Subtype.coe_ne_coe.mp hv₀
+    have : Nontrivial Vχ₀ := nontrivial_of_ne ⟨v₀, ?_⟩ 0 <| Subtype.coe_ne_coe.mp hv₀
+    swap; · simpa [Vχ₀, altWeightSpace, mem_weightSpace] using hv₀A
     apply Module.End.exists_hasEigenvalue_of_genEigenspace_eq_top
     exact LieModule.IsTriangularizable.maxGenEigenspace_eq_top z
   obtain ⟨⟨v, hv⟩, hvc⟩ := hc.exists_hasEigenvector
+  have hv' : ∀ (x : ↥A), ⁅x, v⁆ = χ₀ x • v := by
+    simpa only [altWeightSpace, LieSubmodule.mem_mk_iff', LieSubmodule.mem_coeSubmodule,
+      mem_weightSpace, LieIdeal.coe_bracket_of_module, Vχ₀] using hv
 
   use (χ₀.comp π₁) + c • (e.comp π₂), v
   constructor
@@ -49,7 +53,7 @@ theorem extend_weight [LieModule.IsTriangularizable k L V]
     suffices ⁅(π₂ x : L), v⁆ = (c • e (π₂ x)) • v by
       calc ⁅x, v⁆
           = ⁅π₁ x, v⁆       + ⁅(π₂ x : L), v⁆    := congr(⁅$hπ.symm, v⁆) ▸ add_lie _ _ _
-        _ =  χ₀ (π₁ x) • v  + (c • e (π₂ x)) • v := by rw [hv (π₁ x), this]
+        _ =  χ₀ (π₁ x) • v  + (c • e (π₂ x)) • v := by rw [hv' (π₁ x), this]
         _ = _ := by simp [add_smul]
     calc ⁅(π₂ x : L), v⁆
         = e (π₂ x) • ↑(c • ⟨v, hv⟩ : Vχ₀) := by rw [← he, smul_lie, ← hvc.apply_eq_smul]; rfl
