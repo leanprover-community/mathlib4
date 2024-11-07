@@ -31,27 +31,7 @@ structure IsNest (N : CompleteSublattice (Submodule R M)) [LinearOrder N] where
 
 variable {ι : Type*} [LinearOrder ι] (bm : Basis ι R M)
 
-lemma SupClosed.insert_top {α : Type*} [SemilatticeSup α] [OrderTop α] {s : Set α}
-    (h : SupClosed s) :
-  SupClosed (insert (⊤ : α) s) := by
-  rw [SupClosed]
-  aesop
 
-lemma SupClosed.insert_bot {α : Type*} [SemilatticeSup α] [OrderBot α] {s : Set α}
-    (h : SupClosed s) :
-  SupClosed (insert (⊥ : α) s) := by
-  rw [SupClosed]
-  aesop
-
-lemma InfClosed.insert_top {α : Type*} [SemilatticeInf α] [OrderTop α] {s : Set α}
-    (h : InfClosed s) : InfClosed (insert (⊤ : α) s) := by
-  rw [InfClosed]
-  aesop
-
-lemma InfClosed.insert_bot {α : Type*} [SemilatticeInf α] [OrderBot α] {s : Set α}
-    (h : InfClosed s) : InfClosed (insert (⊥ : α) s) := by
-  rw [InfClosed]
-  aesop
 
 
 /--
