@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 
 /-!
 # Homogeneous ideals of a graded algebra
@@ -56,19 +56,14 @@ variable (I : Ideal A)
 
 /-- An `I : Ideal A` is homogeneous if for every `r ∈ I`, all homogeneous components
   of `r` are in `I`. -/
-def Ideal.IsHomogeneous : Prop :=
-  ∀ (i : ι) ⦃r : A⦄, r ∈ I → (DirectSum.decompose 𝒜 r i : A) ∈ I
+def Ideal.IsHomogeneous : Prop := Submodule.IsHomogeneous I 𝒜
 
 theorem Ideal.IsHomogeneous.mem_iff {I} (hI : Ideal.IsHomogeneous 𝒜 I) {x} :
-    x ∈ I ↔ ∀ i, (decompose 𝒜 x i : A) ∈ I := by
-  classical
-  refine ⟨fun hx i ↦ hI i hx, fun hx ↦ ?_⟩
-  rw [← DirectSum.sum_support_decompose 𝒜 x]
-  exact Ideal.sum_mem _ (fun i _ ↦ hx i)
+    x ∈ I ↔ ∀ i, (decompose 𝒜 x i : A) ∈ I :=
+  Submodule.IsHomogeneous.mem_iff 𝒜 hI
 
 /-- For any `Semiring A`, we collect the homogeneous ideals of `A` into a type. -/
-structure HomogeneousIdeal extends Submodule A A where
-  is_homogeneous' : Ideal.IsHomogeneous 𝒜 toSubmodule
+abbrev HomogeneousIdeal := HomogeneousSubmodule 𝒜 𝒜
 
 variable {𝒜}
 
@@ -83,20 +78,15 @@ theorem HomogeneousIdeal.toIdeal_injective :
     Function.Injective (HomogeneousIdeal.toIdeal : HomogeneousIdeal 𝒜 → Ideal A) :=
   fun ⟨x, hx⟩ ⟨y, hy⟩ => fun (h : x = y) => by simp [h]
 
-instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A where
-  coe I := I.toIdeal
-  coe_injective' _ _ h := HomogeneousIdeal.toIdeal_injective <| SetLike.coe_injective h
+instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A :=
+  HomogeneousSubmodule.setLike 𝒜 𝒜
 
 @[ext]
 theorem HomogeneousIdeal.ext {I J : HomogeneousIdeal 𝒜} (h : I.toIdeal = J.toIdeal) : I = J :=
   HomogeneousIdeal.toIdeal_injective h
 
 theorem HomogeneousIdeal.ext' {I J : HomogeneousIdeal 𝒜} (h : ∀ i, ∀ x ∈ 𝒜 i, x ∈ I ↔ x ∈ J) :
-    I = J := by
-  ext
-  rw [I.isHomogeneous.mem_iff, J.isHomogeneous.mem_iff]
-  apply forall_congr'
-  exact fun i ↦ h i _ (decompose 𝒜 _ i).2
+    I = J := HomogeneousSubmodule.ext' 𝒜 𝒜 h
 
 @[simp]
 theorem HomogeneousIdeal.mem_iff {I : HomogeneousIdeal 𝒜} {x : A} : x ∈ I.toIdeal ↔ x ∈ I :=
