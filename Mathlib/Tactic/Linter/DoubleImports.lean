@@ -32,17 +32,27 @@ def Lean.Name.isLocal (env : Environment) (decl : Name) : Bool :=
   -- I am not sure if this is at all the right way to go about it, but it seems to work in practice.
   (env.getModuleIdxFor? decl).isNone
 
-/-- Does the declaration with this name depend on `def`s in the current file? -/
-def Lean.Name.localDefDependencies (env : Environment) (decl : Name) : CoreM Bool := do
-  let deps ← decl.transitivelyUsedConstants
-  let constInfos := deps.toList.filterMap env.find?
-  let defs := constInfos.filter (·.isDef)
-  return defs.any fun constInfo => constInfo.name != decl && constInfo.name.isLocal env
+open Mathlib.Command.MinImports
 
 /-- Does the declaration with this name depend on `def`s in the current file? -/
-def Lean.Syntax.localDefDependencies (env : Environment) (decl : Syntax) : CoreM Bool := do
-  let options ← resolveGlobalConst decl
-  options.anyM (fun name => name.localDefDependencies env)
+def Lean.Environment.localDefDependencies (env : Environment) (stx id : Syntax) :
+    CommandElabM Bool := do
+  let declName : NameSet ← try
+    NameSet.ofList <$> resolveGlobalConst id
+  catch _ =>
+    pure ∅
+
+  let immediateDeps ← getAllDependencies stx id
+
+  -- Drop all the unresolvable constants, otherwise `transitivelyUsedConstants` fails
+  -- Is this really the best way to filter a NameSet?
+  let immediateDeps : NameSet := immediateDeps.fold (init := ∅) fun s n =>
+    if (env.find? n).isSome then s.insert n else s
+
+  let deps ← liftCoreM <| immediateDeps.transitivelyUsedConstants
+  let constInfos := deps.toList.filterMap env.find?
+  let defs := constInfos.filter (·.isDef)
+  return defs.any fun constInfo => !(declName.contains constInfo.name) && constInfo.name.isLocal env
 
 namespace Mathlib.Linter
 
@@ -65,8 +75,6 @@ register_option linter.doubleImports : Bool := {
 
 namespace DoubleImports
 
-open Mathlib.Command.MinImports
-
 @[inherit_doc Mathlib.Linter.linter.doubleImports]
 def doubleImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.doubleImports (← getOptions) do
@@ -78,7 +86,7 @@ def doubleImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let id ← getId stx
     if id != .missing then
       let newImports := getIrredundantImports env (← getAllImports stx id)
-      if newImports.size == 1 && !(← liftCoreM <| id.localDefDependencies env) then
+      if newImports.size == 1 && !(← env.localDefDependencies stx id) then
         dbg_trace "imports for '{id}': {newImports.toArray.qsort (·.toString < ·.toString)}"
 
 initialize addLinter doubleImportsLinter
