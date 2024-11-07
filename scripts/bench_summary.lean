@@ -173,6 +173,7 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
   -- where source_sha and target_sha are the commit hashes of the revisions being benchmarked.
   -- The comment contains such a URL (and only one); parse the revisions from the comment.
   let frags := output.split (· == '/')
+  let compIdx := (frags.findIdx? (· == "compare")).getD default
   let some compIdx := frags.findIdx? (· == "compare") |
     logInfo "No 'compare' found in URL."
     return
@@ -185,6 +186,8 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
   let curlSpeedCenter : IO.Process.SpawnArgs :=
     { cmd := "curl"
       args := #[s!"http://speed.lean-fro.org/mathlib4/api/compare/{source}/to/{target}?all_values=true"] }
+  dbg_trace "\n#running\n\
+    curl http://speed.lean-fro.org/mathlib4/api/compare/{source}/to/{target}?all_values=true > {tempFile}.src"
   let bench ← IO.Process.run curlSpeedCenter
   IO.FS.writeFile (tempFile ++ ".src") bench
   -- Extract all instruction changes whose magnitude is larger than `threshold`.
@@ -195,6 +198,10 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
         ".differences | .[] | ($thr|tonumber) as $th |
         select(.dimension.metric == \"instructions\" and ((.diff >= $th) or (.diff <= -$th)))",
         (tempFile ++ ".src")] }
+  dbg_trace "\n#running\n\
+    jq -r --arg thr {threshold} '.differences | .[] | ($thr|tonumber) as $th |\n  \
+      select(.dimension.metric == \"instructions\" and ((.diff >= $th) or (.diff <= -$th)))' \
+      {tempFile}.src > {tempFile}"
   let firstFilter ← IO.Process.run jq1
   -- we leave `tempFile.src` unchanged and we switch to updating `tempfile`: this is useful for
   -- debugging, as it preserves the original data downloaded from the speed-center
@@ -203,10 +210,14 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
   let jq2 : IO.Process.SpawnArgs :=
     { cmd := "jq"
       args := #["-c", "[{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]", tempFile] }
+  dbg_trace "\n#running\n\
+    jq -c '[\{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]' {tempFile} > {tempFile}.2"
   let secondFilter ← IO.Process.run jq2
   IO.FS.writeFile tempFile secondFilter
   let jq3 : IO.Process.SpawnArgs :=
     { cmd := "jq", args := #["-n", "reduce inputs as $in (null; . + $in)", tempFile] }
+  dbg_trace "\n#running\n\
+    jq -n 'reduce inputs as $in (null; . + $in)' {tempFile}.2"
   let thirdFilter ← IO.Process.run jq3
   let report ← benchOutput thirdFilter
   IO.println report
