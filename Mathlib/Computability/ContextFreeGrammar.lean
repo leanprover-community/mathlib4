@@ -219,14 +219,14 @@ def reverse (r : ContextFreeRule T N) : ContextFreeRule T N := ⟨r.input, r.out
 lemma reverse_involutive : Involutive (reverse : ContextFreeRule T N → ContextFreeRule T N) :=
   reverse_reverse
 
+lemma reverse_bijective : Bijective (reverse : ContextFreeRule T N → ContextFreeRule T N) :=
+  reverse_involutive.bijective
+
 lemma reverse_injective : Injective (reverse : ContextFreeRule T N → ContextFreeRule T N) :=
   reverse_involutive.injective
 
 lemma reverse_surjective : Surjective (reverse : ContextFreeRule T N → ContextFreeRule T N) :=
   reverse_involutive.surjective
-
-lemma reverse_bijective : Bijective (reverse : ContextFreeRule T N → ContextFreeRule T N) :=
-  reverse_involutive.bijective
 
 protected lemma Rewrites.reverse : ∀ {u v}, r.Rewrites u v → r.reverse.Rewrites u.reverse v.reverse
   | _, _, head s => by simpa using .append_left .input_output _
@@ -253,14 +253,14 @@ variable {g : ContextFreeGrammar T} {u v : List (Symbol T g.NT)} {w : List T}
 lemma reverse_involutive : Involutive (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
   reverse_reverse
 
+lemma reverse_bijective : Bijective (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
+  reverse_involutive.bijective
+
 lemma reverse_injective : Injective (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
   reverse_involutive.injective
 
 lemma reverse_surjective : Surjective (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
   reverse_involutive.surjective
-
-lemma reverse_bijective : Bijective (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
-  reverse_involutive.bijective
 
 lemma produces_reverse : g.reverse.Produces u.reverse v.reverse ↔ g.Produces u v :=
   (Equiv.ofBijective _ ContextFreeRule.reverse_bijective).exists_congr
