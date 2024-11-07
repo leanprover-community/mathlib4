@@ -60,7 +60,7 @@ lemma odd_val_iff_of_even {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : Odd k
     have h2l : (2 * l).val = l.val + l.val := by
       rw [two_mul l]
       exact Nat.mod_eq_of_lt (Nat.add_lt_add hl hl)
-    rw [val_add_eq_mod, h2l]
+    rw [val_add, h2l]
     simp [Nat.mod_eq_of_lt (Nat.add_succ_lt_add hl hl)]
   | Or.inr hl =>
     let x : ℕ := l.val - n
@@ -70,11 +70,11 @@ lemma odd_val_iff_of_even {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : Odd k
       omega
     have hnn : Even (n + n) := even_add_self n
     have hxl : 2 * x + 1 = (2 * l + 1).val := by
-      rw [two_mul l, two_mul x, hxxll, @val_add_eq_of_sum_lt (n + n) (l + l) 1]
+      rw [two_mul l, two_mul x, hxxll, @val_add_eq_of_add_lt (n + n) (l + l) 1]
       · simp only [add_right_inj]
         exact (Nat.one_mod_eq_one.mpr n.add_self_ne_one).symm
-      · rw [one_val_cast (Nat.one_lt_of_ne_zero_and_even (NeZero.ne (n + n)) hnn)]
-        refine Nat.add_one_lt_of_even_and_even_and_lt
+      · rw [one_val_cast  (Nat.one_lt_of_ne_zero_off_even (NeZero.ne (n + n)) hnn)]
+        refine Nat.add_one_lt_of_even
           ((even_val_iff_of_even hnn).mpr (even_add_self l)) hnn ?_
         fin_omega
     rw [← hxl]

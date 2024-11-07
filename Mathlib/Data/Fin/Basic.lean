@@ -427,11 +427,9 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     Nat.mod_eq_of_lt (show ↑b < n from b.2)]
 --- Porting note: syntactically the same as the above
 
-theorem val_add_eq_mod {n : ℕ} (a b : Fin n) : (a + b).val = (a.val + b.val) % n := rfl
-
-theorem val_add_eq_of_sum_lt {n : ℕ} {a b : Fin n} (huv : a.val + b.val < n) :
+theorem val_add_eq_of_add_lt {n : ℕ} {a b : Fin n} (huv : a.val + b.val < n) :
     (a + b).val = a.val + b.val := by
-  rw [val_add_eq_mod]
+  rw [val_add]
   simp [Nat.mod_eq_of_lt huv]
 
 lemma intCast_val_sub_eq_sub_add_ite {n : ℕ} (a b : Fin n) :
