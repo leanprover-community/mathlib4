@@ -115,7 +115,7 @@ theorem isometry_of_comp (h : ∀ x, ‖f x‖ = v x) : Isometry f :=
 the pseudo metric space associated to the absolute value is the same as the pseudo metric space
 induced by `f`. -/
 theorem pseudoMetricSpace_induced_of_comp (h : ∀ x, ‖f x‖ = v x) :
-     PseudoMetricSpace.induced f inferInstance = (normedField v).toPseudoMetricSpace := by
+    PseudoMetricSpace.induced f inferInstance = (normedField v).toPseudoMetricSpace := by
   ext; exact isometry_of_comp h |>.dist_eq _ _
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
