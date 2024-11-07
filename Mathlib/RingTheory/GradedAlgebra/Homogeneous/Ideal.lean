@@ -240,7 +240,7 @@ theorem coe_top : ((⊤ : HomogeneousIdeal 𝒜) : Set A) = univ :=
 theorem coe_bot : ((⊥ : HomogeneousIdeal 𝒜) : Set A) = 0 :=
   rfl
 
-@[simp]
+@[simp high]
 theorem coe_sup (I J : HomogeneousIdeal 𝒜) : ↑(I ⊔ J) = (I + J : Set A) :=
   Submodule.coe_sup _ _
 
@@ -290,11 +290,11 @@ theorem toIdeal_iInf₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → 
     (⨅ (i) (j), s i j).toIdeal = ⨅ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iInf]
 
-@[simp]
+@[simp high]
 theorem eq_top_iff (I : HomogeneousIdeal 𝒜) : I = ⊤ ↔ I.toIdeal = ⊤ :=
   toIdeal_injective.eq_iff.symm
 
-@[simp]
+@[simp high]
 theorem eq_bot_iff (I : HomogeneousIdeal 𝒜) : I = ⊥ ↔ I.toIdeal = ⊥ :=
   toIdeal_injective.eq_iff.symm
 
