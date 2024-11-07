@@ -498,7 +498,9 @@ import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Equiv.Opposite
 import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.Algebra.Module.GradedModule
+import Mathlib.Algebra.Module.GradedModule.Basic
+import Mathlib.Algebra.Module.GradedModule.QuotientGrading
+import Mathlib.Algebra.Module.GradedModule.Subgrading
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.LinearMap.Basic
