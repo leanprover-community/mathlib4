@@ -218,7 +218,7 @@ def toSpec (f : A) : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f where
   continuous_toFun := by
     rw [PrimeSpectrum.isTopologicalBasis_basic_opens.continuous_iff]
     rintro _ ⟨x, rfl⟩
-    obtain ⟨x, rfl⟩ := Quotient.surjective_Quotient_mk'' x
+    obtain ⟨x, rfl⟩ := Quotient.mk''_surjective x
     rw [ToSpec.preimage_basicOpen]
     exact (pbo x.num).2.preimage continuous_subtype_val
 
