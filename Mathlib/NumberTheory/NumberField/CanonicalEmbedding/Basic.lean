@@ -781,19 +781,16 @@ protected abbrev mixedSpace :=
     (WithLp 2 ((EuclideanSpace ℝ {w : InfinitePlace K // IsReal w}) ×
       (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w})))
 
-instance : Ring (euclidean.mixedSpace K) := by
+instance : Ring (euclidean.mixedSpace K) :=
   have : Ring (EuclideanSpace ℝ {w : InfinitePlace K // IsReal w}) := Pi.ring
   have : Ring (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w}) := Pi.ring
-  exact Prod.instRing
+  inferInstanceAs (Ring (_ × _))
 
 instance : MeasurableSpace (euclidean.mixedSpace K) := borel _
 
 instance : BorelSpace (euclidean.mixedSpace K) := ⟨rfl⟩
 
 variable [NumberField K]
-
-open Classical in
-instance : T2Space (euclidean.mixedSpace K) := Prod.t2Space
 
 open Classical in
 /-- The continuous linear equivalence between the euclidean mixed space and the mixed space. -/
@@ -816,7 +813,7 @@ open Classical in
 theorem stdOrthonormalBasis_map_eq :
     (euclidean.stdOrthonormalBasis K).toBasis.map (toMixed K).toLinearEquiv =
       mixedEmbedding.stdBasis K := by
-  ext _ _ <;> rfl
+  ext <;> rfl
 
 open Classical in
 theorem volumePreserving_toMixed :
