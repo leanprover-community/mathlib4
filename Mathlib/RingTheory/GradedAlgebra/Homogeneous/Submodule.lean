@@ -22,7 +22,7 @@ For any `p : Submodule A M`:
 ## Implementation notes
 
 The **notion** of homogeneous submodule does not rely on a graded ring, only a decomposition of the
-the module. However, most interesting properties of homogeneous submodules do reply on the base ring
+the module. However, most interesting properties of homogeneous submodules do rely on the base ring
 is a graded ring. For technical reasons, we make `HomogeneousSubmodule` depend on a graded ring.
 For example, if the definition of a homogeneous submodule does not depend on a graded ring, the
 instance that `HomogeneousSubmodule` is a complete lattice can not be synthesized due to
