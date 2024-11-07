@@ -176,6 +176,12 @@ protected theorem mul_inv {a b : ℝ≥0∞} (ha : a ≠ 0 ∨ b ≠ ∞) (hb : 
     ENNReal.coe_mul, mul_inv_rev, mul_comm]
   simp [h'a, h'b]
 
+protected theorem inv_div {a b : ℝ≥0∞} (htop : b ≠ ∞ ∨ a ≠ ∞) (hzero : b ≠ 0 ∨ a ≠ 0) :
+    (a / b)⁻¹ = b / a := by
+  rw [← ENNReal.inv_ne_zero] at htop
+  rw [← ENNReal.inv_ne_top] at hzero
+  rw [ENNReal.div_eq_inv_mul, ENNReal.div_eq_inv_mul, ENNReal.mul_inv htop hzero, mul_comm, inv_inv]
+
 protected theorem mul_div_mul_left (a b : ℝ≥0∞) (hc : c ≠ 0) (hc' : c ≠ ⊤) :
     c * a / (c * b) = a / b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ENNReal.mul_inv (Or.inl hc) (Or.inl hc'), mul_mul_mul_comm,

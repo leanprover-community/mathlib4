@@ -132,7 +132,7 @@ lemma biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) : 
     -- Porting note: this entire proof was `simp [or_and_right, exists_or]`
     simp_rw [mem_biUnion]
     apply exists_congr
-    simp (config := { contextual := true }) only [hs, and_congr_right_iff, ht, implies_true]
+    simp +contextual only [hs, and_congr_right_iff, ht, implies_true]
 
 @[simp]
 lemma disjiUnion_eq_biUnion (s : Finset α) (f : α → Finset β) (hf) :

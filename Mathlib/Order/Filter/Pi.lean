@@ -185,6 +185,11 @@ theorem pi_inj [∀ i, NeBot (f₁ i)] : pi f₁ = pi f₂ ↔ f₁ = f₂ := by
   haveI : ∀ i, NeBot (f₂ i) := fun i => neBot_of_le (hle i)
   exact hle.antisymm (pi_le_pi.1 h.ge)
 
+theorem tendsto_piMap_pi {β : ι → Type*} {f : ∀ i, α i → β i} {l : ∀ i, Filter (α i)}
+    {l' : ∀ i, Filter (β i)} (h : ∀ i, Tendsto (f i) (l i) (l' i)) :
+    Tendsto (Pi.map f) (pi l) (pi l') :=
+  tendsto_pi.2 fun i ↦ (h i).comp (tendsto_eval_pi _ _)
+
 end Pi
 
 /-! ### `n`-ary coproducts of filters -/
