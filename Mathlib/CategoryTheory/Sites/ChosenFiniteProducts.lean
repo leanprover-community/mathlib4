@@ -43,7 +43,7 @@ lemma tensorUnit_isSheaf : Presheaf.IsSheaf J (𝟙_ (Cᵒᵖ ⥤ A)) := by
 /-- Any `ChosenFiniteProducts` on `A` induce a `ChosenFiniteProducts` structures on `A`-valued
 sheaves. -/
 @[simps! product_cone_pt_val terminal_cone_pt_val_obj terminal_cone_pt_val_map]
-noncomputable instance : ChosenFiniteProducts (Sheaf J A) where
+noncomputable instance chosenFiniteProducts: ChosenFiniteProducts (Sheaf J A) where
   product X Y :=
     { cone := BinaryFan.mk
           (P := { val := X.val ⊗ Y.val
@@ -74,21 +74,24 @@ noncomputable instance : ChosenFiniteProducts (Sheaf J A) where
             exact ChosenFiniteProducts.toUnit_unique f.val _} }
 
 @[simp]
-lemma fst_val : (ChosenFiniteProducts.fst X Y).val = ChosenFiniteProducts.fst X.val Y.val := rfl
+lemma chosenFiniteProducts_fst_val : (ChosenFiniteProducts.fst X Y).val =
+    ChosenFiniteProducts.fst X.val Y.val := rfl
 
 @[simp]
-lemma snd_val : (ChosenFiniteProducts.snd X Y).val = ChosenFiniteProducts.snd X.val Y.val := rfl
+lemma chosenFiniteProducts_snd_val : (ChosenFiniteProducts.snd X Y).val =
+    ChosenFiniteProducts.snd X.val Y.val := rfl
 
 variable {X Y}
 variable {W : Sheaf J A} (f : W ⟶ X) (g : W ⟶ Y)
 
 @[simp]
-lemma lift_val : (ChosenFiniteProducts.lift f g).val = ChosenFiniteProducts.lift f.val g.val := rfl
+lemma chosenFiniteProducts_lift_val : (ChosenFiniteProducts.lift f g).val =
+    ChosenFiniteProducts.lift f.val g.val := rfl
 
 @[simp]
-lemma whiskerLeft_val : (X ◁ f).val = (X.val ◁ f.val) := rfl
+lemma chosenFiniteProducts_whiskerLeft_val : (X ◁ f).val = (X.val ◁ f.val) := rfl
 @[simp]
-lemma whiskerRight_val : (f ▷ X).val = (f.val ▷ X.val) := rfl
+lemma chosenFiniteProducts_whiskerRight_val : (f ▷ X).val = (f.val ▷ X.val) := rfl
 
 /-- The inclusion from sheaves to presheaves is monoidal with respect to the cartesian monoidal
 structures. -/
