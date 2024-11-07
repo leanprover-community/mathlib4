@@ -538,7 +538,7 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
 
 variable (f : X ⟶ Y) (𝒰 : Y.OpenCover) (𝒱 : ∀ i, ((𝒰.pullbackCover f).obj i).OpenCover)
 
-/-
+/--
 Given `𝒰 i` covering `Y` and `𝒱 i j` covering `𝒰 i`, this is the open cover
 `𝒱 i j₁ ×_{𝒰 i} 𝒱 i j₂` ranging over all `i`, `j₁`, `j₂`.
 -/
