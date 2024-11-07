@@ -22,7 +22,7 @@ import Mathlib.RingTheory.Multiplicity
 
 ## Main results
 * `Ideal.setOf_isPrincipal_wellFoundedOn_gt`, `WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt`
-  in a domain, well-foundedness of the strict verison of ∣ is equivalent to the ascending
+  in a domain, well-foundedness of the strict version of ∣ is equivalent to the ascending
   chain condition on principal ideals.
 
 ## TODO
