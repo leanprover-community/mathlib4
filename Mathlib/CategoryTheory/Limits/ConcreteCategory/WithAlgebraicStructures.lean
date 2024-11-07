@@ -148,7 +148,7 @@ scalar multiplication `Rᵢ → Mⱼ → Mₖ` for every `i → j` and `i → k`
 -/
 def hSMul {c₁ c₂ c₃ : J} (i₁ : c₁ ⟶ c₃) (i₂ : c₂ ⟶ c₃)
     (r : ℛ.obj c₁) (m : ℳ.obj c₂) : ℳ.obj c₃ :=
-  (ℛ.map i₁ r) • (ℳ.map i₂ m)
+  ℛ.map i₁ r • ℳ.map i₂ m
 
 section hSMul
 
