@@ -482,8 +482,8 @@ lemma δ_comp_σ_of_le_apply {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ 
     S.δ (Fin.castSucc i) (S.σ j.succ x) = S.σ j (S.δ i x) := congr_fun (S.δ_comp_σ_of_le H) x
 
 @[simp]
-lemma δ_comp_σ_self_apply {n} (i : Fin (n + 1)) (x : S _[n]) : S.δ i.castSucc (S.σ i x) = x
-  := congr_fun S.δ_comp_σ_self x
+lemma δ_comp_σ_self_apply {n} (i : Fin (n + 1)) (x : S _[n]) : S.δ i.castSucc (S.σ i x) = x :=
+  congr_fun S.δ_comp_σ_self x
 
 @[simp]
 lemma δ_comp_σ_self'_apply {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = Fin.castSucc i)
@@ -511,7 +511,5 @@ lemma σ_comp_σ_apply {n} {i j : Fin (n + 1)} (H : i ≤ j) (x : S _[n]) :
     S.σ i.castSucc (S.σ j x) = S.σ j.succ (S.σ i x) := congr_fun (S.σ_comp_σ H) x
 
 end applications
-
-
 
 end SSet
