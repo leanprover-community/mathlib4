@@ -5,6 +5,8 @@ Authors: Pieter Cuijpers
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.CompleteLattice
+import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 /-!
 # Theory of quantales
@@ -120,13 +122,20 @@ theorem mul_sup_eq_sup_mul : x * (y ⊔ z) = (x * y) ⊔ (x * z) := by
 theorem sup_mul_eq_sup_mul : (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
   rw [← (@iSup_pair _ _ _ (fun _? => _? * z) _ _), ← sSup_pair, sSup_mul_eq_iSup_mul]
 
-@[to_additive]
-theorem mul_le_mul_left : x ≤ y → x * z ≤ y * z := by
-  intro h; rw [← left_eq_sup, ← sup_mul_eq_sup_mul, sup_of_le_left h]
+/- There is not general class definition for OrderedMonoid, so we use the more granular
+MulLeftMono and MulRightMono class definitions instead to obtain monotonicity theorems. -/
 
 @[to_additive]
-theorem mul_le_mul_right : x ≤ y → z * x ≤ z * y := by
-  intro h; rw [← left_eq_sup, ← mul_sup_eq_sup_mul, sup_of_le_left h]
+instance : MulLeftMono α where
+  elim := by
+    intro _ _ _ ; simp only; intro h
+    rw [← left_eq_sup, ← mul_sup_eq_sup_mul, sup_of_le_left h]
+
+@[to_additive]
+instance : MulRightMono α where
+  elim := by
+    intro _ _ _ ; simp only; intro h
+    rw [← left_eq_sup, ← sup_mul_eq_sup_mul, sup_of_le_left h]
 
 end Quantale
 
@@ -194,7 +203,7 @@ theorem leftResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z := by
   rw [leftResiduation];
   constructor
   · intro h1
-    apply le_trans (mul_le_mul_left h1)
+    apply le_trans (mul_le_mul_right' h1 _)
     simp_all only [sSup_mul_eq_iSup_mul, Set.mem_setOf_eq, iSup_le_iff, implies_true]
   · intro h1
     apply le_sSup
@@ -205,7 +214,7 @@ theorem rightResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z := by
   rw [rightResiduation];
   constructor
   · intro h1
-    apply le_trans (mul_le_mul_right h1)
+    apply le_trans (mul_le_mul_left' h1 _)
     simp_all only [mul_sSup_eq_iSup_mul, Set.mem_setOf_eq, iSup_le_iff, implies_true]
   · intro h1
     apply le_sSup
