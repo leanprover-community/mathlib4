@@ -258,6 +258,11 @@ theorem rTensor_preserves_injective_linearMap {N' : Type*} [AddCommGroup N'] [Mo
 @[deprecated (since := "2024-03-29")]
 alias preserves_injective_linearMap := rTensor_preserves_injective_linearMap
 
+instance [Flat R M] [Flat R N] : Flat R (M ⊗[R] N) :=
+  (iff_rTensor_injective' _ _).mpr fun I ↦ by
+    simpa [rTensor_tensor] using rTensor_preserves_injective_linearMap _
+      (rTensor_preserves_injective_linearMap _ I.injective_subtype)
+
 /--
 If `M` is a flat module, then `𝟙 M ⊗ f` is injective for all injective linear maps `f`.
 -/
@@ -390,6 +395,22 @@ theorem iff_rTensor_exact : Flat R M ↔
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
         Function.Exact f g → Function.Exact (f.rTensor M) (g.rTensor M) :=
   iff_rTensor_exact'.{max u v}
+
+/-- If p and q are submodules of M and N respectively, and M and q are flat,
+then `p ⊗ q → M ⊗ N` is injective. -/
+theorem tensorProduct_mapIncl_injective (p : Submodule R M) (q : Submodule R N)
+    [Flat R M] [Flat R q] : Function.Injective (mapIncl p q) := by
+  rw [mapIncl, ← lTensor_comp_rTensor]
+  exact (lTensor_preserves_injective_linearMap _ q.injective_subtype).comp
+    (rTensor_preserves_injective_linearMap _ p.injective_subtype)
+
+/-- If p and q are submodules of M and N respectively, and N and p are flat,
+then `p ⊗ q → M ⊗ N` is injective. -/
+theorem tensorProduct_mapIncl_injective' (p : Submodule R M) (q : Submodule R N)
+    [Flat R p] [Flat R N] : Function.Injective (mapIncl p q) := by
+  rw [mapIncl, ← rTensor_comp_lTensor]
+  exact (rTensor_preserves_injective_linearMap _ p.injective_subtype).comp
+    (lTensor_preserves_injective_linearMap _ q.injective_subtype)
 
 end Flat
 
