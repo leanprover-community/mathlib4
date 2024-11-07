@@ -454,7 +454,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
   rw [← @Fin.mk.inj_iff _ _ _ kl k1l]; apply h
   rw [get_permutations'Aux, get_permutations'Aux]
   have hl : length (insertIdx k x s) = length (insertIdx (k + 1) x s) := by
-    rw [length_insertIdx _ _ hk.le, length_insertIdx _ _ (Nat.succ_le_of_lt hk)]
+    rw [length_insertIdx_of_le_length hk.le, length_insertIdx_of_le_length (Nat.succ_le_of_lt hk)]
   refine ext_get hl fun n hn hn' => ?_
   rcases lt_trichotomy n k with (H | rfl | H)
   · rw [get_insertIdx_of_lt _ _ _ _ H (H.trans hk),
@@ -465,7 +465,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       convert hk' using 1
       exact get_insertIdx_add_succ _ _ _ 0 _
     · obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt H'
-      rw [length_insertIdx _ _ hk.le, Nat.succ_lt_succ_iff, Nat.succ_add] at hn
+      rw [length_insertIdx_of_le_length hk.le, Nat.succ_lt_succ_iff, Nat.succ_add] at hn
       rw [get_insertIdx_add_succ]
       · convert get_insertIdx_add_succ s x k m.succ (by simpa using hn) using 2
         · simp [Nat.add_assoc, Nat.add_left_comm]
@@ -492,21 +492,21 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
       have hl : as.length = bs.length := (ha.trans hb.symm).length_eq
       simp only [Nat.lt_succ_iff, length_permutations'Aux] at hn hm
       rw [get_permutations'Aux] at hn' hm'
-      have hx :
-        (insertIdx n x as)[m]'(by rwa [length_insertIdx _ _ hn, Nat.lt_succ_iff, hl]) = x := by
+      have hx : (insertIdx n x as)[m]'(by
+          rwa [length_insertIdx_of_le_length hn, Nat.lt_succ_iff, hl]) = x := by
         simp [hn', ← hm', hm]
-      have hx' :
-        (insertIdx m x bs)[n]'(by rwa [length_insertIdx _ _ hm, Nat.lt_succ_iff, ← hl]) = x := by
+      have hx' : (insertIdx m x bs)[n]'(by
+          rwa [length_insertIdx_of_le_length hm, Nat.lt_succ_iff, ← hl]) = x := by
         simp [hm', ← hn', hn]
       rcases lt_trichotomy n m with (ht | ht | ht)
       · suffices x ∈ bs by exact h x (hb.subset this) rfl
-        rw [← hx', getElem_insertIdx_of_lt _ _ _ _ ht (ht.trans_le hm)]
+        rw [← hx', getElem_insertIdx_of_lt ht (by simp [length_insertIdx]; split <;> omega)]
         exact get_mem _ _ _
       · simp only [ht] at hm' hn'
         rw [← hm'] at hn'
         exact H (insertIdx_injective _ _ hn')
       · suffices x ∈ as by exact h x (ha.subset this) rfl
-        rw [← hx, getElem_insertIdx_of_lt _ _ _ _ ht (ht.trans_le hn)]
+        rw [← hx, getElem_insertIdx_of_lt ht (by simp [length_insertIdx]; split <;> omega)]
         exact get_mem _ _ _
 
 lemma permutations_take_two (x y : α) (s : List α) :

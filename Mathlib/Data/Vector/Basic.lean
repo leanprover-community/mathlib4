@@ -527,8 +527,7 @@ variable {a : α}
 def insertIdx (a : α) (i : Fin (n + 1)) (v : Vector α n) : Vector α (n + 1) :=
   ⟨v.1.insertIdx i a, by
     rw [List.length_insertIdx, v.2]
-    rw [v.2, ← Nat.succ_le_succ_iff]
-    exact i.2⟩
+    split <;> omega⟩
 
 @[deprecated (since := "2024-10-21")] alias insertNth := insertIdx
 
