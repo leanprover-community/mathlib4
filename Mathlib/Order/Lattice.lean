@@ -740,8 +740,8 @@ abbrev Lattice.toLinearOrder (α : Type u) [Lattice α]
     [DecidableRel ((· ≤ ·) : α → α → Prop)] [IsTotal α (· ≤ ·)] : LinearOrder α where
   __ := ‹Lattice α›
   decidableLE := ‹_›
-  decidableEq := by intro _ _; rw [le_antisymm_iff]; infer_instance
-  decidableLT := by intro _ _; simp_rw [lt_iff_le_not_le]; infer_instance
+  decidableEq _ _ := decidable_of_decidable_of_iff le_antisymm_iff.symm
+  decidableLT _ _ := decidable_of_decidable_of_iff lt_iff_le_not_le.symm
   le_total := total_of (· ≤ ·)
   max := (· ⊔ ·)
   max_def := by exact congr_fun₂ sup_eq_maxDefault
