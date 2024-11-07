@@ -490,7 +490,7 @@ lemma measurable_of_real_prod {f : EReal × β → γ}
     (h_real : Measurable fun p : ℝ × β ↦ f (p.1, p.2))
     (h_bot : Measurable fun x ↦ f (⊥, x)) (h_top : Measurable fun x ↦ f (⊤, x)) : Measurable f :=
   .of_union₃_range_cover (measurableEmbedding_prod_mk_left _) (measurableEmbedding_prod_mk_left _)
-    (measurableEmbedding_coe.prod_mk .id) (by simp [-univ_subset_iff, subset_def])
+    (measurableEmbedding_coe.prod_mk .id) (by simp [-univ_subset_iff, subset_def, EReal.forall])
     h_bot h_top h_real
 
 lemma measurable_of_real_real {f : EReal × EReal → β}
