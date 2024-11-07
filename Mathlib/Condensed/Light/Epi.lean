@@ -91,6 +91,199 @@ lemma epi_π_app_zero_of_epi : Epi (c.π.app ⟨0⟩) := by
     exact isLimitOfPreserves _ hc
   · exact fun _ ↦ (forget R).map_epi _
 
-open Functor Limits
+section Products
+
+section General
+
+variable {C : Type*}
+variable {M N : ℕ → C} -- [∀ n, Epi (f n)]
+
+private lemma functorObj_eq_pos {n m : ℕ} (h : m ≤ n) :
+    (fun i ↦ if _ : i ≤ n then M i else N i) m = M m := dif_pos h
+
+private lemma functorObj_eq_neg {n m : ℕ} (h : ¬(m ≤ n)) :
+    (fun i ↦ if _ : i ≤ n then M i else N i) m = N m := dif_neg h
+
+variable [Category C] (f : ∀ n, M n ⟶ N n)
+variable [HasProductsOfShape ℕ C]
+
+private noncomputable def functorObj : ℕ → C :=
+  fun n ↦ ∏ᶜ (fun m ↦ if _ : m ≤ n then M m else N m)
+
+-- `functorObj` is off by one
+noncomputable def functorObjZeroHom : functorObj (M := M) (N := N) 0 ⟶ ∏ᶜ N :=
+  Limits.Pi.map fun n ↦ if h : n ≤ 0 then eqToHom (functorObj_eq_pos h) ≫ f n else
+    eqToHom (functorObj_eq_neg h)
+
+instance : Epi (functorObjZeroHom f) := sorry -- Use locally surjective
+
+private noncomputable def functorMap : ∀ n,
+    functorObj (M := M) (N := N) (n + 1) ⟶ functorObj (M := M) (N := N) n := by
+  intro n
+  refine Limits.Pi.map fun m ↦ if h : m ≤ n then eqToHom ?_ else
+    if h' : m ≤ n + 1 then eqToHom ?_ ≫ f m ≫ eqToHom ?_ else eqToHom ?_
+  · split_ifs
+    · rfl
+    · omega
+  all_goals split_ifs; rfl
+
+private lemma functorMap_commSq_succ (n : ℕ) :
+    (Functor.ofOpSequence (functorMap f)).map (homOfLE (by omega : n ≤ n+1)).op ≫ Pi.π _ (n+1) ≫
+      eqToHom (functorObj_eq_neg (by omega : ¬(n+1 ≤ n))) =
+        (Pi.π (fun i ↦ if _ : i ≤ (n + 1) then M i else N i) (n + 1)) ≫
+          eqToHom (functorObj_eq_pos le_rfl) ≫ f (n + 1) := by
+  simp [functorMap]
+
+private lemma functorMap_commSq_aux {n m k : ℕ} (h : n ≤ m) (hh : ¬(k ≤ m)) :
+    (Functor.ofOpSequence (functorMap f)).map (homOfLE h).op ≫ Pi.π _ k ≫
+      eqToHom (functorObj_eq_neg (by omega : ¬(k ≤ n))) =
+        (Pi.π (fun i ↦ if _ : i ≤ m then M i else N i) k) ≫
+          eqToHom (functorObj_eq_neg hh) := by
+  induction' h using Nat.leRec with m h ih
+  · simp
+  · specialize ih (by omega)
+    have : homOfLE (by omega : n ≤ m + 1) =
+        homOfLE (by omega : n ≤ m) ≫ homOfLE (by omega : m ≤ m + 1) := by simp
+    rw [this, op_comp, Functor.map_comp]
+    slice_lhs 2 4 => rw [ih]
+    simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ,
+      functorMap, dite_eq_ite, limMap_π_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app]
+    split_ifs
+    simp [dif_neg (by omega : ¬(k ≤ m))]
+
+private lemma functorMap_commSq {n m : ℕ} (h : ¬(m ≤ n)) :
+    (Functor.ofOpSequence (functorMap f)).map (homOfLE (by omega : n ≤ m)).op ≫ Pi.π _ m ≫
+      eqToHom (functorObj_eq_neg h) =
+        (Pi.π (fun i ↦ if _ : i ≤ m then M i else N i) m) ≫
+          eqToHom (functorObj_eq_pos le_rfl) ≫ f m := by
+  cases m with
+  | zero => omega
+  | succ m =>
+      rw [← functorMap_commSq_succ f m]
+      simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, dite_eq_ite,
+        Functor.ofOpSequence_map_homOfLE_succ, add_le_iff_nonpos_right, nonpos_iff_eq_zero,
+        one_ne_zero]
+      have : homOfLE (by omega : n ≤ m + 1) =
+          homOfLE (by omega : n ≤ m) ≫ homOfLE (by omega : m ≤ m + 1) := by simp
+      rw [this, op_comp, Functor.map_comp]
+      simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ,
+        Category.assoc, add_le_iff_nonpos_right, nonpos_iff_eq_zero, one_ne_zero]
+      congr 1
+      exact functorMap_commSq_aux f (by omega) (by omega)
+
+private noncomputable def cone : Cone (Functor.ofOpSequence (functorMap f)) where
+  pt := ∏ᶜ M
+  π := by
+    refine NatTrans.ofOpSequence
+      (fun n ↦ Limits.Pi.map fun m ↦ if h : m ≤ n then eqToHom (functorObj_eq_pos h).symm else
+        f m ≫ eqToHom (functorObj_eq_neg h).symm) (fun n ↦ ?_)
+    apply Limits.Pi.hom_ext
+    intro m
+    simp only [Functor.const_obj_obj, Functor.ofOpSequence_obj, homOfLE_leOfHom,
+      Functor.const_obj_map, Category.id_comp, limMap_π, Discrete.functor_obj_eq_as,
+      Discrete.natTrans_app, Functor.ofOpSequence_map_homOfLE_succ, functorMap, Category.assoc,
+      limMap_π_assoc]
+    split_ifs
+    · simp [dif_pos (by omega : m ≤ n + 1)]
+    · by_cases h' : m ≤ n + 1
+      · simp [dif_pos h']
+      · simp [dif_neg h']
+
+private lemma cone_π_app (n : ℕ) : (cone f).π.app ⟨n⟩ =
+  Limits.Pi.map fun m ↦ if h : m ≤ n then eqToHom (functorObj_eq_pos h).symm else
+    f m ≫ eqToHom (functorObj_eq_neg h).symm := rfl
+
+@[reassoc]
+lemma cone_π_app_comp_Pi_π_pos (m n : ℕ) (h : n ≤ m) : (cone f).π.app ⟨m⟩ ≫
+    Pi.π (fun i ↦ if _ : i ≤ m then M i else N i) n =
+    Pi.π _ n ≫ eqToHom (functorObj_eq_pos h).symm := by
+  simp only [Functor.const_obj_obj, dite_eq_ite, Functor.ofOpSequence_obj, cone_π_app, limMap_π,
+    Discrete.functor_obj_eq_as, Discrete.natTrans_app]
+  rw [dif_pos h]
+
+@[reassoc]
+lemma cone_π_app_comp_Pi_π_neg (m n : ℕ) (h : ¬(n ≤ m)) : (cone f).π.app ⟨m⟩ ≫ Pi.π _ n =
+    Pi.π _ n ≫ f n ≫ eqToHom (functorObj_eq_neg h).symm := by
+  simp only [Functor.const_obj_obj, dite_eq_ite, Functor.ofOpSequence_obj, cone_π_app, limMap_π,
+    Discrete.functor_obj_eq_as, Discrete.natTrans_app]
+  rw [dif_neg h]
+
+private noncomputable def isLimit : IsLimit (cone f) where
+  lift s := Pi.lift fun m ↦
+    s.π.app ⟨m⟩ ≫ Pi.π (fun i ↦ if _ : i ≤ m then M i else N i) m ≫ eqToHom (dif_pos le_rfl)
+  fac s := by
+    intro ⟨n⟩
+    apply Pi.hom_ext
+    intro m
+    by_cases h : m ≤ n
+    · simp only [le_refl, Category.assoc, cone_π_app_comp_Pi_π_pos f _ _ h]
+      simp only [dite_eq_ite, Functor.ofOpSequence_obj, le_refl, limit.lift_π_assoc, Fan.mk_pt,
+        Discrete.functor_obj_eq_as, Fan.mk_π_app, Category.assoc, eqToHom_trans]
+      rw [← s.w (homOfLE h).op]
+      simp only [Functor.const_obj_obj, Functor.ofOpSequence_obj, homOfLE_leOfHom, le_refl,
+        Category.assoc]
+      congr
+      induction' h using Nat.leRec with n h ih
+      · simp
+      · have : homOfLE (Nat.le_succ_of_le h) = homOfLE h ≫ homOfLE (Nat.le_succ n) := by simp
+        rw [this, op_comp, Functor.map_comp]
+        simp only [Functor.ofOpSequence_obj, Nat.succ_eq_add_one, homOfLE_leOfHom,
+          Functor.ofOpSequence_map_homOfLE_succ, le_refl, Category.assoc]
+        have h₁ : (if _ : m ≤ m then M m else N m) = if _ : m ≤ n then M m else N m := by
+          rw [dif_pos le_rfl, dif_pos h]
+        have h₂ : (if _ : m ≤ n then M m else N m) = if _ : m ≤ (n + 1) then M m else N m := by
+          rw [dif_pos h, dif_pos (by omega)]
+        rw [← eqToHom_trans h₁ h₂]
+        slice_lhs 2 4 => rw [ih]
+        simp only [functorMap, dite_eq_ite, Pi.π, limMap_π_assoc, Discrete.functor_obj_eq_as,
+          Discrete.natTrans_app]
+        split_ifs
+        · simp
+        · simp
+    · simp only [le_refl, Category.assoc]
+      rw [cone_π_app_comp_Pi_π_neg f _ _ h]
+      simp only [dite_eq_ite, Functor.ofOpSequence_obj, le_refl, limit.lift_π_assoc, Fan.mk_pt,
+        Discrete.functor_obj_eq_as, Fan.mk_π_app, Category.assoc]
+      slice_lhs 2 4 => erw [← functorMap_commSq f h]
+      simp
+  uniq s m h := by
+    apply Pi.hom_ext
+    intro n
+    simp only [Functor.ofOpSequence_obj, le_refl, dite_eq_ite, limit.lift_π, Fan.mk_pt,
+      Fan.mk_π_app, ← h ⟨n⟩, Category.assoc]
+    slice_rhs 2 3 => erw [cone_π_app_comp_Pi_π_pos f n _ le_rfl]
+    simp
+
+end General
+
+variable {M N : ℕ → LightCondMod.{u} R} (f : ∀ n, M n ⟶ N n) [∀ n, Epi (f n)]
+
+-- Use locally surjective
+instance (n : ℕ) : Epi (functorMap f n) where
+  left_cancellation a b h := sorry
+
+instance : Epi (Limits.Pi.map f) := by
+  let F : ℕᵒᵖ ⥤ LightCondMod R := Functor.ofOpSequence (functorMap f)
+  have : Limits.Pi.map f = (cone f).π.app ⟨0⟩ ≫ (functorObjZeroHom f) := sorry
+  rw [this]
+  have := epi_π_app_zero_of_epi R (isLimit f) (fun n ↦ by simp; infer_instance)
+  infer_instance
+
+instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms where
+  preserves f := by
+    have : lim.map f = (Pi.isoLimit _).inv ≫ Limits.Pi.map (f.app ⟨·⟩) ≫ (Pi.isoLimit _).hom := by
+      apply limit.hom_ext
+      intro ⟨n⟩
+      simp only [lim_obj, lim_map, limMap, IsLimit.map, limit.isLimit_lift, limit.lift_π,
+        Cones.postcompose_obj_pt, limit.cone_x, Cones.postcompose_obj_π, NatTrans.comp_app,
+        Functor.const_obj_obj, limit.cone_π, Pi.isoLimit, Limits.Pi.map, Category.assoc,
+        limit.conePointUniqueUpToIso_hom_comp, Pi.cone_pt, Pi.cone_π, Discrete.natTrans_app,
+        Discrete.functor_obj_eq_as]
+      erw [IsLimit.conePointUniqueUpToIso_inv_comp_assoc]
+      rfl
+    rw [this]
+    infer_instance
+
+end Products
 
 end LightCondensed
