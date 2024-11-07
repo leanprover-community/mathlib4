@@ -65,7 +65,7 @@ def mkOfInjective {K V W : Type*}
 
 /-- If the coefficients are a field, and one of the spaces is finite-dimensional, it is sufficient
 to check only injectivity instead of bijectivity of the bilinear form. -/
-def mkOfFiniteDimensional' {K V W : Type*}
+def mkOfInjective' {K V W : Type*}
     [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W] [FiniteDimensional K W]
     (B : V →ₗ[K] W →ₗ[K] K)
     (h : Injective B)
@@ -163,10 +163,10 @@ theorem reflexive_right : IsReflexive R N :=
 
 private lemma restrict_aux
     {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
-    (i : M' →ₗ[R] M) (hi : Injective i)
-    (j : N' →ₗ[R] N) (hj : Injective j)
+    (i : M' →ₗ[R] M) (j : N' →ₗ[R] N)
     (hM : IsCompl (LinearMap.range i) ((LinearMap.range j).dualAnnihilator.map p.toDualLeft.symm))
-    (hN : IsCompl (LinearMap.range j) ((LinearMap.range i).dualAnnihilator.map p.toDualRight.symm)):
+    (hN : IsCompl (LinearMap.range j) ((LinearMap.range i).dualAnnihilator.map p.toDualRight.symm))
+    (hi : Injective i) (hj : Injective j) :
     Bijective (p.toLin.compl₁₂ i j) := by
   refine ⟨LinearMap.ker_eq_bot.mp <| eq_bot_iff.mpr fun m hm ↦ ?_, fun f ↦ ?_⟩
   · replace hm : i m ∈ (LinearMap.range j).dualAnnihilator.map p.toDualLeft.symm := by
@@ -193,14 +193,14 @@ private lemma restrict_aux
 definitional control). -/
 @[simps]
 def restrict {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
-    (i : M' →ₗ[R] M) (hi : Injective i)
-    (j : N' →ₗ[R] N) (hj : Injective j)
+    (i : M' →ₗ[R] M) (j : N' →ₗ[R] N)
     (hM : IsCompl (LinearMap.range i) ((LinearMap.range j).dualAnnihilator.map p.toDualLeft.symm))
-    (hN : IsCompl (LinearMap.range j) ((LinearMap.range i).dualAnnihilator.map p.toDualRight.symm)):
+    (hN : IsCompl (LinearMap.range j) ((LinearMap.range i).dualAnnihilator.map p.toDualRight.symm))
+    (hi : Injective i) (hj : Injective j) :
     PerfectPairing R M' N' where
   toLin := p.toLin.compl₁₂ i j
-  bijectiveLeft := p.restrict_aux i hi j hj hM hN
-  bijectiveRight := p.flip.restrict_aux j hj i hi hN hM
+  bijectiveLeft := p.restrict_aux i j hM hN hi hj
+  bijectiveRight := p.flip.restrict_aux j i hN hM hj hi
 
 section RestrictScalars
 
@@ -265,8 +265,7 @@ def restrictScalars
       (p.toDualRight (j n)).restrictScalars S ∘ₗ i = Algebra.linearMap S R ∘ₗ g)
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
     PerfectPairing S M' N' :=
-  { toLin := LinearMap.restrictScalarsRange i j (Algebra.linearMap S R)
-      (NoZeroSMulDivisors.algebraMap_injective S R) p.toLin hp
+  { toLin := p.restrictScalarsAux i j hp
     bijectiveLeft := ⟨p.restrictScalarsAux_injective i j hi hN hp,
       p.restrictScalarsAux_surjective i j h₁ hp⟩
     bijectiveRight := ⟨p.flip.restrictScalarsAux_injective j i hj hM (fun m n ↦ hp n m),
@@ -282,9 +281,7 @@ def restrictScalarsField {K : Type*} [Field K] [Algebra K R]
     (hN : span R (LinearMap.range j : Set N) = ⊤)
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K R).range) :
     PerfectPairing K M' N' :=
-  PerfectPairing.mkOfFiniteDimensional
-    (LinearMap.restrictScalarsRange i j (Algebra.linearMap K R)
-      (NoZeroSMulDivisors.algebraMap_injective K R) p.toLin hp)
+  PerfectPairing.mkOfInjective _
     (p.restrictScalarsAux_injective i j hi hN hp)
     (p.flip.restrictScalarsAux_injective j i hj hM (fun m n ↦ hp n m))
 
