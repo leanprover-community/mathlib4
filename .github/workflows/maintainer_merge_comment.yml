@@ -48,6 +48,7 @@ jobs:
           BODY: ${{ steps.make_comment.outputs.comment }} #${{ github.event.comment.body }}
         run: |
           echo ${{ steps.determine_topic.outputs.topic }}
+          echo ${{ steps.make_comment.outputs.comment }}
           ./scripts/maintainer_merge_message.sh "${BODY}" comment | tee "$GITHUB_OUTPUT"
           #if printf '%s\n' "${BODY}" | grep "^maintainer merge"
           #then
