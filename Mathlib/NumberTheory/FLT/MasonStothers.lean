@@ -68,23 +68,16 @@ theorem Polynomial.abc {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 
   set w := wronskian a b with wab
   have wca : w = wronskian c a := by
     rw [add_rotate] at hsum
-    have h := wronskian_eq_of_sum_zero hsum
-    rw [← wbc] at h; exact h
+    simpa only [← wbc] using wronskian_eq_of_sum_zero hsum
   have abc_dr_dvd_w : divRadical (a * b * c) ∣ w := by
     have adr_dvd_w := divRadical_dvd_wronskian_left a b
     have bdr_dvd_w := divRadical_dvd_wronskian_right a b
     have cdr_dvd_w := divRadical_dvd_wronskian_right b c
     rw [← wab] at adr_dvd_w bdr_dvd_w
     rw [← wbc] at cdr_dvd_w
-    have cop_ab_dr := hab.divRadical
-    have cop_bc_dr := hbc.divRadical
-    have cop_ca_dr := hca.divRadical
-    have cop_abc_dr := cop_ca_dr.symm.mul_left cop_bc_dr
-    have abdr_dvd_w := cop_ab_dr.mul_dvd adr_dvd_w bdr_dvd_w
-    have abcdr_dvd_w := cop_abc_dr.mul_dvd abdr_dvd_w cdr_dvd_w
-    convert abcdr_dvd_w using 1
-    rw [← divRadical_mul hab]
-    rw [← divRadical_mul]
+    convert (hca.divRadical.symm.mul_left hbc.divRadical).mul_dvd
+      (hab.divRadical.mul_dvd adr_dvd_w bdr_dvd_w) cdr_dvd_w using 1
+    rw [← divRadical_mul hab, ← divRadical_mul]
     exact hca.symm.mul_left hbc
   by_cases hw : w = 0
   · right
