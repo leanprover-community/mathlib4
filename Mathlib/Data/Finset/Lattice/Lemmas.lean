@@ -157,6 +157,21 @@ lemma inter_singleton {a : α} {s : Finset α} :
 
 lemma union_eq_empty : s ∪ t = ∅ ↔ s = ∅ ∧ t = ∅ := sup_eq_bot_iff
 
+theorem insert_union_comm (s t : Finset α) (a : α) : insert a s ∪ t = s ∪ insert a t := by
+  rw [insert_union, union_insert]
+
 end Lattice
 
 end Finset
+
+namespace List
+
+variable [DecidableEq α] {l l' : List α}
+
+@[simp]
+theorem toFinset_append : toFinset (l ++ l') = l.toFinset ∪ l'.toFinset := by
+  induction' l with hd tl hl
+  · simp
+  · simp [hl]
+
+end List
