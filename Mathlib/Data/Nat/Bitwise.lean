@@ -86,7 +86,7 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
   cases a <;> cases b <;> simp [h2, h4] <;> split_ifs
-    <;> simp_all (config := {decide := true}) [two_mul]
+    <;> simp_all +decide [two_mul]
 
 lemma bit_mod_two_eq_zero_iff (a x) :
     bit a x % 2 = 0 ↔ !a := by

@@ -8,7 +8,7 @@ import Mathlib.Data.Finset.Order
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.Tactic.SuppressCompilation
 
 /-!

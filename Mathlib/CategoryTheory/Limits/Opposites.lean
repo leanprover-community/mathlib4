@@ -161,13 +161,15 @@ def isLimitConeOfCoconeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cocone F.unop} (hc : 
 
 /-- Turn a limit for `F.unop : J ⥤ C` into a colimit for `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/
 @[simps]
-def isColimitConeOfCoconeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F.unop} (hc : IsLimit c) :
+def isColimitCoconeOfConeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F.unop} (hc : IsLimit c) :
     IsColimit (coconeOfConeUnop c) where
   desc s := (hc.lift (coneUnopOfCocone s)).op
   fac s j := Quiver.Hom.unop_inj (by simp)
   uniq s m w := by
     refine Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj ?_)
     simpa only [Quiver.Hom.unop_op, IsLimit.fac] using w (op j)
+
+@[deprecated (since := "2024-11-01")] alias isColimitConeOfCoconeUnop := isColimitCoconeOfConeUnop
 
 /-- If `F.leftOp : Jᵒᵖ ⥤ C` has a colimit, we can construct a limit for `F : J ⥤ Cᵒᵖ`.
 -/
@@ -181,10 +183,35 @@ theorem hasLimit_of_hasColimit_op (F : J ⥤ C) [HasColimit F.op] : HasLimit F :
     { cone := (colimit.cocone F.op).unop
       isLimit := (colimit.isColimit _).unop }
 
-theorem hasLimit_op_of_hasColimit (F : J ⥤ C) [HasColimit F] : HasLimit F.op :=
+theorem hasLimit_of_hasColimit_rightOp (F : Jᵒᵖ ⥤ C) [HasColimit F.rightOp] : HasLimit F :=
+  HasLimit.mk
+    { cone := coneOfCoconeRightOp (colimit.cocone F.rightOp)
+      isLimit := isLimitConeOfCoconeRightOp _ (colimit.isColimit _) }
+
+theorem hasLimit_of_hasColimit_unop (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasColimit F.unop] : HasLimit F :=
+  HasLimit.mk
+    { cone := coneOfCoconeUnop (colimit.cocone F.unop)
+      isLimit := isLimitConeOfCoconeUnop _ (colimit.isColimit _) }
+
+instance hasLimit_op_of_hasColimit (F : J ⥤ C) [HasColimit F] : HasLimit F.op :=
   HasLimit.mk
     { cone := (colimit.cocone F).op
       isLimit := (colimit.isColimit _).op }
+
+instance hasLimit_leftOp_of_hasColimit (F : J ⥤ Cᵒᵖ) [HasColimit F] : HasLimit F.leftOp :=
+  HasLimit.mk
+    { cone := coneLeftOpOfCocone (colimit.cocone F)
+      isLimit := isLimitConeLeftOpOfCocone _ (colimit.isColimit _) }
+
+instance hasLimit_rightOp_of_hasColimit (F : Jᵒᵖ ⥤ C) [HasColimit F] : HasLimit F.rightOp :=
+  HasLimit.mk
+    { cone := coneRightOpOfCocone (colimit.cocone F)
+      isLimit := isLimitConeRightOpOfCocone _ (colimit.isColimit _) }
+
+instance hasLimit_unop_of_hasColimit (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasColimit F] : HasLimit F.unop :=
+  HasLimit.mk
+    { cone := coneUnopOfCocone (colimit.cocone F)
+      isLimit := isLimitConeUnopOfCocone _ (colimit.isColimit _) }
 
 /-- If `C` has colimits of shape `Jᵒᵖ`, we can construct limits in `Cᵒᵖ` of shape `J`.
 -/
@@ -214,8 +241,7 @@ theorem has_cofiltered_limits_of_has_filtered_colimits_op [HasFilteredColimitsOf
     HasCofilteredLimitsOfSize.{v₂, u₂} C :=
   { HasLimitsOfShape := fun _ _ _ => hasLimitsOfShape_of_hasColimitsOfShape_op }
 
-/-- If `F.leftOp : Jᵒᵖ ⥤ C` has a limit, we can construct a colimit for `F : J ⥤ Cᵒᵖ`.
--/
+/-- If `F.leftOp : Jᵒᵖ ⥤ C` has a limit, we can construct a colimit for `F : J ⥤ Cᵒᵖ`. -/
 theorem hasColimit_of_hasLimit_leftOp (F : J ⥤ Cᵒᵖ) [HasLimit F.leftOp] : HasColimit F :=
   HasColimit.mk
     { cocone := coconeOfConeLeftOp (limit.cone F.leftOp)
@@ -226,10 +252,35 @@ theorem hasColimit_of_hasLimit_op (F : J ⥤ C) [HasLimit F.op] : HasColimit F :
     { cocone := (limit.cone F.op).unop
       isColimit := (limit.isLimit _).unop }
 
-theorem hasColimit_op_of_hasLimit (F : J ⥤ C) [HasLimit F] : HasColimit F.op :=
+theorem hasColimit_of_hasLimit_rightOp (F : Jᵒᵖ ⥤ C) [HasLimit F.rightOp] : HasColimit F :=
+  HasColimit.mk
+    { cocone := coconeOfConeRightOp (limit.cone F.rightOp)
+      isColimit := isColimitCoconeOfConeRightOp _ (limit.isLimit _) }
+
+theorem hasColimit_of_hasLimit_unop (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasLimit F.unop] : HasColimit F :=
+  HasColimit.mk
+    { cocone := coconeOfConeUnop (limit.cone F.unop)
+      isColimit := isColimitCoconeOfConeUnop _ (limit.isLimit _) }
+
+instance hasColimit_op_of_hasLimit (F : J ⥤ C) [HasLimit F] : HasColimit F.op :=
   HasColimit.mk
     { cocone := (limit.cone F).op
       isColimit := (limit.isLimit _).op }
+
+instance hasColimit_leftOp_of_hasLimit (F : J ⥤ Cᵒᵖ) [HasLimit F] : HasColimit F.leftOp :=
+  HasColimit.mk
+    { cocone := coconeLeftOpOfCone (limit.cone F)
+      isColimit := isColimitCoconeLeftOpOfCone _ (limit.isLimit _) }
+
+instance hasColimit_rightOp_of_hasLimit (F : Jᵒᵖ ⥤ C) [HasLimit F] : HasColimit F.rightOp :=
+  HasColimit.mk
+    { cocone := coconeRightOpOfCone (limit.cone F)
+      isColimit := isColimitCoconeRightOpOfCone _ (limit.isLimit _) }
+
+instance hasColimit_unop_of_hasLimit (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasLimit F] : HasColimit F.unop :=
+  HasColimit.mk
+    { cocone := coconeUnopOfCone (limit.cone F)
+      isColimit := isColimitCoconeUnopOfCone _ (limit.isLimit _) }
 
 /-- If `C` has colimits of shape `Jᵒᵖ`, we can construct limits in `Cᵒᵖ` of shape `J`.
 -/

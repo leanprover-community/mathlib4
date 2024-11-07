@@ -986,6 +986,24 @@ theorem forall_mem_insert {P : α → Prop} {a : α} {s : Set α} :
   forall₂_or_left.trans <| and_congr_left' forall_eq
 @[deprecated (since := "2024-03-23")] alias ball_insert_iff := forall_mem_insert
 
+/-- Inserting an element to a set is equivalent to the option type. -/
+def subtypeInsertEquivOption
+    [DecidableEq α] {t : Set α} {x : α} (h : x ∉ t) :
+    { i // i ∈ insert x t } ≃ Option { i // i ∈ t } where
+  toFun y := if h : ↑y = x then none else some ⟨y, (mem_insert_iff.mp y.2).resolve_left h⟩
+  invFun y := (y.elim ⟨x, mem_insert _ _⟩) fun z => ⟨z, mem_insert_of_mem _ z.2⟩
+  left_inv y := by
+    by_cases h : ↑y = x
+    · simp only [Subtype.ext_iff, h, Option.elim, dif_pos, Subtype.coe_mk]
+    · simp only [h, Option.elim, dif_neg, not_false_iff, Subtype.coe_eta, Subtype.coe_mk]
+  right_inv := by
+    rintro (_ | y)
+    · simp only [Option.elim, dif_pos]
+    · have : ↑y ≠ x := by
+        rintro ⟨⟩
+        exact h y.2
+      simp only [this, Option.elim, Subtype.eta, dif_neg, not_false_iff, Subtype.coe_mk]
+
 /-! ### Lemmas about singletons -/
 
 /- porting note: instance was in core in Lean3 -/
@@ -1281,6 +1299,10 @@ theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (
 
 theorem inter_diff_distrib_right (s t u : Set α) : s \ t ∩ u = (s ∩ u) \ (t ∩ u) :=
   inf_sdiff_distrib_right _ _ _
+
+theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
+    Disjoint s t ↔ s = ∅ := by
+  simp only [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
 
 /-! ### Lemmas about complement -/
 
@@ -1929,6 +1951,17 @@ end Function
 open Function
 
 namespace Set
+
+section
+variable {α β : Type*} {a : α} {b : β}
+
+lemma preimage_fst_singleton_eq_range : (Prod.fst ⁻¹' {a} : Set (α × β)) = range (a, ·) := by
+  aesop
+
+lemma preimage_snd_singleton_eq_range : (Prod.snd ⁻¹' {b} : Set (α × β)) = range (·, b) := by
+  aesop
+
+end
 
 /-! ### Lemmas about `inclusion`, the injection of subtypes induced by `⊆` -/
 

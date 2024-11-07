@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Christopher Hoskin
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Set.Finite
 import Mathlib.Order.Closure
-import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Sets closed under join/meet

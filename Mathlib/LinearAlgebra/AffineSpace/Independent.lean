@@ -687,7 +687,7 @@ theorem affineIndependent_of_ne_of_mem_of_mem_of_not_mem {s : AffineSubspace k P
   refine hp₃ ((AffineSubspace.le_def' _ s).1 ?_ p₃ h)
   simp_rw [affineSpan_le, Set.image_subset_iff, Set.subset_def, Set.mem_preimage]
   intro x
-  fin_cases x <;> simp (config := {decide := true}) [hp₁, hp₂]
+  fin_cases x <;> simp +decide [hp₁, hp₂]
 
 /-- If distinct points `p₁` and `p₃` lie in `s` but `p₂` does not, the three points are affinely
 independent. -/
