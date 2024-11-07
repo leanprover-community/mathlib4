@@ -71,7 +71,7 @@ theorem finiteType_localizationPreserves : RingHom.LocalizationPreserves @RingHo
 theorem localization_away_map_finiteType (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.FiniteType) :
     (IsLocalization.Away.map R' S' f r).FiniteType :=
-  finiteType_localizationPreserves.away r hf
+  finiteType_localizationPreserves.away _ r _ _ hf
 
 variable {S'}
 
