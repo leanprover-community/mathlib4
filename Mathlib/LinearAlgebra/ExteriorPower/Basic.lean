@@ -17,6 +17,10 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
 
 * `exteriorPower.presentation R n M` is the standard presentation of the `R`-module `⋀[R]^n M`.
 
+* `exteriorPower.map n f : ⋀[R]^n M →ₗ[R] ⋀[R]^n N` is the linear map on `nth` exterior powers
+induced by a linear map `f : M →ₗ[R] N`. (See the file `Algebra.Category.ModuleCat.ExteriorPower`
+for the corresponding functor `ModuleCat R ⥤ ModuleCat R`.)
+
 ## Theorems
 * The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
 
@@ -200,5 +204,86 @@ lemma alternatingMapLinearEquiv_comp (g : N →ₗ[R] N') (f : M [⋀^Fin n]→�
   ext
   simp only [alternatingMapLinearEquiv_comp_ιMulti, LinearMap.compAlternatingMap_apply,
     LinearMap.coe_comp, comp_apply, alternatingMapLinearEquiv_apply_ιMulti]
+
+/-! Functoriality of the exterior powers. -/
+
+variable (n) in
+
+/-- The linear map between `n`th exterior powers induced by a linear map between the modules. -/
+noncomputable def map (f : M →ₗ[R] N) : ⋀[R]^n M →ₗ[R] ⋀[R]^n N :=
+  alternatingMapLinearEquiv ((ιMulti R n).compLinearMap f)
+
+@[simp] lemma alternatingMapLinearEquiv_symm_map (f : M →ₗ[R] N) :
+    alternatingMapLinearEquiv.symm (map n f) = (ιMulti R n).compLinearMap f := by
+  simp only [map, LinearEquiv.symm_apply_apply]
+
+@[simp]
+theorem map_comp_ιMulti (f : M →ₗ[R] N) :
+    (map n f).compAlternatingMap (ιMulti R n) = (ιMulti R n).compLinearMap f := by
+  simp only [map, alternatingMapLinearEquiv_comp_ιMulti]
+
+@[simp]
+theorem map_apply_ιMulti (f : M →ₗ[R] N) (m : Fin n → M) :
+    map n f (ιMulti R n m) = ιMulti R n (f ∘ m) := by
+  simp only [map, alternatingMapLinearEquiv_apply_ιMulti, AlternatingMap.compLinearMap_apply]
+  rfl
+
+@[simp]
+theorem map_id :
+    map n (LinearMap.id (R := R) (M := M)) = LinearMap.id := by
+  aesop
+
+@[simp]
+theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
+    map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
+  aesop
+
+/-! Linear equivalences in degrees 0 and 1. -/
+
+variable (R M) in
+/-- The linear equivalence ` ⋀[R]^0 M ≃ₗ[R] R`. -/
+@[simps! (config := .lemmasOnly) apply symm_apply]
+noncomputable def linearEquiv₀ : ⋀[R]^0 M ≃ₗ[R] R :=
+  LinearEquiv.ofLinear
+    (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
+    { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
+      map_add' := by intros; simp only [add_smul]
+      map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply]}
+    (by aesop) (by aesop)
+
+lemma linearEquiv₀_naturality (f : M →ₗ[R] N) :
+    (linearEquiv₀ R N).comp (map 0 f) = linearEquiv₀ R M := by
+  ext
+  dsimp [linearEquiv₀]
+  simp
+
+variable (R M) in
+/-- The linear equivalence `M ≃ₗ[R] ⋀[R]^1 M`. -/
+@[simps! (config := .lemmasOnly) apply symm_apply]
+noncomputable def linearEquiv₁ : ⋀[R]^1 M ≃ₗ[R] M :=
+  LinearEquiv.ofLinear
+    (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id))
+    (by
+      have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
+        ext i
+        fin_cases i
+        rfl
+      exact
+        { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
+          map_add' := fun m₁ m₂ ↦ by
+            dsimp
+            rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
+            simp only [Fin.isValue, AlternatingMap.map_add]
+          map_smul' := fun r m ↦ by
+            dsimp
+            rw [h]; nth_rw 2 [h]
+            simp only [Fin.isValue, AlternatingMap.map_smul] })
+    (by aesop) (by aesop)
+
+lemma linearEquiv₁_naturality (f : M →ₗ[R] N) :
+    (linearEquiv₁ R N).comp (map 1 f) = f.comp (linearEquiv₁ R M).toLinearMap := by
+  ext
+  dsimp [linearEquiv₁]
+  simp
 
 end exteriorPower
