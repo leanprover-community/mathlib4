@@ -49,25 +49,19 @@ def bell (m : Multiset ℕ) : ℕ :=
 @[simp]
 theorem bell_zero : bell 0 = 1 := rfl
 
-private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) (c : ℕ) :
-    x ! ^ c * c ! * ∏ j ∈ Finset.range c, (j * x + x - 1).choose (x - 1) = (x * c)! := by
-  induction c with
-  | zero => simp
-  | succ c hrec =>
-    have h : x ! ^ (c + 1) * (c + 1) ! = x ! * (c + 1) * x ! ^ c * c ! := by
-      rw [factorial_succ, pow_succ]; ring_nf
-    calc
+private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) :
+    ∀ c, x ! ^ c * c ! * ∏ j ∈ Finset.range c, (j * x + x - 1).choose (x - 1) = (x * c)! 
+  | 0 => by simp
+  | c + 1 => calc
       x ! ^ (c + 1) * (c + 1)! * ∏ j ∈ Finset.range (c + 1), (j * x + x - 1).choose (x - 1)
         = x ! * (c + 1) * x ! ^ c * c ! *
-            ∏ j ∈ Finset.range (c + 1), (j * x + x - 1).choose (x - 1) := by rw [h]
-      _ = x ! * (c + 1) * x ! ^ c * c ! * (∏ j in Finset.range c, (j * x + x - 1).choose (x - 1)) *
-            (c * x + x - 1).choose (x - 1) := by
-        rw [Finset.prod_range_succ]
-        simp only [mul_assoc]
+            ∏ j ∈ Finset.range (c + 1), (j * x + x - 1).choose (x - 1) := by 
+        rw [factorial_succ, pow_succ]; ring
       _ = (x ! ^ c * c ! * ∏ j in Finset.range c, (j * x + x - 1).choose (x - 1)) *
-            (c * x + x - 1).choose (x - 1) * x ! * (c + 1)  := by ring
-      _ = (x * c)! * (c * x + x - 1).choose (x - 1) * x ! * (c + 1) := by rw [hrec]
-      _ = (c + 1) * (c * x + x - 1).choose (x - 1) * (x * c)! * x ! := by ring
+            (c * x + x - 1).choose (x - 1) * x ! * (c + 1)  := by 
+        rw [Finset.prod_range_succ]; ring
+      _ = (c + 1) * (c * x + x - 1).choose (x - 1) * (x * c)! * x ! := by 
+        rw [bell_mul_eq_lemma hx]; ring
       _ = (x * (c + 1))! := by
         rw [← Nat.choose_mul_add hx, mul_comm c x, Nat.add_choose_mul_factorial_mul_factorial]
         ring_nf
