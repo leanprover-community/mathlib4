@@ -8,6 +8,8 @@ import Mathlib.Topology.Bases
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.LocallyFinite
+import Mathlib.Topology.Ultrafilter
+import Mathlib.Topology.Defs.Ultrafilter
 /-!
 # Compact sets and compact spaces
 
@@ -1007,7 +1009,7 @@ instance (priority := 100) Finite.compactSpace [Finite X] : CompactSpace X where
   isCompact_univ := finite_univ.isCompact
 
 instance ULift.compactSpace [CompactSpace X] : CompactSpace (ULift.{v} X) :=
-  ULift.isClosedEmbedding_down.compactSpace
+  IsClosedEmbedding.uliftDown.compactSpace
 
 /-- The product of two compact spaces is compact. -/
 instance [CompactSpace X] [CompactSpace Y] : CompactSpace (X × Y) :=

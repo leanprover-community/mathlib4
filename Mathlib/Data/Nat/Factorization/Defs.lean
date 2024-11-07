@@ -35,9 +35,6 @@ with a normalization function, and then deduplicated.  The basics of this have b
 
 -/
 
--- Workaround for lean4#2038
-attribute [-instance] instBEqNat
-
 open Nat Finset List Finsupp
 
 namespace Nat
@@ -241,28 +238,27 @@ theorem factorization_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
   ext q
   rw [Finsupp.add_apply, factorization_mul_apply_of_coprime hab]
 
-/-! ### Generalisation of the "even part" and "odd part" of a natural number
+/-! ### Generalisation of the "even part" and "odd part" of a natural number -/
 
-We introduce the notations `ord_proj[p] n` for the largest power of the prime `p` that
-divides `n` and `ord_compl[p] n` for the complementary part. The `ord` naming comes from
+/-- We introduce the notations `ordProj[p] n` for the largest power of the prime `p` that
+divides `n` and `ordCompl[p] n` for the complementary part. The `ord` naming comes from
 the $p$-adic order/valuation of a number, and `proj` and `compl` are for the projection and
 complementary projection. The term `n.factorization p` is the $p$-adic order itself.
-For example, `ord_proj[2] n` is the even part of `n` and `ord_compl[2] n` is the odd part. -/
+For example, `ordProj[2] n` is the even part of `n` and `ordCompl[2] n` is the odd part. -/
+notation "ordProj[" p "] " n:arg => p ^ Nat.factorization n p
 
+@[inherit_doc «termOrdProj[_]_»]
+notation "ordCompl[" p "] " n:arg => n / ordProj[p] n
 
--- Porting note: Lean 4 thinks we need `HPow` without this
-set_option quotPrecheck false in
-notation "ord_proj[" p "] " n:arg => p ^ Nat.factorization n p
-
-notation "ord_compl[" p "] " n:arg => n / ord_proj[p] n
-
-theorem ord_proj_dvd (n p : ℕ) : ord_proj[p] n ∣ n := by
+theorem ordProj_dvd (n p : ℕ) : ordProj[p] n ∣ n := by
   if hp : p.Prime then ?_ else simp [hp]
   rw [← primeFactorsList_count_eq]
   apply dvd_of_primeFactorsList_subperm (pow_ne_zero _ hp.ne_zero)
   rw [hp.primeFactorsList_pow, List.subperm_ext_iff]
   intro q hq
   simp [List.eq_of_mem_replicate hq]
+
+@[deprecated (since := "2024-10-24")] alias ord_proj_dvd := ordProj_dvd
 
 /-! ### Factorization LCM definitions -/
 
