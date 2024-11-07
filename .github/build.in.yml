@@ -4,15 +4,6 @@
 ### NB: and regenerate those files by manually running
 ### NB: .github/workflows/mk_build_yml.sh
 
-# .github/workflows/bors.yml:308:155: unexpected token "[" while parsing variable access, function call, null, bool, int, float or string. expecting "IDENT", "(", "INTEGER", "FLOAT", "STRING" [expression]
-# .github/workflows/bors.yml:309:9: shellcheck reported issue in this script: SC2086:info:7:16: Double quote to prevent globbing and word splitting [shellcheck]
-# .github/workflows/build.yml:315:155: unexpected token "[" while parsing variable access, function call, null, bool, int, float or string. expecting "IDENT", "(", "INTEGER", "FLOAT", "STRING" [expression]
-# .github/workflows/build.yml:316:9: shellcheck reported issue in this script: SC2086:info:7:16: Double quote to prevent globbing and word splitting [shellcheck]
-# .github/workflows/build_fork.yml:312:155: unexpected token "[" while parsing variable access, function call, null, bool, int, float or string. expecting "IDENT", "(", "INTEGER", "FLOAT", "STRING" [expression]
-# .github/workflows/build_fork.yml:313:9: shellcheck reported issue in this script: SC2086:info:7:16: Double quote to prevent globbing and word splitting [shellcheck]
-# .github/workflows/lean4checker.yml:70:9: shellcheck reported issue in this script: SC2086:info:7:16: Double quote to prevent globbing and word splitting [shellcheck]
-# reviewdog: found at least one issue with severity greater than or equal to the given level: error
-
 jobs:
   # Cancels previous runs of jobs in this file
   cancel:
