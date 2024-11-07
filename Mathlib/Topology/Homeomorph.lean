@@ -1067,6 +1067,7 @@ def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
   continuous_toFun := h.continuous_toFun f
   continuous_invFun := h.continuous_invFun f }
 
+@[simp]
 theorem coe_coe [h : HomeomorphClass F α β] (f : F) : ⇑(h.toHomeomorph f) = ⇑f := rfl
 
 instance [HomeomorphClass F α β] : CoeTC F (α ≃ₜ β) :=
