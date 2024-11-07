@@ -34,61 +34,58 @@ attribute [local instance] ConcreteCategory.instFunLike
 namespace CategoryTheory.coherentTopology
 
 variable {C : Type u} [Category.{v} C] [Preregular C] [FinitaryExtensive C]
-    {F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) (Type v)} {c : Cone F}
+
+variable {F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) (Type v)} {c : Cone F}
     (hc : IsLimit c)
     (hF : ∀ n, Sheaf.IsLocallySurjective (F.map (homOfLE (Nat.le_succ n)).op))
+
+private structure struct (F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) (Type v)) where
+  X (n : ℕ) : C
+  x (n : ℕ) : (F.obj ⟨n⟩).val.obj ⟨X n⟩
+  map (n : ℕ) : X (n + 1) ⟶ X n
+  effectiveEpi (n : ℕ) : EffectiveEpi (map n)
+  w (n : ℕ) : (F.map (homOfLE (n.le_add_right 1)).op).val.app (op (X (n + 1))) (x (n + 1)) =
+      (F.obj (op n)).val.map (map n).op (x n)
+
+include hF in
+private lemma exists_effectiveEpi (n : ℕ) (X : C) (y : (F.obj ⟨n⟩).val.obj ⟨X⟩) :
+    ∃ (X' : C) (φ : X' ⟶ X) (_ : EffectiveEpi φ) (x : (F.obj ⟨n + 1⟩).val.obj ⟨X'⟩),
+      ((F.map (homOfLE (n.le_add_right 1)).op).val.app ⟨X'⟩) x = ((F.obj ⟨n⟩).val.map φ.op) y := by
+  have := hF n
+  rw [coherentTopology.isLocallySurjective_iff, regularTopology.isLocallySurjective_iff] at this
+  exact this X y
 
 private noncomputable def preimage (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) :
     (n : ℕ) → ((Y : C) × (F.obj ⟨n⟩).val.obj ⟨Y⟩)
   | 0 => ⟨X, y⟩
-  | (n+1) => by
-    have := hF n
-    rw [coherentTopology.isLocallySurjective_iff, regularTopology.isLocallySurjective_iff] at this
-    specialize this (preimage X y n).1 (preimage X y n).2
-    exact ⟨this.choose, this.choose_spec.choose_spec.choose_spec.choose⟩
+  | (n+1) => ⟨(exists_effectiveEpi hF n (preimage X y n).1 (preimage X y n).2).choose,
+      (exists_effectiveEpi hF n
+        (preimage X y n).1 (preimage X y n).2).choose_spec.choose_spec.choose_spec.choose⟩
 
-private noncomputable def preimageTransitionMap (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) (n : ℕ) :
-    (preimage hF X y (n + 1)).1 ⟶ (preimage hF X y n).1 := by
-  have := hF n
-  rw [coherentTopology.isLocallySurjective_iff, regularTopology.isLocallySurjective_iff] at this
-  specialize this (preimage hF X y n).1 (preimage hF X y n).2
-  exact this.choose_spec.choose
-
-private lemma preimageTransitionMap_effectiveEpi (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) (n : ℕ) :
-    EffectiveEpi (preimageTransitionMap hF X y n) := by
-  have := hF n
-  rw [coherentTopology.isLocallySurjective_iff, regularTopology.isLocallySurjective_iff] at this
-  specialize this (preimage hF X y n).1 (preimage hF X y n).2
-  exact this.choose_spec.choose_spec.choose
-
-private lemma preimage_w (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) (n : ℕ) :
-    (F.map (homOfLE (n.le_add_right 1)).op).val.app ⟨(preimage hF X y (n+1)).1⟩
-      (preimage hF X y (n+1)).2 = ((F.obj ⟨n⟩).val.map (preimageTransitionMap hF X y n).op)
-        (preimage hF X y n).2 := by
-  have := hF n
-  rw [coherentTopology.isLocallySurjective_iff, regularTopology.isLocallySurjective_iff] at this
-  specialize this (preimage hF X y n).1 (preimage hF X y n).2
-  exact this.choose_spec.choose_spec.choose_spec.choose_spec
+private noncomputable def preimageStruct (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) : struct F where
+  X n := (preimage hF X y n).1
+  x n := (preimage hF X y n).2
+  map n := (exists_effectiveEpi hF n _ _).choose_spec.choose
+  effectiveEpi n := (exists_effectiveEpi hF n _ _).choose_spec.choose_spec.choose
+  w n := (exists_effectiveEpi hF n _ _).choose_spec.choose_spec.choose_spec.choose_spec
 
 private noncomputable def preimageDiagram (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) : ℕᵒᵖ ⥤ C :=
-  Functor.ofOpSequence (X := fun n ↦ (preimage hF X y n).1)
-    fun n ↦ preimageTransitionMap hF X y n
+  Functor.ofOpSequence (preimageStruct hF X y).map
 
 variable [HasLimitsOfShape ℕᵒᵖ C]
 
-private noncomputable def auxCone (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) : Cone F where
+private noncomputable def cone (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) : Cone F where
   pt := ((coherentTopology C).yoneda).obj (limit (preimageDiagram hF X y))
   π := NatTrans.ofOpSequence
     (fun n ↦ (coherentTopology C).yoneda.map
-      (limit.π _ ⟨n⟩) ≫ ((coherentTopology C).yonedaEquiv).symm (preimage hF X y n).2) (by
+      (limit.π _ ⟨n⟩) ≫ ((coherentTopology C).yonedaEquiv).symm ((preimageStruct hF X y).x n)) (by
     intro n
     simp only [Functor.const_obj_obj, homOfLE_leOfHom, Functor.const_obj_map, Category.id_comp,
       Category.assoc, ← limit.w (preimageDiagram hF X y) (homOfLE (n.le_add_right 1)).op,
-      Nat.succ_eq_add_one, homOfLE_leOfHom, Functor.map_comp]
-    rw [GrothendieckTopology.yonedaEquiv_symm_naturality_left,
-      GrothendieckTopology.yonedaEquiv_symm_naturality_right]
-    erw [preimage_w hF X y n]
-    simp [preimageDiagram] )
+      homOfLE_leOfHom, Functor.map_comp]
+    simp [GrothendieckTopology.yonedaEquiv_symm_naturality_left,
+      GrothendieckTopology.yonedaEquiv_symm_naturality_right,
+      preimageDiagram, (preimageStruct hF X y).w n])
 
 variable [ConcreteCategory C] (h : ∀ {X Y : C} (f : X ⟶ Y), EffectiveEpi f ↔ Function.Surjective f)
 
@@ -102,11 +99,11 @@ lemma isLocallySurjective_π_app_zero_of_isLocallySurjective_map :
   have hh : EffectiveEpi (limit.π (preimageDiagram hF X y) ⟨0⟩) := by
     rw [h]
     refine Concrete.surjective_π_app_zero_of_surjective_map (limit.isLimit _) fun n ↦ ?_
-    simpa [preimageDiagram, ← h] using preimageTransitionMap_effectiveEpi hF X y n
+    simpa [preimageDiagram, ← h] using (preimageStruct hF X y).effectiveEpi n
   refine ⟨limit (preimageDiagram hF X y), limit.π (preimageDiagram hF X y) ⟨0⟩, hh,
-    (coherentTopology C).yonedaEquiv (hc.lift (auxCone hF X y )),
+    (coherentTopology C).yonedaEquiv (hc.lift (cone hF X y )),
     (?_ : (c.π.app (op 0)).val.app _ _ = _)⟩
-  simp only [← (coherentTopology C).yonedaEquiv_comp, Functor.const_obj_obj, auxCone,
+  simp only [← (coherentTopology C).yonedaEquiv_comp, Functor.const_obj_obj, cone,
     IsLimit.fac, NatTrans.ofOpSequence_app, (coherentTopology C).yonedaEquiv_comp,
     (coherentTopology C).yonedaEquiv_yoneda_map]
   rfl
