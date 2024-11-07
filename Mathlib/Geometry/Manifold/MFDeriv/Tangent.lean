@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.Geometry.Manifold.Diffeomorph
 
 /-!
 # Derivatives of maps in the tangent bundle
