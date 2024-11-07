@@ -273,11 +273,11 @@ noncomputable def linearEquiv₁ : ⋀[R]^1 M ≃ₗ[R] M :=
           map_add' := fun m₁ m₂ ↦ by
             dsimp
             rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
-            simp only [Fin.isValue, AlternatingMap.map_add]
+            simp only [Fin.isValue, AlternatingMap.map_update_add]
           map_smul' := fun r m ↦ by
             dsimp
             rw [h]; nth_rw 2 [h]
-            simp only [Fin.isValue, AlternatingMap.map_smul] })
+            simp only [Fin.isValue, AlternatingMap.map_update_smul] })
     (by aesop) (by aesop)
 
 lemma linearEquiv₁_naturality (f : M →ₗ[R] N) :
