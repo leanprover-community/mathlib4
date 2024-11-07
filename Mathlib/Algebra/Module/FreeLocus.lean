@@ -37,6 +37,7 @@ namespace Module
 
 open PrimeSpectrum TensorProduct
 
+/-- The free locus of a module, i.e. the set of primes `p` such that `Mₚ` is free over `Rₚ`. -/
 def freeLocus : Set (PrimeSpectrum R) :=
   { p | Module.Free (Localization.AtPrime p.asIdeal) (LocalizedModule p.asIdeal.primeCompl M) }
 
@@ -174,6 +175,7 @@ lemma isOpen_freeLocus [Module.FinitePresentation R M] :
   exact ⟨basicOpen r, basicOpen_subset_freeLocus_iff.mpr inferInstance, (basicOpen r).2, hr⟩
 
 variable (M) in
+/-- The rank of `M` at the stalk of `p` is the rank of `Mₚ` as a `Rₚ`-module. -/
 noncomputable
 def rankAtStalk (p : PrimeSpectrum R) : ℕ :=
   Module.finrank (Localization.AtPrime p.asIdeal) (LocalizedModule p.asIdeal.primeCompl M)
