@@ -1054,7 +1054,7 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
     IsHomeomorph (fun (x : ∀ i, X i) i ↦ f i (x i)) :=
   (Homeomorph.piCongrRight fun i ↦ (h i).homeomorph (f i)).isHomeomorph
 
-/-- `HomeomorphClass F A B` states that `F` is a type of two-sided continuous morphisms.-/
+/-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms.-/
 class HomeomorphClass (F : Type*) (A B : outParam Type*)
     [TopologicalSpace A] [TopologicalSpace B] [h : EquivLike F A B] : Prop where
   continuous_toFun : ∀ (f : F), Continuous (h.coe f)
@@ -1066,11 +1066,13 @@ variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLik
 
 /-- Turn an element of a type `F` satisfying `HomeomorphClass F α β` into an actual
 `Homeomorph`. This is declared as the default coercion from `F` to `α ≃ₜ β`. -/
-def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :={
-  (f : α ≃ β) with
+@[coe]
+def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
+  {(f : α ≃ β) with
   continuous_toFun := h.continuous_toFun f
-  continuous_invFun := h.continuous_invFun f
-  }
+  continuous_invFun := h.continuous_invFun f }
+
+theorem coe_coe [h : HomeomorphClass F α β] (f : F) : ⇑(h.toHomeomorph f) = ⇑f := rfl
 
 instance [HomeomorphClass F α β] : CoeTC F (α ≃ₜ β) :=
   ⟨HomeomorphClass.toHomeomorph⟩
