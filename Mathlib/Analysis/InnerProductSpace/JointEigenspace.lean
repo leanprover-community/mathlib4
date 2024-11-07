@@ -53,7 +53,7 @@ section RCLike
 variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {α : 𝕜} {A B : E →ₗ[𝕜] E} {T : n → E →ₗ[𝕜] E}
 
-/-- The joint eigenspaces of a pair of commuting symmetric operators form an
+/-- The joint eigenspaces of a pair of symmetric operators form an
 `OrthogonalFamily`. -/
 theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.IsSymmetric) :
     OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) => (eigenspace A i.2 ⊓ eigenspace B i.1 : Submodule 𝕜 E))
@@ -64,7 +64,7 @@ theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.
     · exact hB.orthogonalFamily_eigenspaces.pairwise h₁ hv2 w hw2
     · exact hA.orthogonalFamily_eigenspaces.pairwise h₂ hv1 w hw1
 
-/-- The joint eigenspaces of a family of commuting symmetric operators form an
+/-- The joint eigenspaces of a family of symmetric operators form an
 `OrthogonalFamily`. -/
 theorem orthogonalFamily_iInf_eigenspaces (hT : ∀ i, (T i).IsSymmetric) :
     OrthogonalFamily 𝕜 (fun γ : n → 𝕜 ↦ (⨅ j, eigenspace (T j) (γ j) : Submodule 𝕜 E))
@@ -83,7 +83,7 @@ open IsFinitelySemisimple
 
 /-- If A and B are commuting symmetric operators on a finite dimensional inner product space
 then the eigenspaces of the restriction of B to any eigenspace of A exhaust that eigenspace. -/
-theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric) (hAB : Commute A B) :
+theorem iSup_eigenspace_inf_eigenspace_of_commute (hB : B.IsSymmetric) (hAB : Commute A B) :
     (⨆ γ, eigenspace A α ⊓ eigenspace B γ) = eigenspace A α := by
   conv_rhs => rw [← (eigenspace A α).map_subtype_top]
   simp only [← genEigenspace_eq_eigenspace (f := B), ← Submodule.map_iSup,
@@ -95,10 +95,10 @@ theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric) (hAB : Commute A B) 
 
 /-- If A and B are commuting symmetric operators acting on a finite dimensional inner product space,
 then the simultaneous eigenspaces of A and B exhaust the space. -/
-theorem iSup_iSup_eigenspace_inf_eigenspace_eq_top (hA : A.IsSymmetric) (hB : B.IsSymmetric)
-    (hAB : Commute A B) :
+theorem iSup_iSup_eigenspace_inf_eigenspace_eq_top_of_commute (hA : A.IsSymmetric)
+    (hB : B.IsSymmetric) (hAB : Commute A B) :
     (⨆ α, ⨆ γ, eigenspace A α ⊓ eigenspace B γ) = ⊤ := by
-  simpa [iSup_eigenspace_inf_eigenspace hB hAB] using
+  simpa [iSup_eigenspace_inf_eigenspace_of_commute hB hAB] using
     Submodule.orthogonal_eq_bot_iff.mp <| hA.orthogonalComplement_iSup_eigenspaces_eq_bot
 
 /-- Given a commuting pair of symmetric linear operators on a finite dimensional inner product
@@ -109,7 +109,7 @@ theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric
     DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace A i.2 ⊓ eigenspace B i.1)):= by
   apply (orthogonalFamily_eigenspace_inf_eigenspace hA hB).isInternal_iff.mpr
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
-  exact iSup_iSup_eigenspace_inf_eigenspace_eq_top hA hB hAB
+  exact iSup_iSup_eigenspace_inf_eigenspace_eq_top_of_commute hA hB hAB
 
 /-- In finite dimensions, the indexed supremum of the joint eigenspaces of a commuting family
 of symmetric linear operators equals `⊤`. -/
