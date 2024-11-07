@@ -50,14 +50,6 @@ jobs:
           echo "Topic: ${{ steps.determine_topic.outputs.topic }}"
           printf 'Comment: %s\nEnd comment\n' "${{ steps.make_comment.outputs.comment }}"
           printf 'title<<EOF\n%s\nEOF' "A simple message" | tee
-          #printf 'title<<EOF\n%s\nEOF' "$(./scripts/maintainer_merge_message.sh "${BODY}" comment)" | tee "$GITHUB_OUTPUT"
-          #if printf '%s\n' "${BODY}" | grep "^maintainer merge"
-          #then
-          #  printf $'title<<EOF\n%s\nEOF' "${{ format('{0} requested a maintainer merge from comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}" >> "${GITHUB_OUTPUT}"
-          #elif printf '%s\n' "${BODY}" | grep "^maintainer delegate"
-          #then
-          #  printf $'title<<EOF\n%s\nEOF' "${{ format('{0} requested a maintainer delegate from comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}" >> "${GITHUB_OUTPUT}"
-          #fi
 
       #- name: Send message on Zulip
       #  uses: zulip/github-actions-zulip/send-message@v1
@@ -78,7 +70,7 @@ jobs:
         with:
           issue-number: 18736 # ${{ github.event.issue.number }}
           body: |
-            🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}.    before        "${{ steps.merge_or_delegate.outputs.title }}"   after
+            🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}.    before        ${{ steps.merge_or_delegate.outputs.title }}   after
             > feat: maintainer delegate everywhere #${{ github.event.issue.title }}
       #- name: Add label to PR
       #  uses: actions/github-script@v7
