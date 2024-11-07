@@ -3,7 +3,6 @@ Copyright (c) 2022 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
 -/
-import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
@@ -30,11 +29,11 @@ theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [LocalRing R] (q : �
   let r := ringChar K
   let n := q.factorization r
   -- `r := char(R/m)` is either prime or zero:
-  cases' CharP.char_is_prime_or_zero K r with r_prime r_zero
+  rcases CharP.char_is_prime_or_zero K r with r_prime | r_zero
   · let a := q / r ^ n
     -- If `r` is prime, we can write it as `r = a * q^n` ...
-    have q_eq_a_mul_rn : q = r ^ n * a := by rw [Nat.mul_div_cancel' (Nat.ord_proj_dvd q r)]
-    have r_ne_dvd_a := Nat.not_dvd_ord_compl r_prime q_pos
+    have q_eq_a_mul_rn : q = r ^ n * a := by rw [Nat.mul_div_cancel' (Nat.ordProj_dvd q r)]
+    have r_ne_dvd_a := Nat.not_dvd_ordCompl r_prime q_pos
     have rn_dvd_q : r ^ n ∣ q := ⟨a, q_eq_a_mul_rn⟩
     rw [mul_comm] at q_eq_a_mul_rn
     -- ... where `a` is a unit.
@@ -47,7 +46,6 @@ theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [LocalRing R] (q : �
       have r_dvd_a := (ringChar.spec K a).1 a_cast_zero
       exact absurd r_dvd_a r_ne_dvd_a
     -- Let `b` be the inverse of `a`.
-    cases' a_unit.exists_left_inv with a_inv h_inv_mul_a
     have rn_cast_zero : ↑(r ^ n) = (0 : R) := by
       rw [← @mul_one R _ ↑(r ^ n), mul_comm, ← Classical.choose_spec a_unit.exists_left_inv,
         mul_assoc, ← Nat.cast_mul, ← q_eq_a_mul_rn, CharP.cast_eq_zero R q]

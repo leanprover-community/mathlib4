@@ -43,7 +43,7 @@ namespace MeasureTheory
 variable {α E G : Type*}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  {f g : α → E} {m : MeasurableSpace α} {μ : Measure α}
+  {m : MeasurableSpace α} {μ : Measure α}
 
 /-- **Lebesgue dominated convergence theorem** provides sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their integrals.
@@ -194,7 +194,7 @@ namespace intervalIntegral
 
 section DCT
 
-variable {ι 𝕜 E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {a b : ℝ} {f : ℝ → E} {μ : Measure ℝ}
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
@@ -255,8 +255,8 @@ variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
 /-- Continuity of interval integral with respect to a parameter, at a point within a set.
   Given `F : X → ℝ → E`, assume `F x` is ae-measurable on `[a, b]` for `x` in a
-  neighborhood of `x₀` within `s` and at `x₀`, and assume it is bounded by a function integrable
-  on `[a, b]` independent of `x` in a neighborhood of `x₀` within `s`. If `(fun x ↦ F x t)`
+  neighborhood of `x₀` within `s` and at `x₀`, and assume it is bounded by a function integrable
+  on `[a, b]` independent of `x` in a neighborhood of `x₀` within `s`. If `(fun x ↦ F x t)`
   is continuous at `x₀` within `s` for almost every `t` in `[a, b]`
   then the same holds for `(fun x ↦ ∫ t in a..b, F x t ∂μ) s x₀`. -/
 theorem continuousWithinAt_of_dominated_interval {F : X → ℝ → E} {x₀ : X} {bound : ℝ → ℝ} {a b : ℝ}

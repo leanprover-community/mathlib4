@@ -45,7 +45,7 @@ abbrev ofList (rs : List R) := span { r | r ∈ rs }
   have : { r | r ∈ rs₁ ++ rs₂ } = _ := Set.ext (fun _ => List.mem_append)
   Eq.trans (congrArg span this) (span_union _ _)
 
-@[simp] lemma ofList_singleton (r : R) : ofList [r] = span {r} :=
+lemma ofList_singleton (r : R) : ofList [r] = span {r} :=
   congrArg span (Set.ext fun _ => List.mem_singleton)
 
 @[simp] lemma ofList_cons (r : R) (rs : List R) :
@@ -232,7 +232,7 @@ lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
       IsSMulRegular M r ∧ IsWeaklyRegular (QuotSMulTop r M) rs :=
   have := Eq.trans (congrArg (· • ⊤) Ideal.ofList_nil) (bot_smul ⊤)
   let e i := quotOfListConsSMulTopEquivQuotSMulTopInner M r (rs.take i)
-  Iff.trans (isWeaklyRegular_iff_Fin _ _) <| Iff.trans Fin.forall_fin_succ <|
+  Iff.trans (isWeaklyRegular_iff_Fin _ _) <| Iff.trans Fin.forall_iff_succ <|
     and_congr ((quotEquivOfEqBot _ this).isSMulRegular_congr r) <|
       Iff.trans (forall_congr' fun i => (e i).isSMulRegular_congr (rs.get i))
         (isWeaklyRegular_iff_Fin _ _).symm
@@ -333,7 +333,7 @@ def recIterModByRegularWithRing
     {R : Type u} → [CommRing R] → {M : Type v} → [AddCommGroup M] →
     [Module R M] → {rs : List R} → (h : IsWeaklyRegular M rs) → motive R M rs h
   | R, _, M, _, _, [], _ => nil R M
-  | R, _, M, _, _, r :: rs, h =>
+  | _, _, M, _, _, r :: rs, h =>
     let ⟨h1, h2⟩ := (isWeaklyRegular_cons_iff' M r rs).mp h
     cons r rs h1 h2 (recIterModByRegularWithRing nil cons h2)
   termination_by _ _ _ _ _ rs => List.length rs
@@ -555,12 +555,14 @@ lemma map_first_exact_on_four_term_right_exact_of_isSMulRegular_last
     (h₄ : IsWeaklyRegular M₄ rs) :
     Exact (mapQ _ _ _ (smul_top_le_comap_smul_top (Ideal.ofList rs) f₁))
           (mapQ _ _ _ (smul_top_le_comap_smul_top (Ideal.ofList rs) f₂)) := by
-  induction' h₄ with _ _ _ N _ _ r rs h₄ _ ih generalizing M M₂ M₃
-  · apply (Exact.iff_of_ladder_linearEquiv ?_ ?_).mp h₁₂
+  induction h₄ generalizing M M₂ M₃ with
+  | nil =>
+    apply (Exact.iff_of_ladder_linearEquiv ?_ ?_).mp h₁₂
     any_goals exact quotEquivOfEqBot _ <|
       Eq.trans (congrArg (· • ⊤) Ideal.ofList_nil) (bot_smul ⊤)
     all_goals exact quot_hom_ext _ _ _ fun _ => rfl
-  · specialize ih
+  | cons r rs h₄ _ ih =>
+    specialize ih
       (map_first_exact_on_four_term_exact_of_isSMulRegular_last h₁₂ h₂₃ h₄)
       (map_exact r h₂₃ h₃) (map_surjective r h₃)
     have H₁ := quotOfListConsSMulTopEquivQuotSMulTopInner_naturality r rs f₁

@@ -97,7 +97,7 @@ lemma rightDerived_ext (G : D ⥤ H) (γ₁ γ₂ : RF ⟶ G)
   RF.hom_ext_of_isLeftKanExtension α γ₁ γ₂ hγ
 
 /-- The natural transformation `RF ⟶ RF'` on right derived functors that is
-induced by a natural transformation `F ⟶ F'`.  -/
+induced by a natural transformation `F ⟶ F'`. -/
 noncomputable def rightDerivedNatTrans (τ : F ⟶ F') : RF ⟶ RF' :=
   RF.rightDerivedDesc α W RF' (τ ≫ α')
 
@@ -128,7 +128,7 @@ lemma rightDerivedNatTrans_comp (τ : F ⟶ F') (τ' : F' ⟶ F'') :
   rightDerived_ext RF α W _ _ _ (by aesop_cat)
 
 /-- The natural isomorphism `RF ≅ RF'` on right derived functors that is
-induced by a natural isomorphism `F ≅ F'`.  -/
+induced by a natural isomorphism `F ≅ F'`. -/
 @[simps]
 noncomputable def rightDerivedNatIso (τ : F ≅ F') :
     RF ≅ RF' where

@@ -5,6 +5,7 @@ Authors: Anne Baanen, Filippo A. E. Nuccio
 -/
 import Mathlib.RingTheory.FractionalIdeal.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # More operations on fractional ideals
@@ -153,15 +154,15 @@ theorem mapEquiv_refl : mapEquiv AlgEquiv.refl = RingEquiv.refl (FractionalIdeal
 theorem isFractional_span_iff {s : Set P} :
     IsFractional S (span R s) ↔ ∃ a ∈ S, ∀ b : P, b ∈ s → IsInteger R (a • b) :=
   ⟨fun ⟨a, a_mem, h⟩ => ⟨a, a_mem, fun b hb => h b (subset_span hb)⟩, fun ⟨a, a_mem, h⟩ =>
-    ⟨a, a_mem, fun b hb =>
-      span_induction hb h
+    ⟨a, a_mem, fun _ hb =>
+      span_induction (hx := hb) h
         (by
           rw [smul_zero]
           exact isInteger_zero)
-        (fun x y hx hy => by
+        (fun x y _ _ hx hy => by
           rw [smul_add]
           exact isInteger_add hx hy)
-        fun s x hx => by
+        fun s x _ hx => by
         rw [smul_comm]
         exact isInteger_smul hx⟩⟩
 
@@ -205,7 +206,7 @@ noncomputable irreducible_def canonicalEquiv : FractionalIdeal S P ≃+* Fractio
   mapEquiv
     { ringEquivOfRingEquiv P P' (RingEquiv.refl R)
         (show S.map _ = S by rw [RingEquiv.toMonoidHom_refl, Submonoid.map_id]) with
-      commutes' := fun r => ringEquivOfRingEquiv_eq _ _ }
+      commutes' := fun _ => ringEquivOfRingEquiv_eq _ _ }
 
 @[simp]
 theorem mem_canonicalEquiv_apply {I : FractionalIdeal S P} {x : P'} :
@@ -226,7 +227,7 @@ theorem canonicalEquiv_symm : (canonicalEquiv S P P').symm = canonicalEquiv S P'
       exact ⟨fun ⟨y, mem, Eq⟩ => ⟨y, mem, Eq⟩, fun ⟨y, mem, Eq⟩ => ⟨y, mem, Eq⟩⟩
 
 theorem canonicalEquiv_flip (I) : canonicalEquiv S P P' (canonicalEquiv S P' P I) = I := by
-  rw [← canonicalEquiv_symm]; erw [RingEquiv.apply_symm_apply]
+  rw [← canonicalEquiv_symm, RingEquiv.symm_apply_apply]
 
 @[simp]
 theorem canonicalEquiv_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'']
@@ -454,7 +455,7 @@ theorem eq_one_div_of_mul_eq_one_right (I J : FractionalIdeal R₁⁰ K) (h : I 
   apply (le_div_iff_of_nonzero hI).mpr _
   intro y hy x hx
   rw [mul_comm]
-  exact mul_mem_mul hx hy
+  exact mul_mem_mul hy hx
 
 theorem mul_div_self_cancel_iff {I : FractionalIdeal R₁⁰ K} : I * (1 / I) = 1 ↔ ∃ J, I * J = 1 :=
   ⟨fun h => ⟨1 / I, h⟩, fun ⟨J, hJ⟩ => by rwa [← eq_one_div_of_mul_eq_one_right I J hJ]⟩
@@ -515,15 +516,15 @@ variable (R₁)
 def spanFinset {ι : Type*} (s : Finset ι) (f : ι → K) : FractionalIdeal R₁⁰ K :=
   ⟨Submodule.span R₁ (f '' s), by
     obtain ⟨a', ha'⟩ := IsLocalization.exist_integer_multiples R₁⁰ s f
-    refine ⟨a', a'.2, fun x hx => Submodule.span_induction hx ?_ ?_ ?_ ?_⟩
+    refine ⟨a', a'.2, fun x hx => Submodule.span_induction ?_ ?_ ?_ ?_ hx⟩
     · rintro _ ⟨i, hi, rfl⟩
       exact ha' i hi
     · rw [smul_zero]
       exact IsLocalization.isInteger_zero
-    · intro x y hx hy
+    · intro x y _ _ hx hy
       rw [smul_add]
       exact IsLocalization.isInteger_add hx hy
-    · intro c x hx
+    · intro c x _ hx
       rw [smul_comm]
       exact IsLocalization.isInteger_smul hx⟩
 
@@ -792,7 +793,7 @@ instance isPrincipal {R} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [Alg
 
 theorem le_spanSingleton_mul_iff {x : P} {I J : FractionalIdeal S P} :
     I ≤ spanSingleton S x * J ↔ ∀ zI ∈ I, ∃ zJ ∈ J, x * zJ = zI :=
-  show (∀ {zI} (hzI : zI ∈ I), zI ∈ spanSingleton _ x * J) ↔ ∀ zI ∈ I, ∃ zJ ∈ J, x * zJ = zI by
+  show (∀ {zI} (_ : zI ∈ I), zI ∈ spanSingleton _ x * J) ↔ ∀ zI ∈ I, ∃ zJ ∈ J, x * zJ = zI by
     simp only [mem_singleton_mul, eq_comm]
 
 theorem spanSingleton_mul_le_iff {x : P} {I J : FractionalIdeal S P} :

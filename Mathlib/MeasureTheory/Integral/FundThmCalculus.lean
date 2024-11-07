@@ -146,7 +146,7 @@ open MeasureTheory Set Filter Function
 
 open scoped Classical Topology Filter ENNReal Interval NNReal
 
-variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {ι 𝕜 E A : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 namespace intervalIntegral
 
@@ -467,7 +467,7 @@ at `(a, b)` provided that `f` is integrable on `a..b` and is continuous at `a` a
 
 
 variable [CompleteSpace E]
-  {f : ℝ → E} {c ca cb : E} {l l' la la' lb lb' : Filter ℝ} {lt : Filter ι} {a b z : ℝ}
+  {f : ℝ → E} {c ca cb : E} {l l' la la' lb lb' : Filter ℝ} {lt : Filter ι} {a b : ℝ}
   {u v ua ub va vb : ι → ℝ} [FTCFilter a la la'] [FTCFilter b lb lb']
 
 /-!
@@ -591,7 +591,7 @@ theorem integral_hasStrictFDerivAt_of_tendsto_ae (hf : IntervalIntegrable f volu
       (continuous_snd.snd.tendsto ((a, b), (a, b)))
       (continuous_fst.snd.tendsto ((a, b), (a, b)))
   refine (this.congr_left ?_).trans_isBigO ?_
-  · intro x; simp [sub_smul]; abel
+  · intro x; simp [sub_smul]
   · exact isBigO_fst_prod.norm_left.add isBigO_snd_prod.norm_left
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in both endpoints.
@@ -794,7 +794,7 @@ theorem integral_hasFDerivWithinAt_of_tendsto_ae (hf : IntervalIntegrable f volu
       (tendsto_const_pure.mono_right FTCFilter.pure_le : Tendsto _ _ (𝓝[s] a)) tendsto_fst
       (tendsto_const_pure.mono_right FTCFilter.pure_le : Tendsto _ _ (𝓝[t] b)) tendsto_snd
   refine .of_isLittleO <| (this.congr_left ?_).trans_isBigO ?_
-  · intro x; simp [sub_smul]; abel
+  · intro x; simp [sub_smul]
   · exact isBigO_fst_prod.norm_left.add isBigO_snd_prod.norm_left
 
 /-- Let `f` be a measurable function integrable on `a..b`. The function `(u, v) ↦ ∫ x in u..v, f x`
@@ -953,7 +953,7 @@ semicontinuity. As  `g' t < G' t`, this gives the conclusion. One can therefore 
 this inequality to the right until the point `b`, where it gives the desired conclusion.
 -/
 
-variable {f : ℝ → E} {g' g φ : ℝ → ℝ} {a b : ℝ}
+variable {g' g φ : ℝ → ℝ} {a b : ℝ}
 
 /-- Hard part of FTC-2 for integrable derivatives, real-valued functions: one has
 `g b - g a ≤ ∫ y in a..b, g' y` when `g'` is integrable.
@@ -1002,7 +1002,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
         _ ≤ ∫ w in t..u, (G' w).toReal := by
           rw [intervalIntegral.integral_of_le hu.1.le, ← integral_Icc_eq_integral_Ioc]
           apply setIntegral_mono_ae_restrict
-          · simp only [integrableOn_const, Real.volume_Icc, ENNReal.ofReal_lt_top, or_true_iff]
+          · simp only [integrableOn_const, Real.volume_Icc, ENNReal.ofReal_lt_top, or_true]
           · exact IntegrableOn.mono_set G'int I
           · have C1 : ∀ᵐ x : ℝ ∂volume.restrict (Icc t u), G' x < ∞ :=
               ae_mono (Measure.restrict_mono I le_rfl) G'lt_top
@@ -1252,10 +1252,10 @@ theorem intervalIntegrable_deriv_of_nonneg (hcont : ContinuousOn g (uIcc a b))
     (hpos : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ g' x) : IntervalIntegrable g' volume a b := by
   rcases le_total a b with hab | hab
   · simp only [uIcc_of_le, min_eq_left, max_eq_right, hab, IntervalIntegrable, hab,
-      Ioc_eq_empty_of_le, integrableOn_empty, and_true_iff] at hcont hderiv hpos ⊢
+      Ioc_eq_empty_of_le, integrableOn_empty, and_true] at hcont hderiv hpos ⊢
     exact integrableOn_deriv_of_nonneg hcont hderiv hpos
   · simp only [uIcc_of_ge, min_eq_right, max_eq_left, hab, IntervalIntegrable, Ioc_eq_empty_of_le,
-      integrableOn_empty, true_and_iff] at hcont hderiv hpos ⊢
+      integrableOn_empty, true_and] at hcont hderiv hpos ⊢
     exact integrableOn_deriv_of_nonneg hcont hderiv hpos
 
 /-!
@@ -1559,3 +1559,5 @@ theorem integral_deriv_comp_mul_deriv {f f' g g' : ℝ → ℝ}
 end Mul
 
 end intervalIntegral
+
+set_option linter.style.longFile 1700

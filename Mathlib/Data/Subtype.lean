@@ -207,7 +207,7 @@ end Subtype
 namespace Subtype
 
 /-! Some facts about sets, which require that `α` is a type. -/
-variable {α β γ : Type*} {p : α → Prop}
+variable {α : Type*}
 
 @[simp]
 theorem coe_prop {S : Set α} (a : { a // a ∈ S }) : ↑a ∈ S :=

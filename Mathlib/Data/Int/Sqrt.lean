@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Data.Int.Defs
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Sqrt
 import Mathlib.Tactic.Common
 
 /-!

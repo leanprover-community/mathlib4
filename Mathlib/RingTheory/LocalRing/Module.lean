@@ -3,13 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Nakayama
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 # Finite modules over local rings
@@ -28,7 +28,7 @@ This file gathers various results about finite modules over a local ring `(R, �
   `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
 
-variable {R S} [CommRing R] [CommRing S] [Algebra R S]
+variable {R} [CommRing R]
 
 section
 
@@ -93,7 +93,7 @@ theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
   rw [← map_tensorProduct_mk_eq_top, Submodule.map_span, ← Submodule.restrictScalars_span R k
     Ideal.Quotient.mk_surjective, Submodule.restrictScalars_eq_top_iff,
     ← b.span_eq, ← Set.range_comp]
-  simp only [Function.comp, mk_apply, hb, Basis.span_eq]
+  simp only [Function.comp_def, mk_apply, hb, Basis.span_eq]
 
 end LocalRing
 
@@ -152,9 +152,9 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
     isNoetherian_of_isNoetherianRing_of_finite k (k ⊗[R] (I →₀ R))
   choose f hf using TensorProduct.mk_surjective R M k Ideal.Quotient.mk_surjective
   -- By choosing an arbitrary lift of `b` to `I → M`, we get a surjection `i : Rᴵ → M`.
-  let i := Finsupp.total I M R (f ∘ b)
+  let i := Finsupp.linearCombination R (f ∘ b)
   have hi : Surjective i := by
-    rw [← LinearMap.range_eq_top, Finsupp.range_total]
+    rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
     exact LocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := f ∘ b) b (fun _ ↦ hf _)
   have : Module.Finite R (LinearMap.ker i) := by
     constructor
@@ -171,26 +171,28 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
     refine ⟨?_, this⟩
     rw [← LinearMap.ker_eq_bot (M := k ⊗[R] (I →₀ R)) (f := i.baseChange k),
       ← Submodule.finrank_eq_zero (R := k) (M := k ⊗[R] (I →₀ R)),
-      ← Nat.add_right_inj (n := FiniteDimensional.finrank k (LinearMap.range <| i.baseChange k)),
+      ← Nat.add_right_inj (n := Module.finrank k (LinearMap.range <| i.baseChange k)),
       LinearMap.finrank_range_add_finrank_ker (V := k ⊗[R] (I →₀ R)),
       LinearMap.range_eq_top.mpr this, finrank_top]
-    simp only [FiniteDimensional.finrank_tensorProduct, FiniteDimensional.finrank_self,
-      FiniteDimensional.finrank_finsupp_self, one_mul, add_zero]
-    rw [FiniteDimensional.finrank_eq_card_chooseBasisIndex]
+    simp only [Module.finrank_tensorProduct, Module.finrank_self,
+      Module.finrank_finsupp_self, one_mul, add_zero]
+    rw [Module.finrank_eq_card_chooseBasisIndex]
   -- On the other hand, `m ⊗ M → M` injective => `Tor₁(k, M) = 0` => `k ⊗ ker(i) → kᴵ` injective.
-  have := @lTensor_injective_of_exact_of_exact_of_rTensor_injective
-    (N₁ := LinearMap.ker i) (N₂ := I →₀ R) (N₃ := M)
-    (f₁ := (𝔪).subtype) (f₂ := Submodule.mkQ 𝔪) inferInstance inferInstance inferInstance
-    inferInstance inferInstance inferInstance
   intro x
-  apply @this (LinearMap.ker i).subtype i (LinearMap.exact_subtype_mkQ 𝔪)
-    (Submodule.mkQ_surjective _) (LinearMap.exact_subtype_ker_map i) hi H
-    (Module.Flat.lTensor_preserves_injective_linearMap _ Subtype.val_injective)
-  apply hi'.injective
-  rw [LinearMap.baseChange_eq_ltensor]
-  erw [← LinearMap.comp_apply (i.lTensor k), ← LinearMap.lTensor_comp]
-  rw [(LinearMap.exact_subtype_ker_map i).linearMap_comp_eq_zero]
-  simp only [LinearMap.lTensor_zero, LinearMap.zero_apply, map_zero]
+  refine lTensor_injective_of_exact_of_exact_of_rTensor_injective
+    (N₁ := LinearMap.ker i) (N₂ := I →₀ R) (N₃ := M)
+    (f₁ := (𝔪).subtype) (f₂ := Submodule.mkQ 𝔪)
+    (g₁ := (LinearMap.ker i).subtype) (g₂ := i) (LinearMap.exact_subtype_mkQ 𝔪)
+    (Submodule.mkQ_surjective _) (LinearMap.exact_subtype_ker_map i) hi H ?_ ?_
+  · apply Module.Flat.lTensor_preserves_injective_linearMap
+      (N := LinearMap.ker i) (N' := I →₀ R)
+      (L := (LinearMap.ker i).subtype)
+    exact Subtype.val_injective
+  · apply hi'.injective
+    rw [LinearMap.baseChange_eq_ltensor]
+    erw [← LinearMap.comp_apply (i.lTensor k), ← LinearMap.lTensor_comp]
+    rw [(LinearMap.exact_subtype_ker_map i).linearMap_comp_eq_zero]
+    simp only [LinearMap.lTensor_zero, LinearMap.zero_apply, map_zero]
 
 -- TODO: Generalise this to finite free modules.
 theorem free_of_flat_of_localRing [Module.FinitePresentation R P] [Module.Flat R P] :

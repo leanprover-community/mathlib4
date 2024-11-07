@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Scott Morrison
+Authors: Markus Himmel, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
@@ -49,7 +49,6 @@ protected abbrev image.ι : Abelian.image f ⟶ Q :=
 protected abbrev factorThruImage : P ⟶ Abelian.image f :=
   kernel.lift (cokernel.π f) f <| cokernel.condition f
 
--- Porting note (#10618): simp can prove this and reassoc version, removed tags
 /-- `f` factors through its image via the canonical morphism `p`. -/
 protected theorem image.fac : Abelian.factorThruImage f ≫ image.ι f = f :=
   kernel.lift_ι _ _ _

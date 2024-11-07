@@ -297,7 +297,7 @@ variable {α : Type*} [MeasurableSpace α] (m : OuterMeasure α)
 /-- Given an outer measure `m` we can forget its value on non-measurable sets, and then consider
   `m.trim`, the unique maximal outer measure less than that function. -/
 def trim : OuterMeasure α :=
-  inducedOuterMeasure (fun s _ => m s) MeasurableSet.empty m.empty
+  inducedOuterMeasure (P := MeasurableSet) (fun s _ => m s) .empty m.empty
 
 theorem le_trim_iff {m₁ m₂ : OuterMeasure α} :
     m₁ ≤ m₂.trim ↔ ∀ s, MeasurableSet s → m₁ s ≤ m₂ s :=
@@ -409,7 +409,7 @@ and `m₃ s`. -/
 theorem trim_binop {m₁ m₂ m₃ : OuterMeasure α} {op : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
     (h : ∀ s, m₁ s = op (m₂ s) (m₃ s)) (s : Set α) : m₁.trim s = op (m₂.trim s) (m₃.trim s) := by
   rcases exists_measurable_superset_forall_eq_trim ![m₁, m₂, m₃] s with ⟨t, _hst, _ht, htm⟩
-  simp only [Fin.forall_fin_succ, Matrix.cons_val_zero, Matrix.cons_val_succ] at htm
+  simp only [Fin.forall_iff_succ, Matrix.cons_val_zero, Matrix.cons_val_succ] at htm
   rw [← htm.1, ← htm.2.1, ← htm.2.2.1, h]
 
 /-- If `m₁ s = op (m₂ s)` for all `s`, then the same is true for `m₁.trim` and `m₂.trim`. -/

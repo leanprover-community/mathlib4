@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Simon Hudon
 -/
 import Batteries.Data.List.Lemmas
-import Batteries.Tactic.Classical
 import Mathlib.Tactic.TypeStar
 
 /-!
@@ -33,7 +32,7 @@ theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 
 theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l :=
   ⟨fun H => ⟨H a (by simp) b (Mem.tail a h),
-    fun p hp q hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
+    fun _ hp _ hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
       by
         rintro ⟨ab, H⟩ p (_ | ⟨_, hp⟩) q (_ | ⟨_, hq⟩)
         · rfl
