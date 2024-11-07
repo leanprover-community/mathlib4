@@ -23,7 +23,7 @@ In abelian groups, the Plünnecke-Ruzsa inequality is the stronger statement tha
 implies small powers. See `Mathlib.Combinatorics.Additive.PluenneckeRuzsa`.
 -/
 
-open Fin
+open Fin MulOpposite
 open List hiding tail
 open scoped Pointwise
 
@@ -83,23 +83,7 @@ private lemma small_neg_neg_pos (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A⁻¹ *
   simpa [mul_assoc] using small_neg_pos_pos (A := A) (K := K) (by simpa)
 
 private lemma small_pos_neg_neg (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * A⁻¹) ≤ K ^ 2 * #A := by
-  obtain rfl | hA₀ := A.eq_empty_or_nonempty
-  · simp
-  have : 0 ≤ K := nonneg_of_mul_nonneg_left (hA.trans' <| by positivity) (by positivity)
-  refine le_of_mul_le_mul_left ?_ (by positivity : (0 : ℝ) < #A)
-  calc
-    (#A * #(A * A⁻¹ * A⁻¹) : ℝ) = (#A * #(A * (A⁻¹ * A⁻¹)) : ℝ) := by rw [mul_assoc]
-    _ ≤ #(A * A) * #(A * A * A) := by
-      norm_cast
-      have := ruzsa_triangle_inequality_invMul_mul_mul A⁻¹ A⁻¹ (A⁻¹ * A⁻¹)
-      simpa only [card_inv, inv_inv, inv_pow, ← mul_inv_rev] using this
-    _ = #(A ^ 2) * #(A ^ 3) := by simp [pow_succ]
-    _ ≤ (K * #A) * (K * #A) := by
-      gcongr
-      calc
-        (#(A ^ 2) : ℝ) ≤ #(A ^ 3) := mod_cast hA₀.card_pow_mono (by norm_num)
-        _ ≤ K * #A := hA
-    _ = #A * (K ^ 2 * #A) := by ring
+  simpa using small_neg_pos_pos (A := A⁻¹) (by simpa)
 
 private lemma small_pos_pos_neg (hA : #(A ^ 3) ≤ K * #A) : #(A * A * A⁻¹) ≤ K ^ 2 * #A := by
   rw [← card_inv]
