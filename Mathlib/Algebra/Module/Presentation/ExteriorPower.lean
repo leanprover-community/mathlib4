@@ -89,7 +89,7 @@ lemma AlternatingMap.antisymmetry {R M N ι : Type*} [Ring R] [AddCommGroup M] [
   exact this
 
 lemma LinearMap.alternating_of_generators {R M N : Type*} [CommRing R] [AddCommGroup M]
-    [Module R M] [AddCommGroup N] [Module R N] {ι : Type*} [DecidableEq ι]
+    [Module R M] [AddCommGroup N] [Module R N]
     (f : M →ₗ[R] M →ₗ[R] N) {γ : Type*} {g : γ → M}
     (hg : Submodule.span R (Set.range g) = ⊤)
     (hf₁ : ∀ i , f (g i) (g i) = 0) (hf₂ : ∀ i j, f (g j) (g i) = - f (g i) (g j))
@@ -110,14 +110,40 @@ lemma LinearMap.alternating_of_generators {R M N : Type*} [CommRing R] [AddCommG
   | add m₁ m₂ hm₁ hm₂ h₁ h₂ => simp [h₁, h₂, antisym m₁ m₂]
   | smul a m hm h => simp [h]
 
-lemma MultilinearMap.map_eq_zero_of_eq_of_generators {R M N : Type*} [Ring R] [AddCommGroup M]
+namespace MultilinearMap
+
+variable {R : Type*} [CommRing R]
+    {ι : Type*}
+    {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+    {N : Type*} [AddCommGroup N] [Module R N]
+    (f : MultilinearMap R M N) {i j : ι} (hij : i ≠ j)
+
+def curry₂ :
+    M i →ₗ[R] M j →ₗ[R] MultilinearMap R (fun (k : ({i, j}ᶜ : Set ι)) ↦ M k) N := by
+  have := hij
+  have := f
+  sorry
+
+lemma curry₂_apply (v : (i : ι) → M i) :
+    curry₂ f hij (v i) (v j) (fun k ↦ v k) = f v := by
+  sorry
+
+variable [DecidableEq ι]
+lemma map_eq_zero_of_eq_of_generators {R M N : Type*} [CommRing R] [AddCommGroup M]
     [Module R M] [AddCommGroup N] [Module R N] {ι : Type*} [DecidableEq ι]
     (f : MultilinearMap R (fun (_ : ι) ↦ M) N) {γ : Type*} {g : γ → M}
     (hg : Submodule.span R (Set.range g) = ⊤)
     {i j : ι} (hij : i ≠ j) (hf₁ : ∀ (k : ι → γ) (hk : k i = k j), f (g ∘ k) = 0)
     (hf₂ : ∀ (k : ι → γ), f (swapValues (g ∘ k) i j) = -f (g ∘ k))
     (v : ι → M) (hv : v i = v j) :
-    f v = 0 := sorry
+    f v = 0 := by
+  rw [← curry₂_apply _ hij, ← hv]
+  rw [LinearMap.alternating_of_generators (curry₂ f hij) hg, zero_apply]
+  · intro k
+    sorry
+  · sorry
+
+end MultilinearMap
 
 namespace Module
 
