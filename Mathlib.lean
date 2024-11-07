@@ -526,7 +526,8 @@ import Mathlib.Algebra.Module.Presentation.ExteriorPower
 import Mathlib.Algebra.Module.Presentation.Free
 import Mathlib.Algebra.Module.Presentation.ExteriorPower
 import Mathlib.Algebra.Module.Presentation.Finite
-import Mathlib.Algebra.Module.Presentation.PiTensor
+import Mathlib.Algebra.Module.Presentation.Finite
+import Mathlib.Algebra.Module.Presentation.ExteriorPower
 import Mathlib.Algebra.Module.Presentation.RestrictScalars
 import Mathlib.Algebra.Module.Presentation.Tautological
 import Mathlib.Algebra.Module.Presentation.Tensor
