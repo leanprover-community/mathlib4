@@ -122,6 +122,7 @@ variable {R : Type*} [NonAssocRing R]
 /--
 The kernel of the ring homomorphism `R → R⧸I` is `I`.
 -/
+@[simp]
 lemma ker_ringCon_mk' (I : TwoSidedIdeal R) : ker I.ringCon.mk' = I :=
   le_antisymm
     (fun _ h => by simpa using I.rel_iff _ _ |>.1 (Quotient.eq'.1 h))
