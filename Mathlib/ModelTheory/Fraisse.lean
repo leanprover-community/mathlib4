@@ -455,7 +455,6 @@ theorem can_extend_FGEquiv (S : K) (f : S ≃ₚ[L] S) (f_fg : f.dom.FG) :
   apply_fun (· ⟨y, y_in_dom_f⟩) at eq
   simp only [Embedding.comp_apply, coeSubtype, Equiv.coe_toEmbedding] at eq
   cases eq_xy
-  simp
   change g₁ ((g₂.equivRange.symm (g₂.equivRange y))) = _
   simp only [Equiv.symm_apply_apply, eq, PartialEquiv.map_cod, Embedding.coe_toHom,
     Embedding.comp_apply, Equiv.coe_toEmbedding, coeSubtype, map_coe]

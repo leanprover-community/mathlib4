@@ -302,11 +302,10 @@ theorem map_monotone (f : M ↪[L] N) : Monotone (fun g : M ≃ₚ[L] M ↦ g.ma
   use Substructure.monotone_map (dom_le_dom h)
   use Substructure.monotone_map (cod_le_cod h)
   rintro ⟨x, hx⟩
-  unfold map
   let ⟨u, u_mem, eq_u_x⟩ := mem_map.2 hx
   cases eq_u_x
   apply Subtype.coe_injective
-  simp only [Embedding.coe_toHom, Equiv.comp_apply, coe_inclusion, map_coe, Set.coe_inclusion,
+  simp only [map, Embedding.coe_toHom, Equiv.comp_apply, coe_inclusion, map_coe, Set.coe_inclusion,
     Embedding.substructureEquivMap_apply, Set.inclusion_mk, EmbeddingLike.apply_eq_iff_eq]
   let ⟨_, _, eq⟩ := le_iff.1 h
   have eq := congr_arg (Subtype.val) (eq ((Equiv.symm (Embedding.substructureEquivMap f g.dom))
@@ -329,14 +328,13 @@ theorem map_map (f : M ↪[L] N) (g : N ↪[L] P) (h : M ≃ₚ[L] M) :
   rw [ext_iff]
   use same_dom
   intro x hx
-  unfold map
   show _ = ↑(((g.comp f).substructureEquivMap h.cod) _)
   rw [Embedding.substructureEquivMap_apply, Embedding.comp_apply]
-  simp only [Equiv.comp_apply, coeSubtype, Embedding.substructureEquivMap_apply,
+  simp only [map, Equiv.comp_apply, coeSubtype, Embedding.substructureEquivMap_apply,
     Embedding.comp_toHom, EmbeddingLike.apply_eq_iff_eq, SetLike.coe_eq_coe]
   rw [← Equiv.comp_apply, ← Equiv.comp_symm]
   have hi : h.dom.map (g.comp f).toHom = (h.dom.map f.toHom).map g.toHom := by
-    simp [← Substructure.map_map]
+    simp only [Embedding.comp_toHom, ← FirstOrder.Language.Substructure.map_map]
   have H : (g.substructureEquivMap (Substructure.map f.toHom h.dom)).comp
       (f.substructureEquivMap h.dom) =
         (Substructure.equiv_from_eq hi).comp ((g.comp f).substructureEquivMap h.dom) := by
