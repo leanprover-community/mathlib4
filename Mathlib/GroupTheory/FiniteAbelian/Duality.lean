@@ -34,7 +34,7 @@ variable (G M : Type*) [CommGroup G] [Finite G] [CommMonoid M]
 
 private
 lemma exists_apply_ne_one_aux (H : ∀ n : ℕ, n ∣ Monoid.exponent G → ∀ a : ZMod n, a ≠ 0 →
-       ∃ φ : Multiplicative (ZMod n) →* M, φ (.ofAdd a) ≠ 1)
+    ∃ φ : Multiplicative (ZMod n) →* M, φ (.ofAdd a) ≠ 1)
     {a : G} (ha : a ≠ 1) :
     ∃ φ : G →* M, φ a ≠ 1 := by
   obtain ⟨ι, _, n, _, h⟩ := CommGroup.equiv_prod_multiplicative_zmod G
