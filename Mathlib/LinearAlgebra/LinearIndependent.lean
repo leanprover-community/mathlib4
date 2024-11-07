@@ -1458,10 +1458,10 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
   apply
     Exists.elim
       (this (t.filter fun x => x ∉ s) (t.filter fun x => x ∈ s) (by simp [Set.subset_def])
-        (by simp (config := { contextual := true }) [Set.ext_iff]) (by rwa [eq]))
+        (by simp +contextual [Set.ext_iff]) (by rwa [eq]))
   intro u h
   exact
-    ⟨u, Subset.trans h.1 (by simp (config := { contextual := true }) [subset_def, and_imp, or_imp]),
+    ⟨u, Subset.trans h.1 (by simp +contextual [subset_def, and_imp, or_imp]),
       h.2.1, by simp only [h.2.2, eq]⟩
 
 theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span (ht : t.Finite)

@@ -399,7 +399,7 @@ theorem sup_range_inl_inr : (range <| inl R M M₂) ⊔ (range <| inr R M M₂) 
   IsCompl.sup_eq_top isCompl_range_inl_inr
 
 theorem disjoint_inl_inr : Disjoint (range <| inl R M M₂) (range <| inr R M M₂) := by
-  simp (config := { contextual := true }) [disjoint_def, @eq_comm M 0, @eq_comm M₂ 0]
+  simp +contextual [disjoint_def, @eq_comm M 0, @eq_comm M₂ 0]
 
 theorem map_coprod_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (p : Submodule R M)
     (q : Submodule R M₂) : map (coprod f g) (p.prod q) = map f p ⊔ map g q := by
@@ -440,7 +440,7 @@ theorem ker_prod_ker_le_ker_coprod {M₂ : Type*} [AddCommGroup M₂] [Module R 
     [AddCommGroup M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) :
     (ker f).prod (ker g) ≤ ker (f.coprod g) := by
   rintro ⟨y, z⟩
-  simp (config := { contextual := true })
+  simp +contextual
 
 theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] {M₃ : Type*}
     [AddCommGroup M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃)

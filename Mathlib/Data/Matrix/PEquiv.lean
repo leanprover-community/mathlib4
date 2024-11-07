@@ -60,7 +60,7 @@ theorem mul_matrix_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃. m
   dsimp [toMatrix, Matrix.mul_apply]
   cases' h : f i with fi
   · simp [h]
-  · rw [Finset.sum_eq_single fi] <;> simp (config := { contextual := true }) [h, eq_comm]
+  · rw [Finset.sum_eq_single fi] <;> simp +contextual [h, eq_comm]
 
 theorem toMatrix_symm [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m ≃. n) :
     (f.symm.toMatrix : Matrix n m α) = f.toMatrixᵀ := by

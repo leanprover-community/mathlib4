@@ -200,7 +200,7 @@ theorem opow_add (a b c : Ordinal) : a ^ (b + c) = a ^ b * a ^ c := by
       eq_of_forall_ge_iff fun d =>
         (((isNormal_opow a1).trans (isNormal_add_right b)).limit_le l).trans ?_
     dsimp only [Function.comp_def]
-    simp (config := { contextual := true }) only [IH]
+    simp +contextual only [IH]
     exact
       (((isNormal_mul_right <| opow_pos b (Ordinal.pos_iff_ne_zero.2 a0)).trans
               (isNormal_opow a1)).limit_le
@@ -239,7 +239,7 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
               l).trans
           ?_
     dsimp only [Function.comp_def]
-    simp (config := { contextual := true }) only [IH]
+    simp +contextual only [IH]
     exact (opow_le_of_limit (opow_ne_zero _ a0) l).symm
 
 theorem opow_mul_add_pos {b v : Ordinal} (hb : b ≠ 0) (u : Ordinal) (hv : v ≠ 0) (w : Ordinal) :

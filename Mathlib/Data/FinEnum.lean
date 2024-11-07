@@ -119,7 +119,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
         List.not_mem_nil, or_false, ih]
       refine ⟨by aesop, fun hs => ⟨s.erase x, ?_⟩⟩
       simp only [or_iff_not_imp_left] at hs
-      simp (config := { contextual := true }) [eq_comm (a := s), or_iff_not_imp_left, hs]
+      simp +contextual [eq_comm (a := s), or_iff_not_imp_left, hs]
 
 instance Finset.finEnum [FinEnum α] : FinEnum (Finset α) :=
   ofList (Finset.enum (toList α)) (by intro; simp)
