@@ -134,23 +134,21 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
 protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g G')
-    (hf : Bijective f) (hM : M.IsMatching) : (M.map f).IsMatching := by
+    (hf : Injective f) (hM : M.IsMatching) : (M.map f).IsMatching := by
   rintro _ ⟨v, hv, rfl⟩
   obtain ⟨v', hv'⟩ := hM hv
   use f v'
-  refine ⟨by simp only [Relation.map_apply]; exact ⟨v, v', hv'.1, rfl, rfl⟩, ?_⟩
-  intro y hy
-  obtain ⟨w', hw'⟩ := hf.existsUnique y
-  rw [map_adj, ← hw'.1, Relation.map_apply_apply hf.injective hf.injective] at hy
-  rw [← hv'.2 w' hy]
-  exact hw'.1.symm
+  refine ⟨⟨v, v', hv'.1, rfl, rfl⟩, ?_⟩
+  rintro _ ⟨w, w', hw, hw', rfl⟩
+  cases hf hw'.symm
+  rw [hv'.2 w' hw]
 
 @[simp]
 lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : G ≃g G') :
     (M.map f.toHom).IsMatching ↔ M.IsMatching where
-   mp h := by simpa [← map_comp] using h.map f.symm.toHom f.symm.bijective
-   mpr := .map f.toHom f.bijective
-
+   mp h := by simpa [← map_comp] using h.map f.symm.toHom f.symm.injective
+   mpr := .map f.toHom f.injective
+   
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
 matched.
