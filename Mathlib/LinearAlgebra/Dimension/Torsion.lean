@@ -16,7 +16,7 @@ import Mathlib.LinearAlgebra.Dimension.Constructions
 
 open Submodule
 
-theorem rank_quotient_eq_of_le_torsion {R M} [CommRing R] [AddCommGroup M] [Module R M]
+theorem rank_quotient_eq_of_le_torsion {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
     {M' : Submodule R M} (hN : M' ≤ torsion R M) : Module.rank R (M ⧸ M') = Module.rank R M :=
   (rank_quotient_le M').antisymm <| by
     nontriviality R
