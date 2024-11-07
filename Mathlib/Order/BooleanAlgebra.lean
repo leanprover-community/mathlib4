@@ -727,13 +727,9 @@ instance Bool.instBooleanAlgebra : BooleanAlgebra Bool where
   inf_compl_le_bot a := a.and_not_self.le
   top_le_sup_compl a := a.or_not_self.ge
 
-@[simp]
-theorem Bool.sup_eq_bor : (· ⊔ ·) = or :=
-  rfl
+theorem Bool.sup_eq_bor : (· ⊔ ·) = or := by dsimp
 
-@[simp]
-theorem Bool.inf_eq_band : (· ⊓ ·) = and :=
-  rfl
+theorem Bool.inf_eq_band : (· ⊓ ·) = and := by dsimp
 
 @[simp]
 theorem Bool.compl_eq_bnot : HasCompl.compl = not :=

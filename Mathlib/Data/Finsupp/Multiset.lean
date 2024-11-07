@@ -163,11 +163,11 @@ theorem toFinsupp_eq_iff {s : Multiset α} {f : α →₀ ℕ} :
 
 theorem toFinsupp_union (s t : Multiset α) : toFinsupp (s ∪ t) = toFinsupp s ⊔ toFinsupp t := by
   ext
-  simp [sup_eq_max]
+  simp
 
 theorem toFinsupp_inter (s t : Multiset α) : toFinsupp (s ∩ t) = toFinsupp s ⊓ toFinsupp t := by
   ext
-  simp [inf_eq_min]
+  simp
 
 @[simp]
 theorem toFinsupp_sum_eq (s : Multiset α) : s.toFinsupp.sum (fun _ ↦ id) = Multiset.card s := by

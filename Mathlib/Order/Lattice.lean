@@ -66,6 +66,7 @@ variable {α : Type u} {β : Type v}
   with a join (a.k.a. lub / least upper bound, sup / supremum) operation
   `⊔` which is the least element larger than both factors. -/
 class SemilatticeSup (α : Type u) extends PartialOrder α where
+  /-- The binary supremum, used to derive `Max α` -/
   sup : α → α → α
   /-- The supremum is an upper bound on the first argument -/
   protected le_sup_left : ∀ a b : α, a ≤ sup a b
@@ -275,6 +276,7 @@ end SemilatticeSup
   with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
   `⊓` which is the greatest element smaller than both factors. -/
 class SemilatticeInf (α : Type u) extends PartialOrder α where
+  /-- The binary infimum, used to derive `Min α` -/
   inf : α → α → α
   /-- The infimum is a lower bound on the first argument -/
   protected inf_le_left : ∀ a b : α, inf a b ≤ a

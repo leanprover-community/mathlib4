@@ -293,7 +293,7 @@ theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = 
   ext
   simp only [inf_apply, mem_support_iff, Ne, Finset.mem_union, Finset.mem_filter,
     Finset.mem_inter]
-  simp only [inf_eq_min, ← nonpos_iff_eq_zero, min_le_iff, not_or]
+  simp only [← nonpos_iff_eq_zero, min_le_iff, not_or]
 
 @[simp]
 theorem support_sup [DecidableEq ι] (f g : ι →₀ α) : (f ⊔ g).support = f.support ∪ g.support := by

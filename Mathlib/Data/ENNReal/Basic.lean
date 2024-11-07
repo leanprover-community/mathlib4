@@ -514,7 +514,7 @@ theorem max_zero_left : max 0 a = a :=
 theorem max_zero_right : max a 0 = a :=
   max_eq_left (zero_le a)
 
-@[simp] theorem sup_eq_max : a ⊔ b = max a b := rfl
+theorem sup_eq_max : a ⊔ b = max a b := rfl
 
 -- Porting note: moved `le_of_forall_pos_le_add` down
 

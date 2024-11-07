@@ -29,12 +29,6 @@ variable {R S : Type*}
 
 open Tropical
 
-instance instSupTropical [Max R] : Max (Tropical R) where
-  max x y := trop (untrop x ⊔ untrop y)
-
-instance instInfTropical [Min R] : Min (Tropical R) where
-  min x y := trop (untrop x ⊓ untrop y)
-
 instance instSemilatticeInfTropical [SemilatticeInf R] : SemilatticeInf (Tropical R) :=
   { Tropical.instPartialOrderTropical with
     inf := fun x y ↦ trop (untrop x ⊓ untrop y)
@@ -58,8 +52,7 @@ instance [InfSet R] : InfSet (Tropical R) where sInf s := trop (sInf (untrop '' 
 
 instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice R] :
     ConditionallyCompleteLattice (Tropical R) :=
-  { @instInfTropical R _, @instSupTropical R _,
-    instLatticeTropical with
+  { instLatticeTropical with
     le_csSup := fun _s _x hs hx ↦
       le_csSup (untrop_monotone.map_bddAbove hs) (Set.mem_image_of_mem untrop hx)
     csSup_le := fun _s _x hs hx ↦
