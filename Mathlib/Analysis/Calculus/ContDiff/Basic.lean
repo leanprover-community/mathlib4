@@ -537,8 +537,8 @@ theorem ContDiffWithinAt.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F
   rcases hf m hm with ⟨u, hu, p, hp⟩
   rcases hg m hm with ⟨v, hv, q, hq⟩
   let w := insert x s ∩ (u ∩ f ⁻¹' v)
-  have wv : w ⊆ f ⁻¹' v := fun y hy => hy.2.2
-  have wu : w ⊆ u := fun y hy => hy.2.1
+  have wv : w ⊆ f ⁻¹' v := inter_subset_right.trans inter_subset_right
+  have wu : w ⊆ u := inter_subset_right.trans inter_subset_left
   refine ⟨w, ?_, fun y ↦ (q (f y)).taylorComp (p y), hq.comp (hp.mono wu) wv⟩
   apply inter_mem self_mem_nhdsWithin (inter_mem hu ?_)
   apply (continuousWithinAt_insert_self.2 hf.continuousWithinAt).preimage_mem_nhdsWithin'
