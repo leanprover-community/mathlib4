@@ -11,18 +11,17 @@ import Mathlib.NumberTheory.NumberField.Embeddings
 /-!
 # The completion of a number field at an infinite place
 
-This file contains the completion of a number field at an infinite place.
-
-This is ultimately achieved by applying the `UniformSpace.Completion` functor, however each
-infinite place induces its own `UniformSpace` instance on the number field, so the inference system
-cannot automatically infer these. A common approach to handle the ambiguity that arises from having
-multiple sources of instances is through the use of type synonyms. In this case, we use the
-type synonym `WithAbs` for a semiring. In particular this type synonym depends on an
-absolute value, which provides a systematic way of assigning and inferring instances of the semiring
-that also depend on an absolute value. In our application, relevant instances and the completion
-of a number field `K` are first defined at the level of `AbsoluteValue` by using the type synonym
-`WithAbs` of `K`, and then derived downstream for `InfinitePlace` (which is a subtype of
-`AbsoluteValue`).
+This file contains the completion of a number field at an infinite place. This is ultimately
+achieved by applying the `UniformSpace.Completion` functor, however each infinite place induces
+its own `UniformSpace` instance on the number field, so the inference system cannot automatically
+infer these. A common approach to handle the ambiguity that arises from having multiple sources
+of instances is through the use of type synonyms. In this case, we use the type synonym `WithAbs`
+of a semiring. In particular this type synonym depends on an absolute value, which provides a
+systematic way of assigning and inferring instances of the semiring that also depend on an absolute
+value. The completion of a field at multiple absolute values is defined in
+`Mathlib.Algebra.Ring.WithAbs` as `AbsoluteValue.completion`. The completion of a number
+field at an infinite place is then derived in this file, as `InfinitePlace` is a subtype of
+`AbsoluteValue`.
 
 ## Main definitions
  - `NumberField.InfinitePlace.completion` : the completion of a number field `K` at an infinite
