@@ -7,7 +7,7 @@ Authors: Christopher Hoskin
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Order.CompleteSublattice
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Nest algebras
