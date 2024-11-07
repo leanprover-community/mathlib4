@@ -216,6 +216,20 @@ lemma spread_out_unique_of_isGermInjective {x : X} [X.IsGermInjectiveAt x]
   simp only [Scheme.Hom.appLE, Category.assoc, X.presheaf.germ_res', ← Scheme.stalkMap_germ, H]
   simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.stalkMap_germ]
 
+/--
+A variant of `spread_out_unique_of_isGermInjective`
+whose condition is an equality of scheme morphisms instead of ring homomorphisms.
+-/
+lemma spread_out_unique_of_isGermInjective' {x : X} [X.IsGermInjectiveAt x]
+    (f g : X ⟶ Y)
+    (e : X.fromSpecStalk x ≫ f = X.fromSpecStalk x ≫ g) :
+    ∃ (U : X.Opens), x ∈ U ∧ U.ι ≫ f = U.ι ≫ g := by
+  fapply spread_out_unique_of_isGermInjective
+  · simpa using congr(($e).base (LocalRing.closedPoint _))
+  · apply Spec.map_injective
+    rw [← cancel_mono (Y.fromSpecStalk _)]
+    simpa [Scheme.Spec_map_stalkSpecializes_fromSpecStalk]
+
 lemma exists_lift_of_germInjective_aux {U : X.Opens} {x : X} (hxU)
     (φ : A ⟶ X.presheaf.stalk x) (φRA : R ⟶ A) (φRX : R ⟶ Γ(X, U))
     (hφRA : RingHom.FiniteType φRA)
@@ -333,5 +347,27 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
     rw [← IsAffineOpen.Spec_map_appLE_fromSpec sY hU hV iVU, ← Spec.map_comp_assoc, ← h₂,
       ← Scheme.Hom.appLE, ← hW.isoSpec_hom, IsAffineOpen.Spec_map_appLE_fromSpec sX hU hW i,
       ← Iso.eq_inv_comp, IsAffineOpen.isoSpec_inv_ι_assoc]
+
+/--
+Given `S`-schemes `X Y`, a point `x : X`, and a `S`-morphism `φ : Spec 𝒪_{X, x} ⟶ Y`,
+we may spread it out to an `S`-morphism `f : U ⟶ Y`
+provided that `Y` is locally of finite type over `S` and
+`X` is "germ-injective" at `x` (e.g. when it's integral or locally noetherian).
+
+TODO: The condition on `X` is unnecessary when `Y` is locally of finite presentation.
+-/
+lemma spread_out_of_isGermInjective' [LocallyOfFiniteType sY] {x : X} [X.IsGermInjectiveAt x]
+    (φ : Spec (X.presheaf.stalk x) ⟶ Y)
+    (h : φ ≫ sY = X.fromSpecStalk x ≫ sX) :
+    ∃ (U : X.Opens) (hxU : x ∈ U) (f : U.toScheme ⟶ Y),
+      φ = U.fromSpecStalkOfMem x hxU ≫ f ∧ f ≫ sY = U.ι ≫ sX := by
+  have := spread_out_of_isGermInjective sX sY ?_ (Scheme.stalkClosedPointTo φ) ?_
+  · simpa only [Scheme.Spec_stalkClosedPointTo_fromSpecStalk] using this
+  · rw [← Scheme.comp_base_apply, h, Scheme.comp_base_apply, Scheme.fromSpecStalk_closedPoint]
+  · apply Spec.map_injective
+    rw [← cancel_mono (S.fromSpecStalk _)]
+    simpa only [Spec.map_comp, Category.assoc, Scheme.Spec_map_stalkMap_fromSpecStalk,
+      Scheme.Spec_stalkClosedPointTo_fromSpecStalk_assoc,
+      Scheme.Spec_map_stalkSpecializes_fromSpecStalk]
 
 end AlgebraicGeometry

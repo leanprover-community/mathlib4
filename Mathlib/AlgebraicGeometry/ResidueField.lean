@@ -52,7 +52,8 @@ def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
 `Spec.map (X.residue x)` is a closed immersion. -/
 instance {X : Scheme.{u}} (x) : IsPreimmersion (Spec.map (X.residue x)) :=
   IsPreimmersion.mk_Spec_map
-    (PrimeSpectrum.isClosedEmbedding_comap_of_surjective _ _ Ideal.Quotient.mk_surjective).embedding
+    (PrimeSpectrum.isClosedEmbedding_comap_of_surjective _ _
+      Ideal.Quotient.mk_surjective).isEmbedding
     (RingHom.surjectiveOnStalks_of_surjective (Ideal.Quotient.mk_surjective))
 
 @[simp]
@@ -217,13 +218,21 @@ instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecResidueField x) :=
   rw [IsPreimmersion.comp_iff]
   infer_instance
 
+@[simps] noncomputable
+instance (x : X) : (Spec (X.residueField x)).Over X := ⟨X.fromSpecResidueField x⟩
+
+@[simps! over] noncomputable
+instance (x : X) : (Spec (X.residueField x)).CanonicallyOver X where
+
 @[reassoc (attr := simp)]
 lemma residueFieldCongr_fromSpecResidueField {x y : X} (h : x = y) :
     Spec.map (X.residueFieldCongr h).hom ≫ X.fromSpecResidueField _ =
       X.fromSpecResidueField _ := by
   subst h; simp
 
-@[reassoc]
+instance {x y : X} (h : x = y) : (Spec.map (X.residueFieldCongr h).hom).IsOver X where
+
+@[reassoc (attr := simp)]
 lemma Hom.Spec_map_residueFieldMap_fromSpecResidueField (x : X) :
     Spec.map (f.residueFieldMap x) ≫ Y.fromSpecResidueField _ =
       X.fromSpecResidueField x ≫ f := by
@@ -231,6 +240,8 @@ lemma Hom.Spec_map_residueFieldMap_fromSpecResidueField (x : X) :
   rw [Category.assoc, ← Spec_map_stalkMap_fromSpecStalk, ← Spec.map_comp_assoc,
     ← Spec.map_comp_assoc]
   rfl
+
+instance [X.Over Y] (x : X) : Spec.map ((X ↘ Y).residueFieldMap x) |>.IsOver Y where
 
 @[simp]
 lemma fromSpecResidueField_apply (x : X.carrier) (s : Spec (X.residueField x)) :
