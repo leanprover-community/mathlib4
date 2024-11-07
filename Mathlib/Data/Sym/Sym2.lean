@@ -406,12 +406,58 @@ def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α) : (∀ a ∈ s,
     rw [rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
     apply hpq.imp <;> rintro rfl <;> simp
 
+theorem mem_sat_pair {P : α → Prop} (a b : α) : (∀ x ∈ s(a, b), P x) ↔ P a ∧ P b := by
+  simp only [mem_iff, forall_eq_or_imp, forall_eq]
+
+@[simp]
+lemma pmap_pair {P : α → Prop} (f : ∀ a, P a → β) (a b : α) (h : P a) (h' : P b) :
+    pmap f s(a, b) ((mem_sat_pair a b).mpr ⟨h, h'⟩) = s(f a h, f b h') := by
+  simp only [pmap]
+
+@[simp]
+lemma mem_pmap_iff {P : α → Prop} (f : ∀ a, P a → β) (z : Sym2 α) (h : ∀ a ∈ z, P a) (b : β) :
+    b ∈ z.pmap f h ↔ ∃ (a : α) (ha : a ∈ z), b = f a (h a ha) := by
+  induction' z with x y
+  rw [pmap_pair _ _ _ (h x (mem_mk_left x y)) (h y (mem_mk_right x y))]
+  simp only [mem_iff]
+  constructor
+  · rintro (rfl | rfl)
+    · use x, Or.inl rfl
+    · use y, Or.inr rfl
+  · rintro ⟨a, (rfl | rfl), rfl⟩
+    exact Or.inl rfl
+    exact Or.inr rfl
+
+lemma pmap_eq_map {P : α → Prop} (f : α → β) (z : Sym2 α) (h : ∀ a ∈ z, P a) :
+    z.pmap (fun a _ => f a) h = z.map f := by
+  induction' z with x y
+  rfl
+
+lemma map_pmap {Q : β → Prop} (f : α → β) (g : ∀ b, Q b → γ) (z : Sym2 α)
+  (h' : ∀ b ∈ z.map f, Q b) :
+    (z.map f).pmap g h' =
+    z.pmap (fun a ha => g (f a) (h' (f a) (mem_map.mpr ⟨a, ha, rfl⟩))) (fun a ha => ha) := by
+  induction' z with x y
+  rfl
+
+lemma pmap_map {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : β → γ)
+    (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
+    (z.pmap f h).map g = z.pmap (fun a ha => g (f a (h a ha))) (fun a ha ↦ ha) := by
+  induction' z with x y
+  rfl
+
 /--
 "Attach" a proof `P a` that holds for all the elements of `s` to produce a new Sym2 object
 with the same elements but in the type `{x // P x}`.
 -/
 def attachWith (s : Sym2 α) (P : α → Prop) (f : ∀ a ∈ s, P a) : Sym2 {a // P a} :=
   pmap Subtype.mk s f
+
+@[simp]
+lemma attachWith_map_subtype_val {s : Sym2 α} {P : α → Prop} (f : ∀ a ∈ s, P a) :
+    (s.attachWith P f).map Subtype.val = s := by
+  induction' s with x y
+  rfl
 
 /-! ### Diagonal -/
 
