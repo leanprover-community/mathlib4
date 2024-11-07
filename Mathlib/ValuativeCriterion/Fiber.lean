@@ -1,5 +1,5 @@
 -- `Mathlib/AlgebraicGeometry/Fiber
-import Mathlib.ValuativeCriterion.PullbackCarrier
+import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace
 

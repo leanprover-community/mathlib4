@@ -2,7 +2,6 @@
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.ValuativeCriterion.Fiber
-import Mathlib.ValuativeCriterion.PullbackCarrier
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace
 
@@ -263,11 +262,11 @@ lemma universallyClosed_iff_specializingMap [QuasiCompact f] :
   rw [universallyClosed_eq]
   constructor
   · intro h Z W g i₂ f' hp
-    have : QuasiCompact f' := quasiCompact_stableUnderBaseChange hp.flip inferInstance
+    have : QuasiCompact f' := MorphismProperty.of_isPullback hp.flip inferInstance
     have hcl : IsClosedMap f'.base := h g i₂ f' hp
     rwa [isClosedMap_iff_specializingMap] at hcl
   · intro h Z W g i₂ f' hp
-    have : QuasiCompact f' := quasiCompact_stableUnderBaseChange hp.flip inferInstance
+    have : QuasiCompact f' := MorphismProperty.of_isPullback hp.flip inferInstance
     have hcl : SpecializingMap f'.base := h g i₂ f' hp
     rwa [← isClosedMap_iff_specializingMap] at hcl
 
@@ -438,7 +437,7 @@ lemma isProperMap_of_universallyClosed [UniversallyClosed f] : IsProperMap f.bas
   · exact MorphismProperty.universally_le (P := topologically @IsClosedMap) _ UniversallyClosed.out
   · intro y
     have : UniversallyClosed (f.fiberToResidueField y) :=
-      universallyClosed_stableUnderBaseChange (f.fiber_isPullback y) inferInstance
+      MorphismProperty.of_isPullback (f.fiber_isPullback y) inferInstance
     have : CompactSpace (f.fiber y) := compactSpace_of_universallyClosed (f.fiberToResidueField y)
     rw [← Scheme.Hom.range_fiberι]
     exact isCompact_range (Scheme.Hom.continuous _)

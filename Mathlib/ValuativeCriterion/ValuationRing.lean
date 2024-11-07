@@ -64,14 +64,16 @@ instance : PartialOrder (LocalSubring R) where
     subst hab_eq
     rfl
 
+end LocalSubring
+
 variable {K : Type*} [Field K]
 
-def _root_.ValuationSubring.toLocalSubring (A : ValuationSubring K) : LocalSubring K where
+def ValuationSubring.toLocalSubring (A : ValuationSubring K) : LocalSubring K where
   toSubring := A.toSubring
   localRing := A.localRing
 
 -- by def
-lemma _root_.ValuationSubring.toLocalSubring_injective :
+lemma ValuationSubring.toLocalSubring_injective :
     Function.Injective (ValuationSubring.toLocalSubring (K := K)) := by
   intro a b h
   ext x

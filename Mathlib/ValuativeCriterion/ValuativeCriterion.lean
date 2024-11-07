@@ -128,8 +128,9 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
       Iso.inv_hom_id, Spec.map_id, Category.id_comp]
 
 /-- by def -/
-lemma stableUnderBaseChange :
-    ValuativeCriterion.Existence.StableUnderBaseChange := by
+instance stableUnderBaseChange :
+    ValuativeCriterion.Existence.IsStableUnderBaseChange := by
+  constructor
   intros Y' X X' Y  Y'_to_Y f X'_to_X f' hP hf commSq
 
   let commSq' : ValuativeCommSq f := {
@@ -178,7 +179,7 @@ lemma eq : ValuativeCriterion.Existence =
   · intro _
     apply MorphismProperty.universally_mono
     · apply specializingMap
-    · rwa [MorphismProperty.StableUnderBaseChange.universally_eq stableUnderBaseChange]
+    · rwa [MorphismProperty.IsStableUnderBaseChange.universally_eq]
   · apply of_specializingMap
 
 /-- by `ValuativeCriterion.Existence.eq` and `universallyClosed_iff_specializingMap`. -/
@@ -258,7 +259,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] :
   have h := hl₁'.trans hl₂'.symm
   let Z := pullback (pullback.diagonal f) (pullback.lift l₁ l₂ h)
   let g : Z ⟶ Spec (.of S.R) := pullback.snd _ _
-  have : IsClosedImmersion g := IsClosedImmersion.stableUnderBaseChange.snd _ _ inferInstance
+  have : IsClosedImmersion g := MorphismProperty.pullback_snd _ _ inferInstance
   have hZ : IsAffine Z := by
     rw [@HasAffineProperty.iff_of_isAffine @IsClosedImmersion] at this
     exact this.left

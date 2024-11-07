@@ -1,6 +1,5 @@
 -- `Mathlib/AlgebraicGeometry/Morphisms/Immersion
 import Mathlib
-import Mathlib.ValuativeCriterion.PullbackCarrier
 
 /-
 This is a stub. I(@erdOne) am working towards a better def via #14748 and #14377.
