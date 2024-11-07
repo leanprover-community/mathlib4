@@ -35,10 +35,13 @@ jobs:
           PR:  /repos/leanprover-community/mathlib4/issues/${{ github.event.issue.number }}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Form the message
+      - name: set variable
+        run: printf $'TITLE<<EEE\nthis is free text containing\nmyself merge\nEEE' >> "$GITHUB_ENV"
+
+        - name: Form the message
         id: merge_or_delegate
-        env:
-          TITLE: $'this is free text containing\nmyself merge' #${{ github.event.pull_request.title }}
+        #env:
+        #  TITLE: $'this is free text containing\nmyself merge' #${{ github.event.pull_request.title }}
         run: |
           printf '%s' "${TITLE}"
           printf '%s' "${TITLE}" | grep "^myself" || echo "not found"
