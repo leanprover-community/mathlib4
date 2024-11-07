@@ -18,10 +18,15 @@ Give the definition in the correct generality.
 -/
 
 namespace AddChar
-variable {A M : Type*} [AddMonoid A] [Monoid M]
-  [MeasurableSpace A] [DiscreteMeasurableSpace A] [MeasurableSpace M] [DiscreteMeasurableSpace M]
+variable {A M : Type*} [AddMonoid A] [Monoid M] [MeasurableSpace A] [MeasurableSpace M]
 
-instance instMeasurableSpace : MeasurableSpace (AddChar A M) := ⊤
-instance instDiscreteMeasurableSpace : DiscreteMeasurableSpace (AddChar A M) := ⟨fun _ ↦ trivial⟩
+@[nolint unusedArguments]
+instance instMeasurableSpace [DiscreteMeasurableSpace A] [DiscreteMeasurableSpace M] :
+    MeasurableSpace (AddChar A M) :=
+  ⊤
+
+instance instDiscreteMeasurableSpace [DiscreteMeasurableSpace A] [DiscreteMeasurableSpace M] :
+    DiscreteMeasurableSpace (AddChar A M) :=
+  ⟨fun _ ↦ trivial⟩
 
 end AddChar

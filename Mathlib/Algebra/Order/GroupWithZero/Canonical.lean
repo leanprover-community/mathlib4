@@ -225,15 +225,10 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
   ext
   rfl
 
-#adaptation_note /-- 2024-04-23
-After https://github.com/leanprover/lean4/pull/3965,
-we need to either write `@inv_zero (G₀ := α) (_)` in `neg_top`,
-or use `set_option backward.isDefEq.lazyProjDelta false`.
-See https://github.com/leanprover-community/mathlib4/issues/12535 -/
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
-    neg_top := set_option backward.isDefEq.lazyProjDelta false in @inv_zero _ (_)
+    neg_top := inv_zero (G₀ := α)
     add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
 
 lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
@@ -291,8 +286,8 @@ lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b :=
   WithBot.coe_le_iff
 
-instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ ·)] :
-    CovariantClass (WithZero α) (WithZero α) (· * ·) (· ≤ ·) := by
+instance mulLeftMono [Mul α] [MulLeftMono α] :
+    MulLeftMono (WithZero α) := by
   refine ⟨fun a b c hbc => ?_⟩
   induction a; · exact zero_le _
   induction b; · exact zero_le _
@@ -300,8 +295,8 @@ instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ 
   rw [← coe_mul _ c, ← coe_mul, coe_le_coe]
   exact mul_le_mul_left' hbc' _
 
-protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (· + ·) (· ≤ ·)]
-    (h : ∀ a : α, 0 ≤ a) : CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
+protected lemma addLeftMono [AddZeroClass α] [AddLeftMono α]
+    (h : ∀ a : α, 0 ≤ a) : AddLeftMono (WithZero α) := by
   refine ⟨fun a b c hbc => ?_⟩
   induction a
   · rwa [zero_add, zero_add]
@@ -332,8 +327,8 @@ variable [PartialOrder α]
 
 instance partialOrder : PartialOrder (WithZero α) := WithBot.partialOrder
 
-instance contravariantClass_mul_lt [Mul α] [ContravariantClass α α (· * ·) (· < ·)] :
-    ContravariantClass (WithZero α) (WithZero α) (· * ·) (· < ·) := by
+instance mulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
+    MulLeftReflectLT (WithZero α) := by
   refine ⟨fun a b c h => ?_⟩
   have := ((zero_le _).trans_lt h).ne'
   induction a
@@ -352,11 +347,9 @@ variable [LinearOrder α] {a b c : α}
 
 instance linearOrder : LinearOrder (WithZero α) := WithBot.linearOrder
 
--- Porting note (#10618): @[simp] can prove this
 protected lemma le_max_iff : (a : WithZero α) ≤ max (b : WithZero α) c ↔ a ≤ max b c := by
   simp only [WithZero.coe_le_coe, le_max_iff]
 
--- Porting note (#10618): @[simp] can prove this
 protected lemma min_le_iff : min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
   simp only [WithZero.coe_le_coe, min_le_iff]
 
@@ -378,7 +371,7 @@ elements are ≤ 1 and then 1 is the top element.
 protected abbrev orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : α, 0 ≤ a) :
     OrderedAddCommMonoid (WithZero α) :=
   { WithZero.partialOrder, WithZero.addCommMonoid with
-    add_le_add_left := @add_le_add_left _ _ _ (WithZero.covariantClass_add_le zero_le).. }
+    add_le_add_left := @add_le_add_left _ _ _ (WithZero.addLeftMono zero_le).. }
 
 -- This instance looks absurd: a monoid already has a zero
 /-- Adding a new zero to a canonically ordered additive monoid produces another one. -/

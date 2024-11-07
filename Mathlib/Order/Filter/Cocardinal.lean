@@ -22,9 +22,7 @@ In this file we define `Filter.cocardinal hc`: the filter of sets with cardinali
 open Set Filter Cardinal
 
 universe u
-variable {ι : Type u} {α β : Type u}
-variable {c : Cardinal.{u}} {hreg : c.IsRegular}
-variable {l : Filter α}
+variable {α : Type u} {c : Cardinal.{u}} {hreg : c.IsRegular}
 
 namespace Filter
 

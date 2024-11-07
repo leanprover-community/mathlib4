@@ -555,7 +555,7 @@ theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
 theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
     (p : G.Walk u v) (q : G.Walk v w) : q.support ⊆ (p.append q).support := by
   intro h
-  simp (config := { contextual := true }) only [mem_support_append_iff, or_true, imp_true_iff]
+  simp +contextual only [mem_support_append_iff, or_true, imp_true_iff]
 
 theorem coe_support {u v : V} (p : G.Walk u v) :
     (p.support : Multiset V) = {u} + p.support.tail := by cases p <;> rfl
@@ -1299,7 +1299,7 @@ variable {v w : V}
 This is an abbreviation for `SimpleGraph.Walk.toDeleteEdges`. -/
 abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
     (G.deleteEdges {e}).Walk v w :=
-  p.toDeleteEdges {e} (fun e' => by contrapose!; simp (config := { contextual := true }) [hp])
+  p.toDeleteEdges {e} (fun e' => by contrapose!; simp +contextual [hp])
 
 @[simp]
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :

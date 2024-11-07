@@ -88,7 +88,6 @@ theorem mk_injective (A B : T) :
 theorem mk_inj (A B : T) {f g : A ⟶ B} : Arrow.mk f = Arrow.mk g ↔ f = g :=
   (mk_injective A B).eq_iff
 
-/- Porting note: was marked as dangerous instance so changed from `Coe` to `CoeOut` -/
 instance {X Y : T} : CoeOut (X ⟶ Y) (Arrow T) where
   coe := mk
 
