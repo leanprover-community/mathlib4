@@ -496,7 +496,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral' {N : ℕ∞}
     (h'f : AEStronglyMeasurable f μ) :
     HasFTaylorSeriesUpTo N (fourierIntegral 𝐞 μ L.toLinearMap₂ f)
       (fun w n ↦ fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) w) :=
-  hasFTaylorSeriesUpTo_fourierIntegral _ (fun n hn ↦ hf n (by exact_mod_cast hn)) h'f
+  hasFTaylorSeriesUpTo_fourierIntegral _ (fun n hn ↦ hf n (mod_cast hn)) h'f
 
 /-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the Fourier transform of `f` is `C^N`. -/
 theorem contDiff_fourierIntegral {N : ℕ∞}
@@ -518,7 +518,7 @@ lemma iteratedFDeriv_fourierIntegral {N : ℕ∞}
       fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) := by
   ext w : 1
   exact ((hasFTaylorSeriesUpTo_fourierIntegral' L hf h'f).eq_iteratedFDeriv
-    (by exact_mod_cast hn) w).symm
+    (mod_cast hn) w).symm
 
 end SecondCountableTopology
 

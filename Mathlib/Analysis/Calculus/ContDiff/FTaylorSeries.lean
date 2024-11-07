@@ -248,21 +248,21 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
         (∀ x ∈ s, HasFDerivWithinAt (fun y => p y n) (p x n.succ).curryLeft s x) ∧
           ContinuousOn (fun x => p x (n + 1)) s := by
   constructor
-  · exact fun h ↦ ⟨h.of_le (by exact_mod_cast Nat.le_succ n),
-      h.fderivWithin _ (by exact_mod_cast lt_add_one n), h.cont (n + 1) le_rfl⟩
+  · exact fun h ↦ ⟨h.of_le (mod_cast Nat.le_succ n),
+      h.fderivWithin _ (mod_cast lt_add_one n), h.cont (n + 1) le_rfl⟩
   · intro h
     constructor
     · exact h.1.zero_eq
     · intro m hm
       by_cases h' : m < n
-      · exact h.1.fderivWithin m (by exact_mod_cast h')
-      · have : m = n := Nat.eq_of_lt_succ_of_not_lt (by exact_mod_cast hm) h'
+      · exact h.1.fderivWithin m (mod_cast h')
+      · have : m = n := Nat.eq_of_lt_succ_of_not_lt (mod_cast hm) h'
         rw [this]
         exact h.2.1
     · intro m hm
       by_cases h' : m ≤ n
-      · apply h.1.cont m (by exact_mod_cast h')
-      · have : m = n + 1 := le_antisymm (by exact_mod_cast hm) (not_le.1 h')
+      · apply h.1.cont m (mod_cast h')
+      · have : m = n + 1 := le_antisymm (mod_cast hm) (not_le.1 h')
         rw [this]
         exact h.2.2
 
@@ -579,7 +579,7 @@ theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     (hx : x ∈ s) : p x m = iteratedFDerivWithin 𝕜 m f s x := by
   induction' m with m IH generalizing x
   · rw [h.zero_eq' hx, iteratedFDerivWithin_zero_eq_comp]; rfl
-  · have A : (m : ℕ∞) < n := lt_of_lt_of_le (by exact_mod_cast lt_add_one m) hmn
+  · have A : (m : ℕ∞) < n := lt_of_lt_of_le (mod_cast lt_add_one m) hmn
     have :
       HasFDerivWithinAt (fun y : E => iteratedFDerivWithin 𝕜 m f s y)
         (ContinuousMultilinearMap.curryLeft (p x (Nat.succ m))) s x :=

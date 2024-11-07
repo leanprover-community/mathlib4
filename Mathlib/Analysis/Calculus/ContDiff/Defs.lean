@@ -132,7 +132,7 @@ variable {𝕜}
 theorem contDiffWithinAt_nat {n : ℕ} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∃ u ∈ 𝓝[insert x s] x,
       ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpToOn n f p u :=
-  ⟨fun H => H n le_rfl, fun ⟨u, hu, p, hp⟩ _m hm => ⟨u, hu, p, hp.of_le (by exact_mod_cast hm)⟩⟩
+  ⟨fun H => H n le_rfl, fun ⟨u, hu, p, hp⟩ _m hm => ⟨u, hu, p, hp.of_le (mod_cast hm)⟩⟩
 
 theorem ContDiffWithinAt.of_le (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m ≤ n) :
     ContDiffWithinAt 𝕜 m f s x := fun k hk => h k (le_trans hk hmn)
@@ -297,7 +297,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
     rcases h n.succ le_rfl with ⟨u, hu, p, Hp⟩
     refine
       ⟨u, hu, fun y => (continuousMultilinearCurryFin1 𝕜 E F) (p y 1), fun y hy =>
-        Hp.hasFDerivWithinAt (by exact_mod_cast (Nat.le_add_left 1 n)) hy, ?_⟩
+        Hp.hasFDerivWithinAt (mod_cast (Nat.le_add_left 1 n)) hy, ?_⟩
     intro m hm
     refine ⟨u, ?_, fun y : E => (p y).shift, ?_⟩
     · -- Porting note: without the explicit argument Lean is not sure of the type.
@@ -306,7 +306,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
       exact insert_eq_of_mem (mem_of_mem_nhdsWithin this hu)
     · rw [show ((n.succ : ℕ) : WithTop ℕ∞) = n + 1 from rfl,
         hasFTaylorSeriesUpToOn_succ_iff_right] at Hp
-      exact Hp.2.2.of_le (by exact_mod_cast hm)
+      exact Hp.2.2.of_le (mod_cast hm)
   · rintro ⟨u, hu, f', f'_eq_deriv, Hf'⟩
     rw [show (n : ℕ∞) + 1 = (n + 1 : ℕ) from rfl, contDiffWithinAt_nat]
     rcases Hf' n le_rfl with ⟨v, hv, p', Hp'⟩
@@ -380,7 +380,7 @@ theorem HasFTaylorSeriesUpToOn.contDiffOn {f' : E → FormalMultilinearSeries �
   intro x hx m hm
   use s
   simp only [Set.insert_eq_of_mem hx, self_mem_nhdsWithin, true_and]
-  exact ⟨f', hf.of_le (by exact_mod_cast hm)⟩
+  exact ⟨f', hf.of_le (mod_cast hm)⟩
 
 theorem ContDiffOn.contDiffWithinAt (h : ContDiffOn 𝕜 n f s) (hx : x ∈ s) :
     ContDiffWithinAt 𝕜 n f s x :=
@@ -476,11 +476,11 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt {n : ℕ} :
     rcases (h x hx) n.succ le_rfl with ⟨u, hu, p, Hp⟩
     refine
       ⟨u, hu, fun y => (continuousMultilinearCurryFin1 𝕜 E F) (p y 1), fun y hy =>
-        Hp.hasFDerivWithinAt (by exact_mod_cast (Nat.le_add_left 1 n)) hy, ?_⟩
+        Hp.hasFDerivWithinAt (mod_cast (Nat.le_add_left 1 n)) hy, ?_⟩
     rw [show (n.succ : WithTop ℕ∞) = (n : ℕ) + 1 from rfl,
       hasFTaylorSeriesUpToOn_succ_iff_right] at Hp
     intro z hz m hm
-    refine ⟨u, ?_, fun x : E => (p x).shift, Hp.2.2.of_le (by exact_mod_cast hm)⟩
+    refine ⟨u, ?_, fun x : E => (p x).shift, Hp.2.2.of_le (mod_cast hm)⟩
     -- Porting note: without the explicit arguments `convert` can not determine the type.
     convert @self_mem_nhdsWithin _ _ z u
     exact insert_eq_of_mem hz
@@ -493,7 +493,7 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt {n : ℕ} :
 @[simp]
 theorem contDiffOn_zero : ContDiffOn 𝕜 0 f s ↔ ContinuousOn f s := by
   refine ⟨fun H => H.continuousOn, fun H => fun x hx m hm ↦ ?_⟩
-  have : (m : WithTop ℕ∞) = 0 := le_antisymm (by exact_mod_cast hm) bot_le
+  have : (m : WithTop ℕ∞) = 0 := le_antisymm (mod_cast hm) bot_le
   rw [this]
   refine ⟨insert x s, self_mem_nhdsWithin, ftaylorSeriesWithin 𝕜 f s, ?_⟩
   rw [hasFTaylorSeriesUpToOn_zero_iff]
@@ -522,7 +522,7 @@ protected theorem ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs
     simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.curry0_apply,
       iteratedFDerivWithin_zero_apply]
   · intro m hm x hx
-    have : m < n := by exact_mod_cast hm
+    have : m < n := mod_cast hm
     rcases (h x hx) m.succ (Order.add_one_le_of_lt this) with ⟨u, hu, p, Hp⟩
     rw [insert_eq_of_mem hx] at hu
     rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩
@@ -537,15 +537,15 @@ protected theorem ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs
       change p y m = iteratedFDerivWithin 𝕜 m f s y
       rw [← iteratedFDerivWithin_inter_open o_open yo]
       exact
-        (Hp.mono ho).eq_iteratedFDerivWithin_of_uniqueDiffOn (by exact_mod_cast Nat.le_succ m)
+        (Hp.mono ho).eq_iteratedFDerivWithin_of_uniqueDiffOn (mod_cast Nat.le_succ m)
           (hs.inter o_open) ⟨hy, yo⟩
     exact
-      ((Hp.mono ho).fderivWithin m (by exact_mod_cast lt_add_one m) x ⟨hx, xo⟩).congr
+      ((Hp.mono ho).fderivWithin m (mod_cast lt_add_one m) x ⟨hx, xo⟩).congr
         (fun y hy => (A y hy).symm) (A x ⟨hx, xo⟩).symm
   · intro m hm
     apply continuousOn_of_locally_continuousOn
     intro x hx
-    rcases h x hx m (by exact_mod_cast hm) with ⟨u, hu, p, Hp⟩
+    rcases h x hx m (mod_cast hm) with ⟨u, hu, p, Hp⟩
     rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩
     rw [insert_eq_of_mem hx] at ho
     rw [inter_comm] at ho
@@ -570,9 +570,9 @@ theorem contDiffOn_of_continuousOn_differentiableOn
     simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.curry0_apply,
       iteratedFDerivWithin_zero_apply]
   · intro k hk y hy
-    convert (Hdiff k (lt_of_lt_of_le (by exact_mod_cast hk) hm) y hy).hasFDerivWithinAt
+    convert (Hdiff k (lt_of_lt_of_le (mod_cast hk) hm) y hy).hasFDerivWithinAt
   · intro k hk
-    exact Hcont k (le_trans (by exact_mod_cast hk) hm)
+    exact Hcont k (le_trans (mod_cast hk) hm)
 
 theorem contDiffOn_of_differentiableOn
     (h : ∀ m : ℕ, m ≤ n → DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s) :
@@ -582,12 +582,12 @@ theorem contDiffOn_of_differentiableOn
 
 theorem ContDiffOn.continuousOn_iteratedFDerivWithin {m : ℕ} (h : ContDiffOn 𝕜 n f s)
     (hmn : m ≤ n) (hs : UniqueDiffOn 𝕜 s) : ContinuousOn (iteratedFDerivWithin 𝕜 m f s) s :=
-  (h.ftaylorSeriesWithin hs).cont m (by exact_mod_cast hmn)
+  (h.ftaylorSeriesWithin hs).cont m (mod_cast hmn)
 
 theorem ContDiffOn.differentiableOn_iteratedFDerivWithin {m : ℕ} (h : ContDiffOn 𝕜 n f s)
     (hmn : m < n) (hs : UniqueDiffOn 𝕜 s) :
     DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s := fun x hx =>
-  ((h.ftaylorSeriesWithin hs).fderivWithin m (by exact_mod_cast hmn) x hx).differentiableWithinAt
+  ((h.ftaylorSeriesWithin hs).fderivWithin m (mod_cast hmn) x hx).differentiableWithinAt
 
 theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
     (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m < n) (hs : UniqueDiffOn 𝕜 (insert x s)) :
@@ -813,7 +813,7 @@ theorem contDiffOn_univ : ContDiffOn 𝕜 n f univ ↔ ContDiff 𝕜 n f := by
     exact H.ftaylorSeriesWithin uniqueDiffOn_univ
   · rintro ⟨p, hp⟩ x _ m hm
     exact ⟨univ, Filter.univ_sets _, p, (hp.hasFTaylorSeriesUpToOn univ).of_le
-      (by exact_mod_cast hm)⟩
+      (mod_cast hm)⟩
 
 theorem contDiff_iff_contDiffAt : ContDiff 𝕜 n f ↔ ∀ x, ContDiffAt 𝕜 n f x := by
   simp [← contDiffOn_univ, ContDiffOn, ContDiffAt]

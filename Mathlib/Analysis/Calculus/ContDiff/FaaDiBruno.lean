@@ -940,7 +940,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
       change HasFDerivWithinAt (fun y ↦ B (q (f y) c.length) (fun i ↦ p y (c.partSize i)))
         (∑ i : Option (Fin c.length),
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)).curryLeft) s x
-      have cm : (c.length : WithTop ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.length_le c
+      have cm : (c.length : WithTop ℕ∞) ≤ m := mod_cast OrderedFinpartition.length_le c
       have cp i : (c.partSize i : WithTop ℕ∞) ≤ m := by
         exact_mod_cast OrderedFinpartition.partSize_le c i
       have I i : HasFDerivWithinAt (fun x ↦ p x (c.partSize i))
@@ -949,7 +949,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
       have J : HasFDerivWithinAt (fun x ↦ q x c.length) (q (f x) c.length.succ).curryLeft
         t (f x) := hg.fderivWithin c.length (cm.trans_lt hm) (f x) (h hx)
       have K : HasFDerivWithinAt f ((continuousMultilinearCurryFin1 𝕜 E F) (p x 1)) s x :=
-        hf.hasFDerivWithinAt (le_trans (by exact_mod_cast Nat.le_add_left 1 m)
+        hf.hasFDerivWithinAt (le_trans (mod_cast Nat.le_add_left 1 m)
           (ENat.add_one_nat_le_withTop_of_lt hm)) hx
       convert HasFDerivWithinAt.linear_multilinear_comp (J.comp x K h) I B
       simp only [Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
@@ -976,7 +976,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
     change ContinuousOn
       ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun i ↦ p x (c.partSize i)))) s
     apply B.continuous_uncurry_of_multilinear.comp_continuousOn (ContinuousOn.prod ?_ ?_)
-    · have : (c.length : WithTop ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.length_le c
+    · have : (c.length : WithTop ℕ∞) ≤ m := mod_cast OrderedFinpartition.length_le c
       exact (hg.cont c.length (this.trans hm)).comp hf.continuousOn h
     · apply continuousOn_pi.2 (fun i ↦ ?_)
       have : (c.partSize i : WithTop ℕ∞) ≤ m := by
