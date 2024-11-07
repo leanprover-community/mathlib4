@@ -455,4 +455,19 @@ noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
 
 end Augmented
 
+section applications
+
+@[simp]
+lemma SSet.δ_comp_σ_self_apply (S : SSet) {n} (i : Fin (n + 1)) (x : S _[n]) :
+    S.δ i.castSucc (S.σ i x) = x := congr_fun S.δ_comp_σ_self x
+
+@[simp]
+lemma SSet.δ_comp_σ_succ_apply (S : SSet) {n} (i : Fin (n + 1)) (x : S _[n]) :
+    S.δ i.succ (S.σ i x) = x := congr_fun S.δ_comp_σ_succ x
+
+
+end applications
+
+
+
 end SSet
