@@ -635,8 +635,7 @@ theorem maps_system_same_step (m : ℕ) : maps_system K_fraisse (le_refl m)
     conv =>
       lhs
       congr
-      rw [if_then_else_right]
-      simp
+      rw [if_then_else_right, Embedding.eq_embed_trans]
       · skip
       · exact u m
     simp only [add_le_iff_nonpos_right, nonpos_iff_eq_zero, one_ne_zero,
@@ -653,8 +652,7 @@ theorem maps_init_system_same_step (m : ℕ) : ((init_system K_fraisse m).2 m).2
       nonpos_iff_eq_zero, one_ne_zero]
     conv =>
       lhs
-      rw [if_then_else_right]
-      simp
+      rw [if_then_else_right, Embedding.eq_embed_trans]
       · skip
       · exact u m
 
