@@ -25,8 +25,6 @@ of a number field `K` are first defined at the level of `AbsoluteValue` by using
 `AbsoluteValue`).
 
 ## Main definitions
- - `AbsoluteValue.completion` : the uniform space completion of a field `K` according to the
-  uniform structure defined by the specified real absolute value.
  - `NumberField.InfinitePlace.completion` : the completion of a number field `K` at an infinite
   place, obtained by completing `K` with respect to the absolute value associated to the infinite
   place.
@@ -107,15 +105,13 @@ instance locallyCompactSpace : LocallyCompactSpace (v.completion) :=
 
 /-- The embedding `v.completion →+* ℂ` has closed image inside `ℂ`. -/
 theorem isClosed_image_extensionEmbedding : IsClosed (Set.range (extensionEmbedding v)) :=
-  ((isClosedEmbedding_iff _).1 <|
-    isClosedEmbedding_extensionEmbedding_of_comp v.norm_embedding_eq).2
+  (closedEmbedding_extensionEmbedding_of_comp v.norm_embedding_eq).isClosed_range
 
 /-- The embedding `v.completion →+* ℝ` associated to a real infinite place has closed image
 inside `ℝ`. -/
 theorem isClosed_image_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
     IsClosed (Set.range (extensionEmbedding_of_isReal hv)) :=
-  ((isClosedEmbedding_iff _).1 <|
-    isClosedEmbedding_extensionEmbedding_of_comp (v.norm_embedding_of_isReal hv)).2
+  (closedEmbedding_extensionEmbedding_of_comp <| v.norm_embedding_of_isReal hv).isClosed_range
 
 theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     (extensionEmbedding v).fieldRange ≠ Complex.ofRealHom.fieldRange := by
@@ -130,7 +126,7 @@ theorem surjective_extensionEmbedding_of_isComplex {v : InfinitePlace K} (hv : I
     Function.Surjective (extensionEmbedding v) := by
   rw [← RingHom.fieldRange_eq_top_iff]
   exact (Complex.subfield_eq_of_closed <| isClosed_image_extensionEmbedding v).resolve_left <|
-      subfield_ne_real_of_isComplex hv
+    subfield_ne_real_of_isComplex hv
 
 /-- If `v` is a complex infinite place, then the embedding `v.completion →+* ℂ` is bijective. -/
 theorem bijective_extensionEmbedding_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
@@ -152,7 +148,7 @@ def isometryEquiv_complex_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) 
 /-- If `v` is a real infinite place, then the embedding `v.completion →+* ℝ` is surjective. -/
 theorem surjective_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
     Function.Surjective (extensionEmbedding_of_isReal hv) := by
-  rw [← RingHom.fieldRange_eq_top_iff, ← Real.subfield_eq_of_closed ]
+  rw [← RingHom.fieldRange_eq_top_iff, ← Real.subfield_eq_of_closed]
   exact isClosed_image_extensionEmbedding_of_isReal hv
 
 /-- If `v` is a real infinite place, then the embedding `v.completion →+* ℝ` is bijective. -/
