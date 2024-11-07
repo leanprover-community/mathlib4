@@ -409,7 +409,6 @@ def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α) : (∀ a ∈ s,
 theorem mem_sat_pair {P : α → Prop} (a b : α) : (∀ x ∈ s(a, b), P x) ↔ P a ∧ P b := by
   simp only [mem_iff, forall_eq_or_imp, forall_eq]
 
-@[simp]
 lemma pmap_pair {P : α → Prop} (f : ∀ a, P a → β) (a b : α) (h : P a) (h' : P b) :
     pmap f s(a, b) ((mem_sat_pair a b).mpr ⟨h, h'⟩) = s(f a h, f b h') := by
   simp only [pmap]
