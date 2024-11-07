@@ -163,11 +163,11 @@ then the extended embedding `v.completion →+* L` preserves distances. -/
 theorem extensionEmbedding_dist_eq_of_comp (h : ∀ x, ‖f x‖ = v x) (x y : v.completion) :
     dist (extensionEmbedding_of_comp h x) (extensionEmbedding_of_comp h y) =
       dist x y := by
-  refine (UniformSpace.Completion.induction_on₂ x y ?_ (fun x y => ?_))
+  refine UniformSpace.Completion.induction_on₂ x y ?_ (fun x y => ?_)
   · refine isClosed_eq ?_ continuous_dist
-    exact (continuous_iff_continuous_dist.1 (UniformSpace.Completion.continuous_extension))
+    exact continuous_iff_continuous_dist.1 UniformSpace.Completion.continuous_extension
   · simp only [extensionEmbedding_of_comp_coe]
-    exact UniformSpace.Completion.dist_eq x y ▸ Isometry.dist_eq (WithAbs.isometry_of_comp h) _ _
+    exact UniformSpace.Completion.dist_eq x y ▸ (WithAbs.isometry_of_comp h).dist_eq _ _
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.completion →+* L` is an isometry. -/
