@@ -86,7 +86,7 @@ For `HasAffineProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
     `P f ↔ ∀ i, Q (f ∣_ U i)` for a family `U i` of affine open sets covering `Y`.
 - `AlgebraicGeometry.HasAffineProperty.iff_of_openCover`:
     `P f ↔ ∀ i, P (𝒰.pullbackHom f i)` for affine open covers `𝒰` of `Y`.
-- `AlgebraicGeometry.HasAffineProperty.stableUnderBaseChange_mk`:
+- `AlgebraicGeometry.HasAffineProperty.isStableUnderBaseChange_mk`:
     If `Q` is stable under affine base change, then `P` is stable under arbitrary base change.
 -/
 
@@ -398,13 +398,13 @@ instance (P : MorphismProperty Scheme) [IsLocalAtTarget P] : (of P).IsLocal wher
 
 /-- A `P : AffineTargetMorphismProperty` is stable under base change if `P` holds for `Y ⟶ S`
 implies that `P` holds for `X ×ₛ Y ⟶ X` with `X` and `S` affine schemes. -/
-def StableUnderBaseChange (P : AffineTargetMorphismProperty) : Prop :=
+def IsStableUnderBaseChange (P : AffineTargetMorphismProperty) : Prop :=
   ∀ ⦃Z X Y S : Scheme⦄ [IsAffine S] [IsAffine X] {f : X ⟶ S} {g : Y ⟶ S}
     {f' : Z ⟶ Y} {g' : Z ⟶ X}, IsPullback g' f' f g → P g → P g'
 
-lemma StableUnderBaseChange.mk (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
+lemma IsStableUnderBaseChange.mk (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
     (H : ∀ ⦃X Y S : Scheme⦄ [IsAffine S] [IsAffine X] (f : X ⟶ S) (g : Y ⟶ S),
-      P g → P (pullback.fst f g)) : P.StableUnderBaseChange := by
+      P g → P (pullback.fst f g)) : P.IsStableUnderBaseChange := by
   intros Z X Y S _ _ f g f' g' h hg
   rw [← P.cancel_left_of_respectsIso h.isoPullback.inv, h.isoPullback_inv_fst]
   exact H f g hg
@@ -578,7 +578,7 @@ protected theorem iff {P : MorphismProperty Scheme} {Q : AffineTargetMorphismPro
   ⟨fun _ ↦ ⟨inferInstance, ext fun _ _ _ ↦ iff_of_isAffine.symm⟩,
     fun ⟨_, e⟩ ↦ e ▸ of_isLocalAtTarget P⟩
 
-private theorem pullback_fst_of_right (hP' : Q.StableUnderBaseChange)
+private theorem pullback_fst_of_right (hP' : Q.IsStableUnderBaseChange)
     {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffine S] (H : Q g) :
     P (pullback.fst f g) := by
   letI := isLocal_affineProperty P
@@ -591,9 +591,9 @@ private theorem pullback_fst_of_right (hP' : Q.StableUnderBaseChange)
   apply hP' (.of_hasPullback _ _)
   exact H
 
-theorem stableUnderBaseChange (hP' : Q.StableUnderBaseChange) :
-    P.StableUnderBaseChange :=
-  MorphismProperty.StableUnderBaseChange.mk
+theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
+    P.IsStableUnderBaseChange :=
+  MorphismProperty.IsStableUnderBaseChange.mk'
     (fun X Y S f g H => by
       rw [IsLocalAtTarget.iff_of_openCover (P := P) (S.affineCover.pullbackCover f)]
       intro i

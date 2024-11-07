@@ -47,7 +47,7 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and 
 
 universe u v
 
-open TensorProduct
+open TensorProduct DirectSum
 
 namespace Module
 
@@ -177,6 +177,39 @@ lemma iff_flat_and_lTensor_reflects_triviality :
       simp only [← not_subsingleton_iff_nontrivial]; tauto
 
 end faithful
+
+/-- If `M` is a faithfully flat `R`-module and `N` is `R`-linearly isomorphic to `M`, then
+`N` is faithfully flat. -/
+lemma of_linearEquiv {N : Type*} [AddCommGroup N] [Module R N] [FaithfullyFlat R M]
+    (e : N ≃ₗ[R] M) : FaithfullyFlat R N := by
+  rw [iff_flat_and_lTensor_faithful]
+  exact ⟨Flat.of_linearEquiv R M N e,
+    fun P _ _ hP ↦ (TensorProduct.congr e (LinearEquiv.refl R P)).toEquiv.nontrivial⟩
+
+section
+
+open Classical
+
+/-- A direct sum of faithfully flat `R`-modules is faithfully flat. -/
+instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)]
+    [∀ i, Module R (M i)] [∀ i, FaithfullyFlat R (M i)] : FaithfullyFlat R (⨁ i, M i) := by
+  rw [iff_flat_and_lTensor_faithful]
+  refine ⟨inferInstance, fun N _ _ hN ↦ ?_⟩
+  obtain ⟨i⟩ := ‹Nonempty ι›
+  obtain ⟨x, y, hxy⟩ := Nontrivial.exists_pair_ne (α := M i ⊗[R] N)
+  haveI : Nontrivial (⨁ (i : ι), M i ⊗[R] N) :=
+    ⟨DirectSum.of _ i x, DirectSum.of _ i y, fun h ↦ hxy (DirectSum.of_injective i h)⟩
+  apply (TensorProduct.directSumLeft R M N).toEquiv.nontrivial
+
+/-- Free `R`-modules over discrete types are flat. -/
+instance finsupp (ι : Type v) [Nonempty ι] : FaithfullyFlat R (ι →₀ R) :=
+  of_linearEquiv _ _ (finsuppLEquivDirectSum R R ι)
+
+end
+
+/-- Any free, nontrivial `R`-module is flat. -/
+instance [Nontrivial M] [Module.Free R M] : FaithfullyFlat R M :=
+  of_linearEquiv _ _ (Free.repr R M)
 
 section exact
 

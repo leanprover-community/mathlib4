@@ -87,7 +87,7 @@ protected theorem continuousAt (hf : IsCoveringMapOn f s) {x : E} (hx : f x ∈ 
   (hf (f x) hx).continuousAt
 
 protected theorem continuousOn (hf : IsCoveringMapOn f s) : ContinuousOn f (f ⁻¹' s) :=
-  ContinuousAt.continuousOn fun _ => hf.continuousAt
+  continuousOn_of_forall_continuousAt fun _ => hf.continuousAt
 
 protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
     IsLocalHomeomorphOn f (f ⁻¹' s) := by
