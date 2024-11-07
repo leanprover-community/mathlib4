@@ -2098,4 +2098,4 @@ theorem ContDiff.restrict_scalars (h : ContDiff 𝕜' n f) : ContDiff 𝕜 n f :
 
 end RestrictScalars
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 2200
