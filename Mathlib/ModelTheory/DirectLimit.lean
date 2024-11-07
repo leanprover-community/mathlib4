@@ -3,11 +3,11 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
-import Mathlib.Data.Fintype.Order
-import Mathlib.Algebra.DirectLimit
-import Mathlib.ModelTheory.Quotients
-import Mathlib.ModelTheory.FinitelyGenerated
 import Mathlib.Data.Finite.Sum
+import Mathlib.Data.Fintype.Order
+import Mathlib.ModelTheory.FinitelyGenerated
+import Mathlib.ModelTheory.Quotients
+import Mathlib.Order.DirectedInverseSystem
 
 /-!
 # Direct Limits of First-Order Structures
@@ -45,13 +45,13 @@ namespace DirectedSystem
 /-- A copy of `DirectedSystem.map_self` specialized to `L`-embeddings, as otherwise the
 `fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem map_self [DirectedSystem G fun i j h => f i j h] (i x h) : f i i h x = x :=
-  DirectedSystem.map_self (fun i j h => f i j h) i x h
+  DirectedSystem.map_self (f := (f · · ·)) x
 
 /-- A copy of `DirectedSystem.map_map` specialized to `L`-embeddings, as otherwise the
 `fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
     f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
-  DirectedSystem.map_map (fun i j h => f i j h) hij hjk x
+  DirectedSystem.map_map (f := (f · · ·)) hij hjk x
 
 variable {G' : ℕ → Type w} [∀ i, L.Structure (G' i)] (f' : ∀ n : ℕ, G' n ↪[L] G' (n + 1))
 
@@ -73,8 +73,8 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
       Embedding.comp_apply, ih]
 
 instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i j h :=
-  ⟨fun _ _ _ => congr (congr rfl (Nat.leRecOn_self _)) rfl,
-   fun hij hjk => by simp [Nat.leRecOn_trans hij hjk]⟩
+  ⟨fun _ _ => congr (congr rfl (Nat.leRecOn_self _)) rfl,
+   fun _ _ _ hij hjk => by simp [Nat.leRecOn_trans hij hjk]⟩
 
 end DirectedSystem
 
@@ -444,8 +444,8 @@ variable [Nonempty ι] [IsDirected ι (· ≤ ·)]
 variable {M N : Type*} [L.Structure M] [L.Structure N] (S : ι →o L.Substructure M)
 
 instance : DirectedSystem (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) where
-  map_self' := fun _ _ _ ↦ rfl
-  map_map' := fun _ _ _ ↦ rfl
+  map_self _ _ := rfl
+  map_map _ _ _ _ _ _ := rfl
 
 namespace DirectLimit
 
