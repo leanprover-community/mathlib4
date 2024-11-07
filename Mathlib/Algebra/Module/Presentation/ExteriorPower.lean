@@ -16,6 +16,27 @@ Given a presentation of a `R`-module `M`, we obtain a presentation of `⋀[R]^n 
 
 universe w
 
+namespace MultilinearMap
+
+open Function
+
+/-- Better constructor for `MultilinearMap` when the index type has a `DecidableEq` instance. -/
+@[simps]
+def mk' {R : Type*} {ι : Type*} [DecidableEq ι]
+    {M₁ : ι → Type*} {M₂ : Type*} [Semiring R]
+    [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀ i, Module R (M₁ i)] [Module R M₂]
+    (f : (∀ i, M₁ i) → M₂)
+    (map_update_add : ∀ (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i),
+      f (update m i (x + y)) = f (update m i x) + f (update m i y))
+    (map_update_smul : ∀ (m : (i : ι) → M₁ i) (i : ι) (c : R) (x : M₁ i),
+      f (update m i (c • x)) = c • f (update m i x)):
+    MultilinearMap R M₁ M₂ where
+  toFun := f
+  map_update_add' m i x y := by convert map_update_add m i x y
+  map_update_smul' m i c x := by convert map_update_smul m i c x
+
+end MultilinearMap
+
 namespace Function
 
 section
@@ -75,7 +96,6 @@ section
 variable {ι : Type*} [DecidableEq ι] {M : ι → Type*} {i₀ i₁ : ι} (hi : i₀ ≠ i₁)
   (f : ∀ (i : ({i₀, i₁}ᶜ : Set ι)), M i) (x₀ : M i₀) (x₁ : M i₁)
 
-
 def extendComplPair (i : ι) : M i :=
   extendComplSingleton _
     (extendComplSingleton (ι := ({i₀}ᶜ : Set ι)) (M := fun j ↦ M j)
@@ -120,6 +140,50 @@ lemma extendComplPair_restriction (φ : ∀ i, M i) :
     · subst h₁
       simp
     · rw [extendComplPair_of_neq _ _ _ _ _ h₀ h₁]
+
+lemma extendComplPair_update (k : ({i₀, i₁}ᶜ : Set ι)) (x : M k) :
+    extendComplPair hi (update f k x) x₀ x₁ =
+      update (extendComplPair hi f x₀ x₁) k x := by
+  obtain ⟨k, hk⟩ := k
+  simp only [Set.mem_compl_iff, Set.mem_insert_iff, Set.mem_singleton_iff, not_or] at hk
+  ext i
+  by_cases h₀ : i = i₀
+  · subst h₀
+    rw [extendComplPair_zero, update_noteq (Ne.symm hk.1), extendComplPair_zero]
+  · by_cases h₁ : i = i₁
+    · subst h₁
+      rw [extendComplPair_one, update_noteq (Ne.symm hk.2), extendComplPair_one]
+    · rw [extendComplPair_of_neq _ _ _ _ _ h₀ h₁]
+      by_cases hik : i = k
+      · subst hik
+        simp
+      · rw [update_noteq (by simpa using hik),
+          update_noteq (by simpa using hik),
+          extendComplPair_of_neq _ _ _ _ _ h₀ h₁]
+
+@[simp]
+lemma update_extendComplPair₀ (x₀' : M i₀) :
+    update (extendComplPair hi f x₀ x₁) i₀ x₀' = extendComplPair hi f x₀' x₁ := by
+  ext i
+  by_cases h₀ : i = i₀
+  · subst h₀
+    simp only [update_same, extendComplPair_zero]
+  · by_cases h₁ : i = i₁
+    · subst h₁
+      simp only [update_noteq hi.symm, extendComplPair_one]
+    · simp only [update_noteq h₀, extendComplPair_of_neq _ _ _ _ _ h₀ h₁]
+
+@[simp]
+lemma update_extendComplPair₁ (x₁' : M i₁) :
+    update (extendComplPair hi f x₀ x₁) i₁ x₁' = extendComplPair hi f x₀ x₁' := by
+  ext i
+  by_cases h₁ : i = i₁
+  · subst h₁
+    simp only [update_same, extendComplPair_one]
+  · by_cases h₀ : i = i₀
+    · subst h₀
+      simp only [update_noteq hi, extendComplPair_zero]
+    · simp only [update_noteq h₁, extendComplPair_of_neq _ _ _ _ _ h₀ h₁]
 
 lemma extendComplPair_comp {α : Type*} (f : ({i₀, i₁}ᶜ : Set ι) → α) {β : Type*} (g : α → β)
     (x₀ x₁ : α) :
@@ -202,15 +266,29 @@ variable {R : Type*} [CommRing R]
 def curry₂ :
     M i →ₗ[R] M j →ₗ[R] MultilinearMap R (fun (k : ({i, j}ᶜ : Set ι)) ↦ M k) N where
   toFun := fun mi ↦
-    { toFun := fun mj ↦
-        { toFun := fun m ↦ f (extendComplPair hij m mi mj)
-          map_update_add' := sorry
-          map_update_smul' := sorry }
-      map_add' := by
-        sorry
-      map_smul' := sorry }
-  map_add' := sorry
-  map_smul' := sorry
+    { toFun := fun mj ↦ MultilinearMap.mk' (fun m ↦ f (extendComplPair hij m mi mj))
+        (fun m k m₀ m₁ ↦ by
+          dsimp
+          simp only [Function.extendComplPair_update, f.map_update_add])
+        (fun m k r m₀ ↦ by
+          dsimp
+          simp only [Function.extendComplPair_update, f.map_update_smul])
+      map_add' := fun mj mj' ↦ by
+        ext m
+        simpa only [update_extendComplPair₁] using
+          f.map_update_add (extendComplPair hij m mi 0) j mj mj'
+      map_smul' := fun r mj ↦ by
+        ext m
+        simpa only [update_extendComplPair₁] using
+          f.map_update_smul (extendComplPair hij m mi 0) j r mj }
+  map_add' mi mi' := by
+    ext mj m
+    simpa only [update_extendComplPair₀] using
+      f.map_update_add (extendComplPair hij m 0 mj) i mi mi'
+  map_smul' r mi := by
+    ext mj m
+    simpa only [update_extendComplPair₀] using
+      f.map_update_smul (extendComplPair hij m 0 mj) i r mi
 
 lemma curry₂_apply (mi : M i) (mj : M j) (v : (k : ({i, j}ᶜ : Set ι)) → M k) :
     curry₂ f hij mi mj v = f (extendComplPair hij v mi mj) :=
