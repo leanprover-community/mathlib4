@@ -216,9 +216,13 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
     · rw [ht]; trivial
 
 theorem finiteType_is_local : PropertyIsLocal @FiniteType :=
-  ⟨finiteType_localizationPreserves, finiteType_ofLocalizationSpanTarget,
-    finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
-      finiteType_holdsForLocalizationAway⟩
+  ⟨finiteType_localizationPreserves.away,
+    finiteType_ofLocalizationSpanTarget,
+    finiteType_ofLocalizationSpanTarget.ofLocalizationSpan
+      (finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+        finiteType_holdsForLocalizationAway).left,
+    (finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+      finiteType_holdsForLocalizationAway).right⟩
 
 theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType :=
   RingHom.finiteType_is_local.respectsIso
