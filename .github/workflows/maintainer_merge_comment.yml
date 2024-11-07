@@ -49,7 +49,8 @@ jobs:
         run: |
           echo "Topic: ${{ steps.determine_topic.outputs.topic }}"
           printf 'Comment: %s\nEnd comment\n' "${{ steps.make_comment.outputs.comment }}"
-          printf 'title<<EOF\n%s\nEOF' "$(./scripts/maintainer_merge_message.sh "${BODY}" comment)" | tee "$GITHUB_OUTPUT"
+          printf 'title<<EOF\n%s\nEOF' "A simple message" | tee
+          #printf 'title<<EOF\n%s\nEOF' "$(./scripts/maintainer_merge_message.sh "${BODY}" comment)" | tee "$GITHUB_OUTPUT"
           #if printf '%s\n' "${BODY}" | grep "^maintainer merge"
           #then
           #  printf $'title<<EOF\n%s\nEOF' "${{ format('{0} requested a maintainer merge from comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}" >> "${GITHUB_OUTPUT}"
