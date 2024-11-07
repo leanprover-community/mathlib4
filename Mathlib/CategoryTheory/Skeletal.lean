@@ -76,6 +76,9 @@ instance [Inhabited C] : Inhabited (Skeleton C) :=
 noncomputable instance : Category (Skeleton C) := by
   apply InducedCategory.category
 
+noncomputable instance {α} [CoeSort C α] : CoeSort (Skeleton C) α :=
+  inferInstanceAs (CoeSort (InducedCategory _ _) _)
+
 /-- The functor from the skeleton of `C` to `C`. -/
 @[simps!]
 noncomputable def fromSkeleton : Skeleton C ⥤ C :=
@@ -92,9 +95,25 @@ instance : (fromSkeleton C).EssSurj where mem_essImage X := ⟨Quotient.mk' X, Q
 -- Porting note: named this instance
 noncomputable instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalence where
 
+theorem fromSkeleton_asEquivalence_inverse_obj (X : C) :
+    (fromSkeleton C).asEquivalence.inverse.obj X = ⟦X⟧ :=
+  Quotient.eq_mk_iff_out.mpr ⟨(fromSkeleton C).asEquivalence.counitIso.app X⟩
+
 /-- The equivalence between the skeleton and the category itself. -/
 noncomputable def skeletonEquivalence : Skeleton C ≌ C :=
-  (fromSkeleton C).asEquivalence
+  (fromSkeleton C).asEquivalence.changeInverse <|
+    Functor.isoCopyObj _ _ (eqToIso <| fromSkeleton_asEquivalence_inverse_obj C ·)
+
+variable {C}
+
+/-- The class of an object in the skeleton. -/
+abbrev toSkeleton (X : C) : Skeleton C := ⟦X⟧
+
+theorem skeletonEquivalence_inverse_obj (X : C) :
+    (skeletonEquivalence C).inverse.obj X = toSkeleton X :=
+  rfl
+
+variable (C)
 
 theorem skeleton_skeletal : Skeletal (Skeleton C) := by
   rintro X Y ⟨h⟩
