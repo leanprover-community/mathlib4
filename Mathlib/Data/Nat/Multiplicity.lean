@@ -6,7 +6,6 @@ Authors: Chris Hughes
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.Digits
@@ -57,12 +56,12 @@ namespace Nat
 divides `n`. This set is expressed by filtering `Ico 1 b` where `b` is any bound greater than
 `log m n`. -/
 theorem emultiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) (hb : log m n < b) :
-    emultiplicity m n = ↑((Finset.Ico 1 b).filter fun i => m ^ i ∣ n).card :=
+    emultiplicity m n = #{i ∈ Ico 1 b | m ^ i ∣ n} :=
   have fin := Nat.multiplicity_finite_iff.2 ⟨hm, hn⟩
   calc
-    emultiplicity m n = ↑(Ico 1 <| multiplicity m n + 1).card := by
+    emultiplicity m n = #(Ico 1 <| multiplicity m n + 1) := by
       simp [fin.emultiplicity_eq_multiplicity]
-    _ = ↑((Finset.Ico 1 b).filter fun i => m ^ i ∣ n).card :=
+    _ = #{i ∈ Ico 1 b | m ^ i ∣ n} :=
       congr_arg _ <|
         congr_arg card <|
           Finset.ext fun i => by
@@ -108,8 +107,7 @@ theorem emultiplicity_factorial {p : ℕ} (hp : p.Prime) :
     calc
       emultiplicity p (n + 1)! = emultiplicity p n ! + emultiplicity p (n + 1) := by
         rw [factorial_succ, hp.emultiplicity_mul, add_comm]
-      _ = (∑ i ∈ Ico 1 b, n / p ^ i : ℕ) +
-            ((Finset.Ico 1 b).filter fun i => p ^ i ∣ n + 1).card := by
+      _ = (∑ i ∈ Ico 1 b, n / p ^ i : ℕ) + #{i ∈ Ico 1 b | p ^ i ∣ n + 1} := by
         rw [emultiplicity_factorial hp ((log_mono_right <| le_succ _).trans_lt hb), ←
           emultiplicity_eq_card_pow_dvd hp.ne_one (succ_pos _) hb]
       _ = (∑ i ∈ Ico 1 b, (n / p ^ i + if p ^ i ∣ n + 1 then 1 else 0) : ℕ) := by
@@ -178,7 +176,7 @@ theorem emultiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
 theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
     ∑ i ∈ Finset.Ico 1 b, n / p ^ i =
       ((∑ i ∈ Finset.Ico 1 b, k / p ^ i) + ∑ i ∈ Finset.Ico 1 b, (n - k) / p ^ i) +
-        ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
+        #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} :=
   calc
     ∑ i ∈ Finset.Ico 1 b, n / p ^ i = ∑ i ∈ Finset.Ico 1 b, (k + (n - k)) / p ^ i := by
       simp only [add_tsub_cancel_of_le hkn]
@@ -191,12 +189,10 @@ theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
   are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
   is any bound greater than `log p (n + k)`. -/
 theorem emultiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k) < b) :
-    emultiplicity p (choose (n + k) k) =
-      ((Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card := by
+    emultiplicity p (choose (n + k) k) = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} := by
   have h₁ :
       emultiplicity p (choose (n + k) k) + emultiplicity p (k ! * n !) =
-        ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card +
-          emultiplicity p (k ! * n !) := by
+        #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} + emultiplicity p (k ! * n !) := by
     rw [← hp.emultiplicity_mul, ← mul_assoc]
     have := (add_tsub_cancel_right n k) ▸ choose_mul_factorial_mul_factorial (le_add_left k n)
     rw [this, hp.emultiplicity_factorial hnb, hp.emultiplicity_mul,
@@ -212,8 +208,7 @@ theorem emultiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k
   are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
   is any bound greater than `log p n`. -/
 theorem emultiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb : log p n < b) :
-    emultiplicity p (choose n k) =
-      ((Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card := by
+    emultiplicity p (choose n k) = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
   have := Nat.sub_add_cancel hkn
   convert @emultiplicity_choose' p (n - k) k b hp _
   · rw [this]
@@ -237,9 +232,9 @@ theorem emultiplicity_choose_prime_pow_add_emultiplicity (hp : p.Prime) (hkn : k
   le_antisymm
     (by
       have hdisj :
-        Disjoint ((Ico 1 n.succ).filter fun i => p ^ i ≤ k % p ^ i + (p ^ n - k) % p ^ i)
-          ((Ico 1 n.succ).filter fun i => p ^ i ∣ k) := by
-        simp (config := { contextual := true }) [disjoint_right, *, dvd_iff_mod_eq_zero,
+        Disjoint {i ∈ Ico 1 n.succ | p ^ i ≤ k % p ^ i + (p ^ n - k) % p ^ i}
+          {i ∈ Ico 1 n.succ | p ^ i ∣ k} := by
+        simp +contextual [disjoint_right, *, dvd_iff_mod_eq_zero,
           Nat.mod_lt _ (pow_pos hp.pos _)]
       rw [emultiplicity_choose hp hkn (lt_succ_self _),
         emultiplicity_eq_card_pow_dvd (ne_of_gt hp.one_lt) hk0.bot_lt
@@ -282,10 +277,10 @@ theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplic
   · intro b n ih h
     by_cases hn : n = 0
     · subst hn
-      simp only [ne_eq, bit_eq_zero, true_and, Bool.not_eq_false] at h
-      simp only [h, bit_true, factorial, mul_one, Nat.isUnit_iff, cast_one]
+      simp only [ne_eq, bit_eq_zero_iff, true_and, Bool.not_eq_false] at h
+      simp only [h, factorial, mul_one, Nat.isUnit_iff, cast_one]
       rw [Prime.emultiplicity_one]
-      · simp [zero_lt_one]
+      · exact zero_lt_one
       · decide
     have : emultiplicity 2 (2 * n)! < (2 * n : ℕ) := by
       rw [prime_two.emultiplicity_factorial_mul]

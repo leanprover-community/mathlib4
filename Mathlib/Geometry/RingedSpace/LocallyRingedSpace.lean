@@ -11,7 +11,7 @@ import Mathlib.Geometry.RingedSpace.Stalks
 
 We define (bundled) locally ringed spaces (as `SheafedSpace CommRing` along with the fact that the
 stalks are local rings), and morphisms between these (morphisms in `SheafedSpace` with
-`IsLocalRingHom` on the stalk maps).
+`IsLocalHom` on the stalk maps).
 -/
 
 -- Explicit universe annotations were used in this file to improve performance #12737
@@ -73,7 +73,7 @@ def 𝒪 : Sheaf CommRingCat X.toTopCat :=
 structure Hom (X Y : LocallyRingedSpace.{u})
     extends X.toPresheafedSpace.Hom Y.toPresheafedSpace : Type _ where
   /-- the underlying morphism induces a local ring homomorphism on stalks -/
-  prop : ∀ x, IsLocalRingHom (toHom.stalkMap x)
+  prop : ∀ x, IsLocalHom (toHom.stalkMap x)
 
 /-- A morphism of locally ringed spaces as a morphism of sheafed spaces. -/
 abbrev Hom.toShHom {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
@@ -104,18 +104,23 @@ noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x :
     Y.presheaf.stalk (f.1.1 x) ⟶ X.presheaf.stalk x :=
   f.toShHom.stalkMap x
 
-instance isLocalRingHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
-    IsLocalRingHom (f.stalkMap x) :=
+@[instance]
+theorem isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+    IsLocalHom (f.stalkMap x) :=
   f.2 x
 
-instance isLocalRingHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
-    IsLocalRingHom (f.toShHom.stalkMap x) :=
+@[instance]
+theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+    IsLocalHom (f.toShHom.stalkMap x) :=
   f.2 x
+
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHomValStalkMap := isLocalHomValStalkMap
 
 /-- The identity morphism on a locally ringed space. -/
 @[simps! toShHom]
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
-  ⟨𝟙 X.toSheafedSpace, fun x => by erw [PresheafedSpace.stalkMap.id]; apply isLocalRingHom_id⟩
+  ⟨𝟙 X.toSheafedSpace, fun x => by erw [PresheafedSpace.stalkMap.id]; infer_instance⟩
 
 instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
   ⟨id X⟩
@@ -124,7 +129,7 @@ instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
 def comp {X Y Z : LocallyRingedSpace.{u}} (f : Hom X Y) (g : Hom Y Z) : Hom X Z :=
   ⟨f.toShHom ≫ g.toShHom, fun x => by
     erw [PresheafedSpace.stalkMap.comp]
-    exact @RingHom.isLocalRingHom_comp _ _ _ _ _ _ _ _ (f.2 _) (g.2 _)⟩
+    infer_instance⟩
 
 /-- The category of locally ringed spaces. -/
 instance : Category LocallyRingedSpace.{u} where
@@ -180,12 +185,11 @@ See also `isoOfSheafedSpaceIso`.
 @[simps! toShHom]
 def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace.{u}}
     (f : X.toSheafedSpace ⟶ Y.toSheafedSpace) [IsIso f] : X ⟶ Y :=
-  Hom.mk f fun x =>
+  Hom.mk f fun _ =>
     -- Here we need to see that the stalk maps are really local ring homomorphisms.
     -- This can be solved by type class inference, because stalk maps of isomorphisms
     -- are isomorphisms and isomorphisms are local ring homomorphisms.
-    show IsLocalRingHom ((SheafedSpace.forgetToPresheafedSpace.map f).stalkMap x) by
-      infer_instance
+    inferInstance
 
 /-- Given two locally ringed spaces `X` and `Y`, an isomorphism between `X` and `Y` as _sheafed_
 spaces can be lifted to an isomorphism `X ⟶ Y` as locally ringed spaces.
@@ -213,8 +217,8 @@ instance is_sheafedSpace_iso {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) [IsIso
 /-- The restriction of a locally ringed space along an open embedding.
 -/
 @[simps!]
-def restrict {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : OpenEmbedding f) :
-    LocallyRingedSpace where
+def restrict {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat}
+    (h : IsOpenEmbedding f) : LocallyRingedSpace where
   localRing := by
     intro x
     -- We show that the stalk of the restriction is isomorphic to the original stalk,
@@ -224,13 +228,13 @@ def restrict {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h
 
 /-- The canonical map from the restriction to the subspace. -/
 def ofRestrict {U : TopCat} (X : LocallyRingedSpace.{u})
-    {f : U ⟶ X.toTopCat} (h : OpenEmbedding f) : X.restrict h ⟶ X :=
+    {f : U ⟶ X.toTopCat} (h : IsOpenEmbedding f) : X.restrict h ⟶ X :=
   ⟨X.toPresheafedSpace.ofRestrict h, fun _ => inferInstance⟩
 
 /-- The restriction of a locally ringed space `X` to the top subspace is isomorphic to `X` itself.
 -/
 def restrictTopIso (X : LocallyRingedSpace.{u}) :
-    X.restrict (Opens.openEmbedding ⊤) ≅ X :=
+    X.restrict (Opens.isOpenEmbedding ⊤) ≅ X :=
   isoOfSheafedSpaceIso X.toSheafedSpace.restrictTopIso
 
 /-- The global sections, notated Gamma.
@@ -432,7 +436,7 @@ theorem preimage_basicOpen {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) {U : Ope
     rw [← stalkMap_germ_apply] at hx
     exact (isUnit_map_iff (f.toShHom.stalkMap _) _).mp hx
 
-variable {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : OpenEmbedding f)
+variable {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : IsOpenEmbedding f)
   (V : Opens U) (x : U) (hx : x ∈ V)
 
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk

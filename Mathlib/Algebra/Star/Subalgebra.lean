@@ -73,7 +73,6 @@ instance algebra (s : StarSubalgebra R A) : Algebra R s :=
 instance starModule (s : StarSubalgebra R A) : StarModule R s where
   star_smul r a := Subtype.ext (star_smul r (a : A))
 
-@[simp, nolint simpNF] -- porting note (#10618): `simpNF` says `simp` can prove this, but it can't
 theorem mem_carrier {s : StarSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 

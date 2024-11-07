@@ -46,7 +46,7 @@ structure Scheme extends LocallyRingedSpace where
     ∀ x : toLocallyRingedSpace,
       ∃ (U : OpenNhds x) (R : CommRingCat),
         Nonempty
-          (toLocallyRingedSpace.restrict U.openEmbedding ≅ Spec.toLocallyRingedSpace.obj (op R))
+          (toLocallyRingedSpace.restrict U.isOpenEmbedding ≅ Spec.toLocallyRingedSpace.obj (op R))
 
 namespace Scheme
 
@@ -389,6 +389,9 @@ lemma Spec.map_app (U) :
 lemma Spec.map_appLE {U V} (e : U ≤ Spec.map f ⁻¹ᵁ V) :
     (Spec.map f).appLE V U e = StructureSheaf.comap f V U e := rfl
 
+instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
+  inferInstanceAs <| Nonempty (PrimeSpectrum A)
+
 end
 
 namespace Scheme
@@ -640,6 +643,9 @@ namespace Scheme
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
+instance (x) : IsLocalHom (f.stalkMap x) :=
+  f.prop x
+
 @[simp]
 lemma stalkMap_id (X : Scheme.{u}) (x : X) :
     (𝟙 X : X ⟶ X).stalkMap x = 𝟙 (X.presheaf.stalk x) :=
@@ -723,7 +729,7 @@ open LocalRing
 
 @[simp]
 lemma Spec_closedPoint {R S : CommRingCat} [LocalRing R] [LocalRing S]
-    {f : R ⟶ S} [IsLocalRingHom f] : (Spec.map f).base (closedPoint S) = closedPoint R :=
+    {f : R ⟶ S} [IsLocalHom f] : (Spec.map f).base (closedPoint S) = closedPoint R :=
   LocalRing.comap_closedPoint f
 
 end LocalRing

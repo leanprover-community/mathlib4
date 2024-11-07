@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Wojciech Nawrocki
 -/
 import Mathlib.Data.Matrix.Basis
+import Mathlib.RingTheory.Ideal.Lattice
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 import Mathlib.RingTheory.JacobsonIdeal
 
@@ -166,7 +167,7 @@ theorem asIdeal_matricesOver [DecidableEq n] (I : TwoSidedIdeal R) :
     asIdeal (I.matricesOver n) = (asIdeal I).matricesOver n := by
   ext; simp
 
-variable {n : Type*} [Fintype n] [DecidableEq n]
+variable {n : Type*} [Fintype n]
 
 /--
 Two-sided ideals in $R$ correspond bijectively to those in $Mₙ(R)$.
@@ -182,12 +183,15 @@ def equivMatricesOver (i j : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n 
     (by rintro _ _ ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩; exact ⟨x + y, J.add_mem hx hy, rfl⟩)
     (by rintro _ ⟨x, hx, rfl⟩; exact ⟨-x, J.neg_mem hx, rfl⟩)
     (by
+      classical
       rintro x _ ⟨y, hy, rfl⟩
       exact ⟨diagonal (fun _ ↦ x) * y, J.mul_mem_left _ _ hy, by simp⟩)
     (by
+      classical
       rintro _ y ⟨x, hx, rfl⟩
       exact ⟨x * diagonal (fun _ ↦ y), J.mul_mem_right _ _ hx, by simp⟩)
   right_inv J := SetLike.ext fun x ↦ by
+    classical
     simp only [mem_mk', Set.mem_image, SetLike.mem_coe, mem_matricesOver]
     constructor
     · intro h
@@ -203,7 +207,7 @@ def equivMatricesOver (i j : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n 
       by_cases hab : a = k ∧ b = l
       · rcases hab with ⟨ha, hb⟩
         subst ha hb
-        simp only [stdBasisMatrix, and_self, ↓reduceIte, StdBasisMatrix.mul_right_apply_same,
+        simp only [StdBasisMatrix.apply_same, StdBasisMatrix.mul_right_apply_same,
           StdBasisMatrix.mul_left_apply_same, one_mul, mul_one]
         rw [hy2 a b]
       · conv_lhs =>

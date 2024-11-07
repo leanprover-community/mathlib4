@@ -565,6 +565,7 @@ def pullbackSpecIso :
   letI H := IsLimit.equivIsoLimit (PullbackCone.eta _)
     (PushoutCocone.isColimitEquivIsLimitOp _ (CommRingCat.pushoutCoconeIsColimit R S T))
   limit.isoLimitCone ⟨_, isLimitPullbackConeMapOfIsLimit Scheme.Spec _ H⟩
+
 /--
 The composition of the inverse of the isomorphism `pullbackSepcIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the first projection is
@@ -575,6 +576,7 @@ the morphism `Spec (S ⊗[R] T) ⟶ Spec S` obtained by applying `Spec.map` to t
 lemma pullbackSpecIso_inv_fst :
     (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom includeLeftRingHom) :=
   limit.isoLimitCone_inv_π _ _
+
 /--
 The composition of the inverse of the isomorphism `pullbackSepcIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the second projection is
@@ -586,6 +588,7 @@ lemma pullbackSpecIso_inv_snd :
     (pullbackSpecIso R S T).inv ≫ pullback.snd _ _ =
       Spec.map (ofHom (R := T) (S := S ⊗[R] T) (toRingHom includeRight)) :=
   limit.isoLimitCone_inv_π _ _
+
 /--
 The composition of the isomorphism `pullbackSepcIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the morphism
@@ -596,6 +599,7 @@ is the first projection.
 lemma pullbackSpecIso_hom_fst :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom includeLeftRingHom) = pullback.fst _ _ := by
   rw [← pullbackSpecIso_inv_fst, Iso.hom_inv_id_assoc]
+
 /--
 The composition of the isomorphism `pullbackSepcIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the morphism
@@ -607,7 +611,26 @@ lemma pullbackSpecIso_hom_snd :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (toRingHom includeRight)) = pullback.snd _ _ := by
   rw [← pullbackSpecIso_inv_snd, Iso.hom_inv_id_assoc]
 
-end Spec
+lemma isPullback_Spec_map_isPushout {A B C P : CommRingCat} (f : A ⟶ B) (g : A ⟶ C)
+    (inl : B ⟶ P) (inr : C ⟶ P) (h : IsPushout f g inl inr) :
+    IsPullback (Spec.map inl) (Spec.map inr) (Spec.map f) (Spec.map g) :=
+  IsPullback.map Scheme.Spec h.op.flip
 
+lemma isPullback_Spec_map_pushout {A B C : CommRingCat} (f : A ⟶ B) (g : A ⟶ C) :
+    IsPullback (Spec.map (pushout.inl f g))
+      (Spec.map (pushout.inr f g)) (Spec.map f) (Spec.map g) := by
+  apply isPullback_Spec_map_isPushout
+  exact IsPushout.of_hasPushout f g
+
+lemma diagonal_Spec_map :
+    pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))) =
+      Spec.map (CommRingCat.ofHom (Algebra.TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).toRingHom) ≫
+        (pullbackSpecIso R S S).inv := by
+  ext1 <;> simp only [pullback.diagonal_fst, pullback.diagonal_snd, ← Spec.map_comp, ← Spec.map_id,
+    AlgHom.toRingHom_eq_coe, Category.assoc, pullbackSpecIso_inv_fst, pullbackSpecIso_inv_snd]
+  · congr 1; ext x; show x = Algebra.TensorProduct.lmul' R (S := S) (x ⊗ₜ[R] 1); simp
+  · congr 1; ext x; show x = Algebra.TensorProduct.lmul' R (S := S) (1 ⊗ₜ[R] x); simp
+
+end Spec
 
 end AlgebraicGeometry

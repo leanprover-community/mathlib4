@@ -253,18 +253,18 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
   rw [comapRight_compProd_id_prod _ _ he]
   have h_fst : fst κ' = fst κ := by
     ext a u
-    unfold_let κ'
+    unfold κ'
     rw [fst_apply, map_apply _ (by fun_prop),
       Measure.map_map measurable_fst h_prod_embed.measurable, fst_apply]
     congr
   rw [h_fst]
   ext a t ht : 2
-  simp_rw [compProd_apply _ _ _ ht]
+  simp_rw [compProd_apply ht]
   refine lintegral_congr_ae ?_
   have h_ae : ∀ᵐ t ∂(fst κ a), (a, t) ∈ {p : α × β | η p (range e)ᶜ = 0} := by
     rw [← h_fst]
     have h_compProd : κ' a (univ ×ˢ range e)ᶜ = 0 := by
-      unfold_let κ'
+      unfold κ'
       rw [map_apply' _ (by fun_prop)]
       swap; · exact (MeasurableSet.univ.prod he.measurableSet_range).compl
       suffices Prod.map id e ⁻¹' (univ ×ˢ range e)ᶜ = ∅ by rw [this]; simp
@@ -298,7 +298,7 @@ lemma compProd_fst_borelMarkovFromReal (κ : Kernel α (β × Ω)) [IsSFiniteKer
     MeasurableEmbedding.id.prod_mk he
   have : κ = comapRight κ' h_prod_embed := by
     ext c t : 2
-    unfold_let κ'
+    unfold κ'
     rw [comapRight_apply, map_apply _ (by fun_prop), h_prod_embed.comap_map]
   conv_rhs => rw [this, ← hη']
   exact compProd_fst_borelMarkovFromReal_eq_comapRight_compProd κ η hη

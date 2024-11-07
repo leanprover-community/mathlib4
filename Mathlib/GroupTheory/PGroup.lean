@@ -73,7 +73,7 @@ theorem of_surjective {H : Type*} [Group H] (ϕ : G →* H) (hϕ : Function.Surj
   rw [← hg, ← ϕ.map_pow, hk, ϕ.map_one]
 
 theorem to_quotient (H : Subgroup G) [H.Normal] : IsPGroup p (G ⧸ H) :=
-  hG.of_surjective (QuotientGroup.mk' H) Quotient.surjective_Quotient_mk''
+  hG.of_surjective (QuotientGroup.mk' H) Quotient.mk''_surjective
 
 theorem of_equiv {H : Type*} [Group H] (ϕ : G ≃* H) : IsPGroup p H :=
   hG.of_surjective ϕ.toMonoidHom ϕ.surjective
@@ -179,7 +179,7 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
     rw [Nat.card_eq_fintype_card] at hk
     have : k = 0 := by
       contrapose! hb
-      simp [-Quotient.eq'', key, hk, hb]
+      simp [-Quotient.eq, key, hk, hb]
     exact
       ⟨⟨b, mem_fixedPoints_iff_card_orbit_eq_one.2 <| by rw [hk, this, pow_zero]⟩,
         Finset.mem_univ _, ne_of_eq_of_ne Nat.cast_one one_ne_zero, rfl⟩
@@ -348,3 +348,12 @@ theorem commutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : ∀ a b : G,
 end P2comm
 
 end IsPGroup
+
+namespace ZModModule
+variable {n : ℕ} {G : Type*} [AddCommGroup G] [Module (ZMod n) G]
+
+lemma isPGroup_multiplicative : IsPGroup n (Multiplicative G) := by
+  simpa [IsPGroup, Multiplicative.forall] using
+    fun _ ↦ ⟨1, by simp [← ofAdd_nsmul, ZModModule.char_nsmul_eq_zero]⟩
+
+end ZModModule

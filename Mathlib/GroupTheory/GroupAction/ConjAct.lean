@@ -5,8 +5,10 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Subgroup.ZPowers
+import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Data.Fintype.Card
+import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Conjugation action of a group on itself
@@ -246,7 +248,7 @@ theorem fixedPoints_eq_center : fixedPoints (ConjAct G) G = center G := by
 theorem mem_orbit_conjAct {g h : G} : g ∈ orbit (ConjAct G) h ↔ IsConj g h := by
   rw [isConj_comm, isConj_iff, mem_orbit_iff]; rfl
 
-theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
+theorem orbitRel_conjAct : ⇑(orbitRel (ConjAct G) G) = IsConj :=
   funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
 
 theorem orbit_eq_carrier_conjClasses (g : G) :
@@ -258,6 +260,16 @@ theorem stabilizer_eq_centralizer (g : G) :
     stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=
   le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ => mul_inv_eq_iff_eq_mul.mp)) fun _ h =>
     mul_inv_eq_of_eq_mul (h g (mem_zpowers g)).symm
+
+theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
+    Subgroup.centralizer {g} = Subgroup.comap ConjAct.toConjAct.toMonoidHom
+      (MulAction.stabilizer (ConjAct G) g) := by
+  ext k
+-- NOTE: `Subgroup.mem_centralizer_iff` should probably be stated
+-- with the equality in the other direction
+  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq, ConjAct.toConjAct_smul]
+  rw [eq_comm]
+  exact Iff.symm mul_inv_eq_iff_eq_mul
 
 /-- As normal subgroups are closed under conjugation, they inherit the conjugation action
   of the underlying group. -/

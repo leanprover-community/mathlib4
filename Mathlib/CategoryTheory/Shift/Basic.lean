@@ -519,7 +519,7 @@ lemma shiftFunctorCompIsoId_add'_inv_app :
   dsimp [shiftFunctorCompIsoId]
   simp only [Functor.map_comp, Category.assoc]
   congr 1
-  erw [← NatTrans.naturality]
+  rw [← NatTrans.naturality]
   dsimp
   rw [← cancel_mono ((shiftFunctorAdd' C p' p 0 hp).inv.app X), Iso.hom_inv_id_app,
     Category.assoc, Category.assoc, Category.assoc, Category.assoc,

@@ -8,6 +8,7 @@ import Mathlib.Tactic.Abel
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.RingTheory.Congruence.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Module.Opposite
 
 /-!
 # Two Sided Ideals
