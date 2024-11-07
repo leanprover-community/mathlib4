@@ -75,7 +75,7 @@ theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
         Or.inr
           ⟨Q ∩ R, cond.inter_mem hQ hR, by
             ext x
-            constructor <;> simp (config := { contextual := true })⟩
+            constructor <;> simp +contextual⟩
 
 open Set
 

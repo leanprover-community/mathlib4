@@ -151,13 +151,15 @@ lemma equiv_iff (e : M ≃ₗ[R] N) : Flat R M ↔ Flat R N :=
 instance ulift [Module.Flat R M] : Module.Flat R (ULift.{v'} M) :=
   of_linearEquiv R M (ULift.{v'} M) ULift.moduleEquiv
 
-instance (priority := 100) of_ulift [Module.Flat R (ULift.{v'} M)] : Module.Flat R M :=
+-- Making this an instance causes an infinite sequence `M → ULift M → ULift (ULift M) → ...`.
+lemma of_ulift [Module.Flat R (ULift.{v'} M)] : Module.Flat R M :=
   of_linearEquiv R (ULift.{v'} M) M ULift.moduleEquiv.symm
 
 instance shrink [Small.{v'} M] [Module.Flat R M] : Module.Flat R (Shrink.{v'} M) :=
   of_linearEquiv R M (Shrink.{v'} M) (Shrink.linearEquiv M R)
 
-instance (priority := 100) of_shrink [Small.{v'} M] [Module.Flat R (Shrink.{v'} M)] :
+-- Making this an instance causes an infinite sequence `M → Shrink M → Shrink (Shrink M) → ...`.
+lemma of_shrink [Small.{v'} M] [Module.Flat R (Shrink.{v'} M)] :
     Module.Flat R M :=
   of_linearEquiv R (Shrink.{v'} M) M (Shrink.linearEquiv M R).symm
 
@@ -328,7 +330,7 @@ lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
     rw [show g = ι.comp π from rfl, lTensor_comp]
     exact exact1.comp_injective _ (lTensor_preserves_injective_linearMap ι <| by
       simpa [ι, - Subtype.val_injective] using Subtype.val_injective) (map_zero _)
-  exact _root_.lTensor_exact _ (fun x => by simp [π]) Quotient.surjective_Quotient_mk''
+  exact _root_.lTensor_exact _ (fun x => by simp [π]) Quotient.mk''_surjective
 
 variable (M) in
 /-- If `M` is flat then `- ⊗ M` is an exact functor. -/
@@ -345,7 +347,7 @@ lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
     rw [show g = ι.comp π from rfl, rTensor_comp]
     exact exact1.comp_injective _ (rTensor_preserves_injective_linearMap ι <| by
       simpa [ι, - Subtype.val_injective] using Subtype.val_injective) (map_zero _)
-  exact _root_.rTensor_exact M (fun x => by simp [π]) Quotient.surjective_Quotient_mk''
+  exact _root_.rTensor_exact M (fun x => by simp [π]) Quotient.mk''_surjective
 
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor. See
   `Module.Flat.iff_lTensor_exact` to specialize the universe of `N, N', N''` to `Type (max u v)`. -/

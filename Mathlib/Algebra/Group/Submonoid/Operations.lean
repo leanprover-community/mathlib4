@@ -866,7 +866,7 @@ theorem eq_top_iff' : S = ⊤ ↔ ∀ x : M, x ∈ S :=
 
 @[to_additive]
 theorem eq_bot_iff_forall : S = ⊥ ↔ ∀ x ∈ S, x = (1 : M) :=
-  SetLike.ext_iff.trans <| by simp (config := { contextual := true }) [iff_def, S.one_mem]
+  SetLike.ext_iff.trans <| by simp +contextual [iff_def, S.one_mem]
 
 @[to_additive]
 theorem eq_bot_of_subsingleton [Subsingleton S] : S = ⊥ := by
