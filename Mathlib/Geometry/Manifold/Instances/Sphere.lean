@@ -12,6 +12,7 @@ import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Tactic.Module
+import Mathlib.Topology.Compactification.OnePoint
 
 /-!
 # Manifold structure on the sphere
@@ -575,3 +576,100 @@ theorem contMDiff_circleExp : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ Circle.exp :
 @[deprecated (since := "2024-07-25")] alias contMDiff_expMapCircle := contMDiff_circleExp
 
 end Circle
+
+section OnePoint
+
+variable {n : ℕ}
+variable {v : EuclideanSpace ℝ (Fin n.succ)}
+variable (hv : ‖v‖ = 1)
+variable (hv' : v ∈ Metric.sphere 0 (1:ℝ))
+/-
+    For example, `v` could be
+    `(EuclideanSpace.single (0:Fin n.succ) (1:ℝ))`
+-/
+
+theorem stereo_inj : Function.Injective (stereoInvFun hv) := by
+      intro x y h
+      rw [←(stereographic hv).right_inv' (show x ∈ (stereographic hv).target by trivial)]
+      rw [←(stereographic hv).right_inv' (show y ∈ (stereographic hv).target by trivial)]
+      exact congrArg (↑(stereographic hv).toPartialEquiv) h
+
+lemma continuous_comp_val {X Y : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] (p : PartialHomeomorph X Y)
+     :
+    Continuous (p.toPartialEquiv ∘
+    (@Subtype.val X p.source)) := by
+  have h₀₀ : ContinuousOn p p.source := by exact PartialHomeomorph.continuousOn p
+  apply ContinuousOn.comp_continuous
+  · exact h₀₀
+  · exact continuous_subtype_val
+  · intro x
+    exact Subtype.coe_prop x
+
+
+instance {n : ℕ} : Fact (Module.finrank ℝ (EuclideanSpace ℝ (Fin n.succ)) = n + 1) :=
+    {out := by simp}
+
+noncomputable def Submodule_homeo_Euclidean {n : ℕ}
+    (v : Metric.sphere (0 : (EuclideanSpace ℝ (Fin n.succ))) 1) :
+    Homeomorph ((Submodule.span ℝ {v.1})ᗮ) (EuclideanSpace ℝ (Fin n)) :=
+  (OrthonormalBasis.fromOrthogonalSpanSingleton n (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph
+
+lemma image_source (s : Set ↥(Submodule.span ℝ {v})ᗮ) : stereoInvFun hv '' s =
+    (stereographic hv).toPartialEquiv ⁻¹' s ∩ (stereographic hv).source := by
+  ext x
+  constructor
+  · intro h
+    obtain ⟨y,hy⟩ := h
+    simp
+    constructor
+    · have : (stereographic hv) x = y :=
+        hy.2 ▸ (stereographic hv).right_inv' trivial
+      exact this ▸ hy.1
+    · exact hy.2 ▸ stereoInvFun_ne_north_pole hv y
+  · exact fun h => ⟨(stereographic hv) x,
+        h.1, (stereographic hv).left_inv' <| Set.mem_of_mem_inter_right h⟩
+
+/-- The one-point compactification of ℝⁿ, in the form of a dimension n-1 subspace,
+ is homeomorphic to the n-sphere. -/
+noncomputable def OnePointEuclidean_homeo_sphere_aux : Homeomorph
+  (OnePoint ((Submodule.span ℝ {v})ᗮ))
+  (Metric.sphere (0 : EuclideanSpace ℝ (Fin n.succ)) 1) := by
+  apply OnePoint.equivOfIsEmbeddingOfRangeEq (Y := Metric.sphere 0 1)
+  · show IsEmbedding <|stereoInvFun hv
+    unfold stereoInvFun
+    constructor
+    · rw [isInducing_iff]
+      ext s
+      constructor
+      · intro h
+        apply isOpen_mk.mpr
+        use stereoInvFun hv '' s
+        constructor
+        · obtain ⟨b,hb⟩ := (continuous_comp_val (stereographic hv)).isOpen_preimage s h
+          have hh : (stereographic hv) ⁻¹' s ∩ {⟨v, hv'⟩}ᶜ
+                                         = b ∩ {⟨v, hv'⟩}ᶜ :=
+              Set.ext <| fun x => ⟨fun h => ⟨(congrFun hb.2 ⟨x, h.2⟩).mpr h.1, h.2⟩,
+                                   fun h => ⟨(congrFun hb.2 ⟨x, h.2⟩).mp  h.1, h.2⟩⟩
+          exact image_source hv s ▸ hh ▸ IsOpen.inter hb.1 isOpen_compl_singleton
+        · exact Function.Injective.preimage_image (stereo_inj hv) s
+      · intro ⟨t,ht⟩
+        rw [isOpen_mk] at ht
+        exact ht.2 ▸ ContinuousOn.isOpen_preimage
+          (ContinuousOn.mono (stereographic hv).continuousOn_invFun fun ⦃a⦄ _ ↦ trivial)
+          ((continuous_stereoInvFun hv).isOpen_preimage t ht.1) (fun ⦃a⦄ a ↦ a) ht.1
+    · exact stereo_inj hv
+  · rw [← stereographic_source hv]
+    ext x
+    exact ⟨fun ⟨y,hy⟩ => hy ▸ (fun x => (stereographic hv).map_target) y (by trivial),
+      fun h => ⟨(stereographic hv).toFun' x, (stereographic hv).left_inv h⟩⟩
+
+
+/-- The one-point compactification of Euclidean space is homeomorphic to the sphere. -/
+noncomputable def OnePointEuclidean_homeo_sphere : Homeomorph
+    (OnePoint (EuclideanSpace ℝ (Fin n)))
+    ((Metric.sphere (0 : EuclideanSpace ℝ (Fin n.succ)) 1)) :=
+  (Homeomorph.onePointCongr (Submodule_homeo_Euclidean ⟨v,hv'⟩).symm).trans
+    <| OnePointEuclidean_homeo_sphere_aux hv hv'
+
+end OnePoint
