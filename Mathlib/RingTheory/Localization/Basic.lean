@@ -140,20 +140,24 @@ variable {A : Type*} [CommSemiring A]
   {R : Type*} [CommSemiring R] [Algebra A R] {M : Submonoid R}
   {S : Type*} [CommSemiring S] [Algebra A S] [Algebra R S] [IsScalarTower A R S]
   {P : Type*} [CommSemiring P] [Algebra A P] [IsLocalization M S]
-  {g : R →ₐ[A] P}
+  {f : R →ₐ[A] P} (hf : ∀ y : M, IsUnit (f y)) (x : S)
+include hf
 
 /-- `AlgHom` version of `IsLocalization.lift`. -/
-@[simps toRingHom]
-noncomputable def liftAlgHom (hg : ∀ y : M, IsUnit (g y)) : S →ₐ[A] P :=
-  { lift hg with
+noncomputable def liftAlgHom : S →ₐ[A] P :=
+  { lift hf with
     commutes' := by
       intro r
-      change lift hg (algebraMap A S r) = _
+      change lift hf (algebraMap A S r) = _
       simp [IsScalarTower.algebraMap_apply A R S]
   }
 
+theorem liftAlgHom_toRingHom : (liftAlgHom hf : S →ₐ[A] P).toRingHom = lift hf := rfl
+
 @[simp]
-theorem liftAlgHom_apply (hg : ∀ y : M, IsUnit (g y)) (x : S) : liftAlgHom hg x = lift hg x := rfl
+theorem coe_liftAlgHom : ((liftAlgHom hf : S →ₐ[A] P) : S → P) = lift hf := rfl
+
+theorem liftAlgHom_apply : liftAlgHom hf x = lift hf x := rfl
 
 end liftAlgHom
 

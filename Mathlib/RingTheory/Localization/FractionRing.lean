@@ -200,11 +200,12 @@ noncomputable def lift (hg : Injective g) : K →+* L :=
 
 section liftAlgHom
 
-variable [Algebra R A] [Algebra R K] [IsScalarTower R A K] [Algebra R L] {g : A →ₐ[R] L}
+variable [Algebra R A] [Algebra R K] [IsScalarTower R A K] [Algebra R L]
+  {g : A →ₐ[R] L} (hg : Injective g) (x : K)
+include hg
 
 /-- `AlgHom` version of `IsFractionRing.lift`. -/
-@[simps toRingHom]
-noncomputable def liftAlgHom (hg : Injective g) : K →ₐ[R] L :=
+noncomputable def liftAlgHom : K →ₐ[R] L :=
   { lift hg with
     commutes' := by
       intro r
@@ -212,8 +213,12 @@ noncomputable def liftAlgHom (hg : Injective g) : K →ₐ[R] L :=
       simp [IsScalarTower.algebraMap_apply R A K]
   }
 
+theorem liftAlgHom_toRingHom : (liftAlgHom hg : K →ₐ[R] L).toRingHom = lift hg := rfl
+
 @[simp]
-theorem liftAlgHom_apply (hg : Injective g) (x : K) : liftAlgHom hg x = lift hg x := rfl
+theorem coe_liftAlgHom : ((liftAlgHom hg : K →ₐ[R] L) : K → L) = lift hg := rfl
+
+theorem liftAlgHom_apply : liftAlgHom hg x = lift hg x := rfl
 
 end liftAlgHom
 
