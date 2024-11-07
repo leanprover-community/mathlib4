@@ -78,6 +78,9 @@ instance : FunLike (r ≼i s) α β where
 instance : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'
 
+instance : RelHomClass (r ≼i s) r s where
+  map_rel f := f.map_rel_iff.2
+
 /-- An initial segment embedding between the `<` relations of two partial orders is an order
 embedding. -/
 def toOrderEmbedding [PartialOrder α] [PartialOrder β] (f : α ≤i β) : α ↪o β :=
@@ -153,16 +156,16 @@ theorem trans_apply (f : r ≼i s) (g : s ≼i t) (a : α) : (f.trans g) a = g (
   rfl
 
 instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl β s]
-    [IsWellFounded α r] : Subsingleton (r ≼i s) :=
-  ⟨fun f g => by
+    [IsWellFounded α r] : Subsingleton (r ≼i s) where
+  allEq f g := by
     ext a
     refine IsWellFounded.induction r a fun b IH =>
       extensional_of_trichotomous_of_irrefl s fun x => ?_
     rw [f.exists_eq_iff_rel, g.exists_eq_iff_rel]
-    exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl⟩
+    exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl
 
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
-  ⟨fun a => by let _ := a.isWellFounded; exact Subsingleton.elim a⟩
+  ⟨fun a => have := a.isWellFounded; Subsingleton.elim a⟩
 
 protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
@@ -264,6 +267,24 @@ instance : CoeOut (r ≺i s) (r ↪r s) :=
 
 instance : CoeFun (r ≺i s) fun _ => α → β :=
   ⟨fun f => f⟩
+
+theorem toRelEmbedding_injective [IsIrrefl β s] [IsTrichotomous β s] :
+    Function.Injective (@toRelEmbedding α β r s) := by
+  rintro ⟨f, a, hf⟩ ⟨g, b, hg⟩ rfl
+  congr
+  refine extensional_of_trichotomous_of_irrefl s fun x ↦ ?_
+  rw [← hf, hg]
+
+@[simp]
+theorem toRelEmbedding_inj [IsIrrefl β s] [IsTrichotomous β s] {f g : r ≺i s} :
+    f.toRelEmbedding = g.toRelEmbedding ↔ f = g :=
+  toRelEmbedding_injective.eq_iff
+
+@[ext]
+theorem ext [IsIrrefl β s] [IsTrichotomous β s] {f g : r ≺i s} (h : ∀ x, f x = g x) : f = g := by
+  rw [← toRelEmbedding_inj]
+  ext
+  exact h _
 
 @[simp]
 theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α → β) = f :=
@@ -375,17 +396,8 @@ theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
   rfl
 
 /-- Given a well order `s`, there is a most one principal segment embedding of `r` into `s`. -/
-instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
-  ⟨fun f g => by
-    have ef : (f : α → β) = g := by
-      show ((f : r ≼i s) : α → β) = (g : r ≼i s)
-      rw [@Subsingleton.elim _ _ (f : r ≼i s) g]
-    have et : f.top = g.top := by
-      refine extensional_of_trichotomous_of_irrefl s fun x => ?_
-      simp only [← PrincipalSeg.mem_range_iff_rel, ef]
-    cases f
-    cases g
-    have := RelEmbedding.coe_fn_injective ef; congr ⟩
+instance [IsWellOrder β s] : Subsingleton (r ≺i s) where
+  allEq f g := ext ((f : r ≼i s).eq g)
 
 protected theorem eq [IsWellOrder β s] (f g : r ≺i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
@@ -574,6 +586,10 @@ theorem mem_range_of_le [Preorder α] (f : α ≤i β) (h : b ≤ f a) : b ∈ S
   obtain rfl | hb := h.eq_or_lt
   exacts [⟨a, rfl⟩, f.mem_range_of_rel hb]
 
+theorem isLowerSet_range [Preorder α] (f : α ≤i β) : IsLowerSet (Set.range f) := by
+  rintro _ b h ⟨a, rfl⟩
+  exact mem_range_of_le f h
+
 -- TODO: this would follow immediately if we had a `RelEmbeddingClass`
 @[simp]
 theorem le_iff_le [PartialOrder α] (f : α ≤i β) : f a ≤ f a' ↔ a ≤ a' :=
@@ -589,6 +605,16 @@ theorem monotone [PartialOrder α] (f : α ≤i β) : Monotone f :=
 
 theorem strictMono [PartialOrder α] (f : α ≤i β) : StrictMono f :=
   f.toOrderEmbedding.strictMono
+
+theorem map_isMin [PartialOrder α] (f : α ≤i β) (h : IsMin a) : IsMin (f a) := by
+  intro b hb
+  obtain ⟨x, rfl⟩ := f.mem_range_of_le hb
+  rw [f.le_iff_le] at hb ⊢
+  exact h hb
+
+@[simp]
+theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α ≤i β) : f ⊥ = ⊥ :=
+  (map_isMin f isMin_bot).eq_bot
 
 theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
   constructor
@@ -617,6 +643,9 @@ variable [PartialOrder β] {a a' : α} {b : β}
 theorem mem_range_of_le [Preorder α] (f : α <i β) (h : b ≤ f a) : b ∈ Set.range f :=
   (f : α ≤i β).mem_range_of_le h
 
+theorem isLowerSet_range [Preorder α] (f : α <i β) : IsLowerSet (Set.range f) :=
+  (f : α ≤i β).isLowerSet_range
+
 -- TODO: this would follow immediately if we had a `RelEmbeddingClass`
 @[simp]
 theorem le_iff_le [PartialOrder α] (f : α <i β) : f a ≤ f a' ↔ a ≤ a' :=
@@ -632,6 +661,13 @@ theorem monotone [PartialOrder α] (f : α <i β) : Monotone f :=
 
 theorem strictMono [PartialOrder α] (f : α <i β) : StrictMono f :=
   (f : α ≤i β).strictMono
+
+theorem map_isMin [PartialOrder α] (f : α <i β) (h : IsMin a) : IsMin (f a) :=
+  (f : α ≤i β).map_isMin h
+
+@[simp]
+theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α <i β) : f ⊥ = ⊥ :=
+  (f : α ≤i β).map_bot
 
 theorem le_apply_iff [LinearOrder α] (f : α <i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b :=
   (f : α ≤i β).le_apply_iff

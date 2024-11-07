@@ -66,7 +66,7 @@ noncomputable def integerNormalization (p : S[X]) : R[X] :=
 @[simp]
 theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i := by
-  simp (config := { contextual := true }) [integerNormalization, coeff_monomial,
+  simp +contextual [integerNormalization, coeff_monomial,
     coeffIntegerNormalization_of_not_mem_support]
 
 theorem integerNormalization_spec (p : S[X]) :
@@ -401,16 +401,16 @@ variable {S K}
 /-- If the `S`-multiples of `a` are contained in some `R`-span, then `Frac(S)`-multiples of `a`
 are contained in the equivalent `Frac(R)`-span. -/
 theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [Field K] [Field L]
-    [Algebra R K] [Algebra R L] [Algebra S L] [IsIntegralClosure S R L] [IsFractionRing S L]
+    [Algebra R K] [Algebra R L] [Algebra S L] [Algebra.IsAlgebraic R S] [IsFractionRing S L]
     [Algebra K L] [IsScalarTower R S L] [IsScalarTower R K L] {a : S} {b : Set S}
-    [Algebra.IsAlgebraic R L] (inj : Function.Injective (algebraMap R L))
+    (inj : Function.Injective (algebraMap R L))
     (h : (Ideal.span ({a} : Set S) : Set S) ⊆ Submodule.span R b) :
     (Ideal.span ({algebraMap S L a} : Set L) : Set L) ⊆ Submodule.span K (algebraMap S L '' b) := by
   intro x hx
   obtain ⟨x', rfl⟩ := Ideal.mem_span_singleton.mp hx
   obtain ⟨y', z', rfl⟩ := IsLocalization.mk'_surjective S⁰ x'
   obtain ⟨y, z, hz0, yz_eq⟩ :=
-    IsIntegralClosure.exists_smul_eq_mul inj y' (nonZeroDivisors.coe_ne_zero z')
+    Algebra.IsAlgebraic.exists_smul_eq_mul R y' (nonZeroDivisors.coe_ne_zero z')
   have injRS : Function.Injective (algebraMap R S) := by
     refine
       Function.Injective.of_comp (show Function.Injective (algebraMap S L ∘ algebraMap R S) from ?_)

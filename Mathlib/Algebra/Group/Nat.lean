@@ -123,7 +123,7 @@ lemma two_not_dvd_two_mul_sub_one : ∀ {n}, 0 < n → ¬2 ∣ 2 * n - 1
 /-- If `m` and `n` are natural numbers, then the natural number `m^n` is even
 if and only if `m` is even and `n` is positive. -/
 @[parity_simps] lemma even_pow : Even (m ^ n) ↔ Even m ∧ n ≠ 0 := by
-  induction n <;> simp (config := { contextual := true }) [*, pow_succ', even_mul]
+  induction n <;> simp +contextual [*, pow_succ', even_mul]
 
 lemma even_pow' (h : n ≠ 0) : Even (m ^ n) ↔ Even m := even_pow.trans <| and_iff_left h
 

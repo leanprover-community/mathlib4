@@ -134,7 +134,7 @@ theorem of_comp_isClosedImmersion {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [
     simp only [Scheme.comp_coeBase, TopCat.coe_comp] at h
     refine .of_continuous_injective_isClosedMap (Scheme.Hom.continuous f) h.inj.of_comp ?_
     intro Z hZ
-    rw [IsClosedEmbedding.closed_iff_image_closed g.isClosedEmbedding,
+    rw [IsClosedEmbedding.isClosed_iff_image_isClosed g.isClosedEmbedding,
       ← Set.image_comp]
     exact h.isClosedMap _ hZ
   surj_on_stalks x := by
@@ -268,7 +268,7 @@ instance IsClosedImmersion.isLocalAtTarget : IsLocalAtTarget @IsClosedImmersion 
 /-- On morphisms with affine target, being a closed immersion is precisely having affine source
 and being surjective on global sections. -/
 instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmersion
-    (fun X Y f ↦ IsAffine X ∧ Function.Surjective (f.app ⊤)) := by
+    (fun X _ f ↦ IsAffine X ∧ Function.Surjective (f.app ⊤)) := by
   convert HasAffineProperty.of_isLocalAtTarget @IsClosedImmersion
   refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
 
@@ -284,13 +284,13 @@ instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersi
   exact (IsClosedImmersion.isAffine_surjective_of_isAffine f).1
 
 /-- Being a closed immersion is stable under base change. -/
-lemma IsClosedImmersion.stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange @IsClosedImmersion := by
-  apply HasAffineProperty.stableUnderBaseChange
+instance IsClosedImmersion.isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange @IsClosedImmersion := by
+  apply HasAffineProperty.isStableUnderBaseChange
   haveI := HasAffineProperty.isLocal_affineProperty @IsClosedImmersion
-  apply AffineTargetMorphismProperty.StableUnderBaseChange.mk
+  apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   intro X Y S _ _ f g ⟨ha, hsurj⟩
-  exact ⟨inferInstance, RingHom.surjective_stableUnderBaseChange.pullback_fst_app_top _
+  exact ⟨inferInstance, RingHom.surjective_isStableUnderBaseChange.pullback_fst_app_top _
     RingHom.surjective_respectsIso f _ hsurj⟩
 
 /-- Closed immersions are locally of finite type. -/
@@ -314,7 +314,7 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
   · refine (IsLocalAtTarget.iff_of_openCover (P := .isomorphisms Scheme) Y.affineCover).mpr ?_
     intro i
     apply (config := { allowSynthFailures := true }) this
-    · exact IsClosedImmersion.stableUnderBaseChange.snd _ _ inferInstance
+    · exact MorphismProperty.pullback_snd _ _ inferInstance
     · exact IsLocalAtTarget.of_isPullback (.of_hasPullback f (Y.affineCover.map i)) ‹_›
     · exact isReduced_of_isOpenImmersion (Y.affineCover.map i)
     · infer_instance

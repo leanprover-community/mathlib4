@@ -363,15 +363,18 @@ theorem fst_isOpenEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S
 alias fst_openEmbedding_of_right_openEmbedding := fst_isOpenEmbedding_of_right
 
 /-- If `X ⟶ S`, `Y ⟶ S` are open embeddings, then so is `X ×ₛ Y ⟶ S`. -/
-theorem isOpenEmbedding_of_pullback_open_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}
+theorem isOpenEmbedding_of_pullback {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}
     (H₁ : IsOpenEmbedding f) (H₂ : IsOpenEmbedding g) :
     IsOpenEmbedding (limit.π (cospan f g) WalkingCospan.one) := by
   convert H₂.comp (snd_isOpenEmbedding_of_left H₁ g)
   rw [← coe_comp, ← limit.w _ WalkingCospan.Hom.inr]
   rfl
 
+@[deprecated (since := "2024-10-30")]
+alias isOpenEmbedding_of_pullback_open_embeddings := isOpenEmbedding_of_pullback
+
 @[deprecated (since := "2024-10-18")]
-alias openEmbedding_of_pullback_open_embeddings := isOpenEmbedding_of_pullback_open_embeddings
+alias openEmbedding_of_pullback_open_embeddings := isOpenEmbedding_of_pullback
 
 theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (hg : IsEmbedding g) (H : Set.range f ⊆ Set.range g) :
