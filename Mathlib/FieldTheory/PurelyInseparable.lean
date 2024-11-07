@@ -793,7 +793,7 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [Algebra.IsSeparabl
   haveI : Algebra.IsSeparable F E' := Algebra.isSeparable_tower_bot_of_isSeparable F E' E
   let v' (i : s) : E' := ⟨v i.1, subset_adjoin F _ (Finset.mem_image.2 ⟨i.1, i.2, rfl⟩)⟩
   have h' : LinearIndependent F v' := (h s).of_comp E'.val.toLinearMap
-  exact (h'.map_pow_expChar_pow_of_fd_isSeparable q n).map'
+  exact (LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable (F := F) (E := E') q n h' : _).map'
     E'.val.toLinearMap (LinearMap.ker_eq_bot_of_injective E'.val.injective)
 
 /-- If `E / F` is a field extension of exponential characteristic `q`, if `{ u_i }` is a
@@ -807,7 +807,7 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isIntegral'
     rintro _ ⟨y, rfl⟩; exact hsep y
   let v' (i : ι) : E' := ⟨v i, subset_adjoin F _ ⟨i, rfl⟩⟩
   have h' : LinearIndependent F v' := h.of_comp E'.val.toLinearMap
-  exact (h'.map_pow_expChar_pow_of_isSeparable q n).map'
+  exact (LinearIndependent.map_pow_expChar_pow_of_isSeparable (F := F) (E := E') q n h' : _).map'
     E'.val.toLinearMap (LinearMap.ker_eq_bot_of_injective E'.val.injective)
 
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is an
@@ -1090,7 +1090,8 @@ theorem minpoly.map_eq_of_isSeparable_of_isPurelyInseparable (x : K)
   have := Algebra.IsSeparable.isAlgebraic F F⟮x⟯
   have := Algebra.IsSeparable.isAlgebraic E E⟮x⟯
   rw [Polynomial.natDegree_map, ← adjoin.finrank hi, ← adjoin.finrank hi',
-    ← finSepDegree_eq_finrank_of_isSeparable F _, ← finSepDegree_eq_finrank_of_isSeparable E _,
+    ← finSepDegree_eq_finrank_of_isSeparable F F⟮x⟯,
+    ← finSepDegree_eq_finrank_of_isSeparable E E⟮x⟯,
     finSepDegree_eq, finSepDegree_eq,
     sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable (F := F) E]
 

@@ -155,7 +155,8 @@ theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
 
 theorem matPolyEquiv_eval_eq_map (M : Matrix n n R[X]) (r : R) :
     (matPolyEquiv M).eval (scalar n r) = M.map (eval r) := by
-  simpa only [AlgEquiv.symm_apply_apply] using (matPolyEquiv_symm_map_eval (matPolyEquiv M) r).symm
+  simpa only [AlgEquiv.symm_apply_apply] using
+    (matPolyEquiv_symm_map_eval (R := R) (matPolyEquiv M) r).symm
 
 -- I feel like this should use `Polynomial.algHom_eval₂_algebraMap`
 theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :

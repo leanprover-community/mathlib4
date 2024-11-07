@@ -98,7 +98,7 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     have := IntermediateField.adjoin.finiteDimensional
       (Algebra.IsSeparable.isSeparable K k).isIntegral
     have := FormallyEtale.of_isSeparable_aux K (K⟮k⟯)
-    have := FormallyEtale.comp_bijective (R := K) (A := K⟮k⟯) I h
+    have := this.comp_bijective (R := K) (A := K⟮k⟯) I h
     exact this.existsUnique _
   choose g hg₁ hg₂ using this
   have hg₃ : ∀ x y (h : x ∈ K⟮y⟯), g y ⟨x, h⟩ = g x (IntermediateField.AdjoinSimple.gen K x) := by
@@ -136,6 +136,8 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
   · show g 0 0 = 0; rw [map_zero]
   · intros x y
     obtain ⟨α, hx, hy⟩ := H x y
+    have : LinearMapClass (K⟮α⟯ →ₐ[K] B) _ _ _ := inferInstance
+    have : AddHomClass (K⟮α⟯ →ₐ[K] B) _ _ := inferInstance
     simp only [← hg₃ _ _ hx, ← hg₃ _ _ hy, ← map_add, ← hg₃ _ _ (add_mem hx hy)]
     rfl
   · intro r

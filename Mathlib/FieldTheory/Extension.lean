@@ -81,7 +81,7 @@ theorem Lifts.exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral 
       rw [mem_aroots, and_iff_right (minpoly.ne_zero h1)]
       exact map_rootOfSplits x.emb.toRingHom h2 I2⟩)
   ⟨⟨carrier, (@algHomEquivSigma F x.carrier carrier K _ _ _ _ _ _ _ _
-      (IsScalarTower.of_algebraMap_eq fun _ ↦ rfl)).symm ⟨x.emb, φ⟩⟩,
+      (IsScalarTower.of_algebraMap_eq fun _ ↦ by rfl)).symm ⟨x.emb, φ⟩⟩,
     ⟨fun z hz ↦ algebraMap_mem x.carrier⟮s⟯ ⟨z, hz⟩, φ.commutes⟩,
     mem_adjoin_simple_self x.carrier s⟩
 

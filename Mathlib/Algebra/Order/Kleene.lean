@@ -66,6 +66,8 @@ class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
   protected bot : α := 0
   protected bot_le : ∀ a, bot ≤ a
 
+attribute [instance 50] IdemSemiring.toSemiring
+
 /-- An idempotent commutative semiring is a commutative semiring with the additional property that
 addition is idempotent. -/
 class IdemCommSemiring (α : Type u) extends CommSemiring α, IdemSemiring α
