@@ -154,6 +154,7 @@ import Mathlib.Algebra.Category.Ring.LinearAlgebra
 import Mathlib.Algebra.Category.Semigrp.Basic
 import Mathlib.Algebra.Central.Basic
 import Mathlib.Algebra.Central.Defs
+import Mathlib.Algebra.Central.Matrix
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.CharAndCard
