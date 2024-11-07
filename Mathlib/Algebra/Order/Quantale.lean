@@ -122,9 +122,6 @@ theorem mul_sup_eq_sup_mul : x * (y ⊔ z) = (x * y) ⊔ (x * z) := by
 theorem sup_mul_eq_sup_mul : (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
   rw [← (@iSup_pair _ _ _ (fun _? => _? * z) _ _), ← sSup_pair, sSup_mul_eq_iSup_mul]
 
-/- There is not general class definition for OrderedMonoid, so we use the more granular
-MulLeftMono and MulRightMono class definitions instead to obtain monotonicity theorems. -/
-
 @[to_additive]
 instance : MulLeftMono α where
   elim := by
