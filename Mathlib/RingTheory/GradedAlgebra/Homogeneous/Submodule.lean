@@ -78,7 +78,7 @@ theorem HomogeneousSubmodule.isHomogeneous (I : HomogeneousSubmodule 𝒜 ℳ) :
 theorem HomogeneousSubmodule.toSubmodule_injective :
     Function.Injective
       (HomogeneousSubmodule.toSubmodule : HomogeneousSubmodule 𝒜 ℳ → Submodule A M) :=
-  fun ⟨x, hx⟩ ⟨y, hy⟩ => fun (h : x = y) => by simp [h]
+  fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ fun (h : x = y) ↦ by simp [h]
 
 instance HomogeneousSubmodule.setLike : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
   coe p := p.toSubmodule
