@@ -141,7 +141,7 @@ lemma two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h ↦
 lemma div_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
   fun h ↦ Nat.div_mul_cancel ((even_iff_exists_two_nsmul _).1 h)
 
-theorem one_lt_of_ne_zero_off_even {n : ℕ} (h0 : n ≠ 0) (hn : Even n) : 1 < n := by
+theorem one_lt_of_ne_zero_of_even {n : ℕ} (h0 : n ≠ 0) (hn : Even n) : 1 < n := by
   refine Nat.one_lt_iff_ne_zero_and_ne_one.mpr (And.intro h0 ?_)
   intro h
   rw [h] at hn

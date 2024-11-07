@@ -73,7 +73,7 @@ lemma odd_val_iff_of_even {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : Odd k
       rw [two_mul l, two_mul x, hxxll, @val_add_eq_of_add_lt (n + n) (l + l) 1]
       · simp only [add_right_inj]
         exact (Nat.one_mod_eq_one.mpr n.add_self_ne_one).symm
-      · rw [one_val_cast  (Nat.one_lt_of_ne_zero_off_even (NeZero.ne (n + n)) hnn)]
+      · rw [one_val_cast  (Nat.one_lt_of_ne_zero_of_even (NeZero.ne (n + n)) hnn)]
         refine Nat.add_one_lt_of_even
           ((even_val_iff_of_even hnn).mpr (even_add_self l)) hnn ?_
         fin_omega
