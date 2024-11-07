@@ -5,8 +5,6 @@ Authors: Jujian Zhang, Jireh Loreaux
 -/
 
 import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Order.GaloisConnection
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
