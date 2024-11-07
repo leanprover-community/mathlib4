@@ -411,21 +411,6 @@ instance [IsEmpty L.Constants] : IsEmpty (⊥ : L.Substructure M) := by
 
 variable {L} {M}
 
-theorem iSup_eq_closure {ι : Sort*} (S : ι → L.Substructure M) :
-    ⨆ i, S i = closure L (⋃ i, (S i : Set M)) := by simp_rw [closure_iUnion, closure_eq]
-
--- This proof uses the fact that `Substructure.closure` is finitary.
-theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Substructure M}
-    (hS : Directed (· ≤ ·) S) {x : M} :
-    x ∈ (iSup S : L.Substructure M) ↔ ∃ i, x ∈ S i := by
-  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
-  suffices x ∈ closure L (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
-    simpa only [closure_iUnion, closure_eq (S _)] using this
-  refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) (fun f v hC ↦ ?_)
-  simp_rw [Set.mem_setOf] at *
-  have ⟨i, hi⟩ := hS.fintype_le (fun i ↦ Classical.choose (hC i))
-  refine ⟨i, (S i).fun_mem f v (fun j ↦ hi j (Classical.choose_spec (hC j)))⟩
-
 /-!
 ### `comap` and `map`
  -/
@@ -899,11 +884,6 @@ theorem codRestrict_apply' (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
   rfl
 
 @[simp]
-theorem codRestrict_apply' (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
-    codRestrict p f h x = ⟨f x, h x⟩ :=
-  rfl
-
-@[simp]
 theorem comp_codRestrict (f : M ↪[L] N) (g : N ↪[L] P) (p : L.Substructure P) (h : ∀ b, g b ∈ p) :
     ((codRestrict p g h).comp f : M ↪[L] p) = codRestrict p (g.comp f) fun _ => h _ :=
   ext fun _ => rfl
@@ -939,11 +919,6 @@ theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
     (subtype _).comp (f.substructureEquivMap s).toEmbedding = f.comp (subtype _) := by
   ext; rfl
 
-@[simp]
-theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
-    (subtype _).comp (f.substructureEquivMap s).toEmbedding = f.comp (subtype _) := by
-  ext; rfl
-
 /-- The equivalence between the domain and the range of an embedding `f`. -/
 @[simps toEquiv_apply] noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
   toFun := codRestrict f.toHom.range f f.toHom.mem_range_self
@@ -957,10 +932,6 @@ theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
 @[simp]
 theorem equivRange_apply (f : M ↪[L] N) (x : M) : (f.equivRange x : N) = f x :=
   rfl
-
-@[simp]
-theorem subtype_equivRange (f : M ↪[L] N) : (subtype _).comp f.equivRange.toEmbedding = f := by
-  ext; rfl
 
 @[simp]
 theorem subtype_equivRange (f : M ↪[L] N) : (subtype _).comp f.equivRange.toEmbedding = f := by
@@ -1025,36 +996,6 @@ theorem subtype_comp_equiv_from_eq {S T : L.Substructure M} (h : S = T) :
   rfl
 
 end Substructure
-
-namespace Embedding
-
-/-- Given an embedding, returns the corresponding subequivalence with top as domain. -/
-noncomputable def toSubEquivalence (f : M ↪[L] N) : M ≃ₚ[L] N :=
-  ⟨⊤, f.toHom.range, f.equivRange.comp (Substructure.topEquiv)⟩
-
-theorem toSubEquivalence_injective :
-    Function.Injective (fun f : M ↪[L] N ↦ f.toSubEquivalence) := by
-  intro _ _ h
-  ext
-  rw [Substructure.SubEquivalence.ext_iff] at h
-  rcases h with ⟨_, H⟩
-  exact H _ (Substructure.mem_top _)
-
-@[simp]
-theorem toEmbedding_toSubEquivalence (f : M ↪[L] N) :
-    Substructure.SubEquivalence.dom_top_toEmbedding (f := f.toSubEquivalence) rfl = f :=
-  rfl
-
-@[simp]
-theorem toSubEquivalence_toEmbedding {f :  M ≃ₚ[L] N} (h : f.sub_dom = ⊤) :
-    (Substructure.SubEquivalence.dom_top_toEmbedding h).toSubEquivalence = f := by
-  rcases f with ⟨_, _, _⟩
-  cases h
-  apply Substructure.SubEquivalence.ext
-  intro _ _
-  rfl; rfl
-
-end Embedding
 
 end Language
 

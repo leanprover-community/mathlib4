@@ -26,7 +26,7 @@ This file constructs the direct limit of a directed system of first-order embedd
 -/
 
 
-universe v w w' w' u₁ u₂
+universe v w w' u₁ u₂
 
 open FirstOrder
 
