@@ -31,7 +31,7 @@ theorem exists_out_continuousLinearMap :
   rcases (mkCLM K E).toLinearMap.exists_rightInverse_of_surjective
     (LinearMap.range_eq_top.mpr surjective_mk) with ⟨f, hf⟩
   replace hf : mk ∘ f = id := congr_arg DFunLike.coe hf
-  exact ⟨⟨f, inducing_mk.continuous_iff.2 (by continuity)⟩, DFunLike.ext' hf⟩
+  exact ⟨⟨f, isInducing_mk.continuous_iff.2 (by continuity)⟩, DFunLike.ext' hf⟩
 
 /-- A continuous `K`-linear map from `SeparationQuotient E` to `E`
 such that `mk (outCLM x) = x` for all `x`. -/
@@ -59,11 +59,14 @@ theorem postcomp_mkCLM_surjective {L : Type*} [Semiring L] (σ : L →+* K)
   rw [← ContinuousLinearMap.comp_assoc, mkCLM_comp_outCLM, ContinuousLinearMap.id_comp]
 
 /-- The `SeparationQuotient.outCLM K E` map is a topological embedding. -/
-theorem outCLM_embedding : Embedding (outCLM K E) :=
-  Function.LeftInverse.embedding (mk_outCLM K) continuous_mk (map_continuous _)
+theorem isEmbedding_outCLM : IsEmbedding (outCLM K E) :=
+  Function.LeftInverse.isEmbedding (mk_outCLM K) continuous_mk (map_continuous _)
+
+@[deprecated (since := "2024-10-26")]
+alias outCLM_embedding := isEmbedding_outCLM
 
 theorem outCLM_injective : Function.Injective (outCLM K E) :=
-  (outCLM_embedding K E).injective
+  (isEmbedding_outCLM K E).injective
 
 end VectorSpace
 

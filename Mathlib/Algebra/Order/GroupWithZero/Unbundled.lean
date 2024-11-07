@@ -1489,18 +1489,34 @@ end MulPosStrictMono
 end PartialOrder
 
 section LinearOrder
-variable [LinearOrder G₀] [ZeroLEOneClass G₀] [PosMulReflectLT G₀] {a b : G₀}
+variable [LinearOrder G₀] [ZeroLEOneClass G₀] {a b : G₀}
 
-@[simp] lemma inv_neg'' : a⁻¹ < 0 ↔ a < 0 := by simp only [← not_le, inv_nonneg]
-@[simp] lemma inv_nonpos : a⁻¹ ≤ 0 ↔ a ≤ 0 := by simp only [← not_lt, inv_pos]
+section PosMulMono
+variable [PosMulMono G₀]
+
+@[simp] lemma inv_neg'' : a⁻¹ < 0 ↔ a < 0 := by
+  have := PosMulMono.toPosMulReflectLT (α := G₀); simp only [← not_le, inv_nonneg]
+
+@[simp] lemma inv_nonpos : a⁻¹ ≤ 0 ↔ a ≤ 0 := by
+  have := PosMulMono.toPosMulReflectLT (α := G₀); simp only [← not_lt, inv_pos]
 
 alias inv_lt_zero := inv_neg''
 
 lemma one_div_neg : 1 / a < 0 ↔ a < 0 := one_div a ▸ inv_neg''
 lemma one_div_nonpos : 1 / a ≤ 0 ↔ a ≤ 0 := one_div a ▸ inv_nonpos
 
-lemma div_nonpos_of_nonneg_of_nonpos [PosMulMono G₀] (ha : 0 ≤ a) (hb : b ≤ 0) : a / b ≤ 0 := by
+lemma div_nonpos_of_nonneg_of_nonpos (ha : 0 ≤ a) (hb : b ≤ 0) : a / b ≤ 0 := by
   rw [div_eq_mul_inv]; exact mul_nonpos_of_nonneg_of_nonpos ha (inv_nonpos.2 hb)
+
+lemma neg_of_div_neg_right (h : a / b < 0) (ha : 0 ≤ a) : b < 0 :=
+  have := PosMulMono.toPosMulReflectLT (α := G₀)
+  lt_of_not_ge fun hb ↦ (div_nonneg ha hb).not_lt h
+
+lemma neg_of_div_neg_left (h : a / b < 0) (hb : 0 ≤ b) : a < 0 :=
+  have := PosMulMono.toPosMulReflectLT (α := G₀)
+  lt_of_not_ge fun ha ↦ (div_nonneg ha hb).not_lt h
+
+end PosMulMono
 
 variable [PosMulStrictMono G₀] {m n : ℤ}
 

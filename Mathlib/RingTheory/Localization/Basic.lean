@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
-import Mathlib.RingTheory.OreLocalization.Ring
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.Localization.Defs
+import Mathlib.RingTheory.OreLocalization.Ring
 
 /-!
 # Localizations of commutative rings
@@ -118,11 +119,9 @@ noncomputable def algEquiv : S ≃ₐ[R] Q :=
 
 end
 
--- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y := by
   simp
 
--- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem algEquiv_symm_mk' (x : R) (y : M) : (algEquiv M S Q).symm (mk' Q x y) = mk' S x y := by simp
 
 variable (M) in
@@ -265,11 +264,9 @@ noncomputable def _root_.IsLocalization.unique (R Rₘ) [CommSemiring R] [CommSe
 
 end
 
--- Porting note (#10618): removed `simp`, `simp` can prove it
 nonrec theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S (mk' (Localization M) x y) = mk' S x y :=
   algEquiv_mk' _ _
 
--- Porting note (#10618): removed `simp`, `simp` can prove it
 nonrec theorem algEquiv_symm_mk' (x : R) (y : M) :
     (algEquiv M S).symm (mk' S x y) = mk' (Localization M) x y :=
   algEquiv_symm_mk' _ _

@@ -17,7 +17,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 /-!
 # Dependent functions with finite support
 
-For a non-dependent version see `data/finsupp.lean`.
+For a non-dependent version see `Mathlib.Data.Finsupp.Defs`.
 
 ## Notation
 
@@ -554,7 +554,6 @@ theorem single_apply {i i' b} :
 theorem single_zero (i) : (single i 0 : Π₀ i, β i) = 0 :=
   DFunLike.coe_injective <| Pi.single_zero _
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem single_eq_same {i b} : (single i b : Π₀ i, β i) i = b := by
   simp only [single_apply, dite_eq_ite, ite_true]
 
@@ -655,7 +654,6 @@ def erase (i : ι) (x : Π₀ i, β i) : Π₀ i, β i :=
 theorem erase_apply {i j : ι} {f : Π₀ i, β i} : (f.erase i) j = if j = i then 0 else f j :=
   rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem erase_same {i : ι} {f : Π₀ i, β i} : (f.erase i) i = 0 := by simp
 
 theorem erase_ne {i i' : ι} {f : Π₀ i, β i} (h : i' ≠ i) : (f.erase i) i' = f i' := by simp [h]
@@ -1019,7 +1017,7 @@ theorem not_mem_support_iff {f : Π₀ i, β i} {i : ι} : i ∉ f.support ↔ f
 
 @[simp]
 theorem support_eq_empty {f : Π₀ i, β i} : f.support = ∅ ↔ f = 0 :=
-  ⟨fun H => ext <| by simpa [Finset.ext_iff] using H, by simp (config := { contextual := true })⟩
+  ⟨fun H => ext <| by simpa [Finset.ext_iff] using H, by simp +contextual⟩
 
 instance decidableZero [∀ (i) (x : β i), Decidable (x = 0)] (f : Π₀ i, β i) : Decidable (f = 0) :=
   f.support'.recOnSubsingleton <| fun s =>
@@ -1120,7 +1118,7 @@ theorem filter_def (f : Π₀ i, β i) : f.filter p = mk (f.support.filter p) fu
   ext i; by_cases h1 : p i <;> by_cases h2 : f i ≠ 0 <;> simp at h2 <;> simp [h1, h2]
 
 @[simp]
-theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = f.support.filter p := by
+theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = {x ∈ f.support | p x} := by
   ext i; by_cases h : p i <;> simp [h]
 
 theorem subtypeDomain_def (f : Π₀ i, β i) :
@@ -1613,14 +1611,14 @@ theorem prod_add_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decida
     (h_add : ∀ i b₁ b₂, h i (b₁ + b₂) = h i b₁ * h i b₂) : (f + g).prod h = f.prod h * g.prod h :=
   have f_eq : (∏ i ∈ f.support ∪ g.support, h i (f i)) = f.prod h :=
     (Finset.prod_subset Finset.subset_union_left <| by
-        simp (config := { contextual := true }) [mem_support_iff, h_zero]).symm
+        simp +contextual [mem_support_iff, h_zero]).symm
   have g_eq : (∏ i ∈ f.support ∪ g.support, h i (g i)) = g.prod h :=
     (Finset.prod_subset Finset.subset_union_right <| by
-        simp (config := { contextual := true }) [mem_support_iff, h_zero]).symm
+        simp +contextual [mem_support_iff, h_zero]).symm
   calc
     (∏ i ∈ (f + g).support, h i ((f + g) i)) = ∏ i ∈ f.support ∪ g.support, h i ((f + g) i) :=
       Finset.prod_subset support_add <| by
-        simp (config := { contextual := true }) [mem_support_iff, h_zero]
+        simp +contextual [mem_support_iff, h_zero]
     _ = (∏ i ∈ f.support ∪ g.support, h i (f i)) * ∏ i ∈ f.support ∪ g.support, h i (g i) := by
       { simp [h_add, Finset.prod_mul_distrib] }
     _ = _ := by rw [f_eq, g_eq]
@@ -1717,7 +1715,7 @@ theorem sumAddHom_comp_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f
 theorem sumAddHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (f : Π₀ i, β i) : sumAddHom φ f = f.sum fun x => φ x := by
   rcases f with ⟨f, s, hf⟩
-  change (∑ i ∈ _, _) = ∑ i ∈ Finset.filter _ _, _
+  change (∑ i ∈ _, _) = ∑ i ∈ _ with _, _
   rw [Finset.sum_filter, Finset.sum_congr rfl]
   intro i _
   dsimp only [coe_mk', Subtype.coe_mk] at *
@@ -1861,7 +1859,7 @@ theorem prod_finset_sum_index {γ : Type w} {α : Type x} [∀ i, AddCommMonoid 
     (∏ i ∈ s, (g i).prod h) = (∑ i ∈ s, g i).prod h := by
   classical
   exact Finset.induction_on s (by simp [prod_zero_index])
-        (by simp (config := { contextual := true }) [prod_add_index, h_zero, h_add])
+        (by simp +contextual [prod_add_index, h_zero, h_add])
 
 @[to_additive]
 theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]

@@ -129,7 +129,6 @@ theorem lintegral_zero : ∫⁻ _ : α, 0 ∂μ = 0 := by simp
 theorem lintegral_zero_fun : lintegral μ (0 : α → ℝ≥0∞) = 0 :=
   lintegral_zero
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem lintegral_one : ∫⁻ _, (1 : ℝ≥0∞) ∂μ = μ univ := by rw [lintegral_const, one_mul]
 
 theorem setLIntegral_const (s : Set α) (c : ℝ≥0∞) : ∫⁻ _ in s, c ∂μ = c * μ s := by
@@ -396,7 +395,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
       refine le_of_eq (Finset.sum_congr rfl fun r _ => ?_)
       congr 2 with a
       refine and_congr_right ?_
-      simp (config := { contextual := true })
+      simp +contextual
     _ ≤ ⨆ n, ∫⁻ a, f n a ∂μ := by
       simp only [← SimpleFunc.lintegral_eq_lintegral]
       gcongr with n a

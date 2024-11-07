@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Sébastien Gouëzel, Yury Kudryashov, Dylan MacKenzie
 -/
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
@@ -26,7 +27,7 @@ noncomputable section
 
 open Set Function Filter Finset Metric Asymptotics Topology Nat NNReal ENNReal
 
-variable {α β ι : Type*}
+variable {α : Type*}
 
 /-! ### Powers -/
 

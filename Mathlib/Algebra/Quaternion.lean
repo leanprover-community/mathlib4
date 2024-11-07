@@ -1282,15 +1282,12 @@ instance instDivisionRing : DivisionRing ℍ[R] where
   nnqsmul_def q x := by rw [← coe_nnratCast, coe_mul_eq_smul]; ext <;> exact NNRat.smul_def _ _
   qsmul_def q x := by rw [← coe_ratCast, coe_mul_eq_smul]; ext <;> exact Rat.smul_def _ _
 
---@[simp] Porting note (#10618): `simp` can prove it
 theorem normSq_inv : normSq a⁻¹ = (normSq a)⁻¹ :=
   map_inv₀ normSq _
 
---@[simp] Porting note (#10618): `simp` can prove it
 theorem normSq_div : normSq (a / b) = normSq a / normSq b :=
   map_div₀ normSq a b
 
---@[simp] Porting note (#10618): `simp` can prove it
 theorem normSq_zpow (z : ℤ) : normSq (a ^ z) = normSq a ^ z :=
   map_zpow₀ normSq a z
 
@@ -1330,7 +1327,6 @@ theorem mk_quaternionAlgebra_of_infinite [Infinite R] : #(ℍ[R,c₁,c₂]) = #R
 theorem mk_univ_quaternionAlgebra : #(Set.univ : Set ℍ[R,c₁,c₂]) = #R ^ 4 := by
   rw [mk_univ, mk_quaternionAlgebra]
 
---@[simp] Porting note (#10618): `simp` can prove it
 theorem mk_univ_quaternionAlgebra_of_infinite [Infinite R] :
     #(Set.univ : Set ℍ[R,c₁,c₂]) = #R := by rw [mk_univ_quaternionAlgebra, pow_four]
 
@@ -1359,7 +1355,6 @@ theorem mk_quaternion_of_infinite [Infinite R] : #(ℍ[R]) = #R :=
   mk_quaternionAlgebra_of_infinite _ _
 
 /-- The cardinality of the quaternions, as a set. -/
---@[simp] Porting note (#10618): `simp` can prove it
 theorem mk_univ_quaternion : #(Set.univ : Set ℍ[R]) = #R ^ 4 :=
   mk_univ_quaternionAlgebra _ _
 
