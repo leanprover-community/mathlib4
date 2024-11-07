@@ -65,7 +65,7 @@ when `M` is a commutative monoid with enough `n`th roots of unity, where `n` is 
 of `G`. -/
 theorem monoidHom_mulEquiv_self_of_hasEnoughRootsOfUnity : Nonempty (G ≃* (G →* Mˣ)) := by
   classical -- to get `DecidableEq ι`
-  obtain ⟨ι, _, n, ⟨h₁, h₂⟩⟩ := equiv_prod_multiplicative_zmod G
+  obtain ⟨ι, _, n, ⟨h₁, h₂⟩⟩ := equiv_prod_multiplicative_zmod_of_finite G
   let e := h₂.some
   let e' := Pi.monoidHomMulEquiv (fun i ↦ Multiplicative (ZMod (n i))) Mˣ
   let e'' := MulEquiv.monoidHomCongr e (.refl Mˣ)

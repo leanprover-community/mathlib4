@@ -14,7 +14,7 @@ import Mathlib.Data.ZMod.Quotient
   `p i ^ e i`.
 * `AddCommGroup.equiv_directSum_zmod_of_finite` : Any finite abelian group is a direct sum of
   some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`.
-* `CommGroup.equiv_prod_multiplicative_zmod` is a version for multiplicative groups.
+* `CommGroup.equiv_prod_multiplicative_zmod_of_finite` is a version for multiplicative groups.
 -/
 
 open scoped DirectSum
@@ -163,7 +163,7 @@ theorem finite_of_fg_torsion [CommGroup G] [Group.FG G] (hG : Monoid.IsTorsion G
 
 /-- The **Structure Theorem For Finite Abelian Groups** in a multiplicative version:
 A finite commutative group `G` is isomorphic to a finite product of finite cyclic groups. -/
-theorem equiv_prod_multiplicative_zmod (G : Type*) [CommGroup G] [Finite G] :
+theorem equiv_prod_multiplicative_zmod_of_finite (G : Type*) [CommGroup G] [Finite G] :
     ∃ (ι : Type) (_ : Fintype ι) (n : ι → ℕ),
        (∀ (i : ι), 1 < n i) ∧ Nonempty (G ≃* ((i : ι) → Multiplicative (ZMod (n i)))) := by
   obtain ⟨ι, inst, n, h₁, h₂⟩ := AddCommGroup.equiv_directSum_zmod_of_finite' (Additive G)
