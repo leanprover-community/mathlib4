@@ -23,7 +23,7 @@ It contains
 * an integer `diff` representing the change in number of instructions for `file`;
 * a float `reldiff` representing the percentage change in number of instructions for `file`.
 -/
-structure Bench :=
+structure Bench where
   file    : String
   diff    : Int
   reldiff : Float
@@ -124,8 +124,8 @@ def benchOutput (jsonInput : String) : IO String := do
   -- The `boundᵢ` entry becomes `none` for the collapsed entries, so that we know that these
   -- should be printed individually instead of inside a `<details><summary>`-block.
   -- A single bin with just a single file is also marked with `none`, for the same reason.
-  let ts1 := togetherSorted.groupBy (·.2.size == 1 && ·.2.size == 1)
-  let ts2 := List.join <| ts1.map fun l ↦
+  let ts1 := togetherSorted.splitBy (·.2.size == 1 && ·.2.size == 1)
+  let ts2 := List.flatten <| ts1.map fun l ↦
     if (l.getD 0 default).2.size == 1 then
       [(none, l.foldl (· ++ ·.2) #[])]
     else
