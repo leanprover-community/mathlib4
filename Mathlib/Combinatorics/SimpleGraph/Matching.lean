@@ -148,6 +148,7 @@ lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : G ≃g G') :
     (M.map f.toHom).IsMatching ↔ M.IsMatching where
    mp h := by simpa [← map_comp] using h.map f.symm.toHom f.symm.injective
    mpr := .map f.toHom f.injective
+
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
 matched.
