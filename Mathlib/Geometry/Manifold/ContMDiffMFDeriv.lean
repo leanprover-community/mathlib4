@@ -161,7 +161,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
             PartialEquiv.mem_symm_trans_source _ (mem_extChartAt_source (f x₂ (g x₂)))
               h3x₂).differentiableWithinAt le_top
     have h3f := (h2x₂.mdifferentiableAt le_rfl).differentiableWithinAt_writtenInExtChartAt
-    refine fderivWithin.comp₃ _ hI' h3f hI ?_ ?_ ?_ ?_ (I.uniqueDiffOn _ <| mem_range_self _)
+    refine fderivWithin_comp₃ _ hI' h3f hI ?_ ?_ ?_ ?_ (I.uniqueDiffOn _ <| mem_range_self _)
     · exact fun x _ => mem_range_self _
     · exact fun x _ => mem_range_self _
     · simp_rw [writtenInExtChartAt, Function.comp_apply,
@@ -378,7 +378,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
       rw [ho] at this
       exact this.1
     · have : π E (TangentSpace I) ⁻¹' s ∩ π E (TangentSpace I) ⁻¹' (o ∩ l.source) = s'_lift := by
-        unfold_let s'_lift s'
+        unfold s'_lift s'
         rw [ho]; mfld_set_tac
       rw [this]
       exact h
@@ -391,17 +391,17 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
     rw [ho, inter_comm]
     exact hs.inter o_open
   have U'l : UniqueMDiffOn I s'l := U'.uniqueMDiffOn_preimage (mdifferentiable_chart _)
-  have diff_f : ContMDiffOn I I' n f s' := hf.mono (by unfold_let s'; mfld_set_tac)
+  have diff_f : ContMDiffOn I I' n f s' := hf.mono (by unfold s'; mfld_set_tac)
   have diff_r : ContMDiffOn I' I' n r r.source := contMDiffOn_chart
   have diff_rf : ContMDiffOn I I' n (r ∘ f) s' := by
     refine ContMDiffOn.comp diff_r diff_f fun x hx => ?_
     simp only [s', mfld_simps] at hx; simp only [hx, mfld_simps]
   have diff_l : ContMDiffOn I I n l.symm s'l :=
     haveI A : ContMDiffOn I I n l.symm l.target := contMDiffOn_chart_symm
-    A.mono (by unfold_let s'l; mfld_set_tac)
+    A.mono (by unfold s'l; mfld_set_tac)
   have diff_rfl : ContMDiffOn I I' n (r ∘ f ∘ l.symm) s'l := by
     apply ContMDiffOn.comp diff_rf diff_l
-    unfold_let s'l
+    unfold s'l
     mfld_set_tac
   have diff_rfl_lift :
     ContMDiffOn I.tangent I'.tangent m (tangentMapWithin I I' (r ∘ f ∘ l.symm) s'l) s'l_lift :=
@@ -500,7 +500,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
         exact (chartAt (ModelProd H' E') (tangentMapWithin I I' f s p)).left_inv this
       · simp only [hq, mfld_simps]
     have E : tangentMapWithin I I' f s' q = tangentMapWithin I I' f s q := by
-      refine tangentMapWithin_subset (by unfold_let; mfld_set_tac) U'q ?_
+      refine tangentMapWithin_subset (by unfold s'; mfld_set_tac) U'q ?_
       apply hf.mdifferentiableOn one_le_n
       simp only [hq, mfld_simps]
     dsimp only [Function.comp_def] at A B C D E ⊢

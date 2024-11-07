@@ -8,7 +8,7 @@ import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.Topology.Sheaves.Functors
-import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # $Spec$ as a functor to locally ringed spaces.
