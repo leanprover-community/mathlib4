@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Sites.Equivalence
 
 # Coherence and equivalence of categories
 
-This file proves that the coherent and regular topologies transfer nicely along equivalences of
+This file proves that the coherent and regular topologies transfer nicely along equivalences of
 categories.
 -/
 
@@ -27,7 +27,7 @@ section Coherent
 
 variable [Precoherent C]
 
-/-- `Precoherent` is preserved by equivalence of categories. -/
+/-- `Precoherent` is preserved by equivalence of categories. -/
 theorem precoherent (e : C ≌ D) : Precoherent D := e.inverse.reflects_precoherent
 
 instance [EssentiallySmall C] :
@@ -75,7 +75,7 @@ section Regular
 
 variable [Preregular C]
 
-/-- `Preregular` is preserved by equivalence of categories. -/
+/-- `Preregular` is preserved by equivalence of categories. -/
 theorem preregular (e : C ≌ D) : Preregular D := e.inverse.reflects_preregular
 
 instance [EssentiallySmall C] :

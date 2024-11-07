@@ -6,8 +6,8 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Order.Fin.Basic
-import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Order.PiLex
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Order properties on tuples
@@ -25,7 +25,7 @@ lemma pi_lex_lt_cons_cons {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ}
     (s : ∀ {i : Fin n.succ}, α i → α i → Prop) :
     Pi.Lex (· < ·) (@s) (Fin.cons x₀ x) (Fin.cons y₀ y) ↔
       s x₀ y₀ ∨ x₀ = y₀ ∧ Pi.Lex (· < ·) (@fun i : Fin n ↦ @s i.succ) x y := by
-  simp_rw [Pi.Lex, Fin.exists_fin_succ, Fin.cons_succ, Fin.cons_zero, Fin.forall_fin_succ]
+  simp_rw [Pi.Lex, Fin.exists_fin_succ, Fin.cons_succ, Fin.cons_zero, Fin.forall_iff_succ]
   simp [and_assoc, exists_and_left]
 
 variable [∀ i, Preorder (α i)]
@@ -39,12 +39,12 @@ lemma insertNth_mem_Icc {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove
 lemma preimage_insertNth_Icc_of_mem {i : Fin (n + 1)} {x : α i} {q₁ q₂ : ∀ j, α j}
     (hx : x ∈ Icc (q₁ i) (q₂ i)) :
     i.insertNth x ⁻¹' Icc q₁ q₂ = Icc (fun j ↦ q₁ (i.succAbove j)) fun j ↦ q₂ (i.succAbove j) :=
-  Set.ext fun p ↦ by simp only [mem_preimage, insertNth_mem_Icc, hx, true_and_iff]
+  Set.ext fun p ↦ by simp only [mem_preimage, insertNth_mem_Icc, hx, true_and]
 
 lemma preimage_insertNth_Icc_of_not_mem {i : Fin (n + 1)} {x : α i} {q₁ q₂ : ∀ j, α j}
     (hx : x ∉ Icc (q₁ i) (q₂ i)) : i.insertNth x ⁻¹' Icc q₁ q₂ = ∅ :=
   Set.ext fun p ↦ by
-    simp only [mem_preimage, insertNth_mem_Icc, hx, false_and_iff, mem_empty_iff_false]
+    simp only [mem_preimage, insertNth_mem_Icc, hx, false_and, mem_empty_iff_false]
 
 end Fin
 
@@ -54,7 +54,7 @@ variable {α : Type*}
 
 lemma liftFun_vecCons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} {a : α} :
     ((· < ·) ⇒ r) (vecCons a f) (vecCons a f) ↔ r a (f 0) ∧ ((· < ·) ⇒ r) f f := by
-  simp only [liftFun_iff_succ r, forall_fin_succ, cons_val_succ, cons_val_zero, ← succ_castSucc,
+  simp only [liftFun_iff_succ r, forall_iff_succ, cons_val_succ, cons_val_zero, ← succ_castSucc,
     castSucc_zero]
 
 variable [Preorder α] {n : ℕ} {f : Fin (n + 1) → α} {a : α}
@@ -112,11 +112,54 @@ def OrderIso.piFinTwoIso (α : Fin 2 → Type*) [∀ i, Preorder (α i)] : (∀ 
 def OrderIso.finTwoArrowIso (α : Type*) [Preorder α] : (Fin 2 → α) ≃o α × α :=
   { OrderIso.piFinTwoIso fun _ => α with toEquiv := finTwoArrowEquiv α }
 
+namespace Fin
+
+/-- Order isomorphism between tuples of length `n + 1` and pairs of an element and a tuple of length
+`n` given by separating out the first element of the tuple.
+
+This is `Fin.cons` as an `OrderIso`. -/
+@[simps!, simps toEquiv]
+def consOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] :
+    α 0 × (∀ i, α (succ i)) ≃o ∀ i, α i where
+  toEquiv := consEquiv α
+  map_rel_iff' := forall_iff_succ
+
+/-- Order isomorphism between tuples of length `n + 1` and pairs of an element and a tuple of length
+`n` given by separating out the last element of the tuple.
+
+This is `Fin.snoc` as an `OrderIso`. -/
+@[simps!, simps toEquiv]
+def snocOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] :
+    α (last n) × (∀ i, α (castSucc i)) ≃o ∀ i, α i where
+  toEquiv := snocEquiv α
+  map_rel_iff' := by simp [Pi.le_def, Prod.le_def, forall_iff_castSucc]
+
+/-- Order isomorphism between tuples of length `n + 1` and pairs of an element and a tuple of length
+`n` given by separating out the `p`-th element of the tuple.
+
+This is `Fin.insertNth` as an `OrderIso`. -/
+@[simps!, simps toEquiv]
+def insertNthOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] (p : Fin (n + 1)) :
+    α p × (∀ i, α (p.succAbove i)) ≃o ∀ i, α i where
+  toEquiv := insertNthEquiv α p
+  map_rel_iff' := by simp [Pi.le_def, Prod.le_def, p.forall_iff_succAbove]
+
+@[simp] lemma insertNthOrderIso_zero (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] :
+    insertNthOrderIso α 0 = consOrderIso α := by ext; simp [insertNthOrderIso]
+
+/-- Note this lemma can only be written about non-dependent tuples as `insertNth (last n) = snoc` is
+not a definitional equality. -/
+@[simp] lemma insertNthOrderIso_last (n : ℕ) (α : Type*) [LE α] :
+    insertNthOrderIso (fun _ ↦ α) (last n) = snocOrderIso (fun _ ↦ α) := by ext; simp
+
+end Fin
+
 /-- Order isomorphism between `Π j : Fin (n + 1), α j` and
 `α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
+@[deprecated Fin.insertNthOrderIso (since := "2024-07-12")]
 def OrderIso.piFinSuccAboveIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃o α i × ∀ j, α (i.succAbove j) where
-  toEquiv := Equiv.piFinSuccAbove α i
+  toEquiv := (Fin.insertNthEquiv α i).symm
   map_rel_iff' := Iff.symm i.forall_iff_succAbove
 
 /-- `Fin.succAbove` as an order isomorphism between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/

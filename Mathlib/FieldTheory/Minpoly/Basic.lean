@@ -58,10 +58,13 @@ theorem ne_zero [Nontrivial A] (hx : IsIntegral A x) : minpoly A x ≠ 0 :=
 theorem eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
   dif_neg hx
 
+theorem ne_zero_iff [Nontrivial A] : minpoly A x ≠ 0 ↔ IsIntegral A x :=
+  ⟨fun h => of_not_not <| eq_zero.mt h, ne_zero⟩
+
 theorem algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
     minpoly A (f x) = minpoly A x := by
-  refine dif_ctx_congr (isIntegral_algHom_iff _ hf) (fun _ => ?_) fun _ => rfl
-  simp_rw [← Polynomial.aeval_def, aeval_algHom, AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
+  simp_rw [minpoly, isIntegral_algHom_iff _ hf, ← Polynomial.aeval_def, aeval_algHom,
+    AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
 
 theorem algebraMap_eq {B} [CommRing B] [Algebra A B] [Algebra B B'] [IsScalarTower A B B']
     (h : Function.Injective (algebraMap B B')) (x : B) :

@@ -73,9 +73,6 @@ instance instEquivLike : EquivLike (P₁ ≃ᵃL[k] P₂) P₁ P₂ where
   right_inv f := f.right_inv
   coe_injective' _ _ h _ := toAffineEquiv_injective (DFunLike.coe_injective h)
 
-instance : CoeFun (P₁ ≃ᵃL[k] P₂) fun _ ↦ P₁ → P₂ :=
-  DFunLike.hasCoeToFun
-
 attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 
 /-- Coerce continuous affine equivalences to affine equivalences. -/
@@ -179,7 +176,7 @@ theorem symm_symm (e : P₁ ≃ᵃL[k] P₂) : e.symm.symm = e := rfl
 theorem symm_symm_apply (e : P₁ ≃ᵃL[k] P₂) (x : P₁) : e.symm.symm x = e x :=
   rfl
 
-theorem symm_apply_eq (e : P₁ ≃ᵃL[k] P₂)  {x y} : e.symm x = y ↔ x = e y :=
+theorem symm_apply_eq (e : P₁ ≃ᵃL[k] P₂) {x y} : e.symm x = y ↔ x = e y :=
   e.toAffineEquiv.symm_apply_eq
 
 theorem eq_symm_apply (e : P₁ ≃ᵃL[k] P₂) {x y} : y = e.symm x ↔ e y = x :=

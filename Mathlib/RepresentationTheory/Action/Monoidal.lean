@@ -1,17 +1,15 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.RepresentationTheory.Action.Limits
-import Mathlib.RepresentationTheory.Action.Concrete
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
-import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Linear
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
+import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
+import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
+import Mathlib.RepresentationTheory.Action.Concrete
+import Mathlib.RepresentationTheory.Action.Limits
 
 /-!
 # Induced monoidal structure on `Action V G`
@@ -35,77 +33,36 @@ open MonoidalCategory
 
 variable [MonoidalCategory V]
 
+@[simps! tensorUnit_V tensorObj_V tensorHom_hom whiskerLeft_hom whiskerRight_hom
+  associator_hom_hom associator_inv_hom leftUnitor_hom_hom leftUnitor_inv_hom
+  rightUnitor_hom_hom rightUnitor_inv_hom]
 instance instMonoidalCategory : MonoidalCategory (Action V G) :=
   Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
+/- Adding this solves `simpNF` linter report at `tensorUnit_ρ` -/
 @[simp]
-theorem tensorUnit_v : (𝟙_ (Action V G)).V = 𝟙_ V :=
-  rfl
-
--- Porting note: removed @[simp] as the simpNF linter complains
-theorem tensorUnit_rho {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
+theorem tensorUnit_ρ' {g : G} :
+    @DFunLike.coe (G →* MonCat.of (End (𝟙_ V))) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) := by
   rfl
 
 @[simp]
-theorem tensor_v {X Y : Action V G} : (X ⊗ Y).V = X.V ⊗ Y.V :=
+theorem tensorUnit_ρ {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
   rfl
 
--- Porting note: removed @[simp] as the simpNF linter complains
-theorem tensor_rho {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
+/- Adding this solves `simpNF` linter report at `tensor_ρ` -/
+@[simp]
+theorem tensor_ρ' {X Y : Action V G} {g : G} :
+    @DFunLike.coe (G →* MonCat.of (End (X.V ⊗ Y.V))) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 
 @[simp]
-theorem tensor_hom {W X Y Z : Action V G} (f : W ⟶ X) (g : Y ⟶ Z) : (f ⊗ g).hom = f.hom ⊗ g.hom :=
+theorem tensor_ρ {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
-
-@[simp]
-theorem whiskerLeft_hom (X : Action V G) {Y Z : Action V G} (f : Y ⟶ Z) :
-    (X ◁ f).hom = X.V ◁ f.hom :=
-  rfl
-
-@[simp]
-theorem whiskerRight_hom {X Y : Action V G} (f : X ⟶ Y) (Z : Action V G) :
-    (f ▷ Z).hom = f.hom ▷ Z.V :=
-  rfl
-
--- Porting note: removed @[simp] as the simpNF linter complains
-theorem associator_hom_hom {X Y Z : Action V G} :
-    Hom.hom (α_ X Y Z).hom = (α_ X.V Y.V Z.V).hom := by
-  dsimp
-  simp
-
--- Porting note: removed @[simp] as the simpNF linter complains
-theorem associator_inv_hom {X Y Z : Action V G} :
-    Hom.hom (α_ X Y Z).inv = (α_ X.V Y.V Z.V).inv := by
-  dsimp
-  simp
-
--- Porting note: removed @[simp] as the simpNF linter complains
-theorem leftUnitor_hom_hom {X : Action V G} : Hom.hom (λ_ X).hom = (λ_ X.V).hom := by
-  dsimp
-  simp
-
--- Porting note: removed @[simp] as the simpNF linter complains
-theorem leftUnitor_inv_hom {X : Action V G} : Hom.hom (λ_ X).inv = (λ_ X.V).inv := by
-  dsimp
-  simp
-
--- Porting note: removed @[simp] as the simpNF linter complains
-theorem rightUnitor_hom_hom {X : Action V G} : Hom.hom (ρ_ X).hom = (ρ_ X.V).hom := by
-  dsimp
-  simp
-
--- Porting note: removed @[simp] as the simpNF linter complains
-theorem rightUnitor_inv_hom {X : Action V G} : Hom.hom (ρ_ X).inv = (ρ_ X.V).inv := by
-  dsimp
-  simp
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
 is isomorphic to the tensor unit of `Action V G`. -/
 def tensorUnitIso {X : V} (f : 𝟙_ V ≅ X) : 𝟙_ (Action V G) ≅ Action.mk X 1 :=
-  Action.mkIso f fun _ => by
-    simp only [MonoidHom.one_apply, End.one_def, Category.id_comp f.hom, tensorUnit_rho,
-      MonCat.oneHom_apply, MonCat.one_of, Category.comp_id]
+  Action.mkIso f
 
 variable (V G)
 
@@ -114,7 +71,7 @@ variable (V G)
 def forgetMonoidal : MonoidalFunctor (Action V G) V :=
   { toFunctor := Action.forget _ _
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 instance forgetMonoidal_faithful : (forgetMonoidal V G).Faithful := by
   change (forget V G).Faithful; infer_instance
@@ -284,11 +241,11 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
-        erw [tensor_rho, tensor_rho]
+        rw [tensor_ρ, tensor_ρ]
         dsimp
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [leftRegular_ρ_apply]
-        erw [map_mul]
+        rw [map_mul]
         rfl }
   hom_inv_id := by
     apply Hom.ext
@@ -308,7 +265,7 @@ each factor. -/
 @[simps!]
 noncomputable def diagonalSucc (G : Type u) [Monoid G] (n : ℕ) :
     diagonal G (n + 1) ≅ leftRegular G ⊗ diagonal G n :=
-  mkIso (Equiv.piFinSuccAbove _ 0).toIso fun _ => rfl
+  mkIso (Fin.consEquiv _).symm.toIso fun _ => rfl
 
 end Action
 

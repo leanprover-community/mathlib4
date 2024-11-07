@@ -38,7 +38,7 @@ theorem Ico_lemma {α} [LinearOrder α] {x₁ x₂ y₁ y₂ z₁ z₂ w : α} (
   simp only [not_and, not_lt, mem_Ico] at hw
   refine ⟨max x₁ (min w y₂), ?_, ?_, ?_⟩
   · simp [le_refl, lt_trans h₁ (lt_trans hy h₂), h₂]
-  · simp (config := { contextual := true }) [hw, lt_irrefl, not_le_of_lt h₁]
+  · simp +contextual [hw, lt_irrefl, not_le_of_lt h₁]
   · simp [hw.2.1, hw.2.2, hz₁, lt_of_lt_of_le h₁ hz₂]
 
 /-- A (hyper)-cube (in standard orientation) is a vector `b` consisting of the bottom-left point
@@ -71,7 +71,7 @@ theorem univ_pi_side (c : Cube n) : pi univ (side c) = c.toSet :=
 
 theorem toSet_subset {c c' : Cube n} : c.toSet ⊆ c'.toSet ↔ ∀ j, c.side j ⊆ c'.side j := by
   simp only [← univ_pi_side, univ_pi_subset_univ_pi_iff, (c.side_nonempty _).ne_empty, exists_false,
-    or_false_iff]
+    or_false]
 
 theorem toSet_disjoint {c c' : Cube n} :
     Disjoint c.toSet c'.toSet ↔ ∃ j, Disjoint (c.side j) (c'.side j) := by
@@ -181,7 +181,7 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
     (cs i).shiftUp.bottom ⊆ ⋃ i : ι, (cs i).bottom := by
   intro p hp; cases' hp with hp0 hps; rw [tail_shiftUp] at hps
   have : p ∈ (unitCube : Cube (n + 1)).toSet := by
-    simp only [toSet, forall_fin_succ, hp0, side_unitCube, mem_setOf_eq, mem_Ico, head_shiftUp]
+    simp only [toSet, forall_iff_succ, hp0, side_unitCube, mem_setOf_eq, mem_Ico, head_shiftUp]
     refine ⟨⟨?_, ?_⟩, ?_⟩
     · rw [← zero_add (0 : ℝ)]; apply add_le_add
       · apply zero_le_b h
@@ -225,7 +225,7 @@ theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube :=
     intro h0 hv
     have : v ∈ (unitCube : Cube (n + 1)).toSet := by
       dsimp only [toSet, unitCube, mem_setOf_eq]
-      rw [forall_fin_succ, h0]; constructor
+      rw [forall_iff_succ, h0]; constructor
       · norm_num [side, unitCube]
       · exact hv
     rw [← h.2, mem_iUnion] at this; rcases this with ⟨i, hi⟩
@@ -361,7 +361,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
     dsimp only [x]; rw [← bi, add_sub_assoc, add_lt_iff_neg_left, sub_lt_zero]
     apply mi_strict_minimal (Ne.symm h2i') hi'
   refine ⟨x, ⟨?_, ?_⟩, ?_⟩
-  · simp only [side, neg_lt_zero, hw, add_lt_iff_neg_left, and_true_iff, mem_Ico, sub_eq_add_neg, x]
+  · simp only [side, neg_lt_zero, hw, add_lt_iff_neg_left, and_true, mem_Ico, sub_eq_add_neg, x]
     rw [add_assoc, le_add_iff_nonneg_right, ← sub_eq_add_neg, sub_nonneg]
     apply le_of_lt (w_lt_w h v hi')
   · simp only [side, not_and_or, not_lt, not_le, mem_Ico]; left; exact hx
@@ -408,14 +408,14 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
   have i'_i'' : i' ≠ i'' := by
     rintro ⟨⟩
     have : (cs i).b ∈ (cs i').toSet := by
-      simp only [toSet, forall_fin_succ, hi.1, bottom_mem_side h2i', true_and_iff, mem_setOf_eq]
+      simp only [toSet, forall_iff_succ, hi.1, bottom_mem_side h2i', true_and, mem_setOf_eq]
       intro j₂; by_cases hj₂ : j₂ = j
       · simpa [p', side_tail, hj'.symm, hj₂] using hi''.2 j
       · simpa [p, hj₂] using hi'.2 j₂
     apply not_disjoint_iff.mpr ⟨(cs i).b, (cs i).b_mem_toSet, this⟩ (h.1 i_i')
   have i_i'' : i ≠ i'' := by intro h; induction h; simpa [p', hx'.2] using hi''.2 j'
   apply Not.elim _ (h.1 i'_i'')
-  simp_rw [onFun, comp, toSet_disjoint, not_exists, not_disjoint_iff, forall_fin_succ]
+  simp_rw [onFun, comp, toSet_disjoint, not_exists, not_disjoint_iff, forall_iff_succ]
   refine ⟨⟨c.b 0, bottom_mem_side h2i', bottom_mem_side h2i''⟩, ?_⟩
   intro j₂
   by_cases hj₂ : j₂ = j
@@ -480,9 +480,9 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     have h3i'' : (cs i).w < (cs i'').w := by
       apply mi_strict_minimal _ h2i''; rintro rfl; apply h2p3; convert hi''.2
     let p' := @cons n (fun _ => ℝ) (cs i).xm p3
-    have hp' : p' ∈ (cs i').toSet := by simpa [p', toSet, forall_fin_succ, hi'.symm] using h1p3
+    have hp' : p' ∈ (cs i').toSet := by simpa [p', toSet, forall_iff_succ, hi'.symm] using h1p3
     have h2p' : p' ∈ (cs i'').toSet := by
-      simp only [p', toSet, forall_fin_succ, cons_succ, cons_zero, mem_setOf_eq]
+      simp only [p', toSet, forall_iff_succ, cons_succ, cons_zero, mem_setOf_eq]
       refine ⟨?_, by simpa [toSet] using hi''.2⟩
       have : (cs i).b 0 = (cs i'').b 0 := by rw [hi.1, h2i''.1]
       simp [side, hw', xm, this, h3i'']

@@ -1,10 +1,13 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Algebra.Polynomial.Induction
+import Mathlib.Algebra.Ring.Subsemiring.Basic
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -50,7 +53,7 @@ theorem eval₂_congr {R S : Type*} [Semiring R] [Semiring S] {f g : R →+* S} 
 
 @[simp]
 theorem eval₂_at_zero : p.eval₂ f 0 = f (coeff p 0) := by
-  simp (config := { contextual := true }) only [eval₂_eq_sum, zero_pow_eq, mul_ite, mul_zero,
+  simp +contextual only [eval₂_eq_sum, zero_pow_eq, mul_ite, mul_zero,
     mul_one, sum, Classical.not_not, mem_support_iff, sum_ite_eq', ite_eq_left_iff,
     RingHom.map_zero, imp_true_iff, eq_self_iff_true]
 
@@ -400,9 +403,9 @@ theorem eval_mul_X : (p * X).eval x = p.eval x * x := by
 
 @[simp]
 theorem eval_mul_X_pow {k : ℕ} : (p * X ^ k).eval x = p.eval x * x ^ k := by
-  induction' k with k ih
-  · simp
-  · simp [pow_succ, ← mul_assoc, ih]
+  induction k with
+  | zero => simp
+  | succ k ih => simp [pow_succ, ← mul_assoc, ih]
 
 theorem eval_sum (p : R[X]) (f : ℕ → R → R[X]) (x : R) :
     (p.sum f).eval x = p.sum fun n a => (f n a).eval x :=
@@ -511,15 +514,15 @@ theorem mul_X_comp : (p * X).comp r = p.comp r * r := by
 
 @[simp]
 theorem X_pow_comp {k : ℕ} : (X ^ k).comp p = p ^ k := by
-  induction' k with k ih
-  · simp
-  · simp [pow_succ, mul_X_comp, ih]
+  induction k with
+  | zero => simp
+  | succ k ih => simp [pow_succ, mul_X_comp, ih]
 
 @[simp]
 theorem mul_X_pow_comp {k : ℕ} : (p * X ^ k).comp r = p.comp r * r ^ k := by
-  induction' k with k ih
-  · simp
-  · simp [ih, pow_succ, ← mul_assoc, mul_X_comp]
+  induction k with
+  | zero => simp
+  | succ k ih => simp [ih, pow_succ, ← mul_assoc, mul_X_comp]
 
 @[simp]
 theorem C_mul_comp : (C a * p).comp r = C a * p.comp r := by
@@ -580,7 +583,7 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     refine natDegree_pow_le.trans_lt ((mul_lt_mul_right (pos_iff_ne_zero.mpr hqd0)).mpr ?_)
     exact lt_of_le_of_ne (le_natDegree_of_mem_supp _ hbs) hbp
   case h₁ =>
-    simp (config := { contextual := true })
+    simp +contextual
 
 @[simp] lemma sum_comp (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
     (∑ i ∈ s, p i).comp q = ∑ i ∈ s, (p i).comp q := Polynomial.eval₂_finset_sum _ _ _ _
@@ -813,10 +816,10 @@ protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
 theorem map_comp (p q : R[X]) : map f (p.comp q) = (map f p).comp (map f q) :=
   Polynomial.induction_on p (by simp only [map_C, forall_const, C_comp, eq_self_iff_true])
     (by
-      simp (config := { contextual := true }) only [Polynomial.map_add, add_comp, forall_const,
+      simp +contextual only [Polynomial.map_add, add_comp, forall_const,
         imp_true_iff, eq_self_iff_true])
     (by
-      simp (config := { contextual := true }) only [pow_succ, ← mul_assoc, comp, forall_const,
+      simp +contextual only [pow_succ, ← mul_assoc, comp, forall_const,
         eval₂_mul_X, imp_true_iff, eq_self_iff_true, map_X, Polynomial.map_mul])
 
 @[simp]
@@ -898,9 +901,9 @@ theorem eval₂_comp {x : S} : eval₂ f x (p.comp q) = eval₂ f (eval₂ f x q
 @[simp]
 theorem iterate_comp_eval₂ (k : ℕ) (t : S) :
     eval₂ f t (p.comp^[k] q) = (fun x => eval₂ f x p)^[k] (eval₂ f t q) := by
-  induction' k with k IH
-  · simp
-  · rw [Function.iterate_succ_apply', Function.iterate_succ_apply', eval₂_comp, IH]
+  induction k with
+  | zero => simp
+  | succ k IH => rw [Function.iterate_succ_apply', Function.iterate_succ_apply', eval₂_comp, IH]
 
 end
 
@@ -1035,6 +1038,14 @@ theorem eval_eq_zero_of_dvd_of_eval_eq_zero : p ∣ q → eval x p = 0 → eval 
 theorem eval_geom_sum {R} [CommSemiring R] {n : ℕ} {x : R} :
     eval x (∑ i ∈ range n, X ^ i) = ∑ i ∈ range n, x ^ i := by simp [eval_finset_sum]
 
+variable [NoZeroDivisors R]
+
+lemma root_mul : IsRoot (p * q) a ↔ IsRoot p a ∨ IsRoot q a := by
+  simp_rw [IsRoot, eval_mul, mul_eq_zero]
+
+lemma root_or_root_of_root_mul (h : IsRoot (p * q) a) : IsRoot p a ∨ IsRoot q a :=
+  root_mul.1 h
+
 end
 
 end Eval
@@ -1045,7 +1056,7 @@ theorem support_map_subset [Semiring R] [Semiring S] (f : R →+* S) (p : R[X]) 
     (map f p).support ⊆ p.support := by
   intro x
   contrapose!
-  simp (config := { contextual := true })
+  simp +contextual
 
 theorem support_map_of_injective [Semiring R] [Semiring S] (p : R[X]) {f : R →+* S}
     (hf : Function.Injective f) : (map f p).support = p.support := by
@@ -1152,4 +1163,50 @@ alias mul_X_sub_int_cast_comp := mul_X_sub_intCast_comp
 
 end Ring
 
+section
+variable [Semiring R] [CommRing S] [IsDomain S] (φ : R →+* S) {f : R[X]}
+
+lemma isUnit_of_isUnit_leadingCoeff_of_isUnit_map (hf : IsUnit f.leadingCoeff)
+    (H : IsUnit (map φ f)) : IsUnit f := by
+  have dz := degree_eq_zero_of_isUnit H
+  rw [degree_map_eq_of_leadingCoeff_ne_zero] at dz
+  · rw [eq_C_of_degree_eq_zero dz]
+    refine IsUnit.map C ?_
+    convert hf
+    change coeff f 0 = coeff f (natDegree f)
+    rw [(degree_eq_iff_natDegree_eq _).1 dz]
+    · rfl
+    rintro rfl
+    simp at H
+  · intro h
+    have u : IsUnit (φ f.leadingCoeff) := IsUnit.map φ hf
+    rw [h] at u
+    simp at u
+
+end
+
+section
+variable [CommRing R] [IsDomain R] [CommRing S] [IsDomain S] (φ : R →+* S)
+
+/-- A polynomial over an integral domain `R` is irreducible if it is monic and
+irreducible after mapping into an integral domain `S`.
+
+A special case of this lemma is that a polynomial over `ℤ` is irreducible if
+it is monic and irreducible over `ℤ/pℤ` for some prime `p`.
+-/
+lemma Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
+    (h_irr : Irreducible (f.map φ)) : Irreducible f := by
+  refine ⟨h_irr.not_unit ∘ IsUnit.map (mapRingHom φ), fun a b h => ?_⟩
+  dsimp [Monic] at h_mon
+  have q := (leadingCoeff_mul a b).symm
+  rw [← h, h_mon] at q
+  refine (h_irr.isUnit_or_isUnit <|
+    (congr_arg (Polynomial.map φ) h).trans (Polynomial.map_mul φ)).imp ?_ ?_ <;>
+      apply isUnit_of_isUnit_leadingCoeff_of_isUnit_map <;>
+    apply isUnit_of_mul_eq_one
+  · exact q
+  · rw [mul_comm]
+    exact q
+
+end
 end Polynomial

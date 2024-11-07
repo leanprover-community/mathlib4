@@ -116,7 +116,7 @@ theorem integrable_compProd_iff ⦃f : β × γ → E⦄ (hf : AEStronglyMeasura
       (∀ᵐ x ∂κ a, Integrable (fun y => f (x, y)) (η (a, x))) ∧
         Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) := by
   simp only [Integrable, hasFiniteIntegral_compProd_iff' hf, hf.norm.integral_kernel_compProd,
-    hf, hf.compProd_mk_left, eventually_and, true_and_iff]
+    hf, hf.compProd_mk_left, eventually_and, true_and]
 
 theorem _root_.MeasureTheory.Integrable.compProd_mk_left_ae ⦃f : β × γ → E⦄
     (hf : Integrable f ((κ ⊗ₖ η) a)) : ∀ᵐ x ∂κ a, Integrable (fun y => f (x, y)) (η (a, x)) :=
@@ -226,7 +226,7 @@ theorem integral_compProd :
   · simp [integral, hE]
   apply Integrable.induction
   · intro c s hs h2s
-    simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp,
+    simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp_def,
       integral_indicator (measurable_prod_mk_left hs), MeasureTheory.setIntegral_const,
       integral_smul_const]
     congr 1
@@ -234,7 +234,7 @@ theorem integral_compProd :
     rotate_left
     · exact (Kernel.measurable_kernel_prod_mk_left' hs _).aemeasurable
     · exact ae_kernel_lt_top a h2s.ne
-    rw [Kernel.compProd_apply _ _ _ hs]
+    rw [Kernel.compProd_apply hs]
     rfl
   · intro f g _ i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, Kernel.integral_integral_add' i_f i_g, hf, hg]
@@ -249,7 +249,7 @@ theorem integral_compProd :
 theorem setIntegral_compProd {f : β × γ → E} {s : Set β} {t : Set γ} (hs : MeasurableSet s)
     (ht : MeasurableSet t) (hf : IntegrableOn f (s ×ˢ t) ((κ ⊗ₖ η) a)) :
     ∫ z in s ×ˢ t, f z ∂(κ ⊗ₖ η) a = ∫ x in s, ∫ y in t, f (x, y) ∂η (a, x) ∂κ a := by
-  -- Porting note: `compProd_restrict` needed some explicit argumnts
+  -- Porting note: `compProd_restrict` needed some explicit arguments
   rw [← Kernel.restrict_apply (κ ⊗ₖ η) (hs.prod ht), ← compProd_restrict hs ht, integral_compProd]
   · simp_rw [Kernel.restrict_apply]
   · rw [compProd_restrict, Kernel.restrict_apply]; exact hf

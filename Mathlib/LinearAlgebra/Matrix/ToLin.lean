@@ -8,6 +8,7 @@ import Mathlib.Data.Matrix.Notation
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.Data.Finite.Sum
 
 /-!
 # Linear maps and matrices
@@ -942,7 +943,7 @@ If `M₁` and `M₂` are modules with basis `b₁` and `b₂` respectively index
 by finite types `ι₁` and `ι₂`,
 then `Basis.linearMap b₁ b₂` is the basis of `M₁ →ₗ[R] M₂` indexed by `ι₂ × ι₁`
 where `(i, j)` indexes the linear map that sends `b j` to `b i`
-and sends all other basis vectors to `0`.  -/
+and sends all other basis vectors to `0`. -/
 @[simps! (config := .lemmasOnly) repr_apply repr_symm_apply]
 noncomputable
 def linearMap (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) :
@@ -959,7 +960,7 @@ lemma linearMap_apply_apply (ij : ι₂ × ι₁) (k : ι₁) :
     (b₁.linearMap b₂ ij) (b₁ k) = if ij.2 = k then b₂ ij.1 else 0 := by
   have := Classical.decEq ι₂
   rw [linearMap_apply, Matrix.stdBasis_eq_stdBasisMatrix, Matrix.toLin_self]
-  dsimp only [Matrix.stdBasisMatrix]
+  dsimp only [Matrix.stdBasisMatrix, of_apply]
   simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, if_true]
 
 /-- The standard basis of the endomorphism algebra of a module
@@ -968,7 +969,7 @@ induced by a basis of the module.
 If `M` is a module with basis `b` indexed by a finite type `ι`,
 then `Basis.end b` is the basis of `Module.End R M` indexed by `ι × ι`
 where `(i, j)` indexes the linear map that sends `b j` to `b i`
-and sends all other basis vectors to `0`.  -/
+and sends all other basis vectors to `0`. -/
 @[simps! (config := .lemmasOnly) repr_apply repr_symm_apply]
 noncomputable
 abbrev _root_.Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=

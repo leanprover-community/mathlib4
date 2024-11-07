@@ -22,15 +22,18 @@ variable {α β : Type*}
 
 namespace IsSimpleOrder
 
+variable [LE α] [BoundedOrder α] [IsSimpleOrder α]
+
 section DecidableEq
 
 /- It is important that `IsSimpleOrder` is the last type-class argument of this instance,
 so that type-class inference fails quickly if it doesn't apply. -/
-instance (priority := 200) {α} [DecidableEq α] [LE α] [BoundedOrder α] [IsSimpleOrder α] :
-    Fintype α :=
+instance (priority := 200) [DecidableEq α] : Fintype α :=
   Fintype.ofEquiv Bool equivBool.symm
 
 end DecidableEq
+
+instance (priority := 200) : Finite α := by classical infer_instance
 
 end IsSimpleOrder
 
@@ -38,7 +41,7 @@ namespace Fintype
 
 namespace IsSimpleOrder
 
-variable [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α] [DecidableEq α]
+variable [LE α] [BoundedOrder α] [IsSimpleOrder α] [DecidableEq α]
 
 theorem univ : (Finset.univ : Finset α) = {⊤, ⊥} := by
   change Finset.map _ (Finset.univ : Finset Bool) = _

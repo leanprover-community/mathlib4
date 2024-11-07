@@ -7,8 +7,8 @@ import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Algebra.Group.ULift
+import Mathlib.Topology.ContinuousMap.Defs
 
 /-!
 # Theory of topological monoids
@@ -75,7 +75,7 @@ instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
 instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
   ⟨show Continuous ((fun p : M × M => p.1 * p.2) ∘ Prod.swap ∘ Prod.map MulOpposite.unop id) from
       continuous_mul.comp <|
-        continuous_swap.comp <| Continuous.prod_map MulOpposite.continuous_unop continuous_id⟩
+        continuous_swap.comp <| Continuous.prodMap MulOpposite.continuous_unop continuous_id⟩
 
 @[to_additive]
 theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [MulOneClass α]
@@ -83,7 +83,7 @@ theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F �
     @ContinuousMul α (tβ.induced f) _ := by
   let tα := tβ.induced f
   refine ⟨continuous_induced_rng.2 ?_⟩
-  simp only [Function.comp, map_mul]
+  simp only [Function.comp_def, map_mul]
   fun_prop
 
 @[to_additive (attr := continuity, fun_prop)]
@@ -302,8 +302,6 @@ theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
     isClosed_iInter fun x =>
       isClosed_iInter fun y =>
         isClosed_eq (continuous_apply _)
-          -- Porting note: proof was:
-          -- `((continuous_apply _).mul (continuous_apply _))`
           (by continuity)
 
 -- Porting note: split variables command over two lines, can't change explicitness at the same time
@@ -343,21 +341,23 @@ theorem MonoidHom.isClosed_range_coe : IsClosed (Set.range ((↑) : (M₁ →* M
 end PointwiseLimits
 
 @[to_additive]
-theorem Inducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
-    [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F) (hf : Inducing f) :
-    ContinuousMul M :=
+theorem IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
+    [MulHomClass F M N] [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F)
+    (hf : IsInducing f) : ContinuousMul M :=
   ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).1⟩
+
+@[deprecated (since := "2024-10-28")] alias Inducing.continuousMul := IsInducing.continuousMul
 
 @[to_additive]
 theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
     [TopologicalSpace N] [ContinuousMul N] (f : F) : @ContinuousMul M (induced f ‹_›) _ :=
   letI := induced f ‹_›
-  Inducing.continuousMul f ⟨rfl⟩
+  IsInducing.continuousMul f ⟨rfl⟩
 
 @[to_additive]
 instance Subsemigroup.continuousMul [TopologicalSpace M] [Semigroup M] [ContinuousMul M]
     (S : Subsemigroup M) : ContinuousMul S :=
-  Inducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl} : MulHom S M) ⟨rfl⟩
+  IsInducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl} : MulHom S M) ⟨rfl⟩
 
 @[to_additive]
 instance Submonoid.continuousMul [TopologicalSpace M] [Monoid M] [ContinuousMul M]
@@ -614,8 +614,7 @@ of the monoid, with respect to the induced topology, is continuous.
 
 Negation is also continuous, but we register this in a later file, `Topology.Algebra.Group`, because
 the predicate `ContinuousNeg` has not yet been defined."]
-instance : ContinuousMul αˣ :=
-  inducing_embedProduct.continuousMul (embedProduct α)
+instance : ContinuousMul αˣ := isInducing_embedProduct.continuousMul (embedProduct α)
 
 end Units
 

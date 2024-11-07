@@ -7,6 +7,7 @@ import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Compiler.CSimpAttr
 import Lean.Util.FoldConsts
+import Lean.Data.AssocList
 
 /-!
 # Define the `compile_inductive%` command.

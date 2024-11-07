@@ -3,12 +3,9 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
 -/
-import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.ChangeOrigin
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Data.Finset.NoncommProd
-import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Exponential in a Banach algebra
@@ -154,6 +151,7 @@ theorem star_exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸)
 
 variable (𝕂)
 
+@[aesop safe apply]
 theorem _root_.IsSelfAdjoint.exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : IsSelfAdjoint x) : IsSelfAdjoint (exp 𝕂 x) :=
   (star_exp x).trans <| h.symm ▸ rfl
@@ -269,7 +267,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
     ext
     rw [hxy.add_pow' _, Finset.smul_sum]
   refine tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => ?_
-  rw [← Nat.cast_smul_eq_nsmul 𝕂, smul_smul, smul_mul_smul, ← Finset.mem_antidiagonal.mp hkl,
+  rw [← Nat.cast_smul_eq_nsmul 𝕂, smul_smul, smul_mul_smul_comm, ← Finset.mem_antidiagonal.mp hkl,
     Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
   congr 1
   have : (n ! : 𝕂) ≠ 0 := Nat.cast_ne_zero.mpr n.factorial_ne_zero
@@ -388,7 +386,7 @@ theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
 
 theorem expSeries_radius_pos : 0 < (expSeries 𝕂 𝔸).radius := by
   rw [expSeries_radius_eq_top]
-  exact WithTop.zero_lt_top
+  exact WithTop.top_pos
 
 variable {𝕂 𝔸 𝔹}
 
@@ -472,7 +470,7 @@ commute then `NormedSpace.exp 𝕂 (∑ i, f i) = ∏ i, NormedSpace.exp 𝕂 (f
 theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     (h : (s : Set ι).Pairwise fun i j => Commute (f i) (f j)) :
     exp 𝕂 (∑ i ∈ s, f i) =
-      s.noncommProd (fun i => exp 𝕂 (f i)) fun i hi j hj _ => (h.of_refl hi hj).exp 𝕂 := by
+      s.noncommProd (fun i => exp 𝕂 (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp 𝕂 := by
   classical
     induction' s using Finset.induction_on with a s ha ih
     · simp

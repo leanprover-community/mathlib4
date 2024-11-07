@@ -269,10 +269,10 @@ attribute [coe] LieHom.toLinearMap
 instance : Coe (L₁ →ₗ⁅R⁆ L₂) (L₁ →ₗ[R] L₂) :=
   ⟨LieHom.toLinearMap⟩
 
-instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ L₂ :=
-  { coe := fun f => f.toFun,
-    coe_injective' := fun x y h =>
-      by cases x; cases y; simp at h; simp [h] }
+instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ L₂ where
+  coe f := f.toFun
+  coe_injective' x y h := by
+    cases x; cases y; simp at h; simp [h]
 
 initialize_simps_projections LieHom (toFun → apply)
 
@@ -471,13 +471,12 @@ instance hasCoeToLieHom : Coe (L₁ ≃ₗ⁅R⁆ L₂) (L₁ →ₗ⁅R⁆ L₂
 instance hasCoeToLinearEquiv : Coe (L₁ ≃ₗ⁅R⁆ L₂) (L₁ ≃ₗ[R] L₂) :=
   ⟨toLinearEquiv⟩
 
-instance : EquivLike (L₁ ≃ₗ⁅R⁆ L₂) L₁ L₂ :=
-  { coe := fun f => f.toFun,
-    inv := fun f => f.invFun,
-    left_inv := fun f => f.left_inv,
-    right_inv := fun f => f.right_inv,
-    coe_injective' := fun f g h₁ h₂ =>
-      by cases f; cases g; simp at h₁ h₂; simp [*] }
+instance : EquivLike (L₁ ≃ₗ⁅R⁆ L₂) L₁ L₂ where
+  coe f := f.toFun
+  inv f := f.invFun
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
+  coe_injective' f g h₁ h₂ := by cases f; cases g; simp at h₁ h₂; simp [*]
 
 theorem coe_to_lieHom (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ →ₗ⁅R⁆ L₂) = e :=
   rfl
@@ -622,10 +621,9 @@ attribute [coe] LieModuleHom.toLinearMap
 instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
   ⟨LieModuleHom.toLinearMap⟩
 
-instance : FunLike (M →ₗ⁅R, L⁆ N) M N :=
-  { coe := fun f => f.toFun,
-    coe_injective' := fun x y h =>
-      by cases x; cases y; simp at h; simp [h] }
+instance : FunLike (M →ₗ⁅R, L⁆ N) M N where
+  coe f := f.toFun
+  coe_injective' x y h := by cases x; cases y; simp at h; simp [h]
 
 initialize_simps_projections LieModuleHom (toFun → apply)
 
@@ -855,13 +853,12 @@ instance hasCoeToLieModuleHom : Coe (M ≃ₗ⁅R,L⁆ N) (M →ₗ⁅R,L⁆ N) 
 instance hasCoeToLinearEquiv : CoeOut (M ≃ₗ⁅R,L⁆ N) (M ≃ₗ[R] N) :=
   ⟨toLinearEquiv⟩
 
-instance : EquivLike (M ≃ₗ⁅R,L⁆ N) M N :=
-  { coe := fun f => f.toFun,
-    inv := fun f => f.invFun,
-    left_inv := fun f => f.left_inv,
-    right_inv := fun f => f.right_inv,
-    coe_injective' := fun f g h₁ h₂ =>
-      by cases f; cases g; simp at h₁ h₂; simp [*] }
+instance : EquivLike (M ≃ₗ⁅R,L⁆ N) M N where
+  coe f := f.toFun
+  inv f := f.invFun
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
+  coe_injective' f g h₁ h₂ := by cases f; cases g; simp at h₁ h₂; simp [*]
 
 @[simp] lemma coe_coe (e : M ≃ₗ⁅R,L⁆ N) : ⇑(e : M →ₗ⁅R,L⁆ N) = e := rfl
 

@@ -35,7 +35,7 @@ theorem uniqueMDiffOn_iff_uniqueDiffOn : UniqueMDiffOn 𝓘(𝕜, E) s ↔ Uniqu
 
 alias ⟨UniqueMDiffOn.uniqueDiffOn, UniqueDiffOn.uniqueMDiffOn⟩ := uniqueMDiffOn_iff_uniqueDiffOn
 
--- Porting note (#10618): was `@[simp, mfld_simps]` but `simp` can prove it
+@[simp, mfld_simps]
 theorem writtenInExtChartAt_model_space : writtenInExtChartAt 𝓘(𝕜, E) 𝓘(𝕜, E') x f = f :=
   rfl
 

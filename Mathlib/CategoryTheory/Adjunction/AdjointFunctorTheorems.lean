@@ -3,6 +3,7 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
@@ -62,7 +63,7 @@ section GeneralAdjointFunctorTheorem
 variable {D : Type u} [Category.{v} D]
 variable (G : D ⥤ C)
 
-/-- If `G : D ⥤ C` is a right adjoint it satisfies the solution set condition.  -/
+/-- If `G : D ⥤ C` is a right adjoint it satisfies the solution set condition. -/
 theorem solutionSetCondition_of_isRightAdjoint [G.IsRightAdjoint] : SolutionSetCondition G := by
   intro A
   refine

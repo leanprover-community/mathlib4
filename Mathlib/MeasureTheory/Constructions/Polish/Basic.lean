@@ -106,15 +106,26 @@ section
 
 variable [MeasurableSpace α]
 
-instance standardBorel_of_polish [τ : TopologicalSpace α]
+-- See note [lower instance priority]
+instance (priority := 100) standardBorel_of_polish [τ : TopologicalSpace α]
     [BorelSpace α] [PolishSpace α] : StandardBorelSpace α := by exists τ
 
-instance countablyGenerated_of_standardBorel [StandardBorelSpace α] :
+-- See note [lower instance priority]
+instance (priority := 100) standardBorelSpace_of_discreteMeasurableSpace [DiscreteMeasurableSpace α]
+    [Countable α] : StandardBorelSpace α :=
+  let _ : TopologicalSpace α := ⊥
+  have : DiscreteTopology α := ⟨rfl⟩
+  inferInstance
+
+-- See note [lower instance priority]
+instance (priority := 100) countablyGenerated_of_standardBorel [StandardBorelSpace α] :
     MeasurableSpace.CountablyGenerated α :=
   letI := upgradeStandardBorel α
   inferInstance
 
-instance measurableSingleton_of_standardBorel [StandardBorelSpace α] : MeasurableSingletonClass α :=
+-- See note [lower instance priority]
+instance (priority := 100) measurableSingleton_of_standardBorel [StandardBorelSpace α] :
+    MeasurableSingletonClass α :=
   letI := upgradeStandardBorel α
   inferInstance
 
@@ -343,7 +354,7 @@ protected lemma AnalyticSet.preimage {X Y : Type*} [TopologicalSpace X] [Topolog
     [PolishSpace X] [T2Space Y] {s : Set Y} (hs : AnalyticSet s) {f : X → Y} (hf : Continuous f) :
     AnalyticSet (f ⁻¹' s) := by
   rcases analyticSet_iff_exists_polishSpace_range.1 hs with ⟨Z, _, _, g, hg, rfl⟩
-  have : IsClosed {x : X × Z | f x.1 = g x.2} := isClosed_diagonal.preimage (hf.prod_map hg)
+  have : IsClosed {x : X × Z | f x.1 = g x.2} := isClosed_eq hf.fst' hg.snd'
   convert this.analyticSet.image_of_continuous continuous_fst
   ext x
   simp [eq_comm]
@@ -561,7 +572,7 @@ theorem measurableSet_preimage_iff_preimage_val {f : X → Z} [CountablySeparate
 /-- If `f : X → Z` is a Borel measurable map from a standard Borel space to a
 countably separated measurable space and the range of `f` is measurable,
 then the preimage of a set `s` is measurable
-if and only if the intesection with `Set.range f` is measurable. -/
+if and only if the intersection with `Set.range f` is measurable. -/
 theorem measurableSet_preimage_iff_inter_range {f : X → Z} [CountablySeparated (range f)]
     (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by
@@ -604,7 +615,7 @@ theorem Continuous.map_borel_eq {X Y : Type*} [TopologicalSpace X] [PolishSpace 
 instance Quotient.borelSpace {X : Type*} [TopologicalSpace X] [PolishSpace X] [MeasurableSpace X]
     [BorelSpace X] {s : Setoid X} [T0Space (Quotient s)] [SecondCountableTopology (Quotient s)] :
     BorelSpace (Quotient s) :=
-  ⟨continuous_quotient_mk'.map_eq_borel (surjective_quotient_mk' _)⟩
+  ⟨continuous_quotient_mk'.map_eq_borel Quotient.mk'_surjective⟩
 
 /-- When the subgroup `N < G` is not necessarily `Normal`, we have a `CosetSpace` as opposed
 to `QuotientGroup` (the next `instance`).
@@ -620,10 +631,7 @@ instance CosetSpace.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] 
 instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
     [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
     [IsClosed (N : Set G)] : BorelSpace (G ⧸ N) :=
-  -- Porting note: 1st and 3rd `haveI`s were not needed in Lean 3
-  haveI := Subgroup.t3_quotient_of_isClosed N
-  haveI := QuotientGroup.secondCountableTopology (Γ := N)
-  Quotient.borelSpace
+  ⟨continuous_mk.map_eq_borel mk_surjective⟩
 
 namespace MeasureTheory
 

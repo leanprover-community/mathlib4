@@ -135,7 +135,7 @@ theorem mem_degrees {p : MvPolynomial σ R} {i : σ} :
   classical
   simp only [degrees_def, Multiset.mem_sup, ← mem_support_iff, Finsupp.mem_toMultiset, exists_prop]
 
-theorem le_degrees_add {p q : MvPolynomial σ R} (h : p.degrees.Disjoint q.degrees) :
+theorem le_degrees_add {p q : MvPolynomial σ R} (h : Disjoint p.degrees q.degrees) :
     p.degrees ≤ (p + q).degrees := by
   classical
   apply Finset.sup_le
@@ -154,7 +154,7 @@ theorem le_degrees_add {p q : MvPolynomial σ R} (h : p.degrees.Disjoint q.degre
     all_goals rw [mem_degrees]; refine ⟨d, ?_, hj⟩; assumption
 
 theorem degrees_add_of_disjoint [DecidableEq σ] {p q : MvPolynomial σ R}
-    (h : Multiset.Disjoint p.degrees q.degrees) : (p + q).degrees = p.degrees ∪ q.degrees := by
+    (h : Disjoint p.degrees q.degrees) : (p + q).degrees = p.degrees ∪ q.degrees := by
   apply le_antisymm
   · apply degrees_add
   · apply Multiset.union_le
@@ -219,7 +219,7 @@ theorem degreeOf_eq_sup (n : σ) (f : MvPolynomial σ R) :
   rw [degreeOf_def, degrees, Multiset.count_finset_sup]
   congr
   ext
-  simp
+  simp only [count_toMultiset]
 
 theorem degreeOf_lt_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} (h : 0 < d) :
     degreeOf n f < d ↔ ∀ m : σ →₀ ℕ, m ∈ f.support → m n < d := by
@@ -253,30 +253,49 @@ theorem monomial_le_degreeOf (i : σ) {f : MvPolynomial σ R} {m : σ →₀ ℕ
   rw [degreeOf_eq_sup i]
   apply Finset.le_sup h_m
 
--- TODO we can prove equality here if R is a domain
+lemma degreeOf_monomial_eq [DecidableEq σ] (s : σ →₀ ℕ) (i : σ) {a : R} (ha : a ≠ 0) :
+    (monomial s a).degreeOf i = s i := by
+  rw [degreeOf_def, degrees_monomial_eq _ _ ha, Finsupp.count_toMultiset]
+
+-- TODO we can prove equality with `NoZeroDivisors R`
 theorem degreeOf_mul_le (i : σ) (f g : MvPolynomial σ R) :
     degreeOf i (f * g) ≤ degreeOf i f + degreeOf i g := by
   classical
-  repeat' rw [degreeOf]
+  simp only [degreeOf]
   convert Multiset.count_le_of_le i (degrees_mul f g)
   rw [Multiset.count_add]
+
+theorem degreeOf_sum_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
+    degreeOf i (∑ j ∈ s, f j) ≤ s.sup fun j => degreeOf i (f j) := by
+  simp_rw [degreeOf_eq_sup]
+  exact supDegree_sum_le
+
+-- TODO we can prove equality with `NoZeroDivisors R`
+theorem degreeOf_prod_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
+    degreeOf i (∏ j ∈ s, f j) ≤ ∑ j ∈ s, (f j).degreeOf i := by
+  simp_rw [degreeOf_eq_sup]
+  exact supDegree_prod_le (by simp only [coe_zero, Pi.zero_apply])
+    (fun _ _ => by simp only [coe_add, Pi.add_apply])
+
+-- TODO we can prove equality with `NoZeroDivisors R`
+theorem degreeOf_pow_le (i : σ) (p : MvPolynomial σ R) (n : ℕ) :
+    degreeOf i (p ^ n) ≤ n * degreeOf i p := by
+  simpa using degreeOf_prod_le i (Finset.range n) (fun _ => p)
 
 theorem degreeOf_mul_X_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
     degreeOf i (f * X j) = degreeOf i f := by
   classical
-  repeat' rw [degreeOf_eq_sup (R := R) i]
-  rw [support_mul_X]
-  simp only [Finset.sup_map]
+  simp only [degreeOf_eq_sup i, support_mul_X, Finset.sup_map]
   congr
   ext
   simp only [Finsupp.single, Nat.one_ne_zero, add_right_eq_self, addRightEmbedding_apply, coe_mk,
     Pi.add_apply, comp_apply, ite_eq_right_iff, Finsupp.coe_add, Pi.single_eq_of_ne h]
 
--- TODO in the following we have equality iff f ≠ 0
+-- TODO in the following we have equality iff `f ≠ 0`
 theorem degreeOf_mul_X_eq (j : σ) (f : MvPolynomial σ R) :
     degreeOf j (f * X j) ≤ degreeOf j f + 1 := by
   classical
-  repeat' rw [degreeOf]
+  simp only [degreeOf]
   apply (Multiset.count_le_of_le j (degrees_mul f (X j))).trans
   simp only [Multiset.count_add, add_le_add_iff_left]
   convert Multiset.count_le_of_le j (degrees_X' (R := R) j)
@@ -286,13 +305,13 @@ theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (C c * p).degreeOf i ≤ p.degreeOf i := by
   unfold degreeOf
   convert Multiset.count_le_of_le i <| degrees_mul (C c) p
-  simp [degrees_C]
+  simp only [degrees_C, zero_add]
 
 theorem degreeOf_mul_C_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (p * C c).degreeOf i ≤ p.degreeOf i := by
   unfold degreeOf
   convert Multiset.count_le_of_le i <| degrees_mul p (C c)
-  simp [degrees_C]
+  simp only [degrees_C, add_zero]
 
 theorem degreeOf_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f)
     (i : σ) : degreeOf (f i) (rename f p) = degreeOf i p := by

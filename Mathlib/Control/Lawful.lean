@@ -48,7 +48,7 @@ end StateT
 
 namespace ExceptT
 
-variable {α β ε : Type u} {m : Type u → Type v} (x : ExceptT ε m α)
+variable {α ε : Type u} {m : Type u → Type v} (x : ExceptT ε m α)
 
 -- Porting note: This is proven by proj reduction in Lean 3.
 @[simp]
@@ -73,7 +73,6 @@ namespace ReaderT
 
 section
 
-variable {ρ : Type u}
 variable {m : Type u → Type v}
 variable {α σ : Type u}
 

@@ -1,10 +1,9 @@
 /-
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Wärn, Scott Morrison
+Authors: David Wärn, Kim Morrison
 -/
 import Mathlib.Data.Opposite
-import Mathlib.Tactic.Cases
 
 /-!
 # Quivers
@@ -72,8 +71,8 @@ theorem ext {V : Type u} [Quiver.{v₁} V] {W : Type u₂} [Quiver.{v₂} W] {F 
     (h_obj : ∀ X, F.obj X = G.obj X)
     (h_map : ∀ (X Y : V) (f : X ⟶ Y),
       F.map f = Eq.recOn (h_obj Y).symm (Eq.recOn (h_obj X).symm (G.map f))) : F = G := by
-  cases' F with F_obj _
-  cases' G with G_obj _
+  obtain ⟨F_obj, _⟩ := F
+  obtain ⟨G_obj, _⟩ := G
   obtain rfl : F_obj = G_obj := by
     ext X
     apply h_obj
@@ -137,6 +136,15 @@ def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
 
 /-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`. -/
 def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
+
+/-- The bijection `(X ⟶ Y) ≃ (op Y ⟶ op X)`. -/
+@[simps]
+def Hom.opEquiv {V} [Quiver V] {X Y : V} :
+    (X ⟶ Y) ≃ (Opposite.op Y ⟶ Opposite.op X) where
+  toFun := Opposite.op
+  invFun := Opposite.unop
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- A type synonym for a quiver with no arrows. -/
 -- Porting note(#5171): this linter isn't ported yet.

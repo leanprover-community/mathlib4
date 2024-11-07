@@ -55,7 +55,7 @@ noncomputable def beattySeq' (r : ℝ) : ℤ → ℤ :=
 
 namespace Beatty
 
-variable {r s : ℝ} {j k : ℤ}
+variable {r s : ℝ} {j : ℤ}
 
 /-- Let `r > 1` and `1/r + 1/s = 1`. Then `B_r` and `B'_s` are disjoint (i.e. no collision exists).
 -/
@@ -63,9 +63,9 @@ private theorem no_collision (hrs : r.IsConjExponent s) :
     Disjoint {beattySeq r k | k} {beattySeq' s k | k} := by
   rw [Set.disjoint_left]
   intro j ⟨k, h₁⟩ ⟨m, h₂⟩
-  rw [beattySeq, Int.floor_eq_iff, ← div_le_iff₀ hrs.pos, ← lt_div_iff hrs.pos] at h₁
+  rw [beattySeq, Int.floor_eq_iff, ← div_le_iff₀ hrs.pos, ← lt_div_iff₀ hrs.pos] at h₁
   rw [beattySeq', sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one,
-    add_sub_cancel_right, ← div_lt_iff hrs.symm.pos, ← le_div_iff₀ hrs.symm.pos] at h₂
+    add_sub_cancel_right, ← div_lt_iff₀ hrs.symm.pos, ← le_div_iff₀ hrs.symm.pos] at h₂
   have h₃ := add_lt_add_of_le_of_lt h₁.1 h₂.1
   have h₄ := add_lt_add_of_lt_of_le h₁.2 h₂.2
   simp_rw [div_eq_inv_mul, ← right_distrib, hrs.inv_add_inv_conj, one_mul] at h₃ h₄
@@ -91,10 +91,10 @@ private theorem hit_or_miss (h : r > 0) :
   -- for both cases, the candidate is `k = ⌈(j + 1) / r⌉ - 1`
   cases lt_or_ge ((⌈(j + 1) / r⌉ - 1) * r) j
   · refine Or.inr ⟨⌈(j + 1) / r⌉ - 1, ?_⟩
-    rw [Int.cast_sub, Int.cast_one, lt_div_iff h, sub_add_cancel]
+    rw [Int.cast_sub, Int.cast_one, lt_div_iff₀ h, sub_add_cancel]
     exact ⟨‹_›, Int.le_ceil _⟩
   · refine Or.inl ⟨⌈(j + 1) / r⌉ - 1, ?_⟩
-    rw [beattySeq, Int.floor_eq_iff, Int.cast_sub, Int.cast_one, ← lt_div_iff h, sub_lt_iff_lt_add]
+    rw [beattySeq, Int.floor_eq_iff, Int.cast_sub, Int.cast_one, ← lt_div_iff₀ h, sub_lt_iff_lt_add]
     exact ⟨‹_›, Int.ceil_lt_add_one _⟩
 
 /-- Let `0 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B'_r` or `B'_r` jumps over `j`. -/
