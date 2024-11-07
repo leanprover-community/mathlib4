@@ -25,8 +25,8 @@ variable [CharZero k] [Module.Finite k V]
 open LieModule Submodule in
 theorem extend_weight [LieModule.IsTriangularizable k L V]
     (A : LieIdeal k L) (hA : IsCoatom A.toSubmodule)
-    (χ₀ : Module.Dual k A) (v₀ : V) (hv₀ : v₀ ≠ 0) (hv₀A : ∀ (x : A), ⁅x, v₀⁆ = χ₀ x • v₀) :
-    ∃ (χ : Module.Dual k L) (v : V), v ≠ 0 ∧ ∀ (x : L), ⁅x, v⁆ = χ x • v := by
+    (χ₀ : Module.Dual k A) [Nontrivial (weightSpace V χ₀)] :
+    ∃ (χ : Module.Dual k L), Nontrivial (weightSpace V χ) := by
   obtain ⟨z, -, hz⟩ := SetLike.exists_of_lt (hA.lt_top)
   let e : (k ∙ z) ≃ₗ[k] k := (LinearEquiv.toSpanNonzeroSingleton k L z <| by aesop).symm
   have he : ∀ x, e x • z = x := by simp [e]
@@ -34,21 +34,22 @@ theorem extend_weight [LieModule.IsTriangularizable k L V]
   let π₁ : L →ₗ[k] A       := A.toSubmodule.linearProjOfIsCompl (k ∙ z) hA
   let π₂ : L →ₗ[k] (k ∙ z) := (k ∙ z).linearProjOfIsCompl ↑A hA.symm
 
-  set Vχ₀ := altWeightSpace (L := L) (V := V) χ₀
-  obtain ⟨c, hc⟩ : ∃ c, (toEnd k _ Vχ₀ z).HasEigenvalue c := by
-    have : Nontrivial Vχ₀ := nontrivial_of_ne ⟨v₀, ?_⟩ 0 <| Subtype.coe_ne_coe.mp hv₀
-    swap; · simpa [Vχ₀, altWeightSpace, mem_weightSpace] using hv₀A
+  set W : LieSubmodule k L V :=
+  { toSubmodule := weightSpace V χ₀
+    lie_mem := fun {z v} hv ↦ lie_stable χ₀ z v hv }
+  obtain ⟨c, hc⟩ : ∃ c, (toEnd k _ W z).HasEigenvalue c := by
+    have : Nontrivial W := inferInstanceAs (Nontrivial (weightSpace V χ₀))
     apply Module.End.exists_hasEigenvalue_of_genEigenspace_eq_top
     exact LieModule.IsTriangularizable.maxGenEigenspace_eq_top z
+
   obtain ⟨⟨v, hv⟩, hvc⟩ := hc.exists_hasEigenvector
   have hv' : ∀ (x : ↥A), ⁅x, v⁆ = χ₀ x • v := by
-    simpa only [altWeightSpace, LieSubmodule.mem_mk_iff', LieSubmodule.mem_coeSubmodule,
-      mem_weightSpace, LieIdeal.coe_bracket_of_module, Vχ₀] using hv
+    simpa [W, mem_weightSpace] using hv
 
-  use (χ₀.comp π₁) + c • (e.comp π₂), v
-  constructor
-  · simpa only [ne_eq, LieSubmodule.mk_eq_zero] using hvc.right
-  · intro x
+  use (χ₀.comp π₁) + c • (e.comp π₂)
+  refine nontrivial_of_ne ⟨v, ?_⟩ 0 ?_
+  · rw [mem_weightSpace]
+    intro x
     have hπ : (π₁ x : L) + π₂ x = x := linear_proj_add_linearProjOfIsCompl_eq_self hA x
     suffices ⁅(π₂ x : L), v⁆ = (c • e (π₂ x)) • v by
       calc ⁅x, v⁆
@@ -56,8 +57,9 @@ theorem extend_weight [LieModule.IsTriangularizable k L V]
         _ =  χ₀ (π₁ x) • v  + (c • e (π₂ x)) • v := by rw [hv' (π₁ x), this]
         _ = _ := by simp [add_smul]
     calc ⁅(π₂ x : L), v⁆
-        = e (π₂ x) • ↑(c • ⟨v, hv⟩ : Vχ₀) := by rw [← he, smul_lie, ← hvc.apply_eq_smul]; rfl
+        = e (π₂ x) • ↑(c • ⟨v, hv⟩ : W) := by rw [← he, smul_lie, ← hvc.apply_eq_smul]; rfl
       _ = (c • e (π₂ x)) • v              := by rw [smul_assoc, smul_comm]; rfl
+  · simpa [ne_eq, LieSubmodule.mk_eq_zero] using hvc.right
 
 variable (k L V)
 variable [Nontrivial V]
@@ -70,19 +72,19 @@ open LieAlgebra
 private lemma LieModule.exists_forall_lie_eq_smul_of_isSolvable_of_finite
     (L : Type*) [LieRing L] [LieAlgebra k L] [LieRingModule L V] [LieModule k L V]
     [IsSolvable k L] [LieModule.IsTriangularizable k L V] [Module.Finite k L] :
-    ∃ χ : Module.Dual k L, ∃ v : V, v ≠ 0 ∧ ∀ x : L, ⁅x, v⁆ = χ x • v := by
+    ∃ χ : Module.Dual k L, Nontrivial (weightSpace V χ) := by
   obtain H|⟨A, hA, hAL⟩ := eq_top_or_exists_le_coatom (derivedSeries k L 1).toSubmodule
   · obtain _|_ := subsingleton_or_nontrivial L
     · use 0
-      simpa using exists_ne _
+      sorry --simpa using exists_ne _
     · rw [LieSubmodule.coeSubmodule_eq_top_iff] at H
       exact ((derivedSeries_lt_top_of_solvable k L).ne H).elim
   lift A to LieIdeal k L
   · intros
     exact hAL <| LieSubmodule.lie_mem_lie (LieSubmodule.mem_top _) (LieSubmodule.mem_top _)
   change LieIdeal k L at A -- remove this line when bug in `lift` is fixed (#15865)
-  obtain ⟨χ', v, hv, hvA⟩ := exists_forall_lie_eq_smul_of_isSolvable_of_finite A
-  exact extend_weight A hA χ' v hv hvA
+  obtain ⟨χ', _⟩ := exists_forall_lie_eq_smul_of_isSolvable_of_finite A
+  exact extend_weight A hA χ'
 termination_by Module.finrank k L
 decreasing_by
   simp_wf
@@ -96,15 +98,16 @@ local notation "π" => LieModule.toEnd k L V
 have a common eigenvector for the action of all elements of the Lie algebra. -/
 theorem LieModule.exists_forall_lie_eq_smul_of_isSolvable
     [IsSolvable k L] [LieModule.IsTriangularizable k L V] :
-    ∃ χ : Module.Dual k L, ∃ v : V, v ≠ 0 ∧ ∀ x : L, ⁅x, v⁆ = χ x • v := by
+    ∃ χ : Module.Dual k L, Nontrivial (weightSpace V χ) := by
   let imL := (π).range
   let toEndo : L →ₗ[k] imL := LinearMap.codRestrict imL.toSubmodule π
       (fun x ↦ LinearMap.mem_range.mpr ⟨x, rfl⟩ : ∀ x : L, π x ∈ imL)
-  have ⟨χ, v, hv, hχ⟩ := exists_forall_lie_eq_smul_of_isSolvable_of_finite k V imL
-  use χ.comp toEndo, v, hv
-  intro x
-  have : ⁅x, v⁆ = ⁅toEndo x, v⁆ := rfl
-  simpa [← hχ, toEndo] using this
+  have ⟨χ, h⟩ := exists_forall_lie_eq_smul_of_isSolvable_of_finite k V imL
+  use χ.comp toEndo
+  sorry
+  -- intro x
+  -- have : ⁅x, v⁆ = ⁅toEndo x, v⁆ := rfl
+  -- simpa [← hχ, toEndo] using this
 
 end
 

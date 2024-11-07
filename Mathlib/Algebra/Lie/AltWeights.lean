@@ -168,40 +168,24 @@ lemma trace_πza (a : A) :
 
 variable [CharZero R]
 
-include hv in
-lemma chi_za_zero (a : A) (hv₀ : v ≠ 0) :
-    χ ⁅z, a⁆ = 0 := by
-  have h := trace_πza χ z hv a
-  rw [trace_πza_zero χ z hv a] at h
-  suffices h' : finrank R ↥(iSupIR χ z hv) ≠ 0 by aesop
-  have hvU : v ∈ iSupIR χ z hv := by
-    apply Submodule.mem_iSup_of_mem 1
-    apply Submodule.subset_span
-    use 0, zero_lt_one
-    rw [pow_zero, LinearMap.one_apply]
-  have iSup_iteratedRange_nontrivial : Nontrivial (iSupIR χ z hv) :=
-    ⟨⟨v,hvU⟩,0, by simp only [ne_eq, LieSubmodule.mk_eq_zero, hv₀, not_false_eq_true]⟩
-  apply Nat.ne_of_lt'
-  apply Module.finrank_pos
-
-open LieModule
-
+open LieModule in
 lemma lie_stable (x : L) (v : V) (hv : v ∈ weightSpace V χ) : ⁅x, v⁆ ∈ weightSpace V χ := by
   rw [mem_weightSpace] at hv ⊢
   intro a
   rcases eq_or_ne v 0 with (rfl | hv')
   · simp only [lie_zero, smul_zero]
-  · rw [leibniz_lie', hv a, lie_smul, lie_swap_lie, hv,
-      chi_za_zero χ x hv a hv', zero_smul, neg_zero, zero_add]
+  suffices χ ⁅x, a⁆ = 0 by
+    rw [leibniz_lie', hv a, lie_smul, lie_swap_lie, hv, this, zero_smul, neg_zero, zero_add]
+  have h := trace_πza χ x hv a
+  rw [trace_πza_zero χ x hv a] at h
+  suffices h' : finrank R ↥(iSupIR χ x hv) ≠ 0 by aesop
+  have hvU : v ∈ iSupIR χ x hv := by
+    apply Submodule.mem_iSup_of_mem 1
+    apply Submodule.subset_span
+    use 0, zero_lt_one
+    rw [pow_zero, LinearMap.one_apply]
+  have iSup_iteratedRange_nontrivial : Nontrivial (iSupIR χ x hv) :=
+    ⟨⟨v, hvU⟩, 0, by simp only [ne_eq, LieSubmodule.mk_eq_zero, hv', not_false_eq_true]⟩
+  apply Nat.ne_of_lt'
+  apply Module.finrank_pos
 
-/--
-The intersection of all eigenspaces of `V` of weight `χ : A → k`
-with respect to the action of all elements in a Lie ideal `A`.
-
-Note:
-- This is a variant of `LieModule.weightSpace`.
-  The latter assumes a nilpotent Lie algebra and works with generalized eigenspaces.
--/
-def altWeightSpace : LieSubmodule R L V where
-  toSubmodule := weightSpace V χ
-  lie_mem {z v} hv := lie_stable χ z v hv
