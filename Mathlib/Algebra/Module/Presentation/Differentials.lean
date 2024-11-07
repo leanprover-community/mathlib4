@@ -166,7 +166,7 @@ lemma linearCombination_aux₃
   erw [← Finsupp.apply_linearCombination]
   congr 1
   obtain ⟨s, rfl⟩ := (mvPolynomialBasis R pres.vars).repr.symm.surjective ω
-  simp
+  simp only [Basis.repr_symm_apply, Basis.repr_linearCombination]
   congr 2
   ext g
   simp
