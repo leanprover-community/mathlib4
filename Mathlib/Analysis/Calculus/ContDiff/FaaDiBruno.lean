@@ -917,7 +917,7 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
 
 /-- *Faa di Bruno* formula: If two functions `g` and `f` have Taylor series up to `n` given by
 `q` and `p`, then `g ∘ f` also has a Taylor series, given by `q.taylorComp p`. -/
-theorem HasFTaylorSeriesUpToOn.comp {n : ℕ∞} {g : F → G} {f : E → F}
+theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E → F}
     (hg : HasFTaylorSeriesUpToOn n g q t) (hf : HasFTaylorSeriesUpToOn n f p s) (h : MapsTo f s t) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x ↦ (q (f x)).taylorComp (p x)) s := by
   /- One has to check that the `m+1`-th term is the derivative of the `m`-th term. The `m`-th term
@@ -940,8 +940,8 @@ theorem HasFTaylorSeriesUpToOn.comp {n : ℕ∞} {g : F → G} {f : E → F}
       change HasFDerivWithinAt (fun y ↦ B (q (f y) c.length) (fun i ↦ p y (c.partSize i)))
         (∑ i : Option (Fin c.length),
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)).curryLeft) s x
-      have cm : (c.length : ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.length_le c
-      have cp i : (c.partSize i : ℕ∞) ≤ m := by
+      have cm : (c.length : WithTop ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.length_le c
+      have cp i : (c.partSize i : WithTop ℕ∞) ≤ m := by
         exact_mod_cast OrderedFinpartition.partSize_le c i
       have I i : HasFDerivWithinAt (fun x ↦ p x (c.partSize i))
           (p x (c.partSize i).succ).curryLeft s x :=
@@ -949,7 +949,8 @@ theorem HasFTaylorSeriesUpToOn.comp {n : ℕ∞} {g : F → G} {f : E → F}
       have J : HasFDerivWithinAt (fun x ↦ q x c.length) (q (f x) c.length.succ).curryLeft
         t (f x) := hg.fderivWithin c.length (cm.trans_lt hm) (f x) (h hx)
       have K : HasFDerivWithinAt f ((continuousMultilinearCurryFin1 𝕜 E F) (p x 1)) s x :=
-        hf.hasFDerivWithinAt (le_trans le_add_self (Order.add_one_le_of_lt hm)) hx
+        hf.hasFDerivWithinAt (le_trans (by exact_mod_cast Nat.le_add_left 1 m)
+          (ENat.add_one_nat_le_withTop_of_lt hm)) hx
       convert HasFDerivWithinAt.linear_multilinear_comp (J.comp x K h) I B
       simp only [Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
         faaDiBruno_aux2]
@@ -975,8 +976,9 @@ theorem HasFTaylorSeriesUpToOn.comp {n : ℕ∞} {g : F → G} {f : E → F}
     change ContinuousOn
       ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun i ↦ p x (c.partSize i)))) s
     apply B.continuous_uncurry_of_multilinear.comp_continuousOn (ContinuousOn.prod ?_ ?_)
-    · have : (c.length : ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.length_le c
+    · have : (c.length : WithTop ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.length_le c
       exact (hg.cont c.length (this.trans hm)).comp hf.continuousOn h
     · apply continuousOn_pi.2 (fun i ↦ ?_)
-      have : (c.partSize i : ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.partSize_le c i
+      have : (c.partSize i : WithTop ℕ∞) ≤ m := by
+        exact_mod_cast OrderedFinpartition.partSize_le c i
       exact hf.cont _ (this.trans hm)
