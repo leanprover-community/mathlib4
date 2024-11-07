@@ -269,7 +269,7 @@ instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   obtain ⟨a, h₁, h₂⟩ := h
   right
   intro b hb
-  obtain ⟨c, h | h⟩ := ValuationRing.cond a b
+  obtain ⟨c, h | h⟩ := PreValuationRing.cond a b
   · rw [← h]
     exact Ideal.mul_mem_right _ _ h₁
   · exfalso; apply h₂; rw [← h]
