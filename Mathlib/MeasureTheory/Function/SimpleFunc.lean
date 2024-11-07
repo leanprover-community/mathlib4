@@ -1236,8 +1236,8 @@ lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {P : (α → ℝ
     ⦃f : α → ℝ≥0∞⦄ (hf : Measurable f) : P f := by
   refine Measurable.ennreal_induction (fun c s hs ↦ ?_) h_add h_iSup hf
   convert h_iSup (f := fun n ↦ (s ∩ spanningSets μ n).indicator fun _ ↦ c)
-    (fun n ↦ measurable_const.indicator (hs.inter (measurable_spanningSets ..)))
+    (fun n ↦ measurable_const.indicator (hs.inter (measurableSet_spanningSets ..)))
     (fun m n hmn a ↦ Set.indicator_le_indicator_of_subset (by gcongr) (by simp) _)
-    (fun n ↦ h_ind _ (hs.inter (measurable_spanningSets ..))
+    (fun n ↦ h_ind _ (hs.inter (measurableSet_spanningSets ..))
       (measure_inter_lt_top_of_right_ne_top (measure_spanningSets_lt_top ..).ne)) with a
   simp [← Set.indicator_iUnion_apply (M := ℝ≥0∞) rfl, ← Set.inter_iUnion]
