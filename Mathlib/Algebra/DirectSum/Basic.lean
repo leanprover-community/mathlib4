@@ -391,3 +391,11 @@ theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
 end DirectSum
+
+/-- The canonical isomorphism of a finite direct sum of additive commutative monoids
+and the corresponding finite product. -/
+def DirectSum.addEquivProd {ι : Type*} [Fintype ι] (G : ι → Type*) [(i : ι) → AddCommMonoid (G i)] :
+    DirectSum ι G ≃+ ((i : ι) → G i) :=
+  ⟨DFinsupp.equivFunOnFintype, fun g h ↦ funext fun _ ↦ by
+    simp only [DFinsupp.equivFunOnFintype, Equiv.toFun_as_coe, Equiv.coe_fn_mk, add_apply,
+      Pi.add_apply]⟩

@@ -276,8 +276,14 @@ theorem card_filter_le (s : Finset α) (p : α → Prop) [DecidablePred p] :
 theorem eq_of_subset_of_card_le {s t : Finset α} (h : s ⊆ t) (h₂ : #t ≤ #s) : s = t :=
   eq_of_veq <| Multiset.eq_of_le_of_card_le (val_le_iff.mpr h) h₂
 
+theorem eq_iff_card_le_of_subset (hst : s ⊆ t) : #t ≤ #s ↔ s = t :=
+  ⟨eq_of_subset_of_card_le hst, (ge_of_eq <| congr_arg _ ·)⟩
+
 theorem eq_of_superset_of_card_ge (hst : s ⊆ t) (hts : #t ≤ #s) : t = s :=
   (eq_of_subset_of_card_le hst hts).symm
+
+theorem eq_iff_card_ge_of_superset (hst : s ⊆ t) : #t ≤ #s ↔ t = s :=
+  (eq_iff_card_le_of_subset hst).trans eq_comm
 
 theorem subset_iff_eq_of_card_le (h : #t ≤ #s) : s ⊆ t ↔ s = t :=
   ⟨fun hst => eq_of_subset_of_card_le hst h, Eq.subset'⟩
@@ -285,10 +291,16 @@ theorem subset_iff_eq_of_card_le (h : #t ≤ #s) : s ⊆ t ↔ s = t :=
 theorem map_eq_of_subset {f : α ↪ α} (hs : s.map f ⊆ s) : s.map f = s :=
   eq_of_subset_of_card_le hs (card_map _).ge
 
-theorem filter_card_eq {p : α → Prop} [DecidablePred p] (h : #(s.filter p) = #s) (x : α)
-    (hx : x ∈ s) : p x := by
-  rw [← eq_of_subset_of_card_le (s.filter_subset p) h.ge, mem_filter] at hx
-  exact hx.2
+theorem card_filter_eq_iff {p : α → Prop} [DecidablePred p] :
+    #(s.filter p) = #s ↔ ∀ x ∈ s, p x := by
+  rw [(card_filter_le s p).eq_iff_not_lt, not_lt, eq_iff_card_le_of_subset (filter_subset p s),
+    filter_eq_self]
+
+alias ⟨filter_card_eq, _⟩ := card_filter_eq_iff
+
+theorem card_filter_eq_zero_iff {p : α → Prop} [DecidablePred p] :
+    #(s.filter p) = 0 ↔ ∀ x ∈ s, ¬ p x := by
+  rw [card_eq_zero, filter_eq_empty_iff]
 
 nonrec lemma card_lt_card (h : s ⊂ t) : #s < #t := card_lt_card <| val_lt_iff.2 h
 

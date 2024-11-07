@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
-import Mathlib.RingTheory.OreLocalization.Ring
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.Localization.Defs
+import Mathlib.RingTheory.OreLocalization.Ring
 
 /-!
 # Localizations of commutative rings

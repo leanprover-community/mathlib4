@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Group.List
-import Mathlib.Data.List.Perm
 
 /-!
 # Products of lists of prime elements.

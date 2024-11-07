@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Prod.TProd
+import Mathlib.Data.Set.UnionLift
+import Mathlib.GroupTheory.Coset.Defs
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
-import Mathlib.Order.LiminfLimsup
-import Mathlib.Data.Set.UnionLift
 import Mathlib.Order.Filter.SmallSets
-import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.Order.LiminfLimsup
 
 /-!
 # Measurable spaces and measurable functions
@@ -333,7 +334,7 @@ theorem Measurable.measurable_of_countable_ne [MeasurableSingletonClass α] (hf 
   refine (h.mono inter_subset_right).measurableSet.union ?_
   have : g ⁻¹' t ∩ { x : α | f x = g x } = f ⁻¹' t ∩ { x : α | f x = g x } := by
     ext x
-    simp (config := { contextual := true })
+    simp +contextual
   rw [this]
   exact (hf ht).inter h.measurableSet.of_compl
 
@@ -599,7 +600,7 @@ def measurableAtom (x : β) : Set β :=
   ⋂ (s : Set β) (_h's : x ∈ s) (_hs : MeasurableSet s), s
 
 @[simp] lemma mem_measurableAtom_self (x : β) : x ∈ measurableAtom x := by
-  simp (config := {contextual := true}) [measurableAtom]
+  simp +contextual [measurableAtom]
 
 lemma mem_of_mem_measurableAtom {x y : β} (h : y ∈ measurableAtom x) {s : Set β}
     (hs : MeasurableSet s) (hxs : x ∈ s) : y ∈ s := by
@@ -758,7 +759,7 @@ theorem measurable_from_prod_countable' [Countable β]
 theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass β]
     {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
     Measurable f :=
-  measurable_from_prod_countable' hf (by simp (config := {contextual := true}))
+  measurable_from_prod_countable' hf (by simp +contextual)
 
 /-- A piecewise function on countably many pieces is measurable if all the data is measurable. -/
 @[measurability]
@@ -1268,13 +1269,46 @@ theorem isCountablySpanning_measurableSet [MeasurableSpace α] :
     IsCountablySpanning { s : Set α | MeasurableSet s } :=
   ⟨fun _ => univ, fun _ => MeasurableSet.univ, iUnion_const _⟩
 
+/-- Rectangles of countably spanning sets are countably spanning. -/
+lemma IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsCountablySpanning C)
+    (hD : IsCountablySpanning D) : IsCountablySpanning (image2 (· ×ˢ ·) C D) := by
+  rcases hC, hD with ⟨⟨s, h1s, h2s⟩, t, h1t, h2t⟩
+  refine ⟨fun n => s n.unpair.1 ×ˢ t n.unpair.2, fun n => mem_image2_of_mem (h1s _) (h1t _), ?_⟩
+  rw [iUnion_unpair_prod, h2s, h2t, univ_prod_univ]
+
 namespace MeasurableSet
+
+variable [MeasurableSpace α]
+
+protected theorem iUnion_of_monotone_of_frequently
+    {ι : Type*} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
+    (hsm : Monotone s) (hs : ∃ᶠ i in atTop, MeasurableSet (s i)) : MeasurableSet (⋃ i, s i) := by
+  rcases exists_seq_forall_of_frequently hs with ⟨x, hx, hxm⟩
+  rw [← hsm.iUnion_comp_tendsto_atTop hx]
+  exact .iUnion hxm
+
+protected theorem iInter_of_antitone_of_frequently
+    {ι : Type*} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
+    (hsm : Antitone s) (hs : ∃ᶠ i in atTop, MeasurableSet (s i)) : MeasurableSet (⋂ i, s i) := by
+  rw [← compl_iff, compl_iInter]
+  exact .iUnion_of_monotone_of_frequently (compl_anti.comp hsm) <| hs.mono fun _ ↦ .compl
+
+protected theorem iUnion_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
+    (hsm : Monotone s) (hs : ∀ i, MeasurableSet (s i)) : MeasurableSet (⋃ i, s i) := by
+  cases isEmpty_or_nonempty ι with
+  | inl _ => simp
+  | inr _ => exact .iUnion_of_monotone_of_frequently hsm <| .of_forall hs
+
+protected theorem iInter_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
+    (hsm : Antitone s) (hs : ∀ i, MeasurableSet (s i)) : MeasurableSet (⋂ i, s i) := by
+  rw [← compl_iff, compl_iInter]
+  exact .iUnion_of_monotone (compl_anti.comp hsm) fun i ↦ (hs i).compl
 
 /-!
 ### Typeclasses on `Subtype MeasurableSet`
 -/
-
-variable [MeasurableSpace α]
 
 instance Subtype.instMembership : Membership α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun s a => a ∈ (s : Set α)⟩

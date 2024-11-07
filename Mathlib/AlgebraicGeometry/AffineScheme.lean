@@ -255,8 +255,8 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
 theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
     Opens.IsBasis (Set.range (X.basicOpen : Γ(X, ⊤) → X.Opens)) := by
   delta Opens.IsBasis
-  convert PrimeSpectrum.isBasis_basic_opens.inducing
-    (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso X.isoSpec)).inducing using 1
+  convert PrimeSpectrum.isBasis_basic_opens.isInducing
+    (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso X.isoSpec)).isInducing using 1
   ext
   simp only [Set.mem_image, exists_exists_eq_and]
   constructor
@@ -342,12 +342,12 @@ theorem opensRange_fromSpec :hU.fromSpec.opensRange = U := Opens.ext (range_from
 @[reassoc (attr := simp)]
 theorem map_fromSpec {V : X.Opens} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
     Spec.map (X.presheaf.map f) ≫ hU.fromSpec = hV.fromSpec := by
-  have : IsAffine (X.restrictFunctor.obj U).left := hU
+  have : IsAffine U := hU
   haveI : IsAffine _ := hV
   conv_rhs =>
-    rw [fromSpec, ← X.restrictFunctor_map_ofRestrict f.unop, isoSpec_inv, Category.assoc,
+    rw [fromSpec, ← X.homOfLE_ι (V := U) f.unop.le, isoSpec_inv, Category.assoc,
       ← Scheme.isoSpec_inv_naturality_assoc,
-      ← Spec.map_comp_assoc, Scheme.restrictFunctor_map_app, ← Functor.map_comp]
+      ← Spec.map_comp_assoc, Scheme.homOfLE_app, ← Functor.map_comp]
   rw [fromSpec, isoSpec_inv, Category.assoc, ← Spec.map_comp_assoc, ← Functor.map_comp]
   rfl
 
@@ -357,11 +357,11 @@ lemma Spec_map_appLE_fromSpec (f : X ⟶ Y) {V : X.Opens} {U : Y.Opens}
     Spec.map (f.appLE U V i) ≫ hU.fromSpec = hV.fromSpec ≫ f := by
   have : IsAffine U := hU
   simp only [IsAffineOpen.fromSpec, Category.assoc, isoSpec_inv]
-  simp_rw [← Scheme.restrictFunctor_map_ofRestrict (homOfLE i)]
+  simp_rw [← Scheme.homOfLE_ι _ i]
   rw [Category.assoc, ← morphismRestrict_ι,
     ← Category.assoc _ (f ∣_ U) U.ι, ← @Scheme.isoSpec_inv_naturality_assoc,
     ← Spec.map_comp_assoc, ← Spec.map_comp_assoc, Scheme.comp_app, morphismRestrict_app,
-    Scheme.restrictFunctor_map_app, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map,
+    Scheme.homOfLE_app, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map,
     Scheme.Hom.appLE_map, Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
 
 lemma fromSpec_top [IsAffine X] : (isAffineOpen_top X).fromSpec = X.isoSpec.inv := by
@@ -573,6 +573,35 @@ lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (hU : IsA
   rw [← CommRingCat.comp_eq_ring_hom_comp, IsLocalization.Away.map, IsLocalization.map_comp,
     RingHom.algebraMap_toAlgebra, RingHom.algebraMap_toAlgebra, ← CommRingCat.comp_eq_ring_hom_comp,
     Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
+
+lemma app_basicOpen_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
+    (hU : IsAffineOpen U) (h : IsAffineOpen (f ⁻¹ᵁ U)) (r : Γ(Y, U)) :
+    haveI := hU.isLocalization_basicOpen r
+    haveI := h.isLocalization_basicOpen (f.app U r)
+    f.app (Y.basicOpen r) =
+      IsLocalization.Away.map Γ(Y, Y.basicOpen r) Γ(X, X.basicOpen (f.app U r)) (f.app U) r ≫
+        X.presheaf.map (eqToHom (by simp)).op := by
+  haveI := hU.isLocalization_basicOpen r
+  haveI := h.isLocalization_basicOpen (f.app U r)
+  apply IsLocalization.ringHom_ext (.powers r)
+  rw [← CommRingCat.comp_eq_ring_hom_comp, ← CommRingCat.comp_eq_ring_hom_comp,
+    IsLocalization.Away.map, ← Category.assoc]
+  nth_rw 3 [CommRingCat.comp_eq_ring_hom_comp]
+  rw [IsLocalization.map_comp, RingHom.algebraMap_toAlgebra, ← CommRingCat.comp_eq_ring_hom_comp,
+    RingHom.algebraMap_toAlgebra, Category.assoc, ← X.presheaf.map_comp]
+  simp
+
+/-- `f.app (Y.basicOpen r)` is isomorphic to map induced on localizations
+`Γ(Y, Y.basicOpen r) ⟶ Γ(X, X.basicOpen (f.app U r))` -/
+def appBasicOpenIsoAwayMap {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
+    (hU : IsAffineOpen U) (h : IsAffineOpen (f ⁻¹ᵁ U)) (r : Γ(Y, U)) :
+    haveI := hU.isLocalization_basicOpen r
+    haveI := h.isLocalization_basicOpen (f.app U r)
+    Arrow.mk (f.app (Y.basicOpen r)) ≅
+      Arrow.mk (IsLocalization.Away.map Γ(Y, Y.basicOpen r)
+        Γ(X, X.basicOpen (f.app U r)) (f.app U) r) :=
+  Arrow.isoMk (Iso.refl _) (X.presheaf.mapIso (eqToIso (by simp)).op) <| by
+    simp [hU.app_basicOpen_eq_away_map f h]
 
 include hU in
 theorem isLocalization_of_eq_basicOpen {V : X.Opens} (i : V ⟶ U) (e : V = X.basicOpen f) :

@@ -401,6 +401,15 @@ theorem sphere_eq_empty_of_subsingleton [Subsingleton α] (hε : ε ≠ 0) : sph
 instance sphere_isEmpty_of_subsingleton [Subsingleton α] [NeZero ε] : IsEmpty (sphere x ε) := by
   rw [sphere_eq_empty_of_subsingleton (NeZero.ne ε)]; infer_instance
 
+theorem closedBall_eq_singleton_of_subsingleton [Subsingleton α] (h : 0 ≤ ε) :
+    closedBall x ε = {x} := by
+  ext x'
+  simpa [Subsingleton.allEq x x']
+
+theorem ball_eq_singleton_of_subsingleton [Subsingleton α] (h : 0 < ε) : ball x ε = {x} := by
+  ext x'
+  simpa [Subsingleton.allEq x x']
+
 theorem mem_closedBall_self (h : 0 ≤ ε) : x ∈ closedBall x ε := by
   rwa [mem_closedBall, dist_self]
 

@@ -171,8 +171,8 @@ instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
   { Finsupp.orderedAddCommMonoid with
     le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
-instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α (· + ·) (· ≤ ·)] :
-    ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
+instance addLeftReflectLE [OrderedAddCommMonoid α] [AddLeftReflectLE α] :
+    AddLeftReflectLE (ι →₀ α) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
 section SMulZeroClass
@@ -275,12 +275,12 @@ theorem single_tsub : single i (a - b) = single i a - single i b := by
   · rw [tsub_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, tsub_self]
 
 theorem support_tsub {f1 f2 : ι →₀ α} : (f1 - f2).support ⊆ f1.support := by
-  simp (config := { contextual := true }) only [subset_iff, tsub_eq_zero_iff_le, mem_support_iff,
+  simp +contextual only [subset_iff, tsub_eq_zero_iff_le, mem_support_iff,
     Ne, coe_tsub, Pi.sub_apply, not_imp_not, zero_le, imp_true_iff]
 
 theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
     f1.support \ f2.support ⊆ (f1 - f2).support := by
-  simp (config := { contextual := true }) [subset_iff]
+  simp +contextual [subset_iff]
 
 end CanonicallyOrderedAddCommMonoid
 

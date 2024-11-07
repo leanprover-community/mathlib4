@@ -163,6 +163,10 @@ lemma of_op (W : MorphismProperty C) [IsMultiplicative W.op] : IsMultiplicative 
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W.unop] : IsMultiplicative W :=
   (inferInstance : IsMultiplicative W.unop.op)
 
+instance : MorphismProperty.IsMultiplicative (⊤ : MorphismProperty C) where
+  comp_mem _ _ _ _ := trivial
+  id_mem _ := trivial
+
 instance : (isomorphisms C).IsMultiplicative where
   id_mem _ := isomorphisms.infer_property _
   comp_mem f g hf hg := by
