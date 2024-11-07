@@ -417,6 +417,7 @@ theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
 
 @[deprecated (since := "2024-08-29")] alias total_dualBasis := linearCombination_dualBasis
 
+@[simp]
 theorem dualBasis_repr (l : Dual R M) (i : ι) : b.dualBasis.repr l i = l (b i) := by
   rw [← linearCombination_dualBasis b, Basis.linearCombination_repr b.dualBasis l]
 
