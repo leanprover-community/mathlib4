@@ -236,11 +236,4 @@ def proj [DecidableEq ιM] [Decomposition 𝓜]  (i : ιM) : M →+ M where
   map_zero' := by simp
   map_add' := by simp
 
-/--
-For each `a : M`, `GradedModule.homogeneousComponents ℳ a` is the collection of the
-homogeneous components of `a`, which is a finite subset of `M`.
--/
-def homogeneousComponents [DecidableEq ιM] [Decomposition 𝓜] [DecidableEq M] (a : M) : Finset M :=
-    (decompose 𝓜 a).support.image (decompose 𝓜 a ·)
-
 end GradedModule
