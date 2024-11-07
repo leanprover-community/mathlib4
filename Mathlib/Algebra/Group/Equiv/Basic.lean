@@ -96,6 +96,11 @@ infixl:25 " ≃* " => MulEquiv
 /-- Notation for an `AddEquiv`. -/
 infixl:25 " ≃+ " => AddEquiv
 
+@[to_additive]
+lemma MulEquiv.toEquiv_injective {α β : Type*} [Mul α] [Mul β] :
+    Function.Injective (toEquiv : (α ≃* β) → (α ≃ β))
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+
 /-- `MulEquivClass F A B` states that `F` is a type of multiplication-preserving morphisms.
 You should extend this class when you extend `MulEquiv`. -/
 -- TODO: make this a synonym for MulHomClass?

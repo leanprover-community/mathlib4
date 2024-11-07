@@ -60,3 +60,11 @@ instance Equiv.finite_right {α β : Sort*} [Finite β] : Finite (α ≃ β) :=
 
 instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) :=
   Finite.of_equiv _ ⟨Equiv.symm, Equiv.symm, Equiv.symm_symm, Equiv.symm_symm⟩
+
+@[to_additive]
+instance MulEquiv.finite_left {α β : Type*} [Mul α] [Mul β] [Finite α] : Finite (α ≃* β) :=
+  Finite.of_injective toEquiv toEquiv_injective
+
+@[to_additive]
+instance MulEquiv.finite_right {α β : Type*} [Mul α] [Mul β] [Finite β] : Finite (α ≃* β) :=
+  Finite.of_injective toEquiv toEquiv_injective
