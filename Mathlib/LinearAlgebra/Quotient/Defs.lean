@@ -200,6 +200,10 @@ instance module (P : Submodule R M) : Module R (M ⧸ P) :=
 
 end Module
 
+@[elab_as_elim]
+theorem induction_on {C : M ⧸ p → Prop} (x : M ⧸ p) (H : ∀ z, C (Submodule.Quotient.mk z)) :
+    C x := Quotient.inductionOn' x H
+
 theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) := by
   rintro ⟨x⟩
   exact ⟨x, rfl⟩
