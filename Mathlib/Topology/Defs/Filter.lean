@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 import Mathlib.Topology.Defs.Basic
-import Mathlib.Order.Filter.Ultrafilter
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Setoid.Basic
+import Mathlib.Order.Filter.Defs
+import Mathlib.Tactic.IrreducibleDef
 
 /-!
 # Definitions about filters in topological spaces
@@ -107,6 +108,8 @@ as well as other definitions that rely on `Filter`s.
 * `𝓝[≠] x`: the filter `nhdsWithin x {x}ᶜ` of punctured neighborhoods of `x`;
 * `𝓝ˢ s`: the filter `nhdsSet s` of neighborhoods of a set.
 -/
+
+assert_not_exists Ultrafilter
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
@@ -230,13 +233,6 @@ section Lim
 /-- If `f` is a filter, then `Filter.lim f` is a limit of the filter, if it exists. -/
 noncomputable def lim [Nonempty X] (f : Filter X) : X :=
   Classical.epsilon fun x => f ≤ 𝓝 x
-
-/--
-If `F` is an ultrafilter, then `Filter.Ultrafilter.lim F` is a limit of the filter, if it exists.
-Note that dot notation `F.lim` can be used for `F : Filter.Ultrafilter X`.
--/
-noncomputable nonrec def Ultrafilter.lim (F : Ultrafilter X) : X :=
-  @lim X _ (nonempty_of_neBot F) F
 
 /-- If `f` is a filter in `α` and `g : α → X` is a function, then `limUnder f g` is a limit of `g`
 at `f`, if it exists. -/

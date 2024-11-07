@@ -1271,7 +1271,7 @@ theorem iInf_image :
 theorem iSup_extend_bot {e : ι → β} (he : Injective e) (f : ι → α) :
     ⨆ j, extend e f ⊥ j = ⨆ i, f i := by
   rw [iSup_split _ fun j => ∃ i, e i = j]
-  simp (config := { contextual := true }) [he.extend_apply, extend_apply', @iSup_comm _ β ι]
+  simp +contextual [he.extend_apply, extend_apply', @iSup_comm _ β ι]
 
 theorem iInf_extend_top {e : ι → β} (he : Injective e) (f : ι → α) :
     ⨅ j, extend e f ⊤ j = iInf f :=

@@ -64,15 +64,12 @@ structure Finpartition [Lattice α] [OrderBot α] (a : α) where
   /-- The elements of the finite partition of `a` -/
   parts : Finset α
   /-- The partition is supremum-independent -/
-  supIndep : parts.SupIndep id
+  protected supIndep : parts.SupIndep id
   /-- The supremum of the partition is `a` -/
   sup_parts : parts.sup id = a
   /-- No element of the partition is bottom -/
   not_bot_mem : ⊥ ∉ parts
   deriving DecidableEq
-
--- Porting note: attribute [protected] doesn't work
--- attribute [protected] Finpartition.supIndep
 
 namespace Finpartition
 

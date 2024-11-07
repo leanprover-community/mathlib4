@@ -638,7 +638,7 @@ theorem coe_iInf {ι : Sort*} [Nonempty ι] (f : ι → ℝ≥0) : (↑(iInf f) 
 
 theorem coe_mem_upperBounds {s : Set ℝ≥0} :
     ↑r ∈ upperBounds (ofNNReal '' s) ↔ r ∈ upperBounds s := by
-  simp (config := { contextual := true }) [upperBounds, forall_mem_image, -mem_image, *]
+  simp +contextual [upperBounds, forall_mem_image, -mem_image, *]
 
 lemma iSup_coe_eq_top : ⨆ i, (f i : ℝ≥0∞) = ⊤ ↔ ¬ BddAbove (range f) := WithTop.iSup_coe_eq_top
 lemma iSup_coe_lt_top : ⨆ i, (f i : ℝ≥0∞) < ⊤ ↔ BddAbove (range f) := WithTop.iSup_coe_lt_top

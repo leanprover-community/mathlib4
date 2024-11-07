@@ -1780,9 +1780,8 @@ end AEFinStronglyMeasurable
 
 section SecondCountableTopology
 
-variable {G : Type*} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure α}
-  [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
-  {f : α → G}
+variable {G : Type*} [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace G]
+  [SecondCountableTopology G] {f : α → G}
 
 /-- In a space with second countable topology and a sigma-finite measure, `FinStronglyMeasurable`
   and `Measurable` are equivalent. -/

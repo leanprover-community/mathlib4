@@ -52,7 +52,7 @@ namespace MeasureTheory
 
 namespace Measure
 
-variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
+variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 
 /-- A pair of measures `μ` and `ν` is said to `HaveLebesgueDecomposition` if there exists a
 measure `ξ` and a measurable function `f`, such that `ξ` is mutually singular with respect to

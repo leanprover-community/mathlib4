@@ -20,6 +20,11 @@ import Mathlib.RingTheory.Multiplicity
 * `UniqueFactorizationMonoid` holds for `WfDvdMonoid`s where
   `Irreducible` is equivalent to `Prime`
 
+## Main results
+* `Ideal.setOf_isPrincipal_wellFoundedOn_gt`, `WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt`
+  in a domain, well-foundedness of the strict version of ∣ is equivalent to the ascending
+  chain condition on principal ideals.
+
 ## TODO
 * set up the complete lattice structure on `FactorSet`.
 
@@ -30,7 +35,7 @@ variable {α : Type*}
 
 local infixl:50 " ~ᵤ " => Associated
 
-/-- Well-foundedness of the strict version of |, which is equivalent to the descending chain
+/-- Well-foundedness of the strict version of ∣, which is equivalent to the descending chain
 condition on divisibility and to the ascending chain condition on
 principal ideals in an integral domain.
   -/
@@ -40,14 +45,6 @@ abbrev WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop :=
 theorem wellFounded_dvdNotUnit {α : Type*} [CommMonoidWithZero α] [h : WfDvdMonoid α] :
     WellFounded (DvdNotUnit (α := α)) :=
   h.wf
-
--- see Note [lower instance priority]
-instance (priority := 100) IsNoetherianRing.wfDvdMonoid [CommRing α] [IsDomain α]
-    [h : IsNoetherianRing α] : WfDvdMonoid α :=
-  ⟨by
-    convert InvImage.wf (fun a => Ideal.span ({a} : Set α)) h.wf
-    ext
-    exact Ideal.span_singleton_lt_span_singleton.symm⟩
 
 namespace WfDvdMonoid
 
@@ -1989,5 +1986,36 @@ lemma factors_multiset_prod_of_irreducible {s : Multiset ℕ} (h : ∀ x : ℕ, 
   exact fun con ↦ not_irreducible_zero (h 0 con)
 
 end Nat
+
+section Ideal
+
+/-- The ascending chain condition on principal ideals holds in a `WfDvdMonoid` domain. -/
+lemma Ideal.setOf_isPrincipal_wellFoundedOn_gt [CommSemiring α] [WfDvdMonoid α] [IsDomain α] :
+    {I : Ideal α | I.IsPrincipal}.WellFoundedOn (· > ·) := by
+  have : {I : Ideal α | I.IsPrincipal} = ((fun a ↦ Ideal.span {a}) '' Set.univ) := by
+    ext
+    simp [Submodule.isPrincipal_iff, eq_comm]
+  rw [this, Set.wellFoundedOn_image, Set.wellFoundedOn_univ]
+  convert wellFounded_dvdNotUnit (α := α)
+  ext
+  exact Ideal.span_singleton_lt_span_singleton
+
+/-- The ascending chain condition on principal ideals in a domain is sufficient to prove that
+the domain is `WfDvdMonoid`. -/
+lemma WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt [CommSemiring α] [IsDomain α]
+    (h : {I : Ideal α | I.IsPrincipal}.WellFoundedOn (· > ·)) :
+    WfDvdMonoid α := by
+  have : WellFounded (α := {I : Ideal α // I.IsPrincipal}) (· > ·) := h
+  constructor
+  convert InvImage.wf (fun a => ⟨Ideal.span ({a} : Set α), _, rfl⟩) this
+  ext
+  exact Ideal.span_singleton_lt_span_singleton.symm
+
+-- see Note [lower instance priority]
+instance (priority := 100) IsNoetherianRing.wfDvdMonoid [CommSemiring α] [IsDomain α]
+    [h : IsNoetherianRing α] : WfDvdMonoid α :=
+  WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt h.wf.wellFoundedOn
+
+end Ideal
 
 set_option linter.style.longFile 2100

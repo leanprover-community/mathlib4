@@ -155,7 +155,6 @@ instance instProdEDist : EDist (WithLp p (α × β)) where
       (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal)
 
 variable {p α β}
-variable (x y : WithLp p (α × β)) (x' : α × β)
 
 @[simp]
 theorem prod_edist_eq_card (f g : WithLp 0 (α × β)) :
