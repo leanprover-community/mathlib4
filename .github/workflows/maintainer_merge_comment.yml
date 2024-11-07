@@ -1,8 +1,9 @@
 name: Maintainer merge (comment)
 
 on:
-  pull_request: #issue_comment:
-    types: [opened, edited] #types: [created, edited]
+  push:
+  #issue_comment:
+  #  types: [created, edited]
 
 jobs:
   ping_zulip:
@@ -70,9 +71,7 @@ jobs:
         with:
           issue-number: 18736 # ${{ github.event.issue.number }}
           body: |
-            🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}.
-            #${{ steps.merge_or_delegate.outputs.title }}
-            #> ${{ github.event.issue.title }}
+            🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}.            #${{ steps.merge_or_delegate.outputs.title }}            #> ${{ github.event.issue.title }}
       #- name: Add label to PR
       #  uses: actions/github-script@v7
       #  with:
