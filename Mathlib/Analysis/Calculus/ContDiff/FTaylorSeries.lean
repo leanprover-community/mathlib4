@@ -99,7 +99,7 @@ In this file, we denote `⊤ : ℕ∞` with `∞`.
 noncomputable section
 
 open scoped Classical
-open NNReal Topology Filter
+open ENat NNReal Topology Filter
 
 local notation "∞" => (⊤ : ℕ∞)
 
@@ -172,17 +172,11 @@ theorem hasFTaylorSeriesUpToOn_zero_iff :
   rw [continuousOn_congr this, LinearIsometryEquiv.comp_continuousOn_iff]
   exact H.1
 
-lemma nat_le_of_infty_le (hN : ∞ ≤ N) (n : ℕ) : n ≤ N :=
-  le_trans (by exact_mod_cast le_top) hN
-
-lemma nat_lt_of_infty_le (hN : ∞ ≤ N) (n : ℕ) : n < N :=
-  lt_of_lt_of_le (by exact_mod_cast lt_add_one n) (nat_le_of_infty_le hN (n + 1))
-
 theorem hasFTaylorSeriesUpToOn_top_iff_add (hN : ∞ ≤ N) (k : ℕ) :
     HasFTaylorSeriesUpToOn N f p s ↔ ∀ n : ℕ, HasFTaylorSeriesUpToOn (n + k : ℕ) f p s := by
   constructor
   · intro H n
-    apply H.of_le (nat_le_of_infty_le hN _)
+    apply H.of_le (nat_le_of_infty_le_withTop hN _)
   · intro H
     constructor
     · exact (H 0).zero_eq
@@ -202,7 +196,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff' (hN : ∞ ≤ N) :
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧
         ∀ m : ℕ, ∀ x ∈ s, HasFDerivWithinAt (fun y => p y m) (p x m.succ).curryLeft s x := by
   -- Everything except for the continuity is trivial:
-  refine ⟨fun h => ⟨h.1, fun m => h.2 m (nat_lt_of_infty_le hN _)⟩, fun h =>
+  refine ⟨fun h => ⟨h.1, fun m => h.2 m (nat_lt_of_infty_le_withTop hN _)⟩, fun h =>
     ⟨h.1, fun m _ => h.2 m, fun m _ x hx =>
       -- The continuity follows from the existence of a derivative:
       (h.2 m x hx).continuousWithinAt⟩⟩

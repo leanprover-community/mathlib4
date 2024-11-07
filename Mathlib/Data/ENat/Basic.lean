@@ -261,6 +261,17 @@ theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ 
   · exact htop A
   · exact A _
 
+lemma add_one_pos : 0 < n + 1 :=
+  succ_def n ▸ Order.bot_lt_succ n
+
+lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < m :=
+  WithTop.add_lt_add_iff_right h
+
+lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
+  WithTop.add_lt_add_iff_left h
+
+section withTop_enat
+
 lemma add_one_nat_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : (m + 1 : ℕ) ≤ n := by
   match n with
   | ⊤ => exact le_top
@@ -283,13 +294,12 @@ lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} :
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
     fun h ↦ add_one_nat_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
 
-lemma add_one_pos : 0 < n + 1 :=
-  succ_def n ▸ Order.bot_lt_succ n
+lemma nat_le_of_infty_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞) ≤ N) (n : ℕ) : n ≤ N :=
+  le_trans (by exact_mod_cast le_top) hN
 
-lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < m :=
-  WithTop.add_lt_add_iff_right h
+lemma nat_lt_of_infty_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞) ≤ N) (n : ℕ) : n < N :=
+  lt_of_lt_of_le (by exact_mod_cast lt_add_one n) (nat_le_of_infty_le_withTop hN (n + 1))
 
-lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
-  WithTop.add_lt_add_iff_left h
+end withTop_enat
 
 end ENat
