@@ -43,9 +43,13 @@ jobs:
         #env:
         #  TITLE: $'this is free text containing\nmyself merge' #${{ github.event.pull_request.title }}
         run: |
-          printf '%s' "${TITLE}"
-          printf '%s' "${TITLE}" | grep "^myself" || echo "not found"
-          printf $'title<<EOF\n%s\nEOF' "${TITLE}" >> "${GITHUB_OUTPUT}"
+          printf '%s\n' "${TITLE}"
+          printf '%s\n' "${TITLE}" | grep "^myself merge" || echo "not found"
+          if printf '%s\n' "${TITLE}" | grep "^myself merge"
+          then
+            printf $'title<<EOF\n%s\nEOF' "This message was a merge" >> "${GITHUB_OUTPUT}"
+          else
+            printf $'title<<EOF\n%s\nEOF' "This message was a delegate" >> "${GITHUB_OUTPUT}"
       #- name: Send message on Zulip
       #  uses: zulip/github-actions-zulip/send-message@v1
       #  with:
