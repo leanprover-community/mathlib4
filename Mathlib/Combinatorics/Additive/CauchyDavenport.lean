@@ -29,11 +29,11 @@ There are two kinds of proof of Cauchy-Davenport:
 
 ## Main declarations
 
-* `Finset.min_le_card_mul`: A generalisation of the Cauchy-Davenport theorem to arbitrary groups.
-* `Monoid.IsTorsionFree.card_add_card_sub_one_le_card_mul`: The Cauchy-Davenport theorem in
-  torsion-free groups.
-* `ZMod.min_le_card_add`: The Cauchy-Davenport theorem.
-* `Finset.card_add_card_sub_one_le_card_mul`: The Cauchy-Davenport theorem in linear ordered
+* `cauchy_davenport_minOrder_mul`: A generalisation of the Cauchy-Davenport theorem to arbitrary
+  groups.
+* `cauchy_davenport_of_isTorsionFree`: The Cauchy-Davenport theorem in torsion-free groups.
+* `ZMod.cauchy_davenport`: The Cauchy-Davenport theorem for `ZMod p`.
+* `cauchy_davenport_mul_of_linearOrder_isCancelMul`: The Cauchy-Davenport theorem in linear ordered
   cancellative semigroups.
 
 ## TODO
@@ -109,7 +109,7 @@ subgroup. -/
 @[to_additive "A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups. The size of
 `s + t` is lower-bounded by `|s| + |t| - 1` unless this quantity is greater than the size of the
 smallest subgroup."]
-lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
+lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
     min (minOrder α) ↑(#s + #t - 1) ≤ #(s * t) := by
   -- Set up the induction on `x := (s, t)` along the `DevosMulRel` relation.
   set x := (s, t) with hx
@@ -178,11 +178,13 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
 
 /-- The **Cauchy-Davenport Theorem** for torsion-free groups. The size of `s * t` is lower-bounded
 by `|s| + |t| - 1`. -/
-@[to_additive "The **Cauchy-Davenport theorem** for torsion-free groups. The size of `s + t` is
-lower-bounded by `|s| + |t| - 1`."]
-lemma Monoid.IsTorsionFree.card_add_card_sub_one_le_card_mul (h : IsTorsionFree α)
+@[to_additive
+"The **Cauchy-Davenport theorem** for torsion-free groups. The size of `s + t` is lower-bounded
+by `|s| + |t| - 1`."]
+lemma cauchy_davenport_mul_of_isTorsionFree (h : IsTorsionFree α)
     (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
-  simpa only [h.minOrder, min_eq_right, le_top, Nat.cast_le] using Finset.min_le_card_mul hs ht
+  simpa only [h.minOrder, min_eq_right, le_top, Nat.cast_le]
+    using cauchy_davenport_minOrder_mul hs ht
 
 end General
 
@@ -190,9 +192,10 @@ end General
 
 /-- The **Cauchy-Davenport Theorem**. If `s`, `t` are nonempty sets in $$ℤ/pℤ$$, then the size of
 `s + t` is lower-bounded by `|s| + |t| - 1`, unless this quantity is greater than `p`. -/
-lemma ZMod.min_le_card_add {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs : s.Nonempty)
+lemma ZMod.cauchy_davenport {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs : s.Nonempty)
     (ht : t.Nonempty) : min p (#s + #t - 1) ≤ #(s + t) := by
-  simpa only [ZMod.minOrder_of_prime hp, min_le_iff, Nat.cast_le] using Finset.min_le_card_add hs ht
+  simpa only [ZMod.minOrder_of_prime hp, min_le_iff, Nat.cast_le]
+    using cauchy_davenport_minOrder_add hs ht
 
 /-! ### Linearly ordered cancellative semigroups -/
 
@@ -201,7 +204,7 @@ lemma ZMod.min_le_card_add {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs 
 @[to_additive
 "The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups. The size of
 `s + t` is lower-bounded by `|s| + |t| - 1`."]
-lemma Finset.card_add_card_sub_one_le_card_mul [LinearOrder α] [Semigroup α] [IsCancelMul α]
+lemma cauchy_davenport_mul_of_linearOrder_isCancelMul [LinearOrder α] [Semigroup α] [IsCancelMul α]
     [MulLeftMono α] [MulRightMono α]
     {s t : Finset α} (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
   suffices s * {t.min' ht} ∩ ({s.max' hs} * t) = {s.max' hs * t.min' ht} by
