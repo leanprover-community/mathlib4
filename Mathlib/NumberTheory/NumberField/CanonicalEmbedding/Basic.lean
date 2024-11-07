@@ -788,7 +788,7 @@ instance : Ring (euclidean.mixedSpace K) := by
 
 instance : MeasurableSpace (euclidean.mixedSpace K) := borel _
 
-instance : BorelSpace (euclidean.mixedSpace K)  :=  ⟨rfl⟩
+instance : BorelSpace (euclidean.mixedSpace K) := ⟨rfl⟩
 
 variable [NumberField K]
 
