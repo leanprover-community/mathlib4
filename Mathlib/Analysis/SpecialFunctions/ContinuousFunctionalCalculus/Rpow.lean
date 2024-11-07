@@ -214,10 +214,7 @@ example (a : A) : abs a = 0 ↔ a = 0 := by
   constructor
   · intro h
     sorry
-  · intro h
-    simp [abs]
-    rw [h]
-    simp only [star_zero, mul_zero, sqrt_zero]
+  · exact fun h ↦ by simp only [h, abs, star_zero, mul_zero, sqrt_zero]
 
 end abs
 
