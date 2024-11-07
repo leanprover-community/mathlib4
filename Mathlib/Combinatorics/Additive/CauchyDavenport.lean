@@ -178,7 +178,7 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
 
 /-- The **Cauchy-Davenport Theorem** for torsion-free groups. The size of `s * t` is lower-bounded
 by `|s| + |t| - 1`. -/
-@[to_additive AddMonoid.IsTorsionFree.card_add_card_sub_one_le_card_add
+@[to_additive cauchy_davenport_add_of_isTorsionFree
 "The **Cauchy-Davenport theorem** for torsion-free groups. The size of `s + t` is lower-bounded
 by `|s| + |t| - 1`."]
 lemma cauchy_davenport_mul_of_isTorsionFree (h : IsTorsionFree α)
