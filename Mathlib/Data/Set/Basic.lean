@@ -1581,7 +1581,7 @@ theorem diff_insert_of_not_mem {x : α} (h : x ∉ s) : s \ insert x t = s \ t :
 @[simp]
 theorem insert_diff_of_mem (s) (h : a ∈ t) : insert a s \ t = s \ t := by
   ext
-  constructor <;> simp (config := { contextual := true }) [or_imp, h]
+  constructor <;> simp +contextual [or_imp, h]
 
 theorem insert_diff_of_not_mem (s) (h : a ∉ t) : insert a s \ t = insert a (s \ t) := by
   classical
