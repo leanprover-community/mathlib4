@@ -26,26 +26,6 @@ invariants.
 
 -/
 
-section fieldEquivOfAlgEquivHom
-
-open IsFractionRing
-
-variable {A B : Type*} [CommRing A] [CommRing B] [IsDomain A] [IsDomain B] [Algebra A B]
-  (K L : Type*) [Field K] [Field L]
-  [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
-  [Algebra A L] [IsScalarTower A B L] [Algebra K L] [IsScalarTower A K L]
-
-variable (A B)
-
-@[simp]
-lemma fieldEquivOfAlgEquivHom_injective :
-    Function.Injective (fieldEquivOfAlgEquivHom K L : (B ≃ₐ[A] B) →* (L ≃ₐ[K] L)) := by
-  intro f g h
-  ext b
-  simpa using AlgEquiv.ext_iff.mp h (algebraMap B L b)
-
-end fieldEquivOfAlgEquivHom
-
 open scoped Pointwise
 
 -- PRed
@@ -106,28 +86,19 @@ open MulSemiringAction Polynomial
 
 variable [IsInvariant A B G]
 
-theorem exists_map_eq_charpoly [Fintype G] (b : B) :
-    ∃ M : A[X], M.Monic ∧ M.map (algebraMap A B) = charpoly G b := by
-  have hinv k : ∃ a : A, algebraMap A B a = (charpoly G b).coeff k :=
-    isInvariant ((charpoly G b).coeff k) (charpoly_coeff_smul b k)
-  let f : ℕ → A := fun k ↦ (hinv k).choose
-  have hf : ∀ k, algebraMap A B (f k) = (charpoly G b).coeff k := fun k ↦ (hinv k).choose_spec
-  use X ^ (charpoly G b).natDegree + ∑ k ∈ Finset.range (charpoly G b).natDegree, C (f k) * X ^ k
-  constructor
-  · apply Polynomial.monic_X_pow_add
-    rw [← Fin.sum_univ_eq_sum_range]
-    apply Polynomial.degree_sum_fin_lt
-  · simp_rw [Polynomial.map_add, Polynomial.map_sum, Polynomial.map_mul, Polynomial.map_pow,
-      Polynomial.map_X, Polynomial.map_C, hf]
-    exact (charpoly_monic G b).as_sum.symm
+-- PRed
+theorem charpoly_mem_lifts [Fintype G] (b : B) :
+    charpoly G b ∈ Polynomial.lifts (algebraMap A B) :=
+  (charpoly G b).lifts_iff_coeff_lifts.mpr fun n ↦ isInvariant _ (charpoly_coeff_smul b n)
 
+-- PRed
 include G in
 theorem isIntegral [Finite G] : Algebra.IsIntegral A B := by
   cases nonempty_fintype G
   refine ⟨fun b ↦ ?_⟩
-  obtain ⟨f, hf1, hf2⟩ := exists_map_eq_charpoly A B G b
-  refine ⟨f, hf1, ?_⟩
-  rw [← eval_map, hf2, charpoly_eval]
+  obtain ⟨p, hp1, -, hp2⟩ := Polynomial.lifts_and_natDegree_eq_and_monic
+    (charpoly_mem_lifts A B G b) (charpoly_monic G b)
+  exact ⟨p, hp2, by rw [← eval_map, hp1, charpoly_eval]⟩
 
 /-- `G` acts transitively on primes of `B` above the same prime of `A`. -/
 theorem exists_smul_of_under_eq [Finite G] [SMulCommClass G A B]
@@ -148,7 +119,6 @@ theorem exists_smul_of_under_eq [Finite G] [SMulCommClass G A B]
       hPQ, Q.mem_comap, ha, hQ.prod_mem_iff]
     exact ⟨1, Finset.mem_univ 1, (one_smul G b).symm ▸ hb⟩
   obtain ⟨g, -, hg⟩ := this P Q hPQ
-  have h := hP.smul g -- should this be an instance?
   obtain ⟨g', -, hg'⟩ := this Q (g • P) ((P.under_smul A g).trans hPQ).symm
   exact ⟨g, le_antisymm hg (smul_eq_of_le_smul (hg.trans hg') ▸ hg')⟩
 
@@ -263,7 +233,7 @@ private theorem fixed_of_fixed1 [NoZeroSMulDivisors (B ⧸ Q) L] (f : L ≃ₐ[K
   intro hx
   rw [← Ideal.Quotient.algebraMap_eq]
   obtain ⟨a, b, ha1, ha2, hb⟩ := fixed_of_fixed1_aux2 G Q b₀ (fun g hg ↦ hx ⟨g, hg⟩)
-  obtain ⟨M, _, key⟩ := Algebra.IsInvariant.exists_map_eq_charpoly A B G b
+  obtain ⟨M, key⟩ := (mem_lifts _).mp (Algebra.IsInvariant.charpoly_mem_lifts A B G b)
   replace key := congrArg (map (algebraMap B (B ⧸ Q))) key
   rw [map_map, ← algebraMap_eq, algebraMap_eq A (A ⧸ P) (B ⧸ Q),
       ← map_map, MulSemiringAction.charpoly, Polynomial.map_prod] at key
@@ -291,6 +261,7 @@ private theorem fixed_of_fixed1 [NoZeroSMulDivisors (B ⧸ Q) L] (f : L ≃ₐ[K
 
 variable [IsFractionRing (A ⧸ P) K] [IsFractionRing (B ⧸ Q) L]
 
+/-- If `Q` lies over `P`, then the stabilizer of `Q` acts on `Frac(B/Q)/Frac(A/P)`. -/
 noncomputable def IsFractionRing.stabilizerHom : MulAction.stabilizer G Q →* (L ≃ₐ[K] L) :=
   have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under A Q
   MonoidHom.comp (IsFractionRing.fieldEquivOfAlgEquivHom K L) (Ideal.Quotient.stabilizerHom Q P G)
@@ -333,7 +304,7 @@ theorem Ideal.Quotient.stabilizerHom_surjective :
   have key := IsFractionRing.stabilizerHom_surjective G P Q
     (FractionRing (A ⧸ P)) (FractionRing (B ⧸ Q))
   rw [IsFractionRing.stabilizerHom, MonoidHom.coe_comp] at key
-  exact key.of_comp_left (fieldEquivOfAlgEquivHom_injective (A ⧸ P) (B ⧸ Q)
+  exact key.of_comp_left (IsFractionRing.fieldEquivOfAlgEquivHom_injective (A ⧸ P) (B ⧸ Q)
     (FractionRing (A ⧸ P)) (FractionRing (B ⧸ Q)))
 
 end surjectivity
