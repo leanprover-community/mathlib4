@@ -24,9 +24,6 @@ import Mathlib.Data.Fintype.Quotient
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
 variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
-variable (β)
-
-variable {β}
 
 namespace DFinsupp
 
