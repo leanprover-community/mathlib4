@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Module.Presentation.Tensor
-import Mathlib.LinearAlgebra.PiTensorProduct
+import Mathlib.LinearAlgebra.PiTensorProduct.Generators
 
 /-!
 # Presentation of the tensor product of a (finite) family of modules
@@ -15,64 +15,6 @@ import Mathlib.LinearAlgebra.PiTensorProduct
 universe w' w v u
 
 open TensorProduct
-
-namespace Function
-
-variable {ι : Type*} [DecidableEq ι] {M : ι → Type*} (i₀ : ι)
-  (f : ∀ (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) (x : M i₀)
-
-def extendComplSingleton (i : ι) : M i :=
-  if h : i = i₀ then by rw [h]; exact x else f ⟨i, h⟩
-
-@[simp]
-lemma extendComplSingleton_self : extendComplSingleton i₀ f x i₀ = x := dif_pos rfl
-
-lemma extendComplSingleton_of_neq (i : ι) (h : i ≠ i₀) :
-    extendComplSingleton i₀ f x i = f ⟨i, h⟩ := dif_neg h
-
-@[simp]
-lemma extendCompSingleton_restriction (φ : ∀ i, M i) (i₀ : ι) :
-    extendComplSingleton i₀ (fun i ↦ φ i) (φ i₀) = φ := by
-  ext i
-  by_cases h : i = i₀
-  · subst h
-    simp
-  · rw [extendComplSingleton_of_neq _ _ _ _ h]
-
-end Function
-
-section
-
-namespace PiTensorProduct
-
-variable (R : Type u) [CommRing R]
-  {ι : Type w} [DecidableEq ι] (M : ι → Type v)
-  [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
-
-def equivTensorPiTensorComplSingleton (i : ι) :
-    (⨂[R] i, M i) ≃ₗ[R] (M i ⊗[R] ⨂[R] (i : (Set.singleton i).compl), M i) := sorry
-
-@[simp]
-lemma equivTensorPiTensorComplSingleton_tprod (i₀ : ι) (m : ∀ i, M i) :
-    equivTensorPiTensorComplSingleton R M i₀ (⨂ₜ[R] i, m i) =
-      m i₀ ⊗ₜ (⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j) := sorry
-
-@[simp]
-lemma equivTensorPiTensorComplSingleton_symm_tmul (i₀ : ι)
-    (x : M i₀) (m : ∀ (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) :
-    (equivTensorPiTensorComplSingleton R M i₀).symm
-      (x ⊗ₜ (⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j)) =
-      (⨂ₜ[R] i, Function.extendComplSingleton i₀ m x i) := by
-  apply (equivTensorPiTensorComplSingleton R M i₀).injective
-  simp only [LinearEquiv.apply_symm_apply, equivTensorPiTensorComplSingleton_tprod,
-    Function.extendComplSingleton_self]
-  congr
-  ext ⟨i, hi⟩
-  rw [Function.extendComplSingleton_of_neq]
-
-end PiTensorProduct
-
-end
 
 section
 
