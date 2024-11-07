@@ -41,9 +41,9 @@ jobs:
           TITLE: 'this is free text containing
 myself merge' #${{ github.event.pull_request.title }}
         run: |
-          echo "${TITLE}"
-          echo "${TITLE}" | grep "^myself"
-          echo "title=${TITLE}" >> "${GITHUB_OUTPUT}"
+          printf "${TITLE}"
+          printf "${TITLE}" | grep "^myself"
+          printf $'title<<EOF\n%s\nEOF' "${TITLE}" >> "${GITHUB_OUTPUT}"
       #- name: Send message on Zulip
       #  uses: zulip/github-actions-zulip/send-message@v1
       #  with:
