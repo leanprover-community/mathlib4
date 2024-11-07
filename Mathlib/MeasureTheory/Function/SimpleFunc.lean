@@ -1226,7 +1226,7 @@ a simple function with a multiple of a characteristic function and that the inte
 of their images is a subset of `{0}`. -/
 @[elab_as_elim]
 lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {P : (α → ℝ≥0∞) → Prop}
-    (h_ind : ∀ (c : ℝ≥0∞) ⦃s⦄, MeasurableSet s → μ s < ∞ → P (Set.indicator s fun _ => c))
+    (h_ind : ∀ (c : ℝ≥0∞) ⦃s⦄, MeasurableSet s → μ s < ∞ → P (Set.indicator s fun _ ↦ c))
     (h_add :
       ∀ ⦃f g : α → ℝ≥0∞⦄,
         Disjoint (support f) (support g) → Measurable f → Measurable g → P f → P g → P (f + g))
