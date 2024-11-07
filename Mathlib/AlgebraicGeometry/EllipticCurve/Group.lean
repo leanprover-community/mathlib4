@@ -11,8 +11,8 @@ import Mathlib.RingTheory.ClassGroup
 # Group law on Weierstrass curves
 
 This file proves that the nonsingular rational points on a Weierstrass curve forms an abelian group
-under the geometric group law defined in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine` and in
-`Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian`.
+under the geometric group law defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean` and
+in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean`.
 
 ## Mathematical background
 
