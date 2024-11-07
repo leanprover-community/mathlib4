@@ -116,11 +116,11 @@ theorem iSup_mul_eq_iSup_mul (x : α) (f : ι → α ) : (⨆ i, f i) * x = ⨆ 
 
 @[to_additive]
 theorem mul_sup_eq_sup_mul : ∀ x y z : α, x * (y ⊔ z) = (x * y) ⊔ (x * z) := by
-  intros; rw [← iSup_pair, ←sSup_pair, mul_sSup_eq_iSup_mul]
+  intros; rw [← iSup_pair, ← sSup_pair, mul_sSup_eq_iSup_mul]
 
 @[to_additive]
 theorem sup_mul_eq_sup_mul : ∀ x y z : α, (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
-  intro _ _ z; rw [← (@iSup_pair _ _ _ (fun _? => _? * z) _ _), ←sSup_pair, sSup_mul_eq_iSup_mul]
+  intro _ _ z; rw [← (@iSup_pair _ _ _ (fun _? => _? * z) _ _), ← sSup_pair, sSup_mul_eq_iSup_mul]
 
 @[to_additive]
 theorem mul_le_mul_left : ∀ x y z : α, x ≤ y → x * z ≤ y * z := by
@@ -192,7 +192,7 @@ variable {α : Type*}
 variable [Semigroup α] [Quantale α]
 
 @[to_additive]
-theorem lres_le_iff_mul_le (x y z : α) : x ≤ y ⇨ₗ z ↔ x * y ≤ z := by
+theorem leftResiduation_le_iff_mul_le (x y z : α) : x ≤ y ⇨ₗ z ↔ x * y ≤ z := by
   rw [leftResiduation];
   constructor
   · intro h1
@@ -203,7 +203,7 @@ theorem lres_le_iff_mul_le (x y z : α) : x ≤ y ⇨ₗ z ↔ x * y ≤ z := by
     exact h1
 
 @[to_additive]
-theorem rres_le_iff_mul_le (x y z : α) : x ≤ y ⇨ᵣ z ↔ y * x ≤ z := by
+theorem rres_le_iff_mul_le {x y z : α} : x ≤ y ⇨ᵣ z ↔ y * x ≤ z := by
   rw [rightResiduation];
   constructor
   · intro h1
