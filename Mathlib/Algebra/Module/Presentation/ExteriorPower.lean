@@ -18,6 +18,8 @@ universe w
 
 namespace Function
 
+section
+
 variable {ι α : Type*} [DecidableEq ι]
 
 lemma update_comp (f : ι → α) (i : ι) (x : α) {β : Type*} (g : α → β) :
@@ -66,6 +68,85 @@ lemma swapValues_apply (hi : k ≠ i) (hj : k ≠ j) :
 lemma swapValues_comp {β : Type*} (g : α → β) :
     swapValues (g.comp f) i j = g ∘ swapValues f i j := by
   simp only [swapValues_eq_update_update, comp_apply, ← update_comp]
+end
+
+section
+
+variable {ι : Type*} [DecidableEq ι] {M : ι → Type*} {i₀ i₁ : ι} (hi : i₀ ≠ i₁)
+  (f : ∀ (i : ({i₀, i₁}ᶜ : Set ι)), M i) (x₀ : M i₀) (x₁ : M i₁)
+
+
+def extendComplPair (i : ι) : M i :=
+  extendComplSingleton _
+    (extendComplSingleton (ι := ({i₀}ᶜ : Set ι)) (M := fun j ↦ M j)
+      (i₀ := ⟨i₁, by simpa using hi.symm⟩) (fun ⟨j, hj⟩ ↦ f ⟨j, by
+        simp only [Set.mem_compl_iff, Set.mem_insert_iff, Set.mem_singleton_iff, not_or]
+        constructor
+        · simpa [-Subtype.coe_prop] using j.2
+        · obtain ⟨j, hj'⟩ := j
+          rw [Set.mem_compl_iff] at hj
+          intro hj''
+          obtain rfl : j = i₁ := by simpa using hj''
+          exact hj (Set.mem_singleton _)
+        ⟩) x₁) x₀ i
+
+@[simp]
+lemma extendComplPair_zero : extendComplPair hi f x₀ x₁ i₀ = x₀ := by
+  simp [extendComplPair]
+
+@[simp]
+lemma extendComplPair_one : extendComplPair hi f x₀ x₁ i₁ = x₁ := by
+  dsimp [extendComplPair]
+  rw [extendComplSingleton_of_neq _ _ _ _ hi.symm,
+    extendComplSingleton_self]
+
+lemma extendComplPair_of_neq (i : ι) (h₀ : i ≠ i₀) (h₁ : i ≠ i₁):
+    extendComplPair hi f x₀ x₁ i = f ⟨i, by
+      rw [Set.mem_compl_iff, Not, Set.mem_insert_iff, Set.mem_singleton_iff,
+        imp_false, not_or]
+      exact ⟨h₀, h₁⟩⟩ := by
+  dsimp [extendComplPair]
+  rw [extendComplSingleton_of_neq _ _ _ _ h₀,
+    extendComplSingleton_of_neq _ _ _ _ (by simpa using h₁)]
+
+@[simp]
+lemma extendComplPair_restriction (φ : ∀ i, M i) :
+    extendComplPair hi (fun i ↦ φ i) (φ i₀) (φ i₁) = φ := by
+  ext i
+  by_cases h₀ : i = i₀
+  · subst h₀
+    simp
+  · by_cases h₁ : i = i₁
+    · subst h₁
+      simp
+    · rw [extendComplPair_of_neq _ _ _ _ _ h₀ h₁]
+
+lemma extendComplPair_comp {α : Type*} (f : ({i₀, i₁}ᶜ : Set ι) → α) {β : Type*} (g : α → β)
+    (x₀ x₁ : α) :
+    extendComplPair (M := fun _ ↦ β) hi (g.comp f) (g x₀) (g x₁) =
+      g ∘ extendComplPair (M := fun _ ↦ α) hi f x₀ x₁ := by
+  ext i
+  by_cases h₀ : i = i₀
+  · subst h₀
+    simp
+  · by_cases h₁ : i = i₁
+    · subst h₁
+      simp
+    · simp [extendComplPair_of_neq _ _ _ _ _ h₀ h₁]
+
+lemma swapValues_extendComplPair {α : Type*} (f : ({i₀, i₁}ᶜ : Set ι) → α) (x₀ x₁ : α):
+    swapValues (extendComplPair hi f x₀ x₁) i₀ i₁ = extendComplPair hi f x₁ x₀ := by
+  ext i
+  by_cases h₀ : i = i₀
+  · subst h₀
+    simp
+  · by_cases h₁ : i = i₁
+    · subst h₁
+      simp
+    · rw [swapValues_apply _ _ _ _ h₀ h₁, extendComplPair_of_neq _ _ _ _ _ h₀ h₁,
+        extendComplPair_of_neq _ _ _ _ _ h₀ h₁]
+
+end
 
 end Function
 
@@ -113,35 +194,60 @@ lemma LinearMap.alternating_of_generators {R M N : Type*} [CommRing R] [AddCommG
 namespace MultilinearMap
 
 variable {R : Type*} [CommRing R]
-    {ι : Type*}
+    {ι : Type*} [DecidableEq ι]
     {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
     {N : Type*} [AddCommGroup N] [Module R N]
     (f : MultilinearMap R M N) {i j : ι} (hij : i ≠ j)
 
 def curry₂ :
-    M i →ₗ[R] M j →ₗ[R] MultilinearMap R (fun (k : ({i, j}ᶜ : Set ι)) ↦ M k) N := by
-  have := hij
-  have := f
-  sorry
+    M i →ₗ[R] M j →ₗ[R] MultilinearMap R (fun (k : ({i, j}ᶜ : Set ι)) ↦ M k) N where
+  toFun := fun mi ↦
+    { toFun := fun mj ↦
+        { toFun := fun m ↦ f (extendComplPair hij m mi mj)
+          map_update_add' := sorry
+          map_update_smul' := sorry }
+      map_add' := by
+        sorry
+      map_smul' := sorry }
+  map_add' := sorry
+  map_smul' := sorry
 
-lemma curry₂_apply (v : (i : ι) → M i) :
+lemma curry₂_apply (mi : M i) (mj : M j) (v : (k : ({i, j}ᶜ : Set ι)) → M k) :
+    curry₂ f hij mi mj v = f (extendComplPair hij v mi mj) :=
+  rfl
+
+lemma curry₂_apply_restriction (v : (i : ι) → M i) :
     curry₂ f hij (v i) (v j) (fun k ↦ v k) = f v := by
-  sorry
+  simp [curry₂]
 
 variable [DecidableEq ι]
 lemma map_eq_zero_of_eq_of_generators {R M N : Type*} [CommRing R] [AddCommGroup M]
-    [Module R M] [AddCommGroup N] [Module R N] {ι : Type*} [DecidableEq ι]
+    [Module R M] [AddCommGroup N] [Module R N] {ι : Type*} [DecidableEq ι] [Finite ι]
     (f : MultilinearMap R (fun (_ : ι) ↦ M) N) {γ : Type*} {g : γ → M}
     (hg : Submodule.span R (Set.range g) = ⊤)
-    {i j : ι} (hij : i ≠ j) (hf₁ : ∀ (k : ι → γ) (hk : k i = k j), f (g ∘ k) = 0)
+    {i j : ι} (hij : i ≠ j) (hf₁ : ∀ (k : ι → γ) (_ : k i = k j), f (g ∘ k) = 0)
     (hf₂ : ∀ (k : ι → γ), f (swapValues (g ∘ k) i j) = -f (g ∘ k))
     (v : ι → M) (hv : v i = v j) :
     f v = 0 := by
-  rw [← curry₂_apply _ hij, ← hv]
+  rw [← curry₂_apply_restriction _ hij, ← hv]
   rw [LinearMap.alternating_of_generators (curry₂ f hij) hg, zero_apply]
   · intro k
-    sorry
-  · sorry
+    apply MultilinearMap.ext_of_span_eq_top (hg := fun _ ↦ hg)
+    intro g'
+    dsimp
+    rw [curry₂_apply]
+    have := hf₁ (extendComplPair (hi := hij) (M := fun _ ↦ γ) g' k k) (by simp)
+    rw [← extendComplPair_comp] at this
+    exact this
+  · intro k₁ k₂
+    apply MultilinearMap.ext_of_span_eq_top (hg := fun _ ↦ hg)
+    intro g'
+    dsimp
+    have := hf₂ (extendComplPair (hi := hij) (M := fun _ ↦ γ) g' k₁ k₂)
+    rw [swapValues_comp, swapValues_extendComplPair,
+      ← extendComplPair_comp, ← extendComplPair_comp] at this
+    rw [curry₂_apply, curry₂_apply]
+    exact this
 
 end MultilinearMap
 
