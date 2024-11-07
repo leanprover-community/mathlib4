@@ -36,7 +36,7 @@ jobs:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: set variable
-        run: printf $'TITLE<<EEE\nthis is free text containing\nmyself merge\nEEE' >> "$GITHUB_ENV"
+        run: printf $'TITLE<<EEE\nthis is free text containing\nmyself delegate\nEEE' >> "$GITHUB_ENV"
 
       - name: Form the message
         id: merge_or_delegate
@@ -48,7 +48,8 @@ jobs:
           if printf '%s\n' "${TITLE}" | grep "^myself merge"
           then
             printf $'title<<EOF\n%s\nEOF' "This message was a merge" >> "${GITHUB_OUTPUT}"
-          else
+          elif printf '%s\n' "${TITLE}" | grep "^myself delegate"
+          then
             printf $'title<<EOF\n%s\nEOF' "This message was a delegate" >> "${GITHUB_OUTPUT}"
           fi
       #- name: Send message on Zulip
