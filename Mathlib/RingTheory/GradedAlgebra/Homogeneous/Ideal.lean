@@ -68,7 +68,7 @@ abbrev HomogeneousIdeal := HomogeneousSubmodule 𝒜 𝒜
 variable {𝒜}
 
 /-- Converting a homogeneous ideal to an ideal. -/
-def HomogeneousIdeal.toIdeal (I : HomogeneousIdeal 𝒜) : Ideal A :=
+abbrev HomogeneousIdeal.toIdeal (I : HomogeneousIdeal 𝒜) : Ideal A :=
   I.toSubmodule
 
 theorem HomogeneousIdeal.isHomogeneous (I : HomogeneousIdeal 𝒜) : I.toIdeal.IsHomogeneous 𝒜 :=
