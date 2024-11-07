@@ -38,7 +38,8 @@ jobs:
       - name: Form the message
         id: merge_or_delegate
         env:
-          TITLE: ${{ github.event.pull_request.title }}
+          TITLE: 'this is free text containing
+myself merge' #${{ github.event.pull_request.title }}
         run: |
           echo "${TITLE}"
       #- name: Send message on Zulip
