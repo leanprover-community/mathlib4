@@ -88,6 +88,8 @@ structure varsTracker where
   seen : NameSet := {}
   /-- The map from unique names of variables to the corresponding syntax node. -/
   dict : NameMap Syntax := {}
+  /-- The map from unique names of variables to the corresponding pretty-printed expression. -/
+  defDict : NameMap Format := {}
   deriving Inhabited
 
 /-- A `varsTracker` is empty if its constituents are empty. -/
@@ -137,6 +139,11 @@ def usedVarsRef.addDict (a : Name) (ref : Syntax) : IO Unit := do
     if varTrack.dict.contains a then varTrack
     else {varTrack with dict := varTrack.dict.insert a ref}
 
+def usedVarsRef.addDefDict (a : Name) (ref : Format) : IO Unit := do
+  usedVarsRef.modify fun varTrack =>
+    if varTrack.defDict.contains a then varTrack
+    else {varTrack with defDict := varTrack.defDict.insert a ref}
+
 /--
 `includedVariables plumb` returns the unique `Name`, the user `Name` and the `Expr` of
 each `variable` that is present in the current context.
@@ -146,7 +153,7 @@ from the local context.
 Finally, the `Bool`ean `plumb` decides whether or not `includedVariables` also extends the
 `NameSet` of variables that have been used in some declaration.
 -/
-def includedVariables (plumb : Bool) : TermElabM (Array (Name × Name × Expr)) := do
+def includedVariables (def? : Bool) (plumb : Bool) : TermElabM (Array (Name × Name × Expr)) := do
   let c ← read
   let fvs := c.sectionFVars
   let mut varIds := #[]
@@ -154,7 +161,10 @@ def includedVariables (plumb : Bool) : TermElabM (Array (Name × Name × Expr)) 
   for (a, b) in fvs do
     let ref ← getRef
     if (lctx.findFVar? b).isNone then
-      usedVarsRef.addDict a ref
+      if def? then
+        usedVarsRef.addDefDict a (← Meta.ppExpr (← Meta.inferType b))
+      else
+        usedVarsRef.addDict a ref
     if (lctx.findFVar? b).isSome then
       let mut fd := .anonymous
       for (x, y) in c.sectionVars do
@@ -171,8 +181,8 @@ The variant `included_variables plumb` is intended only for the internal use of 
 unused variable command linter: besides printing the message, `plumb` also adds records that
 the variables included in the current declaration really are included.
 -/
-elab "included_variables" plumb:(ppSpace &"plumb")? : tactic => do
-    let (_plb, usedUserIds) := (← includedVariables plumb.isSome).unzip
+elab "included_variables" dd:(ppSpace "!")? plumb:(ppSpace &"plumb")? : tactic => do
+    let (_plb, usedUserIds) := (← includedVariables dd.isSome plumb.isSome).unzip
     let msgs ← usedUserIds.mapM fun (userName, expr) =>
       return m!"'{userName}' of type '{← Meta.inferType expr}'"
     if ! msgs.isEmpty then
