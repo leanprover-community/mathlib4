@@ -44,16 +44,16 @@ lemma odd_of_odd {n : ℕ} [NeZero n] (hn : Odd n) (k : Fin n) : Odd k := by
   · intro hk
     exact odd_of_val hk
 
-lemma even_val_iff_of_even {n : ℕ} (hn : Even n) {k : Fin n} : Even k.val ↔ Even k := by
+lemma even_iff_of_even {n : ℕ} (hn : Even n) {k : Fin n} : Even k ↔ Even k.val := by
   rcases hn with ⟨n, rfl⟩
-  refine ⟨even_of_val, ?_⟩
+  refine ⟨?_, even_of_val⟩
   rintro ⟨l, rfl⟩
   rw [val_add_eq_ite]
   split_ifs with h <;> simp [Nat.even_sub, *]
 
-lemma odd_val_iff_of_even {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : Odd k.val ↔ Odd k := by
+lemma odd_iff_of_even {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : Odd k ↔ Odd k.val := by
   rcases hn with ⟨n, rfl⟩
-  refine ⟨odd_of_val, ?_⟩
+  refine ⟨?_, odd_of_val⟩
   rintro ⟨l, rfl⟩
   match l.val.lt_or_ge n with
   | Or.inl hl =>
@@ -75,7 +75,7 @@ lemma odd_val_iff_of_even {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : Odd k
         exact (Nat.one_mod_eq_one.mpr n.add_self_ne_one).symm
       · rw [one_val_cast  (Nat.one_lt_of_ne_zero_of_even (NeZero.ne (n + n)) hnn)]
         refine Nat.add_one_lt_of_even
-          ((even_val_iff_of_even hnn).mpr (even_add_self l)) hnn ?_
+          ((even_iff_of_even hnn).mp (even_add_self l)) hnn ?_
         fin_omega
     rw [← hxl]
     exact odd_two_mul_add_one x
@@ -85,7 +85,7 @@ otherwise an element is even iff its `Fin.val` value is even. -/
 lemma even_iff {n : ℕ} {k : Fin n} : Even k ↔ (Odd n ∨ Even k.val) := by
   refine ⟨fun hk ↦ ?_, or_imp.mpr ⟨(even_of_odd · k), even_of_val⟩⟩
   rw [← Nat.not_even_iff_odd, ← imp_iff_not_or]
-  exact fun hn ↦ (even_val_iff_of_even hn).mpr hk
+  exact fun hn ↦ (even_iff_of_even hn).mp hk
 
 /-- A variation of the above lemma -/
 lemma even_iff' {n : ℕ} {k : Fin n} : Even k ↔ (Even n → Even k.val) := by
@@ -97,7 +97,7 @@ otherwise an element is off iff its `Fin.val` value is off. -/
 lemma odd_iff {n : ℕ} [NeZero n] {k : Fin n} : Odd k ↔ Odd n ∨ Odd k.val := by
   refine ⟨fun hk ↦ ?_, or_imp.mpr ⟨(odd_of_odd · k), odd_of_val⟩⟩
   rw [← Nat.not_even_iff_odd, ← imp_iff_not_or]
-  exact fun hn ↦ (odd_val_iff_of_even hn).mpr hk
+  exact fun hn ↦ (odd_iff_of_even hn).mp hk
 
 /-- A variation of the above lemma -/
 lemma odd_iff' {n : ℕ} [NeZero n] {k : Fin n} : Odd k ↔ (Even n → Odd k.val) := by
