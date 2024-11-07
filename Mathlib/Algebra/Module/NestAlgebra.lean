@@ -7,6 +7,7 @@ Authors: Christopher Hoskin
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Order.CompleteSublattice
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Nest algebras
@@ -20,10 +21,20 @@ instance test : CompleteLattice (Submodule R M) := Submodule.completeLattice
 
 --variable (N : CompleteSublattice (Submodule R M)) [LinearOrder N]
 
-/-
-structure Nest (N : CompleteSublattice (Submodule R M)) [LinearOrder N] where
+structure IsNest (N : CompleteSublattice (Submodule R M)) [LinearOrder N] where
   mem_bot: ⊥ ∈ N
   mem_top: ⊤ ∈ N
+
+variable {ι : Type*} [LinearOrder ι] (bm : Basis ι R M)
+
+def Basis.toNest : Set (Submodule R M) :=
+  Set.range (fun i => sInf { p | bm '' Set.Iio i ⊆ p }) ∪ {⊤}
+
+/-
+structure nest extends  CompleteSublattice (Submodule R M) where
+  mem_bot: ⊥ ∈ carrier
+  mem_top: ⊤ ∈ carrier
+  lo: LinearOrder carrier
 -/
 
 /--
