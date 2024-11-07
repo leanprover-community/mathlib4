@@ -9,8 +9,6 @@ import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Zify
 import Mathlib.Data.Vector.Defs
-import Mathlib.Data.Vector.Basic
-import Mathlib.Data.Vector.Defs
 
 /-!
 

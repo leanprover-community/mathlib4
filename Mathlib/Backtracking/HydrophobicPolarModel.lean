@@ -8,7 +8,6 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Vector.Defs
 import Batteries.Data.List.Basic
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Data.Vector.Basic
 import Mathlib.Backtracking.HydrophobicPolarModelBasic
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
@@ -121,7 +120,9 @@ def morf_list {b₀ b₁ : ℕ} (f : Fin b₀ → Fin b₁) (v : List (Fin b₀)
 /-- finished March 8, 2024 -/
 theorem morf_len {b₀ b₁ : ℕ} (f : Fin b₀ → Fin b₁) (l : List (Fin b₀)) :
     (morf_list f l).length = l.length := by
-  induction l; unfold morf_list; rfl; unfold morf_list; repeat (rw [List.length_cons])
+  induction l
+  · rfl
+  unfold morf_list; repeat (rw [List.length_cons])
   simp
 
 /-- . -/
@@ -147,7 +148,9 @@ theorem pt_loc_of_embeds {α:Type} [DecidableEq α] {b₀ b₁ : ℕ}
            pt_loc go₁ fold a b phobic := by
   unfold pt_loc at *;
   simp only [Bool.and_eq_true, decide_eq_true_eq] at *;
-  constructor; tauto; exact nearby_of_embeds h_embed htri.2
+  constructor
+  · tauto
+  · exact nearby_of_embeds h_embed htri.2
 
 /-- . -/
 theorem pts_at_of_embeds' {α:Type} [DecidableEq α] {b₀ b₁ : ℕ}
@@ -588,8 +591,8 @@ theorem pts_earned_bound' {α: Type} [Zero α] [DecidableEq α] {b:ℕ}
     ∧ pts_tot' go ph (pathᵥ go moves) ≤ l * l.pred / 2) by
     exact Nat.le_min.mpr this
   constructor
-  exact pts_earned_bound_dir' ph moves path_inj right_inj left_inj
-  exact pts_earned_bound_loc'_improved go ph (pathᵥ go moves)
+  · exact pts_earned_bound_dir' ph moves path_inj right_inj left_inj
+  · exact pts_earned_bound_loc'_improved go ph (pathᵥ go moves)
 
 
 /-- . -/
@@ -699,7 +702,7 @@ theorem orderly_injective_helper₁ {β:Type} {k : ℕ} {x : (Fin k.succ) → β
   exists ⟨Nat.find hthis,fin_fin h⟩
   let h := (Nat.find_spec hthis).1
   constructor
-  exact h
+  · exact h
   constructor
   cases h₂ ⟨Nat.find hthis,fin_fi h⟩ h with
   |inl h_1 => exact h_1
@@ -832,22 +835,22 @@ theorem transform_of_embed {α:Type} [Zero α] {b₀ b₁ : ℕ}
     repeat (rw [path_cons])
     simp only [List.cons.injEq]
     constructor
-    let a := (Vector.head (path go₀ tail))
-    rw [h_embed head a]
-    have : path go₁ (morph f go₀ tail)
-      = ⟨(path go₀ tail).1,(by rw [morph_len]; exact (path go₀ tail).2)⟩ :=
-      Vector.eq _ _ (by unfold Vector.toList; rw [← tail_ih])
-    rw [this]
-    have hau: ∃ a u, path go₀ tail = a ::ᵥ u := Vector.exists_eq_cons (path go₀ tail)
-    have : Vector.head ⟨
-      (path go₀ tail).1, by
-        show (path go₀ tail).1.length = (morph f go₀ tail).length.succ
-        rw [morph_len]; exact (path go₀ tail).2
-      ⟩ = Vector.head (path go₀ tail) := by
-      obtain ⟨a,ha⟩ := hau
-      obtain ⟨u,hu⟩ := ha
-      rw [hu]; simp only [Vector.cons_val, Vector.head_cons]; rfl
-    · exact congr_arg _ this
+    · let a := (Vector.head (path go₀ tail))
+      rw [h_embed head a]
+      have : path go₁ (morph f go₀ tail)
+        = ⟨(path go₀ tail).1,(by rw [morph_len]; exact (path go₀ tail).2)⟩ :=
+        Vector.eq _ _ (by unfold Vector.toList; rw [← tail_ih])
+      rw [this]
+      have hau: ∃ a u, path go₀ tail = a ::ᵥ u := Vector.exists_eq_cons (path go₀ tail)
+      have : Vector.head ⟨
+        (path go₀ tail).1, by
+          show (path go₀ tail).1.length = (morph f go₀ tail).length.succ
+          rw [morph_len]; exact (path go₀ tail).2
+        ⟩ = Vector.head (path go₀ tail) := by
+        obtain ⟨a,ha⟩ := hau
+        obtain ⟨u,hu⟩ := ha
+        rw [hu]; simp only [Vector.cons_val, Vector.head_cons]; rfl
+      · exact congr_arg _ this
     · rw [tail_ih]
 
 /-- . -/

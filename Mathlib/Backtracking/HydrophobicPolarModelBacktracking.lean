@@ -9,7 +9,6 @@ import Mathlib.Backtracking.BacktrackingVerification
 import Mathlib.Data.Vector.Defs
 import Batteries.Data.List.Basic
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Data.Vector.Basic
 import Mathlib.Backtracking.HydrophobicPolarModel
 import Mathlib.Tactic.FinCases
 /-!
@@ -135,8 +134,8 @@ theorem rotate_basic (u : ℤ × ℤ) (c: Fin 4) :
   unfold rotate rect
   simp only [neg_add_rev]
   apply Prod.ext
-  rw [Int.add_comm]
-  fin_cases c <;> (simp only [Prod.fst_add, add_right_inj]; decide)
+  · rw [Int.add_comm]
+    fin_cases c <;> (simp only [Prod.fst_add, add_right_inj]; decide)
   fin_cases c <;> (simp only [Prod.snd_add, add_right_inj]; decide)
 
 /-- . -/
@@ -169,19 +168,19 @@ theorem trafo_preserves_nearby_converse {u v : ℤ × ℤ} {trafo : ℤ×ℤ →
 theorem rotateIndex_surjective : Function.Surjective rotateIndex := by
   intro b
   fin_cases b
-  use 3;rfl
-  use 2;rfl
-  use 0;rfl
-  use 1;rfl
+  · use 3;rfl
+  · use 2;rfl
+  · use 0;rfl
+  · use 1;rfl
 
 /-- . -/
 theorem reflectIndex_surjective : Function.Surjective reflectIndex := by
   intro b
   fin_cases b
-  use 0;rfl
-  use 1;rfl
-  use 3;rfl
-  use 2;rfl
+  · use 0;rfl
+  · use 1;rfl
+  · use 3;rfl
+  · use 2;rfl
 
 /-- . -/
 theorem rotate_injective : Function.Injective rotate := by
@@ -281,7 +280,7 @@ lemma reflect_morf_list (moves: List (Fin 4)) (k : Fin (path rect moves).length)
     reflect ((path rect                  moves ).get  k) =
     (path rect (morf_list reflectIndex moves)).get ⟨k.1, ref_length₀_morf moves k⟩ := by
   induction moves with
-  |nil => have : k = 0 := Fin.ext (Fin.coe_fin_one k);rw [this];rfl
+  |nil => have : k = 0 := Fin.ext (Fin.val_eq_zero k);rw [this];rfl
   |cons hd tl tail_ih =>
     rw [path_cons_vec]
     by_cases h : k = 0
@@ -306,7 +305,7 @@ lemma reflect_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
              (path rect (morph (fun a _ => reflectIndex a) rect moves)).get
              ⟨k.1, ref_length₀ moves k⟩ := by
   induction moves with
-  | nil => (have : k = 0 := Fin.ext (Fin.coe_fin_one k));subst this;rfl
+  | nil => (have : k = 0 := Fin.ext (Fin.val_eq_zero k));subst this;rfl
   | cons hd tl tail_ih =>
     rw [path_cons_vec]
     by_cases h : k = 0
@@ -328,7 +327,7 @@ lemma rotate_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
             (path rect (morph (fun a _ => rotateIndex a) rect moves)).get
             ⟨k.1, rot_length₀ moves k⟩ := by
   induction moves with
-  | nil => (have : k = 0 := Fin.ext (Fin.coe_fin_one k));subst this;rfl
+  | nil => (have : k = 0 := Fin.ext (Fin.val_eq_zero k));subst this;rfl
   | cons hd tl tail_ih =>
     rw [path_cons_vec]
     by_cases h : k = 0
@@ -564,9 +563,11 @@ theorem towards_orderly {l : ℕ} (ph : Vector Bool l.succ.succ) (moves : Vector
       simp only [Vector.get_zero] at Q;rw [Q]
 
     · constructor
-      · intro j₁ hj₁;by_cases h : j₁ < j;let Q := hj.1 j₁ h
+      · intro j₁ hj₁
+        by_cases h : j₁ < j
+        · let Q := hj.1 j₁ h
         -- now it's easy using morf
-        · cases Q with
+          cases Q with
           |inl h_1 =>
             intro hc;unfold morf at hc; simp only [Vector.get_map] at hc;
             rw [h_1] at hc
@@ -627,8 +628,8 @@ def pts_tot'_list_rev' {b:ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ) (ph : List
           rw [List.length_reverse]
           simp_rw [h]
           rw [path_len' go _ moves]
-          exact h
-          rfl
+          · exact h
+          · rfl
         )⟩) (fun _ ↦ 0)
 
 /-- . -/
@@ -916,8 +917,8 @@ theorem goodFolds_monotone (go: Fin 4 → ℤ×ℤ→ℤ×ℤ) {l :ℕ} (ph₀ p
     change (InjectivePath₅ go (ph₁.1) p).Q w.1
     unfold InjectivePath₅ at T
     constructor
-    exact hp
-    simp_all
+    · exact hp
+    · simp_all
   · simp_all
 
 /--

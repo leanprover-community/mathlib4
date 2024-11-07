@@ -6,7 +6,6 @@ Authors: Bjørn Kjos-Hanssen
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Vector.Defs
 import Batteries.Data.List.Basic
-import Mathlib.Data.Vector.Basic
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Tactic.Ring
@@ -450,7 +449,7 @@ theorem tri_rect_embedding_left_injective :
     | 0 => tauto
     | 1 =>
       show  ¬ (0 % 4 : Fin 4) =  1 % 4
-      exact (bne_iff_ne (0 % 4) (1 % 4)).mp (by exact rfl)
+      exact ne_of_beq_false rfl
     | 2 =>
       show ¬0 = if Even (x.1 + x.2) then 2 else 3
       by_cases h : Even (x.1+x.2)
@@ -462,7 +461,7 @@ theorem tri_rect_embedding_left_injective :
     | 1 => tauto
     | 0 =>
       show  ¬ (1 % 4 : Fin 4) =  0 % 4
-      exact (bne_iff_ne (1 % 4) (0 % 4)).mp (by exact rfl)
+      exact ne_of_beq_false rfl
     | 2 =>
       show  ¬1 = if Even (x.1 + x.2) then 2 else 3
       by_cases h : Even (x.1+x.2)
@@ -574,14 +573,24 @@ exact match a with
   | 2 => by
     show go_A x ≠ go_WS x;
     unfold go_A go_WS sp sm;
-    by_cases h:(Even (x.1 + x.2)); rw [if_pos h]; simp; rw [if_neg h]; simp
+    by_cases h:(Even (x.1 + x.2))
+    · rw [if_pos h]
+      simp
+    · rw [if_neg h]
+      simp
 | 2 => match b with
   | 0 => by
     show go_WS x   ≠ go_D x; unfold go_WS go_D sp sm;
-    by_cases h:(Even (x.1 + x.2)); rw [if_pos h]; simp; rw [if_neg h]; simp
+    by_cases h:(Even (x.1 + x.2))
+    · rw [if_pos h]
+      simp
+    · rw [if_neg h]
+      simp
   | 1 => by
     show go_WS x   ≠ go_A x; unfold go_WS go_A sm sp;
-    by_cases h:(Even (x.1 + x.2)); rw [if_pos h]; simp; rw [if_neg h]; simp
+    by_cases h:(Even (x.1 + x.2))
+    · rw [if_pos h]; simp
+    · rw [if_neg h]; simp
   | 2 => by tauto
 
 /-- `rectMap` is injective. -/

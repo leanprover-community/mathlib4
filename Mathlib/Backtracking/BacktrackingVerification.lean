@@ -83,9 +83,8 @@ lemma still_holds {b L z: ℕ } {M: MonoPred b} {w: Gap b (Nat.succ L) (Nat.succ
 lemma if_replicate {b : ℕ} (P : Fin b → Prop) (c : Fin b → ℕ) [DecidablePred P]
     (h : ∀ a, ¬ P a):
     List.ofFn (fun a ↦ if P a then c a else 0) = List.replicate b 0 :=
-  List.eq_replicate.mpr (by
-    simp only [List.length_ofFn, List.forall_mem_ofFn_iff,
-    ite_eq_else, true_and];tauto)
+  List.eq_replicate_iff.mpr (by
+    simp only [List.length_ofFn, List.forall_mem_ofFn_iff, ite_eq_right_iff, true_and];tauto)
 
 /-- Simplifying a gap defined by a vacuous `ite`. -/
 lemma if_replicate₀ {b L : ℕ} {M : MonoPred b} [DecidablePred M.P] [DecidablePred M.Q]
@@ -370,13 +369,14 @@ theorem branch_out_set (b:ℕ) {n L : ℕ} {M : MonoPred b} [DecidablePred M.P]
       apply Finset.ext; intro v; constructor;
       · simp only [Finset.mem_biUnion, Finset.mem_univ, true_and,
           Finset.not_mem_empty, forall_exists_index, imp_false]
-        intro hv;
-        split_ifs with h₀
+        intro hv
+        obtain ⟨a,ha⟩ := hv
+        split_ifs at * with h₀
         · have := still_holds h₀
           tauto
         · have := still_holds h₀
           tauto
-        · simp
+        · simp at ha
       · simp
 
 /-- Gap is a fintype. -/
@@ -426,7 +426,7 @@ theorem verify_those_with_suffix {k b :ℕ} {L:ℕ} (bound : k ≤ L.succ) {M:Mo
     unfold satisfy_and_have_suffix
     simp only [Nat.zero_eq, Nat.sub_zero, filter_congr_decidable]
     split_ifs with h
-    exact filter_suffix_singleton h
+    · exact filter_suffix_singleton h
     symm
     exact filter_suffix_empty h
 
