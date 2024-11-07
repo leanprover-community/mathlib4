@@ -44,12 +44,15 @@ and `M` is an `R`-module.
 consider `R : J ⥤ CommRingCat` and `M : J ⥤ AddCommGrp`, then `colimit M` is both a
 `colimit R`-module and a `colimit (R ⋙ forget₂ CommRingCat RingCat)`-module; the two module
 structures are virtually the same. This situation manifests in stalks of sheaves of modules:
-for any ringed space `X` and a sheaf of `𝒪_X`-module `ℳ`, we want to think the stalk `ℳₓ` as an
+for any scheme `X` and a sheaf of `𝒪_X`-module `ℳ`, we want to think the stalk `ℳₓ` as an
 `𝒪_{X,x}`-module. But since `PresheafOfModules` requires a presheaf of `RingCat` not `CommRingCat`,
-we need to compose the sheaf with forgetful functors, but we don't want to think about the
-difference between `𝒪_{X, x}` as a colimit in `CommRing` and `𝒪_{X, x}` as a colimit in `RingCat`
-all the time. So we ask `R` and `M` to be functors into concrete categories which behaves like rings
-and abelian groups respectively.
+`𝒪_{X,x}` can mean two things in Lean:
+1. `TopCat.Presheaf.stalk X.presheaf x` or
+2. `TopCat.Presheaf.stsalk X.ringCatSheaf.presheaf x`
+The module sturectures of `ℳₓ` over both interpretations are the same. Thus instead of choosing a
+category, we work in some concrete categories that behaves like `RingCat` and `AddCommGrp`.
+For example if `ℳ` is an `𝒪_X`-algebras, this setup is still valid and can be extended to give an
+algebra instance.
 
 2. Other than `Module.overFilteredColimits.{moduleColimitColimit, smul_spec}`, everything else in
 this namespace is implementation details and is probably not very useful.
