@@ -389,6 +389,9 @@ lemma Spec.map_app (U) :
 lemma Spec.map_appLE {U V} (e : U ≤ Spec.map f ⁻¹ᵁ V) :
     (Spec.map f).appLE V U e = StructureSheaf.comap f V U e := rfl
 
+instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
+  inferInstanceAs <| Nonempty (PrimeSpectrum A)
+
 end
 
 namespace Scheme
