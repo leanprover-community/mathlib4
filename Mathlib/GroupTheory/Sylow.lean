@@ -396,8 +396,9 @@ theorem card_sylow_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
   ((congr_arg _ (card_sylow_eq_index_normalizer P)).mp dvd_rfl).trans
     (index_dvd_of_le le_normalizer)
 
-theorem not_dvd_index_sylow' [hp : Fact p.Prime] (P : Sylow p G) [(P : Subgroup G).Normal]
-    [fP : FiniteIndex (P : Subgroup G)] : ¬p ∣ (P : Subgroup G).index := by
+/-- Auxilliary lemma for `Sylow.not_dvd_index` which is strictly stronger. -/
+private theorem Sylow.not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
+    [P.FiniteIndex] : ¬ p ∣ P.index := by
   intro h
   rw [index_eq_card (P : Subgroup G)] at h
   obtain ⟨x, hx⟩ := exists_prime_orderOf_dvd_card' (G := G ⧸ (P : Subgroup G)) p h
@@ -413,14 +414,26 @@ theorem not_dvd_index_sylow' [hp : Fact p.Prime] (P : Sylow p G) [(P : Subgroup 
     QuotientGroup.ker_mk'] at hp
   exact hp.ne' (P.3 hQ hp.le)
 
-theorem not_dvd_index_sylow [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
-    (hP : relindex ↑P (P : Subgroup G).normalizer ≠ 0) : ¬p ∣ (P : Subgroup G).index := by
+/-- A Sylow p-subgroup has index indivisible by `p`, assuming [N(P) : P] < ∞. -/
+theorem Sylow.not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
+    (hP : P.relindex P.normalizer ≠ 0) : ¬ p ∣ P.index := by
   rw [← relindex_mul_index le_normalizer, ← card_sylow_eq_index_normalizer]
   haveI : (P.subtype le_normalizer : Subgroup (P : Subgroup G).normalizer).Normal :=
     Subgroup.normal_in_normalizer
   haveI : FiniteIndex ↑(P.subtype le_normalizer : Subgroup (P : Subgroup G).normalizer) := ⟨hP⟩
-  replace hP := not_dvd_index_sylow' (P.subtype le_normalizer)
+  replace hP := not_dvd_index_aux (P.subtype le_normalizer)
   exact hp.1.not_dvd_mul hP (not_dvd_card_sylow p G)
+
+@[deprecated (since := "2024-11-03")]
+alias not_dvd_index_sylow := Sylow.not_dvd_index'
+
+/-- A Sylow p-subgroup has index indivisible by `p`. -/
+theorem Sylow.not_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) [P.FiniteIndex] :
+    ¬ p ∣ P.index :=
+  P.not_dvd_index' Nat.card_pos.ne'
+
+@[deprecated (since := "2024-11-03")]
+alias not_dvd_index_sylow' := Sylow.not_dvd_index
 
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
   of `N`, then `N_G(P) ⊔ N = G`. -/
@@ -636,8 +649,7 @@ lemma exists_subgroup_le_card_le {k p : ℕ} (hp : p.Prime) (h : IsPGroup p G) {
 theorem pow_dvd_card_of_pow_dvd_card [Finite G] {p n : ℕ} [hp : Fact p.Prime] (P : Sylow p G)
     (hdvd : p ^ n ∣ Nat.card G) : p ^ n ∣ Nat.card P := by
   rw [← index_mul_card P.1] at hdvd
-  exact (hp.1.coprime_pow_of_not_dvd
-    (not_dvd_index_sylow P index_ne_zero_of_finite)).symm.dvd_of_dvd_mul_left hdvd
+  exact (hp.1.coprime_pow_of_not_dvd P.not_dvd_index).symm.dvd_of_dvd_mul_left hdvd
 
 theorem dvd_card_of_dvd_card [Finite G] {p : ℕ} [Fact p.Prime] (P : Sylow p G)
     (hdvd : p ∣ Nat.card G) : p ∣ Nat.card P := by
@@ -649,7 +661,7 @@ theorem dvd_card_of_dvd_card [Finite G] {p : ℕ} [Fact p.Prime] (P : Sylow p G)
 theorem card_coprime_index [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G) :
     (Nat.card P).Coprime (index (P : Subgroup G)) :=
   let ⟨_n, hn⟩ := IsPGroup.iff_card.mp P.2
-  hn.symm ▸ (hp.1.coprime_pow_of_not_dvd (not_dvd_index_sylow P index_ne_zero_of_finite)).symm
+  hn.symm ▸ (hp.1.coprime_pow_of_not_dvd P.not_dvd_index).symm
 
 theorem ne_bot_of_dvd_card [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G)
     (hdvd : p ∣ Nat.card G) : (P : Subgroup G) ≠ ⊥ := by
