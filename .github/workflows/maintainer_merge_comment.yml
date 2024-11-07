@@ -68,7 +68,7 @@ jobs:
       - name: Add comment to PR
         uses: GrantBirki/comment@v2
         with:
-          issue-number: ${{ github.event.issue.number }}
+          issue-number: 18736 # ${{ github.event.issue.number }}
           body: |
             🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}.
             ${{ steps.merge_or_delegate.outputs.title }}
