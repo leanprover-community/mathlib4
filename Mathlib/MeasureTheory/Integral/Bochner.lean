@@ -1221,13 +1221,13 @@ lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   let F' : α → ℝ≥0∞ := fun a ↦ ENNReal.ofReal (F a - f 0 a)
   have hf'_int_eq : ∀ i, ∫⁻ a, f' i a ∂μ = ENNReal.ofReal (∫ a, f i a ∂μ - ∫ a, f 0 a ∂μ) := by
     intro i
-    unfold_let f'
+    unfold f'
     rw [← ofReal_integral_eq_lintegral_ofReal, integral_sub (hf_int i) (hf_int 0)]
     · exact (hf_int i).sub (hf_int 0)
     · filter_upwards [hf_mono] with a h_mono
       simp [h_mono (zero_le i)]
   have hF'_int_eq : ∫⁻ a, F' a ∂μ = ENNReal.ofReal (∫ a, F a ∂μ - ∫ a, f 0 a ∂μ) := by
-    unfold_let F'
+    unfold F'
     rw [← ofReal_integral_eq_lintegral_ofReal, integral_sub hF_int (hf_int 0)]
     · exact hF_int.sub (hf_int 0)
     · filter_upwards [hf_bound] with a h_bound
@@ -1251,13 +1251,13 @@ lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   · exact ((lintegral_ofReal_le_lintegral_nnnorm _).trans_lt (hF_int.sub (hf_int 0)).2).ne
   filter_upwards [h, hf_mono, hf_bound] with a ha ha_mono ha_bound
   have h1 : (fun i ↦ f i a) = fun i ↦ (f' i a).toReal + f 0 a := by
-    unfold_let f'
+    unfold f'
     ext i
     rw [ENNReal.toReal_ofReal]
     · abel
     · simp [ha_mono (zero_le i)]
   have h2 : F a = (F' a).toReal + f 0 a := by
-    unfold_let F'
+    unfold F'
     rw [ENNReal.toReal_ofReal]
     · abel
     · simp [ha_bound 0]
