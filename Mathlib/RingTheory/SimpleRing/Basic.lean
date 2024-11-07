@@ -93,7 +93,7 @@ lemma injective_ringHom_or_subsingleton_codomain
       rwa [TwoSidedIdeal.mem_ker, map_one, eq_comm] at mem)
 
 -- Implementation note: the following lemma **cannot** replace `RingHom.Injective` even though all
--- division rings are simple. For `RingHom.Injective` works when the target is a semiring.
+-- division rings are simple. For `RingHom.injective` works when the target is a semiring.
 lemma injective_ringHom
     {R S : Type*} [NonAssocRing R] [IsSimpleRing R] [NonAssocRing S] [Nontrivial S]
     (f : R →+* S) : Function.Injective f :=
