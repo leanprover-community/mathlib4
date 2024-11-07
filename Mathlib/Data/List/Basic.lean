@@ -838,33 +838,15 @@ theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0
 
 end deprecated
 
-theorem modifyTailIdx_modifyTailIdx {f g : List α → List α} (m : ℕ) :
-    ∀ (n) (l : List α),
-      (l.modifyTailIdx f n).modifyTailIdx g (m + n) =
-        l.modifyTailIdx (fun l => (f l).modifyTailIdx g m) n
-  | 0, _ => rfl
-  | _ + 1, [] => rfl
-  | n + 1, a :: l => congr_arg (List.cons a) (modifyTailIdx_modifyTailIdx m n l)
-
-@[deprecated (since := "2024-10-21")]
-alias modifyNthTail_modifyNthTail := modifyTailIdx_modifyTailIdx
-
-theorem modifyTailIdx_modifyTailIdx_le {f g : List α → List α} (m n : ℕ) (l : List α)
-    (h : n ≤ m) :
-    (l.modifyTailIdx f n).modifyTailIdx g m =
-      l.modifyTailIdx (fun l => (f l).modifyTailIdx g (m - n)) n := by
-  rcases Nat.exists_eq_add_of_le h with ⟨m, rfl⟩
-  rw [Nat.add_comm, modifyTailIdx_modifyTailIdx, Nat.add_sub_cancel]
-
 @[deprecated (since := "2024-10-21")]
 alias modifyNthTail_modifyNthTail_le := modifyTailIdx_modifyTailIdx_le
 
-theorem modifyTailIdx_modifyTailIdx_same {f g : List α → List α} (n : ℕ) (l : List α) :
-    (l.modifyTailIdx f n).modifyTailIdx g n = l.modifyTailIdx (g ∘ f) n := by
-  rw [modifyTailIdx_modifyTailIdx_le n n l (le_refl n), Nat.sub_self]; rfl
+theorem modifyTailIdx_modifyTailIdx_self {f g : List α → List α} (n : ℕ) (l : List α) :
+    (l.modifyTailIdx f n).modifyTailIdx g n = l.modifyTailIdx (g ∘ f) n :=
+  modifyTailIdx_modifyTailIdx_eq n l
 
 @[deprecated (since := "2024-10-21")]
-alias modifyNthTail_modifyNthTail_same := modifyTailIdx_modifyTailIdx_same
+alias modifyNthTail_modifyNthTail_same := modifyTailIdx_modifyTailIdx_self
 @[deprecated (since := "2024-05-04")] alias removeNth_eq_nthTail := eraseIdx_eq_modifyTailIdx
 
 @[deprecated (since := "2024-10-21")] alias modifyNth_eq_set := modify_eq_set
