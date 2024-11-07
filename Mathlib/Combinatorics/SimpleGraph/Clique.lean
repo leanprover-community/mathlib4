@@ -330,7 +330,7 @@ theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n �
     simp [CliqueFree, show ∃ (_ : β), True from ⟨f (Classical.arbitrary _), trivial⟩]
   simp [CliqueFree, isNClique_map_iff hlt]
 
-/-- See `SimpleGraph.IsCliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
+/-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
   by_contra h
   refine Nat.lt_le_asymm hc ?_
