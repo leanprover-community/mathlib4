@@ -45,13 +45,13 @@ lemma isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
       exact hA k f g h.1 h.2
     else
       left
-      simp only [Function.Injective, not_and_or, not_forall, ← ne_eq] at h
-      obtain ⟨i, j, hfij, hij⟩ | ⟨i, j, hrij, hij⟩ := h
+      simp_rw [not_and_or, Function.not_injective_iff] at h
+      obtain ⟨i, j, hfij, hij⟩ | ⟨i, j, hgij, hij⟩ := h
       · rw [← det_transpose, transpose_submatrix]
         apply det_zero_of_column_eq hij.symm
         simp [hfij]
       · apply det_zero_of_column_eq hij
-        simp [hrij]
+        simp [hgij]
   · intro _ _ _ _ _
     apply hA
 
