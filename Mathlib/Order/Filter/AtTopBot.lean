@@ -294,36 +294,6 @@ lemma atTop_countable_basis [Countable α] :
     HasCountableBasis (atTop : Filter α) (fun _ => True) Ici :=
   { atTop_basis with countable := to_countable _ }
 
-section comap
-
-/-- Explicit form of the inverse image of the `atTop` filter. -/
-lemma mem_comap_atTop_iff_exists_forall_le {f : β → α} {s : Set β} :
-    s ∈ comap f atTop ↔ ∃ a, ∀ b, a ≤ f b → b ∈ s := by
-  simp only [mem_comap', mem_atTop_sets]
-  exact ⟨fun ⟨a, h⟩ ↦ ⟨a, fun b hb ↦ h _ hb rfl⟩, fun ⟨a, h⟩ ↦ ⟨a, fun c hc b hb ↦ h b (hb ▸ hc)⟩⟩
-
-/-- Explicit form of the inverse image of the `atTop` filter. -/
-lemma mem_comap_atTop_iff_exists_forall_lt [NoMaxOrder α] {f : β → α} {s : Set β} :
-    s ∈ comap f atTop ↔ ∃ a, ∀ b, a < f b → b ∈ s := by
-  simp only [mem_comap', mem_atTop_sets]
-  refine ⟨fun ⟨a, h⟩ ↦ ⟨a, fun b hb ↦ h _ hb.le rfl⟩, fun ⟨a, h⟩ ↦ ?_⟩
-  obtain ⟨c, hc⟩ := exists_gt a
-  exact ⟨c, fun d hd b hb ↦ h _ <| hb ▸ (hc.trans_le hd)⟩
-
-/-- Explicit form of the inverse image of the `atBot` filter. -/
-lemma mem_comap_atBot_iff_exists_forall_ge {α : Type*} [Preorder α]
-    [IsDirected α fun x1 x2 ↦ x1 ≥ x2] [Nonempty α] {f : β → α} {s : Set β} :
-    s ∈ comap f atBot ↔ ∃ b, ∀ a, f a ≤ b → a ∈ s :=
-  mem_comap_atTop_iff_exists_forall_le (α := αᵒᵈ)
-
-/-- Explicit form of the inverse image of the `atBot` filter. -/
-lemma mem_comap_atBot_iff_exists_forall_gt {α : Type*} [Preorder α] [NoMinOrder α]
-    [IsDirected α fun x1 x2 ↦ x1 ≥ x2] [Nonempty α] {f : β → α} {s : Set β} :
-    s ∈ comap f atBot ↔ ∃ b, ∀ a, f a < b → a ∈ s :=
-  mem_comap_atTop_iff_exists_forall_lt (α := αᵒᵈ)
-
-end comap
-
 end IsDirected
 
 section IsCodirected
