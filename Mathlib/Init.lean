@@ -32,5 +32,4 @@ All linters imported here have no bulk imports;
 - the text-based linters in `Linters/TextBased.lean`, as they can be imported later
 - the `minImports` linter, as that is still disabled by default.
 - the `haveLet` linter, as it is currently disabled by default
-
 -/
