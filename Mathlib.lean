@@ -2978,7 +2978,7 @@ import Mathlib.GroupTheory.Divisible
 import Mathlib.GroupTheory.DoubleCoset
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.Exponent
-import Mathlib.GroupTheory.FiniteAbelian
+import Mathlib.GroupTheory.FiniteAbelian.Basic
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.FixedPointFree
 import Mathlib.GroupTheory.Frattini
