@@ -38,11 +38,10 @@ jobs:
       - name: Form the message
         id: merge_or_delegate
         env:
-          TITLE: 'this is free text containing
-myself merge' #${{ github.event.pull_request.title }}
+          TITLE: $'this is free text containing\nmyself merge' #${{ github.event.pull_request.title }}
         run: |
-          printf "${TITLE}"
-          printf "${TITLE}" | grep "^myself" || echo "not found"
+          printf '%s' "${TITLE}"
+          printf '%s' "${TITLE}" | grep "^myself" || echo "not found"
           printf $'title<<EOF\n%s\nEOF' "${TITLE}" >> "${GITHUB_OUTPUT}"
       #- name: Send message on Zulip
       #  uses: zulip/github-actions-zulip/send-message@v1
