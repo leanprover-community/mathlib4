@@ -544,7 +544,7 @@ theorem if_then_else_left {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
       (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).2 =
         f.comp (Embedding.eq_embed (congr_arg _ (if_then_else_left_struct f g h))):= by
   have h' : (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩) = ⟨A, f⟩ := by
-    simp [h]
+    simp only [h, ↓reduceIte]
   apply map_from_eq_dep_pair h'
 
 theorem if_then_else_right_struct {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
@@ -557,7 +557,7 @@ theorem if_then_else_right {A B C: K} {P : Prop} [Decidable P] (f : A ↪[L] C)
       (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩).2 =
         g.comp (Embedding.eq_embed (congr_arg _ (if_then_else_right_struct f g h))):= by
   have h' : (if P then (⟨A, f⟩ : (B : K) × (B ↪[L] C)) else ⟨B, g⟩) = ⟨B, g⟩ := by
-    simp [h]
+    simp only [h, ↓reduceIte]
   apply map_from_eq_dep_pair h'
 
 variable [Countable (Σ l, L.Functions l)] [Countable M] [Countable N]
@@ -630,7 +630,8 @@ theorem maps_system_same_step (m : ℕ) : maps_system K_fraisse (le_refl m)
   · rename_i m
     unfold maps_system
     simp_rw [init_system]
-    have u : ∀ (n : ℕ), ((n+1 ≤ n) = False) := by intro n; simp
+    have u : ∀ (n : ℕ), ((n+1 ≤ n) = False) := by intro n; simp only [add_le_iff_nonpos_right,
+      nonpos_iff_eq_zero, one_ne_zero]
     conv =>
       lhs
       congr
@@ -648,7 +649,8 @@ theorem maps_init_system_same_step (m : ℕ) : ((init_system K_fraisse m).2 m).2
   · rfl
   · rename_i m
     simp_rw [init_system]
-    have u : ∀ (n : ℕ), ((n+1 ≤ n) = False) := by intro n; simp
+    have u : ∀ (n : ℕ), ((n+1 ≤ n) = False) := by intro n; simp only [add_le_iff_nonpos_right,
+      nonpos_iff_eq_zero, one_ne_zero]
     conv =>
       lhs
       rw [if_then_else_right]
@@ -701,10 +703,10 @@ theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
       rfl
   | k+1 =>
       cases h'
-      · simp [maps_system_same_step]
+      · simp only [maps_system_same_step, Embedding.refl_comp]
       · rename_i h'
         rw [factorize_with_map_step, map_step, Embedding.comp_assoc,
-            transitive_maps_system h h', ←map_step, ←factorize_with_map_step]
+            transitive_maps_system h h', ← map_step, ← factorize_with_map_step]
 
 theorem map_step_is_extend_and_join (r : ℕ) :
     map_step K_fraisse r = ((extend_and_join K_fraisse (ess_surj_sequence K_fraisse (r+1))
@@ -713,8 +715,8 @@ theorem map_step_is_extend_and_join (r : ℕ) :
       (PartialEquiv.map_dom (((init_system K_fraisse r).2
         (Nat.unpair r).1).2) _ ▸ FG.map _ (FGEquiv_extended K_fraisse r).2)).2) := by
   rw [map_step, maps_system, init_system_map_decomposition]
-  · simp [Embedding.comp_assoc]
-    rw [←maps_system, maps_system_same_step, Embedding.comp_refl]
+  · simp only [PartialEquiv.map_dom, Embedding.comp_assoc, Embedding.eq_embed_trans]
+    rw [← maps_system, maps_system_same_step, Embedding.comp_refl]
   · rfl
 
 theorem all_fgequiv_extend {m : ℕ} : ∀ f : L.FGEquiv (system _ m) (system _ m),
@@ -722,8 +724,8 @@ theorem all_fgequiv_extend {m : ℕ} : ∀ f : L.FGEquiv (system _ m) (system _ 
   intro f
   let ⟨n, hn⟩ := sequence_FGEquiv_spec K_fraisse f
   let r := Nat.pair m n
-  have h_unpair_m : m = (Nat.unpair r).1 := by simp [r]
-  have h_unpair_n : n = (Nat.unpair r).2 := by simp [r]
+  have h_unpair_m : m = (Nat.unpair r).1 := by simp only [Nat.unpair_pair, r]
+  have h_unpair_n : n = (Nat.unpair r).2 := by simp only [Nat.unpair_pair, r]
   let f'' := FGEquiv_extended K_fraisse r
   clear_value r
   cases h_unpair_m
@@ -738,11 +740,11 @@ theorem all_fgequiv_extend {m : ℕ} : ∀ f : L.FGEquiv (system _ m) (system _ 
         (sequence_FGEquiv K_fraisse B (Nat.unpair r).2).val := by
       intro A B h
       cases h
-      simp
+      simp only [Embedding.refl_eq_embed, PartialEquiv.map_refl]
     exact H _ _ (system_eq K_fraisse (Nat.unpair_left_le r))
   use r+1
   use (Nat.unpair_left_le r).trans (Nat.le_add_right r 1)
-  rw [←transitive_maps_system K_fraisse (Nat.unpair_left_le r) (Nat.le_add_right r 1)]
+  rw [← transitive_maps_system K_fraisse (Nat.unpair_left_le r) (Nat.le_add_right r 1)]
   apply PartialEquiv.comp_is_extended_by
   have H : f'.map ((init_system _ r).2 (Nat.unpair r).1).2 =
       (sequence_FGEquiv K_fraisse (system K_fraisse (Nat.unpair r).1) (Nat.unpair r).2).1.map
@@ -750,7 +752,7 @@ theorem all_fgequiv_extend {m : ℕ} : ∀ f : L.FGEquiv (system _ m) (system _ 
       unfold_let f'
       rw [PartialEquiv.map_map]
       rfl
-  rw [←H, h_f'_f'', ←map_step, map_step_is_extend_and_join]
+  rw [← H, h_f'_f'', ← map_step, map_step_is_extend_and_join]
   unfold_let f''
   apply extend_and_join_spec_1
 
@@ -762,7 +764,7 @@ theorem contains_K : ∀ M ∈ K, ∃ n, Nonempty (M ↪[L] system K_fraisse n) 
   apply fun f ↦ Embedding.comp f g.toEmbedding
   cases n
   · trivial
-  · simp [system, init_system]
+  · simp only [system, init_system, Embedding.refl_eq_embed]
     apply Classical.choice
     apply extend_and_join_spec_2
 
@@ -777,49 +779,44 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
       fun i j h ↦ ⇑(maps_system K_fraisse h) := by
     constructor
     intro _ _ _
-    simp [maps_system_same_step]
+    simp only [Function.comp_apply, maps_system_same_step, Embedding.refl_apply]
     intro i j k hij hjk x
-    simp [←Embedding.comp_apply, transitive_maps_system]
+    simp only [Function.comp_apply, ← Embedding.comp_apply, transitive_maps_system]
   let M := DirectLimit (L := L) (Bundled.α ∘ Subtype.val ∘ system K_fraisse)
     (@maps_system _ _ K_fraisse _)
   use ⟨M, DirectLimit.instStructureDirectLimit ..⟩
   have M_c : Countable M := by
-    rw [←Structure.cg_iff_countable (L := L)]
+    rw [← Structure.cg_iff_countable (L := L)]
     apply DirectLimit.cg
-    simp [Function.comp_apply, Structure.cg_of_countable, implies_true]
+    simp only [Function.comp_apply, Structure.cg_of_countable, implies_true]
   use M_c
   let of : (n : ℕ) → (system K_fraisse n ↪[L] M) :=
     fun n ↦ DirectLimit.of L ℕ (Bundled.α ∘ Subtype.val ∘ system K_fraisse) _ n
   refine ⟨?_, ?_⟩
   · rw [isUltrahomogeneous_iff_IsExtensionPair Structure.cg_of_countable]
-    simp
     unfold IsExtensionPair
     intro ⟨f, f_fg⟩ m
     let A := f.dom ⊔ f.cod ⊔ (closure L {m})
     let A_fg : A.FG := FG.sup (FG.sup f_fg (f.dom_fg_iff_cod_fg.1 f_fg)) (fg_closure_singleton m)
     let ⟨n, A', hA'⟩ := DirectLimit.exists_fg_substructure_in_Sigma A A_fg
     have in_range : f.dom ⊔ f.cod ⊔ (closure L {m}) ≤ (of n).toHom.range := by
-      show A ≤ _
-      rw [←hA']
+      unfold_let A at hA'
+      rw [← hA']
       exact Hom.map_le_range
     let ⟨f',f'_map⟩ := (PartialEquiv.exists_preimage_map_iff (of n) f).2
       (le_sup_left.trans in_range)
     have f'_fg : f'.dom.FG := by
       apply FG.of_map_embedding (of n)
-      rwa [←PartialEquiv.map_dom, f'_map]
+      rwa [← PartialEquiv.map_dom, f'_map]
     have H : f'.is_extended_by (of n) := by
       let ⟨m, hnm, f'_extended⟩ := all_fgequiv_extend K_fraisse ⟨f', f'_fg⟩
       unfold_let of
-      simp
-      rw [←DirectLimit.of_comp_f (hij := hnm)]
+      simp only
+      rw [← DirectLimit.of_comp_f (hij := hnm)]
       exact PartialEquiv.is_extended_by_comp _ _ _ f'_extended
     let ⟨g', map_f'_le, range_le_g'⟩ := H
     let g := g'.domRestrict (in_range.trans range_le_g')
-    have g_fg : g.dom.FG := by
-      unfold_let g
-      unfold PartialEquiv.domRestrict
-      simpa
-    have f_le_g : (⟨f, f_fg⟩ : FGEquiv L M M) ≤ ⟨g, g_fg⟩ := by
+    have f_le_g : (⟨f, f_fg⟩ : FGEquiv L M M) ≤ ⟨g, A_fg⟩ := by
       rw [Subtype.mk_le_mk]
       apply PartialEquiv.le_domRestrict
       exact le_sup_left.trans le_sup_left
@@ -828,11 +825,11 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
     have m_in_dom : m ∈ g.dom := by
       unfold_let g
       unfold PartialEquiv.domRestrict
-      simp
-      rw [←closure_eq f.dom, ←closure_eq f.cod, ←closure_union, ←closure_union]
+      simp only
+      rw [← closure_eq f.dom, ← closure_eq f.cod, ← closure_union, ← closure_union]
       apply subset_closure
       exact mem_union_right (f.dom ∪ (f.cod : Set M)) rfl
-    use ⟨g, g_fg⟩
+    use ⟨g, A_fg⟩
   · rw [age_directLimit]
     apply Set.ext
     intro S
