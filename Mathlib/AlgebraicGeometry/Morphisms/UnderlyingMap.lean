@@ -17,7 +17,7 @@ of the underlying map of topological spaces, including
 - `Surjective`
 - `IsOpenMap`
 - `IsClosedMap`
-- `Embedding`
+- `IsEmbedding`
 - `IsOpenEmbedding`
 - `IsClosedEmbedding`
 - `DenseRange` (`IsDominant`)
@@ -105,15 +105,15 @@ instance isClosedMap_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedMa
 
 end IsClosedMap
 
-section Embedding
+section IsEmbedding
 
-instance : (topologically Embedding).RespectsIso :=
-  topologically_respectsIso _ (fun e ↦ e.embedding) (fun _ _ hf hg ↦ hg.comp hf)
+instance : (topologically IsEmbedding).RespectsIso :=
+  topologically_respectsIso _ (fun e ↦ e.isEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance embedding_isLocalAtTarget : IsLocalAtTarget (topologically Embedding) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ ↦ embedding_iff_embedding_of_iSup_eq_top
+instance isEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsEmbedding) :=
+  topologically_isLocalAtTarget' _ fun _ _ _ ↦ isEmbedding_iff_of_iSup_eq_top
 
-end Embedding
+end IsEmbedding
 
 section IsOpenEmbedding
 
@@ -175,6 +175,19 @@ instance IsDominant.isLocalAtTarget : IsLocalAtTarget @IsDominant :=
     dominant_eq_topologically ▸ IsDominant.respectsIso
   dominant_eq_topologically ▸ topologically_isLocalAtTarget' DenseRange
     fun _ _ _ hU _ ↦ denseRange_iff_denseRange_of_iSup_eq_top hU
+
+lemma surjective_of_isDominant_of_isClosed_range (f : X ⟶ Y) [IsDominant f]
+    (hf : IsClosed (Set.range f.base)) :
+    Surjective f :=
+  ⟨by rw [← Set.range_iff_surjective, ← hf.closure_eq, f.denseRange.closure_range]⟩
+
+lemma IsDominant.of_comp_of_isOpenImmersion
+    (f : X ⟶ Y) (g : Y ⟶ Z) [H : IsDominant (f ≫ g)] [IsOpenImmersion g] :
+    IsDominant f := by
+  rw [isDominant_iff, DenseRange] at H ⊢
+  simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp] at H
+  convert H.preimage g.isOpenEmbedding.isOpenMap using 1
+  rw [Set.preimage_image_eq _ g.isOpenEmbedding.inj]
 
 end IsDominant
 

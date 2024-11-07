@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
-# Limit preservation properties of `functor.op` and related constructions
+# Limit preservation properties of `Functor.op` and related constructions
 
 We formulate conditions about `F` which imply that `F.op`, `F.unop`, `F.leftOp` and `F.rightOp`
 preserve certain (co)limits.

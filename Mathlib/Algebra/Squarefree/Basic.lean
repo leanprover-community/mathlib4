@@ -42,7 +42,6 @@ theorem IsRelPrime.of_squarefree_mul [CommMonoid R] {m n : R} (h : Squarefree (m
 theorem IsUnit.squarefree [CommMonoid R] {x : R} (h : IsUnit x) : Squarefree x := fun _ hdvd =>
   isUnit_of_mul_isUnit_left (isUnit_of_dvd_unit hdvd h)
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem squarefree_one [CommMonoid R] : Squarefree (1 : R) :=
   isUnit_one.squarefree
 

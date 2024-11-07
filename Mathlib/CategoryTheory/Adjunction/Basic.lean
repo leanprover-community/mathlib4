@@ -161,7 +161,9 @@ def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
     rw [F.map_comp, assoc, ← Functor.comp_map, adj.counit.naturality, ← assoc]
     simp
   right_inv := fun g => by
-    simp [← assoc, ← Functor.comp_map, ← adj.unit.naturality, assoc]
+    simp only [Functor.comp_obj, Functor.map_comp]
+    rw [← assoc, ← Functor.comp_map, ← adj.unit.naturality]
+    simp
 
 alias homEquiv_unit := homEquiv_apply
 alias homEquiv_counit := homEquiv_symm_apply

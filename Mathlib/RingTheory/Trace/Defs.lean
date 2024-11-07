@@ -42,11 +42,11 @@ For now, the definitions assume `S` is commutative, so the choice doesn't matter
 -/
 
 
-universe u v w z
+universe w
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra R T]
-variable {ι κ : Type w} [Fintype ι]
+variable {ι : Type w} [Fintype ι]
 
 open Module
 

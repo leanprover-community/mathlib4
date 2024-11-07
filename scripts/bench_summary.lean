@@ -80,9 +80,7 @@ def formatFile (file : String) : String := s!"`{file.dropWhile (!·.isAlpha)}`"
 ``| `file` | ±x.y⬝10⁹ | ±z.w% |`` (technically, without the spaces).
 -/
 def summary (bc : Bench) : String :=
-  let reldiff := bc.reldiff
-  let (sgnf : Float) := if reldiff < 0 then -1 else 1
-  let middle := [formatFile bc.file, formatDiff bc.diff, formatPercent (sgnf * reldiff)]
+  let middle := [formatFile bc.file, formatDiff bc.diff, formatPercent bc.reldiff]
   "|".intercalate (""::middle ++ [""])
 
 /--
@@ -188,7 +186,7 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
     { cmd := "curl"
       args := #[s!"http://speed.lean-fro.org/mathlib4/api/compare/{source}/to/{target}?all_values=true"] }
   let bench ← IO.Process.run curlSpeedCenter
-  IO.FS.writeFile tempFile bench
+  IO.FS.writeFile (tempFile ++ ".src") bench
   -- Extract all instruction changes whose magnitude is larger than `threshold`.
   let threshold := s!"{10 ^ 9}"
   let jq1 : IO.Process.SpawnArgs :=
@@ -196,8 +194,10 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
       args := #["-r", "--arg", "thr", threshold,
         ".differences | .[] | ($thr|tonumber) as $th |
         select(.dimension.metric == \"instructions\" and ((.diff >= $th) or (.diff <= -$th)))",
-        tempFile] }
+        (tempFile ++ ".src")] }
   let firstFilter ← IO.Process.run jq1
+  -- we leave `tempFile.src` unchanged and we switch to updating `tempfile`: this is useful for
+  -- debugging, as it preserves the original data downloaded from the speed-center
   IO.FS.writeFile tempFile firstFilter
   -- Write these in compact form, in the format suitable for `benchOutput`.
   let jq2 : IO.Process.SpawnArgs :=

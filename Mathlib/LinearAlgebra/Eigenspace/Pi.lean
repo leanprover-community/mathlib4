@@ -45,8 +45,7 @@ lemma _root_.Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo {μ : ι → R
       (⨅ i, maxGenEigenspace ((f i).restrict (hfp i)) (μ i)).map p.subtype := by
   cases isEmpty_or_nonempty ι
   · simp [iInf_of_isEmpty]
-  · simp_rw [inf_iInf, maxGenEigenspace_def, ((f _).genEigenspace _).mono.directed_le.inf_iSup_eq,
-      p.inf_genEigenspace _ (hfp _), ← Submodule.map_iSup, Submodule.map_iInf _ p.injective_subtype]
+  · simp_rw [inf_iInf, p.inf_genEigenspace _ (hfp _), Submodule.map_iInf _ p.injective_subtype]
 
 /-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
 distinguished index `i` whose maximal generalised `μ i`-eigenspace is invariant wrt every `f j`,
@@ -64,15 +63,17 @@ lemma iInf_maxGenEigenspace_restrict_map_subtype_eq
     refine le_antisymm ?_ inf_le_right
     simpa only [le_inf_iff, le_refl, and_true] using iInf_le _ _
   rw [Submodule.map_iInf _ p.injective_subtype, this, Submodule.inf_iInf]
-  simp_rw [maxGenEigenspace_def, Submodule.map_iSup,
-    ((f _).genEigenspace _).mono.directed_le.inf_iSup_eq, p.inf_genEigenspace (f _) (h _)]
+  conv_rhs =>
+    enter [1]
+    ext
+    rw [p.inf_genEigenspace (f _) (h _)]
 
 variable [NoZeroSMulDivisors R M]
 
 lemma disjoint_iInf_maxGenEigenspace {χ₁ χ₂ : ι → R} (h : χ₁ ≠ χ₂) :
     Disjoint (⨅ i, (f i).maxGenEigenspace (χ₁ i)) (⨅ i, (f i).maxGenEigenspace (χ₂ i)) := by
   obtain ⟨j, hj⟩ : ∃ j, χ₁ j ≠ χ₂ j := Function.ne_iff.mp h
-  exact (End.disjoint_unifEigenspace (f j) hj ⊤ ⊤).mono (iInf_le _ j) (iInf_le _ j)
+  exact (End.disjoint_genEigenspace (f j) hj ⊤ ⊤).mono (iInf_le _ j) (iInf_le _ j)
 
 lemma injOn_iInf_maxGenEigenspace :
     InjOn (fun χ : ι → R ↦ ⨅ i, (f i).maxGenEigenspace (χ i))
@@ -166,8 +167,7 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo [FiniteDimensional K M]
       apply ih _ (hy φ)
       · intro j k μ
         exact mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo (f j) (f k) _ _ (h j k μ)
-      · simp_rw [maxGenEigenspace_def] at h' ⊢
-        exact fun j ↦ Module.End.iSup_genEigenspace_restrict_eq_top _ (h' j)
+      · exact fun j ↦ Module.End.genEigenspace_restrict_eq_top _ (h' j)
       · rfl
     replace ih (φ : K) :
         ⨆ (χ : ι → K) (_ : χ i = φ), ⨅ j, maxGenEigenspace ((f j).restrict (hi j φ)) (χ j) = ⊤ := by
@@ -177,8 +177,7 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo [FiniteDimensional K M]
       rw [eq_bot_iff, ← ((f i).maxGenEigenspace φ).ker_subtype, LinearMap.ker,
         ← Submodule.map_le_iff_le_comap, ← Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo,
         ← disjoint_iff_inf_le]
-      simp_rw [maxGenEigenspace_def]
-      exact ((f i).disjoint_iSup_genEigenspace hχ.symm).mono_right (iInf_le _ i)
+      exact ((f i).disjoint_genEigenspace hχ.symm _ _).mono_right (iInf_le _ i)
     replace ih (φ : K) :
         ⨆ (χ : ι → K) (_ : χ i = φ), ⨅ j, maxGenEigenspace (f j) (χ j) =
         maxGenEigenspace (f i) φ := by

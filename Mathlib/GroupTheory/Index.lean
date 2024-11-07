@@ -9,6 +9,7 @@ import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Index of a Subgroup

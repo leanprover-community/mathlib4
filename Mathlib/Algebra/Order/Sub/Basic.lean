@@ -74,7 +74,7 @@ end AddLECancellable
 
 section Contra
 
-variable [ContravariantClass α α (· + ·) (· ≤ ·)]
+variable [AddLeftReflectLE α]
 
 theorem tsub_le_tsub_iff_left (h : c ≤ a) : a - b ≤ a - c ↔ c ≤ b :=
   Contravariant.AddLECancellable.tsub_le_tsub_iff_left Contravariant.AddLECancellable h
@@ -145,7 +145,7 @@ end AddLECancellable
 
 section Contra
 
-variable [ContravariantClass α α (· + ·) (· ≤ ·)]
+variable [AddLeftReflectLE α]
 
 /-- This lemma also holds for `ENNReal`, but we need a different proof for that. -/
 theorem tsub_lt_tsub_iff_right (h : c ≤ a) : a - c < b - c ↔ a < b :=
@@ -186,8 +186,7 @@ theorem tsub_add_min : a - b + min a b = a := by
   apply min_le_left
 
 -- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
-lemma Even.tsub
-    [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
+lemma Even.tsub [AddLeftReflectLE α] {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
   obtain ⟨b, rfl⟩ := hn

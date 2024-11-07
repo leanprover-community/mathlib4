@@ -5,7 +5,8 @@ Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.SingleObj
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # (Co)limits of functors out of `SingleObj M`
