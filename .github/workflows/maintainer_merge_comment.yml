@@ -41,13 +41,14 @@ jobs:
         env:
           BODY: ${{ github.event.comment.body }}
         run: |
-          if printf '%s\n' "${BODY}" | grep "^maintainer merge"
-          then
-            printf $'title<<EOF\n%s\nEOF' "${{ format('{0} requested a maintainer merge from comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}" >> "${GITHUB_OUTPUT}"
-          elif printf '%s\n' "${BODY}" | grep "^maintainer delegate"
-          then
-            printf $'title<<EOF\n%s\nEOF' "${{ format('{0} requested a maintainer delegate from comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}" >> "${GITHUB_OUTPUT}"
-          fi
+          ./scripts/maintainer_merge_message.sh "${BODY}" comment >> "${GITHUB_OUTPUT}"
+          #if printf '%s\n' "${BODY}" | grep "^maintainer merge"
+          #then
+          #  printf $'title<<EOF\n%s\nEOF' "${{ format('{0} requested a maintainer merge from comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}" >> "${GITHUB_OUTPUT}"
+          #elif printf '%s\n' "${BODY}" | grep "^maintainer delegate"
+          #then
+          #  printf $'title<<EOF\n%s\nEOF' "${{ format('{0} requested a maintainer delegate from comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}" >> "${GITHUB_OUTPUT}"
+          #fi
 
       - name: Send message on Zulip
         uses: zulip/github-actions-zulip/send-message@v1
