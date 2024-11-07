@@ -2076,6 +2076,7 @@ import Mathlib.Combinatorics.Additive.ErdosGinzburgZiv
 import Mathlib.Combinatorics.Additive.FreimanHom
 import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 import Mathlib.Combinatorics.Additive.RuzsaCovering
+import Mathlib.Combinatorics.Additive.SmallTripling
 import Mathlib.Combinatorics.Colex
 import Mathlib.Combinatorics.Configuration
 import Mathlib.Combinatorics.Derangements.Basic
