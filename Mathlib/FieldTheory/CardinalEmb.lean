@@ -64,9 +64,9 @@ universe u v
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
 
-namespace Field
+namespace Field.Emb
 
-namespace Emb.Cardinal
+namespace Cardinal
 
 noncomputable section
 
@@ -283,7 +283,7 @@ def equivLim : (E⟮<i⟯ →ₐ[F] Ē) ≃ limit (embFunctor F E) i where
       rw [((equivOfEq (eq_bot_of_not_nonempty hi h)).trans <| botEquiv F E).forall_congr_left]
       simp
   right_inv f := Subtype.ext <| funext fun j ↦ by
-    have : Nonempty _ := ⟨j⟩
+    have := Nonempty.intro j
     simp_rw [dif_pos this]
     apply Subalgebra.iSupLift_comp_inclusion
 
@@ -303,11 +303,11 @@ end Algebraic
 
 end
 
-end Emb.Cardinal
+end Cardinal
 
 variable {F E}
 
-theorem cardinal_emb_of_aleph0_le_rank_of_isSeparable [Algebra.IsSeparable F E]
+theorem cardinal_eq_two_pow_rank [Algebra.IsSeparable F E]
     (rank_inf : ℵ₀ ≤ Module.rank F E) : #(Field.Emb F E) = 2 ^ Module.rank F E := by
   haveI := Fact.mk rank_inf
   rw [Emb.Cardinal.embEquivPi.cardinal_eq, mk_pi]
@@ -318,27 +318,27 @@ theorem cardinal_emb_of_aleph0_le_rank_of_isSeparable [Algebra.IsSeparable F E]
   · conv_lhs => rw [← mk_ord_toType (Module.rank F E), ← prod_const']
     exact prod_le_prod _ _ Emb.Cardinal.two_le_deg
 
-theorem cardinal_emb_of_isSeparable [Algebra.IsSeparable F E] :
+theorem cardinal_eq_of_isSeparable [Algebra.IsSeparable F E] :
     #(Field.Emb F E) = (fun c ↦ if ℵ₀ ≤ c then 2 ^ c else c) (Module.rank F E) := by
   dsimp only; split_ifs with h
-  · exact cardinal_emb_of_aleph0_le_rank_of_isSeparable h
+  · exact cardinal_eq_two_pow_rank h
   rw [not_le, ← IsNoetherian.iff_rank_lt_aleph0] at h
   rw [← Module.finrank_eq_rank, ← toNat_eq_iff Module.finrank_pos.ne',
     ← Nat.card, ← finSepDegree, finSepDegree_eq_finrank_of_isSeparable]
 
-theorem cardinal_emb_separableClosure [Algebra.IsAlgebraic F E] :
+theorem cardinal_separableClosure [Algebra.IsAlgebraic F E] :
     #(Field.Emb F <| separableClosure F E) = #(Field.Emb F E) := by
   have := separableClosure.isPurelyInseparable F E
   rw [← (embProdEmbOfIsAlgebraic F (separableClosure F E) E).cardinal_eq,
     mk_prod, mk_eq_one (Emb _ E), lift_one, mul_one, lift_id]
 
-theorem cardinal_emb_of_aleph0_le_sepDegree [Algebra.IsAlgebraic F E]
+theorem cardinal_eq_two_pow_sepDegree [Algebra.IsAlgebraic F E]
     (rank_inf : ℵ₀ ≤ sepDegree F E) : #(Field.Emb F E) = 2 ^ sepDegree F E := by
-  rw [← cardinal_emb_separableClosure, cardinal_emb_of_aleph0_le_rank_of_isSeparable rank_inf]
+  rw [← cardinal_separableClosure, cardinal_eq_two_pow_rank rank_inf]
   rfl
 
-theorem cardinal_emb [Algebra.IsAlgebraic F E] :
+theorem cardinal_eq [Algebra.IsAlgebraic F E] :
     #(Field.Emb F E) = (fun c ↦ if ℵ₀ ≤ c then 2 ^ c else c) (sepDegree F E) := by
-  rw [← cardinal_emb_separableClosure, cardinal_emb_of_isSeparable]; rfl
+  rw [← cardinal_separableClosure, cardinal_eq_of_isSeparable]; rfl
 
-end Field
+end Field.Emb

@@ -33,7 +33,7 @@ This file contains basics about the separable degree of a field extension.
   will show that (`Field.finSepDegree_eq`), if `Field.Emb F E` is finite, then these two
   definitions coincide. If `E / F` is infinite and algebraic, we have
   `#(Field.Emb F E) = 2 ^ Field.sepDegree F E` instead.
-  (See `Field.cardinal_emb_of_aleph0_le_sepDegree` in another file.) For example, if
+  (See `Field.Emb.cardinal_eq_two_pow_sepDegree` in another file.) For example, if
   $F = \mathbb{Q}$ and $E = \mathbb{Q}( \mu_{p^\infty} )$, then $\operatorname{Emb}_F (E)$
   is in bijection with $\operatorname{Gal}(E/F)$, which is isomorphic to
   $\mathbb{Z}_p^\times$, which is uncountable, whereas $ [E:F] $ is countable.
