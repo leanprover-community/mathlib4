@@ -48,13 +48,18 @@ theorem adjoin_toSubfield :
 
 variable {S}
 
+theorem mem_adjoin_range_iff {ι : Type*} (i : ι → E) (x : E) :
+    x ∈ adjoin F (Set.range i) ↔ ∃ r s : MvPolynomial ι F,
+      x = MvPolynomial.aeval i r / MvPolynomial.aeval i s := by
+  simp_rw [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
+    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
+    Algebra.adjoin_range_eq_range_aeval, AlgHom.mem_range, exists_exists_eq_and]
+  tauto
+
 theorem mem_adjoin_iff (x : E) :
     x ∈ adjoin F S ↔ ∃ r s : MvPolynomial S F,
       x = MvPolynomial.aeval Subtype.val r / MvPolynomial.aeval Subtype.val s := by
-  simp only [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
-    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
-    Algebra.adjoin_eq_range, AlgHom.mem_range, exists_exists_eq_and]
-  tauto
+  rw [← mem_adjoin_range_iff, Subtype.range_coe]
 
 theorem mem_adjoin_simple_iff {α : E} (x : E) :
     x ∈ adjoin F {α} ↔ ∃ r s : F[X], x = aeval α r / aeval α s := by
@@ -1325,7 +1330,7 @@ theorem fg_adjoin_finset (t : Finset E) : (adjoin F (↑t : Set E)).FG :=
 theorem fg_def {S : IntermediateField F E} : S.FG ↔ ∃ t : Set E, Set.Finite t ∧ adjoin F t = S :=
   Iff.symm Set.exists_finite_iff_finset
 
-theorem fg_adjoin_finite {t : Set E} (h : Set.Finite t) : (adjoin F t).FG :=
+theorem fg_adjoin_of_finite {t : Set E} (h : Set.Finite t) : (adjoin F t).FG :=
   fg_def.mpr ⟨t, h, rfl⟩
 
 theorem fg_bot : (⊥ : IntermediateField F E).FG :=
@@ -1337,11 +1342,11 @@ theorem fg_sup {S T : IntermediateField F E} (hS : S.FG) (hT : T.FG) : (S ⊔ T)
   classical rw [← adjoin_union, ← Finset.coe_union]
   exact fg_adjoin_finset _
 
-theorem fg_iSup {ι} [Finite ι] {S : ι → IntermediateField F E} (h : ∀ i, (S i).FG) :
+theorem fg_iSup {ι : Sort*} [Finite ι] {S : ι → IntermediateField F E} (h : ∀ i, (S i).FG) :
     (⨆ i, S i).FG := by
   choose s hs using h
   simp_rw [← hs, ← adjoin_iUnion]
-  exact fg_adjoin_finite (Set.finite_iUnion fun _ ↦ Finset.finite_toSet _)
+  exact fg_adjoin_of_finite (Set.finite_iUnion fun _ ↦ Finset.finite_toSet _)
 
 theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG) : S.FG := by
   cases' h with t ht

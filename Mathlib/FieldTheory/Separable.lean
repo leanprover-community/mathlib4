@@ -8,6 +8,7 @@ import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.PowerBasis
+import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 
@@ -605,7 +606,7 @@ end AlgEquiv
 
 section IsScalarTower
 
-variable [Field L] [CommRing E] [Algebra F L]
+variable [Field L] [Ring E] [Algebra F L]
     [Algebra F E] [Algebra L E] [IsScalarTower F L E]
 
 /-- If `E / L / F` is a scalar tower and `x : E` is separable over `F`, then it's also separable
@@ -696,29 +697,45 @@ theorem Algebra.IsSeparable.of_algHom [Algebra.IsSeparable F E'] : Algebra.IsSep
 
 end
 
+namespace IntermediateField
+
+variable [Field K] [Algebra F K] (M : IntermediateField F K)
+
+instance isSeparable_tower_bot [Algebra.IsSeparable F K] : Algebra.IsSeparable F M :=
+  Algebra.isSeparable_tower_bot_of_isSeparable F M K
+
+instance isSeparable_tower_top [Algebra.IsSeparable F K] : Algebra.IsSeparable M K :=
+  Algebra.isSeparable_tower_top_of_isSeparable F M K
+
+end IntermediateField
+
 end Field
 
 section AlgEquiv
 
-variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
-    [Field A₂] [Field B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+open RingHom RingEquiv
+
+variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Ring B₁] [Field A₂] [Ring B₂]
+    [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
-include e₁ e₂ he
+include he
 
 lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) :=
   letI := e₁.toRingHom.toAlgebra
-  letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
-  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
-    (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
+  letI : Algebra A₂ B₁ :=
+    { (algebraMap A₁ B₁).comp e₁.symm.toRingHom with
+        smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
+        commutes' := fun r x ↦ (Algebra.commutes) (e₁.symm.toRingHom r) x
+        smul_def' := fun _ _ ↦ rfl }
+  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq <| fun x ↦
+      (algebraMap A₁ B₁).congr_arg <| id ((e₁.symm_apply_apply x).symm)
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
-      commutes' := fun r ↦ by
-        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm r) }
-  have := IsSeparable.tower_top A₂ h
-  IsSeparable.of_algHom e.symm ((e₂.symm_apply_apply x).symm ▸ this)
+      commutes' := fun x ↦ by
+        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm x) }
+  (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
 
-lemma Algebra.IsSeparable.of_equiv_equiv
-    [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
+lemma Algebra.IsSeparable.of_equiv_equiv [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
   ⟨fun x ↦ (e₂.apply_symm_apply x) ▸ _root_.IsSeparable.of_equiv_equiv e₁ e₂ he
     (Algebra.IsSeparable.isSeparable _ _)⟩
 

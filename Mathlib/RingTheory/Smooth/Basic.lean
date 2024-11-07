@@ -3,13 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.QuotientNilpotent
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.FinitePresentation
 import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.Ideal.Cotangent
+import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 

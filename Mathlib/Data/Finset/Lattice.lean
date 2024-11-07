@@ -130,6 +130,7 @@ theorem sup_ite (p : β → Prop) [DecidablePred p] :
     (s.sup fun i => ite (p i) (f i) (g i)) = (s.filter p).sup f ⊔ (s.filter fun i => ¬p i).sup g :=
   fold_ite _
 
+@[gcongr]
 theorem sup_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.sup f ≤ s.sup g :=
   Finset.sup_le fun b hb => le_trans (h b hb) (le_sup hb)
 
@@ -354,6 +355,7 @@ theorem inf_ite (p : β → Prop) [DecidablePred p] :
     (s.inf fun i ↦ ite (p i) (f i) (g i)) = (s.filter p).inf f ⊓ (s.filter fun i ↦ ¬ p i).inf g :=
   fold_ite _
 
+@[gcongr]
 theorem inf_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.inf f ≤ s.inf g :=
   Finset.le_inf fun b hb => le_trans (inf_le hb) (h b hb)
 
@@ -732,6 +734,10 @@ theorem le_sup' {b : β} (h : b ∈ s) : f b ≤ s.sup' ⟨b, h⟩ f :=
 theorem le_sup'_of_le {a : α} {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup' ⟨b, hb⟩ f :=
   h.trans <| le_sup' _ hb
 
+lemma sup'_eq_of_forall {a : α} (h : ∀ b ∈ s, f b = a) : s.sup' H f = a :=
+  le_antisymm (sup'_le _ _ (fun _ hb ↦ (h _ hb).le))
+    (le_sup'_of_le _ H.choose_spec (h _ H.choose_spec).ge)
+
 @[simp]
 theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a := by
   apply le_antisymm
@@ -801,7 +807,7 @@ theorem sup'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ 
     s.sup' H f = t.sup' (h₁ ▸ H) g := by
   subst s
   refine eq_of_forall_ge_iff fun c => ?_
-  simp (config := { contextual := true }) only [sup'_le_iff, h₂]
+  simp +contextual only [sup'_le_iff, h₂]
 
 theorem comp_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonempty) {f : β → α}
     (g : α → γ) (g_sup : ∀ x y, g (x ⊔ y) = g x ⊔ g y) : g (s.sup' H f) = s.sup' H (g ∘ f) := by
@@ -899,6 +905,9 @@ theorem inf'_le {b : β} (h : b ∈ s) : s.inf' ⟨b, h⟩ f ≤ f b :=
 
 theorem inf'_le_of_le {a : α} {b : β} (hb : b ∈ s) (h : f b ≤ a) :
     s.inf' ⟨b, hb⟩ f ≤ a := (inf'_le _ hb).trans h
+
+lemma inf'_eq_of_forall {a : α} (h : ∀ b ∈ s, f b = a) : s.inf' H f = a :=
+  sup'_eq_of_forall (α := αᵒᵈ) H f h
 
 @[simp]
 theorem inf'_const (a : α) : (s.inf' H fun _ => a) = a :=
@@ -1181,12 +1190,18 @@ theorem mem_sup {α β} [DecidableEq β] {s : Finset α} {f : α → Multiset β
 end Multiset
 
 namespace Finset
+variable [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α}
 
-theorem mem_sup {α β} [DecidableEq β] {s : Finset α} {f : α → Finset β} {x : β} :
-    x ∈ s.sup f ↔ ∃ v ∈ s, x ∈ f v := by
-  change _ ↔ ∃ v ∈ s, x ∈ (f v).val
-  rw [← Multiset.mem_sup, ← Multiset.mem_toFinset, sup_toFinset]
-  simp_rw [val_toFinset]
+set_option linter.docPrime false in
+@[simp] lemma mem_sup' (hs) : a ∈ s.sup' hs f ↔ ∃ i ∈ s, a ∈ f i := by
+  induction' hs using Nonempty.cons_induction <;> simp [*]
+
+set_option linter.docPrime false in
+@[simp] lemma mem_inf' (hs) : a ∈ s.inf' hs f ↔ ∀ i ∈ s, a ∈ f i := by
+  induction' hs using Nonempty.cons_induction <;> simp [*]
+
+@[simp] lemma mem_sup : a ∈ s.sup f ↔ ∃ i ∈ s, a ∈ f i := by
+  induction' s using cons_induction <;> simp [*]
 
 theorem sup_eq_biUnion {α β} [DecidableEq β] (s : Finset α) (t : α → Finset β) :
     s.sup t = s.biUnion t := by
@@ -1194,14 +1209,14 @@ theorem sup_eq_biUnion {α β} [DecidableEq β] (s : Finset α) (t : α → Fins
   rw [mem_sup, mem_biUnion]
 
 @[simp]
-theorem sup_singleton'' [DecidableEq α] (s : Finset β) (f : β → α) :
+theorem sup_singleton'' (s : Finset β) (f : β → α) :
     (s.sup fun b => {f b}) = s.image f := by
   ext a
   rw [mem_sup, mem_image]
   simp only [mem_singleton, eq_comm]
 
 @[simp]
-theorem sup_singleton' [DecidableEq α] (s : Finset α) : s.sup singleton = s :=
+theorem sup_singleton' (s : Finset α) : s.sup singleton = s :=
   (s.sup_singleton'' _).trans image_id
 
 end Finset

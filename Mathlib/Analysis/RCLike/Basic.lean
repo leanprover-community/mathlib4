@@ -39,7 +39,7 @@ in `Mathlib/Data/Nat/Cast/Defs.lean`. See also Note [coercion into rings] for mo
 In addition, several lemmas need to be set at priority 900 to make sure that they do not override
 their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter errors).
 
-A few lemmas requiring heavier imports are in `Mathlib/Data/RCLike/Lemmas.lean`.
+A few lemmas requiring heavier imports are in `Mathlib/Analysis/RCLike/Lemmas.lean`.
 -/
 
 open Fintype
