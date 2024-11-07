@@ -222,7 +222,7 @@ the binders and the expected type, to produce a new `theorem` using `mkThmCore`.
 This is the more "structured" sibling of `mkThm'`, that tries to handle the cases that slip through
 the cracks of the matching in `mkThm`.
 -/
-def mkThm {m} [Monad m] [MonadQuotation m] [MonadRef m] (stx : Syntax) : m Syntax := do
+def mkThm {m} [Monad m] [MonadQuotation m] [MonadRef m] [MonadResolveName m] (stx : Syntax) : m (Syntax × Syntax) := do
   let fls := mkIdent `False
   let (id, hyps, typ) := ← match stx with
     | `($_:declModifiers abbrev $did:declId $as* : $t $_:declVal) =>
@@ -240,8 +240,14 @@ def mkThm {m} [Monad m] [MonadQuotation m] [MonadRef m] (stx : Syntax) : m Synta
       let exts ← es.getElems.mapM fun d => `(Term.instBinder| [$d])
       return (did, as.map (⟨·⟩) ++ exts.map (⟨·⟩), fls)
     | _ => return (default, #[], fls)
+  --let parts := match id.raw[0].getId with
+  --  | .str n1 str => (n1, str)
+  --  | _ => default
+  let rawName := id.raw[0]
+  let openHiding ← `(command| open $(mkIdent (← getCurrNamespace)) hiding $(⟨rawName⟩))
+  dbg_trace "parts: {openHiding}"
   let newNm := id.raw[0].getId ++ `sfx
-  mkThmCore (mkIdent newNm) hyps typ
+  return (← mkThmCore (mkIdent newNm) hyps typ, openHiding)
 
 /-- `getPropValue stx` assumes that `stx` is the syntax of some declaration and returns a
 `Prop`-valued `Syntax` term.
@@ -433,13 +439,17 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
       let s ← get
       let toFalse := mkIdent `toFalse
       let toThm : Syntax := if decl.isOfKind `lemma then lemmaToThm decl else decl
-      let renStx ← mkThm toThm
+      dbg_trace "reconstructing openHiding"
+      let (renStx, openHiding) ← mkThm toThm
       let newRStx : Syntax := stx.replaceM (m := Id)
         (if · == decl then return some renStx else return none)
-      elabCommand (← `(def $toFalse (S : Sort _) := False))
-      try elabCommand newRStx
-      catch _ => dbg_trace "caught something"
+      let ns ← getCurrNamespace
+      withScope (fun sc => {sc with currNamespace := .anonymous}) do
+        elabCommand (← `(def $toFalse (S : Sort _) := False))
+        try elabCommand newRStx
+        catch _ => dbg_trace "caught something"
       set s
+      logInfo m!"elaborating: {newRStx}\nnot elabor: {openHiding}"
       return
     let usedVarNames := ← do
       if #[``Command.instance, ``definition, ``Command.structure, ``Command.abbrev].contains
