@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Noetherian.Defs
 
 ## Main results
 
-* `IsNoetherianRing.isNilpotent_nilradical`:
+* `IsNoetherianRing.isNilpotent_nilradical`
 -/
 
 open IsNoetherian
