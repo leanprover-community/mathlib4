@@ -128,13 +128,13 @@ MulLeftMono and MulRightMono class definitions instead to obtain monotonicity th
 @[to_additive]
 instance : MulLeftMono α where
   elim := by
-    intro _ _ _ ; simp only; intro h
+    intro _ _ _; simp only; intro h
     rw [← left_eq_sup, ← mul_sup_eq_sup_mul, sup_of_le_left h]
 
 @[to_additive]
 instance : MulRightMono α where
   elim := by
-    intro _ _ _ ; simp only; intro h
+    intro _ _ _; simp only; intro h
     rw [← left_eq_sup, ← sup_mul_eq_sup_mul, sup_of_le_left h]
 
 end Quantale
