@@ -295,7 +295,7 @@ jobs:
           scripts/lean-pr-testing-comments.sh batteries
 
       - name: build lean4checker, but don't run it
-        if: ${{ (always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure') && contains(github.event.pull_request.changed_files || [], 'lean-toolchain') }}
+        if: ${{ (always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
