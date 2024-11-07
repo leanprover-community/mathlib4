@@ -37,7 +37,7 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
 -/
 
 
-universe u v w
+universe u v
 
 noncomputable section
 
@@ -47,8 +47,7 @@ open DirectSum TensorProduct
 
 open Set LinearMap Submodule
 
-variable {R : Type u} {M : Type v} {N : Type w}
-  [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type u} {N : Type v} [CommSemiring R]
 
 variable {σ : Type*}
 
@@ -228,6 +227,15 @@ lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
       Algebra.TensorProduct.tmul_pow, one_pow, hfa]
     nth_rw 2 [← mul_one a]
     rw [Algebra.TensorProduct.tmul_mul_tmul]
+
+lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
+    (aeval fun x ↦ (1 ⊗ₜ[R] f x : N ⊗[R] S)) p = 1 ⊗ₜ[R] (aeval f) p := by
+  induction' p using MvPolynomial.induction_on with a p q hp hq p i h
+  · simp only [map_C, algHom_C, Algebra.TensorProduct.algebraMap_apply,
+      RingHomCompTriple.comp_apply]
+    rw [← mul_one ((algebraMap R N) a), ← Algebra.smul_def, smul_tmul, Algebra.smul_def, mul_one]
+  · simp [hp, hq, tmul_add]
+  · simp [h]
 
 end Algebra
 

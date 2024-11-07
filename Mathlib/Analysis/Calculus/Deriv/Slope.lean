@@ -25,23 +25,20 @@ derivative, slope
 -/
 
 
-universe u v w
+universe u v
 
-noncomputable section
+open scoped Topology
 
-open Topology Filter TopologicalSpace
-open Filter Set
+open Filter TopologicalSpace Set
 
 section NormedField
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {f f₀ f₁ g : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
+variable {f : 𝕜 → F}
+variable {f' : F}
 variable {x : 𝕜}
-variable {s t : Set 𝕜}
-variable {L L₁ L₂ : Filter 𝕜}
+variable {s : Set 𝕜}
 
 /-- If the domain has dimension one, then Fréchet derivative is equivalent to the classical
 definition with a limit. In this version we have to take the limit along the subset `-{x}`,
@@ -147,6 +144,11 @@ theorem isSeparable_range_deriv [SeparableSpace 𝕜] (f : 𝕜 → F) :
     IsSeparable (range (deriv f)) := by
   rw [← derivWithin_univ]
   exact isSeparable_range_derivWithin _ _
+
+lemma HasDerivAt.continuousAt_div [DecidableEq 𝕜] {f : 𝕜 → 𝕜} {c a : 𝕜} (hf : HasDerivAt f a c) :
+    ContinuousAt (Function.update (fun x ↦ (f x - f c) / (x - c)) c a) c := by
+  rw [← slope_fun_def_field]
+  exact continuousAt_update_same.mpr <| hasDerivAt_iff_tendsto_slope.mp hf
 
 end NormedField
 

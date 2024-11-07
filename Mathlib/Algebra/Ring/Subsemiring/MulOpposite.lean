@@ -5,6 +5,7 @@ Authors: Jz Pan
 -/
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Ring.Subsemiring.Basic
+import Mathlib.Algebra.Ring.Opposite
 
 /-!
 
@@ -147,7 +148,7 @@ theorem op_closure (s : Set R) : (closure s).op = closure (MulOpposite.unop ⁻�
 
 theorem unop_closure (s : Set Rᵐᵒᵖ) : (closure s).unop = closure (MulOpposite.op ⁻¹' s) := by
   rw [← op_inj, op_unop, op_closure]
-  rfl
+  simp_rw [Set.preimage_preimage, MulOpposite.op_unop, Set.preimage_id']
 
 /-- Bijection between a subsemiring `S` and its opposite. -/
 @[simps!]

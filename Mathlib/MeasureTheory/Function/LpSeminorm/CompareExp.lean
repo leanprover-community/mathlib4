@@ -126,7 +126,7 @@ theorem eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteM
     _ < ∞ := by
       rw [ENNReal.mul_lt_top_iff]
       refine Or.inl ⟨hfq_lt_top, ENNReal.rpow_lt_top_of_nonneg ?_ (measure_ne_top μ Set.univ)⟩
-      rwa [le_sub_comm, sub_zero, one_div, one_div, inv_le_inv hq_pos hp_pos]
+      rwa [le_sub_comm, sub_zero, one_div, one_div, inv_le_inv₀ hq_pos hp_pos]
 
 @[deprecated (since := "2024-07-27")]
 alias snorm'_lt_top_of_snorm'_lt_top_of_exponent_le :=

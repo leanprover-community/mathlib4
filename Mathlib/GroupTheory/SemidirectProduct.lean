@@ -171,7 +171,7 @@ theorem rightHom_surjective : Function.Surjective (rightHom : N ⋊[φ] G → G)
   Function.surjective_iff_hasRightInverse.2 ⟨inr, rightHom_inr⟩
 
 theorem range_inl_eq_ker_rightHom : (inl : N →* N ⋊[φ] G).range = rightHom.ker :=
-  le_antisymm (fun _ ↦ by simp (config := { contextual := true }) [MonoidHom.mem_ker, eq_comm])
+  le_antisymm (fun _ ↦ by simp +contextual [MonoidHom.mem_ker, eq_comm])
     fun x hx ↦ ⟨x.left, by ext <;> simp_all [MonoidHom.mem_ker]⟩
 
 section lift

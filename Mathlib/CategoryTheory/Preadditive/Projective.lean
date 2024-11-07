@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Scott Morrison
+Authors: Markus Himmel, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Limits
@@ -92,8 +92,8 @@ instance zero_projective [HasZeroObject C] : Projective (0 : C) :=
 
 end
 
-theorem of_iso {P Q : C} (i : P ≅ Q) (hP : Projective P) : Projective Q where
-  factors f e e_epi :=
+theorem of_iso {P Q : C} (i : P ≅ Q) (_ : Projective P) : Projective Q where
+  factors f e _ :=
     let ⟨f', hf'⟩ := Projective.factors (i.hom ≫ f) e
     ⟨i.inv ≫ f', by simp [hf']⟩
 

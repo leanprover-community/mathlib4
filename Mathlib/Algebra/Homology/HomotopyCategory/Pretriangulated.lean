@@ -323,13 +323,11 @@ noncomputable def shiftTriangleIso (n : ℤ) :
       Triangle.mk_obj₂, Triangle.mk_mor₁, Preadditive.smul_iso_hom, Iso.refl_hom,
       Linear.comp_smul, comp_id, smul_smul, Int.units_coe_mul_self, one_smul, id_comp]
   · ext p
-    set_option tactic.skipAssignedInstances false in
     dsimp
     simp only [Units.smul_def, shiftIso, Int.reduceNeg, Linear.smul_comp, id_comp,
       ext_to_iff _ _ (p + 1) rfl, shiftFunctor_obj_X', assoc, lift_f_fst_v, Cocycle.coe_smul,
       Cocycle.shift_coe, Cochain.smul_v, Cochain.shift_v', Linear.comp_smul, inr_f_fst_v,
       smul_zero, lift_f_snd_v, inr_f_snd_v, and_true]
-    rw [smul_zero]
   · ext p
     dsimp
     simp only [triangle, Triangle.mk_mor₃, Cocycle.homOf_f, Cocycle.rightShift_coe,
