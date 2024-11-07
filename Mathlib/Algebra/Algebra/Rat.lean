@@ -52,7 +52,8 @@ instance _root_.DivisionSemiring.toNNRatAlgebra : Algebra ℚ≥0 R where
   toRingHom := castHom _
   commutes' := cast_commute
 
-instance _root_.RingHomClass.toLinearMapClassNNRat [FunLike F R S] [RingHomClass F R S] :
+instance (priority := 50) _root_.RingHomClass.toLinearMapClassNNRat
+    [FunLike F R S] [RingHomClass F R S] :
     LinearMapClass F ℚ≥0 R S where
   map_smulₛₗ f q a := by simp [smul_def, cast_id]
 
@@ -94,7 +95,8 @@ instance _root_.DivisionRing.toRatAlgebra : Algebra ℚ R where
   toRingHom := castHom _
   commutes' := cast_commute
 
-instance _root_.RingHomClass.toLinearMapClassRat [FunLike F R S] [RingHomClass F R S] :
+instance (priority := 50) _root_.RingHomClass.toLinearMapClassRat
+    [FunLike F R S] [RingHomClass F R S] :
     LinearMapClass F ℚ R S where
   map_smulₛₗ f q a := by simp [smul_def, cast_id]
 

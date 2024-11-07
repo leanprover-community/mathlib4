@@ -660,7 +660,7 @@ class StarAlgEquivClass (F : Type*) (R A B : outParam Type*)
 namespace StarAlgEquivClass
 
 -- See note [lower instance priority]
-instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
+instance (priority := 50) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
     [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [EquivLike F A B]
     [NonUnitalAlgEquivClass F R A B] :
     NonUnitalAlgHomClass F R A B :=

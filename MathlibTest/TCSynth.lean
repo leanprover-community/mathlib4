@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Kim Morrison
+Authors: Johan Commelin, Kim Morrison, Yuyang Zhao
 -/
 import Mathlib
 
@@ -90,5 +90,26 @@ open Equiv in
 set_option synthInstance.maxHeartbeats 1000 in
 example {n : ℕ} (p : Fin (n + 1)) (e : Perm (Fin n)) :
     Equiv.Perm.decomposeFin.symm (p, e) 0 = p := by simp
+
+end
+
+section
+
+open scoped IntermediateField in
+set_option synthInstance.maxHeartbeats 3000 in
+example {K L B : Type u} [Field K] [Field L] [Algebra K L] [CommRing B] [Algebra K B] (α : L) :
+    AddHomClass (K⟮α⟯ →ₐ[K] B) K⟮α⟯ B :=
+  inferInstance
+
+end
+
+section
+
+set_option synthInstance.maxHeartbeats 6000 in
+open TensorProduct in
+example {R A S : Type*} [CommRing R] [CommRing A] [Algebra A R] [CommRing S] [Algebra A S]
+    {S₀ : Subalgebra A S} {T₀ : Subalgebra A R} :
+    AddHomClass (T₀ ⊗[A] S₀ →ₐ[A] R ⊗[A] S) (T₀ ⊗[A] S₀) (R ⊗[A] S) :=
+  inferInstance
 
 end
