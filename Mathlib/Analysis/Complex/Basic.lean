@@ -563,6 +563,25 @@ end RCLike
 
 namespace Complex
 
+section tprod
+
+variable {α : Type*}
+
+theorem hasProd_abs {f : α → ℂ} {x : ℂ} (hfx : HasProd f x) :
+    HasProd (fun i ↦ (f i).abs) x.abs := by
+  simp only [HasProd, ← abs_prod]
+  exact (continuous_abs.tendsto _).comp hfx
+
+theorem multipliable_abs {f : α → ℂ} (hf : Multipliable f) :
+    Multipliable (fun i ↦ (f i).abs) :=
+  let ⟨x, hx⟩ := hf; ⟨x.abs, hasProd_abs hx⟩
+
+theorem abs_tprod {α : Type*} {f : α → ℂ} (h : Multipliable f) :
+    (∏' i, f i).abs = ∏' i, (f i).abs :=
+  (hasProd_abs h.hasProd).tprod_eq.symm
+
+end tprod
+
 /-!
 We have to repeat the lemmas about `RCLike.re` and `RCLike.im` as they are not syntactic
 matches for `Complex.re` and `Complex.im`.
