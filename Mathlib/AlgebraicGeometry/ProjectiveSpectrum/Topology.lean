@@ -3,7 +3,7 @@ Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Johan Commelin
 -/
-import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
+import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Data.Set.Subsingleton
