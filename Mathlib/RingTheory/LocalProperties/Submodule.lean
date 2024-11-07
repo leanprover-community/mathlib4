@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, David Swinarski
 -/
 import Mathlib.Algebra.Module.LocalizedModule.Submodule
+import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Localization.AtPrime
 
 /-!
