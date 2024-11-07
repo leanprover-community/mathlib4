@@ -13,6 +13,7 @@ import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Tactic.Module
 import Mathlib.Topology.Compactification.OnePoint
+import Mathlib.Topology.PartialHomeomorph
 
 /-!
 # Manifold structure on the sphere
@@ -595,20 +596,14 @@ variable (hv' : v ∈ sphere 0 (1:ℝ))
 open Set Submodule
 
 /-- The inverse stereographic projection is injective. -/
-theorem stereo_inj : Injective (stereoInvFun hv) := fun x y h => by
-  rw [← (stereographic hv).right_inv' (show x ∈ (stereographic hv).target by trivial)]
-  rw [← (stereographic hv).right_inv' (show y ∈ (stereographic hv).target by trivial)]
-  exact congrArg (↑(stereographic hv).toPartialEquiv) h
+theorem stereo_inj : Injective (stereoInvFun hv) := fun x y h =>
+  (stereographic hv).right_inv' (show x ∈ (stereographic hv).target by trivial) ▸
+  (stereographic hv).right_inv' (show y ∈ (stereographic hv).target by trivial) ▸
+  congrArg (stereographic hv).toPartialEquiv h
 
-/-- While stereographic projection technically may be discontinuous
- at its anchor, it is continuous on its intended domain, the `source`. -/
-lemma continuous_comp_val {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    (p : PartialHomeomorph X Y) : Continuous (p.toPartialEquiv ∘ (@Subtype.val X p.source)) :=
-  p.continuousOn.comp_continuous continuous_subtype_val Subtype.coe_prop
 
 /-- Instance needed by `Submodule_homeo_Euclidean`. -/
-instance {n : ℕ} : Fact (Module.finrank ℝ (EuclideanSpace ℝ (Fin n.succ)) = n + 1) :=
-    {out := by simp}
+instance {n : ℕ} : Fact (finrank ℝ (EuclideanSpace ℝ (Fin n.succ)) = n + 1) := {out := by simp}
 
 /-- A codimension 1 subspace of Euclidean space is homeomorphic to a sphere. -/
 noncomputable def Submodule_homeo_Euclidean {n : ℕ}
@@ -623,43 +618,39 @@ noncomputable def Submodule_homeo_Euclidean {n : ℕ}
 lemma image_source (s : Set ↥(span ℝ {v})ᗮ) : stereoInvFun hv '' s =
     (stereographic hv).toPartialEquiv ⁻¹' s ∩ (stereographic hv).source := ext <| fun x =>
     ⟨fun h => by
-    obtain ⟨y,hy⟩ := h
-    simp only [PartialHomeomorph.toFun_eq_coe, mem_inter_iff, mem_preimage]
-    constructor
-    · have : (stereographic hv) x = y := hy.2 ▸ (stereographic hv).right_inv' trivial
-      exact this ▸ hy.1
-    · exact hy.2 ▸ stereoInvFun_ne_north_pole hv y,
+      obtain ⟨y,hy⟩ := h
+      have : (stereographic hv) x = y := hy.2 ▸ (stereographic hv).right_inv' trivial
+      simp only [PartialHomeomorph.toFun_eq_coe, mem_inter_iff, mem_preimage]
+      exact ⟨this ▸ hy.1, hy.2 ▸ stereoInvFun_ne_north_pole hv y⟩,
     fun h => ⟨(stereographic hv) x, h.1, (stereographic hv).left_inv' <| mem_of_mem_inter_right h⟩⟩
 
 /-- The one-point compactification of ℝⁿ, in the form of a codimension 1 subspace,
  is homeomorphic to the n-sphere. -/
 noncomputable def OnePointSubmodule_homeo_sphere : Homeomorph
     (OnePoint ((span ℝ {v})ᗮ)) (sphere (0 : EuclideanSpace ℝ (Fin n.succ)) 1) := by
-  apply OnePoint.equivOfIsEmbeddingOfRangeEq (Y := sphere 0 1)
-  · show IsEmbedding <|stereoInvFun hv
-    constructor
+  apply OnePoint.equivOfIsEmbeddingOfRangeEq (f := stereoInvFun hv)
+  · constructor
     · apply (isInducing_iff _).mpr
       ext s
       constructor
-      · intro h
-        apply isOpen_mk.mpr
-        use stereoInvFun hv '' s
-        constructor
-        · obtain ⟨b,hb⟩ := (continuous_comp_val (stereographic hv)).isOpen_preimage s h
-          have hh : (stereographic hv) ⁻¹' s ∩ {⟨v, hv'⟩}ᶜ = b ∩ {⟨v, hv'⟩}ᶜ := ext <| fun x =>
-            ⟨fun h => ⟨(congrFun hb.2 ⟨x, h.2⟩).mpr h.1, h.2⟩,
-             fun h => ⟨(congrFun hb.2 ⟨x, h.2⟩).mp  h.1, h.2⟩⟩
-          exact image_source hv s ▸ hh ▸ hb.1.inter isOpen_compl_singleton
-        · exact (stereo_inj hv).preimage_image s
+      · exact fun h => isOpen_mk.mpr <| by
+          use stereoInvFun hv '' s
+          constructor
+          · obtain ⟨b,hb⟩ := (PartialHomeomorph.continuous_comp_val
+              (stereographic hv)).isOpen_preimage s h
+            have hh : (stereographic hv) ⁻¹' s ∩ {⟨v, hv'⟩}ᶜ = b ∩ {⟨v, hv'⟩}ᶜ := ext <| fun x =>
+              ⟨fun h => ⟨(congrFun hb.2 ⟨x, h.2⟩).mpr h.1, h.2⟩,
+               fun h => ⟨(congrFun hb.2 ⟨x, h.2⟩).mp  h.1, h.2⟩⟩
+            exact image_source hv s ▸ hh ▸ hb.1.inter isOpen_compl_singleton
+          · exact (stereo_inj hv).preimage_image s
       · intro ⟨t,ht⟩
         rw [isOpen_mk] at ht
         exact ht.2 ▸ ((stereographic hv).continuousOn_invFun.mono
-                    fun ⦃a⦄ _ ↦ trivial).isOpen_preimage
+                     fun _ _ ↦ trivial).isOpen_preimage
           ((continuous_stereoInvFun hv).isOpen_preimage t ht.1) (fun ⦃a⦄ a ↦ a) ht.1
     · exact stereo_inj hv
-  · rw [← stereographic_source hv]
-    ext x
-    exact ⟨fun ⟨y,hy⟩ => hy ▸ (fun x => (stereographic hv).map_target) y (by trivial),
+  · exact ext <| fun x =>
+      ⟨fun ⟨y,hy⟩ => hy ▸ (fun _ => (stereographic hv).map_target) y (by trivial),
       fun h => ⟨(stereographic hv).toFun' x, (stereographic hv).left_inv h⟩⟩
 
 
