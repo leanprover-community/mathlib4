@@ -288,6 +288,15 @@ theorem nhdsWithin_prod {α : Type*} [TopologicalSpace α] {β : Type*} [Topolog
   rw [nhdsWithin_prod_eq]
   exact prod_mem_prod hu hv
 
+lemma Filter.EventuallyEq.mem_interior {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t)
+    (h : x ∈ interior s) : x ∈ interior t := by
+  rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
+  simpa [mem_interior_iff_mem_nhds, ← nhdsWithin_eq_nhds, hst] using h
+
+lemma EventuallyEq.mem_interior_iff {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t) :
+    x ∈ interior s ↔ x ∈ interior t :=
+  ⟨fun h ↦ hst.mem_interior h, fun h ↦ hst.symm.mem_interior h⟩
+
 section Pi
 
 variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
