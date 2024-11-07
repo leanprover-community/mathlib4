@@ -22,7 +22,8 @@ the Dershowitz-Manna ordering defined over multisets is also well-founded.
 - `Multiset.IsDershowitzMannaLT` : the standard definition fo the `Dershowitz-Manna ordering`.
 - `Multiset.wellFounded_isDershowitzMannaLT` : the main theorem about the
 `Dershowitz-Manna ordering` being well-founded.
-- `Multiset.TransLT_eq_DMLT` : two definitions of the `Dershowitz-Manna ordering` are equivalent.
+- `Multiset.TransLT_eq_isDershowitzMannaLT` : two definitions of the `Dershowitz-Manna ordering`
+are equivalent.
 
 ## References
 
@@ -62,13 +63,13 @@ open Relation
 private def TransLT [LT α] : Multiset α → Multiset α → Prop := TransGen OneStepLT
 
 /-- A special case of `IsDershowitzMannaLT`. -/
-private lemma dmlt_of_DMLT_singleton (M N : Multiset α)
+private lemma isDershowitzMannaLT_of_oneStepLT {M N : Multiset α}
     (h : OneStepLT M N) : IsDershowitzMannaLT M N := by
   rcases h with ⟨X, Y, a, M_def, N_def, ys_lt_a⟩
   use X, Y, {a}, by simp, M_def, N_def
   · simpa
 
-private lemma DMLT_singleton_insert [DecidableEq α] {a : α} {M N : Multiset α}
+private lemma isDershowitzMannaLT_singleton_insert [DecidableEq α] {a : α} {M N : Multiset α}
     (h : OneStepLT N (a ::ₘ M)) :
     ∃ M', N = a ::ₘ M' ∧ OneStepLT M' M ∨ N = M + M' ∧ ∀ x ∈ M', x < a := by
   rcases h with ⟨X, Y, a0, h1, h0, h2⟩
@@ -125,7 +126,7 @@ private lemma acc_cons [DecidableEq α] (a : α) (M0 : Multiset α)
   constructor
   intros N N_lt
   change Acc OneStepLT N
-  rcases (DMLT_singleton_insert N_lt) with ⟨x, H, h0⟩
+  rcases (isDershowitzMannaLT_singleton_insert N_lt) with ⟨x, H, h0⟩
   case h.intro.inr h =>
     rcases h with ⟨H, h0⟩
     rw [H]
@@ -183,7 +184,7 @@ private lemma acc_of_acc_lt [DecidableEq α] :
       simp_all
 
 /-- If `LT.lt` is well-founded, then `OneStepLT` is well-founded. -/
-private lemma DMLT_singleton_wf [DecidableEq α]
+private lemma isDershowitzMannaLT_singleton_wf [DecidableEq α]
     (wf_lt : WellFoundedLT α) : WellFounded (OneStepLT : Multiset α → Multiset α → Prop) := by
   constructor
   intros a
@@ -195,7 +196,7 @@ private lemma DMLT_singleton_wf [DecidableEq α]
   assumption
 
 /-- `IsDershowitzMannaLT` is transitive. -/
-private lemma dmlt_trans {α} [dec : DecidableEq α] [Preorder α] :
+lemma isDershowitzMannaLT.trans {α} [dec : DecidableEq α] [Preorder α] :
     ∀ (M N P : Multiset α) ,
     IsDershowitzMannaLT N M → IsDershowitzMannaLT P N → IsDershowitzMannaLT P M := by
   intros M N P LTNM LTPN
@@ -257,7 +258,7 @@ private lemma dmlt_trans {α} [dec : DecidableEq α] [Preorder α] :
       use w
       tauto
 
-private lemma transLT_of_dmLT [dec : DecidableEq α]
+private lemma transLT_of_isDershowitzMannaLT [dec : DecidableEq α]
     [DecidableRel (fun (x : α) (y : α) => x < y)] (M N : Multiset α)
     (DMLTMN : IsDershowitzMannaLT M N) : TransLT M N := by
   rcases DMLTMN with ⟨X, Y, Z, Z_not_empty, MXY, NXZ, h⟩
@@ -377,7 +378,7 @@ private lemma transLT_of_dmLT [dec : DecidableEq α]
         exact this
 
 /-- `TransLT` and `IsDershowitzMannaLT` are equivalent. -/
-private lemma transLT_eq_dmLT [DecidableEq α] [@DecidableRel α (· < ·)] :
+private lemma transLT_eq_isDershowitzMannaLT [DecidableEq α] [@DecidableRel α (· < ·)] :
     (TransLT : Multiset α → Multiset α → Prop) =
     (IsDershowitzMannaLT : Multiset α → Multiset α → Prop) := by
   funext X Y
@@ -390,20 +391,20 @@ private lemma transLT_eq_dmLT [DecidableEq α] [@DecidableRel α (· < ·)] :
       use W, U, {y}
       simp_all
     case tail _ aih bih =>
-      apply dmlt_trans _ _ _ _ bih
-      apply dmlt_of_DMLT_singleton
+      apply isDershowitzMannaLT.trans _ _ _ _ bih
+      apply isDershowitzMannaLT_of_oneStepLT
       assumption
-  · apply transLT_of_dmLT
+  · apply transLT_of_isDershowitzMannaLT
 
 /-- The desired theorem: If `LT.lt` is well-founded, then `IsDershowitzMannaLT` is well-founded. -/
 theorem wellFounded_isDershowitzMannaLT [DecidableEq α]
     [DecidableRel (fun (x : α) (y : α) => x < y)] (wf_lt :  WellFoundedLT α) :
     WellFounded (IsDershowitzMannaLT : Multiset α → Multiset α → Prop) := by
-  rw [← transLT_eq_dmLT]
+  rw [← transLT_eq_isDershowitzMannaLT]
   apply WellFounded.transGen
-  exact (DMLT_singleton_wf wf_lt)
+  exact (isDershowitzMannaLT_singleton_wf wf_lt)
 
-instance instWellFoundedDMLT [DecidableEq α] [wf_lt : WellFoundedLT α]
+instance instWellFoundedisDershowitzMannaLT [DecidableEq α] [wf_lt : WellFoundedLT α]
     [DecidableRel (fun (x : α) (y : α) => x < y)]  :
     WellFoundedRelation (Multiset α) := ⟨IsDershowitzMannaLT, wellFounded_isDershowitzMannaLT wf_lt⟩
 
