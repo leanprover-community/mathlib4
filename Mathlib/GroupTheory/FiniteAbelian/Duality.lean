@@ -48,7 +48,7 @@ lemma exists_apply_ne_one_aux (H : ∀ n : ℕ, n ∣ Monoid.exponent G → ∀ 
   use (φi.comp (Pi.evalMonoidHom (fun (i : ι) ↦ Multiplicative (ZMod (n i))) i)).comp e
   simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using hφi
 
-variable  [HasEnoughRootsOfUnity M (Monoid.exponent G)]
+variable [HasEnoughRootsOfUnity M (Monoid.exponent G)]
 
 /-- If `G` is a finite commutative group of exponent `n` and `M` is a commutative monoid
 with enough `n`th roots of unity, then for each `a ≠ 1` in `G`, there exists a
@@ -61,8 +61,8 @@ theorem exists_apply_ne_one_of_hasEnoughRootsOfUnity {a : G} (ha : a ≠ 1) :
   exact ZMod.exists_monoidHom_apply_ne_one (HasEnoughRootsOfUnity.exists_primitiveRoot M n) ha₀
 
 /-- A finite commutative group `G` is (noncanonically) isomorphic to the group `G →* Mˣ`
-of `M`-valued characters when `M` is a commutative monoid with enough `n`th roots of unity,
-where `n` is the exponent of `G`. -/
+when `M` is a commutative monoid with enough `n`th roots of unity, where `n` is the exponent
+of `G`. -/
 theorem monoidHom_mulEquiv_self_of_hasEnoughRootsOfUnity : Nonempty (G ≃* (G →* Mˣ)) := by
   classical -- to get `DecidableEq ι`
   obtain ⟨ι, _, n, ⟨h₁, h₂⟩⟩ := equiv_prod_multiplicative_zmod G
