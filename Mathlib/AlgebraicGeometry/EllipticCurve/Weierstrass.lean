@@ -510,10 +510,8 @@ lemma coe_inv_map_Δ' : (W.map φ).Δ'⁻¹ = φ ↑W.Δ'⁻¹ := by
   simp
 
 set_option linter.docPrime false in
-@[simp]
 lemma inv_map_Δ' : (W.map φ).Δ'⁻¹ = Units.map φ W.Δ'⁻¹ := by
-  ext
-  exact W.coe_inv_map_Δ' φ
+  simp
 
 @[simp]
 lemma map_j : (W.map φ).j = φ W.j := by
