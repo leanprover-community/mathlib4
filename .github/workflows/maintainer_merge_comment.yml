@@ -47,7 +47,7 @@ jobs:
         env:
           BODY: ${{ steps.make_comment.outputs.comment }} #${{ github.event.comment.body }}
         run: |
-          printf 'title<<EOF\n%s\nEOF' "$(./scripts/maintainer_merge_message.sh "author:${{github.event.comment.user.login}}:" "${BODY}" comment "${{ github.event.issue.number }}")"
+          printf 'title<<EOF\n%s\nEOF' "$(./scripts/maintainer_merge_message.sh "author:${{ github.event.comment.user.login }}:" "body:${BODY}" comment "issueNumber${{ github.event.issue.number }}")"
           printf 'title<<EOF\n%s\nEOF' "$(./scripts/maintainer_merge_message.sh "author:${{github.event.comment.user.login}}:" "${BODY}" comment)" >> "$GITHUB_OUTPUT"
 
       #- name: Send message on Zulip
