@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Data.DFinsupp.Module
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.DFinsupp.Module
 
 /-!
 # Conversion between `Finsupp` and homogeneous `DFinsupp`
