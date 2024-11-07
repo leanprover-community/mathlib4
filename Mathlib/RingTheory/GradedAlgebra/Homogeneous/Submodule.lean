@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
 import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.Algebra.Module.GradedModule
+import Mathlib.Algebra.Module.GradedModule.Basic
 
 /-!
 # Homogeneous submodules of a graded module
@@ -97,6 +97,13 @@ theorem HomogeneousSubmodule.toSubmodule_injective :
 instance HomogeneousSubmodule.setLike : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
   coe p := p.toSubmodule
   coe_injective' _ _ h := HomogeneousSubmodule.toSubmodule_injective 𝒜 ℳ <| SetLike.coe_injective h
+
+instance HomogeneousSubmodule.addSubmonoid : AddSubmonoidClass (HomogeneousSubmodule 𝒜 ℳ) M where
+  add_mem {x} := x.toSubmodule.add_mem
+  zero_mem {x} := x.toSubmodule.zero_mem
+
+instance HomogeneousSubmodule.module (p : HomogeneousSubmodule 𝒜 ℳ) : Module A p :=
+  p.toSubmodule.module
 
 @[ext]
 theorem HomogeneousSubmodule.ext
