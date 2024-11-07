@@ -516,7 +516,7 @@ theorem update_injective (f : ∀ a, β a) (a' : α) : Injective (update f a') :
 lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a → Prop) :
     (∀ x, p x (update f a b x)) ↔ p a b ∧ ∀ x, x ≠ a → p x (f x) := by
   rw [← and_forall_ne a, update_same]
-  simp (config := { contextual := true })
+  simp +contextual
 
 theorem exists_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
     (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ x ≠ a, p x (f x) := by
@@ -713,14 +713,6 @@ theorem comp_right {α β γ δ : Sort*} {f : α → β} {g : α → γ} (h : Fa
 end FactorsThrough
 
 theorem uncurry_def {α β γ} (f : α → β → γ) : uncurry f = fun p ↦ f p.1 p.2 :=
-  rfl
-
-@[simp]
-theorem uncurry_apply_pair {α β γ} (f : α → β → γ) (x : α) (y : β) : uncurry f (x, y) = f x y :=
-  rfl
-
-@[simp]
-theorem curry_apply {α β γ} (f : α × β → γ) (x : α) (y : β) : curry f x y = f (x, y) :=
   rfl
 
 section Bicomp
@@ -987,3 +979,40 @@ instance {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x
 instance {α β : Type*} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
   Decidable (curry r a b) :=
 ‹Decidable _›
+
+namespace Sum
+
+variable {ι₁ ι₂ : Type*} {α : ι₁ ⊕ ι₂ → Type*}
+
+section
+
+variable
+  (f : ∀ i₁, α (.inl i₁)) (g : ∀ i₂, α (.inr i₂))
+
+@[simp]
+lemma rec_update₁ [DecidableEq ι₁] [DecidableEq ι₂] (i₁ : ι₁) (x : α (.inl i₁)) :
+    Sum.rec (update f i₁ x) g =
+      update (Sum.rec f g) (.inl i₁) x := by
+  ext (j₁ | _)
+  · simp only
+    by_cases h : j₁ = i₁
+    · subst h
+      simp only [update_same]
+    · rw [Function.update_noteq h, Function.update_noteq (by simpa using h)]
+  · rfl
+
+@[simp]
+lemma rec_update₂ [DecidableEq ι₁] [DecidableEq ι₂] (i₂ : ι₂) (y : α (.inr i₂)) :
+    Sum.rec f (Function.update g i₂ y) =
+      update (Sum.rec f g) (.inr i₂) y := by
+  ext (_ | j₂)
+  · rfl
+  · by_cases h : j₂ = i₂
+    · subst h
+      simp only [update_same]
+    · simp
+      rw [update_noteq h, update_noteq (by simpa using h)]
+
+end
+
+end Sum

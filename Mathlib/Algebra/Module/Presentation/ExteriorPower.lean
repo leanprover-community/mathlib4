@@ -3,13 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+
 import Mathlib.Algebra.Module.Presentation.PiTensor
-import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
+import Mathlib.LinearAlgebra.ExteriorPower.Generators
 
 /-!
 # Presentation of the exterior power
 
+Given a presentation of a `R`-module `M`, we obtain a presentation of `⋀[R]^n M`.
+
 -/
+
+universe w
 
 namespace Function
 
@@ -73,8 +78,8 @@ lemma AlternatingMap.antisymmetry {R M N ι : Type*} [Ring R] [AddCommGroup M] [
   have := f.map_eq_zero_of_eq
     (Function.update (Function.update x i (x i + x j)) j (x i + x j))
     (by simp [update_noteq hij]) hij
-  rw [map_add, update_update _ _ _ _ _ hij, map_add,
-    update_update _ _ _ _ _ hij, map_add] at this
+  rw [map_update_add, update_update _ _ _ _ _ hij, map_update_add,
+    update_update _ _ _ _ _ hij, map_update_add] at this
   nth_rw 1 [f.map_eq_zero_of_eq (hij := hij)] at this; swap
   · rw [update_same, update_update _ _ _ _ _ hij.symm, update_same]
   nth_rw 3 [f.map_eq_zero_of_eq (hij := hij)] at this; swap
@@ -83,90 +88,14 @@ lemma AlternatingMap.antisymmetry {R M N ι : Type*} [Ring R] [AddCommGroup M] [
   rw [swapValues_eq_update_update, update_update _ _ _ _ _ hij]
   exact this
 
-namespace ExteriorAlgebra
-
-variable (R : Type*) [CommRing R] (ι : Type*) [DecidableEq ι]
-  (n : ℕ) (M : Type*) [AddCommGroup M] [Module R M]
-
-namespace exteriorPower
-
-inductive Rels
-  | add (m : ι → M) (i : ι) (x y : M)
-  | smul (m : ι → M) (i : ι) (r : R) (x : M)
-  | alt (m : ι → M) (i j : ι) (hm : m i = m j) (hij : i ≠ j)
-
-@[simps]
-noncomputable def relations : Module.Relations R where
-  G := ι → M
-  R := Rels R ι M
-  relation r := match r with
-    | .add m i x y => Finsupp.single ((update m i x)) 1 +
-        Finsupp.single ((update m i y)) 1 -
-        Finsupp.single ((update m i (x + y))) 1
-    | .smul m i r x => Finsupp.single ((update m i (r • x))) 1 -
-        r • Finsupp.single ((update m i x)) 1
-    | .alt m _ _ _ _ => Finsupp.single m 1
-
-variable (N : Type*) [AddCommGroup N] [Module R N]
-
-variable {R ι M N} in
-def relationsSolutionEquiv :
-    (relations R ι M).Solution N ≃ AlternatingMap R M N ι where
-  toFun s :=
-    { toFun := fun m ↦ s.var m
-      map_add' := fun m i x y ↦ by
-        have := s.linearCombination_var_relation (.add m i x y)
-        dsimp at this ⊢
-        rw [map_sub, map_add, Finsupp.linearCombination_single, one_smul,
-          Finsupp.linearCombination_single, one_smul,
-          Finsupp.linearCombination_single, one_smul, sub_eq_zero] at this
-        convert this.symm
-      map_smul' := fun m i r x ↦ by
-        have := s.linearCombination_var_relation (.smul m i r x)
-        dsimp at this ⊢
-        rw [Finsupp.smul_single, smul_eq_mul, mul_one, map_sub,
-          Finsupp.linearCombination_single, one_smul,
-          Finsupp.linearCombination_single, sub_eq_zero] at this
-        convert this
-      map_eq_zero_of_eq' := fun v i j hm hij ↦
-        by simpa using s.linearCombination_var_relation (.alt v i j hm hij) }
-  invFun f :=
-    { var := fun m ↦ f m
-      linearCombination_var_relation := by
-        rintro (⟨m, i, x, y⟩ | ⟨m, i, r, x⟩ | ⟨v, i, j, hm, hij⟩)
-        · simp
-        · simp
-        · simpa using f.map_eq_zero_of_eq v hm hij }
-  left_inv _ := rfl
-  right_inv _ := rfl
-
-end exteriorPower
-
-def exteriorProduct : AlternatingMap R M (exteriorPower R n M) (Fin n) where
-  toFun m := ⟨ιMulti R n m, ιMulti_range _ _ (by simp)⟩
-  map_add' m i x y := Subtype.ext (by simp)
-  map_smul' m i c x := Subtype.ext (by simp)
-  map_eq_zero_of_eq' v i j hij hij' :=
-    Subtype.ext ((ιMulti R (M := M) n).map_eq_zero_of_eq v hij hij')
-
-namespace exteriorPower
-
-def relationsSolution :
-    (relations R (Fin n) M).Solution (exteriorPower R n M) :=
-  relationsSolutionEquiv.symm (exteriorProduct R n M)
-
--- the code in https://github.com/leanprover-community/mathlib4/pull/18261 basically shows this
-lemma relationsSolution_isPresentation :
-    (relationsSolution R n M).IsPresentation := sorry
-
-@[simps!]
-noncomputable def presentation : Module.Presentation R (exteriorPower R n M) where
-  toSolution := relationsSolution R n M
-  toIsPresentation := relationsSolution_isPresentation R n M
-
-end exteriorPower
-
-end ExteriorAlgebra
+lemma MultilinearMap.map_eq_zero_of_eq_of_generators {R M N : Type*} [Ring R] [AddCommGroup M]
+    [Module R M] [AddCommGroup N] [Module R N] {ι : Type*} [DecidableEq ι]
+    (f : MultilinearMap R (fun (_ : ι) ↦ M) N) {γ : Type*} {g : γ → M}
+    (hg : Submodule.span R (Set.range g) = ⊤)
+    {i j : ι} (hij : i ≠ j) (hf₁ : ∀ (k : ι → γ) (hk : k i = k j), f (g ∘ k) = 0)
+    (hf₂ : ∀ (k : ι → γ), f (swapValues (g ∘ k) i j) = -f (g ∘ k))
+    (v : ι → M) (hv : v i = v j) :
+    f v = 0 := sorry
 
 namespace Module
 
@@ -179,6 +108,7 @@ variable (relation : Relations R) (n : ℕ)
 
 namespace exteriorPower
 
+variable (n : ℕ)
 inductive Rels
   | piTensor (i₀ : Fin n) (r : relation.R) (g : ∀ (i : Fin n) (_ : i ≠ i₀), relation.G)
   | antisymmetry (g : Fin n → relation.G) (i j : Fin n) (hg : i ≠ j)
@@ -198,24 +128,85 @@ noncomputable def exteriorPower : Relations R where
 
 namespace Solution
 
-variable {relation} {N : Type*} [AddCommGroup N] [Module R N]
-  (s : relation.Solution N) (n : ℕ)
+variable {M}
+variable {relation} (s : relation.Solution M)
 
-def exteriorPower : (relation.exteriorPower n).Solution
-    (ExteriorAlgebra.exteriorPower R n N) where
-  var g := ExteriorAlgebra.exteriorProduct R n N (s.var ∘ g)
-  linearCombination_var_relation := sorry
+@[simps var]
+def exteriorPower (n : ℕ) : (relation.exteriorPower n).Solution
+    (ExteriorAlgebra.exteriorPower R n M) where
+  var g := exteriorPower.ιMulti _ _ (s.var ∘ g)
+  linearCombination_var_relation := by
+    rintro (⟨i₀, r, g⟩ | ⟨g, i, j, hij⟩ | ⟨g, i, j, hg, hij⟩)
+    · have := ((Relations.Solution.piTensor (fun (i : Fin n) ↦ s)).postcomp
+        (exteriorPower.fromTensorPower R M n)).linearCombination_var_relation
+        ⟨i₀, r, fun ⟨i, hi⟩ ↦ g i hi⟩
+      dsimp at this ⊢
+      simp only [Finsupp.linearCombination_embDomain] at this ⊢
+      convert this
+      aesop
+    · dsimp
+      simp only [map_add, Finsupp.linearCombination_single, one_smul,
+        ← swapValues_comp, AlternatingMap.antisymmetry _ _ _ _ hij, neg_add_cancel]
+    · dsimp
+      simp only [Finsupp.linearCombination_single, one_smul]
+      exact AlternatingMap.map_eq_zero_of_eq _ _ (by simp [hg]) hij
 
-namespace IsPresentation
+variable {s}
 
-variable {s} (h : s.IsPresentation)
+namespace isPresentationCore
 
-include h in
-lemma exteriorPower : (s.exteriorPower n).IsPresentation := by
-  have := h
-  sorry
+variable {N : Type*} [AddCommGroup N] [Module R N]
+  (h : s.IsPresentation) {n : ℕ} (t : (relation.exteriorPower n).Solution N)
 
-end IsPresentation
+noncomputable def descAsMultilinearMap :
+    MultilinearMap R (fun (_ : Fin n) ↦ M) N :=
+      LinearMap.compMultilinearMap (
+        (IsPresentation.piTensor (fun (_ : Fin n) ↦ h)).desc
+          { var := t.var
+            linearCombination_var_relation := by
+              rintro ⟨i₀, r, g⟩
+              exact t.π_relation (.piTensor i₀ r (fun i hi ↦ g ⟨i, hi⟩)) })
+        (PiTensorProduct.tprod (R := R) )
+
+@[simp]
+lemma descAsMultilinearMap_apply (g : Fin n → relation.G) :
+    descAsMultilinearMap h t (s.var ∘ g) = t.var g :=
+  IsPresentation.desc_var _ _ _
+
+lemma map_eq_zero_of_eq (v : Fin n → M) (i j : Fin n) (hv : v i = v j) (hij : i ≠ j) :
+    descAsMultilinearMap h t v = 0 := by
+  apply MultilinearMap.map_eq_zero_of_eq_of_generators (hg := h.span_var_eq_top)
+    (hij := hij) (v := v) (hv := hv)
+  · intro k hk
+    have := t.π_relation (.alternate k i j hk hij)
+    dsimp at this
+    erw [π_single] at this
+    simpa only [descAsMultilinearMap_apply] using this
+  · intro k
+    have := t.π_relation (.antisymmetry k i j hij)
+    dsimp at this
+    rw [map_add] at this
+    erw [π_single, π_single] at this
+    simpa only [swapValues_comp, descAsMultilinearMap_apply, eq_neg_iff_add_eq_zero] using this
+
+end isPresentationCore
+
+open isPresentationCore in
+noncomputable def isPresentationCore (h : s.IsPresentation) (n : ℕ) :
+    IsPresentationCore.{w} (s.exteriorPower n) where
+  desc t := exteriorPower.alternatingMapLinearEquiv
+    { toMultilinearMap := descAsMultilinearMap h t
+      map_eq_zero_of_eq' := map_eq_zero_of_eq h t }
+  postcomp_desc t := by aesop
+  postcomp_injective {N _ _ f f'} hff' := by
+    rw [Submodule.linearMap_eq_iff_of_span_eq_top
+      (hM := exteriorPower.span_ιMulti_of_span_eq_top (hg := h.span_var_eq_top) n)]
+    rintro ⟨_, ⟨g, rfl⟩⟩
+    simpa using congr_var hff' g
+
+lemma IsPresentation.exteriorPower (h : s.IsPresentation) (n : ℕ) :
+    (s.exteriorPower n).IsPresentation :=
+  (isPresentationCore h n).isPresentation
 
 end Solution
 

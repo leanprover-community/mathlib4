@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
-import Batteries.Data.Sum.Lemmas
 
 /-!
 # Additional lemmas about sum types
@@ -19,6 +18,9 @@ universe u v w x
 variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}
 
 namespace Sum
+
+-- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
+attribute [simp] Sum.forall Sum.exists
 
 theorem exists_sum {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
     (∃ fab, p fab) ↔ (∃ fa fb, p (Sum.rec fa fb)) := by
@@ -62,12 +64,12 @@ open Function (update update_eq_iff update_comp_eq_of_injective update_comp_eq_o
 @[simp]
 theorem update_elim_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α → γ} {g : β → γ} {i : α}
     {x : γ} : update (Sum.elim f g) (inl i) x = Sum.elim (update f i x) g :=
-  update_eq_iff.2 ⟨by simp, by simp (config := { contextual := true })⟩
+  update_eq_iff.2 ⟨by simp, by simp +contextual⟩
 
 @[simp]
 theorem update_elim_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α → γ} {g : β → γ} {i : β}
     {x : γ} : update (Sum.elim f g) (inr i) x = Sum.elim f (update g i x) :=
-  update_eq_iff.2 ⟨by simp, by simp (config := { contextual := true })⟩
+  update_eq_iff.2 ⟨by simp, by simp +contextual⟩
 
 @[simp]
 theorem update_inl_comp_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α}
@@ -106,6 +108,28 @@ theorem update_inr_comp_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α �
 theorem update_inr_apply_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i j : β}
     {x : γ} : update f (inr i) x (inr j) = update (f ∘ inr) i x j := by
   rw [← update_inr_comp_inr, Function.comp_apply]
+
+@[simp]
+theorem update_inl_comp_inl_apply [DecidableEq α] [DecidableEq (α ⊕ β)] {γ : α ⊕ β → Type*}
+    {f : (i : α ⊕ β) → γ i} {i : α}
+    {x : γ (.inl i)} (j : α) :
+    update f (.inl i) x (Sum.inl j) =
+      update (fun j ↦ f (.inl j)) i x j := by
+  by_cases h : j = i
+  · subst h
+    simp
+  · rw [Function.update_noteq (by simpa using h), Function.update_noteq h]
+
+@[simp]
+theorem update_inr_comp_inr_apply {γ : α ⊕ β → Type*}
+    [DecidableEq β] [DecidableEq (α ⊕ β)] {f : (i : α ⊕ β) → γ i} {i : β}
+    {x : γ (.inr i)} (j : β) :
+    update f (.inr i) x (Sum.inr j) =
+      update (fun j ↦ f (.inr j)) i x j := by
+  by_cases h : j = i
+  · subst h
+    simp
+  · rw [Function.update_noteq (by simpa using h), Function.update_noteq h]
 
 @[simp]
 theorem swap_leftInverse : Function.LeftInverse (@swap α β) swap :=

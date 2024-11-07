@@ -395,7 +395,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
       refine le_of_eq (Finset.sum_congr rfl fun r _ => ?_)
       congr 2 with a
       refine and_congr_right ?_
-      simp (config := { contextual := true })
+      simp +contextual
     _ ≤ ⨆ n, ∫⁻ a, f n a ∂μ := by
       simp only [← SimpleFunc.lintegral_eq_lintegral]
       gcongr with n a

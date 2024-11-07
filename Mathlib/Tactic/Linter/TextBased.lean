@@ -6,7 +6,6 @@ Authors: Michael Rothgang
 
 import Batteries.Data.String.Matcher
 import Mathlib.Data.Nat.Notation
-import Std.Data.HashMap.Basic
 
 /-!
 ## Text-based linters
@@ -57,7 +56,6 @@ inductive StyleError where
   | adaptationNote
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding
-  | duplicateImport (importStatement: String) (alreadyImportedLine: ℕ)
 deriving BEq
 
 /-- How to format style errors -/
@@ -78,8 +76,6 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
     "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
   | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
     endings (\n) instead"
-  | StyleError.duplicateImport (importStatement) (alreadyImportedLine) =>
-    s!"Duplicate imports: {importStatement} (already imported on line {alreadyImportedLine})"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -87,7 +83,6 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
 def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.windowsLineEnding => "ERR_WIN"
-  | StyleError.duplicateImport _ _ => "ERR_DIMP"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -106,11 +101,9 @@ inductive ComparisonResult
   /-- The contexts describe different errors: two separate style exceptions are required
   to cover both. -/
   | Different
-  /-- The existing exception also covers the new error.
-  Indicate whether we prefer keeping the existing exception (the more common case)
-  or would rather replace it by the new exception
-  (this is more rare, and currently only happens for particular file length errors). -/
-  | Comparable (preferExisting : Bool)
+  /-- The existing exception also covers the new error:
+  we keep the existing exception. -/
+  | Comparable
   deriving BEq
 
 /-- Determine whether a `new` `ErrorContext` is covered by an `existing` exception,
@@ -124,17 +117,13 @@ def compare (existing new : ErrorContext) : ComparisonResult :=
 
   -- NB: keep the following in sync with `parse?_errorContext` below.
   -- Generally, comparable errors must have equal `StyleError`s.
-  else match (existing.error, new.error) with
-  -- We do *not* care about the kind or line number of a duplicate import.
-  | (StyleError.duplicateImport _ _, StyleError.duplicateImport _ _) =>
-    ComparisonResult.Comparable true
-  -- In all other cases, `StyleErrors` must compare equal.
-  | (a, b) => if a == b then ComparisonResult.Comparable true else ComparisonResult.Different
+  else
+    if existing.error == new.error then ComparisonResult.Comparable else ComparisonResult.Different
 
 /-- Find the first style exception in `exceptions` (if any) which covers a style exception `e`. -/
 def ErrorContext.find?_comparable (e : ErrorContext) (exceptions : Array ErrorContext) :
     Option ErrorContext :=
-  (exceptions).find? (fun new ↦ compare e new matches ComparisonResult.Comparable _)
+  (exceptions).find? (fun new ↦ compare e new == ComparisonResult.Comparable)
 
 /-- Output the formatted error message, containing its context.
 `style` specifies if the error should be formatted for humans to read, github problem matchers
@@ -172,7 +161,6 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         -- NB: keep this in sync with `compare` above!
         | "ERR_ADN" => some (StyleError.adaptationNote)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
-        | "ERR_DIMP" => some (StyleError.duplicateImport "" 0)
         | _ => none
       match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
@@ -216,26 +204,6 @@ def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
     lineNumber := lineNumber + 1
   return (errors, none)
 
-/-- Lint on a collection of input strings if one of the is a duplicate import statement. -/
-def duplicateImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
-  let mut lineNumber := 1
-  let mut errors := Array.mkEmpty 0
-  let mut importStatements : Std.HashMap String ℕ := {}
-  for line in lines do
-    if line.startsWith "import " then
-      let lineWithoutComment := (line.splitOn "--")[0]!
-      let importStatement := lineWithoutComment.trim
-      if importStatements.contains importStatement then
-        let alreadyImportedLine := importStatements[importStatement]!
-        errors := errors.push (
-          (StyleError.duplicateImport importStatement alreadyImportedLine),
-          lineNumber
-        )
-      else
-        importStatements := importStatements.insert importStatement lineNumber
-    lineNumber := lineNumber + 1
-  return (errors, none)
-
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
 def isImportsOnlyFile (lines : Array String) : Bool :=
@@ -247,7 +215,7 @@ end
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    adaptationNoteLinter, duplicateImportsLinter
+    adaptationNoteLinter
   ]
 
 

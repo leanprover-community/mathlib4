@@ -316,6 +316,10 @@ lemma exact : Function.Exact relations.map solution.π := by
   rw [LinearMap.exact_iff, range_map, ← solution.injective_fromQuotient_iff_ker_π_eq_span]
   exact h.bijective.1
 
+lemma span_var_eq_top : Submodule.span A (Set.range solution.var) = ⊤ := by
+  rw [← range_π, LinearMap.range_eq_top]
+  exact h.surjective_π
+
 variable {N : Type v'} [AddCommGroup N] [Module A N]
 
 /-- If `M` admits a presentation by generators and relations, and we have a solution of the
@@ -389,7 +393,7 @@ lemma uniq_symm_var (g : relations.G) : (uniq h h').symm (solution'.var g) = sol
 
 end
 
-lemma ofLinearEquiv (e : M ≃ₗ[A] N) : (solution.postcomp e.toLinearMap).IsPresentation where
+lemma of_linearEquiv (e : M ≃ₗ[A] N) : (solution.postcomp e.toLinearMap).IsPresentation where
   bijective := by
     have : (solution.postcomp e.toLinearMap).fromQuotient =
       e.toLinearMap.comp (solution.fromQuotient) := by aesop
@@ -506,10 +510,12 @@ def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
   toSolution := solution
   toIsPresentation := h
 
+/-- The presentation of an `A`-module `N` that is deduced from a presentation of
+a module `M` and a linear equivalence `e : M ≃ₗ[A] N`. -/
 @[simps! toRelations toSolution]
 def Presentation.ofLinearEquiv (pres : Presentation.{w₀, w₁} A M)
     {N : Type v'} [AddCommGroup N] [Module A N] (e : M ≃ₗ[A] N) :
     Presentation A N :=
-  ofIsPresentation (pres.toIsPresentation.ofLinearEquiv e)
+  ofIsPresentation (pres.toIsPresentation.of_linearEquiv e)
 
 end Module

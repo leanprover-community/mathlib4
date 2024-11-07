@@ -120,7 +120,7 @@ noncomputable def presentationDifferentialsUp :
 @[simp]
 lemma presentationDifferentialsUp_var {n : ℕ} (g : Fin n → B) :
     ((presentationDifferentialsUp A B n).var g) =
-      exteriorProduct _ _ _ (KaehlerDifferential.D A B ∘ g) := by
+      exteriorPower.ιMulti _ _ (KaehlerDifferential.D A B ∘ g) := by
   dsimp [presentationDifferentialsUp]
   congr
   aesop
@@ -222,7 +222,7 @@ noncomputable def presentationDifferentialsDown :
 
 lemma presentationDifferentialsDown_var (b₀ : B) {n : ℕ} (g : Fin n → B) :
     ((presentationDifferentialsDown A B n).var ⟨g, b₀⟩) =
-      b₀ • exteriorProduct _ _ _ (KaehlerDifferential.D A B ∘ g) := by
+      b₀ • exteriorPower.ιMulti _ _ (KaehlerDifferential.D A B ∘ g) := by
   dsimp [presentationDifferentialsDown, Module.Presentation.restrictScalars,
     Module.Presentation.ofExact]
   simp only [Module.Presentation.finsupp_var, Module.Presentation.tautological_var]
@@ -254,7 +254,7 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
               rw [finInsert_eq_update_finInsert_zero]
               nth_rw 2 [finInsert_eq_update_finInsert_zero]
               nth_rw 3 [finInsert_eq_update_finInsert_zero]
-              rw [AlternatingMap.map_add]
+              rw [AlternatingMap.map_update_add]
           | smul a b =>
               dsimp
               simp only [presentationDifferentialsDown_relation,
@@ -266,7 +266,7 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
               rw [finInsert_eq_update_finInsert_zero]
               nth_rw 2 [finInsert_eq_update_finInsert_zero]
               rw [algebra_compatible_smul B a, algebra_compatible_smul B a,
-                AlternatingMap.map_smul]
+                AlternatingMap.map_update_smul]
         · dsimp at b₀
           induction r with
           | piTensor i r g =>
@@ -282,7 +282,7 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
                   rw [embedding_eq_update_embedding_zero]
                   nth_rw 2 [embedding_eq_update_embedding_zero]
                   nth_rw 3 [embedding_eq_update_embedding_zero]
-                  simp only [finInsert_update, AlternatingMap.map_add]
+                  simp only [finInsert_update, AlternatingMap.map_update_add]
               | mul b₁ b₂ =>
                   dsimp
                   simp only [presentationDifferentialsDown_relation, map_sub, map_add,
@@ -293,18 +293,19 @@ noncomputable def d (n : ℕ) : exteriorPower B n (KaehlerDifferential A B) →�
                   simp only [comp_finInsert, comp_embedding]
                   conv_rhs =>
                     rw [Derivation.leibniz, embedding_eq_update_embedding_zero,
-                      finInsert_update, AlternatingMap.map_add, AlternatingMap.map_smul,
-                      AlternatingMap.map_smul, ← finInsert_update, ← finInsert_update,
+                      finInsert_update, AlternatingMap.map_update_add,
+                      AlternatingMap.map_update_smul, AlternatingMap.map_update_smul,
+                      ← finInsert_update, ← finInsert_update,
                       ← embedding_eq_update_embedding_zero,
                       ← embedding_eq_update_embedding_zero]
                   rw [finInsert_eq_update_finInsert_zero]
                   nth_rw 2 [finInsert_eq_update_finInsert_zero]
                   conv_lhs =>
-                    rw [Derivation.leibniz, AlternatingMap.map_add,
-                      AlternatingMap.map_smul, AlternatingMap.map_smul,
+                    rw [Derivation.leibniz, AlternatingMap.map_update_add,
+                      AlternatingMap.map_update_smul, AlternatingMap.map_update_smul,
                       ← finInsert_eq_update_finInsert_zero]
-                    rw [Derivation.leibniz, AlternatingMap.map_add,
-                      AlternatingMap.map_smul, AlternatingMap.map_smul,
+                    rw [Derivation.leibniz, AlternatingMap.map_update_add,
+                      AlternatingMap.map_update_smul, AlternatingMap.map_update_smul,
                       ← finInsert_eq_update_finInsert_zero,
                       ← finInsert_eq_update_finInsert_zero,
                       ← finInsert_eq_update_finInsert_zero]

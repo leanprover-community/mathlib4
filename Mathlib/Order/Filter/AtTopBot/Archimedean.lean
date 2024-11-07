@@ -138,24 +138,23 @@ theorem atTop_hasAntitoneBasis_of_archimedean [OrderedSemiring R] [Archimedean R
     (atTop : Filter R).HasAntitoneBasis fun n : ℕ => Ici n :=
   hasAntitoneBasis_atTop.comp_mono Nat.mono_cast tendsto_natCast_atTop_atTop
 
-theorem atTop_hasCountableBasis_of_archimedean [StrictOrderedSemiring R] [Archimedean R] :
+theorem atTop_hasCountableBasis_of_archimedean [OrderedSemiring R] [Archimedean R] :
     (atTop : Filter R).HasCountableBasis (fun _ : ℕ => True) fun n => Ici n :=
   ⟨atTop_hasAntitoneBasis_of_archimedean.1, to_countable _⟩
 
--- Porting note (#11215): TODO: generalize to a `StrictOrderedRing`
-theorem atBot_hasCountableBasis_of_archimedean [LinearOrderedRing R] [Archimedean R] :
-    (atBot : Filter R).HasCountableBasis (fun _ : ℤ => True) fun m => Iic m :=
-  { countable := to_countable _
-    toHasBasis :=
-      atBot_basis.to_hasBasis
-        (fun x _ => let ⟨m, hm⟩ := exists_int_lt x; ⟨m, trivial, Iic_subset_Iic.2 hm.le⟩)
-        fun m _ => ⟨m, trivial, Subset.rfl⟩ }
+theorem atBot_hasCountableBasis_of_archimedean [OrderedRing R] [Archimedean R] :
+    (atBot : Filter R).HasCountableBasis (fun _ : ℤ => True) fun m => Iic m where
+  countable := to_countable _
+  toHasBasis :=
+    atBot_basis.to_hasBasis
+      (fun x _ => let ⟨m, hm⟩ := exists_int_le x; ⟨m, trivial, Iic_subset_Iic.2 hm⟩)
+      fun m _ => ⟨m, trivial, Subset.rfl⟩
 
-instance (priority := 100) atTop_isCountablyGenerated_of_archimedean [StrictOrderedSemiring R]
+instance (priority := 100) atTop_isCountablyGenerated_of_archimedean [OrderedSemiring R]
     [Archimedean R] : (atTop : Filter R).IsCountablyGenerated :=
   atTop_hasCountableBasis_of_archimedean.isCountablyGenerated
 
-instance (priority := 100) atBot_isCountablyGenerated_of_archimedean [LinearOrderedRing R]
+instance (priority := 100) atBot_isCountablyGenerated_of_archimedean [OrderedRing R]
     [Archimedean R] : (atBot : Filter R).IsCountablyGenerated :=
   atBot_hasCountableBasis_of_archimedean.isCountablyGenerated
 
