@@ -519,7 +519,6 @@ theorem Ideal.homogeneousHull_eq_iSup :
         apply SetLike.homogeneous_coe)⟩ := by
   ext1
   rw [Ideal.toIdeal_homogeneousHull_eq_iSup, toIdeal_iSup]
-  rfl
 
 end HomogeneousHull
 
