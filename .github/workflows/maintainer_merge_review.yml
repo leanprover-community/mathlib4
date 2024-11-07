@@ -40,7 +40,7 @@ jobs:
           BODY: ${{ github.event.comment.body }}
         run: |
           ./scripts/maintainer_merge_message.sh "${BODY}" review >> "${GITHUB_OUTPUT}"
-          # ${{ format('{0} requested a maintainer merge from review on PR [#{1}]({2}):', github.event.review.user.login, github.event.#pull_request.number, github.event.pull_request.html_url ) }}
+          #${{ format('{0} requested a maintainer merge from review on PR [#{1}]({2}):', github.event.review.user.login, github.event.pull_request.number, github.event.pull_request.html_url ) }}
 
       - name: Send message on Zulip
         uses: zulip/github-actions-zulip/send-message@v1
