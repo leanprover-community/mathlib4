@@ -53,8 +53,7 @@ theorem Algebra.rank_adjoin_le {R : Type u} {S : Type v} [CommRing R] [Ring S] [
   rw [adjoin_eq_range_freeAlgebra_lift]
   cases subsingleton_or_nontrivial R
   · rw [rank_subsingleton]; exact one_le_aleph0.trans (le_max_right _ _)
-  change Module.rank R (LinearMap.range (FreeAlgebra.lift R Subtype.val).toLinearMap) ≤ _
   rw [← lift_le.{max u v}]
-  refine (lift_rank_range_le _).trans ?_
+  refine (lift_rank_range_le (FreeAlgebra.lift R ((↑) : s → S)).toLinearMap).trans ?_
   rw [FreeAlgebra.rank_eq, lift_id'.{v,u}, lift_umax.{v,u}, lift_le, max_comm]
   exact mk_list_le_max _
