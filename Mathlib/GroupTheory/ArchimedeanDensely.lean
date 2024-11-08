@@ -393,8 +393,7 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_disc
     simp [← Units.val_le_val]
   · simp [Function.onFun]
   · exact fun x ↦ if h : x = 0 then 1 else Units.mk0 x h
-  · intro
-    simp (config := {contextual := true}) [← Units.val_le_val]
+  · simp +contextual [← Units.val_le_val, MapsTo]
   · simp only [mem_diff, mem_setOf_eq, mem_singleton_iff, Function.onFun, and_imp]
     intro _ _ ha0 _ _ hb0 h
     simp [ha0, hb0, ← Units.val_lt_val, h]
