@@ -13,7 +13,7 @@ Let `M` be a finite commutative monoid and `R` a ring that has enough `n`th root
 where `n` is the exponent of `M`. Then the main results of this file are as follows.
 
 * `MulChar.exists_apply_ne_one_of_hasEnoughRootsOfUnity`: multiplicative characters
-  `M → R` separate elements of `M`.
+  `M → R` separate elements of `Mˣ`.
 
 * `MulChar.mulEquiv_units`: the group of multiplicative characters `M → R` is
    (noncanonically) isomorphic to `Mˣ`.
