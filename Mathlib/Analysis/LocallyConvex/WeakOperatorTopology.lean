@@ -114,9 +114,11 @@ instance instFunLike : FunLike (E →WOT[𝕜] F) E F where
   coe f :=  ((ContinuousLinearMap.toWOT 𝕜 E F).symm f : E → F)
   coe_injective' := by intro; simp
 
-instance instContinuousLinearMapClass : ContinuousLinearMapClass (E →WOT[𝕜] F) 𝕜 E F where
+instance instLinearMapClass : LinearMapClass (E →WOT[𝕜] F) 𝕜 E F where
   map_add f x y := by simp only [DFunLike.coe]; simp
   map_smulₛₗ f r x := by simp only [DFunLike.coe]; simp
+
+instance instContinuousMapClass : ContinuousMapClass (E →WOT[𝕜] F) E F where
   map_continuous f := ContinuousLinearMap.continuous ((ContinuousLinearMap.toWOT 𝕜 E F).symm f)
 
 lemma _root_.ContinuousLinearMap.toWOT_apply {A : E →L[𝕜] F} {x : E} :
