@@ -5,7 +5,6 @@ Authors: Tom Kranz
 -/
 import Mathlib.Data.FinEnum
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Data.ULift
 
 /-!
 # FinEnum instance for Option

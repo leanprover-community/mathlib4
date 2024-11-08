@@ -137,6 +137,8 @@ theorem card_ulift [FinEnum (ULift α)] [FinEnum α] : card (ULift α) = card α
 theorem uliftId_equiv [FinEnum α] (i : Fin (card α)) :
     equiv.symm i = (uliftId.equiv.symm i).down := rfl
 
+/-- An empty type has a trivial enumeration. Not registered as an instance, to make sure that there
+aren't two definitionally differing instances around. -/
 def ofIsEmpty [IsEmpty α] : FinEnum α := default
 
 instance pempty : FinEnum PEmpty :=
@@ -145,6 +147,8 @@ instance pempty : FinEnum PEmpty :=
 instance empty : FinEnum Empty :=
   ofList [] fun x => Empty.elim x
 
+/-- A type with unique inhabitant has a trivial enumeration. Not registered as an instance, to make
+sure that there aren't two definitionally differing instances around. -/
 def ofUnique [Unique α] : FinEnum α := default
 
 instance punit : FinEnum PUnit :=
