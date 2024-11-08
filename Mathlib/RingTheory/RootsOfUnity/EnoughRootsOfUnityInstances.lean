@@ -22,7 +22,7 @@ This is probably easiest via setting up an isomorphism
 
 namespace IsAlgClosed
 
-/-- An algebraically closed field `F`satisfies `HasEnoughRootsOfUnity F n` for all `n`
+/-- An algebraically closed field `F` satisfies `HasEnoughRootsOfUnity F n` for all `n`
 that are not divisible by the characteristic of `F`. -/
 instance hasEnoughRootsOfUnity (F : Type*) [Field F] [IsAlgClosed F] (n : ℕ) [i : NeZero (n : F)] :
     HasEnoughRootsOfUnity F n where
