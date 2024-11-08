@@ -15,36 +15,11 @@ import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Data.Set.SymmDiff
 
 /-!
-# Finite sets
+# Basic lemmas on finite sets
 
-Terms of type `Finset α` are one way of talking about finite subsets of `α` in mathlib.
-Below, `Finset α` is defined as a structure with 2 fields:
+This file contains lemmas on the interaction of various definitions on the `Finset` type.
 
-  1. `val` is a `Multiset α` of elements;
-  2. `nodup` is a proof that `val` has no duplicates.
-
-Finsets in Lean are constructive in that they have an underlying `List` that enumerates their
-elements. In particular, any function that uses the data of the underlying list cannot depend on its
-ordering. This is handled on the `Multiset` level by multiset API, so in most cases one needn't
-worry about it explicitly.
-
-Finsets give a basic foundation for defining finite sums and products over types:
-
-  1. `∑ i ∈ (s : Finset α), f i`;
-  2. `∏ i ∈ (s : Finset α), f i`.
-
-Lean refers to these operations as big operators.
-More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset.lean`.
-
-Finsets are directly used to define fintypes in Lean.
-A `Fintype α` instance for a type `α` consists of a universal `Finset α` containing every term of
-`α`, called `univ`. See `Mathlib/Data/Fintype/Basic.lean`.
-There is also `univ'`, the noncomputable partner to `univ`,
-which is defined to be `α` as a finset if `α` is finite,
-and the empty finset otherwise. See `Mathlib/Data/Fintype/Basic.lean`.
-
-`Finset.card`, the size of a finset is defined in `Mathlib/Data/Finset/Card.lean`.
-This is then used to define `Fintype.card`, the size of a type.
+For an explanation of `Finset` design decisions, please see `Mathlib/Data/Finset/Defs.lean`.
 
 ## Main declarations
 
