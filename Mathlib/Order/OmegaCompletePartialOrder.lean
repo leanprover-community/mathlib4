@@ -72,7 +72,6 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : FunLike (Chain α) ℕ α := inferInstanceAs <| FunLike (ℕ →o α) ℕ α
 instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
-instance : CoeFun (Chain α) fun _ => ℕ → α := ⟨DFunLike.coe⟩
 
 instance [Inhabited α] : Inhabited (Chain α) :=
   ⟨⟨default, fun _ _ _ => le_rfl⟩⟩
@@ -553,7 +552,7 @@ lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuo
     ωScottContinuous (⨆ i, f i) := by
   refine ωScottContinuous.of_monotone_map_ωSup
     ⟨Monotone.iSup fun i ↦ (hf i).monotone, fun c ↦ eq_of_forall_ge_iff fun a ↦ ?_⟩
-  simp (config := { contextual := true }) [ωSup_le_iff, (hf _).map_ωSup, @forall_swap ι]
+  simp +contextual [ωSup_le_iff, (hf _).map_ωSup, @forall_swap ι]
 
 lemma ωScottContinuous.sSup {s : Set (α → β)} (hs : ∀ f ∈ s, ωScottContinuous f) :
     ωScottContinuous (sSup s) := by

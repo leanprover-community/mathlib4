@@ -7,6 +7,9 @@ import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Maps on modules and ideals
+
+Main definitions include `Ideal.map`, `Ideal.comap`, `RingHom.ker`, `Module.annihilator`
+and `Submodule.annihilator`.
 -/
 
 assert_not_exists Basis -- See `RingTheory.Ideal.Basis`
@@ -47,6 +50,8 @@ def comap [RingHomClass F R S] (I : Ideal S) : Ideal R where
 
 @[simp]
 theorem coe_comap [RingHomClass F R S] (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
+
+lemma comap_coe [RingHomClass F R S] (I : Ideal S) : I.comap (f : R →+* S) = I.comap f := rfl
 
 variable {f}
 
@@ -212,8 +217,9 @@ theorem comap_sInf (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ s, (I : Id
 theorem comap_sInf' (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ comap f '' s, I :=
   _root_.trans (comap_sInf f s) (by rw [iInf_image])
 
+/-- Variant of `Ideal.IsPrime.comap` where ideal is explicit rather than implicit.  -/
 theorem comap_isPrime [H : IsPrime K] : IsPrime (comap f K) :=
-  ⟨comap_ne_top f H.ne_top, fun {x y} h => H.mem_or_mem <| by rwa [mem_comap, map_mul] at h⟩
+  H.comap f
 
 variable {I J K L}
 
@@ -309,6 +315,10 @@ theorem le_map_of_comap_le_of_surjective : comap f K ≤ I → K ≤ map f I := 
 
 end
 
+theorem map_comap_eq_self_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
+    (I : Ideal S) : map e (comap e I) = I :=
+  I.map_comap_of_surjective e (EquivLike.surjective e)
+
 theorem map_eq_submodule_map (f : R →+* S) [h : RingHomSurjective f] (I : Ideal R) :
     I.map f = Submodule.map f.toSemilinearMap I :=
   Submodule.ext fun _ => mem_map_iff_of_surjective f h.1
@@ -329,7 +339,7 @@ end Injective
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm (map f I) = I`. -/
 @[simp]
-theorem map_of_equiv (I : Ideal R) (f : R ≃+* S) :
+theorem map_of_equiv {I : Ideal R} (f : R ≃+* S) :
     (I.map (f : R →+* S)).map (f.symm : S →+* R) = I := by
   rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, map_map,
     RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, map_id]
@@ -337,27 +347,34 @@ theorem map_of_equiv (I : Ideal R) (f : R ≃+* S) :
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`,
   then `comap f (comap f.symm I) = I`. -/
 @[simp]
-theorem comap_of_equiv (I : Ideal R) (f : R ≃+* S) :
+theorem comap_of_equiv {I : Ideal R} (f : R ≃+* S) :
     (I.comap (f.symm : S →+* R)).comap (f : R →+* S) = I := by
   rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, comap_comap,
     RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, comap_id]
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f I = comap f.symm I`. -/
-theorem map_comap_of_equiv (I : Ideal R) (f : R ≃+* S) : I.map (f : R →+* S) = I.comap f.symm :=
+theorem map_comap_of_equiv {I : Ideal R} (f : R ≃+* S) : I.map (f : R →+* S) = I.comap f.symm :=
   le_antisymm (Ideal.map_le_comap_of_inverse _ _ _ (Equiv.left_inv' _))
       (Ideal.comap_le_map_of_inverse _ _ _ (Equiv.right_inv' _))
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `comap f.symm I = map f I`. -/
 @[simp]
-theorem comap_symm (I : Ideal R) (f : R ≃+* S) : I.comap f.symm = I.map f :=
-  (map_comap_of_equiv I f).symm
+theorem comap_symm {I : Ideal R} (f : R ≃+* S) : I.comap f.symm = I.map f :=
+  (map_comap_of_equiv f).symm
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm I = comap f I`. -/
 @[simp]
-theorem map_symm (I : Ideal S) (f : R ≃+* S) : I.map f.symm = I.comap f :=
-  map_comap_of_equiv I (RingEquiv.symm f)
+theorem map_symm {I : Ideal S} (f : R ≃+* S) : I.map f.symm = I.comap f :=
+  map_comap_of_equiv (RingEquiv.symm f)
 
-
+theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
+    {I : Ideal R} (y : S) : y ∈ map e I ↔ ∃ x ∈ I, e x = y := by
+  constructor
+  · intro h
+    simp_rw [show map e I = _ from map_comap_of_equiv (e : R ≃+* S)] at h
+    exact ⟨(e : R ≃+* S).symm y, h, (e : R ≃+* S).apply_symm_apply y⟩
+  · rintro ⟨x, hx, rfl⟩
+    exact mem_map_of_mem e hx
 
 end Semiring
 
@@ -420,6 +437,11 @@ theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S}
   rw [comap_map_of_surjective _ hf, sup_eq_left]
   exact le_trans (comap_mono bot_le) (le_of_lt hJ)
 
+/-- The pullback of a maximal ideal under a ring isomorphism is a maximal ideal. -/
+instance comap_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
+    {p : Ideal S} [p.IsMaximal] : (comap e p).IsMaximal :=
+  comap_isMaximal_of_surjective e (EquivLike.surjective e)
+
 theorem comap_le_comap_iff_of_surjective (hf : Function.Surjective f) (I J : Ideal S) :
     comap f I ≤ comap f J ↔ I ≤ J :=
   ⟨fun h => (map_comap_of_surjective f hf I).symm.le.trans (map_le_of_le_comap h), fun h =>
@@ -457,6 +479,11 @@ theorem map.isMaximal (hf : Function.Bijective f) {I : Ideal R} (H : IsMaximal I
     I = comap f (map f I) := ((relIsoOfBijective f hf).right_inv I).symm
     _ = comap f ⊤ := by rw [h]
     _ = ⊤ := by rw [comap_top]
+
+/-- A ring isomorphism sends a maximal ideal to a maximal ideal. -/
+instance map_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
+    {p : Ideal R} [hp : p.IsMaximal] : (map e p).IsMaximal :=
+  map.isMaximal e (EquivLike.bijective e) hp
 
 end Bijective
 
@@ -760,10 +787,11 @@ theorem map_eq_bot_iff_le_ker {I : Ideal R} (f : F) : I.map f = ⊥ ↔ I ≤ Ri
 theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun _ hx =>
   mem_comap.2 (RingHom.mem_ker.1 hx ▸ K.zero_mem)
 
-theorem map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S]
+/-- A ring isomorphism sends a prime ideal to a prime ideal. -/
+instance map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S]
     (f : F') {I : Ideal R} [IsPrime I] : IsPrime (map f I) := by
   have h : I.map f = I.map ((f : R ≃+* S) : R →+* S) := rfl
-  rw [h, map_comap_of_equiv I (f : R ≃+* S)]
+  rw [h, map_comap_of_equiv (f : R ≃+* S)]
   exact Ideal.IsPrime.comap (RingEquiv.symm (f : R ≃+* S))
 
 end Semiring
@@ -955,3 +983,19 @@ def idealMap (I : Ideal R) : I →ₗ[R] I.map (algebraMap R S) :=
     (fun _ ↦ Ideal.mem_map_of_mem _)
 
 end Algebra
+
+namespace NoZeroSMulDivisors
+
+theorem of_ker_algebraMap_eq_bot (R A : Type*) [CommRing R] [Semiring A] [Algebra R A]
+    [NoZeroDivisors A] (h : RingHom.ker (algebraMap R A) = ⊥) : NoZeroSMulDivisors R A :=
+  of_algebraMap_injective ((RingHom.injective_iff_ker_eq_bot _).mpr h)
+
+theorem ker_algebraMap_eq_bot (R A : Type*) [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
+    [NoZeroSMulDivisors R A] : RingHom.ker (algebraMap R A) = ⊥ :=
+  (RingHom.injective_iff_ker_eq_bot _).mp (algebraMap_injective R A)
+
+theorem iff_ker_algebraMap_eq_bot {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [Algebra R A] :
+    NoZeroSMulDivisors R A ↔ RingHom.ker (algebraMap R A) = ⊥ :=
+  iff_algebraMap_injective.trans (RingHom.injective_iff_ker_eq_bot (algebraMap R A))
+
+end NoZeroSMulDivisors

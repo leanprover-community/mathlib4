@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Jujian Zhang
 -/
 
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 
@@ -156,12 +156,11 @@ variable (M) in
 quotienting that module by the corresponding submodule. -/
 noncomputable def quotTensorEquivQuotSMul (I : Ideal R) :
     ((R ⧸ I) ⊗[R] M) ≃ₗ[R] M ⧸ (I • (⊤ : Submodule R M)) :=
-  (rTensor.equiv M (LinearMap.exact_subtype_mkQ I) I.mkQ_surjective).symm.trans <|
-    Submodule.Quotient.equiv _ _ (TensorProduct.lid R M) <|
-      Eq.trans (LinearMap.range_comp _ _).symm <|
-        Eq.trans ((Submodule.topEquiv.lTensor I).range_comp _).symm <| Eq.symm <|
-          (Submodule.smul_eq_map₂.trans <| map₂_eq_range_lift_comp_mapIncl _ _ _).trans <|
-            congrArg _ (TensorProduct.ext' (fun _ _ => rfl))
+  quotientTensorEquiv M I ≪≫ₗ
+  (Submodule.Quotient.equiv _ _ (TensorProduct.lid R M) <| by
+    erw [← LinearMap.range_comp, ← (Submodule.topEquiv.lTensor I).range_comp,
+      Submodule.smul_eq_map₂, map₂_eq_range_lift_comp_mapIncl]
+    exact congr_arg _ (TensorProduct.ext' fun _ _ ↦  rfl))
 
 variable (M) in
 /-- Right tensoring a module with a quotient of the ring is the same as

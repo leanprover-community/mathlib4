@@ -6,7 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.NonUnitalSubring.Basic
+import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 /-!
@@ -41,6 +41,8 @@ protected theorem _root_.Ideal.smul_eq_mul (I J : Ideal R) : I • J = I * J :=
   rfl
 
 variable {I J : Ideal R} {N P : Submodule R M}
+
+theorem smul_toAddSubmonoid : (I • N).toAddSubmonoid = I.toAddSubmonoid • N.toAddSubmonoid := rfl
 
 theorem smul_mem_smul {r} {n} (hr : r ∈ I) (hn : n ∈ N) : r • n ∈ I • N :=
   AddSubmonoid.smul_mem_smul hr hn
@@ -94,7 +96,7 @@ variable (I J N P)
 
 @[simp]
 theorem smul_bot : I • (⊥ : Submodule R M) = ⊥ :=
-  le_bot_iff.mp <| smul_le.mpr <| by rintro _ _ _ rfl; rw [smul_zero]; exact zero_mem _
+  toAddSubmonoid_injective <| AddSubmonoid.addSubmonoid_smul_bot _
 
 @[simp]
 theorem bot_smul : (⊥ : Ideal R) • N = ⊥ :=
@@ -105,10 +107,8 @@ theorem top_smul : (⊤ : Ideal R) • N = N :=
   le_antisymm smul_le_right fun r hri => one_smul R r ▸ smul_mem_smul mem_top hri
 
 theorem smul_sup : I • (N ⊔ P) = I • N ⊔ I • P :=
-  le_antisymm (smul_le.mpr fun m hm np hnp ↦ by
-    obtain ⟨n, hn, p, hp, rfl⟩ := mem_sup.mp hnp
-    rw [smul_add]; exact add_mem_sup (smul_mem_smul hm hn) <| smul_mem_smul hm hp)
-    (sup_le (smul_mono_right _ le_sup_left) <| smul_mono_right _ le_sup_right)
+  toAddSubmonoid_injective <| by
+    simp only [smul_toAddSubmonoid, sup_toAddSubmonoid, AddSubmonoid.addSubmonoid_smul_sup]
 
 theorem sup_smul : (I ⊔ J) • N = I • N ⊔ J • N :=
   le_antisymm (smul_le.mpr fun mn hmn p hp ↦ by
@@ -133,10 +133,8 @@ protected theorem smul_inf_le (M₁ M₂ : Submodule R M) :
     I • (M₁ ⊓ M₂) ≤ I • M₁ ⊓ I • M₂ := smul_inf_le _ _ _
 
 theorem smul_iSup {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} : I • iSup t = ⨆ i, I • t i :=
-  le_antisymm (smul_le.mpr fun t ht s hs ↦ iSup_induction _ (C := (t • · ∈ _)) hs
-    (fun i s hs ↦ mem_iSup_of_mem i <| smul_mem_smul ht hs) (by simp_rw [smul_zero]; apply zero_mem)
-    fun _ _ ↦ by simp_rw [smul_add]; apply add_mem) <|
-    iSup_le fun i ↦ smul_mono_right _ (le_iSup _ i)
+  toAddSubmonoid_injective <| by
+    simp only [smul_toAddSubmonoid, iSup_toAddSubmonoid, AddSubmonoid.smul_iSup]
 
 @[deprecated smul_iInf_le (since := "2024-03-31")]
 protected theorem smul_iInf_le {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} :
@@ -309,7 +307,8 @@ section Semiring
 variable {R : Type u} [Semiring R] {I J K L : Ideal R}
 
 @[simp]
-theorem one_eq_top : (1 : Ideal R) = ⊤ := Ideal.span_singleton_one
+theorem one_eq_top : (1 : Ideal R) = ⊤ := by
+  rw [Submodule.one_eq_span, ← Ideal.span, Ideal.span_singleton_one]
 
 theorem add_eq_one_iff : I + J = 1 ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = 1 := by
   rw [one_eq_top, eq_top_iff_one, add_eq_sup, Submodule.mem_sup]
@@ -350,10 +349,8 @@ protected theorem mul_assoc : I * J * K = I * (J * K) :=
 
 variable (I)
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem mul_bot : I * ⊥ = ⊥ := by simp
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem bot_mul : ⊥ * I = ⊥ := by simp
 
 @[simp]
@@ -427,8 +424,7 @@ theorem pow_succ : I ^ (n + 1) = I * I ^ n := by
 end IsTwoSided
 
 @[simp]
-theorem mul_eq_bot [NoZeroDivisors R] :
-    I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
+theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
   ⟨fun hij =>
     or_iff_not_imp_left.mpr fun I_ne_bot =>
       J.eq_bot_iff.mpr fun j hj =>
@@ -439,8 +435,8 @@ theorem mul_eq_bot [NoZeroDivisors R] :
 instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
-instance {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
-    [NoZeroSMulDivisors R S] {I : Ideal S} : NoZeroSMulDivisors R I :=
+instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [Module S A]
+    [IsScalarTower R S A] [NoZeroSMulDivisors R A] {I : Submodule S A} : NoZeroSMulDivisors R I :=
   Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
 
 end Semiring
@@ -465,6 +461,19 @@ theorem prod_mem_prod {ι : Type*} {s : Finset ι} {I : ι → Ideal R} {x : ι 
       exact
         mul_mem_mul (h a <| Finset.mem_insert_self a s)
           (IH fun i hi => h i <| Finset.mem_insert_of_mem hi)
+
+lemma sup_pow_add_le_pow_sup_pow {n m : ℕ} : (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔ J ^ m := by
+  rw [← Ideal.add_eq_sup, ← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup]
+  apply Finset.sup_le
+  intros i hi
+  by_cases hn : n ≤ i
+  · exact (Ideal.mul_le_right.trans (Ideal.mul_le_right.trans
+      ((Ideal.pow_le_pow_right hn).trans le_sup_left)))
+  · refine (Ideal.mul_le_right.trans (Ideal.mul_le_left.trans
+      ((Ideal.pow_le_pow_right ?_).trans le_sup_right)))
+    simp only [Finset.mem_range, Nat.lt_succ] at hi
+    rw [Nat.le_sub_iff_add_le hi]
+    nlinarith
 
 variable (I J K)
 
@@ -850,6 +859,22 @@ variable {I J} in
 theorem IsRadical.inf (hI : IsRadical I) (hJ : IsRadical J) : IsRadical (I ⊓ J) := by
   rw [IsRadical, radical_inf]; exact inf_le_inf hI hJ
 
+/-- `Ideal.radical` as an `InfTopHom`, bundling in that it distributes over `inf`. -/
+def radicalInfTopHom : InfTopHom (Ideal R) (Ideal R) where
+  toFun := radical
+  map_inf' := radical_inf
+  map_top' := radical_top _
+
+@[simp]
+lemma radicalInfTopHom_apply (I : Ideal R) : radicalInfTopHom I = radical I := rfl
+
+open Finset in
+lemma radical_finset_inf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (hi : i ∈ s)
+    (hs : ∀ ⦃y⦄, y ∈ s → (f y).radical = (f i).radical) :
+    (s.inf f).radical = (f i).radical := by
+  rw [← radicalInfTopHom_apply, map_finset_inf, ← Finset.inf'_eq_inf ⟨_, hi⟩]
+  exact Finset.inf'_eq_of_forall _ _ hs
+
 /-- The reverse inclusion does not hold for e.g. `I := fun n : ℕ ↦ Ideal.span {(2 ^ n : ℤ)}`. -/
 theorem radical_iInf_le {ι} (I : ι → Ideal R) : radical (⨅ i, I i) ≤ ⨅ i, radical (I i) :=
   le_iInf fun _ ↦ radical_mono (iInf_le _ _)
@@ -916,12 +941,10 @@ theorem radical_bot_of_noZeroDivisors {R : Type u} [CommSemiring R] [NoZeroDivis
 instance : IdemCommSemiring (Ideal R) :=
   inferInstance
 
-variable (R)
-
+variable (R) in
 theorem top_pow (n : ℕ) : (⊤ ^ n : Ideal R) = ⊤ :=
   Nat.recOn n one_eq_top fun n ih => by rw [pow_succ, ih, top_mul]
 
-variable {R}
 variable (I)
 
 lemma radical_pow : ∀ {n}, n ≠ 0 → radical (I ^ n) = radical I
@@ -1271,8 +1294,7 @@ lemma span_smul_eq
 @[simp]
 theorem set_smul_top_eq_span (s : Set R) :
     s • ⊤ = Ideal.span s :=
-  Eq.trans (span_smul_eq s ⊤).symm <|
-    Eq.trans (smul_eq_mul (Ideal R)) (Ideal.mul_top (.span s))
+  (span_smul_eq s ⊤).symm.trans (Ideal.span s).mul_top
 
 end Submodule
 

@@ -64,7 +64,6 @@ protected theorem nonneg (q : ℚ) : 0 ≤ padicNorm p q :=
 protected theorem zero : padicNorm p 0 = 0 := by simp [padicNorm]
 
 /-- The `p`-adic norm of `1` is `1`. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem one : padicNorm p 1 = 1 := by simp [padicNorm]
 
 /-- The `p`-adic norm of `p` is `p⁻¹` if `p > 1`.

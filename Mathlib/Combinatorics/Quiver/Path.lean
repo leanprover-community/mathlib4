@@ -72,6 +72,11 @@ theorem eq_of_length_zero (p : Path a b) (hzero : p.length = 0) : a = b := by
   · rfl
   · cases Nat.succ_ne_zero _ hzero
 
+theorem eq_nil_of_length_zero (p : Path a a) (hzero : p.length = 0) : p = nil := by
+  cases p
+  · rfl
+  · simp at hzero
+
 /-- Composition of paths. -/
 def comp {a b : V} : ∀ {c}, Path a b → Path b c → Path a c
   | _, p, nil => p
@@ -138,6 +143,22 @@ theorem comp_inj_left {p₁ p₂ : Path a b} {q : Path b c} : p₁.comp q = p₂
 @[simp]
 theorem comp_inj_right {p : Path a b} {q₁ q₂ : Path b c} : p.comp q₁ = p.comp q₂ ↔ q₁ = q₂ :=
   p.comp_injective_right.eq_iff
+
+lemma eq_toPath_comp_of_length_eq_succ (p : Path a b) {n : ℕ}
+    (hp : p.length = n + 1) :
+    ∃ (c : V) (f : a ⟶ c) (q : Quiver.Path c b) (_ : q.length = n),
+      p = f.toPath.comp q := by
+  induction p generalizing n with
+  | nil => simp at hp
+  | @cons c d p q h =>
+    cases n
+    · rw [length_cons, Nat.zero_add, Nat.add_left_eq_self] at hp
+      obtain rfl := eq_of_length_zero p hp
+      obtain rfl := eq_nil_of_length_zero p hp
+      exact ⟨d, q, nil, rfl, rfl⟩
+    · rw [length_cons, Nat.add_right_cancel_iff] at hp
+      obtain ⟨x, q'', p'', hl, rfl⟩ := h hp
+      exact ⟨x, q'', p''.cons q, by simpa, rfl⟩
 
 /-- Turn a path into a list. The list contains `a` at its head, but not `b` a priori. -/
 @[simp]

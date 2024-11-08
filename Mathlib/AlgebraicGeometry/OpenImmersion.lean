@@ -56,7 +56,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
     refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
-    · exact Opens.openEmbedding _ -- Porting note (#11187): was `infer_instance`
+    · exact Opens.isOpenEmbedding _ -- Porting note (#11187): was `infer_instance`
 
 end LocallyRingedSpace.IsOpenImmersion
 
@@ -71,13 +71,16 @@ namespace Scheme.Hom
 
 variable {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f]
 
-theorem openEmbedding : OpenEmbedding f.base :=
+theorem isOpenEmbedding : IsOpenEmbedding f.base :=
   H.base_open
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding := isOpenEmbedding
 
 /-- The image of an open immersion as an open set. -/
 @[simps]
 def opensRange : Y.Opens :=
-  ⟨_, f.openEmbedding.isOpen_range⟩
+  ⟨_, f.isOpenEmbedding.isOpen_range⟩
 
 /-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev opensFunctor : X.Opens ⥤ Y.Opens :=
@@ -103,7 +106,7 @@ lemma image_top_eq_opensRange : f ''ᵁ ⊤ = f.opensRange := by
 @[simp]
 lemma preimage_image_eq (U : X.Opens) : f ⁻¹ᵁ f ''ᵁ U = U := by
   apply Opens.ext
-  simp [Set.preimage_image_eq _ f.openEmbedding.inj]
+  simp [Set.preimage_image_eq _ f.isOpenEmbedding.inj]
 
 lemma image_le_image_iff (f : X ⟶ Y) [IsOpenImmersion f] (U U' : X.Opens) :
     f ''ᵁ U ≤ f ''ᵁ U' ↔ U ≤ U' := by
@@ -194,7 +197,7 @@ def IsOpenImmersion.opensEquiv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion
     X.Opens ≃ { U : Y.Opens // U ≤ f.opensRange } where
   toFun U := ⟨f ''ᵁ U, Set.image_subset_range _ _⟩
   invFun U := f ⁻¹ᵁ U
-  left_inv _ := Opens.ext (Set.preimage_image_eq _ f.openEmbedding.inj)
+  left_inv _ := Opens.ext (Set.preimage_image_eq _ f.isOpenEmbedding.inj)
   right_inv U := Subtype.ext (Opens.ext (Set.image_preimage_eq_of_subset U.2))
 
 namespace Scheme
@@ -202,7 +205,7 @@ namespace Scheme
 instance basic_open_isOpenImmersion {R : CommRingCat.{u}} (f : R) :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) := by
   apply SheafedSpace.IsOpenImmersion.of_stalk_iso (H := ?_)
-  · exact (PrimeSpectrum.localization_away_openEmbedding (Localization.Away f) f : _)
+  · exact (PrimeSpectrum.localization_away_isOpenEmbedding (Localization.Away f) f : _)
   · intro x
     exact Spec_map_localization_isIso R (Submonoid.powers f) x
 
@@ -292,7 +295,7 @@ end PresheafedSpace.IsOpenImmersion
 
 section Restrict
 
-variable {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X} (h : OpenEmbedding f)
+variable {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X} (h : IsOpenEmbedding f)
 
 /-- The restriction of a Scheme along an open embedding. -/
 @[simps! (config := .lemmasOnly) carrier, simps! presheaf_obj]
@@ -351,7 +354,7 @@ theorem to_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsOpenImmersion f] [Epi f.b
       LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace)
     (@PresheafedSpace.IsOpenImmersion.to_iso _ _ _ _ f.toPshHom h _) _
 
-theorem of_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : OpenEmbedding f.base)
+theorem of_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : IsOpenEmbedding f.base)
     [∀ x, IsIso (f.stalkMap x)] : IsOpenImmersion f :=
   haveI (x : X) : IsIso (f.toShHom.stalkMap x) := inferInstanceAs <| IsIso (f.stalkMap x)
   SheafedSpace.IsOpenImmersion.of_stalk_iso f.toShHom hf
@@ -368,10 +371,10 @@ lemma of_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion 
       infer_instance
     IsIso.of_isIso_comp_left (f := g.stalkMap (f.base x)) _
   IsOpenImmersion.of_stalk_iso _ <|
-    OpenEmbedding.of_comp _ (Scheme.Hom.openEmbedding g) (Scheme.Hom.openEmbedding (f ≫ g))
+    IsOpenEmbedding.of_comp _ (Scheme.Hom.isOpenEmbedding g) (Scheme.Hom.isOpenEmbedding (f ≫ g))
 
 theorem iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    IsOpenImmersion f ↔ OpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) :=
+    IsOpenImmersion f ↔ IsOpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) :=
   ⟨fun H => ⟨H.1, fun x ↦ inferInstanceAs <| IsIso (f.toPshHom.stalkMap x)⟩,
     fun ⟨h₁, h₂⟩ => @IsOpenImmersion.of_stalk_iso _ _ f h₁ h₂⟩
 
@@ -391,7 +394,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X �
               (Equiv.ofBijective _ ⟨h₂.inj, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
               h₂.isOpenMap)).hom
     infer_instance
-  · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.base)).openEmbedding⟩
+  · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.base)).isOpenEmbedding⟩
 
 /-- An open immersion induces an isomorphism from the domain onto the image -/
 def isoRestrict : X ≅ (Z.restrict H.base_open : _) :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.GroupTheory.GroupAction.Hom
 
@@ -110,10 +110,6 @@ class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiri
 
 end
 
--- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
--- `σ` becomes a metavariable but that's fine because it's an `outParam`
--- attribute [nolint dangerousInstance] SemilinearMapClass.toAddHomClass
-
 -- `map_smulₛₗ` should be `@[simp]` but doesn't fire due to `lean4#3701`.
 -- attribute [simp] map_smulₛₗ
 
@@ -139,7 +135,6 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMon
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
--- Porting note: the `dangerousInstance` linter has become smarter about `outParam`s
 instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
@@ -448,17 +443,6 @@ theorem toAddMonoidHom_injective :
 theorem ext_ring {f g : R →ₛₗ[σ] M₃} (h : f 1 = g 1) : f = g :=
   ext fun x ↦ by rw [← mul_one x, ← smul_eq_mul, f.map_smulₛₗ, g.map_smulₛₗ, h]
 
-@[ext high]
-theorem ext_ring_op {σ : Rᵐᵒᵖ →+* S} {f g : R →ₛₗ[σ] M₃} (h : f (1 : R) = g (1 : R)) :
-    f = g :=
-  ext fun x ↦ by
-    -- Porting note: replaced the oneliner `rw` proof with a partially term-mode proof
-    -- because `rw` was giving "motive is type incorrect" errors
-    rw [← one_mul x, ← op_smul_eq_mul]
-    refine (f.map_smulₛₗ (MulOpposite.op x) 1).trans ?_
-    rw [h]
-    exact (g.map_smulₛₗ (MulOpposite.op x) 1).symm
-
 end
 
 /-- Interpret a `RingHom` `f` as an `f`-semilinear map. -/
@@ -600,21 +584,16 @@ variable [Semiring R] [Module R M] [Semiring S] [Module S M₂] [Module R M₃]
 variable {σ : R →+* S}
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
-@[coe]
+@[deprecated (since := "2024-11-08")]
 def toSemilinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M₂ :=
   { fₗ with }
 
 instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
 
-instance instCoeTCSemilinearMap : CoeTC (M →ₑ+[σ.toMonoidHom] M₂) (M →ₛₗ[σ] M₂) :=
-  ⟨toSemilinearMap⟩
-
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
+@[deprecated (since := "2024-11-08")]
 def toLinearMap (fₗ : M →+[R] M₃) : M →ₗ[R] M₃ :=
   { fₗ with }
-
-instance instCoeTCLinearMap : CoeTC (M →+[R] M₃) (M →ₗ[R] M₃) :=
-  ⟨toLinearMap⟩
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where

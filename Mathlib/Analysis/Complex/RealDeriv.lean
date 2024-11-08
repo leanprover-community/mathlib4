@@ -167,6 +167,6 @@ theorem conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj {f : ℂ 
   rw [differentiableAt_iff_restrictScalars ℝ (h_diff.comp _ conjCLE.differentiableAt)]
   refine exists_congr fun g => rfl.congr ?_
   have : fderiv ℝ conj (conj z) = _ := conjCLE.fderiv
-  simp [fderiv.comp _ h_diff conjCLE.differentiableAt, this, conj_conj]
+  simp [fderiv_comp _ h_diff conjCLE.differentiableAt, this, conj_conj]
 
 end Conformality

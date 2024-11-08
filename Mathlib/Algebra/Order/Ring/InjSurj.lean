@@ -17,7 +17,7 @@ variable {α β : Type*}
 
 namespace Function.Injective
 variable [Zero β] [One β] [Add β] [Mul β] [Neg β] [Sub β] [SMul ℕ β] [SMul ℤ β] [Pow β ℕ]
-  [NatCast β] [IntCast β] [Sup β] [Inf β] (f : β → α) (hf : Injective f)
+  [NatCast β] [IntCast β] [Max β] [Min β] (f : β → α) (hf : Injective f)
 
 /-- Pullback an `OrderedSemiring` under an injective map. -/
 -- See note [reducible non-instances]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Maps.OpenQuotient
 
@@ -30,8 +30,11 @@ instance [CompactSpace G] (N : Subgroup G) : CompactSpace (G ⧸ N) :=
   Quotient.compactSpace
 
 @[to_additive]
-theorem quotientMap_mk (N : Subgroup G) : QuotientMap (mk : G → G ⧸ N) :=
-  quotientMap_quot_mk
+theorem isQuotientMap_mk (N : Subgroup G) : IsQuotientMap (mk : G → G ⧸ N) :=
+  isQuotientMap_quot_mk
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_mk := isQuotientMap_mk
 
 @[to_additive]
 theorem continuous_mk {N : Subgroup G} : Continuous (mk : G → G ⧸ N) :=
@@ -121,13 +124,13 @@ theorem _root_.topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N)
 theorem isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
     IsClosedMap ((↑) : G → G ⧸ H) := by
   intro t ht
-  rw [← (quotientMap_mk H).isClosed_preimage, preimage_image_mk_eq_mul]
+  rw [← (isQuotientMap_mk H).isClosed_preimage, preimage_image_mk_eq_mul]
   exact ht.mul_right_of_isCompact hH
 
 @[to_additive]
 instance instT3Space [N.Normal] [hN : IsClosed (N : Set G)] : T3Space (G ⧸ N) := by
   rw [← QuotientGroup.ker_mk' N] at hN
-  haveI := TopologicalGroup.t1Space (G ⧸ N) ((quotientMap_mk N).isClosed_preimage.mp hN)
+  haveI := TopologicalGroup.t1Space (G ⧸ N) ((isQuotientMap_mk N).isClosed_preimage.mp hN)
   infer_instance
 
 end QuotientGroup

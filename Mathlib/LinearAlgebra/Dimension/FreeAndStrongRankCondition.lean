@@ -202,16 +202,16 @@ there is some `v : V` so every vector is a multiple of `v`.
 -/
 theorem finrank_le_one_iff [Module.Free K V] [Module.Finite K V] :
     finrank K V ≤ 1 ↔ ∃ v : V, ∀ w : V, ∃ c : K, c • v = w := by
-  rw [← rank_le_one_iff, ← finrank_eq_rank, ← natCast_le, Nat.cast_one]
+  rw [← rank_le_one_iff, ← finrank_eq_rank, Nat.cast_le_one]
 
 theorem Submodule.finrank_le_one_iff_isPrincipal
     (W : Submodule K V) [Module.Free K W] [Module.Finite K W] :
     finrank K W ≤ 1 ↔ W.IsPrincipal := by
-  rw [← W.rank_le_one_iff_isPrincipal, ← finrank_eq_rank, ← natCast_le, Nat.cast_one]
+  rw [← W.rank_le_one_iff_isPrincipal, ← finrank_eq_rank, Nat.cast_le_one]
 
 theorem Module.finrank_le_one_iff_top_isPrincipal [Module.Free K V] [Module.Finite K V] :
     finrank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by
-  rw [← Module.rank_le_one_iff_top_isPrincipal, ← finrank_eq_rank, ← natCast_le, Nat.cast_one]
+  rw [← Module.rank_le_one_iff_top_isPrincipal, ← finrank_eq_rank, Nat.cast_le_one]
 
 variable (K V) in
 theorem lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank [Module.Free K V]

@@ -180,7 +180,7 @@ instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K w
     rw [← hi.cauchy_map_iff] at F_cau ⊢
     rw [map_comm (show (i ∘ fun x => x⁻¹) = (fun x => x⁻¹) ∘ i by ext; rfl)]
     apply CompletableTopField.nice _ F_cau
-    rw [← Filter.push_pull', ← map_zero i, ← hi.inducing.nhds_eq_comap, inf_F, Filter.map_bot]
+    rw [← Filter.push_pull', ← map_zero i, ← hi.isInducing.nhds_eq_comap, inf_F, Filter.map_bot]
 
 instance (priority := 100) completableTopField_of_complete (L : Type*) [Field L] [UniformSpace L]
     [TopologicalDivisionRing L] [T0Space L] [CompleteSpace L] : CompletableTopField L where
@@ -211,4 +211,4 @@ theorem IsUniformInducing.completableTopField
     ext; simp only [Function.comp_apply, map_inv₀, Subfield.coe_inv]
   rw [Filter.map_comm h_comm]
   apply CompletableTopField.nice _ F_cau
-  rw [← Filter.push_pull', ← map_zero f, ← hf.inducing.nhds_eq_comap, inf_F, Filter.map_bot]
+  rw [← Filter.push_pull', ← map_zero f, ← hf.isInducing.nhds_eq_comap, inf_F, Filter.map_bot]
