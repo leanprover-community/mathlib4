@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.DifferentialsNew
+import Mathlib.Algebra.Module.Presentation.Differentials
 import Mathlib.Algebra.Module.Presentation.ExteriorPower
 import Mathlib.Algebra.Module.Presentation.RestrictScalars
 import Mathlib.Algebra.Homology.HomologicalComplex

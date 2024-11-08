@@ -6,6 +6,7 @@ Authors: Joël Riou
 
 import Mathlib.Algebra.Module.Presentation.Basic
 import Mathlib.RingTheory.Kaehler.Polynomial
+import Mathlib.RingTheory.Kaehler.CotangentComplex
 import Mathlib.RingTheory.Presentation
 
 /-!
@@ -15,125 +16,76 @@ Given a presentation of a `R`-algebra `S`, we obtain a presentation
 of the `S`-module `Ω[S⁄R]`.
 
 -/
-
 universe w' t w u v
 
-namespace Derivation
+namespace Function.Exact
 
-variable {R : Type*} {A : Type*} [CommRing R] [CommRing A] [Algebra R A]
-  {M : Type*} [AddCommGroup M] [Module R M] [Module A M]
-  (d : Derivation R A M) (B : Type*) [CommRing B] [Algebra A B]
-  [Module B M] [IsScalarTower A B M]
-
-/-- Given `d : Derivation R A M`, when `B` is an `A`-algebra and `M` is a `B`-module,
-this is the ideal of `A` consisting of the elements that are both in the
-kernel `algebraMap A B` and the kernel of `d`. -/
-def kerInterKer :
-    Ideal A where
-  carrier x := algebraMap A B x = 0 ∧ d x = 0
-  add_mem' := by
-    rintro x y ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
-    exact ⟨by simp [h₁, h₃], by simp [h₂, h₄]⟩
-  zero_mem' := ⟨by simp, by simp⟩
-  smul_mem' := by
-    rintro a x ⟨h₁, h₂⟩
-    constructor
-    · simp [h₁]
-    · rw [smul_eq_mul, leibniz, h₂, smul_zero, zero_add,
-        algebra_compatible_smul B, h₁, zero_smul]
-
-lemma kerInterKer_le_ringHom_ker :
-    d.kerInterKer B ≤ RingHom.ker (algebraMap A B) :=
-  fun _ ⟨h₁, _⟩ ↦ h₁
-
-lemma ringHom_ker_eq_kerInterKer_iff :
-    RingHom.ker (algebraMap A B) = d.kerInterKer B ↔
-      RingHom.ker (algebraMap A B) ≤ d.kerInterKer B :=
-  ⟨fun h ↦ by rw [h], fun h ↦ le_antisymm h (kerInterKer_le_ringHom_ker _ _)⟩
-
-lemma ringHom_ker_eq_kerInterKer_of_span_eq_ker {G : Set A}
-    (hG : Ideal.span G = RingHom.ker (algebraMap A B)) (h : ∀ (g : G), d g = 0) :
-    RingHom.ker (algebraMap A B) = d.kerInterKer B := by
-  rw [ringHom_ker_eq_kerInterKer_iff, ← hG, Ideal.span_le]
-  exact fun g hg ↦ ⟨(Ideal.ext_iff.1 hG g).1 (Ideal.subset_span hg), h ⟨g, hg⟩⟩
-
-end Derivation
-
--- to be moved
 section
 
-variable (R : Type*) {A B : Type*} [CommRing R] [CommRing A] [CommRing B]
-  [Algebra R A] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
-  (surj : Function.Surjective (algebraMap A B))
-  (M : Type*) [AddCommGroup M] [Module R M] [Module A M] [Module B M] [IsScalarTower A B M]
+variable {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+  [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+  (f : M₁ →+ M₂) (g : M₂ →+ M₃) (f' : N₁ →+ N₂) (g' : N₂ →+ N₃)
+  (τ₁ : M₁ →+ N₁) (τ₂ : M₂ →+ N₂) (τ₃ : M₃ →+ N₃)
+  (comm₁₂ : f'.comp τ₁ = τ₂.comp f)
+  (comm₂₃ : g'.comp τ₂ = τ₃.comp g)
+  (h₁ : Function.Surjective τ₁)
+  (h₂ : Function.Bijective τ₂)
+  (h₃ : Function.Injective τ₃)
 
-/-- Assume that a morphism of `R`-algebras from `A` to `B` is surjective, then
-`R`-derivations of a `B`-module `M` identify to `R`-derivations of `M` as a `A`-module
-which vanishes on the kernel ideal of `algebraMap A B`. -/
-@[simps! apply_coe]
-noncomputable def Derivation.equivOfSurjective :
-    Derivation R B M ≃
-      { d : Derivation R A M // RingHom.ker (algebraMap A B) = d.kerInterKer B } :=
-  Equiv.ofBijective (fun d ↦ ⟨d.compAlgebraMap A, by
-      refine le_antisymm (fun x hx ↦ ?_) (Derivation.kerInterKer_le_ringHom_ker _ _)
-      simp only [RingHom.mem_ker] at hx
-      exact ⟨hx, by rw [compAlgebraMap_apply, hx, map_zero]⟩⟩) (by
+include comm₁₂ comm₂₃ h₁ h₂ h₃ in
+lemma exact_iff_of_surjective_of_bijective_of_injective :
+    Exact f g ↔ Exact f' g' := by
+  replace comm₁₂ := DFunLike.congr_fun comm₁₂
+  replace comm₂₃ := DFunLike.congr_fun comm₂₃
+  dsimp at comm₁₂ comm₂₃
+  constructor
+  · intro h y₂
+    obtain ⟨x₂, rfl⟩ := h₂.2 y₂
     constructor
-    · intro d₁ d₂ h
-      simp only [Subtype.mk.injEq] at h
-      ext b
-      obtain ⟨a, rfl⟩ := surj b
-      exact DFunLike.congr_fun h a
-    · intro d
-      obtain ⟨s, hs⟩ := surj.hasRightInverse
-      let d' : B → M := fun b ↦ d.1 (s b)
-      have h : ∀ (a : A), d' (algebraMap A B a) = d.1 a := fun a ↦ by
-        dsimp [d']
-        rw [← sub_eq_zero, ← map_sub]
-        exact ((Ideal.ext_iff.1 d.2 _).1 (by simp [hs _])).2
-      exact
-         ⟨{ toFun := d'
-            map_add' := fun x y ↦ by
-              obtain ⟨x, rfl⟩ := surj x
-              obtain ⟨y, rfl⟩ := surj y
-              rw [← map_add, h, h, h, map_add]
-            map_one_eq_zero' := by
-              dsimp
-              rw [← RingHom.map_one, h, map_one_eq_zero]
-            map_smul' := fun r x ↦ by
-              obtain ⟨x, rfl⟩ := surj x
-              dsimp
-              rw [h, ← map_smul, ← h, Algebra.smul_def, Algebra.smul_def, map_mul,
-                IsScalarTower.algebraMap_apply R A B]
-            leibniz' := fun x y ↦ by
-              obtain ⟨x, rfl⟩ := surj x
-              obtain ⟨y, rfl⟩ := surj y
-              dsimp
-              rw [← map_mul, h, leibniz, h, h, algebra_compatible_smul B x,
-                algebra_compatible_smul B y]}, by aesop⟩)
+    · intro hx₂
+      obtain ⟨x₁, rfl⟩ := (h x₂).1 (h₃ (by simpa only [map_zero, comm₂₃] using hx₂))
+      exact ⟨τ₁ x₁, by simp only [comm₁₂]⟩
+    · rintro ⟨y₁, hy₁⟩
+      obtain ⟨x₁, rfl⟩ := h₁ y₁
+      rw [comm₂₃, (h x₂).2 _, map_zero]
+      exact ⟨x₁, h₂.1 (by simpa only [comm₁₂] using hy₁)⟩
+  · intro h x₂
+    constructor
+    · intro hx₂
+      obtain ⟨y₁, hy₁⟩ := (h (τ₂ x₂)).1 (by simp only [comm₂₃, hx₂, map_zero])
+      obtain ⟨x₁, rfl⟩ := h₁ y₁
+      exact ⟨x₁, h₂.1 (by simpa only [comm₁₂] using hy₁)⟩
+    · rintro ⟨x₁, rfl⟩
+      apply h₃
+      simp only [← comm₁₂, ← comm₂₃, h.apply_apply_eq_zero (τ₁ x₁), map_zero]
 
 end
 
--- to be moved
 section
 
-variable {R : Type u} {S : Type v} [CommSemiring R] [CommSemiring S] [Algebra R S]
-  (α : Type*) (M : Type*) [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
-  (v : α → M) (l : α →₀ R)
+variable {R : Type*} [Semiring R]
+  {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+  [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+  [Module R M₁] [Module R M₂] [Module R M₃]
+  [Module R N₁] [Module R N₂] [Module R N₃]
+  (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) (f' : N₁ →ₗ[R] N₂) (g' : N₂ →ₗ[R] N₃)
+  (τ₁ : M₁ →ₗ[R] N₁) (τ₂ : M₂ →ₗ[R] N₂) (τ₃ : M₃ →ₗ[R] N₃)
+  (comm₁₂ : f'.comp τ₁ = τ₂.comp f)
+  (comm₂₃ : g'.comp τ₂ = τ₃.comp g)
+  (h₁ : Function.Surjective τ₁)
+  (h₂ : Function.Bijective τ₂)
+  (h₃ : Function.Injective τ₃)
 
-@[simp]
-lemma Finsupp.linearCombination_mapRange_algebraMap :
-    Finsupp.linearCombination S v
-      (Finsupp.mapRange (algebraMap R S) (by simp) l) =
-        Finsupp.linearCombination R v l := by
-  apply Finsupp.induction_linear
-    (p := fun (l : α →₀ R) ↦ Finsupp.linearCombination S v _ = _)
-  · simp
-  · intro f g hf hg
-    rw [map_add, Finsupp.mapRange_add (by simp), map_add, hf, hg]
-  · simp
+include comm₁₂ comm₂₃ h₁ h₂ h₃ in
+lemma linearMap_exact_iff_of_surjective_of_bijective_of_injective :
+    Exact f g ↔ Exact f' g' :=
+  exact_iff_of_surjective_of_bijective_of_injective f.toAddMonoidHom g.toAddMonoidHom
+    f'.toAddMonoidHom g'.toAddMonoidHom τ₁.toAddMonoidHom τ₂.toAddMonoidHom τ₃.toAddMonoidHom
+    (by ext; apply DFunLike.congr_fun comm₁₂) (by ext; apply DFunLike.congr_fun comm₂₃) h₁ h₂ h₃
 
 end
+
+end Function.Exact
 
 namespace Algebra.Presentation
 
@@ -152,184 +104,99 @@ noncomputable def differentialsRelations : Module.Relations S where
     Finsupp.mapRange (algebraMap pres.Ring S) (by simp)
       ((mvPolynomialBasis R pres.vars).repr (D _ _ (pres.relation r)))
 
-section
+namespace differentials
 
-variable {N : Type w'} [AddCommGroup N]
-  [Module pres.Ring N]
+/-- Same as `comm₂₃` below, but here we have not yet constructed `differentialsSolution`. -/
+lemma comm₂₃' : pres.toKaehler.comp pres.cotangentSpaceBasis.repr.symm.toLinearMap =
+    Finsupp.linearCombination S (fun g ↦ D _ _ (pres.val g)) := by
+  aesop
 
--- these lemmas needs some clarification
-lemma linearCombination_aux₃
-    (φ : Ω[MvPolynomial pres.vars R⁄R] →ₗ[MvPolynomial pres.vars R] N)
-    (ω : Ω[MvPolynomial pres.vars R⁄R]) :
-    (Finsupp.linearCombination pres.Ring fun g ↦ φ (D _ _ (MvPolynomial.X g)))
-    ((mvPolynomialBasis R pres.vars).repr ω) = φ ω := by
-  erw [← Finsupp.apply_linearCombination]
-  congr 1
-  obtain ⟨s, rfl⟩ := (mvPolynomialBasis R pres.vars).repr.symm.surjective ω
-  simp only [Basis.repr_symm_apply, Basis.repr_linearCombination]
-  congr 2
-  ext g
-  simp
+noncomputable def hom₁ : (pres.rels →₀ S) →ₗ[S] pres.Cotangent :=
+  Finsupp.linearCombination S (fun r ↦ Ideal.toCotangent _ ⟨pres.relation r, by simp⟩)
 
-variable [Module R N]
-  [IsScalarTower R pres.Ring N]
+lemma hom₁_single (r : pres.rels) :
+    hom₁ pres (Finsupp.single r 1) = Ideal.toCotangent _ ⟨pres.relation r, by simp⟩ := by
+  simp [hom₁]
 
-lemma linearCombination_aux₂
-    (d : Derivation R (MvPolynomial pres.vars R) N)
-    (ω : Ω[MvPolynomial pres.vars R⁄R]) :
-    (Finsupp.linearCombination pres.Ring fun g ↦ d (MvPolynomial.X g))
-    ((mvPolynomialBasis R pres.vars).repr ω) =
-    d.liftKaehlerDifferential ω := by
-  rw [← linearCombination_aux₃]
-  simp only [Derivation.liftKaehlerDifferential_comp_D]
-
-variable [Module S N]
-  [IsScalarTower pres.Ring S N]
-
-lemma linearCombination_aux₁
-    (d : Derivation R (MvPolynomial pres.vars R) N) (r : pres.Ring) :
-    Finsupp.linearCombination S (fun g ↦ d (MvPolynomial.X g))
-      (Finsupp.mapRange (algebraMap pres.Ring S) (by simp)
-        ((mvPolynomialBasis R pres.vars).repr (D _ _ r))) =
-      d r := by
-  rw [Finsupp.linearCombination_mapRange_algebraMap,
-    linearCombination_aux₂, Derivation.liftKaehlerDifferential_comp_D]
-
-lemma linearCombination_aux₀ (s : pres.vars → N) (r : pres.Ring) :
-    Finsupp.linearCombination S s
-      (Finsupp.mapRange (algebraMap pres.Ring S) (by simp)
-        ((mvPolynomialBasis R pres.vars).repr (D _ _ r))) =
-      MvPolynomial.mkDerivation R s r := by
-  simp only [← linearCombination_aux₁ pres (MvPolynomial.mkDerivation R s) r,
-    Finsupp.linearCombination_mapRange_algebraMap, MvPolynomial.mkDerivation_X]
-
-@[simp]
-lemma linearCombination_differentialsRelations_relation
-    (s : pres.vars → N) (r : pres.rels) :
-    Finsupp.linearCombination S s (pres.differentialsRelations.relation r) =
-      (MvPolynomial.mkDerivation R s) (pres.relation r) := by
-  dsimp [differentialsRelations]
-  rw [linearCombination_aux₀]
-
-noncomputable def differentialsRelationsSolutionEquivSubtype :
-    pres.differentialsRelations.Solution N ≃
-      { d : Derivation R pres.Ring N //
-        RingHom.ker (algebraMap pres.Ring S) = d.kerInterKer S } where
-  toFun s := ⟨MvPolynomial.mkDerivation R s.var, by
-    rw [Derivation.ringHom_ker_eq_kerInterKer_of_span_eq_ker (R := R) (M := N)
-      (hG := pres.span_range_relation_eq_ker)]
-    rintro ⟨_, ⟨r, rfl⟩⟩
-    simpa using s.linearCombination_var_relation r⟩
-  invFun := fun ⟨d, hd⟩ ↦
-    { var := fun g ↦ d (MvPolynomial.X g)
-      linearCombination_var_relation := fun r ↦ by
-        have : d (pres.relation r) = 0 :=
-          ((Ideal.ext_iff.1 hd _).1 ((Ideal.ext_iff.1 pres.span_range_relation_eq_ker _).1
-            (Ideal.subset_span (Set.mem_range_self r)))).2
-        dsimp
-        rw [linearCombination_differentialsRelations_relation, ← this]
-        congr
-        ext g
-        rw [MvPolynomial.mkDerivation_X] }
-  left_inv s := by aesop
-  right_inv := fun ⟨d, hd⟩ ↦ by aesop
-
-noncomputable def differentialsRelationsSolutionEquiv :
-    pres.differentialsRelations.Solution N ≃
-      Derivation R S N :=
-  pres.differentialsRelationsSolutionEquivSubtype.trans
-    (Derivation.equivOfSurjective R pres.algebraMap_surjective N).symm
-
-lemma differentialsRelationsSolutionEquiv_symm_naturality
-    (d : Derivation R S N) [IsScalarTower R S N]
-    {N' : Type*} [AddCommGroup N'] [Module S N'] [Module pres.Ring N']
-    [Module R N'] [IsScalarTower R S N'] [IsScalarTower R pres.Ring N']
-    [IsScalarTower pres.Ring S N'] (φ : N →ₗ[S] N') :
-    pres.differentialsRelationsSolutionEquiv.symm (LinearMap.compDer φ d) =
-    (pres.differentialsRelationsSolutionEquiv.symm d).postcomp φ := by
+lemma surjective_hom₁ : Function.Surjective (hom₁ pres) := by
+  let φ : (pres.rels →₀ S) →ₗ[pres.Ring] pres.Cotangent :=
+    { toFun := hom₁ pres
+      map_add' := by simp
+      map_smul' := by simp }
+  change Function.Surjective φ
+  have h₁ := Algebra.Generators.Cotangent.mk_surjective
+    (P := pres.toGenerators)
+  have h₂ : Submodule.span pres.Ring
+    (Set.range (fun r ↦ (⟨pres.relation r, by simp⟩ : pres.ker))) = ⊤ := by
+    refine Submodule.map_injective_of_injective (f := Submodule.subtype pres.ker)
+      Subtype.coe_injective ?_
+    rw [Submodule.map_top, Submodule.range_subtype, Submodule.map_span,
+      Submodule.coe_subtype, Ideal.submodule_span_eq]
+    simp only [← pres.span_range_relation_eq_ker]
+    congr
+    aesop
+  rw [← LinearMap.range_eq_top] at h₁ ⊢
+  rw [← top_le_iff, ← h₁, LinearMap.range_eq_map, ← h₂, Submodule.map_span_le]
+  rintro _ ⟨r, rfl⟩
+  simp only [LinearMap.mem_range]
+  refine ⟨Finsupp.single r 1, ?_⟩
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, hom₁_single, φ]
   rfl
 
-end
+lemma comm₁₂_single (r : pres.rels) :
+    pres.cotangentComplex (hom₁ pres (Finsupp.single r 1)) =
+      pres.cotangentSpaceBasis.repr.symm ((differentialsRelations pres).relation r) := by
+  simp only [hom₁, Finsupp.linearCombination_single, one_smul, differentialsRelations,
+    Basis.repr_symm_apply]
+  erw [Generators.cotangentComplex_mk]
+  exact pres.cotangentSpaceBasis.repr.injective (by ext; simp)
 
+lemma comm₁₂ : pres.cotangentComplex.comp (hom₁ pres) =
+    pres.cotangentSpaceBasis.repr.symm.comp (differentialsRelations pres).map := by
+  ext r
+  dsimp
+  rw [comm₁₂_single]
+  erw [Module.Relations.map_single]
+
+end differentials
+
+open differentials in
 /-- The `S`-module `Ω[S⁄R]` contains an obvious solution to the system of linear
 equations `pres.differentialsRelations.Solution` when `pres` is a presentation
 of `S` as a `R`-algebra. -/
 noncomputable def differentialsSolution :
-    pres.differentialsRelations.Solution (Ω[S⁄R]) :=
-  pres.differentialsRelationsSolutionEquiv.symm (D R S)
+    pres.differentialsRelations.Solution (Ω[S⁄R]) where
+  var g := D _ _ (pres.val g)
+  linearCombination_var_relation r := by
+    simp only [differentialsRelations_G, LinearMap.coe_comp, LinearEquiv.coe_coe,
+      Function.comp_apply, ← comm₂₃', ← comm₁₂_single]
+    apply DFunLike.congr_fun (Function.Exact.linearMap_comp_eq_zero
+      (pres.exact_cotangentComplex_toKaehler))
 
-@[nolint unusedArguments]
-def algebraize (_ : Presentation R S)
-    (N : Type w') [AddCommGroup N] [Module S N] := N
+namespace differentials
 
-section
+lemma comm₂₃ :
+    pres.toKaehler.comp pres.cotangentSpaceBasis.repr.symm.toLinearMap =
+      pres.differentialsSolution.π :=
+  comm₂₃' pres
 
-variable {N : Type w'} [AddCommGroup N] [Module S N]
+end differentials
 
-instance : AddCommGroup (algebraize pres N) :=
-  inferInstanceAs (AddCommGroup N)
-
-instance : Module S (algebraize pres N) :=
-  inferInstanceAs (Module S N)
-
-instance : Module R (algebraize pres N) :=
-  Module.compHom N (algebraMap R S)
-
-instance : Module pres.Ring (algebraize pres N) :=
-  Module.compHom N (algebraMap pres.Ring S)
-
-instance : IsScalarTower R S (algebraize pres N) :=
-  IsScalarTower.of_algebraMap_smul (by intros; rfl)
-
-instance : IsScalarTower pres.Ring S (algebraize pres N) :=
-  IsScalarTower.of_algebraMap_smul (by intros; rfl)
-
-instance : IsScalarTower R pres.Ring (algebraize pres N) :=
-  IsScalarTower.of_algebraMap_smul
-    (by simp [← IsScalarTower.algebraMap_smul S])
-
-lemma compatibility₂
-    (s : pres.differentialsRelations.Solution (algebraize pres N)) :
-    pres.differentialsSolution.postcomp
-      (pres.differentialsRelationsSolutionEquiv s).liftKaehlerDifferential = s := by
-  obtain ⟨d, rfl⟩ := pres.differentialsRelationsSolutionEquiv.symm.surjective s
-  simp only [Equiv.apply_symm_apply]
-  dsimp [differentialsSolution]
-  rw [← pres.differentialsRelationsSolutionEquiv_symm_naturality (D R S)
-    d.liftKaehlerDifferential]
-  congr
-  aesop
-
-lemma compatibility₁
-    (s : pres.differentialsRelations.Solution (algebraize pres N)) (g : pres.vars) :
-    (pres.differentialsRelationsSolutionEquiv s).liftKaehlerDifferential
-      (pres.differentialsSolution.var g) = s.var g :=
-  Module.Relations.Solution.congr_var (compatibility₂ pres s) g
-
-end
-
-/-- The `S`-module `Ω[S⁄R]` admits a presentation by generators and relations that
-is determined by a presentation of `S` as a `R`-algebra. -/
-noncomputable def isPresentationCoreDifferentialsSolution :
-    Module.Relations.Solution.IsPresentationCore.{w'}
-      pres.differentialsSolution where
-  desc {N _ _} s := by
-    change Ω[S⁄R] →ₗ[S] algebraize pres N
-    exact Derivation.liftKaehlerDifferential
-      (pres.differentialsRelationsSolutionEquiv s)
-  postcomp_desc {N _ _} s := by
-    ext g
-    exact compatibility₁ pres s g
-  postcomp_injective {N _ _ f f' h} := by
-    change Ω[S⁄R] →ₗ[S] algebraize pres N at f f'
-    apply (KaehlerDifferential.linearMapEquivDerivation _ _ ).injective
-    apply pres.differentialsRelationsSolutionEquiv.symm.injective
-    ext g
-    exact Module.Relations.Solution.congr_var h g
-
+open differentials in
 lemma differentialsSolution_isPresentation :
-    pres.differentialsSolution.IsPresentation :=
-  pres.isPresentationCoreDifferentialsSolution.isPresentation
+    pres.differentialsSolution.IsPresentation := by
+  rw [Module.Relations.Solution.isPresentation_iff]
+  constructor
+  · rw [← Module.Relations.Solution.surjective_π_iff_span_eq_top, ← comm₂₃]
+    exact Generators.toKaehler_surjective.comp pres.cotangentSpaceBasis.repr.symm.surjective
+  · rw [← Module.Relations.range_map]
+    exact Function.Exact.linearMap_ker_eq
+      ((Function.Exact.linearMap_exact_iff_of_surjective_of_bijective_of_injective
+      _ _ _ _ (hom₁ pres)
+      pres.cotangentSpaceBasis.repr.symm.toLinearMap .id
+      (comm₁₂ pres) (by simpa using comm₂₃ pres) (surjective_hom₁ pres)
+        (LinearEquiv.bijective _) (Equiv.refl _).injective).2
+        pres.exact_cotangentComplex_toKaehler)
 
 /-- The presentation of the `S`-module `Ω[S⁄R]` deduced from a presentation
 of `S` as a `R`-algebra. -/
