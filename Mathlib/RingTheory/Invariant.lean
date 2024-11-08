@@ -14,7 +14,7 @@ Given an extension of rings `B/A` and an action of `G` on `B`, we introduce a pr
 `Algebra.IsInvariant A B G` which states that every fixed point of `B` lies in the image of `A`.
 
 ## Main statements
-* `Algebra.IsInvariant.isIntegral`: If `G` is finite, then `B/A` is an integral extensions.
+* `Algebra.IsInvariant.isIntegral`: If `G` is finite, then `B/A` is an integral extension.
 
 TODO: Prove the existence of Frobenius elements in this general setting.
 
@@ -80,7 +80,6 @@ theorem charpoly_mem_lifts [Fintype G] (b : B) :
     charpoly G b ∈ Polynomial.lifts (algebraMap A B) :=
   (charpoly G b).lifts_iff_coeff_lifts.mpr fun n ↦ isInvariant _ (charpoly_coeff_smul b n)
 
-include G in
 theorem isIntegral [Finite G] : Algebra.IsIntegral A B := by
   cases nonempty_fintype G
   refine ⟨fun b ↦ ?_⟩
