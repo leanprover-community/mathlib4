@@ -47,11 +47,12 @@ jobs:
         env:
           BODY: ${{ steps.make_comment.outputs.comment }} #${{ github.event.comment.body }}
         run: |
-          printf 'title<<EOF\n%s\nEOF' "$(
+          message="$(
             ./scripts/maintainer_merge_message.sh author:"${{ github.event.comment.user.login }}" body:"${BODY}" comment issueNumber:"${{ github.event.issue.number }}" http
             ./scripts/maintainer_merge_message.sh author:"${{ github.event.comment.user.login }}" body:"${BODY}" comment issueNumber:"${{ github.event.issue.number }}"
           )"
-          printf 'title<<EOF\n%s\nEOF' "$(./scripts/maintainer_merge_message.sh author:"${{ github.event.comment.user.login }}" body:"${BODY}" comment issueNumber:"${{ github.event.issue.number }}")" url:"${{ github.event.issue.html_url }}" >> "$GITHUB_OUTPUT"
+          printf 'title<<EOF\n%s\nEOF' "${message}"
+          printf 'title<<EOF\n%s\nEOF' "${message}" >> "$GITHUB_OUTPUT"
 
       #- name: Send message on Zulip
       #  uses: zulip/github-actions-zulip/send-message@v1
