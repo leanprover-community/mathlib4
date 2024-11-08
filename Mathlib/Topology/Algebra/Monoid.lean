@@ -527,13 +527,7 @@ theorem Submonoid.topologicalClosure_minimal (s : Submonoid M) {t : Submonoid M}
 topological closure."]
 def Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
     (hs : ∀ x y : s, x * y = y * x) : CommMonoid s.topologicalClosure :=
-  { s.topologicalClosure.toMonoid with
-    mul_comm :=
-      have : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x := fun x hx y hy =>
-        congr_arg Subtype.val (hs ⟨x, hx⟩ ⟨y, hy⟩)
-      fun ⟨x, hx⟩ ⟨y, hy⟩ =>
-      Subtype.ext <|
-        eqOn_closure₂ this continuous_mul (continuous_snd.mul continuous_fst) x hx y hy }
+  { s.topologicalClosure.toMonoid, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
 
 @[to_additive exists_nhds_zero_quarter]
 theorem exists_nhds_one_split4 {u : Set M} (hu : u ∈ 𝓝 (1 : M)) :

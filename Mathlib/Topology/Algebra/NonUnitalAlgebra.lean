@@ -49,7 +49,7 @@ theorem topologicalClosure_minimal (s : NonUnitalSubalgebra R A) {t : NonUnitalS
 
 /-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
 topological closure. -/
-def nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
+abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
   s.toNonUnitalSubsemiring.nonUnitalCommSemiringTopologicalClosure hs
 
