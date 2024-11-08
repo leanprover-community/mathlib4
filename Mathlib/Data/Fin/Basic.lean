@@ -453,8 +453,6 @@ whose value is the original number. -/
 theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a :=
   Nat.mod_eq_of_lt h
 
-theorem one_val_cast {n : ℕ} [NeZero n] (h : 1 < n) : (1 : Fin n).val = 1 := val_cast_of_lt h
-
 /-- If `n` is non-zero, converting the value of a `Fin n` to `Fin n` results
 in the same value. -/
 @[simp] theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
