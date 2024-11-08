@@ -1772,12 +1772,6 @@ theorem filter_true (l : List α) :
 theorem filter_false (l : List α) :
     filter (fun _ => false) l = [] := by induction l <;> simp [*, filter]
 
-theorem filter_replicate {p : α → Bool} {n} {a : α} :
-    List.filter p (List.replicate n a) = if p a then List.replicate n a else [] := by
-  induction n with
-  | zero => simp
-  | succ n ih => by_cases hf : p a <;> simp_all
-
 /- Porting note: need a helper theorem for span.loop. -/
 theorem span.loop_eq_take_drop :
     ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)

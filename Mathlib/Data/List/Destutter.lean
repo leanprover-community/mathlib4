@@ -248,14 +248,13 @@ theorem Chain.length_le_length_destutter [IsEquiv α Rᶜ] (h₁ : l₂ <+ l) (h
   induction n generalizing l l₂ with
   | zero => -- if l is length zero, l₂ is too, done.
     intro hn
-    rw [Nat.zero_eq] at hn
     rw [length_eq_zero.mp hn.symm] at h₁ ⊢
     simp [sublist_nil.mp h₁]
   | succ n ih => -- otherwise induction on lists l of length at most n1...
     intro hn
     cases hl₂ : l₂ with
     --l.dedup always starts with the first element of l.
-    | nil => simp only [length_nil, zero_le] -- if l2 is length zero, done.
+    | nil => simp only [length_nil, Nat.zero_le] -- if l2 is length zero, done.
     | cons o os => -- otherwise write l₂ = o::os
       cases l with -- deconstruct l = a::as
       | nil => simp at hn -- l can't be [], contradiction with 'succ n1 ih', a nonzero length
@@ -277,8 +276,7 @@ theorem Chain.length_le_length_destutter [IsEquiv α Rᶜ] (h₁ : l₂ <+ l) (h
         case pos =>
           --If l₂ does start with the first element, write l₂ = a::os.
           rw [hao] at hl₂ ⊢
-          have hlos : l₂.length = Nat.succ os.length :=
-            hl₂ ▸ length_cons o os
+          have hlos : l₂.length = os.length + 1 := hl₂ ▸ length_cons o os
           cases as with -- deconstruct as = b::bs
           | nil => -- when l₂ = [a]
             have hlen2 : l₂.length ≤ [a].length := Sublist.length_le h₁
@@ -320,9 +318,9 @@ theorem Chain.length_le_length_destutter [IsEquiv α Rᶜ] (h₁ : l₂ <+ l) (h
                   _ = length l₂ := by simp [hl₂, hos];
                 · dsimp [destutter, destutter']
                   rw [if_pos hab, length_cons]
-                · rw [ge_iff_le, add_le_add_iff_right]
+                · rw [ge_iff_le, Nat.add_le_add_iff_right]
                   apply ih (b::bs) os
-                  · exact hos ▸ sublist_of_cons_sublist_cons (hl₂ ▸ h₁)
+                  · exact hos ▸ (hl₂ ▸ h₁).of_cons_cons
                   · simp_all
                   · rwa [length_cons, Nat.succ.injEq] at hn
 
