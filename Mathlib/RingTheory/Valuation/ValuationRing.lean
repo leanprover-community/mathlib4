@@ -276,6 +276,8 @@ instance le_total_ideal : IsTotal (Ideal A) LE.le := by
     apply Ideal.mul_mem_right _ _ hb
 
 instance [DecidableRel ((· ≤ ·) : Ideal A → Ideal A → Prop)] : LinearOrder (Ideal A) :=
+  have := decidableEqOfDecidableLE (α := Ideal A)
+  have := decidableLTOfDecidableLE (α := Ideal A)
   Lattice.toLinearOrder (Ideal A)
 
 end

@@ -13,8 +13,8 @@ In this file we introduce typeclasses and definitions for lattice operations.
 
 ## Main definitions
 
-* the `⊔` notation is used for `Max` now
-* the `⊓` notation is used for `Min` now
+* the `⊔` notation is used for `Max` since November 2024
+* the `⊓` notation is used for `Min` since November 2024
 * `HasCompl`: type class for the `ᶜ` notation
 * `Top`: type class for the `⊤` notation
 * `Bot`: type class for the `⊥` notation

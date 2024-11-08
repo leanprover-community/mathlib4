@@ -160,16 +160,6 @@ end NonUnitalRingHom
 
 namespace NonUnitalSubsemiring
 
--- should we define this as the range of the zero homomorphism?
-instance : Bot (NonUnitalSubsemiring R) :=
-  ⟨{  carrier := {0}
-      add_mem' := fun _ _ => by simp_all
-      zero_mem' := Set.mem_singleton 0
-      mul_mem' := fun _ _ => by simp_all }⟩
-
-instance : Inhabited (NonUnitalSubsemiring R) :=
-  ⟨⊥⟩
-
 instance : InfSet (NonUnitalSubsemiring R) :=
   ⟨fun s =>
     NonUnitalSubsemiring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, NonUnitalSubsemiring.toSubsemigroup t)

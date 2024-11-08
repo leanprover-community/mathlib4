@@ -485,7 +485,7 @@ instance : SemilatticeSup ℝ :=
 
 open scoped Classical
 
-instance : IsTotal ℝ (· ≤ ·) :=
+instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
   ⟨by
     intros a b
     induction' a using Real.ind_mk with a
@@ -493,7 +493,7 @@ instance : IsTotal ℝ (· ≤ ·) :=
     simpa using le_total a b⟩
 
 noncomputable instance linearOrder : LinearOrder ℝ :=
-  Lattice.toLinearOrder _
+  Lattice.toLinearOrder ℝ
 
 noncomputable instance linearOrderedCommRing : LinearOrderedCommRing ℝ :=
   { Real.nontrivial, Real.strictOrderedRing, Real.commRing, Real.linearOrder with }
