@@ -583,22 +583,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable [Semiring R] [Module R M] [Semiring S] [Module S M₂] [Module R M₃]
 variable {σ : R →+* S}
 
-/-- A `DistribMulActionHom` between two modules is a linear map. -/
-@[coe]
-def toSemilinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M₂ :=
-  { fₗ with }
-
 instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
-
-instance instCoeTCSemilinearMap : CoeTC (M →ₑ+[σ.toMonoidHom] M₂) (M →ₛₗ[σ] M₂) :=
-  ⟨toSemilinearMap⟩
-
-/-- A `DistribMulActionHom` between two modules is a linear map. -/
-def toLinearMap (fₗ : M →+[R] M₃) : M →ₗ[R] M₃ :=
-  { fₗ with }
-
-instance instCoeTCLinearMap : CoeTC (M →+[R] M₃) (M →ₗ[R] M₃) :=
-  ⟨toLinearMap⟩
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where
