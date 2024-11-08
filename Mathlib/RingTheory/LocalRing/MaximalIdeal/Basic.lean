@@ -19,9 +19,9 @@ section CommSemiring
 
 variable [CommSemiring R]
 
-namespace LocalRing
+namespace IsLocalRing
 
-variable [LocalRing R]
+variable [IsLocalRing R]
 
 variable (R)
 
@@ -65,7 +65,7 @@ theorem isField_iff_maximalIdeal_eq : IsField R ↔ maximalIdeal R = ⊥ :=
     ⟨Ring.ne_bot_of_isMaximal_of_not_isField inferInstance, fun h =>
       Ring.not_isField_iff_exists_prime.mpr ⟨_, h, Ideal.IsMaximal.isPrime' _⟩⟩
 
-end LocalRing
+end IsLocalRing
 
 end CommSemiring
 
@@ -73,39 +73,39 @@ section CommRing
 
 variable [CommRing R]
 
-namespace LocalRing
+namespace IsLocalRing
 
-variable [LocalRing R]
+variable [IsLocalRing R]
 
 theorem maximalIdeal_le_jacobson (I : Ideal R) :
-    LocalRing.maximalIdeal R ≤ I.jacobson :=
-  le_sInf fun _ ⟨_, h⟩ => le_of_eq (LocalRing.eq_maximalIdeal h).symm
+    IsLocalRing.maximalIdeal R ≤ I.jacobson :=
+  le_sInf fun _ ⟨_, h⟩ => le_of_eq (IsLocalRing.eq_maximalIdeal h).symm
 
 theorem jacobson_eq_maximalIdeal (I : Ideal R) (h : I ≠ ⊤) :
-    I.jacobson = LocalRing.maximalIdeal R :=
+    I.jacobson = IsLocalRing.maximalIdeal R :=
   le_antisymm (sInf_le ⟨le_maximalIdeal h, maximalIdeal.isMaximal R⟩)
               (maximalIdeal_le_jacobson I)
 
-end LocalRing
+end IsLocalRing
 
 end CommRing
 
-namespace LocalRing
+namespace IsLocalRing
 
 section
 
-variable [CommRing R] [LocalRing R] [CommRing S] [LocalRing S]
+variable [CommRing R] [IsLocalRing R] [CommRing S] [IsLocalRing S]
 
 theorem ker_eq_maximalIdeal [Field K] (φ : R →+* K) (hφ : Function.Surjective φ) :
     RingHom.ker φ = maximalIdeal R :=
-  LocalRing.eq_maximalIdeal <| (RingHom.ker_isMaximal_of_surjective φ) hφ
+  IsLocalRing.eq_maximalIdeal <| (RingHom.ker_isMaximal_of_surjective φ) hφ
 
 end
 
-end LocalRing
+end IsLocalRing
 
-theorem LocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : LocalRing.maximalIdeal R = ⊥ :=
-  LocalRing.isField_iff_maximalIdeal_eq.mp (Field.toIsField R)
+theorem IsLocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : IsLocalRing.maximalIdeal R = ⊥ :=
+  IsLocalRing.isField_iff_maximalIdeal_eq.mp (Field.toIsField R)
 
 section Nilrad_max_localization
 
@@ -114,9 +114,9 @@ open Ideal
 variable {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S] [Algebra R S] {M : Submonoid R}
 
 -- TODO: Make this an `instance`
-theorem LocalRing.of_nilradical_isMaximal [h : (nilradical R).IsMaximal] :
-    LocalRing R := by
-  refine LocalRing.of_unique_max_ideal ⟨nilradical R, h, fun I hI ↦ ?_⟩
+theorem IsLocalRing.of_nilradical_isMaximal [h : (nilradical R).IsMaximal] :
+    IsLocalRing R := by
+  refine IsLocalRing.of_unique_max_ideal ⟨nilradical R, h, fun I hI ↦ ?_⟩
   rw [nilradical_eq_sInf] at h ⊢
   exact (IsMaximal.eq_of_le h hI.ne_top (sInf_le hI.isPrime)).symm
 
@@ -127,9 +127,9 @@ contain 0. If the nilradical of `R` is maximal then there is a `R`-algebra isomo
 noncomputable def localizationEquivSelfOfNilradicalIsMaximal [h : (nilradical R).IsMaximal]
     (h' : (0 : R) ∉ M) [IsLocalization M S] : R ≃ₐ[R] S := by
   have (m) (hm : m ∈ M) : IsUnit m := by
-    haveI := LocalRing.of_nilradical_isMaximal (h := h)
-    apply LocalRing.not_mem_maximalIdeal.mp
-    rw [← LocalRing.eq_maximalIdeal h]
+    haveI := IsLocalRing.of_nilradical_isMaximal (h := h)
+    apply IsLocalRing.not_mem_maximalIdeal.mp
+    rw [← IsLocalRing.eq_maximalIdeal h]
     rintro ⟨k, hk⟩
     rw [← hk] at h'
     exact h' (Submonoid.pow_mem M hm k)

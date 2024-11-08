@@ -415,17 +415,17 @@ theorem Ideal.mem_iInf_smul_pow_eq_bot_iff [IsNoetherianRing R] [Module.Finite R
     · rw [add_comm, pow_add, ← smul_smul, pow_one, ← eq]
       exact Submodule.smul_mem_smul r.prop hi
 
-theorem Ideal.iInf_pow_smul_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing R]
+theorem Ideal.iInf_pow_smul_eq_bot_of_localRing [IsNoetherianRing R] [IsLocalRing R]
     [Module.Finite R M] (h : I ≠ ⊤) : (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) = ⊥ := by
   rw [eq_bot_iff]
   intro x hx
   obtain ⟨r, hr⟩ := (I.mem_iInf_smul_pow_eq_bot_iff x).mp hx
-  have := LocalRing.isUnit_one_sub_self_of_mem_nonunits _ (LocalRing.le_maximalIdeal h r.prop)
+  have := IsLocalRing.isUnit_one_sub_self_of_mem_nonunits _ (IsLocalRing.le_maximalIdeal h r.prop)
   apply this.smul_left_cancel.mp
   simp [sub_smul, hr]
 
 /-- **Krull's intersection theorem** for noetherian local rings. -/
-theorem Ideal.iInf_pow_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing R] (h : I ≠ ⊤) :
+theorem Ideal.iInf_pow_eq_bot_of_localRing [IsNoetherianRing R] [IsLocalRing R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by
   convert I.iInf_pow_smul_eq_bot_of_localRing (M := R) h
   ext i
@@ -433,7 +433,7 @@ theorem Ideal.iInf_pow_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing R] (h
 
 /-- Also see `Ideal.isIdempotentElem_iff_eq_bot_or_top` for integral domains. -/
 theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing {R} [CommRing R]
-    [IsNoetherianRing R] [LocalRing R] (I : Ideal R) :
+    [IsNoetherianRing R] [IsLocalRing R] (I : Ideal R) :
     IsIdempotentElem I ↔ I = ⊥ ∨ I = ⊤ := by
   constructor
   · intro H

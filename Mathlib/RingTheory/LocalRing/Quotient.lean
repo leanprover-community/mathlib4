@@ -18,9 +18,9 @@ We gather results about the quotients of local rings.
 
 open Submodule FiniteDimensional Module
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [LocalRing R] [Module.Finite R S]
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing R] [Module.Finite R S]
 
-namespace LocalRing
+namespace IsLocalRing
 
 local notation "p" => maximalIdeal R
 local notation "pS" => Ideal.map (algebraMap R S) p
@@ -101,4 +101,4 @@ lemma basisQuotient_repr {ι} [Fintype ι] (b : Basis ι R S) (x) (i) :
     Ideal.Quotient.mk_smul_mk_quotient_map_quotient, ← Algebra.smul_def]
   rw [← map_sum, Basis.sum_repr b x]
 
-end LocalRing
+end IsLocalRing

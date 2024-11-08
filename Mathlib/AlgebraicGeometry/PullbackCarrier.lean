@@ -24,7 +24,7 @@ We also give the ranges of `pullback.fst`, `pullback.snd` and `pullback.map`.
 
 -/
 
-open CategoryTheory Limits TopologicalSpace LocalRing TensorProduct
+open CategoryTheory Limits TopologicalSpace IsLocalRing TensorProduct
 
 noncomputable section
 

@@ -57,22 +57,22 @@ variable [FormallyUnramified K A] [EssFiniteType K A]
 variable [FormallyUnramified K L] [EssFiniteType K L]
 
 theorem bijective_of_isAlgClosed_of_localRing
-    [IsAlgClosed K] [LocalRing A] :
+    [IsAlgClosed K] [IsLocalRing A] :
     Function.Bijective (algebraMap K A) := by
   have := finite_of_free (R := K) (S := A)
   have : IsArtinianRing A := isArtinian_of_tower K inferInstance
-  have hA : IsNilpotent (LocalRing.maximalIdeal A) := by
-    rw [← LocalRing.jacobson_eq_maximalIdeal ⊥]
+  have hA : IsNilpotent (IsLocalRing.maximalIdeal A) := by
+    rw [← IsLocalRing.jacobson_eq_maximalIdeal ⊥]
     · exact IsArtinianRing.isNilpotent_jacobson_bot
     · exact bot_ne_top
-  have : Function.Bijective (Algebra.ofId K (A ⧸ LocalRing.maximalIdeal A)) :=
+  have : Function.Bijective (Algebra.ofId K (A ⧸ IsLocalRing.maximalIdeal A)) :=
     ⟨RingHom.injective _, IsAlgClosed.algebraMap_surjective_of_isIntegral⟩
-  let e : K ≃ₐ[K] A ⧸ LocalRing.maximalIdeal A := {
-    __ := Algebra.ofId K (A ⧸ LocalRing.maximalIdeal A)
+  let e : K ≃ₐ[K] A ⧸ IsLocalRing.maximalIdeal A := {
+    __ := Algebra.ofId K (A ⧸ IsLocalRing.maximalIdeal A)
     __ := Equiv.ofBijective _ this }
-  let e' : A ⊗[K] (A ⧸ LocalRing.maximalIdeal A) ≃ₐ[A] A :=
+  let e' : A ⊗[K] (A ⧸ IsLocalRing.maximalIdeal A) ≃ₐ[A] A :=
     (Algebra.TensorProduct.congr AlgEquiv.refl e.symm).trans (Algebra.TensorProduct.rid K A A)
-  let f : A ⧸ LocalRing.maximalIdeal A →ₗ[A] A := e'.toLinearMap.comp (sec K A _)
+  let f : A ⧸ IsLocalRing.maximalIdeal A →ₗ[A] A := e'.toLinearMap.comp (sec K A _)
   have hf : (Algebra.ofId _ _).toLinearMap ∘ₗ f = LinearMap.id := by
     dsimp [f]
     rw [← LinearMap.comp_assoc, ← comp_sec K A]
@@ -81,13 +81,13 @@ theorem bijective_of_isAlgClosed_of_localRing
     apply _root_.TensorProduct.ext'
     intros r s
     obtain ⟨s, rfl⟩ := e.surjective s
-    suffices s • (Ideal.Quotient.mk (LocalRing.maximalIdeal A)) r = r • e s by
+    suffices s • (Ideal.Quotient.mk (IsLocalRing.maximalIdeal A)) r = r • e s by
       simpa [ofId, e']
     simp [Algebra.smul_def, e, ofId, mul_comm]
-  have hf₁ : f 1 • (1 : A ⧸ LocalRing.maximalIdeal A) = 1 := by
+  have hf₁ : f 1 • (1 : A ⧸ IsLocalRing.maximalIdeal A) = 1 := by
     rw [← algebraMap_eq_smul_one]
     exact LinearMap.congr_fun hf 1
-  have hf₂ : 1 - f 1 ∈ LocalRing.maximalIdeal A := by
+  have hf₂ : 1 - f 1 ∈ IsLocalRing.maximalIdeal A := by
     rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_one, ← Ideal.Quotient.algebraMap_eq,
      algebraMap_eq_smul_one, hf₁, sub_self]
   have hf₃ : IsIdempotentElem (1 - f 1) := by
@@ -109,8 +109,8 @@ theorem bijective_of_isAlgClosed_of_localRing
     map_smul, hf₄, smul_eq_mul, mul_one]
 
 theorem isField_of_isAlgClosed_of_localRing
-    [IsAlgClosed K] [LocalRing A] : IsField A := by
-  rw [LocalRing.isField_iff_maximalIdeal_eq, eq_bot_iff]
+    [IsAlgClosed K] [IsLocalRing A] : IsField A := by
+  rw [IsLocalRing.isField_iff_maximalIdeal_eq, eq_bot_iff]
   intro x hx
   obtain ⟨x, rfl⟩ := (bijective_of_isAlgClosed_of_localRing K A).surjective x
   show _ = 0

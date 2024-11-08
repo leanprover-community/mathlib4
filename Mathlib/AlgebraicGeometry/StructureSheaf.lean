@@ -77,9 +77,9 @@ def Localizations (P : PrimeSpectrum.Top R) : Type u :=
 instance commRingLocalizations (P : PrimeSpectrum.Top R) : CommRing <| Localizations R P :=
   inferInstanceAs <| CommRing <| Localization.AtPrime P.asIdeal
 
--- Porting note: can't derive `LocalRing`
-instance localRingLocalizations (P : PrimeSpectrum.Top R) : LocalRing <| Localizations R P :=
-  inferInstanceAs <| LocalRing <| Localization.AtPrime P.asIdeal
+-- Porting note: can't derive `IsLocalRing`
+instance localRingLocalizations (P : PrimeSpectrum.Top R) : IsLocalRing <| Localizations R P :=
+  inferInstanceAs <| IsLocalRing <| Localization.AtPrime P.asIdeal
 
 instance (P : PrimeSpectrum.Top R) : Inhabited (Localizations R P) :=
   ⟨1⟩
