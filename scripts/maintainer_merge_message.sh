@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-AUTHOR="${1}"
-BODY="${2}"
-GHsource="${3}"
-PR="${4}"
-URL="${5}"
-PR_TITLE="${6}"
+AUTHOR="${1}"   # adomani
+BODY="${2}"     # message content, containing `maintainer {merge, delegate}`
+GHsource="${3}" # one of `comment`, `review` or `review comment`
+PR="${4}"       # the number of the PR
+URL="${5}"      # the url link to the PR
+PR_TITLE="${6}" # the title of the PR
 
 mergeOrDelegate="neither merge nor delegate"
 if printf '%s\n' "${BODY}" | grep -q "^maintainer merge"
