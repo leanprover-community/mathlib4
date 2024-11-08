@@ -26,8 +26,12 @@ noncomputable def finOrderEmbeddingEquiv (n : ℕ) :
     (Fin n ↪o ι) ≃ { s : Finset ι // s.card = n } where
   toFun f := ⟨Finset.mapEmbedding f.toEmbedding ⊤, by simp⟩
   invFun s := Finset.orderEmbOfFin s.1 s.2
-  left_inv := sorry
-  right_inv := sorry
+  left_inv f := sorry
+  right_inv := by
+    rintro ⟨s, hs⟩
+    dsimp
+    simp only [Subtype.mk.injEq]
+    exact Finset.coe_injective (by simp)
 
 end
 
