@@ -15,7 +15,7 @@ import Mathlib.Algebra.Squarefree.Basic
 variable {M : Type*} [CommSemiring M] {F : Type*} [CommRing F] [Algebra M F]
 
 lemma multiplicity_deriv [IsDomain F] [WfDvdMonoid F] (D : Derivation M F F)
-    [CharZero F] [Algebra ℚ F] (p : F) (hp : Prime p) (hp2 : ¬p ∣ D p) (a : F) (h : p ∣ a) :
+    [Algebra ℚ F] (p : F) (hp : Prime p) (hp2 : ¬p ∣ D p) (a : F) (h : p ∣ a) :
     emultiplicity p (D a) + 1 = emultiplicity p a := by
   by_cases ha : a = 0
   · simp [ha]
