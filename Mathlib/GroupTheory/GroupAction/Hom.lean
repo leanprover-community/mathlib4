@@ -405,7 +405,7 @@ def _root_.MulActionSemiHomClass.toDistribMulActionHom
 /-- Any type satisfying `MulActionHomClass` can be cast into `MulActionHom`
 via `MulActionHomClass.toMulActionHom`. -/
 instance [MulActionSemiHomClass F φ A B] [AddMonoidHomClass F A B] :
-    CoeOut F (A →ₑ+[φ] B) :=
+    CoeTC F (A →ₑ+[φ] B) :=
   ⟨MulActionSemiHomClass.toDistribMulActionHom⟩
 
 /-- If `DistribMulAction` of `M` and `N` on `A` commute,
