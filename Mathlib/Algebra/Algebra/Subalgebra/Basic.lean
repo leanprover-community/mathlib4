@@ -792,6 +792,9 @@ theorem range_top_iff_surjective (f : A →ₐ[R] B) :
   Algebra.eq_top_iff
 
 @[simp]
+theorem range_ofId : (Algebra.ofId R A).range = ⊥ := rfl
+
+@[simp]
 theorem range_id : (AlgHom.id R A).range = ⊤ :=
   SetLike.coe_injective Set.range_id
 

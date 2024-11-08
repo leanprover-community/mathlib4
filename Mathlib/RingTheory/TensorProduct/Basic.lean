@@ -832,6 +832,14 @@ theorem comm_symm :
     (TensorProduct.comm R A B).symm = TensorProduct.comm R B A := by
   ext; rfl
 
+@[simp]
+lemma comm_comp_includeLeft :
+    (TensorProduct.comm R A B).toAlgHom.comp includeLeft = includeRight := rfl
+
+@[simp]
+lemma comm_comp_includeRight :
+    (TensorProduct.comm R A B).toAlgHom.comp includeRight = includeLeft := rfl
+
 theorem adjoin_tmul_eq_top : adjoin R { t : A ⊗[R] B | ∃ a b, a ⊗ₜ[R] b = t } = ⊤ :=
   top_le_iff.mp <| (top_le_iff.mpr <| span_tmul_eq_top R A B).trans (span_le_adjoin R _)
 
@@ -922,6 +930,16 @@ theorem map_range (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
     exact mul_mem_sup (AlgHom.mem_range_self _ a) (AlgHom.mem_range_self _ b)
   · rw [← map_comp_includeLeft f g, ← map_comp_includeRight f g]
     exact sup_le (AlgHom.range_comp_le_range _ _) (AlgHom.range_comp_le_range _ _)
+
+lemma comm_comp_map (f : A →ₐ[R] C) (g : B →ₐ[R] D) :
+    (TensorProduct.comm R C D).toAlgHom.comp (Algebra.TensorProduct.map f g) =
+    (Algebra.TensorProduct.map g f).comp (TensorProduct.comm R A B).toAlgHom := by
+  ext <;> rfl
+
+lemma comm_comp_map_apply (f : A →ₐ[R] C) (g : B →ₐ[R] D) (x) :
+    TensorProduct.comm R C D (Algebra.TensorProduct.map f g x) =
+    (Algebra.TensorProduct.map g f) (TensorProduct.comm R A B x) :=
+  congr($(comm_comp_map f g) x)
 
 /-- Construct an isomorphism between tensor products of an S-algebra with an R-algebra
 from S- and R- isomorphisms between the tensor factors.
