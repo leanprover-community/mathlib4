@@ -649,9 +649,9 @@ variable [Semiring R] [NoZeroDivisors R]
 @[simp]
 theorem dvd_derivative_iff {P : R[X]} : P ∣ derivative P ↔ derivative P = 0 where
   mp h := by
-    by_cases a_nz : a = 0
-    · simp only [a_nz, derivative_zero]
-    exact eq_zero_of_dvd_of_degree_lt h (degree_derivative_lt a_nz)
+    by_cases hP : P = 0
+    · simp only [hP, derivative_zero]
+    exact eq_zero_of_dvd_of_degree_lt h (degree_derivative_lt hP)
   mpr h := by simp [h]
 
 end NoZeroDivisors

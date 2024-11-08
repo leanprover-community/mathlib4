@@ -119,7 +119,7 @@ For coprime polynomials `a` and `b`, their Wronskian is zero
 if and only if their derivatives are zeros.
 -/
 theorem _root_.IsCoprime.wronskian_eq_zero_iff
-    [NoZeroDivisors R] {P Q : R[X]} (hc : IsCoprime a b) :
+    [NoZeroDivisors R] {a b : R[X]} (hc : IsCoprime a b) :
     wronskian a b = 0 ↔ derivative a = 0 ∧ derivative b = 0 where
   mp hw := by
     rw [wronskian, sub_eq_iff_eq_add, zero_add] at hw
