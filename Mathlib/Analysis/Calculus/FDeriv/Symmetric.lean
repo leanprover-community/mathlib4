@@ -444,24 +444,10 @@ theorem second_derivative_symmetric [IsRCLikeNormedField 𝕜]
     (hf : ∀ y, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x) (v w : E) : f'' v w = f'' w v :=
   second_derivative_symmetric_of_eventually (Filter.Eventually.of_forall hf) hx v w
 
-variable (𝕜) in
-/-- A smoothness exponent is admissible if it is `ω` or the field is ℝ or ℂ. This guarantees that
-second derivatives are symmetric, and more generally good behavior for calculus. -/
-class IsAdmissibleSmoothness (n : WithTop ℕ∞) : Prop :=
-  out : n = ⊤ ∨ IsRCLikeNormedField 𝕜
-
-instance (priority := 100) [h : IsRCLikeNormedField 𝕜] (n : WithTop ℕ∞) :
-    IsAdmissibleSmoothness 𝕜 n :=
-  ⟨Or.inr h⟩
-
-instance : IsAdmissibleSmoothness 𝕜 ⊤ := ⟨Or.inl rfl⟩
-
 /-- If a function is `C^2` at a point, then its second derivative there is symmetric. -/
-theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞} [h : IsAdmissibleSmoothness 𝕜 n]
+theorem ContDiffAt.isSymmSndFDerivAt [IsRCLikeNormedField 𝕜] {n : ℕ∞}
     (hf : ContDiffAt 𝕜 n f x) (hn : 2 ≤ n) :
     IsSymmSndFDerivAt 𝕜 f x := by
-  rcases h.out with h'n | h𝕜
-  · simp at h'n
   intro v w
   apply second_derivative_symmetric_of_eventually (f := f) (f' := fderiv 𝕜 f) (x := x)
   · obtain ⟨u, hu, h'u⟩ : ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 2 f u := hf.contDiffOn (m := 2) hn
@@ -478,12 +464,10 @@ theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞} [h : IsAdmissibleSmoothness �
 
 /-- If a function is `C^2` within a set at a point, and accumulated by points in the interior
 of the set, then its second derivative there is symmetric. -/
-theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞} [h : IsAdmissibleSmoothness 𝕜 n]
+theorem ContDiffWithinAt.isSymmSndFDerivWithinAt [IsRCLikeNormedField 𝕜] {n : ℕ∞}
     (hf : ContDiffWithinAt 𝕜 n f s x)
     (hn : 2 ≤ n) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ closure (interior s)) (h'x : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by
-  rcases h.out with h'n | h𝕜
-  · simp at h'n
   /- We argue that, at interior points, the second derivative is symmetric, and moreover by
   continuity it converges to the second derivative at `x`. Therefore, the latter is also
   symmetric. -/
