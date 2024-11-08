@@ -991,6 +991,14 @@ variable (ι : Type*) [Fintype ι] [DecidableEq ι]
 variable (R : Type*) [Semiring R]
 variable (M : Type*) [AddCommMonoid M] [Module R M]
 
+/--
+Let `M` be an `R`-module. Every `R`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
+are `R`-linear maps `M → M`. In another word, we have`End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
+`(f : Mⁿ → Mⁿ) ↦ (x ↦ f (0, ...,x at j-th position, ..., 0) i)ᵢⱼ` and
+`m : Matₙₓₙ(End(M)) ↦ (v ↦ ∑ⱼ mᵢⱼ(vⱼ))`.
+
+See also `LinearMap.toMatrix'`
+-/
 @[simps]
 def endVecEquivMatrixEnd :
     Module.End R (ι → M) ≃ Matrix ι ι (Module.End R M) where
@@ -1009,6 +1017,14 @@ def endVecEquivMatrixEnd :
     exact congr_arg₂ _ (by aesop) rfl
   right_inv m := by ext; simp [Pi.single_apply, apply_ite]
 
+/--
+Let `M` be an `R`-module. Every `R`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
+are `R`-linear maps `M → M`. In another word, we have`End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
+`(f : Mⁿ → Mⁿ) ↦ (x ↦ f (0, ...,x at j-th position, ..., 0) i)ᵢⱼ` and
+`m : Matₙₓₙ(End(M)) ↦ (v ↦ ∑ⱼ mᵢⱼ(vⱼ))`.
+
+See also `LinearMap.toMatrix'`
+-/
 @[simp]
 def endVecRingEquivMatrixEnd :
     Module.End R (ι → M) ≃+* Matrix ι ι (Module.End R M) where
@@ -1029,6 +1045,14 @@ variable (ι : Type*) [Fintype ι] [DecidableEq ι]
 variable (R : Type*) [CommSemiring R]
 variable (M : Type*) [AddCommMonoid M] [Module R M]
 
+/--
+Let `M` be an `R`-module. Every `R`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
+are `R`-linear maps `M → M`. In another word, we have`End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
+`(f : Mⁿ → Mⁿ) ↦ (x ↦ f (0, ...,x at j-th position, ..., 0) i)ᵢⱼ` and
+`m : Matₙₓₙ(End(M)) ↦ (v ↦ ∑ⱼ mᵢⱼ(vⱼ))`.
+
+See also `LinearMap.toMatrix'`
+-/
 @[simps! apply_apply symm_apply_apply]
 def endVecAlgEquivMatrixEnd :
     Module.End R (ι → M) ≃ₐ[R] Matrix ι ι (Module.End R M) where
