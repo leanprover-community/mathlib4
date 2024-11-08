@@ -23,6 +23,13 @@ Lean 3, this difference was hidden in typeclass instances. Since these instances
 equal, we did not duplicate generic lemmas about `WithTop α` and `WithTop.some` coercion for `ENat`
 and `Nat.cast` coercion. If you need to apply a lemma about `WithTop`, you may either rewrite back
 and forth using `ENat.some_eq_coe`, or restate the lemma for `ENat`.
+
+## TODO
+
+Unify `ENat.add_iSup`/`ENat.iSup_add` with `ENNReal.add_iSup`/`ENNReal.iSup_add`. The key property
+of `ENat` and `ENNReal` we are using is that all `a` are either absorbing for addition (`a + b = a`
+for all `b`), or that it's order-cancellable (`a + b ≤ a + c → b ≤ c` for all `b`, `c`), and
+similarly for multiplication.
 -/
 
 deriving instance Zero, CanonicallyOrderedCommSemiring, Nontrivial,
@@ -44,7 +51,6 @@ instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
 instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
 instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
 instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
-instance : IsWellOrder ℕ∞ (· < ·) where
 
 variable {a b c m n : ℕ∞}
 

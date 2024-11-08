@@ -514,8 +514,6 @@ theorem max_zero_left : max 0 a = a :=
 theorem max_zero_right : max a 0 = a :=
   max_eq_left (zero_le a)
 
-@[simp] theorem sup_eq_max : a ⊔ b = max a b := rfl
-
 -- Porting note: moved `le_of_forall_pos_le_add` down
 
 theorem lt_iff_exists_rat_btwn :
@@ -640,7 +638,7 @@ theorem coe_iInf {ι : Sort*} [Nonempty ι] (f : ι → ℝ≥0) : (↑(iInf f) 
 
 theorem coe_mem_upperBounds {s : Set ℝ≥0} :
     ↑r ∈ upperBounds (ofNNReal '' s) ↔ r ∈ upperBounds s := by
-  simp (config := { contextual := true }) [upperBounds, forall_mem_image, -mem_image, *]
+  simp +contextual [upperBounds, forall_mem_image, -mem_image, *]
 
 lemma iSup_coe_eq_top : ⨆ i, (f i : ℝ≥0∞) = ⊤ ↔ ¬ BddAbove (range f) := WithTop.iSup_coe_eq_top
 lemma iSup_coe_lt_top : ⨆ i, (f i : ℝ≥0∞) < ⊤ ↔ BddAbove (range f) := WithTop.iSup_coe_lt_top
