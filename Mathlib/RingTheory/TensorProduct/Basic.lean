@@ -1106,6 +1106,12 @@ variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
 
 end LinearMap
 
+lemma Algebra.baseChange_lmul {R B : Type*} [CommRing R] [CommRing B] [Algebra R B]
+    {A : Type*} [CommRing A] [Algebra R A] (f : B) :
+    (Algebra.lmul R B f).baseChange A = Algebra.lmul A (A ⊗[R] B) (1 ⊗ₜ f) := by
+  ext i
+  simp
+
 namespace LinearMap
 
 variable (R A M N : Type*) [CommRing R] [CommRing A] [Algebra R A]
