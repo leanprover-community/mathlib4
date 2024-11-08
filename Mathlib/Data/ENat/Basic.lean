@@ -3,11 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.Ring.WithTop
+import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Order.Nat
 
 /-!
 # Definition and basic properties of extended natural numbers
@@ -22,6 +23,13 @@ Lean 3, this difference was hidden in typeclass instances. Since these instances
 equal, we did not duplicate generic lemmas about `WithTop α` and `WithTop.some` coercion for `ENat`
 and `Nat.cast` coercion. If you need to apply a lemma about `WithTop`, you may either rewrite back
 and forth using `ENat.some_eq_coe`, or restate the lemma for `ENat`.
+
+## TODO
+
+Unify `ENat.add_iSup`/`ENat.iSup_add` with `ENNReal.add_iSup`/`ENNReal.iSup_add`. The key property
+of `ENat` and `ENNReal` we are using is that all `a` are either absorbing for addition (`a + b = a`
+for all `b`), or that it's order-cancellable (`a + b ≤ a + c → b ≤ c` for all `b`, `c`), and
+similarly for multiplication.
 -/
 
 deriving instance Zero, CanonicallyOrderedCommSemiring, Nontrivial,
@@ -44,7 +52,7 @@ instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
 instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
 instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
 
-variable {m n : ℕ∞}
+variable {a b c m n : ℕ∞}
 
 /-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
 `ℕ → ℕ∞` is `Nat.cast`. -/
@@ -261,7 +269,24 @@ theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ 
   · exact htop A
   · exact A _
 
-lemma add_one_nat_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : (m + 1 : ℕ) ≤ n := by
+protected lemma exists_nat_gt {n : ℕ∞} (hn : n ≠ ⊤) : ∃ m : ℕ, n < m := by
+  lift n to ℕ using hn
+  obtain ⟨m, hm⟩ := exists_gt n
+  exact ⟨m, Nat.cast_lt.2 hm⟩
+
+@[simp] lemma sub_eq_top_iff : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := WithTop.sub_eq_top_iff
+lemma sub_ne_top_iff : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne_top_iff
+
+lemma addLECancellable_of_ne_top : a ≠ ⊤ → AddLECancellable a := WithTop.addLECancellable_of_ne_top
+lemma addLECancellable_of_lt_top : a < ⊤ → AddLECancellable a := WithTop.addLECancellable_of_lt_top
+
+protected lemma le_sub_of_add_le_left (ha : a ≠ ⊤) : a + b ≤ c → b ≤ c - a :=
+  (addLECancellable_of_ne_top ha).le_tsub_of_add_le_left
+
+protected lemma sub_sub_cancel (h : a ≠ ⊤) (h2 : b ≤ a) : a - (a - b) = b :=
+  (addLECancellable_of_ne_top <| ne_top_of_le_ne_top h tsub_le_self).tsub_tsub_cancel_of_le h2
+
+lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : (m + 1 : ℕ) ≤ n := by
   match n with
   | ⊤ => exact le_top
   | (⊤ : ℕ∞) => exact WithTop.coe_le_coe.2 (OrderTop.le_top _)
@@ -269,19 +294,19 @@ lemma add_one_nat_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : 
 
 @[simp] lemma coe_top_add_one : ((⊤ : ℕ∞) : WithTop ℕ∞) + 1 = (⊤ : ℕ∞) := rfl
 
-@[simp] lemma add_one_eq_coe_top_iff (n : WithTop ℕ∞) :
-    n + 1 = (⊤ : ℕ∞) ↔ n = (⊤ : ℕ∞) := by
+@[simp] lemma add_one_eq_coe_top_iff : n + 1 = (⊤ : ℕ∞) ↔ n = (⊤ : ℕ∞) := by
   match n with
   | ⊤ => exact Iff.rfl
-  | (⊤ : ℕ∞) => exact Iff.rfl
   | (n : ℕ) => norm_cast; simp only [coe_ne_top, iff_false, ne_eq]
 
-@[simp] lemma nat_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := ne_of_beq_false rfl
+@[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
 
-lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} :
-    1 ≤ n ↔ n ≠ 0 :=
+@[deprecated (since := "2024-10-22")]
+alias nat_ne_coe_top := natCast_ne_coe_top
+
+lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} : 1 ≤ n ↔ n ≠ 0 :=
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
-    fun h ↦ add_one_nat_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
+    fun h ↦ add_one_natCast_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
 
 lemma add_one_pos : 0 < n + 1 :=
   succ_def n ▸ Order.bot_lt_succ n
