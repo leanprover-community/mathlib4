@@ -1503,8 +1503,8 @@ For any ring `R`, we have ring isomorphism `Matₙₓₙ(Rᵒᵖ) ≅ (Matₙₓ
 -/
 @[simps apply symm_apply]
 def mopMatrix : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
-  toFun := fun M => op (M.transpose.map unop)
-  invFun := fun M => M.unop.transpose.map op
+  toFun M := op (M.transpose.map unop)
+  invFun M := M.unop.transpose.map op
   left_inv _ := by aesop
   right_inv _ := by aesop
   map_mul' _ _ := unop_injective <| by ext; simp [transpose, mul_apply]
