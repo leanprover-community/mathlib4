@@ -48,6 +48,8 @@ jobs:
           BODY: ${{ steps.make_comment.outputs.comment }} #${{ github.event.comment.body }}
           PR_TITLE: ${{ github.event.issue.title }}
         run: |
+          echo "comment body: '${{ github.event.comment.body }}'"
+          echo "pr?: '${{ github.event.issue.pull_request }}'"
           message="$(
             ./scripts/maintainer_merge_message.sh author:"${{ github.event.comment.user.login }}|" body:"${BODY}|" comment issueNumber:"${{ github.event.issue.number }}|" https:"${{ github.event.issue.html_url }}|" pr_title:"${PR_TITLE}"
           )"
