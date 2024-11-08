@@ -48,8 +48,7 @@ jobs:
           BODY: ${{ steps.make_comment.outputs.comment }} #${{ github.event.comment.body }}
         run: |
           message="$(
-            ./scripts/maintainer_merge_message.sh author:"${{ github.event.comment.user.login }}" body:"${BODY}" comment issueNumber:"${{ github.event.issue.number }}" http
-            ./scripts/maintainer_merge_message.sh author:"${{ github.event.comment.user.login }}" body:"${BODY}" comment issueNumber:"${{ github.event.issue.number }}"
+            ./scripts/maintainer_merge_message.sh author:"${{ github.event.comment.user.login }}" body:"${BODY}" comment issueNumber:"${{ github.event.issue.number }}" https
           )"
           printf 'title<<EOF\n%s\nEOF' "${message}"
           printf 'title<<EOF\n%s\nEOF' "${message}" >> "$GITHUB_OUTPUT"
