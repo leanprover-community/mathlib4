@@ -117,12 +117,11 @@ instance (priority := 900) quasiSeparatedOfMono {X Y : Scheme} (f : X ⟶ Y) [Mo
 
 instance quasiSeparated_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiSeparated :=
-  quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸
-    (MorphismProperty.diagonal_isStableUnderComposition quasiCompact_stableUnderBaseChange)
+  quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ inferInstance
 
-theorem quasiSeparated_stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange @QuasiSeparated :=
-  quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ quasiCompact_stableUnderBaseChange.diagonal
+instance quasiSeparated_isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange @QuasiSeparated :=
+  quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ inferInstance
 
 instance quasiSeparatedComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f]
     [QuasiSeparated g] : QuasiSeparated (f ≫ g) :=
@@ -138,11 +137,11 @@ theorem quasiSeparatedSpace_iff_quasiSeparated (X : Scheme) :
 
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated g] :
     QuasiSeparated (pullback.fst f g) :=
-  quasiSeparated_stableUnderBaseChange.fst f g inferInstance
+  MorphismProperty.pullback_fst f g inferInstance
 
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated f] :
     QuasiSeparated (pullback.snd f g) :=
-  quasiSeparated_stableUnderBaseChange.snd f g inferInstance
+  MorphismProperty.pullback_snd f g inferInstance
 
 theorem quasiSeparatedSpace_of_quasiSeparated {X Y : Scheme} (f : X ⟶ Y)
     [hY : QuasiSeparatedSpace Y] [QuasiSeparated f] : QuasiSeparatedSpace X := by
