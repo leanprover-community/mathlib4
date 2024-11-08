@@ -440,7 +440,7 @@ theorem lintegral_eq_iSup_eapprox_lintegral {f : α → ℝ≥0∞} (hf : Measur
     ∫⁻ a, f a ∂μ = ⨆ n, (eapprox f n).lintegral μ :=
   calc
     ∫⁻ a, f a ∂μ = ∫⁻ a, ⨆ n, (eapprox f n : α → ℝ≥0∞) a ∂μ := by
-      congr; ext a; rw [iSup_eapprox_apply f hf]
+      congr; ext a; rw [iSup_eapprox_apply hf]
     _ = ⨆ n, ∫⁻ a, (eapprox f n : α → ℝ≥0∞) a ∂μ := by
       apply lintegral_iSup
       · measurability
@@ -665,7 +665,7 @@ theorem lintegral_const_mul (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measu
     ∫⁻ a, r * f a ∂μ = ∫⁻ a, ⨆ n, (const α r * eapprox f n) a ∂μ := by
       congr
       funext a
-      rw [← iSup_eapprox_apply f hf, ENNReal.mul_iSup]
+      rw [← iSup_eapprox_apply hf, ENNReal.mul_iSup]
       simp
     _ = ⨆ n, r * (eapprox f n).lintegral μ := by
       rw [lintegral_iSup]
