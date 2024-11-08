@@ -54,6 +54,8 @@ jobs:
           echo "title: '${PR_TITLE:-PR_TITLE not set}'"
           echo "github.event_name: '${{ github.event_name }}'"
           echo "github.ref: '${{ github.ref }}'"
+          echo "github.event.action: '${{ github.event.action }}'"
+          echo ""
           message="$(
             ./scripts/maintainer_merge_message.sh author:"${{ github.event.comment.user.login }}|" body:"${BODY}|" comment issueNumber:"${{ github.event.issue.number }}|" https:"${{ github.event.issue.html_url }}|" pr_title:"${PR_TITLE}"
           )"
