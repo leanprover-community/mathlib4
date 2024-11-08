@@ -44,14 +44,14 @@ instance (priority := 900) [IsClosedImmersion f] : UniversallyClosed f := by
   rw [universallyClosed_eq]
   intro X' Y' i₁ i₂ f' hf
   have hf' : IsClosedImmersion f' :=
-    IsClosedImmersion.stableUnderBaseChange hf.flip inferInstance
+    MorphismProperty.of_isPullback hf.flip inferInstance
   exact hf'.base_closed.isClosedMap
 
 theorem universallyClosed_respectsIso : RespectsIso @UniversallyClosed :=
   universallyClosed_eq.symm ▸ universally_respectsIso (topologically @IsClosedMap)
 
-theorem universallyClosed_stableUnderBaseChange : StableUnderBaseChange @UniversallyClosed :=
-  universallyClosed_eq.symm ▸ universally_stableUnderBaseChange (topologically @IsClosedMap)
+instance universallyClosed_isStableUnderBaseChange : IsStableUnderBaseChange @UniversallyClosed :=
+  universallyClosed_eq.symm ▸ universally_isStableUnderBaseChange (topologically @IsClosedMap)
 
 instance isClosedMap_isStableUnderComposition :
     IsStableUnderComposition (topologically @IsClosedMap) where
@@ -71,11 +71,11 @@ instance : MorphismProperty.IsMultiplicative @UniversallyClosed where
 
 instance universallyClosed_fst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
     UniversallyClosed (pullback.fst f g) :=
-  universallyClosed_stableUnderBaseChange.fst f g hg
+  MorphismProperty.pullback_fst f g hg
 
 instance universallyClosed_snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyClosed f] :
     UniversallyClosed (pullback.snd f g) :=
-  universallyClosed_stableUnderBaseChange.snd f g hf
+  MorphismProperty.pullback_snd f g hf
 
 instance universallyClosed_isLocalAtTarget : IsLocalAtTarget @UniversallyClosed := by
   rw [universallyClosed_eq]

@@ -85,19 +85,21 @@ theorem continuous_postcomp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C
 
 /-- If `g : C(Y, Z)` is a topology inducing map,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is a topology inducing map too. -/
-theorem inducing_postcomp (g : C(Y, Z)) (hg : Inducing g) :
-    Inducing (g.comp : C(X, Y) → C(X, Z)) where
-  induced := by
+theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
+    IsInducing (g.comp : C(X, Y) → C(X, Z)) where
+  eq_induced := by
     simp only [compactOpen_eq, induced_generateFrom_eq, image_image2, hg.setOf_isOpen,
       image2_image_right, MapsTo, mem_preimage, preimage_setOf_eq, comp_apply]
 
-@[deprecated (since := "2024-10-19")] alias inducing_comp := inducing_postcomp
+@[deprecated (since := "2024-10-28")] alias inducing_postcomp := isInducing_postcomp
+
+@[deprecated (since := "2024-10-19")] alias inducing_comp := isInducing_postcomp
 
 /-- If `g : C(Y, Z)` is a topological embedding,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
 theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
     IsEmbedding (g.comp : C(X, Y) → C(X, Z)) :=
-  ⟨inducing_postcomp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
+  ⟨isInducing_postcomp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_postcomp := isEmbedding_postcomp

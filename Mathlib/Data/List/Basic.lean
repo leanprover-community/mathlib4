@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Monad
+import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.OpClass
 import Mathlib.Logic.Unique
 import Mathlib.Order.Basic
@@ -248,8 +249,10 @@ theorem mem_pure (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
 /-! ### bind -/
 
 @[simp]
-theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bind f :=
+theorem bind_eq_flatMap {α β} (f : α → List β) (l : List α) : l >>= f = l.flatMap f :=
   rfl
+
+@[deprecated (since := "2024-10-16")] alias bind_eq_bind := bind_eq_flatMap
 
 /-! ### concat -/
 
@@ -864,13 +867,6 @@ theorem modifyTailIdx_modifyTailIdx_same {f g : List α → List α} (n : ℕ) (
 alias modifyNthTail_modifyNthTail_same := modifyTailIdx_modifyTailIdx_same
 @[deprecated (since := "2024-05-04")] alias removeNth_eq_nthTail := eraseIdx_eq_modifyTailIdx
 
-theorem modify_eq_set (f : α → α) :
-    ∀ (n) (l : List α), modify f n l = ((fun a => set l n (f a)) <$> l[n]?).getD l
-  | 0, l => by cases l <;> simp
-  | _ + 1, [] => rfl
-  | n + 1, b :: l =>
-    (congr_arg (cons b) (modify_eq_set f n l)).trans <| by cases h : l[n]? <;> simp [h]
-
 @[deprecated (since := "2024-10-21")] alias modifyNth_eq_set := modify_eq_set
 
 @[simp]
@@ -895,21 +891,27 @@ attribute [simp] map_const'
 
 @[deprecated (since := "2024-06-21")] alias map_congr := map_congr_left
 
-theorem bind_pure_eq_map (f : α → β) (l : List α) : l.bind (pure ∘ f) = map f l :=
-  .symm <| map_eq_bind ..
+theorem flatMap_pure_eq_map (f : α → β) (l : List α) : l.flatMap (pure ∘ f) = map f l :=
+  .symm <| map_eq_flatMap ..
+
+@[deprecated (since := "2024-10-16")] alias bind_pure_eq_map := flatMap_pure_eq_map
 
 set_option linter.deprecated false in
-@[deprecated bind_pure_eq_map (since := "2024-03-24")]
+@[deprecated flatMap_pure_eq_map (since := "2024-03-24")]
 theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l :=
   bind_pure_eq_map f l
 
-theorem bind_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
-    List.bind l f = List.bind l g :=
-  (congr_arg List.join <| map_congr_left h : _)
+theorem flatMap_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
+    List.flatMap l f = List.flatMap l g :=
+  (congr_arg List.flatten <| map_congr_left h : _)
 
-theorem infix_bind_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → List α) :
-    f a <:+: as.bind f :=
-  List.infix_of_mem_join (List.mem_map_of_mem f h)
+@[deprecated (since := "2024-10-16")] alias bind_congr := flatMap_congr
+
+theorem infix_flatMap_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → List α) :
+    f a <:+: as.flatMap f :=
+  List.infix_of_mem_flatten (List.mem_map_of_mem f h)
+
+@[deprecated (since := "2024-10-16")] alias infix_bind_of_mem := infix_flatMap_of_mem
 
 @[simp]
 theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
@@ -1426,24 +1428,24 @@ theorem splitOnP_cons (x : α) (xs : List α) :
       if p x then [] :: xs.splitOnP p else (xs.splitOnP p).modifyHead (cons x) := by
   rw [splitOnP, splitOnP.go]; split <;> [rfl; simp [splitOnP.go_acc]]
 
-/-- The original list `L` can be recovered by joining the lists produced by `splitOnP p L`,
+/-- The original list `L` can be recovered by flattening the lists produced by `splitOnP p L`,
 interspersed with the elements `L.filter p`. -/
 theorem splitOnP_spec (as : List α) :
-    join (zipWith (· ++ ·) (splitOnP p as) (((as.filter p).map fun x => [x]) ++ [[]])) = as := by
+    flatten (zipWith (· ++ ·) (splitOnP p as) (((as.filter p).map fun x => [x]) ++ [[]])) = as := by
   induction as with
   | nil => rfl
   | cons a as' ih =>
     rw [splitOnP_cons, filter]
     by_cases h : p a
-    · rw [if_pos h, h, map, cons_append, zipWith, nil_append, join, cons_append, cons_inj_right]
+    · rw [if_pos h, h, map, cons_append, zipWith, nil_append, flatten, cons_append, cons_inj_right]
       exact ih
-    · rw [if_neg h, eq_false_of_ne_true h, join_zipWith (splitOnP_ne_nil _ _)
+    · rw [if_neg h, eq_false_of_ne_true h, flatten_zipWith (splitOnP_ne_nil _ _)
         (append_ne_nil_of_right_ne_nil _ (cons_ne_nil [] [])), cons_inj_right]
       exact ih
 where
-  join_zipWith {xs ys : List (List α)} {a : α} (hxs : xs ≠ []) (hys : ys ≠ []) :
-      join (zipWith (fun x x_1 ↦ x ++ x_1) (modifyHead (cons a) xs) ys) =
-        a :: join (zipWith (fun x x_1 ↦ x ++ x_1) xs ys) := by
+  flatten_zipWith {xs ys : List (List α)} {a : α} (hxs : xs ≠ []) (hys : ys ≠ []) :
+      flatten (zipWith (fun x x_1 ↦ x ++ x_1) (modifyHead (cons a) xs) ys) =
+        a :: flatten (zipWith (fun x x_1 ↦ x ++ x_1) xs ys) := by
     cases xs with | nil => contradiction | cons =>
       cases ys with | nil => contradiction | cons => rfl
 
@@ -1467,15 +1469,15 @@ theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep) (as :
 /-- `intercalate [x]` is the left inverse of `splitOn x`  -/
 theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.splitOn x) = xs := by
   simp only [intercalate, splitOn]
-  induction' xs with hd tl ih; · simp [join]
+  induction' xs with hd tl ih; · simp [flatten]
   cases' h' : splitOnP (· == x) tl with hd' tl'; · exact (splitOnP_ne_nil _ tl h').elim
   rw [h'] at ih
   rw [splitOnP_cons]
   split_ifs with h
   · rw [beq_iff_eq] at h
     subst h
-    simp [ih, join, h']
-  cases tl' <;> simpa [join, h'] using ih
+    simp [ih, flatten, h']
+  cases tl' <;> simpa [flatten, h'] using ih
 
 /-- `splitOn x` is the left inverse of `intercalate [x]`, on the domain
   consisting of each nonempty list of lists `ls` whose elements do not contain `x`  -/
@@ -1484,13 +1486,13 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
   simp only [intercalate]
   induction' ls with hd tl ih; · contradiction
   cases tl
-  · suffices hd.splitOn x = [hd] by simpa [join]
+  · suffices hd.splitOn x = [hd] by simpa [flatten]
     refine splitOnP_eq_single _ _ ?_
     intro y hy H
     rw [eq_of_beq H] at hy
     refine hx hd ?_ hy
     simp
-  · simp only [intersperse_cons_cons, singleton_append, join]
+  · simp only [intersperse_cons_cons, singleton_append, flatten]
     specialize ih _ _
     · intro l hl
       apply hx l
@@ -1660,10 +1662,12 @@ attribute [simp 1100] filterMap_cons_none
 -- removing attribute `nolint simpNF`
 attribute [simp 1100] filterMap_cons_some
 
-theorem filterMap_eq_bind_toList (f : α → Option β) (l : List α) :
-    l.filterMap f = l.bind fun a ↦ (f a).toList := by
+theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
+    l.filterMap f = l.flatMap fun a ↦ (f a).toList := by
   induction' l with a l ih <;> simp [filterMap_cons]
   rcases f a <;> simp [ih]
+
+@[deprecated (since := "2024-10-16")] alias filterMap_eq_bind_toList := filterMap_eq_flatMap_toList
 
 theorem filterMap_congr {f g : α → Option β} {l : List α}
     (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by
