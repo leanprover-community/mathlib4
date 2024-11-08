@@ -9,13 +9,13 @@ import Mathlib.Topology.Algebra.Module.Basic
 /-!
 # Non-unital topological (sub)algebras
 
-A non-unital topological algebra over a topological semiring `R` is a topological (non-unital) 
-semiring with a compatible continuous scalar multiplication by elements of `R`. We reuse 
+A non-unital topological algebra over a topological semiring `R` is a topological (non-unital)
+semiring with a compatible continuous scalar multiplication by elements of `R`. We reuse
 typeclass `ContinuousSMul` to express the latter condition.
 
 ## Results
 
-Any non-unital subalgebra of a non-unital topological algebra is itself a non-unital 
+Any non-unital subalgebra of a non-unital topological algebra is itself a non-unital
 topological algebra, and its closure is again a non-unital subalgebra.
 
 -/
