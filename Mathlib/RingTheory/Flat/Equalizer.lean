@@ -148,7 +148,7 @@ lemma LinearMap.tensorKerEquiv_apply [Module.Flat R M] (x : M ⊗[R] ker f) :
 @[simp]
 lemma LinearMap.lTensor_ker_subtype_tensorKerEquiv_symm [Module.Flat R M]
     (x : ker (AlgebraTensorModule.lTensor S M f)) :
-    (lTensor M (ker f).subtype) (tensorKerInv S M f x) = x :=
+    (lTensor M (ker f).subtype) ((tensorKerEquiv S M f).symm x) = x :=
   lTensor_ker_subtype_tensorKerInv S M f x
 
 /-- If `M` is `R`-flat, the canonical map `M ⊗[R] eq(f, g) →ₗ[S] eq (𝟙 ⊗ f, 𝟙 ⊗ g)` is an
@@ -173,7 +173,7 @@ lemma LinearMap.tensorEqLocusEquiv_apply [Module.Flat R M] (x : M ⊗[R] LinearM
 @[simp]
 lemma LinearMap.lTensor_eqLocus_subtype_tensoreqLocusEquiv_symm [Module.Flat R M]
     (x : eqLocus (AlgebraTensorModule.lTensor S M f) (AlgebraTensorModule.lTensor S M g)) :
-    (lTensor M (eqLocus f g).subtype) (tensorEqLocusInv S M f g x) = x :=
+    (lTensor M (eqLocus f g).subtype) ((tensorEqLocusEquiv S M f g).symm x) = x :=
   lTensor_eqLocus_subtype_tensorEqLocusInv S M f g x
 
 end Module
