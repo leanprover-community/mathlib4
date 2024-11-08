@@ -398,9 +398,11 @@ theorem iff_rTensor_exact : Flat R M ↔
         Function.Exact f g → Function.Exact (f.rTensor M) (g.rTensor M) :=
   iff_rTensor_exact'.{max u v}
 
+variable (p : Submodule R M) (q : Submodule R N)
+
 /-- If p and q are submodules of M and N respectively, and M and q are flat,
 then `p ⊗ q → M ⊗ N` is injective. -/
-theorem tensorProduct_mapIncl_injective (p : Submodule R M) (q : Submodule R N)
+theorem tensorProduct_mapIncl_injective_of_right_flat
     [Flat R M] [Flat R q] : Function.Injective (mapIncl p q) := by
   rw [mapIncl, ← lTensor_comp_rTensor]
   exact (lTensor_preserves_injective_linearMap _ q.injective_subtype).comp
@@ -408,7 +410,7 @@ theorem tensorProduct_mapIncl_injective (p : Submodule R M) (q : Submodule R N)
 
 /-- If p and q are submodules of M and N respectively, and N and p are flat,
 then `p ⊗ q → M ⊗ N` is injective. -/
-theorem tensorProduct_mapIncl_injective' (p : Submodule R M) (q : Submodule R N)
+theorem tensorProduct_mapIncl_injective_of_left_flat
     [Flat R p] [Flat R N] : Function.Injective (mapIncl p q) := by
   rw [mapIncl, ← rTensor_comp_lTensor]
   exact (rTensor_preserves_injective_linearMap _ p.injective_subtype).comp
