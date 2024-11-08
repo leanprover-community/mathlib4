@@ -52,6 +52,17 @@ namespace LieModule
 
 open Set Function TensorProduct LieModule
 
+variable (M) in
+/-- If `M` is a representation of a Lie algebra `L` and `χ : L → R` is a family of scalars,
+then `weightSpace M χ` is the intersection of the `χ x`-eigenspaces
+of the action of `x` on `M` as `x` ranges over `L`. -/
+def weightSpace (χ : L → R) : LieSubmodule R L M where
+  __ := ⨅ x : L, (toEnd R L M x).eigenspace (χ x)
+  lie_mem {x m} hm := by simp_all [smul_comm (χ x)]
+
+lemma mem_weightSpace (χ : L → R) (m : M) : m ∈ weightSpace M χ ↔ ∀ x, ⁅x, m⁆ = χ x • m := by
+  simp [weightSpace]
+
 section notation_genWeightSpaceOf
 
 /-- Until we define `LieModule.genWeightSpaceOf`, it is useful to have some notation as follows: -/
@@ -183,6 +194,14 @@ theorem mem_genWeightSpace (χ : L → R) (m : M) :
 lemma genWeightSpace_le_genWeightSpaceOf (x : L) (χ : L → R) :
     genWeightSpace M χ ≤ genWeightSpaceOf M (χ x) x :=
   iInf_le _ x
+
+lemma weightSpace_le_genWeightSpace (χ : L → R) :
+    weightSpace M χ ≤ genWeightSpace M χ := by
+  apply le_iInf
+  intro x
+  rw [← (LieSubmodule.toSubmodule_orderEmbedding R L M).le_iff_le]
+  apply (iInf_le _ x).trans
+  exact ((toEnd R L M x).genEigenspace (χ x)).monotone le_top
 
 variable (R L) in
 /-- A weight of a Lie module is a map `L → R` such that the corresponding weight space is

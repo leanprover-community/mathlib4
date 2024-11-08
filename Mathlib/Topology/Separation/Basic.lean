@@ -145,7 +145,7 @@ def HasSeparatingCover : Set X → Set X → Prop := fun s t ↦
   ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) t
 
 /-- Used to prove that a regular topological space with Lindelöf topology is a normal space,
-and (todo) a perfectly normal space is a completely normal space. -/
+and a perfectly normal space is a completely normal space. -/
 theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
     HasSeparatingCover s t ∧ HasSeparatingCover t s ↔ SeparatedNhds s t := by
   constructor
@@ -686,7 +686,7 @@ theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y]
     rw [continuousWithinAt_update_of_ne hz.2] at H
     exact H.mono diff_subset
   · rw [continuousWithinAt_update_of_ne hzx]
-    refine (H z ⟨hzs, hzx⟩).mono_of_mem (inter_mem_nhdsWithin _ ?_)
+    refine (H z ⟨hzs, hzx⟩).mono_of_mem_nhdsWithin (inter_mem_nhdsWithin _ ?_)
     exact isOpen_ne.mem_nhds hzx
   · exact continuousWithinAt_update_same
 
@@ -768,6 +768,14 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space X] {x y : X} {s t : Set 
   refine nhdsWithin_mono x hu ?_
   rw [nhdsWithin_insert_of_ne h]
   exact mem_of_superset self_mem_nhdsWithin (subset_insert x s)
+
+lemma eventuallyEq_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    (insert x s : Set X) =ᶠ[𝓝 x] (insert x t : Set X) := by
+  simp_rw [eventuallyEq_set] at h ⊢
+  simp_rw [← union_singleton, ← nhdsWithin_univ, ← compl_union_self {x},
+    nhdsWithin_union, eventually_sup, nhdsWithin_singleton,
+    eventually_pure, union_singleton, mem_insert_iff, true_or, and_true]
+  filter_upwards [nhdsWithin_compl_singleton_le x y h] with y using or_congr (Iff.rfl)
 
 @[simp]
 theorem ker_nhds [T1Space X] (x : X) : (𝓝 x).ker = {x} := by
@@ -851,6 +859,29 @@ theorem eventually_ne_nhds [T1Space X] {a b : X} (h : a ≠ b) : ∀ᶠ x in �
 theorem eventually_ne_nhdsWithin [T1Space X] {a b : X} {s : Set X} (h : a ≠ b) :
     ∀ᶠ x in 𝓝[s] a, x ≠ b :=
   Filter.Eventually.filter_mono nhdsWithin_le_nhds <| eventually_ne_nhds h
+
+theorem continuousWithinAt_insert [TopologicalSpace Y] [T1Space X]
+    {x y : X} {s : Set X} {f : X → Y} :
+    ContinuousWithinAt f (insert y s) x ↔ ContinuousWithinAt f s x := by
+  rcases eq_or_ne x y with (rfl | h)
+  · exact continuousWithinAt_insert_self
+  simp_rw [ContinuousWithinAt, nhdsWithin_insert_of_ne h]
+
+alias ⟨ContinuousWithinAt.of_insert, ContinuousWithinAt.insert'⟩ := continuousWithinAt_insert
+
+/-- See also `continuousWithinAt_diff_self` for the case `y = x` but not requiring `T1Space`. -/
+theorem continuousWithinAt_diff_singleton [TopologicalSpace Y] [T1Space X]
+    {x y : X} {s : Set X} {f : X → Y} :
+    ContinuousWithinAt f (s \ {y}) x ↔ ContinuousWithinAt f s x := by
+  rw [← continuousWithinAt_insert, insert_diff_singleton, continuousWithinAt_insert]
+
+/-- If two sets coincide locally around `x`, except maybe at `y`, then it is equivalent to be
+continuous at `x` within one set or the other. -/
+theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
+    {x : X} {s t : Set X} {f : X → Y} (y : X) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
+  rw [← continuousWithinAt_insert_self (s := s), ← continuousWithinAt_insert_self (s := t)]
+  exact continuousWithinAt_congr_set (eventuallyEq_insert h)
 
 /-- To prove a function to a `T1Space` is continuous at some point `x`, it suffices to prove that
 `f` admits *some* limit at `x`. -/
@@ -1584,10 +1615,10 @@ instance [T2Space X] [TopologicalSpace Y] [T2Space Y] :
     T2Space (X ⊕ Y) := by
   constructor
   rintro (x | x) (y | y) h
-  · exact separated_by_isOpenEmbedding isOpenEmbedding_inl <| ne_of_apply_ne _ h
+  · exact separated_by_isOpenEmbedding .inl <| ne_of_apply_ne _ h
   · exact separated_by_continuous continuous_isLeft <| by simp
   · exact separated_by_continuous continuous_isLeft <| by simp
-  · exact separated_by_isOpenEmbedding isOpenEmbedding_inr <| ne_of_apply_ne _ h
+  · exact separated_by_isOpenEmbedding .inr <| ne_of_apply_ne _ h
 
 instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
     [∀ a, T2Space (Y a)] : T2Space (∀ a, Y a) :=
@@ -1599,7 +1630,7 @@ instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [
   rintro ⟨i, x⟩ ⟨j, y⟩ neq
   rcases eq_or_ne i j with (rfl | h)
   · replace neq : x ≠ y := ne_of_apply_ne _ neq
-    exact separated_by_isOpenEmbedding isOpenEmbedding_sigmaMk neq
+    exact separated_by_isOpenEmbedding .sigmaMk neq
   · let _ := (⊥ : TopologicalSpace ι); have : DiscreteTopology ι := ⟨rfl⟩
     exact separated_by_continuous (continuous_def.2 fun u _ => isOpen_sigma_fst_preimage u) h
 
@@ -1627,7 +1658,7 @@ lemma mk_eq {x y : X} : mk x = mk y ↔ ∀ s : Setoid X, T2Space (Quotient s) �
 
 variable (X)
 
-lemma surjective_mk : Surjective (mk : X → t2Quotient X) := surjective_quotient_mk _
+lemma surjective_mk : Surjective (mk : X → t2Quotient X) := Quotient.mk_surjective
 
 lemma continuous_mk : Continuous (mk : X → t2Quotient X) :=
   continuous_quotient_mk'
@@ -2324,8 +2355,7 @@ protected theorem IsClosedEmbedding.t4Space [TopologicalSpace Y] [T4Space Y] {f 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.t4Space := IsClosedEmbedding.t4Space
 
-instance ULift.instT4Space [T4Space X] : T4Space (ULift X) :=
-  ULift.isClosedEmbedding_down.t4Space
+instance ULift.instT4Space [T4Space X] : T4Space (ULift X) := IsClosedEmbedding.uliftDown.t4Space
 
 namespace SeparationQuotient
 
@@ -2563,7 +2593,8 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
   haveI : CompactSpace s := isCompact_iff_compactSpace.1 comp
   obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := compact_exists_isClopen_in_isOpen u_open_in_s xs
   have VisClopen' : IsClopen (((↑) : s → H) '' V) := by
-    refine ⟨comp.isClosed.isClosedEmbedding_subtypeVal.closed_iff_image_closed.1 VisClopen.1, ?_⟩
+    refine ⟨comp.isClosed.isClosedEmbedding_subtypeVal.isClosed_iff_image_isClosed.1 VisClopen.1,
+      ?_⟩
     let v : Set u := ((↑) : u → s) ⁻¹' V
     have : ((↑) : u → H) = ((↑) : s → H) ∘ ((↑) : u → s) := rfl
     have f0 : IsEmbedding ((↑) : u → H) := IsEmbedding.subtypeVal.comp IsEmbedding.subtypeVal
