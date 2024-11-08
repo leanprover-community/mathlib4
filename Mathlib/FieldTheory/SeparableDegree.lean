@@ -70,6 +70,8 @@ This file contains basics about the separable degree of a field extension.
   In particular, the separable degrees satisfy the tower law: $[E:F]_s [K:E]_s = [K:F]_s$
   (see also `Module.finrank_mul_finrank`).
 
+- `Field.infinite_emb_of_transcendental`: `Field.Emb` is infinite for transcendental extensions.
+
 - `Polynomial.natSepDegree_le_natDegree`: the separable degree of a polynomial is smaller than
   its degree.
 
@@ -125,6 +127,38 @@ noncomputable section
 
 -- TODO: remove this section when PR #18648 is merged
 section Adhoc
+
+namespace IsFractionRing
+
+open Function
+
+variable {R : Type*} [CommRing R] {A : Type*} [CommRing A] {K : Type*}
+  [Field K] {L : Type*} [Field L] [Algebra A K] [IsFractionRing A K] [Algebra R A] [Algebra R K]
+  [IsScalarTower R A K] [Algebra R L] {g : A →ₐ[R] L}
+
+-- TODO: this condition is useless after XXX is merged
+variable [IsDomain A]
+
+variable (hg : Injective g) (x : K)
+include hg
+
+/-- `AlgHom` version of `IsFractionRing.lift`. -/
+noncomputable def liftAlgHom : K →ₐ[R] L :=
+  { lift hg with
+    commutes' := by
+      intro r
+      change IsLocalization.lift _ (algebraMap R K r) = _
+      simp [IsScalarTower.algebraMap_apply R A K]
+  }
+
+theorem liftAlgHom_toRingHom : (liftAlgHom hg : K →ₐ[R] L).toRingHom = lift hg := rfl
+
+@[simp]
+theorem coe_liftAlgHom : ((liftAlgHom hg : K →ₐ[R] L) : K → L) = lift hg := rfl
+
+theorem liftAlgHom_apply : liftAlgHom hg x = lift hg x := rfl
+
+end IsFractionRing
 
 namespace AlgebraicIndependent
 
@@ -286,6 +320,47 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
       fun _ : Emb E K ↦ AlgEquiv.arrowCongr (@AlgEquiv.refl F E _ _ _) <|
         (IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K)
           (AlgebraicClosure E)).restrictScalars F).symm
+
+/-- If the field extension `E / F` is transcendental, then `Field.Emb F E` is infinite. -/
+instance infinite_emb_of_transcendental [Algebra.Transcendental F E] : Infinite (Emb F E) := by
+  obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' _ (algebraMap F E).injective
+  haveI := hx.isAlgebraic_field
+  rw [← (embProdEmbOfIsAlgebraic F (adjoin F (Set.range x)) E).infinite_iff]
+  refine @Prod.infinite_of_left _ _ ?_ _
+  rw [← (embEquivOfEquiv _ _ _ hx.1.aevalEquivField).infinite_iff]
+  rcases isEmpty_or_nonempty ι with _ | ⟨i⟩
+  · rw [show adjoin F (Set.range x) = ⊥ by simp [Set.range_eq_empty],
+      ← algebra_isAlgebraic_ringHom_iff_of_comp_eq (botEquiv F E) (RingEquiv.refl E) (by
+        ext a
+        obtain ⟨_, rfl⟩ := (botEquiv F E).symm.surjective a
+        simp)] at this
+    exact False.elim (Algebra.transcendental_iff_not_isAlgebraic.1 ‹_› this)
+  let i1 := IsScalarTower.toAlgHom F (MvPolynomial ι F)
+    (AlgebraicClosure (FractionRing (MvPolynomial ι F)))
+  have hi1 : Function.Injective i1 := by
+    change Function.Injective (algebraMap _ _)
+    rw [IsScalarTower.algebraMap_eq _ (FractionRing (MvPolynomial ι F)), RingHom.coe_comp]
+    exact (algebraMap (FractionRing (MvPolynomial ι F)) (AlgebraicClosure _)).injective.comp
+      (IsFractionRing.injective _ _)
+  let f (n : ℕ) :
+      FractionRing (MvPolynomial ι F) →ₐ[F] (AlgebraicClosure (FractionRing (MvPolynomial ι F))) :=
+    IsFractionRing.liftAlgHom
+      (K := FractionRing (MvPolynomial ι F)) (g := i1.comp <| MvPolynomial.aeval (R := F)
+        fun i : ι ↦ MvPolynomial.X (R := F) i ^ (n + 1)) <| by
+          rw [AlgHom.coe_comp]
+          apply hi1.comp
+          simpa [algebraicIndependent_iff_injective_aeval] using
+            MvPolynomial.algebraicIndependent_polynomial_aeval_X _ fun (i : ι) ↦
+              (Polynomial.transcendental_X F).pow (Nat.succ_pos n)
+  have hf : Function.Injective f := fun m n h ↦ by
+    replace h : (MvPolynomial.X i) ^ (m + 1) = (MvPolynomial.X i) ^ (n + 1) := hi1 <| by
+      simpa [f, -map_pow] using congr($h (algebraMap _ (FractionRing (MvPolynomial ι F))
+        (MvPolynomial.X (R := F) i)))
+    apply_fun MvPolynomial.coeff (Finsupp.single i (m + 1)) at h
+    classical simp_rw [MvPolynomial.coeff_single_X_pow] at h
+    by_contra!
+    simp [if_neg this.symm] at h
+  exact Infinite.of_injective f hf
 
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic, then their
 separable degrees satisfy the tower law
