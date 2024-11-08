@@ -60,11 +60,11 @@ noncomputable def quotientTensorQuotientEquiv (m : Submodule R M) (n : Submodule
       simp only [LinearMap.compr₂_apply, LinearMap.flip_apply, mk_apply, Submodule.mkQ_apply,
         LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
       exact Submodule.mem_sup_right ⟨y ⊗ₜ ⟨x, hx⟩, rfl⟩) fun x hx => by
-        ext y
-        simp only [LinearMap.coe_comp, Function.comp_apply, Submodule.mkQ_apply,
-          LinearMap.flip_apply, Submodule.liftQ_apply, LinearMap.compr₂_apply, mk_apply,
-          LinearMap.zero_comp, LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
-        exact Submodule.mem_sup_left ⟨⟨x, hx⟩ ⊗ₜ y, rfl⟩)
+      ext y
+      simp only [LinearMap.coe_comp, Function.comp_apply, Submodule.mkQ_apply, LinearMap.flip_apply,
+        Submodule.liftQ_apply, LinearMap.compr₂_apply, mk_apply, LinearMap.zero_comp,
+        LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
+      exact Submodule.mem_sup_left ⟨⟨x, hx⟩ ⊗ₜ y, rfl⟩)
     (Submodule.liftQ _ (map (Submodule.mkQ _) (Submodule.mkQ _)) fun x hx => by
       rw [Submodule.mem_sup] at hx
       rcases hx with ⟨_, ⟨a, rfl⟩, _, ⟨b, rfl⟩, rfl⟩
