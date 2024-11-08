@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.Differentials
+import Mathlib.Algebra.Module.Presentation.DifferentialsNew
 import Mathlib.Algebra.Module.Presentation.ExteriorPower
 import Mathlib.Algebra.Module.Presentation.RestrictScalars
 import Mathlib.Algebra.Homology.HomologicalComplex
@@ -189,10 +189,8 @@ noncomputable def presentationDifferentialsUp :
 @[simp]
 lemma presentationDifferentialsUp_var {n : ℕ} (g : Fin n → B) :
     ((presentationDifferentialsUp A B n).var g) =
-      exteriorPower.ιMulti _ _ (KaehlerDifferential.D A B ∘ g) := by
-  dsimp [presentationDifferentialsUp]
-  congr
-  aesop
+      exteriorPower.ιMulti _ _ (KaehlerDifferential.D A B ∘ g) :=
+  rfl
 
 lemma presentationDifferentialsUp_relation_alternate
     (g : Fin n → B) (i j : Fin n) (hg : g i = g j) (hij : i ≠ j):
