@@ -31,7 +31,7 @@ namespace Ideal
 
 open Set
 
-variable {R : Type u} [CommRing R] (I : Ideal R) {a b : R}
+variable {R : Type u} [Ring R] (I J : Ideal R) {a b : R}
 variable {S : Type v}
 
 namespace Quotient
@@ -112,7 +112,7 @@ theorem quotient_ring_saturate (s : Set R) :
     ⟨fun ⟨a, a_in, h⟩ => ⟨⟨_, I.neg_mem h⟩, a, a_in, by simp⟩, fun ⟨⟨i, hi⟩, a, ha, Eq⟩ =>
       ⟨a, ha, by rw [← Eq, sub_add_eq_sub_sub_swap, sub_self, zero_sub]; exact I.neg_mem hi⟩⟩
 
-variable [Semiring S]
+variable [Semiring S] (I)
 
 /-- Given a ring homomorphism `f : R →+* S` sending all elements of an ideal to zero,
 lift it to the quotient by this ideal. -/
