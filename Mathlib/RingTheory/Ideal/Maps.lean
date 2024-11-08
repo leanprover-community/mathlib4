@@ -313,6 +313,10 @@ theorem le_map_of_comap_le_of_surjective : comap f K ≤ I → K ≤ map f I := 
 
 end
 
+theorem map_comap_eq_self_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
+    (I : Ideal S) : map e (comap e I) = I :=
+  I.map_comap_of_surjective e (EquivLike.surjective e)
+
 theorem map_eq_submodule_map (f : R →+* S) [h : RingHomSurjective f] (I : Ideal R) :
     I.map f = Submodule.map f.toSemilinearMap I :=
   Submodule.ext fun _ => mem_map_iff_of_surjective f h.1

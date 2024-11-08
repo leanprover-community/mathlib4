@@ -157,8 +157,7 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
           intro e
           calc
             ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1 * (e.2 - x.2) + (e.1 - x.1) * x.2‖ := by
-              rw [_root_.mul_sub, _root_.sub_mul, sub_add_sub_cancel]
-            -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be protected
+              rw [mul_sub, sub_mul, sub_add_sub_cancel]
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
         refine squeeze_zero (fun e => norm_nonneg _) this ?_
@@ -297,9 +296,8 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
     have e0 : e ≠ 0 := norm_pos_iff.1 (ε0.trans he)
     calc
       ‖e⁻¹ - r⁻¹‖ = ‖r‖⁻¹ * ‖r - e‖ * ‖e‖⁻¹ := by
-        rw [← norm_inv, ← norm_inv, ← norm_mul, ← norm_mul, _root_.mul_sub, _root_.sub_mul,
+        rw [← norm_inv, ← norm_inv, ← norm_mul, ← norm_mul, mul_sub, sub_mul,
           mul_assoc _ e, inv_mul_cancel₀ r0, mul_inv_cancel₀ e0, one_mul, mul_one]
-      -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be `protected`
       _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp [mul_comm]
       _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
   refine squeeze_zero' (Eventually.of_forall fun _ => norm_nonneg _) this ?_

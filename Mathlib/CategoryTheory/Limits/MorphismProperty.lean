@@ -88,7 +88,7 @@ the subcategory of `Over X` defined by `P` is closed under pullbacks.
 Without the cancellation property, this does not in general. Consider for example
 `P = Function.Surjective` on `Type`. -/
 lemma Over.closedUnderLimitsOfShape_pullback [HasPullbacks T]
-    [P.IsStableUnderComposition] (hP : P.StableUnderBaseChange)
+    [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
     (of_postcomp : ∀ {X Y Z : T} {f : X ⟶ Y} (g : Y ⟶ Z), P g → P (f ≫ g) → P f) :
     ClosedUnderLimitsOfShape WalkingCospan (fun f : Over X ↦ P f.hom) := by
   intro D c hc hf
@@ -96,7 +96,7 @@ lemma Over.closedUnderLimitsOfShape_pullback [HasPullbacks T]
         (D.map WalkingCospan.Hom.inr).left := IsPullback.of_isLimit_cone <|
     Limits.isLimitOfPreserves (CategoryTheory.Over.forget X) hc
   rw [show c.pt.hom = (c.π.app .left).left ≫ (D.obj .left).hom by simp]
-  apply P.comp_mem _ _ (hP h.flip ?_) (hf _)
+  apply P.comp_mem _ _ (P.of_isPullback h.flip ?_) (hf _)
   exact of_postcomp (D.obj WalkingCospan.one).hom (hf .one) (by simpa using hf .right)
 
 end
@@ -136,23 +136,23 @@ instance [P.ContainsIdentities] : HasTerminal (P.Over ⊤ X) :=
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,
 `Over.forget P ⊤ X` creates pullbacks. -/
 noncomputable def createsLimitsOfShape_walkingCospan [HasPullbacks T]
-    [P.IsStableUnderComposition] (hP : P.StableUnderBaseChange)
+    [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
     (of_postcomp : ∀ {X Y Z : T} {f : X ⟶ Y} (g : Y ⟶ Z), P g → P (f ≫ g) → P f) :
     CreatesLimitsOfShape WalkingCospan (Over.forget P ⊤ X) :=
   haveI : HasLimitsOfShape WalkingCospan (Comma (𝟭 T) (Functor.fromPUnit X)) :=
     inferInstanceAs <| HasLimitsOfShape WalkingCospan (Over X)
   forgetCreatesLimitsOfShapeOfClosed P
-    (Over.closedUnderLimitsOfShape_pullback P hP of_postcomp)
+    (Over.closedUnderLimitsOfShape_pullback P of_postcomp)
 
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,
 `P.Over ⊤ X` has pullbacks -/
-lemma hasPullbacks [HasPullbacks T] [P.IsStableUnderComposition] (hP : P.StableUnderBaseChange)
+lemma hasPullbacks [HasPullbacks T] [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
     (of_postcomp : ∀ {X Y Z : T} {f : X ⟶ Y} (g : Y ⟶ Z), P g → P (f ≫ g) → P f) :
     HasPullbacks (P.Over ⊤ X) :=
   haveI : HasLimitsOfShape WalkingCospan (Comma (𝟭 T) (Functor.fromPUnit X)) :=
     inferInstanceAs <| HasLimitsOfShape WalkingCospan (Over X)
   hasLimitsOfShape_of_closedUnderLimitsOfShape P
-    (Over.closedUnderLimitsOfShape_pullback P hP of_postcomp)
+    (Over.closedUnderLimitsOfShape_pullback P of_postcomp)
 
 end MorphismProperty.Over
 
