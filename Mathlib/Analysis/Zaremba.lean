@@ -9,36 +9,6 @@ open scoped ComplexConjugate
 open scoped NNReal ENNReal Matrix Real
 open MeasureTheory Complex
 
-#check Finsupp.prod
-
-def SupportedCoprime (μ : Finsupp (Fin 2 → ℤ) ℂ) : Prop :=
-  ∀ p ∈ μ.support, IsCoprime (p 0) (p 1)
-
-variable (μ ν : Finsupp (Fin 2 → ℤ) ℂ)
-  (hμ : SupportedCoprime μ) (hν : SupportedCoprime ν)
-  (β : ℝ) (a q : ℕ) (hq₀ : q ≠ 0) (haq : IsCoprime a q) (N Q K : ℝ) (hK₀ : 0 ≤ K) (hQ₀ : 0 ≤ Q)
-  (hQ : Q ^ 2 < N)
-  (hK : Q ^ 2 * K ^ 2 < N) (hq₁ : Q / 2 ≤ q) (hq₂ : q ≤ Q) (hβ₁ : K / (2 * N) ≤ |β|)
-  (hβ₂ : |β| ≤ K / N)
-  (hμN : ∀ x ∈ μ.support, x ⬝ᵥ x ≤ N)
-  (hνN : ∀ y ∈ ν.support, y ⬝ᵥ y ≤ N)
-
--- FIXME why isn't this notation showing up?
-set_option quotPrecheck false in
-notation "θ" => (a:ℝ) / q + β
-
-noncomputable def fourierBit (x y : Fin 2 → ℤ) : ℂ := exp (2 * π * I * θ * (x ⬝ᵥ y))
-
-noncomputable def thing : Finsupp (Fin 2 → ℤ) ℂ := ∑ x in μ.support, ∑ y in ν.support, fourierBit x y
-
-set_option quotPrecheck false in
-notation "S" => ∑ x : Fin 2 → ℤ, ∫ y : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y)) ∂ν ∂μ
-
-
-#exit
-
-#check Finsupp.sum
-
 /-! Delaborator for complex conjugation -- to be added to Mathlib. -/
 open Lean PrettyPrinter Delaborator SubExpr in
 @[delab app.DFunLike.coe]
@@ -52,9 +22,48 @@ def conjDelab : Delab := do
   let z ← withNaryArg 5 delab
   `(conj $z)
 
+def SupportedCoprime (μ : (Fin 2 → ℤ) →₀ ℝ≥0) : Prop :=
+  ∀ p ∈ μ.support, IsCoprime (p 0) (p 1)
+
+class WellDistributed {ι : Type*} (μ : ι →₀ ℝ≥0) : Prop where
+  is_well_distributed : ∀ i : ι, μ i ≤ 1
+
+
+variable (μ ν : (Fin 2 → ℤ) →₀ ℝ≥0)
+  (hμ : SupportedCoprime μ) (hν : SupportedCoprime ν)
+  (β : ℝ) (a q : ℕ) (hq₀ : q ≠ 0) (haq : IsCoprime a q) (N Q K : ℝ) (hK₀ : 0 ≤ K) (hQ₀ : 0 ≤ Q)
+  (hQ : Q ^ 2 < N)
+  (hK : Q ^ 2 * K ^ 2 < N) (hq₁ : Q / 2 ≤ q) (hq₂ : q ≤ Q) (hβ₁ : K / (2 * N) ≤ |β|)
+  (hβ₂ : |β| ≤ K / N)
+  (hμN : ∀ x ∈ μ.support, x ⬝ᵥ x ≤ N)
+  (hνN : ∀ y ∈ ν.support, y ⬝ᵥ y ≤ N)
+
+-- FIXME why isn't this notation showing up?
+set_option quotPrecheck false in
+notation "θ" => (a:ℝ) / q + β
+
+@[simps] def Finsupp.pointwise_prod {α β A : Type*} [Semiring A] [NoZeroDivisors A]
+    (f : α →₀ A) (g : β →₀ A) : α × β →₀ A where
+  support := f.support ×ˢ g.support
+  toFun p := f p.1 * g p.2
+  mem_support_toFun := by simp [mul_ne_zero_iff]
+
+def Finsupp.mass {α A : Type*} [AddCommMonoid A] (a : α →₀ A) : A := a.sum (fun _ ↦ id)
+
+notation "coe" => Finsupp.mapRange (fun a ↦ a : ℝ≥0 → ℂ) (by simp)
+
+set_option quotPrecheck false in
+notation "S" => Finsupp.mass <|
+ (fun (x, y) ↦ exp (2 * π * I * θ * (x ⬝ᵥ y)) : (Fin 2 → ℤ) × (Fin 2 → ℤ) → ℂ)
+  • (coe (μ.pointwise_prod ν))
+
+example : ‖S‖ ^ 2 ≤ ((μ * μ).mass * (ν * ν).mass : ℝ) / (K * Q) ^ 2 := by
+  sorry
+
+#exit
+
+
 -- rename
-class WellDistributed {ι : Type*} [MeasurableSpace ι] (μ : Measure ι) : Prop where
-  is_well_distributed : ∀ i : ι, μ {i} ≤ 1
 
 -- alternative implementation: l∞ norm ≤ 1
 -- variable (μ ν : lp (fun _ : (Fin 2 → ℤ) ↦ ℝ) ∞)
