@@ -5,6 +5,7 @@ Authors: Jujian Zhang
 -/
 
 import Mathlib.RingTheory.SimpleRing.Defs
+import Mathlib.RingTheory.TwoSidedIdeal.Operations
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Ring.Subring.Basic
 
@@ -17,6 +18,10 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 - `IsSimpleRing.nontrivial`: simple rings are non-trivial.
 - `DivisionRing.IsSimpleRing`: division rings are simple.
 - `IsSimpleRing.center_isField`: the center of a simple ring is a field.
+- `IsSimpleRing.injective_ringHom`: every ring homomorphism from a simple ring to a nontrivial ring
+  is injective.
+- `IsSimpleRing.iff_injective_ringHom`: a ring is simple iff every ring homomorphism to a nontrivial
+  ring is injective.
 
 -/
 
@@ -78,6 +83,39 @@ lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.ce
       _ = y * ((a * x) * y) := by rw [mul_assoc]
       _ = y * (a * (x * y)) := by rw [mul_assoc a x y]
       _ = y * a := by rw [hy, mul_one]
+
+lemma injective_ringHom_or_subsingleton_codomain
+    {R S : Type*} [NonAssocRing R] [IsSimpleRing R] [NonAssocRing S]
+    (f : R →+* S) : Function.Injective f ∨ Subsingleton S :=
+  simple.eq_bot_or_eq_top (TwoSidedIdeal.ker f) |>.imp (TwoSidedIdeal.ker_eq_bot _ |>.1)
+    (fun h => subsingleton_iff_zero_eq_one.1 <| by
+      have mem : 1 ∈ TwoSidedIdeal.ker f := h.symm ▸ TwoSidedIdeal.mem_top _
+      rwa [TwoSidedIdeal.mem_ker, map_one, eq_comm] at mem)
+
+-- Implementation note: the following lemma **cannot** replace `RingHom.Injective` even though all
+-- division rings are simple. For `RingHom.injective` works when the target is a semiring.
+lemma injective_ringHom
+    {R S : Type*} [NonAssocRing R] [IsSimpleRing R] [NonAssocRing S] [Nontrivial S]
+    (f : R →+* S) : Function.Injective f :=
+  injective_ringHom_or_subsingleton_codomain f |>.resolve_right fun r => not_subsingleton _ r
+
+universe u in
+lemma iff_injective_ringHom_or_subsingleton_codomain (R : Type u) [NonAssocRing R] [Nontrivial R] :
+    IsSimpleRing R ↔
+    ∀ {S : Type u} [NonAssocRing S] (f : R →+* S), Function.Injective f ∨ Subsingleton S where
+  mp _ _ _ := injective_ringHom_or_subsingleton_codomain
+  mpr H := of_eq_bot_or_eq_top fun I => H I.ringCon.mk' |>.imp
+    (fun h => le_antisymm
+      (fun _ hx => TwoSidedIdeal.ker_eq_bot _ |>.2 h ▸ I.ker_ringCon_mk'.symm ▸ hx) bot_le)
+    (fun h => le_antisymm le_top fun x _ => I.mem_iff _ |>.2 (Quotient.eq'.1 (h.elim x 0)))
+
+universe u in
+lemma iff_injective_ringHom (R : Type u) [NonAssocRing R] [Nontrivial R] :
+    IsSimpleRing R ↔
+    ∀ {S : Type u} [NonAssocRing S] [Nontrivial S] (f : R →+* S), Function.Injective f :=
+  iff_injective_ringHom_or_subsingleton_codomain R |>.trans <|
+    ⟨fun H _ _ _ f => H f |>.resolve_right (by simpa [not_subsingleton_iff_nontrivial]),
+      fun H S _ f => subsingleton_or_nontrivial S |>.recOn Or.inr fun _ => Or.inl <| H f⟩
 
 end IsSimpleRing
 

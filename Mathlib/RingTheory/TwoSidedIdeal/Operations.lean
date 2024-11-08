@@ -5,8 +5,6 @@ Authors: Jujian Zhang, Jireh Loreaux
 -/
 
 import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Order.GaloisConnection
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
@@ -108,7 +106,27 @@ def ker : TwoSidedIdeal R :=
 lemma mem_ker {x : R} : x ∈ ker f ↔ f x = 0 := by
   delta ker; rw [mem_mk']; rfl
 
+lemma ker_eq_bot : ker f = ⊥ ↔ Function.Injective f :=
+  ⟨fun h _ _ _ =>
+      sub_eq_zero.1 <| mem_bot _ |>.1 <| h.symm ▸ mem_ker _ |>.2 <| by simpa [sub_eq_zero],
+    fun h => eq_bot_iff.2 fun x hx => mem_bot _ |>.2 <| h <| by simpa [mem_ker] using hx⟩
+
 end NonUnitalNonAssocRing
+
+section NonAssocRing
+
+variable {R : Type*} [NonAssocRing R]
+
+/--
+The kernel of the ring homomorphism `R → R⧸I` is `I`.
+-/
+@[simp]
+lemma ker_ringCon_mk' (I : TwoSidedIdeal R) : ker I.ringCon.mk' = I :=
+  le_antisymm
+    (fun _ h => by simpa using I.rel_iff _ _ |>.1 (Quotient.eq'.1 h))
+    (fun _ h => Quotient.sound' <| I.rel_iff _ _ |>.2 (by simpa using h))
+
+end NonAssocRing
 
 section NonUnitalRing
 
