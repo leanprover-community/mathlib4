@@ -528,7 +528,7 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
   have := congr_arg DFunLike.coe <| (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
   refine Eq.subst this.symm ?_
   rw [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe]
-  simpa using Subtype.coe_injective
+  simpa [- Subtype.val_injective] using Subtype.val_injective
 
 end SmoothManifold
 
