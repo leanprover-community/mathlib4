@@ -138,14 +138,17 @@ lemma adj_unit_app (X : Cat.{0, u}) :
 lemma adj_counit_app (A : Type u) :
     adj.counit.app A = counitApp A := rfl
 
-/-- Left triangle equality of the adjunction Cat.objects ⊣ Codiscrete.functorToCat -/
-lemma left_triangle_components {C : Cat.{0, u}} :
-    objects.map (adj.unit.app C) ≫ adj.counit.app (objects.obj (C)) = 𝟙 (objects.obj C) := rfl
+/-- Left triangle equality of the adjunction `Cat.objects ⊣ Codiscrete.functorToCat`,
+as a universe polymorphic statement. -/
+lemma left_triangle_components (C : Type u) [Category.{v} C] :
+    (counitApp C).comp (unitApp C).obj = id :=
+  rfl
 
-/-- Right triangle equality of the adjunction Cat.objects ⊣ Codiscrete.functorToCat -/
-lemma right_triangle_components {X : Type u} :
-    adj.unit.app (functorToCat.obj X) ≫ functorToCat.map (adj.counit.app X) =
-      𝟙 (functorToCat.obj X) := rfl
+/-- Right triangle equality of the adjunction `Cat.objects ⊣ Codiscrete.functorToCat`,
+stated using a composition of functors. -/
+lemma right_triangle_components (X : Type u) :
+    unitApp (Codiscrete X) ⋙ functorOfFun (counitApp X) = 𝟭 (Codiscrete X) :=
+  rfl
 
 end Codiscrete
 
