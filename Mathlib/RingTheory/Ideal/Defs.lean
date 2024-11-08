@@ -42,6 +42,14 @@ namespace Ideal
 
 variable [Semiring α] (I : Ideal α) {a b : α}
 
+/-- A left ideal `I : Ideal R` is two-sided if it is also a right ideal. -/
+class IsTwoSided : Prop where
+  mul_mem_of_left {a : α} (b : α) : a ∈ I → a * b ∈ I
+
+instance : IsTwoSided (⊥ : Ideal α) := ⟨fun _ h ↦ by rw [h, zero_mul]; exact zero_mem _⟩
+
+instance : IsTwoSided (⊤ : Ideal α) := ⟨fun _ _ ↦ trivial⟩
+
 protected theorem zero_mem : (0 : α) ∈ I :=
   Submodule.zero_mem I
 
@@ -53,11 +61,22 @@ variable (a)
 theorem mul_mem_left : b ∈ I → a * b ∈ I :=
   Submodule.smul_mem I a
 
+theorem mul_mem_right {α} {a : α} (b : α) [Semiring α] (I : Ideal α) [I.IsTwoSided]
+    (h : a ∈ I) : a * b ∈ I :=
+  IsTwoSided.mul_mem_of_left b h
+
+instance {ι} (I : ι → Ideal α) [∀ i, (I i).IsTwoSided] : (⨅ i, I i).IsTwoSided :=
+  ⟨fun _ h ↦ (Submodule.mem_iInf _).mpr (mul_mem_right _ _ <| (Submodule.mem_iInf _).mp h ·)⟩
+
 variable {a}
 
 @[ext]
 theorem ext {I J : Ideal α} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
   Submodule.ext h
+
+theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
+    (∀ c ∈ t, f c ∈ I) → (∑ i ∈ t, f i) ∈ I :=
+  Submodule.sum_mem I
 
 @[simp]
 theorem unit_mul_mem_iff_mem {x y : α} (hy : IsUnit y) : y * x ∈ I ↔ x ∈ I := by
@@ -110,7 +129,7 @@ section Ring
 
 namespace Ideal
 
-variable [Ring α] (I : Ideal α) {a b : α}
+variable [Ring α] (I : Ideal α) {a b c d : α}
 
 protected theorem neg_mem_iff : -a ∈ I ↔ a ∈ I :=
   Submodule.neg_mem_iff I
@@ -124,19 +143,9 @@ protected theorem add_mem_iff_right : a ∈ I → (a + b ∈ I ↔ b ∈ I) :=
 protected theorem sub_mem : a ∈ I → b ∈ I → a - b ∈ I :=
   Submodule.sub_mem I
 
-end Ideal
-
-end Ring
-
-section CommRing
-
-namespace Ideal
-
-theorem mul_sub_mul_mem {R : Type*} [CommRing R] (I : Ideal R) {a b c d : R} (h1 : a - b ∈ I)
-    (h2 : c - d ∈ I) : a * c - b * d ∈ I := by
+theorem mul_sub_mul_mem [I.IsTwoSided]
+    (h1 : a - b ∈ I) (h2 : c - d ∈ I) : a * c - b * d ∈ I := by
   rw [show a * c - b * d = (a - b) * c + b * (c - d) by rw [sub_mul, mul_sub]; abel]
   exact I.add_mem (I.mul_mem_right _ h1) (I.mul_mem_left _ h2)
 
-end Ideal
-
-end CommRing
+end Ring
