@@ -145,7 +145,7 @@ def HasSeparatingCover : Set X → Set X → Prop := fun s t ↦
   ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) t
 
 /-- Used to prove that a regular topological space with Lindelöf topology is a normal space,
-and (todo) a perfectly normal space is a completely normal space. -/
+and a perfectly normal space is a completely normal space. -/
 theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
     HasSeparatingCover s t ∧ HasSeparatingCover t s ↔ SeparatedNhds s t := by
   constructor
