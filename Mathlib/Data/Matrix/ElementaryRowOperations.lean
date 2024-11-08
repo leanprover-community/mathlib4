@@ -227,45 +227,45 @@ theorem mulRow_mulRow_inv_cancel_left [GroupWithZero R] [MulAction R α] (M : Ma
 
 /-! ### mulRow is equivalent to a multiplication by the identity matrix -/
 
-/-- Multiplying matrix `M` by the elementary matrix derived from multiplying row `i` of the
-identity matrix by scalar `x` is equivalent to multiplying row `i` of matrix `M` by scalar `x` -/
-@[simp]
-theorem mulRow_elem_mat_eq_mulRow [Fintype m] [DivisionRing α] [SMul R α] (M : Matrix m m α)
-    (i : m) (x : R) :
-    (mulRow_elem_mat i x) * M = mulRow M i x := by
-  rw [mulRow_elem_mat]
-  ext k l
-  by_cases h : k = i
-  · rw [h, mulRow_eq_mul_row]
-    rw [mul_apply, mulRow_eq_mul_row]
-    -- THIS NEXT SIMP IT TURNS INTO SCALAR MUL INSTEAD OF MUL
-    simp
-    simp_rw [one_apply]
-    sorry
-    -- need to figure out how to finish
-  · rw [mulRow_other_rows_same]
-    rw [mul_apply, mulRow_other_rows_same]
-    simp_rw [one_apply]
-    simp
-    repeat exact h
-
 -- /-- Multiplying matrix `M` by the elementary matrix derived from multiplying row `i` of the
 -- identity matrix by scalar `x` is equivalent to multiplying row `i` of matrix `M` by scalar `x` -/
 -- @[simp]
--- theorem mulRow_id_mul_mat_eq_mulRow [Fintype m] [Fintype n] (M : Matrix m n ℝ) (i : m) (x : ℝ) :
---     mulRow (1 : Matrix m m ℝ) i x * M = mulRow M i x := by
+-- theorem mulRow_elem_mat_eq_mulRow [Fintype m] [DivisionRing α] [SMul R α] (M : Matrix m m α)
+--     (i : m) (x : R) :
+--     (mulRow_elem_mat i x) * M = mulRow M i x := by
+--   rw [mulRow_elem_mat]
 --   ext k l
 --   by_cases h : k = i
 --   · rw [h, mulRow_eq_mul_row]
 --     rw [mul_apply, mulRow_eq_mul_row]
+--     -- THIS NEXT SIMP IT TURNS INTO SCALAR MUL INSTEAD OF MUL
 --     simp
 --     simp_rw [one_apply]
---     simp
+
+--     -- need to figure out how to finish
 --   · rw [mulRow_other_rows_same]
 --     rw [mul_apply, mulRow_other_rows_same]
 --     simp_rw [one_apply]
 --     simp
 --     repeat exact h
+
+/-- Multiplying matrix `M` by the elementary matrix derived from multiplying row `i` of the
+identity matrix by scalar `x` is equivalent to multiplying row `i` of matrix `M` by scalar `x` -/
+@[simp]
+theorem mulRow_id_mul_mat_eq_mulRow [Fintype m] [Fintype n] (M : Matrix m n ℝ) (i : m) (x : ℝ) :
+    mulRow (1 : Matrix m m ℝ) i x * M = mulRow M i x := by
+  ext k l
+  by_cases h : k = i
+  · rw [h, mulRow_eq_mul_row]
+    rw [mul_apply, mulRow_eq_mul_row]
+    simp
+    simp_rw [one_apply]
+    simp
+  · rw [mulRow_other_rows_same]
+    rw [mul_apply, mulRow_other_rows_same]
+    simp_rw [one_apply]
+    simp
+    repeat exact h
 
 -- there is a matrix that if multiplying by the elementary matrix you will get the identity matrix
 
