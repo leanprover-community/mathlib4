@@ -81,6 +81,17 @@ attribute [-instance] instTopologicalSpaceNat instUniformSpaceNat
 
 section Metric
 
+-- noncomputable
+-- abbrev f : ℕ → ℝ := fun n ↦ 2 ^(- n : ℤ)
+
+-- lemma inj_f : Injective f := sorry
+
+-- abbrev S : Set ℝ := range f
+
+-- noncomputable local instance : MetricSpace S := by
+--   use MetricSpace.induced
+--   -- have := MetricSpace.induced f inj_f
+
 noncomputable local instance : PseudoMetricSpace ℕ where
   dist := fun n m ↦ |2 ^ (- n : ℤ) - 2 ^ (- m : ℤ)|
   dist_self := by simp only [zpow_neg, zpow_natCast, sub_self, abs_zero, implies_true]
@@ -90,12 +101,88 @@ noncomputable local instance : PseudoMetricSpace ℕ where
 @[simp]
 lemma dist_def {n m : ℕ} : dist n m = |2 ^ (-n : ℤ) - 2 ^ (-m : ℤ)| := rfl
 
+lemma ball_eq_singleton {n : ℕ} : Metric.ball n ((2 : ℝ) ^ (-n : ℤ)) = {n} := by
+  ext m
+  constructor
+  · simp only [zpow_natCast, mem_ball, dist_def, mem_singleton_iff]
+    intro H
+    have : |(2 : ℝ) ^ (-m : ℤ) - 2 ^ (-n : ℤ)| = |2 ^ (-n : ℤ)* (2 ^ (n - m : ℤ) -1)| := sorry
+
+      --rw [not_le, ← Int.ofNat_lt, ← neg_lt_neg_iff] at hmn
+      -- specialize this _ H
+
+  --   · sorry
+  -- · intro H
+  --   simp only [/- zpow_neg,  -/zpow_natCast, mem_ball, dist_def]
+  --   simp at H
+  --   rw [H]
+  --   simp only [zpow_neg, zpow_natCast, sub_self, abs_zero, inv_pos, Nat.ofNat_pos, pow_pos]
+
+
 theorem TopIsDiscrete : DiscreteTopology ℕ := by
+
   rw [← singletons_open_iff_discrete]
   intro n
-  have := @continuous_dist ℕ _
-  rw [continuous_def] at this
-  specialize this (Ioo (-n -1 : ℤ) (-n + 1: ℤ)) isOpen_Ioo
+  set φ : ℕ → ℝ := fun x ↦ dist x n with hφ
+  simp only [dist, zpow_natCast] at hφ
+  have c_φ : Continuous φ := sorry
+  rw [continuous_def] at c_φ
+  specialize c_φ (Ioo ((2 : ℝ) ^ (-n - 1 : ℤ)) ((2 : ℝ) ^ (-n : ℤ))) isOpen_Ioo
+  convert c_φ
+  ext m
+  simp only [mem_singleton_iff, hφ, zpow_natCast, mem_preimage/- , mem_Ioo -/]
+  constructor
+  · intro hmn
+    rw [hmn]
+    simp only [zpow_neg, zpow_natCast, sub_self, abs_zero, inv_pos, Nat.ofNat_pos, pow_pos,
+      and_true]
+  · intro H
+    simp at H
+
+
+    -- rintro ⟨HL, HR⟩
+    -- simp at HL HR
+
+
+  --   -- simp only [zpow_natCast]--, sub_self, abs_zero]
+  --   constructor
+  --   · sorry
+  --   · sorry
+
+
+
+  have con : Continuous (fun x ↦ (x, n) : ℕ → ℕ × ℕ) := by
+    simp_all only [continuous_prod_mk]
+    apply And.intro
+    · apply continuous_id'
+    · apply continuous_const
+  have := (@continuous_dist ℕ _)
+  -- have cc := (@continuous_prod_mk ℕ ℕ ℕ _ _ _ id n).mpr
+  -- simp only [id_eq, Pi.natCast_def, Nat.cast_id, /- continuous_prod_mk, -/ continuous_const, continuous_id, and_true]
+  --   at cc
+  -- simp? at cc
+  have  fd := Continuous.comp (hf := con) (hg := this)
+
+  -- have f := @continuous_fst ℕ ℕ _ _
+  rw [continuous_def] at fd
+  specialize fd (Ioo (-n -1 : ℤ) (-n + 1: ℤ)) isOpen_Ioo
+  convert fd
+  -- simp only [dist_def, zpow_neg, zpow_natCast, Int.cast_sub, Int.cast_neg, Int.cast_natCast,
+  --   Int.cast_one, Int.cast_add]
+  ext m
+  simp only [mem_singleton_iff, dist_def, zpow_neg, zpow_natCast, Int.cast_sub, Int.cast_neg,
+    Int.cast_natCast, Int.cast_one, Int.cast_add, mem_preimage, comp_apply, mem_Ioo,
+    lt_neg_add_iff_add_lt]
+
+  constructor
+  · intro hmn
+    rw [hmn]
+    simp only [sub_self/- , abs_zero, sub_neg, add_zero, Nat.cast_lt_one -/]
+  --   sorry
+  -- · intro H
+  --   simp at H
+
+
   -- simp at this
   -- have ff : {(n, n)} = (fun p ↦ dist p.1 p.2) ⁻¹' (Ioo (-(n : ℤ) - 1) ((-n : ℤ) + 1)) := sorry
   -- simp at ff
