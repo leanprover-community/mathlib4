@@ -590,7 +590,6 @@ notation:25 (name := «MulSemiringActionHomIdLocal≺»)
   R " →+*[" M:25 "] " S:0 => MulSemiringActionHom (MonoidHom.id M) R S
 
 set_option synthInstance.checkSynthOrder false in
-set_option linter.deprecated false in
 /-- `MulSemiringActionHomClass F φ R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to `φ`.
 
