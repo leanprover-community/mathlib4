@@ -7,7 +7,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basis
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Properties of centers and centralizers
