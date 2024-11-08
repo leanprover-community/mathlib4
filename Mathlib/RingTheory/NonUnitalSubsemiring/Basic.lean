@@ -11,7 +11,6 @@ import Mathlib.Algebra.GroupWithZero.Center
 import Mathlib.Algebra.Ring.Center
 import Mathlib.Algebra.Ring.Centralizer
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
 import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
