@@ -74,7 +74,7 @@ def IsSymmSndFDerivWithinAt (f : E → F) (s : Set E) (x : E) : Prop :=
   ∀ v w, fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v w = fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x w v
 
 variable (𝕜) in
-/-- Definition recording that a function has a symmetric second derivative within a set at
+/-- Definition recording that a function has a symmetric second derivative at
 a point. This is automatic in most cases of interest (open sets over real or complex vector fields,
 or general case for analytic functions), but we can express theorems of calculus using this
 as a general assumption, and then specialize to these situations. -/
@@ -142,6 +142,12 @@ theorem IsSymmSndFDerivWithinAt.congr_set (h : IsSymmSndFDerivWithinAt 𝕜 f s 
 theorem isSymmSndFDerivWithinAt_congr_set (hst : s =ᶠ[𝓝 x] t) :
     IsSymmSndFDerivWithinAt 𝕜 f s x ↔ IsSymmSndFDerivWithinAt 𝕜 f t x :=
   ⟨fun h ↦ h.congr_set hst, fun h ↦ h.congr_set hst.symm⟩
+
+theorem IsSymmSndFDerivAt.isSymmSndFDerivWithinAt (h : IsSymmSndFDerivAt 𝕜 f x)
+    (hf : ContDiffAt 𝕜 2 f x) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    IsSymmSndFDerivWithinAt 𝕜 f s x := by
+  simp only [← isSymmSndFDerivWithinAt_univ, ← contDiffWithinAt_univ] at h hf
+  exact h.mono_of_mem_nhdsWithin univ_mem hf hs uniqueDiffOn_univ hx
 
 end General
 
