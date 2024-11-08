@@ -647,7 +647,7 @@ section NoZeroDivisors
 variable [Semiring R] [NoZeroDivisors R]
 
 @[simp]
-theorem dvd_derivative_iff  {P : R[X]} : P ∣ derivative P ↔ derivative P = 0 where
+theorem dvd_derivative_iff {P : R[X]} : P ∣ derivative P ↔ derivative P = 0 where
   mp h := by
     by_cases a_nz : a = 0
     · simp only [a_nz, derivative_zero]
