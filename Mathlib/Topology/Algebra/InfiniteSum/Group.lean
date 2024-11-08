@@ -371,10 +371,6 @@ section NormedField
 
 variable {α E : Type*} [NormedField E] {f : α → E} {x : E}
 
--- lemma abs_prod [LinearOrderedCommRing R] (s : Finset ι) (f : ι → R) :
---     |∏ x ∈ s, f x| = ∏ x ∈ s, |f x| :=
---   map_prod absHom _ _
-
 nonrec theorem HasProd.norm (hfx : HasProd f x) : HasProd (‖f ·‖) ‖x‖ := by
   simp only [HasProd, ← norm_prod]
   exact hfx.norm
