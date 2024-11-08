@@ -218,21 +218,22 @@ section Cond
 
 /-! ### Relation between conditional expectation, conditional kernel and the conditional measure. -/
 
+open MeasurableSpace
+
 variable {s t : Set Ω} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 
 omit [StandardBorelSpace Ω]
 
 lemma condexp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf : Integrable f μ) :
-    μ[f | MeasurableSpace.generateFrom {s}] =ᵐ[μ.restrict s]
-    fun _ ↦ ∫ x, f x ∂μ[|s] := by
+    μ[f | generateFrom {s}] =ᵐ[μ.restrict s] fun _ ↦ ∫ x, f x ∂μ[|s] := by
   by_cases hμs : μ s = 0
   · rw [Measure.restrict_eq_zero.2 hμs]
     rfl
   refine ae_eq_trans (condexp_restrict_ae_eq_restrict
-    (MeasurableSpace.generateFrom_singleton_le hs)
-    (MeasurableSpace.measurableSet_generateFrom rfl) hf).symm ?_
+    (generateFrom_singleton_le hs)
+    (measurableSet_generateFrom rfl) hf).symm ?_
   · refine (ae_eq_condexp_of_forall_setIntegral_eq
-      (MeasurableSpace.generateFrom_singleton_le hs) hf.restrict ?_ ?_
+      (generateFrom_singleton_le hs) hf.restrict ?_ ?_
       stronglyMeasurable_const.aeStronglyMeasurable').symm
     · rintro t - -
       rw [integrableOn_const]
@@ -252,19 +253,18 @@ lemma condexp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
           smul_inv_smul₀ <| ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩]
 
 lemma condexp_set_generateFrom_singleton (hs : MeasurableSet s) (ht : MeasurableSet t) :
-    μ⟦t | MeasurableSpace.generateFrom {s}⟧ =ᵐ[μ.restrict s]
-    fun _ ↦ (μ[t|s]).toReal := by
+    μ⟦t | generateFrom {s}⟧ =ᵐ[μ.restrict s] fun _ ↦ (μ[t|s]).toReal := by
   rw [← integral_indicator_one ht]
   exact condexp_generateFrom_singleton hs <| Integrable.indicator (integrable_const 1) ht
 
-lemma condexpKernel_ae_eq_cond [StandardBorelSpace Ω] (hs : MeasurableSet s)
+lemma condexpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : MeasurableSet s)
     (ht : MeasurableSet t) :
     ∀ᵐ ω ∂μ.restrict s,
-      condexpKernel μ (MeasurableSpace.generateFrom {s}) ω t = μ[t|s] := by
-  have : (fun ω ↦ (condexpKernel μ (MeasurableSpace.generateFrom {s}) ω t).toReal) =ᵐ[μ.restrict s]
-      μ⟦t | MeasurableSpace.generateFrom {s}⟧ :=
+      condexpKernel μ (generateFrom {s}) ω t = μ[t|s] := by
+  have : (fun ω ↦ (condexpKernel μ (generateFrom {s}) ω t).toReal) =ᵐ[μ.restrict s]
+      μ⟦t | generateFrom {s}⟧ :=
     ae_restrict_le hs <| condexpKernel_ae_eq_condexp
-      (MeasurableSpace.generateFrom_singleton_le hs) ht
+      (generateFrom_singleton_le hs) ht
   filter_upwards [condexp_set_generateFrom_singleton hs ht, this] with ω hω₁ hω₂
   rwa [hω₁, ENNReal.toReal_eq_toReal (measure_ne_top _ t) (measure_ne_top _ t)] at hω₂
 
