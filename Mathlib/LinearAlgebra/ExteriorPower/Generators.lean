@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.LinearAlgebra.ExteriorPower.Basic
-import Mathlib.LinearAlgebra.TensorPower
+import Mathlib.LinearAlgebra.TensorPower.Basic
 import Mathlib.LinearAlgebra.PiTensorProduct.Generators
 
 /-!

@@ -99,7 +99,7 @@ lemma pairingDual_apply_apply_eq_one (a : Fin n ↪o ι) :
   · rw [h₀ (by simpa using Ne.symm hij), Matrix.one_apply_ne hij]
 
 include h₀ in
-lemma pairingDual_apply_apply_eq_one_zero (a b : Fin n ↪o ι) (h : a ≠ b) :
+lemma pairingDual_apply_apply_eq_zero (a b : Fin n ↪o ι) (h : a ≠ b) :
     pairingDual R M n (ιMulti _ _ (f ∘ a)) (ιMulti _ _ (x ∘ b)) = 0 := by
   simp only [pairingDual_ιMulti_ιMulti, Function.comp_apply, Matrix.det_apply]
   refine Finset.sum_eq_zero (fun σ _ ↦ ?_)
