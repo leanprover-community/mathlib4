@@ -3,7 +3,6 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Separation
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 
@@ -195,6 +194,12 @@ theorem TendstoUniformlyOn.congr {F' : ι → α → β} (hf : TendstoUniformlyO
   rw [eventually_iff] at hff' ⊢
   simp only [Set.EqOn] at hff'
   simp only [mem_prod_principal, hff', mem_setOf_eq]
+
+lemma tendstoUniformly_congr {F F' : ι → α → β} {f : α → β} (hF : F =ᶠ[p] F') :
+    TendstoUniformly F f p ↔ TendstoUniformly F' f p := by
+  simp_rw [← tendstoUniformlyOn_univ] at *
+  have HF := EventuallyEq.exists_mem hF
+  exact ⟨fun h => h.congr (by aesop), fun h => h.congr (by simp_rw [eqOn_comm]; aesop)⟩
 
 theorem TendstoUniformlyOn.congr_right {g : α → β} (hf : TendstoUniformlyOn F f p s)
     (hfg : EqOn f g s) : TendstoUniformlyOn F g p s := fun u hu => by
@@ -592,11 +597,11 @@ theorem tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe :
     tendstoLocallyUniformlyOn_iff_forall_tendsto, ← map_nhds_subtype_val, prod_map_right]; rfl
 
 protected theorem TendstoUniformlyOn.tendstoLocallyUniformlyOn (h : TendstoUniformlyOn F f p s) :
-    TendstoLocallyUniformlyOn F f p s := fun u hu x _ =>
+    TendstoLocallyUniformlyOn F f p s := fun u hu _ _ =>
   ⟨s, self_mem_nhdsWithin, by simpa using h u hu⟩
 
 protected theorem TendstoUniformly.tendstoLocallyUniformly (h : TendstoUniformly F f p) :
-    TendstoLocallyUniformly F f p := fun u hu x => ⟨univ, univ_mem, by simpa using h u hu⟩
+    TendstoLocallyUniformly F f p := fun u hu _ => ⟨univ, univ_mem, by simpa using h u hu⟩
 
 theorem TendstoLocallyUniformlyOn.mono (h : TendstoLocallyUniformlyOn F f p s) (h' : s' ⊆ s) :
     TendstoLocallyUniformlyOn F f p s' := by
@@ -680,14 +685,14 @@ theorem tendstoLocallyUniformlyOn_TFAE [LocallyCompactSpace α] (G : ι → α �
       ∀ K, K ⊆ s → IsCompact K → TendstoUniformlyOn G g p K,
       ∀ x ∈ s, ∃ v ∈ 𝓝[s] x, TendstoUniformlyOn G g p v] := by
   tfae_have 1 → 2
-  · rintro h K hK1 hK2
-    exact (tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hK2).mp (h.mono hK1)
+  | h, K, hK1, hK2 =>
+    (tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hK2).mp (h.mono hK1)
   tfae_have 2 → 3
-  · rintro h x hx
+  | h, x, hx => by
     obtain ⟨K, ⟨hK1, hK2⟩, hK3⟩ := (compact_basis_nhds x).mem_iff.mp (hs.mem_nhds hx)
     exact ⟨K, nhdsWithin_le_nhds hK1, h K hK3 hK2⟩
   tfae_have 3 → 1
-  · rintro h u hu x hx
+  | h, u, hu, x, hx => by
     obtain ⟨v, hv1, hv2⟩ := h x hx
     exact ⟨v, hv1, hv2 u hu⟩
   tfae_finish

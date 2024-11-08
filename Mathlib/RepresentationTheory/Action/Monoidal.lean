@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
@@ -71,7 +71,7 @@ variable (V G)
 def forgetMonoidal : MonoidalFunctor (Action V G) V :=
   { toFunctor := Action.forget _ _
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 instance forgetMonoidal_faithful : (forgetMonoidal V G).Faithful := by
   change (forget V G).Faithful; infer_instance
@@ -245,7 +245,7 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
         dsimp
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [leftRegular_ρ_apply]
-        erw [map_mul]
+        rw [map_mul]
         rfl }
   hom_inv_id := by
     apply Hom.ext

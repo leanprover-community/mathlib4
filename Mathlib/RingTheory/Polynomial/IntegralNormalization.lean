@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
@@ -45,13 +45,13 @@ theorem integralNormalization_coeff {f : R[X]} {i : ℕ} :
     (integralNormalization f).coeff i =
       if f.degree = i then 1 else coeff f i * f.leadingCoeff ^ (f.natDegree - 1 - i) := by
   have : f.coeff i = 0 → f.degree ≠ i := fun hc hd => coeff_ne_zero_of_eq_degree hd hc
-  simp (config := { contextual := true }) [integralNormalization, coeff_monomial, this,
+  simp +contextual [integralNormalization, coeff_monomial, this,
     mem_support_iff]
 
 theorem integralNormalization_support {f : R[X]} :
     (integralNormalization f).support ⊆ f.support := by
   intro
-  simp (config := { contextual := true }) [integralNormalization, coeff_monomial, mem_support_iff]
+  simp +contextual [integralNormalization, coeff_monomial, mem_support_iff]
 
 theorem integralNormalization_coeff_degree {f : R[X]} {i : ℕ} (hi : f.degree = i) :
     (integralNormalization f).coeff i = 1 := by rw [integralNormalization_coeff, if_pos hi]

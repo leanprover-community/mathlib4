@@ -511,7 +511,7 @@ lemma of_sigmaFinite [SigmaFinite μ] :
     rw [← (monotone_const.inter (monotone_spanningSets μ)).measure_iUnion, hBU]
   rw [this] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
-  refine ⟨s ∩ B n, inter_subset_left, ⟨hs.inter (measurable_spanningSets μ n), ?_⟩, hn⟩
+  refine ⟨s ∩ B n, inter_subset_left, ⟨hs.inter (measurableSet_spanningSets μ n), ?_⟩, hn⟩
   exact ((measure_mono inter_subset_right).trans_lt (measure_spanningSets_lt_top μ n)).ne
 
 variable [TopologicalSpace α]

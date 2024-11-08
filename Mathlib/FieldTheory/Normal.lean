@@ -355,9 +355,54 @@ theorem AlgEquiv.restrict_liftNormal (χ : K₁ ≃ₐ[F] K₁) [Normal F K₁] 
     (algebraMap K₁ E).injective
       (Eq.trans (AlgEquiv.restrictNormal_commutes _ K₁ x) (χ.liftNormal_commutes E x))
 
+/-- The group homomorphism given by restricting an algebra isomorphism to a normal subfield
+is surjective. -/
 theorem AlgEquiv.restrictNormalHom_surjective [Normal F K₁] [Normal F E] :
     Function.Surjective (AlgEquiv.restrictNormalHom K₁ : (E ≃ₐ[F] E) → K₁ ≃ₐ[F] K₁) := fun χ =>
   ⟨χ.liftNormal E, χ.restrict_liftNormal E⟩
+
+/-- The group homomorphism given by restricting an algebra isomorphism to itself
+is the identity map. -/
+@[simp]
+theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
+    [Field F] [Field K] [Algebra F K] [Normal F K] :
+    AlgEquiv.restrictNormalHom K = MonoidHom.id (K ≃ₐ[F] K) := by
+  ext f x
+  dsimp only [restrictNormalHom, MonoidHom.mk'_apply, MonoidHom.id_apply]
+  apply (algebraMap K K).injective
+  rw [AlgEquiv.restrictNormal_commutes]
+  simp only [Algebra.id.map_eq_id, RingHom.id_apply]
+
+namespace IsScalarTower
+
+/-- In a scalar tower `K₃/K₂/K₁/F` with `K₁` and `K₂` are normal over `F`, the group homomorphism
+given by the restriction of algebra isomorphisms of `K₃` to `K₁` is equal to the composition of
+the group homomorphism given by the restricting an algebra isomorphism of `K₃` to `K₂` and
+the group homomorphism given by the restricting an algebra isomorphism of `K₂` to `K₁` -/
+theorem AlgEquiv.restrictNormalHom_comp (F K₁ K₂ K₃ : Type*)
+    [Field F] [Field K₁] [Field K₂] [Field K₃]
+    [Algebra F K₁] [Algebra F K₂] [Algebra F K₃] [Algebra K₁ K₂] [Algebra K₁ K₃] [Algebra K₂ K₃]
+    [IsScalarTower F K₁ K₃] [IsScalarTower F K₁ K₂] [IsScalarTower F K₂ K₃] [IsScalarTower K₁ K₂ K₃]
+    [Normal F K₁] [Normal F K₂] :
+    AlgEquiv.restrictNormalHom K₁ =
+    (AlgEquiv.restrictNormalHom K₁).comp
+    (AlgEquiv.restrictNormalHom (F := F) (K₁ := K₃) K₂) := by
+  ext f x
+  apply (algebraMap K₁ K₃).injective
+  rw [IsScalarTower.algebraMap_eq K₁ K₂ K₃]
+  simp only [AlgEquiv.restrictNormalHom, MonoidHom.mk'_apply, RingHom.coe_comp, Function.comp_apply,
+    ← algebraMap_apply, AlgEquiv.restrictNormal_commutes, MonoidHom.coe_comp]
+
+theorem AlgEquiv.restrictNormalHom_comp_apply (K₁ K₂ : Type*) {F K₃ : Type*}
+    [Field F] [Field K₁] [Field K₂] [Field K₃]
+    [Algebra F K₁] [Algebra F K₂] [Algebra F K₃] [Algebra K₁ K₂] [Algebra K₁ K₃] [Algebra K₂ K₃]
+    [IsScalarTower F K₁ K₃] [IsScalarTower F K₁ K₂] [IsScalarTower F K₂ K₃] [IsScalarTower K₁ K₂ K₃]
+    [Normal F K₁] [Normal F K₂] (f : K₃ ≃ₐ[F] K₃) :
+    AlgEquiv.restrictNormalHom K₁ f =
+    (AlgEquiv.restrictNormalHom K₁) (AlgEquiv.restrictNormalHom K₂ f) := by
+  rw [IsScalarTower.AlgEquiv.restrictNormalHom_comp F K₁ K₂ K₃, MonoidHom.comp_apply]
+
+end IsScalarTower
 
 open IntermediateField in
 theorem Normal.minpoly_eq_iff_mem_orbit [h : Normal F E] {x y : E} :

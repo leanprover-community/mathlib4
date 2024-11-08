@@ -127,3 +127,49 @@ theorem dirichletLSeries_eulerProduct {N : ℕ} (χ : DirichletCharacter ℂ N) 
       (𝓝 (L ↗χ s)) := by
   rw [← tsum_dirichletSummand χ hs]
   apply eulerProduct_completely_multiplicative <| summable_dirichletSummand χ hs
+
+
+/-!
+### Changing the level of a Dirichlet `L`-series
+-/
+
+/-- If `χ` is a Dirichlet character and its level `M` divides `N`, then we obtain the L-series
+of `χ` considered as a Dirichlet character of level `N` from the L-series of `χ` by multiplying
+with `∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s))`. -/
+lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
+    (hMN : M ∣ N) (χ : DirichletCharacter ℂ M) {s : ℂ} (hs : 1 < s.re) :
+    LSeries ↗(changeLevel hMN χ) s =
+      LSeries ↗χ s * ∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s)) := by
+  rw [prod_eq_tprod_mulIndicator, ← dirichletLSeries_eulerProduct_tprod _ hs,
+    ← dirichletLSeries_eulerProduct_tprod _ hs]
+  -- convert to a form suitable for `tprod_subtype`
+  have (f : Primes → ℂ) : ∏' (p : Primes), f p = ∏' (p : ↑{p : ℕ | p.Prime}), f p := rfl
+  rw [this, tprod_subtype _ fun p : ℕ ↦ (1 - (changeLevel hMN χ) p * p ^ (-s))⁻¹,
+    this, tprod_subtype _ fun p : ℕ ↦ (1 - χ p * p ^ (-s))⁻¹, ← tprod_mul]
+  rotate_left -- deal with convergence goals first
+  · exact multipliable_subtype_iff_mulIndicator.mp
+      (dirichletLSeries_eulerProduct_hasProd χ hs).multipliable
+  · exact multipliable_subtype_iff_mulIndicator.mp Multipliable.of_finite
+  · congr 1 with p
+    simp only [Set.mulIndicator_apply, Set.mem_setOf_eq, Finset.mem_coe, Nat.mem_primeFactors,
+      ne_eq, mul_ite, ite_mul, one_mul, mul_one]
+    by_cases h : p.Prime; swap
+    · simp only [h, false_and, if_false]
+    simp only [h, true_and, if_true]
+    by_cases hp' : p ∣ N; swap
+    · simp only [hp', false_and, ↓reduceIte, inv_inj, sub_right_inj, mul_eq_mul_right_iff,
+        cpow_eq_zero_iff, Nat.cast_eq_zero, h.ne_zero, ne_eq, neg_eq_zero, or_false]
+      have hq : IsUnit (p : ZMod N) := (ZMod.isUnit_prime_iff_not_dvd h).mpr hp'
+      simp only [hq.unit_spec ▸ DirichletCharacter.changeLevel_eq_cast_of_dvd χ hMN hq.unit,
+        ZMod.cast_natCast hMN]
+    · simp only [hp', NeZero.ne N, not_false_eq_true, and_self, ↓reduceIte]
+      have : ¬IsUnit (p : ZMod N) := by rwa [ZMod.isUnit_prime_iff_not_dvd h, not_not]
+      rw [MulChar.map_nonunit _ this, zero_mul, sub_zero, inv_one]
+      refine (inv_mul_cancel₀ ?_).symm
+      rw [sub_ne_zero, ne_comm]
+      -- Remains to show `χ p * p ^ (-s) ≠ 1`. We show its norm is strictly `< 1`.
+      apply_fun (‖·‖)
+      simp only [norm_mul, norm_one]
+      have ha : ‖χ p‖ ≤ 1 := χ.norm_le_one p
+      have hb : ‖(p : ℂ) ^ (-s)‖ ≤ 1 / 2 := norm_prime_cpow_le_one_half ⟨p, h⟩ hs
+      exact ((mul_le_mul ha hb (norm_nonneg _) zero_le_one).trans_lt (by norm_num)).ne

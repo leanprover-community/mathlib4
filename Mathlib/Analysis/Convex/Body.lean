@@ -181,7 +181,7 @@ noncomputable instance : PseudoMetricSpace (ConvexBody V) where
   dist K L := Metric.hausdorffDist (K : Set V) L
   dist_self _ := Metric.hausdorffDist_self_zero
   dist_comm _ _ := Metric.hausdorffDist_comm
-  dist_triangle K L M := Metric.hausdorffDist_triangle hausdorffEdist_ne_top
+  dist_triangle _ _ _ := Metric.hausdorffDist_triangle hausdorffEdist_ne_top
 
 @[simp, norm_cast]
 theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
@@ -212,7 +212,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     rw [show (1 + u n : ℝ) • y - y = (u n : ℝ) • y by rw [add_smul, one_smul, add_sub_cancel_left],
       norm_smul, Real.norm_eq_abs]
     specialize hn n le_rfl
-    rw [_root_.lt_div_iff' hC_pos, mul_comm, NNReal.coe_zero, sub_zero, Real.norm_eq_abs] at hn
+    rw [lt_div_iff₀' hC_pos, mul_comm, NNReal.coe_zero, sub_zero, Real.norm_eq_abs] at hn
     refine lt_of_le_of_lt ?_ hn
     exact mul_le_mul_of_nonneg_left (hC_bdd _ hyK) (abs_nonneg _)
   · refine Set.mem_iInter.mpr (fun n => Convex.mem_smul_of_zero_mem K.convex h_zero h ?_)
