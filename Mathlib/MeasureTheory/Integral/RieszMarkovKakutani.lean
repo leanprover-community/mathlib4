@@ -132,24 +132,22 @@ theorem rieszContentAux_sup_le (K1 K2 : Compacts X) :
 end RieszSubadditive
 
 
-section Urysohn
+section PartitionOfUnity
 
-lemma exists_bounded_zero_one_of_closed_nnreal
-    {s t : Set X} (s_closed : IsClosed s) (t_closed : IsClosed t) (disj : Disjoint s t) :
-    ∃ (f : C_c(X, ℝ≥0)), EqOn f 0 s ∧ EqOn f 1 t ∧ ⇑f ≤ 1 := by
+theorem exists_continuous_sum_one_of_isOpen_isCompact
+    {n : ℕ} {t : Set X} {s : Fin n → Set X} (hs : ∀ (i : Fin n), IsOpen (s i)) (htcp : IsCompact t)
+    (hst : t ⊆ ⋃ i, s i) : ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧
+    EqOn (∑ i, f i) 1 t ∧ (∀ (i : Fin n), ∀ (x : X), f i x ∈ Icc (0 : ℝ) 1) ∧ (∀ (i : Fin n),
+    HasCompactSupport (f i)) := by
   sorry
-  -- obtain ⟨g, g_zero_on_s, g_one_on_t, g_bdd⟩ := exists_bounded_zero_one_of_closed s_closed t_closed disj
-  -- refine ⟨g.nnrealPartCompactlySupported, ?_, ?_, ?_⟩
-  -- · intro x x_in_s; simp [g_zero_on_s x_in_s]
-  -- · intro x x_in_t; simp [g_one_on_t x_in_t]
-  -- · intro x; simp [(g_bdd x).2]
+  -- proved in #12266
 
 lemma exists_sum_one_of_isCompact_nnreal
-    {s₁ s₂ t : Set X} (s₁_compact : IsCompact s₁) (s₂_compact : IsCompact s₂)
-    (t_compact : IsCompact t) (disj : Disjoint s₁ s₂) (hst : s₁ ∪ s₂ ⊆ t) :
-    ∃ (f₁ f₂ : C_c(X, ℝ≥0)), EqOn f₁ 1 s₁ ∧ EqOn f₂ 1 s₂ ∧ EqOn (f₁ + f₂) 1 t := by
+    {s : Fin 2 → Set X} {t : Set X} (s_compact : ∀ i, IsCompact (s i))
+    (t_compact : IsCompact t) (disj : Disjoint (s 0) (s 1)) (hst : ⋃ i, s i ⊆ t) :
+    ∃ (f₀ f₁ : C_c(X, ℝ≥0)), EqOn f₀ 1 (s 0) ∧ EqOn f₁ 1 (s 1) ∧ EqOn (f₀ + f₁) 1 t := by
   sorry
-  -- obtain ⟨f, f_zero_on_s, f_one_on_t, f_bdd⟩ := exists_bounded_zero_one_of_closed_nnreal s_closed t_closed disj
+  -- obtain ⟨f, f_zero_on_s, f_one_on_t, f_bdd⟩ := exists_continuous_sum_one_of_isOpen_isCompact s_closed t_closed disj
   -- refine ⟨1 - f, f, ?_, ?_, ?_⟩
   -- · intro x x_in_s; simp [f_zero_on_s x_in_s]
   -- · intro x x_in_t; simp [f_one_on_t x_in_t]
@@ -160,7 +158,7 @@ lemma exists_sum_one_of_isCompact_nnreal
   --   norm_cast
   --   exact tsub_add_cancel_of_le (f_bdd x)
 
-end Urysohn
+end PartitionOfUnity
 
 lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
     (disj : Disjoint (K₁ : Set X) K₂) :
@@ -168,13 +166,40 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
   refine le_antisymm (rieszContentAux_sup_le Λ K₁ K₂) ?_
   refine le_csInf (rieszContentAux_image_nonempty Λ (K₁ ⊔ K₂)) ?_
   intro b ⟨f, ⟨hf, Λf_eq_b⟩⟩
+  have j0or1 (j : Fin 2) : j = 0 ∨ j = 1 := by
+    rw [Fin.ext_iff, Fin.ext_iff]
+    simp only [Fin.isValue, Fin.val_zero, Fin.val_one]
+    rw [← Nat.le_one_iff_eq_zero_or_eq_one]
+    exact Fin.is_le j
+  set K : Fin 2 → Set X := fun j => if j = 0 then K₁ else K₂ with hK
+  have K_compact : ∀ j, IsCompact (K j) := by
+    intro j
+    by_cases h0 : j = 0
+    · rw [hK, h0]
+      simp only [Fin.isValue, ↓reduceIte]
+      exact Compacts.isCompact K₁
+    · rw [hK]
+      simp only [Fin.isValue, apply_dite]
+      rw [if_neg h0]
+      exact Compacts.isCompact K₂
   have hsuppf : ∀ x ∈ K₁ ⊔ K₂, x ∈ support f := by
     intro x hx
     rw [mem_support]
     exact Ne.symm (ne_of_lt <| lt_of_lt_of_le (zero_lt_one' ℝ≥0) (hf x hx))
   have hsubsuppf : (K₁ : Set X) ∪ (K₂ : Set X) ⊆ tsupport f := subset_trans hsuppf subset_closure
-  obtain ⟨g₁, g₂, hg₁, hg₂, sum_g⟩ := exists_sum_one_of_isCompact_nnreal K₁.isCompact K₂.isCompact
-    f.hasCompactSupport'.isCompact disj hsubsuppf
+  have hKt : ⋃ j, K j ⊆ tsupport f := by
+    apply iUnion_subset
+    intro j
+    by_cases h0 : j = 0
+    · rw [h0, hK]
+      simp only [Fin.isValue, ↓reduceIte]
+      exact (union_subset_iff.mp hsubsuppf).1
+    · rw [hK]
+      simp only [Fin.isValue]
+      rw [if_neg h0]
+      exact (union_subset_iff.mp hsubsuppf).2
+  obtain ⟨g₁, g₂, hg₁, hg₂, sum_g⟩ := exists_sum_one_of_isCompact_nnreal K_compact
+    f.hasCompactSupport'.isCompact disj hKt
   have f_eq_sum : f = g₁ * f + g₂ * f := by
     ext x
     simp only [CompactlySupportedContinuousMap.coe_add, CompactlySupportedContinuousMap.coe_mul,
