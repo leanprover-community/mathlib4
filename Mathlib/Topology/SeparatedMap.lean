@@ -158,7 +158,7 @@ alias IsLocallyInjective_iff_openEmbedding := IsLocallyInjective_iff_isOpenEmbed
 theorem isLocallyInjective_iff_isOpenMap {f : X → Y} :
     IsLocallyInjective f ↔ IsOpenMap (toPullbackDiag f) :=
   IsLocallyInjective_iff_isOpenEmbedding.trans
-    ⟨IsOpenEmbedding.isOpenMap, isOpenEmbedding_of_continuous_injective_open
+    ⟨IsOpenEmbedding.isOpenMap, .of_continuous_injective_isOpenMap
       (IsEmbedding.toPullbackDiag f).continuous (injective_toPullbackDiag f)⟩
 
 theorem discreteTopology_iff_locallyInjective (y : Y) :
