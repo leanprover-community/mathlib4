@@ -412,10 +412,11 @@ lemma div_le_iff_le_mul_add_pred (hb : 0 < b) : a / b ≤ c ↔ a ≤ b * c + (b
 lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
   Nat.div_lt_self (Nat.succ_pos _) (Nat.succ_lt_succ (Nat.succ_pos _))
 
+@[deprecated le_div_iff_mul_le (since := "2024-11-06")]
 lemma le_div_iff_mul_le' (hb : 0 < b) : a ≤ c / b ↔ a * b ≤ c := le_div_iff_mul_le hb
 
-lemma div_lt_iff_lt_mul' (hb : 0 < b) : a / b < c ↔ a < c * b := by
-  simp only [← Nat.not_le, le_div_iff_mul_le' hb]
+@[deprecated div_lt_iff_lt_mul (since := "2024-11-06")]
+lemma div_lt_iff_lt_mul' (hb : 0 < b) : a / b < c ↔ a < c * b := div_lt_iff_lt_mul hb
 
 lemma one_le_div_iff (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by rw [le_div_iff_mul_le hb, Nat.one_mul]
 
@@ -425,7 +426,7 @@ lemma div_lt_one_iff (hb : 0 < b) : a / b < 1 ↔ a < b := by
 @[gcongr]
 protected lemma div_le_div_right (h : a ≤ b) : a / c ≤ b / c :=
   (c.eq_zero_or_pos.elim fun hc ↦ by simp [hc]) fun hc ↦
-    (le_div_iff_mul_le' hc).2 <| Nat.le_trans (Nat.div_mul_le_self _ _) h
+    (le_div_iff_mul_le hc).2 <| Nat.le_trans (Nat.div_mul_le_self _ _) h
 
 lemma lt_of_div_lt_div (h : a / c < b / c) : a < b :=
   Nat.lt_of_not_le fun hab ↦ Nat.not_le_of_lt h <| Nat.div_le_div_right hab
@@ -475,7 +476,7 @@ protected lemma mul_div_mul_comm (hba : b ∣ a) (hdc : d ∣ c) : a * c / (b * 
 
 lemma eq_zero_of_le_div (hn : 2 ≤ n) (h : m ≤ m / n) : m = 0 :=
   eq_zero_of_mul_le hn <| by
-    rw [Nat.mul_comm]; exact (Nat.le_div_iff_mul_le' (Nat.lt_of_lt_of_le (by decide) hn)).1 h
+    rw [Nat.mul_comm]; exact (Nat.le_div_iff_mul_le (Nat.lt_of_lt_of_le (by decide) hn)).1 h
 
 lemma div_mul_div_le_div (a b c : ℕ) : a / c * b / a ≤ b / c := by
   obtain rfl | ha := Nat.eq_zero_or_pos a
@@ -1151,7 +1152,7 @@ protected theorem div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 :
 -- Moved to Batteries
 
 lemma lt_mul_div_succ (a : ℕ) (hb : 0 < b) : a < b * (a / b + 1) := by
-  rw [Nat.mul_comm, ← Nat.div_lt_iff_lt_mul' hb]
+  rw [Nat.mul_comm, ← Nat.div_lt_iff_lt_mul hb]
   exact lt_succ_self _
 
 -- TODO: Batteries claimed this name but flipped the order of multiplication
