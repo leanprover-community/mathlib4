@@ -640,6 +640,18 @@ theorem IsTranscendenceBasis.isAlgebraic [Nontrivial R] (hx : IsTranscendenceBas
   exact h₂ (hx.2 (Set.range fun o : Option ι => o.elim a x)
     ((algebraicIndependent_subtype_range ai.injective).2 ai) h₁)
 
+theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
+    [Field F] [Field E] [Algebra F E] (hx : IsTranscendenceBasis F x) :
+    Algebra.IsAlgebraic (IntermediateField.adjoin F (range x)) E := by
+  haveI := hx.isAlgebraic
+  set S := range x
+  letI : Algebra (adjoin F S) (IntermediateField.adjoin F S) :=
+    (Subalgebra.inclusion (IntermediateField.algebra_adjoin_le_adjoin F S)).toRingHom.toAlgebra
+  haveI : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
+    IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  exact Algebra.IsAlgebraic.tower_top_of_injective (R := adjoin F S)
+    (Subalgebra.inclusion_injective _)
+
 section Field
 
 variable [Field K] [Algebra K A]
