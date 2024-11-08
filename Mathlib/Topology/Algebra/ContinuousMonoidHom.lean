@@ -478,8 +478,8 @@ instance : MulEquivClass (M ≃ₜ* N) M N where
 
 @[to_additive]
 instance : HomeomorphClass (M ≃ₜ* N) M N where
-  continuous_toFun f := f.continuous_toFun
-  continuous_invFun f := f.continuous_invFun
+  map_continuous f := f.continuous_toFun
+  inv_continuous f := f.continuous_invFun
 
 @[to_additive] -- shortcut instance that doesn't generate any subgoals
 instance : CoeFun (M ≃ₜ* N) fun _ ↦ M → N where
@@ -564,11 +564,10 @@ section symm
 
 /-- The inverse of a ContinuousMulEquiv. -/
 @[to_additive "The inverse of a ContinuousAddEquiv."]
-def symm (cme : M ≃ₜ* N) : N ≃ₜ* M := {
-  cme.toMulEquiv.symm with
+def symm (cme : M ≃ₜ* N) : N ≃ₜ* M :=
+  { cme.toMulEquiv.symm with
   continuous_toFun := cme.continuous_invFun
-  continuous_invFun := cme.continuous_toFun
-  }
+  continuous_invFun := cme.continuous_toFun }
 
 @[to_additive]
 theorem invFun_eq_symm {f : M ≃ₜ* N} : f.invFun = f.symm := rfl
