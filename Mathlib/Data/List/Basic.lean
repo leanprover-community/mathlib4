@@ -841,10 +841,6 @@ end deprecated
 @[deprecated (since := "2024-10-21")]
 alias modifyNthTail_modifyNthTail_le := modifyTailIdx_modifyTailIdx_le
 
-theorem modifyTailIdx_modifyTailIdx_self {f g : List α → List α} (n : ℕ) (l : List α) :
-    (l.modifyTailIdx f n).modifyTailIdx g n = l.modifyTailIdx (g ∘ f) n :=
-  modifyTailIdx_modifyTailIdx_eq n l
-
 @[deprecated (since := "2024-10-21")]
 alias modifyNthTail_modifyNthTail_same := modifyTailIdx_modifyTailIdx_self
 @[deprecated (since := "2024-05-04")] alias removeNth_eq_nthTail := eraseIdx_eq_modifyTailIdx
