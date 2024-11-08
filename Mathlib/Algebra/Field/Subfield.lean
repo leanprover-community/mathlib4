@@ -491,6 +491,13 @@ theorem fieldRange_eq_map : f.fieldRange = Subfield.map f ⊤ := by
 theorem map_fieldRange : f.fieldRange.map g = (g.comp f).fieldRange := by
   simpa only [fieldRange_eq_map] using (⊤ : Subfield K).map_map g f
 
+theorem mem_fieldRange_self (x : K) : f x ∈ f.fieldRange :=
+  exists_apply_eq_apply _ _
+
+theorem fieldRange_eq_top_iff {f : K →+* L} :
+    f.fieldRange = ⊤ ↔ Function.Surjective f :=
+  SetLike.ext'_iff.trans Set.range_iff_surjective
+
 /-- The range of a morphism of fields is a fintype, if the domain is a fintype.
 
 Note that this instance can cause a diamond with `Subtype.Fintype` if `L` is also a fintype. -/
