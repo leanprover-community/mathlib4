@@ -654,6 +654,9 @@ theorem toValuation_apply (r : R) :
     toValuation v r = Multiplicative.ofAdd (OrderDual.toDual (v r)) :=
   rfl
 
+@[deprecated (since := "2024-11-08")]
+alias valuation_apply := toValuation_apply
+
 @[simp]
 theorem addValuation_apply (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) (r : R) :
     ofValuation v r = OrderDual.ofDual (Multiplicative.toAdd (v r)) :=
