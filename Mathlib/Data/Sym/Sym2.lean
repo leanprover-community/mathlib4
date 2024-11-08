@@ -444,16 +444,23 @@ lemma pmap_map {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : 
   induction' z with x y
   rfl
 
+lemma pmap_pmap {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : ∀ b, Q b → γ)
+    (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
+    (z.pmap f h).pmap g h' = z.pmap (fun a ha => g (f a (h a ha))
+    (h' _ ((mem_pmap_iff f z h _).mpr ⟨a, ha, rfl⟩))) (fun a ha ↦ ha) := by
+  induction' z with x y
+  rfl
+
 /--
 "Attach" a proof `P a` that holds for all the elements of `s` to produce a new Sym2 object
 with the same elements but in the type `{x // P x}`.
 -/
-def attachWith (s : Sym2 α) (P : α → Prop) (f : ∀ a ∈ s, P a) : Sym2 {a // P a} :=
+def attachWith {P : α → Prop} (s : Sym2 α)  (f : ∀ a ∈ s, P a) : Sym2 {a // P a} :=
   pmap Subtype.mk s f
 
 @[simp]
 lemma attachWith_map_subtype_val {s : Sym2 α} {P : α → Prop} (f : ∀ a ∈ s, P a) :
-    (s.attachWith P f).map Subtype.val = s := by
+    (s.attachWith f).map Subtype.val = s := by
   induction' s with x y
   rfl
 
