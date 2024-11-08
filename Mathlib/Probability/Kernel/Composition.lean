@@ -1201,6 +1201,7 @@ variable {γ : Type*} {mγ : MeasurableSpace γ}
 noncomputable def prod (κ : Kernel α β) (η : Kernel α γ) : Kernel α (β × γ) :=
   κ ⊗ₖ swapLeft (prodMkLeft β η)
 
+@[inherit_doc]
 scoped[ProbabilityTheory] infixl:100 " ×ₖ " => ProbabilityTheory.Kernel.prod
 
 theorem prod_apply' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]
