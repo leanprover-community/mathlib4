@@ -3689,6 +3689,7 @@ import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 import Mathlib.NumberTheory.ModularForms.SlashActions
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 import Mathlib.NumberTheory.MulChar.Basic
+import Mathlib.NumberTheory.MulChar.Duality
 import Mathlib.NumberTheory.MulChar.Lemmas
 import Mathlib.NumberTheory.Multiplicity
 import Mathlib.NumberTheory.NumberField.Basic
