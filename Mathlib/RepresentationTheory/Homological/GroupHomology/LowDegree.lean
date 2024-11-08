@@ -184,9 +184,9 @@ theorem dZero_comp_dOne [DecidableEq G] : dZero A ∘ₗ dOne A = 0 := by
 
 open Finsupp
 theorem dOne_comp_dTwo [DecidableEq G] : dOne A ∘ₗ dTwo A = 0 := by
-  show ModuleCat.ofHom (dTwo A) ≫ ModuleCat.ofHom (dOne A) = _
-  have h1 : _ ≫ ModuleCat.ofHom (dOne A) = _ ≫ _ := congr(ModuleCat.ofHom $(dOne_comp_eq A))
-  have h2 : _ ≫ ModuleCat.ofHom (dTwo A) = _ ≫ _ := congr(ModuleCat.ofHom $(dTwo_comp_eq A))
+  show ModuleCat.asHom (dTwo A) ≫ ModuleCat.asHom (dOne A) = _
+  have h1 : _ ≫ ModuleCat.asHom (dOne A) = _ ≫ _ := congr(ModuleCat.asHom $(dOne_comp_eq A))
+  have h2 : _ ≫ ModuleCat.asHom (dTwo A) = _ ≫ _ := congr(ModuleCat.asHom $(dTwo_comp_eq A))
   simp only [← LinearEquiv.toModuleIso_hom] at h1 h2
   simp only [(Iso.eq_inv_comp _).2 h2, (Iso.eq_inv_comp _).2 h1,
     Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc, zero_comp, comp_zero]
@@ -721,7 +721,7 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
 `(inhomogeneousChains A).d 1 0` of the complex of inhomogeneous chains of `A`. -/
 @[simps! hom_left hom_right inv_left inv_right]
 def dZeroArrowIso : Arrow.mk ((inhomogeneousChains A).d 1 0) ≅
-    Arrow.mk (ModuleCat.ofHom (dZero A)) :=
+    Arrow.mk (ModuleCat.asHom (dZero A)) :=
   Arrow.isoMk (oneChainsLEquiv A).toModuleIso (zeroChainsLEquiv A).toModuleIso
     (dZero_comp_eq A)
 

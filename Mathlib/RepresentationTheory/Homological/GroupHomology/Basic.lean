@@ -88,7 +88,9 @@ theorem d_eq [DecidableEq G] :
   have := finsuppToCoinvariantsTensorFree_single (A := A) g
   have := barResolution.d_single (k := k) _ g
   have := coinvariantsTensorFreeToFinsupp_mk_tmul_single (A := A) (α := Fin n → G)
-  simp_all [moduleCat_simps, coinvariantsTensorBarResolution, coinvariantsMap, hom_whiskerLeft,
+  simp_all [moduleCat_simps, coinvariantsTensorBarResolution, coinvariantsMap,
+    ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
+    ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_whiskerLeft, ModuleCat.MonoidalCategory.whiskerLeft,
     TensorProduct.tmul_add, TensorProduct.tmul_sum, Submodule.Quotient.mk_sum]
 
 end inhomogeneousChains

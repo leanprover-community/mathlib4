@@ -51,7 +51,7 @@ noncomputable def TateCohomology {k G : Type u} [CommRing k] [Group G]
   | -(n + 2 : ℕ) => groupHomology A (n + 1)
 
 namespace TateCohomology
-open groupCohomology groupCohomology.IsPairMap groupHomology groupHomology.IsPairMap
+open groupCohomology groupHomology
 
 variable {k G : Type u} [CommRing k] [Group G] [Fintype G] [DecidableEq G] (A : Rep k G)
   {A B : Rep k G}
@@ -62,18 +62,19 @@ noncomputable def map (φ : A ⟶ B) (n : ℤ) :
   | 0 => ModuleCat.asHom <| Submodule.mapQ _ _ ((invariantsFunctor k G).map φ) <| by
     rintro y ⟨x, rfl⟩
     induction' x using Quotient.inductionOn' with x
-    use (Submodule.Quotient.mk (hom φ x))
+    use (Submodule.Quotient.mk (φ.hom x))
     ext
-    simp [liftRestrictNorm, ModuleCat.asHom, ModuleCat.hom_def, ModuleCat.coe_of,
-      ModuleCat.comp_def, Submodule.Quotient.mk''_eq_mk, hom_comm_apply, norm]
-  | (n + 1 : ℕ) => cohomologyMap A B (MonoidHom.id G) φ.hom (n + 1)
+    simpa [liftRestrictNorm, moduleCat_simps, Submodule.Quotient.mk''_eq_mk, norm]
+      using congr(∑ c : G, $((hom_comm_apply φ _ _).symm))
+  | (n + 1 : ℕ) => cohomologyMap (MonoidHom.id G) φ (n + 1)
   | -1 => ModuleCat.asHom <| LinearMap.restrict (coinvariantsMap φ) <| by
     rintro x (hx : _ = _)
     ext
     induction' x using Quotient.inductionOn' with x
-    simp_all [Submodule.Quotient.mk''_eq_mk, liftRestrictNorm, Subtype.ext_iff, ← hom_comm_apply,
-      ← map_sum, norm]
-  | -(n + 2 : ℕ) => homologyMap A B (MonoidHom.id G) φ.hom (n + 1)
+    have := fun c => (hom_comm_apply φ c x).symm
+    simp_all [liftRestrictNorm, moduleCat_simps, Submodule.Quotient.mk''_eq_mk, Subtype.ext_iff,
+      norm, ← map_sum, @map_zero A B]
+  | -(n + 2 : ℕ) => homologyMap (MonoidHom.id G) φ (n + 1)
 
 @[simp]
 theorem map_id (n : ℤ) : map (𝟙 A) n = 𝟙 _ :=
@@ -81,18 +82,17 @@ theorem map_id (n : ℤ) : map (𝟙 A) n = 𝟙 _ :=
   | 0 => Submodule.mapQ_id _ <| by rintro y ⟨x, rfl⟩; exact LinearMap.mem_range_self _ _
   | (n + 1 : ℕ) => by simp [map, cohomologyMap, TateCohomology, groupCohomology]
   | -1 => LinearMap.ext fun _ => Subtype.ext <| by simp only [map, coinvariantsMap_id]; rfl
-  | Int.negSucc (n + 1) => by simp [map, IsPairMap.homologyMap, TateCohomology, groupHomology]
+  | Int.negSucc (n + 1) => by
+    simp [map, groupHomology.homologyMap, TateCohomology, groupHomology]
 
 @[simp]
 theorem map_comp {C : Rep k G} (f : A ⟶ B) (g : B ⟶ C) (n : ℤ) :
     map (f ≫ g) n = map f n ≫ map g n :=
   match n with
   | 0 => Submodule.linearMap_qext _ rfl
-  | (n + 1 : ℕ) => by
-    simp [map, cohomologyMap, TateCohomology, groupCohomology, HomologicalComplex.homologyMap_comp]
+  | (n + 1 : ℕ) => cohomologyMap_comp (MonoidHom.id G) (MonoidHom.id G) _ _ _
   | -1 => LinearMap.ext fun _ => Subtype.ext <| by simp only [map, coinvariantsMap_comp]; rfl
-  | Int.negSucc (n + 1) => by simp [map, IsPairMap.homologyMap, TateCohomology, groupHomology,
-      HomologicalComplex.homologyMap_comp]
+  | Int.negSucc (n + 1) => homologyMap_comp (MonoidHom.id G) (MonoidHom.id G) _ _ _
 
 variable (k G) in
 @[simps]
@@ -264,13 +264,14 @@ noncomputable def δ₀ : TateCohomology X.X₃ 0 ⟶ groupCohomology X.X₁ 1 :
     rcases (Rep.epi_iff_surjective X.g).1 hX.3 x with ⟨(y : X.X₂), rfl⟩
     have : (groupCohomology.isoH1 X.X₁).hom _ = _ :=
       congr($((groupCohomology.H0ShortComplex₃ hX).zero)
-        ⟨hom X.X₂.norm y, fun g => LinearMap.ext_iff.1 (X.X₂.ρ_comp_norm g) y⟩)
-    simp_all only [ModuleCat.coe_of, ModuleCat.hom_def, groupCohomology.IsPairMap.mapH0, ← hom_def,
+        ⟨X.X₂.norm.hom y, fun g => LinearMap.ext_iff.1 (X.X₂.ρ_comp_norm g) y⟩)
+
+    simp_all only [ModuleCat.coe_of, ModuleCat.hom_def, groupCohomology.mapH0,
       groupCohomology.δ₀, ModuleCat.comp_def, ModuleCat.asHom, LinearMap.coe_comp,
       Function.comp_apply, zero_comp]
     convert this
     ext
-    simp [hom_comm_apply, norm]
+    simpa [norm] using congr(∑ c : G, $((hom_comm_apply X.g c y).symm))
 
 theorem mkQ_comp_δ₀ : ModuleCat.asHom (Submodule.mkQ _) ≫ δ₀ hX
     = (groupCohomology.isoH0 X.X₃).inv ≫ (groupCohomology.mapShortExact hX).δ 0 1 rfl := by
@@ -288,7 +289,8 @@ noncomputable def δNeg₁ : TateCohomology X.X₃ (-1) ⟶ TateCohomology X.X�
 
 theorem δNeg₁_apply (z : X.X₃) (hz : (Submodule.mkQ _ z) ∈ LinearMap.ker (liftRestrictNorm X.X₃))
     (y : X.X₂) (x : X.X₁.ρ.invariants)
-    (hyz : hom X.g y - z ∈ X.X₃.ρ.coinvariantsKer) (hx : hom X.f x.1 = hom X.X₂.norm y) :
+    (hyz : (· - z : X.X₃ → X.X₃) (X.g.hom y) ∈ X.X₃.ρ.coinvariantsKer)
+    (hx : X.f.hom x.1 = X.X₂.norm.hom y) :
     TateCohomology.δNeg₁ hX ⟨Submodule.mkQ _ z, hz⟩ = Submodule.mkQ _ x := by
   convert congr((π₁.mapIso <| snakeInputIso₃ hX).hom $((TateCohomology.snakeInput hX).δ_apply
     ((π₃.mapIso <| snakeInputIso₀ hX).inv ⟨Submodule.mkQ _ z, hz⟩) (Submodule.mkQ _ y) x
@@ -308,7 +310,7 @@ theorem liftRestrictNorm_δ₀_apply (x : groupHomology.H1 X.X₃) :
     LinearMap.mem_ker.1 <| (H0ShortComplex₁_exact hX).moduleCat_range_eq_ker
       ▸ LinearMap.mem_range_self _ _
   simp_all [ModuleCat.coe_of, ModuleCat.hom_def, mapH0_eq_coinvariantsFunctor_map,
-    ModuleCat.asHom, ModuleCat.comp_def, hom_def]
+    ModuleCat.asHom, ModuleCat.comp_def]
 
 noncomputable def δNeg₂ : TateCohomology X.X₃ (-2) ⟶ TateCohomology X.X₁ (-1) :=
   LinearMap.codRestrict _ ((groupHomology.mapShortExact hX).δ 1 0 rfl
@@ -356,10 +358,10 @@ noncomputable def shortComplexNeg₂₃ (hX : ShortExact X) : ShortComplex (Modu
   zero := by
     rw [← cancel_mono (ModuleCat.asHom <| Submodule.subtype _)]
     have := congr($((groupHomology.H1ShortComplex₃ hX).zero) ≫ (groupHomology.isoH0 X.X₁).inv)
-    have h := (CommSq.vert_inv ⟨homologyMap_comp_isoH1_hom X.X₂ X.X₃ (MonoidHom.id G) X.g.hom⟩).w
+    have h := (CommSq.vert_inv ⟨homologyMap_comp_isoH1_hom (MonoidHom.id G) X.g⟩).w
     simp_all only [groupHomology.δ₀, Category.assoc, Iso.hom_inv_id, Category.comp_id, zero_comp,
       δNeg₂_comp_subtype, Iso.hom_inv_id_assoc]
-    show IsPairMap.homologyMap X.X₂ X.X₃ (MonoidHom.id G) X.g.hom 1 ≫ _ = _
+    show homologyMap (MonoidHom.id G) X.g 1 ≫ _ = _
     simp_all only [← Category.assoc, Preadditive.IsIso.comp_right_eq_zero]
     simp_all
 
@@ -385,7 +387,7 @@ noncomputable def shortComplexNeg₁₁ (hX : ShortExact X) : ShortComplex (Modu
     simp_all only [groupHomology.δ₀, Category.assoc, Iso.hom_inv_id_assoc, ModuleCat.coe_comp,
       Function.comp_apply, comp_zero, LinearMap.zero_apply]
     simpa [-zero, δNeg₂, map, -ZeroMemClass.coe_eq_zero, ModuleCat.coe_of, ModuleCat.asHom,
-      ModuleCat.hom_def, ModuleCat.comp_def, hom_def] using this
+      ModuleCat.hom_def, ModuleCat.comp_def] using this
 
 theorem shortComplexNeg₁₁_exact (hX : ShortExact X) : (shortComplexNeg₁₁ hX).Exact := by
   rw [moduleCat_exact_iff_ker_sub_range]
@@ -470,7 +472,7 @@ noncomputable def shortComplex₁₁ (hX : ShortExact X) : ShortComplex (ModuleC
   f := δ₀ hX
   g := map X.f 1
   zero := by
-    have := (cohomologyMap_comp_isoH1_hom X.X₁ X.X₂ (MonoidHom.id G) X.f.hom)
+    have := (cohomologyMap_comp_isoH1_hom (MonoidHom.id G) X.f)
     rw [← cancel_epi (ModuleCat.asHom <| Submodule.mkQ _),
       ← cancel_mono (groupCohomology.isoH1 X.X₂).hom]
     simp_all only [δ₀, map, Category.assoc, comp_zero]

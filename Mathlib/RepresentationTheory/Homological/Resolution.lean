@@ -396,12 +396,12 @@ instance x_projective [Group G] :
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
-theorem d_eq [Monoid G] : Rep.hom ((standardResolution k G).d (n + 1) n) = d k G (n + 1) := by
+theorem d_eq [Monoid G] : ((standardResolution k G).d (n + 1) n).hom = d k G (n + 1) := by
   refine Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
   simp [classifyingSpaceUniversalCover_obj, Action.ofMulAction_V, standardResolution,
     Rep.coe_linearization_obj, d_of (k := k) x, SimplicialObject.δ,
     ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), classifyingSpaceUniversalCover_map_hom,
-    SimplexCategory.δ, Fin.succAboveOrderEmb]
+    SimplexCategory.δ, Fin.succAboveOrderEmb, moduleCat_simps]
 
 end Differentials
 
@@ -531,12 +531,11 @@ def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
 
 variable {k G}
 
-@[simp]
 lemma d_single (x : Gⁿ⁺¹) :
-    hom (d k G n) (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
+    (d k G n).hom (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
       Finset.univ.sum fun j : Fin (n + 1) =>
         single (Fin.contractNth j (· * ·) x)  (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
-  simp [d]
+  simp [d, moduleCat_simps]
 
 variable (k G)
 
@@ -544,9 +543,10 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
     d k G n ≫ (diagonalSuccIsoFree k G n).inv =
       (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardResolution k G).d (n + 1) n :=
   free_ext _ _ fun i => by
-    simp only [hom_comp, LinearMap.coe_comp, Function.comp_apply, d_single, map_add,
-      diagonalSuccIsoFree_inv_single_single (i 0), map_sum,
-      diagonalSuccIsoFree_inv_single_single (1 : G)]
+    have := d_single (k := k) (G := G)
+    have := @diagonalSuccIsoFree_inv_single_single k G _
+    simp_all only [coe_V, coe_of, ModuleCat.hom_def, Action.comp_hom, ModuleCat.comp_def,
+      LinearMap.coe_comp, Function.comp_apply, map_add, map_sum, one_smul]
     simpa [standardResolution.d_eq, standardResolution.d_of (k := k) (Fin.partialProd i),
       Fin.sum_univ_succ, Fin.partialProd_contractNth_eq]
       using congr(Finsupp.single $(by ext j; exact (Fin.partialProd_succ' i j).symm) 1)
@@ -582,6 +582,7 @@ def isoStandardResolution : barResolution k G ≅ standardResolution k G :=
 
 /-- The chain complex `Rep.barResolution k G` as a projective resolution of `k` as a trivial
 `k`-linear `G`-representation. -/
+@[simps complex]
 def projectiveResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := barResolution k G
   projective n := Rep.equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|

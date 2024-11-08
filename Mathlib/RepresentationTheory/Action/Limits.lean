@@ -203,6 +203,50 @@ noncomputable instance : ReflectsColimits (Action.forget V G) where
 
 end Forget
 
+section Res
+
+variable {H : Type u} [Monoid G] [Monoid H] (f : G →* H)
+
+noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
+    PreservesLimitsOfShape J (Action.res V f) :=
+  letI : PreservesLimitsOfShape J (Action.res V f ⋙ Action.forget V G) :=
+    inferInstanceAs <| PreservesLimitsOfShape J (Action.forget V H)
+  preservesLimitsOfShapeOfReflectsOfPreserves (Action.res V f) (Action.forget V G)
+
+noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasColimitsOfShape J V] :
+    PreservesColimitsOfShape J (Action.res V f) :=
+  letI : PreservesColimitsOfShape J (Action.res V f ⋙ Action.forget V G) :=
+    inferInstanceAs <| PreservesColimitsOfShape J (Action.forget V H)
+  preservesColimitsOfShapeOfReflectsOfPreserves (Action.res V f) (Action.forget V G)
+
+noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (Action.res V f) :=
+  letI : PreservesFiniteLimits (Action.res V f ⋙ Action.forget V G) :=
+    inferInstanceAs <| PreservesFiniteLimits (Action.forget V H)
+  preservesFiniteLimitsOfReflectsOfPreserves (Action.res V f) (Action.forget V G)
+
+noncomputable instance [HasFiniteColimits V] : PreservesFiniteColimits (Action.res V f) :=
+  letI : PreservesFiniteColimits (Action.res V f ⋙ Action.forget V G) :=
+    inferInstanceAs <| PreservesFiniteColimits (Action.forget V H)
+  preservesFiniteColimitsOfReflectsOfPreserves (Action.res V f) (Action.forget V G)
+
+noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
+    ReflectsLimitsOfShape J (Action.res V f) where
+      reflectsLimit := {
+        reflects := fun hc => ReflectsLimit.reflects (F := Action.forget V H)
+          (PreservesLimit.preserves (F := Action.forget V G) hc) }
+
+noncomputable instance [HasLimits V] : ReflectsLimits (Action.res V f) where
+
+noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasColimitsOfShape J V] :
+    ReflectsColimitsOfShape J (Action.res V f) where
+      reflectsColimit := {
+        reflects := fun hc => ReflectsColimit.reflects (F := Action.forget V H)
+          (PreservesColimit.preserves (F := Action.forget V G) hc) }
+
+noncomputable instance [HasColimits V] : ReflectsColimits (Action.res V f) where
+
+end Res
+
 section HasZeroMorphisms
 
 variable [HasZeroMorphisms V]

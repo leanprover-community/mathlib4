@@ -267,8 +267,7 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
     ext z w
     simp [mul_smul]
 
-/-- The natural `k`-linear `G`-representation on `k[G]` induced by left multiplication of `G` on
-itself. -/
+/-- The natural `k`-linear `G`-representation on `k[G]` induced by left multiplication in `G`. -/
 noncomputable abbrev leftRegular := ofMulAction k G G
 
 variable {k G H}
@@ -520,14 +519,13 @@ def finsuppLEquivFreeAsModule :
     map_smul' := fun r x => by
       simp only [AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
         AddEquiv.refl_apply, RingHom.id_apply]
-      refine x.induction ?_ fun x y f _ _ h => ?_
+      refine x.induction ?_ fun _ _ _ _ _ h => ?_
       · simp only [smul_zero]
       · rw [smul_add, h]
         show _ + asAlgebraHom _ _ _ = asAlgebraHom _ _ _
         simp only [map_add, smul_single, smul_eq_mul, MonoidAlgebra.mul_def,
           asAlgebraHom_def, MonoidAlgebra.lift_apply]
-        congr
-        simp [free, asModule, ofMulAction_def, mapDomain, smul_sum, ← single_sum] }
+        simp [free, MonoidAlgebra, asModule, ofMulAction_def, mapDomain, smul_sum, single_sum] }
 
 /-- `α` gives a `k[G]`-basis of the representation `free k G α`. -/
 def freeAsModuleBasis :

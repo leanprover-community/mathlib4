@@ -117,7 +117,7 @@ variable [Group G] (A : Rep k G) (n : ℕ)
   ext f g
   show _ = Finsupp.linearCombination _ _ _
   have h := barResolution.d_single (k := k) _ g
-  simp_all [← hom_def, coe_V]
+  simp_all [coe_V]
 
 end inhomogeneousCochains
 

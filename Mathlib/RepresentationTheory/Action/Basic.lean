@@ -64,6 +64,7 @@ variable (G : Type u) [Monoid G]
 
 section
 
+/-- The action defined by sending every group element to the identity. -/
 @[simps]
 def trivial (X : V) : Action V G := { V := X, ρ := 1 }
 

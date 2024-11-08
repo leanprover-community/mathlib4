@@ -3,6 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
@@ -260,9 +261,9 @@ noncomputable abbrev leftRegularTensorIso (X : Action (Type u) G) :
   Action.mkIso (Equiv.toIso {
     toFun := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
     invFun := fun g => ⟨g.1, X.ρ g.1 g.2⟩
-    left_inv := fun ⟨(x : G), (y : X.V)⟩ => Prod.ext rfl <| by simp
-    right_inv := fun ⟨(x : G), (y : X.V)⟩ => Prod.ext rfl <| by simp }) <| fun g => by
-      ext ⟨(x : G), (y : X.V)⟩
+    left_inv := fun _ => Prod.ext rfl <| by simp
+    right_inv := fun _ => Prod.ext rfl <| by simp }) <| fun _ => by
+      ext _
       simp only [instMonoidalCategory_tensorObj_V, tensor_ρ', types_comp_apply, tensor_apply,
         ofMulAction_apply]
       simp
@@ -291,7 +292,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom {n : ℕ} (f : Fin (n + 1) → G) :
   induction' n with n hn
   · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
   · refine Prod.ext rfl (funext fun x => ?_)
-    induction' x using Fin.cases with i
+    induction' x using Fin.cases
     <;> simp_all only [instMonoidalCategory_tensorObj_V, diagonalSuccIsoTensorTrivial,
         Iso.trans_hom, tensorIso_hom, Iso.refl_hom, id_tensorHom, comp_hom,
         instMonoidalCategory_whiskerLeft_hom, mkIso_hom_hom, tensor_ρ', tensor_apply,
@@ -302,14 +303,11 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom {n : ℕ} (f : Fin (n + 1) → G) :
 theorem diagonalSuccIsoTensorTrivial_inv_hom {n : ℕ} (g : G) (f : Fin n → G) :
     (diagonalSuccIsoTensorTrivial G n).inv.hom (g, f) =
       (g • Fin.partialProd f : Fin (n + 1) → G) := by
-  revert g
-  induction' n with n hn
-  · intro g
-    funext (x : Fin 1)
+  induction' n with n hn generalizing g
+  · funext (x : Fin 1)
     simp [diagonalSuccIsoTensorTrivial, diagonalOneIsoLeftRegular, Subsingleton.elim x 0]
-  · intro g
-    funext x
-    induction' x using Fin.cases with i
+  · funext x
+    induction' x using Fin.cases
     <;> simp_all only [diagonalSuccIsoTensorTrivial, instMonoidalCategory_tensorObj_V,
         Iso.trans_inv, comp_hom, mkIso_inv_hom, tensor_ρ', tensor_apply, ofMulAction_apply]
     <;> simp_all [types_tensorObj, mul_assoc, Fin.partialProd_succ']
