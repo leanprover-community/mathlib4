@@ -328,13 +328,14 @@ instance infinite_emb_of_transcendental [Algebra.Transcendental F E] : Infinite 
   rw [← (embProdEmbOfIsAlgebraic F (adjoin F (Set.range x)) E).infinite_iff]
   refine @Prod.infinite_of_left _ _ ?_ _
   rw [← (embEquivOfEquiv _ _ _ hx.1.aevalEquivField).infinite_iff]
-  rcases isEmpty_or_nonempty ι with _ | ⟨i⟩
+  rcases isEmpty_or_nonempty ι with _ | h
   · rw [show adjoin F (Set.range x) = ⊥ by simp [Set.range_eq_empty],
       ← algebra_isAlgebraic_ringHom_iff_of_comp_eq (botEquiv F E) (RingEquiv.refl E) (by
         ext a
         obtain ⟨_, rfl⟩ := (botEquiv F E).symm.surjective a
         simp)] at this
     exact False.elim (Algebra.transcendental_iff_not_isAlgebraic.1 ‹_› this)
+  obtain ⟨i⟩ := h
   let i1 := IsScalarTower.toAlgHom F (MvPolynomial ι F)
     (AlgebraicClosure (FractionRing (MvPolynomial ι F)))
   have hi1 : Function.Injective i1 := by
