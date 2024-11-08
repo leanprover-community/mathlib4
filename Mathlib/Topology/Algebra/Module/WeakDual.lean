@@ -99,8 +99,11 @@ instance instInhabited : Inhabited (WeakDual 𝕜 E) :=
 instance instFunLike : FunLike (WeakDual 𝕜 E) E 𝕜 :=
   ContinuousLinearMap.funLike
 
-instance instContinuousLinearMapClass : ContinuousLinearMapClass (WeakDual 𝕜 E) 𝕜 E 𝕜 :=
-  ContinuousLinearMap.continuousSemilinearMapClass
+instance instLinearMapClass : LinearMapClass (WeakDual 𝕜 E) 𝕜 E 𝕜 :=
+  ContinuousLinearMap.semilinearMapClass
+
+instance instContinuousMapClass : ContinuousMapClass (WeakDual 𝕜 E) E 𝕜 :=
+  ContinuousLinearMap.continuousLinearMapClass
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/

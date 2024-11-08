@@ -269,6 +269,9 @@ structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] extends M ≃ₛₗ[σ] M₂, M ≃ₜ M₂ where
 
+/-- A continuous linear equivalence induces a homeomorphism. -/
+add_decl_doc ContinuousLinearEquiv.toHomeomorph
+
 @[inherit_doc]
 notation:50 M " ≃SL[" σ "] " M₂ => ContinuousLinearEquiv σ M M₂
 
@@ -384,7 +387,7 @@ instance semilinearMapClass :
   map_add f := map_add f.toLinearMap
   map_smulₛₗ f := f.toLinearMap.map_smul'
 
-instance continuousSemilinearMapClass :
+instance continuousMapClass :
     ContinuousMapClass (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
   map_continuous f := f.2
 
