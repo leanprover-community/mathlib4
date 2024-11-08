@@ -274,6 +274,7 @@ variable [FunLike F α β] [IsometryClass F α β] (f : F)
 protected theorem edist_eq (x y : α) : edist (f x) (f y) = edist x y :=
   (IsometryClass.isometry f).edist_eq x y
 
+@[continuity]
 protected theorem continuous : Continuous f :=
   (IsometryClass.isometry f).continuous
 
