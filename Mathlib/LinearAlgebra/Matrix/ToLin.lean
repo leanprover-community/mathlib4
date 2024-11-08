@@ -999,9 +999,9 @@ are `R`-linear maps `M → M`. In another word, we have`End(Mⁿ) ≅ Matₙₓ�
 
 See also `LinearMap.toMatrix'`
 -/
-@[simps]
-def endVecEquivMatrixEnd :
-    Module.End R (ι → M) ≃ Matrix ι ι (Module.End R M) where
+@[simp]
+def endVecRingEquivMatrixEnd :
+    Module.End R (ι → M) ≃+* Matrix ι ι (Module.End R M) where
   toFun f i j :=
   { toFun := fun x ↦ f (Pi.single j x) i
     map_add' := fun x y ↦ by simp [Pi.single_add]
@@ -1016,23 +1016,10 @@ def endVecEquivMatrixEnd :
     rw [← Fintype.sum_apply, ← map_sum]
     exact congr_arg₂ _ (by aesop) rfl
   right_inv m := by ext; simp [Pi.single_apply, apply_ite]
-
-/--
-Let `M` be an `R`-module. Every `R`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
-are `R`-linear maps `M → M`. In another word, we have`End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
-`(f : Mⁿ → Mⁿ) ↦ (x ↦ f (0, ...,x at j-th position, ..., 0) i)ᵢⱼ` and
-`m : Matₙₓₙ(End(M)) ↦ (v ↦ ∑ⱼ mᵢⱼ(vⱼ))`.
-
-See also `LinearMap.toMatrix'`
--/
-@[simp]
-def endVecRingEquivMatrixEnd :
-    Module.End R (ι → M) ≃+* Matrix ι ι (Module.End R M) where
-  __ := endVecEquivMatrixEnd ι R M
   map_mul' f g := by
     ext
-    simp only [Equiv.toFun_as_coe, endVecEquivMatrixEnd_apply_apply, LinearMap.mul_apply,
-      Matrix.mul_apply, coeFn_sum, Finset.sum_apply]
+    simp only [LinearMap.mul_apply, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply, coeFn_sum,
+      Finset.sum_apply]
     rw [← Fintype.sum_apply, ← map_sum]
     exact congr_arg₂ _ (by aesop) rfl
   map_add' f g := by ext; simp
@@ -1043,7 +1030,8 @@ section
 
 variable (ι : Type*) [Fintype ι] [DecidableEq ι]
 variable (R : Type*) [CommSemiring R]
-variable (M : Type*) [AddCommMonoid M] [Module R M]
+variable (A : Type*) [Semiring A] [Algebra R A]
+variable (M : Type*) [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 /--
 Let `M` be an `R`-module. Every `R`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
@@ -1055,14 +1043,14 @@ See also `LinearMap.toMatrix'`
 -/
 @[simps! apply_apply symm_apply_apply]
 def endVecAlgEquivMatrixEnd :
-    Module.End R (ι → M) ≃ₐ[R] Matrix ι ι (Module.End R M) where
-  __ := endVecRingEquivMatrixEnd ι R M
+    Module.End A (ι → M) ≃ₐ[R] Matrix ι ι (Module.End A M) where
+  __ := endVecRingEquivMatrixEnd ι A M
   commutes' r := by
     ext
     simp only [endVecRingEquivMatrixEnd, RingEquiv.toEquiv_eq_coe, Module.algebraMap_end_eq_smul_id,
-      Equiv.toFun_as_coe, EquivLike.coe_coe, RingEquiv.coe_mk, endVecEquivMatrixEnd_apply_apply,
+      Equiv.toFun_as_coe, EquivLike.coe_coe, RingEquiv.coe_mk, Equiv.coe_fn_mk,
       LinearMap.smul_apply, id_coe, id_eq, Pi.smul_apply, Pi.single_apply, smul_ite, smul_zero,
-      algebraMap_matrix_apply]
+      LinearMap.coe_mk, AddHom.coe_mk, algebraMap_matrix_apply]
     split_ifs <;> rfl
 
 end
