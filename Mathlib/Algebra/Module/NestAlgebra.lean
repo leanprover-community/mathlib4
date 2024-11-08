@@ -41,8 +41,8 @@ def Basis.toNest : Sublattice (Submodule R M) where
   carrier := {⊤} ∪ Set.range (⟨fun i ↦ sInf {p | bm '' Set.Iio i ⊆ ↑p},
   fun _ _ hab => sInf_le_sInf (fun _ hn => subset_trans (Set.image_subset _
   (Set.Iio_subset_Iio hab)) hn)⟩ : ι →o Submodule R M )
-  supClosed' := SupClosed.insert_top (supClosed_range _)
-  infClosed' := InfClosed.insert_top (infClosed_range _)
+  supClosed' := SupClosed.insert_upper_bound (supClosed_range _) (fun _ _ _ _ ↦ trivial)
+  infClosed' := InfClosed.insert_upper_bound (infClosed_range _) (fun _ _ _ _ ↦ trivial)
 
 /-
 structure nest extends  CompleteSublattice (Submodule R M) where
