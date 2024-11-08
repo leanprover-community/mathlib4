@@ -370,7 +370,7 @@ example {α} {b : Bool} {x} (h : (⟨3, 5⟩ : MyProd _ _) = x) : (@test α).ext
   rw [h]
 
 /- check simpRhs option -/
-@[simps (config := {simpRhs := true})] def Equiv'.trans {α β γ} (f : α ≃ β) (g : β ≃ γ) : α ≃ γ :=
+@[simps +simpRhs] def Equiv'.trans {α β γ} (f : α ≃ β) (g : β ≃ γ) : α ≃ γ :=
 ⟨ g.toFun ∘ f.toFun,
   f.invFun ∘ g.invFun,
   (by intro x; simp [Equiv'.left_inv _ _]),
@@ -383,13 +383,13 @@ example {α β γ : Type} (f : α ≃ β) (g : β ≃ γ) (x : α) {z : γ} (h :
   rw [h]
 
 attribute [local simp] Nat.zero_add Nat.one_mul Nat.mul_one
-@[simps (config := {simpRhs := true})] def myNatEquiv : ℕ ≃ ℕ :=
+@[simps +simpRhs] def myNatEquiv : ℕ ≃ ℕ :=
   ⟨fun n ↦ 0 + n, fun n ↦ 1 * n * 1, by intro n; simp, by intro n; simp⟩
 
 example (n : ℕ) : myNatEquiv.toFun (myNatEquiv.toFun <| myNatEquiv.invFun n) = n := by
   { /-successIfFail { rfl },-/ simp only [myNatEquiv_toFun, myNatEquiv_invFun] }
 
-@[simps (config := {simpRhs := true})] def succeed_without_simplification_possible : ℕ ≃ ℕ :=
+@[simps +simpRhs] def succeed_without_simplification_possible : ℕ ≃ ℕ :=
   ⟨fun n ↦ n, fun n ↦ n, by intro n; rfl, by intro n; rfl⟩
 
 
@@ -413,7 +413,7 @@ run_cmd liftTermElabM <| do
   guard <| env.find? `pprodEquivProd2_invFun_snd |>.isSome
 
 -- we can disable this behavior with the option `notRecursive`.
-@[simps! (config := {notRecursive := []})] def pprodEquivProd22 : PProd ℕ ℕ ≃ ℕ × ℕ :=
+@[simps! (notRecursive := [])] def pprodEquivProd22 : PProd ℕ ℕ ≃ ℕ × ℕ :=
   pprodEquivProd2
 
 run_cmd liftTermElabM <| do
@@ -586,7 +586,7 @@ def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 def Equiv.Simps.invFun (e : α ≃ β) : β → α := e.symm
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
-@[simps (config := {simpRhs := true})]
+@[simps +simpRhs]
 protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β)⟩
 
@@ -640,7 +640,7 @@ initialize_simps_projections Equiv
 -- run_cmd has_attribute `_simps_str `ManualInitialize.Equiv
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
-@[simps (config := {simpRhs := true})]
+@[simps +simpRhs]
 protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β)⟩
 
@@ -725,7 +725,7 @@ run_cmd liftTermElabM <| do
   let data ← getRawProjections .missing `ManualProjectionNames.Equiv
   guard <| data.2.map (·.name) == #[`apply, `symm_apply]
 
-@[simps (config := {simpRhs := true})]
+@[simps +simpRhs]
 protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β)⟩
 
@@ -765,7 +765,7 @@ run_cmd liftTermElabM <| do
   guard <| data.2.map (·.name) = #[`coe, `symm_apply]
   guard <| data.2.map (·.isPrefix) = #[true, false]
 
-@[simps (config := {simpRhs := true})]
+@[simps +simpRhs]
 protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β)⟩
 
@@ -802,14 +802,14 @@ example {x : Set ℕ} (h : Set.univ = x) : Nat.SetPlus1.s = x := by
   dsimp only [Nat.SetPlus1_s]
   rw [h]
 
-@[simps (config := {typeMd := .default})]
+@[simps (typeMd := .default)]
 def Nat.SetPlus2 : SetPlus ℕ := ⟨Set.univ, 1, trivial⟩
 
 example {x : Set ℕ} (h : Set.univ = x) : Nat.SetPlus2.s = x := by
   fail_if_success { rw [h] }
   exact h
 
-@[simps (config := {rhsMd := .default})]
+@[simps (rhsMd := .default)]
 def Nat.SetPlus3 : SetPlus ℕ := Nat.SetPlus1
 
 example {x : Set ℕ} (h : Set.univ = x) : Nat.SetPlus3.s = x := by
@@ -828,7 +828,7 @@ variable {α β γ : Sort _}
 
 @[simps] def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
-@[simps (config := {rhsMd := .default, fullyApplied := false})]
+@[simps (rhsMd := .default) -fullyApplied]
 def Equiv.symm2 : (α ≃ β) ≃ (β ≃ α) :=
   ⟨Equiv.symm, Equiv.symm⟩
 
@@ -837,7 +837,7 @@ example (e : α ≃ β) {x : β → α} (h : e.invFun = x) : (Equiv.symm2.invFun
   rw [h]
 
 /- do not prematurely unfold `Equiv.symm`, unless necessary -/
-@[simps (config := {rhsMd := .default}) toFun toFun_toFun] def Equiv.symm3 : (α ≃ β) ≃ (β ≃ α) :=
+@[simps (rhsMd := .default) toFun toFun_toFun] def Equiv.symm3 : (α ≃ β) ≃ (β ≃ α) :=
   Equiv.symm2
 
 -- this fails in Lean 4, not sure what is going on
@@ -934,10 +934,11 @@ attribute [local simp] Nat.add
 structure MyType where
   (A : Type)
 
-@[simps (config := {simpRhs := true})] def myTypeDef : MyType :=
+@[simps +simpRhs] def myTypeDef : MyType :=
   ⟨{ _x : Fin (Nat.add 3 0) // 1 + 1 = 2 }⟩
 
 -- todo: this fails in Lean 4, not sure what is going on
+set_option linter.unusedVariables false in
 example (h : false) (x y : { x : Fin (Nat.add 3 0) // 1 + 1 = 2 }) : myTypeDef.A = Unit := by
   simp only [myTypeDef_A]
   guard_target = { _x : Fin 3 // True } = Unit

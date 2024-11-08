@@ -30,6 +30,7 @@ info: fun₀
     | ["just two"] => 2 : Π₀ _ : List String, ℕ)
 
 end Repr
+
 section PrettyPrinter
 
 /--

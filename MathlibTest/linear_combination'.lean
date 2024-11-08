@@ -147,7 +147,7 @@ example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
 
 example (x y : ℤ) (h1 : x = -3) (_h2 : y = 10) : 2 * x = -6 := by
   linear_combination' (norm := skip) 2 * h1
-  simp (config := {decide := true})
+  simp +decide
 
 /-! ### Cases without any arguments provided -/
 
@@ -219,6 +219,7 @@ example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
   fail_if_success linear_combination' h1
   linear_combination2 h1
 
+set_option linter.unusedVariables false in
 example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := by
   fail_if_success linear_combination' 2 * hab
   linear_combination' 2 * hxy

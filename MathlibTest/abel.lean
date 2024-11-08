@@ -1,5 +1,7 @@
 import Mathlib.Tactic.Abel
 
+set_option linter.unusedVariables false
+
 variable {α : Type _} {a b : α}
 
 example [AddCommMonoid α] : a + (b + a) = a + a + b := by abel

@@ -855,7 +855,7 @@ theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b :=
   | H₂ _ _ => rw [succ_le_iff, lt_div c0]
   | H₃ _ h₁ h₂ =>
     revert h₁ h₂
-    simp (config := { contextual := true }) only [mul_le_of_limit, limit_le, forall_true_iff]
+    simp +contextual only [mul_le_of_limit, limit_le, forall_true_iff]
 
 theorem div_lt {a b c : Ordinal} (b0 : b ≠ 0) : a / b < c ↔ a < b * c :=
   lt_iff_lt_of_le_iff_le <| le_div b0
@@ -1589,6 +1589,9 @@ theorem bsup_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o'
 theorem bsup_eq_of_brange_eq {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
     (h : brange o f = brange o' g) : bsup.{u, max v w} o f = bsup.{v, max u w} o' g :=
   (bsup_le_of_brange_subset.{u, v, w} h.le).antisymm (bsup_le_of_brange_subset.{v, u, w} h.ge)
+
+theorem iSup_eq_bsup {o} {f : ∀ a < o, Ordinal} : ⨆ a : Iio o, f a.1 a.2 = bsup o f := by
+  simp_rw [Iio, bsup, sup, iSup, range_familyOfBFamily, brange, range, Subtype.exists, mem_setOf]
 
 end bsup
 

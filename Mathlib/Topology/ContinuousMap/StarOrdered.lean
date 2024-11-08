@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Real.StarOrdered
-import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.Topology.ContinuousMap.Lattice
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
 /-! # Continuous functions as a star-ordered ring -/
