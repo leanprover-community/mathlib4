@@ -1052,8 +1052,8 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
 /-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms.-/
 class HomeomorphClass (F : Type*) (A B : outParam Type*)
     [TopologicalSpace A] [TopologicalSpace B] [h : EquivLike F A B] : Prop where
-  continuous_toFun : ∀ (f : F), Continuous (h.coe f)
-  continuous_invFun : ∀ (f : F), Continuous (h.inv f)
+  map_continuous : ∀ (f : F), Continuous f
+  inv_continuous : ∀ (f : F), Continuous (h.inv f)
 
 namespace HomeomorphClass
 
@@ -1064,20 +1064,20 @@ variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLik
 @[coe]
 def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
   {(f : α ≃ β) with
-  continuous_toFun := h.continuous_toFun f
-  continuous_invFun := h.continuous_invFun f }
+  continuous_toFun := h.map_continuous f
+  continuous_invFun := h.inv_continuous f }
 
 @[simp]
 theorem coe_coe [h : HomeomorphClass F α β] (f : F) : ⇑(h.toHomeomorph f) = ⇑f := rfl
 
-instance [HomeomorphClass F α β] : CoeTC F (α ≃ₜ β) :=
+instance [HomeomorphClass F α β] : CoeOut F (α ≃ₜ β) :=
   ⟨HomeomorphClass.toHomeomorph⟩
 
 theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((↑) : F → α ≃ₜ β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ β ↦ e.toFun a) e
 
 instance : HomeomorphClass (α ≃ₜ β) α β where
-  continuous_toFun e := e.continuous_toFun
-  continuous_invFun e := e.continuous_invFun
+  map_continuous e := e.continuous_toFun
+  inv_continuous e := e.continuous_invFun
 
 end HomeomorphClass
