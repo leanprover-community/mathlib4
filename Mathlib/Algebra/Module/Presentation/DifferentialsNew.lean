@@ -118,16 +118,38 @@ lemma hom₁_single (r : pres.rels) :
     hom₁ pres (Finsupp.single r 1) = Ideal.toCotangent _ ⟨pres.relation r, by simp⟩ := by
   simp [hom₁]
 
-lemma surjecive_hom₁ : Function.Surjective (hom₁ pres) := by
-  sorry
+lemma surjective_hom₁ : Function.Surjective (hom₁ pres) := by
+  let φ : (pres.rels →₀ S) →ₗ[pres.Ring] pres.Cotangent :=
+    { toFun := hom₁ pres
+      map_add' := by simp
+      map_smul' := by simp }
+  change Function.Surjective φ
+  have h₁ := Algebra.Generators.Cotangent.mk_surjective
+    (P := pres.toGenerators)
+  have h₂ : Submodule.span pres.Ring
+    (Set.range (fun r ↦ (⟨pres.relation r, by simp⟩ : pres.ker))) = ⊤ := by
+    refine Submodule.map_injective_of_injective (f := Submodule.subtype pres.ker)
+      Subtype.coe_injective ?_
+    rw [Submodule.map_top, Submodule.range_subtype, Submodule.map_span,
+      Submodule.coe_subtype, Ideal.submodule_span_eq]
+    simp only [← pres.span_range_relation_eq_ker]
+    congr
+    aesop
+  rw [← LinearMap.range_eq_top] at h₁ ⊢
+  rw [← top_le_iff, ← h₁, LinearMap.range_eq_map, ← h₂, Submodule.map_span_le]
+  rintro _ ⟨r, rfl⟩
+  simp only [LinearMap.mem_range]
+  refine ⟨Finsupp.single r 1, ?_⟩
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, hom₁_single, φ]
+  rfl
 
 lemma comm₁₂_single (r : pres.rels) :
     pres.cotangentComplex (hom₁ pres (Finsupp.single r 1)) =
       pres.cotangentSpaceBasis.repr.symm ((differentialsRelations pres).relation r) := by
-  simp [hom₁, differentialsRelations]
+  simp only [hom₁, Finsupp.linearCombination_single, one_smul, differentialsRelations,
+    Basis.repr_symm_apply]
   erw [Generators.cotangentComplex_mk]
-  simp
-  sorry
+  exact pres.cotangentSpaceBasis.repr.injective (by ext; simp)
 
 lemma comm₁₂ : pres.cotangentComplex.comp (hom₁ pres) =
     pres.cotangentSpaceBasis.repr.symm.comp (differentialsRelations pres).map := by
@@ -172,7 +194,7 @@ lemma differentialsSolution_isPresentation :
       ((Function.Exact.linearMap_exact_iff_of_surjective_of_bijective_of_injective
       _ _ _ _ (hom₁ pres)
       pres.cotangentSpaceBasis.repr.symm.toLinearMap .id
-      (comm₁₂ pres) (by simpa using comm₂₃ pres) (surjecive_hom₁ pres)
+      (comm₁₂ pres) (by simpa using comm₂₃ pres) (surjective_hom₁ pres)
         (LinearEquiv.bijective _) (Equiv.refl _).injective).2
         pres.exact_cotangentComplex_toKaehler)
 
