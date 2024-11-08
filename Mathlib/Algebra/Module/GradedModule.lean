@@ -227,4 +227,13 @@ def linearEquiv [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐] [DirectSum
   convert DirectSum.decompose_coe 𝓜 _
   rfl
 
+/--
+The projection map of an internally graded module.
+-/
+@[simps]
+def proj [DecidableEq ιM] [Decomposition 𝓜]  (i : ιM) : M →+ M where
+  toFun m := decompose 𝓜 m i
+  map_zero' := by simp
+  map_add' := by simp
+
 end GradedModule
