@@ -50,13 +50,16 @@ variable {N : ℕ}
 /-- A cell on the board for the game. -/
 abbrev Cell (N : ℕ) : Type := Fin (N + 2) × Fin (N + 1)
 
+/-- A row that is neither the first nor the last (and thus contains a monster). -/
+abbrev InteriorRow (N : ℕ) : Type := (Set.Icc 1 ⟨N, by omega⟩ : Set (Fin (N + 2)))
+
 /-- Data for valid positions of the monsters. -/
-abbrev MonsterData (N : ℕ) : Type := (Set.Icc 1 ⟨N, by omega⟩ : Set (Fin (N + 2))) ↪ Fin (N + 1)
+abbrev MonsterData (N : ℕ) : Type := InteriorRow N ↪ Fin (N + 1)
 
 /-- The cells with monsters as a Set, given an injection from rows to columns. -/
 def MonsterData.monsterCells (m : MonsterData N) :
     Set (Cell N) :=
-  Set.range (fun x : (Set.Icc 1 ⟨N, by omega⟩ : Set (Fin (N + 2))) ↦ ((x : Fin (N + 2)), m x))
+  Set.range (fun x : InteriorRow N ↦ ((x : Fin (N + 2)), m x))
 
 /-- Whether two cells are adjacent. -/
 def Adjacent (x y : Cell N) : Prop :=
@@ -101,7 +104,7 @@ def Cell.reflect (c : Cell N) : Cell N := (c.1, c.2.rev)
 /-! ### API definitions and lemmas about `MonsterData` -/
 
 /-- The row 1, in the form required for MonsterData. -/
-def row1 (hN : 2 ≤ N) : (Set.Icc 1 ⟨N, by omega⟩ : Set (Fin (N + 2))) :=
+def row1 (hN : 2 ≤ N) : InteriorRow N :=
   ⟨1, ⟨by omega, by
     rw [Fin.le_def]
     simp
@@ -111,7 +114,7 @@ lemma coe_coe_row1 (hN : 2 ≤ N) : (((row1 hN) : Fin (N + 2)) : ℕ) = 1 :=
   rfl
 
 /-- The row 2, in the form required for MonsterData. -/
-def row2 (hN : 2 ≤ N) : (Set.Icc 1 ⟨N, by omega⟩ : Set (Fin (N + 2))) :=
+def row2 (hN : 2 ≤ N) : InteriorRow N :=
   ⟨⟨2, by omega⟩, ⟨by
     simp only [Fin.le_def, Fin.val_one]
     omega, by
