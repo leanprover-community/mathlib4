@@ -7,6 +7,8 @@ import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Topology.Sheaves.Stalks
+import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.Algebra.Category.Ring.Limits
 
 /-!
 
