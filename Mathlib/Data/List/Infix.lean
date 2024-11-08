@@ -51,11 +51,13 @@ theorem eq_of_prefix_of_length_eq (h : l₁ <+: l₂) : l₁.length = l₂.lengt
 theorem eq_of_suffix_of_length_eq (h : l₁ <:+ l₂) : l₁.length = l₂.length → l₁ = l₂ :=
   h.eq_of_length
 
-lemma IsPrefix.take (h : l₁ <+: l₂) (n : ℕ) : l₁.take n <+: l₂.take n := by
+@[gcongr] lemma IsPrefix.take (h : l₁ <+: l₂) (n : ℕ) : l₁.take n <+: l₂.take n := by
   simpa [prefix_take_iff, Nat.min_le_left] using (take_prefix n l₁).trans h
 
-lemma IsPrefix.drop (h : l₁ <+: l₂) (n : ℕ) : l₁.drop n <+: l₂.drop n := by
+@[gcongr] lemma IsPrefix.drop (h : l₁ <+: l₂) (n : ℕ) : l₁.drop n <+: l₂.drop n := by
   rw [prefix_iff_eq_take.mp h, drop_take]; apply take_prefix
+
+attribute [gcongr] take_prefix_take_left
 
 lemma isPrefix_append_of_length (h : l₁.length ≤ l₂.length) : l₁ <+: l₂ ++ l₃ ↔ l₁ <+: l₂ :=
   ⟨fun h ↦ by rw [prefix_iff_eq_take] at *; nth_rw 1 [h, take_eq_left_iff]; tauto,
