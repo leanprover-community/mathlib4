@@ -537,6 +537,6 @@ noncomputable def nnrealPartCompactlySupported (f : C_c(α, ℝ)) : C_c(α, ℝ�
 
 @[simp]
 lemma nnrealPartCompactlySupported_apply (f : C_c(α, ℝ)) (x : α) :
-  (nnrealPartCompactlySupported f) x = Real.toNNReal (f x) := rfl
+    (nnrealPartCompactlySupported f) x = Real.toNNReal (f x) := rfl
 
 end NonnegativePart

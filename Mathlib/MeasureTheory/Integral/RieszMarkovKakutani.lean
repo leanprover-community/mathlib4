@@ -272,6 +272,7 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
     simp [hg₂ x_in_K₂, hf x (mem_union_right _ x_in_K₂)]
   exact add_le_add (rieszContentAux_le Λ aux₁) (rieszContentAux_le Λ aux₂)
 
+/-- The contents induced by the linear functional `Λ`. -/
 noncomputable def rieszContent (Λ : (C_c(X, ℝ≥0)) →ₗ[ℝ≥0] ℝ≥0) : Content X where
   toFun := rieszContentAux Λ
   mono' := fun _ _ ↦ rieszContentAux_mono Λ
