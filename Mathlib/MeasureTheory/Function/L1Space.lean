@@ -1402,9 +1402,9 @@ lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
   convert lintegral_mono_set (μ := μ) (s := s) (t := univ) (f := fun x ↦ ↑‖f x‖₊) (subset_univ s)
   exact Measure.restrict_univ.symm
 
-lemma Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
-    Integrable f (μ.restrict s) :=
-  ⟨f_intble.aestronglyMeasurable.restrict, f_intble.hasFiniteIntegral.restrict⟩
+/-- One should usually use `MeasureTheory.Integrable.IntegrableOn` instead. -/
+lemma Integrable.restrict (hf : Integrable f μ) {s : Set α} : Integrable f (μ.restrict s) :=
+  hf.mono_measure Measure.restrict_le_self
 
 end restrict
 
