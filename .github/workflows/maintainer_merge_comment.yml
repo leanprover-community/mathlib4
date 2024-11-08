@@ -2,8 +2,8 @@ name: Maintainer merge (comment)
 
 on:
   push:
-  #issue_comment:
-  #  types: [created, edited]
+  issue_comment:
+    types: [created, edited]
 
 jobs:
   ping_zulip:
