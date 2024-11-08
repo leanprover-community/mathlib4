@@ -834,11 +834,11 @@ theorem comm_symm :
 
 @[simp]
 lemma comm_comp_includeLeft :
-    (TensorProduct.comm R A B).toAlgHom.comp includeLeft = includeRight := rfl
+    (TensorProduct.comm R A B : A ⊗[R] B →ₐ[R] B ⊗[R] A).comp includeLeft = includeRight := rfl
 
 @[simp]
 lemma comm_comp_includeRight :
-    (TensorProduct.comm R A B).toAlgHom.comp includeRight = includeLeft := rfl
+    (TensorProduct.comm R A B : A ⊗[R] B →ₐ[R] B ⊗[R] A).comp includeRight = includeLeft := rfl
 
 theorem adjoin_tmul_eq_top : adjoin R { t : A ⊗[R] B | ∃ a b, a ⊗ₜ[R] b = t } = ⊤ :=
   top_le_iff.mp <| (top_le_iff.mpr <| span_tmul_eq_top R A B).trans (span_le_adjoin R _)
