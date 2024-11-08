@@ -156,11 +156,8 @@ instance : DFunLike (A →ₛₙₐ[φ] B) A fun _ => B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
-theorem toFun_eq_coe (f : A →ₛₙₐ[φ] B) : f.toFun = ⇑f :=
-  rfl
-
 @[simp]
-theorem coe_toDistribMulActionHom (f : A →ₛₙₐ[φ] B) : ⇑f.toDistribMulActionHom = ⇑f :=
+theorem toFun_eq_coe (f : A →ₛₙₐ[φ] B) : f.toFun = ⇑f :=
   rfl
 
 /-- See Note [custom simps projection] -/
@@ -178,7 +175,6 @@ protected theorem coe_coe {F : Type*} [FunLike F A B]
 
 theorem coe_injective : @Function.Injective (A →ₛₙₐ[φ] B) (A → B) (↑) := by
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
-
 instance : FunLike (A →ₛₙₐ[φ] B) A B where
   coe f := f.toFun
   coe_injective' := coe_injective
