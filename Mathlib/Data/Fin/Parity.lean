@@ -69,7 +69,7 @@ lemma even_iff' {n : ℕ} {k : Fin n} : Even k ↔ (Even n → Even k.val) := by
   exact even_iff
 
 /-- In `Fin n`, all elements are odd for odd `n`,
-otherwise an element is off iff its `Fin.val` value is off. -/
+otherwise an element is odd iff its `Fin.val` value is odd. -/
 lemma odd_iff {n : ℕ} [NeZero n] {k : Fin n} : Odd k ↔ Odd n ∨ Odd k.val := by
   refine ⟨fun hk ↦ ?_, or_imp.mpr ⟨(odd_of_odd · k), odd_of_val⟩⟩
   rw [← Nat.not_even_iff_odd, ← imp_iff_not_or]
