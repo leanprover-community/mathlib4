@@ -33,6 +33,7 @@ namespace Linarith
 open Lean hiding Rat
 open Elab Tactic Meta
 open Qq
+open Mathlib
 open Mathlib.Tactic (AtomM)
 open Batteries (RBSet)
 

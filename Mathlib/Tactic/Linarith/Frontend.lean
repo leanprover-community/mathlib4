@@ -131,7 +131,7 @@ linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear progra
 -/
 
 open Lean Elab Tactic Meta
-open Batteries
+open Batteries Mathlib
 
 
 namespace Linarith

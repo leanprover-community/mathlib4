@@ -19,7 +19,7 @@ This file implements the reconstruction.
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
 
-open Lean Elab Tactic Meta
+open Lean Elab Tactic Meta Mathlib
 
 namespace Qq
 

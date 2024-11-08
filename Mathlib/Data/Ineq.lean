@@ -15,7 +15,7 @@ involving it. The type `Ineq` is one of the fundamental objects manipulated by t
 
 open Lean Elab Tactic Meta
 
-namespace Linarith
+namespace Mathlib
 
 /-! ### Inequalities -/
 
@@ -57,12 +57,12 @@ instance : ToString Ineq := ⟨toString⟩
 
 instance : ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
 
-end Linarith.Ineq
+end Mathlib.Ineq
 
 /-! ### Parsing inequalities -/
 
 namespace Lean.Expr
-open Linarith
+open Mathlib
 
 /-- Given an expression `e`, parse it as a `=`, `≤` or `<`, and return this relation (as a
 `Linarith.Ineq`) together with the type in which the (in)equality occurs and the two sides of the

@@ -16,7 +16,7 @@ We split them into their own file.
 This file also contains a few convenient auxiliary functions.
 -/
 
-open Lean Elab Tactic Meta Qq
+open Lean Elab Tactic Meta Qq Mathlib
 
 initialize registerTraceClass `linarith
 initialize registerTraceClass `linarith.detail
