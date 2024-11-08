@@ -5,7 +5,7 @@ Authors: Jesse Reimann, Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.Topology.ContinuousMap.CompactlySupported
-import Mathlib.Topology.UrysohnsBounded
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 #  Riesz–Markov–Kakutani representation theorem
@@ -29,11 +29,10 @@ noncomputable section
 open scoped Classical BoundedContinuousFunction NNReal ENNReal
 open Set Function TopologicalSpace CompactlySupported MeasureTheory
 
-variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X]
+variable {X : Type*} [TopologicalSpace X]
 variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
 /-! ### Construction of the content: -/
-
 
 /-- Given a positive linear functional Λ on X, for `K ⊆ X` compact define
 `λ(K) = inf {Λf | 1≤f on K}`. When X is a compact Hausdorff space, this will be shown to be a
@@ -43,15 +42,7 @@ def rieszContentAux : Compacts X → ℝ≥0 := fun K =>
 
 section RieszMonotone
 
-def nnrealPartCompactlySupported (f : C_c(X, ℝ)) : C_c(X, ℝ≥0) where
-  toFun := Real.toNNReal.comp f.toFun
-  continuous_toFun := Continuous.comp continuous_real_toNNReal f.continuous
-  hasCompactSupport' := by
-    apply HasCompactSupport.comp_left f.hasCompactSupport' Real.toNNReal_zero
-
-@[simp]
-lemma nnrealPartCompactlySupported_apply (f : C_c(X, ℝ)) (x : X) :
-  (nnrealPartCompactlySupported f) x = Real.toNNReal (f x) := rfl
+variable [T2Space X] [LocallyCompactSpace X]
 
 /-- For any compact subset `K ⊆ X`, there exist some bounded continuous nonnegative
 functions f on X such that `f ≥ 1` on K. -/
@@ -94,6 +85,8 @@ theorem rieszContentAux_le {K : Compacts X} {f : C_c(X, ℝ≥0)} (h : ∀ x ∈
     rieszContentAux Λ K ≤ Λ f :=
   csInf_le (OrderBot.bddBelow _) ⟨f, ⟨h, rfl⟩⟩
 
+variable [T2Space X] [LocallyCompactSpace X]
+
 /-- The Riesz content can be approximated arbitrarily well by evaluating the positive linear
 functional on test functions: for any `ε > 0`, there exists a bounded continuous nonnegative
 function f on X such that `f ≥ 1` on K and such that `λ(K) ≤ Λ f < λ(K) + ε`. -/
@@ -134,6 +127,8 @@ end RieszSubadditive
 
 section PartitionOfUnity
 
+variable [T2Space X] [LocallyCompactSpace X]
+
 theorem exists_continuous_sum_one_of_isOpen_isCompact
     {n : ℕ} {t : Set X} {s : Fin n → Set X} (hs : ∀ (i : Fin n), IsOpen (s i)) (htcp : IsCompact t)
     (hst : t ⊆ ⋃ i, s i) : ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧
@@ -146,19 +141,87 @@ lemma exists_sum_one_of_isCompact_nnreal
     {s : Fin 2 → Set X} {t : Set X} (s_compact : ∀ i, IsCompact (s i))
     (t_compact : IsCompact t) (disj : Disjoint (s 0) (s 1)) (hst : ⋃ i, s i ⊆ t) :
     ∃ (f₀ f₁ : C_c(X, ℝ≥0)), EqOn f₀ 1 (s 0) ∧ EqOn f₁ 1 (s 1) ∧ EqOn (f₀ + f₁) 1 t := by
-  sorry
-  -- obtain ⟨f, f_zero_on_s, f_one_on_t, f_bdd⟩ := exists_continuous_sum_one_of_isOpen_isCompact s_closed t_closed disj
-  -- refine ⟨1 - f, f, ?_, ?_, ?_⟩
-  -- · intro x x_in_s; simp [f_zero_on_s x_in_s]
-  -- · intro x x_in_t; simp [f_one_on_t x_in_t]
-  -- · ext x
-  --   simp only [BoundedContinuousFunction.coe_add, BoundedContinuousFunction.coe_sub,
-  --              BoundedContinuousFunction.coe_one, Pi.add_apply, Pi.sub_apply, Pi.one_apply, NNReal.coe_add,
-  --              NNReal.coe_one]
-  --   norm_cast
-  --   exact tsub_add_cancel_of_le (f_bdd x)
+  set so : Fin 2 → Set X := fun j => if j = 0 then (s 0)ᶜ else (s 1)ᶜ with hso
+  have soopen : ∀ j, IsOpen (so j) := by
+    intro j
+    by_cases h0 : j = 0
+    · rw [h0, hso]
+      simp only [Fin.isValue, ↓reduceIte, isOpen_compl_iff]
+      exact IsCompact.isClosed <| s_compact 0
+    · rw [hso]
+      simp only [Fin.isValue]
+      rw [if_neg h0]
+      simp only [Fin.isValue, isOpen_compl_iff]
+      exact IsCompact.isClosed <| s_compact 1
+  have hsot : t ⊆ ⋃ j, so j := by
+    rw [hso]
+    simp only [Fin.isValue]
+    intro x hx
+    rw [mem_iUnion]
+    rw [← subset_compl_iff_disjoint_right, ← compl_compl (s 0), compl_subset_iff_union] at disj
+    have h : x ∈ (s 0)ᶜ ∨ x ∈ (s 1)ᶜ := by
+      rw [← mem_union, disj]
+      trivial
+    apply Or.elim h
+    · intro h0
+      use 0
+      simp only [Fin.isValue, ↓reduceIte]
+      exact h0
+    · intro h1
+      use 1
+      simp only [Fin.isValue, one_ne_zero, ↓reduceIte]
+      exact h1
+  obtain ⟨f, f_supp_in_so, sum_f_one_on_t, f_in_icc, f_hcs⟩ :=
+    exists_continuous_sum_one_of_isOpen_isCompact soopen t_compact hsot
+  use (nnrealPartCompactlySupported (⟨f 1, f_hcs 1⟩ : C_c(X, ℝ))),
+    (nnrealPartCompactlySupported (⟨f 0, f_hcs 0⟩ : C_c(X, ℝ)))
+  simp only [Fin.isValue, CompactlySupportedContinuousMap.coe_add]
+  have sum_one_x : ∀ x, x ∈ t → (f 0) x + (f 1) x = 1 := by
+    intro x hx
+    let sum_one := sum_f_one_on_t hx
+    simp only [Finset.sum_apply, Fin.sum_univ_two, Fin.isValue, Pi.one_apply] at sum_one
+    exact sum_one
+  refine ⟨?_, ?_, ?_⟩
+  · intro x hx
+    simp only [Fin.isValue, nnrealPartCompactlySupported_apply,
+      CompactlySupportedContinuousMap.coe_mk, Pi.one_apply, Real.toNNReal_eq_one]
+    have : (f 0) x = 0 := by
+      rw [← nmem_support]
+      have : s 0 ⊆ (tsupport (f 0))ᶜ := by
+        apply subset_trans _ (compl_subset_compl.mpr (f_supp_in_so 0))
+        rw [hso]
+        simp only [Fin.isValue, ↓reduceIte, compl_compl, subset_refl]
+      apply not_mem_of_mem_compl
+      exact mem_of_subset_of_mem (subset_trans this (compl_subset_compl_of_subset subset_closure))
+        hx
+    rw [iUnion_subset_iff] at hst
+    rw [← sum_one_x x (mem_of_subset_of_mem (hst 0) hx), this]
+    exact Eq.symm (AddZeroClass.zero_add ((f 1) x))
+  · intro x hx
+    simp only [Fin.isValue, nnrealPartCompactlySupported_apply,
+      CompactlySupportedContinuousMap.coe_mk, Pi.one_apply, Real.toNNReal_eq_one]
+    have : (f 1) x = 0 := by
+      rw [← nmem_support]
+      have : s 1 ⊆ (tsupport (f 1))ᶜ := by
+        apply subset_trans _ (compl_subset_compl.mpr (f_supp_in_so 1))
+        rw [hso]
+        simp only [Fin.isValue, one_ne_zero, ↓reduceIte, compl_compl, subset_refl]
+      apply not_mem_of_mem_compl
+      exact mem_of_subset_of_mem (subset_trans this (compl_subset_compl_of_subset subset_closure))
+        hx
+    rw [iUnion_subset_iff] at hst
+    rw [← sum_one_x x (mem_of_subset_of_mem (hst 1) hx), this]
+    exact Eq.symm (AddMonoid.add_zero ((f 0) x))
+  · intro x hx
+    simp only [Fin.isValue, Pi.add_apply, nnrealPartCompactlySupported_apply,
+      CompactlySupportedContinuousMap.coe_mk, Pi.one_apply]
+    rw [Real.toNNReal_add_toNNReal (f_in_icc 1 x).1 (f_in_icc 0 x).1, add_comm]
+    simp only [Fin.isValue, Real.toNNReal_eq_one]
+    exact sum_one_x x hx
 
 end PartitionOfUnity
+
+variable [T2Space X] [LocallyCompactSpace X]
 
 lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
     (disj : Disjoint (K₁ : Set X) K₂) :
@@ -166,11 +229,6 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
   refine le_antisymm (rieszContentAux_sup_le Λ K₁ K₂) ?_
   refine le_csInf (rieszContentAux_image_nonempty Λ (K₁ ⊔ K₂)) ?_
   intro b ⟨f, ⟨hf, Λf_eq_b⟩⟩
-  have j0or1 (j : Fin 2) : j = 0 ∨ j = 1 := by
-    rw [Fin.ext_iff, Fin.ext_iff]
-    simp only [Fin.isValue, Fin.val_zero, Fin.val_one]
-    rw [← Nat.le_one_iff_eq_zero_or_eq_one]
-    exact Fin.is_le j
   set K : Fin 2 → Set X := fun j => if j = 0 then K₁ else K₂ with hK
   have K_compact : ∀ j, IsCompact (K j) := by
     intro j
