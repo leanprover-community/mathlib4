@@ -60,7 +60,7 @@ theorem contDiffOn_fderiv_coord_change (i j : atlas H M) :
   intro x hx
   refine (ContDiffWithinAt.fderivWithin_right ?_ I.uniqueDiffOn le_top <| h hx).mono h
   refine (PartialHomeomorph.contDiffOn_extend_coord_change (subset_maximalAtlas j.2)
-    (subset_maximalAtlas i.2) x hx).mono_of_mem ?_
+    (subset_maximalAtlas i.2) x hx).mono_of_mem_nhdsWithin ?_
   exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 hx
 
 
@@ -231,12 +231,12 @@ theorem mem_chart_source_iff (p q : TM) :
 theorem mem_chart_target_iff (p : H × E) (q : TM) :
     p ∈ (chartAt (ModelProd H E) q).target ↔ p.1 ∈ (chartAt H q.1).target := by
   /- porting note: was
-  simp (config := { contextual := true }) only [FiberBundle.chartedSpace_chartAt,
+  simp +contextual only [FiberBundle.chartedSpace_chartAt,
     and_iff_left_iff_imp, mfld_simps]
   -/
   simp only [FiberBundle.chartedSpace_chartAt, mfld_simps]
   rw [PartialEquiv.prod_symm]
-  simp (config := { contextual := true }) only [and_iff_left_iff_imp, mfld_simps]
+  simp +contextual only [and_iff_left_iff_imp, mfld_simps]
 
 @[simp, mfld_simps]
 theorem coe_chartAt_fst (p q : TM) : ((chartAt (ModelProd H E) q) p).1 = chartAt H q.1 p.1 :=

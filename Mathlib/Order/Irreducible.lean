@@ -65,7 +65,7 @@ theorem not_supIrred : ¬SupIrred a ↔ IsMin a ∨ ∃ b c, b ⊔ c = a ∧ b <
   rw [SupIrred, not_and_or]
   push_neg
   rw [exists₂_congr]
-  simp (config := { contextual := true }) [@eq_comm _ _ a]
+  simp +contextual [@eq_comm _ _ a]
 
 @[simp]
 theorem not_supPrime : ¬SupPrime a ↔ IsMin a ∨ ∃ b c, a ≤ b ⊔ c ∧ ¬a ≤ b ∧ ¬a ≤ c := by
@@ -261,11 +261,8 @@ theorem infPrime_iff_infIrred : InfPrime a ↔ InfIrred a :=
   ⟨InfPrime.infIrred,
     And.imp_right fun h b c => by simp_rw [← sup_eq_left, sup_inf_left]; exact @h _ _⟩
 
-alias ⟨_, SupIrred.supPrime⟩ := supPrime_iff_supIrred
-
-alias ⟨_, InfIrred.infPrime⟩ := infPrime_iff_infIrred
-
--- Porting note: was attribute [protected] SupIrred.supPrime InfIrred.infPrime
+protected alias ⟨_, SupIrred.supPrime⟩ := supPrime_iff_supIrred
+protected alias ⟨_, InfIrred.infPrime⟩ := infPrime_iff_infIrred
 
 end DistribLattice
 

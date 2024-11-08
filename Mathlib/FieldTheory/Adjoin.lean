@@ -48,13 +48,18 @@ theorem adjoin_toSubfield :
 
 variable {S}
 
+theorem mem_adjoin_range_iff {ι : Type*} (i : ι → E) (x : E) :
+    x ∈ adjoin F (Set.range i) ↔ ∃ r s : MvPolynomial ι F,
+      x = MvPolynomial.aeval i r / MvPolynomial.aeval i s := by
+  simp_rw [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
+    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
+    Algebra.adjoin_range_eq_range_aeval, AlgHom.mem_range, exists_exists_eq_and]
+  tauto
+
 theorem mem_adjoin_iff (x : E) :
     x ∈ adjoin F S ↔ ∃ r s : MvPolynomial S F,
       x = MvPolynomial.aeval Subtype.val r / MvPolynomial.aeval Subtype.val s := by
-  simp only [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
-    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
-    Algebra.adjoin_eq_range, AlgHom.mem_range, exists_exists_eq_and]
-  tauto
+  rw [← mem_adjoin_range_iff, Subtype.range_coe]
 
 theorem mem_adjoin_simple_iff {α : E} (x : E) :
     x ∈ adjoin F {α} ↔ ∃ r s : F[X], x = aeval α r / aeval α s := by
@@ -480,6 +485,20 @@ theorem extendScalars_adjoin {K : IntermediateField F E} {S : Set E} (h : K ≤ 
   exact le_antisymm (adjoin.mono F S _ Set.subset_union_right) <| adjoin_le_iff.2 <|
     Set.union_subset h (subset_adjoin F S)
 
+theorem adjoin_union {S T : Set E} : adjoin F (S ∪ T) = adjoin F S ⊔ adjoin F T :=
+  gc.l_sup
+
+theorem restrictScalars_adjoin_eq_sup (K : IntermediateField F E) (S : Set E) :
+    restrictScalars F (adjoin K S) = K ⊔ adjoin F S := by
+  rw [restrictScalars_adjoin, adjoin_union, adjoin_self]
+
+theorem adjoin_iUnion {ι} (f : ι → Set E) : adjoin F (⋃ i, f i) = ⨆ i, adjoin F (f i) :=
+  gc.l_iSup
+
+theorem iSup_eq_adjoin {ι} (f : ι → IntermediateField F E) :
+    ⨆ i, f i = adjoin F (⋃ i, f i : Set E) := by
+  simp_rw [adjoin_iUnion, adjoin_self]
+
 variable {F} in
 /-- If `E / L / F` and `E / L' / F` are two field extension towers, `L ≃ₐ[F] L'` is an isomorphism
 compatible with `E / L` and `E / L'`, then for any subset `S` of `E`, `L(S)` and `L'(S)` are
@@ -522,13 +541,39 @@ theorem adjoin_eq_top_of_algebra (hS : Algebra.adjoin F S = ⊤) : adjoin F S = 
   top_le_iff.mp (hS.symm.trans_le <| algebra_adjoin_le_adjoin F S)
 
 @[elab_as_elim]
-theorem adjoin_induction {s : Set E} {p : E → Prop} {x} (h : x ∈ adjoin F s) (mem : ∀ x ∈ s, p x)
-    (algebraMap : ∀ x, p (algebraMap F E x)) (add : ∀ x y, p x → p y → p (x + y))
-    (neg : ∀ x, p x → p (-x)) (inv : ∀ x, p x → p x⁻¹) (mul : ∀ x y, p x → p y → p (x * y)) :
-    p x :=
-  Subfield.closure_induction h
-    (fun x hx => Or.casesOn hx (fun ⟨x, hx⟩ => hx ▸ algebraMap x) (mem x))
-    ((_root_.algebraMap F E).map_one ▸ algebraMap 1) add neg inv mul
+theorem adjoin_induction {s : Set E} {p : ∀ x ∈ adjoin F s, Prop}
+    (mem : ∀ x hx, p x (subset_adjoin _ _ hx))
+    (algebraMap : ∀ x, p (algebraMap F E x) (algebraMap_mem _ _))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx))
+    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    {x} (h : x ∈ adjoin F s) : p x h :=
+  Subfield.closure_induction
+    (fun x hx ↦ Or.casesOn hx (fun ⟨x, hx⟩ ↦ hx ▸ algebraMap x) (mem x))
+    (by simp_rw [← (_root_.algebraMap F E).map_one]; exact algebraMap 1) add
+    (fun x _ h ↦ by
+      simp_rw [← neg_one_smul F x, Algebra.smul_def]; exact mul _ _ _ _ (algebraMap _) h) inv mul h
+
+section
+
+variable {K : Type*} [Semiring K] [Algebra F K]
+
+theorem adjoin_algHom_ext {s : Set E} ⦃φ₁ φ₂ : adjoin F s →ₐ[F] K⦄
+    (h : ∀ x hx, φ₁ ⟨x, subset_adjoin _ _ hx⟩ = φ₂ ⟨x, subset_adjoin _ _ hx⟩) :
+    φ₁ = φ₂ :=
+  AlgHom.ext fun ⟨x, hx⟩ ↦ adjoin_induction _ h (fun _ ↦ φ₂.commutes _ ▸ φ₁.commutes _)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
+    (fun _ _ ↦ eq_on_inv₀ _ _)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl)
+    hx
+
+theorem algHom_ext_of_eq_adjoin {S : IntermediateField F E} {s : Set E} (hS : S = adjoin F s)
+    ⦃φ₁ φ₂ : S →ₐ[F] K⦄
+    (h : ∀ x hx, φ₁ ⟨x, hS.ge (subset_adjoin _ _ hx)⟩ = φ₂ ⟨x, hS.ge (subset_adjoin _ _ hx)⟩) :
+    φ₁ = φ₂ := by
+  subst hS; exact adjoin_algHom_ext F h
+
+end
 
 /- Porting note (kmill): this notation is replacing the typeclass-based one I had previously
 written, and it gives true `{x₁, x₂, ..., xₙ}` sets in the `adjoin` term. -/
@@ -1285,16 +1330,32 @@ theorem fg_adjoin_finset (t : Finset E) : (adjoin F (↑t : Set E)).FG :=
 theorem fg_def {S : IntermediateField F E} : S.FG ↔ ∃ t : Set E, Set.Finite t ∧ adjoin F t = S :=
   Iff.symm Set.exists_finite_iff_finset
 
+theorem fg_adjoin_of_finite {t : Set E} (h : Set.Finite t) : (adjoin F t).FG :=
+  fg_def.mpr ⟨t, h, rfl⟩
+
 theorem fg_bot : (⊥ : IntermediateField F E).FG :=
   -- Porting note: was `⟨∅, adjoin_empty F E⟩`
   ⟨∅, by simp only [Finset.coe_empty, adjoin_empty]⟩
 
-theorem fG_of_fG_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG) : S.FG := by
+theorem fg_sup {S T : IntermediateField F E} (hS : S.FG) (hT : T.FG) : (S ⊔ T).FG := by
+  obtain ⟨s, rfl⟩ := hS; obtain ⟨t, rfl⟩ := hT
+  classical rw [← adjoin_union, ← Finset.coe_union]
+  exact fg_adjoin_finset _
+
+theorem fg_iSup {ι : Sort*} [Finite ι] {S : ι → IntermediateField F E} (h : ∀ i, (S i).FG) :
+    (⨆ i, S i).FG := by
+  choose s hs using h
+  simp_rw [← hs, ← adjoin_iUnion]
+  exact fg_adjoin_of_finite (Set.finite_iUnion fun _ ↦ Finset.finite_toSet _)
+
+theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG) : S.FG := by
   cases' h with t ht
   exact ⟨t, (eq_adjoin_of_eq_algebra_adjoin _ _ _ ht.symm).symm⟩
 
+@[deprecated (since := "2024-10-28")] alias fG_of_fG_toSubalgebra := fg_of_fg_toSubalgebra
+
 theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :=
-  S.fG_of_fG_toSubalgebra S.toSubalgebra.fg_of_noetherian
+  S.fg_of_fg_toSubalgebra S.toSubalgebra.fg_of_noetherian
 
 theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
@@ -1404,11 +1465,8 @@ open IntermediateField
 
 /-- If `y : L` is a root of `minpoly K x`, then `minpoly K y = minpoly K x`. -/
 theorem eq_of_root {x y : L} (hx : IsAlgebraic K x)
-    (h_ev : (Polynomial.aeval y) (minpoly K x) = 0) : minpoly K y = minpoly K x := by
-  have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, h_ev⟩
-  exact Polynomial.eq_of_monic_of_associated (monic hy.isIntegral) (monic hx.isIntegral)
-    (Irreducible.associated_of_dvd (irreducible hy.isIntegral)
-      (irreducible hx.isIntegral) (dvd K y h_ev))
+    (h_ev : Polynomial.aeval y (minpoly K x) = 0) : minpoly K y = minpoly K x :=
+  ((eq_iff_aeval_minpoly_eq_zero hx.isIntegral).mpr h_ev).symm
 
 /-- The canonical `algEquiv` between `K⟮x⟯`and `K⟮y⟯`, sending `x` to `y`, where `x` and `y` have
   the same minimal polynomial over `K`. -/
