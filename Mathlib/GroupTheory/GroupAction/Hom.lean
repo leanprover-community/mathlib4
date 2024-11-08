@@ -85,7 +85,7 @@ notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulA
 
 You should extend this class when you extend `MulActionHom`. -/
 class MulActionSemiHomClass (F : Type*)
-    {M N : outParam Type*} (φ : outParam (M → N))
+    {M : Type*} {N : outParam Type*} (φ : outParam (M → N))
     (X Y : outParam Type*) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop where
   /-- The proposition that the function preserves the action. -/
   map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
@@ -95,8 +95,8 @@ export MulActionSemiHomClass (map_smulₛₗ)
 /-- `MulActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionSemiHomClass`. -/
-abbrev MulActionHomClass (F : Type*) (M : outParam Type*)
-    (X Y : outParam Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
+abbrev MulActionHomClass (F : Type*) (M : Type*)
+    (X Y : Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
   MulActionSemiHomClass F (@id M) X Y
 
 instance : FunLike (MulActionHom φ X Y) X Y where
