@@ -50,14 +50,45 @@ notation "θ" => (a:ℝ) / q + β
 
 def Finsupp.mass {α A : Type*} [AddCommMonoid A] (a : α →₀ A) : A := a.sum (fun _ ↦ id)
 
-notation "coe" => Finsupp.mapRange (fun a ↦ a : ℝ≥0 → ℂ) (by simp)
+class CoePreservesZero (A B : Type*) [Zero A] [Zero B] [Coe A B] : Prop :=
+  (coe_preserves_zero : (0:A) = (0:B))
+
+instance : CoePreservesZero ℝ≥0 ℝ where
+  coe_preserves_zero := rfl
+
+instance : CoePreservesZero ℝ ℂ where
+  coe_preserves_zero := rfl
+
+noncomputable instance {α A B : Type*} [Zero A] [Zero B] [Coe A B] [CoePreservesZero A B] :
+    Coe (α →₀ A) (α →₀ B) where
+  coe := Finsupp.mapRange (fun a ↦ a) sorry
 
 set_option quotPrecheck false in
 notation "S" => Finsupp.mass <|
  (fun (x, y) ↦ exp (2 * π * I * θ * (x ⬝ᵥ y)) : (Fin 2 → ℤ) × (Fin 2 → ℤ) → ℂ)
-  • (coe (μ.pointwise_prod ν))
+  • (μ.pointwise_prod ν : (Fin 2 → ℤ) × (Fin 2 → ℤ) →₀ ℂ)
 
-example : ‖S‖ ^ 2 ≤ ((μ * μ).mass * (ν * ν).mass : ℝ) / (K * Q) ^ 2 := by
+theorem cauchy_schwarz {α : Type*} (μ : α →₀ ℝ≥0) (f g : α → ℂ) :
+    ‖((f * g) • (μ : α →₀ ℂ)).mass‖ ^ 2
+    ≤ ((Complex.normSq ∘ f) • (μ : α →₀ ℝ)).mass * ((Complex.normSq ∘ g) • (μ : α →₀ ℝ)).mass :=
+  sorry
+
+
+example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
+  let f : (Fin 2 → ℤ) → ℂ := 1
+  let g (x : Fin 2 → ℤ) : ℂ := Finsupp.mass <|
+    (fun y ↦ exp (2 * π * I * θ * (x ⬝ᵥ y))) • (ν : (Fin 2 → ℤ) →₀ ℂ)
+  calc _ = _ := by
+        simp [f, g]
+        sorry
+    _ ≤ _ := cauchy_schwarz μ f g
+    _ = μ.mass * ((Complex.normSq ∘ g) • (μ : (Fin 2 → ℤ) →₀ ℝ)).mass := by
+        simp [f]
+        sorry
+    _ ≤ μ.mass * ((μ.mass * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2) := ?_
+    _ = _ := by ring
+  gcongr
+
   sorry
 
 #exit
