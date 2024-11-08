@@ -51,6 +51,7 @@ jobs:
         run: |
           echo "comment body: '${COMMENT}'"
           echo "pr?: '${{ github.event.issue.pull_request }}'"
+          echo "title: '${PR_TITLE}'"
           message="$(
             ./scripts/maintainer_merge_message.sh author:"${{ github.event.comment.user.login }}|" body:"${BODY}|" comment issueNumber:"${{ github.event.issue.number }}|" https:"${{ github.event.issue.html_url }}|" pr_title:"${PR_TITLE}"
           )"
