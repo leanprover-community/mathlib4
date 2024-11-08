@@ -264,11 +264,11 @@ theorem smul_eq_of_normal {g : G} {P : Sylow p G} [h : P.Normal] :
 end Sylow
 
 theorem Subgroup.sylow_mem_fixedPoints_iff (H : Subgroup G) {P : Sylow p G} :
-    P ∈ fixedPoints H (Sylow p G) ↔ H ≤ (P : Subgroup G).normalizer := by
+    P ∈ fixedPoints H (Sylow p G) ↔ H ≤ P.normalizer := by
   simp_rw [SetLike.le_def, ← Sylow.smul_eq_iff_mem_normalizer]; exact Subtype.forall
 
 theorem IsPGroup.inf_normalizer_sylow {P : Subgroup G} (hP : IsPGroup p P) (Q : Sylow p G) :
-    P ⊓ (Q : Subgroup G).normalizer = P ⊓ Q :=
+    P ⊓ Q.normalizer = P ⊓ Q :=
   le_antisymm
     (le_inf inf_le_left
       (sup_eq_right.mp
@@ -346,7 +346,7 @@ theorem orbit_eq_top [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) : orbit
   top_le_iff.mp fun Q _ => exists_smul_eq G P Q
 
 theorem stabilizer_eq_normalizer (P : Sylow p G) :
-    stabilizer G P = (P : Subgroup G).normalizer := by
+    stabilizer G P = P.normalizer := by
   ext; simp [smul_eq_iff_mem_normalizer]
 
 theorem conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite (Sylow p G)]
@@ -393,15 +393,16 @@ theorem card_eq_card_quotient_normalizer [Fact p.Prime] [Finite (Sylow p G)]
 alias _root_.card_sylow_eq_card_quotient_normalizer := card_eq_card_quotient_normalizer
 
 theorem card_eq_index_normalizer [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
-    Nat.card (Sylow p G) = (P : Subgroup G).normalizer.index :=
+    Nat.card (Sylow p G) = P.normalizer.index :=
   P.card_eq_card_quotient_normalizer
 
 @[deprecated (since := "2024-11-07")]
 alias _root_.card_sylow_eq_index_normalizer := card_eq_index_normalizer
 
 theorem card_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
-    Nat.card (Sylow p G) ∣ (P : Subgroup G).index :=
-  ((congr_arg _ P.card_eq_index_normalizer).mp dvd_rfl).trans (index_dvd_of_le le_normalizer)
+    Nat.card (Sylow p G) ∣ P.index :=
+  ((congr_arg _ P.card_eq_index_normalizer).mp dvd_rfl).trans
+    (index_dvd_of_le le_normalizer)
 
 @[deprecated (since := "2024-11-07")]
 alias _root_.card_sylow_dvd_index := card_dvd_index
@@ -410,7 +411,7 @@ alias _root_.card_sylow_dvd_index := card_dvd_index
 private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
     [P.FiniteIndex] : ¬ p ∣ P.index := by
   intro h
-  rw [index_eq_card (P : Subgroup G)] at h
+  rw [P.index_eq_card] at h
   obtain ⟨x, hx⟩ := exists_prime_orderOf_dvd_card' (G := G ⧸ (P : Subgroup G)) p h
   have h := IsPGroup.of_card (((Nat.card_zpowers x).trans hx).trans (pow_one p).symm)
   let Q := (zpowers x).comap (QuotientGroup.mk' (P : Subgroup G))
@@ -448,7 +449,8 @@ alias _root_.not_dvd_index_sylow' := not_dvd_index
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
   of `N`, then `N_G(P) ⊔ N = G`. -/
 theorem normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
-    [Finite (Sylow p N)] (P : Sylow p N) : (P.map N.subtype).normalizer ⊔ N = ⊤ := by
+    [Finite (Sylow p N)] (P : Sylow p N) :
+    (P.map N.subtype).normalizer ⊔ N = ⊤ := by
   refine top_le_iff.mp fun g _ => ?_
   obtain ⟨n, hn⟩ := exists_smul_eq N ((MulAut.conjNormal g : MulAut N) • P) P
   rw [← inv_mul_cancel_left (↑n) g, sup_comm]
