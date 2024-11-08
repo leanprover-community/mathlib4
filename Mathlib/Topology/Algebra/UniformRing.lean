@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.Ring.Ideal
+import Mathlib.Topology.Algebra.UniformGroup.Basic
 
 /-!
 # Completion of topological rings:
@@ -38,7 +39,7 @@ noncomputable section
 universe u
 namespace UniformSpace.Completion
 
-open DenseInducing UniformSpace Function
+open IsDenseInducing UniformSpace Function
 
 section one_and_mul
 variable (α : Type*) [Ring α] [UniformSpace α]
@@ -47,7 +48,7 @@ instance one : One (Completion α) :=
   ⟨(1 : α)⟩
 
 instance mul : Mul (Completion α) :=
-  ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
+  ⟨curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
 
 @[norm_cast]
 theorem coe_one : ((1 : α) : Completion α) = 1 :=
@@ -59,7 +60,7 @@ variable {α : Type*} [Ring α] [UniformSpace α] [TopologicalRing α]
 
 @[norm_cast]
 theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
-  ((denseInducing_coe.prod denseInducing_coe).extend_eq
+  ((isDenseInducing_coe.prodMap isDenseInducing_coe).extend_eq
       ((continuous_coe α).comp (@continuous_mul α _ _ _)) (a, b)).symm
 
 variable [UniformAddGroup α]
@@ -70,7 +71,7 @@ theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.
     apply (continuous_coe α).comp _
     simp only [AddMonoidHom.coe_mul, AddMonoidHom.coe_mulLeft]
     exact _root_.continuous_mul
-  have di : DenseInducing (toCompl : α → Completion α) := denseInducing_coe
+  have di : IsDenseInducing (toCompl : α → Completion α) := isDenseInducing_coe
   convert di.extend_Z_bilin di this
 
 theorem Continuous.mul {β : Type*} [TopologicalSpace β] {f g : β → Completion α}
@@ -161,7 +162,7 @@ def extensionHom [CompleteSpace β] [T0Space β] : Completion α →+* β :=
         fun a b => by
         simp_rw [← coe_mul, extension_coe hf, f.map_mul] }
 
-theorem extensionHom_coe [CompleteSpace β] [T0Space β] (a : α):
+theorem extensionHom_coe [CompleteSpace β] [T0Space β] (a : α) :
     Completion.extensionHom f hf a = f a := by
   simp only [Completion.extensionHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
     UniformSpace.Completion.extension_coe <| uniformContinuous_addMonoidHom_of_continuous hf]
@@ -227,7 +228,7 @@ variable {α : Type*}
 theorem inseparableSetoid_ring (α) [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
     inseparableSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
   Setoid.ext fun x y =>
-    addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_r_def _).symm
+    addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_def _).symm
 
 @[deprecated (since := "2024-03-09")]
 alias ring_sep_rel := inseparableSetoid_ring
@@ -264,11 +265,11 @@ def sepQuotRingEquivRingQuot (α) [CommRing α] [TopologicalSpace α] [Topologic
 instance topologicalRing [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
     TopologicalRing (SeparationQuotient α) where
   toContinuousAdd :=
-    Inducing.continuousAdd (sepQuotRingEquivRingQuot α) (sepQuotHomeomorphRingQuot α).inducing
+    (sepQuotHomeomorphRingQuot α).isInducing.continuousAdd (sepQuotRingEquivRingQuot α)
   toContinuousMul :=
-    Inducing.continuousMul (sepQuotRingEquivRingQuot α) (sepQuotHomeomorphRingQuot α).inducing
+    (sepQuotHomeomorphRingQuot α).isInducing.continuousMul (sepQuotRingEquivRingQuot α)
   toContinuousNeg :=
-    Inducing.continuousNeg (sepQuotHomeomorphRingQuot α).inducing <|
+    (sepQuotHomeomorphRingQuot α).isInducing.continuousNeg <|
       map_neg (sepQuotRingEquivRingQuot α)
 
 end UniformSpace
@@ -281,28 +282,28 @@ variable {γ : Type*} [UniformSpace γ] [Semiring γ] [TopologicalSemiring γ]
 variable [T2Space γ] [CompleteSpace γ]
 
 /-- The dense inducing extension as a ring homomorphism. -/
-noncomputable def DenseInducing.extendRingHom {i : α →+* β} {f : α →+* γ} (ue : UniformInducing i)
-    (dr : DenseRange i) (hf : UniformContinuous f) : β →+* γ where
-  toFun := (ue.denseInducing dr).extend f
+noncomputable def IsDenseInducing.extendRingHom {i : α →+* β} {f : α →+* γ}
+    (ue : IsUniformInducing i) (dr : DenseRange i) (hf : UniformContinuous f) : β →+* γ where
+  toFun := (ue.isDenseInducing dr).extend f
   map_one' := by
-    convert DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous 1
+    convert IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 1
     exacts [i.map_one.symm, f.map_one.symm]
   map_zero' := by
-    convert DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous 0 <;>
+    convert IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 0 <;>
     simp only [map_zero]
   map_add' := by
     have h := (uniformContinuous_uniformly_extend ue dr hf).continuous
     refine fun x y => DenseRange.induction_on₂ dr ?_ (fun a b => ?_) x y
     · exact isClosed_eq (Continuous.comp h continuous_add)
         ((h.comp continuous_fst).add (h.comp continuous_snd))
-    · simp_rw [← i.map_add, DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous _,
+    · simp_rw [← i.map_add, IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous _,
         ← f.map_add]
   map_mul' := by
     have h := (uniformContinuous_uniformly_extend ue dr hf).continuous
     refine fun x y => DenseRange.induction_on₂ dr ?_ (fun a b => ?_) x y
     · exact isClosed_eq (Continuous.comp h continuous_mul)
         ((h.comp continuous_fst).mul (h.comp continuous_snd))
-    · simp_rw [← i.map_mul, DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous _,
+    · simp_rw [← i.map_mul, IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous _,
         ← f.map_mul]
 
 end UniformExtension

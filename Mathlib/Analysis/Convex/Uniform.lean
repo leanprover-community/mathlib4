@@ -72,7 +72,8 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
   have h₂ : ∀ z : E, ‖z‖ ≤ 1 → 1 - δ' ≤ ‖z‖ → ‖‖z‖⁻¹ • z - z‖ ≤ δ' := by
     rintro z hz hδz
     nth_rw 3 [← one_smul ℝ z]
-    rwa [← sub_smul, norm_smul_of_nonneg (sub_nonneg_of_le <| one_le_inv (hδ'.trans_le hδz) hz),
+    rwa [← sub_smul,
+      norm_smul_of_nonneg (sub_nonneg_of_le <| (one_le_inv₀ (hδ'.trans_le hδz)).2 hz),
       sub_mul, inv_mul_cancel₀ (hδ'.trans_le hδz).ne', one_mul, sub_le_comm]
   set x' := ‖x‖⁻¹ • x
   set y' := ‖y‖⁻¹ • y
@@ -86,12 +87,12 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
       _ ≤ _ := by
         have : ∀ x' y', x - y = x' - y' + (x - x') + (y' - y) := fun _ _ => by abel
         rw [sub_le_iff_le_add, norm_sub_rev _ x, ← add_assoc, this]
-        exact norm_add₃_le _ _ _
+        exact norm_add₃_le
   calc
     ‖x + y‖ ≤ ‖x' + y'‖ + ‖x' - x‖ + ‖y' - y‖ := by
       have : ∀ x' y', x + y = x' + y' + (x - x') + (y - y') := fun _ _ => by abel
       rw [norm_sub_rev, norm_sub_rev y', this]
-      exact norm_add₃_le _ _ _
+      exact norm_add₃_le
     _ ≤ 2 - δ + δ' + δ' :=
       (add_le_add_three (h (h₁ _ hx') (h₁ _ hy') hxy') (h₂ _ hx hx'.le) (h₂ _ hy hy'.le))
     _ ≤ 2 - δ' := by

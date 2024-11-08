@@ -3,15 +3,13 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Order.Defs
 import Mathlib.Order.Notation
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.SimpRw
-import Batteries.Data.Sum.Lemmas
-import Batteries.Tactic.Classical
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -186,7 +184,7 @@ end
 
 namespace Eq
 
-variable [Preorder α] {x y z : α}
+variable [Preorder α] {x y : α}
 
 /-- If `x = y` then `y ≤ x`. Note: this lemma uses `y ≤ x` instead of `x ≥ y`, because `le` is used
 almost exclusively in mathlib. -/
@@ -308,7 +306,7 @@ alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 protected theorem Decidable.eq_iff_le_not_lt [@DecidableRel α (· ≤ ·)] :
     a = b ↔ a ≤ b ∧ ¬a < b :=
   ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
-    h₁.antisymm <| Decidable.by_contradiction fun h₃ ↦ h₂ (h₁.lt_of_not_le h₃)⟩
+    h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_le h₃)⟩
 
 theorem eq_iff_le_not_lt : a = b ↔ a ≤ b ∧ ¬a < b :=
   haveI := Classical.dec
@@ -463,11 +461,12 @@ theorem commutative_of_le {f : β → β → α} (comm : ∀ a b, f a b ≤ f b 
 
 /-- To prove associativity of a commutative binary operation `○`, we only to check
 `(a ○ b) ○ c ≤ a ○ (b ○ c)` for all `a`, `b`, `c`. -/
-theorem associative_of_commutative_of_le {f : α → α → α} (comm : Commutative f)
-    (assoc : ∀ a b c, f (f a b) c ≤ f a (f b c)) : Associative f := fun a b c ↦
-  le_antisymm (assoc _ _ _) <| by
-    rw [comm, comm b, comm _ c, comm a]
-    exact assoc _ _ _
+theorem associative_of_commutative_of_le {f : α → α → α} (comm : Std.Commutative f)
+    (assoc : ∀ a b c, f (f a b) c ≤ f a (f b c)) : Std.Associative f where
+  assoc a b c :=
+    le_antisymm (assoc _ _ _) <| by
+      rw [comm.comm, comm.comm b, comm.comm _ c, comm.comm a]
+      exact assoc _ _ _
 
 end PartialOrder
 
@@ -710,6 +709,10 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
   decidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
   decidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
 
+/-- The opposite linear order to a given linear order -/
+def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
+  inferInstanceAs <| LinearOrder (OrderDual α)
+
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
 
 theorem Preorder.dual_dual (α : Type*) [H : Preorder α] : OrderDual.instPreorder αᵒᵈ = H :=
@@ -749,6 +752,11 @@ instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α rᶜ :=
 instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 
+theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·) := by ext; simp [compl]
+theorem compl_le [LinearOrder α] : (· ≤ · : α → α → _)ᶜ = (· > ·) := by ext; simp [compl]
+theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·) := by ext; simp [compl]
+theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by ext; simp [compl]
+
 /-! ### Order instances on the function space -/
 
 
@@ -762,11 +770,11 @@ theorem Pi.le_def [∀ i, LE (π i)] {x y : ∀ i, π i} :
 instance Pi.preorder [∀ i, Preorder (π i)] : Preorder (∀ i, π i) where
   __ := inferInstanceAs (LE (∀ i, π i))
   le_refl := fun a i ↦ le_refl (a i)
-  le_trans := fun a b c h₁ h₂ i ↦ le_trans (h₁ i) (h₂ i)
+  le_trans := fun _ _ _ h₁ h₂ i ↦ le_trans (h₁ i) (h₂ i)
 
 theorem Pi.lt_def [∀ i, Preorder (π i)] {x y : ∀ i, π i} :
     x < y ↔ x ≤ y ∧ ∃ i, x i < y i := by
-  simp (config := { contextual := true }) [lt_iff_le_not_le, Pi.le_def]
+  simp +contextual [lt_iff_le_not_le, Pi.le_def]
 
 instance Pi.partialOrder [∀ i, PartialOrder (π i)] : PartialOrder (∀ i, π i) where
   __ := Pi.preorder
@@ -836,7 +844,7 @@ theorem update_le_iff : Function.update x i a ≤ y ↔ a ≤ y i ∧ ∀ (j) (_
 
 theorem update_le_update_iff :
     Function.update x i a ≤ Function.update y i b ↔ a ≤ b ∧ ∀ (j) (_ : j ≠ i), x j ≤ y j := by
-  simp (config := { contextual := true }) [update_le_iff]
+  simp +contextual [update_le_iff]
 
 @[simp]
 theorem update_le_update_iff' : update x i a ≤ update x i b ↔ a ≤ b := by
@@ -1100,7 +1108,8 @@ instance (α β : Type*) [LE α] [LE β] : LE (α × β) :=
 
 -- Porting note (#10754): new instance
 instance instDecidableLE (α β : Type*) [LE α] [LE β] (x y : α × β)
-    [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) := And.decidable
+    [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
+  inferInstanceAs (Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2))
 
 theorem le_def [LE α] [LE β] {x y : α × β} : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 :=
   Iff.rfl
@@ -1120,7 +1129,7 @@ variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y 
 instance (α β : Type*) [Preorder α] [Preorder β] : Preorder (α × β) where
   __ := inferInstanceAs (LE (α × β))
   le_refl := fun ⟨a, b⟩ ↦ ⟨le_refl a, le_refl b⟩
-  le_trans := fun ⟨a, b⟩ ⟨c, d⟩ ⟨e, f⟩ ⟨hac, hbd⟩ ⟨hce, hdf⟩ ↦ ⟨le_trans hac hce, le_trans hbd hdf⟩
+  le_trans := fun ⟨_, _⟩ ⟨_, _⟩ ⟨_, _⟩ ⟨hac, hbd⟩ ⟨hce, hdf⟩ ↦ ⟨le_trans hac hce, le_trans hbd hdf⟩
 
 @[simp]
 theorem swap_lt_swap : x.swap < y.swap ↔ x < y :=
@@ -1189,6 +1198,12 @@ instance OrderDual.denselyOrdered (α : Type*) [LT α] [h : DenselyOrdered α] :
 @[simp]
 theorem denselyOrdered_orderDual [LT α] : DenselyOrdered αᵒᵈ ↔ DenselyOrdered α :=
   ⟨by convert @OrderDual.denselyOrdered αᵒᵈ _, @OrderDual.denselyOrdered α _⟩
+
+/-- Any ordered subsingleton is densely ordered. Not an instance to avoid a heavy subsingleton
+typeclass search. -/
+lemma Subsingleton.instDenselyOrdered {X : Type*} [Subsingleton X] [Preorder X] :
+    DenselyOrdered X :=
+  ⟨fun _ _ h ↦ (not_lt_of_subsingleton h).elim⟩
 
 instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] : DenselyOrdered (α × β) :=
   ⟨fun a b ↦ by
@@ -1271,11 +1286,9 @@ theorem max_eq : max a b = unit :=
 theorem min_eq : min a b = unit :=
   rfl
 
--- Porting note (#10618): simp can prove this @[simp]
 protected theorem le : a ≤ b :=
   trivial
 
--- Porting note (#10618): simp can prove this @[simp]
 theorem not_lt : ¬a < b :=
   not_false
 

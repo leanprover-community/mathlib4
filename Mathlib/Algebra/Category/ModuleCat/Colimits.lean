@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Joël Riou
+Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
@@ -42,7 +42,7 @@ noncomputable def coconePointSMul :
     R →+* End (colimit (F ⋙ forget₂ _ AddCommGrp)) where
   toFun r := colimMap
     { app := fun j => (F.obj j).smul r
-      naturality := fun X Y f => smul_naturality _ _ }
+      naturality := fun _ _ _ => smul_naturality _ _ }
   map_zero' := colimit.hom_ext (by simp)
   map_one' := colimit.hom_ext (by simp)
   map_add' r s := colimit.hom_ext (fun j => by

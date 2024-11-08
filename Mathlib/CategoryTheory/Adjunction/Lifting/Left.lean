@@ -122,6 +122,13 @@ variable [HasReflexiveCoequalizers A]
 noncomputable def constructLeftAdjointObj (Y : B) : A :=
   coequalizer (F'.map (U.map (adj₁.counit.app Y))) (otherMap _ _ adj₁ adj₂ Y)
 
+#adaptation_note
+/--
+The new unused variable linter in
+https://github.com/leanprover/lean4/pull/5338
+flags `{ z : F.obj (U.obj X) ⟶ R.obj Y // _ }`.
+-/
+set_option linter.unusedVariables false in
 /-- The homset equivalence which helps show that `R` is a right adjoint. -/
 @[simps!] -- Porting note: Originally `@[simps (config := { rhsMd := semireducible })]`
 noncomputable def constructLeftAdjointEquiv [∀ X : B, RegularEpi (adj₁.counit.app X)] (Y : A)
@@ -149,6 +156,8 @@ noncomputable def constructLeftAdjointEquiv [∀ X : B, RegularEpi (adj₁.couni
         assoc, adj₁.counit_naturality, adj₁.counit_naturality_assoc]
       apply eq_comm
     _ ≃ (X ⟶ R.obj Y) := (Cofork.IsColimit.homIso (counitCoequalises adj₁ X) _).symm
+
+attribute [local simp] Adjunction.homEquiv_counit
 
 /-- Construct the left adjoint to `R`, with object map `constructLeftAdjointObj`. -/
 noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app X)] : B ⥤ A := by

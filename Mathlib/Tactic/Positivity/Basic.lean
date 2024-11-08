@@ -159,16 +159,16 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
   | .positive pa, .positive pb =>
-    let _a ← synthInstanceQ (q(CovariantClass $α $α (·+·) (·<·)) : Q(Prop))
+    let _a ← synthInstanceQ (q(AddLeftStrictMono $α) : Q(Prop))
     pure (.positive q(add_pos $pa $pb))
   | .positive pa, .nonnegative pb =>
-    let _a ← synthInstanceQ (q(CovariantClass $α $α (swap (·+·)) (·<·)) : Q(Prop))
+    let _a ← synthInstanceQ (q(AddRightStrictMono $α) : Q(Prop))
     pure (.positive q(lt_add_of_pos_of_le $pa $pb))
   | .nonnegative pa, .positive pb =>
-    let _a ← synthInstanceQ (q(CovariantClass $α $α (·+·) (·<·)) : Q(Prop))
+    let _a ← synthInstanceQ (q(AddLeftStrictMono $α) : Q(Prop))
     pure (.positive q(lt_add_of_le_of_pos $pa $pb))
   | .nonnegative pa, .nonnegative pb =>
-    let _a ← synthInstanceQ (q(CovariantClass $α $α (·+·) (·≤·)) : Q(Prop))
+    let _a ← synthInstanceQ (q(AddLeftMono $α) : Q(Prop))
     pure (.nonnegative q(add_nonneg $pa $pb))
   | _, _ => failure
 
@@ -304,7 +304,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     | .none => pure .none
 
 private theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
-    [CovariantClass α α (·+·) (·≤·)] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
+    [AddLeftMono α] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
 
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/
 @[positivity |_|]
@@ -500,9 +500,11 @@ def evalRatDen : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for `posPart`. `a⁺` is always nonegative, and positive if `a` is. -/
 @[positivity _⁺]
-def evalPosPart : PositivityExt where eval zα pα e := do
+def evalPosPart : PositivityExt where eval {u α} zα pα e := do
   match e with
-  | ~q(@posPart _ $instαlat $instαgrp $a) =>
+  | ~q(@posPart _ $instαpospart $a) =>
+    let _instαlat ← synthInstanceQ q(Lattice $α)
+    let _instαgrp ← synthInstanceQ q(AddGroup $α)
     assertInstancesCommute
     -- FIXME: There seems to be a bug in `Positivity.core` that makes it fail (instead of returning
     -- `.none`) here sometimes. See eg the first test for `posPart`. This is why we need `catchNone`
@@ -513,9 +515,11 @@ def evalPosPart : PositivityExt where eval zα pα e := do
 
 /-- Extension for `negPart`. `a⁻` is always nonegative. -/
 @[positivity _⁻]
-def evalNegPart : PositivityExt where eval _ _ e := do
+def evalNegPart : PositivityExt where eval {u α} _ _ e := do
   match e with
-  | ~q(@negPart _ $instαlat $instαgrp $a) =>
+  | ~q(@negPart _ $instαnegpart $a) =>
+    let _instαlat ← synthInstanceQ q(Lattice $α)
+    let _instαgrp ← synthInstanceQ q(AddGroup $α)
     assertInstancesCommute
     return .nonnegative q(negPart_nonneg $a)
   | _ => throwError "not `negPart`"

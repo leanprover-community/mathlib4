@@ -68,7 +68,7 @@ theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
 theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α} (p : G.Walk u u)
     (hOdd : Odd p.length) : 3 ≤ G.chromaticNumber := Classical.by_contradiction <| by
   intro h
-  have h' : G.chromaticNumber ≤ 2 := ENat.le_of_lt_add_one <| not_le.mp h
+  have h' : G.chromaticNumber ≤ 2 := Order.le_of_lt_add_one <| not_le.mp h
   let c : G.Coloring (Fin 2) := (chromaticNumber_le_iff_colorable.mp h').some
   let c' : G.Coloring Bool := recolorOfEquiv G finTwoEquiv c
   have : ¬c' u ↔ c' u := (c'.odd_length_iff_not_congr p).mp hOdd

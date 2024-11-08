@@ -62,9 +62,6 @@ instance : FunLike (OuterMeasure α) (Set α) ℝ≥0∞ where
   coe m := m.measureOf
   coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 
-instance instCoeFun : CoeFun (OuterMeasure α) (fun _ => Set α → ℝ≥0∞) :=
-  inferInstance
-
 @[simp] theorem measureOf_eq_coe (m : OuterMeasure α) : m.measureOf = m := rfl
 
 instance : OuterMeasureClass (OuterMeasure α) α where

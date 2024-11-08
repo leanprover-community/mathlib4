@@ -558,7 +558,7 @@ partial def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr)
     if path₁.isEmpty then
       guard (it₂ == e₁)
       break
-    if path₁.back == it₂ then
+    if path₁.back! == it₂ then
       -- found it!
       break
     path₁ := path₁.pop
@@ -842,7 +842,7 @@ def dbgTraceACState : CCM Unit := do
 def mkACProof (e₁ e₂ : Expr) : MetaM Expr := do
   let eq ← mkEq e₁ e₂
   let .mvar m ← mkFreshExprSyntheticOpaqueMVar eq | failure
-  AC.rewriteUnnormalized m
+  AC.rewriteUnnormalizedRefl m
   let pr ← instantiateMVars (.mvar m)
   mkExpectedTypeHint pr eq
 
@@ -1232,7 +1232,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
     let fn := e.getAppFn
     let apps := e.getAppApps
     guard (apps.size > 0)
-    guard (apps.back == e)
+    guard (apps.back! == e)
     let mut pinfo : List ParamInfo := []
     let state ← get
     if state.ignoreInstances then
@@ -1470,7 +1470,8 @@ partial def propagateEqUp (e : Expr) : CCM Unit := do
     if ← isInterpretedValue ra <&&> isInterpretedValue rb <&&>
         pure (ra.int?.isNone || ra.int? != rb.int?) then
       raNeRb := some
-        (Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[ra, rb])) (← mkEqRefl (.const ``true [])))
+        (Expr.app (.proj ``Iff 0 (← mkAppOptM ``bne_iff_ne #[none, none, none, ra, rb]))
+          (← mkEqRefl (.const ``true [])))
     else
       if let some c₁ ← isConstructorApp? ra then
       if let some c₂ ← isConstructorApp? rb then
@@ -1712,7 +1713,7 @@ def propagateBetaToEqc (fnRoots lambdas : Array Expr) (newLambdaApps : Array Exp
     CCM (Array Expr) := do
   if lambdas.isEmpty then return newLambdaApps
   let mut newLambdaApps := newLambdaApps
-  let lambdaRoot ← getRoot lambdas.back
+  let lambdaRoot ← getRoot lambdas.back!
   guard (← lambdas.allM fun l => pure l.isLambda <&&> (· == lambdaRoot) <$> getRoot l)
   for fnRoot in fnRoots do
     if let some ps := (← get).parents.find? fnRoot then
@@ -1808,7 +1809,8 @@ def propagateValueInconsistency (e₁ e₂ : Expr) : CCM Unit := do
   let some eqProof ← getEqProof e₁ e₂ | failure
   let trueEqFalse ← mkEq (.const ``True []) (.const ``False [])
   let neProof :=
-    Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[e₁, e₂])) (← mkEqRefl (.const ``true []))
+    Expr.app (.proj ``Iff 0 (← mkAppOptM ``bne_iff_ne #[none, none, none, e₁, e₂]))
+      (← mkEqRefl (.const ``true []))
   let H ← mkAbsurd trueEqFalse eqProof neProof
   pushEq (.const ``True []) (.const ``False []) H
 
@@ -1848,7 +1850,7 @@ def propagateEqDown (e : Expr) : CCM Unit := do
 /-- Propagate equality from `¬∃ x, p x` to `∀ x, ¬p x`. -/
 def propagateExistsDown (e : Expr) : CCM Unit := do
   if ← isEqFalse e then
-    let hNotE ← mkAppM ``not_of_eq_false #[← getEqFalseProof e]
+    let hNotE ← mkAppM ``of_eq_false #[← getEqFalseProof e]
     let (all, hAll) ← e.forallNot_of_notExists hNotE
     internalizeCore all none
     pushEq all (.const ``True []) (← mkEqTrue hAll)
