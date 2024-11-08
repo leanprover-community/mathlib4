@@ -32,11 +32,6 @@ requiring that the point under consideration is accumulated by points in the int
 These are written using ad hoc predicates `IsSymmSndFDerivAt` and `IsSymmSndFDerivWithinAt`, which
 increase readability of statements in differential geometry where they show up a lot.
 
-The statements are formulated using a typeclass `IsAdmissibleSmoothness 𝕜 n` which requires
-either that `𝕜` is `ℝ` or `ℂ`, or that the smoothness exponent is `ω`. In the current state of the
-library, the latter option is not possible, but it will become so with an ongoing refactor. We
-formulate things to minimize the necessary changes after the refactor.
-
 ## Implementation note
 
 For the proof, we obtain an asymptotic expansion to order two of `f (x + v + w) - f (x + v)`, by
