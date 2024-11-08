@@ -478,8 +478,8 @@ instance : MulEquivClass (M ≃ₜ* N) M N where
 
 @[to_additive]
 instance : HomeomorphClass (M ≃ₜ* N) M N where
-  continuous_toFun f := f.continuous_toFun
-  continuous_invFun f := f.continuous_invFun
+  map_continuous f := f.continuous_toFun
+  inv_continuous f := f.continuous_invFun
 
 @[to_additive] -- shortcut instance that doesn't generate any subgoals
 instance : CoeFun (M ≃ₜ* N) fun _ ↦ M → N where
@@ -544,8 +544,8 @@ variable (M)
 
 /-- The identity map is a continuous multiplicative isomorphism. -/
 @[to_additive (attr := refl) "The identity map is a continuous additive isomorphism."]
-def refl : M ≃ₜ* M := {
-  MulEquiv.refl _ with
+def refl : M ≃ₜ* M :=
+  { MulEquiv.refl _ with
   continuous_toFun := by continuity
   continuous_invFun := by continuity }
 
@@ -564,22 +564,21 @@ section symm
 
 /-- The inverse of a ContinuousMulEquiv. -/
 @[to_additive "The inverse of a ContinuousAddEquiv."]
-def symm (cme : M ≃ₜ* N) : N ≃ₜ* M := {
-  cme.toMulEquiv.symm with
+def symm (cme : M ≃ₜ* N) : N ≃ₜ* M :=
+  { cme.toMulEquiv.symm with
   continuous_toFun := cme.continuous_invFun
-  continuous_invFun := cme.continuous_toFun
-  }
+  continuous_invFun := cme.continuous_toFun }
 
 @[to_additive]
 theorem invFun_eq_symm {f : M ≃ₜ* N} : f.invFun = f.symm := rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem coe_toHomeomorph_symm (f : M ≃ₜ* N) : (f : M ≃ₜ N).symm = (f.symm : N ≃ₜ M) := rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem equivLike_inv_eq_symm (f : M ≃ₜ* N) : EquivLike.inv f = f.symm := rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem symm_symm (f : M ≃ₜ* N) : f.symm.symm = f := rfl
 
 /-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/
@@ -640,8 +639,8 @@ variable {L : Type*} [Mul L] [TopologicalSpace L]
 
 /-- The composition of two ContinuousMulEquiv. -/
 @[to_additive "The composition of two ContinuousAddEquiv."]
-def trans (cme1 : M ≃ₜ* N) (cme2 : N ≃ₜ* L) : M ≃ₜ* L := {
-  cme1.toMulEquiv.trans cme2.toMulEquiv with
+def trans (cme1 : M ≃ₜ* N) (cme2 : N ≃ₜ* L) : M ≃ₜ* L :=
+  { cme1.toMulEquiv.trans cme2.toMulEquiv with
   continuous_toFun := by convert Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
   continuous_invFun := by convert Continuous.comp cme1.continuous_invFun cme2.continuous_invFun }
 
@@ -670,8 +669,8 @@ section unique
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
 def continuousMulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
-    [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N := {
-  MulEquiv.mulEquivOfUnique with
+    [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N :=
+  { MulEquiv.mulEquivOfUnique with
   continuous_toFun := by continuity
   continuous_invFun := by continuity }
 
