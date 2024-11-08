@@ -45,7 +45,7 @@ lemma pure_one : IsApproximateUnit (pure (1 : α))  where
 
 set_option linter.unusedVariables false in
 /-- If `l` is an approximate unit and `⊥ < l' ≤ l`, then `l'` is also an approximate unit. -/
-lemma of_le {l l' : Filter α} (hl : l.IsApproximateUnit) (hle : l' ≤ l) [hl' : l'.NeBot] :
+lemma mono {l l' : Filter α} (hl : l.IsApproximateUnit) (hle : l' ≤ l) [hl' : l'.NeBot] :
     l'.IsApproximateUnit where
   tendsto_mul_left m := hl.tendsto_mul_left m |>.mono_left hle
   tendsto_mul_right m := hl.tendsto_mul_right m |>.mono_left hle
@@ -60,7 +60,13 @@ lemma nhds_one [ContinuousMul α] : IsApproximateUnit (𝓝 (1 : α)) where
 lemma iff_neBot_and_le_nhds_one [ContinuousMul α] {l : Filter α} :
     IsApproximateUnit l ↔ l.NeBot ∧ l ≤ 𝓝 1 :=
   ⟨fun hl ↦ ⟨hl.neBot, by simpa using hl.tendsto_mul_left 1⟩,
-    And.elim fun _ hl ↦ IsApproximateUnit.nhds_one α |>.of_le hl⟩
+    And.elim fun _ hl ↦ nhds_one α |>.mono hl⟩
+
+/-- In a topological unital magma, `𝓝 1` is the largest approximate unit. -/
+lemma iff_le_nhds_one [ContinuousMul α] {l : Filter α} [l.NeBot] :
+    IsApproximateUnit l ↔ l ≤ 𝓝 1 := by
+  simpa [iff_neBot_and_le_nhds_one] using fun _ ↦ ‹_›
+
 
 end TopologicalMonoid
 
