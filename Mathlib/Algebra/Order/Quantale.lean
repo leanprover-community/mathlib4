@@ -7,6 +7,8 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.CompleteLattice
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 /-!
 # Theory of quantales
@@ -28,9 +30,10 @@ which also distinguish unital, commutative, idempotent, integral and involutive 
 A unital quantale is simply a quantale over a monoid, a commutative quantale is a quantale
 over a commutative semigroup, and an idempotent quantale is a quantale over an idempotent
 semigroup. As we define quantales relative to their semigroup, these do not need to be defined
-explicitly here. An integral (or strictly two-sided) quantale is a unital quantale in which
+explicitly here, one can simply use a `Monoid`, `CommMonoid`, or `IdemMonoid` while constructing
+the quantale. An integral (or strictly two-sided) quantale is a unital quantale in which
 the top element of the lattice and the unit of the semigroup coincide. We give a mix-in class
-definition for this.
+definition `IntegralQuantale` for this.
 
 The involutive quantale (which is necessary to discuss regularity properties) we do not cover
 in this file. Also the proof that every frame is a commutative quantale, and that a quantale is
@@ -49,7 +52,8 @@ overhead if a user does not need them.
   which the semigroup operation is denoted by addition instead of multiplication;
 
 * furthermore, we provide basic lemmas rewriting distributivity laws for sSup into iSup and sup,
-  monotonicity of the multiplication, and an equivalence for left- and right- residuation.
+  monotonicity of the multiplication, and basic equivalence theorems for left- and right-
+  residuation.
 
 ## Naming conventions
 
@@ -66,6 +70,8 @@ overhead if a user does not need them.
 <https://ncatlab.org/nlab/show/quantale>
 
 -/
+
+open Function
 
 /-- An additive quantale is an additive semigroup distributing over a complete lattice. -/
 class AddQuantale (α : Type*) [AddSemigroup α] extends CompleteLattice α where
@@ -128,14 +134,16 @@ MulLeftMono and MulRightMono class definitions instead to obtain monotonicity th
 @[to_additive]
 instance : MulLeftMono α where
   elim := by
-    intro _ _ _ ; simp only; intro h
-    rw [← left_eq_sup, ← mul_sup_eq_sup_mul, sup_of_le_left h]
+    intro _ _ _; simp only; intro
+    rw [← left_eq_sup, ← mul_sup_eq_sup_mul, sup_of_le_left]
+    trivial
 
 @[to_additive]
 instance : MulRightMono α where
   elim := by
-    intro _ _ _ ; simp only; intro h
-    rw [← left_eq_sup, ← sup_mul_eq_sup_mul, sup_of_le_left h]
+    intro _ _ _; simp only; intro
+    rw [← left_eq_sup, ← sup_mul_eq_sup_mul, sup_of_le_left]
+    trivial
 
 end Quantale
 
@@ -204,6 +212,7 @@ theorem leftResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z := by
   constructor
   · intro h1
     apply le_trans (mul_le_mul_right' h1 _)
+    apply le_trans (mul_le_mul_right' h1 _)
     simp_all only [sSup_mul_eq_iSup_mul, Set.mem_setOf_eq, iSup_le_iff, implies_true]
   · intro h1
     apply le_sSup
@@ -214,6 +223,7 @@ theorem rightResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z := by
   rw [rightResiduation];
   constructor
   · intro h1
+    apply le_trans (mul_le_mul_left' h1 _)
     apply le_trans (mul_le_mul_left' h1 _)
     simp_all only [mul_sSup_eq_iSup_mul, Set.mem_setOf_eq, iSup_le_iff, implies_true]
   · intro h1
