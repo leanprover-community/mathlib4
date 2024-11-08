@@ -21,7 +21,7 @@ topological algebra.
 
 In this file we define continuous algebra homomorphisms, as algebra homomorphisms between
 topological (semi-)rings which are continuous. The set of continuous algebra homomorphisms between
-the topological `R`-algebras `A` and `B` is denoted by `A →R[A] B`.
+the topological `R`-algebras `A` and `B` is denoted by `A →A[R] B`.
 
 TODO: add continuous algebra isomorphisms.
 
