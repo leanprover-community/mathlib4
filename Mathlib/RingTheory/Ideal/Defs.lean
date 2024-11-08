@@ -46,10 +46,6 @@ variable [Semiring α] (I : Ideal α) {a b : α}
 class IsTwoSided : Prop where
   mul_mem_of_left {a : α} (b : α) : a ∈ I → a * b ∈ I
 
-instance : IsTwoSided (⊥ : Ideal α) := ⟨fun _ h ↦ by rw [h, zero_mul]; exact zero_mem _⟩
-
-instance : IsTwoSided (⊤ : Ideal α) := ⟨fun _ _ ↦ trivial⟩
-
 protected theorem zero_mem : (0 : α) ∈ I :=
   Submodule.zero_mem I
 
@@ -65,18 +61,11 @@ theorem mul_mem_right {α} {a : α} (b : α) [Semiring α] (I : Ideal α) [I.IsT
     (h : a ∈ I) : a * b ∈ I :=
   IsTwoSided.mul_mem_of_left b h
 
-instance {ι} (I : ι → Ideal α) [∀ i, (I i).IsTwoSided] : (⨅ i, I i).IsTwoSided :=
-  ⟨fun _ h ↦ (Submodule.mem_iInf _).mpr (mul_mem_right _ _ <| (Submodule.mem_iInf _).mp h ·)⟩
-
 variable {a}
 
 @[ext]
 theorem ext {I J : Ideal α} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
   Submodule.ext h
-
-theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
-    (∀ c ∈ t, f c ∈ I) → (∑ i ∈ t, f i) ∈ I :=
-  Submodule.sum_mem I
 
 @[simp]
 theorem unit_mul_mem_iff_mem {x y : α} (hy : IsUnit y) : y * x ∈ I ↔ x ∈ I := by
@@ -99,16 +88,11 @@ namespace Ideal
 
 variable [CommSemiring α] (I : Ideal α)
 
+instance : I.IsTwoSided := ⟨fun b ha ↦ mul_comm b _ ▸ I.smul_mem _ ha⟩
+
 @[simp]
 theorem mul_unit_mem_iff_mem {x y : α} (hy : IsUnit y) : x * y ∈ I ↔ x ∈ I :=
   mul_comm y x ▸ unit_mul_mem_iff_mem I hy
-
-variable (b)
-
-theorem mul_mem_right (h : a ∈ I) : a * b ∈ I :=
-  mul_comm b a ▸ I.mul_mem_left b h
-
-variable {b}
 
 lemma mem_of_dvd (hab : a ∣ b) (ha : a ∈ I) : b ∈ I := by
   obtain ⟨c, rfl⟩ := hab; exact I.mul_mem_right _ ha
@@ -147,5 +131,7 @@ theorem mul_sub_mul_mem [I.IsTwoSided]
     (h1 : a - b ∈ I) (h2 : c - d ∈ I) : a * c - b * d ∈ I := by
   rw [show a * c - b * d = (a - b) * c + b * (c - d) by rw [sub_mul, mul_sub]; abel]
   exact I.add_mem (I.mul_mem_right _ h1) (I.mul_mem_left _ h2)
+
+end Ideal
 
 end Ring

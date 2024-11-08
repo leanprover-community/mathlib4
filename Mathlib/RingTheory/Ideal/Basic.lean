@@ -75,8 +75,6 @@ namespace Ideal
 
 variable [CommSemiring α] (I : Ideal α)
 
-instance : I.IsTwoSided := ⟨fun b ha ↦ mul_comm b _ ▸ I.smul_mem _ ha⟩
-
 theorem add_pow_mem_of_pow_mem_of_le {m n k : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hk : m + n ≤ k + 1) :
     (a + b) ^ k ∈ I := by
