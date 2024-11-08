@@ -236,16 +236,19 @@ theorem IsTopologicalBasis.exists_nonempty_subset {B : Set (Set α)} (hb : IsTop
 theorem isTopologicalBasis_opens : IsTopologicalBasis { U : Set α | IsOpen U } :=
   isTopologicalBasis_of_isOpen_of_nhds (by tauto) (by tauto)
 
-protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α → β} {T : Set (Set β)}
-    (hf : Inducing f) (h : IsTopologicalBasis T) : IsTopologicalBasis ((preimage f) '' T) :=
+protected lemma IsTopologicalBasis.isInducing {β} [TopologicalSpace β] {f : α → β} {T : Set (Set β)}
+    (hf : IsInducing f) (h : IsTopologicalBasis T) : IsTopologicalBasis ((preimage f) '' T) :=
   .of_hasBasis_nhds fun a ↦ by
     convert (hf.basis_nhds (h.nhds_hasBasis (a := f a))).to_image_id with s
     aesop
 
+@[deprecated (since := "2024-10-28")]
+alias IsTopologicalBasis.inducing := IsTopologicalBasis.isInducing
+
 protected theorem IsTopologicalBasis.induced {α} [s : TopologicalSpace β] (f : α → β)
     {T : Set (Set β)} (h : IsTopologicalBasis T) :
     IsTopologicalBasis (t := induced f s) ((preimage f) '' T) :=
-  h.inducing (t := induced f s) (inducing_induced f)
+  h.isInducing (t := induced f s) (.induced f)
 
 protected theorem IsTopologicalBasis.inf {t₁ t₂ : TopologicalSpace β} {B₁ B₂ : Set (Set β)}
     (h₁ : IsTopologicalBasis (t := t₁) B₁) (h₂ : IsTopologicalBasis (t := t₂) B₂) :
@@ -576,7 +579,7 @@ theorem isTopologicalBasis_subtype
     {α : Type*} [TopologicalSpace α] {B : Set (Set α)}
     (h : TopologicalSpace.IsTopologicalBasis B) (p : α → Prop) :
     IsTopologicalBasis (Set.preimage (Subtype.val (p := p)) '' B) :=
-  h.inducing ⟨rfl⟩
+  h.isInducing ⟨rfl⟩
 
 section
 variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
@@ -659,16 +662,22 @@ instance Subtype.firstCountableTopology (s : Set α) [FirstCountableTopology α]
     FirstCountableTopology s :=
   firstCountableTopology_induced s α (↑)
 
-protected theorem _root_.Inducing.firstCountableTopology {β : Type*}
-    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : Inducing f) :
+protected theorem _root_.IsInducing.firstCountableTopology {β : Type*}
+    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : IsInducing f) :
     FirstCountableTopology α := by
   rw [hf.1]
   exact firstCountableTopology_induced α β f
 
-protected theorem _root_.Embedding.firstCountableTopology {β : Type*}
-    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : Embedding f) :
+@[deprecated (since := "2024-10-28")]
+alias _root_.Inducing.firstCountableTopology := _root_.IsInducing.firstCountableTopology
+
+protected theorem _root_.IsEmbedding.firstCountableTopology {β : Type*}
+    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : IsEmbedding f) :
     FirstCountableTopology α :=
   hf.1.firstCountableTopology
+
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.firstCountableTopology := IsEmbedding.firstCountableTopology
 
 namespace FirstCountableTopology
 
@@ -890,8 +899,8 @@ theorem IsTopologicalBasis.sum {s : Set (Set α)} (hs : IsTopologicalBasis s) {t
     IsTopologicalBasis ((fun u => Sum.inl '' u) '' s ∪ (fun u => Sum.inr '' u) '' t) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro u (⟨w, hw, rfl⟩ | ⟨w, hw, rfl⟩)
-    · exact isOpenEmbedding_inl.isOpenMap w (hs.isOpen hw)
-    · exact isOpenEmbedding_inr.isOpenMap w (ht.isOpen hw)
+    · exact IsOpenEmbedding.inl.isOpenMap w (hs.isOpen hw)
+    · exact IsOpenEmbedding.inr.isOpenMap w (ht.isOpen hw)
   · rintro (x | x) u hxu u_open
     · obtain ⟨v, vs, xv, vu⟩ : ∃ v ∈ s, x ∈ v ∧ v ⊆ Sum.inl ⁻¹' u :=
         hs.exists_subset_of_mem_open hxu (isOpen_sum_iff.1 u_open).1
@@ -969,18 +978,21 @@ open TopologicalSpace
 
 variable {α β : Type*} [TopologicalSpace α] {f : α → β}
 
-protected theorem Inducing.secondCountableTopology [TopologicalSpace β] [SecondCountableTopology β]
-    (hf : Inducing f) : SecondCountableTopology α := by
+protected theorem IsInducing.secondCountableTopology [TopologicalSpace β]
+    [SecondCountableTopology β] (hf : IsInducing f) : SecondCountableTopology α := by
   rw [hf.1]
   exact secondCountableTopology_induced α β f
 
-protected theorem Embedding.secondCountableTopology
+@[deprecated (since := "2024-10-28")]
+alias Inducing.secondCountableTopology := IsInducing.secondCountableTopology
+
+protected theorem IsEmbedding.secondCountableTopology
     [TopologicalSpace β] [SecondCountableTopology β]
-    (hf : Embedding f) : SecondCountableTopology α :=
+    (hf : IsEmbedding f) : SecondCountableTopology α :=
   hf.1.secondCountableTopology
 
-protected theorem Embedding.separableSpace
-    [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : Embedding f) :
+protected theorem IsEmbedding.separableSpace
+    [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : IsEmbedding f) :
     TopologicalSpace.SeparableSpace α := by
   have := hf.secondCountableTopology
   exact SecondCountableTopology.to_separableSpace

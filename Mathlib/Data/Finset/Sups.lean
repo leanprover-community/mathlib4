@@ -356,7 +356,7 @@ end DistribLattice
 
 section Finset
 variable [DecidableEq α]
-variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α}
+variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
 
 @[simp] lemma powerset_union (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
   ext u
@@ -508,7 +508,7 @@ theorem disjSups_disjSups_disjSups_comm : s ○ t ○ (u ○ v) = s ○ u ○ (t
 end DistribLattice
 section Diffs
 variable [DecidableEq α]
-variable [GeneralizedBooleanAlgebra α] (s s₁ s₂ t t₁ t₂ u v : Finset α)
+variable [GeneralizedBooleanAlgebra α] (s s₁ s₂ t t₁ t₂ u : Finset α)
 
 /-- `s \\ t` is the finset of elements of the form `a \ b` where `a ∈ s`, `b ∈ t`. -/
 def diffs : Finset α → Finset α → Finset α := image₂ (· \ ·)
@@ -592,7 +592,7 @@ lemma diffs_right_comm : s \\ t \\ u = s \\ u \\ t := image₂_right_comm sdiff_
 end Diffs
 
 section Compls
-variable [BooleanAlgebra α] (s s₁ s₂ t t₁ t₂ u v : Finset α)
+variable [BooleanAlgebra α] (s s₁ s₂ t : Finset α)
 
 /-- `sᶜˢ` is the finset of elements of the form `aᶜ` where `a ∈ s`. -/
 def compls : Finset α → Finset α := map ⟨compl, compl_injective⟩
@@ -602,7 +602,7 @@ scoped[FinsetFamily] postfix:max "ᶜˢ" => Finset.compls
 
 open FinsetFamily
 
-variable {s t} {a b c : α}
+variable {s t} {a : α}
 
 @[simp] lemma mem_compls : a ∈ sᶜˢ ↔ aᶜ ∈ s := by
   rw [Iff.comm, ← mem_map' ⟨compl, compl_injective⟩, Embedding.coeFn_mk, compl_compl, compls]
@@ -615,7 +615,7 @@ variable (s t)
 
 @[simp] lemma card_compls : #sᶜˢ = #s := card_map _
 
-variable {s s₁ s₂ t t₁ t₂ u}
+variable {s s₁ s₂ t}
 
 lemma compl_mem_compls : a ∈ s → aᶜ ∈ sᶜˢ := mem_map_of_mem _
 @[simp] lemma compls_subset_compls : s₁ᶜˢ ⊆ s₂ᶜˢ ↔ s₁ ⊆ s₂ := map_subset_map

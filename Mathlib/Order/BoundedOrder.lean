@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Order.Lattice
 import Mathlib.Order.ULift
 import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -89,6 +90,10 @@ theorem lt_top_of_lt (h : a < b) : a < ⊤ :=
 
 alias LT.lt.lt_top := lt_top_of_lt
 
+attribute [aesop (rule_sets := [finiteness]) unsafe 20%] ne_top_of_lt
+-- would have been better to implement this as a "safe" "forward" rule, why doesn't this work?
+-- attribute [aesop (rule_sets := [finiteness]) safe forward] ne_top_of_lt
+
 end Preorder
 
 variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a b : α}
@@ -134,6 +139,7 @@ theorem not_lt_top_iff : ¬a < ⊤ ↔ a = ⊤ :=
 theorem eq_top_or_lt_top (a : α) : a = ⊤ ∨ a < ⊤ :=
   le_top.eq_or_lt
 
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem Ne.lt_top (h : a ≠ ⊤) : a < ⊤ :=
   lt_top_iff_ne_top.mpr h
 
@@ -758,21 +764,19 @@ theorem min_bot_right [OrderBot α] (a : α) : min a ⊥ = ⊥ := inf_bot_eq _
 
 theorem max_top_right [OrderTop α] (a : α) : max a ⊤ = ⊤ := sup_top_eq _
 
+theorem max_eq_bot [OrderBot α] {a b : α} : max a b = ⊥ ↔ a = ⊥ ∧ b = ⊥ :=
+  sup_eq_bot_iff
+
+theorem min_eq_top [OrderTop α] {a b : α} : min a b = ⊤ ↔ a = ⊤ ∧ b = ⊤ :=
+  inf_eq_top_iff
+
 @[simp]
 theorem min_eq_bot [OrderBot α] {a b : α} : min a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := by
-  simp only [← inf_eq_min, ← le_bot_iff, inf_le_iff]
+  simp_rw [← le_bot_iff, inf_le_iff]
 
 @[simp]
 theorem max_eq_top [OrderTop α] {a b : α} : max a b = ⊤ ↔ a = ⊤ ∨ b = ⊤ :=
   @min_eq_bot αᵒᵈ _ _ a b
-
-@[simp]
-theorem max_eq_bot [OrderBot α] {a b : α} : max a b = ⊥ ↔ a = ⊥ ∧ b = ⊥ :=
-  sup_eq_bot_iff
-
-@[simp]
-theorem min_eq_top [OrderTop α] {a b : α} : min a b = ⊤ ↔ a = ⊤ ∧ b = ⊤ :=
-  inf_eq_top_iff
 
 end LinearOrder
 
