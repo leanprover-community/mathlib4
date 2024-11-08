@@ -283,7 +283,6 @@ protected theorem lipschitz : LipschitzWith 1 f :=
 protected theorem antilipschitz : AntilipschitzWith 1 f :=
   (IsometryClass.isometry f).antilipschitz
 
-@[simp]
 theorem ediam_image (s : Set α) : EMetric.diam (f '' s) = EMetric.diam s :=
   (IsometryClass.isometry f).ediam_image s
 
