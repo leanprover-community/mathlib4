@@ -117,6 +117,7 @@ instance : Bot (TwoSidedIdeal R) where
 
 lemma bot_ringCon : (⊥ : TwoSidedIdeal R).ringCon = ⊥ := rfl
 
+@[simp]
 lemma mem_bot {x : R} : x ∈ (⊥ : TwoSidedIdeal R) ↔ x = 0 :=
   Iff.rfl
 
