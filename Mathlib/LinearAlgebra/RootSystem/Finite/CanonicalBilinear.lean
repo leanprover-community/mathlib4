@@ -22,16 +22,17 @@ Weyl group.
  * `Polarization`: A distinguished linear map from the weight space to the coweight space.
  * `RootForm` : The bilinear form on weight space corresponding to `Polarization`.
 
-## References:
- * SGAIII Exp. XXI
- * Bourbaki, Lie groups and Lie algebras
-
 ## Main results:
  * `polarization_self_sum_of_squares` : The inner product of any weight vector is a sum of squares.
  * `rootForm_reflection_reflection_apply` : `RootForm` is invariant with respect
    to reflections.
  * `rootForm_self_smul_coroot`: The inner product of a root with itself times the
    corresponding coroot is equal to two times Polarization applied to the root.
+ * `rootForm_self_non_neg`: `RootForm` is positive semidefinite.
+
+## References:
+ * SGAIII Exp. XXI
+ * Bourbaki, Lie groups and Lie algebras
 
 ## TODO (possibly in other files)
  * Positivity and nondegeneracy
@@ -186,15 +187,6 @@ lemma prod_rootForm_root_self_pos :
     0 < ∏ i, P.RootForm (P.root i) (P.root i) :=
   Finset.prod_pos fun i _ => rootForm_root_self_pos P i
 
-/-!lemma prod_rootForm_smul_coroot_in_range (i : ι) :
-    (∏ a : ι, P.RootForm (P.root a) (P.root a)) • P.coroot i ∈ LinearMap.range P.Polarization := by
-  have hdvd : P.RootForm (P.root i) (P.root i) ∣ ∏ a : ι, P.RootForm (P.root a) (P.root a) :=
-    Finset.dvd_prod_of_mem (fun a ↦ P.RootForm (P.root a) (P.root a)) (Finset.mem_univ i)
-  obtain ⟨c, hc⟩ := hdvd
-  rw [hc, mul_comm, mul_smul, rootForm_self_smul_coroot]
-  exact LinearMap.mem_range.mpr (Exists.intro (c • 2 • P.root i) (by simp))
--/
-
 lemma prod_rootForm_smul_coroot_in_range_domRestrict (i : ι) :
     (∏ a : ι, P.RootForm (P.root a) (P.root a)) • P.coroot i ∈
       LinearMap.range (P.Polarization.domRestrict (Submodule.span R (Set.range P.root))) := by
@@ -205,8 +197,6 @@ lemma prod_rootForm_smul_coroot_in_range_domRestrict (i : ι) :
   refine LinearMap.mem_range.mpr ?_
   use ⟨(c • 2 • P.root i), by aesop⟩
   simp
-
-
 
 end LinearOrderedCommRing
 

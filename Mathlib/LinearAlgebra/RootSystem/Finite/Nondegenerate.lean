@@ -3,6 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
+import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.Dimension.LinearMap
 import Mathlib.LinearAlgebra.Dimension.Localization
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
@@ -11,8 +12,7 @@ import Mathlib.LinearAlgebra.RootSystem.RootPositive
 /-!
 # Nondegeneracy of the polarization on a finite root pairing
 We show that if the base ring of a finite root pairing is linearly ordered, then the canonical
-bilinear form is root-positive, positive-semidefinite on the weight space, and positive-definite on
-the span of roots.
+bilinear form is root-positive and positive-definite on the span of roots.
 From these facts, it is easy to show that Coxeter weights in a finite root pairing are bounded
 above by 4.  Thus, the pairings of roots and coroots in a root pairing are restricted to the
 interval `[-4, 4]`.  Furthermore, a linearly independent pair of roots cannot have Coxeter weight 4.
@@ -21,13 +21,13 @@ options for each pair.
 Another application is to the faithfulness of the Weyl group action on roots, and finiteness of the
 Weyl group.
 ## Main results:
- * `polInner_rootPositive`: The inner product is root-positive.
+ * `rootForm_rootPositive`: `RootForm` is root-positive.
  * `polarization_domRestrict_injective`: The polarization restricted to the span of roots is
    injective.
- * `RootForm_posDef`: `RootForm` is strictly positive on non-zero linear combinations of roots.
-  That is, it is positive-definite when restricted to the linear span of roots.  This gives
-  us a convenient way to eliminate certain Dynkin diagrams from the classification, since it
-  suffices to produce a nonzero linear combination of simple roots with non-positive norm.
+ * `rootForm_pos_of_nonzero`: `RootForm` is strictly positive on non-zero linear combinations of
+  roots. This gives us a convenient way to eliminate certain Dynkin diagrams from the
+  classification, since it suffices to produce a nonzero linear combination of simple roots with
+  non-positive norm.
 ## References:
  * SGAIII Exp. XXI
  * Bourbaki, Lie groups and Lie algebras
@@ -43,7 +43,6 @@ noncomputable section
 open Set Function
 open Module hiding reflection
 open Submodule (span)
---open AddSubgroup (zmultiples)
 
 namespace RootPairing
 
@@ -64,24 +63,24 @@ lemma span_coroot_finite : Module.Finite R (span R (range P.coroot)) :=
   Finite.span_of_finite R <| finite_range P.coroot
 
 lemma span_root_finite_rank : Module.rank R ↥(span R (range ⇑P.root)) < Cardinal.aleph0 := by
-  haveI := span_root_finite P
+  have := span_root_finite P
   exact rank_lt_aleph0 R ↥(span R (range ⇑P.root))
 
 lemma finrank_eq_rank_span_root :
     Module.finrank R (span R (range P.root)) = Module.rank R (span R (range P.root)) := by
-  haveI := span_root_finite P
+  have := span_root_finite P
   exact finrank_eq_rank R ↥(span R (range P.root))
 
 lemma finrank_eq_rank_span_coroot :
     Module.finrank R (span R (range P.coroot)) = Module.rank R (span R (range P.coroot)) := by
-  haveI := span_coroot_finite P
+  have := span_coroot_finite P
   exact finrank_eq_rank R ↥(span R (range P.coroot))
 
 lemma rank_polarization_domRestrict_eq_rank_span_coroot :
     LinearMap.rank (P.Polarization.domRestrict (span R (range P.root))) =
       Module.rank R (span R (range P.coroot)) := by
   refine eq_of_le_of_le (Submodule.rank_mono P.range_polarization_domRestrict_le_span_coroot) ?_
-  letI : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
+  have : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
   refine rank_le_of_smul_regular (span R (range P.coroot))
     (LinearMap.range (P.Polarization.domRestrict (span R (range P.root))))
     (smul_right_injective N (Ne.symm (ne_of_lt P.prod_rootForm_root_self_pos)))
@@ -125,7 +124,7 @@ lemma polarization_domRestrict_kernel_rank_zero : Module.rank R (LinearMap.ker
 lemma polarization_domRestrict_injective :
     Injective (LinearMap.domRestrict P.Polarization (span R (range P.root))) := by
   refine LinearMap.ker_eq_bot.mp ?_
-  letI : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
+  have : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
   --refine (Submodule.rank_eq_zero (R := R) (M := M)).mp ?_
   ext x
   rw [Submodule.mem_bot]
@@ -149,11 +148,20 @@ lemma mem_span_root_eq_zero_of_rootForm {x : M} (hx : x ∈ span R (range P.root
   have : y = 0 := mem_span_root_zero_of_coroot P h
   exact (AddSubmonoid.mk_eq_zero (span R (range P.root)).toAddSubmonoid).mp this
 
--- lemma rootForm_posDef : combine above with `rootForm_self_non_neg`; use #18559
+lemma rootForm_pos_of_nonzero {x : M} (hx : x ∈ span R (range P.root)) (h : x ≠ 0) :
+    0 < P.RootForm x x := by
+  refine lt_of_le_of_ne (P.rootForm_self_non_neg x) ?_
+  contrapose! h
+  exact mem_span_root_eq_zero_of_rootForm P hx h.symm
 
--- rewrite with #18559
 lemma rootForm_nondegenerate_on_span {x : span R (range P.root)}
     (hx : ∀ y : span R (range P.root), RootForm P x y = 0) : x = 0 :=
   SetLike.coe_eq_coe.mp (mem_span_root_eq_zero_of_rootForm P (Submodule.coe_mem x) (hx x))
+
+lemma rootForm_restrict_nondegenerate :
+    (P.RootForm.restrict (span R (range P.root))).Nondegenerate := by
+  refine LinearMap.IsRefl.nondegenerate_of_separatingLeft ?_ ?_
+  · exact LinearMap.IsSymm.isRefl fun x y => by simp [rootForm_apply_apply, mul_comm]
+  · apply rootForm_nondegenerate_on_span
 
 end RootPairing
