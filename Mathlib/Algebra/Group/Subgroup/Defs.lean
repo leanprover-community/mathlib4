@@ -292,6 +292,19 @@ instance : SubgroupClass (Subgroup G) G where
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
 
+@[to_additive]
+instance {S G : Type*} [Group G] [SetLike S G] [SubgroupClass S G] : CoeHead S (Subgroup G) where
+  coe s :=
+  { carrier := s
+    mul_mem' := by aesop
+    one_mem' := by aesop
+    inv_mem' := by aesop }
+
+@[to_additive]
+lemma SubgroupClass.mem_coe_subgroup {S G : Type*} [Group G] [SetLike S G] [SubgroupClass S G]
+    (s : S) (x : G) : x ∈ (s : Subgroup G) ↔ x ∈ s :=
+  Iff.rfl
+
 @[to_additive (attr := simp, nolint simpNF)] -- Porting note (#10675): dsimp can not prove this
 theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
