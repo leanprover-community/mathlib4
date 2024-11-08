@@ -4766,6 +4766,7 @@ import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Topology.Algebra.WithZeroTopology
+import Mathlib.Topology.ApproximateUnit
 import Mathlib.Topology.Baire.BaireMeasurable
 import Mathlib.Topology.Baire.CompleteMetrizable
 import Mathlib.Topology.Baire.Lemmas
