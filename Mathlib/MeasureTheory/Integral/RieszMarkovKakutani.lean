@@ -5,7 +5,7 @@ Authors: Jesse Reimann, Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.Topology.ContinuousMap.CompactlySupported
-import Mathlib.Topology.UrysohnsLemma
+import Mathlib.Topology.PartitionOfUnity
 
 /-!
 #  Riesz–Markov–Kakutani representation theorem
@@ -128,14 +128,6 @@ end RieszSubadditive
 section PartitionOfUnity
 
 variable [T2Space X] [LocallyCompactSpace X]
-
-theorem exists_continuous_sum_one_of_isOpen_isCompact
-    {n : ℕ} {t : Set X} {s : Fin n → Set X} (hs : ∀ (i : Fin n), IsOpen (s i)) (htcp : IsCompact t)
-    (hst : t ⊆ ⋃ i, s i) : ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧
-    EqOn (∑ i, f i) 1 t ∧ (∀ (i : Fin n), ∀ (x : X), f i x ∈ Icc (0 : ℝ) 1) ∧ (∀ (i : Fin n),
-    HasCompactSupport (f i)) := by
-  sorry
-  -- proved in #12266
 
 lemma exists_sum_one_of_isCompact_nnreal
     {s : Fin 2 → Set X} {t : Set X} (s_compact : ∀ i, IsCompact (s i))
