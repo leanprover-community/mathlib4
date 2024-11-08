@@ -4,12 +4,13 @@ AUTHOR="${1}"
 BODY="${2}"
 GHsource="${3}"
 PR="${4}"
+URL="${5}"
 
 mergeOrDelegate="neither merge nor delegate"
-if printf '%s\n' "${BODY}" | grep "^maintainer merge"
+if printf '%s\n' "${BODY}" | grep -q "^maintainer merge"
 then
   mergeOrDelegate=merge
-elif printf '%s\n' "${BODY}" | grep "^maintainer delegate"
+elif printf '%s\n' "${BODY}" | grep -q "^maintainer delegate"
 then
   mergeOrDelegate=delegate
 fi
@@ -25,4 +26,4 @@ fi
 
 #printf $'title<<EOF\n${{ format(\'{0} requested a maintainer %s from %s on PR [#{1}]({2}):\', github.event.%s.user.login, github.event.%s.number, github.event.%s.html_url ) }}\nEOF' "${mergeOrDelegate}" "${GHsource}" "${GHsource}" "${GHevent}" "${GHevent}"
 
-printf '%s requested a maintainer %s from %s on PR [#%s]({2}):\n> "%s", GHsource: "%s", GHevent: "%s"' "${author}" "${mergeOrDelegate}" "${GHsource}" "${PR}" "${GHevent}"
+printf '%s requested a maintainer %s from %s on PR [#%s](%s):\n> %s\n' "${AUTHOR}" "${mergeOrDelegate}" "${GHsource}" "${PR}" http "${GHevent}"
