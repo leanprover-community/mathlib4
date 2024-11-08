@@ -118,7 +118,7 @@ theorem coe_inclusion' {X : TopCat} {U : Opens X} :
     (inclusion' U : U → X) = Subtype.val := rfl
 
 theorem isOpenEmbedding {X : TopCat.{u}} (U : Opens X) : IsOpenEmbedding (inclusion' U) :=
-  IsOpen.isOpenEmbedding_subtypeVal U.2
+  U.2.isOpenEmbedding_subtypeVal
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding := isOpenEmbedding

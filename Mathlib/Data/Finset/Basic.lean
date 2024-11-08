@@ -7,7 +7,7 @@ import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.Directed
-import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Data.Set.SymmDiff
 
 /-!
@@ -867,8 +867,8 @@ theorem disjoint_iff_ne : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := 
   simp only [disjoint_left, imp_not_comm, forall_eq']
 
 @[simp]
-theorem disjoint_val : s.1.Disjoint t.1 ↔ Disjoint s t :=
-  disjoint_left.symm
+theorem disjoint_val : Disjoint s.1 t.1 ↔ Disjoint s t :=
+  Multiset.disjoint_left.trans disjoint_left.symm
 
 theorem _root_.Disjoint.forall_ne_finset (h : Disjoint s t) (ha : a ∈ s) (hb : b ∈ t) : a ≠ b :=
   disjoint_iff_ne.1 h _ ha _ hb
@@ -1233,11 +1233,11 @@ instance : Lattice (Finset α) :=
     inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2 }
 
 @[simp]
-theorem sup_eq_union : (Sup.sup : Finset α → Finset α → Finset α) = Union.union :=
+theorem sup_eq_union : (Max.max : Finset α → Finset α → Finset α) = Union.union :=
   rfl
 
 @[simp]
-theorem inf_eq_inter : (Inf.inf : Finset α → Finset α → Finset α) = Inter.inter :=
+theorem inf_eq_inter : (Min.min : Finset α → Finset α → Finset α) = Inter.inter :=
   rfl
 
 theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
@@ -1436,7 +1436,7 @@ theorem inter_subset_left {s₁ s₂ : Finset α} : s₁ ∩ s₂ ⊆ s₁ := fu
 theorem inter_subset_right {s₁ s₂ : Finset α} : s₁ ∩ s₂ ⊆ s₂ := fun _a => mem_of_mem_inter_right
 
 theorem subset_inter {s₁ s₂ u : Finset α} : s₁ ⊆ s₂ → s₁ ⊆ u → s₁ ⊆ s₂ ∩ u := by
-  simp (config := { contextual := true }) [subset_iff, mem_inter]
+  simp +contextual [subset_iff, mem_inter]
 
 @[simp, norm_cast]
 theorem coe_inter (s₁ s₂ : Finset α) : ↑(s₁ ∩ s₂) = (s₁ ∩ s₂ : Set α) :=
@@ -1545,7 +1545,7 @@ theorem inter_subset_union : s ∩ t ⊆ s ∪ t :=
 
 instance : DistribLattice (Finset α) :=
   { le_sup_inf := fun a b c => by
-      simp (config := { contextual := true }) only
+      simp +contextual only
         [sup_eq_union, inf_eq_inter, le_eq_subset, subset_iff, mem_inter, mem_union, and_imp,
         or_imp, true_or, imp_true_iff, true_and, or_true] }
 
@@ -1633,6 +1633,10 @@ theorem disjoint_or_nonempty_inter (s t : Finset α) : Disjoint s t ∨ (s ∩ t
   rw [← not_disjoint_iff_nonempty_inter]
   exact em _
 
+theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
+    Disjoint s t ↔ s = ∅ := by
+  rw [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
+
 end Lattice
 
 instance isDirected_le : IsDirected (Finset α) (· ≤ ·) := by classical infer_instance
@@ -1702,7 +1706,7 @@ theorem erase_eq_self : s.erase a = s ↔ a ∉ s :=
 @[simp]
 theorem erase_insert_eq_erase (s : Finset α) (a : α) : (insert a s).erase a = s.erase a :=
   ext fun x => by
-    simp (config := { contextual := true }) only [mem_erase, mem_insert, and_congr_right_iff,
+    simp +contextual only [mem_erase, mem_insert, and_congr_right_iff,
       false_or, iff_self, imp_true_iff]
 
 theorem erase_insert {a : α} {s : Finset α} (h : a ∉ s) : erase (insert a s) a = s := by
@@ -2390,7 +2394,7 @@ theorem filter_cons_of_neg (a : α) (s : Finset α) (ha : a ∉ s) (hp : ¬p a) 
 
 theorem disjoint_filter {s : Finset α} {p q : α → Prop} [DecidablePred p] [DecidablePred q] :
     Disjoint (s.filter p) (s.filter q) ↔ ∀ x ∈ s, p x → ¬q x := by
-  constructor <;> simp (config := { contextual := true }) [disjoint_left]
+  constructor <;> simp +contextual [disjoint_left]
 
 theorem disjoint_filter_filter {s t : Finset α}
     {p q : α → Prop} [DecidablePred p] [DecidablePred q] :
@@ -3111,15 +3115,17 @@ namespace Multiset
 
 variable [DecidableEq α]
 
+@[simp]
 theorem disjoint_toFinset {m1 m2 : Multiset α} :
-    _root_.Disjoint m1.toFinset m2.toFinset ↔ m1.Disjoint m2 := by
-  rw [Finset.disjoint_iff_ne]
-  refine ⟨fun h a ha1 ha2 => ?_, ?_⟩
-  · rw [← Multiset.mem_toFinset] at ha1 ha2
-    exact h _ ha1 _ ha2 rfl
-  · rintro h a ha b hb rfl
-    rw [Multiset.mem_toFinset] at ha hb
-    exact h ha hb
+    _root_.Disjoint m1.toFinset m2.toFinset ↔ Disjoint m1 m2 := by
+  simp [disjoint_left, Finset.disjoint_left]
+
+@[simp]
+lemma toFinset_replicate (n : ℕ) (a : α) :
+    (replicate n a).toFinset = if n = 0 then ∅ else {a} := by
+  ext x
+  simp only [mem_toFinset, Finset.mem_singleton, mem_replicate]
+  split_ifs with hn <;> simp [hn]
 
 end Multiset
 
@@ -3127,8 +3133,9 @@ namespace List
 
 variable [DecidableEq α] {l l' : List α}
 
+@[simp]
 theorem disjoint_toFinset_iff_disjoint : _root_.Disjoint l.toFinset l'.toFinset ↔ l.Disjoint l' :=
-  Multiset.disjoint_toFinset
+  Multiset.disjoint_toFinset.trans (Multiset.coe_disjoint _ _)
 
 end List
 

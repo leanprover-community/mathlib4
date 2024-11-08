@@ -200,12 +200,6 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h�
 theorem mk_coe (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₛₙₐ[φ] B) = f := by
   rfl
 
-instance : CoeOut (A →ₛₙₐ[φ] B) (A →ₑ+[φ] B) :=
-  ⟨toDistribMulActionHom⟩
-
-instance : CoeOut (A →ₛₙₐ[φ] B) (A →ₙ* B) :=
-  ⟨toMulHom⟩
-
 @[simp]
 theorem toDistribMulActionHom_eq_coe (f : A →ₛₙₐ[φ] B) : f.toDistribMulActionHom = ↑f :=
   rfl

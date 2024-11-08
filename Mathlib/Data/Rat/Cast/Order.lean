@@ -46,6 +46,9 @@ def castOrderEmbedding : ℚ ↪o K :=
 
 @[simp, norm_cast] lemma cast_lt : (p : K) < q ↔ p < q := cast_strictMono.lt_iff_lt
 
+@[gcongr] alias ⟨_, _root_.GCongr.ratCast_le_ratCast⟩ := cast_le
+@[gcongr] alias ⟨_, _root_.GCongr.ratCast_lt_ratCast⟩ := cast_lt
+
 @[simp] lemma cast_nonneg : 0 ≤ (q : K) ↔ 0 ≤ q := by norm_cast
 
 @[simp] lemma cast_nonpos : (q : K) ≤ 0 ↔ q ≤ 0 := by norm_cast
