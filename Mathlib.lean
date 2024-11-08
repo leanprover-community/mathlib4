@@ -4306,6 +4306,7 @@ import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.RingTheory.SimpleRing.Defs
+import Mathlib.RingTheory.SimpleRing.Matrix
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Smooth.Pi
