@@ -219,6 +219,61 @@ theorem map_smul_left (b : B) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (b �
   simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
     smul_apply, smul_tmul']
 
+variable (A M) in
+/-- Heterobasic version of `LinearMap.lTensor` -/
+def lTensor (f : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] M ⊗[R] Q :=
+  map LinearMap.id f
+
+@[simp]
+lemma coe_lTensor (f : N →ₗ[R] Q) :
+    (lTensor A M f : M ⊗[R] N → M ⊗[R] Q) = f.lTensor M := rfl
+
+@[simp]
+lemma restrictScalars_lTensor (f : N →ₗ[R] Q) :
+    LinearMap.restrictScalars R (lTensor A M f) = f.lTensor M := rfl
+
+@[simp] lemma lTensor_tmul (f : N →ₗ[R] Q) (m : M) (n : N) :
+    lTensor A M f (m ⊗ₜ[R] n) = m ⊗ₜ f n :=
+  rfl
+
+@[simp] lemma lTensor_id : lTensor A M (id : N →ₗ[R] N) = .id :=
+  ext fun _ _ => rfl
+
+lemma lTensor_comp (f₂ : Q →ₗ[R] Q') (f₁ : N →ₗ[R] Q) :
+    lTensor A M (f₂.comp f₁) = (lTensor A M f₂).comp (lTensor A M f₁) :=
+  ext fun _ _ => rfl
+
+@[simp]
+lemma lTensor_one : lTensor A M (1 : N →ₗ[R] N) = 1 := map_id
+
+lemma lTensor_mul (f₁ f₂ : N →ₗ[R] N) :
+    lTensor A M (f₁ * f₂) = lTensor A M f₁ * lTensor A M f₂ := lTensor_comp _ _
+
+lemma lTensor_add (f₁ f₂ : N →ₗ[R] Q) :
+    lTensor A M (f₁ + f₂) = lTensor A M f₁ + lTensor A M f₂ :=
+  map_add_right _ f₁ f₂
+
+lemma lTensor_smul (r : R) (f : N →ₗ[R] Q) : lTensor A M (r • f) = r • lTensor A M f :=
+  map_smul_right _ _ _
+
+variable (R A M N Q) in
+def lTensorHom : (N →ₗ[R] Q) →ₗ[R] M ⊗[R] N →ₗ[A] M ⊗[R] Q where
+  toFun f := lTensor A M f
+  map_add' := lTensor_add
+  map_smul' := lTensor_smul
+
+@[simp]
+lemma coe_lTensorHom :
+    (lTensorHom R A M N Q : (N →ₗ[R] Q) → M ⊗[R] N →ₗ[A] M ⊗[R] Q) = lTensor A M :=
+  rfl
+
+lemma lTensor_sub {M N Q : Type*} [AddCommGroup M] [AddCommGroup Q] [AddCommGroup N]
+    [Module R M] [Module R N] [Module R Q] [Module A M] [IsScalarTower R A M]
+    (f₁ f₂ : N →ₗ[R] Q) :
+    lTensor A M (f₁ - f₂) = lTensor A M f₁ - lTensor A M f₂ := by
+  rw [← coe_lTensorHom]
+  rw [map_sub]
+
 variable (R A B M N P Q)
 
 /-- Heterobasic version of `TensorProduct.map_bilinear` -/
