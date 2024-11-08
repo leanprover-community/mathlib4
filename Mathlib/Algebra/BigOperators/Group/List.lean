@@ -205,7 +205,7 @@ theorem prod_take_mul_prod_drop (L : List M) (i : ℕ) :
 @[to_additive (attr := simp)]
 theorem prod_take_succ (L : List M) (i : ℕ) (p : i < L.length) :
     (L.take (i + 1)).prod = (L.take i).prod * L[i] := by
-  simp [take_succ, p]
+  simp [← take_concat_get', p]
 
 /-- A list with product not one must have positive length. -/
 @[to_additive "A list with sum not zero must have positive length."]
