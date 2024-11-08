@@ -120,13 +120,14 @@ open Scheme Pullback
 
 variable (𝒰 : Y.OpenCover) (𝒱 : ∀ i, (pullback f (𝒰.map i)).OpenCover)
 
-lemma Scheme.Pullback.diagonalCoverDiagonal_eq_top_of_injective (hf : Function.Injective f.base) :
-    diagonalCoverDiagonal f 𝒰 𝒱 = ⊤ := by
+lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
+    (hf : Function.Injective f.base) :
+    diagonalCoverDiagonalRange f 𝒰 𝒱 = ⊤ := by
   rw [← top_le_iff]
   rintro x -
-  simp only [diagonalCoverDiagonal, openCoverOfBase_J, openCoverOfBase_obj, openCoverOfLeftRight_J,
-    Opens.iSup_mk, Opens.carrier_eq_coe, Hom.opensRange_coe, Opens.coe_mk, Set.mem_iUnion,
-    Set.mem_range, Sigma.exists]
+  simp only [diagonalCoverDiagonalRange, openCoverOfBase_J, openCoverOfBase_obj,
+    openCoverOfLeftRight_J, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.opensRange_coe, Opens.coe_mk,
+    Set.mem_iUnion, Set.mem_range, Sigma.exists]
   have H : (pullback.fst f f).base x = (pullback.snd f f).base x :=
     hf (by rw [← Scheme.comp_base_apply, ← Scheme.comp_base_apply, pullback.condition])
   let i := 𝒰.f (f.base ((pullback.fst f f).base x))
@@ -143,12 +144,12 @@ lemma Scheme.Pullback.diagonalCoverDiagonal_eq_top_of_injective (hf : Function.I
     Function.comp_apply, ← H, and_self, ← hz₁, ← hy]
   exact ⟨w, rfl⟩
 
-lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonal :
-    Set.range (pullback.diagonal f).base ⊆ diagonalCoverDiagonal f 𝒰 𝒱 := by
+lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
+    Set.range (pullback.diagonal f).base ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by
   rintro _ ⟨x, rfl⟩
-  simp only [diagonalCoverDiagonal, openCoverOfBase_J, openCoverOfBase_obj, openCoverOfLeftRight_J,
-    Opens.iSup_mk, Opens.carrier_eq_coe, Hom.opensRange_coe, Opens.coe_mk, Set.mem_iUnion,
-    Set.mem_range, Sigma.exists]
+  simp only [diagonalCoverDiagonalRange, openCoverOfBase_J, openCoverOfBase_obj,
+    openCoverOfLeftRight_J, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.opensRange_coe, Opens.coe_mk,
+    Set.mem_iUnion, Set.mem_range, Sigma.exists]
   let i := 𝒰.f (f.base x)
   obtain ⟨y : 𝒰.obj i, hy : (𝒰.map i).base y = f.base x⟩ := 𝒰.covers (f.base x)
   obtain ⟨z, hz₁, hz₂⟩ := exists_preimage_pullback _ _ hy.symm
@@ -160,18 +161,18 @@ lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonal :
   congr 4
   apply pullback.hom_ext <;> simp [diagonalCover_map, OpenCover.pullbackHom]
 
-lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonal
+lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange
     [∀ i, IsAffine (𝒰.obj i)] [∀ i j, IsAffine ((𝒱 i).obj j)] :
-    IsClosedImmersion (pullback.diagonal f ∣_ diagonalCoverDiagonal f 𝒰 𝒱) := by
-  let U : (Σ i, (𝒱 i).J) → (diagonalCoverDiagonal f 𝒰 𝒱).toScheme.Opens := fun i ↦
-    (diagonalCoverDiagonal f 𝒰 𝒱).ι ⁻¹ᵁ ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange
-  have hU (i) : (diagonalCoverDiagonal f 𝒰 𝒱).ι ''ᵁ U i =
+    IsClosedImmersion (pullback.diagonal f ∣_ diagonalCoverDiagonalRange f 𝒰 𝒱) := by
+  let U : (Σ i, (𝒱 i).J) → (diagonalCoverDiagonalRange f 𝒰 𝒱).toScheme.Opens := fun i ↦
+    (diagonalCoverDiagonalRange f 𝒰 𝒱).ι ⁻¹ᵁ ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange
+  have hU (i) : (diagonalCoverDiagonalRange f 𝒰 𝒱).ι ''ᵁ U i =
       ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange := by
     rw [TopologicalSpace.Opens.functor_obj_map_obj, inf_eq_right, Hom.image_top_eq_opensRange,
       Opens.opensRange_ι]
     exact le_iSup (fun i : Σ i, (𝒱 i).J ↦ ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange) i
-  have hf : iSup U = ⊤ :=
-    (TopologicalSpace.Opens.map_iSup _ _).symm.trans (diagonalCoverDiagonal f 𝒰 𝒱).ι_preimage_self
+  have hf : iSup U = ⊤ := (TopologicalSpace.Opens.map_iSup _ _).symm.trans
+    (diagonalCoverDiagonalRange f 𝒰 𝒱).ι_preimage_self
   rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsClosedImmersion) _ hf]
   intro i
   rw [MorphismProperty.arrow_mk_iso_iff (P := @IsClosedImmersion) (morphismRestrictRestrict _ _ _),
@@ -186,8 +187,8 @@ lemma isSeparated_of_injective (hf : Function.Injective f.base) :
   let 𝒰 := Y.affineCover
   let 𝒱 (i) := (pullback f (𝒰.map i)).affineCover
   refine IsLocalAtTarget.of_iSup_eq_top (fun i : PUnit.{0} ↦ ⊤) (by simp) fun _ ↦ ?_
-  rw [← diagonalCoverDiagonal_eq_top_of_injective f 𝒰 𝒱 hf]
-  exact isClosedImmersion_diagonal_restrict_diagonalCoverDiagonal f 𝒰 𝒱
+  rw [← diagonalCoverDiagonalRange_eq_top_of_injective f 𝒰 𝒱 hf]
+  exact isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange f 𝒰 𝒱
 
 end of_injective
 

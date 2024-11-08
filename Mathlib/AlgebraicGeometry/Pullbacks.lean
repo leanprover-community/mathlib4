@@ -549,7 +549,7 @@ def diagonalCover : (pullback.diagonalObj f).OpenCover :=
 
 /-- The image of `𝒱 i j₁ ×_{𝒰 i} 𝒱 i j₂` in `diagonalCover` with `j₁ = j₂`  -/
 noncomputable
-def diagonalCoverDiagonal : (pullback.diagonalObj f).Opens :=
+def diagonalCoverDiagonalRange : (pullback.diagonalObj f).Opens :=
 ⨆ i : Σ i, (𝒱 i).J, ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange
 
 lemma diagonalCover_map (I) : (diagonalCover f 𝒰 𝒱).map I =
