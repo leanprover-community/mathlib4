@@ -7,7 +7,20 @@ import Mathlib.Algebra.Star.NonUnitalSubalgebra
 import Mathlib.Topology.Algebra.NonUnitalAlgebra
 import Mathlib.Topology.Algebra.Star
 
-/-! # Non-unital topological star (sub)algebras -/
+/-!
+# Non-unital topological star (sub)algebras
+
+A non-unital topological star algebra over a topological semiring `R` is a topological 
+(non-unital) semiring with a compatible continuous scalar multiplication by elements 
+of `R` and a continuous `star` operation. We reuse typeclasses `ContinuousSMul` and 
+`ContinuousStar` to express the latter two conditions.
+
+## Results
+
+Any non-unital star subalgebra of a non-unital topological star algebra is itself a 
+non-unital topological star algebra, and its closure is again a non-unital star subalgebra.
+
+-/
 
 namespace NonUnitalStarSubalgebra
 
@@ -31,7 +44,7 @@ theorem le_topologicalClosure (s : NonUnitalStarSubalgebra R A) : s ≤ s.topolo
   subset_closure
 
 theorem isClosed_topologicalClosure (s : NonUnitalStarSubalgebra R A) :
-    IsClosed (s.topologicalClosure : Set A) := by convert @isClosed_closure A s _
+    IsClosed (s.topologicalClosure : Set A) := isClosed_closure
 
 theorem topologicalClosure_minimal (s : NonUnitalStarSubalgebra R A)
     {t : NonUnitalStarSubalgebra R A} (h : s ≤ t) (ht : IsClosed (t : Set A)) :
