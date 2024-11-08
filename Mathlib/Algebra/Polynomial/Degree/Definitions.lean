@@ -714,7 +714,7 @@ theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
     calc
       degree (∑ i ∈ cons a s has, f i) ≤ max (degree (f a)) (degree (∑ i ∈ s, f i)) := by
         rw [Finset.sum_cons]; exact degree_add_le _ _
-      _ ≤ _ := by rw [sup_cons, sup_eq_max]; exact max_le_max le_rfl ih
+      _ ≤ _ := by rw [sup_cons]; exact max_le_max le_rfl ih
 
 theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
   simpa only [degree, ← support_toFinsupp, toFinsupp_mul]

@@ -346,12 +346,13 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
-instance linearOrderOverring : LinearOrder {S // A ≤ S} :=
-  { (inferInstance : PartialOrder _) with
-    le_total :=
-      let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
-      (primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total
-    decidableLE := inferInstance }
+instance le_total_ideal : IsTotal {S // A ≤ S} LE.le :=
+  let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
+  ⟨(primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total⟩
+
+instance linearOrderOverring : LinearOrder {S // A ≤ S} where
+  le_total := (le_total_ideal A).1
+  max_def a b := congr_fun₂ sup_eq_maxDefault a b
 
 end Order
 

@@ -952,11 +952,11 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
     contradiction
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
-function `f : α → β`. This version takes `[Sup α]` and `[Inf α]` as arguments, then uses
+function `f : α → β`. This version takes `[Max α]` and `[Min α]` as arguments, then uses
 them for `max` and `min` fields. See `LinearOrder.lift'` for a version that autogenerates `min` and
 `max` fields, and `LinearOrder.liftWithOrd` for one that does not auto-generate `compare`
 fields. See note [reducible non-instances]. -/
-abbrev LinearOrder.lift [LinearOrder β] [Sup α] [Inf α] (f : α → β) (inj : Injective f)
+abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj : Injective f)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
   letI instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
@@ -985,7 +985,7 @@ abbrev LinearOrder.lift [LinearOrder β] [Sup α] [Inf α] (f : α → β) (inj 
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version autogenerates `min` and `max` fields. See `LinearOrder.lift`
-for a version that takes `[Sup α]` and `[Inf α]`, then uses them as `max` and `min`. See
+for a version that takes `[Max α]` and `[Min α]`, then uses them as `max` and `min`. See
 `LinearOrder.liftWithOrd'` for a version which does not auto-generate `compare` fields.
 See note [reducible non-instances]. -/
 abbrev LinearOrder.lift' [LinearOrder β] (f : α → β) (inj : Injective f) : LinearOrder α :=
@@ -995,12 +995,12 @@ abbrev LinearOrder.lift' [LinearOrder β] (f : α → β) (inj : Injective f) : 
     (apply_ite f _ _ _).trans (min_def _ _).symm
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
-function `f : α → β`. This version takes `[Sup α]` and `[Inf α]` as arguments, then uses
+function `f : α → β`. This version takes `[Max α]` and `[Min α]` as arguments, then uses
 them for `max` and `min` fields. It also takes `[Ord α]` as an argument and uses them for `compare`
 fields. See `LinearOrder.lift` for a version that autogenerates `compare` fields, and
 `LinearOrder.liftWithOrd'` for one that auto-generates `min` and `max` fields.
 fields. See note [reducible non-instances]. -/
-abbrev LinearOrder.liftWithOrd [LinearOrder β] [Sup α] [Inf α] [Ord α] (f : α → β)
+abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : α → β)
     (inj : Injective f) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
     (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
     (compare_f : ∀ a b : α, compare a b = compare (f a) (f b)) : LinearOrder α :=

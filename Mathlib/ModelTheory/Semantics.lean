@@ -285,7 +285,7 @@ theorem realize_rel₂ {R : L.Relations 2} {t₁ t₂ : L.Term _} :
 
 @[simp]
 theorem realize_sup : (φ ⊔ ψ).Realize v xs ↔ φ.Realize v xs ∨ ψ.Realize v xs := by
-  simp only [realize, Sup.sup, realize_not, eq_iff_iff]
+  simp only [realize, max, realize_not, eq_iff_iff]
   tauto
 
 @[simp]

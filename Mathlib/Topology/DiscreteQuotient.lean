@@ -136,7 +136,7 @@ theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.toSetoid x)) := by
   rw [← fiber_eq]
   apply isClopen_preimage
 
-instance : Inf (DiscreteQuotient X) :=
+instance : Min (DiscreteQuotient X) :=
   ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
 
 instance : SemilatticeInf (DiscreteQuotient X) :=

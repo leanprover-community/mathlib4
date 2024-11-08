@@ -161,7 +161,7 @@ theorem coe_top : ((⊤ : L.Substructure M) : Set M) = Set.univ :=
   rfl
 
 /-- The inf of two substructures is their intersection. -/
-instance instInf : Inf (L.Substructure M) :=
+instance instInf : Min (L.Substructure M) :=
   ⟨fun S₁ S₂ =>
     { carrier := (S₁ : Set M) ∩ (S₂ : Set M)
       fun_mem := fun {_} f => (S₁.fun_mem f).inf (S₂.fun_mem f) }⟩

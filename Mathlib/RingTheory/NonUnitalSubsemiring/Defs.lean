@@ -235,7 +235,7 @@ theorem mem_bot {x : R} : x ∈ (⊥ : NonUnitalSubsemiring R) ↔ x = 0 :=
   Set.mem_singleton_iff
 
 /-- The inf of two non-unital subsemirings is their intersection. -/
-instance : Inf (NonUnitalSubsemiring R) :=
+instance : Min (NonUnitalSubsemiring R) :=
   ⟨fun s t =>
     { s.toSubsemigroup ⊓ t.toSubsemigroup, s.toAddSubmonoid ⊓ t.toAddSubmonoid with
       carrier := s ∩ t }⟩

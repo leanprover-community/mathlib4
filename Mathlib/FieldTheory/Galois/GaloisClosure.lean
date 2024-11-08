@@ -77,11 +77,11 @@ instance (L₁ L₂ : IntermediateField k K) [Algebra.IsSeparable k L₂] :
 instance (L₁ L₂ : IntermediateField k K) [IsGalois k L₁] [IsGalois k L₂] :
     IsGalois k ↑(L₁ ⊓ L₂) where
 
-instance : Sup (FiniteGaloisIntermediateField k K) where
-  sup L₁ L₂ := .mk <| L₁ ⊔ L₂
+instance : Max (FiniteGaloisIntermediateField k K) where
+  max L₁ L₂ := .mk <| L₁ ⊔ L₂
 
-instance : Inf (FiniteGaloisIntermediateField k K) where
-  inf L₁ L₂ := .mk <| L₁ ⊓ L₂
+instance : Min (FiniteGaloisIntermediateField k K) where
+  min L₁ L₂ := .mk <| L₁ ⊓ L₂
 
 instance : Lattice (FiniteGaloisIntermediateField k K) :=
   val_injective.lattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)

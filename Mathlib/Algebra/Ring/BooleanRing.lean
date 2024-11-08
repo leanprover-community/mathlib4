@@ -151,11 +151,11 @@ variable [BooleanRing α] [BooleanRing β] [BooleanRing γ]
 namespace BooleanRing
 
 /-- The join operation in a Boolean ring is `x + y + x * y`. -/
-def sup : Sup α :=
+def sup : Max α :=
   ⟨fun x y => x + y + x * y⟩
 
 /-- The meet operation in a Boolean ring is `x * y`. -/
-def inf : Inf α :=
+def inf : Min α :=
   ⟨(· * ·)⟩
 
 -- Porting note (#11215): TODO: add priority 100. lower instance priority

@@ -515,13 +515,13 @@ open Filter
 open Filter
 
 @[aesop safe 20 (rule_sets := [Measurable])]
-protected theorem sup [Sup β] [ContinuousSup β] (hf : StronglyMeasurable f)
+protected theorem sup [Max β] [ContinuousSup β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f ⊔ g) :=
   ⟨fun n => hf.approx n ⊔ hg.approx n, fun x =>
     (hf.tendsto_approx x).sup_nhds (hg.tendsto_approx x)⟩
 
 @[aesop safe 20 (rule_sets := [Measurable])]
-protected theorem inf [Inf β] [ContinuousInf β] (hf : StronglyMeasurable f)
+protected theorem inf [Min β] [ContinuousInf β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f ⊓ g) :=
   ⟨fun n => hf.approx n ⊓ hg.approx n, fun x =>
     (hf.tendsto_approx x).inf_nhds (hg.tendsto_approx x)⟩

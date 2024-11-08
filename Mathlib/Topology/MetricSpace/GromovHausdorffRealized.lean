@@ -439,7 +439,7 @@ def premetricOptimalGHDist : PseudoMetricSpace (X ⊕ Y) where
   edist_dist x y := by
     simp only
     congr
-    simp only [max, left_eq_sup]
+    simp only [left_eq_sup]
     exact candidates_nonneg (optimalGHDist_mem_candidatesB X Y)
 
 attribute [local instance] premetricOptimalGHDist

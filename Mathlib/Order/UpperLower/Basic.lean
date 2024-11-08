@@ -478,10 +478,10 @@ namespace UpperSet
 
 variable {S : Set (UpperSet α)} {s t : UpperSet α} {a : α}
 
-instance : Sup (UpperSet α) :=
+instance : Max (UpperSet α) :=
   ⟨fun s t => ⟨s ∩ t, s.upper.inter t.upper⟩⟩
 
-instance : Inf (UpperSet α) :=
+instance : Min (UpperSet α) :=
   ⟨fun s t => ⟨s ∪ t, s.upper.union t.upper⟩⟩
 
 instance : Top (UpperSet α) :=
@@ -613,10 +613,10 @@ namespace LowerSet
 
 variable {S : Set (LowerSet α)} {s t : LowerSet α} {a : α}
 
-instance : Sup (LowerSet α) :=
+instance : Max (LowerSet α) :=
   ⟨fun s t => ⟨s ∪ t, fun _ _ h => Or.imp (s.lower h) (t.lower h)⟩⟩
 
-instance : Inf (LowerSet α) :=
+instance : Min (LowerSet α) :=
   ⟨fun s t => ⟨s ∩ t, fun _ _ h => And.imp (s.lower h) (t.lower h)⟩⟩
 
 instance : Top (LowerSet α) :=
