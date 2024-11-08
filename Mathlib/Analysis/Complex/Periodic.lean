@@ -52,7 +52,7 @@ theorem im_invQParam (q : ℂ) : im (invQParam h q) = -h / (2 * π) * Real.log (
 
 variable {h} -- next few theorems all assume h ≠ 0 or 0 < h
 
-theorem qParam_right_inv (hh : h ≠ 0) {e : ℂ} (hq : e ≠ 0) : 𝕢 h (invQParam h e) = e := by
+theorem qParam_right_inv (hh : h ≠ 0) {q : ℂ} (hq : q ≠ 0) : 𝕢 h (invQParam h q) = q := by
   simp only [qParam, invQParam, ← mul_assoc, mul_div_cancel₀ _ two_pi_I_ne_zero,
     mul_div_cancel_left₀ _ (ofReal_ne_zero.mpr hh), exp_log hq]
 
@@ -151,7 +151,7 @@ theorem eventually_differentiableAt_cuspFunction_nhds_ne_zero (hh : 0 < h) (hf :
   refine ((invQParam_tendsto hh).eventually h_hol).mp ?_
   refine eventually_nhdsWithin_of_forall (fun q hq h_diff ↦ ?_)
   rw [← qParam_right_inv hh.ne' hq]
-  exact differentiableAt_cuspFunction  hh.ne' hf h_diff
+  exact differentiableAt_cuspFunction hh.ne' hf h_diff
 
 end HoloOnC
 
@@ -206,8 +206,9 @@ exponentially fast.
 theorem exp_decay_of_zero_at_inf (hh : 0 < h) (hf : Periodic f h)
     (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) (h_zer : ZeroAtFilter I∞ f) :
     f =O[I∞] fun z ↦ Real.exp (-2 * π * im z / h) := by
-  suffices cuspFunction h f =O[_] id by simpa only [comp_def, eq_cuspFunction hh.ne' hf, id_eq,
-    norm_eq_abs, abs_qParam] using (this.comp_tendsto (qParam_tendsto hh)).norm_right
+  suffices cuspFunction h f =O[_] id by
+    simpa only [comp_def, eq_cuspFunction hh.ne' hf, id_eq, norm_eq_abs, abs_qParam]
+      using (this.comp_tendsto (qParam_tendsto hh)).norm_right
   simpa only [cuspFunction_zero_of_zero_at_inf hh h_zer, sub_zero] using
     (differentiableAt_cuspFunction_zero hh hf h_hol h_zer.boundedAtFilter).isBigO_sub.mono
       nhdsWithin_le_nhds
