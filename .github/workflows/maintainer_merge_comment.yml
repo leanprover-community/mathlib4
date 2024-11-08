@@ -49,9 +49,10 @@ jobs:
           COMMENT: ${{ github.event.comment.body }}
           PR_TITLE: ${{ github.event.issue.title }}
         run: |
-          echo "comment body: '${COMMENT}'"
+          echo "comment body: '${COMMENT:-COMMENT not set}'"
           echo "pr?: '${{ github.event.issue.pull_request }}'"
-          echo "title: '${PR_TITLE}'"
+          echo "title: '${PR_TITLE:-PR_TITLE not set}'"
+          echo "github.event_name: '${{ github.event_name }}'"
           message="$(
             ./scripts/maintainer_merge_message.sh author:"${{ github.event.comment.user.login }}|" body:"${BODY}|" comment issueNumber:"${{ github.event.issue.number }}|" https:"${{ github.event.issue.html_url }}|" pr_title:"${PR_TITLE}"
           )"
