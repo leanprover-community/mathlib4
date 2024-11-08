@@ -1497,6 +1497,19 @@ theorem mapMatrix_trans (f : α ≃+* β) (g : β ≃+* γ) :
     f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m m α ≃+* _) :=
   rfl
 
+open MulOpposite in
+/--
+For any ring `R`, we have ring isomorphism `Matₙₓₙ(Rᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose.
+-/
+@[simps apply symm_apply]
+def mopMatrix : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
+  toFun M := op (M.transpose.map unop)
+  invFun M := M.unop.transpose.map op
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+  map_mul' _ _ := unop_injective <| by ext; simp [transpose, mul_apply]
+  map_add' _ _ := by aesop
+
 end RingEquiv
 
 namespace AlgHom
