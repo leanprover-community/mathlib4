@@ -204,8 +204,7 @@ theorem iso (e : A ≃L[R] B) : IsModuleTopology R B where
       rw [induced_compose]
       refine ⟨⟨continuousSMul_induced g, continuousAdd_induced h⟩, ?_⟩
       nth_rw 2 [← induced_id (t := τ)]
-      simp only [ContinuousLinearEquiv.symm_toHomeomorph, ContinuousLinearEquiv.coe_toHomeomorph,
-        ContinuousLinearEquiv.self_comp_symm]
+      simp
 
 end iso
 

@@ -267,10 +267,9 @@ topological semiring `R`. -/
 structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
-    [Module S M₂] extends M ≃ₛₗ[σ] M₂, M ≃ₜ M₂ where
-
-/-- A continuous linear equivalence induces a homeomorphism. -/
-add_decl_doc ContinuousLinearEquiv.toHomeomorph
+    [Module S M₂] extends M ≃ₛₗ[σ] M₂ where
+  continuous_toFun : Continuous toFun := by continuity
+  continuous_invFun : Continuous invFun := by continuity
 
 @[inherit_doc]
 notation:50 M " ≃SL[" σ "] " M₂ => ContinuousLinearEquiv σ M M₂
@@ -1677,6 +1676,10 @@ theorem coe_injective : Function.Injective ((↑) : (M₁ ≃SL[σ₁₂] M₂) 
 @[simp, norm_cast]
 theorem coe_inj {e e' : M₁ ≃SL[σ₁₂] M₂} : (e : M₁ →SL[σ₁₂] M₂) = e' ↔ e = e' :=
   coe_injective.eq_iff
+
+/-- A continuous linear equivalence induces a homeomorphism. -/
+def toHomeomorph (e : M₁ ≃SL[σ₁₂] M₂) : M₁ ≃ₜ M₂ :=
+  { e with toEquiv := e.toLinearEquiv.toEquiv }
 
 @[simp]
 theorem coe_toHomeomorph (e : M₁ ≃SL[σ₁₂] M₂) : ⇑e.toHomeomorph = e :=

@@ -103,7 +103,7 @@ instance instLinearMapClass : LinearMapClass (WeakDual 𝕜 E) 𝕜 E 𝕜 :=
   ContinuousLinearMap.semilinearMapClass
 
 instance instContinuousMapClass : ContinuousMapClass (WeakDual 𝕜 E) E 𝕜 :=
-  ContinuousLinearMap.continuousLinearMapClass
+  ContinuousLinearMap.continuousMapClass
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
