@@ -249,10 +249,14 @@ theorem isAlgebraic_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f)
 section RingHom
 
 omit [Algebra R S] [Algebra S A] [IsScalarTower R S A] [Algebra R B]
-variable [Algebra S B] {FRS FAB : Type*} [FunLike FAB A B] [RingHomClass FAB A B]
+variable [Algebra S B] {FRS FAB : Type*}
 
-protected theorem IsAlgebraic.ringHom_of_comp_eq [FunLike FRS R S] [RingHomClass FRS R S]
-    (f : FRS) (g : FAB) {a : A} (halg : IsAlgebraic R a)
+section
+
+variable [FunLike FRS R S] [RingHomClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
+  (f : FRS) (g : FAB) {a : A}
+
+theorem IsAlgebraic.ringHom_of_comp_eq (halg : IsAlgebraic R a)
     (hf : Function.Injective f)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     IsAlgebraic S (g a) := by
@@ -261,8 +265,15 @@ protected theorem IsAlgebraic.ringHom_of_comp_eq [FunLike FRS R S] [RingHomClass
   change aeval ((g : A →+* B) a) _ = 0
   rw [← map_aeval_eq_aeval_map h, h2, map_zero]
 
-theorem IsAlgebraic.of_ringHom_of_comp_eq [FunLike FRS R S] [RingHomClass FRS R S]
-    (f : FRS) (g : FAB) {a : A} (halg : IsAlgebraic S (g a))
+theorem Algebra.IsAlgebraic.ringHom_of_comp_eq [Algebra.IsAlgebraic R A]
+    (hf : Function.Injective f) (hg : Function.Surjective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.IsAlgebraic S B := by
+  refine ⟨fun b ↦ ?_⟩
+  obtain ⟨a, rfl⟩ := hg b
+  exact (Algebra.IsAlgebraic.isAlgebraic a).ringHom_of_comp_eq f g hf h
+
+theorem IsAlgebraic.of_ringHom_of_comp_eq (halg : IsAlgebraic S (g a))
     (hf : Function.Surjective f) (hg : Function.Injective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     IsAlgebraic R a := by
@@ -275,12 +286,29 @@ theorem IsAlgebraic.of_ringHom_of_comp_eq [FunLike FRS R S] [RingHomClass FRS R 
   change (g : A →+* B) _ = _
   rw [map_zero, map_aeval_eq_aeval_map h, h2]
 
-theorem isAlgebraic_ringHom_iff_of_comp_eq [EquivLike FRS R S] [RingEquivClass FRS R S]
+theorem Algebra.IsAlgebraic.of_ringHom_of_comp_eq [Algebra.IsAlgebraic S B]
+    (hf : Function.Surjective f) (hg : Function.Injective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.IsAlgebraic R A :=
+  ⟨fun a ↦ (Algebra.IsAlgebraic.isAlgebraic (g a)).of_ringHom_of_comp_eq f g hf hg h⟩
+
+end
+
+theorem isAlgebraic_ringHom_iff_of_comp_eq
+    [EquivLike FRS R S] [RingEquivClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
     (f : FRS) (g : FAB) (hg : Function.Injective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) {a : A} :
     IsAlgebraic S (g a) ↔ IsAlgebraic R a :=
   ⟨fun H ↦ H.of_ringHom_of_comp_eq f g (EquivLike.surjective f) hg h,
     fun H ↦ H.ringHom_of_comp_eq f g (EquivLike.injective f) h⟩
+
+theorem algebra_isAlgebraic_ringHom_iff_of_comp_eq
+    [EquivLike FRS R S] [RingEquivClass FRS R S] [EquivLike FAB A B] [RingEquivClass FAB A B]
+    (f : FRS) (g : FAB)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.IsAlgebraic S B ↔ Algebra.IsAlgebraic R A :=
+  ⟨fun H ↦ H.of_ringHom_of_comp_eq f g (EquivLike.surjective f) (EquivLike.injective g) h,
+    fun H ↦ H.ringHom_of_comp_eq f g (EquivLike.injective f) (EquivLike.surjective g) h⟩
 
 end RingHom
 
