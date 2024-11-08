@@ -1,10 +1,9 @@
 TODO:
+- change variable names inside of bodies when using ext
+- will generalize identity matrices of mulRow and addMulRow
 - will have to troubleshoot issues with continuous integration
-- ask if i should leave sections as is or do namespaces, on that note: should we leave   mulRow_id_mul_mat_eq_mulRow_mat as is
+- ask if i should leave sections as is or do namespaces
 - parse through all swapRow theorems and do what i did for the others
-- add docstring on theorems and lemmas
-- the ones like mulRow_inv need to be checked and if we even want to write stuff like that
-- make left and right of mulRow_mulRow_inv_cancel 
 - simplify bodies of theorems 
 - check for delimiters and normal form
 - might need to switch theorem names to pure snake_case (ask on Zulip)
