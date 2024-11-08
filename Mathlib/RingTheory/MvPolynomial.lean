@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.RingTheory.MvPolynomial.Basic
@@ -45,5 +46,13 @@ theorem rank_eq {σ : Type v} : Module.rank K (MvPolynomial σ K) = #(σ →₀ 
   rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank]
 
 @[deprecated (since := "2024-11-07")] alias rank_mvPolynomial := rank_eq
+
+theorem finrank_eq_zero [Nonempty σ] : Module.finrank K (MvPolynomial σ K) = 0 :=
+  (basisMonomials σ K).linearIndependent.finrank_eq_zero_of_infinite
+
+omit [Nontrivial K] in
+theorem finrank_eq_one [IsEmpty σ] : Module.finrank K (MvPolynomial σ K) = 1 :=
+  Module.rank_eq_one_iff_finrank_eq_one.mp <| by
+    cases subsingleton_or_nontrivial K <;> simp [rank_eq_lift]
 
 end MvPolynomial
