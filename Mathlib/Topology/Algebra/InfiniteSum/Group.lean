@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
@@ -365,3 +366,23 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
       simpa [multipliable_const_iff] using ha
 
 end TopologicalGroup
+
+section NormedField
+
+variable {α E : Type*} [NormedField E] {f : α → E} {x : E}
+
+-- lemma abs_prod [LinearOrderedCommRing R] (s : Finset ι) (f : ι → R) :
+--     |∏ x ∈ s, f x| = ∏ x ∈ s, |f x| :=
+--   map_prod absHom _ _
+
+nonrec theorem HasProd.norm (hfx : HasProd f x) : HasProd (‖f ·‖) ‖x‖ := by
+  simp only [HasProd, ← norm_prod]
+  exact hfx.norm
+
+theorem Multipliable.norm (hf : Multipliable f) : Multipliable (‖f ·‖) :=
+  let ⟨x, hx⟩ := hf; ⟨‖x‖, hx.norm⟩
+
+theorem norm_tprod (hf : Multipliable f) : ‖∏' i, f i‖ = ∏' i, ‖f i‖ :=
+  hf.hasProd.norm.tprod_eq.symm
+
+end NormedField

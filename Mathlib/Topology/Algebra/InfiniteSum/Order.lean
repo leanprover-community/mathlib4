@@ -284,6 +284,21 @@ theorem Set.Finite.of_summable_const [LinearOrderedAddCommGroup α] [Topological
 
 end LinearOrder
 
+section LinearOrderedCommRing
+
+variable [LinearOrderedCommRing α] [TopologicalSpace α] [OrderTopology α] {f : ι → α} {x : α}
+
+nonrec theorem HasProd.abs (hfx : HasProd f x) : HasProd (|f ·|) |x| := by
+  simpa only [HasProd, ← abs_prod] using hfx.abs
+
+theorem multipliable_abs (hf : Multipliable f) : Multipliable (|f ·|) :=
+  let ⟨x, hx⟩ := hf; ⟨|x|, hx.abs⟩
+
+theorem abs_tprod (hf : Multipliable f) : |∏' i, f i| = ∏' i, |f i| :=
+  hf.hasProd.abs.tprod_eq.symm
+
+end LinearOrderedCommRing
+
 theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace α] [OrderTopology α]
     {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop :=
   inv_inv f ▸ Filter.Tendsto.inv_tendsto_zero <|
