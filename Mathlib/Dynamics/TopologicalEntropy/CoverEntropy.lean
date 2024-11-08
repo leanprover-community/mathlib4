@@ -6,7 +6,6 @@ Authors: Damien Thomine, Pietro Monticone
 import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
-import Mathlib.Dynamics.TopologicalEntropy.ExpGrowth
 
 /-!
 # Topological entropy via covers
@@ -275,7 +274,7 @@ lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n :
     coverMincard T F U n = 0 ↔ F = ∅ := by
   refine Iff.intro (fun h ↦ subset_empty_iff.1 ?_) (fun F_empt ↦ by rw [F_empt, coverMincard_empty])
   have := coverMincard_finite_iff T F U n
-  rw [h, eq_true ENat.top_pos, true_iff] at this
+  rw [h, eq_true ENat.zero_lt_top, true_iff] at this
   simp only [IsDynCoverOf, Finset.mem_coe, Nat.cast_eq_zero, Finset.card_eq_zero, exists_eq_right,
     Finset.not_mem_empty, iUnion_of_empty, iUnion_empty] at this
   exact this
@@ -404,27 +403,31 @@ lemma log_coverMincard_le_add {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
 
 /-! ### Cover entropy of entourages -/
 
-open ExpGrowth Filter
+open Filter
 
 /-- The entropy of an entourage `U`, defined as the exponential rate of growth of the size
   of the smallest `(U, n)`-refined cover of `F`. Takes values in the space of extended real numbers
   `[-∞, +∞]`. This first version uses a `limsup`, and is chosen as the default definition.-/
 noncomputable def coverEntropyEntourage (T : X → X) (F : Set X) (U : Set (X × X)) :=
-  expGrowthSup fun n ↦ (coverMincard T F U n)
+  atTop.limsup fun n : ℕ ↦ log (coverMincard T F U n) / n
 
 /-- The entropy of an entourage `U`, defined as the exponential rate of growth of the size
   of the smallest `(U, n)`-refined cover of `F`. Takes values in the space of extended real numbers
   `[-∞, +∞]`. This second version uses a `liminf`, and is chosen as an alternative definition.-/
 noncomputable def coverEntropyInfEntourage (T : X → X) (F : Set X) (U : Set (X × X)) :=
-  expGrowthInf fun n ↦ (coverMincard T F U n)
+  atTop.liminf fun n : ℕ ↦ log (coverMincard T F U n) / n
 
 lemma coverEntropyInfEntourage_antitone (T : X → X) (F : Set X) :
     Antitone (fun U : Set (X × X) ↦ coverEntropyInfEntourage T F U) :=
-  fun _ _ U_V ↦ expGrowthInf_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_antitone T F n U_V)
+  fun _ _ U_V ↦ (liminf_le_liminf) <| Eventually.of_forall
+    fun n ↦ monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
+    <| log_monotone (ENat.toENNReal_mono (coverMincard_antitone T F n U_V))
 
 lemma coverEntropyEntourage_antitone (T : X → X) (F : Set X) :
     Antitone (fun U : Set (X × X) ↦ coverEntropyEntourage T F U) :=
-  fun _ _ U_V ↦ expGrowthSup_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_antitone T F n U_V)
+  fun _ _ U_V ↦ (limsup_le_limsup) <| Eventually.of_forall
+    fun n ↦ monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
+    <| log_monotone (ENat.toENNReal_mono (coverMincard_antitone T F n U_V))
 
 lemma coverEntropyInfEntourage_le_coverEntropyEntourage (T : X → X) (F : Set X) (U : Set (X × X)) :
     coverEntropyInfEntourage T F U ≤ coverEntropyEntourage T F U := liminf_le_limsup
@@ -432,8 +435,11 @@ lemma coverEntropyInfEntourage_le_coverEntropyEntourage (T : X → X) (F : Set X
 @[simp]
 lemma coverEntropyEntourage_empty {T : X → X} {U : Set (X × X)} :
     coverEntropyEntourage T ∅ U = ⊥ := by
-  simp only [coverEntropyEntourage, coverMincard_empty, ENat.toENNReal_zero]
-  exact expGrowthSup_zero
+  suffices h : ∀ᶠ n : ℕ in atTop, log (coverMincard T ∅ U n) / n = ⊥ by
+    rw [coverEntropyEntourage]
+    exact limsup_congr h ▸ limsup_const ⊥
+  · simp only [coverMincard_empty, ENat.toENNReal_zero, log_zero, eventually_atTop]
+    exact ⟨1, fun n n_pos ↦ bot_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)⟩
 
 @[simp]
 lemma coverEntropyInfEntourage_empty {T : X → X} {U : Set (X × X)} :
@@ -452,13 +458,11 @@ lemma coverEntropyEntourage_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) (U
 
 lemma coverEntropyEntourage_univ (T : X → X) {F : Set X} (h : F.Nonempty) :
     coverEntropyEntourage T F univ = 0 := by
-  simp only [coverEntropyEntourage, coverMincard_univ T h, ENat.toENNReal_one]
-  exact expGrowthSup_const one_ne_zero one_ne_top
+  simp [coverEntropyEntourage, coverMincard_univ T h]
 
 lemma coverEntropyInfEntourage_univ (T : X → X) {F : Set X} (h : F.Nonempty) :
     coverEntropyInfEntourage T F univ = 0 := by
-  simp only [coverEntropyInfEntourage, coverMincard_univ T h, ENat.toENNReal_one]
-  exact expGrowthInf_const one_ne_zero one_ne_top
+  simp [coverEntropyInfEntourage, coverMincard_univ T h]
 
 lemma coverEntropyEntourage_le_log_coverMincard_div {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
     {U : Set (X × X)} (U_symm : SymmetricRel U) {n : ℕ} (n_pos : 0 < n) :
@@ -484,23 +488,6 @@ lemma coverEntropyEntourage_le_log_coverMincard_div {T : X → X} {F : Set X} (F
     specialize this (Or.inr EReal.zero_ne_top) (Or.inr EReal.zero_ne_bot)
     exact this.trans_eq (limsup_const (log (coverMincard T F U n) / n))
   exact Tendsto.limsup_eq (EReal.tendsto_const_div_atTop_nhds_zero_nat logm_nneg logm_fin)
-
-lemma coverEntropyEntourage_le_log_coverMincard_div' {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
-    {U : Set (X × X)} (U_symm : SymmetricRel U) {n : ℕ} (n_pos : 0 < n) :
-    coverEntropyEntourage T F (U ○ U) ≤ log (coverMincard T F U n) / n := by
-  -- Deal with the edge cases: `F = ∅` or `F` has no finite cover.
-  rcases eq_or_ne (coverMincard T F U n) 0 with mincard_zero | mincard_pos
-  · rw [coverMincard_eq_zero_iff T F U n] at mincard_zero
-    simp [mincard_zero]
-  rcases eq_or_ne (coverMincard T F U n) ⊤ with mincard_top | mincard_fin
-  · rw [mincard_top, ENat.toENNReal_top, log_top,
-      top_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)]
-    exact le_top
-  -- Simplify?
-  apply (expGrowthSup_monotone (Pi.le_def.2 fun m ↦
-    ENat.toENNReal_mono ((coverMincard_le_pow F_inv U_symm n_pos) m))).trans
-  simp only [ENat.toENNReal_pow, pow_succ, ENat.toENNReal_mul, mul_comm]
-  sorry
 
 lemma IsDynCoverOf.coverEntropyEntourage_le_log_card_div {T : X → X} {F : Set X}
     (F_inv : MapsTo T F F) {U : Set (X × X)} (U_symm : SymmetricRel U) {n : ℕ} (n_pos : 0 < n)
