@@ -988,12 +988,13 @@ end Basis
 section
 
 variable (ι : Type*) [Fintype ι] [DecidableEq ι]
-variable (R : Type*) [Semiring R]
-variable (M : Type*) [AddCommMonoid M] [Module R M]
+variable (R : Type*) [CommSemiring R]
+variable (A : Type*) [Semiring A] [Algebra R A]
+variable (M : Type*) [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 /--
-Let `M` be an `R`-module. Every `R`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
-are `R`-linear maps `M → M`. In another word, we have`End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
+Let `M` be an `A`-module. Every `A`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
+are `A`-linear maps `M → M`. In another word, we have`End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
 `(f : Mⁿ → Mⁿ) ↦ (x ↦ f (0, ..., x at j-th position, ..., 0) i)ᵢⱼ` and
 `m : Matₙₓₙ(End(M)) ↦ (v ↦ ∑ⱼ mᵢⱼ(vⱼ))`.
 
@@ -1001,7 +1002,7 @@ See also `LinearMap.toMatrix'`
 -/
 @[simp]
 def endVecRingEquivMatrixEnd :
-    Module.End R (ι → M) ≃+* Matrix ι ι (Module.End R M) where
+    Module.End A (ι → M) ≃+* Matrix ι ι (Module.End A M) where
   toFun f i j :=
   { toFun := fun x ↦ f (Pi.single j x) i
     map_add' := fun x y ↦ by simp [Pi.single_add]
@@ -1023,15 +1024,6 @@ def endVecRingEquivMatrixEnd :
     rw [← Fintype.sum_apply, ← map_sum]
     exact congr_arg₂ _ (by aesop) rfl
   map_add' f g := by ext; simp
-
-end
-
-section
-
-variable (ι : Type*) [Fintype ι] [DecidableEq ι]
-variable (R : Type*) [CommSemiring R]
-variable (A : Type*) [Semiring A] [Algebra R A]
-variable (M : Type*) [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 /--
 Let `M` be an `A`-module. Every `A`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
