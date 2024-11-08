@@ -277,9 +277,18 @@ protected theorem edist_eq (x y : α) : edist (f x) (f y) = edist x y :=
 protected theorem continuous : Continuous f :=
   (IsometryClass.isometry f).continuous
 
+protected theorem lipschitz : LipschitzWith 1 f :=
+  (IsometryClass.isometry f).lipschitz
+
+protected theorem antilipschitz : AntilipschitzWith 1 f :=
+  (IsometryClass.isometry f).antilipschitz
+
 @[simp]
 theorem ediam_image (s : Set α) : EMetric.diam (f '' s) = EMetric.diam s :=
   (IsometryClass.isometry f).ediam_image s
+
+theorem ediam_range : EMetric.diam (range f) = EMetric.diam (univ : Set α) :=
+  (IsometryClass.isometry f).ediam_range
 
 instance toContinuousMapClass : ContinuousMapClass F α β where
   map_continuous := IsometryClass.continuous
@@ -300,6 +309,12 @@ protected theorem dist_eq (x y : α) : dist (f x) (f y) = dist x y :=
 
 protected theorem nndist_eq (x y : α) : nndist (f x) (f y) = nndist x y :=
   (IsometryClass.isometry f).nndist_eq x y
+
+theorem diam_image (s : Set α) : Metric.diam (f '' s) = Metric.diam s :=
+  (IsometryClass.isometry f).diam_image s
+
+theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set α) :=
+  (IsometryClass.isometry f).diam_range
 
 end PseudoMetricSpace
 
