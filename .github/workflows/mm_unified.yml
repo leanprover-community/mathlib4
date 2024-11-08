@@ -1,0 +1,93 @@
+name: Maintainer merge (comment)
+
+on:
+  push:
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  ping_zulip:
+    name: Ping maintainers on Zulip
+    #if: github.event.issue.pull_request &&
+    #    ((startsWith(github.event.comment.body, 'maintainer merge') ||
+    #    contains(toJSON(github.event.comment.body), '\nmaintainer merge')) ||
+    #    (startsWith(github.event.comment.body, 'maintainer delegate') ||
+    #    contains(toJSON(github.event.comment.body), '\nmaintainer delegate')))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check whether user is part of mathlib-reviewers team
+        uses: TheModdingInquisition/actions-team-membership@v1.0
+        with:
+          organization: 'leanprover-community'
+          team: 'mathlib-reviewers' # required. The team to check for
+          token: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # required. Personal Access Token with the `read:org` permission
+          comment: 'You seem to not be authorized' # optional. A comment to post if the user is not part of the team.
+                                                  # This feature is only applicable in an issue (or PR) context
+          exit: true # optional. If the action should exit if the user is not part of the team. Defaults to true.
+
+      - uses: actions/checkout@v4
+        #with:
+        #  ref: master
+
+      - name: Make comment
+        id: make_comment
+        run: |
+          printf 'comment<<EEE\nHello\nmaintainer merge\nsomething else\nEEE' >> "$GITHUB_OUTPUT"
+
+      - name: Determine Zulip topic
+        id: determine_topic
+        run: |
+          ./scripts/get_tlabel.sh "${PR}" >> "$GITHUB_OUTPUT"
+        env:
+          PR:  /repos/leanprover-community/mathlib4/issues/${{ github.event.issue.number }}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Form the message
+        id: merge_or_delegate
+        env:
+          BODY: ${{ steps.make_comment.outputs.comment }}
+          COMMENT: ${{ github.event.comment.body }}
+          PR_TITLE: ${{ github.event.issue.title }}
+        run: |
+          echo "comment body: '${COMMENT:-COMMENT not set}'"
+          echo "pr?: '${{ github.event.issue.pull_request }}'"
+          echo "title: '${PR_TITLE:-PR_TITLE not set}'"
+          echo "github.event_name: '${{ github.event_name }}'"
+          echo "github.ref: '${{ github.ref }}'"
+          echo "github.event.action: '${{ github.event.action }}'"
+          echo ""
+          message="$(
+            ./scripts/maintainer_merge_message.sh author:"${{ github.event.comment.user.login }}|" body:"${BODY}|" comment issueNumber:"${{ github.event.issue.number }}|" https:"${{ github.event.issue.html_url }}|" pr_title:"${PR_TITLE}"
+          )"
+          printf 'title<<EOF\n%s\nEOF' "${message}"
+          printf 'title<<EOF\n%s\nEOF' "${message}" >> "$GITHUB_OUTPUT"
+
+      #- name: Send message on Zulip
+      #  uses: zulip/github-actions-zulip/send-message@v1
+      #  with:
+      #    api-key: ${{ secrets.ZULIP_API_KEY }}
+      #    email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+      #    organization-url: 'https://leanprover.zulipchat.com'
+      #    to: 'mathlib reviewers'
+      #    type: 'stream'
+      #    topic: ${{ steps.determine_topic.outputs.topic }}
+      #    content: |
+      #      ${{ steps.merge_or_delegate.outputs.title }}
+
+      #      > ${{ github.event.issue.title }}
+
+      - name: Add comment to PR
+        uses: GrantBirki/comment@v2
+        with:
+          issue-number: 18736 # ${{ github.event.issue.number }}
+          body: |
+            🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}.
+            ${{ steps.merge_or_delegate.outputs.title }}
+
+      #- name: Add label to PR
+      #  uses: actions/github-script@v7
+      #  with:
+      #    github-token: ${{secrets.GITHUB_TOKEN}}
+      #    script: |
+      #      const { owner, repo, number: issue_number } = context.issue;
+      #      await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['maintainer-merge'] });
