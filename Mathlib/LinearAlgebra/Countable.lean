@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Finsupp.Encodable
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Data.Set.Countable
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Countable modules

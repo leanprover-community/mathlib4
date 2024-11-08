@@ -3204,8 +3204,14 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FiniteSpan
-import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.LinearAlgebra.Finsupp.Defs
+import Mathlib.LinearAlgebra.Finsupp.LSum
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.LinearAlgebra.Finsupp.Pi
+import Mathlib.LinearAlgebra.Finsupp.Span
+import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.LinearAlgebra.Finsupp.Supported
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeAlgebra
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Determinant

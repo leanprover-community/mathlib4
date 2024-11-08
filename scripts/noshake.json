@@ -328,6 +328,7 @@
   "Mathlib.RingTheory.Finiteness":
   ["Mathlib.Algebra.Algebra.RestrictScalars", "Mathlib.Tactic.Algebraize"],
   "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
+  "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.RepresentationTheory.FdRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.RepresentationTheory.FDRep":
@@ -350,6 +351,7 @@
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Logic.Equiv.Defs": ["Mathlib.Data.Bool.Basic"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
+  "Mathlib.LinearAlgebra.DFinsupp": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.LinearAlgebra.Basic": ["Mathlib.Algebra.BigOperators.Group.Finset"],
   "Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional": ["Mathlib.Init.Core"],
   "Mathlib.LinearAlgebra.AffineSpace.Basic": ["Mathlib.Algebra.AddTorsor"],
@@ -425,6 +427,8 @@
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
   "Mathlib.Algebra.Order.CauSeq.Basic": ["Mathlib.Data.Setoid.Basic"],
+  "Mathlib.Algebra.MonoidAlgebra.Basic":
+  ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.Algebra.Module.LinearMap.Star":
   ["Mathlib.Algebra.Module.Equiv",
    "Mathlib.Algebra.Module.Equiv.Defs",
