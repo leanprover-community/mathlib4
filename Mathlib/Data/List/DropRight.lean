@@ -82,17 +82,23 @@ theorem rtake_concat_succ (x : α) : rtake (l ++ [x]) (n + 1) = rtake l n ++ [x]
 
 @[simp]
 lemma length_rtake {l : List α} {t : Nat} (ht : t ≤ l.length) : (l.rtake t).length = t := by
-  unfold List.rtake ; rw [List.length_drop] ; apply Nat.sub_sub_self ht
+  unfold List.rtake
+  rw [List.length_drop]
+  apply Nat.sub_sub_self ht
 
 @[simp]
 lemma rtake_cons_eq_self_of_le_length {l : List α} {x : α} {t : Nat} (ht : t ≤ l.length) :
     ((x :: l).rtake t) = (l.rtake t) := by
-  unfold List.rtake ; rw [List.length_cons, Nat.succ_sub ht] ; rfl
+  unfold List.rtake
+  rw [List.length_cons, Nat.succ_sub ht]
+  rfl
 
 @[simp]
 lemma rtake_length_le {α : Type _} {n : ℕ} {l : List α} (h : List.length l ≤ n) :
     l.rtake n  = l := by
-  unfold List.rtake ; rw [Nat.sub_eq_zero_of_le h]  ; apply List.drop_zero
+  unfold List.rtake
+  rw [Nat.sub_eq_zero_of_le h]
+  apply List.drop_zero
 
 
 /-- Drop elements from the tail end of a list that satisfy `p : α → Bool`.
