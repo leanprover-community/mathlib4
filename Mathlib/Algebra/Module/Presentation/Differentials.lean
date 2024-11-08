@@ -260,7 +260,7 @@ noncomputable def differentialsSolution :
 
 @[nolint unusedArguments]
 def algebraize (_ : Presentation R S)
-  (N : Type w') [AddCommGroup N] [Module S N] := N
+    (N : Type w') [AddCommGroup N] [Module S N] := N
 
 section
 
