@@ -257,6 +257,7 @@ lemma lTensor_smul (r : R) (f : N →ₗ[R] Q) : lTensor A M (r • f) = r • l
   map_smul_right _ _ _
 
 variable (R A M N Q) in
+/-- Heterobasic version of `LinearMap.lTensorHom`. -/
 def lTensorHom : (N →ₗ[R] Q) →ₗ[R] M ⊗[R] N →ₗ[A] M ⊗[R] Q where
   toFun f := lTensor A M f
   map_add' := lTensor_add
