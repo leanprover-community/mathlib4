@@ -71,23 +71,34 @@ theorem map_natCast_nonneg {α : Type*} (n : ℕ∞) [AddMonoidWithOne α] [Part
   · rw [← ENat.some_eq_coe, WithTop.map_coe]
     simp
 
-@[simp]
-theorem map_natCast_eq_zero_iff {α : Type*} (n : ℕ∞) [AddMonoidWithOne α] [CharZero α] :
-    WithTop.map (Nat.cast : ℕ → α) n = 0 ↔ n = 0 := by
-  cases n
-  · rw [WithTop.map_top]
-    simp
-  · rw [← ENat.some_eq_coe, WithTop.map_coe]
-    simp
+theorem map_eq_some_iff {α β : Type*} {f : α → β} {y : β} {v : WithTop α} :
+    WithTop.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := by
+  cases v <;> simp
+
+theorem some_eq_map_iff {α β : Type*} {f : α → β} {y : β} {v : WithTop α} :
+    .some y = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
+  cases v <;> simp [eq_comm]
+
+theorem map_eq_zero_iff {α β : Type*} {f : α → β} {v : WithTop α} [Zero β] :
+    WithTop.map f v = 0 ↔ ∃ x, v = .some x ∧ f x = 0 := map_eq_some_iff
+
+theorem zero_eq_map_iff {α β : Type*} {f : α → β} {v : WithTop α} [Zero β] :
+    0 = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = 0 := some_eq_map_iff
+
+theorem map_eq_one_iff {α β : Type*} {f : α → β} {v : WithTop α} [One β] :
+    WithTop.map f v = 1 ↔ ∃ x, v = .some x ∧ f x = 1 := map_eq_some_iff
+
+theorem map_eq_natCast_iff {α β : Type*} {f : α → β} {n : ℕ} {v : WithTop α} [AddMonoidWithOne β] :
+    WithTop.map f v = n ↔ ∃ x, v = .some x ∧ f x = n := map_eq_some_iff
 
 @[simp]
-theorem zero_eq_map_natCast_iff {α : Type*} (n : ℕ∞) [AddMonoidWithOne α] [CharZero α] :
-    0 = WithTop.map (Nat.cast : ℕ → α) n ↔ 0 = n :=
-  (Eq.comm.trans (map_natCast_eq_zero_iff n)).trans Eq.comm
+lemma test : WithTop ℕ = ℕ∞ := rfl
 
 lemma adicValuation_coe_pos_iff (a : R) :
     0 < adicValuation p (algebraMap R K a) ↔ p ∣ a := by
-  simp [lt_iff_le_and_ne, emultiplicity_eq_zero, eq_comm]
+  simp only [adicValuation_coe, lt_iff_le_and_ne, map_natCast_nonneg, ne_eq, zero_eq_map_iff, test,
+    ENat.some_eq_coe, Nat.cast_eq_zero, exists_eq_right, CharP.cast_eq_zero, emultiplicity_eq_zero,
+    not_not, true_and]
 
 open IsFractionRing
 
