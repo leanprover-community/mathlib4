@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.CompleteLattice
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 /-!
 # Theory of quantales
@@ -212,7 +210,6 @@ theorem leftResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z := by
   constructor
   · intro h1
     apply le_trans (mul_le_mul_right' h1 _)
-    apply le_trans (mul_le_mul_right' h1 _)
     simp_all only [sSup_mul_eq_iSup_mul, Set.mem_setOf_eq, iSup_le_iff, implies_true]
   · intro h1
     apply le_sSup
@@ -223,7 +220,6 @@ theorem rightResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z := by
   rw [rightResiduation];
   constructor
   · intro h1
-    apply le_trans (mul_le_mul_left' h1 _)
     apply le_trans (mul_le_mul_left' h1 _)
     simp_all only [mul_sSup_eq_iSup_mul, Set.mem_setOf_eq, iSup_le_iff, implies_true]
   · intro h1
