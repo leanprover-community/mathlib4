@@ -472,7 +472,7 @@ variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S]
 over `S` can be viewed as a non-unital algebra homomorphism over `R`. -/
 def restrictScalars (f : A →ₙₐ[S] B) : A →ₙₐ[R] B :=
   { (f : A →ₙ+* B) with
-    map_smul' := fun r x ↦ by have := map_smul f (r • 1) x; simpa }
+    map_smul' := fun r x ↦ by have := map_smul f (r • 1 : S) x; simpa }
 
 @[simp]
 lemma restrictScalars_apply (f : A →ₙₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
