@@ -984,3 +984,61 @@ lemma end_apply_apply (ij : ι × ι) (k : ι) : (b.end ij) (b k) = if ij.2 = k 
   linearMap_apply_apply b b ij k
 
 end Basis
+
+section
+
+variable (ι : Type*) [Fintype ι] [DecidableEq ι]
+variable (R : Type*) [Semiring R]
+variable (M : Type*) [AddCommMonoid M] [Module R M]
+
+@[simps]
+def endVecEquivMatrixEnd :
+    Module.End R (ι → M) ≃ Matrix ι ι (Module.End R M) where
+  toFun f i j :=
+  { toFun := fun x ↦ f (Pi.single j x) i
+    map_add' := fun x y ↦ by simp [Pi.single_add]
+    map_smul' := fun x y ↦ by simp [Pi.single_smul] }
+  invFun m :=
+  { toFun := fun x i ↦ ∑ j, m i j (x j)
+    map_add' := by intros; ext; simp [Finset.sum_add_distrib]
+    map_smul' := by intros; ext; simp [Finset.smul_sum] }
+  left_inv f := by
+    ext i x j
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, coe_comp, coe_single, Function.comp_apply]
+    rw [← Fintype.sum_apply, ← map_sum]
+    exact congr_arg₂ _ (by aesop) rfl
+  right_inv m := by ext; simp [Pi.single_apply, apply_ite]
+
+@[simp]
+def endVecRingEquivMatrixEnd :
+    Module.End R (ι → M) ≃+* Matrix ι ι (Module.End R M) where
+  __ := endVecEquivMatrixEnd ι R M
+  map_mul' f g := by
+    ext
+    simp only [Equiv.toFun_as_coe, endVecEquivMatrixEnd_apply_apply, LinearMap.mul_apply,
+      Matrix.mul_apply, coeFn_sum, Finset.sum_apply]
+    rw [← Fintype.sum_apply, ← map_sum]
+    exact congr_arg₂ _ (by aesop) rfl
+  map_add' f g := by ext; simp
+
+end
+
+section
+
+variable (ι : Type*) [Fintype ι] [DecidableEq ι]
+variable (R : Type*) [CommSemiring R]
+variable (M : Type*) [AddCommMonoid M] [Module R M]
+
+@[simps! apply_apply symm_apply_apply]
+def endVecAlgEquivMatrixEnd :
+    Module.End R (ι → M) ≃ₐ[R] Matrix ι ι (Module.End R M) where
+  __ := endVecRingEquivMatrixEnd ι R M
+  commutes' r := by
+    ext
+    simp only [endVecRingEquivMatrixEnd, RingEquiv.toEquiv_eq_coe, Module.algebraMap_end_eq_smul_id,
+      Equiv.toFun_as_coe, EquivLike.coe_coe, RingEquiv.coe_mk, endVecEquivMatrixEnd_apply_apply,
+      LinearMap.smul_apply, id_coe, id_eq, Pi.smul_apply, Pi.single_apply, smul_ite, smul_zero,
+      algebraMap_matrix_apply]
+    split_ifs <;> rfl
+
+end
