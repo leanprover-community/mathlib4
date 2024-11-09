@@ -634,7 +634,7 @@ theorem of_apply : (of f h0 h1 hadd hmul) r = f r := rfl
 def toValuation : AddValuation R Γ₀ ≃ Valuation R (Multiplicative Γ₀ᵒᵈ) :=
   Equiv.refl _
 
-@[deprecated (since := "2024-11-07")]
+@[deprecated (since := "2024-11-09")]
 alias valuation := toValuation
 
 /-- The `AddValuation` associated to a `Valuation`.
@@ -660,7 +660,7 @@ theorem toValuation_apply (r : R) :
     toValuation v r = Multiplicative.ofAdd (OrderDual.toDual (v r)) :=
   rfl
 
-@[deprecated (since := "2024-11-08")]
+@[deprecated (since := "2024-11-09")]
 alias valuation_apply := toValuation_apply
 
 @[simp]
