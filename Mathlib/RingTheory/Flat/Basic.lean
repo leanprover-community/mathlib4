@@ -260,10 +260,14 @@ theorem rTensor_preserves_injective_linearMap {N' : Type*} [AddCommGroup N'] [Mo
 @[deprecated (since := "2024-03-29")]
 alias preserves_injective_linearMap := rTensor_preserves_injective_linearMap
 
-instance [Flat R M] [Flat R N] : Flat R (M ⊗[R] N) :=
+instance {S} [CommRing S] [Algebra R S] [Module S M] [IsScalarTower R S M] [Flat S M] [Flat R N] :
+    Flat S (M ⊗[R] N) :=
   (iff_rTensor_injective' _ _).mpr fun I ↦ by
-    simpa [rTensor_tensor] using rTensor_preserves_injective_linearMap _
+    simpa [AlgebraTensorModule.rTensor_tensor] using
+      rTensor_preserves_injective_linearMap (.restrictScalars R <| rTensor M I.subtype)
       (rTensor_preserves_injective_linearMap _ I.injective_subtype)
+
+example [Flat R M] [Flat R N] : Flat R (M ⊗[R] N) := inferInstance
 
 /--
 If `M` is a flat module, then `𝟙 M ⊗ f` is injective for all injective linear maps `f`.
