@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
 import Mathlib.Analysis.Normed.Group.Uniform
+import Mathlib.Analysis.Normed.MulAction
 
 /-!
 # The null subgroup in a seminormed commutative group
@@ -70,6 +71,17 @@ theorem quotient_norm_eq_zero_iff (m : M) :
 theorem mk_eq_zero_iff (m : M) : mk m = 0 ↔ ‖m‖ = 0 := by
   rw [← quotient_norm_eq_zero_iff]
   exact Iff.symm norm_eq_zero
+
+variable (𝕜 E : Type*)
+variable [SeminormedAddCommGroup E] [NormedDivisionRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+
+/-- The null space with respect to the norm. -/
+def nullSubmodule : Submodule 𝕜 E where
+  __ := nullSubgroup E
+  smul_mem' c x (hx : ‖x‖ = 0) := by simp [norm_smul, hx]
+
+@[simp]
+lemma mem_nullSubmodule_iff {x : E} : x ∈ nullSubmodule 𝕜 E ↔ ‖x‖ = 0 := Iff.rfl
 
 end SeparationQuotient
 
