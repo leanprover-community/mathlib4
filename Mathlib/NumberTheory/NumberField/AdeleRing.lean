@@ -70,7 +70,7 @@ instance : Algebra K (InfiniteAdeleRing K) := Pi.algebra _ _
 
 @[simp]
 theorem algebraMap_apply (x : K) (v : InfinitePlace K) :
-  algebraMap K (InfiniteAdeleRing K) x v = x := rfl
+    algebraMap K (InfiniteAdeleRing K) x v = x := rfl
 
 /-- The infinite adele ring is locally compact. -/
 instance locallyCompactSpace [NumberField K] : LocallyCompactSpace (InfiniteAdeleRing K) :=
