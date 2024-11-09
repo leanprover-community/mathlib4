@@ -77,33 +77,19 @@ open SeparationQuotient LinearMap
 variable (E) in
 /-- The null space with respect to the norm. -/
 def nullSubmodule : Submodule 𝕜 E where
-  __ := nullSubgroup
+  __ := nullSubgroup E
   smul_mem' c x (hx : ‖x‖ = 0) := by simp [norm_smul, hx]
 
 @[simp]
 lemma mem_nullSubmodule_iff {x : E} : x ∈ nullSubmodule 𝕜 E ↔ ‖x‖ = 0 := Iff.rfl
 
-lemma inner_eq_zero_of_left {x : E} (y : E) (h : ‖x‖ = 0) :
-    ⟪x, y⟫_𝕜 = 0 := by
-  rw [← norm_eq_zero]
-  refine le_antisymm ?_ (by positivity)
-  exact norm_inner_le_norm _ _ |>.trans <| by simp [h]
-
-lemma inner_eq_zero_of_right (x : E) {y : E} (h : ‖y‖ = 0) : ⟪x, y⟫_𝕜 = 0 := by
-  rw [inner_eq_zero_symm, inner_eq_zero_of_left _ _ h]
-
-lemma norm_sub_eq_norm (x y : E) (h : ‖y‖ = 0) : ‖x - y‖ = ‖x‖ := by
-  apply le_antisymm ?_ ?_
-  · simpa [h] using norm_sub_le x y
-  · simpa [h] using norm_sub_norm_le x y
-
 /-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
 lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) :=
-  fun _ ↦ inner_eq_zero_of_right 𝕜 x
+  fun _ hx ↦ inner_eq_zero_of_right x ((mem_nullSubmodule_iff 𝕜).mp hx)
 
 /-- The kernel of the map `x ↦ ⟪·, x⟫` includes the null space. -/
 lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E) :=
-  fun _ hx ↦ ContinuousLinearMap.ext <| fun y ↦ inner_eq_zero_of_left 𝕜 y hx
+  fun _ hx ↦ ContinuousLinearMap.ext <| fun y ↦ inner_eq_zero_of_left y hx
 
 lemma isClosed_nullSubmodule : IsClosed (nullSubmodule 𝕜 E : Set E) := isClosed_nullSubgroup
 

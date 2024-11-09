@@ -1144,6 +1144,14 @@ theorem abs_real_inner_le_norm (x y : F) : |⟪x, y⟫_ℝ| ≤ ‖x‖ * ‖y�
 theorem real_inner_le_norm (x y : F) : ⟪x, y⟫_ℝ ≤ ‖x‖ * ‖y‖ :=
   le_trans (le_abs_self _) (abs_real_inner_le_norm _ _)
 
+lemma inner_eq_zero_of_left {x : E} (y : E) (h : ‖x‖ = 0) : ⟪x, y⟫_𝕜 = 0 := by
+  rw [← norm_eq_zero]
+  refine le_antisymm ?_ (by positivity)
+  exact norm_inner_le_norm _ _ |>.trans <| by simp [h]
+
+lemma inner_eq_zero_of_right (x : E) {y : E} (h : ‖y‖ = 0) : ⟪x, y⟫_𝕜 = 0 := by
+  rw [inner_eq_zero_symm, inner_eq_zero_of_left _ h]
+
 variable (𝕜)
 
 include 𝕜 in
