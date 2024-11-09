@@ -223,8 +223,8 @@ theorem finiteType_is_local : PropertyIsLocal @FiniteType :=
 theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType :=
   RingHom.finiteType_is_local.respectsIso
 
-theorem finiteType_stableUnderBaseChange : StableUnderBaseChange @FiniteType := by
-  apply StableUnderBaseChange.mk
+theorem finiteType_isStableUnderBaseChange : IsStableUnderBaseChange @FiniteType := by
+  apply IsStableUnderBaseChange.mk
   · exact finiteType_respectsIso
   · introv h
     replace h : Algebra.FiniteType R T := by
