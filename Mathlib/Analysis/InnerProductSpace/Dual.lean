@@ -96,7 +96,7 @@ lemma inner_eq_zero_of_right (x : E) {y : E} (h : ‖y‖ = 0) : ⟪x, y⟫_𝕜
 lemma norm_sub_eq_norm (x y : E) (h : ‖y‖ = 0) : ‖x - y‖ = ‖x‖ := by
   apply le_antisymm ?_ ?_
   · simpa [h] using norm_sub_le x y
-  · simpa [h] using norm_add_le (x - y) y
+  · simpa [h] using norm_sub_norm_le x y
 
 /-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
 lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) :=
