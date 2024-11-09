@@ -96,19 +96,52 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ * $c₂)
     | .proof rel₁ p₁, .const c₂ =>
-      let (rel, n) := rel₁.mulRelConstData
-      .proof rel <$> ``($(mkIdent n) $p₁ $c₂)
+      match rel₁ with
+      | eq => .proof eq <$> ``(mul_eq_const $p₁ $c₂)
+      | le =>
+        let e₂ ← withSynthesizeLight <| Term.elabTerm c₂ ty
+        let hc₂ ← Meta.Positivity.proveNonneg e₂
+        .proof le <$> ``(mul_le_const $p₁ $(← hc₂.toSyntax))
+      | _ =>
+        let e₂ ← withSynthesizeLight <| Term.elabTerm c₂ ty
+        let (strict, hc₂) ← Meta.Positivity.bestResult e₂
+        if strict then
+          .proof lt <$> ``(mul_lt_const $p₁ $(← hc₂.toSyntax))
+        else
+          .proof le <$> ``(mul_lt_const_weak $p₁ $(← hc₂.toSyntax))
     | .const c₁, .proof rel₂ p₂ =>
-      let (rel, n) := rel₂.mulConstRelData
-      .proof rel <$> ``($(mkIdent n) $p₂ $c₁)
+      match rel₂ with
+      | eq => .proof eq <$> ``(mul_const_eq $p₂ $c₁)
+      | le =>
+        let e₁ ← withSynthesizeLight <| Term.elabTerm c₁ ty
+        let hc₁ ← Meta.Positivity.proveNonneg e₁
+        .proof le <$> ``(mul_const_le $p₂ $(← hc₁.toSyntax))
+      | _ =>
+        let e₁ ← withSynthesizeLight <| Term.elabTerm c₁ ty
+        let (strict, hc₁) ← Meta.Positivity.bestResult e₁
+        if strict then
+          .proof lt <$> ``(mul_const_lt $p₂ $(← hc₁.toSyntax))
+        else
+          .proof le <$> ``(mul_const_lt_weak $p₂ $(← hc₁.toSyntax))
     | .proof _ _, .proof _ _ =>
       throwErrorAt tk "'linear_combination' supports only linear operations"
   | `($e₁ /%$tk $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ / $c₂)
     | .proof rel₁ p₁, .const c₂ =>
-      let (rel, n) := rel₁.divRelConstData
-      .proof rel <$> ``($(mkIdent n) $p₁ $c₂)
+      match rel₁ with
+      | eq => .proof eq <$> ``(div_eq_const $p₁ $c₂)
+      | le =>
+        let e₂ ← withSynthesizeLight <| Term.elabTerm c₂ ty
+        let hc₂ ← Meta.Positivity.proveNonneg e₂
+        .proof le <$> ``(div_le_const $p₁ $(← hc₂.toSyntax))
+      | _ =>
+        let e₂ ← withSynthesizeLight <| Term.elabTerm c₂ ty
+        let (strict, hc₂) ← Meta.Positivity.bestResult e₂
+        if strict then
+          .proof lt <$> ``(div_lt_const $p₁ $(← hc₂.toSyntax))
+        else
+          .proof le <$> ``(div_lt_const_weak $p₁ $(← hc₂.toSyntax))
     | _, .proof _ _ => throwErrorAt tk "'linear_combination' supports only linear operations"
   | e =>
     -- We have the expected type from the goal, so we can fully synthesize this leaf node.

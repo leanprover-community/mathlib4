@@ -43,31 +43,29 @@ theorem add_eq_lt [OrderedCancelAddCommMonoid α] {a₁ b₁ a₂ b₂ : α}
 
 theorem mul_eq_const [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
 
-theorem mul_le_const [OrderedSemiring α] (p : b ≤ c) (a : α) (ha : 0 ≤ a := by positivity) :
+theorem mul_le_const [OrderedSemiring α] (p : b ≤ c) {a : α} (ha : 0 ≤ a) :
     b * a ≤ c * a :=
   mul_le_mul_of_nonneg_right p ha
 
-theorem mul_lt_const [StrictOrderedSemiring α] (p : b < c) (a : α) (ha : 0 < a := by positivity) :
+theorem mul_lt_const [StrictOrderedSemiring α] (p : b < c) {a : α} (ha : 0 < a) :
     b * a < c * a :=
   mul_lt_mul_of_pos_right p ha
 
--- FIXME allow for this variant
-theorem mul_lt_const_weak [OrderedSemiring α] (p : b < c) (a : α) (ha : 0 ≤ a := by positivity) :
+theorem mul_lt_const_weak [OrderedSemiring α] (p : b < c) {a : α} (ha : 0 ≤ a) :
     b * a ≤ c * a :=
   mul_le_mul_of_nonneg_right p.le ha
 
 theorem mul_const_eq [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
 
-theorem mul_const_le [OrderedSemiring α] (p : b ≤ c) (a : α) (ha : 0 ≤ a := by positivity) :
+theorem mul_const_le [OrderedSemiring α] (p : b ≤ c) {a : α} (ha : 0 ≤ a) :
     a * b ≤ a * c :=
   mul_le_mul_of_nonneg_left p ha
 
-theorem mul_const_lt [StrictOrderedSemiring α] (p : b < c) (a : α) (ha : 0 < a := by positivity) :
+theorem mul_const_lt [StrictOrderedSemiring α] (p : b < c) {a : α} (ha : 0 < a) :
     a * b < a * c :=
   mul_lt_mul_of_pos_left p ha
 
--- FIXME allow for this variant
-theorem mul_const_lt_weak [OrderedSemiring α] (p : b < c) (a : α) (ha : 0 ≤ a := by positivity) :
+theorem mul_const_lt_weak [OrderedSemiring α] (p : b < c) {a : α} (ha : 0 ≤ a) :
     a * b ≤ a * c :=
   mul_le_mul_of_nonneg_left p.le ha
 
@@ -75,17 +73,14 @@ theorem mul_const_lt_weak [OrderedSemiring α] (p : b < c) (a : α) (ha : 0 ≤ 
 
 theorem div_eq_const [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
 
-theorem div_le_const [LinearOrderedSemifield α] (p : b ≤ c) (a : α)
-    (ha : 0 ≤ a := by positivity) : b / a ≤ c / a :=
+theorem div_le_const [LinearOrderedSemifield α] (p : b ≤ c) {a : α} (ha : 0 ≤ a) : b / a ≤ c / a :=
   div_le_div_of_nonneg_right p ha
 
-theorem div_lt_const [LinearOrderedSemifield α] (p : b < c) (a : α)
-    (ha : 0 < a := by positivity) : b / a < c / a :=
+theorem div_lt_const [LinearOrderedSemifield α] (p : b < c) {a : α} (ha : 0 < a) : b / a < c / a :=
   div_lt_div_of_pos_right p ha
 
--- FIXME allow for this variant
-theorem div_lt_const_weak [LinearOrderedSemifield α] (p : b < c) (a : α)
-    (ha : 0 ≤ a := by positivity) : b / a ≤ c / a :=
+theorem div_lt_const_weak [LinearOrderedSemifield α] (p : b < c) {a : α} (ha : 0 ≤ a) :
+    b / a ≤ c / a :=
   div_le_div_of_nonneg_right p.le ha
 
 /-! ### Lemmas constructing the reduction of a goal to a specified built-up hypothesis -/
@@ -155,27 +150,6 @@ def addRelRelData : Ineq → Ineq → Ineq × Name
   | lt, eq => (lt, ``add_lt_eq)
   | lt, le => (lt, ``add_lt_add_of_lt_of_le)
   | lt, lt => (lt, ``add_lt_add)
-
-/-- Given an (in)equality, look up the lemma to left-multiply it by a constant and the relation in
-the result. -/
-def mulConstRelData : Ineq → Ineq × Name
-  | eq => (eq, ``mul_const_eq)
-  | le => (le, ``mul_const_le)
-  | lt => (lt, ``mul_const_lt)
-
-/-- Given an (in)equality, look up the lemma to right-multiply it by a constant and the relation in
-the result. -/
-def mulRelConstData : Ineq → Ineq × Name
-  | eq => (eq, ``mul_eq_const)
-  | le => (le, ``mul_le_const)
-  | lt => (lt, ``mul_lt_const)
-
-/-- Given an (in)equality, look up the lemma to divide it by a constant and the relation in the
-result. -/
-def divRelConstData : Ineq → Ineq × Name
-  | eq => (eq, ``div_eq_const)
-  | le => (le, ``div_le_const)
-  | lt => (lt, ``div_lt_const)
 
 /-- Given two (in)equalities `P` and `Q`, look up the lemma to deduce `Q` from `P`, and the relation
 appearing in the side condition produced by this lemma. -/

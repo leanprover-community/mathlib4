@@ -382,8 +382,12 @@ example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≥ 0) : a ≤ b := by linear_combina
 
 /-! ### Nonlinear inequalities -/
 
--- FIXME should permit writing just `hb`, not `hb.le`
-example {a b : ℝ} (ha : 0 ≤ a) (hb : b < 1) : a * b ≤ a := by linear_combination a * hb.le
+example {a b : ℝ} (ha : 0 ≤ a) (hb : b < 1) : a * b ≤ a := by linear_combination a * hb
+example {a b : ℝ} (ha : 0 ≤ a) (hb : b < 1) : a * b ≤ a := by linear_combination hb * a
+
+/-- error: could not establish the nonnegativity of a -/
+#guard_msgs in
+example {a b : ℝ} (hb : b < 1) : a * b ≤ a := by linear_combination a * hb
 
 example {u v x y A B : ℝ} (_ : 0 ≤ u) (_ : 0 ≤ v) (h2 : A ≤ 1) (h3 : 1 ≤ B) (h4 : x ≤ B)
     (h5 : y ≤ B) (h8 : u < A) (h9 : v < A) :
