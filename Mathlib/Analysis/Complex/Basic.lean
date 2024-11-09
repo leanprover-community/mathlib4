@@ -250,8 +250,10 @@ def reCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 
-lemma uniformlyContinous_re : UniformContinuous re :=
+lemma uniformlyContinuous_re : UniformContinuous re :=
   reCLM.uniformContinuous
+
+@[deprecated (since := "2024-11-04")] alias uniformlyContinous_re := uniformlyContinuous_re
 
 @[simp]
 theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
@@ -269,8 +271,10 @@ def imCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 
-lemma uniformlyContinous_im : UniformContinuous im :=
+lemma uniformlyContinuous_im : UniformContinuous im :=
   imCLM.uniformContinuous
+
+@[deprecated (since := "2024-11-04")] alias uniformlyContinous_im := uniformlyContinuous_im
 
 @[simp]
 theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
@@ -363,7 +367,7 @@ theorem isUniformEmbedding_ofReal : IsUniformEmbedding ((↑) : ℝ → ℂ) :=
 
 theorem _root_.Filter.tendsto_ofReal_iff {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ} :
     Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) ↔ Tendsto f l (𝓝 x) :=
-  isUniformEmbedding_ofReal.toIsClosedEmbedding.tendsto_nhds_iff.symm
+  isUniformEmbedding_ofReal.isClosedEmbedding.tendsto_nhds_iff.symm
 
 lemma _root_.Filter.Tendsto.ofReal {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ}
     (hf : Tendsto f l (𝓝 x)) : Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) :=
