@@ -319,6 +319,7 @@ lemma tensorKaehlerQuotKerSqEquiv_symm_tmul_D (s t) :
   apply (tensorKaehlerQuotKerSqEquiv R P S).injective
   simp
 
+set_option maxHeartbeats 250000 in
 /--
 Given a surjective algebra homomorphism `f : P →ₐ[R] S` with kernel `I`,
 there is a one-to-one correspondence between `P`-linear retractions of `I/I² →ₗ[P] S ⊗[P] Ω[P/R]`
