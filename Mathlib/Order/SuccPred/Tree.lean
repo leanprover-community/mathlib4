@@ -286,7 +286,7 @@ instance {α : Type*} (r : α → α → Prop) [IsTrans α r] :
   trans _ _ _ := fun ⟨ab, ⟨hab, hab2⟩⟩ ⟨bc, ⟨hbc, hbc2⟩⟩ ↦
     ⟨bc.comp ab, hbc.comp hab, fun _ ↦ Trans.trans (hab2 _) (hbc2 _)⟩
 
-lemma RootedTree.homeomorphism_of_subtree {a b : RootedTree} [DecidableEq b.α] {x : b}
+lemma RootedTree.Homeomorphism.of_subtree {a b : RootedTree} [DecidableEq b.α] {x : b}
     (h : a.Homeomorphism (b.subtree x)) : a.Homeomorphism b := by
   obtain ⟨f, hf⟩ := h
   use InfHom.comp (InfHom.subtypeVal (fun _ _ ↦ le_inf)) f
@@ -294,7 +294,7 @@ lemma RootedTree.homeomorphism_of_subtree {a b : RootedTree} [DecidableEq b.α] 
   apply Function.Injective.comp _ hf
   exact Subtype.val_injective
 
-lemma LabeledTree.homeomorphism_of_subtree {α β : Type*} (r : α → β → Prop) {a : LabeledTree α}
+lemma LabeledTree.Homeomorphism.of_subtree {α β : Type*} (r : α → β → Prop) {a : LabeledTree α}
     {b : LabeledTree β} [DecidableEq b] {x : b.1}
     (h : a.Homeomorphism r (RootedTree.subtree b x)) : a.Homeomorphism r b := by
   obtain ⟨f, hf⟩ := h
