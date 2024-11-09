@@ -298,7 +298,7 @@ theorem hsum_orderTop {s : SummableFamily Γ R α} {a : α}
       simp only [coeff_toFun, Finsupp.coe_zero, Pi.zero_apply]
       refine coeff_eq_zero_of_lt_orderTop <| lt_of_lt_of_le (WithTop.coe_lt_coe.mpr hg') ?_
       rw [← hg]
-      by_cases hc : c = a ; · rw [hc]
+      by_cases hc : c = a; · rw [hc]
       rw [← @Ne.eq_def] at hc
       exact le_of_lt <| ha c hc
     simp only [orderTop]
