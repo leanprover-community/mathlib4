@@ -171,7 +171,7 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
 @[gcongr] lemma height_strictMono {x y : α} (hxy : x < y) (hfin : height x < ⊤) :
     height x < height y := by
   suffices height x + 1 ≤ height y by
-    have hnetop : height x ≠ ⊤ := ne_top_of_lt (lt_of_le_of_lt (height_mono (le_of_lt hxy)) hfin)
+    have hnetop : height x ≠ ⊤ := ne_top_of_lt hfin
     rw [← ENat.add_one_le_iff hnetop]
     assumption
   rw [height_add_const]
