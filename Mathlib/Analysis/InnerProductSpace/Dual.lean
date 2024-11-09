@@ -74,8 +74,7 @@ section NullSubmodule
 
 open SeparationQuotient LinearMap
 
-variable (E)
-
+variable (E) in
 /-- The null space with respect to the norm. -/
 def nullSubmodule : Submodule 𝕜 E where
   __ := nullSubgroup
