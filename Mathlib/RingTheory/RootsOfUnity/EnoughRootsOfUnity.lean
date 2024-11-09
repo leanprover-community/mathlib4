@@ -82,7 +82,7 @@ section cyclic
 
 /-- The group of group homomorphims from a finite cyclic group `G` of order `n` into the
 group of units of a ring `M` with all roots of unity is isomorphic to `G` -/
-lemma monoidHom_equiv_self (G M : Type*) [CommGroup G] [Finite G]
+lemma IsCyclic.monoidHom_equiv_self (G M : Type*) [CommGroup G] [Finite G]
     [IsCyclic G] [CommMonoid M] [HasEnoughRootsOfUnity M (Nat.card G)] :
     Nonempty ((G →* Mˣ) ≃* G) := by
   have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
