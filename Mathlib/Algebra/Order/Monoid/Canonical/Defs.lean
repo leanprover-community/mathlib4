@@ -197,11 +197,17 @@ end NeZero
 class CanonicallyLinearOrderedAddCommMonoid (α : Type*)
   extends CanonicallyOrderedAddCommMonoid α, LinearOrderedAddCommMonoid α
 
+attribute [instance 0] CanonicallyLinearOrderedAddCommMonoid.toMin
+attribute [instance 0] CanonicallyLinearOrderedAddCommMonoid.toMax
+
 /-- A canonically linear-ordered monoid is a canonically ordered monoid
     whose ordering is a linear order. -/
 @[to_additive]
 class CanonicallyLinearOrderedCommMonoid (α : Type*)
   extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
+
+attribute [instance 0] CanonicallyLinearOrderedCommMonoid.toMin
+attribute [instance 0] CanonicallyLinearOrderedCommMonoid.toMax
 
 attribute [to_additive existing] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
 

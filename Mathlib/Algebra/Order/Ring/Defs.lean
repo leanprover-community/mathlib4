@@ -180,14 +180,23 @@ addition is monotone and multiplication by a positive number is strictly monoton
 class LinearOrderedSemiring (α : Type u) extends StrictOrderedSemiring α,
   LinearOrderedAddCommMonoid α
 
+attribute [instance 0] LinearOrderedSemiring.toMin
+attribute [instance 0] LinearOrderedSemiring.toMax
+
 /-- A `LinearOrderedCommSemiring` is a nontrivial commutative semiring with a linear order such
 that addition is monotone and multiplication by a positive number is strictly monotone. -/
 class LinearOrderedCommSemiring (α : Type*) extends StrictOrderedCommSemiring α,
   LinearOrderedSemiring α
 
+attribute [instance 0] LinearOrderedCommSemiring.toMin
+attribute [instance 0] LinearOrderedCommSemiring.toMax
+
 /-- A `LinearOrderedRing` is a ring with a linear order such that addition is monotone and
 multiplication by a positive number is strictly monotone. -/
 class LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder α
+
+attribute [instance 0] LinearOrderedRing.toMin
+attribute [instance 0] LinearOrderedRing.toMax
 
 /-- A `LinearOrderedCommRing` is a commutative ring with a linear order such that addition is
 monotone and multiplication by a positive number is strictly monotone. -/

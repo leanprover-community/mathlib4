@@ -101,11 +101,17 @@ additive commutative group with a linear order in which
 addition is monotone. -/
 class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
 
+attribute [instance 0] LinearOrderedAddCommGroup.toMin
+attribute [instance 0] LinearOrderedAddCommGroup.toMax
+
 /-- A linearly ordered commutative group is a
 commutative group with a linear order in which
 multiplication is monotone. -/
 @[to_additive]
 class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOrder α
+
+attribute [instance 0] LinearOrderedCommGroup.toMin
+attribute [instance 0] LinearOrderedCommGroup.toMax
 
 section LinearOrderedCommGroup
 
