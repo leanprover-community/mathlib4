@@ -170,12 +170,7 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
 /- For elements of finite height, `height` is strictly monotone. -/
 @[gcongr] lemma height_strictMono {x y : α} (hxy : x < y) (hfin : height x < ⊤) :
     height x < height y := by
-  suffices height x + 1 ≤ height y by
-    have hnetop : height x ≠ ⊤ := ne_top_of_lt hfin
-    rw [← ENat.add_one_le_iff hnetop]
-    assumption
-  rw [height_add_const]
-  apply iSup₂_le
+  rw [← ENat.add_one_le_iff hfin.ne, height_add_const, iSup₂_le_iff]
   intro p hlast
   have := length_le_height_last (p := p.snoc y (by simp [*]))
   simpa using this
