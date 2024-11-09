@@ -102,13 +102,9 @@ lemma norm_sub_eq_norm (x y : E) (h : ‖y‖ = 0) : ‖x - y‖ = ‖x‖ := by
 lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) :=
   fun _ ↦ inner_eq_zero_of_right 𝕜 x
 
-/-- The kernel of the map `x ↦ ⟪x, ⬝⟫` includes the null space. -/
-lemma nullSubmodule_le_ker_toDualMap' : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E) := by
-  intro x hx
-  refine LinearMap.mem_ker.mpr ?_
-  ext y
-  simp only [toDualMap_apply, ContinuousLinearMap.zero_apply]
-  exact inner_eq_zero_of_left 𝕜 E x y hx
+/-- The kernel of the map `x ↦ ⟪·, x⟫` includes the null space. -/
+lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E) :=
+  fun _ hx ↦ ContinuousLinearMap.ext <| fun y ↦ inner_eq_zero_of_left 𝕜 y hx
 
 lemma isClosed_nullSubmodule : IsClosed (nullSubmodule 𝕜 E : Set E) := isClosed_nullSubgroup
 
