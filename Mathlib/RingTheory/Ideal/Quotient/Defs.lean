@@ -49,7 +49,7 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R :=
       convert I.add_mem (I.mul_mem_left a₁ h₂) (mul_mem_right b₂ _ h₁) using 1
       rw [mul_sub, sub_mul, sub_add_sub_cancel] }
 
-instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
+instance (priority := 500) ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
   inferInstanceAs (Ring (Quotient.ringCon I).Quotient)
 
 instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) :=
