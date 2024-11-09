@@ -397,6 +397,7 @@ lemma isLocal_ringHomProperty_of_isLocalAtSource_of_isLocalAtTarget
     exact IsLocalAtSource.comp hf ..
 
 open _root_.PrimeSpectrum in
+variable (P) in
 lemma of_isLocalAtSource_of_isLocalAtTarget [IsLocalAtTarget P] [IsLocalAtSource P] :
     HasRingHomProperty P (fun f ↦ P (Spec.map (CommRingCat.ofHom f))) where
   isLocal_ringHomProperty :=
@@ -427,7 +428,7 @@ lemma stalkwise {P} (hP : RingHom.RespectsIso P) :
   have := stalkwiseIsLocalAtTarget_of_respectsIso hP
   have := stalkwise_isLocalAtSource_of_respectsIso hP
   convert of_isLocalAtSource_of_isLocalAtTarget (P := AlgebraicGeometry.stalkwise P) with R S _ _ φ
-  exact (stalkwise_Spec_iff hP (CommRingCat.ofHom φ)).symm
+  exact (stalkwise_Spec_map_iff hP (CommRingCat.ofHom φ)).symm
 
 lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
     P.IsStableUnderComposition where

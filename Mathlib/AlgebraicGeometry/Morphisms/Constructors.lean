@@ -305,7 +305,7 @@ lemma stalkwise_isLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
     rw [← hP.cancel_right_isIso _ ((U i).ι.stalkMap ⟨x, hi⟩)]
     simpa [Scheme.stalkMap_comp] using hf i ⟨x, hi⟩
 
-lemma stalkwise_Spec_iff (hP : RingHom.RespectsIso P) {R S : CommRingCat} (φ : R ⟶ S) :
+lemma stalkwise_Spec_map_iff (hP : RingHom.RespectsIso P) {R S : CommRingCat} (φ : R ⟶ S) :
     stalkwise P (Spec.map φ) ↔ ∀ (p : Ideal S) (_ : p.IsPrime),
       P (Localization.localRingHom _ p φ rfl) := by
   have hP' : (RingHom.toMorphismProperty P).RespectsIso :=
