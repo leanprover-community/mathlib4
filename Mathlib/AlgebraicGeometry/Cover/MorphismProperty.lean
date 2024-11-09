@@ -152,7 +152,8 @@ for any pair of morphisms `f : X ⟶ S` and `g : Y ⟶ S` where `g` satisfies `P
 any pair of points `x : X` and `y : Y` with `f x = g y` can be lifted to a point
 of `X ×[S] Y`.
 
-In later files, this will be automatic, since this holds for any morphism `g`. But at
+In later files, this will be automatic, since this holds for any morphism `g`
+(see `AlgebraicGeometry.Scheme.isJointlySurjectivePreserving`). But at
 this early stage in the import tree, we only know it for open immersions. -/
 class IsJointlySurjectivePreserving (P : MorphismProperty Scheme.{u}) where
   exists_preimage_fst_triplet_of_prop {X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S} [HasPullback f g]

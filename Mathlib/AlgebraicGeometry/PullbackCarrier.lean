@@ -353,7 +353,8 @@ lemma range_map {X' Y' S' : Scheme.{u}} (f' : X' ⟶ S') (g' : Y' ⟶ S') (i₁ 
 
 end Pullback
 
-instance (P : MorphismProperty Scheme.{u}) : IsJointlySurjectivePreserving P where
+instance isJointlySurjectivePreserving (P : MorphismProperty Scheme.{u}) :
+    IsJointlySurjectivePreserving P where
   exists_preimage_fst_triplet_of_prop {X Y S} f g _ hg x y hxy := by
     obtain ⟨a, b, h⟩ := Pullback.exists_preimage_pullback x y hxy
     use a
