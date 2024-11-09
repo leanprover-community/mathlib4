@@ -295,10 +295,10 @@ lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} :
     fun h ↦ add_one_nat_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
 
 lemma nat_le_of_infty_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞) ≤ N) (n : ℕ) : n ≤ N :=
-  le_trans (by exact_mod_cast le_top) hN
+  le_trans (mod_cast le_top) hN
 
 lemma nat_lt_of_infty_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞) ≤ N) (n : ℕ) : n < N :=
-  lt_of_lt_of_le (by exact_mod_cast lt_add_one n) (nat_le_of_infty_le_withTop hN (n + 1))
+  lt_of_lt_of_le (mod_cast lt_add_one n) (nat_le_of_infty_le_withTop hN (n + 1))
 
 end withTop_enat
 
