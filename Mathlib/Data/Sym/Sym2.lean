@@ -459,7 +459,7 @@ def attachWith {P : α → Prop} (s : Sym2 α)  (f : ∀ a ∈ s, P a) : Sym2 {a
   pmap Subtype.mk s f
 
 @[simp]
-lemma attachWith_map_subtype_val {s : Sym2 α} {P : α → Prop} (f : ∀ a ∈ s, P a) :
+lemma attachWith_map_subtypeVal {s : Sym2 α} {P : α → Prop} (f : ∀ a ∈ s, P a) :
     (s.attachWith f).map Subtype.val = s := by
   induction' s with x y
   rfl
