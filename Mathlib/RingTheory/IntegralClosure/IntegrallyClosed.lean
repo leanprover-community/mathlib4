@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.RingTheory.Localization.Integral
+import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 /-!
 # Integrally closed rings
@@ -275,6 +276,27 @@ theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L]
 
 end integralClosure
 
+section localization
+
+variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+
+lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed R] [IsDomain R] (M : Submonoid R)
+    (hM : M ≤ R⁰) [IsLocalization M S] : IsIntegrallyClosed S := by
+  let K := FractionRing R
+  let g : S →+* K := IsLocalization.map _ (T := R⁰) (RingHom.id R) hM
+  letI := g.toAlgebra
+  have : IsScalarTower R S K := IsScalarTower.of_algebraMap_eq'
+    (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
+  have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M S K
+  refine (isIntegrallyClosed_iff_isIntegralClosure (K := K)).mpr
+    ⟨IsFractionRing.injective _ _, fun {x} ↦ ⟨?_, fun e ↦ e.choose_spec ▸ isIntegral_algebraMap⟩⟩
+  intro hx
+  obtain ⟨⟨y, y_mem⟩, hy⟩ := hx.exists_multiple_integral_of_isLocalization M _
+  obtain ⟨z, hz⟩ := (isIntegrallyClosed_iff _).mp ‹_› hy
+  refine ⟨IsLocalization.mk' S z ⟨y, y_mem⟩, (IsLocalization.lift_mk'_spec _ _ _ _).mpr ?_⟩
+  rw [RingHom.comp_id, hz, ← Algebra.smul_def, Submonoid.mk_smul]
+
+end localization
 /-- Any field is integral closed. -/
 /- Although `infer_instance` can find this if you import Mathlib, in this file they have not been
   proven yet. However, it is used to prove a fundamental property of `IsIntegrallyClosed`,

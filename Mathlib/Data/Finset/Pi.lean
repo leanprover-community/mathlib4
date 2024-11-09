@@ -93,6 +93,10 @@ lemma pi_nonempty : (s.pi t).Nonempty ↔ ∀ a ∈ s, (t a).Nonempty := by
 alias ⟨_, pi_nonempty_of_forall_nonempty⟩ := pi_nonempty
 
 @[simp]
+lemma pi_eq_empty : s.pi t = ∅ ↔ ∃ a ∈ s, t a = ∅ := by
+  simp [← not_nonempty_iff_eq_empty]
+
+@[simp]
 theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}
     (ha : a ∉ s) : pi (insert a s) t = (t a).biUnion fun b => (pi s t).image (Pi.cons s a b) := by
   apply eq_of_veq

@@ -81,8 +81,8 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : Kernel α (γ × ℝ)) [IsFiniteKe
   measurable := measurable_pi_iff.mpr fun _ ↦ measurable_density κ (fst κ) measurableSet_Iic
   mono' a q r hqr :=
     ae_of_all _ fun c ↦ density_mono_set le_rfl a c (Iic_subset_Iic.mpr (by exact_mod_cast hqr))
-  nonneg' a q := ae_of_all _ fun c ↦ density_nonneg le_rfl _ _ _
-  le_one' a q := ae_of_all _ fun c ↦ density_le_one le_rfl _ _ _
+  nonneg' _ _ := ae_of_all _ fun _ ↦ density_nonneg le_rfl _ _ _
+  le_one' _ _ := ae_of_all _ fun _ ↦ density_le_one le_rfl _ _ _
   tendsto_integral_of_antitone a s hs_anti hs_tendsto := by
     let s' : ℕ → Set ℝ := fun n ↦ Iic (s n)
     refine tendsto_integral_density_of_antitone le_rfl a s' ?_ ?_ (fun _ ↦ measurableSet_Iic)
@@ -108,8 +108,8 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : Kernel α (γ × ℝ)) [IsFiniteKe
       obtain ⟨i, hi⟩ := hs_tendsto q
       refine ⟨i, hq.le.trans ?_⟩
       exact mod_cast hi i le_rfl
-  integrable a q := integrable_density le_rfl a measurableSet_Iic
-  setIntegral a A hA q := setIntegral_density le_rfl a measurableSet_Iic hA
+  integrable a _ := integrable_density le_rfl a measurableSet_Iic
+  setIntegral a _ hA _ := setIntegral_density le_rfl a measurableSet_Iic hA
 
 /-- Taking the kernel density of intervals `Iic q` for `q : ℚ` gives a function with the property
 `isRatCondKernelCDF`. -/
@@ -259,7 +259,7 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
     congr
   rw [h_fst]
   ext a t ht : 2
-  simp_rw [compProd_apply _ _ _ ht]
+  simp_rw [compProd_apply ht]
   refine lintegral_congr_ae ?_
   have h_ae : ∀ᵐ t ∂(fst κ a), (a, t) ∈ {p : α × β | η p (range e)ᶜ = 0} := by
     rw [← h_fst]

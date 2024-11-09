@@ -374,21 +374,21 @@ def LimZero {abv : β → α} (f : CauSeq β abv) : Prop :=
 
 theorem add_limZero {f g : CauSeq β abv} (hf : LimZero f) (hg : LimZero g) : LimZero (f + g)
   | ε, ε0 =>
-    (exists_forall_ge_and (hf _ <| half_pos ε0) (hg _ <| half_pos ε0)).imp fun i H j ij => by
+    (exists_forall_ge_and (hf _ <| half_pos ε0) (hg _ <| half_pos ε0)).imp fun _ H j ij => by
       let ⟨H₁, H₂⟩ := H _ ij
       simpa [add_halves ε] using lt_of_le_of_lt (abv_add abv _ _) (add_lt_add H₁ H₂)
 
 theorem mul_limZero_right (f : CauSeq β abv) {g} (hg : LimZero g) : LimZero (f * g)
   | ε, ε0 =>
     let ⟨F, F0, hF⟩ := f.bounded' 0
-    (hg _ <| div_pos ε0 F0).imp fun i H j ij => by
+    (hg _ <| div_pos ε0 F0).imp fun _ H j ij => by
       have := mul_lt_mul' (le_of_lt <| hF j) (H _ ij) (abv_nonneg abv _) F0
       rwa [mul_comm F, div_mul_cancel₀ _ (ne_of_gt F0), ← abv_mul] at this
 
 theorem mul_limZero_left {f} (g : CauSeq β abv) (hg : LimZero f) : LimZero (f * g)
   | ε, ε0 =>
     let ⟨G, G0, hG⟩ := g.bounded' 0
-    (hg _ <| div_pos ε0 G0).imp fun i H j ij => by
+    (hg _ <| div_pos ε0 G0).imp fun _ H j ij => by
       have := mul_lt_mul'' (H _ ij) (hG j) (abv_nonneg abv _) (abv_nonneg abv _)
       rwa [div_mul_cancel₀ _ (ne_of_gt G0), ← abv_mul] at this
 
@@ -430,7 +430,7 @@ theorem sub_equiv_sub {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 �
 
 theorem equiv_def₃ {f g : CauSeq β abv} (h : f ≈ g) {ε : α} (ε0 : 0 < ε) :
     ∃ i, ∀ j ≥ i, ∀ k ≥ j, abv (f k - g j) < ε :=
-  (exists_forall_ge_and (h _ <| half_pos ε0) (f.cauchy₃ <| half_pos ε0)).imp fun i H j ij k jk => by
+  (exists_forall_ge_and (h _ <| half_pos ε0) (f.cauchy₃ <| half_pos ε0)).imp fun _ H j ij k jk => by
     let ⟨h₁, h₂⟩ := H _ ij
     have := lt_of_le_of_lt (abv_add abv (f j - g j) _) (add_lt_add h₁ (h₂ _ jk))
     rwa [sub_add_sub_cancel', add_halves] at this
@@ -749,14 +749,14 @@ theorem coe_inf (f g : CauSeq α abs) : ⇑(f ⊓ g) = (f : ℕ → α) ⊓ g :=
 
 theorem sup_limZero {f g : CauSeq α abs} (hf : LimZero f) (hg : LimZero g) : LimZero (f ⊔ g)
   | ε, ε0 =>
-    (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun i H j ij => by
+    (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun _ H j ij => by
       let ⟨H₁, H₂⟩ := H _ ij
       rw [abs_lt] at H₁ H₂ ⊢
       exact ⟨lt_sup_iff.mpr (Or.inl H₁.1), sup_lt_iff.mpr ⟨H₁.2, H₂.2⟩⟩
 
 theorem inf_limZero {f g : CauSeq α abs} (hf : LimZero f) (hg : LimZero g) : LimZero (f ⊓ g)
   | ε, ε0 =>
-    (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun i H j ij => by
+    (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun _ H j ij => by
       let ⟨H₁, H₂⟩ := H _ ij
       rw [abs_lt] at H₁ H₂ ⊢
       exact ⟨lt_inf_iff.mpr ⟨H₁.1, H₂.1⟩, inf_lt_iff.mpr (Or.inl H₁.2)⟩

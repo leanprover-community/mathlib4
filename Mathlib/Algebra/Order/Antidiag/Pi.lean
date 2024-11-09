@@ -7,6 +7,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+import Mathlib.Data.Finset.Sym
 
 /-!
 # Antidiagonal of functions as finsets
@@ -226,7 +227,7 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
 
 lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag s m).map
-      ⟨(n • ·), fun f g h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
+      ⟨(n • ·), fun _ _ h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
         (piAntidiag s (n * m)).filter fun f : ι → ℕ ↦ ∀ i ∈ s, n ∣ f i := by
   classical rw [map_eq_image]; exact nsmul_piAntidiag _ _ hn
 
@@ -237,7 +238,7 @@ lemma nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
 
 lemma map_nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag (univ : Finset ι) m).map
-        ⟨(n • ·), fun f g h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
+        ⟨(n • ·), fun _ _ h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
       (piAntidiag univ (n * m)).filter fun f : ι → ℕ ↦ ∀ i, n ∣ f i := by
   simpa using map_nsmul_piAntidiag (univ : Finset ι) m hn
 

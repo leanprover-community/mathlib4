@@ -44,7 +44,7 @@ noncomputable section
 
 open scoped nonZeroDivisors Polynomial Multiplicative
 
-variable (Fq F : Type) [Field Fq] [Field F]
+variable (Fq F : Type*) [Field Fq] [Field F]
 
 /-- `F` is a function field over the finite field `Fq` if it is a finite
 extension of the field of rational functions in one variable over `Fq`.
@@ -54,7 +54,6 @@ Note that `F` can be a function field over multiple, non-isomorphic, `Fq`.
 abbrev FunctionField [Algebra (RatFunc Fq) F] : Prop :=
   FiniteDimensional (RatFunc Fq) F
 
--- Porting note: Removed `protected`
 /-- `F` is a function field over `Fq` iff it is a finite extension of `Fq(t)`. -/
 theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     [IsFractionRing Fq[X] Fqt] [Algebra (RatFunc Fq) F] [Algebra Fqt F] [Algebra Fq[X] F]
@@ -69,9 +68,9 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     refine IsLocalization.ext (nonZeroDivisors Fq[X]) _ _ ?_ ?_ ?_ ?_ ?_ <;> intros <;>
       simp only [map_one, map_mul, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   constructor <;> intro h
-  · let b := FiniteDimensional.finBasis (RatFunc Fq) F
+  · let b := Module.finBasis (RatFunc Fq) F
     exact FiniteDimensional.of_fintype_basis (b.mapCoeffs e this)
-  · let b := FiniteDimensional.finBasis Fqt F
+  · let b := Module.finBasis Fqt F
     refine FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm ?_)
     intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 

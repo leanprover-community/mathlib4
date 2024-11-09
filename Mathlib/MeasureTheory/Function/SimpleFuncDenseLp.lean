@@ -23,7 +23,7 @@ by a sequence of simple functions.
   measurable and `Memℒp` (for `p < ∞`), then the simple functions
   `SimpleFunc.approxOn f hf s 0 h₀ n` may be considered as elements of `Lp E p μ`, and they tend
   in Lᵖ to `f`.
-* `Lp.simpleFunc.denseEmbedding`: the embedding `coeToLp` of the `Lp` simple functions into
+* `Lp.simpleFunc.isDenseEmbedding`: the embedding `coeToLp` of the `Lp` simple functions into
   `Lp` is dense.
 * `Lp.simpleFunc.induction`, `Lp.induction`, `Memℒp.induction`, `Integrable.induction`: to prove
   a predicate for all elements of one of these classes of functions, it suffices to check that it
@@ -679,16 +679,21 @@ variable [Fact (1 ≤ p)]
 protected theorem uniformContinuous : UniformContinuous ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
   uniformContinuous_comap
 
-protected theorem uniformEmbedding : UniformEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  uniformEmbedding_comap Subtype.val_injective
+lemma isUniformEmbedding : IsUniformEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
+  isUniformEmbedding_comap Subtype.val_injective
 
-protected theorem uniformInducing : UniformInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  simpleFunc.uniformEmbedding.toUniformInducing
+@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
-protected theorem denseEmbedding (hp_ne_top : p ≠ ∞) :
-    DenseEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) := by
+theorem isUniformInducing : IsUniformInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
+  simpleFunc.isUniformEmbedding.isUniformInducing
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing := isUniformInducing
+
+lemma isDenseEmbedding (hp_ne_top : p ≠ ∞) :
+    IsDenseEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) := by
   borelize E
-  apply simpleFunc.uniformEmbedding.denseEmbedding
+  apply simpleFunc.isUniformEmbedding.isDenseEmbedding
   intro f
   rw [mem_closure_iff_seq_limit]
   have hfi' : Memℒp f p μ := Lp.memℒp f
@@ -703,13 +708,16 @@ protected theorem denseEmbedding (hp_ne_top : p ≠ ∞) :
   convert SimpleFunc.tendsto_approxOn_range_Lp hp_ne_top (Lp.stronglyMeasurable f).measurable hfi'
   rw [toLp_coeFn f (Lp.memℒp f)]
 
-protected theorem denseInducing (hp_ne_top : p ≠ ∞) :
-    DenseInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  (simpleFunc.denseEmbedding hp_ne_top).toDenseInducing
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding := isDenseEmbedding
+
+protected theorem isDenseInducing (hp_ne_top : p ≠ ∞) :
+    IsDenseInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
+  (simpleFunc.isDenseEmbedding hp_ne_top).isDenseInducing
 
 protected theorem denseRange (hp_ne_top : p ≠ ∞) :
     DenseRange ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  (simpleFunc.denseInducing hp_ne_top).dense
+  (simpleFunc.isDenseInducing hp_ne_top).dense
 
 protected theorem dense (hp_ne_top : p ≠ ∞) : Dense (Lp.simpleFunc E p μ : Set (Lp E p μ)) := by
   simpa only [denseRange_subtype_val] using simpleFunc.denseRange (E := E) (μ := μ) hp_ne_top
@@ -734,8 +742,7 @@ variable {G : Type*} [NormedLatticeAddCommGroup G]
 theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
 
-instance instCovariantClassLE :
-    CovariantClass (Lp.simpleFunc G p μ) (Lp.simpleFunc G p μ) (· + ·) (· ≤ ·) := by
+instance instAddLeftMono : AddLeftMono (Lp.simpleFunc G p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
   rw [← Lp.simpleFunc.coeFn_le] at hg₁₂ ⊢
   have h_add_1 : ((f + g₁ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₁ := Lp.coeFn_add _ _

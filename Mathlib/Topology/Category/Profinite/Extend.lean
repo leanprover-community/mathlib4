@@ -126,12 +126,7 @@ def cone (S : Profinite) :
   pt := G.obj S
   π := {
     app := fun i ↦ G.map i.hom
-    naturality := fun _ _ f ↦ (by
-      have := f.w
-      simp only [const_obj_obj, StructuredArrow.left_eq_id, const_obj_map, Category.id_comp,
-        StructuredArrow.w] at this
-      simp only [const_obj_obj, comp_obj, StructuredArrow.proj_obj, const_obj_map, Category.id_comp,
-        Functor.comp_map, StructuredArrow.proj_map, ← map_comp, StructuredArrow.w]) }
+    naturality := fun _ _ f ↦ (by simp [← map_comp]) }
 
 example : G.mapCone c = (cone G c.pt).whisker (functor c) := rfl
 
@@ -141,7 +136,7 @@ then `cone G c.pt` is a limit cone.
 -/
 noncomputable
 def isLimitCone (hc : IsLimit c) [∀ i, Epi (c.π.app i)] (hc' : IsLimit <| G.mapCone c) :
-    IsLimit (cone G c.pt) := (functor_initial c hc).isLimitWhiskerEquiv _ hc'
+    IsLimit (cone G c.pt) := (functor_initial c hc).isLimitWhiskerEquiv _ _ hc'
 
 end Limit
 
@@ -166,8 +161,7 @@ def cocone (S : Profinite) :
       have := f.w
       simp only [op_obj, const_obj_obj, op_map, CostructuredArrow.right_eq_id, const_obj_map,
         Category.comp_id] at this
-      simp only [comp_obj, CostructuredArrow.proj_obj, op_obj, const_obj_obj, Functor.comp_map,
-        CostructuredArrow.proj_map, op_map, ← map_comp, this, const_obj_map, Category.comp_id]) }
+      simp [← map_comp, this]) }
 
 example : G.mapCocone c.op = (cocone G c.pt).whisker (functorOp c) := rfl
 
@@ -177,7 +171,7 @@ are epimorphic, then `cocone G c.pt` is a colimit cone.
 -/
 noncomputable
 def isColimitCocone (hc : IsLimit c) [∀ i, Epi (c.π.app i)] (hc' : IsColimit <| G.mapCocone c.op) :
-    IsColimit (cocone G c.pt) := (functorOp_final c hc).isColimitWhiskerEquiv _ hc'
+    IsColimit (cocone G c.pt) := (functorOp_final c hc).isColimitWhiskerEquiv _ _ hc'
 
 end Colimit
 

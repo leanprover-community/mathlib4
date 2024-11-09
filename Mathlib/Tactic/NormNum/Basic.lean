@@ -3,13 +3,13 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
+import Mathlib.Algebra.GroupWithZero.Invertible
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Algebra.Ring.Int
-import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.Tactic.ClearExclamation
-import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 ## `norm_num` basic plugins
@@ -24,6 +24,14 @@ See other files in this directory for many more plugins.
 -/
 
 universe u
+
+#adaptation_note
+/--
+Since https://github.com/leanprover/lean4/pull/5338,
+the unused variable linter can not see usages of variables in
+`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
+-/
+set_option linter.unusedVariables false
 
 namespace Mathlib
 open Lean hiding Rat mkRat

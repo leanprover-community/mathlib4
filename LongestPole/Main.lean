@@ -54,7 +54,7 @@ def RunResponse.instructions (response : RunResponse) :
   for m in response.run.result.measurements do
     let n := m.dimension.benchmark
     if n.startsWith "~" then
-      r := r.insert (n.drop 1).toName m.value
+      r := r.insert (n.drop 1).toName (m.value/10^6)
   return r
 
 def instructions (run : String) : IO (NameMap Float) :=
@@ -116,6 +116,18 @@ def Float.toStringDecimals (r : Float) (digits : Nat) : String :=
   | [a, b] => a ++ "." ++ b.take digits
   | _ => r.toString
 
+open System in
+-- Lines of code is obviously a `Nat` not a `Float`,
+-- but we're using it here as a very rough proxy for instruction count.
+def countLOC (modules : List Name) : IO (NameMap Float) := do
+  let mut r := {}
+  for m in modules do
+    if let .some fp ← Lean.SearchPath.findModuleWithExt [s!".{FilePath.pathSeparator}"] "lean" m
+    then
+      let src ← IO.FS.readFile fp
+      r := r.insert m (src.toList.count '\n').toFloat
+  return r
+
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
   let to ← match args.flag? "to" with
@@ -126,7 +138,10 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
     let graph := env.importGraph
     let sha ← headSha
     IO.eprintln s!"Analyzing {to} at {sha}"
-    let instructions ← SpeedCenterAPI.instructions (sha)
+    let instructions ← if args.hasFlag "loc" then
+      countLOC (graph.toList.map (·.1))
+    else
+      SpeedCenterAPI.instructions sha
     let cumulative := cumulativeInstructions instructions graph
     let total := totalInstructions instructions graph
     let slowest := slowestParents cumulative graph
@@ -138,10 +153,11 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       let c := cumulative.find! n'
       let t := total.find! n'
       let r := (t / c).toStringDecimals 2
-      table := table.push #[n.get!.toString, toString (i/10^6 |>.toUInt64), toString (c/10^6 |>.toUInt64), r]
+      table := table.push #[n.get!.toString, toString i.toUInt64, toString c.toUInt64, r]
       n := slowest.find? n'
+    let instructionsHeader := if args.hasFlag "loc" then "LoC" else "instructions"
     IO.println (formatTable
-                  #["file", "instructions", "cumulative", "parallelism"]
+                  #["file", instructionsHeader, "cumulative", "parallelism"]
                   table
                   #[Alignment.left, Alignment.right, Alignment.right, Alignment.center])
   return 0
@@ -157,6 +173,7 @@ def pole : Cmd := `[Cli|
 
   FLAGS:
     to : ModuleName;      "Calculate the longest pole to the specified module."
+    loc;                  "Use lines of code instead of speedcenter instruction counts."
 ]
 
 /-- `lake exe pole` -/

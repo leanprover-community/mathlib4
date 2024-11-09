@@ -44,7 +44,7 @@ instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) :=
 instance category : Category (Kleisli T) where
   Hom := fun X Y : C => X ⟶ (T : C ⥤ C).obj Y
   id X := T.η.app X
-  comp {X} {Y} {Z} f g := f ≫ (T : C ⥤ C).map g ≫ T.μ.app Z
+  comp {_} {_} {Z} f g := f ≫ (T : C ⥤ C).map g ≫ T.μ.app Z
   id_comp {X} {Y} f := by
     dsimp -- Porting note: unfold comp
     rw [← T.η.naturality_assoc f, T.left_unit]
@@ -70,12 +70,12 @@ def toKleisli : C ⥤ Kleisli T where
 def fromKleisli : Kleisli T ⥤ C where
   obj X := T.obj X
   map {_} {Y} f := T.map f ≫ T.μ.app Y
-  map_id X := T.right_unit _
+  map_id _ := T.right_unit _
   map_comp {X} {Y} {Z} f g := by
     -- Porting note: hack for missing unfold_projs tactic
     change T.map (f ≫ T.map g ≫ T.μ.app Z) ≫ T.μ.app Z = _
     simp only [Functor.map_comp, Category.assoc]
-    erw [← T.μ.naturality_assoc g, T.assoc]
+    rw [← T.μ.naturality_assoc g, T.assoc]
     rfl
 
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
@@ -92,7 +92,7 @@ def adj : toKleisli T ⊣ fromKleisli T :=
 
 /-- The composition of the adjunction gives the original functor. -/
 def toKleisliCompFromKleisliIsoSelf : toKleisli T ⋙ fromKleisli T ≅ T :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 end Adjunction
 
@@ -116,7 +116,7 @@ instance [Inhabited C] (U : Comonad C) : Inhabited (Cokleisli U) :=
 instance category : Category (Cokleisli U) where
   Hom := fun X Y : C => (U : C ⥤ C).obj X ⟶ Y
   id X := U.ε.app X
-  comp {X} {Y} {Z} f g := U.δ.app X ≫ (U : C ⥤ C).map f ≫ g
+  comp {X} {_} {_} f g := U.δ.app X ≫ (U : C ⥤ C).map f ≫ g
   id_comp f := by dsimp; rw [U.right_counit_assoc]
   assoc {X} {Y} {Z} {W} f g h := by
     -- Porting note: working around lack of unfold_projs
@@ -143,7 +143,7 @@ def toCokleisli : C ⥤ Cokleisli U where
 def fromCokleisli : Cokleisli U ⥤ C where
   obj X := U.obj X
   map {X} {_} f := U.δ.app X ≫ U.map f
-  map_id X := U.right_counit _
+  map_id _ := U.right_counit _
   map_comp {X} {Y} {_} f g := by
     -- Porting note: working around lack of unfold_projs
     change U.δ.app X ≫ U.map (U.δ.app X ≫ U.map f ≫ g) =
@@ -159,12 +159,12 @@ def adj : fromCokleisli U ⊣ toCokleisli U :=
       homEquiv_naturality_right := fun {X} {Y} {_} f g => by
         -- Porting note: working around lack of unfold_projs
         change f ≫ g = U.δ.app X ≫ U.map f ≫ U.ε.app Y ≫ g
-        erw [← Category.assoc (U.map f), U.ε.naturality]; dsimp
+        rw [← Category.assoc (U.map f), U.ε.naturality]; dsimp
         simp only [← Category.assoc, Comonad.left_counit, Category.id_comp] }
 
 /-- The composition of the adjunction gives the original functor. -/
 def toCokleisliCompFromCokleisliIsoSelf : toCokleisli U ⋙ fromCokleisli U ≅ U :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 end Adjunction
 

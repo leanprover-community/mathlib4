@@ -57,7 +57,10 @@ instance locallyOfFiniteType_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 theorem locallyOfFiniteType_of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [LocallyOfFiniteType (f ≫ g)] : LocallyOfFiniteType f :=
-  HasRingHomProperty.of_comp (fun f g ↦ RingHom.FiniteType.of_comp_finiteType) ‹_›
+  HasRingHomProperty.of_comp (fun _ _ ↦ RingHom.FiniteType.of_comp_finiteType) ‹_›
+
+instance : MorphismProperty.IsMultiplicative @LocallyOfFiniteType where
+  id_mem _ := inferInstance
 
 open scoped TensorProduct in
 lemma locallyOfFiniteType_stableUnderBaseChange :

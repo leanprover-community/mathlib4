@@ -128,13 +128,13 @@ theorem isBigO_iff'' {g : α → E'''} :
     obtain ⟨c, ⟨hc_pos, hc⟩⟩ := h
     refine ⟨c⁻¹, ⟨by positivity, ?_⟩⟩
     filter_upwards [hc] with x hx
-    rwa [inv_mul_le_iff (by positivity)]
+    rwa [inv_mul_le_iff₀ (by positivity)]
   case mpr =>
     rw [isBigO_iff']
     obtain ⟨c, ⟨hc_pos, hc⟩⟩ := h
     refine ⟨c⁻¹, ⟨by positivity, ?_⟩⟩
     filter_upwards [hc] with x hx
-    rwa [← inv_inv c, inv_mul_le_iff (by positivity)] at hx
+    rwa [← inv_inv c, inv_mul_le_iff₀ (by positivity)] at hx
 
 theorem IsBigO.of_bound (c : ℝ) (h : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖) : f =O[l] g :=
   isBigO_iff.2 ⟨c, h⟩
@@ -251,7 +251,7 @@ theorem isLittleO_iff_nat_mul_le_aux (h₀ : (∀ x, 0 ≤ ‖f x‖) ∨ ∀ x,
     rcases exists_nat_gt ε⁻¹ with ⟨n, hn⟩
     have hn₀ : (0 : ℝ) < n := (inv_pos.2 ε0).trans hn
     refine ((isBigOWith_inv hn₀).2 (H n)).bound.mono fun x hfg => ?_
-    refine hfg.trans (mul_le_mul_of_nonneg_right (inv_le_of_inv_le ε0 hn.le) ?_)
+    refine hfg.trans (mul_le_mul_of_nonneg_right (inv_le_of_inv_le₀ ε0 hn.le) ?_)
     refine h₀.elim (fun hf => nonneg_of_mul_nonneg_right ((hf x).trans hfg) ?_) fun h => h x
     exact inv_pos.2 hn₀
 
@@ -1251,6 +1251,9 @@ theorem IsLittleO.trans_tendsto (hfg : f'' =o[l] g'') (hg : Tendsto g'' l (𝓝 
     Tendsto f'' l (𝓝 0) :=
   hfg.isBigO.trans_tendsto hg
 
+lemma isLittleO_id_one [One F''] [NeZero (1 : F'')] : (fun x : E'' => x) =o[𝓝 0] (1 : E'' → F'') :=
+  isLittleO_id_const one_ne_zero
+
 /-! ### Multiplication by a constant -/
 
 
@@ -1447,7 +1450,7 @@ theorem IsBigOWith.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : IsBigOWith 
   rcases eq_or_ne (f x) 0 with hx | hx
   · simp only [hx, h₀ hx, inv_zero, norm_zero, mul_zero, le_rfl]
   · have hc : 0 < c := pos_of_mul_pos_left ((norm_pos_iff.2 hx).trans_le hle) (norm_nonneg _)
-    replace hle := inv_le_inv_of_le (norm_pos_iff.2 hx) hle
+    replace hle := inv_anti₀ (norm_pos_iff.2 hx) hle
     simpa only [norm_inv, mul_inv, ← div_eq_inv_mul, div_le_iff₀ hc] using hle
 
 theorem IsBigO.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : f =O[l] g)
@@ -1700,7 +1703,7 @@ theorem isBigOWith_iff_exists_eq_mul (hc : 0 ≤ c) :
   · intro h
     use fun x => u x / v x
     refine ⟨Eventually.mono h.bound fun y hy => ?_, h.eventually_mul_div_cancel.symm⟩
-    simpa using div_le_of_nonneg_of_le_mul (norm_nonneg _) hc hy
+    simpa using div_le_of_le_mul₀ (norm_nonneg _) hc hy
   · rintro ⟨φ, hφ, h⟩
     exact isBigOWith_of_eq_mul φ hφ h
 
@@ -1741,7 +1744,7 @@ theorem div_isBoundedUnder_of_isBigO {α : Type*} {l : Filter α} {f g : α → 
   obtain ⟨c, h₀, hc⟩ := h.exists_nonneg
   refine ⟨c, eventually_map.2 (hc.bound.mono fun x hx => ?_)⟩
   rw [norm_div]
-  exact div_le_of_nonneg_of_le_mul (norm_nonneg _) h₀ hx
+  exact div_le_of_le_mul₀ (norm_nonneg _) h₀ hx
 
 theorem isBigO_iff_div_isBoundedUnder {α : Type*} {l : Filter α} {f g : α → 𝕜}
     (hgf : ∀ᶠ x in l, g x = 0 → f x = 0) :
@@ -1819,7 +1822,7 @@ theorem IsBigOWith.right_le_sub_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
 
 theorem IsBigOWith.right_le_add_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWith c l f₁ f₂) (hc : c < 1) :
     IsBigOWith (1 / (1 - c)) l f₂ fun x => f₁ x + f₂ x :=
-  (h.neg_right.right_le_sub_of_lt_one hc).neg_right.of_neg_left.congr rfl (fun x ↦ rfl) fun x ↦ by
+  (h.neg_right.right_le_sub_of_lt_one hc).neg_right.of_neg_left.congr rfl (fun _ ↦ rfl) fun x ↦ by
     rw [neg_sub, sub_neg_eq_add]
 
 @[deprecated (since := "2024-01-31")]
@@ -1869,7 +1872,7 @@ theorem isBigO_nat_atTop_iff {f : ℕ → E''} {g : ℕ → F''} (h : ∀ x, g x
 
 theorem isBigO_one_nat_atTop_iff {f : ℕ → E''} :
     f =O[atTop] (fun _n => 1 : ℕ → ℝ) ↔ ∃ C, ∀ n, ‖f n‖ ≤ C :=
-  Iff.trans (isBigO_nat_atTop_iff fun n h => (one_ne_zero h).elim) <| by
+  Iff.trans (isBigO_nat_atTop_iff fun _ h => (one_ne_zero h).elim) <| by
     simp only [norm_one, mul_one]
 
 theorem isBigOWith_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
@@ -1915,6 +1918,13 @@ theorem isBigO_atTop_iff_eventually_exists_pos {α : Type*}
     f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c > 0, ∀ n ≥ n₀, c * ‖f n‖ ≤ ‖g n‖ := by
   simp_rw [isBigO_iff'', ← exists_prop, Subtype.exists', exists_eventually_atTop]
 
+lemma isBigO_mul_iff_isBigO_div {f g h : α → 𝕜} (hf : ∀ᶠ x in l, f x ≠ 0) :
+    (fun x ↦ f x * g x) =O[l] h ↔ g =O[l] (fun x ↦ h x / f x) := by
+  rw [isBigO_iff', isBigO_iff']
+  refine ⟨fun ⟨c, hc, H⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, H⟩ ↦ ⟨c, hc, ?_⟩⟩ <;>
+  · refine H.congr <| Eventually.mp hf <| Eventually.of_forall fun x hx ↦ ?_
+    rw [norm_mul, norm_div, ← mul_div_assoc, le_div_iff₀' (norm_pos_iff.mpr hx)]
+
 end Asymptotics
 
 open Asymptotics
@@ -1948,8 +1958,8 @@ theorem isBigOWith_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.ta
       rwa [ContinuousAt, e.rightInvOn hb] at this,
     fun h =>
     (h.comp_tendsto (e.continuousAt_symm hb)).congr' rfl
-      ((e.eventually_right_inverse hb).mono fun x hx => congr_arg f hx)
-      ((e.eventually_right_inverse hb).mono fun x hx => congr_arg g hx)⟩
+      ((e.eventually_right_inverse hb).mono fun _ hx => congr_arg f hx)
+      ((e.eventually_right_inverse hb).mono fun _ hx => congr_arg g hx)⟩
 
 /-- Transfer `IsBigO` over a `PartialHomeomorph`. -/
 theorem isBigO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
@@ -2037,5 +2047,13 @@ protected theorem isBigO_rev_principal (hf : ContinuousOn f s)
 end IsBigORev
 
 end ContinuousOn
+
+/-- The (scalar) product of a sequence that tends to zero with a bounded one also tends to zero. -/
+lemma NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 𝔸 : Type*}
+    [NormedDivisionRing 𝕜] [NormedAddCommGroup 𝔸] [Module 𝕜 𝔸] [BoundedSMul 𝕜 𝔸] {l : Filter ι}
+    {ε : ι → 𝕜} {f : ι → 𝔸} (hε : Tendsto ε l (𝓝 0)) (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) :
+    Tendsto (ε • f) l (𝓝 0) := by
+  rw [← isLittleO_one_iff 𝕜] at hε ⊢
+  simpa using IsLittleO.smul_isBigO hε (hf.isBigO_const (one_ne_zero : (1 : 𝕜) ≠ 0))
 
 set_option linter.style.longFile 2200

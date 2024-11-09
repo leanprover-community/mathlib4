@@ -883,7 +883,7 @@ instance Λ'.instInhabited : Inhabited Λ' :=
 instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
   induction a generalizing b <;> cases b <;> first
     | apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done
-    | exact decidable_of_iff' _ (by simp [Function.funext_iff]; rfl)
+    | exact decidable_of_iff' _ (by simp [funext_iff]; rfl)
 
 /-- The type of TM2 statements used by this machine. -/
 def Stmt' :=
@@ -997,30 +997,34 @@ def tr : Λ' → Stmt'
         cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)
   | Λ'.ret Cont'.halt => (load fun _ => none) <| halt
 
-/- Porting note: The equation lemma of `tr` simplifies to `match` structures. To prevent this,
-we replace equation lemmas of `tr`. -/
-
+@[simp]
 theorem tr_move (p k₁ k₂ q) : tr (Λ'.move p k₁ k₂ q) =
     pop' k₁ (branch (fun s => s.elim true p) (goto fun _ => q)
       (push' k₂ <| goto fun _ => Λ'.move p k₁ k₂ q)) := rfl
 
+@[simp]
 theorem tr_push (k f q) : tr (Λ'.push k f q) = branch (fun s => (f s).isSome)
     ((push k fun s => (f s).iget) <| goto fun _ => q) (goto fun _ => q) := rfl
 
+@[simp]
 theorem tr_read (q) : tr (Λ'.read q) = goto q := rfl
 
+@[simp]
 theorem tr_clear (p k q) : tr (Λ'.clear p k q) = pop' k (branch
     (fun s => s.elim true p) (goto fun _ => q) (goto fun _ => Λ'.clear p k q)) := rfl
 
+@[simp]
 theorem tr_copy (q) : tr (Λ'.copy q) = pop' rev (branch Option.isSome
     (push' main <| push' stack <| goto fun _ => Λ'.copy q) (goto fun _ => q)) := rfl
 
+@[simp]
 theorem tr_succ (q) : tr (Λ'.succ q) = pop' main (branch (fun s => s = some Γ'.bit1)
     ((push rev fun _ => Γ'.bit0) <| goto fun _ => Λ'.succ q) <|
       branch (fun s => s = some Γ'.cons)
         ((push main fun _ => Γ'.cons) <| (push main fun _ => Γ'.bit1) <| goto fun _ => unrev q)
         ((push main fun _ => Γ'.bit1) <| goto fun _ => unrev q)) := rfl
 
+@[simp]
 theorem tr_pred (q₁ q₂) : tr (Λ'.pred q₁ q₂) = pop' main (branch (fun s => s = some Γ'.bit0)
     ((push rev fun _ => Γ'.bit1) <| goto fun _ => Λ'.pred q₁ q₂) <|
     branch (fun s => natEnd s.iget) (goto fun _ => q₁)
@@ -1028,25 +1032,25 @@ theorem tr_pred (q₁ q₂) : tr (Λ'.pred q₁ q₂) = pop' main (branch (fun s
         branch (fun s => natEnd s.iget) (goto fun _ => unrev q₂)
           ((push rev fun _ => Γ'.bit0) <| goto fun _ => unrev q₂))) := rfl
 
+@[simp]
 theorem tr_ret_cons₁ (fs k) : tr (Λ'.ret (Cont'.cons₁ fs k)) = goto fun _ =>
     move₂ (fun _ => false) main aux <|
       move₂ (fun s => s = Γ'.consₗ) stack main <|
         move₂ (fun _ => false) aux stack <| trNormal fs (Cont'.cons₂ k) := rfl
 
+@[simp]
 theorem tr_ret_cons₂ (k) : tr (Λ'.ret (Cont'.cons₂ k)) =
     goto fun _ => head stack <| Λ'.ret k := rfl
 
+@[simp]
 theorem tr_ret_comp (f k) : tr (Λ'.ret (Cont'.comp f k)) = goto fun _ => trNormal f k := rfl
 
+@[simp]
 theorem tr_ret_fix (f k) : tr (Λ'.ret (Cont'.fix f k)) = pop' main (goto fun s =>
     cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)) := rfl
 
+@[simp]
 theorem tr_ret_halt : tr (Λ'.ret Cont'.halt) = (load fun _ => none) halt := rfl
-
-attribute
-  [eqns tr_move tr_push tr_read tr_clear tr_copy tr_succ tr_pred tr_ret_cons₁
-    tr_ret_cons₂ tr_ret_comp tr_ret_fix tr_ret_halt] tr
-attribute [simp] tr
 
 /-- Translating a `Cont` continuation to a `Cont'` continuation simply entails dropping all the
 data. This data is instead encoded in `trContStack` in the configuration. -/
@@ -1604,7 +1608,7 @@ def trStmts₁ : Λ' → Finset Λ'
 theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trStmts₁ q := by
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
-  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _
+  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
   all_goals
     simp (config := { contextual := true }) only [trStmts₁, Finset.mem_insert, Finset.mem_union,
       or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and]
@@ -1801,8 +1805,8 @@ theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts
   have W := fun {q} => trStmts₁_self q
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
-  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _
-  all_goals simp [trStmts₁, -Finset.singleton_subset_iff] at HS₁ ⊢
+  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
+    simp [trStmts₁, -Finset.singleton_subset_iff] at HS₁ ⊢
   any_goals
     cases' Finset.insert_subset_iff.1 HS₁ with h₁ h₂
     first | have h₃ := h₂ W | try simp [Finset.subset_iff] at h₂

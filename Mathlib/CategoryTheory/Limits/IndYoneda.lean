@@ -40,8 +40,6 @@ variable {C : Type u₁} [Category.{u₂} C] {I : Type v₁} [Category.{v₂} I]
 
 section LimitOpColimit
 
-instance (F : I ⥤ C) [HasColimit F] : HasLimit F.op := hasLimit_op_of_hasColimit F
-
 /-- The limit of `F.op` is the opposite of `colimit F`. -/
 noncomputable def limitOpIsoOpColimit (F : I ⥤ C) [HasColimit F] :
     limit F.op ≅ op <| colimit F :=
@@ -94,7 +92,7 @@ lemma coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π (i : I) :
     (coyonedaOpColimitIsoLimitCoyoneda F).hom ≫ limit.π (F.op.comp coyoneda) ⟨i⟩
       = coyoneda.map (colimit.ι F i).op := by
   simp only [coyonedaOpColimitIsoLimitCoyoneda, Functor.mapIso_symm,
-    Iso.trans_hom, Iso.symm_hom, Functor.mapIso_inv, Category.assoc, preservesLimitsIso_hom_π,
+    Iso.trans_hom, Iso.symm_hom, Functor.mapIso_inv, Category.assoc, preservesLimitIso_hom_π,
     ← Functor.map_comp, limitOpIsoOpColimit_inv_comp_π]
 
 @[reassoc (attr := simp)]
@@ -142,7 +140,7 @@ lemma coyonedaOpColimitIsoLimitCoyoneda'_hom_comp_π (i : I) :
     (coyonedaOpColimitIsoLimitCoyoneda' F).hom ≫ limit.π (F.rightOp ⋙ coyoneda) i
       = coyoneda.map (colimit.ι F ⟨i⟩).op := by
   simp only [coyonedaOpColimitIsoLimitCoyoneda', Functor.mapIso_symm, Iso.trans_hom, Iso.symm_hom,
-    Functor.mapIso_inv, Category.assoc, preservesLimitsIso_hom_π, ← Functor.map_comp,
+    Functor.mapIso_inv, Category.assoc, preservesLimitIso_hom_π, ← Functor.map_comp,
     limitRightOpIsoOpColimit_inv_comp_π]
 
 @[reassoc (attr := simp)]

@@ -235,7 +235,7 @@ alias set_integral_tilted := setIntegral_tilted
 
 lemma integral_tilted (f : α → ℝ) (g : α → E) :
     ∫ x, g x ∂(μ.tilted f) = ∫ x, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by
-  rw [← integral_univ, setIntegral_tilted' f g MeasurableSet.univ, integral_univ]
+  rw [← setIntegral_univ, setIntegral_tilted' f g MeasurableSet.univ, setIntegral_univ]
 
 end integral
 

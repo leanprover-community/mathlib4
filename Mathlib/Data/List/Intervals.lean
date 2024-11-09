@@ -125,8 +125,6 @@ theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
   · rw [eq_nil_of_le (le_of_not_gt h)]
     trivial
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
 
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
@@ -135,7 +133,7 @@ theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
     simp only [(lt_of_lt_of_le (mem.1 hk).2 hml), decide_True]
 
 theorem filter_lt_of_le_bot {n m l : ℕ} (hln : l ≤ n) : ((Ico n m).filter fun x => x < l) = [] :=
-  filter_eq_nil.2 fun k hk => by
+  filter_eq_nil_iff.2 fun k hk => by
      simp only [decide_eq_true_eq, not_lt]
      apply le_trans hln
      exact (mem.1 hk).1
@@ -161,7 +159,7 @@ theorem filter_le_of_le_bot {n m l : ℕ} (hln : l ≤ n) :
     exact le_trans hln (mem.1 hk).1
 
 theorem filter_le_of_top_le {n m l : ℕ} (hml : m ≤ l) : ((Ico n m).filter fun x => l ≤ x) = [] :=
-  filter_eq_nil.2 fun k hk => by
+  filter_eq_nil_iff.2 fun k hk => by
     rw [decide_eq_true_eq]
     exact not_le_of_gt (lt_of_lt_of_le (mem.1 hk).2 hml)
 

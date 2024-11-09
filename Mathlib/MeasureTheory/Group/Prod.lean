@@ -3,8 +3,8 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Group.Measure
+import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Measure theory in the product of groups
@@ -221,7 +221,7 @@ theorem absolutelyContinuous_map_div_left (g : G) : μ ≪ map (fun h => g / h) 
 @[to_additive "This is the computation performed in the proof of [Halmos, §60 Th. A]."]
 theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) (f : G → ℝ≥0∞)
     (hf : Measurable f) : (μ s * ∫⁻ y, f y ∂ν) = ∫⁻ x, ν ((fun z => z * x) ⁻¹' s) * f x⁻¹ ∂μ := by
-  rw [← setLIntegral_one, ← lintegral_indicator _ sm,
+  rw [← setLIntegral_one, ← lintegral_indicator sm,
     ← lintegral_lintegral_mul (measurable_const.indicator sm).aemeasurable hf.aemeasurable,
     ← lintegral_lintegral_mul_inv μ ν]
   swap
@@ -233,7 +233,7 @@ theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) 
   have : ∀ x y, s.indicator (fun _ : G => (1 : ℝ≥0∞)) (y * x) =
       ((fun z => z * x) ⁻¹' s).indicator (fun b : G => 1) y := by
     intro x y; symm; convert indicator_comp_right (M := ℝ≥0∞) fun y => y * x using 2; ext1; rfl
-  simp_rw [this, lintegral_mul_const _ (ms _), lintegral_indicator _ (measurable_mul_const _ sm),
+  simp_rw [this, lintegral_mul_const _ (ms _), lintegral_indicator (measurable_mul_const _ sm),
     setLIntegral_one]
 
 /-- Any two nonzero left-invariant measures are absolutely continuous w.r.t. each other. -/
@@ -262,11 +262,11 @@ theorem ae_measure_preimage_mul_right_lt_top (hμs : μ' s ≠ ∞) :
   simp only [ν'.inv_apply] at h3A
   apply ae_lt_top (measurable_measure_mul_right ν' sm)
   have h1 := measure_mul_lintegral_eq μ' ν' sm (A⁻¹.indicator 1) (measurable_one.indicator hA.inv)
-  rw [lintegral_indicator _ hA.inv] at h1
+  rw [lintegral_indicator hA.inv] at h1
   simp_rw [Pi.one_apply, setLIntegral_one, ← image_inv, indicator_image inv_injective, image_inv,
     ← indicator_mul_right _ fun x => ν' ((fun y => y * x) ⁻¹' s), Function.comp, Pi.one_apply,
     mul_one] at h1
-  rw [← lintegral_indicator _ hA, ← h1]
+  rw [← lintegral_indicator hA, ← h1]
   exact ENNReal.mul_ne_top hμs h3A.ne
 
 @[to_additive]
@@ -320,7 +320,7 @@ theorem measure_mul_measure_eq (s t : Set G) (h2s : ν' s ≠ 0) (h3s : ν' s �
     (measurable_const.indicator ht)
   have h2 := measure_lintegral_div_measure μ' ν' hs h2s h3s (t.indicator fun _ => 1)
     (measurable_const.indicator ht)
-  rw [lintegral_indicator _ ht, setLIntegral_one] at h1 h2
+  rw [lintegral_indicator ht, setLIntegral_one] at h1 h2
   rw [← h1, mul_left_comm, h2]
 
 /-- Left invariant Borel measures on a measurable group are unique (up to a scalar). -/
