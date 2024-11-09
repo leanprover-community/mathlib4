@@ -51,16 +51,14 @@ instance (priority := 900) locallyOfFinitePresentation_of_isOpenImmersion [IsOpe
   HasRingHomProperty.of_isOpenImmersion
     RingHom.finitePresentation_holdsForLocalizationAway.containsIdentities
 
-instance : MorphismProperty.IsStableUnderComposition @LocallyOfFinitePresentation :=
-  HasRingHomProperty.stableUnderComposition RingHom.finitePresentation_stableUnderComposition
+instance : MorphismProperty.IsMultiplicative @LocallyOfFinitePresentation where
+  __ := HasRingHomProperty.stableUnderComposition RingHom.finitePresentation_stableUnderComposition
+  id_mem := inferInstance
 
-instance locallyOfFinitePresentation_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [hf : LocallyOfFinitePresentation f] [hg : LocallyOfFinitePresentation g] :
-    LocallyOfFinitePresentation (f ≫ g) :=
-  MorphismProperty.comp_mem _ f g hf hg
-
-lemma locallyOfFinitePresentation_isStableUnderBaseChange :
+instance locallyOfFinitePresentation_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @LocallyOfFinitePresentation :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.finitePresentation_isStableUnderBaseChange
+
+addMorphismPropertyInstances @LocallyOfFinitePresentation
 
 end AlgebraicGeometry

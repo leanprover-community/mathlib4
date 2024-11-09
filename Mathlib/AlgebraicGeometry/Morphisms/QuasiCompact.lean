@@ -43,24 +43,15 @@ class QuasiCompact (f : X ⟶ Y) : Prop where
 theorem quasiCompact_iff_spectral : QuasiCompact f ↔ IsSpectralMap f.base :=
   ⟨fun ⟨h⟩ => ⟨by fun_prop, h⟩, fun h => ⟨h.2⟩⟩
 
-instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
-    QuasiCompact f := by
-  constructor
-  intro U _ hU'
-  convert hU'.image (inv f.base).continuous_toFun using 1
-  rw [Set.image_eq_preimage_of_inverse]
-  · delta Function.LeftInverse
-    exact IsIso.inv_hom_id_apply f.base
-  · exact IsIso.hom_inv_id_apply f.base
-
-instance quasiCompact_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCompact f]
-    [QuasiCompact g] : QuasiCompact (f ≫ g) := by
-  constructor
-  intro U hU hU'
-  rw [Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp]
-  apply QuasiCompact.isCompact_preimage
-  · exact Continuous.isOpen_preimage (by fun_prop) _ hU
-  apply QuasiCompact.isCompact_preimage <;> assumption
+instance : MorphismProperty.IsMultiplicative @QuasiCompact where
+  id_mem X := ⟨fun U hU ↦ id⟩
+  comp_mem f g _ _ := by
+    constructor
+    intro U hU hU'
+    rw [Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp]
+    apply QuasiCompact.isCompact_preimage
+    · exact Continuous.isOpen_preimage (by fun_prop) _ hU
+    apply QuasiCompact.isCompact_preimage <;> assumption
 
 theorem isCompactOpen_iff_eq_finset_affine_union {X : Scheme} (U : Set X) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⋃ i ∈ s, i := by
@@ -152,10 +143,6 @@ theorem compactSpace_iff_quasiCompact (X : Scheme) :
     CompactSpace X ↔ QuasiCompact (terminal.from X) := by
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
 
-instance quasiCompact_isStableUnderComposition :
-    MorphismProperty.IsStableUnderComposition @QuasiCompact where
-  comp_mem _ _ _ _ := inferInstance
-
 instance quasiCompact_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @QuasiCompact := by
   letI := HasAffineProperty.isLocal_affineProperty @QuasiCompact
@@ -167,13 +154,9 @@ instance quasiCompact_isStableUnderBaseChange :
   have : ∀ i, CompactSpace (𝒰.obj i) := by intro i; dsimp [𝒰]; infer_instance
   exact 𝒰.compactSpace
 
+addMorphismPropertyInstances @QuasiCompact
+
 variable {Z : Scheme.{u}}
-
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] : QuasiCompact (pullback.fst f g) :=
-  MorphismProperty.pullback_fst f g inferInstance
-
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.snd f g) :=
-  MorphismProperty.pullback_snd f g inferInstance
 
 @[elab_as_elim]
 theorem compact_open_induction_on {P : X.Opens → Prop} (S : X.Opens)

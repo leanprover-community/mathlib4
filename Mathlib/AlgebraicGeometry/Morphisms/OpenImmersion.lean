@@ -67,4 +67,6 @@ instance isOpenImmersion_isStableUnderBaseChange :
   MorphismProperty.IsStableUnderBaseChange.mk' <| by
     intro X Y Z f g H; infer_instance
 
+addMorphismPropertyInstances @IsOpenImmersion
+
 end AlgebraicGeometry

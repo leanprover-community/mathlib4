@@ -77,13 +77,8 @@ instance : MorphismProperty.IsStableUnderComposition @IsSmooth :=
     isStandardSmooth_respectsIso isStandardSmooth_localizationPreserves
       isStandardSmooth_stableUnderComposition
 
-/-- The composition of smooth morphisms is smooth. -/
-instance isSmooth_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [IsSmooth f] [IsSmooth g] :
-    IsSmooth (f ≫ g) :=
-  MorphismProperty.comp_mem _ f g ‹IsSmooth f› ‹IsSmooth g›
-
 /-- Smooth of relative dimension `n` is stable under base change. -/
-lemma isSmooth_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsSmooth :=
+instance isSmooth_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsSmooth :=
   HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
     isStandardSmooth_respectsIso isStandardSmooth_isStableUnderBaseChange
 
@@ -116,7 +111,7 @@ instance : HasRingHomProperty (@IsSmoothOfRelativeDimension n)
     rw [isSmoothOfRelativeDimension_iff]
 
 /-- Smooth of relative dimension `n` is stable under base change. -/
-lemma isSmoothOfRelativeDimension_isStableUnderBaseChange :
+instance isSmoothOfRelativeDimension_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange (@IsSmoothOfRelativeDimension n) :=
   HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
     isStandardSmoothOfRelativeDimension_respectsIso
@@ -155,13 +150,13 @@ instance isSmoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
     exact (isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n).right
       _ r _ hf₁
 
-instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsSmoothOfRelativeDimension 0 f]
-    [IsSmoothOfRelativeDimension 0 g] :
-    IsSmoothOfRelativeDimension 0 (f ≫ g) :=
-  inferInstanceAs <| IsSmoothOfRelativeDimension (0 + 0) (f ≫ g)
-
 /-- Smooth of relative dimension `0` is stable under composition. -/
 instance : MorphismProperty.IsStableUnderComposition (@IsSmoothOfRelativeDimension 0) where
-  comp_mem _ _ _ _ := inferInstance
+  comp_mem _ _ _ _ := inferInstanceAs <| IsSmoothOfRelativeDimension (0 + 0) _
+
+addMorphismPropertyInstances @IsSmooth
+addMorphismPropertyInstances @IsSmoothOfRelativeDimension n
+-- some instances only works for `n = 0`.
+addMorphismPropertyInstances @IsSmoothOfRelativeDimension 0
 
 end AlgebraicGeometry

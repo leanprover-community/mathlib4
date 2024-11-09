@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
 import Mathlib.CategoryTheory.MorphismProperty.Basic
+import Mathlib.CategoryTheory.MorphismProperty.Tactic
 
 /-!
 # Compatibilities of properties of morphisms with respect to composition
@@ -65,6 +66,7 @@ instance Pi.containsIdentities {J : Type w} {C : J → Type u}
     (pi W).ContainsIdentities :=
   ⟨fun _ _ => MorphismProperty.id_mem _ _⟩
 
+@[morphismPropertyInstance]
 lemma of_isIso (P : MorphismProperty C) [P.ContainsIdentities] [P.RespectsIso] {X Y : C} (f : X ⟶ Y)
     [IsIso f] : P f :=
   Category.id_comp f ▸ RespectsIso.postcomp P f (𝟙 X) (P.id_mem X)
@@ -78,6 +80,7 @@ two such morphisms still falls in the class. -/
 class IsStableUnderComposition (P : MorphismProperty C) : Prop where
   comp_mem {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) : P f → P g → P (f ≫ g)
 
+@[morphismPropertyInstance]
 lemma comp_mem (W : MorphismProperty C) [W.IsStableUnderComposition]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hg : W g) : W (f ≫ g) :=
   IsStableUnderComposition.comp_mem f g hf hg

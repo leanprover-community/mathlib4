@@ -1910,6 +1910,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Factorization
 import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Representable
+import Mathlib.CategoryTheory.MorphismProperty.Tactic
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Noetherian

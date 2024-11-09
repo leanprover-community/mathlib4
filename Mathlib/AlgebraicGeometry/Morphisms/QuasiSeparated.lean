@@ -119,13 +119,14 @@ instance quasiSeparated_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ inferInstance
 
+instance : MorphismProperty.IsMultiplicative @QuasiSeparated where
+  id_mem _ := inferInstance
+
 instance quasiSeparated_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ inferInstance
 
-instance quasiSeparatedComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f]
-    [QuasiSeparated g] : QuasiSeparated (f ≫ g) :=
-  MorphismProperty.comp_mem _ f g inferInstance inferInstance
+addMorphismPropertyInstances @QuasiSeparated
 
 theorem quasiSeparated_over_affine_iff {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
     QuasiSeparated f ↔ QuasiSeparatedSpace X := by
@@ -134,14 +135,6 @@ theorem quasiSeparated_over_affine_iff {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y]
 theorem quasiSeparatedSpace_iff_quasiSeparated (X : Scheme) :
     QuasiSeparatedSpace X ↔ QuasiSeparated (terminal.from X) :=
   (quasiSeparated_over_affine_iff _).symm
-
-instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated g] :
-    QuasiSeparated (pullback.fst f g) :=
-  MorphismProperty.pullback_fst f g inferInstance
-
-instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated f] :
-    QuasiSeparated (pullback.snd f g) :=
-  MorphismProperty.pullback_snd f g inferInstance
 
 theorem quasiSeparatedSpace_of_quasiSeparated {X Y : Scheme} (f : X ⟶ Y)
     [hY : QuasiSeparatedSpace Y] [QuasiSeparated f] : QuasiSeparatedSpace X := by
