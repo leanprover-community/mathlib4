@@ -35,6 +35,7 @@ variable {M : Type*} [SeminormedAddCommGroup M]
 
 namespace SeparationQuotient
 
+variable (M) in
 /-- The null subgroup with respect to the norm. -/
 def nullSubgroup : AddSubgroup M where
   carrier := {x : M | ‖x‖ = 0}
