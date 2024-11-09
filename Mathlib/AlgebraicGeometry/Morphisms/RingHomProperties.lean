@@ -324,7 +324,7 @@ theorem iff_of_source_openCover [IsAffine Y] (𝒰 : X.OpenCover) [∀ i, IsAffi
 
 theorem iff_of_isAffine [IsAffine X] [IsAffine Y] :
     P f ↔ Q (f.app ⊤) := by
-  rw [iff_of_source_openCover (P := P) (Scheme.openCoverOfIsIso.{u} (𝟙 _))]
+  rw [iff_of_source_openCover (P := P) (Scheme.coverOfIsIso.{u} (𝟙 _))]
   simp
 
 theorem Spec_iff {R S : CommRingCat.{u}} {φ : R ⟶ S} :
@@ -373,7 +373,7 @@ lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
     wlog hY : IsAffine Y generalizing X Y
     · rw [IsLocalAtSource.iff_of_openCover (P := P) (Y.affineCover.pullbackCover f)]
       intro i
-      rw [← Scheme.OpenCover.pullbackHom_map_assoc]
+      rw [← Scheme.Cover.pullbackHom_map_assoc]
       exact this _ _ (IsLocalAtTarget.of_isPullback (.of_hasPullback _ _) hf)
         (comp_of_isOpenImmersion _ _ _ hg) inferInstance
     wlog hX : IsAffine X generalizing X

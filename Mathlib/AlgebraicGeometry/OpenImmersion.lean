@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.Geometry.RingedSpace.OpenImmersion
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Open immersions of schemes
@@ -635,6 +636,29 @@ instance {Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [IsOpenImmersion f]
   IsOpenImmersion.of_comp _ f
 
 end IsOpenImmersion
+
+section MorphismProperty
+
+instance isOpenImmersion_isStableUnderComposition :
+    MorphismProperty.IsStableUnderComposition @IsOpenImmersion where
+  comp_mem f g _ _ := LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
+
+instance isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersion := by
+  apply MorphismProperty.respectsIso_of_isStableUnderComposition
+  intro _ _ f (hf : IsIso f)
+  have : IsIso f := hf
+  infer_instance
+
+instance isOpenImmersion_isMultiplicative :
+    MorphismProperty.IsMultiplicative @IsOpenImmersion where
+  id_mem _ := inferInstance
+
+instance isOpenImmersion_stableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange @IsOpenImmersion :=
+  MorphismProperty.IsStableUnderBaseChange.mk' <| by
+    intro X Y Z f g _ H; infer_instance
+
+end MorphismProperty
 
 namespace Scheme
 
