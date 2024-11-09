@@ -232,6 +232,30 @@ lemma nnnorm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_
     ‖a‖₊ ≤ n ↔ a ≤ n := by
   simpa using nnnorm_le_iff_of_nonneg a n
 
+
+section Icc
+
+open Set
+
+lemma mem_Icc_algebraMap_iff_norm_le {x : A} {r : ℝ} (hr : 0 ≤ r) :
+    x ∈ Icc 0 (algebraMap ℝ A r) ↔ 0 ≤ x ∧ ‖x‖ ≤ r := by
+  rw [mem_Icc, and_congr_right_iff, iff_comm]
+  exact (norm_le_iff_le_algebraMap _ hr ·)
+
+lemma mem_Icc_algebraMap_iff_nnnorm_le {x : A} {r : ℝ≥0} :
+    x ∈ Icc 0 (algebraMap ℝ≥0 A r) ↔ 0 ≤ x ∧ ‖x‖₊ ≤ r :=
+  mem_Icc_algebraMap_iff_norm_le (hr := r.2)
+
+lemma mem_Icc_iff_norm_le_one {x : A} :
+    x ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖ ≤ 1 := by
+  simpa only [map_one] using mem_Icc_algebraMap_iff_norm_le zero_le_one
+
+lemma mem_Icc_iff_nnnorm_le_one {x : A} :
+    x ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖₊ ≤ 1 :=
+  mem_Icc_iff_norm_le_one
+
+end Icc
+
 end CStarAlgebra
 
 section Inv
@@ -424,6 +448,27 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
 
 instance : OrderClosedTopology A where
   isClosed_le' := isClosed_le_of_isClosed_nonneg isClosed_nonneg
+
+section Icc
+
+open Unitization Set Metric
+
+lemma inr_mem_Icc_iff_norm_le {x : A} :
+    (x : A⁺¹) ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖ ≤ 1 := by
+  simp only [mem_Icc, inr_nonneg_iff, and_congr_right_iff]
+  rw [← norm_inr (𝕜 := ℂ), ← inr_nonneg_iff, iff_comm]
+  exact (norm_le_one_iff_of_nonneg _ ·)
+
+lemma inr_mem_Icc_iff_nnnorm_le {x : A} :
+    (x : A⁺¹) ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖₊ ≤ 1 :=
+  inr_mem_Icc_iff_norm_le
+
+lemma preimage_inr_Icc_zero_one :
+    ((↑) : A → A⁺¹) ⁻¹' Icc 0 1 = {x : A | 0 ≤ x} ∩ closedBall 0 1 := by
+  ext
+  simp [- mem_Icc, inr_mem_Icc_iff_norm_le]
+
+end Icc
 
 end CStarAlgebra
 
