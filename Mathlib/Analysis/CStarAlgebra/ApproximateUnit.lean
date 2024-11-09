@@ -11,7 +11,7 @@ import Mathlib.Topology.ApproximateUnit
 
 /-! # Nonnegative contractions in a C⋆-algebra form an approximate unit
 
-This file will shows that the collection of positive contractions (of norm strictly less than one)
+This file shows that the collection of positive contractions (of norm strictly less than one)
 in a possibly non-unital C⋆-algebra form a directed set. The key step uses the continuous functional
 calculus applied with the functions `fun x : ℝ≥0, 1 - (1 + x)⁻¹` and `fun x : ℝ≥0, x * (1 - x)⁻¹`,
 which are inverses on the interval `{x : ℝ≥0 | x < 1}`.
