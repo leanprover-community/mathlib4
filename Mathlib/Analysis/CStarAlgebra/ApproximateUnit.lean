@@ -160,11 +160,25 @@ open Metric Filter Topology
 /-- An *increasing approximate unit* in a C⋆-algebra is an approximate unit contained in the
 closed unit ball of nonnegative elements. -/
 structure Filter.IsIncreasingApproximateUnit (l : Filter A) extends l.IsApproximateUnit : Prop where
-  eventually_mem_Icc : ∀ᶠ x in l, 0 ≤ x
+  eventually_nonneg : ∀ᶠ x in l, 0 ≤ x
   eventually_norm : ∀ᶠ x in l, ‖x‖ ≤ 1
-  disjoint_cobounded := Filter.disjoint_of_disjoint_of_mem subset_rfl.disjoint_compl_right
-    (by simpa [Filter.eventually_iff, closedBall] using eventually_norm)
-    (Metric.isBounded_closedBall (x := 0) (r := 1)).compl
+
+namespace Filter.IsIncreasingApproximateUnit
+
+omit [StarOrderedRing A] in
+lemma eventually_nnnorm {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
+    ∀ᶠ x in l, ‖x‖₊ ≤ 1 :=
+  hl.eventually_norm
+
+lemma eventually_isSelfAdjoint {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
+    ∀ᶠ x in l, IsSelfAdjoint x :=
+  hl.eventually_nonneg.mp <| .of_forall fun _ ↦ IsSelfAdjoint.of_nonneg
+
+lemma eventually_star_eq {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
+    ∀ᶠ x in l, star x = x :=
+  hl.eventually_isSelfAdjoint.mp <| .of_forall fun _ ↦ IsSelfAdjoint.star_eq
+
+end Filter.IsIncreasingApproximateUnit
 
 namespace CStarAlgebra
 
@@ -214,51 +228,46 @@ lemma hasBasis_approximateUnit :
     (approximateUnit A).HasBasis (fun x : A ↦ 0 ≤ x ∧ ‖x‖ < 1) ({x | · ≤ x} ∩ closedBall 0 1) :=
   isBasis_nonneg_sections A |>.hasBasis.inf_principal (closedBall 0 1)
 
-/-- This is the key norm computation in the proof that `CStarAlgebra.approximateUnit` is
-an approximate unit. -/
-private theorem tendsto_mul_right_approximateUnit_aux {A : Type*} [CStarAlgebra A]
-    [PartialOrder A] [StarOrderedRing A] {ε : ℝ≥0} (hε : 0 < ε) {m x : A} (hm : m ∈ Set.Icc 0 1)
-    (hx : x ∈ Set.Icc 0 1) (hmx : cfc (fun y : ℝ≥0 ↦ 1 - (1 + y)⁻¹) (ε⁻¹ ^ 2 • m) ≤ x) :
-    ‖m - x * m‖₊ ^ 2 ≤ ε ^ 2 := by
-  have hx' := Set.sub_mem_Icc_zero_iff_right.mpr hx
-  set g : ℝ≥0 → ℝ≥0 := fun y ↦ 1 - (1 + y)⁻¹
-  have hg : Continuous g := by
-    rw [continuous_iff_continuousOn_univ]
-    fun_prop (disch := intro _ _; positivity)
-  have hg' : ContinuousOn (fun y ↦ (1 + ε⁻¹ ^ 2 • y)⁻¹) (spectrum ℝ≥0 m) :=
-    ContinuousOn.inv₀ (by fun_prop) fun _ _ ↦ by positivity
-  calc
-    ‖m - x * m‖₊ ^ 2 = ‖star m * ((1 - x) ^ 2) * m‖₊ := by
-      rw [sq, ← CStarRing.nnnorm_star_mul_self]
-      simp [sq, sub_mul, mul_sub, IsSelfAdjoint.star_eq (.of_nonneg hx.1), mul_assoc]
-    _ ≤ ‖star m * (1 - cfc g (ε⁻¹ ^ 2 • m)) * m‖₊ := by
-      refine nnnorm_le_nnnorm_of_nonneg_of_le (conjugate_nonneg (pow_nonneg hx'.1 2) _) ?_
-      refine conjugate_le_conjugate ?_ _
-      refine pow_antitone hx'.1 hx'.2 one_le_two |>.trans ?_
-      simp only [pow_one]
-      gcongr
-    _ = ‖cfc (fun y : ℝ≥0 ↦ y * (1 + ε⁻¹ ^ 2 • y)⁻¹ * y) m‖₊ := by
-      rw [cfc_mul _ _ m (continuousOn_id' _ |>.mul hg') (continuousOn_id' _),
-        cfc_mul _ _ m (continuousOn_id' _) hg', cfc_id' .., IsSelfAdjoint.star_eq (.of_nonneg hm.1)]
-      congr
-      rw [← cfc_one (R := ℝ≥0) m, ← cfc_comp_smul _ _ _ hg.continuousOn hm.1,
-        ← cfc_tsub _ _ m (by simp [g]) hm.1 (by fun_prop) (Continuous.continuousOn <| by fun_prop)]
-      refine cfc_congr (fun y _ ↦ ?_)
-      simp [g, tsub_tsub_cancel_of_le]
-    _ ≤ ε ^ 2 := by
-      refine nnnorm_cfc_nnreal_le fun y hy ↦ ?_
-      field_simp
-      calc
-        y * ε ^ 2 * y / (ε ^ 2 + y) ≤ ε ^ 2 * 1 := by
-          rw [mul_div_assoc]
-          gcongr
-          · refine mul_le_of_le_one_left (zero_le _) ?_
-            have hm' := hm.2
-            rw [← cfc_id' ℝ≥0 m, ← cfc_one (R := ℝ≥0) m,
-              cfc_nnreal_le_iff _ _ _ (QuasispectrumRestricts.nnreal_of_nonneg hm.1)] at hm'
-            exact hm' y hy
-          · exact div_le_one (by positivity) |>.mpr le_add_self
-        _ = ε ^ 2 := mul_one _
+/-- This is a common reasoning sequence in C⋆-algebra theory. If `0 ≤ x ≤ y ≤ 1`, then the norm
+of `z - y * z` is controled by the norm of `star z * (1 - x) * z`, which is advantageous because the
+latter is nonnegative. This is a key step in establishing the existence of an increasing approximate
+unit in general C⋆-algebras. -/
+lemma nnnorm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+    {x y : A} (z : A) (hx₀ : 0 ≤ x) (hy : y ∈ Set.Icc x 1) {c : ℝ≥0}
+    (h : ‖star z * (1 - x) * z‖₊ ≤ c ^ 2) :
+    ‖z - y * z‖₊ ≤ c := by
+  nth_rw 1 [← one_mul z]
+  rw [← sqrt_sq c, le_sqrt_iff_sq_le, ← sub_mul, sq, ← CStarRing.nnnorm_star_mul_self]
+  simp only [star_mul, star_sub, star_one]
+  have hy₀ : y ∈ Set.Icc 0 1 := ⟨hx₀.trans hy.1, hy.2⟩
+  have hy' : 1 - y ∈ Set.Icc 0 1 := Set.sub_mem_Icc_zero_iff_right.mpr hy₀
+  rw [hy₀.1.star_eq, ← mul_assoc, mul_assoc (star _), ← sq]
+  refine nnnorm_le_nnnorm_of_nonneg_of_le (conjugate_nonneg (pow_nonneg hy'.1 2) _) ?_ |>.trans h
+  refine conjugate_le_conjugate ?_ _
+  trans (1 - y)
+  · simpa using pow_antitone hy'.1 hy'.2 one_le_two
+  · gcongr
+    exact hy.1
+
+/-- A variant of `nnnorm_sub_mul_self_le` which uses `‖·‖` instead of `‖·‖₊`. -/
+lemma norm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+    {x y : A} (z : A) (hx₀ : 0 ≤ x) (hy : y ∈ Set.Icc x 1)
+    {c : ℝ} (hc : 0 ≤ c) (h : ‖star z * (1 - x) * z‖ ≤ c ^ 2) :
+    ‖z - y * z‖ ≤ c :=
+  nnnorm_sub_mul_self_le z hx₀ hy h (c := ⟨c, hc⟩)
+
+variable {A} in
+/-- A variant of `norm_sub_mul_self_le` for non-unital algebras that passes to the unitization. -/
+lemma norm_sub_mul_self_le_of_inr {x y : A} (z : A) (hx₀ : 0 ≤ x) (hxy : x ≤ y) (hy₁ : ‖y‖ ≤ 1)
+    {c : ℝ} (hc : 0 ≤ c) (h : ‖star (z : A⁺¹) * (1 - x) * z‖ ≤ c ^ 2) :
+    ‖z - y * z‖ ≤ c := by
+  rw [← norm_inr (𝕜 := ℂ), inr_sub, inr_mul]
+  refine norm_sub_mul_self_le _ ?_ ?_ hc h
+  · rwa [inr_nonneg_iff]
+  · have hy := hx₀.trans hxy
+    rw [Set.mem_Icc, inr_le_iff _ _ hx₀.isSelfAdjoint hy.isSelfAdjoint,
+      ← norm_le_one_iff_of_nonneg _, norm_inr]
+    exact ⟨hxy, hy₁⟩
 
 variable {A} in
 /-- This shows `CStarAlgebra.approximateUnit` is a one-sided approximate unit, but this is marked
@@ -266,26 +275,54 @@ variable {A} in
 private lemma tendsto_mul_right_approximateUnit (m : A) :
     Tendsto (· * m) (approximateUnit A) (𝓝 m) := by
   refine tendsto_mul_right_of_forall_nonneg_tendsto (fun m hm₁ hm₂ ↦ ?_) m
-  rw [isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.tendsto_nhds_iff]
-  simp only [Function.comp_def, inr_mul]
-  refine tendsto_map'_iff (f := (· * (m : A⁺¹))) |>.mp ?_
-  rw [(hasBasis_approximateUnit A).map inr |>.tendsto_iff nhds_basis_closedBall]
+  rw [(hasBasis_approximateUnit A).tendsto_iff nhds_basis_closedBall]
   intro ε hε
-  refine ⟨cfcₙ (fun y : ℝ≥0 ↦ 1 - (1 + y)⁻¹) (ε⁻¹ ^ 2 • m),
-    ⟨cfcₙ_nonneg_of_predicate, norm_cfcₙ_one_sub_one_add_inv_lt_one (ε⁻¹ ^ 2 • m)⟩, ?_⟩
-  rintro - ⟨x, ⟨(hx₁ : _ ≤ x), hx₂⟩, rfl⟩
-  simp only [mem_closedBall, dist_eq_norm', zero_sub, norm_neg] at hx₂ ⊢
-  have hx₀ : 0 ≤ x := cfcₙ_nonneg_of_predicate.trans hx₁
   lift ε to ℝ≥0 using hε.le
   rw [coe_pos] at hε
-  rw [← NNReal.coe_inv, ← coe_pow, ← smul_def, ← inr_le_iff _ _, nnreal_cfcₙ_eq_cfc_inr _ _,
-    inr_smul] at hx₁
-  rw [← coe_nnnorm, coe_le_coe, ← sqrt_sq ε, ← sqrt_sq ‖_‖₊, sqrt_le_sqrt]
+  refine ⟨cfcₙ (fun y : ℝ≥0 ↦ 1 - (1 + y)⁻¹) (ε⁻¹ ^ 2 • m),
+    ⟨cfcₙ_nonneg_of_predicate, norm_cfcₙ_one_sub_one_add_inv_lt_one (ε⁻¹ ^ 2 • m)⟩, ?_⟩
+  rintro x ⟨(hx₁ : _ ≤ x), hx₂⟩
+  simp only [mem_closedBall, dist_eq_norm', zero_sub, norm_neg] at hx₂ ⊢
+  rw [← coe_nnnorm, coe_le_coe]
+  have hx₀ : 0 ≤ x := cfcₙ_nonneg_of_predicate.trans hx₁
+  rw [← inr_le_iff _ _ (.of_nonneg cfcₙ_nonneg_of_predicate) (.of_nonneg hx₀),
+    nnreal_cfcₙ_eq_cfc_inr _ _ (by simp [tsub_self]), inr_smul] at hx₁
   rw [← norm_inr (𝕜 := ℂ)] at hm₂ hx₂
   rw [← inr_nonneg_iff] at hx₀ hm₁
-  exact tendsto_mul_right_approximateUnit_aux hε
-    ⟨hm₁, norm_le_one_iff_of_nonneg (m : A⁺¹) hm₁ |>.mp hm₂.le⟩
-    ⟨hx₀, norm_le_one_iff_of_nonneg (x : A⁺¹) hx₀ |>.mp hx₂⟩ hx₁
+  rw [← nnnorm_inr (𝕜 := ℂ), inr_sub, inr_mul]
+  generalize (x : A⁺¹) = x, (m : A⁺¹) = m at *
+  set g : ℝ≥0 → ℝ≥0 := fun y ↦ 1 - (1 + y)⁻¹
+  have hg : Continuous g := by
+    rw [continuous_iff_continuousOn_univ]
+    fun_prop (disch := intro _ _; positivity)
+  have hg' : ContinuousOn (fun y ↦ (1 + ε⁻¹ ^ 2 • y)⁻¹) (spectrum ℝ≥0 m) :=
+    ContinuousOn.inv₀ (by fun_prop) fun _ _ ↦ by positivity
+  have hx : x ∈ Set.Icc 0 1 := mem_Icc_iff_norm_le_one.mpr ⟨hx₀, hx₂⟩
+  have hx' : x ∈ Set.Icc _ 1 := ⟨hx₁, hx.2⟩
+  refine nnnorm_sub_mul_self_le m cfc_nonneg_of_predicate hx' ?_
+  suffices star m * (1 - cfc g (ε⁻¹ ^ 2 • m)) * m =
+      cfc (fun y : ℝ≥0 ↦ y * (1 + ε⁻¹ ^ 2 • y)⁻¹ * y) m by
+    rw [this]
+    refine nnnorm_cfc_nnreal_le fun y hy ↦ ?_
+    field_simp
+    calc
+      y * ε ^ 2 * y / (ε ^ 2 + y) ≤ ε ^ 2 * 1 := by
+        rw [mul_div_assoc]
+        gcongr
+        · refine mul_le_of_le_one_left (zero_le _) ?_
+          have hm' := hm₂.le
+          rw [norm_le_one_iff_of_nonneg m hm₁, ← cfc_id' ℝ≥0 m, ← cfc_one (R := ℝ≥0) m,
+            cfc_nnreal_le_iff _ _ _ (QuasispectrumRestricts.nnreal_of_nonneg hm₁)] at hm'
+          exact hm' y hy
+        · exact div_le_one (by positivity) |>.mpr le_add_self
+      _ = ε ^ 2 := mul_one _
+  rw [cfc_mul _ _ m (continuousOn_id' _ |>.mul hg') (continuousOn_id' _),
+    cfc_mul _ _ m (continuousOn_id' _) hg', cfc_id' .., hm₁.star_eq]
+  congr
+  rw [← cfc_one (R := ℝ≥0) m, ← cfc_comp_smul _ _ _ hg.continuousOn hm₁,
+    ← cfc_tsub _ _ m (by simp [g]) hm₁ (by fun_prop) (Continuous.continuousOn <| by fun_prop)]
+  refine cfc_congr (fun y _ ↦ ?_)
+  simp [g, tsub_tsub_cancel_of_le]
 
 /-- The filter `CStarAlgebra.approximateUnit` generated by the sections
 `{x | a ≤ x} ∩ closedBall 0 1` for `0 ≤ a` forms an increasing approximate unit. -/
@@ -296,9 +333,9 @@ lemma increasingApproximateUnit :
     · exact tendsto_mul_right_approximateUnit
     · rw [(hasBasis_approximateUnit A).eventually_iff]
       peel (hasBasis_approximateUnit A).ex_mem with x hx
-      exact ⟨hx, fun y hy ↦ .of_nonneg (hx.1.trans hy.1)⟩
+      exact ⟨hx, fun y hy ↦ (hx.1.trans hy.1).isSelfAdjoint⟩
   tendsto_mul_right := tendsto_mul_right_approximateUnit
-  eventually_mem_Icc := .filter_mono inf_le_left <|
+  eventually_nonneg := .filter_mono inf_le_left <|
     (isBasis_nonneg_sections A).hasBasis.eventually_iff.mpr ⟨0, by simp⟩
   eventually_norm := .filter_mono inf_le_right <| by simp
   neBot := hasBasis_approximateUnit A |>.neBot_iff.mpr
