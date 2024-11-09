@@ -197,7 +197,6 @@ theorem algEquivOfAlgEquiv_mk' (x : R) (y : M) :
       mk' Q (h x) ⟨h y, show h y ∈ T from H ▸ Set.mem_image_of_mem h y.2⟩ := by
   simp [map_mk']
 
-@[simp]
 theorem algEquivOfAlgEquiv_symm : (algEquivOfAlgEquiv S Q h H).symm =
     algEquivOfAlgEquiv Q S h.symm (show Submonoid.map h.symm T = M by
       erw [← H, ← Submonoid.comap_equiv_eq_map_symm,
