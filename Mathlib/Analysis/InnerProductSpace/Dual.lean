@@ -90,9 +90,8 @@ lemma inner_eq_zero_of_left (x y : E) (h : ‖x‖ = 0) :
   refine le_antisymm ?_ (by positivity)
   exact norm_inner_le_norm _ _ |>.trans <| by simp [h]
 
-lemma inner_nullSubmodule_right_eq_zero (x y : E) (h : ‖y‖ = 0) : ⟪x, y⟫_𝕜 = 0 := by
-  rw [inner_eq_zero_symm]
-  exact inner_eq_zero_of_left 𝕜 E y x h
+lemma inner_eq_zero_of_right (x : E) {y : E} (h : ‖y‖ = 0) : ⟪x, y⟫_𝕜 = 0 := by
+  rw [inner_eq_zero_symm, inner_eq_zero_of_left _ _ h]
 
 lemma norm_sub_eq_norm (x y : E) (h : ‖y‖ = 0) : ‖x - y‖ = ‖x‖ := by
   apply le_antisymm ?_ ?_
