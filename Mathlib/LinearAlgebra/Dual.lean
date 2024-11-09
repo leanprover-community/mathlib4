@@ -587,7 +587,8 @@ lemma bijective_dual_eval [IsReflexive R M] : Bijective (Dual.eval R M) :=
   IsReflexive.bijective_dual_eval'
 
 /-- See also `Module.instFiniteDimensionalOfIsReflexive` for the converse over a field. -/
-instance IsReflexive.of_finite_of_free [Module.Finite R M] [Free R M] : IsReflexive R M where
+instance (priority := 900) IsReflexive.of_finite_of_free [Module.Finite R M] [Free R M] :
+    IsReflexive R M where
   bijective_dual_eval' := ⟨LinearMap.ker_eq_bot.mp (Free.chooseBasis R M).eval_ker,
                            LinearMap.range_eq_top.mp (Free.chooseBasis R M).eval_range⟩
 
