@@ -566,16 +566,16 @@ namespace Complex
 
 section tprod
 
-variable {α : Type*}
+variable {α : Type*} {f : α → ℂ}
 
-theorem hasProd_abs {f : α → ℂ} {x : ℂ} (hfx : HasProd f x) : HasProd (fun i ↦ (f i).abs) x.abs :=
+theorem hasProd_abs {x : ℂ} (hfx : HasProd f x) : HasProd (fun i ↦ (f i).abs) x.abs :=
   hfx.norm
 
-theorem multipliable_abs {f : α → ℂ} (hf : Multipliable f) : Multipliable (fun i ↦ (f i).abs) :=
+theorem multipliable_abs (hf : Multipliable f) : Multipliable (fun i ↦ (f i).abs) :=
   hf.norm
 
-theorem abs_tprod {α : Type*} {f : α → ℂ} (h : Multipliable f) :
-    (∏' i, f i).abs = ∏' i, (f i).abs := norm_tprod h
+theorem abs_tprod (h : Multipliable f) : (∏' i, f i).abs = ∏' i, abs (f i) :=
+  norm_tprod h
 
 end tprod
 
