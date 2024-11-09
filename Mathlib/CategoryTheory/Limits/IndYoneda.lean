@@ -198,7 +198,7 @@ lemma colimitCoyonedaHomIsoLimit_π_apply (f : colimit (D.rightOp ⋙ coyoneda) 
 
 end ProCoyonedaContravariant
 
-section ProCoyonedaContravariantRightOp
+section ProCoyonedaContravariantLeftOp
 
 variable (D : I ⥤ Cᵒᵖ) (F : C ⥤ Type u₂)
 variable [HasColimit (D ⋙ coyoneda)] [HasLimitsOfShape Iᵒᵖ (Type (max u₁ u₂))]
@@ -208,24 +208,20 @@ of `F` evaluated at `D`. This variant is for contravariant diagrams, see
 `colimitCoyonedaHomIsoLimit'` for a covariant version. -/
 noncomputable def colimitCoyonedaHomIsoLimitLeftOp :
     (colimit (D ⋙ coyoneda) ⟶ F) ≅ limit (D.leftOp ⋙ F ⋙ uliftFunctor.{u₁}) :=
-  colimitHomIsoLimitYoneda _ F ≪≫
-    HasLimit.isoOfNatIso (isoWhiskerLeft (D.leftOp ⋙ Prod.sectl C F) (coyonedaLemma C))
+  haveI : HasColimit (D.leftOp.rightOp ⋙ coyoneda) :=
+    inferInstanceAs <| HasColimit (D ⋙ coyoneda)
+  colimitCoyonedaHomIsoLimit D.leftOp F
 
 @[simp]
 lemma colimitCoyonedaHomIsoLimitLeftOp_π_apply (f : colimit (D ⋙ coyoneda) ⟶ F) (i : I) :
     limit.π (D.leftOp ⋙ F ⋙ uliftFunctor.{u₁}) (op i) ((colimitCoyonedaHomIsoLimitLeftOp D F).hom f)
       = ⟨f.app (D.obj i).unop ((colimit.ι (D ⋙ coyoneda) i).app (D.obj i).unop
-          (𝟙 (D.obj i).unop))⟩ := by
-  change ((colimitCoyonedaHomIsoLimitLeftOp D F).hom ≫
-    (limit.π (D.leftOp ⋙ F ⋙ uliftFunctor.{u₁}) (op i))) f = _
-  simp only [colimitCoyonedaHomIsoLimitLeftOp, Iso.trans_hom, Category.assoc,
-    HasLimit.isoOfNatIso_hom_π]
-  rw [← Category.assoc, colimitHomIsoLimitYoneda_hom_comp_π]
-  dsimp [coyonedaLemma, types_comp_apply]
-  erw [coyonedaEquiv_comp, coyonedaEquiv_apply]
-  rfl
+          (𝟙 (D.obj i).unop))⟩ :=
+  have : HasColimit (D.leftOp.rightOp ⋙ coyoneda) :=
+    inferInstanceAs <| HasColimit (D ⋙ coyoneda)
+  colimitCoyonedaHomIsoLimit_π_apply _ _ _ _
 
-end ProCoyonedaContravariantRightOp
+end ProCoyonedaContravariantLeftOp
 
 section IndYonedaCovariant
 
@@ -264,20 +260,18 @@ evaluated at `D`. This version is for covariant diagrams, see `colimitYonedaHomI
 contravariant version. -/
 noncomputable def colimitYonedaHomIsoLimitOp :
       (colimit (D ⋙ yoneda) ⟶ F) ≅ limit (D.op ⋙ F ⋙ uliftFunctor.{u₁}) :=
-  colimitHomIsoLimitYoneda _ _ ≪≫
-    HasLimit.isoOfNatIso (isoWhiskerLeft (D.op ⋙ Prod.sectl _ _) (yonedaLemma C))
+  haveI : HasColimit (D.op.unop ⋙ yoneda) :=
+    inferInstanceAs <| HasColimit (D ⋙ yoneda)
+  colimitYonedaHomIsoLimit D.op F
 
 @[simp]
 lemma colimitYonedaHomIsoLimitOp_π_apply (f : colimit (D ⋙ yoneda) ⟶ F) (i : Iᵒᵖ) :
     limit.π (D.op ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitYonedaHomIsoLimitOp D F).hom f) =
       ⟨f.app (op (D.obj i.unop))
-        ((colimit.ι (D ⋙ yoneda) i.unop).app (op (D.obj i.unop)) (𝟙 (D.obj i.unop)))⟩ := by
-  change ((colimitYonedaHomIsoLimitOp D F).hom ≫ (limit.π (D.op ⋙ F ⋙ uliftFunctor.{u₁}) i)) f = _
-  simp only [colimitYonedaHomIsoLimitOp, Iso.trans_hom, Category.assoc, HasLimit.isoOfNatIso_hom_π]
-  rw [← Category.assoc, colimitHomIsoLimitYoneda_hom_comp_π]
-  dsimp [yonedaLemma]
-  erw [yonedaEquiv_comp, yonedaEquiv_apply]
-  rfl
+        ((colimit.ι (D ⋙ yoneda) i.unop).app (op (D.obj i.unop)) (𝟙 (D.obj i.unop)))⟩ :=
+  have : HasColimit (D.op.unop ⋙ yoneda) :=
+    inferInstanceAs <| HasColimit (D ⋙ yoneda)
+  colimitYonedaHomIsoLimit_π_apply _ _ _ _
 
 end IndYonedaCovariantOp
 
@@ -317,22 +311,18 @@ of `F` evaluated at `D`. This variant is for covariant diagrams, see
 `colimitCoyonedaHomIsoLimit` for a covariant version. -/
 noncomputable def colimitCoyonedaHomIsoLimitUnop :
     (colimit (D ⋙ coyoneda) ⟶ F) ≅ limit (D.unop ⋙ F ⋙ uliftFunctor.{u₁}) :=
-  colimitHomIsoLimitYoneda' _ F ≪≫
-    HasLimit.isoOfNatIso (isoWhiskerLeft (D.unop ⋙ Prod.sectl C F) (coyonedaLemma C))
+  haveI : HasColimit (D.unop.op ⋙ coyoneda) :=
+    inferInstanceAs <| HasColimit (D ⋙ coyoneda)
+  colimitCoyonedaHomIsoLimit' D.unop F
 
 @[simp]
 lemma colimitCoyonedaHomIsoLimitUnop_π_apply (f : colimit (D ⋙ coyoneda) ⟶ F) (i : I) :
     limit.π (D.unop ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitCoyonedaHomIsoLimitUnop D F).hom f)
       = ⟨f.app (D.obj (op i)).unop
-          ((colimit.ι (D ⋙ coyoneda) ⟨i⟩).app (D.obj (op i)).unop (𝟙 (D.obj (op i)).unop))⟩ := by
-  change ((colimitCoyonedaHomIsoLimitUnop D F).hom ≫
-    (limit.π (D.unop ⋙ F ⋙ uliftFunctor.{u₁}) i)) f = _
-  simp only [colimitCoyonedaHomIsoLimitUnop, Iso.trans_hom, Category.assoc,
-    HasLimit.isoOfNatIso_hom_π]
-  rw [← Category.assoc, colimitHomIsoLimitYoneda'_hom_comp_π]
-  dsimp [coyonedaLemma]
-  erw [coyonedaEquiv_comp, coyonedaEquiv_apply]
-  rfl
+          ((colimit.ι (D ⋙ coyoneda) ⟨i⟩).app (D.obj (op i)).unop (𝟙 (D.obj (op i)).unop))⟩ :=
+  have : HasColimit (D.unop.op ⋙ coyoneda) :=
+    inferInstanceAs <| HasColimit (D ⋙ coyoneda)
+  colimitCoyonedaHomIsoLimit'_π_apply _ _ _ _
 
 end ProCoyonedaCovariantUnop
 
@@ -373,22 +363,18 @@ evaluated at `D`. This version is for contravariant diagrams, see `colimitYoneda
 covariant version. -/
 noncomputable def colimitYonedaHomIsoLimitRightOp :
     (colimit (D ⋙ yoneda) ⟶ F) ≅ limit (D.rightOp ⋙ F ⋙ uliftFunctor.{u₁}) :=
-  colimitHomIsoLimitYoneda' _ F ≪≫
-    HasLimit.isoOfNatIso (isoWhiskerLeft (D.rightOp ⋙ Prod.sectl _ _) (yonedaLemma C))
+  haveI : HasColimit (D.rightOp.leftOp ⋙ yoneda) :=
+    inferInstanceAs <| HasColimit (D ⋙ yoneda)
+  colimitYonedaHomIsoLimit' D.rightOp F
 
 @[simp]
 lemma colimitYonedaHomIsoLimitRightOp_π_apply (f : colimit (D ⋙ yoneda) ⟶ F) (i : I) :
     limit.π (D.rightOp ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitYonedaHomIsoLimitRightOp D F).hom f) =
       ⟨f.app (op (D.obj (op i)))
-        ((colimit.ι (D ⋙ yoneda) (op i)).app (op (D.obj (op i))) (𝟙 (D.obj (op i))))⟩ := by
-  change ((colimitYonedaHomIsoLimitRightOp D F).hom ≫
-    (limit.π (D.rightOp ⋙ F ⋙ uliftFunctor.{u₁}) i)) f = _
-  simp only [colimitYonedaHomIsoLimitRightOp, Iso.trans_hom, Category.assoc,
-    HasLimit.isoOfNatIso_hom_π]
-  rw [← Category.assoc, colimitHomIsoLimitYoneda'_hom_comp_π]
-  dsimp [yonedaLemma]
-  erw [yonedaEquiv_comp, yonedaEquiv_apply]
-  rfl
+        ((colimit.ι (D ⋙ yoneda) (op i)).app (op (D.obj (op i))) (𝟙 (D.obj (op i))))⟩ :=
+  have : HasColimit (D.rightOp.leftOp ⋙ yoneda) :=
+    inferInstanceAs <| HasColimit (D ⋙ yoneda)
+  colimitYonedaHomIsoLimit'_π_apply _ _ _ _
 
 end IndYonedaContravariantRightOp
 
