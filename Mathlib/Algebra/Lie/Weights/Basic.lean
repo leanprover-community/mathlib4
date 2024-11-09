@@ -27,7 +27,7 @@ Basic definitions and properties of the above ideas are provided in this file.
 
   * `LieModule.genWeightSpaceOf`
   * `LieModule.genWeightSpace`
-  * `LieModule.Weight`
+  * `LieModule.GenWeight`
   * `LieModule.posFittingCompOf`
   * `LieModule.posFittingComp`
   * `LieModule.iSup_ucs_eq_genWeightSpace_zero`

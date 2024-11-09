@@ -8,13 +8,13 @@ import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
-# Lie modules with linear weights
+# Lie modules with linear generalized weights
 
 Given a Lie module `M` over a nilpotent Lie algebra `L` with coefficients in `R`, one frequently
-studies `M` via its weights. These are functions `χ : L → R` whose corresponding weight space
-`LieModule.genWeightSpace M χ`, is non-trivial. If `L` is Abelian or if `R` has characteristic zero
-(and `M` is finite-dimensional) then such `χ` are necessarily `R`-linear. However in general
-non-linear weights do exist. For example if we take:
+studies `M` via its generalized weights. These are functions `χ : L → R` whose corresponding
+generalized weight space `LieModule.genWeightSpace M χ`, is non-trivial. If `L` is Abelian
+or if `R` has characteristic zero (and `M` is finite-dimensional) then such `χ` are necessarily
+`R`-linear. However in general non-linear weights do exist. For example if we take:
  * `R`: the field with two elements (or indeed any perfect field of characteristic two),
  * `L`: `sl₂` (this is nilpotent in characteristic two),
  * `M`: the natural two-dimensional representation of `L`,
@@ -22,13 +22,13 @@ non-linear weights do exist. For example if we take:
 then there is a single weight and it is non-linear. (See remark following Proposition 9 of
 chapter VII, §1.3 in [N. Bourbaki, Chapters 7--9](bourbaki1975b).)
 
-We thus introduce a typeclass `LieModule.LinearWeights` to encode the fact that a Lie module does
-have linear weights and provide typeclass instances in the two important cases that `L` is Abelian
-or `R` has characteristic zero.
+We thus introduce a typeclass `LieModule.LinearGenWeights` to encode the fact that a Lie module does
+have linear generalized weights and provide typeclass instances in the two important cases that
+`L` is Abelian or `R` has characteristic zero.
 
 ## Main definitions
- * `LieModule.LinearWeights`: a typeclass encoding the fact that a given Lie module has linear
-   weights, and furthermore that the weights vanish on the derived ideal.
+ * `LieModule.LinearGenWeights`: a typeclass encoding the fact that a given Lie module has linear
+   generalized weights, and furthermore that the weights vanish on the derived ideal.
  * `LieModule.instLinearWeightsOfCharZero`: a typeclass instance encoding the fact that for an
    Abelian Lie algebra, the weights of any Lie module are linear.
  * `LieModule.instLinearWeightsOfIsLieAbelian`: a typeclass instance encoding the fact that in
@@ -90,7 +90,7 @@ abbrev ker := LinearMap.ker (χ : L →ₗ[R] R)
 
 end GenWeight
 
-/-- For an Abelian Lie algebra, the weights of any Lie module are linear. -/
+/-- For an Abelian Lie algebra, the generalized weights of any Lie module are linear. -/
 instance instLinearGenWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R M] :
     LinearGenWeights R L M :=
   have aux : ∀ (χ : L → R), genWeightSpace M χ ≠ ⊥ → ∀ (x y : L), χ (x + y) = χ x + χ y := by
@@ -137,8 +137,8 @@ lemma zero_lt_finrank_genWeightSpace {χ : L → R} (hχ : genWeightSpace M χ �
   rwa [← LieSubmodule.nontrivial_iff_ne_bot, ← rank_pos_iff_nontrivial (R := R), ← finrank_eq_rank,
     Nat.cast_pos] at hχ
 
-/-- In characteristic zero, the weights of any finite-dimensional Lie module are linear and vanish
-on the derived ideal. -/
+/-- In characteristic zero, the generalized weights of any finite-dimensional Lie module are linear
+and vanish on the derived ideal. -/
 instance instLinearWeightsOfCharZero [CharZero R] :
     LinearGenWeights R L M where
   map_add χ hχ x y := by
@@ -230,7 +230,7 @@ end shiftedGenWeightSpace
 open shiftedGenWeightSpace in
 /-- Given a Lie module `M` of a Lie algebra `L` with coefficients in `R`, if a function `χ : L → R`
 has a simultaneous generalized eigenvector for the action of `L` then it has a simultaneous true
-eigenvector, provided `M` is Noetherian and has linear weights. -/
+eigenvector, provided `M` is Noetherian and has linear generalized weights. -/
 lemma exists_forall_lie_eq_smul [LinearGenWeights R L M] [IsNoetherian R M] (χ : GenWeight R L M) :
     ∃ m : M, m ≠ 0 ∧ ∀ x : L, ⁅x, m⁆ = χ x • m := by
   replace hχ : Nontrivial (shiftedGenWeightSpace R L M χ) :=
