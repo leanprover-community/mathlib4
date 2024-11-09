@@ -73,6 +73,21 @@ theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
   · rintro ⟨n, s, hs⟩
     exact ⟨range s, finite_range s, hs⟩
 
+universe w v u in
+lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type v}
+    [AddCommMonoid M] [Module A M] {N : Submodule A M} :
+    N.FG ↔ ∃ (G : Type w) (_ : Finite G) (g : G → M), Submodule.span A (Set.range g) = N := by
+  constructor
+  · intro hN
+    obtain ⟨n, f, h⟩ := Submodule.fg_iff_exists_fin_generating_family.1 hN
+    refine ⟨ULift (Fin n), inferInstance, f ∘ ULift.down, ?_⟩
+    convert h
+    ext x
+    simp only [Set.mem_range, Function.comp_apply, ULift.exists]
+  · rintro ⟨G, _, g, hg⟩
+    have := Fintype.ofFinite (range g)
+    exact ⟨(range g).toFinset, by simpa using hg⟩
+
 /-- **Nakayama's Lemma**. Atiyah-Macdonald 2.5, Eisenbud 4.7, Matsumura 2.2,
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV) -/
 theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRing R] {M : Type*}
