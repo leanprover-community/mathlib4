@@ -78,6 +78,7 @@ instance (priority := 900) IsStableUnderBaseChange.respectsIso {P : MorphismProp
   intro f g e
   exact of_isPullback (IsPullback.of_horiz_isIso (CommSq.mk e.inv.w))
 
+@[morphismPropertyInstance]
 theorem pullback_fst {P : MorphismProperty C} [IsStableUnderBaseChange P]
     {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] (H : P g) :
     P (pullback.fst f g) :=
@@ -85,6 +86,7 @@ theorem pullback_fst {P : MorphismProperty C} [IsStableUnderBaseChange P]
 
 @[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.fst := pullback_fst
 
+@[morphismPropertyInstance]
 theorem pullback_snd {P : MorphismProperty C} [IsStableUnderBaseChange P]
     {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] (H : P f) :
     P (pullback.snd f g) :=
@@ -112,6 +114,7 @@ theorem baseChange_map [HasPullbacks C] {P : MorphismProperty C}
 
 @[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.baseChange_map := baseChange_map
 
+@[morphismPropertyInstance]
 theorem pullback_map [HasPullbacks C] {P : MorphismProperty C}
     [IsStableUnderBaseChange P] [P.IsStableUnderComposition] {S X X' Y Y' : C} {f : X ⟶ S}
     {g : Y ⟶ S} {f' : X' ⟶ S} {g' : Y' ⟶ S} {i₁ : X ⟶ X'} {i₂ : Y ⟶ Y'} (h₁ : P i₁) (h₂ : P i₂)
@@ -165,6 +168,7 @@ instance IsStableUnderCobaseChange.respectsIso {P : MorphismProperty C}
   RespectsIso.of_respects_arrow_iso _ fun _ _ e ↦
     of_isPushout (IsPushout.of_horiz_isIso (CommSq.mk e.hom.w))
 
+@[morphismPropertyInstance]
 theorem pushout_inl {P : MorphismProperty C} [IsStableUnderCobaseChange P]
     {A B A' : C} (f : A ⟶ A') (g : A ⟶ B) [HasPushout f g] (H : P g) :
     P (pushout.inl f g) :=
@@ -172,6 +176,7 @@ theorem pushout_inl {P : MorphismProperty C} [IsStableUnderCobaseChange P]
 
 @[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.inl := pushout_inl
 
+@[morphismPropertyInstance]
 theorem pushout_inr {P : MorphismProperty C} [IsStableUnderCobaseChange P]
     {A B A' : C} (f : A ⟶ A') (g : A ⟶ B) [HasPushout f g] (H : P f) : P (pushout.inr f g) :=
   of_isPushout (IsPushout.of_hasPushout f g).flip H

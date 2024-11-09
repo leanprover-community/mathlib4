@@ -43,10 +43,6 @@ instance : MorphismProperty.RespectsIso @IsProper := by
   rw [isProper_eq]
   infer_instance
 
-instance stableUnderComposition : MorphismProperty.IsStableUnderComposition @IsProper := by
-  rw [isProper_eq]
-  infer_instance
-
 instance : MorphismProperty.IsMultiplicative @IsProper := by
   rw [isProper_eq]
   infer_instance
@@ -60,6 +56,8 @@ instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsP
 instance : IsLocalAtTarget @IsProper := by
   rw [isProper_eq]
   infer_instance
+
+addMorphismPropertyInstances @IsProper
 
 end IsProper
 

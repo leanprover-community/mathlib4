@@ -63,17 +63,15 @@ instance (priority := 900) [IsAffineHom f] : QuasiCompact f :=
   (quasiCompact_iff_forall_affine f).mpr
     (fun U hU ↦ (IsAffineHom.isAffine_preimage U hU).isCompact)
 
-instance [IsAffineHom f] [IsAffineHom g] : IsAffineHom (f ≫ g) := by
-  constructor
-  intros U hU
-  rw [Scheme.comp_base, Opens.map_comp_obj]
-  apply IsAffineHom.isAffine_preimage
-  apply IsAffineHom.isAffine_preimage
-  exact hU
-
 instance : MorphismProperty.IsMultiplicative @IsAffineHom where
   id_mem := inferInstance
-  comp_mem _ _ _ _ := inferInstance
+  comp_mem _ _ _ _ := by
+    constructor
+    intros U hU
+    rw [Scheme.comp_base, Opens.map_comp_obj]
+    apply IsAffineHom.isAffine_preimage
+    apply IsAffineHom.isAffine_preimage
+    exact hU
 
 instance {X : Scheme} (r : Γ(X, ⊤)) :
     IsAffineHom (X.basicOpen r).ι := by
@@ -182,5 +180,7 @@ instance (priority := 100) isAffineHom_of_isAffine [IsAffine X] [IsAffine Y] : I
 
 lemma isAffine_of_isAffineHom [IsAffineHom f] [IsAffine Y] : IsAffine X :=
   (HasAffineProperty.iff_of_isAffine (P := @IsAffineHom) (f := f)).mp inferInstance
+
+addMorphismPropertyInstances @IsAffineHom
 
 end AlgebraicGeometry

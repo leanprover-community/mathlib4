@@ -331,4 +331,6 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
     (inferInstanceAs (Surjective f))
   exact this.1
 
+addMorphismPropertyInstances @IsClosedImmersion
+
 end AlgebraicGeometry

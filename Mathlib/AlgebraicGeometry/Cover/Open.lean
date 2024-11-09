@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Open covers of schemes
@@ -189,6 +190,11 @@ def OpenCover.pullbackHom {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X) 
 @[reassoc (attr := simp)]
 lemma OpenCover.pullbackHom_map {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X) (i) :
     𝒰.pullbackHom f i ≫ 𝒰.map i = (𝒰.pullbackCover f).map i ≫ f := pullback.condition.symm
+
+@[morphismPropertyInstance]
+lemma MorphismProperty.pullbackHom (P : MorphismProperty Scheme.{u}) [P.IsStableUnderBaseChange]
+    {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X) (i) (hf : P f) : P (𝒰.pullbackHom f i) :=
+  MorphismProperty.pullback_snd _ _ hf
 
 /-- Given an open cover on `X`, we may pull them back along a morphism `f : W ⟶ X` to obtain
 an open cover of `W`. This is similar to `Scheme.OpenCover.pullbackCover`, but here we

@@ -62,20 +62,8 @@ instance universallyClosed_isStableUnderComposition :
   rw [universallyClosed_eq]
   infer_instance
 
-instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [hf : UniversallyClosed f] [hg : UniversallyClosed g] : UniversallyClosed (f ≫ g) :=
-  comp_mem _ _ _ hf hg
-
 instance : MorphismProperty.IsMultiplicative @UniversallyClosed where
   id_mem _ := inferInstance
-
-instance universallyClosed_fst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
-    UniversallyClosed (pullback.fst f g) :=
-  MorphismProperty.pullback_fst f g hg
-
-instance universallyClosed_snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyClosed f] :
-    UniversallyClosed (pullback.snd f g) :=
-  MorphismProperty.pullback_snd f g hf
 
 instance universallyClosed_isLocalAtTarget : IsLocalAtTarget @UniversallyClosed := by
   rw [universallyClosed_eq]
@@ -83,5 +71,7 @@ instance universallyClosed_isLocalAtTarget : IsLocalAtTarget @UniversallyClosed 
   intro X Y f ι U hU H
   simp_rw [topologically, morphismRestrict_base] at H
   exact (isClosedMap_iff_isClosedMap_of_iSup_eq_top hU).mpr H
+
+addMorphismPropertyInstances @UniversallyClosed
 
 end AlgebraicGeometry

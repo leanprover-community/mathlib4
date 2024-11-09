@@ -444,6 +444,12 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Open
   -- Porting note: changed `rw` to `erw`
   erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
 
+@[morphismPropertyInstance]
+theorem MorphismProperty.morphismRestrict (P : MorphismProperty.{u} Scheme)
+    [P.IsStableUnderBaseChange]
+    {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (hf : P f) : P (f ∣_ U) :=
+  MorphismProperty.of_isPullback (isPullback_morphismRestrict f U).flip hf
+
 @[simp]
 lemma morphismRestrict_id {X : Scheme.{u}} (U : X.Opens) : 𝟙 X ∣_ U = 𝟙 _ := by
   rw [← cancel_mono U.ι, morphismRestrict_ι, Category.comp_id, Category.id_comp]
@@ -603,11 +609,6 @@ def morphismRestrictStalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) 
     intro V hxV
     change ↑(f ⁻¹ᵁ U) at x
     simp [Scheme.stalkMap_germ_assoc, Scheme.Hom.appLE]
-
-instance {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) [IsOpenImmersion f] :
-    IsOpenImmersion (f ∣_ U) := by
-  delta morphismRestrict
-  exact PresheafedSpace.IsOpenImmersion.comp _ _
 
 variable {X Y : Scheme.{u}}
 

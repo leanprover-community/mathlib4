@@ -67,4 +67,6 @@ instance locallyOfFiniteType_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @LocallyOfFiniteType :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.finiteType_isStableUnderBaseChange
 
+addMorphismPropertyInstances @LocallyOfFiniteType
+
 end AlgebraicGeometry
