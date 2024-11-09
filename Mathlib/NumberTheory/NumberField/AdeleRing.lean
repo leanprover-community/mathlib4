@@ -41,7 +41,7 @@ open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion DedekindDom
 
 open scoped Classical
 
-variable (K : Type*) [Field K] (v : InfinitePlace K)
+variable (K : Type*) [Field K]
 
 /-! ## The infinite adele ring
 
@@ -69,7 +69,8 @@ instance : TopologicalRing (InfiniteAdeleRing K) := Pi.instTopologicalRing
 instance : Algebra K (InfiniteAdeleRing K) := Pi.algebra _ _
 
 @[simp]
-theorem algebraMap_apply (x : K) : algebraMap K (InfiniteAdeleRing K) x v = x := rfl
+theorem algebraMap_apply (x : K) (v : InfinitePlace K) :
+  algebraMap K (InfiniteAdeleRing K) x v = x := rfl
 
 /-- The infinite adele ring is locally compact. -/
 instance locallyCompactSpace [NumberField K] : LocallyCompactSpace (InfiniteAdeleRing K) :=
@@ -134,7 +135,8 @@ instance : TopologicalRing (AdeleRing K) := instTopologicalRingProd
 instance : Algebra K (AdeleRing K) := Prod.algebra _ _ _
 
 @[simp]
-theorem algebraMap_fst_apply (x : K) : (algebraMap K (AdeleRing K) x).1 v = x := rfl
+theorem algebraMap_fst_apply (x : K) (v : InfinitePlace K) :
+    (algebraMap K (AdeleRing K) x).1 v = x := rfl
 
 @[simp]
 theorem algebraMap_snd_apply (x : K) (v : HeightOneSpectrum (𝓞 K)) :
