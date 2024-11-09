@@ -573,30 +573,27 @@ end Ring_Ring
 
 section
 
-variable [Ring B] [Algebra R₁ B]
+variable [Ring B] [Algebra R₁ B] {I : Ideal A} (J : Ideal B) [I.IsTwoSided] [J.IsTwoSided]
 
 /-- The algebra hom `A/I →+* B/J` induced by an algebra hom `f : A →ₐ[R₁] B` with `I ≤ f⁻¹(J)`. -/
-def quotientMapₐ {I : Ideal A} (J : Ideal B) [I.IsTwoSided] [J.IsTwoSided]
-    (f : A →ₐ[R₁] B) (hIJ : I ≤ J.comap f) :
+def quotientMapₐ (f : A →ₐ[R₁] B) (hIJ : I ≤ J.comap f) :
     A ⧸ I →ₐ[R₁] B ⧸ J :=
   { quotientMap J (f : A →+* B) hIJ with commutes' := fun r => by simp only [RingHom.toFun_eq_coe,
     quotientMap_algebraMap, AlgHom.coe_toRingHom, AlgHom.commutes, Quotient.mk_algebraMap] }
 
 @[simp]
-theorem quotient_map_mkₐ {I : Ideal A} (J : Ideal B) [I.IsTwoSided] [J.IsTwoSided]
-    (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) {x : A} :
+theorem quotient_map_mkₐ (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) {x : A} :
     quotientMapₐ J f H (Quotient.mk I x) = Quotient.mkₐ R₁ J (f x) :=
   rfl
 
-theorem quotient_map_comp_mkₐ {I : Ideal A} (J : Ideal B) [I.IsTwoSided] [J.IsTwoSided]
-    (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) :
+theorem quotient_map_comp_mkₐ (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) :
     (quotientMapₐ J f H).comp (Quotient.mkₐ R₁ I) = (Quotient.mkₐ R₁ J).comp f :=
   AlgHom.ext fun x => by simp only [quotient_map_mkₐ, Quotient.mkₐ_eq_mk, AlgHom.comp_apply]
 
+variable (I) in
 /-- The algebra equiv `A/I ≃ₐ[R] B/J` induced by an algebra equiv `f : A ≃ₐ[R] B`,
 where`J = f(I)`. -/
-def quotientEquivAlg (I : Ideal A) (J : Ideal B) [I.IsTwoSided] [J.IsTwoSided]
-    (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
+def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
     (A ⧸ I) ≃ₐ[R₁] B ⧸ J :=
   { quotientEquiv I J (f : A ≃+* B) hIJ with
     commutes' := fun r => by
