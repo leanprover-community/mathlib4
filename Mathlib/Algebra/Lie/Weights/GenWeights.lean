@@ -630,7 +630,7 @@ lemma finite_genWeightSpace_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] :
 def Weight.equivSetOf [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
   toFun w := ⟨w.1, w.genWeightSpace_ne_bot _⟩
-  invFun w := ⟨w.1, sorry⟩
+  invFun w := ⟨w.1, by apply LieModule.exists_forall_lie_eq_smul⟩ -- needs to import Weights.Linear
   left_inv w := by simp
   right_inv w := by simp
 
