@@ -292,7 +292,7 @@ variable [LinearOrderedCommRing α] [TopologicalSpace α] [OrderTopology α] {f 
 nonrec theorem HasProd.abs (hfx : HasProd f x) : HasProd (|f ·|) |x| := by
   simpa only [HasProd, ← abs_prod] using hfx.abs
 
-theorem multipliable_abs (hf : Multipliable f) : Multipliable (|f ·|) :=
+theorem Multipliable.abs (hf : Multipliable f) : Multipliable (|f ·|) :=
   let ⟨x, hx⟩ := hf; ⟨|x|, hx.abs⟩
 
 theorem abs_tprod (hf : Multipliable f) : |∏' i, f i| = ∏' i, |f i| :=
