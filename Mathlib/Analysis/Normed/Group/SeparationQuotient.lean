@@ -48,7 +48,7 @@ def nullSubgroup : AddSubgroup M where
     exact hx
 
 @[simp]
-lemma mem_nullSubmodule_iff {x : M} : x ∈ nullSubgroup ↔ ‖x‖ = 0 := Iff.rfl
+lemma mem_nullSubgroup_iff {x : M} : x ∈ nullSubgroup ↔ ‖x‖ = 0 := Iff.rfl
 
 lemma inseparable_iff_norm_zero (x y : M) : Inseparable x y ↔ ‖x - y‖ = 0 := by
   rw [Metric.inseparable_iff, dist_eq_norm]
