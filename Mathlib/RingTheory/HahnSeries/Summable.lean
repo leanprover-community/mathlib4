@@ -267,7 +267,24 @@ end AddCommGroup
 
 section SMul
 
-variable [PartialOrder Γ] [PartialOrder Γ'] [AddCommMonoid R] [AddCommMonoid V] [SMulWithZero R V]
+variable [PartialOrder Γ] [PartialOrder Γ'] [AddCommMonoid V]
+
+instance [Zero R] [SMulWithZero R V] : SMul R (SummableFamily Γ' V β) :=
+  ⟨fun r t =>
+    { toFun := r • t
+      isPWO_iUnion_support' := t.isPWO_iUnion_support.mono (Set.iUnion_mono fun i =>
+        Pi.smul_apply r t i ▸ Function.support_const_smul_subset r _)
+      finite_co_support' := by
+        intro g
+        refine (t.finite_co_support g).subset ?_
+        intro i hi
+        simp only [Pi.smul_apply, smul_coeff, ne_eq, Set.mem_setOf_eq] at hi
+        simp only [Function.mem_support, ne_eq]
+        exact right_ne_zero_of_smul hi
+    }
+  ⟩
+
+variable [AddCommMonoid R] [SMulWithZero R V]
 
 theorem smul_support_subset_prod (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (gh : Γ × Γ') :
@@ -426,6 +443,40 @@ def lsum : SummableFamily Γ R α →ₗ[HahnSeries Γ R] HahnSeries Γ R where
 theorem hsum_sub {R : Type*} [Ring R] {s t : SummableFamily Γ R α} :
     (s - t).hsum = s.hsum - t.hsum := by
   rw [← lsum_apply, LinearMap.map_sub, lsum_apply, lsum_apply]
+
+theorem isPWO_iUnion_support_prod_mul {s : α → HahnSeries Γ R} {t : β → HahnSeries Γ R}
+    (hs : (⋃ a, (s a).support).IsPWO) (ht : (⋃ b, (t b).support).IsPWO) :
+    (⋃ (a : α × β), ((fun a ↦ ((s a.1) * (t a.2))) a).support).IsPWO :=
+  isPWO_iUnion_support_prod_smul hs ht
+
+theorem finite_co_support_prod_mul (s : SummableFamily Γ R α)
+    (t : SummableFamily Γ R β) (g : Γ) :
+    Finite {(a : α × β) | ((fun (a : α × β) ↦ (s a.1 * t a.2)) a).coeff g ≠ 0} :=
+  finite_co_support_prod_smul s t g
+
+/-- A summable family given by pointwise multiplication of a pair of summable families. -/
+@[simps]
+def FamilyMul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
+    (SummableFamily Γ R (α × β)) where
+  toFun a := s (a.1) * t (a.2)
+  isPWO_iUnion_support' :=
+    isPWO_iUnion_support_prod_mul s.isPWO_iUnion_support t.isPWO_iUnion_support
+  finite_co_support' g := finite_co_support_prod_mul s t g
+
+theorem familymul_eq_familysmul {β : Type*} (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
+    FamilyMul s t = FamilySMul s t :=
+  rfl
+
+theorem family_mul_coeff {β : Type*} (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) (g : Γ) :
+    (FamilyMul s t).hsum.coeff g = ∑ gh ∈ addAntidiagonal s.isPWO_iUnion_support
+      t.isPWO_iUnion_support g, (s.hsum.coeff gh.1) * (t.hsum.coeff gh.2) := by
+  simp_rw [← smul_eq_mul, familymul_eq_familysmul]
+  exact family_smul_coeff s t g
+
+theorem hsum_family_mul {β : Type*} (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
+    (FamilyMul s t).hsum = s.hsum * t.hsum := by
+  rw [← smul_eq_mul, familymul_eq_familysmul]
+  exact hsum_family_smul s t
 
 end Semiring
 
