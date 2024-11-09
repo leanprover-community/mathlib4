@@ -105,7 +105,7 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
 @[simp]
 lemma traceForm_genWeightSpace_eq [Module.Free R M]
     [IsDomain R] [IsPrincipalIdealRing R]
-    [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] [LinearWeights R L M] (χ : L → R) (x y : L) :
+    [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] [LinearGenWeights R L M] (χ : L → R) (x y : L) :
     traceForm R L (genWeightSpace M χ) x y = finrank R (genWeightSpace M χ) • (χ x * χ y) := by
   set d := finrank R (genWeightSpace M χ)
   have h₁ : χ y • d • χ x - χ y • χ x • (d : R) = 0 := by simp [mul_comm (χ x)]
@@ -399,11 +399,11 @@ open Submodule (span subset_span)
 namespace LieModule
 
 variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
-variable [LieAlgebra.IsNilpotent K L] [LinearWeights K L M] [IsTriangularizable K L M]
+variable [LieAlgebra.IsNilpotent K L] [LinearGenWeights K L M] [IsTriangularizable K L M]
 
 lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
-    traceForm K L M x y = ∑ χ : Weight K L M, finrank K (genWeightSpace M χ) • (χ x * χ y) := by
-  have hxy : ∀ χ : Weight K L M, MapsTo (toEnd K L M x ∘ₗ toEnd K L M y)
+    traceForm K L M x y = ∑ χ : GenWeight K L M, finrank K (genWeightSpace M χ) • (χ x * χ y) := by
+  have hxy : ∀ χ : GenWeight K L M, MapsTo (toEnd K L M x ∘ₗ toEnd K L M y)
       (genWeightSpace M χ) (genWeightSpace M χ) :=
     fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
   classical
@@ -417,7 +417,7 @@ lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
 /-- See also `LieModule.traceForm_eq_sum_finrank_nsmul'` for an expression omitting the zero
 weights. -/
 lemma traceForm_eq_sum_finrank_nsmul :
-    traceForm K L M = ∑ χ : Weight K L M, finrank K (genWeightSpace M χ) •
+    traceForm K L M = ∑ χ : GenWeight K L M, finrank K (genWeightSpace M χ) •
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
   ext
   rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
@@ -426,25 +426,25 @@ lemma traceForm_eq_sum_finrank_nsmul :
 /-- A variant of `LieModule.traceForm_eq_sum_finrank_nsmul` in which the sum is taken only over the
 non-zero weights. -/
 lemma traceForm_eq_sum_finrank_nsmul' :
-    traceForm K L M = ∑ χ in {χ : Weight K L M | χ.IsNonZero}, finrank K (genWeightSpace M χ) •
+    traceForm K L M = ∑ χ in {χ : GenWeight K L M | χ.IsNonZero}, finrank K (genWeightSpace M χ) •
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
   classical
-  suffices ∑ χ in {χ : Weight K L M | χ.IsZero}, finrank K (genWeightSpace M χ) •
+  suffices ∑ χ in {χ : GenWeight K L M | χ.IsZero}, finrank K (genWeightSpace M χ) •
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) = 0 by
     rw [traceForm_eq_sum_finrank_nsmul,
-      ← Finset.sum_filter_add_sum_filter_not (p := fun χ : Weight K L M ↦ χ.IsNonZero)]
+      ← Finset.sum_filter_add_sum_filter_not (p := fun χ : GenWeight K L M ↦ χ.IsNonZero)]
     simp [this]
   refine Finset.sum_eq_zero fun χ hχ ↦ ?_
-  replace hχ : (χ : L →ₗ[K] K) = 0 := by simpa [← Weight.coe_toLinear_eq_zero_iff] using hχ
+  replace hχ : (χ : L →ₗ[K] K) = 0 := by simpa [← GenWeight.coe_toLinear_eq_zero_iff] using hχ
   simp [hχ]
 
 -- The reverse inclusion should also hold: TODO prove this!
 lemma range_traceForm_le_span_weight :
-    LinearMap.range (traceForm K L M) ≤ span K (range (Weight.toLinear K L M)) := by
+    LinearMap.range (traceForm K L M) ≤ span K (range (GenWeight.toLinear K L M)) := by
   rintro - ⟨x, rfl⟩
   rw [LieModule.traceForm_eq_sum_finrank_nsmul, LinearMap.coeFn_sum, Finset.sum_apply]
   refine Submodule.sum_mem _ fun χ _ ↦ ?_
-  simp_rw [LinearMap.smul_apply, LinearMap.coe_smulRight, Weight.toLinear_apply,
+  simp_rw [LinearMap.smul_apply, LinearMap.coe_smulRight, GenWeight.toLinear_apply,
     ← Nat.cast_smul_eq_nsmul K]
   exact Submodule.smul_mem _ _ <| Submodule.smul_mem _ _ <| subset_span <| mem_range_self χ
 

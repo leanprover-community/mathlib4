@@ -48,35 +48,35 @@ namespace LieModule
 
 /-- A typeclass encoding the fact that a given Lie module has linear weights, vanishing on the
 derived ideal. -/
-class LinearWeights [LieAlgebra.IsNilpotent R L] : Prop where
+class LinearGenWeights [LieAlgebra.IsNilpotent R L] : Prop where
   map_add : ∀ χ : L → R, genWeightSpace M χ ≠ ⊥ → ∀ x y, χ (x + y) = χ x + χ y
   map_smul : ∀ χ : L → R, genWeightSpace M χ ≠ ⊥ → ∀ (t : R) x, χ (t • x) = t • χ x
   map_lie : ∀ χ : L → R, genWeightSpace M χ ≠ ⊥ → ∀ x y : L, χ ⁅x, y⁆ = 0
 
-namespace Weight
+namespace GenWeight
 
-variable [LieAlgebra.IsNilpotent R L] [LinearWeights R L M] (χ : Weight R L M)
+variable [LieAlgebra.IsNilpotent R L] [LinearGenWeights R L M] (χ : GenWeight R L M)
 
 /-- A weight of a Lie module, bundled as a linear map. -/
 @[simps]
 def toLinear : L →ₗ[R] R where
   toFun := χ
-  map_add' := LinearWeights.map_add χ χ.genWeightSpace_ne_bot
-  map_smul' := LinearWeights.map_smul χ χ.genWeightSpace_ne_bot
+  map_add' := LinearGenWeights.map_add χ χ.genWeightSpace_ne_bot
+  map_smul' := LinearGenWeights.map_smul χ χ.genWeightSpace_ne_bot
 
-instance instCoeLinearMap : CoeOut (Weight R L M) (L →ₗ[R] R) where
-  coe := Weight.toLinear R L M
+instance instCoeLinearMap : CoeOut (GenWeight R L M) (L →ₗ[R] R) where
+  coe := GenWeight.toLinear R L M
 
-instance instLinearMapClass : LinearMapClass (Weight R L M) R L R where
-  map_add χ := LinearWeights.map_add χ χ.genWeightSpace_ne_bot
-  map_smulₛₗ χ := LinearWeights.map_smul χ χ.genWeightSpace_ne_bot
+instance instLinearMapClass : LinearMapClass (GenWeight R L M) R L R where
+  map_add χ := LinearGenWeights.map_add χ χ.genWeightSpace_ne_bot
+  map_smulₛₗ χ := LinearGenWeights.map_smul χ χ.genWeightSpace_ne_bot
 
 variable {R L M χ}
 
 @[simp]
 lemma apply_lie (x y : L) :
     χ ⁅x, y⁆ = 0 :=
-  LinearWeights.map_lie χ χ.genWeightSpace_ne_bot x y
+  LinearGenWeights.map_lie χ χ.genWeightSpace_ne_bot x y
 
 @[simp] lemma coe_coe : (↑(χ : L →ₗ[R] R) : L → R) = (χ : L → R) := rfl
 
@@ -88,11 +88,11 @@ lemma coe_toLinear_ne_zero_iff : (χ : L →ₗ[R] R) ≠ 0 ↔ χ.IsNonZero := 
 /-- The kernel of a weight of a Lie module with linear weights. -/
 abbrev ker := LinearMap.ker (χ : L →ₗ[R] R)
 
-end Weight
+end GenWeight
 
 /-- For an Abelian Lie algebra, the weights of any Lie module are linear. -/
-instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R M] :
-    LinearWeights R L M :=
+instance instLinearGenWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R M] :
+    LinearGenWeights R L M :=
   have aux : ∀ (χ : L → R), genWeightSpace M χ ≠ ⊥ → ∀ (x y : L), χ (x + y) = χ x + χ y := by
     have h : ∀ x y, Commute (toEnd R L M x) (toEnd R L M y) := fun x y ↦ by
       rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
@@ -140,7 +140,7 @@ lemma zero_lt_finrank_genWeightSpace {χ : L → R} (hχ : genWeightSpace M χ �
 /-- In characteristic zero, the weights of any finite-dimensional Lie module are linear and vanish
 on the derived ideal. -/
 instance instLinearWeightsOfCharZero [CharZero R] :
-    LinearWeights R L M where
+    LinearGenWeights R L M where
   map_add χ hχ x y := by
     rw [← smul_right_inj (zero_lt_finrank_genWeightSpace hχ).ne', smul_add, ← Pi.smul_apply,
       ← Pi.smul_apply, ← Pi.smul_apply, ← trace_comp_toEnd_genWeightSpace_eq, map_add]
@@ -165,21 +165,21 @@ namespace shiftedGenWeightSpace
 private lemma aux [h : Nontrivial (shiftedGenWeightSpace R L M χ)] : genWeightSpace M χ ≠ ⊥ :=
   (LieSubmodule.nontrivial_iff_ne_bot _ _ _).mp h
 
-variable [LinearWeights R L M]
+variable [LinearGenWeights R L M]
 
 instance : LieRingModule L (shiftedGenWeightSpace R L M χ) where
   bracket x m := ⁅x, m⁆ - χ x • m
   add_lie x y m := by
     nontriviality shiftedGenWeightSpace R L M χ
-    simp only [add_lie, LinearWeights.map_add χ (aux R L M χ), add_smul]
+    simp only [add_lie, LinearGenWeights.map_add χ (aux R L M χ), add_smul]
     abel
   lie_add x m n := by
     nontriviality shiftedGenWeightSpace R L M χ
-    simp only [lie_add, LinearWeights.map_add χ (aux R L M χ), smul_add]
+    simp only [lie_add, LinearGenWeights.map_add χ (aux R L M χ), smul_add]
     abel
   leibniz_lie x y m := by
     nontriviality shiftedGenWeightSpace R L M χ
-    simp only [lie_sub, lie_smul, lie_lie, LinearWeights.map_lie χ (aux R L M χ), zero_smul,
+    simp only [lie_sub, lie_smul, lie_lie, LinearGenWeights.map_lie χ (aux R L M χ), zero_smul,
       sub_zero, smul_sub, smul_comm (χ x)]
     abel
 
@@ -193,7 +193,7 @@ instance : LieModule R L (shiftedGenWeightSpace R L M χ) where
     nontriviality shiftedGenWeightSpace R L M χ
     apply Subtype.ext
     rw [coe_lie_shiftedGenWeightSpace_apply]
-    simp only [smul_lie, LinearWeights.map_smul χ (aux R L M χ), smul_assoc t, SetLike.val_smul]
+    simp only [smul_lie, LinearGenWeights.map_smul χ (aux R L M χ), smul_assoc t, SetLike.val_smul]
     rw [← smul_sub]
     congr
   lie_smul t x m := by
@@ -231,7 +231,7 @@ open shiftedGenWeightSpace in
 /-- Given a Lie module `M` of a Lie algebra `L` with coefficients in `R`, if a function `χ : L → R`
 has a simultaneous generalized eigenvector for the action of `L` then it has a simultaneous true
 eigenvector, provided `M` is Noetherian and has linear weights. -/
-lemma exists_forall_lie_eq_smul [LinearWeights R L M] [IsNoetherian R M] (χ : Weight R L M) :
+lemma exists_forall_lie_eq_smul [LinearGenWeights R L M] [IsNoetherian R M] (χ : GenWeight R L M) :
     ∃ m : M, m ≠ 0 ∧ ∀ x : L, ⁅x, m⁆ = χ x • m := by
   replace hχ : Nontrivial (shiftedGenWeightSpace R L M χ) :=
     (LieSubmodule.nontrivial_iff_ne_bot R L M).mpr χ.genWeightSpace_ne_bot

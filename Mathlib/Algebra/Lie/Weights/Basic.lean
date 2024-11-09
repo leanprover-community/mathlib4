@@ -204,97 +204,101 @@ lemma weightSpace_le_genWeightSpace (χ : L → R) :
   exact ((toEnd R L M x).genEigenspace (χ x)).monotone le_top
 
 variable (R L) in
-/-- A weight of a Lie module is a map `L → R` such that the corresponding weight space is
-non-trivial. -/
-structure Weight where
+/-- A generalized weight of a Lie module is a map `L → R` such that
+the corresponding generalized weight space is non-trivial. -/
+structure GenWeight where
   /-- The family of eigenvalues corresponding to a weight. -/
   toFun : L → R
   genWeightSpace_ne_bot' : genWeightSpace M toFun ≠ ⊥
 
-namespace Weight
+namespace GenWeight
 
-instance instFunLike : FunLike (Weight R L M) L R where
+instance instFunLike : FunLike (GenWeight R L M) L R where
   coe χ := χ.1
   coe_injective' χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
 
 @[simp] lemma coe_weight_mk (χ : L → R) (h) :
-    (↑(⟨χ, h⟩ : Weight R L M) : L → R) = χ :=
+    (↑(⟨χ, h⟩ : GenWeight R L M) : L → R) = χ :=
   rfl
 
-lemma genWeightSpace_ne_bot (χ : Weight R L M) : genWeightSpace M χ ≠ ⊥ := χ.genWeightSpace_ne_bot'
+lemma genWeightSpace_ne_bot (χ : GenWeight R L M) :
+    genWeightSpace M χ ≠ ⊥ := χ.genWeightSpace_ne_bot'
 
 variable {M}
 
-@[ext] lemma ext {χ₁ χ₂ : Weight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := by
+@[ext] lemma ext {χ₁ χ₂ : GenWeight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := by
   cases' χ₁ with f₁ _; cases' χ₂ with f₂ _; aesop
 
-lemma ext_iff' {χ₁ χ₂ : Weight R L M} : (χ₁ : L → R) = χ₂ ↔ χ₁ = χ₂ := by aesop
+/-- Extensionality lemma for generalized weights, in terms of their coercion to functions. -/
+lemma ext_iff' {χ₁ χ₂ : GenWeight R L M} : (χ₁ : L → R) = χ₂ ↔ χ₁ = χ₂ := by aesop
 
-lemma exists_ne_zero (χ : Weight R L M) :
+lemma exists_ne_zero (χ : GenWeight R L M) :
     ∃ x ∈ genWeightSpace M χ, x ≠ 0 := by
   simpa [LieSubmodule.eq_bot_iff] using χ.genWeightSpace_ne_bot
 
-instance [Subsingleton M] : IsEmpty (Weight R L M) :=
+instance [Subsingleton M] : IsEmpty (GenWeight R L M) :=
   ⟨fun h ↦ h.2 (Subsingleton.elim _ _)⟩
 
-instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (Weight R L M) :=
+instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (GenWeight R L M) :=
   ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
 
 @[simp]
-lemma coe_zero [Nontrivial (genWeightSpace M (0 : L → R))] : ((0 : Weight R L M) : L → R) = 0 := rfl
+lemma coe_zero [Nontrivial (genWeightSpace M (0 : L → R))] :
+    ((0 : GenWeight R L M) : L → R) = 0 := rfl
 
-lemma zero_apply [Nontrivial (genWeightSpace M (0 : L → R))] (x) : (0 : Weight R L M) x = 0 := rfl
+lemma zero_apply [Nontrivial (genWeightSpace M (0 : L → R))] (x) :
+    (0 : GenWeight R L M) x = 0 := rfl
 
 /-- The proposition that a weight of a Lie module is zero.
 
 We make this definition because we cannot define a `Zero (Weight R L M)` instance since the weight
 space of the zero function can be trivial. -/
-def IsZero (χ : Weight R L M) := (χ : L → R) = 0
+def IsZero (χ : GenWeight R L M) := (χ : L → R) = 0
 
-@[simp] lemma IsZero.eq {χ : Weight R L M} (hχ : χ.IsZero) : (χ : L → R) = 0 := hχ
+@[simp] lemma IsZero.eq {χ : GenWeight R L M} (hχ : χ.IsZero) : (χ : L → R) = 0 := hχ
 
-@[simp] lemma coe_eq_zero_iff (χ : Weight R L M) : (χ : L → R) = 0 ↔ χ.IsZero := Iff.rfl
+@[simp] lemma coe_eq_zero_iff (χ : GenWeight R L M) : (χ : L → R) = 0 ↔ χ.IsZero := Iff.rfl
 
-lemma isZero_iff_eq_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : Weight R L M} :
-    χ.IsZero ↔ χ = 0 := Weight.ext_iff' (χ₂ := 0)
+lemma isZero_iff_eq_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : GenWeight R L M} :
 
-lemma isZero_zero [Nontrivial (genWeightSpace M (0 : L → R))] : IsZero (0 : Weight R L M) := rfl
+    χ.IsZero ↔ χ = 0 := GenWeight.ext_iff' (χ₂ := 0)
+lemma isZero_zero [Nontrivial (genWeightSpace M (0 : L → R))] : IsZero (0 : GenWeight R L M) := rfl
 
 /-- The proposition that a weight of a Lie module is non-zero. -/
-abbrev IsNonZero (χ : Weight R L M) := ¬ IsZero (χ : Weight R L M)
+abbrev IsNonZero (χ : GenWeight R L M) := ¬ IsZero (χ : GenWeight R L M)
 
-lemma isNonZero_iff_ne_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : Weight R L M} :
+lemma isNonZero_iff_ne_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : GenWeight R L M} :
     χ.IsNonZero ↔ χ ≠ 0 := isZero_iff_eq_zero.not
 
 noncomputable instance : DecidablePred (IsNonZero (R := R) (L := L) (M := M)) := Classical.decPred _
 
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
-def equivSetOf : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
+def equivSetOf : GenWeight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
   toFun w := ⟨w.1, w.2⟩
   invFun w := ⟨w.1, w.2⟩
   left_inv w := by simp
   right_inv w := by simp
 
-lemma genWeightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
+lemma genWeightSpaceOf_ne_bot (χ : GenWeight R L M) (x : L) :
     genWeightSpaceOf M (χ x) x ≠ ⊥ := by
   have : ⨅ x, genWeightSpaceOf M (χ x) x ≠ ⊥ := χ.genWeightSpace_ne_bot
   contrapose! this
   rw [eq_bot_iff]
   exact le_of_le_of_eq (iInf_le _ _) this
 
-lemma hasEigenvalueAt (χ : Weight R L M) (x : L) :
+lemma hasEigenvalueAt (χ : GenWeight R L M) (x : L) :
     (toEnd R L M x).HasEigenvalue (χ x) := by
   obtain ⟨k : ℕ, hk : (toEnd R L M x).genEigenspace (χ x) k ≠ ⊥⟩ := by
     simpa [genWeightSpaceOf, ← Module.End.iSup_genEigenspace_eq] using χ.genWeightSpaceOf_ne_bot x
   exact Module.End.hasEigenvalue_of_hasGenEigenvalue hk
 
 lemma apply_eq_zero_of_isNilpotent [NoZeroSMulDivisors R M] [IsReduced R]
-    (x : L) (h : _root_.IsNilpotent (toEnd R L M x)) (χ : Weight R L M) :
+    (x : L) (h : _root_.IsNilpotent (toEnd R L M x)) (χ : GenWeight R L M) :
     χ x = 0 :=
   ((χ.hasEigenvalueAt x).isNilpotent_of_isNilpotent h).eq_zero
 
-end Weight
+end GenWeight
 
 /-- See also the more useful form `LieModule.zero_genWeightSpace_eq_top_of_nilpotent`. -/
 @[simp]
@@ -675,9 +679,9 @@ lemma independent_genWeightSpace [NoZeroSMulDivisors R M] :
     (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem)
 
 lemma independent_genWeightSpace' [NoZeroSMulDivisors R M] :
-    CompleteLattice.Independent fun χ : Weight R L M ↦ genWeightSpace M χ :=
+    CompleteLattice.Independent fun χ : GenWeight R L M ↦ genWeightSpace M χ :=
   (independent_genWeightSpace R L M).comp <|
-    Subtype.val_injective.comp (Weight.equivSetOf R L M).injective
+    Subtype.val_injective.comp (GenWeight.equivSetOf R L M).injective
 
 lemma independent_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
     CompleteLattice.Independent fun (χ : R) ↦ genWeightSpaceOf M χ x := by
@@ -693,13 +697,13 @@ lemma finite_genWeightSpace_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     {χ : L → R | genWeightSpace M χ ≠ ⊥}.Finite :=
   CompleteLattice.WellFoundedGT.finite_ne_bot_of_independent (independent_genWeightSpace R L M)
 
-instance Weight.instFinite [NoZeroSMulDivisors R M] [IsNoetherian R M] :
-    Finite (Weight R L M) := by
+instance GenWeight.instFinite [NoZeroSMulDivisors R M] [IsNoetherian R M] :
+    Finite (GenWeight R L M) := by
   have : Finite {χ : L → R | genWeightSpace M χ ≠ ⊥} := finite_genWeightSpace_ne_bot R L M
   exact Finite.of_injective (equivSetOf R L M) (equivSetOf R L M).injective
 
-noncomputable instance Weight.instFintype [NoZeroSMulDivisors R M] [IsNoetherian R M] :
-    Fintype (Weight R L M) :=
+noncomputable instance GenWeight.instFintype [NoZeroSMulDivisors R M] [IsNoetherian R M] :
+    Fintype (GenWeight R L M) :=
   Fintype.ofFinite _
 
 /-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorhpism of `M` defined by
@@ -766,9 +770,9 @@ lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
   apply IsTriangularizable.maxGenEigenspace_eq_top
 
 lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
-    ⨆ χ : Weight K L M, genWeightSpace M χ = ⊤ := by
+    ⨆ χ : GenWeight K L M, genWeightSpace M χ = ⊤ := by
   have := iSup_genWeightSpace_eq_top K L M
-  erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOf K L M).iSup_comp] at this
+  erw [← iSup_ne_bot_subtype, ← (GenWeight.equivSetOf K L M).iSup_comp] at this
   exact this
 
 end field
