@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
@@ -214,8 +214,6 @@ A family `{ eᵢ }` of idempotent elements is complete orthogonal if
 structure CompleteOrthogonalIdempotents (e : I → R) extends OrthogonalIdempotents e : Prop where
   complete : ∑ i, e i = 1
 
-variable (he : CompleteOrthogonalIdempotents e)
-
 lemma CompleteOrthogonalIdempotents.unique_iff [Unique I] :
     CompleteOrthogonalIdempotents e ↔ e default = 1 := by
   rw [completeOrthogonalIdempotents_iff, OrthogonalIdempotents.unique, Fintype.sum_unique,
@@ -404,7 +402,7 @@ lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempot
   refine ⟨?_, he.1.surjective_pi⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
-  simp [Function.funext_iff, Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton] at hx
+  simp [funext_iff, Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton] at hx
   suffices ∀ s : Finset I, (∏ i in s, (1 - e i)) * x = x by
     rw [← this Finset.univ, he.prod_one_sub, zero_mul]
   refine fun s ↦ Finset.induction_on s (by simp) ?_

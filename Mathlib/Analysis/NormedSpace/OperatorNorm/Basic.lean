@@ -33,17 +33,17 @@ open Filter hiding map_smul
 open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
+variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 : Type*}
 
 section SemiNormed
 
 open Metric ContinuousLinearMap
 
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup Eₗ] [SeminormedAddCommGroup F]
-  [SeminormedAddCommGroup Fₗ] [SeminormedAddCommGroup G] [SeminormedAddCommGroup Gₗ]
+variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup Fₗ]
+  [SeminormedAddCommGroup G]
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜 Eₗ] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 variable [FunLike 𝓕 E F]
@@ -56,7 +56,7 @@ theorem norm_image_of_norm_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕
 
 section
 
-variable [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₃]
+variable [RingHomIsometric σ₁₂]
 
 theorem SemilinearMapClass.bound_of_shell_semi_normed [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕)
     {ε C : ℝ} (ε_pos : 0 < ε) {c : 𝕜} (hc : 1 < ‖c‖)
@@ -174,7 +174,7 @@ theorem opNorm_neg (f : E →SL[σ₁₂] F) : ‖-f‖ = ‖f‖ := by simp onl
 @[deprecated (since := "2024-02-02")] alias op_norm_neg := opNorm_neg
 
 theorem opNorm_nonneg (f : E →SL[σ₁₂] F) : 0 ≤ ‖f‖ :=
-  Real.sInf_nonneg _ fun _ ↦ And.left
+  Real.sInf_nonneg fun _ ↦ And.left
 
 @[deprecated (since := "2024-02-02")] alias op_norm_nonneg := opNorm_nonneg
 
@@ -227,7 +227,7 @@ theorem opNorm_le_iff {f : E →SL[σ₁₂] F} {M : ℝ} (hMp : 0 ≤ M) :
 @[deprecated (since := "2024-02-02")] alias op_norm_le_iff := opNorm_le_iff
 
 theorem ratio_le_opNorm : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
-  div_le_of_nonneg_of_le_mul (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)
+  div_le_of_le_mul₀ (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)
 
 @[deprecated (since := "2024-02-02")] alias ratio_le_op_norm := ratio_le_opNorm
 
@@ -264,7 +264,7 @@ theorem opNorm_le_of_shell' {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 <
   · refine opNorm_le_of_ball ε_pos hC fun x hx => hf x ?_ ?_
     · simp [h0]
     · rwa [ball_zero_eq] at hx
-  · rw [← inv_inv c, norm_inv, inv_lt_one_iff_of_pos (norm_pos_iff.2 <| inv_ne_zero h0)] at hc
+  · rw [← inv_inv c, norm_inv, inv_lt_one₀ (norm_pos_iff.2 <| inv_ne_zero h0)] at hc
     refine opNorm_le_of_shell ε_pos hC hc ?_
     rwa [norm_inv, div_eq_mul_inv, inv_inv]
 

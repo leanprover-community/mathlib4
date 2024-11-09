@@ -61,7 +61,7 @@ theorem prod_single_index {a : α} {b : M} {h : α → M → N} (h_zero : h a 0 
     (single a b).prod h = h a b :=
   calc
     (single a b).prod h = ∏ x ∈ {a}, h x (single a b x) :=
-      prod_of_support_subset _ support_single_subset h fun x hx =>
+      prod_of_support_subset _ support_single_subset h fun _ hx =>
         (mem_singleton.1 hx).symm ▸ h_zero
     _ = h a b := by simp
 
@@ -113,8 +113,6 @@ theorem prod_ite_eq' [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
   dsimp [Finsupp.prod]
   rw [f.support.prod_ite_eq']
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem sum_ite_self_eq' [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (x = a) v 0) = f a := by
   classical
@@ -133,7 +131,7 @@ result of `onFinset` is the same as multiplying it over the original `Finset`. -
       result of `onFinset` is the same as summing it over the original `Finset`."]
 theorem onFinset_prod {s : Finset α} {f : α → M} {g : α → M → N} (hf : ∀ a, f a ≠ 0 → a ∈ s)
     (hg : ∀ a, g a 0 = 1) : (onFinset s f hf).prod g = ∏ a ∈ s, g a (f a) :=
-  Finset.prod_subset support_onFinset_subset <| by simp (config := { contextual := true }) [*]
+  Finset.prod_subset support_onFinset_subset <| by simp +contextual [*]
 
 /-- Taking a product over `f : α →₀ M` is the same as multiplying the value on a single element
 `y ∈ f.support` by the product over `erase y f`. -/
@@ -249,12 +247,12 @@ theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M →
   finset_sum_apply _ _ _
 
 -- Porting note: inserted ⇑ on the rhs
-theorem coe_finset_sum [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) :
+@[simp, norm_cast] theorem coe_finset_sum [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) :
     ⇑(∑ i ∈ S, f i) = ∑ i ∈ S, ⇑(f i) :=
   map_sum (coeFnAddHom : (α →₀ N) →+ _) _ _
 
 -- Porting note: inserted ⇑ on the rhs
-theorem coe_sum [Zero M] [AddCommMonoid N] (f : α →₀ M) (g : α → M → β →₀ N) :
+@[simp, norm_cast] theorem coe_sum [Zero M] [AddCommMonoid N] (f : α →₀ M) (g : α → M → β →₀ N) :
     ⇑(f.sum g) = f.sum fun a₁ b => ⇑(g a₁ b) :=
   coe_finset_sum _ _
 
@@ -346,8 +344,7 @@ def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α 
     ext
     simp [singleAddHom]
   right_inv F := by
-  -- Porting note: This was `ext` and used the wrong lemma
-    apply Finsupp.addHom_ext'
+    ext
     simp [singleAddHom, AddMonoidHom.comp, Function.comp_def]
   map_add' F G := by
     ext x
@@ -407,8 +404,6 @@ theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → 
   ext
   simp
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem liftAddHom_apply_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α)
     (b : M) : (liftAddHom (α := α) (M := M) (N := N)) f (single a b) = f a b :=
   sum_single_index (f a).map_zero

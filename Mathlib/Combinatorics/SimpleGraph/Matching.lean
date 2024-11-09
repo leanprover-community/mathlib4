@@ -40,7 +40,7 @@ one edge, and the edges of the subgraph represent the paired vertices.
 open Function
 
 namespace SimpleGraph
-variable {V : Type*} {G G': SimpleGraph V} {M M' : Subgraph G} {v w : V}
+variable {V W : Type*} {G G': SimpleGraph V} {M M' : Subgraph G} {v w : V}
 
 namespace Subgraph
 
@@ -133,6 +133,22 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
+protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g G')
+    (hf : Injective f) (hM : M.IsMatching) : (M.map f).IsMatching := by
+  rintro _ ⟨v, hv, rfl⟩
+  obtain ⟨v', hv'⟩ := hM hv
+  use f v'
+  refine ⟨⟨v, v', hv'.1, rfl, rfl⟩, ?_⟩
+  rintro _ ⟨w, w', hw, hw', rfl⟩
+  cases hf hw'.symm
+  rw [hv'.2 w' hw]
+
+@[simp]
+lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : G ≃g G') :
+    (M.map f.toHom).IsMatching ↔ M.IsMatching where
+   mp h := by simpa [← map_comp] using h.map f.symm.toHom f.symm.injective
+   mpr := .map f.toHom f.injective
+
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
 matched.
@@ -193,9 +209,7 @@ namespace ConnectedComponent
 
 section Finite
 
-variable [Fintype V]
-
-lemma even_card_of_isPerfectMatching [DecidableEq V] [DecidableRel G.Adj]
+lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
     (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
   #adaptation_note
@@ -208,7 +222,8 @@ lemma even_card_of_isPerfectMatching [DecidableEq V] [DecidableRel G.Adj]
   letI : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
   simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
-lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.deleteVerts ⊤ u).coe}
+lemma odd_matches_node_outside [Finite V] {u : Set V}
+    {c : ConnectedComponent (Subgraph.deleteVerts ⊤ u).coe}
     (hM : M.IsPerfectMatching) (codd : Odd (Nat.card c.supp)) :
     ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.supp := by
   by_contra! h
@@ -224,7 +239,6 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
       Subgraph.induce_adj, hwnu, not_false_eq_true, and_self, Subgraph.top_adj, M.adj_sub hw.1,
       and_true] at hv' ⊢
     trivial
-
   apply Nat.not_even_iff_odd.2 codd
   haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
   classical
@@ -254,9 +268,9 @@ lemma IsMatchingFree.mono {G G' : SimpleGraph V} (h : G ≤ G') (hmf : G'.IsMatc
   simp only [Subgraph.map_verts, Hom.coe_ofLE, id_eq, Set.image_id']
   exact hc.2 v
 
-lemma exists_maximal_isMatchingFree [Fintype V] [DecidableEq V]
-    (h : G.IsMatchingFree) : ∃ Gmax : SimpleGraph V,
-    G ≤ Gmax ∧ Gmax.IsMatchingFree ∧ ∀ G', G' > Gmax → ∃ M : Subgraph G', M.IsPerfectMatching := by
+lemma exists_maximal_isMatchingFree [Finite V] (h : G.IsMatchingFree) :
+    ∃ Gmax : SimpleGraph V, G ≤ Gmax ∧ Gmax.IsMatchingFree ∧
+      ∀ G', G' > Gmax → ∃ M : Subgraph G', M.IsPerfectMatching := by
   simp_rw [← @not_forall_not _ Subgraph.IsPerfectMatching]
   obtain ⟨Gmax, hGmax⟩ := Finite.exists_le_maximal h
   exact ⟨Gmax, ⟨hGmax.1, ⟨hGmax.2.prop, fun _ h' ↦ hGmax.2.not_prop_of_gt h'⟩⟩⟩

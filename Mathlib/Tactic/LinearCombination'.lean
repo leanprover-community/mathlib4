@@ -174,12 +174,17 @@ syntax expStx := atomic(" (" &"exp" " := ") withoutPosition(num) ")"
   of a list of equalities and subtracting it from the target.
   The tactic will create a linear
   combination by adding the equalities together from left to right, so the order
-  of the input hypotheses does matter.  If the `normalize` field of the
-  configuration is set to false, then the tactic will simply set the user up to
+  of the input hypotheses does matter.  If the `norm` field of the
+  tactic is set to `skip`, then the tactic will simply set the user up to
   prove their target using the linear combination instead of normalizing the subtraction.
 
 Note: There is also a similar tactic `linear_combination` (no prime); this version is
-provided for backward compatibility.
+provided for backward compatibility.  Compared to this tactic, `linear_combination`:
+* drops the `←` syntax for reversing an equation, instead offering this operation using the `-`
+  syntax
+* does not support multiplication of two hypotheses (`h1 * h2`), division by a hypothesis (`3 / h`),
+  or inversion of a hypothesis (`h⁻¹`)
+* produces noisy output when the user adds or subtracts a constant to a hypothesis (`h + 3`)
 
 Note: The left and right sides of all the equalities should have the same
   type, and the coefficients should also have this type.  There must be

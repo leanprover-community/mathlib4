@@ -251,7 +251,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
       refine ⟨-b, Submodule.mem_map.mpr ⟨⟨_, N.sub_mem zN (N.smul_mem b yN)⟩, ?_, ?_⟩⟩
       · refine LinearMap.mem_ker.mpr (show ϕ (⟨z, N_le_M zN⟩ - b • ⟨y, N_le_M yN⟩) = 0 from ?_)
         rw [LinearMap.map_sub, LinearMap.map_smul, hb, ϕy_eq, smul_eq_mul, mul_comm, sub_self]
-      · simp only [sub_eq_add_neg, neg_smul, coeSubtype]
+      · simp only [sub_eq_add_neg, neg_smul, coe_subtype]
   -- And extend a basis for `M'` with `y'`
   intro m' hn'm' bM'
   refine ⟨Nat.succ_le_succ hn'm', ?_, ?_⟩
@@ -270,7 +270,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   · simp only [Fin.cons_zero, Fin.castLE_zero]
     exact a_smul_y'.symm
   · rw [Fin.castLE_succ]
-    simp only [Fin.cons_succ, Function.comp_apply, coe_inclusion, map_coe, coeSubtype, h i]
+    simp only [Fin.cons_succ, Function.comp_apply, coe_inclusion, map_coe, coe_subtype, h i]
 
 /-- A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.

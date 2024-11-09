@@ -49,7 +49,7 @@ namespace ContT
 
 export MonadCont (Label goto)
 
-variable {r : Type u} {m : Type u → Type v} {α β γ ω : Type w}
+variable {r : Type u} {m : Type u → Type v} {α β : Type w}
 
 def run : ContT r m α → (α → m r) → m r :=
   id
