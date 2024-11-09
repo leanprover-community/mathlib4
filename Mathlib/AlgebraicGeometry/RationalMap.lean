@@ -266,7 +266,7 @@ lemma Opens.isDominant_homOfLE {U V : X.Opens} (hU : Dense (X := X) U) (hU' : U 
   IsDominant.of_comp_of_isOpenImmersion (g := Opens.ι _) _
 
 /-- Two partial maps from reduced schemes to separated schemes are equivalent if and only if
-they are equal **any** open dense subset. -/
+they are equal on **any** open dense subset. -/
 lemma equiv_iff_of_isSeparated_of_le [X.Over S] [Y.Over S] [IsReduced X]
     [IsSeparated (Y ↘ S)] {f g : X.PartialMap Y} [f.IsOver S] [g.IsOver S]
     {W : X.Opens} (hW : Dense (X := X) W) (hWl : W ≤ f.domain) (hWr : W ≤ g.domain) : f.equiv g ↔
