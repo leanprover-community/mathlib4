@@ -510,7 +510,7 @@ def quotientEquiv (I : Ideal R) (J : Ideal S) [I.IsTwoSided] [J.IsTwoSided]
     (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S)) :
     R ⧸ I ≃+* S ⧸ J where
   __ := quotientMap J f (hIJ ▸ le_comap_map)
-  invFun := quotientMap I f.symm (hIJ ▸ (map_comap_of_equiv I f).le)
+  invFun := quotientMap I f.symm (hIJ ▸ (map_comap_of_equiv f).le)
   left_inv := by
     rintro ⟨r⟩
     simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, RingHom.toFun_eq_coe,
