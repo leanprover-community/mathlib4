@@ -217,7 +217,7 @@ lemma colimitCoyonedaHomIsoLimitLeftOp_π_apply (f : colimit (D ⋙ coyoneda) �
     limit.π (D.leftOp ⋙ F ⋙ uliftFunctor.{u₁}) (op i) ((colimitCoyonedaHomIsoLimitLeftOp D F).hom f)
       = ⟨f.app (D.obj i).unop ((colimit.ι (D ⋙ coyoneda) i).app (D.obj i).unop
           (𝟙 (D.obj i).unop))⟩ :=
-  have : HasColimit (D.leftOp.rightOp ⋙ coyoneda) :=
+  haveI : HasColimit (D.leftOp.rightOp ⋙ coyoneda) :=
     inferInstanceAs <| HasColimit (D ⋙ coyoneda)
   colimitCoyonedaHomIsoLimit_π_apply _ _ _ _
 
@@ -269,7 +269,7 @@ lemma colimitYonedaHomIsoLimitOp_π_apply (f : colimit (D ⋙ yoneda) ⟶ F) (i 
     limit.π (D.op ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitYonedaHomIsoLimitOp D F).hom f) =
       ⟨f.app (op (D.obj i.unop))
         ((colimit.ι (D ⋙ yoneda) i.unop).app (op (D.obj i.unop)) (𝟙 (D.obj i.unop)))⟩ :=
-  have : HasColimit (D.op.unop ⋙ yoneda) :=
+  haveI : HasColimit (D.op.unop ⋙ yoneda) :=
     inferInstanceAs <| HasColimit (D ⋙ yoneda)
   colimitYonedaHomIsoLimit_π_apply _ _ _ _
 
@@ -320,7 +320,7 @@ lemma colimitCoyonedaHomIsoLimitUnop_π_apply (f : colimit (D ⋙ coyoneda) ⟶ 
     limit.π (D.unop ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitCoyonedaHomIsoLimitUnop D F).hom f)
       = ⟨f.app (D.obj (op i)).unop
           ((colimit.ι (D ⋙ coyoneda) ⟨i⟩).app (D.obj (op i)).unop (𝟙 (D.obj (op i)).unop))⟩ :=
-  have : HasColimit (D.unop.op ⋙ coyoneda) :=
+  haveI : HasColimit (D.unop.op ⋙ coyoneda) :=
     inferInstanceAs <| HasColimit (D ⋙ coyoneda)
   colimitCoyonedaHomIsoLimit'_π_apply _ _ _ _
 
@@ -372,7 +372,7 @@ lemma colimitYonedaHomIsoLimitRightOp_π_apply (f : colimit (D ⋙ yoneda) ⟶ F
     limit.π (D.rightOp ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitYonedaHomIsoLimitRightOp D F).hom f) =
       ⟨f.app (op (D.obj (op i)))
         ((colimit.ι (D ⋙ yoneda) (op i)).app (op (D.obj (op i))) (𝟙 (D.obj (op i))))⟩ :=
-  have : HasColimit (D.rightOp.leftOp ⋙ yoneda) :=
+  haveI : HasColimit (D.rightOp.leftOp ⋙ yoneda) :=
     inferInstanceAs <| HasColimit (D ⋙ yoneda)
   colimitYonedaHomIsoLimit'_π_apply _ _ _ _
 
