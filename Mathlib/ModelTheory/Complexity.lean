@@ -307,8 +307,7 @@ theorem IsQF.induction_on_inf_not {P : L.BoundedFormula α n → Prop} {φ : L.B
 
 theorem iff_toPrenex (φ : L.BoundedFormula α n) :
     φ ⇔[∅] φ.toPrenex :=
-  Theory.iff_iff_models_iff.2 (fun M v xs => by
-    rw [realize_iff, realize_toPrenex])
+  Theory.iff_iff_models_iff.2 (fun M v xs => by rw [realize_iff, realize_toPrenex])
 
 theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : L.BoundedFormula α n)
     (hqf : ∀ {m} {ψ : L.BoundedFormula α m}, IsQF ψ → P ψ)

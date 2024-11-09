@@ -59,7 +59,8 @@ instance : IsTrans (L.BoundedFormula α n) T.Imp := ⟨fun _ _ _ => Imp.trans⟩
 instance : IsPreorder (L.BoundedFormula α n) T.Imp where
 
 /-- Implication induces a preorder on formulas. -/
-def preorder (T : L.Theory) : Preorder (L.BoundedFormula α n) where
+-- See note [reducible non instances]
+abbrev preorder (T : L.Theory) : Preorder (L.BoundedFormula α n) where
   le := T.Imp
   le_refl := Imp.refl
   le_trans _ _ _ := Imp.trans
@@ -237,6 +238,9 @@ protected theorem inf_congr {φ ψ φ' ψ' : L.BoundedFormula α n}
 
 end Iff
 
+protected theorem iff_comm {φ ψ : L.BoundedFormula α n} : φ ⇔[T] ψ ↔ ψ ⇔[T] φ :=
+  ⟨Iff.symm, Iff.symm⟩
+
 /-- Semantic equivalence forms an equivalence relation on formulas. -/
 def iffSetoid (T : L.Theory) : Setoid (L.BoundedFormula α n) where
   r := T.Iff
@@ -249,38 +253,37 @@ namespace BoundedFormula
 variable (φ ψ : L.BoundedFormula α n)
 
 theorem iff_not_not : φ ⇔[T] φ.not.not :=
-  Theory.iff_iff_models_iff.2 (fun M v xs => by simp)
+  Theory.iff_iff_models_iff.2 fun M v xs => by simp
 
 theorem imp_iff_not_sup : (φ.imp ψ) ⇔[T] (φ.not ⊔ ψ) :=
-  Theory.iff_iff_models_iff.2 (fun M v xs => by simp [imp_iff_not_or])
+  Theory.iff_iff_models_iff.2 fun M v xs => by simp [imp_iff_not_or]
 
 theorem sup_iff_not_inf_not : (φ ⊔ ψ) ⇔[T] (φ.not ⊓ ψ.not).not :=
-  Theory.iff_iff_models_iff.2 (fun M v xs => by simp [imp_iff_not_or])
+  Theory.iff_iff_models_iff.2 fun M v xs => by simp [imp_iff_not_or]
 
 theorem inf_iff_not_sup_not : (φ ⊓ ψ) ⇔[T] (φ.not ⊔ ψ.not).not :=
-  Theory.iff_iff_models_iff.2 (fun M v xs => by simp)
+  Theory.iff_iff_models_iff.2 fun M v xs => by simp
 
 theorem all_iff_not_ex_not (φ : L.BoundedFormula α (n + 1)) :
     φ.all ⇔[T] φ.not.ex.not :=
-  Theory.iff_iff_models_iff.2 (fun M v xs => by simp)
+  Theory.iff_iff_models_iff.2 fun M v xs => by simp
 
 theorem ex_iff_not_all_not (φ : L.BoundedFormula α (n + 1)) :
     φ.ex ⇔[T] φ.not.all.not :=
-  Theory.iff_iff_models_iff.2 (fun M v xs => by simp)
+  Theory.iff_iff_models_iff.2 fun M v xs => by simp
 
 theorem iff_all_liftAt : φ ⇔[T] (φ.liftAt 1 n).all :=
-  Theory.iff_iff_models_iff.2 (fun M v xs => by
-    rw [realize_iff, realize_all_liftAt_one_self])
+  Theory.iff_iff_models_iff.2 fun M v xs => by rw [realize_iff, realize_all_liftAt_one_self]
 
 lemma inf_not_iff_bot :
     φ ⊓ ∼φ ⇔[T] ⊥ :=
-  Theory.iff_iff_models_iff.2 (fun M v xs => by
-    simp only [realize_iff, realize_inf, realize_not, and_not_self, realize_bot])
+  Theory.iff_iff_models_iff.2 fun M v xs => by
+    simp only [realize_iff, realize_inf, realize_not, and_not_self, realize_bot]
 
 lemma sup_not_iff_top :
     φ ⊔ ∼φ ⇔[T] ⊤ :=
-  Theory.iff_iff_models_iff.2 (fun M v xs => by
-    simp only [realize_iff, realize_sup, realize_not, realize_top, iff_true, or_not])
+  Theory.iff_iff_models_iff.2 fun M v xs => by
+    simp only [realize_iff, realize_sup, realize_not, realize_top, iff_true, or_not]
 
 end BoundedFormula
 
@@ -350,7 +353,7 @@ def Realize (φ : T.Formula α) {M : Type*} [L.Structure M] [M ⊨ T] [Nonempty 
 
 lemma realize_coe (φ : L.Formula α) {M : Type*} [L.Structure M] [M ⊨ T] [Nonempty M] (v : α → M) :
     Formula.Realize (↑φ : T.Formula α) v ↔ φ.Realize v := by
-  simp only [Realize, toAntisymmetrization, Quotient.lift_mk]
+  simp only [Formula.Realize, toAntisymmetrization, Quotient.lift_mk]
 
 end Formula
 
