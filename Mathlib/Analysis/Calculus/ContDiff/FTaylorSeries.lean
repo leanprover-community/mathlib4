@@ -176,7 +176,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff_add (hN : ∞ ≤ N) (k : ℕ) :
     HasFTaylorSeriesUpToOn N f p s ↔ ∀ n : ℕ, HasFTaylorSeriesUpToOn (n + k : ℕ) f p s := by
   constructor
   · intro H n
-    apply H.of_le (nat_le_of_infty_le_withTop hN _)
+    apply H.of_le (natCast_le_of_coe_top_le_withTop hN _)
   · intro H
     constructor
     · exact (H 0).zero_eq
@@ -196,7 +196,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff' (hN : ∞ ≤ N) :
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧
         ∀ m : ℕ, ∀ x ∈ s, HasFDerivWithinAt (fun y => p y m) (p x m.succ).curryLeft s x := by
   -- Everything except for the continuity is trivial:
-  refine ⟨fun h => ⟨h.1, fun m => h.2 m (nat_lt_of_infty_le_withTop hN _)⟩, fun h =>
+  refine ⟨fun h => ⟨h.1, fun m => h.2 m (natCast_lt_of_coe_top_le_withTop hN _)⟩, fun h =>
     ⟨h.1, fun m _ => h.2 m, fun m _ x hx =>
       -- The continuity follows from the existence of a derivative:
       (h.2 m x hx).continuousWithinAt⟩⟩
@@ -355,7 +355,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff_right (hN : ∞ ≤ N) :
       fun n ↦ (hasFTaylorSeriesUpToOn_succ_nat_iff_right.1 (h n)).2.2⟩
   · apply (hasFTaylorSeriesUpToOn_top_iff_add hN 1).2 (fun n ↦ ?_)
     rw [hasFTaylorSeriesUpToOn_succ_nat_iff_right]
-    exact ⟨h.1, h.2.1, (h.2.2).of_le (m := n) (nat_le_of_infty_le_withTop hN n)⟩
+    exact ⟨h.1, h.2.1, (h.2.2).of_le (m := n) (natCast_le_of_coe_top_le_withTop hN n)⟩
 
 /-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
 for `p 1`, which is a derivative of `f`. Version for `n : WithTop ℕ∞`. -/
