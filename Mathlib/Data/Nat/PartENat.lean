@@ -139,7 +139,7 @@ instance : Top PartENat :=
 instance : Bot PartENat :=
   ⟨0⟩
 
-instance : Sup PartENat :=
+instance : Max PartENat :=
   ⟨fun x y => ⟨x.Dom ∧ y.Dom, fun h => x.get h.1 ⊔ y.get h.2⟩⟩
 
 theorem le_def (x y : PartENat) :
@@ -731,8 +731,6 @@ theorem lt_wf : @WellFounded PartENat (· < ·) := by
 
 instance : WellFoundedLT PartENat :=
   ⟨lt_wf⟩
-
-instance isWellOrder : IsWellOrder PartENat (· < ·) := {}
 
 instance wellFoundedRelation : WellFoundedRelation PartENat :=
   ⟨(· < ·), lt_wf⟩

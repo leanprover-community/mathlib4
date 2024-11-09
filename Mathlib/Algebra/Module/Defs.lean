@@ -3,10 +3,8 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Hom.End
+import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Algebra.Ring.Invertible
-import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Int.Cast.Lemmas
 
@@ -37,10 +35,11 @@ to use a canonical `Module` typeclass throughout.
 semimodule, module, vector space
 -/
 
-assert_not_exists Multiset
-assert_not_exists Set.indicator
-assert_not_exists Pi.single_smul₀
 assert_not_exists Field
+assert_not_exists Invertible
+assert_not_exists Multiset
+assert_not_exists Pi.single_smul₀
+assert_not_exists Set.indicator
 
 open Function Set
 
@@ -81,10 +80,6 @@ instance AddCommGroup.toNatModule : Module ℕ M where
   zero_smul := zero_nsmul
   add_smul r s x := add_nsmul x r s
 
-theorem AddMonoid.End.natCast_def (n : ℕ) :
-    (↑n : AddMonoid.End M) = DistribMulAction.toAddMonoidEnd ℕ M n :=
-  rfl
-
 theorem add_smul : (r + s) • x = r • x + s • x :=
   Module.add_smul r s x
 
@@ -95,11 +90,6 @@ variable (R)
 
 -- Porting note: this is the letter of the mathlib3 version, but not really the spirit
 theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
-
-@[simp]
-theorem invOf_two_smul_add_invOf_two_smul [Invertible (2 : R)] (x : M) :
-    (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
-  Convex.combo_self invOf_two_add_invOf_two _
 
 /-- Pullback a `Module` structure along an injective additive monoid homomorphism.
 See note [reducible non-instances]. -/
@@ -145,32 +135,7 @@ abbrev Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
     add_smul := fun r s x => show f (r + s) • x = f r • x + f s • x by simp [add_smul] }
 
-variable (R)
-
-/-- `(•)` as an `AddMonoidHom`.
-
-This is a stronger version of `DistribMulAction.toAddMonoidEnd` -/
-@[simps! apply_apply]
-def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
-  { DistribMulAction.toAddMonoidEnd R M with
-    -- Porting note: the two `show`s weren't needed in mathlib3.
-    -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
-    -- use in later fields.  See
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
-    map_zero' := AddMonoidHom.ext fun r => show (0 : R) • r = 0 by simp
-    map_add' := fun x y =>
-      AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
-
-/-- A convenience alias for `Module.toAddMonoidEnd` as an `AddMonoidHom`, usually to allow the
-use of `AddMonoidHom.flip`. -/
-def smulAddHom : R →+ M →+ M :=
-  (Module.toAddMonoidEnd R M).toAddMonoidHom
-
-variable {R M}
-
-@[simp]
-theorem smulAddHom_apply (r : R) (x : M) : smulAddHom R M r x = r • x :=
-  rfl
+variable {M}
 
 theorem Module.eq_zero_of_zero_eq_one (zero_eq_one : (0 : R) = 1) : x = 0 := by
   rw [← one_smul R x, ← zero_eq_one, zero_smul]
@@ -193,10 +158,6 @@ instance AddCommGroup.toIntModule : Module ℤ M where
   smul_zero := zsmul_zero
   zero_smul := zero_zsmul
   add_smul r s x := add_zsmul x r s
-
-theorem AddMonoid.End.intCast_def (z : ℤ) :
-    (↑z : AddMonoid.End M) = DistribMulAction.toAddMonoidEnd ℤ M z :=
-  rfl
 
 variable {R M}
 
@@ -224,8 +185,6 @@ variable [Ring R] [AddCommGroup M] [Module R M] (r : R) (x : M)
 theorem neg_smul : -r • x = -(r • x) :=
   eq_neg_of_add_eq_zero_left <| by rw [← add_smul, neg_add_cancel, zero_smul]
 
--- Porting note (#10618): simp can prove this
---@[simp]
 theorem neg_smul_neg : -r • -x = r • x := by rw [neg_smul, smul_neg, neg_neg]
 
 @[simp]
@@ -281,12 +240,8 @@ instance (priority := 910) Semiring.toModule [Semiring R] : Module R R where
   zero_smul := zero_mul
   smul_zero := mul_zero
 
--- see Note [lower instance priority]
-/-- Like `Semiring.toModule`, but multiplies on the right. -/
-instance (priority := 910) Semiring.toOppositeModule [Semiring R] : Module Rᵐᵒᵖ R :=
-  { MonoidWithZero.toOppositeMulActionWithZero R with
-    smul_add := fun _ _ _ => add_mul _ _ _
-    add_smul := fun _ _ _ => mul_add _ _ _ }
+instance [NonUnitalNonAssocSemiring R] : DistribSMul R R where
+  smul_add := left_distrib
 
 /-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`. -/
 def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
@@ -358,63 +313,14 @@ instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
 
 end AddCommMonoid
 
-section AddCommGroup
-
-variable [Ring R] [AddCommGroup M] [Module R M]
-
-section
-
-variable (R)
-
-/-- `zsmul` is equal to any other module structure via a cast. -/
-lemma Int.cast_smul_eq_zsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
-  have : ((smulAddHom R M).flip b).comp (Int.castAddHom R) = (smulAddHom ℤ M).flip b := by
-    apply AddMonoidHom.ext_int
-    simp
-  DFunLike.congr_fun this n
-
-@[deprecated (since := "2024-07-23")] alias intCast_smul := Int.cast_smul_eq_zsmul
-
-/-- `zsmul` is equal to any other module structure via a cast. -/
-@[deprecated Int.cast_smul_eq_zsmul (since := "2024-07-23")]
-theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b := (Int.cast_smul_eq_zsmul ..).symm
-
-end
-
-/-- Convert back any exotic `ℤ`-smul to the canonical instance. This should not be needed since in
-mathlib all `AddCommGroup`s should normally have exactly one `ℤ`-module structure by design. -/
-theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) : @SMul.smul ℤ M h.toSMul n x = n • x :=
-  Int.cast_smul_eq_zsmul ..
-
-/-- All `ℤ`-module structures are equal. Not an instance since in mathlib all `AddCommGroup`
-should normally have exactly one `ℤ`-module structure by design. -/
-def AddCommGroup.uniqueIntModule : Unique (Module ℤ M) where
-  default := by infer_instance
-  uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
-
-end AddCommGroup
-
-theorem map_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
-    [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂]
-    (x : ℤ) (a : M) :
-    f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_zsmul, map_zsmul]
-
 theorem map_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
   simp only [Nat.cast_smul_eq_nsmul, AddMonoidHom.map_nsmul, map_nsmul]
 
-instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
-    [Module R M] : IsScalarTower ℤ R M where
-  smul_assoc n x y := ((smulAddHom R M).flip y).map_zsmul x n
-
--- Porting note (#10618): simp can prove this
---@[simp]
 theorem Nat.smul_one_eq_cast {R : Type*} [NonAssocSemiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]
 
--- Porting note (#10618): simp can prove this
---@[simp]
 theorem Int.smul_one_eq_cast {R : Type*} [NonAssocRing R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
 

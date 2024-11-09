@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.OrderOfElement
 
@@ -311,7 +312,6 @@ theorem inv_apply' {R : Type*} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ a
   (inv_apply χ a).trans <| congr_arg _ (Ring.inverse_eq_inv a)
 
 /-- The product of a character with its inverse is the trivial character. -/
--- Porting note (#10618): @[simp] can prove this (later)
 theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   ext x
   rw [coeToFun_mul, Pi.mul_apply, inv_apply_eq_inv]
@@ -502,7 +502,7 @@ theorem IsQuadratic.pow_char {χ : MulChar R R'} (hχ : χ.IsQuadratic) (p : ℕ
   rcases hχ x with (hx | hx | hx) <;> rw [hx]
   · rw [zero_pow (@Fact.out p.Prime).ne_zero]
   · rw [one_pow]
-  · exact CharP.neg_one_pow_char R' p
+  · exact neg_one_pow_char R' p
 
 /-- The `n`th power of a quadratic character is the trivial character, when `n` is even. -/
 theorem IsQuadratic.pow_even {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ} (hn : Even n) :
@@ -515,6 +515,22 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
     χ ^ n = χ := by
   obtain ⟨n, rfl⟩ := hn
   rw [pow_add, pow_one, hχ.pow_even (even_two_mul _), one_mul]
+
+/-- A multiplicative character `χ` into an integral domain is quadratic
+if and only if `χ^2 = 1`. -/
+lemma isQuadratic_iff_sq_eq_one {M R : Type*} [CommMonoid M] [CommRing R] [NoZeroDivisors R]
+    [Nontrivial R] {χ : MulChar M R} :
+    IsQuadratic χ ↔ χ ^ 2 = 1:= by
+  refine ⟨fun h ↦ ext (fun x ↦ ?_), fun h x ↦ ?_⟩
+  · rw [one_apply_coe, χ.pow_apply_coe]
+    rcases h x with H | H | H
+    · exact (not_isUnit_zero <| H ▸ IsUnit.map χ <| x.isUnit).elim
+    · simp only [H, one_pow]
+    · simp only [H, even_two, Even.neg_pow, one_pow]
+  · by_cases hx : IsUnit x
+    · refine .inr <| sq_eq_one_iff.mp ?_
+      rw [← χ.pow_apply' two_ne_zero, h, MulChar.one_apply hx]
+    · exact .inl <| map_nonunit χ hx
 
 end quadratic_and_comp
 

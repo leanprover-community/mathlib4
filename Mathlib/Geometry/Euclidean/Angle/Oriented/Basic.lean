@@ -223,12 +223,10 @@ theorem oangle_neg_self_right {x : V} (hx : x ≠ 0) : o.oangle x (-x) = π := b
   simp [oangle_neg_right, hx]
 
 /-- Twice the angle between the negation of a vector and that vector is 0. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem two_zsmul_oangle_neg_self_left (x : V) : (2 : ℤ) • o.oangle (-x) x = 0 := by
   by_cases hx : x = 0 <;> simp [hx]
 
 /-- Twice the angle between a vector and its negation is 0. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem two_zsmul_oangle_neg_self_right (x : V) : (2 : ℤ) • o.oangle x (-x) = 0 := by
   by_cases hx : x = 0 <;> simp [hx]
 
@@ -796,7 +794,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
   have hc : IsConnected s := isConnected_univ.image _ (continuous_const.prod_mk
     ((continuous_id.smul continuous_const).add continuous_const)).continuousOn
   have hf : ContinuousOn (fun z : V × V => o.oangle z.1 z.2) s := by
-    refine ContinuousAt.continuousOn fun z hz => o.continuousAt_oangle ?_ ?_
+    refine continuousOn_of_forall_continuousAt fun z hz => o.continuousAt_oangle ?_ ?_
     all_goals
       simp_rw [s, Set.mem_image] at hz
       obtain ⟨r', -, rfl⟩ := hz
@@ -901,7 +899,6 @@ theorem oangle_sign_sub_left_swap (x y : V) : (o.oangle (x - y) x).sign = (o.oan
 /-- The sign of the angle between a vector, and a linear combination of that vector with a second
 vector, is the sign of the factor by which the second vector is multiplied in that combination
 multiplied by the sign of the angle between the two vectors. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem oangle_sign_smul_add_smul_right (x y : V) (r₁ r₂ : ℝ) :
     (o.oangle x (r₁ • x + r₂ • y)).sign = SignType.sign r₂ * (o.oangle x y).sign := by
   rw [← o.oangle_sign_smul_add_right x (r₁ • x + r₂ • y) (-r₁)]
@@ -910,7 +907,6 @@ theorem oangle_sign_smul_add_smul_right (x y : V) (r₁ r₂ : ℝ) :
 /-- The sign of the angle between a linear combination of two vectors and the second vector is
 the sign of the factor by which the first vector is multiplied in that combination multiplied by
 the sign of the angle between the two vectors. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem oangle_sign_smul_add_smul_left (x y : V) (r₁ r₂ : ℝ) :
     (o.oangle (r₁ • x + r₂ • y) y).sign = SignType.sign r₁ * (o.oangle x y).sign := by
   simp_rw [o.oangle_rev y, Real.Angle.sign_neg, add_comm (r₁ • x), oangle_sign_smul_add_smul_right,

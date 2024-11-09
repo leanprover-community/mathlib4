@@ -215,13 +215,9 @@ theorem coe_subset_Icc : ↑I ⊆ Box.Icc I :=
 
 /-- `I ⊔ J` is the least box that includes both `I` and `J`. Since `↑I ∪ ↑J` is usually not a box,
 `↑(I ⊔ J)` is larger than `↑I ∪ ↑J`. -/
-instance : Sup (Box ι) :=
-  ⟨fun I J ↦ ⟨I.lower ⊓ J.lower, I.upper ⊔ J.upper,
-    fun i ↦ (min_le_left _ _).trans_lt <| (I.lower_lt_upper i).trans_le (le_max_left _ _)⟩⟩
-
 instance : SemilatticeSup (Box ι) :=
-  { (inferInstance : PartialOrder (Box ι)),
-    (inferInstance : Sup (Box ι)) with
+  { sup := fun I J ↦ ⟨I.lower ⊓ J.lower, I.upper ⊔ J.upper,
+    fun i ↦ (min_le_left _ _).trans_lt <| (I.lower_lt_upper i).trans_le (le_max_left _ _)⟩
     le_sup_left := fun _ _ ↦ le_iff_bounds.2 ⟨inf_le_left, le_sup_left⟩
     le_sup_right := fun _ _ ↦ le_iff_bounds.2 ⟨inf_le_right, le_sup_right⟩
     sup_le := fun _ _ _ h₁ h₂ ↦ le_iff_bounds.2
@@ -297,7 +293,7 @@ theorem coe_mk' (l u : ι → ℝ) : (mk' l u : Set (ι → ℝ)) = pi univ fun 
     rw [coe_bot, univ_pi_eq_empty]
     exact Ioc_eq_empty hi
 
-instance WithBot.inf : Inf (WithBot (Box ι)) :=
+instance WithBot.inf : Min (WithBot (Box ι)) :=
   ⟨fun I ↦
     WithBot.recBotCoe (fun _ ↦ ⊥)
       (fun I J ↦ WithBot.recBotCoe ⊥ (fun J ↦ mk' (I.lower ⊔ J.lower) (I.upper ⊓ J.upper)) J) I⟩
@@ -315,8 +311,7 @@ theorem coe_inf (I J : WithBot (Box ι)) : (↑(I ⊓ J) : Set (ι → ℝ)) = (
     coe_coe]
 
 instance : Lattice (WithBot (Box ι)) :=
-  { WithBot.semilatticeSup,
-    Box.WithBot.inf with
+  { inf := min
     inf_le_left := fun I J ↦ by
       rw [← withBotCoe_subset_iff, coe_inf]
       exact inter_subset_left

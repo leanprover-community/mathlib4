@@ -5,6 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Field.Subfield
 import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Data.Set.Pointwise.Interval
@@ -17,6 +18,11 @@ definitions.
 
 Some useful results that relate the topology of the normed field to the discrete topology include:
 * `norm_eq_one_iff_ne_zero_of_discrete`
+
+Methods for constructing a normed ring/field instance from a given real absolute value on a
+ring/field are given in:
+* AbsoluteValue.toNormedRing
+* AbsoluteValue.toNormedField
 -/
 
 -- Guard against import creep.
@@ -289,7 +295,7 @@ instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
 
 /-- Non-unital seminormed ring structure on the product of two non-unital seminormed rings,
   using the sup norm. -/
-instance Prod.nonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
+noncomputable instance Prod.nonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
     NonUnitalSeminormedRing (α × β) :=
   { seminormedAddCommGroup, instNonUnitalRing with
     norm_mul := fun x y =>
@@ -424,7 +430,7 @@ instance ULift.seminormedRing : SeminormedRing (ULift α) :=
 
 /-- Seminormed ring structure on the product of two seminormed rings,
   using the sup norm. -/
-instance Prod.seminormedRing [SeminormedRing β] : SeminormedRing (α × β) :=
+noncomputable instance Prod.seminormedRing [SeminormedRing β] : SeminormedRing (α × β) :=
   { nonUnitalSeminormedRing, instRing with }
 
 instance MulOpposite.instSeminormedRing : SeminormedRing αᵐᵒᵖ where
@@ -454,6 +460,23 @@ lemma nnnorm_sub_mul_le (ha : ‖a‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖c - 
 chord length is a metric on the unit complex numbers. -/
 lemma nnnorm_sub_mul_le' (hb : ‖b‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖1 - a‖₊ + ‖c - b‖₊ := norm_sub_mul_le' hb
 
+lemma norm_commutator_units_sub_one_le (a b : αˣ) :
+    ‖(a * b * a⁻¹ * b⁻¹).val - 1‖ ≤ 2 * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ * ‖a.val - 1‖ * ‖b.val - 1‖ :=
+  calc
+    ‖(a * b * a⁻¹ * b⁻¹).val - 1‖ = ‖(a * b - b * a) * a⁻¹.val * b⁻¹.val‖ := by simp [sub_mul, *]
+    _ ≤ ‖(a * b - b * a : α)‖ * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ := norm_mul₃_le
+    _ = ‖(a - 1 : α) * (b - 1) - (b - 1) * (a - 1)‖ * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ := by
+      simp_rw [sub_one_mul, mul_sub_one]; abel_nf
+    _ ≤ (‖(a - 1 : α) * (b - 1)‖ + ‖(b - 1 : α) * (a - 1)‖) * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ := by
+      gcongr; exact norm_sub_le ..
+    _ ≤ (‖a.val - 1‖ * ‖b.val - 1‖ + ‖b.val - 1‖ * ‖a.val - 1‖) * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ := by
+      gcongr <;> exact norm_mul_le ..
+    _ = 2 * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ * ‖a.val - 1‖ * ‖b.val - 1‖ := by ring
+
+lemma nnnorm_commutator_units_sub_one_le (a b : αˣ) :
+    ‖(a * b * a⁻¹ * b⁻¹).val - 1‖₊ ≤ 2 * ‖a⁻¹.val‖₊ * ‖b⁻¹.val‖₊ * ‖a.val - 1‖₊ * ‖b.val - 1‖₊ := by
+  simpa using norm_commutator_units_sub_one_le a b
+
 /-- A homomorphism `f` between semi_normed_rings is bounded if there exists a positive
   constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/
 def RingHom.IsBounded {α : Type*} [SeminormedRing α] {β : Type*} [SeminormedRing β]
@@ -471,8 +494,8 @@ instance ULift.nonUnitalNormedRing : NonUnitalNormedRing (ULift α) :=
 
 /-- Non-unital normed ring structure on the product of two non-unital normed rings,
 using the sup norm. -/
-instance Prod.nonUnitalNormedRing [NonUnitalNormedRing β] : NonUnitalNormedRing (α × β) :=
-  { Prod.nonUnitalSeminormedRing, Prod.normedAddCommGroup with }
+noncomputable instance Prod.nonUnitalNormedRing [NonUnitalNormedRing β] :
+  NonUnitalNormedRing (α × β) := { Prod.nonUnitalSeminormedRing, Prod.normedAddCommGroup with }
 
 instance MulOpposite.instNonUnitalNormedRing : NonUnitalNormedRing αᵐᵒᵖ where
   __ := instNonUnitalRing
@@ -495,7 +518,7 @@ instance ULift.normedRing : NormedRing (ULift α) :=
   { ULift.seminormedRing, ULift.normedAddCommGroup with }
 
 /-- Normed ring structure on the product of two normed rings, using the sup norm. -/
-instance Prod.normedRing [NormedRing β] : NormedRing (α × β) :=
+noncomputable instance Prod.normedRing [NormedRing β] : NormedRing (α × β) :=
   { nonUnitalNormedRing, instRing with }
 
 instance MulOpposite.instNormedRing : NormedRing αᵐᵒᵖ where
@@ -514,7 +537,7 @@ instance ULift.nonUnitalSeminormedCommRing : NonUnitalSeminormedCommRing (ULift 
 
 /-- Non-unital seminormed commutative ring structure on the product of two non-unital seminormed
 commutative rings, using the sup norm. -/
-instance Prod.nonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing β] :
+noncomputable instance Prod.nonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing β] :
     NonUnitalSeminormedCommRing (α × β) :=
   { nonUnitalSeminormedRing, instNonUnitalCommRing with }
 
@@ -547,7 +570,7 @@ instance ULift.nonUnitalNormedCommRing : NonUnitalNormedCommRing (ULift α) :=
 
 /-- Non-unital normed commutative ring structure on the product of two non-unital normed
 commutative rings, using the sup norm. -/
-instance Prod.nonUnitalNormedCommRing [NonUnitalNormedCommRing β] :
+noncomputable instance Prod.nonUnitalNormedCommRing [NonUnitalNormedCommRing β] :
     NonUnitalNormedCommRing (α × β) :=
   { Prod.nonUnitalSeminormedCommRing, Prod.normedAddCommGroup with }
 
@@ -566,8 +589,8 @@ instance ULift.seminormedCommRing : SeminormedCommRing (ULift α) :=
 
 /-- Seminormed commutative ring structure on the product of two seminormed commutative rings,
   using the sup norm. -/
-instance Prod.seminormedCommRing [SeminormedCommRing β] : SeminormedCommRing (α × β) :=
-  { Prod.nonUnitalSeminormedCommRing, instCommRing with }
+noncomputable instance Prod.seminormedCommRing [SeminormedCommRing β] :
+  SeminormedCommRing (α × β) := { Prod.nonUnitalSeminormedCommRing, instCommRing with }
 
 instance MulOpposite.instSeminormedCommRing : SeminormedCommRing αᵐᵒᵖ where
   __ := instSeminormedRing
@@ -596,7 +619,7 @@ instance ULift.normedCommRing : NormedCommRing (ULift α) :=
 
 /-- Normed commutative ring structure on the product of two normed commutative rings, using the sup
 norm. -/
-instance Prod.normedCommRing [NormedCommRing β] : NormedCommRing (α × β) :=
+noncomputable instance Prod.normedCommRing [NormedCommRing β] : NormedCommRing (α × β) :=
   { nonUnitalNormedRing, instCommRing with }
 
 instance MulOpposite.instNormedCommRing : NormedCommRing αᵐᵒᵖ where
@@ -613,7 +636,7 @@ end NormedCommRing
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α] {a : α}
+variable [NormedDivisionRing α] {a b : α}
 
 @[simp]
 theorem norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ :=
@@ -694,6 +717,14 @@ theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
 theorem nndist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
     nndist z⁻¹ w⁻¹ = nndist z w / (‖z‖₊ * ‖w‖₊) :=
   NNReal.eq <| dist_inv_inv₀ hz hw
+
+lemma norm_commutator_sub_one_le (ha : a ≠ 0) (hb : b ≠ 0) :
+    ‖a * b * a⁻¹ * b⁻¹ - 1‖ ≤ 2 * ‖a‖⁻¹ * ‖b‖⁻¹ * ‖a - 1‖ * ‖b - 1‖ := by
+  simpa using norm_commutator_units_sub_one_le (.mk0 a ha) (.mk0 b hb)
+
+lemma nnnorm_commutator_sub_one_le (ha : a ≠ 0) (hb : b ≠ 0) :
+    ‖a * b * a⁻¹ * b⁻¹ - 1‖₊ ≤ 2 * ‖a‖₊⁻¹ * ‖b‖₊⁻¹ * ‖a - 1‖₊ * ‖b - 1‖₊ := by
+  simpa using nnnorm_commutator_units_sub_one_le (.mk0 a ha) (.mk0 b hb)
 
 namespace NormedDivisionRing
 
@@ -892,7 +923,6 @@ namespace NNReal
 
 open NNReal
 
--- porting note (#10618): removed `@[simp]` because `simp` can prove this
 theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
 
 @[simp]
@@ -1065,3 +1095,38 @@ instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : Normed
   { SubringClass.toNormedRing s with mul_comm := mul_comm }
 
 end SubringClass
+
+namespace SubfieldClass
+
+variable {S F : Type*} [SetLike S F]
+
+/--
+If `s` is a subfield of a normed field `F`, then `s` is equipped with an induced normed
+field structure.
+-/
+instance toNormedField [NormedField F] [SubfieldClass S F] (s : S) : NormedField s :=
+  NormedField.induced s F (SubringClass.subtype s) Subtype.val_injective
+
+end SubfieldClass
+
+namespace AbsoluteValue
+
+/-- A real absolute value on a ring determines a `NormedRing` structure. -/
+noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing R where
+  norm := v
+  dist_eq _ _ := rfl
+  dist_self x := by simp only [sub_self, MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom, map_zero]
+  dist_comm := v.map_sub
+  dist_triangle := v.sub_le
+  edist_dist x y := rfl
+  norm_mul x y := (v.map_mul x y).le
+  eq_of_dist_eq_zero := by simp only [MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom,
+    AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
+
+/-- A real absolute value on a field determines a `NormedField` structure. -/
+noncomputable def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
+  toField := inferInstanceAs (Field K)
+  __ := v.toNormedRing
+  norm_mul' := v.map_mul
+
+end AbsoluteValue

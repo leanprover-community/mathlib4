@@ -94,7 +94,7 @@ open scoped Classical
 universe v₁ w₁
 
 variable {R S A}
-variable [Semiring R] [Semiring S] [AddCommMonoid A]
+variable [Ring R] [Ring S] [AddCommGroup A]
 variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁} {c : ι' → A}

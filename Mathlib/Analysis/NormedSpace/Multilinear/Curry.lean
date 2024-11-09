@@ -217,8 +217,8 @@ def ContinuousMultilinearMap.uncurryRight
     ContinuousMultilinearMap 𝕜 Ei G :=
   let f' : MultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →ₗ[𝕜] G) :=
     { toFun := fun m => (f m).toLinearMap
-      map_add' := fun m i x y => by simp
-      map_smul' := fun m i c x => by simp }
+      map_update_add' := fun m i x y => by simp
+      map_update_smul' := fun m i c x => by simp }
   (@MultilinearMap.uncurryRight 𝕜 n Ei G _ _ _ _ _ f').mkContinuous ‖f‖ fun m =>
     f.norm_map_init_le m
 
@@ -237,10 +237,10 @@ def ContinuousMultilinearMap.curryRight (f : ContinuousMultilinearMap 𝕜 Ei G)
     { toFun := fun m =>
         (f.toMultilinearMap.curryRight m).mkContinuous (‖f‖ * ∏ i, ‖m i‖) fun x =>
           f.norm_map_snoc_le m x
-      map_add' := fun m i x y => by
+      map_update_add' := fun m i x y => by
         ext
         simp
-      map_smul' := fun m i c x => by
+      map_update_smul' := fun m i c x => by
         ext
         simp }
   f'.mkContinuous ‖f‖ fun m => by
@@ -560,7 +560,7 @@ variable (𝕜 G G') {k l : ℕ} {s : Finset (Fin n)}
 `l`, then the space of continuous multilinear maps `G [×n]→L[𝕜] G'` of `n` variables is isomorphic
 to the space of continuous multilinear maps `G [×k]→L[𝕜] G [×l]→L[𝕜] G'` of `k` variables taking
 values in the space of continuous multilinear maps of `l` variables. -/
-def curryFinFinset {k l n : ℕ} {s : Finset (Fin n)} (hk : s.card = k) (hl : sᶜ.card = l) :
+def curryFinFinset {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l) :
     (G[×n]→L[𝕜] G') ≃ₗᵢ[𝕜] G[×k]→L[𝕜] G[×l]→L[𝕜] G' :=
   (domDomCongrₗᵢ 𝕜 G G' (finSumEquivOfFinset hk hl).symm).trans
     (currySumEquiv 𝕜 (Fin k) (Fin l) G G')
@@ -568,33 +568,31 @@ def curryFinFinset {k l n : ℕ} {s : Finset (Fin n)} (hk : s.card = k) (hl : s�
 variable {𝕜 G G'}
 
 @[simp]
-theorem curryFinFinset_apply (hk : s.card = k) (hl : sᶜ.card = l) (f : G[×n]→L[𝕜] G')
+theorem curryFinFinset_apply (hk : #s = k) (hl : #sᶜ = l) (f : G[×n]→L[𝕜] G')
     (mk : Fin k → G) (ml : Fin l → G) : curryFinFinset 𝕜 G G' hk hl f mk ml =
       f fun i => Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i) :=
   rfl
 
 @[simp]
-theorem curryFinFinset_symm_apply (hk : s.card = k) (hl : sᶜ.card = l)
+theorem curryFinFinset_symm_apply (hk : #s = k) (hl : #sᶜ = l)
     (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (m : Fin n → G) : (curryFinFinset 𝕜 G G' hk hl).symm f m =
       f (fun i => m <| finSumEquivOfFinset hk hl (Sum.inl i)) fun i =>
         m <| finSumEquivOfFinset hk hl (Sum.inr i) :=
   rfl
 
--- @[simp] -- Porting note (#10618): simp removed: simp can reduce LHS
-theorem curryFinFinset_symm_apply_piecewise_const (hk : s.card = k) (hl : sᶜ.card = l)
+theorem curryFinFinset_symm_apply_piecewise_const (hk : #s = k) (hl : #sᶜ = l)
     (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (x y : G) :
     (curryFinFinset 𝕜 G G' hk hl).symm f (s.piecewise (fun _ => x) fun _ => y) =
       f (fun _ => x) fun _ => y :=
   MultilinearMap.curryFinFinset_symm_apply_piecewise_const hk hl _ x y
 
 @[simp]
-theorem curryFinFinset_symm_apply_const (hk : s.card = k) (hl : sᶜ.card = l)
+theorem curryFinFinset_symm_apply_const (hk : #s = k) (hl : #sᶜ = l)
     (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (x : G) :
     ((curryFinFinset 𝕜 G G' hk hl).symm f fun _ => x) = f (fun _ => x) fun _ => x :=
   rfl
 
--- @[simp] -- Porting note (#10618): simp removed: simp can reduce LHS
-theorem curryFinFinset_apply_const (hk : s.card = k) (hl : sᶜ.card = l) (f : G[×n]→L[𝕜] G')
+theorem curryFinFinset_apply_const (hk : #s = k) (hl : #sᶜ = l) (f : G[×n]→L[𝕜] G')
     (x y : G) : (curryFinFinset 𝕜 G G' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
   refine (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans ?_
@@ -618,7 +616,7 @@ noncomputable def continuousMultilinearMapOption (B : G →L[𝕜] ContinuousMul
     ContinuousMultilinearMap 𝕜 (fun (_ : Option ι) ↦ (G × (Π i, E i))) F :=
   MultilinearMap.mkContinuous
   { toFun := fun p ↦ B (p none).1 (fun i ↦ (p i).2 i)
-    map_add' := by
+    map_update_add' := by
       intro inst v j x y
       match j with
       | none => simp
@@ -631,7 +629,7 @@ noncomputable def continuousMultilinearMapOption (B : G →L[𝕜] ContinuousMul
           · simp
           · simp [hij]
         simp [B]
-    map_smul' := by
+    map_update_smul' := by
       intro inst v j c x
       match j with
       | none => simp
