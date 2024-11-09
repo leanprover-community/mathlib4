@@ -205,8 +205,15 @@ protected theorem pow_zero : M ^ 0 = 1 := rfl
 
 protected theorem pow_succ {n : ℕ} : M ^ (n + 1) = M ^ n * M := rfl
 
+protected theorem pow_add {m n : ℕ} (h : n ≠ 0) : M ^ (m + n) = M ^ m * M ^ n :=
+  npowRec_add m n h _ M.one_mul
+
 protected theorem pow_one : M ^ 1 = M := by
   rw [Submodule.pow_succ, Submodule.pow_zero, Submodule.one_mul]
+
+/-- `Submodule.pow_succ` with the right hand side commuted. -/
+protected theorem pow_succ' {n : ℕ} (h : n ≠ 0) : M ^ (n + 1) = M * M ^ n := by
+  rw [add_comm, M.pow_add h, Submodule.pow_one]
 
 theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n := by
   induction n with

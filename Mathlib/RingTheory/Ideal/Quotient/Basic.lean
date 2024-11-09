@@ -38,13 +38,23 @@ namespace Quotient
 
 variable {I} {x y : R}
 
+theorem zero_eq_one_iff : (0 : R ⧸ I) = 1 ↔ I = ⊤ :=
+  eq_comm.trans <| (Submodule.Quotient.mk_eq_zero _).trans (eq_top_iff_one _).symm
+
+theorem zero_ne_one_iff : (0 : R ⧸ I) ≠ 1 ↔ I ≠ ⊤ :=
+  not_congr zero_eq_one_iff
+
 protected theorem nontrivial (hI : I ≠ ⊤) : Nontrivial (R ⧸ I) :=
-  Submodule.Quotient.nontrivial_of_lt_top _ hI.lt_top
+  ⟨⟨0, 1, zero_ne_one_iff.2 hI⟩⟩
 
-theorem subsingleton_iff : Subsingleton (R ⧸ I) ↔ I = ⊤ :=
-  Submodule.subsingleton_quotient_iff_eq_top
+theorem subsingleton_iff : Subsingleton (R ⧸ I) ↔ I = ⊤ := by
+  rw [Submodule.Quotient.subsingleton_iff, eq_top_iff, SetLike.le_def]
+  simp_rw [Submodule.mem_top, true_implies]
 
-example : Unique (R ⧸ (⊤ : Ideal R)) := inferInstance
+instance : Unique (R ⧸ (⊤ : Ideal R)) :=
+  ⟨⟨0⟩, by rintro ⟨x⟩; exact Quotient.eq_zero_iff_mem.mpr Submodule.mem_top⟩
+
+variable [I.IsTwoSided]
 
 -- this instance is harder to find than the one via `Algebra α (R ⧸ I)`, so use a lower priority
 instance (priority := 100) isScalarTower_right {α} [SMul α R] [IsScalarTower α R R] :
@@ -64,14 +74,10 @@ theorem eq_zero_iff_dvd {R} [CommRing R] (x y : R) :
   rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
 
 @[simp]
-lemma mk_singleton_self {R} [CommRing R] (x : R) : mk (Ideal.span {x}) x = 0 := by
-  rw [eq_zero_iff_dvd]
+lemma mk_singleton_self (x : R) [(Ideal.span {x}).IsTwoSided] : mk (Ideal.span {x}) x = 0 :=
+  (Submodule.Quotient.mk_eq_zero _).mpr (mem_span_singleton_self _)
 
-theorem zero_eq_one_iff : (0 : R ⧸ I) = 1 ↔ I = ⊤ :=
-  eq_comm.trans <| eq_zero_iff_mem.trans (eq_top_iff_one _).symm
-
-theorem zero_ne_one_iff : (0 : R ⧸ I) ≠ 1 ↔ I ≠ ⊤ :=
-  not_congr zero_eq_one_iff
+variable (I)
 
 instance noZeroDivisors [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
     eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Quotient.inductionOn₂' a b fun {_ _} hab =>
@@ -122,10 +128,8 @@ See note [reducible non-instances]. -/
 protected noncomputable abbrev divisionRing [I.IsMaximal] : DivisionRing (R ⧸ I) where
   __ := ring _
   __ := Quotient.groupWithZero _
-  nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
-  qsmul := _
-  qsmul_def := fun _ _ => rfl
+  nnqsmul_def _ _ := rfl
+  qsmul_def _ _ := rfl
 
 /-- The quotient of a commutative ring by a maximal ideal is a field.
 This is a `def` rather than `instance`, since users
@@ -134,12 +138,8 @@ will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 See note [reducible non-instances]. -/
 protected noncomputable abbrev field {R} [CommRing R] (I : Ideal R) [I.IsMaximal] :
     Field (R ⧸ I) where
+  __ := Quotient.divisionRing I
   __ := commRing _
-  __ := Quotient.groupWithZero _
-  nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
-  qsmul := _
-  qsmul_def := fun _ _ => rfl
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/
 theorem maximal_of_isField {R} [CommRing R] (I : Ideal R) (hqf : IsField (R ⧸ I)) :
@@ -166,7 +166,7 @@ end Quotient
 
 section Pi
 
-variable (I J) (ι : Type v)
+variable (ι : Type v)
 
 /-- `R^n/I^n` is a `R/I`-module. -/
 instance modulePi [I.IsTwoSided] : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
@@ -221,7 +221,7 @@ noncomputable def piQuotEquiv [I.IsTwoSided] : ((ι → R) ⧸ I.pi ι) ≃ₗ[R
 
 /-- If `f : R^n → R^m` is an `R`-linear map and `I ⊆ R` is an ideal, then the image of `I^n` is
     contained in `I^m`. -/
-theorem map_pi {ι : Type*} [Finite ι] {ι' : Type w} (x : ι → R) (hi : ∀ i, x i ∈ I)
+theorem map_pi [I.IsTwoSided] {ι : Type*} [Finite ι] {ι' : Type w} (x : ι → R) (hi : ∀ i, x i ∈ I)
     (f : (ι → R) →ₗ[R] ι' → R) (i : ι') : f x i ∈ I := by
   classical
     cases nonempty_fintype ι
@@ -233,12 +233,11 @@ end Pi
 
 open scoped Pointwise in
 /-- A ring is made up of a disjoint union of cosets of an ideal. -/
-lemma univ_eq_iUnion_image_add {R : Type*} [Ring R] (I : Ideal R) :
-    (Set.univ (α := R)) = ⋃ x : R ⧸ I, x.out' +ᵥ (I : Set R) :=
+lemma univ_eq_iUnion_image_add : (Set.univ (α := R)) = ⋃ x : R ⧸ I, x.out' +ᵥ (I : Set R) :=
   QuotientAddGroup.univ_eq_iUnion_vadd I.toAddSubgroup
 
-lemma _root_.Finite.of_finite_quot_finite_ideal {R : Type*} [Ring R] {I : Ideal R}
-    [hI : Finite I] [h : Finite (R ⧸ I)] : Finite R :=
+variable {I} in
+lemma _root_.Finite.of_finite_quot_finite_ideal [hI : Finite I] [h : Finite (R ⧸ I)] : Finite R :=
   @Finite.of_finite_quot_finite_addSubgroup _ _ _ hI h
 
 end Ideal
