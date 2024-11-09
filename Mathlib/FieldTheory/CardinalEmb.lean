@@ -171,8 +171,6 @@ def succEquiv (i : ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē
       (@Field.embEquivOfIsAlgClosed _ _ _ _ _ _ _ (_) <|
         (Algebra.IsAlgebraic.tower_top (K := F) _).of_injective (val _) Subtype.val_injective).symm
 
-open FiniteDimensional
-
 theorem succEquiv_coherence (i : ι) (f) : (succEquiv i f).1 =
     f.comp (Subalgebra.inclusion <| strictMono_filtration.monotone <| le_succ i) := by
   ext; simp [succEquiv]; rfl -- slow rfl (type checking took 11.9s)
@@ -241,7 +239,7 @@ section Lim
 variable {i : WithTop (Module.rank F E).ord.toType} -- WithTop ι doesn't work
 
 theorem directed_filtration : Directed (· ≤ ·) fun j : Iio i ↦ filtration j.1 :=
-    (filtration.monotone.comp <| Subtype.mono_coe _).directed_le
+  (filtration.monotone.comp <| Subtype.mono_coe _).directed_le
 
 variable (hi : IsSuccPrelimit i)
 include hi
