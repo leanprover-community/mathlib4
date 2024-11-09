@@ -79,8 +79,7 @@ variable (E)
 /-- The null space with respect to the norm. -/
 def nullSubmodule : Submodule 𝕜 E where
   __ := nullSubgroup
-  smul_mem' c x (hx : ‖x‖ = 0) := show ‖c • x‖ = 0 from
-    le_antisymm (norm_smul_le _ _ |>.trans <| by rw [hx, mul_zero]) (norm_nonneg _)
+  smul_mem' c x (hx : ‖x‖ = 0) := by simp [norm_smul, hx]
 
 @[simp]
 lemma mem_nullSubmodule_iff {x : E} : x ∈ nullSubmodule 𝕜 E ↔ ‖x‖ = 0 := Iff.rfl
