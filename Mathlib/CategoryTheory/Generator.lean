@@ -732,16 +732,20 @@ theorem hasCodetector_op_iff : HasCodetector Cᵒᵖ ↔ HasDetector C :=
    fun ⟨G, hG⟩ => ⟨op G, (isCodetector_op_iff G).mpr hG⟩⟩
 
 instance HasSeparator.hasCoseparator_op [HasSeparator C] : HasCoseparator Cᵒᵖ := by simp [*]
-theorem HasSeparator.hasCoseparator_unop [h : HasSeparator Cᵒᵖ] : HasCoseparator C := by simp_all
+theorem HasSeparator.hasCoseparator_of_hasSeparator_op [h : HasSeparator Cᵒᵖ] :
+    HasCoseparator C := by simp_all
 
 instance HasCoseparator.hasSeparator_op [HasCoseparator C] : HasSeparator Cᵒᵖ := by simp [*]
-theorem HasCoseparator.hasSeparator_unop [HasCoseparator Cᵒᵖ] : HasSeparator C := by simp_all
+theorem HasCoseparator.hasSeparator_of_hasCoseparator_op [HasCoseparator Cᵒᵖ] :
+    HasSeparator C := by simp_all
 
 instance HasDetector.hasCodetector_op [HasDetector C] : HasCodetector Cᵒᵖ := by simp [*]
-theorem HasDetector.hasCodetector_unop [HasDetector Cᵒᵖ] : HasCodetector C := by simp_all
+theorem HasDetector.hasCodetector_of_hasDetector_op [HasDetector Cᵒᵖ] :
+    HasCodetector C := by simp_all
 
 instance HasCodetector.hasDetector_op [HasCodetector C] : HasDetector Cᵒᵖ := by simp [*]
-theorem HasCodetector.hasDetector_unop [HasCodetector Cᵒᵖ] : HasDetector C := by simp_all
+theorem HasCodetector.hasDetector_of_hasCodetector_op [HasCodetector Cᵒᵖ] :
+    HasDetector C := by simp_all
 
 end Dual
 
