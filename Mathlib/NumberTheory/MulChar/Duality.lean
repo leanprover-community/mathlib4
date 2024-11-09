@@ -64,7 +64,7 @@ theorem exists_apply_ne_one_of_hasEnoughRootsOfUnity [Nontrivial R] {a : M} (ha 
 of unity. -/
 lemma mulEquiv_units : Nonempty (MulChar M R ≃* Mˣ) :=
   ⟨mulEquivToUnitHom.trans
-    (CommGroup.mulEquiv_monoidHom_of_hasEnoughRootsOfUnity Mˣ R).some.symm⟩
+    (CommGroup.mmonoidHom_mulEquiv_of_hasEnoughRootsOfUnity Mˣ R).some⟩
 
 /-- The cardinality of the group of `R`-valued multiplicative characters on a finite commutative
 monoid `M` is the same as that of its unit group `Mˣ` when `R` is a ring that has enough roots
