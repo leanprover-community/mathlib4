@@ -64,6 +64,10 @@ theorem tensorProduct_compatibleSMul : CompatibleSMul R A M₁ M₂ where
     simp_rw [algebraMap_smul, smul_tmul', ← smul_assoc, smul_tmul, ← smul_assoc, smul_mk'_self,
       algebraMap_smul, smul_tmul]
 
+noncomputable example : M₁ ⊗[A] M₂ ≃ₗ[A] M₁ ⊗[R] M₂ :=
+  have := tensorProduct_compatibleSMul S A M₁ M₂
+  equivOfCompatibleSMul R M₁ M₂ A
+
 /-- If A is a localization of a commutative ring R, the tensor product of A with A over R is
 canonically isomorphic as A-algebras to A itself. -/
 noncomputable def tensorSelfAlgEquiv : A ⊗[R] A ≃ₐ[A] A :=
