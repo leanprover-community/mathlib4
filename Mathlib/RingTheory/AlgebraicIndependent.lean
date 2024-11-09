@@ -201,6 +201,12 @@ theorem of_aeval {f : ι → MvPolynomial ι R}
   intro p hp
   exact H p (by rw [← aeval_comp_bind₁, AlgHom.comp_apply, bind₁, hp, map_zero])
 
+/-- If `A/R` is algebraic, then all algebraically independent families are empty. -/
+theorem isEmpty_of_isAlgebraic [Algebra.IsAlgebraic R A] : IsEmpty ι := by
+  rcases isEmpty_or_nonempty ι with h | ⟨⟨i⟩⟩
+  · exact h
+  exact False.elim (hx.transcendental i (Algebra.IsAlgebraic.isAlgebraic _))
+
 end AlgebraicIndependent
 
 namespace MvPolynomial
@@ -653,6 +659,28 @@ theorem IsTranscendenceBasis.isAlgebraic [Nontrivial R] (hx : IsTranscendenceBas
     simpa
   exact h₂ (hx.2 (Set.range fun o : Option ι => o.elim a x)
     ((algebraicIndependent_subtype_range ai.injective).2 ai) h₁)
+
+/-- If `x` is a transcendence basis of `A/R`, then it is empty if and only if
+`A/R` is algebraic. -/
+theorem IsTranscendenceBasis.isEmpty_iff_isAlgebraic [Nontrivial R]
+    (hx : IsTranscendenceBasis R x) :
+    IsEmpty ι ↔ Algebra.IsAlgebraic R A := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ hx.1.isEmpty_of_isAlgebraic⟩
+  have := hx.isAlgebraic
+  rw [Set.range_eq_empty x, adjoin_empty] at this
+  refine Algebra.IsAlgebraic.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R A))
+    (RingHom.id A) (fun r ↦ ?_) Function.injective_id (by ext; rfl)
+  obtain ⟨y, hy⟩ := Algebra.mem_bot.1 r.2
+  use y
+  apply_fun algebraMap _ A using Subtype.val_injective
+  rw [← IsScalarTower.algebraMap_apply, hy]; rfl
+
+/-- If `x` is a transcendence basis of `A/R`, then it is not empty if and only if
+`A/R` is transcendental. -/
+theorem IsTranscendenceBasis.nonempty_iff_transcendental [Nontrivial R]
+    (hx : IsTranscendenceBasis R x) :
+    Nonempty ι ↔ Algebra.Transcendental R A := by
+  rw [← not_isEmpty_iff, Algebra.transcendental_iff_not_isAlgebraic, hx.isEmpty_iff_isAlgebraic]
 
 theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
     [Field F] [Field E] [Algebra F E] (hx : IsTranscendenceBasis F x) :
