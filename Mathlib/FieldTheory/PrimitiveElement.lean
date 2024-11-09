@@ -3,7 +3,7 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.IntegralDomain
 
 /-!
@@ -349,19 +349,17 @@ variable (F E : Type*) [Field F] [Field E] [Algebra F E]
     [FiniteDimensional F E] [Algebra.IsSeparable F E]
 
 @[simp]
-theorem AlgHom.card (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :
-    Fintype.card (E →ₐ[F] K) = finrank F E := by
-  convert (AlgHom.card_of_powerBasis (L := K) (Field.powerBasisOfFiniteOfSeparable F E)
-    (Algebra.IsSeparable.isSeparable _ _) (IsAlgClosed.splits_codomain _)).trans
-      (PowerBasis.finrank _).symm
-
-@[simp]
 theorem AlgHom.card_of_splits (L : Type*) [Field L] [Algebra F L]
     (hL : ∀ x : E, (minpoly F x).Splits (algebraMap F L)) :
     Fintype.card (E →ₐ[F] L) = finrank F E := by
-  rw [← Fintype.ofEquiv_card <| Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits
-    (AlgebraicClosure L) _ hL]
-  convert AlgHom.card F E (AlgebraicClosure L)
+  convert (AlgHom.card_of_powerBasis (L := L) (Field.powerBasisOfFiniteOfSeparable F E)
+    (Algebra.IsSeparable.isSeparable _ _) <| hL _).trans
+      (PowerBasis.finrank _).symm
+
+@[simp]
+theorem AlgHom.card (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :
+    Fintype.card (E →ₐ[F] K) = finrank F E :=
+  AlgHom.card_of_splits _ _ _ (fun _ ↦ IsAlgClosed.splits_codomain _)
 
 section iff
 

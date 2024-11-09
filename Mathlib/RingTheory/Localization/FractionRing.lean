@@ -364,6 +364,14 @@ lemma fieldEquivOfAlgEquivHom_apply (f : B ≃ₐ[A] B) :
     fieldEquivOfAlgEquivHom K L f = fieldEquivOfAlgEquiv K L L f :=
   rfl
 
+variable (A B)
+
+lemma fieldEquivOfAlgEquivHom_injective :
+    Function.Injective (fieldEquivOfAlgEquivHom K L : (B ≃ₐ[A] B) →* (L ≃ₐ[K] L)) := by
+  intro f g h
+  ext b
+  simpa using AlgEquiv.ext_iff.mp h (algebraMap B L b)
+
 end fieldEquivOfAlgEquivHom
 
 theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :

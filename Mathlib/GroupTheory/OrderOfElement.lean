@@ -1162,3 +1162,12 @@ lemma orderOf_eq [Group G] (a : G) {x y : G} (h : SemiconjBy a x y) : orderOf x 
   exact (h.pow_right n).eq_one_iff
 
 end SemiconjBy
+
+section single
+
+lemma orderOf_piMulSingle {ι : Type*} [DecidableEq ι] {M : ι → Type*} [(i : ι) → Monoid (M i)]
+    (i : ι) (g : M i) :
+    orderOf (Pi.mulSingle i g) = orderOf g :=
+  orderOf_injective (MonoidHom.mulSingle M i) (Pi.mulSingle_injective M i) g
+
+end single
