@@ -3,7 +3,7 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Tactic.Linarith.Ineq
+import Mathlib.Data.Ineq
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Algebra.Order.Field.Basic
 
@@ -143,20 +143,20 @@ end Mathlib.Tactic.LinearCombination
 open Mathlib.Tactic.LinearCombination
 
 /-- Given an expression `e`, parse it as a `=`, `≤` or `<`, and return this relation (as a
-`Linarith.Ineq`) together with the type in which the (in)equality occurs.
+`Mathlib.Ineq`) together with the type in which the (in)equality occurs.
 -/
-def Lean.Expr.ineq? (e : Expr) : Option (Linarith.Ineq × Expr) :=
+def Lean.Expr.ineq? (e : Expr) : Option (Mathlib.Ineq × Expr) :=
   match e.eq? with
-  | some (ty, _, _) => (Linarith.Ineq.eq, ty)
+  | some (ty, _, _) => (Mathlib.Ineq.eq, ty)
   | none =>
   match e.le? with
-  | some (ty, _, _) => (Linarith.Ineq.le, ty)
+  | some (ty, _, _) => (Mathlib.Ineq.le, ty)
   | none =>
   match e.lt? with
-  | some (ty, _, _) => (Linarith.Ineq.lt, ty)
+  | some (ty, _, _) => (Mathlib.Ineq.lt, ty)
   | none => none
 
-namespace Linarith.Ineq
+namespace Mathlib.Ineq
 
 /-- Given two (in)equalities, look up the lemma to add them and the relation in the result. -/
 def addRelRelData : Ineq → Ineq → Ineq × Name
@@ -210,4 +210,4 @@ def rearrangeData : Ineq → Name
   | le => ``le_rearrange
   | lt => ``lt_rearrange
 
-end Linarith.Ineq
+end Mathlib.Ineq
