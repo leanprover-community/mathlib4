@@ -8,6 +8,7 @@ import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Data.Nat.Find
 import Mathlib.Order.Atoms
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Order.Hom.Lattice
 
 /-!
 # Rooted trees
@@ -19,9 +20,9 @@ dangling chains.
 
 --/
 
-variable {α : Type*} [PartialOrder α] [PredOrder α] [IsPredArchimedean α]
-
 namespace IsPredArchimedean
+
+variable {α : Type*} [PartialOrder α] [PredOrder α] [IsPredArchimedean α]
 
 variable [OrderBot α]
 
@@ -111,12 +112,39 @@ structure RootedTree where
   /-- The predecessor relationship should be archimedean. -/
   [isPredArchimedean : IsPredArchimedean α]
 
-attribute [coe] RootedTree.α
+run_cmd Lean.Elab.Command.liftTermElabM do
+  Lean.Meta.registerCoercion ``RootedTree.α
+    (some { numArgs := 1, coercee := 0, type := .coeSort })
 
 instance : CoeSort RootedTree Type* := ⟨RootedTree.α⟩
 
 attribute [instance] RootedTree.semilatticeInf RootedTree.predOrder
     RootedTree.orderBot RootedTree.isPredArchimedean
+
+def LabeledTree (α : Type*) := (s : RootedTree) × (s → α)
+
+@[coe, reducible]
+def LabeledTree.coeTree {α : Type*} (t : LabeledTree α) : RootedTree := t.1
+
+@[reducible]
+def LabeledTree.coeSort {α : Type*} (t : LabeledTree α) : Type* := t.1
+
+run_cmd Lean.Elab.Command.liftTermElabM do
+  Lean.Meta.registerCoercion ``LabeledTree.coeSort
+    (some { numArgs := 2, coercee := 1, type := .coeSort })
+
+instance {α : Type*} : CoeOut (LabeledTree α) RootedTree := ⟨LabeledTree.coeTree⟩
+
+instance {α : Type*} : CoeSort (LabeledTree α) Type* := ⟨LabeledTree.coeSort⟩
+
+@[reducible]
+def LabeledTree.coeFun {α : Type*} (t : LabeledTree α) : t → α := t.2
+
+run_cmd Lean.Elab.Command.liftTermElabM do
+  Lean.Meta.registerCoercion ``LabeledTree.coeFun
+    (some { numArgs := 2, coercee := 1, type := .coeFun })
+
+instance {α : Type*} : CoeFun (LabeledTree α) (fun a ↦ a → α) := ⟨LabeledTree.coeFun⟩
 
 /--
 A subtree is represented by its root, therefore this is a type synonym.
@@ -160,6 +188,16 @@ noncomputable def SubRootedTree.coeTree {t : RootedTree} (r : SubRootedTree t) :
 
 noncomputable instance (t : RootedTree) : CoeOut (SubRootedTree t) RootedTree :=
   ⟨SubRootedTree.coeTree⟩
+
+/--
+The coercion from a `SubRootedTree` of a `LabeledTree` to a `LabeledTree`.
+-/
+@[coe, reducible]
+noncomputable def SubRootedTree.coeLabeledTree {α : Type*} {t : LabeledTree α}
+    (r : SubRootedTree t) : LabeledTree α := ⟨r, t.2 ∘ (↑)⟩
+
+noncomputable instance {α : Type*} (t : LabeledTree α) : CoeOut (SubRootedTree t) (LabeledTree α) :=
+  ⟨SubRootedTree.coeLabeledTree⟩
 
 @[simp]
 lemma SubRootedTree.bot_mem_iff {t : RootedTree} (r : SubRootedTree t) :
@@ -226,3 +264,44 @@ lemma RootedTree.mem_subtreeOf [DecidableEq t] {v : t} :
 lemma RootedTree.subtreeOf_mem_subtrees [DecidableEq t] {v : t} (hr : v ≠ ⊥) :
     t.subtreeOf v ∈ t.subtrees := by
   simpa [RootedTree.subtrees, RootedTree.subtreeOf]
+
+def RootedTree.Homeomorphism (a b : RootedTree) : Prop := ∃ f : InfHom a b, Function.Injective f
+
+instance : IsRefl RootedTree RootedTree.Homeomorphism where
+  refl a := ⟨InfHom.id a, fun ⦃_ _⦄ ↦ id⟩
+
+instance : IsTrans RootedTree RootedTree.Homeomorphism where
+  trans _ _ _ := fun ⟨ab, hab⟩ ⟨bc, hbc⟩ ↦ ⟨bc.comp ab, hbc.comp hab⟩
+
+def LabeledTree.Homeomorphism {α β : Type*} (r : α → β → Prop) (a : LabeledTree α)
+    (b : LabeledTree β) : Prop :=
+  ∃ f : InfHom a b, Function.Injective f ∧ ∀ x, r (a x) (b (f x))
+
+instance {α : Type*} (r : α → α → Prop) [IsRefl α r] :
+    IsRefl (LabeledTree α) (LabeledTree.Homeomorphism r) where
+  refl a := ⟨InfHom.id a, fun ⦃_ _⦄ ↦ id, fun _ ↦ IsRefl.refl _⟩
+
+instance {α : Type*} (r : α → α → Prop) [IsTrans α r] :
+    IsTrans (LabeledTree α) (LabeledTree.Homeomorphism r) where
+  trans _ _ _ := fun ⟨ab, ⟨hab, hab2⟩⟩ ⟨bc, ⟨hbc, hbc2⟩⟩ ↦
+    ⟨bc.comp ab, hbc.comp hab, fun _ ↦ Trans.trans (hab2 _) (hbc2 _)⟩
+
+lemma RootedTree.homeomorphism_of_subtree {a b : RootedTree} [DecidableEq b.α] {x : b}
+    (h : a.Homeomorphism (b.subtree x)) : a.Homeomorphism b := by
+  obtain ⟨f, hf⟩ := h
+  use InfHom.comp (InfHom.subtypeVal (fun _ _ ↦ le_inf)) f
+  rw [InfHom.coe_comp]
+  apply Function.Injective.comp _ hf
+  exact Subtype.val_injective
+
+lemma LabeledTree.homeomorphism_of_subtree {α β : Type*} (r : α → β → Prop) {a : LabeledTree α}
+    {b : LabeledTree β} [DecidableEq b] {x : b.1}
+    (h : a.Homeomorphism r (RootedTree.subtree b x)) : a.Homeomorphism r b := by
+  obtain ⟨f, hf⟩ := h
+  use InfHom.comp (InfHom.subtypeVal (fun _ _ ↦ le_inf)) f
+  rw [InfHom.coe_comp]
+  constructor
+  · apply Function.Injective.comp _ hf.1
+    exact Subtype.val_injective
+  · intro x
+    apply hf.2
