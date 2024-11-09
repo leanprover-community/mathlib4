@@ -76,7 +76,7 @@ theorem eventually_forall_le_dist_cast_div (hx : Irrational x) (n : ℕ) :
     rintro ⟨m, rfl⟩
     simp at hx
   rcases Metric.mem_nhds_iff.1 (A.isOpen_compl.mem_nhds B) with ⟨ε, ε0, hε⟩
-  refine (ge_mem_nhds ε0).mono fun δ hδ m => not_lt.1 fun hlt => ?_
+  refine (eventually_le_nhds ε0).mono fun δ hδ m => not_lt.1 fun hlt => ?_
   rw [dist_comm] at hlt
   refine hε (ball_subset_ball hδ hlt) ⟨m, ?_⟩
   simp [div_eq_inv_mul]

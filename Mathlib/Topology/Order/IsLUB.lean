@@ -60,7 +60,7 @@ theorem isLUB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ upp
     [NeBot (f ⊓ 𝓝 a)] : IsLUB s a :=
   ⟨hsa, fun b hb =>
     not_lt.1 fun hba =>
-      have : s ∩ { a | b < a } ∈ f ⊓ 𝓝 a := inter_mem_inf hsf (IsOpen.mem_nhds (isOpen_lt' _) hba)
+      have : s ∩ { a | b < a } ∈ f ⊓ 𝓝 a := inter_mem_inf hsf (Ioi_mem_nhds hba)
       let ⟨_x, ⟨hxs, hxb⟩⟩ := Filter.nonempty_of_mem this
       have : b < b := lt_of_lt_of_le hxb <| hb hxs
       lt_irrefl b this⟩
@@ -152,7 +152,7 @@ theorem IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
   obtain ⟨v, hvx, hvt⟩ := exists_seq_forall_of_frequently (htx.frequently_mem ht)
   replace hvx := hvx.mono_right nhdsWithin_le_nhds
   have hvx' : ∀ {n}, v n < x := (htx.1 (hvt _)).lt_of_ne (ne_of_mem_of_not_mem (hvt _) not_mem)
-  have : ∀ k, ∀ᶠ l in atTop, v k < v l := fun k => hvx.eventually (lt_mem_nhds hvx')
+  have : ∀ k, ∀ᶠ l in atTop, v k < v l := fun k => hvx.eventually (eventually_gt_nhds hvx')
   choose N hN hvN using fun k => ((eventually_gt_atTop k).and (this k)).exists
   refine ⟨fun k => v (N^[k] 0), strictMono_nat_of_lt_succ fun _ => ?_, fun _ => hvx',
     hvx.comp (strictMono_nat_of_lt_succ fun _ => ?_).tendsto_atTop, fun _ => hvt _⟩

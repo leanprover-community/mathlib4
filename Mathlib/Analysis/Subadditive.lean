@@ -68,7 +68,7 @@ theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n
     rw [add_zero, add_zero] at A
     refine A.congr' <| (eventually_ne_atTop 0).mono fun x hx => ?_
     simp only [(· ∘ ·), add_div' _ _ _ hx, div_div_div_cancel_right₀ hx, mul_comm]
-  refine ((B.comp tendsto_natCast_atTop_atTop).eventually (gt_mem_nhds hL)).mono fun k hk => ?_
+  filter_upwards [(B.comp tendsto_natCast_atTop_atTop).eventually (eventually_lt_nhds hL)] with k hk
   /- Finally, we use an upper estimate on `u (k * n + r)` to get an estimate on
   `u (k * n + r) / (k * n + r)`. -/
   rw [mul_comm]

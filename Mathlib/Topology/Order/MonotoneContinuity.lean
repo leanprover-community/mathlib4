@@ -277,19 +277,17 @@ namespace OrderIso
 variable {α β : Type*} [PartialOrder α] [PartialOrder β] [TopologicalSpace α] [TopologicalSpace β]
   [OrderTopology α] [OrderTopology β]
 
-protected theorem continuous (e : α ≃o β) : Continuous e := by
-  rw [‹OrderTopology β›.topology_eq_generate_intervals, continuous_generateFrom_iff]
-  rintro s ⟨a, rfl | rfl⟩
-  · rw [e.preimage_Ioi]
-    apply isOpen_lt'
-  · rw [e.preimage_Iio]
-    apply isOpen_gt'
+protected theorem isInducing (e : α ≃o β) : IsInducing e := by
+  simp only [isInducing_iff, ‹OrderTopology α›.topology_eq_ofOrder,
+    ‹OrderTopology β›.topology_eq_ofOrder, TopologicalSpace.ofOrder,
+    induced_generateFrom_eq, image_union, ← range_comp, Function.comp_def,
+    e.preimage_Ioi, e.preimage_Iio, ← e.symm.surjective.range_comp]
+
+@[fun_prop, continuity]
+protected theorem continuous (e : α ≃o β) : Continuous e := e.isInducing.continuous
 
 /-- An order isomorphism between two linear order `OrderTopology` spaces is a homeomorphism. -/
-def toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
-  { e with
-    continuous_toFun := e.continuous
-    continuous_invFun := e.symm.continuous }
+def toHomeomorph (e : α ≃o β) : α ≃ₜ β := (e : α ≃ β).toHomeomorphOfIsInducing e.isInducing
 
 @[simp]
 theorem coe_toHomeomorph (e : α ≃o β) : ⇑e.toHomeomorph = e :=

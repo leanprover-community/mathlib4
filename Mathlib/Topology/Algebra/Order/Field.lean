@@ -62,8 +62,8 @@ tends to a positive constant `C` then `f * g` tends to `Filter.atTop`. -/
 theorem Filter.Tendsto.atTop_mul {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l atTop)
     (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atTop := by
   refine tendsto_atTop_mono' _ ?_ (hf.atTop_mul_const (half_pos hC))
-  filter_upwards [hg.eventually (lt_mem_nhds (half_lt_self hC)), hf.eventually_ge_atTop 0]
-    with x hg hf using mul_le_mul_of_nonneg_left hg.le hf
+  filter_upwards [hg.eventually (eventually_ge_nhds (half_lt_self hC)), hf.eventually_ge_atTop 0]
+    with x hg hf using mul_le_mul_of_nonneg_left hg hf
 
 /-- In a linearly ordered field with the order topology, if `f` tends to a positive constant `C` and
 `g` tends to `Filter.atTop` then `f * g` tends to `Filter.atTop`. -/

@@ -23,7 +23,7 @@ Topology on `ℕ∞`.
 Note: this is different from the `EMetricSpace` topology. The `EMetricSpace` topology has
 `IsOpen {∞}`, but all neighborhoods of `∞` in `ℕ∞` contain infinite intervals.
 -/
-instance : TopologicalSpace ℕ∞ := Preorder.topology ℕ∞
+instance : TopologicalSpace ℕ∞ := .ofOrder ℕ∞
 
 instance : OrderTopology ℕ∞ := ⟨rfl⟩
 
@@ -78,7 +78,7 @@ instance : ContinuousMul ℕ∞ where
       · simp [ContinuousAt, nhds_prod_eq]
       · simp only [ContinuousAt, Function.uncurry, mul_top ha.ne']
         refine tendsto_nhds_top_mono continuousAt_snd ?_
-        filter_upwards [continuousAt_fst (lt_mem_nhds ha)] with (x, y) (hx : 0 < x)
+        filter_upwards [continuousAt_fst (eventually_gt_nhds ha)] with (x, y) (hx : 0 < x)
         exact le_mul_of_one_le_left (zero_le y) (Order.one_le_iff_pos.2 hx)
     continuous_iff_continuousAt.2 <| Prod.forall.2 fun
       | (a : ℕ∞), ⊤ => key a
@@ -96,11 +96,11 @@ protected theorem continuousAt_sub {a b : ℕ∞} (h : a ≠ ⊤ ∨ b ≠ ⊤) 
   | (a : ℕ), ⊤, _ =>
     suffices ∀ᶠ b in 𝓝 ⊤, (a - b : ℕ∞) = 0 by
       simpa [ContinuousAt, nhds_prod_eq, tsub_eq_zero_of_le]
-    filter_upwards [le_mem_nhds (WithTop.coe_lt_top a)] with b using tsub_eq_zero_of_le
+    filter_upwards [eventually_ge_nhds (WithTop.coe_lt_top a)] with b using tsub_eq_zero_of_le
   | ⊤, (b : ℕ), _ =>
     suffices ∀ n : ℕ, ∀ᶠ a : ℕ∞ in 𝓝 ⊤, b + n < a by
       simpa [ContinuousAt, nhds_prod_eq, (· ∘ ·), lt_tsub_iff_left, tendsto_nhds_top_iff_natCast_lt]
-    exact fun n ↦ lt_mem_nhds <| WithTop.coe_lt_top (b + n)
+    exact fun n ↦ eventually_gt_nhds <| WithTop.coe_lt_top (b + n)
 
 end ENat
 

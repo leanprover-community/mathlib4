@@ -46,7 +46,7 @@ limit, we use `f a` instead to guarantee a good behavior in most cases. -/
 noncomputable def Function.leftLim (f : α → β) (a : α) : β := by
   classical
   haveI : Nonempty β := ⟨f a⟩
-  letI : TopologicalSpace α := Preorder.topology α
+  letI : TopologicalSpace α := .ofOrder α
   exact if 𝓝[<] a = ⊥ ∨ ¬∃ y, Tendsto f (𝓝[<] a) (𝓝 y) then f a else limUnder (𝓝[<] a) f
 
 /-- Let `f : α → β` be a function from a linear order `α` to a topological space `β`, and
@@ -62,14 +62,14 @@ theorem leftLim_eq_of_tendsto [hα : TopologicalSpace α] [h'α : OrderTopology 
     {f : α → β} {a : α} {y : β} (h : 𝓝[<] a ≠ ⊥) (h' : Tendsto f (𝓝[<] a) (𝓝 y)) :
     leftLim f a = y := by
   have h'' : ∃ y, Tendsto f (𝓝[<] a) (𝓝 y) := ⟨y, h'⟩
-  rw [h'α.topology_eq_generate_intervals] at h h' h''
+  rw [h'α.topology_eq_ofOrder] at h h' h''
   simp only [leftLim, h, h'', not_true, or_self_iff, if_false]
   haveI := neBot_iff.2 h
   exact lim_eq h'
 
 theorem leftLim_eq_of_eq_bot [hα : TopologicalSpace α] [h'α : OrderTopology α] (f : α → β) {a : α}
     (h : 𝓝[<] a = ⊥) : leftLim f a = f a := by
-  rw [h'α.topology_eq_generate_intervals] at h
+  rw [h'α.topology_eq_ofOrder] at h
   simp [leftLim, ite_eq_left_iff, h]
 
 theorem rightLim_eq_of_tendsto [TopologicalSpace α] [OrderTopology α] [T2Space β]
@@ -100,7 +100,7 @@ theorem rightLim_eq_sInf [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x
   rightLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Ioi x)
 
 theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
-  letI : TopologicalSpace α := Preorder.topology α
+  letI : TopologicalSpace α := .ofOrder α
   haveI : OrderTopology α := ⟨rfl⟩
   rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
   · simpa [leftLim, h'] using hf h
@@ -114,7 +114,7 @@ theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
     exact hf (hz.le.trans h)
 
 theorem le_leftLim (h : x < y) : f x ≤ leftLim f y := by
-  letI : TopologicalSpace α := Preorder.topology α
+  letI : TopologicalSpace α := .ofOrder α
   haveI : OrderTopology α := ⟨rfl⟩
   rcases eq_or_ne (𝓝[<] y) ⊥ with (h' | h')
   · rw [leftLim_eq_of_eq_bot _ h']
@@ -146,7 +146,7 @@ theorem leftLim_le_rightLim (h : x ≤ y) : leftLim f x ≤ rightLim f y :=
   (hf.leftLim_le le_rfl).trans (hf.le_rightLim h)
 
 theorem rightLim_le_leftLim (h : x < y) : rightLim f x ≤ leftLim f y := by
-  letI : TopologicalSpace α := Preorder.topology α
+  letI : TopologicalSpace α := .ofOrder α
   haveI : OrderTopology α := ⟨rfl⟩
   rcases eq_or_ne (𝓝[<] y) ⊥ with (h' | h')
   · simpa [leftLim, h'] using rightLim_le hf h

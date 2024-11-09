@@ -293,7 +293,7 @@ theorem orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrde
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r }) : OrderTopology α := by
   refine ⟨TopologicalSpace.ext_nhds fun a => ?_⟩
   rw [h_nhds]
-  letI := Preorder.topology α; letI : OrderTopology α := ⟨rfl⟩
+  letI := TopologicalSpace.ofOrder α; letI : OrderTopology α := ⟨rfl⟩
   exact (nhds_eq_iInf_abs_sub a).symm
 
 theorem LinearOrderedAddCommGroup.tendsto_nhds {x : Filter β} {a : α} :
@@ -311,7 +311,7 @@ theorem Filter.Tendsto.add_atTop {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tend
   nontriviality α
   obtain ⟨C', hC'⟩ : ∃ C', C' < C := exists_lt C
   refine tendsto_atTop_add_left_of_le' _ C' ?_ hg
-  exact (hf.eventually (lt_mem_nhds hC')).mono fun x => le_of_lt
+  exact (hf.eventually (eventually_gt_nhds hC')).mono fun x => le_of_lt
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to `C`
 and `g` tends to `atBot` then `f + g` tends to `atBot`. -/

@@ -91,10 +91,11 @@ theorem Metric.uniformCauchySeqOn_iff {γ : Type*} {F : β → γ → α} {s : S
 and `b` converges to zero, then `s` is a Cauchy sequence. -/
 theorem cauchySeq_of_le_tendsto_0' {s : β → α} (b : β → ℝ)
     (h : ∀ n m : β, n ≤ m → dist (s n) (s m) ≤ b n) (h₀ : Tendsto b atTop (𝓝 0)) : CauchySeq s :=
-  Metric.cauchySeq_iff'.2 fun ε ε0 => (h₀.eventually (gt_mem_nhds ε0)).exists.imp fun N hN n hn =>
-    calc dist (s n) (s N) = dist (s N) (s n) := dist_comm _ _
-    _ ≤ b N := h _ _ hn
-    _ < ε := hN
+  Metric.cauchySeq_iff'.2 fun ε ε0 ↦
+    (h₀.eventually (eventually_lt_nhds ε0)).exists.imp fun N hN n hn => calc
+      dist (s n) (s N) = dist (s N) (s n) := dist_comm _ _
+      _ ≤ b N := h _ _ hn
+      _ < ε := hN
 
 /-- If the distance between `s n` and `s m`, `n, m ≥ N` is bounded above by `b N`
 and `b` converges to zero, then `s` is a Cauchy sequence. -/

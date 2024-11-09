@@ -12,40 +12,31 @@ import Mathlib.Topology.Order.Basic
 This file gives `SignType` the discrete topology, and proves continuity results for `SignType.sign`
 in an `OrderTopology`.
 
+## TODO
+
+- Prove `OrderTopology SignType`.
 -/
 
 
-instance : TopologicalSpace SignType :=
-  ⊥
+instance : TopologicalSpace SignType := ⊥
+instance : DiscreteTopology SignType := ⟨rfl⟩
 
-instance : DiscreteTopology SignType :=
-  ⟨rfl⟩
+variable {α : Type*} [Zero α] [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
 
-variable {α : Type*} [Zero α] [TopologicalSpace α]
+@[fun_prop]
+theorem continuousAt_sign (h : a ≠ 0) : ContinuousAt SignType.sign a := by
+  rcases h.lt_or_lt with h_neg | h_pos
+  · refine (continuousAt_const (y := -1)).congr ?_
+    exact (eventually_lt_nhds h_neg).mono fun x hx ↦ (sign_neg hx).symm
+  · refine (continuousAt_const (y := 1)).congr ?_
+    exact (eventually_gt_nhds h_pos).mono fun x hx ↦ (sign_pos hx).symm
 
-section PartialOrder
+@[deprecated continuousAt_sign (since := "2024-11-09")]
+theorem continuousAt_sign_of_pos (h : 0 < a) : ContinuousAt SignType.sign a :=
+  continuousAt_sign h.ne'
 
-variable [PartialOrder α] [DecidableRel ((· < ·) : α → α → Prop)] [OrderTopology α]
+@[deprecated continuousAt_sign (since := "2024-11-09")]
+theorem continuousAt_sign_of_neg (h : a < 0) : ContinuousAt SignType.sign a :=
+  continuousAt_sign h.ne
 
-theorem continuousAt_sign_of_pos {a : α} (h : 0 < a) : ContinuousAt SignType.sign a := by
-  refine (continuousAt_const : ContinuousAt (fun _ => (1 : SignType)) a).congr ?_
-  rw [Filter.EventuallyEq, eventually_nhds_iff]
-  exact ⟨{ x | 0 < x }, fun x hx => (sign_pos hx).symm, isOpen_lt' 0, h⟩
-
-theorem continuousAt_sign_of_neg {a : α} (h : a < 0) : ContinuousAt SignType.sign a := by
-  refine (continuousAt_const : ContinuousAt (fun x => (-1 : SignType)) a).congr ?_
-  rw [Filter.EventuallyEq, eventually_nhds_iff]
-  exact ⟨{ x | x < 0 }, fun x hx => (sign_neg hx).symm, isOpen_gt' 0, h⟩
-
-end PartialOrder
-
-section LinearOrder
-
-variable [LinearOrder α] [OrderTopology α]
-
-theorem continuousAt_sign_of_ne_zero {a : α} (h : a ≠ 0) : ContinuousAt SignType.sign a := by
-  rcases h.lt_or_lt with (h_neg | h_pos)
-  · exact continuousAt_sign_of_neg h_neg
-  · exact continuousAt_sign_of_pos h_pos
-
-end LinearOrder
+@[deprecated (since := "2024-11-09")] alias continuousAt_sign_of_ne_zero := continuousAt_sign
