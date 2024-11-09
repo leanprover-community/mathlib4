@@ -142,20 +142,6 @@ end Mathlib.Tactic.LinearCombination
 
 open Mathlib.Tactic.LinearCombination
 
-/-- Given an expression `e`, parse it as a `=`, `≤` or `<`, and return this relation (as a
-`Mathlib.Ineq`) together with the type in which the (in)equality occurs.
--/
-def Lean.Expr.ineq? (e : Expr) : Option (Mathlib.Ineq × Expr) :=
-  match e.eq? with
-  | some (ty, _, _) => (Mathlib.Ineq.eq, ty)
-  | none =>
-  match e.le? with
-  | some (ty, _, _) => (Mathlib.Ineq.le, ty)
-  | none =>
-  match e.lt? with
-  | some (ty, _, _) => (Mathlib.Ineq.lt, ty)
-  | none => none
-
 namespace Mathlib.Ineq
 
 /-- Given two (in)equalities, look up the lemma to add them and the relation in the result. -/

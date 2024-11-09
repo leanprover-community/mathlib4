@@ -3,6 +3,7 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
+import Mathlib.Control.Basic
 import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Compare
@@ -36,7 +37,7 @@ Lastly, calls a normalization tactic on this target.
 
 namespace Mathlib.Tactic.LinearCombination
 open Lean hiding Rat
-open Elab Meta Term Linarith Ineq
+open Elab Meta Term Mathlib Ineq
 
 /-- Result of `expandLinearCombo`, either an equality/inequality proof or a value. -/
 inductive Expanded
@@ -115,7 +116,7 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
       -- It is OK to use `ty` as the expected type even if `e` is a proof.
       -- The expected type is just a hint.
       let c ← withSynthesizeLight <| Term.elabTerm e ty
-      match (← whnfR (← inferType c)).ineq? with
+      match ← try? (← whnfR (← inferType c)).ineq? with
       | some (rel, _) => .proof rel <$> c.toSyntax
       | none => .const <$> c.toSyntax
 
@@ -124,8 +125,7 @@ def elabLinearCombination (tk : Syntax)
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
     Tactic.TacticM Unit := Tactic.withMainContext <| Tactic.focus do
   let eType ← withReducible <| (← Tactic.getMainGoal).getType'
-  let some (goalRel, ty) := eType.ineq? |
-    throwError "'linear_combination' only proves equalities and inequalities"
+  let (goalRel, ty, _) ← eType.ineq?
   -- build the specified linear combination of the hypotheses
   let (hypRel, p) ← match input with
   | none => Prod.mk eq <$>  `(Eq.refl 0)
