@@ -48,7 +48,7 @@ For `HasRingHomProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
     If `Y` is affine, `P f ↔ ∀ i, Q (f.appLE ⊤ (U i) _)` for a family `U` of affine opens of `X`.
 - `AlgebraicGeometry.HasRingHomProperty.of_isOpenImmersion`:
     If `f` is an open immersion then `P f`.
-- `AlgebraicGeometry.HasRingHomProperty.stableUnderBaseChange`:
+- `AlgebraicGeometry.HasRingHomProperty.isStableUnderBaseChange`:
     If `Q` is stable under base change, then so is `P`.
 
 We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`,
@@ -66,8 +66,8 @@ namespace RingHom
 
 variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
 
-theorem StableUnderBaseChange.pullback_fst_app_top
-    (hP : StableUnderBaseChange P) (hP' : RespectsIso P)
+theorem IsStableUnderBaseChange.pullback_fst_app_top
+    (hP : IsStableUnderBaseChange P) (hP' : RespectsIso P)
     {X Y S : Scheme} [IsAffine X] [IsAffine Y] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S)
     (H : P (g.app ⊤)) : P ((pullback.fst f g).app ⊤) := by
   -- Porting note (#11224): change `rw` to `erw`
@@ -324,7 +324,7 @@ theorem iff_of_source_openCover [IsAffine Y] (𝒰 : X.OpenCover) [∀ i, IsAffi
 
 theorem iff_of_isAffine [IsAffine X] [IsAffine Y] :
     P f ↔ Q (f.app ⊤) := by
-  rw [iff_of_source_openCover (P := P) (Scheme.openCoverOfIsIso.{u} (𝟙 _))]
+  rw [iff_of_source_openCover (P := P) (Scheme.coverOfIsIso.{u} (𝟙 _))]
   simp
 
 theorem Spec_iff {R S : CommRingCat.{u}} {φ : R ⟶ S} :
@@ -441,7 +441,7 @@ lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
     wlog hY : IsAffine Y generalizing X Y
     · rw [IsLocalAtSource.iff_of_openCover (P := P) (Y.affineCover.pullbackCover f)]
       intro i
-      rw [← Scheme.OpenCover.pullbackHom_map_assoc]
+      rw [← Scheme.Cover.pullbackHom_map_assoc]
       exact this _ _ (IsLocalAtTarget.of_isPullback (.of_hasPullback _ _) hf)
         (comp_of_isOpenImmersion _ _ _ hg) inferInstance
     wlog hX : IsAffine X generalizing X
@@ -489,10 +489,11 @@ lemma of_isOpenImmersion (hP : RingHom.ContainsIdentities Q) [IsOpenImmersion f]
   haveI : P.ContainsIdentities := containsIdentities hP
   IsLocalAtSource.of_isOpenImmersion f
 
-lemma stableUnderBaseChange (hP : RingHom.StableUnderBaseChange Q) : P.StableUnderBaseChange := by
-  apply HasAffineProperty.stableUnderBaseChange
+lemma isStableUnderBaseChange (hP : RingHom.IsStableUnderBaseChange Q) :
+    P.IsStableUnderBaseChange := by
+  apply HasAffineProperty.isStableUnderBaseChange
   letI := HasAffineProperty.isLocal_affineProperty P
-  apply AffineTargetMorphismProperty.StableUnderBaseChange.mk
+  apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   intros X Y S _ _ f g H
   rw [← HasAffineProperty.iff_of_isAffine (P := P)] at H ⊢
   wlog hX : IsAffine Y generalizing Y

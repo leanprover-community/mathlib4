@@ -83,9 +83,9 @@ instance isSmooth_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [IsSmooth f] [IsSmooth g] 
   MorphismProperty.comp_mem _ f g ‹IsSmooth f› ‹IsSmooth g›
 
 /-- Smooth of relative dimension `n` is stable under base change. -/
-lemma isSmooth_stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @IsSmooth :=
-  HasRingHomProperty.stableUnderBaseChange <| locally_stableUnderBaseChange
-    isStandardSmooth_respectsIso isStandardSmooth_stableUnderBaseChange
+lemma isSmooth_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsSmooth :=
+  HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
+    isStandardSmooth_respectsIso isStandardSmooth_isStableUnderBaseChange
 
 /--
 A morphism of schemes `f : X ⟶ Y` is smooth of relative dimension `n` if for each `x : X` there
@@ -116,11 +116,11 @@ instance : HasRingHomProperty (@IsSmoothOfRelativeDimension n)
     rw [isSmoothOfRelativeDimension_iff]
 
 /-- Smooth of relative dimension `n` is stable under base change. -/
-lemma isSmoothOfRelativeDimension_stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange (@IsSmoothOfRelativeDimension n) :=
-  HasRingHomProperty.stableUnderBaseChange <| locally_stableUnderBaseChange
+lemma isSmoothOfRelativeDimension_isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange (@IsSmoothOfRelativeDimension n) :=
+  HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
     isStandardSmoothOfRelativeDimension_respectsIso
-    (isStandardSmoothOfRelativeDimension_stableUnderBaseChange n)
+    (isStandardSmoothOfRelativeDimension_isStableUnderBaseChange n)
 
 /-- Open immersions are smooth of relative dimension `0`. -/
 instance (priority := 900) [IsOpenImmersion f] : IsSmoothOfRelativeDimension 0 f :=
