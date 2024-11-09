@@ -23,16 +23,12 @@ namespace DirichletCharacter
 noncomputable instance fintype {R : Type*} [CommRing R] [IsDomain R] {n : ℕ} :
     Fintype (DirichletCharacter R n) := .ofFinite _
 
-variable (R : Type*) [CommRing R] (n : ℕ) [NeZero n] [HasEnoughRootsOfUnity R n.totient]
-
-private lemma HasEnoughRootsOfUnity.of_totient :
-    HasEnoughRootsOfUnity R (Monoid.exponent (ZMod n)ˣ) :=
-  HasEnoughRootsOfUnity.of_dvd R (ZMod.card_units_eq_totient n ▸ Group.exponent_dvd_card)
+variable (R : Type*) [CommRing R] (n : ℕ) [NeZero n]
+  [HasEnoughRootsOfUnity R (Monoid.exponent (ZMod n)ˣ)]
 
 /-- The group of Dirichlet characters mod `n` with values in a ring `R` that has enough
 roots of unity is (noncanonically) isomorphic to `(ZMod n)ˣ`. -/
 lemma mulEquiv_units : Nonempty (DirichletCharacter R n ≃* (ZMod n)ˣ) :=
-  have := HasEnoughRootsOfUnity.of_totient R n
   MulChar.mulEquiv_units ..
 
 /-- There are `n.totient` Dirichlet characters mod `n` with values in a ring that has enough
@@ -49,7 +45,6 @@ variable {n}
 such that `χ a ≠ 1`. -/
 theorem exists_apply_ne_one_of_hasEnoughRootsOfUnity [Nontrivial R] ⦃a : ZMod n⦄ (ha : a ≠ 1) :
     ∃ χ : DirichletCharacter R n, χ a ≠ 1 :=
-  have := HasEnoughRootsOfUnity.of_totient R n
   MulChar.exists_apply_ne_one_of_hasEnoughRootsOfUnity (ZMod n) R ha
 
 variable [IsDomain R]
