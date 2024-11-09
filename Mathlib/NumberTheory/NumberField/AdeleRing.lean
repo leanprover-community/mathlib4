@@ -78,8 +78,7 @@ instance locallyCompactSpace [NumberField K] : LocallyCompactSpace (InfiniteAdel
 /-- The ring isomorphism between the infinite adele ring of a number field and the
 space `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of the number field. -/
 abbrev ringEquiv_mixedSpace :
-    InfiniteAdeleRing K ≃+*
-      ({w : InfinitePlace K // IsReal w} → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℂ) :=
+    InfiniteAdeleRing K ≃+* mixedEmbedding.mixedSpace K :=
   RingEquiv.trans
     (RingEquiv.piEquivPiSubtypeProd (fun (v : InfinitePlace K) => IsReal v)
       (fun (v : InfinitePlace K) => v.completion))
