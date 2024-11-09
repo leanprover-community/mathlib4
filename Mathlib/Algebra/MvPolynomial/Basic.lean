@@ -155,7 +155,7 @@ variable [CommSemiring R] [CommSemiring S₁] {p q : MvPolynomial σ R}
 
 /-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s`  -/
 def monomial (s : σ →₀ ℕ) : R →ₗ[R] MvPolynomial σ R :=
-  lsingle s
+  AddMonoidAlgebra.lsingle s
 
 theorem single_eq_monomial (s : σ →₀ ℕ) (a : R) : Finsupp.single s a = monomial s a :=
   rfl
@@ -191,10 +191,10 @@ theorem monomial_left_inj {s t : σ →₀ ℕ} {r : R} (hr : r ≠ 0) :
 theorem C_apply : (C a : MvPolynomial σ R) = monomial 0 a :=
   rfl
 
--- Porting note (#10618): `simp` can prove this
+@[simp]
 theorem C_0 : C 0 = (0 : MvPolynomial σ R) := map_zero _
 
--- Porting note (#10618): `simp` can prove this
+@[simp]
 theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
   rfl
 
@@ -203,15 +203,15 @@ theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
   show AddMonoidAlgebra.single _ _ * AddMonoidAlgebra.single _ _ = AddMonoidAlgebra.single _ _
   simp [C_apply, single_mul_single]
 
--- Porting note (#10618): `simp` can prove this
+@[simp]
 theorem C_add : (C (a + a') : MvPolynomial σ R) = C a + C a' :=
   Finsupp.single_add _ _ _
 
--- Porting note (#10618): `simp` can prove this
+@[simp]
 theorem C_mul : (C (a * a') : MvPolynomial σ R) = C a * C a' :=
   C_mul_monomial.symm
 
--- Porting note (#10618): `simp` can prove this
+@[simp]
 theorem C_pow (a : R) (n : ℕ) : (C (a ^ n) : MvPolynomial σ R) = C a ^ n :=
   map_pow _ _ _
 
@@ -303,7 +303,7 @@ theorem C_mul_X_pow_eq_monomial {s : σ} {a : R} {n : ℕ} :
 theorem C_mul_X_eq_monomial {s : σ} {a : R} : C a * X s = monomial (Finsupp.single s 1) a := by
   rw [← C_mul_X_pow_eq_monomial, pow_one]
 
--- Porting note (#10618): `simp` can prove this
+@[simp]
 theorem monomial_zero {s : σ →₀ ℕ} : monomial s (0 : R) = 0 :=
   Finsupp.single_zero _
 
@@ -689,7 +689,7 @@ theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
   · contrapose! h
     rw [← mem_support_iff] at h
     obtain ⟨j, -, rfl⟩ : ∃ j ∈ support p, j + s = m := by
-      simpa [Finset.add_singleton]
+      simpa [Finset.mem_add]
         using Finset.add_subset_add_left support_monomial_subset <| support_mul _ _ h
     exact le_add_left le_rfl
 

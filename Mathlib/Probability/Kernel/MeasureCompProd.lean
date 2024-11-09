@@ -55,7 +55,7 @@ lemma compProd_of_not_isSFiniteKernel (μ : Measure α) (κ : Kernel α β) (h :
 
 lemma compProd_apply [SFinite μ] [IsSFiniteKernel κ] {s : Set (α × β)} (hs : MeasurableSet s) :
     (μ ⊗ₘ κ) s = ∫⁻ a, κ a (Prod.mk a ⁻¹' s) ∂μ := by
-  simp_rw [compProd, Kernel.compProd_apply _ _ _ hs, Kernel.const_apply, Kernel.prodMkLeft_apply']
+  simp_rw [compProd, Kernel.compProd_apply hs, Kernel.const_apply, Kernel.prodMkLeft_apply']
   rfl
 
 lemma compProd_apply_prod [SFinite μ] [IsSFiniteKernel κ]

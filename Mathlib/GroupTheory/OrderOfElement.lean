@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Algebra.Order.Group.Action
 import Mathlib.GroupTheory.Index
 import Mathlib.Order.Interval.Set.Infinite
-import Mathlib.Algebra.Group.Subgroup.Finite
 
 /-!
 # Order of an element
@@ -574,7 +575,7 @@ theorem orderOf_inv (x : G) : orderOf x⁻¹ = orderOf x := by simp [orderOf_eq_
 namespace Subgroup
 variable {H : Subgroup G}
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10618): simp can prove this (so removed simp)
+@[to_additive (attr := norm_cast)]
 lemma orderOf_coe (a : H) : orderOf (a : G) = orderOf a :=
   orderOf_injective H.subtype Subtype.coe_injective _
 
@@ -942,11 +943,11 @@ noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) 
     rwa [zpow_add, zpow_mul, zpow_mul', zpow_natCast, zpow_natCast, zpow_natCast, h.gcd_eq_one,
       pow_one, pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
 
-@[to_additive] -- Porting note (#10618): simp can prove this (so removed simp)
+@[to_additive]
 theorem powCoprime_one {G : Type*} [Group G] (h : (Nat.card G).Coprime n) : powCoprime h 1 = 1 :=
   one_pow n
 
-@[to_additive] -- Porting note (#10618): simp can prove this (so removed simp)
+@[to_additive]
 theorem powCoprime_inv {G : Type*} [Group G] (h : (Nat.card G).Coprime n) {g : G} :
     powCoprime h g⁻¹ = (powCoprime h g)⁻¹ :=
   inv_pow g n
@@ -977,6 +978,22 @@ theorem pow_gcd_card_eq_one_iff : x ^ n = 1 ↔ x ^ gcd n (Fintype.card G) = 1 :
   ⟨fun h => pow_gcd_eq_one _ h <| pow_card_eq_one, fun h => by
     let ⟨m, hm⟩ := gcd_dvd_left n (Fintype.card G)
     rw [hm, pow_mul, h, one_pow]⟩
+
+lemma smul_eq_of_le_smul
+    {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
+    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le] (h : a ≤ g • a) : g • a = a := by
+  have key := smul_mono_right g (le_pow_smul h (Nat.card G - 1))
+  rw [smul_smul, ← _root_.pow_succ',
+    Nat.sub_one_add_one_eq_of_pos Nat.card_pos, pow_card_eq_one', one_smul] at key
+  exact le_antisymm key h
+
+lemma smul_eq_of_smul_le
+    {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
+    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le] (h : g • a ≤ a) : g • a = a := by
+  have key := smul_mono_right g (pow_smul_le h (Nat.card G - 1))
+  rw [smul_smul, ← _root_.pow_succ',
+    Nat.sub_one_add_one_eq_of_pos Nat.card_pos, pow_card_eq_one', one_smul] at key
+  exact le_antisymm h key
 
 end FiniteGroup
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Fangming Li
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
 /-!
 # Stalks of a Scheme
@@ -67,6 +68,19 @@ noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
 @[simp]
 theorem IsAffineOpen.fromSpecStalk_eq_fromSpecStalk {x : X} (hxU : x ∈ U) :
     hU.fromSpecStalk hxU = X.fromSpecStalk x := fromSpecStalk_eq ..
+
+instance IsAffineOpen.fromSpecStalk_isPreimmersion {X : Scheme.{u}} {U : Opens X}
+    (hU : IsAffineOpen U) (x : X) (hx : x ∈ U) : IsPreimmersion (hU.fromSpecStalk hx) := by
+  dsimp [IsAffineOpen.fromSpecStalk]
+  haveI : IsPreimmersion (Spec.map (X.presheaf.germ U x hx)) :=
+    letI : Algebra Γ(X, U) (X.presheaf.stalk x) := (X.presheaf.germ U x hx).toAlgebra
+    haveI := hU.isLocalization_stalk ⟨x, hx⟩
+    IsPreimmersion.of_isLocalization (R := Γ(X, U)) (S := X.presheaf.stalk x)
+      (hU.primeIdealOf ⟨x, hx⟩).asIdeal.primeCompl
+  apply IsPreimmersion.comp
+
+instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecStalk x) :=
+  IsAffineOpen.fromSpecStalk_isPreimmersion _ _ _
 
 lemma IsAffineOpen.fromSpecStalk_closedPoint {U : Opens X} (hU : IsAffineOpen U)
     {x : X} (hxU : x ∈ U) :
@@ -141,6 +155,36 @@ lemma range_fromSpecStalk {x : X} :
     rw [← Spec_map_stalkSpecializes_fromSpecStalk hy] at this
     exact ⟨_, this⟩
 
+/-- The canonical map `Spec 𝒪_{X, x} ⟶ U` given `x ∈ U ⊆ X`. -/
+noncomputable
+def Opens.fromSpecStalkOfMem {X : Scheme.{u}} (U : X.Opens) (x : X) (hxU : x ∈ U) :
+    Spec (X.presheaf.stalk x) ⟶ U :=
+  Spec.map (inv (U.ι.stalkMap ⟨x, hxU⟩)) ≫ U.toScheme.fromSpecStalk ⟨x, hxU⟩
+
+@[reassoc (attr := simp)]
+lemma Opens.fromSpecStalkOfMem_ι {X : Scheme.{u}} (U : X.Opens) (x : X) (hxU : x ∈ U) :
+    U.fromSpecStalkOfMem x hxU ≫ U.ι = X.fromSpecStalk x := by
+  simp only [Opens.fromSpecStalkOfMem, Spec.map_inv, Category.assoc, IsIso.inv_comp_eq]
+  exact (Scheme.Spec_map_stalkMap_fromSpecStalk U.ι (x := ⟨x, hxU⟩)).symm
+
+@[reassoc]
+lemma fromSpecStalk_toSpecΓ (X : Scheme.{u}) (x : X) :
+    X.fromSpecStalk x ≫ X.toSpecΓ = Spec.map (X.presheaf.germ ⊤ x trivial) := by
+  rw [Scheme.toSpecΓ_naturality, ← SpecMap_ΓSpecIso_hom, ← Spec.map_comp,
+    @Scheme.fromSpecStalk_app X ⊤ _ trivial]
+  simp
+
+@[reassoc (attr := simp)]
+lemma Opens.fromSpecStalkOfMem_toSpecΓ {X : Scheme.{u}} (U : X.Opens) (x : X) (hxU : x ∈ U) :
+    U.fromSpecStalkOfMem x hxU ≫ U.toSpecΓ = Spec.map (X.presheaf.germ U x hxU) := by
+  rw [fromSpecStalkOfMem, Opens.toSpecΓ, Category.assoc, fromSpecStalk_toSpecΓ_assoc,
+    ← Spec.map_comp, ← Spec.map_comp]
+  congr 1
+  rw [IsIso.comp_inv_eq, Iso.inv_comp_eq]
+  erw [stalkMap_germ U.ι U ⟨x, hxU⟩]
+  rw [Opens.ι_app, Opens.topIso_hom, ← Functor.map_comp_assoc]
+  exact (U.toScheme.presheaf.germ_res (homOfLE le_top) ⟨x, hxU⟩ (U := U.ι ⁻¹ᵁ U) hxU).symm
+
 end Scheme
 
 end fromSpecStalk
@@ -183,7 +227,6 @@ end stalkClosedPointIso
 section stalkClosedPointTo
 
 variable {R} (f : Spec R ⟶ X)
-
 
 namespace Scheme
 

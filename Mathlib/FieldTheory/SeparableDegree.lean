@@ -639,10 +639,10 @@ theorem natSepDegree_eq_one_iff_eq_X_sub_C_pow : (minpoly F x).natSepDegree = 1 
     rw [minpoly.aeval, map_sub, map_pow, aeval_X, aeval_C, sub_eq_zero, eq_comm] at hx
     use n
     rw [h, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, hx, map_pow,
-      ← sub_pow_expChar_pow_of_commute E[X] X (C x) (commute_X _)]
+      ← sub_pow_expChar_pow_of_commute _ _ (commute_X _)]
   apply_fun constantCoeff at h
   simp_rw [map_pow, map_sub, constantCoeff_apply, coeff_map, coeff_X_zero, coeff_C_zero] at h
-  rw [zero_sub, neg_pow, ExpChar.neg_one_pow_expChar_pow] at h
+  rw [zero_sub, neg_pow, neg_one_pow_expChar_pow] at h
   exact ⟨n, -(minpoly F x).coeff 0, by rw [map_neg, h, neg_mul, one_mul, neg_neg]⟩
 
 end minpoly

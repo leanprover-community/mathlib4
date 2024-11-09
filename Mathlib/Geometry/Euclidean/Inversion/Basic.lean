@@ -32,7 +32,7 @@ variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricS
 
 namespace EuclideanGeometry
 
-variable {a b c d x y z : P} {r R : ℝ}
+variable {c x y : P} {R : ℝ}
 
 /-- Inversion in a sphere in an affine space. This map sends each point `x` to the point `y` such
 that `y -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c)`, where `c` and `R` are the center and the radius the

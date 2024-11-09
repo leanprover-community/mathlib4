@@ -25,7 +25,7 @@ open Set Function Module
 
 noncomputable section
 
-variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace LinearMap
 

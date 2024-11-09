@@ -146,7 +146,7 @@ open MeasureTheory Set Filter Function
 
 open scoped Classical Topology Filter ENNReal Interval NNReal
 
-variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {ι 𝕜 E A : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 namespace intervalIntegral
 
@@ -467,7 +467,7 @@ at `(a, b)` provided that `f` is integrable on `a..b` and is continuous at `a` a
 
 
 variable [CompleteSpace E]
-  {f : ℝ → E} {c ca cb : E} {l l' la la' lb lb' : Filter ℝ} {lt : Filter ι} {a b z : ℝ}
+  {f : ℝ → E} {c ca cb : E} {l l' la la' lb lb' : Filter ℝ} {lt : Filter ι} {a b : ℝ}
   {u v ua ub va vb : ι → ℝ} [FTCFilter a la la'] [FTCFilter b lb lb']
 
 /-!
@@ -953,7 +953,7 @@ semicontinuity. As  `g' t < G' t`, this gives the conclusion. One can therefore 
 this inequality to the right until the point `b`, where it gives the desired conclusion.
 -/
 
-variable {f : ℝ → E} {g' g φ : ℝ → ℝ} {a b : ℝ}
+variable {g' g φ : ℝ → ℝ} {a b : ℝ}
 
 /-- Hard part of FTC-2 for integrable derivatives, real-valued functions: one has
 `g b - g a ≤ ∫ y in a..b, g' y` when `g'` is integrable.

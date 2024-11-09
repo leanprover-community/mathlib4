@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Basic
 import Mathlib.Order.SetNotation
 import Mathlib.Order.Bounds.Defs
+import Mathlib.Data.Set.Basic
 
 /-!
 # Definitions about filters
@@ -339,6 +339,16 @@ instance : Bind Filter :=
   ⟨@Filter.bind⟩
 
 instance : Functor Filter where map := @Filter.map
+
+/-- A variant on `bind` using a function `g` taking a set instead of a member of `α`.
+This is essentially a push-forward along a function mapping each set to a filter. -/
+protected def lift (f : Filter α) (g : Set α → Filter β) :=
+  ⨅ s ∈ f, g s
+
+/-- Specialize `lift` to functions `Set α → Set β`. This can be viewed as a generalization of `map`.
+This is essentially a push-forward along a function mapping each set to a set. -/
+protected def lift' (f : Filter α) (h : Set α → Set β) :=
+  f.lift (𝓟 ∘ h)
 
 end Filter
 
