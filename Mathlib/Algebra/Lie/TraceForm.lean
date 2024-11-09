@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.InvariantForm
-import Mathlib.Algebra.Lie.Weights.Cartan
-import Mathlib.Algebra.Lie.Weights.Linear
+import Mathlib.Algebra.Lie.GenWeights.Cartan
+import Mathlib.Algebra.Lie.GenWeights.Linear
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.LinearAlgebra.PID
 
@@ -105,7 +105,7 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
 @[simp]
 lemma traceForm_genWeightSpace_eq [Module.Free R M]
     [IsDomain R] [IsPrincipalIdealRing R]
-    [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] [LinearWeights R L M] (χ : L → R) (x y : L) :
+    [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] [LinearGenWeights R L M] (χ : L → R) (x y : L) :
     traceForm R L (genWeightSpace M χ) x y = finrank R (genWeightSpace M χ) • (χ x * χ y) := by
   set d := finrank R (genWeightSpace M χ)
   have h₁ : χ y • d • χ x - χ y • χ x • (d : R) = 0 := by simp [mul_comm (χ x)]
@@ -234,7 +234,7 @@ lemma traceForm_eq_sum_genWeightSpaceOf
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
 
--- In characteristic zero (or even just `LinearWeights R L M`) a stronger result holds (no
+-- In characteristic zero (or even just `LinearGenWeights R L M`) a stronger result holds (no
 -- `⊓ LieAlgebra.center R L`) TODO prove this using `LieModule.traceForm_eq_sum_finrank_nsmul_mul`.
 lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Module.Finite R M] :
     lowerCentralSeries R L L 1 ⊓ LieAlgebra.center R L ≤ LinearMap.ker (traceForm R L M) := by
@@ -399,7 +399,7 @@ open Submodule (span subset_span)
 namespace LieModule
 
 variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
-variable [LieAlgebra.IsNilpotent K L] [LinearWeights K L M] [IsTriangularizable K L M]
+variable [LieAlgebra.IsNilpotent K L] [LinearGenWeights K L M] [IsTriangularizable K L M]
 
 lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
     traceForm K L M x y = ∑ χ : Weight K L M, finrank K (genWeightSpace M χ) • (χ x * χ y) := by

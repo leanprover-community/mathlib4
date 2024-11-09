@@ -458,6 +458,12 @@ import Mathlib.Algebra.Lie.DirectSum
 import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.EngelSubalgebra
 import Mathlib.Algebra.Lie.Free
+import Mathlib.Algebra.Lie.GenWeights.Basic
+import Mathlib.Algebra.Lie.GenWeights.Cartan
+import Mathlib.Algebra.Lie.GenWeights.Chain
+import Mathlib.Algebra.Lie.GenWeights.Killing
+import Mathlib.Algebra.Lie.GenWeights.Linear
+import Mathlib.Algebra.Lie.GenWeights.RootSystem
 import Mathlib.Algebra.Lie.IdealOperations
 import Mathlib.Algebra.Lie.InvariantForm
 import Mathlib.Algebra.Lie.Killing
