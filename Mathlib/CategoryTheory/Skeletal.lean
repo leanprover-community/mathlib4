@@ -106,6 +106,7 @@ noncomputable def preCounitIso (X : C) : (fromSkeleton C).obj (toSkeleton X) ≅
 
 variable (C)
 
+/-- An inverse to `fromSkeleton C` that forms an equivalence with it. -/
 @[simps] noncomputable def toSkeletonFunctor : C ⥤ Skeleton C where
   obj := toSkeleton
   map {X Y} f := by apply (preCounitIso X).hom ≫ f ≫ (preCounitIso Y).inv
