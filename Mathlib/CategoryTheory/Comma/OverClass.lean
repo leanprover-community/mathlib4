@@ -31,7 +31,7 @@ universe v u
 
 variable {C : Type u} [Category.{v} C]
 
-variable {X Y : C} (f : X ⟶ Y) (S S' : C)
+variable {X Y Z : C} (f : X ⟶ Y) (S S' : C)
 
 /--
 `OverClass X S` is the typeclass containing the data of a structure morphism `X ↘ S : X ⟶ S`.
@@ -68,9 +68,12 @@ def CanonicallyOverClass.Simps.over (X S : C) [CanonicallyOverClass X S] : X ⟶
 initialize_simps_projections CanonicallyOverClass (hom → over)
 
 @[simps]
-instance (priority := 100) : OverClass X X := ⟨𝟙 _⟩
+instance : OverClass X X := ⟨𝟙 _⟩
 
-@[simps]
+instance : IsIso (S ↘ S) := inferInstanceAs (IsIso (𝟙 S))
+
+-- This cannot be a simp lemma be cause it loops with `comp_over`.
+@[simps (config := .lemmasOnly)]
 instance (priority := 900) [CanonicallyOverClass X Y] [OverClass Y S] : OverClass X S :=
   ⟨X ↘ Y ≫ Y ↘ S⟩
 
@@ -84,10 +87,19 @@ lemma comp_over [OverClass X S] [OverClass Y S] [HomIsOver f S] :
     f ≫ Y ↘ S = X ↘ S :=
   HomIsOver.comp_over
 
+instance [OverClass X S] : HomIsOver (𝟙 X) S where
+
+instance [OverClass X S] [OverClass Y S] [OverClass Z S]
+    (f : X ⟶ Y) (g : Y ⟶ Z) [HomIsOver f S] [HomIsOver g S] :
+    HomIsOver (f ≫ g) S where
+
 /-- `Scheme.IsOverTower X Y S` is the typeclass asserting that the structure morphisms
 `X ↘ Y`, `Y ↘ S`, and `X ↘ S` commute. -/
 abbrev IsOverTower (X Y S : C) [OverClass X S] [OverClass Y S] [OverClass X Y] :=
   HomIsOver (X ↘ Y) S
+
+instance [OverClass X S] : IsOverTower X X S where
+instance [OverClass X S] : IsOverTower X S S where
 
 instance [CanonicallyOverClass X Y] [OverClass Y S] : IsOverTower X Y S :=
   ⟨rfl⟩
