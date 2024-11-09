@@ -373,8 +373,7 @@ lemma log_coverMincard_iterate_le {T : X → X} {F : Set X} (F_inv : MapsTo T F 
     log (coverMincard T F (U ○ U) (m * n)) / n ≤ log (coverMincard T F U m) := by
   apply (EReal.div_le_iff_le_mul (b := n) (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)).2
   rw [← log_pow, StrictMono.le_iff_le log_strictMono]
-  nth_rw 2 [← ENat.toENNRealRingHom_apply]
-  rw [← RingHom.map_pow ENat.toENNRealRingHom _ n, ENat.toENNRealRingHom_apply, ENat.toENNReal_le]
+  norm_cast
   exact coverMincard_mul_le_pow F_inv U_symm m n
 
 lemma log_coverMincard_le_add {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
