@@ -46,13 +46,9 @@ noncomputable def adicValuation : AddValuation K (WithTop ℤ) :=
       intro v hv
       apply Set.mem_compl
       intro nh
-      simp only [SetLike.mem_coe, Valuation.mem_supp_iff, toValuation_apply] at nh
-      apply_fun Multiplicative.toAdd at nh
-      apply_fun OrderDual.ofDual at nh
-      simp only [map_apply, AddMonoidHom.withTopMap_apply, Nat.coe_castAddMonoidHom, toAdd_ofAdd,
-        OrderDual.ofDual_toDual] at nh
-      change _ = ⊤ at nh
-      simp only [WithTop.map_eq_top_iff] at nh
+      simp only [SetLike.mem_coe, Valuation.mem_supp_iff, toValuation_apply, map_apply,
+        AddMonoidHom.withTopMap_apply, Nat.coe_castAddMonoidHom, ofAdd_toDual_eq_zero_iff,
+        WithTop.map_eq_top_iff] at nh
       exact multiplicity.finite_prime_left Fact.out (nonZeroDivisors.ne_zero hv)
         |>.emultiplicity_ne_top nh
 

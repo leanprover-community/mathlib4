@@ -244,12 +244,28 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     [LinearOrderedAddCommMonoidWithTop α] :
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.orderedCommMonoid, Multiplicative.linearOrder with
-    zero := Multiplicative.ofAdd (⊤ : α)
+    zero := Multiplicative.ofAdd (OrderDual.toDual ⊤)
     zero_mul := @top_add _ (_)
     -- Porting note:  Here and elsewhere in the file, just `zero_mul` worked in Lean 3. See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
     mul_zero := @add_top _ (_)
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
+
+@[simp]
+theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
+    (x : α) : Multiplicative.ofAdd (OrderDual.toDual x) = 0 ↔ x = ⊤ := Iff.rfl
+
+@[simp]
+theorem ofDual_toAdd_eq_top_iff [LinearOrderedAddCommMonoidWithTop α]
+    (x : Multiplicative αᵒᵈ) : OrderDual.ofDual (Multiplicative.toAdd x) = ⊤ ↔ x = 0 := Iff.rfl
+
+@[simp]
+theorem ofAdd_toDual_top [LinearOrderedAddCommMonoidWithTop α] :
+    Multiplicative.ofAdd (OrderDual.toDual (⊤ : α)) = 0 := rfl
+
+@[simp]
+theorem ofDual_toAdd_zero [LinearOrderedAddCommMonoidWithTop α] :
+    OrderDual.ofDual (Multiplicative.toAdd (0 : Multiplicative αᵒᵈ)) = ⊤ := rfl
 
 instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
