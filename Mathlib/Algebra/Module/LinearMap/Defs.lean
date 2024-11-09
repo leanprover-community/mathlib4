@@ -451,6 +451,8 @@ def _root_.RingHom.toSemilinearMap (f : R →+* S) : R →ₛₗ[f] S :=
   { f with
     map_smul' := f.map_mul }
 
+@[simp] theorem _root_.RingHom.coe_toSemilinearMap (f : R →+* S) : ⇑f.toSemilinearMap = f := rfl
+
 section
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]

@@ -323,6 +323,15 @@ theorem map_eq_submodule_map (f : R →+* S) [h : RingHomSurjective f] (I : Idea
     I.map f = Submodule.map f.toSemilinearMap I :=
   Submodule.ext fun _ => mem_map_iff_of_surjective f h.1
 
+instance (f : R →+* S) [RingHomSurjective f] (I : Ideal R) [I.IsTwoSided] :
+    (I.map f).IsTwoSided where
+  mul_mem_of_left b ha := by
+    rw [map_eq_submodule_map] at ha ⊢
+    obtain ⟨a, ha, rfl⟩ := ha
+    obtain ⟨b, rfl⟩ := f.surjective b
+    rw [RingHom.coe_toSemilinearMap, ← map_mul]
+    exact ⟨_, I.mul_mem_right _ ha, rfl⟩
+
 end Surjective
 
 section Injective

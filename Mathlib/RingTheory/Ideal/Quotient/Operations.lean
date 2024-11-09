@@ -498,7 +498,7 @@ theorem quotientMap_comp_mk {J : Ideal R} {I : Ideal S} [I.IsTwoSided] [J.IsTwoS
     (quotientMap I f H).comp (Quotient.mk J) = (Quotient.mk I).comp f :=
   RingHom.ext fun x => by simp only [Function.comp_apply, RingHom.coe_comp, Ideal.quotientMap_mk]
 
-lemma ker_quotientMap_mk {R} [CommRing R] {I J : Ideal R} :
+lemma ker_quotientMap_mk {I J : Ideal R} [I.IsTwoSided] [J.IsTwoSided] :
     RingHom.ker (quotientMap (J.map _) (Quotient.mk I) le_comap_map) = I.map (Quotient.mk J) := by
   rw [Ideal.quotientMap, Ideal.ker_quotient_lift, ← RingHom.comap_ker, Ideal.mk_ker,
     Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective,
