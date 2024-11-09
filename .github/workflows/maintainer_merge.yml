@@ -53,7 +53,7 @@ jobs:
           team: 'mathlib-reviewers' # required. The team to check for
           token: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # required. Personal Access Token with the `read:org` permission
           comment: 'You seem to not be authorized' # optional. A comment to post if the user is not part of the team.
-                                                  # This feature is only applicable in an issue (or PR) context
+                                                   # This feature is only applicable in an issue (or PR) context
           exit: true # optional. If the action should exit if the user is not part of the team. Defaults to true.
 
       - name: Checkout
