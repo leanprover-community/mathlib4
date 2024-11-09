@@ -97,3 +97,6 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   to the appropriate topic on zulip.
 - `count-trans-deps.py`, `import-graph-report.py` and `import_trans_difference.sh` produce various
   summaries of changes in transitive imports that the `PR_summary` message incorporates.
+- `zulip_emoji_merge_delegate.py` is called every hour by a Github action cronjob.
+  It looks through the latest 1000 zulip posts: if a message mentions a PR that is merged or delegated,
+  then this script will post an emoji reaction `:merge:` or `:peace_sign:` respectively to the message.
