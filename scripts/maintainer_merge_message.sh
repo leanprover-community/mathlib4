@@ -1,31 +1,38 @@
 #!/usr/bin/env bash
 
-AUTHOR="${1}"   # adomani
-BODY="${2}"     # message content, containing `maintainer {merge, delegate}`
-GHsource="${3}" # one of `comment`, `review` or `review comment`
-PR="${4}"       # the number of the PR
-URL="${5}"      # the url link to the PR
-PR_TITLE="${6}" # the title of the PR
+AUTHOR="${1:-AUTHOR not set}"         # the author of the PR
+M_or_D="${2:-M_or_D not set}"         # `merge` or `delegate`
+EVENT_NAME="${3:-EVENT_NAME not set}" # one of `issue_comment`, `pull_request_review` or `pull_request_review_comment`
+                                      # to be converted to `comment`, `review` or `review comment`
+PR="${4:-PR not set}"                 # the number of the PR
+URL="${5:-URL not set}"               # the url link to the PR
+PR_TITLE="${6:-PR_TITLE not set}"     # the title of the PR
 
-mergeOrDelegate="neither merge nor delegate"
-if printf '%s\n' "${BODY}" | grep -q "^maintainer merge"
-then
-  mergeOrDelegate=merge
-elif printf '%s\n' "${BODY}" | grep -q "^maintainer delegate"
-then
-  mergeOrDelegate=delegate
-fi
+# figure out if the GitHub event starting this action is a comment, a review or a review comment
+# and set the `SOURCE` variable accordingly
+case ${EVENT_NAME} in
+  issue_comment)
+  SOURCE='comment'
+  ;;
+  pull_request_review)
+  SOURCE='review'
+  ;;
+  pull_request_review_comment)
+  SOURCE='review comment'
+  ;;
+  *)
+  SOURCE='unknown origin'
+  ;;
+esac
 
-GHevent=nothing
-if [ "${GHsource}" == "comment" ]
-then
-  GHevent=issue
-elif [ "${GHsource/% */}" == "review" ]
-then
-  GHevent=pull_request
-fi
+# for debugging, we print the available variables to stderr
+>&2 echo "PR_TITLE:   '${PR_TITLE}'"
+>&2 echo "AUTHOR:     '${AUTHOR}'"
+>&2 echo "M_or_D:     '${M_or_D}'"
+>&2 echo "PR_NUMBER:  '${PR_NUMBER}'"
+>&2 echo "PR_URL:     '${PR_URL}'"
+>&2 echo "title:      '${PR_TITLE}'"
+>&2 echo "EVENT_NAME: '${EVENT_NAME}'"
 
-#printf $'title<<EOF\n${{ format(\'{0} requested a maintainer %s from %s on PR [#{1}]({2}):\', github.event.%s.user.login, github.event.%s.number, github.event.%s.html_url ) }}\nEOF' "${mergeOrDelegate}" "${GHsource}" "${GHsource}" "${GHevent}" "${GHevent}"
-
-printf '%s requested a maintainer %s from %s on PR [#%s](%s):\n' "${AUTHOR}" "${mergeOrDelegate}" "${GHsource}" "${PR}" "${URL}"
+printf '%s requested a maintainer %s from %s on PR [#%s](%s):\n' "${AUTHOR}" "${M_or_D}" "${SOURCE}" "${PR}" "${URL}"
 printf '> %s\n' "${PR_TITLE}"
