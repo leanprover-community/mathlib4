@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
 import Mathlib.Data.Ineq
-import Mathlib.Tactic.Positivity.Core
 import Mathlib.Algebra.Order.Field.Basic
 
 /-!
@@ -139,17 +138,17 @@ open Tactic.LinearCombination
 
 namespace Ineq
 
-/-- Given two (in)equalities, look up the lemma to add them and the relation in the result. -/
-def addRelRelData : Ineq → Ineq → Ineq × Name
-  | eq, eq => (eq, ``add_eq_eq)
-  | eq, le => (le, ``add_eq_le)
-  | eq, lt => (lt, ``add_eq_lt)
-  | le, eq => (le, ``add_le_eq)
-  | le, le => (le, ``add_le_add)
-  | le, lt => (lt, ``add_lt_add_of_le_of_lt)
-  | lt, eq => (lt, ``add_lt_eq)
-  | lt, le => (lt, ``add_lt_add_of_lt_of_le)
-  | lt, lt => (lt, ``add_lt_add)
+/-- Given two (in)equalities, look up the lemma to add them. -/
+def addRelRelData : Ineq → Ineq → Name
+  | eq, eq => ``add_eq_eq
+  | eq, le => ``add_eq_le
+  | eq, lt => ``add_eq_lt
+  | le, eq => ``add_le_eq
+  | le, le => ``add_le_add
+  | le, lt => ``add_lt_add_of_le_of_lt
+  | lt, eq => ``add_lt_eq
+  | lt, le => ``add_lt_add_of_lt_of_le
+  | lt, lt => ``add_lt_add
 
 /-- Finite inductive type extending `Mathlib.Ineq`: a type of inequality (`eq`, `le` or `lt`),
 together with, in the case of `lt`, a boolean, typically representing the strictness (< or ≤) of

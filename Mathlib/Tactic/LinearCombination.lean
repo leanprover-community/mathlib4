@@ -93,8 +93,8 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ + $c₂)
     | .proof rel₁ p₁, .proof rel₂ p₂ =>
-      let (rel, n) := Ineq.addRelRelData rel₁ rel₂
-      .proof rel <$> ``($(mkIdent n) $p₁ $p₂)
+      let i := mkIdent <| Ineq.addRelRelData rel₁ rel₂
+      .proof (max rel₁ rel₂) <$> ``($i $p₁ $p₂)
     | .proof rel p, .const c | .const c, .proof rel p =>
       logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
         from the term"
@@ -111,8 +111,8 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
         from the term"
       .proof rel <$> ``(Eq.symm $p)
     | .proof rel₁ p₁, .proof eq p₂ =>
-      let (rel, n) := Ineq.addRelRelData rel₁ eq
-      .proof rel <$> ``($(mkIdent n) $p₁ (Eq.symm $p₂))
+      let i := mkIdent <| Ineq.addRelRelData rel₁ eq
+      .proof rel₁ <$> ``($i $p₁ (Eq.symm $p₂))
     | .proof _ _, .proof _ _ =>
       throwError "coefficients of inequalities in 'linear_combination' must be nonnegative"
   | `(-$e) => do
