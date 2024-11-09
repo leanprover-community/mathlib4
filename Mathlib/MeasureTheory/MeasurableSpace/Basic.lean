@@ -11,6 +11,7 @@ import Mathlib.GroupTheory.Coset.Defs
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.Order.Filter.SmallSets
+import Mathlib.Tactic.FinCases
 import Mathlib.Order.LiminfLimsup
 
 /-!
@@ -625,7 +626,6 @@ lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
     · intro z hz
       simp only [mem_iInter, mem_compl_iff]
       intro i hi
-      show z ∈ s i
       exact mem_of_mem_measurableAtom hz (hs i hi).2.1 (hs i hi).1
     · apply compl_subset_compl.1
       intro z hz
@@ -1182,7 +1182,66 @@ namespace MeasurableSpace
   rintro _ ⟨u, -, rfl⟩
   exact (show MeasurableSet s from GenerateMeasurable.basic _ <| mem_singleton s).mem trivial
 
+lemma generateFrom_singleton_le {m : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s) :
+    MeasurableSpace.generateFrom {s} ≤ m :=
+  generateFrom_le (fun _ ht ↦ mem_singleton_iff.1 ht ▸ hs)
+
 end MeasurableSpace
+
+namespace MeasureTheory
+
+theorem measurableSet_generateFrom_singleton_iff {s t : Set α} :
+    MeasurableSet[MeasurableSpace.generateFrom {s}] t ↔ t = ∅ ∨ t = s ∨ t = sᶜ ∨ t = univ := by
+  simp_rw [MeasurableSpace.generateFrom_singleton]
+  change t ∈ {t | _} ↔ _
+  simp_rw [MeasurableSpace.measurableSet_top, true_and, mem_setOf_eq]
+  constructor
+  · rintro ⟨x, rfl⟩
+    by_cases hT : True ∈ x
+    · by_cases hF : False ∈ x
+      · refine Or.inr <| Or.inr <| Or.inr <| subset_antisymm (subset_univ _) ?_
+        suffices x = univ by simp only [this, preimage_univ, subset_refl]
+        refine subset_antisymm (subset_univ _) ?_
+        rw [univ_eq_true_false]
+        rintro - (rfl | rfl)
+        · assumption
+        · assumption
+      · have hx : x = {True} := by
+          ext p
+          refine ⟨fun hp ↦ mem_singleton_iff.2 ?_, fun hp ↦ hp ▸ hT⟩
+          by_contra hpneg
+          rw [eq_iff_iff, iff_true, ← false_iff] at hpneg
+          exact hF (by convert hp)
+        simp [hx]
+    · by_cases hF : False ∈ x
+      · have hx : x = {False} := by
+          ext p
+          refine ⟨fun hp ↦ mem_singleton_iff.2 ?_, fun hp ↦ hp ▸ hF⟩
+          by_contra hpneg
+          simp only [eq_iff_iff, iff_false, not_not] at hpneg
+          refine hT ?_
+          convert hp
+          simpa
+        refine Or.inr <| Or.inr <| Or.inl <| ?_
+        simp [hx]
+        rfl
+      · refine Or.inl <| subset_antisymm ?_ <| empty_subset _
+        suffices x ⊆ ∅ by
+          rw [subset_empty_iff] at this
+          simp only [this, preimage_empty, subset_refl]
+        intro p hp
+        fin_cases p
+        · contradiction
+        · contradiction
+  · rintro (rfl | rfl | rfl | rfl)
+    on_goal 1 => use ∅
+    on_goal 2 => use {True}
+    on_goal 3 => use {False}
+    on_goal 4 => use Set.univ
+    all_goals
+      simp [compl_def]
+
+end MeasureTheory
 
 namespace Filter
 
@@ -1360,7 +1419,7 @@ instance Subtype.instUnion : Union (Subtype (MeasurableSet : Set α → Prop)) :
 theorem coe_union (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∪ t) = (s ∪ t : Set α) :=
   rfl
 
-instance Subtype.instSup : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instSup : Max (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∪ y⟩
 
 @[simp]
@@ -1373,7 +1432,7 @@ instance Subtype.instInter : Inter (Subtype (MeasurableSet : Set α → Prop)) :
 theorem coe_inter (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∩ t) = (s ∩ t : Set α) :=
   rfl
 
-instance Subtype.instInf : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instInf : Min (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∩ y⟩
 
 @[simp]
