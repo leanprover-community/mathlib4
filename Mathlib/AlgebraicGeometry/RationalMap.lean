@@ -22,7 +22,8 @@ import Mathlib.AlgebraicGeometry.Morphisms.Separated
   Given `S`-schemes `X` and `Y` such that `Y` is locally of finite type and `X` is integral,
   `S`-morphisms `Spec K(X) ⟶ Y` correspond bijectively to `S`-rational maps from `X` to `Y`.
 * `AlgebraicGeometry.Scheme.RationalMap.toPartialMap`:
-  If `X` is integral and `Y` is separated, then any `f : X ⤏ Y
+  If `X` is integral and `Y` is separated, then any `f : X ⤏ Y` can be realized as a partial
+  map on `f.domain`, the domain of definition of `f`.
 -/
 
 universe u
