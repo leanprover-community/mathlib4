@@ -89,7 +89,7 @@ If not, then it is contained in some maximal ideal. The localization of that max
 a local subring that dominates `R`, contradicting the maximality of `R`.
 -/
 lemma map_maximalIdeal_eq_top_of_mem_maximalLocalSubrings {R : LocalSubring K}
-    (hR : R ∈ maximalLocalSubrings K) {S : Subring K} (hS : R.1 < S) :
+    (hR : R ∈ maximalLocalSubrings K) {S : Subring K} (hS : R.toSubring < S) :
     (maximalIdeal R.toSubring).map (Subring.inclusion hS.le) = ⊤ := by
   by_contra h_is_not_top
   obtain ⟨M, h_is_max, h_incl⟩ := Ideal.exists_le_maximal _ h_is_not_top
@@ -100,9 +100,10 @@ lemma map_maximalIdeal_eq_top_of_mem_maximalLocalSubrings {R : LocalSubring K}
     aesop
   let funSₘtoK  : Sₘ →+* K := IsLocalization.lift funStoK_invertible_goto_units
   let fSₘ: LocalSubring K := LocalSubring.range funSₘtoK
-  let funRtoSₘ : R ≤ fSₘ := by
+  have ltRtoSₘ : R < fSₘ := by
     sorry
-  sorry
+  have notMax := not_isMax_of_lt (ltRtoSₘ)
+  exact notMax hR
 
 open scoped Polynomial
 
