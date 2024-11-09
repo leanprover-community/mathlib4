@@ -163,7 +163,7 @@ lemma height_mono : Monotone (α := α) height :=
     height a ≤ height b := height_mono hab
 
 private lemma height_add_const (a : α) (n : ℕ∞) :
-    height a + n = ⨆ (p : LTSeries α ) (_ : p.last = a), p.length + n := by
+    height a + n = ⨆ (p : LTSeries α) (_ : p.last = a), p.length + n := by
   have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
   rw [height_eq_iSup_last_eq, iSup_subtype', iSup_subtype', ENat.iSup_add]
 
