@@ -97,15 +97,6 @@ protected theorem div_mul_cancel (h0 : a ≠ 0) (hI : a ≠ ∞) : b / a * a = b
 protected theorem mul_div_cancel' (h0 : a ≠ 0) (hI : a ≠ ∞) : a * (b / a) = b := by
   rw [mul_comm, ENNReal.div_mul_cancel h0 hI]
 
-protected theorem mul_eq_left (ha : a ≠ 0) (h'a : a ≠ ∞) : a * b = a ↔ b = 1 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, mul_one]⟩
-  have : a * b * a⁻¹ = a * a⁻¹ := by rw [h]
-  rwa [mul_assoc, mul_comm b, ← mul_assoc, ENNReal.mul_inv_cancel ha h'a, one_mul] at this
-
-protected theorem mul_eq_right (ha : a ≠ 0) (h'a : a ≠ ∞) : b * a = a ↔ b = 1 := by
-  rw [mul_comm]
-  exact ENNReal.mul_eq_left ha h'a
-
 -- Porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by
   simp only [div_eq_mul_inv, mul_right_comm, ← mul_assoc]
@@ -635,7 +626,10 @@ variable {ι κ : Sort*} {f g : ι → ℝ≥0∞} {s : Set ℝ≥0∞} {a : ℝ
 
 @[simp] lemma iSup_eq_zero : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 := iSup_eq_bot
 
-@[simp] lemma iSup_zero_eq_zero : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
+@[simp] lemma iSup_zero : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
+
+@[deprecated (since := "2024-10-22")]
+alias iSup_zero_eq_zero := iSup_zero
 
 lemma iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
   (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)

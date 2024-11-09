@@ -447,8 +447,8 @@ section Mul
 variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 variable {M N : Submodule R A}
 
-theorem FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG :=
-  hm.map₂ _ hn
+theorem FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG := by
+  rw [mul_eq_map₂]; exact hm.map₂ _ hn
 
 theorem FG.pow (h : M.FG) (n : ℕ) : (M ^ n).FG :=
   Nat.recOn n ⟨{1}, by simp [one_eq_span]⟩ fun n ih => by simpa [pow_succ] using ih.mul h
