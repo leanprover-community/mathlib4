@@ -5,7 +5,7 @@ Authors: Bhavik Mehta
 -/
 
 import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Group
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 /-!
 # Infinite sums and products in topological fields
