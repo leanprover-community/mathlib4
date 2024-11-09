@@ -88,8 +88,8 @@ theorem map_id :
     IsLocalRing.ResidueField.map (RingHom.id R) = RingHom.id (IsLocalRing.ResidueField R) :=
   Ideal.Quotient.ringHom_ext <| RingHom.ext fun _ => rfl
 
-/-- The composite of two `IsLocalRing.ResidueField.map`s is the `IsLocalRing.ResidueField.map` of the
-composite. -/
+/-- The composite of two `IsLocalRing.ResidueField.map`s is the `IsLocalRing.ResidueField.map` of
+the composite. -/
 theorem map_comp (f : T →+* R) (g : R →+* S) [IsLocalHom f] [IsLocalHom g] :
     IsLocalRing.ResidueField.map (g.comp f) =
       (IsLocalRing.ResidueField.map g).comp (IsLocalRing.ResidueField.map f) :=
@@ -146,7 +146,8 @@ section MulSemiringAction
 
 variable (G : Type*) [Group G] [MulSemiringAction G R]
 
-/-- If `G` acts on `R` as a `MulSemiringAction`, then it also acts on `IsLocalRing.ResidueField R`. -/
+/-- If `G` acts on `R` as a `MulSemiringAction`, then it also acts on `IsLocalRing.ResidueField R`.
+-/
 instance : MulSemiringAction G (IsLocalRing.ResidueField R) :=
   MulSemiringAction.compHom _ <| mapAut.comp (MulSemiringAction.toRingAut G R)
 

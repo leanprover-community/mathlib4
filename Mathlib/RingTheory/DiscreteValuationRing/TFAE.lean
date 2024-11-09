@@ -225,8 +225,8 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [IsLocalRing R] [IsDomai
 
 variable {R}
 
-lemma IsLocalRing.finrank_CotangentSpace_eq_one_iff [IsNoetherianRing R] [IsLocalRing R] [IsDomain R] :
-    finrank (ResidueField R) (CotangentSpace R) = 1 ↔ DiscreteValuationRing R := by
+lemma IsLocalRing.finrank_CotangentSpace_eq_one_iff [IsNoetherianRing R] [IsLocalRing R]
+    [IsDomain R] : finrank (ResidueField R) (CotangentSpace R) = 1 ↔ DiscreteValuationRing R := by
   by_cases hR : IsField R
   · letI := hR.toField
     simp only [finrank_cotangentSpace_eq_zero, zero_ne_one, false_iff]
@@ -240,5 +240,5 @@ lemma IsLocalRing.finrank_CotangentSpace_eq_one [IsDomain R] [DiscreteValuationR
   finrank_CotangentSpace_eq_one_iff.mpr ‹_›
 
 instance (priority := 100) IsDedekindDomain.isPrincipalIdealRing
-    [IsLocalRing R] [IsDedekindDomain R] :
-    IsPrincipalIdealRing R := ((tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain R).out 2 0).mp ‹_›
+    [IsLocalRing R] [IsDedekindDomain R] : IsPrincipalIdealRing R :=
+  ((tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain R).out 2 0).mp ‹_›

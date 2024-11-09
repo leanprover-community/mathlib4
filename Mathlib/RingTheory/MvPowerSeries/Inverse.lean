@@ -157,7 +157,7 @@ variable [CommRing R]
 instance [IsLocalRing R] : IsLocalRing (MvPowerSeries σ R) :=
   IsLocalRing.of_isUnit_or_isUnit_one_sub_self <| by
     intro φ
-    rcases IsLocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff σ R φ) with (⟨u, h⟩ | ⟨u, h⟩) <;>
+    obtain ⟨u, h⟩ | ⟨u, h⟩ := IsLocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff σ R φ) <;>
         [left; right] <;>
       · refine isUnit_of_mul_eq_one _ _ (mul_invOfUnit _ u ?_)
         simpa using h.symm

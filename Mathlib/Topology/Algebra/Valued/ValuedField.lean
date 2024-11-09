@@ -372,8 +372,8 @@ def maximalIdeal : Ideal 𝒪[K] := IsLocalRing.maximalIdeal 𝒪[K]
 @[inherit_doc]
 scoped notation "𝓂[" K "]" => maximalIdeal K
 
-/-- An abbreviation for `IsLocalRing.ResidueField 𝒪[K]` of a `Valued` instance, enabling the notation
-`𝓀[K]` for the residue field of a valued field `K`. -/
+/-- An abbreviation for `IsLocalRing.ResidueField 𝒪[K]` of a `Valued` instance, enabling the
+notation `𝓀[K]` for the residue field of a valued field `K`. -/
 @[reducible]
 def ResidueField := IsLocalRing.ResidueField (𝒪[K])
 

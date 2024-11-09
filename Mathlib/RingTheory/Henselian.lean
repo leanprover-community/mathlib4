@@ -144,7 +144,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
     simp only [← ker_eq_maximalIdeal φ hφ, eval₂_at_apply, RingHom.mem_ker] at H h₁ h₂
     obtain ⟨a, ha₁, ha₂⟩ := H h₁ (by
       contrapose! h₂
-      rwa [← mem_nonunits_iff, ← IsLocalRing.mem_maximalIdeal, ← IsLocalRing.ker_eq_maximalIdeal φ hφ,
+      rwa [← mem_nonunits_iff, ← mem_maximalIdeal, ← ker_eq_maximalIdeal φ hφ,
         RingHom.mem_ker] at h₂)
     refine ⟨a, ha₁, ?_⟩
     rwa [φ.map_sub, sub_eq_zero] at ha₂

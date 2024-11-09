@@ -230,7 +230,8 @@ variable {R}
 lemma subsingleton_cotangentSpace_iff [IsNoetherianRing R] :
     Subsingleton (CotangentSpace R) ↔ IsField R := by
   refine (maximalIdeal R).cotangent_subsingleton_iff.trans ?_
-  rw [IsLocalRing.isField_iff_maximalIdeal_eq, Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing]
+  rw [IsLocalRing.isField_iff_maximalIdeal_eq,
+    Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing]
   simp [(maximalIdeal.isMaximal R).ne_top]
 
 lemma CotangentSpace.map_eq_top_iff [IsNoetherianRing R] {M : Submodule R (maximalIdeal R)} :
