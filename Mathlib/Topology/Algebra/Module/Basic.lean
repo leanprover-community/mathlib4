@@ -97,7 +97,8 @@ end
 section LatticeOps
 
 variable {R M₁ M₂ : Type*} [SMul R M₁] [SMul R M₂] [u : TopologicalSpace R]
-  {t : TopologicalSpace M₂} [ContinuousSMul R M₂] (f : M₁ →[R] M₂)
+  {t : TopologicalSpace M₂} [ContinuousSMul R M₂]
+  {F : Type*} [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂] (f : F)
 
 theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) :=
   let _ : TopologicalSpace M₁ := t.induced f
