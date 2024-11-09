@@ -190,8 +190,6 @@ theorem AtPrime.map_eq_maximalIdeal :
   -- Porting note: can not find `hI`
   rw [map_comap I.primeCompl]
 
-@[deprecated (since := "2024-11-09")] alias `AtPrime.localRing` := `AtPrime.isLocalRing`
-
 theorem le_comap_primeCompl_iff {J : Ideal P} [J.IsPrime] {f : R →+* P} :
     I.primeCompl ≤ J.primeCompl.comap f ↔ J.comap f ≤ I :=
   ⟨fun h x hx => by
