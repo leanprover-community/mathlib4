@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Tactic.Linarith.Lemmas
-import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Util.SynthesizeUsing
 
 /-!
@@ -16,7 +16,7 @@ We split them into their own file.
 This file also contains a few convenient auxiliary functions.
 -/
 
-open Lean Elab Tactic Meta Qq
+open Lean Elab Tactic Meta Qq Mathlib
 
 initialize registerTraceClass `linarith
 initialize registerTraceClass `linarith.detail
@@ -272,6 +272,14 @@ This functions is used by multiple modules, so we put it here for accessibility.
 -/
 
 /--
+`parseCompAndExpr e` checks if `e` is of the form `t < 0`, `t ≤ 0`, or `t = 0`.
+If it is, it returns the comparison along with `t`.
+-/
+def parseCompAndExpr (e : Expr) : MetaM (Ineq × Expr) := do
+  let (rel, _, e, z) ← e.ineq?
+  if z.zero? then return (rel, e) else throwError "invalid comparison, rhs not zero: {z}"
+
+/--
 `mkSingleCompZeroOf c h` assumes that `h` is a proof of `t R 0`.
 It produces a pair `(R', h')`, where `h'` is a proof of `c*t R' 0`.
 Typically `R` and `R'` will be the same, except when `c = 0`, in which case `R'` is `=`.
@@ -285,7 +293,7 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
     return (Ineq.eq, e')
   else if c = 1 then return (iq, h)
   else do
-    let tp ← inferType (← getRelSides (← inferType h)).2
+    let (_, tp, _) ← tp.ineq?
     let cpos : Q(Prop) ← mkAppM ``GT.gt #[(← tp.ofNat c), (← tp.ofNat 0)]
     let ex ← synthesizeUsingTactic' cpos (← `(tactic| norm_num))
     let e' ← mkAppM iq.toConstMulName #[h, ex]

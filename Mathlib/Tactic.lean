@@ -109,7 +109,6 @@ import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.HaveI
-import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.Hint
 import Mathlib.Tactic.ITauto
@@ -123,7 +122,6 @@ import Mathlib.Tactic.LiftLets
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Linarith.Frontend
-import Mathlib.Tactic.Linarith.Ineq
 import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
 import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
