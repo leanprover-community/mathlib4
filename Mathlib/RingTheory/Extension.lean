@@ -36,7 +36,7 @@ open TensorProduct MvPolynomial
 variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 
 /--
-An extension of an `R`-algebra `S` is an `R` algebra `P` together with a surjection `P →ₐ[R] R`.
+An extension of an `R`-algebra `S` is an `R` algebra `P` together with a surjection `P →ₐ[R] S`.
 Also see `Algebra.Extension.ofSurjective`.
 -/
 structure Algebra.Extension where
