@@ -149,8 +149,7 @@ noncomputable def liftAlgHom : S →ₐ[A] P :=
     commutes' := by
       intro r
       change lift hf (algebraMap A S r) = _
-      simp [IsScalarTower.algebraMap_apply A R S]
-  }
+      simp [IsScalarTower.algebraMap_apply A R S] }
 
 theorem liftAlgHom_toRingHom : (liftAlgHom hf : S →ₐ[A] P).toRingHom = lift hf := rfl
 
@@ -177,11 +176,9 @@ an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism o
 `S ≃ₐ[A] Q`. -/
 @[simps!]
 noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q :=
-  {
-    ringEquivOfRingEquiv S Q h.toRingEquiv H with
+  { ringEquivOfRingEquiv S Q h.toRingEquiv H with
     commutes' := fun _ ↦ by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
-      RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
-  }
+      RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q] }
 
 variable {S Q h}
 
