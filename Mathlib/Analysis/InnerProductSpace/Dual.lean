@@ -86,15 +86,9 @@ lemma mem_nullSubmodule_iff {x : E} : x ∈ nullSubmodule 𝕜 E ↔ ‖x‖ = 0
 
 lemma inner_eq_zero_of_left (x y : E) (h : ‖x‖ = 0) :
     ⟪x, y⟫_𝕜 = 0 := by
-  rw [← norm_eq_zero, ← sq_eq_zero_iff]
-  apply le_antisymm _ (sq_nonneg _)
-  rw [sq]
-  nth_rw 2 [← RCLike.norm_conj]
-  rw [_root_.inner_conj_symm]
-  calc ‖⟪x, y⟫_𝕜‖ * ‖⟪y, x⟫_𝕜‖ ≤ re ⟪x, x⟫_𝕜 * re ⟪y, y⟫_𝕜 := inner_mul_inner_self_le _ _
-  _ = (‖x‖ * ‖x‖) * re ⟪y, y⟫_𝕜 := by rw [inner_self_eq_norm_mul_norm x]
-  _ = (0 * 0) * re ⟪y, y⟫_𝕜 := by rw [(mem_nullSubmodule_iff 𝕜 E).mp h]
-  _ = 0 := by ring
+  rw [← norm_eq_zero]
+  refine le_antisymm ?_ (by positivity)
+  exact norm_inner_le_norm _ _ |>.trans <| by simp [h]
 
 lemma inner_nullSubmodule_right_eq_zero (x y : E) (h : ‖y‖ = 0) : ⟪x, y⟫_𝕜 = 0 := by
   rw [inner_eq_zero_symm]
