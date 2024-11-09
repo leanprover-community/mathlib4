@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout mathlib repository
+      uses: actions/checkout@v4
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -22,62 +25,8 @@ jobs:
     - name: Run Zulip Emoji Merge Delegate Script
       env:
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
-        ZULIP_EMAIL: ${{ secrets.ZULIP_EMAIL }}
+        ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
         ZULIP_SITE: https://leanprover.zulipchat.com
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        python - <<EOF
-        import zulip
-        import requests
-        from datetime import datetime, timedelta
-
-        # Initialize Zulip client
-        client = zulip.Client(config_file=None)
-        client.set_api_key("${{ secrets.ZULIP_API_KEY }}")
-        client.set_email("${{ secrets.ZULIP_EMAIL }}")
-        client.set_site("https://leanprover.zulipchat.com")
-
-        # Calculate the time range
-        now = datetime.utcnow()
-        since = now - timedelta(minutes=75)
-
-        # Fetch messages from the past 1h15
-        response = client.get_messages({
-            "anchor": "newest",
-            "num_before": 0,
-            "num_after": 1000,
-            "narrow": [
-                {"operator": "stream", "operand": "general"},
-                {"operator": "after", "operand": since.isoformat()}
-            ]
-        })
-
-        messages = response['messages']
-        pr_pattern = re.compile(r'(^|\s)#(\d{1,5})')
-
-        for message in messages:
-            content = message['content']
-            match = pr_pattern.search(content)
-            if match:
-                pr_number = match.group(1)
-                # Check for emoji reactions
-                reactions = message['reactions']
-                has_merge = any(reaction['emoji_name'] == 'merge' for reaction in reactions)
-                has_peace_sign = any(reaction['emoji_name'] == 'peace_sign' for reaction in reactions)
-
-                if not has_merge and not has_peace_sign:
-                    pr_url = f"https://api.github.com/repos/leanprover-community/mathlib4/pulls/{pr_number}"
-                    pr_response = requests.get(pr_url, headers={"Authorization": f"token ${{ secrets.GITHUB_TOKEN }}"})
-                    pr_data = pr_response.json()
-
-                    if pr_data['title'].startswith("[Merged by Bors]"):
-                        client.add_reaction({
-                            "message_id": message['id'],
-                            "emoji_name": "merge"
-                        })
-                    elif 'delegated' in [label['name'] for label in pr_data['labels']]:
-                        client.add_reaction({
-                            "message_id": message['id'],
-                            "emoji_name": "peace_sign"
-                        })
-        EOF
+        python scripts/zulip_emoji_merge_delegate.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $GITHUB_TOKEN
