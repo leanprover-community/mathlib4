@@ -130,6 +130,10 @@ lemma rootForm_apply_apply (x y : M) : P.RootForm x y =
     ∑ (i : ι), P.coroot' i x * P.coroot' i y := by
   simp [RootForm]
 
+lemma Polarization_apply_apply (x y : M) :
+    P.toPerfectPairing y (P.Polarization x) = P.RootForm x y := by
+  simp [RootForm]
+
 lemma rootForm_symmetric :
     LinearMap.IsSymm P.RootForm := by
   simp [LinearMap.IsSymm, mul_comm, rootForm_apply_apply]
@@ -165,6 +169,14 @@ lemma rootForm_self_smul_coroot (i : ι) :
 lemma corootForm_self_smul_root (i : ι) :
     (P.CorootForm (P.coroot i) (P.coroot i)) • P.root i = 2 • P.CoPolarization (P.coroot i) :=
   rootForm_self_smul_coroot (P.flip) i
+
+lemma rootForm_mul_pairing (i j : ι) : P.RootForm (P.root i) (P.root i) * P.pairing j i =
+    P.RootForm (P.root j) (P.root j) * P.pairing i j := by
+  rw [pairing, root', ← smul_eq_mul, ← map_smul, rootForm_self_smul_coroot, map_nsmul,
+    Polarization_apply_apply, pairing, root', ← smul_eq_mul,
+    ← map_smul _ ((P.RootForm (P.root j)) (P.root j)), rootForm_self_smul_coroot, map_nsmul,
+    Polarization_apply_apply]
+  simp [RootForm, mul_comm]
 
 lemma rootForm_self_sum_of_squares (x : M) :
     IsSumSq (P.RootForm x x) :=
@@ -216,20 +228,6 @@ theorem polarization_reflection (i : ι) (x : M) :
   | inv => sorry
 -/
 
-lemma four_smul_copolarization_polarization (P : RootPairing ι R M N) (i : ι) :
-    4 • P.CoPolarization (P.Polarization (P.root i)) =
-    (P.RootForm (P.root i) (P.root i)) •
-      (P.CorootForm (P.coroot i) (P.coroot i)) • P.root i := by
-  rw [show 4 = 2 • 2 by rfl, smul_assoc, ← map_nsmul, ← rootForm_self_smul_coroot, map_smul,
-    rootForm_root_self, corootForm_self_smul_root, smul_comm, CoPolarization_eq]
-
-lemma four_smul_polarization_copolarization (P : RootPairing ι R M N) (i : ι) :
-    4 • P.Polarization (P.CoPolarization (P.coroot i)) =
-    (P.CorootForm (P.coroot i) (P.coroot i)) •
-      (P.RootForm (P.root i) (P.root i)) • P.coroot i := by
-  rw [show 4 = 2 • 2 by rfl, smul_assoc, ← map_nsmul, ← corootForm_self_smul_root, map_smul,
-    rootForm_self_smul_coroot, smul_comm]
-
 end CommRing
 
 section LinearOrderedCommRing
@@ -257,7 +255,7 @@ lemma rootForm_root_self_pos (j : ι) :
   use j
   exact ⟨Finset.mem_univ j, by simp⟩
 
-lemma rootForm_rootPositive : IsRootPositive P P.RootForm where
+instance : IsRootPositive P P.RootForm where
   zero_lt_apply_root i := P.rootForm_root_self_pos i
   symm := P.rootForm_symmetric
   apply_reflection_eq := P.rootForm_reflection_reflection_apply
@@ -265,14 +263,6 @@ lemma rootForm_rootPositive : IsRootPositive P P.RootForm where
 lemma prod_rootForm_root_self_pos :
     0 < ∏ i, P.RootForm (P.root i) (P.root i) :=
   Finset.prod_pos fun i _ => rootForm_root_self_pos P i
-
-lemma prod_rootForm_smul_coroot_in_range (i : ι) :
-    (∏ a : ι, P.RootForm (P.root a) (P.root a)) • P.coroot i ∈ LinearMap.range P.Polarization := by
-  have hdvd : P.RootForm (P.root i) (P.root i) ∣ ∏ a : ι, P.RootForm (P.root a) (P.root a) :=
-    Finset.dvd_prod_of_mem (fun a ↦ P.RootForm (P.root a) (P.root a)) (Finset.mem_univ i)
-  obtain ⟨c, hc⟩ := hdvd
-  rw [hc, mul_comm, mul_smul, rootForm_self_smul_coroot]
-  exact LinearMap.mem_range.mpr (Exists.intro (c • 2 • P.root i) (by simp))
 
 lemma prod_rootForm_smul_coroot_in_range_domRestrict (i : ι) :
     (∏ a : ι, P.RootForm (P.root a) (P.root a)) • P.coroot i ∈
