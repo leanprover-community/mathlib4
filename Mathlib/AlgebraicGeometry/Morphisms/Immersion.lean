@@ -164,11 +164,11 @@ open Limits Scheme.Pullback in
 instance : IsImmersion (pullback.diagonal f) := by
   let 𝒰 := Y.affineCover
   let 𝒱 (i) := (pullback f (𝒰.map i)).affineCover
-  have H : pullback.diagonal f ⁻¹ᵁ diagonalCoverDiagonal f 𝒰 𝒱 = ⊤ :=
-    top_le_iff.mp fun _ _ ↦ range_diagonal_subset_diagonalCoverDiagonal _ _ _ ⟨_, rfl⟩
-  have := isClosedImmersion_diagonal_restrict_diagonalCoverDiagonal f 𝒰 𝒱
-  have : IsImmersion ((pullback.diagonal f ∣_ diagonalCoverDiagonal f 𝒰 𝒱) ≫ Scheme.Opens.ι _) :=
-    inferInstance
+  have H : pullback.diagonal f ⁻¹ᵁ diagonalCoverDiagonalRange f 𝒰 𝒱 = ⊤ :=
+    top_le_iff.mp fun _ _ ↦ range_diagonal_subset_diagonalCoverDiagonalRange _ _ _ ⟨_, rfl⟩
+  have := isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange f 𝒰 𝒱
+  have : IsImmersion ((pullback.diagonal f ∣_
+    diagonalCoverDiagonalRange f 𝒰 𝒱) ≫ Scheme.Opens.ι _) := inferInstance
   rwa [morphismRestrict_ι, H, ← Scheme.topIso_hom,
     MorphismProperty.cancel_left_of_respectsIso (P := @IsImmersion)] at this
 

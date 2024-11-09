@@ -139,10 +139,9 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   refine ⟨i, j, ?_⟩
   simp_rw [diagonalCover_map]
   show x ∈ Set.range _
-  erw [range_map]
-  simp only [comp_coeBase, TopCat.coe_comp, Set.mem_inter_iff, Set.mem_preimage, Set.mem_range,
-    Function.comp_apply, ← H, and_self, ← hz₁, ← hy]
-  exact ⟨w, rfl⟩
+  dsimp only [diagonalCover, OpenCover.bind_obj, openCoverOfLeftRight_obj]
+  rw [range_map]
+  simp [← H, ← hz₁, ← hy]
 
 lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
     Set.range (pullback.diagonal f).base ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by
@@ -157,9 +156,10 @@ lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
   obtain ⟨w : (𝒱 i).obj j, hy : ((𝒱 i).map j).base w = z⟩ := (𝒱 i).covers z
   refine ⟨i, j, (pullback.diagonal ((𝒱 i).map j ≫ pullback.snd f (𝒰.map i))).base w, ?_⟩
   rw [← hz₁, ← hy, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
-  erw [← Scheme.comp_base_apply]
+  dsimp only [diagonalCover, OpenCover.pullbackHom, OpenCover.bind_obj, openCoverOfLeftRight_obj]
+  rw [← Scheme.comp_base_apply]
   congr 4
-  apply pullback.hom_ext <;> simp [diagonalCover_map, OpenCover.pullbackHom]
+  apply pullback.hom_ext <;> simp
 
 lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange
     [∀ i, IsAffine (𝒰.obj i)] [∀ i j, IsAffine ((𝒱 i).obj j)] :
