@@ -406,18 +406,21 @@ def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α) : (∀ a ∈ s,
     rw [rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
     apply hpq.imp <;> rintro rfl <;> simp
 
-theorem forall_mem_pair {P : α → Prop} (a b : α) : (∀ x ∈ s(a, b), P x) ↔ P a ∧ P b := by
+@[simp]
+theorem forall_mem_pair {P : α → Prop} {a b : α} : (∀ x ∈ s(a, b), P x) ↔ P a ∧ P b := by
   simp only [mem_iff, forall_eq_or_imp, forall_eq]
 
 lemma pmap_pair {P : α → Prop} (f : ∀ a, P a → β) (a b : α) (h : P a) (h' : P b) :
-    pmap f s(a, b) ((mem_sat_pair a b).mpr ⟨h, h'⟩) = s(f a h, f b h') := by
-  simp only [pmap]
+    s(f a h, f b h') = pmap f s(a, b) (forall_mem_pair.mpr ⟨h, h'⟩) := rfl
+
+lemma pmap_pair' {P : α → Prop} (f : ∀ a, P a → β) (a b : α) (h : ∀ x ∈ s(a, b), P x) :
+    pmap f s(a, b) h = s(f a (h a (mem_mk_left a b)), f b (h b (mem_mk_right a b))) := rfl
 
 @[simp]
 lemma mem_pmap_iff {P : α → Prop} (f : ∀ a, P a → β) (z : Sym2 α) (h : ∀ a ∈ z, P a) (b : β) :
     b ∈ z.pmap f h ↔ ∃ (a : α) (ha : a ∈ z), b = f a (h a ha) := by
   induction' z with x y
-  rw [pmap_pair _ _ _ (h x (mem_mk_left x y)) (h y (mem_mk_right x y))]
+  rw [pmap_pair' f x y h]
   simp only [mem_iff]
   constructor
   · rintro (rfl | rfl)
