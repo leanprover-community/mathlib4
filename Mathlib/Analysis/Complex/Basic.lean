@@ -574,7 +574,7 @@ theorem hasProd_abs {x : ℂ} (hfx : HasProd f x) : HasProd (fun i ↦ (f i).abs
 theorem multipliable_abs (hf : Multipliable f) : Multipliable (fun i ↦ (f i).abs) :=
   hf.norm
 
-theorem abs_tprod (h : Multipliable f) : (∏' i, f i).abs = ∏' i, abs (f i) :=
+theorem abs_tprod (h : Multipliable f) : (∏' i, f i).abs = ∏' i, (f i).abs :=
   norm_tprod h
 
 end tprod
