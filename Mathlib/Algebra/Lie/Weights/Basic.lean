@@ -211,6 +211,8 @@ structure GenWeight where
   toFun : L → R
   genWeightSpace_ne_bot' : genWeightSpace M toFun ≠ ⊥
 
+@[deprecated (since := "2024-11-09")] alias Weight := GenWeight
+
 namespace GenWeight
 
 instance instFunLike : FunLike (GenWeight R L M) L R where

@@ -53,6 +53,8 @@ class LinearGenWeights [LieAlgebra.IsNilpotent R L] : Prop where
   map_smul : ∀ χ : L → R, genWeightSpace M χ ≠ ⊥ → ∀ (t : R) x, χ (t • x) = t • χ x
   map_lie : ∀ χ : L → R, genWeightSpace M χ ≠ ⊥ → ∀ x y : L, χ ⁅x, y⁆ = 0
 
+@[deprecated (since := "2024-11-09")] alias LinearWeights := LinearGenWeights
+
 namespace GenWeight
 
 variable [LieAlgebra.IsNilpotent R L] [LinearGenWeights R L M] (χ : GenWeight R L M)
