@@ -1,4 +1,4 @@
-name: Maintainer merge (comment)
+name: Maintainer merge
 
 # triggers the action when
 on:
