@@ -1438,7 +1438,7 @@ theorem lift_card_sInf_compl_le (s : Set Ordinal.{u}) :
   exact not_mem_of_lt_csInf' hx
 
 theorem card_sInf_range_compl_le_lift {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    (sInf (range f)ᶜ).card ≤ Cardinal.lift.{v} (#ι) := by
+    (sInf (range f)ᶜ).card ≤ Cardinal.lift.{v} #ι := by
   rw [← Cardinal.lift_le.{max u v + 1}, Cardinal.lift_lift]
   apply (lift_card_sInf_compl_le _).trans
   rw [← Cardinal.lift_id'.{u, max u v + 1} #(range _)]
