@@ -98,12 +98,12 @@ lemma fderivWithin_fderivWithin_eq_of_mem_nhdsWithin (h : t ∈ 𝓝[s] x)
       nhdsWithin_le_iff.2 h (nhdsWithin_mono _ (subset_insert x t) hf.eventually)
     filter_upwards [self_mem_nhdsWithin, this, eventually_eventually_nhdsWithin.2 h]
       with y hy h'y h''y
-    exact fderivWithin_of_mem h''y (hs y hy) (h'y.differentiableWithinAt one_le_two)
+    exact fderivWithin_of_mem_nhdsWithin h''y (hs y hy) (h'y.differentiableWithinAt one_le_two)
   have : fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x := by
     apply Filter.EventuallyEq.fderivWithin_eq A
-    exact fderivWithin_of_mem h (hs x hx) (hf.differentiableWithinAt one_le_two)
+    exact fderivWithin_of_mem_nhdsWithin h (hs x hx) (hf.differentiableWithinAt one_le_two)
   rw [this]
-  apply fderivWithin_of_mem h (hs x hx)
+  apply fderivWithin_of_mem_nhdsWithin h (hs x hx)
   exact (hf.fderivWithin_right (m := 1) ht le_rfl
     (mem_of_mem_nhdsWithin hx h)).differentiableWithinAt le_rfl
 
