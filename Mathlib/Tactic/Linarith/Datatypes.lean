@@ -266,9 +266,9 @@ structure CertificateOracle : Type where
   produceCertificate (hyps : List Comp) (max_var : Nat) : MetaM (Std.HashMap Nat Nat)
 
 /-!
-### Auxiliary function
+### Auxiliary functions
 
-This functions is used by multiple modules, so we put it here for accessibility.
+These functions are used by multiple modules, so we put them here for accessibility.
 -/
 
 /--
