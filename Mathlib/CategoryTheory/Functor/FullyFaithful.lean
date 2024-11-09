@@ -165,6 +165,11 @@ lemma map_bijective (X Y : C) :
     Function.Bijective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   hF.homEquiv.bijective
 
+@[reassoc]
+lemma preimage_comp {X Y Z : C} (f : F.obj X ⟶ F.obj Y) (g : F.obj Y ⟶ F.obj Z) :
+    hF.preimage (f ≫ g) = hF.preimage f ≫ hF.preimage g :=
+  hF.map_injective (by simp)
+
 lemma full : F.Full where
   map_surjective := hF.map_surjective
 
