@@ -47,9 +47,9 @@ instance : IsStableUnderComposition @IsFinite :=
   HasAffineProperty.affineAnd_isStableUnderComposition inferInstance
     RingHom.finite_stableUnderComposition
 
-lemma stableUnderBaseChange : StableUnderBaseChange @IsFinite :=
-  HasAffineProperty.affineAnd_stableUnderBaseChange inferInstance
-    RingHom.finite_respectsIso RingHom.finite_stableUnderBaseChange
+instance : IsStableUnderBaseChange @IsFinite :=
+  HasAffineProperty.affineAnd_isStableUnderBaseChange inferInstance
+    RingHom.finite_respectsIso RingHom.finite_isStableUnderBaseChange
 
 instance : ContainsIdentities @IsFinite :=
   HasAffineProperty.affineAnd_containsIdentities inferInstance
