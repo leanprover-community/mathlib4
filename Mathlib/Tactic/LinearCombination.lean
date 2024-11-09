@@ -46,6 +46,35 @@ inductive Expanded
   /-- A value, equivalently a proof of `c = c`. -/
   | const (c : Syntax.Term)
 
+/-- The handling in `linear_combination` of left- and right-multiplication and of division all
+all three proceed according to the same logic, specified here: given a proof `p` of an (in)equality
+and a constant `c`,
+* if `p` is a proof of an equation, multiply/divide through by `c`;
+* if `p` is a proof of a non-strict inequality, run `positivity` to find a proof that `c` is
+  nonnegative, then multiply/divide through by `c`, invoking the nonnegativity of `c` where needed;
+* if `p` is a proof of a strict inequality, run `positivity` to find a proof that `c` is positive
+  (if possible) or nonnegative (if not), then multiply/divide through by `c`, invoking the
+  positivity or nonnegativity of `c` where needed.
+
+This generic logic takes as a parameter the object `lems`: the four lemmas corresponding to the four
+cases. -/
+def rescale (lems : Ineq.WithStrictness → Name) (ty : Expr) (p c : Term) :
+    Ineq → TermElabM Expanded
+  | eq => do
+    let i := mkIdent <| lems .eq
+    .proof eq <$> ``($i $p $c)
+  | le => do
+    let i := mkIdent <| lems .le
+    let e₂ ← withSynthesizeLight <| Term.elabTerm c ty
+    let hc₂ ← Meta.Positivity.proveNonneg e₂
+    .proof le <$> ``($i $p $(← hc₂.toSyntax))
+  | lt => do
+    let e₂ ← withSynthesizeLight <| Term.elabTerm c ty
+    let (strict, hc₂) ← Meta.Positivity.bestResult e₂
+    let i := mkIdent <| lems (.lt strict)
+    let p' : TermElabM Term := ``($i $p $(← hc₂.toSyntax))
+    if strict then .proof lt <$> p' else .proof le <$> p'
+
 /--
 Performs macro expansion of a linear combination expression,
 using `+`/`-`/`*`/`/` on equations and values.
@@ -64,7 +93,7 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ + $c₂)
     | .proof rel₁ p₁, .proof rel₂ p₂ =>
-      let (rel, n) := rel₁.addRelRelData rel₂
+      let (rel, n) := Ineq.addRelRelData rel₁ rel₂
       .proof rel <$> ``($(mkIdent n) $p₁ $p₂)
     | .proof rel p, .const c | .const c, .proof rel p =>
       logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
@@ -82,7 +111,7 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
         from the term"
       .proof rel <$> ``(Eq.symm $p)
     | .proof rel₁ p₁, .proof eq p₂ =>
-      let (rel, n) := rel₁.addRelRelData eq
+      let (rel, n) := Ineq.addRelRelData rel₁ eq
       .proof rel <$> ``($(mkIdent n) $p₁ (Eq.symm $p₂))
     | .proof _ _, .proof _ _ =>
       throwError "coefficients of inequalities in 'linear_combination' must be nonnegative"
@@ -95,53 +124,14 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
   | `($e₁ *%$tk $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ * $c₂)
-    | .proof rel₁ p₁, .const c₂ =>
-      match rel₁ with
-      | eq => .proof eq <$> ``(mul_eq_const $p₁ $c₂)
-      | le =>
-        let e₂ ← withSynthesizeLight <| Term.elabTerm c₂ ty
-        let hc₂ ← Meta.Positivity.proveNonneg e₂
-        .proof le <$> ``(mul_le_const $p₁ $(← hc₂.toSyntax))
-      | _ =>
-        let e₂ ← withSynthesizeLight <| Term.elabTerm c₂ ty
-        let (strict, hc₂) ← Meta.Positivity.bestResult e₂
-        if strict then
-          .proof lt <$> ``(mul_lt_const $p₁ $(← hc₂.toSyntax))
-        else
-          .proof le <$> ``(mul_lt_const_weak $p₁ $(← hc₂.toSyntax))
-    | .const c₁, .proof rel₂ p₂ =>
-      match rel₂ with
-      | eq => .proof eq <$> ``(mul_const_eq $p₂ $c₁)
-      | le =>
-        let e₁ ← withSynthesizeLight <| Term.elabTerm c₁ ty
-        let hc₁ ← Meta.Positivity.proveNonneg e₁
-        .proof le <$> ``(mul_const_le $p₂ $(← hc₁.toSyntax))
-      | _ =>
-        let e₁ ← withSynthesizeLight <| Term.elabTerm c₁ ty
-        let (strict, hc₁) ← Meta.Positivity.bestResult e₁
-        if strict then
-          .proof lt <$> ``(mul_const_lt $p₂ $(← hc₁.toSyntax))
-        else
-          .proof le <$> ``(mul_const_lt_weak $p₂ $(← hc₁.toSyntax))
+    | .proof rel₁ p₁, .const c₂ => rescale mulRelConstData ty p₁ c₂ rel₁
+    | .const c₁, .proof rel₂ p₂ => rescale mulConstRelData ty p₂ c₁ rel₂
     | .proof _ _, .proof _ _ =>
       throwErrorAt tk "'linear_combination' supports only linear operations"
   | `($e₁ /%$tk $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ / $c₂)
-    | .proof rel₁ p₁, .const c₂ =>
-      match rel₁ with
-      | eq => .proof eq <$> ``(div_eq_const $p₁ $c₂)
-      | le =>
-        let e₂ ← withSynthesizeLight <| Term.elabTerm c₂ ty
-        let hc₂ ← Meta.Positivity.proveNonneg e₂
-        .proof le <$> ``(div_le_const $p₁ $(← hc₂.toSyntax))
-      | _ =>
-        let e₂ ← withSynthesizeLight <| Term.elabTerm c₂ ty
-        let (strict, hc₂) ← Meta.Positivity.bestResult e₂
-        if strict then
-          .proof lt <$> ``(div_lt_const $p₁ $(← hc₂.toSyntax))
-        else
-          .proof le <$> ``(div_lt_const_weak $p₁ $(← hc₂.toSyntax))
+    | .proof rel₁ p₁, .const c₂ => rescale divRelConstData ty p₁ c₂ rel₁
     | _, .proof _ _ => throwErrorAt tk "'linear_combination' supports only linear operations"
   | e =>
     -- We have the expected type from the goal, so we can fully synthesize this leaf node.
@@ -171,7 +161,7 @@ def elabLinearCombination (tk : Syntax)
     | .proof hypRel p => pure (hypRel, p)
   -- look up the lemma for the central `refine` in `linear_combination`
   let (reduceLem, newGoalRel) : Name × Ineq := ← do
-    match hypRel.relImpRelData goalRel with
+    match Ineq.relImpRelData hypRel goalRel with
     | none => throwError "cannot prove an equality from inequality hypotheses"
     | some n => pure n
   -- build the term for the central `refine` in `linear_combination`

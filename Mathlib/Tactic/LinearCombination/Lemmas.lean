@@ -151,17 +151,51 @@ def addRelRelData : Ineq → Ineq → Ineq × Name
   | lt, le => (lt, ``add_lt_add_of_lt_of_le)
   | lt, lt => (lt, ``add_lt_add)
 
+/-- Finite inductive type extending `Mathlib.Ineq`: a type of inequality (`eq`, `le` or `lt`),
+together with, in the case of `lt`, a boolean, typically representing the strictness (< or ≤) of
+some other inequality. -/
+protected inductive WithStrictness : Type
+  | eq : Ineq.WithStrictness
+  | le : Ineq.WithStrictness
+  | lt (strict : Bool) : Ineq.WithStrictness
+
+/-- Given an (in)equality, look up the lemma to left-multiply it by a constant.  If relevant, also
+take into account the degree of positivity which can be proved of the constant: strict or
+non-strict. -/
+def mulRelConstData : Ineq.WithStrictness → Name
+  | .eq => ``mul_eq_const
+  | .le => ``mul_le_const
+  | .lt true => ``mul_lt_const
+  | .lt false => ``mul_lt_const_weak
+
+/-- Given an (in)equality, look up the lemma to right-multiply it by a constant.  If relevant, also
+take into account the degree of positivity which can be proved of the constant: strict or
+non-strict. -/
+def mulConstRelData : Ineq.WithStrictness → Name
+  | .eq => ``mul_const_eq
+  | .le => ``mul_const_le
+  | .lt true => ``mul_const_lt
+  | .lt false => ``mul_const_lt_weak
+
+/-- Given an (in)equality, look up the lemma to divide it by a constant.  If relevant, also take
+into account the degree of positivity which can be proved of the constant: strict or non-strict. -/
+def divRelConstData : Ineq.WithStrictness → Name
+  | .eq => ``div_eq_const
+  | .le => ``div_le_const
+  | .lt true => ``div_lt_const
+  | .lt false => ``div_lt_const_weak
+
 /-- Given two (in)equalities `P` and `Q`, look up the lemma to deduce `Q` from `P`, and the relation
 appearing in the side condition produced by this lemma. -/
 def relImpRelData : Ineq → Ineq → Option (Name × Ineq)
   | eq, eq => some (``eq_of_eq, eq)
-  | eq, le => some (``Mathlib.Tactic.LinearCombination.le_of_eq, le)
+  | eq, le => some (``Tactic.LinearCombination.le_of_eq, le)
   | eq, lt => some (``lt_of_eq, lt)
   | le, eq => none
   | le, le => some (``le_of_le, le)
   | le, lt => some (``lt_of_le, lt)
   | lt, eq => none
-  | lt, le => some (``Mathlib.Tactic.LinearCombination.le_of_lt, le)
+  | lt, le => some (``Tactic.LinearCombination.le_of_lt, le)
   | lt, lt => some (``lt_of_lt, le)
 
 /-- Given an (in)equality, look up the lemma to move everything to the LHS. -/
