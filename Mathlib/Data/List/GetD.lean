@@ -52,7 +52,7 @@ theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
 theorem getD_reverse {l : List α} (i) (h : i < length l) :
     getD l.reverse i = getD l (l.length - 1 - i) := by
   funext a
-  rwa [List.getD_eq_get?, List.get?_reverse, ← List.getD_eq_get?]
+  rwa [List.getD_eq_getElem?_getD, List.getElem?_reverse, ← List.getD_eq_getElem?_getD]
 
 /-- An empty list can always be decidably checked for the presence of an element.
 Not an instance because it would clash with `DecidableEq α`. -/
@@ -74,11 +74,9 @@ theorem getElem?_getD_replicate_default_eq (r n : ℕ) : (replicate r d)[n]?.get
 @[deprecated (since := "2024-06-12")]
 alias getD_replicate_default_eq := getElem?_getD_replicate_default_eq
 
-@[simp]
 theorem getD_replicate {y i n} (h : i < n) :
     getD (replicate n x) i y = x := by
-  rw [getD_eq_get]
-  rw [get_replicate]
+  rw [getD_eq_getElem,  getElem_replicate]
   rwa [length_replicate]
 
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :
