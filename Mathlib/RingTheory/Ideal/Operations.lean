@@ -413,13 +413,13 @@ instance : (I ^ n).IsTwoSided :=
 protected theorem mul_one : I * 1 = I :=
   mul_le_right.antisymm fun i hi ↦ mul_one i ▸ mul_mem_mul hi (one_eq_top (R := R) ▸ trivial)
 
-theorem pow_add : I ^ (m + n) = I ^ m * I ^ n := by
+protected theorem pow_add : I ^ (m + n) = I ^ m * I ^ n := by
   obtain rfl | h := eq_or_ne n 0
   · rw [add_zero, Submodule.pow_zero, IsTwoSided.mul_one]
   · exact Submodule.pow_add _ h
 
-theorem pow_succ : I ^ (n + 1) = I * I ^ n := by
-  rw [add_comm, pow_add, Submodule.pow_one]
+protected theorem pow_succ : I ^ (n + 1) = I * I ^ n := by
+  rw [add_comm, IsTwoSided.pow_add, Submodule.pow_one]
 
 end IsTwoSided
 
