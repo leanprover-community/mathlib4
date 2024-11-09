@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.SetTheory.Cardinal.Aleph
 import Mathlib.SetTheory.Ordinal.Principal
-import Mathlib.Tactic.Linarith
 
 /-!
 # Cardinal arithmetic
@@ -455,30 +454,6 @@ alias add_one_le_add_one_iff_of_lt_aleph_0 := add_one_le_add_one_iff
 
 end aleph
 
-/-! ### Properties about `omega` -/
-
-theorem principal_add_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· + ·) c.ord := by
-  intro a b ha hb
-  rw [lt_ord, card_add] at *
-  exact add_lt_of_lt hc ha hb
-
-theorem principal_add_omega (o : Ordinal) : Principal (· + ·) (ω_ o) := by
-  rw [← ord_aleph]
-  exact principal_add_ord (aleph0_le_aleph o)
-
-@[deprecated principal_add_omega (since := "2024-11-08")]
-theorem principal_add_aleph (o : Ordinal) : Principal (· + ·) (ℵ_ o).ord :=
-  principal_add_ord <| aleph0_le_aleph o
-
-theorem principal_mul_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· * ·) c.ord := by
-  intro a b ha hb
-  rw [lt_ord, card_mul] at *
-  exact mul_lt_of_lt hc ha hb
-
-theorem principal_mul_omega (o : Ordinal) : Principal (· * ·) (ω_ o) := by
-  rw [← ord_aleph]
-  exact principal_mul_ord (aleph0_le_aleph o)
-
 /-! ### Properties about `power` -/
 section power
 
@@ -864,6 +839,40 @@ theorem card_iSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Ordinal.{u} → Or
   convert ← sum_le_iSup_lift _
   · exact mk_toType o
   · exact (enumIsoToType o).symm.iSup_comp (g := fun x ↦ (f x.1).card)
+
+/-! ### Initial ordinals are principal -/
+
+theorem principal_add_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· + ·) c.ord := by
+  intro a b ha hb
+  rw [lt_ord, card_add] at *
+  exact add_lt_of_lt hc ha hb
+
+theorem IsInitial.principal_add {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) :
+    Principal (· + ·) o := by
+  rw [← h.ord_card]
+  apply principal_add_ord
+  rwa [aleph0_le_card]
+
+theorem principal_add_omega (o : Ordinal) : Principal (· + ·) (ω_ o) :=
+  (isInitial_omega o).principal_add (omega0_le_omega o)
+
+theorem principal_mul_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· * ·) c.ord := by
+  intro a b ha hb
+  rw [lt_ord, card_mul] at *
+  exact mul_lt_of_lt hc ha hb
+
+theorem IsInitial.principal_mul {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) :
+    Principal (· * ·) o := by
+  rw [← h.ord_card]
+  apply principal_mul_ord
+  rwa [aleph0_le_card]
+
+theorem principal_mul_omega (o : Ordinal) : Principal (· * ·) (ω_ o) :=
+  (isInitial_omega o).principal_mul (omega0_le_omega o)
+
+@[deprecated principal_add_omega (since := "2024-11-08")]
+theorem _root_.Cardinal.principal_add_aleph (o : Ordinal) : Principal (· + ·) (ℵ_ o).ord :=
+  principal_add_ord <| aleph0_le_aleph o
 
 end Ordinal
 
