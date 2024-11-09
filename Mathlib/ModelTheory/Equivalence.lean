@@ -79,26 +79,32 @@ theorem models_sentence_imp {φ ψ : L.Sentence} {M : Type*} [Nonempty M]
     M ⊨ φ → M ⊨ ψ :=
   h.realize_imp
 
+@[gcongr]
 protected theorem not {φ ψ : L.BoundedFormula α n} (h : φ ⟹[T] ψ) :
     ψ.not ⟹[T] φ.not :=
   fun _ _ _ h1 h2 => h1 (h.realize_bd_imp h2)
 
+@[gcongr]
 protected theorem all {φ ψ : L.BoundedFormula α (n + 1)}
     (h : φ ⟹[T] ψ) : φ.all ⟹[T] ψ.all :=
   fun _ _ _ => forall_imp fun _ => h.realize_bd_imp
 
+@[gcongr]
 protected theorem ex {φ ψ : L.BoundedFormula α (n + 1)} (h : φ ⟹[T] ψ) :
     φ.ex ⟹[T] ψ.ex :=
   h.not.all.not
 
+@[gcongr]
 theorem imp_mono {φ ψ φ' ψ' : L.BoundedFormula α n} (h : ψ ⟹[T] φ) (h' : φ' ⟹[T] ψ') :
     (φ.imp φ') ⟹[T] (ψ.imp ψ') :=
   fun _ _ _ h1 h2 => h'.realize_bd_imp (h1 (h.realize_bd_imp h2))
 
+@[gcongr]
 theorem sup_mono {φ ψ φ' ψ' : L.BoundedFormula α n} (h : φ ⟹[T] ψ) (h' : φ' ⟹[T] ψ') :
     (φ ⊔ φ') ⟹[T] (ψ ⊔ ψ') :=
   h.not.imp_mono h'
 
+@[gcongr]
 theorem inf_mono {φ ψ φ' ψ' : L.BoundedFormula α n} (h : φ ⟹[T] ψ) (h' : φ' ⟹[T] ψ') :
     (φ ⊓ φ') ⟹[T] (ψ ⊓ ψ') :=
   (h.imp_mono h'.not).not
@@ -210,27 +216,33 @@ theorem models_sentence_iff {φ ψ : L.Sentence} {M : Type*} [Nonempty M]
     M ⊨ φ ↔ M ⊨ ψ :=
   h.realize_iff
 
+@[gcongr]
 protected theorem all {φ ψ : L.BoundedFormula α (n + 1)}
     (h : φ ⇔[T] ψ) : φ.all ⇔[T] ψ.all :=
   ⟨h.1.all, h.2.all⟩
 
+@[gcongr]
 protected theorem ex {φ ψ : L.BoundedFormula α (n + 1)} (h : φ ⇔[T] ψ) :
     φ.ex ⇔[T] ψ.ex :=
   ⟨h.1.ex, h.2.ex⟩
 
+@[gcongr]
 protected theorem not {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
     φ.not ⇔[T] ψ.not :=
   ⟨h.2.not, h.1.not⟩
 
+@[gcongr]
 protected theorem imp_congr {φ ψ φ' ψ' : L.BoundedFormula α n} (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
     (φ.imp φ') ⇔[T] (ψ.imp ψ') :=
   ⟨h.2.imp_mono h'.1, h.1.imp_mono h'.2⟩
 
+@[gcongr]
 protected theorem sup_congr {φ ψ φ' ψ' : L.BoundedFormula α n}
     (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
     (φ ⊔ φ') ⇔[T] (ψ ⊔ ψ') :=
   ⟨h.1.sup_mono h'.1, h.2.sup_mono h'.2⟩
 
+@[gcongr]
 protected theorem inf_congr {φ ψ φ' ψ' : L.BoundedFormula α n}
     (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
     (φ ⊓ φ') ⇔[T] (ψ ⊓ ψ') :=
