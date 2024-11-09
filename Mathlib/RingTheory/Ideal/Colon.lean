@@ -25,6 +25,8 @@ variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
 def colon (N P : Submodule R M) : Ideal R :=
   annihilator (P.map N.mkQ)
 
+instance : (N.colon P).IsTwoSided := inferInstanceAs (annihilator _).IsTwoSided
+
 theorem mem_colon {r} : r ∈ N.colon P ↔ ∀ p ∈ P, r • p ∈ N :=
   mem_annihilator.trans
      ⟨fun H p hp => (Quotient.mk_eq_zero N).1 (H (Quotient.mk p) (mem_map_of_mem hp)),
