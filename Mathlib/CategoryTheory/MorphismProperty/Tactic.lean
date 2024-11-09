@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Calle Sönne
 -/
 import Mathlib.CategoryTheory.MorphismProperty.Basic
-import Lean
 
 /-!
 # The `addMorphismPropertyInstances` command
@@ -30,6 +29,7 @@ structure Config where
 /-- Function elaborating `Config` -/
 declare_command_config_elab elabConfig Config
 
+/-- The syntax for the `morphismPropertyInstance` attribute. -/
 syntax (name := morphismPropertyInstance) "morphismPropertyInstance" Parser.Tactic.optConfig : attr
 
 /--
