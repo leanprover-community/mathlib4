@@ -136,13 +136,13 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
-end Mathlib.Tactic.LinearCombination
+end Tactic.LinearCombination
 
 /-! ### Lookup functions for lemmas by operation and relation(s) -/
 
-open Mathlib.Tactic.LinearCombination
+open Tactic.LinearCombination
 
-namespace Mathlib.Ineq
+namespace Ineq
 
 /-- Given two (in)equalities, look up the lemma to add them and the relation in the result. -/
 def addRelRelData : Ineq → Ineq → Ineq × Name
