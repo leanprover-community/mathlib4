@@ -650,7 +650,7 @@ lemma IsReflexive.of_split (i : N →ₗ[R] M) (s : M →ₗ[R] N) (H : s ∘ₗ
     .of_comp (g := s) <| (surjective_of_comp_eq_id i.dualMap.dualMap s.dualMap.dualMap <|
       congr_arg (dualMap ∘ dualMap) H).comp (bijective_dual_eval R M).2⟩
 
-instance [Module.Finite R N] [Projective R N] : IsReflexive R N :=
+instance (priority := 900) [Module.Finite R N] [Projective R N] : IsReflexive R N :=
   have ⟨_, f, hf⟩ := Finite.exists_fin' R N
   have ⟨g, H⟩ := projective_lifting_property f .id hf
   .of_split g f H
