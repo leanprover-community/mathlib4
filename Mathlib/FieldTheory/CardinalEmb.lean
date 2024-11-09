@@ -10,12 +10,12 @@ import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.DirectedInverseSystem
 
 /-!
-# Number of embeddings of an infinite algebraic field extension into the algebraic closure
+# Number of embeddings of an algebraic extension of infinite separable degree
 
-We show that if `E/F` is an infinite-dimensional algebraic extension, then
+We show that if `E/F` is an algebraic extension of infinite separable degree, then
 `#(Field.Emb F E) = 2 ^ Field.sepDegree F E`. If `E/F` is moreover separable, then
-`#(Field.Emb F E) = 2 ^ Module.rank F E`. This is in contrast to the finite-dimensional case, where
-`#(Field.Emb F E) = Module.rank F E`.
+`#(Field.Emb F E) = 2 ^ Module.rank F E`. This is in contrast to the case of finite
+separable degree, where `#(Field.Emb F E) = Module.rank F E`.
 
 We use a transfinite recursive construction that is fairly standard in set theory, but the author
 has not seen similar arguments elsewhere in mathlib, and some parts proved tricky to formalize.
