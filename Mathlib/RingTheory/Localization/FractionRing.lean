@@ -271,6 +271,10 @@ lemma ringEquivOfRingEquiv_algebraMap
 @[deprecated (since := "2024-11-05")]
 alias fieldEquivOfRingEquiv_algebraMap := ringEquivOfRingEquiv_algebraMap
 
+@[simp]
+lemma ringEquivOfRingEquiv_symm :
+    (ringEquivOfRingEquiv h : K ≃+* L).symm = ringEquivOfRingEquiv h.symm := rfl
+
 end ringEquivOfRingEquiv
 
 section algEquivOfAlgEquiv
@@ -290,6 +294,10 @@ noncomputable def algEquivOfAlgEquiv : K ≃ₐ[R] L :=
 lemma algEquivOfAlgEquiv_algebraMap
     (a : A) : algEquivOfAlgEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
   simp [algEquivOfAlgEquiv]
+
+@[simp]
+lemma algEquivOfAlgEquiv_symm :
+    (algEquivOfAlgEquiv h : K ≃ₐ[R] L).symm = algEquivOfAlgEquiv h.symm := rfl
 
 end algEquivOfAlgEquiv
 
