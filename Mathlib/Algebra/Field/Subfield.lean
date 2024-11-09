@@ -491,6 +491,13 @@ theorem fieldRange_eq_map : f.fieldRange = Subfield.map f ⊤ := by
 theorem map_fieldRange : f.fieldRange.map g = (g.comp f).fieldRange := by
   simpa only [fieldRange_eq_map] using (⊤ : Subfield K).map_map g f
 
+theorem mem_fieldRange_self (x : K) : f x ∈ f.fieldRange :=
+  exists_apply_eq_apply _ _
+
+theorem fieldRange_eq_top_iff {f : K →+* L} :
+    f.fieldRange = ⊤ ↔ Function.Surjective f :=
+  SetLike.ext'_iff.trans Set.range_iff_surjective
+
 /-- The range of a morphism of fields is a fintype, if the domain is a fintype.
 
 Note that this instance can cause a diamond with `Subtype.Fintype` if `L` is also a fintype. -/
@@ -505,7 +512,7 @@ namespace Subfield
 
 
 /-- The inf of two subfields is their intersection. -/
-instance : Inf (Subfield K) :=
+instance : Min (Subfield K) :=
   ⟨fun s t =>
     { s.toSubring ⊓ t.toSubring with
       inv_mem' := fun _ hx =>
@@ -616,14 +623,22 @@ theorem closure_eq_of_le {s : Set K} {t : Subfield K} (h₁ : s ⊆ t) (h₂ : t
 of `s`, and is preserved under addition, negation, and multiplication, then `p` holds for all
 elements of the closure of `s`. -/
 @[elab_as_elim]
-theorem closure_induction {s : Set K} {p : K → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
-    (one : p 1) (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x, p x → p (-x))
-    (inv : ∀ x, p x → p x⁻¹) (mul : ∀ x y, p x → p y → p (x * y)) : p x := by
+theorem closure_induction {s : Set K} {p : ∀ x ∈ closure s, Prop}
+    (mem : ∀ x hx, p x (subset_closure hx))
+    (one : p 1 (one_mem _)) (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (neg : ∀ x hx, p x hx → p (-x) (neg_mem hx)) (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx))
+    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    {x} (h : x ∈ closure s) : p x h :=
     letI : Subfield K :=
-      ⟨⟨⟨⟨⟨p, by intro _ _; exact mul _ _⟩, one⟩,
-        by intro _ _; exact add _ _, @add_neg_cancel K _ 1 ▸ add _ _ one (neg _ one)⟩,
-          by intro _; exact neg _⟩, inv⟩
-    exact (closure_le (t := this)).2 mem h
+      { carrier := {x | ∃ hx, p x hx}
+        mul_mem' := by rintro _ _ ⟨_, hx⟩ ⟨_, hy⟩; exact ⟨_, mul _ _ _ _ hx hy⟩
+        one_mem' := ⟨_, one⟩
+        add_mem' := by rintro _ _ ⟨_, hx⟩ ⟨_, hy⟩; exact ⟨_, add _ _ _ _ hx hy⟩
+        zero_mem' := ⟨zero_mem _, by
+          simp_rw [← @add_neg_cancel K _ 1]; exact add _ _ _ _ one (neg _ _ one)⟩
+        neg_mem' := by rintro _ ⟨_, hx⟩; exact ⟨_, neg _ _ hx⟩
+        inv_mem' := by rintro _ ⟨_, hx⟩; exact ⟨_, inv _ _ hx⟩ }
+    ((closure_le (t := this)).2 (fun x hx ↦ ⟨_, mem x hx⟩) h).2
 
 variable (K)
 
