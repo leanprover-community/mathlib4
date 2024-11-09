@@ -504,11 +504,14 @@ lemma ker_quotientMap_mk {I J : Ideal R} [I.IsTwoSided] [J.IsTwoSided] :
     Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective,
     ← RingHom.ker_eq_comap_bot, Ideal.mk_ker, Ideal.map_sup, Ideal.map_quotient_self, bot_sup_eq]
 
+section quotientEquiv
+
+variable (I : Ideal R) (J : Ideal S) [I.IsTwoSided] [J.IsTwoSided]
+    (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S))
+
 /-- The ring equiv `R/I ≃+* S/J` induced by a ring equiv `f : R ≃+* S`, where `J = f(I)`. -/
 @[simps]
-def quotientEquiv (I : Ideal R) (J : Ideal S) [I.IsTwoSided] [J.IsTwoSided]
-    (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S)) :
-    R ⧸ I ≃+* S ⧸ J where
+def quotientEquiv : R ⧸ I ≃+* S ⧸ J where
   __ := quotientMap J f (hIJ ▸ le_comap_map)
   invFun := quotientMap I f.symm (hIJ ▸ (map_comap_of_equiv f).le)
   left_inv := by
@@ -522,16 +525,16 @@ def quotientEquiv (I : Ideal R) (J : Ideal S) [I.IsTwoSided] [J.IsTwoSided]
 
 /- Porting note: removed simp. LHS simplified. Slightly different version of the simplified
 form closed this and was itself closed by simp -/
-theorem quotientEquiv_mk (I : Ideal R) (J : Ideal S) [I.IsTwoSided] [J.IsTwoSided]
-    (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S))
-    (x : R) : quotientEquiv I J f hIJ (Ideal.Quotient.mk I x) = Ideal.Quotient.mk J (f x) :=
+theorem quotientEquiv_mk (x : R) :
+    quotientEquiv I J f hIJ (Ideal.Quotient.mk I x) = Ideal.Quotient.mk J (f x) :=
   rfl
 
 @[simp]
-theorem quotientEquiv_symm_mk (I : Ideal R) (J : Ideal S) [I.IsTwoSided] [J.IsTwoSided]
-    (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S)) (x : S) :
+theorem quotientEquiv_symm_mk (x : S) :
     (quotientEquiv I J f hIJ).symm (Ideal.Quotient.mk J x) = Ideal.Quotient.mk I (f.symm x) :=
   rfl
+
+end quotientEquiv
 
 /-- `H` and `h` are kept as separate hypothesis since H is used in constructing the quotient map. -/
 theorem quotientMap_injective' {J : Ideal R} {I : Ideal S} [I.IsTwoSided] [J.IsTwoSided]
@@ -609,7 +612,7 @@ end
 instance (priority := 100) quotientAlgebra {R} [CommRing R] {I : Ideal A} [I.IsTwoSided]
     [Algebra R A] : Algebra (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) where
   toRingHom := quotientMap I (algebraMap R A) le_rfl
-  smul := Quotient.lift₂ (fun r a ↦ ⟦r • a⟧) fun r₁ a₁ r₂ a₂ hr ha ↦ Quotient.sound <| by
+  smul := Quotient.lift₂ (⟦· • ·⟧) fun r₁ a₁ r₂ a₂ hr ha ↦ Quotient.sound <| by
     apply (Submodule.quotientRel_def _).mp at hr
     apply (Submodule.quotientRel_def _).mp at ha
     rw [mem_comap, map_sub] at hr
