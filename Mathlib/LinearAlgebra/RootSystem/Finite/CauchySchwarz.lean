@@ -3,8 +3,8 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+import Mathlib.LinearAlgebra.RootSystem.Basic
 
 /-!
 # The Cauchy-Schwarz inequality for modules
@@ -118,7 +118,6 @@ lemma coxeterWeight_le_4 (i j : ι) : P.coxeterWeight i j ≤ 4 := by
       P.rootForm_self_non_neg (P.root i) (P.root j)) (rootForm_root_self_pos P i)
   linarith
 
-/-!
 lemma coxeterWeight_Icc (i j : ι) (hP : P.IsCrystallographic) (hO : ¬ P.IsOrthogonal i j)
     (h : LinearIndependent R ![P.root i, P.root j]) :
     P.coxeterWeight i j = 1 ∨ P.coxeterWeight i j = 2 ∨ P.coxeterWeight i j = 3 := by
@@ -133,9 +132,22 @@ lemma coxeterWeight_Icc (i j : ι) (hP : P.IsCrystallographic) (hO : ¬ P.IsOrth
   have ht : P.coxeterWeight i j = ij * ji := Eq.symm (Mathlib.Tactic.Ring.mul_congr hij hji rfl)
   have hn4 : P.coxeterWeight i j ≠ 4 := by
     by_contra hc
-    have : Module.IsReflexive R M := by exact P.toPerfectPairing.reflexive_left
-    --have := P.infinite_of_linearly_independent_coxeterWeight_four i j h hc --needs NoZeroSMul ℤ M
-    sorry
--/
+    have : Module.IsReflexive R M := P.toPerfectPairing.reflexive_left
+    have : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
+    have := P.infinite_of_linearly_independent_coxeterWeight_four i j h hc --needs NoZeroSMul ℤ M
+    simp_all only [not_or, ← isEmpty_fintype, isEmpty_iff]
+  have : ∃ (n : ℕ), P.coxeterWeight i j = n := by
+    have : (0 : ℤ) ≤ ij * ji := by
+      rw [ht, ← Int.cast_mul, ← Int.cast_zero, Int.cast_le] at hn
+      exact hn
+    rw [ht, ← Int.cast_mul]
+    lift (ij * ji) to ℕ with k
+    · exact this
+    · use k
+      norm_cast
+  obtain ⟨n, hcn⟩ := this
+  simp only [hcn] at *
+  norm_cast at *
+  omega
 
 end RootPairing
