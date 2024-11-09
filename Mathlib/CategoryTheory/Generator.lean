@@ -51,7 +51,7 @@ and `HasCodetector` on categories and prove analogous results for these.
 -/
 
 
-universe w v₁ v₂ v₃ u₁ u₂ u₃
+universe w v₁ v₂ u₁ u₂
 
 open CategoryTheory.Limits Opposite
 
@@ -633,54 +633,49 @@ section Choice
 variable (C)
 
 /--
-Given a category `C` that has a separator (`HasSeparator C`), `separator` is an arbitrarily
+Given a category `C` that has a separator (`HasSeparator C`), `separator C` is an arbitrarily
 chosen separator of `C`.
 -/
-noncomputable def separator [HasSeparator C] : C :=
-  Classical.indefiniteDescription _ HasSeparator.hasSeparator |>.1
-
+noncomputable def separator [HasSeparator C] : C := HasSeparator.hasSeparator.choose
 
 /--
-Given a category `C` that has a coseparator (`HasCoseparator C`), `coseparator` is an arbitrarily
+Given a category `C` that has a coseparator (`HasCoseparator C`), `coseparator C` is an arbitrarily
 chosen coseparator of `C`.
 -/
-noncomputable def coseparator [HasCoseparator C] : C :=
-  Classical.indefiniteDescription _ HasCoseparator.hasCoseparator |>.1
+noncomputable def coseparator [HasCoseparator C] : C := HasCoseparator.hasCoseparator.choose
 
 /--
-Given a category `C` that has a detector (`HasDetector C`), `detector` is an arbitrarily
+Given a category `C` that has a detector (`HasDetector C`), `detector C` is an arbitrarily
 chosen detector of `C`.
 -/
-noncomputable def detector [HasDetector C] : C :=
-  Classical.indefiniteDescription _ HasDetector.hasDetector |>.1
+noncomputable def detector [HasDetector C] : C := HasDetector.hasDetector.choose
 
 /--
-Given a category `C` that has a codetector (`HasCodetector C`), `codetector` is an arbitrarily
+Given a category `C` that has a codetector (`HasCodetector C`), `codetector C` is an arbitrarily
 chosen codetector of `C`.
 -/
-noncomputable def codetector [HasCodetector C] : C :=
-  Classical.indefiniteDescription _ HasCodetector.hasCodetector |>.1
+noncomputable def codetector [HasCodetector C] : C := HasCodetector.hasCodetector.choose
 
 theorem isSeparator_separator [HasSeparator C] : IsSeparator (separator C) :=
-  Classical.indefiniteDescription _ HasSeparator.hasSeparator |>.2
+  HasSeparator.hasSeparator.choose_spec
 
 theorem isDetector_separator [Balanced C] [HasSeparator C] : IsDetector (separator C) :=
   isSeparator_separator C |>.isDetector
 
 theorem isCoseparator_coseparator [HasCoseparator C] : IsCoseparator (coseparator C) :=
-  Classical.indefiniteDescription _ HasCoseparator.hasCoseparator |>.2
+  HasCoseparator.hasCoseparator.choose_spec
 
 theorem isCodetector_coseparator [Balanced C] [HasCoseparator C] : IsCodetector (coseparator C) :=
   isCoseparator_coseparator C |>.isCodetector
 
 theorem isDetector_detector [HasDetector C] : IsDetector (detector C) :=
-  Classical.indefiniteDescription _ HasDetector.hasDetector |>.2
+  HasDetector.hasDetector.choose_spec
 
 theorem isSeparator_detector [HasEqualizers C] [HasDetector C] : IsSeparator (detector C) :=
   isDetector_detector C |>.isSeparator
 
 theorem isCodetector_codetector [HasCodetector C] : IsCodetector (codetector C) :=
-  Classical.indefiniteDescription _ HasCodetector.hasCodetector |>.2
+  HasCodetector.hasCodetector.choose_spec
 
 theorem isCoseparator_codetector [HasCoequalizers C] [HasCodetector C] :
     IsCoseparator (codetector C) := isCodetector_codetector C |>.isCoseparator
