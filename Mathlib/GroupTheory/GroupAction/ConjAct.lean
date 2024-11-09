@@ -261,6 +261,16 @@ theorem stabilizer_eq_centralizer (g : G) :
   le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ => mul_inv_eq_iff_eq_mul.mp)) fun _ h =>
     mul_inv_eq_of_eq_mul (h g (mem_zpowers g)).symm
 
+theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
+    Subgroup.centralizer {g} = Subgroup.comap ConjAct.toConjAct.toMonoidHom
+      (MulAction.stabilizer (ConjAct G) g) := by
+  ext k
+-- NOTE: `Subgroup.mem_centralizer_iff` should probably be stated
+-- with the equality in the other direction
+  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq, ConjAct.toConjAct_smul]
+  rw [eq_comm]
+  exact Iff.symm mul_inv_eq_iff_eq_mul
+
 /-- As normal subgroups are closed under conjugation, they inherit the conjugation action
   of the underlying group. -/
 instance Subgroup.conjAction {H : Subgroup G} [hH : H.Normal] : SMul (ConjAct G) H :=
