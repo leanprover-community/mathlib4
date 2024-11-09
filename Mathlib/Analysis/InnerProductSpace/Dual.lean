@@ -99,11 +99,8 @@ lemma norm_sub_eq_norm (x y : E) (h : ‖y‖ = 0) : ‖x - y‖ = ‖x‖ := by
   · simpa [h] using norm_add_le (x - y) y
 
 /-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
-lemma nullSubmodule_le_ker_toDualMap (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) := by
-  intro y hy
-  refine LinearMap.mem_ker.mpr ?_
-  simp only [toDualMap_apply]
-  exact inner_nullSubmodule_right_eq_zero 𝕜 E x y hy
+lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) :=
+  fun _ ↦ inner_eq_zero_of_right 𝕜 x
 
 /-- The kernel of the map `x ↦ ⟪x, ⬝⟫` includes the null space. -/
 lemma nullSubmodule_le_ker_toDualMap' : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E) := by
