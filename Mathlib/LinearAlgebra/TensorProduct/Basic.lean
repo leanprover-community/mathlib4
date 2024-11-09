@@ -569,9 +569,7 @@ theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMu
   fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
     fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
 
-variable [CompatibleSMul A R M N]
-
-def equivOfCompatibleSMul : M ⊗[A] N ≃ₗ[A] M ⊗[R] N where
+def equivOfCompatibleSMul [CompatibleSMul A R M N] : M ⊗[A] N ≃ₗ[A] M ⊗[R] N where
   __ := mapOfCompatibleSMul R M N A
   invFun := mapOfCompatibleSMul A M N R
   left_inv x := x.induction_on (map_zero _) (fun _ _ ↦ rfl)
