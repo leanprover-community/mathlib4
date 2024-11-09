@@ -378,7 +378,7 @@ The actual definition says that `a` is equal to some `u : Mˣ`, where
 `Mˣ` is a bundled version of `IsUnit`.
 
 While we define this predicate as a typeclass, we mostly use it as a non-typeclass predicate.
-However, sometimes we it as a `Prop`-valued version of `Invertible`. -/
+However, sometimes we use it as a `Prop`-valued version of `Invertible`. -/
 @[to_additive, mk_iff]
 class IsUnit [Monoid M] (a : M) : Prop where
   /-- There exists a bundled unit equal to a given element satisfying `IsUnit a`.
