@@ -791,7 +791,8 @@ theorem ext_get?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
     ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n :=
   ⟨by rintro rfl _ _; rfl, ext_get?'⟩
 
-/-- If two lists are the same length and get! is the same on all indices, the lists are equal. -/
+/-- If two lists `l₁` and `l₂` are the same length and `l₁[n]! = l₂[n]!` for all `n`,
+then the lists are equal. -/
 theorem ext_getElem! [Inhabited α] (hl : length l₁ = length l₂) (h : ∀ n : ℕ, l₁[n]! = l₂[n]!) :
     l₁ = l₂ :=
   ext_getElem hl fun n h₁ h₂ ↦ by simpa only [← getElem!_pos] using h n
