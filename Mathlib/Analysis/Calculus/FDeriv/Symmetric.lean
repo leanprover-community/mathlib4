@@ -79,7 +79,7 @@ def IsSymmSndFDerivWithinAt (f : E → F) (s : Set E) (x : E) : Prop :=
   ∀ v w, fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v w = fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x w v
 
 variable (𝕜) in
-/-- Definition recording that a function has a symmetric second derivative within a set at
+/-- Definition recording that a function has a symmetric second derivative at
 a point. This is automatic in most cases of interest (open sets over real or complex vector fields,
 or general case for analytic functions), but we can express theorems of calculus using this
 as a general assumption, and then specialize to these situations. -/
@@ -147,6 +147,12 @@ theorem IsSymmSndFDerivWithinAt.congr_set (h : IsSymmSndFDerivWithinAt 𝕜 f s 
 theorem isSymmSndFDerivWithinAt_congr_set (hst : s =ᶠ[𝓝 x] t) :
     IsSymmSndFDerivWithinAt 𝕜 f s x ↔ IsSymmSndFDerivWithinAt 𝕜 f t x :=
   ⟨fun h ↦ h.congr_set hst, fun h ↦ h.congr_set hst.symm⟩
+
+theorem IsSymmSndFDerivAt.isSymmSndFDerivWithinAt (h : IsSymmSndFDerivAt 𝕜 f x)
+    (hf : ContDiffAt 𝕜 2 f x) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    IsSymmSndFDerivWithinAt 𝕜 f s x := by
+  simp only [← isSymmSndFDerivWithinAt_univ, ← contDiffWithinAt_univ] at h hf
+  exact h.mono_of_mem_nhdsWithin univ_mem hf hs uniqueDiffOn_univ hx
 
 end General
 
@@ -406,12 +412,11 @@ end Real
 
 section IsRCLikeNormedField
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
   {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] {s : Set E} {f : E → F} {x : E}
 
-theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
-    {f' : E → E →L[𝕜] F} {x : E}
+theorem second_derivative_symmetric_of_eventually {f' : E → E →L[𝕜] F} {x : E}
     {f'' : E →L[𝕜] E →L[𝕜] F} (hf : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x)
     (v w : E) : f'' v w = f'' w v := by
   letI := IsRCLikeNormedField.rclike 𝕜
@@ -439,29 +444,13 @@ theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
 
 /-- If a function is differentiable, and has two derivatives at `x`, then the second
 derivative is symmetric. -/
-theorem second_derivative_symmetric [IsRCLikeNormedField 𝕜]
-    {f' : E → E →L[𝕜] F} {f'' : E →L[𝕜] E →L[𝕜] F} {x : E}
+theorem second_derivative_symmetric {f' : E → E →L[𝕜] F} {f'' : E →L[𝕜] E →L[𝕜] F} {x : E}
     (hf : ∀ y, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x) (v w : E) : f'' v w = f'' w v :=
   second_derivative_symmetric_of_eventually (Filter.Eventually.of_forall hf) hx v w
 
-variable (𝕜) in
-/-- A smoothness exponent is admissible if it is `ω` or the field is ℝ or ℂ. This guarantees that
-second derivatives are symmetric, and more generally good behavior for calculus. -/
-class IsAdmissibleSmoothness (n : WithTop ℕ∞) : Prop where
-  out : n = ⊤ ∨ IsRCLikeNormedField 𝕜
-
-instance (priority := 100) [h : IsRCLikeNormedField 𝕜] (n : WithTop ℕ∞) :
-    IsAdmissibleSmoothness 𝕜 n :=
-  ⟨Or.inr h⟩
-
-instance : IsAdmissibleSmoothness 𝕜 ⊤ := ⟨Or.inl rfl⟩
-
 /-- If a function is `C^2` at a point, then its second derivative there is symmetric. -/
-theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞} [h : IsAdmissibleSmoothness 𝕜 n]
-    (hf : ContDiffAt 𝕜 n f x) (hn : 2 ≤ n) :
+theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞} (hf : ContDiffAt 𝕜 n f x) (hn : 2 ≤ n) :
     IsSymmSndFDerivAt 𝕜 f x := by
-  rcases h.out with h'n | h𝕜
-  · simp at h'n
   intro v w
   apply second_derivative_symmetric_of_eventually (f := f) (f' := fderiv 𝕜 f) (x := x)
   · obtain ⟨u, hu, h'u⟩ : ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 2 f u := hf.contDiffOn (m := 2) hn
@@ -478,12 +467,9 @@ theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞} [h : IsAdmissibleSmoothness �
 
 /-- If a function is `C^2` within a set at a point, and accumulated by points in the interior
 of the set, then its second derivative there is symmetric. -/
-theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞} [h : IsAdmissibleSmoothness 𝕜 n]
-    (hf : ContDiffWithinAt 𝕜 n f s x)
+theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hn : 2 ≤ n) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ closure (interior s)) (h'x : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by
-  rcases h.out with h'n | h𝕜
-  · simp at h'n
   /- We argue that, at interior points, the second derivative is symmetric, and moreover by
   continuity it converges to the second derivative at `x`. Therefore, the latter is also
   symmetric. -/

@@ -1473,11 +1473,11 @@ theorem prod_le [Nontrivial α] {a b : FactorSet α} : a.prod ≤ b.prod ↔ a �
   rwa [prod_factors, prod_factors] at this
 
 open Classical in
-noncomputable instance : Sup (Associates α) :=
+noncomputable instance : Max (Associates α) :=
   ⟨fun a b => (a.factors ⊔ b.factors).prod⟩
 
 open Classical in
-noncomputable instance : Inf (Associates α) :=
+noncomputable instance : Min (Associates α) :=
   ⟨fun a b => (a.factors ⊓ b.factors).prod⟩
 
 open Classical in

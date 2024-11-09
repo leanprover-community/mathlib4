@@ -166,7 +166,6 @@ class ConditionallyCompleteLinearOrder (α : Type*) extends ConditionallyComplet
 instance ConditionallyCompleteLinearOrder.toLinearOrder [ConditionallyCompleteLinearOrder α] :
     LinearOrder α :=
   { ‹ConditionallyCompleteLinearOrder α› with
-    max := Sup.sup, min := Inf.inf,
     min_def := fun a b ↦ by
       by_cases hab : a = b
       · simp [hab]
