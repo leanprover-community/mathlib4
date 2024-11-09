@@ -1197,8 +1197,7 @@ theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
   (path_connected_basis x).hasBasis_self_subset (IsOpen.mem_nhds h hx)
 
-/-- The path-connected neighbourhoods of `path_connected_basis` can be chosen to be open. -/
-theorem LocPathConnectedSpace.open_pathConnected_basis (x : X) :
+theorem open_pathConnected_basis (x : X) :
     (𝓝 x).HasBasis (fun s : Set X ↦ IsOpen s ∧ x ∈ s ∧ IsPathConnected s) id := by
   refine ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ mem_nhds_iff.mpr ⟨u, hu.2, hu.1.1, hu.1.2.1⟩⟩⟩
   have ⟨u, hus, hu, hxu⟩ := mem_nhds_iff.mp hs
@@ -1230,14 +1229,14 @@ theorem IsOpen.isConnected_iff_isPathConnected {U : Set X} (U_op : IsOpen U) :
 
 /-- Locally path-connected spaces are locally connected. -/
 instance : LocallyConnectedSpace X := by
-  refine ⟨forall_imp (fun x h ↦ ⟨fun s ↦ ?_⟩) LocPathConnectedSpace.open_pathConnected_basis⟩
+  refine ⟨forall_imp (fun x h ↦ ⟨fun s ↦ ?_⟩) open_pathConnected_basis⟩
   refine ⟨fun hs ↦ ?_, fun ⟨u, ⟨hu, hxu, _⟩, hus⟩ ↦ mem_nhds_iff.mpr ⟨u, hus, hu, hxu⟩⟩
   let ⟨u, ⟨hu, hxu, hu'⟩, hus⟩ := (h.mem_iff' s).mp hs
   exact ⟨u, ⟨hu, hxu, hu'.isConnected⟩, hus⟩
 
 /-- A space is locally path-connected iff all path components of open subsets are open. -/
-lemma isLocPathConnected_iff {X : Type*} [TopologicalSpace X] : LocPathConnectedSpace X ↔
-    ∀ (x : X) (u : Set X), IsOpen u → IsOpen (pathComponentIn x u) :=
+lemma locPathConnectedSpace_iff_isOpen_pathComponentIn {X : Type*} [TopologicalSpace X] :
+    LocPathConnectedSpace X ↔ ∀ (x : X) (u : Set X), IsOpen u → IsOpen (pathComponentIn x u) :=
   ⟨fun _ _ _ hu ↦ hu.pathComponentIn _, fun h ↦ ⟨fun x ↦ ⟨fun s ↦ by
     refine ⟨fun hs ↦ ?_, fun ⟨_, ht⟩ ↦ Filter.mem_of_superset ht.1.1 ht.2⟩
     let ⟨u, hu⟩ := mem_nhds_iff.mp hs
@@ -1245,9 +1244,11 @@ lemma isLocPathConnected_iff {X : Type*} [TopologicalSpace X] : LocPathConnected
       isPathConnected_pathComponentIn hu.2.2⟩, pathComponentIn_subset.trans hu.1⟩⟩⟩⟩
 
 /-- A space is locally path-connected iff all path components of open subsets are neighbourhoods. -/
-lemma isLocPathConnected_iff' {X : Type*} [TopologicalSpace X] : LocPathConnectedSpace X ↔
+lemma locPathConnectedSpace_iff_pathComponentIn_mem_nhds {X : Type*} [TopologicalSpace X] :
+    LocPathConnectedSpace X ↔
     ∀ x : X, ∀ u : Set X, IsOpen u → x ∈ u → pathComponentIn x u ∈ nhds x := by
-  simp_rw [isLocPathConnected_iff, forall_comm (β := Set X), ← imp_forall_iff]
+  rw [locPathConnectedSpace_iff_isOpen_pathComponentIn]
+  simp_rw [forall_comm (β := Set X), ← imp_forall_iff]
   refine forall_congr' fun u ↦ imp_congr_right fun _ ↦ ?_
   exact ⟨fun h x hxu ↦ (h x).mem_nhds (mem_pathComponentIn_self hxu),
     fun h x ↦ isOpen_iff_mem_nhds.mpr fun y hy ↦
@@ -1257,7 +1258,7 @@ lemma isLocPathConnected_iff' {X : Type*} [TopologicalSpace X] : LocPathConnecte
 lemma LocPathConnectedSpace.coinduced {Y : Type*} (f : X → Y) :
     @LocPathConnectedSpace Y (.coinduced f ‹_›) := by
   let _ := TopologicalSpace.coinduced f ‹_›; have hf : Continuous f := continuous_coinduced_rng
-  refine isLocPathConnected_iff.mpr fun y u hu ↦
+  refine locPathConnectedSpace_iff_isOpen_pathComponentIn.mpr fun y u hu ↦
     isOpen_coinduced.mpr <| isOpen_iff_mem_nhds.mpr fun x hx ↦ ?_
   have hx' := preimage_mono pathComponentIn_subset hx
   refine mem_nhds_iff.mpr ⟨pathComponentIn x (f ⁻¹' u), ?_,
@@ -1284,7 +1285,7 @@ instance Quotient.locPathConnectedSpace {s : Setoid X} : LocPathConnectedSpace (
 instance Sigma.locPathConnectedSpace {X : ι → Type*}
     [(i : ι) → TopologicalSpace (X i)] [(i : ι) → LocPathConnectedSpace (X i)] :
     LocPathConnectedSpace ((i : ι) × X i) := by
-  rw [isLocPathConnected_iff']; intro x u hu hxu; rw [mem_nhds_iff]
+  rw [locPathConnectedSpace_iff_pathComponentIn_mem_nhds]; intro x u hu hxu; rw [mem_nhds_iff]
   refine ⟨(Sigma.mk x.1) '' (pathComponentIn x.2 ((Sigma.mk x.1) ⁻¹' u)), ?_, ?_, ?_⟩
   · apply IsPathConnected.subset_pathComponentIn
     · exact (isPathConnected_pathComponentIn (by exact hxu)).image continuous_sigmaMk
