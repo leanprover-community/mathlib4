@@ -574,89 +574,173 @@ theorem wellPowered_of_isSeparator [HasPullbacks C] [Balanced C] (G : C) (hG : I
 
 section HasGenerator
 
-variable (E : Type u₃) [Category.{v₃} E]
+section Definitions
+
+variable (C)
 
 /--
-A category instantiates `HasSeparator` if and only if it has a separator.
-See also `IsSeparator`.
+For a category `C` and an object `G : C`, `G` is a separator of `C` if
+the functor `C(G, -)` is faithful.
+
+While `IsSeparator G : Prop` is the proposition that `G` is a separator of `C`,
+an `HasSeparator C : Prop` is the proposition that such a separator exists.
+Note that `HasSeparator C` is a proposition. It does not designate a favored separator
+and merely asserts the existence of one.
 -/
-class HasSeparator : Prop :=
-  hasSeparator : ∃ G : E, IsSeparator G
+class HasSeparator : Prop where
+  hasSeparator : ∃ G : C, IsSeparator G
 
 /--
-A category instantiates `HasCoseparator` if and only if it has a coseparator.
-See also `IsCoseparator`.
+For a category `C` and an object `G : C`, `G` is a coseparator of `C` if
+the functor `C(-, G)` is faithful.
+
+While `IsCoseparator G : Prop` is the proposition that `G` is a coseparator of `C`,
+an `HasCoseparator C : Prop` is the proposition that such a coseparator exists.
+Note that `HasCoseparator C` is a proposition. It does not designate a favored coseparator
+and merely asserts the existence of one.
 -/
-class HasCoseparator : Prop :=
-  hasCoseparator : ∃ G : E, IsCoseparator G
+class HasCoseparator : Prop where
+  hasCoseparator : ∃ G : C, IsCoseparator G
 
 /--
-A category instantiates `HasDetector` if and only if it has a detector.
-See also `IsDetector`.
+For a category `C` and an object `G : C`, `G` is a detector of `C` if
+the functor `C(G, -)` reflects isomorphisms.
+
+While `IsDetector G : Prop` is the proposition that `G` is a detector of `C`,
+an `HasDetector C : Prop` is the proposition that such a detector exists.
+Note that `HasDetector C` is a proposition. It does not designate a favored detector
+and merely asserts the existence of one.
 -/
-class HasDetector : Prop :=
-  hasDetector : ∃ G : E, IsDetector G
+class HasDetector : Prop where
+  hasDetector : ∃ G : C, IsDetector G
 
 /--
-A category instantiates `HasCodetector` if and only if it has a codetector.
-See also `IsCodetector`.
+For a category `C` and an object `G : C`, `G` is a codetector of `C` if
+the functor `C(-, G)` reflects isomorphisms.
+
+While `IsCodetector G : Prop` is the proposition that `G` is a codetector of `C`,
+an `HasCodetector C : Prop` is the proposition that such a codetector exists.
+Note that `HasCodetector C` is a proposition. It does not designate a favored codetector
+and merely asserts the existence of one.
 -/
-class HasCodetector : Prop :=
-  hasCodetector : ∃ G : E, IsCodetector G
+class HasCodetector : Prop where
+  hasCodetector : ∃ G : C, IsCodetector G
 
-theorem HasSeparator.hasDetector [Balanced C] [HasSeparator C] : HasDetector C := by
-  obtain ⟨G, hG⟩ : HasSeparator C := inferInstance
-  exact ⟨G, hG.isDetector⟩
+end Definitions
 
-theorem HasDetector.hasSeparator [HasEqualizers C] [HasDetector C] : HasSeparator C := by
-  obtain ⟨G, hG⟩ : HasDetector C := inferInstance
-  exact ⟨G, hG.isSeparator⟩
+section Choice
 
-theorem HasCoseparator.hasCodetector [Balanced C] [HasCoseparator C] : HasCodetector C := by
-  obtain ⟨G, hG⟩ : HasCoseparator C := inferInstance
-  exact ⟨G, hG.isCodetector⟩
+variable (C)
 
-theorem HasCodetector.hasCoseparator [HasCoequalizers C] [HasCodetector C] : HasCoseparator C := by
-  obtain ⟨G, hG⟩ : HasCodetector C := inferInstance
-  exact ⟨G, hG.isCoseparator⟩
+/--
+Given a category `C` that has a separator (`HasSeparator C`), `separator` is an arbitrarily
+chosen separator of `C`.
+-/
+noncomputable def separator [HasSeparator C] : C :=
+  Classical.indefiniteDescription _ HasSeparator.hasSeparator |>.1
 
-theorem HasDetector.wellPowered [HasPullbacks C] [HasDetector C] : WellPowered C := by
-  obtain ⟨G, hG⟩ : HasDetector C := inferInstance
-  exact wellPowered_of_isDetector G hG
 
-theorem HasSeparator.wellPowered [HasPullbacks C] [Balanced C] [HasSeparator C] :
+/--
+Given a category `C` that has a coseparator (`HasCoseparator C`), `coseparator` is an arbitrarily
+chosen coseparator of `C`.
+-/
+noncomputable def coseparator [HasCoseparator C] : C :=
+  Classical.indefiniteDescription _ HasCoseparator.hasCoseparator |>.1
+
+/--
+Given a category `C` that has a detector (`HasDetector C`), `detector` is an arbitrarily
+chosen detector of `C`.
+-/
+noncomputable def detector [HasDetector C] : C :=
+  Classical.indefiniteDescription _ HasDetector.hasDetector |>.1
+
+/--
+Given a category `C` that has a codetector (`HasCodetector C`), `codetector` is an arbitrarily
+chosen codetector of `C`.
+-/
+noncomputable def codetector [HasCodetector C] : C :=
+  Classical.indefiniteDescription _ HasCodetector.hasCodetector |>.1
+
+theorem isSeparator_separator [HasSeparator C] : IsSeparator (separator C) :=
+  Classical.indefiniteDescription _ HasSeparator.hasSeparator |>.2
+
+theorem isDetector_separator [Balanced C] [HasSeparator C] : IsDetector (separator C) :=
+  isSeparator_separator C |>.isDetector
+
+theorem isCoseparator_coseparator [HasCoseparator C] : IsCoseparator (coseparator C) :=
+  Classical.indefiniteDescription _ HasCoseparator.hasCoseparator |>.2
+
+theorem isCodetector_coseparator [Balanced C] [HasCoseparator C] : IsCodetector (coseparator C) :=
+  isCoseparator_coseparator C |>.isCodetector
+
+theorem isDetector_detector [HasDetector C] : IsDetector (detector C) :=
+  Classical.indefiniteDescription _ HasDetector.hasDetector |>.2
+
+theorem isSeparator_detector [HasEqualizers C] [HasDetector C] : IsSeparator (detector C) :=
+  isDetector_detector C |>.isSeparator
+
+theorem isCodetector_codetector [HasCodetector C] : IsCodetector (codetector C) :=
+  Classical.indefiniteDescription _ HasCodetector.hasCodetector |>.2
+
+theorem isCoseparator_codetector [HasCoequalizers C] [HasCodetector C] :
+    IsCoseparator (codetector C) := isCodetector_codetector C |>.isCoseparator
+
+end Choice
+
+section Instances
+
+theorem HasSeparator.hasDetector [Balanced C] [HasSeparator C] : HasDetector C :=
+  ⟨_, isDetector_separator C⟩
+
+theorem HasDetector.hasSeparator [HasEqualizers C] [HasDetector C] : HasSeparator C :=
+  ⟨_, isSeparator_detector C⟩
+
+theorem HasCoseparator.hasCodetector [Balanced C] [HasCoseparator C] : HasCodetector C :=
+  ⟨_, isCodetector_coseparator C⟩
+
+theorem HasCodetector.hasCoseparator [HasCoequalizers C] [HasCodetector C] : HasCoseparator C :=
+  ⟨_, isCoseparator_codetector C⟩
+
+instance HasDetector.wellPowered [HasPullbacks C] [HasDetector C] : WellPowered C :=
+  isDetector_detector C |> wellPowered_of_isDetector _
+
+instance HasSeparator.wellPowered [HasPullbacks C] [Balanced C] [HasSeparator C] :
     WellPowered C := HasSeparator.hasDetector.wellPowered
+
+end Instances
 
 section Dual
 
 @[simp]
-theorem hasSeparator_op_iff : HasSeparator Eᵒᵖ ↔ HasCoseparator E :=
+theorem hasSeparator_op_iff : HasSeparator Cᵒᵖ ↔ HasCoseparator C :=
   ⟨fun ⟨G, hG⟩ => ⟨unop G, (isCoseparator_unop_iff G).mpr hG⟩,
    fun ⟨G, hG⟩ => ⟨op G, (isSeparator_op_iff G).mpr hG⟩⟩
 
 @[simp]
-theorem hasCoseparator_op_iff : HasCoseparator Eᵒᵖ ↔ HasSeparator E :=
+theorem hasCoseparator_op_iff : HasCoseparator Cᵒᵖ ↔ HasSeparator C :=
   ⟨fun ⟨G, hG⟩ => ⟨unop G, (isSeparator_unop_iff G).mpr hG⟩,
    fun ⟨G, hG⟩ => ⟨op G, (isCoseparator_op_iff G).mpr hG⟩⟩
 
-theorem HasSeparator.hasCoseparator_op [HasSeparator C] : HasCoseparator Cᵒᵖ := by simp [*]
-theorem HasSeparator.hasCoseparator_unop [h : HasSeparator Cᵒᵖ] : HasCoseparator C := by simp_all
-theorem HasCoseparator.hasSeparator_op [HasCoseparator C] : HasSeparator Cᵒᵖ := by simp [*]
-theorem HasCoseparator.hasSeparator_unop [HasCoseparator Cᵒᵖ] : HasSeparator C := by simp_all
-
 @[simp]
-theorem hasDetector_op_iff : HasDetector Eᵒᵖ ↔ HasCodetector E :=
+theorem hasDetector_op_iff : HasDetector Cᵒᵖ ↔ HasCodetector C :=
   ⟨fun ⟨G, hG⟩ => ⟨unop G, (isCodetector_unop_iff G).mpr hG⟩,
    fun ⟨G, hG⟩ => ⟨op G, (isDetector_op_iff G).mpr hG⟩⟩
 
 @[simp]
-theorem hasCodetector_op_iff : HasCodetector Eᵒᵖ ↔ HasDetector E :=
+theorem hasCodetector_op_iff : HasCodetector Cᵒᵖ ↔ HasDetector C :=
   ⟨fun ⟨G, hG⟩ => ⟨unop G, (isDetector_unop_iff G).mpr hG⟩,
    fun ⟨G, hG⟩ => ⟨op G, (isCodetector_op_iff G).mpr hG⟩⟩
 
-theorem HasDetector.hasCodetector_op [HasDetector C] : HasCodetector Cᵒᵖ := by simp [*]
+instance HasSeparator.hasCoseparator_op [HasSeparator C] : HasCoseparator Cᵒᵖ := by simp [*]
+theorem HasSeparator.hasCoseparator_unop [h : HasSeparator Cᵒᵖ] : HasCoseparator C := by simp_all
+
+instance HasCoseparator.hasSeparator_op [HasCoseparator C] : HasSeparator Cᵒᵖ := by simp [*]
+theorem HasCoseparator.hasSeparator_unop [HasCoseparator Cᵒᵖ] : HasSeparator C := by simp_all
+
+instance HasDetector.hasCodetector_op [HasDetector C] : HasCodetector Cᵒᵖ := by simp [*]
 theorem HasDetector.hasCodetector_unop [HasDetector Cᵒᵖ] : HasCodetector C := by simp_all
-theorem HasCodetector.hasDetector_op [HasCodetector C] : HasDetector Cᵒᵖ := by simp [*]
+
+instance HasCodetector.hasDetector_op [HasCodetector C] : HasDetector Cᵒᵖ := by simp [*]
 theorem HasCodetector.hasDetector_unop [HasCodetector Cᵒᵖ] : HasDetector C := by simp_all
 
 end Dual
