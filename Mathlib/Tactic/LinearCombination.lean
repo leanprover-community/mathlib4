@@ -116,7 +116,7 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
       -- It is OK to use `ty` as the expected type even if `e` is a proof.
       -- The expected type is just a hint.
       let c ← withSynthesizeLight <| Term.elabTerm e ty
-      match ← try? (← whnfR (← inferType c)).ineq? with
+      match ← try? (← inferType c).ineq? with
       | some (rel, _) => .proof rel <$> c.toSyntax
       | none => .const <$> c.toSyntax
 
