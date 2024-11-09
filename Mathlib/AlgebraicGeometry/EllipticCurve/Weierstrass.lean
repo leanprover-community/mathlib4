@@ -103,22 +103,18 @@ section Quantity
 
 /-! ### Standard quantities -/
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₂` coefficient of a Weierstrass curve. -/
 def b₂ : R :=
   W.a₁ ^ 2 + 4 * W.a₂
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₄` coefficient of a Weierstrass curve. -/
 def b₄ : R :=
   2 * W.a₄ + W.a₁ * W.a₃
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₆` coefficient of a Weierstrass curve. -/
 def b₆ : R :=
   W.a₃ ^ 2 + 4 * W.a₆
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₈` coefficient of a Weierstrass curve. -/
 def b₈ : R :=
   W.a₁ ^ 2 * W.a₆ + 4 * W.a₂ * W.a₆ - W.a₁ * W.a₃ * W.a₄ + W.a₂ * W.a₃ ^ 2 - W.a₄ ^ 2
@@ -127,17 +123,14 @@ lemma b_relation : 4 * W.b₈ = W.b₂ * W.b₆ - W.b₄ ^ 2 := by
   simp only [b₂, b₄, b₆, b₈]
   ring1
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `c₄` coefficient of a Weierstrass curve. -/
 def c₄ : R :=
   W.b₂ ^ 2 - 24 * W.b₄
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `c₆` coefficient of a Weierstrass curve. -/
 def c₆ : R :=
   -W.b₂ ^ 3 + 36 * W.b₂ * W.b₄ - 216 * W.b₆
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The discriminant `Δ` of a Weierstrass curve. If `R` is a field, then this polynomial vanishes
 if and only if the cubic curve cut out by this equation is singular. Sometimes only defined up to
 sign in the literature; we choose the sign used by the LMFDB. For more discussion, see
@@ -438,7 +431,6 @@ theorem ext {x y : EllipticCurve R} (h₁ : x.a₁ = y.a₁) (h₂ : x.a₂ = y.
 
 variable (E : EllipticCurve R)
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`. -/
 def j : R :=
   E.Δ'⁻¹ * E.c₄ ^ 3

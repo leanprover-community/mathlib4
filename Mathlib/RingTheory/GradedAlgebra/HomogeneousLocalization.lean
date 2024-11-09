@@ -228,10 +228,10 @@ theorem den_add (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 + c2).den : A) = c1.den * 
 instance : CommMonoid (NumDenSameDeg 𝒜 x) where
   one := 1
   mul := (· * ·)
-  mul_assoc c1 c2 c3 := ext _ (add_assoc _ _ _) (mul_assoc _ _ _) (mul_assoc _ _ _)
-  one_mul c := ext _ (zero_add _) (one_mul _) (one_mul _)
-  mul_one c := ext _ (add_zero _) (mul_one _) (mul_one _)
-  mul_comm c1 c2 := ext _ (add_comm _ _) (mul_comm _ _) (mul_comm _ _)
+  mul_assoc _ _ _ := ext _ (add_assoc _ _ _) (mul_assoc _ _ _) (mul_assoc _ _ _)
+  one_mul _ := ext _ (zero_add _) (one_mul _) (one_mul _)
+  mul_one _ := ext _ (add_zero _) (mul_one _) (mul_one _)
+  mul_comm _ _ := ext _ (add_comm _ _) (mul_comm _ _) (mul_comm _ _)
 
 instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
   pow c n :=
@@ -285,7 +285,7 @@ abbrev mk (y : HomogeneousLocalization.NumDenSameDeg 𝒜 x) : HomogeneousLocali
   Quotient.mk'' y
 
 lemma mk_surjective : Function.Surjective (mk (𝒜 := 𝒜) (x := x)) :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.mk''_surjective
 
 /-- View an element of `HomogeneousLocalization 𝒜 x` as an element of `Aₓ` by forgetting that the
 numerator and denominator are of the same grading.
@@ -528,7 +528,7 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
       (hc ▸ Ideal.mul_mem_left _ c.1 (Ideal.mul_mem_right b _ h))
   refine isUnit_of_mul_eq_one _ (Quotient.mk'' ⟨f.1, f.3, f.2, this⟩) ?_
   rw [← mk_mul, ext_iff_val, val_mk]
-  simp [mul_comm f.den.1]
+  simp [mul_comm f.den.1, Localization.mk_eq_monoidOf_mk']
 
 instance : Nontrivial (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
   ⟨⟨0, 1, fun r => by simp [ext_iff_val, val_zero, val_one, zero_ne_one] at r⟩⟩

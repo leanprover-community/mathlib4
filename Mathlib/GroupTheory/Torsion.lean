@@ -161,7 +161,7 @@ namespace CommMonoid
 @[to_additive addTorsion "The torsion submonoid of an additive commutative monoid."]
 def torsion : Submonoid G where
   carrier := { x | IsOfFinOrder x }
-  one_mem' := isOfFinOrder_one
+  one_mem' := IsOfFinOrder.one
   mul_mem' hx hy := hx.mul hy
 
 variable {G}

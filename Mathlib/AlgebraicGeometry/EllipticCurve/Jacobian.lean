@@ -1169,7 +1169,7 @@ lemma add_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.add P Q = W'.dblXYZ P 
 lemma add_smul_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
     W'.add (u • P) (v • Q) = u ^ 4 • W'.add P Q := by
   have smul : P ≈ Q ↔ u • P ≈ v • Q := by
-    erw [← Quotient.eq, ← Quotient.eq, smul_eq P hu, smul_eq Q hv]
+    erw [← Quotient.eq_iff_equiv, ← Quotient.eq_iff_equiv, smul_eq P hu, smul_eq Q hv]
     rfl
   rw [add_of_equiv <| smul.mp h, dblXYZ_smul, add_of_equiv h]
 
@@ -1185,7 +1185,7 @@ lemma add_of_not_equiv {P Q : Fin 3 → R} (h : ¬P ≈ Q) : W'.add P Q = W'.add
 lemma add_smul_of_not_equiv {P Q : Fin 3 → R} (h : ¬P ≈ Q) {u v : R} (hu : IsUnit u)
     (hv : IsUnit v) : W'.add (u • P) (v • Q) = (u * v) ^ 2 • W'.add P Q := by
   have smul : P ≈ Q ↔ u • P ≈ v • Q := by
-    erw [← Quotient.eq, ← Quotient.eq, smul_eq P hu, smul_eq Q hv]
+    erw [← Quotient.eq_iff_equiv, ← Quotient.eq_iff_equiv, smul_eq P hu, smul_eq Q hv]
     rfl
   rw [add_of_not_equiv <| h.comp smul.mpr, addXYZ_smul, add_of_not_equiv h]
 

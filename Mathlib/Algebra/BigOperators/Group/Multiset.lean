@@ -49,8 +49,7 @@ theorem prod_eq_foldl (s : Multiset α) :
   (foldr_swap _ _ _).trans (by simp [mul_comm])
 
 @[to_additive (attr := simp, norm_cast)]
-theorem prod_coe (l : List α) : prod ↑l = l.prod :=
-  prod_eq_foldl _
+theorem prod_coe (l : List α) : prod ↑l = l.prod := rfl
 
 @[to_additive (attr := simp)]
 theorem prod_toList (s : Multiset α) : s.toList.prod = s.prod := by

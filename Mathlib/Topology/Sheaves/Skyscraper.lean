@@ -308,7 +308,7 @@ theorem fromStalk_to_skyscraper {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p�
 @[simps]
 protected def unit :
     𝟭 (Presheaf C X) ⟶ Presheaf.stalkFunctor C p₀ ⋙ skyscraperPresheafFunctor p₀ where
-  app 𝓕 := toSkyscraperPresheaf _ <| 𝟙 _
+  app _ := toSkyscraperPresheaf _ <| 𝟙 _
   naturality 𝓕 𝓖 f := by
     ext U; dsimp
     split_ifs with h
@@ -381,7 +381,7 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
   counit := StalkSkyscraperPresheafAdjunctionAuxs.counit p₀
   left_triangle_components X :=
     ((skyscraperPresheafStalkAdjunction p₀).left_triangle_components X.val)
-  right_triangle_components Y :=
+  right_triangle_components _ :=
     Sheaf.Hom.ext ((skyscraperPresheafStalkAdjunction p₀).right_triangle_components _)
 
 instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint  :=

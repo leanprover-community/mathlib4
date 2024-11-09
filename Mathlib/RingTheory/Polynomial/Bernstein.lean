@@ -246,13 +246,13 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
       suffices (Polynomial.derivative^[n - k] p).eval 1 = 0 by
         rw [this]
         exact (iterate_derivative_at_1_ne_zero ℚ n k h).symm
-      refine span_induction m ?_ ?_ ?_ ?_
+      refine span_induction ?_ ?_ ?_ ?_ m
       · simp only [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
         rintro ⟨a, w⟩; simp only [Fin.val_mk]
         rw [iterate_derivative_at_1_eq_zero_of_lt ℚ n ((tsub_lt_tsub_iff_left_of_le h).mpr w)]
       · simp
-      · intro x y hx hy; simp [hx, hy]
-      · intro a x h; simp [h]
+      · intro x y _ _ hx hy; simp [hx, hy]
+      · intro a x _ h; simp [h]
 
 /-- The Bernstein polynomials are linearly independent.
 

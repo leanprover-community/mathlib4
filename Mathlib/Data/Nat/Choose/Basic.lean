@@ -77,7 +77,7 @@ theorem choose_eq_choose_pred_add {n k : ℕ} (hn : 0 < n) (hk : 0 < k) :
 
 theorem choose_eq_zero_of_lt : ∀ {n k}, n < k → choose n k = 0
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)
-  | 0, k + 1, _ => choose_zero_succ _
+  | 0, _ + 1, _ => choose_zero_succ _
   | n + 1, k + 1, hk => by
     have hnk : n < k := lt_of_succ_lt_succ hk
     have hnk1 : n < k + 1 := lt_of_succ_lt hk
@@ -109,7 +109,7 @@ theorem choose_two_right (n : ℕ) : choose n 2 = n * (n - 1) / 2 := by
 theorem choose_pos : ∀ {n k}, k ≤ n → 0 < choose n k
   | 0, _, hk => by rw [Nat.eq_zero_of_le_zero hk]; decide
   | n + 1, 0, _ => by simp
-  | n + 1, k + 1, hk => Nat.add_pos_left (choose_pos (le_of_succ_le_succ hk)) _
+  | _ + 1, _ + 1, hk => Nat.add_pos_left (choose_pos (le_of_succ_le_succ hk)) _
 
 theorem choose_eq_zero_iff {n k : ℕ} : n.choose k = 0 ↔ n < k :=
   ⟨fun h => lt_of_not_ge (mt Nat.choose_pos h.symm.not_lt), Nat.choose_eq_zero_of_lt⟩
@@ -295,8 +295,8 @@ theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left
-      rw [div_lt_iff_lt_mul' Nat.zero_lt_two] at h
-      rw [le_div_iff_mul_le' Nat.zero_lt_two, Nat.mul_sub_right_distrib, Nat.sub_le_iff_le_add,
+      rw [div_lt_iff_lt_mul Nat.zero_lt_two] at h
+      rw [le_div_iff_mul_le Nat.zero_lt_two, Nat.mul_sub_right_distrib, Nat.sub_le_iff_le_add,
         ← Nat.sub_le_iff_le_add', Nat.mul_two, Nat.add_sub_cancel]
       exact le_of_lt h
   · rw [choose_eq_zero_of_lt b]

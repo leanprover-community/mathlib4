@@ -82,7 +82,7 @@ noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
 @[simp]
 theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
     (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by
-  -- Porting note: The whole proof was just `simp [toKernelSubobject]`.
+  -- Porting note (#10959): the whole proof was just `simp [toKernelSubobject]`.
   suffices ((arrow ((kernelSubobject f))) ∘ (kernelSubobjectIso f ≪≫ kernelIsoKer f).inv) x = x by
     convert this
   rw [Iso.trans_inv, ← coe_comp, Category.assoc]
@@ -105,7 +105,7 @@ theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [
     (g : (imageSubobject f : ModuleCat.{v} R) ⟶ N) [HasCokernel g] {x y : N} (l : L)
     (w : x = y + g (factorThruImageSubobject f l)) : cokernel.π g x = cokernel.π g y := by
   subst w
-  -- Porting note: The proof from here used to just be `simp`.
+  -- Porting note (#10959): The proof from here used to just be `simp`.
   simp only [map_add, add_right_eq_self]
   change ((cokernel.π g) ∘ (g) ∘ (factorThruImageSubobject f)) l = 0
   rw [← coe_comp, ← coe_comp, Category.assoc]

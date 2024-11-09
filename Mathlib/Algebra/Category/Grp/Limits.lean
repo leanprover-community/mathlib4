@@ -97,7 +97,7 @@ noncomputable instance Forget₂.createsLimit :
       validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
       makesLimit :=
         IsLimit.ofFaithful (forget₂ Grp MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
-          (fun s => _) fun s => rfl }
+          (fun _ => _) fun _ => rfl }
 
 /-- A choice of limit cone for a functor into `Grp`.
 (Generally, you'll just want to use `limit F`.)

@@ -240,7 +240,7 @@ section Lattice
 
 variable [Lattice α]
 
-instance : Sup (NonemptyInterval α) :=
+instance : Max (NonemptyInterval α) :=
   ⟨fun s t => ⟨⟨s.fst ⊓ t.fst, s.snd ⊔ t.snd⟩, inf_le_left.trans <| s.fst_le_snd.trans le_sup_left⟩⟩
 
 instance : SemilatticeSup (NonemptyInterval α) :=
@@ -470,7 +470,7 @@ instance lattice : Lattice (Interval α) :=
       match s, t with
       | ⊥, ⊥ => bot_le
       | ⊥, some _ => bot_le
-      | some s, ⊥ => bot_le
+      | some _, ⊥ => bot_le
       | some s, some t => by
         change dite _ _ _ ≤ _
         split_ifs
@@ -479,7 +479,7 @@ instance lattice : Lattice (Interval α) :=
     inf_le_right := fun s t =>
       match s, t with
       | ⊥, ⊥ => bot_le
-      | ⊥, some t => bot_le
+      | ⊥, some _ => bot_le
       | some _, ⊥ => bot_le
       | some s, some t => by
         change dite _ _ _ ≤ _
@@ -488,7 +488,7 @@ instance lattice : Lattice (Interval α) :=
         · exact bot_le
     le_inf := fun s t c =>
       match s, t, c with
-      | ⊥, t, c => fun _ _ => bot_le
+      | ⊥, _, _ => fun _ _ => bot_le
       | (s : NonemptyInterval α), t, c => fun hb hc => by
         lift t to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hb
         lift c to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hc
@@ -517,7 +517,8 @@ theorem coe_inf : ∀ s t : Interval α, (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t
     rw [inf_bot_eq]
     exact (inter_empty _).symm
   | (s : NonemptyInterval α), (t : NonemptyInterval α) => by
-    simp only [Inf.inf, coe_coe, NonemptyInterval.coe_def, Icc_inter_Icc]
+    simp only [Min.min, coe_coe, NonemptyInterval.coe_def, Icc_inter_Icc,
+      SemilatticeInf.inf, Lattice.inf]
     split_ifs with h
     · simp only [coe_coe, NonemptyInterval.coe_def]
     · refine (Icc_eq_empty <| mt ?_ h).symm

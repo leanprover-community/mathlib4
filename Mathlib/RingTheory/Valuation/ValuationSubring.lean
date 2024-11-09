@@ -172,7 +172,7 @@ theorem valuation_eq_iff (x y : K) : A.valuation x = A.valuation y ↔ ∃ a : A
 theorem valuation_le_iff (x y : K) : A.valuation x ≤ A.valuation y ↔ ∃ a : A, (a : K) * y = x :=
   Iff.rfl
 
-theorem valuation_surjective : Function.Surjective A.valuation := surjective_quot_mk _
+theorem valuation_surjective : Function.Surjective A.valuation := Quot.mk_surjective
 
 theorem valuation_unit (a : Aˣ) : A.valuation a = 1 := by
   rw [← A.valuation.map_one, valuation_eq_iff]; use a; simp
@@ -227,7 +227,7 @@ def subtype (R : ValuationSubring K) : R →+* K :=
 
 /-- The canonical map on value groups induced by a coarsening of valuation rings. -/
 def mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : R.ValueGroup →*₀ S.ValueGroup where
-  toFun := Quotient.map' id fun x y ⟨u, hu⟩ => ⟨Units.map (R.inclusion S h).toMonoidHom u, hu⟩
+  toFun := Quotient.map' id fun _ _ ⟨u, hu⟩ => ⟨Units.map (R.inclusion S h).toMonoidHom u, hu⟩
   map_zero' := rfl
   map_one' := rfl
   map_mul' := by rintro ⟨⟩ ⟨⟩; rfl
@@ -346,12 +346,13 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
-instance linearOrderOverring : LinearOrder {S // A ≤ S} :=
-  { (inferInstance : PartialOrder _) with
-    le_total :=
-      let i : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
-      (primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total
-    decidableLE := inferInstance }
+instance le_total_ideal : IsTotal {S // A ≤ S} LE.le :=
+  let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
+  ⟨(primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total⟩
+
+instance linearOrderOverring : LinearOrder {S // A ≤ S} where
+  le_total := (le_total_ideal A).1
+  max_def a b := congr_fun₂ sup_eq_maxDefault a b
 
 end Order
 
@@ -613,7 +614,7 @@ def principalUnitGroupEquiv :
       rw [A.coe_mem_principalUnitGroup_iff]; simp⟩
   left_inv x := by simp
   right_inv x := by simp
-  map_mul' x y := rfl
+  map_mul' _ _ := rfl
 
 theorem principalUnitGroupEquiv_apply (a : A.principalUnitGroup) :
     (((principalUnitGroupEquiv A a : Aˣ) : A) : K) = (a : Kˣ) :=
@@ -646,7 +647,7 @@ theorem ker_unitGroupToResidueFieldUnits :
 theorem surjective_unitGroupToResidueFieldUnits :
     Function.Surjective A.unitGroupToResidueFieldUnits :=
   (LocalRing.surjective_units_map_of_local_ringHom _ Ideal.Quotient.mk_surjective
-        LocalRing.isLocalRingHom_residue).comp
+        LocalRing.isLocalHom_residue).comp
     (MulEquiv.surjective _)
 
 /-- The quotient of the unit group of `A` by the principal unit group of `A` agrees with

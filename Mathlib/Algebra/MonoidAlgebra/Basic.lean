@@ -90,8 +90,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
       sum_single_index, Function.comp_apply, one_smul, zero_smul, MulHom.coe_comp,
       NonUnitalAlgHom.coe_to_mulHom]
   right_inv F := by
-    -- Porting note: `ext` → `refine nonUnitalAlgHom_ext' k (MulHom.ext fun m => ?_)`
-    refine nonUnitalAlgHom_ext' k (MulHom.ext fun m => ?_)
+    ext m
     simp only [NonUnitalAlgHom.coe_mk, ofMagma_apply, NonUnitalAlgHom.toMulHom_eq_coe,
       sum_single_index, Function.comp_apply, one_smul, zero_smul, MulHom.coe_comp,
       NonUnitalAlgHom.coe_to_mulHom]
@@ -109,9 +108,8 @@ In particular this provides the instance `Algebra k (MonoidAlgebra k G)`.
 instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
     Algebra k (MonoidAlgebra A G) :=
   { singleOneRingHom.comp (algebraMap k A) with
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
     smul_def' := fun r a => by
-      refine Finsupp.ext fun _ => ?_
+      ext
       -- Porting note: Newly required.
       rw [Finsupp.coe_smul]
       simp [single_one_mul_apply, Algebra.smul_def, Pi.smul_apply]
@@ -125,8 +123,7 @@ def singleOneAlgHom {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Mon
     A →ₐ[k] MonoidAlgebra A G :=
   { singleOneRingHom with
     commutes' := fun r => by
-      -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-      refine Finsupp.ext fun _ => ?_
+      ext
       simp
       rfl }
 
@@ -390,9 +387,8 @@ In particular this provides the instance `Algebra k k[G]`.
 instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
     Algebra R k[G] :=
   { singleZeroRingHom.comp (algebraMap R k) with
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
     smul_def' := fun r a => by
-      refine Finsupp.ext fun _ => ?_
+      ext
       -- Porting note: Newly required.
       rw [Finsupp.coe_smul]
       simp [single_zero_mul_apply, Algebra.smul_def, Pi.smul_apply]
@@ -405,8 +401,7 @@ instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
 def singleZeroAlgHom [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] : k →ₐ[R] k[G] :=
   { singleZeroRingHom with
     commutes' := fun r => by
-      -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-      refine Finsupp.ext fun _ => ?_
+      ext
       simp
       rfl }
 
