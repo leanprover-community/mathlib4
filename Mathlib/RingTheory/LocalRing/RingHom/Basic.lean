@@ -140,4 +140,6 @@ protected theorem isLocalRing {A B : Type*} [CommSemiring A] [IsLocalRing A] [Co
   haveI := e.symm.toEquiv.nontrivial
   IsLocalRing.of_surjective (e : A →+* B) e.surjective
 
+@[deprecated (since := "2024-11-09")] alias localRing := isLocalRing
+
 end RingEquiv

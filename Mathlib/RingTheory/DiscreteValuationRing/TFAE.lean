@@ -233,11 +233,17 @@ lemma IsLocalRing.finrank_CotangentSpace_eq_one_iff [IsNoetherianRing R] [IsLoca
     exact fun h ↦ h.3 maximalIdeal_eq_bot
   · exact (DiscreteValuationRing.TFAE R hR).out 5 0
 
+@[deprecated (since := "2024-11-09")]
+alias LocalRing.finrank_CotangentSpace_eq_one_iff := IsLocalRing.finrank_CotangentSpace_eq_one_iff
+
 variable (R)
 
 lemma IsLocalRing.finrank_CotangentSpace_eq_one [IsDomain R] [DiscreteValuationRing R] :
     finrank (ResidueField R) (CotangentSpace R) = 1 :=
   finrank_CotangentSpace_eq_one_iff.mpr ‹_›
+
+@[deprecated (since := "2024-11-09")]
+alias LocalRing.finrank_CotangentSpace_eq_one := IsLocalRing.finrank_CotangentSpace_eq_one
 
 instance (priority := 100) IsDedekindDomain.isPrincipalIdealRing
     [IsLocalRing R] [IsDedekindDomain R] : IsPrincipalIdealRing R :=

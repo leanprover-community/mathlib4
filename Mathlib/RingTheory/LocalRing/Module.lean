@@ -275,4 +275,8 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
     rw [← this]
     exact Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _)
 
+@[deprecated (since := "2024-11-09")]
+alias LocalRing.split_injective_iff_lTensor_residueField_injective :=
+  IsLocalRing.split_injective_iff_lTensor_residueField_injective
+
 end

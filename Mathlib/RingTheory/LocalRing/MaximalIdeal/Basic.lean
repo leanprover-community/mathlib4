@@ -107,6 +107,9 @@ end IsLocalRing
 theorem IsLocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : IsLocalRing.maximalIdeal R = ⊥ :=
   IsLocalRing.isField_iff_maximalIdeal_eq.mp (Field.toIsField R)
 
+@[deprecated (since := "2024-11-09")]
+alias LocalRing.maximalIdeal_eq_bot := IsLocalRing.maximalIdeal_eq_bot
+
 section Nilrad_max_localization
 
 open Ideal
@@ -119,6 +122,9 @@ theorem IsLocalRing.of_nilradical_isMaximal [h : (nilradical R).IsMaximal] :
   refine IsLocalRing.of_unique_max_ideal ⟨nilradical R, h, fun I hI ↦ ?_⟩
   rw [nilradical_eq_sInf] at h ⊢
   exact (IsMaximal.eq_of_le h hI.ne_top (sInf_le hI.isPrime)).symm
+
+@[deprecated (since := "2024-11-09")]
+alias LocalRing.of_nilradical_isMaximal := IsLocalRing.of_nilradical_isMaximal
 
 /--
 Let `S` be the localization of a commutative semiring `R` at a submonoid `M` that does not
