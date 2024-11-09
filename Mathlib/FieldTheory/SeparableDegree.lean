@@ -31,7 +31,7 @@ This file contains basics about the separable degree of a field extension.
   for a general algebraic extension `E / F` is defined to be the degree of `L / F`, where `L` is
   the separable closure of `F` in `E`, which is not defined in this file yet. Later we
   will show that (`Field.finSepDegree_eq`), if `Field.Emb F E` is finite, then these two
-  definitions coincide. If `E / F` is infinite and algebraic, we have
+  definitions coincide. If `E / F` is algebraic with infinite separable degree, we have
   `#(Field.Emb F E) = 2 ^ Field.sepDegree F E` instead.
   (See `Field.Emb.cardinal_eq_two_pow_sepDegree` in another file.) For example, if
   $F = \mathbb{Q}$ and $E = \mathbb{Q}( \mu_{p^\infty} )$, then $\operatorname{Emb}_F (E)$
