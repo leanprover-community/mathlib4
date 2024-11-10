@@ -8,6 +8,10 @@ import Mathlib.Analysis.Complex.ReImTopology
 
 /-!
 # Theorems about convexity on the complex plane
+
+We show that the open and closed half-spaces in ℂ given by an inequality on either the real or
+imaginary part are all convex over ℝ. We also prove some results on star-convexity for the
+slit plane.
 -/
 
 open Set
