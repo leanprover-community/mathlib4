@@ -13,7 +13,7 @@ import Mathlib.Algebra.Module.LinearMap.Defs
 
 open Function
 
-variable {M M₂ : Type*}
+variable {F M M₂ : Type*}
 
 /-- Reinterpret an additive homomorphism as a `ℚ`-linear map. -/
 def AddMonoidHom.toRatLinearMap [AddCommGroup M] [Module ℚ M] [AddCommGroup M₂] [Module ℚ M₂]
@@ -30,3 +30,13 @@ theorem AddMonoidHom.toRatLinearMap_injective [AddCommGroup M] [Module ℚ M] [A
 theorem AddMonoidHom.coe_toRatLinearMap [AddCommGroup M] [Module ℚ M] [AddCommGroup M₂]
     [Module ℚ M₂] (f : M →+ M₂) : ⇑f.toRatLinearMap = f :=
   rfl
+
+instance [AddCommMonoid M] [AddCommMonoid M₂]
+    [Module ℚ≥0 M] [Module ℚ≥0 M₂] [FunLike F M M₂] [AddMonoidHomClass F M M₂] :
+    MulActionHomClass F ℚ≥0 M M₂ where
+  map_smulₛₗ := map_nnrat_smul
+
+instance [AddCommGroup M] [AddCommGroup M₂]
+    [Module ℚ M] [Module ℚ M₂] [FunLike F M M₂] [AddMonoidHomClass F M M₂] :
+    MulActionHomClass F ℚ M M₂ where
+  map_smulₛₗ := map_rat_smul

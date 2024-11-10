@@ -92,10 +92,6 @@ instance _root_.DivisionRing.toRatAlgebra : Algebra ℚ R where
   toRingHom := castHom _
   commutes' := cast_commute
 
-instance _root_.RingHomClass.toMulActionHomClassRat [FunLike F R S] [RingHomClass F R S] :
-    MulActionHomClass F ℚ R S where
-  map_smulₛₗ f q a := by simp [smul_def, cast_id]
-
 variable [SMul R S]
 
 instance instSMulCommClass [SMulCommClass R S S] : SMulCommClass ℚ R S where
