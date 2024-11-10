@@ -703,7 +703,7 @@ theorem Bundle.Prod.smooth_of_smooth_fst_comp_of_smooth_snd_comp
 `TotalSpace.Prod.fst ∘ φ` into the total space of `E₁`, and (2) the map `TotalSpace.Prod.snd ∘ φ`
 into the total space of `E₂`. -/
 theorem Bundle.Prod.smooth_iff_smooth_fst_comp_smooth_snd_comp
-    {φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)} :
+    (φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) :
     Smooth IM (IB.prod 𝓘(𝕜, F₁ × F₂)) φ ↔
     (Smooth IM (IB.prod 𝓘(𝕜, F₁)) (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ∘ φ)
     ∧ Smooth IM (IB.prod 𝓘(𝕜, F₂)) (TotalSpace.Prod.snd F₁ F₂ E₁ E₂ ∘ φ)) := by

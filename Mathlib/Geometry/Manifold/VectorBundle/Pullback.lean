@@ -86,7 +86,7 @@ into the total space of the pullback `f *ᵖ E` is smooth if and only if the fol
 smooth: (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (2) the map `Pullback.lift f ∘ φ` into the
 total space of `E`. -/
 theorem Bundle.Pullback.smooth_iff_smooth_proj_comp_and_smooth_lift_comp
-    {φ : M → TotalSpace F (f *ᵖ E)} :
+    (φ : M → TotalSpace F (f *ᵖ E)) :
     Smooth IM (IB'.prod 𝓘(𝕜, F)) φ ↔
     (Smooth IM IB' (TotalSpace.proj ∘ φ) ∧ Smooth IM (IB.prod 𝓘(𝕜, F)) (Pullback.lift f ∘ φ)) := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
