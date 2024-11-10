@@ -116,7 +116,8 @@ protected theorem range : LinearMap.range (e : M →ₛₗ[σ₁₂] M₂) = ⊤
 
 @[simp]
 protected theorem _root_.LinearEquivClass.range [Module R M] [Module R₂ M₂] {F : Type*}
-    [EquivLike F M M₂] [SemilinearEquivClass F σ₁₂ M M₂] (e : F) : LinearMap.range e = ⊤ :=
+    [EquivLike F M M₂] [AddMonoidHomClass F M M₂] [MulActionSemiHomClass F σ₁₂ M M₂] (e : F) :
+    LinearMap.range e = ⊤ :=
   LinearMap.range_eq_top.2 (EquivLike.surjective e)
 
 theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Submodule R₂ M₂)) : p = ⊥ := by
