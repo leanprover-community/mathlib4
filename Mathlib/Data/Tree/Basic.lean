@@ -6,8 +6,6 @@ Authors: Mario Carneiro, Wojciech Nawrocki
 import Mathlib.Data.Nat.Notation
 import Mathlib.Tactic.TypeStar
 import Mathlib.Util.CompileInductive
-import Mathlib.Control.Applicative
-import Mathlib.Control.Traversable.Basic
 
 /-!
 # Binary tree
@@ -57,59 +55,6 @@ def traverse {m:Type* → Type*} [Applicative m] {α β} (f:α → m β) :Tree �
 def map {β} (f : α → β) : Tree α → Tree β
   | .nil => nil
   | .node a l r => node (f a) (map f l) (map f r)
-
-instance : Traversable Tree where
-  map := map
-  traverse := traverse
-
-instance : LawfulTraversable Tree where
-  map_const := rfl
-  id_map t := by
-    dsimp [(· <$> ·)]
-    induction t
-    · rw [map]
-    · rename_i hl hr
-      rw [map,hl,hr,id_eq]
-  comp_map f g t := by
-    dsimp [(· <$> ·)]
-    induction t
-    · rw [map,map,map]
-    · rename_i hl hr
-      rw [map,map,map,hl,hr,Function.comp_apply]
-  id_traverse t := by
-    dsimp [Traversable.traverse]
-    induction t
-    · rw [traverse,Id.pure_eq]
-    · rename_i hl hr
-      rw [traverse,hl,hr]
-      rfl
-  comp_traverse := by
-    intro F G _ _ _ _ α β γ  f g x
-    dsimp [Traversable.traverse]
-    induction x
-    · rw [traverse,traverse,map_pure,traverse]
-      rfl
-    · rename_i hl hr
-      rw [traverse,hl,hr,traverse]
-      simp [Functor.Comp.map_mk,Functor.map_map,Function.comp_def,Comp.seq_mk,
-        seq_map_assoc,map_seq]
-      rfl
-  traverse_eq_map_id f t:= by
-    dsimp [Traversable.traverse,(· <$> ·)]
-    induction t
-    · rw [Tree.traverse,Tree.map]
-      rfl
-    · rename_i hl hr
-      rw [traverse,map,hl,hr]
-      rfl
-  naturality F G {_ _ _ _} η {α β} f t := by
-    dsimp [Traversable.traverse]
-    induction t
-    · rw [traverse, traverse, η.preserves_pure']
-    · rename_i hl hr
-      rw [traverse, traverse, η.preserves_seq', η.preserves_seq',
-        ← pure_seq, η.preserves_seq', hl, hr, η.preserves_pure', pure_seq]
-      rfl
 
 /-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
 @[simp]

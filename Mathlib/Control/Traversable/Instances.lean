@@ -7,6 +7,7 @@ import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Functor
+import Mathlib.Data.Tree.Basic
 
 /-!
 # LawfulTraversable instances
@@ -176,3 +177,70 @@ instance {σ : Type u} : LawfulTraversable.{u} (Sum σ) :=
     naturality := Sum.naturality }
 
 end Sum
+
+namespace Tree
+section Traverse
+
+instance : Traversable Tree where
+  map := map
+  traverse := traverse
+
+lemma id_map {α :Type*} (t:Tree α) : t.map id = t := by
+  induction t with
+    | nil => rw [map]
+    | node v l r hl hr => rw [map, hl, hr, id_eq]
+
+lemma comp_map {α β γ: Type*} (f:α → β) (g:β → γ) (t : Tree α) :
+    t.map (g ∘ f) = (t.map f).map g := by
+  induction t with
+    | nil => rw [map, map, map]
+    | node v l r hl hr => rw [map, map, map, hl, hr, Function.comp_apply]
+
+lemma id_traverse {α : Type*} (t : Tree α) : t.traverse (pure : α → Id α) = t := by
+  nth_rw 2 [← Id.pure_eq t]
+  induction t with
+    | nil => rw [traverse]
+    | node v l r hl hr => rw [traverse, hl, hr, map_pure, pure_seq,map_pure,pure_seq,map_pure]
+
+universe w in
+lemma comp_traverse
+    {F : Type u → Type v} {G : Type v → Type w} [Applicative F] [Applicative G]
+    [LawfulApplicative F] [LawfulApplicative G] {α : Type*} {β : Type v} {γ : Type u} (f : β → F γ)
+    (g : α → G β) (t : Tree α) : t.traverse (Functor.Comp.mk ∘ (f <$> ·) ∘ g) =
+      Functor.Comp.mk ((·.traverse f) <$> (t.traverse g)) := by
+  induction t with
+    | nil => rw [traverse, traverse, map_pure, traverse]; rfl
+    | node v l r hl hr =>
+      rw [traverse, hl, hr, traverse]
+      simp only [Function.comp_def, Function.comp_apply, Functor.Comp.map_mk, Functor.map_map,
+        Comp.seq_mk, seq_map_assoc, map_seq]
+      rfl
+
+lemma traverse_eq_map_id {α β : Type*} (f : α → β) (t : Tree α) :
+    t.traverse ((pure : β → Id β) ∘ f) = t.map f := by
+  rw [← Id.pure_eq (t.map f)]
+  induction t with
+    | nil => rw [traverse, map]
+    | node v l r hl hr => rw [traverse, map, hl, hr, Function.comp_apply, map_pure, pure_seq,
+      map_pure, pure_seq, map_pure]
+
+lemma naturality {F G : Type u → Type*} [Applicative F] [Applicative G] [LawfulApplicative F]
+    [LawfulApplicative G] (η : ApplicativeTransformation F G) {α :Type*} {β : Type u} (f : α → F β)
+    (t : Tree α) : η (t.traverse f) = t.traverse (η.app β ∘ f : α → G β) := by
+  induction t with
+    | nil => rw [traverse,traverse, η.preserves_pure]
+    | node v l r hl hr => rw [traverse,traverse, η.preserves_seq, η.preserves_seq, η.preserves_map,
+      hl, hr, Function.comp_apply]
+
+instance : LawfulTraversable Tree where
+  map_const := rfl
+  id_map := id_map
+  comp_map := comp_map
+  id_traverse := id_traverse
+  comp_traverse := comp_traverse
+  traverse_eq_map_id := traverse_eq_map_id
+  naturality := naturality
+
+end Traverse
+
+end Tree
