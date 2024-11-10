@@ -28,9 +28,9 @@ open CategoryTheory Limits TopologicalSpace LocalRing TensorProduct
 
 noncomputable section
 
-namespace AlgebraicGeometry.Scheme.Pullback
-
 universe u
+
+namespace AlgebraicGeometry.Scheme.Pullback
 
 /-- A `Triplet` over `f : X ⟶ S` and `g : Y ⟶ S` is a triple of points `x : X`, `y : Y`,
 `s : S` such that `f x = s = f y`. -/
@@ -351,4 +351,12 @@ lemma range_map {X' Y' S' : Scheme.{u}} (f' : X' ⟶ S') (g' : Y' ⟶ S') (i₁ 
     rw [pullback_map_eq_pullbackFstFstIso_inv, ← Scheme.comp_base_apply, Iso.hom_inv_id_assoc]
     simp [ht₂, T, hw₂.left, T₂]
 
-end AlgebraicGeometry.Scheme.Pullback
+end Pullback
+
+instance isJointlySurjectivePreserving (P : MorphismProperty Scheme.{u}) :
+    IsJointlySurjectivePreserving P where
+  exists_preimage_fst_triplet_of_prop {X Y S} f g _ hg x y hxy := by
+    obtain ⟨a, b, h⟩ := Pullback.exists_preimage_pullback x y hxy
+    use a
+
+end AlgebraicGeometry.Scheme

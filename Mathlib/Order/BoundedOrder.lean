@@ -764,21 +764,19 @@ theorem min_bot_right [OrderBot α] (a : α) : min a ⊥ = ⊥ := inf_bot_eq _
 
 theorem max_top_right [OrderTop α] (a : α) : max a ⊤ = ⊤ := sup_top_eq _
 
+theorem max_eq_bot [OrderBot α] {a b : α} : max a b = ⊥ ↔ a = ⊥ ∧ b = ⊥ :=
+  sup_eq_bot_iff
+
+theorem min_eq_top [OrderTop α] {a b : α} : min a b = ⊤ ↔ a = ⊤ ∧ b = ⊤ :=
+  inf_eq_top_iff
+
 @[simp]
 theorem min_eq_bot [OrderBot α] {a b : α} : min a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := by
-  simp only [← inf_eq_min, ← le_bot_iff, inf_le_iff]
+  simp_rw [← le_bot_iff, inf_le_iff]
 
 @[simp]
 theorem max_eq_top [OrderTop α] {a b : α} : max a b = ⊤ ↔ a = ⊤ ∨ b = ⊤ :=
   @min_eq_bot αᵒᵈ _ _ a b
-
-@[simp]
-theorem max_eq_bot [OrderBot α] {a b : α} : max a b = ⊥ ↔ a = ⊥ ∧ b = ⊥ :=
-  sup_eq_bot_iff
-
-@[simp]
-theorem min_eq_top [OrderTop α] {a b : α} : min a b = ⊤ ↔ a = ⊤ ∧ b = ⊤ :=
-  inf_eq_top_iff
 
 end LinearOrder
 

@@ -38,7 +38,7 @@ namespace Scheme
 /-- The Zariski pretopology on the category of schemes. -/
 def zariskiPretopology : Pretopology (Scheme.{u}) where
   coverings Y S := ∃ (U : OpenCover.{u} Y), S = Presieve.ofArrows U.obj U.map
-  has_isos _ _ f _ := ⟨openCoverOfIsIso f, (Presieve.ofArrows_pUnit _).symm⟩
+  has_isos _ _ f _ := ⟨coverOfIsIso f, (Presieve.ofArrows_pUnit _).symm⟩
   pullbacks := by
     rintro Y X f _ ⟨U, rfl⟩
     exact ⟨U.pullbackCover' f, (Presieve.ofArrows_pullback _ _ _).symm⟩
@@ -46,7 +46,7 @@ def zariskiPretopology : Pretopology (Scheme.{u}) where
     rintro X _ T ⟨U, rfl⟩ H
     choose V hV using H
     use U.bind (fun j => V (U.map j) ⟨j⟩)
-    simpa only [OpenCover.bind, ← hV] using Presieve.ofArrows_bind U.obj U.map _
+    simpa only [Cover.bind, ← hV] using Presieve.ofArrows_bind U.obj U.map _
       (fun _ f H => (V f H).obj) (fun _ f H => (V f H).map)
 
 /-- The Zariski topology on the category of schemes. -/
@@ -65,7 +65,7 @@ lemma zariskiTopology_openCover {Y : Scheme.{u}} (U : OpenCover.{v} Y) :
       map := fun y => U.map (U.f y)
       f := id
       covers := U.covers
-      IsOpen := fun _ => U.IsOpen _ }
+      map_prop := fun _ => U.map_prop _ }
   refine ⟨_, zariskiPretopology_openCover V, ?_⟩
   rintro _ _ ⟨y⟩
   exact ⟨_, 𝟙 _, U.map (U.f y), ⟨_⟩, by simp⟩
