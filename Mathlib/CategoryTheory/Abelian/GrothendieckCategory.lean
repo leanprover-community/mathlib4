@@ -20,9 +20,8 @@ A `GrothendieckCategory` is an abelian category provided that it has `AB5` and a
 
 ## Theorems
 
-Relevant implications of `GrothendieckCategory` are established in
-`GrothendieckCategory.wellPowered`, `GrothendieckCategory.hasLimits` and
-`GrothendieckCategory.hasColimits`.
+Relevant implications of `GrothendieckCategory` are established in `GrothendieckCategory.hasLimits`
+and `GrothendieckCategory.hasColimits`.
 
 ## References
 
@@ -47,7 +46,6 @@ section Instances
 
 variable [HasFilteredColimits C] [AB5 C] [Abelian C] [HasSeparator C] [GrothendieckCategory C]
 
-instance GrothendieckCategory.wellPowered : WellPowered C := HasSeparator.wellPowered
 instance GrothendieckCategory.hasColimits : HasColimits C := has_colimits_of_finite_and_filtered
 instance GrothendieckCategory.hasLimits : HasLimits C := hasLimits_of_hasColimits_of_hasSeparator
 
