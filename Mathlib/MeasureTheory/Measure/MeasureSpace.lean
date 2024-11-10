@@ -233,7 +233,7 @@ theorem measure_eq_top_iff_of_symmDiff (hμst : μ (s ∆ t) ≠ ∞) : μ s = �
   apply hμuv
   rw [Set.symmDiff_def, eq_top_iff]
   calc
-    ∞ = μ u - μ v := (WithTop.sub_eq_top_iff.2 ⟨hμu, hμv⟩).symm
+    ∞ = μ u - μ v := by rw [ENNReal.sub_eq_top_iff.2 ⟨hμu, hμv⟩]
     _ ≤ μ (u \ v) := le_measure_diff
     _ ≤ μ (u \ v ∪ v \ u) := measure_mono subset_union_left
 
@@ -1370,7 +1370,7 @@ theorem sum_apply_eq_zero' {μ : ι → Measure α} {s : Set α} (hs : Measurabl
     sum μ s = 0 ↔ ∀ i, μ i s = 0 := by simp [hs]
 
 @[simp] lemma sum_eq_zero : sum f = 0 ↔ ∀ i, f i = 0 := by
-  simp (config := { contextual := true }) [Measure.ext_iff, forall_swap (α := ι)]
+  simp +contextual [Measure.ext_iff, forall_swap (α := ι)]
 
 @[simp]
 lemma sum_zero : Measure.sum (fun (_ : ι) ↦ (0 : Measure α)) = 0 := by

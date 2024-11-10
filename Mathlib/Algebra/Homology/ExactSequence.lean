@@ -72,7 +72,7 @@ lemma isComplex_iff_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂
 lemma isComplex₀ (S : ComposableArrows C 0) : S.IsComplex where
   -- See https://github.com/leanprover/lean4/issues/2862
   -- Without `decide := true`, simp gets stuck at `hi : autoParam False _auto✝`
-  zero i hi := by simp (config := {decide := true}) at hi
+  zero i hi := by simp +decide at hi
 
 lemma isComplex₁ (S : ComposableArrows C 1) : S.IsComplex where
   zero i hi := by exfalso; omega
