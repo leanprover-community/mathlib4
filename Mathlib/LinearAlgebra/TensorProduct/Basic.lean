@@ -569,6 +569,8 @@ theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMu
   fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
     fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
 
+/-- If the R- and A-actions on M and N satisfy `CompatibleSMul` both ways,
+then `M ⊗[A] N` is canonically isomorphic to `M ⊗[R] N`. -/
 def equivOfCompatibleSMul [CompatibleSMul A R M N] : M ⊗[A] N ≃ₗ[A] M ⊗[R] N where
   __ := mapOfCompatibleSMul R M N A
   invFun := mapOfCompatibleSMul A M N R
