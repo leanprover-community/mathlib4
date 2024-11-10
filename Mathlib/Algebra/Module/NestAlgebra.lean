@@ -17,40 +17,6 @@ variable (R M N : Type*)
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-/--
-A nest is a totally ordered set which contains the top and bottom.
--/
-structure Nest (α : Type*) [LE α] [OrderTop α] [OrderBot α] where
-  /-- The `carrier` of a nest is the underlying set. -/
-  carrier : Set α
-  /-- By definition, a nest is a chain -/
-  chain : IsChain (· ≤ ·) carrier
-  mem_bot : ⊥ ∈ carrier
-  mem_top : ⊤ ∈ carrier
-
-variable (α : Type*)
-
-/-- A Flag is a Nest -/
-def Flag.toNest [LE α] [OrderTop α] [OrderBot α] (s : Flag α) : Nest α where
-  carrier := s.carrier
-  chain := s.Chain'
-  mem_bot := Flag.bot_mem _
-  mem_top := Flag.top_mem _
-
-/-- A Nest is a Sublattice -/
-def Nest.toSublattice [Lattice α] [OrderTop α] [OrderBot α] (s : Nest α) : Sublattice α where
-  carrier := s.carrier
-  supClosed' := by
-    intro _ ha _ hb
-    cases s.chain.total ha hb with
-      | inl h => rw [sup_of_le_right h]; exact hb
-      | inr h => rw [sup_of_le_left h]; exact ha
-  infClosed' := by
-    intro _ ha _ hb
-    cases s.chain.total ha hb with
-      | inl h => rw [inf_of_le_left h]; exact ha
-      | inr h => rw [inf_of_le_right h]; exact hb
-
 variable {ι : Type*} [LinearOrder ι] (bm : Basis ι R M)
 
 /--

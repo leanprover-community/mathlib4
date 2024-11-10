@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Order.Sublattice
 
 /-!
 # Chains and flags
@@ -250,6 +251,38 @@ theorem maxChain_spec : IsMaxChain r (maxChain r) :=
 
 end Chain
 
+/-! ### Nests -/
+
+/--
+A nest is a chain which contains the top and bottom.
+-/
+structure Nest (α : Type*) [LE α] [OrderTop α] [OrderBot α] where
+  /-- The `carrier` of a nest is the underlying set. -/
+  carrier : Set α
+  /-- By definition, a nest is a chain -/
+  chain : IsChain (· ≤ ·) carrier
+  mem_bot : ⊥ ∈ carrier
+  mem_top : ⊤ ∈ carrier
+
+namespace Nest
+
+/-- A Nest is a Sublattice -/
+def toSublattice [Lattice α] [OrderTop α] [OrderBot α] (s : Nest α) : Sublattice α where
+  carrier := s.carrier
+  supClosed' := by
+    intro _ ha _ hb
+    cases s.chain.total ha hb with
+      | inl h => rw [sup_of_le_right h]; exact hb
+      | inr h => rw [sup_of_le_left h]; exact ha
+  infClosed' := by
+    intro _ ha _ hb
+    cases s.chain.total ha hb with
+      | inl h => rw [inf_of_le_left h]; exact ha
+      | inr h => rw [inf_of_le_right h]; exact hb
+
+end Nest
+
+
 /-! ### Flags -/
 
 
@@ -301,6 +334,13 @@ theorem top_mem [OrderTop α] (s : Flag α) : (⊤ : α) ∈ s :=
 
 theorem bot_mem [OrderBot α] (s : Flag α) : (⊥ : α) ∈ s :=
   s.maxChain.bot_mem
+
+/-- A Flag is a Nest -/
+def toNest [OrderTop α] [OrderBot α] (s : Flag α) : Nest α where
+  carrier := s.carrier
+  chain := s.Chain'
+  mem_bot := Flag.bot_mem _
+  mem_top := Flag.top_mem _
 
 end LE
 
