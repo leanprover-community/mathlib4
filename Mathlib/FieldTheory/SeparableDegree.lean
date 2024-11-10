@@ -886,5 +886,3 @@ theorem PerfectField.splits_of_natSepDegree_eq_one [PerfectField K] {f : E[X]}
     (i : E →+* K) (hf : f.natSepDegree = 1) : f.Splits i :=
   (splits_id_iff_splits _).mp <| (perfectField_iff_splits_of_natSepDegree_eq_one K).mp ‹_› _
     (natSepDegree_map K f i ▸ hf)
-
-theorem 
