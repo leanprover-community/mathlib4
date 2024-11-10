@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Batteries.Data.Vector
-import Mathlib.Data.List.GroupBy
+import Mathlib.Data.List.SplitBy
 
 /-!
 # Finding the maximal rectangles in a list of points.
@@ -45,7 +45,6 @@ We say `r₁ ≤ r₂` if and only if every point in `r₁` is contained in `r�
 instance instLE : LE Rectangle where
   le r₁ r₂ := r₁.width = 0 ∨ r₁.height = 0 ∨
     ((r₁.left, r₁.bottom) ∈ r₂ ∧ (r₁.right - 1, r₁.top - 1) ∈ r₂)
-  le r₁ r₂ := r₁.width = 0 ∨ r₁.height = 0 ∨ ((r₁.left, r₁.bottom) ∈ r₂ ∧ (r₁.right - 1, r₁.top - 1) ∈ r₂)
 
 instance : DecidableRel ((· : Rectangle) ≤ ·) := by
   dsimp [LE.le, instLE]
@@ -70,8 +69,8 @@ def area (r : Rectangle) : Nat := r.width * r.height
 The number of points in `r`, weighted by the function `w`.
 -/
 def weightedArea (r : Rectangle) (w : Nat × Nat → Nat) : Nat :=
-  Nat.sum <|
-    (List.range' r.left r.width).bind fun x => (List.range' r.bottom r.height).map fun y => w (x, y)
+  ((List.range' r.left r.width).flatMap
+    fun x => (List.range' r.bottom r.height).map fun y => w (x, y)).sum
 
 end Rectangle
 
@@ -124,24 +123,6 @@ end List
 open Batteries (Vector)
 
 namespace Batteries.Vector
-
-attribute [simp] Vector.size_eq
-
-@[simp] theorem length_toList {α n} (xs : Vector α n) : xs.toList.length = n :=
-  xs.size_eq
-
-@[simp] theorem getElem_toArray {α n} (xs : Vector α n) (i : Nat) (h : i < xs.toArray.size) :
-    xs.toArray[i] = xs[i]'(by simpa using h) := by
-  cases xs
-  simp
-
-@[simp] theorem getElem_toList {α n} (xs : Vector α n) (i : Nat) (h : i < xs.toList.length) :
-    xs.toList[i] = xs[i]'(by simpa using h) := by
-  simp [toList]
-
-@[simp] theorem getElem_ofFn {α n} (f : Fin n → α) (i : Nat) (h : i < n) :
-    (Vector.ofFn f)[i] = f ⟨i, by simpa using h⟩ := by
-  simp [ofFn]
 
 def finEnum {α n} (xs : Vector α n) : Vector (Fin n × α) n :=
   .ofFn fun i => ⟨i, xs[i]⟩
@@ -213,14 +194,11 @@ instance {n} : HasSubset (BitVec n) where
   Subset xs ys := xs &&& ys = xs
 
 instance {n} : DecidableRel ((· : BitVec n) ⊆ ·) := by
-  dsimp [Subset, instLE]
+  dsimp [Subset]
   infer_instance
 
 def ofFnLE {n} (f : Fin n → Bool) : BitVec n :=
   BitVec.cast (by simp) (BitVec.ofBoolListLE <| List.ofFn f)
-
-instance {n} : Hashable (BitVec n) where
-  hash v := hash v.toNat
 
 end BitVec
 
@@ -276,8 +254,8 @@ def sortDedupWithIndexes {α} (xs : List α)
     (le : α → α → Bool := by exact (· ≤ ·)) (eq : α → α → Bool := by exact (· = ·)) :
     List (α × List (Fin xs.length)) :=
   let enumSorted := xs.finEnum.mergeSort fun ⟨_, x⟩ ⟨_, y⟩ => le x y
-  let splits := enumSorted.groupBy fun ⟨_, x⟩ ⟨_, y⟩ => eq x y
-  splits.attach.map fun ⟨s, m⟩ => ((s.head (ne_nil_of_mem_groupBy m)).2, s.map (·.1))
+  let splits := enumSorted.splitBy fun ⟨_, x⟩ ⟨_, y⟩ => eq x y
+  splits.attach.map fun ⟨s, m⟩ => ((s.head (ne_nil_of_mem_splitBy m)).2, s.map (·.1))
 
 variable {α} [LE α] [DecidableRel ((· : α) ≤ ·)] [DecidableEq α]
   {xs : List α} {le eq : α → α → Bool}
