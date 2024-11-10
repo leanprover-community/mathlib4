@@ -130,6 +130,7 @@ theorem sup_ite (p : β → Prop) [DecidablePred p] :
     (s.sup fun i => ite (p i) (f i) (g i)) = (s.filter p).sup f ⊔ (s.filter fun i => ¬p i).sup g :=
   fold_ite _
 
+@[gcongr]
 theorem sup_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.sup f ≤ s.sup g :=
   Finset.sup_le fun b hb => le_trans (h b hb) (le_sup hb)
 
@@ -354,6 +355,7 @@ theorem inf_ite (p : β → Prop) [DecidablePred p] :
     (s.inf fun i ↦ ite (p i) (f i) (g i)) = (s.filter p).inf f ⊓ (s.filter fun i ↦ ¬ p i).inf g :=
   fold_ite _
 
+@[gcongr]
 theorem inf_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.inf f ≤ s.inf g :=
   Finset.le_inf fun b hb => le_trans (inf_le hb) (h b hb)
 
@@ -805,7 +807,7 @@ theorem sup'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ 
     s.sup' H f = t.sup' (h₁ ▸ H) g := by
   subst s
   refine eq_of_forall_ge_iff fun c => ?_
-  simp (config := { contextual := true }) only [sup'_le_iff, h₂]
+  simp +contextual only [sup'_le_iff, h₂]
 
 theorem comp_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonempty) {f : β → α}
     (g : α → γ) (g_sup : ∀ x y, g (x ⊔ y) = g x ⊔ g y) : g (s.sup' H f) = s.sup' H (g ∘ f) := by
@@ -1179,7 +1181,6 @@ theorem count_finset_sup [DecidableEq β] (s : Finset α) (f : α → Multiset �
   · exact count_zero _
   · intro i s _ ih
     rw [Finset.sup_insert, sup_eq_union, count_union, Finset.sup_insert, ih]
-    rfl
 
 theorem mem_sup {α β} [DecidableEq β] {s : Finset α} {f : α → Multiset β} {x : β} :
     x ∈ s.sup f ↔ ∃ v ∈ s, x ∈ f v := by

@@ -44,7 +44,7 @@ lemma range_toUniformOnFun [DecidableEq ι] [TopologicalSpace F] :
   ext f
   constructor
   · rintro ⟨f, rfl⟩
-    exact ⟨f.cont, f.map_add, f.map_smul⟩
+    exact ⟨f.cont, f.map_update_add, f.map_update_smul⟩
   · rintro ⟨hcont, hadd, hsmul⟩
     exact ⟨⟨⟨f, by intro; convert hadd, by intro; convert hsmul⟩, hcont⟩, rfl⟩
 

@@ -250,6 +250,8 @@ section CompleteLattice
 
 /- Complete lattice structure on `Filter α`. -/
 instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
+  inf a b := min a b
+  sup a b := max a b
   le_sup_left _ _ _ h := h.1
   le_sup_right _ _ _ h := h.2
   sup_le _ _ _ h₁ h₂ _ h := ⟨h₁ h, h₂ h⟩
@@ -1160,11 +1162,11 @@ theorem EventuallyEq.smul {𝕜} [SMul 𝕜 β] {l : Filter α} {f f' : α → �
     (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') : (fun x => f x • g x) =ᶠ[l] fun x => f' x • g' x :=
   hf.comp₂ (· • ·) hg
 
-theorem EventuallyEq.sup [Sup β] {l : Filter α} {f f' g g' : α → β} (hf : f =ᶠ[l] f')
+theorem EventuallyEq.sup [Max β] {l : Filter α} {f f' g g' : α → β} (hf : f =ᶠ[l] f')
     (hg : g =ᶠ[l] g') : (fun x => f x ⊔ g x) =ᶠ[l] fun x => f' x ⊔ g' x :=
   hf.comp₂ (· ⊔ ·) hg
 
-theorem EventuallyEq.inf [Inf β] {l : Filter α} {f f' g g' : α → β} (hf : f =ᶠ[l] f')
+theorem EventuallyEq.inf [Min β] {l : Filter α} {f f' g g' : α → β} (hf : f =ᶠ[l] f')
     (hg : g =ᶠ[l] g') : (fun x => f x ⊓ g x) =ᶠ[l] fun x => f' x ⊓ g' x :=
   hf.comp₂ (· ⊓ ·) hg
 

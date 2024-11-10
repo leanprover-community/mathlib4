@@ -568,6 +568,16 @@ lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
 
 lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_add_C_eq_zero_iff.not
 
+lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
+    p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
+  convert (map_dvd_iff <| algEquivAevalXAddC a).symm using 2
+  rw [C_eq_algebraMap, algEquivAevalXAddC_apply, ← comp_eq_aeval]
+  simp [comp_assoc]
+
+lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
+    p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
+  simpa using dvd_comp_X_sub_C_iff p q (-a)
+
 variable [IsDomain R]
 
 lemma units_coeff_zero_smul (c : R[X]ˣ) (p : R[X]) : (c : R[X]).coeff 0 • p = c * p := by
