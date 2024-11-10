@@ -669,7 +669,7 @@ omit [(x : B) → Module 𝕜 (E₁ x)] [(x : B) → Module 𝕜 (E₂ x)] [Vect
   [VectorBundle 𝕜 F₂ E₂] [SmoothVectorBundle F₁ E₁ IB] [SmoothVectorBundle F₂ E₂ IB] in
 /-- Given smooth fiber bundles `E₁`, `E₂` over a manifold `B`, if `φ` is a map into the total space
 of `E₁ ×ᵇ E₂`, then its smoothness can be checked by checking the smoothness of (1) the map
-`TotalSpace.Prod.fst ∘ φ` into the total space of `E₁`, and (ii) the map `TotalSpace.Prod.snd ∘ φ`
+`TotalSpace.Prod.fst ∘ φ` into the total space of `E₁`, and (2) the map `TotalSpace.Prod.snd ∘ φ`
 into the total space of `E₂`. -/
 theorem Bundle.Prod.smooth_of_smooth_fst_comp_of_smooth_snd_comp
     {φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
@@ -697,6 +697,20 @@ theorem Bundle.Prod.smooth_of_smooth_fst_comp_of_smooth_snd_comp
       rw [contMDiffAt_iff_contDiffAt]
       exact contDiffAt_snd
     exact (this _).comp _ h2.2
+
+/-- Given smooth vector bundles `E₁`, `E₂` over a manifold `B`, a map `φ` into the total space of
+`E₁ ×ᵇ E₂` is smooth if and only if the following two maps are smooth: (1) the map
+`TotalSpace.Prod.fst ∘ φ` into the total space of `E₁`, and (2) the map `TotalSpace.Prod.snd ∘ φ`
+into the total space of `E₂`. -/
+theorem Bundle.Prod.smooth_iff_smooth_fst_comp_smooth_snd_comp
+    {φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)} :
+    Smooth IM (IB.prod 𝓘(𝕜, F₁ × F₂)) φ ↔
+    (Smooth IM (IB.prod 𝓘(𝕜, F₁)) (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ∘ φ)
+    ∧ Smooth IM (IB.prod 𝓘(𝕜, F₂)) (TotalSpace.Prod.snd F₁ F₂ E₁ E₂ ∘ φ)) := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
+  · exact (Bundle.Prod.smooth_fst F₁ E₁ F₂ E₂).comp h
+  · exact (Bundle.Prod.smooth_snd F₁ E₁ F₂ E₂).comp h
+  · exact Bundle.Prod.smooth_of_smooth_fst_comp_of_smooth_snd_comp F₁ E₁ F₂ E₂ h₁ h₂
 
 end Prod
 

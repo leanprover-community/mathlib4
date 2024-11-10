@@ -41,6 +41,8 @@ instance SmoothVectorBundle.pullback : SmoothVectorBundle F (f *ᵖ E) IB' where
     rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]
     exacts [rfl, hb]
 
+variable {IB'}
+
 /-- For a smooth vector bundle `E` over a manifold `B` and a smooth map `f : B' → B`, the natural
 "lift" map from the total space of `f *ᵖ E` to the total space of `E` is smooth. -/
 theorem Bundle.Pullback.smooth_lift :
@@ -59,7 +61,7 @@ variable {M EM HM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] [Topolo
 omit [(x : B) → Module 𝕜 (E x)] in
 /-- Given a smooth fibre bundle `E` over a manifold `B` and a smooth map `f : B' → B`, if `φ` is
 a map into the total space of the pullback `f *ᵖ E`, then its smoothness can be checked by checking
-the smoothness of (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (ii) the map
+the smoothness of (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (2) the map
 `Pullback.lift f ∘ φ` into the total space of `E`. -/
 theorem Bundle.Pullback.smooth_of_smooth_proj_comp_of_smooth_lift_comp
     {φ : M → TotalSpace F (f *ᵖ E)} (h1 : Smooth IM IB' (TotalSpace.proj ∘ φ))
@@ -78,3 +80,16 @@ theorem Bundle.Pullback.smooth_of_smooth_proj_comp_of_smooth_lift_comp
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_snd
   exact (this _).comp _ h2.2
+
+/-- Given a smooth fibre bundle `E` over a manifold `B` and a smooth map `f : B' → B`, a map `φ`
+into the total space of the pullback `f *ᵖ E` is smooth if and only if the following two maps are
+smooth: (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (2) the map `Pullback.lift f ∘ φ` into the
+total space of `E`. -/
+theorem Bundle.Pullback.smooth_iff_smooth_proj_comp_and_smooth_lift_comp
+    {φ : M → TotalSpace F (f *ᵖ E)} :
+    Smooth IM (IB'.prod 𝓘(𝕜, F)) φ ↔
+    (Smooth IM IB' (TotalSpace.proj ∘ φ) ∧ Smooth IM (IB.prod 𝓘(𝕜, F)) (Pullback.lift f ∘ φ)) := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
+  · exact (Bundle.smooth_proj (f *ᵖ E)).comp h
+  · exact (Bundle.Pullback.smooth_lift F E f).comp h
+  · exact Bundle.Pullback.smooth_of_smooth_proj_comp_of_smooth_lift_comp F E f h₁ h₂
