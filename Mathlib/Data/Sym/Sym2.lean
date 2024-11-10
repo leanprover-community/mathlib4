@@ -598,7 +598,7 @@ theorem mem_equivSym_symm_iff_mem (m : Sym α 2) (a : α) : a ∈ (equivSym α).
   mem_equivSym_symm_iff_mem_of_eq m _ _ rfl
 
 theorem equivSym_map_comm (f : α → β) (s : Sym2 α) :
-  (Sym2.equivSym β) (s.map f) = (Sym2.equivSym _ s).map f := by
+    (Sym2.equivSym β) (s.map f) = (Sym2.equivSym _ s).map f := by
   induction' s with x y
   rfl
 
