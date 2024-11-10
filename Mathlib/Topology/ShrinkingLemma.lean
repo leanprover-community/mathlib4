@@ -266,9 +266,9 @@ variable {u : ι → Set X} {s : Set X} [T2Space X] [LocallyCompactSpace X]
 and `i` is an index such that `i ∉ v.carrier`, then there exists a partial refinement that is
 strictly greater than `v`. -/
 theorem exists_gt_t2space (v : PartialRefinement u s (fun X => IsCompact (closure X)))
-    (hs : IsCompact s) (i : ι)
-    (hi : i ∉ v.carrier) : ∃ v' : PartialRefinement u s (fun X => IsCompact (closure X)),
-    v < v' ∧ IsCompact (closure (v' i)) := by
+    (hs : IsCompact s) (i : ι) (hi : i ∉ v.carrier) :
+    ∃ v' : PartialRefinement u s (fun X => IsCompact (closure X)),
+      v < v' ∧ IsCompact (closure (v' i)) := by
   -- take `v i` such that `closure (v i)` is compact
   set si := s ∩ (⋃ j ≠ i, v j)ᶜ with hsi
   simp only [ne_eq, compl_iUnion] at hsi
@@ -341,7 +341,7 @@ is contained in the corresponding original open set. -/
 theorem exists_subset_iUnion_closure_subset_t2space (hs : IsCompact s) (uo : ∀ i, IsOpen (u i))
     (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsOpen (v i)) ∧ (∀ i, closure (v i) ⊆ u i)
-    ∧ (∀ i, IsCompact (closure (v i))) := by
+      ∧ (∀ i, IsCompact (closure (v i))) := by
   haveI : Nonempty (PartialRefinement u s (fun X => IsCompact (closure X))) :=
     ⟨⟨u, ∅, uo, us, False.elim, False.elim, fun _ => rfl⟩⟩
   have : ∀ c : Set (PartialRefinement u s (fun X => IsCompact (closure X))),
@@ -364,7 +364,7 @@ original open set. See also `exists_subset_iUnion_closure_subset_t2space` for a 
 theorem exists_subset_iUnion_compact_subset_t2space (hs : IsCompact s) (uo : ∀ i, IsOpen (u i))
     (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsClosed (v i)) ∧ (∀ i, v i ⊆ u i)
-    ∧ ∀ i, IsCompact (v i) := by
+      ∧ ∀ i, IsCompact (v i) := by
   let ⟨v, hsv, _, hv⟩ := exists_subset_iUnion_closure_subset_t2space hs uo uf us
   use fun i => closure (v i)
   refine ⟨?_, ?_, ?_⟩

@@ -301,7 +301,8 @@ theorem exists_finset_nhd_support_subset {U : ι → Set X} (hso : f.IsSubordina
 `fun x ↦ ∑ᶠ i, f i x • g i x` is a continuous function. -/
 theorem IsSubordinate.continuous_finsum_smul [ContinuousAdd E] {U : ι → Set X}
     (ho : ∀ i, IsOpen (U i)) (hf : f.IsSubordinate U) {g : ι → X → E}
-    (hg : ∀ i, ContinuousOn (g i) (U i)) : Continuous fun x => ∑ᶠ i, f i x • g i x :=
+    (hg : ∀ i, ContinuousOn (g i) (U i)) :
+    Continuous fun x => ∑ᶠ i, f i x • g i x :=
   f.continuous_finsum_smul fun i _ hx => (hg i).continuousAt <| (ho i).mem_nhds <| hf i hx
 
 end PartitionOfUnity
@@ -373,7 +374,8 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop [NormalSpace X] (p : (X �
     (h01 : ∀ s t, IsClosed s → IsClosed t → Disjoint s t →
       ∃ f : C(X, ℝ), p f ∧ EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1)
     (hs : IsClosed s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
-    (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U := by
+    (hU : s ⊆ ⋃ i, U i) :
+    ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U := by
   rcases exists_subset_iUnion_closure_subset hs ho (fun x _ => hf.point_finite x) hU with
     ⟨V, hsV, hVo, hVU⟩
   have hVU' : ∀ i, V i ⊆ U i := fun i => Subset.trans subset_closure (hVU i)
@@ -435,8 +437,9 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop_t2space [LocallyCompactSpa
     (p : (X → ℝ) → Prop) (h01 : ∀ s t, IsClosed s → IsCompact t → Disjoint s t → ∃ f : C(X, ℝ),
     p f ∧ EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1)
     (hs : IsCompact s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
-    (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U ∧
-    ∀ i, HasCompactSupport (f i) := by
+    (hU : s ⊆ ⋃ i, U i) :
+    ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U ∧
+      ∀ i, HasCompactSupport (f i) := by
   rcases exists_subset_iUnion_closure_subset_t2space hs ho (fun x _ => hf.point_finite x) hU with
     ⟨V, hsV, hVo, hVU, hcp⟩
   have hVU' i : V i ⊆ U i := subset_closure.trans (hVU i)
@@ -460,8 +463,8 @@ paracompact space, then the assumption `hf : LocallyFinite U` can be omitted, se
 theorem exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space [LocallyCompactSpace X]
     [T2Space X]
     (hs : IsCompact s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
-    (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, f.IsSubordinate U ∧
-    ∀ i, HasCompactSupport (f i) :=
+    (hU : s ⊆ ⋃ i, U i) :
+    ∃ f : BumpCovering ι X s, f.IsSubordinate U ∧ ∀ i, HasCompactSupport (f i) := by
   -- need to switch 0 and 1 in `exists_continuous_zero_one_of_isCompact`
   simpa using
     exists_isSubordinate_of_locallyFinite_of_prop_t2space (fun _ => True)
@@ -625,8 +628,8 @@ theorem exists_isSubordinate [NormalSpace X] [ParacompactSpace X] (hs : IsClosed
 compact set `s`, then there exists a `PartitionOfUnity ι X s` that is subordinate to `U`. -/
 theorem exists_isSubordinate_of_locallyFinite_t2space [LocallyCompactSpace X] [T2Space X]
     (hs : IsCompact s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
-    (hU : s ⊆ ⋃ i, U i) : ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U ∧
-    ∀ i, HasCompactSupport (f i) :=
+    (hU : s ⊆ ⋃ i, U i) :
+    ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U ∧ ∀ i, HasCompactSupport (f i) :=
   let ⟨f, hfsub, hfcp⟩ :=
     BumpCovering.exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space hs U ho hf hU
   ⟨f.toPartitionOfUnity, hfsub.toPartitionOfUnity, fun i => IsCompact.of_isClosed_subset (hfcp i)
@@ -640,9 +643,9 @@ supported continuous functions `{f i}_i` supported in `s i`, `∑ i, f i x = 1` 
 `0 ≤ f i x ≤ 1`. -/
 theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompactSpace X]
     {n : ℕ} {t : Set X} {s : Fin n → Set X} (hs : ∀ (i : Fin n), IsOpen (s i)) (htcp : IsCompact t)
-    (hst : t ⊆ ⋃ i, s i) : ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧
-    EqOn (∑ i, f i) 1 t ∧ (∀ (i : Fin n), ∀ (x : X), f i x ∈ Icc (0 : ℝ) 1) ∧ (∀ (i : Fin n),
-    HasCompactSupport (f i)) := by
+    (hst : t ⊆ ⋃ i, s i) :
+    ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧ EqOn (∑ i, f i) 1 t ∧
+    (∀ (i : Fin n), ∀ (x : X), f i x ∈ Icc (0 : ℝ) 1) ∧ (∀ (i : Fin n), HasCompactSupport (f i)) := by
   obtain ⟨f, hfsub, hfcp⟩ := PartitionOfUnity.exists_isSubordinate_of_locallyFinite_t2space htcp s
     hs (locallyFinite_of_finite _) hst
   use f.toFun

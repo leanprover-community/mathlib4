@@ -462,8 +462,8 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
 compact open set `s` such that `t ⊆ s`, there is a continuous function `f` supported in `s`,
 `f x = 1` on `t` and `0 ≤ f x ≤ 1`. -/
 lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
-    (hs : IsOpen s) (hscp : IsCompact (closure s)) (ht : IsClosed t) (hst : t ⊆ s) : ∃ f : C(X, ℝ),
-    tsupport f ⊆ s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
+    (hs : IsOpen s) (hscp : IsCompact (closure s)) (ht : IsClosed t) (hst : t ⊆ s) :
+    ∃ f : C(X, ℝ), tsupport f ⊆ s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
 -- separate `sᶜ` and `t` by `u` and `v`.
   rw [← compl_compl s] at hscp
   obtain ⟨u, v, huIsOpen, hvIsOpen, hscompl_subset_u, ht_subset_v, hDjsjointuv⟩ :=
