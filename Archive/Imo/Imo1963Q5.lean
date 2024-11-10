@@ -8,7 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 /-!
 # IMO 1963 Q5
 
-Prove the equality `cos (π / 7) - cos (2 * π / 7) + cos (3 * π / 7) = 1 / 2`.
+Prove that `cos (π / 7) - cos (2 * π / 7) + cos (3 * π / 7) = 1 / 2`.
 
 The main idea of the proof is multiply both sides by `2 * sin (π / 7)`, then the result follows
 through basic algebraic manipulations with the use of some trigonometric identities.
