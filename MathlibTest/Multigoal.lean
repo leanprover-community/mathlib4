@@ -19,7 +19,8 @@ example : True := by
 #guard_msgs(drop warning) in
 set_option linter.style.multiGoal true in
 /--
-warning: There are 2 unclosed goals before 'exact .intro' and at least one remaining goal afterwards.
+warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
+  exact .intro
 Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
@@ -32,7 +33,8 @@ example : True := by
 #guard_msgs(drop warning) in
 set_option linter.style.multiGoal true in
 /--
-warning: There are 2 unclosed goals before 'assumption' and at least one remaining goal afterwards.
+warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
+  assumption
 Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
@@ -58,7 +60,8 @@ set_option linter.unusedTactic false in
 #guard_msgs(drop warning) in
 set_option linter.style.multiGoal true in
 /--
-warning: There are 2 unclosed goals before 'rfl' and at least one remaining goal afterwards.
+warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
+  rfl
 Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
@@ -73,11 +76,13 @@ example (p : Prop) (hp : p) : (0 = 0 ∧ p) ∨ 0 = 0 := by
 #guard_msgs(drop warning) in
 set_option linter.style.multiGoal true in
 /--
-warning: There are 3 unclosed goals before 'rfl' and at least one remaining goal afterwards.
+warning: The following tactic starts with 3 goals and ends with 2 goals, 2 of which are not operated on.
+  rfl
 Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 ---
-warning: There are 2 unclosed goals before 'trivial' and at least one remaining goal afterwards.
+warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
+  trivial
 Please focus on the current goal, for instance using `·` (typed as "\.").
 note: this linter can be disabled with `set_option linter.style.multiGoal false`
 -/
@@ -129,3 +134,13 @@ example : True := by
   fail_if_success done
   success_if_fail_with_msg "internal exception #4" done
   exact .intro
+
+/-!
+Testing that it does not flag tactics that do nothing.
+This used to trigger the multigoal linter.
+-/
+elab "my_skip" : tactic => pure ()
+set_option linter.unusedTactic false in
+example : True := by
+  my_skip
+  trivial
