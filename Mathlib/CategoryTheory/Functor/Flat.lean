@@ -57,12 +57,14 @@ section RepresentablyFlat
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 variable {E : Type u₃} [Category.{v₃} E]
 
-/-- A functor `F : C ⥤ D` is representably-flat functor if the comma category `(X/F)`
-is cofiltered for each `X : C`.
+/-- A functor `F : C ⥤ D` is representably flat if the comma category `(X/F)` is cofiltered for
+each `X : D`.
 -/
 class RepresentablyFlat (F : C ⥤ D) : Prop where
   cofiltered : ∀ X : D, IsCofiltered (StructuredArrow X F)
 
+/-- A functor `F : C ⥤ D` is representably coflat if the comma category `(F/X)` is filtered for
+each `X : D`. -/
 class RepresentablyCoflat (F : C ⥤ D) : Prop where
   filtered : ∀ X : D, IsFiltered (CostructuredArrow F X)
 
