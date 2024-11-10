@@ -88,13 +88,7 @@ end IsLocalization
 theorem Cardinal.mk_fractionRing (R : Type u) [CommRing R] : #(FractionRing R) = #R :=
   IsLocalization.cardinal_mk (FractionRing R) R⁰ le_rfl
 
-namespace FractionRing
-
-variable (R)
-
-alias cardinal_mk := Cardinal.mk_fractionRing
-
-end FractionRing
+alias FractionRing.cardinal_mk := Cardinal.mk_fractionRing
 
 namespace IsFractionRing
 

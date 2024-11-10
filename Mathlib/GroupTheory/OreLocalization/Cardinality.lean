@@ -21,7 +21,7 @@ This file contains some results on cardinality of Ore localizations.
 
 universe u v
 
-open Cardinal
+open Cardinal Function
 
 namespace OreLocalization
 
