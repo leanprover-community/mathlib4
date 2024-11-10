@@ -146,7 +146,7 @@ instance monoidalPredicate_module_finite :
   prop_id := Module.Finite.self R
   prop_tensor := @fun X Y _ _ => Module.Finite.tensorProduct R X Y
 
-instance : MonoidalCategory (FGModuleCat R) := by
+instance instMonoidalCategory : MonoidalCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
@@ -167,24 +167,12 @@ instance : MonoidalLinear R (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-/-- The forgetful functor `FGModuleCat R ⥤ Module R` as a monoidal functor. -/
-def forget₂Monoidal : MonoidalFunctor (FGModuleCat R) (ModuleCat.{u} R) :=
-  MonoidalCategory.fullMonoidalSubcategoryInclusion _
+/-- The forgetful functor `FGModuleCat R ⥤ Module R` is a monoidal functor. -/
+instance : (forget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R)).Monoidal :=
+  fullSubcategoryInclusionMonoidal _
 
-instance forget₂Monoidal_faithful : (forget₂Monoidal R).Faithful := by
-  dsimp [forget₂Monoidal]
-  -- Porting note (#11187): was `infer_instance`
-  exact FullSubcategory.faithful _
-
-instance forget₂Monoidal_additive : (forget₂Monoidal R).Additive := by
-  dsimp [forget₂Monoidal]
-  -- Porting note (#11187): was `infer_instance`
-  exact Functor.fullSubcategoryInclusion_additive _
-
-instance forget₂Monoidal_linear : (forget₂Monoidal R).Linear R := by
-  dsimp [forget₂Monoidal]
-  -- Porting note (#11187): was `infer_instance`
-  exact Functor.fullSubcategoryInclusionLinear _ _
+instance : (forget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R)).Additive where
+instance : (forget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R)).Linear R where
 
 theorem Iso.conj_eq_conj {V W : FGModuleCat R} (i : V ≅ W) (f : End V) :
     Iso.conj i f = LinearEquiv.conj (isoToLinearEquiv i) f :=
