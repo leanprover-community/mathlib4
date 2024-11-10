@@ -198,7 +198,8 @@ def addBenchSummaryComment (PR : Nat) (repo : String)
   IO.FS.writeFile (tempFile ++ ".src") bench
 
   -- Extract all instruction changes whose magnitude is larger than `threshold`.
-  let threshold := s!"{10 ^ 9}"
+  let thr := 10 ^ 9
+  let threshold := s!"{thr}"
   let jq1 : IO.Process.SpawnArgs :=
     { cmd := "jq"
       args := #["-r", "--arg", "thr", threshold,
@@ -224,7 +225,7 @@ def addBenchSummaryComment (PR : Nat) (repo : String)
   if secondFilter == "" then
     let _ ← IO.Process.run
       { cmd := "gh", args := #["pr", "comment", PR, "--repo", repo, "--body",
-        s!"No benchmark entry differed by at least {threshold} instructions"] }
+        s!"No benchmark entry differed by at least {formatDiff thr} instructions"] }
   else
   IO.FS.writeFile tempFile secondFilter
   let jq3 : IO.Process.SpawnArgs :=
@@ -240,6 +241,9 @@ def addBenchSummaryComment (PR : Nat) (repo : String)
   let _ ← IO.Process.run add_comment
 
 end BenchAction
+
+
+--run_cmd BenchAction.addBenchSummaryComment 18812 "leanprover-community/mathlib4" "adomani"
 
 -- CI adds the following line, replacing `putPR` with the PR number:
 --run_cmd BenchAction.addBenchSummaryComment putPR "leanprover-community/mathlib4" "adomani"
