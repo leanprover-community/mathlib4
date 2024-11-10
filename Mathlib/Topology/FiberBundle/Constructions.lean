@@ -116,12 +116,12 @@ alias FiberBundle.Prod.inducing_diag := FiberBundle.Prod.isInducing_diag
 /-- For vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
 total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is continuous. -/
 theorem Bundle.Prod.continuous_fst : Continuous (TotalSpace.Prod.fst F₁ F₂ E₁ E₂) :=
-  _root_.continuous_fst.comp (FiberBundle.Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
+  _root_.continuous_fst.comp (FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
 
 /-- For fiber bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
 total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is continuous. -/
 theorem FiberBundle.Prod.continuous_snd : Continuous (TotalSpace.Prod.snd F₁ F₂ E₁ E₂) :=
-  _root_.continuous_snd.comp (FiberBundle.Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
+  _root_.continuous_snd.comp (FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
 
 variable {F₁ F₂ E₁ E₂} in
 /-- Given fiber bundles `E₁`, `E₂` over a space `B`, if `φ` is a map into the total space of
@@ -133,7 +133,7 @@ theorem FiberBundle.Prod.continuous_of_continuous_fst_comp_of_continuous_snd_com
     (h1 : Continuous (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ∘ φ))
     (h2 : Continuous (TotalSpace.Prod.snd F₁ F₂ E₁ E₂ ∘ φ)) :
     Continuous φ := by
-  rw [(FiberBundle.Prod.inducing_diag F₁ E₁ F₂ E₂).continuous_iff]
+  rw [(FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous_iff]
   exact h1.prod_mk h2
 
 end Defs
