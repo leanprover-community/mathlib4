@@ -60,7 +60,8 @@ lemma colimit_no_zero_smul_divisor
     (F : J ⥤ C) [PreservesColimit F (forget C)] [IsFiltered J] [HasColimit F]
     (R : Type*) [Semiring R]
     [∀ c : C, AddCommMonoid c] [∀ c : C, Module R c]
-    [∀ {c c' : C}, LinearMapClass (c ⟶ c') R c c']
+    [∀ {c c' : C}, ZeroHomClass (c ⟶ c') c c']
+    [∀ {c c' : C}, MulActionHomClass (c ⟶ c') R c c']
     (r : R) (H : ∃ (j' : J), ∀ (j : J) (_ : j' ⟶ j), ∀ (c : F.obj j), r • c = 0 → c = 0)
     (x : (forget C).obj (colimit F)) (hx : r • x = 0) : x = 0 := by
   classical
