@@ -145,8 +145,8 @@ lemma ofComplex_apply_eq_ite (w : ℂ) :
     exact (a.prop.not_le (by simpa using hw)).elim
 
 lemma ofComplex_apply_of_im_pos {z : ℂ} (hz : 0 < z.im) :
-    ofComplex z = ⟨z, hz⟩ :=
-  by simpa only [coe_mk_subtype] using ofComplex_apply ⟨z, hz⟩
+    ofComplex z = ⟨z, hz⟩ := by
+  simpa only [coe_mk_subtype] using ofComplex_apply ⟨z, hz⟩
 
 lemma ofComplex_apply_of_im_nonpos {w : ℂ} (hw : w.im ≤ 0) :
     ofComplex w = Classical.choice inferInstance := by
