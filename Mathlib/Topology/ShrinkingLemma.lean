@@ -265,9 +265,9 @@ variable {u : ι → Set X} {s : Set X} [T2Space X] [LocallyCompactSpace X]
 /-- In a locally compact Hausdorff space `X`, if `s` is a compact set, `v` is a partial refinement,
 and `i` is an index such that `i ∉ v.carrier`, then there exists a partial refinement that is
 strictly greater than `v`. -/
-theorem exists_gt_t2space (v : PartialRefinement u s (fun X => IsCompact (closure X)))
+theorem exists_gt_t2space (v : PartialRefinement u s (fun w => IsCompact (closure w)))
     (hs : IsCompact s) (i : ι) (hi : i ∉ v.carrier) :
-    ∃ v' : PartialRefinement u s (fun X => IsCompact (closure X)),
+    ∃ v' : PartialRefinement u s (fun w => IsCompact (closure w)),
       v < v' ∧ IsCompact (closure (v' i)) := by
   -- take `v i` such that `closure (v i)` is compact
   set si := s ∩ (⋃ j ≠ i, v j)ᶜ with hsi
@@ -342,9 +342,9 @@ theorem exists_subset_iUnion_closure_subset_t2space (hs : IsCompact s) (uo : ∀
     (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsOpen (v i)) ∧ (∀ i, closure (v i) ⊆ u i)
       ∧ (∀ i, IsCompact (closure (v i))) := by
-  haveI : Nonempty (PartialRefinement u s (fun X => IsCompact (closure X))) :=
+  haveI : Nonempty (PartialRefinement u s (fun w => IsCompact (closure w))) :=
     ⟨⟨u, ∅, uo, us, False.elim, False.elim, fun _ => rfl⟩⟩
-  have : ∀ c : Set (PartialRefinement u s (fun X => IsCompact (closure X))),
+  have : ∀ c : Set (PartialRefinement u s (fun w => IsCompact (closure w))),
       IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
     fun c hc ne => ⟨.chainSup c hc ne uf us, fun v hv => PartialRefinement.le_chainSup _ _ _ _ hv⟩
   rcases zorn_le_nonempty this with ⟨v, hv⟩
