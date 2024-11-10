@@ -174,6 +174,23 @@ lemma pow_unbounded_of_one_lt [ExistsAddOfLE α] (x : α) (hy1 : 1 < y) : ∃ n 
 
 end StrictOrderedSemiring
 
+section OrderedRing
+
+variable {R : Type*} [OrderedRing R] [Archimedean R]
+
+theorem exists_int_ge (x : R) : ∃ n : ℤ, x ≤ n := let ⟨n, h⟩ := exists_nat_ge x; ⟨n, mod_cast h⟩
+
+theorem exists_int_le (x : R) : ∃ n : ℤ, n ≤ x :=
+  let ⟨n, h⟩ := exists_int_ge (-x); ⟨-n, by simpa [neg_le] using h⟩
+
+instance (priority := 100) : IsDirected R (· ≥ ·) where
+  directed a b :=
+    let ⟨m, hm⟩ := exists_int_le a; let ⟨n, hn⟩ := exists_int_le b
+    ⟨(min m n : ℤ), le_trans (Int.cast_mono <| min_le_left _ _) hm,
+      le_trans (Int.cast_mono <| min_le_right _ _) hn⟩
+
+end OrderedRing
+
 section StrictOrderedRing
 variable [StrictOrderedRing α] [Archimedean α]
 
