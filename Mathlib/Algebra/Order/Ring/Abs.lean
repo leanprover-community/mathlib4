@@ -116,6 +116,9 @@ lemma abs_lt_of_sq_lt_sq' (h : a ^ 2 < b ^ 2) (hb : 0 ≤ b) : -b < a ∧ a < b 
 lemma abs_le_of_sq_le_sq (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : |a| ≤ b := by
   rwa [← abs_of_nonneg hb, ← sq_le_sq]
 
+theorem le_of_sq_le_sq (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : a ≤ b :=
+  le_abs_self a |>.trans <| abs_le_of_sq_le_sq h hb
+
 lemma abs_le_of_sq_le_sq' (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : -b ≤ a ∧ a ≤ b :=
   abs_le.1 <| abs_le_of_sq_le_sq h hb
 
