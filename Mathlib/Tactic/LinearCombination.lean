@@ -71,8 +71,8 @@ def rescale (lems : Ineq.WithStrictness → Name) (ty : Expr) (p c : Term) :
     let e₂ ← withSynthesizeLight <| Term.elabTerm c ty
     let (strict, hc₂) ← Meta.Positivity.bestResult e₂
     let i := mkIdent <| lems (.lt strict)
-    let p' : TermElabM Term := ``($i $p $(← hc₂.toSyntax))
-    if strict then .proof lt <$> p' else .proof le <$> p'
+    let p' : Term ← ``($i $p $(← hc₂.toSyntax))
+    if strict then pure (.proof lt p') else pure (.proof le p')
 
 /--
 Performs macro expansion of a linear combination expression,
