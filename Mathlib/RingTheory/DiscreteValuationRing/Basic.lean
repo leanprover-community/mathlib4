@@ -454,24 +454,6 @@ section
 variable (A : Type u) [CommRing A] [IsDomain A] [DiscreteValuationRing A]
 
 /-- A DVR is a valuation ring. -/
-instance (priority := 100) of_discreteValuationRing : ValuationRing A := by
-  constructor
-  intro a b
-  by_cases ha : a = 0; · use 0; right; simp [ha]
-  by_cases hb : b = 0; · use 0; left; simp [hb]
-  obtain ⟨ϖ, hϖ⟩ := DiscreteValuationRing.exists_irreducible A
-  obtain ⟨m, u, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible ha hϖ
-  obtain ⟨n, v, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible hb hϖ
-  rcases le_total m n with h | h
-  · use (u⁻¹ * v : Aˣ) * ϖ ^ (n - m); left
-    simp_rw [mul_comm (u : A), Units.val_mul, ← mul_assoc, mul_assoc _ (u : A)]
-    simp only [Units.mul_inv, mul_one, mul_comm _ (v : A), mul_assoc, ← pow_add]
-    congr 2
-    exact Nat.add_sub_of_le h
-  · use (v⁻¹ * u : Aˣ) * ϖ ^ (m - n); right
-    simp_rw [mul_comm (v : A), Units.val_mul, ← mul_assoc, mul_assoc _ (v : A)]
-    simp only [Units.mul_inv, mul_one, mul_comm _ (u : A), mul_assoc, ← pow_add]
-    congr 2
-    exact Nat.add_sub_of_le h
+instance (priority := 100) of_discreteValuationRing : ValuationRing A := inferInstance
 
 end

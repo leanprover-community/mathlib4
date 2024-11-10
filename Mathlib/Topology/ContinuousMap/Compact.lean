@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Topology.ContinuousMap.Bounded
+import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Sets.Compacts
@@ -222,6 +223,9 @@ theorem apply_le_norm (f : C(α, ℝ)) (x : α) : f x ≤ ‖f‖ :=
 theorem neg_norm_le_apply (f : C(α, ℝ)) (x : α) : -‖f‖ ≤ f x :=
   le_trans (neg_le_neg (f.norm_coe_le_norm x)) (neg_le.mp (neg_le_abs (f x)))
 
+theorem nnnorm_eq_iSup_nnnorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
+  (mkOfCompact f).nnnorm_eq_iSup_nnnorm
+
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
 
@@ -336,6 +340,16 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
   rfl
 
 end
+
+@[simp] lemma nnnorm_smul_const {R β : Type*} [NormedAddCommGroup β] [NormedDivisionRing R]
+    [Module R β] [BoundedSMul R β] (f : C(α, R)) (b : β) :
+    ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
+  simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
+
+@[simp] lemma norm_smul_const {R β : Type*} [NormedAddCommGroup β] [NormedDivisionRing R]
+    [Module R β] [BoundedSMul R β] (f : C(α, R)) (b : β) :
+    ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
+  simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
 
 section
 

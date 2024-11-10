@@ -251,7 +251,7 @@ def openCover (D : Scheme.GlueData) : OpenCover D.glued where
 
 end GlueData
 
-namespace OpenCover
+namespace Cover
 
 variable {X : Scheme.{u}} (𝒰 : OpenCover.{u} X)
 
@@ -380,8 +380,7 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.base := by
   · exact ⟨hx, 𝒰.covers x⟩
 
 theorem fromGlued_isOpenEmbedding : IsOpenEmbedding 𝒰.fromGlued.base :=
-  isOpenEmbedding_of_continuous_injective_open
-    (by fun_prop) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
+  .of_continuous_injective_isOpenMap (by fun_prop) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
 
 @[deprecated (since := "2024-10-18")]
 alias fromGlued_openEmbedding := fromGlued_isOpenEmbedding
@@ -439,7 +438,7 @@ theorem hom_ext {Y : Scheme} (f₁ f₂ : X ⟶ Y) (h : ∀ x, 𝒰.map x ≫ f�
   erw [Multicoequalizer.π_desc_assoc]
   exact h x
 
-end OpenCover
+end Cover
 
 end Scheme
 
