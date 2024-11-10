@@ -3,7 +3,6 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Control.Basic
 import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Compare
@@ -46,9 +45,9 @@ inductive Expanded
   /-- A value, equivalently a proof of `c = c`. -/
   | const (c : Syntax.Term)
 
-/-- The handling in `linear_combination` of left- and right-multiplication and of division all
-all three proceed according to the same logic, specified here: given a proof `p` of an (in)equality
-and a constant `c`,
+/-- The handling in `linear_combination` of left- and right-multiplication and of division all three
+proceed according to the same logic, specified here: given a proof `p` of an (in)equality and a
+constant `c`,
 * if `p` is a proof of an equation, multiply/divide through by `c`;
 * if `p` is a proof of a non-strict inequality, run `positivity` to find a proof that `c` is
   nonnegative, then multiply/divide through by `c`, invoking the nonnegativity of `c` where needed;
