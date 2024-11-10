@@ -670,7 +670,7 @@ theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompac
     exact zero_le_one
   rw [← Finset.sum_singleton (f.toFun ·  x) i]
   apply le_trans _ (f.sum_le_one' x)
-  rw [finsum_eq_sum (f · x) (by exact toFinite (support (f · x)))]
+  rw [finsum_eq_sum (f.toFun ·  x) (by exact toFinite (support fun x_1 ↦ (f.toFun x_1) x))]
   simp only [Finite.toFinset_setOf, ne_eq]
   gcongr with z hz
   · exact fun j _ _ => f.nonneg j x
