@@ -1,0 +1,109 @@
+name: Discover `lean-pr-testing` branches
+
+on:
+  push:
+    branches:
+      - nightly-testing
+    paths:
+      - lean-toolchain
+
+jobs:
+  discover-lean-pr-testing:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout mathlib repository
+      uses: actions/checkout@v4
+      with:
+        repository: leanprover-community/mathlib
+        ref: nightly-testing
+        fetch-depth: 0  # Fetch all branches
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+
+    - name: Read date from lean-toolchain
+      id: fetch-date
+      run: |
+        TODAY=$(grep -oP 'nightly-\K\d{4}-\d{2}-\d{2}' lean-toolchain)
+        echo "TODAY=$TODAY" >> "$GITHUB_ENV"
+
+    - name: Set YESTERDAY
+      id: set-yesterday
+      run: |
+        YESTERDAY=$(date -d "$TODAY -1 day" +%Y-%m-%d)
+        echo "YESTERDAY=$YESTERDAY" >> "$GITHUB_ENV"
+
+    - name: Clone lean4-nightly repository and get PRs
+      id: get-prs
+      run: |
+        NIGHTLY_URL="https://github.com/leanprover/lean4-nightly.git"
+        
+        # Create a temporary directory for cloning
+        cd "$(mktemp -d)" || exit 1
+        
+        # Clone the repository with a depth of 30 (adjust as needed)
+        git clone --depth 30 "$NIGHTLY_URL"
+        
+        # Navigate to the cloned repository
+        cd lean4-nightly || exit 1
+        YESTERDAY="${{ steps.set-yesterday.outputs.yesterday }}"
+        TODAY="${{ steps.fetch-date.outputs.today }}"
+        PRS=$(git log --oneline "nightly-$YESTERDAY..nightly-$TODAY" | sed 's/.*(#\([0-9]\+\))$/\1/')
+        
+        # Output the PRs
+        echo "$PRS"
+        echo "prs=$PRS" >> "$GITHUB_OUTPUT"
+
+    - name: Use merged PRs information
+      id: find-branches
+      run: |
+        # Use the PRs from the previous step
+        PRS="${{ steps.get-prs.outputs.prs }}"
+        echo "$PRS" | tr ' ' '\n' > prs.txt
+        MATCHING_BRANCHES=$(git branch -r | grep -f prs.txt)
+
+        # Initialize an empty variable to store branches with relevant diffs
+        RELEVANT_BRANCHES=""
+
+        # Loop through each matching branch
+        for BRANCH in $MATCHING_BRANCHES; do
+            # Get the diff filenames
+            DIFF_FILES=$(git diff --name-only "origin/nightly-testing...$BRANCH")
+            
+            # Check if the diff contains files other than the specified ones
+            if echo "$DIFF_FILES" | grep -v -e 'lake-manifest.json' -e 'lakefile.lean' -e 'lean-toolchain'; then
+                # If it does, add the branch to RELEVANT_BRANCHES
+                RELEVANT_BRANCHES="$RELEVANT_BRANCHES $BRANCH"
+            fi
+        done
+
+        # Output the relevant branches
+        echo "'$RELEVANT_BRANCHES'"
+        echo "branches=$RELEVANT_BRANCHES" >> "$GITHUB_OUTPUT"
+
+    - name: Check if there are relevant branches
+      id: check-branches
+      run: |
+        if [ -z "${{ steps.find-branches.outputs.branches }}" ]; then
+          echo "no_branches=true" >> "$GITHUB_ENV"
+        else
+          echo "no_branches=false" >> "$GITHUB_ENV"
+        fi
+
+    - name: Send message on Zulip
+      if: env.no_branches == 'false'
+      uses: zulip/github-actions-zulip/send-message@v1
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'nightly-testing'
+        type: 'stream'
+        topic: 'Mathlib status updates'
+        content: |
+          We will need to merge the following branches into `nightly-testing`:
+
+          ${{ steps.find-branches.outputs.branches }}
