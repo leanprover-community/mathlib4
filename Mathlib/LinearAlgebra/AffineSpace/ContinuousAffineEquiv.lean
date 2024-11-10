@@ -73,9 +73,6 @@ instance instEquivLike : EquivLike (P₁ ≃ᵃL[k] P₂) P₁ P₂ where
   right_inv f := f.right_inv
   coe_injective' _ _ h _ := toAffineEquiv_injective (DFunLike.coe_injective h)
 
-instance : CoeFun (P₁ ≃ᵃL[k] P₂) fun _ ↦ P₁ → P₂ :=
-  DFunLike.hasCoeToFun
-
 attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 
 /-- Coerce continuous affine equivalences to affine equivalences. -/

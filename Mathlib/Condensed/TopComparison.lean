@@ -31,7 +31,7 @@ variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{w})
   (X : Type w') [TopologicalSpace X]
 
 /--
-An auxiliary lemma to that allows us to use `QuotientMap.lift` in the proof of
+An auxiliary lemma to that allows us to use `IsQuotientMap.lift` in the proof of
 `equalizerCondition_yonedaPresheaf`.
 -/
 theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullback π π]
@@ -50,7 +50,7 @@ theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullbac
   have h₂ : ∀ y, G.map (pullback.snd _ _) ((PreservesPullback.iso G π π).inv y) =
       pullback.snd (G.map π) (G.map π) y := by
     simp only [← PreservesPullback.iso_inv_snd]; intro y; rfl
-  erw [h₁, h₂, TopCat.pullbackIsoProdSubtype_inv_fst_apply,
+  rw [h₁, h₂, TopCat.pullbackIsoProdSubtype_inv_fst_apply,
     TopCat.pullbackIsoProdSubtype_inv_snd_apply] at ha'
   simpa using ha'
 
@@ -61,7 +61,7 @@ condition which is required to be a sheaf for the regular topology.
 -/
 theorem equalizerCondition_yonedaPresheaf
     [∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], PreservesLimit (cospan π π) G]
-    (hq : ∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], QuotientMap (G.map π)) :
+    (hq : ∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], IsQuotientMap (G.map π)) :
       EqualizerCondition (yonedaPresheaf G X) := by
   apply EqualizerCondition.mk
   intro Z B π _ _
@@ -113,7 +113,7 @@ def TopCat.toSheafCompHausLike :
     apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
       (CompHausLike.compHausLikeToTop.{u} P) X
     intro Z B π he
-    apply QuotientMap.of_surjective_continuous (hs _ he) π.continuous
+    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.continuous
 
 /--
 `TopCat.toSheafCompHausLike` yields a functor from `TopCat.{max u w}` to

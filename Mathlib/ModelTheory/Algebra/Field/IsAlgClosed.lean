@@ -49,7 +49,7 @@ namespace FirstOrder
 
 namespace Field
 
-open Ring FreeCommRing BigOperators Polynomial Language
+open Ring FreeCommRing Polynomial Language
 
 /-- A generic monic polynomial of degree `n` as an element of the
 free commutative ring in `n+1` variables, with a variable for each

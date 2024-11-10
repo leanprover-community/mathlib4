@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mitchell Rowett, Scott Morrison, Johan Commelin, Mario Carneiro,
+Authors: Johannes Hölzl, Mitchell Rowett, Kim Morrison, Johan Commelin, Mario Carneiro,
   Michael Howes
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
@@ -32,7 +32,7 @@ subgroup, subgroups, IsSubgroup
 
 open Set Function
 
-variable {G : Type*} {H : Type*} {A : Type*} {a a₁ a₂ b c : G}
+variable {G : Type*} {H : Type*} {A : Type*} {a b : G}
 
 section Group
 
@@ -345,9 +345,9 @@ theorem preimage {f : G → H} (hf : IsGroupHom f) {s : Set H} (hs : IsSubgroup 
 theorem preimage_normal {f : G → H} (hf : IsGroupHom f) {s : Set H} (hs : IsNormalSubgroup s) :
     IsNormalSubgroup (f ⁻¹' s) :=
   { one_mem := by simp [hf.map_one, hs.toIsSubgroup.one_mem]
-    mul_mem := by simp (config := { contextual := true }) [hf.map_mul, hs.toIsSubgroup.mul_mem]
-    inv_mem := by simp (config := { contextual := true }) [hf.map_inv, hs.toIsSubgroup.inv_mem]
-    normal := by simp (config := { contextual := true }) [hs.normal, hf.map_mul, hf.map_inv] }
+    mul_mem := by simp +contextual [hf.map_mul, hs.toIsSubgroup.mul_mem]
+    inv_mem := by simp +contextual [hf.map_inv, hs.toIsSubgroup.inv_mem]
+    normal := by simp +contextual [hs.normal, hf.map_mul, hf.map_inv] }
 
 @[to_additive]
 theorem isNormalSubgroup_ker {f : G → H} (hf : IsGroupHom f) : IsNormalSubgroup (ker f) :=
@@ -369,7 +369,7 @@ theorem trivial_ker_of_injective {f : G → H} (hf : IsGroupHom f) (h : Function
       (fun hx => by
         suffices f x = f 1 by simpa using h this
         simp [hf.map_one]; rwa [mem_ker] at hx)
-      (by simp (config := { contextual := true }) [mem_ker, hf.map_one])
+      (by simp +contextual [mem_ker, hf.map_one])
 
 @[to_additive]
 theorem injective_iff_trivial_ker {f : G → H} (hf : IsGroupHom f) :
@@ -453,10 +453,11 @@ theorem closure_subgroup {s : Set G} (hs : IsSubgroup s) : closure s = s :=
 @[to_additive]
 theorem exists_list_of_mem_closure {s : Set G} {a : G} (h : a ∈ closure s) :
     ∃ l : List G, (∀ x ∈ l, x ∈ s ∨ x⁻¹ ∈ s) ∧ l.prod = a :=
-  InClosure.recOn h (fun {x} hxs => ⟨[x], List.forall_mem_singleton.2 <| Or.inl hxs, one_mul _⟩)
+  InClosure.recOn h
+    (fun {x} hxs => ⟨[x], List.forall_mem_singleton.2 <| Or.inl hxs, List.prod_singleton⟩)
     ⟨[], List.forall_mem_nil _, rfl⟩
-    (fun {x} _ ⟨L, HL1, HL2⟩ =>
-      ⟨L.reverse.map Inv.inv, fun x hx =>
+    (fun {_} _ ⟨L, HL1, HL2⟩ =>
+      ⟨L.reverse.map Inv.inv, fun _ hx =>
         let ⟨y, hy1, hy2⟩ := List.exists_of_mem_map hx
         hy2 ▸ Or.imp id (by rw [inv_inv]; exact id) (HL1 _ <| List.mem_reverse.1 hy1).symm,
         HL2 ▸
