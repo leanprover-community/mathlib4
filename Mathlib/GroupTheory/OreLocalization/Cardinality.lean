@@ -30,7 +30,7 @@ variable {R : Type u} [Monoid R] (S : Submonoid R) [OreLocalization.OreSet S]
 
 @[to_additive]
 theorem oreDiv_one_surjective_of_finite_left [Finite S] :
-    Function.Surjective (fun x ↦ x /ₒ (1 : ↥S) : X → OreLocalization S X) := by
+    Surjective (fun x ↦ x /ₒ (1 : ↥S) : X → OreLocalization S X) := by
   refine OreLocalization.ind fun x s ↦ ?_
   obtain ⟨i, j, hne, heq⟩ := Finite.exists_ne_map_eq_of_infinite (α := ℕ) (s ^ ·)
   wlog hlt : j < i generalizing i j
@@ -44,7 +44,7 @@ theorem oreDiv_one_surjective_of_finite_left [Finite S] :
 
 @[to_additive]
 theorem oreDiv_one_surjective_of_finite_right [Finite X] :
-    Function.Surjective (fun x ↦ x /ₒ (1 : ↥S) : X → OreLocalization S X) := by
+    Surjective (fun x ↦ x /ₒ (1 : ↥S) : X → OreLocalization S X) := by
   refine OreLocalization.ind fun x s ↦ ?_
   obtain ⟨i, j, hne, heq⟩ := Finite.exists_ne_map_eq_of_infinite (α := ℕ) (s ^ · • x)
   wlog hlt : j < i generalizing i j
@@ -57,8 +57,7 @@ theorem oreDiv_one_surjective_of_finite_right [Finite X] :
   · simp_rw [SubmonoidClass.coe_pow, OneMemClass.coe_one, mul_one, pow_succ]
 
 @[to_additive]
-theorem numeratorHom_surjective_of_finite [Finite S] :
-    Function.Surjective (numeratorHom (S := S)) :=
+theorem numeratorHom_surjective_of_finite [Finite S] : Surjective (numeratorHom (S := S)) :=
   oreDiv_one_surjective_of_finite_left S R
 
 @[to_additive]
@@ -71,7 +70,7 @@ theorem cardinalMk_le_max : #(OreLocalization S X) ≤ max (lift.{v} #S) (lift.{
   · have := lift_mk_le_lift_mk_of_surjective (oreDiv_one_surjective_of_finite_left S X)
     rw [lift_umax.{v, u}, lift_id'] at this
     exact le_max_of_le_right this
-  convert ← mk_le_of_surjective (show Function.Surjective fun x : X × S ↦ x.1 /ₒ x.2 from
+  convert ← mk_le_of_surjective (show Surjective fun x : X × S ↦ x.1 /ₒ x.2 from
     Quotient.mk''_surjective)
   rw [mk_prod, mul_comm]
   refine mul_eq_max ?_ ?_ <;> simp
@@ -93,18 +92,18 @@ theorem cardinalMk_le_lift_cardinalMk_of_commute (hc : ∀ s s' : S, Commute s s
     refine ⟨s, s'.1, h, ?_⟩
     · exact_mod_cast hc
   let i (x : X × S) := x.1 /ₒ x.2
-  have hsurj : Function.Surjective i := Quotient.mk''_surjective
-  have hi := Function.rightInverse_surjInv hsurj
-  let j := (fun x : X × S ↦ (x.1, x.2 • x.1)) ∘ Function.surjInv hsurj
-  suffices Function.Injective j by
+  have hsurj : Surjective i := Quotient.mk''_surjective
+  have hi := rightInverse_surjInv hsurj
+  let j := (fun x : X × S ↦ (x.1, x.2 • x.1)) ∘ surjInv hsurj
+  suffices Injective j by
     have := lift_mk_le_lift_mk_of_injective this
     rwa [lift_umax.{v, u}, lift_id', mk_prod, lift_id, lift_mul, mul_eq_self (by simp)] at this
   intro y y' heq
   rw [← hi y, ← hi y']
-  simp_rw [j, Function.comp_apply, Prod.ext_iff] at heq
+  simp_rw [j, comp_apply, Prod.ext_iff] at heq
   simp_rw [i]
-  set x := Function.surjInv hsurj y
-  set x' := Function.surjInv hsurj y'
+  set x := surjInv hsurj y
+  set x' := surjInv hsurj y'
   obtain ⟨h1, h2⟩ := heq
   rw [← h1] at h2 ⊢
   exact key x.1 x.2 x'.2 h2 (hc _ _)
