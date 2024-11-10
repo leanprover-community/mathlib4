@@ -17,8 +17,8 @@ basic facts about them.
 
 ## Definitions
 
-- `AB4` -- an abelian category satisfies `AB4` provided that coproducts are exact.
-- `AB5` -- an abelian category satisfies `AB5` provided that filtered colimits are exact.
+- `AB4` -- a category satisfies `AB4` provided that coproducts are exact.
+- `AB5` -- a category satisfies `AB5` provided that filtered colimits are exact.
 - The duals of the above definitions, called `AB4Star` and `AB5Star`.
 
 ## Theorems
@@ -34,10 +34,11 @@ Exactness as the preservation of short exact sequences is introduced in
 `CategoryTheory.Abelian.Exact`.
 
 We do not require `Abelian` in the definition of `AB4` and `AB5` because these classes represent
-individual axioms. A non-abelian category with `AB5` is not an AB5 category in the sense of the
-literature.
+individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, and similarly for
+`AB5`.
 
 ## Projects
+
 - Add additional axioms, especially define Grothendieck categories.
 
 ## References
