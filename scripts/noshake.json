@@ -364,6 +364,7 @@
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
   "Mathlib.Deprecated.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
+  "Mathlib.Data.Tree.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Set.Image":
   ["Batteries.Tactic.Congr", "Mathlib.Data.Set.SymmDiff"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
