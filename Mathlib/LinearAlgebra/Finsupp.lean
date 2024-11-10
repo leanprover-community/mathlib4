@@ -565,7 +565,7 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
     · intro y hy xy
       simp only [SetLike.mem_coe, mem_supported, subset_def, Finset.mem_coe, mem_support_iff] at h₁
       simp [mt (H _ (h₁ _ hy) _ xs) xy]
-    · simp (config := { contextual := true })
+    · simp +contextual
   · by_contra h
     exact xs (h₁ <| Finsupp.mem_support_iff.2 h)
 
@@ -636,9 +636,14 @@ theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
 
 variable {α M}
 
+theorem linearCombination_linear_comp (f : M →ₗ[R] M') :
+    linearCombination R (f ∘ v) = f ∘ₗ linearCombination R v := by
+  ext
+  simp [linearCombination_apply]
+
 theorem apply_linearCombination (f : M →ₗ[R] M') (v) (l : α →₀ R) :
-    f (linearCombination R v l) = linearCombination R (f ∘ v) l := by
-  apply Finsupp.induction_linear l <;> simp (config := { contextual := true })
+    f (linearCombination R v l) = linearCombination R (f ∘ v) l :=
+  congr($(linearCombination_linear_comp R f) l).symm
 
 @[deprecated (since := "2024-08-29")] alias apply_total := apply_linearCombination
 
@@ -1225,10 +1230,8 @@ protected theorem Submodule.finsupp_sum_mem {ι β : Type*} [Zero β] (S : Submo
   AddSubmonoidClass.finsupp_sum_mem S f g h
 
 theorem LinearMap.map_finsupp_linearCombination (f : M →ₗ[R] N) {ι : Type*} {g : ι → M}
-    (l : ι →₀ R) : f (linearCombination R g l) = linearCombination R (f ∘ g) l := by
-  -- Porting note: `(· ∘ ·)` is required.
-  simp only [linearCombination_apply, linearCombination_apply, Finsupp.sum, map_sum, map_smul,
-             (· ∘ ·)]
+    (l : ι →₀ R) : f (linearCombination R g l) = linearCombination R (f ∘ g) l :=
+  apply_linearCombination _ _ _ _
 
 @[deprecated (since := "2024-08-29")] alias LinearMap.map_finsupp_total :=
   LinearMap.map_finsupp_linearCombination

@@ -394,6 +394,11 @@ lemma append_comp_rev {m n} (xs : Fin m → α) (ys : Fin n → α) :
     append xs ys ∘ rev = append (ys ∘ rev) (xs ∘ rev) ∘ cast (Nat.add_comm ..) :=
   funext <| append_rev xs ys
 
+theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
+    append (fun i ↦ f (castAdd n i)) (fun i ↦ f (natAdd m i)) = f := by
+  unfold append addCases
+  simp
+
 end Append
 
 section Repeat

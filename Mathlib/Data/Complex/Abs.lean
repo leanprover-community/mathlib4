@@ -170,11 +170,6 @@ theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
 theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| := by
   simpa [re_add_im] using Complex.abs.add_le z.re (z.im * I)
 
--- Porting note: added so `two_pos` in the next proof works
--- TODO: move somewhere else
-instance : NeZero (1 : ℝ) :=
- ⟨by apply one_ne_zero⟩
-
 theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max |z.re| |z.im| := by
   cases' z with x y
   simp only [abs_apply, normSq_mk, ← sq]

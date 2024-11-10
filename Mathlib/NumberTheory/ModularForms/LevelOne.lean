@@ -41,7 +41,7 @@ lemma SlashInvariantForm.wt_const_eq_zero {F : Type*} [FunLike F ℍ ℂ] (k : �
     [SlashInvariantFormClass F ⊤ k] (hf : ⇑f = (fun _ => c)) : k = 0 ∨ c = 0 := by
   have hI := slash_action_eqn'' f (by tauto : ModularGroup.S ∈ ⊤) I
   have h2I2 := slash_action_eqn'' f (by tauto : ModularGroup.S ∈ ⊤) ⟨2 * Complex.I, by simp⟩
-  simp only [hf, subgroup_to_sl_moeb, sl_moeb, denom_S] at *
+  simp only [hf, sl_moeb, denom_S] at *
   nth_rw 1 [h2I2] at hI
   simp only [mul_eq_mul_right_iff] at hI
   rcases hI with H | H

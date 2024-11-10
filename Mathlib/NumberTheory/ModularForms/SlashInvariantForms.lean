@@ -81,7 +81,7 @@ theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ) (hγ : γ
 
 theorem slash_action_eqn' {k : ℤ} {Γ : Subgroup SL(2, ℤ)} [SlashInvariantFormClass F Γ k]
     (f : F) {γ} (hγ : γ ∈ Γ) (z : ℍ) :
-    f (γ • z) = ((↑ₘₙ[ℤ] γ 1 0 : ℂ) * z + (↑ₘₙ[ℤ] γ 1 1 : ℂ)) ^ k * f z := by
+    f (γ • z) = (γ 1 0 * z + γ 1 1) ^ k * f z := by
   rw [← ModularForm.slash_action_eq'_iff, slash_action_eqn f γ hγ]
 
 /--Every `SlashInvariantForm` `f` satisfies ` f (γ • z) = (denom γ z) ^ k * f z`. -/

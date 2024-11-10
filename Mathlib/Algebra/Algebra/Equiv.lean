@@ -44,8 +44,6 @@ class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semir
   /-- An equivalence of algebras commutes with the action of scalars. -/
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
--- Porting note: Removed nolint dangerousInstance from AlgEquivClass.toRingEquivClass
-
 namespace AlgEquivClass
 
 -- See note [lower instance priority]
@@ -132,7 +130,6 @@ theorem mk_coe (e : A₁ ≃ₐ[R] A₂) (e' h₁ h₂ h₃ h₄ h₅) :
 theorem toEquiv_eq_coe : e.toEquiv = e :=
   rfl
 
--- Porting note: `protected` used to be an attribute below
 @[simp]
 protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂] (f : F) :
     ⇑(f : A₁ ≃ₐ[R] A₂) = f :=
@@ -141,7 +138,6 @@ protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R
 theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
   DFunLike.coe_injective
 
--- Porting note: Made to CoeOut instance from Coe, not dangerous anymore
 instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
   ⟨AlgEquiv.toRingEquiv⟩
 
@@ -219,7 +215,6 @@ protected theorem map_mul : ∀ x y, e (x * y) = e x * e y :=
 protected theorem map_one : e 1 = 1 :=
   map_one e
 
--- @[simp] -- Porting note (#10618): simp can prove this
 @[deprecated map_smul (since := "2024-06-20")]
 protected theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x :=
   map_smul _ _ _

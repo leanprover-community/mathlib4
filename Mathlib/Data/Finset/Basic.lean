@@ -7,7 +7,8 @@ import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.Directed
-import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Finite sets
@@ -751,6 +752,13 @@ theorem mem_cons_self (a : α) (s : Finset α) {h} : a ∈ cons a s h :=
 theorem cons_val (h : a ∉ s) : (cons a s h).1 = a ::ₘ s.1 :=
   rfl
 
+theorem eq_of_mem_cons_of_not_mem (has : a ∉ s) (h : b ∈ cons a s has) (hb : b ∉ s) : b = a :=
+  (mem_cons.1 h).resolve_right hb
+
+theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} {has} {i : α}
+    (hi : i ∈ cons a s has) (hia : i ≠ a) : i ∈ s :=
+  (mem_cons.1 hi).resolve_left hia
+
 theorem forall_mem_cons (h : a ∉ s) (p : α → Prop) :
     (∀ x, x ∈ cons a s h → p x) ↔ p a ∧ ∀ x, x ∈ s → p x := by
   simp only [mem_cons, or_imp, forall_and, forall_eq]
@@ -808,6 +816,36 @@ theorem cons_swap (hb : b ∉ s) (ha : a ∉ s.cons b hb) :
       ha (mem_cons.mpr (.inl ((mem_cons.mp h).elim symm (fun h ↦ False.elim (hb h))))) :=
   eq_of_veq <| Multiset.cons_swap a b s.val
 
+/-- Split the added element of cons off a Pi type. -/
+@[simps!]
+def consPiProd (f : α → Type*) (has : a ∉ s) (x : Π i ∈ cons a s has, f i) : f a × Π i ∈ s, f i :=
+  (x a (mem_cons_self a s), fun i hi => x i (mem_cons_of_mem hi))
+
+/-- Combine a product with a pi type to pi of cons. -/
+def prodPiCons [DecidableEq α] (f : α → Type*) {a : α} (has : a ∉ s) (x : f a × Π i ∈ s, f i) :
+    (Π i ∈ cons a s has, f i) :=
+  fun i hi =>
+    if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_cons_of_ne hi h)
+
+/-- The equivalence between pi types on cons and the product. -/
+def consPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+    (Π i ∈ cons a s has, f i) ≃ f a × Π i ∈ s, f i where
+  toFun := consPiProd f has
+  invFun := prodPiCons f has
+  left_inv _ := by
+    ext i _
+    dsimp only [prodPiCons, consPiProd]
+    by_cases h : i = a
+    · rw [dif_pos h]
+      subst h
+      simp_all only [cast_eq]
+    · rw [dif_neg h]
+  right_inv _ := by
+    ext _ hi
+    · simp [prodPiCons]
+    · simp only [consPiProd_snd]
+      exact dif_neg (ne_of_mem_of_not_mem hi has)
+
 end Cons
 
 /-! ### disjoint -/
@@ -829,8 +867,8 @@ theorem disjoint_iff_ne : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := 
   simp only [disjoint_left, imp_not_comm, forall_eq']
 
 @[simp]
-theorem disjoint_val : s.1.Disjoint t.1 ↔ Disjoint s t :=
-  disjoint_left.symm
+theorem disjoint_val : Disjoint s.1 t.1 ↔ Disjoint s t :=
+  Multiset.disjoint_left.trans disjoint_left.symm
 
 theorem _root_.Disjoint.forall_ne_finset (h : Disjoint s t) (ha : a ∈ s) (hb : b ∈ t) : a ≠ b :=
   disjoint_iff_ne.1 h _ ha _ hb
@@ -955,7 +993,7 @@ theorem mem_insert_of_mem (h : a ∈ s) : a ∈ insert b s :=
 theorem mem_of_mem_insert_of_ne (h : b ∈ insert a s) : b ≠ a → b ∈ s :=
   (mem_insert.1 h).resolve_left
 
-theorem eq_of_not_mem_of_mem_insert (ha : b ∈ insert a s) (hb : b ∉ s) : b = a :=
+theorem eq_of_mem_insert_of_not_mem (ha : b ∈ insert a s) (hb : b ∉ s) : b = a :=
   (mem_insert.1 ha).resolve_right hb
 
 /-- A version of `LawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
@@ -1039,7 +1077,7 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
   simp_rw [← coe_subset]; simp [-coe_subset, ha]
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_not_mem_of_mem_insert (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
+  ⟨fun h => eq_of_mem_insert_of_not_mem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
 
 theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) sᶜ := fun _ h _ _ =>
   (insert_inj h).1
@@ -1137,6 +1175,35 @@ theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint 
 theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t :=
   disjoint_comm.trans <| by rw [disjoint_insert_left, _root_.disjoint_comm]
 
+/-- Split the added element of insert off a Pi type. -/
+@[simps!]
+def insertPiProd (f : α → Type*) (x : Π i ∈ insert a s, f i) : f a × Π i ∈ s, f i :=
+  (x a (mem_insert_self a s), fun i hi => x i (mem_insert_of_mem hi))
+
+/-- Combine a product with a pi type to pi of insert. -/
+def prodPiInsert (f : α → Type*) {a : α} (x : f a × Π i ∈ s, f i) : (Π i ∈ insert a s, f i) :=
+  fun i hi =>
+    if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_insert_of_ne hi h)
+
+/-- The equivalence between pi types on insert and the product. -/
+def insertPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+    (Π i ∈ insert a s, f i) ≃ f a × Π i ∈ s, f i where
+  toFun := insertPiProd f
+  invFun := prodPiInsert f
+  left_inv _ := by
+    ext i _
+    dsimp only [prodPiInsert, insertPiProd]
+    by_cases h : i = a
+    · rw [dif_pos h]
+      subst h
+      simp_all only [cast_eq]
+    · rw [dif_neg h]
+  right_inv _ := by
+    ext _ hi
+    · simp [prodPiInsert]
+    · simp only [insertPiProd_snd]
+      exact dif_neg (ne_of_mem_of_not_mem hi has)
+
 end Insert
 
 /-! ### Lattice structure -/
@@ -1166,11 +1233,11 @@ instance : Lattice (Finset α) :=
     inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2 }
 
 @[simp]
-theorem sup_eq_union : (Sup.sup : Finset α → Finset α → Finset α) = Union.union :=
+theorem sup_eq_union : (Max.max : Finset α → Finset α → Finset α) = Union.union :=
   rfl
 
 @[simp]
-theorem inf_eq_inter : (Inf.inf : Finset α → Finset α → Finset α) = Inter.inter :=
+theorem inf_eq_inter : (Min.min : Finset α → Finset α → Finset α) = Inter.inter :=
   rfl
 
 theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
@@ -1369,7 +1436,7 @@ theorem inter_subset_left {s₁ s₂ : Finset α} : s₁ ∩ s₂ ⊆ s₁ := fu
 theorem inter_subset_right {s₁ s₂ : Finset α} : s₁ ∩ s₂ ⊆ s₂ := fun _a => mem_of_mem_inter_right
 
 theorem subset_inter {s₁ s₂ u : Finset α} : s₁ ⊆ s₂ → s₁ ⊆ u → s₁ ⊆ s₂ ∩ u := by
-  simp (config := { contextual := true }) [subset_iff, mem_inter]
+  simp +contextual [subset_iff, mem_inter]
 
 @[simp, norm_cast]
 theorem coe_inter (s₁ s₂ : Finset α) : ↑(s₁ ∩ s₂) = (s₁ ∩ s₂ : Set α) :=
@@ -1478,7 +1545,7 @@ theorem inter_subset_union : s ∩ t ⊆ s ∪ t :=
 
 instance : DistribLattice (Finset α) :=
   { le_sup_inf := fun a b c => by
-      simp (config := { contextual := true }) only
+      simp +contextual only
         [sup_eq_union, inf_eq_inter, le_eq_subset, subset_iff, mem_inter, mem_union, and_imp,
         or_imp, true_or, imp_true_iff, true_and, or_true] }
 
@@ -1566,6 +1633,10 @@ theorem disjoint_or_nonempty_inter (s t : Finset α) : Disjoint s t ∨ (s ∩ t
   rw [← not_disjoint_iff_nonempty_inter]
   exact em _
 
+theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
+    Disjoint s t ↔ s = ∅ := by
+  rw [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
+
 end Lattice
 
 instance isDirected_le : IsDirected (Finset α) (· ≤ ·) := by classical infer_instance
@@ -1635,7 +1706,7 @@ theorem erase_eq_self : s.erase a = s ↔ a ∉ s :=
 @[simp]
 theorem erase_insert_eq_erase (s : Finset α) (a : α) : (insert a s).erase a = s.erase a :=
   ext fun x => by
-    simp (config := { contextual := true }) only [mem_erase, mem_insert, and_congr_right_iff,
+    simp +contextual only [mem_erase, mem_insert, and_congr_right_iff,
       false_or, iff_self, imp_true_iff]
 
 theorem erase_insert {a : α} {s : Finset α} (h : a ∉ s) : erase (insert a s) a = s := by
@@ -2323,7 +2394,7 @@ theorem filter_cons_of_neg (a : α) (s : Finset α) (ha : a ∉ s) (hp : ¬p a) 
 
 theorem disjoint_filter {s : Finset α} {p q : α → Prop} [DecidablePred p] [DecidablePred q] :
     Disjoint (s.filter p) (s.filter q) ↔ ∀ x ∈ s, p x → ¬q x := by
-  constructor <;> simp (config := { contextual := true }) [disjoint_left]
+  constructor <;> simp +contextual [disjoint_left]
 
 theorem disjoint_filter_filter {s t : Finset α}
     {p q : α → Prop} [DecidablePred p] [DecidablePred q] :
@@ -3044,15 +3115,17 @@ namespace Multiset
 
 variable [DecidableEq α]
 
+@[simp]
 theorem disjoint_toFinset {m1 m2 : Multiset α} :
-    _root_.Disjoint m1.toFinset m2.toFinset ↔ m1.Disjoint m2 := by
-  rw [Finset.disjoint_iff_ne]
-  refine ⟨fun h a ha1 ha2 => ?_, ?_⟩
-  · rw [← Multiset.mem_toFinset] at ha1 ha2
-    exact h _ ha1 _ ha2 rfl
-  · rintro h a ha b hb rfl
-    rw [Multiset.mem_toFinset] at ha hb
-    exact h ha hb
+    _root_.Disjoint m1.toFinset m2.toFinset ↔ Disjoint m1 m2 := by
+  simp [disjoint_left, Finset.disjoint_left]
+
+@[simp]
+lemma toFinset_replicate (n : ℕ) (a : α) :
+    (replicate n a).toFinset = if n = 0 then ∅ else {a} := by
+  ext x
+  simp only [mem_toFinset, Finset.mem_singleton, mem_replicate]
+  split_ifs with hn <;> simp [hn]
 
 end Multiset
 
@@ -3060,8 +3133,9 @@ namespace List
 
 variable [DecidableEq α] {l l' : List α}
 
+@[simp]
 theorem disjoint_toFinset_iff_disjoint : _root_.Disjoint l.toFinset l'.toFinset ↔ l.Disjoint l' :=
-  Multiset.disjoint_toFinset
+  Multiset.disjoint_toFinset.trans (Multiset.coe_disjoint _ _)
 
 end List
 
