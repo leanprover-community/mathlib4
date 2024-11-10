@@ -20,7 +20,7 @@ and the actions
 * `Submodule.pointwiseDistribMulAction`
 * `Submodule.pointwiseMulActionWithZero`
 
-which matches the action of `Set.mulActionSet`.
+which matches the action of ` Set.mulActionSet`.
 
 This file also provides:
 * `Submodule.pointwiseSetSMulSubmodule`: for `R`-module `M`, a `s : Set R` can act on
@@ -214,7 +214,7 @@ theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submodule R M) : m ∈ S �
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 
 instance : SMulLeftMono α (Submodule R M) :=
-  ⟨fun _ _ => map_mono⟩
+  ⟨fun _ _ _ => map_mono⟩
 
 /-- See also `Submodule.smul_bot`. -/
 @[simp]
