@@ -225,7 +225,7 @@ def addBenchSummaryComment (PR : Nat) (repo : String)
   if secondFilter == "" then
     let _ ← IO.Process.run
       { cmd := "gh", args := #["pr", "comment", PR, "--repo", repo, "--body",
-        s!"No benchmark entry differed by at least {formatDiff thr} instructions"] }
+        s!"No benchmark entry differed by at least {formatDiff thr} instructions."] }
   else
   IO.FS.writeFile tempFile secondFilter
   let jq3 : IO.Process.SpawnArgs :=
