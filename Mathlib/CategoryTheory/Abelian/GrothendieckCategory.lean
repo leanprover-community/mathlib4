@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
 -/
 
-import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Abelian.Subobject
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms
-import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
 
 /-!
 
