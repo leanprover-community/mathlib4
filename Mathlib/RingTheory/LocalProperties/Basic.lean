@@ -119,17 +119,17 @@ def RingHom.HoldsForLocalizationAway : Prop :=
   ∀ ⦃R : Type u⦄ (S : Type u) [CommRing R] [CommRing S] [Algebra R S] (r : R)
     [IsLocalization.Away r S], P (algebraMap R S)
 
-/-- A property `P` of ring homs satisfies `RingHom.StableUnderCompositionWithLocalizationAwayLeft`
+/-- A property `P` of ring homs satisfies `RingHom.StableUnderCompositionWithLocalizationAwaySource`
 if whenever `P` holds for `f` it also holds for the composition with
-localization maps on the left. -/
-def RingHom.StableUnderCompositionWithLocalizationAwayLeft : Prop :=
+localization maps on the source. -/
+def RingHom.StableUnderCompositionWithLocalizationAwaySource : Prop :=
   ∀ ⦃R : Type u⦄ (S : Type u) ⦃T : Type u⦄ [CommRing R] [CommRing S] [CommRing T] [Algebra R S]
     (r : R) [IsLocalization.Away r S] (f : S →+* T), P f → P (f.comp (algebraMap R S))
 
 /-- A property `P` of ring homs satisfies `RingHom.StableUnderCompositionWithLocalizationAway`
 if whenever `P` holds for `f` it also holds for the composition with
-localization maps on the right. -/
-def RingHom.StableUnderCompositionWithLocalizationAwayRight : Prop :=
+localization maps on the target. -/
+def RingHom.StableUnderCompositionWithLocalizationAwayTarget : Prop :=
   ∀ ⦃R S : Type u⦄ (T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra S T] (s : S)
     [IsLocalization.Away s T] (f : R →+* S), P f → P ((algebraMap S T).comp f)
 
@@ -137,8 +137,8 @@ def RingHom.StableUnderCompositionWithLocalizationAwayRight : Prop :=
 if whenever `P` holds for `f` it also holds for the composition with
 localization maps on the left and on the right. -/
 def RingHom.StableUnderCompositionWithLocalizationAway : Prop :=
-  StableUnderCompositionWithLocalizationAwayLeft P ∧
-    StableUnderCompositionWithLocalizationAwayRight P
+  StableUnderCompositionWithLocalizationAwaySource P ∧
+    StableUnderCompositionWithLocalizationAwayTarget P
 
 /-- A property `P` of ring homs satisfies `RingHom.OfLocalizationFiniteSpanTarget`
 if `P` holds for `R →+* S` whenever there exists a finite set `{ r }` that spans `S` such that
@@ -173,8 +173,8 @@ structure RingHom.PropertyIsLocal : Prop where
   localizationAwayPreserves : RingHom.LocalizationAwayPreserves @P
   ofLocalizationSpanTarget : RingHom.OfLocalizationSpanTarget @P
   ofLocalizationSpan : RingHom.OfLocalizationSpan @P
-  stableUnderCompositionWithLocalizationAwayRight :
-    RingHom.StableUnderCompositionWithLocalizationAwayRight @P
+  StableUnderCompositionWithLocalizationAwayTarget :
+    RingHom.StableUnderCompositionWithLocalizationAwayTarget @P
 
 theorem RingHom.ofLocalizationSpan_iff_finite :
     RingHom.OfLocalizationSpan @P ↔ RingHom.OfLocalizationFiniteSpan @P := by
@@ -281,12 +281,12 @@ lemma RingHom.PropertyIsLocal.HoldsForLocalizationAway (hP : RingHom.PropertyIsL
   introv R _
   have : algebraMap R S = (algebraMap R S).comp (RingHom.id R) := by simp
   rw [this]
-  apply hP.stableUnderCompositionWithLocalizationAwayRight S r
+  apply hP.StableUnderCompositionWithLocalizationAwayTarget S r
   apply hPi
 
 theorem RingHom.OfLocalizationSpanTarget.ofLocalizationSpan
     (hP : RingHom.OfLocalizationSpanTarget @P)
-    (hP' : RingHom.StableUnderCompositionWithLocalizationAwayLeft @P) :
+    (hP' : RingHom.StableUnderCompositionWithLocalizationAwaySource @P) :
     RingHom.OfLocalizationSpan @P := by
   introv R hs hs'
   apply_fun Ideal.map f at hs

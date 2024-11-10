@@ -225,10 +225,10 @@ lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPr
 
 /-- If `P` is stable under composition with localization away maps on the right,
 then so is `Locally P`. -/
-lemma locally_stableUnderCompositionWithLocalizationAwayRight
+lemma locally_StableUnderCompositionWithLocalizationAwayTarget
     (hP0 : RespectsIso P)
-    (hPa : StableUnderCompositionWithLocalizationAwayRight P) :
-    StableUnderCompositionWithLocalizationAwayRight (Locally P) := by
+    (hPa : StableUnderCompositionWithLocalizationAwayTarget P) :
+    StableUnderCompositionWithLocalizationAwayTarget (Locally P) := by
   intro R S T _ _ _ _ t _ f hf
   simp only [locally_iff_isLocalization hP0 f] at hf
   obtain ⟨s, hsone, hs⟩ := hf
@@ -254,9 +254,9 @@ lemma locally_stableUnderCompositionWithLocalizationAwayRight
 
 /-- If `P` is stable under composition with localization away maps on the left,
 then so is `Locally P`. -/
-lemma locally_stableUnderCompositionWithLocalizationAwayLeft
-    (hPa : StableUnderCompositionWithLocalizationAwayLeft P) :
-    StableUnderCompositionWithLocalizationAwayLeft (Locally P) := by
+lemma locally_StableUnderCompositionWithLocalizationAwaySource
+    (hPa : StableUnderCompositionWithLocalizationAwaySource P) :
+    StableUnderCompositionWithLocalizationAwaySource (Locally P) := by
   intro R S T _ _ _ _ r _ f ⟨s, hsone, hs⟩
   refine ⟨s, hsone, fun t ht ↦ ?_⟩
   rw [← comp_assoc]
@@ -378,10 +378,10 @@ away maps, then `Locally P` is a local property of ring homomorphisms. -/
 lemma locally_propertyIsLocal (hPl : LocalizationAwayPreserves P)
     (hPa : StableUnderCompositionWithLocalizationAway P) : PropertyIsLocal (Locally P) where
   localizationAwayPreserves := locally_localizationAwayPreserves hPl
-  stableUnderCompositionWithLocalizationAwayRight :=
-    locally_stableUnderCompositionWithLocalizationAwayRight hPl.respectsIso hPa.right
+  StableUnderCompositionWithLocalizationAwayTarget :=
+    locally_StableUnderCompositionWithLocalizationAwayTarget hPl.respectsIso hPa.right
   ofLocalizationSpan := (locally_ofLocalizationSpanTarget hPl.respectsIso).ofLocalizationSpan
-    (locally_stableUnderCompositionWithLocalizationAwayLeft hPa.left)
+    (locally_StableUnderCompositionWithLocalizationAwaySource hPa.left)
   ofLocalizationSpanTarget := locally_ofLocalizationSpanTarget hPl.respectsIso
 
 end Stability

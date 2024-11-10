@@ -171,7 +171,7 @@ variable {P} {X Y : Scheme.{u}} {f : X ⟶ Y}
 open affine neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f`
 over some basic open of `U₁` (resp. `V₁`). -/
 lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
-    (hPa : StableUnderCompositionWithLocalizationAwayRight P) (hPl : LocalizationAwayPreserves P)
+    (hPa : StableUnderCompositionWithLocalizationAwayTarget P) (hPl : LocalizationAwayPreserves P)
     (x : X) (U₁ : Y.affineOpens) (U₂ : Y.affineOpens) (V₁ : X.affineOpens) (V₂ : X.affineOpens)
     (hx₁ : x ∈ V₁.1) (hx₂ : x ∈ V₂.1) (e₂ : V₂.1 ≤ f ⁻¹ᵁ U₂.1) (h₂ : P (f.appLE U₂ V₂ e₂))
     (hfx₁ : f.base x ∈ U₁.1) :
@@ -206,7 +206,7 @@ lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
 open neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f` over some affine open
 `U'` of `Y` (resp. `V'` of `X`) that is contained in `U₁` (resp. `V₁`). -/
 lemma exists_affineOpens_le_appLE_of_appLE
-    (hPa : StableUnderCompositionWithLocalizationAwayRight P) (hPl : LocalizationAwayPreserves P)
+    (hPa : StableUnderCompositionWithLocalizationAwayTarget P) (hPl : LocalizationAwayPreserves P)
     (x : X) (U₁ : Y.Opens) (U₂ : Y.affineOpens) (V₁ : X.Opens) (V₂ : X.affineOpens)
     (hx₁ : x ∈ V₁) (hx₂ : x ∈ V₂.1) (e₂ : V₂.1 ≤ f ⁻¹ᵁ U₂.1) (h₂ : P (f.appLE U₂ V₂ e₂))
     (hfx₁ : f.base x ∈ U₁.1) :
@@ -301,7 +301,7 @@ theorem of_source_openCover [IsAffine Y]
     simp_rw [Scheme.affineBasicOpen_coe,
       ← f.appLE_map (U := ⊤) le_top (homOfLE (X.basicOpen_le r)).op]
     have := U.2.isLocalization_basicOpen r
-    exact (isLocal_ringHomProperty P).stableUnderCompositionWithLocalizationAwayRight _ r _ H
+    exact (isLocal_ringHomProperty P).StableUnderCompositionWithLocalizationAwayTarget _ r _ H
   | openCover U s hs H =>
     apply (isLocal_ringHomProperty P).ofLocalizationSpanTarget.ofIsLocalization
       (isLocal_ringHomProperty P).respectsIso _ _ hs
@@ -508,7 +508,7 @@ lemma isStableUnderBaseChange (hP : RingHom.IsStableUnderBaseChange Q) :
 
 include Q in
 private lemma respects_isOpenImmersion_aux
-    (hQ : RingHom.StableUnderCompositionWithLocalizationAwayLeft Q)
+    (hQ : RingHom.StableUnderCompositionWithLocalizationAwaySource Q)
     {X Y : Scheme.{u}} [IsAffine Y] {U : Y.Opens}
     (f : X ⟶ U.toScheme) (hf : P f) : P (f ≫ U.ι) := by
   wlog hYa : ∃ (a : Γ(Y, ⊤)), U = Y.basicOpen a generalizing X Y
@@ -545,7 +545,7 @@ private lemma respects_isOpenImmersion_aux
 
 /-- Any property of scheme morphisms induced by a property of ring homomorphisms is stable
 under composition with open immersions. -/
-lemma respects_isOpenImmersion (hQ : RingHom.StableUnderCompositionWithLocalizationAwayLeft Q) :
+lemma respects_isOpenImmersion (hQ : RingHom.StableUnderCompositionWithLocalizationAwaySource Q) :
     P.Respects @IsOpenImmersion where
   postcomp {X Y Z} i hi f hf := by
     wlog hZ : IsAffine Z generalizing X Y Z
@@ -563,12 +563,12 @@ omit [HasRingHomProperty P Q] in
 /-- If `P` is induced by `Locally Q`, it suffices to check `Q` on affine open sets locally around
 points of the source. -/
 lemma iff_exists_appLE_locally
-    (hQ : RingHom.StableUnderCompositionWithLocalizationAwayLeft Q)
+    (hQ : RingHom.StableUnderCompositionWithLocalizationAwaySource Q)
     (hQi : RespectsIso Q) [HasRingHomProperty P (Locally Q)] :
     P f ↔ ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.1) (e : V.1 ≤ f ⁻¹ᵁ U.1),
       Q (f.appLE U V e) := by
   have := respects_isOpenImmersion (P := P)
-    (RingHom.locally_stableUnderCompositionWithLocalizationAwayLeft hQ)
+    (RingHom.locally_StableUnderCompositionWithLocalizationAwaySource hQ)
   refine ⟨fun hf x ↦ ?_, fun hf ↦ (IsLocalAtSource.iff_exists_resLE (P := P)).mpr <| fun x ↦ ?_⟩
   · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_affine_open Y)
       (Opens.mem_top <| f.base x)
@@ -594,7 +594,7 @@ lemma iff_exists_appLE_locally
 
 /-- `P` can be checked locally around points of the source. -/
 lemma iff_exists_appLE
-    (hQ : StableUnderCompositionWithLocalizationAwayLeft Q) : P f ↔
+    (hQ : StableUnderCompositionWithLocalizationAwaySource Q) : P f ↔
     ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.1) (e : V.1 ≤ f ⁻¹ᵁ U.1),
       Q (f.appLE U V e) := by
   haveI inst : HasRingHomProperty P Q := inferInstance
