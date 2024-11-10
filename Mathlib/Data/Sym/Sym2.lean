@@ -409,60 +409,64 @@ def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α) : (∀ a ∈ s,
 theorem forall_mem_pair {P : α → Prop} {a b : α} : (∀ x ∈ s(a, b), P x) ↔ P a ∧ P b := by
   simp only [mem_iff, forall_eq_or_imp, forall_eq]
 
-lemma pmap_pair {P : α → Prop} (f : ∀ a, P a → β) (a b : α) (h : P a) (h' : P b) :
+lemma pair_eq_pmap {P : α → Prop} (f : ∀ a, P a → β) (a b : α) (h : P a) (h' : P b) :
     s(f a h, f b h') = pmap f s(a, b) (forall_mem_pair.mpr ⟨h, h'⟩) := rfl
 
-lemma pmap_pair' {P : α → Prop} (f : ∀ a, P a → β) (a b : α) (h : ∀ x ∈ s(a, b), P x) :
+lemma pmap_pair {P : α → Prop} (f : ∀ a, P a → β) (a b : α) (h : ∀ x ∈ s(a, b), P x) :
     pmap f s(a, b) h = s(f a (h a (mem_mk_left a b)), f b (h b (mem_mk_right a b))) := rfl
 
 @[simp]
 lemma mem_pmap_iff {P : α → Prop} (f : ∀ a, P a → β) (z : Sym2 α) (h : ∀ a ∈ z, P a) (b : β) :
     b ∈ z.pmap f h ↔ ∃ (a : α) (ha : a ∈ z), b = f a (h a ha) := by
   induction' z with x y
-  rw [pmap_pair' f x y h]
+  rw [pmap_pair f x y h]
   simp only [mem_iff]
   constructor
   · rintro (rfl | rfl)
     · use x, Or.inl rfl
     · use y, Or.inr rfl
-  · rintro ⟨a, (rfl | rfl), rfl⟩
-    exact Or.inl rfl
-    exact Or.inr rfl
+  · rintro ⟨a, (rfl | rfl), rfl⟩ <;> tauto
 
 lemma pmap_eq_map {P : α → Prop} (f : α → β) (z : Sym2 α) (h : ∀ a ∈ z, P a) :
     z.pmap (fun a _ => f a) h = z.map f := by
   induction' z with x y
   rfl
 
-lemma map_pmap {Q : β → Prop} (f : α → β) (g : ∀ b, Q b → γ) (z : Sym2 α) (h' : ∀ b ∈ z.map f, Q b):
-    (z.map f).pmap g h' =
-    z.pmap (fun a ha => g (f a) (h' (f a) (mem_map.mpr ⟨a, ha, rfl⟩))) (fun a ha => ha) := by
+lemma map_pmap {Q : β → Prop} (f : α → β) (g : ∀ b, Q b → γ) (z : Sym2 α) (h : ∀ b ∈ z.map f, Q b):
+    (z.map f).pmap g h =
+    z.pmap (fun a ha => g (f a) (h (f a) (mem_map.mpr ⟨a, ha, rfl⟩))) (fun _ ha => ha) := by
   induction' z with x y
   rfl
 
 lemma pmap_map {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : β → γ)
     (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
-    (z.pmap f h).map g = z.pmap (fun a ha => g (f a (h a ha))) (fun a ha ↦ ha) := by
+    (z.pmap f h).map g = z.pmap (fun a ha => g (f a (h a ha))) (fun _ ha ↦ ha) := by
   induction' z with x y
   rfl
 
 lemma pmap_pmap {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : ∀ b, Q b → γ)
     (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
     (z.pmap f h).pmap g h' = z.pmap (fun a ha => g (f a (h a ha))
-    (h' _ ((mem_pmap_iff f z h _).mpr ⟨a, ha, rfl⟩))) (fun a ha ↦ ha) := by
+    (h' _ ((mem_pmap_iff f z h _).mpr ⟨a, ha, rfl⟩))) (fun _ ha ↦ ha) := by
   induction' z with x y
+  rfl
+
+@[simp]
+lemma pmap_subtype_map_subtypeVal {P : α → Prop} (s : Sym2 α) (h : ∀ a ∈ s, P a) :
+    (s.pmap Subtype.mk h).map Subtype.val = s := by
+  induction' s with x y
   rfl
 
 /--
 "Attach" a proof `P a` that holds for all the elements of `s` to produce a new Sym2 object
 with the same elements but in the type `{x // P x}`.
 -/
-def attachWith {P : α → Prop} (s : Sym2 α)  (f : ∀ a ∈ s, P a) : Sym2 {a // P a} :=
-  pmap Subtype.mk s f
+def attachWith {P : α → Prop} (s : Sym2 α) (h : ∀ a ∈ s, P a) : Sym2 {a // P a} :=
+  pmap Subtype.mk s h
 
 @[simp]
-lemma attachWith_map_subtypeVal {s : Sym2 α} {P : α → Prop} (f : ∀ a ∈ s, P a) :
-    (s.attachWith f).map Subtype.val = s := by
+lemma attachWith_map_subtypeVal {s : Sym2 α} {P : α → Prop} (h : ∀ a ∈ s, P a) :
+    (s.attachWith h).map Subtype.val = s := by
   induction' s with x y
   rfl
 
