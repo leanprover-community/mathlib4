@@ -209,68 +209,76 @@ subtracting the given combination of hypotheses.
 syntax expStx := atomic(" (" &"exp" " := ") withoutPosition(num) ")"
 
 /--
-`linear_combination` attempts to simplify the target by creating a linear combination
-  of a list of equalities and subtracting it from the target.
-  The tactic will create a linear
-  combination by adding the equalities together from left to right, so the order
-  of the input hypotheses does matter.  If the `norm` field of the
-  tactic is set to `skip`, then the tactic will simply set the user up to
-  prove their target using the linear combination instead of normalizing the subtraction.
+The `linear_combination` tactic attempts to prove an (in)equality goal by exhibiting it as a
+specified linear combination of (in)equality hypotheses, or other (in)equality proof terms, modulo
+(A) moving terms between the LHS and RHS of the (in)equalities, and (B) a normalization tactic
+which by default is ring-normalization.
 
-Note: The left and right sides of all the equalities should have the same type `α`, and the
+Example usage:
+```
+example {a b : ℚ} (h1 : a = 1) (h2 : b = 3) : (a + b) / 2 = 2 := by
+  linear_combination (h1 + h2) / 2
+
+example {a b : ℚ} (h1 : a ≤ 1) (h2 : b ≤ 3) : (a + b) / 2 ≤ 2 := by
+  linear_combination (h1 + h2) / 2
+
+example {a b : ℚ} : 2 * a * b ≤ a ^ 2 + b ^ 2 := by
+  linear_combination sq_nonneg (a - b)
+
+example {x y z w : ℤ} (h₁ : x * z = y ^ 2) (h₂ : y * w = z ^ 2) :
+    z * (x * w - y * z) = 0 := by
+  linear_combination w * h₁ + y * h₂
+
+example {x : ℚ} (h : x ≥ 5) : x ^ 2 > 2 * x + 11 := by
+  linear_combination (x + 3) * h
+
+example {R : Type*} [CommRing R] {a b : R} (h : a = b) : a ^ 2 = b ^ 2 := by
+  linear_combination (a + b) * h
+
+example {A : Type*} [AddCommGroup A]
+    {x y z : A} (h1 : x + y = 10 • z) (h2 : x - y = 6 • z) :
+    2 • x = 2 • (8 • z) := by
+  linear_combination (norm := abel) h1 + h2
+
+example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) :
+    x * y = -2 * y + 1 := by
+  linear_combination (norm := ring_nf) -2 * h2
+  -- leaves goal `⊢ x * y + x * 2 - 1 = 0`
+```
+
+The input `e` in `linear_combination e` is a linear combination of proofs of (in)equalities,
+given as a sum/difference of coefficients multiplied by expressions.
+The coefficients may be arbitrary expressions (with nonnegativity constraints in the case of
+inequalities).
+The expressions can be arbitrary proof terms proving (in)equalities;
+most commonly they are hypothesis names `h1`, `h2`, ....
+
+The left and right sides of all the (in)equalities should have the same type `α`, and the
 coefficients should also have type `α`.  For full functionality `α` should be a commutative ring --
 strictly speaking, a commutative semiring with "cancellative" addition (in the semiring case,
 negation and subtraction will be handled "formally" as if operating in the enveloping ring). If a
 nonstandard normalization is used (for example `abel` or `skip`), the tactic will work over types
-`α` with less algebraic structure: the minimum is instances of `[Add α] [IsRightCancelAdd α]`
-together with instances of whatever operations are used in the tactic call.
+`α` with less algebraic structure: for equalities, the minimum is instances of
+`[Add α] [IsRightCancelAdd α]` together with instances of whatever operations are used in the tactic
+call.
 
-* The input `e` in `linear_combination e` is a linear combination of proofs of equalities,
-  given as a sum/difference of coefficients multiplied by expressions.
-  The coefficients may be arbitrary expressions.
-  The expressions can be arbitrary proof terms proving equalities.
-  Most commonly they are hypothesis names `h1, h2, ...`.
-* `linear_combination (norm := tac) e` runs the "normalization tactic" `tac`
-  on the subgoal(s) after constructing the linear combination.
-  * The default normalization tactic is `ring1`, which closes the goal or fails.
-  * To get a subgoal in the case that it is not immediately provable, use
-    `ring_nf` as the normalization tactic.
-  * To avoid normalization entirely, use `skip` as the normalization tactic.
-* `linear_combination (exp := n) e` will take the goal to the `n`th power before subtracting the
-  combination `e`. In other words, if the goal is `t1 = t2`, `linear_combination (exp := n) e`
-  will change the goal to `(t1 - t2)^n = 0` before proceeding as above.
+The variant `linear_combination (norm := tac) e` specifies explicitly the "normalization tactic"
+`tac` to be run on the subgoal(s) after constructing the linear combination.
+* The default normalization tactic is `ring1` (for equalities) or `Mathlib.Tactic.Ring.prove{LE,LT}`
+  (for inequalities). These are finishing tactics: they close the goal or fail.
+* When working in algebraic categories other than commutative rings -- for example fields, abelian
+  groups, modules -- it is sometimes useful to use normalization tactics adapted to those categories
+  (`field_simp`, `abel`, `module`).
+* To skip normalization entirely, use `skip` as the normalization tactic.
+* The `linear_combination` tactic creates a linear combination by adding the provided (in)equalities
+  together from left to right, so if `tac` is not invariant under commutation of additive
+  expressions, then the order of the input hypotheses can matter.
 
-Example Usage:
-```
-example (x y : ℤ) (h1 : x*y + 2*x = 1) (h2 : x = y) : x*y = -2*y + 1 := by
-  linear_combination 1*h1 - 2*h2
-
-example (x y : ℤ) (h1 : x*y + 2*x = 1) (h2 : x = y) : x*y = -2*y + 1 := by
-  linear_combination h1 - 2*h2
-
-example (x y : ℤ) (h1 : x*y + 2*x = 1) (h2 : x = y) : x*y = -2*y + 1 := by
-  linear_combination (norm := ring_nf) -2*h2
-  /- Goal: x * y + x * 2 - 1 = 0 -/
-
-example (x y z : ℝ) (ha : x + 2*y - z = 4) (hb : 2*x + y + z = -2)
-    (hc : x + 2*y + z = 2) :
-    -3*x - 3*y - 4*z = 2 := by
-  linear_combination ha - hb - 2*hc
-
-example (x y : ℚ) (h1 : x + y = 3) (h2 : 3*x = 7) :
-    x*x*y + y*x*y + 6*x = 3*x*y + 14 := by
-  linear_combination x*y*h1 + 2*h2
-
-example (x y : ℤ) (h1 : x = -3) (h2 : y = 10) : 2*x = -6 := by
-  linear_combination (norm := skip) 2*h1
-  simp
-
-axiom qc : ℚ
-axiom hqc : qc = 2*qc
-
-example (a b : ℚ) (h : ∀ p q : ℚ, p = q) : 3*a + qc = 3*b + 2*qc := by
-  linear_combination 3 * h a b + hqc
-```
+The variant `linear_combination (exp := n) e` will take the goal to the `n`th power before
+subtracting the combination `e`. In other words, if the goal is `t1 = t2`,
+`linear_combination (exp := n) e` will change the goal to `(t1 - t2)^n = 0` before proceeding as
+above.  This variant is implemented only for linear combinations of equalities (i.e., not for
+inequalities).
 -/
 syntax (name := linearCombination) "linear_combination"
   (normStx)? (expStx)? (ppSpace colGt term)? : tactic

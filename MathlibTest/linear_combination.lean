@@ -1,3 +1,4 @@
+import Mathlib.Tactic.Abel
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith
 
@@ -227,6 +228,10 @@ example (a b c d : ℚ) (h1 : a = 4) (h2 : 3 = b) (h3 : c * 3 = d) (h4 : -d = a)
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y = -2 * y + 1 := by
   linear_combination (norm := ring_nf)
   linear_combination h1 - 2 * h2
+
+example {A : Type*} [AddCommGroup A] {x y z : A} (h1 : x + y = 10 • z) (h2 : x - y = 6 • z) :
+    2 • x = 2 • (8 • z) := by
+  linear_combination (norm := abel) h1 + h2
 
 /-! ### Cases that should fail -/
 
