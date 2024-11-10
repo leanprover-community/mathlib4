@@ -14,7 +14,7 @@ This file contains some results on cardinality of Ore localizations.
 
 ## TODO
 
-- Prove or disprove `OreLocalization.cardinal_mk_le_lift_cardinal_mk_of_commute`
+- Prove or disprove `OreLocalization.cardinalMk_le_lift_cardinalMk_of_commute`
   with `Commute` assumption removed.
 
 -/
@@ -62,7 +62,7 @@ theorem numeratorHom_surjective_of_finite [Finite S] :
   oreDiv_one_surjective_of_finite_left S R
 
 @[to_additive]
-theorem cardinal_mk_le_max : #(OreLocalization S X) ≤ max (lift.{v} #S) (lift.{u} #X) := by
+theorem cardinalMk_le_max : #(OreLocalization S X) ≤ max (lift.{v} #S) (lift.{u} #X) := by
   rcases finite_or_infinite X with _ | _
   · have := lift_mk_le_lift_mk_of_surjective (oreDiv_one_surjective_of_finite_right S X)
     rw [lift_umax.{v, u}, lift_id'] at this
@@ -77,13 +77,13 @@ theorem cardinal_mk_le_max : #(OreLocalization S X) ≤ max (lift.{v} #S) (lift.
   refine mul_eq_max ?_ ?_ <;> simp
 
 @[to_additive]
-theorem cardinal_mk_le : #(OreLocalization S R) ≤ #R := by
-  convert ← cardinal_mk_le_max S R
+theorem cardinalMk_le : #(OreLocalization S R) ≤ #R := by
+  convert ← cardinalMk_le_max S R
   simp_rw [lift_id, max_eq_right_iff, mk_subtype_le]
 
 -- TODO: remove the `Commute` assumption
 @[to_additive]
-theorem cardinal_mk_le_lift_cardinal_mk_of_commute (hc : ∀ s s' : S, Commute s s') :
+theorem cardinalMk_le_lift_cardinalMk_of_commute (hc : ∀ s s' : S, Commute s s') :
     #(OreLocalization S X) ≤ lift.{u} #X := by
   rcases finite_or_infinite X with _ | _
   · have := lift_mk_le_lift_mk_of_surjective (oreDiv_one_surjective_of_finite_right S X)
