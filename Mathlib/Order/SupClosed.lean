@@ -154,7 +154,7 @@ lemma infClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeInf (α i
   fun _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
 
 lemma InfClosed.insert_upper_bound {s : Set α} {a : α} (hs : InfClosed s) (ha : ∀ b ∈ s, b ≤ a) :
-    InfClosed (insert a s):= by
+    InfClosed (insert a s) := by
   rw [InfClosed]
   aesop
 
