@@ -800,9 +800,7 @@ protected noncomputable def opRingEquiv [Monoid G] :
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
         AddEquiv.trans_apply, AddEquiv.trans_apply, MulOpposite.opAddEquiv_symm_apply]
-      rw [MulOpposite.unop_mul (α := MonoidAlgebra k G)]
-      -- This was not needed before leanprover/lean4#2644
-      erw [unop_op, unop_op, single_mul_single]
+      rw [MulOpposite.unop_mul (α := MonoidAlgebra k G), unop_op, unop_op, single_mul_single]
       simp }
 
 -- @[simp] -- Porting note (#10618): simp can prove this.
@@ -1517,8 +1515,7 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
       erw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
         MulOpposite.opAddEquiv_symm_apply]; rw [MulOpposite.unop_mul (α := k[G])]
       dsimp
-      -- This was not needed before leanprover/lean4#2644
-      erw [mapRange_single, single_mul_single, mapRange_single, mapRange_single]
+      rw [mapRange_single, single_mul_single, mapRange_single, mapRange_single]
       simp only [mapRange_single, single_mul_single, ← op_mul, add_comm] }
 
 -- @[simp] -- Porting note (#10618): simp can prove this.
