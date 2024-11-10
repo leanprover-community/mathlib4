@@ -289,7 +289,7 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun X => IsCompact (closur
       rw [Set.mem_iInter₂] at hsi'
       exact hsi' j hj
     obtain ⟨j, hj⟩ := Set.mem_iUnion.mp
-      (Set.mem_of_subset_of_mem v.subset_iUnion (Set.mem_of_mem_inter_left hx))
+      (v.subset_iUnion (Set.mem_of_mem_inter_left hx))
     obtain rfl : j = i := by
       by_contra! h
       exact this j h hj
