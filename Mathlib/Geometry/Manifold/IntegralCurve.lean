@@ -316,7 +316,7 @@ lemma isIntegralCurveOn_Ioo_comp_mul_pos {ε a : ℝ} (ha : 0 < a) :
       IsIntegralCurveOn (γ ∘ (· * a)) (a • v) (Ioo ((t₀ - ε) / a) ((t₀ + ε) / a)) := by
   have : {t | t * a ∈ Ioo (t₀ - ε) (t₀ + ε)} = Ioo ((t₀ - ε) / a) ((t₀ + ε) / a) := by
     ext t
-    rw [mem_setOf, mem_Ioo, mem_Ioo, div_lt_iff ha, lt_div_iff ha]
+    rw [mem_setOf, mem_Ioo, mem_Ioo, div_lt_iff₀ ha, lt_div_iff₀ ha]
   rw [isIntegralCurveOn_comp_mul_ne_zero (ne_of_gt ha), this]
 
 lemma isIntegralCurveOn_Ioo_comp_mul_neg {ε a : ℝ} (ha : a < 0) :
@@ -505,7 +505,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurveOn γ v (Ioo a b)) (hγ' : IsIntegralCurveOn γ' v (Ioo a b))
     (h : γ t₀ = γ' t₀) : EqOn γ γ' (Ioo a b) := by
-  set s := {t | γ t = γ' t} ∩ Ioo a b
+  set s := {t | γ t = γ' t} ∩ Ioo a b with hs
   -- since `Ioo a b` is connected, we get `s = Ioo a b` by showing that `s` is clopen in `Ioo a b`
   -- in the subtype topology (`s` is also non-empty by assumption)
   -- here we use a slightly weaker alternative theorem
@@ -603,6 +603,8 @@ lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
 
 section UniformTime
 
+/-- This is the uniqueness theorem of integral curves applied to a real-indexed family of integral
+  curves with the same starting point. -/
 lemma eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a, IsIntegralCurveOn (γ a) v (Ioo (-a) a))
@@ -614,9 +616,9 @@ lemma eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     exact ⟨neg_lt_zero.mpr hpos, by positivity⟩
   · apply Ioo_subset_Ioo <;> linarith
 
-/-- Suppose for every `a : ℝ`, there exists an integral curve `γ a` on `Ioo (-a) a`.
-Then, the global curve `γ_ext := fun t ↦ γ (|t| + 1) t` agrees with each `γ a` on `Ioo (-a) a`.
-This will help us show that `γ` is a global integral curve. -/
+/-- Suppose for every `a : ℝ`, there exists an integral curve `γ a` on `Ioo (-a) a`, all with the
+  same starting point `γ 0 = x`. Then, the global curve `γ_ext := fun t ↦ γ (|t| + 1) t` agrees with
+  each `γ a` on `Ioo (-a) a`. This will help us show that `γ_ext` is a global integral curve. -/
 lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn_aux [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) {a : ℝ} :
@@ -631,9 +633,9 @@ lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn_aux [Boundaryles
   · exact eqOn_of_isIntegralCurveOn_Ioo hv γ hγx hγ
       (neg_lt_self_iff.mp <| lt_trans ht'.1 ht'.2) (not_lt.mp hlt) ht' |>.symm
 
-/-- If for every `a : ℝ`, there exists an integral curve defined on `Ioo (-a) a`, then there exists
-  a global integral curve. -/
-lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M] [T2Space M]
+/-- If for every `a : ℝ`, there exists an integral curve defined on `Ioo (-a) a`, all with the
+  same starting point `x`, then there exists a global integral curve starting at `x`. -/
+lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) :
     ∃ γ, γ 0 = x ∧ IsIntegralCurve γ v := by
@@ -650,7 +652,7 @@ lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [BoundarylessManifold
       rw [abs_lt] at this
       exact Ioo_mem_nhds this.1 this.2
 
-lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M] [T2Space M]
+lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
     (∃ γ, γ 0 = x ∧ IsIntegralCurve γ v) ↔
       ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a) :=
@@ -735,13 +737,13 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
   -- integral curve starting at `-(asup - ε / 2)` with radius `ε`
   obtain ⟨γ1_aux, h1_aux, hγ1⟩ := h (γ (-(asup - ε / 2)))
   rw [isIntegralCurveOn_Ioo_comp_add (asup - ε / 2)] at hγ1
-  let γ1 := γ1_aux ∘ (· + (asup - ε / 2))
-  have heq1 : γ1 (-(asup - ε / 2)) = γ (-(asup - ε / 2)) := by simp [h1_aux]
+  set γ1 := γ1_aux ∘ (· + (asup - ε / 2)) with γ1_def
+  have heq1 : γ1 (-(asup - ε / 2)) = γ (-(asup - ε / 2)) := by simp [γ1_def, h1_aux]
   -- integral curve starting at `asup - ε / 2` with radius `ε`
   obtain ⟨γ2_aux, h2_aux, hγ2⟩ := h (γ (asup - ε / 2))
   rw [isIntegralCurveOn_Ioo_comp_sub (asup - ε / 2)] at hγ2
-  let γ2 := γ2_aux ∘ (· - (asup - ε / 2))
-  have heq2 : γ2 (asup - ε / 2) = γ (asup - ε / 2) := by simp [h2_aux]
+  set γ2 := γ2_aux ∘ (· - (asup - ε / 2)) with γ2_def
+  have heq2 : γ2 (asup - ε / 2) = γ (asup - ε / 2) := by simp [γ2_def, h2_aux]
 
   -- to help `linarith`
   have hεle : ε ≤ asup := le_csSup hbdd (h x)
@@ -756,12 +758,12 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
   suffices hext : IsIntegralCurveOn γ_ext v (Ioo (-(asup + ε / 2)) (asup + ε / 2)) from
     (not_lt.mpr <| le_csSup hbdd ⟨γ_ext, heq_ext, hext⟩) <| lt_add_of_pos_right asup (half_pos hε)
   apply (isIntegralCurveOn_piecewise (t₀ := asup - ε / 2) hv _ hγ2
-      ⟨⟨by linarith, hlt⟩, ⟨by linarith, by linarith⟩⟩ _).mono
+      ⟨⟨by linarith, hlt⟩, ⟨by linarith, by linarith⟩⟩
+      (by rw [piecewise, if_pos ⟨by linarith, hlt⟩, ← heq2])).mono
     (Ioo_subset_Ioo_union_Ioo le_rfl (by linarith) (by linarith))
   apply (isIntegralCurveOn_piecewise (t₀ := -(asup - ε / 2)) hv hγ hγ1
       ⟨⟨neg_lt_neg hlt, by linarith⟩, ⟨by linarith, by linarith⟩⟩ heq1.symm).mono
     (union_comm _ _ ▸ Ioo_subset_Ioo_union_Ioo (by linarith) (by linarith) le_rfl)
-  rw [piecewise, if_pos ⟨by linarith, hlt⟩, ← heq2]
 
 end UniformTime
 
