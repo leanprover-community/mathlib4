@@ -29,7 +29,7 @@ jobs:
           {
             cat scripts/bench_summary.lean
             printf $'run_cmd BenchAction.addBenchSummaryComment %s "leanprover-community/mathlib4" "adomani"' "${PR}"
-            printf $'\neval "CI run: https://github.com/%s/actions/runs/%s"\n' "${{ github.repository }}" "${{ github.run_id }}"
+            printf $'\nrun_cmd Lean.logInfo "[CI run](https://github.com/%s/actions/runs/%s)"\n' "${{ github.repository }}" "${{ github.run_id }}"
           } |
             lake env lean --stdin
         env:
