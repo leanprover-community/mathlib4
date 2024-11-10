@@ -69,7 +69,7 @@ class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Mo
     (φ : outParam (R →* S)) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B]
-    extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B : Prop
+    extends MulActionSemiHomClass F φ A B, NonUnitalRingHomClass F A B : Prop
 
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are `R`-linear.
@@ -199,12 +199,6 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h�
 @[simp]
 theorem mk_coe (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₛₙₐ[φ] B) = f := by
   rfl
-
-instance : CoeOut (A →ₛₙₐ[φ] B) (A →ₑ+[φ] B) :=
-  ⟨toDistribMulActionHom⟩
-
-instance : CoeOut (A →ₛₙₐ[φ] B) (A →ₙ* B) :=
-  ⟨toMulHom⟩
 
 @[simp]
 theorem toDistribMulActionHom_eq_coe (f : A →ₛₙₐ[φ] B) : f.toDistribMulActionHom = ↑f :=
