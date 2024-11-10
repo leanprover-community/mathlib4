@@ -205,8 +205,8 @@ lemma id_traverse {α : Type*} (t : Tree α) : t.traverse (pure : α → Id α) 
 universe w in
 lemma comp_traverse
     {F : Type u → Type v} {G : Type v → Type w} [Applicative F] [Applicative G]
-    [LawfulApplicative F] [LawfulApplicative G] {α : Type*} {β : Type v} {γ : Type u} (f : β → F γ)
-    (g : α → G β) (t : Tree α) : t.traverse (Functor.Comp.mk ∘ (f <$> ·) ∘ g) =
+    [LawfulApplicative G] {α : Type*} {β : Type v} {γ : Type u} (f : β → F γ) (g : α → G β)
+    (t : Tree α) : t.traverse (Functor.Comp.mk ∘ (f <$> ·) ∘ g) =
       Functor.Comp.mk ((·.traverse f) <$> (t.traverse g)) := by
   induction t with
     | nil => rw [traverse, traverse, map_pure, traverse]; rfl
