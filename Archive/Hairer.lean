@@ -1,13 +1,14 @@
 /-
-Copyright (c) 2023 Floris Van Doorn. All rights reserved.
+Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Sébastien Gouëzel, Patrick Massot, Ruben Van de Velde, Floris Van Doorn,
+Authors: Johan Commelin, Sébastien Gouëzel, Patrick Massot, Ruben Van de Velde, Floris van Doorn,
 Junyan Xu
 -/
+import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.Data.MvPolynomial.Funext
+import Mathlib.LinearAlgebra.Dual
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Topology.Algebra.MvPolynomial
 
@@ -95,11 +96,11 @@ lemma inj_L : Injective (L ι) :=
   (injective_iff_map_eq_zero _).mpr fun p hp ↦ by
     have H : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ ball 0 1 → eval x p = 0 :=
       isOpen_ball.ae_eq_zero_of_integral_contDiff_smul_eq_zero
-        (by exact continuous_eval p |>.locallyIntegrable.locallyIntegrableOn _)
+        (continuous_eval p |>.locallyIntegrable.locallyIntegrableOn _)
         fun g hg _h2g g_supp ↦ by
           simpa [mul_comm (g _), L] using congr($hp ⟨g, g_supp.trans ball_subset_closedBall, hg⟩)
     simp_rw [MvPolynomial.funext_iff, map_zero]
-    refine fun x ↦ AnalyticOn.eval_linearMap (EuclideanSpace.equiv ι ℝ).toLinearMap p
+    refine fun x ↦ AnalyticOnNhd.eval_linearMap (EuclideanSpace.equiv ι ℝ).toLinearMap p
       |>.eqOn_zero_of_preconnected_of_eventuallyEq_zero
       (preconnectedSpace_iff_univ.mp inferInstance) (z₀ := 0) trivial
       (Filter.mem_of_superset (Metric.ball_mem_nhds 0 zero_lt_one) ?_) trivial

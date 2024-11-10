@@ -61,7 +61,7 @@ lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
     mk s hs_sup hs_inf < mk t ht_sup ht_inf ↔ s ⊂ t := Iff.rfl
 
 /-- Copy of a sublattice with a new `carrier` equal to the old one. Useful to fix definitional
-equalities.-/
+equalities. -/
 protected def copy (L : Sublattice α) (s : Set α) (hs : s = L) : Sublattice α where
   carrier := s
   supClosed' := hs.symm ▸ L.supClosed'
@@ -75,12 +75,12 @@ lemma copy_eq (L : Sublattice α) (s : Set α) (hs) : L.copy s hs = L := SetLike
 lemma ext : (∀ a, a ∈ L ↔ a ∈ M) → L = M := SetLike.ext
 
 /-- A sublattice of a lattice inherits a supremum. -/
-instance instSupCoe : Sup L where
-  sup a b := ⟨a ⊔ b, L.supClosed a.2 b.2⟩
+instance instSupCoe : Max L where
+  max a b := ⟨a ⊔ b, L.supClosed a.2 b.2⟩
 
 /-- A sublattice of a lattice inherits an infimum. -/
-instance instInfCoe : Inf L where
-  inf a b := ⟨a ⊓ b, L.infClosed a.2 b.2⟩
+instance instInfCoe : Min L where
+  min a b := ⟨a ⊓ b, L.infClosed a.2 b.2⟩
 
 @[simp, norm_cast] lemma coe_sup (a b : L) : a ⊔ b = (a : α) ⊔ b := rfl
 @[simp, norm_cast] lemma coe_inf (a b : L) : a ⊓ b = (a : α) ⊓ b := rfl
@@ -136,18 +136,18 @@ instance instBot : Bot (Sublattice α) where
   bot.infClosed' := infClosed_empty
 
 /-- The inf of two sublattices is their intersection. -/
-instance instInf : Inf (Sublattice α) where
-  inf L M := { carrier := L ∩ M
+instance instInf : Min (Sublattice α) where
+  min L M := { carrier := L ∩ M
                supClosed' := L.supClosed.inter M.supClosed
                infClosed' := L.infClosed.inter M.infClosed }
 
 /-- The inf of sublattices is their intersection. -/
 instance instInfSet : InfSet (Sublattice α) where
   sInf S := { carrier := ⨅ L ∈ S, L
-              supClosed' := supClosed_sInter <| forall_range_iff.2 fun L ↦ supClosed_sInter <|
-                forall_range_iff.2 fun _ ↦ L.supClosed
-              infClosed' := infClosed_sInter <| forall_range_iff.2 fun L ↦ infClosed_sInter <|
-                forall_range_iff.2 fun _ ↦ L.infClosed }
+              supClosed' := supClosed_sInter <| forall_mem_range.2 fun L ↦ supClosed_sInter <|
+                forall_mem_range.2 fun _ ↦ L.supClosed
+              infClosed' := infClosed_sInter <| forall_mem_range.2 fun L ↦ infClosed_sInter <|
+                forall_mem_range.2 fun _ ↦ L.infClosed }
 
 instance instInhabited : Inhabited (Sublattice α) := ⟨⊥⟩
 

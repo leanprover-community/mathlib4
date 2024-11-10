@@ -3,7 +3,7 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.Module.Defs
 
 /-!
@@ -11,7 +11,7 @@ import Mathlib.Algebra.Order.Module.Defs
 
 This file proves properties of algebras where both rings are ordered compatibly.
 
-### TODO
+## TODO
 
 `positivity` extension for `algebraMap`
 -/
@@ -70,3 +70,43 @@ variable [SMulPosReflectLT α β]
 
 end SMulPosStrictMono
 end StrictOrderedSemiring
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq Function
+
+/-- Extension for `algebraMap`. -/
+@[positivity algebraMap _ _ _]
+def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
+  let ~q(@algebraMap $α _ $instα $instβ $instαβ $a) := e | throwError "not `algebraMap`"
+  let pα ← synthInstanceQ (q(PartialOrder $α) : Q(Type u_1))
+  match ← core q(inferInstance) pα a with
+  | .positive pa =>
+    let _instαring ← synthInstanceQ q(OrderedCommSemiring $α)
+    try
+      let _instβring ← synthInstanceQ q(StrictOrderedSemiring $β)
+      let _instαβsmul ← synthInstanceQ q(SMulPosStrictMono $α $β)
+      assertInstancesCommute
+      return .positive q(algebraMap_pos $β $pa)
+    catch _ =>
+      let _instβring ← synthInstanceQ q(OrderedSemiring $β)
+      let _instαβsmul ← synthInstanceQ q(SMulPosMono $α $β)
+      assertInstancesCommute
+      return .nonnegative q(algebraMap_nonneg $β <| le_of_lt $pa)
+  | .nonnegative pa =>
+    let _instαring ← synthInstanceQ q(OrderedCommSemiring $α)
+    let _instβring ← synthInstanceQ q(OrderedSemiring $β)
+    let _instαβsmul ← synthInstanceQ q(SMulPosMono $α $β)
+    assertInstancesCommute
+    return .nonnegative q(algebraMap_nonneg $β $pa)
+  | _ => pure .none
+
+example [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 ≤ a) :
+    0 ≤ algebraMap α β a := by positivity
+
+example [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 < a) :
+    0 ≤ algebraMap α β a := by positivity
+
+example [StrictOrderedSemiring β] [Algebra α β] [SMulPosStrictMono α β] {a : α} (ha : 0 < a) :
+    0 < algebraMap α β a := by positivity
+
+end Mathlib.Meta.Positivity

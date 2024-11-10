@@ -5,10 +5,7 @@ Authors: Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Equicontinuity
-import Mathlib.Topology.Separation
 import Mathlib.Topology.Support
-
-#align_import topology.uniform_space.compact from "leanprover-community/mathlib"@"735b22f8f9ff9792cf4212d7cb051c4c994bc685"
 
 /-!
 # Compact separated uniform spaces
@@ -30,13 +27,12 @@ import Mathlib.Topology.Support
 The construction `uniformSpace_of_compact_t2` is not declared as an instance, as it would badly
 loop.
 
-## tags
+## Tags
 
 uniform space, uniform continuity, compact space
 -/
 
-
-open Classical Uniformity Topology Filter UniformSpace Set
+open Uniformity Topology Filter UniformSpace Set
 
 variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 
@@ -44,26 +40,23 @@ variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 ### Uniformity on compact spaces
 -/
 
-
 /-- On a compact uniform space, the topology determines the uniform structure, entourages are
 exactly the neighborhoods of the diagonal. -/
 theorem nhdsSet_diagonal_eq_uniformity [CompactSpace α] : 𝓝ˢ (diagonal α) = 𝓤 α := by
-  refine' nhdsSet_diagonal_le_uniformity.antisymm _
+  refine nhdsSet_diagonal_le_uniformity.antisymm ?_
   have :
     (𝓤 (α × α)).HasBasis (fun U => U ∈ 𝓤 α) fun U =>
       (fun p : (α × α) × α × α => ((p.1.1, p.2.1), p.1.2, p.2.2)) ⁻¹' U ×ˢ U := by
     rw [uniformity_prod_eq_comap_prod]
     exact (𝓤 α).basis_sets.prod_self.comap _
-  refine' (isCompact_diagonal.nhdsSet_basis_uniformity this).ge_iff.2 fun U hU => _
+  refine (isCompact_diagonal.nhdsSet_basis_uniformity this).ge_iff.2 fun U hU => ?_
   exact mem_of_superset hU fun ⟨x, y⟩ hxy => mem_iUnion₂.2
     ⟨(x, x), rfl, refl_mem_uniformity hU, hxy⟩
-#align nhds_set_diagonal_eq_uniformity nhdsSet_diagonal_eq_uniformity
 
 /-- On a compact uniform space, the topology determines the uniform structure, entourages are
 exactly the neighborhoods of the diagonal. -/
 theorem compactSpace_uniformity [CompactSpace α] : 𝓤 α = ⨆ x, 𝓝 (x, x) :=
   nhdsSet_diagonal_eq_uniformity.symm.trans (nhdsSet_diagonal _)
-#align compact_space_uniformity compactSpace_uniformity
 
 theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
     {u u' : UniformSpace γ} (h : u.toTopologicalSpace = t) (h' : u'.toTopologicalSpace = t) :
@@ -72,14 +65,11 @@ theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
   have : @CompactSpace γ u.toTopologicalSpace := by rwa [h]
   have : @CompactSpace γ u'.toTopologicalSpace := by rwa [h']
   rw [@compactSpace_uniformity _ u, compactSpace_uniformity, h, h']
-#align unique_uniformity_of_compact unique_uniformity_of_compact
 
 /-- The unique uniform structure inducing a given compact topological structure. -/
-def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ] : UniformSpace γ
-    where
+def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ] : UniformSpace γ where
   uniformity := 𝓝ˢ (diagonal γ)
-  refl := principal_le_nhdsSet
-  symm := continuous_swap.tendsto_nhdsSet fun x => Eq.symm
+  symm := continuous_swap.tendsto_nhdsSet fun _ => Eq.symm
   comp := by
     /-  This is the difficult part of the proof. We need to prove that, for each neighborhood `W`
         of the diagonal `Δ`, there exists a smaller neighborhood `V` such that `V ○ V ⊆ W`.
@@ -117,9 +107,9 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     have W_in : W ∈ 𝓝Δ := by
       rw [mem_nhdsSet_iff_forall]
       rintro ⟨z, z'⟩ (rfl : z = z')
-      refine' IsOpen.mem_nhds _ _
+      refine IsOpen.mem_nhds ?_ ?_
       · apply_rules [IsOpen.union, IsOpen.prod]
-      · simp only [mem_union, mem_prod, and_self_iff]
+      · simp only [W, mem_union, mem_prod, and_self_iff]
         exact (_root_.em _).imp_left fun h => union_subset_union VU₁ VU₂ h
     -- So W ○ W ∈ F by definition of F
     have : W ○ W ∈ F := @mem_lift' _ _ _ (fun s => s ○ s) _ W_in
@@ -142,22 +132,15 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     -- Hence w ∈ U₁ ∩ U₂ which is empty.
     -- So we have a contradiction
     exact hU₁₂.le_bot ⟨uw_in.2, wv_in.1⟩
-  isOpen_uniformity := by
-    -- Here we need to prove the topology induced by the constructed uniformity is the
-    -- topology we started with.
-    suffices ∀ x : γ, Filter.comap (Prod.mk x) (𝓝ˢ (diagonal γ)) = 𝓝 x by
-      intro s
-      simp_rw [isOpen_iff_mem_nhds, ← mem_comap_prod_mk, this]
-    intro x
-    simp_rw [nhdsSet_diagonal, comap_iSup, nhds_prod_eq, comap_prod, (· ∘ ·), comap_id']
+  nhds_eq_comap_uniformity x := by
+    simp_rw [nhdsSet_diagonal, comap_iSup, nhds_prod_eq, comap_prod, Function.comp_def, comap_id']
     rw [iSup_split_single _ x, comap_const_of_mem fun V => mem_of_mem_nhds]
-    suffices ∀ (y) (_ : y ≠ x), comap (fun _ : γ => x) (𝓝 y) ⊓ 𝓝 y ≤ 𝓝 x by simpa
+    suffices ∀ y ≠ x, comap (fun _ : γ ↦ x) (𝓝 y) ⊓ 𝓝 y ≤ 𝓝 x by simpa
     intro y hxy
-    simp [comap_const_of_not_mem (compl_singleton_mem_nhds hxy) (Classical.not_not.2 rfl)]
-#align uniform_space_of_compact_t2 uniformSpaceOfCompactT2
+    simp [comap_const_of_not_mem (compl_singleton_mem_nhds hxy) (not_not_intro rfl)]
 
 /-!
-### Heine-Cantor theorem
+### Heine-Cantor theorem
 -/
 
 
@@ -167,9 +150,8 @@ theorem CompactSpace.uniformContinuous_of_continuous [CompactSpace α] {f : α �
     (h : Continuous f) : UniformContinuous f :=
 calc map (Prod.map f f) (𝓤 α)
    = map (Prod.map f f) (𝓝ˢ (diagonal α)) := by rw [nhdsSet_diagonal_eq_uniformity]
- _ ≤ 𝓝ˢ (diagonal β)                      := (h.prod_map h).tendsto_nhdsSet mapsTo_prod_map_diagonal
+ _ ≤ 𝓝ˢ (diagonal β)                      := (h.prodMap h).tendsto_nhdsSet mapsTo_prod_map_diagonal
  _ ≤ 𝓤 β                                  := nhdsSet_diagonal_le_uniformity
-#align compact_space.uniform_continuous_of_continuous CompactSpace.uniformContinuous_of_continuous
 
 /-- Heine-Cantor: a continuous function on a compact set of a uniform space is uniformly
 continuous. -/
@@ -179,7 +161,6 @@ theorem IsCompact.uniformContinuousOn_of_continuous {s : Set α} {f : α → β}
   rw [isCompact_iff_compactSpace] at hs
   rw [continuousOn_iff_continuous_restrict] at hf
   exact CompactSpace.uniformContinuous_of_continuous hf
-#align is_compact.uniform_continuous_on_of_continuous IsCompact.uniformContinuousOn_of_continuous
 
 /-- If `s` is compact and `f` is continuous at all points of `s`, then `f` is
 "uniformly continuous at the set `s`", i.e. `f x` is close to `f y` whenever `x ∈ s` and `y` is
@@ -196,9 +177,8 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
   rintro ⟨a₁, a₂⟩ h h₁
   obtain ⟨a, ha, haU⟩ := Set.mem_iUnion₂.1 (hsU h₁)
   apply htr
-  refine' ⟨f a, htsymm.mk_mem_comm.1 (hb _ _ _ haU _), hb _ _ _ haU _⟩
+  refine ⟨f a, htsymm.mk_mem_comm.1 (hb _ _ _ haU ?_), hb _ _ _ haU ?_⟩
   exacts [mem_ball_self _ (hT a a.2), mem_iInter₂.1 h a ha]
-#align is_compact.uniform_continuous_at_of_continuous_at IsCompact.uniformContinuousAt_of_continuousAt
 
 theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : β}
     (h_cont : Continuous f) (hx : Tendsto f (cocompact α) (𝓝 x)) : UniformContinuous f :=
@@ -215,29 +195,11 @@ theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : �
     by_cases h₂ : b₂ ∈ s; · exact (h.2 h₂).2
     apply htr
     exact ⟨x, htsymm.mk_mem_comm.1 (hst h₁), hst h₂⟩
-#align continuous.uniform_continuous_of_tendsto_cocompact Continuous.uniformContinuous_of_tendsto_cocompact
-
-/-- If `f` has compact multiplicative support, then `f` tends to 1 at infinity. -/
-@[to_additive "If `f` has compact support, then `f` tends to zero at infinity."]
-theorem HasCompactMulSupport.is_one_at_infty {f : α → γ} [TopologicalSpace γ] [One γ]
-    (h : HasCompactMulSupport f) : Tendsto f (cocompact α) (𝓝 1) := by
-  -- porting note: move to src/topology/support.lean once the port is over
-  intro N hN
-  rw [mem_map, mem_cocompact']
-  refine' ⟨mulTSupport f, h.isCompact, _⟩
-  rw [compl_subset_comm]
-  intro v hv
-  rw [mem_preimage, image_eq_one_of_nmem_mulTSupport hv]
-  exact mem_of_mem_nhds hN
-#align has_compact_mul_support.is_one_at_infty HasCompactMulSupport.is_one_at_infty
-#align has_compact_support.is_zero_at_infty HasCompactSupport.is_zero_at_infty
 
 @[to_additive]
 theorem HasCompactMulSupport.uniformContinuous_of_continuous {f : α → β} [One β]
     (h1 : HasCompactMulSupport f) (h2 : Continuous f) : UniformContinuous f :=
   h2.uniformContinuous_of_tendsto_cocompact h1.is_one_at_infty
-#align has_compact_mul_support.uniform_continuous_of_continuous HasCompactMulSupport.uniformContinuous_of_continuous
-#align has_compact_support.uniform_continuous_of_continuous HasCompactSupport.uniformContinuous_of_continuous
 
 /-- A family of functions `α → β → γ` tends uniformly to its value at `x` if `α` is locally compact,
 `β` is compact and `f` is continuous on `U × (univ : Set β)` for some neighborhood `U` of `x`. -/
@@ -249,7 +211,6 @@ theorem ContinuousOn.tendstoUniformly [LocallyCompactSpace α] [CompactSpace β]
     IsCompact.uniformContinuousOn_of_continuous (hK.prod isCompact_univ)
       (h.mono <| prod_mono hKU Subset.rfl)
   exact this.tendstoUniformly hxK
-#align continuous_on.tendsto_uniformly ContinuousOn.tendstoUniformly
 
 /-- A continuous family of functions `α → β → γ` tends uniformly to its value at `x`
 if `α` is weakly locally compact and `β` is compact. -/
@@ -259,7 +220,6 @@ theorem Continuous.tendstoUniformly [WeaklyLocallyCompactSpace α] [CompactSpace
   have : UniformContinuousOn (↿f) (K ×ˢ univ) :=
     IsCompact.uniformContinuousOn_of_continuous (hK.prod isCompact_univ) h.continuousOn
   this.tendstoUniformly hxK
-#align continuous.tendsto_uniformly Continuous.tendstoUniformly
 
 /-- In a product space `α × β`, assume that a function `f` is continuous on `s × k` where `k` is
 compact. Then, along the fiber above any `q ∈ s`, `f` is transversely uniformly continuous, i.e.,
@@ -297,6 +257,5 @@ theorem CompactSpace.uniformEquicontinuous_of_equicontinuous {ι : Type*} {F : �
   rw [equicontinuous_iff_continuous] at h
   rw [uniformEquicontinuous_iff_uniformContinuous]
   exact CompactSpace.uniformContinuous_of_continuous h
-#align compact_space.uniform_equicontinuous_of_equicontinuous CompactSpace.uniformEquicontinuous_of_equicontinuous
 
 end UniformConvergence

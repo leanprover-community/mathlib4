@@ -1,13 +1,11 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Limits.HasLimits
-
-#align_import category_theory.monoidal.limits from "leanprover-community/mathlib"@"744d59af0b28d0c42f631038627df9b85ae1d1ce"
 
 /-!
 # `lim : (J ⥤ C) ⥤ C` is lax monoidal when `C` is a monoidal category.
@@ -17,6 +15,9 @@ i.e. there are morphisms
 * `limLax.ε : (𝟙_ C) → limit (𝟙_ (J ⥤ C))`
 * `limLax.μ : limit F ⊗ limit G ⟶ limit (F ⊗ G)`
 satisfying the laws of a lax monoidal functor.
+
+## TODO
+Now that we have oplax monoidal functors, assemble `Limits.colim` into an oplax monoidal functor.
 -/
 
 
@@ -26,23 +27,20 @@ open CategoryTheory.MonoidalCategory
 
 namespace CategoryTheory.Limits
 
-universe v u
+universe v u w
 
 noncomputable section
 
-variable {J : Type v} [SmallCategory J]
-
-variable {C : Type u} [Category.{v} C] [HasLimits C]
+variable {J : Type w} [SmallCategory J]
+variable {C : Type u} [Category.{v} C] [HasLimitsOfShape J C]
 
 instance limitFunctorial : Functorial fun F : J ⥤ C => limit F where
   map' := Limits.lim.map
-#align category_theory.limits.limit_functorial CategoryTheory.Limits.limitFunctorial
 
 @[simp]
 theorem limitFunctorial_map {F G : J ⥤ C} (α : F ⟶ G) :
     map (fun F : J ⥤ C => limit F) α = Limits.lim.map α :=
   rfl
-#align category_theory.limits.limit_functorial_map CategoryTheory.Limits.limitFunctorial_map
 
 variable [MonoidalCategory.{v} C]
 
@@ -51,7 +49,7 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorH
   (ε :=
     limit.lift _
       { pt := _
-        π := { app := fun j => 𝟙 _ } })
+        π := { app := fun _ => 𝟙 _ } })
   (μ := fun F G =>
     limit.lift (F ⊗ G)
       { pt := limit F ⊗ limit G
@@ -60,7 +58,7 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorH
             naturality := fun j j' f => by
               dsimp
               simp only [Category.id_comp, ← tensor_comp, limit.w] } })
-  (μ_natural:= fun f g => by
+  (μ_natural := fun f g => by
     ext; dsimp
     simp only [limit.lift_π, Cones.postcompose_obj_π, Monoidal.tensorHom_app, limit.lift_map,
       NatTrans.comp_app, Category.assoc, ← tensor_comp, limMap_π])
@@ -78,7 +76,7 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorH
     slice_rhs 2 3 =>
       rw [← id_tensor_comp, limit.lift_π]
       dsimp
-    dsimp; simp)
+    dsimp; rw [id_tensor_comp_tensor_id])
   (left_unitality := fun X => by
     ext j; dsimp
     simp only [limit.lift_map, Category.assoc, limit.lift_π, Cones.postcompose_obj_pt,
@@ -89,7 +87,7 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorH
       rw [← comp_tensor_id]
       erw [limit.lift_π]
       dsimp
-    slice_rhs 2 3 => rw [leftUnitor_naturality]
+    slice_rhs 2 3 => rw [id_tensorHom, leftUnitor_naturality]
     simp)
   (right_unitality := fun X => by
     ext j; dsimp
@@ -101,37 +99,31 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorH
       rw [← id_tensor_comp]
       erw [limit.lift_π]
       dsimp
-    slice_rhs 2 3 => rw [rightUnitor_naturality]
+    slice_rhs 2 3 => rw [tensorHom_id, rightUnitor_naturality]
     simp)
-#align category_theory.limits.limit_lax_monoidal CategoryTheory.Limits.limitLaxMonoidal
 
 /-- The limit functor `F ↦ limit F` bundled as a lax monoidal functor. -/
 def limLax : LaxMonoidalFunctor (J ⥤ C) C :=
   LaxMonoidalFunctor.of fun F : J ⥤ C => limit F
-#align category_theory.limits.lim_lax CategoryTheory.Limits.limLax
 
 @[simp]
 theorem limLax_obj (F : J ⥤ C) : limLax.obj F = limit F :=
   rfl
-#align category_theory.limits.lim_lax_obj CategoryTheory.Limits.limLax_obj
 
 theorem limLax_obj' (F : J ⥤ C) : limLax.obj F = lim.obj F :=
   rfl
-#align category_theory.limits.lim_lax_obj' CategoryTheory.Limits.limLax_obj'
 
 @[simp]
 theorem limLax_map {F G : J ⥤ C} (α : F ⟶ G) : limLax.map α = lim.map α :=
   rfl
-#align category_theory.limits.lim_lax_map CategoryTheory.Limits.limLax_map
 
 @[simp]
 theorem limLax_ε :
     (@limLax J _ C _ _ _).ε =
       limit.lift _
         { pt := _
-          π := { app := fun j => 𝟙 _ } } :=
+          π := { app := fun _ => 𝟙 _ } } :=
   rfl
-#align category_theory.limits.lim_lax_ε CategoryTheory.Limits.limLax_ε
 
 @[simp]
 theorem limLax_μ (F G : J ⥤ C) :
@@ -144,7 +136,6 @@ theorem limLax_μ (F G : J ⥤ C) :
                 dsimp
                 simp only [Category.id_comp, ← tensor_comp, limit.w] } } :=
   rfl
-#align category_theory.limits.lim_lax_μ CategoryTheory.Limits.limLax_μ
 
 end
 

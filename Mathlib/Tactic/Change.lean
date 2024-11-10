@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Tactic.Basic
+import Mathlib.Init
+import Lean.Elab.Tactic.ElabTerm
+import Lean.Meta.Tactic.TryThis
 /-!
 
 # Tactic `change? term`
@@ -30,7 +32,7 @@ example : (fun x : Nat => x) 0 = 1 := by
 -/
 syntax (name := change?) "change?" (ppSpace colGt term)? : tactic
 
-open Lean Meta Elab.Tactic Std.Tactic.TryThis in
+open Lean Meta Elab.Tactic Meta.Tactic.TryThis in
 elab_rules : tactic
 | `(tactic|change?%$tk $[$sop:term]?) => withMainContext do
   let stx ← getRef
