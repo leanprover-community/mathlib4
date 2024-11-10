@@ -80,7 +80,7 @@ instance (priority := 900) [CanonicallyOverClass X Y] [OverClass Y S] : OverClas
 /-- Given `OverClass X S` and `OverClass Y S` and `f : X ⟶ Y`,
 `HomIsOver f S` is the typeclass asserting `f` commutes with the structure morphisms. -/
 class HomIsOver (f : X ⟶ Y) (S : C) [OverClass X S] [OverClass Y S] : Prop where
-  comp_over : f ≫ Y ↘ S = X ↘ S := by simp
+  comp_over : f ≫ Y ↘ S = X ↘ S := by simp; try rfl
 
 @[reassoc (attr := simp)]
 lemma comp_over [OverClass X S] [OverClass Y S] [HomIsOver f S] :
