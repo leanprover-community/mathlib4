@@ -78,16 +78,6 @@ lemma supClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeSup (α i
     {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, SupClosed (t i)) : SupClosed (s.pi t) :=
   fun _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
 
-lemma SupClosed.insert_upper_bound {s : Set α} {a : α} (hs : SupClosed s) (ha : ∀ b ∈ s, b ≤ a) :
-    SupClosed (insert a s) := by
-  rw [SupClosed]
-  aesop
-
-lemma SupClosed.insert_lower_bound {s : Set α} {a : α} (h : SupClosed s) (ha : ∀ b ∈ s, a ≤ b) :
-    SupClosed (insert a s) := by
-  rw [SupClosed]
-  aesop
-
 end Set
 
 section Finset
@@ -152,16 +142,6 @@ lemma InfClosed.prod {t : Set β} (hs : InfClosed s) (ht : InfClosed t) : InfClo
 lemma infClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeInf (α i)] {s : Set ι}
     {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, InfClosed (t i)) : InfClosed (s.pi t) :=
   fun _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
-
-lemma InfClosed.insert_upper_bound {s : Set α} {a : α} (hs : InfClosed s) (ha : ∀ b ∈ s, b ≤ a) :
-    InfClosed (insert a s):= by
-  rw [InfClosed]
-  aesop
-
-lemma InfClosed.insert_lower_bound {s : Set α} {a : α} (h : InfClosed s) (ha : ∀ b ∈ s, a ≤ b) :
-    InfClosed (insert a s) := by
-  rw [InfClosed]
-  aesop
 
 end Set
 
