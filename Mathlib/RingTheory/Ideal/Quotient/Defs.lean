@@ -50,8 +50,9 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R :=
       rw [mul_sub, sub_mul, sub_add_sub_cancel] }
 
 /-- The quotient of a ring by a two-sided ideal is a ring. -/
-abbrev ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
-  inferInstanceAs (Ring (Quotient.ringCon I).Quotient)
+abbrev ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) where
+  __ : AddCommGroup (R ⧸ I) := inferInstance
+  __ : Ring (Quotient.ringCon I).Quotient := inferInstance
 
 attribute [local instance] ring
 
