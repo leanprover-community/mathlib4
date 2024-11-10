@@ -426,6 +426,12 @@ theorem IsDiag.mem_range_diag {z : Sym2 α} : IsDiag z → z ∈ Set.range (@dia
 theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) :=
   ⟨IsDiag.mem_range_diag, fun ⟨i, hi⟩ => hi ▸ diag_isDiag i⟩
 
+@[simp]
+lemma map_IsDiag_iff (f : α ↪ β) (s : Sym2 α) :
+    (s.map f).IsDiag ↔ s.IsDiag := by
+  induction' s with x y
+  simp only [map_pair_eq, isDiag_iff_proj_eq, EmbeddingLike.apply_eq_iff_eq]
+
 instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
 
@@ -565,6 +571,49 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
 /-- The symmetric square is equivalent to the second symmetric power. -/
 def equivSym (α : Type*) : Sym2 α ≃ Sym α 2 :=
   Equiv.trans sym2EquivSym' symEquivSym'.symm
+
+@[simp]
+theorem equivSym_pair_eq {a b : α} : (equivSym α) s(a, b) = ⟨{a, b}, rfl⟩ := rfl
+
+@[simp]
+theorem equivSym_symm_eq_pair {a b : α} : (equivSym α).symm ⟨a ::ₘ {b}, rfl⟩ = s(a, b) := rfl
+
+@[simp]
+theorem mem_equivSym_iff_mem (s : Sym2 α) (a : α) : a ∈ equivSym α s ↔ a ∈ s := by
+  induction' s with x y
+  rw [equivSym_pair_eq]
+  simp only [Multiset.insert_eq_cons, Sym.mem_mk, Multiset.mem_cons, Multiset.mem_singleton,
+    mem_iff]
+
+private theorem mem_equivSym_symm_iff_mem_of_eq (m : Sym α 2) (s : Sym2 α) (a : α) :
+    s = (equivSym α).symm m → (a ∈ s ↔ a ∈ m) := by
+  induction' s with x y
+  intro h
+  rw [Equiv.eq_symm_apply] at h
+  subst m
+  exact (mem_equivSym_iff_mem s(x, y) a).symm
+
+@[simp]
+theorem mem_equivSym_symm_iff_mem (m : Sym α 2) (a : α) : a ∈ (equivSym α).symm m ↔ a ∈ m :=
+  mem_equivSym_symm_iff_mem_of_eq m _ _ rfl
+
+theorem equivSym_map_comm (f : α → β) (s : Sym2 α) :
+  (Sym2.equivSym β) (s.map f) = (Sym2.equivSym _ s).map f := by
+  induction' s with x y
+  rfl
+
+theorem IsDiag.equivSym_symm_replicate (a : α) :
+    ((equivSym α).symm (Sym.replicate 2 a)).IsDiag  := by
+  simp only [replicate, Multiset.replicate_succ, Multiset.replicate_zero, Multiset.cons_zero,
+    equivSym_symm_eq_pair, isDiag_iff_proj_eq]
+
+theorem equivSym_IsDiag_eq_replicate (s : Sym2 α) :
+    s.IsDiag ↔ ∃ a, equivSym α s = replicate 2 a := by
+  induction' s with x y
+  simp_rw [eq_replicate_iff]
+  simp only [isDiag_iff_proj_eq, equivSym_pair_eq, Multiset.insert_eq_cons, Sym.mem_mk,
+    Multiset.mem_cons, Multiset.mem_singleton, forall_eq_or_imp, forall_eq, exists_eq_left']
+  exact eq_comm
 
 /-- The symmetric square is equivalent to multisets of cardinality
 two. (This is currently a synonym for `equivSym`, but it's provided
