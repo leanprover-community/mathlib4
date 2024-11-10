@@ -22,17 +22,8 @@ lemma cos_times_sin (x y : ℝ) : 2 * sin x * cos y = (sin (x + y) + sin (x - y)
   ring
 
 lemma two_sin_pi_over_seven_ne_zero : 2 * sin (π / 7) ≠ 0 := by
-  simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, sin_eq_zero_iff, false_or, not_exists]
-  intro k
-  ring_nf
-  by_contra h
-  have seven_ne_zero : (7 : ℝ) ≠ 0 := by simp
-  rw [mul_comm, mul_right_inj' pi_ne_zero, ← mul_right_inj' seven_ne_zero] at h
-  simp only [one_div, isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
-    IsUnit.mul_inv_cancel] at h
-  norm_cast at h
-  apply Int.eq_one_of_mul_eq_one_right (by decide) at h
-  contradiction
+  simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, false_or]
+  apply (Real.sin_pos_of_pos_of_lt_pi _ _).ne' <;> linarith [pi_pos]
 
 lemma sin_pi_mul_neg_div (a b : ℝ) : sin (π * (- a / b)) = - sin (π * (a / b)) := by
   ring_nf
