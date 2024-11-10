@@ -82,8 +82,12 @@ See also `LinearEquivClass F R M M₂` for the case where `σ` is the identity m
 
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
-`f (c • x) = (σ c) • f x`. -/
-class SemilinearEquivClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
+`f (c • x) = (σ c) • f x`.
+
+Deprecated and changed from a `class` to a `structure`.
+Use `[AddMonoidHomClass F M M₂] [MulActionSemiHomClass F σ M M₂]` instead. -/
+@[deprecated (since := "2024-11-10")]
+structure SemilinearEquivClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
   (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
   [EquivLike F M M₂]
@@ -93,8 +97,12 @@ class SemilinearEquivClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semi
 
 -- `R, S, σ, σ'` become metavars, but it's OK since they are outparams.
 
+set_option linter.deprecated false in
 /-- `LinearEquivClass F R M M₂` asserts `F` is a type of bundled `R`-linear equivs `M → M₂`.
 This is an abbreviation for `SemilinearEquivClass F (RingHom.id R) M M₂`.
+
+Deprecated and changed from a `class` to a `structure`.
+Use `[AddMonoidHomClass F M M₂] [MulActionHomClass F R M M₂]` instead.
 -/
 abbrev LinearEquivClass (F : Type*) (R M M₂ : outParam Type*) [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
@@ -108,21 +116,19 @@ variable (F : Type*) [Semiring R] [Semiring S]
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
-instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  [EquivLike F M M₂] [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
-  { s with }
-
 variable {F}
 
 /-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
 @[coe]
 def semilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] (f : F) : M ≃ₛₗ[σ] M₂ :=
+    [EquivLike F M M₂] [AddMonoidHomClass F M M₂] [MulActionSemiHomClass F σ M M₂] (f : F) :
+    M ≃ₛₗ[σ] M₂ :=
   { (f : M ≃+ M₂), (f : M →ₛₗ[σ] M₂) with }
 
 /-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
 instance instCoeToSemilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] : CoeHead F (M ≃ₛₗ[σ] M₂) where
+    [EquivLike F M M₂] [AddMonoidHomClass F M M₂] [MulActionSemiHomClass F σ M M₂] :
+    CoeHead F (M ≃ₛₗ[σ] M₂) where
   coe f := semilinearEquiv f
 
 end SemilinearEquivClass
@@ -168,8 +174,11 @@ instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   left_inv := LinearEquiv.left_inv
   right_inv := LinearEquiv.right_inv
 
-instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
+instance : AddMonoidHomClass (M ≃ₛₗ[σ] M₂) M M₂ where
   map_add := (·.map_add') --map_add' Porting note (#11215): TODO why did I need to change this?
+  map_zero f := map_zero f.toLinearMap
+
+instance : MulActionSemiHomClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note (#11215): TODO why did I need to change this?
 
 -- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
