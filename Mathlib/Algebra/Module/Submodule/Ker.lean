@@ -49,7 +49,7 @@ open Submodule
 
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂] [MulActionSemiHomClass  F τ₁₂ M M₂]
 
 /-- The kernel of a linear map `f : M → M₂` is defined to be `comap f ⊥`. This is equivalent to the
 set of `x : M` such that `f x = 0`. The kernel is a submodule of `M`. -/
@@ -155,7 +155,7 @@ variable [Ring R] [Ring R₂]
 variable [AddCommGroup M] [AddCommGroup M₂]
 variable [Module R M] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂}
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂] [MulActionSemiHomClass  F τ₁₂ M M₂]
 variable {f : F}
 
 open Submodule
@@ -230,7 +230,7 @@ variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R₂ M₂]
 variable (p : Submodule R M)
 variable {τ₁₂ : R →+* R₂}
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂] [MulActionSemiHomClass  F τ₁₂ M M₂]
 
 open LinearMap
 
