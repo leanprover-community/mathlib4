@@ -37,6 +37,9 @@ We do not require `Abelian` in the definition of `AB4` and `AB5` because these c
 individual axioms. A non-abelian category with `AB5` is not an AB5 category in the sense of the
 literature.
 
+## Projects
+- Add additional axioms, especially define Grothendieck categories.
+
 ## References
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
 
