@@ -36,6 +36,8 @@ alias _root_.multiplicity_addValuation_apply := multiplicity_apply
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] [UniqueFactorizationMonoid R]
 variable (p : R) [hp : Fact (Prime p)]
 
+attribute [-simp] ENat.withTop_nat_eq_enat
+
 /--
 The valuation on a fraction ring to `WithTop ℤ` given by a prime.
 -/
@@ -81,20 +83,21 @@ theorem map_eq_zero_iff {α β : Type*} {f : α → β} {v : WithTop α} [Zero �
 theorem zero_eq_map_iff {α β : Type*} {f : α → β} {v : WithTop α} [Zero β] :
     0 = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = 0 := some_eq_map_iff
 
+theorem ENat.zero_eq_map_iff {β : Type*} {f : ℕ → β} {v : ℕ∞} [Zero β] :
+    0 = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = 0 := some_eq_map_iff
+
 theorem map_eq_one_iff {α β : Type*} {f : α → β} {v : WithTop α} [One β] :
     WithTop.map f v = 1 ↔ ∃ x, v = .some x ∧ f x = 1 := map_eq_some_iff
 
 theorem map_eq_natCast_iff {α β : Type*} {f : α → β} {n : ℕ} {v : WithTop α} [AddMonoidWithOne β] :
     WithTop.map f v = n ↔ ∃ x, v = .some x ∧ f x = n := map_eq_some_iff
 
-@[simp]
-lemma test : WithTop ℕ = ℕ∞ := rfl
-
 lemma adicValuation_coe_pos_iff (a : R) :
     0 < adicValuation p (algebraMap R K a) ↔ p ∣ a := by
-  simp only [adicValuation_coe, lt_iff_le_and_ne, map_natCast_nonneg, ne_eq, zero_eq_map_iff, test,
+  simp only [adicValuation_coe, lt_iff_le_and_ne, map_natCast_nonneg, ne_eq, ENat.zero_eq_map_iff,
     ENat.some_eq_coe, Nat.cast_eq_zero, exists_eq_right, CharP.cast_eq_zero, emultiplicity_eq_zero,
     not_not, true_and]
+
 
 open IsFractionRing
 
