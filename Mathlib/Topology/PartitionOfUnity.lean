@@ -463,12 +463,11 @@ theorem exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space [Locally
     (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, f.IsSubordinate U ∧
     ∀ i, HasCompactSupport (f i) :=
   -- need to switch 0 and 1 in `exists_continuous_zero_one_of_isCompact`
-  let ⟨f, _, hfU⟩ :=
+  simpa using
     exists_isSubordinate_of_locallyFinite_of_prop_t2space (fun _ => True)
       (fun _ _ ht hs hd =>
         (exists_continuous_zero_one_of_isCompact' hs ht hd.symm).imp fun _ hf => ⟨trivial, hf⟩)
       hs U ho hf hU
-  ⟨f, hfU⟩
 
 /-- Index of a bump function such that `fs i =ᶠ[𝓝 x] 1`. -/
 def ind (x : X) (hx : x ∈ s) : ι :=
