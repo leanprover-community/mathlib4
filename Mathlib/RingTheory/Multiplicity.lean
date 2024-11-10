@@ -363,11 +363,11 @@ theorem le_emultiplicity_map {F : Type*} [FunLike F α β] [MonoidHomClass F α 
     emultiplicity a b ≤ emultiplicity (f a) (f b) :=
   emultiplicity_le_emultiplicity_iff.2 fun n ↦ by rw [← map_pow]; exact map_dvd f
 
-theorem emultiplicity_map_eq {F : Type*} [EquivLike F α β] [MulEquivClass F α β]
+theorem emultiplicity_map_eq {F : Type*} [EquivLike F α β] [MulHomClass F α β]
     (f : F) {a b : α} : emultiplicity (f a) (f b) = emultiplicity a b := by
   simp [emultiplicity_eq_emultiplicity_iff, ← map_pow, map_dvd_iff]
 
-theorem multiplicity_map_eq {F : Type*} [EquivLike F α β] [MulEquivClass F α β]
+theorem multiplicity_map_eq {F : Type*} [EquivLike F α β] [MulHomClass F α β]
     (f : F) {a b : α} : multiplicity (f a) (f b) = multiplicity a b :=
   multiplicity_eq_of_emultiplicity_eq (emultiplicity_map_eq f)
 
