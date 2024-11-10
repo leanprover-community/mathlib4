@@ -146,7 +146,7 @@ theorem map (f : M →ₗ[R] N) (h : SameRay R x y) : SameRay R (f x) (f y) :=
 /-- The images of two vectors under an injective linear map are on the same ray if and only if the
 original vectors are on the same ray. -/
 theorem _root_.Function.Injective.sameRay_map_iff
-    {F : Type*} [FunLike F M N] [LinearMapClass F R M N]
+    {F : Type*} [FunLike F M N] [AddMonoidHomClass F M N] [MulActionHomClass F R M N]
     {f : F} (hf : Function.Injective f) :
     SameRay R (f x) (f y) ↔ SameRay R x y := by
   simp only [SameRay, map_zero, ← hf.eq_iff, map_smul]

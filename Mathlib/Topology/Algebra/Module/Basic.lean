@@ -232,6 +232,7 @@ notation:25 M " →SL[" σ "] " M₂ => ContinuousLinearMap σ M M₂
 @[inherit_doc]
 notation:25 M " →L[" R "] " M₂ => ContinuousLinearMap (RingHom.id R) M M₂
 
+set_option linter.deprecated false in
 /-- `ContinuousSemilinearMapClass F σ M M₂` asserts `F` is a type of bundled continuous
 `σ`-semilinear maps `M → M₂`.  See also `ContinuousLinearMapClass F R M M₂` for the case where
 `σ` is the identity map on `R`.  A map `f` between an `R`-module and an `S`-module over a ring
@@ -381,9 +382,13 @@ instance funLike : FunLike (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toLinearMap
   coe_injective' _ _ h := coe_injective (DFunLike.coe_injective h)
 
-instance semilinearMapClass :
-    SemilinearMapClass (M₁ →SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
+instance addMonoidHomClass :
+    AddMonoidHomClass (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
   map_add f := map_add f.toLinearMap
+  map_zero f := map_zero f.toLinearMap
+
+instance mulActionHomClass :
+    MulActionSemiHomClass (M₁ →SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
   map_smulₛₗ f := f.toLinearMap.map_smul'
 
 instance continuousMapClass :
@@ -881,27 +886,27 @@ theorem coe_inr [Module R₁ M₂] : (inr R₁ M₁ M₂ : M₂ →ₗ[R₁] M�
   rfl
 
 theorem isClosed_ker [T1Space M₂] [FunLike F M₁ M₂]
-    [SemilinearMapClass F σ₁₂ M₁ M₂] [ContinuousMapClass F M₁ M₂]
+    [AddMonoidHomClass F M₁ M₂] [MulActionSemiHomClass F σ₁₂ M₁ M₂] [ContinuousMapClass F M₁ M₂]
     (f : F) :
     IsClosed (ker f : Set M₁) :=
   continuous_iff_isClosed.1 (map_continuous f) _ isClosed_singleton
 
 theorem isComplete_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddCommMonoid M']
     [Module R₁ M'] [T1Space M₂] [FunLike F M' M₂]
-    [SemilinearMapClass F σ₁₂ M' M₂] [ContinuousMapClass F M' M₂]
+    [AddMonoidHomClass F M' M₂] [MulActionSemiHomClass F σ₁₂ M' M₂] [ContinuousMapClass F M' M₂]
     (f : F) :
     IsComplete (ker f : Set M') :=
   (isClosed_ker f).isComplete
 
 instance completeSpace_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M']
-    [AddCommMonoid M'] [Module R₁ M'] [T1Space M₂]
-    [FunLike F M' M₂] [SemilinearMapClass F σ₁₂ M' M₂] [ContinuousMapClass F M' M₂]
+    [AddCommMonoid M'] [Module R₁ M'] [T1Space M₂] [FunLike F M' M₂]
+    [AddMonoidHomClass F M' M₂] [MulActionSemiHomClass F σ₁₂ M' M₂] [ContinuousMapClass F M' M₂]
     (f : F) : CompleteSpace (ker f) :=
   (isComplete_ker f).completeSpace_coe
 
 instance completeSpace_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M']
-    [AddCommMonoid M'] [Module R₁ M'] [T2Space M₂]
-    [FunLike F M' M₂] [SemilinearMapClass F σ₁₂ M' M₂] [ContinuousMapClass F M' M₂]
+    [AddCommMonoid M'] [Module R₁ M'] [T2Space M₂] [FunLike F M' M₂]
+    [AddMonoidHomClass F M' M₂] [MulActionSemiHomClass F σ₁₂ M' M₂] [ContinuousMapClass F M' M₂]
     (f g : F) : CompleteSpace (LinearMap.eqLocus f g) :=
   IsClosed.completeSpace_coe <| isClosed_eq (map_continuous f) (map_continuous g)
 
@@ -1640,9 +1645,15 @@ instance equivLike :
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
-instance semilinearEquivClass :
-    SemilinearEquivClass (M₁ ≃SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
+instance addHomClass :
+    AddHomClass (M₁ ≃SL[σ₁₂] M₂) M₁ M₂ where
   map_add f := f.map_add'
+
+instance addMonoidHomClass :
+    AddMonoidHomClass (M₁ ≃SL[σ₁₂] M₂) M₁ M₂ where
+
+instance mulActionSemiHomClass :
+    MulActionSemiHomClass (M₁ ≃SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
   map_smulₛₗ f := f.map_smul'
 
 instance homeomorphClass :
