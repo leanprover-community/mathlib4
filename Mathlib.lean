@@ -3646,6 +3646,7 @@ import Mathlib.NumberTheory.JacobiSum.Basic
 import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.LSeries.AbstractFuncEq
 import Mathlib.NumberTheory.LSeries.Basic
+import Mathlib.NumberTheory.LSeries.Card
 import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.NumberTheory.LSeries.Convolution
 import Mathlib.NumberTheory.LSeries.Deriv
