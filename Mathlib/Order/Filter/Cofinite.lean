@@ -36,6 +36,10 @@ theorem mem_cofinite {s : Set α} : s ∈ @cofinite α ↔ sᶜ.Finite :=
   Iff.rfl
 
 @[simp]
+theorem compl_mem_cofinite {s : Set α} : sᶜ ∈ @cofinite α ↔ s.Finite := by
+  convert (compl_compl s) ▸ mem_cofinite (s := sᶜ)
+
+@[simp]
 theorem eventually_cofinite {p : α → Prop} : (∀ᶠ x in cofinite, p x) ↔ { x | ¬p x }.Finite :=
   Iff.rfl
 
