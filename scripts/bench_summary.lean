@@ -179,6 +179,7 @@ def addBenchSummaryComment (PR : Nat) (repo : String)
   let frags := output.split (· == '/')
   let some compIdx := frags.findIdx? (· == "compare") |
     logInfo "No 'compare' found in URL."
+    dbg_trace frags
     return
   let source := frags.getD (compIdx + 1) ""
   let target := (frags.getD (compIdx + 3) "").takeWhile (· != ')')
