@@ -252,7 +252,7 @@ theorem mem_bot {x : R} : x ∈ (⊥ : NonUnitalSubring R) ↔ x = 0 :=
 /-! ## inf -/
 
 /-- The inf of two `NonUnitalSubring`s is their intersection. -/
-instance : Inf (NonUnitalSubring R) :=
+instance : Min (NonUnitalSubring R) :=
   ⟨fun s t =>
     { s.toSubsemigroup ⊓ t.toSubsemigroup, s.toAddSubgroup ⊓ t.toAddSubgroup with
       carrier := s ∩ t }⟩
