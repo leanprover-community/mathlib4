@@ -63,8 +63,7 @@ lemma even_iff {n : ℕ} {k : Fin n} : Even k ↔ (Odd n ∨ Even k.val) := by
   rw [← Nat.not_even_iff_odd, ← imp_iff_not_or]
   exact fun hn ↦ (even_iff_of_even hn).mp hk
 
-/-- A logic variation of the above lemma -/
-lemma even_iff' {n : ℕ} {k : Fin n} : Even k ↔ (Even n → Even k.val) := by
+lemma even_iff_imp {n : ℕ} {k : Fin n} : Even k ↔ (Even n → Even k.val) := by
   rw [imp_iff_not_or, Nat.not_even_iff_odd]
   exact even_iff
 
@@ -75,8 +74,7 @@ lemma odd_iff {n : ℕ} [NeZero n] {k : Fin n} : Odd k ↔ Odd n ∨ Odd k.val :
   rw [← Nat.not_even_iff_odd, ← imp_iff_not_or]
   exact fun hn ↦ (odd_iff_of_even hn).mp hk
 
-/-- A logic variation of the above lemma -/
-lemma odd_iff' {n : ℕ} [NeZero n] {k : Fin n} : Odd k ↔ (Even n → Odd k.val) := by
+lemma odd_iff_imp {n : ℕ} [NeZero n] {k : Fin n} : Odd k ↔ (Even n → Odd k.val) := by
   rw [imp_iff_not_or, Nat.not_even_iff_odd]
   exact odd_iff
 
