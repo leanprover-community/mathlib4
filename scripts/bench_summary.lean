@@ -220,6 +220,11 @@ def addBenchSummaryComment (PR : Nat) (repo : String)
     jq -c '[\{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]' {tempFile} > \
       {tempFile}.2"
   let secondFilter ← IO.Process.run jq2
+  if secondFilter == "" then
+    let _ ← IO.Process.run
+      { cmd := "gh", args := #["pr", "comment", PR, "--repo", repo, "--body",
+        s!"No benchmark entry differed by at least {threshold} instructions"] }
+  else
   IO.FS.writeFile tempFile secondFilter
   let jq3 : IO.Process.SpawnArgs :=
     { cmd := "jq", args := #["-n", "reduce inputs as $in (null; . + $in)", tempFile] }
@@ -236,4 +241,4 @@ def addBenchSummaryComment (PR : Nat) (repo : String)
 end BenchAction
 
 -- CI adds the following line, replacing `putPR` with the PR number:
---run_cmd BenchAction.addBenchSummaryComment putPR "leanprover-community/mathlib4"
+--run_cmd BenchAction.addBenchSummaryComment putPR "leanprover-community/mathlib4" "adomani"

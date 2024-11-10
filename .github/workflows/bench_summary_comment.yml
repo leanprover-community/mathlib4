@@ -19,15 +19,17 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          ref: master
+          ref: adomani/improve_messaging_bench_action #master
           sparse-checkout: |
             scripts/bench_summary.lean
+            .github/workflows/bench_summary_comment.yml
 
       - name: Summarize bench output
         run: |
           {
             cat scripts/bench_summary.lean
             printf $'run_cmd BenchAction.addBenchSummaryComment %s "leanprover-community/mathlib4"' "${PR}"
+            printf $'\neval "CI run: https://github.com/%s/actions/runs/%s"\n' "${{ github.repository }}" "${{ github.run_id }}"
           } |
             lake env lean --stdin
         env:
