@@ -37,7 +37,7 @@ variable {τ₁₂ : R →+* R₂}
 
 section
 
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂] [MulActionSemiHomClass F τ₁₂ M M₂]
 
 /-- A linear map version of `AddMonoidHom.eqLocusM` -/
 def eqLocus (f g : F) : Submodule R M :=

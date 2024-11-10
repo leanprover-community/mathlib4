@@ -56,10 +56,9 @@ variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] [FunLike F A B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
-  { ‹AlgHomClass F R A B› with
-    map_smulₛₗ := fun f r x => by
-      simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
+instance (priority := 100) mulActionHomClass [AlgHomClass F R A B] : MulActionHomClass F R A B where
+  map_smulₛₗ f r x := by
+    simp only [Algebra.smul_def, map_mul, commutes, id]
 
 -- Porting note (#11445): A new definition underlying a coercion `↑`.
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
