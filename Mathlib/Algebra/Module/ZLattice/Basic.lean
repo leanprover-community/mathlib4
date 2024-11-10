@@ -24,7 +24,7 @@ A `ℤ`-lattice `L` can be defined in two ways:
 Results about the first point of view are in the `ZSpan` namespace and results about the second
 point of view are in the `ZLattice` namespace.
 
-## Main results
+## Main results and definitions
 
 * `ZSpan.isAddFundamentalDomain`: for a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that
 the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
@@ -32,6 +32,9 @@ the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
 `ℤ`-module
 * `ZLattice.rank`: a `ℤ`-submodule of `E` that is discrete and spans `E` over `K` is free
 of `ℤ`-rank equal to the `K`-rank of `E`
+* `ZLattice.comap`: for `e : E → F` a linear map and `L : Submodule ℤ E`, define the pullback of
+`L` by `e`. If `L` is a `IsZLattice` and `e` is a continuous linear equiv, then it is also a
+`IsZLattice`, see `instIsZLatticeComap`.
 
 ## Implementation Notes
 
@@ -57,6 +60,11 @@ variable [NormedAddCommGroup E] [NormedSpace K E]
 variable (b : Basis ι K E)
 
 theorem span_top : span K (span ℤ (Set.range b) : Set E) = ⊤ := by simp [span_span_of_tower]
+
+
+theorem map {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :
+    Submodule.map (f.restrictScalars ℤ) (span ℤ (Set.range b)) = span ℤ (Set.range (b.map f)) := by
+  simp_rw [Submodule.map_span, LinearEquiv.restrictScalars_apply, Basis.coe_map, Set.range_comp]
 
 /-- The fundamental domain of the ℤ-lattice spanned by `b`. See `ZSpan.isAddFundamentalDomain`
 for the proof that it is a fundamental domain. -/
@@ -276,7 +284,7 @@ theorem discreteTopology_pi_basisFun [Finite ι] :
   refine discreteTopology_iff_isOpen_singleton_zero.mpr ⟨Metric.ball 0 1, Metric.isOpen_ball, ?_⟩
   ext x
   rw [Set.mem_preimage, mem_ball_zero_iff, pi_norm_lt_iff zero_lt_one, Set.mem_singleton_iff]
-  simp_rw [← coe_eq_zero, Function.funext_iff, Pi.zero_apply, Real.norm_eq_abs]
+  simp_rw [← coe_eq_zero, funext_iff, Pi.zero_apply, Real.norm_eq_abs]
   refine forall_congr' (fun i => ?_)
   rsuffices ⟨y, hy⟩ : ∃ (y : ℤ), (y : ℝ) = (x : ι → ℝ) i
   · rw [← hy, ← Int.cast_abs, ← Int.cast_one,  Int.cast_lt, Int.abs_lt_one_iff, Int.cast_eq_zero]
@@ -384,7 +392,7 @@ end ZSpan
 
 section ZLattice
 
-open Submodule FiniteDimensional ZSpan
+open Submodule Module ZSpan
 
 -- TODO: generalize this class to other rings than `ℤ`
 /-- `L : Submodule ℤ E` where `E` is a vector space over a normed field `K` is a `ℤ`-lattice if
@@ -398,6 +406,8 @@ theorem _root_.ZSpan.isZLattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpa
     [Finite ι] (b : Basis ι ℝ E) :
     IsZLattice ℝ (span ℤ (Set.range b)) where
   span_top := ZSpan.span_top b
+
+section NormedLinearOrderedField
 
 variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
@@ -562,7 +572,7 @@ variable {ι : Type*} [hs : IsZLattice K L] (b : Basis ι ℤ L)
 /-- Any `ℤ`-basis of `L` is also a `K`-basis of `E`. -/
 def Basis.ofZLatticeBasis :
     Basis ι K E := by
-  have : Finite ℤ L := ZLattice.module_finite K L
+  have : Module.Finite ℤ L := ZLattice.module_finite K L
   have : Free ℤ L := ZLattice.module_free K L
   let e :=  Basis.indexEquiv (Free.chooseBasis ℤ L) b
   have : Fintype ι := Fintype.ofEquiv _ e
@@ -606,5 +616,82 @@ instance instCountable_of_discrete_submodule {E : Type*} [NormedAddCommGroup E] 
     Countable L := by
   simp_rw [← (Module.Free.chooseBasis ℤ L).ofZLatticeBasis_span ℝ]
   infer_instance
+
+end NormedLinearOrderedField
+
+section comap
+
+variable (K : Type*) [NormedField K] {E F : Type*} [NormedAddCommGroup E] [NormedSpace K E]
+    [NormedAddCommGroup F] [NormedSpace K F] (L : Submodule ℤ E)
+
+/-- Let `e : E → F` a linear map, the map that sends a `L : Submodule ℤ E` to the
+`Submodule ℤ F` that is the pullback of `L` by `e`. If `IsZLattice L` and `e` is a continuous
+linear equiv, then it is a `IsZLattice` of `E`, see `instIsZLatticeComap`. -/
+protected def ZLattice.comap (e : F →ₗ[K] E) := L.comap (e.restrictScalars ℤ)
+
+@[simp]
+theorem ZLattice.coe_comap (e : F →ₗ[K] E) :
+    (ZLattice.comap K L e : Set F) = e⁻¹' L := rfl
+
+theorem ZLattice.comap_refl :
+    ZLattice.comap K L (1 : E →ₗ[K] E)= L := Submodule.comap_id L
+
+theorem ZLattice.comap_discreteTopology [hL : DiscreteTopology L] {e : F →ₗ[K] E}
+    (he₁ : Continuous e) (he₂ : Function.Injective e) :
+    DiscreteTopology (ZLattice.comap K L e) := by
+  exact DiscreteTopology.preimage_of_continuous_injective L he₁ he₂
+
+instance [DiscreteTopology L] (e : F ≃L[K] E) :
+    DiscreteTopology (ZLattice.comap K L e.toLinearMap) :=
+  ZLattice.comap_discreteTopology K L e.continuous e.injective
+
+theorem ZLattice.comap_span_top (hL : span K (L : Set E) = ⊤) {e : F →ₗ[K] E}
+    (he : (L : Set E) ⊆ LinearMap.range e) :
+    span K (ZLattice.comap K L e : Set F) = ⊤ := by
+  rw [ZLattice.coe_comap, Submodule.span_preimage_eq (Submodule.nonempty L) he, hL, comap_top]
+
+instance instIsZLatticeComap [DiscreteTopology L] [IsZLattice K L] (e : F ≃L[K] E) :
+    IsZLattice K (ZLattice.comap K L e.toLinearMap) where
+  span_top := by
+    rw [ZLattice.coe_comap, LinearEquiv.coe_coe, e.coe_toLinearEquiv, ← e.image_symm_eq_preimage,
+      ← Submodule.map_span, IsZLattice.span_top, Submodule.map_top, LinearEquivClass.range]
+
+theorem ZLattice.comap_comp {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
+    (e : F →ₗ[K] E) (e' : G →ₗ[K] F) :
+    (ZLattice.comap K (ZLattice.comap K L e) e') = ZLattice.comap K L (e ∘ₗ e') :=
+  (Submodule.comap_comp _ _ L).symm
+
+/-- If `e` is a linear equivalence, it induces a `ℤ`-linear equivalence between
+`L` and `ZLattice.comap K L e`. -/
+def ZLattice.comap_equiv (e : F ≃ₗ[K] E) :
+    L ≃ₗ[ℤ] (ZLattice.comap K L e.toLinearMap) :=
+  LinearEquiv.ofBijective
+    ((e.symm.toLinearMap.restrictScalars ℤ).restrict
+      (fun _ h ↦ by simpa [← SetLike.mem_coe] using h))
+    ⟨fun _ _ h ↦ Subtype.ext_iff_val.mpr (e.symm.injective (congr_arg Subtype.val h)),
+    fun ⟨x, hx⟩ ↦ ⟨⟨e x, by rwa [← SetLike.mem_coe, ZLattice.coe_comap] at hx⟩,
+      by simp [Subtype.ext_iff_val]⟩⟩
+
+@[simp]
+theorem ZLattice.comap_equiv_apply (e : F ≃ₗ[K] E) (x : L) :
+    ZLattice.comap_equiv K L e x = e.symm x := rfl
+
+/-- The basis of `ZLattice.comap K L e` given by the image of a basis `b` of `L` by `e.symm`. -/
+def Basis.ofZLatticeComap (e : F ≃ₗ[K] E) {ι : Type*}
+    (b : Basis ι ℤ L) :
+    Basis ι ℤ (ZLattice.comap K L e.toLinearMap) := b.map (ZLattice.comap_equiv K L e)
+
+@[simp]
+theorem Basis.ofZLatticeComap_apply (e : F ≃ₗ[K] E) {ι : Type*}
+    (b : Basis ι ℤ L) (i : ι) :
+    b.ofZLatticeComap K L e i = e.symm (b i) := by simp [Basis.ofZLatticeComap]
+
+@[simp]
+theorem Basis.ofZLatticeComap_repr_apply (e : F ≃ₗ[K] E) {ι : Type*} (b : Basis ι ℤ L) (x : L)
+    (i : ι) :
+    (b.ofZLatticeComap K L e).repr (ZLattice.comap_equiv K L e x) i = b.repr x i := by
+  simp [Basis.ofZLatticeComap]
+
+end comap
 
 end ZLattice

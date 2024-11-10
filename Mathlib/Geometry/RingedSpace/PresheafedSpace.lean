@@ -58,7 +58,7 @@ attribute [coe] PresheafedSpace.carrier
 
 -- Porting note: we add this instance, as Lean does not reliably use the `CoeOut` instance above
 -- in downstream files.
-instance : CoeSort (PresheafedSpace C) Type* where coe := fun X => X.carrier
+instance : CoeSort (PresheafedSpace C) Type* where coe X := X.carrier
 
 -- Porting note: the following lemma is removed because it is a syntactic tauto
 /-@[simp]
@@ -157,7 +157,9 @@ instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
 
 variable {C}
 
--- Porting note (#5229): adding an `ext` lemma.
+/-- Cast `Hom X Y` as an arrow `X ⟶ Y` of presheaves. -/
+abbrev Hom.toPshHom {X Y : PresheafedSpace C} (f : Hom X Y) : X ⟶ Y := f
+
 @[ext (iff := false)]
 theorem ext {X Y : PresheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
@@ -291,7 +293,7 @@ section Restrict
 -/
 @[simps]
 def restrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
-    (h : OpenEmbedding f) : PresheafedSpace C where
+    (h : IsOpenEmbedding f) : PresheafedSpace C where
   carrier := U
   presheaf := h.isOpenMap.functor.op ⋙ X.presheaf
 
@@ -299,7 +301,7 @@ def restrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
 -/
 @[simps]
 def ofRestrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
-    (h : OpenEmbedding f) : X.restrict h ⟶ X where
+    (h : IsOpenEmbedding f) : X.restrict h ⟶ X where
   base := f
   c :=
     { app := fun V => X.presheaf.map (h.isOpenMap.adjunction.counit.app V.unop).op
@@ -308,8 +310,8 @@ def ofRestrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
           rw [← map_comp, ← map_comp]
           rfl }
 
-instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1) (hf : OpenEmbedding f) :
-    Mono (X.ofRestrict hf) := by
+instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
+    (hf : IsOpenEmbedding f) : Mono (X.ofRestrict hf) := by
   haveI : Mono f := (TopCat.mono_iff_injective _).mpr hf.inj
   constructor
   intro Z g₁ g₂ eq
@@ -337,14 +339,14 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1) (h
     simpa using h
 
 theorem restrict_top_presheaf (X : PresheafedSpace C) :
-    (X.restrict (Opens.openEmbedding ⊤)).presheaf =
+    (X.restrict (Opens.isOpenEmbedding ⊤)).presheaf =
       (Opens.inclusionTopIso X.carrier).inv _* X.presheaf := by
   dsimp
   rw [Opens.inclusion'_top_functor X.carrier]
   rfl
 
 theorem ofRestrict_top_c (X : PresheafedSpace C) :
-    (X.ofRestrict (Opens.openEmbedding ⊤)).c =
+    (X.ofRestrict (Opens.isOpenEmbedding ⊤)).c =
       eqToHom
         (by
           rw [restrict_top_presheaf, ← Presheaf.Pushforward.comp_eq]
@@ -363,14 +365,14 @@ theorem ofRestrict_top_c (X : PresheafedSpace C) :
 subspace.
 -/
 @[simps]
-def toRestrictTop (X : PresheafedSpace C) : X ⟶ X.restrict (Opens.openEmbedding ⊤) where
+def toRestrictTop (X : PresheafedSpace C) : X ⟶ X.restrict (Opens.isOpenEmbedding ⊤) where
   base := (Opens.inclusionTopIso X.carrier).inv
   c := eqToHom (restrict_top_presheaf X)
 
 /-- The isomorphism from the restriction to the top subspace.
 -/
 @[simps]
-def restrictTopIso (X : PresheafedSpace C) : X.restrict (Opens.openEmbedding ⊤) ≅ X where
+def restrictTopIso (X : PresheafedSpace C) : X.restrict (Opens.isOpenEmbedding ⊤) ≅ X where
   hom := X.ofRestrict _
   inv := X.toRestrictTop
   hom_inv_id := by

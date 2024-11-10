@@ -247,14 +247,14 @@ theorem nonempty_of_nonempty_constants [h : Nonempty L.Constants] : Nonempty M :
 
 /-- `HomClass L F M N` states that `F` is a type of `L`-homomorphisms. You should extend this
   typeclass when you extend `FirstOrder.Language.Hom`. -/
-class HomClass (L : outParam Language) (F M N : Type*)
+class HomClass (L : outParam Language) (F : Type*) (M N : outParam Type*)
   [FunLike F M N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r x → RelMap r (φ ∘ x)
 
 /-- `StrongHomClass L F M N` states that `F` is a type of `L`-homomorphisms which preserve
   relations in both directions. -/
-class StrongHomClass (L : outParam Language) (F M N : Type*)
+class StrongHomClass (L : outParam Language) (F : Type*) (M N : outParam Type*)
   [FunLike F M N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
@@ -295,9 +295,6 @@ instance homClass : HomClass L (M →[L] N) M N where
 
 instance [L.IsAlgebraic] : StrongHomClass L (M →[L] N) M N :=
   HomClass.strongHomClassOfIsAlgebraic
-
-instance hasCoeToFun : CoeFun (M →[L] N) fun _ => M → N :=
-  DFunLike.hasCoeToFun
 
 @[simp]
 theorem toFun_eq_coe {f : M →[L] N} : f.toFun = (f : M → N) :=
@@ -379,7 +376,7 @@ instance funLike : FunLike (M ↪[L] N) M N where
     cases g
     congr
     ext x
-    exact Function.funext_iff.1 h x
+    exact funext_iff.1 h x
 
 instance embeddingLike : EmbeddingLike (M ↪[L] N) M N where
   injective' f := f.toEmbedding.injective
@@ -416,7 +413,7 @@ theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
     cases g
     congr
     ext x
-    exact Function.funext_iff.1 h x
+    exact funext_iff.1 h x
 
 @[ext]
 theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
@@ -537,7 +534,7 @@ instance : EquivLike (M ≃[L] N) M N where
     cases g
     simp only [mk.injEq]
     ext x
-    exact Function.funext_iff.1 h₁ x
+    exact funext_iff.1 h₁ x
 
 instance : StrongHomClass L (M ≃[L] N) M N where
   map_fun := map_fun'
@@ -556,9 +553,6 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
       simp only [Equiv.toFun_as_coe]
       refine (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans ?_
       rw [← Function.comp_assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
-
-instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=
-  DFunLike.hasCoeToFun
 
 @[simp]
 theorem symm_symm (f : M ≃[L] N) :

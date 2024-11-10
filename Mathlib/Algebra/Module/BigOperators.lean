@@ -41,16 +41,16 @@ lemma Fintype.sum_smul_sum [Fintype α] [Fintype β] (f : α → R) (g : β → 
 
 end AddCommMonoid
 
-theorem Finset.cast_card [CommSemiring R] (s : Finset α) : (s.card : R) = ∑ a ∈ s, 1 := by
-  rw [Finset.sum_const, Nat.smul_one_eq_cast]
-
 open Finset
+
+theorem Finset.cast_card [CommSemiring R] (s : Finset α) : (#s : R) = ∑ _ ∈ s, 1 := by
+  rw [Finset.sum_const, Nat.smul_one_eq_cast]
 
 namespace Fintype
 variable [DecidableEq ι] [Fintype ι] [AddCommMonoid α]
 
 lemma sum_piFinset_apply (f : κ → α) (s : Finset κ) (i : ι) :
-    ∑ g ∈ piFinset fun _ : ι ↦ s, f (g i) = s.card ^ (card ι - 1) • ∑ b ∈ s, f b := by
+    ∑ g ∈ piFinset fun _ : ι ↦ s, f (g i) = #s ^ (card ι - 1) • ∑ b ∈ s, f b := by
   classical
   rw [Finset.sum_comp]
   simp only [eval_image_piFinset_const, card_filter_piFinset_const s, ite_smul, zero_smul, smul_sum,

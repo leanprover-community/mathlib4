@@ -93,7 +93,7 @@ instance {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsLocallySurjective J f] :
 
 theorem isLocallySurjective_iff_imagePresheaf_sheafify_eq_top {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
     IsLocallySurjective J f ↔ (imagePresheaf (whiskerRight f (forget A))).sheafify J = ⊤ := by
-  simp only [Subpresheaf.ext_iff, Function.funext_iff, Set.ext_iff, top_subpresheaf_obj,
+  simp only [Subpresheaf.ext_iff, funext_iff, Set.ext_iff, top_subpresheaf_obj,
     Set.top_eq_univ, Set.mem_univ, iff_true]
   exact ⟨fun H _ => H.imageSieve_mem, fun H => ⟨H _⟩⟩
 

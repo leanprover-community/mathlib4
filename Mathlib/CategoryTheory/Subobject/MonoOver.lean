@@ -355,7 +355,7 @@ def imageForgetAdj : image ⊣ forget X :=
                     e := k.left
                     fac := Over.w k }
             · apply image.lift_fac
-          left_inv := fun k => Subsingleton.elim _ _
+          left_inv := fun _ => Subsingleton.elim _ _
           right_inv := fun k => by
             ext1
             change factorThruImage _ ≫ image.lift _ = _

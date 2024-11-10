@@ -85,7 +85,7 @@ end IsKilling
 
 section Field
 
-open FiniteDimensional LieModule Set
+open Module LieModule Set
 open Submodule (span subset_span)
 
 variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
@@ -269,7 +269,7 @@ lemma isSemisimple_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H) :
       (genWeightSpace_le_genWeightSpaceOf L x' α) hy
     rw [maxGenEigenspace_eq] at hy
     set k := maxGenEigenspaceIndex (ad K L x) (α x')
-    rw [apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub hy hS₀ hS hN]
+    rw [apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil hy hS₀ hS.isFinitelySemisimple hN]
   /- So `S` obeys the derivation axiom if we restrict to root spaces. -/
   have h_der (y z : L) (α β : H → K) (hy : y ∈ rootSpace H α) (hz : z ∈ rootSpace H β) :
       S ⁅y, z⁆ = ⁅S y, z⁆ + ⁅y, S z⁆ := by
@@ -317,7 +317,8 @@ lemma lie_eq_smul_of_mem_rootSpace {α : H → K} {x : L} (hx : x ∈ rootSpace 
   replace hx : x ∈ (ad K L h).maxGenEigenspace (α h) :=
     genWeightSpace_le_genWeightSpaceOf L h α hx
   rw [(isSemisimple_ad_of_mem_isCartanSubalgebra
-    h.property).maxGenEigenspace_eq_eigenspace, Module.End.mem_eigenspace_iff] at hx
+    h.property).isFinitelySemisimple.maxGenEigenspace_eq_eigenspace,
+    Module.End.mem_eigenspace_iff] at hx
   simpa using hx
 
 lemma lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg
@@ -429,7 +430,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
     (hx : x ∈ α.ker) (hy : y ∈ K ∙ coroot α) :
     traceForm K H L x y = 0 := by
   rw [← coe_corootSpace_eq_span_singleton, LieSubmodule.mem_coeSubmodule, mem_corootSpace'] at hy
-  induction hy using Submodule.span_induction' with
+  induction hy using Submodule.span_induction with
   | mem z hz =>
     obtain ⟨u, hu, v, -, huv⟩ := hz
     change killingForm K L (x : L) (z : L) = 0
@@ -555,6 +556,16 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
   obtain ⟨n, hn⟩ := P.exists_nat
   replace hn : -2 = (n : ℤ) := by norm_cast at hn
   omega
+
+/-- The collection of roots as a `Finset`. -/
+noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
+
+lemma restrict_killingForm_eq_sum :
+    (killingForm K L).restrict H = ∑ α in H.root, (α : H →ₗ[K] K).smulRight (α : H →ₗ[K] K) := by
+  rw [restrict_killingForm, traceForm_eq_sum_finrank_nsmul' K H L]
+  refine Finset.sum_congr rfl fun χ hχ ↦ ?_
+  replace hχ : χ.IsNonZero := by simpa [LieSubalgebra.root] using hχ
+  simp [finrank_rootSpace_eq_one _ hχ]
 
 end CharZero
 

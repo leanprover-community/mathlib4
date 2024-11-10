@@ -91,22 +91,39 @@ theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f
       show A.comap f < B.comap f from Submodule.comap_strictMono_of_surjective hf hAB)
     (InvImage.wf (Submodule.comap f) IsWellFounded.wf)⟩
 
+instance isArtinian_of_quotient_of_artinian
+    (N : Submodule R M) [IsArtinian R M] : IsArtinian R (M ⧸ N) :=
+  isArtinian_of_surjective M (Submodule.mkQ N) (Submodule.Quotient.mk_surjective N)
+
 variable {M}
+
+instance isArtinian_range (f : M →ₗ[R] P) [IsArtinian R M] : IsArtinian R (LinearMap.range f) :=
+  isArtinian_of_surjective _ _ f.surjective_rangeRestrict
 
 theorem isArtinian_of_linearEquiv (f : M ≃ₗ[R] P) [IsArtinian R M] : IsArtinian R P :=
   isArtinian_of_surjective _ f.toLinearMap f.toEquiv.surjective
 
+theorem LinearEquiv.isArtinian_iff (f : M ≃ₗ[R] P) : IsArtinian R M ↔ IsArtinian R P :=
+  ⟨fun _ ↦ isArtinian_of_linearEquiv f, fun _ ↦ isArtinian_of_linearEquiv f.symm⟩
+
 theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
-    (hf : Function.Injective f) (hg : Function.Surjective g)
     (h : LinearMap.range f = LinearMap.ker g) : IsArtinian R N :=
-  wellFounded_lt_exact_sequence (LinearMap.range f) (Submodule.map f)
-    (Submodule.comap f) (Submodule.comap g) (Submodule.map g) (Submodule.gciMapComap hf)
-    (Submodule.giMapComap hg)
-    (by simp [Submodule.map_comap_eq, inf_comm]) (by simp [Submodule.comap_map_eq, h])
+  wellFounded_lt_exact_sequence (LinearMap.range f) (Submodule.map (f.ker.liftQ f le_rfl))
+    (Submodule.comap (f.ker.liftQ f le_rfl))
+    (Submodule.comap g.rangeRestrict) (Submodule.map g.rangeRestrict)
+    (Submodule.gciMapComap <| LinearMap.ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ le_rfl)
+    (Submodule.giMapComap g.surjective_rangeRestrict)
+    (by simp [Submodule.map_comap_eq, inf_comm, Submodule.range_liftQ])
+    (by simp [Submodule.comap_map_eq, h])
+
+theorem isArtinian_iff_submodule_quotient (S : Submodule R P) :
+    IsArtinian R P ↔ IsArtinian R S ∧ IsArtinian R (P ⧸ S) := by
+  refine ⟨fun h ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ ?_⟩
+  apply isArtinian_of_range_eq_ker S.subtype S.mkQ
+  rw [Submodule.ker_mkQ, Submodule.range_subtype]
 
 instance isArtinian_prod [IsArtinian R M] [IsArtinian R P] : IsArtinian R (M × P) :=
-  isArtinian_of_range_eq_ker (LinearMap.inl R M P) (LinearMap.snd R M P) LinearMap.inl_injective
-    LinearMap.snd_surjective (LinearMap.range_inl R M P)
+  isArtinian_of_range_eq_ker (LinearMap.inl R M P) (LinearMap.snd R M P) (LinearMap.range_inl R M P)
 
 instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
@@ -114,30 +131,37 @@ instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
 -- attribute [local elab_as_elim] Finite.induction_empty_option
 
-instance isArtinian_pi {R ι : Type*} [Finite ι] :
-    ∀ {M : ι → Type*} [Ring R] [∀ i, AddCommGroup (M i)],
-      ∀ [∀ i, Module R (M i)], ∀ [∀ i, IsArtinian R (M i)], IsArtinian R (∀ i, M i) := by
+instance isArtinian_sup (M₁ M₂ : Submodule R P) [IsArtinian R M₁] [IsArtinian R M₂] :
+    IsArtinian R ↥(M₁ ⊔ M₂) := by
+  have := isArtinian_range (M₁.subtype.coprod M₂.subtype)
+  rwa [LinearMap.range_coprod, Submodule.range_subtype, Submodule.range_subtype] at this
+
+variable {ι : Type*} [Finite ι]
+
+instance isArtinian_pi :
+    ∀ {M : ι → Type*} [∀ i, AddCommGroup (M i)]
+      [∀ i, Module R (M i)] [∀ i, IsArtinian R (M i)], IsArtinian R (∀ i, M i) := by
   apply Finite.induction_empty_option _ _ _ ι
-  · intro α β e hα M _ _ _ _
-    have := @hα
-    exact isArtinian_of_linearEquiv (LinearEquiv.piCongrLeft R M e)
-  · intro M _ _ _ _
-    infer_instance
-  · intro α _ ih M _ _ _ _
-    have := @ih
-    exact isArtinian_of_linearEquiv (LinearEquiv.piOptionEquivProd R).symm
+  · exact fun e h ↦ isArtinian_of_linearEquiv (LinearEquiv.piCongrLeft R _ e)
+  · infer_instance
+  · exact fun ih ↦ isArtinian_of_linearEquiv (LinearEquiv.piOptionEquivProd R).symm
 
 /-- A version of `isArtinian_pi` for non-dependent functions. We need this instance because
 sometimes Lean fails to apply the dependent version in non-dependent settings (e.g., it fails to
 prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
-instance isArtinian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
-    [IsArtinian R M] : IsArtinian R (ι → M) :=
+instance isArtinian_pi' [IsArtinian R M] : IsArtinian R (ι → M) :=
   isArtinian_pi
 
 --porting note (#10754): new instance
-instance isArtinian_finsupp {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
-    [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
+instance isArtinian_finsupp [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
   isArtinian_of_linearEquiv (Finsupp.linearEquivFunOnFinite _ _ _).symm
+
+instance isArtinian_iSup :
+    ∀ {M : ι → Submodule R P} [∀ i, IsArtinian R (M i)], IsArtinian R ↥(⨆ i, M i) := by
+  apply Finite.induction_empty_option _ _ _ ι
+  · intro _ _ e h _ _; rw [← e.iSup_comp]; apply h
+  · intros; rw [iSup_of_empty]; infer_instance
+  · intro _ _ ih _ _; rw [iSup_option]; infer_instance
 
 end
 
@@ -336,10 +360,6 @@ theorem Ring.isArtinian_of_zero_eq_one {R} [Ring R] (h01 : (0 : R) = 1) : IsArti
 theorem isArtinian_of_submodule_of_artinian (R M) [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) (_ : IsArtinian R M) : IsArtinian R N := inferInstance
 
-instance isArtinian_of_quotient_of_artinian (R) [Ring R] (M) [AddCommGroup M] [Module R M]
-    (N : Submodule R M) [IsArtinian R M] : IsArtinian R (M ⧸ N) :=
-  isArtinian_of_surjective M (Submodule.mkQ N) (Submodule.Quotient.mk_surjective N)
-
 /-- If `M / S / R` is a scalar tower, and `M / R` is Artinian, then `M / S` is also Artinian. -/
 theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [Algebra R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M :=
@@ -519,8 +539,5 @@ instance [IsReduced R] : DecompositionMonoid (Polynomial R) :=
 
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing
-
-proof_wanted IsSemisimpleRing.isArtinianRing (R : Type*) [CommRing R] [IsSemisimpleRing R] :
-    IsArtinianRing R
 
 end IsArtinianRing

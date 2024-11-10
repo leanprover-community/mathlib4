@@ -22,7 +22,7 @@ rings of integers.
 
 open scoped NumberField
 
-open Finset NumberField Algebra FiniteDimensional
+open Finset NumberField Algebra Module
 
 section Rat
 

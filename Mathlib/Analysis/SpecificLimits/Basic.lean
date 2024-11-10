@@ -114,12 +114,59 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
     intros
     simp_all only [comp_apply, map_inv₀, map_natCast]
 
+/-- For any positive `m : ℕ`, `((n % m : ℕ) : ℝ) / (n : ℝ)` tends to `0` as `n` tends to `∞`. -/
+theorem tendsto_mod_div_atTop_nhds_zero_nat {m : ℕ} (hm : 0 < m) :
+    Tendsto (fun n : ℕ => ((n % m : ℕ) : ℝ) / (n : ℝ)) atTop (𝓝 0) := by
+  have h0 : ∀ᶠ n : ℕ in atTop, 0 ≤ (fun n : ℕ => ((n % m : ℕ) : ℝ)) n := by aesop
+  exact tendsto_bdd_div_atTop_nhds_zero h0
+    (.of_forall (fun n ↦  cast_le.mpr (mod_lt n hm).le)) tendsto_natCast_atTop_atTop
+
+theorem Filter.EventuallyEq.div_mul_cancel {α G : Type*} [GroupWithZero G] {f g : α → G}
+    {l : Filter α} (hg : Tendsto g l (𝓟 {0}ᶜ)) : (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x := by
+  filter_upwards [hg.le_comap <| preimage_mem_comap (m := g) (mem_principal_self {0}ᶜ)] with x hx
+  aesop
+
+/-- If `g` tends to `∞`, then eventually for all `x` we have `(f x / g x) * g x = f x`. -/
+theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*} [LinearOrderedSemifield K]
+    {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) :
+    (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x :=
+  div_mul_cancel <| hg.mono_right <| le_principal_iff.mpr <|
+    mem_of_superset (Ioi_mem_atTop 0) <| by aesop
+
+/-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
+  constant, then `f` tends to `∞`. -/
+theorem Tendsto.num {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [OrderTopology K]
+    {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) {a : K} (ha : 0 < a)
+    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+    Tendsto f l atTop :=
+  Tendsto.congr' (EventuallyEq.div_mul_cancel_atTop hg) (Tendsto.mul_atTop ha hlim hg)
+
+/-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
+  constant, then `f` tends to `∞`. -/
+theorem Tendsto.den {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [OrderTopology K]
+    [ContinuousInv K] {f g : α → K} {l : Filter α} (hf : Tendsto f l atTop) {a : K} (ha : 0 < a)
+    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+    Tendsto g l atTop := by
+  have hlim' : Tendsto (fun x => g x / f x) l (𝓝 a⁻¹) := by
+    simp_rw [← inv_div (f _)]
+    exact Filter.Tendsto.inv (f := fun x => f x / g x) hlim
+  apply Tendsto.congr' (EventuallyEq.div_mul_cancel_atTop hf)
+    (Tendsto.mul_atTop (inv_pos_of_pos ha) hlim' hf)
+
+/-- If when `x` tends to `∞`, `f x / g x` tends to a positive constant, then `f` tends to `∞` if
+  and only if `g` tends to `∞`. -/
+theorem Tendsto.num_atTop_iff_den_atTop {α K : Type*} [LinearOrderedField K] [TopologicalSpace K]
+    [OrderTopology K] [ContinuousInv K] {f g : α → K} {l : Filter α} {a : K} (ha : 0 < a)
+    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+    Tendsto f l atTop ↔ Tendsto g l atTop :=
+  ⟨fun hf ↦ Tendsto.den hf ha hlim, fun hg ↦ Tendsto.num hg ha hlim⟩
+
 /-! ### Powers -/
 
 
 theorem tendsto_add_one_pow_atTop_atTop_of_pos [LinearOrderedSemiring α] [Archimedean α] {r : α}
     (h : 0 < r) : Tendsto (fun n : ℕ ↦ (r + 1) ^ n) atTop atTop :=
-  tendsto_atTop_atTop_of_monotone' (fun _ _ ↦ pow_le_pow_right <| le_add_of_nonneg_left h.le) <|
+  tendsto_atTop_atTop_of_monotone' (pow_right_mono₀ <| le_add_of_nonneg_left h.le) <|
     not_bddAbove_iff.2 fun _ ↦ Set.exists_range_iff.2 <| add_one_pow_unbounded_of_pos _ h
 
 theorem tendsto_pow_atTop_atTop_of_one_lt [LinearOrderedRing α] [Archimedean α] {r : α}
@@ -137,7 +184,7 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField
     (fun hr ↦ (tendsto_add_atTop_iff_nat 1).mp <| by
       simp [_root_.pow_succ, ← hr, tendsto_const_nhds])
     (fun hr ↦
-      have := one_lt_inv hr h₂ |> tendsto_pow_atTop_atTop_of_one_lt
+      have := (one_lt_inv₀ hr).2 h₂ |> tendsto_pow_atTop_atTop_of_one_lt
       (tendsto_inv_atTop_zero.comp this).congr fun n ↦ by simp)
 @[deprecated (since := "2024-01-31")]
 alias tendsto_pow_atTop_nhds_0_of_lt_1 := tendsto_pow_atTop_nhds_zero_of_lt_one
@@ -252,7 +299,7 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
     specialize h_tends (Ioi_mem_nhds one_lt_top)
     simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage, Set.mem_Ioi] at h_tends
     obtain ⟨n, hn⟩ := h_tends
-    exact lt_irrefl _ <| lt_of_lt_of_le (hn n le_rfl) <| pow_le_one n (zero_le _) r_le_one
+    exact lt_irrefl _ <| lt_of_lt_of_le (hn n le_rfl) <| pow_le_one₀ (zero_le _) r_le_one
   · intro r_gt_one
     have obs := @Tendsto.inv ℝ≥0∞ ℕ _ _ _ (fun n ↦ (r⁻¹)^n) atTop 0
     simp only [ENNReal.tendsto_pow_atTop_nhds_zero_iff, inv_zero] at obs
@@ -360,7 +407,7 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
       (ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 ha)).imp fun n hn ↦ lt_of_lt_of_le hn ?_
     calc
       (n : ℝ≥0∞) = ∑ i ∈ range n, 1 := by rw [sum_const, nsmul_one, card_range]
-      _ ≤ ∑ i ∈ range n, r ^ i := by gcongr; apply one_le_pow_of_one_le' hr
+      _ ≤ ∑ i ∈ range n, r ^ i := by gcongr; apply one_le_pow₀ hr
 
 theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
   simp only [_root_.pow_succ', ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
@@ -513,7 +560,7 @@ theorem summable_one_div_pow_of_le {m : ℝ} {f : ℕ → ℕ} (hm : 1 < m) (fi 
       (summable_geometric_of_lt_one (one_div_nonneg.mpr (zero_le_one.trans hm.le))
         ((one_div_lt (zero_lt_one.trans hm) zero_lt_one).mpr (one_div_one.le.trans_lt hm)))
   rw [div_pow, one_pow]
-  refine (one_div_le_one_div ?_ ?_).mpr (pow_le_pow_right hm.le (fi a)) <;>
+  refine (one_div_le_one_div ?_ ?_).mpr (pow_right_mono₀ hm.le (fi a)) <;>
     exact pow_pos (zero_lt_one.trans hm) _
 
 /-! ### Positive sequences with small sums on countable types -/

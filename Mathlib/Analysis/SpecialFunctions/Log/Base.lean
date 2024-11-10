@@ -47,11 +47,13 @@ theorem logb_zero : logb b 0 = 0 := by simp [logb]
 @[simp]
 theorem logb_one : logb b 1 = 0 := by simp [logb]
 
-@[simp]
 theorem logb_zero_left : logb 0 x = 0 := by simp only [← log_div_log, log_zero, div_zero]
 
-@[simp]
+@[simp] theorem logb_zero_left_eq_zero : logb 0 = 0 := by ext; rw [logb_zero_left, Pi.zero_apply]
+
 theorem logb_one_left : logb 1 x = 0 := by simp only [← log_div_log, log_one, div_zero]
+
+@[simp] theorem logb_one_left_eq_zero : logb 1 = 0 := by ext; rw [logb_one_left, Pi.zero_apply]
 
 @[simp]
 lemma logb_self_eq_one (hb : 1 < b) : logb b b = 1 :=
@@ -423,7 +425,7 @@ lemma Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx�
     intro x hx
     have hx' : 0 < x / x₀ := div_pos (hx₀.trans_le hx) hx₀
     refine this ⌊logb r (x / x₀)⌋₊ x ?_
-    rw [mem_Ico, ← div_lt_iff hx₀, ← rpow_natCast, ← logb_lt_iff_lt_rpow hr hx', Nat.cast_add,
+    rw [mem_Ico, ← div_lt_iff₀ hx₀, ← rpow_natCast, ← logb_lt_iff_lt_rpow hr hx', Nat.cast_add,
       Nat.cast_one]
     exact ⟨hx, Nat.lt_floor_add_one _⟩
   intro n

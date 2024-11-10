@@ -114,7 +114,7 @@ example : MonoidalPreadditive (FDRep k G) := by infer_instance
 
 example : MonoidalLinear k (FDRep k G) := by infer_instance
 
-open FiniteDimensional
+open Module
 
 open scoped Classical
 

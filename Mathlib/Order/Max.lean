@@ -158,7 +158,7 @@ theorem NoMaxOrder.not_acc [LT α] [NoMaxOrder α] (a : α) : ¬Acc (· > ·) a 
 
 section LE
 
-variable [LE α] {a b : α}
+variable [LE α] {a : α}
 
 /-- `a : α` is a bottom element of `α` if it is less than or equal to any other element of `α`.
 This predicate is roughly an unbundled version of `OrderBot`, except that a preorder may have

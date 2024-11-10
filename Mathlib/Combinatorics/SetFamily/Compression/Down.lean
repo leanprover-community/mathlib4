@@ -35,18 +35,17 @@ compression, down-compression
 -/
 
 
-variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α} {a : α}
+variable {α : Type*} [DecidableEq α] {𝒜 : Finset (Finset α)} {s : Finset α} {a : α}
 
 namespace Finset
 
 /-- Elements of `𝒜` that do not contain `a`. -/
-def nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
-  𝒜.filter fun s => a ∉ s
+def nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) := {s ∈ 𝒜 | a ∉ s}
 
 /-- Image of the elements of `𝒜` which contain `a` under removing `a`. Finsets that do not contain
 `a` such that `insert a s ∈ 𝒜`. -/
 def memberSubfamily (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
-  (𝒜.filter fun s => a ∈ s).image fun s => erase s a
+  {s ∈ 𝒜 | a ∈ s}.image fun s => erase s a
 
 @[simp]
 theorem mem_nonMemberSubfamily : s ∈ 𝒜.nonMemberSubfamily a ↔ s ∈ 𝒜 ∧ a ∉ s := by
@@ -79,7 +78,7 @@ theorem memberSubfamily_union (a : α) (𝒜 ℬ : Finset (Finset α)) :
   simp_rw [memberSubfamily, filter_union, image_union]
 
 theorem card_memberSubfamily_add_card_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) :
-    (𝒜.memberSubfamily a).card + (𝒜.nonMemberSubfamily a).card = 𝒜.card := by
+    #(𝒜.memberSubfamily a) + #(𝒜.nonMemberSubfamily a) = #𝒜 := by
   rw [memberSubfamily, nonMemberSubfamily, card_image_of_injOn]
   · conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun s => (a ∈ s))]
   · apply (erase_injOn' _).mono
@@ -136,7 +135,7 @@ lemma memberSubfamily_image_insert (h𝒜 : ∀ s ∈ 𝒜, a ∉ s) :
     (ne_of_mem_of_not_mem' (mem_insert_self _ _) (not_mem_erase _ _)).symm]
 
 lemma image_insert_memberSubfamily (𝒜 : Finset (Finset α)) (a : α) :
-    (𝒜.memberSubfamily a).image (insert a) = 𝒜.filter (a ∈ ·) := by
+    (𝒜.memberSubfamily a).image (insert a) = {s ∈ 𝒜 | a ∈ s} := by
   ext s
   simp only [mem_memberSubfamily, mem_image, mem_filter]
   refine ⟨?_, fun ⟨hs, ha⟩ ↦ ⟨erase s a, ⟨?_, not_mem_erase _ _⟩, insert_erase ha⟩⟩
@@ -182,7 +181,7 @@ it suffices to prove it for
 * `ℬ ∪ 𝒞` assuming the property for `ℬ` and `𝒞`, where `a` is an element of the ground type and
   `ℬ`is a family of finsets not containing `a` and `𝒞` a family of finsets containing `a`.
   Note that instead of giving `ℬ` and `𝒞`, the `subfamily` case gives you `𝒜 = ℬ ∪ 𝒞`, so that
-  `ℬ = 𝒜.filter (a ∉ ·)` and `𝒞 = 𝒜.filter (a ∈ ·)`.
+  `ℬ = {s ∈ 𝒜 | a ∉ s}` and `𝒞 = {s ∈ 𝒜 | a ∈ s}`.
 
 This is a way of formalising induction on `n` where `𝒜` is a finset family on `n` elements.
 
@@ -193,7 +192,7 @@ protected lemma family_induction_on {p : Finset (Finset α) → Prop}
     (image_insert : ∀ (a : α) ⦃𝒜 : Finset (Finset α)⦄,
       (∀ s ∈ 𝒜, a ∉ s) → p 𝒜 → p (𝒜.image <| insert a))
     (subfamily : ∀ (a : α) ⦃𝒜 : Finset (Finset α)⦄,
-      p (𝒜.filter (a ∉ ·)) → p (𝒜.filter (a ∈ ·)) → p 𝒜) : p 𝒜 := by
+      p {s ∈ 𝒜 | a ∉ s} → p {s ∈ 𝒜 | a ∈ s} → p 𝒜) : p 𝒜 := by
   refine memberFamily_induction_on 𝒜 empty singleton_empty fun a 𝒜 h𝒜₀ h𝒜₁ ↦ subfamily a h𝒜₀ ?_
   rw [← image_insert_memberSubfamily]
   exact image_insert _ (by simp) h𝒜₁
@@ -208,11 +207,8 @@ namespace Down
 /-- `a`-down-compressing `𝒜` means removing `a` from the elements of `𝒜` that contain it, when the
 resulting Finset is not already in `𝒜`. -/
 def compression (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
-  (𝒜.filter fun s => erase s a ∈ 𝒜).disjUnion
-      ((𝒜.image fun s => erase s a).filter fun s => s ∉ 𝒜) <|
-    disjoint_left.2 fun s h₁ h₂ => by
-      have := (mem_filter.1 h₂).2
-      exact this (mem_filter.1 h₁).1
+  {s ∈ 𝒜 | erase s a ∈ 𝒜}.disjUnion {s ∈ 𝒜.image fun s ↦ erase s a | s ∉ 𝒜} <|
+    disjoint_left.2 fun _s h₁ h₂ ↦ (mem_filter.1 h₂).2 (mem_filter.1 h₁).1
 
 @[inherit_doc]
 scoped[FinsetFamily] notation "𝓓 " => Down.compression
@@ -258,7 +254,7 @@ theorem compression_idem (a : α) (𝒜 : Finset (Finset α)) : 𝓓 a (𝓓 a �
 
 /-- Down-compressing a family doesn't change its size. -/
 @[simp]
-theorem card_compression (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).card = 𝒜.card := by
+theorem card_compression (a : α) (𝒜 : Finset (Finset α)) : #(𝓓 a 𝒜) = #𝒜 := by
   rw [compression, card_disjUnion, filter_image,
     card_image_of_injOn ((erase_injOn' _).mono fun s hs => _), ← card_union_of_disjoint]
   · conv_rhs => rw [← filter_union_filter_neg_eq (fun s => (erase s a ∈ 𝒜)) 𝒜]

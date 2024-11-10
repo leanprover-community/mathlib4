@@ -113,7 +113,7 @@ def yonedaJointlyReflectsLimits (F : J ⥤ Cᵒᵖ) (c : Cone F)
 application of `yoneda.obj X` for all `X : C`. -/
 noncomputable def Limits.Cocone.isColimitYonedaEquiv {F : J ⥤ C} (c : Cocone F) :
     IsColimit c ≃ ∀ (X : C), IsLimit ((yoneda.obj X).mapCone c.op) where
-  toFun h X := isLimitOfPreserves _ h.op
+  toFun h _ := isLimitOfPreserves _ h.op
   invFun h := IsLimit.unop (yonedaJointlyReflectsLimits _ _ h)
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := by ext; apply Subsingleton.elim
@@ -154,7 +154,7 @@ def coyonedaJointlyReflectsLimits (F : J ⥤ C) (c : Cone F)
 /-- A cone is limit iff it is so after the application of `coyoneda.obj X` for all `X : Cᵒᵖ`. -/
 noncomputable def Limits.Cone.isLimitCoyonedaEquiv {F : J ⥤ C} (c : Cone F) :
     IsLimit c ≃ ∀ (X : Cᵒᵖ), IsLimit ((coyoneda.obj X).mapCone c) where
-  toFun h X := isLimitOfPreserves _ h
+  toFun h _ := isLimitOfPreserves _ h
   invFun h := coyonedaJointlyReflectsLimits _ _ h
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := by ext; apply Subsingleton.elim
@@ -193,7 +193,7 @@ namespace Functor
 
 section Representable
 
-variable (F : Cᵒᵖ ⥤ Type v) [F.Representable] {J : Type*} [Category J]
+variable (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] {J : Type*} [Category J]
 
 noncomputable instance representablePreservesLimit (G : J ⥤ Cᵒᵖ) :
     PreservesLimit G F :=
@@ -210,7 +210,7 @@ end Representable
 
 section Corepresentable
 
-variable (F : C ⥤ Type v) [F.Corepresentable] {J : Type*} [Category J]
+variable (F : C ⥤ Type v) [F.IsCorepresentable] {J : Type*} [Category J]
 
 noncomputable instance corepresentablePreservesLimit (G : J ⥤ C) :
     PreservesLimit G F :=

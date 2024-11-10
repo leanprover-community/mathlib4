@@ -202,7 +202,7 @@ theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a :
     exact mod_cast hq
 
 theorem lt_inducedMap_iff : b < inducedMap α β a ↔ ∃ q : ℚ, b < q ∧ (q : α) < a :=
-  ⟨fun h => (exists_rat_btwn h).imp fun q => And.imp_right coe_lt_inducedMap_iff.1,
+  ⟨fun h => (exists_rat_btwn h).imp fun _ => And.imp_right coe_lt_inducedMap_iff.1,
     fun ⟨q, hbq, hqa⟩ => hbq.trans <| by rwa [coe_lt_inducedMap_iff]⟩
 
 @[simp]
@@ -216,7 +216,6 @@ theorem inducedMap_inducedMap (a : α) : inducedMap β γ (inducedMap α β a) =
   eq_of_forall_rat_lt_iff_lt fun q => by
     rw [coe_lt_inducedMap_iff, coe_lt_inducedMap_iff, Iff.comm, coe_lt_inducedMap_iff]
 
---@[simp] -- Porting note (#10618): simp can prove it
 theorem inducedMap_inv_self (b : β) : inducedMap γ β (inducedMap β γ b) = b := by
   rw [inducedMap_inducedMap, inducedMap_self]
 

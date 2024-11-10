@@ -3,9 +3,8 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Algebra.Order.Floor
+import Mathlib.Order.Filter.AtTopBot.Floor
 import Mathlib.Topology.Algebra.Order.Group
-import Mathlib.Topology.Order.Basic
 
 /-!
 # Topological facts about `Int.floor`, `Int.ceil` and `Int.fract`
@@ -27,7 +26,35 @@ This file proves statements about limits and continuity of functions involving `
 
 open Filter Function Int Set Topology
 
+namespace FloorSemiring
+
+open scoped Nat
+
+variable {K : Type*} [LinearOrderedField K] [FloorSemiring K] [TopologicalSpace K] [OrderTopology K]
+
+theorem tendsto_mul_pow_div_factorial_sub_atTop (a c : K) (d : ℕ) :
+    Tendsto (fun n ↦ a * c ^ n / (n - d)!) atTop (𝓝 0) := by
+  rw [tendsto_order]
+  constructor
+  all_goals
+    intro ε hε
+    filter_upwards [eventually_mul_pow_lt_factorial_sub (a * ε⁻¹) c d] with n h
+    rw [mul_right_comm, ← div_eq_mul_inv] at h
+  · rw [div_lt_iff_of_neg hε] at h
+    rwa [lt_div_iff₀' (Nat.cast_pos.mpr (Nat.factorial_pos _))]
+  · rw [div_lt_iff₀ hε] at h
+    rwa [div_lt_iff₀' (Nat.cast_pos.mpr (Nat.factorial_pos _))]
+
+theorem tendsto_pow_div_factorial_atTop (c : K) :
+    Tendsto (fun n ↦ c ^ n / n !) atTop (𝓝 0) := by
+  convert tendsto_mul_pow_div_factorial_sub_atTop 1 c 0
+  rw [one_mul]
+
+end FloorSemiring
+
 variable {α β γ : Type*} [LinearOrderedRing α] [FloorRing α]
+
+-- TODO: move to `Mathlib.Order.Filter.AtTopBot.Floor`
 
 theorem tendsto_floor_atTop : Tendsto (floor : α → ℤ) atTop atTop :=
   floor_mono.tendsto_atTop_atTop fun b =>
@@ -179,7 +206,7 @@ theorem ContinuousOn.comp_fract' {f : β → α → γ} (h : ContinuousOn (uncur
         (tendsto_id.prod_map (tendsto_fract_right _))).mono_right (le_of_eq ?_) <;>
         simp [nhdsWithin_prod_eq, nhdsWithin_univ]
   · replace ht : t ≠ ⌊t⌋ := fun ht' => ht ⟨_, ht'⟩
-    refine (h.continuousAt ?_).comp (continuousAt_id.prod_map (continuousAt_fract ht))
+    refine (h.continuousAt ?_).comp (continuousAt_id.prodMap (continuousAt_fract ht))
     exact prod_mem_nhds univ_mem (Icc_mem_nhds (fract_pos.2 ht) (fract_lt_one _))
 
 theorem ContinuousOn.comp_fract {s : β → α} {f : β → α → γ}

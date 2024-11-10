@@ -15,7 +15,7 @@ import Mathlib.Algebra.Ring.Hom.Defs
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
+variable {α : Type u} {β : Type v} {R : Type x}
 
 open Function
 
@@ -23,7 +23,7 @@ namespace Units
 
 section HasDistribNeg
 
-variable [Monoid α] [HasDistribNeg α] {a b : α}
+variable [Monoid α] [HasDistribNeg α]
 
 /-- Each element of the group of units of a ring has an additive inverse. -/
 instance : Neg αˣ :=

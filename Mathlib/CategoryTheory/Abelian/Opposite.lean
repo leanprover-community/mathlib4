@@ -151,7 +151,7 @@ theorem image_ι_op_comp_imageUnopOp_hom :
     Quiver.Hom.op_unop, cokernelIsoOfEq_hom_comp_desc_assoc, cokernel.π_desc_assoc,
     cokernel.π_desc]
   simp only [eqToHom_refl]
-  erw [IsIso.inv_id, Category.id_comp]
+  rw [IsIso.inv_id, Category.id_comp]
 
 theorem imageUnopOp_hom_comp_image_ι :
     (imageUnopOp g).hom ≫ image.ι g = (factorThruImage g.unop).op := by

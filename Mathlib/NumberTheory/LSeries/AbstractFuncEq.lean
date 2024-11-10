@@ -167,7 +167,7 @@ lemma hf_zero' (P : WeakFEPair E) :
     filter_upwards [eventually_le_nhds zero_lt_one] with x hx' (hx : 0 < x)
     apply le_mul_of_one_le_right (norm_nonneg _)
     rw [norm_of_nonneg (rpow_pos_of_pos hx _).le, rpow_neg hx.le]
-    exact one_le_inv (rpow_pos_of_pos hx _) (rpow_le_one hx.le hx' P.hk.le)
+    exact (one_le_inv₀ (rpow_pos_of_pos hx _)).2 (rpow_le_one hx.le hx' P.hk.le)
 
 end WeakFEPair
 
@@ -226,8 +226,8 @@ theorem functional_equation (s : ℂ) :
   have step3 := mellin_const_smul (fun t ↦ (t : ℂ) ^ (-P.k : ℂ) • P.g (1 / t)) (P.k - s) P.ε
   rw [step2] at step3
   rw [← step3]
-  -- now the integrand matches `P.h_feq'` on `Ioi 0`, so we can apply `setIntegral_congr`
-  refine setIntegral_congr measurableSet_Ioi (fun t ht ↦ ?_)
+  -- now the integrand matches `P.h_feq'` on `Ioi 0`, so we can apply `setIntegral_congr_fun`
+  refine setIntegral_congr_fun measurableSet_Ioi (fun t ht ↦ ?_)
   simp_rw [P.h_feq' t ht, ← mul_smul]
   -- some simple `cpow` arithmetic to finish
   rw [cpow_neg, ofReal_cpow (le_of_lt ht)]
@@ -261,7 +261,7 @@ lemma hf_modif_int :
     LocallyIntegrableOn P.f_modif (Ioi 0) := by
   have : LocallyIntegrableOn (fun x : ℝ ↦ (P.ε * ↑(x ^ (-P.k))) • P.g₀) (Ioi 0) := by
     refine ContinuousOn.locallyIntegrableOn ?_ measurableSet_Ioi
-    refine ContinuousAt.continuousOn (fun x (hx : 0 < x) ↦ ?_)
+    refine continuousOn_of_forall_continuousAt (fun x (hx : 0 < x) ↦ ?_)
     refine (continuousAt_const.mul ?_).smul continuousAt_const
     exact continuous_ofReal.continuousAt.comp (continuousAt_rpow_const _ _ (Or.inl hx.ne'))
   refine LocallyIntegrableOn.add (fun x hx ↦ ?_) (fun x hx ↦ ?_)
@@ -343,7 +343,7 @@ lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
   _ = ∫ (x : ℝ) in Ioi 0, (x : ℂ) ^ (s - 1) •
       ((Ioo 0 1).indicator (fun t : ℝ ↦ P.f₀ - (P.ε * ↑(t ^ (-P.k))) • P.g₀) x
       + ({1} : Set ℝ).indicator (fun _ ↦ P.f₀ - P.f 1) x) :=
-    setIntegral_congr measurableSet_Ioi (fun x hx ↦ by simp [f_modif_aux1 P hx])
+    setIntegral_congr_fun measurableSet_Ioi (fun x hx ↦ by simp [f_modif_aux1 P hx])
   _ = ∫ (x : ℝ) in Ioi 0, (x : ℂ) ^ (s - 1) • ((Ioo 0 1).indicator
       (fun t : ℝ ↦ P.f₀ - (P.ε * ↑(t ^ (-P.k))) • P.g₀) x) := by
     refine setIntegral_congr_ae measurableSet_Ioi (eventually_of_mem (U := {1}ᶜ)
@@ -353,7 +353,7 @@ lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
     simp_rw [← indicator_smul, setIntegral_indicator measurableSet_Ioo,
       inter_eq_right.mpr Ioo_subset_Ioi_self, integral_Ioc_eq_integral_Ioo]
   _ = ∫ x : ℝ in Ioc 0 1, ((x : ℂ) ^ (s - 1) • P.f₀ - P.ε • (x : ℂ) ^ (s - P.k - 1) • P.g₀) := by
-    refine setIntegral_congr measurableSet_Ioc (fun x ⟨hx, _⟩ ↦ ?_)
+    refine setIntegral_congr_fun measurableSet_Ioc (fun x ⟨hx, _⟩ ↦ ?_)
     rw [ofReal_cpow hx.le, ofReal_neg, smul_sub, ← mul_smul, mul_comm, mul_assoc, mul_smul,
       mul_comm, ← cpow_add _ _ (ofReal_ne_zero.mpr hx.ne'), ← sub_eq_add_neg, sub_right_comm]
   _ = (∫ (x : ℝ) in Ioc 0 1, (x : ℂ) ^ (s - 1)) • P.f₀
@@ -427,10 +427,8 @@ theorem functional_equation₀ (s : ℂ) : P.Λ₀ (P.k - s) = P.ε • P.symm.�
 /-- Functional equation formulated for `Λ`. -/
 theorem functional_equation (s : ℂ) :
     P.Λ (P.k - s) = P.ε • P.symm.Λ s := by
-  have := P.functional_equation₀ s
-  rw [P.Λ₀_eq, P.symm_Λ₀_eq, sub_sub_cancel] at this
-  rwa [smul_add, smul_add, ← mul_smul, mul_one_div, ← mul_smul, ← mul_div_assoc,
-    mul_inv_cancel₀ P.hε, add_assoc, add_comm (_ • _), add_assoc, add_left_inj] at this
+  linear_combination (norm := module) P.functional_equation₀ s - P.Λ₀_eq (P.k - s)
+    + congr(P.ε • $(P.symm_Λ₀_eq s)) + congr(($(mul_inv_cancel₀ P.hε) / ((P.k:ℂ) - s)) • P.f₀)
 
 /-- The residue of `Λ` at `s = k` is equal to `ε • g₀`. -/
 theorem Λ_residue_k :
@@ -444,8 +442,7 @@ theorem Λ_residue_k :
     exact continuousAt_const.div continuousAt_id (ofReal_ne_zero.mpr P.hk.ne')
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ P.k) ↦ ?_)
-    simp_rw [← mul_smul]
-    congr 1
+    match_scalars
     field_simp [sub_ne_zero.mpr hs.symm]
     ring
 
@@ -457,7 +454,7 @@ theorem Λ_residue_zero :
   · exact (continuous_id.smul P.differentiable_Λ₀.continuous).tendsto _
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ 0) ↦ ?_)
-    simp_rw [← mul_smul]
+    match_scalars
     field_simp [sub_ne_zero.mpr hs.symm]
   · rw [show 𝓝 0 = 𝓝 ((0 : ℂ) • (P.ε / (P.k - 0 : ℂ)) • P.g₀) by rw [zero_smul]]
     exact (continuousAt_id.smul ((continuousAt_const.div ((continuous_sub_left _).continuousAt)

@@ -21,14 +21,13 @@ can also be useful as a recursive description of this set when `V` is finite.
 TODO: should this be extended further?
 -/
 
-open Function
+open Finset Function
 
 universe u v w
 
 namespace SimpleGraph
 
-variable {V : Type u} {V' : Type v} {V'' : Type w}
-variable (G : SimpleGraph V) (G' : SimpleGraph V') (G'' : SimpleGraph V'')
+variable {V : Type u} (G : SimpleGraph V)
 
 /-! ### Walks of a given length -/
 
@@ -64,7 +63,7 @@ Note that `u` and `v` may be the same. -/
 def walkLengthTwoEquivCommonNeighbors (u v : V) :
     {p : G.Walk u v // p.length = 2} ≃ G.commonNeighbors u v where
   toFun p := ⟨p.val.getVert 1, match p with
-    | ⟨.cons _ (.cons _ .nil), hp⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩
+    | ⟨.cons _ (.cons _ .nil), _⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩
   invFun w := ⟨w.prop.1.toWalk.concat w.prop.2.symm, rfl⟩
   left_inv | ⟨.cons _ (.cons _ .nil), hp⟩ => by rfl
   right_inv _ := rfl
@@ -152,7 +151,7 @@ theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
 /- See `SimpleGraph.adjMatrix_pow_apply_eq_card_walk` for the cardinality in terms of the `n`th
 power of the adjacency matrix. -/
 theorem card_set_walk_length_eq (u v : V) (n : ℕ) :
-    Fintype.card {p : G.Walk u v | p.length = n} = (G.finsetWalkLength n u v).card :=
+    Fintype.card {p : G.Walk u v | p.length = n} = #(G.finsetWalkLength n u v) :=
   Fintype.card_ofFinset (G.finsetWalkLength n u v) fun p => by
     rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
 
@@ -165,7 +164,7 @@ instance fintypeSubtypeWalkLengthLT (u v : V) (n : ℕ) : Fintype {p : G.Walk u 
 
 instance fintypeSetPathLength (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v | p.IsPath ∧ p.length = n} :=
-  Fintype.ofFinset ((G.finsetWalkLength n u v).filter Walk.IsPath) <| by
+  Fintype.ofFinset {w ∈ G.finsetWalkLength n u v | w.IsPath} <| by
     simp [mem_finsetWalkLength_iff, and_comm]
 
 instance fintypeSubtypePathLength (u v : V) (n : ℕ) :
@@ -174,7 +173,7 @@ instance fintypeSubtypePathLength (u v : V) (n : ℕ) :
 
 instance fintypeSetPathLengthLT (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v | p.IsPath ∧ p.length < n} :=
-  Fintype.ofFinset ((G.finsetWalkLengthLT n u v).filter Walk.IsPath) <| by
+  Fintype.ofFinset {w ∈ G.finsetWalkLengthLT n u v | w.IsPath} <| by
     simp [mem_finsetWalkLengthLT_iff, and_comm]
 
 instance fintypeSubtypePathLengthLT (u v : V) (n : ℕ) :
@@ -210,7 +209,6 @@ instance : Decidable G.Connected := by
   rw [connected_iff, ← Finset.univ_nonempty_iff]
   infer_instance
 
-open Finset in
 instance Path.instFintype {u v : V} : Fintype (G.Path u v) where
   elems := (univ (α := { p : G.Walk u v | p.IsPath ∧ p.length < Fintype.card V })).map
     ⟨fun p ↦ { val := p.val, property := p.prop.left },

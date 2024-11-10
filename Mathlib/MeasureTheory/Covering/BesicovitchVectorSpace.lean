@@ -43,7 +43,7 @@ In particular, this number is bounded by `5 ^ dim` by a straightforward measure 
 
 universe u
 
-open Metric Set FiniteDimensional MeasureTheory Filter Fin
+open Metric Set Module MeasureTheory Filter Fin
 
 open scoped ENNReal Topology
 

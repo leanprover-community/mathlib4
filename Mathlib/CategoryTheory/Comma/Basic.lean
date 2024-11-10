@@ -106,8 +106,6 @@ section
 
 variable {X Y Z : Comma L R} {f : X ⟶ Y} {g : Y ⟶ Z}
 
--- Porting note: this lemma was added because `CommaMorphism.ext`
--- was not triggered automatically
 @[ext]
 lemma hom_ext (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) : f = g :=
   CommaMorphism.ext h₁ h₂
@@ -162,6 +160,34 @@ theorem eqToHom_right (X Y : Comma L R) (H : X = Y) :
     CommaMorphism.right (eqToHom H) = eqToHom (by cases H; rfl) := by
   cases H
   rfl
+
+section
+
+variable {L R} {X Y : Comma L R} (e : X ⟶ Y)
+
+instance [IsIso e] : IsIso e.left :=
+  (Comma.fst L R).map_isIso e
+
+instance [IsIso e] : IsIso e.right :=
+  (Comma.snd L R).map_isIso e
+
+@[simp]
+lemma inv_left [IsIso e] : (inv e).left = inv e.left := by
+  apply IsIso.eq_inv_of_hom_inv_id
+  rw [← Comma.comp_left, IsIso.hom_inv_id, id_left]
+
+@[simp]
+lemma inv_right [IsIso e] : (inv e).right = inv e.right := by
+  apply IsIso.eq_inv_of_hom_inv_id
+  rw [← Comma.comp_right, IsIso.hom_inv_id, id_right]
+
+lemma left_hom_inv_right [IsIso e] : L.map (e.left) ≫ Y.hom ≫ R.map (inv e.right) = X.hom := by
+  simp
+
+lemma inv_left_hom_right [IsIso e] : L.map (inv e.left) ≫ X.hom ≫ R.map e.right = Y.hom := by
+  simp
+
+end
 
 section
 
@@ -363,7 +389,7 @@ end
 
 section
 
-variable {C : Type u₄} [Category.{v₄} C] {D : Type u₅} [Category.{v₅} D]
+variable {C : Type u₄} [Category.{v₄} C]
 
 /-- The functor `(F ⋙ L, R) ⥤ (L, R)` -/
 @[simps]

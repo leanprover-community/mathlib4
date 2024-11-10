@@ -165,7 +165,7 @@ theorem Kernel.measure_le_bound (κ : Kernel α β) [h : IsFiniteKernel κ] (a :
     κ a s ≤ IsFiniteKernel.bound κ :=
   (measure_mono (Set.subset_univ s)).trans (h.exists_univ_le.choose_spec.2 a)
 
-instance isFiniteKernel_zero (α β : Type*) {mα : MeasurableSpace α} {mβ : MeasurableSpace β} :
+instance isFiniteKernel_zero (α β : Type*) {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     IsFiniteKernel (0 : Kernel α β) :=
   ⟨⟨0, ENNReal.coe_lt_top, fun _ => by
       simp only [Kernel.zero_apply, Measure.coe_zero, Pi.zero_apply, le_zero_iff]⟩⟩

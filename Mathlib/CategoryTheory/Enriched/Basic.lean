@@ -30,7 +30,7 @@ We verify that when `V = Type v`, all these notion reduce to the usual ones.
 -/
 
 
-universe w v u₁ u₂ u₃
+universe w w' v v' u₁ u₂ u₃
 
 noncomputable section
 
@@ -94,7 +94,7 @@ theorem e_assoc' (W X Y Z : C) :
 
 section
 
-variable {V} {W : Type v} [Category.{w} W] [MonoidalCategory W]
+variable {V} {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
 
 -- Porting note: removed `@[nolint hasNonemptyInstance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
@@ -147,7 +147,7 @@ def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
     EnrichedCategory (Type v) C where
   Hom := 𝒞.Hom
   id X _ := 𝟙 X
-  comp X Y Z p := p.1 ≫ p.2
+  comp _ _ _ p := p.1 ≫ p.2
   id_comp X Y := by ext; simp
   comp_id X Y := by ext; simp
   assoc W X Y Z := by ext ⟨f, g, h⟩; simp
@@ -163,7 +163,7 @@ def enrichedCategoryTypeEquivCategory (C : Type u₁) :
 
 section
 
-variable {W : Type (v + 1)} [Category.{v} W] [MonoidalCategory W] [EnrichedCategory W C]
+variable {W : Type v} [Category.{w} W] [MonoidalCategory W] [EnrichedCategory W C]
 
 -- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
@@ -184,7 +184,7 @@ For `V = Algebra R`, the usual forgetful functor is coyoneda of `R[X]`, not of `
 (Perhaps we should have a typeclass for this situation: `ConcreteMonoidal`?)
 -/
 @[nolint unusedArguments]
-def ForgetEnrichment (W : Type (v + 1)) [Category.{v} W] [MonoidalCategory W] (C : Type u₁)
+def ForgetEnrichment (W : Type v) [Category.{w} W] [MonoidalCategory W] (C : Type u₁)
     [EnrichedCategory W C] :=
   C
 
@@ -208,7 +208,7 @@ theorem ForgetEnrichment.of_to (X : ForgetEnrichment W C) :
   rfl
 
 instance categoryForgetEnrichment : Category (ForgetEnrichment W C) := by
-  let I : EnrichedCategory (Type v) (TransportEnrichment (coyonedaTensorUnit W) C) :=
+  let I : EnrichedCategory (Type w) (TransportEnrichment (coyonedaTensorUnit W) C) :=
     inferInstance
   exact enrichedCategoryTypeEquivCategory C I
 
@@ -281,7 +281,7 @@ attribute [reassoc (attr := simp)] EnrichedFunctor.map_comp
 @[simps]
 def EnrichedFunctor.id (C : Type u₁) [EnrichedCategory V C] : EnrichedFunctor V C C where
   obj X := X
-  map X Y := 𝟙 _
+  map _ _ := 𝟙 _
 
 instance : Inhabited (EnrichedFunctor V C C) :=
   ⟨EnrichedFunctor.id V C⟩
@@ -292,7 +292,7 @@ def EnrichedFunctor.comp {C : Type u₁} {D : Type u₂} {E : Type u₃} [Enrich
     [EnrichedCategory V D] [EnrichedCategory V E] (F : EnrichedFunctor V C D)
     (G : EnrichedFunctor V D E) : EnrichedFunctor V C E where
   obj X := G.obj (F.obj X)
-  map X Y := F.map _ _ ≫ G.map _ _
+  map _ _ := F.map _ _ ≫ G.map _ _
 
 section
 
@@ -419,7 +419,7 @@ def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Ty
       map_comp := fun f g => congr_fun (F.map_comp _ _ _) ⟨f, g⟩ }
   invFun F :=
     { obj := fun X => F.obj X
-      map := fun X Y f => F.map f
+      map := fun _ _ f => F.map f
       map_id := fun X => by ext ⟨⟩; exact F.map_id X
       map_comp := fun X Y Z => by ext ⟨f, g⟩; exact F.map_comp f g }
   left_inv _ := rfl

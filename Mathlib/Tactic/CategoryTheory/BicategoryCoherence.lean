@@ -27,7 +27,7 @@ open CategoryTheory CategoryTheory.FreeBicategory
 
 open scoped Bicategory
 
-variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
+variable {B : Type u} [Bicategory.{w, v} B] {a b c d : B}
 
 namespace Mathlib.Tactic.BicategoryCoherence
 
@@ -136,13 +136,13 @@ open Lean.Parser.Tactic
 /--
 Simp lemmas for rewriting a 2-morphism into a normal form.
 -/
-syntax (name := whisker_simps) "whisker_simps" (config)? : tactic
+syntax (name := whisker_simps) "whisker_simps" optConfig : tactic
 
 @[inherit_doc whisker_simps]
 elab_rules : tactic
-| `(tactic| whisker_simps $[$cfg]?) => do
+| `(tactic| whisker_simps $cfg) => do
   evalTactic (← `(tactic|
-    simp $[$cfg]? only [Category.assoc,
+    simp $cfg only [Category.assoc,
       Bicategory.comp_whiskerLeft, Bicategory.id_whiskerLeft,
       Bicategory.whiskerRight_comp, Bicategory.whiskerRight_id,
       Bicategory.whiskerLeft_comp, Bicategory.whiskerLeft_id,

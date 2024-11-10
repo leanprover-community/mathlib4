@@ -146,18 +146,23 @@ def combinedIsColimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.
 
 noncomputable section
 
+instance functorCategoryHasLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.obj k)] : HasLimit F :=
+  HasLimit.mk
+    { cone := combineCones F fun _ => getLimitCone _
+      isLimit := combinedIsLimit _ _ }
+
 instance functorCategoryHasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (K ⥤ C) where
-  has_limit F :=
-    HasLimit.mk
-      { cone := combineCones F fun _ => getLimitCone _
-        isLimit := combinedIsLimit _ _ }
+  has_limit _ := inferInstance
+
+instance functorCategoryHasColimit (F : J ⥤ K ⥤ C) [∀ k, HasColimit (F.flip.obj k)] :
+    HasColimit F :=
+  HasColimit.mk
+    { cocone := combineCocones F fun _ => getColimitCocone _
+      isColimit := combinedIsColimit _ _ }
 
 instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] :
     HasColimitsOfShape J (K ⥤ C) where
-  has_colimit _ :=
-    HasColimit.mk
-      { cocone := combineCocones _ fun _ => getColimitCocone _
-        isColimit := combinedIsColimit _ _ }
+  has_colimit _ := inferInstance
 
 -- Porting note: previously Lean could see through the binders and infer_instance sufficed
 instance functorCategoryHasLimitsOfSize [HasLimitsOfSize.{v₁, u₁} C] :
@@ -169,14 +174,20 @@ instance functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
     HasColimitsOfSize.{v₁, u₁} (K ⥤ C) where
   has_colimits_of_shape := fun _ _ => inferInstance
 
+instance hasLimitCompEvalution (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.obj k)] :
+    HasLimit (F ⋙ (evaluation _ _).obj k) :=
+  hasLimitOfIso (F := F.flip.obj k) (Iso.refl _)
+
+instance evaluationPreservesLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.obj k)] (k : K) :
+    PreservesLimit F ((evaluation K C).obj k) :=
+    -- Porting note: added a let because X was not inferred
+  let X : (k : K) → LimitCone (F.flip.obj k) := fun k => getLimitCone (F.flip.obj k)
+  preservesLimitOfPreservesLimitCone (combinedIsLimit _ X) <|
+    IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm
+
 instance evaluationPreservesLimitsOfShape [HasLimitsOfShape J C] (k : K) :
     PreservesLimitsOfShape J ((evaluation K C).obj k) where
-  preservesLimit {F} := by
-    -- Porting note: added a let because X was not inferred
-    let X : (k : K) → LimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k) :=
-      fun k => getLimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
-    exact preservesLimitOfPreservesLimitCone (combinedIsLimit _ _) <|
-      IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm
+  preservesLimit := inferInstance
 
 /-- If `F : J ⥤ K ⥤ C` is a functor into a functor category which has a limit,
 then the evaluation of that limit at `k` is the limit of the evaluations of `F.obj j` at `k`.
@@ -225,14 +236,43 @@ theorem limit_obj_ext {H : J ⥤ K ⥤ C} [HasLimitsOfShape J C] {k : K} {W : C}
   ext j
   simpa using w j
 
+/-- Taking a limit after whiskering by `G` is the same as using `G` and then taking a limit. -/
+def limitCompWhiskeringLeftIsoCompLimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasLimitsOfShape J C] :
+    limit (F ⋙ (whiskeringLeft _ _ _).obj G) ≅ G ⋙ limit F :=
+  NatIso.ofComponents (fun j =>
+    limitObjIsoLimitCompEvaluation (F ⋙ (whiskeringLeft _ _ _).obj G) j ≪≫
+      HasLimit.isoOfNatIso (isoWhiskerLeft F (whiskeringLeftCompEvaluation G j)) ≪≫
+      (limitObjIsoLimitCompEvaluation F (G.obj j)).symm)
+
+@[reassoc (attr := simp)]
+theorem limitCompWhiskeringLeftIsoCompLimit_hom_whiskerLeft_π (F : J ⥤ K ⥤ C) (G : D ⥤ K)
+    [HasLimitsOfShape J C] (j : J) :
+    (limitCompWhiskeringLeftIsoCompLimit F G).hom ≫ whiskerLeft G (limit.π F j) =
+      limit.π (F ⋙ (whiskeringLeft _ _ _).obj G) j := by
+  ext d
+  simp [limitCompWhiskeringLeftIsoCompLimit]
+
+@[reassoc (attr := simp)]
+theorem limitCompWhiskeringLeftIsoCompLimit_inv_π (F : J ⥤ K ⥤ C) (G : D ⥤ K)
+    [HasLimitsOfShape J C] (j : J) :
+    (limitCompWhiskeringLeftIsoCompLimit F G).inv ≫ limit.π (F ⋙ (whiskeringLeft _ _ _).obj G) j =
+      whiskerLeft G (limit.π F j) := by
+  simp [Iso.inv_comp_eq]
+
+instance hasColimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasColimit (F.flip.obj k)] :
+    HasColimit (F ⋙ (evaluation _ _).obj k) :=
+  hasColimitOfIso (F := F.flip.obj k) (Iso.refl _)
+
+instance evaluationPreservesColimit (F : J ⥤ K ⥤ C) [∀ k, HasColimit (F.flip.obj k)] (k : K) :
+    PreservesColimit F ((evaluation K C).obj k) :=
+  -- Porting note: added a let because X was not inferred
+  let X : (k : K) → ColimitCocone (F.flip.obj k) := fun k => getColimitCocone (F.flip.obj k)
+  preservesColimitOfPreservesColimitCocone (combinedIsColimit _ X) <|
+    IsColimit.ofIsoColimit (colimit.isColimit _) (evaluateCombinedCocones F X k).symm
+
 instance evaluationPreservesColimitsOfShape [HasColimitsOfShape J C] (k : K) :
     PreservesColimitsOfShape J ((evaluation K C).obj k) where
-  preservesColimit {F} := by
-    -- Porting note: added a let because X was not inferred
-    let X : (k : K) → ColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k) :=
-      fun k => getColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
-    refine preservesColimitOfPreservesColimitCocone (combinedIsColimit _ _) <|
-      IsColimit.ofIsoColimit (colimit.isColimit _) (evaluateCombinedCocones F X k).symm
+  preservesColimit := inferInstance
 
 /-- If `F : J ⥤ K ⥤ C` is a functor into a functor category which has a colimit,
 then the evaluation of that colimit at `k` is the colimit of the evaluations of `F.obj j` at `k`.
@@ -284,6 +324,29 @@ theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W 
   apply (cancel_epi (colimitObjIsoColimitCompEvaluation H k).inv).1
   ext j
   simpa using w j
+
+/-- Taking a colimit after whiskering by `G` is the same as using `G` and then taking a colimit. -/
+def colimitCompWhiskeringLeftIsoCompColimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasColimitsOfShape J C] :
+    colimit (F ⋙ (whiskeringLeft _ _ _).obj G) ≅ G ⋙ colimit F :=
+  NatIso.ofComponents (fun j =>
+    colimitObjIsoColimitCompEvaluation (F ⋙ (whiskeringLeft _ _ _).obj G) j ≪≫
+      HasColimit.isoOfNatIso (isoWhiskerLeft F (whiskeringLeftCompEvaluation G j)) ≪≫
+      (colimitObjIsoColimitCompEvaluation F (G.obj j)).symm)
+
+@[reassoc (attr := simp)]
+theorem ι_colimitCompWhiskeringLeftIsoCompColimit_hom (F : J ⥤ K ⥤ C) (G : D ⥤ K)
+    [HasColimitsOfShape J C] (j : J) :
+    colimit.ι (F ⋙ (whiskeringLeft _ _ _).obj G) j ≫
+      (colimitCompWhiskeringLeftIsoCompColimit F G).hom = whiskerLeft G (colimit.ι F j) := by
+  ext d
+  simp [colimitCompWhiskeringLeftIsoCompColimit]
+
+@[reassoc (attr := simp)]
+theorem whiskerLeft_ι_colimitCompWhiskeringLeftIsoCompColimit_inv (F : J ⥤ K ⥤ C) (G : D ⥤ K)
+    [HasColimitsOfShape J C] (j : J) :
+    whiskerLeft G (colimit.ι F j) ≫ (colimitCompWhiskeringLeftIsoCompColimit F G).inv =
+      colimit.ι (F ⋙ (whiskeringLeft _ _ _).obj G) j := by
+  simp [Iso.comp_inv_eq]
 
 instance evaluationPreservesLimits [HasLimits C] (k : K) :
     PreservesLimits ((evaluation K C).obj k) where
@@ -382,7 +445,7 @@ def colimitIsoFlipCompColim [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : colim
 /-- A variant of `colimit_iso_flip_comp_colim` where the arguments of `F` are flipped. -/
 @[simps!]
 def colimitFlipIsoCompColim [HasColimitsOfShape J C] (F : K ⥤ J ⥤ C) : colimit F.flip ≅ F ⋙ colim :=
-  let f := fun k =>
+  let f := fun _ =>
       colimitObjIsoColimitCompEvaluation _ _ ≪≫ HasColimit.isoOfNatIso (flipCompEvaluation _ _)
   NatIso.ofComponents f
 

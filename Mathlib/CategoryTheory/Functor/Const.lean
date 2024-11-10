@@ -47,16 +47,16 @@ is (naturally isomorphic to) the opposite of the constant functor `J ⥤ C` send
 -/
 @[simps]
 def opObjOp (X : C) : (const Jᵒᵖ).obj (op X) ≅ ((const J).obj X).op where
-  hom := { app := fun j => 𝟙 _ }
-  inv := { app := fun j => 𝟙 _ }
+  hom := { app := fun _ => 𝟙 _ }
+  inv := { app := fun _ => 𝟙 _ }
 
 /-- The constant functor `Jᵒᵖ ⥤ C` sending everything to `unop X`
 is (naturally isomorphic to) the opposite of
 the constant functor `J ⥤ Cᵒᵖ` sending everything to `X`.
 -/
 def opObjUnop (X : Cᵒᵖ) : (const Jᵒᵖ).obj (unop X) ≅ ((const J).obj X).leftOp where
-  hom := { app := fun j => 𝟙 _ }
-  inv := { app := fun j => 𝟙 _ }
+  hom := { app := fun _ => 𝟙 _ }
+  inv := { app := fun _ => 𝟙 _ }
 
 -- Lean needs some help with universes here.
 @[simp]
@@ -96,8 +96,15 @@ instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C) where
 def compConstIso (F : C ⥤ D) :
     F ⋙ Functor.const J ≅ Functor.const J ⋙ (whiskeringRight J C D).obj F :=
   NatIso.ofComponents
-    (fun X => NatIso.ofComponents (fun j => Iso.refl _) (by aesop_cat))
+    (fun X => NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat))
     (by aesop_cat)
+
+/-- The canonical isomorphism
+`const D ⋙ (whiskeringLeft J _ _).obj F ≅ const J`.-/
+@[simps!]
+def constCompWhiskeringLeftIso (F : J ⥤ D) :
+    const D ⋙ (whiskeringLeft J D C).obj F ≅ const J :=
+  NatIso.ofComponents fun X => NatIso.ofComponents fun Y => Iso.refl _
 
 end
 

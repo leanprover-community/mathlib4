@@ -108,7 +108,7 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
     ext j
     simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
       forget_map_eq_coe]
-    erw [map_one]
+    rw [map_one]
     rfl
   · intro x y
     simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app]

@@ -183,13 +183,9 @@ theorem linearization_μ_hom (X Y : Action (Type u) (MonCat.of G)) :
 @[simp]
 theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
     (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
--- Porting note (#11039): broken proof was
-/- simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
-  apply IsIso.inv_eq_of_hom_inv_id _
-  exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/
   rw [← Action.forget_map, Functor.map_inv]
   apply IsIso.inv_eq_of_hom_inv_id
-  exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply (finsuppTensorFinsupp' k X.V Y.V) x
+  exact LinearMap.ext fun x ↦ LinearEquiv.symm_apply_apply _ _
 
 @[simp]
 theorem linearization_ε_hom : (linearization k G).ε.hom = Finsupp.lsingle PUnit.unit :=
@@ -293,8 +289,8 @@ representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]
 noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶ A) ≃ₗ[k] A where
   toFun f := f.hom (Finsupp.single 1 1)
-  map_add' x y := rfl
-  map_smul' r x := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
   invFun x := leftRegularHom A x
   left_inv f := by
     refine Action.Hom.ext (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring ?_)
@@ -332,7 +328,7 @@ variable [Group G] (A B C : Rep k G)
 protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map := fun {X} {Y} f =>
-    { hom := ModuleCat.ofHom (LinearMap.llcomp k _ _ _ f.hom)
+    { hom := ModuleCat.asHom (LinearMap.llcomp k _ _ _ f.hom)
       comm := fun g => LinearMap.ext fun x => LinearMap.ext fun y => by
         show f.hom (X.ρ g _) = _
         simp only [hom_comm_apply]; rfl }
@@ -371,9 +367,9 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
           Rep.ihom_obj_ρ_apply,
           LinearMap.comp_apply, LinearMap.comp_apply] --, ρ_inv_self_apply (A := C)]
         dsimp
-        erw [ρ_inv_self_apply]
+        rw [ρ_inv_self_apply]
         rfl}
-  left_inv f := Action.Hom.ext (TensorProduct.ext' fun _ _ => rfl)
+  left_inv _ := Action.Hom.ext (TensorProduct.ext' fun _ _ => rfl)
   right_inv f := by ext; rfl
 
 variable {A B C}
@@ -569,7 +565,7 @@ theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
 /- Porting note: rest of broken proof was
   simp only [AddEquiv.apply_eq_iff_eq, AddEquiv.apply_symm_apply,
     Representation.asModuleEquiv_symm_map_rho, Representation.ofModule_asModule_act] -/
-  erw [Representation.asModuleEquiv_symm_map_rho]
+  rw [Representation.asModuleEquiv_symm_map_rho]
   rfl
 
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/

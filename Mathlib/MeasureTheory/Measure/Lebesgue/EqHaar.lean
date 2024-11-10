@@ -100,7 +100,7 @@ theorem Basis.map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [
 
 namespace MeasureTheory
 
-open Measure TopologicalSpace.PositiveCompacts FiniteDimensional
+open Measure TopologicalSpace.PositiveCompacts Module
 
 /-!
 ### The Lebesgue measure is a Haar measure on `ℝ` and on `ℝ^ι`.
@@ -223,8 +223,7 @@ theorem map_linearMap_addHaar_pi_eq_smul_addHaar {ι : Type*} [Finite ι] {f : (
     Real.map_linearMap_volume_pi_eq_smul_volume_pi hf, smul_comm]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
-  [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type*} [NormedAddCommGroup F]
-  [NormedSpace ℝ F] [CompleteSpace F]
+  [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
 
 theorem map_linearMap_addHaar_eq_smul_addHaar {f : E →ₗ[ℝ] E} (hf : LinearMap.det f ≠ 0) :
     Measure.map f μ = ENNReal.ofReal |(LinearMap.det f)⁻¹| • μ := by

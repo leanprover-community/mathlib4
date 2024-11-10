@@ -61,7 +61,7 @@ theorem prod_single_index {a : α} {b : M} {h : α → M → N} (h_zero : h a 0 
     (single a b).prod h = h a b :=
   calc
     (single a b).prod h = ∏ x ∈ {a}, h x (single a b x) :=
-      prod_of_support_subset _ support_single_subset h fun x hx =>
+      prod_of_support_subset _ support_single_subset h fun _ hx =>
         (mem_singleton.1 hx).symm ▸ h_zero
     _ = h a b := by simp
 
@@ -113,8 +113,6 @@ theorem prod_ite_eq' [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
   dsimp [Finsupp.prod]
   rw [f.support.prod_ite_eq']
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem sum_ite_self_eq' [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (x = a) v 0) = f a := by
   classical
@@ -133,7 +131,7 @@ result of `onFinset` is the same as multiplying it over the original `Finset`. -
       result of `onFinset` is the same as summing it over the original `Finset`."]
 theorem onFinset_prod {s : Finset α} {f : α → M} {g : α → M → N} (hf : ∀ a, f a ≠ 0 → a ∈ s)
     (hg : ∀ a, g a 0 = 1) : (onFinset s f hf).prod g = ∏ a ∈ s, g a (f a) :=
-  Finset.prod_subset support_onFinset_subset <| by simp (config := { contextual := true }) [*]
+  Finset.prod_subset support_onFinset_subset <| by simp +contextual [*]
 
 /-- Taking a product over `f : α →₀ M` is the same as multiplying the value on a single element
 `y ∈ f.support` by the product over `erase y f`. -/
@@ -406,8 +404,6 @@ theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → 
   ext
   simp
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem liftAddHom_apply_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α)
     (b : M) : (liftAddHom (α := α) (M := M) (N := N)) f (single a b) = f a b :=
   sum_single_index (f a).map_zero
