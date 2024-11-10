@@ -199,6 +199,10 @@ end One
 section Mul
 variable [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 𝕜] [Mul 𝕜]
 
+/--
+The multiplication operation in incidence algebras is defined on an interval by summing over 
+all divisions into two subintervals the product of the values of the original pair of functions.
+-/
 instance instMul : Mul (IncidenceAlgebra 𝕜 α) where
   mul f g :=
     ⟨fun a b ↦ ∑ x ∈ Icc a b, f a x * g x b, fun a b h ↦ by dsimp; rw [Icc_eq_empty h, sum_empty]⟩
@@ -248,7 +252,7 @@ instance instRing [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Ring �
 
 /-! ### Scalar multiplication between incidence algebras -/
 
-section Smul
+section SMul
 variable [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 𝕜] [AddCommMonoid 𝕝] [SMul 𝕜 𝕝]
 
 instance instSMul : SMul (IncidenceAlgebra 𝕜 α) (IncidenceAlgebra 𝕝 α) :=
@@ -260,7 +264,7 @@ lemma smul_apply (f : IncidenceAlgebra 𝕜 α) (g : IncidenceAlgebra 𝕝 α) (
     (f • g) a b = ∑ x ∈ Icc a b, f a x • g x b :=
   rfl
 
-end Smul
+end SMul
 
 instance instIsScalarTower [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 𝕜] [Monoid 𝕜]
     [Semiring 𝕝] [AddCommMonoid 𝕞] [SMul 𝕜 𝕝] [Module 𝕝 𝕞] [DistribMulAction 𝕜 𝕞]
