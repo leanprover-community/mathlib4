@@ -378,7 +378,6 @@ theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompac
       tsub_le_iff_right, le_add_iff_nonneg_right]
     refine ⟨(hicc x).2, (hicc x).1⟩
 
-
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous compactly supported
 function `f : X → ℝ` such that
