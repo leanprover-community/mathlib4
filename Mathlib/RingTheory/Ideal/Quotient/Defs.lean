@@ -49,6 +49,7 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R :=
       convert I.add_mem (I.mul_mem_left a₁ h₂) (mul_mem_right b₂ _ h₁) using 1
       rw [mul_sub, sub_mul, sub_add_sub_cancel] }
 
+/-- The quotient of a ring by a two-sided ideal is a ring. -/
 abbrev ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
   inferInstanceAs (Ring (Quotient.ringCon I).Quotient)
 
