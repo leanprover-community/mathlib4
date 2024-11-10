@@ -49,11 +49,13 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R :=
       convert I.add_mem (I.mul_mem_left a₁ h₂) (mul_mem_right b₂ _ h₁) using 1
       rw [mul_sub, sub_mul, sub_add_sub_cancel] }
 
-instance (priority := low) ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
+abbrev ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
   inferInstanceAs (Ring (Quotient.ringCon I).Quotient)
 
-instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
-  mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)
+instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) :=
+  inferInstanceAs (CommRing (Quotient.ringCon I).Quotient)
+
+attribute [local instance] ring
 
 variable [I.IsTwoSided]
 
@@ -153,6 +155,8 @@ theorem factor_comp_mk (H : S ≤ T) : (factor S T H).comp (mk S) = mk T := by
 end Quotient
 
 variable {I J} [I.IsTwoSided] [J.IsTwoSided]
+
+attribute [local instance] Quotient.ring
 
 /-- Quotienting by equal ideals gives equivalent rings.
 

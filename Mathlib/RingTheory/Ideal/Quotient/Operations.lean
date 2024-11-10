@@ -25,6 +25,10 @@ import Mathlib.RingTheory.Ideal.Quotient.Basic
    `ZMod`).
 -/
 
+section
+
+attribute [local instance] Ideal.Quotient.ring
+
 universe u v w
 
 namespace RingHom
@@ -1011,3 +1015,5 @@ def powQuotPowSuccEquivMapMkPowSuccPow :
 end PowQuot
 
 end Ideal
+
+end
