@@ -46,7 +46,6 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 
 -/
 
-
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -109,7 +108,6 @@ theorem orthogonalComplement_iSup_eigenspaces (hT : T.IsSymmetric) (μ : 𝕜) :
   exact H₂.disjoint
 
 /-! ### Finite-dimensional theory -/
-
 
 variable [FiniteDimensional 𝕜 E]
 
