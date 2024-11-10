@@ -251,25 +251,26 @@ noncomputable def preservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F
         · exact h
         · exact PreservesFiniteLimitsOfFlat.fac F hc s }
 
+/-- Representably coflat functors preserve finite colimits. -/
 noncomputable def preservesFiniteColimitsOfCoflat (F : C ⥤ D) [RepresentablyCoflat F] :
-    PreservesFiniteColimits F := by
-  apply preservesFiniteColimitsOfOp
+    PreservesFiniteColimits F :=
+  letI _ := preservesFiniteLimitsOfFlat F.op
+  preservesFiniteColimitsOfOp _
 
-/-- If `C` is finitely cocomplete, then `F : C ⥤ D` is representably flat iff it preserves
+/-- If `C` is finitely complete, then `F : C ⥤ D` is representably flat iff it preserves
 finite limits.
 -/
 noncomputable def preservesFiniteLimitsIffFlat [HasFiniteLimits C] (F : C ⥤ D) :
-    RepresentablyFlat F ≃ PreservesFiniteLimits F where
-  toFun _ := preservesFiniteLimitsOfFlat F
-  invFun _ := flat_of_preservesFiniteLimits F
-  left_inv _ := proof_irrel _ _
-  right_inv x := by
-    cases x
-    unfold preservesFiniteLimitsOfFlat
-    dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
-    congr
-    -- Porting note: this next line wasn't needed in lean 3
-    subsingleton
+    RepresentablyFlat F ≃ PreservesFiniteLimits F :=
+  equivOfSubsingletonOfSubsingleton
+    (fun _ => preservesFiniteLimitsOfFlat F) (fun _ => flat_of_preservesFiniteLimits F)
+
+/-- If `C` is finitely cocomplete, then `F : C ⥤ D` is representably coflat iff it preserves
+finite colmits. -/
+noncomputable def preservesFiniteColimitsIffCoflat [HasFiniteColimits C] (F : C ⥤ D) :
+    RepresentablyCoflat F ≃ PreservesFiniteColimits F :=
+  equivOfSubsingletonOfSubsingleton
+    (fun _ => preservesFiniteColimitsOfCoflat F) (fun _ => coflat_of_preservesFiniteColimits F)
 
 end HasLimit
 
