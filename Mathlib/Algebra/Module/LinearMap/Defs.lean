@@ -102,8 +102,12 @@ See also `LinearMapClass F R M M₂` for the case where `σ` is the identity map
 
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
-`f (c • x) = (σ c) • f x`. -/
-class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
+`f (c • x) = (σ c) • f x`.
+
+Deprecated and changed from a `class` to a `structure`.
+Use `[AddMonoidHomClass F M M₂] [MulActionSemiHomClass F σ M M₂]` instead. -/
+@[deprecated (since := "2024-11-10")]
+structure SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
   (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module S M₂] [FunLike F M M₂]
     extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂ : Prop
@@ -113,21 +117,24 @@ end
 -- `map_smulₛₗ` should be `@[simp]` but doesn't fire due to `lean4#3701`.
 -- attribute [simp] map_smulₛₗ
 
+set_option linter.deprecated false in
 /-- `LinearMapClass F R M M₂` asserts `F` is a type of bundled `R`-linear maps `M → M₂`.
 
 This is an abbreviation for `SemilinearMapClass F (RingHom.id R) M M₂`.
+
+Deprecated and changed from a `class` to a `structure`.
+Use `[AddMonoidHomClass F M M₂] [MulActionHomClass F R M M₂]` instead.
 -/
+@[deprecated (since := "2024-11-10")]
 abbrev LinearMapClass (F : Type*) (R : outParam Type*) (M M₂ : Type*)
     [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
     [FunLike F M M₂] :=
   SemilinearMapClass F (RingHom.id R) M M₂
 
-protected lemma LinearMapClass.map_smul {R M M₂ : outParam Type*} [Semiring R] [AddCommMonoid M]
-    [AddCommMonoid M₂] [Module R M] [Module R M₂]
-    {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] (f : F) (r : R) (x : M) :
-    f (r • x) = r • f x := by rw [_root_.map_smul]
+@[deprecated (since := "2024-11-10")]
+protected alias LinearMapClass.map_smul := map_smul
 
-namespace SemilinearMapClass
+namespace MulActionSemiHomClass
 
 variable (F : Type*)
 variable [Semiring R] [Semiring S]
@@ -135,23 +142,13 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMon
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
-instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
-    AddMonoidHomClass F M M₃ :=
-  { SemilinearMapClass.toAddHomClass with
-    map_zero := fun f ↦
-      show f 0 = 0 by
-        rw [← zero_smul R (0 : M), map_smulₛₗ]
-        simp }
+variable {F} (f : F) [FunLike F M M₃]
 
-instance (priority := 100) mulActionSemiHomClass
-    [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
-    MulActionSemiHomClass F σ M M₃ where
-  map_smulₛₗ := fun f c x ↦ by rw [map_smulₛₗ]
-
-variable {F} (f : F) [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
-
-theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
+theorem map_smul_inv [MulActionSemiHomClass F σ M M₃]
+    {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
     c • f x = f (σ' c • x) := by simp [map_smulₛₗ _]
+
+variable [AddHomClass F M M₃] [MulActionSemiHomClass F σ M M₃]
 
 /-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
 @[coe]
@@ -164,18 +161,21 @@ def semilinearMap : M →ₛₗ[σ] M₃ where
 instance instCoeToSemilinearMap : CoeHead F (M →ₛₗ[σ] M₃) where
   coe f := semilinearMap f
 
-end SemilinearMapClass
+end MulActionSemiHomClass
+
+@[deprecated (since := "2024-11-10")]
+alias SemilinearMapClass.map_smul_inv := MulActionSemiHomClass.map_smul_inv
 
 namespace LinearMapClass
 variable {F : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
-  (f : F) [FunLike F M₁ M₂] [LinearMapClass F R M₁ M₂]
+  (f : F) [FunLike F M₁ M₂] [AddHomClass F M₁ M₂] [MulActionHomClass F R M₁ M₂]
 
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
-abbrev linearMap : M₁ →ₗ[R] M₂ := SemilinearMapClass.semilinearMap f
+abbrev linearMap : M₁ →ₗ[R] M₂ := MulActionSemiHomClass.semilinearMap f
 
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
 instance instCoeToLinearMap : CoeHead F (M₁ →ₗ[R] M₂) where
-  coe f := SemilinearMapClass.semilinearMap f
+  coe f := MulActionSemiHomClass.semilinearMap f
 
 end LinearMapClass
 
@@ -200,12 +200,18 @@ instance instFunLike : FunLike (M →ₛₗ[σ] M₃) M M₃ where
     apply DFunLike.coe_injective'
     exact h
 
-instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
-  map_add f := f.map_add'
+instance mulActionSemiHomClass : MulActionSemiHomClass (M →ₛₗ[σ] M₃) σ M M₃ where
   map_smulₛₗ := LinearMap.map_smul'
 
+instance addMonoidHomClass : AddMonoidHomClass (M →ₛₗ[σ] M₃) M M₃ where
+  map_add f := f.map_add'
+  map_zero f := by
+    rw [← zero_smul R (0 : M), map_smulₛₗ]
+    simp
+
 @[simp, norm_cast]
-lemma coe_coe {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] {f : F} :
+lemma coe_coe {F : Type*} [FunLike F M M₃]
+    [AddMonoidHomClass F M M₃] [MulActionSemiHomClass F σ M M₃] {f : F} :
     ⇑(f : M →ₛₗ[σ] M₃) = f :=
   rfl
 
@@ -250,11 +256,13 @@ theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
     ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : AddHom M M₃) = f :=
   rfl
 
-theorem coe_semilinearMap {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] (f : F) :
+theorem coe_semilinearMap {F : Type*} [FunLike F M M₃]
+    [AddMonoidHomClass F M M₃] [MulActionSemiHomClass F σ M M₃] (f : F) :
     ((f : M →ₛₗ[σ] M₃) : M → M₃) = f :=
   rfl
 
-theorem toLinearMap_injective {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
+theorem toLinearMap_injective {F : Type*} [FunLike F M M₃]
+    [AddMonoidHomClass F M M₃] [MulActionSemiHomClass F σ M M₃]
     {f g : F} (h : (f : M →ₛₗ[σ] M₃) = (g : M →ₛₗ[σ] M₃)) :
     f = g := by
   apply DFunLike.ext
@@ -587,15 +595,18 @@ variable {σ : R →+* S}
 def toSemilinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M₂ :=
   { fₗ with }
 
-instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
+instance : AddMonoidHomClass (M →ₑ+[σ.toMonoidHom] M₂) M M₂ := inferInstance
+
+instance : MulActionSemiHomClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ := inferInstance
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 @[deprecated (since := "2024-11-08")]
 def toLinearMap (fₗ : M →+[R] M₃) : M →ₗ[R] M₃ :=
   { fₗ with }
 
-/-- A `DistribMulActionHom` between two modules is a linear map. -/
-instance : LinearMapClass (M →+[R] M₃) R M M₃ where
+instance : AddMonoidHomClass (M →+[R] M₃) M M₃ := inferInstance
+
+instance : MulActionHomClass (M →+[R] M₃) R M M₃ := inferInstance
 
 -- Porting note: because coercions get unfolded, there is no need for this rewrite
 
