@@ -644,8 +644,9 @@ supported continuous functions `{f i}_i` supported in `s i`, `∑ i, f i x = 1` 
 theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompactSpace X]
     {n : ℕ} {t : Set X} {s : Fin n → Set X} (hs : ∀ (i : Fin n), IsOpen (s i)) (htcp : IsCompact t)
     (hst : t ⊆ ⋃ i, s i) :
-    ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧ EqOn (∑ i, f i) 1 t ∧
-    (∀ (i : Fin n), ∀ (x : X), f i x ∈ Icc (0 : ℝ) 1) ∧ (∀ (i : Fin n), HasCompactSupport (f i)) := by
+    ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧ EqOn (∑ i, f i) 1 t
+      ∧ (∀ (i : Fin n), ∀ (x : X), f i x ∈ Icc (0 : ℝ) 1)
+      ∧ (∀ (i : Fin n), HasCompactSupport (f i)) := by
   obtain ⟨f, hfsub, hfcp⟩ := PartitionOfUnity.exists_isSubordinate_of_locallyFinite_t2space htcp s
     hs (locallyFinite_of_finite _) hst
   use f.toFun
@@ -670,7 +671,7 @@ theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompac
     exact zero_le_one
   rw [← Finset.sum_singleton (f.toFun ·  x) i]
   apply le_trans _ (f.sum_le_one' x)
-  rw [finsum_eq_sum (f.toFun ·  x) (by exact toFinite (support fun x_1 ↦ (f.toFun x_1) x))]
+  rw [finsum_eq_sum (f.toFun ·  x) (by exact toFinite (support (f.toFun · x)))]
   simp only [Finite.toFinset_setOf, ne_eq]
   gcongr with z hz
   · exact fun j _ _ => f.nonneg j x
