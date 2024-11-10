@@ -537,6 +537,32 @@ theorem IsPurelyInseparable.injective_comp_algebraMap [IsPurelyInseparable F E]
   haveI := expChar_of_injective_ringHom (f.comp (algebraMap F E)).injective q
   exact iterateFrobenius_inj L q n heq
 
+theorem IsPurelyInseparable.injective_comp_toAlgHom [IsPurelyInseparable F E] (R L) [CommSemiring R]
+    [CommRing L] [IsReduced L] [Algebra R F] [Algebra R E] [Algebra R L] [IsScalarTower R F E] :
+    Function.Injective fun f : E →ₐ[R] L ↦ f.comp (IsScalarTower.toAlgHom R F E) := fun _ _ eq ↦
+  AlgHom.coe_ringHom_injective <| injective_comp_algebraMap F E L <| congr_arg AlgHom.toRingHom eq
+
+instance [IsPurelyInseparable F E] (L) [Field L] [PerfectField L] [Algebra F L] :
+    Nonempty (E →ₐ[F] L) :=
+  nonempty_algHom_of_splits fun x ↦ ⟨IsPurelyInseparable.isIntegral' _ _,
+    have ⟨q, _⟩ := ExpChar.exists F
+    PerfectField.splits_of_natSepDegree_eq_one (algebraMap F L)
+      ((minpoly.natSepDegree_eq_one_iff_eq_X_pow_sub_C q).mpr <|
+        IsPurelyInseparable.minpoly_eq_X_pow_sub_C F q x)⟩
+
+theorem IsPurelyInseparable.bijective_comp_algebraMap [IsPurelyInseparable F E]
+    (L) [Field L] [PerfectField L] :
+    Function.Bijective fun f : E →+* L ↦ f.comp (algebraMap F E) :=
+  ⟨injective_comp_algebraMap F E L, fun g ↦ let _ := g.toAlgebra
+    ⟨_, (Classical.arbitrary <| E →ₐ[F] L).comp_algebraMap⟩⟩
+
+theorem IsPurelyInseparable.bijective_comp_toAlgHom [IsPurelyInseparable F E] (R L) [CommSemiring R]
+    [Field L] [PerfectField L] [Algebra R F] [Algebra R E] [Algebra R L] [IsScalarTower R F E] :
+    Function.Bijective fun f : E →ₐ[R] L ↦ f.comp (IsScalarTower.toAlgHom R F E) :=
+  ⟨injective_comp_toAlgHom F E R L, fun g ↦ let _ := g.toAlgebra
+    let f := Classical.arbitrary (E →ₐ[F] L)
+    ⟨f.restrictScalars R, AlgHom.coe_ringHom_injective f.comp_algebraMap⟩⟩
+
 /-- If `E / F` is purely inseparable, then for any reduced `F`-algebra `L`, there exists at most one
 `F`-algebra homomorphism from `E` to `L`. -/
 instance instSubsingletonAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
@@ -611,6 +637,12 @@ instance separableClosure.isPurelyInseparable [Algebra.IsAlgebraic F E] :
   haveI : Algebra.IsSeparable F (restrictScalars F L⟮x⟯) := Algebra.IsSeparable.trans F L L⟮x⟯
   have hx : x ∈ restrictScalars F L⟮x⟯ := mem_adjoin_simple_self _ x
   exact ⟨⟨x, mem_separableClosure_iff.2 <| isSeparable_of_mem_isSeparable F E hx⟩, rfl⟩
+
+open Cardinal in
+theorem Field.Emb.cardinal_separableClosure [Algebra.IsAlgebraic F E] :
+    #(Field.Emb F <| separableClosure F E) = #(Field.Emb F E) := by
+  rw [← (embProdEmbOfIsAlgebraic F (separableClosure F E) E).cardinal_eq,
+    mk_prod, mk_eq_one (Emb _ E), lift_one, mul_one, lift_id]
 
 /-- An intermediate field of `E / F` contains the separable closure of `F` in `E`
 if `E` is purely inseparable over it. -/
