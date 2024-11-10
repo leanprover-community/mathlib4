@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Isaac Hernando, Coleton Kotch, Adam Topaz
 -/
 
-import Mathlib.CategoryTheory.Abelian.Subobject
-import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
@@ -22,15 +20,10 @@ basic facts about them.
 - `AB4` -- an abelian category satisfies `AB4` provided that coproducts are exact.
 - `AB5` -- an abelian category satisfies `AB5` provided that filtered colimits are exact.
 - The duals of the above definitions, called `AB4Star` and `AB5Star`.
-- `GrothendieckCategory` -- an abelian category satisfies `GrothendieckCategory` provided that
-it has `AB5` and a separator.
 
 ## Theorems
 
 - The implication from `AB5` to `AB4` is established in `AB4.ofAB5`.
-- Relevant implications of `GrothendieckCategory` are established in
-`GrothendieckCategory.wellPowered`, `GrothendieckCategory.hasLimits` and
-`GrothendieckCategory.hasColimits`.
 
 ## Remarks
 
@@ -102,24 +95,6 @@ class AB5Star [HasCofilteredLimits C] where
     PreservesFiniteColimits (lim (J := J) (C := C))
 
 attribute [instance] AB5Star.preservesFiniteColimits
-
-section GrothendieckCategory
-
-/--
-An abelian category `C` is called a Grothendieck category provided that it has `AB5` and a
-separator (see `HasSeparator`).
--/
-class GrothendieckCategory [Abelian C] [HasFilteredColimits C] [AB5 C] [HasSeparator C] : Prop where
-
-variable [HasFilteredColimits C] [AB5 C] [Abelian C] [HasSeparator C] [GrothendieckCategory C]
-
-instance GrothendieckCategory.wellPowered : WellPowered C := HasSeparator.wellPowered
-
-instance GrothendieckCategory.hasColimits : HasColimits C := has_colimits_of_finite_and_filtered
-
-instance GrothendieckCategory.hasLimits : HasLimits C := hasLimits_of_hasColimits_of_hasSeparator
-
-end GrothendieckCategory
 
 noncomputable section
 
