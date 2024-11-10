@@ -554,12 +554,12 @@ theorem Trivialization.smoothOn_symm (e : Trivialization F (π F E)) [MemTrivial
 theorem smoothOn_trivializationAt (x : TotalSpace F E) :
     SmoothOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) (trivializationAt F E x.proj)
       (trivializationAt F E x.proj).source :=
-  (trivializationAt F E x.proj).smoothOn IB
+  (trivializationAt F E x.proj).smoothOn
 
 theorem smoothOn_trivializationAt_symm (x : TotalSpace F E) :
     SmoothOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F))
       (trivializationAt F E x.proj).toPartialHomeomorph.symm (trivializationAt F E x.proj).target :=
-  (trivializationAt F E x.proj).smoothOn_symm IB
+  (trivializationAt F E x.proj).smoothOn_symm
 
 end
 
@@ -643,7 +643,7 @@ theorem Bundle.Prod.smooth_fst :
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_fst
   refine (this _).comp _ <| contMDiffAt_snd.comp _ <|
-    (smoothOn_trivializationAt IB x).contMDiffAt ?_
+    (smoothOn_trivializationAt x).contMDiffAt ?_
   apply (trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj).open_source.mem_nhds
   simp
 
@@ -658,7 +658,7 @@ theorem Bundle.Prod.smooth_snd :
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_snd
   refine (this _).comp _ <| contMDiffAt_snd.comp _ <|
-    (smoothOn_trivializationAt IB x).contMDiffAt ?_
+    (smoothOn_trivializationAt x).contMDiffAt ?_
   apply (trivializationAt (F₁ × F₂) (E₁ ×ᵇ E₂) x.proj).open_source.mem_nhds
   simp
 
