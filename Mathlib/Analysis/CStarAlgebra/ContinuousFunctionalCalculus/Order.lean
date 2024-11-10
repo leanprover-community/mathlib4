@@ -267,9 +267,10 @@ lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hbu : IsUnit b) (ha : 0 ≤ a) (hb : 
   lift b to Aˣ using hbu
   have hbab : 0 ≤ (b : A) ^ (-(1 / 2) : ℝ) * a * (b : A) ^ (-(1 / 2) : ℝ) :=
     conjugate_nonneg_of_nonneg ha rpow_nonneg
+  #adaptation_note /-- 2024-11-10 added `(R := A)` -/
   conv_rhs =>
     rw [← sq_le_one_iff (norm_nonneg _), sq, ← CStarRing.norm_star_mul_self, star_mul,
-      IsSelfAdjoint.of_nonneg sqrt_nonneg, IsSelfAdjoint.of_nonneg rpow_nonneg,
+      IsSelfAdjoint.of_nonneg (R := A) sqrt_nonneg, IsSelfAdjoint.of_nonneg rpow_nonneg,
       ← mul_assoc, mul_assoc _ _ (sqrt a), sqrt_mul_sqrt_self a,
       CStarAlgebra.norm_le_one_iff_of_nonneg _ hbab]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩

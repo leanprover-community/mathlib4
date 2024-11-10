@@ -1095,7 +1095,7 @@ def subtypeVal {P : β → Prop}
     letI := Subtype.lattice Psup Pinf
     LatticeHom {x : β // P x} β :=
   letI := Subtype.lattice Psup Pinf
-  .mk (SupHom.subtypeVal Psup) (by simp)
+  .mk (SupHom.subtypeVal Psup) (by simp [Subtype.coe_inf Pinf])
 
 @[simp]
 lemma subtypeVal_apply {P : β → Prop}

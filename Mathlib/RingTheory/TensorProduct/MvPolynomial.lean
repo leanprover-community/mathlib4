@@ -64,29 +64,35 @@ noncomputable def rTensor :
     MvPolynomial σ S ⊗[R] N ≃ₗ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) :=
   TensorProduct.finsuppLeft' _ _ _ _ _
 
+#adaptation_note /-- 2024-11-10 added `.toFun` -/
 lemma rTensor_apply_tmul (p : MvPolynomial σ S) (n : N) :
-    rTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) :=
+    rTensor.toFun (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) :=
   TensorProduct.finsuppLeft_apply_tmul p n
 
+#adaptation_note /-- 2024-11-10 added `.toFun` -/
 lemma rTensor_apply_tmul_apply (p : MvPolynomial σ S) (n : N) (d : σ →₀ ℕ) :
-    rTensor (p ⊗ₜ[R] n) d = (coeff d p) ⊗ₜ[R] n :=
+    rTensor.toFun (p ⊗ₜ[R] n) d = (coeff d p) ⊗ₜ[R] n :=
   TensorProduct.finsuppLeft_apply_tmul_apply p n d
 
+#adaptation_note /-- 2024-11-10 added `.toFun` -/
 lemma rTensor_apply_monomial_tmul (e : σ →₀ ℕ) (s : S) (n : N) (d : σ →₀ ℕ) :
-    rTensor (monomial e s ⊗ₜ[R] n) d = if e = d then s ⊗ₜ[R] n else 0 := by
+    rTensor.toFun (monomial e s ⊗ₜ[R] n) d = if e = d then s ⊗ₜ[R] n else 0 := by
   simp only [rTensor_apply_tmul_apply, coeff_monomial, ite_tmul]
 
+#adaptation_note /-- 2024-11-10 added `.toFun` -/
 lemma rTensor_apply_X_tmul (s : σ) (n : N) (d : σ →₀ ℕ) :
-    rTensor (X s ⊗ₜ[R] n) d = if Finsupp.single s 1 = d then (1 : S) ⊗ₜ[R] n else 0 := by
+    rTensor.toFun (X s ⊗ₜ[R] n) d = if Finsupp.single s 1 = d then (1 : S) ⊗ₜ[R] n else 0 := by
   rw [rTensor_apply_tmul_apply, coeff_X', ite_tmul]
 
+#adaptation_note /-- 2024-11-10 added `.toFun` -/
 lemma rTensor_apply (t : MvPolynomial σ S ⊗[R] N) (d : σ →₀ ℕ) :
-    rTensor t d = ((lcoeff S d).restrictScalars R).rTensor N t :=
+    rTensor.toFun t d = ((lcoeff S d).restrictScalars R).rTensor N t :=
   TensorProduct.finsuppLeft_apply t d
 
+#adaptation_note /-- 2024-11-10 added `.toFun` -/
 @[simp]
 lemma rTensor_symm_apply_single (d : σ →₀ ℕ) (s : S) (n : N) :
-    rTensor.symm (Finsupp.single d (s ⊗ₜ n)) =
+    rTensor.symm.toFun (Finsupp.single d (s ⊗ₜ n)) =
       (monomial d s) ⊗ₜ[R] n :=
   TensorProduct.finsuppLeft_symm_apply_single (R := R) d s n
 
@@ -163,8 +169,9 @@ lemma rTensorAlgHom_toLinearMap :
   simp only [coeff]
   erw [finsuppLeft_apply_tmul_apply]
 
+#adaptation_note /-- 2024-11-10 added `.toFun` -/
 lemma rTensorAlgHom_apply_eq (p : MvPolynomial σ S ⊗[R] N) :
-    rTensorAlgHom (S := S) p = rTensor p := by
+    rTensorAlgHom (S := S) p = rTensor.toFun p := by
   rw [← AlgHom.toLinearMap_apply, rTensorAlgHom_toLinearMap]
   rfl
 
@@ -178,6 +185,8 @@ noncomputable def rTensorAlgEquiv :
     rw [← LinearEquiv.symm_apply_eq]
     exact finsuppLeft_symm_apply_single (R := R) (0 : σ →₀ ℕ) (1 : S) (1 : N)
   · intro x y
+    #adaptation_note /-- 2024-11-10 added `change` -/
+    change rTensor.toFun (x * y) = _
     erw [← rTensorAlgHom_apply_eq (S := S)]
     simp only [_root_.map_mul, rTensorAlgHom_apply_eq]
     rfl
