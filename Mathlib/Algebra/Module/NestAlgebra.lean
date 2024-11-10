@@ -20,25 +20,25 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 /--
 A nest is a totally ordered set which contains the top and bottom.
 -/
-class Nest (α : Type*) [LE α] [OrderTop α] [OrderBot α] where
-  /-- The `carrier` of a flag is the underlying set. -/
+structure Nest (α : Type*) [LE α] [OrderTop α] [OrderBot α] where
+  /-- The `carrier` of a nest is the underlying set. -/
   carrier : Set α
-  /-- By definition, a flag is a chain -/
+  /-- By definition, a nest is a chain -/
   chain : IsChain (· ≤ ·) carrier
   mem_bot : ⊥ ∈ carrier
   mem_top : ⊤ ∈ carrier
 
 variable (α : Type*)
 
-/- A Flag is a Nest -/
-instance [LE α] [OrderTop α] [OrderBot α] (s : Flag α) : Nest α where
+/-- A Flag is a Nest -/
+def Flag.toNest [LE α] [OrderTop α] [OrderBot α] (s : Flag α) : Nest α where
   carrier := s.carrier
   chain := s.Chain'
   mem_bot := Flag.bot_mem _
   mem_top := Flag.top_mem _
 
-/- A Nest is a sublattice -/
-instance [Lattice α] [OrderTop α] [OrderBot α] (s : Nest α) : Sublattice α where
+/-- A Nest is a Sublattice -/
+def Nest.toSublattice [Lattice α] [OrderTop α] [OrderBot α] (s : Nest α) : Sublattice α where
   carrier := s.carrier
   supClosed' := by
     intro _ ha _ hb
