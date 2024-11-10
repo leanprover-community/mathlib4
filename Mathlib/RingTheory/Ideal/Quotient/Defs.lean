@@ -53,10 +53,10 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R :=
 abbrev ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
   inferInstanceAs (Ring (Quotient.ringCon I).Quotient)
 
-instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) :=
-  inferInstanceAs (CommRing (Quotient.ringCon I).Quotient)
-
 attribute [local instance] ring
+
+instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
+  mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)
 
 variable [I.IsTwoSided]
 
