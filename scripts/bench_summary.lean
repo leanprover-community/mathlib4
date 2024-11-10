@@ -242,8 +242,5 @@ def addBenchSummaryComment (PR : Nat) (repo : String)
 
 end BenchAction
 
-
---run_cmd BenchAction.addBenchSummaryComment 18812 "leanprover-community/mathlib4" "adomani"
-
 -- CI adds the following line, replacing `putPR` with the PR number:
---run_cmd BenchAction.addBenchSummaryComment putPR "leanprover-community/mathlib4" "adomani"
+--run_cmd BenchAction.addBenchSummaryComment putPR "leanprover-community/mathlib4"
