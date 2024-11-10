@@ -318,13 +318,6 @@ theorem comap_singleton_isClosed_of_surjective (f : R →+* S) (hf : Function.Su
   haveI : x.asIdeal.IsMaximal := (isClosed_singleton_iff_isMaximal x).1 hx
   (isClosed_singleton_iff_isMaximal _).2 (Ideal.comap_isMaximal_of_surjective f hf)
 
-theorem comap_singleton_isClosed_of_isIntegral (f : R →+* S) (hf : f.IsIntegral)
-    (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
-    IsClosed ({comap f x} : Set (PrimeSpectrum R)) :=
-  have := (isClosed_singleton_iff_isMaximal x).1 hx
-  (isClosed_singleton_iff_isMaximal _).2
-    (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal' f hf x.asIdeal)
-
 theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
     comap f '' zeroLocus I = zeroLocus (I.comap f) :=
   image_specComap_zeroLocus_eq_zeroLocus_comap _ f hf I
@@ -635,6 +628,66 @@ lemma exists_idempotent_basicOpen_eq_of_is_clopen {s : Set (PrimeSpectrum R)}
   · rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Set.compl_subset_comm, ← hI']
     exact PrimeSpectrum.zeroLocus_anti_mono
       (Set.singleton_subset_iff.mpr <| Ideal.pow_le_self hnz hx)
+
+section IsIntegral
+
+open Polynomial
+
+theorem comap_singleton_isClosed_of_isIntegral {R S : Type*} [CommRing R] [CommRing S]
+    (f : R →+* S) (hf : f.IsIntegral)
+    (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
+    IsClosed ({comap f x} : Set (PrimeSpectrum R)) :=
+  have := (isClosed_singleton_iff_isMaximal x).1 hx
+  (isClosed_singleton_iff_isMaximal _).2
+    (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal' f hf x.asIdeal)
+
+lemma closure_image_comap_zeroLocus {R S : Type*} [CommRing R] [CommRing S]
+    (f : R →+* S) (I : Ideal S) :
+    closure (comap f '' zeroLocus I) = zeroLocus (I.comap f) := by
+  apply subset_antisymm
+  · rw [(isClosed_zeroLocus _).closure_subset_iff, Set.image_subset_iff, preimage_comap_zeroLocus]
+    exact zeroLocus_anti_mono (Set.image_preimage_subset _ _)
+  · rintro x (hx : I.comap f ≤ x.asIdeal)
+    obtain ⟨q, hq₁, hq₂⟩ := Ideal.exists_minimalPrimes_le hx
+    obtain ⟨p', hp', hp'', rfl⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f _ hq₁
+    let p'' : PrimeSpectrum S := ⟨p', hp'⟩
+    apply isClosed_closure.stableUnderSpecialization ((le_iff_specializes
+      (comap f ⟨p', hp'⟩) x).mp hq₂) (subset_closure (by exact ⟨_, hp'', rfl⟩))
+
+lemma isIntegral_of_isClosedMap_comap_polynomial
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (h : IsClosedMap (comap (mapRingHom (algebraMap R S)))) :
+    Algebra.IsIntegral R S := by
+  nontriviality R
+  nontriviality S
+  constructor
+  intro r
+  let p : S[X] := C r * X - 1
+  have : (1 : R[X]) ∈ Ideal.span {X} ⊔ (Ideal.span {p}).comap (mapRingHom (algebraMap R S)) := by
+    have H := h _ (isClosed_zeroLocus {p})
+    rw [← zeroLocus_span, ← closure_eq_iff_isClosed, closure_image_comap_zeroLocus] at H
+    rw [← Ideal.eq_top_iff_one, sup_comm, ← zeroLocus_empty_iff_eq_top, zeroLocus_sup, H]
+    suffices ∀ (a : PrimeSpectrum S[X]), p ∈ a.asIdeal → X ∉ a.asIdeal by
+      simpa [Set.eq_empty_iff_forall_not_mem]
+    intro q hpq hXq
+    have : 1 ∈ q.asIdeal := by simpa [p] using (sub_mem (q.asIdeal.mul_mem_left (C r) hXq) hpq)
+    exact q.2.ne_top (q.asIdeal.eq_top_iff_one.mpr this)
+  obtain ⟨a, b, hb, e⟩ := Ideal.mem_span_singleton_sup.mp this
+  obtain ⟨c, hc : b.map _ = _⟩ := Ideal.mem_span_singleton.mp hb
+  refine ⟨b.reverse * X ^ (1 + c.natDegree), ?_, ?_⟩
+  · refine Monic.mul ?_ (by simp)
+    have h : b.coeff 0 = 1 := by simpa using congr(($e).coeff 0)
+    have : b.natTrailingDegree = 0 := by simp [h]
+    rw [Monic.def, reverse_leadingCoeff, trailingCoeff, this, h]
+  · have : p.natDegree ≤ 1 := by simpa using natDegree_linear_le (a := r) (b := -1)
+    rw [eval₂_eq_eval_map, reverse, Polynomial.map_mul, ← reflect_map, Polynomial.map_pow,
+      map_X, ← revAt_zero (1 + _), ← reflect_monomial,
+      ← reflect_mul _ _ (natDegree_map_le _ _) (by simp), pow_zero, mul_one, hc,
+      ← add_assoc, reflect_mul _ _ (this.trans (by simp)) le_rfl,
+      eval_mul, reflect_sub, reflect_mul _ _ (by simp) (by simp)]
+    simp [← pow_succ']
+
+end IsIntegral
 
 section LocalizationAtMinimal
 
