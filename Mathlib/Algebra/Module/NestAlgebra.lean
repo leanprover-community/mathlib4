@@ -20,7 +20,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 /--
 A nest is a totally ordered set which contains the top and bottom.
 -/
-structure Nest (α : Type*) [LE α] [OrderTop α] [OrderBot α] where
+class Nest (α : Type*) [LE α] [OrderTop α] [OrderBot α] where
   /-- The `carrier` of a flag is the underlying set. -/
   carrier : Set α
   /-- By definition, a flag is a chain -/
