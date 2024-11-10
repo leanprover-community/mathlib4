@@ -18,11 +18,11 @@ the noncommutative division algebra `D` with center `k`.
 ## Main Results
 
 - `exists_separable_mem_of_not_central` : (Jacobson-Noether theorem) For a
-  non-commutative finite dimensional division algebra `D` (with base ring
+  non-commutative algebraic division algebra `D` (with base ring
   being its center `k`), if `k ≠ D`, then there exist an element `x` of
   `D \ k` that is separable over its center.
 - `exists_separable_mem_of_not_central'` : (Jacobson-Noether theorem) For a
-  non-commutative finite dimensional division algebra `D` (with base ring
+  non-commutative algebraic division algebra `D` (with base ring
   being a field `L`), if the center of `D` over `L` is `L` and `L ≠ D`,
   then there exist an element `x` of `D \ L` that is separable over `L`.
 
@@ -121,7 +121,7 @@ lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
   rw [((Nat.sub_eq_iff_eq_add hn).1 rfl), pow_add, inter, mul_zero]
 
 variable (D) in
-/-- Jacobson-Noether theorem: For a non-commutative finite dimensional
+/-- Jacobson-Noether theorem: For a non-commutative algebraic
   division algebra `D` (with base ring being its center `k`), if `k ≠ D`, then
   there exist an element `x` of `D \ k` that is separable over its center.-/
 theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
@@ -189,7 +189,7 @@ theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
   exact one_ne_zero deq
 
 open Subring Algebra in
-/-- Jacobson-Noether theorem: For a non-commutative finite dimensional
+/-- Jacobson-Noether theorem: For a non-commutative algebraic
   division algebra `D` (with base ring being a field `L`), if the center of
   `D` over `L` is `L` and `L ≠ D`, then there exist an element `x` of `D \ L`
   that is separable over `L`.-/
