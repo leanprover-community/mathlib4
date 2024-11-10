@@ -97,6 +97,17 @@ theorem Functor.final_of_exists_of_isFiltered [IsFilteredOrEmpty C]
   suffices ∀ d, IsFiltered (StructuredArrow d F) from final_of_isFiltered_structuredArrow F
   exact isFiltered_structuredArrow_of_isFiltered_of_exists F h₁ h₂
 
+/-- The inclusion of a terminal object is final. -/
+theorem Functor.final_const_of_isTerminal {X : C} (hX : IsTerminal X) :
+    ((Functor.const (Discrete PUnit.{v₂ + 1})).obj X).Final :=
+  Functor.final_of_exists_of_isFiltered _ (fun d => ⟨⟨PUnit.unit⟩, ⟨hX.from d⟩⟩)
+    (fun _ _ => ⟨⟨PUnit.unit⟩, 𝟙 _, hX.hom_ext _ _⟩)
+
+/-- The inclusion of the terminal object is final. -/
+theorem Functor.final_const_terminal [HasTerminal C] :
+    ((Functor.const (Discrete PUnit.{v₂ + 1})).obj (⊤_ C)).Final :=
+  Functor.final_const_of_isTerminal terminalIsTerminal
+
 /-- If `C` is cofiltered, then we can give an explicit condition for a functor `F : C ⥤ D` to
     be final. The converse is also true, see `initial_iff_of_isCofiltered`. -/
 theorem Functor.initial_of_exists_of_isCofiltered [IsCofilteredOrEmpty C]
@@ -105,6 +116,17 @@ theorem Functor.initial_of_exists_of_isCofiltered [IsCofilteredOrEmpty C]
   suffices ∀ d, IsCofiltered (CostructuredArrow F d) from
     initial_of_isCofiltered_costructuredArrow F
   exact isCofiltered_costructuredArrow_of_isCofiltered_of_exists F h₁ h₂
+
+/-- The inclusion of an initial object is initial. -/
+theorem Functor.initial_const_of_isInitial {X : C} (hX : IsInitial X) :
+    ((Functor.const (Discrete PUnit.{v₂ + 1})).obj X).Initial :=
+  Functor.initial_of_exists_of_isCofiltered _ (fun d => ⟨⟨PUnit.unit⟩, ⟨hX.to d⟩⟩)
+    (fun _ _ => ⟨⟨PUnit.unit⟩, 𝟙 _, hX.hom_ext _ _⟩)
+
+/-- The inclusion of the initial object is initial. -/
+theorem Functor.inial_const_initial [HasInitial C] :
+    ((Functor.const (Discrete PUnit.{v₂ + 1})).obj (⊥_ C)).Initial :=
+  Functor.initial_const_of_isInitial initialIsInitial
 
 /-- In this situation, `F` is also final, see
     `Functor.final_of_exists_of_isFiltered_of_fullyFaithful`. -/
