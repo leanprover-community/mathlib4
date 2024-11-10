@@ -1726,6 +1726,7 @@ import Mathlib.CategoryTheory.Limits.EssentiallySmall
 import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.Final.ParallelPair
 import Mathlib.CategoryTheory.Limits.FinallySmall
