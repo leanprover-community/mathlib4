@@ -132,7 +132,8 @@ which
   (with the exception of tactics that leave the sole goal unchanged);
 * are not excluded through `exclusions` or `ignoreBranch`;
 
-together with the total number of goals.
+ together with the number of goals before the tactic,
+the number of goals after the tactic, and the number of unaffected goals.
 -/
 partial
 def getManyGoals : InfoTree → Array (Syntax × Nat × Nat × Nat)
