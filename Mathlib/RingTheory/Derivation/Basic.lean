@@ -363,7 +363,7 @@ def liftOfRightInverse (f : F) (f_inv : M → A) (hf : Function.RightInverse f_i
     apply hd
     simp [hf _]
   leibniz' x y := by
-    suffices f (d (f_inv (x * y) - f_inv x * f_inv y)) = 0 by simpa [sub_eq_iff_eq_add', hf _]
+    suffices f (d (f_inv (x * y) - f_inv x * f_inv y)) = 0 by simpa [sub_eq_zero, hf _]
     apply hd
     simp [hf _]
 
