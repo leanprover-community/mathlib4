@@ -445,7 +445,7 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop_t2space [LocallyCompactSpa
   choose f hfp hf0 hf1 hf01 using fun i =>
     h01 _ _ (isClosed_compl_iff.2 <| hVo i) (hWc i)
       (disjoint_right.2 fun x hx => Classical.not_not.2 (hWV i hx))
-  have hsupp : ∀ i, support (f i) ⊆ V i := fun i => support_subset_iff'.2 (hf0 i)
+  have hsupp i : support (f i) ⊆ V i := support_subset_iff'.2 (hf0 i)
   refine ⟨⟨f, hf.subset fun i => Subset.trans (hsupp i) (hVU' i), fun i x => (hf01 i x).1,
       fun i x => (hf01 i x).2, fun x hx => ?_⟩,
     hfp, fun i => Subset.trans (closure_mono (hsupp i)) (hVU i),
