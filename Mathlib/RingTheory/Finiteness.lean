@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Module.Projective
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.RingTheory.Ideal.Quotient.Basic
@@ -159,16 +160,12 @@ theorem _root_.Subalgebra.fg_bot_toSubmodule {R A : Type*} [CommSemiring R] [Sem
 
 theorem fg_unit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (I : (Submodule R A)ˣ) :
     (I : Submodule R A).FG := by
-  have : (1 : A) ∈ (I * ↑I⁻¹ : Submodule R A) := by
-    rw [I.mul_inv]
-    exact one_le.mp le_rfl
-  obtain ⟨T, T', hT, hT', one_mem⟩ := mem_span_mul_finite_of_mem_mul this
+  obtain ⟨T, T', hT, hT', one_mem⟩ := mem_span_mul_finite_of_mem_mul (I.mul_inv ▸ one_le.mp le_rfl)
   refine ⟨T, span_eq_of_le _ hT ?_⟩
   rw [← one_mul I, ← mul_one (span R (T : Set A))]
   conv_rhs => rw [← I.inv_mul, ← mul_assoc]
   refine mul_le_mul_left (le_trans ?_ <| mul_le_mul_right <| span_le.mpr hT')
-  simp only [Units.val_one, span_mul_span]
-  rwa [one_le]
+  rwa [Units.val_one, span_mul_span, one_le]
 
 theorem fg_of_isUnit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] {I : Submodule R A}
     (hI : IsUnit I) : I.FG :=
@@ -447,8 +444,8 @@ section Mul
 variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 variable {M N : Submodule R A}
 
-theorem FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG :=
-  hm.map₂ _ hn
+theorem FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG := by
+  rw [mul_eq_map₂]; exact hm.map₂ _ hn
 
 theorem FG.pow (h : M.FG) (n : ℕ) : (M ^ n).FG :=
   Nat.recOn n ⟨{1}, by simp [one_eq_span]⟩ fun n ih => by simpa [pow_succ] using ih.mul h
@@ -579,6 +576,14 @@ lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[
   have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
   refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
   rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
+
+variable (R M) in
+theorem exists_comp_eq_id_of_projective [Module.Finite R M] [Projective R M] :
+    ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M) (g : M →ₗ[R] Fin n → R),
+      Function.Surjective f ∧ Function.Injective g ∧ f ∘ₗ g = .id :=
+  have ⟨n, f, surj⟩ := exists_fin' R M
+  have ⟨g, hfg⟩ := Module.projective_lifting_property f .id surj
+  ⟨n, f, g, surj, LinearMap.injective_of_comp_eq_id _ _ hfg, hfg⟩
 
 variable (R) in
 lemma _root_.Module.finite_of_finite [Finite R] [Module.Finite R M] : Finite M := by
