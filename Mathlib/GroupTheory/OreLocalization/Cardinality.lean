@@ -72,7 +72,7 @@ theorem cardinalMk_le_max : #(OreLocalization S X) ≤ max (lift.{v} #S) (lift.{
     rw [lift_umax.{v, u}, lift_id'] at this
     exact le_max_of_le_right this
   convert ← mk_le_of_surjective (show Function.Surjective fun x : X × S ↦ x.1 /ₒ x.2 from
-    Quotient.surjective_Quotient_mk'')
+    Quotient.mk''_surjective)
   rw [mk_prod, mul_comm]
   refine mul_eq_max ?_ ?_ <;> simp
 
@@ -93,7 +93,7 @@ theorem cardinalMk_le_lift_cardinalMk_of_commute (hc : ∀ s s' : S, Commute s s
     refine ⟨s, s'.1, h, ?_⟩
     · exact_mod_cast hc
   let i (x : X × S) := x.1 /ₒ x.2
-  have hsurj : Function.Surjective i := Quotient.surjective_Quotient_mk''
+  have hsurj : Function.Surjective i := Quotient.mk''_surjective
   have hi := Function.rightInverse_surjInv hsurj
   let j := (fun x : X × S ↦ (x.1, x.2 • x.1)) ∘ Function.surjInv hsurj
   suffices Function.Injective j by
