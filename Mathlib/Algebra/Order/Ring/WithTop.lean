@@ -219,7 +219,8 @@ protected def _root_.RingHom.withTopMap {R S : Type*}
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
 
-variable [PosMulStrictMono α] {a a₁ a₂ b₁ b₂ : WithTop α}
+variable [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] [PosMulStrictMono α]
+  {a a₁ a₂ b₁ b₂ : WithTop α}
 
 @[gcongr]
 protected lemma mul_lt_mul (ha : a₁ < a₂) (hb : b₁ < b₂) : a₁ * b₁ < a₂ * b₂ := by
