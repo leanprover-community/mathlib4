@@ -102,8 +102,9 @@ noncomputable def mkOfSuccNatTrans :
         erw [← natTrans_naturality_assoc φ k₁ i h₂ (by rfl)]
         rw [mkOfSuccNatTransApp_succ_eq]
         dsimp
-        change _ ≫ iter₁.mapSucc i (Order.lt_succ_of_not_isMax hi) ≫ _ =
-          _ ≫ _ ≫ iter₂.mapSucc i (Order.lt_succ_of_not_isMax hi)
+        have ha : iter₁.F.map f₂ = iter₁.mapSucc i (Order.lt_succ_of_not_isMax hi) := rfl
+        have hb : iter₂.F.map f₂ = iter₂.mapSucc i (Order.lt_succ_of_not_isMax hi) := rfl
+        rw [ha, hb]
         rw [iter₁.mapSucc_eq i, iter₂.mapSucc_eq i, assoc,
           Iso.inv_hom_id_assoc]
         ext X
