@@ -103,6 +103,18 @@ instance : FunLike (MulActionHom φ X Y) X Y where
   coe := MulActionHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
+/-- Hint Lean how to unify `MulActionSemiHomClass F ⇑f M N` and
+`MulActionHomClass F R M N`. -/
+unif_hint mulActionSemiHomClass_coe_eq_mulActionHomClass {F R M N : Type*}
+    [NonAssocSemiring R] [SMul R M] [SMul R N] [FunLike F M N] (f : R →+* R) where
+  f ≟ RingHom.id R ⊢ MulActionSemiHomClass F ⇑f M N ≟ MulActionHomClass F R M N
+
+/-- Hint Lean how to unify `MulActionSemiHomClass F ⇑f M N` and
+`MulActionSemiHomClass F (MonoidHom.id R) M N`. -/
+unif_hint mulActionSemiHomClass_coe_eq_mulActionSemiHomClass_monoidHomId {F R M N : Type*}
+    [NonAssocSemiring R] [SMul R M] [SMul R N] [FunLike F M N] (f : R →+* R) where
+  f ≟ RingHom.id R ⊢ MulActionSemiHomClass F ⇑f M N ≟ MulActionSemiHomClass F (MonoidHom.id R) M N
+
 @[simp]
 theorem map_smul {F M X Y : Type*} [SMul M X] [SMul M Y]
     [FunLike F X Y] [MulActionHomClass F M X Y]
