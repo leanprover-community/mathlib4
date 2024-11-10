@@ -417,10 +417,10 @@ protected theorem map_zero : f 0 = 0 :=
 variable {x}
 
 protected theorem map_eq_zero_iff : f x = 0 ↔ x = 0 :=
-  AddEquivClass.map_eq_zero_iff f
+  EquivLike.map_eq_zero_iff f
 
 theorem map_ne_zero_iff : f x ≠ 0 ↔ x ≠ 0 :=
-  AddEquivClass.map_ne_zero_iff f
+  EquivLike.map_ne_zero_iff f
 
 variable [FunLike F R S]
 
@@ -541,10 +541,10 @@ protected theorem map_one : f 1 = 1 :=
 variable {x}
 
 protected theorem map_eq_one_iff : f x = 1 ↔ x = 1 :=
-  MulEquivClass.map_eq_one_iff f
+  EquivLike.map_eq_one_iff f
 
 theorem map_ne_one_iff : f x ≠ 1 ↔ x ≠ 1 :=
-  MulEquivClass.map_ne_one_iff f
+  EquivLike.map_ne_one_iff f
 
 theorem coe_monoidHom_refl : (RingEquiv.refl R : R →* R) = MonoidHom.id R :=
   rfl
