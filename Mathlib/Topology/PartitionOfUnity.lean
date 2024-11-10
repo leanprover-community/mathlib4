@@ -461,7 +461,7 @@ theorem exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space [Locally
     [T2Space X]
     (hs : IsCompact s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
     (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, f.IsSubordinate U ∧
-    ∀ i, HasCompactSupport (f i):=
+    ∀ i, HasCompactSupport (f i) :=
   -- need to switch 0 and 1 in `exists_continuous_zero_one_of_isCompact`
   let ⟨f, _, hfU⟩ :=
     exists_isSubordinate_of_locallyFinite_of_prop_t2space (fun _ => True)
