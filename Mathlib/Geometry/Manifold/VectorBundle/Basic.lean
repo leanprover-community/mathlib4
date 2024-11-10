@@ -667,8 +667,8 @@ variable {M EM HM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] [Topolo
 
 omit [(x : B) → Module 𝕜 (E₁ x)] [(x : B) → Module 𝕜 (E₂ x)] [VectorBundle 𝕜 F₁ E₁]
   [VectorBundle 𝕜 F₂ E₂] [SmoothVectorBundle F₁ E₁ IB] [SmoothVectorBundle F₂ E₂ IB] in
-/-- Given a smooth fiber bundles `E₁`, `E₂` over a manifold `B`, if `φ` is a map into the total
-space of `E₁ ×ᵇ E₂`, then its smoothness can be checked by checking the smoothness of (1) the map
+/-- Given smooth fiber bundles `E₁`, `E₂` over a manifold `B`, if `φ` is a map into the total space
+of `E₁ ×ᵇ E₂`, then its smoothness can be checked by checking the smoothness of (1) the map
 `TotalSpace.Prod.fst ∘ φ` into the total space of `E₁`, and (ii) the map `TotalSpace.Prod.snd ∘ φ`
 into the total space of `E₂`. -/
 theorem Bundle.Prod.smooth_of_smooth_fst_comp_of_smooth_snd_comp
