@@ -27,38 +27,28 @@ variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
 section Mul
 
--- Porting note (#11215): TODO: generalize to `WithTop`
 @[mono, gcongr]
-theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := by
-  rcases lt_iff_exists_nnreal_btwn.1 ac with ⟨a', aa', a'c⟩
-  lift a to ℝ≥0 using ne_top_of_lt aa'
-  rcases lt_iff_exists_nnreal_btwn.1 bd with ⟨b', bb', b'd⟩
-  lift b to ℝ≥0 using ne_top_of_lt bb'
-  norm_cast at *
-  calc
-    ↑(a * b) < ↑(a' * b') := coe_lt_coe.2 (mul_lt_mul₀ aa' bb')
-    _ ≤ c * d := mul_le_mul' a'c.le b'd.le
+theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := WithTop.mul_lt_mul ac bd
 
--- TODO: generalize to `MulLeftMono α`
-theorem mul_left_mono : Monotone (a * ·) := fun _ _ => mul_le_mul' le_rfl
+@[deprecated mul_left_mono (since := "2024-10-15")]
+protected theorem mul_left_mono : Monotone (a * ·) := mul_left_mono
 
--- TODO: generalize to `MulRightMono α`
-theorem mul_right_mono : Monotone (· * a) := fun _ _ h => mul_le_mul' h le_rfl
+@[deprecated mul_right_mono (since := "2024-10-15")]
+protected theorem mul_right_mono : Monotone (· * a) := mul_right_mono
 
--- Porting note (#11215): TODO: generalize to `WithTop`
-theorem pow_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun x : ℝ≥0∞ => x ^ n
-  | 0, h => absurd rfl h
-  | 1, _ => by simpa only [pow_one] using strictMono_id
-  | n + 2, _ => fun x y h ↦ by
-    simp_rw [pow_succ _ (n + 1)]; exact mul_lt_mul (pow_strictMono n.succ_ne_zero h) h
+protected lemma pow_right_strictMono {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : ℝ≥0∞ ↦ a ^ n :=
+  WithTop.pow_right_strictMono hn
 
-@[gcongr] protected theorem pow_lt_pow_left (h : a < b) {n : ℕ} (hn : n ≠ 0) :
-    a ^ n < b ^ n :=
-  ENNReal.pow_strictMono hn h
+@[deprecated (since := "2024-10-15")] alias pow_strictMono := ENNReal.pow_right_strictMono
 
-theorem max_mul : max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
+@[gcongr] protected lemma pow_lt_pow_left (hab : a < b) {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n :=
+  WithTop.pow_lt_pow_left hab hn
 
-theorem mul_max : a * max b c = max (a * b) (a * c) := mul_left_mono.map_max
+@[deprecated max_mul (since := "2024-10-15")]
+protected theorem max_mul : max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
+
+@[deprecated mul_max (since := "2024-10-15")]
+protected theorem mul_max : a * max b c = max (a * b) (a * c) := mul_left_mono.map_max
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
 theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * ·) := by
@@ -100,6 +90,12 @@ theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b < a * c ↔ b 
 -- Porting note (#11215): TODO: generalize to `WithTop`
 theorem mul_lt_mul_right : c ≠ 0 → c ≠ ∞ → (a * c < b * c ↔ a < b) :=
   mul_comm c a ▸ mul_comm c b ▸ mul_lt_mul_left
+
+protected lemma mul_eq_left (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * b = a ↔ b = 1 := by
+  simpa using ENNReal.mul_eq_mul_left ha₀ ha (c := 1)
+
+protected lemma mul_eq_right (hb₀ : b ≠ 0) (hb : b ≠ ∞) : a * b = b ↔ a = 1 := by
+  simpa using ENNReal.mul_eq_mul_right hb₀ hb (b := 1)
 
 end Mul
 
@@ -312,8 +308,8 @@ theorem sub_eq_sInf {a b : ℝ≥0∞} : a - b = sInf { d | a ≤ d + b } :=
 /-- This is a special case of `WithTop.sub_top` in the `ENNReal` namespace -/
 theorem sub_top : a - ∞ = 0 := WithTop.sub_top
 
--- Porting note: added `@[simp]`
 @[simp] theorem sub_eq_top_iff : a - b = ∞ ↔ a = ∞ ∧ b ≠ ∞ := WithTop.sub_eq_top_iff
+lemma sub_ne_top_iff : a - b ≠ ∞ ↔ a ≠ ∞ ∨ b = ∞ := WithTop.sub_ne_top_iff
 
 -- This is unsafe because we could have `a = b = ∞`
 @[aesop (rule_sets := [finiteness]) unsafe 75% apply]

@@ -103,6 +103,8 @@ theorem encard_ne_zero : s.encard ≠ 0 ↔ s.Nonempty := by
 @[simp] theorem encard_pos : 0 < s.encard ↔ s.Nonempty := by
   rw [pos_iff_ne_zero, encard_ne_zero]
 
+protected alias ⟨_, Nonempty.encard_pos⟩ := encard_pos
+
 @[simp] theorem encard_singleton (e : α) : ({e} : Set α).encard = 1 := by
   rw [encard, ← PartENat.withTopEquiv.symm.injective.eq_iff, Equiv.symm_apply_apply,
     PartENat.card_eq_coe_fintype_card, Fintype.card_ofSubsingleton, Nat.cast_one]; rfl
@@ -530,6 +532,8 @@ theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := by
 theorem ncard_pos (hs : s.Finite := by toFinite_tac) : 0 < s.ncard ↔ s.Nonempty := by
   rw [pos_iff_ne_zero, Ne, ncard_eq_zero hs, nonempty_iff_ne_empty]
 
+protected alias ⟨_, Nonempty.ncard_pos⟩ := ncard_pos
+
 theorem ncard_ne_zero_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := by toFinite_tac) : s.ncard ≠ 0 :=
   ((ncard_pos hs).mpr ⟨a, h⟩).ne.symm
 
@@ -788,6 +792,9 @@ theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
       (fun a ha ↦ by { rw [mem_toFinset] at ha ⊢; exact hf a ha }) (by simpa)
       (by { rwa [← ncard_eq_toFinset_card', ← ncard_eq_toFinset_card'] }) a₁
       (by simpa) a₂ (by simpa) (by simpa)
+
+@[simp] lemma ncard_graphOn (s : Set α) (f : α → β) : (s.graphOn f).ncard = s.ncard := by
+  rw [← ncard_image_of_injOn fst_injOn_graph, image_fst_graphOn]
 
 section Lattice
 

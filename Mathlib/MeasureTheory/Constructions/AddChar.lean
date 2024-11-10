@@ -9,8 +9,8 @@ import Mathlib.MeasureTheory.MeasurableSpace.Defs
 /-!
 # Measurable space instance for additive characters
 
-This file endows `AddChar A M` with the discrete measurable space structure whenever `A` and `M`
-are themselves discrete measurable spaces.
+This file endows `AddChar A M` with the discrete measurable space structure whenever `A` is a finite
+discrete measurable space.
 
 ## TODO
 
@@ -18,10 +18,15 @@ Give the definition in the correct generality.
 -/
 
 namespace AddChar
-variable {A M : Type*} [AddMonoid A] [Monoid M]
-  [MeasurableSpace A] [DiscreteMeasurableSpace A] [MeasurableSpace M] [DiscreteMeasurableSpace M]
+variable {A M : Type*} [AddMonoid A] [Monoid M] [MeasurableSpace A] [MeasurableSpace M]
 
-instance instMeasurableSpace : MeasurableSpace (AddChar A M) := ⊤
-instance instDiscreteMeasurableSpace : DiscreteMeasurableSpace (AddChar A M) := ⟨fun _ ↦ trivial⟩
+@[nolint unusedArguments]
+instance instMeasurableSpace [DiscreteMeasurableSpace A] [Finite A] :
+    MeasurableSpace (AddChar A M) :=
+  ⊤
+
+instance instDiscreteMeasurableSpace [DiscreteMeasurableSpace A] [Finite A] :
+    DiscreteMeasurableSpace (AddChar A M) :=
+  ⟨fun _ ↦ trivial⟩
 
 end AddChar

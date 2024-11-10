@@ -298,10 +298,10 @@ instance : Top (HomogeneousIdeal 𝒜) :=
 instance : Bot (HomogeneousIdeal 𝒜) :=
   ⟨⟨⊥, Ideal.IsHomogeneous.bot 𝒜⟩⟩
 
-instance : Sup (HomogeneousIdeal 𝒜) :=
+instance : Max (HomogeneousIdeal 𝒜) :=
   ⟨fun I J => ⟨_, I.isHomogeneous.sup J.isHomogeneous⟩⟩
 
-instance : Inf (HomogeneousIdeal 𝒜) :=
+instance : Min (HomogeneousIdeal 𝒜) :=
   ⟨fun I J => ⟨_, I.isHomogeneous.inf J.isHomogeneous⟩⟩
 
 instance : SupSet (HomogeneousIdeal 𝒜) :=
