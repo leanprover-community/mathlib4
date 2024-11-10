@@ -265,6 +265,54 @@ theorem AlgebraicIndependent.restrictScalars {K : Type*} [CommRing K] [Algebra R
   rw [← this, RingHom.coe_comp]
   exact Injective.comp ai (MvPolynomial.map_injective _ hinj)
 
+section RingHom
+
+variable {S B FRS FAB : Type*} [CommRing S] [CommRing B] [Algebra S B]
+
+section
+
+variable [FunLike FRS R S] [RingHomClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
+  (f : FRS) (g : FAB)
+
+theorem AlgebraicIndependent.of_ringHom_of_comp_eq (H : AlgebraicIndependent S (g ∘ x))
+    (hf : Function.Injective f)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    AlgebraicIndependent R x := by
+  rw [algebraicIndependent_iff] at H ⊢
+  intro p hp
+  have := H (p.map f) <| by
+    have : (g : A →+* B) _ = _ := congr(g $hp)
+    rwa [map_zero, map_aeval, ← h, ← eval₂Hom_map_hom, ← aeval_eq_eval₂Hom] at this
+  exact map_injective f hf (by rwa [map_zero])
+
+theorem AlgebraicIndependent.ringHom_of_comp_eq (H : AlgebraicIndependent R x)
+    (hf : Function.Surjective f) (hg : Function.Injective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    AlgebraicIndependent S (g ∘ x) := by
+  rw [algebraicIndependent_iff] at H ⊢
+  intro p hp
+  obtain ⟨q, rfl⟩ := map_surjective f hf p
+  erw [aeval_eq_eval₂Hom, eval₂Hom_map_hom, h, ← map_aeval] at hp
+  rw [H q (hg (by rwa [map_zero])), map_zero]
+
+end
+
+section
+
+variable [EquivLike FRS R S] [RingEquivClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
+  (f : FRS) (g : FAB)
+
+theorem algebraicIndependent_ringHom_iff_of_comp_eq
+    (hg : Function.Injective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    AlgebraicIndependent S (g ∘ x) ↔ AlgebraicIndependent R x :=
+  ⟨fun H ↦ H.of_ringHom_of_comp_eq f g (EquivLike.injective f) h,
+    fun H ↦ H.ringHom_of_comp_eq f g (EquivLike.surjective f) hg h⟩
+
+end
+
+end RingHom
+
 /-- Every finite subset of an algebraically independent set is algebraically independent. -/
 theorem algebraicIndependent_finset_map_embedding_subtype (s : Set A)
     (li : AlgebraicIndependent R ((↑) : s → A)) (t : Finset s) :
