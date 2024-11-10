@@ -5,7 +5,7 @@ Authors: Christopher Hoskin
 -/
 
 import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Order.CompleteSublattice
+import Mathlib.Order.Sublattice
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.LinearAlgebra.Basis.Defs
 
