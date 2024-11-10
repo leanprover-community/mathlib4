@@ -439,7 +439,7 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop_t2space [LocallyCompactSpa
     ∀ i, HasCompactSupport (f i) := by
   rcases exists_subset_iUnion_closure_subset_t2space hs ho (fun x _ => hf.point_finite x) hU with
     ⟨V, hsV, hVo, hVU, hcp⟩
-  have hVU' : ∀ i, V i ⊆ U i := fun i => Subset.trans subset_closure (hVU i)
+  have hVU' i : V i ⊆ U i := subset_closure.trans (hVU i)
   rcases exists_subset_iUnion_closure_subset_t2space hs hVo
     (fun x _ => (hf.subset hVU').point_finite x) hsV with ⟨W, hsW, hWo, hWV, hWc⟩
   choose f hfp hf0 hf1 hf01 using fun i =>
