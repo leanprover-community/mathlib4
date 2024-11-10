@@ -56,8 +56,6 @@ of fields.
 - `isPurelyInseparable_iff_finSepDegree_eq_one`: an algebraic extension is purely inseparable
   if and only if it has finite separable degree (`Field.finSepDegree`) one.
 
-  **TODO:** remove the algebraic assumption.
-
 - `IsPurelyInseparable.normal`: a purely inseparable extension is normal.
 
 - `separableClosure.isPurelyInseparable`: if `E / F` is algebraic, then `E` is purely inseparable
@@ -508,19 +506,21 @@ theorem IsPurelyInseparable.minpoly_eq_X_sub_C_pow (q : ℕ) [ExpChar F q] [IsPu
 
 variable (E)
 
--- TODO: remove `halg` assumption
 variable {F E} in
 /-- If an algebraic extension has finite separable degree one, then it is purely inseparable. -/
-theorem isPurelyInseparable_of_finSepDegree_eq_one [Algebra.IsAlgebraic F E]
+theorem isPurelyInseparable_of_finSepDegree_eq_one
     (hdeg : finSepDegree F E = 1) : IsPurelyInseparable F E := by
-  rw [isPurelyInseparable_iff]
-  refine fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, fun hsep ↦ ?_⟩
-  have : Algebra.IsAlgebraic F⟮x⟯ E := Algebra.IsAlgebraic.tower_top (K := F) F⟮x⟯
-  have := finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E
-  rw [hdeg, mul_eq_one, (finSepDegree_adjoin_simple_eq_finrank_iff F E x
-      (Algebra.IsAlgebraic.isAlgebraic x)).2 hsep,
-    IntermediateField.finrank_eq_one_iff] at this
-  simpa only [this.1] using mem_adjoin_simple_self F x
+  by_cases H : Algebra.IsAlgebraic F E
+  · rw [isPurelyInseparable_iff]
+    refine fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, fun hsep ↦ ?_⟩
+    have : Algebra.IsAlgebraic F⟮x⟯ E := Algebra.IsAlgebraic.tower_top (K := F) F⟮x⟯
+    have := finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E
+    rw [hdeg, mul_eq_one, (finSepDegree_adjoin_simple_eq_finrank_iff F E x
+        (Algebra.IsAlgebraic.isAlgebraic x)).2 hsep,
+      IntermediateField.finrank_eq_one_iff] at this
+    simpa only [this.1] using mem_adjoin_simple_self F x
+  · rw [← Algebra.transcendental_iff_not_isAlgebraic] at H
+    simp [show finSepDegree F E = 0 from Nat.card_eq_zero_of_infinite] at hdeg
 
 /-- If `E / F` is purely inseparable, then for any reduced ring `L`, the map `(E →+* L) → (F →+* L)`
 induced by `algebraMap F E` is injective. In particular, a purely inseparable field extension
@@ -570,10 +570,9 @@ theorem IsPurelyInseparable.insepDegree_eq [IsPurelyInseparable F E] :
 theorem IsPurelyInseparable.finInsepDegree_eq [IsPurelyInseparable F E] :
     finInsepDegree F E = finrank F E := congr(Cardinal.toNat $(insepDegree_eq F E))
 
--- TODO: remove `halg` assumption
 /-- An algebraic extension is purely inseparable if and only if it has finite separable
 degree one. -/
-theorem isPurelyInseparable_iff_finSepDegree_eq_one [Algebra.IsAlgebraic F E] :
+theorem isPurelyInseparable_iff_finSepDegree_eq_one :
     IsPurelyInseparable F E ↔ finSepDegree F E = 1 :=
   ⟨fun _ ↦ IsPurelyInseparable.finSepDegree_eq_one F E,
     fun h ↦ isPurelyInseparable_of_finSepDegree_eq_one h⟩
