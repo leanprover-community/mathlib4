@@ -29,7 +29,7 @@ variable {R : Type u} [Monoid R] (S : Submonoid R) [OreLocalization.OreSet S]
   (X : Type v) [MulAction R X]
 
 @[to_additive]
-theorem oreDiv_one_surj_of_finite_left [Finite S] :
+theorem oreDiv_one_surjective_of_finite_left [Finite S] :
     Function.Surjective (fun x ↦ x /ₒ (1 : ↥S) : X → OreLocalization S X) := by
   refine OreLocalization.ind fun x s ↦ ?_
   obtain ⟨i, j, hne, heq⟩ := Finite.exists_ne_map_eq_of_infinite (α := ℕ) (s ^ ·)
@@ -43,7 +43,7 @@ theorem oreDiv_one_surj_of_finite_left [Finite S] :
   · simp_rw [SubmonoidClass.coe_pow, OneMemClass.coe_one, mul_one, pow_succ]
 
 @[to_additive]
-theorem oreDiv_one_surj_of_finite_right [Finite X] :
+theorem oreDiv_one_surjective_of_finite_right [Finite X] :
     Function.Surjective (fun x ↦ x /ₒ (1 : ↥S) : X → OreLocalization S X) := by
   refine OreLocalization.ind fun x s ↦ ?_
   obtain ⟨i, j, hne, heq⟩ := Finite.exists_ne_map_eq_of_infinite (α := ℕ) (s ^ · • x)
@@ -57,18 +57,18 @@ theorem oreDiv_one_surj_of_finite_right [Finite X] :
   · simp_rw [SubmonoidClass.coe_pow, OneMemClass.coe_one, mul_one, pow_succ]
 
 @[to_additive]
-theorem numeratorHom_surj_of_finite [Finite S] :
+theorem numeratorHom_surjective_of_finite [Finite S] :
     Function.Surjective (numeratorHom (S := S)) :=
-  oreDiv_one_surj_of_finite_left S R
+  oreDiv_one_surjective_of_finite_left S R
 
 @[to_additive]
 theorem cardinal_mk_le_max : #(OreLocalization S X) ≤ max (lift.{v} #S) (lift.{u} #X) := by
   rcases finite_or_infinite X with _ | _
-  · have := lift_mk_le_lift_mk_of_surjective (oreDiv_one_surj_of_finite_right S X)
+  · have := lift_mk_le_lift_mk_of_surjective (oreDiv_one_surjective_of_finite_right S X)
     rw [lift_umax.{v, u}, lift_id'] at this
     exact le_max_of_le_right this
   rcases finite_or_infinite S with _ | _
-  · have := lift_mk_le_lift_mk_of_surjective (oreDiv_one_surj_of_finite_left S X)
+  · have := lift_mk_le_lift_mk_of_surjective (oreDiv_one_surjective_of_finite_left S X)
     rw [lift_umax.{v, u}, lift_id'] at this
     exact le_max_of_le_right this
   convert ← mk_le_of_surjective (show Function.Surjective fun x : X × S ↦ x.1 /ₒ x.2 from
@@ -86,7 +86,7 @@ theorem cardinal_mk_le : #(OreLocalization S R) ≤ #R := by
 theorem cardinal_mk_le_lift_cardinal_mk_of_commute (hc : ∀ s s' : S, Commute s s') :
     #(OreLocalization S X) ≤ lift.{u} #X := by
   rcases finite_or_infinite X with _ | _
-  · have := lift_mk_le_lift_mk_of_surjective (oreDiv_one_surj_of_finite_right S X)
+  · have := lift_mk_le_lift_mk_of_surjective (oreDiv_one_surjective_of_finite_right S X)
     rwa [lift_umax.{v, u}, lift_id'] at this
   have key (x : X) (s s' : S) (h : s • x = s' • x) (hc : Commute s s') : x /ₒ s = x /ₒ s' := by
     rw [oreDiv_eq_iff]
