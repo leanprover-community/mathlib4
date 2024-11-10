@@ -124,7 +124,7 @@ theorem Functor.initial_const_of_isInitial [IsCofiltered C] {X : D} (hX : IsInit
     (fun {_ c} _ _ => ⟨c, 𝟙 _, hX.hom_ext _ _⟩)
 
 /-- The inclusion of the initial object is initial. -/
-theorem Functor.inial_const_initial [IsCofiltered C] [HasInitial D] :
+theorem Functor.initial_const_initial [IsCofiltered C] [HasInitial D] :
     ((Functor.const C).obj (⊥_ D)).Initial :=
   Functor.initial_const_of_isInitial initialIsInitial
 
