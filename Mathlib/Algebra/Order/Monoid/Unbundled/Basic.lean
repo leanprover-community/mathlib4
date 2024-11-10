@@ -94,11 +94,11 @@ section Preorder
 variable [Preorder α]
 
 @[to_additive]
-lemma mul_left_mono [CovariantClass α α (· * ·) (· ≤ ·)] {a : α} : Monotone (a * ·) :=
+lemma mul_left_mono [MulLeftMono α] {a : α} : Monotone (a * ·) :=
   fun _ _ h ↦ mul_le_mul_left' h _
 
 @[to_additive]
-lemma mul_right_mono [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a : α} : Monotone (· * a) :=
+lemma mul_right_mono [MulRightMono α] {a : α} : Monotone (· * a) :=
   fun _ _ h ↦ mul_le_mul_right' h _
 
 @[to_additive (attr := gcongr)]
@@ -239,11 +239,11 @@ section LinearOrder
 variable [LinearOrder α] {a b c d : α}
 
 @[to_additive]
-lemma mul_max [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+lemma mul_max [MulLeftMono α] (a b c : α) :
     a * max b c = max (a * b) (a * c) := mul_left_mono.map_max
 
 @[to_additive]
-lemma max_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
+lemma max_mul [MulRightMono α] :
     max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
 
 @[to_additive] lemma min_lt_max_of_mul_lt_mul
