@@ -371,9 +371,7 @@ def liftOfRightInverse (f : F) (f_inv : M → A) (hf : Function.RightInverse f_i
 lemma liftOfRightInverse_apply (f : F) (f_inv : M → A) (hf : Function.RightInverse f_inv f)
     (d : Derivation R A A) (hd : ∀ x, f x = 0 → f (d x) = 0) (x : A) :
     Derivation.liftOfRightInverse f f_inv hf d hd (f x) = f (d x) := by
-  unfold liftOfRightInverse
-  simp only [mk_coe, LinearMap.coe_mk, AddHom.coe_mk]
-  rw [← sub_eq_zero, ← map_sub, ← map_sub]
+  suffices f (d (f_inv (f x) - x)) = 0 by simpa [sub_eq_zero]
   apply hd
   simp [hf _]
 
