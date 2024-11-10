@@ -56,6 +56,9 @@ theorem cardinalMk_le_sigma_polynomial :
       refine (Subtype.heq_iff_coe_eq ?_).1 h.2
       simp only [h.1, forall_true_iff]
 
+@[deprecated (since := "2024-11-10")]
+alias cardinal_mk_le_sigma_polynomial := cardinalMk_le_sigma_polynomial
+
 /-- The cardinality of an algebraic extension is at most the maximum of the cardinality
 of the base ring or `ℵ₀`. -/
 @[stacks 09GK]
@@ -72,6 +75,8 @@ theorem cardinalMk_le_max : #L ≤ max #R ℵ₀ :=
     _ ≤ max (max (max #R ℵ₀) ℵ₀) ℵ₀ :=
       (max_le_max (max_le_max Polynomial.cardinalMk_le_max le_rfl) le_rfl)
     _ = max #R ℵ₀ := by simp only [max_assoc, max_comm ℵ₀, max_left_comm ℵ₀, max_self]
+
+@[deprecated (since := "2024-11-10")] alias cardinal_mk_le_max := cardinalMk_le_max
 
 end Algebra.IsAlgebraic
 

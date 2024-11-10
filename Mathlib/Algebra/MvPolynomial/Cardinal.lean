@@ -34,9 +34,13 @@ theorem cardinalMk_eq_max_lift [Nonempty σ] [Nontrivial R] :
   (mk_finsupp_lift_of_infinite _ R).trans <| by
     rw [mk_finsupp_nat, max_assoc, lift_max, lift_aleph0, max_comm]
 
+@[deprecated (since := "2024-11-10")] alias cardinal_mk_eq_max_lift := cardinalMk_eq_max_lift
+
 @[simp]
 theorem cardinalMk_eq_lift [IsEmpty σ] : #(MvPolynomial σ R) = Cardinal.lift.{u} #R :=
   ((isEmptyRingEquiv R σ).toEquiv.trans Equiv.ulift.{u}.symm).cardinal_eq
+
+@[deprecated (since := "2024-11-10")] alias cardinal_mk_eq_lift := cardinalMk_eq_lift
 
 theorem cardinal_lift_mk_le_max {σ : Type u} {R : Type v} [CommSemiring R] : #(MvPolynomial σ R) ≤
     max (max (Cardinal.lift.{u} #R) <| Cardinal.lift.{v} #σ) ℵ₀ := by
@@ -53,9 +57,13 @@ variable {σ R : Type u} [CommSemiring R]
 theorem cardinalMk_eq_max [Nonempty σ] [Nontrivial R] :
     #(MvPolynomial σ R) = max (max #R #σ) ℵ₀ := by simp
 
+@[deprecated (since := "2024-11-10")] alias cardinal_mk_eq_max := cardinalMk_eq_max
+
 /-- The cardinality of the multivariate polynomial ring, `MvPolynomial σ R` is at most the maximum
 of `#R`, `#σ` and `ℵ₀` -/
 theorem cardinalMk_le_max : #(MvPolynomial σ R) ≤ max (max #R #σ) ℵ₀ :=
   cardinal_lift_mk_le_max.trans <| by rw [lift_id, lift_id]
+
+@[deprecated (since := "2024-11-10")] alias cardinal_mk_le_max := cardinalMk_le_max
 
 end MvPolynomial
