@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Algebra.MvPolynomial.Supported
 
 /-!
@@ -290,9 +289,7 @@ theorem IsAlgebraic.of_ringHom_of_comp_eq (halg : IsAlgebraic S (g a))
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     IsAlgebraic R a := by
   obtain ⟨p, h1, h2⟩ := halg
-  obtain ⟨q, rfl⟩ : ∃ q : R[X], q.map f = p := by
-    rw [← mem_lifts, lifts_iff_coeff_lifts]
-    simp [hf.range_eq]
+  obtain ⟨q, rfl⟩ := map_surjective f hf p
   refine ⟨q, fun h' ↦ by simp [h'] at h1, hg ?_⟩
   change aeval ((g : A →+* B) a) _ = 0 at h2
   change (g : A →+* B) _ = _
