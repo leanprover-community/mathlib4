@@ -34,8 +34,6 @@ open Set
 variable {R : Type u} [Ring R] (I J : Ideal R) {a b : R}
 variable {S : Type v}
 
-attribute [local instance] Quotient.ring
-
 namespace Quotient
 
 variable {I} {x y : R}
