@@ -351,29 +351,20 @@ def liftOfRightInverse (f : F) (f_inv : M → A) (hf : Function.RightInverse f_i
     (d : Derivation R A A) (hd : ∀ x, f x = 0 → f (d x) = 0) : Derivation R M M where
   toFun x := f (d (f_inv x))
   map_add' x y := by
-    simp only [← map_add]
-    rw [← sub_eq_zero, ← map_sub, ← map_sub]
+    suffices f (d (f_inv (x + y) - (f_inv x + f_inv y))) = 0 by simpa [sub_eq_zero]
     apply hd
     simp [hf _]
   map_smul' x y := by
-    simp only [RingHom.id_apply, ← _root_.map_smul, ← map_smul]
-    rw [← sub_eq_zero, ← map_sub, ← map_sub]
+    suffices f (d (f_inv (x • y) - x • f_inv y)) = 0 by simpa [sub_eq_zero]
     apply hd
     simp [hf _]
   map_one_eq_zero' := by
-    simp only [LinearMap.coe_mk, AddHom.coe_mk]
-    convert_to f (d (f_inv 1 - 1)) = 0
-    · simp
+    suffices f (d (f_inv 1 - 1)) = 0 by simpa [sub_eq_zero]
     apply hd
-    simp [hf _, map_one]
+    simp [hf _]
   leibniz' x y := by
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, smul_eq_mul]
-    convert_to _ = f (f_inv x * d (f_inv y)) + f (f_inv y * d (f_inv x)) using 2
-    · simp [hf _]
-    · simp [hf _]
-    convert_to _ = f (d (f_inv x * f_inv y))
-    · simp
-    rw [← sub_eq_zero, ← map_sub, ← map_sub]
+    dsimp
+    suffices f (d (f_inv (x * y) - f_inv x * f_inv y)) = 0 by simpa [sub_eq_iff_eq_add', hf _]
     apply hd
     simp [hf _]
 
@@ -386,6 +377,13 @@ lemma liftOfRightInverse_apply (f : F) (f_inv : M → A) (hf : Function.RightInv
   rw [← sub_eq_zero, ← map_sub, ← map_sub]
   apply hd
   simp [hf _]
+
+lemma liftOfRightInverse_eq (f : F) (f_inv₁ f_inv₂ : M → A) (hf₁ : Function.RightInverse f_inv₁ f)
+    (hf₂ : Function.RightInverse f_inv₂ f) :
+    liftOfRightInverse f _ hf₁ = liftOfRightInverse f _ hf₂ := by
+  ext _ _ x
+  obtain ⟨x, rfl⟩ := hf₁.surjective x
+  simp
 
 /--
 A noncomputable version of `liftOfRightInverse` for surjective homomorphisms.
