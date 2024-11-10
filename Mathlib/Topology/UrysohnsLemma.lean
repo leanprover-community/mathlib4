@@ -374,8 +374,7 @@ theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompac
     simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, Pi.one_apply, sub_eq_self]
     exact hgs hx
   · intro x
-    simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, mem_Icc, sub_nonneg,
-      tsub_le_iff_right, le_add_iff_nonneg_right]
+    simpa [and_comm] using hicc x
     exact ⟨(hicc x).2, (hicc x).1⟩
 
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
