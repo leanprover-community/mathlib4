@@ -643,13 +643,8 @@ theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompac
     (hst : t ⊆ ⋃ i, s i) : ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧
     EqOn (∑ i, f i) 1 t ∧ (∀ (i : Fin n), ∀ (x : X), f i x ∈ Icc (0 : ℝ) 1) ∧ (∀ (i : Fin n),
     HasCompactSupport (f i)) := by
-  have hlf : LocallyFinite s := by
-    intro x
-    use univ
-    refine ⟨univ_mem, ?_⟩
-    exact toFinite {i | (s i ∩ univ).Nonempty}
   obtain ⟨f, hfsub, hfcp⟩ := PartitionOfUnity.exists_isSubordinate_of_locallyFinite_t2space htcp s
-    hs hlf hst
+    hs (locallyFinite_of_finite _) hst
   use f.toFun
   refine ⟨fun i ↦ hfsub i, ?_, ?_, fun i => hfcp i⟩
   · intro t ht
