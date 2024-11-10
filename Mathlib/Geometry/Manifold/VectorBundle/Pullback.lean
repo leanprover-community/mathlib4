@@ -41,8 +41,6 @@ instance SmoothVectorBundle.pullback : SmoothVectorBundle F (f *ᵖ E) IB' where
     rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]
     exacts [rfl, hb]
 
-omit [SmoothManifoldWithCorners IB B] [SmoothManifoldWithCorners IB' B']
-
 /-- For a smooth vector bundle `E` over a manifold `B` and a smooth map `f : B' → B`, the natural
 "lift" map from the total space of `f *ᵖ E` to the total space of `E` is smooth. -/
 theorem Bundle.Pullback.smooth_lift :
@@ -51,7 +49,7 @@ theorem Bundle.Pullback.smooth_lift :
   rw [contMDiffAt_totalSpace]
   refine ⟨f.smooth.smoothAt.comp _ (smoothAt_proj (f *ᵖ E)), ?_⟩
   refine (contMDiffAt_snd (M := B')).comp _ <|
-    (smoothOn_trivializationAt IB' x).contMDiffAt ?_
+    (smoothOn_trivializationAt x).contMDiffAt ?_
   apply (trivializationAt F (f *ᵖ E) x.proj).open_source.mem_nhds
   simp
 
