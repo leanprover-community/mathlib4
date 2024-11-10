@@ -81,7 +81,7 @@ theorem HasAffineProperty.diagonal_of_openCover (P) {Q} [HasAffineProperty P Q]
   · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       Functor.const_obj_obj, cospan_one, cospan_left, cospan_right, Category.comp_id]
     convert h𝒰' i j k
-    ext1 <;> simp [Scheme.OpenCover.pullbackHom]
+    ext1 <;> simp [Scheme.Cover.pullbackHom]
 
 theorem HasAffineProperty.diagonal_of_openCover_diagonal
     (P) {Q} [HasAffineProperty P Q]
@@ -116,7 +116,7 @@ theorem HasAffineProperty.diagonal_iff
     (pullback.fst (f := f) (g := 𝟙 Y)), pullback.condition, Category.comp_id] at hf
   let 𝒰 := X.affineCover.pushforwardIso (inv (pullback.fst (f := f) (g := 𝟙 Y)))
   have (i) : IsAffine (𝒰.obj i) := by dsimp [𝒰]; infer_instance
-  exact HasAffineProperty.diagonal_of_openCover P f (Scheme.openCoverOfIsIso (𝟙 _))
+  exact HasAffineProperty.diagonal_of_openCover P f (Scheme.coverOfIsIso (𝟙 _))
     (fun _ ↦ 𝒰) (fun _ _ _ ↦ hf _ _)
 
 instance HasAffineProperty.diagonal_affineProperty_isLocal

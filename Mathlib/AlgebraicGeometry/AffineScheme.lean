@@ -229,7 +229,8 @@ instance Scheme.isAffine_affineOpenCover (X : Scheme) (𝒰 : X.AffineOpenCover)
     IsAffine (𝒰.openCover.obj i) :=
   inferInstanceAs (IsAffine (Spec (𝒰.obj i)))
 
-instance {X} [IsAffine X] (i) : IsAffine ((Scheme.openCoverOfIsIso (𝟙 X)).obj i) := by
+instance {X} [IsAffine X] (i) :
+    IsAffine ((Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 X)).obj i) := by
   dsimp; infer_instance
 
 theorem isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by
