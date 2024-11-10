@@ -58,18 +58,6 @@ theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
   subst h
   simp_rw [Fin.cast_refl, id]
 
-/-- `ofFn` on an empty domain is the empty list. -/
-@[simp]
-theorem ofFn_zero (f : Fin 0 → α) : ofFn f = [] :=
-  ext_get (by simp) (fun i hi₁ hi₂ => by contradiction)
-
-@[simp]
-theorem ofFn_succ {n} (f : Fin (succ n) → α) : ofFn f = f 0 :: ofFn fun i => f i.succ :=
-  ext_get (by simp) (fun i hi₁ hi₂ => by
-    cases i
-    · simp
-    · simp)
-
 theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
     ofFn f = (ofFn fun i => f (Fin.castSucc i)).concat (f (Fin.last _)) := by
   induction' n with n IH
@@ -77,10 +65,6 @@ theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
     rfl
   · rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero]
     congr
-
-@[simp]
-theorem ofFn_eq_nil_iff {n : ℕ} {f : Fin n → α} : ofFn f = [] ↔ n = 0 := by
-  cases n <;> simp only [ofFn_zero, ofFn_succ, eq_self_iff_true, Nat.succ_ne_zero, reduceCtorEq]
 
 theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
     (hn : n - 1 < n := Nat.pred_lt <| ofFn_eq_nil_iff.not.mp h) :
