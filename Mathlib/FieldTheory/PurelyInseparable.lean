@@ -183,7 +183,7 @@ theorem AlgEquiv.isPurelyInseparable_iff (e : K ≃ₐ[F] E) :
 
 /-- If `E / F` is an algebraic extension, `F` is separably closed,
 then `E / F` is purely inseparable. -/
-theorem Algebra.IsAlgebraic.isPurelyInseparable_of_isSepClosed
+instance Algebra.IsAlgebraic.isPurelyInseparable_of_isSepClosed
     {F : Type u} {E : Type v} [Field F] [Ring E] [IsDomain E] [Algebra F E]
     [Algebra.IsAlgebraic F E]
     [IsSepClosed F] : IsPurelyInseparable F E :=
@@ -602,7 +602,7 @@ instance IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E where
 
 /-- If `E / F` is algebraic, then `E` is purely inseparable over the
 separable closure of `F` in `E`. -/
-theorem separableClosure.isPurelyInseparable [Algebra.IsAlgebraic F E] :
+instance separableClosure.isPurelyInseparable [Algebra.IsAlgebraic F E] :
     IsPurelyInseparable (separableClosure F E) E := isPurelyInseparable_iff.2 fun x ↦ by
   set L := separableClosure F E
   refine ⟨(IsAlgebraic.tower_top L (Algebra.IsAlgebraic.isAlgebraic (R := F) x)).isIntegral,
