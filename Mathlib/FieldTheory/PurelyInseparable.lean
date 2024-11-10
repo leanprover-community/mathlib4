@@ -824,7 +824,7 @@ end
 purely inseparable. -/
 theorem isSepClosed_iff_isPurelyInseparable_algebraicClosure [IsAlgClosure F E] :
     IsSepClosed F ↔ IsPurelyInseparable F E :=
-  ⟨fun _ ↦ IsAlgClosure.isAlgebraic.isPurelyInseparable_of_isSepClosed, fun H ↦ by
+  ⟨fun _ ↦ inferInstance, fun H ↦ by
     haveI := IsAlgClosure.isAlgClosed F (K := E)
     rwa [← separableClosure.eq_bot_iff, IsSepClosed.separableClosure_eq_bot_iff] at H⟩
 
@@ -834,7 +834,6 @@ then `E` is also separably closed. -/
 theorem Algebra.IsAlgebraic.isSepClosed [Algebra.IsAlgebraic F E]
     [IsSepClosed F] : IsSepClosed E :=
   have : Algebra.IsAlgebraic F (AlgebraicClosure E) := Algebra.IsAlgebraic.trans (L := E)
-  have : IsPurelyInseparable F (AlgebraicClosure E) := isPurelyInseparable_of_isSepClosed
   (isSepClosed_iff_isPurelyInseparable_algebraicClosure E _).mpr
     (IsPurelyInseparable.tower_top F E <| AlgebraicClosure E)
 
