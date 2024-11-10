@@ -188,14 +188,19 @@ axiom IsTranscendenceBasis.isAlgebraic_field {ι F E : Type*} {x : ι → E}
     [Field F] [Field E] [Algebra F E] (hx : IsTranscendenceBasis F x) :
     Algebra.IsAlgebraic (IntermediateField.adjoin F (Set.range x)) E
 
-/-- TODO: remove this when PR #18769 is merged -/
-axiom algebra_isAlgebraic_ringHom_iff_of_comp_eq
-    {R S A B FRS FAB : Type*}
-    [CommRing R] [CommRing S] [Ring A] [Ring B] [Algebra R A] [Algebra S B]
-    [EquivLike FRS R S] [RingEquivClass FRS R S] [EquivLike FAB A B] [RingEquivClass FAB A B]
-    (f : FRS) (g : FAB)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
-    Algebra.IsAlgebraic S B ↔ Algebra.IsAlgebraic R A
+/-- TODO: remove this when PR #18648 is merged -/
+axiom IsTranscendenceBasis.isEmpty_iff_isAlgebraic
+    {ι R A : Type*} [CommRing R] [CommRing A] [Algebra R A] {x : ι → A}
+    [Nontrivial R]
+    (hx : IsTranscendenceBasis R x) :
+    IsEmpty ι ↔ Algebra.IsAlgebraic R A
+
+/-- TODO: remove this when PR #18648 is merged -/
+axiom IsTranscendenceBasis.nonempty_iff_transcendental
+    {ι R A : Type*} [CommRing R] [CommRing A] [Algebra R A] {x : ι → A}
+    [Nontrivial R]
+    (hx : IsTranscendenceBasis R x) :
+    Nonempty ι ↔ Algebra.Transcendental R A
 
 end Adhoc
 
@@ -322,20 +327,13 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
           (AlgebraicClosure E)).restrictScalars F).symm
 
 /-- If the field extension `E / F` is transcendental, then `Field.Emb F E` is infinite. -/
-instance infinite_emb_of_transcendental [Algebra.Transcendental F E] : Infinite (Emb F E) := by
+instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infinite (Emb F E) := by
   obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' _ (algebraMap F E).injective
   haveI := hx.isAlgebraic_field
   rw [← (embProdEmbOfIsAlgebraic F (adjoin F (Set.range x)) E).infinite_iff]
   refine @Prod.infinite_of_left _ _ ?_ _
   rw [← (embEquivOfEquiv _ _ _ hx.1.aevalEquivField).infinite_iff]
-  rcases isEmpty_or_nonempty ι with _ | h
-  · rw [show adjoin F (Set.range x) = ⊥ by simp [Set.range_eq_empty],
-      ← algebra_isAlgebraic_ringHom_iff_of_comp_eq (botEquiv F E) (RingEquiv.refl E) (by
-        ext a
-        obtain ⟨_, rfl⟩ := (botEquiv F E).symm.surjective a
-        simp)] at this
-    exact False.elim (Algebra.transcendental_iff_not_isAlgebraic.1 ‹_› this)
-  obtain ⟨i⟩ := h
+  obtain ⟨i⟩ := hx.nonempty_iff_transcendental.2 H
   let i1 := IsScalarTower.toAlgHom F (MvPolynomial ι F)
     (AlgebraicClosure (FractionRing (MvPolynomial ι F)))
   have hi1 : Function.Injective i1 := by
