@@ -31,7 +31,7 @@ def zpowers (g : G) : Subgroup G where
 theorem mem_zpowers (g : G) : g ∈ zpowers g :=
   ⟨1, zpow_one _⟩
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive (attr := norm_cast)] -- TODO: simp?
 theorem coe_zpowers (g : G) : ↑(zpowers g) = Set.range (g ^ · : ℤ → G) :=
   rfl
 
