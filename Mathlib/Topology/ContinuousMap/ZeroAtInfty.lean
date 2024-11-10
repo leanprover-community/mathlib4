@@ -96,6 +96,13 @@ theorem coe_toContinuousMap (f : C₀(α, β)) : (f.toContinuousMap : α → β)
 theorem ext {f g : C₀(α, β)} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
+@[simp]
+lemma coe_mk {f : α → β} (hf : Continuous f) (hf' : Tendsto f (cocompact α) (𝓝 0)) :
+    { toFun := f,
+      continuous_toFun := hf,
+      zero_at_infty' := hf' : ZeroAtInftyContinuousMap α β} = f :=
+  rfl
+
 /-- Copy of a `ZeroAtInftyContinuousMap` with a new `toFun` equal to the old one. Useful
 to fix definitional equalities. -/
 protected def copy (f : C₀(α, β)) (f' : α → β) (h : f' = f) : C₀(α, β) where
@@ -381,7 +388,7 @@ theorem toBCF_injective : Function.Injective (toBCF : C₀(α, β) → α →ᵇ
 
 end
 
-variable {C : ℝ} {f g : C₀(α, β)}
+variable {f g : C₀(α, β)}
 
 /-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
 inclusion `ZeroAtInftyContinuousMap.toBCF`, is a pseudo-metric space. -/

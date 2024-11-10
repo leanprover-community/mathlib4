@@ -77,7 +77,7 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
   points of the form `(a, a) : X × X`) is closed under the product topology.
 * `separatedNhds_of_finset_finset`: Any two disjoint finsets are `SeparatedNhds`.
 * Most topological constructions preserve Hausdorffness;
-  these results are part of the typeclass inference system (e.g. `Embedding.t2Space`)
+  these results are part of the typeclass inference system (e.g. `IsEmbedding.t2Space`)
 * `Set.EqOn.closure`: If two functions are equal on some set `s`, they are equal on its closure.
 * `IsCompact.isClosed`: All compact sets are closed.
 * `WeaklyLocallyCompactSpace.locallyCompactSpace`: If a topological space is both
@@ -145,7 +145,7 @@ def HasSeparatingCover : Set X → Set X → Prop := fun s t ↦
   ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) t
 
 /-- Used to prove that a regular topological space with Lindelöf topology is a normal space,
-and (todo) a perfectly normal space is a completely normal space. -/
+and a perfectly normal space is a completely normal space. -/
 theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
     HasSeparatingCover s t ∧ HasSeparatingCover t s ↔ SeparatedNhds s t := by
   constructor
@@ -270,19 +270,31 @@ theorem t0Space_iff_not_inseparable (X : Type u) [TopologicalSpace X] :
 theorem Inseparable.eq [T0Space X] {x y : X} (h : Inseparable x y) : x = y :=
   T0Space.t0 h
 
-/-- A topology `Inducing` map from a T₀ space is injective. -/
-protected theorem Inducing.injective [TopologicalSpace Y] [T0Space X] {f : X → Y}
-    (hf : Inducing f) : Injective f := fun _ _ h =>
+/-- A topology inducing map from a T₀ space is injective. -/
+protected theorem IsInducing.injective [TopologicalSpace Y] [T0Space X] {f : X → Y}
+    (hf : IsInducing f) : Injective f := fun _ _ h =>
   (hf.inseparable_iff.1 <| .of_eq h).eq
 
-/-- A topology `Inducing` map from a T₀ space is a topological embedding. -/
-protected theorem Inducing.embedding [TopologicalSpace Y] [T0Space X] {f : X → Y}
-    (hf : Inducing f) : Embedding f :=
+@[deprecated (since := "2024-10-28")] alias Inducing.injective := IsInducing.injective
+
+/-- A topology inducing map from a T₀ space is a topological embedding. -/
+protected theorem IsInducing.isEmbedding [TopologicalSpace Y] [T0Space X] {f : X → Y}
+    (hf : IsInducing f) : IsEmbedding f :=
   ⟨hf, hf.injective⟩
 
-lemma embedding_iff_inducing [TopologicalSpace Y] [T0Space X] {f : X → Y} :
-    Embedding f ↔ Inducing f :=
-  ⟨Embedding.toInducing, Inducing.embedding⟩
+@[deprecated (since := "2024-10-28")] alias Inducing.isEmbedding := IsInducing.isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias Inducing.embedding := IsInducing.isEmbedding
+
+lemma isEmbedding_iff_isInducing [TopologicalSpace Y] [T0Space X] {f : X → Y} :
+    IsEmbedding f ↔ IsInducing f :=
+  ⟨IsEmbedding.isInducing, IsInducing.isEmbedding⟩
+
+@[deprecated (since := "2024-10-28")] alias isEmbedding_iff_inducing := isEmbedding_iff_isInducing
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_iff_inducing := isEmbedding_iff_isInducing
 
 theorem t0Space_iff_nhds_injective (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Injective (𝓝 : X → Filter X) :=
@@ -328,7 +340,7 @@ def specializationOrder (X) [TopologicalSpace X] [T0Space X] : PartialOrder X :=
 
 instance SeparationQuotient.instT0Space : T0Space (SeparationQuotient X) :=
   ⟨fun x y => Quotient.inductionOn₂' x y fun _ _ h =>
-    SeparationQuotient.mk_eq_mk.2 <| SeparationQuotient.inducing_mk.inseparable_iff.1 h⟩
+    SeparationQuotient.mk_eq_mk.2 <| SeparationQuotient.isInducing_mk.inseparable_iff.1 h⟩
 
 theorem minimal_nonempty_closed_subsingleton [T0Space X] {s : Set X} (hs : IsClosed s)
     (hmin : ∀ t, t ⊆ s → t.Nonempty → IsClosed t → t = s) : s.Subsingleton := by
@@ -394,12 +406,15 @@ theorem t0Space_of_injective_of_continuous [TopologicalSpace Y] {f : X → Y}
     (hf : Function.Injective f) (hf' : Continuous f) [T0Space Y] : T0Space X :=
   ⟨fun _ _ h => hf <| (h.map hf').eq⟩
 
-protected theorem Embedding.t0Space [TopologicalSpace Y] [T0Space Y] {f : X → Y}
-    (hf : Embedding f) : T0Space X :=
+protected theorem IsEmbedding.t0Space [TopologicalSpace Y] [T0Space Y] {f : X → Y}
+    (hf : IsEmbedding f) : T0Space X :=
   t0Space_of_injective_of_continuous hf.inj hf.continuous
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.t0Space := IsEmbedding.t0Space
+
 instance Subtype.t0Space [T0Space X] {p : X → Prop} : T0Space (Subtype p) :=
-  embedding_subtype_val.t0Space
+  IsEmbedding.subtypeVal.t0Space
 
 theorem t0Space_iff_or_not_mem_closure (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun a b : X => a ∉ closure ({b} : Set X) ∨ b ∉ closure ({a} : Set X) := by
@@ -413,8 +428,7 @@ instance Pi.instT0Space {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace
     T0Space (∀ i, X i) :=
   ⟨fun _ _ h => funext fun i => (h.map (continuous_apply i)).eq⟩
 
-instance ULift.instT0Space [T0Space X] : T0Space (ULift X) :=
-  embedding_uLift_down.t0Space
+instance ULift.instT0Space [T0Space X] : T0Space (ULift X) := IsEmbedding.uliftDown.t0Space
 
 theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set X, x ∈ s ∧ y ∈ s ∧ T0Space s) :
     T0Space X := by
@@ -457,11 +471,13 @@ theorem specializes_iff_inseparable : x ⤳ y ↔ Inseparable x y :=
 /-- In an R₀ space, `Specializes` implies `Inseparable`. -/
 alias ⟨Specializes.inseparable, _⟩ := specializes_iff_inseparable
 
-theorem Inducing.r0Space [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) : R0Space Y where
+theorem IsInducing.r0Space [TopologicalSpace Y] {f : Y → X} (hf : IsInducing f) : R0Space Y where
   specializes_symmetric a b := by
     simpa only [← hf.specializes_iff] using Specializes.symm
 
-instance {p : X → Prop} : R0Space {x // p x} := inducing_subtype_val.r0Space
+@[deprecated (since := "2024-10-28")] alias Inducing.r0Space := IsInducing.r0Space
+
+instance {p : X → Prop} : R0Space {x // p x} := IsInducing.subtypeVal.r0Space
 
 instance [TopologicalSpace Y] [R0Space Y] : R0Space (X × Y) where
   specializes_symmetric _ _ h := h.fst.symm.prod h.snd.symm
@@ -670,7 +686,7 @@ theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y]
     rw [continuousWithinAt_update_of_ne hz.2] at H
     exact H.mono diff_subset
   · rw [continuousWithinAt_update_of_ne hzx]
-    refine (H z ⟨hzs, hzx⟩).mono_of_mem (inter_mem_nhdsWithin _ ?_)
+    refine (H z ⟨hzs, hzx⟩).mono_of_mem_nhdsWithin (inter_mem_nhdsWithin _ ?_)
     exact isOpen_ne.mem_nhds hzx
   · exact continuousWithinAt_update_same
 
@@ -678,13 +694,16 @@ theorem t1Space_of_injective_of_continuous [TopologicalSpace Y] {f : X → Y}
     (hf : Function.Injective f) (hf' : Continuous f) [T1Space Y] : T1Space X :=
   t1Space_iff_specializes_imp_eq.2 fun _ _ h => hf (h.map hf').eq
 
-protected theorem Embedding.t1Space [TopologicalSpace Y] [T1Space Y] {f : X → Y}
-    (hf : Embedding f) : T1Space X :=
+protected theorem IsEmbedding.t1Space [TopologicalSpace Y] [T1Space Y] {f : X → Y}
+    (hf : IsEmbedding f) : T1Space X :=
   t1Space_of_injective_of_continuous hf.inj hf.continuous
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.t1Space := IsEmbedding.t1Space
 
 instance Subtype.t1Space {X : Type u} [TopologicalSpace X] [T1Space X] {p : X → Prop} :
     T1Space (Subtype p) :=
-  embedding_subtype_val.t1Space
+  IsEmbedding.subtypeVal.t1Space
 
 instance [TopologicalSpace Y] [T1Space X] [T1Space Y] : T1Space (X × Y) :=
   ⟨fun ⟨a, b⟩ => @singleton_prod_singleton _ _ a b ▸ isClosed_singleton.prod isClosed_singleton⟩
@@ -694,7 +713,7 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
   ⟨fun f => univ_pi_singleton f ▸ isClosed_set_pi fun _ _ => isClosed_singleton⟩
 
 instance ULift.instT1Space [T1Space X] : T1Space (ULift X) :=
-  embedding_uLift_down.t1Space
+  IsEmbedding.uliftDown.t1Space
 
 -- see Note [lower instance priority]
 instance (priority := 100) TotallyDisconnectedSpace.t1Space [h : TotallyDisconnectedSpace X] :
@@ -749,6 +768,14 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space X] {x y : X} {s t : Set 
   refine nhdsWithin_mono x hu ?_
   rw [nhdsWithin_insert_of_ne h]
   exact mem_of_superset self_mem_nhdsWithin (subset_insert x s)
+
+lemma eventuallyEq_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    (insert x s : Set X) =ᶠ[𝓝 x] (insert x t : Set X) := by
+  simp_rw [eventuallyEq_set] at h ⊢
+  simp_rw [← union_singleton, ← nhdsWithin_univ, ← compl_union_self {x},
+    nhdsWithin_union, eventually_sup, nhdsWithin_singleton,
+    eventually_pure, union_singleton, mem_insert_iff, true_or, and_true]
+  filter_upwards [nhdsWithin_compl_singleton_le x y h] with y using or_congr (Iff.rfl)
 
 @[simp]
 theorem ker_nhds [T1Space X] (x : X) : (𝓝 x).ker = {x} := by
@@ -833,6 +860,29 @@ theorem eventually_ne_nhdsWithin [T1Space X] {a b : X} {s : Set X} (h : a ≠ b)
     ∀ᶠ x in 𝓝[s] a, x ≠ b :=
   Filter.Eventually.filter_mono nhdsWithin_le_nhds <| eventually_ne_nhds h
 
+theorem continuousWithinAt_insert [TopologicalSpace Y] [T1Space X]
+    {x y : X} {s : Set X} {f : X → Y} :
+    ContinuousWithinAt f (insert y s) x ↔ ContinuousWithinAt f s x := by
+  rcases eq_or_ne x y with (rfl | h)
+  · exact continuousWithinAt_insert_self
+  simp_rw [ContinuousWithinAt, nhdsWithin_insert_of_ne h]
+
+alias ⟨ContinuousWithinAt.of_insert, ContinuousWithinAt.insert'⟩ := continuousWithinAt_insert
+
+/-- See also `continuousWithinAt_diff_self` for the case `y = x` but not requiring `T1Space`. -/
+theorem continuousWithinAt_diff_singleton [TopologicalSpace Y] [T1Space X]
+    {x y : X} {s : Set X} {f : X → Y} :
+    ContinuousWithinAt f (s \ {y}) x ↔ ContinuousWithinAt f s x := by
+  rw [← continuousWithinAt_insert, insert_diff_singleton, continuousWithinAt_insert]
+
+/-- If two sets coincide locally around `x`, except maybe at `y`, then it is equivalent to be
+continuous at `x` within one set or the other. -/
+theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
+    {x : X} {s t : Set X} {f : X → Y} (y : X) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
+  rw [← continuousWithinAt_insert_self (s := s), ← continuousWithinAt_insert_self (s := t)]
+  exact continuousWithinAt_congr_set (eventuallyEq_insert h)
+
 /-- To prove a function to a `T1Space` is continuous at some point `x`, it suffices to prove that
 `f` admits *some* limit at `x`. -/
 theorem continuousAt_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {x : X} {y : Y}
@@ -899,9 +949,9 @@ theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Sp
   rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 0 9 :)]
   constructor
   · intro h x y xspecy
-    rw [← Inducing.specializes_iff inducing_mk, h xspecy] at *
+    rw [← IsInducing.specializes_iff isInducing_mk, h xspecy] at *
   · rintro h ⟨x⟩ ⟨y⟩ sxspecsy
-    have xspecy : x ⤳ y := (Inducing.specializes_iff inducing_mk).mp sxspecsy
+    have xspecy : x ⤳ y := isInducing_mk.specializes_iff.mp sxspecsy
     have yspecx : y ⤳ x := h xspecy
     erw [mk_eq_mk, inseparable_iff_specializes_and]
     exact ⟨xspecy, yspecx⟩
@@ -1135,11 +1185,13 @@ theorem R1Space.of_continuous_specializes_imp [TopologicalSpace Y] {f : Y → X}
   specializes_or_disjoint_nhds x y := (specializes_or_disjoint_nhds (f x) (f y)).imp (hspec x y) <|
     ((hc.tendsto _).disjoint · (hc.tendsto _))
 
-theorem Inducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) : R1Space Y :=
+theorem IsInducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : IsInducing f) : R1Space Y :=
   .of_continuous_specializes_imp hf.continuous fun _ _ ↦ hf.specializes_iff.1
 
+@[deprecated (since := "2024-10-28")] alias Inducing.r1Space := IsInducing.r1Space
+
 protected theorem R1Space.induced (f : Y → X) : @R1Space Y (.induced f ‹_›) :=
-  @Inducing.r1Space _ _ _ _ (.induced f _) f (inducing_induced f)
+  @IsInducing.r1Space _ _ _ _ (.induced f _) f (.induced f)
 
 instance (p : X → Prop) : R1Space (Subtype p) := .induced _
 
@@ -1549,21 +1601,24 @@ theorem T2Space.of_injective_continuous [TopologicalSpace Y] [T2Space Y] {f : X 
 
 /-- If the codomain of a topological embedding is a Hausdorff space, then so is its domain.
 See also `T2Space.of_continuous_injective`. -/
-theorem Embedding.t2Space [TopologicalSpace Y] [T2Space Y] {f : X → Y} (hf : Embedding f) :
-    T2Space X :=
+theorem IsEmbedding.t2Space [TopologicalSpace Y] [T2Space Y] {f : X → Y}
+    (hf : IsEmbedding f) : T2Space X :=
   .of_injective_continuous hf.inj hf.continuous
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.t2Space := IsEmbedding.t2Space
+
 instance ULift.instT2Space [T2Space X] : T2Space (ULift X) :=
-  embedding_uLift_down.t2Space
+  IsEmbedding.uliftDown.t2Space
 
 instance [T2Space X] [TopologicalSpace Y] [T2Space Y] :
     T2Space (X ⊕ Y) := by
   constructor
   rintro (x | x) (y | y) h
-  · exact separated_by_isOpenEmbedding isOpenEmbedding_inl <| ne_of_apply_ne _ h
+  · exact separated_by_isOpenEmbedding .inl <| ne_of_apply_ne _ h
   · exact separated_by_continuous continuous_isLeft <| by simp
   · exact separated_by_continuous continuous_isLeft <| by simp
-  · exact separated_by_isOpenEmbedding isOpenEmbedding_inr <| ne_of_apply_ne _ h
+  · exact separated_by_isOpenEmbedding .inr <| ne_of_apply_ne _ h
 
 instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
     [∀ a, T2Space (Y a)] : T2Space (∀ a, Y a) :=
@@ -1575,7 +1630,7 @@ instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [
   rintro ⟨i, x⟩ ⟨j, y⟩ neq
   rcases eq_or_ne i j with (rfl | h)
   · replace neq : x ≠ y := ne_of_apply_ne _ neq
-    exact separated_by_isOpenEmbedding isOpenEmbedding_sigmaMk neq
+    exact separated_by_isOpenEmbedding .sigmaMk neq
   · let _ := (⊥ : TopologicalSpace ι); have : DiscreteTopology ι := ⟨rfl⟩
     exact separated_by_continuous (continuous_def.2 fun u _ => isOpen_sigma_fst_preimage u) h
 
@@ -1603,7 +1658,7 @@ lemma mk_eq {x y : X} : mk x = mk y ↔ ∀ s : Setoid X, T2Space (Quotient s) �
 
 variable (X)
 
-lemma surjective_mk : Surjective (mk : X → t2Quotient X) := surjective_quotient_mk _
+lemma surjective_mk : Surjective (mk : X → t2Quotient X) := Quotient.mk_surjective
 
 lemma continuous_mk : Continuous (mk : X → t2Quotient X) :=
   continuous_quotient_mk'
@@ -1722,7 +1777,7 @@ alias Function.LeftInverse.closed_range := Function.LeftInverse.isClosed_range
 
 theorem Function.LeftInverse.isClosedEmbedding [T2Space X] {f : X → Y} {g : Y → X}
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : IsClosedEmbedding g :=
-  ⟨h.embedding hf hg, h.isClosed_range hf hg⟩
+  ⟨.of_leftInverse h hf hg, h.isClosed_range hf hg⟩
 
 @[deprecated (since := "2024-10-20")]
 alias Function.LeftInverse.closedEmbedding := Function.LeftInverse.isClosedEmbedding
@@ -1996,15 +2051,17 @@ theorem TopologicalSpace.IsTopologicalBasis.exists_closure_subset {B : Set (Set 
     ∃ t ∈ B, x ∈ t ∧ closure t ⊆ s := by
   simpa only [exists_prop, and_assoc] using hB.nhds_hasBasis.nhds_closure.mem_iff.mp h
 
-protected theorem Inducing.regularSpace [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) :
+protected theorem IsInducing.regularSpace [TopologicalSpace Y] {f : Y → X} (hf : IsInducing f) :
     RegularSpace Y :=
   .of_hasBasis
     (fun b => by rw [hf.nhds_eq_comap b]; exact (closed_nhds_basis _).comap _)
     fun b s hs => by exact hs.2.preimage hf.continuous
 
+@[deprecated (since := "2024-10-28")] alias Inducing.regularSpace := IsInducing.regularSpace
+
 theorem regularSpace_induced (f : Y → X) : @RegularSpace Y (induced f ‹_›) :=
   letI := induced f ‹_›
-  (inducing_induced f).regularSpace
+  (IsInducing.induced f).regularSpace
 
 theorem regularSpace_sInf {X} {T : Set (TopologicalSpace X)} (h : ∀ t ∈ T, @RegularSpace X t) :
     @RegularSpace X (sInf T) := by
@@ -2028,7 +2085,7 @@ theorem RegularSpace.inf {X} {t₁ t₂ : TopologicalSpace X} (h₁ : @RegularSp
   exact regularSpace_iInf (Bool.forall_bool.2 ⟨h₂, h₁⟩)
 
 instance {p : X → Prop} : RegularSpace (Subtype p) :=
-  embedding_subtype_val.toInducing.regularSpace
+  IsEmbedding.subtypeVal.isInducing.regularSpace
 
 instance [TopologicalSpace Y] [RegularSpace Y] : RegularSpace (X × Y) :=
   (regularSpace_induced (@Prod.fst X Y)).inf (regularSpace_induced (@Prod.snd X Y))
@@ -2143,12 +2200,15 @@ theorem T25Space.of_injective_continuous [TopologicalSpace Y] [T25Space Y] {f : 
   t2_5 x y hne := (tendsto_lift'_closure_nhds hcont x).disjoint (t2_5 <| hinj.ne hne)
     (tendsto_lift'_closure_nhds hcont y)
 
-theorem Embedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X → Y} (hf : Embedding f) :
-    T25Space X :=
+theorem IsEmbedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X → Y}
+    (hf : IsEmbedding f) : T25Space X :=
   .of_injective_continuous hf.inj hf.continuous
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.t25Space := IsEmbedding.t25Space
+
 instance Subtype.instT25Space [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
-  embedding_subtype_val.t25Space
+  IsEmbedding.subtypeVal.t25Space
 
 end T25
 
@@ -2172,16 +2232,19 @@ instance (priority := 100) T3Space.t25Space [T3Space X] : T25Space X := by
   simp only [← disjoint_nhds_nhdsSet, nhdsSet_singleton] at this
   exact this.elim id fun h => h.symm
 
-protected theorem Embedding.t3Space [TopologicalSpace Y] [T3Space Y] {f : X → Y}
-    (hf : Embedding f) : T3Space X :=
+protected theorem IsEmbedding.t3Space [TopologicalSpace Y] [T3Space Y] {f : X → Y}
+    (hf : IsEmbedding f) : T3Space X :=
   { toT0Space := hf.t0Space
-    toRegularSpace := hf.toInducing.regularSpace }
+    toRegularSpace := hf.isInducing.regularSpace }
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.t3Space := IsEmbedding.t3Space
 
 instance Subtype.t3Space [T3Space X] {p : X → Prop} : T3Space (Subtype p) :=
-  embedding_subtype_val.t3Space
+  IsEmbedding.subtypeVal.t3Space
 
 instance ULift.instT3Space [T3Space X] : T3Space (ULift X) :=
-  embedding_uLift_down.t3Space
+  IsEmbedding.uliftDown.t3Space
 
 instance [TopologicalSpace Y] [T3Space X] [T3Space Y] : T3Space (X × Y) := ⟨⟩
 
@@ -2286,14 +2349,13 @@ theorem T4Space.of_compactSpace_t2Space [CompactSpace X] [T2Space X] :
 /-- If the codomain of a closed embedding is a T₄ space, then so is the domain. -/
 protected theorem IsClosedEmbedding.t4Space [TopologicalSpace Y] [T4Space Y] {f : X → Y}
     (hf : IsClosedEmbedding f) : T4Space X where
-  toT1Space := hf.toEmbedding.t1Space
+  toT1Space := hf.isEmbedding.t1Space
   toNormalSpace := hf.normalSpace
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.t4Space := IsClosedEmbedding.t4Space
 
-instance ULift.instT4Space [T4Space X] : T4Space (ULift X) :=
-  ULift.isClosedEmbedding_down.t4Space
+instance ULift.instT4Space [T4Space X] : T4Space (ULift X) := IsClosedEmbedding.uliftDown.t4Space
 
 namespace SeparationQuotient
 
@@ -2330,33 +2392,39 @@ instance (priority := 100) CompletelyNormalSpace.toNormalSpace
   normal s t hs ht hd := separatedNhds_iff_disjoint.2 <|
     completely_normal (by rwa [hs.closure_eq]) (by rwa [ht.closure_eq])
 
-theorem Embedding.completelyNormalSpace [TopologicalSpace Y] [CompletelyNormalSpace Y] {e : X → Y}
-    (he : Embedding e) : CompletelyNormalSpace X := by
+theorem IsEmbedding.completelyNormalSpace [TopologicalSpace Y] [CompletelyNormalSpace Y]
+    {e : X → Y} (he : IsEmbedding e) : CompletelyNormalSpace X := by
   refine ⟨fun s t hd₁ hd₂ => ?_⟩
-  simp only [he.toInducing.nhdsSet_eq_comap]
+  simp only [he.isInducing.nhdsSet_eq_comap]
   refine disjoint_comap (completely_normal ?_ ?_)
   · rwa [← subset_compl_iff_disjoint_left, image_subset_iff, preimage_compl,
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_left]
   · rwa [← subset_compl_iff_disjoint_right, image_subset_iff, preimage_compl,
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_right]
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.completelyNormalSpace := IsEmbedding.completelyNormalSpace
+
 /-- A subspace of a completely normal space is a completely normal space. -/
 instance [CompletelyNormalSpace X] {p : X → Prop} : CompletelyNormalSpace { x // p x } :=
-  embedding_subtype_val.completelyNormalSpace
+  IsEmbedding.subtypeVal.completelyNormalSpace
 
 instance ULift.instCompletelyNormalSpace [CompletelyNormalSpace X] :
     CompletelyNormalSpace (ULift X) :=
-  embedding_uLift_down.completelyNormalSpace
+  IsEmbedding.uliftDown.completelyNormalSpace
 
 /-- A T₅ space is a completely normal T₁ space. -/
 class T5Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyNormalSpace X : Prop
 
-theorem Embedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y} (he : Embedding e) :
-    T5Space X where
+theorem IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y}
+    (he : IsEmbedding e) : T5Space X where
   __ := he.t1Space
   completely_normal := by
-    have := Embedding.completelyNormalSpace he
+    have := he.completelyNormalSpace
     exact completely_normal
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.t5Space := IsEmbedding.t5Space
 
 -- see Note [lower instance priority]
 /-- A `T₅` space is a `T₄` space. -/
@@ -2365,10 +2433,10 @@ instance (priority := 100) T5Space.toT4Space [T5Space X] : T4Space X where
 
 /-- A subspace of a T₅ space is a T₅ space. -/
 instance [T5Space X] {p : X → Prop} : T5Space { x // p x } :=
-  embedding_subtype_val.t5Space
+  IsEmbedding.subtypeVal.t5Space
 
 instance ULift.instT5Space [T5Space X] : T5Space (ULift X) :=
-  embedding_uLift_down.t5Space
+  IsEmbedding.uliftDown.t5Space
 
 open SeparationQuotient
 
@@ -2525,10 +2593,11 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
   haveI : CompactSpace s := isCompact_iff_compactSpace.1 comp
   obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := compact_exists_isClopen_in_isOpen u_open_in_s xs
   have VisClopen' : IsClopen (((↑) : s → H) '' V) := by
-    refine ⟨comp.isClosed.isClosedEmbedding_subtypeVal.closed_iff_image_closed.1 VisClopen.1, ?_⟩
+    refine ⟨comp.isClosed.isClosedEmbedding_subtypeVal.isClosed_iff_image_isClosed.1 VisClopen.1,
+      ?_⟩
     let v : Set u := ((↑) : u → s) ⁻¹' V
     have : ((↑) : u → H) = ((↑) : s → H) ∘ ((↑) : u → s) := rfl
-    have f0 : Embedding ((↑) : u → H) := embedding_subtype_val.comp embedding_subtype_val
+    have f0 : IsEmbedding ((↑) : u → H) := IsEmbedding.subtypeVal.comp IsEmbedding.subtypeVal
     have f1 : IsOpenEmbedding ((↑) : u → H) := by
       refine ⟨f0, ?_⟩
       · have : Set.range ((↑) : u → H) = interior s := by

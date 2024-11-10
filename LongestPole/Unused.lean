@@ -35,6 +35,7 @@ Demo video at https://youtu.be/PVj_FHGwhUI
 
 
 open Cli
+
 open Lean Name
 
 def Core.withImportModules (modules : Array Name) {α} (f : CoreM α) : IO α := do

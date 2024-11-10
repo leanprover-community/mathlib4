@@ -982,8 +982,6 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
-  -- Also compiles without the option, but much slower.
-  set_option tactic.skipAssignedInstances false in
   simp [← mem_coe, coe_pow, Set.mem_pow]
 
 @[to_additive (attr := simp) nsmul_empty]
@@ -1021,6 +1019,17 @@ theorem univ_pow [Fintype α] (hn : n ≠ 0) : (univ : Finset α) ^ n = univ :=
 @[to_additive]
 protected theorem _root_.IsUnit.finset : IsUnit a → IsUnit ({a} : Finset α) :=
   IsUnit.map (singletonMonoidHom : α →* Finset α)
+
+@[to_additive]
+lemma image_op_pow (s : Finset α) : ∀ n : ℕ, (s ^ n).image op = s.image op ^ n
+  | 0 => by simp [singleton_one]
+  | n + 1 => by rw [pow_succ, pow_succ', image_op_mul, image_op_pow]
+
+@[to_additive]
+lemma map_op_pow (s : Finset α) :
+    ∀ n : ℕ, (s ^ n).map opEquiv.toEmbedding = s.map opEquiv.toEmbedding ^ n
+  | 0 => by simp [singleton_one]
+  | n + 1 => by rw [pow_succ, pow_succ', map_op_mul, map_op_pow]
 
 end Monoid
 
