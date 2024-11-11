@@ -97,6 +97,21 @@ theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
 
 end IsLocalRing
 
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.map_mkQ_eq := IsLocalRing.map_mkQ_eq
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.map_mkQ_eq_top := IsLocalRing.map_mkQ_eq_top
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.map_tensorProduct_mk_eq_top := IsLocalRing.map_tensorProduct_mk_eq_top
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.subsingleton_tensorProduct := IsLocalRing.subsingleton_tensorProduct
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.span_eq_top_of_tmul_eq_basis := IsLocalRing.span_eq_top_of_tmul_eq_basis
+
 open Function in
 /--
 Given `M₁ → M₂ → M₃ → 0` and `N₁ → N₂ → N₃ → 0`,

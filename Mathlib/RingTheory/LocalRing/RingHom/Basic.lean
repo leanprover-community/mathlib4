@@ -132,6 +132,11 @@ instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
   map_nonunit r hr := by simpa only [isUnit_iff_ne_zero, ne_eq, map_eq_zero] using hr.ne_zero
 
 end IsLocalRing
+@[deprecated (since := "2024-11-11")] alias LocalRing.local_hom_TFAE := IsLocalRing.local_hom_TFAE
+@[deprecated (since := "2024-11-11")] alias LocalRing.of_surjective := IsLocalRing.of_surjective
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.surjective_units_map_of_local_ringHom :=
+  IsLocalRing.surjective_units_map_of_local_ringHom
 
 namespace RingEquiv
 

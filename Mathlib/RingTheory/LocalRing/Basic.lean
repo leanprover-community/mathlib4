@@ -67,6 +67,24 @@ theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) :
 
 end IsLocalRing
 
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.of_isUnit_or_isUnit_of_isUnit_add := IsLocalRing.of_isUnit_or_isUnit_of_isUnit_add
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.of_nonunits_add := IsLocalRing.of_nonunits_add
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.of_unique_max_ideal := IsLocalRing.of_unique_max_ideal
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.of_unique_nonzero_prime := IsLocalRing.of_unique_nonzero_prime
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.isUnit_or_isUnit_of_isUnit_add := IsLocalRing.isUnit_or_isUnit_of_isUnit_add
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.nonunits_add := IsLocalRing.nonunits_add
+
 end CommSemiring
 
 namespace IsLocalRing
@@ -96,6 +114,23 @@ theorem of_surjective' [CommRing S] [Nontrivial S] (f : R →+* S) (hf : Functio
     apply (isUnit_or_isUnit_one_sub_self a).imp <| RingHom.isUnit_map _
     rw [← f.map_one, ← f.map_sub]
     apply f.isUnit_map)
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.of_isUnit_or_isUnit_one_sub_self := IsLocalRing.of_isUnit_or_isUnit_one_sub_self
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.isUnit_or_isUnit_one_sub_self := IsLocalRing.isUnit_or_isUnit_one_sub_self
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.isUnit_of_mem_nonunits_one_sub_self :=
+  IsLocalRing.isUnit_of_mem_nonunits_one_sub_self
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.isUnit_one_sub_self_of_mem_nonunits :=
+  IsLocalRing.isUnit_one_sub_self_of_mem_nonunits
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.of_surjective' := IsLocalRing.of_surjective'
 
 end IsLocalRing
 
