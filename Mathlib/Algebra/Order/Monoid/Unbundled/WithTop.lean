@@ -227,6 +227,17 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
     a + c < b + d :=
   (WithTop.add_lt_add_right hc hab).trans_le <| add_le_add_left hcd _
 
+lemma addLECancellable_of_ne_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+    (ha : a ≠ ⊤) : AddLECancellable a := fun _b _c ↦ WithTop.le_of_add_le_add_left ha
+
+lemma addLECancellable_of_lt_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+    (ha : a < ⊤) : AddLECancellable a := addLECancellable_of_ne_top ha.ne
+
+lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)] : AddLECancellable a ↔ a ≠ ⊤ where
+  mp := by rintro h rfl; exact (coe_lt_top <| Classical.arbitrary _).not_le <| h <| by simp
+  mpr := addLECancellable_of_ne_top
+
 --  There is no `WithTop.map_mul_of_mulHom`, since `WithTop` does not have a multiplication.
 @[simp]
 protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]

@@ -27,7 +27,11 @@ respectively, `3 + (x + y)` and `4 + (x + y)`, which differ by an additive const
 
 The automation is provided in the `MetaM` monad; that is, these functions are not user-facing. It
 would not be hard to provide user-facing versions (see the test file), but the scope of this
-automation is rather specialized and might be confusing to users. It is also subsumed by `linarith`.
+automation is rather specialized and might be confusing to users.
+
+However, this automation serves as the discharger for the `linear_combination` tactic on inequality
+goals, so it is available to the user indirectly as the "degenerate" case of that tactic -- that is,
+by calling `linear_combination` without arguments.
 -/
 
 namespace Mathlib.Tactic.Ring
