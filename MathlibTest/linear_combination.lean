@@ -402,6 +402,16 @@ example {t : ℚ} (ht : t ≥ 10) : t ^ 2 - 3 * t - 17 ≥ 5 := by linear_combin
 
 example {n : ℤ} (hn : n ≥ 5) : n ^ 2 > 2 * n + 11 := by linear_combination (n + 3) * hn
 
+example {a b : ℚ} : a * b ≤ (a ^ 2 + b ^ 2) / 2 := by linear_combination sq_nonneg (a - b) / 2
+
+example {a b c : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hc : 0 ≤ c) :
+    a * b * c ≤ (a ^ 3 + b ^ 3 + c ^ 3) / 3 := by
+  have h : (a - b) ^ 2 + (b - c) ^ 2 + (c - a) ^ 2 ≥ 0 := by positivity
+  linear_combination (a + b + c) * h / 6
+
+example {a b c x : ℚ} (h : a * x ^ 2 + b * x + c = 0) : b ^ 2 ≥ 4 * a * c := by
+  linear_combination 4 * a * h + sq_nonneg (2 * a * x + b)
+
 /-! ### Regression tests -/
 
 def g (a : ℤ) : ℤ := a ^ 2
