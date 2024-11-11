@@ -64,9 +64,8 @@ jobs:
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
         id: determine_topic
         run: |
-          ./scripts/get_tlabel.sh "${PR}" >> "$GITHUB_OUTPUT"
+          ./scripts/get_tlabel.sh "/repos/leanprover-community/mathlib4/issues/${PR_NUMBER}" >> "$GITHUB_OUTPUT"
         env:
-          PR:  /repos/leanprover-community/mathlib4/issues/${{ github.event.issue.number }}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Form the message
@@ -80,7 +79,7 @@ jobs:
           message="$(
             ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}"
           )"
-          printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
+          printf 'title<<EOF\n%s\n[CI run](%s)\nEOF' "${message}" "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" | tee "$GITHUB_OUTPUT"
 
       - name: Send message on Zulip
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
