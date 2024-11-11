@@ -51,8 +51,7 @@ a few of which rely on the fact that subtraction is continuous.
 
 noncomputable section
 
-open Set TopologicalSpace Metric Filter
-open scoped Topology
+open Filter Metric Set TopologicalSpace Topology
 
 namespace NNReal
 

@@ -28,7 +28,7 @@ Beyond that, there's a collection of simp lemmas for working with these construc
 -/
 
 
-open CategoryTheory TopologicalSpace Opposite
+open CategoryTheory TopologicalSpace Opposite Topology
 
 universe u
 
@@ -295,8 +295,8 @@ instance IsOpenMap.functorFullOfMono {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMa
 instance IsOpenMap.functor_faithful {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :
     hf.functor.Faithful where
 
-lemma IsOpenEmbedding.functor_obj_injective {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenEmbedding f) :
-    Function.Injective hf.isOpenMap.functor.obj :=
+lemma Topology.IsOpenEmbedding.functor_obj_injective {X Y : TopCat} {f : X ⟶ Y}
+    (hf : IsOpenEmbedding f) : Function.Injective hf.isOpenMap.functor.obj :=
   fun _ _ e ↦ Opens.ext (Set.image_injective.mpr hf.inj (congr_arg (↑· : Opens Y → Set Y) e))
 
 @[deprecated (since := "2024-10-18")]

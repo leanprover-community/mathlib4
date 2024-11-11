@@ -26,7 +26,7 @@ of compact open subsets are still compact.
 -/
 
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
 
@@ -81,7 +81,7 @@ theorem IsQuasiSeparated.image_of_isEmbedding {s : Set α} (H : IsQuasiSeparated
 @[deprecated (since := "2024-10-26")]
 alias IsQuasiSeparated.image_of_embedding := IsQuasiSeparated.image_of_isEmbedding
 
-theorem IsOpenEmbedding.isQuasiSeparated_iff (h : IsOpenEmbedding f) {s : Set α} :
+theorem Topology.IsOpenEmbedding.isQuasiSeparated_iff (h : IsOpenEmbedding f) {s : Set α} :
     IsQuasiSeparated s ↔ IsQuasiSeparated (f '' s) := by
   refine ⟨fun hs => hs.image_of_isEmbedding h.isEmbedding, ?_⟩
   intro H U V hU hU' hU'' hV hV' hV''

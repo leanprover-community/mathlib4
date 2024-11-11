@@ -99,7 +99,7 @@ lemma IsSigmaCompact.image {f : X → Y} (hf : Continuous f) {s : Set X} (hs : I
 
 /-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is σ-compact
   if and only `s` is σ-compact. -/
-lemma IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
+lemma Topology.IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
     (hf : IsInducing f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
   constructor
   · exact fun h ↦ h.image hf.continuous
@@ -123,7 +123,7 @@ alias Inducing.isSigmaCompact_iff := IsInducing.isSigmaCompact_iff
 
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
   if and only `s` is σ-compact. -/
-lemma IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
+lemma Topology.IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
     (hf : IsEmbedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
   hf.isInducing.isSigmaCompact_iff
 
@@ -255,8 +255,8 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
       refine ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ ?_⟩
       exact compactCovering_subset _ (le_max_right _ _) hn
 
-protected theorem IsClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : IsClosedEmbedding e) :
-    SigmaCompactSpace Y :=
+protected lemma Topology.IsClosedEmbedding.sigmaCompactSpace {e : Y → X}
+    (he : IsClosedEmbedding e) : SigmaCompactSpace Y :=
   ⟨⟨fun n => e ⁻¹' compactCovering X n, fun _ =>
       he.isCompact_preimage (isCompact_compactCovering _ _), by
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩

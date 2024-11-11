@@ -18,7 +18,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits
 

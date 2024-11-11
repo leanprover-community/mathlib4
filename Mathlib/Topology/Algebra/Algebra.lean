@@ -27,7 +27,7 @@ TODO: add continuous algebra isomorphisms.
 
 -/
 
-open Set TopologicalSpace Algebra
+open Algebra Set TopologicalSpace Topology
 
 universe u v w
 

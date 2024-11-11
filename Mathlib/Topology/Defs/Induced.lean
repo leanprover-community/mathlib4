@@ -80,6 +80,7 @@ def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
 
 end TopologicalSpace
 
+namespace Topology
 variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
 
 /-- We say that restrictions of the topology on `X` to sets from a family `S`
@@ -142,3 +143,5 @@ structure IsQuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : 
 
 @[deprecated (since := "2024-10-22")]
 alias QuotientMap := IsQuotientMap
+
+end Topology

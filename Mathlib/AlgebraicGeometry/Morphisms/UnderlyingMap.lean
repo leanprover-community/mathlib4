@@ -24,7 +24,7 @@ of the underlying map of topological spaces, including
 
 -/
 
-open CategoryTheory
+open CategoryTheory Topology
 
 namespace AlgebraicGeometry
 

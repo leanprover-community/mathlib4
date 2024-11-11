@@ -17,8 +17,7 @@ be satisfied by itself and all stricter types.
 -/
 
 
-open Function
-open scoped Topology
+open Function Topology
 
 section ContinuousMapClass
 
@@ -366,7 +365,7 @@ def Function.RightInverse.homeomorph {f' : C(Y, X)} (hf : Function.RightInverse 
   continuous_toFun := isQuotientMap_quot_mk.continuous_iff.mpr (map_continuous f)
   continuous_invFun := continuous_quotient_mk'.comp (map_continuous f')
 
-namespace IsQuotientMap
+namespace Topology.IsQuotientMap
 
 /--
 The homeomorphism from the quotient of a quotient map to its codomain. This is
@@ -420,8 +419,7 @@ noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ 
     ext a
     simpa using congrArg g (Function.rightInverse_surjInv hf.surjective a)
 
-end IsQuotientMap
-
+end Topology.IsQuotientMap
 end Lift
 
 namespace Homeomorph

@@ -54,8 +54,7 @@ Vector bundle
 
 noncomputable section
 
-open Bundle Set
-open scoped Topology
+open Bundle Set Topology
 
 variable (R : Type*) {B : Type*} (F : Type*) (E : B → Type*)
 

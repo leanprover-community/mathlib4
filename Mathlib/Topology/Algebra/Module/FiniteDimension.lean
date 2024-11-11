@@ -43,12 +43,11 @@ result follows as `continuous_equivFun_basis`.
 
 -/
 
+open Filter Module Set TopologicalSpace Topology
 
 universe u v w x
 
 noncomputable section
-
-open Filter Module Set TopologicalSpace
 
 section Field
 

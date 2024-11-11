@@ -48,6 +48,7 @@ open TopologicalSpace Topology Filter
 
 variable {X : Type*} {Y : Type*} {Z : Type*} {ι : Type*} {f : X → Y} {g : Y → Z}
 
+namespace Topology
 section IsInducing
 
 variable [TopologicalSpace Y]
@@ -329,7 +330,7 @@ protected theorem isClosed_preimage (hf : IsQuotientMap f) {s : Set Y} :
 
 end IsQuotientMap
 
-end IsQuotientMap
+end Topology.IsQuotientMap
 
 section OpenMap
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
@@ -433,7 +434,7 @@ theorem isOpenMap_iff_interior : IsOpenMap f ↔ ∀ s, f '' interior s ⊆ inte
         _ ⊆ interior (f '' u) := hs u⟩
 
 /-- An inducing map with an open range is an open map. -/
-protected lemma IsInducing.isOpenMap (hi : IsInducing f) (ho : IsOpen (range f)) :
+protected lemma Topology.IsInducing.isOpenMap (hi : IsInducing f) (ho : IsOpen (range f)) :
     IsOpenMap f :=
   IsOpenMap.of_nhds_le fun _ => (hi.map_nhds_of_mem _ <| IsOpen.mem_nhds ho <| mem_range_self _).ge
 
@@ -490,7 +491,7 @@ alias to_quotientMap := isQuotientMap
 
 end IsClosedMap
 
-lemma IsInducing.isClosedMap (hf : IsInducing f) (h : IsClosed (range f)) :
+lemma Topology.IsInducing.isClosedMap (hf : IsInducing f) (h : IsClosed (range f)) :
     IsClosedMap f := by
   intro s hs
   rcases hf.isClosed_iff.1 hs with ⟨t, ht, rfl⟩
@@ -537,6 +538,7 @@ theorem IsClosedMap.mapClusterPt_iff_lift'_closure
 
 end IsClosedMap
 
+namespace Topology
 section IsOpenEmbedding
 
 variable [TopologicalSpace X] [TopologicalSpace Y]
@@ -769,6 +771,4 @@ theorem closure_image_eq (hf : IsClosedEmbedding f) (s : Set X) :
     closure (f '' s) = f '' closure s :=
   hf.isClosedMap.closure_image_eq_of_continuous hf.continuous s
 
-end IsClosedEmbedding
-
-end IsClosedEmbedding
+end Topology.IsClosedEmbedding.IsClosedEmbedding

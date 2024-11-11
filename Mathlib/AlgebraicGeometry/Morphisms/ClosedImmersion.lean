@@ -32,7 +32,7 @@ is a closed immersion and the induced morphisms of stalks are all surjective.
 
 universe v u
 
-open CategoryTheory TopologicalSpace Opposite
+open CategoryTheory Opposite TopologicalSpace Topology
 
 namespace AlgebraicGeometry
 

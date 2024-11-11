@@ -9,8 +9,7 @@ import Mathlib.Topology.Category.TopCat.Limits.Products
 # Pullbacks and pushouts in the category of topological spaces
 -/
 
-
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open CategoryTheory
 

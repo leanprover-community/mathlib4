@@ -16,9 +16,7 @@ resp. right adjoint to the forgetful functor, see `Mathlib.Topology.Category.Top
 -/
 
 
-open CategoryTheory
-
-open TopologicalSpace
+open CategoryTheory TopologicalSpace Topology
 
 universe u
 

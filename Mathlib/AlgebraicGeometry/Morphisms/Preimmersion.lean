@@ -26,7 +26,7 @@ in the literature but it is useful for generalizing results on immersions to oth
 
 universe v u
 
-open CategoryTheory
+open CategoryTheory Topology
 
 namespace AlgebraicGeometry
 

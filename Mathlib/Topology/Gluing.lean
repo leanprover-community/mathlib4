@@ -52,7 +52,7 @@ provided.
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory
+open CategoryTheory TopologicalSpace Topology
 
 universe v u
 

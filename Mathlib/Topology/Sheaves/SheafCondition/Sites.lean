@@ -24,10 +24,9 @@ induce cover preserving functors, and that open embeddings induce continuous fun
 
 noncomputable section
 
+open CategoryTheory TopologicalSpace Topology
 
 universe w v u
-
-open CategoryTheory TopologicalSpace
 
 namespace TopCat.Presheaf
 
@@ -143,7 +142,7 @@ open TopCat.Presheaf Opposite
 variable {C : Type u} [Category.{v} C]
 variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
-theorem IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
+theorem Topology.IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
     CompatiblePreserving (Opens.grothendieckTopology Y) hf.isOpenMap.functor := by
   haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.inj
   apply compatiblePreservingOfDownwardsClosed
@@ -163,7 +162,7 @@ theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
   exact ⟨_, hf.functor.map i, ⟨_, i, 𝟙 _, hV, rfl⟩, Set.mem_image_of_mem f hxV⟩
 
 
-lemma IsOpenEmbedding.functor_isContinuous (h : IsOpenEmbedding f) :
+lemma Topology.IsOpenEmbedding.functor_isContinuous (h : IsOpenEmbedding f) :
     h.isOpenMap.functor.IsContinuous (Opens.grothendieckTopology X)
       (Opens.grothendieckTopology Y) := by
   apply Functor.isContinuous_of_coverPreserving

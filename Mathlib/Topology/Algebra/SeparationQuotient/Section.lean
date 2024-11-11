@@ -15,6 +15,8 @@ In this file we construct a section of the quotient map `E → SeparationQuotien
 linear map `SeparationQuotient E →L[K] E`.
 -/
 
+open Topology
+
 namespace SeparationQuotient
 section VectorSpace
 

@@ -19,9 +19,7 @@ Results requiring a group (rather than monoid) structure on the target should go
 
 noncomputable section
 
-open Filter Finset Function
-
-open scoped Topology
+open Filter Finset Function Topology
 
 variable {α β γ δ : Type*}
 
@@ -192,7 +190,7 @@ protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasPro
   exact (hg.tendsto a).comp hf
 
 @[to_additive]
-protected theorem IsInducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
+protected theorem Topology.IsInducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
     [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) (a : α) :
     HasProd (g ∘ f) (g a) ↔ HasProd f a := by
   simp_rw [HasProd, comp_apply, ← map_prod]
@@ -220,7 +218,7 @@ theorem Multipliable.map_tprod [CommMonoid γ] [TopologicalSpace γ] [T2Space γ
     g (∏' i, f i) = ∏' i, g (f i) := (HasProd.tprod_eq (HasProd.map hf.hasProd g hg)).symm
 
 @[to_additive]
-lemma IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [TopologicalSpace γ]
+lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [TopologicalSpace γ]
     [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) :
     Multipliable f ↔ Multipliable (g ∘ f) ∧ ∏' i, g (f i) ∈ Set.range g := by
   constructor

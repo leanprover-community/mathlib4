@@ -47,6 +47,7 @@ encoded in the `UniqueNonUnitalContinuousFunctionalCalculus` class.
 -/
 local notation "σₙ" => quasispectrum
 
+open Topology
 open scoped ContinuousMapZero
 
 /-- A non-unital star `R`-algebra `A` has a *continuous functional calculus* for elements

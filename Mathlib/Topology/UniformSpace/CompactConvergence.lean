@@ -83,13 +83,10 @@ so that the resulting instance uses the compact-open topology.
   and uniform limits of sequences `ι → γ → C(α, β)`.
 -/
 
-
-universe u₁ u₂ u₃
-
+open Filter Set Topology UniformSpace
 open scoped Uniformity Topology UniformConvergence
 
-open UniformSpace Set Filter
-
+universe u₁ u₂ u₃
 variable {α : Type u₁} {β : Type u₂} [TopologicalSpace α] [UniformSpace β]
 variable (K : Set α) (V : Set (β × β)) (f : C(α, β))
 

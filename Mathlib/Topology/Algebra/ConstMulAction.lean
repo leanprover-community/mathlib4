@@ -143,7 +143,7 @@ theorem Inseparable.const_smul {x y : α} (h : Inseparable x y) (c : M) :
   h.map (continuous_const_smul c)
 
 @[to_additive]
-theorem IsInducing.continuousConstSMul {N β : Type*} [SMul N β] [TopologicalSpace β]
+theorem Topology.IsInducing.continuousConstSMul {N β : Type*} [SMul N β] [TopologicalSpace β]
     {g : β → α} (hg : IsInducing g) (f : N → M) (hf : ∀ {c : N} {x : β}, g (c • x) = f c • g x) :
     ContinuousConstSMul N β where
   continuous_const_smul c := by

@@ -1162,7 +1162,7 @@ theorem trans_transPartialHomeomorph (e : X ≃ₜ Y) (e' : Y ≃ₜ Z) (f'' : P
 
 end Homeomorph
 
-namespace IsOpenEmbedding
+namespace Topology.IsOpenEmbedding
 
 variable (f : X → Y) (h : IsOpenEmbedding f)
 
@@ -1185,7 +1185,7 @@ lemma toPartialHomeomorph_right_inv {x : Y} (hx : x ∈ Set.range f) :
   rw [← congr_fun (h.toPartialHomeomorph_apply f), PartialHomeomorph.right_inv]
   rwa [toPartialHomeomorph_target]
 
-end IsOpenEmbedding
+end Topology.IsOpenEmbedding
 
 /-! inclusion of an open set in a topological space -/
 namespace TopologicalSpace.Opens

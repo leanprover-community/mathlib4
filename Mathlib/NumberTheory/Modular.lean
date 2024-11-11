@@ -64,7 +64,7 @@ open Complex hiding abs_two
 
 open Matrix hiding mul_smul
 
-open Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup
+open Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup Topology
 
 noncomputable section
 

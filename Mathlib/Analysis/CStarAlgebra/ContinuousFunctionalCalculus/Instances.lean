@@ -31,6 +31,8 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 continuous functional calculus, normal, selfadjoint
 -/
 
+open Topology
+
 noncomputable section
 
 local notation "σₙ" => quasispectrum

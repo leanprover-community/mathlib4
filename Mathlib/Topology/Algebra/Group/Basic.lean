@@ -374,7 +374,7 @@ theorem continuousInv_inf {t₁ t₂ : TopologicalSpace G} (h₁ : @ContinuousIn
 end LatticeOps
 
 @[to_additive]
-theorem IsInducing.continuousInv {G H : Type*} [Inv G] [Inv H] [TopologicalSpace G]
+theorem Topology.IsInducing.continuousInv {G H : Type*} [Inv G] [Inv H] [TopologicalSpace G]
     [TopologicalSpace H] [ContinuousInv H] {f : G → H} (hf : IsInducing f)
     (hf_inv : ∀ x, f x⁻¹ = (f x)⁻¹) : ContinuousInv G :=
   ⟨hf.continuous_iff.2 <| by simpa only [Function.comp_def, hf_inv] using hf.continuous.inv⟩
@@ -585,7 +585,7 @@ theorem Homeomorph.shearMulRight_symm_coe :
 variable {G}
 
 @[to_additive]
-protected theorem IsInducing.topologicalGroup {F : Type*} [Group H] [TopologicalSpace H]
+protected theorem Topology.IsInducing.topologicalGroup {F : Type*} [Group H] [TopologicalSpace H]
     [FunLike F H G] [MonoidHomClass F H G] (f : F) (hf : IsInducing f) : TopologicalGroup H :=
   { toContinuousMul := hf.continuousMul _
     toContinuousInv := hf.continuousInv (map_inv f) }

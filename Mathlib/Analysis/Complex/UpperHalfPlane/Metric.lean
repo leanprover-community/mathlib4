@@ -25,9 +25,8 @@ ball/sphere with another center and radius.
 
 noncomputable section
 
+open Filter Metric Real Set Topology
 open scoped UpperHalfPlane ComplexConjugate NNReal Topology MatrixGroups
-
-open Set Metric Filter Real
 
 variable {z w : ℍ} {r : ℝ}
 
