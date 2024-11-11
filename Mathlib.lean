@@ -1233,6 +1233,8 @@ import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 import Mathlib.Analysis.Distribution.FourierSchwartz
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.Analysis.Fourier.AddCircle
+import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
+import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
 import Mathlib.Analysis.Fourier.Inversion
@@ -4238,7 +4240,11 @@ import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.Noetherian.Filter
+import Mathlib.RingTheory.Noetherian.Nilpotent
+import Mathlib.RingTheory.Noetherian.Orzech
+import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 import Mathlib.RingTheory.NonUnitalSubring.Basic
 import Mathlib.RingTheory.NonUnitalSubring.Defs
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
@@ -4713,6 +4719,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
+import Mathlib.Topology.Algebra.InfiniteSum.Field
 import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
 import Mathlib.Topology.Algebra.InfiniteSum.Module
