@@ -140,7 +140,7 @@ This also exists as a `conv`-mode tactic.
 If no local definitions are given, then all local definitions are unfolded.
 This variant also exists as the `conv`-mode tactic `zeta`.
 -/
-@[deprecated unfold]
+@[deprecated unfold (since := "2024-11-11")]
 syntax (name := unfoldLetStx) "unfold_let" (ppSpace colGt term:max)*
   (ppSpace Parser.Tactic.location)? : tactic
 
@@ -153,7 +153,7 @@ elab_rules : tactic
     logWarning "The `unfold_let` tactic is deprecated. Please use `unfold` instead."
     runDefEqTactic (fun _ => unfoldFVars fvars) loc? "unfold_let"
 
-@[inherit_doc unfoldLetStx, deprecated unfold]
+@[inherit_doc unfoldLetStx, deprecated unfold (since := "2024-11-11")]
 syntax "unfold_let" (ppSpace colGt term:max)* : conv
 
 elab_rules : conv
