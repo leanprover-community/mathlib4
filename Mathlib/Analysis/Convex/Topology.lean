@@ -16,6 +16,8 @@ We prove the following facts:
 
 * `Convex.interior` : interior of a convex set is convex;
 * `Convex.closure` : closure of a convex set is convex;
+* `closedConvexHull_eq_closedConvexHull_closure` : the closed convex hull of a set is equal to the
+  closed convex hull of the closure;
 * `Set.Finite.isCompact_convexHull` : convex hull of a finite set is compact;
 * `Set.Finite.isClosed_convexHull` : convex hull of a finite set is closed.
 -/
