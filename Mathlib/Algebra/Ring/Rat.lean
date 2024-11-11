@@ -51,7 +51,7 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
     zero_mul := zero_mul }
 
 instance isDomain : IsDomain ℚ := NoZeroDivisors.to_isDomain _
-@[stacks 09FS "The characteristic of $\mathbb{Q}$ is $0$."]
+@[stacks 09FS "The characteristic of `ℚ` is 0."]
 instance instCharZero : CharZero ℚ where cast_injective a b hab := by simpa using congr_arg num hab
 
 /-!
