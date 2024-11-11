@@ -37,22 +37,27 @@ for message in messages:
         pr_number = match.group(1)
         # Check for emoji reactions
         reactions = message['reactions']
-        has_merge = any(reaction['emoji_name'] == 'merge' for reaction in reactions)
         has_peace_sign = any(reaction['emoji_name'] == 'peace_sign' for reaction in reactions)
+        has_bors = any(reaction['emoji_name'] == 'bors' for reaction in reactions)
+        has_merge = any(reaction['emoji_name'] == 'merge' for reaction in reactions)
 
-        if not has_merge and not has_peace_sign:
-            pr_url = f"https://api.github.com/repos/leanprover-community/mathlib4/pulls/{pr_number}"
-            pr_response = requests.get(pr_url, headers={"Authorization": GITHUB_TOKEN})
-            pr_data = pr_response.json()
-            labels = [label['name'] for label in pr_data['labels']]
+        pr_url = f"https://api.github.com/repos/leanprover-community/mathlib4/pulls/{pr_number}"
+        pr_response = requests.get(pr_url, headers={"Authorization": GITHUB_TOKEN})
+        pr_data = pr_response.json()
+        labels = [label['name'] for label in pr_data['labels']]
 
-            if 'ready-to-merge' in labels:
-                client.add_reaction({
-                    "message_id": message['id'],
-                    "emoji_name": "merge"
-                })
-            elif 'delegated' in labels:
-                client.add_reaction({
-                    "message_id": message['id'],
-                    "emoji_name": "peace_sign"
-                })
+        if 'delegated' in labels:
+            client.add_reaction({
+                "message_id": message['id'],
+                "emoji_name": "peace_sign"
+            })
+        elif 'ready-to-merge' in labels:
+            client.add_reaction({
+                "message_id": message['id'],
+                "emoji_name": "bors"
+            })
+        elif pr_data['title'].startswith("[Merged by Bors]"):
+            client.add_reaction({
+                "message_id": message['id'],
+                "emoji_name": "merge"
+            })
