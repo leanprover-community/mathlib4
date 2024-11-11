@@ -11,6 +11,9 @@ jobs:
     steps:
     - name: Checkout mathlib repository
       uses: actions/checkout@v4
+      with:
+        sparse-checkout: |
+          scripts
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -29,4 +32,4 @@ jobs:
         ZULIP_SITE: https://leanprover.zulipchat.com
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        python scripts/zulip_emoji_merge_delegate.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $GITHUB_TOKEN
+        python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$GITHUB_TOKEN"
