@@ -101,7 +101,7 @@ instance instSecondCountableTopology [SecondCountableTopology X] [LocallyCompact
     · rw [mapsTo_image_iff]
       exact fun y _ ↦ hUV y.2
 
-instance instSeprableSpace [SecondCountableTopology X] [LocallyCompactSpace X]
+instance instSeparableSpace [SecondCountableTopology X] [LocallyCompactSpace X]
     [SecondCountableTopology Y] : SeparableSpace C(X, Y) :=
   inferInstance
 
