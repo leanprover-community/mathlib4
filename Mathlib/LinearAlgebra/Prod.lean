@@ -1011,4 +1011,39 @@ lemma Submodule.exists_eq_graph {G : Submodule S (H × I)} (hf₁ : Bijective (P
   simpa only [range_subtype] using LinearMap.exists_range_eq_graph hf₁.surjective
       (fun a b h ↦ congr_arg (Prod.snd ∘ G.subtype) (hf₁.injective h))
 
+/-- **Line test** for module isomorphisms.
+
+Let `f : G → H × I` be a homomorphism to a product of modules. Assume that `f` is surjective onto
+both factors and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` and every
+"horizontal line" `{(h, i) | h : H}` at most once. Then the image of `f` is the graph of some
+module isomorphism `f' : H ≃ I`. -/
+lemma LinearMap.exists_linearEquiv_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surjective (Prod.fst ∘ f))
+    (hf₂ : Surjective (Prod.snd ∘ f)) (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 ↔ (f g₁).2 = (f g₂).2) :
+    ∃ e : H ≃ₗ[S] I, range f = e.toLinearMap.graph := by
+  obtain ⟨e₁, he₁⟩ := f.exists_range_eq_graph hf₁ fun _ _ ↦ (hf _ _).1
+  obtain ⟨e₂, he₂⟩ := ((LinearEquiv.prodComm _ _ _).toLinearMap.comp f).exists_range_eq_graph
+    (by simpa) <| by simp [hf]
+  have he₁₂ h i : e₁ h = i ↔ e₂ i = h := by
+    simp only [SetLike.ext_iff, LinearMap.mem_graph_iff] at he₁ he₂
+    rw [Eq.comm, ← he₁ (h, i), Eq.comm, ← he₂ (i, h)]
+    simp only [mem_range, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      LinearEquiv.prodComm_apply, Prod.swap_eq_iff_eq_swap, Prod.swap_prod_mk]
+  exact ⟨
+  { toFun := e₁
+    map_smul' := e₁.map_smul'
+    map_add' := e₁.map_add'
+    invFun := e₂
+    left_inv := fun h ↦ by rw [← he₁₂]
+    right_inv := fun i ↦ by rw [he₁₂] }, he₁⟩
+
+/-- **Goursat's lemma** for module isomorphisms.
+
+Let `G ≤ H × I` be a submodule of a product of modules. Assume that the natural maps from `G` to
+both factors are bijective. Then `G` is the graph of some module isomorphism `f : H ≃ I`. -/
+lemma Submodule.exists_equiv_eq_graph {G : Submodule S (H × I)}
+    (hG₁ : Bijective (Prod.fst ∘ G.subtype)) (hG₂ : Bijective (Prod.snd ∘ G.subtype)) :
+    ∃ e : H ≃ₗ[S] I, G = e.toLinearMap.graph := by
+  simpa only [range_subtype] using LinearMap.exists_linearEquiv_eq_graph
+    hG₁.surjective hG₂.surjective fun _ _ ↦ hG₁.injective.eq_iff.trans hG₂.injective.eq_iff.symm
+
 end LineTest
