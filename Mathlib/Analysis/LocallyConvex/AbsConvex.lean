@@ -172,6 +172,9 @@ theorem isClosed_closedAbsConvexHull {s : Set E} :
 theorem subset_closedAbsConvexHull {s : Set E} : s ⊆ closedAbsConvexHull 𝕜 s :=
   (closedAbsConvexHull 𝕜).le_closure s
 
+theorem closure_subset_closedAbsConvexHull {s : Set E} : closure s ⊆ closedAbsConvexHull 𝕜 s :=
+  closure_minimal subset_closedAbsConvexHull isClosed_closedAbsConvexHull
+
 theorem closedAbsConvexHull_min {s t : Set E} (hst : s ⊆ t) (h_conv : AbsConvex 𝕜 t)
     (h_closed : IsClosed t) : closedAbsConvexHull 𝕜 s ⊆ t :=
   (closedAbsConvexHull 𝕜).closure_min hst ⟨h_conv, h_closed⟩
