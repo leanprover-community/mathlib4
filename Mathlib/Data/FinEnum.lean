@@ -81,14 +81,22 @@ noncomputable def ofInjective {α β} (f : α → β) [DecidableEq α] [FinEnum 
       use f x
       simp only [h, Function.partialInv_left])
 
-instance uliftId [FinEnum α] : FinEnum (ULift α) :=
+instance _root_.ULift.instFinEnum [FinEnum α] : FinEnum (ULift α) :=
   ⟨card α, Equiv.ulift.trans equiv⟩
 
+@[simp]
 theorem card_ulift [FinEnum (ULift α)] [FinEnum α] : card (ULift α) = card α :=
   Fin.equiv_iff_eq.mp ⟨equiv.symm.trans Equiv.ulift |>.trans equiv⟩
 
-theorem uliftId_equiv [FinEnum α] (i : Fin (card α)) :
-    equiv.symm i = (uliftId.equiv.symm i).down := rfl
+section ULift
+variable [FinEnum α] (i : Fin (card α))
+
+@[simp] lemma up_equiv : ULift.up (equiv i) = equiv i := rfl
+@[simp] lemma down_equiv : (equiv i).down = equiv i := rfl
+@[simp] lemma up_equiv_symm : ULift.up (equiv.symm i) = equiv.symm i := rfl
+@[simp] lemma down_equiv_symm : (equiv.symm i).down = equiv.symm i := rfl
+
+end ULift
 
 instance pempty : FinEnum PEmpty :=
   ofList [] fun x => PEmpty.elim x
@@ -108,6 +116,7 @@ instance sum {β} [FinEnum α] [FinEnum β] : FinEnum (α ⊕ β) :=
 instance fin {n} : FinEnum (Fin n) :=
   ofList (List.finRange _) (by simp)
 
+@[simp]
 theorem card_fin {n} [FinEnum (Fin n)] : card (Fin n) = n := Fin.equiv_iff_eq.mp ⟨equiv.symm⟩
 
 instance Quotient.enum [FinEnum α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
@@ -169,7 +178,7 @@ instance (priority := 100) [FinEnum α] : Fintype α where
   complete := by intros; simp
 
 /-- The enumeration merely adds an ordering, leaving the cardinality as is. -/
-theorem card_eq_fintype_card {α : Type u} [FinEnum α] [Fintype α] : card α = Fintype.card α :=
+theorem card_eq_fintypeCard {α : Type u} [FinEnum α] [Fintype α] : card α = Fintype.card α :=
   Fintype.truncEquivFin α |>.inductionOn (fun h ↦ Fin.equiv_iff_eq.mp ⟨equiv.symm.trans h⟩)
 
 /-- Any two enumerations of the same type have the same length. -/
