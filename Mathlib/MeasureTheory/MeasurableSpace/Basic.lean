@@ -755,20 +755,10 @@ theorem measurable_from_prod_countable' [Countable β]
   rw [this]
   exact .iUnion (fun y ↦ (hf y hs).prod (.measurableAtom_of_countable y))
 
-/-- For the version where the first space in the product is countable,
-see `measurable_from_prod_countable''`.-/
 theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass β]
     {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
     Measurable f :=
   measurable_from_prod_countable' hf (by simp (config := {contextual := true}))
-
-/-- For the version where the second space in the product is countable,
-see `measurable_from_prod_countable`.-/
-lemma measurable_from_prod_countable'' [Countable β] [MeasurableSingletonClass β]
-    {f : β × α → γ} (hf : ∀ x, Measurable fun y => f (x, y)) :
-    Measurable f := by
-  change Measurable ((fun (p : α × β) ↦ f (p.2, p.1)) ∘ Prod.swap)
-  exact (measurable_from_prod_countable hf).comp measurable_swap
 
 /-- A piecewise function on countably many pieces is measurable if all the data is measurable. -/
 @[measurability]
