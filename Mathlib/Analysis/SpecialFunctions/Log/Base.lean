@@ -417,12 +417,12 @@ lemma tendsto_logb_nhdsWithin_zero_right_of_base_lt_one (hb₀ : 0 < b) (hb : b 
 theorem continuousOn_logb : ContinuousOn (logb b) {0}ᶜ := continuousOn_log.div_const _
 
 /-- The real logarithm base b is continuous as a function from nonzero reals. -/
-@[continuity]
+@[fun_prop]
 theorem continuous_logb : Continuous fun x : { x : ℝ // x ≠ 0 } => logb b x :=
   continuous_log.div_const _
 
 /-- The real logarithm base b is continuous as a function from positive reals. -/
-@[continuity]
+@[fun_prop]
 theorem continuous_logb' : Continuous fun x : { x : ℝ // 0 < x } => logb b x :=
   continuous_log'.div_const _
 
