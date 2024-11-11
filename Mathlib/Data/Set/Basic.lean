@@ -1260,6 +1260,14 @@ lemma disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t
 @[simp]
 lemma disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u := disjoint_sup_right
 
+@[simp]
+theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint s t := by
+  simp only [Set.disjoint_left, Set.mem_insert_iff, forall_eq_or_imp]
+
+@[simp]
+theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t :=
+  disjoint_comm.trans <| by rw [disjoint_insert_left, _root_.disjoint_comm]
+  
 @[simp] lemma disjoint_empty (s : Set α) : Disjoint s ∅ := disjoint_bot_right
 @[simp] lemma empty_disjoint (s : Set α) : Disjoint ∅ s := disjoint_bot_left
 
