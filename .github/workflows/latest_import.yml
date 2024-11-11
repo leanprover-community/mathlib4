@@ -1,16 +1,12 @@
 name: Late importers report
 
 on:
-  push:
-    branches-ignore:
-      # ignore tmp branches used by bors
-      - 'staging.tmp*'
-      - 'trying.tmp*'
-      - 'staging*.tmp'
-      - 'nolints'
-      # ignore staging branch used by bors, this is handled by bors.yml
-      - 'staging'
-  merge_group:
+  schedule:
+    - cron: '0 4 * * 1'  # Run at 04:00 UTC every Monday
+  workflow_dispatch:
+
+env:
+  TOP_MODULE: Mathlib
 
 jobs:
   late-importers:
@@ -74,11 +70,11 @@ jobs:
       with:
         linters: gcc
         run: |
-          lake build Mathlib.Tactic.Simps.Basic
+          lake build
 
     - name: Full report
       run: |
-        ./scripts/late_importers.sh Mathlib.Tactic.Simps.Basic 0 0 "${{ github.run_id }}"
+        ./scripts/late_importers.sh Mathlib 0 0 "${{ github.run_id }}"
 
     - name: Zulip report
       id: late_importers

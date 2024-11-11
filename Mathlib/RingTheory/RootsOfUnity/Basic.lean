@@ -5,9 +5,10 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.CharP.Reduced
 import Mathlib.RingTheory.IntegralDomain
+-- TODO: remove Mathlib.Algebra.CharP.Reduced and move the last two lemmas to Lemmas
 
 /-!
-# Roots of unity and primitive roots of unity
+# Roots of unity
 
 We define roots of unity in the context of an arbitrary commutative monoid,
 as a subgroup of the group of units.
@@ -101,6 +102,18 @@ theorem map_rootsOfUnity (f : Mˣ →* Nˣ) (k : ℕ) : (rootsOfUnity k M).map f
 theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
     (((ζ ^ m :) : Rˣ) : R) = ((ζ : Rˣ) : R) ^ m := by
   rw [Subgroup.coe_pow, Units.val_pow_eq_pow_val]
+
+/-- The canonical isomorphism from the `n`th roots of unity in `Mˣ`
+to the `n`th roots of unity in `M`. -/
+def rootsOfUnityUnitsMulEquiv (M : Type*) [CommMonoid M] (n : ℕ) :
+    rootsOfUnity n Mˣ ≃* rootsOfUnity n M where
+  toFun ζ := ⟨ζ.val, (mem_rootsOfUnity ..).mpr <| (mem_rootsOfUnity' ..).mp ζ.prop⟩
+  invFun ζ := ⟨toUnits ζ.val, by
+    simp only [mem_rootsOfUnity, ← map_pow, MulEquivClass.map_eq_one_iff]
+    exact (mem_rootsOfUnity ..).mp ζ.prop⟩
+  left_inv ζ := by simp only [toUnits_val_apply, Subtype.coe_eta]
+  right_inv ζ := by simp only [val_toUnits_apply, Subtype.coe_eta]
+  map_mul' ζ ζ' := by simp only [Subgroup.coe_mul, Units.val_mul, MulMemClass.mk_mul_mk]
 
 section CommMonoid
 
@@ -229,3 +242,41 @@ theorem mem_rootsOfUnity_prime_pow_mul_iff' (p k : ℕ) (m : ℕ) [ExpChar R p] 
 end Reduced
 
 end rootsOfUnity
+
+section cyclic
+
+namespace IsCyclic
+
+/-- The isomorphism from the group of group homomorphisms from a finite cyclic group `G` of order
+`n` into another group `G'` to the group of `n`th roots of unity in `G'` determined by a generator
+`g` of `G`. It sends `φ : G →* G'` to `φ g`. -/
+noncomputable
+def monoidHomMulEquivRootsOfUnityOfGenerator {G : Type*} [CommGroup G] [Fintype G] {g : G}
+    (hg : ∀ (x : G), x ∈ Subgroup.zpowers g) (G' : Type*) [CommGroup G'] :
+    (G →* G') ≃* rootsOfUnity (Fintype.card G) G' where
+  toFun φ := ⟨(IsUnit.map φ <| Group.isUnit g).unit, by
+    simp only [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, IsUnit.unit_spec,
+      ← map_pow, pow_card_eq_one, map_one, Units.val_one]⟩
+  invFun ζ := monoidHomOfForallMemZpowers hg (g' := (ζ.val : G')) <| by
+    simpa only [orderOf_eq_card_of_forall_mem_zpowers hg, orderOf_dvd_iff_pow_eq_one,
+      ← Units.val_pow_eq_pow_val, Units.val_eq_one] using ζ.prop
+  left_inv φ := (MonoidHom.eq_iff_eq_on_generator hg _ φ).mpr <| by
+    simp only [IsUnit.unit_spec, monoidHomOfForallMemZpowers_apply_gen]
+  right_inv φ := Subtype.ext <| by
+    simp only [monoidHomOfForallMemZpowers_apply_gen, IsUnit.unit_of_val_units]
+  map_mul' x y := by
+    simp only [MonoidHom.mul_apply, MulMemClass.mk_mul_mk, Subtype.mk.injEq, Units.ext_iff,
+      IsUnit.unit_spec, Units.val_mul]
+
+/-- The group of group homomorphisms from a finite cyclic group `G` of order `n` into another
+group `G'` is (noncanonically) isomorphic to the group of `n`th roots of unity in `G'`. -/
+lemma monoidHom_mulEquiv_rootsOfUnity (G : Type*) [CommGroup G] [Finite G] [IsCyclic G]
+    (G' : Type*) [CommGroup G'] :
+    Nonempty <| (G →* G') ≃* rootsOfUnity (Nat.card G) G' := by
+  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
+  have : Fintype G := Fintype.ofFinite _
+  exact ⟨Nat.card_eq_fintype_card (α  := G) ▸ monoidHomMulEquivRootsOfUnityOfGenerator hg G'⟩
+
+end IsCyclic
+
+end cyclic

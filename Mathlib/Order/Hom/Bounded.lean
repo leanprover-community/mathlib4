@@ -308,7 +308,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderTop β] (f g : TopHom α β)
 
-instance : Inf (TopHom α β) :=
+instance : Min (TopHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_top, map_top, inf_top_eq]⟩⟩
 
 instance : SemilatticeInf (TopHom α β) :=
@@ -328,7 +328,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderTop β] (f g : TopHom α β)
 
-instance : Sup (TopHom α β) :=
+instance : Max (TopHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_top, map_top, sup_top_eq]⟩⟩
 
 instance : SemilatticeSup (TopHom α β) :=
@@ -481,7 +481,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderBot β] (f g : BotHom α β)
 
-instance : Inf (BotHom α β) :=
+instance : Min (BotHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_bot, map_bot, inf_bot_eq]⟩⟩
 
 instance : SemilatticeInf (BotHom α β) :=
@@ -501,7 +501,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderBot β] (f g : BotHom α β)
 
-instance : Sup (BotHom α β) :=
+instance : Max (BotHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_bot, map_bot, sup_bot_eq]⟩⟩
 
 instance : SemilatticeSup (BotHom α β) :=
