@@ -566,7 +566,7 @@ alias uniformEmbedding_comap := isUniformEmbedding_comap
 
 /-- Pull back a uniform space structure by an embedding, adjusting the new uniform structure to
 make sure that its topology is defeq to the original one. -/
-def IsEmbedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β]
+def Topology.IsEmbedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β]
     (f : α → β) (h : IsEmbedding f) : UniformSpace α :=
   (u.comap f).replaceTopology h.eq_induced
 
