@@ -4,7 +4,7 @@ import Mathlib
 
 open Real
 
-example (x : ℝ) : deriv (λ x => cos x + 2 * sin x) x = -sin x + 2 * cos x := by
+example (x : ℝ) : deriv (fun x => cos x + 2 * sin x) x = -sin x + 2 * cos x := by
   simp
 
 example (x : ℝ) :
@@ -17,9 +17,9 @@ example (x : ℝ) :
 example (x : ℝ) :
     deriv (fun x ↦ sin (sin (sin x)) + sin x) x =
     cos (sin (sin x)) * (cos (sin x) * cos x) + cos x := by
-  simp (config := {maxDischargeDepth := 3})
+  simp (maxDischargeDepth := 3)
 
 example (x : ℝ) :
     deriv (fun x ↦ sin (sin (sin x)) ^ 10 + sin x) x =
     10 * sin (sin (sin x)) ^ 9 * (cos (sin (sin x)) * (cos (sin x) * cos x)) + cos x := by
-  simp (config := {maxDischargeDepth := 4})
+  simp (maxDischargeDepth := 4)
