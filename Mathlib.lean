@@ -2292,6 +2292,7 @@ import Mathlib.Data.FP.Basic
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.FlagRange
+import Mathlib.Data.Fin.Parity
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Fin.Tuple.BubbleSortInduction
