@@ -41,8 +41,6 @@ namespace TwoSidedIdeal
 
 section NonUnitalNonAssocRing
 
-section span
-
 variable {R S : Type*} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
 variable {F : Type*} [FunLike F R S]
 variable (f : F)
@@ -74,14 +72,6 @@ lemma span_mono {s t : Set R} (h : s ⊆ t) : span s ≤ span t := by
   rw [mem_span_iff] at hx ⊢
   exact fun I hI => hx I <| h.trans hI
 
-end span
-
-section map
-
-variable {R S : Type*} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
-variable {F : Type*} [FunLike F R S]
-variable (f : F)
-
 /--
 Pushout of a two-sided ideal. Defined as the span of the image of a two-sided ideal under a ring
 homomorphism.
@@ -105,54 +95,7 @@ lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
   simp [comap, RingCon.comap, mem_iff]
 
 
-end map
-
-section ker
-
-variable {R S : Type*} [NonUnitalNonAssocRing R] [NonUnitalNonAssocSemiring S]
-variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
-variable (f : F)
-
-/--
-The kernel of a ring homomorphism, as a two-sided ideal.
--/
-def ker : TwoSidedIdeal R :=
-  .mk
-  { r := fun x y ↦ f x = f y
-    iseqv := by constructor <;> aesop
-    mul' := by intro; simp_all [map_add]
-    add' := by intro; simp_all [map_mul] }
-
-@[simp]
-lemma ker_ringCon {x y : R} : (ker f).ringCon x y ↔ f x = f y := Iff.rfl
-
-lemma mem_ker {x : R} : x ∈ ker f ↔ f x = 0 := by
-  rw [mem_iff, ker_ringCon, map_zero]
-
-lemma ker_eq_bot : ker f = ⊥ ↔ Function.Injective f := by
-  fconstructor
-  · intro h x y hxy
-    simpa [h, rel_iff, mem_bot, sub_eq_zero] using show (ker f).ringCon x y from hxy
-  · exact fun h ↦ eq_bot_iff.2 fun x hx => h hx
-
-end ker
-
 end NonUnitalNonAssocRing
-
-section NonAssocRing
-
-variable {R : Type*} [NonAssocRing R]
-
-/--
-The kernel of the ring homomorphism `R → R⧸I` is `I`.
--/
-@[simp]
-lemma ker_ringCon_mk' (I : TwoSidedIdeal R) : ker I.ringCon.mk' = I :=
-  le_antisymm
-    (fun _ h => by simpa using I.rel_iff _ _ |>.1 (Quotient.eq'.1 h))
-    (fun _ h => Quotient.sound' <| I.rel_iff _ _ |>.2 (by simpa using h))
-
-end NonAssocRing
 
 section NonUnitalRing
 

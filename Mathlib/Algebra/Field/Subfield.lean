@@ -6,6 +6,7 @@ Authors: Anne Baanen
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Subfields
