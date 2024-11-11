@@ -406,7 +406,7 @@ private lemma logC_of_left_le_one {b m : ℕ} (hb : b ≤ 1) : logC b m = 0 := b
 private lemma logC_zero {b : ℕ} :
     logC b 0 = 0 := by
   rcases le_or_lt b 1 with hb | hb
-  case inl => exact logC_small_base hb
+  case inl => exact logC_of_left_le_one hb
   case inr =>
     rw [logC, dif_pos hb]
     split
