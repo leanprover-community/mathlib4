@@ -662,6 +662,10 @@ lemma toENNReal_coe {x : ENNReal} : (x : EReal).toENNReal = x := by
   rwa [toENNReal, if_neg _, toReal_coe_ennreal, ENNReal.ofReal_toReal_eq_iff]
   simp [h_top]
 
+lemma toENNReal_eq_toENNReal {x y : EReal} (hx : 0 ≤ x) (hy : 0 ≤ y) :
+    x.toENNReal = y.toENNReal ↔ x = y := by
+  induction x <;> induction y <;> simp_all
+
 lemma toENNReal_le_toENNReal {x y : EReal} (h : x ≤ y) : x.toENNReal ≤ y.toENNReal := by
   induction x
   · simp
@@ -670,6 +674,11 @@ lemma toENNReal_le_toENNReal {x y : EReal} (h : x ≤ y) : x.toENNReal ≤ y.toE
     simp only [toENNReal, coe_ne_top, ↓reduceIte, toReal_coe, hy_top]
     exact ENNReal.ofReal_le_ofReal <| EReal.toReal_le_toReal h (coe_ne_bot _) hy_top
   · simp_all
+
+lemma toENNReal_lt_toENNReal {x y : EReal} (hx : 0 ≤ x) (hxy : x < y) :
+    x.toENNReal < y.toENNReal :=
+  lt_of_le_of_ne (toENNReal_le_toENNReal hxy.le)
+    fun h ↦ hxy.ne <| (toENNReal_eq_toENNReal hx (hx.trans_lt hxy).le).mp h
 
 @[simp] lemma real_coe_toENNReal (x : ℝ) : (x : EReal).toENNReal = ENNReal.ofReal x := rfl
 
