@@ -158,7 +158,7 @@ variable (𝕜)
 /-- The absolutely convex closed hull of a set `s` is the minimal absolutely convex closed set that
 includes `s`. -/
 @[simps! isClosed]
-def absConvexClosedHull : ClosureOperator (Set E) :=
+def closedAbsConvexHull : ClosureOperator (Set E) :=
   .ofCompletePred (fun s => AbsConvex 𝕜 s ∧ IsClosed s) fun _ ↦ absConvex_closed_sInter
 
 variable {𝕜}
