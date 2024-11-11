@@ -407,7 +407,7 @@ instance prop (p : Prop) : Finite p :=
 
 /-- This instance also provides `[Finite s]` for `s : Set α`. -/
 instance Subtype.finite {α : Sort*} [Finite α] {p : α → Prop} : Finite { x // p x } :=
-  Finite.of_injective (↑) Subtype.coe_injective
+  Finite.of_injective Subtype.val Subtype.coe_injective
 
 theorem Finite.of_surjective {α β : Sort*} [Finite α] (f : α → β) (H : Surjective f) : Finite β :=
   Finite.of_injective _ <| injective_surjInv H
