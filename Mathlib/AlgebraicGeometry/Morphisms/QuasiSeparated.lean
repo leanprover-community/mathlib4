@@ -107,7 +107,6 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsAf
 theorem quasiSeparated_eq_diagonal_is_quasiCompact :
     @QuasiSeparated = MorphismProperty.diagonal @QuasiCompact := by ext; exact quasiSeparated_iff _
 
-@[reducible]
 instance : HasAffineProperty @QuasiSeparated (fun X _ _ _ ↦ QuasiSeparatedSpace X) where
   __ := HasAffineProperty.copy
     quasiSeparated_eq_diagonal_is_quasiCompact.symm

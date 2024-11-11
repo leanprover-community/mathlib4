@@ -116,7 +116,6 @@ theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set 
     refine Set.Subset.trans ?_ (Set.subset_iUnion₂ j hj)
     exact Set.Subset.rfl
 
-@[reducible]
 instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) where
   eq_targetAffineLocally' := by
     ext X Y f
