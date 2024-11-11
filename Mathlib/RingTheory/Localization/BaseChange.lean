@@ -68,13 +68,15 @@ noncomputable example : M₁ ⊗[A] M₂ ≃ₗ[A] M₁ ⊗[R] M₂ :=
   have := tensorProduct_compatibleSMul S A M₁ M₂
   equivOfCompatibleSMul R M₁ M₂ A
 
+noncomputable example : A ⊗[R] M₁ ≃ₗ[A] M₁ :=
+  have := tensorProduct_compatibleSMul S A A M₁
+  (equivOfCompatibleSMul R A M₁ A).symm ≪≫ₗ TensorProduct.lid _ _
+
 /-- If A is a localization of a commutative ring R, the tensor product of A with A over R is
 canonically isomorphic as A-algebras to A itself. -/
 noncomputable def tensorSelfAlgEquiv : A ⊗[R] A ≃ₐ[A] A :=
-  .ofAlgHom (lmul'' R) includeLeft lmul'_comp_includeLeft <| AlgHom.ext fun x ↦ x.induction_on
-    (by simp) (fun x y ↦ show (x * y) ⊗ₜ[R] 1 = x ⊗ₜ[R] y by
-      rw [mul_comm, ← smul_eq_mul, (tensorProduct_compatibleSMul S A _ _).1, smul_eq_mul, mul_one])
-    fun _ _ hx hy ↦ by simp_all [hx, hy, add_tmul]
+  have := tensorProduct_compatibleSMul S A A A
+  lmulEquiv R A
 
 set_option linter.docPrime false in
 theorem bijective_linearMap_mul' : Function.Bijective (LinearMap.mul' R A) :=

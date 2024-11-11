@@ -1036,7 +1036,7 @@ variable [Algebra R A] [Algebra R B] [Algebra R S]
 variable (f : A →ₐ[R] S) (g : B →ₐ[R] S)
 variable (R)
 
-/-- `LinearMap.mul'` as an `AlgHom` over a commutative algebra. -/
+/-- `LinearMap.mul'` as an `AlgHom` over the algebra. -/
 def lmul'' : S ⊗[R] S →ₐ[S] S :=
   algHomOfLinearMapTensorProduct
     { __ := LinearMap.mul' R S
@@ -1064,6 +1064,15 @@ theorem lmul'_comp_includeLeft : (lmul' R : _ →ₐ[R] S).comp includeLeft = Al
 @[simp]
 theorem lmul'_comp_includeRight : (lmul' R : _ →ₐ[R] S).comp includeRight = AlgHom.id R S :=
   AlgHom.ext <| one_mul
+
+variable (R S) in
+/-- If multiplication by elements of S can switch between the two factors of `S ⊗[R] S`,
+then `lmul''` is an isomorphism. -/
+def lmulEquiv [CompatibleSMul R S S S] : S ⊗[R] S ≃ₐ[S] S :=
+  .ofAlgHom (lmul'' R) includeLeft lmul'_comp_includeLeft <| AlgHom.ext fun x ↦ x.induction_on
+    (by simp) (fun x y ↦ show (x * y) ⊗ₜ[R] 1 = x ⊗ₜ[R] y by
+      rw [mul_comm, ← smul_eq_mul, smul_tmul, smul_eq_mul, mul_one])
+    fun _ _ hx hy ↦ by simp_all [hx, hy, add_tmul]
 
 /-- If `S` is commutative, for a pair of morphisms `f : A →ₐ[R] S`, `g : B →ₐ[R] S`,
 We obtain a map `A ⊗[R] B →ₐ[R] S` that commutes with `f`, `g` via `a ⊗ b ↦ f(a) * g(b)`.
