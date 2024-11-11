@@ -63,6 +63,15 @@ instance InducedCategory.category : Category.{v} (InducedCategory D F) where
   id X := 𝟙 (F X)
   comp f g := f ≫ g
 
+variable {F} in
+/-- Construct an isomorphism in the induced category
+from an isomorphism in the original category. -/
+@[simps] def InducedCategory.isoMk {X Y : InducedCategory D F} (f : F X ≅ F Y) : X ≅ Y where
+  hom := f.hom
+  inv := f.inv
+  hom_inv_id := f.hom_inv_id
+  inv_hom_id := f.inv_hom_id
+
 /-- The forgetful functor from an induced category to the original category,
 forgetting the extra data.
 -/

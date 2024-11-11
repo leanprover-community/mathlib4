@@ -386,7 +386,7 @@ def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
   inv_hom_id := by rw [← tensor_comp, Iso.inv_hom_id, Iso.inv_hom_id, ← tensor_id]
 
 /-- Notation for `tensorIso`, the tensor product of isomorphisms -/
-infixr:70 " ⊗ " => tensorIso
+scoped infixr:70 " ⊗ " => tensorIso
 
 theorem tensorIso_def {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
     f ⊗ g = whiskerRightIso f X' ≪≫ whiskerLeftIso Y g :=
