@@ -722,6 +722,7 @@ theorem finrank_span_singleton {v : V} (hv : v ≠ 0) : finrank K (K ∙ v) = 1 
   · exact finrank_span_le_card ({v} : Set V)
   · rw [Nat.succ_le_iff, finrank_pos_iff]
     use ⟨v, mem_span_singleton_self v⟩, 0
+    apply Subtype.coe_ne_coe.mp
     simp [hv]
 
 /-- In a one-dimensional space, any vector is a multiple of any nonzero vector -/

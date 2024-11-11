@@ -176,7 +176,7 @@ theorem recF_eq_of_Wequiv {α : Type u} (u : F α → α) (x y : q.P.W) :
     Wequiv x y → recF u x = recF u y := by
   intro h
   induction h with
-  | ind a f f' _ ih => simp only [recF_eq', PFunctor.map_eq, Function.comp, ih]
+  | ind a f f' _ ih => simp only [recF_eq', PFunctor.map_eq, Function.comp_def, ih]
   | abs a f a' f' h => simp only [recF_eq', abs_map, h]
   | trans x y z _ _ ih₁ ih₂ => exact Eq.trans ih₁ ih₂
 

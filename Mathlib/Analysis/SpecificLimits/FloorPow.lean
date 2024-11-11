@@ -234,7 +234,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
         ∑ i ∈ Ico ⌊Real.log j / Real.log c⌋₊ N, (1 : ℝ) / (c ^ i) ^ 2 := by
       refine sum_le_sum_of_subset_of_nonneg (fun i hi ↦ ?_) (by intros; positivity)
       simp only [mem_filter, mem_range] at hi
-      simp only [hi.1, mem_Ico, and_true_iff]
+      simp only [hi.1, mem_Ico, and_true]
       apply Nat.floor_le_of_le
       apply le_of_lt
       rw [div_lt_iff (Real.log_pos hc), ← Real.log_pow]

@@ -91,7 +91,7 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_d
   rotate_left
   · simp only [coe_pair, Set.insert_subset_iff, hs, ht, Set.singleton_subset_iff, and_self_iff]
   · simp only [coe_pair, Set.pairwiseDisjoint_insert, pairwiseDisjoint_singleton,
-      mem_singleton_iff, Ne, id, forall_eq, true_and_iff]
+      mem_singleton_iff, Ne, id, forall_eq, true_and]
     exact fun _ => h_dis
   · simp only [coe_pair, sUnion_insert, sUnion_singleton]
     exact hst

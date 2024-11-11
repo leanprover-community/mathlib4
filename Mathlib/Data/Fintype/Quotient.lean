@@ -63,7 +63,7 @@ def Quotient.finChoice {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → T
         (⟦fun (i : ι) (_ : i ∈ a) => Quotient.out (f i)⟧ : Quotient (by infer_instance))
       apply eq_of_heq
       trans (g a)
-      · exact eq_rec_heq (φ := fun l : Multiset ι => @Quotient (∀ i ∈ l, α i) (by infer_instance))
+      · exact eqRec_heq (φ := fun l : Multiset ι => @Quotient (∀ i ∈ l, α i) (by infer_instance))
           (Quotient.sound h) (g a)
       · change HEq (g a) (g b); congr 1; exact Quotient.sound h))
     (fun f => ⟦fun i => f i (Finset.mem_univ _)⟧) (fun a b h => Quotient.sound fun i => by apply h)

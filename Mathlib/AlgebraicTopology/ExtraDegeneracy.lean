@@ -153,7 +153,7 @@ theorem shiftFun_succ {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin 
   dsimp [shiftFun]
   split_ifs with h
   · exfalso
-    simp only [Fin.ext_iff, Fin.val_succ, Fin.val_zero, add_eq_zero, and_false] at h
+    simp only [Fin.ext_iff, Fin.val_succ, Fin.val_zero, add_eq_zero, and_false, reduceCtorEq] at h
   · simp only [Fin.pred_succ]
 
 /-- The shift of a morphism `f : [n] → Δ` in `SimplexCategory` corresponds to
@@ -282,7 +282,7 @@ theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
   dsimp [ExtraDegeneracy.s]
   simp only [WidePullback.lift_π]
   split_ifs with h
-  · simp only [Fin.ext_iff, Fin.val_succ, Fin.val_zero, add_eq_zero, and_false] at h
+  · simp only [Fin.ext_iff, Fin.val_succ, Fin.val_zero, add_eq_zero, and_false, reduceCtorEq] at h
   · simp only [Fin.pred_succ]
 
 -- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form

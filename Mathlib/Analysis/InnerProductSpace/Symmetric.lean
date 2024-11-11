@@ -36,11 +36,13 @@ open RCLike
 
 open ComplexConjugate
 
+section Seminormed
+
 variable {𝕜 E E' F G : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-variable [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-variable [NormedAddCommGroup E'] [InnerProductSpace ℝ E']
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+variable [SeminormedAddCommGroup E'] [InnerProductSpace ℝ E']
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -83,23 +85,6 @@ theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.Is
   rw [LinearMap.add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right]
   rfl
 
-/-- The **Hellinger--Toeplitz theorem**: if a symmetric operator is defined on a complete space,
-  then it is automatically continuous. -/
-theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) :
-    Continuous T := by
-  -- We prove it by using the closed graph theorem
-  refine T.continuous_of_seq_closed_graph fun u x y hu hTu => ?_
-  rw [← sub_eq_zero, ← @inner_self_eq_zero 𝕜]
-  have hlhs : ∀ k : ℕ, ⟪T (u k) - T x, y - T x⟫ = ⟪u k - x, T (y - T x)⟫ := by
-    intro k
-    rw [← T.map_sub, hT]
-  refine tendsto_nhds_unique ((hTu.sub_const _).inner tendsto_const_nhds) ?_
-  simp_rw [Function.comp_apply, hlhs]
-  rw [← inner_zero_left (T (y - T x))]
-  refine Filter.Tendsto.inner ?_ tendsto_const_nhds
-  rw [← sub_self x]
-  exact hu.sub_const _
-
 /-- For a symmetric operator `T`, the function `fun x ↦ ⟪T x, x⟫` is real-valued. -/
 @[simp]
 theorem IsSymmetric.coe_reApplyInnerSelf_apply {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →ₗ[𝕜] E))
@@ -115,16 +100,17 @@ theorem IsSymmetric.restrict_invariant {T : E →ₗ[𝕜] E} (hT : IsSymmetric 
     (hV : ∀ v ∈ V, T v ∈ V) : IsSymmetric (T.restrict hV) := fun v w => hT v w
 
 theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
-    @LinearMap.IsSymmetric ℝ E _ _ (InnerProductSpace.rclikeToReal 𝕜 E)
-      (@LinearMap.restrictScalars ℝ 𝕜 _ _ _ _ _ _ (InnerProductSpace.rclikeToReal 𝕜 E).toModule
-        (InnerProductSpace.rclikeToReal 𝕜 E).toModule _ _ _ T) :=
+    letI := InnerProductSpace.rclikeToReal 𝕜 E
+    letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
+    (T.restrictScalars ℝ).IsSymmetric :=
   fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
 
 section Complex
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
 
 attribute [local simp] map_ofNat in -- use `ofNat` simp theorem with bad keys
+open scoped InnerProductSpace in
 /-- A linear operator on a complex inner product space is symmetric precisely when
 `⟪T v, v⟫_ℂ` is real for all v. -/
 theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
@@ -166,6 +152,39 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
       sub_sub, ← mul_assoc, mul_neg, h, neg_neg, one_mul, neg_one_mul]
     ring
 
+end LinearMap
+
+end Seminormed
+
+section Normed
+
+variable {𝕜 E E' F G : Type*} [RCLike 𝕜]
+variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+variable [NormedAddCommGroup E'] [InnerProductSpace ℝ E']
+
+local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+
+namespace LinearMap
+
+/-- The **Hellinger--Toeplitz theorem**: if a symmetric operator is defined on a complete space,
+  then it is automatically continuous. -/
+theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) :
+    Continuous T := by
+  -- We prove it by using the closed graph theorem
+  refine T.continuous_of_seq_closed_graph fun u x y hu hTu => ?_
+  rw [← sub_eq_zero, ← @inner_self_eq_zero 𝕜]
+  have hlhs : ∀ k : ℕ, ⟪T (u k) - T x, y - T x⟫ = ⟪u k - x, T (y - T x)⟫ := by
+    intro k
+    rw [← T.map_sub, hT]
+  refine tendsto_nhds_unique ((hTu.sub_const _).inner tendsto_const_nhds) ?_
+  simp_rw [Function.comp_apply, hlhs]
+  rw [← inner_zero_left (T (y - T x))]
+  refine Filter.Tendsto.inner ?_ tendsto_const_nhds
+  rw [← sub_self x]
+  exact hu.sub_const _
+
 /-- A symmetric linear map `T` is zero if and only if `⟪T x, x⟫_ℝ = 0` for all `x`.
 See `inner_map_self_eq_zero` for the complex version without the symmetric assumption. -/
 theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
@@ -177,3 +196,5 @@ theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymm
   ring
 
 end LinearMap
+
+end Normed

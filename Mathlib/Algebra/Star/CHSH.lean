@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Tactic.Polyrith
 

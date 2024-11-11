@@ -433,6 +433,9 @@ theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
 def topEquiv : (⊤ : Subring R) ≃+* R :=
   Subsemiring.topEquiv
 
+instance {R : Type*} [Ring R] [Fintype R] : Fintype (⊤ : Subring R) :=
+  inferInstanceAs (Fintype (⊤ : Set R))
+
 theorem card_top (R) [Ring R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fintype.card R :=
   Fintype.card_congr topEquiv.toEquiv
 
@@ -819,7 +822,7 @@ theorem mem_closure_iff {s : Set R} {x} :
           mul_mem hx hy)
       (zero_mem _) (fun x y hx hy => add_mem hx hy) fun x hx => neg_mem hx⟩
 
-/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring.  -/
+/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
 def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommRing (closure s) :=
   { (closure s).toRing with
@@ -893,6 +896,14 @@ theorem map_sup (s t : Subring R) (f : R →+* S) : (s ⊔ t).map f = s.map f �
 theorem map_iSup {ι : Sort*} (f : R →+* S) (s : ι → Subring R) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
+
+theorem map_inf (s t : Subring R) (f : R →+* S) (hf : Function.Injective f) :
+    (s ⊓ t).map f = s.map f ⊓ t.map f := SetLike.coe_injective (Set.image_inter hf)
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : R →+* S) (hf : Function.Injective f)
+    (s : ι → Subring R) : (iInf s).map f = ⨅ i, (s i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
 theorem comap_inf (s t : Subring S) (f : R →+* S) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf

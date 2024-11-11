@@ -175,6 +175,20 @@ theorem det_ne_zero_of_right_inverse [Nontrivial α] (h : A * B = 1) : A.det ≠
 
 end Invertible
 
+
+section
+
+variable [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [CommRing α]
+
+/-- A version of `mul_eq_one_comm` that works for square matrices with rectangular types. -/
+theorem mul_eq_one_comm_of_equiv {A : Matrix m n α} {B : Matrix n m α} (e : m ≃ n) :
+    A * B = 1 ↔ B * A = 1 := by
+  refine (reindex e e).injective.eq_iff.symm.trans ?_
+  rw [reindex_apply, reindex_apply, submatrix_one_equiv, ← submatrix_mul_equiv _ _ _ (.refl _),
+    mul_eq_one_comm, submatrix_mul_equiv, coe_refl, submatrix_id_id]
+
+end
+
 section Inv
 
 variable [Fintype n] [DecidableEq n] [CommRing α]
@@ -592,6 +606,24 @@ theorem inv_diagonal (v : n → α) : (diagonal v)⁻¹ = diagonal (Ring.inverse
     rw [Ring.inverse_non_unit _ h, Pi.zero_def, diagonal_zero, Ring.inverse_non_unit _ this]
 
 end Diagonal
+
+section Woodbury
+
+variable [Fintype m] [DecidableEq m]
+variable (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
+
+/-- The **Woodbury Identity** (`⁻¹` version). -/
+theorem add_mul_mul_inv_eq_sub (hA : IsUnit A) (hC : IsUnit C) (hAC : IsUnit (C⁻¹ + V * A⁻¹ * U)) :
+    (A + U * C * V)⁻¹ = A⁻¹ - A⁻¹ * U * (C⁻¹ + V * A⁻¹ * U)⁻¹ * V * A⁻¹ := by
+  obtain ⟨_⟩ := hA.nonempty_invertible
+  obtain ⟨_⟩ := hC.nonempty_invertible
+  obtain ⟨iAC⟩ := hAC.nonempty_invertible
+  simp only [← invOf_eq_nonsing_inv] at iAC
+  letI := invertibleAddMulMul A U C V
+  simp only [← invOf_eq_nonsing_inv]
+  apply invOf_add_mul_mul
+
+end Woodbury
 
 @[simp]
 theorem inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := by

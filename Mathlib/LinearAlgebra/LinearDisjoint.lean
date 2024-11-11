@@ -208,15 +208,15 @@ theorem of_basis_right' {ι : Type*} (n : Basis ι R N)
 
 /-- If `{ m_i }` is an `R`-basis of `M`, if `{ n_i }` is an `R`-basis of `N`,
 such that the family `{ m_i * n_j }` in `S` is `R`-linearly independent
-(in this result it is stated as the relevant `Finsupp.total` is injective),
+(in this result it is stated as the relevant `Finsupp.linearCombination` is injective),
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_mul' {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
-    (H : Function.Injective (Finsupp.total (κ × ι) S R fun i ↦ m i.1 * n i.2)) :
+    (H : Function.Injective (Finsupp.linearCombination R fun i : κ × ι ↦ (m i.1 * n i.2 : S))) :
     M.LinearDisjoint N := by
   let i0 := (finsuppTensorFinsupp' R κ ι).symm
   let i1 := TensorProduct.congr m.repr n.repr
   let i := mulMap M N ∘ₗ (i0.trans i1.symm).toLinearMap
-  have : i = Finsupp.total (κ × ι) S R fun i ↦ m i.1 * n i.2 := by
+  have : i = Finsupp.linearCombination R fun i : κ × ι ↦ (m i.1 * n i.2 : S) := by
     ext x
     simp [i, i0, i1, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
   simp_rw [← this, i, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] at H
@@ -311,7 +311,7 @@ theorem linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N
     {ι : Type*} {m : ι → M} (hm : LinearIndependent R m) : LinearMap.ker (mulLeftMap N m) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
   classical simp_rw [mulLeftMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    ← Function.comp.assoc, EquivLike.injective_comp]
+    ← Function.comp_assoc, EquivLike.injective_comp]
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hm
   exact H.injective.comp (Module.Flat.rTensor_preserves_injective_linearMap (M := N) _ hm)
 
@@ -332,7 +332,7 @@ theorem linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R 
     {ι : Type*} {n : ι → N} (hn : LinearIndependent R n) : LinearMap.ker (mulRightMap M n) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
   classical simp_rw [mulRightMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    ← Function.comp.assoc, EquivLike.injective_comp]
+    ← Function.comp_assoc, EquivLike.injective_comp]
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hn
   exact H.injective.comp (Module.Flat.lTensor_preserves_injective_linearMap (M := M) _ hn)
 
@@ -354,13 +354,13 @@ theorem linearIndependent_mul_of_flat_left (H : M.LinearDisjoint N) [Module.Flat
     (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hm hn ⊢
   let i0 := (finsuppTensorFinsupp' R κ ι).symm
-  let i1 := LinearMap.rTensor (ι →₀ R) (Finsupp.total κ M R m)
-  let i2 := LinearMap.lTensor M (Finsupp.total ι N R n)
+  let i1 := LinearMap.rTensor (ι →₀ R) (Finsupp.linearCombination R m)
+  let i2 := LinearMap.lTensor M (Finsupp.linearCombination R n)
   let i := mulMap M N ∘ₗ i2 ∘ₗ i1 ∘ₗ i0.toLinearMap
   have h1 : Function.Injective i1 := Module.Flat.rTensor_preserves_injective_linearMap _ hm
   have h2 : Function.Injective i2 := Module.Flat.lTensor_preserves_injective_linearMap _ hn
   have h : Function.Injective i := H.injective.comp h2 |>.comp h1 |>.comp i0.injective
-  have : i = Finsupp.total (κ × ι) S R fun i ↦ (m i.1).1 * (n i.2).1 := by
+  have : i = Finsupp.linearCombination R fun i ↦ (m i.1).1 * (n i.2).1 := by
     ext x
     simp [i, i0, i1, i2, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
   rwa [this] at h
@@ -375,13 +375,13 @@ theorem linearIndependent_mul_of_flat_right (H : M.LinearDisjoint N) [Module.Fla
     (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hm hn ⊢
   let i0 := (finsuppTensorFinsupp' R κ ι).symm
-  let i1 := LinearMap.lTensor (κ →₀ R) (Finsupp.total ι N R n)
-  let i2 := LinearMap.rTensor N (Finsupp.total κ M R m)
+  let i1 := LinearMap.lTensor (κ →₀ R) (Finsupp.linearCombination R n)
+  let i2 := LinearMap.rTensor N (Finsupp.linearCombination R m)
   let i := mulMap M N ∘ₗ i2 ∘ₗ i1 ∘ₗ i0.toLinearMap
   have h1 : Function.Injective i1 := Module.Flat.lTensor_preserves_injective_linearMap _ hn
   have h2 : Function.Injective i2 := Module.Flat.rTensor_preserves_injective_linearMap _ hm
   have h : Function.Injective i := H.injective.comp h2 |>.comp h1 |>.comp i0.injective
-  have : i = Finsupp.total (κ × ι) S R fun i ↦ (m i.1).1 * (n i.2).1 := by
+  have : i = Finsupp.linearCombination R fun i ↦ (m i.1).1 * (n i.2).1 := by
     ext x
     simp [i, i0, i1, i2, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
   rwa [this] at h
@@ -477,8 +477,8 @@ theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
   have hm : mulRightMap M n m = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
   rw [← LinearMap.mem_ker, H.linearIndependent_right_of_flat hn, mem_bot] at hm
   simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
-    SetLike.coe_eq_coe, false_and, AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero,
-    false_or, m] at hm
+    SetLike.coe_eq_coe, false_and, false_or, m] at hm
+  repeat rw [AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero] at hm
   exact h.ne_zero 0 hm.2
 
 /-- If `M` and `N` are linearly disjoint, if `N` is flat, then any two commutative
@@ -493,8 +493,8 @@ theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
   have hn : mulLeftMap N m n = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
   rw [← LinearMap.mem_ker, H.linearIndependent_left_of_flat hm, mem_bot] at hn
   simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
-    SetLike.coe_eq_coe, false_and, AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero,
-    false_or, n] at hn
+    SetLike.coe_eq_coe, false_and, false_or, n] at hn
+  repeat rw [AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero] at hn
   exact h.ne_zero 0 hn.2
 
 /-- If `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then any two commutative

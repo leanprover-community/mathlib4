@@ -74,8 +74,8 @@ def Quotient (H K : Set G) : Type _ :=
 theorem rel_iff {H K : Subgroup G} {x y : G} :
     (setoid ↑H ↑K).Rel x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
   Iff.trans
-    ⟨fun hxy => (congr_arg _ hxy).mpr (mem_doset_self H K y), fun hxy => (doset_eq_of_mem hxy).symm⟩
-    mem_doset
+    ⟨fun (hxy : doset x H K = doset y H K) => hxy ▸ mem_doset_self H K y,
+      fun hxy => (doset_eq_of_mem hxy).symm⟩ mem_doset
 
 theorem bot_rel_eq_leftRel (H : Subgroup G) :
     (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
@@ -131,7 +131,7 @@ theorem mk_eq_of_doset_eq {H K : Subgroup G} {a b : G} (h : doset a H K = doset 
   rw [eq]
   exact mem_doset.mp (h.symm ▸ mem_doset_self H K b)
 
-theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
+theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H K} :
     a ≠ b → Disjoint (doset a.out' H K) (doset b.out' (H : Set G) K) := by
   contrapose!
   intro h
@@ -140,7 +140,7 @@ theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
 theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
   ext x
   simp only [Set.mem_iUnion, quotToDoset, mem_doset, SetLike.mem_coe, exists_prop, Set.mem_univ,
-    iff_true_iff]
+    iff_true]
   use mk H K x
   obtain ⟨h, k, h3, h4, h5⟩ := mk_out'_eq_mul H K x
   refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩
@@ -172,19 +172,17 @@ theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
     simp only [hxy, ← mul_assoc, hy, one_mul, inv_mul_cancel, Subgroup.coe_mk, inv_mul_cancel_right]
 
 theorem left_bot_eq_left_quot (H : Subgroup G) :
-    Quotient (⊥ : Subgroup G).1 (H : Set G) = (G ⧸ H) := by
+    Quotient (⊥ : Subgroup G) (H : Set G) = (G ⧸ H) := by
   unfold Quotient
   congr
   ext
   simp_rw [← bot_rel_eq_leftRel H]
-  rfl
 
 theorem right_bot_eq_right_quot (H : Subgroup G) :
-    Quotient (H.1 : Set G) (⊥ : Subgroup G) = _root_.Quotient (QuotientGroup.rightRel H) := by
+    Quotient (H : Set G) (⊥ : Subgroup G) = _root_.Quotient (QuotientGroup.rightRel H) := by
   unfold Quotient
   congr
   ext
   simp_rw [← rel_bot_eq_right_group_rel H]
-  rfl
 
 end Doset

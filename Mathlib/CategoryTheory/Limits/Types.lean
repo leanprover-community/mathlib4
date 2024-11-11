@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Reid Barton
+Authors: Kim Morrison, Reid Barton
 -/
 import Mathlib.Data.TypeMax
 import Mathlib.Logic.UnivLE
@@ -548,7 +548,7 @@ theorem colimit_sound' {j j' : J} {x : F.obj j} {x' : F.obj j'} {j'' : J}
 variable {F} in
 theorem colimit_eq {j j' : J} {x : F.obj j} {x' : F.obj j'}
     (w : colimit.ι F j x = colimit.ι F j' x') :
-      EqvGen (Quot.Rel F) ⟨j, x⟩ ⟨j', x'⟩ := by
+      Relation.EqvGen (Quot.Rel F) ⟨j, x⟩ ⟨j', x'⟩ := by
   apply Quot.eq.1
   simpa using congr_arg (colimitEquivQuot F) w
 

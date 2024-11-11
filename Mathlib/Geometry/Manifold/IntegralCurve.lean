@@ -492,7 +492,7 @@ theorem isIntegralCurve_eq_of_contMDiff (hγt : ∀ t, I.IsInteriorPoint (γ t))
     obtain ⟨hS₂, hS₃⟩ := abs_lt.mp hS₂
     exact ⟨T + S, by constructor <;> constructor <;> linarith⟩
   exact isIntegralCurveOn_Ioo_eqOn_of_contMDiff ht (fun t _ ↦ hγt t) hv
-    ((hγ.isIntegralCurveOn _).mono  (subset_univ _))
+    ((hγ.isIntegralCurveOn _).mono (subset_univ _))
     ((hγ'.isIntegralCurveOn _).mono (subset_univ _)) h ht₀
 
 theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I M]

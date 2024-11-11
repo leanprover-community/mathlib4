@@ -82,11 +82,11 @@ theorem map_pure (f : α → β) (x : α) : (f <$> pure x : Comp F G β) = pure 
   Comp.ext <| by simp
 
 theorem seq_pure (f : Comp F G (α → β)) (x : α) : f <*> pure x = (fun g : α → β => g x) <$> f :=
-  Comp.ext <| by simp [(· ∘ ·), functor_norm]
+  Comp.ext <| by simp [comp_def, functor_norm]
 
 theorem seq_assoc (x : Comp F G α) (f : Comp F G (α → β)) (g : Comp F G (β → γ)) :
     g <*> (f <*> x) = @Function.comp α β γ <$> g <*> f <*> x :=
-  Comp.ext <| by simp [(· ∘ ·), functor_norm]
+  Comp.ext <| by simp [comp_def, functor_norm]
 
 theorem pure_seq_eq_map (f : α → β) (x : Comp F G α) : pure f <*> x = f <$> x :=
   Comp.ext <| by simp [Applicative.pure_seq_eq_map', functor_norm]
@@ -119,7 +119,7 @@ instance {f : Type u → Type w} {g : Type v → Type u} [Applicative f] [Applic
   commutative_prod _ _ := by
     simp! [map, Seq.seq]
     rw [commutative_map]
-    simp only [mk, flip, seq_map_assoc, Function.comp, map_map]
+    simp only [mk, flip, seq_map_assoc, Function.comp_def, map_map]
     congr
     funext x y
     rw [commutative_map]

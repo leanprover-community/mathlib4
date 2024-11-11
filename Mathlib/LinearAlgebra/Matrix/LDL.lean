@@ -107,7 +107,7 @@ noncomputable def LDL.lower :=
   (LDL.lowerInv hS)⁻¹
 
 /-- **LDL decomposition**: any positive definite matrix `S` can be
-decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a diagonal matrix.  -/
+decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a diagonal matrix. -/
 theorem LDL.lower_conj_diag : LDL.lower hS * LDL.diag hS * (LDL.lower hS)ᴴ = S := by
   rw [LDL.lower, conjTranspose_nonsing_inv, Matrix.mul_assoc,
     Matrix.inv_mul_eq_iff_eq_mul_of_invertible (LDL.lowerInv hS),

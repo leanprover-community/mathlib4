@@ -82,11 +82,7 @@ theorem algebraicIndependent_iff_injective_aeval :
 @[simp]
 theorem algebraicIndependent_empty_type_iff [IsEmpty ι] :
     AlgebraicIndependent R x ↔ Injective (algebraMap R A) := by
-  have : aeval x = (Algebra.ofId R A).comp (@isEmptyAlgEquiv R ι _ _).toAlgHom := by
-    ext i
-    exact IsEmpty.elim' ‹IsEmpty ι› i
-  rw [AlgebraicIndependent, this, ← Injective.of_comp_iff' _ (@isEmptyAlgEquiv R ι _ _).bijective]
-  rfl
+  rw [algebraicIndependent_iff_injective_aeval, MvPolynomial.aeval_injective_iff_of_isEmpty]
 
 namespace AlgebraicIndependent
 
@@ -100,19 +96,19 @@ variable (hx : AlgebraicIndependent R x)
 include hx
 
 theorem algebraMap_injective : Injective (algebraMap R A) := by
-  simpa [Function.comp] using
+  simpa [Function.comp_def] using
     (Injective.of_comp_iff (algebraicIndependent_iff_injective_aeval.1 hx) MvPolynomial.C).2
       (MvPolynomial.C_injective _ _)
 
 theorem linearIndependent : LinearIndependent R x := by
-  rw [linearIndependent_iff_injective_total]
-  have : Finsupp.total ι A R x =
-      (MvPolynomial.aeval x).toLinearMap.comp (Finsupp.total ι _ R X) := by
+  rw [linearIndependent_iff_injective_linearCombination]
+  have : Finsupp.linearCombination R x =
+      (MvPolynomial.aeval x).toLinearMap.comp (Finsupp.linearCombination R X) := by
     ext
     simp
   rw [this]
   refine hx.comp ?_
-  rw [← linearIndependent_iff_injective_total]
+  rw [← linearIndependent_iff_injective_linearCombination]
   exact linearIndependent_X _ _
 
 protected theorem injective [Nontrivial R] : Injective x :=
@@ -135,7 +131,7 @@ theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
     intro p
     rw [AlgHom.mem_range]
     refine ⟨MvPolynomial.rename (codRestrict x (range x) mem_range_self) p, ?_⟩
-    simp [Function.comp, aeval_rename]
+    simp [Function.comp_def, aeval_rename]
   intro x y hxy
   rw [this] at hxy
   rw [adjoin_eq_range] at hf_inj

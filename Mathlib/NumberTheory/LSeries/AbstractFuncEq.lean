@@ -397,7 +397,7 @@ theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠
     DifferentiableAt ℂ P.Λ s := by
   refine ((P.differentiable_Λ₀ s).sub ?_).sub ?_
   · rcases hs with hs | hs
-    · simpa only [one_div] using (differentiableAt_inv' hs).smul_const P.f₀
+    · simpa only [one_div] using (differentiableAt_inv hs).smul_const P.f₀
     · simpa only [hs, smul_zero] using differentiableAt_const (0 : E)
   · rcases hs' with hs' | hs'
     · apply DifferentiableAt.smul_const

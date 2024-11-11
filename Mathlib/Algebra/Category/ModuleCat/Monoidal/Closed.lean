@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
+Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Linear.Yoneda
@@ -77,8 +77,9 @@ should give a map `M ⊗ Hom(M, N) ⟶ N`, so we flip the order of the arguments
 `Hom(M, N) ⟶ (M ⟶ N)` and uncurry the resulting map `M ⟶ Hom(M, N) ⟶ N.` -/
 theorem ihom_ev_app (M N : ModuleCat.{u} R) :
     (ihom.ev M).app N = TensorProduct.uncurry _ _ _ _ LinearMap.id.flip := by
+  rw [← MonoidalClosed.uncurry_id_eq_ev]
   apply TensorProduct.ext'
-  apply ModuleCat.monoidalClosed_uncurry
+  apply monoidalClosed_uncurry
 
 /-- Describes the unit of the adjunction `M ⊗ - ⊣ Hom(M, -)`. Given an `R`-module `N` this should
 define a map `N ⟶ Hom(M, M ⊗ N)`, which is given by flipping the arguments in the natural

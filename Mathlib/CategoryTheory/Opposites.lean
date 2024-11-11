@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stephen Morgan, Scott Morrison
+Authors: Stephen Morgan, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Equivalence
 
@@ -102,7 +102,7 @@ def unopUnop : Cᵒᵖᵒᵖ ⥤ C where
   obj X := unop (unop X)
   map f := f.unop.unop
 
-/-- The functor from a category to its double-opposite.  -/
+/-- The functor from a category to its double-opposite. -/
 @[simps]
 def opOp : C ⥤ Cᵒᵖᵒᵖ where
   obj X := op (op X)

@@ -152,7 +152,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
   [AddSubmonoidClass A M] [SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `Module` over `SMulMemClass`.
-/-- A submodule of a `Module` is a `Module`.  -/
+/-- A submodule of a `Module` is a `Module`. -/
 instance (priority := 75) toModule : Module R S' :=
   Subtype.coe_injective.module R (AddSubmonoidClass.subtype S') (SetLike.val_smul S')
 
@@ -236,6 +236,7 @@ instance isCentralScalar [SMul S R] [SMul S M] [IsScalarTower S R M] [SMul Sᵐ�
 protected theorem nonempty : (p : Set M).Nonempty :=
   ⟨0, p.zero_mem⟩
 
+@[simp]
 theorem mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
   Subtype.ext_iff_val
 

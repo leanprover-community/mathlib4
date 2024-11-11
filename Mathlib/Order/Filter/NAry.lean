@@ -168,7 +168,7 @@ theorem map₂_assoc {m : δ → γ → ε} {n : α → β → δ} {m' : α → 
     map₂ m (map₂ n f g) h = map₂ m' f (map₂ n' g h) := by
   rw [← map_prod_eq_map₂ n, ← map_prod_eq_map₂ n', map₂_map_left, map₂_map_right,
     ← map_prod_eq_map₂, ← map_prod_eq_map₂, ← prod_assoc, map_map]
-  simp only [h_assoc, Function.comp, Equiv.prodAssoc_apply]
+  simp only [h_assoc, Function.comp_def, Equiv.prodAssoc_apply]
 
 theorem map₂_comm {n : β → α → γ} (h_comm : ∀ a b, m a b = n b a) : map₂ m f g = map₂ n g f :=
   (map₂_swap _ _ _).trans <| by simp_rw [h_comm]

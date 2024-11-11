@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Markus Himmel
+Authors: Kim Morrison, Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 

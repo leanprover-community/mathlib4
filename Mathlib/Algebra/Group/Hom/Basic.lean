@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
+Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Basic
@@ -101,7 +101,7 @@ section Group
 variable [Group G] [CommGroup H]
 
 /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial.
-For the iff statement on the triviality of the kernel, see `injective_iff_map_eq_one'`.  -/
+For the iff statement on the triviality of the kernel, see `injective_iff_map_eq_one'`. -/
 @[to_additive
   "A homomorphism from an additive group to an additive monoid is injective iff
   its kernel is trivial. For the iff statement on the triviality of the kernel,

@@ -91,7 +91,7 @@ theorem IsTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG 
 theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsion H)
     (tN : IsTorsion N) : IsTorsion G := fun g => by
   obtain ⟨ngn, ngnpos, hngn⟩ := (tH <| f g).exists_pow_eq_one
-  have hmem := f.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
+  have hmem := MonoidHom.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
   lift g ^ ngn to N using hN.symm ▸ hmem with gn h
   obtain ⟨nn, nnpos, hnn⟩ := (tN gn).exists_pow_eq_one
   exact isOfFinOrder_iff_pow_eq_one.mpr <| ⟨ngn * nn, mul_pos ngnpos nnpos, by
@@ -201,7 +201,10 @@ variable {G} {p}
 @[to_additive primaryComponent.exists_orderOf_eq_prime_nsmul
   "Elements of the `p`-primary component have additive order `p^n` for some `n`"]
 theorem primaryComponent.exists_orderOf_eq_prime_pow (g : CommMonoid.primaryComponent G p) :
-    ∃ n : ℕ, orderOf g = p ^ n := by simpa [primaryComponent] using g.property
+    ∃ n : ℕ, orderOf g = p ^ n := by
+      obtain ⟨_, hn⟩ := g.property
+      rw [orderOf_submonoid g] at hn
+      exact ⟨_, hn⟩
 
 /-- The `p`- and `q`-primary components are disjoint for `p ≠ q`. -/
 @[to_additive "The `p`- and `q`-primary components are disjoint for `p ≠ q`."]

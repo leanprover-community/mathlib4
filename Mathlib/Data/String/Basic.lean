@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Batteries.Data.String.Lemmas
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
 import Mathlib.Tactic.AdaptationNote
@@ -60,7 +61,7 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) 
   intro ⟨cs₁⟩ ⟨cs₂⟩ i₁ i₂ <;>
   intros <;>
   (conv => lhs; unfold ltb) <;> (conv => rhs; unfold ltb) <;>
-  simp only [Iterator.hasNext_cons_addChar, ite_false, ite_true, *]
+  simp only [Iterator.hasNext_cons_addChar, ite_false, ite_true, *, reduceCtorEq]
   · rename_i h₂ h₁ heq ih
     simp only [Iterator.next, next, heq, Iterator.curr, get_cons_addChar, ite_true] at ih ⊢
     repeat rw [Pos.addChar_right_comm _ c]

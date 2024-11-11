@@ -277,7 +277,7 @@ theorem UniqueMDiffOn.eq (U : UniqueMDiffOn I s) (hx : x ∈ s) (h : HasMFDerivW
 /-!
 ### General lemmas on derivatives of functions between manifolds
 
-We mimick the API for functions between vector spaces
+We mimic the API for functions between vector spaces
 -/
 
 /-- One can reformulate differentiability within a set at a point as continuity within this set at

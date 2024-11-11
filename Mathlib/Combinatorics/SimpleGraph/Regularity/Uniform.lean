@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Order.Partition.Equipartition
-import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Graph uniformity and uniform partitions

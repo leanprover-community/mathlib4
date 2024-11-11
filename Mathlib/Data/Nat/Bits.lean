@@ -43,7 +43,7 @@ def boddDiv2 : ℕ → Bool × ℕ
 /-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2`-/
 def div2 (n : ℕ) : ℕ := (boddDiv2 n).2
 
-/-- `bodd n` returns `true` if `n` is odd-/
+/-- `bodd n` returns `true` if `n` is odd -/
 def bodd (n : ℕ) : Bool := (boddDiv2 n).1
 
 @[simp] lemma bodd_zero : bodd 0 = false := rfl
@@ -66,9 +66,10 @@ lemma bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
 
 @[simp]
 lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
-  induction' n with n IH
-  · simp
-  · simp only [mul_succ, bodd_add, IH, bodd_succ]
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    simp only [mul_succ, bodd_add, IH, bodd_succ]
     cases bodd m <;> cases bodd n <;> rfl
 
 lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
@@ -83,7 +84,7 @@ lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
     intro b
     cases b <;> rfl
   rw [← this]
-  cases' mod_two_eq_zero_or_one n with h h <;> rw [h] <;> rfl
+  rcases mod_two_eq_zero_or_one n with h | h <;> rw [h] <;> rfl
 
 @[simp] lemma div2_zero : div2 0 = 0 := rfl
 
@@ -131,7 +132,7 @@ lemma bit_zero : bit false 0 = 0 :=
 
 /-- `shiftLeft' b m n` performs a left shift of `m` `n` times
  and adds the bit `b` as the least significant bit each time.
- Returns the corresponding natural number-/
+ Returns the corresponding natural number -/
 def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
   | 0 => m
   | n + 1 => bit b (shiftLeft' b m n)
@@ -290,7 +291,7 @@ theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
 @[simp]
 theorem bitCasesOn_bit {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (b : Bool) (n : ℕ) :
     bitCasesOn (bit b n) H = H b n :=
-  eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [bodd_bit, div2_bit]
+  eq_of_heq <| (eqRec_heq _ _).trans <| by rw [bodd_bit, div2_bit]
 
 @[simp]
 theorem bitCasesOn_bit0 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
@@ -339,7 +340,7 @@ theorem binaryRec_eq' {C : ℕ → Sort*} {z : C 0} {f : ∀ b n, C n → C (bit
   split_ifs with h'
   · rcases bit_eq_zero_iff.mp h' with ⟨rfl, rfl⟩
     rw [binaryRec_zero]
-    simp only [imp_false, or_false_iff, eq_self_iff_true, not_true] at h
+    simp only [imp_false, or_false, eq_self_iff_true, not_true, reduceCtorEq] at h
     exact h.symm
   · dsimp only []
     generalize_proofs e
@@ -396,11 +397,13 @@ theorem one_bits : Nat.bits 1 = [true] := by
 -- := by norm_num
 
 theorem bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.headI := by
-  induction' n using Nat.binaryRec' with b n h _; · simp
-  simp [bodd_bit, bits_append_bit _ _ h]
+  induction n using Nat.binaryRec' with
+  | z => simp
+  | f _ _ h _ => simp [bodd_bit, bits_append_bit _ _ h]
 
 theorem div2_bits_eq_tail (n : ℕ) : n.div2.bits = n.bits.tail := by
-  induction' n using Nat.binaryRec' with b n h _; · simp
-  simp [div2_bit, bits_append_bit _ _ h]
+  induction n using Nat.binaryRec' with
+  | z => simp
+  | f _ _ h _ => simp [div2_bit, bits_append_bit _ _ h]
 
 end Nat

@@ -389,7 +389,7 @@ theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) 
   iterate 3 rw [padicValNat_def, PartENat.natCast_get]
   · exact multiplicity.Nat.pow_add_pow hp.out hp1 hxy hx hn
   · exact Odd.pos hn
-  · simp only [add_pos_iff, Nat.succ_pos', or_true_iff]
+  · simp only [add_pos_iff, Nat.succ_pos', or_true]
   · exact Nat.lt_add_left _ (pow_pos y.succ_pos _)
 
 end padicValNat

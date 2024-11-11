@@ -29,11 +29,11 @@ example (a b : ℕ) (h : (a : ℤ) ≤ b) : a ≤ b := by
   guard_target = (a : ℤ) ≤ b
   exact h
 
-/-example (a b : ℕ) (h : a = b ∧ b < a) : False := by
+/- example (a b : ℕ) (h : a = b ∧ b < a) : False := by
   zify at h
   rcases h with ⟨ha, hb⟩
   -- Preorder for `ℤ` is missing
-  exact ne_of_lt hb ha-/
+  exact ne_of_lt hb ha -/
 
 example (a b c : ℕ) (h : a - b < c) (hab : b ≤ a) : True := by
   zify [hab] at h

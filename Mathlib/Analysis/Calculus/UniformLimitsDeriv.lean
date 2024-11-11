@@ -99,7 +99,8 @@ open scoped uniformity Filter Topology
 
 section LimitsOfDerivatives
 
-variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [RCLike 𝕜]
+variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*}
+  [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
   [NormedSpace 𝕜 E] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
   {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
 
@@ -110,6 +111,7 @@ sequence in a neighborhood of `x`. -/
 theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOnFilter f l (𝓝 x) := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   rw [SeminormedAddGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_zero] at hf' ⊢
   suffices
@@ -173,6 +175,7 @@ convergence. See `cauchy_map_of_uniformCauchySeqOn_fderiv`.
 theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f' l (Metric.ball x r))
     (hf : ∀ n : ι, ∀ y : E, y ∈ Metric.ball x r → HasFDerivAt (f n) (f' n y) y)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOn f l (Metric.ball x r) := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   have : NeBot l := (cauchy_map_iff.1 hfg).1
   rcases le_or_lt r 0 with (hr | hr)
@@ -249,15 +252,16 @@ theorem cauchy_map_of_uniformCauchySeqOn_fderiv {s : Set E} (hs : IsOpen s) (h's
 /-- If `f_n → g` pointwise and the derivatives `(f_n)' → h` _uniformly_ converge, then
 in fact for a fixed `y`, the difference quotients `‖z - y‖⁻¹ • (f_n z - f_n y)` converge
 _uniformly_ to `‖z - y‖⁻¹ • (g z - g y)` -/
-theorem difference_quotients_converge_uniformly (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
+theorem difference_quotients_converge_uniformly
+    {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [RCLike 𝕜]
+    [NormedSpace 𝕜 E] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
+    {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
+    (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : ∀ᶠ y : E in 𝓝 x, Tendsto (fun n => f n y) l (𝓝 (g y))) :
     TendstoUniformlyOnFilter (fun n : ι => fun y : E => (‖y - x‖⁻¹ : 𝕜) • (f n y - f n x))
       (fun y : E => (‖y - x‖⁻¹ : 𝕜) • (g y - g x)) l (𝓝 x) := by
   let A : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
-  rcases eq_or_ne l ⊥ with (hl | hl)
-  · simp only [hl, TendstoUniformlyOnFilter, bot_prod, eventually_bot, imp_true_iff]
-  haveI : NeBot l := ⟨hl⟩
   refine
     UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto ?_
       ((hfg.and (eventually_const.mpr hfg.self_of_nhds)).mono fun y hy =>
@@ -302,6 +306,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : ∀ᶠ y in 𝓝 x, Tendsto (fun n => f n y) l (𝓝 (g y))) : HasFDerivAt g (g' x) x := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   -- The proof strategy follows several steps:
   --   1. The quantifiers in the definition of the derivative are
   --      `∀ ε > 0, ∃δ > 0, ∀y ∈ B_δ(x)`. We will introduce a quantifier in the middle:
@@ -411,20 +416,19 @@ _uniformly_ to their limit on an open set containing `x`. -/
 theorem hasFDerivAt_of_tendstoUniformlyOn [NeBot l] {s : Set E} (hs : IsOpen s)
     (hf' : TendstoUniformlyOn f' g' l s)
     (hf : ∀ n : ι, ∀ x : E, x ∈ s → HasFDerivAt (f n) (f' n x) x)
-    (hfg : ∀ x : E, x ∈ s → Tendsto (fun n => f n x) l (𝓝 (g x))) :
-    ∀ x : E, x ∈ s → HasFDerivAt g (g' x) x := fun _ =>
-  hasFDerivAt_of_tendstoLocallyUniformlyOn hs hf'.tendstoLocallyUniformlyOn hf hfg
+    (hfg : ∀ x : E, x ∈ s → Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) :
+    HasFDerivAt g (g' x) x :=
+  hasFDerivAt_of_tendstoLocallyUniformlyOn hs hf'.tendstoLocallyUniformlyOn hf hfg hx
 
 /-- `(d/dx) lim_{n → ∞} f n x = lim_{n → ∞} f' n x` when the `f' n` converge
 _uniformly_ to their limit. -/
 theorem hasFDerivAt_of_tendstoUniformly [NeBot l] (hf' : TendstoUniformly f' g' l)
     (hf : ∀ n : ι, ∀ x : E, HasFDerivAt (f n) (f' n x) x)
-    (hfg : ∀ x : E, Tendsto (fun n => f n x) l (𝓝 (g x))) : ∀ x : E, HasFDerivAt g (g' x) x := by
-  intro x
+    (hfg : ∀ x : E, Tendsto (fun n => f n x) l (𝓝 (g x))) (x : E) : HasFDerivAt g (g' x) x := by
   have hf : ∀ n : ι, ∀ x : E, x ∈ Set.univ → HasFDerivAt (f n) (f' n x) x := by simp [hf]
   have hfg : ∀ x : E, x ∈ Set.univ → Tendsto (fun n => f n x) l (𝓝 (g x)) := by simp [hfg]
   have hf' : TendstoUniformlyOn f' g' l Set.univ := by rwa [tendstoUniformlyOn_univ]
-  exact hasFDerivAt_of_tendstoUniformlyOn isOpen_univ hf' hf hfg x (Set.mem_univ x)
+  exact hasFDerivAt_of_tendstoUniformlyOn isOpen_univ hf' hf hfg (Set.mem_univ x)
 
 end LimitsOfDerivatives
 
@@ -436,7 +440,8 @@ In this section, we provide `deriv` equivalents of the `fderiv` lemmas in the pr
 -/
 
 
-variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [RCLike 𝕜] {G : Type*} [NormedAddCommGroup G]
+variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {G : Type*} [NormedAddCommGroup G]
   [NormedSpace 𝕜 G] {f : ι → 𝕜 → G} {g : 𝕜 → G} {f' : ι → 𝕜 → G} {g' : 𝕜 → G} {x : 𝕜}
 
 /-- If our derivatives converge uniformly, then the Fréchet derivatives converge uniformly -/
@@ -460,6 +465,8 @@ theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
     ContinuousLinearMap.one_apply]
   rw [← smul_sub, norm_smul, mul_comm]
   gcongr
+
+variable [IsRCLikeNormedField 𝕜]
 
 theorem uniformCauchySeqOnFilter_of_deriv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
     (hf : ∀ᶠ n : ι × 𝕜 in l ×ˢ 𝓝 x, HasDerivAt (f n.1) (f' n.1 n.2) n.2)
@@ -530,18 +537,17 @@ theorem hasDerivAt_of_tendsto_locally_uniformly_on' [NeBot l] {s : Set 𝕜} (hs
 theorem hasDerivAt_of_tendstoUniformlyOn [NeBot l] {s : Set 𝕜} (hs : IsOpen s)
     (hf' : TendstoUniformlyOn f' g' l s)
     (hf : ∀ᶠ n in l, ∀ x : 𝕜, x ∈ s → HasDerivAt (f n) (f' n x) x)
-    (hfg : ∀ x : 𝕜, x ∈ s → Tendsto (fun n => f n x) l (𝓝 (g x))) :
-    ∀ x : 𝕜, x ∈ s → HasDerivAt g (g' x) x := fun _ =>
-  hasDerivAt_of_tendstoLocallyUniformlyOn hs hf'.tendstoLocallyUniformlyOn hf hfg
+    (hfg : ∀ x : 𝕜, x ∈ s → Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) :
+    HasDerivAt g (g' x) x :=
+  hasDerivAt_of_tendstoLocallyUniformlyOn hs hf'.tendstoLocallyUniformlyOn hf hfg hx
 
 theorem hasDerivAt_of_tendstoUniformly [NeBot l] (hf' : TendstoUniformly f' g' l)
     (hf : ∀ᶠ n in l, ∀ x : 𝕜, HasDerivAt (f n) (f' n x) x)
-    (hfg : ∀ x : 𝕜, Tendsto (fun n => f n x) l (𝓝 (g x))) : ∀ x : 𝕜, HasDerivAt g (g' x) x := by
-  intro x
+    (hfg : ∀ x : 𝕜, Tendsto (fun n => f n x) l (𝓝 (g x))) (x : 𝕜) : HasDerivAt g (g' x) x := by
   have hf : ∀ᶠ n in l, ∀ x : 𝕜, x ∈ Set.univ → HasDerivAt (f n) (f' n x) x := by
     filter_upwards [hf] with n h x _ using h x
   have hfg : ∀ x : 𝕜, x ∈ Set.univ → Tendsto (fun n => f n x) l (𝓝 (g x)) := by simp [hfg]
   have hf' : TendstoUniformlyOn f' g' l Set.univ := by rwa [tendstoUniformlyOn_univ]
-  exact hasDerivAt_of_tendstoUniformlyOn isOpen_univ hf' hf hfg x (Set.mem_univ x)
+  exact hasDerivAt_of_tendstoUniformlyOn isOpen_univ hf' hf hfg (Set.mem_univ x)
 
 end deriv

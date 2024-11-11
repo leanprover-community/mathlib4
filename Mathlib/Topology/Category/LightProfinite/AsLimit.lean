@@ -36,14 +36,14 @@ abbrev diagram : ℕᵒᵖ ⥤ LightProfinite := S.fintypeDiagram ⋙ FintypeCat
 
 /--
 A cone over `S.diagram` whose cone point is isomorphic to `S`.
-(Auxiliary definition, use `S.asLimitCone` instead.)
+(Auxiliary definition, use `S.asLimitCone` instead.)
 -/
 def asLimitConeAux : Cone S.diagram :=
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   liftLimit hc
 
-/-- An auxiliary isomorphism of cones used to prove that `S.asLimitConeAux` is a limit cone. -/
+/-- An auxiliary isomorphism of cones used to prove that `S.asLimitConeAux` is a limit cone. -/
 def isoMapCone : lightToProfinite.mapCone S.asLimitConeAux ≅ S.toLightDiagram.cone :=
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
@@ -51,7 +51,7 @@ def isoMapCone : lightToProfinite.mapCone S.asLimitConeAux ≅ S.toLightDiagram.
 
 /--
 `S.asLimitConeAux` is indeed a limit cone.
-(Auxiliary definition, use `S.asLimit` instead.)
+(Auxiliary definition, use `S.asLimit` instead.)
 -/
 def asLimitAux : IsLimit S.asLimitConeAux :=
   let hc : IsLimit (lightToProfinite.mapCone S.asLimitConeAux) :=

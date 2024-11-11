@@ -512,7 +512,7 @@ instance instAddGroupWithOne [AddGroupWithOne G] : AddGroupWithOne (Germ l G) wh
   __ := instAddMonoidWithOne
   __ := instAddGroup
   intCast_ofNat _ := congrArg ofFun <| by simp
-  intCast_negSucc _ := congrArg ofFun <| by simp [Function.comp]; rfl
+  intCast_negSucc _ := congrArg ofFun <| by simp [Function.comp_def]; rfl
 
 end Monoid
 

@@ -299,7 +299,7 @@ theorem continuousAt_cpow_zero_of_re_pos {z : ℂ} (hz : 0 < z.re) :
         (continuous_fst.norm.tendsto ((0 : ℂ), z)).rpow
           ((continuous_re.comp continuous_snd).tendsto _) _ <;>
       simp [hz, Real.zero_rpow hz.ne']
-  · simp only [Function.comp, Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
+  · simp only [Function.comp_def, Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
     rcases exists_gt |im z| with ⟨C, hC⟩
     refine ⟨Real.exp (π * C), eventually_map.2 ?_⟩
     refine
@@ -445,7 +445,7 @@ theorem eventually_pow_one_div_le {x : ℝ≥0∞} (hx : x ≠ ∞) {y : ℝ≥0
   · lift y to ℝ≥0 using h
     have := NNReal.eventually_pow_one_div_le x (mod_cast hy : 1 < y)
     refine this.congr (Eventually.of_forall fun n => ?_)
-    rw [coe_rpow_of_nonneg x (by positivity : 0 ≤ (1 / n : ℝ)), coe_le_coe]
+    rw [← coe_rpow_of_nonneg x (by positivity : 0 ≤ (1 / n : ℝ)), coe_le_coe]
 
 private theorem continuousAt_rpow_const_of_pos {x : ℝ≥0∞} {y : ℝ} (h : 0 < y) :
     ContinuousAt (fun a : ℝ≥0∞ => a ^ y) x := by
@@ -457,7 +457,7 @@ private theorem continuousAt_rpow_const_of_pos {x : ℝ≥0∞} {y : ℝ} (h : 0
   rw [continuousAt_coe_iff]
   convert continuous_coe.continuousAt.comp (NNReal.continuousAt_rpow_const (Or.inr h.le)) using 1
   ext1 x
-  simp [coe_rpow_of_nonneg _ h.le]
+  simp [← coe_rpow_of_nonneg _ h.le]
 
 @[continuity, fun_prop]
 theorem continuous_rpow_const {y : ℝ} : Continuous fun a : ℝ≥0∞ => a ^ y := by

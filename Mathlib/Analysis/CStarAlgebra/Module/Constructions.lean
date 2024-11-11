@@ -81,6 +81,7 @@ instance : CStarModule A A where
     rw [← sq_eq_sq (norm_nonneg _) (by positivity)]
     simpa [sq] using Eq.symm <| CStarRing.norm_star_mul_self
 
+open scoped InnerProductSpace in
 lemma inner_def (x y : A) : ⟪x, y⟫_A = star x * y := rfl
 
 end Self
@@ -88,6 +89,8 @@ end Self
 /-! ## Products of C⋆-modules -/
 
 section Prod
+
+open scoped InnerProductSpace
 
 variable {E F : Type*}
 variable [NormedAddCommGroup E] [Module ℂ E] [SMul Aᵐᵒᵖ E]
@@ -139,7 +142,7 @@ lemma max_le_prod_norm (x : C⋆ᵐᵒᵈ (E × F)) : max ‖x.1‖ ‖x.2‖ �
     Real.sqrt_le_sqrt_iff]
   constructor
   all_goals
-    apply norm_le_norm_of_nonneg_of_le
+    apply CStarAlgebra.norm_le_norm_of_nonneg_of_le
     all_goals
       aesop (add safe apply CStarModule.inner_self_nonneg)
 
@@ -188,6 +191,8 @@ end Prod
 /-! ## Pi-types of C⋆-modules -/
 
 section Pi
+
+open scoped InnerProductSpace
 
 variable {ι : Type*} {E : ι → Type*} [Fintype ι]
 variable [∀ i, NormedAddCommGroup (E i)] [∀ i, Module ℂ (E i)] [∀ i, SMul Aᵐᵒᵖ (E i)]
@@ -255,7 +260,7 @@ lemma norm_apply_le_norm (x : C⋆ᵐᵒᵈ (Π i, E i)) (i : ι) : ‖x i‖ �
   let _ : NormedAddCommGroup (C⋆ᵐᵒᵈ (Π i, E i)) := normedAddCommGroup
   refine abs_le_of_sq_le_sq' ?_ (by positivity) |>.2
   rw [pi_norm_sq, norm_sq_eq]
-  refine norm_le_norm_of_nonneg_of_le inner_self_nonneg ?_
+  refine CStarAlgebra.norm_le_norm_of_nonneg_of_le inner_self_nonneg ?_
   exact Finset.single_le_sum (fun j _ ↦ inner_self_nonneg (x := x j)) (Finset.mem_univ i)
 
 open Finset in
@@ -312,6 +317,7 @@ variable {E : Type*}
 variable [NormedAddCommGroup E] [InnerProductSpace ℂ E]
 variable [instSMulOp : SMul ℂᵐᵒᵖ E] [instCentral : IsCentralScalar ℂ E]
 
+open scoped InnerProductSpace in
 /-- Reinterpret an inner product space `E` over `ℂ` as a `CStarModule` over `ℂ`.
 
 Note: this instance requires `SMul ℂᵐᵒᵖ E` and `IsCentralScalar ℂ E` instances to exist on `E`,

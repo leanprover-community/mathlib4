@@ -127,10 +127,12 @@ lemma traceForm_genWeightSpace_eq [Module.Free R M]
 lemma traceForm_eq_zero_if_mem_lcs_of_mem_ucs {x y : L} (k : ℕ)
     (hx : x ∈ (⊤ : LieIdeal R L).lcs L k) (hy : y ∈ (⊥ : LieIdeal R L).ucs k) :
     traceForm R L M x y = 0 := by
-  induction' k with k ih generalizing x y
-  · replace hy : y = 0 := by simpa using hy
+  induction k generalizing x y with
+  | zero =>
+    replace hy : y = 0 := by simpa using hy
     simp [hy]
-  · rw [LieSubmodule.ucs_succ, LieSubmodule.mem_normalizer] at hy
+  | succ k ih =>
+    rw [LieSubmodule.ucs_succ, LieSubmodule.mem_normalizer] at hy
     simp_rw [LieIdeal.lcs_succ, ← LieSubmodule.mem_coeSubmodule,
       LieSubmodule.lieIdeal_oper_eq_linear_span', LieSubmodule.mem_top, true_and] at hx
     refine Submodule.span_induction hx ?_ ?_ (fun z w hz hw ↦ ?_) (fun t z hz ↦ ?_)
@@ -300,7 +302,10 @@ variable [IsDomain R] [IsPrincipalIdealRing R]
 lemma trace_eq_trace_restrict_of_le_idealizer
     (hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)) :
     trace R M (φ x ∘ₗ φ y) = trace R N ((φ x ∘ₗ φ y).restrict hy') := by
-  suffices ∀ m, ⁅x, ⁅y, m⁆⁆ ∈ N by simp [(φ x ∘ₗ φ y).trace_restrict_eq_of_forall_mem _ this]
+  suffices ∀ m, ⁅x, ⁅y, m⁆⁆ ∈ N by
+    have : (trace R { x // x ∈ N }) ((φ x ∘ₗ φ y).restrict _) = (trace R M) (φ x ∘ₗ φ y) :=
+      (φ x ∘ₗ φ y).trace_restrict_eq_of_forall_mem _ this
+    simp [this]
   exact fun m ↦ N.lie_mem (h hy m)
 
 include h in
@@ -320,7 +325,7 @@ lemma traceForm_eq_zero_of_isTrivial [LieModule.IsTrivial I N] :
   let hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)
   suffices (φ x ∘ₗ φ y).restrict hy' = 0 by
     simp [this, N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
-  ext n
+  ext (n : N)
   suffices ⁅y, (n : M)⁆ = 0 by simp [this]
   exact Submodule.coe_eq_zero.mpr (LieModule.IsTrivial.trivial (⟨y, hy⟩ : I) n)
 

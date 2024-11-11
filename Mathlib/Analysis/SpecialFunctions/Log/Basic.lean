@@ -124,7 +124,7 @@ theorem log_le_log_iff (h : 0 < x) (h₁ : 0 < y) : log x ≤ log y ↔ x ≤ y 
 lemma log_le_log (hx : 0 < x) (hxy : x ≤ y) : log x ≤ log y :=
   (log_le_log_iff hx (hx.trans_le hxy)).2 hxy
 
-@[gcongr]
+@[gcongr, bound]
 theorem log_lt_log (hx : 0 < x) (h : x < y) : log x < log y := by
   rwa [← exp_lt_exp, exp_log hx, exp_log (lt_trans hx h)]
 
@@ -143,6 +143,7 @@ theorem log_pos_iff (hx : 0 < x) : 0 < log x ↔ 1 < x := by
   rw [← log_one]
   exact log_lt_log_iff zero_lt_one hx
 
+@[bound]
 theorem log_pos (hx : 1 < x) : 0 < log x :=
   (log_pos_iff (lt_trans zero_lt_one hx)).2 hx
 
@@ -155,6 +156,7 @@ theorem log_neg_iff (h : 0 < x) : log x < 0 ↔ x < 1 := by
   rw [← log_one]
   exact log_lt_log_iff h zero_lt_one
 
+@[bound]
 theorem log_neg (h0 : 0 < x) (h1 : x < 1) : log x < 0 :=
   (log_neg_iff h0).2 h1
 
@@ -177,6 +179,7 @@ theorem log_nonpos_iff' (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 := by
   · simp [le_refl, zero_le_one]
   exact log_nonpos_iff hx
 
+@[bound]
 theorem log_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : log x ≤ 0 :=
   (log_nonpos_iff' hx).2 h'x
 
@@ -274,6 +277,9 @@ theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   rw [le_sub_iff_add_le]
   convert add_one_le_exp (log x)
   rw [exp_log hx]
+
+lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
+  simpa [add_comm] using log_le_sub_one_of_pos (inv_pos.2 hx)
 
 /-- Bound for `|log x * x|` in the interval `(0, 1]`. -/
 theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| < 1 := by

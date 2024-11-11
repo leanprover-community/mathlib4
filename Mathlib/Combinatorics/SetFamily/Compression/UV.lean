@@ -327,7 +327,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
         exact ⟨Or.inl hat, hav⟩
       · rw [← erase_sdiff_comm, sup_eq_union, erase_union_distrib, erase_eq_of_not_mem hau]
   intro s hs𝒜' hs𝒜
-  -- This is gonna be useful a couple of times so let's name it.
+  -- This is going to be useful a couple of times so let's name it.
   have m : ∀ y, y ∉ s → insert y s ∉ 𝒜 := fun y h a => hs𝒜 (mem_shadow_iff_insert_mem.2 ⟨y, h, a⟩)
   obtain ⟨x, _, _⟩ := mem_shadow_iff_insert_mem.1 hs𝒜'
   have hus : u ⊆ insert x s := le_of_mem_compression_of_not_mem ‹_ ∈ 𝒜'› (m _ ‹x ∉ s›)

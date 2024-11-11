@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 
-import Mathlib.NumberTheory.Harmonic.EulerMascheroni
+import Mathlib.Analysis.Convex.Deriv
 import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 
 /-!
-# Derivative of Γ at positive integers
+# Derivative of Γ at positive integers
 
 We prove the formula for the derivative of `Real.Gamma` at a positive integer:
 

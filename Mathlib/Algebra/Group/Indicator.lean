@@ -41,7 +41,7 @@ section One
 
 variable [One M] [One N] {s t : Set α} {f g : α → M} {a : α}
 
-/-- `Set.mulIndicator s f a` is `f a` if `a ∈ s`, `1` otherwise.  -/
+/-- `Set.mulIndicator s f a` is `f a` if `a ∈ s`, `1` otherwise. -/
 @[to_additive "`Set.indicator s f a` is `f a` if `a ∈ s`, `0` otherwise."]
 noncomputable def mulIndicator (s : Set α) (f : α → M) (x : α) : M :=
   haveI := Classical.decPred (· ∈ s)

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Batteries.Data.MLList.Basic
 import Mathlib.Data.Prod.Lex
@@ -87,9 +87,7 @@ structure BestFirstNode {α : Sort*} {ω : Type*} (prio : α → Thunk ω) (ε :
   (We will assume we have `[∀ a : α, Estimator (prio a) (ε a)]`.) -/
   estimator : ε key
 
-set_option autoImplicit true
-
-variable {α : Type} {prio : α → Thunk ω} {ε : α → Type} [LinearOrder ω]
+variable {ω α : Type} {prio : α → Thunk ω} {ε : α → Type} [LinearOrder ω]
   [∀ a, Estimator (prio a) (ε a)]
   [I : ∀ a : α, WellFoundedGT (range (bound (prio a) : ε a → ω))]
   {m : Type → Type} [Monad m] {β : Type}

@@ -69,7 +69,7 @@ private def elabHelpOption (id : Option Ident) : CommandElabM Unit := do
     | .ofInt val => s!"Int := {repr val}"
     | .ofSyntax val => s!"Syntax := {repr val}"
     if let some val := opts.find (.mkSimple name) then
-      msg1 := s!"{msg1}  (currently: {val})"
+      msg1 := s!"{msg1} (currently: {val})"
     msg := msg ++ .nest 2 (f!"option {name} : {msg1}" ++ .line ++ decl.descr) ++ .line ++ .line
   logInfo msg
 

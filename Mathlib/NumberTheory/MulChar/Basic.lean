@@ -159,14 +159,14 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
     classical
       intro x y
       by_cases hx : IsUnit x
-      · simp only [hx, IsUnit.mul_iff, true_and_iff, dif_pos]
+      · simp only [hx, IsUnit.mul_iff, true_and, dif_pos]
         by_cases hy : IsUnit y
         · simp only [hy, dif_pos]
           have hm : (IsUnit.mul_iff.mpr ⟨hx, hy⟩).unit = hx.unit * hy.unit := Units.eq_iff.mp rfl
           rw [hm, map_mul]
           norm_cast
         · simp only [hy, not_false_iff, dif_neg, mul_zero]
-      · simp only [hx, IsUnit.mul_iff, false_and_iff, not_false_iff, dif_neg, zero_mul]
+      · simp only [hx, IsUnit.mul_iff, false_and, not_false_iff, dif_neg, zero_mul]
   map_nonunit' := by
     intro a ha
     simp only [ha, not_false_iff, dif_neg]
@@ -454,7 +454,7 @@ lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
 
 lemma ringHomComp_eq_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
     χ.ringHomComp f = 1 ↔ χ = 1 := by
-  conv_lhs => rw [← (show  (1 : MulChar R R').ringHomComp f = 1 by ext; simp)]
+  conv_lhs => rw [← (show (1 : MulChar R R').ringHomComp f = 1 by ext; simp)]
   exact (injective_ringHomComp hf).eq_iff
 
 lemma ringHomComp_ne_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
@@ -577,7 +577,7 @@ theorem sum_one_eq_card_units [DecidableEq R] :
     · exact map_nonunit _ h
   · congr
     ext a
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and_iff, Finset.mem_map,
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_map,
       Function.Embedding.coeFn_mk, exists_true_left, IsUnit]
 
 end sum

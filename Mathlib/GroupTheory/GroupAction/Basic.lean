@@ -328,6 +328,10 @@ theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) :
   simp only [orbit_smul, mem_orbit]
 
 @[to_additive]
+instance instMulAction (H : Subgroup G) : MulAction H α :=
+  inferInstanceAs (MulAction H.toSubmonoid α)
+
+@[to_additive]
 lemma orbit_subgroup_subset (H : Subgroup G) (a : α) : orbit H a ⊆ orbit G a :=
   orbit_submonoid_subset H.toSubmonoid a
 
@@ -345,11 +349,10 @@ lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
     a ∈ MulAction.orbit H b ↔ (a : α) ∈ MulAction.orbit H (b : α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, rfl⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, orbit.coe_smul, ← Submonoid.smul_def]
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, h⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, ← orbit.coe_smul,
-             ← Submonoid.smul_def, ← Subtype.ext_iff] at h
+    dsimp at h
+    erw [← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
 
@@ -563,12 +566,11 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Qu
     {a b : x.orbit} : (a : α) ∈ MulAction.orbit H (b : α) ↔ a ∈ MulAction.orbit H b := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, h⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, ← orbit.coe_smul,
-      ← Submonoid.smul_def, ← Subtype.ext_iff] at h
+    dsimp at h
+    erw [← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, rfl⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, orbit.coe_smul, ← Submonoid.smul_def]
     exact MulAction.mem_orbit _ g
 
 @[to_additive]
@@ -770,6 +772,7 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
 theorem mem_stabilizer_of_finite_iff_smul_le (s : Set α) (hs : s.Finite) (g : G) :
     g ∈ stabilizer G s ↔ g • s ⊆ s := by
   haveI : Fintype s := Set.Finite.fintype hs
+  haveI : Finite (g • s : Set α) := Finite.Set.finite_image ..
   haveI : Fintype (g • s : Set α) := Fintype.ofFinite _
   rw [mem_stabilizer_iff]
   constructor

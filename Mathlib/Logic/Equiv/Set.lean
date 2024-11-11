@@ -239,6 +239,9 @@ TODO: this is the same as `Equiv.setCongr`! -/
 protected def ofEq {α : Type u} {s t : Set α} (h : s = t) : s ≃ t :=
   Equiv.setCongr h
 
+lemma Equiv.strictMono_setCongr {α : Type*} [PartialOrder α] {S T : Set α} (h : S = T) :
+    StrictMono (setCongr h) := fun _ _ ↦ id
+
 /-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/
 protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) :
     (insert a s : Set α) ≃ s ⊕ PUnit.{u + 1} :=
@@ -298,13 +301,13 @@ theorem sumCompl_symm_apply_of_not_mem {α : Type u} {s : Set α} [DecidablePred
 
 @[simp]
 theorem sumCompl_symm_apply {α : Type*} {s : Set α} [DecidablePred (· ∈ s)] {x : s} :
-    (Equiv.Set.sumCompl s).symm x = Sum.inl x := by
-  cases' x with x hx; exact Set.sumCompl_symm_apply_of_mem hx
+    (Equiv.Set.sumCompl s).symm x = Sum.inl x :=
+  Set.sumCompl_symm_apply_of_mem x.2
 
 @[simp]
 theorem sumCompl_symm_apply_compl {α : Type*} {s : Set α} [DecidablePred (· ∈ s)]
-    {x : (sᶜ : Set α)} : (Equiv.Set.sumCompl s).symm x = Sum.inr x := by
-  cases' x with x hx; exact Set.sumCompl_symm_apply_of_not_mem hx
+    {x : (sᶜ : Set α)} : (Equiv.Set.sumCompl s).symm x = Sum.inr x :=
+  Set.sumCompl_symm_apply_of_not_mem x.2
 
 /-- `sumDiffSubset s t` is the natural equivalence between
 `s ⊕ (t \ s)` and `t`, where `s` and `t` are two sets. -/

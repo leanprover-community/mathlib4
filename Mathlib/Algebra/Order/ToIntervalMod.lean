@@ -517,23 +517,23 @@ theorem tfae_modEq :
       [a ≡ b [PMOD p], ∀ z : ℤ, b - z • p ∉ Set.Ioo a (a + p), toIcoMod hp a b ≠ toIocMod hp a b,
         toIcoMod hp a b + p = toIocMod hp a b] := by
   rw [modEq_iff_toIcoMod_eq_left hp]
-  tfae_have 3 → 2
-  · rw [← not_exists, not_imp_not]
+  tfae_have 3 → 2 := by
+    rw [← not_exists, not_imp_not]
     exact fun ⟨i, hi⟩ =>
       ((toIcoMod_eq_iff hp).2 ⟨Set.Ioo_subset_Ico_self hi, i, (sub_add_cancel b _).symm⟩).trans
         ((toIocMod_eq_iff hp).2 ⟨Set.Ioo_subset_Ioc_self hi, i, (sub_add_cancel b _).symm⟩).symm
   tfae_have 4 → 3
-  · intro h
+  | h => by
     rw [← h, Ne, eq_comm, add_right_eq_self]
     exact hp.ne'
   tfae_have 1 → 4
-  · intro h
+  | h => by
     rw [h, eq_comm, toIocMod_eq_iff, Set.right_mem_Ioc]
     refine ⟨lt_add_of_pos_right a hp, toIcoDiv hp a b - 1, ?_⟩
     rw [sub_one_zsmul, add_add_add_comm, add_neg_cancel, add_zero]
     conv_lhs => rw [← toIcoMod_add_toIcoDiv_zsmul hp a b, h]
-  tfae_have 2 → 1
-  · rw [← not_exists, not_imp_comm]
+  tfae_have 2 → 1 := by
+    rw [← not_exists, not_imp_comm]
     have h' := toIcoMod_mem_Ico hp a b
     exact fun h => ⟨_, h'.1.lt_of_ne' h, h'.2⟩
   tfae_finish
@@ -557,12 +557,12 @@ theorem not_modEq_iff_toIcoMod_eq_toIocMod : ¬a ≡ b [PMOD p] ↔ toIcoMod hp 
 theorem not_modEq_iff_toIcoDiv_eq_toIocDiv :
     ¬a ≡ b [PMOD p] ↔ toIcoDiv hp a b = toIocDiv hp a b := by
   rw [not_modEq_iff_toIcoMod_eq_toIocMod hp, toIcoMod, toIocMod, sub_right_inj,
-    (zsmul_strictMono_left hp).injective.eq_iff]
+    zsmul_left_inj hp]
 
 theorem modEq_iff_toIcoDiv_eq_toIocDiv_add_one :
     a ≡ b [PMOD p] ↔ toIcoDiv hp a b = toIocDiv hp a b + 1 := by
   rw [modEq_iff_toIcoMod_add_period_eq_toIocMod hp, toIcoMod, toIocMod, ← eq_sub_iff_add_eq,
-    sub_sub, sub_right_inj, ← add_one_zsmul, (zsmul_strictMono_left hp).injective.eq_iff]
+    sub_sub, sub_right_inj, ← add_one_zsmul, zsmul_left_inj hp]
 
 end AddCommGroup
 
@@ -595,7 +595,7 @@ theorem toIcoMod_le_toIocMod (a b : α) : toIcoMod hp a b ≤ toIocMod hp a b :=
 
 theorem toIocMod_le_toIcoMod_add (a b : α) : toIocMod hp a b ≤ toIcoMod hp a b + p := by
   rw [toIcoMod, toIocMod, sub_add, sub_le_sub_iff_left, sub_le_iff_le_add, ← add_one_zsmul,
-    (zsmul_strictMono_left hp).le_iff_le]
+    (zsmul_left_strictMono hp).le_iff_le]
   apply (toIocDiv_wcovBy_toIcoDiv _ _ _).le_succ
 
 end IcoIoc

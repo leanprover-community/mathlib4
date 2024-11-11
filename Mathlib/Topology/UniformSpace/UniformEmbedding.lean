@@ -67,7 +67,7 @@ theorem UniformInducing.of_comp_iff {g : β → γ} (hg : UniformInducing g) {f 
     UniformInducing (g ∘ f) ↔ UniformInducing f := by
   refine ⟨fun h ↦ ?_, hg.comp⟩
   rw [uniformInducing_iff, ← hg.comap_uniformity, comap_comap, ← h.comap_uniformity,
-    Function.comp, Function.comp]
+    Function.comp_def, Function.comp_def]
 
 theorem UniformInducing.basis_uniformity {f : α → β} (hf : UniformInducing f) {ι : Sort*}
     {p : ι → Prop} {s : ι → Set (β × β)} (H : (𝓤 β).HasBasis p s) :
@@ -109,7 +109,7 @@ theorem UniformInducing.inducing {f : α → β} (h : UniformInducing f) : Induc
 theorem UniformInducing.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : UniformInducing e₁) (h₂ : UniformInducing e₂) :
     UniformInducing fun p : α × β => (e₁ p.1, e₂ p.2) :=
-  ⟨by simp [(· ∘ ·), uniformity_prod, ← h₁.1, ← h₂.1, comap_inf, comap_comap]⟩
+  ⟨by simp [Function.comp_def, uniformity_prod, ← h₁.1, ← h₂.1, comap_inf, comap_comap]⟩
 
 theorem UniformInducing.denseInducing {f : α → β} (h : UniformInducing f) (hd : DenseRange f) :
     DenseInducing f :=
@@ -238,9 +238,9 @@ theorem closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α �
     ∃ U, (U ∈ 𝓤 β ∧ IsOpen U ∧ SymmetricRel U) ∧ Prod.map e e ⁻¹' U ⊆ s := by
       rwa [← he₁.comap_uniformity, (uniformity_hasBasis_open_symmetric.comap _).mem_iff] at hs
   rcases he₂.dense.mem_nhds (UniformSpace.ball_mem_nhds b hU) with ⟨a, ha⟩
-  refine ⟨a, mem_of_superset ?_ (closure_mono <| image_subset _ <| ball_mono hs a)⟩
+  refine ⟨a, mem_of_superset ?_ (closure_mono <| image_subset _ <| UniformSpace.ball_mono hs a)⟩
   have ho : IsOpen (UniformSpace.ball (e a) U) := UniformSpace.isOpen_ball (e a) hUo
-  refine mem_of_superset (ho.mem_nhds <| (mem_ball_symmetry hsymm).2 ha) fun y hy => ?_
+  refine mem_of_superset (ho.mem_nhds <| (UniformSpace.mem_ball_symmetry hsymm).2 ha) fun y hy => ?_
   refine mem_closure_iff_nhds.2 fun V hV => ?_
   rcases he₂.dense.mem_nhds (inter_mem hV (ho.mem_nhds hy)) with ⟨x, hxV, hxU⟩
   exact ⟨e x, hxV, mem_image_of_mem e hxU⟩
@@ -248,7 +248,7 @@ theorem closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α �
 theorem uniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : UniformEmbedding e)
     (de : DenseEmbedding e) : UniformEmbedding (DenseEmbedding.subtypeEmb p e) :=
   { comap_uniformity := by
-      simp [comap_comap, (· ∘ ·), DenseEmbedding.subtypeEmb, uniformity_subtype,
+      simp [comap_comap, Function.comp_def, DenseEmbedding.subtypeEmb, uniformity_subtype,
         ue.comap_uniformity.symm]
     inj := (de.subtype p).inj }
 
@@ -264,6 +264,21 @@ theorem isComplete_image_iff {m : α → β} {s : Set α} (hm : UniformInducing 
   have fact2 : MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 <| m '' s) := mapsTo_image .. |>.filter_map_Iic
   simp_rw [IsComplete, imp.swap (a := Cauchy _), ← mem_Iic (b := 𝓟 _), fact1.forall fact2,
     hm.cauchy_map_iff, exists_mem_image, map_le_iff_le_comap, hm.inducing.nhds_eq_comap]
+
+/-- If `f : X → Y` is an `UniformInducing` map, the image `f '' s` of a set `s` is complete
+  if and only if `s` is complete. -/
+theorem UniformInducing.isComplete_iff {f : α → β} {s : Set α} (hf : UniformInducing f) :
+    IsComplete (f '' s) ↔ IsComplete s := isComplete_image_iff hf
+
+/-- If `f : X → Y` is an `UniformEmbedding`, the image `f '' s` of a set `s` is complete
+  if and only if `s` is complete. -/
+theorem UniformEmbedding.isComplete_iff {f : α → β} {s : Set α} (hf : UniformEmbedding f) :
+    IsComplete (f '' s) ↔ IsComplete s := hf.toUniformInducing.isComplete_iff
+
+/-- Sets of a subtype are complete iff their image under the coercion is complete. -/
+theorem Subtype.isComplete_iff {p : α → Prop} {s : Set { x // p x }} :
+    IsComplete s ↔ IsComplete ((↑) '' s : Set α) :=
+  uniformEmbedding_subtype_val.isComplete_iff.symm
 
 alias ⟨isComplete_of_complete_image, _⟩ := isComplete_image_iff
 

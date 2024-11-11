@@ -15,7 +15,7 @@ bounds `n^r/r^r ≤ n.choose r ≤ e^r n^r/r^r` in the future.
 
 ## Main declarations
 
-* `Nat.choose_le_pow`: `n.choose r ≤ n^r / r!`
+* `Nat.choose_le_pow_div`: `n.choose r ≤ n^r / r!`
 * `Nat.pow_le_choose`: `(n + 1 - r)^r / r! ≤ n.choose r`. Beware of the fishy ℕ-subtraction.
 -/
 
@@ -26,12 +26,21 @@ variable {α : Type*} [LinearOrderedSemifield α]
 
 namespace Nat
 
-theorem choose_le_pow (r n : ℕ) : (n.choose r : α) ≤ (n ^ r : α) / r ! := by
+theorem choose_le_pow_div (r n : ℕ) : (n.choose r : α) ≤ (n ^ r : α) / r ! := by
   rw [le_div_iff₀']
   · norm_cast
     rw [← Nat.descFactorial_eq_factorial_mul_choose]
     exact n.descFactorial_le_pow r
   exact mod_cast r.factorial_pos
+
+lemma choose_le_descFactorial (n k : ℕ) : n.choose k ≤ n.descFactorial k := by
+  rw [choose_eq_descFactorial_div_factorial]
+  exact Nat.div_le_self _ _
+
+/-- This lemma was changed on 2024/08/29, the old statement is available
+in `Nat.choose_le_pow_div`. -/
+lemma choose_le_pow (n k : ℕ) : n.choose k ≤ n ^ k :=
+  (choose_le_descFactorial n k).trans (descFactorial_le_pow n k)
 
 -- horrific casting is due to ℕ-subtraction
 theorem pow_le_choose (r n : ℕ) : ((n + 1 - r : ℕ) ^ r : α) / r ! ≤ n.choose r := by

@@ -5,6 +5,7 @@ Authors: Jz Pan
 -/
 import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.FieldTheory.IntermediateField.Basic
+import Mathlib.Algebra.EuclideanDomain.Field
 
 /-!
 

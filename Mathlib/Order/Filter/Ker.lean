@@ -54,4 +54,21 @@ lemma ker_surjective : Surjective (ker : Filter α → Set α) := gi_principal_k
   simp only [mem_ker, mem_comap, forall_exists_index, and_imp, @forall_swap (Set α), mem_preimage]
   exact forall₂_congr fun s _ ↦ ⟨fun h ↦ h _ Subset.rfl, fun ha t ht ↦ ht ha⟩
 
+@[simp]
+theorem ker_iSup (f : ι → Filter α) : ker (⨆ i, f i) = ⋃ i, ker (f i) := by
+  refine subset_antisymm (fun x hx ↦ ?_) ker_mono.le_map_iSup
+  simp only [mem_iUnion, mem_ker] at hx ⊢
+  contrapose! hx
+  choose s hsf hxs using hx
+  refine ⟨⋃ i, s i, ?_, by simpa⟩
+  exact mem_iSup.2 fun i ↦ mem_of_superset (hsf i) (subset_iUnion s i)
+
+@[simp]
+theorem ker_sSup (S : Set (Filter α)) : ker (sSup S) = ⋃ f ∈ S, ker f := by
+  simp [sSup_eq_iSup]
+
+@[simp]
+theorem ker_sup (f g : Filter α) : ker (f ⊔ g) = ker f ∪ ker g := by
+  rw [← sSup_pair, ker_sSup, biUnion_pair]
+
 end Filter

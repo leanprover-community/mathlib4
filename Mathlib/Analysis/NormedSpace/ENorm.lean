@@ -182,7 +182,7 @@ def finiteSubspace : Subspace 𝕜 V where
   smul_mem' c x (hx : _ < _) :=
     calc
       e (c • x) = ‖c‖₊ * e x := e.map_smul c x
-      _ < ⊤ := ENNReal.mul_lt_top ENNReal.coe_ne_top hx.ne
+      _ < ⊤ := ENNReal.mul_lt_top ENNReal.coe_lt_top hx
 
 /-- Metric space structure on `e.finiteSubspace`. We use `EMetricSpace.toMetricSpace`
 to ensure that this definition agrees with `e.emetricSpace`. -/

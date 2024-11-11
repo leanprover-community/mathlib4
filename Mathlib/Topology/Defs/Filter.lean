@@ -29,6 +29,12 @@ as well as other definitions that rely on `Filter`s.
   denoted by `𝓝ˢ s` in the `Topology` scope.
   A set `t` is called a neighborhood of `s`, if it includes an open set that includes `s`.
 
+* `exterior s`: The *exterior* of a set is the intersection of all its neighborhoods.
+  In an Alexandrov-discrete space, this is the smallest neighborhood of the set.
+
+  Note that this construction is unnamed in the literature.
+  We choose the name in analogy to `interior`.
+
 ### Continuity at a point
 
 * `ContinuousAt f x`: a function `f` is continuous at a point `x`,
@@ -145,6 +151,13 @@ def nhdsSet (s : Set X) : Filter X :=
   sSup (nhds '' s)
 
 @[inherit_doc] scoped[Topology] notation "𝓝ˢ" => nhdsSet
+
+/-- The *exterior* of a set is the intersection of all its neighborhoods. In an Alexandrov-discrete
+space, this is the smallest neighborhood of the set.
+
+Note that this construction is unnamed in the literature. We choose the name in analogy to
+`interior`. -/
+def exterior (s : Set X) : Set X := (𝓝ˢ s).ker
 
 /-- A function between topological spaces is continuous at a point `x₀`
 if `f x` tends to `f x₀` when `x` tends to `x₀`. -/

@@ -768,12 +768,9 @@ lemma hasSum_nat_cosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 
 /-- Reformulation of `hasSum_nat_cosZeta` using `LSeriesHasSum`. -/
 lemma LSeriesHasSum_cos (a : ℝ) {s : ℂ} (hs : 1 < re s) :
-    LSeriesHasSum (Real.cos <| 2 * π * a * ·) s (cosZeta a s) := by
-  refine (hasSum_nat_cosZeta a hs).congr_fun (fun n ↦ ?_)
-  rcases eq_or_ne n 0 with rfl | hn
-  · rw [LSeries.term_zero, Nat.cast_zero, Nat.cast_zero, zero_cpow (ne_zero_of_one_lt_re hs),
-      div_zero]
-  · apply LSeries.term_of_ne_zero hn
+    LSeriesHasSum (Real.cos <| 2 * π * a * ·) s (cosZeta a s) :=
+  (hasSum_nat_cosZeta a hs).congr_fun
+    (LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs) _)
 
 /-!
 ## Functional equations for the un-completed zetas

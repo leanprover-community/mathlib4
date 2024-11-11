@@ -175,7 +175,7 @@ def unitFork (B : C) :
   Fork.ofι (adj.unit.app B) (adj.unit_naturality _)
 
 variable {adj} in
-/-- The counit fork is a limit provided `F` preserves it.  -/
+/-- The counit fork is a limit provided `F` preserves it. -/
 def counitLimitOfPreservesEqualizer (A : adj.toComonad.Coalgebra)
     [HasEqualizer (G.map A.a) (adj.unit.app (G.obj A.A))]
     [PreservesLimit (parallelPair (G.map A.a) (adj.unit.app (G.obj A.A))) F] :

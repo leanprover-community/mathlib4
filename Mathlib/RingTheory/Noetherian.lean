@@ -550,12 +550,12 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
   · rw [LinearMap.range_eq_top]
     rintro ⟨n, hn⟩
     change n ∈ N at hn
-    rw [← hs, ← Set.image_id (s : Set M), Finsupp.mem_span_image_iff_total] at hn
+    rw [← hs, ← Set.image_id (s : Set M), Finsupp.mem_span_image_iff_linearCombination] at hn
     rcases hn with ⟨l, hl1, hl2⟩
     refine ⟨fun x => l x, Subtype.ext ?_⟩
     change (∑ i ∈ s.attach, l i • (i : M)) = n
     rw [s.sum_attach fun i ↦ l i • i, ← hl2,
-      Finsupp.total_apply, Finsupp.sum, eq_comm]
+      Finsupp.linearCombination_apply, Finsupp.sum, eq_comm]
     refine Finset.sum_subset hl1 fun x _ hx => ?_
     rw [Finsupp.not_mem_support_iff.1 hx, zero_smul]
 

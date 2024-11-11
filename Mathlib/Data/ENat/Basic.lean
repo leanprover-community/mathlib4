@@ -24,21 +24,15 @@ and `Nat.cast` coercion. If you need to apply a lemma about `WithTop`, you may e
 and forth using `ENat.some_eq_coe`, or restate the lemma for `ENat`.
 -/
 
-/-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
-def ENat : Type :=
-  WithTop ℕ
-deriving Zero,
+deriving instance Zero, CanonicallyOrderedCommSemiring, Nontrivial,
+  LinearOrder, Bot, CanonicallyLinearOrderedAddCommMonoid, Sub,
+  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation
+  for ENat
   -- AddCommMonoidWithOne,
-  CanonicallyOrderedCommSemiring, Nontrivial,
-  LinearOrder, Bot, Top, CanonicallyLinearOrderedAddCommMonoid, Sub,
-  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
   -- OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLt, CharZero
 
 -- Porting Note: In `Data.Nat.ENatPart` proofs timed out when having
 -- the `deriving AddCommMonoidWithOne`, and it seems to work without.
-
-/-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
-notation "ℕ∞" => ENat
 
 namespace ENat
 
@@ -56,6 +50,9 @@ variable {m n : ℕ∞}
 /-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
 `ℕ → ℕ∞` is `Nat.cast`. -/
 @[simp] theorem some_eq_coe : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
+
+instance : SuccAddOrder ℕ∞ where
+  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
 
 -- Porting note: `simp` and `norm_cast` can prove it
 --@[simp, norm_cast]
@@ -107,6 +104,14 @@ lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
 theorem toNat_coe (n : ℕ) : toNat n = n :=
   rfl
 
+@[simp]
+theorem toNat_zero : toNat 0 = 0 :=
+  rfl
+
+@[simp]
+theorem toNat_one : toNat 1 = 1 :=
+  rfl
+
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : toNat (no_index (OfNat.ofNat n)) = n :=
@@ -117,23 +122,6 @@ theorem toNat_top : toNat ⊤ = 0 :=
   rfl
 
 @[simp] theorem toNat_eq_zero : toNat n = 0 ↔ n = 0 ∨ n = ⊤ := WithTop.untop'_eq_self_iff
-
--- Porting note (#11445): new definition copied from `WithTop`
-/-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-def recTopCoe {C : ℕ∞ → Sort*} (top : C ⊤) (coe : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
-  | none => top
-  | Option.some a => coe a
-
-@[simp]
-theorem recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) :
-    @recTopCoe C d f ⊤ = d :=
-  rfl
-
-@[simp]
-theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
-    @recTopCoe C d f ↑x = f x :=
-  rfl
 
 @[simp]
 theorem recTopCoe_zero {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) : @recTopCoe C d f 0 = f 0 :=
@@ -225,28 +213,32 @@ lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤
   toNat_le_of_le_coe <| h.trans_eq (coe_toNat hn).symm
 
 @[simp]
-theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 := by cases m <;> rfl
+theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
+  Order.succ_eq_add_one m
 
+@[deprecated Order.add_one_le_of_lt (since := "2024-09-04")]
 theorem add_one_le_of_lt (h : m < n) : m + 1 ≤ n :=
-  m.succ_def ▸ Order.succ_le_of_lt h
+  Order.add_one_le_of_lt h
 
 theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
-  m.succ_def ▸ (Order.succ_le_iff_of_not_isMax <| by rwa [isMax_iff_eq_top])
+  Order.add_one_le_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
+@[deprecated Order.one_le_iff_pos (since := "2024-09-04")]
 theorem one_le_iff_pos : 1 ≤ n ↔ 0 < n :=
-  add_one_le_iff WithTop.zero_ne_top
+  Order.one_le_iff_pos
 
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
-  one_le_iff_pos.trans pos_iff_ne_zero
+  Order.one_le_iff_pos.trans pos_iff_ne_zero
 
 lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
   not_le.symm.trans one_le_iff_ne_zero.not_left
 
+@[deprecated Order.le_of_lt_add_one (since := "2024-09-04")]
 theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
-  Order.le_of_lt_succ <| n.succ_def.symm ▸ h
+  Order.le_of_lt_add_one h
 
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
-  n.succ_def ▸ Order.lt_succ_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
+  Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff

@@ -75,7 +75,7 @@ theorem Principal.iterate_lt {a o : Ordinal} (hao : a < o) (ho : Principal op o)
 
 theorem op_eq_self_of_principal {a o : Ordinal.{u}} (hao : a < o) (H : IsNormal (op a))
     (ho : Principal op o) (ho' : IsLimit o) : op a o = o := by
-  refine le_antisymm ?_ (H.self_le _)
+  apply H.le_apply.antisymm'
   rw [← IsNormal.bsup_eq.{u, u} H ho', bsup_le_iff]
   exact fun b hbo => (ho hao hbo).le
 
@@ -200,7 +200,7 @@ theorem principal_add_iff_zero_or_omega_opow {o : Ordinal} :
   rcases eq_or_ne o 0 with (rfl | ho)
   · simp only [principal_zero, Or.inl]
   · rw [principal_add_iff_add_left_eq_self]
-    simp only [ho, false_or_iff]
+    simp only [ho, false_or]
     refine
       ⟨fun H => ⟨_, ((lt_or_eq_of_le (opow_log_le_self _ ho)).resolve_left fun h => ?_)⟩,
         fun ⟨b, e⟩ => e.symm ▸ fun a => add_omega_opow⟩

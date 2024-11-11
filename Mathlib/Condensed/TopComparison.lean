@@ -12,7 +12,7 @@ import Mathlib.Topology.Category.TopCat.Yoneda
 
 # The functor from topological spaces to condensed sets
 
-This file builds on the API from the file `TopCat.Yoneda`. If the forgetful functor to `TopCat` has
+This file builds on the API from the file `TopCat.Yoneda`. If the forgetful functor to `TopCat` has
 nice properties, like preserving pullbacks and finite coproducts, then this Yoneda presheaf
 satisfies the sheaf condition for the regular and extensive topologies respectively.
 
@@ -31,7 +31,7 @@ variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{w})
   (X : Type w') [TopologicalSpace X]
 
 /--
-An auxiliary lemma to that allows us to use `QuotientMap.lift` in the proof of
+An auxiliary lemma to that allows us to use `QuotientMap.lift` in the proof of
 `equalizerCondition_yonedaPresheaf`.
 -/
 theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullback π π]
@@ -56,7 +56,7 @@ theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullbac
 
 /--
 If `G` preserves the relevant pullbacks and every effective epi in `C` is a quotient map (which is
-the case when `C` is `CompHaus` or `Profinite`), then `yonedaPresheaf` satisfies the equalizer
+the case when `C` is `CompHaus` or `Profinite`), then `yonedaPresheaf` satisfies the equalizer
 condition which is required to be a sheaf for the regular topology.
 -/
 theorem equalizerCondition_yonedaPresheaf
@@ -83,7 +83,7 @@ theorem equalizerCondition_yonedaPresheaf
     exact DFunLike.ext'_iff.mp ((hq Z B π).lift_comp a (factorsThrough_of_pullbackCondition G X ha))
 
 /--
-If `G` preserves finite coproducts (which is the case when `C` is `CompHaus`, `Profinite` or
+If `G` preserves finite coproducts (which is the case when `C` is `CompHaus`, `Profinite` or
 `Stonean`), then `yonedaPresheaf` preserves finite products, which is required to be a sheaf for
 the extensive topology.
 -/
@@ -99,7 +99,7 @@ variable (P : TopCat.{u} → Prop) (X : TopCat.{max u w})
     (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
 
 /--
-The sheaf on `CompHausLike P` of continuous maps to a topological space.
+The sheaf on `CompHausLike P` of continuous maps to a topological space.
 -/
 @[simps! val_obj val_map]
 def TopCat.toSheafCompHausLike :
@@ -136,7 +136,7 @@ noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u}
   toSheafCompHausLike.{u+1} _ X (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
 /--
-`TopCat.toCondensedSet` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
+`TopCat.toCondensedSet` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
 -/
 noncomputable abbrev topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u} :=
   topCatToSheafCompHausLike.{u+1} _ (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)

@@ -125,7 +125,7 @@ variable {Q}
 namespace even.lift
 
 /-- An auxiliary submodule used to store the half-applied values of `f`.
-This is the span of elements `f'` such that `∃ x m₂, ∀ m₁, f' m₁ = f m₁ m₂ * x`.  -/
+This is the span of elements `f'` such that `∃ x m₂, ∀ m₁, f' m₁ = f m₁ m₂ * x`. -/
 private def S : Submodule R (M →ₗ[R] A) :=
   Submodule.span R
     {f' | ∃ x m₂, f' = LinearMap.lcomp R _ (f.bilin.flip m₂) (LinearMap.mulRight R x)}

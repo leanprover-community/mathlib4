@@ -91,7 +91,7 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
   · rfl
   · -- cases' h with _ _ _ _ _ h₀ h₁
     cases h
-    simp only [truncate, Function.comp, true_and_iff, eq_self_iff_true, heq_iff_eq]
+    simp only [truncate, Function.comp_def, eq_self_iff_true, heq_iff_eq]
     -- Porting note: used to be `ext y`
     rename_i n_ih a f y h₁
     suffices (fun x => truncate (y x)) = f
@@ -281,9 +281,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   cases' h : x.approx (succ n) with _ hd ch
   have h' : hd = head' (x.approx 1) := by
     rw [← head_succ' n, h, head']
-    · split
-      injections
-    · apply x.consistent
+    apply x.consistent
   revert ch
   rw [h']
   intros ch h
@@ -481,8 +479,8 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     induction y using PFunctor.M.casesOn'
     simp only [iselect_nil] at hrec
     subst hrec
-    simp only [approx_mk, true_and_iff, eq_self_iff_true, heq_iff_eq, zero_eq, CofixA.intro.injEq,
-                heq_eq_eq, eq_iff_true_of_subsingleton, and_self]
+    simp only [approx_mk, eq_self_iff_true, heq_iff_eq, zero_eq, CofixA.intro.injEq,
+      heq_eq_eq, eq_iff_true_of_subsingleton, and_self]
   · cases hx
     cases hy
     induction x using PFunctor.M.casesOn'
@@ -490,7 +488,7 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     subst z
     iterate 3 (have := mk_inj ‹_›; cases this)
     rename_i n_ih a f₃ f₂ hAgree₂ _ _ h₂ _ _ f₁ h₁ hAgree₁ clr
-    simp only [approx_mk, true_and_iff, eq_self_iff_true, heq_iff_eq]
+    simp only [approx_mk, eq_self_iff_true, heq_iff_eq]
 
     have := mk_inj h₁
     cases this; clear h₁

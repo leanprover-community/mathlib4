@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Scott Morrison
+Authors: Bhavik Mehta, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Adjunction.Over
 import Mathlib.CategoryTheory.Adjunction.Reflective
@@ -28,7 +28,7 @@ and prove their basic properties and relationships.
 ## Notes
 
 This development originally appeared in Bhavik Mehta's "Topos theory for Lean" repository,
-and was ported to mathlib by Scott Morrison.
+and was ported to mathlib by Kim Morrison.
 
 -/
 
@@ -219,13 +219,11 @@ end Pullback
 
 section Map
 
-attribute [instance] mono_comp
-
 /-- We can map monomorphisms over `X` to monomorphisms over `Y`
 by post-composition with a monomorphism `f : X ⟶ Y`.
 -/
 def map (f : X ⟶ Y) [Mono f] : MonoOver X ⥤ MonoOver Y :=
-  lift (Over.map f) fun g => by apply mono_comp g.arrow f
+  lift (Over.map f) fun g => mono_comp g.arrow f
 
 /-- `MonoOver.map` commutes with composition (up to a natural isomorphism). -/
 def mapComp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] : map (f ≫ g) ≅ map f ⋙ map g :=

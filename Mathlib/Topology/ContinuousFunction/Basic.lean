@@ -68,7 +68,7 @@ instance : CoeTC F C(α, β) := ⟨toContinuousMap⟩
 
 end ContinuousMapClass
 
-/-! ### Continuous maps-/
+/-! ### Continuous maps -/
 
 
 namespace ContinuousMap
@@ -304,7 +304,7 @@ def sigma (f : ∀ i, C(X i, A)) : C((Σ i, X i), A) where
 variable (A X) in
 /--
 Giving a continuous map out of a disjoint union is the same as giving a continuous map out of
-each term. This is a version of `Equiv.piCurry` for continuous maps.
+each term. This is a version of `Equiv.piCurry` for continuous maps.
 -/
 @[simps]
 def sigmaEquiv : (∀ i, C(X i, A)) ≃ C((Σ i, X i), A) where
@@ -494,7 +494,7 @@ noncomputable def lift : C(Y, Z) where
   continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
 
 /--
-The obvious triangle induced by `QuotientMap.lift` commutes:
+The obvious triangle induced by `QuotientMap.lift` commutes:
 ```
      g
   X --→ Z

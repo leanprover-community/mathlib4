@@ -49,7 +49,7 @@ section Lattice
 variable [Lattice α]
 
 section Group
-variable [Group α] {a : α}
+variable [Group α] {a b : α}
 
 /-- The *positive part* of an element `a` in a lattice ordered group is `a ⊔ 1`, denoted `a⁺ᵐ`. -/
 @[to_additive
@@ -130,6 +130,16 @@ lemma leOnePart_eq_one : a⁻ᵐ = 1 ↔ 1 ≤ a := by simp [leOnePart_eq_one']
 @[to_additive (attr := simp)] lemma leOnePart_div_oneLePart (a : α) : a⁻ᵐ / a⁺ᵐ = a⁻¹ := by
   rw [← inv_div, oneLePart_div_leOnePart]
 
+@[to_additive]
+lemma oneLePart_leOnePart_injective : Injective fun a : α ↦ (a⁺ᵐ, a⁻ᵐ) := by
+  simp only [Injective, Prod.mk.injEq, and_imp]
+  rintro a b hpos hneg
+  rw [← oneLePart_div_leOnePart a, ← oneLePart_div_leOnePart b, hpos, hneg]
+
+@[to_additive]
+lemma oneLePart_leOnePart_inj : a⁺ᵐ = b⁺ᵐ ∧ a⁻ᵐ = b⁻ᵐ ↔ a = b :=
+  Prod.mk.inj_iff.symm.trans oneLePart_leOnePart_injective.eq_iff
+
 section covariantmulop
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 
@@ -200,7 +210,7 @@ end CommGroup
 end Lattice
 
 section LinearOrder
-variable [LinearOrder α] [Group α] {a : α}
+variable [LinearOrder α] [Group α] {a b : α}
 
 @[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = if 1 ≤ a then a else 1 := by
   rw [oneLePart, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
@@ -212,6 +222,8 @@ variable [LinearOrder α] [Group α] {a : α}
 lemma oneLePart_of_one_lt_oneLePart (ha : 1 < a⁺ᵐ) : a⁺ᵐ = a := by
   rw [oneLePart, right_lt_sup, not_le] at ha; exact oneLePart_eq_self.2 ha.le
 
+@[to_additive (attr := simp)] lemma oneLePart_lt : a⁺ᵐ < b ↔ a < b ∧ 1 < b := sup_lt_iff
+
 section covariantmul
 variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
@@ -220,6 +232,11 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
 @[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_ltOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=
   lt_iff_lt_of_le_iff_le <| (one_le_leOnePart _).le_iff_eq.trans leOnePart_eq_one
+
+variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+
+@[to_additive (attr := simp)] lemma leOnePart_lt : a⁻ᵐ < b ↔ b⁻¹ < a ∧ 1 < b :=
+  sup_lt_iff.trans <| by rw [inv_lt']
 
 end covariantmul
 end LinearOrder

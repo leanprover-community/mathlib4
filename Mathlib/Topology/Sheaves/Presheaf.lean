@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
+Authors: Kim Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.CategoryTheory.Adjunction.Unique
@@ -153,9 +153,9 @@ variable (C)
 def pushforward {X Y : TopCat.{w}} (f : X ⟶ Y) : X.Presheaf C ⥤ Y.Presheaf C :=
   (whiskeringLeft _ _ _).obj (Opens.map f).op
 
-set_option quotPrecheck false in
-/-- push forward of a presheaf-/
-notation f:80 " _* " P:81 => (pushforward _ f).obj P
+/-- push forward of a presheaf -/
+scoped[AlgebraicGeometry] notation f:80 " _* " P:81 =>
+  Prefunctor.obj (Functor.toPrefunctor (TopCat.Presheaf.pushforward _ f)) P
 
 @[simp]
 theorem pushforward_map_app' {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : X.Presheaf C} (α : ℱ ⟶ 𝒢)
@@ -291,7 +291,7 @@ def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
 
 variable {C}
 
-/-- If `f '' U` is open, then `f⁻¹ℱ U ≅ ℱ (f '' U)`.  -/
+/-- If `f '' U` is open, then `f⁻¹ℱ U ≅ ℱ (f '' U)`. -/
 def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) (U : Opens X)
     (H : IsOpen (f '' SetLike.coe U)) : ((pullback C f).obj ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
   let x : CostructuredArrow (Opens.map f).op (op U) := CostructuredArrow.mk

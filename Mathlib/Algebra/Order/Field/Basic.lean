@@ -174,7 +174,7 @@ theorem inv_lt_one_iff_of_pos (h₀ : 0 < a) : a⁻¹ < 1 ↔ 1 < a :=
 theorem inv_lt_one_iff : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
   rcases le_or_lt a 0 with ha | ha
   · simp [ha, (inv_nonpos.2 ha).trans_lt zero_lt_one]
-  · simp only [ha.not_le, false_or_iff, inv_lt_one_iff_of_pos ha]
+  · simp only [ha.not_le, false_or, inv_lt_one_iff_of_pos ha]
 
 theorem one_lt_inv_iff : 1 < a⁻¹ ↔ 0 < a ∧ a < 1 :=
   ⟨fun h => ⟨inv_pos.1 (zero_lt_one.trans h),

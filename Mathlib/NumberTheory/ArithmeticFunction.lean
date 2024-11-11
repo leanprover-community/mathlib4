@@ -390,7 +390,7 @@ instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
 
 section Zeta
 
-/-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`.  -/
+/-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`. -/
 def zeta : ArithmeticFunction ℕ :=
   ⟨fun x => ite (x = 0) 0 1, rfl⟩
 
@@ -625,7 +625,7 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
     constructor
     · ring
     rw [Nat.mul_eq_zero] at *
-    apply not_or_of_not ha hb
+    apply not_or_intro ha hb
   · simp only [Set.InjOn, mem_coe, mem_divisorsAntidiagonal, Ne, mem_product, Prod.mk.inj_iff]
     rintro ⟨⟨a1, a2⟩, ⟨b1, b2⟩⟩ ⟨⟨rfl, ha⟩, ⟨rfl, hb⟩⟩ ⟨⟨c1, c2⟩, ⟨d1, d2⟩⟩ hcd h
     simp only [Prod.mk.inj_iff] at h
@@ -776,7 +776,7 @@ end IsMultiplicative
 
 section SpecialFunctions
 
-/-- The identity on `ℕ` as an `ArithmeticFunction`.  -/
+/-- The identity on `ℕ` as an `ArithmeticFunction`. -/
 nonrec  -- Porting note (#11445): added
 def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩

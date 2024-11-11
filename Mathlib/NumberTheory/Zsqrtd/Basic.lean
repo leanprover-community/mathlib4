@@ -893,8 +893,8 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
   · push_neg at h
     suffices a.re * a.re = 0 by
       rw [eq_zero_of_mul_self_eq_zero this] at ha ⊢
-      simpa only [true_and_iff, or_self_right, zero_re, zero_im, eq_self_iff_true, zero_eq_mul,
-        mul_zero, mul_eq_zero, h.ne, false_or_iff, or_self_iff] using ha
+      simpa only [true_and, or_self_right, zero_re, zero_im, eq_self_iff_true, zero_eq_mul,
+        mul_zero, mul_eq_zero, h.ne, false_or, or_self_iff] using ha
     apply _root_.le_antisymm _ (mul_self_nonneg _)
     rw [ha, mul_assoc]
     exact mul_nonpos_of_nonpos_of_nonneg h.le (mul_self_nonneg _)

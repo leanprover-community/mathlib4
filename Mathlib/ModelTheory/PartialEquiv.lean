@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Gabin Kolly. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson, Gabin Kolly
+Authors: Aaron Anderson, Gabin Kolly, David Wärn
 -/
 import Mathlib.ModelTheory.DirectLimit
 import Mathlib.Order.Ideal
@@ -12,7 +12,26 @@ This file defines partial isomorphisms between first-order structures.
 
 ## Main Definitions
 - `FirstOrder.Language.PartialEquiv` is defined so that `L.PartialEquiv M N`, annotated
-  `M ≃ₚ[L] N`, is the type of equivalences between substructures of `M` and `N`.
+  `M ≃ₚ[L] N`, is the type of equivalences between substructures of `M` and `N`. These can be
+  ordered, with an order that is defined here in terms of a commutative square, but could also be
+  defined as the order on the graphs of the partial equivalences under inclusion as subsets of
+  `M × N`.
+- `FirstOrder.Language.FGEquiv` is the type of partial equivalences `M ≃ₚ[L] N` with
+  finitely-generated domain (or equivalently, codomain).
+- `FirstOrder.Language.IsExtensionPair` is defined so that `L.IsExtensionPair M N` indicates that
+  any finitely-generated partial equivalence from `M` to `N` can be extended to include an arbitrary
+  element `m : M` in its domain.
+
+## Main Results
+- `FirstOrder.Language.embedding_from_cg` shows that if structures `M` and `N` form an equivalence
+  pair with `M` countably-generated, then any finite-generated partial equivalence between them
+  can be extended to an embedding `M ↪[L] N`.
+- `FirstOrder.Language.equiv_from_cg` shows that if countably-generated structures `M` and `N` form
+  an equivalence pair in both directions, then any finite-generated partial equivalence between them
+  can be extended to an isomorphism `M ↪[L] N`.
+- The proofs of these results are adapted in part from David Wärn's approach to countable dense
+  linear orders, a special case of this phenomenon in the case where `L = Language.order`.
+
 -/
 
 universe u v w w'
@@ -328,8 +347,10 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
 
 theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
   ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
-    simp only [cod_partialEquivLimit, dom_partialEquivLimit, partialEquivLimit_comp_inclusion,
-      ← Embedding.comp_assoc, subtype_comp_inclusion]⟩
+    #adaptation_note /-- After lean4#5020, these two `simp` calls cannot be combined. -/
+    simp only [partialEquivLimit_comp_inclusion]
+    simp only [cod_partialEquivLimit, dom_partialEquivLimit, ← Embedding.comp_assoc,
+      subtype_comp_inclusion]⟩
 
 end DirectLimit
 
@@ -368,20 +389,63 @@ theorem countable_self_fgequiv_of_countable [Countable M] :
 instance inhabited_self_FGEquiv : Inhabited (L.FGEquiv M M) :=
   ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
 
+instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
+    [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] [L.Structure N] :
+    Inhabited (L.FGEquiv M N) :=
+  ⟨⟨⟨⊥, ⊥, {
+      toFun := isEmptyElim
+      invFun := isEmptyElim
+      left_inv := isEmptyElim
+      right_inv := isEmptyElim
+      map_fun' := fun {n} f x => by
+        cases n
+        · exact isEmptyElim f
+        · exact isEmptyElim (x 0)
+      map_rel' := fun {n} r x => by
+        cases n
+        · exact isEmptyElim r
+        · exact isEmptyElim (x 0)
+    }⟩, fg_bot⟩⟩
+
 /-- Maps to the symmetric finitely-generated partial equivalence. -/
 @[simps]
 def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M := ⟨f.1.symm, f.1.dom_fg_iff_cod_fg.1 f.2⟩
 
-lemma IsExtensionPair_iff_cod : L.IsExtensionPair M N ↔
+lemma isExtensionPair_iff_cod : L.IsExtensionPair M N ↔
     ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.1.cod ∧ f ≤ g := by
   refine Iff.intro ?_ ?_ <;>
   · intro h f m
     obtain ⟨g, h1, h2⟩ := h f.symm m
     exact ⟨g.symm, h1, monotone_symm h2⟩
 
+/-- An alternate characterization of an extension pair is that every finitely generated partial
+isomorphism can be extended to include any particular element of the domain. -/
+theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
+    L.IsExtensionPair M N ↔
+    ∀ (S : L.Substructure M) (_ : S.FG) (f : S ↪[L] N) (m : M),
+      ∃ g : (closure L {m} ⊔ S : L.Substructure M) ↪[L] N, f =
+        g.comp (Substructure.inclusion le_sup_right) := by
+  refine ⟨fun h S S_FG f m => ?_, fun h ⟨f, f_FG⟩ m => ?_⟩
+  · obtain ⟨⟨f', hf'⟩, mf', ff'1, ff'2⟩ := h ⟨⟨S, _, f.equivRange⟩, S_FG⟩ m
+    refine ⟨f'.toEmbedding.comp (Substructure.inclusion ?_), ?_⟩
+    · simp only [sup_le_iff, ff'1, closure_le, singleton_subset_iff, SetLike.mem_coe, mf',
+        and_self]
+    · ext ⟨x, hx⟩
+      rw [Embedding.subtype_equivRange] at ff'2
+      simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion, inclusion_mk,
+        Equiv.coe_toEmbedding, coeSubtype, PartialEquiv.toEmbedding_apply]
+  · obtain ⟨f', eq_f'⟩ := h f.dom f_FG f.toEmbedding m
+    refine ⟨⟨⟨closure L {m} ⊔ f.dom, f'.toHom.range, f'.equivRange⟩,
+      (fg_closure_singleton _).sup f_FG⟩,
+      subset_closure.trans (le_sup_left : (closure L) {m} ≤ _) (mem_singleton m),
+      ⟨le_sup_right, Embedding.ext (fun _ => ?_)⟩⟩
+    rw [PartialEquiv.toEmbedding] at eq_f'
+    simp only [Embedding.comp_apply, Substructure.coe_inclusion, Equiv.coe_toEmbedding, coeSubtype,
+      Embedding.equivRange_apply, eq_f']
+
 namespace IsExtensionPair
 
-protected alias ⟨cod, _⟩ := IsExtensionPair_iff_cod
+protected alias ⟨cod, _⟩ := isExtensionPair_iff_cod
 
 /-- The cofinal set of finite equivalences with a given element in their domain. -/
 def definedAtLeft

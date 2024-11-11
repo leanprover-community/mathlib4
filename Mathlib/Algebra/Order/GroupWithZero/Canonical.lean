@@ -431,3 +431,13 @@ instance instLinearOrderedCommGroupWithZero [LinearOrderedCommGroup α] :
   __ := commGroupWithZero
 
 end WithZero
+
+section MultiplicativeNotation
+
+/-- Notation for `WithZero (Multiplicative ℕ)` -/
+scoped[Multiplicative] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
+
+/-- Notation for `WithZero (Multiplicative ℤ)` -/
+scoped[Multiplicative] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
+
+end MultiplicativeNotation

@@ -72,7 +72,7 @@ theorem coe_equiv_lpPiLp_symm (f : PiLp p E) : (Equiv.lpPiLp.symm f : ∀ i, E i
 def AddEquiv.lpPiLp : lp E p ≃+ PiLp p E :=
   { Equiv.lpPiLp with map_add' := fun _f _g ↦ rfl }
 
-theorem coe_addEquiv_lpPiLp  (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
+theorem coe_addEquiv_lpPiLp (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
   rfl
 
 theorem coe_addEquiv_lpPiLp_symm (f : PiLp p E) :

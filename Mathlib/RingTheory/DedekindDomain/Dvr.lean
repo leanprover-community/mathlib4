@@ -1,18 +1,16 @@
 /-
 Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
+Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio, Yongle Hu
 -/
-import Mathlib.RingTheory.Localization.LocalizationLocalization
-import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
+import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
 
 /-!
 # Dedekind domains
 
 This file defines an equivalent notion of a Dedekind domain (or Dedekind ring),
-namely a Noetherian integral domain where the localization at all nonzero prime ideals is a DVR
-(TODO: and shows that implies the main definition).
+namely a Noetherian integral domain where the localization at all nonzero prime ideals is a DVR.
 
 ## Main definitions
 
@@ -53,10 +51,8 @@ open scoped nonZeroDivisors Polynomial
 localization at every nonzero prime is a discrete valuation ring.
 
 This is equivalent to `IsDedekindDomain`.
-TODO: prove the equivalence.
 -/
-structure IsDedekindDomainDvr : Prop where
-  isNoetherianRing : IsNoetherianRing A
+class IsDedekindDomainDvr extends IsNoetherian A A : Prop where
   is_dvr_at_nonzero_prime : ∀ P ≠ (⊥ : Ideal A), ∀ _ : P.IsPrime,
     DiscreteValuationRing (Localization.AtPrime P)
 
@@ -94,7 +90,7 @@ theorem IsLocalization.isDedekindDomain [IsDedekindDomain A] {M : Submonoid A} (
     IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M _ _
   refine (isDedekindDomain_iff _ (FractionRing A)).mpr ⟨?_, ?_, ?_, ?_⟩
   · infer_instance
-  · exact IsLocalization.isNoetherianRing M _ (by infer_instance)
+  · exact IsLocalization.isNoetherianRing M _ inferInstance
   · exact Ring.DimensionLEOne.localization Aₘ hM
   · intro x hx
     obtain ⟨⟨y, y_mem⟩, hy⟩ := hx.exists_multiple_integral_of_isLocalization M _
@@ -109,8 +105,12 @@ theorem IsLocalization.AtPrime.isDedekindDomain [IsDedekindDomain A] (P : Ideal 
     IsDedekindDomain Aₘ :=
   IsLocalization.isDedekindDomain A P.primeCompl_le_nonZeroDivisors Aₘ
 
+instance Localization.AtPrime.isDedekindDomain [IsDedekindDomain A] (P : Ideal A) [P.IsPrime] :
+    IsDedekindDomain (Localization.AtPrime P) :=
+  IsLocalization.AtPrime.isDedekindDomain A P _
+
 theorem IsLocalization.AtPrime.not_isField {P : Ideal A} (hP : P ≠ ⊥) [pP : P.IsPrime] (Aₘ : Type*)
-    [CommRing Aₘ] [Algebra A Aₘ] [IsLocalization.AtPrime Aₘ P] : ¬IsField Aₘ := by
+    [CommRing Aₘ] [Algebra A Aₘ] [IsLocalization.AtPrime Aₘ P] : ¬ IsField Aₘ := by
   intro h
   letI := h.toField
   obtain ⟨x, x_mem, x_ne⟩ := P.ne_bot_iff.mp hP
@@ -139,7 +139,36 @@ theorem IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain [IsDedek
 /-- Dedekind domains, in the sense of Noetherian integrally closed domains of Krull dimension ≤ 1,
 are also Dedekind domains in the sense of Noetherian domains where the localization at every
 nonzero prime ideal is a DVR. -/
-theorem IsDedekindDomain.isDedekindDomainDvr [IsDedekindDomain A] : IsDedekindDomainDvr A :=
-  { isNoetherianRing := IsDedekindRing.toIsNoetherian
-    is_dvr_at_nonzero_prime := fun _ hP _ =>
-      IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain A hP _ }
+instance IsDedekindDomain.isDedekindDomainDvr [IsDedekindDomain A] : IsDedekindDomainDvr A where
+  is_dvr_at_nonzero_prime := fun _ hP _ =>
+    IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain A hP _
+
+instance IsDedekindDomainDvr.ring_dimensionLEOne [h : IsDedekindDomainDvr A] :
+    Ring.DimensionLEOne A where
+  maximalOfPrime := by
+    intro p hp hpp
+    rcases p.exists_le_maximal (Ideal.IsPrime.ne_top hpp) with ⟨q, hq, hpq⟩
+    let f := (IsLocalization.orderIsoOfPrime q.primeCompl (Localization.AtPrime q)).symm
+    let P := f ⟨p, hpp, hpq.disjoint_compl_left⟩
+    let Q := f ⟨q, hq.isPrime, Set.disjoint_left.mpr fun _ a => a⟩
+    have hinj : Function.Injective (algebraMap A (Localization.AtPrime q)) :=
+      IsLocalization.injective (Localization.AtPrime q) q.primeCompl_le_nonZeroDivisors
+    have hp1 : P.1 ≠ ⊥ := fun x => hp ((p.map_eq_bot_iff_of_injective hinj).mp x)
+    have hq1 : Q.1 ≠ ⊥ :=
+      fun x => (ne_bot_of_le_ne_bot hp hpq) ((q.map_eq_bot_iff_of_injective hinj).mp x)
+    rcases (DiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime q)).mp
+      (h.is_dvr_at_nonzero_prime q (ne_bot_of_le_ne_bot hp hpq) hq.isPrime) with ⟨_, huq⟩
+    rw [show p = q from Subtype.val_inj.mpr <| f.injective <|
+      Subtype.val_inj.mp (huq.unique ⟨hp1, P.2⟩ ⟨hq1, Q.2⟩)]
+    exact hq
+
+instance IsDedekindDomainDvr.isIntegrallyClosed [h : IsDedekindDomainDvr A] :
+    IsIntegrallyClosed A :=
+  IsIntegrallyClosed.of_localization_maximal <| fun p hp0 hpm =>
+    let ⟨_, _⟩ := (DiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime p)).mp
+      (h.is_dvr_at_nonzero_prime p hp0 hpm.isPrime)
+    inferInstance
+
+/-- If an integral domain is Noetherian, and the localization at every nonzero prime is
+a discrete valuation ring, then it is a Dedekind domain. -/
+instance IsDedekindDomainDvr.isDedekindDomain [IsDedekindDomainDvr A] : IsDedekindDomain A where

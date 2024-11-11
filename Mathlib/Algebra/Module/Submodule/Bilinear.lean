@@ -37,7 +37,7 @@ variable [Module R M] [Module R N] [Module R P]
 
 /-- Map a pair of submodules under a bilinear map.
 
-This is the submodule version of `Set.image2`.  -/
+This is the submodule version of `Set.image2`. -/
 def map₂ (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) : Submodule R P :=
   ⨆ s : p, q.map (f s)
 

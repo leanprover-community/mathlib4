@@ -1,10 +1,9 @@
 /-
 Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mitchell Rowett, Scott Morrison
+Authors: Mitchell Rowett, Kim Morrison
 -/
 import Mathlib.Algebra.Quotient
-import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Group.Subgroup.MulOpposite
 import Mathlib.GroupTheory.GroupAction.Basic
 
@@ -437,6 +436,12 @@ theorem preimage_image_mk_eq_iUnion_image (N : Subgroup α) (s : Set α) :
     mk ⁻¹' ((mk : α → α ⧸ N) '' s) = ⋃ x : N, (· * (x : α)) '' s := by
   rw [preimage_image_mk, iUnion_congr_of_surjective (·⁻¹) inv_surjective]
   exact fun x ↦ image_mul_right'
+
+@[to_additive]
+theorem preimage_image_mk_eq_mul (N : Subgroup α) (s : Set α) :
+    mk ⁻¹' ((mk : α → α ⧸ N) '' s) = s * N := by
+  rw [preimage_image_mk_eq_iUnion_image, iUnion_subtype, ← image2_mul, ← iUnion_image_right]
+  simp only [SetLike.mem_coe]
 
 end QuotientGroup
 

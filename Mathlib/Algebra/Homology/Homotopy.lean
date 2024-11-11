@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
@@ -101,7 +101,7 @@ theorem dNext_nat (C D : ChainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶ D
   dsimp [dNext]
   cases i
   · simp only [shape, ChainComplex.next_nat_zero, ComplexShape.down_Rel, Nat.one_ne_zero,
-      not_false_iff, zero_comp]
+      not_false_iff, zero_comp, reduceCtorEq]
   · congr <;> simp
 
 theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶ D.X j) :
@@ -109,7 +109,7 @@ theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶
   dsimp [prevD]
   cases i
   · simp only [shape, CochainComplex.prev_nat_zero, ComplexShape.up_Rel, Nat.one_ne_zero,
-      not_false_iff, comp_zero]
+      not_false_iff, comp_zero, reduceCtorEq]
   · congr <;> simp
 
 -- Porting note(#5171): removed @[has_nonempty_instance]

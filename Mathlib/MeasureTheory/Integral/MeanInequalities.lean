@@ -296,7 +296,7 @@ theorem lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top {p : ℝ} {f g : α �
         ENNReal.rpow_ne_top_of_nonneg (by simp [hp1]) ENNReal.coe_ne_top
       rw [lintegral_add_left', lintegral_const_mul'' _ (hf.pow_const p),
         lintegral_const_mul' _ _ h_two, ENNReal.add_lt_top]
-      · exact ⟨ENNReal.mul_lt_top h_two hf_top.ne, ENNReal.mul_lt_top h_two hg_top.ne⟩
+      · exact ⟨ENNReal.mul_lt_top h_two.lt_top hf_top, ENNReal.mul_lt_top h_two.lt_top hg_top⟩
       · exact (hf.pow_const p).const_mul _
 
 theorem lintegral_Lp_mul_le_Lq_mul_Lr {α} [MeasurableSpace α] {p q r : ℝ} (hp0_lt : 0 < p)

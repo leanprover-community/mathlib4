@@ -109,7 +109,7 @@ theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] (f : R →+ S) (A : Matr
 
 lemma trace_blockDiagonal [DecidableEq p] (M : p → Matrix n n R) :
     trace (blockDiagonal M) = ∑ i, trace (M i) := by
-  simp [blockDiagonal, trace, Finset.sum_comm (γ := n)]
+  simp [blockDiagonal, trace, Finset.sum_comm (γ := n), Fintype.sum_prod_type]
 
 lemma trace_blockDiagonal' [DecidableEq p] {m : p → Type*} [∀ i, Fintype (m i)]
     (M : ∀ i, Matrix (m i) (m i) R) :

@@ -603,7 +603,7 @@ def map (g : A →+* B)
 
 /--
 Let `A` be a graded algebra and `P ≤ Q` be two submonoids, then the homogeneous localization of `A`
-at `P` embedds into the homogeneous localization of `A` at `Q`.
+at `P` embeds into the homogeneous localization of `A` at `Q`.
 -/
 abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization 𝒜 Q :=

@@ -104,7 +104,8 @@ instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} 
                   simpa only [Sum.lex_inr_inr, fr, InitialSeg.coe_coe_fn, Embedding.coeFn_mk] using
                     @RelEmbedding.map_rel_iff _ _ _ _ f.toRelEmbedding (Sum.inr a) (Sum.inr b)⟩,
               fun a b H => by
-                rcases f.init (by rw [fr] <;> exact Sum.lex_inr_inr.2 H) with ⟨a' | a', h⟩
+                rcases f.mem_range_of_rel (by rw [fr] <;> exact Sum.lex_inr_inr.2 H) with
+                  ⟨a' | a', h⟩
                 · rw [fl] at h
                   cases h
                 · rw [fr] at h
@@ -173,7 +174,7 @@ theorem pred_eq_iff_not_succ' {o} : pred o = o ↔ ∀ a, o ≠ succ a := by
   simpa using pred_eq_iff_not_succ
 
 theorem pred_lt_iff_is_succ {o} : pred o < o ↔ ∃ a, o = succ a :=
-  Iff.trans (by simp only [le_antisymm_iff, pred_le_self, true_and_iff, not_le])
+  Iff.trans (by simp only [le_antisymm_iff, pred_le_self, true_and, not_le])
     (iff_not_comm.1 pred_eq_iff_not_succ).symm
 
 @[simp]
@@ -212,16 +213,25 @@ theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := b
 /-! ### Limit ordinals -/
 
 
-/-- A limit ordinal is an ordinal which is not zero and not a successor. -/
+/-- A limit ordinal is an ordinal which is not zero and not a successor.
+
+TODO: deprecate this in favor of `Order.IsSuccLimit`. -/
 def IsLimit (o : Ordinal) : Prop :=
   o ≠ 0 ∧ ∀ a < o, succ a < o
 
-theorem IsLimit.isSuccLimit {o} (h : IsLimit o) : IsSuccLimit o := isSuccLimit_iff_succ_lt.mpr h.2
+theorem IsLimit.isSuccPrelimit {o} (h : IsLimit o) : IsSuccPrelimit o :=
+  isSuccPrelimit_iff_succ_lt.mpr h.2
+
+@[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
+alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
 
 theorem IsLimit.succ_lt {o a : Ordinal} (h : IsLimit o) : a < o → succ a < o :=
   h.2 a
 
-theorem isSuccLimit_zero : IsSuccLimit (0 : Ordinal) := isSuccLimit_bot
+theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
+
+@[deprecated isSuccPrelimit_zero (since := "2024-09-05")]
+alias isSuccLimit_zero := isSuccPrelimit_zero
 
 theorem not_zero_isLimit : ¬IsLimit 0
   | ⟨h, _⟩ => h rfl
@@ -277,28 +287,28 @@ theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ 
 @[elab_as_elim]
 def limitRecOn {C : Ordinal → Sort*} (o : Ordinal) (H₁ : C 0) (H₂ : ∀ o, C o → C (succ o))
     (H₃ : ∀ o, IsLimit o → (∀ o' < o, C o') → C o) : C o :=
-  SuccOrder.limitRecOn o (fun o _ ↦ H₂ o) fun o hl ↦
+  SuccOrder.prelimitRecOn o (fun o _ ↦ H₂ o) fun o hl ↦
     if h : o = 0 then fun _ ↦ h ▸ H₁ else H₃ o ⟨h, fun _ ↦ hl.succ_lt⟩
 
 @[simp]
 theorem limitRecOn_zero {C} (H₁ H₂ H₃) : @limitRecOn C 0 H₁ H₂ H₃ = H₁ := by
-  rw [limitRecOn, SuccOrder.limitRecOn_limit _ _ isSuccLimit_zero, dif_pos rfl]
+  rw [limitRecOn, SuccOrder.prelimitRecOn_of_isSuccPrelimit _ _ isSuccPrelimit_zero, dif_pos rfl]
 
 @[simp]
 theorem limitRecOn_succ {C} (o H₁ H₂ H₃) :
     @limitRecOn C (succ o) H₁ H₂ H₃ = H₂ o (@limitRecOn C o H₁ H₂ H₃) := by
-  simp_rw [limitRecOn, SuccOrder.limitRecOn_succ _ _ (not_isMax _)]
+  rw [limitRecOn, limitRecOn, SuccOrder.prelimitRecOn_succ]
 
 @[simp]
 theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :
     @limitRecOn C o H₁ H₂ H₃ = H₃ o h fun x _h => @limitRecOn C x H₁ H₂ H₃ := by
-  simp_rw [limitRecOn, SuccOrder.limitRecOn_limit _ _ h.isSuccLimit, dif_neg h.1]
+  simp_rw [limitRecOn, SuccOrder.prelimitRecOn_of_isSuccPrelimit _ _ h.isSuccPrelimit, dif_neg h.1]
 
-instance orderTopOutSucc (o : Ordinal) : OrderTop (succ o).out.α :=
+instance orderTopToTypeSucc (o : Ordinal) : OrderTop (succ o).toType :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
 
 theorem enum_succ_eq_top {o : Ordinal} :
-    enum (· < ·) ⟨o, by rw [type_lt]; exact lt_succ o⟩ = (⊤ : (succ o).out.α) :=
+    enum (α := (succ o).toType) (· < ·) ⟨o, by rw [type_lt]; exact lt_succ o⟩ = ⊤ :=
   rfl
 
 theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
@@ -308,8 +318,11 @@ theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder
   · rw [enum_typein]
   · rw [Subtype.mk_lt_mk, lt_succ_iff]
 
-theorem out_no_max_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.out.α :=
+theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.toType :=
   ⟨has_succ_of_type_succ_lt (by rwa [type_lt])⟩
+
+@[deprecated toType_noMax_of_succ_lt (since := "2024-08-26")]
+alias out_no_max_of_succ_lt := toType_noMax_of_succ_lt
 
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : (type r).IsLimit) (x) :
     Bounded r {x} := by
@@ -322,8 +335,7 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : (typ
 
 -- Porting note: `· < ·` requires a type ascription for an `IsWellOrder` instance.
 theorem type_subrel_lt (o : Ordinal.{u}) :
-    type (Subrel ((· < ·) : Ordinal → Ordinal → Prop) { o' : Ordinal | o' < o })
-      = Ordinal.lift.{u + 1} o := by
+    type (@Subrel Ordinal (· < ·) { o' : Ordinal | o' < o }) = Ordinal.lift.{u + 1} o := by
   refine Quotient.inductionOn o ?_
   rintro ⟨α, r, wo⟩; apply Quotient.sound
   constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enum r).symm).symm
@@ -337,7 +349,7 @@ theorem mk_initialSeg (o : Ordinal.{u}) :
 
 /-- A normal ordinal function is a strictly increasing function which is
   order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
-  `a < o`.  -/
+  `a < o`. -/
 def IsNormal (f : Ordinal → Ordinal) : Prop :=
   (∀ o, f o < f (succ o)) ∧ ∀ o, IsLimit o → ∀ a, f o ≤ a ↔ ∀ b < o, f b ≤ a
 
@@ -373,8 +385,18 @@ theorem IsNormal.le_iff {f} (H : IsNormal f) {a b} : f a ≤ f b ↔ a ≤ b :=
 theorem IsNormal.inj {f} (H : IsNormal f) {a b} : f a = f b ↔ a = b := by
   simp only [le_antisymm_iff, H.le_iff]
 
+theorem IsNormal.id_le {f} (H : IsNormal f) : id ≤ f :=
+  H.strictMono.id_le
+
+theorem IsNormal.le_apply {f} (H : IsNormal f) {a} : a ≤ f a :=
+  H.strictMono.le_apply
+
+@[deprecated IsNormal.le_apply (since := "2024-09-11")]
 theorem IsNormal.self_le {f} (H : IsNormal f) (a) : a ≤ f a :=
-  lt_wf.self_le_of_strictMono H.strictMono a
+  H.strictMono.le_apply
+
+theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
+  H.le_apply.le_iff_eq
 
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=
@@ -409,9 +431,6 @@ theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (l : IsLimit o) : IsLimit (f o
   ⟨ne_of_gt <| (Ordinal.zero_le _).trans_lt <| H.lt_iff.2 l.pos, fun _ h =>
     let ⟨_b, h₁, h₂⟩ := (H.limit_lt l).1 h
     (succ_le_of_lt h₂).trans_lt (H.lt_iff.2 h₁)⟩
-
-theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
-  (H.self_le a).le_iff_eq
 
 theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
   ⟨fun h b' l => (add_le_add_left l.le _).trans h, fun H =>
@@ -448,11 +467,11 @@ theorem add_isLimit (a) {b} : IsLimit b → IsLimit (a + b) :=
 
 alias IsLimit.add := add_isLimit
 
-/-! ### Subtraction on ordinals-/
+/-! ### Subtraction on ordinals -/
 
 
 /-- The set in the definition of subtraction is nonempty. -/
-theorem sub_nonempty {a b : Ordinal} : { o | a ≤ b + o }.Nonempty :=
+private theorem sub_nonempty {a b : Ordinal} : { o | a ≤ b + o }.Nonempty :=
   ⟨a, le_add_left _ _⟩
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
@@ -535,7 +554,7 @@ theorem one_add_omega : 1 + ω = ω := by
 theorem one_add_of_omega_le {o} (h : ω ≤ o) : 1 + o = o := by
   rw [← Ordinal.add_sub_cancel_of_le h, ← add_assoc, one_add_omega]
 
-/-! ### Multiplication of ordinals-/
+/-! ### Multiplication of ordinals -/
 
 
 /-- The multiplication of ordinals `o₁` and `o₂` is the (well founded) lexicographic order on
@@ -561,15 +580,15 @@ instance monoid : Monoid Ordinal.{u} where
       Quotient.sound
         ⟨⟨punitProd _, @fun a b => by
             rcases a with ⟨⟨⟨⟩⟩, a⟩; rcases b with ⟨⟨⟨⟩⟩, b⟩
-            simp only [Prod.lex_def, EmptyRelation, false_or_iff]
-            simp only [eq_self_iff_true, true_and_iff]
+            simp only [Prod.lex_def, EmptyRelation, false_or]
+            simp only [eq_self_iff_true, true_and]
             rfl⟩⟩
   one_mul a :=
     inductionOn a fun α r _ =>
       Quotient.sound
         ⟨⟨prodPUnit _, @fun a b => by
             rcases a with ⟨a, ⟨⟨⟩⟩⟩; rcases b with ⟨b, ⟨⟨⟩⟩⟩
-            simp only [Prod.lex_def, EmptyRelation, and_false_iff, or_false_iff]
+            simp only [Prod.lex_def, EmptyRelation, and_false, or_false]
             rfl⟩⟩
 
 @[simp]
@@ -611,11 +630,10 @@ instance leftDistribClass : LeftDistribClass Ordinal.{u} :=
       Quotient.sound
         ⟨⟨sumProdDistrib _ _ _, by
           rintro ⟨a₁ | a₁, a₂⟩ ⟨b₁ | b₁, b₂⟩ <;>
-            simp only [Prod.lex_def, Sum.lex_inl_inl, Sum.Lex.sep, Sum.lex_inr_inl,
-              Sum.lex_inr_inr, sumProdDistrib_apply_left, sumProdDistrib_apply_right] <;>
+            simp only [Prod.lex_def, Sum.lex_inl_inl, Sum.Lex.sep, Sum.lex_inr_inl, Sum.lex_inr_inr,
+              sumProdDistrib_apply_left, sumProdDistrib_apply_right, reduceCtorEq] <;>
             -- Porting note: `Sum.inr.inj_iff` is required.
-            simp only [Sum.inl.inj_iff, Sum.inr.inj_iff,
-              true_or_iff, false_and_iff, false_or_iff]⟩⟩⟩
+            simp only [Sum.inl.inj_iff, Sum.inr.inj_iff, true_or, false_and, false_or]⟩⟩⟩
 
 theorem mul_succ (a b : Ordinal) : a * succ b = a * b + a :=
   mul_add_one a b
@@ -675,11 +693,11 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
     intro h
     by_cases e₁ : b = b₁ <;> by_cases e₂ : b = b₂
     · substs b₁ b₂
-      simpa only [subrel_val, Prod.lex_def, @irrefl _ s _ b, true_and_iff, false_or_iff,
+      simpa only [subrel_val, Prod.lex_def, @irrefl _ s _ b, true_and, false_or,
         eq_self_iff_true, dif_pos, Sum.lex_inr_inr] using h
     · subst b₁
       simp only [subrel_val, Prod.lex_def, e₂, Prod.lex_def, dif_pos, subrel_val, eq_self_iff_true,
-        or_false_iff, dif_neg, not_false_iff, Sum.lex_inr_inl, false_and_iff] at h ⊢
+        or_false, dif_neg, not_false_iff, Sum.lex_inr_inl, false_and] at h ⊢
       cases' h₂ with _ _ _ _ h₂_h h₂_h <;> [exact asymm h h₂_h; exact e₂ rfl]
     · simp [e₂, dif_neg e₁, show b₂ ≠ b₁ from e₂ ▸ e₁]
     · simpa only [dif_neg e₁, dif_neg e₂, Prod.lex_def, subrel_val, Subtype.mk_eq_mk,
@@ -746,20 +764,20 @@ theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
 
 
 /-- The set in the definition of division is nonempty. -/
-theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.Nonempty :=
+private theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.Nonempty :=
   ⟨a, (succ_le_iff (a := a) (b := b * succ a)).1 <| by
     simpa only [succ_zero, one_mul] using
       mul_le_mul_right' (succ_le_of_lt (Ordinal.pos_iff_ne_zero.2 h)) (succ a)⟩
 
 /-- `a / b` is the unique ordinal `o` satisfying `a = b * o + o'` with `o' < b`. -/
 instance div : Div Ordinal :=
-  ⟨fun a b => if _h : b = 0 then 0 else sInf { o | a < b * succ o }⟩
+  ⟨fun a b => if b = 0 then 0 else sInf { o | a < b * succ o }⟩
 
 @[simp]
 theorem div_zero (a : Ordinal) : a / 0 = 0 :=
   dif_pos rfl
 
-theorem div_def (a) {b : Ordinal} (h : b ≠ 0) : a / b = sInf { o | a < b * succ o } :=
+private theorem div_def (a) {b : Ordinal} (h : b ≠ 0) : a / b = sInf { o | a < b * succ o } :=
   dif_neg h
 
 theorem lt_mul_succ_div (a) {b : Ordinal} (h : b ≠ 0) : a < b * succ (a / b) := by
@@ -783,8 +801,7 @@ theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b :=
   | H₂ _ _ => rw [succ_le_iff, lt_div c0]
   | H₃ _ h₁ h₂ =>
     revert h₁ h₂
-    simp (config := { contextual := true }) only [mul_le_of_limit, limit_le, iff_self_iff,
-      forall_true_iff]
+    simp (config := { contextual := true }) only [mul_le_of_limit, limit_le, forall_true_iff]
 
 theorem div_lt {a b c : Ordinal} (b0 : b ≠ 0) : a / b < c ↔ a < b * c :=
   lt_iff_lt_of_le_iff_le <| le_div b0
@@ -819,6 +836,26 @@ theorem div_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a / b = 0 := by
 @[simp]
 theorem mul_div_cancel (a) {b : Ordinal} (b0 : b ≠ 0) : b * a / b = a := by
   simpa only [add_zero, zero_div] using mul_add_div a b0 0
+
+theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
+    (a * b + c) / (a * d) = b / d := by
+  have ha : a ≠ 0 := ((Ordinal.zero_le c).trans_lt hc).ne'
+  obtain rfl | hd := eq_or_ne d 0
+  · rw [mul_zero, div_zero, div_zero]
+  · have H := mul_ne_zero ha hd
+    apply le_antisymm
+    · rw [← lt_succ_iff, div_lt H, mul_assoc]
+      · apply (add_lt_add_left hc _).trans_le
+        rw [← mul_succ]
+        apply mul_le_mul_left'
+        rw [succ_le_iff]
+        exact lt_mul_succ_div b hd
+    · rw [le_div H, mul_assoc]
+      exact (mul_le_mul_left' (mul_div_le b d) a).trans (le_add_right _ c)
+
+theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) = b / c := by
+  convert mul_add_div_mul (Ordinal.pos_iff_ne_zero.2 ha) b c using 1
+  rw [add_zero]
 
 @[simp]
 theorem div_one (a : Ordinal) : a / 1 = a := by
@@ -932,6 +969,18 @@ theorem mul_add_mod_self (x y z : Ordinal) : (x * y + z) % x = z % x := by
 theorem mul_mod (x y : Ordinal) : x * y % x = 0 := by
   simpa using mul_add_mod_self x y 0
 
+theorem mul_add_mod_mul {w x : Ordinal} (hw : w < x) (y z : Ordinal) :
+    (x * y + w) % (x * z) = x * (y % z) + w := by
+  rw [mod_def, mul_add_div_mul hw]
+  apply sub_eq_of_add_eq
+  rw [← add_assoc, mul_assoc, ← mul_add, div_add_mod]
+
+theorem mul_mod_mul (x y z : Ordinal) : (x * y) % (x * z) = x * (y % z) := by
+  obtain rfl | hx := Ordinal.eq_zero_or_pos x
+  · simp
+  · convert mul_add_mod_mul hx y z using 1 <;>
+    rw [add_zero]
+
 theorem mod_mod_of_dvd (a : Ordinal) {b c : Ordinal} (h : c ∣ b) : a % b % c = a % c := by
   nth_rw 2 [← div_add_mod a b]
   rcases h with ⟨d, rfl⟩
@@ -972,7 +1021,7 @@ def familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {
 
 /-- Converts a family indexed by an `Ordinal.{u}` to one indexed by a `Type u` using a well-ordering
 given by the axiom of choice. -/
-def familyOfBFamily (o : Ordinal) (f : ∀ a < o, α) : o.out.α → α :=
+def familyOfBFamily (o : Ordinal) (f : ∀ a < o, α) : o.toType → α :=
   familyOfBFamily' (· < ·) (type_lt o) f
 
 @[simp]
@@ -993,9 +1042,7 @@ theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrde
 
 @[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
-    familyOfBFamily o f
-        (@enum _ (· < ·) o.out.wo ⟨i, hi.trans_eq (type_lt _).symm⟩) =
-      f i hi :=
+    familyOfBFamily o f (enum (α := o.toType) (· < ·) ⟨i, hi.trans_eq (type_lt _).symm⟩) = f i hi :=
   familyOfBFamily'_enum _ (type_lt o) f _ _
 
 /-- The range of a family indexed by ordinals. -/
@@ -1037,7 +1084,7 @@ theorem brange_bfamilyOfFamily {ι : Type u} (f : ι → α) : brange _ (bfamily
 @[simp]
 theorem brange_const {o : Ordinal} (ho : o ≠ 0) {c : α} : (brange o fun _ _ => c) = {c} := by
   rw [← range_familyOfBFamily]
-  exact @Set.range_const _ o.out.α (out_nonempty_iff_ne_zero.2 ho) c
+  exact @Set.range_const _ o.toType (toType_nonempty_iff_ne_zero.2 ho) c
 
 theorem comp_bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α)
     (g : α → β) : (fun i hi => g (bfamilyOfFamily' r f i hi)) = bfamilyOfFamily' r (g ∘ f) :=
@@ -1058,13 +1105,14 @@ theorem comp_familyOfBFamily {o} (f : ∀ a < o, α) (g : α → β) :
 
 /-! ### Supremum of a family of ordinals -/
 
--- Porting note: Universes should be specified in `sup`s.
-
 /-- The supremum of a family of ordinals -/
+
+@[deprecated iSup (since := "2024-08-27")]
 def sup {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal.{max u v} :=
   iSup f
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-27")]
 theorem sSup_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : sSup (Set.range f) = sup.{_, v} f :=
   rfl
 
@@ -1076,29 +1124,83 @@ theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (
     exact le_of_lt (Cardinal.lt_ord.2 ((lt_succ _).trans_le
       (le_ciSup (Cardinal.bddAbove_range.{_, v} _) _)))⟩
 
+/-- `le_ciSup` whenever the outputs live in a higher universe than the inputs. -/
+protected theorem le_iSup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ iSup f :=
+  le_ciSup (bddAbove_range f)
+
+set_option linter.deprecated false in
+@[deprecated Ordinal.le_iSup (since := "2024-08-27")]
 theorem le_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ sup.{_, v} f := fun i =>
-  le_csSup (bddAbove_range.{_, v} f) (mem_range_self i)
+  Ordinal.le_iSup f i
 
+/-- `ciSup_le_iff'` whenever the outputs live in a higher universe than the inputs. -/
+protected theorem iSup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+    iSup f ≤ a ↔ ∀ i, f i ≤ a :=
+  ciSup_le_iff' (bddAbove_range f)
+
+set_option linter.deprecated false in
+@[deprecated Ordinal.iSup_le_iff (since := "2024-08-27")]
 theorem sup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : sup.{_, v} f ≤ a ↔ ∀ i, f i ≤ a :=
-  (csSup_le_iff' (bddAbove_range.{_, v} f)).trans (by simp)
+  Ordinal.iSup_le_iff
 
+/-- `ciSup_le'` whenever the outputs live in a higher universe than the inputs. -/
+protected theorem iSup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+    (∀ i, f i ≤ a) → iSup f ≤ a :=
+  ciSup_le'
+
+set_option linter.deprecated false in
+@[deprecated Ordinal.iSup_le (since := "2024-08-27")]
 theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i ≤ a) → sup.{_, v} f ≤ a :=
-  sup_le_iff.2
+  Ordinal.iSup_le
 
+-- TODO: generalize to conditionally complete linear orders.
+protected theorem lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+    a < iSup f ↔ ∃ i, a < f i := by
+  rw [← not_iff_not]
+  simpa using Ordinal.iSup_le_iff
+
+set_option linter.deprecated false in
+@[deprecated Ordinal.lt_iSup (since := "2024-08-27")]
 theorem lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : a < sup.{_, v} f ↔ ∃ i, a < f i := by
   simpa only [not_forall, not_le] using not_congr (@sup_le_iff.{_, v} _ f a)
 
+@[deprecated (since := "2024-08-27")]
+theorem ne_iSup_iff_lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} :
+    (∀ i, f i ≠ iSup f) ↔ ∀ i, f i < iSup f :=
+  forall_congr' fun i => (Ordinal.le_iSup f i).lt_iff_ne.symm
+
+set_option linter.deprecated false in
+@[deprecated ne_iSup_iff_lt_iSup (since := "2024-08-27")]
 theorem ne_sup_iff_lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} :
     (∀ i, f i ≠ sup.{_, v} f) ↔ ∀ i, f i < sup.{_, v} f :=
-  ⟨fun hf _ => lt_of_le_of_ne (le_sup _ _) (hf _), fun hf _ => ne_of_lt (hf _)⟩
+  ne_iSup_iff_lt_iSup
 
+-- TODO: state in terms of `IsSuccLimit`.
+theorem succ_lt_iSup_of_ne_iSup {ι : Type u} {f : ι → Ordinal.{max u v}}
+    (hf : ∀ i, f i ≠ iSup f) {a} (hao : a < iSup f) : succ a < iSup f := by
+  by_contra! hoa
+  exact hao.not_le (Ordinal.iSup_le fun i => le_of_lt_succ <|
+    (lt_of_le_of_ne (Ordinal.le_iSup _ _) (hf i)).trans_le hoa)
+
+set_option linter.deprecated false in
+@[deprecated succ_lt_iSup_of_ne_iSup (since := "2024-08-27")]
 theorem sup_not_succ_of_ne_sup {ι : Type u} {f : ι → Ordinal.{max u v}}
     (hf : ∀ i, f i ≠ sup.{_, v} f) {a} (hao : a < sup.{_, v} f) : succ a < sup.{_, v} f := by
   by_contra! hoa
   exact
     hao.not_le (sup_le fun i => le_of_lt_succ <| (lt_of_le_of_ne (le_sup _ _) (hf i)).trans_le hoa)
 
-@[simp]
+-- TODO: generalize to conditionally complete lattices.
+theorem iSup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
+    iSup f = 0 ↔ ∀ i, f i = 0 := by
+  refine
+    ⟨fun h i => ?_, fun h =>
+      le_antisymm (Ordinal.iSup_le fun i => Ordinal.le_zero.2 (h i)) (Ordinal.zero_le _)⟩
+  rw [← Ordinal.le_zero, ← h]
+  exact Ordinal.le_iSup f i
+
+set_option linter.deprecated false in
+@[deprecated iSup_eq_zero_iff (since := "2024-08-27")]
 theorem sup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
     sup.{_, v} f = 0 ↔ ∀ i, f i = 0 := by
   refine
@@ -1107,35 +1209,71 @@ theorem sup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
   rw [← Ordinal.le_zero, ← h]
   exact le_sup f i
 
+-- TODO: generalize universes, make sSup version.
+theorem IsNormal.map_iSup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
+    (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := by
+  apply eq_of_forall_ge_iff
+  intro a
+  rw [H.le_set' Set.univ Set.univ_nonempty g]
+  · rw [Ordinal.iSup_le_iff]
+    simp
+  · intro o
+    rw [Ordinal.iSup_le_iff]
+    simp
+
+set_option linter.deprecated false in
+@[deprecated IsNormal.map_iSup (since := "2024-08-27")]
 theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
     (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) :=
-  eq_of_forall_ge_iff fun a => by
-    rw [sup_le_iff]; simp only [comp]; rw [H.le_set' Set.univ Set.univ_nonempty g] <;>
-      simp [sup_le_iff]
+  H.map_iSup g
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated ciSup_of_empty (since := "2024-08-27")]
 theorem sup_empty {ι} [IsEmpty ι] (f : ι → Ordinal) : sup f = 0 :=
   ciSup_of_empty f
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated ciSup_const (since := "2024-08-27")]
 theorem sup_const {ι} [_hι : Nonempty ι] (o : Ordinal) : (sup fun _ : ι => o) = o :=
   ciSup_const
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated ciSup_unique (since := "2024-08-27")]
 theorem sup_unique {ι} [Unique ι] (f : ι → Ordinal) : sup f = f default :=
   ciSup_unique
 
+set_option linter.deprecated false in
+@[deprecated csSup_le_csSup' (since := "2024-08-27")]
 theorem sup_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f ⊆ Set.range g) : sup.{u, max v w} f ≤ sup.{v, max u w} g :=
-  sup_le fun i =>
-    match h (mem_range_self i) with
-    | ⟨_j, hj⟩ => hj ▸ le_sup _ _
+  csSup_le_csSup' (bddAbove_range.{v, max u w} _) h
 
-theorem sup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
+-- TODO: generalize or remove
+theorem iSup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
+    (h : Set.range f = Set.range g) : iSup f = iSup g :=
+  congr_arg _ h
+
+set_option linter.deprecated false in
+@[deprecated iSup_eq_of_range_eq (since := "2024-08-27")]
+theorem sup_eq_of_range_eq {ι : Type u} {ι' : Type v}
+    {f : ι → Ordinal.{max u v w}} {g : ι' → Ordinal.{max u v w}}
     (h : Set.range f = Set.range g) : sup.{u, max v w} f = sup.{v, max u w} g :=
-  (sup_le_of_range_subset.{u, v, w} h.le).antisymm (sup_le_of_range_subset.{v, u, w} h.ge)
+  Ordinal.iSup_eq_of_range_eq h
 
-@[simp]
+-- TODO: generalize to conditionally complete lattices
+theorem iSup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal.{max u v w}) :
+    iSup f = max (⨆ a, f (Sum.inl a)) (⨆ b, f (Sum.inr b)) := by
+  apply (Ordinal.iSup_le _).antisymm (max_le _ _)
+  · rintro (i | i)
+    · exact le_max_of_le_left (Ordinal.le_iSup.{u, max u v w} _ i)
+    · exact le_max_of_le_right (Ordinal.le_iSup.{v, max u v w} _ i)
+  all_goals
+    apply csSup_le_csSup' (bddAbove_range _)
+    rintro i ⟨a, rfl⟩
+    apply mem_range_self
+
+set_option linter.deprecated false in
+@[deprecated iSup_sum (since := "2024-08-27")]
 theorem sup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
     sup.{max u v, w} f =
       max (sup.{u, max v w} fun a => f (Sum.inl a)) (sup.{v, max u w} fun b => f (Sum.inr b)) := by
@@ -1148,41 +1286,40 @@ theorem sup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
     rintro i ⟨a, rfl⟩
     apply mem_range_self
 
+theorem unbounded_range_of_le_iSup {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
+    (h : type r ≤ ⨆ i, typein r (f i)) : Unbounded r (range f) :=
+  (not_bounded_iff _).1 fun ⟨x, hx⟩ =>
+    h.not_lt <| lt_of_le_of_lt
+      (Ordinal.iSup_le fun y => ((typein_lt_typein r).2 <| hx _ <| mem_range_self y).le)
+      (typein_lt_type r x)
+
+set_option linter.deprecated false in
+@[deprecated unbounded_range_of_le_iSup (since := "2024-08-27")]
 theorem unbounded_range_of_sup_ge {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
     (h : type r ≤ sup.{u, u} (typein r ∘ f)) : Unbounded r (range f) :=
-  (not_bounded_iff _).1 fun ⟨x, hx⟩ =>
-    not_lt_of_le h <|
-      lt_of_le_of_lt
-        (sup_le fun y => le_of_lt <| (typein_lt_typein r).2 <| hx _ <| mem_range_self y)
-        (typein_lt_type r x)
+  unbounded_range_of_le_iSup r f h
 
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-27")]
 theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a ∈ s) :
     a ≤ sup.{u, u} fun x => ((@equivShrink s hs).symm x).val := by
   convert le_sup.{u, u} (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
   rw [symm_apply_apply]
 
-instance small_Iio (o : Ordinal.{u}) : Small.{u} (Set.Iio o) :=
-  let f : o.out.α → Set.Iio o :=
-    fun x => ⟨typein ((· < ·) : o.out.α → o.out.α → Prop) x, typein_lt_self x⟩
-  let hf : Surjective f := fun b =>
-    ⟨@enum _ (· < ·) o.out.wo ⟨b.val,
-        by
-          rw [type_lt]
-          exact b.prop⟩,
-      Subtype.ext (typein_enum _ _)⟩
-  small_of_surjective hf
+-- TODO: move this together with `bddAbove_range`.
 
-instance small_Iic (o : Ordinal.{u}) : Small.{u} (Set.Iic o) := by
-  rw [← Iio_succ]
-  infer_instance
+theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
+  obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
+  use a
+  intro b hb
+  simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
 
 theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
-  ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _x hx => h hx, fun h =>
-    ⟨sup.{u, u} fun x => ((@equivShrink s h).symm x).val, le_sup_shrink_equiv h⟩⟩
+  ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
+    bddAbove_of_small _⟩
 
-theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s :=
-  bddAbove_iff_small.2 h
-
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-27")]
 theorem sup_eq_sSup {s : Set Ordinal.{u}} (hs : Small.{u} s) :
     (sup.{u, u} fun x => (@equivShrink s hs).symm x) = sSup s :=
   let hs' := bddAbove_iff_small.2 hs
@@ -1203,6 +1340,11 @@ theorem iSup_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) :
   -- Porting note: `change` is required.
   conv_lhs => change range (ord ∘ f)
   rw [range_comp]
+
+-- TODO: remove `bsup` in favor of `iSup` in a future refactor.
+
+section bsup
+set_option linter.deprecated false
 
 private theorem sup_le_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop)
     [IsWellOrder ι r] [IsWellOrder ι' r'] {o} (ho : type r = o) (ho' : type r' = o)
@@ -1330,7 +1472,7 @@ theorem bsup_const {o : Ordinal.{u}} (ho : o ≠ 0) (a : Ordinal.{max u v}) :
 
 @[simp]
 theorem bsup_one (f : ∀ a < (1 : Ordinal), Ordinal) : bsup 1 f = f 0 zero_lt_one := by
-  simp_rw [← sup_eq_bsup, sup_unique, familyOfBFamily, familyOfBFamily', typein_one_out]
+  simp_rw [← sup_eq_bsup, sup_unique, familyOfBFamily, familyOfBFamily', typein_one_toType]
 
 theorem bsup_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
     (h : brange o f ⊆ brange o' g) : bsup.{u, max v w} o f ≤ bsup.{v, max u w} o' g :=
@@ -1342,6 +1484,13 @@ theorem bsup_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o'
 theorem bsup_eq_of_brange_eq {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
     (h : brange o f = brange o' g) : bsup.{u, max v w} o f = bsup.{v, max u w} o' g :=
   (bsup_le_of_brange_subset.{u, v, w} h.le).antisymm (bsup_le_of_brange_subset.{v, u, w} h.ge)
+
+end bsup
+
+-- TODO: bring the lsub API in line with the sSup / iSup API, or deprecate it altogether.
+
+section lsub
+set_option linter.deprecated false
 
 /-- The least strict upper bound of a family of ordinals. -/
 def lsub {ι} (f : ι → Ordinal) : Ordinal :=
@@ -1461,7 +1610,7 @@ theorem nonempty_compl_range {ι : Type u} (f : ι → Ordinal.{max u v}) : (Set
   ⟨_, lsub_not_mem_range.{_, v} f⟩
 
 @[simp]
-theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein ((· < ·) : o.out.α → o.out.α → Prop)) = o :=
+theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.toType) (· < ·)) = o :=
   (lsub_le.{u, u} typein_lt_self).antisymm
     (by
       by_contra! h
@@ -1470,22 +1619,30 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein ((· < ·) : o.out.α �
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) ⟨_, h⟩))
 
 theorem sup_typein_limit {o : Ordinal} (ho : ∀ a, a < o → succ a < o) :
-    sup.{u, u} (typein ((· < ·) : o.out.α → o.out.α → Prop)) = o := by
+    sup.{u, u} (typein ((· < ·) : o.toType → o.toType → Prop)) = o := by
   -- Porting note: `rwa` → `rw` & `assumption`
   rw [(sup_eq_lsub_iff_succ.{u, u} (typein (· < ·))).2] <;> rw [lsub_typein o]; assumption
 
 @[simp]
 theorem sup_typein_succ {o : Ordinal} :
-    sup.{u, u} (typein ((· < ·) : (succ o).out.α → (succ o).out.α → Prop)) = o := by
+    sup.{u, u} (typein ((· < ·) : (succ o).toType → (succ o).toType → Prop)) = o := by
   cases'
     sup_eq_lsub_or_sup_succ_eq_lsub.{u, u}
-      (typein ((· < ·) : (succ o).out.α → (succ o).out.α → Prop)) with
+      (typein ((· < ·) : (succ o).toType → (succ o).toType → Prop)) with
     h h
   · rw [sup_eq_lsub_iff_succ] at h
     simp only [lsub_typein] at h
     exact (h o (lt_succ o)).false.elim
   rw [← succ_eq_succ_iff, h]
   apply lsub_typein
+
+end lsub
+
+-- TODO: either deprecate this in favor of `lsub` when its universes are generalized, or deprecate
+-- both of them at once.
+
+section blsub
+set_option linter.deprecated false
 
 /-- The least strict upper bound of a family of ordinals indexed by the set of ordinals less than
     some `o : Ordinal.{u}`.
@@ -1603,7 +1760,7 @@ theorem blsub_succ_of_mono {o : Ordinal.{u}} {f : ∀ a < succ o, Ordinal.{max u
 @[simp]
 theorem blsub_eq_zero_iff {o} {f : ∀ a < o, Ordinal} : blsub o f = 0 ↔ o = 0 := by
   rw [← lsub_eq_blsub, lsub_eq_zero_iff]
-  exact out_empty_iff_eq_zero
+  exact toType_empty_iff_eq_zero
 
 -- Porting note: `rwa` → `rw`
 @[simp]
@@ -1695,25 +1852,35 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
   ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ =>
     funext fun a => by
-      induction' a using limitRecOn with _ _ _ ho H
-      any_goals solve_by_elim
-      rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
-      congr
-      ext b hb
-      exact H b hb⟩
+      induction a using limitRecOn with
+      | H₁ => solve_by_elim
+      | H₂ => solve_by_elim
+      | H₃ _ ho H =>
+        rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
+        congr
+        ext b hb
+        exact H b hb⟩
 
 /-- A two-argument version of `Ordinal.blsub`.
 We don't develop a full API for this, since it's only used in a handful of existence results. -/
 def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) :
     Ordinal :=
-  lsub (fun x : o₁.out.α × o₂.out.α => op (typein_lt_self x.1) (typein_lt_self x.2))
+  lsub (fun x : o₁.toType × o₂.toType => op (typein_lt_self x.1) (typein_lt_self x.2))
 
+-- TODO: deprecate this, and replace the arguments using it by arguments about small sets.
 theorem lt_blsub₂ {o₁ o₂ : Ordinal}
     (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
     (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
   convert lt_lsub _ (Prod.mk (enum (· < ·) ⟨a, by rwa [type_lt]⟩)
     (enum (· < ·) ⟨b, by rwa [type_lt]⟩))
   simp only [typein_enum]
+
+end blsub
+
+-- TODO: deprecate in favor of `sInf sᶜ`.
+
+section mex
+set_option linter.deprecated false
 
 /-! ### Minimum excluded ordinals -/
 
@@ -1755,15 +1922,15 @@ theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
   by_contra! h
   apply (lt_succ #ι).not_le
   have H := fun a => exists_of_lt_mex ((typein_lt_self a).trans_le h)
-  let g : (succ #ι).ord.out.α → ι := fun a => Classical.choose (H a)
+  let g : (succ #ι).ord.toType → ι := fun a => Classical.choose (H a)
   have hg : Injective g := fun a b h' => by
     have Hf : ∀ x, f (g x) =
-        typein ((· < ·) : (succ #ι).ord.out.α → (succ #ι).ord.out.α → Prop) x :=
+        typein ((· < ·) : (succ #ι).ord.toType → (succ #ι).ord.toType → Prop) x :=
       fun a => Classical.choose_spec (H a)
     apply_fun f at h'
     rwa [Hf, Hf, typein_inj] at h'
   convert Cardinal.mk_le_of_injective hg
-  rw [Cardinal.mk_ord_out (succ #ι)]
+  rw [Cardinal.mk_ord_toType (succ #ι)]
 
 /-- The minimum excluded ordinal of a family of ordinals indexed by the set of ordinals less than
     some `o : Ordinal.{u}`. This is a special case of `mex` over the family provided by
@@ -1785,7 +1952,7 @@ theorem le_bmex_of_forall {o : Ordinal} (f : ∀ a < o, Ordinal) {a : Ordinal}
 theorem ne_bmex {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) {i} (hi) :
     f i hi ≠ bmex.{_, v} o f := by
   convert (config := {transparency := .default})
-    ne_mex.{_, v} (familyOfBFamily o f) (@enum _ (· < ·) o.out.wo ⟨i, by rwa [type_lt]⟩) using 2
+    ne_mex.{_, v} (familyOfBFamily o f) (enum (α := o.toType) (· < ·) ⟨i, by rwa [type_lt]⟩) using 2
   -- Porting note: `familyOfBFamily_enum` → `typein_enum`
   rw [typein_enum]
 
@@ -1809,8 +1976,10 @@ theorem bmex_monotone {o o' : Ordinal.{u}}
 
 theorem bmex_lt_ord_succ_card {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{u}) :
     bmex.{_, u} o f < (succ o.card).ord := by
-  rw [← mk_ordinal_out]
+  rw [← mk_toType]
   exact mex_lt_ord_succ_mk (familyOfBFamily o f)
+
+end mex
 
 end Ordinal
 
@@ -1833,6 +2002,14 @@ theorem not_injective_of_ordinal_of_small {α : Type v} [Small.{u} α] (f : Ordi
 the Burali-Forti paradox. -/
 theorem not_small_ordinal : ¬Small.{u} Ordinal.{max u v} := fun h =>
   @not_injective_of_ordinal_of_small _ h _ fun _a _b => Ordinal.lift_inj.{v, u}.1
+
+theorem Ordinal.not_bddAbove_compl_of_small (s : Set Ordinal.{u}) [hs : Small.{u} s] :
+    ¬BddAbove sᶜ := by
+  rw [bddAbove_iff_small]
+  intro h
+  have := small_union s sᶜ
+  rw [union_compl_self, small_univ_iff] at this
+  exact not_small_ordinal this
 
 /-! ### Enumerating unbounded sets of ordinals with ordinals -/
 
@@ -1935,10 +2112,8 @@ theorem enumOrd_surjective (hS : Unbounded (· < ·) S) : ∀ s ∈ S, ∃ a, en
       rcases flip exists_lt_of_lt_csSup ha ⟨0, this⟩ with ⟨b, hb, hab⟩
       exact (enumOrd_strictMono hS hab).trans_le hb
     · by_contra! h
-      exact
-        (le_csSup ⟨s, fun a => (lt_wf.self_le_of_strictMono (enumOrd_strictMono hS) a).trans⟩
-              (enumOrd_succ_le hS hs h)).not_lt
-          (lt_succ _)⟩
+      exact (le_csSup ⟨s, fun a => ((enumOrd_strictMono hS).id_le a).trans⟩
+        (enumOrd_succ_le hS hs h)).not_lt (lt_succ _)⟩
 
 /-- An order isomorphism between an unbounded set of ordinals and the ordinals. -/
 def enumOrdOrderIso (hS : Unbounded (· < ·) S) : Ordinal ≃o S :=
@@ -1955,7 +2130,7 @@ theorem eq_enumOrd (f : Ordinal → Ordinal) (hS : Unbounded (· < ·) S) :
     StrictMono f ∧ range f = S ↔ f = enumOrd S := by
   constructor
   · rintro ⟨h₁, h₂⟩
-    rwa [← lt_wf.eq_strictMono_iff_eq_range h₁ (enumOrd_strictMono hS), range_enumOrd hS]
+    rwa [← h₁.range_inj (enumOrd_strictMono hS), range_enumOrd hS]
   · rintro rfl
     exact ⟨enumOrd_strictMono hS, range_enumOrd hS⟩
 
@@ -2132,8 +2307,13 @@ theorem omega_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
       rw [e, ← succ_le_iff]; exact H (n + 1)⟩
 
 @[simp]
+theorem iSup_natCast : iSup Nat.cast = ω :=
+  (Ordinal.iSup_le fun n => (nat_lt_omega n).le).antisymm <| omega_le.2 <| Ordinal.le_iSup _
+
+set_option linter.deprecated false in
+@[deprecated iSup_natCast (since := "2024-04-17")]
 theorem sup_natCast : sup Nat.cast = ω :=
-  (sup_le fun n => (nat_lt_omega n).le).antisymm <| omega_le.2 <| le_sup _
+  iSup_natCast
 
 @[deprecated (since := "2024-04-17")]
 alias sup_nat_cast := sup_natCast
@@ -2198,14 +2378,27 @@ theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a
   by_contra! hb
   exact (h _ hb).ne H
 
-theorem IsNormal.apply_omega {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f) :
-    Ordinal.sup.{0, u} (f ∘ Nat.cast) = f ω := by rw [← sup_natCast, IsNormal.sup.{0, u, u} hf]
+theorem IsNormal.apply_omega {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
+    ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
 
 @[simp]
+theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
+  (add_isNormal o).apply_omega
+
+set_option linter.deprecated false in
+@[deprecated iSup_add_nat (since := "2024-08-27")]
 theorem sup_add_nat (o : Ordinal) : (sup fun n : ℕ => o + n) = o + ω :=
   (add_isNormal o).apply_omega
 
 @[simp]
+theorem iSup_mul_nat (o : Ordinal) : ⨆ n : ℕ, o * n = o * ω := by
+  rcases eq_zero_or_pos o with (rfl | ho)
+  · rw [zero_mul]
+    exact iSup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
+  · exact (mul_isNormal ho).apply_omega
+
+set_option linter.deprecated false in
+@[deprecated iSup_add_nat (since := "2024-08-27")]
 theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
   rcases eq_zero_or_pos o with (rfl | ho)
   · rw [zero_mul]
@@ -2222,10 +2415,10 @@ namespace Acc
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
 `r b a`). -/
 noncomputable def rank (h : Acc r a) : Ordinal.{u} :=
-  Acc.recOn h fun a _h ih => Ordinal.sup.{u, u} fun b : { b // r b a } => Order.succ <| ih b b.2
+  Acc.recOn h fun a _h ih => ⨆ b : { b // r b a }, Order.succ (ih b b.2)
 
 theorem rank_eq (h : Acc r a) :
-    h.rank = Ordinal.sup.{u, u} fun b : { b // r b a } => Order.succ (h.inv b.2).rank := by
+    h.rank = ⨆ b : { b // r b a }, Order.succ (h.inv b.2).rank := by
   change (Acc.intro a fun _ => h.inv).rank = _
   rfl
 
@@ -2233,7 +2426,7 @@ theorem rank_eq (h : Acc r a) :
 theorem rank_lt_of_rel (hb : Acc r b) (h : r a b) : (hb.inv h).rank < hb.rank :=
   (Order.lt_succ _).trans_le <| by
     rw [hb.rank_eq]
-    refine le_trans ?_ (Ordinal.le_sup _ ⟨a, h⟩)
+    refine le_trans ?_ (Ordinal.le_iSup _ ⟨a, h⟩)
     rfl
 
 end Acc
@@ -2249,7 +2442,7 @@ noncomputable def rank (a : α) : Ordinal.{u} :=
   (hwf.apply a).rank
 
 theorem rank_eq :
-    hwf.rank a = Ordinal.sup.{u, u} fun b : { b // r b a } => Order.succ <| hwf.rank b := by
+    hwf.rank a = ⨆ b : { b // r b a }, Order.succ (hwf.rank b) := by
   rw [rank, Acc.rank_eq]
   rfl
 
@@ -2263,3 +2456,5 @@ theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
     StrictAnti (rank <| @wellFounded_gt α _ _) := fun _ _ => rank_lt_of_rel wellFounded_gt
 
 end WellFounded
+
+set_option linter.style.longFile 2500

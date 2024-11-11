@@ -59,6 +59,7 @@ inductive ringFunc : ℕ → Type
 def Language.ring : Language :=
   { Functions := ringFunc
     Relations := fun _ => Empty }
+  deriving IsAlgebraic
 
 namespace Ring
 
@@ -225,7 +226,6 @@ def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
       | _, .neg => fun x => -x 0
       | _, .zero => fun _ => 0
       | _, .one => fun _ => 1
-    RelMap := Empty.elim,
     funMap_add := fun _ => rfl,
     funMap_mul := fun _ => rfl,
     funMap_neg := fun _ => rfl,

@@ -337,7 +337,7 @@ theorem contMDiffWithinAt_pi_space :
     ContMDiffWithinAt I 𝓘(𝕜, ∀ i, Fi i) n φ s x ↔
       ∀ i, ContMDiffWithinAt I 𝓘(𝕜, Fi i) n (fun x => φ x i) s x := by
   simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
-    writtenInExtChartAt, extChartAt_model_space_eq_id, (· ∘ ·), PartialEquiv.refl_coe, id]
+    writtenInExtChartAt, extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
 
 theorem contMDiffOn_pi_space :
     ContMDiffOn I 𝓘(𝕜, ∀ i, Fi i) n φ s ↔ ∀ i, ContMDiffOn I 𝓘(𝕜, Fi i) n (fun x => φ x i) s :=

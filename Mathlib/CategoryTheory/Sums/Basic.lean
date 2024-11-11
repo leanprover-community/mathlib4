@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Equivalence
 
@@ -31,7 +31,7 @@ section
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 
-/- Porting note: `aesop_cat` not firing on `assoc` where autotac in Lean 3 did-/
+/- Porting note: `aesop_cat` not firing on `assoc` where autotac in Lean 3 did -/
 
 /-- `sum C D` gives the direct sum of two categories.
 -/

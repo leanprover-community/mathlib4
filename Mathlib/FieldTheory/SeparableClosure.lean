@@ -115,7 +115,7 @@ theorem separableClosure.map_eq_of_separableClosure_eq_bot [Algebra E K] [IsScal
     (separableClosure F E).map (IsScalarTower.toAlgHom F E K) = separableClosure F K := by
   refine le_antisymm (map_le_of_algHom _) (fun x hx ↦ ?_)
   obtain ⟨y, rfl⟩ := mem_bot.1 <| h ▸ mem_separableClosure_iff.2
-    (IsSeparable.of_isScalarTower E <| mem_separableClosure_iff.1 hx)
+    (IsSeparable.tower_top E <| mem_separableClosure_iff.1 hx)
   exact ⟨y, (map_mem_separableClosure_iff <| IsScalarTower.toAlgHom F E K).mp hx, rfl⟩
 
 /-- If `i` is an `F`-algebra isomorphism of `E` and `K`, then the image of `separableClosure F E`
@@ -170,7 +170,8 @@ theorem separableClosure.separableClosure_eq_bot :
 theorem separableClosure.normalClosure_eq_self :
     normalClosure F (separableClosure F E) E = separableClosure F E :=
   le_antisymm (normalClosure_le_iff.2 fun i ↦
-    haveI : Algebra.IsSeparable F i.fieldRange := (AlgEquiv.ofInjectiveField i).isSeparable
+    have : Algebra.IsSeparable F i.fieldRange :=
+      (AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField i))
     le_separableClosure F E _) (le_normalClosure _)
 
 /-- If `E` is normal over `F`, then the separable closure of `F` in `E` is Galois (i.e.
@@ -219,7 +220,7 @@ theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ Algebra.IsS
 `separableClosure E K`. -/
 theorem separableClosure.le_restrictScalars [Algebra E K] [IsScalarTower F E K] :
     separableClosure F K ≤ (separableClosure E K).restrictScalars F :=
-  fun _ h ↦ IsSeparable.of_isScalarTower E h
+  fun _ ↦ IsSeparable.tower_top E
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable, then
 `separableClosure F K` is equal to `separableClosure E K`. -/

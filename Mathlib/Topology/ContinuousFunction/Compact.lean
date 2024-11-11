@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.UniformSpace.Compact
@@ -135,9 +135,6 @@ theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f 
 
 end
 
-instance [CompleteSpace β] : CompleteSpace C(α, β) :=
-  (isometryEquivBoundedOfCompact α β).completeSpace
-
 -- TODO at some point we will need lemmas characterising this norm!
 -- At the moment the only way to reason about it is to transfer `f : C(α,E)` back to `α →ᵇ E`.
 instance : Norm C(α, E) where norm x := dist x 0
@@ -204,6 +201,11 @@ theorem neg_norm_le_apply (f : C(α, ℝ)) (x : α) : -‖f‖ ≤ f x :=
 
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
+
+-- A version with better keys
+instance {X : Type*} [TopologicalSpace X] (K : TopologicalSpace.Compacts X) :
+    CompactSpace (K : Set X) :=
+  TopologicalSpace.Compacts.instCompactSpaceSubtypeMem ..
 
 theorem norm_restrict_mono_set {X : Type*} [TopologicalSpace X] (f : C(X, E))
     {K L : TopologicalSpace.Compacts X} (hKL : K ≤ L) : ‖f.restrict K‖ ≤ ‖f.restrict L‖ :=

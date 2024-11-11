@@ -97,7 +97,7 @@ theorem isClosed_and_discrete_iff {S : Set X} :
     simpa [disjoint_iff, nhdsWithin, inf_assoc, hx] using H
 
 /-- The filter of sets with no accumulation points inside a set `S : Set X`, implemented
-as the supremum over all punctured neighborhoods within `S`.  -/
+as the supremum over all punctured neighborhoods within `S`. -/
 def Filter.codiscreteWithin (S : Set X) : Filter X := ⨆ x ∈ S, 𝓝[S \ {x}] x
 
 lemma mem_codiscreteWithin {S T : Set X} :

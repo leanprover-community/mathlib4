@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Emily Witt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Emily Witt, Scott Morrison, Jake Levinson, Sam van Gool
+Authors: Emily Witt, Kim Morrison, Jake Levinson, Sam van Gool
 -/
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.Category.ModuleCat.Colimits
@@ -232,8 +232,8 @@ instance ideal_powers_initial [hR : IsNoetherian R R] :
       -- The inclusions `J^n1 ≤ J'` and `J^n2 ≤ J'` always form a triangle, based on
       -- which exponent is larger.
       rcases le_total (unop j1.left) (unop j2.left) with h | h
-      · right; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
-      · left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
+      · right; exact ⟨CostructuredArrow.homMk (homOfLE h).op rfl⟩
+      · left; exact ⟨CostructuredArrow.homMk (homOfLE h).op rfl⟩
 
 example : HasColimitsOfSize.{0, 0, u, u + 1} (ModuleCat.{u, u} R) := inferInstance
 /-- Local cohomology (defined in terms of powers of `J`) agrees with local

@@ -70,6 +70,7 @@ def Hom : WithTerminal C → WithTerminal C → Type v
   | of X, of Y => X ⟶ Y
   | star, of _ => PEmpty
   | _, star => PUnit
+attribute [nolint simpNF] Hom.eq_3
 
 /-- Identity morphisms for `WithTerminal C`. -/
 @[simp]
@@ -85,6 +86,8 @@ def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
   | star, of _X, _ => fun f _g => PEmpty.elim f
   | _, star, of _Y => fun _f g => PEmpty.elim g
   | star, star, star => fun _ _ => PUnit.unit
+attribute [nolint simpNF] comp.eq_3
+attribute [nolint simpNF] comp.eq_4
 
 instance : Category.{v} (WithTerminal C) where
   Hom X Y := Hom X Y
@@ -371,6 +374,7 @@ def Hom : WithInitial C → WithInitial C → Type v
   | of X, of Y => X ⟶ Y
   | of _, _ => PEmpty
   | star, _ => PUnit
+attribute [nolint simpNF] Hom.eq_2
 
 /-- Identity morphisms for `WithInitial C`. -/
 @[simp]
@@ -386,6 +390,8 @@ def comp : ∀ {X Y Z : WithInitial C}, Hom X Y → Hom Y Z → Hom X Z
   | _, of _X, star => fun _f g => PEmpty.elim g
   | of _Y, star, _ => fun f _g => PEmpty.elim f
   | star, star, star => fun _ _ => PUnit.unit
+attribute [nolint simpNF] comp.eq_3
+attribute [nolint simpNF] comp.eq_4
 
 instance : Category.{v} (WithInitial C) where
   Hom X Y := Hom X Y

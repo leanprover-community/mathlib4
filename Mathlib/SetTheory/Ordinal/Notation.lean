@@ -152,7 +152,7 @@ def cmp : ONote → ONote → Ordering
   | _, 0 => Ordering.gt
   | 0, _ => Ordering.lt
   | _o₁@(oadd e₁ n₁ a₁), _o₂@(oadd e₂ n₂ a₂) =>
-    (cmp e₁ e₂).orElse <| (_root_.cmp (n₁ : ℕ) n₂).orElse (cmp a₁ a₂)
+    (cmp e₁ e₂).then <| (_root_.cmp (n₁ : ℕ) n₂).then (cmp a₁ a₂)
 
 theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o₂
   | 0, 0, _ => rfl
@@ -230,9 +230,10 @@ theorem NF.zero_of_zero {e n a} (h : NF (ONote.oadd e n a)) (e0 : e = 0) : a = 0
   simpa [e0, NFBelow_zero] using h.snd'
 
 theorem NFBelow.repr_lt {o b} (h : NFBelow o b) : repr o < ω ^ b := by
-  induction' h with _ e n a eb b h₁ h₂ h₃ _ IH
-  · exact opow_pos _ omega_pos
-  · rw [repr]
+  induction h with
+  | zero => exact opow_pos _ omega_pos
+  | oadd' _ _ h₃ _ IH =>
+    rw [repr]
     apply ((add_lt_add_iff_left _).2 IH).trans_le
     rw [← mul_succ]
     apply (mul_le_mul_left' (succ_le_of_lt (nat_lt_omega _)) _).trans
@@ -240,8 +241,9 @@ theorem NFBelow.repr_lt {o b} (h : NFBelow o b) : repr o < ω ^ b := by
     exact opow_le_opow_right omega_pos (succ_le_of_lt h₃)
 
 theorem NFBelow.mono {o b₁ b₂} (bb : b₁ ≤ b₂) (h : NFBelow o b₁) : NFBelow o b₂ := by
-  induction' h with _ e n a eb b h₁ h₂ h₃ _ _ <;> constructor
-  exacts [h₁, h₂, lt_of_lt_of_le h₃ bb]
+  induction h with
+  | zero => exact zero
+  | oadd' h₁ h₂ h₃ _ _ => constructor; exacts [h₁, h₂, lt_of_lt_of_le h₃ bb]
 
 theorem NF.below_of_lt {e n a b} (H : repr e < b) :
     NF (ONote.oadd e n a) → NFBelow (ONote.oadd e n a) b
@@ -652,9 +654,7 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
         simp only [repr_add, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero,
           repr_sub]
         have := mt repr_inj.1 e0
-        refine Ordinal.add_sub_cancel_of_le ?_
-        have := one_le_iff_ne_zero.2 this
-        exact this
+        exact Ordinal.add_sub_cancel_of_le <| one_le_iff_ne_zero.2 this
       intros
       substs o' m
       simp [scale, this]
@@ -842,7 +842,8 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     have e0 := Ordinal.pos_iff_ne_zero.2 e0
     have rr0 : 0 < repr a0 + repr a0 := lt_of_lt_of_le e0 (le_add_left _ _)
     apply principal_add_omega_opow
-    · simp [opow_mul, opow_add, mul_assoc]
+    · simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, add_one_eq_succ,
+        opow_mul, opow_succ, mul_assoc]
       rw [Ordinal.mul_lt_mul_iff_left ω00, ← Ordinal.opow_add]
       have : _ < ω ^ (repr a0 + repr a0) := (No.below_of_lt ?_).repr_lt
       · exact mul_lt_omega_opow rr0 this (nat_lt_omega _)
@@ -901,6 +902,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
         conv_lhs =>
           dsimp [(· ^ ·)]
           simp [Pow.pow, opow, Ordinal.succ_ne_zero]
+        rw [opow_natCast]
       · simpa [Nat.one_le_iff_ne_zero]
       · rw [← Nat.cast_succ, lt_omega]
         exact ⟨_, rfl⟩
@@ -915,7 +917,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     simp only [opow_def, opow, e₁, r₁, split_eq_scale_split' e₂, opowAux2, repr]
     cases' k with k
     · simp [r₂, opow_mul, repr_opow_aux₁ a00 al aa, add_assoc]
-    · simp? [r₂, opow_add, opow_mul, mul_assoc, add_assoc, -repr] says
+    · simp? [r₂, opow_add, opow_mul, mul_assoc, add_assoc, -repr, -opow_natCast] says
         simp only [mulNat_eq_mul, repr_add, repr_scale, repr_mul, repr_ofNat, opow_add, opow_mul,
           mul_assoc, add_assoc, r₂, Nat.cast_add, Nat.cast_one, add_one_eq_succ, opow_succ]
       simp only [repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero, opow_one]
@@ -1015,7 +1017,7 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
       simp only [repr, iha, ihb, opow_lt_opow_iff_right one_lt_omega, add_lt_add_iff_left, add_zero,
         eq_self_iff_true, lt_add_iff_pos_right, lt_def, mul_one, Nat.cast_zero, Nat.cast_succ,
         Nat.succPNat_coe, opow_succ, opow_zero, mul_add_one, PNat.one_coe, succ_zero,
-        true_and_iff, _root_.zero_add, zero_def]
+        _root_.zero_add, zero_def]
     · decide
     · exact ⟨rfl, inferInstance⟩
     · have := opow_pos (repr a') omega_pos

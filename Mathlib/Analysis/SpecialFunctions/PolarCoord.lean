@@ -39,12 +39,12 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · simpa using hr
     · right
       simp at hr
-      simpa only [ne_of_gt hr, Ne, mem_setOf_eq, mul_eq_zero, false_or_iff,
+      simpa only [ne_of_gt hr, Ne, mem_setOf_eq, mul_eq_zero, false_or,
         sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2] using h'θ
   map_source' := by
     rintro ⟨x, y⟩ hxy
     simp only [prod_mk_mem_set_prod_eq, mem_Ioi, sqrt_pos, mem_Ioo, Complex.neg_pi_lt_arg,
-      true_and_iff, Complex.arg_lt_pi_iff]
+      true_and, Complex.arg_lt_pi_iff]
     constructor
     · cases' hxy with hxy hxy
       · dsimp at hxy; linarith [sq_pos_of_ne_zero hxy.ne', sq_nonneg y]

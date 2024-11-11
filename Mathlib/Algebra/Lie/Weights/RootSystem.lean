@@ -392,7 +392,10 @@ def rootSystem :
       exact ⟨reflectRoot α β, reflectRoot_isNonZero α β hβ, rfl⟩)
     (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
 
-@[simp] lemma rootSystem_toLin_apply (f x) : (rootSystem H).toLin f x = f x := rfl
+@[simp] lemma rootSystem_toPerfectPairing_apply (f x) : (rootSystem H).toPerfectPairing f x = f x :=
+  rfl
+@[deprecated (since := "2024-09-09")]
+alias rootSystem_toLin_apply := rootSystem_toPerfectPairing_apply
 @[simp] lemma rootSystem_pairing_apply (α β) : (rootSystem H).pairing β α = β.1 (coroot α.1) := rfl
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl

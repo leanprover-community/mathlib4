@@ -42,7 +42,7 @@ def rightInverseUnitor : C ⥤ C × Discrete (PUnit : Type w) where
   obj X := ⟨X, ⟨PUnit.unit⟩⟩
   map f := ⟨f, 𝟙 _⟩
 
-/-- The equivalence of categories expressing left unity of products of categories.  -/
+/-- The equivalence of categories expressing left unity of products of categories. -/
 @[simps]
 def leftUnitorEquivalence : Discrete (PUnit : Type w) × C ≌ C where
   functor := leftUnitor C
@@ -50,7 +50,7 @@ def leftUnitorEquivalence : Discrete (PUnit : Type w) × C ≌ C where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-/-- The equivalence of categories expressing right unity of products of categories.  -/
+/-- The equivalence of categories expressing right unity of products of categories. -/
 @[simps]
 def rightUnitorEquivalence : C × Discrete (PUnit : Type w) ≌ C where
   functor := rightUnitor C

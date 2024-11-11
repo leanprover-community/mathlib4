@@ -3,6 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Topology.Constructions
 
 /-!
@@ -684,8 +685,7 @@ theorem continuousWithinAt_singleton {f : α → β} {x : α} : ContinuousWithin
 @[simp]
 theorem continuousWithinAt_insert_self {f : α → β} {x : α} {s : Set α} :
     ContinuousWithinAt f (insert x s) x ↔ ContinuousWithinAt f s x := by
-  simp only [← singleton_union, continuousWithinAt_union, continuousWithinAt_singleton,
-    true_and_iff]
+  simp only [← singleton_union, continuousWithinAt_union, continuousWithinAt_singleton, true_and]
 
 alias ⟨_, ContinuousWithinAt.insert_self⟩ := continuousWithinAt_insert_self
 
@@ -1138,7 +1138,8 @@ theorem IsOpen.ite' {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
     (ht : ∀ x ∈ frontier t, x ∈ s ↔ x ∈ s') : IsOpen (t.ite s s') := by
   classical
     simp only [isOpen_iff_continuous_mem, Set.ite] at *
-    convert continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn
+    convert
+      continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn using 2
     rename_i x
     by_cases hx : x ∈ t <;> simp [hx]
 

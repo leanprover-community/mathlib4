@@ -531,7 +531,7 @@ section BijectivityCriteria
 
 namespace ContinuousLinearMap
 
-variable {σ : 𝕜 →+* 𝕜'}  {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] {f : E →SL[σ] F}
+variable {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] {f : E →SL[σ] F}
 variable {F : Type u_4} [NormedAddCommGroup F] [NormedSpace 𝕜' F]
 variable [CompleteSpace E]
 

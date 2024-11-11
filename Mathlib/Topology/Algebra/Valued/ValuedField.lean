@@ -313,9 +313,9 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   suffices γ₀ ≠ 0 → (x ∈ closure ((↑) '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
     rcases eq_or_ne γ₀ 0 with h | h
     · simp only [h, (Valuation.zero_iff _).mp h, mem_setOf_eq, Valuation.map_zero, Units.zero_lt,
-        iff_true_iff]
+        iff_true]
       apply subset_closure
-      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and_iff]; rfl⟩
+      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and]; rfl⟩
     · exact this h
   intro h
   have hγ₀ : extension ⁻¹' {γ₀} ∈ 𝓝 x :=

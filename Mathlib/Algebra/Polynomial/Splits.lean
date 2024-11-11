@@ -6,6 +6,7 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Data.List.Prime
+import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Split polynomials
@@ -300,10 +301,32 @@ theorem eq_prod_roots_of_splits_id {p : K[X]} (hsplit : Splits (RingHom.id K) p)
     p = C p.leadingCoeff * (p.roots.map fun a => X - C a).prod := by
   simpa using eq_prod_roots_of_splits hsplit
 
+theorem aeval_eq_prod_aroots_sub_of_splits [Algebra K L] {p : K[X]}
+    (hsplit : Splits (algebraMap K L) p) (v : L) :
+    aeval v p = algebraMap K L p.leadingCoeff * ((p.aroots L).map fun a ↦ v - a).prod := by
+  rw [← eval_map_algebraMap, eq_prod_roots_of_splits hsplit]
+  simp [eval_multiset_prod]
+
+theorem eval_eq_prod_roots_sub_of_splits_id {p : K[X]}
+    (hsplit : Splits (RingHom.id K) p) (v : K) :
+    eval v p = p.leadingCoeff * (p.roots.map fun a ↦ v - a).prod := by
+  convert aeval_eq_prod_aroots_sub_of_splits hsplit v
+  rw [Algebra.id.map_eq_id, map_id]
+
 theorem eq_prod_roots_of_monic_of_splits_id {p : K[X]} (m : Monic p)
     (hsplit : Splits (RingHom.id K) p) : p = (p.roots.map fun a => X - C a).prod := by
   convert eq_prod_roots_of_splits_id hsplit
   simp [m]
+
+theorem aeval_eq_prod_aroots_sub_of_monic_of_splits [Algebra K L] {p : K[X]} (m : Monic p)
+    (hsplit : Splits (algebraMap K L) p) (v : L) :
+    aeval v p = ((p.aroots L).map fun a ↦ v - a).prod := by
+  simp [aeval_eq_prod_aroots_sub_of_splits hsplit, m]
+
+theorem eval_eq_prod_roots_sub_of_monic_of_splits_id {p : K[X]} (m : Monic p)
+    (hsplit : Splits (RingHom.id K) p) (v : K) :
+    eval v p = (p.roots.map fun a ↦ v - a).prod := by
+  simp [eval_eq_prod_roots_sub_of_splits_id hsplit, m]
 
 theorem eq_X_sub_C_of_splits_of_single_root {x : K} {h : K[X]} (h_splits : Splits i h)
     (h_roots : (h.map i).roots = {i x}) : h = C h.leadingCoeff * (X - C x) := by

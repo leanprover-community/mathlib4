@@ -561,7 +561,7 @@ theorem measurableSet_preimage_iff_preimage_val {f : X → Z} [CountablySeparate
 /-- If `f : X → Z` is a Borel measurable map from a standard Borel space to a
 countably separated measurable space and the range of `f` is measurable,
 then the preimage of a set `s` is measurable
-if and only if the intesection with `Set.range f` is measurable. -/
+if and only if the intersection with `Set.range f` is measurable. -/
 theorem measurableSet_preimage_iff_inter_range {f : X → Z} [CountablySeparated (range f)]
     (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by

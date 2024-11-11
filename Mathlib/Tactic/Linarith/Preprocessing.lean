@@ -306,7 +306,7 @@ section nlinarith
 `findSquares s e` collects all terms of the form `a ^ 2` and `a * a` that appear in `e`
 and adds them to the set `s`.
 A pair `(i, true)` is added to `s` when `atoms[i]^2` appears in `e`,
-and `(i, false)` is added to `s` when `atoms[i]*atoms[i]` appears in `e`.  -/
+and `(i, false)` is added to `s` when `atoms[i]*atoms[i]` appears in `e`. -/
 partial def findSquares (s : RBSet (Nat × Bool) lexOrd.compare) (e : Expr) :
     AtomM (RBSet (Nat × Bool) lexOrd.compare) :=
   -- Completely traversing the expression is non-ideal,

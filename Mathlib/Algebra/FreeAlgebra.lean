@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Adam Topaz, Eric Wieser
+Authors: Kim Morrison, Adam Topaz, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Free Algebras
@@ -151,7 +152,7 @@ namespace FreeAlgebra
 attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
   Pre.hasZero Pre.hasOne Pre.hasSMul
 
-/-! Define the basic operations-/
+/-! Define the basic operations -/
 
 instance instSMul {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
   smul r := Quot.map (HMul.hMul (algebraMap R A r : Pre A X)) fun _ _ ↦ Rel.mul_compat_right
@@ -294,7 +295,7 @@ variable {A : Type*} [Semiring A] [Algebra R A]
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   toFun a :=
     Quot.liftOn a (liftFun _ _ f) fun a b h ↦ by
-      induction' h
+      induction h
       · exact (algebraMap R A).map_add _ _
       · exact (algebraMap R A).map_mul _ _
       · apply Algebra.commutes
@@ -567,7 +568,7 @@ variable {A : Type*} [Semiring A] [Algebra R A]
 theorem _root_.Algebra.adjoin_range_eq_range_freeAlgebra_lift (f : X → A) :
     Algebra.adjoin R (Set.range f) = (FreeAlgebra.lift R f).range := by
   simp only [← Algebra.map_top, ← adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
-    (· ∘ ·), lift_ι_apply]
+    Function.comp_def, lift_ι_apply]
 
 /-- Noncommutative version of `Algebra.adjoin_range_eq_range`. -/
 theorem _root_.Algebra.adjoin_eq_range_freeAlgebra_lift (s : Set A) :

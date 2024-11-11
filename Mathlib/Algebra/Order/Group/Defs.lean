@@ -170,7 +170,7 @@ end LinearOrderedCommGroup
 section NormNumLemmas
 
 /- The following lemmas are stated so that the `norm_num` tactic can use them with the
-expected signatures.  -/
+expected signatures. -/
 variable [OrderedCommGroup α] {a b : α}
 
 @[to_additive (attr := gcongr) neg_le_neg]

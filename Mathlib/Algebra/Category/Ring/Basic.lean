@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johannes Hölzl, Yury Kudryashov
+Authors: Kim Morrison, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
@@ -545,6 +545,12 @@ theorem coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
 
 instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat :=
   BundledHom.forget₂ _ _
+
+@[simp] lemma forgetToRingCat_obj (A : CommRingCat.{u}) :
+    ((forget₂ _ RingCat).obj A : Type _) = A := rfl
+
+@[simp] lemma forgetToRingCat_map_apply {A B : CommRingCat.{u}} (f : A ⟶ B) (a : A) :
+    DFunLike.coe (α := A) (β := fun _ ↦ B) ((forget₂ _ RingCat).map f) a = f a := rfl
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :=

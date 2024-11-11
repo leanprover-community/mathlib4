@@ -62,13 +62,15 @@ section RCLike
 
 open RCLike
 
-variable {𝕜 : Type*} [RCLike 𝕜] {E F : Type*}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] {E F : Type*}
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-/-- **Hahn-Banach theorem** for continuous linear functions over `𝕜` satisfying `RCLike 𝕜`. -/
+/-- **Hahn-Banach theorem** for continuous linear functions over `𝕜`
+satisfying `IsRCLikeNormedField 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
     ∃ g : E →L[𝕜] 𝕜, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
   letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars _ 𝕜 _
@@ -109,8 +111,7 @@ open FiniteDimensional
 
 /-- Corollary of the **Hahn-Banach theorem**: if `f : p → F` is a continuous linear map
 from a submodule of a normed space `E` over `𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
-with a finite dimensional range,
-then `f` admits an extension to a continuous linear map `E → F`.
+with a finite dimensional range, then `f` admits an extension to a continuous linear map `E → F`.
 
 Note that contrary to the case `F = 𝕜`, see `exists_extension_norm_eq`,
 we provide no estimates on the norm of the extension.
@@ -118,6 +119,7 @@ we provide no estimates on the norm of the extension.
 lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submodule 𝕜 E}
     (f : p →L[𝕜] F) [FiniteDimensional 𝕜 (LinearMap.range f)] :
     ∃ g : E →L[𝕜] F, f = g.comp p.subtypeL := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   set b := finBasis 𝕜 (LinearMap.range f)
   set e := b.equivFunL
   set fi := fun i ↦ (LinearMap.toContinuousLinearMap (b.coord i)).comp
@@ -141,8 +143,6 @@ variable (𝕜 : Type v) [RCLike 𝕜]
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 open ContinuousLinearEquiv Submodule
-
-open scoped Classical
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
   #adaptation_note

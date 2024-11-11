@@ -324,7 +324,6 @@ namespace Involutive
 
 variable {α : Type*} {f : α → α} {n : ℕ}
 
-set_option linter.deprecated false in
 section
 
 lemma iterate_bit0 (hf : Involutive f) (n : ℕ) : f^[2 * n] = id := by

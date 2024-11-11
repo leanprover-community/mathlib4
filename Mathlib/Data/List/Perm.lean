@@ -10,6 +10,7 @@ import Mathlib.Data.List.InsertNth
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Permutation
 import Mathlib.Data.Nat.Factorial.Basic
+import Batteries.Data.List.Perm
 
 /-!
 # List Permutations
@@ -144,17 +145,17 @@ lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePre
   convert countP_eq_countP_filter_add l _ P
   simp only [decide_not]
 
-theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} (rcomm : RightCommutative f) (p : l₁ ~ l₂) :
+theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} [rcomm : RightCommutative f] (p : l₁ ~ l₂) :
     ∀ b, foldl f b l₁ = foldl f b l₂ :=
-  p.foldl_eq' fun x _hx y _hy z => rcomm z x y
+  p.foldl_eq' fun x _hx y _hy z => rcomm.right_comm z x y
 
-theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : LeftCommutative f) (p : l₁ ~ l₂) :
+theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} [lcomm : LeftCommutative f] (p : l₁ ~ l₂) :
     ∀ b, foldr f b l₁ = foldr f b l₂ := by
   intro b
   induction p using Perm.recOnSwap' generalizing b with
   | nil => rfl
   | cons _ _ r  => simp [r b]
-  | swap' _ _ _ r => simp only [foldr_cons]; rw [lcomm, r b]
+  | swap' _ _ _ r => simp only [foldr_cons]; rw [lcomm.left_comm, r b]
   | trans _ _ r₁ r₂ => exact Eq.trans (r₁ b) (r₂ b)
 
 section
@@ -166,7 +167,7 @@ local notation a " * " b => op a b
 local notation l " <*> " a => foldl op a l
 
 theorem Perm.fold_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l₁ <*> a) = l₂ <*> a :=
-  h.foldl_eq (right_comm _ IC.comm IA.assoc) _
+  h.foldl_eq _
 
 end
 
@@ -216,16 +217,18 @@ variable [DecidableEq α]
 
 theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂) :
     l₁.bagInter t ~ l₂.bagInter t := by
-  induction' h with x _ _ _ _ x y _ _ _ _ _ _ ih_1 ih_2 generalizing t; · simp
-  · by_cases x ∈ t <;> simp [*, Perm.cons]
-  · by_cases h : x = y
+  induction h generalizing t with
+  | nil => simp
+  | cons x => by_cases x ∈ t <;> simp [*, Perm.cons]
+  | swap x y =>
+    by_cases h : x = y
     · simp [h]
     by_cases xt : x ∈ t <;> by_cases yt : y ∈ t
     · simp [xt, yt, mem_erase_of_ne h, mem_erase_of_ne (Ne.symm h), erase_comm, swap]
     · simp [xt, yt, mt mem_of_mem_erase, Perm.cons]
     · simp [xt, yt, mt mem_of_mem_erase, Perm.cons]
     · simp [xt, yt]
-  · exact (ih_1 _).trans (ih_2 _)
+  | trans _ _ ih_1 ih_2 => exact (ih_1 _).trans (ih_2 _)
 
 theorem Perm.bagInter_left (l : List α) {t₁ t₂ : List α} (p : t₁ ~ t₂) :
     l.bagInter t₁ = l.bagInter t₂ := by
@@ -263,7 +266,7 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     · have h₂ : x ∉ t₂ := h h₁
       simp [*]
     by_cases h₂ : x ∈ t₂
-    · simp only [*, inter_cons_of_not_mem, false_or_iff, mem_append, inter_cons_of_mem,
+    · simp only [*, inter_cons_of_not_mem, false_or, mem_append, inter_cons_of_mem,
         not_false_iff]
       refine Perm.trans (Perm.cons _ l_ih) ?_
       change [x] ++ xs ∩ t₁ ++ xs ∩ t₂ ~ xs ∩ t₁ ++ ([x] ++ xs ∩ t₂)
@@ -335,10 +338,9 @@ theorem Perm.drop_inter [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ y
   by_cases h'' : n ≤ xs.length
   · let n' := xs.length - n
     have h₀ : n = xs.length - n' := by rwa [Nat.sub_sub_self]
-    have h₁ : n' ≤ xs.length := Nat.sub_le ..
-    have h₂ : xs.drop n = (xs.reverse.take n').reverse := by
-      rw [take_reverse h₁, h₀, reverse_reverse]
-    rw [h₂]
+    have h₁ : xs.drop n = (xs.reverse.take n').reverse := by
+      rw [take_reverse, h₀, reverse_reverse]
+    rw [h₁]
     apply (reverse_perm _).trans
     rw [inter_reverse]
     apply Perm.take_inter _ _ h'
@@ -453,14 +455,16 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
   exact perm_append_comm.append (ih.map _)
 
 theorem Perm.permutations' {s t : List α} (p : s ~ t) : permutations' s ~ permutations' t := by
-  induction' p with a s t _ IH a b l s t u _ _ IH₁ IH₂; · simp
-  · exact IH.bind_right _
-  · dsimp
+  induction p with
+  | nil => simp
+  | cons _ _ IH => exact IH.bind_right _
+  | swap =>
+    dsimp
     rw [bind_assoc, bind_assoc]
     apply Perm.bind_left
     intro l' _
     apply perm_permutations'Aux_comm
-  · exact IH₁.trans IH₂
+  | trans _ _ IH₁ IH₂ => exact IH₁.trans IH₂
 
 theorem permutations_perm_permutations' (ts : List α) : ts.permutations ~ ts.permutations' := by
   obtain ⟨n, h⟩ : ∃ n, length ts < n := ⟨_, Nat.lt_succ_self _⟩

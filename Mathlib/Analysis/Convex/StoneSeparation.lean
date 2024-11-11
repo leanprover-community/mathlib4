@@ -46,7 +46,9 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
   · positivity
   · positivity
   · rw [← add_div, div_self]; positivity
-  rw [smul_add, smul_add, add_add_add_comm, add_comm, ← mul_smul, ← mul_smul]
+  rw [smul_add, smul_add, add_add_add_comm]
+  nth_rw 2 [add_comm]
+  rw [← mul_smul, ← mul_smul]
   classical
     let w : Fin 3 → 𝕜 := ![az * av * bu, bz * au * bv, au * av]
     let z : Fin 3 → E := ![p, q, az • x + bz • y]
@@ -63,8 +65,8 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
         mul_assoc, ← mul_add, mul_comm av, ← add_mul, ← mul_add, add_comm bu, add_comm bv, habu,
         habv, one_mul, mul_one]
     have hz : ∀ i, z i ∈ ({p, q, az • x + bz • y} : Set E) := fun i => by fin_cases i <;> simp [z]
-    convert Finset.centerMass_mem_convexHull (Finset.univ : Finset (Fin 3)) (fun i _ => hw₀ i)
-        (by rwa [hw]) fun i _ => hz i
+    convert (Finset.centerMass_mem_convexHull (Finset.univ : Finset (Fin 3)) (fun i _ => hw₀ i)
+        (by rwa [hw]) fun i _ => hz i : Finset.univ.centerMass w z ∈ _)
     rw [Finset.centerMass]
     simp_rw [div_eq_inv_mul, hw, mul_assoc, mul_smul (az * av + bz * au)⁻¹, ← smul_add, add_assoc, ←
       mul_assoc]

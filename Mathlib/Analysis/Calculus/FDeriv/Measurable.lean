@@ -661,7 +661,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
           · simp only [one_div, inv_pow, left_mem_Icc, le_add_iff_nonneg_right]
             positivity
           · simp only [pow_add, tsub_le_iff_left] at h'k
-            simpa only [hy.1, mem_Icc, true_and_iff, one_div, pow_one] using h'k
+            simpa only [hy.1, mem_Icc, true_and, one_div, pow_one] using h'k
         _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by field_simp; ring
         _ ≤ 4 * (1 / 2) ^ e * (y - x) := by gcongr
         _ = 4 * (1 / 2) ^ e * ‖y - x‖ := by rw [Real.norm_of_nonneg yzero.le]

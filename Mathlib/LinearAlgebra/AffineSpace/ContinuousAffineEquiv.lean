@@ -179,7 +179,7 @@ theorem symm_symm (e : P₁ ≃ᵃL[k] P₂) : e.symm.symm = e := rfl
 theorem symm_symm_apply (e : P₁ ≃ᵃL[k] P₂) (x : P₁) : e.symm.symm x = e x :=
   rfl
 
-theorem symm_apply_eq (e : P₁ ≃ᵃL[k] P₂)  {x y} : e.symm x = y ↔ x = e y :=
+theorem symm_apply_eq (e : P₁ ≃ᵃL[k] P₂) {x y} : e.symm x = y ↔ x = e y :=
   e.toAffineEquiv.symm_apply_eq
 
 theorem eq_symm_apply (e : P₁ ≃ᵃL[k] P₂) {x y} : y = e.symm x ↔ e y = x :=

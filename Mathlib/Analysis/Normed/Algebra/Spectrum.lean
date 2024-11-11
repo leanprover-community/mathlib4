@@ -272,7 +272,7 @@ variable (𝕜)
 /-- In a Banach algebra `A` over a nontrivially normed field `𝕜`, for any `a : A` the
 power series with coefficients `a ^ n` represents the function `(1 - z • a)⁻¹` in a disk of
 radius `‖a‖₊⁻¹`. -/
-theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
+theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a : A) :
     HasFPowerSeriesOnBall (fun z : 𝕜 => Ring.inverse (1 - z • a))
       (fun n => ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) 0 ‖a‖₊⁻¹ :=
   { r_le := by
@@ -280,7 +280,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
         le_radius_of_bound_nnreal _ (max 1 ‖(1 : A)‖₊) fun n => ?_
       rw [← norm_toNNReal, norm_mkPiRing, norm_toNNReal]
       cases' n with n
-      · simp only [le_refl, mul_one, or_true_iff, le_max_iff, pow_zero]
+      · simp only [le_refl, mul_one, or_true, le_max_iff, pow_zero]
       · refine
           le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) ?_)
             (le_max_left _ _)
@@ -297,7 +297,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
             simpa only [← coe_inv h, mem_ball_zero_iff, Metric.emetric_ball_nnreal] using hy
           rwa [← coe_nnnorm, ← Real.lt_toNNReal_iff_coe_lt, Real.toNNReal_one, nnnorm_smul,
             ← NNReal.lt_inv_iff_mul_lt h]
-      simpa [← smul_pow, (NormedRing.summable_geometric_of_norm_lt_one _ norm_lt).hasSum_iff] using
+      simpa [← smul_pow, (summable_geometric_of_norm_lt_one norm_lt).hasSum_iff] using
         (NormedRing.inverse_one_sub _ norm_lt).symm }
 
 variable {𝕜}
@@ -740,6 +740,26 @@ lemma real_iff [Algebra ℂ A] {a : A} :
     simp
   · exact .of_subset_range_algebraMap Complex.ofReal_re fun x hx ↦ ⟨x.re, (h x hx).symm⟩
 
+lemma nnreal_le_iff [Algebra ℝ A] {a : A}
+    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ spectrum ℝ≥0 a, r ≤ x) ↔ ∀ x ∈ spectrum ℝ a, r ≤ x := by
+  simp [← ha.algebraMap_image]
+
+lemma nnreal_lt_iff [Algebra ℝ A] {a : A}
+    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ spectrum ℝ≥0 a, r < x) ↔ ∀ x ∈ spectrum ℝ a, r < x := by
+  simp [← ha.algebraMap_image]
+
+lemma le_nnreal_iff [Algebra ℝ A] {a : A}
+    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ spectrum ℝ≥0 a, x ≤ r) ↔ ∀ x ∈ spectrum ℝ a, x ≤ r := by
+  simp [← ha.algebraMap_image]
+
+lemma lt_nnreal_iff [Algebra ℝ A] {a : A}
+    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ spectrum ℝ≥0 a, x < r) ↔ ∀ x ∈ spectrum ℝ a, x < r := by
+  simp [← ha.algebraMap_image]
+
 lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : spectralRadius ℝ a ≤ t) :
     SpectrumRestricts a ContinuousMap.realToNNReal ↔
       spectralRadius ℝ (algebraMap ℝ A t - a) ≤ t := by
@@ -816,6 +836,16 @@ lemma real_iff [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] {a
     QuasispectrumRestricts a Complex.reCLM ↔ ∀ x ∈ σₙ ℂ a, x = x.re := by
   rw [quasispectrumRestricts_iff_spectrumRestricts_inr,
     Unitization.quasispectrum_eq_spectrum_inr' _ ℂ, SpectrumRestricts.real_iff]
+
+lemma le_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
+    (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ quasispectrum ℝ≥0 a, x ≤ r) ↔ ∀ x ∈ quasispectrum ℝ a, x ≤ r := by
+  simp [← ha.algebraMap_image]
+
+lemma lt_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
+    (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ quasispectrum ℝ≥0 a, x < r) ↔ ∀ x ∈ quasispectrum ℝ a, x < r := by
+  simp [← ha.algebraMap_image]
 
 end QuasispectrumRestricts
 

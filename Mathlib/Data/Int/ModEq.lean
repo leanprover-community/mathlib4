@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 

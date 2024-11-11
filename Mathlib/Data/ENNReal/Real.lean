@@ -360,7 +360,7 @@ theorem smul_toNNReal (a : ℝ≥0) (b : ℝ≥0∞) : (a • b).toNNReal = a * 
 /-- `ENNReal.toNNReal` as a `MonoidHom`. -/
 def toNNRealHom : ℝ≥0∞ →* ℝ≥0 where
   toFun := ENNReal.toNNReal
-  map_one' := toNNReal_coe
+  map_one' := toNNReal_coe _
   map_mul' _ _ := toNNReal_mul
 
 @[simp]
@@ -441,18 +441,18 @@ theorem toReal_pos_iff_ne_top (p : ℝ≥0∞) [Fact (1 ≤ p)] : 0 < p.toReal �
     this rfl,
     fun h => zero_lt_one.trans_le (p.dichotomy.resolve_left h)⟩
 
-theorem toNNReal_inv (a : ℝ≥0∞) : a⁻¹.toNNReal = a.toNNReal⁻¹ := by
+@[simp] theorem toNNReal_inv (a : ℝ≥0∞) : a⁻¹.toNNReal = a.toNNReal⁻¹ := by
   induction' a with a; · simp
   rcases eq_or_ne a 0 with (rfl | ha); · simp
   rw [← coe_inv ha, toNNReal_coe, toNNReal_coe]
 
-theorem toNNReal_div (a b : ℝ≥0∞) : (a / b).toNNReal = a.toNNReal / b.toNNReal := by
+@[simp] theorem toNNReal_div (a b : ℝ≥0∞) : (a / b).toNNReal = a.toNNReal / b.toNNReal := by
   rw [div_eq_mul_inv, toNNReal_mul, toNNReal_inv, div_eq_mul_inv]
 
-theorem toReal_inv (a : ℝ≥0∞) : a⁻¹.toReal = a.toReal⁻¹ := by
+@[simp] theorem toReal_inv (a : ℝ≥0∞) : a⁻¹.toReal = a.toReal⁻¹ := by
   simp only [ENNReal.toReal, toNNReal_inv, NNReal.coe_inv]
 
-theorem toReal_div (a b : ℝ≥0∞) : (a / b).toReal = a.toReal / b.toReal := by
+@[simp] theorem toReal_div (a b : ℝ≥0∞) : (a / b).toReal = a.toReal / b.toReal := by
   rw [div_eq_mul_inv, toReal_mul, toReal_inv, div_eq_mul_inv]
 
 theorem ofReal_prod_of_nonneg {α : Type*} {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈ s → 0 ≤ f i) :

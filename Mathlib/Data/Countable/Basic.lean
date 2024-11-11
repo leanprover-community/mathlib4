@@ -65,11 +65,18 @@ instance Sum.uncountable_inl [Uncountable α] : Uncountable (α ⊕ β) :=
 instance Sum.uncountable_inr [Uncountable β] : Uncountable (α ⊕ β) :=
   inr_injective.uncountable
 
-instance [Countable α] : Countable (Option α) :=
+instance Option.instCountable [Countable α] : Countable (Option α) :=
   Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{_, 0} α).symm
+
+instance WithTop.instCountable [Countable α] : Countable (WithTop α) := Option.instCountable
+instance WithBot.instCountable [Countable α] : Countable (WithBot α) := Option.instCountable
+instance ENat.instCountable : Countable ℕ∞ := Option.instCountable
 
 instance Option.instUncountable [Uncountable α] : Uncountable (Option α) :=
   Injective.uncountable fun _ _ ↦ Option.some_inj.1
+
+instance WithTop.instUncountable [Uncountable α] : Uncountable (WithTop α) := Option.instUncountable
+instance WithBot.instUncountable [Uncountable α] : Uncountable (WithBot α) := Option.instUncountable
 
 instance [Countable α] [Countable β] : Countable (α × β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
@@ -123,7 +130,7 @@ instance [Finite α] [∀ a, Countable (π a)] : Countable (∀ a, π a) := by
     induction' n with n ihn
     · change Countable (Fin 0 → ℕ); infer_instance
     · haveI := ihn
-      exact Countable.of_equiv (ℕ × (Fin n → ℕ)) (Equiv.piFinSucc _ _).symm
+      exact Countable.of_equiv (ℕ × (Fin n → ℕ)) (Fin.consEquiv fun _ ↦ ℕ)
   rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
   have f := fun a => (nonempty_embedding_nat (π a)).some
   exact ((Embedding.piCongrRight f).trans (Equiv.piCongrLeft' _ e).toEmbedding).countable

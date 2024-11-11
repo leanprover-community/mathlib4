@@ -219,7 +219,7 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
     _ = ∑ s ∈ u.powerset ∩ 𝒜, f s + ∑ s ∈ u.powerset.image (insert a) ∩ 𝒜, f s := ?_
     _ = ∑ s ∈ u.powerset ∩ 𝒜, f s + ∑ s ∈ ((insert a u).powerset \ u.powerset) ∩ 𝒜, f s := ?_
     _ = ∑ s ∈ 𝒜, f s := ?_
-  · rw [← sum_ite_mem, ← sum_ite_mem, sum_image, ← sum_add_distrib]
+  · rw [← Finset.sum_ite_mem, ← Finset.sum_ite_mem, sum_image, ← sum_add_distrib]
     · exact sum_congr rfl fun s hs ↦ collapse_eq (not_mem_mono (mem_powerset.1 hs) hu) _ _
     · exact (insert_erase_invOn.2.injOn).mono fun s hs ↦ not_mem_mono (mem_powerset.1 hs) hu
   · congr with s

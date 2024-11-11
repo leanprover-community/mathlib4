@@ -3,9 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 
@@ -144,6 +144,34 @@ theorem residue_smul (g : G) (r : R) : residue R (g • r) = g • residue R r :
   rfl
 
 end MulSemiringAction
+
+section FiniteDimensional
+
+variable [Algebra R S] [IsLocalRingHom (algebraMap R S)]
+
+noncomputable instance : Algebra (ResidueField R) (ResidueField S) :=
+  (ResidueField.map (algebraMap R S)).toAlgebra
+
+noncomputable instance : Algebra R (ResidueField S) :=
+  ((ResidueField.map <| algebraMap R S).comp <| residue R).toAlgebra
+
+instance : IsScalarTower R (ResidueField R) (ResidueField S) :=
+  IsScalarTower.of_algebraMap_eq (congrFun rfl)
+
+instance finiteDimensional_of_noetherian [IsNoetherian R S] :
+    FiniteDimensional (ResidueField R) (ResidueField S) := by
+  apply IsNoetherian.iff_fg.mp <|
+    isNoetherian_of_tower R (S := ResidueField R) (M := ResidueField S) _
+  convert isNoetherian_of_surjective S (Ideal.Quotient.mkₐ R (maximalIdeal S)).toLinearMap
+    (LinearMap.range_eq_top.mpr Ideal.Quotient.mk_surjective)
+  exact Algebra.algebra_ext _ _ (fun r => rfl)
+
+lemma finite_of_finite [IsNoetherian R S] (hfin : Finite (ResidueField R)) :
+    Finite (ResidueField S) := by
+  have := @finiteDimensional_of_noetherian R S
+  exact FiniteDimensional.finite_of_finite (ResidueField R) (ResidueField S)
+
+end FiniteDimensional
 
 end ResidueField
 

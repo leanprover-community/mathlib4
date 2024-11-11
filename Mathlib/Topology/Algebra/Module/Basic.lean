@@ -252,7 +252,7 @@ class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring 
 
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
 `R`-linear maps `M → M₂`.  This is an abbreviation for
-`ContinuousSemilinearMapClass F (RingHom.id R) M M₂`.  -/
+`ContinuousSemilinearMapClass F (RingHom.id R) M M₂`. -/
 abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
     (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
@@ -727,6 +727,18 @@ theorem add_comp [ContinuousAdd M₃] (g₁ g₂ : M₂ →SL[σ₂₃] M₃) (f
   ext
   simp
 
+theorem comp_finset_sum {ι : Type*} {s : Finset ι}
+    [ContinuousAdd M₂] [ContinuousAdd M₃] (g : M₂ →SL[σ₂₃] M₃)
+    (f : ι → M₁ →SL[σ₁₂] M₂) : g.comp (∑ i ∈ s, f i) = ∑ i ∈ s, g.comp (f i) := by
+  ext
+  simp
+
+theorem finset_sum_comp {ι : Type*} {s : Finset ι}
+    [ContinuousAdd M₃] (g : ι → M₂ →SL[σ₂₃] M₃)
+    (f : M₁ →SL[σ₁₂] M₂) : (∑ i ∈ s, g i).comp f = ∑ i ∈ s, (g i).comp f := by
+  ext
+  simp only [coe_comp', coe_sum', Function.comp_apply, Finset.sum_apply]
+
 theorem comp_assoc {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₁₄ : R₁ →+* R₄} {σ₂₄ : R₂ →+* R₄}
     {σ₃₄ : R₃ →+* R₄} [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄]
     [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄] (h : M₃ →SL[σ₃₄] M₄) (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
@@ -1172,12 +1184,10 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
     Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i where
   toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
-    continuous_pi fun i => by
-      have :=
+    continuous_pi fun i =>
+      Continuous.comp (continuous_apply (π := φ) i) <|
         @continuous_subtype_val _ _ fun x =>
           x ∈ (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i))
-      have := Continuous.comp (continuous_apply (π := φ) i) this
-      exact this
   continuous_invFun :=
     Continuous.subtype_mk
       (continuous_pi fun i => by
@@ -1760,7 +1770,7 @@ theorem coe_refl : ↑(ContinuousLinearEquiv.refl R₁ M₁) = ContinuousLinearM
 theorem coe_refl' : ⇑(ContinuousLinearEquiv.refl R₁ M₁) = id :=
   rfl
 
-/-- The inverse of a continuous linear equivalence as a continuous linear equivalence-/
+/-- The inverse of a continuous linear equivalence as a continuous linear equivalence -/
 @[symm]
 protected def symm (e : M₁ ≃SL[σ₁₂] M₂) : M₂ ≃SL[σ₂₁] M₁ :=
   { e.toLinearEquiv.symm with
@@ -2369,7 +2379,7 @@ theorem isOpenMap_mkQ [TopologicalAddGroup M] : IsOpenMap S.mkQ :=
   QuotientAddGroup.isOpenMap_coe S.toAddSubgroup
 
 instance topologicalAddGroup_quotient [TopologicalAddGroup M] : TopologicalAddGroup (M ⧸ S) :=
-  _root_.topologicalAddGroup_quotient S.toAddSubgroup
+  inferInstanceAs <| TopologicalAddGroup (M ⧸ S.toAddSubgroup)
 
 instance continuousSMul_quotient [TopologicalSpace R] [TopologicalAddGroup M] [ContinuousSMul R M] :
     ContinuousSMul R (M ⧸ S) := by
@@ -2389,3 +2399,5 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
+
+set_option linter.style.longFile 2500

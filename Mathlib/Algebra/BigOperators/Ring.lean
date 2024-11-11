@@ -109,10 +109,11 @@ variable [DecidableEq ι]
 lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
     ∏ a ∈ s, ∑ b ∈ t a, f a b = ∑ p ∈ s.pi t, ∏ x ∈ s.attach, f x.1 (p x.1 x.2) := by
   classical
-  induction' s using Finset.induction with a s ha ih
-  · rw [pi_empty, sum_singleton]
-    rfl
-  · have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
+  induction s using Finset.induction with
+  | empty => simp
+  | insert ha ih =>
+    rename_i a s
+    have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
       Disjoint (image (Pi.cons s a x) (pi s t)) (image (Pi.cons s a y) (pi s t)) := by
       intro x _ y _ h
       simp only [disjoint_iff_ne, mem_image]
@@ -238,7 +239,7 @@ lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :
   simp
 
 /-- `∏ i, (1 - f i) = 1 - ∑ i, f i * (∏ j < i, 1 - f j)`. This formula is useful in construction of
-a partition of unity from a collection of “bump” functions.  -/
+a partition of unity from a collection of “bump” functions. -/
 theorem prod_one_sub_ordered [LinearOrder ι] (s : Finset ι) (f : ι → α) :
     ∏ i ∈ s, (1 - f i) = 1 - ∑ i ∈ s, f i * ∏ j ∈ s.filter (· < i), (1 - f j) := by
   rw [prod_sub_ordered]

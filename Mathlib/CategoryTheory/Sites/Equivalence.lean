@@ -63,7 +63,8 @@ instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
 instance : e.functor.IsDenseSubsite J (e.inverse.inducedTopology J) := by
   have : J = e.functor.inducedTopology (e.inverse.inducedTopology J) := by
     ext X S
-    erw [← GrothendieckTopology.pullback_mem_iff_of_isIso (i := e.unit.app X)]
+    rw [show S ∈ (e.functor.inducedTopology (e.inverse.inducedTopology J)) X ↔ _
+      from (GrothendieckTopology.pullback_mem_iff_of_isIso (i := e.unit.app X)).symm]
     congr!; ext Y f; simp
   nth_rw 1 [this]
   infer_instance

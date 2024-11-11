@@ -111,9 +111,9 @@ variable {I : Ideal R}
 theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
     (hp : p ∈ Ideal.comap (algebraMap R S) (conductor R x)) (hz' : z ∈ I.map (algebraMap R S)) :
     algebraMap R S p * z ∈ algebraMap R<x> S '' ↑(I.map (algebraMap R R<x>)) := by
-  rw [Ideal.map, Ideal.span, Finsupp.mem_span_image_iff_total] at hz'
+  rw [Ideal.map, Ideal.span, Finsupp.mem_span_image_iff_linearCombination] at hz'
   obtain ⟨l, H, H'⟩ := hz'
-  rw [Finsupp.total_apply] at H'
+  rw [Finsupp.linearCombination_apply] at H'
   rw [← H', mul_comm, Finsupp.sum_mul]
   have lem : ∀ {a : R}, a ∈ I → l a • algebraMap R S a * algebraMap R S p ∈
       algebraMap R<x> S '' I.map (algebraMap R R<x>) := by
@@ -168,7 +168,8 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
     obtain ⟨x₁, hx₁, hx₂⟩ := (Set.mem_image _ _ _).mp h
     have : x₁ = ⟨z, hz⟩ := by
       apply h_alg
-      simp [hx₂, algebraMap_eq_smul_one]
+      simp only [hx₂, algebraMap_eq_smul_one]
+      rw [Submonoid.mk_smul, smul_eq_mul, mul_one]
     rwa [← this]
   · -- The converse inclusion is trivial
     have : algebraMap R S = (algebraMap _ S).comp (algebraMap R R<x>) := by ext; rfl
@@ -282,8 +283,8 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
   by_cases hJ : J ∈ normalizedFactors (I.map (algebraMap R S))
   swap
   · rw [Multiset.count_eq_zero.mpr hJ, eq_comm, Multiset.count_eq_zero, Multiset.mem_map]
-    simp only [Multiset.mem_attach, true_and_iff, not_exists]
-    rintro J' rfl
+    simp only [not_exists]
+    rintro J' ⟨_, rfl⟩
     exact
       hJ ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm J').prop
   -- Then we just have to compare the multiplicities, which we already proved are equal.

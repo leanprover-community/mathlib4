@@ -396,13 +396,23 @@ theorem ofSubtype_apply_of_not_mem (f : Perm (Subtype p)) (ha : ¬p a) : ofSubty
 theorem mem_iff_ofSubtype_apply_mem (f : Perm (Subtype p)) (x : α) :
     p x ↔ p ((ofSubtype f : α → α) x) :=
   if h : p x then by
-    simpa only [h, true_iff_iff, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
+    simpa only [h, true_iff, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
   else by simp [h, ofSubtype_apply_of_not_mem f h]
 
 @[simp]
 theorem subtypePerm_ofSubtype (f : Perm (Subtype p)) :
     subtypePerm (ofSubtype f) (mem_iff_ofSubtype_apply_mem f) = f :=
   Equiv.ext fun x => Subtype.coe_injective (ofSubtype_apply_coe f x)
+
+theorem ofSubtype_subtypePerm_of_mem {p : α → Prop} [DecidablePred p]
+    {g : Perm α} (hg : ∀ (x : α), p x ↔ p (g x))
+    {a : α} (ha : p a) : (ofSubtype (g.subtypePerm hg)) a = g a :=
+  ofSubtype_apply_of_mem (g.subtypePerm hg) ha
+
+theorem ofSubtype_subtypePerm_of_not_mem {p : α → Prop} [DecidablePred p]
+    {g : Perm α} (hg : ∀ (x : α), p x ↔ p (g x))
+    {a : α} (ha : ¬ p a) : (ofSubtype (g.subtypePerm hg)) a = a :=
+  ofSubtype_apply_of_not_mem (g.subtypePerm hg) ha
 
 /-- Permutations on a subtype are equivalent to permutations on the original type that fix pointwise
 the rest. -/

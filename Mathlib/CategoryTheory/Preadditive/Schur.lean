@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Scott Morrison
+Authors: Markus Himmel, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Ext
 import Mathlib.CategoryTheory.Simple

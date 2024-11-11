@@ -334,19 +334,16 @@ def lift : Pseudofunctor (FreeBicategory B) C where
   -- in mathlib3 `tidy` did these inductions for us.
   map₂_comp := by
     intros a b f g h η θ
-    apply Quot.rec _ _ η
-    · intro η
-      apply Quot.rec _ _ θ
-      · intro θ; rfl
-      · intros; rfl
-    · intros; rfl
+    induction η using Quot.rec
+    · induction θ using Quot.rec <;> rfl
+    · rfl
   -- Porting note: still borked from here. The infoview doesn't update properly for me.
   map₂_whisker_left := by
     intro a b c f g h η
-    apply Quot.rec _ _ η
-    · intros; aesop_cat
-    · intros; rfl
-  map₂_whisker_right := by intro _ _ _ _ _ η h; dsimp; apply Quot.rec _ _ η <;> aesop_cat
+    induction η using Quot.rec
+    · aesop_cat
+    · rfl
+  map₂_whisker_right := by intro _ _ _ _ _ η h; dsimp; induction η using Quot.rec <;> aesop_cat
 
 end
 
