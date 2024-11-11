@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Data.Tree
+import Mathlib.Data.Tree.Basic
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Util.SynthesizeUsing
@@ -40,35 +40,29 @@ theorem mul_subst {α} [CommRing α] {n1 n2 k e1 e2 t1 t2 : α}
     (h1 : n1 * e1 = t1) (h2 : n2 * e2 = t2) (h3 : n1 * n2 = k) : k * (e1 * e2) = t1 * t2 := by
   rw [← h3, mul_comm n1, mul_assoc n2, ← mul_assoc n1, h1,
       ← mul_assoc n2, mul_comm n2, mul_assoc, h2]
-#align cancel_factors.mul_subst CancelDenoms.mul_subst
 
 theorem div_subst {α} [Field α] {n1 n2 k e1 e2 t1 : α}
     (h1 : n1 * e1 = t1) (h2 : n2 / e2 = 1) (h3 : n1 * n2 = k) : k * (e1 / e2) = t1 := by
   rw [← h3, mul_assoc, mul_div_left_comm, h2, ← mul_assoc, h1, mul_comm, one_mul]
-#align cancel_factors.div_subst CancelDenoms.div_subst
 
 theorem cancel_factors_eq_div {α} [Field α] {n e e' : α}
     (h : n * e = e') (h2 : n ≠ 0) : e = e' / n :=
   eq_div_of_mul_eq h2 <| by rwa [mul_comm] at h
-#align cancel_factors.cancel_factors_eq_div CancelDenoms.cancel_factors_eq_div
 
 theorem add_subst {α} [Ring α] {n e1 e2 t1 t2 : α} (h1 : n * e1 = t1) (h2 : n * e2 = t2) :
     n * (e1 + e2) = t1 + t2 := by simp [left_distrib, *]
-#align cancel_factors.add_subst CancelDenoms.add_subst
 
 theorem sub_subst {α} [Ring α] {n e1 e2 t1 t2 : α} (h1 : n * e1 = t1) (h2 : n * e2 = t2) :
     n * (e1 - e2) = t1 - t2 := by simp [left_distrib, *, sub_eq_add_neg]
-#align cancel_factors.sub_subst CancelDenoms.sub_subst
 
 theorem neg_subst {α} [Ring α] {n e t : α} (h1 : n * e = t) : n * -e = -t := by simp [*]
-#align cancel_factors.neg_subst CancelDenoms.neg_subst
 
 theorem pow_subst {α} [CommRing α] {n e1 t1 k l : α} {e2 : ℕ}
     (h1 : n * e1 = t1) (h2 : l * n ^ e2 = k) : k * (e1 ^ e2) = l * t1 ^ e2 := by
   rw [← h2, ← h1, mul_pow, mul_assoc]
 
 theorem inv_subst {α} [Field α] {n k e : α} (h2 : e ≠ 0) (h3 : n * e = k) :
-    k * (e ⁻¹) = n := by rw [← div_eq_mul_inv, ← h3, mul_div_cancel _ h2]
+    k * (e ⁻¹) = n := by rw [← div_eq_mul_inv, ← h3, mul_div_cancel_right₀ _ h2]
 
 theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
@@ -76,7 +70,6 @@ theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α
   rw [mul_lt_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_lt_mul_left]
   · exact mul_pos had hbd
   · exact one_div_pos.2 hgcd
-#align cancel_factors.cancel_factors_lt CancelDenoms.cancel_factors_lt
 
 theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
@@ -84,7 +77,6 @@ theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α
   rw [mul_le_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_le_mul_left]
   · exact mul_pos had hbd
   · exact one_div_pos.2 hgcd
-#align cancel_factors.cancel_factors_le CancelDenoms.cancel_factors_le
 
 theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :
@@ -95,12 +87,11 @@ theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * 
     rfl
   · intro h
     simp only [← mul_assoc] at h
-    refine' mul_left_cancel₀ (mul_ne_zero _ _) h
-    apply mul_ne_zero
-    apply div_ne_zero
-    exact one_ne_zero
+    refine mul_left_cancel₀ (mul_ne_zero ?_ ?_) h
+    on_goal 1 => apply mul_ne_zero
+    on_goal 1 => apply div_ne_zero
+    · exact one_ne_zero
     all_goals assumption
-#align cancel_factors.cancel_factors_eq CancelDenoms.cancel_factors_eq
 
 theorem cancel_factors_ne {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :
@@ -155,7 +146,7 @@ def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
   catch e =>
     throwError "Could not prove {type} using norm_num. {e.toMessageData}"
 
-/-- `CancelResult mα e v'` provies a value for `v * e` where the denominators have been cancelled.
+/-- `CancelResult mα e v'` provides a value for `v * e` where the denominators have been cancelled.
 -/
 structure CancelResult {u : Level} {α : Q(Type u)} (mα : Q(Mul $α)) (e : Q($α)) (v : Q($α)) where
   /-- An expression with denominators cancelled. -/
@@ -259,15 +250,18 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
 In the case of `LT`, `LE`, `GE`, and `GT` an order on the type is needed, in the last case
 it is not, the final component of the return value tracks this.
 -/
-def findCompLemma (e : Expr) : Option (Expr × Expr × Name × Bool) :=
-  match e.getAppFnArgs with
-  | (``LT.lt, #[_, _, a, b]) => (a, b, ``cancel_factors_lt, true)
-  | (``LE.le, #[_, _, a, b]) => (a, b, ``cancel_factors_le, true)
-  | (``Eq, #[_, a, b]) => (a, b, ``cancel_factors_eq, false)
-  | (``Ne, #[_, a, b]) => (a, b, ``cancel_factors_ne, false)
-  | (``GE.ge, #[_, _, a, b]) => (b, a, ``cancel_factors_le, true)
-  | (``GT.gt, #[_, _, a, b]) => (b, a, ``cancel_factors_lt, true)
-  | _ => none
+def findCompLemma (e : Expr) : MetaM (Option (Expr × Expr × Name × Bool)) := do
+  match (← whnfR e).getAppFnArgs with
+  | (``LT.lt, #[_, _, a, b]) => return (a, b, ``cancel_factors_lt, true)
+  | (``LE.le, #[_, _, a, b]) => return (a, b, ``cancel_factors_le, true)
+  | (``Eq, #[_, a, b]) => return (a, b, ``cancel_factors_eq, false)
+  -- `a ≠ b` reduces to `¬ a = b` under `whnf`
+  | (``Not, #[p]) => match (← whnfR p).getAppFnArgs with
+    | (``Eq, #[_, a, b]) => return (a, b, ``cancel_factors_ne, false)
+    | _ => return none
+  | (``GE.ge, #[_, _, a, b]) => return (b, a, ``cancel_factors_le, true)
+  | (``GT.gt, #[_, _, a, b]) => return (b, a, ``cancel_factors_lt, true)
+  | _ => return none
 
 /--
 `cancelDenominatorsInType h` assumes that `h` is of the form `lhs R rhs`,
@@ -276,7 +270,7 @@ It produces an Expression `h'` of the form `lhs' R rhs'` and a proof that `h = h
 Numeric denominators have been canceled in `lhs'` and `rhs'`.
 -/
 def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
-  let some (lhs, rhs, lem, ord) := findCompLemma h | throwError "cannot kill factors"
+  let some (lhs, rhs, lem, ord) ← findCompLemma h | throwError m!"cannot kill factors"
   let (al, lhs_p) ← derive lhs
   let ⟨u, α, _⟩ ← inferTypeQ' lhs
   let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
@@ -302,7 +296,7 @@ def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
   let gcd_cond ← synthesizeUsingNormNum gcd_cond
   let pf ← mkAppM lem #[lhs_p, rhs_p, al_cond, ar_cond, gcd_cond]
   let pf_tp ← inferType pf
-  return ((findCompLemma pf_tp).elim default (Prod.fst ∘ Prod.snd), pf)
+  return ((← findCompLemma pf_tp).elim default (Prod.fst ∘ Prod.snd), pf)
 
 end CancelDenoms
 

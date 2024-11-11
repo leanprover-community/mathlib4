@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Filtered.Connected
+import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.Limits.Final
 
 /-!
@@ -17,10 +18,13 @@ final can be restated. We show:
 * `final_iff_isFiltered_structuredArrow`: `F` is final if and only if `StructuredArrow d F` is
   filtered for all `d : D`, which strengthens the usual statement that `F` is final if and only
   if `StructuredArrow d F` is connected for all `d : D`.
-
-Additionally, we show that if `D` is a filtered category and `F : C ⥤ D` is fully faithful and
-satisfies the additional condition that for every `d : D` there is an object `c : D` and a morphism
-`d ⟶ F.obj c`, then `C` is filtered and `F` is final.
+* Under categories of objects of filtered categories are filtered and their forgetful functors
+  are final.
+* If `D` is a filtered category and `F : C ⥤ D` is fully faithful and satisfies the additional
+  condition that for every `d : D` there is an object `c : D` and a morphism `d ⟶ F.obj c`, then
+  `C` is filtered and `F` is final.
+* Finality and initiality of diagonal functors `diag : C ⥤ C × C` and of projection functors
+  of (co)structured arrow categories.
 
 ## References
 
@@ -93,6 +97,17 @@ theorem Functor.final_of_exists_of_isFiltered [IsFilteredOrEmpty C]
   suffices ∀ d, IsFiltered (StructuredArrow d F) from final_of_isFiltered_structuredArrow F
   exact isFiltered_structuredArrow_of_isFiltered_of_exists F h₁ h₂
 
+/-- The inclusion of a terminal object is final. -/
+theorem Functor.final_const_of_isTerminal [IsFiltered C] {X : D} (hX : IsTerminal X) :
+    ((Functor.const C).obj X).Final :=
+  Functor.final_of_exists_of_isFiltered _ (fun _ => ⟨IsFiltered.nonempty.some, ⟨hX.from _⟩⟩)
+    (fun {_ c} _ _ => ⟨c, 𝟙 _, hX.hom_ext _ _⟩)
+
+/-- The inclusion of the terminal object is final. -/
+theorem Functor.final_const_terminal [IsFiltered C] [HasTerminal D] :
+    ((Functor.const C).obj (⊤_ D)).Final :=
+  Functor.final_const_of_isTerminal terminalIsTerminal
+
 /-- If `C` is cofiltered, then we can give an explicit condition for a functor `F : C ⥤ D` to
     be final. The converse is also true, see `initial_iff_of_isCofiltered`. -/
 theorem Functor.initial_of_exists_of_isCofiltered [IsCofilteredOrEmpty C]
@@ -102,10 +117,21 @@ theorem Functor.initial_of_exists_of_isCofiltered [IsCofilteredOrEmpty C]
     initial_of_isCofiltered_costructuredArrow F
   exact isCofiltered_costructuredArrow_of_isCofiltered_of_exists F h₁ h₂
 
+/-- The inclusion of an initial object is initial. -/
+theorem Functor.initial_const_of_isInitial [IsCofiltered C] {X : D} (hX : IsInitial X) :
+    ((Functor.const C).obj X).Initial :=
+  Functor.initial_of_exists_of_isCofiltered _ (fun _ => ⟨IsCofiltered.nonempty.some, ⟨hX.to _⟩⟩)
+    (fun {_ c} _ _ => ⟨c, 𝟙 _, hX.hom_ext _ _⟩)
+
+/-- The inclusion of the initial object is initial. -/
+theorem Functor.initial_const_initial [IsCofiltered C] [HasInitial D] :
+    ((Functor.const C).obj (⊥_ D)).Initial :=
+  Functor.initial_const_of_isInitial initialIsInitial
+
 /-- In this situation, `F` is also final, see
     `Functor.final_of_exists_of_isFiltered_of_fullyFaithful`. -/
-theorem IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOrEmpty D] [Full F]
-    [Faithful F] (h : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) : IsFilteredOrEmpty C where
+theorem IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOrEmpty D] [F.Full]
+    [F.Faithful] (h : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) : IsFilteredOrEmpty C where
   cocone_objs c c' := by
     obtain ⟨c₀, ⟨f⟩⟩ := h (IsFiltered.max (F.obj c) (F.obj c'))
     exact ⟨c₀, F.preimage (IsFiltered.leftToMax _ _ ≫ f),
@@ -118,7 +144,7 @@ theorem IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOr
 /-- In this situation, `F` is also initial, see
     `Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful`. -/
 theorem IsCofilteredOrEmpty.of_exists_of_isCofiltered_of_fullyFaithful [IsCofilteredOrEmpty D]
-    [Full F] [Faithful F] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : IsCofilteredOrEmpty C := by
+    [F.Full] [F.Faithful] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : IsCofilteredOrEmpty C := by
   suffices IsFilteredOrEmpty Cᵒᵖ from isCofilteredOrEmpty_of_isFilteredOrEmpty_op _
   refine IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful F.op (fun d => ?_)
   obtain ⟨c, ⟨f⟩⟩ := h d.unop
@@ -126,7 +152,7 @@ theorem IsCofilteredOrEmpty.of_exists_of_isCofiltered_of_fullyFaithful [IsCofilt
 
 /-- In this situation, `F` is also final, see
     `Functor.final_of_exists_of_isFiltered_of_fullyFaithful`. -/
-theorem IsFiltered.of_exists_of_isFiltered_of_fullyFaithful [IsFiltered D] [Full F] [Faithful F]
+theorem IsFiltered.of_exists_of_isFiltered_of_fullyFaithful [IsFiltered D] [F.Full] [F.Faithful]
     (h : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) : IsFiltered C :=
   { IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful F h with
     nonempty := by
@@ -136,8 +162,8 @@ theorem IsFiltered.of_exists_of_isFiltered_of_fullyFaithful [IsFiltered D] [Full
 
 /-- In this situation, `F` is also initial, see
     `Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful`. -/
-theorem IsCofiltered.of_exists_of_isCofiltered_of_fullyFaithful [IsCofiltered D] [Full F]
-    [Faithful F] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : IsCofiltered C :=
+theorem IsCofiltered.of_exists_of_isCofiltered_of_fullyFaithful [IsCofiltered D] [F.Full]
+    [F.Faithful] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : IsCofiltered C :=
   { IsCofilteredOrEmpty.of_exists_of_isCofiltered_of_fullyFaithful F h with
     nonempty := by
       have : Nonempty D := IsCofiltered.nonempty
@@ -146,8 +172,8 @@ theorem IsCofiltered.of_exists_of_isCofiltered_of_fullyFaithful [IsCofiltered D]
 
 /-- In this situation, `C` is also filtered, see
     `IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful`. -/
-theorem Functor.final_of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOrEmpty D] [Full F]
-    [Faithful F] (h : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) : Final F := by
+theorem Functor.final_of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOrEmpty D] [F.Full]
+    [F.Faithful] (h : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) : Final F := by
   have := IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful F h
   refine Functor.final_of_exists_of_isFiltered F h (fun {d c} s s' => ?_)
   obtain ⟨c₀, ⟨f⟩⟩ := h (IsFiltered.coeq s s')
@@ -156,12 +182,46 @@ theorem Functor.final_of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOrEmpt
 
 /-- In this situation, `C` is also cofiltered, see
     `IsCofilteredOrEmpty.of_exists_of_isCofiltered_of_fullyFaithful`. -/
-theorem Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful [IsCofilteredOrEmpty D] [Full F]
+theorem Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful [IsCofilteredOrEmpty D] [F.Full]
     [Faithful F] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : Initial F := by
   suffices Final F.op from initial_of_final_op _
   refine Functor.final_of_exists_of_isFiltered_of_fullyFaithful F.op (fun d => ?_)
   obtain ⟨c, ⟨f⟩⟩ := h d.unop
   exact ⟨op c, ⟨f.op⟩⟩
+
+/-- Any under category on a filtered or empty category is filtered.
+(Note that under categories are always cofiltered since they have an initial object.) -/
+instance IsFiltered.under [IsFilteredOrEmpty C] (c : C) : IsFiltered (Under c) :=
+  isFiltered_structuredArrow_of_isFiltered_of_exists _
+    (fun c' => ⟨c', ⟨𝟙 _⟩⟩)
+    (fun s s' => IsFilteredOrEmpty.cocone_maps s s') c
+
+/-- Any over category on a cofiltered or empty category is cofiltered.
+(Note that over categories are always filtered since they have a terminal object.) -/
+instance IsCofiltered.over [IsCofilteredOrEmpty C] (c : C) : IsCofiltered (Over c) :=
+  isCofiltered_costructuredArrow_of_isCofiltered_of_exists _
+    (fun c' => ⟨c', ⟨𝟙 _⟩⟩)
+    (fun s s' => IsCofilteredOrEmpty.cone_maps s s') c
+
+/-- The forgetful functor of the under category on any filtered or empty category is final. -/
+instance Under.final_forget [IsFilteredOrEmpty C] (c : C) : Final (Under.forget c) :=
+  final_of_exists_of_isFiltered _
+    (fun c' => ⟨mk (IsFiltered.leftToMax c c'), ⟨IsFiltered.rightToMax c c'⟩⟩)
+    (fun {_} {x} s s' => by
+      use mk (x.hom ≫ IsFiltered.coeqHom s s')
+      use homMk (IsFiltered.coeqHom s s') (by simp)
+      simp only [forget_obj, id_obj, mk_right, const_obj_obj, forget_map, homMk_right]
+      rw [IsFiltered.coeq_condition])
+
+/-- The forgetful functor of the over category on any cofiltered or empty category is initial. -/
+instance Over.initial_forget [IsCofilteredOrEmpty C] (c : C) : Initial (Over.forget c) :=
+  initial_of_exists_of_isCofiltered _
+    (fun c' => ⟨mk (IsCofiltered.minToLeft c c'), ⟨IsCofiltered.minToRight c c'⟩⟩)
+    (fun {_} {x} s s' => by
+      use mk (IsCofiltered.eqHom s s' ≫ x.hom)
+      use homMk (IsCofiltered.eqHom s s') (by simp)
+      simp only [forget_obj, mk_left, forget_map, homMk_left]
+      rw [IsCofiltered.eq_condition])
 
 end ArbitraryUniverses
 
@@ -181,7 +241,7 @@ theorem Functor.final_iff_of_isFiltered [IsFilteredOrEmpty C] :
   · intro d c s s'
     have : colimit.ι (F ⋙ coyoneda.obj (op d)) c s = colimit.ι (F ⋙ coyoneda.obj (op d)) c s' := by
       apply (Final.colimitCompCoyonedaIso F d).toEquiv.injective
-      exact Subsingleton.elim _ _
+      subsingleton
     obtain ⟨c', t₁, t₂, h⟩ := (Types.FilteredColimit.colimit_eq_iff.{v₁, v₁, v₁} _).mp this
     refine ⟨IsFiltered.coeq t₁ t₂, t₁ ≫ IsFiltered.coeqHom t₁ t₂, ?_⟩
     conv_rhs => rw [IsFiltered.coeq_condition t₁ t₂]
@@ -227,6 +287,66 @@ theorem Functor.initial_iff_isCofiltered_costructuredArrow [IsCofilteredOrEmpty 
   rw [initial_iff_of_isCofiltered]
   exact fun h => isCofiltered_costructuredArrow_of_isCofiltered_of_exists F h.1 h.2
 
+/-- If `C` is filtered, then the structured arrow category on the diagonal functor `C ⥤ C × C`
+is filtered as well. -/
+instance [IsFiltered C] (X : C × C) : IsFiltered (StructuredArrow X (diag C)) := by
+  haveI : ∀ Y, IsFiltered (StructuredArrow Y (Under.forget X.1)) := by
+    rw [← final_iff_isFiltered_structuredArrow (Under.forget X.1)]
+    infer_instance
+  apply IsFiltered.of_equivalence (StructuredArrow.ofDiagEquivalence X).symm
+
+/-- The diagonal functor on any filtered category is final. -/
+instance Functor.final_diag_of_isFiltered [IsFiltered C] : Final (Functor.diag C) :=
+  final_of_isFiltered_structuredArrow _
+
+/-- If `C` is cofiltered, then the costructured arrow category on the diagonal functor `C ⥤ C × C`
+is cofiltered as well. -/
+instance [IsCofiltered C] (X : C × C) : IsCofiltered (CostructuredArrow (diag C) X) := by
+  haveI : ∀ Y, IsCofiltered (CostructuredArrow (Over.forget X.1) Y) := by
+    rw [← initial_iff_isCofiltered_costructuredArrow (Over.forget X.1)]
+    infer_instance
+  apply IsCofiltered.of_equivalence (CostructuredArrow.ofDiagEquivalence X).symm
+
+/-- The diagonal functor on any cofiltered category is initial. -/
+instance Functor.initial_diag_of_isFiltered [IsCofiltered C] : Initial (Functor.diag C) :=
+  initial_of_isCofiltered_costructuredArrow _
+
 end LocallySmall
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+
+/-- If `C` is filtered, then every functor `F : C ⥤ Discrete PUnit` is final. -/
+theorem Functor.final_of_isFiltered_of_pUnit [IsFiltered C] (F : C ⥤ Discrete PUnit) :
+    Final F := by
+  refine final_of_exists_of_isFiltered F (fun _ => ?_) (fun {_} {c} _ _ => ?_)
+  · use Classical.choice IsFiltered.nonempty
+    exact ⟨Discrete.eqToHom (by simp)⟩
+  · use c; use 𝟙 c
+    apply Subsingleton.elim
+
+/-- If `C` is cofiltered, then every functor `F : C ⥤ Discrete PUnit` is initial. -/
+theorem Functor.initial_of_isCofiltered_pUnit [IsCofiltered C] (F : C ⥤ Discrete PUnit) :
+    Initial F := by
+  refine initial_of_exists_of_isCofiltered F (fun _ => ?_) (fun {_} {c} _ _ => ?_)
+  · use Classical.choice IsCofiltered.nonempty
+    exact ⟨Discrete.eqToHom (by simp)⟩
+  · use c; use 𝟙 c
+    apply Subsingleton.elim
+
+/-- The functor `StructuredArrow.proj : StructuredArrow Y T ⥤ C` is final if `T : C ⥤ D` is final
+and `C` is filtered. -/
+instance StructuredArrow.final_proj_of_isFiltered [IsFilteredOrEmpty C]
+    (T : C ⥤ D) [Final T] (Y : D) : Final (StructuredArrow.proj Y T) := by
+  refine ⟨fun X => ?_⟩
+  rw [isConnected_iff_of_equivalence (ofStructuredArrowProjEquivalence T Y X)]
+  exact (final_comp (Under.forget X) T).out _
+
+/-- The functor `CostructuredArrow.proj : CostructuredArrow Y T ⥤ C` is initial if `T : C ⥤ D` is
+initial and `C` is cofiltered. -/
+instance CostructuredArrow.initial_proj_of_isCofiltered [IsCofilteredOrEmpty C]
+    (T : C ⥤ D) [Initial T] (Y : D) : Initial (CostructuredArrow.proj T Y) := by
+  refine ⟨fun X => ?_⟩
+  rw [isConnected_iff_of_equivalence (ofCostructuredArrowProjEquivalence T Y X)]
+  exact (initial_comp (Over.forget X) T).out _
 
 end CategoryTheory

@@ -61,6 +61,16 @@ structure IndObjectPresentation (A : Cᵒᵖ ⥤ Type v) where
 
 namespace IndObjectPresentation
 
+/-- Alternative constructor for `IndObjectPresentation` taking a cocone instead of its defining
+    natural transformation. -/
+@[simps]
+def ofCocone {I : Type v} [SmallCategory I] [IsFiltered I] {F : I ⥤ C}
+    (c : Cocone (F ⋙ yoneda)) (hc : IsColimit c) : IndObjectPresentation c.pt where
+  I := I
+  F := F
+  ι := c.ι
+  isColimit := hc
+
 variable {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A)
 
 instance : SmallCategory P.I := P.ℐ
@@ -76,6 +86,13 @@ def cocone : Cocone (P.F ⋙ yoneda) where
 def coconeIsColimit : IsColimit P.cocone :=
   P.isColimit
 
+/-- If `A` and `B` are isomorphic, then an ind-object presentation of `A` can be extended to an
+    ind-object presentation of `B`. -/
+@[simps!]
+noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ⟶ B) [IsIso η] :
+    IndObjectPresentation B :=
+  .ofCocone (P.cocone.extend η) (P.coconeIsColimit.extendIso (by exact η))
+
 /-- The canonical comparison functor between the indexing category of the presentation and the
     comma category `CostructuredArrow yoneda A`. This functor is always final. -/
 @[simps! obj_left obj_right_as obj_hom map_left]
@@ -83,17 +100,17 @@ def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
   P.cocone.toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _
 
 instance : P.toCostructuredArrow.Final :=
-  final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
+  Presheaf.final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
 
 /-- Representable presheaves are (trivially) ind-objects. -/
 @[simps]
 def yoneda (X : C) : IndObjectPresentation (yoneda.obj X) where
   I := Discrete PUnit.{v + 1}
   F := Functor.fromPUnit X
-  ι := { app := fun s => 𝟙 _ }
+  ι := { app := fun _ => 𝟙 _ }
   isColimit :=
     { desc := fun s => s.ι.app ⟨PUnit.unit⟩
-      uniq := fun s m h => h ⟨PUnit.unit⟩ }
+      uniq := fun _ _ h => h ⟨PUnit.unit⟩ }
 
 end IndObjectPresentation
 
@@ -112,6 +129,12 @@ theorem isIndObject_yoneda (X : C) : IsIndObject (yoneda.obj X) :=
 namespace IsIndObject
 
 variable {A : Cᵒᵖ ⥤ Type v}
+
+theorem map {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A → IsIndObject B
+  | ⟨⟨P⟩⟩ => ⟨⟨P.extend η⟩⟩
+
+theorem iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A ↔ IsIndObject B :=
+  ⟨.map η, .map (inv η)⟩
 
 /-- Pick a presentation for an ind-object using choice. -/
 noncomputable def presentation : IsIndObject A → IndObjectPresentation A
@@ -135,9 +158,10 @@ theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
     (factoringCompInclusion (fromFinalModel <| CostructuredArrow yoneda A)).symm
   have h₂ : Functor.Final (inclusion (fromFinalModel (CostructuredArrow yoneda A))) :=
     Functor.final_of_comp_full_faithful' (factoring _) (inclusion _)
-  let c := (tautologicalCocone A).whisker (inclusion (fromFinalModel (CostructuredArrow yoneda A)))
+  let c := (Presheaf.tautologicalCocone A).whisker
+    (inclusion (fromFinalModel (CostructuredArrow yoneda A)))
   let hc : IsColimit c := (Functor.Final.isColimitWhiskerEquiv _ _).symm
-    (isColimitTautologicalCocone A)
+    (Presheaf.isColimitTautologicalCocone A)
   have hq : Nonempty (FinalModel (CostructuredArrow yoneda A)) := Nonempty.map
     (Functor.Final.lift (fromFinalModel (CostructuredArrow yoneda A))) IsFiltered.nonempty
   exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, c.ι, hc⟩

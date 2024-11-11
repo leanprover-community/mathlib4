@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Geometry.Euclidean.Inversion.Basic
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Derivative of the inversion
@@ -80,16 +81,16 @@ end DotNotation
 
 namespace EuclideanGeometry
 
-variable {a b c d x y z : F} {r R : ℝ}
+variable {c x : F} {R : ℝ}
 
 /-- Formula for the Fréchet derivative of `EuclideanGeometry.inversion c R`. -/
 theorem hasFDerivAt_inversion (hx : x ≠ c) :
     HasFDerivAt (inversion c R)
       ((R / dist x c) ^ 2 • (reflection (ℝ ∙ (x - c))ᗮ : F →L[ℝ] F)) x := by
   rcases add_left_surjective c x with ⟨x, rfl⟩
-  have : HasFDerivAt (inversion c R) (_ : F →L[ℝ] F) (c + x) := by
-    -- Adaptation note: nightly-2024-03-16: simp was
-    -- simp (config := { unfoldPartialApp := true }) only [inversion]
+  have : HasFDerivAt (inversion c R) (?_ : F →L[ℝ] F) (c + x) := by
+    #adaptation_note /-- nightly-2024-03-16: simp was
+    simp (config := { unfoldPartialApp := true }) only [inversion] -/
     simp only [inversion_def]
     simp_rw [dist_eq_norm, div_pow, div_eq_mul_inv]
     have A := (hasFDerivAt_id (𝕜 := ℝ) (c + x)).sub_const c

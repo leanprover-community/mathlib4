@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Kyle Miller
+Authors: Kim Morrison, Kyle Miller
 -/
 
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Util.AddRelatedDecl
-import Std.Tactic.Lint
+import Batteries.Tactic.Lint
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories
@@ -29,10 +29,8 @@ For more details, see the documentation attached to the `syntax` declaration.
 ## Implementation
 
 This closely follows the implementation of the `@[reassoc]` attribute, due to Simon Hudon and
-reimplemented by Scott Morrison in Lean 4.
+reimplemented by Kim Morrison in Lean 4.
 -/
-
-set_option autoImplicit true
 
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
@@ -42,6 +40,8 @@ open CategoryTheory
 
 section theorems
 
+universe u
+
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
     (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
@@ -49,7 +49,7 @@ attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeT
 
 theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
 
-theorem hom_elementwise [Category C] [ConcreteCategory C]
+theorem hom_elementwise {C : Type*} [Category C] [ConcreteCategory C]
     {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
 
 end theorems
@@ -80,7 +80,7 @@ def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
     MetaM (Expr × Option Level) := do
   let type := (← instantiateMVars type).cleanupAnnotations
   forallTelescope type fun fvars type' => do
-    mkHomElementwise type' (mkAppN pf fvars) fun eqPf instConcr? => do
+    mkHomElementwise type' (← mkExpectedTypeHint (mkAppN pf fvars) type') fun eqPf instConcr? => do
       -- First simplify using elementwise-specific lemmas
       let mut eqPf' ← simpType (simpOnlyNames elementwiseThms (config := { decide := false })) eqPf
       if (← inferType eqPf') == .const ``True [] then
@@ -93,7 +93,7 @@ def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
         -- check that it's not a simp-trivial equality:
         forallTelescope ty' fun _ ty' => do
           if let some (_, lhs, rhs) := ty'.eq? then
-            if ← Std.Tactic.Lint.isSimpEq lhs rhs then
+            if ← Batteries.Tactic.Lint.isSimpEq lhs rhs then
               throwError "applying simp to both sides reduces elementwise lemma for {src} \
                 to the trivial equality {ty'}. \
                 Either add `nosimp` or remove the `elementwise` attribute."

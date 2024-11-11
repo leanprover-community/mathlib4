@@ -1,11 +1,11 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
-import Std.Data.String.Basic
+import Mathlib.Init
 import Lean.Meta.Tactic.TryThis
-import Std.Linter.UnreachableTactic
+import Batteries.Linter.UnreachableTactic
 import Qq.Match
 
 /-!
@@ -39,7 +39,7 @@ register_option says.verify : Bool :=
 register_option says.no_verify_in_CI : Bool :=
   { defValue := false
     group := "says"
-    descr := "Disable reverification, even if `the `CI` environment variable is set." }
+    descr := "Disable reverification, even if the `CI` environment variable is set." }
 
 open Parser Tactic
 
@@ -66,8 +66,8 @@ def evalTacticCapturingMessages (tac : TSyntax `tactic) (only : Message → Bool
   let mut msgs ← modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
   try
     evalTactic tac
-    let (capture, leave) := (← getThe Core.State).messages.msgs.toList.partition only
-    msgs := ⟨leave.foldl (fun m => m.push) msgs.msgs⟩
+    let (capture, leave) := (← getThe Core.State).messages.toList.partition only
+    msgs := leave.foldl (·.add) msgs
     return capture
   catch e =>
     msgs := msgs ++ (← getThe Core.State).messages
@@ -91,7 +91,7 @@ def evalTacticCapturingTryThis (tac : TSyntax `tactic) : TacticM (TSyntax ``tact
   | _ => throwError m!"Tactic `{tac}` produced multiple messages."
   let tryThis ← match msg.dropPrefix? "Try this:" with
   | none => throwError m!"Tactic output did not begin with 'Try this:': {msg}"
-  | some S => pure (Lean.removeLeadingSpaces S.toString)
+  | some S => pure S.toString.removeLeadingSpaces
   match parseAsTacticSeq (← getEnv) tryThis with
   | .ok stx => return stx
   | .error err => throwError m!"Failed to parse tactic output: {tryThis}\n{err}"
@@ -132,4 +132,8 @@ elab_rules : tactic
   | some result, false =>
     evalTactic result
 
-initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
+initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
+
+end Says
+
+end Mathlib.Tactic

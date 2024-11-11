@@ -1,10 +1,11 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Mario Carneiro
+Authors: Kim Morrison, Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.FinCases
+import Mathlib.Control.Basic
 
 /-!
 # Case bash on variables in finite intervals
@@ -21,11 +22,6 @@ You can also explicitly specify a lower and upper bound to use, as `interval_cas
 where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In that case,
 `interval_cases` calls `fin_cases` on the resulting hypothesis `h : n ∈ Set.Ico a b`.
 -/
-
-set_option autoImplicit true
-
--- In this file we would like to be able to use multi-character auto-implicits.
-set_option relaxedAutoImplicit true
 
 namespace Mathlib.Tactic
 
@@ -123,6 +119,8 @@ structure Methods where
   /-- Construct the canonical numeral for integer `z`, or fail if `z` is out of range. -/
   mkNumeral : Int → MetaM Expr
 
+variable {α : Type*} {a b a' b' : α}
+
 theorem of_not_lt_left [LinearOrder α] (h : ¬(a:α) < b) (eq : a = a') : b ≤ a' := eq ▸ not_lt.1 h
 theorem of_not_lt_right [LinearOrder α] (h : ¬(a:α) < b) (eq : b = b') : b' ≤ a := eq ▸ not_lt.1 h
 theorem of_not_le_left [LE α] (h : ¬(a:α) ≤ b) (eq : a = a') : ¬a' ≤ b := eq ▸ h
@@ -159,7 +157,8 @@ def Methods.getBound (m : Methods) (e : Expr) (pf : Expr) (lb : Bool) :
   let .true ← withNewMCtxDepth <| withReducible <| isDefEq e e' | failure
   pure c
 
-theorem le_of_not_le_of_le [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) : (n:α) ≤ lo :=
+theorem le_of_not_le_of_le {hi n lo : α} [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) :
+    (n:α) ≤ lo :=
   le_trans (le_of_not_le h1) h2
 
 /--
@@ -398,3 +397,5 @@ elab_rules : tactic
         catch _ => pure ()
       cont x xs[1]? subst g e lbs ubs (mustUseBounds := false)
     | _, _, _ => throwUnsupportedSyntax
+
+end Mathlib.Tactic
