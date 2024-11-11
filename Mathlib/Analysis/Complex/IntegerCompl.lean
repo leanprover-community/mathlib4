@@ -17,7 +17,7 @@ We also show that the upper half plane embeds into the integer complement.
 open UpperHalfPlane
 
 /--The complement of the integers in `ℂ`. -/
-abbrev Complex.integerComplement := (Set.range ((↑) : ℤ → ℂ))ᶜ
+def Complex.integerComplement := (Set.range ((↑) : ℤ → ℂ))ᶜ
 
 namespace Complex
 
@@ -28,7 +28,7 @@ lemma IntegerComplement_eq : ℂ_ℤ = {z : ℂ | ¬ ∃ (n : ℤ), n = z} := rf
 lemma integerComplement.mem_iff {x : ℂ} : x ∈ ℂ_ℤ ↔ ¬ ∃ (n : ℤ), n = x := Iff.rfl
 
 lemma UpperHalfPlane.coe_mem_integerComplement (z : ℍ) : ↑z ∈ ℂ_ℤ :=
-  not_exists.mpr fun x hx ↦ ne_int z x hx.symm 
+  not_exists.mpr fun x hx ↦ ne_int z x hx.symm
 
 lemma integerComplement.add_coe_int_mem {x : ℂ} (a : ℤ) : x + (a : ℂ) ∈ ℂ_ℤ ↔ x ∈ ℂ_ℤ := by
   simp only [mem_iff, not_iff_not]
