@@ -289,8 +289,9 @@ lemma D₂_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
       K.d₂_eq _ _ (show q + y + 1 = q + 1 + y by omega) _ (by dsimp; omega),
       Linear.units_smul_comp, Category.assoc, smul_smul, ι_totalDesc]
     dsimp
-    simp only [Linear.units_smul_comp, Category.assoc, ι_totalDesc, Linear.comp_units_smul,
-      smul_smul, ← Int.negOnePow_add]
+    rw [Linear.units_smul_comp, Linear.comp_units_smul, smul_smul, smul_smul,
+      ← Int.negOnePow_add, ← Int.negOnePow_add, ← Int.negOnePow_add,
+      ← Int.negOnePow_add]
     congr 2
     omega
   · rw [D₂_shape _ _ _ _ h, zero_comp, D₂_shape, comp_zero, smul_zero]
