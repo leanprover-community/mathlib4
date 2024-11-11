@@ -11,8 +11,12 @@ import Mathlib.AlgebraicGeometry.Sites.BigZariski
 
 # The étale site
 
-In this file we define the étale topology as a Grothendieck topology on the category
-of schemes.
+In this file we define the big étale site, i.e. the étale topology as a Grothendieck topology
+on the category of schemes.
+
+## TODO:
+
+- define the small étale site
 
 -/
 
@@ -22,11 +26,11 @@ open CategoryTheory MorphismProperty Limits
 
 namespace AlgebraicGeometry.Scheme
 
-/-- The étale pretopology on the category of schemes. -/
+/-- Big étale site: the étale pretopology on the category of schemes. -/
 def etalePretopology : Pretopology Scheme.{u} :=
   pretopology @IsEtale
 
-/-- The étale topology on the category of schemes. -/
+/-- Big étale site: the étale topology on the category of schemes. -/
 abbrev etaleTopology : GrothendieckTopology Scheme.{u} :=
   etalePretopology.toGrothendieck
 
