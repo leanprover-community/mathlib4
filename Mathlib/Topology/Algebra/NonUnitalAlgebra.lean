@@ -60,8 +60,11 @@ end Semiring
 section Ring
 
 variable {R A : Type*} [CommRing R] [TopologicalSpace A]
-variable [NonUnitalRing A] [Module R A] [TopologicalSemiring A]
+variable [NonUnitalRing A] [Module R A] [TopologicalRing A]
 variable [ContinuousConstSMul R A]
+
+instance instTopologicalRing (s : NonUnitalSubalgebra R A) : TopologicalRing s :=
+  s.toNonUnitalSubring.instTopologicalRing
 
 /-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
 topological closure.

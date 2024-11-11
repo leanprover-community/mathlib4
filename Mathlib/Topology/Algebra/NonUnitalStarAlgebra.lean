@@ -64,8 +64,11 @@ end Semiring
 section Ring
 
 variable {R A : Type*} [CommRing R] [TopologicalSpace A]
-variable [NonUnitalRing A] [Module R A] [Star A] [TopologicalSemiring A] [ContinuousStar A]
+variable [NonUnitalRing A] [Module R A] [Star A] [TopologicalRing A] [ContinuousStar A]
 variable [ContinuousConstSMul R A]
+
+instance instTopologicalRing (s : NonUnitalStarSubalgebra R A) : TopologicalRing s :=
+  s.toNonUnitalSubring.instTopologicalRing
 
 /-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
 so is its topological closure.
