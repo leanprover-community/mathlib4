@@ -1486,3 +1486,19 @@ theorem rTensor_neg (f : N →ₗ[R] P) : (-f).rTensor M = -f.rTensor M := by
 end LinearMap
 
 end Ring
+
+open TensorProduct
+
+namespace LinearMap
+
+variable (R A : Type*) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+  [SMulCommClass R A A] [IsScalarTower R A A]
+
+/-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
+noncomputable def mul' : A ⊗[R] A →ₗ[R] A := TensorProduct.lift (mul R A)
+
+@[simp] theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b := rfl
+
+end LinearMap
+
+set_option linter.style.longFile 1700

@@ -3,10 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.Span
 
 /-!
 # Facts about algebras involving bilinear maps and tensor products
@@ -16,7 +15,7 @@ in order to avoid importing `LinearAlgebra.BilinearMap` and
 `LinearAlgebra.TensorProduct` unnecessarily.
 -/
 
-open TensorProduct Module
+open Module
 
 namespace LinearMap
 
@@ -24,16 +23,6 @@ section NonUnitalNonAssoc
 
 variable (R A : Type*) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
   [SMulCommClass R A A] [IsScalarTower R A A]
-
-/-- The multiplication in a non-unital non-associative algebra is a bilinear map.
-
-A weaker version of this for semirings exists as `AddMonoidHom.mul`. -/
-def mul : A →ₗ[R] A →ₗ[R] A :=
-  LinearMap.mk₂ R (· * ·) add_mul smul_mul_assoc mul_add mul_smul_comm
-
-/-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
-noncomputable def mul' : A ⊗[R] A →ₗ[R] A :=
-  TensorProduct.lift (mul R A)
 
 variable {A}
 
@@ -73,10 +62,6 @@ theorem mulRight_apply (a b : A) : mulRight R a b = b * a :=
 
 @[simp]
 theorem mulLeftRight_apply (a b x : A) : mulLeftRight R (a, b) x = a * x * b :=
-  rfl
-
-@[simp]
-theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b :=
   rfl
 
 @[simp]

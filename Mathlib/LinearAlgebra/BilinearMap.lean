@@ -376,6 +376,20 @@ protected abbrev BilinForm : Type _ := LinearMap.BilinMap R M R
 
 end CommSemiring
 
+section NonUnitalNonAssocSemiring
+
+variable (R A : Type*) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+  [SMulCommClass R A A] [IsScalarTower R A A]
+
+/-- The multiplication in a non-unital non-associative algebra is a bilinear map.
+
+A weaker version of this for semirings exists as `AddMonoidHom.mul`.
+Also see other variants defined in `Algebra/Algebra/Operations`. -/
+def mul : A →ₗ[R] A →ₗ[R] A :=
+  LinearMap.mk₂ R (· * ·) add_mul smul_mul_assoc mul_add mul_smul_comm
+
+end NonUnitalNonAssocSemiring
+
 section CommRing
 
 variable {R M : Type*} [CommRing R]
