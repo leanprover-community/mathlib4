@@ -44,13 +44,14 @@ for message in messages:
             pr_url = f"https://api.github.com/repos/leanprover-community/mathlib4/pulls/{pr_number}"
             pr_response = requests.get(pr_url, headers={"Authorization": GITHUB_TOKEN})
             pr_data = pr_response.json()
+            labels = [label['name'] for label in pr_data['labels']]
 
-            if pr_data['title'].startswith("[Merged by Bors]"):
+            if 'ready-to-merge' in labels:
                 client.add_reaction({
                     "message_id": message['id'],
                     "emoji_name": "merge"
                 })
-            elif 'delegated' in [label['name'] for label in pr_data['labels']]:
+            elif 'delegated' in labels:
                 client.add_reaction({
                     "message_id": message['id'],
                     "emoji_name": "peace_sign"
