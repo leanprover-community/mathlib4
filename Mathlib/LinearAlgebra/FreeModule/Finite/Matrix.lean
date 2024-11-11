@@ -86,9 +86,7 @@ theorem cardinal_mk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank 
   · have := Module.nontrivial K L
     rw [lift_id, Module.rank_linearMap_self]
 
-/-
-[Stacks: Lemma 09HS](https://stacks.math.columbia.edu/tag/09HS)
--/
+@[stacks 09HS]
 theorem card_algHom_le_finrank : Nat.card (M →ₐ[K] L) ≤ finrank K M := by
   convert toNat_le_toNat (cardinal_mk_algHom_le_rank K M L) ?_
   · rw [toNat_lift, finrank]

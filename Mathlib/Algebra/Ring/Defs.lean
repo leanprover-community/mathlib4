@@ -399,6 +399,6 @@ is cancellative on both sides. In other words, a nontrivial semiring `R` satisfy
 
 This is implemented as a mixin for `Semiring α`.
 To obtain an integral domain use `[CommRing α] [IsDomain α]`.
-
-[Stacks: 09FE](https://stacks.math.columbia.edu/tag/09FE)-/
+-/
+@[stacks 09FE]
 class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop

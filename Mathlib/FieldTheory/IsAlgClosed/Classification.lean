@@ -57,9 +57,8 @@ theorem cardinal_mk_le_sigma_polynomial :
       simp only [h.1, forall_true_iff]
 
 /-- The cardinality of an algebraic extension is at most the maximum of the cardinality
-of the base ring or `ℵ₀` 
-
-[Stacks: Lemma 09GK](https://stacks.math.columbia.edu/tag/09GK)-/
+of the base ring or `ℵ₀`. -/
+@[stacks 09GK]
 theorem cardinal_mk_le_max : #L ≤ max #R ℵ₀ :=
   calc
     #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=

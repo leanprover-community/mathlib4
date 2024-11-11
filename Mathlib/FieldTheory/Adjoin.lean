@@ -37,9 +37,8 @@ section AdjoinDef
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 
 -- Porting note: not adding `neg_mem'` causes an error.
-/-- `adjoin F S` extends a field `F` by adjoining a set `S ⊆ E`.
-[Stacks: Definition 09FZ, first part](https://stacks.math.columbia.edu/tag/09FZ)
--/
+/-- `adjoin F S` extends a field `F` by adjoining a set `S ⊆ E`. -/
+@[stacks 09FZ "first part"]
 def adjoin : IntermediateField F E :=
   { Subfield.closure (Set.range (algebraMap F E) ∪ S) with
     algebraMap_mem' := fun x => Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
@@ -1065,6 +1064,7 @@ theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α
 
 -- Porting note: original proof used `Exists.cases_on`.
 /-- algebra isomorphism between `AdjoinRoot` and `F⟮α⟯` -/
+@[stacks 09G1 "Algebraic case"]
 noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
     AdjoinRoot (minpoly F α) ≃ₐ[F] F⟮α⟯ :=
   AlgEquiv.ofBijective
@@ -1129,8 +1129,8 @@ theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimension
 theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
   have := adjoin.finiteDimensional hx; Algebra.IsAlgebraic.of_finite K K⟮x⟯
 
-/-- If `x` is an algebraic element of field `K`, then its minimal polynomial has degree `[K(x) : K]`
-[Stacks: Lemma 09GN](https://stacks.math.columbia.edu/tag/09GN) -/
+/-- If `x` is an algebraic element of field `K`, then its minimal polynomial has degree `[K(x) : K]`. -/
+@[stacks 09GN]
 theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
     Module.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
   rw [PowerBasis.finrank (adjoin.powerBasis hx : _)]
@@ -1324,9 +1324,8 @@ section Induction
 variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 /-- An intermediate field `S` is finitely generated if there exists `t : Finset E` such that
-`IntermediateField.adjoin F t = S`.
-[Stacks: Definition 09FZ, second part](https://stacks.math.columbia.edu/tag/09FZ)
--/
+`IntermediateField.adjoin F t = S`. -/
+@[stacks 09FZ "second part"]
 def FG (S : IntermediateField F E) : Prop :=
   ∃ t : Finset E, adjoin F ↑t = S
 

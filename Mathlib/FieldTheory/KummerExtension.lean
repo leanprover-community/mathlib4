@@ -148,9 +148,7 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
 
 /--Let `p` be a prime number. Let `F` be a field.
 Let `t ∈ F` be an element which does not have a `p`th root in `F`.
-Then the polynomial `x ^ p - t` is irreducible over `F`.
-
-[Stacks: Lemma 09HF] (https://stacks.math.columbia.edu/tag/09HF)-/
+Then the polynomial `x ^ p - t` is irreducible over `F`.-/
 @[stacks 09HF]
 theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ p - C a) := by

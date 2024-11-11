@@ -73,6 +73,7 @@ section separableClosure
 /-- The (relative) separable closure of `F` in `E`, or called maximal separable subextension
 of `E / F`, is defined to be the intermediate field of `E / F` consisting of all separable
 elements. The previous results prove that these elements are closed under field operations. -/
+@[stacks 09HC]
 def separableClosure : IntermediateField F E where
   carrier := {x | IsSeparable F x}
   mul_mem' := isSeparable_mul
@@ -139,9 +140,8 @@ variable (F E K)
 instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F E) :=
   ⟨fun x ↦ isAlgebraic_iff.2 (IsSeparable.isIntegral x.2).isAlgebraic⟩
 
-/-- The separable closure of `F` in `E` is separable over `F`.
-[Stacks: Lemma 030K Part 1](https://stacks.math.columbia.edu/tag/030K)
--/
+/-- The separable closure of `F` in `E` is separable over `F`. -/
+@[stacks 030K "$E_{sep}/F$ is separable"]
 instance separableClosure.isSeparable : Algebra.IsSeparable F (separableClosure F E) :=
   ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using x.2⟩
 
@@ -159,9 +159,7 @@ theorem le_separableClosure (L : IntermediateField F E) [Algebra.IsSeparable F L
 if and only if it is separable over `F`.
 
 Used to prove that the separable closure is the unique intermediate field that is separable
-downwards and purely inseparable upwards. This is the downwards part.
-[Stacks: Lemma 030K Part 3.1](https://stacks.math.columbia.edu/tag/030K)
--/
+downwards and purely inseparable upwards. This is the downwards part. -/
 theorem le_separableClosure_iff (L : IntermediateField F E) :
     L ≤ separableClosure F E ↔ Algebra.IsSeparable F L :=
   ⟨fun h ↦ ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using h x.2⟩,
@@ -182,9 +180,8 @@ theorem separableClosure.normalClosure_eq_self :
     le_separableClosure F E _) (le_normalClosure _)
 
 /-- If `E` is normal over `F`, then the separable closure of `F` in `E` is Galois (i.e.
-normal and separable) over `F`.
-[Stacks: Lemma 0EXK](https://stacks.math.columbia.edu/tag/0EXK)
--/
+normal and separable) over `F`. -/
+@[stacks 0EHK]
 instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F E) where
   to_isSeparable := separableClosure.isSeparable F E
   to_normal := by
@@ -263,15 +260,13 @@ end separableClosure
 namespace Field
 
 /-- The (infinite) separable degree for a general field extension `E / F` is defined
-to be the degree of `separableClosure F E / F`.
-[Stacks: Definition 030L Part 1](https://stacks.math.columbia.edu/tag/030L)
--/
+to be the degree of `separableClosure F E / F`. -/
+@[stacks 030L "Part 1"]
 def sepDegree := Module.rank F (separableClosure F E)
 
 /-- The (infinite) inseparable degree for a general field extension `E / F` is defined
-to be the degree of `E / separableClosure F E`.
-[Stacks: Definition 030L Part 2](https://stacks.math.columbia.edu/tag/030L)
--/
+to be the degree of `E / separableClosure F E`. -/
+@[stacks 030L "Part 2"]
 def insepDegree := Module.rank (separableClosure F E) E
 
 /-- The finite inseparable degree for a general field extension `E / F` is defined
@@ -300,10 +295,8 @@ theorem sepDegree_eq_of_equiv (K : Type v) [Field K] [Algebra F K] (i : E ≃ₐ
   i.separableClosure.toLinearEquiv.rank_eq
 
 /-- The separable degree multiplied by the inseparable degree is equal
-to the (infinite) field extension degree.
-A claim of this fact can be found in
-[Stacks: Lemma 030L Part 3](https://stacks.math.columbia.edu/tag/030L)
--/
+to the (infinite) field extension degree. -/
+@[stacks 030L "Part 3"]
 theorem sepDegree_mul_insepDegree : sepDegree F E * insepDegree F E = Module.rank F E :=
   rank_mul_rank F (separableClosure F E) E
 

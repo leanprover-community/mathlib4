@@ -130,9 +130,8 @@ instance [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (f : R[X]) :
     DistribMulAction S (AdjoinRoot f) :=
   Submodule.Quotient.distribMulAction' _
 
-/-- `R[x]/(f)` is `R`-algebra
-[Stack: Example 09FX, second part](https://stacks.math.columbia.edu/tag/09FX)
--/
+/-- `R[x]/(f)` is `R`-algebra -/
+@[stacks 09FX "second part"]
 instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
   Ideal.Quotient.algebra S
 

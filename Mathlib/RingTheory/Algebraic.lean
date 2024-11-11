@@ -30,6 +30,7 @@ variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [Algebra R A]
 
 /-- An element of an R-algebra is algebraic over R if it is a root of a nonzero polynomial
 with coefficients in R. -/
+@[stacks 09GC "Algebraic elements"]
 def IsAlgebraic (x : A) : Prop :=
   ∃ p : R[X], p ≠ 0 ∧ aeval x p = 0
 
@@ -131,6 +132,7 @@ def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
 variable (R A)
 
 /-- An algebra is algebraic if all its elements are algebraic. -/
+@[stacks 09GC "Algebraic extensions"]
 protected class Algebra.IsAlgebraic : Prop where
   isAlgebraic : ∀ x : A, IsAlgebraic R x
 
@@ -516,9 +518,8 @@ variable [Field K] [Field L] [Ring A]
 variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 
 /-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
-then A is algebraic over K.
-
-[Stacks: Lemma 09GJ](https://stacks.math.columbia.edu/tag/09GJ)-/
+then A is algebraic over K. -/
+@[stacks 09GJ]
 protected theorem Algebra.IsAlgebraic.trans
     [L_alg : Algebra.IsAlgebraic K L] [A_alg : Algebra.IsAlgebraic L A] :
     Algebra.IsAlgebraic K A := by
@@ -699,9 +700,8 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : 
     · rw [x_eq, Subalgebra.coe_zero, inv_zero]
       exact A.zero_mem
 
-/-- In an algebraic extension L/K, an intermediate subalgebra is a field.
-
-[Stacks: Lemma 0BID](https://stacks.math.columbia.edu/tag/0BID)-/
+/-- In an algebraic extension L/K, an intermediate subalgebra is a field. -/
+@[stacks 0BID]
 theorem Subalgebra.isField_of_algebraic [Algebra.IsAlgebraic K L] : IsField A :=
   { show Nontrivial A by infer_instance, Subalgebra.toCommRing A with
     mul_inv_cancel := fun {a} ha =>

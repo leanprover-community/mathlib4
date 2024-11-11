@@ -273,9 +273,8 @@ lemma normal_iff_forall_map_le' : Normal F K ↔ ∀ σ : L ≃ₐ[F] L, K.map �
   rw [normal_iff_normalClosure_le, normalClosure_def'', iSup_le_iff]
 
 /-- If `L/K/F` is a field tower where `L/F` is normal, then
-`K` is normal over `F` if and only if `σ(K) = K` for every `σ ∈ K →ₐ[F] L`
-This is a stronger version (replacing algebraic closure by normal extension) of
-[Stacks: Lemma 09HQ](https://stacks.math.columbia.edu/tag/09HQ) -/
+`K` is normal over `F` if and only if `σ(K) = K` for every `σ ∈ K →ₐ[F] L`. -/
+@[stacks 09HQ "stronger version replacing an algebraic closure by a normal extension"]
 lemma normal_iff_forall_fieldRange_eq : Normal F K ↔ ∀ σ : K →ₐ[F] L, σ.fieldRange = K :=
 ⟨@AlgHom.fieldRange_of_normal (E := K), normal_iff_forall_fieldRange_le.2 ∘ fun h σ ↦ (h σ).le⟩
 

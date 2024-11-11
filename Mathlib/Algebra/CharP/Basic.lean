@@ -170,6 +170,7 @@ end CharZero
 
 namespace Fin
 
+@[stacks 09FS "The characteristic of $\mathbb{F}_p$ is p."]
 instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff' _ := natCast_eq_zero
 
 end Fin

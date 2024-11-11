@@ -27,9 +27,8 @@ open Polynomial IsScalarTower
 variable (F K : Type*) [Field F] [Field K] [Algebra F K]
 
 /-- Typeclass for normal field extension: `K` is a normal extension of `F` iff the minimal
-polynomial of every element `x` in `K` splits in `K`, i.e. every conjugate of `x` is in `K`.
-[Stacks: Definition 09HM](https://stacks.math.columbia.edu/tag/09HM)
--/
+polynomial of every element `x` in `K` splits in `K`, i.e. every conjugate of `x` is in `K`. -/
+@[stacks 09HM]
 class Normal extends Algebra.IsAlgebraic F K : Prop where
   splits' (x : K) : Splits (algebraMap F K) (minpoly F x)
 
@@ -77,9 +76,7 @@ section NormalTower
 
 variable (E : Type*) [Field E] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 
-/-
-[Stacks: Lemma 09HN](https://stacks.math.columbia.edu/tag/09HN)
--/
+@[stacks 09HN]
 theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
   normal_iff.2 fun x => by
     cases' h.out x with hx hhx
@@ -139,9 +136,8 @@ end NormalTower
 
 namespace IntermediateField
 
-/-- A compositum of normal extensions is normal
-[Stacks: Lemma 0BR3](https://stacks.math.columbia.edu/tag/0BR3)
--/
+/-- A compositum of normal extensions is normal. -/
+@[stacks 0BR3]
 instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
     Normal F (⨆ i, t i : IntermediateField F K) := by
   refine { toIsAlgebraic := isAlgebraic_iSup fun i => (h i).1, splits' := fun x => ?_ }
@@ -183,8 +179,8 @@ instance normal_sup
     Normal F (E ⊔ E' : IntermediateField F K) :=
   iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_|_) <;> infer_instance)
 
-/-- An intersection of normal extensions is normal
-[Stacks: Lemma 09HP](https://stacks.math.columbia.edu/tag/09HP) -/
+/-- An intersection of normal extensions is normal. -/
+@[stacks 09HP]
 instance normal_iInf {ι : Type*} [hι : Nonempty ι]
     (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
     Normal F (⨅ i, t i : IntermediateField F K) := by
@@ -248,9 +244,8 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
   map_mul' x y := Subtype.ext <| by simp
   commutes' x := Subtype.ext (ϕ.commutes x)
 
-/-- Restrict algebra homomorphism to normal subfield
-[Stacks: Lemma 0BME Part 1](https://stacks.math.columbia.edu/tag/0BME)
--/
+/-- Restrict algebra homomorphism to normal subfield. -/
+@[stacks 0BME "Part 1"]
 def AlgHom.restrictNormal [Normal F E] : E →ₐ[F] E :=
   ((AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F E K₂)).symm.toAlgHom.comp
         (ϕ.restrictNormalAux E)).comp
@@ -301,11 +296,8 @@ def AlgEquiv.restrictNormalHom [Normal F E] : (K₁ ≃ₐ[F] K₁) →* E ≃�
 variable (F K₁)
 
 /-- If `K₁/E/F` is a tower of fields with `E/F` normal then `AlgHom.restrictNormal'` is an
- equivalence.
- [Stacks: Lemma 0BR4](https://stacks.math.columbia.edu/tag/0BR4)
- There is a little difference between the stacks project and the current implementation.
- -/
-@[simps]
+ equivalence. -/
+@[simps, stacks 0BR4]
 def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ E ≃ₐ[F] E where
   toFun σ := AlgHom.restrictNormal' σ E
   invFun σ := (IsScalarTower.toAlgHom F E K₁).comp σ.toAlgHom
@@ -327,9 +319,8 @@ variable (E : Type*) [Field E] [Algebra F E] [Algebra K₁ E] [Algebra K₂ E] [
   [IsScalarTower F K₂ E]
 
 /-- If `E/Kᵢ/F` are towers of fields with `E/F` normal then we can lift
-  an algebra homomorphism `ϕ : K₁ →ₐ[F] K₂` to `ϕ.liftNormal E : E →ₐ[F] E`.
-[Stacks: Lemma 0BME Part 2](https://stacks.math.columbia.edu/tag/0BME)
--/
+  an algebra homomorphism `ϕ : K₁ →ₐ[F] K₂` to `ϕ.liftNormal E : E →ₐ[F] E`. -/
+@[stacks 0BME "Part 2"]
 noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
   @AlgHom.restrictScalars F K₁ E E _ _ _ _ _ _
       ((IsScalarTower.toAlgHom F K₂ E).comp ϕ).toRingHom.toAlgebra _ _ _ _ <|
