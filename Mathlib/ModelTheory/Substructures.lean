@@ -973,6 +973,7 @@ theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
 lemma subtype_comp_inclusion {S T : L.Substructure M} (h : S ≤ T) :
     T.subtype.comp (inclusion h) = S.subtype := rfl
 
+/-- Equivalence between equal substructures. -/
 def equiv_from_eq {S T : L.Substructure M} (h : S = T) : S ≃[L] T := by
   cases h
   exact Equiv.refl _ _
