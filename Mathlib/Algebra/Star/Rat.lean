@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Yael Dillies. All rights reserved.
+Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yael Dillies
+Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Star.Basic
@@ -28,4 +28,3 @@ lemma star_nnratCast [DivisionSemiring R] [StarRing R] (q : ℚ≥0) : star (q :
 @[simp, norm_cast]
 theorem star_ratCast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
   (congr_arg unop <| map_ratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r).trans (unop_ratCast _)
-#align star_rat_cast star_ratCast

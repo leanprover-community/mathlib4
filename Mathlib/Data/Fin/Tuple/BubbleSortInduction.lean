@@ -5,8 +5,8 @@ Authors: Michael Stoll
 -/
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Order.WellFounded
-
-#align_import data.fin.tuple.bubble_sort_induction from "leanprover-community/mathlib"@"bf2428c9486c407ca38b5b3fb10b87dad0bc99fa"
+import Mathlib.Order.PiLex
+import Mathlib.Data.Finite.Prod
 
 /-!
 # "Bubble sort" induction
@@ -42,7 +42,6 @@ theorem bubble_sort_induction' {n : ℕ} {α : Type*} [LinearOrder α] {f : Fin 
       (Equiv.refl _) (sort f) P (fun σ => f ∘ σ) (fun σ hσ hfσ => ?_) hf
   obtain ⟨i, j, hij₁, hij₂⟩ := antitone_pair_of_not_sorted' hσ
   exact ⟨σ * Equiv.swap i j, Pi.lex_desc hij₁.le hij₂, h σ i j hij₁ hij₂ hfσ⟩
-#align tuple.bubble_sort_induction' Tuple.bubble_sort_induction'
 
 /-- *Bubble sort induction*: Prove that the sorted version of `f` has some property `P`
 if `f` satisfies `P` and `P` is preserved when swapping two antitone values. -/
@@ -51,6 +50,5 @@ theorem bubble_sort_induction {n : ℕ} {α : Type*} [LinearOrder α] {f : Fin n
     (h : ∀ (g : Fin n → α) (i j : Fin n), i < j → g j < g i → P g → P (g ∘ Equiv.swap i j)) :
     P (f ∘ sort f) :=
   bubble_sort_induction' hf fun _ => h _
-#align tuple.bubble_sort_induction Tuple.bubble_sort_induction
 
 end Tuple

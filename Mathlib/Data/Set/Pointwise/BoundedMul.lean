@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. KudryashovJ
+Authors: Yury KudryashovJ
 -/
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Data.Set.Pointwise.Basic
 
 /-!
 
@@ -25,7 +25,4 @@ open Pointwise
 theorem BddAbove.mul [OrderedCommMonoid α] {A B : Set α} (hA : BddAbove A) (hB : BddAbove B) :
     BddAbove (A * B) :=
   hA.image2 (fun _ _ _ h ↦ mul_le_mul_right' h _) (fun _ _ _ h ↦ mul_le_mul_left' h _) hB
-#align set.bdd_above_mul Set.BddAbove.mul
-#align set.bdd_above_add Set.BddAbove.add
 end Set
-

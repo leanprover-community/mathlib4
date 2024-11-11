@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-set -exo pipefail
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
+set -x
 
 sudo apt install -y git curl
 

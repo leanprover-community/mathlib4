@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Topology.AlexandrovDiscrete
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.Order.LowerUpperTopology
 
 /-!
@@ -74,10 +74,10 @@ def WithUpperSet (α : Type*) := α
 
 namespace WithUpperSet
 
-/-- `toUpperSet` is the identity function to the `WithUpperSet` of a type.  -/
+/-- `toUpperSet` is the identity function to the `WithUpperSet` of a type. -/
 @[match_pattern] def toUpperSet : α ≃ WithUpperSet α := Equiv.refl _
 
-/-- `ofUpperSet` is the identity function from the `WithUpperSet` of a type.  -/
+/-- `ofUpperSet` is the identity function from the `WithUpperSet` of a type. -/
 @[match_pattern] def ofUpperSet : WithUpperSet α ≃ α := Equiv.refl _
 
 @[simp] lemma to_WithUpperSet_symm_eq : (@toUpperSet α).symm = ofUpperSet := rfl
@@ -95,7 +95,7 @@ protected def rec {β : WithUpperSet α → Sort*} (h : ∀ a, β (toUpperSet a)
 instance [Nonempty α] : Nonempty (WithUpperSet α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithUpperSet α) := ‹Inhabited α›
 
-variable [Preorder α] [Preorder β] [Preorder γ]
+variable [Preorder α] [Preorder β]
 
 instance : Preorder (WithUpperSet α) := ‹Preorder α›
 instance : TopologicalSpace (WithUpperSet α) := upperSet α
@@ -120,10 +120,10 @@ def WithLowerSet (α : Type*) := α
 
 namespace WithLowerSet
 
-/-- `toLowerSet` is the identity function to the `WithLowerSet` of a type.  -/
+/-- `toLowerSet` is the identity function to the `WithLowerSet` of a type. -/
 @[match_pattern] def toLowerSet : α ≃ WithLowerSet α := Equiv.refl _
 
-/-- `ofLowerSet` is the identity function from the `WithLowerSet` of a type.  -/
+/-- `ofLowerSet` is the identity function from the `WithLowerSet` of a type. -/
 @[match_pattern] def ofLowerSet : WithLowerSet α ≃ α := Equiv.refl _
 
 @[simp] lemma to_WithLowerSet_symm_eq : (@toLowerSet α).symm = ofLowerSet := rfl
@@ -220,7 +220,7 @@ instance _root_.OrderDual.instIsLowerSet [Preorder α] [TopologicalSpace α] [To
 /-- If `α` is equipped with the upper set topology, then it is homeomorphic to
 `WithUpperSet α`. -/
 def WithUpperSetHomeomorph : WithUpperSet α ≃ₜ α :=
-  WithUpperSet.ofUpperSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithUpperSet.ofUpperSet.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 lemma isOpen_iff_isUpperSet : IsOpen s ↔ IsUpperSet s := by
   rw [topology_eq α]
@@ -302,7 +302,7 @@ instance _root_.OrderDual.instIsUpperSet [Preorder α] [TopologicalSpace α] [To
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to `WithLowerSet α`. -/
 def WithLowerSetHomeomorph : WithLowerSet α ≃ₜ α :=
-  WithLowerSet.ofLowerSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithLowerSet.ofLowerSet.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 lemma isOpen_iff_isLowerSet : IsOpen s ↔ IsLowerSet s := by rw [topology_eq α]; rfl
 
@@ -369,7 +369,7 @@ def map (f : α →o β) : C(WithUpperSet α, WithUpperSet β) where
   continuous_toFun := continuous_def.2 fun _s hs ↦ IsUpperSet.preimage hs f.monotone
 
 @[simp] lemma map_id : map (OrderHom.id : α →o α) = ContinuousMap.id _ := rfl
-@[simp] lemma map_comp (g : β →o γ) (f : α →o β): map (g.comp f) = (map g).comp (map f) := rfl
+@[simp] lemma map_comp (g : β →o γ) (f : α →o β) : map (g.comp f) = (map g).comp (map f) := rfl
 
 @[simp] lemma toUpperSet_specializes_toUpperSet {a b : α} :
     toUpperSet a ⤳ toUpperSet b ↔ b ≤ a := by
@@ -397,7 +397,7 @@ def map (f : α →o β) : C(WithLowerSet α, WithLowerSet β) where
   continuous_toFun := continuous_def.2 fun _s hs ↦ IsLowerSet.preimage hs f.monotone
 
 @[simp] lemma map_id : map (OrderHom.id : α →o α) = ContinuousMap.id _ := rfl
-@[simp] lemma map_comp (g : β →o γ) (f : α →o β): map (g.comp f) = (map g).comp (map f) := rfl
+@[simp] lemma map_comp (g : β →o γ) (f : α →o β) : map (g.comp f) = (map g).comp (map f) := rfl
 
 @[simp] lemma toLowerSet_specializes_toLowerSet {a b : α} :
   toLowerSet a ⤳ toLowerSet b ↔ a ≤ b := by

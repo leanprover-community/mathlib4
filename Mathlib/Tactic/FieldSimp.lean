@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, David Renshaw
 
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Main
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Util.DischargerAsTactic
@@ -18,8 +18,6 @@ import Qq
 Tactic to clear denominators in algebraic expressions, based on `simp` with a specific simpset.
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic.FieldSimp
 
 open Lean Elab.Tactic Parser.Tactic Lean.Meta
@@ -28,7 +26,8 @@ open Qq
 initialize registerTraceClass `Tactic.field_simp
 
 /-- Constructs a trace message for the `discharge` function. -/
-private def dischargerTraceMessage (prop: Expr) : Except ε (Option Expr) → SimpM MessageData
+private def dischargerTraceMessage {ε : Type*} (prop: Expr) :
+    Except ε (Option Expr) → SimpM MessageData
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
 
@@ -146,13 +145,13 @@ that have numerals in denominators.
 The tactics are not related: `cancel_denoms` will only handle numeric denominators, and will try to
 entirely remove (numeric) division from the expression by multiplying by a factor.
 -/
-syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
+syntax (name := fieldSimp) "field_simp" optConfig (discharger)? (&" only")?
   (simpArgs)? (location)? : tactic
 
 elab_rules : tactic
-| `(tactic| field_simp $[$cfg:config]? $[(discharger := $dis)]? $[only%$only?]?
+| `(tactic| field_simp $cfg:optConfig $[(discharger := $dis)]? $[only%$only?]?
     $[$sa:simpArgs]? $[$loc:location]?) => withMainContext do
-  let cfg ← elabSimpConfig (mkOptionalNode cfg) .simp
+  let cfg ← elabSimpConfig cfg .simp
   -- The `field_simp` discharger relies on recursively calling the discharger.
   -- Prior to https://github.com/leanprover/lean4/pull/3523,
   -- the maxDischargeDepth wasn't actually being checked: now we have to set it higher.
@@ -194,3 +193,5 @@ elab_rules : tactic
       pure { ctx, simprocs := {} }
 
   _ ← simpLocation r.ctx {} dis loc
+
+end Mathlib.Tactic.FieldSimp

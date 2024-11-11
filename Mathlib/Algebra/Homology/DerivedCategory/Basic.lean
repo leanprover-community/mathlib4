@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.Localization
 
@@ -206,8 +207,7 @@ instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (Qh (C := C))).F
   inferInstanceAs
     (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Faithful
 
-variable {C}
-
+variable {C} in
 lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
     (T ∈ distTriang (DerivedCategory C)) ↔ ∃ (X Y : CochainComplex C ℤ) (f : X ⟶ Y),
       Nonempty (T ≅ Q.mapTriangle.obj (CochainComplex.mappingCone.triangle f)) := by
@@ -222,5 +222,54 @@ lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
       (e ≪≫ (Functor.mapTriangleIso (quotientCompQhIso C)).symm.app _ ≪≫
       (Functor.mapTriangleCompIso (HomotopyCategory.quotient C _) Qh).app _)
     exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
+
+/-- The single functors `C ⥤ DerivedCategory C` for all `n : ℤ` along with
+their compatibilities with shifts. -/
+noncomputable def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
+  (HomotopyCategory.singleFunctors C).postcomp Qh
+
+/-- The shift functor `C ⥤ DerivedCategory C` which sends `X : C` to the
+single cochain complex with `X` sitting in degree `n : ℤ`. -/
+noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
+
+instance (n : ℤ) : (singleFunctor C n).Additive := by
+  dsimp [singleFunctor, singleFunctors]
+  infer_instance
+
+/-- The isomorphism
+`DerivedCategory.singleFunctors C ≅ (HomotopyCategory.singleFunctors C).postcomp Qh` given
+by the definition of `DerivedCategory.singleFunctors`. -/
+noncomputable def singleFunctorsPostcompQhIso :
+    singleFunctors C ≅ (HomotopyCategory.singleFunctors C).postcomp Qh :=
+  Iso.refl _
+
+/-- The isomorphism
+`DerivedCategory.singleFunctors C ≅ (CochainComplex.singleFunctors C).postcomp Q`. -/
+noncomputable def singleFunctorsPostcompQIso :
+    singleFunctors C ≅ (CochainComplex.singleFunctors C).postcomp Q :=
+  (SingleFunctors.postcompFunctor C ℤ (Qh : _ ⥤ DerivedCategory C)).mapIso
+    (HomotopyCategory.singleFunctorsPostcompQuotientIso C) ≪≫
+      (CochainComplex.singleFunctors C).postcompPostcompIso (HomotopyCategory.quotient _ _) Qh ≪≫
+      SingleFunctors.postcompIsoOfIso
+        (CochainComplex.singleFunctors C) (quotientCompQhIso C)
+
+lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
+    (singleFunctorsPostcompQIso C).hom.hom n = 𝟙 _ := by
+  ext X
+  dsimp [singleFunctorsPostcompQIso, HomotopyCategory.singleFunctorsPostcompQuotientIso,
+    quotientCompQhIso, HomologicalComplexUpToQuasiIso.quotientCompQhIso]
+  rw [CategoryTheory.Functor.map_id, SingleFunctors.id_hom, NatTrans.id_app]
+  erw [Category.id_comp, Category.id_comp]
+  rfl
+
+lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
+    (singleFunctorsPostcompQIso C).inv.hom n = 𝟙 _ := by
+  ext X
+  dsimp [singleFunctorsPostcompQIso, HomotopyCategory.singleFunctorsPostcompQuotientIso,
+    quotientCompQhIso, HomologicalComplexUpToQuasiIso.quotientCompQhIso]
+  erw [CategoryTheory.Functor.map_id]
+  rw [SingleFunctors.id_hom, NatTrans.id_app]
+  erw [Category.id_comp, Category.id_comp]
+  rfl
 
 end DerivedCategory

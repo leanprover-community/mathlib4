@@ -4,7 +4,8 @@ name: Merge master to nightly
 
 on:
   schedule:
-    - cron: '30 */3 * * *'  # 8AM CET/11PM PT
+    - cron: '30 */3 * * *'  # At minute 30 past every 3rd hour.
+  workflow_dispatch:
 
 jobs:
   merge-to-nightly:

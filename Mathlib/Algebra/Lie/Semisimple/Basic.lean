@@ -6,14 +6,12 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Lie.Semisimple.Defs
 import Mathlib.Order.BooleanGenerators
 
-#align_import algebra.lie.semisimple from "leanprover-community/mathlib"@"356447fe00e75e54777321045cdff7c9ea212e60"
-
 /-!
 # Semisimple Lie algebras
 
 The famous Cartan-Dynkin-Killing classification of semisimple Lie algebras renders them one of the
 most important classes of Lie algebras. In this file we prove basic results
-abot simple and semisimple Lie algebras.
+about simple and semisimple Lie algebras.
 
 ## Main declarations
 
@@ -56,7 +54,6 @@ theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
 @[simp]
 theorem HasTrivialRadical.center_eq_bot [HasTrivialRadical R L] : center R L = ⊥ :=
   HasTrivialRadical.eq_bot_of_isSolvable _
-#align lie_algebra.center_eq_bot_of_semisimple LieAlgebra.HasTrivialRadical.center_eq_bot
 
 variable {R L} in
 theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥) :
@@ -66,7 +63,6 @@ theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSol
 theorem hasTrivialRadical_iff_no_solvable_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥ :=
   ⟨@HasTrivialRadical.eq_bot_of_isSolvable _ _ _ _ _, hasTrivialRadical_of_no_solvable_ideals⟩
-#align lie_algebra.is_semisimple_iff_no_solvable_ideals LieAlgebra.hasTrivialRadical_iff_no_solvable_ideals
 
 theorem hasTrivialRadical_iff_no_abelian_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsLieAbelian I → I = ⊥ := by
@@ -75,7 +71,6 @@ theorem hasTrivialRadical_iff_no_abelian_ideals :
   · exact h₁ _ <| LieAlgebra.ofAbelianIsSolvable R I
   · rw [← abelian_of_solvable_ideal_eq_bot_iff]
     exact h₁ _ <| abelian_derivedAbelianOfIdeal I
-#align lie_algebra.is_semisimple_iff_no_abelian_ideals LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals
 
 namespace IsSimple
 
@@ -145,11 +140,12 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
           Submodule.mem_toAddSubmonoid]
         apply add_mem
         -- Now `⁅a, y⁆ ∈ J` since `a ∈ I`, `y ∈ J`, and `J` is an ideal of `I`.
-        · simp only [Submodule.mem_map, LieSubmodule.mem_coeSubmodule, Submodule.coeSubtype,
-            Subtype.exists, exists_and_right, exists_eq_right, ha, lie_mem_left, exists_true_left]
+        · simp only [Submodule.mem_map, LieSubmodule.mem_coeSubmodule, Subtype.exists]
+          erw [Submodule.coe_subtype]
+          simp only [exists_and_right, exists_eq_right, ha, lie_mem_left, exists_true_left]
           exact lie_mem_right R I J ⟨a, ha⟩ y hy
         -- Finally `⁅b, y⁆ = 0`, by the independence of the atoms.
-        · suffices ⁅b, y.val⁆ = 0 by simp only [this, zero_mem]
+        · suffices ⁅b, y.val⁆ = 0 by erw [this]; simp only [zero_mem]
           rw [← LieSubmodule.mem_bot (R := R) (L := L),
               ← (IsSemisimple.setIndependent_isAtom hI).eq_bot]
           exact ⟨lie_mem_right R L I b y y.2, lie_mem_left _ _ _ _ _ hb⟩ }
@@ -162,7 +158,11 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
       rw [eq_bot_iff] at this ⊢
       intro x hx
       suffices x ∈ J → x = 0 from this hx
-      simpa [J'] using @this x.1
+      have := @this x.1
+      simp only [LieIdeal.incl_coe, LieIdeal.coe_to_lieSubalgebra_to_submodule,
+        LieSubmodule.mem_mk_iff', Submodule.mem_map, LieSubmodule.mem_coeSubmodule, Subtype.exists,
+        LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero, forall_exists_index, and_imp, J'] at this
+      exact fun _ ↦ this (↑x) x.property hx rfl
     -- We need to show that `J = ⊥`.
     -- Since `J` is an ideal of `L`, and `I` is an atom,
     -- it suffices to show that `J < I`.
@@ -242,13 +242,13 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   -- and `J ⊓ K = ⊥` by the independence of the atoms.
   · apply (setIndependent_isAtom.disjoint_sSup (hs hJs) hs'S (Finset.not_mem_erase _ _)).le_bot
     apply LieSubmodule.lie_le_inf
-    apply LieSubmodule.lie_mem_lie _ _ j.2
+    apply LieSubmodule.lie_mem_lie j.2
     simpa only [K, Finset.sup_id_eq_sSup] using hz
   -- By similar reasoning, `j` brackets to `0` with `x = y + z ∈ I`, if we show `J ⊓ I = ⊥`.
   suffices J ⊓ I = ⊥ by
     apply this.le
     apply LieSubmodule.lie_le_inf
-    exact LieSubmodule.lie_mem_lie _ _ j.2 hx
+    exact LieSubmodule.lie_mem_lie j.2 hx
   -- Indeed `J ⊓ I = ⊥`, since `J` is an atom that is not contained in `I`.
   apply ((hs hJs).le_iff.mp _).resolve_right
   · contrapose! hJI
@@ -303,12 +303,10 @@ theorem subsingleton_of_hasTrivialRadical_lie_abelian [HasTrivialRadical R L] [h
     Subsingleton L := by
   rw [isLieAbelian_iff_center_eq_top R L, HasTrivialRadical.center_eq_bot] at h
   exact (LieSubmodule.subsingleton_iff R L L).mp (subsingleton_of_bot_eq_top h)
-#align lie_algebra.subsingleton_of_semisimple_lie_abelian LieAlgebra.subsingleton_of_hasTrivialRadical_lie_abelian
 
 theorem abelian_radical_of_hasTrivialRadical [HasTrivialRadical R L] :
     IsLieAbelian (radical R L) := by
-  rw [HasTrivialRadical.radical_eq_bot]; infer_instance
-#align lie_algebra.abelian_radical_of_semisimple LieAlgebra.abelian_radical_of_hasTrivialRadical
+  rw [HasTrivialRadical.radical_eq_bot]; exact LieIdeal.isLieAbelian_of_trivial ..
 
 /-- The two properties shown to be equivalent here are possible definitions for a Lie algebra
 to be reductive.
@@ -322,9 +320,7 @@ theorem abelian_radical_iff_solvable_is_abelian [IsNoetherian R L] :
     rw [LieIdeal.solvable_iff_le_radical] at h₂
     exact (LieIdeal.inclusion_injective h₂).isLieAbelian h₁
   · intro h; apply h; infer_instance
-#align lie_algebra.abelian_radical_iff_solvable_is_abelian LieAlgebra.abelian_radical_iff_solvable_is_abelian
 
 theorem ad_ker_eq_bot_of_hasTrivialRadical [HasTrivialRadical R L] : (ad R L).ker = ⊥ := by simp
-#align lie_algebra.ad_ker_eq_bot_of_semisimple LieAlgebra.ad_ker_eq_bot_of_hasTrivialRadical
 
 end LieAlgebra

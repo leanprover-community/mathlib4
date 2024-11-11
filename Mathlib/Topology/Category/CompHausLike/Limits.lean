@@ -13,10 +13,25 @@ import Mathlib.Topology.Category.CompHausLike.Basic
 This file collects some constructions of explicit limits and colimits in `CompHausLike P`,
 which may be useful due to their definitional properties.
 
-So far, we have the following:
-- Explicit pullbacks, defined in the "usual" way as a subset of the product.
-- Explicit finite coproducts, defined as a disjoint union.
+## Main definitions
 
+* `HasExplicitFiniteCoproducts`: A typeclass describing the property that forming all finite
+  disjoint unions is stable under the property `P`.
+  - Given this property, we deduce that `CompHausLike P` has finite coproducts and the inclusion
+    functors to other `CompHausLike P'` and to `TopCat` preserve them.
+
+* `HasExplicitPullbacks`: A typeclass describing the property that forming all "explicit pullbacks"
+  is stable under the property `P`. Here, explicit pullbacks are defined as a subset of the product.
+  - Given this property, we deduce that `CompHausLike P` has pullbacks and the inclusion
+    functors to other `CompHausLike P'` and to `TopCat` preserve them.
+  - We also define a variant `HasExplicitPullbacksOfInclusions` which is says that explicit
+    pullbacks along inclusion maps into finite disjoint unions exist. `Stonean` has this property
+    but not the stronger one.
+
+## Main results
+
+* Given `[HasExplicitPullbacksOfInclusions P]` (which is implied by `[HasExplicitPullbacks P]`),
+  we provide an instance `FinitaryExtensive (CompHausLike P)`.
 -/
 
 namespace CompHausLike
@@ -49,7 +64,7 @@ def finiteCoproduct : CompHausLike P := CompHausLike.of P (Σ (a : α), X a)
 The inclusion of one of the factors into the explicit finite coproduct.
 -/
 def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
-  toFun := fun x ↦ ⟨a,x⟩
+  toFun := fun x ↦ ⟨a, x⟩
   continuous_toFun := continuous_sigmaMk (σ := fun a ↦ X a)
 
 /--
@@ -59,7 +74,7 @@ This is essentially the universal property of the coproduct.
 -/
 def finiteCoproduct.desc {B : CompHausLike P} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
-  toFun := fun ⟨a,x⟩ ↦ e a x
+  toFun := fun ⟨a, x⟩ ↦ e a x
   continuous_toFun := by
     apply continuous_sigma
     intro a; exact (e a).continuous
@@ -70,7 +85,7 @@ lemma finiteCoproduct.ι_desc {B : CompHausLike P} (e : (a : α) → (X a ⟶ B)
 
 lemma finiteCoproduct.hom_ext {B : CompHausLike P} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
-  ext ⟨a,x⟩
+  ext ⟨a, x⟩
   specialize h a
   apply_fun (fun q ↦ q x) at h
   exact h
@@ -112,7 +127,7 @@ class HasExplicitFiniteCoproducts : Prop where
   hasProp {α : Type w} [Finite α] (X : α → CompHausLike.{max u w} P) : HasExplicitFiniteCoproduct X
 
 /-
-This linter complains that the universes `u` and `w` only occur together, but `w` appears by itself
+This linter complains that the universes `u` and `w` only occur together, but `w` appears by itself
 in the indexing type of the coproduct. In almost all cases, `w` will be either `0` or `u`, but we
 want to allow both possibilities.
 -/
@@ -135,21 +150,27 @@ variable {P : TopCat.{u} → Prop} [HasExplicitFiniteCoproducts.{0} P]
 example : HasFiniteCoproducts (CompHausLike.{u} P) := inferInstance
 
 /-- The inclusion maps into the explicit finite coproduct are open embeddings. -/
-lemma finiteCoproduct.openEmbedding_ι (a : α) :
-    OpenEmbedding (finiteCoproduct.ι X a) :=
-  openEmbedding_sigmaMk (σ := fun a ↦ (X a))
+lemma finiteCoproduct.isOpenEmbedding_ι (a : α) :
+    IsOpenEmbedding (finiteCoproduct.ι X a) :=
+  .sigmaMk (σ := fun a ↦ X a)
+
+@[deprecated (since := "2024-10-18")]
+alias finiteCoproduct.openEmbedding_ι := finiteCoproduct.isOpenEmbedding_ι
 
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
-lemma Sigma.openEmbedding_ι (a : α) :
-    OpenEmbedding (Sigma.ι X a) := by
-  refine OpenEmbedding.of_comp _ (homeoOfIso ((colimit.isColimit _).coconePointUniqueUpToIso
-    (finiteCoproduct.isColimit X))).openEmbedding ?_
-  convert finiteCoproduct.openEmbedding_ι X a
+lemma Sigma.isOpenEmbedding_ι (a : α) :
+    IsOpenEmbedding (Sigma.ι X a) := by
+  refine IsOpenEmbedding.of_comp _ (homeoOfIso ((colimit.isColimit _).coconePointUniqueUpToIso
+    (finiteCoproduct.isColimit X))).isOpenEmbedding ?_
+  convert finiteCoproduct.isOpenEmbedding_ι X a
   ext x
   change (Sigma.ι X a ≫ _) x = _
   simp
 
-/-- The functor to `TopCat` preserves finite coproducts if they exist. -/
+@[deprecated (since := "2024-10-18")]
+alias Sigma.openEmbedding_ι := Sigma.isOpenEmbedding_ι
+
+/-- The functor to `TopCat` preserves finite coproducts if they exist. -/
 instance (P) [HasExplicitFiniteCoproducts.{0} P] :
     PreservesFiniteCoproducts (compHausLikeToTop P) := by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
@@ -158,7 +179,7 @@ instance (P) [HasExplicitFiniteCoproducts.{0} P] :
   apply preservesColimitOfPreservesColimitCocone (CompHausLike.finiteCoproduct.isColimit _)
   exact TopCat.sigmaCofanIsColimit _
 
-/-- The functor to another `CompHausLike` preserves finite coproducts if they exist. -/
+/-- The functor to another `CompHausLike` preserves finite coproducts if they exist. -/
 noncomputable instance {P' : TopCat.{u} → Prop}
     (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     PreservesFiniteCoproducts (toCompHausLike h) := by
@@ -257,21 +278,21 @@ def pullback.isLimit : Limits.IsLimit (pullback.cone f g) :=
     (fun _ ↦ pullback.lift_snd _ _ _ _ _)
     (fun _ _ hm ↦ pullback.hom_ext _ _ _ _ (hm .left) (hm .right))
 
-instance: HasLimit (cospan f g) where
+instance : HasLimit (cospan f g) where
   exists_limit := ⟨⟨pullback.cone f g, pullback.isLimit f g⟩⟩
 
-/-- The functor to `TopCat` creates pullbacks if they exist. -/
+/-- The functor to `TopCat` creates pullbacks if they exist. -/
 noncomputable instance : CreatesLimit (cospan f g) (compHausLikeToTop P) := by
   refine createsLimitOfFullyFaithfulOfIso (pullback f g)
     (((TopCat.pullbackConeIsLimit f g).conePointUniqueUpToIso
         (limit.isLimit _)) ≪≫ Limits.lim.mapIso (?_ ≪≫ (diagramIsoCospan _).symm))
   exact Iso.refl _
 
-/-- The functor to `TopCat` preserves pullbacks. -/
+/-- The functor to `TopCat` preserves pullbacks. -/
 noncomputable instance : PreservesLimit (cospan f g) (compHausLikeToTop P) :=
   preservesLimitOfCreatesLimitAndHasLimit _ _
 
-/-- The functor to another `CompHausLike` preserves pullbacks. -/
+/-- The functor to another `CompHausLike` preserves pullbacks. -/
 noncomputable instance {P' : TopCat → Prop}
     (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     PreservesLimit (cospan f g) (toCompHausLike h) := by
@@ -317,12 +338,12 @@ instance [HasExplicitPullbacksOfInclusions P] : HasPullbacksOfInclusions (CompHa
 
 theorem hasPullbacksOfInclusions
     (hP' : ∀ ⦃X Y B : CompHausLike.{u} P⦄ (f : X ⟶ B) (g : Y ⟶ B)
-      (_ : OpenEmbedding f), HasExplicitPullback f g) :
+      (_ : IsOpenEmbedding f), HasExplicitPullback f g) :
     HasExplicitPullbacksOfInclusions P :=
   { hasProp := by
       intro _ _ _ f
       apply hP'
-      exact Sigma.openEmbedding_ι _ _ }
+      exact Sigma.isOpenEmbedding_ι _ _ }
 
 /-- The functor to `TopCat` preserves pullbacks of inclusions if they exist. -/
 noncomputable instance [HasExplicitPullbacksOfInclusions P] :
@@ -335,7 +356,7 @@ instance [HasExplicitPullbacksOfInclusions P] : FinitaryExtensive (CompHausLike 
   finitaryExtensive_of_preserves_and_reflects (compHausLikeToTop P)
 
 theorem finitaryExtensive (hP' : ∀ ⦃X Y B : CompHausLike.{u} P⦄ (f : X ⟶ B) (g : Y ⟶ B)
-    (_ : OpenEmbedding f), HasExplicitPullback f g) :
+    (_ : IsOpenEmbedding f), HasExplicitPullback f g) :
       FinitaryExtensive (CompHausLike P) :=
   have := hasPullbacksOfInclusions hP'
   finitaryExtensive_of_preserves_and_reflects (compHausLikeToTop P)

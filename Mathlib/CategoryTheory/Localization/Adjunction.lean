@@ -127,6 +127,7 @@ lemma localization_counit_app (X₂ : C₂) :
 
 end
 
+include adj in
 lemma isLocalization [F.Full] [F.Faithful] :
     G.IsLocalization ((MorphismProperty.isomorphisms C₂).inverseImage G) := by
   let W := ((MorphismProperty.isomorphisms C₂).inverseImage G)
