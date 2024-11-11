@@ -112,7 +112,8 @@ theorem HasSum.const_div (h :  HasSum (fun x ↦ 1 / f x) a) (b : α) :
   have := h.mul_left b
   simpa only [div_eq_mul_inv, one_mul] using this
 
-theorem Summable.const_div (h : Summable (1 / f)) (b : α) : Summable fun i ↦ b / f i :=
+theorem Summable.const_div (h : Summable (fun x ↦ 1 / f x)) (b : α) :
+    Summable fun i ↦ b / f i :=
   (h.hasSum.const_div b).summable
 
 theorem hasSum_const_div_iff (h : a₂ ≠ 0) :
