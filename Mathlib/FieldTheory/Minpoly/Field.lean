@@ -297,8 +297,8 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
 lemma minpoly_algHom_toLinearMap (σ : L →ₐ[K] L) (hσ : IsOfFinOrder σ) :
     minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
   have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit) := by
-    rw [← MonoidHom.coe_coe, orderOf_injective (AlgEquiv.algHomUnitsEquiv K L)
-      (AlgEquiv.algHomUnitsEquiv K L).injective, ← orderOf_units, IsOfFinOrder.val_unit]
+    rw [← MonoidHom.coe_coe, orderOf_injective, ← orderOf_units, IsOfFinOrder.val_unit]
+    exact (AlgEquiv.algHomUnitsEquiv K L).injective
   rw [this, ← minpoly_algEquiv_toLinearMap]
   · apply congr_arg
     ext
