@@ -15,11 +15,6 @@ open ENNReal EReal Filter Function
 
 /-! ### General lemmas -/
 
-lemma frequently_congr  {α : Type*} {f : Filter α} {p q : α → Prop}
-    (h : ∀ᶠ x in f, p x ↔ q x) :
-    (∃ᶠ x in f, p x) ↔ ∃ᶠ x in f, q x :=
-  ⟨fun h' ↦ h'.mp (h.mono fun _ ↦ Iff.mp), fun h' ↦ h'.mp (h.mono fun _ ↦ Iff.mpr)⟩
-
 lemma right_distrib_mul_by_nonneg {a b c : EReal} (h : 0 ≤ c) (h' : c ≠ ⊤) :
     (a + b) * c = a * c + b * c := by
   let d := c.toReal
@@ -299,10 +294,10 @@ lemma expGrowthSup_of_bigO {u v : ℕ → ℝ≥0∞} (h : ∃ c ≠ 0, ∀ᶠ n
 
 lemma expGrowthInf_inf {u v : ℕ → ℝ≥0∞} :
     expGrowthInf (u ⊓ v) = (expGrowthInf u) ⊓ expGrowthInf v := by
-  rw [_root_.inf_eq_min, expGrowthInf, expGrowthInf, expGrowthInf, ← liminf_min]
+  rw [expGrowthInf, expGrowthInf, expGrowthInf, ← liminf_min]
   refine liminf_congr (Eventually.of_forall fun n ↦ ?_)
   rw [← Monotone.map_min (monotone_div_right_of_nonneg (Nat.cast_nonneg' n)),
-    ← Monotone.map_min log_monotone, Pi.inf_apply, _root_.inf_eq_min]
+    ← Monotone.map_min log_monotone, Pi.inf_apply]
 
 noncomputable def expGrowthInf_infTopHom : InfTopHom (ℕ → ℝ≥0∞) EReal where
   toFun := expGrowthInf
@@ -322,10 +317,10 @@ lemma expGrowthInf_iInf {ι : Type*} (u : ι → ℕ → ℝ≥0∞) (h : Finite
 
 lemma expGrowthSup_sup {u v : ℕ → ℝ≥0∞} :
     expGrowthSup (u ⊔ v) = (expGrowthSup u) ⊔ expGrowthSup v := by
-  rw [_root_.sup_eq_max, expGrowthSup, expGrowthSup, expGrowthSup, ← limsup_max]
+  rw [expGrowthSup, expGrowthSup, expGrowthSup, ← limsup_max]
   refine limsup_congr (Eventually.of_forall fun n ↦ ?_)
   rw [← Monotone.map_max (monotone_div_right_of_nonneg (Nat.cast_nonneg' n)),
-    ← Monotone.map_max log_monotone, Pi.sup_apply, _root_.sup_eq_max]
+    ← Monotone.map_max log_monotone, Pi.sup_apply]
 
 noncomputable def expGrowthSup_supBotHom : SupBotHom (ℕ → ℝ≥0∞) EReal where
   toFun := expGrowthSup
