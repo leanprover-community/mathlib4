@@ -93,8 +93,8 @@ variable [FinEnum α] (a : α) (a' : ULift α) (i : Fin (card α))
 
 @[simp] lemma up_equiv : equiv (ULift.up a) = equiv a := rfl
 @[simp] lemma down_equiv : equiv a'.down = equiv a' := rfl
-@[simp] lemma up_equiv_symm : ULift.up (equiv.symm i) = ULift.instFinEnum.equiv.symm i := rfl
-@[simp] lemma down_equiv_symm : (ULift.instFinEnum.equiv.symm i).down = equiv.symm i := rfl
+@[simp] lemma equiv_symm_up : ULift.up (equiv.symm i) = (equiv (α := ULift α)).symm i := rfl
+@[simp] lemma equiv_symm_down : ((equiv (α := ULift α)).symm i).down = equiv.symm i := rfl
 
 end ULift
 
