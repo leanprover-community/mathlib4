@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Nat.Factors
-import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Multiplicity
+import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 
@@ -2010,11 +2011,6 @@ lemma WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt [CommSemiring α] [IsDom
   convert InvImage.wf (fun a => ⟨Ideal.span ({a} : Set α), _, rfl⟩) this
   ext
   exact Ideal.span_singleton_lt_span_singleton.symm
-
--- see Note [lower instance priority]
-instance (priority := 100) IsNoetherianRing.wfDvdMonoid [CommSemiring α] [IsDomain α]
-    [h : IsNoetherianRing α] : WfDvdMonoid α :=
-  WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt h.wf.wellFoundedOn
 
 end Ideal
 
