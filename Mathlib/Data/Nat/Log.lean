@@ -362,8 +362,7 @@ Adapted from https://downloads.haskell.org/~ghc/9.0.1/docs/html/libraries/ghc-bi
   in the size of the output, rather than linear time.
   -/
   step (pw : ℕ) (hpw : 1 < pw) : ℕ × ℕ :=
-    if h : m < pw
-    then (m, 0)
+    if h : m < pw then (m, 0)
     else
       let (q, e) := step (pw * pw) (Nat.mul_lt_mul_of_lt_of_lt hpw hpw)
       if q < pw then (q, 2 * e) else (q / pw, 2 * e + 1)
@@ -401,7 +400,7 @@ private lemma logC_spec {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :
   obtain ⟨h₁, h₂, h₃, h₄⟩ := logC_step hb heq
   exact ⟨h₁.trans' (Nat.le_mul_of_pos_right _ (h₄ hm)), h₃.trans_le (Nat.mul_le_mul_left _ h₂)⟩
 
-private lemma logC_small_base {b m : ℕ} (hb : b ≤ 1) : logC b m = 0 := by
+private lemma logC_of_left_le_one {b m : ℕ} (hb : b ≤ 1) : logC b m = 0 := by
   rw [logC, dif_neg hb.not_lt]
 
 private lemma logC_zero {b : ℕ} :
@@ -420,7 +419,7 @@ The result of `Nat.logC` agrees with the result of `Nat.log`. The former will be
 efficiently, but the latter is easier to prove things about and has more lemmas.
 This lemma is tagged @[csimp] so that the code generated for `Nat.log` uses `Nat.logC` instead.
 -/
-@[csimp] theorem logC_eq_log : log = logC := by
+@[csimp] theorem log_eq_logC : log = logC := by
   ext b m
   rcases le_or_lt b 1 with hb | hb
   case inl => rw [logC_small_base hb, Nat.log_of_left_le_one hb]
