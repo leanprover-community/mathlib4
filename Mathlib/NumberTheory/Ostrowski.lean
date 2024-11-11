@@ -438,7 +438,6 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     _ ≤ (m * f m / (f m - 1)) * (f m) ^ (logb m ↑(n ^ k)) := h_ineq1 hm (Nat.one_lt_pow hk hn)
     _ = (m * f m / (f m - 1)) * (f m) ^ (k * logb m n) := by
       rw [Nat.cast_pow, Real.logb_pow]
-      exact_mod_cast zero_lt_of_lt hn
 
 include hm hn notbdd in
 /-- Given two natural numbers `n, m` greater than 1 we have `f n ≤ f m ^ logb m n`. -/
