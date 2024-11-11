@@ -5,7 +5,6 @@ Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.Int.ModEq

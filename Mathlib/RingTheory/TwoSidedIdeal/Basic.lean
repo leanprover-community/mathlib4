@@ -7,7 +7,6 @@ Authors: Jujian Zhang
 import Mathlib.Tactic.Abel
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.Algebra.Module.Opposite
 
 /-!
 # Two Sided Ideals
