@@ -6,6 +6,7 @@ Authors: David Kurniadi Angdinata
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
 import Mathlib.LinearAlgebra.FreeModule.Norm
 import Mathlib.RingTheory.ClassGroup
+import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Group law on Weierstrass curves
