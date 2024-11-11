@@ -372,13 +372,13 @@ attribute [norm_cast] coe_pi
 
 @[simp] lemma pi_empty (L : ∀ i, Sublattice (π i)) : pi ∅ L = ⊤ := ext fun a ↦ by simp [mem_pi]
 
-@[simp] lemma pi_top (s : Set κ) : (pi s fun i ↦ ⊤ : Sublattice (∀ i, π i)) = ⊤ :=
+@[simp] lemma pi_top (s : Set κ) : (pi s fun _ ↦ ⊤ : Sublattice (∀ i, π i)) = ⊤ :=
   ext fun a ↦ by simp [mem_pi]
 
-@[simp] lemma pi_bot {s : Set κ} (hs : s.Nonempty) : (pi s fun i ↦ ⊥ : Sublattice (∀ i, π i)) = ⊥ :=
+@[simp] lemma pi_bot {s : Set κ} (hs : s.Nonempty) : (pi s fun _ ↦ ⊥ : Sublattice (∀ i, π i)) = ⊥ :=
   ext fun a ↦ by simpa [mem_pi] using hs
 
-lemma pi_univ_bot [Nonempty κ] : (pi univ fun i ↦ ⊥ : Sublattice (∀ i, π i)) = ⊥ := by simp
+lemma pi_univ_bot [Nonempty κ] : (pi univ fun _ ↦ ⊥ : Sublattice (∀ i, π i)) = ⊥ := by simp
 
 lemma le_pi {s : Set κ} {L : ∀ i, Sublattice (π i)} {M : Sublattice (∀ i, π i)} :
     M ≤ pi s L ↔ ∀ i ∈ s, M ≤ comap (Pi.evalLatticeHom i) (L i) := by simp [SetLike.le_def]; aesop
