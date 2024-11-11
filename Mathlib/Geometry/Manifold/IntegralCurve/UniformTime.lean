@@ -165,14 +165,19 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
   obtain ⟨γ, h0, hγ⟩ := ha
   -- integral curve starting at `-(asup - ε / 2)` with radius `ε`
   obtain ⟨γ1_aux, h1_aux, hγ1⟩ := h (γ (-(asup - ε / 2)))
-  rw [isIntegralCurveOn_Ioo_comp_add (asup - ε / 2)] at hγ1
+  rw [isIntegralCurveOn_comp_add (dt := asup - ε / 2)] at hγ1
   set γ1 := γ1_aux ∘ (· + (asup - ε / 2)) with γ1_def
   have heq1 : γ1 (-(asup - ε / 2)) = γ (-(asup - ε / 2)) := by simp [γ1_def, h1_aux]
   -- integral curve starting at `asup - ε / 2` with radius `ε`
   obtain ⟨γ2_aux, h2_aux, hγ2⟩ := h (γ (asup - ε / 2))
-  rw [isIntegralCurveOn_Ioo_comp_sub (asup - ε / 2)] at hγ2
+  rw [isIntegralCurveOn_comp_sub (dt := asup - ε / 2)] at hγ2
   set γ2 := γ2_aux ∘ (· - (asup - ε / 2)) with γ2_def
   have heq2 : γ2 (asup - ε / 2) = γ (asup - ε / 2) := by simp [γ2_def, h2_aux]
+
+  -- rewrite shifted Ioo as Ioo
+  rw [neg_sub] at hγ1
+  rw [Real.Ioo_eq_ball, neg_add_cancel, zero_div, sub_neg_eq_add, add_self_div_two,
+    Metric.vadd_ball, vadd_eq_add, add_zero, Real.ball_eq_Ioo] at hγ1 hγ2
 
   -- to help `linarith`
   have hεle : ε ≤ asup := le_csSup hbdd (h x)
