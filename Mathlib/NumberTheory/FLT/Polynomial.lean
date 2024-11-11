@@ -38,23 +38,9 @@ variable {R : Type _} [CommRing R] [IsDomain R] [NormalizationMonoid R]
 -- Multiplying units preserve coprimality
 private theorem isCoprime_mul_units_left {a b : k[X]} {u v : k} (hu : u ≠ 0) (hv : v ≠ 0) :
     IsCoprime (C u * a) (C v * b) ↔ IsCoprime a b :=
-  by
-  #check hu
-  #check Polynomial.isUnit_C.symm
-  sorry
-  -- constructor
-  -- · intro h
-  --   #check isCoprime_mul_unit_left_left
-  --   rw [←isCoprime.map_mul_left hu, ←isCoprime.map_mul_left hv]
-  --   exact h
-  -- · intro h
-  --   rw [←isCoprime.map_mul_left hu, ←isCoprime.map_mul_left hv]
-  --   exact h
-  -- sorry
-  -- Iff.trans
-  --   -- #check isCoprime_mul_unit_left_left
-  --   (isCoprime_mul_unit_left_left hu.isUnit_C _ _)
-  --   (isCoprime_mul_unit_left_right hv.isUnit_C _ _)
+  Iff.trans
+    (isCoprime_mul_unit_left_left (isUnit_C.mpr hu.isUnit) _ _)
+    (isCoprime_mul_unit_left_right (isUnit_C.mpr hv.isUnit) _ _)
 
 private theorem rot_coprime {p q r : ℕ} {a b c : k[X]} {u v w : k}
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0) (hab : IsCoprime a b)
@@ -86,8 +72,7 @@ lemma weighted_average_le_max₃ {p q r a b c : Nat} :
   -- exact Nat.mul_le_mul (Nat.le_refl _) (Nat.le_max₃_right _ _ _)
 
 theorem Polynomial.derivative_C_mul (a : k) (p : k[X]) :
-    derivative (C a * p) = C a * derivative p := by
-  rw [←smul_eq_C_mul, derivative.map_smul _ _, smul_eq_C_mul]
+    derivative (C a * p) = C a * derivative p := iterate_derivative_C_mul _ _ 1
 
 theorem derivative_pow_eq_zero_iff {n : ℕ} (chn : ¬ringChar k ∣ n) {a : k[X]}  :
     derivative (a ^ n) = 0 ↔ derivative a = 0 :=
@@ -137,6 +122,7 @@ theorem Polynomial.flt_catalan_deriv
   cases' abc hap hbp hcp habp heq with ineq dr0
   case inr =>
     simp only [derivative_C_mul] at dr0
+
     rw [mul_eq_zero_left_iff (C_ne_zero.mpr hu),
         mul_eq_zero_left_iff (C_ne_zero.mpr hv),
         mul_eq_zero_left_iff (C_ne_zero.mpr hw),
@@ -212,7 +198,7 @@ private theorem expcont {a : k[X]} (ha : a ≠ 0) (hda : derivative a = 0) (chn0
     ∃ ca, ca ≠ 0 ∧ a = expand k (ringChar k) ca ∧ a.natDegree = ca.natDegree * ringChar k :=
   by
   have heq := (expand_contract (ringChar k) hda chn0).symm
-  refine' ⟨_, _, heq, _⟩
+  refine ⟨_, ?_, heq, ?_⟩
   · intro h; rw [h] at heq; simp only [map_zero] at heq; solve_by_elim
   · rw [←natDegree_expand, ←heq]
 
@@ -242,10 +228,10 @@ theorem Polynomial.flt_catalan_aux
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0) :
     a.natDegree = 0 :=
   by
-  have hbc : IsCoprime b c := by
-    apply rot_coprime <;> assumption
-  have hbc : IsCoprime c a := by
-    apply rot_coprime (add_rotate.symm.trans heq) <;> assumption
+  -- have hbc : IsCoprime b c := by
+  --   apply rot_coprime <;> assumption
+  -- have hbc : IsCoprime c a := by
+  --   apply rot_coprime (add_rotate.symm.trans heq) <;> assumption
   cases' eq_or_ne (ringChar k) 0 with ch0 chn0
   -- Characteristic zero
   · have hderiv : derivative a = 0 ∧ derivative b = 0 ∧ derivative c = 0 := by
@@ -256,16 +242,20 @@ theorem Polynomial.flt_catalan_aux
       rw [ch0]; exact zero_dvd_iff.mp
     have tt := eq_C_of_derivative_eq_zero da
     rw [tt]; exact natDegree_C _
-  /- Characteristic ch ≠ 0, where we use infinite descent.
+  /- Positive characteristic, where we use infinite descent.
     We use proof by contradiction (`by_contra`) combined with strong induction
     (`Nat.case_strong_induction_on`) to formalize the proof.
     -/
   . set d := a.natDegree with eq_d;
+
     clear_value d; by_contra hd
     revert a b c eq_d hd
     induction' d using Nat.case_strong_induction_on with d ih_d
     · intros; tauto
-    intros a b c ha hb hc hab heq hbc hca eq_d hd
+
+
+    -- intros a b c ha hb hc hab heq hbc hca eq_d hd
+    intros a b c ha hb hc hab heq
     have hderiv : derivative a = 0 ∧ derivative b = 0 ∧ derivative c = 0 := by
       apply Polynomial.flt_catalan_deriv hp hq hr _ _ _ _ ha hb hc _ hu hv hw <;> assumption
     rcases hderiv with ⟨ad, bd, cd⟩
@@ -287,6 +277,8 @@ theorem Polynomial.flt_catalan_aux
       have hch2 : 2 ≤ ch := by omega
       -- Why can't a single omega handle things from here?
       rw [←Nat.succ_le_succ_iff]
+      #check eq_d
+      #check hd
       rw [eq_d, eq_deg_a] at hd ⊢
       rw [mul_eq_zero, not_or] at hd
       rcases hd with ⟨ca_nz, _⟩
@@ -307,8 +299,9 @@ theorem Polynomial.flt_catalan
   by
   -- WLOG argument: essentially three times flt_catalan_aux
   have hbc : IsCoprime b c := by apply rot_coprime heq hab <;> assumption
-  have hca : IsCoprime c a := by apply rot_coprime (add_rotate.symm.trans heq) hbc <;> assumption
-  refine' ⟨_, _, _⟩
+  have heq' : C v * b ^ q + C w * c ^ r + C u * a ^ p = 0 := by rw [add_rotate] at heq; exact heq
+  have hca : IsCoprime c a := by apply rot_coprime heq' hbc <;> assumption
+  refine ⟨?_, ?_, ?_⟩
   · apply Polynomial.flt_catalan_aux _ _ _ _ _ _ _ _ _ _ _ _ _ _ heq <;> try assumption
   · rw [add_rotate] at heq hineq; rw [mul_rotate] at hineq
     apply Polynomial.flt_catalan_aux _ _ _ _ _ _ _ _ _ _ _ _ _ _ heq <;> try assumption
