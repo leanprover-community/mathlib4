@@ -546,7 +546,7 @@ section CliqueNumber
 
 variable {α : Type*} {G : SimpleGraph α}
 
-/-- The maximal number of vertices in a clique of a graph `G`. -/
+/-- The maximum number of vertices in a clique of a graph `G`. -/
 noncomputable def cliqueNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNClique n s}
 
 private lemma fintype_cliqueNum_bddAbove [Fintype α] : BddAbove {n | ∃ s, G.IsNClique n s} := by
@@ -573,14 +573,12 @@ theorem isMaximumClique_iff [Fintype α] {s : Finset α} :
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 /-- A maximal clique in a graph `G` is a clique that cannot be extended by adding more vertices. -/
-abbrev IsMaximalClique (G : SimpleGraph α) (s : Set α) := Maximal G.IsClique s
-
 theorem isMaximalClique_iff {s : Set α} :
-    G.IsMaximalClique s ↔ G.IsClique s ∧ ∀ t : Set α, G.IsClique t → s ⊆ t → t ⊆ s :=
+    Maximal G.IsClique s ↔ G.IsClique s ∧ ∀ t : Set α, G.IsClique t → s ⊆ t → t ⊆ s :=
   Eq.to_iff rfl
 
 lemma IsMaximumClique.isMaximalClique [Fintype α] (s : Finset α) (M : G.IsMaximumClique s) :
-    G.IsMaximalClique s :=
+    Maximal G.IsClique s :=
   ⟨ M.isClique,
     fun t ht hsub => by
       by_contra hc
