@@ -1220,16 +1220,14 @@ theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
 
 lemma toENNReal_sub {x y : EReal} (hy : 0 ≤ y) :
     (x - y).toENNReal = x.toENNReal - y.toENNReal := by
-  induction x <;> induction y <;> try {· simp_all}
-  · rename_i x y
-    simp only [ne_eq, coe_ne_top, not_false_eq_true, toENNReal_of_ne_top, toReal_coe]
-    by_cases hxy : x ≤ y
-    · rw [toENNReal_of_nonpos]
-      swap; · exact sub_nonpos.mpr <| EReal.coe_le_coe_iff.mpr hxy
-      simp_all
-    · rw [toENNReal_of_ne_top, ← coe_sub, toReal_coe, ofReal_sub x (EReal.coe_nonneg.mp hy)]
-      exact (ne_of_beq_false rfl).symm
-  · rw [sub_eq_top_iff.mpr (sub_eq_top_iff.mp rfl), top_sub_of_ne_top (coe_ne_top _), toENNReal_top]
+  induction x <;> induction y <;> try {· simp_all [zero_tsub, ENNReal.sub_top]}
+  rename_i x y
+  by_cases hxy : x ≤ y
+  · rw [toENNReal_of_nonpos <| sub_nonpos.mpr <| EReal.coe_le_coe_iff.mpr hxy]
+    exact (tsub_eq_zero_of_le <| toENNReal_le_toENNReal <| EReal.coe_le_coe_iff.mpr hxy).symm
+  · rw [toENNReal_of_ne_top (ne_of_beq_false rfl).symm, ← coe_sub, toReal_coe,
+      ofReal_sub x (EReal.coe_nonneg.mp hy)]
+    simp
 
 lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
   induction a <;> norm_cast
