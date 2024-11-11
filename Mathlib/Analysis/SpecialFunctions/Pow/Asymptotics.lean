@@ -190,7 +190,7 @@ theorem isTheta_exp_arg_mul_im (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x
   refine Real.isTheta_exp_comp_one.2 ⟨π * b, ?_⟩
   rw [eventually_map] at hb ⊢
   refine hb.mono fun x hx => ?_
-  erw [abs_mul]
+  rw [abs_mul]
   exact mul_le_mul (abs_arg_le_pi _) hx (abs_nonneg _) Real.pi_pos.le
 
 theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|) :
@@ -198,7 +198,7 @@ theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
   calc
     (fun x => f x ^ g x) =O[l]
         (show α → ℝ from fun x => abs (f x) ^ (g x).re / Real.exp (arg (f x) * im (g x))) :=
-      isBigO_of_le _ fun x => (abs_cpow_le _ _).trans (le_abs_self _)
+      isBigO_of_le _ fun _ => (abs_cpow_le _ _).trans (le_abs_self _)
     _ =Θ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re / (1 : ℝ)) :=
       ((isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl))
     _ =ᶠ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re) := by
@@ -211,7 +211,7 @@ theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).
   calc
     (fun x => f x ^ g x) =Θ[l]
         (show α → ℝ from fun x => abs (f x) ^ (g x).re / Real.exp (arg (f x) * im (g x))) :=
-      isTheta_of_norm_eventuallyEq' <| hl.mono fun x => abs_cpow_of_imp
+      isTheta_of_norm_eventuallyEq' <| hl.mono fun _ => abs_cpow_of_imp
     _ =Θ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re / (1 : ℝ)) :=
       ((isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl_im))
     _ =ᶠ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re) := by
@@ -282,7 +282,7 @@ open Asymptotics
 /-- `x ^ s = o(exp(b * x))` as `x → ∞` for any real `s` and positive `b`. -/
 theorem isLittleO_rpow_exp_pos_mul_atTop (s : ℝ) {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => x ^ s) =o[atTop] fun x => exp (b * x) :=
-  isLittleO_of_tendsto (fun x h => absurd h (exp_pos _).ne') <| by
+  isLittleO_of_tendsto (fun _ h => absurd h (exp_pos _).ne') <| by
     simpa only [div_eq_mul_inv, exp_neg, neg_mul] using
       tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero s b hb
 

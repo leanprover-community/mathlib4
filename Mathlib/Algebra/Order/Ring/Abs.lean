@@ -17,7 +17,7 @@ import Mathlib.Data.Nat.Cast.Order.Ring
 variable {α : Type*}
 
 section LinearOrderedAddCommGroup
-variable [LinearOrderedCommGroup α] {a b : α}
+variable [LinearOrderedCommGroup α]
 
 @[to_additive] lemma mabs_zpow (n : ℤ) (a : α) : |a ^ n|ₘ = |a|ₘ ^ |n| := by
   obtain n0 | n0 := le_total 0 n
@@ -34,7 +34,7 @@ lemma odd_abs [LinearOrder α] [Ring α] {a : α} : Odd (abs a) ↔ Odd a := by
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α] {n : ℕ} {a b c : α}
+variable [LinearOrderedRing α] {n : ℕ} {a b : α}
 
 @[simp] lemma abs_one : |(1 : α)| = 1 := abs_of_pos zero_lt_one
 
@@ -116,6 +116,9 @@ lemma abs_lt_of_sq_lt_sq' (h : a ^ 2 < b ^ 2) (hb : 0 ≤ b) : -b < a ∧ a < b 
 lemma abs_le_of_sq_le_sq (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : |a| ≤ b := by
   rwa [← abs_of_nonneg hb, ← sq_le_sq]
 
+theorem le_of_sq_le_sq (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : a ≤ b :=
+  le_abs_self a |>.trans <| abs_le_of_sq_le_sq h hb
+
 lemma abs_le_of_sq_le_sq' (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : -b ≤ a ∧ a ≤ b :=
   abs_le.1 <| abs_le_of_sq_le_sq h hb
 
@@ -141,7 +144,7 @@ end LinearOrderedRing
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing α] {a b c d : α}
+variable [LinearOrderedCommRing α]
 
 theorem abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a * b := by
   rw [abs_mul_abs_self]
@@ -152,7 +155,7 @@ end LinearOrderedCommRing
 
 section
 
-variable [Ring α] [LinearOrder α] {a b : α}
+variable [Ring α] [LinearOrder α]
 
 @[simp]
 theorem abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by

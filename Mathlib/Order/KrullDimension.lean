@@ -174,6 +174,8 @@ variable {α β : Type*}
 
 variable [Preorder α] [Preorder β]
 
+lemma LTSeries.length_le_krullDim (p : LTSeries α) : p.length ≤ krullDim α := le_sSup ⟨_, rfl⟩
+
 lemma krullDim_nonneg_of_nonempty [Nonempty α] : 0 ≤ krullDim α :=
   le_sSup ⟨⟨0, fun _ ↦ @Nonempty.some α inferInstance, fun f ↦ f.elim0⟩, rfl⟩
 
@@ -213,6 +215,14 @@ lemma krullDim_eq_zero_of_unique [Unique α] : krullDim α = 0 := by
   refine (LTSeries.longestOf_len_unique (default : LTSeries α) fun q ↦ show _ ≤ 0 from ?_).symm
   by_contra r
   exact ne_of_lt (q.step ⟨0, not_le.mp r⟩) <| Subsingleton.elim _ _
+
+lemma krullDim_nonpos_of_subsingleton [Subsingleton α] : krullDim α ≤ 0 := by
+  by_cases hα : Nonempty α
+  · have := uniqueOfSubsingleton (Classical.choice hα)
+    exact le_of_eq krullDim_eq_zero_of_unique
+  · have := not_nonempty_iff.mp hα
+    exact le_of_lt <| lt_of_eq_of_lt krullDim_eq_bot_of_isEmpty <|
+      Batteries.compareOfLessAndEq_eq_lt.mp rfl
 
 lemma krullDim_le_of_strictComono_and_surj
     (f : α → β) (hf : ∀ ⦃a b⦄, f a < f b → a < b) (hf' : Function.Surjective f) :

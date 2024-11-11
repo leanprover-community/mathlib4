@@ -50,8 +50,6 @@ end override
 namespace Mathlib
 open Lean
 
-deriving instance ToExpr for Int
-
 set_option autoImplicit true in
 deriving instance ToExpr for ULift
 

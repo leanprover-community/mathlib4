@@ -21,7 +21,7 @@ universe u
 
 namespace IsCyclotomicExtension.Rat
 
-open NumberField InfinitePlace FiniteDimensional Complex Nat Polynomial
+open NumberField InfinitePlace Module Complex Nat Polynomial
 
 variable {n : ℕ+} (K : Type u) [Field K] [CharZero K]
 
@@ -30,7 +30,7 @@ of `K`. -/
 theorem nrRealPlaces_eq_zero [IsCyclotomicExtension {n} ℚ K]
     (hn : 2 < n) :
     haveI := IsCyclotomicExtension.numberField {n} ℚ K
-    NrRealPlaces K = 0 := by
+    nrRealPlaces K = 0 := by
   have := IsCyclotomicExtension.numberField {n} ℚ K
   apply (IsCyclotomicExtension.zeta_spec n ℚ K).nrRealPlaces_eq_zero_of_two_lt hn
 
@@ -40,7 +40,7 @@ variable (n)
 of `K`. Note that this uses `1 / 2 = 0` in the cases `n = 1, 2`. -/
 theorem nrComplexPlaces_eq_totient_div_two [h : IsCyclotomicExtension {n} ℚ K] :
     haveI := IsCyclotomicExtension.numberField {n} ℚ K
-    NrComplexPlaces K = φ n / 2 := by
+    nrComplexPlaces K = φ n / 2 := by
   have := IsCyclotomicExtension.numberField {n} ℚ K
   by_cases hn : 2 < n
   · obtain ⟨k, hk : φ n = k + k⟩ := totient_even hn

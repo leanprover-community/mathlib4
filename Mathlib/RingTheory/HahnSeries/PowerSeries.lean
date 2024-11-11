@@ -37,7 +37,7 @@ open Finset Function Pointwise Polynomial
 
 noncomputable section
 
-variable {Γ : Type*} {R : Type*}
+variable {Γ R : Type*}
 
 namespace HahnSeries
 
@@ -113,12 +113,12 @@ theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C R r) = HahnS
     single_coeff]
   split_ifs with hn
   · subst hn
-    convert @embDomain_coeff ℕ R _ _ Γ _ _ _ 0 <;> simp
+    convert embDomain_coeff (a := 0) <;> simp
   · rw [embDomain_notin_image_support]
     simp only [not_exists, Set.mem_image, toPowerSeries_symm_apply_coeff, mem_support,
       PowerSeries.coeff_C]
     intro
-    simp (config := { contextual := true }) [Ne.symm hn]
+    simp +contextual [Ne.symm hn]
 
 @[simp]
 theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
@@ -126,12 +126,12 @@ theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
   simp only [single_coeff, ofPowerSeries_apply, RingHom.coe_mk]
   split_ifs with hn
   · rw [hn]
-    convert @embDomain_coeff ℕ R _ _ Γ _ _ _ 1 <;> simp
+    convert embDomain_coeff (a := 1) <;> simp
   · rw [embDomain_notin_image_support]
     simp only [not_exists, Set.mem_image, toPowerSeries_symm_apply_coeff, mem_support,
       PowerSeries.coeff_X]
     intro
-    simp (config := { contextual := true }) [Ne.symm hn]
+    simp +contextual [Ne.symm hn]
 
 theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
     ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by

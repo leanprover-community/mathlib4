@@ -44,7 +44,7 @@ namespace Set
 
 section Lattice
 
-variable [Lattice α] [Lattice β] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [Lattice α] [Lattice β] {a a₁ a₂ b b₁ b₂ x : α}
 
 /-- `uIcc a b` is the set of elements lying between `a` and `b`, with `a` and `b` included.
 Note that we define it more generally in a lattice as `Set.Icc (a ⊓ b) (a ⊔ b)`. In a product type,
@@ -74,8 +74,6 @@ lemma uIcc_comm (a b : α) : [[a, b]] = [[b, a]] := by simp_rw [uIcc, inf_comm, 
 lemma uIcc_of_lt (h : a < b) : [[a, b]] = Icc a b := uIcc_of_le h.le
 lemma uIcc_of_gt (h : b < a) : [[a, b]] = Icc b a := uIcc_of_ge h.le
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 lemma uIcc_self : [[a, a]] = {a} := by simp [uIcc]
 
 @[simp] lemma nonempty_uIcc : [[a, b]].Nonempty := nonempty_Icc.2 inf_le_sup
@@ -134,7 +132,7 @@ open Interval
 
 section DistribLattice
 
-variable [DistribLattice α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [DistribLattice α] {a b c : α}
 
 lemma eq_of_mem_uIcc_of_mem_uIcc (ha : a ∈ [[b, c]]) (hb : b ∈ [[a, c]]) : a = b :=
   eq_of_inf_eq_sup_eq (inf_congr_right ha.1 hb.1) <| sup_congr_right ha.2 hb.2
@@ -155,7 +153,7 @@ section LinearOrder
 variable [LinearOrder α]
 
 section Lattice
-variable [Lattice β] {f : α → β} {s : Set α} {a b : α}
+variable [Lattice β] {f : α → β} {a b : α}
 
 lemma _root_.MonotoneOn.mapsTo_uIcc (hf : MonotoneOn f (uIcc a b)) :
     MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
@@ -187,7 +185,7 @@ lemma _root_.Antitone.image_uIcc_subset (hf : Antitone f) : f '' uIcc a b ⊆ uI
 
 end Lattice
 
-variable [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ c d x : α}
+variable [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ c : α}
 
 theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl

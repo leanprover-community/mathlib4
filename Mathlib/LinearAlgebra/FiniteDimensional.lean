@@ -27,19 +27,11 @@ variable {K : Type u} {V : Type v}
 
 namespace Submodule
 
-open IsNoetherian FiniteDimensional
+open IsNoetherian Module
 
 section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
-
-/-- In a finite-dimensional vector space, the dimensions of a submodule and of the corresponding
-quotient add up to the dimension of the space. -/
-theorem finrank_quotient_add_finrank [FiniteDimensional K V] (s : Submodule K V) :
-    finrank K (V ⧸ s) + finrank K s = finrank K V := by
-  have := rank_quotient_add_rank s
-  rw [← finrank_eq_rank, ← finrank_eq_rank, ← finrank_eq_rank] at this
-  exact mod_cast this
 
 /-- The dimension of a strict submodule is strictly bounded by the dimension of the ambient
 space. -/
@@ -116,7 +108,7 @@ end FiniteDimensional
 
 namespace LinearMap
 
-open FiniteDimensional
+open Module
 
 section DivisionRing
 
@@ -142,7 +134,7 @@ end DivisionRing
 
 end LinearMap
 
-open FiniteDimensional
+open Module
 
 namespace LinearMap
 
