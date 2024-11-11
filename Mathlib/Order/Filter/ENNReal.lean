@@ -85,19 +85,3 @@ theorem limsup_liminf_le_liminf_limsup {β} [Countable β] {f : Filter α} [Coun
   sInf_le <| h1.mono fun x hx => Filter.liminf_le_liminf (Filter.Eventually.of_forall hx)
 
 end ENNReal
-
-namespace Real
-
-open ENNReal NNReal
-
-/-- If `u v : ℕ → ℝ` are nonnegative and bounded above, then
-  `filter.limsup (u * v) at_top ≤ filter.limsup u at_top * filter.limsup v at_top `.-/
-theorem limsup_mul_le {u v : ℕ → ℝ} (hu_bdd : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
-    (hv_bdd : BddAbove (Set.range v)) (hv0 : 0 ≤ v) :
-    Filter.limsup (u * v) atTop ≤ Filter.limsup u atTop * Filter.limsup v atTop :=
-  _root_.limsup_mul_le (Eventually.of_forall hu0) (BddAbove.isBoundedUnder_of_range hu_bdd)
-    (Eventually.of_forall hv0)
-    (BddAbove.isBoundedUnder_of_range hv_bdd)
-
-
-end Real
