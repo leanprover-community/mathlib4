@@ -110,6 +110,7 @@ theorem grading.right_inv : Function.RightInverse (coeLinearMap (grading R)) gra
   induction' zz using DirectSum.induction_on with i zz d1 d2 ih1 ih2
   · simp only [map_zero]
   · rcases i with (_ | ⟨⟨⟩⟩) <;> rcases zz with ⟨⟨a, b⟩, hab : _ = _⟩ <;> dsimp at hab <;>
+      -- Porting note: proof was `decide` (without reverting any free variables).
       cases hab <;> decide +revert
   · simp only [map_add, ih1, ih2]
 
