@@ -8,6 +8,7 @@ import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.Valuation.Integers
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Valuation Rings
