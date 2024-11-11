@@ -9,7 +9,7 @@ import Mathlib.NumberTheory.LSeries.Basic
 # L-series of counting functions
 
 Let `F : α → ℕ` be a function. Assume that there exists a positive real `l` such that
-`Nat.card {x | F x ≤ n} / n' tends to `l`. In this file, we prove results on the L-series with
+`Nat.card {x | F x ≤ n} / n` tends to `l`. In this file, we prove results on the L-series with
 coefficients `Nat.card {x | F x = n}`.
 
 ## Main results.
