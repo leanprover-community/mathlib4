@@ -23,8 +23,6 @@ This file defines bundled isomorphisms of `R`-algebras.
 universe u v w u₁ v₁
 
 /-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
-@[stacks 09HR "This generalize beyond the field case in 09HR. In mathlib, we use `AlgEquiv` to \
-denote Aut(E/F)."]
 structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
@@ -620,6 +618,8 @@ end OfRingEquiv
 
 -- Porting note: projections mul & one not found, removed [simps] and added theorems manually
 -- @[simps (config := .lemmasOnly) one]
+@[stacks 09HR "This generalize beyond the field case in 09HR. In mathlib, we use `AlgEquiv F E E` \
+to denote the automorphism group Aut(E/F)."]
 instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul ϕ ψ := ψ.trans ϕ
   mul_assoc _ _ _ := rfl
