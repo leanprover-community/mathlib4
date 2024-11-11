@@ -92,7 +92,7 @@ lemma injective_ringHom_or_subsingleton_codomain
       have mem : 1 ∈ TwoSidedIdeal.ker f := h.symm ▸ TwoSidedIdeal.mem_top _
       rwa [TwoSidedIdeal.mem_ker, map_one, eq_comm] at mem)
 
-lemma _root_.RingHom.injective
+protected theorem _root_.RingHom.injective
     {R S : Type*} [NonAssocRing R] [IsSimpleRing R] [NonAssocSemiring S] [Nontrivial S]
     (f : R →+* S) : Function.Injective f :=
   injective_ringHom_or_subsingleton_codomain f |>.resolve_right fun r => not_subsingleton _ r
