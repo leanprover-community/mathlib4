@@ -44,7 +44,7 @@ integral curve, vector field, local existence, uniqueness
 
 open scoped Topology
 
-open Function Set Classical
+open Function Set
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
