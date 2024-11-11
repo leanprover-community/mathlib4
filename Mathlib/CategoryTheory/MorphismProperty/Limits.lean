@@ -296,6 +296,19 @@ instance IsStableUnderBaseChange.diagonal [IsStableUnderBaseChange P] [P.Respect
         P.cancel_right_of_respectsIso]
       exact P.baseChange_map f _ (by simpa))
 
+/-- If `P` is multiplicative and stable under base change, having the of-postcomp property is
+equivalent to `P` being preserved by taking the diagonal. -/
+lemma hasOfPostcompProperty_iff_le_diagonal [P.IsStableUnderBaseChange] [P.IsMultiplicative] :
+    P.HasOfPostcompProperty ↔ P ≤ P.diagonal := by
+  refine ⟨fun hP X Y f hf ↦ ?_, fun hP ↦ ⟨fun {Y X S} g f hf hcomp ↦ ?_⟩⟩
+  · exact hP.of_postcomp _ _ (P.pullback_fst _ _ hf) (by simpa using P.id_mem X)
+  · set gr : Y ⟶ pullback (g ≫ f) f := pullback.lift (𝟙 Y) g (by simp)
+    have : g = gr ≫ pullback.snd _ _ := by simp [gr]
+    rw [this]
+    apply P.comp_mem
+    · exact P.of_isPullback (pullback_lift_diagonal_isPullback g f) (hP _ hf)
+    · exact P.pullback_snd _ _ hcomp
+
 end Diagonal
 
 section Universally
