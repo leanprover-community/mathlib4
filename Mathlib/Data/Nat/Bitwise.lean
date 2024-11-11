@@ -37,7 +37,6 @@ should be connected.
 bitwise, and, or, xor
 -/
 
-
 open Function
 
 namespace Nat
@@ -72,7 +71,7 @@ theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n →
     binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
   cases n using bitCasesOn with
   | h b n =>
-    rw [binaryRec_eq' _ _ (by right; simpa [bit_eq_zero_iff] using h)]
+    rw [binaryRec_eq _ _ (by right; simpa [bit_eq_zero_iff] using h)]
     generalize_proofs h; revert h
     rw [bodd_bit, div2_bit]
     simp
@@ -87,7 +86,7 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
   cases a <;> cases b <;> simp [h2, h4] <;> split_ifs
-    <;> simp_all (config := {decide := true}) [two_mul]
+    <;> simp_all +decide [two_mul]
 
 lemma bit_mod_two_eq_zero_iff (a x) :
     bit a x % 2 = 0 ↔ !a := by
@@ -353,6 +352,21 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
 theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c := by
   obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero.2 h.ne
   exacts [(h.asymm ha).elim, Or.inl <| Nat.xor_comm _ _ ▸ hb, Or.inr hc]
+
+@[simp]
+theorem xor_mod_two_eq {m n : ℕ} : (m ^^^ n) % 2 = (m + n) % 2 := by
+  by_cases h : (m + n) % 2 = 0
+  · simp only [h, mod_two_eq_zero_iff_testBit_zero, testBit_zero, xor_mod_two_eq_one, decide_not,
+      Bool.decide_iff_dist, Bool.not_eq_false', beq_iff_eq, decide_eq_decide]
+    omega
+  · simp only [mod_two_ne_zero] at h
+    simp only [h, xor_mod_two_eq_one]
+    omega
+
+@[simp]
+theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
+  simp only [even_iff, xor_mod_two_eq]
+  omega
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega

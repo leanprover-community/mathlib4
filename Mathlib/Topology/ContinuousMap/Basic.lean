@@ -363,19 +363,19 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
 def Function.RightInverse.homeomorph {f' : C(Y, X)} (hf : Function.RightInverse f' f) :
     Quotient (Setoid.ker f) ≃ₜ Y where
   toEquiv := Setoid.quotientKerEquivOfRightInverse _ _ hf
-  continuous_toFun := quotientMap_quot_mk.continuous_iff.mpr (map_continuous f)
+  continuous_toFun := isQuotientMap_quot_mk.continuous_iff.mpr (map_continuous f)
   continuous_invFun := continuous_quotient_mk'.comp (map_continuous f')
 
-namespace QuotientMap
+namespace IsQuotientMap
 
 /--
 The homeomorphism from the quotient of a quotient map to its codomain. This is
 `Setoid.quotientKerEquivOfSurjective` as a homeomorphism.
 -/
 @[simps!]
-noncomputable def homeomorph (hf : QuotientMap f) : Quotient (Setoid.ker f) ≃ₜ Y where
+noncomputable def homeomorph (hf : IsQuotientMap f) : Quotient (Setoid.ker f) ≃ₜ Y where
   toEquiv := Setoid.quotientKerEquivOfSurjective _ hf.surjective
-  continuous_toFun := quotientMap_quot_mk.continuous_iff.mpr hf.continuous
+  continuous_toFun := isQuotientMap_quot_mk.continuous_iff.mpr hf.continuous
   continuous_invFun := by
     rw [hf.continuous_iff]
     convert continuous_quotient_mk'
@@ -384,7 +384,7 @@ noncomputable def homeomorph (hf : QuotientMap f) : Quotient (Setoid.ker f) ≃�
       (Setoid.quotientKerEquivOfSurjective f hf.surjective).symm_apply_eq]
     rfl
 
-variable (hf : QuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
+variable (hf : IsQuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
 
 /-- Descend a continuous map, which is constant on the fibres, along a quotient map. -/
 @[simps]
@@ -394,7 +394,7 @@ noncomputable def lift : C(Y, Z) where
   continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
 
 /--
-The obvious triangle induced by `QuotientMap.lift` commutes:
+The obvious triangle induced by `IsQuotientMap.lift` commutes:
 ```
      g
   X --→ Z
@@ -409,7 +409,7 @@ theorem lift_comp : (hf.lift g h).comp f = g := by
   ext
   simpa using h (Function.rightInverse_surjInv _ _)
 
-/-- `QuotientMap.lift` as an equivalence. -/
+/-- `IsQuotientMap.lift` as an equivalence. -/
 @[simps]
 noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ C(Y, Z) where
   toFun g := hf.lift g g.prop
@@ -420,7 +420,7 @@ noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ 
     ext a
     simpa using congrArg g (Function.rightInverse_surjInv hf.surjective a)
 
-end QuotientMap
+end IsQuotientMap
 
 end Lift
 
