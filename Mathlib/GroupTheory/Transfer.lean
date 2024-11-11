@@ -223,8 +223,8 @@ complement. -/
 theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker P := by
   have hf : Function.Bijective ((transferSylow P hP).restrict (P : Subgroup G)) :=
     (transferSylow_restrict_eq_pow P hP).symm ▸ (P.2.powEquiv' P.not_dvd_index).bijective
-  rw [Function.Bijective, ← range_eq_top_iff_surjective, restrict_range] at hf
-  have := range_eq_top_iff_surjective.mp (top_le_iff.mp (hf.2.ge.trans
+  rw [Function.Bijective, ← range_eq_top, restrict_range] at hf
+  have := range_eq_top.mp (top_le_iff.mp (hf.2.ge.trans
     (map_le_range (transferSylow P hP) P)))
   rw [← (comap_injective this).eq_iff, comap_top, comap_map_eq, sup_comm, SetLike.ext'_iff,
     normal_mul, ← ker_eq_bot_iff, ← (map_injective (P : Subgroup G).subtype_injective).eq_iff,

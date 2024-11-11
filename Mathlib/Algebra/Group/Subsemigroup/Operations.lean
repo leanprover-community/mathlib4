@@ -574,7 +574,7 @@ theorem map_srange (g : N →ₙ* P) (f : M →ₙ* N) : f.srange.map g = (g.com
 @[to_additive]
 theorem srange_eq_top_iff_surjective {N} [Mul N] {f : M →ₙ* N} :
     f.srange = (⊤ : Subsemigroup N) ↔ Function.Surjective f :=
-  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_srange, coe_top]) Set.range_iff_surjective
+  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_srange, coe_top]) Set.range_eq_univ
 
 /-- The range of a surjective semigroup hom is the whole of the codomain. -/
 @[to_additive (attr := simp)

@@ -332,7 +332,7 @@ theorem _root_.AlgHom.map_fieldRange {L : Type*} [Field L] [Algebra F L]
 
 theorem _root_.AlgHom.fieldRange_eq_top {f : E →ₐ[F] K} :
     f.fieldRange = ⊤ ↔ Function.Surjective f :=
-  SetLike.ext'_iff.trans Set.range_iff_surjective
+  SetLike.ext'_iff.trans Set.range_eq_univ
 
 @[simp]
 theorem _root_.AlgEquiv.fieldRange_eq_top (f : E ≃ₐ[F] K) :

@@ -90,7 +90,7 @@ lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n]
     (B * A).rank = B.rank := by
   suffices Function.Surjective A.mulVecLin by
     rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
-      (LinearMap.range_eq_top_iff_surjective.mpr this), ← rank]
+      (LinearMap.range_eq_top.mpr this), ← rank]
   intro v
   exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
 
@@ -130,7 +130,7 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
   let e₁ := (Pi.basisFun R m).equiv v₁ (Equiv.refl _)
   let e₂ := (Pi.basisFun R n).equiv v₂ (Equiv.refl _)
   have range_e₂ : LinearMap.range e₂ = ⊤ := by
-    rw [LinearMap.range_eq_top_iff_surjective]
+    rw [LinearMap.range_eq_top]
     exact e₂.surjective
   refine LinearEquiv.finrank_eq (e₁.ofSubmodules _ _ ?_)
   rw [← LinearMap.range_comp, ← LinearMap.range_comp_of_range_eq_top (toLin v₂ v₁ A) range_e₂]

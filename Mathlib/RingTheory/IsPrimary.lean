@@ -62,7 +62,7 @@ lemma isPrimary_iff_zero_divisor_quotient_imp_nilpotent_smul :
   simp_rw [S.mkQ_surjective.forall, ← map_smul, ne_eq, ← LinearMap.mem_ker, ker_mkQ]
   congr! 2
   rw [forall_comm, ← or_iff_not_imp_left,
-    ← LinearMap.range_eq_top_iff_surjective.mpr S.mkQ_surjective, ← map_top]
+    ← LinearMap.range_eq_top.mpr S.mkQ_surjective, ← map_top]
   simp_rw [eq_bot_iff, ← map_pointwise_smul, map_le_iff_le_comap, comap_bot, ker_mkQ]
 
 end CommRing

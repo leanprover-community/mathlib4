@@ -82,7 +82,7 @@ theorem Module.FinitePresentation.equiv_quotient [fp : Module.FinitePresentation
   use ι →₀ R, inferInstance, inferInstance
   use LinearMap.ker (Finsupp.linearCombination R Subtype.val)
   refine ⟨(LinearMap.quotKerEquivOfSurjective _ ?_).symm, inferInstance, inferInstance, hι₂⟩
-  apply LinearMap.range_eq_top_iff_surjective.mp
+  apply LinearMap.range_eq_top.mp
   simpa only [Finsupp.range_linearCombination, Subtype.range_coe_subtype, Finset.setOf_mem]
 
 -- Ideally this should be an instance but it makes mathlib much slower.
@@ -113,7 +113,7 @@ lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.
   have hσ₁ : π ∘ σ = id := by ext i; exact congr_arg Subtype.val (hσ i)
   have hσ₂ : l ∘ b ∘ σ = Subtype.val := by ext i; exact congr_arg Subtype.val (hσ i)
   refine ⟨(Set.finite_range (l ∘ b)).toFinset,
-    by simpa [Set.range_comp, LinearMap.range_eq_top_iff_surjective], ?_⟩
+    by simpa [Set.range_comp, LinearMap.range_eq_top], ?_⟩
   let f : M →ₗ[R] (Set.finite_range (l ∘ b)).toFinset →₀ R :=
     Finsupp.lmapDomain _ _ π ∘ₗ b.repr.toLinearMap
   convert hl'.map f
@@ -152,7 +152,7 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
   obtain ⟨s, hs, hs'⟩ := h
   obtain ⟨t, ht⟩ := hl'
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → M)) :=
-    LinearMap.range_eq_top_iff_surjective.mp
+    LinearMap.range_eq_top.mp
       (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
   apply Module.finitePresentation_of_free_of_surjective (l ∘ₗ linearCombination R Subtype.val)
     (hl.comp H)
@@ -169,7 +169,7 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
   classical
   obtain ⟨s, hs, hs'⟩ := h
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → N)) :=
-    LinearMap.range_eq_top_iff_surjective.mp
+    LinearMap.range_eq_top.mp
       (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
   obtain ⟨f, hf⟩ : ∃ f : (s →₀ R) →ₗ[R] M, l ∘ₗ f = (Finsupp.linearCombination R Subtype.val) := by
     choose f hf using show _ from hl
@@ -197,12 +197,12 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     Module.FinitePresentation R M := by
   obtain ⟨s, hs⟩ : (⊤ : Submodule R M).FG := by
     apply Submodule.fg_of_fg_map_of_fg_inf_ker l
-    · rw [Submodule.map_top, LinearMap.range_eq_top_iff_surjective.mpr hl]; exact Module.Finite.out
+    · rw [Submodule.map_top, LinearMap.range_eq_top.mpr hl]; exact Module.Finite.out
     · rw [top_inf_eq, ← Submodule.fg_top]; exact Module.Finite.out
   refine ⟨s, hs, ?_⟩
   let π := Finsupp.linearCombination R ((↑) : s → M)
   have H : Function.Surjective π :=
-    LinearMap.range_eq_top_iff_surjective.mp
+    LinearMap.range_eq_top.mp
       (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
   have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) := by
     constructor
@@ -211,7 +211,7 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
   let f : LinearMap.ker (l ∘ₗ π) →ₗ[R] LinearMap.ker l := LinearMap.restrict π (fun x ↦ id)
   have e : π ∘ₗ Submodule.subtype _ = Submodule.subtype _ ∘ₗ f := by ext; rfl
   have hf : Function.Surjective f := by
-    rw [← LinearMap.range_eq_top_iff_surjective]
+    rw [← LinearMap.range_eq_top]
     apply Submodule.map_injective_of_injective (Submodule.injective_subtype _)
     rw [Submodule.map_top, Submodule.range_subtype, ← LinearMap.range_comp, ← e,
       LinearMap.range_comp, Submodule.range_subtype, LinearMap.ker_comp,
@@ -238,7 +238,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   obtain ⟨σ, hσ, τ, hτ⟩ := h
   let π := Finsupp.linearCombination R ((↑) : σ → M)
   have hπ : Function.Surjective π :=
-    LinearMap.range_eq_top_iff_surjective.mp
+    LinearMap.range_eq_top.mp
       (by rw [range_linearCombination, Subtype.range_val, ← hσ]; rfl)
   classical
   choose s hs using IsLocalizedModule.surj S f

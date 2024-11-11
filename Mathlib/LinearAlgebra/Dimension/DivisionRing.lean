@@ -80,7 +80,7 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     (eq : db.comp cd = eb.comp ce) (eq₂ : ∀ d e, db d = eb e → ∃ c, cd c = d ∧ ce c = e) :
     Module.rank K V + Module.rank K V₁ = Module.rank K V₂ + Module.rank K V₃ := by
   have hf : Surjective (coprod db eb) := by
-    rwa [← range_eq_top_iff_surjective, range_coprod, eq_top_iff]
+    rwa [← range_eq_top, range_coprod, eq_top_iff]
   conv =>
     rhs
     rw [← rank_prod', rank_eq_of_surjective hf]
@@ -94,7 +94,7 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
       exact LinearMap.ext_iff.1 eq c
   refine LinearEquiv.ofBijective L ⟨?_, ?_⟩
   · rw [← ker_eq_bot, ker_codRestrict, ker_prod, hgd, bot_inf_eq]
-  · rw [← range_eq_top_iff_surjective, eq_top_iff, range_codRestrict, ← map_le_iff_le_comap,
+  · rw [← range_eq_top, eq_top_iff, range_codRestrict, ← map_le_iff_le_comap,
       Submodule.map_top, range_subtype]
     rintro ⟨d, e⟩
     have h := eq₂ d (-e)

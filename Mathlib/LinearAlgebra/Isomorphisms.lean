@@ -39,7 +39,7 @@ noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₗ[R] LinearMa
 /-- The **first isomorphism theorem for surjective linear maps**. -/
 noncomputable def quotKerEquivOfSurjective (f : M →ₗ[R] M₂) (hf : Function.Surjective f) :
     (M ⧸ LinearMap.ker f) ≃ₗ[R] M₂ :=
-  f.quotKerEquivRange.trans <| .ofTop (LinearMap.range f) <| range_eq_top_iff_surjective.2 hf
+  f.quotKerEquivRange.trans <| .ofTop (LinearMap.range f) <| range_eq_top.2 hf
 
 @[simp]
 theorem quotKerEquivRange_apply_mk (x : M) :
@@ -80,7 +80,7 @@ theorem quotientInfEquivSupQuotient_injective (p p' : Submodule R M) :
 -- Porting note: breaking up original definition of quotientInfEquivSupQuotient to avoid timing out
 theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
     Function.Surjective (quotientInfToSupQuotient p p') := by
-  rw [← range_eq_top_iff_surjective, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
+  rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
   rintro ⟨x, hx⟩; rcases mem_sup.1 hx with ⟨y, hy, z, hz, rfl⟩
   use ⟨y, hy⟩; apply (Submodule.Quotient.eq _).2
   simp only [mem_comap, map_sub, coe_subtype, coe_inclusion, sub_add_cancel_left, neg_mem_iff, hz]

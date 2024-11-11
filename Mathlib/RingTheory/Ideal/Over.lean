@@ -167,7 +167,7 @@ instance QuotientMapQuotient.isNoetherian [Algebra R S] [IsNoetherian R S] (I : 
     IsNoetherian (R ⧸ I) (S ⧸ Ideal.map (algebraMap R S) I) :=
   isNoetherian_of_tower R <|
     isNoetherian_of_surjective S (Ideal.Quotient.mkₐ R _).toLinearMap <|
-      LinearMap.range_eq_top_iff_surjective.mpr Ideal.Quotient.mk_surjective
+      LinearMap.range_eq_top.mpr Ideal.Quotient.mk_surjective
 
 end CommRing
 

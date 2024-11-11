@@ -195,7 +195,7 @@ lemma map_lowerCentralSeries_eq {f : M →ₗ⁅R,L⁆ M₂} (hf : Function.Surj
   induction k with
   | zero =>
     rwa [lowerCentralSeries_zero, lowerCentralSeries_zero, top_le_iff, f.map_top,
-      f.range_eq_top_iff_surjective]
+      f.range_eq_top]
   | succ =>
     simp only [lowerCentralSeries_succ, LieSubmodule.map_bracket_eq]
     apply LieSubmodule.mono_lie_right
@@ -545,7 +545,7 @@ include hf hg hfg in
 theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
     (lowerCentralSeries R L M k : Submodule R M).map g = lowerCentralSeries R L₂ M₂ k := by
   induction k with
-  | zero => simpa [LinearMap.range_eq_top_iff_surjective]
+  | zero => simpa [LinearMap.range_eq_top]
   | succ k ih =>
     suffices
       g '' {m | ∃ (x : L) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, n⁆ = m} =

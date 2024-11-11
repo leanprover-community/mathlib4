@@ -621,7 +621,7 @@ theorem srangeRestrict_surjective (f : F) :
 
 theorem srange_eq_top_iff_surjective {f : F} :
     srange f = (⊤ : NonUnitalSubsemiring S) ↔ Function.Surjective (f : R → S) :=
-  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_srange, coe_top]) Set.range_iff_surjective
+  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_srange, coe_top]) Set.range_eq_univ
 
 /-- The range of a surjective non-unital ring homomorphism is the whole of the codomain. -/
 @[simp]

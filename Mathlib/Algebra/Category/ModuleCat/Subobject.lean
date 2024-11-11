@@ -44,7 +44,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
           constructor
           · simp [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
             rw [ker_eq_bot_of_mono]
-          · rw [← LinearMap.range_eq_top_iff_surjective, LinearMap.range_codRestrict,
+          · rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict,
               Submodule.comap_subtype_self]
             exact LinearMap.mem_range_self _
         · apply LinearMap.ext

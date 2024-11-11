@@ -92,7 +92,7 @@ theorem ker_toLin_eq_bot [DecidableEq n] (A : Matrix n n R) (hA : IsUnit A.det) 
 
 theorem range_toLin_eq_top [DecidableEq n] (A : Matrix n n R) (hA : IsUnit A.det) :
     LinearMap.range (toLin b b A) = ⊤ :=
-  range_eq_top_iff_surjective.mpr (toLinearEquiv b A hA).surjective
+  range_eq_top.mpr (toLinearEquiv b A hA).surjective
 
 end ToLinearEquiv
 

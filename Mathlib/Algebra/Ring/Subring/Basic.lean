@@ -751,15 +751,15 @@ theorem rangeRestrict_surjective (f : R →+* S) : Function.Surjective f.rangeRe
   let ⟨x, hx⟩ := mem_range.mp hy
   ⟨x, Subtype.ext hx⟩
 
-theorem range_eq_top_iff_surjective {f : R →+* S} :
+theorem range_eq_top {f : R →+* S} :
     f.range = (⊤ : Subring S) ↔ Function.Surjective f :=
-  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_iff_surjective
+  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_eq_univ
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
 @[simp]
 theorem range_eq_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     f.range = (⊤ : Subring S) :=
-  range_eq_top_iff_surjective.2 hf
+  range_eq_top.2 hf
 
 section eqLocus
 

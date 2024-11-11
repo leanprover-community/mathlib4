@@ -118,7 +118,7 @@ instance (S : Submodule R M) : S.IsPrincipal where
 
 theorem toSpanSingleton_surjective {m : M} (hm : m ≠ 0) :
     Function.Surjective (toSpanSingleton R M m) := by
-  rw [← range_eq_top_iff_surjective, ← span_singleton_eq_range, span_singleton_eq_top R hm]
+  rw [← range_eq_top, ← span_singleton_eq_range, span_singleton_eq_top R hm]
 
 theorem ker_toSpanSingleton_isMaximal {m : M} (hm : m ≠ 0) :
     Ideal.IsMaximal (ker (toSpanSingleton R M m)) := by
@@ -381,7 +381,7 @@ theorem injective_of_ne_zero [IsSimpleModule R M] {f : M →ₗ[R] N} (h : f ≠
 
 theorem surjective_or_eq_zero [IsSimpleModule R N] (f : M →ₗ[R] N) :
     Function.Surjective f ∨ f = 0 := by
-  rw [← range_eq_top_iff_surjective, ← range_eq_bot, or_comm]
+  rw [← range_eq_top, ← range_eq_bot, or_comm]
   apply eq_bot_or_eq_top
 
 theorem surjective_of_ne_zero [IsSimpleModule R N] {f : M →ₗ[R] N} (h : f ≠ 0) :

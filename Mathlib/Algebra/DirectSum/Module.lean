@@ -315,7 +315,7 @@ theorem IsInternal.ofBijective_coeLinearMap_of_mem_ne (h : IsInternal A)
 
 /-- If a direct sum of submodules is internal then the submodules span the module. -/
 theorem IsInternal.submodule_iSup_eq_top (h : IsInternal A) : iSup A = ⊤ := by
-  rw [Submodule.iSup_eq_range_dfinsupp_lsum, LinearMap.range_eq_top_iff_surjective]
+  rw [Submodule.iSup_eq_range_dfinsupp_lsum, LinearMap.range_eq_top]
   exact Function.Bijective.surjective h
 
 /-- If a direct sum of submodules is internal then the submodules are independent. -/
@@ -392,7 +392,7 @@ theorem isInternal_submodule_of_independent_of_iSup_eq_top {A : ι → Submodule
     (hi : CompleteLattice.Independent A) (hs : iSup A = ⊤) : IsInternal A :=
   ⟨hi.dfinsupp_lsum_injective,
     -- Note: #8386 had to specify value of `f`
-    (LinearMap.range_eq_top_iff_surjective (f := DFinsupp.lsum _ _)).1 <|
+    (LinearMap.range_eq_top (f := DFinsupp.lsum _ _)).1 <|
       (Submodule.iSup_eq_range_dfinsupp_lsum _).symm.trans hs⟩
 
 /-- `iff` version of `DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top`,

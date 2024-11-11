@@ -581,7 +581,7 @@ theorem KaehlerDifferential.kerTotal_eq :
 
 theorem KaehlerDifferential.linearCombination_surjective :
     Function.Surjective (Finsupp.linearCombination S (KaehlerDifferential.D R S)) := by
-  rw [← LinearMap.range_eq_top_iff_surjective, range_linearCombination, span_range_derivation]
+  rw [← LinearMap.range_eq_top, range_linearCombination, span_range_derivation]
 
 @[deprecated (since := "2024-08-29")] alias KaehlerDifferential.total_surjective :=
   KaehlerDifferential.linearCombination_surjective
@@ -743,7 +743,7 @@ open IsScalarTower (toAlgHom)
 theorem KaehlerDifferential.map_surjective_of_surjective
     (h : Function.Surjective (algebraMap A B)) :
     Function.Surjective (KaehlerDifferential.map R S A B) := by
-  rw [← LinearMap.range_eq_top_iff_surjective, _root_.eq_top_iff,
+  rw [← LinearMap.range_eq_top, _root_.eq_top_iff,
     ← @Submodule.restrictScalars_top A B, ← span_range_derivation,
     Submodule.restrictScalars_span _ _ h, Submodule.span_le]
   rintro _ ⟨x, rfl⟩
@@ -884,7 +884,7 @@ lemma KaehlerDifferential.mapBaseChange_surjective
     (h : Function.Surjective (algebraMap A B)) :
     Function.Surjective (KaehlerDifferential.mapBaseChange R A B) := by
   have := subsingleton_of_surjective A B h
-  rw [← LinearMap.range_eq_top_iff_surjective, range_mapBaseChange, ← top_le_iff]
+  rw [← LinearMap.range_eq_top, range_mapBaseChange, ← top_le_iff]
   exact fun x _ ↦ Subsingleton.elim _ _
 
 end ExactSequence

@@ -642,7 +642,7 @@ set of generators equals `⊤`. -/
 theorem closure_range_of (α) :
     Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
   rw [← lift.range_eq_closure, lift_of_eq_id]
-  exact MonoidHom.range_eq_top_of_surjective _ Function.surjective_id
+  exact MonoidHom.range_eq_top.2 Function.surjective_id
 
 end lift
 

@@ -311,7 +311,7 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
   -- Note that `H ⊗ M` is isomorphic to `ker l12 ⊗ M ⧸ range ((range l12 ⊗ M) -> (ker l23 ⊗ M))`.
   -- So the problem is reduced to proving surjectivity of `range l12 ⊗ M → ker l23 ⊗ M`.
   rw [e.toEquiv.subsingleton_congr, Submodule.subsingleton_quotient_iff_eq_top,
-    LinearMap.range_eq_top_iff_surjective]
+    LinearMap.range_eq_top]
   intro x
   induction x using TensorProduct.induction_on with
   | zero => exact ⟨0, by simp⟩

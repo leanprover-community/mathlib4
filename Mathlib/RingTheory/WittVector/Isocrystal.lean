@@ -199,7 +199,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     refine LinearEquiv.ofBijective F₀ ⟨?_, ?_⟩
     · rw [← LinearMap.ker_eq_bot]
       exact LinearMap.ker_toSpanSingleton K(p, k) V hx
-    · rw [← LinearMap.range_eq_top_iff_surjective]
+    · rw [← LinearMap.range_eq_top]
       rw [← (finrank_eq_one_iff_of_nonzero x hx).mp h_dim]
       rw [LinearMap.span_singleton_eq_range]
   refine ⟨⟨(LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F, fun c ↦ ?_⟩⟩

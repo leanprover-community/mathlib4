@@ -175,7 +175,7 @@ theorem surjective_mk' : Function.Surjective (mk' N) := Quot.mk_surjective
 
 @[simp]
 theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by
-  simp [LieModuleHom.range_eq_top_iff_surjective]
+  simp [LieModuleHom.range_eq_top]
 
 instance isNoetherian [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
   inferInstanceAs (IsNoetherian R (M ⧸ (N : Submodule R M)))

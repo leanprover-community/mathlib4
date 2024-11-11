@@ -449,7 +449,7 @@ theorem Algebra.trace_ne_zero [FiniteDimensional K L] [Algebra.IsSeparable K L] 
 
 theorem Algebra.trace_surjective [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     Function.Surjective (Algebra.trace K L) := by
-  rw [← LinearMap.range_eq_top_iff_surjective]
+  rw [← LinearMap.range_eq_top]
   apply (IsSimpleOrder.eq_bot_or_eq_top (α := Ideal K) _).resolve_left
   rw [LinearMap.range_eq_bot]
   exact Algebra.trace_ne_zero K L

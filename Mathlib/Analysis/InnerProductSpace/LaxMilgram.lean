@@ -78,7 +78,7 @@ theorem isClosed_range (coercive : IsCoercive B) : IsClosed (range B♯ : Set V)
 
 @[deprecated (since := "2024-03-19")] alias closed_range := isClosed_range
 
-theorem range_eq_top_iff_surjective (coercive : IsCoercive B) : range B♯ = ⊤ := by
+theorem range_eq_top (coercive : IsCoercive B) : range B♯ = ⊤ := by
   haveI := coercive.isClosed_range.completeSpace_coe
   rw [← (range B♯).orthogonal_orthogonal]
   rw [Submodule.eq_top_iff']
@@ -101,7 +101,7 @@ such that `continuousLinearEquivOfBilin B v, w⟫ = B v w`.
 The Lax-Milgram theorem states that this is a continuous equivalence.
 -/
 def continuousLinearEquivOfBilin (coercive : IsCoercive B) : V ≃L[ℝ] V :=
-  ContinuousLinearEquiv.ofBijective B♯ coercive.ker_eq_bot coercive.range_eq_top_iff_surjective
+  ContinuousLinearEquiv.ofBijective B♯ coercive.ker_eq_bot coercive.range_eq_top
 
 @[simp]
 theorem continuousLinearEquivOfBilin_apply (coercive : IsCoercive B) (v w : V) :

@@ -39,10 +39,10 @@ theorem mono_iff_injective : Mono f ↔ Function.Injective f := by
 
 theorem epi_iff_range_eq_top : Epi f ↔ LinearMap.range f = ⊤ :=
   ⟨fun _ => range_eq_top_of_epi _, fun hf =>
-    ConcreteCategory.epi_of_surjective _ <| LinearMap.range_eq_top_iff_surjective.1 hf⟩
+    ConcreteCategory.epi_of_surjective _ <| LinearMap.range_eq_top.1 hf⟩
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
-  rw [epi_iff_range_eq_top, LinearMap.range_eq_top_iff_surjective]
+  rw [epi_iff_range_eq_top, LinearMap.range_eq_top]
 
 /-- If the zero morphism is an epi then the codomain is trivial. -/
 def uniqueOfEpiZero (X) [h : Epi (0 : X ⟶ of R M)] : Unique M :=

@@ -47,7 +47,7 @@ lemma finitePresentation_iff_exists_presentation :
     obtain ⟨R : Type w₁, _, relation, hR⟩ :=
       Submodule.fg_iff_exists_finite_generating_family.1
         (Module.FinitePresentation.fg_ker (Finsupp.linearCombination A var) (by
-          rw [← LinearMap.range_eq_top_iff_surjective, Finsupp.range_linearCombination, hG]))
+          rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination, hG]))
     exact
      ⟨{ G := G
         R := R

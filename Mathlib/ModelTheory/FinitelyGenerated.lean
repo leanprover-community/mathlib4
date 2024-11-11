@@ -209,7 +209,7 @@ theorem FG.range {N : Type*} [L.Structure N] (h : FG L M) (f : M →[L] N) : f.r
 
 theorem FG.map_of_surjective {N : Type*} [L.Structure N] (h : FG L M) (f : M →[L] N)
     (hs : Function.Surjective f) : FG L N := by
-  rw [← Hom.range_eq_top_iff_surjective] at hs
+  rw [← Hom.range_eq_top] at hs
   rw [fg_def, ← hs]
   exact h.range f
 
@@ -260,7 +260,7 @@ theorem CG.range {N : Type*} [L.Structure N] (h : CG L M) (f : M →[L] N) : f.r
 
 theorem CG.map_of_surjective {N : Type*} [L.Structure N] (h : CG L M) (f : M →[L] N)
     (hs : Function.Surjective f) : CG L N := by
-  rw [← Hom.range_eq_top_iff_surjective] at hs
+  rw [← Hom.range_eq_top] at hs
   rw [cg_def, ← hs]
   exact h.range f
 

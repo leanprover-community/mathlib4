@@ -787,7 +787,7 @@ theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top, fun h => by
     ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
 
-theorem range_eq_top_iff_surjective (f : A →ₐ[R] B) :
+theorem _root_.AlgHom.range_eq_top (f : A →ₐ[R] B) :
     f.range = (⊤ : Subalgebra R B) ↔ Function.Surjective f :=
   Algebra.eq_top_iff
 
@@ -1238,7 +1238,7 @@ theorem map_comap_eq_self
 
 theorem map_comap_eq_self_of_surjective
     {f : A →ₐ[R] B} (hf : Function.Surjective f) (S : Subalgebra R B) : (S.comap f).map f = S :=
-  map_comap_eq_self <| by simp [(Algebra.range_eq_top_iff_surjective f).2 hf]
+  map_comap_eq_self <| by simp [(AlgHom.range_eq_top f).2 hf]
 
 theorem comap_map_eq_self_of_injective
     {f : A →ₐ[R] B} (hf : Function.Injective f) (S : Subalgebra R A) : (S.map f).comap f = S :=

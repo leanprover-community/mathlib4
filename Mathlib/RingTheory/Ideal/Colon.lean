@@ -74,7 +74,7 @@ theorem _root_.Ideal.mem_colon_singleton {I : Ideal R} {x r : R} :
 theorem annihilator_quotient {N : Submodule R M} :
     Module.annihilator R (M ⧸ N) = N.colon ⊤ := by
   simp [SetLike.ext_iff, Module.mem_annihilator, colon,
-    LinearMap.range_eq_top_iff_surjective.mpr (mkQ_surjective N)]
+    LinearMap.range_eq_top.mpr (mkQ_surjective N)]
 
 theorem _root_.Ideal.annihilator_quotient {I : Ideal R} : Module.annihilator R (R ⧸ I) = I := by
   rw [Submodule.annihilator_quotient, colon_top]
