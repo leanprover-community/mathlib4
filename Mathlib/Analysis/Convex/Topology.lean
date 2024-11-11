@@ -102,7 +102,7 @@ variable (𝕜)
 
 /-- The convex closed hull of a set `s` is the minimal convex closed set that includes `s`. -/
 @[simps! isClosed]
-def convexClosedHull : ClosureOperator (Set E) := .ofCompletePred (fun s => Convex 𝕜 s ∧ IsClosed s)
+def closedConvexHull : ClosureOperator (Set E) := .ofCompletePred (fun s => Convex 𝕜 s ∧ IsClosed s)
   fun _ ↦ convex_closed_sInter
 
 variable {𝕜}
