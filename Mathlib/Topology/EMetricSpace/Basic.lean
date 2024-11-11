@@ -261,7 +261,7 @@ abbrev EMetricSpace.ofT0PseudoEMetricSpace (α : Type*) [PseudoEMetricSpace α] 
 /-- The product of two emetric spaces, with the max distance, is an extended
 metric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
-instance Prod.emetricSpaceMax [EMetricSpace β] : EMetricSpace (γ × β) :=
+noncomputable instance Prod.emetricSpaceMax [EMetricSpace β] : EMetricSpace (γ × β) :=
   .ofT0PseudoEMetricSpace _
 
 namespace EMetric
