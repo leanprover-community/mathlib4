@@ -740,6 +740,10 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
   right_inv := fun _ ↦ rfl
   map_mul' := fun _ _ ↦ rfl
 
+/-- See also `Finite.algHom` -/
+instance _root_.Finite.algEquiv [Finite (A₁ →ₐ[R] A₂)] : Finite (A₁ ≃ₐ[R] A₂) :=
+  Finite.of_injective _ AlgEquiv.coe_algHom_injective
+
 end Semiring
 
 section CommSemiring
