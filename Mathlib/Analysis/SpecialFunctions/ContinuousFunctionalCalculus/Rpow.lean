@@ -223,18 +223,13 @@ theorem abs_sq_eq_star_mul_self (a : A) : (abs a) ^ (2 : NNReal) = star a * a :=
   simp only [abs_nonneg, nnrpow_two]
   apply abs_mul_self_eq_star_mul_self
 
-/-
-example (a : A) : abs a = 0 ↔ a = 0 := by
-  constructor
-  · intro h
-    rw [← abs_zero_eq_zero] at h
-    simp only [abs] at h
-    calc
-      star a * a = (abs a) ^ 2 := by exact?
-      _ = (abs 0) ^ 2 := by rw [h]
-      _ = 0 := by simp only [abs_zero_eq_zero]; sorry
-  · exact fun h ↦ by simp only [h, abs, star_zero, mul_zero, sqrt_zero]
--/
+variable [CStarRing A]
+
+theorem eq_zero_of_abs_eq_zero {a : A} (ha : abs a = 0) : a = 0 := by
+  have H := congrArg (fun x ↦ x ^ (2 : NNReal)) ha
+  simp only [zero_nnrpow] at H
+  rw [abs_sq_eq_star_mul_self] at H
+  exact (CStarRing.star_mul_self_eq_zero_iff a).mp H
 
 end abs
 
