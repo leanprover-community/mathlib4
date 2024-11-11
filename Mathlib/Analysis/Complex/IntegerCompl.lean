@@ -27,10 +27,8 @@ lemma IntegerComplement_eq : ℂ_ℤ = {z : ℂ | ¬ ∃ (n : ℤ), n = z} := rf
 
 lemma integerComplement.mem_iff {x : ℂ} : x ∈ ℂ_ℤ ↔ ¬ ∃ (n : ℤ), n = x := Iff.rfl
 
-lemma UpperHalfPlane.coe_mem_integerComplement (z : ℍ) : ↑z ∈ ℂ_ℤ := by
- rw [integerComplement.mem_iff]
- simp only [not_exists]
- exact fun x a ↦ (UpperHalfPlane.ne_int z)  x (id (Eq.symm a))
+lemma UpperHalfPlane.coe_mem_integerComplement (z : ℍ) : ↑z ∈ ℂ_ℤ :=
+  not_exists.mpr fun x hx ↦ ne_int z x hx.symm 
 
 lemma integerComplement.add_coe_int_mem {x : ℂ} (a : ℤ) : x + (a : ℂ) ∈ ℂ_ℤ ↔ x ∈ ℂ_ℤ := by
   constructor
