@@ -91,8 +91,7 @@ instance : ContinuousMul ℕ∞ where
 protected theorem continuousAt_sub {a b : ℕ∞} (h : a ≠ ⊤ ∨ b ≠ ⊤) :
     ContinuousAt (· - ·).uncurry (a, b) := by
   match a, b, h with
-  | (a : ℕ), (b : ℕ), _ =>
-    simpa [ContinuousAt, nhds_prod_eq] using tendsto_pure_nhds _ _
+  | (a : ℕ), (b : ℕ), _ => simp [ContinuousAt, nhds_prod_eq]
   | (a : ℕ), ⊤, _ =>
     suffices ∀ᶠ b in 𝓝 ⊤, (a - b : ℕ∞) = 0 by
       simpa [ContinuousAt, nhds_prod_eq, tsub_eq_zero_of_le]

@@ -6,6 +6,7 @@ Authors: Devon Tuma
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.RingTheory.Artinian
 
 /-!
 # Jacobson Rings
@@ -91,11 +92,9 @@ theorem Ideal.radical_eq_jacobson [H : IsJacobsonRing R] (I : Ideal R) : I.radic
   le_antisymm (le_sInf fun _J ⟨hJ, hJ_max⟩ => (IsPrime.radical_le_iff hJ_max.isPrime).mpr hJ)
     (H.out (radical_isRadical I) ▸ jacobson_mono le_radical)
 
-/-- Fields have only two ideals, and the condition holds for both of them. -/
-instance (priority := 100) isJacobsonRing_field {K : Type*} [Field K] : IsJacobsonRing K :=
-  ⟨fun I _ => Or.recOn (eq_bot_or_top I)
-    (fun h => le_antisymm (sInf_le ⟨le_rfl, h.symm ▸ bot_isMaximal⟩) (h.symm ▸ bot_le)) fun h =>
-      by rw [h, jacobson_eq_top_iff]⟩
+instance (priority := 100) [IsArtinianRing R] : IsJacobsonRing R :=
+  isJacobsonRing_iff_prime_eq.mpr fun P _ ↦
+    jacobson_eq_self_of_isMaximal (H := IsArtinianRing.isMaximal_of_isPrime P)
 
 theorem isJacobsonRing_of_surjective [H : IsJacobsonRing R] :
     (∃ f : R →+* S, Function.Surjective ↑f) → IsJacobsonRing S := by
@@ -335,7 +334,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
         rw [sub_eq_zero, ← φ'.comp_apply]
         simp only [IsLocalization.map_comp _]
         rfl
-  · obtain ⟨p, rfl⟩ := Quotient.mk_surjective p'
+  · obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective p'
     rw [← RingHom.comp_apply]
     apply Subring.mem_closure_image_of
     apply Polynomial.mem_closure_X_union_C
@@ -559,7 +558,7 @@ theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
       (fun h => absurd (_root_.trans (h ▸ hPJ : P = comap f ⊤) comap_top : P = ⊤) hP.ne_top) id
   apply quotient_mk_comp_C_isIntegral_of_jacobson' _ ?_ (fun x hx => ?_)
   any_goals exact isJacobsonRing_quotient
-  obtain ⟨z, rfl⟩ := Quotient.mk_surjective x
+  obtain ⟨z, rfl⟩ := Ideal.Quotient.mk_surjective x
   rwa [Quotient.eq_zero_iff_mem, mem_comap, hPJ, mem_comap, coe_mapRingHom, map_C]
 
 theorem isMaximal_comap_C_of_isJacobsonRing : (P.comap (C : R →+* R[X])).IsMaximal := by

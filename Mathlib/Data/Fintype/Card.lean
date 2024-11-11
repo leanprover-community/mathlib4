@@ -413,7 +413,7 @@ theorem Finite.of_surjective {α β : Sort*} [Finite α] (f : α → β) (H : Su
   Finite.of_injective _ <| injective_surjInv H
 
 instance Quot.finite {α : Sort*} [Finite α] (r : α → α → Prop) : Finite (Quot r) :=
-  Finite.of_surjective _ (surjective_quot_mk r)
+  Finite.of_surjective _ Quot.mk_surjective
 
 instance Quotient.finite {α : Sort*} [Finite α] (s : Setoid α) : Finite (Quotient s) :=
   Quot.finite _
@@ -800,11 +800,11 @@ theorem Fintype.card_compl_eq_card_compl [Finite α] (p q : α → Prop) [Fintyp
 
 theorem Fintype.card_quotient_le [Fintype α] (s : Setoid α)
     [DecidableRel ((· ≈ ·) : α → α → Prop)] : Fintype.card (Quotient s) ≤ Fintype.card α :=
-  Fintype.card_le_of_surjective _ (surjective_quotient_mk' _)
+  Fintype.card_le_of_surjective _ Quotient.mk'_surjective
 
 theorem Fintype.card_quotient_lt [Fintype α] {s : Setoid α} [DecidableRel ((· ≈ ·) : α → α → Prop)]
     {x y : α} (h1 : x ≠ y) (h2 : x ≈ y) : Fintype.card (Quotient s) < Fintype.card α :=
-  Fintype.card_lt_of_surjective_not_injective _ (surjective_quotient_mk' _) fun w =>
+  Fintype.card_lt_of_surjective_not_injective _ Quotient.mk'_surjective fun w =>
     h1 (w <| Quotient.eq.mpr h2)
 
 theorem univ_eq_singleton_of_card_one {α} [Fintype α] (x : α) (h : Fintype.card α = 1) :
@@ -838,10 +838,6 @@ instance (priority := 100) to_wellFoundedLT [Preorder α] : WellFoundedLT α :=
 -- See note [lower instance priority]
 instance (priority := 100) to_wellFoundedGT [Preorder α] : WellFoundedGT α :=
   ⟨wellFounded_of_trans_of_irrefl _⟩
-
-instance (priority := 10) LinearOrder.isWellOrder_lt [LinearOrder α] : IsWellOrder α (· < ·) := {}
-
-instance (priority := 10) LinearOrder.isWellOrder_gt [LinearOrder α] : IsWellOrder α (· > ·) := {}
 
 end Finite
 
@@ -945,7 +941,7 @@ instance [Nonempty α] : Infinite (Multiset α) :=
   Infinite.of_injective (fun n => Multiset.replicate n x) (Multiset.replicate_left_injective _)
 
 instance [Nonempty α] : Infinite (List α) :=
-  Infinite.of_surjective ((↑) : List α → Multiset α) (surjective_quot_mk _)
+  Infinite.of_surjective ((↑) : List α → Multiset α) Quot.mk_surjective
 
 instance String.infinite : Infinite String :=
   Infinite.of_injective (String.mk) <| by
