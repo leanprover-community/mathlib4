@@ -61,13 +61,25 @@ theorem IsStableUnderBaseChange.mk' {P : MorphismProperty C} [RespectsIso P]
     rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
     exact hP₂ _ _ _ f g hg
 
-variable (C) in
 instance IsStableUnderBaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderBaseChange where
   of_isPullback {_ _ _ _ f g _ _} h hg :=
     have : IsIso g := hg
     have := hasPullback_of_left_iso g f
     h.isoPullback_hom_snd ▸ inferInstanceAs (IsIso _)
+
+variable (C) in
+instance IsStableUnderBaseChange.monomorphisms :
+    (monomorphisms C).IsStableUnderBaseChange where
+  of_isPullback {X Y Y' S f g f' g'} h hg := by
+    have : Mono g := hg
+    constructor
+    intro Z f₁ f₂ h₁₂
+    apply PullbackCone.IsLimit.hom_ext h.isLimit
+    · rw [← cancel_mono g]
+      dsimp
+      simp only [Category.assoc, h.w, reassoc_of% h₁₂]
+    · exact h₁₂
 
 instance (priority := 900) IsStableUnderBaseChange.respectsIso {P : MorphismProperty C}
     [IsStableUnderBaseChange P] : RespectsIso P := by
@@ -293,11 +305,6 @@ instance IsStableUnderBaseChange.diagonal [IsStableUnderBaseChange P] [P.Respect
 
 lemma diagonal_isomorphisms : (isomorphisms C).diagonal = monomorphisms C :=
   ext _ _ fun _ _ _ ↦ pullback.isIso_diagonal_iff _
-
-variable (C) in
-instance IsStableUnderBaseChange.monomorphisms :
-    (monomorphisms C).IsStableUnderBaseChange :=
-  diagonal_isomorphisms (C := C) ▸ inferInstance
 
 end Diagonal
 
