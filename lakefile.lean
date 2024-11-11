@@ -102,6 +102,9 @@ any labels online.
 lean_exe autolabel where
   srcDir := "scripts"
 
+lean_exe «bump-imports» where
+  srcDir := "scripts"
+
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
   root := `Cache.Main
