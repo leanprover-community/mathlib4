@@ -1020,6 +1020,17 @@ theorem univ_pow [Fintype α] (hn : n ≠ 0) : (univ : Finset α) ^ n = univ :=
 protected theorem _root_.IsUnit.finset : IsUnit a → IsUnit ({a} : Finset α) :=
   IsUnit.map (singletonMonoidHom : α →* Finset α)
 
+@[to_additive]
+lemma image_op_pow (s : Finset α) : ∀ n : ℕ, (s ^ n).image op = s.image op ^ n
+  | 0 => by simp [singleton_one]
+  | n + 1 => by rw [pow_succ, pow_succ', image_op_mul, image_op_pow]
+
+@[to_additive]
+lemma map_op_pow (s : Finset α) :
+    ∀ n : ℕ, (s ^ n).map opEquiv.toEmbedding = s.map opEquiv.toEmbedding ^ n
+  | 0 => by simp [singleton_one]
+  | n + 1 => by rw [pow_succ, pow_succ', map_op_mul, map_op_pow]
+
 end Monoid
 
 section CommMonoid

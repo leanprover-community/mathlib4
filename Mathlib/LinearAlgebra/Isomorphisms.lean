@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Isomorphism theorems for modules.
@@ -158,9 +158,11 @@ def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ 
   { quotientQuotientEquivQuotientAux S T h with
     toFun := quotientQuotientEquivQuotientAux S T h
     invFun := mapQ _ _ (mkQ S) (le_comap_map _ _)
-    left_inv := fun x => Quotient.inductionOn' x fun x => Quotient.inductionOn' x fun x =>
-      by simp [Quotient.mk''_eq_mk]
-    right_inv := fun x => Quotient.inductionOn' x fun x => by simp [Quotient.mk''_eq_mk] }
+    left_inv := fun x => Submodule.Quotient.induction_on _
+     x fun x => Submodule.Quotient.induction_on _ x fun x =>
+      by simp
+    right_inv := fun x => Submodule.Quotient.induction_on _ x
+      fun x => by simp }
 
 /-- Essentially the same equivalence as in the third isomorphism theorem,
 except restated in terms of suprema/addition of submodules instead of `≤`. -/

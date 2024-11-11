@@ -13,8 +13,8 @@ In this file we introduce typeclasses and definitions for lattice operations.
 
 ## Main definitions
 
-* `Sup`: type class for the `⊔` notation
-* `Inf`: type class for the `⊓` notation
+* the `⊔` notation is used for `Max` since November 2024
+* the `⊓` notation is used for `Min` since November 2024
 * `HasCompl`: type class for the `ᶜ` notation
 * `Top`: type class for the `⊤` notation
 * `Bot`: type class for the `⊥` notation
@@ -41,22 +41,24 @@ postfix:1024 "ᶜ" => compl
 /-! ### `Sup` and `Inf` -/
 
 /-- Typeclass for the `⊔` (`\lub`) notation -/
-@[notation_class, ext]
+@[deprecated Max (since := "2024-11-06"), notation_class, ext]
 class Sup (α : Type*) where
   /-- Least upper bound (`\lub` notation) -/
   sup : α → α → α
 
 /-- Typeclass for the `⊓` (`\glb`) notation -/
-@[notation_class, ext]
+@[deprecated Min (since := "2024-11-06"), notation_class, ext]
 class Inf (α : Type*) where
   /-- Greatest lower bound (`\glb` notation) -/
   inf : α → α → α
 
-@[inherit_doc]
-infixl:68 " ⊔ " => Sup.sup
+attribute [ext] Min Max
 
 @[inherit_doc]
-infixl:69 " ⊓ " => Inf.inf
+infixl:68 " ⊔ " => Max.max
+
+@[inherit_doc]
+infixl:69 " ⊓ " => Min.min
 
 /-- Syntax typeclass for Heyting implication `⇨`. -/
 @[notation_class]

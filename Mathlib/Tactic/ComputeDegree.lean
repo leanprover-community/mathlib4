@@ -379,7 +379,7 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
         else pure [g]
       | none =>
         return [g]
-  return (assignable.join ++ tried_rfl.join)
+  return (assignable.flatten ++ tried_rfl.flatten)
 
 /--
 `splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
@@ -397,7 +397,7 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
   let progress := ← can_progress.mapM fun mv => do
     let lem := dispatchLemma <| twoHeadsArgs (← mv.getType'')
     mv.applyConst <| lem
-  return (progress.join, static ++ curr_static)
+  return (progress.flatten, static ++ curr_static)
 
 /-- `miscomputedDegree? deg false_goals` takes as input
 *  an `Expr`ession `deg`, representing the degree of a polynomial
@@ -480,7 +480,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`
       evalTactic
         (← `(tactic| try any_goals conv_lhs =>
-                       (simp (config := {decide := true}) only [Nat.cast_withBot]; norm_num)))
+                       (simp +decide only [Nat.cast_withBot]; norm_num)))
       if bang.isSome then
         let mut false_goals : Array MVarId := #[]
         let mut new_goals : Array MVarId := #[]

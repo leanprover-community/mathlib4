@@ -362,7 +362,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
         (l := List.map (Function.uncurry fun _ _ ↦ n₀) (List.enum L)),
         List.sum_replicate, List.length_map, List.enum_length, nsmul_eq_mul, mul_comm,
         Nat.digits_len n₀ m hn₀ (not_eq_zero_of_lt hm), Nat.cast_add_one]
-      simp (config := { contextual := true })
+      simp +contextual
     _ ≤ n₀ * (logb n₀ m + 1) := by gcongr; exact natLog_le_logb ..
   -- For h_ineq2 we need to exclude the case n = 0.
   rcases eq_or_ne n 0 with rfl | h₀
@@ -513,7 +513,7 @@ end Archimedean
 /-- **Ostrowski's Theorem** -/
 theorem mulRingNorm_equiv_standard_or_padic (f : MulRingNorm ℚ) (hf_nontriv : f ≠ 1) :
     (MulRingNorm.equiv f mulRingNorm_real) ∨
-    ∃! p, ∃ (hp : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
+    ∃! p, ∃ (_ : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
   by_cases bdd : ∀ n : ℕ, f n ≤ 1
   · right
     exact mulRingNorm_equiv_padic_of_bounded hf_nontriv bdd

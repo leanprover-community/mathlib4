@@ -5,6 +5,7 @@ Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Localization.Module
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-!
 # Localized Module
@@ -56,3 +57,29 @@ lemma Algebra.isPushout_of_isLocalization [IsLocalization (Algebra.algebraMapSub
     Algebra.IsPushout R T A B := by
   rw [Algebra.IsPushout.comm, Algebra.isPushout_iff]
   apply IsLocalizedModule.isBaseChange S
+
+open TensorProduct in
+instance (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+    {α} (S : Submonoid R) {Mₛ} [AddCommGroup Mₛ] [Module R Mₛ] (f : M →ₗ[R] Mₛ)
+    [IsLocalizedModule S f] : IsLocalizedModule S (Finsupp.mapRange.linearMap (α := α) f) := by
+  classical
+  let e : Localization S ⊗[R] M ≃ₗ[R] Mₛ :=
+    (IsLocalizedModule.isBaseChange S (Localization S)
+      (LocalizedModule.mkLinearMap S M)).equiv.restrictScalars R ≪≫ₗ IsLocalizedModule.iso S f
+  let e' : Localization S ⊗[R] (α →₀ M) ≃ₗ[R] (α →₀ Mₛ) :=
+    finsuppRight R (Localization S) M α ≪≫ₗ Finsupp.mapRange.linearEquiv e
+  suffices IsLocalizedModule S (e'.symm.toLinearMap ∘ₗ Finsupp.mapRange.linearMap f) by
+    convert this.of_linearEquiv (e := e')
+    ext
+    simp
+  rw [isLocalizedModule_iff_isBaseChange S (Localization S)]
+  convert TensorProduct.isBaseChange R (α →₀ M) (Localization S) using 1
+  ext a m
+  apply (finsuppRight R (Localization S) M α).injective
+  ext b
+  apply e.injective
+  suffices (if a = b then f m else 0) = e (1 ⊗ₜ[R] if a = b then m else 0) by
+    simpa [e', Finsupp.single_apply, -EmbeddingLike.apply_eq_iff_eq, apply_ite e]
+  split_ifs with h
+  swap; · simp
+  simp [e, IsBaseChange.equiv_tmul]
