@@ -39,7 +39,7 @@ section CommSemiring
 variable {R : Type u} [CommSemiring R] {S : Type v} [CommSemiring S]
 
 /-- A polynomial is separable iff it is coprime with its derivative. -/
-@[stacks 09H1 "First part. 09H1 (1) only defined separable for irreducible polynomials"]
+@[stacks 09H1 "first part"]
 def Separable (f : R[X]) : Prop :=
   IsCoprime f (derivative f)
 
@@ -538,9 +538,8 @@ variable (F L K : Type*) [CommRing F] [Ring K] [Algebra F K]
 variable {K} in
 /--
 An element `x` of an algebra `K` over a commutative ring `F` is said to be *separable*, if its
-minimal polynomial over `K` is separable. Note that the minimal polynomial of any element not
-integral over `F` is defined to be `0`, which is not a separable polynomial.
--/
+minimal polynamial over `K` is separable. Note that the minimal polynomial of any element not
+integral over `F` is defined to be `0`, which is not a separable polynomial. -/
 @[stacks 09H1 "second part"]
 def IsSeparable (x : K) : Prop := Polynomial.Separable (minpoly F x)
 
@@ -550,8 +549,7 @@ extension, because the minimal polynomial of a non-integral element is `0`, whic
 separable.
 
 We define this for general (commutative) rings and only assume `F` and `K` are fields if this
-is needed for a proof.
--/
+is needed for a proof. -/
 @[mk_iff isSeparable_def, stacks 09H1 "third part"]
 protected class Algebra.IsSeparable : Prop where
   isSeparable' : ∀ x : K, IsSeparable F x

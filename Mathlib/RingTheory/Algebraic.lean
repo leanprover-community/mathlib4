@@ -492,6 +492,7 @@ theorem Algebra.IsAlgebraic.tower_top [Algebra.IsAlgebraic K A] : Algebra.IsAlge
 
 variable (K)
 
+@[stacks 09GG]
 theorem IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
   (IsIntegral.of_finite K e).isAlgebraic
 
