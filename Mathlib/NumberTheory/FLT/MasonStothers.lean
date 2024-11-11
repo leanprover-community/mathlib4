@@ -15,10 +15,6 @@ we have `max {deg(a), deg(b), deg(c)} + 1 ≤ deg(rad(abc))` or `a' = b' = c' = 
 Proof is based on this online note by Franz Lemmermeyer http://www.fen.bilkent.edu.tr/~franz/ag05/ag-02.pdf,
 which is essentially based on Noah Snyder's paper "An Alternative Proof of Mason's Theorem",
 but slightly different.
-
-## TODO
-
-Prove polynomial FLT using Mason-Stothers theorem.
 -/
 
 open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
