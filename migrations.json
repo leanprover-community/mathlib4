@@ -1,0 +1,11 @@
+[
+    {
+        "type": "split_file",
+        "commit_sha1": "b420076afe5b4ba95e067bfc9add3f4b20b3ba90",
+        "old": "Mathlib/MeasureTheory/Constructions/Prod/Basic.lean",
+        "new": [
+            "Mathlib/MeasureTheory/Measure/Prod.lean",
+            "Mathlib/MeasureTheory/MeasurableSpace/Prod.lean"
+        ]
+    }
+]

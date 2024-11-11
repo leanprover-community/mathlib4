@@ -1,0 +1,885 @@
+fa330e6ebc27e9c83e647a7daab02f0ad5f52caa feat: Incidence algebras (#8900)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+cab580f2ebd317d8d746af8a6187154c4b350f2a chore: split UFD results out of RingTheory.Polynomial.Basic (#18875)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+b2572f06eb47cea818ff0260dcf3c1b8c285d1a3 feat: the translation operator (#16183)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+62e66dcfc9c948e83add4c6589b2fe2898f8e7ec feat(AlgebraicGeometry): the big etale site (#18854)
+ Mathlib.lean | 3 +++
+ 1 file changed, 3 insertions(+)
+19ffdd50e6bcb76ca34f3f1586b3f2f0e66cded5 chore(Data/DFinsupp): split `Basic.lean` into many smaller files (#18656)
+ Mathlib.lean | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+79e17d0d8a9a72c6e487c925ae724000957b2bd3 chore(Data/Finset): split `Basic.lean` into many smaller files (#18610)
+ Mathlib.lean | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+b407af361875d5a7057a63c2863802e5c0ba8143 chore(Algebra/Field): split `Subfield.lean` into `Defs` and `Basic` (#18528)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+7bcb227629e92c0cf0c45ca3ce9f15ae54e9a272 feat(Data/Fin/Parity): add lemmas about parity of `Fin` numbers (#8960)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+2567852e5cb84dd7a03131d4f887df4d69e4f908 chore(RingTheory/Noetherian): split `Noetherian.lean` (#18734)
+ Mathlib.lean | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+2eb40bedc659c5ceaa8266f31a17970398445cb9 feat(InfiniteSum): infinite product of absolute value (#18747)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+f3098a35f15f36891c3c6b5f9c8594898b1355cd feat: Pontryagin duality for finite abelian groups (#15999)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+10b85c940deaa23f03892b40b5500a3dedec80b1 feat: add results on cardinality of localization (#18004)
+ Mathlib.lean | 3 +++
+ 1 file changed, 3 insertions(+)
+ae3623fdeca346ff502a0e6f387fb422d9a50d47 feat(Topology/ContinuousMap): add `SecondCountableTopology` (#17706)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+0962f38e1b027b5c4381d8f57e7862ece4baa410 feat(Data/List): lemmas about `ofFn` (#18593)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+5b47f1161179e5293ffb65d3e5d16f5de2c6846a refactor(CategoryTheory/Monoidal): typeclasses Functor.LaxMonoidal, Functor.OplaxMonoidal and Functor.Monoidal (#17904)
+ Mathlib.lean | 1 -
+ 1 file changed, 1 deletion(-)
+9041e9d5dec0f9c3ce47a0c8b2db19c6e57161cd feat(CategoryTheory/SmallObject/Iteration): the unique morphism (bot and succ cases) (#18127)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+984b731629ca16feec9631b2fe29c3f8119d2545 refactor(Analysis/Complex): merge Complex/Convex and Convex/Complex (#18819)
+ Mathlib.lean | 1 -
+ 1 file changed, 1 deletion(-)
+dcd0c54029474826f732df2e67dad6f62d036801 feat(RingTheory/Flat): flat base change commutes with equalizers (#18776)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+b696b3524d2dde1068fa8192e92f25c990e9eb15 chore(Topology/Sheaves): split off results on sheaves of rings (#18762)
+ Mathlib.lean | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+9fcb1e10c5bfb6c3621b86ef4f102f1498c921af refactor: move linarith `Ineq` datatype to standalone file (#18678)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+7fc8954db7c3e9619b2055e97afeda277df11e5a feat(CategoryTheory): codiscrete categories (#17174)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+321f5ba838207eb8a681fca8e80e15c5e6ff9cb5 feat: the adele ring of a number field (#16485)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+5476cef777111bb7a13cd11b7ba78b24fdb2d04f feat(NumberTheory/DirichletCharacter/Orthogonality): new file (#18777)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+c804d44fa2b2808ac42f59ee314d594119c0915d refactor(AlgebraicGeometry): replace `OpenCover` by `Cover @IsOpenImmersion` (#18727)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+efb737da256e54a73006dbac848020821143eff8 feat(Analysis/Complex): periodic holo funcs factor through exponential (#18065)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+43f7c4fb6b4eea313eea397dfca1bc3be8b20ef9 feat(CategoryTheory): filteredness of Grothendieck construction (#18670)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+fd877e3244c9fc6f620484aa36b581ac20811878 feat(NumberTheory/MulChar/Duality): new file (#18760)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+42277c6a783b4f1274b64d72d0b1f15bcf32e768 feat(ENat): iSup_add (#15344)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+31c320e6adec695a8c070a78bb956e0fc5401431 feat: define `Filter.IsApproximateUnit` and basic API (#17787)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+272f00df83e1fa50d1ae847de11fe4ab78602c07 feat(RIngTheory/SimpleRing): matrix ring over a simple ring is simple (#18753)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+8abf91c2209a9808da44071443e2f4c866a3be95 feat(RingTheory/RootsOfUnity/AlgebraicallyClosed): new file (#18759)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+2b878991c9059cada386578e7da9a601b249102e feat: the completion of a number field at an infinite place (#16483)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+dfe98ef4677c6643ec91332a400b021bd3d04083 chore(LinearAlgebra/Dimension): split off `rank_quotient_eq_of_le_torsion` (#18730)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+666dec726dd1e4c7fb82906ae0bdf1b03a9f8894 feat(Combinatorics/Enumerative/Bell): number of ways of partitioning a set into subsets of given cardinalities (#15644)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+3113285d0b395f4dc40f64c95857afb2f78a5cf3 feat(GroupTheory/FiniteAbelian/Duality): new file (#18738)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+e438eb2e0e0caee2286fe6b54274fafc5f03ca7d chore(RingTheory/PrincipalIdealDomain): split off `PrincipalIdealRing.of_prime` (#18731)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+5e5231d8e319f035cb6d684e3a54ca9a66325e9d feat(Combinatorics/Additive): small tripling implies small powers (#18084)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+8a68a7421ba0b98d3703cf4634aa4832ab4fe7f8 feat(CategoryTheory/Sites): chosen finite products on sheaves (#18633)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+ce554f5411343ed97edb908acf68f692acd5c448 chore: move GroupTheory.FiniteAbelian to GroupTheory.FiniteAbelian.Basic (#18729)
+ Mathlib.lean | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+b5683e1452b37d573efcb344b02d7b6ad8d98148 feat: more on central simple algebras (#17789)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+185be8f63b8bcb7f2fbfe71aef6de15361685b2d feat: cardinalities in specific inverse systems (#18067)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+c5adc80d438877328f3307b59a66357d9b1f95b3 feat: Mason-Stothers theorem (polynomial ABC) (#15706)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+de9244e92f6580f60481f7ccf4e18fcfd5c6e06f chore(CauchyDavenport): use semantic lemma names (#17697)
+ Mathlib.lean | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+84343c902b917981ea5c2146ce0074c09c338984 feat: define restrictions of perfect pairings (#18559)
+ Mathlib.lean | 1 -
+ 1 file changed, 1 deletion(-)
+e8818a7d64e68e8ecc8c15bafc7964cb471fd2fb feat(Analysis/Normed/Ultra): Normed algebra preserves ultrametricity (#18698)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+a78ac3bf3898950f8422f687eab13af5c5573497 feat(Algebra/Category): for ring homs, epi + finite => surjective (#18267)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+89c20f6a98424db045ee6e28cbc9a51b046889b3 feat(AlgebraicGeometry): typeclasses for `S`-schemes (#18321)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+3acb1eb22c9bffda43c5183a0faca7b08e455cc7 feat: localization is flat (#18683)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+19c566ca2d5be4fc7eb439fd3ceacc1002324280 chore: split Algebra.Module.LocalizedModule (#18657)
+ Mathlib.lean | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+ea4bde991577ee976f664313b17a2ea98c94ef1e feat(RingTheory/RootsOfUnity/EnoughRootsOfUnity): new file (#18681)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+06cb2ca7c3ad6472f4575adf6161645a64c0fc25 feat: prove Cauchy's upper bound on polynomial roots (#16597)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+39aa723c23ec13bad773dca57b3d6ea3c651c8df feat(Convex): visibility through a set (#17928)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+0d0d40133a762850482f933c25190c12501204dd chore: split RingTheory.RootsOfUnity.Basic (#18669)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+d5bff18b63a26287acc8414a4e9d54fefd456531 feat: if colimits of commute with finite limits, then category is filtered (#18625)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+060720eb4bca7186cd79b7d087d0e50a4d672ca5 chore(Order/Intervals/Set): move some defs to a new file (#17950)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+426be0c2b0617616437af970f49605613b7e65e5 chore(RingTheory/TensorProduct): split finite/free results into new files (#18653)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+f4eec872a74c22069971341f0fb72b451dd3de11 chore(Algebra/Ring/Subring): split `Basic.lean` (#18520)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+c5938ebb4b07e057bb540f2d2b55c49f31f3736f feat(AlgebraicGeometry/Pullback): description of the underlying topological space of a fiber product of schemes (#17767)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+97dc6e834f1a7ed6095555aca7f0376834fa9b20 chore(Algebra/BigOperators): don't import `Sym` in the definition of big operators (#18650)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+76ffa613a406252a5f5bc4f5126d8dfed73ce8df feat(ModelTheory): Turning polynomials into ring terms (#16503)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+48832f004e493aeb43aac927937544c7a60c1644 chore: split Data.Matrix.ConjTranspose from Basic (#18643)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+b44c63b8f63632b656ad0859cdb276bee193c308 feat(Combinatorics/SimpleGraph): Add definition of disjoint sum of graphs (#15546)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+14b6bcc7488c3ec86f44217037c382ac43e50984 feat(Combinatorics/SimpleGraph): conversions between `SimpleGraph` and `Digraphs` (#16954)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+dbc6f5d7102123ea9f61db4053a9e6edd67c75e0 chore(Algebra/Ring/Int): split `Algebra/Ring/Int.lean` into `Defs`, `Parity` and `Units` (#18526)
+ Mathlib.lean | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+655cb8ff424064621224198b2b846b066a65bbca feat: combinatorial part of the Faa di Bruno formula (#17169)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+ddff18e6d123171cc1d13d35fc0f2a062ebdcd48 feat: totally unimodular matrices (#18495)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+375af59c849017dd2bdc6f834eddf91615173a93 chore: split Topology/ContinuousMap/Algebra (#18604)
+ Mathlib.lean | 3 +++
+ 1 file changed, 3 insertions(+)
+100b926899272a7f3c6ebc5c781846ba599b5451 feat(AlgebraicGeometry): pre-requisites of description of topological space of pullback (#18255)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+bb6a6f96d0e6390033773c3fb699bb25544f1413 feat(RingTheory/LocalProperties): being projective can be checked locally on stalks (#18131)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+15f99d44becdf94acbc9f295f44b8f267b508a2c feat: presented monoids (#13152)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+64d75cde3c2fcf9ff60f64ab03d59530efd7aa16 feat: `divRadical` for polynomials (#18452)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+6e98b4c07c04bcff5170ffd7adef179d951dbb0b feat(RingTheory): towards openness of flat locus (#18536)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+079e5ca5a630dabf441b6b74924402b266c3f748 feat(Algebra/Module): the tautological presentation of a module (#18374)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+00a70aba7898cca863914b6673083be45543a40f feat(Algebra/Module): presentation of a direct sum of modules (#18359)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+a7fc949f1b05c2a01e01c027fd9f480496a1253e chore: bump toolchain to v4.14.0-rc1 (#18597)
+ Mathlib.lean | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+7abccc07517e9c3c14539ff07e89613d938d5be6 chore(RingTheory/NonUnitalSubring): split Basic.lean (#18518)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+ddfa45d21fa79757b4bb6bc13e35338db5d9b26c chore(Algebra/Ring/Subsemiring): split `Basic.lean` (#18519)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+872dd56466b04d2d60043f7933ea78bca1274343 chore: move `#help` to Batteries (batteries#969) (#17257)
+ Mathlib.lean | 1 -
+ 1 file changed, 1 deletion(-)
+3a51a909fe294510e91d071384eeef5e7344bef9 feat(CategoryTheory): Colimits on the Grothendieck construction (#18442)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+2d1f8f4014ddb58603577e1f59c47f6ac51f962a chore(RingTheory/NonUnitalSubsemiring): split `Basic.lean` (#18517)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+43eb2160c9282bbbec0e29a4af58dd901eed3b1e chore(Algebra/Module/Submodule): split `Submodule/Basic.lean` (#18489)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+d76ec740aa9424d0b5ec2a5c478f9f7611f9d0c1 chore(Algebra/Group/Subgroup): split MulOpposite (#18488)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+2fc69c7f2cf8a673b129d21c537c69c4d48cb774 chore(ContinuousLinearMapWOT): generalize and golf (#17492)
+ Mathlib.lean | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+0ebaf5f563e708812f7296375fbce23e140eec7c feat(Algebra/Module): relation between Module.FinitePresentation and Module.Presentation (#18408)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+f7f18c5d2b392a8bf09df354fd949d5ce6afa619 chore: delay importing ultrafilters (#18328)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+c89d846221240c16351b00a2e0688bf262359e2a feat(CategoryTheory/Sites): some API for the Yoneda embedding into sheaf categories (#18185)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+592e543310f996eb066c40f9d6f7fc976e348646 feat: symmetric operators are finitely-semisimple (#18054)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+28b734425300a0956a22a1d129e73aa8056073d5 feat(NumberTheory/LSeries/QuadraticNonvanishing): new file (#18302)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+c68aa1080b4c5bc32adfb1fe9cb3f161cf5b13d8 feat(AlgebraicGeometry/Morphisms): affine + ring hom property (#18356)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+318cb7184d6e13f32a69869057dab5bcfe652f0d refactor: move slim_check to plausible (#18459)
+ Mathlib.lean | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+be654dffdb240f5473fe240394796351c7b7f360 feat(NumberTheory/Padics): Mahler basis functions (#18335)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+4b5f1a09a2e4d4d693db48703e230c11782c3c5e feat(Data/Fin/Tuple): Define `Fin.take` and initial theorems (#17196)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+c6c4ad2c80b0ee61738846f9feabf55c55acd955 feat(Topology/Group): Open normal subgroup in clopen nhds of one (#18377)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+e15c6ebb85588b23b9de808a1b085ab63689c2a2 feat: positive contractions in a C⋆-algebra form a directed set (#18016)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+4b231df5b58cfe6155f419e83b98079cdffd08e3 feat(FieldTheory): add basic api's for relative algebraic closure (#16771)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+abfa430bfba5999369262f1b45f517f71bc2b785 chore(RingTheory/Ideal): split `Quotient.lean` into `Defs` and `Basic` (#18393)
+ Mathlib.lean | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+39773322976301b2a422894189a25720c48fe95d feat(Algebra/Module): characterizations of free modules in terms of their presentations (#18327)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+ef78db7e00e989f71af21dd11bcfd6b7caf560da refactor(CategoryTheory): simplicial categories are generalized to enriched "ordinary" categories (#18175)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+39a385b501eae13c051fe0a4b7f33c13a85553c5 feat(CategoryTheory/Comma): limit properties of subcategories defined by morphism properties (#18134)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+07a7b10fb0b7a3fcc304d1dfea2d8fc8cf839252 chore(LinearAlgebra): split `Quotient.lean` into `Defs` and `Basic` (#18384)
+ Mathlib.lean | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+f4f0b47a2f859d27e965c812344deb1435fe8d48 chore(RingTheory/Congruence): split off `Defs.lean` (#18387)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+26c2a161a9386a6d42e74ed34dd4130c745eaa42 chore: remove Data/Int/Align (#18386)
+ Mathlib.lean | 1 -
+ 1 file changed, 1 deletion(-)
+90ab02572cd6230d90288763eaceddd13d691456 chore(RingTheory/Ideal): split up `Ideal/Basic.lean` (#18383)
+ Mathlib.lean | 5 +++++
+ 1 file changed, 5 insertions(+)
+17d5955a8d20feb1770676b854f118e8c40b7d41 feat: cardinalities of free constructions and `Nonempty (CommRing α)` (#18364)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+8a2a57115c2b36d6fb7630c4e8099e9a3fffe588 chore(GroupTheory/QuotientGroup): split off `Defs` file  (#18348)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+43e571a74cf82b7a3fc93d8f51c15520ae321041 feat(CategoryTheory/Limits): the end of a functor (#18082)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+85cb461066947975baa6de928183470813a4c294 feat(CategoryTheory/Closed): functors into a closed monoidal category form a closed monoidal category (#16067)
+ Mathlib.lean | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+54175eb4b1d4098a59093cd6096eeaefb1d68faa feat(AlgebraicGeometry) define rational maps (#18176)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+dfbe436509d43c243ecce8dac9782f7f5632c239 chore(GroupTheory/Coset): split off `Defs` file (#18347)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+925146c7c2f162e99afa66275e9d7beb9cfdb972 chore(GroupTheory/GroupAction): split off `Defs` file  (#18345)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+fe4820c926372190e01f6404c555c1ad2f0cf7e0 feat(Tactic): add `finiteness` tactic (#18034)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+7bf290184508102d1486d560f8ca6d34a27c9b4d chore: split Topology.Instances.Real (#18370)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+1d847d8cc0ca7c2e574a4a4ac22ba1b8607aea94 feat(CategoryTheory) : (Co)structured arrow as a functor to Cat (#18298)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+2d770eb43a4c30c764d1aa33186b14630e939360 feat(RingTheory): generalize `Ideal.IsPrimary` to submodules (#17073)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+4e5fa6379d912f52eb8a4bacac4dd9eb0c75fca3 chore(Algebra/Group/Subgroup): split off `Defs` file (#18340)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+91c4956798cf7dc581e5ee9948c6a0af77acd629 feat(Topology) define jacobson spaces (#18243)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+8781866cd9db1062b2c6a74f0e152e75153a7707 feat(Algebra/FreeMonoid): set of symbols appearing in an element of the free monoid (#18036)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+c0749f642a54f65b0514d92a9e039d1b4102e56b feat: matrices with fixed determinant (#16159)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+41221c61f583d0e7c1572f3bb4e156ea16b0f465 feat(AlgebraicGeometry/PrimeSpectrum): prime spectrum of jacobson rings (#18242)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+ed81cec6edb7997e2d21e33c5d7685ba800a80a3 feat(Algebra/Module): presentation of modules (#18295)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+63796b699530cc696fc8f9fa6ff1f4586edf5bf7 chore: move contents of Data.Finite.Basic earlier (#18316)
+ Mathlib.lean | 1 -
+ 1 file changed, 1 deletion(-)
+bacb7f7dc65a321aa2ee2be900c6a4a90285acc4 feat(RingTheory/LinearDisjoint): definition and properties of linearly disjoint of subalgebras (1) (#17820)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+deda35aa3eb0ef0a1b8f3c21f17169bf4e785cdf chore: split Data.Set.Basic (#18317)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+091df8ec952a1cfe53fee8494ff1c917aecab921 chore: split Mathlib.Topology.Algebra.UniformGroup (#18311)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+91530d46942aa5d14a89d26826f87096a8c536e9 feat: some trivialities about Nat.primeCounting and Finset.card/count (#17037)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+380f469e41f87c305b0706bc38dc1b785603e481 feat: isometric continuous functional calculi (#17837)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+feac7b36ef96a86aa423e04b63146f905a6280f3 feature(Analysis/LocallyConvex/AbsConvex): The absolutely convex hull of a totally bounded set is totally bounded (#17204)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+04f438a04f3eb6279c293f133bdcf717d785331d feat: tensor products of bialgebras (#11977)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+b420076afe5b4ba95e067bfc9add3f4b20b3ba90 chore(MeasureTheory/Constructions/Prod/Basic: split (#18286)
+ Mathlib.lean | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+d91cd4279b4fec91a17a07c01488515ddfca759f feat: define the positive and negative parts of elements in a C⋆-algebra (#18103)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+5532a724f861e30fc9030573e712370d69a58579 feat(CategoryTheory/SmallObject): very basic API for the iteration of functors (#18115)
+ Mathlib.lean | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+6264905204f3ed595bc99032ec15af1910a0eddd feat(RingTheory/Lasker): decomposition into primary ideals (#17123)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+dd8f6e1179f68dfd7a939b270ede7385437e4836 feat: add `MultilinearMap.dfinsuppFamily` and `MultilinearMap.piFamily` (#17881)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+7e4aaba2363bbceb287b74f286f51a50e868f818 feat(CategoryTheory/Monoidal): Day's reflection theorem (#15894)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+608b89fc0dd5614d6a50ebd8c5a6ff43c05deb87 chore: do not depend on CategoryTheory in Module.Injective (#17747)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+0fb334674969d63019f5ae82ebac5e2ff1cd4b67 chore(Bicategory): restructure oplax modifications (#18250)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+2834fd211f1f6bccd9b3a792346ab1661de9ecb3 refactor(RingTheory/Unramified): Switch official definition to allow general universes (#15135)
+ Mathlib.lean | 1 -
+ 1 file changed, 1 deletion(-)
+8cb7d6fc4d7757deaadb42fabaf8c2a1aaffa11a feat(Ideal/IsPrincipalPowQuotient): R/I equiv I^n/I^(n+1) (#15426)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+d4e8628a6cac9e4d7e891cbb6bc9d6f258298f21 feat(AlgebraicGeometry): morphisms into separated schemes are determined by a dense subset (#18151)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+e2338ffc272658ed73b8c5a708aafc386b30e1b7 feat(RingTheory/Etale): etale <=> separable for field extensions of finite type. (#17633)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+8a7de7ec693d71990f0007e58c6e27f18c7290c7 feat(FieldTheory): define `IsConjRoot` and prove its basic properties (#17783)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+2e87d1a8a668a70fa5b9f24085270036824c1902 feat: `StarOrderedRing (α × β)` (#18209)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+e6ba8e0a61b2e29769b333a35aa978c7d3e46e39 feat(NumberTheory/LSeries/Positivity): new file (#18031)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+eba9c377332bae1a588c85fc07a1a4012ea29299 chore(Data/Nat/Prime): split `Defs`; rearrange `Basic` (#18233)
+ Mathlib.lean | 4 ++++
+ 1 file changed, 4 insertions(+)
+970d241d0868926adcfcc688a4a2b846fe732ea3 refactor: delete IsWellOrderLimitElement.lean (#15904)
+ Mathlib.lean | 1 -
+ 1 file changed, 1 deletion(-)
+533ce927a420bd01fa3c66d250c9beb523fcd2a3 feat(CategoryTheory): constructor for pseudofunctors from a strict locally discrete category (#18201)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+aea6f296a35d3b88812a1b424543e1da53822850 chore: split `Limits/Shapes/Terminal.lean` to reduce imports (#18229)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+b5a5319a32d9785c6c18f40b803ff6af0ff31077 chore(Algebra/Associated): split off Prime and Irreducible (#18224)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+21128da4eb35f0ab7bb8165a856f11d38de987b3 chore: split StructuredArrow.lean to reduce imports (#18227)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+086c16c9e1afb5cf1671a508c821c4717fe9050e chore: split Topology.GDelta (#18215)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+d85e7dbb201ed04d86c1f27e373dc6f5fc637092 chore: split Topology.Separation (#18213)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+f8829a66213bebeab14f58c568eeea9442dd607b chore: cleanup/split of Data.List.Perm (#18211)
+ Mathlib.lean | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+fc157081b3adaa6877bf68c0415d54c0126cf47f chore(Algebra/GroupWithZero/Action): reduce theory included with `Group.Action.Defs` (#18190)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+3b956ec74be6771f25956f90740af8ded0572b70 feat(CategoryTheory/Closed/Enrichment): a closed monoidal category is enriched in itself (#17326)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+a3c1388b7856689e7fffbe49cdffb1395c61a54d chore(Algebra/CharP): reduce theory requirements for `CharP.Defs` (#18182)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+1cc8fd2224b0e1f1a0c7ab16628f98fc404e837a chore(Algebra/Group/Action): reduce theory included with `Group.Action.Defs` (#18187)
+ Mathlib.lean | 4 ++++
+ 1 file changed, 4 insertions(+)
+b8fa953fd3a165a7adf4d7d94ff265bcf093c739 feat: Equivalence between OnePoint K and projective line over field K (#17266)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+6937f0825aff0dbc61a002a817fb41c2745b0720 feat: Ind-objects are closed under filtered colimits (#17451)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+8d463aee83e8cdc415b744069803d0c6c491c383 feat(RingTheory/Kaehler): kaehler differential module under base change (#18153)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+e1f8635a93689e15cc8cd292ace6de89bf5036f8 refactor: create `CStarAlgebra` classes and refactor to use them (#16953)
+ Mathlib.lean | 4 ++++
+ 1 file changed, 4 insertions(+)
+a5a1a0dcb784f2801ebf84f26072b8f550194335 feat(CategoryTheory): the short exact sequence of abelian sheaves of a Mayer-Vietoris square (#15053)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+03be989844769da3c80cae464d4ff2878b0494e7 chore(Algebra/Module): split `Defs` a bit further (#18169)
+ Mathlib.lean | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+f72cbf5998335b7b2863a003a2ce58c11e982418 feat(AlgebraicGeometry): define immersions (#18154)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+3693a5a57e378f05c10214413ad7976295d762f7 chore: split NumberTheory/NumberField/Discriminant (#18168)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+ba2cab6d66d37935d50184b5732c3e3e01874dc1 chore: move CategoryTheory.Comma.Presheaf to CategoryTheory.Comma.Presheaf.Basic (#18162)
+ Mathlib.lean | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+0a0178f5f7dfe519f09d3d06cf6b1179f404f2b2 feat(Algebra/Category/ModuleCat/Presheaf): epi and mono in the category of presheaves of modules (#18159)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+a86c9d3e03a01e49cdf7aad6190c7c56efa6ad94 feat: the monoidal structure on the category of presheaves of modules (#17300)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+893b3a846645d48ac45143ec02149cc551acd99d feat(Algebra/Category/ModuleCat): the free presheaf of modules on a presheaf of sets (#16755)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+c46a2f187c308d6e4523de78efd44f1b9824b549 feat(CategoryTheory/Comma): subcategory defined by morphism properties (#18088)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+45deead3df330bee30208e5e46f8f655df30c4ea feat: add First Derivative Test from calculus (#16802)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+b65e87ab079a01dd7909978d4a5d21a85457c252 feat(Tactic/ReduceModChar): add fast modular exponentiation (#18030)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+d747c920641e064678ee487e070e58d12045e9a1 feat(AlgebraicGeometry): spreading out morphisms on stalks (#17987)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+f9091e1356447d70b6fa9248e2992380c24b5a9d feat(CategoryTheory/PathCategory): induction principles for morphisms in path categories (#18074)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+c48f8a2c507e553f98f2daadf5a9e63ccfe09047 feat(CategoryTheory/Adjunction): the left partial adjoint (#17388)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+877aae73ce134e68b43d24adeab9175e218a1be4 chore(SetTheory/Ordinal/Rank): move `IsWellFounded.rank` to its own file (#18078)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+93c444d301e86a998f4e8247dde5d8977258b108 chore(Data/ENNReal): split off `Lemmas` file (#17919)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+f8c840f2ba3c66470aa24aec11803688f2ad4c3f refactor(Order/ConditionallyCompleteLattice): split large file (#18029)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+5eb330bc038e8d4d8af4f844fbe9a87b896e89aa chore(Algebra/PUnitInstances): split off `GCDMonoid PUnit` instance (#18014)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+1ece609f6ff5522cd5858de729b808e787a61695 feat: define finitely-semisimple linear maps (#17689)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+970a6567fb2a41652d0ef34ee38c464dc2b76233 feat(AlgebraicGeometry): basic properties of separated morphisms and schemes (#17960)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+07013722cda97276225650bec2a9635f95807ed6 feat: `WithAbs` type synonym (#17998)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+d2c8beddb0e73ffe98e51d3a9933d5acd833d52f chore(Topology/Algebra/SeparationQuotient): split (#18011)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+340899ebd0cae121230bf6e70a6d1e7bcf330ed0 chore(Pointwise/Finset): move `MonoidWithZero` and `Ring` results out (#17999)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+d254991000b87f4ff40cd3647d42c5e3b26c030f feat(Data/Real/IsNonarchimedean): add lemmas (#16767)
+ Mathlib.lean | 3 +++
+ 1 file changed, 3 insertions(+)
+5195b1b9fa13843cc3e29b43b149588e937a7bd9 chore(Filter/Tendsto): split from `Basic` (#17959)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+662a8bae724a1bc23eb7626d0a6ce80a26fc14d5 chore(Data/NNReal): split into `Defs` and `Basic` (#17913)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+f738d2223ef0c3e25d6a5482c94afb6cf6191ffa feat: the multiGoal linter (#12339)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+4d87f692a546837be1bd8d1dcd18a36e4722c5bc chore: rename List.modifyNth->modify and insertNth->insertIdx (#17985)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+a3996466391c60195c5b37cdd1d7496f75962049 feat(Analysis/Normed/Field/Ultra): nonarchimedean iff norm of nats le one (#15077)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+8d27fbf359865a12c7bc7ed41bfe6ede9fd372a3 feat(CategoryTheory): pull colimits out of hom functors with Yoneda on the LHS (#17440)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+e7b15d2cf73d42c900766fa0e24e0762f13a8106 feat(Analysis/Complex/Positivity): new file (#17862)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+6a88b5460a66aeed2fb64195c0925fd4d07334f1 chore: move binary recursion on `Nat` into a new file (#15567)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+e0dccaab3f60adf16923fcc30de87ce08f296833 chore(FieldTheory/Galois): Move infinite Galois (#17945)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+227950d6190a304c6d697f37d74425bebe12917d feat: topology on module over topological ring (#16895)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+64ac27ea68f1e00fc29e2ce69a1c73c348dcdfb4 chore(Order/Bounds/Basic): Split long file into two shorter files (#16539)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+0d932abadf1d7aad0fd9efbae434ff5e6fa24667 feat: define rooted trees (#16272)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+92412db77694c08a00efa5b1028264e8c7079f7b feat(FiberedCategory/Fiber): define the fibers of a functor (#13603)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+2b96a2f7f0879e2bd4f2517079e0752c24206277 feat(CategoryTheory/Bicategory): Grothendieck construction for a pseudofunctor (#15419)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+66f63643834286e06540e60e459b22c7bbd25475 chore: move trans tactic to Batteries (batteries#1001) (#17931)
+ Mathlib.lean | 1 -
+ 1 file changed, 1 deletion(-)
+a5ac03c22864667518ae5d482af4e870af67200f chore(Algebra/Module): split off `NoZeroSMulDivisors` (#17909)
+ Mathlib.lean | 4 ++++
+ 1 file changed, 4 insertions(+)
+75204348c7d435ac1d22d07c32f5d2836d9548ed feat(FieldTheory/Galois): Finite galois subextensions (#16978)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+7b3afdd0e7374470ac2af311f49a06197ede6db1 feat: more lemmas about the size of pointwise sets (#17231)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+34f08fb6b3608c4b798f493e995f4eb615a9b01d feat: generalize results from EuclideanSpace to PiLp (#17663)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+3b5cedb7b2da9faae67402d7a66a75e5f44b666e feat(Topology): define `ContinuousEval{,Const}` classes (#17319)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+9b16c5d7fb54a2f624ce50e9b4f9de1e2a26b963 chore(Topology/Algebra/Order): move 2 files (#17879)
+ Mathlib.lean | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+077e0efd658ccaa95474fb130feeded70c602f6a chore: move deprecated file Mathlib/Data/ByteArray into Mathlib/Deprecated (#17884)
+ Mathlib.lean | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+3f9cdcd1db12e4b662c93305015ce28d909918d8 feat(Tactic/Linter/Lint): improve `dupNamespace` linter (#17631)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+23a1a4bd2117e0e4a6391122bcf08d7c2edf6008 feat(AlgebraicGeometry): proper morphisms of schemes (#17863)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+389e09795accaebbea904dccedfed6322feb5b86 chore(Algebra.Order.Monoid.TypeTags): split into unbundled and bundled ordered algebra (#16047)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+34de7267074d0f2532903e3e72770b04bfa15ae5 feat: a nonarchimedean group is totally disconnected (#16687)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+b2dddd4c7b46f8feff35592d99c9e4ce57a3832f feat: sum of iterated derivatives (#16886)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+d9aad45391e594b51dfd27fdf9c579e105a0183c feat(CategoryTheory/Shift): shifted morphisms in the opposite category (#17546)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+d82cdbff79fdde07da9d4edc86a3d9d4fbc67c13 feat(RingTheory/Smooth): Smoothness of product rings. (#15131)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+9266f86d046ce02c551f1d9fe9f425dabb44476f feat(RingTheory/Flat/FaithfullyFlat): definition of faithfully flat module (#17805)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+d51a8c9ac5f7970ce1d50207a52ff800aa95d956 feat(LinearAlgebra/TensorProduct/Quotient): add some isomorphisms (#17803)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+d8ceed52a92e5b0ba56911202c89d75114ce9d1b feat(AlgebraicGeometry): smooth morphisms of schemes (#14161)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+9800ff6dbcb799b3fe7c7cb25eb570e77893f4ee feat(LinearAlgebra/Matrix): characterize ideals in matrix rings (#17750)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+b1ec18a85983bb1edd81b603b996cd9f9f7ee8df feat(CategoryTheory/Sites): pretopology induced by a morphism property (#17736)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+c41f54d5da1cfb4821b762dadca0723eaf0de39e feat: generalise `LieModule.independent_genWeightSpace` to any family of compatible endomorphisms (#17654)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+9dba3dd644fa6310b6d1f0a7143491803d5005a4 feat: define the ordinary hypergeometric function (#17455)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+21bb8348b419e6365e8b174cebc3ce95714da087 feat(Condensed): characterisation of discrete (light) condensed sets and modules (#14027)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+8e52ebf89bc31f366f732f12e4ed932eeecf442e chore: move differentiability of Gamma to a new file (#17775)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+b33faadf563e7b3d6b9578d89a7f04292fc0f86d chore(Topology/Group): move `QuotientGroup` to a new file (#17473)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+6eec427982c8cb527cd6e3c99d067d9e2218e719 feat(RingTheory/StandardSmooth): meta properties of standard smooth ring homomorphisms (#16868)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+8e7833a57c7331fcf2a2b9776482ae29dca6d004 feat: `MeasurableSpace` instance for the quotient of a module by a submodule (#17812)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+b913345e5847bd22f23ab83b6256654095f161eb feat(CategoryTheory/Limits): definition of sifted categories (#17779)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+e11ad74a0019789ce11354c1f71b7c44fb8fa6c7 chore: split Data.Finite.Basic (#17796)
+ Mathlib.lean | 5 +++++
+ 1 file changed, 5 insertions(+)
+52ec24b8cf5efb48492a6047c352a222452d9c2d feat(AlgebraicGeometry/EllipticCurve/J): further properties of j-invariants of elliptic curves (#17431)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+66d4c59d16a2dc822498b144b744dfaa6823f3e0 feat(Condensed): colimit characterization of discrete condensed sets (#15566)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+cd2b4684c8a90c3d0cd975765404b95e2c997c2a feat: the header linter (#16574)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+9727486bc885d03a2435255dbb46b3b03599793e refactor: turn `posPart` into a notation class again (#17426)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+a003b0ef2191b8227f791b3c40cdec1c77ef7bb4 chore: bump Batteries (upstreamed DList) (#17791)
+ Mathlib.lean | 2 --
+ 1 file changed, 2 deletions(-)
+7ca047f4fa340d89a8f535c148e6b27a94451c74 chore: move `Init.Logic` and its remaining dependencies to `Deprecated` (#17771)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+a5f83b52871c5420ee5ca4eaebcfa8b1e37663b5 chore: split off `Rat`-based functions from `Mathlib.Lean.Expr.Basic` (#17778)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+b562c300b1aa371a31abd240d9695d0a2b32f380 chore: move `Init.Data.Nat.Lemmas` to `Deprecated.NatLemmas` (#17770)
+ Mathlib.lean | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+b71a497062cee55d6ea0c674b6bdd7312ea190ce chore: move `Init.Algebra.Classes` and its remaining dependencies to `Deprecated` (#17769)
+ Mathlib.lean | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+c9428b0dd6704e88e5703a7c1ab96dbcbac9ea41 chore: split off `RBMap` dependency from `Mathlib.Data.Tree` (#17764)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+427742c47dc65f1bf0b388a769307e6abcd24af1 chore(RingTheory/Localization/Basic): split off `Defs` (#17735)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+dbbb99abc96dcc3399b3801e57433c8f94b069e3 chore(GroupTheory/MonoidLocalization/Basic): split off `Away` (#17731)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+74b17a171fe8ba33353bfdc87c47fae2af792271 chore(RingTheory/OreLocalization): split into `GroupTheory.OreLocalization` (#17730)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+c78db1435bce112c36922972590b0183fcb4d7c6 feat(Data/List/GroupBy): Basic API for `List.GroupBy` (#16818)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+9958ee4c7a38fa22589e8d655e9abbb39bdf1a42 chore(GroupTheory/Congruence/Basic): split off `Defs` and `Hom` (#17729)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+23f702a6fcea4c12960ffaee2341bcc484498e4d chore(Group.Submonoid.Basic): split off `Defs` (#17726)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+fa858033452c8217e036b23ca7e812ed0f13cd70 feat: add a FloorSemiring instance to NNRat (#13548)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+1659e846af8e35f29f68ea84aaa66e291d430677 chore(Group/Subsemigroup/Basic): split off Defs file (#17725)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+a67c43d5b23965bb3f37259d2c1460380face4e2 chore(Algebra.Group.Units): split into `Defs` and `Basic` file (#17724)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+8cb678e92effe8f3913416b9b78327d177e5c3de feat: compactly generated spaces for proper maps and preimages of compact sets / proper and properly discontinuous actions (#15239)
+ Mathlib.lean | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+134f2f109f0ac326add237c68eee4d87539f0926 feat: add `RingTheory.Trace.Quotient`: relations between trace maps and quotients (#14798)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+cb3a2f9abefa51c42fe965d53a78974abc2fbc6c feat(Algebra/Central): definition of central simple algebra (#16856)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+9d6891a766a51bbb1555a9dc2f503d47e7817f7e feat: `MeasurableSpace` instance for `AddChar` (#17275)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+90cf978d2237de99eb5a639301b5b0b3f913d744 chore(Order/Bounds): move defs to a new file (#17676)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+52e14c088046bc1fb62f598492d04cbfa9957981 feat(HolderNorm): Define the Hölder norm (#16711)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+ae22b2a2e15bd80aa1472ec0cc5f25c043db4f5f feat(Dynamics.TopologicalEntropy.Semiconj): topological entropy and semiconjugacies (#17387)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+8839a89f2e68791ecfb4389f6bf12562ef239f30 feat: L2 inner product of finite sequences (#16447)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+13c52d66bee8cc12be90d97f0efd6b63d5dc1b39 chore(SetTheory/Cardinal/Ordinal): split file (#16990)
+ Mathlib.lean | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+3390e4047ee730f33011a787e6523bbbaf3cf8ec chore: rename `condCount` to `uniformOn` (#17571)
+ Mathlib.lean | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+1cc075db4232c2842fc938697d677f91aaba6a96 feat: remove the `SmoothManifoldWithCorners` assumption in the definition of tangent spaces (#17616)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+061a5b195fa7b98c1b5a5c01849a77642ea7edc3 chore(AlgebraicTopology): moved some files into SimplicialSet (#17620)
+ Mathlib.lean | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+4cd3a900ad08603f26ba5c887b8a71369459db7c feat(NumberTheory/Fermat): Fermat numbers (#17000)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+957d5dd1187ba53aa3a8b3f5d0a04525abec9cb0 feat: define finite length modules and show equivalence with `IsNoetherian ∧ IsArtinian` (#17478)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+27e1331f5048efde3cd539d9718ed08787debb9b refactor(SetTheory/Ordinal/Enum): better definition for `Ordinal.enumOrd` (#16962)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+4191d40e319d05da838839d8170cf1f6dbcee5a2 chore(Filter): move defs to a new file (#17552)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+fb07d0ded9b50108d6af885ddb66842e3396f1c2 feat(RingTheory/DualNumber): dual numbers over a field are local and PIR (#17317)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+91bc9bf8cba739b6f62fe346b67eed92c2f94e54 chore(ContinuousMap/Defs): extract from `Basic` (#17265)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+c6cf2b0a850d5d7aa37ad00ad3a1dd52a989d47e feat: basic results about the differentiability of the norm (#17150)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+546cfa08aafd809649d22c8b302d9d769c032381 refactor: generalise `IsLocalRingHom` to monoids (#6045)
+ Mathlib.lean | 1 -
+ 1 file changed, 1 deletion(-)
+a0c5ecc243fa2056aedc80dc90ed8cc8490c9275 feat(Tactic/Linter): the ppRoundtrip linter (#15535)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+688ff147bbdaccab23d77f016ce7cea549b0f6ff feat: `ring`-based prover for certain inequalities in semirings (#16840)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+7138640ce946069270bf5f63cf37d18ffd9987e9 feat: strengthen `instTotallyDisconnectedSpaceOfIsUltrametricDist` to `TotallySeparatedSpace` (#17427)
+ Mathlib.lean | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+2e8a2b233a733bcfb8f95c9498a18d905e697558 feat(Analysis/Convex): Birkhoff's theorem and doubly stochastic matrices (#16278)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+d43e29488bfb253e662f2517cc7d86d0ff83f7ad feat: `FloorSemiring.tendsto_pow_div_factorial` (#17119)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+811c9e37e5e4f027a4bb9320d24d92a8d82507f6 feat(AlgebraicGeometry/EllipticCurve/NormalForms): some normal forms of elliptic curves (#16864)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+eeedb3169ce926c4f1405ada133880a514ea2ef4 chore(Data/Set): split Data/Set/Function (#17091)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+6039b328982ff9a304d5e3f22e4c2baf880591c2 feat(Data/Int/WithZero): add WithZeroMultIntToNNReal (#15741)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+10237afb3047d996a1859d55aba197affdbfa9db feat (Analysis/Normed/Group): ultrametric normed groups are nonarchimedean (#17262)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+7b3092eb077b98318a493ccb2f86522a07c33d41 feat(Condensed): discrete condensed modules are given by locally constant maps (#15569)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+12bdcfbb2f45629063f1d00117ab943db2c485f2 feat(RingTheory): target local closure of property of ring homomorphisms (#17032)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+585232223a64fa72b84c3e1c841c53ba0dcb228e feat(Tactic/Algebraize): add algebraize tactic (#16217)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+6dd0053d1d38ec7c6c0dd7bb5b5f72ab271c005e feat: Big operators indexed by an interval (#17280)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+7e65505042f561db2a6fe1c24a09d1d2c5a0df5b feat: Order instances for `MulOpposite`/`AddOpposite` (#17201)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+2d5610a78a9c94b0a15ec25e14a41a88bac202d0 feat(RingTheory/Unramified): Formally unramified product of rings (#15141)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+6b2a12273e5ba90af2d475ff0d13a2e37e87cddc feat(RingTheory/Unramified): Classification of unramifield field extensions. (#15123)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+1a4c6bcc621d0b5f485d6121d26937525a458c54 feat(AlgebraicGeometry): Residue fields of schemes. (#15333)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+81d4159870a16f4ae3253172f5d203bfa004b8e0 chore: generalise more lemmas from `LinearOrderedField` to `GroupWithZero` (#17359)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+655d653bfd6eb4968829ce8e2b5e4ed0419f6f05 feat (LinearAlgebra/RootPairing/Finite) : The canonical bilinear form on a finite root pairing (#17070)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+343c459e02fb933bc42a6aff3a3554e6dad168cd feat(Analysis.Normed.Ring.IsPowMulFaithful): prove eq_of_powMul_faithful (#15445)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+3b0dde03a4440144a4e587a2b0c514534d04d0f8 feat: derivative of absolute value (#17149)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+8a443b7ad3a6c846913bb0363e9f11e82e29fce1 feat: `Finset.sup s f = 0 ↔ ∀ i ∈ s, f i = 0` (#17078)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+b91c5b63fd9ad104b16ea34bd259162dd1850b9e feat(CategoryTheory/Galois): fiber functor is essentially surjective (#16552)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+e4a8f5b0444a8dcd89f1ac4b7602f894bb177516 feat: balancing a function (#17205)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+081ccd5754d78a2d08f4ec4a737e5c7b54e76743 feat(Analysis/Normed/{Group,Field}/Ultra): Nonarchimedean norms from ultrametrics (#14768)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+f1843eb954a21599b1b417d356952f426db55208 chore(Data/Finset): split lattice file (#17049)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+26ad5ceac5af421995494f631a2c55c3277826e5 feat(RingTheory/TwoSidedIdeal): add some basic operations on two-sided-ideals (#14460)
+ Mathlib.lean | 2 ++
+ 1 file changed, 2 insertions(+)
+69c3e9253dfe613022a408aaa4af323855209d6e feat: Convex functions are continuous (#14999)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)
+c24c460adbd11a4ffd84cf75872e20bcf167bdbe feat: `Irrational π` (#17103)
+ Mathlib.lean | 1 +
+ 1 file changed, 1 insertion(+)

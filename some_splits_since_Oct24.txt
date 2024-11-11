@@ -1,0 +1,27 @@
+--
+13c52d66bee8cc12be90d97f0efd6b63d5dc1b39
+Mathlib.SetTheory.Cardinal.Ordinal -> Mathlib.SetTheory.Cardinal.Aleph, Mathlib.SetTheory.Cardinal.Arithmetic
+
+--
+3390e4047ee730f33011a787e6523bbbaf3cf8ec
+Mathlib.Probability.CondCount -> Mathlib.Probability.UniformOn
+
+--
+061a5b195fa7b98c1b5a5c01849a77642ea7edc3
+Mathlib.AlgebraicTopology.SimplicialSet -> Mathlib.AlgebraicTopology.SimplicialSet.Basic
+Mathlib.AlgebraicTopology.KanComplex -> Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
+Mathlib.AlgebraicTopology.Nerve -> Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+Mathlib.AlgebraicTopology.Quasicategory -> Mathlib.AlgebraicTopology.SimplicialSet.Quasicategory
+
+--
+546cfa08aafd809649d22c8b302d9d769c032381
+Mathlib.RingTheory.LocalRing.RingHom.Defs ->
+
+--
+7138640ce946069270bf5f63cf37d18ffd9987e9
+Mathlib.Topology.MetricSpace.Ultra.TotallyDisconnected -> Mathlib.Topology.MetricSpace.Ultra.TotallySeparated
+
+--
+9b16c5d7fb54a2f624ce50e9b4f9de1e2a26b963
+Mathlib.Topology.Algebra.Order.Compact -> Mathlib.Topology.Order.Compact
+Mathlib.Topology.Algebra.Order.Rolle -> Mathlib.Topology.Order.Rolle
