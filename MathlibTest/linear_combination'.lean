@@ -20,10 +20,6 @@ example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
 example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
   linear_combination' h1
 
-example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
-  fail_if_success linear_combination h1 + 3 -- FIXME give a better error message for this syntax
-  linear_combination h1
-
 example (x y : ℤ) (h1 : x + 2 = -3) (_h2 : y = 10) : 2 * x + 4 = -6 := by
   linear_combination' 2 * h1
 
@@ -61,11 +57,6 @@ example (x y : ℚ) (h1 : 3 * x + 2 * y = 10) (h2 : 2 * x + 5 * y = 3) : -11 * y
 
 example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
   linear_combination' ha / 6 + hab / 3
-
-example (a b : ℚ) (h1 : a + b = 1) (h2 : a - b = 1) : a = 1 := by linear_combination (h1 + h2) / 2
--- example (a b : ℤ) (h1 : a + b = 1) (h2 : a - b = 1) : a = 1 := by
-  -- linear_combination (h1 + h2) / 2
--- FIXME handle this? at least give a better error message
 
 /-! ### Cases with more than 2 equations -/
 
@@ -225,8 +216,8 @@ example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 :=
 --   and coefficients to use a type that fulfills the add_group condition,
 --   and ℕ does not.
 example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
-  fail_if_success linear_combination h1
-  convert congr($h1)
+  fail_if_success linear_combination' h1
+  linear_combination2 h1
 
 set_option linter.unusedVariables false in
 example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := by
@@ -254,62 +245,6 @@ example (K : Type)
   linear_combination' (exp := 6) 2 * y * z ^ 2 * h₂ / 7 + (x ^ 3  - y ^ 2 * z / 7) * h₁ -
     x * y * z * h₀ + y * z * h / 7
 
-/-! ### Linear inequalities -/
-
-example : (3:ℤ) ≤ 4 := by linear_combination
-
-example (x : ℚ) (hx : x ≤ 3) : x - 1 ≤ 5 := by linear_combination hx
-example (x : ℝ) (hx : x ≤ 3) : x - 1 ≤ 5 := by linear_combination hx
-
-example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≤ 1) : a + b ≤ 2 := by linear_combination h1 + h2
-example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : a + b < 3 := by linear_combination h1 + h2
-example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≥ 2) : a ≤ b := by linear_combination h1 + h2
-
-example (a : ℚ) (ha : 0 ≤ a) : 0 ≤ 2 * a := by linear_combination 2 * ha
-
-example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : (a + b) / 2 ≤ 1 := by linear_combination (h1 + h2) / 2
-
-example {x y : ℤ} (hx : x + 3 ≤ 2) (hy : y + 2 * x ≥ 3) : y > 3 := by linear_combination hy + 2 * hx
-
-example {x y : ℤ} (h : x + 1 ≤ y) : x < y := by linear_combination h
--- example {x y : ℤ} (h : x < y) : x + 1 ≤ y := by linear_combination h -- FIXME: handle this?
-
-example {x y z : ℚ} (h1 : 4 * x + y + 3 * z ≤ 25) (h2 : -x + 2 * y + z = 3)
-    (h3 : 5 * x + 7 * z = 43) :
-    x ≤ 4 := by
-  linear_combination (14 * h1 - 7 * h2 - 5 * h3) / 38
-
-example {a b c d e : ℚ}
-    (h1 : 3 * a + 4 * b - 2 * c + d = 15)
-    (h2 : a + 2 * b + c - 2 * d + 2 * e ≤ 3)
-    (h3 : 5 * a + 5 * b - c + d + 4 * e = 31)
-    (h4 : 8 * a + b - c - 2 * d + 2 * e = 8)
-    (h5 : 1 - 2 * b + 3 * c - 4 * d + 5 * e = -4) :
-    a ≤ 1 := by
-  linear_combination (-155 * h1 + 68 * h2 + 49 * h3 + 59 * h4 - 90 * h5) / 320
-
-example {a b c d e : ℚ}
-    (h1 : 3 * a + 4 * b - 2 * c + d = 15)
-    (h2 : a + 2 * b + c - 2 * d + 2 * e ≤ 3)
-    (h3 : 5 * a + 5 * b - c + d + 4 * e = 31)
-    (h4 : 8 * a + b - c - 2 * d + 2 * e = 8)
-    (h5 : 1 - 2 * b + 3 * c - 4 * d + 5 * e > -4) :
-    a < 1 := by
-  linear_combination (-155 * h1 + 68 * h2 + 49 * h3 + 59 * h4 + 90 * h5) / 320
-
-/-! ### Nonlinear inequalities -/
-
--- FIXME should permit writing just `hb`, not `hb.le`
-example {a b : ℝ} (ha : 0 ≤ a) (hb : b < 1) : a * b ≤ a := by linear_combination a * hb.le
-
-example {u v x y A B : ℝ} (_ : 0 ≤ u) (_ : 0 ≤ v) (h2 : A ≤ 1) (h3 : 1 ≤ B) (h4 : x ≤ B)
-    (h5 : y ≤ B) (h8 : u < A) (h9 : v < A) :
-    u * y + v * x + u * v < 3 * A * B := by
-  linear_combination v * h2 + v * h3 + v * h4 + u * h5 + (v + B) * h8 + 2 * B * h9
-
-example {t : ℚ} (ht : t ≥ 10) : t ^ 2 - 3 * t - 17 ≥ 5 := by linear_combination (t + 7) * ht
-
-example {n : ℤ} (hn : n ≥ 5) : n ^ 2 > 2 * n + 11 := by linear_combination (n + 3) * hn
 
 /-! ### Regression tests -/
 
