@@ -564,33 +564,33 @@ lemma exists_isNClique_cliqueNum [Fintype α] : ∃ s, G.IsNClique G.cliqueNum s
     Nat.sSup_mem ⟨0, by simp[isNClique_empty.mpr rfl]⟩ G.fintype_cliqueNum_bddAbove
 
 /-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
-structure IsMaximumClique (G : SimpleGraph α) (s : Finset α) : Prop where
+structure IsMaximumClique [Fintype α] (G : SimpleGraph α) (s : Finset α) : Prop where
   (isClique : G.IsClique s)
   (maximum : ∀ t : Finset α, G.IsClique t → #t ≤ #s)
 
-theorem isMaximumClique_iff {s : Finset α} :
+theorem isMaximumClique_iff [Fintype α] {s : Finset α} :
     G.IsMaximumClique s ↔ G.IsClique s ∧ ∀ t : Finset α, G.IsClique t → #t ≤ #s :=
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 /-- A maximal clique in a graph `G` is a clique that cannot be extended by adding more vertices. -/
-structure IsMaximalClique (G : SimpleGraph α) (s : Finset α) : Prop where
-  (clique : G.IsClique s)
-  (maximal : ∀ t : Finset α, G.IsClique t → s ⊆ t → t = s)
+abbrev IsMaximalClique (G : SimpleGraph α) (s : Set α) := Maximal G.IsClique s
 
-theorem isMaximalClique_iff {s : Finset α} :
-    G.IsMaximalClique s ↔ G.IsClique s ∧ ∀ t : Finset α, G.IsClique t → s ⊆ t → t = s :=
-  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
+theorem isMaximalClique_iff {s : Set α} :
+    G.IsMaximalClique s ↔ G.IsClique s ∧ ∀ t : Set α, G.IsClique t → s ⊆ t → t ⊆ s :=
+  Eq.to_iff rfl
 
-lemma IsMaximumClique.isMaximalClique (s : Finset α) (M : G.IsMaximumClique s) :
+lemma IsMaximumClique.isMaximalClique [Fintype α] (s : Finset α) (M : G.IsMaximumClique s) :
     G.IsMaximalClique s :=
-  { clique := M.isClique,
-    maximal := fun t ht hsub => by
+  ⟨ M.isClique,
+    fun t ht hsub => by
       by_contra hc
-      push_neg at hc
-      have hlt : #s < #t := card_lt_card (hsub.ssubset_of_ne hc.symm)
-      have hle : #t ≤ #s := M.maximum t ht
+      have fint : Fintype t := ofFinite ↑t
+      have ne : s ≠ t.toFinset := fun a ↦ by subst a; simp_all[Set.coe_toFinset, not_true_eq_false]
+      have hle : #t.toFinset ≤ #s := M.maximum t.toFinset (by simp [Set.coe_toFinset, ht])
+      have hlt : #s < #t.toFinset :=
+        card_lt_card (ssubset_of_ne_of_subset ne (Set.subset_toFinset.mpr hsub))
       exact lt_irrefl _ (lt_of_lt_of_le hlt hle)
-  }
+  ⟩
 
 lemma maximumClique_card_eq_cliqueNum [Fintype α] (s : Finset α) (sm : G.IsMaximumClique s) :
     #s = G.cliqueNum := by
