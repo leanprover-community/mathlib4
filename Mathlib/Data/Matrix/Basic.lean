@@ -1250,7 +1250,8 @@ def entryAddHom (i : m) (j : n) : AddHom (Matrix m n α) α where
 -- for unification to succeed
 lemma entryAddHom_eq_comp {i : m} {j : n} :
     entryAddHom α i j =
-      ((Pi.evalAddHom _ j).comp (Pi.evalAddHom _ i)).comp (AddHomClass.toAddHom ofAddEquiv.symm) :=
+      ((Pi.evalAddHom (fun _ => α) j).comp (Pi.evalAddHom _ i)).comp
+        (AddHomClass.toAddHom ofAddEquiv.symm) :=
   rfl
 
 end AddHom
@@ -1274,7 +1275,7 @@ def entryAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
 -- for unification to succeed
 lemma entryAddMonoidHom_eq_comp {i : m} {j : n} :
     entryAddMonoidHom α i j =
-      ((Pi.evalAddMonoidHom _ j).comp (Pi.evalAddMonoidHom _ i)).comp
+      ((Pi.evalAddMonoidHom (fun _ => α) j).comp (Pi.evalAddMonoidHom _ i)).comp
         (AddMonoidHomClass.toAddMonoidHom ofAddEquiv.symm) := by
   rfl
 

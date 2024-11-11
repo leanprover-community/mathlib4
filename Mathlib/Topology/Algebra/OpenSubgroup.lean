@@ -444,8 +444,7 @@ instance [ContinuousMul G] : Sup (OpenNormalSubgroup G) :=
 @[to_additive]
 instance instSemilatticeSupOpenNormalSubgroup [ContinuousMul G] :
     SemilatticeSup (OpenNormalSubgroup G) :=
-  toSubgroup_injective.semilatticeSup
-    (fun (H : OpenNormalSubgroup G) ↦ ↑H.toOpenSubgroup) (fun _ _ ↦ rfl)
+  toSubgroup_injective.semilatticeSup _ (fun _ _ ↦ rfl)
 
 @[to_additive]
 instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
