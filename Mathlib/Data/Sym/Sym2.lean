@@ -392,8 +392,8 @@ then `pmap f s h` is essentially the same as `map f s` but is defined only when 
 satisfy `p`, using the proof to apply `f`.
 -/
 def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α) : (∀ a ∈ s, P a) → Sym2 β :=
-  let g : (p : α × α) → (∀ a ∈ Sym2.mk p, P a) → Sym2 β :=
-    fun p H => s(f p.1 (H p.1 <| mem_mk_left _ _), f p.2 (H p.2 <| mem_mk_right _ _))
+  let g (p : α × α) (H : ∀ a ∈ Sym2.mk p, P a) : Sym2 β :=
+    s(f p.1 (H p.1 <| mem_mk_left _ _), f p.2 (H p.2 <| mem_mk_right _ _))
   Quot.recOn s g fun p q hpq => funext fun Hq => by
     rw [rel_iff'] at hpq
     have Hp : ∀ a ∈ Sym2.mk p, P a := fun a hmem =>
