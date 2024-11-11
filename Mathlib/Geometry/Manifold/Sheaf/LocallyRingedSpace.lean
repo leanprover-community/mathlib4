@@ -94,7 +94,8 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
         apply inv_mul_cancel₀
         exact hVf y
     · intro y
-      exact ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
+      #adaptation_note /-- 2024-11-11 was `exact`; somehow `convert` bypasess unification issues -/
+      convert ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
         (f.smooth.comp (smooth_inclusion hUV)).smoothAt
 
 /-- The non-units of the stalk at `x` of the sheaf of smooth functions from `M` to `𝕜`, considered
