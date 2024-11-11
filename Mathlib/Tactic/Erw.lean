@@ -18,10 +18,11 @@ display a hint explaining what to do if this happens.
 -/
 
 /-- If we call `erw`, first try running regular `rw` and warn if that succeds. -/
+-- This syntax is copied from lean4's ``.
 macro_rules
-  | `(tactic| erw $s $(loc)?) =>
+  | `(tactic| erw $c [$s,*] $(loc)?) =>
     `(tactic|
-      try_this rw $(.none)? $s $(loc)?;
+      try_this rw $c [$s,*] $(loc)?;
       trace "Hint: `rw` succeeded here, but may have performed a different rewrite than `erw` would.
 If `erw` really is needed, try preceding this line with a `rw` to get rid of the other occurrences,
 or use `conv` to specify exactly which subterm to rewrite.")
