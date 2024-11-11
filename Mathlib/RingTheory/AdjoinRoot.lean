@@ -345,10 +345,8 @@ instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaxim
 noncomputable instance instGroupWithZero [Fact (Irreducible f)] : GroupWithZero (AdjoinRoot f) :=
   Quotient.groupWithZero (span {f} : Ideal K[X])
 
-/-- If `R` is a field and `f` is irreducible, then `AdjoinRoot f` is a field.
-
-[Stack: Example 09FX, first part](https://stacks.math.columbia.edu/tag/09FX)
--/
+/-- If `R` is a field and `f` is irreducible, then `AdjoinRoot f` is a field -/
+@[stacks 09FX "first part, see also 09FI"]
 noncomputable instance instField [Fact (Irreducible f)] : Field (AdjoinRoot f) where
   __ := instCommRing _
   __ := instGroupWithZero
