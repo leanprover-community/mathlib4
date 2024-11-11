@@ -297,6 +297,9 @@ lemma Filter.EventuallyEq.mem_interior_iff {x : α} {s t : Set α} (hst : s =ᶠ
     x ∈ interior s ↔ x ∈ interior t :=
   ⟨fun h ↦ hst.mem_interior h, fun h ↦ hst.symm.mem_interior h⟩
 
+@[deprecated (since := "2024-11-11")]
+alias EventuallyEq.mem_interior_iff := Filter.EventuallyEq.mem_interior_iff
+
 section Pi
 
 variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
