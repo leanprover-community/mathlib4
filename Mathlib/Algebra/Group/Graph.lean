@@ -3,7 +3,9 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, David Loeffler
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Prod
+import Mathlib.Data.Set.Function
+import Mathlib.Algebra.Group.Submonoid.Defs
 
 /-!
 # Vertical line test for group homs
