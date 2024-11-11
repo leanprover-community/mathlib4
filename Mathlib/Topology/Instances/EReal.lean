@@ -220,8 +220,7 @@ lemma le_liminf_add : (liminf u f) + (liminf v f) ≤ liminf (u + v) f := by
   exact c_ab.trans (add_lt_add a_x b_x)
 
 lemma limsup_add_le (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤) (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
-    limsup (u + v) f ≤ (limsup u f) + (limsup v f) :=
-  by
+    limsup (u + v) f ≤ (limsup u f) + (limsup v f) := by
   refine le_add_of_forall_lt h h' fun a a_u b b_v ↦ (limsup_le_iff).2 fun c c_ab ↦ ?_
   filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v] with x a_x b_x
   exact (add_lt_add a_x b_x).trans c_ab
