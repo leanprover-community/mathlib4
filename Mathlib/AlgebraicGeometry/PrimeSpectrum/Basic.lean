@@ -3,14 +3,15 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.KrullDimension.Basic
-import Mathlib.Topology.KrullDimension
-import Mathlib.Topology.Sober
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.Tactic.StacksAttribute
+import Mathlib.Topology.KrullDimension
+import Mathlib.Topology.Sober
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring
@@ -208,6 +209,31 @@ instance compactSpace : CompactSpace (PrimeSpectrum R) := by
   choose I hI using fun i ↦ (isClosed_iff_zeroLocus_ideal (S i)).mp (S_closed i)
   simp_rw [hI, ← zeroLocus_iSup, zeroLocus_empty_iff_eq_top, ← top_le_iff] at S_empty ⊢
   exact Ideal.isCompactElement_top.exists_finset_of_le_iSup _ _ S_empty
+
+/-- The prime spectrum of a semiring has discrete Zariski topology iff it is finite and
+all primes are maximal. -/
+theorem discreteTopology_iff_finite_and_isPrime_imp_isMaximal : DiscreteTopology (PrimeSpectrum R) ↔
+    Finite (PrimeSpectrum R) ∧ ∀ I : Ideal R, I.IsPrime → I.IsMaximal :=
+  ⟨fun _ ↦ ⟨finite_of_compact_of_discrete, fun I hI ↦ (isClosed_singleton_iff_isMaximal ⟨I, hI⟩).mp
+    <| discreteTopology_iff_forall_isClosed.mp ‹_› _⟩, fun ⟨_, h⟩ ↦ .of_finite_singleton_isClosed
+    fun p ↦ (isClosed_singleton_iff_isMaximal p).mpr <| h _ p.2⟩
+
+/-- The prime spectrum of a semiring has discrete Zariski topology iff there are only
+finitely many maximal ideals and their intersection is contained in the nilradical. -/
+theorem discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical :
+    letI s := {I : Ideal R | I.IsMaximal}
+    DiscreteTopology (PrimeSpectrum R) ↔ Finite s ∧ sInf s ≤ nilradical R :=
+  discreteTopology_iff_finite_and_isPrime_imp_isMaximal.trans <| by
+    simp_rw [(equivSetOfIsPrime R).finite_iff, Set.finite_coe_iff]
+    refine ⟨fun h ↦ ⟨h.1.subset fun _ h ↦ h.isPrime, nilradical_eq_sInf R ▸ sInf_le_sInf h.2⟩,
+      fun ⟨fin, le⟩ ↦ ?_⟩
+    have hpm (I : Ideal R) (hI : I.IsPrime): I.IsMaximal := by
+      replace le := le.trans (nilradical_le_prime I)
+      rw [← fin.coe_toFinset, ← Finset.inf_id_eq_sInf, hI.inf_le'] at le
+      have ⟨M, hM, hMI⟩ := le
+      rw [fin.mem_toFinset] at hM
+      rwa [← hM.eq_of_le hI.1 hMI]
+    exact ⟨fin.subset hpm, hpm⟩
 
 section Comap
 
@@ -505,6 +531,22 @@ lemma iSup_basicOpen_eq_top_iff' {s : Set R} :
   conv_rhs => rw [← Subtype.range_val (s := s), ← iSup_basicOpen_eq_top_iff]
   simp
 
+theorem isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton [Algebra R S]
+    {f : R} {p : PrimeSpectrum R} (h : (basicOpen f).1 = {p}) :
+    IsLocalization.Away f S ↔ IsLocalization.AtPrime S p.1 :=
+  have : IsLocalization.AtPrime (Localization.Away f) p.1 := by
+    refine .of_le_of_exists_dvd (Submonoid.powers f) _
+      (Submonoid.powers_le.mpr <| by apply h ▸ Set.mem_singleton p) fun r hr ↦ ?_
+    contrapose! hr
+    simp_rw [← Ideal.mem_span_singleton] at hr
+    have ⟨q, prime, le, disj⟩ := Ideal.exists_le_prime_disjoint (Ideal.span {r})
+      (Submonoid.powers f) (Set.disjoint_right.mpr hr)
+    have : ⟨q, prime⟩ ∈ (basicOpen f).1 := Set.disjoint_right.mp disj (Submonoid.mem_powers f)
+    rw [h, Set.mem_singleton_iff] at this
+    rw [← this]
+    exact not_not.mpr (q.span_singleton_le_iff_mem.mp le)
+  IsLocalization.isLocalization_iff_of_isLocalization _ _ (Localization.Away f)
+
 end BasicOpen
 
 section Order
@@ -593,14 +635,30 @@ lemma isCompact_isOpen_iff {s : Set (PrimeSpectrum R)} :
     fun ⟨s, e⟩ ↦ ⟨s, s.finite_toSet, by simpa using e.symm⟩⟩
 
 lemma isCompact_isOpen_iff_ideal {s : Set (PrimeSpectrum R)} :
-    IsCompact s ∧ IsOpen s ↔
-      ∃ I : Ideal R, I.FG ∧ (PrimeSpectrum.zeroLocus (I : Set R))ᶜ = s := by
+    IsCompact s ∧ IsOpen s ↔ ∃ I : Ideal R, I.FG ∧ (zeroLocus I)ᶜ = s := by
   rw [isCompact_isOpen_iff]
   exact ⟨fun ⟨s, e⟩ ↦ ⟨.span s, ⟨s, rfl⟩, by simpa using e⟩,
     fun ⟨I, ⟨s, hs⟩, e⟩ ↦ ⟨s, by simpa [hs.symm] using e⟩⟩
 
-lemma exists_idempotent_basicOpen_eq_of_is_clopen {s : Set (PrimeSpectrum R)}
-    (hs : IsClopen s) : ∃ e : R, IsIdempotentElem e ∧ s = basicOpen e := by
+lemma basicOpen_injOn_isIdempotentElem :
+    {e : R | IsIdempotentElem e}.InjOn basicOpen := fun x hx y hy eq ↦ by
+  by_contra! ne
+  wlog ne' : x * y ≠ x generalizing x y
+  · apply this y hy x hx eq.symm ne.symm
+    rwa [mul_comm, of_not_not ne']
+  have : x ∉ Ideal.span {y} := fun mem ↦ ne' <| by
+    obtain ⟨r, rfl⟩ := Ideal.mem_span_singleton'.mp mem
+    rw [mul_assoc, hy]
+  have ⟨p, prime, le, nmem⟩ := Ideal.exists_le_prime_nmem_of_isIdempotentElem _ x hx this
+  exact ne_of_mem_of_not_mem' (a := ⟨p, prime⟩) nmem
+    (not_not.mpr <| p.span_singleton_le_iff_mem.mp le) eq
+
+@[stacks 00EE]
+lemma existsUnique_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
+    (hs : IsClopen s) : ∃! e : R, IsIdempotentElem e ∧ s = basicOpen e := by
+  refine exists_unique_of_exists_of_unique ?_ ?_; swap
+  · rintro x y ⟨hx, rfl⟩ ⟨hy, eq⟩
+    exact basicOpen_injOn_isIdempotentElem hx hy (SetLike.ext' eq)
   cases subsingleton_or_nontrivial R
   · exact ⟨0, Subsingleton.elim _ _, Subsingleton.elim _ _⟩
   obtain ⟨I, hI, hI'⟩ := isCompact_isOpen_iff_ideal.mp ⟨hs.1.isCompact, hs.2⟩
@@ -635,6 +693,13 @@ lemma exists_idempotent_basicOpen_eq_of_is_clopen {s : Set (PrimeSpectrum R)}
   · rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Set.compl_subset_comm, ← hI']
     exact PrimeSpectrum.zeroLocus_anti_mono
       (Set.singleton_subset_iff.mpr <| Ideal.pow_le_self hnz hx)
+
+lemma exists_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
+    (hs : IsClopen s) : ∃ e : R, IsIdempotentElem e ∧ s = basicOpen e :=
+  (existsUnique_idempotent_basicOpen_eq_of_isClopen hs).exists
+
+@[deprecated (since := "2024-11-11")]
+alias exists_idempotent_basicOpen_eq_of_is_clopen := exists_idempotent_basicOpen_eq_of_isClopen
 
 section LocalizationAtMinimal
 
@@ -774,6 +839,7 @@ section Idempotent
 
 variable {R} [CommRing R]
 
+@[stacks 00EC]
 lemma PrimeSpectrum.basicOpen_eq_zeroLocus_of_isIdempotentElem
     (e : R) (he : IsIdempotentElem e) :
     basicOpen e = zeroLocus {1 - e} := by
@@ -786,6 +852,7 @@ lemma PrimeSpectrum.basicOpen_eq_zeroLocus_of_isIdempotentElem
     rw [Ideal.eq_top_iff_one, ← sub_add_cancel 1 e]
     exact add_mem h₁ h₂
 
+@[stacks 00EC]
 lemma PrimeSpectrum.zeroLocus_eq_basicOpen_of_isIdempotentElem
     (e : R) (he : IsIdempotentElem e) :
     zeroLocus {e} = basicOpen (1 - e) := by
@@ -793,17 +860,64 @@ lemma PrimeSpectrum.zeroLocus_eq_basicOpen_of_isIdempotentElem
 
 lemma PrimeSpectrum.isClopen_iff {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e : R, IsIdempotentElem e ∧ s = basicOpen e := by
-  refine ⟨PrimeSpectrum.exists_idempotent_basicOpen_eq_of_is_clopen, ?_⟩
+  refine ⟨exists_idempotent_basicOpen_eq_of_isClopen, ?_⟩
   rintro ⟨e, he, rfl⟩
   refine ⟨?_, (basicOpen e).2⟩
   rw [PrimeSpectrum.basicOpen_eq_zeroLocus_of_isIdempotentElem e he]
   exact isClosed_zeroLocus _
 
 lemma PrimeSpectrum.isClopen_iff_zeroLocus {s : Set (PrimeSpectrum R)} :
-    IsClopen s ↔ ∃ e : R, IsIdempotentElem e ∧ s = zeroLocus {e} := by
-  rw [isClopen_iff]
-  refine ⟨fun ⟨e, he, h⟩ ↦ ⟨1 - e, he.one_sub,
-    h.trans (basicOpen_eq_zeroLocus_of_isIdempotentElem e he)⟩, fun ⟨e, he, h⟩ ↦
-    ⟨1 - e, he.one_sub, h.trans (zeroLocus_eq_basicOpen_of_isIdempotentElem e he)⟩⟩
+    IsClopen s ↔ ∃ e : R, IsIdempotentElem e ∧ s = zeroLocus {e} :=
+  isClopen_iff.trans <| ⟨fun ⟨e, he, h⟩ ↦ ⟨1 - e, he.one_sub,
+    h.trans (basicOpen_eq_zeroLocus_of_isIdempotentElem e he)⟩,
+    fun ⟨e, he, h⟩ ↦ ⟨1 - e, he.one_sub, h.trans (zeroLocus_eq_basicOpen_of_isIdempotentElem e he)⟩⟩
+
+/-- Clopen subsets in the prime spectrum of a commutative ring are in 1-1 correspondence
+with idempotent elements in the ring. -/
+@[stacks 00EE]
+def PrimeSpectrum.isIdempotentElemEquivIsClopen :
+    {e : R | IsIdempotentElem e} ≃ {s : Set (PrimeSpectrum R) | IsClopen s} :=
+  .ofBijective (fun e ↦ ⟨basicOpen e.1, isClopen_iff.mpr ⟨_, e.2, rfl⟩⟩)
+    ⟨fun x y eq ↦ Subtype.ext (basicOpen_injOn_isIdempotentElem x.2 y.2 <|
+      SetLike.ext' (congr_arg (·.1) eq)), fun s ↦
+        have ⟨e, he, h⟩ := exists_idempotent_basicOpen_eq_of_isClopen s.2
+        ⟨⟨e, he⟩, Subtype.ext h.symm⟩⟩
+
+lemma PrimeSpectrum.basicOpen_isIdempotentElemEquivIsClopen_symm (s) :
+    basicOpen (isIdempotentElemEquivIsClopen (R := R).symm s).1 = s.1 :=
+  congr_arg (·.1) (isIdempotentElemEquivIsClopen.apply_symm_apply s)
+
+lemma IsLocalization.away_quotient_of_isIdempotentElem {e : R} (he : IsIdempotentElem e) :
+    IsLocalization.Away e (R ⧸ Ideal.span {1 - e}) :=
+  away_of_isIdempotentElem he Ideal.mk_ker Quotient.mk_surjective
+
+open PrimeSpectrum in
+/-- If the prime spectrum of a commutative ring R has discrete Zariski topology, then R is
+canonically isomorphic to the product of its localizations at the (finitely many) maximal ideals. -/
+@[stacks 00JA
+"See also `PrimeSpectrum.discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical`."]
+def RingHom.toLocalizationIsMaximalEquiv [DiscreteTopology (PrimeSpectrum R)] : R ≃+*
+    ∀ I : {I : Ideal R | I.IsMaximal}, haveI : I.1.IsMaximal := I.2; Localization.AtPrime I.1 :=
+  .ofBijective _ ⟨RingHom.toLocalizationIsMaximal_injective R, fun x ↦ by
+    let idem I := isIdempotentElemEquivIsClopen (R := R).symm ⟨{I}, isClopen_discrete _⟩
+    let ideal I := Ideal.span {1 - (idem I).1}
+    let toSpec (I : {I : Ideal R | I.IsMaximal}) : PrimeSpectrum R := ⟨I.1, I.2.isPrime⟩
+    have loc I : IsLocalization.AtPrime (R ⧸ ideal I) I.1 := by
+      rw [← isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton]
+      exacts [IsLocalization.away_quotient_of_isIdempotentElem (idem I).2,
+       (basicOpen_isIdempotentElemEquivIsClopen_symm ⟨{I}, isClopen_discrete _⟩)]
+    let equiv I := IsLocalization.algEquiv I.1.primeCompl (Localization.AtPrime I.1) (R ⧸ ideal I)
+    have := (discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical.mp ‹_›).1
+    have := Ideal.pi_quotient_surjective ?_ fun I ↦ equiv (toSpec I) (x I)
+    · have ⟨r, hr⟩ := this
+      refine ⟨r, funext fun I ↦ (equiv <| toSpec I).injective ?_⟩
+      rw [← hr]; exact (equiv _).commutes r
+    refine fun I J ne ↦ Ideal.isCoprime_iff_exists.mpr ?_
+    have := ((idem <| toSpec I).2.mul (idem <| toSpec J).2).eq_zero_of_isNilpotent <| by
+      simp_rw [← basicOpen_eq_bot_iff, basicOpen_mul, SetLike.ext'_iff, idem,
+        TopologicalSpace.Opens.coe_inf, basicOpen_isIdempotentElemEquivIsClopen_symm]
+      exact Set.singleton_inter_eq_empty.mpr fun h ↦ ne (Subtype.ext <| congr_arg (·.1) h)
+    simp_rw [ideal, Ideal.mem_span_singleton', exists_exists_eq_and]
+    exact ⟨1, idem (toSpec I), by simpa [mul_sub]⟩⟩
 
 end Idempotent

@@ -345,6 +345,7 @@ end CommRing
 
 Strictly speaking, this should be called `IsLeftArtinianRing` but we omit the `Left` for
 convenience in the commutative case. For a right Artinian ring, use `IsArtinian Rᵐᵒᵖ R`. -/
+@[stacks 00J5]
 abbrev IsArtinianRing (R) [Ring R] :=
   IsArtinian R R
 
@@ -416,6 +417,7 @@ open IsArtinian
 
 variable {R : Type*} [CommRing R] [IsArtinianRing R]
 
+@[stacks 00J8]
 theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) := by
   let Jac := Ideal.jacobson (⊥ : Ideal R)
   let f : ℕ →o (Ideal R)ᵒᵈ := ⟨fun n => Jac ^ n, fun _ _ h => Ideal.pow_le_pow_right h⟩
@@ -502,9 +504,7 @@ lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
   rwa [← Subtype.ext <| (@isMaximal_of_isPrime _ _ _ _ q.2).eq_of_le p.2.1 hq2]
 
 variable (R)
-/--
-[Stacks Lemma 00J7](https://stacks.math.columbia.edu/tag/00J7)
--/
+@[stacks 00J7]
 lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
   simp_rw [← isPrime_iff_isMaximal]
   apply primeSpectrum_finite R

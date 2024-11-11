@@ -83,6 +83,13 @@ instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
 
 variable (R S)
 
+/-- The prime spectrum is in bijection with the set of prime ideals. -/
+def equivSetOfIsPrime : PrimeSpectrum R ≃ {I : Ideal R | I.IsPrime} where
+  toFun I := ⟨I.1, I.2⟩
+  invFun I := ⟨I.1, I.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]
 def primeSpectrumProdOfSum : PrimeSpectrum R ⊕ PrimeSpectrum S → PrimeSpectrum (R × S)

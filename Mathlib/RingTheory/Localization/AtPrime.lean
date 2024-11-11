@@ -248,3 +248,26 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
     simp only [Function.comp_apply, RingHom.coe_comp, localRingHom_to_map]
 
 end Localization
+
+namespace RingHom
+
+variable (R)
+
+def toLocalizationIsMaximal : R →+*
+    ∀ I : {I : Ideal R | I.IsMaximal}, haveI : I.1.IsMaximal := I.2; Localization.AtPrime I.1 :=
+  Pi.ringHom fun _ ↦ algebraMap R _
+
+theorem toLocalizationIsMaximal_injective :
+    Function.Injective (RingHom.toLocalizationIsMaximal R) := fun r r' eq ↦ by
+  by_contra ne
+  rw [← one_mul r, ← one_mul r'] at ne
+  let equalizer : Ideal R :=
+  { carrier := {s : R | s * r = s * r'}
+    add_mem' := fun h h' ↦ by simpa [right_distrib] using congr($h + $h')
+    zero_mem' := by simp_rw [Set.mem_setOf, zero_mul]
+    smul_mem' := fun _ _ h ↦ by simpa [mul_assoc] using congr(_ * $h) }
+  have ⟨I, mI, hI⟩ := equalizer.exists_le_maximal (equalizer.ne_top_iff_one.mpr ne)
+  have ⟨s, hs⟩ := (IsLocalization.eq_iff_exists I.primeCompl _).mp (congr_fun eq ⟨I, mI⟩)
+  exact s.2 (hI hs)
+
+end RingHom
