@@ -64,8 +64,8 @@ open scoped Cardinal InitialSeg
 
 universe u v w
 
-variable {α : Type u} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
-  {t : γ → γ → Prop}
+variable {α : Type u} {β : Type v} {γ : Type w}
+  {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
 
 /-! ### Definition of ordinals -/
 
@@ -234,11 +234,6 @@ protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
 
 instance nontrivial : Nontrivial Ordinal.{u} :=
   ⟨⟨1, 0, Ordinal.one_ne_zero⟩⟩
-
-@[simp]
-theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
-    type (f ⁻¹'o r) = type r :=
-  (RelIso.preimage f r).ordinal_type_eq
 
 @[elab_as_elim]
 theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
@@ -611,26 +606,29 @@ def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
 
 @[simp]
 theorem type_uLift (r : α → α → Prop) [IsWellOrder α r] :
-    type (ULift.down ⁻¹'o r) = lift.{v} (type r) := by
-  simp (config := { unfoldPartialApp := true })
+    type (ULift.down ⁻¹'o r) = lift.{v} (type r) :=
   rfl
 
-theorem _root_.RelIso.ordinal_lift_type_eq {α : Type u} {β : Type v} {r : α → α → Prop}
-    {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s] (f : r ≃r s) :
-    lift.{v} (type r) = lift.{u} (type s) :=
+theorem _root_.RelIso.ordinal_lift_type_eq {r : α → α → Prop} {s : β → β → Prop}
+    [IsWellOrder α r] [IsWellOrder β s] (f : r ≃r s) : lift.{v} (type r) = lift.{u} (type s) :=
   ((RelIso.preimage Equiv.ulift r).trans <|
       f.trans (RelIso.preimage Equiv.ulift s).symm).ordinal_type_eq
 
--- @[simp]
-theorem type_lift_preimage {α : Type u} {β : Type v} (r : α → α → Prop) [IsWellOrder α r]
+@[simp]
+theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
+    type (f ⁻¹'o r) = type r :=
+  (RelIso.preimage f r).ordinal_type_eq
+
+@[simp]
+theorem type_lift_preimage (r : α → α → Prop) [IsWellOrder α r]
     (f : β ≃ α) : lift.{u} (type (f ⁻¹'o r)) = lift.{v} (type r) :=
   (RelIso.preimage f r).ordinal_lift_type_eq
 
-@[simp, nolint simpNF]
-theorem type_lift_preimage_aux {α : Type u} {β : Type v} (r : α → α → Prop) [IsWellOrder α r]
-    (f : β ≃ α) : lift.{u} (@type _ (fun x y => r (f x) (f y))
+@[deprecated type_lift_preimage_aux (since := "2024-10-22")]
+theorem type_lift_preimage_aux (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
+    lift.{u} (@type _ (fun x y => r (f x) (f y))
       (inferInstanceAs (IsWellOrder β (f ⁻¹'o r)))) = lift.{v} (type r) :=
-  (RelIso.preimage f r).ordinal_lift_type_eq
+  type_lift_preimage r f
 
 /-- `lift.{max u v, u}` equals `lift.{v, u}`.
 
