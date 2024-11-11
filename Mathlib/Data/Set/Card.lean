@@ -1062,8 +1062,8 @@ theorem exists_union_disjoint_cardinal_eq_of_even_finite [DecidableEq α] (s : S
     t ∪ u = s ∧ Disjoint t u ∧ t.ncard = u.ncard := by
   obtain rfl | h := s.eq_empty_or_nonempty
   · use ∅, ∅
-    simp only [Set.union_self, disjoint_self, Set.bot_eq_empty, and_self]
-  · obtain ⟨x, y, hxy⟩ := (Set.one_lt_ncard_iff hs).mp (one_lt_ncard_of_nonempty_of_even hs h he)
+    simp only [union_self, disjoint_self, bot_eq_empty, and_self]
+  · obtain ⟨x, y, hxy⟩ := (one_lt_ncard_iff hs).mp (one_lt_ncard_of_nonempty_of_even hs h he)
     have hsi : insert x (insert y (s \ {x, y})) = s := by
       ext v
       simp only [mem_insert_iff, mem_diff, mem_singleton_iff, not_or]
@@ -1092,24 +1092,24 @@ theorem exists_union_disjoint_cardinal_eq_of_even_finite [DecidableEq α] (s : S
     obtain ⟨t, u, hst⟩ := exists_union_disjoint_cardinal_eq_of_even_finite _ hu'e (hs.diff _)
     use insert x t, insert y u
     refine ⟨by simp only [union_insert, insert_union, hst.1, insert_comm, hsi], ?_⟩
-    have hynt : y ∉ t := fun hys ↦ by simpa [hst.1] using (Set.subset_union_left hys : y ∈ t ∪ u)
-    have hxnu : x ∉ u := fun hxt ↦ by simpa [hst.1] using (Set.subset_union_right hxt : x ∈ t ∪ u)
-    have hynu : y ∉ u := fun hys ↦ by simpa [hst.1] using (Set.subset_union_right hys : y ∈ t ∪ u)
-    have hxnt : x ∉ t := fun hxs ↦ by simpa [hst.1] using (Set.subset_union_left hxs : x ∈ t ∪ u)
+    have hynt : y ∉ t := fun hys ↦ by simpa [hst.1] using (subset_union_left hys : y ∈ t ∪ u)
+    have hxnu : x ∉ u := fun hxt ↦ by simpa [hst.1] using (subset_union_right hxt : x ∈ t ∪ u)
+    have hynu : y ∉ u := fun hys ↦ by simpa [hst.1] using (subset_union_right hys : y ∈ t ∪ u)
+    have hxnt : x ∉ t := fun hxs ↦ by simpa [hst.1] using (subset_union_left hxs : x ∈ t ∪ u)
     have htuf : (t ∪ u).Finite := by
       rw [hst.1]
       exact Finite.diff hs {x, y}
     constructor <;> simp [hxnu, hynt, hst.2.1, hxy.2.2.symm,
-      Set.ncard_insert_of_not_mem hxnt (Set.finite_union.mp htuf).1,
-      Set.ncard_insert_of_not_mem hynu (Set.finite_union.mp htuf).2, hst.2.2]
+      ncard_insert_of_not_mem hxnt (finite_union.mp htuf).1,
+      ncard_insert_of_not_mem hynu (finite_union.mp htuf).2, hst.2.2]
 termination_by s.ncard
 decreasing_by
 · simp_wf
-  refine Set.ncard_lt_ncard ?_ hs
-  exact ⟨Set.diff_subset, by
-    rw [Set.not_subset_iff_exists_mem_not_mem]
+  refine ncard_lt_ncard ?_ hs
+  exact ⟨diff_subset, by
+    rw [not_subset_iff_exists_mem_not_mem]
     use x
-    exact ⟨hxy.1, by simp only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, true_or,
+    exact ⟨hxy.1, by simp only [mem_diff, mem_insert_iff, mem_singleton_iff, true_or,
       not_true_eq_false, and_false, not_false_eq_true]⟩⟩
 
 theorem exists_union_disjoint_cardinal_eq_of_infinite [DecidableEq α] (s : Set α)
@@ -1120,14 +1120,14 @@ theorem exists_union_disjoint_cardinal_eq_of_infinite [DecidableEq α] (s : Set 
         apply Classical.inhabited_of_nonempty
         rw [← Cardinal.eq, Cardinal.mk_sum, Cardinal.add_eq_max (by
           rw [@Cardinal.aleph0_le_lift]
-          exact Cardinal.infinite_iff.mp (Set.infinite_coe_iff.mpr h)
+          exact Cardinal.infinite_iff.mp (infinite_coe_iff.mpr h)
           )]
         simp only [Cardinal.lift_id, max_self]
       exact this.default
-  use Subtype.val '' (f '' (Sum.inl '' Set.univ)), Subtype.val '' (f '' (Sum.inr '' Set.univ))
+  use Subtype.val '' (f '' (Sum.inl '' univ)), Subtype.val '' (f '' (Sum.inr '' univ))
   constructor
   · ext v
-    simp only [Set.image_univ, Set.mem_union, Set.mem_image, Set.mem_image_equiv, Set.mem_range,
+    simp only [image_univ, mem_union, mem_image, mem_image_equiv, mem_range,
       Subtype.exists, exists_and_right, exists_eq_right]
     refine ⟨fun h ↦ by
       cases' h with hl hr
@@ -1147,17 +1147,17 @@ theorem exists_union_disjoint_cardinal_eq_of_infinite [DecidableEq α] (s : Set 
       · left; use l, l.coe_prop
       · right; use r, r.coe_prop
   · constructor
-    · simp only [Set.image_univ, ← Set.image_comp]
-      apply Set.disjoint_image_of_injective (by
+    · simp only [image_univ, ← image_comp]
+      apply disjoint_image_of_injective (by
         simp only [Subtype.val_injective, Function.Injective.of_comp_iff, f.injective])
-      rw [Set.disjoint_right]
+      rw [disjoint_right]
       intro a ha
-      simp only [Set.mem_range, Subtype.exists, not_exists] at *
+      simp only [mem_range, Subtype.exists, not_exists] at *
       intro v hv
       obtain ⟨_, _, h⟩ := ha
       rw [← h]
       exact Sum.inl_ne_inr
-    · simp only [Set.image_univ, Subtype.val_injective, Cardinal.mk_image_eq, f.injective,
+    · simp only [image_univ, Subtype.val_injective, Cardinal.mk_image_eq, f.injective,
         Sum.inl_injective, Cardinal.mk_range_eq, Sum.inr_injective]
 
 
@@ -1169,17 +1169,17 @@ theorem exists_union_disjoint_cardinal_eq_iff [DecidableEq α] (s : Set α) :
       use t, u
       refine ⟨rfl, htu2, ?_⟩
       simp only [← @card_coe_set_eq, Nat.card.eq_1] at htu3
-      rw [Set.finite_union] at hfin
+      rw [finite_union] at hfin
       exact Cardinal.toNat_injOn (mem_Iio.mpr (Finite.lt_aleph0 hfin.1))
         (mem_Iio.mpr (Finite.lt_aleph0 hfin.2)) htu3
     · exact exists_union_disjoint_cardinal_eq_of_infinite s hnfin
   · obtain ⟨t, u, rfl, htu2, htu3⟩ := h
     obtain hfin | hnfin := (t ∪ u).finite_or_infinite
-    · rw [Set.finite_union] at hfin
-      rw [Set.ncard_union_eq htu2 hfin.1 hfin.2]
+    · rw [finite_union] at hfin
+      rw [ncard_union_eq htu2 hfin.1 hfin.2]
       have hn : Cardinal.toNat (Cardinal.mk t) = Cardinal.toNat (Cardinal.mk u) := by
         congr
-      simp only [← Nat.card.eq_1, Set.Nat.card_coe_set_eq] at hn
+      simp only [← Nat.card.eq_1, Nat.card_coe_set_eq] at hn
       rw [hn]
       exact even_add_self u.ncard
     · simp only [hnfin.ncard, even_zero]
