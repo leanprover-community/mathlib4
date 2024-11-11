@@ -761,6 +761,27 @@ theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [IsLocalRing T]
 
 end IsLocalRing
 
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.closedPoint := IsLocalRing.closedPoint
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.isLocalHom_iff_comap_closedPoint := IsLocalRing.isLocalHom_iff_comap_closedPoint
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.comap_closedPoint := IsLocalRing.comap_closedPoint
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.specializes_closedPoint := IsLocalRing.specializes_closedPoint
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.closedPoint_mem_iff := IsLocalRing.closedPoint_mem_iff
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.closed_point_mem_iff := IsLocalRing.closed_point_mem_iff
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.PrimeSpectrum.comap_residue := IsLocalRing.PrimeSpectrum.comap_residue
+
 section KrullDimension
 
 theorem PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim [CommRing R] :
