@@ -43,4 +43,4 @@ theorem harmonic_not_int {n : ℕ} (h : 2 ≤ n) : ¬ (harmonic n).isInt := by
   apply padicNorm.not_int_of_not_padic_int 2
   rw [padicNorm.eq_zpow_of_nonzero (harmonic_pos (ne_zero_of_lt h)).ne',
       padicValRat_two_harmonic, neg_neg, zpow_natCast]
-  exact one_lt_pow one_lt_two (Nat.log_pos one_lt_two h).ne'
+  exact one_lt_pow₀ one_lt_two (Nat.log_pos one_lt_two h).ne'

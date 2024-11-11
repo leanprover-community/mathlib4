@@ -46,7 +46,7 @@ add_decl_doc AddMonCat.AssocAddMonoidHom
 
 @[to_additive]
 instance bundledHom : BundledHom AssocMonoidHom where
-  toFun {X Y} _ _ f := ⇑f
+  toFun {_ _} _ _ f := ⇑f
   id _ := MonoidHom.id _
   comp _ _ _ := MonoidHom.comp
 
@@ -145,7 +145,7 @@ instance {G : Type*} [Group G] : Group (MonCat.of G) := by assumption
   "Universe lift functor for additive monoids."]
 def uliftFunctor : MonCat.{u} ⥤ MonCat.{max u v} where
   obj X := MonCat.of (ULift.{v, u} X)
-  map {X Y} f := MonCat.ofHom <|
+  map {_ _} f := MonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
   map_comp {X Y Z} f g := by rfl
@@ -249,7 +249,7 @@ lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x
   "Universe lift functor for additive commutative monoids."]
 def uliftFunctor : CommMonCat.{u} ⥤ CommMonCat.{max u v} where
   obj X := CommMonCat.of (ULift.{v, u} X)
-  map {X Y} f := CommMonCat.ofHom <|
+  map {_ _} f := CommMonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
   map_comp {X Y Z} f g := by rfl

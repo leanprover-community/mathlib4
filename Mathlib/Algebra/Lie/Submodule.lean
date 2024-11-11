@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Noetherian.Orzech
 
 /-!
 # Lie submodules of a Lie algebra
@@ -83,7 +83,7 @@ instance (priority := mid) coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl
 
--- Porting note (#10618): `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
+-- `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
 -- but `dsimp` can't.
 @[simp, nolint simpNF]
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
@@ -368,7 +368,7 @@ theorem coeSubmodule_eq_top_iff : (N : Submodule R M) = ⊤ ↔ N = ⊤ := by
 theorem mem_top (x : M) : x ∈ (⊤ : LieSubmodule R L M) :=
   mem_univ x
 
-instance : Inf (LieSubmodule R L M) :=
+instance : Min (LieSubmodule R L M) :=
   ⟨fun N N' ↦
     { (N ⊓ N' : Submodule R M) with
       lie_mem := fun h ↦ mem_inter (N.lie_mem h.1) (N'.lie_mem h.2) }⟩
@@ -419,8 +419,8 @@ theorem iInf_coe {ι} (p : ι → LieSubmodule R L M) : (↑(⨅ i, p i) : Set M
 theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
   rw [← SetLike.mem_coe, iInf_coe, Set.mem_iInter]; rfl
 
-instance : Sup (LieSubmodule R L M) where
-  sup N N' :=
+instance : Max (LieSubmodule R L M) where
+  max N N' :=
     { toSubmodule := (N : Submodule R M) ⊔ (N' : Submodule R M)
       lie_mem := by
         rintro x m (hm : m ∈ (N : Submodule R M) ⊔ (N' : Submodule R M))
@@ -522,7 +522,7 @@ theorem iSup_eq_top_iff_coe_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R 
     ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
   rw [← iSup_coe_toSubmodule, ← top_coeSubmodule (L := L), coe_toSubmodule_eq_iff]
 
-instance : Add (LieSubmodule R L M) where add := Sup.sup
+instance : Add (LieSubmodule R L M) where add := max
 
 instance : Zero (LieSubmodule R L M) where zero := ⊥
 
@@ -885,7 +885,7 @@ Submodules. -/
   invFun := comap e
   left_inv := fun N ↦ by ext; simp
   right_inv := fun N ↦ by ext; simp [e.apply_eq_iff_eq_symm_apply]
-  map_rel_iff' := fun {N N'} ↦ Set.image_subset_image_iff e.injective
+  map_rel_iff' := fun {_ _} ↦ Set.image_subset_image_iff e.injective
 
 end LieSubmodule
 
@@ -1386,7 +1386,7 @@ def LieSubalgebra.topEquiv : (⊤ : LieSubalgebra R L) ≃ₗ⁅R⁆ L :=
   { (⊤ : LieSubalgebra R L).incl with
     invFun := fun x ↦ ⟨x, Set.mem_univ x⟩
     left_inv := fun x ↦ by ext; rfl
-    right_inv := fun x ↦ rfl }
+    right_inv := fun _ ↦ rfl }
 
 @[simp]
 theorem LieSubalgebra.topEquiv_apply (x : (⊤ : LieSubalgebra R L)) : LieSubalgebra.topEquiv x = x :=

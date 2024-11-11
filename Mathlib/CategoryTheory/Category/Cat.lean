@@ -56,13 +56,13 @@ instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
   id C := 𝟭 C
   comp F G := F ⋙ G
   homCategory := fun _ _ => Functor.category
-  whiskerLeft {C} {D} {E} F G H η := whiskerLeft F η
-  whiskerRight {C} {D} {E} F G η H := whiskerRight η H
-  associator {A} {B} {C} D := Functor.associator
-  leftUnitor {A} B := Functor.leftUnitor
-  rightUnitor {A} B := Functor.rightUnitor
-  pentagon := fun {A} {B} {C} {D} {E}=> Functor.pentagon
-  triangle {A} {B} {C} := Functor.triangle
+  whiskerLeft {_} {_} {_} F _ _ η := whiskerLeft F η
+  whiskerRight {_} {_} {_} _ _ η H := whiskerRight η H
+  associator {_} {_} {_} _ := Functor.associator
+  leftUnitor {_} _ := Functor.leftUnitor
+  rightUnitor {_} _ := Functor.rightUnitor
+  pentagon := fun {_} {_} {_} {_} {_}=> Functor.pentagon
+  triangle {_} {_} {_} := Functor.triangle
 
 /-- `Cat` is a strict bicategory. -/
 instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
@@ -132,6 +132,14 @@ lemma associator_hom_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ 
 lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
     (α_ F G H).inv.app X = eqToHom (by simp) :=
   rfl
+
+/-- The identity in the category of categories equals the identity functor.-/
+theorem id_eq_id (X : Cat) : 𝟙 X = 𝟭 X := rfl
+
+/-- Composition in the category of categories equals functor composition.-/
+theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙ G := rfl
+
+@[simp] theorem of_α (C) [Category C] : (of C).α = C := rfl
 
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.Prod
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
@@ -17,11 +18,6 @@ namespace Filter
 variable {α β γ : Type*} {ι : Sort*}
 
 section lift
-
-/-- A variant on `bind` using a function `g` taking a set instead of a member of `α`.
-This is essentially a push-forward along a function mapping each set to a filter. -/
-protected def lift (f : Filter α) (g : Set α → Filter β) :=
-  ⨅ s ∈ f, g s
 
 variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Set α → Filter β}
 
@@ -198,11 +194,6 @@ theorem lift_iInf_of_map_univ {f : ι → Filter α} {g : Set α → Filter β}
 end lift
 
 section Lift'
-
-/-- Specialize `lift` to functions `Set α → Set β`. This can be viewed as a generalization of `map`.
-This is essentially a push-forward along a function mapping each set to a set. -/
-protected def lift' (f : Filter α) (h : Set α → Set β) :=
-  f.lift (𝓟 ∘ h)
 
 variable {f f₁ f₂ : Filter α} {h h₁ h₂ : Set α → Set β}
 

@@ -469,9 +469,23 @@ protected theorem Subsingleton.wellFoundedOn (hs : s.Subsingleton) : s.WellFound
 theorem wellFoundedOn_insert : WellFoundedOn (insert a s) r ↔ WellFoundedOn s r := by
   simp only [← singleton_union, wellFoundedOn_union, wellFoundedOn_singleton, true_and]
 
+@[simp]
+theorem wellFoundedOn_sdiff_singleton : WellFoundedOn (s \ {a}) r ↔ WellFoundedOn s r := by
+  simp only [← wellFoundedOn_insert (a := a), insert_diff_singleton, mem_insert_iff, true_or,
+    insert_eq_of_mem]
+
 protected theorem WellFoundedOn.insert (h : WellFoundedOn s r) (a : α) :
     WellFoundedOn (insert a s) r :=
   wellFoundedOn_insert.2 h
+
+protected theorem WellFoundedOn.sdiff_singleton (h : WellFoundedOn s r) (a : α) :
+    WellFoundedOn (s \ {a}) r :=
+  wellFoundedOn_sdiff_singleton.2 h
+
+lemma WellFoundedOn.mapsTo {α β : Type*} {r : α → α → Prop} (f : β → α)
+    {s : Set α} {t : Set β} (h : MapsTo f t s) (hw : s.WellFoundedOn r) :
+    t.WellFoundedOn (r on f) := by
+  exact InvImage.wf (fun x : t ↦ ⟨f x, h x.prop⟩) hw
 
 end WellFoundedOn
 
@@ -838,7 +852,7 @@ theorem Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber (hα : s.WellFoundedOn
     (hβ : ∀ a, (s ∩ f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
     s.WellFoundedOn (Prod.Lex rα rβ on fun c => (f c, g c)) :=
   WellFounded.prod_lex_of_wellFoundedOn_fiber hα
-    fun a ↦ ((hβ a).onFun (f := fun x => ⟨x, x.1.2, x.2⟩)).mono (fun b c h ↦ ‹_›)
+    fun a ↦ ((hβ a).onFun (f := fun x => ⟨x, x.1.2, x.2⟩)).mono (fun _ _ h ↦ ‹_›)
 
 end ProdLex
 

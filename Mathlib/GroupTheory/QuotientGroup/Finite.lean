@@ -50,4 +50,9 @@ noncomputable def fintypeOfKerOfCodom [Fintype g.ker] : Fintype G :=
 noncomputable def fintypeOfDomOfCoker [Normal f.range] [Fintype <| G ⧸ f.range] : Fintype G :=
   fintypeOfKerLeRange _ (mk' f.range) fun x => (eq_one_iff x).mp
 
+@[to_additive]
+lemma _root_.Finite.of_finite_quot_finite_subgroup {H : Subgroup G} [Finite H] [Finite (G ⧸ H)] :
+    Finite G :=
+  Finite.of_equiv _ (groupEquivQuotientProdSubgroup (s := H)).symm
+
 end Group

@@ -92,7 +92,7 @@ variable [DecidableEq ι₁₂] [DecidableEq ι₂₃]
   [HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄]
   [HasMapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄]
 
-instance  :
+instance :
     (((GradedObject.mapBifunctor G ι₁₂ ι₃).obj (GradedObject.mapBifunctorMapObj F₁₂
         (ComplexShape.π c₁ c₂ c₁₂) K₁.X K₂.X)).obj K₃.X).HasMap
           (ComplexShape.π c₁₂ c₃ c₄) :=

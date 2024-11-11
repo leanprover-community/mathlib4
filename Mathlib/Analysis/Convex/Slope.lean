@@ -158,7 +158,7 @@ theorem strictConvexOn_of_slope_strict_mono_adjacent (hs : Convex 𝕜 s)
       simp_rw [div_eq_iff hxz.ne', ← hab]
       ring
     rwa [sub_mul, sub_mul, sub_lt_iff_lt_add', ← add_sub_assoc, lt_sub_iff_add_lt, ← mul_add,
-      sub_add_sub_cancel, ← lt_div_iff hxz, add_div, mul_div_assoc, mul_div_assoc, mul_comm (f x),
+      sub_add_sub_cancel, ← lt_div_iff₀ hxz, add_div, mul_div_assoc, mul_div_assoc, mul_comm (f x),
       mul_comm (f z), ha, hb] at this
 
 /-- If for any three points `x < y < z`, the slope of the secant line of `f : 𝕜 → 𝕜` on `[x, y]` is
@@ -267,7 +267,7 @@ theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x
   have hxy' : 0 < y - x := by linarith
   have hyz' : 0 < z - y := by linarith
   have hxz' : 0 < z - x := by linarith
-  rw [← lt_div_iff' hxz']
+  rw [← lt_div_iff₀' hxz']
   have ha : 0 < (z - y) / (z - x) := by positivity
   have hb : 0 < (y - x) / (z - x) := by positivity
   calc

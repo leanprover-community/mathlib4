@@ -3,6 +3,7 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta, Jakob von Raumer
 -/
+import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Trifunctor
 import Mathlib.CategoryTheory.Products.Basic
 
@@ -981,5 +982,30 @@ theorem prodMonoidal_rightUnitor_inv_snd (X : C₁ × C₂) :
 end
 
 end MonoidalCategory
+
+namespace NatTrans
+
+variable {J : Type*} [Category J] {C : Type*} [Category C] [MonoidalCategory C]
+  {F G F' G' : J ⥤ C} (α : F ⟶ F') (β : G ⟶ G')
+
+@[reassoc]
+lemma tensor_naturality {X Y X' Y' : J} (f : X ⟶ Y) (g : X' ⟶ Y') :
+    (F.map f ⊗ G.map g) ≫ (α.app Y ⊗ β.app Y') =
+      (α.app X ⊗ β.app X') ≫ (F'.map f ⊗ G'.map g) := by
+  simp only [← tensor_comp, naturality]
+
+@[reassoc]
+lemma whiskerRight_app_tensor_app {X Y : J} (f : X ⟶ Y) (X' : J) :
+    F.map f ▷ G.obj X' ≫ (α.app Y ⊗ β.app X') =
+      (α.app X ⊗ β.app X') ≫ F'.map f ▷ (G'.obj X') := by
+  simpa using tensor_naturality α β f (𝟙 X')
+
+@[reassoc]
+lemma whiskerLeft_app_tensor_app {X' Y' : J} (f : X' ⟶ Y') (X : J) :
+    F.obj X ◁ G.map f ≫ (α.app X ⊗ β.app Y') =
+      (α.app X ⊗ β.app X') ≫ F'.obj X ◁ G'.map f := by
+  simpa using tensor_naturality α β (𝟙 X) f
+
+end NatTrans
 
 end CategoryTheory

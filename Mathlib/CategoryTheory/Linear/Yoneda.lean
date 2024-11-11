@@ -28,7 +28,7 @@ namespace CategoryTheory
 variable (R : Type w) [Ring R] {C : Type u} [Category.{v} C] [Preadditive C] [Linear R C]
 variable (C)
 
--- Porting note: inserted specific `ModuleCat.ofHom` in the definition of `linearYoneda`
+-- Porting note: inserted specific `ModuleCat.asHom` in the definition of `linearYoneda`
 -- and similarly in `linearCoyoneda`, otherwise many simp lemmas are not triggered automatically.
 -- Eventually, doing so allows more proofs to be automatic!
 /-- The Yoneda embedding for `R`-linear categories `C`,
@@ -38,9 +38,9 @@ with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
 def linearYoneda : C ⥤ Cᵒᵖ ⥤ ModuleCat R where
   obj X :=
     { obj := fun Y => ModuleCat.of R (unop Y ⟶ X)
-      map := fun f => ModuleCat.ofHom (Linear.leftComp R _ f.unop) }
+      map := fun f => ModuleCat.asHom (Linear.leftComp R _ f.unop) }
   map {X₁ X₂} f :=
-    { app := fun Y => @ModuleCat.ofHom R _ (Y.unop ⟶ X₁) (Y.unop ⟶ X₂) _ _ _ _
+    { app := fun Y => @ModuleCat.asHom R _ (Y.unop ⟶ X₁) (Y.unop ⟶ X₂) _ _ _ _
         (Linear.rightComp R _ f) }
 
 /-- The Yoneda embedding for `R`-linear categories `C`,
@@ -50,9 +50,9 @@ with value on `X : C` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
 def linearCoyoneda : Cᵒᵖ ⥤ C ⥤ ModuleCat R where
   obj Y :=
     { obj := fun X => ModuleCat.of R (unop Y ⟶ X)
-      map := fun f => ModuleCat.ofHom (Linear.rightComp R _ f) }
+      map := fun f => ModuleCat.asHom (Linear.rightComp R _ f) }
   map {Y₁ Y₂} f :=
-    { app := fun X => @ModuleCat.ofHom R _ (unop Y₁ ⟶ X) (unop Y₂ ⟶ X) _ _ _ _
+    { app := fun X => @ModuleCat.asHom R _ (unop Y₁ ⟶ X) (unop Y₂ ⟶ X) _ _ _ _
         (Linear.leftComp _ _ f.unop) }
 
 instance linearYoneda_obj_additive (X : C) : ((linearYoneda R C).obj X).Additive where
