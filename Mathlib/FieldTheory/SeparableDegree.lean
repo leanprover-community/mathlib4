@@ -250,7 +250,7 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic, then their
 separable degrees satisfy the tower law
 $[E:F]_s [K:E]_s = [K:F]_s$. See also `Module.finrank_mul_finrank`. -/
-@[stacks 09HK "Part 1, `finDegree` variant"]
+@[stacks 09HK "Part 1, `finSepDegree` variant"]
 theorem finSepDegree_mul_finSepDegree_of_isAlgebraic
     [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgebraic E K] :
     finSepDegree F E * finSepDegree E K = finSepDegree F K := by
