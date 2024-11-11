@@ -213,7 +213,7 @@ namespace Field
 
 /-- `Field.Emb F E` is the type of `F`-algebra homomorphisms from `E` to the algebraic closure
 of `E`. -/
-def Emb := E →ₐ[F] AlgebraicClosure E
+abbrev Emb := E →ₐ[F] AlgebraicClosure E
 
 /-- If `E / F` is an algebraic extension, then the (finite) separable degree of `E / F`
 is the number of `F`-algebra homomorphisms from `E` to the algebraic closure of `E`,
@@ -341,8 +341,7 @@ instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infin
     rw [IsScalarTower.algebraMap_eq _ (FractionRing (MvPolynomial ι F)), RingHom.coe_comp]
     exact (algebraMap (FractionRing (MvPolynomial ι F)) (AlgebraicClosure _)).injective.comp
       (IsFractionRing.injective _ _)
-  let f (n : ℕ) :
-      FractionRing (MvPolynomial ι F) →ₐ[F] (AlgebraicClosure (FractionRing (MvPolynomial ι F))) :=
+  let f (n : ℕ) : Emb F (FractionRing (MvPolynomial ι F)) :=
     IsFractionRing.liftAlgHom
       (K := FractionRing (MvPolynomial ι F)) (g := i1.comp <| MvPolynomial.aeval (R := F)
         fun i : ι ↦ MvPolynomial.X (R := F) i ^ (n + 1)) <| by
