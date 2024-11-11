@@ -84,26 +84,56 @@ lemma ValuationSubring.toLocalSubring_injective :
 def maximalLocalSubrings (K : Type*) [Field K] : Set (LocalSubring K) :=
   { R | IsMax R }
 
-/--
-If not, then it is contained in some maximal ideal. The localization of that maximal ideal is
-a local subring that dominates `R`, contradicting the maximality of `R`.
--/
 lemma map_maximalIdeal_eq_top_of_mem_maximalLocalSubrings {R : LocalSubring K}
     (hR : R ∈ maximalLocalSubrings K) {S : Subring K} (hS : R.toSubring < S) :
     (maximalIdeal R.toSubring).map (Subring.inclusion hS.le) = ⊤ := by
+  let mR := (maximalIdeal R.toSubring).map (Subring.inclusion hS.le)
   by_contra h_is_not_top
   obtain ⟨M, h_is_max, h_incl⟩ := Ideal.exists_le_maximal _ h_is_not_top
   let Sₘ := Localization.AtPrime M
   let funStoK : S →+* K := S.subtype
   let funStoSₘ := algebraMap S Sₘ
-  have funStoK_invertible_goto_units : ∀ (y : M.primeCompl), IsUnit (funStoK y) := by
-    aesop
-  let funSₘtoK  : Sₘ →+* K := IsLocalization.lift funStoK_invertible_goto_units
+  have h_funStoK_invertible_goto_units : ∀ (y : M.primeCompl), IsUnit (funStoK y) := by aesop
+  let funSₘtoK : Sₘ →+* K := IsLocalization.lift h_funStoK_invertible_goto_units
   let fSₘ: LocalSubring K := LocalSubring.range funSₘtoK
-  have ltRtoSₘ : R < fSₘ := by
-    sorry
-  have notMax := not_isMax_of_lt (ltRtoSₘ)
-  exact notMax hR
+  let funSₘtofSₘ : Sₘ →+* fSₘ.toSubring := funSₘtoK.codRestrict fSₘ.toSubring (by aesop)
+  let funRtofSₘ := funSₘtofSₘ.comp (funStoSₘ.comp (Subring.inclusion hS.le))
+  let funRtoSₘ := funStoSₘ.comp (Subring.inclusion hS.le)
+  have SlefSₘ : S ≤ fSₘ.toSubring := by
+    intro x hx
+    simp [fSₘ]
+    use (algebraMap S Sₘ) ⟨x, hx⟩
+    rw [IsLocalization.lift_eq h_funStoK_invertible_goto_units _]
+    rfl
+  have h_RleSₘ_subring : R.toSubring ≤ fSₘ.toSubring := fun x hx => SlefSₘ (hS.le hx)
+  have h_RleSₘ : R ≤ fSₘ := by
+    refine ⟨h_RleSₘ_subring, ?_⟩
+    have h_fRtoSₘ_eq : funSₘtofSₘ.comp (funStoSₘ.comp (Subring.inclusion hS.le)) = (
+      Subring.inclusion h_RleSₘ_subring) := by
+      sorry
+    rw [← h_fRtoSₘ_eq]
+    refine ⟨?_⟩
+    rintro ⟨a, h_a_inR⟩ h_fa_isUnit
+    rw [RingHom.comp_apply, RingHom.comp_apply] at h_fa_isUnit
+    have h_inS : a ∈ S := hS.le h_a_inR
+    have h_funSₘtofSₘ_units: ∀ x : Sₘ, IsUnit (funSₘtofSₘ x) ↔ IsUnit x := by
+      sorry
+    apply (h_funSₘtofSₘ_units _).mp at h_fa_isUnit
+    apply (IsLocalization.AtPrime.isUnit_to_map_iff Sₘ M _).mp at h_fa_isUnit
+    change _ ∉ M at h_fa_isUnit
+    have a_notIn_mR : (Subring.inclusion hS.le) ⟨a, h_a_inR⟩ ∉ mR :=
+      fun a_1 ↦ h_fa_isUnit (h_incl a_1)
+    apply mt (Ideal.mem_map_of_mem (Subring.inclusion hS.le)) at a_notIn_mR
+    rw [mem_maximalIdeal, mem_nonunits_iff, not_not] at a_notIn_mR
+    exact a_notIn_mR
+  have h_RneSₘ : R ≠ fSₘ := by
+    obtain ⟨x, hxS, hxR⟩ := (Set.ssubset_iff_of_subset (hS.le)).mp hS
+    rintro rfl
+    exact hxR (SlefSₘ hxS)
+  have h_RltSₘ : R < fSₘ := lt_of_le_of_ne h_RleSₘ h_RneSₘ
+  exact ne_of_lt (lt_of_le_of_lt (hR h_RltSₘ.le) h_RltSₘ) rfl
+
+#exit
 
 open scoped Polynomial
 
