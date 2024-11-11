@@ -46,6 +46,10 @@ protected lemma inv_nonneg {a : ℚ} (ha : 0 ≤ a) : 0 ≤ a⁻¹ := by
 protected lemma div_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a / b :=
   mul_nonneg ha (Rat.inv_nonneg hb)
 
+protected lemma zpow_nonneg {a : ℚ} (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
+  | Int.ofNat n => by simp [ha]
+  | Int.negSucc n => by simpa using Rat.inv_nonneg (pow_nonneg ha (n + 1))
+
 end Rat
 
 namespace NNRat
@@ -56,8 +60,12 @@ instance instInv : Inv ℚ≥0 where
 instance instDiv : Div ℚ≥0 where
   div x y := ⟨x / y, Rat.div_nonneg x.2 y.2⟩
 
+instance instZPow : Pow ℚ≥0 ℤ where
+  pow x n := ⟨x ^ n, Rat.zpow_nonneg x.2 n⟩
+
 @[simp, norm_cast] lemma coe_inv (q : ℚ≥0) : ((q⁻¹ : ℚ≥0) : ℚ) = (q : ℚ)⁻¹ := rfl
 @[simp, norm_cast] lemma coe_div (p q : ℚ≥0) : ((p / q : ℚ≥0) : ℚ) = p / q := rfl
+@[simp, norm_cast] lemma coe_zpow (p : ℚ≥0) (n : ℤ) : ((p ^ n : ℚ≥0) : ℚ) = p ^ n := rfl
 
 lemma inv_def (q : ℚ≥0) : q⁻¹ = divNat q.den q.num := by ext; simp [Rat.inv_def', num_coe, den_coe]
 lemma div_def (p q : ℚ≥0) : p / q = divNat (p.num * q.den) (p.den * q.num) := by
@@ -85,5 +93,9 @@ instance instSemifield : Semifield ℚ≥0 where
   nnratCast_def q := q.num_div_den.symm
   nnqsmul q a := q * a
   nnqsmul_def q a := rfl
+  zpow n a := a ^ n
+  zpow_zero' a := by ext; norm_cast
+  zpow_succ' n a := by ext; norm_cast
+  zpow_neg' n a := by ext; norm_cast
 
 end NNRat
