@@ -138,7 +138,7 @@ structure PreInnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [Ad
   conj_symm : ∀ x y, conj (inner y x) = inner x y
   /-- The inner product is positive (semi)definite. -/
   nonneg_re : ∀ x, 0 ≤ re (inner x x)
-  /-- The inner product is positive definite. -/
+  /-- The inner product is additive in the first coordinate. -/
   add_left : ∀ x y z, inner (x + y) z = inner x z + inner y z
   /-- The inner product is conjugate linear in the first coordinate. -/
   smul_left : ∀ x y r, inner (r • x) y = conj r * inner x y
