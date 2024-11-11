@@ -45,6 +45,12 @@ theorem map_ne_one_iff {f : F} {x : M} :
 
 end EmbeddingLike
 
+@[to_additive (attr := deprecated (since := "2024-11-10"))]
+alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
+
+@[to_additive (attr := deprecated (since := "2024-11-10"))]
+alias MulEquivClass.map_ne_one_iff := EmbeddingLike.map_ne_one_iff
+
 /-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
 @[to_additive (attr := simps)
   "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
@@ -144,18 +150,6 @@ instance (priority := 100) instMonoidHomClass
           congr_arg _ (EquivLike.right_inv e 1).symm
         _ = e (EquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
         _ = 1 := EquivLike.right_inv e 1 }
-
-variable {F}
-
-@[to_additive (attr := deprecated (since := "2024-11-10"))]
-theorem map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
-    (h : F) {x : M} :
-    h x = 1 ↔ x = 1 := _root_.map_eq_one_iff h (EquivLike.injective h)
-
-@[to_additive (attr := deprecated (since := "2024-11-10"))]
-theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
-    (h : F) {x : M} :
-    h x ≠ 1 ↔ x ≠ 1 := _root_.map_ne_one_iff h (EquivLike.injective h)
 
 end MulEquivClass
 
