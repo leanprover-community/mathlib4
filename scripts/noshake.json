@@ -164,6 +164,7 @@
   "Mathlib.Tactic.Simps.NotationClass",
   "Mathlib.Tactic.SplitIfs",
   "Mathlib.Tactic.Spread",
+  "Mathlib.Tactic.StacksAttribute",
   "Mathlib.Tactic.Substs",
   "Mathlib.Tactic.SuppressCompilation",
   "Mathlib.Tactic.SwapVar",
@@ -245,7 +246,7 @@
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
   "Mathlib.Tactic.Linter.UnusedTactic": ["Batteries.Tactic.Unreachable"],
   "Mathlib.Tactic.LinearCombination":
-  ["Mathlib.Tactic.LinearCombination.Lemmas"],
+  ["Mathlib.Tactic.Ring", "Mathlib.Tactic.LinearCombination.Lemmas"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
   "Mathlib.Tactic.ITauto": ["Batteries.Tactic.Init", "Mathlib.Logic.Basic"],
@@ -339,7 +340,8 @@
   ["Mathlib.Control.Traversable.Instances"],
   "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.BoundedOrder": ["Mathlib.Tactic.Finiteness.Attr"],
-  "Mathlib.Order.Basic": ["Batteries.Tactic.Classical"],
+  "Mathlib.Order.Basic":
+  ["Batteries.Tactic.Classical", "Mathlib.Tactic.GCongr.Core"],
   "Mathlib.NumberTheory.Cyclotomic.Basic": ["Mathlib.Init.Core"],
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
@@ -402,7 +404,6 @@
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
-  "Mathlib.CategoryTheory.Category.Basic": ["Mathlib.Tactic.StacksAttribute"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
   ["Mathlib.Tactic.CategoryTheory.ToApp"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Lax":
