@@ -145,6 +145,50 @@ theorem tendsto_nhds_bot_iff_real {α : Type*} {m : α → EReal} {f : Filter α
     Tendsto m f (𝓝 ⊥) ↔ ∀ x : ℝ, ∀ᶠ a in f, m a < x :=
   nhds_bot_basis.tendsto_right_iff.trans <| by simp only [true_implies, mem_Iio]
 
+/-! ### toENNReal -/
+
+lemma continuous_toENNReal : Continuous EReal.toENNReal := by
+  refine continuous_iff_continuousAt.mpr fun x ↦ ?_
+  by_cases h_top : x = ⊤
+  · simp only [ContinuousAt, h_top, toENNReal_top]
+    refine ENNReal.tendsto_nhds_top fun n ↦ ?_
+    filter_upwards [eventually_gt_nhds (coe_lt_top n)] with y hy
+    exact toENNReal_coe (x := n) ▸ toENNReal_lt_toENNReal (coe_ennreal_nonneg _) hy
+  refine ContinuousOn.continuousAt ?_ (compl_singleton_mem_nhds_iff.mpr h_top)
+  refine (ContinuousAt.continuousOn fun x hx ↦ ?_).congr (fun _ hx ↦ toENNReal_of_ne_top hx)
+  by_cases h_bot : x = ⊥
+  · refine tendsto_nhds_of_eventually_eq ?_
+    rw [h_bot, nhds_bot_basis.eventually_iff]
+    simp [toReal_bot, ENNReal.ofReal_zero, ENNReal.ofReal_eq_zero, true_and]
+    exact ⟨0, fun _ hx ↦ toReal_nonpos hx.le⟩
+  refine ENNReal.continuous_ofReal.continuousAt.comp' <| continuousOn_toReal.continuousAt
+    <| (toFinite _).isClosed.compl_mem_nhds ?_
+  simp_all only [mem_compl_iff, mem_singleton_iff, mem_insert_iff, or_self, not_false_eq_true]
+
+@[fun_prop]
+lemma _root_.Continous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : α → EReal}
+    (hf : Continuous f) :
+    Continuous fun x => (f x).toENNReal :=
+  continuous_toENNReal.comp hf
+
+@[fun_prop]
+lemma _root_.ContinuousOn.ereal_toENNReal {α : Type*} [TopologicalSpace α] {s : Set α}
+    {f : α → EReal} (hf : ContinuousOn f s) :
+    ContinuousOn (fun x => (f x).toENNReal) s :=
+  continuous_toENNReal.comp_continuousOn hf
+
+@[fun_prop]
+lemma _root_.ContinuousWithinAt.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : α → EReal}
+    {s : Set α} {x : α} (hf : ContinuousWithinAt f s x) :
+    ContinuousWithinAt (fun x => (f x).toENNReal) s x :=
+  continuous_toENNReal.continuousAt.comp_continuousWithinAt hf
+
+@[fun_prop]
+lemma _root_.ContinuousAt.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : α → EReal}
+    {x : α} (hf : ContinuousAt f x) :
+    ContinuousAt (fun x => (f x).toENNReal) x :=
+  continuous_toENNReal.continuousAt.comp hf
+
 /-! ### Infs and Sups -/
 
 variable {α : Type*} {u v : α → EReal}
