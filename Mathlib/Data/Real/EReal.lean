@@ -150,7 +150,8 @@ protected def mul : EReal → EReal → EReal
 instance : Mul EReal := ⟨EReal.mul⟩
 
 @[simp, norm_cast]
-theorem coe_mul (x y : ℝ) : (↑(x * y) : EReal) = x * y := rfl
+theorem coe_mul (x y : ℝ) : (↑(x * y) : EReal) = x * y :=
+  rfl
 
 /-- Induct on two `EReal`s by performing case splits on the sign of one whenever the other is
 infinite. -/
@@ -1778,12 +1779,10 @@ instance : Inv (EReal) := ⟨EReal.inv⟩
 noncomputable instance : DivInvMonoid EReal where inv := EReal.inv
 
 @[simp]
-lemma inv_bot : (⊥ : EReal)⁻¹ = 0 :=
-  rfl
+lemma inv_bot : (⊥ : EReal)⁻¹ = 0 := rfl
 
 @[simp]
-lemma inv_top : (⊤ : EReal)⁻¹ = 0 :=
-  rfl
+lemma inv_top : (⊤ : EReal)⁻¹ = 0 := rfl
 
 lemma coe_inv (x : ℝ) : (x⁻¹ : ℝ) = (x : EReal)⁻¹ := rfl
 
