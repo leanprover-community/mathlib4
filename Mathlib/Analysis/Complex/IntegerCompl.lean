@@ -31,17 +31,9 @@ lemma UpperHalfPlane.coe_mem_integerComplement (z : ℍ) : ↑z ∈ ℂ_ℤ :=
   not_exists.mpr fun x hx ↦ ne_int z x hx.symm 
 
 lemma integerComplement.add_coe_int_mem {x : ℂ} (a : ℤ) : x + (a : ℂ) ∈ ℂ_ℤ ↔ x ∈ ℂ_ℤ := by
-  constructor
-  · contrapose
-    simp only [Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, Decidable.not_not,
-      forall_exists_index]
-    intro b hb
-    refine ⟨b + a, by simp only [Int.cast_add, hb]⟩
-  · contrapose
-    simp only [Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, Decidable.not_not,
-      forall_exists_index]
-    intro b hb
-    refine ⟨b - a, by simp only [Int.cast_sub, hb, add_sub_cancel_right]⟩
+  simp only [mem_iff, not_iff_not]
+  exact ⟨(Exists.elim · fun n hn ↦ ⟨n - a, by simp [hn]⟩),
+    (Exists.elim · fun n hn ↦ ⟨n + a, by simp [hn]⟩)⟩
 
 lemma integerComplement.ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 0 :=
   fun hx' ↦ hx ⟨0, by exact_mod_cast hx'.symm⟩
