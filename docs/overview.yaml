@@ -463,7 +463,7 @@ Combinatorics:
   Ramsey theory:
     van der Waerden theorem: 'Combinatorics.exists_mono_homothetic_copy'
     Hales-Jewett theorem: 'Combinatorics.Line.exists_mono_in_high_dimension'
-    Hindman's theorem: 'FS_partition_regular'
+    Hindman's theorem: 'Hindman.FS_partition_regular'
   Additive combinatorics:
     Avoiding patterns:
       sets without arithmetic progressions: 'ThreeAPFree'
