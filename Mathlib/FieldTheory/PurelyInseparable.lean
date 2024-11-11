@@ -626,7 +626,6 @@ theorem separableClosure_le (L : IntermediateField F E)
 
 /-- If `E / F` is algebraic, then an intermediate field of `E / F` contains the
 separable closure of `F` in `E` if and only if `E` is purely inseparable over it. -/
-@[stacks 030K "This theorem implies the `E/E_sep`  is purely inseparable part." -/
 theorem separableClosure_le_iff [Algebra.IsAlgebraic F E] (L : IntermediateField F E) :
     separableClosure F E ≤ L ↔ IsPurelyInseparable L E := by
   refine ⟨fun h ↦ ?_, fun _ ↦ separableClosure_le F E L⟩
