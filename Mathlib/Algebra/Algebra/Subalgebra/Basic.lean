@@ -772,9 +772,6 @@ theorem iSup_toSubsemiring {ι : Sort*} [Nonempty ι] (S : ι → Subalgebra R A
     (iSup S).toSubsemiring = ⨆ i, (S i).toSubsemiring := by
   simp only [iSup, Set.range_nonempty, sSup_toSubsemiring, ← Set.range_comp, Function.comp_def]
 
-lemma le_iSup {ι : Sort*} (S : ι → Subalgebra R A) (i : ι) : S i ≤ iSup S :=
-  le_iSup_of_le i le_rfl
-
 lemma mem_iSup_of_mem {ι : Sort*} {S : ι → Subalgebra R A} (i : ι) {x : A} (hx : x ∈ S i) :
     x ∈ iSup S :=
   le_iSup S i hx
