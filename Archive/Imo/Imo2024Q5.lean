@@ -378,14 +378,11 @@ lemma Path.findFstEq_fst_sub_one_mem (p : Path N) {r : Fin (N + 2)} (hr : r ≠ 
     (⟨(r : ℕ) - 1, by omega⟩, (p.findFstEq r).2) ∈ p.cells := by
   rw [findFstEq_eq_find?_le]
   have h1 := p.one_lt_length_cells
-  have he := p.exists_mem_fst_eq r
+  obtain ⟨cr, hcrc, hcrr⟩ := p.exists_mem_fst_eq r
   rcases p with ⟨cells, nonempty, head_first_row, last_last_row, valid_move_seq⟩
-  dsimp only at h1 he ⊢
-  have hd : cells.dropWhile (fun c ↦ ! decide (r ≤ c.1)) ≠ [] := by
-    intro h
-    rw [List.dropWhile_eq_nil_iff] at h
-    rcases he with ⟨c, hc, hcr⟩
-    simpa [hcr] using h c hc
+  dsimp only at h1 hcrc ⊢
+  have hd : ∃ c ∈ cells, decide (r ≤ c.1) = true := ⟨cr, hcrc, by simpa using hcrr.symm.le⟩
+  have hd' : cells.dropWhile (fun c ↦ ! decide (r ≤ c.1)) ≠ [] := by simpa using hd
   have ht : cells.takeWhile (fun c ↦ ! decide (r ≤ c.1)) ≠ [] := by
     intro h
     rw [List.takeWhile_eq_nil_iff] at h
@@ -395,15 +392,15 @@ lemma Path.findFstEq_fst_sub_one_mem (p : Path N) {r : Fin (N + 2)} (hr : r ≠ 
   rw [← cells.takeWhile_append_dropWhile (fun c ↦ ! decide (r ≤ c.1)),
     List.chain'_append] at valid_move_seq
   have ha := valid_move_seq.2.2
-  simp only [List.head?_eq_head hd, List.getLast?_eq_getLast _ ht, Option.mem_def,
+  simp only [List.head?_eq_head hd', List.getLast?_eq_getLast _ ht, Option.mem_def,
     Option.some.injEq, forall_eq'] at ha
   nth_rw 1 [← cells.takeWhile_append_dropWhile (fun c ↦ ! decide (r ≤ c.1))]
   refine List.mem_append_left _ ?_
   convert List.getLast_mem ht using 1
   have htr : ((List.takeWhile (fun c ↦ !decide (r ≤ c.1)) cells).getLast ht).1 < r := by
     simpa using List.mem_takeWhile_imp (List.getLast_mem ht)
-  have hdr : r ≤ ((List.dropWhile (fun c ↦ !decide (r ≤ c.1)) cells).head hd).1 := by
-    simpa using cells.head_dropWhile_not (fun c ↦ !decide (r ≤ c.1)) hd
+  have hdr : r ≤ ((List.dropWhile (fun c ↦ !decide (r ≤ c.1)) cells).head hd').1 := by
+    simpa using cells.head_dropWhile_not (fun c ↦ !decide (r ≤ c.1)) hd'
   simp only [Adjacent, Nat.dist] at ha
   have hrm : N + 1 + (r : ℕ) = N + 2 + (r - 1) := by omega
   simp only [Prod.ext_iff, Fin.ext_iff]
