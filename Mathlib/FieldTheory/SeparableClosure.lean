@@ -156,10 +156,7 @@ theorem le_separableClosure (L : IntermediateField F E) [Algebra.IsSeparable F L
     L ≤ separableClosure F E := le_separableClosure' F E (Algebra.IsSeparable.isSeparable F)
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
-if and only if it is separable over `F`.
-
-Used to prove that the separable closure is the unique intermediate field that is separable
-downwards and purely inseparable upwards. This is the downwards part. -/
+if and only if it is separable over `F`. -/
 theorem le_separableClosure_iff (L : IntermediateField F E) :
     L ≤ separableClosure F E ↔ Algebra.IsSeparable F L :=
   ⟨fun h ↦ ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using h x.2⟩,
