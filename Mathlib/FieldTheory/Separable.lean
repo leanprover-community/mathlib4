@@ -621,8 +621,7 @@ theorem IsSeparable.tower_top
 
 variable (F E) in
 /-- If `E / K / F` is an extension tower, `E` is separable over `F`, then it's also separable
-over `K`.
--/
+over `K`. -/
 @[stacks 09H2 "second part"]
 theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
     Algebra.IsSeparable L E :=
