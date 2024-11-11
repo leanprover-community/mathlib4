@@ -5,6 +5,7 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 
