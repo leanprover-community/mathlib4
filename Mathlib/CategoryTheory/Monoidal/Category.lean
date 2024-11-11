@@ -404,7 +404,7 @@ theorem inv_tensor {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g]
     inv (f ⊗ g) = inv f ⊗ inv g := by
   simp [tensorHom_def ,whisker_exchange]
 
-variable {U V W X Y Z : C}
+variable {W X Y Z : C}
 
 theorem whiskerLeft_dite {P : Prop} [Decidable P]
     (X : C) {Y Z : C} (f : P → (Y ⟶ Z)) (f' : ¬P → (Y ⟶ Z)) :

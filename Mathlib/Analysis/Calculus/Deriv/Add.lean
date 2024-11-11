@@ -29,11 +29,10 @@ open Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {f f₀ f₁ g : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
+variable {f g : 𝕜 → F}
+variable {f' g' : F}
 variable {x : 𝕜}
-variable {s t : Set 𝕜}
+variable {s : Set 𝕜}
 variable {L : Filter 𝕜}
 
 section Add
