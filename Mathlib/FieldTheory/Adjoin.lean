@@ -1129,7 +1129,8 @@ theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimension
 theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
   have := adjoin.finiteDimensional hx; Algebra.IsAlgebraic.of_finite K K⟮x⟯
 
-/-- If `x` is an algebraic element of field `K`, then its minimal polynomial has degree `[K(x) : K]`. -/
+/-- If `x` is an algebraic element of field `K`, then its minimal polynomial has degree
+`[K(x) : K]`. -/
 @[stacks 09GN]
 theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
     Module.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
