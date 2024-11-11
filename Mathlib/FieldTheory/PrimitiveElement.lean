@@ -5,6 +5,7 @@ Authors: Thomas Browning, Patrick Lutz
 -/
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.IntegralDomain
+import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Primitive Element Theorem
