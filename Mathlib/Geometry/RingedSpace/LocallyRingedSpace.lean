@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Geometry.RingedSpace.Basic
 import Mathlib.Geometry.RingedSpace.Stalks
+import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # The category of locally ringed spaces
@@ -23,7 +24,7 @@ open CategoryTheory
 
 open TopCat
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open Opposite
 

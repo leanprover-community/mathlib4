@@ -25,6 +25,9 @@ being used to define Archimedean completions of a number field.
  - `AbsoluteValue.completion` : the uniform space completion of a field `K` according to the
   uniform structure defined by the specified real absolute value.
 -/
+
+open Topology
+
 noncomputable section
 
 variable {R S K : Type*} [Semiring R] [OrderedSemiring S] [Field K]
