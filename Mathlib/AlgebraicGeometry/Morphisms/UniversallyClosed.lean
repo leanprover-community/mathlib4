@@ -63,13 +63,6 @@ instance universallyClosed_isStableUnderComposition :
   rw [universallyClosed_eq]
   infer_instance
 
-lemma IsClosedMap.of_comp_surjective {X Y Z} [TopologicalSpace X] [TopologicalSpace Y]
-    [TopologicalSpace Z] {f : X → Y} {g : Y → Z} (hf : Function.Surjective f) (hf' : Continuous f)
-    (hfg : IsClosedMap (g ∘ f)) : IsClosedMap g := by
-  intro K hK
-  rw [← Set.image_preimage_eq K hf, ← Set.image_comp]
-  exact hfg _ (hK.preimage hf')
-
 lemma UniversallyClosed.of_comp_surjective {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [UniversallyClosed (f ≫ g)] [Surjective f] : UniversallyClosed g := by
   constructor
