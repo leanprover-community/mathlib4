@@ -38,7 +38,7 @@ variable (F : I ⥤ C) (G : Cᵒᵖ ⥤ Type v)
 /-- Variant of `colimitYonedaHomIsoLimitOp`: natural transformations with domain
 `colimit (F ⋙ yoneda)` are equivalent to a limit in a lower universe. -/
 noncomputable def colimitYonedaHomEquiv : (colimit (F ⋙ yoneda) ⟶ G) ≃ limit (F.op ⋙ G) :=
-  Equiv.symm <| (Equiv.ulift.symm).trans <| Equiv.symm <| Iso.toEquiv <| calc
+  Equiv.symm <| Equiv.ulift.symm.trans <| Equiv.symm <| Iso.toEquiv <| calc
   (colimit (F ⋙ yoneda) ⟶ G) ≅ limit (F.op ⋙ G ⋙ uliftFunctor.{u}) :=
         colimitYonedaHomIsoLimitOp _ _
   _ ≅ limit ((F.op ⋙ G) ⋙ uliftFunctor.{u}) :=
