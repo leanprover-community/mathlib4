@@ -23,41 +23,27 @@ semiring, i.e. a complete semiring in which + and sup coincide. However, we will
 additive quantales, i.e. quantales in which the semigroup operator is thought of as addition, in
 which case the link with semirings will lead to confusion notationally.
 
-In this file, we follow the basic definitions set out on the wikipedia page on quantales,
-which also distinguish unital, commutative, idempotent, integral and involutive quantales.
-A unital quantale is simply a quantale over a monoid, a commutative quantale is a quantale
-over a commutative semigroup, and an idempotent quantale is a quantale over an idempotent
-semigroup. As we define quantales relative to their semigroup, these do not need to be defined
-explicitly here, one can simply use a `Monoid`, `CommMonoid`, or `IdemMonoid` while constructing
-the quantale. An integral (or strictly two-sided) quantale is a unital quantale in which
-the top element of the lattice and the unit of the semigroup coincide. We give a mix-in class
-definition `IntegralQuantale` for this.
-
-The involutive quantale (which is necessary to discuss regularity properties) we do not cover
-in this file. Also the proof that every frame is a commutative quantale, and that a quantale is
-a frame if and only if it is integral and idempotent are developed separately in order to reduce
-overhead if a user does not need them.
+In this file, we follow the basic definition set out on the wikipedia page on quantales,
+using a mixin typeclass to make the special cases of unital, commutative, idempotent,
+integral, and involutive quantales easier to add on later.
 
 ## Main definitions
 
-* `Quantale`: Typeclass mixin for a a semigroup distributing over a complete lattice,
-  i.e satisfying `x * (sSup s) = ⨆ y ∈ s, x * y` and `(sSup s) * y = ⨆ x ∈ s, x * y`;
+* `IsQuantale` and `IsAddQuantale` : Typeclass mixin for a (additive) semigroup distributing
+  over a complete lattice, i.e satisfying `x * (sSup s) = ⨆ y ∈ s, x * y` and
+  `(sSup s) * y = ⨆ x ∈ s, x * y`;
 
-* `IsIntegralQuantale`: Typeclass mixin for a unital quantale (i.e. a quantale in which the
-  semigroup is a monoid) respecting `⊤ = 1` (also called a two-sided quantale);
+* `leftMulResiduation`, `rightMulResiduation`, `leftAddResiduation`, `rightAddResiduation` :
+  Defining the left- and right- residuations of the semigroup (see notation below).
 
-* next to these classes, we define the additive versions `AddQuantale`, `IsAddIntegral` in
-  which the semigroup operation is denoted by addition instead of multiplication;
-
-* furthermore, we provide basic lemmas rewriting distributivity laws for sSup into iSup and sup,
-  monotonicity of the multiplication, and basic equivalence theorems for left- and right-
-  residuation.
+* Finally, we provide basic distributivity laws for sSup into iSup and sup, monotonicity of
+  the semigroup operator, and basic equivalences for left- and right-residuation.
 
 ## Notation
 
-* `x ⇨ₗ y` : `sSup {z | z * x ≤ y}`, the `leftResiduation` of `y` over `x`;
+* `x ⇨ₗ y` : `sSup {z | z * x ≤ y}`, the `leftMulResiduation` of `y` over `x`;
 
-* `x ⇨ᵣ y` : `sSup {z | x * z ≤ y}`, the `rightResiduation` of `y` over `x`;
+* `x ⇨ᵣ y` : `sSup {z | x * z ≤ y}`, the `rightMulResiduation` of `y` over `x`;
 
 ## References
 
@@ -85,20 +71,6 @@ class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] where
   protected mul_sSup_eq_iSup_mul (x : α) (s : Set α) : x * sSup s = ⨆ y ∈ s, x * y
   /-- Multiplication is distributive over join in a quantale -/
   protected sSup_mul_eq_iSup_mul (s : Set α) (y : α) : sSup s * y = ⨆ x ∈ s, x * y
-
-/-- An integral (or strictly two-sided) additive quantale is a quantale over an additive monoid
-`⊤` and `0` coincide. -/
-class IsIntegralAddQuantale (α : Type*) [AddMonoid α] [CompleteLattice α] extends IsAddQuantale α
-  where
-  /-- `⊤` and `1` coincide in an integral (or strictly two-sided) quantale -/
-  protected top_eq_zero : (⊤ : α) = 0
-
-/-- An integral (or strictly two-sided) quantale is a quantale over a monoid where
-`⊤` and `1` coincide. -/
-@[to_additive]
-class IsIntegralQuantale (α : Type*) [Monoid α] [CompleteLattice α] extends IsQuantale α where
-  /-- `⊤` and `1` coincide in an integral (or strictly two-sided) quantale -/
-  protected top_eq_one : (⊤ : α) = 1
 
 variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
 variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
@@ -139,21 +111,6 @@ instance : MulRightMono α where
     rw [← left_eq_sup, ← sup_mul_eq_sup_mul, sup_of_le_left]
     trivial
 
-section IsIntegral
-
-variable {α : Type*}
-variable [Monoid α] [CompleteLattice α] [IsIntegralQuantale α]
-
-@[to_additive]
-theorem top_eq_one : (⊤ : α) = 1 := IsIntegralQuantale.top_eq_one
-
-end IsIntegral
-
-section Residuation
-
-variable {α : Type*}
-variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
-
 /-- Left- and right-residuation operators on an additive quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
 I.e. `x ≤ y ⇨ₗ z ↔ x * y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
@@ -186,11 +143,8 @@ scoped infixr:60 " ⇨ₗ " => leftAddResiduation
 @[inherit_doc]
 scoped infixr:60 " ⇨ᵣ " => rightAddResiduation
 
-variable {α : Type*} {x y z : α}
-variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
-
 @[to_additive]
-theorem leftResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z := by
+theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z := by
   rw [leftMulResiduation];
   constructor
   · intro h1
@@ -201,7 +155,7 @@ theorem leftResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z := by
     exact h1
 
 @[to_additive]
-theorem rightResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z := by
+theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z := by
   rw [rightMulResiduation];
   constructor
   · intro h1
@@ -210,7 +164,5 @@ theorem rightResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z := by
   · intro h1
     apply le_sSup
     exact h1
-
-end Residuation
 
 end Quantale
