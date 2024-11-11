@@ -61,6 +61,7 @@ elab "test_forallNot_of_notExists" t:term : tactic => do
   logInfo m!"{ety'}"
 
 set_option linter.unusedTactic false
+set_option linter.unusedVariables false
 
 /-- info: ∀ (x : Nat), ¬0 < x -/
 #guard_msgs in

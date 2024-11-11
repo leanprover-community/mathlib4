@@ -357,7 +357,7 @@ example (f : ℕ → α) : ∏ i ∈ Finset.range 0, f i = 1 := by norm_num1
 example (f : Fin 0 → α) : ∏ i : Fin 0, f i = 1 := by norm_num1
 example (f : Fin 0 → α) : ∑ i : Fin 0, f i = 0 := by norm_num1
 example (f : ℕ → α) : ∑ i ∈ (∅ : Finset ℕ), f i = 0 := by norm_num1
-example : ∑ i : Fin 3, 1 = 3 := by norm_num1
+example : ∑ _ : Fin 3, 1 = 3 := by norm_num1
 /-
 example : ∑ i : Fin 3, (i : ℕ) = 3 := by norm_num1
 example : ((0 : Fin 3) : ℕ) = 0 := by norm_num1

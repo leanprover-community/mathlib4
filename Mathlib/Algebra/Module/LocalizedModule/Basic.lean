@@ -3,8 +3,6 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.RingTheory.Localization.Defs
 
@@ -586,30 +584,6 @@ lemma isLocalizedModule_id (R') [CommSemiring R'] [Algebra R R'] [IsLocalization
   surj' m := ⟨(m, 1), one_smul _ _⟩
   exists_of_eq h := ⟨1, congr_arg _ h⟩
 
-variable {S} in
-theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommSemiring A] [Algebra R A] [CommSemiring Aₛ]
-    [Algebra A Aₛ] [Algebra R Aₛ] [IsScalarTower R A Aₛ] :
-    IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap ↔
-      IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ := by
-  rw [isLocalizedModule_iff, isLocalization_iff]
-  refine and_congr ?_ (and_congr (forall_congr' fun _ ↦ ?_) (forall₂_congr fun _ _ ↦ ?_))
-  · simp_rw [← (Algebra.lmul R Aₛ).commutes, Algebra.lmul_isUnit_iff, Subtype.forall,
-      Algebra.algebraMapSubmonoid, ← SetLike.mem_coe, Submonoid.coe_map,
-      Set.forall_mem_image, ← IsScalarTower.algebraMap_apply]
-  · simp_rw [Prod.exists, Subtype.exists, Algebra.algebraMapSubmonoid]
-    simp [← IsScalarTower.algebraMap_apply, Submonoid.mk_smul, Algebra.smul_def, mul_comm]
-  · congr!; simp_rw [Subtype.exists, Algebra.algebraMapSubmonoid]; simp [Algebra.smul_def]
-
-instance {A Aₛ} [CommSemiring A] [Algebra R A][CommSemiring Aₛ] [Algebra A Aₛ] [Algebra R Aₛ]
-    [IsScalarTower R A Aₛ] [h : IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ] :
-    IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap :=
-  isLocalizedModule_iff_isLocalization.mpr h
-
-lemma isLocalizedModule_iff_isLocalization' (R') [CommSemiring R'] [Algebra R R'] :
-    IsLocalizedModule S (Algebra.ofId R R').toLinearMap ↔ IsLocalization S R' := by
-  convert isLocalizedModule_iff_isLocalization (S := S) (A := R) (Aₛ := R')
-  exact (Submonoid.map_id S).symm
-
 namespace LocalizedModule
 
 /--
@@ -1037,6 +1011,52 @@ theorem mk'_surjective : Function.Surjective (Function.uncurry <| mk' f : M × S
   obtain ⟨⟨m, s⟩, e : s • x = f m⟩ := IsLocalizedModule.surj S f x
   exact ⟨⟨m, s⟩, mk'_eq_iff.mpr e.symm⟩
 
+section liftOfLE
+
+variable {M₁ M₂} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
+variable (S₁ S₂ : Submonoid R) (h : S₁ ≤ S₂) (f₁ : M →ₗ[R] M₁) (f₂ : M →ₗ[R] M₂)
+variable [IsLocalizedModule S₁ f₁] [IsLocalizedModule S₂ f₂]
+
+/-- The natural map `Mₛ →ₗ[R] Mₜ` if `s ≤ t` (in `Submonoid R`). -/
+noncomputable
+def liftOfLE : M₁ →ₗ[R] M₂ :=
+  lift S₁ f₁ f₂ fun x ↦ map_units f₂ ⟨x.1, h x.2⟩
+
+/-- The natural map `Mₛ →ₗ[R] Mₜ` if `s ≤ t` (in `Submonoid R`). -/
+noncomputable
+abbrev _root_.LocalizedModule.liftOfLE : LocalizedModule S₁ M →ₗ[R] LocalizedModule S₂ M :=
+  IsLocalizedModule.liftOfLE S₁ S₂ h
+    (LocalizedModule.mkLinearMap S₁ M) (LocalizedModule.mkLinearMap S₂ M)
+
+lemma liftOfLE_comp : (liftOfLE S₁ S₂ h f₁ f₂).comp f₁ = f₂ := lift_comp ..
+
+@[simp] lemma liftOfLE_apply (x) : liftOfLE S₁ S₂ h f₁ f₂ (f₁ x) = f₂ x := lift_apply ..
+
+/-- The image of `m/s` under `liftOfLE` is `m/s`. -/
+@[simp]
+lemma liftOfLE_mk' (m : M) (s : S₁) :
+    liftOfLE S₁ S₂ h f₁ f₂ (mk' f₁ m s) = mk' f₂ m ⟨s.1, h s.2⟩ := by
+  apply ((Module.End_isUnit_iff _).mp (map_units f₂ ⟨s, h s.2⟩)).1
+  simp only [Module.algebraMap_end_apply, ← map_smul, ← Submonoid.smul_def, mk'_cancel']
+  rw [liftOfLE, lift_apply]
+  exact (mk'_cancel' (S := S₂) f₂ m ⟨s.1, h s.2⟩).symm
+
+instance : IsLocalizedModule S₂ (liftOfLE S₁ S₂ h f₁ f₂) where
+  map_units := map_units f₂
+  surj' y := by
+    obtain ⟨⟨y', s⟩, e⟩ := IsLocalizedModule.surj S₂ f₂ y
+    exact ⟨⟨f₁ y', s⟩, by simpa⟩
+  exists_of_eq := by
+    intros x₁ x₂ e
+    obtain ⟨x₁, s₁, rfl⟩ := mk'_surjective S₁ f₁ x₁
+    obtain ⟨x₂, s₂, rfl⟩ := mk'_surjective S₁ f₁ x₂
+    simp only [Function.uncurry, liftOfLE_mk', mk'_eq_mk'_iff, Submonoid.mk_smul,
+      Submonoid.smul_def, ← mk'_smul] at e ⊢
+    obtain ⟨c, e⟩ := e
+    exact ⟨c, 1, by simpa [← smul_comm c.1]⟩
+
+end liftOfLE
+
 variable {N N'} [AddCommMonoid N] [AddCommMonoid N'] [Module R N] [Module R N']
 variable (g : N →ₗ[R] N') [IsLocalizedModule S g]
 
@@ -1126,36 +1146,6 @@ lemma map_iso_commute (g : M₀ →ₗ[R] M₁) : (map S f₀ f₁) g ∘ₗ (is
 
 end IsLocalizedModule
 
-namespace LocalizedModule
-
-open IsLocalizedModule LocalizedModule Function Submonoid
-
-variable {M₀ M₀'} [AddCommMonoid M₀] [Module R M₀]
-variable {M₁ M₁'} [AddCommMonoid M₁] [Module R M₁]
-variable {M₂ M₂'} [AddCommMonoid M₂] [Module R M₂]
-
-/-- Localization of modules is an exact functor, proven here for `LocalizedModule`.
-See `IsLocalizedModule.map_exact` for the more general version. -/
-lemma map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : Exact g h) :
-    Exact (map S (mkLinearMap S M₀) (mkLinearMap S M₁) g)
-    (map S (mkLinearMap S M₁) (mkLinearMap S M₂) h) :=
-  fun y ↦ Iff.intro
-    (induction_on
-      (fun m s hy ↦ by
-        rw [map_LocalizedModules, ← zero_mk 1, mk_eq, one_smul, smul_zero] at hy
-        obtain ⟨a, aS, ha⟩ := Subtype.exists.1 hy
-        rw [smul_zero, mk_smul, ← LinearMap.map_smul, ex (a • m)] at ha
-        rcases ha with ⟨x, hx⟩
-        use mk x (⟨a, aS⟩ * s)
-        rw [map_LocalizedModules, hx, ← mk_cancel_common_left ⟨a, aS⟩ s m, mk_smul])
-      y)
-    fun ⟨x, hx⟩ ↦ by
-      revert hx
-      refine induction_on (fun m s hx ↦ ?_) x
-      rw [← hx, map_LocalizedModules, map_LocalizedModules, (ex (g m)).2 ⟨m, rfl⟩, zero_mk]
-
-end LocalizedModule
-
 namespace IsLocalizedModule
 
 variable {M₀ M₀'} [AddCommMonoid M₀] [AddCommMonoid M₀'] [Module R M₀] [Module R M₀']
@@ -1164,12 +1154,6 @@ variable {M₁ M₁'} [AddCommMonoid M₁] [AddCommMonoid M₁'] [Module R M₁]
 variable (f₁ : M₁ →ₗ[R] M₁') [IsLocalizedModule S f₁]
 variable {M₂ M₂'} [AddCommMonoid M₂] [AddCommMonoid M₂'] [Module R M₂] [Module R M₂']
 variable (f₂ : M₂ →ₗ[R] M₂') [IsLocalizedModule S f₂]
-
-/-- Localization of modules is an exact functor. -/
-theorem map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : Function.Exact g h) :
-    Function.Exact (map S f₀ f₁ g) (map S f₁ f₂ h) :=
-  Function.Exact.of_ladder_linearEquiv_of_exact
-    (map_iso_commute S f₀ f₁ g) (map_iso_commute S f₁ f₂ h) (LocalizedModule.map_exact S g h ex)
 
 /-- Localization of composition is the composition of localization -/
 theorem map_comp' (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) :

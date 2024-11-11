@@ -6,9 +6,8 @@ Authors: Kim Morrison
 import Lean.Meta.Tactic.SolveByElim
 import Mathlib.Tactic.Constructor
 import Batteries.Tactic.PermuteGoals
-import Batteries.Test.Internal.DummyLabelAttr
+import MathlibTest.solve_by_elim.dummy_label_attr
 
-set_option autoImplicit true
 
 example (h : Nat) : Nat := by solve_by_elim
 example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim
@@ -30,6 +29,7 @@ example {α β : Type} (f : α → β) (a : α) : β := by
   fail_if_success solve_by_elim only [f]
   solve_by_elim
 
+set_option linter.unusedVariables false in
 example {α β γ : Type} (f : α → β) (g : β → γ) (b : β) : γ := by
   fail_if_success solve_by_elim [-g]
   solve_by_elim [-f]
@@ -42,6 +42,7 @@ example {α β γ : Type} (_f : α → β) (g : β → γ) (b : β) : γ := by s
 example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 4 := by
   solve_by_elim only [f, a]
 
+set_option linter.unusedVariables false in
 example (h₁ h₂ : False) : Empty := by
   -- 'It doesn't make sense to remove local hypotheses when using `only` without `*`.'
   fail_if_success solve_by_elim only [-h₁]

@@ -28,7 +28,7 @@ open Lean Elab Term
 
 def tryToCompileAllInductives : TermElabM Unit := do
   let ivs := (← getEnv).constants.toList.filterMap fun | (_, .inductInfo iv) => some iv | _ => none
-  let mut success := 0
+  let mut success : Nat := 0
   for iv in ivs do
     try
       withCurrHeartbeats <| Mathlib.Util.compileInductive iv

@@ -9,6 +9,7 @@ import Mathlib.Data.ENNReal.Inv
 -- set_option trace.Tactic.norm_cast true
 -- set_option trace.Meta.Tactic.simp true
 set_option autoImplicit true
+set_option linter.unusedVariables false
 
 variable (an bn cn dn : ℕ) (az bz cz dz : ℤ)
 variable (aq bq cq dq : ℚ)

@@ -6,11 +6,8 @@ set_option linter.hashCommand true
 
 section ignored_commands
 
--- `#guard_msgs in` without a doc-string triggers the linter, but with the `doc-string does not
-/--
-warning: `#`-commands, such as '#guard_msgs', are not allowed in 'Mathlib'
-note: this linter can be disabled with `set_option linter.hashCommand false`
--/
+-- As a consequence of lean4#5644, `#guard_msgs in`, even without a doc-string,
+-- does not triggers the `#`-command linter.
 #guard_msgs in
 #guard_msgs in
 #adaptation_note /-- testing that the hashCommand linter ignores this. -/
@@ -31,7 +28,8 @@ note: this linter can be disabled with `set_option linter.hashCommand false`
 #check 0
 
 /--
-info:
+warning: `#`-commands, such as '#eval', are not allowed in 'Mathlib'
+note: this linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 -- emits an empty message -- the linter allows it

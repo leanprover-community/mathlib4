@@ -1091,7 +1091,7 @@ theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
 
 instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
     PathConnectedSpace (Quotient s) :=
-  (surjective_quotient_mk' X).pathConnectedSpace continuous_coinduced_rng
+  Quotient.mk'_surjective.pathConnectedSpace continuous_coinduced_rng
 
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
@@ -1204,7 +1204,7 @@ theorem IsOpenEmbedding.locPathConnectedSpace {e : Y → X} (he : IsOpenEmbeddin
 alias OpenEmbedding.locPathConnectedSpace := IsOpenEmbedding.locPathConnectedSpace
 
 theorem IsOpen.locPathConnectedSpace {U : Set X} (h : IsOpen U) : LocPathConnectedSpace U :=
-  (isOpenEmbedding_subtypeVal h).locPathConnectedSpace
+  h.isOpenEmbedding_subtypeVal.locPathConnectedSpace
 
 @[deprecated (since := "2024-10-17")]
 alias locPathConnected_of_isOpen := IsOpen.locPathConnectedSpace
