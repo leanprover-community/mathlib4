@@ -89,12 +89,12 @@ theorem card_ulift [FinEnum (ULift α)] [FinEnum α] : card (ULift α) = card α
   Fin.equiv_iff_eq.mp ⟨equiv.symm.trans Equiv.ulift |>.trans equiv⟩
 
 section ULift
-variable [FinEnum α] (i : Fin (card α))
+variable [FinEnum α] (a : α) (a' : ULift α) (i : Fin (card α))
 
-@[simp] lemma up_equiv : ULift.up (equiv i) = equiv i := rfl
-@[simp] lemma down_equiv : (equiv i).down = equiv i := rfl
-@[simp] lemma up_equiv_symm : ULift.up (equiv.symm i) = equiv.symm i := rfl
-@[simp] lemma down_equiv_symm : (equiv.symm i).down = equiv.symm i := rfl
+@[simp] lemma up_equiv : equiv (ULift.up a) = equiv a := rfl
+@[simp] lemma down_equiv : equiv a'.down = equiv a' := rfl
+@[simp] lemma up_equiv_symm : ULift.up (equiv.symm i) = ULift.instFinEnum.equiv.symm i := rfl
+@[simp] lemma down_equiv_symm : (ULift.instFinEnum.equiv.symm i).down = equiv.symm i := rfl
 
 end ULift
 
@@ -184,13 +184,13 @@ theorem card_eq_fintypeCard {α : Type u} [FinEnum α] [Fintype α] : card α = 
 /-- Any two enumerations of the same type have the same length. -/
 theorem card_unique {α : Type u} (e₁ e₂ : FinEnum α) : e₁.card = e₂.card :=
   calc _
-  _ = _ := @card_eq_fintype_card _ e₁ inferInstance
+  _ = _ := @card_eq_fintypeCard _ e₁ inferInstance
   _ = _ := Fintype.card_congr' rfl
-  _ = _ := @card_eq_fintype_card _ e₂ inferInstance |>.symm
+  _ = _ := @card_eq_fintypeCard _ e₂ inferInstance |>.symm
 
 /-- A type indexable by `Fin 0` is empty and vice versa. -/
 theorem card_eq_zero_iff {α : Type u} [FinEnum α] : card α = 0 ↔ IsEmpty α :=
-  Eq.congr_left card_eq_fintype_card |>.trans Fintype.card_eq_zero_iff
+  Eq.congr_left card_eq_fintypeCard |>.trans Fintype.card_eq_zero_iff
 
 /-- Any enumeration of an empty type has length 0. -/
 theorem card_eq_zero {α : Type u} [FinEnum α] [IsEmpty α] : card α = 0 :=
@@ -198,7 +198,7 @@ theorem card_eq_zero {α : Type u} [FinEnum α] [IsEmpty α] : card α = 0 :=
 
 /-- A type indexable by `Fin n` with positive `n` is inhabited and vice versa. -/
 theorem card_pos_iff {α : Type u} [FinEnum α] : 0 < card α ↔ Nonempty α :=
-  card_eq_fintype_card (α := α) ▸ Fintype.card_pos_iff
+  card_eq_fintypeCard (α := α) ▸ Fintype.card_pos_iff
 
 /-- Any non-empty enumeration has more than one element. -/
 lemma card_pos {α : Type*} [FinEnum α] [Nonempty α] : 0 < card α :=
@@ -209,7 +209,7 @@ lemma card_ne_zero {α : Type*} [FinEnum α] [Nonempty α] : card α ≠ 0 := ca
 
 /-- Any enumeration of a type with unique inhabitant has length 1. -/
 theorem card_eq_one (α : Type u) [FinEnum α] [Unique α] : card α = 1 :=
-  card_eq_fintype_card.trans <| Fintype.card_eq_one_iff_nonempty_unique.mpr ⟨‹_›⟩
+  card_eq_fintypeCard.trans <| Fintype.card_eq_one_iff_nonempty_unique.mpr ⟨‹_›⟩
 
 instance [IsEmpty α] : Unique (FinEnum α) where
   default := ⟨0, Equiv.equivOfIsEmpty α (Fin 0)⟩

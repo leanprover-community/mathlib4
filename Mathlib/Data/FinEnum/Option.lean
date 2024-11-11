@@ -27,7 +27,7 @@ def insertNone (α : Type u) [FinEnum α] (i : Fin (card α + 1)) : FinEnum (Opt
 /-- This is an arbitrary choice of insertion rank for a default instance.
 It keeps the mapping of the existing `α`-inhabitants intact, modulo `Fin.castSucc`. -/
 instance instFinEnumOptionLast (α : Type u) [FinEnum α] : FinEnum (Option α) :=
-  insertNone α (Fin.last <| card α)
+  insertNone α (Fin.last _)
 
 /-- A recursor principle for finite-and-enumerable types, analogous to `Nat.rec`.
 It effectively says that every `FinEnum` is either `Empty` or `Option α`, up to an `Equiv` mediated
@@ -50,7 +50,7 @@ def recEmptyOption {P : Type u → Sort v}
   match cardeq : card α with
   | 0 => congr _ _ cardeq empty
   | n + 1 =>
-    let fN := uliftId (α := Fin n)
+    let fN := ULift.instFinEnum (α := Fin n)
     have : card (ULift.{u} <| Fin n) = n := card_ulift.trans card_fin
     congr (insertNone _ <| finChoice n) _
       (cardeq.trans <| congrArg Nat.succ this.symm) <|
@@ -68,7 +68,7 @@ theorem recEmptyOption_of_card_eq_zero {P : Type u → Sort v}
     (option : {α : Type u} → FinEnum α → P α → P (Option α))
     (α : Type u) [FinEnum α] (h : card α = 0) (_ : FinEnum PEmpty.{u + 1}) :
     recEmptyOption finChoice congr empty option α =
-      congr _ _ (h.trans <| card_eq_zero |>.symm) empty := by
+      congr _ _ (h.trans card_eq_zero.symm) empty := by
   unfold recEmptyOption
   split
   · congr 1; exact Subsingleton.allEq _ _
@@ -87,16 +87,13 @@ theorem recEmptyOption_of_card_pos {P : Type u → Sort v}
     (α : Type u) [FinEnum α] (h : 0 < card α) :
     recEmptyOption finChoice congr empty option α =
       congr (insertNone _ <| finChoice (card α - 1)) ‹_›
-        (calc _
-        _ = card _ + 1 := card_unique _ <| instFinEnumOptionLast _
-        _ = _ := congrArg (· + 1) <| card_unique _ uliftId |>.trans card_fin
-        _ = _ := (card α).succ_pred_eq_of_pos h).symm
-        (option uliftId <|
+        (congrArg (· + 1) card_fin |>.trans <| (card α).succ_pred_eq_of_pos h).symm
+        (option ULift.instFinEnum <|
           recEmptyOption finChoice congr empty option (ULift.{u} <| Fin (card α - 1))) := by
   conv => lhs; unfold recEmptyOption
   split
   · exact absurd (‹_› ▸ h) (card α).lt_irrefl
-  · rcases Nat.succ.inj <| (card α).succ_pred_eq_of_pos h |>.trans ‹_› with ⟨rfl⟩; rfl
+  · rcases Nat.succ.inj <| (card α).succ_pred_eq_of_pos h |>.trans ‹_› with rfl; rfl
 
 /-- A recursor principle for finite-and-enumerable types, analogous to `Nat.recOn`.
 It effectively says that every `FinEnum` is either `Empty` or `Option α`, up to an `Equiv` mediated
