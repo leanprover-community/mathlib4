@@ -91,6 +91,16 @@ theorem mk'_mem_iff {x} {y : M} {I : Ideal S} : mk' S x y ∈ I ↔ algebraMap R
     have := I.mul_mem_left b h
     rwa [mul_comm, mul_assoc, hb, mul_one] at this
 
+variable (M S) in
+include M in
+theorem linearMap_compatibleSMul (N₁ N₂) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁]
+    [Module S N₁] [Module R N₂] [Module S N₂] [IsScalarTower R S N₁] [IsScalarTower R S N₂] :
+    LinearMap.CompatibleSMul N₁ N₂ S R where
+  map_smul f s s' := by
+    obtain ⟨r, m, rfl⟩ := mk'_surjective M s
+    rw [← (map_units S m).smul_left_cancel]
+    simp_rw [algebraMap_smul, ← map_smul, ← smul_assoc, smul_mk'_self, algebraMap_smul, map_smul]
+
 variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 
 variable (M) in
