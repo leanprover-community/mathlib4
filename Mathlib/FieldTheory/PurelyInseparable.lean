@@ -447,7 +447,7 @@ theorem IsPurelyInseparable.tower_top [Algebra E K] [IsScalarTower F E K]
 
 /-- If `E / F` and `K / E` are both purely inseparable extensions, then `K / F` is also
 purely inseparable. -/
-@[stacks 09HG]
+@[stacks 02JJ "See also 00GM"]
 theorem IsPurelyInseparable.trans [Algebra E K] [IsScalarTower F E K]
     [h1 : IsPurelyInseparable F E] [h2 : IsPurelyInseparable E K] : IsPurelyInseparable F K := by
   obtain ⟨q, _⟩ := ExpChar.exists F
@@ -874,7 +874,7 @@ namespace Field
 as a natural number. This means that the cardinality of `Field.Emb F E` and the degree of
 `(separableClosure F E) / F` are both finite or infinite, and when they are finite, they
 coincide. -/
-@[stacks 09HJ "The definition of both side in 09HJ is exaclty the same as in this lemma."]
+@[stacks 09HJ "`sepDegree` is defined as the right hand side of 09HJ"]
 theorem finSepDegree_eq [Algebra.IsAlgebraic F E] :
     finSepDegree F E = Cardinal.toNat (sepDegree F E) := by
   have : Algebra.IsAlgebraic (separableClosure F E) E := Algebra.IsAlgebraic.tower_top (K := F) _
@@ -886,7 +886,6 @@ theorem finSepDegree_eq [Algebra.IsAlgebraic F E] :
 
 /-- The finite separable degree multiply by the finite inseparable degree is equal
 to the (finite) field extension degree. -/
-@[stacks 030L "Part 3, `finDegree` variant"]
 theorem finSepDegree_mul_finInsepDegree : finSepDegree F E * finInsepDegree F E = finrank F E := by
   by_cases halg : Algebra.IsAlgebraic F E
   · have := congr_arg Cardinal.toNat (sepDegree_mul_insepDegree F E)

@@ -492,14 +492,13 @@ theorem Algebra.IsAlgebraic.tower_top [Algebra.IsAlgebraic K A] : Algebra.IsAlge
 
 variable (K)
 
-@[stacks 09GG]
 theorem IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
   (IsIntegral.of_finite K e).isAlgebraic
 
 variable (A)
 
 /-- A field extension is algebraic if it is finite. -/
-@[stacks 09GG]
+@[stacks 09GG "first part"]
 instance Algebra.IsAlgebraic.of_finite [FiniteDimensional K A] : Algebra.IsAlgebraic K A :=
   (IsIntegral.of_finite K A).isAlgebraic
 

@@ -63,7 +63,6 @@ section Discr
 `discr A ι b` as the determinant of `traceMatrix A ι b`. -/
 -- Porting note: using `[DecidableEq ι]` instead of `by classical...` did not work in
 -- mathlib3.
-@[stacks 0BIM]
 noncomputable def discr (A : Type u) {B : Type v} [CommRing A] [CommRing B] [Algebra A B]
     [Fintype ι] (b : ι → B) := (traceMatrix A b).det
 

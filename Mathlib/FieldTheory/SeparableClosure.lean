@@ -181,7 +181,7 @@ theorem separableClosure.normalClosure_eq_self :
 
 /-- If `E` is normal over `F`, then the separable closure of `F` in `E` is Galois (i.e.
 normal and separable) over `F`. -/
-@[stacks 0EHK]
+@[stacks 0EXK]
 instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F E) where
   to_isSeparable := separableClosure.isSeparable F E
   to_normal := by
@@ -296,7 +296,6 @@ theorem sepDegree_eq_of_equiv (K : Type v) [Field K] [Algebra F K] (i : E ≃ₐ
 
 /-- The separable degree multiplied by the inseparable degree is equal
 to the (infinite) field extension degree. -/
-@[stacks 030L "Part 3"]
 theorem sepDegree_mul_insepDegree : sepDegree F E * insepDegree F E = Module.rank F E :=
   rank_mul_rank F (separableClosure F E) E
 

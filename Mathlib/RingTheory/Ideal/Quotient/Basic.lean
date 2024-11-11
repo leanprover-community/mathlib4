@@ -138,7 +138,6 @@ theorem maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal
     exact J.sub_mem (J.mul_mem_right _ hxJ) (hIJ (Ideal.Quotient.eq.1 hy))
 
 /-- The quotient of a ring by an ideal is a field iff the ideal is maximal. -/
-@[stacks 09FF]
 theorem maximal_ideal_iff_isField_quotient (I : Ideal R) : I.IsMaximal ↔ IsField (R ⧸ I) :=
   ⟨fun h =>
     let _i := @Quotient.field _ _ I h

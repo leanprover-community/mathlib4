@@ -36,7 +36,6 @@ variable [Field K]
 /-- `intDegree x` is the degree of the rational function `x`, defined as the difference between
 the `natDegree` of its numerator and the `natDegree` of its denominator. In particular,
 `intDegree 0 = 0`. -/
-@[stacks 09G6]
 def intDegree (x : RatFunc K) : ℤ :=
   natDegree x.num - natDegree x.denom
 
