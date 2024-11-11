@@ -122,11 +122,6 @@ theorem hasSum_const_div_iff (h : a₂ ≠ 0) :
 theorem summable_const_div_iff (h : a ≠ 0) : (Summable fun i ↦ a / f i) ↔ Summable (1 / f) := by
   simpa only [div_eq_mul_inv, one_mul] using summable_mul_left_iff h
 
-theorem summable_const_div (h : Summable (fun i ↦ 1 / f i)) : (Summable fun i ↦ a / f i) := by
-  simp_rw [div_eq_mul_inv] at *
-  apply Summable.mul_left
-  simpa only [one_mul] using h
-
 end DivisionSemiring
 
 /-!

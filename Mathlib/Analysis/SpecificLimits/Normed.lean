@@ -214,17 +214,11 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
   rw [tendsto_zero_iff_norm_tendsto_zero]
   simpa [div_eq_mul_inv] using tendsto_pow_const_div_const_pow_of_one_lt k hr'
 
-lemma tendsto_const_div_atTop {F : Type*} [TopologicalSpace F] [LinearOrderedField F]
-    [OrderTopology F] (g : ℕ → F) (r : F) (hg : Tendsto g atTop atTop) :
-    Tendsto (fun n ↦ r / g n) atTop (𝓝 0) := by
-  apply Filter.Tendsto.div_atTop tendsto_const_nhds hg (f := fun _ => r) (a := r)
-
 /--For `k ≠ 0` and a constant `r` the function `r / n ^ k` tends to zero. -/
 lemma tendsto_const_div_pow (r : ℝ) (k : ℕ) (hk : k ≠ 0) :
     Tendsto (fun n : ℕ => r / n ^ k) atTop (𝓝 0) := by
-  apply tendsto_const_div_atTop
-  apply ((tendsto_natCast_atTop_atTop (R := ℝ)).comp (Filter.tendsto_pow_atTop hk (α := ℕ))).congr
-  simp only [Nat.reduceAdd, comp_apply, Nat.cast_pow, implies_true]
+  simpa using tendsto_const_div_atTop atTop _ r <|
+    tendsto_natCast_atTop_atTop.comp (tendsto_pow_atTop hk)
 
 /-- If `0 ≤ r < 1`, then `n ^ k r ^ n` tends to zero for any natural `k`.
 This is a specialized version of `tendsto_pow_const_mul_const_pow_of_abs_lt_one`, singled out
