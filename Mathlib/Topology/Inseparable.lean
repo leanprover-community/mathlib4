@@ -358,6 +358,12 @@ lemma specializingMap_iff_isClosed_image_closure_singleton (hf : Continuous f) :
   rw [(specializingMap_iff_closure_singleton hf).mp h x]
   exact isClosed_closure
 
+lemma SpecializingMap.comp {f : X → Y} {g : Y → Z}
+    (hf : SpecializingMap f) (hg : SpecializingMap g) :
+    SpecializingMap (g ∘ f) := by
+  simp only [specializingMap_iff_stableUnderSpecialization_image, Set.image_comp] at *
+  exact fun s h ↦ hg _ (hf  _ h)
+
 lemma IsClosedMap.specializingMap (hf : IsClosedMap f) : SpecializingMap f :=
   specializingMap_iff_stableUnderSpecialization_image_singleton.mpr <|
     fun _ ↦ (hf _ isClosed_closure).stableUnderSpecialization
@@ -401,6 +407,12 @@ alias StableUnderGeneralization.image := GeneralizingMap.stableUnderGeneralizati
 lemma GeneralizingMap.stableUnderGeneralization_range (h : GeneralizingMap f) :
     StableUnderGeneralization (range f) :=
   @image_univ _ _ f ▸ stableUnderGeneralization_univ.image h
+
+lemma GeneralizingMap.comp {f : X → Y} {g : Y → Z}
+    (hf : GeneralizingMap f) (hg : GeneralizingMap g) :
+    GeneralizingMap (g ∘ f) := by
+  simp only [GeneralizingMap_iff_stableUnderGeneralization_image, Set.image_comp] at *
+  exact fun s h ↦ hg _ (hf  _ h)
 
 /-!
 ### `Inseparable` relation

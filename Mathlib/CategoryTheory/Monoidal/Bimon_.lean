@@ -40,7 +40,7 @@ objects, and structure morphisms of them satisfy appropriate consistency conditi
 class Bimon_Class (M : C) extends Mon_Class M, Comon_Class M where
   /- For the names of the conditions below, the unprimed names are reserved for the version where
   the argument `M` is explicit. -/
-  mul_comul' : μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ[M] ⊗ μ[M]) := by aesop_cat
+  mul_comul' : μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ μ[M]) := by aesop_cat
   one_comul' : η[M] ≫ Δ[M] = η[M ⊗ M] := by aesop_cat
   mul_counit' : μ[M] ≫ ε[M] = ε[M ⊗ M] := by aesop_cat
   one_counit' : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := by aesop_cat
@@ -54,7 +54,7 @@ variable (M : C) [Bimon_Class M]
 
 @[reassoc (attr := simp)]
 theorem mul_comul (M : C) [Bimon_Class M] :
-    μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ[M] ⊗ μ[M]) :=
+    μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ μ[M]) :=
   mul_comul'
 
 @[reassoc (attr := simp)]
@@ -104,7 +104,7 @@ theorem toMon_forget : toMon_ C ⋙ Mon_.forget C = forget C := rfl
 
 /-- The forgetful functor from bimonoid objects to comonoid objects. -/
 @[simps!]
-def toComon_ : Bimon_ C ⥤ Comon_ C := (Mon_.forgetMonoidal C).toOplaxMonoidalFunctor.mapComon
+def toComon_ : Bimon_ C ⥤ Comon_ C := (Mon_.forget C).mapComon
 
 @[simp]
 theorem toComon_forget : toComon_ C ⋙ Comon_.forget C = forget C := rfl
@@ -129,7 +129,7 @@ def toMon_Comon_ : Bimon_ C ⥤ Mon_ (Comon_ C) where
 /-- The object level part of the backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]
 def ofMon_Comon_obj (M : Mon_ (Comon_ C)) : Bimon_ C where
-  X := (Comon_.forgetMonoidal C).toLaxMonoidalFunctor.mapMon.obj M
+  X := (Comon_.forget C).mapMon.obj M
   counit := { hom := M.X.counit }
   comul :=
   { hom := M.X.comul,
@@ -140,7 +140,7 @@ def ofMon_Comon_obj (M : Mon_ (Comon_ C)) : Bimon_ C where
 def ofMon_Comon_ : Mon_ (Comon_ C) ⥤ Bimon_ C where
   obj := ofMon_Comon_obj C
   map f :=
-  { hom := (Comon_.forgetMonoidal C).toLaxMonoidalFunctor.mapMon.map f }
+  { hom := (Comon_.forget C).mapMon.map f }
 
 /-- The equivalence `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 def equivMon_Comon_ : Bimon_ C ≌ Mon_ (Comon_ C) where
@@ -188,7 +188,7 @@ theorem mul_counit (M : Bimon_ C) :
       (M.X.mul ⊗ M.X.mul) =
     M.X.mul ≫ M.comul.hom := by
   have := (Mon_.Hom.mul_hom M.comul).symm
-  simpa [-Mon_.Hom.mul_hom, tensor_μ] using this
+  simpa [-Mon_.Hom.mul_hom, tensorμ] using this
 
 @[reassoc (attr := simp)] theorem comul_counit_hom (M : Bimon_ C) :
     M.comul.hom ≫ (_ ◁ M.counit.hom) = (ρ_ _).inv := by
