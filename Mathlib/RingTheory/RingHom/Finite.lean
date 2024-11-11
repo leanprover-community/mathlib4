@@ -109,7 +109,7 @@ theorem RingHom.finite_localizationPreserves : RingHom.LocalizationPreserves @Ri
 
 theorem RingHom.localization_away_map_finite (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.Finite) : (IsLocalization.Away.map R' S' f r).Finite :=
-  finite_localizationPreserves.away r hf
+  finite_localizationPreserves.away f r _ _ hf
 
 /-- Let `S` be an `R`-algebra, `M` a submonoid of `R`, and `S' = M⁻¹S`.
 If the image of some `x : S` falls in the span of some finite `s ⊆ S'` over `R`,

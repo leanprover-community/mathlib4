@@ -179,6 +179,24 @@ lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_pullbackHom
   convert pullbackSymmetry_inv_comp_fst ((𝒰.obj i.1).affineCover.map i.2) (pullback.fst _ _)
   exact pullbackRightPullbackFstIso_hom_fst _ _ _
 
+/-- A family of elements spanning the unit ideal of `R` gives a affine open cover of `Spec R`. -/
+@[simps]
+noncomputable
+def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R)
+    (hs : Ideal.span (Set.range s) = ⊤) : (Spec R).AffineOpenCover where
+  J := ι
+  obj i := .of (Localization.Away (s i))
+  map i := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away (s i))))
+  f x := by
+    have : ∃ i, s i ∉ x.asIdeal := by
+      by_contra! h; apply x.2.ne_top; rwa [← top_le_iff, ← hs, Ideal.span_le, Set.range_subset_iff]
+    exact this.choose
+  covers x := by
+    generalize_proofs H
+    let i := (H x).choose
+    have := PrimeSpectrum.localization_away_comap_range (Localization.Away (s i)) (s i)
+    exact (eq_iff_iff.mp congr(x ∈ $this)).mpr (H x).choose_spec
+
 /-- Given any open cover `𝓤`, this is an affine open cover which refines it. -/
 def OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
     𝓤.affineRefinement.openCover ⟶ 𝓤 where
