@@ -368,6 +368,10 @@ theorem iUnion_eq : ⋃ n, K n = univ :=
 theorem exists_mem (x : X) : ∃ n, x ∈ K n :=
   iUnion_eq_univ_iff.1 K.iUnion_eq x
 
+theorem exists_mem_nhds (x : X) : ∃ n, K n ∈ 𝓝 x := by
+  rcases K.exists_mem x with ⟨n, hn⟩
+  exact ⟨n + 1, mem_interior_iff_mem_nhds.mp <| K.subset_interior_succ n hn⟩
+
 /-- A compact exhaustion eventually covers any compact set. -/
 theorem exists_superset_of_isCompact {s : Set X} (hs : IsCompact s) : ∃ n, s ⊆ K n := by
   suffices ∃ n, s ⊆ interior (K n) from this.imp fun _ ↦ (Subset.trans · interior_subset)
@@ -422,7 +426,7 @@ noncomputable def choice (X : Type*) [TopologicalSpace X] [WeaklyLocallyCompactS
   · refine univ_subset_iff.1 (iUnion_compactCovering X ▸ ?_)
     exact iUnion_mono' fun n => ⟨n + 1, subset_union_right⟩
 
-noncomputable instance [SigmaCompactSpace X] [LocallyCompactSpace X] :
+noncomputable instance [SigmaCompactSpace X] [WeaklyLocallyCompactSpace X] :
     Inhabited (CompactExhaustion X) :=
   ⟨CompactExhaustion.choice X⟩
 
