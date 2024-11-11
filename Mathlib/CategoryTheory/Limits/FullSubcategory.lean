@@ -39,6 +39,20 @@ section
 
 variable {C : Type u} [Category.{v} C] {J : Type w} [Category.{w'} J] {P : C → Prop}
 
+theorem closedUnderLimitsOfShape_of_limit (hP : ∀ {X Y : C}, (X ≅ Y) → P X → P Y)
+    (h : ∀ {F : J ⥤ C} [HasLimit F], (∀ j, P (F.obj j)) → P (limit F)) :
+    ClosedUnderLimitsOfShape J P := by
+  intros F c hc hF
+  have : HasLimit F := ⟨_, hc⟩
+  exact hP ((limit.isLimit _).conePointUniqueUpToIso hc) (h hF)
+
+theorem closedUnderColimitsOfShape_of_colimit (hP : ∀ {X Y : C}, (X ≅ Y) → P X → P Y)
+    (h : ∀ {F : J ⥤ C} [HasColimit F], (∀ j, P (F.obj j)) → P (colimit F)) :
+    ClosedUnderColimitsOfShape J P := by
+  intros F c hc hF
+  have : HasColimit F := ⟨_, hc⟩
+  exact hP ((colimit.isColimit _).coconePointUniqueUpToIso hc) (h hF)
+
 theorem ClosedUnderLimitsOfShape.limit (h : ClosedUnderLimitsOfShape J P) {F : J ⥤ C} [HasLimit F] :
     (∀ j, P (F.obj j)) → P (limit F) :=
   h (limit.isLimit _)
