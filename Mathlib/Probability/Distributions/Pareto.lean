@@ -73,7 +73,7 @@ lemma stronglyMeasurable_paretoPDFReal (t r : ℝ) :
 lemma paretoPDFReal_pos (ht : 0 < t) (hr : 0 < r) (hx : t ≤ x) :
     0 < paretoPDFReal t r x := by
   rw [paretoPDFReal, if_pos hx]
-  have _ : 0 < x := by linarith
+  have _ : 0 < x := by linear_combination ht + hx
   positivity
 
 /-- The Pareto pdf is nonnegative. -/

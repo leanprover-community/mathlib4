@@ -484,11 +484,11 @@ theorem Convex_subadditive_le [SMul 𝕜 E] {f : E → 𝕜} (hf1 : ∀ x y, f (
     Convex 𝕜 { x | f x ≤ B } := by
   rw [convex_iff_segment_subset]
   rintro x hx y hy z ⟨a, b, ha, hb, hs, rfl⟩
-  calc
-    _ ≤ a • (f x) + b • (f y) := le_trans (hf1 _ _) (add_le_add (hf2 x ha) (hf2 y hb))
-    _ ≤ a • B + b • B :=
-        add_le_add (smul_le_smul_of_nonneg_left hx ha) (smul_le_smul_of_nonneg_left hy hb)
-    _ ≤ B := by rw [← add_smul, hs, one_smul]
+  dsimp at hx hy ⊢
+  linear_combination (norm := skip)
+    hf1 (a • x) (b • y) + hf2 x ha + hf2 y hb + a * hx + b * hy + hs * B
+  apply le_of_eq
+  noncomm_ring [smul_eq_mul]
 
 end LinearOrderedRing
 

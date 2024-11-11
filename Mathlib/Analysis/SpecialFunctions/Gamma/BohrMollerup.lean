@@ -56,7 +56,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
   -- and `q = 1 / b`, to the functions `f a s` and `f b t`, where `f` is as follows:
   let f : ℝ → ℝ → ℝ → ℝ := fun c u x => exp (-c * x) * x ^ (c * (u - 1))
   have e : IsConjExponent (1 / a) (1 / b) := Real.isConjExponent_one_div ha hb hab
-  have hab' : b = 1 - a := by linarith
+  have hab' : b = 1 - a := by linear_combination hab
   have hst : 0 < a * s + b * t := by positivity
   -- some properties of f:
   have posf : ∀ c u x : ℝ, x ∈ Ioi (0 : ℝ) → 0 ≤ f c u x := fun c u x hx =>
@@ -108,7 +108,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
 
 theorem convexOn_log_Gamma : ConvexOn ℝ (Ioi 0) (log ∘ Gamma) := by
   refine convexOn_iff_forall_pos.mpr ⟨convex_Ioi _, fun x hx y hy a b ha hb hab => ?_⟩
-  have : b = 1 - a := by linarith
+  have : b = 1 - a := by linear_combination hab
   subst this
   simp_rw [Function.comp_apply, smul_eq_mul]
   simp only [mem_Ioi] at hx hy

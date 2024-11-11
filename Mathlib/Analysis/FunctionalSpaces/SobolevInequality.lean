@@ -146,7 +146,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
     fun {_} ↦ hf.lmarginal μ |>.comp <| measurable_update _
   have hF₀ : Measurable fun t ↦ f (X t) := hf.comp <| measurable_update _
   let k : ℝ := s.card
-  have hk' : 0 ≤ 1 - k * p := by linarith only [hp]
+  have hk' : 0 ≤ 1 - k * p := by linear_combination hp
   calc ∫⁻ t, f (X t) ^ (1 - k * p)
           * ∏ j in (insert i s), (∫⋯∫⁻_{j}, f ∂μ) (X t) ^ p ∂ (μ i)
       = ∫⁻ t, (∫⋯∫⁻_{i}, f ∂μ) (X t) ^ p * (f (X t) ^ (1 - k * p)
@@ -275,7 +275,7 @@ theorem lintegral_prod_lintegral_pow_le [Fintype ι] [∀ i, SigmaFinite (μ i)]
   have : Nontrivial ι :=
     Fintype.one_lt_card_iff_nontrivial.mp (by exact_mod_cast hp.one_lt)
   have h0 : (1 : ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
-  have h1 : (0 : ℝ) < #ι - 1 := by linarith
+  have h1 : (0 : ℝ) < #ι - 1 := by linear_combination h0
   have h2 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
   have h3 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp
   have h4 : p = 1 + 1 / (↑#ι - 1) := by field_simp; rw [mul_comm, hp.sub_one_mul_conj]
