@@ -68,6 +68,7 @@ theorem HasSeparableContraction.isSeparableContraction :
     IsSeparableContraction q f hf.contraction := Classical.choose_spec hf
 
 /-- The separable degree divides the degree, in function of the exponential characteristic of F. -/
+@[stacks 09H5 "second part"]
 theorem IsSeparableContraction.dvd_degree' {g} (hf : IsSeparableContraction q f g) :
     ∃ m : ℕ, g.natDegree * q ^ m = f.natDegree := by
   obtain ⟨m, rfl⟩ := hf.2
@@ -83,6 +84,7 @@ theorem HasSeparableContraction.dvd_degree : hf.degree ∣ f.natDegree :=
   Dvd.intro (q ^ a) ha
 
 /-- In exponential characteristic one, the separable degree equals the degree. -/
+@[stacks 09H5 "third part"]
 theorem HasSeparableContraction.eq_degree {f : F[X]} (hf : HasSeparableContraction 1 f) :
     hf.degree = f.natDegree := by
   let ⟨a, ha⟩ := hf.dvd_degree'
@@ -95,8 +97,8 @@ section Field
 variable {F : Type*} [Field F]
 variable (q : ℕ) {f : F[X]} (hf : HasSeparableContraction q f)
 
-/-- Every irreducible polynomial can be contracted to a separable polynomial.
-https://stacks.math.columbia.edu/tag/09H0 -/
+/-- Every irreducible polynomial can be contracted to a separable polynomial. -/
+@[stacks 09H0]
 theorem _root_.Irreducible.hasSeparableContraction (q : ℕ) [hF : ExpChar F q] {f : F[X]}
     (irred : Irreducible f) : HasSeparableContraction q f := by
   cases hF

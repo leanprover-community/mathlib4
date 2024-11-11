@@ -76,8 +76,8 @@ variable {k}
 
 /--
 If `k` is algebraically closed, then every nonconstant polynomial has a root.
-[Stacks: Lemma 09GR, (4) ⟹ (3)](https://stacks.math.columbia.edu/tag/09GR)
 -/
+@[stacks 09GR "(4) ⟹ (3)"]
 theorem exists_root [IsAlgClosed k] (p : k[X]) (hp : p.degree ≠ 0) : ∃ x, IsRoot p x :=
   exists_root_of_splits _ (IsAlgClosed.splits p) hp
 
@@ -126,8 +126,8 @@ theorem exists_aeval_eq_zero {R : Type*} [Field R] [IsAlgClosed k] [Algebra R k]
 
 /--
 If every nonconstant polynomial over `k` has a root, then `k` is algebraically closed.
-[Stacks: Lemma 09GR, (3) ⟹ (4)](https://stacks.math.columbia.edu/tag/09GR)
 -/
+@[stacks 09GR "(3) ⟹ (4)"]
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p.eval x = 0) :
     IsAlgClosed k := by
   refine ⟨fun p ↦ Or.inr ?_⟩
@@ -156,8 +156,8 @@ theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
 
 /--
 If `k` is algebraically closed, then every irreducible polynomial over `k` is linear.
-[Stacks: Lemma 09GR, (4) ⟹ (2)](https://stacks.math.columbia.edu/tag/09GR)
 -/
+@[stacks 09GR "(4) ⟹ (2)"]
 theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducible p) :
     p.degree = 1 :=
   degree_eq_one_of_irreducible_of_splits hp (IsAlgClosed.splits_codomain _)
@@ -194,10 +194,8 @@ end IsAlgClosed
 
 /-- If `k` is algebraically closed, `K / k` is a field extension, `L / k` is an intermediate field
 which is algebraic, then `L` is equal to `k`. A corollary of
-`IsAlgClosed.algebraMap_surjective_of_isAlgebraic`.
-
-[Stacks: Definition 09GQ, Lemma 09GR (4) ⟹ (1)](https://stacks.math.columbia.edu/tag/09GQ)
--/
+`IsAlgClosed.algebraMap_surjective_of_isAlgebraic`. -/
+@[stacks 09GQ "(4) ⟹ (1)"]
 theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Field k] [Field K]
     [IsAlgClosed k] [Algebra k K] (L : IntermediateField k K) [Algebra.IsAlgebraic k L] :
     L = ⊥ := bot_unique fun x hx ↦ by
@@ -215,9 +213,8 @@ lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field 
       simpa only [degree_map] using (ne_of_lt <| degree_pos_of_ne_zero_of_nonunit h0 hu).symm
     exact not_and_or.mpr (h a) (by simp_rw [map_mul, ← eval_map_algebraMap, ha, zero_mul, true_and])
 
-/-- Typeclass for an extension being an algebraic closure.
-[Stacks: Definition 09GS](https://stacks.math.columbia.edu/tag/09GS)
- -/
+/-- Typeclass for an extension being an algebraic closure. -/
+@[stacks 09GS]
 class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K]
     [NoZeroSMulDivisors R K] : Prop where
   isAlgClosed : IsAlgClosed K
@@ -297,10 +294,8 @@ private instance FractionRing.isAlgebraic :
       (Algebra.IsAlgebraic.isAlgebraic _)
 
 /-- A (random) homomorphism from an algebraic extension of R into an algebraically
-  closed extension of R.
-
-[Stacks: Lemma 09GU](https://stacks.math.columbia.edu/tag/09GU)
--/
+  closed extension of R. -/
+@[stacks 09GU]
 noncomputable irreducible_def lift : S →ₐ[R] M := by
   letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
   letI := FractionRing.liftAlgebra R M
@@ -346,9 +341,8 @@ variable (R : Type u) [CommRing R] (L : Type v) (M : Type w) [Field L] [Field M]
 variable [Algebra R M] [NoZeroSMulDivisors R M] [IsAlgClosure R M]
 variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 
-/-- A (random) isomorphism between two algebraic closures of `R`.
-
-[Stacks: Lemma 09GV](https://stacks.math.columbia.edu/tag/09GV) -/
+/-- A (random) isomorphism between two algebraic closures of `R`. -/
+@[stacks 09GV]
 noncomputable def equiv : L ≃ₐ[R] M :=
   -- Porting note (#10754): added to replace local instance above
   haveI : IsAlgClosed L := IsAlgClosure.isAlgClosed R

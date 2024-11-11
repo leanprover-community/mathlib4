@@ -210,7 +210,9 @@ instance (priority := 100) Field.isDomain : IsDomain K :=
 end Field
 
 namespace RingHom
-
+/-- Any ring homomorphism `f : F → R` from a `DivisionRing F` to nonzero ring `R` is injective.
+-/
+@[stacks 09FU]
 protected theorem injective [DivisionRing K] [Semiring L] [Nontrivial L] (f : K →+* L) :
     Injective f :=
   (injective_iff_map_eq_zero f).2 fun _ ↦ (map_eq_zero f).1

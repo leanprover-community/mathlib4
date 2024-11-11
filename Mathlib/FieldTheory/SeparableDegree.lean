@@ -130,13 +130,15 @@ variable (K : Type w) [Field K] [Algebra F K]
 namespace Field
 
 /-- `Field.Emb F E` is the type of `F`-algebra homomorphisms from `E` to the algebraic closure
-of `E`. -/
+of `E`.
+-/
 def Emb := E →ₐ[F] AlgebraicClosure E
 
 /-- If `E / F` is an algebraic extension, then the (finite) separable degree of `E / F`
 is the number of `F`-algebra homomorphisms from `E` to the algebraic closure of `E`,
 as a natural number. It is defined to be zero if there are infinitely many of them.
-Note that if `E / F` is not algebraic, then this definition makes no mathematical sense. -/
+Note that if `E / F` is not algebraic, then this definition makes no mathematical sense.
+-/
 def finSepDegree : ℕ := Nat.card (Emb F E)
 
 instance instInhabitedEmb : Inhabited (Emb F E) := ⟨IsScalarTower.toAlgHom F E _⟩
@@ -227,6 +229,7 @@ def embEquivOfIsAlgClosed [Algebra.IsAlgebraic F E] [IsAlgClosed K] :
 
 /-- The `Field.finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K` as a natural number,
 when `E / F` is algebraic and `K / F` is algebraically closed. -/
+@[stacks 09H9 "We use `finSepDegree` to state a more general result."]
 theorem finSepDegree_eq_of_isAlgClosed [Algebra.IsAlgebraic F E] [IsAlgClosed K] :
     finSepDegree F E = Nat.card (E →ₐ[F] K) := Nat.card_congr (embEquivOfIsAlgClosed F E K)
 
@@ -247,6 +250,7 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic, then their
 separable degrees satisfy the tower law
 $[E:F]_s [K:E]_s = [K:F]_s$. See also `Module.finrank_mul_finrank`. -/
+@[stacks 09HK "Part 1, `finDegree` variant"]
 theorem finSepDegree_mul_finSepDegree_of_isAlgebraic
     [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgebraic E K] :
     finSepDegree F E * finSepDegree E K = finSepDegree F K := by
@@ -706,6 +710,7 @@ theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
   exact dvd_zero _
 
 /-- The separable degree of a finite extension `E / F` is smaller than the degree of `E / F`. -/
+@[stacks 09HA "The inequality"]
 theorem finSepDegree_le_finrank [FiniteDimensional F E] :
     finSepDegree F E ≤ finrank F E := Nat.le_of_dvd finrank_pos <| finSepDegree_dvd_finrank F E
 
@@ -741,6 +746,7 @@ alias Algebra.IsSeparable.finSepDegree_eq := finSepDegree_eq_finrank_of_isSepara
 
 /-- If `E / F` is a finite extension, then its separable degree is equal to its degree if and
 only if it is a separable extension. -/
+@[stacks 09HA "The equality condition"]
 theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
     finSepDegree F E = finrank F E ↔ Algebra.IsSeparable F E :=
   ⟨fun heq ↦ ⟨fun x ↦ by
@@ -802,6 +808,7 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
   exact isSeparable_of_mem_isSeparable F K hx
 
 /-- If `E / F` and `K / E` are both separable extensions, then `K / F` is also separable. -/
+@[stacks 09HB]
 theorem Algebra.IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
     [Algebra.IsSeparable F E] [Algebra.IsSeparable E K] : Algebra.IsSeparable F K :=
   ⟨fun x ↦ IsSeparable.of_algebra_isSeparable_of_isSeparable F
