@@ -985,8 +985,9 @@ most once. Then the image of `f` is the graph of some linear map `f' : H → I`.
 lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
     ∃ f' : H →ₗ[S] I, LinearMap.range f = LinearMap.graph f' := by
-  obtain ⟨f', hf'⟩ := AddMonoidHom.exists_range_eq_graph (I := I) (f := f) hf₁ hf
-  simp only [Set.ext_iff, mem_graphOn, mem_univ, true_and, AddMonoidHom.coe_coe] at hf'
+  obtain ⟨f', hf'⟩ := AddMonoidHom.exists_mrange_eq_mgraph (I := I) (f := f) hf₁ hf
+  simp only [SetLike.ext_iff, AddMonoidHom.mem_mrange, AddMonoidHom.coe_coe,
+    AddMonoidHom.mem_mgraph] at hf'
   use
   { toFun := f'.toFun
     map_add' := f'.map_add'
@@ -994,9 +995,9 @@ lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surj
       intro s h
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, RingHom.id_apply]
       refine (hf' (s • h, _)).mp ?_
-      rw [← Prod.smul_mk, ← LinearMap.range_coe, SetLike.mem_coe]
+      rw [← Prod.smul_mk, ← LinearMap.mem_range]
       apply Submodule.smul_mem
-      rw [← SetLike.mem_coe, LinearMap.range_coe, hf'] }
+      rw [LinearMap.mem_range, hf'] }
   ext x
   simpa only [mem_range, Eq.comm, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mem_graph_iff,
     coe_mk, AddHom.coe_mk, AddMonoidHom.coe_coe, Set.mem_range] using hf' x

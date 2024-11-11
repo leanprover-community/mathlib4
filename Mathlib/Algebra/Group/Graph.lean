@@ -34,11 +34,11 @@ namespace MonoidHom
 
 /-- The graph of a monoid homomorphism as a submonoid.
 
-See also `MonoidHom.range` for the graph as a subgroup. -/
+See also `MonoidHom.graph` for the graph as a subgroup. -/
 @[to_additive
 "The graph of a monoid homomorphism as a submonoid.
 
-See also `AddMonoidHom.range` for the graph as a subgroup."]
+See also `AddMonoidHom.graph` for the graph as a subgroup."]
 def mgraph (f : G →* H) : Submonoid (G × H) where
   carrier := {x | f x.1 = x.2}
   one_mem' := map_one f
@@ -153,11 +153,11 @@ namespace MonoidHom
 
 /-- The graph of a group homomorphism as a subgroup.
 
-See also `MonoidHom.mrange` for the graph as a submonoid. -/
+See also `MonoidHom.mgraph` for the graph as a submonoid. -/
 @[to_additive
 "The graph of a group homomorphism as a subgroup.
 
-See also `AddMonoidHom.mrange` for the graph as a submonoid."]
+See also `AddMonoidHom.mgraph` for the graph as a submonoid."]
 def graph (f : G →* H) : Subgroup (G × H) where
   toSubmonoid := f.mgraph
   inv_mem' {x} := by simp +contextual
@@ -168,7 +168,7 @@ attribute [simps! coe toAddSubmonoid] AddMonoidHom.graph
 set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] coe_graph graph_toSubmonoid
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma mem_graph {f : G →* H} {x : G × H} : x ∈ f.mgraph ↔ f x.1 = x.2 := .rfl
 
 @[to_additive]
