@@ -52,7 +52,7 @@ theorem Fintype.prod_apply {α : Type*} {β : α → Type*} {γ : Type*} [Fintyp
 theorem prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Finset γ) (f : γ → α)
     (g : γ → β) : (∏ x ∈ s, f x, ∏ x ∈ s, g x) = ∏ x ∈ s, (f x, g x) :=
   haveI := Classical.decEq γ
-  Finset.induction_on s rfl (by simp (config := { contextual := true }) [Prod.ext_iff])
+  Finset.induction_on s rfl (by simp +contextual [Prod.ext_iff])
 
 /-- decomposing `x : ι → R` as a sum along the canonical basis -/
 theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [Semiring R]

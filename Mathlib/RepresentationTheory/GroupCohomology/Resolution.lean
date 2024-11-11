@@ -163,7 +163,7 @@ which `G` acts by `ρ(g₁)(g₂ ⊗ x) = (g₁ * g₂) ⊗ x`) sending `(g₀, 
 def diagonalSucc (n : ℕ) :
     diagonal k G (n + 1) ≅ leftRegular k G ⊗ trivial k G ((Fin n → G) →₀ k) :=
   (linearization k G).mapIso (actionDiagonalSucc G n) ≪≫
-    (asIso ((linearization k G).μ (Action.leftRegular G) _)).symm ≪≫
+    (Functor.Monoidal.μIso (linearization k G) _ _).symm ≪≫
       tensorIso (Iso.refl _) (linearizationTrivialIso k G (Fin n → G))
 
 variable {k G n}
@@ -171,20 +171,7 @@ variable {k G n}
 theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     (diagonalSucc k G n).hom.hom (single f a) =
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
-/- Porting note (#11039): broken proof was
-  dsimp only [diagonalSucc]
-  simpa only [Iso.trans_hom, Iso.symm_hom, Action.comp_hom, ModuleCat.comp_def,
-    LinearMap.comp_apply, Functor.mapIso_hom,
-    linearization_map_hom_single (actionDiagonalSucc G n).hom f a, asIso_inv,
-    linearization_μ_inv_hom, actionDiagonalSucc_hom_apply, finsuppTensorFinsupp',
-    LinearEquiv.trans_symm, lcongr_symm, LinearEquiv.trans_apply, lcongr_single,
-    TensorProduct.lid_symm_apply, finsuppTensorFinsupp_symm_single, LinearEquiv.coe_toLinearMap] -/
-  change (𝟙 ((linearization k G).1.obj (Action.leftRegular G)).V
-      ⊗ (linearizationTrivialIso k G (Fin n → G)).hom.hom)
-    ((inv ((linearization k G).μ (Action.leftRegular G) { V := Fin n → G, ρ := 1 })).hom
-      ((lmapDomain k k (actionDiagonalSucc G n).hom.hom) (single f a))) = _
-  simp only [CategoryTheory.Functor.map_id, linearization_μ_inv_hom]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  dsimp [diagonalSucc]
   erw [lmapDomain_apply, mapDomain_single, LinearEquiv.coe_toLinearMap, finsuppTensorFinsupp',
     LinearEquiv.trans_symm, LinearEquiv.trans_apply, lcongr_symm, Equiv.refl_symm]
   erw [lcongr_single]
@@ -454,7 +441,7 @@ variable (k)
 face map complex of a simplicial `k`-linear `G`-representation. -/
 def groupCohomology.resolution [Monoid G] :=
   (AlgebraicTopology.alternatingFaceMapComplex (Rep k G)).obj
-    (classifyingSpaceUniversalCover G ⋙ (Rep.linearization k G).1.1)
+    (classifyingSpaceUniversalCover G ⋙ Rep.linearization k G)
 
 namespace groupCohomology.resolution
 
@@ -528,7 +515,7 @@ def compForgetAugmentedIso :
       groupCohomology.resolution.forget₂ToModuleCat k G :=
   eqToIso
     (Functor.congr_obj (map_alternatingFaceMapComplex (forget₂ (Rep k G) (ModuleCat.{u} k))).symm
-      (classifyingSpaceUniversalCover G ⋙ (Rep.linearization k G).1.1))
+      (classifyingSpaceUniversalCover G ⋙ Rep.linearization k G))
 
 /-- As a complex of `k`-modules, the standard resolution of the trivial `G`-representation `k` is
 homotopy equivalent to the complex which is `k` at 0 and 0 elsewhere. -/

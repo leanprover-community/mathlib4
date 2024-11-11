@@ -196,6 +196,8 @@
  {"Mathlib.Util.Notation3": ["Lean.Elab.BuiltinCommand"],
   "Mathlib.Topology.UniformSpace.Basic": ["Mathlib.Tactic.Monotonicity.Basic"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
+  "Mathlib.Topology.Sheaves.CommRingCat":
+  ["Mathlib.Algebra.Category.Ring.Limits"],
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
   "Mathlib.Topology.JacobsonSpace": ["Mathlib.Tactic.StacksAttribute"],
@@ -243,7 +245,7 @@
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
   "Mathlib.Tactic.Linter.UnusedTactic": ["Batteries.Tactic.Unreachable"],
   "Mathlib.Tactic.LinearCombination":
-  ["Mathlib.Tactic.LinearCombination.Lemmas"],
+  ["Mathlib.Tactic.Ring", "Mathlib.Tactic.LinearCombination.Lemmas"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
   "Mathlib.Tactic.ITauto": ["Batteries.Tactic.Init", "Mathlib.Logic.Basic"],
@@ -337,7 +339,8 @@
   ["Mathlib.Control.Traversable.Instances"],
   "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.BoundedOrder": ["Mathlib.Tactic.Finiteness.Attr"],
-  "Mathlib.Order.Basic": ["Batteries.Tactic.Classical"],
+  "Mathlib.Order.Basic":
+  ["Batteries.Tactic.Classical", "Mathlib.Tactic.GCongr.Core"],
   "Mathlib.NumberTheory.Cyclotomic.Basic": ["Mathlib.Init.Core"],
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
@@ -431,7 +434,6 @@
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
   "Mathlib.Algebra.Group.Units.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Units": ["Mathlib.Tactic.Subsingleton"],
-  "Mathlib.Algebra.Group.Defs": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":

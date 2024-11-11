@@ -66,7 +66,7 @@ noncomputable def integerNormalization (p : S[X]) : R[X] :=
 @[simp]
 theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i := by
-  simp (config := { contextual := true }) [integerNormalization, coeff_monomial,
+  simp +contextual [integerNormalization, coeff_monomial,
     coeffIntegerNormalization_of_not_mem_support]
 
 theorem integerNormalization_spec (p : S[X]) :
