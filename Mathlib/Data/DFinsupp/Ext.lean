@@ -12,7 +12,7 @@ import Mathlib.Data.DFinsupp.Defs
 ## Main results
 
 * `DFinsupp.addHom_ext`, `DFinsupp.addHom_ext'`: if two additive homomorphisms from `Π₀ i, β i`
-  are equal on each `single a b`, then they are equal. 
+  are equal on each `single a b`, then they are equal.
 -/
 
 
