@@ -1073,7 +1073,8 @@ private lemma exists_lt_add_left {a b c : EReal} (hc : c < a + b) : ∃ a' < a, 
 private lemma exists_lt_add_right {a b c : EReal} (hc : c < a + b) : ∃ b' < b, c < a + b' := by
   simp_rw [add_comm a] at hc ⊢; exact exists_lt_add_left hc
 
-lemma add_le_of_forall_lt {a b c : EReal} (h : ∀ a' < a, ∀ b' < b, a' + b' ≤ c) : a + b ≤ c := by
+lemma add_le_of_forall_lt {a b c : EReal} (h : ∀ a' < a, ∀ b' < b, a' + b' ≤ c) : a + b ≤ c :=
+  by
   refine le_of_forall_ge_of_dense fun d hd ↦ ?_
   obtain ⟨a', ha', hd⟩ := exists_lt_add_left hd
   obtain ⟨b', hb', hd⟩ := exists_lt_add_right hd
@@ -1085,6 +1086,9 @@ lemma le_add_of_forall_lt {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂
   exact add_le_of_forall_lt fun a' ha' b' hb' ↦ le_neg_of_le_neg
     <| (h (-a') (lt_neg_of_lt_neg ha') (-b') (lt_neg_of_lt_neg hb')).trans_eq
     (neg_add (.inr hb'.ne_top) (.inl ha'.ne_top)).symm
+
+@[deprecated (since := "2024-11-11")] alias add_le_of_forall_add_le := add_le_of_forall_lt
+@[deprecated (since := "2024-11-11")] alias le_add_of_forall_le_add := le_add_of_forall_lt
 
 /-! ### Multiplication -/
 
