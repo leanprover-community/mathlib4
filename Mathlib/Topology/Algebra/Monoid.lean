@@ -341,21 +341,23 @@ theorem MonoidHom.isClosed_range_coe : IsClosed (Set.range ((↑) : (M₁ →* M
 end PointwiseLimits
 
 @[to_additive]
-theorem Inducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
-    [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F) (hf : Inducing f) :
-    ContinuousMul M :=
+theorem IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
+    [MulHomClass F M N] [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F)
+    (hf : IsInducing f) : ContinuousMul M :=
   ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).1⟩
+
+@[deprecated (since := "2024-10-28")] alias Inducing.continuousMul := IsInducing.continuousMul
 
 @[to_additive]
 theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
     [TopologicalSpace N] [ContinuousMul N] (f : F) : @ContinuousMul M (induced f ‹_›) _ :=
   letI := induced f ‹_›
-  Inducing.continuousMul f ⟨rfl⟩
+  IsInducing.continuousMul f ⟨rfl⟩
 
 @[to_additive]
 instance Subsemigroup.continuousMul [TopologicalSpace M] [Semigroup M] [ContinuousMul M]
     (S : Subsemigroup M) : ContinuousMul S :=
-  Inducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl} : MulHom S M) ⟨rfl⟩
+  IsInducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl} : MulHom S M) ⟨rfl⟩
 
 @[to_additive]
 instance Submonoid.continuousMul [TopologicalSpace M] [Monoid M] [ContinuousMul M]
@@ -432,8 +434,10 @@ theorem Submonoid.topologicalClosure_minimal (s : Submonoid M) {t : Submonoid M}
 
 /-- If a submonoid of a topological monoid is commutative, then so is its topological closure. -/
 @[to_additive "If a submonoid of an additive topological monoid is commutative, then so is its
-topological closure."]
-def Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
+topological closure.
+
+See note [reducible non-instances]."]
+abbrev Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
     (hs : ∀ x y : s, x * y = y * x) : CommMonoid s.topologicalClosure :=
   { s.topologicalClosure.toMonoid with
     mul_comm :=
@@ -612,8 +616,7 @@ of the monoid, with respect to the induced topology, is continuous.
 
 Negation is also continuous, but we register this in a later file, `Topology.Algebra.Group`, because
 the predicate `ContinuousNeg` has not yet been defined."]
-instance : ContinuousMul αˣ :=
-  inducing_embedProduct.continuousMul (embedProduct α)
+instance : ContinuousMul αˣ := isInducing_embedProduct.continuousMul (embedProduct α)
 
 end Units
 

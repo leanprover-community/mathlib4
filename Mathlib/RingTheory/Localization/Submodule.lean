@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Submodules in localizations of commutative rings
@@ -67,7 +67,6 @@ theorem coeSubmodule_span (s : Set R) :
   rw [IsLocalization.coeSubmodule, Ideal.span, Submodule.map_span]
   rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem coeSubmodule_span_singleton (x : R) :
     coeSubmodule S (Ideal.span {x}) = Submodule.span R {(algebraMap R S) x} := by
   rw [coeSubmodule_span, Set.image_singleton]

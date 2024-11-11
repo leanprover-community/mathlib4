@@ -3,6 +3,7 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
+import Mathlib.Order.Filter.AtTopBot
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
@@ -285,7 +286,7 @@ abbrev mk (y : HomogeneousLocalization.NumDenSameDeg 𝒜 x) : HomogeneousLocali
   Quotient.mk'' y
 
 lemma mk_surjective : Function.Surjective (mk (𝒜 := 𝒜) (x := x)) :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.mk''_surjective
 
 /-- View an element of `HomogeneousLocalization 𝒜 x` as an element of `Aₓ` by forgetting that the
 numerator and denominator are of the same grading.
@@ -528,7 +529,7 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
       (hc ▸ Ideal.mul_mem_left _ c.1 (Ideal.mul_mem_right b _ h))
   refine isUnit_of_mul_eq_one _ (Quotient.mk'' ⟨f.1, f.3, f.2, this⟩) ?_
   rw [← mk_mul, ext_iff_val, val_mk]
-  simp [mul_comm f.den.1]
+  simp [mul_comm f.den.1, Localization.mk_eq_monoidOf_mk']
 
 instance : Nontrivial (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
   ⟨⟨0, 1, fun r => by simp [ext_iff_val, val_zero, val_one, zero_ne_one] at r⟩⟩

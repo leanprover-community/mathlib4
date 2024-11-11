@@ -113,7 +113,7 @@ theorem t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
   let π : X → Quotient R := Quotient.mk'
   have : IsOpenQuotientMap (Prod.map π π) :=
     MulAction.isOpenQuotientMap_quotientMk.prodMap MulAction.isOpenQuotientMap_quotientMk
-  rw [← this.quotientMap.isClosed_preimage]
+  rw [← this.isQuotientMap.isClosed_preimage]
   convert ProperSMul.isProperMap_smul_pair.isClosedMap.isClosed_range
   · ext ⟨x₁, x₂⟩
     simp only [mem_preimage, map_apply, mem_diagonal_iff, mem_range, Prod.mk.injEq, Prod.exists,
@@ -130,7 +130,7 @@ theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G]
     refine IsClosedEmbedding.isProperMap ⟨?_, ?_⟩
     · let g := fun gx : G × X ↦ gx.2
       have : Function.LeftInverse g f := fun x ↦ by simp
-      exact this.embedding (by fun_prop) (by fun_prop)
+      exact this.isEmbedding (by fun_prop) (by fun_prop)
     · have : range f = ({1} ×ˢ univ) := by simp
       rw [this]
       exact isClosed_singleton.prod isClosed_univ

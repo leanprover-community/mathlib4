@@ -98,8 +98,8 @@ theorem cells_subset_iff {μ ν : YoungDiagram} : μ.cells ⊆ ν.cells ↔ μ �
 theorem cells_ssubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ < ν :=
   Iff.rfl
 
-instance : Sup YoungDiagram where
-  sup μ ν :=
+instance : Max YoungDiagram where
+  max μ ν :=
     { cells := μ.cells ∪ ν.cells
       isLowerSet := by
         rw [Finset.coe_union]
@@ -117,8 +117,8 @@ theorem coe_sup (μ ν : YoungDiagram) : ↑(μ ⊔ ν) = (μ ∪ ν : Set (ℕ 
 theorem mem_sup {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊔ ν ↔ x ∈ μ ∨ x ∈ ν :=
   Finset.mem_union
 
-instance : Inf YoungDiagram where
-  inf μ ν :=
+instance : Min YoungDiagram where
+  min μ ν :=
     { cells := μ.cells ∩ ν.cells
       isLowerSet := by
         rw [Finset.coe_inter]
@@ -153,7 +153,6 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
   rfl
 
 -- Porting note: removed `↑`, added `.cells` and changed proof
--- @[simp] -- Porting note (#10618): simp can prove this
 @[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
   refine Set.eq_of_subset_of_subset ?_ ?_

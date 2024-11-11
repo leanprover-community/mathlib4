@@ -3,10 +3,9 @@ Copyright (c) 2023 Yaël Dillies, Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Set.Finite
 import Mathlib.Order.Closure
-import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Sets closed under join/meet
@@ -306,7 +305,7 @@ lemma supClosure_min : s ⊆ t → SupClosed t → supClosure s ⊆ t := supClos
 protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite := by
   lift s to Finset α using hs
   classical
-  refine ((s.powerset.filter Finset.Nonempty).attach.image
+  refine ({t ∈ s.powerset | t.Nonempty}.attach.image
     fun t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
@@ -378,7 +377,7 @@ lemma infClosure_min : s ⊆ t → InfClosed t → infClosure s ⊆ t := infClos
 protected lemma Set.Finite.infClosure (hs : s.Finite) : (infClosure s).Finite := by
   lift s to Finset α using hs
   classical
-  refine ((s.powerset.filter Finset.Nonempty).attach.image
+  refine ({t ∈ s.powerset | t.Nonempty}.attach.image
     fun t ↦ t.1.inf' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,

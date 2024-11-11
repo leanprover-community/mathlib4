@@ -25,7 +25,7 @@ Also see `tfae_of_isNoetherianRing_of_localRing_of_isDomain` for a version witho
 -/
 
 
-variable (R : Type*) [CommRing R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R : Type*) [CommRing R]
 
 open scoped Multiplicative
 

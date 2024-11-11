@@ -121,9 +121,9 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
         (by rw [← sum_mul, mul_comm]; gcongr)
   rw [sum_range_sub_sum_range (le_of_lt hNMK)]
   calc
-    (∑ i ∈ (range K).filter fun k ↦ max N M + 1 ≤ k,
+    (∑ i ∈ range K with max N M + 1 ≤ i,
           abv (f i) * abv ((∑ k ∈ range (K - i), g k) - ∑ k ∈ range K, g k)) ≤
-        ∑ i ∈ (range K).filter fun k ↦ max N M + 1 ≤ k, abv (f i) * (2 * Q) := by
+        ∑ i ∈ range K with max N M + 1 ≤ i, abv (f i) * (2 * Q) := by
         gcongr
         rw [sub_eq_add_neg]
         refine le_trans (abv_add _ _ _) ?_
