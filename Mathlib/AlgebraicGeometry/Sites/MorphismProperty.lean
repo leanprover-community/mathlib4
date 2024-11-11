@@ -55,7 +55,10 @@ def pretopology : Pretopology Scheme.{u} where
 abbrev grothendieckTopology : GrothendieckTopology Scheme.{u} :=
   (pretopology P).toGrothendieck
 
-/-- The pretopology on the category of schemes defined by jointly surjective families. -/
+/-- The pretopology on the category of schemes defined by jointly surjective families.
+
+Note: The assumption `IsJointlySurjectivePreserving ⊤` is mathematically unneeded, and only here
+to reduce imports. To satisfy it, use `AlgebraicGeometry.Scheme.isJointlySurjectivePreserving`. -/
 def surjectiveFamiliesPretopology [IsJointlySurjectivePreserving ⊤] : Pretopology Scheme.{u} where
   coverings X S :=
     ∀ x : X, ∃ (Y : Scheme.{u}) (y : Y) (f : Y ⟶ X) (hf : S f), f.base y = x
