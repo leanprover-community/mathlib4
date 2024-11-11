@@ -185,7 +185,7 @@ def gciGenerateFrom (α : Type*) :
   topology whose open sets are those sets open in every member of the collection. -/
 instance : CompleteLattice (TopologicalSpace α) := (gciGenerateFrom α).liftCompleteLattice
 
-@[mono]
+@[mono, gcongr]
 theorem generateFrom_anti {α} {g₁ g₂ : Set (Set α)} (h : g₁ ⊆ g₂) :
     generateFrom g₂ ≤ generateFrom g₁ :=
   (gc_generateFrom _).monotone_u h
