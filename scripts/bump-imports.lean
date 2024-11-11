@@ -163,8 +163,8 @@ def readAdhocFile : IO (Array Migration) := do
       | [] | [_] | _ => let _ := 42 -- invalid input
   return migrations
 
-def moarMigrations : IO (Array Migration) := do
-  let mig := #[]
+def automaticallyClassifiedMigrations : IO (Array Migration) := do
+  let mut mig := #[]
   let lines ← IO.FS.lines "output.txt"
   for line in lines do
     -- We only consider the lines describing the commit hash.
@@ -174,20 +174,31 @@ def moarMigrations : IO (Array Migration) := do
     let hash := (line.splitOn " ").get! 0
     if hash.length != 40 then
       dbg_trace s!"something unexpected happened: line {line} should contain a commit hash..."
-    let diff ← IO.Process.output { cmd := "git", args := #["diff", hash, "Mathlib.lean"] }
+    let diff ← IO.Process.output { cmd := "git", args := #["show", hash, "Mathlib.lean"] }
     if diff.exitCode != 0 then
-      IO.println s!"error: git diff {hash} Mathlib.lean returned as error"
+      IO.println s!"error: git show {hash} Mathlib.lean returned an error"
+      continue
     let interesting_lines := (diff.stdout.splitOn "\n").filter (fun line ↦
       (line.startsWith "-" || line.startsWith "+") && !(line.containsSubstr "Mathlib.lean")
     )
     let added := interesting_lines.filter (·.startsWith "+") |>.drop ("+import ".length)
     let removed := interesting_lines.filter (·.startsWith "-") |>.drop ("-import ".length)
     match (removed.length, added.length) with
+    | (0, 0) =>
+      dbg_trace "error: parsing returned *no* additions or deletions; something is off!"
+      dbg_trace hash
     | (0, _) => continue -- just additions, not interesting
     | (_, 0) =>
-      let sdf := 42 -- deletion(s)
-    | (1, 1) => let sdf := 234 -- move
-    | (1, _) => let sdf := 234 -- split
+      -- Just deletions, easy to parse.
+      mig := mig.append (removed.toArray.map (fun rem ↦
+        Migration.mk hash (MigrationKind.DeleteFile (moduleNameToName rem))
+      ))
+    | (1, 1) => -- file is moved
+      mig := mig.push <| Migration.mk hash <| MigrationKind.MoveFile
+        (moduleNameToName (removed.get! 0)) (moduleNameToName (added.get! 0))
+    | (1, _) => -- one file is split
+      mig := mig.push <| Migration.mk hash <| MigrationKind.SplitFile
+        (moduleNameToName (removed.get! 0)) (added.toArray.map moduleNameToName)
     | _ => dbg_trace hash -- interesting cases
   return mig
 
@@ -316,7 +327,7 @@ def bumpImportsCli (args : Cli.Parsed) : IO UInt32 := do
       Feel free to contribute additional migrations!"
 
   -- Find all migrations which apply to the current range of commits.
-  let untypedMigrations := #[] --← readJsonFile (Array UntypedMigration) (System.mkFilePath ["migrations.json"])
+  let untypedMigrations ← readJsonFile (Array UntypedMigration) (System.mkFilePath ["migrations.json"])
 
   -- Parse the data into some typed representation.
   let mut migrations : Array Migration := #[]
@@ -355,8 +366,7 @@ def bumpImportsCli (args : Cli.Parsed) : IO UInt32 := do
   migrations := migrations.append extraTypedMigrations
   IO.println s!"info: input data is well-formed, found {migrations.size} typed migration(s)"
 
-  -- TODO: the following doesn't work, as I'd need to run git within mathlib.
-  let moreExtra ← moarMigrations
+  let moreExtra ← automaticallyClassifiedMigrations
 
   -- Extract all mathlib commits between the specified commits.
   -- FUTURE: do this automatically? or add further look-up files? Un-hard-code `from` and `to`!
