@@ -19,7 +19,7 @@ namespace Subring
 variable {ι : Sort*} {R : Type*} [Ring R]
 
 /-- Pull a subring back to an opposite subring along `MulOpposite.unop` -/
-@[simps coe toSubsemiring]
+@[simps! coe toSubsemiring]
 protected def op (S : Subring R) : Subring Rᵐᵒᵖ where
   toSubsemiring := S.toSubsemiring.op
   neg_mem' {x} hx := neg_mem (show x.unop ∈ S from hx)
@@ -30,7 +30,7 @@ attribute [norm_cast] coe_op
 theorem mem_op {x : Rᵐᵒᵖ} {S : Subring R} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
 /-- Pull an opposite subring back to a subring along `MulOpposite.op` -/
-@[simps coe toSubsemiring]
+@[simps! coe toSubsemiring]
 protected def unop (S : Subring Rᵐᵒᵖ) : Subring R where
   toSubsemiring := S.toSubsemiring.unop
   neg_mem' {x} hx := neg_mem (show MulOpposite.op x ∈ S from hx)

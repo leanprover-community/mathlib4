@@ -163,6 +163,8 @@ instance : SubringClass (Subring R) R where
   mul_mem {s} := s.mul_mem'
   neg_mem {s} := s.neg_mem'
 
+initialize_simps_projections Subring (carrier → coe, as_prefix coe)
+
 @[simp]
 theorem mem_toSubsemiring {s : Subring R} {x : R} : x ∈ s.toSubsemiring ↔ x ∈ s := Iff.rfl
 
@@ -186,14 +188,11 @@ theorem ext {S T : Subring R} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
 
 /-- Copy of a subring with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
+@[simps coe toSubsemiring]
 protected def copy (S : Subring R) (s : Set R) (hs : s = ↑S) : Subring R :=
   { S.toSubsemiring.copy s hs with
     carrier := s
     neg_mem' := hs.symm ▸ S.neg_mem' }
-
-@[simp]
-theorem coe_copy (S : Subring R) (s : Set R) (hs : s = ↑S) : (S.copy s hs : Set R) = s :=
-  rfl
 
 theorem copy_eq (S : Subring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
@@ -209,14 +208,10 @@ theorem toSubmonoid_injective : Function.Injective (fun s : Subring R => s.toSub
 
 /-- Construct a `Subring R` from a set `s`, a submonoid `sm`, and an additive
 subgroup `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
+@[simps! coe toSubsemiring]
 protected def mk' (s : Set R) (sm : Submonoid R) (sa : AddSubgroup R) (hm : ↑sm = s)
     (ha : ↑sa = s) : Subring R :=
   { sm.copy s hm.symm, sa.copy s ha.symm with }
-
-@[simp]
-theorem coe_mk' {s : Set R} {sm : Submonoid R} (hm : ↑sm = s) {sa : AddSubgroup R} (ha : ↑sa = s) :
-    (Subring.mk' s sm sa hm ha : Set R) = s :=
-  rfl
 
 @[simp]
 theorem mem_mk' {s : Set R} {sm : Submonoid R} (hm : ↑sm = s) {sa : AddSubgroup R} (ha : ↑sa = s)
@@ -236,6 +231,7 @@ theorem mk'_toAddSubgroup {s : Set R} {sm : Submonoid R} (hm : ↑sm = s) {sa : 
 end Subring
 
 /-- A `Subsemiring` containing -1 is a `Subring`. -/
+@[simps toSubsemiring]
 def Subsemiring.toSubring (s : Subsemiring R) (hneg : (-1 : R) ∈ s) : Subring R where
   toSubsemiring := s
   neg_mem' h := by
