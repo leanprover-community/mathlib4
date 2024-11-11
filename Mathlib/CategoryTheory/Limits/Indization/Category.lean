@@ -46,7 +46,7 @@ noncomputable def Ind.equivalence : Ind C ≌ FullSubcategory (IsIndObject (C :=
 
 variable (C) in
 /-- The canonical inclusion of ind-objects into presheaves. -/
-noncomputable def Ind.inclusion : Ind C ⥤ Cᵒᵖ ⥤ Type v :=
+protected noncomputable def Ind.inclusion : Ind C ⥤ Cᵒᵖ ⥤ Type v :=
   (Ind.equivalence C).functor ⋙ fullSubcategoryInclusion _
 
 instance : (Ind.inclusion C).Full :=
