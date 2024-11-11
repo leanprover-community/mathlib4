@@ -1131,10 +1131,9 @@ lemma toENNReal_sub {x y : EReal} (hy : 0 ≤ y) :
     · rw [toENNReal_of_nonpos]
       swap; · exact sub_nonpos.mpr <| EReal.coe_le_coe_iff.mpr hxy
       simp_all
-    · rw [toENNReal_of_ne_top, ← EReal.coe_sub, toReal_coe,
-        ENNReal.ofReal_sub x (EReal.coe_nonneg.mp hy)]
+    · rw [toENNReal_of_ne_top, ← coe_sub, toReal_coe, ofReal_sub x (EReal.coe_nonneg.mp hy)]
       exact (ne_of_beq_false rfl).symm
-  · rw [ENNReal.sub_eq_top_iff.mpr (by simp), top_sub_of_ne_top (coe_ne_top _), toENNReal_top]
+  · rw [sub_eq_top_iff.mpr (sub_eq_top_iff.mp rfl), top_sub_of_ne_top (coe_ne_top _), toENNReal_top]
 
 lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
   induction a <;> norm_cast
@@ -1380,10 +1379,10 @@ lemma mul_ne_bot (a b : EReal) :
 lemma toENNReal_mul {x y : EReal} (hx : 0 ≤ x) :
     (x * y).toENNReal = x.toENNReal * y.toENNReal := by
   induction x <;> induction y
-    <;> try {· simp_all [mul_nonpos_iff, ENNReal.ofReal_mul, ← EReal.coe_mul]}
+    <;> try {· simp_all [mul_nonpos_iff, ofReal_mul, ← coe_mul]}
   · rcases eq_or_lt_of_le hx with (hx | hx)
     · simp [← hx]
-    · simp_all [EReal.mul_top_of_pos hx]
+    · simp_all [mul_top_of_pos hx]
   · rename_i a
     rcases lt_trichotomy a 0 with (ha | ha | ha)
     · simp_all [le_of_lt, top_mul_of_neg (EReal.coe_neg'.mpr ha)]
