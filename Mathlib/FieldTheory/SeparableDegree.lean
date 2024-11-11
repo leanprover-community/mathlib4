@@ -350,9 +350,8 @@ theorem natSepDegree_eq_of_isAlgClosed [DecidableEq E] [IsAlgClosed E] :
 theorem natSepDegree_map (f : E[X]) (i : E →+* K) : (f.map i).natSepDegree = f.natSepDegree := by
   classical
   let _ := i.toAlgebra
-  rw [show i = algebraMap E K by rfl]
-  simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure K), aroots_def, map_map,
-    ← IsScalarTower.algebraMap_eq]
+  simp_rw [show i = algebraMap E K by rfl, natSepDegree_eq_of_isAlgClosed (AlgebraicClosure K),
+    aroots_def, map_map, ← IsScalarTower.algebraMap_eq]
 
 @[simp]
 theorem natSepDegree_C_mul {x : F} (hx : x ≠ 0) :
