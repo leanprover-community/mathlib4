@@ -92,32 +92,36 @@ theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
 
 open ENNReal in
 @[simp]
-theorem interior_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
+theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a < y i } := by
   let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
   simpa [interior_Ici] using f.interior_preimage (Function.surjective_eval _) (Ici a)
+@[deprecated (since := "2024-11-11")] alias interior_halfspace := interior_halfSpace
 
 open ENNReal in
 @[simp]
-theorem closure_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
+theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
   let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
   simpa [closure_Ici] using f.closure_preimage (Function.surjective_eval _) (Ici a)
+@[deprecated (since := "2024-11-11")] alias closure_halfspace := closure_halfSpace
 
 open ENNReal in
 @[simp]
-theorem closure_open_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
+theorem closure_openHalfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a < y i } = { y | a ≤ y i } := by
   let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
   simpa [closure_Ioi] using f.closure_preimage (Function.surjective_eval _) (Ioi a)
+@[deprecated (since := "2024-11-11")] alias closure_open_halfspace := closure_openHalfSpace
 
 open ENNReal in
 @[simp]
-theorem frontier_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
+theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
-  rw [frontier, closure_halfspace, interior_halfspace]
+  rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
   simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
+@[deprecated (since := "2024-11-11")] alias frontier_halfspace := frontier_halfSpace
 
 theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
@@ -202,7 +206,7 @@ lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     _ = interior ({ y | 0 ≤ y 0}) := by
       congr!
       apply range_euclideanHalfSpace
-    _ = { y | 0 < y 0 } := interior_halfspace _ _ _
+    _ = { y | 0 < y 0 } := interior_halfSpace _ _ _
 
 lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
@@ -210,7 +214,7 @@ lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     _ = frontier ({ y | 0 ≤ y 0 }) := by
       congr!
       apply range_euclideanHalfSpace
-    _ = { y | 0 = y 0 } := frontier_halfspace 2 _ _
+    _ = { y | 0 = y 0 } := frontier_halfSpace 2 _ _
 
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
