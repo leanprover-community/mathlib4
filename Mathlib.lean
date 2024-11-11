@@ -276,7 +276,6 @@ import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.Algebra.Group.Invertible.Defs
-import Mathlib.Algebra.Group.IsIdem
 import Mathlib.Algebra.Group.MinimalAxioms
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Group.NatPowAssoc
