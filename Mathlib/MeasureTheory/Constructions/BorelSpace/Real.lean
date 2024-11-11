@@ -471,14 +471,6 @@ namespace EReal
 lemma measurableEmbedding_coe : MeasurableEmbedding Real.toEReal :=
   isOpenEmbedding_coe.measurableEmbedding
 
-lemma lowerSemicontinuous_add : LowerSemicontinuous fun p : EReal × EReal ↦ p.1 + p.2 := by
-  intro x y
-  by_cases hx₁ : x.1 = ⊥
-  · simp [hx₁]
-  by_cases hx₂ : x.2 = ⊥
-  · simp [hx₂]
-  · exact continuousAt_add (.inr hx₂) (.inl hx₁) |>.lowerSemicontinuousAt _
-
 instance : MeasurableAdd₂ EReal := ⟨EReal.lowerSemicontinuous_add.measurable⟩
 
 section MeasurableMul

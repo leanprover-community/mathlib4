@@ -7,6 +7,7 @@ import Mathlib.Data.Rat.Encodable
 import Mathlib.Data.Real.EReal
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Order.MonotoneContinuity
+import Mathlib.Topology.Semicontinuous
 
 /-!
 # Topological structure on `EReal`
@@ -449,5 +450,13 @@ theorem continuousAt_mul {p : EReal × EReal} (h₁ : p.1 ≠ 0 ∨ p.2 ≠ ⊥)
   · simp only [ne_eq, not_true_eq_false, EReal.coe_eq_zero, false_or] at h₄
     exact continuousAt_mul_top_ne_zero h₄
   · exact continuousAt_mul_top_top
+
+lemma lowerSemicontinuous_add : LowerSemicontinuous fun p : EReal × EReal ↦ p.1 + p.2 := by
+  intro x y
+  by_cases hx₁ : x.1 = ⊥
+  · simp [hx₁]
+  by_cases hx₂ : x.2 = ⊥
+  · simp [hx₂]
+  · exact continuousAt_add (.inr hx₂) (.inl hx₁) |>.lowerSemicontinuousAt _
 
 end EReal
