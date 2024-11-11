@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Mathlib.Algebra.Order.Field.InjSurj
-import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.Field.Subfield.Defs
 
 /-!
 # Ordered instances on subfields
