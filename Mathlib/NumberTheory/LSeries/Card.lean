@@ -10,12 +10,12 @@ import Mathlib.NumberTheory.LSeries.RiemannZeta
 # L-series of counting functions
 
 Let `F : α → ℕ` be a function. Assume that there exists a positive real `l` such that
-`#{x | F x ≤ n} / n' tends to `l`. In this file, we prove results on the L-series with
+`Nat.card {x | F x ≤ n} / n' tends to `l`. In this file, we prove results on the L-series with
 coefficients `Nat.card {x | F x = n}`.
 
 ## Main results.
 
-* `NumberTheory.LSeriesSummable_card_eq`: the L-series defined by `n ↦ Nat.card {x | F x = n}`
+* `NumberTheory.LSeriesSummable_card_eq`: the L-series with coefficients `n ↦ Nat.card {x | F x = n}`
   is summable for `s ∈ ℂ` with `1 < s.re`.
 
 -/
