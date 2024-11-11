@@ -106,6 +106,13 @@ theorem closure_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
 
 open ENNReal in
 @[simp]
+theorem closure_open_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
+    closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a < y i } = { y | a ≤ y i } := by
+  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  simpa [closure_Ioi] using f.closure_preimage (Function.surjective_eval _) (Ioi a)
+
+open ENNReal in
+@[simp]
 theorem frontier_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
   rw [frontier, closure_halfspace, interior_halfspace]
@@ -141,6 +148,7 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
       UniqueDiffOn.pi (Fin n) (fun _ => ℝ) _ _ fun i (_ : i ∈ ({0} : Set (Fin n))) =>
         uniqueDiffOn_Ici 0
     simpa only [singleton_pi] using this
+  target_subset_closure_interior := by simp
   continuous_toFun := continuous_subtype_val
   continuous_invFun := by
     exact (continuous_id.update 0 <| (continuous_apply 0).max continuous_const).subtype_mk _
@@ -163,6 +171,12 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     have this : UniqueDiffOn ℝ _ :=
       UniqueDiffOn.univ_pi (Fin n) (fun _ => ℝ) _ fun _ => uniqueDiffOn_Ici 0
     simpa only [pi_univ_Ici] using this
+  target_subset_closure_interior := by
+    have : {x : EuclideanSpace ℝ (Fin n) | ∀ (i : Fin n), 0 ≤ x i}
+      = Set.pi univ (fun i ↦ Ici 0) := by aesop
+    simp only [this, interior_pi_set finite_univ]
+    rw [closure_pi_set]
+    simp
   continuous_toFun := continuous_subtype_val
   continuous_invFun := Continuous.subtype_mk
     (continuous_pi fun i => (continuous_id.max continuous_const).comp (continuous_apply i)) _
