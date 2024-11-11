@@ -5,6 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.OreLocalization.Ring
+import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Ring
 
 /-!
