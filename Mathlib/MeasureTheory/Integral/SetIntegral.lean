@@ -53,9 +53,8 @@ assert_not_exists InnerProductSpace
 
 noncomputable section
 
-open Set Filter TopologicalSpace MeasureTheory Function RCLike
-
-open scoped Classical Topology ENNReal NNReal
+open Filter Function MeasureTheory RCLike Set TopologicalSpace Topology
+open scoped Classical ENNReal NNReal
 
 variable {X Y E F : Type*}
 
@@ -556,7 +555,7 @@ theorem _root_.MeasurableEmbedding.setIntegral_map {Y} {_ : MeasurableSpace Y} {
 @[deprecated (since := "2024-04-17")]
 alias _root_.MeasurableEmbedding.set_integral_map := _root_.MeasurableEmbedding.setIntegral_map
 
-theorem _root_.IsClosedEmbedding.setIntegral_map [TopologicalSpace X] [BorelSpace X] {Y}
+theorem _root_.Topology.IsClosedEmbedding.setIntegral_map [TopologicalSpace X] [BorelSpace X] {Y}
     [MeasurableSpace Y] [TopologicalSpace Y] [BorelSpace Y] {g : X → Y} {f : Y → E} (s : Set Y)
     (hg : IsClosedEmbedding g) : ∫ y in s, f y ∂Measure.map g μ = ∫ x in g ⁻¹' s, f (g x) ∂μ :=
   hg.measurableEmbedding.setIntegral_map _ _
@@ -565,7 +564,8 @@ theorem _root_.IsClosedEmbedding.setIntegral_map [TopologicalSpace X] [BorelSpac
 alias _root_.ClosedEmbedding.setIntegral_map := IsClosedEmbedding.setIntegral_map
 
 @[deprecated (since := "2024-04-17")]
-alias _root_.IsClosedEmbedding.set_integral_map := _root_.IsClosedEmbedding.setIntegral_map
+alias _root_.IsClosedEmbedding.set_integral_map :=
+  IsClosedEmbedding.setIntegral_map
 
 @[deprecated (since := "2024-10-20")]
 alias _root_.ClosedEmbedding.set_integral_map := IsClosedEmbedding.set_integral_map

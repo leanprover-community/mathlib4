@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Embedding
 import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Finset.SymmDiff
 import Mathlib.Data.Finset.Union
 
 /-! # Image and map operations on finite sets
