@@ -128,7 +128,7 @@ noncomputable example : Inv ℝ≥0 := by infer_instance
 
 noncomputable example : Div ℝ≥0 := by infer_instance
 
-noncomputable example : LE ℝ≥0 := by infer_instance
+example : LE ℝ≥0 := by infer_instance
 
 example : Bot ℝ≥0 := by infer_instance
 
