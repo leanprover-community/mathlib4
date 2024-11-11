@@ -205,13 +205,19 @@ end sqrt
 
 section abs
 
-variable [StarOrderedRing A] [UniqueNonUnitalContinuousFunctionalCalculus NNReal A]
-
 /-- The absolute value of an operator, using the nonunital continuous functional calculus. -/
 noncomputable def abs (a : A) := sqrt (star a * a)
 
+theorem abs_zero_eq_zero : abs (0 : A) = 0 :=
+  by simp only [abs, star_zero, mul_zero, sqrt_zero]
+
+variable [StarOrderedRing A] [UniqueNonUnitalContinuousFunctionalCalculus NNReal A]
+
 theorem abs_mul_self_eq_star_mul (a : A) : (abs a) * (abs a) = star a * a := by
   refine sqrt_mul_sqrt_self _ <| star_mul_self_nonneg _
+
+
+
 
 /-
 example (a : A) : abs a = 0 ↔ a = 0 := by
