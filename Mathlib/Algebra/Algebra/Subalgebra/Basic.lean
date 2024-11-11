@@ -772,6 +772,30 @@ theorem iSup_toSubsemiring {ι : Sort*} [Nonempty ι] (S : ι → Subalgebra R A
     (iSup S).toSubsemiring = ⨆ i, (S i).toSubsemiring := by
   simp only [iSup, Set.range_nonempty, sSup_toSubsemiring, ← Set.range_comp, Function.comp_def]
 
+lemma le_iSup {ι : Sort*} (S : ι → Subalgebra R A) (i : ι) : S i ≤ iSup S :=
+  le_iSup_of_le i le_rfl
+
+lemma mem_iSup_of_mem {ι : Sort*} {S : ι → Subalgebra R A} (i : ι) {x : A} (hx : x ∈ S i) :
+    x ∈ iSup S :=
+  le_iSup S i hx
+
+lemma iSup_induction {ι : Sort*} {S : ι → Subalgebra R A} {motive : A → Prop}
+    {x : A} (mem : x ∈ iSup S)
+    (basic : ∀ i, ∀ a ∈ S i, motive a)
+    (zero : motive 0) (one : motive 1)
+    (add : ∀ a b, motive a → motive b → motive (a + b))
+    (mul : ∀ a b, motive a → motive b → motive (a * b))
+    (algebraMap : ∀ r, motive (algebraMap R A r)) : motive x := by
+  let T : Subalgebra R A :=
+  { carrier := motive
+    mul_mem' := fun {a b} ↦ mul a b
+    one_mem' := one
+    add_mem' := fun {a b} ↦ add a b
+    zero_mem' := zero
+    algebraMap_mem' := algebraMap }
+  suffices iSup S ≤ T from this mem
+  rwa [iSup_le_iff]
+
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
 theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl

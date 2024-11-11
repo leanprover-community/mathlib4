@@ -932,7 +932,7 @@ theorem map_range (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
     exact sup_le (AlgHom.range_comp_le_range _ _) (AlgHom.range_comp_le_range _ _)
 
 lemma comm_comp_map (f : A →ₐ[R] C) (g : B →ₐ[R] D) :
-    (TensorProduct.comm R C D).toAlgHom.comp (Algebra.TensorProduct.map f g) =
+    (TensorProduct.comm R C D : C ⊗[R] D →ₐ[R] D ⊗[R] C).comp (Algebra.TensorProduct.map f g) =
     (Algebra.TensorProduct.map g f).comp (TensorProduct.comm R A B).toAlgHom := by
   ext <;> rfl
 

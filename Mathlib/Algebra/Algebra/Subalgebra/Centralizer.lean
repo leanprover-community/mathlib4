@@ -47,6 +47,24 @@ lemma centralizer_sup (S T : Subalgebra R A) :
     | add _ _ _ _ h h' => simp [add_mul, h, h', mul_add]
     | mul _ _ _ _ h h' => rw [mul_assoc, h', ← mul_assoc, h, mul_assoc]
 
+lemma centralizer_iSup {ι : Sort*} (S : ι → Subalgebra R A) :
+    centralizer R ((⨆ i, S i : Subalgebra R A) : Set A) = ⨅ i, centralizer R (S i) := by
+  ext x
+  simp only [mem_centralizer_iff, SetLike.mem_coe, Algebra.mem_iInf]
+  constructor
+  · exact fun h i a ha ↦ @h a (Algebra.mem_iSup_of_mem i ha)
+  · intro h a ha
+    apply Algebra.iSup_induction ha
+    · exact fun i b hb ↦ h i b hb
+    · simp
+    · simp
+    · intro b c hb hc
+      simp only [add_mul, hb, hc, mul_add]
+    · intro b c hb hc
+      rw [mul_assoc, hc, ← mul_assoc, hb, mul_assoc]
+    · intro r
+      simp only [Algebra.commutes]
+
 end CommSemiring
 
 section Free
