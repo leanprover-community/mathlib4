@@ -53,8 +53,6 @@ overhead if a user does not need them.
   monotonicity of the multiplication, and basic equivalence theorems for left- and right-
   residuation.
 
-## Naming conventions
-
 ## Notation
 
 * `x ⇨ₗ y` : `sSup {z | z * x ≤ y}`, the `leftResiduation` of `y` over `x`;
@@ -90,7 +88,7 @@ class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] where
 
 /-- An integral (or strictly two-sided) additive quantale is a quantale over an additive monoid
 `⊤` and `0` coincide. -/
-class IsIntegralAddQuantale (α : Type*) [AddMonoid α] [CompleteLattice α] [IsAddQuantale α] : Prop
+class IsIntegralAddQuantale (α : Type*) [AddMonoid α] [CompleteLattice α] extends IsAddQuantale α
   where
   /-- `⊤` and `1` coincide in an integral (or strictly two-sided) quantale -/
   protected top_eq_zero : (⊤ : α) = 0
@@ -98,7 +96,7 @@ class IsIntegralAddQuantale (α : Type*) [AddMonoid α] [CompleteLattice α] [Is
 /-- An integral (or strictly two-sided) quantale is a quantale over a monoid where
 `⊤` and `1` coincide. -/
 @[to_additive]
-class IsIntegralQuantale (α : Type*) [Monoid α] [CompleteLattice α] [IsQuantale α] : Prop where
+class IsIntegralQuantale (α : Type*) [Monoid α] [CompleteLattice α] extends IsQuantale α where
   /-- `⊤` and `1` coincide in an integral (or strictly two-sided) quantale -/
   protected top_eq_one : (⊤ : α) = 1
 
@@ -144,7 +142,7 @@ instance : MulRightMono α where
 section IsIntegral
 
 variable {α : Type*}
-variable [Monoid α] [CompleteLattice α] [IsQuantale α] [IsIntegralQuantale α]
+variable [Monoid α] [CompleteLattice α] [IsIntegralQuantale α]
 
 @[to_additive]
 theorem top_eq_one : (⊤ : α) = 1 := IsIntegralQuantale.top_eq_one
