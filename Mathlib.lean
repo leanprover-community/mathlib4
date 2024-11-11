@@ -1182,7 +1182,6 @@ import Mathlib.Analysis.Convex.Birkhoff
 import Mathlib.Analysis.Convex.Body
 import Mathlib.Analysis.Convex.Caratheodory
 import Mathlib.Analysis.Convex.Combination
-import Mathlib.Analysis.Convex.Complex
 import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Analysis.Convex.Cone.Closure
 import Mathlib.Analysis.Convex.Cone.Extension
@@ -1879,7 +1878,6 @@ import Mathlib.CategoryTheory.Monoidal.Free.Basic
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.Monoidal.Hopf_
 import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Internal.Limits
@@ -2037,6 +2035,7 @@ import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.SmallObject.Construction
 import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+import Mathlib.CategoryTheory.SmallObject.Iteration.UniqueHom
 import Mathlib.CategoryTheory.Square
 import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.Subobject.Comma
@@ -2394,6 +2393,7 @@ import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.FunLike.Fintype
 import Mathlib.Data.Holor
+import Mathlib.Data.Ineq
 import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.Data.Int.Associated
 import Mathlib.Data.Int.Bitwise
@@ -2427,6 +2427,7 @@ import Mathlib.Data.LazyList.Basic
 import Mathlib.Data.List.AList
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.ChainOfFn
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.List.Dedup
@@ -4099,6 +4100,7 @@ import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.Flat.Algebra
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.Flat.CategoryTheory
+import Mathlib.RingTheory.Flat.Equalizer
 import Mathlib.RingTheory.Flat.EquationalCriterion
 import Mathlib.RingTheory.Flat.FaithfullyFlat
 import Mathlib.RingTheory.Flat.Localization
@@ -4872,6 +4874,7 @@ import Mathlib.Topology.ContinuousMap.LocallyConstant
 import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.ContinuousMap.Periodic
 import Mathlib.Topology.ContinuousMap.Polynomial
+import Mathlib.Topology.ContinuousMap.SecondCountableSpace
 import Mathlib.Topology.ContinuousMap.Sigma
 import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Topology.ContinuousMap.StarOrdered
@@ -5066,6 +5069,7 @@ import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Sets.Order
+import Mathlib.Topology.Sheaves.CommRingCat
 import Mathlib.Topology.Sheaves.Forget
 import Mathlib.Topology.Sheaves.Functors
 import Mathlib.Topology.Sheaves.Init
@@ -5073,7 +5077,6 @@ import Mathlib.Topology.Sheaves.Limits
 import Mathlib.Topology.Sheaves.LocalPredicate
 import Mathlib.Topology.Sheaves.LocallySurjective
 import Mathlib.Topology.Sheaves.MayerVietoris
-import Mathlib.Topology.Sheaves.Operations
 import Mathlib.Topology.Sheaves.PUnit
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.PresheafOfFunctions
