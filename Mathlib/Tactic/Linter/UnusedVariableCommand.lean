@@ -391,7 +391,7 @@ def cleanUpExplicitUniverses (stx : Syntax) : Syntax :=
   stx.replaceM (m := Id) fun s =>
     if s.isOfKind ``Lean.Parser.Term.explicitUniv then
       let firstPos := s[0].getPos?.getD default
-      let lastPos := s.getArgs.back.getHeadInfo.getTailPos?.getD default
+      let lastPos := (s.getArgs.back?.getD default).getHeadInfo.getTailPos?.getD default
       some (mkIdentFrom (.ofRange ⟨firstPos, lastPos⟩) s[0].getId)
     else none
 
