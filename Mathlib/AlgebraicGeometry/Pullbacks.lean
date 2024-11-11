@@ -557,7 +557,7 @@ lemma diagonalCover_map (I) : (diagonalCover f 𝒰 𝒱).map I =
     ((𝒱 I.fst).map _ ≫ pullback.fst _ _) ((𝒱 I.fst).map _ ≫ pullback.fst _ _) (𝒰.map _)
     (by simp)
     (by simp) := by
-  ext1 <;> simp [diagonalCover, OpenCover.pullbackHom]
+  ext1 <;> simp [diagonalCover, Cover.pullbackHom]
 
 /-- The restriction of the diagonal `X ⟶ X ×ₛ X` to `𝒱 i j ×[𝒰 i] 𝒱 i j` is the diagonal
 `𝒱 i j ⟶ 𝒱 i j ×[𝒰 i] 𝒱 i j`. -/
@@ -582,8 +582,8 @@ def diagonalRestrictIsoDiagonal (i j) :
       · simp [diagonalCover_map]
       · rw [← pullback.condition_assoc, ← pullback.condition_assoc]
         simp
-    · simp [pullback.condition, OpenCover.pullbackHom]
-  dsimp [OpenCover.pullbackHom] at H ⊢
+    · simp [pullback.condition, Cover.pullbackHom]
+  dsimp [Cover.pullbackHom] at H ⊢
   apply pullback.hom_ext
   · simp only [Category.assoc, pullback.diagonal_fst, Category.comp_id]
     simp only [← Category.assoc, IsIso.comp_inv_eq]
