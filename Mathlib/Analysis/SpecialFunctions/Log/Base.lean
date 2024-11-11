@@ -106,7 +106,7 @@ theorem div_logb {a b c : ℝ} (h₁ : c ≠ 0) (h₂ : c ≠ 1) (h₃ : c ≠ -
 theorem logb_rpow_eq_mul_logb_of_pos (hx : 0 < x) : logb b (x ^ y) = y * logb b x := by
   rw [logb, log_rpow hx, logb, mul_div_assoc]
 
-theorem logb_pow {k : ℕ} : logb b (x ^ k) = k * logb b x := by
+theorem logb_pow (b x : ℝ) (k : ℕ) : logb b (x ^ k) = k * logb b x := by
   rw [logb, logb, log_pow, mul_div_assoc]
 
 section BPosAndNeOne
