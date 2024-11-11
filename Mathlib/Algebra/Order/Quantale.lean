@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pieter Cuijpers
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Order.CompleteLattice
-import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Order.CompleteLattice
 
 /-!
 # Theory of quantales
