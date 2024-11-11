@@ -40,11 +40,11 @@ Since every `FinEnum` instance implies a `Fintype` instance and `Prop` is squash
 `Fintype.induction_empty_option` can be used if a `Prop` needs to be constructed.
 Cf. `Data.Fintype.Option`
 -/
-def recEmptyOption {P : (α : Type u) → Sort v}
-    (fin_choice : (n : ℕ) → Fin (n + 1))
-    (of_equiv : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β )
-    (h_empty : P PEmpty.{u + 1})
-    (h_option : {α : Type u} → FinEnum α → P α → P (Option α))
+def recEmptyOption {P : Type u → Sort v}
+    (finChoice : (n : ℕ) → Fin (n + 1))
+    (congr : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β )
+    (empty : P PEmpty.{u + 1})
+    (option : {α : Type u} → FinEnum α → P α → P (Option α))
     (α : Type u) [FinEnum α] :
     P α :=
   match cardeq : card α with
@@ -58,7 +58,7 @@ def recEmptyOption {P : (α : Type u) → Sort v}
 termination_by card α
 
 /--
-For a type whose `card` disappears, the recursion principle evaluates to whatever `of_equiv`
+For an empty type, the recursion principle evaluates to whatever `of_equiv`
 makes of the base case.
 -/
 theorem recEmptyOption_of_card_eq_zero {P : (α : Type u) → Sort v}
