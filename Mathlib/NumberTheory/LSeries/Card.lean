@@ -15,7 +15,7 @@ coefficients `Nat.card {x | F x = n}`.
 
 ## Main results.
 
-* `NumberTheory.LSeriesSummable_card_eq`: the L-series with coefficients `n ↦ Nat.card {x | F x = n}`
+* `NumberTheory.LSeriesSummable_card_eq`: the L-series with coefficients `Nat.card {x | F x = n}`
   is summable for `s ∈ ℂ` with `1 < s.re`.
 
 -/
