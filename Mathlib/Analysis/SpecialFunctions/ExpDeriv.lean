@@ -73,9 +73,11 @@ theorem hasDerivAt_exp (x : ℂ) : HasDerivAt exp (exp x) x := by
   simp only [Metric.mem_ball, dist_zero_right, norm_pow]
   exact fun z hz => exp_bound_sq x z hz.le
 
+@[simp, fun_prop]
 theorem differentiable_exp : Differentiable 𝕜 exp := fun x =>
   (hasDerivAt_exp x).differentiableAt.restrictScalars 𝕜
 
+@[simp, fun_prop]
 theorem differentiableAt_exp {x : ℂ} : DifferentiableAt 𝕜 exp x :=
   differentiable_exp x
 
@@ -231,8 +233,10 @@ theorem hasDerivAt_exp (x : ℝ) : HasDerivAt exp (exp x) x :=
 theorem contDiff_exp {n : ℕ∞} : ContDiff ℝ n exp :=
   Complex.contDiff_exp.real_of_complex
 
+@[simp, fun_prop]
 theorem differentiable_exp : Differentiable ℝ exp := fun x => (hasDerivAt_exp x).differentiableAt
 
+@[simp, fun_prop]
 theorem differentiableAt_exp {x : ℝ} : DifferentiableAt ℝ exp x :=
   differentiable_exp x
 
