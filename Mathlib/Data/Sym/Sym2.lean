@@ -397,7 +397,7 @@ def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α) : (∀ a ∈ s,
   Quot.recOn s g fun p q hpq => funext fun Hq => by
     rw [rel_iff'] at hpq
     have Hp : ∀ a ∈ Sym2.mk p, P a := fun a hmem =>
-      Hq a ((Sym2.mk_eq_mk_iff.2 hpq) ▸ hmem : a ∈ Sym2.mk q)
+      Hq a (Sym2.mk_eq_mk_iff.2 hpq ▸ hmem : a ∈ Sym2.mk q)
     have h : ∀ {s₂ e H}, Eq.ndrec (motive := fun s => (∀ a ∈ s, P a) → Sym2 β) (g p) (b := s₂) e H =
       g p Hp := by
       rintro s₂ rfl _
