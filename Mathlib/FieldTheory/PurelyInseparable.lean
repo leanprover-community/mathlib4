@@ -53,7 +53,7 @@ of fields.
   characteristic `q` is purely inseparable if and only if for every element `x` of `E`, the minimal
   polynomial of `x` over `F` is of form `(X - x) ^ (q ^ n)` for some natural number `n`.
 
-- `isPurelyInseparable_iff_finSepDegree_eq_one`: an algebraic extension is purely inseparable
+- `isPurelyInseparable_iff_finSepDegree_eq_one`: an extension is purely inseparable
   if and only if it has finite separable degree (`Field.finSepDegree`) one.
 
 - `IsPurelyInseparable.normal`: a purely inseparable extension is normal.
@@ -506,7 +506,7 @@ theorem IsPurelyInseparable.minpoly_eq_X_sub_C_pow (q : ℕ) [ExpChar F q] [IsPu
 variable (E)
 
 variable {F E} in
-/-- If an algebraic extension has finite separable degree one, then it is purely inseparable. -/
+/-- If an extension has finite separable degree one, then it is purely inseparable. -/
 theorem isPurelyInseparable_of_finSepDegree_eq_one
     (hdeg : finSepDegree F E = 1) : IsPurelyInseparable F E := by
   by_cases H : Algebra.IsAlgebraic F E
@@ -569,8 +569,7 @@ theorem IsPurelyInseparable.insepDegree_eq [IsPurelyInseparable F E] :
 theorem IsPurelyInseparable.finInsepDegree_eq [IsPurelyInseparable F E] :
     finInsepDegree F E = finrank F E := congr(Cardinal.toNat $(insepDegree_eq F E))
 
-/-- An algebraic extension is purely inseparable if and only if it has finite separable
-degree one. -/
+/-- An extension is purely inseparable if and only if it has finite separable degree one. -/
 theorem isPurelyInseparable_iff_finSepDegree_eq_one :
     IsPurelyInseparable F E ↔ finSepDegree F E = 1 :=
   ⟨fun _ ↦ IsPurelyInseparable.finSepDegree_eq_one F E,

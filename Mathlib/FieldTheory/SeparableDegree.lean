@@ -341,15 +341,14 @@ instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infin
     rw [IsScalarTower.algebraMap_eq _ (FractionRing (MvPolynomial ι F)), RingHom.coe_comp]
     exact (algebraMap (FractionRing (MvPolynomial ι F)) (AlgebraicClosure _)).injective.comp
       (IsFractionRing.injective _ _)
-  let f (n : ℕ) : Emb F (FractionRing (MvPolynomial ι F)) :=
-    IsFractionRing.liftAlgHom
-      (K := FractionRing (MvPolynomial ι F)) (g := i1.comp <| MvPolynomial.aeval (R := F)
-        fun i : ι ↦ MvPolynomial.X (R := F) i ^ (n + 1)) <| by
-          rw [AlgHom.coe_comp]
-          apply hi1.comp
-          simpa [algebraicIndependent_iff_injective_aeval] using
-            MvPolynomial.algebraicIndependent_polynomial_aeval_X _ fun (i : ι) ↦
-              (Polynomial.transcendental_X F).pow (Nat.succ_pos n)
+  let f (n : ℕ) : Emb F (FractionRing (MvPolynomial ι F)) := IsFractionRing.liftAlgHom
+    (K := FractionRing (MvPolynomial ι F)) (g := i1.comp <| MvPolynomial.aeval (R := F)
+      fun i : ι ↦ MvPolynomial.X (R := F) i ^ (n + 1)) <| by
+        rw [AlgHom.coe_comp]
+        apply hi1.comp
+        simpa [algebraicIndependent_iff_injective_aeval] using
+          MvPolynomial.algebraicIndependent_polynomial_aeval_X _ fun i : ι ↦
+            (Polynomial.transcendental_X F).pow (Nat.succ_pos n)
   have hf : Function.Injective f := fun m n h ↦ by
     replace h : (MvPolynomial.X i) ^ (m + 1) = (MvPolynomial.X i) ^ (n + 1) := hi1 <| by
       simpa [f, -map_pow] using congr($h (algebraMap _ (FractionRing (MvPolynomial ι F))
