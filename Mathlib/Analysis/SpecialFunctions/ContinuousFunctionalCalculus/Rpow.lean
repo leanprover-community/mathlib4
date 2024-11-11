@@ -226,10 +226,8 @@ theorem abs_sq_eq_star_mul_self (a : A) : (abs a) ^ (2 : NNReal) = star a * a :=
 variable [CStarRing A]
 
 theorem eq_zero_of_abs_eq_zero {a : A} (ha : abs a = 0) : a = 0 := by
-  have H := congrArg (fun x ↦ x ^ (2 : NNReal)) ha
-  simp only [zero_nnrpow] at H
-  rw [abs_sq_eq_star_mul_self] at H
-  exact (CStarRing.star_mul_self_eq_zero_iff a).mp H
+  have := congrArg (fun x ↦ x ^ (2 : NNReal)) ha
+  simpa only [zero_nnrpow, abs_sq_eq_star_mul_self, CStarRing.star_mul_self_eq_zero_iff]
 
 end abs
 
