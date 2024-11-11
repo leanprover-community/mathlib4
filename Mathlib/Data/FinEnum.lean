@@ -57,23 +57,20 @@ def toList (α) [FinEnum α] : List α :=
   (List.finRange (card α)).map (equiv).symm
 
 /-- Any two enumerations of the same type have the same length. -/
-theorem card_eq_card {α : Type u} (e₁ e₂ : FinEnum α) : e₁.card = e₂.card :=
+theorem card_unique {α : Type u} (e₁ e₂ : FinEnum α) : e₁.card = e₂.card :=
   Fin.equiv_iff_eq.mp ⟨e₁.equiv.symm.trans e₂.equiv⟩
 
 /-- Any enumeration of an empty type has length 0. -/
-theorem card_eq_zero_of_IsEmpty {α : Type u} [FinEnum α] [IsEmpty α] : card α = 0 :=
+theorem card_eq_zero {α : Type u} [FinEnum α] [IsEmpty α] : card α = 0 :=
   match h : card α with
   | 0 => rfl
   | _ + 1 => ‹IsEmpty α›.elim ((h ▸ equiv).symm 0)
 
-/-- Any enumeration of a non-empty type has a length with an actual predecessor. -/
-def cardPredOfNonempty (α : Type u) [FinEnum α] [Nonempty α] : { n : ℕ // card α = n + 1 } :=
-  match h : card α with
-  | 0 => False.elim <| ‹Nonempty α›.elim ((h ▸ equiv) · |>.elim0)
-  | n + 1 => ⟨n, rfl⟩
+lemma card_pos {α : Type*} [FinEnum α] [Nonempty α] : 0 < card α := sorry
+lemma card_ne_zero {α : Type*} [FinEnum α] [Nonempty α] : card α ≠ 0 := card_pos.ne'
 
 /-- Any enumeration of a type with unique inhabitant has length 1. -/
-theorem card_eq_one_of_Unique (α : Type u) [FinEnum α] [Unique α] : card α = 1 :=
+theorem card_eq_one (α : Type u) [FinEnum α] [Unique α] : card α = 1 :=
   match cardPredOfNonempty α with
   | ⟨0, h⟩ => h
   | ⟨n + 1, h⟩ =>
