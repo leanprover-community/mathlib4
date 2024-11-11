@@ -128,11 +128,9 @@ theorem convexHull_subseteq_closedConvexHull {s : Set E} :
   convexHull_min subset_closedConvexHull convex_closedConvexHull
 
 theorem closedConvexHull_eq_closedConvexHull_closure {s : Set E} :
-    closedConvexHull 𝕜 s = closedConvexHull 𝕜 (closure s) := subset_antisymm
-  (closedConvexHull_min (subset_trans subset_closure subset_closedConvexHull)
-    convex_closedConvexHull isClosed_closedConvexHull)
-  (closedConvexHull_min (closure_minimal subset_closedConvexHull isClosed_closedConvexHull)
-    convex_closedConvexHull isClosed_closedConvexHull)
+    closedConvexHull 𝕜 s = closedConvexHull 𝕜 (closure s) :=
+  subset_antisymm ((closedConvexHull 𝕜).monotone subset_closure) <| by
+    simpa using ((closedConvexHull 𝕜).monotone (closure_subset_closedConvexHull (𝕜 := 𝕜) (E := E)))
 
 end TopologicalSpace
 
