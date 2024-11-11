@@ -252,6 +252,59 @@ theorem le_nth_of_lt_nth_succ {k a : ℕ} (h : a < nth p (k + 1)) (ha : p a) : a
   · rcases subset_range_nth ha with ⟨n, rfl⟩
     rwa [nth_lt_nth hf, Nat.lt_succ_iff, ← nth_le_nth hf] at h
 
+lemma nth_add_one {n : ℕ} (h0 : ¬p 0) (h : nth p n ≠ 0) :
+    nth (fun i ↦ p (i + 1)) n + 1 = nth p n := by
+  have hs {p' : ℕ → Prop} (h0p' : ¬ p' 0) : (· + 1) '' {i | p' (i + 1)} = setOf p' := by
+    ext i
+    simp only [Set.mem_image, Set.mem_setOf_eq]
+    refine ⟨fun he ↦ ?_, fun he ↦ ?_⟩
+    · rcases he with ⟨i, hi, rfl⟩
+      exact hi
+    · refine ⟨i - 1, ?_⟩
+      have hi : 1 ≤ i := by
+        by_contra hi
+        simp only [not_le, lt_one_iff] at hi
+        rw [hi] at he
+        exact h0p' he
+      simpa [hi]
+  induction n using Nat.case_strong_induction_on
+  case hz =>
+    have h0 : ¬p 0 := fun h0 ↦ h (nth_zero_of_zero h0)
+    simp_rw [nth_zero] at h ⊢
+    rw [← hs h0]
+    have h1 : {i | p (i + 1)}.Nonempty := by
+      simp only [ne_eq, sInf_eq_zero, Set.mem_setOf_eq, h0, ← Set.not_nonempty_iff_eq_empty,
+        false_or, not_not] at h
+      rcases h with ⟨i, hi⟩
+      rcases i with ⟨⟩ | ⟨i⟩
+      · exact False.elim (h0 hi)
+      · exact ⟨i, hi⟩
+    rw [← add_right_mono.map_csInf h1]
+  case hi n ih =>
+    nth_rw 1 [nth_eq_sInf]
+    nth_rw 1 [nth_eq_sInf]
+    nth_rw 2 [← hs (by simp [h0])]
+    have h1 : {i | p (i + 1) ∧ ∀ k < n + 1, nth p k < i + 1}.Nonempty := by
+      have hp1 : 1 ≤ nth p (n + 1) := by omega
+      have hf : ∀ hf : (setOf p).Finite, n + 1 < hf.toFinset.card := by
+        simpa [nth_eq_zero] using h
+      refine ⟨nth p (n + 1) - 1, ?_, ?_⟩
+      · simp only [hp1, Nat.sub_add_cancel]
+        exact nth_mem _ hf
+      · simp only [hp1, Nat.sub_add_cancel]
+        exact fun k hk ↦ nth_lt_nth' hk hf
+    rw [← add_right_mono.map_csInf h1]
+    convert rfl using 8 with k m hm
+    nth_rw 2 [← add_lt_add_iff_right 1]
+    convert Iff.rfl using 2
+    rw [Nat.lt_add_one_iff] at hm
+    exact ih m hm fun hm0 ↦ h (nth_eq_zero_mono h0 (by omega) hm0)
+
+lemma nth_add_one_eq_sub {n : ℕ} (h0 : ¬p 0) (h : nth p n ≠ 0) :
+    nth (fun i ↦ p (i + 1)) n = nth p n - 1 := by
+  rw [← nth_add_one h0 h]
+  omega
+
 section Count
 
 variable (p) [DecidablePred p]
