@@ -2759,13 +2759,13 @@ import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.Card
+import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Countable
 import Mathlib.Data.Set.Defs
 import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Equitable
 import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Finite.Defs
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
