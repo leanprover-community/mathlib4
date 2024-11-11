@@ -24,7 +24,7 @@ open CategoryTheory
 
 open TopCat
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open Opposite
 

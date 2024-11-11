@@ -20,7 +20,7 @@ the definitions.
 
 universe u v
 
-open Set Filter TopologicalSpace
+open Set Filter TopologicalSpace Topology
 open scoped Topology Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
@@ -341,7 +341,7 @@ theorem MonoidHom.isClosed_range_coe : IsClosed (Set.range ((↑) : (M₁ →* M
 end PointwiseLimits
 
 @[to_additive]
-theorem IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
+theorem Topology.IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
     [MulHomClass F M N] [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F)
     (hf : IsInducing f) : ContinuousMul M :=
   ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).1⟩
