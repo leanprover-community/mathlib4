@@ -58,7 +58,7 @@ def recEmptyOption {P : Type u → Sort v}
 termination_by card α
 
 /--
-For an empty type, the recursion principle evaluates to whatever `of_equiv`
+For an empty type, the recursion principle evaluates to whatever `congr`
 makes of the base case.
 -/
 theorem recEmptyOption_of_card_eq_zero {P : Type u → Sort v}
@@ -76,8 +76,8 @@ theorem recEmptyOption_of_card_eq_zero {P : Type u → Sort v}
 
 /--
 For a type whose `card` has a predecessor `n`, the recursion principle evaluates to whatever
-`of_equiv` makes of the step result, where `Option.none` has been inserted into the
-`(fin_choice n)`th rank of the enumeration.
+`congr` makes of the step result, where `Option.none` has been inserted into the
+`(finChoice n)`th rank of the enumeration.
 -/
 theorem recEmptyOption_of_card_eq_succ {P : Type u → Sort v}
     (finChoice : (n : ℕ) → Fin (n + 1))
