@@ -3,7 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Joël Riou, Adam Topaz
 -/
-import Mathlib.AlgebraicGeometry.PullbackCarrier
+import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.CategoryTheory.Sites.MorphismProperty
 
 /-!
@@ -27,7 +27,7 @@ open CategoryTheory MorphismProperty Limits
 namespace AlgebraicGeometry.Scheme
 
 variable (P : MorphismProperty Scheme.{u}) [P.IsMultiplicative] [P.RespectsIso]
-  [P.IsStableUnderBaseChange]
+  [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
 
 /--
 The pretopology on the category of schemes defined by covering families where the components
@@ -56,7 +56,7 @@ abbrev grothendieckTopology : GrothendieckTopology Scheme.{u} :=
   (pretopology P).toGrothendieck
 
 /-- The pretopology on the category of schemes defined by jointly surjective families. -/
-def surjectiveFamiliesPretopology : Pretopology Scheme.{u} where
+def surjectiveFamiliesPretopology [IsJointlySurjectivePreserving ⊤] : Pretopology Scheme.{u} where
   coverings X S :=
     ∀ x : X, ∃ (Y : Scheme.{u}) (y : Y) (f : Y ⟶ X) (hf : S f), f.base y = x
   has_isos X Y f hf x := by
@@ -64,16 +64,17 @@ def surjectiveFamiliesPretopology : Pretopology Scheme.{u} where
     simp [← Scheme.comp_base_apply]
   pullbacks X Y f S hS x := by
     obtain ⟨Z, z, g, hg, hz⟩ := hS (f.base x)
-    obtain ⟨w, hwl, hwr⟩ := Pullback.exists_preimage_pullback z x hz
+    obtain ⟨w, hw⟩ :=
+      IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop (P := ⊤) trivial z x hz
     use pullback g f, w, pullback.snd g f
-    simpa [hwr] using Presieve.pullbackArrows.mk Z g hg
+    simpa [hw] using Presieve.pullbackArrows.mk Z g hg
   transitive X S T hS hT x := by
     obtain ⟨Y, y, f, hf, hy⟩ := hS x
     obtain ⟨Z, z, g, hg, hz⟩ := hT f hf y
     use Z, z, g ≫ f
     simpa [hz, hy] using Presieve.bind_comp f hf hg
 
-lemma pretopology_le_inf :
+lemma pretopology_le_inf [IsJointlySurjectivePreserving ⊤] :
     pretopology P ≤ surjectiveFamiliesPretopology ⊓ P.pretopology := by
   rintro X S ⟨𝒰, rfl⟩
   refine ⟨fun x ↦ ?_, fun ⟨i⟩ ↦ 𝒰.map_prop i⟩
@@ -89,7 +90,7 @@ Note: Because of size issues, this does not hold on the level of pretopologies: 
 in the intersection can have up to `Type (u + 1)` many components, while in the definition
 of `AlgebraicGeometry.Scheme.pretopology` we only allow `Type u` many components.
 -/
-lemma grothendieckTopology_eq_inf :
+lemma grothendieckTopology_eq_inf [IsJointlySurjectivePreserving ⊤] :
     grothendieckTopology P = (surjectiveFamiliesPretopology ⊓ P.pretopology).toGrothendieck := by
   apply le_antisymm ((Pretopology.gi Scheme.{u}).gc.monotone_l (pretopology_le_inf P))
   intro X S ⟨T, ⟨hs, hP⟩, hle⟩
@@ -131,7 +132,7 @@ lemma grothendieckTopology_cover {X : Scheme.{u}} (𝒰 : Cover.{v} P X) :
 section
 
 variable {Q : MorphismProperty Scheme.{u}} [Q.IsMultiplicative] [Q.RespectsIso]
-  [Q.IsStableUnderBaseChange]
+  [Q.IsStableUnderBaseChange] [IsJointlySurjectivePreserving Q]
 
 lemma pretopology_le_pretopology (hPQ : P ≤ Q) :
     pretopology P ≤ pretopology Q := by
