@@ -347,8 +347,8 @@ variable {F : Type*} [FunLike F A M] [AlgHomClass F R A M]
 Lift a derivation via an algebra homomorphism `f` with a right inverse. This gives the derivation
 `f ∘ d ∘ f⁻¹`.
 -/
-def liftOfRightInverse (f : F) (f_inv : M → A) (hf : Function.RightInverse f_inv f)
-    (d : Derivation R A A) (hd : ∀ x, f x = 0 → f (d x) = 0) : Derivation R M M where
+def liftOfRightInverse {f : F} {f_inv : M → A} (hf : Function.RightInverse f_inv f)
+    ⦃d : Derivation R A A⦄ (hd : ∀ x, f x = 0 → f (d x) = 0) : Derivation R M M where
   toFun x := f (d (f_inv x))
   map_add' x y := by
     suffices f (d (f_inv (x + y) - (f_inv x + f_inv y))) = 0 by simpa [sub_eq_zero]
@@ -368,16 +368,16 @@ def liftOfRightInverse (f : F) (f_inv : M → A) (hf : Function.RightInverse f_i
     simp [hf _]
 
 @[simp]
-lemma liftOfRightInverse_apply (f : F) (f_inv : M → A) (hf : Function.RightInverse f_inv f)
-    (d : Derivation R A A) (hd : ∀ x, f x = 0 → f (d x) = 0) (x : A) :
-    Derivation.liftOfRightInverse f f_inv hf d hd (f x) = f (d x) := by
+lemma liftOfRightInverse_apply {f : F} {f_inv : M → A} (hf : Function.RightInverse f_inv f)
+    {d : Derivation R A A} (hd : ∀ x, f x = 0 → f (d x) = 0) (x : A) :
+    Derivation.liftOfRightInverse hf hd (f x) = f (d x) := by
   suffices f (d (f_inv (f x) - x)) = 0 by simpa [sub_eq_zero]
   apply hd
   simp [hf _]
 
-lemma liftOfRightInverse_eq (f : F) (f_inv₁ f_inv₂ : M → A) (hf₁ : Function.RightInverse f_inv₁ f)
+lemma liftOfRightInverse_eq {f : F} {f_inv₁ f_inv₂ : M → A} (hf₁ : Function.RightInverse f_inv₁ f)
     (hf₂ : Function.RightInverse f_inv₂ f) :
-    liftOfRightInverse f _ hf₁ = liftOfRightInverse f _ hf₂ := by
+    liftOfRightInverse hf₁ = liftOfRightInverse hf₂ := by
   ext _ _ x
   obtain ⟨x, rfl⟩ := hf₁.surjective x
   simp
@@ -385,13 +385,13 @@ lemma liftOfRightInverse_eq (f : F) (f_inv₁ f_inv₂ : M → A) (hf₁ : Funct
 /--
 A noncomputable version of `liftOfRightInverse` for surjective homomorphisms.
 -/
-noncomputable abbrev liftOfSurjective (f : F) (hf : Function.Surjective f)
-    (d : Derivation R A A) (hd : ∀ x, f x = 0 → f (d x) = 0) : Derivation R M M :=
-  d.liftOfRightInverse f (Function.surjInv hf) (Function.rightInverse_surjInv hf) hd
+noncomputable abbrev liftOfSurjective {f : F} (hf : Function.Surjective f)
+    ⦃d : Derivation R A A⦄ (hd : ∀ x, f x = 0 → f (d x) = 0) : Derivation R M M :=
+  d.liftOfRightInverse (Function.rightInverse_surjInv hf) hd
 
-lemma liftOfSurjective_apply (f : F) (hf : Function.Surjective f)
-    (d : Derivation R A A) (hd : ∀ x, f x = 0 → f (d x) = 0) (x : A) :
-    Derivation.liftOfSurjective f hf d hd (f x) = f (d x) := by simp
+lemma liftOfSurjective_apply {f : F} (hf : Function.Surjective f)
+    {d : Derivation R A A} (hd : ∀ x, f x = 0 → f (d x) = 0) (x : A) :
+    Derivation.liftOfSurjective hf hd (f x) = f (d x) := by simp
 
 end Lift
 
