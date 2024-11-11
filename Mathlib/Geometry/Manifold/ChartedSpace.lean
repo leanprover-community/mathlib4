@@ -183,7 +183,7 @@ instance (H : Type u) [TopologicalSpace H] :
   coe s := s.members
   coe_injective' N O h := by cases N; cases O; congr
 
-instance : Inf (StructureGroupoid H) :=
+instance : Min (StructureGroupoid H) :=
   ⟨fun G G' => StructureGroupoid.mk
     (members := G.members ∩ G'.members)
     (trans' := fun e e' he he' =>
@@ -366,7 +366,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       apply e.continuousOn_toFun.isOpen_inter_preimage e.open_source e'.open_source
     · apply PG.comp he'.2 he.2 e'.open_target e.open_target
       apply e'.continuousOn_invFun.isOpen_inter_preimage e'.open_target e.open_target
-  symm' e he := ⟨he.2, he.1⟩
+  symm' _ he := ⟨he.2, he.1⟩
   id_mem' := ⟨PG.id_mem, PG.id_mem⟩
   locality' e he := by
     constructor
@@ -445,7 +445,7 @@ instance : CompleteLattice (StructureGroupoid H) :=
     top := instStructureGroupoidOrderTop.top
     le_top := instStructureGroupoidOrderTop.le_top
     inf := (· ⊓ ·)
-    le_inf := fun N₁ N₂ N₃ h₁₂ h₁₃ m hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
+    le_inf := fun _ _ _ h₁₂ h₁₃ _ hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
@@ -705,6 +705,18 @@ theorem chartAt_comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalS
     (letI := ChartedSpace.comp H H' M; chartAt H x) = chartAt H' x ≫ₕ chartAt H (chartAt H' x x) :=
   rfl
 
+/-- A charted space over a T1 space is T1. Note that this is *not* true for T2 (for instance for
+the real line with a double origin). -/
+theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
+  apply t1Space_iff_exists_open.2 (fun x y hxy ↦ ?_)
+  by_cases hy : y ∈ (chartAt H x).source
+  · refine ⟨(chartAt H x).source ∩ (chartAt H x)⁻¹' ({chartAt H x y}ᶜ), ?_, ?_, by simp⟩
+    · exact PartialHomeomorph.isOpen_inter_preimage _ isOpen_compl_singleton
+    · simp only [preimage_compl, mem_inter_iff, mem_chart_source, mem_compl_iff, mem_preimage,
+        mem_singleton_iff, true_and]
+      exact (chartAt H x).injOn.ne (ChartedSpace.mem_chart_source x) hy hxy
+  · exact ⟨(chartAt H x).source, (chartAt H x).open_source, ChartedSpace.mem_chart_source x, hy⟩
+
 end
 
 library_note "Manifold type tags" /-- For technical reasons we introduce two type tags:
@@ -758,9 +770,8 @@ section
 
 variable {ι : Type*} {Hi : ι → Type*}
 
--- Porting note: Old proof was `Pi.inhabited _`.
 instance modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) :=
-  ⟨fun _ ↦ default⟩
+  Pi.instInhabited
 
 instance [∀ i, TopologicalSpace (Hi i)] : TopologicalSpace (ModelPi Hi) :=
   Pi.topologicalSpace
@@ -1050,7 +1061,7 @@ variable (e : PartialHomeomorph α H)
 /-- If a single partial homeomorphism `e` from a space `α` into `H` has source covering the whole
 space `α`, then that partial homeomorphism induces an `H`-charted space structure on `α`.
 (This condition is equivalent to `e` being an open embedding of `α` into `H`; see
-`OpenEmbedding.singletonChartedSpace`.) -/
+`IsOpenEmbedding.singletonChartedSpace`.) -/
 def singletonChartedSpace (h : e.source = Set.univ) : ChartedSpace H α where
   atlas := {e}
   chartAt _ := e
@@ -1086,24 +1097,24 @@ theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H
 
 end PartialHomeomorph
 
-namespace OpenEmbedding
+namespace IsOpenEmbedding
 
 variable [Nonempty α]
 
 /-- An open embedding of `α` into `H` induces an `H`-charted space structure on `α`.
 See `PartialHomeomorph.singletonChartedSpace`. -/
-def singletonChartedSpace {f : α → H} (h : OpenEmbedding f) : ChartedSpace H α :=
+def singletonChartedSpace {f : α → H} (h : IsOpenEmbedding f) : ChartedSpace H α :=
   (h.toPartialHomeomorph f).singletonChartedSpace (toPartialHomeomorph_source _ _)
 
-theorem singletonChartedSpace_chartAt_eq {f : α → H} (h : OpenEmbedding f) {x : α} :
+theorem singletonChartedSpace_chartAt_eq {f : α → H} (h : IsOpenEmbedding f) {x : α} :
     ⇑(@chartAt H _ α _ h.singletonChartedSpace x) = f :=
   rfl
 
-theorem singleton_hasGroupoid {f : α → H} (h : OpenEmbedding f) (G : StructureGroupoid H)
+theorem singleton_hasGroupoid {f : α → H} (h : IsOpenEmbedding f) (G : StructureGroupoid H)
     [ClosedUnderRestriction G] : @HasGroupoid _ _ _ _ h.singletonChartedSpace G :=
   (h.toPartialHomeomorph f).singleton_hasGroupoid (toPartialHomeomorph_source _ _) G
 
-end OpenEmbedding
+end IsOpenEmbedding
 
 end Singleton
 
@@ -1161,21 +1172,15 @@ theorem chartAt_subtype_val_symm_eventuallyEq (U : Opens M) {x : U} :
   exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn ⟨x⟩)
 
 theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x : U} :
-    #adaptation_note
-    /--
-    After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-    See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-    -/
-    letI : ChartedSpace H V := V.instChartedSpace
-    (chartAt H (Set.inclusion hUV x)).symm
-    =ᶠ[𝓝 (chartAt H (Set.inclusion hUV x) (Set.inclusion hUV x))]
-    Set.inclusion hUV ∘ (chartAt H x).symm := by
+    (chartAt H (Opens.inclusion hUV x)).symm
+    =ᶠ[𝓝 (chartAt H (Opens.inclusion hUV x) (Set.inclusion hUV x))]
+    Opens.inclusion hUV ∘ (chartAt H x).symm := by
   set e := chartAt H (x : M)
   have heUx_nhds : (e.subtypeRestr ⟨x⟩).target ∈ 𝓝 (e x) := by
     apply (e.subtypeRestr ⟨x⟩).open_target.mem_nhds
     exact e.map_subtype_source ⟨x⟩ (mem_chart_source _ _)
   exact Filter.eventuallyEq_of_mem heUx_nhds <| e.subtypeRestr_symm_eqOn_of_le ⟨x⟩
-    ⟨Set.inclusion hUV x⟩ hUV
+    ⟨Opens.inclusion hUV x⟩ hUV
 end TopologicalSpace.Opens
 
 /-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.

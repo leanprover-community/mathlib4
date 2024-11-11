@@ -24,7 +24,7 @@ Finally, we provide dot notation convenience lemmas.
 open Filter Set MeasureTheory
 open scoped ENNReal Topology symmDiff
 
-variable {α X Y : Type*}
+variable {X Y : Type*}
   [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X] [R1Space X]
   [TopologicalSpace Y] [MeasurableSpace Y] [BorelSpace Y] [R1Space Y]
   {μ : Measure X} {ν : Measure Y} [μ.InnerRegularCompactLTTop] [IsLocallyFiniteMeasure ν]

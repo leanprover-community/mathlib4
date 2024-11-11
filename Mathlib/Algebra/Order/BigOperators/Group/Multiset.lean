@@ -47,9 +47,10 @@ lemma all_one_of_le_one_le_of_prod_eq_one :
 
 @[to_additive]
 lemma prod_le_prod_of_rel_le (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
-  induction' h with _ _ _ _ rh _ rt
-  · rfl
-  · rw [prod_cons, prod_cons]
+  induction h with
+  | zero => rfl
+  | cons rh _ rt =>
+    rw [prod_cons, prod_cons]
     exact mul_le_mul' rh rt
 
 @[to_additive]
@@ -154,6 +155,20 @@ lemma max_le_of_forall_le {α : Type*} [LinearOrder α] [OrderBot α] (l : Multi
     (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n := by
   induction l using Quotient.inductionOn
   simpa using List.max_le_of_forall_le _ _ h
+
+@[to_additive]
+lemma max_prod_le [LinearOrderedCommMonoid α] {s : Multiset ι} {f g : ι → α} :
+    max (s.map f).prod (s.map g).prod ≤ (s.map fun i ↦ max (f i) (g i)).prod := by
+  obtain ⟨l⟩ := s
+  simp_rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.prod_coe]
+  apply List.max_prod_le
+
+@[to_additive]
+lemma prod_min_le [LinearOrderedCommMonoid α] {s : Multiset ι} {f g : ι → α} :
+    (s.map fun i ↦ min (f i) (g i)).prod ≤ min (s.map f).prod (s.map g).prod := by
+  obtain ⟨l⟩ := s
+  simp_rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.prod_coe]
+  apply List.prod_min_le
 
 lemma abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
     |s.sum| ≤ (s.map abs).sum :=

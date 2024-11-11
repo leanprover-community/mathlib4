@@ -206,7 +206,7 @@ theorem y_ne_zero_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : a.y ≠ 0 := 
 theorem d_pos_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : 0 < d := by
   refine pos_of_mul_pos_left ?_ (sq_nonneg a.y)
   rw [a.prop_y, sub_pos]
-  exact one_lt_pow ha two_ne_zero
+  exact one_lt_pow₀ ha two_ne_zero
 
 /-- If a solution has `x > 1`, then `d` is not a square. -/
 theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare d := by
@@ -305,8 +305,8 @@ theorem exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
         (lt_or_gt_of_ne (a.x_ne_zero h₀.le)).elim
           ((le_total 0 a.y).elim (fun hy hx => ⟨-a⁻¹, ?_, ?_, ?_⟩) fun hy hx => ⟨-a, ?_, ?_, ?_⟩)
           ((le_total 0 a.y).elim (fun hy hx => ⟨a, hx, hy, ?_⟩) fun hy hx => ⟨a⁻¹, hx, ?_, ?_⟩) <;>
-      simp only [neg_neg, inv_inv, neg_inv, Set.mem_insert_iff, Set.mem_singleton_iff, true_or_iff,
-        eq_self_iff_true, x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true_iff] <;>
+      simp only [neg_neg, inv_inv, neg_inv, Set.mem_insert_iff, Set.mem_singleton_iff, true_or,
+        eq_self_iff_true, x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true] <;>
     assumption
 
 end Solution₁

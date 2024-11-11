@@ -25,10 +25,8 @@ rectangular box, box partition
 
 noncomputable section
 
+open Finset Function ENNReal NNReal Set
 open scoped Classical
-open ENNReal NNReal
-
-open Set Function
 
 namespace BoxIntegral
 
@@ -204,10 +202,9 @@ theorem isHenstock_biUnionTagged {π : Prepartition I} {πi : ∀ J, TaggedPrepa
 
 /-- In a Henstock prepartition, there are at most `2 ^ Fintype.card ι` boxes with a given tag. -/
 theorem IsHenstock.card_filter_tag_eq_le [Fintype ι] (h : π.IsHenstock) (x : ι → ℝ) :
-    (π.boxes.filter fun J => π.tag J = x).card ≤ 2 ^ Fintype.card ι :=
+    #{J ∈ π.boxes | π.tag J = x} ≤ 2 ^ Fintype.card ι :=
   calc
-    (π.boxes.filter fun J => π.tag J = x).card ≤
-        (π.boxes.filter fun J : Box ι => x ∈ Box.Icc J).card := by
+    #{J ∈ π.boxes | π.tag J = x} ≤ #{J ∈ π.boxes | x ∈ Box.Icc J} := by
       refine Finset.card_le_card fun J hJ => ?_
       rw [Finset.mem_filter] at hJ ⊢; rcases hJ with ⟨hJ, rfl⟩
       exact ⟨hJ, h J hJ⟩

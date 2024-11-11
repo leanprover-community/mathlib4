@@ -26,8 +26,19 @@ open Metric Bornology Set Pointwise Convex
 
 variable {ι 𝕜 E : Type*}
 
-theorem Real.convex_iff_isPreconnected {s : Set ℝ} : Convex ℝ s ↔ IsPreconnected s :=
+namespace Real
+variable {s : Set ℝ} {r ε : ℝ}
+
+lemma closedBall_eq_segment (hε : 0 ≤ ε) : closedBall r ε = segment ℝ (r - ε) (r + ε) := by
+  rw [closedBall_eq_Icc, segment_eq_Icc ((sub_le_self _ hε).trans <| le_add_of_nonneg_right hε)]
+
+lemma ball_eq_openSegment (hε : 0 < ε) : ball r ε = openSegment ℝ (r - ε) (r + ε) := by
+  rw [ball_eq_Ioo, openSegment_eq_Ioo ((sub_lt_self _ hε).trans <| lt_add_of_pos_right _ hε)]
+
+theorem convex_iff_isPreconnected : Convex ℝ s ↔ IsPreconnected s :=
   convex_iff_ordConnected.trans isPreconnected_iff_ordConnected.symm
+
+end Real
 
 alias ⟨_, IsPreconnected.convex⟩ := Real.convex_iff_isPreconnected
 

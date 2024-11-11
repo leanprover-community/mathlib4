@@ -24,6 +24,9 @@ the present file is about their interaction.
   addition, for example `Units`.
 * `(NonUnital)(NonAssoc)(Semi)Ring`: Typeclasses for possibly non-unital or non-associative
   rings and semirings. Some combinations are not defined yet because they haven't found use.
+  For Lie Rings, there is a type synonym `CommutatorRing` defined in
+  `Mathlib/Algebra/Algebra/NonUnitalHom.lean` turning the bracket into a multiplication so that the
+  instance `instNonUnitalNonAssocSemiringCommutatorRing` can be defined.
 
 ## Tags
 
@@ -42,9 +45,9 @@ assert_not_exists DivisionMonoid.toDivInvOneMonoid
 assert_not_exists mul_rotate
 
 
-universe u v w x
+universe u v
 
-variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
+variable {α : Type u} {R : Type v}
 
 open Function
 
@@ -109,7 +112,9 @@ that `Semiring -> NonAssocSemiring` is tried before `NonAssocRing -> NonAssocSem
 TODO: clean this once lean4#2115 is fixed
 -/
 
-/-- A not-necessarily-unital, not-necessarily-associative semiring. -/
+/-- A not-necessarily-unital, not-necessarily-associative semiring. See `CommutatorRing` and the
+  documentation thereof in case you need a `NonUnitalNonAssocSemiring` instance on a Lie ring
+  or a Lie algebra. -/
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 
 /-- An associative but not-necessarily unital semiring. -/
@@ -173,34 +178,6 @@ theorem mul_two (n : α) : n * 2 = n + n :=
 
 end NonAssocSemiring
 
-@[to_additive]
-theorem mul_ite {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
-    (a * if P then b else c) = if P then a * b else a * c := by split_ifs <;> rfl
-
-@[to_additive]
-theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
-    (if P then a else b) * c = if P then a * c else b * c := by split_ifs <;> rfl
-
--- We make `mul_ite` and `ite_mul` simp lemmas,
--- but not `add_ite` or `ite_add`.
--- The problem we're trying to avoid is dealing with
--- summations of the form `∑ x ∈ s, (f x + ite P 1 0)`,
--- in which `add_ite` followed by `sum_ite` would needlessly slice up
--- the `f x` terms according to whether `P` holds at `x`.
--- There doesn't appear to be a corresponding difficulty so far with
--- `mul_ite` and `ite_mul`.
-attribute [simp] mul_ite ite_mul
-
-theorem ite_sub_ite {α} [Sub α] (P : Prop) [Decidable P] (a b c d : α) :
-    ((if P then a else b) - if P then c else d) = if P then a - c else b - d := by
-  split
-  repeat rfl
-
-theorem ite_add_ite {α} [Add α] (P : Prop) [Decidable P] (a b c d : α) :
-    ((if P then a else b) + if P then c else d) = if P then a + c else b + d := by
-  split
-  repeat rfl
-
 section MulZeroClass
 variable [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q] (a b : α)
 
@@ -245,7 +222,7 @@ instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
 
 section CommSemiring
 
-variable [CommSemiring α] {a b c : α}
+variable [CommSemiring α]
 
 theorem add_mul_self_eq (a b : α) : (a + b) * (a + b) = a * a + 2 * a * b + b * b := by
   simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
@@ -366,7 +343,7 @@ end NonAssocRing
 
 section Ring
 
-variable [Ring α] {a b c d e : α}
+variable [Ring α]
 
 -- A (unital, associative) ring is a not-necessarily-unital ring
 -- see Note [lower instance priority]

@@ -106,7 +106,7 @@ nicely under the monad operations. -/
 def Integral : Giry.Algebra where
   A := MeasCat.of ℝ≥0∞
   a := ⟨fun m : MeasureTheory.Measure ℝ≥0∞ ↦ ∫⁻ x, x ∂m, Measure.measurable_lintegral measurable_id⟩
-  unit := Subtype.eq <| funext fun r : ℝ≥0∞ => lintegral_dirac' _ measurable_id
+  unit := Subtype.eq <| funext fun _ : ℝ≥0∞ => lintegral_dirac' _ measurable_id
   assoc := Subtype.eq <| funext fun μ : MeasureTheory.Measure (MeasureTheory.Measure ℝ≥0∞) =>
     show ∫⁻ x, x ∂μ.join = ∫⁻ x, x ∂Measure.map (fun m => ∫⁻ x, x ∂m) μ by
       rw [Measure.lintegral_join, lintegral_map] <;>

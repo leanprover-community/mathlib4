@@ -81,7 +81,7 @@ theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖
     (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) : y ∈ tangentConeAt 𝕜 s x := by
   refine ⟨fun n ↦ (r ^ n)⁻¹, fun n ↦ r ^ n • y, hs, ?_, ?_⟩
   · simp only [norm_inv, norm_pow, ← inv_pow]
-    exact tendsto_pow_atTop_atTop_of_one_lt <| one_lt_inv (norm_pos_iff.2 hr₀) hr
+    exact tendsto_pow_atTop_atTop_of_one_lt <| (one_lt_inv₀ (norm_pos_iff.2 hr₀)).2 hr
   · simp only [inv_smul_smul₀ (pow_ne_zero _ hr₀), tendsto_const_nhds]
 
 theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
@@ -196,7 +196,7 @@ theorem mem_tangentCone_of_openSegment_subset {s : Set G} {x y : G} (h : openSeg
   rw [openSegment_eq_image]
   refine ⟨(1 / 2) ^ n, ⟨?_, ?_⟩, ?_⟩
   · exact pow_pos one_half_pos _
-  · exact pow_lt_one one_half_pos.le one_half_lt_one hn
+  · exact pow_lt_one₀ one_half_pos.le one_half_lt_one hn
   · simp only [sub_smul, one_smul, smul_sub]; abel
 
 /-- If a subset of a real vector space contains a segment, then the direction of this

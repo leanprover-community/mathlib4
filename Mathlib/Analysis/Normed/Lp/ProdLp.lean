@@ -155,7 +155,6 @@ instance instProdEDist : EDist (WithLp p (α × β)) where
       (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal)
 
 variable {p α β}
-variable (x y : WithLp p (α × β)) (x' : α × β)
 
 @[simp]
 theorem prod_edist_eq_card (f g : WithLp 0 (α × β)) :
@@ -420,12 +419,12 @@ theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricS
         gcongr <;> simp [edist]
       _ = (2 ^ (1 / p.toReal) : ℝ≥0) * edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) := by
         simp only [← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel,
-          ENNReal.rpow_one, ← ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
+          ENNReal.rpow_one, ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
 
 theorem prod_aux_uniformity_eq [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     𝓤 (WithLp p (α × β)) = 𝓤[instUniformSpaceProd] := by
-  have A : UniformInducing (WithLp.equiv p (α × β)) :=
-    (prod_antilipschitzWith_equiv_aux p α β).uniformInducing
+  have A : IsUniformInducing (WithLp.equiv p (α × β)) :=
+    (prod_antilipschitzWith_equiv_aux p α β).isUniformInducing
       (prod_lipschitzWith_equiv_aux p α β).uniformContinuous
   have : (fun x : WithLp p (α × β) × WithLp p (α × β) =>
     ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) = id := by
@@ -617,7 +616,7 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
   norm_cast
 
 @[simp] theorem prod_nnnorm_equiv (f : WithLp ∞ (α × β)) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
-  rw [prod_nnnorm_eq_sup, Prod.nnnorm_def', _root_.sup_eq_max, equiv_fst, equiv_snd]
+  rw [prod_nnnorm_eq_sup, Prod.nnnorm_def', equiv_fst, equiv_snd]
 
 @[simp] theorem prod_nnnorm_equiv_symm (f : α × β) : ‖(WithLp.equiv ⊤ _).symm f‖₊ = ‖f‖₊ :=
   (prod_nnnorm_equiv _).symm

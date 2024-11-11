@@ -59,14 +59,16 @@ section
 /-- `TopHomClass F α β` states that `F` is a type of `⊤`-preserving morphisms.
 
 You should extend this class when you extend `TopHom`. -/
-class TopHomClass (F α β : Type*) [Top α] [Top β] [FunLike F α β] : Prop where
+class TopHomClass (F : Type*) (α β : outParam Type*) [Top α] [Top β] [FunLike F α β] :
+    Prop where
   /-- A `TopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 
 /-- `BotHomClass F α β` states that `F` is a type of `⊥`-preserving morphisms.
 
 You should extend this class when you extend `BotHom`. -/
-class BotHomClass (F α β : Type*) [Bot α] [Bot β] [FunLike F α β] : Prop where
+class BotHomClass (F : Type*) (α β : outParam Type*) [Bot α] [Bot β] [FunLike F α β] :
+    Prop where
   /-- A `BotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 
@@ -306,7 +308,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderTop β] (f g : TopHom α β)
 
-instance : Inf (TopHom α β) :=
+instance : Min (TopHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_top, map_top, inf_top_eq]⟩⟩
 
 instance : SemilatticeInf (TopHom α β) :=
@@ -326,7 +328,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderTop β] (f g : TopHom α β)
 
-instance : Sup (TopHom α β) :=
+instance : Max (TopHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_top, map_top, sup_top_eq]⟩⟩
 
 instance : SemilatticeSup (TopHom α β) :=
@@ -479,7 +481,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderBot β] (f g : BotHom α β)
 
-instance : Inf (BotHom α β) :=
+instance : Min (BotHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_bot, map_bot, inf_bot_eq]⟩⟩
 
 instance : SemilatticeInf (BotHom α β) :=
@@ -499,7 +501,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderBot β] (f g : BotHom α β)
 
-instance : Sup (BotHom α β) :=
+instance : Max (BotHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_bot, map_bot, sup_bot_eq]⟩⟩
 
 instance : SemilatticeSup (BotHom α β) :=

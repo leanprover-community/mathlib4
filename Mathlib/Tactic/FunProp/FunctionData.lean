@@ -3,7 +3,6 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Lean
 import Qq
 
 import Mathlib.Tactic.FunProp.Mor
@@ -88,7 +87,7 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
         args := p.getAppArgs.map (fun a => {expr:=a}) ++ args
 
       let mainArgs := args
-        |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i.1 else none)
+        |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i else none)
         |>.filterMap id
 
       return {
@@ -121,9 +120,9 @@ def getFunctionData? (f : Expr)
     (unfoldPred : Name → Bool := fun _ => false) (cfg : WhnfCoreConfig := {}) :
     MetaM MaybeFunctionData := do
 
-  let unfold := fun e : Expr =>
+  let unfold := fun e : Expr => do
     if let .some n := e.getAppFn'.constName? then
-      pure (unfoldPred n)
+      pure ((unfoldPred n) || (← isReducible n))
     else
       pure false
 
@@ -131,7 +130,7 @@ def getFunctionData? (f : Expr)
     | throwError m!"fun_prop bug: function expected, got `{f} : {← inferType f}, \
                     type ctor {(← inferType f).ctorName}"
   withLocalDeclD xName xType fun x => do
-    let fx' ← Mor.whnfPred (f.beta #[x]).eta unfold cfg
+    let fx' := (← Mor.whnfPred (f.beta #[x]).eta unfold cfg) |> headBetaThroughLet
     let f' ← mkLambdaFVars #[x] fx'
     match fx' with
     | .letE .. => return .letE f'
@@ -144,7 +143,7 @@ def FunctionData.unfoldHeadFVar? (fData : FunctionData) : MetaM (Option Expr) :=
   let .fvar id := fData.fn | return none
   let .some val ← id.getValue? | return none
   let f ← withLCtx fData.lctx fData.insts do
-    mkLambdaFVars #[fData.mainVar] (Mor.mkAppN val fData.args)
+    mkLambdaFVars #[fData.mainVar] (headBetaThroughLet (Mor.mkAppN val fData.args))
   return f
 
 /-- Type of morphism application. -/

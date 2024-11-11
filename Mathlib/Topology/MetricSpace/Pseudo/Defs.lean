@@ -59,7 +59,7 @@ def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist
 abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀ x y, dist x y = dist y x)
     (dist_triangle : ∀ x y z, dist x z ≤ dist x y + dist y z) : Bornology α :=
   Bornology.ofBounded { s : Set α | ∃ C, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → dist x y ≤ C }
-    ⟨0, fun x hx y => hx.elim⟩ (fun s ⟨c, hc⟩ t h => ⟨c, fun x hx y hy => hc (h hx) (h hy)⟩)
+    ⟨0, fun _ hx _ => hx.elim⟩ (fun _ ⟨c, hc⟩ _ h => ⟨c, fun _ hx _ hy => hc (h hx) (h hy)⟩)
     (fun s hs t ht => by
       rcases s.eq_empty_or_nonempty with rfl | ⟨x, hx⟩
       · rwa [empty_union]
@@ -400,6 +400,15 @@ theorem sphere_eq_empty_of_subsingleton [Subsingleton α] (hε : ε ≠ 0) : sph
 
 instance sphere_isEmpty_of_subsingleton [Subsingleton α] [NeZero ε] : IsEmpty (sphere x ε) := by
   rw [sphere_eq_empty_of_subsingleton (NeZero.ne ε)]; infer_instance
+
+theorem closedBall_eq_singleton_of_subsingleton [Subsingleton α] (h : 0 ≤ ε) :
+    closedBall x ε = {x} := by
+  ext x'
+  simpa [Subsingleton.allEq x x']
+
+theorem ball_eq_singleton_of_subsingleton [Subsingleton α] (h : 0 < ε) : ball x ε = {x} := by
+  ext x'
+  simpa [Subsingleton.allEq x x']
 
 theorem mem_closedBall_self (h : 0 ≤ ε) : x ∈ closedBall x ε := by
   rwa [mem_closedBall, dist_self]
@@ -766,7 +775,7 @@ theorem tendsto_nhdsWithin_nhds [PseudoMetricSpace β] {f : α → β} {a b} :
     Tendsto f (𝓝[s] a) (𝓝 b) ↔
       ∀ ε > 0, ∃ δ > 0, ∀ {x : α}, x ∈ s → dist x a < δ → dist (f x) b < ε := by
   rw [← nhdsWithin_univ b, tendsto_nhdsWithin_nhdsWithin]
-  simp only [mem_univ, true_and_iff]
+  simp only [mem_univ, true_and]
 
 theorem tendsto_nhds_nhds [PseudoMetricSpace β] {f : α → β} {a b} :
     Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ ε > 0, ∃ δ > 0, ∀ {x : α}, dist x a < δ → dist (f x) b < ε :=
@@ -1013,8 +1022,8 @@ section Real
 instance Real.pseudoMetricSpace : PseudoMetricSpace ℝ where
   dist x y := |x - y|
   dist_self := by simp [abs_zero]
-  dist_comm x y := abs_sub_comm _ _
-  dist_triangle x y z := abs_sub_le _ _ _
+  dist_comm _ _ := abs_sub_comm _ _
+  dist_triangle _ _ _ := abs_sub_le _ _ _
 
 theorem Real.dist_eq (x y : ℝ) : dist x y = |x - y| := rfl
 

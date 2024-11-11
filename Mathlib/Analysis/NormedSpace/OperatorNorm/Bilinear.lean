@@ -409,6 +409,54 @@ theorem map_add_add (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (x x' : E) (y y' : F
   simp only [map_add, add_apply, coe_deriv₂, add_assoc]
   abel
 
+/-- The norm of the tensor product of a scalar linear map and of an element of a normed space
+is the product of the norms. -/
+@[simp]
+theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖ = ‖c‖ * ‖f‖ := by
+  refine le_antisymm ?_ ?_
+  · refine opNorm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => ?_
+    calc
+      ‖c x • f‖ = ‖c x‖ * ‖f‖ := norm_smul _ _
+      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _)
+      _ = ‖c‖ * ‖f‖ * ‖x‖ := by ring
+  · obtain hf | hf := (norm_nonneg f).eq_or_gt
+    · simp [hf]
+    · rw [← le_div_iff₀ hf]
+      refine opNorm_le_bound _ (div_nonneg (norm_nonneg _) (norm_nonneg f)) fun x => ?_
+      rw [div_mul_eq_mul_div, le_div_iff₀ hf]
+      calc
+        ‖c x‖ * ‖f‖ = ‖c x • f‖ := (norm_smul _ _).symm
+        _ = ‖smulRight c f x‖ := rfl
+        _ ≤ ‖smulRight c f‖ * ‖x‖ := le_opNorm _ _
+
+/-- The non-negative norm of the tensor product of a scalar linear map and of an element of a normed
+space is the product of the non-negative norms. -/
+@[simp]
+theorem nnnorm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖₊ = ‖c‖₊ * ‖f‖₊ :=
+  NNReal.eq <| c.norm_smulRight_apply f
+
+variable (𝕜 E Fₗ) in
+/-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
+`smulRightL (c : E →L[𝕜] 𝕜) (f : F) (x : E) = c x • f`. -/
+def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ :=
+  LinearMap.mkContinuous₂
+    { toFun := smulRightₗ
+      map_add' := fun c₁ c₂ => by
+        ext x
+        simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
+      map_smul' := fun m c => by
+        ext x
+        dsimp
+        rw [smul_smul] }
+    1 fun c x => by
+      simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
+        le_refl]
+
+
+@[simp]
+theorem norm_smulRightL_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRightL 𝕜 E Fₗ c f‖ = ‖c‖ * ‖f‖ :=
+  norm_smulRight_apply c f
+
 end ContinuousLinearMap
 
 end SemiNormed
