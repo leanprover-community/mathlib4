@@ -4873,6 +4873,7 @@ import Mathlib.Topology.ContinuousMap.LocallyConstant
 import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.ContinuousMap.Periodic
 import Mathlib.Topology.ContinuousMap.Polynomial
+import Mathlib.Topology.ContinuousMap.SecondCountableSpace
 import Mathlib.Topology.ContinuousMap.Sigma
 import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Topology.ContinuousMap.StarOrdered
