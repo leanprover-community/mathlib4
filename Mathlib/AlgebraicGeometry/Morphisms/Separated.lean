@@ -139,7 +139,7 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   refine ⟨i, j, ?_⟩
   simp_rw [diagonalCover_map]
   show x ∈ Set.range _
-  dsimp only [diagonalCover, OpenCover.bind_obj, openCoverOfLeftRight_obj]
+  dsimp only [diagonalCover, Cover.bind_obj, openCoverOfLeftRight_obj]
   rw [range_map]
   simp [← H, ← hz₁, ← hy]
 
@@ -156,7 +156,7 @@ lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
   obtain ⟨w : (𝒱 i).obj j, hy : ((𝒱 i).map j).base w = z⟩ := (𝒱 i).covers z
   refine ⟨i, j, (pullback.diagonal ((𝒱 i).map j ≫ pullback.snd f (𝒰.map i))).base w, ?_⟩
   rw [← hz₁, ← hy, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
-  dsimp only [diagonalCover, OpenCover.pullbackHom, OpenCover.bind_obj, openCoverOfLeftRight_obj]
+  dsimp only [diagonalCover, Cover.pullbackHom, Cover.bind_obj, openCoverOfLeftRight_obj]
   rw [← Scheme.comp_base_apply]
   congr 4
   apply pullback.hom_ext <;> simp
