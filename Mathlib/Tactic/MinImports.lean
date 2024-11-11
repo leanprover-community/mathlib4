@@ -164,13 +164,11 @@ def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
   for imp in env.header.moduleNames do
     hm := hm.insert ((env.getModuleIdx? imp).getD default) imp
   let mut fins : NameSet := {}
-  for t1 in ts do
-    let tns := t1::(← resolveGlobalName t1).map Prod.fst
-    for t in tns do
-      let new := match env.getModuleIdxFor? t with
-        | some t => (hm.get? t).get!
-        | none   => .anonymous -- instead of `getMainModule`, we omit the current module
-      if !fins.contains new then fins := fins.insert new
+  for t in ts do
+    let new := match env.getModuleIdxFor? t with
+      | some t => (hm.get? t).get!
+      | none   => .anonymous -- instead of `getMainModule`, we omit the current module
+    if !fins.contains new then fins := fins.insert new
   return fins.erase .anonymous
 
 /-- `getIrredundantImports env importNames` takes an `Environment` and a `NameSet` as inputs.

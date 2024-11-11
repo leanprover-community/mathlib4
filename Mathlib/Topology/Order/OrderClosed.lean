@@ -237,12 +237,16 @@ theorem Ioo_mem_nhdsWithin_Iio' (H : a < b) : Ioo a b ∈ 𝓝[<] b := by
 theorem Ioo_mem_nhdsWithin_Iio (H : b ∈ Ioc a c) : Ioo a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio' H.1) <| Ioo_subset_Ioo_right H.2
 
-theorem CovBy.nhdsWithin_Iio (h : a ⋖ b) : 𝓝[<] b = ⊥ :=
+protected theorem CovBy.nhdsWithin_Iio (h : a ⋖ b) : 𝓝[<] b = ⊥ :=
   empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Iio' h.1
+
+protected theorem PredOrder.nhdsWithin_Iio [PredOrder α] : 𝓝[<] a = ⊥ := by
+  if h : IsMin a then simp [h.Iio_eq]
+  else exact (Order.pred_covBy_of_not_isMin h).nhdsWithin_Iio
 
 theorem Ico_mem_nhdsWithin_Iio (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Ico_self
--- Porting note (#11215): TODO: swap `'`?
+
 -- Porting note (#11215): TODO: swap `'`?
 theorem Ico_mem_nhdsWithin_Iio' (H : a < b) : Ico a b ∈ 𝓝[<] b :=
   Ico_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
@@ -281,6 +285,12 @@ theorem continuousWithinAt_Ioo_iff_Iio (h : a < b) :
 /-!
 #### Point included
 -/
+
+protected theorem CovBy.nhdsWithin_Iic (H : a ⋖ b) : 𝓝[≤] b = pure b := by
+  rw [← Iio_insert, nhdsWithin_insert, H.nhdsWithin_Iio, sup_bot_eq]
+
+protected theorem PredOrder.nhdsWithin_Iic [PredOrder α] : 𝓝[≤] b = pure b := by
+  rw [← Iio_insert, nhdsWithin_insert, PredOrder.nhdsWithin_Iio, sup_bot_eq]
 
 theorem Ioc_mem_nhdsWithin_Iic' (H : a < b) : Ioc a b ∈ 𝓝[≤] b :=
   inter_mem (nhdsWithin_le_nhds <| Ioi_mem_nhds H) self_mem_nhdsWithin
@@ -446,8 +456,11 @@ theorem Ioo_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioo a c ∈ �
 theorem Ioo_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[>] a :=
   Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
-theorem CovBy.nhdsWithin_Ioi {a b : α} (h : a ⋖ b) : 𝓝[>] a = ⊥ :=
+protected theorem CovBy.nhdsWithin_Ioi {a b : α} (h : a ⋖ b) : 𝓝[>] a = ⊥ :=
   empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Ioi' h.1
+
+protected theorem SuccOrder.nhdsWithin_Ioi [SuccOrder α] : 𝓝[>] a = ⊥ :=
+  PredOrder.nhdsWithin_Iio (α := αᵒᵈ)
 
 theorem Ioc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Ioc_self
@@ -491,6 +504,12 @@ theorem continuousWithinAt_Ioo_iff_Ioi (h : a < b) :
 /-!
 ### Point included
 -/
+
+protected theorem CovBy.nhdsWithin_Ici (H : a ⋖ b) : 𝓝[≥] a = pure a :=
+  H.toDual.nhdsWithin_Iic
+
+protected theorem SuccOrder.nhdsWithin_Ici [SuccOrder α] : 𝓝[≥] a = pure a :=
+  PredOrder.nhdsWithin_Iic (α := αᵒᵈ)
 
 theorem Ico_mem_nhdsWithin_Ici' (H : a < b) : Ico a b ∈ 𝓝[≥] a :=
   inter_mem_nhdsWithin _ <| Iio_mem_nhds H
@@ -666,7 +685,17 @@ theorem Ico_mem_nhds {a b x : α} (ha : a < x) (hb : x < b) : Ico a b ∈ 𝓝 x
 theorem Icc_mem_nhds {a b x : α} (ha : a < x) (hb : x < b) : Icc a b ∈ 𝓝 x :=
   mem_of_superset (Ioo_mem_nhds ha hb) Ioo_subset_Icc_self
 
-variable [TopologicalSpace γ]
+/-- The only order closed topology on a linear order which is a `PredOrder` and a `SuccOrder`
+is the discrete topology.
+
+This theorem is not an instance,
+because it causes searches for `PredOrder` and `SuccOrder` with their `Preorder` arguments
+and very rarely matches. -/
+theorem DiscreteTopology.of_predOrder_succOrder [PredOrder α] [SuccOrder α] :
+    DiscreteTopology α := by
+  refine discreteTopology_iff_nhds.mpr fun a ↦ ?_
+  rw [← nhdsWithin_univ, ← Iic_union_Ioi, nhdsWithin_union, PredOrder.nhdsWithin_Iic,
+    SuccOrder.nhdsWithin_Ioi, sup_bot_eq]
 
 end LinearOrder
 

@@ -43,7 +43,7 @@ lemma Module.FinitePresentation.exists_basis_localizedModule_powers
       (b' : Basis I (Localization (.powers r)) (LocalizedModule (.powers r) M)),
       ∀ i, (LocalizedModule.lift (.powers r) f fun s ↦ IsLocalizedModule.map_units f
         ⟨s.1, SetLike.le_def.mp (Submonoid.powers_le.mpr hr) s.2⟩) (b' i) = b i := by
-  have : Module.FinitePresentation R (I →₀ R) := Module.finitePresentation_of_free _ _
+  have : Module.FinitePresentation R (I →₀ R) := Module.finitePresentation_of_projective _ _
   obtain ⟨r, hr, e, he⟩ := Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule S f
     (Finsupp.mapRange.linearMap (Algebra.linearMap R Rₛ)) (b.repr.restrictScalars R)
   let e' := IsLocalizedModule.iso (.powers r) (Finsupp.mapRange.linearMap (α := I)
