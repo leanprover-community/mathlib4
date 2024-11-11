@@ -522,11 +522,14 @@ theorem isPurelyInseparable_of_finSepDegree_eq_one [Algebra.IsAlgebraic F E]
     IntermediateField.finrank_eq_one_iff] at this
   simpa only [this.1] using mem_adjoin_simple_self F x
 
+namespace IsPurelyInseparable
+
+variable [IsPurelyInseparable F E] (R L : Type*) [CommSemiring R] [Algebra R F] [Algebra R E]
+
 /-- If `E / F` is purely inseparable, then for any reduced ring `L`, the map `(E →+* L) → (F →+* L)`
 induced by `algebraMap F E` is injective. In particular, a purely inseparable field extension
 is an epimorphism in the category of fields. -/
-theorem IsPurelyInseparable.injective_comp_algebraMap [IsPurelyInseparable F E]
-    (L : Type w) [CommRing L] [IsReduced L] :
+theorem injective_comp_algebraMap [CommRing L] [IsReduced L] :
     Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E) := fun f g heq ↦ by
   ext x
   let q := ringExpChar F
@@ -537,31 +540,29 @@ theorem IsPurelyInseparable.injective_comp_algebraMap [IsPurelyInseparable F E]
   haveI := expChar_of_injective_ringHom (f.comp (algebraMap F E)).injective q
   exact iterateFrobenius_inj L q n heq
 
-theorem IsPurelyInseparable.injective_comp_toAlgHom [IsPurelyInseparable F E] (R L) [CommSemiring R]
-    [CommRing L] [IsReduced L] [Algebra R F] [Algebra R E] [Algebra R L] [IsScalarTower R F E] :
-    Function.Injective fun f : E →ₐ[R] L ↦ f.comp (IsScalarTower.toAlgHom R F E) := fun _ _ eq ↦
+theorem injective_restrictDomain [CommRing L] [IsReduced L] [Algebra R L] [IsScalarTower R F E] :
+    Function.Injective (AlgHom.restrictDomain (A := R) F (C := E) (D := L)) := fun _ _ eq ↦
   AlgHom.coe_ringHom_injective <| injective_comp_algebraMap F E L <| congr_arg AlgHom.toRingHom eq
 
-instance [IsPurelyInseparable F E] (L) [Field L] [PerfectField L] [Algebra F L] :
-    Nonempty (E →ₐ[F] L) :=
+instance [Field L] [PerfectField L] [Algebra F L] : Nonempty (E →ₐ[F] L) :=
   nonempty_algHom_of_splits fun x ↦ ⟨IsPurelyInseparable.isIntegral' _ _,
     have ⟨q, _⟩ := ExpChar.exists F
     PerfectField.splits_of_natSepDegree_eq_one (algebraMap F L)
       ((minpoly.natSepDegree_eq_one_iff_eq_X_pow_sub_C q).mpr <|
         IsPurelyInseparable.minpoly_eq_X_pow_sub_C F q x)⟩
 
-theorem IsPurelyInseparable.bijective_comp_algebraMap [IsPurelyInseparable F E]
-    (L) [Field L] [PerfectField L] :
+theorem bijective_comp_algebraMap [Field L] [PerfectField L] :
     Function.Bijective fun f : E →+* L ↦ f.comp (algebraMap F E) :=
   ⟨injective_comp_algebraMap F E L, fun g ↦ let _ := g.toAlgebra
     ⟨_, (Classical.arbitrary <| E →ₐ[F] L).comp_algebraMap⟩⟩
 
-theorem IsPurelyInseparable.bijective_comp_toAlgHom [IsPurelyInseparable F E] (R L) [CommSemiring R]
-    [Field L] [PerfectField L] [Algebra R F] [Algebra R E] [Algebra R L] [IsScalarTower R F E] :
-    Function.Bijective fun f : E →ₐ[R] L ↦ f.comp (IsScalarTower.toAlgHom R F E) :=
-  ⟨injective_comp_toAlgHom F E R L, fun g ↦ let _ := g.toAlgebra
+theorem bijective_restrictDomain [Field L] [PerfectField L] [Algebra R L] [IsScalarTower R F E] :
+    Function.Bijective (AlgHom.restrictDomain (A := R) F (C := E) (D := L)) :=
+  ⟨injective_restrictDomain F E R L, fun g ↦ let _ := g.toAlgebra
     let f := Classical.arbitrary (E →ₐ[F] L)
     ⟨f.restrictScalars R, AlgHom.coe_ringHom_injective f.comp_algebraMap⟩⟩
+
+end IsPurelyInseparable
 
 /-- If `E / F` is purely inseparable, then for any reduced `F`-algebra `L`, there exists at most one
 `F`-algebra homomorphism from `E` to `L`. -/
