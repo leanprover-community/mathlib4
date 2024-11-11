@@ -1057,7 +1057,7 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
   simp [h]
 
 theorem exists_union_disjoint_cardinal_eq_of_even_finite [DecidableEq α] (s : Set α)
-     (he : Even s.ncard) (hs : s.Finite := by toFinite_tac) : ∃ (t u : Set α),
+    (he : Even s.ncard) (hs : s.Finite := by toFinite_tac) : ∃ (t u : Set α),
     t ∪ u = s ∧ Disjoint t u ∧ t.ncard = u.ncard := by
   obtain rfl | h := s.eq_empty_or_nonempty
   · use ∅, ∅
@@ -1112,7 +1112,7 @@ decreasing_by
       not_true_eq_false, and_false, not_false_eq_true]⟩⟩
 
 theorem exists_union_disjoint_cardinal_eq_of_infinite [DecidableEq α] (s : Set α)
-     (h : s.Infinite) : ∃ (t u : Set α),
+    (h : s.Infinite) : ∃ (t u : Set α),
     t ∪ u = s ∧ Disjoint t u ∧ Cardinal.mk t = Cardinal.mk u := by
   have f : s ⊕ s ≃ s := by
       have : Inhabited (s ⊕ s ≃ s) := by

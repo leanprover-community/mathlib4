@@ -1267,7 +1267,7 @@ theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint 
 @[simp]
 theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t :=
   disjoint_comm.trans <| by rw [disjoint_insert_left, _root_.disjoint_comm]
-  
+
 @[simp] lemma disjoint_empty (s : Set α) : Disjoint s ∅ := disjoint_bot_right
 @[simp] lemma empty_disjoint (s : Set α) : Disjoint ∅ s := disjoint_bot_left
 
