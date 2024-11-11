@@ -165,9 +165,15 @@ def readAdhocFile : IO (Array Migration) := do
 
 def moarMigrations : IO (Array Migration) := do
   let mig := #[]
-  let lines ← IO.FS.lines output.txt
+  let lines ← IO.FS.lines "output.txt"
   for line in lines do
+    -- We only consider the lines describing the commit hash.
+    if line.startsWith " Mathlib.lean | " then continue
+    else if line.startsWith " 1 file changed, " && (line.containsSubstr "deletion" || line.containsSubstr "insertion") then
+      continue
     let hash := (line.splitOn " ").get! 0
+    if hash.length != 40 then
+      dbg_trace s!"something unexpected happened: line {line} should contain a commit hash..."
     let diff ← IO.Process.output { cmd := "git", args := #["diff", hash, "Mathlib.lean"] }
     if diff.exitCode != 0 then
       IO.println s!"error: git diff {hash} Mathlib.lean returned as error"
