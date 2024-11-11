@@ -208,7 +208,7 @@ theorem toSubmonoid_injective : Function.Injective (fun s : Subring R => s.toSub
 
 /-- Construct a `Subring R` from a set `s`, a submonoid `sm`, and an additive
 subgroup `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
-@[simps! coe toSubsemiring]
+@[simps! coe]
 protected def mk' (s : Set R) (sm : Submonoid R) (sa : AddSubgroup R) (hm : ↑sm = s)
     (ha : ↑sa = s) : Subring R :=
   { sm.copy s hm.symm, sa.copy s ha.symm with }
