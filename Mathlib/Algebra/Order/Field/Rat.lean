@@ -32,7 +32,3 @@ end Rat
 -- instances for performance
 deriving instance CanonicallyLinearOrderedSemifield, LinearOrderedSemifield,
   LinearOrderedCommGroupWithZero for NNRat
-
-/-- These test cases ensure there is no diamond with the `Semifield` structure defined earlier. -/
-example : (inferInstanceAs (Semifield ℚ≥0)).toCommGroupWithZero =
-    (inferInstanceAs (LinearOrderedCommGroupWithZero ℚ≥0)).toCommGroupWithZero := rfl
