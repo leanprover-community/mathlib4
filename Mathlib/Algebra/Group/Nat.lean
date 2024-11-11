@@ -141,6 +141,18 @@ lemma two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h ↦
 lemma div_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
   fun h ↦ Nat.div_mul_cancel ((even_iff_exists_two_nsmul _).1 h)
 
+theorem one_lt_of_ne_zero_of_even {n : ℕ} (h0 : n ≠ 0) (hn : Even n) : 1 < n := by
+  refine Nat.one_lt_iff_ne_zero_and_ne_one.mpr (And.intro h0 ?_)
+  intro h
+  rw [h] at hn
+  exact Nat.not_even_one hn
+
+theorem add_one_lt_of_even {n m : ℕ} (hn : Even n) (hm : Even m) (hnm : n < m) :
+    n + 1 < m := by
+  rcases hn with ⟨n, rfl⟩
+  rcases hm with ⟨m, rfl⟩
+  omega
+
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by simp [*, parity_simps]
 
