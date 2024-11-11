@@ -2427,6 +2427,7 @@ import Mathlib.Data.LazyList.Basic
 import Mathlib.Data.List.AList
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.ChainOfFn
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.List.Dedup
@@ -4872,6 +4873,7 @@ import Mathlib.Topology.ContinuousMap.LocallyConstant
 import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.ContinuousMap.Periodic
 import Mathlib.Topology.ContinuousMap.Polynomial
+import Mathlib.Topology.ContinuousMap.SecondCountableSpace
 import Mathlib.Topology.ContinuousMap.Sigma
 import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Topology.ContinuousMap.StarOrdered
