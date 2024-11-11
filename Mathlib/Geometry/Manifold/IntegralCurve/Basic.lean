@@ -108,29 +108,6 @@ lemma IsIntegralCurveAt.isIntegralCurveOn (h : ∀ t ∈ s, IsIntegralCurveAt γ
   obtain ⟨s, hs, h⟩ := isIntegralCurveAt_iff.mp (h t ht)
   exact h t (mem_of_mem_nhds hs)
 
-lemma IsIntegralCurveOn.congr_of_eqOn (hs : IsOpen s) (h : IsIntegralCurveOn γ v s)
-    (hγ : EqOn γ γ' s) : IsIntegralCurveOn γ' v s := by
-  intros t ht
-  rw [← hγ ht]
-  apply (h t ht).congr_of_eventuallyEq
-  exact Filter.eventuallyEq_of_mem (hs.mem_nhds ht) hγ.symm
-
-lemma isIntegralCurveOn_congr_of_eqOn (hs : IsOpen s) (hγ : EqOn γ γ' s) :
-    IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn γ' v s :=
-  ⟨fun h ↦ h.congr_of_eqOn hs hγ, fun h ↦ h.congr_of_eqOn hs hγ.symm⟩
-
-lemma IsIntegralCurveAt.congr_of_eventuallyEq (h : IsIntegralCurveAt γ v t₀)
-    (hγ : γ =ᶠ[nhds t₀] γ') : IsIntegralCurveAt γ' v t₀ := by
-  obtain ⟨s, hdrv, hs1, hs2⟩ := eventually_nhds_iff.mp (h.and hγ)
-  refine eventually_nhds_iff.mpr ⟨s, fun t ht ↦ ?_, hs1, hs2⟩
-  apply ((hdrv t ht).2 ▸ (hdrv t ht).1).congr_of_eventuallyEq
-  rw [Filter.eventuallyEq_iff_exists_mem]
-  exact ⟨s, hs1.mem_nhds ht, fun t' ht' ↦ (hdrv t' ht').2.symm⟩
-
-lemma isIntegralCurveAt_congr_of_eventuallyEq (hγ : γ =ᶠ[nhds t₀] γ') :
-    IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt γ' v t₀ :=
-  ⟨fun h ↦ h.congr_of_eventuallyEq hγ, fun h ↦ h.congr_of_eventuallyEq hγ.symm⟩
-
 lemma isIntegralCurveOn_iff_isIntegralCurveAt (hs : IsOpen s) :
     IsIntegralCurveOn γ v s ↔ ∀ t ∈ s, IsIntegralCurveAt γ v t :=
   ⟨fun h _ ht ↦ h.isIntegralCurveAt (hs.mem_nhds ht), IsIntegralCurveAt.isIntegralCurveOn⟩
@@ -149,7 +126,8 @@ lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
 lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) : Continuous γ :=
   continuous_iff_continuousAt.mpr fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
 
-variable [SmoothManifoldWithCorners I M] in
+variable [SmoothManifoldWithCorners I M]
+
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
   expressed in the local chart around the initial point `γ t₀`. -/
 lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (ht : t ∈ s)
@@ -168,7 +146,6 @@ lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (h
     mfderiv_chartAt_eq_tangentCoordChange hsrc]
   rfl
 
-variable [SmoothManifoldWithCorners I M] in
 lemma IsIntegralCurveAt.eventually_hasDerivAt (hγ : IsIntegralCurveAt γ v t₀) :
     ∀ᶠ t in 𝓝 t₀, HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
       (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t := by

@@ -41,6 +41,7 @@ Lee. May require submanifolds.
 
 integral curve, vector field, local existence, uniqueness
 -/
+
 open scoped Topology
 
 open Function Set Classical
@@ -48,12 +49,8 @@ open Function Set Classical
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} {t₀ : ℝ}
-
-/-! ### Existence and uniqueness -/
-
-variable [SmoothManifoldWithCorners I M] (t₀) {x₀ : M}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+  {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} (t₀ : ℝ) {x₀ : M}
 
 /-- Existence of local integral curves for a $C^1$ vector field at interior points of a smooth
 manifold. -/

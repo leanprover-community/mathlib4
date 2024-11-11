@@ -19,6 +19,7 @@ curve.
 
 integral curve, vector field
 -/
+
 open Function Set
 
 variable
@@ -40,32 +41,13 @@ lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
   simp only [mfld_simps, hasFDerivWithinAt_univ]
   exact HasFDerivAt.add_const (hasFDerivAt_id _) _
 
-lemma isIntegralCurveOn_comp_add (dt : ℝ) :
+lemma isIntegralCurveOn_comp_add {dt : ℝ} :
     IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
-  convert hγ.comp_add (-dt) <;> ext <;> simp
-
-lemma isIntegralCurveOn_comp_sub (dt : ℝ) :
-    IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· - dt)) v { t | t - dt ∈ s } := by
-  refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
-  convert hγ.comp_add dt <;> ext <;> simp
-
--- TODO: missing lemma(s) for `Ioo`
-lemma isIntegralCurveOn_Ioo_comp_add {a b : ℝ} (dt : ℝ) :
-    IsIntegralCurveOn γ v (Ioo a b) ↔
-      IsIntegralCurveOn (γ ∘ (· + dt)) v (Ioo (a - dt) (b - dt)) := by
-  have : {t | t + dt ∈ Ioo a b} = Ioo (a - dt) (b - dt) := by
-    ext t
-    rw [mem_setOf, mem_Ioo, mem_Ioo, sub_lt_iff_lt_add (c := dt), lt_sub_iff_add_lt (b := dt)]
-  rw [isIntegralCurveOn_comp_add dt, this]
-
-lemma isIntegralCurveOn_Ioo_comp_sub {a b : ℝ} (dt : ℝ) :
-    IsIntegralCurveOn γ v (Ioo a b) ↔
-      IsIntegralCurveOn (γ ∘ (· - dt)) v (Ioo (a + dt) (b + dt)) := by
-  have : {t | t - dt ∈ Ioo a b} = Ioo (a + dt) (b + dt) := by
-    ext t
-    rw [mem_setOf, mem_Ioo, mem_Ioo, sub_lt_iff_lt_add (c := dt), lt_sub_iff_add_lt (b := dt)]
-  rw [isIntegralCurveOn_comp_sub dt, this]
+  convert hγ.comp_add (-dt)
+  · ext t
+    simp only [Function.comp_apply, neg_add_cancel_right]
+  · simp only [mem_setOf_eq, neg_add_cancel_right, setOf_mem_eq]
 
 lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) :
     IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
@@ -76,7 +58,7 @@ lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) 
   ext t
   rw [mem_setOf_eq, Metric.mem_ball, Metric.mem_ball, dist_sub_eq_dist_add_right]
 
-lemma isIntegralCurveAt_comp_add (dt : ℝ) :
+lemma isIntegralCurveAt_comp_add {dt : ℝ} :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
@@ -84,25 +66,17 @@ lemma isIntegralCurveAt_comp_add (dt : ℝ) :
     simp only [Function.comp_apply, neg_add_cancel_right]
   · simp only [sub_neg_eq_add, sub_add_cancel]
 
-lemma isIntegralCurveAt_comp_sub (dt : ℝ) :
-    IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· - dt)) v (t₀ + dt) := by
-  simpa using isIntegralCurveAt_comp_add (-dt)
-
 lemma IsIntegralCurve.comp_add (hγ : IsIntegralCurve γ v) (dt : ℝ) :
     IsIntegralCurve (γ ∘ (· + dt)) v := by
   rw [isIntegralCurve_iff_isIntegralCurveOn] at *
   exact hγ.comp_add _
 
-lemma isIntegralCurve_comp_add (dt : ℝ) :
+lemma isIntegralCurve_comp_add {dt : ℝ} :
     IsIntegralCurve γ v ↔ IsIntegralCurve (γ ∘ (· + dt)) v := by
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
   ext t
   simp only [Function.comp_apply, neg_add_cancel_right]
-
-lemma isIntegralCurve_comp_sub (dt : ℝ) :
-    IsIntegralCurve γ v ↔ IsIntegralCurve (γ ∘ (· - dt)) v := by
-  simpa using isIntegralCurve_comp_add (-dt)
 
 end Translation
 
@@ -126,23 +100,6 @@ lemma isIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
   · simp only [mem_setOf_eq, mul_assoc, inv_mul_eq_div, div_self ha, mul_one, setOf_mem_eq]
-
--- TODO: missing lemma(s) about Ioo
-lemma isIntegralCurveOn_Ioo_comp_mul_pos {ε a : ℝ} (ha : 0 < a) :
-    IsIntegralCurveOn γ v (Ioo (t₀ - ε) (t₀ + ε)) ↔
-      IsIntegralCurveOn (γ ∘ (· * a)) (a • v) (Ioo ((t₀ - ε) / a) ((t₀ + ε) / a)) := by
-  have : {t | t * a ∈ Ioo (t₀ - ε) (t₀ + ε)} = Ioo ((t₀ - ε) / a) ((t₀ + ε) / a) := by
-    ext t
-    rw [mem_setOf, mem_Ioo, mem_Ioo, div_lt_iff₀ ha, lt_div_iff₀ ha]
-  rw [isIntegralCurveOn_comp_mul_ne_zero (ne_of_gt ha), this]
-
-lemma isIntegralCurveOn_Ioo_comp_mul_neg {ε a : ℝ} (ha : a < 0) :
-    IsIntegralCurveOn γ v (Ioo (t₀ - ε) (t₀ + ε)) ↔
-      IsIntegralCurveOn (γ ∘ (· * a)) (a • v) (Ioo ((t₀ + ε) / a) ((t₀ - ε) / a)) := by
-  have : {t | t * a ∈ Ioo (t₀ - ε) (t₀ + ε)} = Ioo ((t₀ + ε) / a) ((t₀ - ε) / a) := by
-    ext t
-    rw [mem_setOf, mem_Ioo, mem_Ioo, div_lt_iff_of_neg ha, lt_div_iff_of_neg ha, and_comm]
-  rw [isIntegralCurveOn_comp_mul_ne_zero (ne_of_lt ha), this]
 
 lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
