@@ -19,7 +19,7 @@ client = zulip.Client(
     site=ZULIP_SITE
 )
 
-# Fetch messages from the past 1h15
+# Fetch the last 200 messages
 response = client.get_messages({
     "anchor": "newest",
     "num_before": 200,
