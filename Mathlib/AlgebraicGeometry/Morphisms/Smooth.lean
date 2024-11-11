@@ -160,8 +160,9 @@ instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsSmoothOfRelativeDimension 0 f]
     IsSmoothOfRelativeDimension 0 (f ≫ g) :=
   inferInstanceAs <| IsSmoothOfRelativeDimension (0 + 0) (f ≫ g)
 
-/-- Smooth of relative dimension `0` is stable under composition. -/
-instance : MorphismProperty.IsStableUnderComposition (@IsSmoothOfRelativeDimension 0) where
+/-- Smooth of relative dimension `0` is multiplicative. -/
+instance : MorphismProperty.IsMultiplicative (@IsSmoothOfRelativeDimension 0) where
+  id_mem _ := inferInstance
   comp_mem _ _ _ _ := inferInstance
 
 end AlgebraicGeometry
