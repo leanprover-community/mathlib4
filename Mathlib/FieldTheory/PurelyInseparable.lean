@@ -78,6 +78,11 @@ of fields.
   reduced ring `L`, the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective.
   In particular, a purely inseparable field extension is an epimorphism in the category of fields.
 
+- `IsPurelyInseparable.of_injective_comp_algebraMap`: if `L` is an algebraically closed field
+  containing `E`, such that the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is
+  injective, then `E / F` is purely inseparable. As a corollary, epimorphisms in the category of
+  fields must be purely inseparable extensions.
+
 - `IntermediateField.isPurelyInseparable_adjoin_iff_pow_mem`: if `F` is of exponential
   characteristic `q`, then `F(S) / F` is a purely inseparable extension if and only if for any
   `x ∈ S`, `x ^ (q ^ n)` is contained in `F` for some `n : ℕ`.
@@ -112,12 +117,6 @@ of fields.
 separable degree, degree, separable closure, purely inseparable
 
 ## TODO
-
-- `IsPurelyInseparable.of_injective_comp_algebraMap`: if `L` is an algebraically closed field
-  containing `E`, such that the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is
-  injective, then `E / F` is purely inseparable. As a corollary, epimorphisms in the category of
-  fields must be purely inseparable extensions. Need to use the fact that `Emb F E` is infinite
-  (or just not a singleton) when `E / F` is (purely) transcendental.
 
 - Restate some intermediate result in terms of linearly disjointness.
 
@@ -645,15 +644,25 @@ theorem eq_separableClosure_iff [Algebra.IsAlgebraic F E] (L : IntermediateField
   ⟨by rintro rfl; exact ⟨isSeparable F E, isPurelyInseparable F E⟩,
    fun ⟨_, _⟩ ↦ eq_separableClosure F E L⟩
 
--- TODO: prove it
-set_option linter.unusedVariables false in
 /-- If `L` is an algebraically closed field containing `E`, such that the map
 `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective, then `E / F` is
 purely inseparable. As a corollary, epimorphisms in the category of fields must be
 purely inseparable extensions. -/
-proof_wanted IsPurelyInseparable.of_injective_comp_algebraMap (L : Type w) [Field L] [IsAlgClosed L]
-    (hn : Nonempty (E →+* L)) (h : Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E)) :
-    IsPurelyInseparable F E
+theorem IsPurelyInseparable.of_injective_comp_algebraMap (L : Type w) [Field L] [IsAlgClosed L]
+    [hn : Nonempty (E →+* L)] (h : Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E)) :
+    IsPurelyInseparable F E := by
+  rw [isPurelyInseparable_iff_finSepDegree_eq_one, finSepDegree, Nat.card_eq_one_iff_unique,
+    and_iff_left (by infer_instance), ← not_nontrivial_iff_subsingleton]
+  rw [Function.Injective] at h
+  contrapose! h
+  obtain ⟨f, g, hfg⟩ := exists_pair_ne (Emb F E)
+  obtain ⟨i⟩ := hn
+  letI := i.toAlgebra
+  let j : AlgebraicClosure E →ₐ[E] L := IsAlgClosed.lift
+  refine ⟨j.toRingHom.comp f.toRingHom, j.toRingHom.comp g.toRingHom, by ext; simp, fun H ↦ ?_⟩
+  apply_fun (fun x ↦ (x : E → L)) at H
+  simp_rw [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe] at H
+  exact hfg (AlgHom.coe_fn_inj.1 (j.injective.comp_left H))
 
 end IsPurelyInseparable
 
