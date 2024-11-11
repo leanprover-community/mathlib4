@@ -185,6 +185,13 @@ theorem comap_le_comap_iff {f : F} (hf : range f = ⊤) {p p'} : comap f p ≤ c
 theorem comap_injective {f : F} (hf : range f = ⊤) : Injective (comap f) := fun _ _ h =>
   le_antisymm ((comap_le_comap_iff hf).1 (le_of_eq h)) ((comap_le_comap_iff hf).1 (ge_of_eq h))
 
+-- TODO (?): generalize to semilinear maps with `f ∘ₗ g` bijective.
+theorem ker_eq_range_of_comp_eq_id {M P} [AddCommGroup M] [Module R M]
+    [AddCommGroup P] [Module R P] {f : M →ₗ[R] P} {g : P →ₗ[R] M} (h : f ∘ₗ g = .id) :
+    ker f = range (LinearMap.id - g ∘ₗ f) :=
+  le_antisymm (fun x hx ↦ ⟨x, show x - g (f x) = x by rw [hx, map_zero, sub_zero]⟩) <|
+    range_le_ker_iff.mpr <| by rw [comp_sub, comp_id, ← comp_assoc, h, id_comp, sub_self]
+
 end
 
 end AddCommMonoid
@@ -394,6 +401,9 @@ theorem surjective_rangeRestrict : Surjective f.rangeRestrict := by
   rw [← range_eq_top, range_rangeRestrict]
 
 @[simp] theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
+
+@[simp] theorem injective_rangeRestrict_iff : Injective f.rangeRestrict ↔ Injective f :=
+  Set.injective_codRestrict _
 
 end rangeRestrict
 
