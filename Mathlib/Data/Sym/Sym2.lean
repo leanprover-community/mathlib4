@@ -579,7 +579,7 @@ theorem equivSym_pair_eq {a b : α} : (equivSym α) s(a, b) = ⟨{a, b}, rfl⟩ 
 theorem equivSym_symm_eq_pair {a b : α} : (equivSym α).symm ⟨a ::ₘ {b}, rfl⟩ = s(a, b) := rfl
 
 @[simp]
-theorem mem_equivSym_iff_mem (s : Sym2 α) (a : α) : a ∈ equivSym α s ↔ a ∈ s := by
+theorem mem_equivSym_iff_mem {s : Sym2 α} {a : α} : a ∈ equivSym α s ↔ a ∈ s := by
   induction' s with x y
   rw [equivSym_pair_eq]
   simp only [Multiset.insert_eq_cons, Sym.mem_mk, Multiset.mem_cons, Multiset.mem_singleton,
