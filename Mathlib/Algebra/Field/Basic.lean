@@ -210,6 +210,7 @@ instance (priority := 100) Field.isDomain : IsDomain K :=
 end Field
 
 namespace RingHom
+
 /-- Any ring homomorphism `f : F → R` from a `DivisionRing F` to nonzero ring `R` is injective.
 -/
 @[stacks 09FU]

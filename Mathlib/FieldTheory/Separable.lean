@@ -463,7 +463,7 @@ theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingH
 
 /-- If a non-zero polynomial over `F` splits in `K`, then it has no repeated roots on `K`
 if and only if it is separable. -/
-@[stacks 09H3 "Here we only require `f` splits instead of `K` is algebraic closure."]
+@[stacks 09H3 "Here we only require `f` splits instead of `K` is algebraically closed."]
 theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
     (h : f.Splits (algebraMap F K)) : (f.aroots K).Nodup ↔ f.Separable := by
   rw [← (algebraMap F K).id_comp, ← splits_map_iff] at h
@@ -538,8 +538,9 @@ variable (F L K : Type*) [CommRing F] [Ring K] [Algebra F K]
 variable {K} in
 /--
 An element `x` of an algebra `K` over a commutative ring `F` is said to be *separable*, if its
-minimal polynamial over `K` is separable. Note that the minimal polynomial of any element not
-integral over `F` is defined to be `0`, which is not a separable polynomial. -/
+minimal polynomial over `K` is separable. Note that the minimal polynomial of any element not
+integral over `F` is defined to be `0`, which is not a separable polynomial.
+-/
 @[stacks 09H1 "second part"]
 def IsSeparable (x : K) : Prop := Polynomial.Separable (minpoly F x)
 
@@ -620,8 +621,7 @@ theorem IsSeparable.tower_top
 
 variable (F E) in
 /-- If `E / K / F` is an extension tower, `E` is separable over `F`, then it's also separable
-over `K`.
--/
+over `K`. -/
 @[stacks 09H2 "second part"]
 theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
     Algebra.IsSeparable L E :=
