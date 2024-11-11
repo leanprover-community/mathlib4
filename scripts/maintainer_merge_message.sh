@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 AUTHOR="${1:-AUTHOR not set}"         # the author of the PR
-M_or_D="**${2:-M_or_D not set}**"     # `merge` or `delegate`
+M_or_D="${2:-M_or_D not set}"         # `merge` or `delegate`
 EVENT_NAME="${3:-EVENT_NAME not set}" # one of `issue_comment`, `pull_request_review` or `pull_request_review_comment`
                                       # to be converted to `comment`, `review` or `review comment`
 PR="${4:-PR not set}"                 # the number of the PR
@@ -34,5 +34,5 @@ esac
 >&2 echo "title:      '${PR_TITLE}'"
 >&2 echo "EVENT_NAME: '${EVENT_NAME}'"
 
-printf '%s requested a maintainer %s from %s on PR [#%s](%s):\n' "${AUTHOR}" "${M_or_D}" "${SOURCE}" "${PR}" "${URL}"
+printf '%s requested a maintainer **%s** from %s on PR [#%s](%s):\n' "${AUTHOR}" "${M_or_D}" "${SOURCE}" "${PR}" "${URL}"
 printf '> %s\n' "${PR_TITLE}"
