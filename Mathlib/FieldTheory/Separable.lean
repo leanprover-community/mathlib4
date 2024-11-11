@@ -463,7 +463,7 @@ theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingH
 
 /-- If a non-zero polynomial over `F` splits in `K`, then it has no repeated roots on `K`
 if and only if it is separable. -/
-@[stacks 09H3 "Here we only require `f` splits instead of `K` is algebraic closure."]
+@[stacks 09H3 "Here we only require `f` splits instead of `K` is algebraically closed."]
 theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
     (h : f.Splits (algebraMap F K)) : (f.aroots K).Nodup ↔ f.Separable := by
   rw [← (algebraMap F K).id_comp, ← splits_map_iff] at h
