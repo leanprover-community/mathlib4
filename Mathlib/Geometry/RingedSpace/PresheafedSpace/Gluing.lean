@@ -56,7 +56,7 @@ commute with the maps in the diagram (the green arrows), which is just a lengthy
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits AlgebraicGeometry.PresheafedSpace
 

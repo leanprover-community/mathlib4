@@ -20,7 +20,7 @@ the definitions.
 
 universe u v
 
-open Set Filter TopologicalSpace
+open Set Filter TopologicalSpace Topology
 open scoped Topology Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
@@ -341,7 +341,7 @@ theorem MonoidHom.isClosed_range_coe : IsClosed (Set.range ((↑) : (M₁ →* M
 end PointwiseLimits
 
 @[to_additive]
-theorem IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
+theorem Topology.IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
     [MulHomClass F M N] [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F)
     (hf : IsInducing f) : ContinuousMul M :=
   ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).1⟩
@@ -434,8 +434,10 @@ theorem Submonoid.topologicalClosure_minimal (s : Submonoid M) {t : Submonoid M}
 
 /-- If a submonoid of a topological monoid is commutative, then so is its topological closure. -/
 @[to_additive "If a submonoid of an additive topological monoid is commutative, then so is its
-topological closure."]
-def Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
+topological closure.
+
+See note [reducible non-instances]."]
+abbrev Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
     (hs : ∀ x y : s, x * y = y * x) : CommMonoid s.topologicalClosure :=
   { s.topologicalClosure.toMonoid with
     mul_comm :=

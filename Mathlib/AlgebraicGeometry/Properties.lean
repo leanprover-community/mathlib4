@@ -23,7 +23,7 @@ We provide some basic properties of schemes
 
 universe u
 
-open TopologicalSpace Opposite CategoryTheory CategoryTheory.Limits TopCat
+open TopologicalSpace Opposite CategoryTheory CategoryTheory.Limits TopCat Topology
 
 namespace AlgebraicGeometry
 
