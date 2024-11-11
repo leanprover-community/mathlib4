@@ -107,28 +107,28 @@ def closedConvexHull : ClosureOperator (Set E) := .ofCompletePred (fun s => Conv
 
 variable {𝕜}
 
-theorem convex_convexClosedHull {s : Set E} :
-    Convex 𝕜 (convexClosedHull 𝕜 s) := ((convexClosedHull 𝕜).isClosed_closure s).1
+theorem convex_closedConvexHull {s : Set E} :
+    Convex 𝕜 (closedConvexHull 𝕜 s) := ((closedConvexHull 𝕜).isClosed_closure s).1
 
-theorem isClosed_convexClosedHull {s : Set E} :
-    IsClosed (convexClosedHull 𝕜 s) := ((convexClosedHull 𝕜).isClosed_closure s).2
+theorem isClosed_closedConvexHull {s : Set E} :
+    IsClosed (closedConvexHull 𝕜 s) := ((closedConvexHull 𝕜).isClosed_closure s).2
 
-theorem subset_convexClosedHull {s : Set E} : s ⊆ convexClosedHull 𝕜 s :=
-  (convexClosedHull 𝕜).le_closure s
+theorem subset_closedConvexHull {s : Set E} : s ⊆ closedConvexHull 𝕜 s :=
+  (closedConvexHull 𝕜).le_closure s
 
-theorem convexClosedHull_min {s t : Set E} : s ⊆ t → Convex 𝕜 t ∧ IsClosed t →
-    convexClosedHull 𝕜 s ⊆ t := (convexClosedHull 𝕜).closure_min
+theorem closedConvexHull_min {s t : Set E} : s ⊆ t → Convex 𝕜 t ∧ IsClosed t →
+    closedConvexHull 𝕜 s ⊆ t := (closedConvexHull 𝕜).closure_min
 
-theorem convexHull_subseteq_convexClosedHull {s : Set E} :
-    (convexHull 𝕜) s ⊆ (convexClosedHull 𝕜) s :=
-  convexHull_min subset_convexClosedHull convex_convexClosedHull
+theorem convexHull_subseteq_closedConvexHull {s : Set E} :
+    (convexHull 𝕜) s ⊆ (closedConvexHull 𝕜) s :=
+  convexHull_min subset_closedConvexHull convex_closedConvexHull
 
-theorem convexClosedHull_eq_convexClosedHull_closure {s : Set E} :
-    convexClosedHull 𝕜 s = convexClosedHull 𝕜 (closure s) := subset_antisymm
-  (convexClosedHull_min (subset_trans subset_closure subset_convexClosedHull)
-    ⟨convex_convexClosedHull, isClosed_convexClosedHull⟩)
-  (convexClosedHull_min (closure_minimal subset_convexClosedHull isClosed_convexClosedHull)
-    ⟨convex_convexClosedHull, isClosed_convexClosedHull⟩)
+theorem closedConvexHull_eq_closedConvexHull_closure {s : Set E} :
+    closedConvexHull 𝕜 s = closedConvexHull 𝕜 (closure s) := subset_antisymm
+  (closedConvexHull_min (subset_trans subset_closure subset_closedConvexHull)
+    ⟨convex_closedConvexHull, isClosed_closedConvexHull⟩)
+  (closedConvexHull_min (closure_minimal subset_closedConvexHull isClosed_closedConvexHull)
+    ⟨convex_closedConvexHull, isClosed_closedConvexHull⟩)
 
 end TopologicalSpace
 
@@ -275,11 +275,11 @@ protected theorem Convex.closure {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 
     (continuous_fst.const_smul _).add (continuous_snd.const_smul _)
   show f x y ∈ closure s from map_mem_closure₂ hf hx hy fun _ hx' _ hy' => hs hx' hy' ha hb hab
 
-theorem convexClosedHull_eq_closure_convexHull {s : Set E} :
-    convexClosedHull 𝕜 s = closure (convexHull 𝕜 s) := subset_antisymm
-  (convexClosedHull_min (subset_trans (subset_convexHull 𝕜 s) subset_closure)
+theorem closedConvexHull_eq_closure_convexHull {s : Set E} :
+    closedConvexHull 𝕜 s = closure (convexHull 𝕜 s) := subset_antisymm
+  (closedConvexHull_min (subset_trans (subset_convexHull 𝕜 s) subset_closure)
     ⟨Convex.closure (convex_convexHull 𝕜 s), isClosed_closure⟩)
-  (closure_minimal convexHull_subseteq_convexClosedHull isClosed_convexClosedHull)
+  (closure_minimal convexHull_subseteq_closedConvexHull isClosed_closedConvexHull)
 
 open AffineMap
 
