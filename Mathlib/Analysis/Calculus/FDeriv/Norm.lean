@@ -75,7 +75,7 @@ theorem ContDiffAt.contDiffAt_norm_of_smul (h : ContDiffAt ℝ n (‖·‖) (t �
   rcases eq_bot_or_bot_lt n with rfl | hn
   · apply contDiffAt_zero.2
     exact ⟨univ, univ_mem, continuous_norm.continuousOn⟩
-  replace hn : 1 ≤ n := ENat.add_one_nat_le_withTop_of_lt hn
+  replace hn : 1 ≤ n := ENat.add_one_natCast_le_withTop_of_lt hn
   obtain rfl | ht := eq_or_ne t 0
   · by_cases hE : Nontrivial E
     · rw [zero_smul] at h

@@ -262,7 +262,7 @@ theorem ContDiff.continuous_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h : Co
 
 theorem ContDiff.differentiable_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h : ContDiff 𝕜 n f)
     (hmn : (m : ℕ∞) < n) : Differentiable 𝕜 (iteratedDeriv m f) :=
-  (contDiff_iff_iteratedDeriv.1 (h.of_le (ENat.add_one_nat_le_withTop_of_lt hmn))).2 m
+  (contDiff_iff_iteratedDeriv.1 (h.of_le (ENat.add_one_natCast_le_withTop_of_lt hmn))).2 m
     (by exact_mod_cast (lt_add_one m))
 
 /-- The `n+1`-th iterated derivative can be obtained by differentiating the `n`-th
