@@ -52,10 +52,8 @@ namespace Algebra
 
 variable (R)
 
-/-- The norm of an element `s` of an `R`-algebra is the determinant of `(*) s`.
-
-This is a generalization of
-[Stacks: Definition 0BIF, second part](https://stacks.math.columbia.edu/tag/0BIF). -/
+/-- The norm of an element `s` of an `R`-algebra is the determinant of `(*) s`. -/
+@[stacks 0BIF "Norm"]
 noncomputable def norm : S →* R :=
   LinearMap.det.comp (lmul R S).toRingHom.toMonoidHom
 

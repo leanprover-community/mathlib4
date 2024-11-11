@@ -229,9 +229,8 @@ end
 
 variable (K) [Field K] [Fintype K]
 
-/-- The cardinality `q` is a power of the characteristic of `K`.
-
-  [Stacks: 09HY, first part](https://stacks.math.columbia.edu/tag/09HY)-/
+/-- The cardinality `q` is a power of the characteristic of `K`. -/
+@[stacks 09HY "first part"]
 theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : ℕ) := by
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime K p⟩
   letI : Module (ZMod p) K := { (ZMod.castHom dvd_rfl K : ZMod p →+* _).toModule with }

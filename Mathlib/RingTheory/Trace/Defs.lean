@@ -62,11 +62,8 @@ namespace Algebra
 variable (R S)
 
 /-- The trace of an element `s` of an `R`-algebra is the trace of `(s * ·)`,
-as an `R`-linear map.
-
-This is a generalization of
-[Stacks: Definition 0BIF, first part](https://stacks.math.columbia.edu/tag/0BIF) -/
---@[stacks 0BIF "Our definition is more general than the Stacks definition"]
+as an `R`-linear map. -/
+@[stacks 0BIF "Trace"]
 noncomputable def trace : S →ₗ[R] R :=
   (LinearMap.trace R S).comp (lmul R S).toLinearMap
 

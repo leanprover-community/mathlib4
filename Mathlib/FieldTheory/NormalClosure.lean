@@ -33,6 +33,7 @@ variable (F K L : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F 
   (Since the minimal polynomial of a transcendental element is 0,
   the normal closure of `K/F` is the same as the normal closure over `F`
   of the algebraic closure of `F` in `K`.) -/
+@[stacks 0BMF "Predicate version"]
 class IsNormalClosure : Prop where
   splits (x : K) : (minpoly F x).Splits (algebraMap F L)
   adjoin_rootSet : ⨆ x : K, adjoin F ((minpoly F x).rootSet L) = ⊤
@@ -40,6 +41,7 @@ class IsNormalClosure : Prop where
   this yet because `integralClosure F K` needs to have a `Field` instance. -/
 
 /-- The normal closure of `K/F` in `L/F`. -/
+@[stacks 0BMF]
 noncomputable def normalClosure : IntermediateField F L :=
   ⨆ f : K →ₐ[F] L, f.fieldRange
 
@@ -159,11 +161,13 @@ noncomputable def algHomEquiv : (K →ₐ[F] normalClosure F K L) ≃ (K →ₐ[
   left_inv _ := rfl
   right_inv _ := rfl
 
+@[stacks 0BMG "(1) normality."]
 instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
   obtain _ | φ := isEmpty_or_nonempty (K →ₐ[F] L)
   · rw [normalClosure, iSup_of_empty]; exact Normal.of_algEquiv (botEquiv F L).symm
   · exact (isNormalClosure_normalClosure F K L).normal
 
+@[stacks 0BMG "When `L` is normal over `K`, this agrees with 0BMG (1) finiteness."]
 instance is_finiteDimensional [FiniteDimensional F K] :
     FiniteDimensional F (normalClosure F K L) := by
   haveI : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f ↦

@@ -47,10 +47,8 @@ variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 /-! ### Primitive element theorem for finite fields -/
 
 
-/-- **Primitive element theorem** assuming E is finite.
-
-  [Stacks: 09HY, second part](https://stacks.math.columbia.edu/tag/09HY)
--/
+/-- **Primitive element theorem** assuming E is finite. -/
+@[stacks 09HY "second part"]
 theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α⟯ = ⊤ := by
   obtain ⟨α, hα⟩ := @IsCyclic.exists_generator Eˣ _ _
   use α
@@ -208,11 +206,8 @@ section SeparableAssumption
 variable [FiniteDimensional F E] [Algebra.IsSeparable F E]
 
 /-- **Primitive element theorem**: a finite separable field extension `E` of `F` has a
-  primitive element, i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`.
-
-  This theorem claims the 'Moreover' part of
-  [Stacks: Lemma 030N Part 2](https://stacks.math.columbia.edu/tag/030N)
-  -/
+  primitive element, i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`. -/
+@[stacks 030N "The moreover part"]
 theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
   rcases isEmpty_or_nonempty (Fintype F) with (F_inf | ⟨⟨F_finite⟩⟩)
   · let P : IntermediateField F E → Prop := fun K => ∃ α : E, F⟮α⟯ = K
@@ -341,11 +336,8 @@ theorem finite_intermediateField_of_exists_primitive_element [Algebra.IsAlgebrai
 
 /-- **Steinitz theorem**: an algebraic extension `E` of `F` has a
   primitive element (i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`)
-  if and only if there exist only finitely many intermediate fields between `E` and `F`.
-
-  This theorem claims the equivalence of (1) & (2)
-  [Stacks: Lemma 030N Part 1](https://stacks.math.columbia.edu/tag/030N)
--/
+  if and only if there exist only finitely many intermediate fields between `E` and `F`. -/
+@[stacks 030N "Equivalence of (1) & (2)"]
 theorem exists_primitive_element_iff_finite_intermediateField :
     (Algebra.IsAlgebraic F E ∧ ∃ α : E, F⟮α⟯ = ⊤) ↔ Finite (IntermediateField F E) :=
   ⟨fun ⟨_, h⟩ ↦ finite_intermediateField_of_exists_primitive_element F E h,
