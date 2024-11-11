@@ -200,7 +200,7 @@ section Mul
 variable [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 𝕜] [Mul 𝕜]
 
 /--
-The multiplication operation in incidence algebras is defined on an interval by summing over 
+The multiplication operation in incidence algebras is defined on an interval by summing over
 all divisions into two subintervals the product of the values of the original pair of functions.
 -/
 instance instMul : Mul (IncidenceAlgebra 𝕜 α) where
