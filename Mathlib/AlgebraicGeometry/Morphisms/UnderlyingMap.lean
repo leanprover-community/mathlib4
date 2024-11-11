@@ -191,4 +191,43 @@ lemma IsDominant.of_comp_of_isOpenImmersion
 
 end IsDominant
 
+section SpecializingMap
+
+open TopologicalSpace
+
+instance specializingMap_respectsIso : (topologically @SpecializingMap).RespectsIso := by
+  apply topologically_respectsIso
+  · introv
+    exact f.isClosedMap.specializingMap
+  · introv hf hg
+    exact hf.comp hg
+
+instance specializingMap_isLocalAtTarget : IsLocalAtTarget (topologically @SpecializingMap) := by
+  apply topologically_isLocalAtTarget
+  · introv _ _ hf
+    rw [specializingMap_iff_closure_singleton_subset] at hf ⊢
+    intro ⟨x, hx⟩ ⟨y, hy⟩ hcl
+    simp only [closure_subtype, Set.restrictPreimage_mk, Set.image_singleton] at hcl
+    obtain ⟨a, ha, hay⟩ := hf x hcl
+    rw [← specializes_iff_mem_closure] at hcl
+    exact ⟨⟨a, by simp [hay, hy]⟩, by simpa [closure_subtype], by simpa⟩
+  · introv hU _ hsp
+    simp_rw [specializingMap_iff_closure_singleton_subset] at hsp ⊢
+    intro x y hy
+    have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ trivial)
+    obtain ⟨i, hi⟩ := this
+    rw [← specializes_iff_mem_closure] at hy
+    have hfx : f x ∈ U i := (U i).2.stableUnderGeneralization hy hi
+    have hy : (⟨y, hi⟩ : U i) ∈ closure {⟨f x, hfx⟩} := by
+      simp only [closure_subtype, Set.image_singleton]
+      rwa [← specializes_iff_mem_closure]
+    obtain ⟨a, ha, hay⟩ := hsp i ⟨x, hfx⟩ hy
+    rw [closure_subtype] at ha
+    simp only [Opens.carrier_eq_coe, Set.image_singleton] at ha
+    apply_fun Subtype.val at hay
+    simp only [Opens.carrier_eq_coe, Set.restrictPreimage_coe] at hay
+    use a.val, ha, hay
+
+end SpecializingMap
+
 end AlgebraicGeometry

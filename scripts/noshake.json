@@ -164,6 +164,7 @@
   "Mathlib.Tactic.Simps.NotationClass",
   "Mathlib.Tactic.SplitIfs",
   "Mathlib.Tactic.Spread",
+  "Mathlib.Tactic.StacksAttribute",
   "Mathlib.Tactic.Substs",
   "Mathlib.Tactic.SuppressCompilation",
   "Mathlib.Tactic.SwapVar",
@@ -403,7 +404,6 @@
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
-  "Mathlib.CategoryTheory.Category.Basic": ["Mathlib.Tactic.StacksAttribute"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
   ["Mathlib.Tactic.CategoryTheory.ToApp"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Lax":
