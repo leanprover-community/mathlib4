@@ -264,7 +264,7 @@ theorem eval_surjective (n : ℕ) : Function.Surjective (eval I M n) := fun x �
 
 @[simp]
 theorem range_eval (n : ℕ) : LinearMap.range (eval I M n) = ⊤ :=
-  LinearMap.range_eq_top.2 (eval_surjective I M n)
+  LinearMap.range_eq_top_iff_surjective.2 (eval_surjective I M n)
 
 @[simp]
 theorem val_zero (n : ℕ) : (0 : AdicCompletion I M).val n = 0 :=

@@ -221,9 +221,9 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
   letI RX := MvPolynomial (Fin n) R
   letI AX := MvPolynomial (Fin n) A
   refine ⟨n, MvPolynomial.aeval (f ∘ X), ?_, ?_⟩
-  · rw [← Algebra.range_top_iff_surjective, ← Algebra.adjoin_range_eq_range_aeval,
+  · rw [← Algebra.range_eq_top_iff_surjective, ← Algebra.adjoin_range_eq_range_aeval,
       Set.range_comp f MvPolynomial.X, eq_top_iff, ← @adjoin_adjoin_of_tower R A B,
-      adjoin_image, adjoin_range_X, Algebra.map_top, (Algebra.range_top_iff_surjective _).mpr hf]
+      adjoin_image, adjoin_range_X, Algebra.map_top, (Algebra.range_eq_top_iff_surjective _).mpr hf]
     exact fun {x} => subset_adjoin ⟨⟩
   · obtain ⟨t, ht⟩ := FiniteType.out (R := R) (A := A)
     have := fun i : t => hf (algebraMap A B i)

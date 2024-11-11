@@ -283,7 +283,7 @@ lemma piEquiv_apply_apply (ι R M : Type*) [Fintype ι] [CommSemiring R]
 
 @[simp] lemma surjective_piEquiv_apply_iff (v : ι → M) :
     Surjective (piEquiv ι R M v) ↔ span R (range v) = ⊤ := by
-  rw [← LinearMap.range_eq_top, range_piEquiv]
+  rw [← LinearMap.range_eq_top_iff_surjective, range_piEquiv]
 
 end Module
 

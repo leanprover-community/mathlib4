@@ -235,7 +235,7 @@ theorem subgroup_closure_range_simple : Subgroup.closure (range cs.simple) = ⊤
   have : cs.simple = cs.mulEquiv.symm ∘ PresentedGroup.of := rfl
   rw [this, Set.range_comp, ← MulEquiv.coe_toMonoidHom, ← MonoidHom.map_closure,
     PresentedGroup.closure_range_of, ← MonoidHom.range_eq_map]
-  exact MonoidHom.range_top_of_surjective _ (MulEquiv.surjective _)
+  exact MonoidHom.range_eq_top_of_surjective _ (MulEquiv.surjective _)
 
 /-- The simple reflections of `W` generate `W` as a monoid. -/
 theorem submonoid_closure_range_simple : Submonoid.closure (range cs.simple) = ⊤ := by

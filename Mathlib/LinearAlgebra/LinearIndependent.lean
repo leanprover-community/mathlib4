@@ -815,8 +815,8 @@ def LinearIndependent.linearCombinationEquiv (hv : LinearIndependent R v) :
       rw [← Finsupp.range_linearCombination]
       rw [LinearMap.mem_range]
       apply mem_range_self l
-  · rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, LinearMap.map_codRestrict, ←
-      LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top]
+  · rw [← LinearMap.range_eq_top_iff_surjective, LinearMap.range_eq_map, LinearMap.map_codRestrict,
+      ← LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top]
     rw [Finsupp.range_linearCombination]
 
 @[deprecated (since := "2024-08-29")] noncomputable alias LinearIndependent.totalEquiv :=

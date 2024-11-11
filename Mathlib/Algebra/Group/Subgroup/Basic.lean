@@ -1433,16 +1433,16 @@ theorem map_range (g : N →* P) (f : G →* N) : f.range.map g = (g.comp f).ran
   rw [range_eq_map, range_eq_map]; exact (⊤ : Subgroup G).map_map g f
 
 @[to_additive]
-theorem range_top_iff_surjective {N} [Group N] {f : G →* N} :
+theorem range_eq_top_iff_surjective {N} [Group N] {f : G →* N} :
     f.range = (⊤ : Subgroup N) ↔ Function.Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_iff_surjective
 
 /-- The range of a surjective monoid homomorphism is the whole of the codomain. -/
 @[to_additive (attr := simp)
   "The range of a surjective `AddMonoid` homomorphism is the whole of the codomain."]
-theorem range_top_of_surjective {N} [Group N] (f : G →* N) (hf : Function.Surjective f) :
+theorem range_eq_top_of_surjective {N} [Group N] (f : G →* N) (hf : Function.Surjective f) :
     f.range = (⊤ : Subgroup N) :=
-  range_top_iff_surjective.2 hf
+  range_eq_top_iff_surjective.2 hf
 
 @[to_additive (attr := simp)]
 theorem range_one : (1 : G →* N).range = ⊥ :=
@@ -1694,7 +1694,7 @@ variable {N : Type*} [Group N] (H : Subgroup G)
 @[to_additive]
 theorem Normal.map {H : Subgroup G} (h : H.Normal) (f : G →* N) (hf : Function.Surjective f) :
     (H.map f).Normal := by
-  rw [← normalizer_eq_top, ← top_le_iff, ← f.range_top_of_surjective hf, f.range_eq_map, ←
+  rw [← normalizer_eq_top, ← top_le_iff, ← f.range_eq_top_of_surjective hf, f.range_eq_map, ←
     normalizer_eq_top.2 h]
   exact le_normalizer_map _
 
@@ -1755,7 +1755,7 @@ theorem map_comap_eq_self {f : G →* N} {H : Subgroup N} (h : H ≤ f.range) :
 @[to_additive]
 theorem map_comap_eq_self_of_surjective {f : G →* N} (h : Function.Surjective f) (H : Subgroup N) :
     map f (comap f H) = H :=
-  map_comap_eq_self ((range_top_of_surjective _ h).symm ▸ le_top)
+  map_comap_eq_self ((range_eq_top_of_surjective _ h).symm ▸ le_top)
 
 @[to_additive]
 theorem comap_le_comap_of_le_range {f : G →* N} {K L : Subgroup N} (hf : K ≤ f.range) :
@@ -1765,7 +1765,7 @@ theorem comap_le_comap_of_le_range {f : G →* N} {K L : Subgroup N} (hf : K ≤
 @[to_additive]
 theorem comap_le_comap_of_surjective {f : G →* N} {K L : Subgroup N} (hf : Function.Surjective f) :
     K.comap f ≤ L.comap f ↔ K ≤ L :=
-  comap_le_comap_of_le_range (le_top.trans (f.range_top_of_surjective hf).ge)
+  comap_le_comap_of_le_range (le_top.trans (f.range_eq_top_of_surjective hf).ge)
 
 @[to_additive]
 theorem comap_lt_comap_of_surjective {f : G →* N} {K L : Subgroup N} (hf : Function.Surjective f) :
@@ -1847,8 +1847,8 @@ theorem comap_sup_eq_of_le_range {H K : Subgroup N} (hH : H ≤ f.range) (hK : K
 @[to_additive]
 theorem comap_sup_eq (H K : Subgroup N) (hf : Function.Surjective f) :
     comap f H ⊔ comap f K = comap f (H ⊔ K) :=
-  comap_sup_eq_of_le_range f (le_top.trans (ge_of_eq (f.range_top_of_surjective hf)))
-    (le_top.trans (ge_of_eq (f.range_top_of_surjective hf)))
+  comap_sup_eq_of_le_range f (le_top.trans (ge_of_eq (f.range_eq_top_of_surjective hf)))
+    (le_top.trans (ge_of_eq (f.range_eq_top_of_surjective hf)))
 
 @[to_additive]
 theorem sup_subgroupOf_eq {H K L : Subgroup G} (hH : H ≤ L) (hK : K ≤ L) :
@@ -2309,7 +2309,7 @@ theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg 
     simp only [MonoidHom.codRestrict_apply, MulEquiv.coe_toMonoidHom, MulAut.conj_apply, coe_mk,
       MonoidHom.restrict_apply, Subtype.mk_eq_mk, ← mul_assoc, mul_inv_cancel, one_mul]
     rw [mul_assoc, mul_inv_cancel, mul_one]
-  rw [eq_top_iff, ← MonoidHom.range_top_of_surjective _ hs, MonoidHom.range_eq_map]
+  rw [eq_top_iff, ← MonoidHom.range_eq_top_of_surjective _ hs, MonoidHom.range_eq_map]
   refine le_trans (map_mono (eq_top_iff.1 ht)) (map_le_iff_le_comap.2 (normalClosure_le_normal ?_))
   rw [Set.singleton_subset_iff, SetLike.mem_coe]
   simp only [MonoidHom.codRestrict_apply, MulEquiv.coe_toMonoidHom, MulAut.conj_apply, coe_mk,

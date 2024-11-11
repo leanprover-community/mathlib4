@@ -115,7 +115,7 @@ instance isNoetherian_quotient {A M : Type*} [Ring A] [AddCommGroup M] [SMul R A
     [Module A M] [IsScalarTower R A M] (N : Submodule A M) [IsNoetherian R M] :
     IsNoetherian R (M ⧸ N) :=
   isNoetherian_of_surjective M ((Submodule.mkQ N).restrictScalars R) <|
-    LinearMap.range_eq_top.mpr N.mkQ_surjective
+    LinearMap.range_eq_top_iff_surjective.mpr N.mkQ_surjective
 
 @[deprecated (since := "2024-04-27"), nolint defLemma]
 alias Submodule.Quotient.isNoetherian := isNoetherian_quotient
@@ -425,7 +425,7 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
       change (∑ i ∈ s.attach, (c • f i) • _) = _
       simp only [smul_eq_mul, mul_smul]
       exact Finset.smul_sum.symm
-  · rw [LinearMap.range_eq_top]
+  · rw [LinearMap.range_eq_top_iff_surjective]
     rintro ⟨n, hn⟩
     change n ∈ N at hn
     rw [← hs, ← Set.image_id (s : Set M), Finsupp.mem_span_image_iff_linearCombination] at hn

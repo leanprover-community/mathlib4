@@ -142,7 +142,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
       rw [← LinearMap.ker_eq_bot]
       exact Submodule.ker_liftQ_eq_bot _ _ _ (le_refl _)
     have hs : Function.Surjective ((LinearMap.ker l).liftQ l (le_refl _)) := by
-      rw [← LinearMap.range_eq_top, Submodule.range_liftQ]
+      rw [← LinearMap.range_eq_top_iff_surjective, Submodule.range_liftQ]
       exact Submodule.eq_top_of_finrank_eq ((finrank_self 𝕜).symm ▸ this)
     let φ : (E ⧸ LinearMap.ker l) ≃ₗ[𝕜] 𝕜 :=
       LinearEquiv.ofBijective ((LinearMap.ker l).liftQ l (le_refl _)) ⟨hi, hs⟩
@@ -321,7 +321,7 @@ theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
 /-- A surjective linear map `f` with finite dimensional codomain is an open map. -/
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
     IsOpenMap f := by
-  rcases f.exists_rightInverse_of_surjective (LinearMap.range_eq_top.2 hf) with ⟨g, hg⟩
+  obtain ⟨g, hg⟩ := f.exists_rightInverse_of_surjective (LinearMap.range_eq_top_iff_surjective.2 hf)
   refine IsOpenMap.of_sections fun x => ⟨fun y => g (y - f x) + x, ?_, ?_, fun y => ?_⟩
   · exact
       ((g.continuous_of_finiteDimensional.comp <| continuous_id.sub continuous_const).add

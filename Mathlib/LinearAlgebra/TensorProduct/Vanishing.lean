@@ -106,7 +106,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
   set G : (ι →₀ R) →ₗ[R] M := Finsupp.linearCombination R m with hG
   have G_basis_eq (i : ι) : G (Finsupp.single i 1) = m i := by simp [hG, toModule_lof]
   have G_surjective : Surjective G := by
-    apply LinearMap.range_eq_top.mp
+    apply LinearMap.range_eq_top_iff_surjective.mp
     apply top_le_iff.mp
     rw [← hm]
     apply Submodule.span_le.mpr

@@ -489,12 +489,12 @@ theorem surjective_of_injective [FiniteDimensional K V] {f : V →ₗ[K] V} (hin
     Surjective f := by
   have h := rank_range_of_injective _ hinj
   rw [← finrank_eq_rank, ← finrank_eq_rank, Nat.cast_inj] at h
-  exact range_eq_top.1 (eq_top_of_finrank_eq h)
+  exact range_eq_top_iff_surjective.1 (eq_top_of_finrank_eq h)
 
 /-- The image under an onto linear map of a finite-dimensional space is also finite-dimensional. -/
 theorem finiteDimensional_of_surjective [FiniteDimensional K V] (f : V →ₗ[K] V₂)
     (hf : LinearMap.range f = ⊤) : FiniteDimensional K V₂ :=
-  Module.Finite.of_surjective f <| range_eq_top.1 hf
+  Module.Finite.of_surjective f <| range_eq_top_iff_surjective.1 hf
 
 /-- The range of a linear map defined on a finite-dimensional space is also finite-dimensional. -/
 instance finiteDimensional_range [FiniteDimensional K V] (f : V →ₗ[K] V₂) :
@@ -505,7 +505,7 @@ instance finiteDimensional_range [FiniteDimensional K V] (f : V →ₗ[K] V₂) 
 theorem injective_iff_surjective [FiniteDimensional K V] {f : V →ₗ[K] V} :
     Injective f ↔ Surjective f :=
   ⟨surjective_of_injective, fun hsurj =>
-    let ⟨g, hg⟩ := f.exists_rightInverse_of_surjective (range_eq_top.2 hsurj)
+    let ⟨g, hg⟩ := f.exists_rightInverse_of_surjective (range_eq_top_iff_surjective.2 hsurj)
     have : Function.RightInverse g f := LinearMap.ext_iff.1 hg
     (leftInverse_of_surjective_of_rightInverse (surjective_of_injective this.injective)
         this).injective⟩
@@ -519,7 +519,7 @@ lemma injOn_iff_surjOn {p : Submodule K V} [FiniteDimensional K p]
 
 theorem ker_eq_bot_iff_range_eq_top [FiniteDimensional K V] {f : V →ₗ[K] V} :
     LinearMap.ker f = ⊥ ↔ LinearMap.range f = ⊤ := by
-  rw [range_eq_top, ker_eq_bot, injective_iff_surjective]
+  rw [range_eq_top_iff_surjective, ker_eq_bot, injective_iff_surjective]
 
 /-- In a finite-dimensional space, if linear maps are inverse to each other on one side then they
 are also inverse to each other on the other side. -/
@@ -527,8 +527,8 @@ theorem mul_eq_one_of_mul_eq_one [FiniteDimensional K V] {f g : V →ₗ[K] V} (
     g * f = 1 := by
   have ginj : Injective g :=
     HasLeftInverse.injective ⟨f, fun x => show (f * g) x = (1 : V →ₗ[K] V) x by rw [hfg]⟩
-  let ⟨i, hi⟩ :=
-    g.exists_rightInverse_of_surjective (range_eq_top.2 (injective_iff_surjective.1 ginj))
+  let ⟨i, hi⟩ := g.exists_rightInverse_of_surjective
+    (range_eq_top_iff_surjective.2 (injective_iff_surjective.1 ginj))
   have : f * (g * i) = f * 1 := congr_arg _ hi
   rw [← mul_assoc, hfg, one_mul, mul_one] at this; rwa [← this]
 

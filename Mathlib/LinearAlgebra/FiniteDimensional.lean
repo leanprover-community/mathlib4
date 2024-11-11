@@ -145,7 +145,7 @@ theorem injective_iff_surjective_of_finrank_eq_finrank [FiniteDimensional K V]
     [FiniteDimensional K V₂] (H : finrank K V = finrank K V₂) {f : V →ₗ[K] V₂} :
     Function.Injective f ↔ Function.Surjective f := by
   have := finrank_range_add_finrank_ker f
-  rw [← ker_eq_bot, ← range_eq_top]; refine ⟨fun h => ?_, fun h => ?_⟩
+  rw [← ker_eq_bot, ← range_eq_top_iff_surjective]; refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [h, finrank_bot, add_zero, H] at this
     exact eq_top_of_finrank_eq this
   · rw [h, finrank_top, H] at this
@@ -154,7 +154,7 @@ theorem injective_iff_surjective_of_finrank_eq_finrank [FiniteDimensional K V]
 theorem ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank [FiniteDimensional K V]
     [FiniteDimensional K V₂] (H : finrank K V = finrank K V₂) {f : V →ₗ[K] V₂} :
     LinearMap.ker f = ⊥ ↔ LinearMap.range f = ⊤ := by
-  rw [range_eq_top, ker_eq_bot, injective_iff_surjective_of_finrank_eq_finrank H]
+  rw [range_eq_top_iff_surjective, ker_eq_bot, injective_iff_surjective_of_finrank_eq_finrank H]
 
 /-- Given a linear map `f` between two vector spaces with the same dimension, if
 `ker f = ⊥` then `linearEquivOfInjective` is the induced isomorphism

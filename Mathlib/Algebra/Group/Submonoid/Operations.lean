@@ -64,6 +64,8 @@ submonoid, range, product, map, comap
 
 assert_not_exists MonoidWithZero
 
+open Function
+
 variable {M N P : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass P] (S : Submonoid M)
 
 /-!
@@ -638,15 +640,15 @@ theorem map_mrange (g : N →* P) (f : M →* N) : f.mrange.map g = mrange (comp
   simpa only [mrange_eq_map] using (⊤ : Submonoid M).map_map g f
 
 @[to_additive]
-theorem mrange_top_iff_surjective {f : F} : mrange f = (⊤ : Submonoid N) ↔ Function.Surjective f :=
+theorem mrange_eq_top_iff_surjective {f : F} : mrange f = (⊤ : Submonoid N) ↔ Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_mrange, coe_top]) Set.range_iff_surjective
 
 /-- The range of a surjective monoid hom is the whole of the codomain. -/
 @[to_additive (attr := simp)
   "The range of a surjective `AddMonoid` hom is the whole of the codomain."]
-theorem mrange_top_of_surjective (f : F) (hf : Function.Surjective f) :
+theorem mrange_eq_top_of_surjective (f : F) (hf : Function.Surjective f) :
     mrange f = (⊤ : Submonoid N) :=
-  mrange_top_iff_surjective.2 hf
+  mrange_eq_top_iff_surjective.2 hf
 
 @[to_additive]
 theorem mclosure_preimage_le (f : F) (s : Set N) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
@@ -829,11 +831,11 @@ theorem mrange_inr' : mrange (inr M N) = comap (fst M N) ⊥ :=
 
 @[to_additive (attr := simp)]
 theorem mrange_fst : mrange (fst M N) = ⊤ :=
-  mrange_top_of_surjective (fst M N) <| @Prod.fst_surjective _ _ ⟨1⟩
+  mrange_eq_top_of_surjective (fst M N) <| @Prod.fst_surjective _ _ ⟨1⟩
 
 @[to_additive (attr := simp)]
 theorem mrange_snd : mrange (snd M N) = ⊤ :=
-  mrange_top_of_surjective (snd M N) <| @Prod.snd_surjective _ _ ⟨1⟩
+  mrange_eq_top_of_surjective (snd M N) <| @Prod.snd_surjective _ _ ⟨1⟩
 
 @[to_additive prod_eq_bot_iff]
 theorem prod_eq_bot_iff {s : Submonoid M} {t : Submonoid N} : s.prod t = ⊥ ↔ s = ⊥ ∧ t = ⊥ := by

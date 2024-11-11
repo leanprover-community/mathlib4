@@ -341,7 +341,7 @@ theorem fg_ker_comp {R M N P : Type*} [Ring R] [AddCommGroup M] [Module R M] [Ad
     (hsur : Function.Surjective f) : (g.comp f).ker.FG := by
   rw [LinearMap.ker_comp]
   apply fg_of_fg_map_of_fg_inf_ker f
-  · rwa [Submodule.map_comap_eq, LinearMap.range_eq_top.2 hsur, top_inf_eq]
+  · rwa [Submodule.map_comap_eq, LinearMap.range_eq_top_iff_surjective.2 hsur, top_inf_eq]
   · rwa [inf_of_le_right (show (LinearMap.ker f) ≤
       (LinearMap.ker g).comap f from comap_mono bot_le)]
 
@@ -575,7 +575,7 @@ variable (R M) in
 lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
   have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
   refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
-  rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
+  rw [← LinearMap.range_eq_top_iff_surjective, Basis.constr_range, hs]
 
 variable (R M) in
 theorem exists_comp_eq_id_of_projective [Module.Finite R M] [Projective R M] :
@@ -604,7 +604,7 @@ lemma _root_.Module.finite_iff_finite [Finite R] : Module.Finite R M ↔ Finite 
 theorem of_surjective [hM : Module.Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) :
     Module.Finite R N :=
   ⟨by
-    rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
+    rw [← LinearMap.range_eq_top_iff_surjective.2 hf, ← Submodule.map_top]
     exact hM.1.map f⟩
 
 instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
@@ -926,7 +926,7 @@ lemma Module.exists_surjective_quotient_of_finite :
     ∃ (I : Ideal R) (f : M →ₗ[R] R ⧸ I), I ≠ ⊤ ∧ Function.Surjective f := by
   obtain ⟨N, hN, ⟨x, hx⟩⟩ := Module.exists_isPrincipal_quotient_of_finite R M
   let f := (LinearMap.toSpanSingleton R _ x).quotKerEquivOfSurjective
-    (by rw [← LinearMap.range_eq_top, ← LinearMap.span_singleton_eq_range, hx])
+    (by rw [← LinearMap.range_eq_top_iff_surjective, ← LinearMap.span_singleton_eq_range, hx])
   refine ⟨_, f.symm.toLinearMap.comp N.mkQ, fun e ↦ ?_, f.symm.surjective.comp N.mkQ_surjective⟩
   obtain rfl : x = 0 := by simpa using LinearMap.congr_fun (LinearMap.ker_eq_top.mp e) 1
   rw [ne_eq, ← Submodule.subsingleton_quotient_iff_eq_top, ← not_nontrivial_iff_subsingleton,

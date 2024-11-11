@@ -284,7 +284,8 @@ theorem frontier_preimage (hsurj : Surjective f) (s : Set F) :
 theorem exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F)
     (hsurj : LinearMap.range f = ⊤) :
     ∃ fsymm : NonlinearRightInverse f, 0 < fsymm.nnnorm := by
-  choose C hC fsymm h using exists_preimage_norm_le _ (LinearMap.range_eq_top.mp hsurj)
+  choose C hC fsymm h using
+    exists_preimage_norm_le _ (LinearMap.range_eq_top_iff_surjective.1 hsurj)
   use {
       toFun := fsymm
       nnnorm := ⟨C, hC.lt.le⟩
@@ -376,7 +377,7 @@ noncomputable def ofBijective (f : E →SL[σ] F) (hinj : ker f = ⊥) (hsurj : 
     E ≃SL[σ] F :=
   (LinearEquiv.ofBijective ↑f
         ⟨LinearMap.ker_eq_bot.mp hinj,
-          LinearMap.range_eq_top.mp hsurj⟩).toContinuousLinearEquivOfContinuous
+          LinearMap.range_eq_top_iff_surjective.mp hsurj⟩).toContinuousLinearEquivOfContinuous
     -- Porting note: added `by convert`
     (by convert f.continuous)
 
@@ -406,7 +407,7 @@ lemma _root_.ContinuousLinearMap.isUnit_iff_bijective {f : E →L[𝕜] E} :
   · rintro ⟨f, rfl⟩
     exact ofUnit f |>.bijective
   · refine fun h ↦ ⟨toUnit <| .ofBijective f ?_ ?_, rfl⟩ <;>
-    simp only [LinearMap.range_eq_top, LinearMapClass.ker_eq_bot, h.1, h.2]
+    simp only [LinearMap.range_eq_top_iff_surjective, LinearMapClass.ker_eq_bot, h.1, h.2]
 
 end ContinuousLinearEquiv
 
@@ -557,8 +558,8 @@ lemma bijective_iff_dense_range_and_antilipschitz (f : E →SL[σ] F) :
   case eq_top => simpa [SetLike.ext'_iff] using h.2.denseRange.closure_eq
   case anti =>
     refine ⟨_, ContinuousLinearEquiv.ofBijective f ?_ ?_ |>.antilipschitz⟩ <;>
-    simp only [LinearMap.range_eq_top, LinearMapClass.ker_eq_bot, h.1, h.2]
-  case surj => rwa [← LinearMap.range_eq_top, ← closed_range_of_antilipschitz hf]
+    simp only [LinearMap.range_eq_top_iff_surjective, LinearMapClass.ker_eq_bot, h.1, h.2]
+  case surj => rwa [← LinearMap.range_eq_top_iff_surjective, ← closed_range_of_antilipschitz hf]
 
 end ContinuousLinearMap
 

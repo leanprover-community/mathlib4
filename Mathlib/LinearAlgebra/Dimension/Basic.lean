@@ -321,7 +321,7 @@ variable {R M}
 
 theorem rank_range_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
     Module.rank R (LinearMap.range f) = Module.rank R M' := by
-  rw [LinearMap.range_eq_top.2 h, rank_top]
+  rw [LinearMap.range_eq_top_iff_surjective.2 h, rank_top]
 
 theorem Submodule.rank_le (s : Submodule R M) : Module.rank R s ≤ Module.rank R M := by
   rw [← rank_top R M]

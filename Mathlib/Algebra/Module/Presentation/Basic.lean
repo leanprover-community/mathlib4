@@ -273,7 +273,7 @@ lemma surjective_fromQuotient_iff_surjective_π :
 lemma surjective_π_iff_span_eq_top :
     Function.Surjective solution.π ↔
       Submodule.span A (Set.range solution.var) = ⊤ := by
-  rw [← LinearMap.range_eq_top, range_π]
+  rw [← LinearMap.range_eq_top_iff_surjective, range_π]
 
 end
 

@@ -110,7 +110,7 @@ theorem Basis.le_span'' {ι : Type*} [Fintype ι] (b : Basis ι R M) {w : Set M}
   · exact b.repr.toLinearMap.comp (Finsupp.linearCombination R (↑))
   · apply Surjective.comp (g := b.repr.toLinearMap)
     · apply LinearEquiv.surjective
-    rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
+    rw [← LinearMap.range_eq_top_iff_surjective, Finsupp.range_linearCombination]
     simpa using s
 
 /--

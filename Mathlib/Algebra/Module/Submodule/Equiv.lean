@@ -112,12 +112,12 @@ theorem ofTop_symm_apply {h} (x : M) : (ofTop p h).symm x = ⟨x, h.symm ▸ tri
 
 @[simp]
 protected theorem range : LinearMap.range (e : M →ₛₗ[σ₁₂] M₂) = ⊤ :=
-  LinearMap.range_eq_top.2 e.toEquiv.surjective
+  LinearMap.range_eq_top_iff_surjective.2 e.toEquiv.surjective
 
 @[simp]
 protected theorem _root_.LinearEquivClass.range [Module R M] [Module R₂ M₂] {F : Type*}
     [EquivLike F M M₂] [SemilinearEquivClass F σ₁₂ M M₂] (e : F) : LinearMap.range e = ⊤ :=
-  LinearMap.range_eq_top.2 (EquivLike.surjective e)
+  LinearMap.range_eq_top_iff_surjective.2 (EquivLike.surjective e)
 
 theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Submodule R₂ M₂)) : p = ⊥ := by
   refine bot_unique (SetLike.le_def.2 fun b hb => (Submodule.mem_bot R).2 ?_)
@@ -182,7 +182,8 @@ lemma ofInjective_symm_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair 
 /-- A bijective linear map is a linear equivalence. -/
 noncomputable def ofBijective [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] (hf : Bijective f) :
     M ≃ₛₗ[σ₁₂] M₂ :=
-  (ofInjective f hf.injective).trans (ofTop _ <| LinearMap.range_eq_top.2 hf.surjective)
+  (ofInjective f hf.injective).trans <| ofTop _ <|
+    LinearMap.range_eq_top_iff_surjective.2 hf.surjective
 
 @[simp]
 theorem ofBijective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {hf} (x : M) :

@@ -76,9 +76,9 @@ theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
       intro x; obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
       rw [← this, LinearMap.comp_apply]; exact ⟨_, rfl⟩
     apply_fun Submodule.map f at hN
-    rwa [← Submodule.map_comp, this, Submodule.map_top, LinearMap.range_eq_top.mpr hf,
+    rwa [← Submodule.map_comp, this, Submodule.map_top, LinearMap.range_eq_top_iff_surjective.2 hf,
       map_mkQ_eq_top] at hN
-  · rintro rfl; rw [Submodule.map_top, LinearMap.range_eq_top]
+  · rintro rfl; rw [Submodule.map_top, LinearMap.range_eq_top_iff_surjective]
     exact TensorProduct.mk_surjective R M k Ideal.Quotient.mk_surjective
 
 theorem subsingleton_tensorProduct [Module.Finite R M] :
@@ -154,7 +154,7 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
   -- By choosing an arbitrary lift of `b` to `I → M`, we get a surjection `i : Rᴵ → M`.
   let i := Finsupp.linearCombination R (f ∘ b)
   have hi : Surjective i := by
-    rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
+    rw [← LinearMap.range_eq_top_iff_surjective, Finsupp.range_linearCombination]
     exact LocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := f ∘ b) b (fun _ ↦ hf _)
   have : Module.Finite R (LinearMap.ker i) := by
     constructor
@@ -173,7 +173,7 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
       ← Submodule.finrank_eq_zero (R := k) (M := k ⊗[R] (I →₀ R)),
       ← Nat.add_right_inj (n := Module.finrank k (LinearMap.range <| i.baseChange k)),
       LinearMap.finrank_range_add_finrank_ker (V := k ⊗[R] (I →₀ R)),
-      LinearMap.range_eq_top.mpr this, finrank_top]
+      LinearMap.range_eq_top_iff_surjective.mpr this, finrank_top]
     simp only [Module.finrank_tensorProduct, Module.finrank_self,
       Module.finrank_finsupp_self, one_mul, add_zero]
     rw [Module.finrank_eq_card_chooseBasisIndex]

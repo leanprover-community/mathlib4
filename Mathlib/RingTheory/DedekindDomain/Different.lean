@@ -108,8 +108,8 @@ lemma traceDual_top [Decidable (IsField A)] :
     (⊤ : Submodule B L)ᵛ = if IsField A then ⊤ else ⊥ := by
   convert traceDual_top'
   rw [← IsFractionRing.surjective_iff_isField (R := A) (K := K),
-    LinearMap.range_eq_top.mpr (Algebra.trace_surjective K L),
-    ← RingHom.range_top_iff_surjective, _root_.eq_top_iff]
+    LinearMap.range_eq_top_iff_surjective.mpr (Algebra.trace_surjective K L),
+    ← RingHom.range_eq_top_iff_surjective, _root_.eq_top_iff]
   simp [SetLike.le_def]
 
 end Submodule

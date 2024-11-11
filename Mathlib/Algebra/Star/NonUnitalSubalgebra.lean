@@ -828,7 +828,7 @@ def toTop : A →⋆ₙₐ[R] (⊤ : NonUnitalStarSubalgebra R A) :=
 
 end StarSubAlgebraA
 
-theorem range_top_iff_surjective [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
+theorem range_eq_top_iff_surjective [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
     (f : F) : NonUnitalStarAlgHom.range f = (⊤ : NonUnitalStarSubalgebra R B) ↔
       Function.Surjective f :=
   NonUnitalStarAlgebra.eq_top_iff

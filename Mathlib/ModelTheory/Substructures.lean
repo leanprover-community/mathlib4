@@ -798,7 +798,7 @@ theorem range_comp (f : M →[L] N) (g : N →[L] P) : range (g.comp f : M →[L
 theorem range_comp_le_range (f : M →[L] N) (g : N →[L] P) : range (g.comp f : M →[L] P) ≤ range g :=
   SetLike.coe_mono (Set.range_comp_subset_range f g)
 
-theorem range_eq_top {f : M →[L] N} : range f = ⊤ ↔ Function.Surjective f := by
+theorem range_eq_top_iff_surjective {f : M →[L] N} : range f = ⊤ ↔ Function.Surjective f := by
   rw [SetLike.ext'_iff, range_coe, coe_top, Set.range_iff_surjective]
 
 theorem range_le_iff_comap {f : M →[L] N} {p : L.Substructure N} : range f ≤ p ↔ comap f p = ⊤ := by

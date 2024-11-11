@@ -31,7 +31,7 @@ Note that continuity of this map comes for free, because `mk` is a topology indu
 theorem exists_out_continuousLinearMap :
     ∃ f : SeparationQuotient E →L[K] E, mkCLM K E ∘L f = .id K (SeparationQuotient E) := by
   rcases (mkCLM K E).toLinearMap.exists_rightInverse_of_surjective
-    (LinearMap.range_eq_top.mpr surjective_mk) with ⟨f, hf⟩
+    (LinearMap.range_eq_top_iff_surjective.mpr surjective_mk) with ⟨f, hf⟩
   replace hf : mk ∘ f = id := congr_arg DFunLike.coe hf
   exact ⟨⟨f, isInducing_mk.continuous_iff.2 (by continuity)⟩, DFunLike.ext' hf⟩
 

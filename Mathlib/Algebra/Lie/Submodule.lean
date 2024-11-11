@@ -1078,13 +1078,13 @@ theorem ker_eq_bot : f.ker = ⊥ ↔ Function.Injective f := by
 theorem range_coeSubmodule : (f.range : Submodule R L') = LinearMap.range (f : L →ₗ[R] L') :=
   rfl
 
-theorem range_eq_top : f.range = ⊤ ↔ Function.Surjective f := by
+theorem range_eq_top_iff_surjective : f.range = ⊤ ↔ Function.Surjective f := by
   rw [← LieSubalgebra.coe_to_submodule_eq_iff, range_coeSubmodule, LieSubalgebra.top_coe_submodule]
-  exact LinearMap.range_eq_top
+  exact LinearMap.range_eq_top_iff_surjective
 
 @[simp]
 theorem idealRange_eq_top_of_surjective (h : Function.Surjective f) : f.idealRange = ⊤ := by
-  rw [← f.range_eq_top] at h
+  rw [← f.range_eq_top_iff_surjective] at h
   rw [idealRange_eq_lieSpan_range, h, ← LieSubalgebra.coe_to_submodule, ←
     LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.top_coeSubmodule,
     LieSubalgebra.top_coe_submodule, LieSubmodule.coe_lieSpan_submodule_eq_iff]
@@ -1092,7 +1092,7 @@ theorem idealRange_eq_top_of_surjective (h : Function.Surjective f) : f.idealRan
   exact LieSubmodule.top_coeSubmodule
 
 theorem isIdealMorphism_of_surjective (h : Function.Surjective f) : f.IsIdealMorphism := by
-  rw [isIdealMorphism_def, f.idealRange_eq_top_of_surjective h, f.range_eq_top.mpr h,
+  rw [isIdealMorphism_def, f.idealRange_eq_top_of_surjective h, f.range_eq_top_iff_surjective.mpr h,
     LieIdeal.top_coe_lieSubalgebra]
 
 end LieHom
@@ -1289,7 +1289,7 @@ theorem mem_range (n : N) : n ∈ f.range ↔ ∃ m, f m = n :=
 @[simp]
 theorem map_top : LieSubmodule.map f ⊤ = f.range := by ext; simp [LieSubmodule.mem_map]
 
-theorem range_eq_top : f.range = ⊤ ↔ Function.Surjective f := by
+theorem range_eq_top_iff_surjective : f.range = ⊤ ↔ Function.Surjective f := by
   rw [SetLike.ext'_iff, coe_range, LieSubmodule.top_coe, Set.range_iff_surjective]
 
 /-- A morphism of Lie modules `f : M → N` whose values lie in a Lie submodule `P ⊆ N` can be
@@ -1374,7 +1374,7 @@ variable {R L}
 @[simp] lemma LieModuleEquiv.range_coe {M' : Type*}
     [AddCommGroup M'] [Module R M'] [LieRingModule L M'] (e : M ≃ₗ⁅R,L⁆ M') :
     LieModuleHom.range (e : M →ₗ⁅R,L⁆ M') = ⊤ := by
-  rw [LieModuleHom.range_eq_top]
+  rw [LieModuleHom.range_eq_top_iff_surjective]
   exact e.surjective
 
 variable [LieAlgebra R L] [LieModule R L M]

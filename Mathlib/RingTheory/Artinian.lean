@@ -287,7 +287,7 @@ theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective 
   obtain ⟨n, hn⟩ := eventually_atTop.mp f.eventually_codisjoint_ker_pow_range_pow
   specialize hn (n + 1) (n.le_add_right 1)
   rw [codisjoint_iff, LinearMap.ker_eq_bot.mpr (LinearMap.iterate_injective s _), bot_sup_eq,
-    LinearMap.range_eq_top] at hn
+    LinearMap.range_eq_top_iff_surjective] at hn
   exact LinearMap.surjective_of_iterate_surjective n.succ_ne_zero hn
 
 /-- Any injective endomorphism of an Artinian module is bijective. -/
@@ -378,7 +378,7 @@ theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M
   have : ∀ x ∈ s, x ∈ N := fun x hx => hs ▸ Submodule.subset_span hx
   refine @isArtinian_of_surjective _ ((↑s : Set M) →₀ R) N _ _ _ _ _ ?_ ?_ isArtinian_finsupp
   · exact Finsupp.linearCombination R (fun i => ⟨i, hs ▸ subset_span i.2⟩)
-  · rw [← LinearMap.range_eq_top, eq_top_iff,
+  · rw [← LinearMap.range_eq_top_iff_surjective, eq_top_iff,
        ← map_le_map_iff_of_injective (show Injective (Submodule.subtype N)
          from Subtype.val_injective), Submodule.map_top, range_subtype,
          ← Submodule.map_top, ← Submodule.map_comp, Submodule.map_top]

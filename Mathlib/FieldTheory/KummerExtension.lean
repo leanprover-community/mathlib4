@@ -422,7 +422,7 @@ def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducib
     haveI := Fact.mk H
     letI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
     refine ⟨(AlgHom.toRingHom _).injective, ?_⟩
-    rw [← Algebra.range_top_iff_surjective, ← IsSplittingField.adjoin_rootSet _ (X ^ n - C a),
+    rw [← Algebra.range_eq_top_iff_surjective, ← IsSplittingField.adjoin_rootSet _ (X ^ n - C a),
       eq_comm, adjoin_rootSet_eq_range, IsSplittingField.adjoin_rootSet]
     exact IsSplittingField.splits _ _
 
@@ -440,7 +440,7 @@ lemma Algebra.adjoin_root_eq_top_of_isSplittingField :
     Algebra.adjoin K {α} = ⊤ := by
   apply Subalgebra.map_injective (f := (adjoinRootXPowSubCEquiv hζ H hα).symm)
     (adjoinRootXPowSubCEquiv hζ H hα).symm.injective
-  rw [Algebra.map_top, (Algebra.range_top_iff_surjective _).mpr
+  rw [Algebra.map_top, (Algebra.range_eq_top_iff_surjective _).mpr
     (adjoinRootXPowSubCEquiv hζ H hα).symm.surjective, AlgHom.map_adjoin,
     Set.image_singleton, AlgHom.coe_coe, adjoinRootXPowSubCEquiv_symm_eq_root, adjoinRoot_eq_top]
 

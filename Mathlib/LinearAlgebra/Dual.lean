@@ -377,7 +377,7 @@ variable [Finite ι]
 
 /-- A vector space is linearly equivalent to its dual space. -/
 def toDualEquiv : M ≃ₗ[R] Dual R M :=
-  LinearEquiv.ofBijective b.toDual ⟨ker_eq_bot.mp b.toDual_ker, range_eq_top.mp b.toDual_range⟩
+  .ofBijective b.toDual ⟨ker_eq_bot.mp b.toDual_ker, range_eq_top_iff_surjective.mp b.toDual_range⟩
 
 -- `simps` times out when generating this
 @[simp]
@@ -589,14 +589,14 @@ lemma bijective_dual_eval [IsReflexive R M] : Bijective (Dual.eval R M) :=
 /-- See also `Module.instFiniteDimensionalOfIsReflexive` for the converse over a field. -/
 instance (priority := 900) IsReflexive.of_finite_of_free [Module.Finite R M] [Free R M] :
     IsReflexive R M where
-  bijective_dual_eval' := ⟨LinearMap.ker_eq_bot.mp (Free.chooseBasis R M).eval_ker,
-                           LinearMap.range_eq_top.mp (Free.chooseBasis R M).eval_range⟩
+  bijective_dual_eval'.left := ker_eq_bot.mp (Free.chooseBasis R M).eval_ker
+  bijective_dual_eval'.right := range_eq_top_iff_surjective.mp (Free.chooseBasis R M).eval_range
 
 variable [IsReflexive R M]
 
 -- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 theorem erange_coe : LinearMap.range (eval R M) = ⊤ :=
-  range_eq_top.mpr (bijective_dual_eval _ _).2
+  range_eq_top_iff_surjective.mpr (bijective_dual_eval _ _).2
 
 /-- The bijection between a reflexive module and its double dual, bundled as a `LinearEquiv`. -/
 def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
@@ -1414,7 +1414,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
     (hf : Function.Surjective f.range.subtype.dualMap) :
     LinearMap.range f.dualMap = f.ker.dualAnnihilator := by
   have rr_surj : Function.Surjective f.rangeRestrict := by
-    rw [← range_eq_top, range_rangeRestrict]
+    rw [← range_eq_top_iff_surjective, range_rangeRestrict]
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
   convert this using 1
   -- Porting note (#11036): broken dot notation lean4#1910
@@ -1422,7 +1422,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
       _ = range ((range f).subtype.comp f.rangeRestrict).dualMap := by simp
       _ = _ := ?_
     rw [← dualMap_comp_dualMap, range_comp_of_range_eq_top]
-    rwa [range_eq_top]
+    rwa [range_eq_top_iff_surjective]
   · apply congr_arg
     exact (ker_rangeRestrict f).symm
 
@@ -1523,7 +1523,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker (f : V₁ →ₗ[K] V₂) :
 @[simp]
 theorem dualMap_surjective_iff {f : V₁ →ₗ[K] V₂} :
     Function.Surjective f.dualMap ↔ Function.Injective f := by
-  rw [← LinearMap.range_eq_top, range_dualMap_eq_dualAnnihilator_ker,
+  rw [← LinearMap.range_eq_top_iff_surjective, range_dualMap_eq_dualAnnihilator_ker,
       ← Submodule.dualAnnihilator_bot, Subspace.dualAnnihilator_inj, LinearMap.ker_eq_bot]
 
 end LinearMap
@@ -1624,16 +1624,16 @@ theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
     finrank K (LinearMap.range f.dualMap) = finrank K (LinearMap.range f) := by
   rw [congr_arg dualMap (show f = (range f).subtype.comp f.rangeRestrict by rfl),
     ← dualMap_comp_dualMap, range_comp,
-    range_eq_top.mpr (dualMap_surjective_of_injective (range f).injective_subtype),
+    range_eq_top_iff_surjective.mpr (dualMap_surjective_of_injective (range f).injective_subtype),
     Submodule.map_top, finrank_range_of_inj, Subspace.dual_finrank_eq]
-  exact dualMap_injective_of_surjective (range_eq_top.mp f.range_rangeRestrict)
+  exact dualMap_injective_of_surjective (range_eq_top_iff_surjective.mp f.range_rangeRestrict)
 
 /-- `f.dualMap` is injective if and only if `f` is surjective -/
 @[simp]
 theorem dualMap_injective_iff {f : V₁ →ₗ[K] V₂} :
     Function.Injective f.dualMap ↔ Function.Surjective f := by
   refine ⟨Function.mtr fun not_surj inj ↦ ?_, dualMap_injective_of_surjective⟩
-  rw [← range_eq_top, ← Ne, ← lt_top_iff_ne_top] at not_surj
+  rw [← range_eq_top_iff_surjective, ← Ne, ← lt_top_iff_ne_top] at not_surj
   obtain ⟨φ, φ0, range_le_ker⟩ := (range f).exists_le_ker_of_lt_top not_surj
   exact φ0 (inj <| ext fun x ↦ range_le_ker ⟨x, rfl⟩)
 

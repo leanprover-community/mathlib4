@@ -527,7 +527,7 @@ lemma eq_nil_of_isRegular_on_artinian [IsArtinian R M] :
     rw [isRegular_iff, ne_comm, ← lt_top_iff_ne_top, Ideal.ofList_cons,
       sup_smul, ideal_span_singleton_smul, isWeaklyRegular_cons_iff] at h
     refine absurd ?_ (ne_of_lt (lt_of_le_of_lt le_sup_left h.right))
-    exact Eq.trans (Submodule.map_top _) <| LinearMap.range_eq_top.mpr <|
+    exact Eq.trans (Submodule.map_top _) <| LinearMap.range_eq_top_iff_surjective.mpr <|
       surjective_of_injective_endomorphism (LinearMap.lsmul R M r) h.left.left
 
 lemma IsWeaklyRegular.isWeaklyRegular_lTensor [Module.Flat R M₂]

@@ -58,7 +58,7 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
             Finsupp.basisSingleOne
         f := Finsupp.basisSingleOne.constr ℕ _root_.id
         epi := (epi_iff_range_eq_top _).mpr
-            (range_eq_top.2 fun m => ⟨Finsupp.single m (1 : R), by
+            (range_eq_top_iff_surjective.2 fun m => ⟨Finsupp.single m (1 : R), by
               -- Porting note: simp [Finsupp.linearCombination_single] fails but rw succeeds
               dsimp [Basis.constr]
               simp only [Finsupp.lmapDomain_id, comp_id]

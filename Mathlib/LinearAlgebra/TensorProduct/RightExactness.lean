@@ -129,9 +129,9 @@ theorem LinearMap.lTensor_range :
   nth_rewrite 1 [this]
   rw [lTensor_comp]
   apply range_comp_of_range_eq_top
-  rw [range_eq_top]
+  rw [range_eq_top_iff_surjective]
   apply lTensor_surjective
-  rw [← range_eq_top, range_rangeRestrict]
+  rw [← range_eq_top_iff_surjective, range_rangeRestrict]
 
 /-- If `g` is surjective, then `rTensor Q g` is surjective -/
 theorem LinearMap.rTensor_surjective (hg : Function.Surjective g) :
@@ -154,9 +154,9 @@ theorem LinearMap.rTensor_range :
   nth_rewrite 1 [this]
   rw [rTensor_comp]
   apply range_comp_of_range_eq_top
-  rw [range_eq_top]
+  rw [range_eq_top_iff_surjective]
   apply rTensor_surjective
-  rw [← range_eq_top, range_rangeRestrict]
+  rw [← range_eq_top_iff_surjective, range_rangeRestrict]
 
 lemma LinearMap.rTensor_exact_iff_lTensor_exact :
     Function.Exact (f.rTensor Q) (g.rTensor Q) ↔
@@ -411,7 +411,7 @@ theorem TensorProduct.map_ker :
     Submodule.map_top]
   rw [← lTensor_comp_rTensor, range_eq_map, Submodule.map_comp,
     Submodule.map_top]
-  rw [range_eq_top.mpr (rTensor_surjective M' hg), Submodule.map_top]
+  rw [range_eq_top_iff_surjective.mpr (rTensor_surjective M' hg), Submodule.map_top]
   rw [Exact.linearMap_ker_eq (lTensor_exact P hfg' hg')]
 
 variable (M)
@@ -420,7 +420,7 @@ variable (R) in
 theorem TensorProduct.mk_surjective (S) [Semiring S] [Algebra R S]
     (h : Surjective (algebraMap R S)) :
     Surjective (TensorProduct.mk R S M 1) := by
-  rw [← LinearMap.range_eq_top, ← top_le_iff, ← TensorProduct.span_tmul_eq_top, Submodule.span_le]
+  rw [← LinearMap.range_eq_top_iff_surjective, ← top_le_iff, ← span_tmul_eq_top, Submodule.span_le]
   rintro _ ⟨x, y, rfl⟩
   obtain ⟨x, rfl⟩ := h x
   rw [Algebra.algebraMap_eq_smul_one, smul_tmul]

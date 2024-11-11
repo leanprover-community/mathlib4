@@ -281,7 +281,7 @@ theorem IsHilbertSum.mk [∀ i, CompleteSpace <| G i] (hVortho : OrthogonalFamil
   { OrthogonalFamily := hVortho
     surjective_isometry := by
       rw [← LinearIsometry.coe_toLinearMap]
-      exact LinearMap.range_eq_top.mp
+      exact LinearMap.range_eq_top_iff_surjective.mp
         (eq_top_iff.mpr <| hVtotal.trans_eq hVortho.range_linearIsometry.symm) }
 
 /-- This is `Orthonormal.isHilbertSum` in the case of actual inclusions from subspaces. -/

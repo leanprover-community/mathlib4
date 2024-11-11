@@ -336,7 +336,7 @@ theorem restrictDom_comp_subtype (s : Set α) [DecidablePred (· ∈ s)] :
 
 theorem range_restrictDom (s : Set α) [DecidablePred (· ∈ s)] :
     LinearMap.range (restrictDom M R s) = ⊤ :=
-  range_eq_top.2 <|
+  range_eq_top_iff_surjective.2 <|
     Function.RightInverse.surjective <| LinearMap.congr_fun (restrictDom_comp_subtype s)
 
 theorem supported_mono {s t : Set α} (st : s ⊆ t) : supported M R s ≤ supported M R t := fun _ h =>
@@ -669,7 +669,7 @@ theorem linearCombination_surjective (h : Function.Surjective v) :
 
 theorem linearCombination_range (h : Function.Surjective v) :
     LinearMap.range (linearCombination R v) = ⊤ :=
-  range_eq_top.2 <| linearCombination_surjective R h
+  range_eq_top_iff_surjective.2 <| linearCombination_surjective R h
 
 @[deprecated (since := "2024-08-29")] alias total_range := linearCombination_range
 

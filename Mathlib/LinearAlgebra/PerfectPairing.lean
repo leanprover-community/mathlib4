@@ -245,7 +245,7 @@ private lemma restrictScalarsAux_surjective
       (p.toDualLeft (i m)).restrictScalars S ∘ₗ j = Algebra.linearMap S R ∘ₗ g)
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
     Surjective (p.restrictScalarsAux i j hp) := by
-  rw [← LinearMap.range_eq_top]
+  rw [← LinearMap.range_eq_top_iff_surjective]
   refine Submodule.eq_top_iff'.mpr fun g : Module.Dual S N' ↦ ?_
   obtain ⟨m, hm⟩ := h g
   refine ⟨m, ?_⟩
