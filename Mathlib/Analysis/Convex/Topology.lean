@@ -116,6 +116,9 @@ theorem isClosed_closedConvexHull {s : Set E} :
 theorem subset_closedConvexHull {s : Set E} : s ⊆ closedConvexHull 𝕜 s :=
   (closedConvexHull 𝕜).le_closure s
 
+theorem closure_subset_convexClosedHull {s : Set E} : closure s ⊆ closedConvexHull 𝕜 s :=
+  closure_minimal subset_closedConvexHull isClosed_closedConvexHull
+
 theorem closedConvexHull_min {s t : Set E} (hst : s ⊆ t) (h_conv : Convex 𝕜 t)
     (h_closed : IsClosed t) : closedConvexHull 𝕜 s ⊆ t :=
   (closedConvexHull 𝕜).closure_min hst ⟨h_conv, h_closed⟩
