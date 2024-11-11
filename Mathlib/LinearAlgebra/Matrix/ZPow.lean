@@ -110,12 +110,14 @@ theorem _root_.IsUnit.det_zpow {A : M} (h : IsUnit A.det) (n : ℤ) : IsUnit (A 
   · simpa using h.pow n.succ
 
 theorem isUnit_det_zpow_iff {A : M} {z : ℤ} : IsUnit (A ^ z).det ↔ IsUnit A.det ∨ z = 0 := by
-  induction' z using Int.induction_on with z _ z _
-  · simp
-  · rw [← Int.ofNat_succ, zpow_natCast, det_pow, isUnit_pow_succ_iff, ← Int.ofNat_zero,
+  induction z using Int.induction_on with
+  | hz => simp
+  | hp z =>
+    rw [← Int.ofNat_succ, zpow_natCast, det_pow, isUnit_pow_succ_iff, ← Int.ofNat_zero,
       Int.ofNat_inj]
     simp
-  · rw [← neg_add', ← Int.ofNat_succ, zpow_neg_natCast, isUnit_nonsing_inv_det_iff, det_pow,
+  | hn z =>
+    rw [← neg_add', ← Int.ofNat_succ, zpow_neg_natCast, isUnit_nonsing_inv_det_iff, det_pow,
       isUnit_pow_succ_iff, neg_eq_zero, ← Int.ofNat_zero, Int.ofNat_inj]
     simp
 
@@ -216,7 +218,7 @@ theorem zpow_add_one_of_ne_neg_one {A : M} : ∀ n : ℤ, n ≠ -1 → A ^ (n + 
     rcases nonsing_inv_cancel_or_zero A with (⟨h, _⟩ | h)
     · apply zpow_add_one (isUnit_det_of_left_inverse h)
     · show A ^ (-((n + 1 : ℕ) : ℤ)) = A ^ (-((n + 2 : ℕ) : ℤ)) * A
-      simp_rw [zpow_neg_natCast, ← inv_pow', h, zero_pow $ Nat.succ_ne_zero _, zero_mul]
+      simp_rw [zpow_neg_natCast, ← inv_pow', h, zero_pow <| Nat.succ_ne_zero _, zero_mul]
 
 theorem zpow_mul (A : M) (h : IsUnit A.det) : ∀ m n : ℤ, A ^ (m * n) = (A ^ m) ^ n
   | (m : ℕ), (n : ℕ) => by rw [zpow_natCast, zpow_natCast, ← pow_mul, ← zpow_natCast, Int.ofNat_mul]

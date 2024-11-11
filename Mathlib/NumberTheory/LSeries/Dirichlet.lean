@@ -105,6 +105,21 @@ local notation (name := Dchar_one) "χ₁" => (1 : DirichletCharacter ℂ 1)
 
 namespace DirichletCharacter
 
+open ArithmeticFunction in
+/-- The arithmetic function associated to a Dirichlet character is multiplicative. -/
+lemma isMultiplicative_toArithmeticFunction {N : ℕ} {R : Type*} [CommMonoidWithZero R]
+    (χ : DirichletCharacter R N) :
+    (toArithmeticFunction (χ ·)).IsMultiplicative := by
+  refine IsMultiplicative.iff_ne_zero.mpr ⟨?_, fun {m} {n} hm hn _ ↦ ?_⟩
+  · simp only [toArithmeticFunction, coe_mk, one_ne_zero, ↓reduceIte, Nat.cast_one, map_one]
+  · simp only [toArithmeticFunction, coe_mk, mul_eq_zero, hm, hn, false_or, Nat.cast_mul, map_mul,
+      if_false]
+
+lemma apply_eq_toArithmeticFunction_apply {N : ℕ} {R : Type*} [CommMonoidWithZero R]
+    (χ : DirichletCharacter R N) {n : ℕ} (hn : n ≠ 0) :
+    χ n = toArithmeticFunction (χ ·) n := by
+  simp only [toArithmeticFunction, ArithmeticFunction.coe_mk, hn, ↓reduceIte]
+
 open LSeries Nat Complex
 
 /-- Twisting by a Dirichlet character `χ` distributes over convolution. -/
@@ -137,7 +152,7 @@ lemma convolution_mul_moebius {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ 
 lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
   ext n
   rcases eq_or_ne n 0 with rfl | hn
-  · simp_rw [cast_zero, χ.map_nonunit not_isUnit_zero, delta, if_false]
+  · simp_rw [cast_zero, χ.map_nonunit not_isUnit_zero, delta, reduceCtorEq, if_false]
   rcases eq_or_ne n 1 with rfl | hn'
   · simp only [cast_one, map_one, delta, ↓reduceIte]
   have : ¬ IsUnit (n : ZMod 0) := fun h ↦ hn' <| ZMod.eq_one_of_isUnit_natCast h
@@ -329,7 +344,7 @@ lemma convolution_vonMangoldt_zeta : ↗Λ ⍟ ↗ζ = ↗Complex.log := by
   ext n
   simpa only [zeta_apply, apply_ite, cast_zero, cast_one, LSeries.convolution_def, mul_zero,
     mul_one, mul_apply, natCoe_apply, ofReal_sum, ofReal_zero, log_apply, ofReal_log n.cast_nonneg]
-    using congr_arg (ofReal' <| · n) vonMangoldt_mul_zeta
+    using congr_arg (ofReal <| · n) vonMangoldt_mul_zeta
 
 lemma convolution_vonMangoldt_const_one : ↗Λ ⍟ 1 = ↗Complex.log :=
   (convolution_one_eq_convolution_zeta _).trans convolution_vonMangoldt_zeta

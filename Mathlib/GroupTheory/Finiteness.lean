@@ -3,8 +3,10 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Data.Set.Pointwise.Finite
-import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Finitely generated monoids and groups
@@ -370,6 +372,12 @@ theorem rank_closure_finite_le_nat_card (s : Set G) [Finite s] :
   haveI := Fintype.ofFinite s
   rw [Nat.card_eq_fintype_card, ← s.toFinset_card, ← rank_congr (congr_arg _ s.coe_toFinset)]
   exact rank_closure_finset_le_card s.toFinset
+
+theorem nat_card_centralizer_nat_card_stabilizer (g : G) :
+    Nat.card (Subgroup.centralizer {g}) =
+      Nat.card (MulAction.stabilizer (ConjAct G) g) := by
+  rw [Subgroup.centralizer_eq_comap_stabilizer]
+  rfl
 
 end Subgroup
 

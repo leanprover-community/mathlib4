@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.ContinuousFunction.CocompactMap
+import Mathlib.Topology.ContinuousMap.CocompactMap
 import Mathlib.Topology.MetricSpace.Bounded
 
 /-!

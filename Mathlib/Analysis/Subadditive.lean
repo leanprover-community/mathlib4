@@ -3,8 +3,8 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Topology.Instances.Real
-import Mathlib.Order.Filter.Archimedean
 
 /-!
 # Convergence of subadditive sequences
@@ -46,7 +46,7 @@ theorem lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n 
 include h in
 theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
   induction k with
-  | zero => simp only [Nat.zero_eq, Nat.cast_zero, zero_mul, zero_add]; rfl
+  | zero => simp only [Nat.cast_zero, zero_mul, zero_add]; rfl
   | succ k IH =>
     calc
       u ((k + 1) * n + r) = u (n + (k * n + r)) := by congr 1; ring
@@ -67,7 +67,7 @@ theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n
   have B : Tendsto (fun x => (x * u n + u r) / (x * n + r)) atTop (𝓝 (u n / n)) := by
     rw [add_zero, add_zero] at A
     refine A.congr' <| (eventually_ne_atTop 0).mono fun x hx => ?_
-    simp only [(· ∘ ·), add_div' _ _ _ hx, div_div_div_cancel_right _ hx, mul_comm]
+    simp only [(· ∘ ·), add_div' _ _ _ hx, div_div_div_cancel_right₀ hx, mul_comm]
   refine ((B.comp tendsto_natCast_atTop_atTop).eventually (gt_mem_nhds hL)).mono fun k hk => ?_
   /- Finally, we use an upper estimate on `u (k * n + r)` to get an estimate on
   `u (k * n + r) / (k * n + r)`. -/

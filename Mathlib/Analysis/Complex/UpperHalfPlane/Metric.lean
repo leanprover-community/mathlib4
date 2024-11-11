@@ -29,7 +29,7 @@ open scoped UpperHalfPlane ComplexConjugate NNReal Topology MatrixGroups
 
 open Set Metric Filter Real
 
-variable {z w : ℍ} {r R : ℝ}
+variable {z w : ℍ} {r : ℝ}
 
 namespace UpperHalfPlane
 
@@ -93,7 +93,7 @@ theorem dist_eq_iff_eq_sq_sinh (hr : 0 ≤ r) :
   all_goals positivity
 
 protected theorem dist_triangle (a b c : ℍ) : dist a c ≤ dist a b + dist b c := by
-  rw [dist_le_iff_le_sinh, sinh_half_dist_add_dist, div_mul_eq_div_div _ _ (dist _ _), le_div_iff,
+  rw [dist_le_iff_le_sinh, sinh_half_dist_add_dist, div_mul_eq_div_div _ _ (dist _ _), le_div_iff₀,
     div_mul_eq_mul_div]
   · gcongr
     exact EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist (a : ℂ) b c (conj (b : ℂ))
@@ -218,11 +218,11 @@ theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
       simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_abs (z - w)
 
 theorem im_le_im_mul_exp_dist (z w : ℍ) : z.im ≤ w.im * Real.exp (dist z w) := by
-  rw [← div_le_iff' w.im_pos, ← exp_log z.im_pos, ← exp_log w.im_pos, ← Real.exp_sub, exp_le_exp]
+  rw [← div_le_iff₀' w.im_pos, ← exp_log z.im_pos, ← exp_log w.im_pos, ← Real.exp_sub, exp_le_exp]
   exact (le_abs_self _).trans (dist_log_im_le z w)
 
 theorem im_div_exp_dist_le (z w : ℍ) : z.im / Real.exp (dist z w) ≤ w.im :=
-  (div_le_iff (exp_pos _)).2 (im_le_im_mul_exp_dist z w)
+  (div_le_iff₀ (exp_pos _)).2 (im_le_im_mul_exp_dist z w)
 
 /-- An upper estimate on the complex distance between two points in terms of the hyperbolic distance
 and the imaginary part of one of the points. -/
@@ -261,7 +261,7 @@ instance : MetricSpace ℍ :=
       have h₀ : 0 < R / im z + 1 := one_pos.trans h₁
       refine ⟨log (R / im z + 1), Real.log_pos h₁, ?_⟩
       refine fun w hw => (dist_coe_le w z).trans_lt ?_
-      rwa [← lt_div_iff' z.im_pos, sub_lt_iff_lt_add, ← Real.lt_log_iff_exp_lt h₀]
+      rwa [← lt_div_iff₀' z.im_pos, sub_lt_iff_lt_add, ← Real.lt_log_iff_exp_lt h₀]
 
 theorem im_pos_of_dist_center_le {z : ℍ} {r : ℝ} {w : ℂ}
     (h : dist w (center z r) ≤ z.im * Real.sinh r) : 0 < w.im :=
@@ -300,7 +300,7 @@ theorem image_coe_sphere (z : ℍ) (r : ℝ) :
 
 instance : ProperSpace ℍ := by
   refine ⟨fun z r => ?_⟩
-  rw [inducing_subtype_val.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
+  rw [IsInducing.subtypeVal.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
   apply isCompact_closedBall
 
 theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (exp_pos y) := by
@@ -327,7 +327,7 @@ instance : IsometricSMul SL(2, ℝ) ℍ :=
         have h₂ : Complex.abs (y₁ * y₂) ≠ 0 := by simp [y₁.ne_zero, y₂.ne_zero]
         simp only [dist_eq, modular_S_smul, inv_neg, neg_div, div_mul_div_comm, coe_mk, mk_im,
           div_one, Complex.inv_im, Complex.neg_im, coe_im, neg_neg, Complex.normSq_neg,
-          mul_eq_mul_left_iff, Real.arsinh_inj, one_ne_zero, or_false_iff,
+          mul_eq_mul_left_iff, Real.arsinh_inj, one_ne_zero,
           dist_neg_neg, mul_neg, neg_mul, dist_inv_inv₀ y₁.ne_zero y₂.ne_zero, ←
           AbsoluteValue.map_mul, ← Complex.normSq_mul, Real.sqrt_div h₁, ← Complex.abs_apply,
           mul_div (2 : ℝ), div_div_div_comm, div_self h₂, Complex.norm_eq_abs]

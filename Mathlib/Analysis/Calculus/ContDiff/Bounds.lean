@@ -50,7 +50,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
     original spaces, which explains why we assume in the lemma that all spaces live in the same
     universe. -/
   induction' n with n IH generalizing Eu Fu Gu
-  · simp only [Nat.zero_eq, norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
+  · simp only [norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
       Finset.sum_singleton, Nat.choose_self, Nat.cast_one, one_mul, Nat.sub_zero, ← mul_assoc]
     apply B.le_opNorm₂
   · have In : (n : ℕ∞) + 1 ≤ n.succ := by simp only [Nat.cast_succ, le_refl]
@@ -107,10 +107,10 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
         (hs y hy)
     rw [← norm_iteratedFDerivWithin_fderivWithin hs hx, J]
     have A : ContDiffOn 𝕜 n (fun y => B.precompR Du (f y) (fderivWithin 𝕜 g s y)) s :=
-      (B.precompR Du).isBoundedBilinearMap.contDiff.comp_contDiff_on₂
+      (B.precompR Du).isBoundedBilinearMap.contDiff.comp₂_contDiffOn
         (hf.of_le (Nat.cast_le.2 (Nat.le_succ n))) (hg.fderivWithin hs In)
     have A' : ContDiffOn 𝕜 n (fun y => B.precompL Du (fderivWithin 𝕜 f s y) (g y)) s :=
-      (B.precompL Du).isBoundedBilinearMap.contDiff.comp_contDiff_on₂ (hf.fderivWithin hs In)
+      (B.precompL Du).isBoundedBilinearMap.contDiff.comp₂_contDiffOn (hf.fderivWithin hs In)
         (hg.of_le (Nat.cast_le.2 (Nat.le_succ n)))
     rw [iteratedFDerivWithin_add_apply' A A' hs hx]
     apply (norm_add_le _ _).trans ((add_le_add I1 I2).trans (le_of_eq ?_))
@@ -304,7 +304,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
       (g := (fun v ↦ v.multinomial *
           ∏ j ∈ insert i u, ‖iteratedFDerivWithin 𝕜 (v.count j) (f j) s x‖) ∘
         Sym.toMultiset ∘ Subtype.val ∘ (Finset.symInsertEquiv hi).symm)
-      (by simp) (by simp only [← comp_apply (g := Finset.symInsertEquiv hi), comp.assoc]; simp)]
+      (by simp) (by simp only [← comp_apply (g := Finset.symInsertEquiv hi), comp_assoc]; simp)]
     rw [← Finset.univ_sigma_univ, Finset.sum_sigma, Finset.sum_range]
     simp only [comp_apply, Finset.symInsertEquiv_symm_apply_coe]
     refine Finset.sum_le_sum ?_
@@ -407,7 +407,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
       have L : (1 : ℕ∞) ≤ n.succ := by simpa only [ENat.coe_one, Nat.one_le_cast] using n.succ_pos
       congr 1
       refine iteratedFDerivWithin_congr (fun y hy => ?_) hx _
-      apply fderivWithin.comp _ _ _ hst (hs y hy)
+      apply fderivWithin_comp _ _ _ hst (hs y hy)
       · exact hg.differentiableOn L _ (hst hy)
       · exact hf.differentiableOn L _ hy
     -- bound it using the fact that the composition of linear maps is a bilinear operation,
@@ -449,7 +449,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
         exact Nat.add_sub_of_le (Finset.mem_range_succ_iff.1 hi)
     _ ≤ ∑ i ∈ Finset.range (n + 1), (n ! : ℝ) * 1 * C * D ^ (n + 1) * 1 := by
       gcongr with i
-      apply inv_le_one
+      apply inv_le_one_of_one_le₀
       simpa only [Nat.one_le_cast] using (n - i).factorial_pos
     _ = (n + 1)! * C * D ^ (n + 1) := by
       simp only [mul_assoc, mul_one, Finset.sum_const, Finset.card_range, nsmul_eq_mul,

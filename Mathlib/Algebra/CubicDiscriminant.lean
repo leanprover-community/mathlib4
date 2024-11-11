@@ -194,7 +194,6 @@ theorem leadingCoeff_of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) :
     P.toPoly.leadingCoeff = P.d := by
   rw [of_c_eq_zero ha hb hc, leadingCoeff_C]
 
--- @[simp] -- porting note (#10618): simp can prove this
 theorem leadingCoeff_of_c_eq_zero' : (toPoly ⟨0, 0, 0, d⟩).leadingCoeff = d :=
   leadingCoeff_of_c_eq_zero rfl rfl rfl
 
@@ -240,9 +239,9 @@ def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
   invFun f := ⟨coeff f 3, coeff f 2, coeff f 1, coeff f 0⟩
   left_inv P := by ext <;> simp only [Subtype.coe_mk, coeffs]
   right_inv f := by
-    -- Porting note: Added `simp only [Nat.zero_eq, Nat.succ_eq_add_one] <;> ring_nf`
+    -- Porting note: Added `simp only [Nat.succ_eq_add_one] <;> ring_nf`
     -- There's probably a better way to do this.
-    ext (_ | _ | _ | _ | n) <;> simp only [Nat.zero_eq, Nat.succ_eq_add_one] <;> ring_nf
+    ext (_ | _ | _ | _ | n) <;> simp only [Nat.succ_eq_add_one] <;> ring_nf
       <;> try simp only [coeffs]
     have h3 : 3 < 4 + n := by linarith only
     rw [coeff_eq_zero h3,
@@ -304,7 +303,6 @@ theorem degree_of_d_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) (hd : P
     P.toPoly.degree = ⊥ := by
   rw [of_d_eq_zero ha hb hc hd, degree_zero]
 
--- @[simp] -- porting note (#10618): simp can prove this
 theorem degree_of_d_eq_zero' : (⟨0, 0, 0, 0⟩ : Cubic R).toPoly.degree = ⊥ :=
   degree_of_d_eq_zero rfl rfl rfl rfl
 
@@ -354,7 +352,6 @@ theorem natDegree_of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) :
     P.toPoly.natDegree = 0 := by
   rw [of_c_eq_zero ha hb hc, natDegree_C]
 
--- @[simp] -- porting note (#10618): simp can prove this
 theorem natDegree_of_c_eq_zero' : (toPoly ⟨0, 0, 0, d⟩).natDegree = 0 :=
   natDegree_of_c_eq_zero rfl rfl rfl
 

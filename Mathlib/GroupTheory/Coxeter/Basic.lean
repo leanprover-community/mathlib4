@@ -3,9 +3,11 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen, Mitchell Lee
 -/
-import Mathlib.Algebra.Ring.Int
-import Mathlib.GroupTheory.PresentedGroup
+import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.GroupTheory.Coxeter.Matrix
+import Mathlib.GroupTheory.PresentedGroup
+import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Use
 
@@ -248,7 +250,8 @@ preserved under multiplication, then it holds for all elements of `W`. -/
 theorem simple_induction {p : W → Prop} (w : W) (simple : ∀ i : B, p (s i)) (one : p 1)
     (mul : ∀ w w' : W, p w → p w' → p (w * w')) : p w := by
   have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
-  exact Submonoid.closure_induction this (fun x ⟨i, hi⟩ ↦ hi ▸ simple i) one mul
+  exact Submonoid.closure_induction (fun x ⟨i, hi⟩ ↦ hi ▸ simple i) one (fun _ _ _ _ ↦ mul _ _)
+    this
 
 /-- If `p : W → Prop` holds for the identity and it is preserved under multiplying on the left
 by a simple reflection, then it holds for all elements of `W`. -/
@@ -398,7 +401,7 @@ theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
   · rw [alternatingWord]
     nth_rw 1 [ih i' i]
     rw [alternatingWord]
-    simp [Nat.even_add_one]
+    simp [Nat.even_add_one, ← Nat.not_even_iff_odd]
 
 @[simp]
 theorem length_alternatingWord (i i' : B) (m : ℕ) :
@@ -436,10 +439,10 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
     repeat rw [Int.mul_ediv_cancel _ (by norm_num)]
     rw [zpow_sub, zpow_natCast, simple_mul_simple_pow' cs i i', ← inv_zpow]
     simp
-  · have : ¬Even (2 * k + 1) := Int.odd_iff_not_even.mp ⟨k, rfl⟩
+  · have : ¬Even (2 * k + 1) := Int.not_even_iff_odd.2 ⟨k, rfl⟩
     rw [if_neg this]
     have : ¬Even (↑(M i i') * 2 - (2 * k + 1)) :=
-      Int.odd_iff_not_even.mp ⟨↑(M i i') - k - 1, by ring⟩
+      Int.not_even_iff_odd.2 ⟨↑(M i i') - k - 1, by ring⟩
     rw [if_neg this]
 
     rw [(by ring : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),

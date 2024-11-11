@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro
 -/
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.GroupTheory.Congruence.Basic
+import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.SuppressCompilation
 
@@ -449,7 +449,7 @@ variable (R M N)
 
 /-- The simple (aka pure) elements span the tensor product. -/
 theorem span_tmul_eq_top : Submodule.span R { t : M ⊗[R] N | ∃ m n, m ⊗ₜ n = t } = ⊤ := by
-  ext t; simp only [Submodule.mem_top, iff_true_iff]
+  ext t; simp only [Submodule.mem_top, iff_true]
   refine t.induction_on ?_ ?_ ?_
   · exact Submodule.zero_mem _
   · intro m n
@@ -614,6 +614,8 @@ theorem ext_threefold {g h : (M ⊗[R] N) ⊗[R] P →ₗ[R] Q}
   ext x y z
   exact H x y z
 
+@[deprecated (since := "2024-10-18")] alias ext₃ := ext_threefold
+
 -- We'll need this one for checking the pentagon identity!
 theorem ext_fourfold {g h : ((M ⊗[R] N) ⊗[R] P) ⊗[R] Q →ₗ[R] S}
     (H : ∀ w x y z, g (w ⊗ₜ x ⊗ₜ y ⊗ₜ z) = h (w ⊗ₜ x ⊗ₜ y ⊗ₜ z)) : g = h := by
@@ -669,7 +671,7 @@ theorem comm_tmul (m : M) (n : N) : (TensorProduct.comm R M N) (m ⊗ₜ n) = n 
 theorem comm_symm_tmul (m : M) (n : N) : (TensorProduct.comm R M N).symm (n ⊗ₜ m) = m ⊗ₜ n :=
   rfl
 
-lemma lift_comp_comm_eq  (f : M →ₗ[R] N →ₗ[R] P) :
+lemma lift_comp_comm_eq (f : M →ₗ[R] N →ₗ[R] P) :
     lift f ∘ₗ TensorProduct.comm R N M = lift f.flip :=
   ext rfl
 end
@@ -827,19 +829,19 @@ theorem map_id : map (id : M →ₗ[R] M) (id : N →ₗ[R] N) = .id := by
   simp only [mk_apply, id_coe, compr₂_apply, _root_.id, map_tmul]
 
 @[simp]
-theorem map_one : map (1 : M →ₗ[R] M) (1 : N →ₗ[R] N) = 1 :=
+protected theorem map_one : map (1 : M →ₗ[R] M) (1 : N →ₗ[R] N) = 1 :=
   map_id
 
-theorem map_mul (f₁ f₂ : M →ₗ[R] M) (g₁ g₂ : N →ₗ[R] N) :
+protected theorem map_mul (f₁ f₂ : M →ₗ[R] M) (g₁ g₂ : N →ₗ[R] N) :
     map (f₁ * f₂) (g₁ * g₂) = map f₁ g₁ * map f₂ g₂ :=
   map_comp f₁ f₂ g₁ g₂
 
 @[simp]
 protected theorem map_pow (f : M →ₗ[R] M) (g : N →ₗ[R] N) (n : ℕ) :
     map f g ^ n = map (f ^ n) (g ^ n) := by
-  induction' n with n ih
-  · simp only [Nat.zero_eq, pow_zero, map_one]
-  · simp only [pow_succ', ih, map_mul]
+  induction n with
+  | zero => simp only [pow_zero, TensorProduct.map_one]
+  | succ n ih => simp only [pow_succ', ih, TensorProduct.map_mul]
 
 theorem map_add_left (f₁ f₂ : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by

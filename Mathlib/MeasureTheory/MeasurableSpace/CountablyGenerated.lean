@@ -89,7 +89,7 @@ lemma generateFrom_natGeneratingSequence (α : Type*) [m : MeasurableSpace α]
 
 lemma measurableSet_natGeneratingSequence [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) :
     MeasurableSet (natGeneratingSequence α n) :=
-  measurableSet_countableGeneratingSet $ Set.enumerateCountable_mem _
+  measurableSet_countableGeneratingSet <| Set.enumerateCountable_mem _
     empty_mem_countableGeneratingSet n
 
 theorem CountablyGenerated.comap [m : MeasurableSpace β] [h : CountablyGenerated β] (f : α → β) :
@@ -159,7 +159,7 @@ theorem separating_of_generateFrom (S : Set (Set α))
   letI := generateFrom S
   intros x y hxy
   rw [← forall_generateFrom_mem_iff_mem_iff] at hxy
-  exact separatesPoints_def $ fun _ hs ↦ (hxy _ hs).mp
+  exact separatesPoints_def <| fun _ hs ↦ (hxy _ hs).mp
 
 theorem SeparatesPoints.mono {m m' : MeasurableSpace α} [hsep : @SeparatesPoints _ m] (h : m ≤ m') :
     @SeparatesPoints _ m' := @SeparatesPoints.mk _ m' fun _ _ hxy ↦
@@ -194,12 +194,12 @@ theorem CountablySeparated.subtype_iff [MeasurableSpace α] {s : Set α} :
 
 instance (priority := 100) Subtype.separatesPoints [MeasurableSpace α] [h : SeparatesPoints α]
     {s : Set α} : SeparatesPoints s :=
-  ⟨fun _ _ hxy ↦ Subtype.val_injective $ h.1 _ _ fun _ ht ↦ hxy _ $ measurable_subtype_coe ht⟩
+  ⟨fun _ _ hxy ↦ Subtype.val_injective <| h.1 _ _ fun _ ht ↦ hxy _ <| measurable_subtype_coe ht⟩
 
 instance (priority := 100) Subtype.countablySeparated [MeasurableSpace α]
     [h : CountablySeparated α] {s : Set α} : CountablySeparated s := by
   rw [CountablySeparated.subtype_iff]
-  exact h.countably_separated.mono (fun s ↦ id) $ subset_univ _
+  exact h.countably_separated.mono (fun s ↦ id) <| subset_univ _
 
 instance (priority := 100) separatesPoints_of_measurableSingletonClass [MeasurableSpace α]
     [MeasurableSingletonClass α] : SeparatesPoints α := by
@@ -207,6 +207,17 @@ instance (priority := 100) separatesPoints_of_measurableSingletonClass [Measurab
   specialize h _ (MeasurableSet.singleton x)
   simp_rw [mem_singleton_iff, forall_true_left] at h
   exact h.symm
+
+instance (priority := 50) MeasurableSingletonClass.of_separatesPoints [MeasurableSpace α]
+    [Countable α] [SeparatesPoints α] : MeasurableSingletonClass α where
+  measurableSet_singleton x := by
+    choose s hsm hxs hys using fun y (h : x ≠ y) ↦ exists_measurableSet_of_ne h
+    convert MeasurableSet.iInter fun y ↦ .iInter fun h ↦ hsm y h
+    ext y
+    rcases eq_or_ne x y with rfl | h
+    · simpa
+    · simp only [mem_singleton_iff, h.symm, false_iff, mem_iInter, not_forall]
+      exact ⟨y, h, hys y h⟩
 
 instance hasCountableSeparatingOn_of_countablySeparated_subtype
     [MeasurableSpace α] {s : Set α} [h : CountablySeparated s] :
@@ -235,7 +246,7 @@ theorem exists_countablyGenerated_le_of_countablySeparated [m : MeasurableSpace 
   refine ⟨generateFrom b, ?_, ?_, generateFrom_le hbm⟩
   · use b
   rw [@separatesPoints_iff]
-  exact fun x y hxy ↦ hb _ trivial _ trivial fun _ hs ↦ hxy _ $ measurableSet_generateFrom hs
+  exact fun x y hxy ↦ hb _ trivial _ trivial fun _ hs ↦ hxy _ <| measurableSet_generateFrom hs
 
 open Function
 
@@ -270,9 +281,9 @@ the Cantor Space. -/
 theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
     [CountablyGenerated α] [SeparatesPoints α] :
     ∃ s : Set (ℕ → Bool), Nonempty (α ≃ᵐ s) := by
-  use range (mapNatBool α), Equiv.ofInjective _ $
+  use range (mapNatBool α), Equiv.ofInjective _ <|
     injective_mapNatBool _,
-    Measurable.subtype_mk $ measurable_mapNatBool _
+    Measurable.subtype_mk <| measurable_mapNatBool _
   simp_rw [← generateFrom_natGeneratingSequence α]
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
@@ -299,7 +310,7 @@ theorem measurableSingletonClass_of_countablySeparated
   rcases measurable_injection_nat_bool_of_countablySeparated α with ⟨f, fmeas, finj⟩
   refine ⟨fun x ↦ ?_⟩
   rw [← finj.preimage_image {x}, image_singleton]
-  exact fmeas $ MeasurableSet.singleton _
+  exact fmeas <| MeasurableSet.singleton _
 
 end SeparatesPoints
 
@@ -322,12 +333,11 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
     MeasurableSet[generateFrom (memPartition t n)] s
       ↔ ∃ S : Finset (Set α), ↑S ⊆ memPartition t n ∧ s = ⋃₀ S := by
   refine ⟨fun h ↦ ?_, fun ⟨S, hS_subset, hS_eq⟩ ↦ ?_⟩
-  · refine MeasurableSpace.generateFrom_induction
-      (p := fun u ↦ ∃ S : Finset (Set α), ↑S ⊆ memPartition t n ∧ u = ⋃₀ ↑S)
-      (C := memPartition t n) ?_ ?_ ?_ ?_ h
-    · exact fun u hu ↦ ⟨{u}, by simp [hu], by simp⟩
-    · exact ⟨∅, by simp, by simp⟩
-    · rintro u ⟨S, hS_subset, rfl⟩
+  · induction s, h using generateFrom_induction with
+    | hC u hu _ => exact ⟨{u}, by simp [hu], by simp⟩
+    | empty => exact ⟨∅, by simp, by simp⟩
+    | compl u _ hu =>
+      obtain ⟨S, hS_subset, rfl⟩ := hu
       classical
       refine ⟨(memPartition t n).toFinset \ S, ?_, ?_⟩
       · simp only [Finset.coe_sdiff, coe_toFinset]
@@ -341,7 +351,7 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
         · rw [codisjoint_iff]
           simp only [sup_eq_union, top_eq_univ]
           rw [← sUnion_memPartition t n, union_comm, ← sUnion_union, union_diff_cancel hS_subset]
-    · intro f h
+    | iUnion f _ h =>
       choose S hS_subset hS_eq using h
       have : Fintype (⋃ n, (S n : Set (Set α))) := by
         refine (Finite.subset (finite_memPartition t n) ?_).fintype
@@ -373,7 +383,7 @@ lemma generateFrom_iUnion_memPartition (t : ℕ → Set α) :
     obtain ⟨n, hun⟩ := hu
     induction n generalizing u with
     | zero =>
-      simp only [Nat.zero_eq, memPartition_zero, mem_insert_iff, mem_singleton_iff] at hun
+      simp only [memPartition_zero, mem_insert_iff, mem_singleton_iff] at hun
       rw [hun]
       exact MeasurableSet.univ
     | succ n ih =>
@@ -418,7 +428,7 @@ end MeasurableMemPartition
 variable [m : MeasurableSpace α] [h : CountablyGenerated α]
 
 /-- For each `n : ℕ`, `countablePartition α n` is a partition of the space in at most
-`2^n` sets. Each partition is finer than the preceeding one. The measurable space generated by
+`2^n` sets. Each partition is finer than the preceding one. The measurable space generated by
 the union of all those partitions is the measurable space on `α`. -/
 def countablePartition (α : Type*) [MeasurableSpace α] [CountablyGenerated α] : ℕ → Set (Set α) :=
   memPartition (enumerateCountable countable_countableGeneratingSet ∅)
@@ -505,7 +515,8 @@ variable [MeasurableSpace β]
 
 /-- A class registering that either `α` is countable or `β` is a countably generated
 measurable space. -/
-class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] : Prop :=
+class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
+    Prop where
   countableOrCountablyGenerated : Countable α ∨ MeasurableSpace.CountablyGenerated β
 
 instance instCountableOrCountablyGeneratedOfCountable [h1 : Countable α] :

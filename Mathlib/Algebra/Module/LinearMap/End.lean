@@ -6,6 +6,8 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Module.Equiv.Opposite
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Endomorphisms of a module
@@ -67,7 +69,7 @@ instance _root_.Module.End.instNontrivial [Nontrivial M] : Nontrivial (Module.En
 instance _root_.Module.End.monoid : Monoid (Module.End R M) where
   mul := (· * ·)
   one := (1 : M →ₗ[R] M)
-  mul_assoc f g h := LinearMap.ext fun x ↦ rfl
+  mul_assoc _ _ _ := LinearMap.ext fun _ ↦ rfl
   mul_one := comp_id
   one_mul := id_comp
 
@@ -138,9 +140,9 @@ theorem commute_pow_left_of_commute
     [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂] {σ₁₂ : R →+* R₂}
     {f : M →ₛₗ[σ₁₂] M₂} {g : Module.End R M} {g₂ : Module.End R₂ M₂}
     (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
-  induction' k with k ih
-  · simp only [Nat.zero_eq, pow_zero, one_eq_id, id_comp, comp_id]
-  · rw [pow_succ', pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih,
+  induction k with
+  | zero => simp only [pow_zero, one_eq_id, id_comp, comp_id]
+  | succ k ih => rw [pow_succ', pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih,
     ← LinearMap.comp_assoc, h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
 
 @[simp]

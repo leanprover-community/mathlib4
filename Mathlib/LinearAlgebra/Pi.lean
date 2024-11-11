@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Fin.Tuple
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.Logic.Equiv.Fin
 
 /-!
@@ -63,7 +63,7 @@ theorem pi_eq_zero (f : (i : ι) → M₂ →ₗ[R] φ i) : pi f = 0 ↔ ∀ i, 
   simp only [LinearMap.ext_iff, pi_apply, funext_iff]
   exact ⟨fun h a b => h b a, fun h a b => h b a⟩
 
-theorem pi_zero : pi (fun i => 0 : (i : ι) → M₂ →ₗ[R] φ i) = 0 := by ext; rfl
+theorem pi_zero : pi (fun _ => 0 : (i : ι) → M₂ →ₗ[R] φ i) = 0 := by ext; rfl
 
 theorem pi_comp (f : (i : ι) → M₂ →ₗ[R] φ i) (g : M₃ →ₗ[R] M₂) :
     (pi f).comp g = pi fun i => (f i).comp g :=
@@ -197,7 +197,7 @@ theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
 /-- The linear equivalence between linear functions on a finite product of modules and
 families of functions on these modules. See note [bundled maps over different rings]. -/
 @[simps symm_apply]
-def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semiring S] [Module S M]
+def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S] [Module S M]
     [SMulCommClass R S M] : ((i : ι) → φ i →ₗ[R] M) ≃ₗ[S] ((i : ι) → φ i) →ₗ[R] M where
   toFun f := ∑ i : ι, (f i).comp (proj i)
   invFun f i := f.comp (single R φ i)
@@ -462,8 +462,8 @@ def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) �
     [(i : Option ι) → Module R (M i)] :
     ((i : Option ι) → M i) ≃ₗ[R] M none × ((i : ι) → M (some i)) :=
   { Equiv.piOptionEquivProd with
-    map_add' := by simp [Function.funext_iff]
-    map_smul' := by simp [Function.funext_iff] }
+    map_add' := by simp [funext_iff]
+    map_smul' := by simp [funext_iff] }
 
 variable (ι M) (S : Type*) [Fintype ι] [DecidableEq ι] [Semiring S] [AddCommMonoid M]
   [Module R M] [Module S M] [SMulCommClass R S M]

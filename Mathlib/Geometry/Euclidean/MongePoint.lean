@@ -46,10 +46,7 @@ generalization, the Monge point of a simplex.
 
 -/
 
-
 noncomputable section
-
-open scoped Classical
 
 open scoped RealInnerProductSpace
 
@@ -171,7 +168,7 @@ theorem mongePointVSubFaceCentroidWeightsWithCircumcenter_eq_sub {n : ℕ} {i₁
   cases' i with i
   · rw [Pi.sub_apply, mongePointWeightsWithCircumcenter, centroidWeightsWithCircumcenter,
       mongePointVSubFaceCentroidWeightsWithCircumcenter]
-    have hu : card ({i₁, i₂}ᶜ : Finset (Fin (n + 3))) = n + 1 := by
+    have hu : #{i₁, i₂}ᶜ = n + 1 := by
       simp [card_compl, Fintype.card_fin, h]
     rw [hu]
     by_cases hi : i = i₁ ∨ i = i₂ <;> simp [compl_eq_univ_sdiff, hi]
@@ -309,7 +306,7 @@ theorem eq_mongePoint_of_forall_mem_mongePlane {n : ℕ} {s : Simplex ℝ P (n +
   rw [hu, ← vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_univ _), Set.image_univ] at hi
   have hv : p -ᵥ s.mongePoint ∈ vectorSpan ℝ (Set.range s.points) := by
     let s₁ : Finset (Fin (n + 3)) := univ.erase i₁
-    obtain ⟨i₂, h₂⟩ := card_pos.1 (show 0 < card s₁ by simp [s₁, card_erase_of_mem])
+    obtain ⟨i₂, h₂⟩ := card_pos.1 (show 0 < #s₁ by simp [s₁, card_erase_of_mem])
     have h₁₂ : i₁ ≠ i₂ := (ne_of_mem_erase h₂).symm
     exact (Submodule.mem_inf.1 (h' i₂ h₁₂)).2
   exact Submodule.disjoint_def.1 (vectorSpan ℝ (Set.range s.points)).orthogonal_disjoint _ hv hi
@@ -347,7 +344,7 @@ theorem vectorSpan_isOrtho_altitude_direction {n : ℕ} (s : Simplex ℝ P (n + 
   rw [direction_altitude]
   exact (Submodule.isOrtho_orthogonal_right _).mono_right inf_le_left
 
-open FiniteDimensional
+open Module
 
 /-- An altitude is finite-dimensional. -/
 instance finiteDimensional_direction_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
@@ -362,8 +359,9 @@ theorem finrank_direction_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fi
   rw [direction_altitude]
   have h := Submodule.finrank_add_inf_finrank_orthogonal
     (vectorSpan_mono ℝ (Set.image_subset_range s.points ↑(univ.erase i)))
-  have hc : card (univ.erase i) = n + 1 := by rw [card_erase_of_mem (mem_univ _)]; simp
+  have hc : #(univ.erase i) = n + 1 := by rw [card_erase_of_mem (mem_univ _)]; simp
   refine add_left_cancel (_root_.trans h ?_)
+  classical
   rw [s.independent.finrank_vectorSpan (Fintype.card_fin _), ← Finset.coe_image,
     s.independent.finrank_vectorSpan_image_finset hc]
 
@@ -394,7 +392,7 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} (s : Simplex ℝ P (n + 1)) (i
     rw [vectorSpan_eq_span_vsub_set_left_ne ℝ (Set.mem_insert _ _),
       Set.insert_diff_of_mem _ (Set.mem_singleton _),
       Set.diff_singleton_eq_self fun h => hne (Set.mem_singleton_iff.1 h), Set.image_singleton]
-    refine eq_of_le_of_finrank_eq ?_ ?_
+    refine Submodule.eq_of_le_of_finrank_eq ?_ ?_
     · rw [Submodule.span_le]
       simpa using h
     · rw [finrank_direction_altitude, finrank_span_set_eq_card]
@@ -406,7 +404,7 @@ end Simplex
 
 namespace Triangle
 
-open EuclideanGeometry Finset Simplex AffineSubspace FiniteDimensional
+open EuclideanGeometry Finset Simplex AffineSubspace Module
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -446,12 +444,10 @@ theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h�
     (h₂₃ : i₂ ≠ i₃) : t.altitude i₁ = t.mongePlane i₂ i₃ := by
   have hs : ({i₂, i₃}ᶜ : Finset (Fin 3)) = {i₁} := by
     -- Porting note (#11043): was `decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
-      <;> simp (config := {decide := true}) at h₁₂ h₁₃ h₂₃ ⊢
+    revert i₁ i₂ i₃; decide
   have he : univ.erase i₁ = {i₂, i₃} := by
     -- Porting note (#11043): was `decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
-      <;> simp (config := {decide := true}) at h₁₂ h₁₃ h₂₃ ⊢
+    revert i₁ i₂ i₃; decide
   rw [mongePlane_def, altitude_def, direction_affineSpan, hs, he, centroid_singleton, coe_insert,
     coe_singleton, vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_insert i₂ _)]
   simp [h₂₃, Submodule.span_insert_eq_span]
@@ -504,16 +500,8 @@ theorem dist_orthocenter_reflection_circumcenter (t : Triangle ℝ P) {i₁ i₂
       ∃ i₃, univ \ ({i₁, i₂} : Finset (Fin 3)) = {i₃} ∧ i₃ ≠ i₁ ∧ i₃ ≠ i₂ := by
     -- Porting note (#11043): was `decide!`
     fin_cases i₁ <;> fin_cases i₂ <;> simp at h <;> decide
-  -- Porting note: Original proof was `simp_rw [← sum_sdiff hu, hi₃]; simp [hi₃₁, hi₃₂]; norm_num`
-  rw [← sum_sdiff hu, ← sum_sdiff hu, hi₃, sum_singleton, ← sum_sdiff hu, hi₃]
-  split_ifs with h
-  · exact (h.elim hi₃₁ hi₃₂).elim
-  simp only [zero_add, Nat.cast_one, inv_one, sub_zero, one_mul, pointsWithCircumcenter_point,
-    sum_singleton, h, ite_false, dist_self, mul_zero, mem_singleton, true_or, ite_true, sub_self,
-    zero_mul, implies_true, sum_insert_of_eq_zero_if_not_mem, or_true, add_zero, div_one,
-    sub_neg_eq_add, pointsWithCircumcenter_eq_circumcenter, dist_circumcenter_eq_circumradius,
-    sum_const_zero, dist_circumcenter_eq_circumradius', mul_one, neg_add_rev, add_self_div_two]
-  norm_num
+  simp_rw [← sum_sdiff hu, hi₃]
+  norm_num [hi₃₁, hi₃₂]
 
 /-- The distance from the orthocenter to the reflection of the
 circumcenter in a side equals the circumradius, variant using a
@@ -550,12 +538,12 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   have he : affineSpan ℝ (Set.range t₂.points) = affineSpan ℝ (Set.range t₁.points) := by
     refine ext_of_direction_eq ?_
       ⟨t₁.points i₃, mem_affineSpan ℝ ⟨j₃, h₃⟩, mem_affineSpan ℝ (Set.mem_range_self _)⟩
-    refine eq_of_le_of_finrank_eq (direction_le (spanPoints_subset_coe_of_subset_coe ?_)) ?_
+    refine Submodule.eq_of_le_of_finrank_eq (direction_le (spanPoints_subset_coe_of_subset_coe ?_))
+      ?_
     · have hu : (Finset.univ : Finset (Fin 3)) = {j₁, j₂, j₃} := by
         clear h₁ h₂ h₃
         -- Porting note (#11043): was `decide!`
-        fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃
-          <;> simp (config := {decide := true}) at hj₁₂ hj₁₃ hj₂₃ ⊢
+        revert i₁ i₂ i₃ j₁ j₂ j₃; decide
       rw [← Set.image_univ, ← Finset.coe_univ, hu, Finset.coe_insert, Finset.coe_insert,
         Finset.coe_singleton, Set.image_insert_eq, Set.image_insert_eq, Set.image_singleton, h₁, h₂,
         h₃, Set.insert_subset_iff, Set.insert_subset_iff, Set.singleton_subset_iff]
@@ -570,8 +558,7 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   have hu : Finset.univ.erase j₂ = {j₁, j₃} := by
     clear h₁ h₂ h₃
     -- Porting note (#11043): was `decide!`
-    fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃
-      <;> simp (config := {decide := true}) at hj₁₂ hj₁₃ hj₂₃ ⊢
+    revert i₁ i₂ i₃ j₁ j₂ j₃; decide
   rw [hu, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton, h₁, h₃]
   have hle : (t₁.altitude i₃).directionᗮ ≤ line[ℝ, t₁.orthocenter, t₁.points i₃].directionᗮ :=
     Submodule.orthogonal_le (direction_le (affineSpan_orthocenter_point_le_altitude _ _))
@@ -579,8 +566,7 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   have hui : Finset.univ.erase i₃ = {i₁, i₂} := by
     clear hle h₂ h₃
     -- Porting note (#11043): was `decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
-      <;> simp (config := {decide := true}) at hi₁₂ hi₁₃ hi₂₃ ⊢
+    revert i₁ i₂ i₃; decide
   rw [hui, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton]
   exact vsub_mem_vectorSpan ℝ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_singleton _))
 
@@ -604,7 +590,7 @@ end Affine
 
 namespace EuclideanGeometry
 
-open Affine AffineSubspace FiniteDimensional
+open Affine AffineSubspace Module
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -652,6 +638,7 @@ theorem exists_of_range_subset_orthocentricSystem {t : Triangle ℝ P}
   · right
     have hs := Set.subset_diff_singleton hps h
     rw [Set.insert_diff_self_of_not_mem ho] at hs
+    classical
     refine Set.eq_of_subset_of_card_le hs ?_
     rw [Set.card_range_of_injective hpi, Set.card_range_of_injective t.independent.injective]
 
@@ -707,7 +694,7 @@ theorem affineSpan_of_orthocentricSystem {s : Set P} (ho : OrthocentricSystem s)
     ⟨p 0, mem_affineSpan ℝ (Set.mem_range_self _), mem_affineSpan ℝ (hps (Set.mem_range_self _))⟩
   have hfd : FiniteDimensional ℝ (affineSpan ℝ s).direction := by rw [hs]; infer_instance
   haveI := hfd
-  refine eq_of_le_of_finrank_eq (direction_le (affineSpan_mono ℝ hps)) ?_
+  refine Submodule.eq_of_le_of_finrank_eq (direction_le (affineSpan_mono ℝ hps)) ?_
   rw [hs, direction_affineSpan, direction_affineSpan, ha.finrank_vectorSpan (Fintype.card_fin _),
     t.independent.finrank_vectorSpan (Fintype.card_fin _)]
 
@@ -743,7 +730,7 @@ theorem OrthocentricSystem.eq_insert_orthocenter {s : Set P} (ho : OrthocentricS
         ∃ j₁ : Fin 3, j₁ ≠ j₂ ∧ j₁ ≠ j₃ ∧ ∀ j : Fin 3, j = j₁ ∨ j = j₂ ∨ j = j₃ := by
       clear h₂ h₃
       -- Porting note (#11043): was `decide!`
-      fin_cases j₂ <;> fin_cases j₃ <;> simp (config := {decide := true}) at hj₂₃ ⊢
+      revert j₂ j₃; decide
     suffices h : t₀.points j₁ = t.orthocenter by
       have hui : (Set.univ : Set (Fin 3)) = {i₁, i₂, i₃} := by ext x; simpa using h₁₂₃ x
       have huj : (Set.univ : Set (Fin 3)) = {j₁, j₂, j₃} := by ext x; simpa using hj₁₂₃ x

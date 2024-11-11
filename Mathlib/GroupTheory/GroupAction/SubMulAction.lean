@@ -5,7 +5,8 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.SetLike.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
@@ -153,7 +154,7 @@ end OfTower
 
 end SetLike
 
-/-- A SubMulAction is a set which is closed under scalar multiplication.  -/
+/-- A SubMulAction is a set which is closed under scalar multiplication. -/
 structure SubMulAction (R : Type u) (M : Type v) [SMul R M] : Type v where
   /-- The underlying set of a `SubMulAction`. -/
   carrier : Set M
@@ -243,7 +244,7 @@ variable [Monoid R] [MulAction R M] {A : Type*} [SetLike A M]
 variable [hA : SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `MulAction` over `SMulMemClass`.
-/-- A `SubMulAction` of a `MulAction` is a `MulAction`.  -/
+/-- A `SubMulAction` of a `MulAction` is a `MulAction`. -/
 instance (priority := 75) toMulAction : MulAction R S' :=
   Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
 

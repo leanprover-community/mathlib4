@@ -11,8 +11,8 @@ import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
 # Reflecting the property of being preregular
 
 We prove that given a fully faithful functor `F : C ⥤ D`, with `Preregular D`, such that for every
-object `X` of `D` there exists an object `W` of `C` with an effective epi `π : F.obj W ⟶ X`, the
-category `C` is `Preregular`.
+object `X` of `D` there exists an object `W` of `C` with an effective epi `π : F.obj W ⟶ X`, the
+category `C` is `Preregular`.
 -/
 
 namespace CategoryTheory

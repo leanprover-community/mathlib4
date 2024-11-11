@@ -100,7 +100,7 @@ theorem Basis.map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [
 
 namespace MeasureTheory
 
-open Measure TopologicalSpace.PositiveCompacts FiniteDimensional
+open Measure TopologicalSpace.PositiveCompacts Module
 
 /-!
 ### The Lebesgue measure is a Haar measure on `ℝ` and on `ℝ^ι`.
@@ -223,8 +223,7 @@ theorem map_linearMap_addHaar_pi_eq_smul_addHaar {ι : Type*} [Finite ι] {f : (
     Real.map_linearMap_volume_pi_eq_smul_volume_pi hf, smul_comm]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
-  [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type*} [NormedAddCommGroup F]
-  [NormedSpace ℝ F] [CompleteSpace F]
+  [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
 
 theorem map_linearMap_addHaar_eq_smul_addHaar {f : E →ₗ[ℝ] E} (hf : LinearMap.det f ≠ 0) :
     Measure.map f μ = ENNReal.ofReal |(LinearMap.det f)⁻¹| • μ := by
@@ -492,7 +491,8 @@ theorem addHaar_sphere_of_ne_zero (x : E) {r : ℝ} (hr : r ≠ 0) : μ (sphere 
   rcases hr.lt_or_lt with (h | h)
   · simp only [empty_diff, measure_empty, ← closedBall_diff_ball, closedBall_eq_empty.2 h]
   · rw [← closedBall_diff_ball,
-      measure_diff ball_subset_closedBall measurableSet_ball measure_ball_lt_top.ne,
+      measure_diff ball_subset_closedBall measurableSet_ball.nullMeasurableSet
+        measure_ball_lt_top.ne,
       addHaar_ball_of_pos μ _ h, addHaar_closedBall μ _ h.le, tsub_self]
 
 theorem addHaar_sphere [Nontrivial E] (x : E) (r : ℝ) : μ (sphere x r) = 0 := by
@@ -511,8 +511,8 @@ theorem addHaar_singleton_add_smul_div_singleton_add_smul {r : ℝ} (hr : r ≠ 
           (μ s * (μ t)⁻¹) := by
       rw [ENNReal.mul_inv]
       · ring
-      · simp only [pow_pos (abs_pos.mpr hr), ENNReal.ofReal_eq_zero, not_le, Ne, true_or_iff]
-      · simp only [ENNReal.ofReal_ne_top, true_or_iff, Ne, not_false_iff]
+      · simp only [pow_pos (abs_pos.mpr hr), ENNReal.ofReal_eq_zero, not_le, Ne, true_or]
+      · simp only [ENNReal.ofReal_ne_top, true_or, Ne, not_false_iff]
     _ = μ s / μ t := by
       rw [ENNReal.mul_inv_cancel, one_mul, div_eq_mul_inv]
       · simp only [pow_pos (abs_pos.mpr hr), ENNReal.ofReal_eq_zero, not_le, Ne]
@@ -601,12 +601,11 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
   have A : Tendsto (fun r : ℝ => μ (s ∩ ({x} + r • t)) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 0) := by
     apply
       tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds h
-        (eventually_of_forall fun b => zero_le _)
+        (Eventually.of_forall fun b => zero_le _)
     filter_upwards [self_mem_nhdsWithin]
     rintro r (rpos : 0 < r)
     rw [← affinity_unitClosedBall rpos.le, singleton_add, ← image_vadd]
     gcongr
-    exact smul_set_mono t_bound
   have B :
     Tendsto (fun r : ℝ => μ (closedBall x r) / μ ({x} + r • u)) (𝓝[>] 0)
       (𝓝 (μ (closedBall x 1) / μ ({x} + u))) := by
@@ -623,7 +622,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
       (𝓝[>] 0) (𝓝 (0 * (μ (closedBall x 1) / μ ({x} + u)))) := by
     apply ENNReal.Tendsto.mul A _ B (Or.inr ENNReal.zero_ne_top)
     simp only [ne_eq, not_true, singleton_add, image_add_left, measure_preimage_add, false_or,
-      ENNReal.div_eq_top, h'u, false_or_iff, not_and, and_false_iff]
+      ENNReal.div_eq_top, h'u, not_and, and_false]
     intro aux
     exact (measure_closedBall_lt_top.ne aux).elim
     -- Porting note: it used to be enough to pass `measure_closedBall_lt_top.ne` to `simp`
@@ -696,7 +695,8 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
         (𝓝 (μ (⋂ n : ℕ, t \ closedBall 0 n))) := by
       have N : ∃ n : ℕ, μ (t \ closedBall 0 n) ≠ ∞ :=
         ⟨0, ((measure_mono diff_subset).trans_lt h''t.lt_top).ne⟩
-      refine tendsto_measure_iInter (fun n ↦ ht.diff measurableSet_closedBall) (fun m n hmn ↦ ?_) N
+      refine tendsto_measure_iInter (fun n ↦ (ht.diff measurableSet_closedBall).nullMeasurableSet)
+        (fun m n hmn ↦ ?_) N
       exact diff_subset_diff Subset.rfl (closedBall_subset_closedBall (Nat.cast_le.2 hmn))
     have : ⋂ n : ℕ, t \ closedBall 0 n = ∅ := by
       simp_rw [diff_eq, ← inter_iInter, iInter_eq_compl_iUnion_compl, compl_compl,
@@ -744,10 +744,8 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Meas
     rw [← ENNReal.sub_mul]; swap
     · simp only [uzero, ENNReal.inv_eq_top, imp_true_iff, Ne, not_false_iff]
     congr 1
-    apply
-      ENNReal.sub_eq_of_add_eq (ne_top_of_le_ne_top utop (measure_mono inter_subset_right))
-    rw [inter_comm _ u, inter_comm _ u]
-    exact measure_inter_add_diff u vmeas
+    rw [inter_comm _ u, inter_comm _ u, eq_comm]
+    exact ENNReal.eq_sub_of_add_eq' utop (measure_inter_add_diff u vmeas)
   have L : Tendsto (fun r => μ (sᶜ ∩ closedBall x r) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 0) := by
     have A : Tendsto (fun r => μ (closedBall x r) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 1) := by
       apply tendsto_const_nhds.congr' _
@@ -778,11 +776,10 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Meas
   rintro r (rpos : 0 < r)
   refine I ({x} + r • t) s ?_ ?_ hs
   · simp only [h't, abs_of_nonneg rpos.le, pow_pos rpos, addHaar_smul, image_add_left,
-      ENNReal.ofReal_eq_zero, not_le, or_false_iff, Ne, measure_preimage_add, abs_pow,
+      ENNReal.ofReal_eq_zero, not_le, or_false, Ne, measure_preimage_add, abs_pow,
       singleton_add, mul_eq_zero]
   · simp [h''t, ENNReal.ofReal_ne_top, addHaar_smul, image_add_left, ENNReal.mul_eq_top,
-      Ne, not_false_iff, measure_preimage_add, singleton_add, and_false_iff, false_and_iff,
-      or_self_iff]
+      Ne, not_false_iff, measure_preimage_add, singleton_add, or_self_iff]
 
 /-- Consider a point `x` at which a set `s` has density one, with respect to closed balls (i.e.,
 a Lebesgue density point of `s`). Then `s` has also density one at `x` with respect to any
@@ -798,7 +795,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one (s : Set E) (x : E)
       tendsto_addHaar_inter_smul_one_of_density_one_aux μ _ (measurableSet_toMeasurable _ _) _ _
         t ht h't h''t
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' h tendsto_const_nhds
-    · refine eventually_of_forall fun r ↦ ?_
+    · refine Eventually.of_forall fun r ↦ ?_
       gcongr
       apply subset_toMeasurable
     · filter_upwards [self_mem_nhdsWithin]

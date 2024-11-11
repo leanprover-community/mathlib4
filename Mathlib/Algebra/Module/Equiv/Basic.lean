@@ -6,6 +6,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.LinearMap.End
@@ -78,9 +79,9 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   mul f g := g.trans f
   one := LinearEquiv.refl R M
   inv f := f.symm
-  mul_assoc f g h := rfl
-  mul_one f := ext fun x ↦ rfl
-  one_mul f := ext fun x ↦ rfl
+  mul_assoc _ _ _ := rfl
+  mul_one _ := ext fun _ ↦ rfl
+  one_mul _ := ext fun _ ↦ rfl
   inv_mul_cancel f := ext <| f.left_inv
 
 @[simp]
@@ -122,7 +123,7 @@ protected theorem smul_def (f : M ≃ₗ[R] M) (a : M) : f • a = f a :=
 
 /-- `LinearEquiv.applyDistribMulAction` is faithful. -/
 instance apply_faithfulSMul : FaithfulSMul (M ≃ₗ[R] M) M :=
-  ⟨@fun _ _ ↦ LinearEquiv.ext⟩
+  ⟨LinearEquiv.ext⟩
 
 instance apply_smulCommClass [SMul S R] [SMul S M] [IsScalarTower S R M] :
     SMulCommClass S (M ≃ₗ[R] M) M where
@@ -403,23 +404,23 @@ end Subsingleton
 
 section Uncurry
 
-variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable (V V₂ R)
+variable [Semiring R]
+variable [AddCommMonoid M] [Module R M]
+variable (V V₂ R M)
 
 /-- Linear equivalence between a curried and uncurried function.
   Differs from `TensorProduct.curry`. -/
-protected def curry : (V × V₂ → R) ≃ₗ[R] V → V₂ → R :=
+protected def curry : (V × V₂ → M) ≃ₗ[R] V → V₂ → M :=
   { Equiv.curry _ _ _ with
     map_add' := fun _ _ ↦ rfl
     map_smul' := fun _ _ ↦ rfl }
 
 @[simp]
-theorem coe_curry : ⇑(LinearEquiv.curry R V V₂) = curry :=
+theorem coe_curry : ⇑(LinearEquiv.curry R M V V₂) = curry :=
   rfl
 
 @[simp]
-theorem coe_curry_symm : ⇑(LinearEquiv.curry R V V₂).symm = uncurry :=
+theorem coe_curry_symm : ⇑(LinearEquiv.curry R M V V₂).symm = uncurry :=
   rfl
 
 end Uncurry

@@ -26,7 +26,8 @@ is a generalization of `Algebra.Polynomial.Eval`.
 * `smeval_monomial`: monomials evaluate as we expect.
 * `smeval_add`, `smeval_smul`: linearity of evaluation, given an `R`-module.
 * `smeval_mul`, `smeval_comp`: multiplicativity of evaluation, given power-associativity.
-* `eval₂_eq_smeval`, `leval_eq_smeval.linearMap`, `aeval = smeval.algebraMap`, etc.: comparisons
+* `eval₂_smulOneHom_eq_smeval`, `leval_eq_smeval.linearMap`,
+  `aeval_eq_smeval`, etc.: comparisons
 
 ## TODO
 
@@ -64,12 +65,12 @@ theorem eval_eq_smeval : p.eval r = p.smeval r := by
   rw [eval_eq_sum, smeval_eq_sum]
   rfl
 
-theorem eval₂_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] (f : R →+* S) (p : R[X])
-    (x : S) : letI : Module R S := RingHom.toModule f
-    p.eval₂ f x = p.smeval x := by
-  letI : Module R S := RingHom.toModule f
+theorem eval₂_smulOneHom_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] [Module R S]
+    [IsScalarTower R S S] (p : R[X]) (x : S) :
+    p.eval₂ RingHom.smulOneHom x = p.smeval x := by
   rw [smeval_eq_sum, eval₂_eq_sum]
-  rfl
+  congr 1 with e a
+  simp only [RingHom.smulOneHom_apply, smul_one_mul, smul_pow]
 
 variable (R)
 
@@ -108,7 +109,7 @@ theorem smeval_add : (p + q).smeval x = p.smeval x + q.smeval x := by
 
 theorem smeval_natCast (n : ℕ) : (n : R[X]).smeval x = n • x ^ 0 := by
   induction n with
-  | zero => simp only [smeval_zero, Nat.cast_zero, Nat.zero_eq, zero_smul]
+  | zero => simp only [smeval_zero, Nat.cast_zero, zero_smul]
   | succ n ih => rw [n.cast_succ, smeval_add, ih, smeval_one, ← add_nsmul]
 
 @[deprecated (since := "2024-04-17")]
@@ -133,7 +134,7 @@ theorem smeval.linearMap_apply : smeval.linearMap R x p = p.smeval x := rfl
 
 theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
     ⇑(leval r) = fun p => p.smeval r := by
-  rw [Function.funext_iff]
+  rw [funext_iff]
   intro
   rw [leval_apply, smeval_def, eval_eq_sum]
   rfl
@@ -180,7 +181,7 @@ the defining structures independently.  For non-associative power-associative al
 octonions), we replace the `[Semiring S]` with `[NonAssocSemiring S] [Pow S ℕ] [NatPowAssoc S]`.
 -/
 
-variable (R : Type*) [Semiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
+variable (R : Type*) [Semiring R] (r : R) (p q : R[X]) {S : Type*}
   [NonAssocSemiring S] [Module R S] [Pow S ℕ] (x : S)
 
 theorem smeval_C_mul : (C r * p).smeval x = r • p.smeval x := by
@@ -210,7 +211,7 @@ theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
     simp_all only [smeval_add, coeff_add, add_smul]
   | h_monomial n a =>
     cases n with
-    | zero => simp only [Nat.zero_eq, monomial_zero_left, smeval_C, npow_zero, coeff_C_zero]
+    | zero => simp only [monomial_zero_left, smeval_C, npow_zero, coeff_C_zero]
     | succ n => rw [coeff_monomial_succ, smeval_monomial, npow_add, npow_one, mul_zero, zero_smul,
         smul_zero]
 

@@ -90,16 +90,13 @@ variable (ϕ : ∀ i : ι, N i →* M)
 -- We assume that the elements of different morphism commute
 variable (hcomm : Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y))
 
--- We use `f` and `g` to denote elements of `Π (i : ι), N i`
-variable (f g : ∀ i : ι, N i)
-
 namespace MonoidHom
 
 /-- The canonical homomorphism from a family of monoids. -/
 @[to_additive "The canonical homomorphism from a family of additive monoids. See also
 `LinearMap.lsum` for a linear version without the commutativity assumption."]
 def noncommPiCoprod : (∀ i : ι, N i) →* M where
-  toFun f := Finset.univ.noncommProd (fun i => ϕ i (f i)) fun i _ j _ h => hcomm h _ _
+  toFun f := Finset.univ.noncommProd (fun i => ϕ i (f i)) fun _ _ _ _ h => hcomm h _ _
   map_one' := by
     apply (Finset.noncommProd_eq_pow_card _ _ _ _ _).trans (one_pow _)
     simp
@@ -135,7 +132,7 @@ def noncommPiCoprodEquiv [DecidableEq ι] :
       ((∀ i, N i) →* M) where
   toFun ϕ := noncommPiCoprod ϕ.1 ϕ.2
   invFun f :=
-    ⟨fun i => f.comp (MonoidHom.mulSingle N i), fun i j hij x y =>
+    ⟨fun i => f.comp (MonoidHom.mulSingle N i), fun _ _ hij x y =>
       Commute.map (Pi.mulSingle_commute hij x y) f⟩
   left_inv ϕ := by
     ext
@@ -157,6 +154,22 @@ theorem noncommPiCoprod_mrange :
     rintro i x ⟨y, rfl⟩
     exact ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 
+@[to_additive]
+lemma commute_noncommPiCoprod {m : M}
+    (comm : ∀ i (x : N i), Commute m ((ϕ i x))) (h : (i : ι) → N i) :
+    Commute m (MonoidHom.noncommPiCoprod ϕ hcomm h) := by
+  dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
+  apply Finset.noncommProd_induction
+  · exact fun x y ↦ Commute.mul_right
+  · exact Commute.one_right _
+  · exact fun x _ ↦ comm x (h x)
+
+@[to_additive]
+lemma noncommPiCoprod_apply (h : (i : ι) → N i) :
+    MonoidHom.noncommPiCoprod ϕ hcomm h = Finset.noncommProd Finset.univ (fun i ↦ ϕ i (h i))
+      (Pairwise.set_pairwise (fun ⦃i j⦄ a ↦ hcomm a (h i) (h j)) _) := by
+  dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
+
 end MonoidHom
 
 end FamilyOfMonoids
@@ -167,9 +180,6 @@ variable {G : Type*} [Group G]
 variable {ι : Type*}
 variable {H : ι → Type*} [∀ i, Group (H i)]
 variable (ϕ : ∀ i : ι, H i →* G)
-
--- We use `f` and `g` to denote elements of `Π (i : ι), H i`
-variable (f g : ∀ i : ι, H i)
 
 namespace MonoidHom
 -- The subgroup version of `MonoidHom.noncommPiCoprod_mrange`
@@ -251,9 +261,6 @@ namespace Subgroup
 variable {G : Type*} [Group G]
 variable {ι : Type*} {H : ι → Subgroup G}
 
--- Elements of `Π (i : ι), H i` are called `f` and `g` here
-variable (f g : ∀ i : ι, H i)
-
 section CommutingSubgroups
 
 -- We assume that the elements of different subgroups commute
@@ -307,6 +314,13 @@ theorem injective_noncommPiCoprod_of_independent
   · simpa using hind
   · intro i
     exact Subtype.coe_injective
+
+@[to_additive]
+theorem noncommPiCoprod_apply (comm) (u : (i : ι) → H i) :
+    Subgroup.noncommPiCoprod comm u = Finset.noncommProd Finset.univ (fun i ↦ u i)
+      (fun i _ j _ h ↦ comm h _ _ (u i).prop (u j).prop) := by
+  simp only [Subgroup.noncommPiCoprod, MonoidHom.noncommPiCoprod,
+    coeSubtype, MonoidHom.coe_mk, OneHom.coe_mk]
 
 end CommutingSubgroups
 

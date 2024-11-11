@@ -25,6 +25,7 @@ of topological (semi)rings.
 - The indexed product of topological (semi)rings is a topological (semi)ring.
 -/
 
+assert_not_exists Cardinal
 
 open Set Filter TopologicalSpace Function Topology Filter
 
@@ -39,7 +40,7 @@ The `TopologicalSemiring` class should *only* be instantiated in the presence of
 `NonUnitalNonAssocSemiring` instance; if there is an instance of `NonUnitalNonAssocRing`,
 then `TopologicalRing` should be used. Note: in the presence of `NonAssocRing`, these classes are
 mathematically equivalent (see `TopologicalSemiring.continuousNeg_of_mul` or
-`TopologicalSemiring.toTopologicalRing`).  -/
+`TopologicalSemiring.toTopologicalRing`). -/
 class TopologicalSemiring [TopologicalSpace α] [NonUnitalNonAssocSemiring α] extends
   ContinuousAdd α, ContinuousMul α : Prop
 
@@ -114,8 +115,10 @@ theorem Subsemiring.topologicalClosure_minimal (s : Subsemiring α) {t : Subsemi
   closure_minimal h ht
 
 /-- If a subsemiring of a topological semiring is commutative, then so is its
-topological closure. -/
-def Subsemiring.commSemiringTopologicalClosure [T2Space α] (s : Subsemiring α)
+topological closure.
+
+See note [reducible non-instances]. -/
+abbrev Subsemiring.commSemiringTopologicalClosure [T2Space α] (s : Subsemiring α)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
   { s.topologicalClosure.toSemiring, s.toSubmonoid.commMonoidTopologicalClosure hs with }
 
@@ -163,7 +166,7 @@ instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiri
     TopologicalSemiring αᵐᵒᵖ := ⟨⟩
 
 instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [ContinuousNeg α] : ContinuousNeg αᵐᵒᵖ :=
-  opHomeomorph.symm.inducing.continuousNeg fun _ => rfl
+  opHomeomorph.symm.isInducing.continuousNeg fun _ => rfl
 
 instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [TopologicalRing α] :
     TopologicalRing αᵐᵒᵖ := ⟨⟩
@@ -249,9 +252,11 @@ theorem Subring.topologicalClosure_minimal (s : Subring α) {t : Subring α} (h 
     (ht : IsClosed (t : Set α)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
-/-- If a subring of a topological ring is commutative, then so is its topological closure. -/
-def Subring.commRingTopologicalClosure [T2Space α] (s : Subring α) (hs : ∀ x y : s, x * y = y * x) :
-    CommRing s.topologicalClosure :=
+/-- If a subring of a topological ring is commutative, then so is its topological closure.
+
+See note [reducible non-instances]. -/
+abbrev Subring.commRingTopologicalClosure [T2Space α] (s : Subring α)
+    (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
   { s.topologicalClosure.toRing, s.toSubmonoid.commMonoidTopologicalClosure hs with }
 
 end TopologicalSemiring

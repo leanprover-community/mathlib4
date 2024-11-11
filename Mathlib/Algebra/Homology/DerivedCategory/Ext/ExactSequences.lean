@@ -13,8 +13,8 @@ import Mathlib.CategoryTheory.Triangulated.Yoneda
 
 In this file, we obtain the covariant long exact sequence of `Ext` when `n₀ + 1 = n₁`:
 `Ext X S.X₁ n₀ → Ext X S.X₂ n₀ → Ext X S.X₃ n₀ → Ext X S.X₁ n₁ → Ext X S.X₂ n₁ → Ext X S.X₃ n₁`
-when `S` is a short exact short complex in an abelian category `C`
-and `X : C`. Similarly, if `Y : C`, there is a contravariant long exact sequence :
+when `S` is a short exact short complex in an abelian category `C`, `n₀ + 1 = n₁` and `X : C`.
+Similarly, if `Y : C`, there is a contravariant long exact sequence :
 `Ext S.X₃ Y n₀ → Ext S.X₂ Y n₀ → Ext S.X₁ Y n₀ → Ext S.X₃ Y n₁ → Ext S.X₂ Y n₁ → Ext S.X₁ Y n₁`.
 
 -/
@@ -54,6 +54,7 @@ lemma preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply
 variable (X)
 
 include hS in
+/-- Alternative formulation of `covariant_sequence_exact₂` -/
 lemma covariant_sequence_exact₂' (n : ℕ) :
     (ShortComplex.mk (AddCommGrp.ofHom ((mk₀ S.f).postcomp X (add_zero n)))
       (AddCommGrp.ofHom ((mk₀ S.g).postcomp X (add_zero n))) (by
@@ -74,6 +75,7 @@ section
 
 variable (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁)
 
+/-- Alternative formulation of `covariant_sequence_exact₃` -/
 lemma covariant_sequence_exact₃' :
     (ShortComplex.mk (AddCommGrp.ofHom ((mk₀ S.g).postcomp X (add_zero n₀)))
       (AddCommGrp.ofHom (hS.extClass.postcomp X h)) (by
@@ -92,6 +94,7 @@ lemma covariant_sequence_exact₃' :
   · ext x
     exact preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply hS x h
 
+/-- Alternative formulation of `covariant_sequence_exact₁` -/
 lemma covariant_sequence_exact₁' :
     (ShortComplex.mk
       (AddCommGrp.ofHom (hS.extClass.postcomp X h))
@@ -114,7 +117,8 @@ open ComposableArrows
 
 /-- Given a short exact short complex `S` in an abelian category `C` and an object `X : C`,
 this is the long exact sequence
-`Ext X S.X₁ n₀ → Ext X S.X₂ n₀ → Ext X S.X₃ n₀ → Ext X S.X₁ n₁ → Ext X S.X₂ n₁ → Ext X S.X₃ n₁`. -/
+`Ext X S.X₁ n₀ → Ext X S.X₂ n₀ → Ext X S.X₃ n₀ → Ext X S.X₁ n₁ → Ext X S.X₂ n₁ → Ext X S.X₃ n₁`
+when `n₀ + 1 = n₁` -/
 noncomputable def covariantSequence : ComposableArrows AddCommGrp.{w} 5 :=
   mk₅ (AddCommGrp.ofHom ((mk₀ S.f).postcomp X (add_zero n₀)))
     (AddCommGrp.ofHom ((mk₀ S.g).postcomp X (add_zero n₀)))
@@ -176,6 +180,7 @@ lemma preadditiveYoneda_homologySequenceδ_singleTriangle_apply
   rfl
 
 include hS in
+/-- Alternative formulation of `contravariant_sequence_exact₂` -/
 lemma contravariant_sequence_exact₂' (n : ℕ) :
     (ShortComplex.mk (AddCommGrp.ofHom ((mk₀ S.g).precomp Y (zero_add n)))
       (AddCommGrp.ofHom ((mk₀ S.f).precomp Y (zero_add n))) (by
@@ -195,6 +200,7 @@ section
 
 variable (n₀ n₁ : ℕ) (h : 1 + n₀ = n₁)
 
+/-- Alternative formulation of `contravariant_sequence_exact₁` -/
 lemma contravariant_sequence_exact₁' :
     (ShortComplex.mk (AddCommGrp.ofHom (((mk₀ S.f).precomp Y (zero_add n₀))))
       (AddCommGrp.ofHom (hS.extClass.precomp Y h)) (by
@@ -211,6 +217,7 @@ lemma contravariant_sequence_exact₁' :
   · ext; apply singleFunctor_map_comp_hom (C := C)
   · ext; dsimp; apply preadditiveYoneda_homologySequenceδ_singleTriangle_apply
 
+/-- Alternative formulation of `contravariant_sequence_exact₃` -/
 lemma contravariant_sequence_exact₃' :
     (ShortComplex.mk (AddCommGrp.ofHom (hS.extClass.precomp Y h))
       (AddCommGrp.ofHom (((mk₀ S.g).precomp Y (zero_add n₁)))) (by
@@ -231,7 +238,8 @@ open ComposableArrows
 
 /-- Given a short exact short complex `S` in an abelian category `C` and an object `Y : C`,
 this is the long exact sequence
-`Ext S.X₃ Y n₀ → Ext S.X₂ Y n₀ → Ext S.X₁ Y n₀ → Ext S.X₃ Y n₁ → Ext S.X₂ Y n₁ → Ext S.X₁ Y n₁`. -/
+`Ext S.X₃ Y n₀ → Ext S.X₂ Y n₀ → Ext S.X₁ Y n₀ → Ext S.X₃ Y n₁ → Ext S.X₂ Y n₁ → Ext S.X₁ Y n₁`
+when `1 + n₀ = n₁`. -/
 noncomputable def contravariantSequence : ComposableArrows AddCommGrp.{w} 5 :=
   mk₅ (AddCommGrp.ofHom ((mk₀ S.g).precomp Y (zero_add n₀)))
     (AddCommGrp.ofHom ((mk₀ S.f).precomp Y (zero_add n₀)))

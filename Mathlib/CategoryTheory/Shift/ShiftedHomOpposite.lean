@@ -41,8 +41,7 @@ lemma opEquiv_symm_apply {n : ℤ} (f : ShiftedHom (Opposite.op Y) (Opposite.op 
       ((opShiftFunctorEquivalence C n).unitIso.inv.app (Opposite.op X)).unop ≫ f.unop⟦n⟧' := by
   rfl
 
-lemma opEquiv_symm_apply_comp
-    {X Y : C} {a : ℤ}
+lemma opEquiv_symm_apply_comp {X Y : C} {a : ℤ}
     (f : ShiftedHom (Opposite.op X) (Opposite.op Y) a) {b : ℤ} {Z : C}
     (z : ShiftedHom X Z b) {c : ℤ} (h : b + a = c) :
     ((ShiftedHom.opEquiv a).symm f).comp z h =
@@ -60,8 +59,7 @@ lemma opEquiv_symm_comp {a b : ℤ}
     (opEquiv _).symm (f.comp g h) =
       ((opEquiv _).symm g).comp ((opEquiv _).symm f) (by omega) := by
   rw [opEquiv_symm_apply, opEquiv_symm_apply,
-    opShiftFunctorEquivalence_unitIso_inv_app_eq_add' _ _ _ _
-    (show a + b = c by omega), comp, comp]
+    opShiftFunctorEquivalence_unitIso_inv_app_eq _ _ _ _ (show a + b = c by omega), comp, comp]
   dsimp
   rw [assoc, assoc, assoc, assoc, ← Functor.map_comp, ← unop_comp_assoc,
     Iso.inv_hom_id_app]
@@ -123,7 +121,7 @@ lemma opEquiv'_add_symm (n m a a' a'' : ℤ) (ha' : n + a = a') (ha'' : m + a' =
       (opEquiv' m a' a'' ha'').symm ((opEquiv' n a a' ha').symm
         (x ≫ (shiftFunctorAdd Cᵒᵖ m n).hom.app _)).op := by
   simp only [opEquiv'_symm_apply, opEquiv_symm_apply,
-    opShiftFunctorEquivalence_unitIso_inv_app_eq_add' _ _ _ _ (add_comm n m)]
+    opShiftFunctorEquivalence_unitIso_inv_app_eq _ _ _ _ (add_comm n m)]
   dsimp
   simp only [assoc, Functor.map_comp, ← shiftFunctorAdd'_eq_shiftFunctorAdd,
     ← NatTrans.naturality_assoc,

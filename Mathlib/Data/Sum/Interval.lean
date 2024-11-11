@@ -222,7 +222,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (α ⊕ β) where
   finset_mem_Ioc := by rintro (a | a) (b | b) (x | x) <;> simp
   finset_mem_Ioo := by rintro (a | a) (b | b) (x | x) <;> simp
 
-variable (a₁ a₂ : α) (b₁ b₂ : β) (a b : α ⊕ β)
+variable (a₁ a₂ : α) (b₁ b₂ : β)
 
 theorem Icc_inl_inl : Icc (inl a₁ : α ⊕ β) (inl a₂) = (Icc a₁ a₂).map Embedding.inl :=
   rfl
@@ -300,7 +300,7 @@ local elab "simp_lex" : tactic => do
         map_empty, not_mem_empty, true_and, inl_mem_disjSum, inr_mem_disjSum, and_true, ofLex_toLex,
         mem_map, Embedding.coeFn_mk, exists_prop, exists_eq_right, Embedding.inl_apply,
         -- Porting note: added
-        inl.injEq, inr.injEq]
+        inl.injEq, inr.injEq, reduceCtorEq]
   )
 
 instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
