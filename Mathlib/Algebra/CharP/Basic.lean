@@ -7,13 +7,7 @@ import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.Group.ULift
-import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Cast.Prod
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.ULift
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Characteristic of semirings
