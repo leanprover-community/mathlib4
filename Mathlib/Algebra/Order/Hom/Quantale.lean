@@ -105,23 +105,19 @@ instance QuantaleHom.instFunLike : FunLike (QuantaleHom M N) M N where
     apply DFunLike.coe_injective'
     exact h
 
-/-- Turn an element of a type `F` satisfying `QuantaleHomClass F M N` into an actual
-`QuantaleHom`. This is declared as the default coercion from `F` to `M →*q N`. -/
+/-- Turn a `Funlike F` satisfying `[MulHomClass F M N] [CompleteLatticeHomClass F M N]` into
+a `QuantaleHom`. This is declared as the default coercion from `F` to `M →*q N`. -/
 @[to_additive (attr := coe)
-"Turn an element of a type `F` satisfying `AddQuantaleHomClass F M N` into an
-actual `AddQuantaleHom`. This is declared as the default coercion from `F` to `M →+q N`."]
-def QuantaleHomClass.toQuantaleHom
+"Turn a `Funlike F` satisfying `[AddHomClass F M N] [CompleteLatticeHomClass F M N]` into
+an `AddQuantaleHom`. This is declared as the default coercion from `F` to `M →*q N`."]
+def instQuantaleHom
   [FunLike F M N] [MulHomClass F M N] [CompleteLatticeHomClass F M N] (f : F) : QuantaleHom M N :=
   { (f : MulHom M N), (f : CompleteLatticeHom M N) with }
 
-/-- Any type satisfying `QuantaleHomClass` can be cast into `QuantaleHom` via
-`QuantaleHomClass.toQuantaleHom`. -/
-@[to_additive "Any type satisfying `AddQuantaleHomClass` can be cast into `AddQuantaleHom` via
-`AddQuantaleHomClass.toAddQuantaleHom`."]
+@[to_additive]
 instance
   [FunLike F M N] [MulHomClass F M N] [CompleteLatticeHomClass F M N] :
-  CoeTC F (QuantaleHom M N) :=
-  ⟨QuantaleHomClass.toQuantaleHom⟩
+  CoeTC F (QuantaleHom M N) := ⟨instQuantaleHom⟩
 
 @[to_additive (attr := simp)]
 theorem QuantaleHom.coe_coe
@@ -188,22 +184,18 @@ instance OneQuantaleHom.instFunLike : FunLike (M →*q N) M N where
     apply DFunLike.coe_injective'
     exact h
 
-/-- Turn an element of a type `F` satisfying `OneQuantaleHomClass F M N` into an actual
-`OneQuantaleHom`. This is declared as the default coercion from `F` to `M →*q N`. -/
+/-- Turn a `Funlike F` satisfying `MonoidHomClass` and `CompleteLatticeHomClass`
+into a `OneQuantaleHom`. This is declared as the default coercion from `F` to `M →*q N`. -/
 @[to_additive (attr := coe)
-"Turn an element of a type `F` satisfying `ZeroAddQuantaleHomClass F M N` into an
-actual `ZeroAddQuantaleHom`. This is declared as the default coercion from `F` to `M →+q N`."]
-def toOneQuantaleHom
+"Turn a `Funlike F` satisfying `AddMonoidHomClass` and `CompleteLatticeHomClass` into a
+`ZeroAddQuantaleHom`. This is declared as the default coercion from `F` to `M →+q N`."]
+def instOneQuantaleHom
   [FunLike F M N] [MonoidHomClass F M N] [CompleteLatticeHomClass F M N] (f : F) : M →*q N :=
   { (f : MonoidHom M N), (f : CompleteLatticeHom M N) with }
 
-/-- Any type satisfying `OneQuantaleHomClass` can be cast into `OneQuantaleHom` via
-`OneQuantaleHomClass.toOneQuantaleHom`. -/
-@[to_additive "Any type satisfying `ZeroAddQuantaleHomClass` can be cast into `ZeroAddQuantaleHom`
-via `ZeroAddQuantaleHomClass.toZeroAddQuantaleHom`."]
+@[to_additive]
 instance [FunLike F M N] [MonoidHomClass F M N] [CompleteLatticeHomClass F M N] :
-  CoeTC F (M →*q N) :=
-  ⟨toOneQuantaleHom⟩
+  CoeTC F (M →*q N) := ⟨instOneQuantaleHom⟩
 
 @[to_additive (attr := simp)]
 theorem OneQuantaleHom.coe_coe
@@ -212,7 +204,6 @@ theorem OneQuantaleHom.coe_coe
 
 /- Isomorphisms -/
 
-variable (f : M ≃*o N)
-#check toOneQuantaleHom f
+example (f : M ≃*o N) : M →*q N := instOneQuantaleHom f
 
 end Quantale
