@@ -42,33 +42,33 @@ Cf. `Data.Fintype.Option`
 -/
 def recEmptyOption {P : Type u → Sort v}
     (finChoice : (n : ℕ) → Fin (n + 1))
-    (congr : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β )
+    (congr : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β)
     (empty : P PEmpty.{u + 1})
     (option : {α : Type u} → FinEnum α → P α → P (Option α))
     (α : Type u) [FinEnum α] :
     P α :=
   match cardeq : card α with
-  | 0 => of_equiv _ _ cardeq h_empty
+  | 0 => congr _ _ cardeq empty
   | n + 1 =>
     let fN := uliftId (α := Fin n)
     have : card (ULift.{u} <| Fin n) = n := card_ulift.trans card_fin
-    of_equiv (insertNone _ <| fin_choice n) _
+    congr (insertNone _ <| finChoice n) _
       (cardeq.trans <| congrArg Nat.succ this.symm) <|
-        h_option fN (recEmptyOption fin_choice of_equiv h_empty h_option _)
+        option fN (recEmptyOption finChoice congr empty option _)
 termination_by card α
 
 /--
 For an empty type, the recursion principle evaluates to whatever `of_equiv`
 makes of the base case.
 -/
-theorem recEmptyOption_of_card_eq_zero {P : (α : Type u) → Sort v}
-    (fin_choice : (n : ℕ) → Fin (n + 1))
-    (of_equiv : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β )
-    (h_empty : P PEmpty.{u + 1})
-    (h_option : {α : Type u} → FinEnum α → P α → P (Option α))
+theorem recEmptyOption_of_card_eq_zero {P : Type u → Sort v}
+    (finChoice : (n : ℕ) → Fin (n + 1))
+    (congr : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β)
+    (empty : P PEmpty.{u + 1})
+    (option : {α : Type u} → FinEnum α → P α → P (Option α))
     (α : Type u) [FinEnum α] (h : card α = 0) (_ : FinEnum PEmpty.{u + 1}) :
-    recEmptyOption fin_choice of_equiv h_empty h_option α =
-      of_equiv _ _ (h.trans <| card_eq_zero_of_IsEmpty |>.symm) h_empty := by
+    recEmptyOption finChoice congr empty option α =
+      congr _ _ (h.trans <| card_eq_zero_of_IsEmpty |>.symm) empty := by
   unfold recEmptyOption
   split
   · congr 1; exact Subsingleton.allEq _ _
@@ -79,17 +79,17 @@ For a type whose `card` has a predecessor `n`, the recursion principle evaluates
 `of_equiv` makes of the step result, where `Option.none` has been inserted into the
 `(fin_choice n)`th rank of the enumeration.
 -/
-theorem recEmptyOption_of_card_eq_succ {P : (α : Type u) → Sort v}
-    (fin_choice : (n : ℕ) → Fin (n + 1))
-    (of_equiv : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β )
-    (h_empty : P PEmpty.{u + 1})
-    (h_option : {α : Type u} → FinEnum α → P α → P (Option α))
+theorem recEmptyOption_of_card_eq_succ {P : Type u → Sort v}
+    (finChoice : (n : ℕ) → Fin (n + 1))
+    (congr : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β)
+    (empty : P PEmpty.{u + 1})
+    (option : {α : Type u} → FinEnum α → P α → P (Option α))
     (α : Type u) [FinEnum α] (n : {n : ℕ // card α = n + 1}) :
-    recEmptyOption fin_choice of_equiv h_empty h_option α =
-      of_equiv (insertNone _ <| fin_choice n) _
+    recEmptyOption finChoice congr empty option α =
+      congr (insertNone _ <| finChoice n) _
         (n.prop.trans <| congrArg Nat.succ (card_ulift.trans card_fin).symm)
-        (h_option uliftId <|
-          recEmptyOption fin_choice of_equiv h_empty h_option (ULift.{u} <| Fin n)) := by
+        (option uliftId <|
+          recEmptyOption finChoice congr empty option (ULift.{u} <| Fin n)) := by
   conv => lhs; unfold recEmptyOption
   split
   · exact Nat.noConfusion <| n.prop.symm.trans ‹_›
@@ -102,13 +102,13 @@ In contrast to the `Fintype` case, data can be transported along such an `Equiv`
 Also, since order matters, the choice of element that gets replaced by `Option.none` has
 to be provided for every step.
 -/
-abbrev recOnEmptyOption {P : (α : Type u) → Sort v}
+abbrev recOnEmptyOption {P : Type u → Sort v}
     {α : Type u} (aenum : FinEnum α)
-    (fin_choice : (n : ℕ) → Fin (n + 1))
-    (of_equiv : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β )
-    (h_empty : P PEmpty.{u + 1})
-    (h_option : {α : Type u} → FinEnum α → P α → P (Option α)) :
+    (finChoice : (n : ℕ) → Fin (n + 1))
+    (congr : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β)
+    (empty : P PEmpty.{u + 1})
+    (option : {α : Type u} → FinEnum α → P α → P (Option α)) :
     P α :=
-  @recEmptyOption P fin_choice of_equiv h_empty h_option α aenum
+  @recEmptyOption P finChoice congr empty option α aenum
 
 end FinEnum
