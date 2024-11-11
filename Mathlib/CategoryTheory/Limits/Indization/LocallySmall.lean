@@ -48,8 +48,8 @@ noncomputable def colimitYonedaHomEquiv : (colimit (F ⋙ yoneda) ⟶ G) ≃ lim
 
 @[simp]
 theorem colimitYonedaHomEquiv_π_apply (η : colimit (F ⋙ yoneda) ⟶ G) (i : Iᵒᵖ) :
-  limit.π (F.op ⋙ G) i (colimitYonedaHomEquiv F G η) =
-    η.app (op (F.obj i.unop)) ((colimit.ι (F ⋙ yoneda) i.unop).app _ (𝟙 _)) := by
+    limit.π (F.op ⋙ G) i (colimitYonedaHomEquiv F G η) =
+      η.app (op (F.obj i.unop)) ((colimit.ι (F ⋙ yoneda) i.unop).app _ (𝟙 _)) := by
   simp only [Functor.comp_obj, Functor.op_obj, colimitYonedaHomEquiv, uliftFunctor_obj,
     Iso.instTransIso_trans, Iso.trans_assoc, Iso.toEquiv_comp, Equiv.symm_trans_apply,
     Equiv.symm_symm, Equiv.trans_apply, Iso.toEquiv_fun, Iso.symm_hom, Equiv.ulift_apply]
