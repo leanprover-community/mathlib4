@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.Topology.LocalAtTarget
 
 /-!
@@ -61,6 +62,21 @@ instance universallyClosed_isStableUnderComposition :
     IsStableUnderComposition @UniversallyClosed := by
   rw [universallyClosed_eq]
   infer_instance
+
+lemma IsClosedMap.of_comp_surjective {X Y Z} [TopologicalSpace X] [TopologicalSpace Y]
+    [TopologicalSpace Z] {f : X → Y} {g : Y → Z} (hf : Function.Surjective f) (hf' : Continuous f)
+    (hfg : IsClosedMap (g ∘ f)) : IsClosedMap g := by
+  intro K hK
+  rw [← Set.image_preimage_eq K hf, ← Set.image_comp]
+  exact hfg _ (hK.preimage hf')
+
+lemma UniversallyClosed.of_comp_surjective {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [UniversallyClosed (f ≫ g)] [Surjective f] : UniversallyClosed g := by
+  constructor
+  intro X' Y' i₁ i₂ f' H
+  have := UniversallyClosed.out _ _ _ ((IsPullback.of_hasPullback i₁ f).paste_horiz H)
+  exact IsClosedMap.of_comp_surjective (MorphismProperty.pullback_fst (P := @Surjective) _ _ ‹_›).1
+    (Scheme.Hom.continuous _) this
 
 instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : UniversallyClosed f] [hg : UniversallyClosed g] : UniversallyClosed (f ≫ g) :=
