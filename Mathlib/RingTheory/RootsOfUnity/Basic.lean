@@ -109,7 +109,7 @@ def rootsOfUnityUnitsMulEquiv (M : Type*) [CommMonoid M] (n : ℕ) :
     rootsOfUnity n Mˣ ≃* rootsOfUnity n M where
   toFun ζ := ⟨ζ.val, (mem_rootsOfUnity ..).mpr <| (mem_rootsOfUnity' ..).mp ζ.prop⟩
   invFun ζ := ⟨toUnits ζ.val, by
-    simp only [mem_rootsOfUnity, ← map_pow, EquivLike.map_eq_one_iff]
+    simp only [mem_rootsOfUnity, ← map_pow, EmbeddingLike.map_eq_one_iff]
     exact (mem_rootsOfUnity ..).mp ζ.prop⟩
   left_inv ζ := by simp only [toUnits_val_apply, Subtype.coe_eta]
   right_inv ζ := by simp only [val_toUnits_apply, Subtype.coe_eta]

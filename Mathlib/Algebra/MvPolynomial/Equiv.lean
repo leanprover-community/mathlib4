@@ -475,7 +475,7 @@ theorem finSuccEquiv_support' {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} :
 -- TODO: generalize `finSuccEquiv R n` to an arbitrary ZeroHom
 theorem support_finSuccEquiv_nonempty {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
     (finSuccEquiv R n f).support.Nonempty := by
-  rwa [Polynomial.support_nonempty, EquivLike.map_ne_zero_iff]
+  rwa [Polynomial.support_nonempty, EmbeddingLike.map_ne_zero_iff]
 
 theorem degree_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
     (finSuccEquiv R n f).degree = degreeOf 0 f := by
