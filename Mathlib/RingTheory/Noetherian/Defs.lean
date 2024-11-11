@@ -3,12 +3,7 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Order.Filter.EventuallyConst
-import Mathlib.Order.PartialSups
-import Mathlib.Algebra.Module.Submodule.IterateMapComap
-import Mathlib.RingTheory.OrzechProperty
-import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.RingTheory.Finiteness
 
 /-!
 # Noetherian rings and modules
@@ -52,7 +47,7 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 -/
 
 
-open Set Filter Pointwise
+open Set Pointwise
 
 /-- `IsNoetherian R M` is the proposition that `M` is a Noetherian `R`-module,
 implemented as the predicate that all `R`-submodules of `M` are finitely generated.
@@ -301,11 +296,6 @@ theorem monotone_stabilizes_iff_noetherian :
     (∀ f : ℕ →o Submodule R M, ∃ n, ∀ m, n ≤ m → f n = f m) ↔ IsNoetherian R M := by
   rw [isNoetherian_iff, WellFounded.monotone_chain_condition]
 
-theorem eventuallyConst_of_isNoetherian [IsNoetherian R M] (f : ℕ →o Submodule R M) :
-    atTop.EventuallyConst f := by
-  simp_rw [eventuallyConst_atTop, eq_comm]
-  exact (monotone_stabilizes_iff_noetherian.mpr inferInstance) f
-
 /-- If `∀ I > J, P I` implies `P J`, then `P` holds for all submodules. -/
 theorem IsNoetherian.induction [IsNoetherian R M] {P : Submodule R M → Prop}
     (hgt : ∀ I, (∀ J > I, P J) → P I) (I : Submodule R M) : P I :=
@@ -362,61 +352,6 @@ theorem isNoetherian_iff_submodule_quotient (S : Submodule R P) :
   apply isNoetherian_of_range_eq_ker S.subtype S.mkQ
   rw [Submodule.ker_mkQ, Submodule.range_subtype]
 
-/-- For an endomorphism of a Noetherian module, any sufficiently large iterate has disjoint kernel
-and range. -/
-theorem LinearMap.eventually_disjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
-    ∀ᶠ n in atTop, Disjoint (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
-  obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.ker (f ^ n) = LinearMap.ker (f ^ m)⟩ :=
-    monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
-  refine eventually_atTop.mpr ⟨n, fun m hm ↦ disjoint_iff.mpr ?_⟩
-  rw [← hn _ hm, Submodule.eq_bot_iff]
-  rintro - ⟨hx, ⟨x, rfl⟩⟩
-  apply LinearMap.pow_map_zero_of_le hm
-  replace hx : x ∈ LinearMap.ker (f ^ (n + m)) := by
-    simpa [f.pow_apply n, f.pow_apply m, ← f.pow_apply (n + m), ← iterate_add_apply] using hx
-  rwa [← hn _ (n.le_add_right m)] at hx
-
-lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :
-    ∀ᶠ n in atTop, ⨆ m, LinearMap.ker (f ^ m) = LinearMap.ker (f ^ n) := by
-  obtain ⟨n, hn : ∀ m, n ≤ m → ker (f ^ n) = ker (f ^ m)⟩ :=
-    monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
-  refine eventually_atTop.mpr ⟨n, fun m hm ↦ ?_⟩
-  refine le_antisymm (iSup_le fun l ↦ ?_) (le_iSup (fun i ↦ LinearMap.ker (f ^ i)) m)
-  rcases le_or_lt m l with h | h
-  · rw [← hn _ (hm.trans h), hn _ hm]
-  · exact f.iterateKer.monotone h.le
-
-/-- **Orzech's theorem** for Noetherian modules: if `R` is a ring (not necessarily commutative),
-`M` and `N` are `R`-modules, `M` is Noetherian, `i : N →ₗ[R] M` is injective,
-`f : N →ₗ[R] M` is surjective, then `f` is also injective. The proof here is adapted from
-Djoković's paper *Epimorphisms of modules which must be isomorphisms* [djokovic1973],
-utilizing `LinearMap.iterateMapComap`.
-See also Orzech's original paper: *Onto endomorphisms are isomorphisms* [orzech1971]. -/
-theorem IsNoetherian.injective_of_surjective_of_injective (i f : N →ₗ[R] M)
-    (hi : Injective i) (hf : Surjective f) : Injective f := by
-  haveI := isNoetherian_of_injective i hi
-  obtain ⟨n, H⟩ := monotone_stabilizes_iff_noetherian.2 ‹_›
-    ⟨_, monotone_nat_of_le_succ <| f.iterateMapComap_le_succ i ⊥ (by simp)⟩
-  exact LinearMap.ker_eq_bot.1 <| bot_unique <|
-    f.ker_le_of_iterateMapComap_eq_succ i ⊥ n (H _ (Nat.le_succ _)) hf hi
-
-/-- **Orzech's theorem** for Noetherian modules: if `R` is a ring (not necessarily commutative),
-`M` is a Noetherian `R`-module, `N` is a submodule, `f : N →ₗ[R] M` is surjective, then `f` is also
-injective. -/
-theorem IsNoetherian.injective_of_surjective_of_submodule
-    {N : Submodule R M} (f : N →ₗ[R] M) (hf : Surjective f) : Injective f :=
-  IsNoetherian.injective_of_surjective_of_injective N.subtype f N.injective_subtype hf
-
-/-- Any surjective endomorphism of a Noetherian module is injective. -/
-theorem IsNoetherian.injective_of_surjective_endomorphism (f : M →ₗ[R] M)
-    (s : Surjective f) : Injective f :=
-  IsNoetherian.injective_of_surjective_of_injective _ f (LinearEquiv.refl _ _).injective s
-
-/-- Any surjective endomorphism of a Noetherian module is bijective. -/
-theorem IsNoetherian.bijective_of_surjective_endomorphism (f : M →ₗ[R] M)
-    (s : Surjective f) : Bijective f :=
-  ⟨IsNoetherian.injective_of_surjective_endomorphism f s, s⟩
-
 /-- A sequence `f` of submodules of a noetherian module,
 with `f (n+1)` disjoint from the supremum of `f 0`, ..., `f n`,
 is eventually zero. -/
@@ -435,19 +370,6 @@ theorem IsNoetherian.disjoint_partialSups_eventually_bot
   exact
     ⟨n, fun m p =>
       (h m).eq_bot_of_ge <| sup_eq_left.1 <| (w (m + 1) <| le_add_right p).symm.trans <| w m p⟩
-
-/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial. -/
-theorem IsNoetherian.subsingleton_of_prod_injective (f : M × N →ₗ[R] M)
-    (i : Injective f) : Subsingleton N := .intro fun x y ↦ by
-  have h := IsNoetherian.injective_of_surjective_of_injective f _ i LinearMap.fst_surjective
-  simpa using h (show LinearMap.fst R M N (0, x) = LinearMap.fst R M N (0, y) from rfl)
-
-/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial. -/
-@[simps!]
-def IsNoetherian.equivPUnitOfProdInjective (f : M × N →ₗ[R] M)
-    (i : Injective f) : N ≃ₗ[R] PUnit.{w + 1} :=
-  haveI := IsNoetherian.subsingleton_of_prod_injective f i
-  .ofSubsingleton _ _
 
 end
 
@@ -539,17 +461,3 @@ instance isNoetherianRing_range {R} [Ring R] {S} [Ring S] (f : R →+* S) [IsNoe
 theorem isNoetherianRing_of_ringEquiv (R) [Ring R] {S} [Ring S] (f : R ≃+* S) [IsNoetherianRing R] :
     IsNoetherianRing S :=
   isNoetherianRing_of_surjective R S f.toRingHom f.toEquiv.surjective
-
-theorem IsNoetherianRing.isNilpotent_nilradical (R : Type*) [CommRing R] [IsNoetherianRing R] :
-    IsNilpotent (nilradical R) := by
-  obtain ⟨n, hn⟩ := Ideal.exists_radical_pow_le_of_fg (⊥ : Ideal R) (IsNoetherian.noetherian _)
-  exact ⟨n, eq_bot_iff.mpr hn⟩
-
-/-- Any Noetherian ring satisfies Orzech property.
-See also `IsNoetherian.injective_of_surjective_of_submodule` and
-`IsNoetherian.injective_of_surjective_of_injective`. -/
-instance (priority := 100) IsNoetherianRing.orzechProperty
-    (R) [Ring R] [IsNoetherianRing R] : OrzechProperty R where
-  injective_of_surjective_of_submodule' {M} :=
-    letI := Module.addCommMonoidToAddCommGroup R (M := M)
-    IsNoetherian.injective_of_surjective_of_submodule

@@ -7,7 +7,7 @@ import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Prime spectrum of a commutative (semi)ring as a type

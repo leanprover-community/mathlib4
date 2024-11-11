@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Noetherian.Orzech
 
 /-!
 # Finiteness conditions in commutative algebra

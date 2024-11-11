@@ -3,13 +3,13 @@ Copyright (c) 2023 Emily Witt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emily Witt, Kim Morrison, Jake Levinson, Sam van Gool
 -/
-import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.CategoryTheory.Abelian.Ext
-import Mathlib.RingTheory.Finiteness
 import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Finiteness
+import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Local cohomology.
