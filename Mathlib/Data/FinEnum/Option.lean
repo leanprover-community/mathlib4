@@ -68,32 +68,35 @@ theorem recEmptyOption_of_card_eq_zero {P : Type u → Sort v}
     (option : {α : Type u} → FinEnum α → P α → P (Option α))
     (α : Type u) [FinEnum α] (h : card α = 0) (_ : FinEnum PEmpty.{u + 1}) :
     recEmptyOption finChoice congr empty option α =
-      congr _ _ (h.trans <| card_eq_zero_of_IsEmpty |>.symm) empty := by
+      congr _ _ (h.trans <| card_eq_zero |>.symm) empty := by
   unfold recEmptyOption
   split
   · congr 1; exact Subsingleton.allEq _ _
   · exact Nat.noConfusion <| h.symm.trans ‹_›
 
 /--
-For a type whose `card` has a predecessor `n`, the recursion principle evaluates to whatever
+For a type with positive `card`, the recursion principle evaluates to whatever
 `congr` makes of the step result, where `Option.none` has been inserted into the
-`(finChoice n)`th rank of the enumeration.
+`(finChoice (card α - 1))`th rank of the enumeration.
 -/
-theorem recEmptyOption_of_card_eq_succ {P : Type u → Sort v}
+theorem recEmptyOption_of_card_pos {P : Type u → Sort v}
     (finChoice : (n : ℕ) → Fin (n + 1))
     (congr : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β)
     (empty : P PEmpty.{u + 1})
     (option : {α : Type u} → FinEnum α → P α → P (Option α))
-    (α : Type u) [FinEnum α] (n : {n : ℕ // card α = n + 1}) :
+    (α : Type u) [FinEnum α] (h : 0 < card α) :
     recEmptyOption finChoice congr empty option α =
-      congr (insertNone _ <| finChoice n) _
-        (n.prop.trans <| congrArg Nat.succ (card_ulift.trans card_fin).symm)
+      congr (insertNone _ <| finChoice (card α - 1)) ‹_›
+        (calc _
+        _ = card _ + 1 := card_unique _ <| instFinEnumOptionLast _
+        _ = _ := congrArg (· + 1) <| card_unique _ uliftId |>.trans card_fin
+        _ = _ := (card α).succ_pred_eq_of_pos h).symm
         (option uliftId <|
-          recEmptyOption finChoice congr empty option (ULift.{u} <| Fin n)) := by
+          recEmptyOption finChoice congr empty option (ULift.{u} <| Fin (card α - 1))) := by
   conv => lhs; unfold recEmptyOption
   split
-  · exact Nat.noConfusion <| n.prop.symm.trans ‹_›
-  · rcases Nat.succ.inj <| n.prop.symm.trans ‹_› with ⟨rfl⟩; rfl
+  · exact absurd (‹_› ▸ h) (card α).lt_irrefl
+  · rcases Nat.succ.inj <| (card α).succ_pred_eq_of_pos h |>.trans ‹_› with ⟨rfl⟩; rfl
 
 /-- A recursor principle for finite-and-enumerable types, analogous to `Nat.recOn`.
 It effectively says that every `FinEnum` is either `Empty` or `Option α`, up to an `Equiv` mediated

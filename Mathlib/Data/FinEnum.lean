@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Card
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Pi
 
@@ -56,51 +57,6 @@ def ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) : FinEnum 
 def toList (α) [FinEnum α] : List α :=
   (List.finRange (card α)).map (equiv).symm
 
-/-- Any two enumerations of the same type have the same length. -/
-theorem card_unique {α : Type u} (e₁ e₂ : FinEnum α) : e₁.card = e₂.card :=
-  Fin.equiv_iff_eq.mp ⟨e₁.equiv.symm.trans e₂.equiv⟩
-
-/-- Any enumeration of an empty type has length 0. -/
-theorem card_eq_zero {α : Type u} [FinEnum α] [IsEmpty α] : card α = 0 :=
-  match h : card α with
-  | 0 => rfl
-  | _ + 1 => ‹IsEmpty α›.elim ((h ▸ equiv).symm 0)
-
-lemma card_pos {α : Type*} [FinEnum α] [Nonempty α] : 0 < card α := sorry
-lemma card_ne_zero {α : Type*} [FinEnum α] [Nonempty α] : card α ≠ 0 := card_pos.ne'
-
-/-- Any enumeration of a type with unique inhabitant has length 1. -/
-theorem card_eq_one (α : Type u) [FinEnum α] [Unique α] : card α = 1 :=
-  match cardPredOfNonempty α with
-  | ⟨0, h⟩ => h
-  | ⟨n + 1, h⟩ =>
-    let α₀ : α := equiv.symm ⟨0, h ▸ (n + 1).succ_pos⟩
-    let α₁ : α := equiv.symm ⟨1, h ▸ Nat.succ_lt_succ (n.succ_pos)⟩
-    Nat.noConfusion <| Fin.mk.inj <| equiv.symm.injective <| Subsingleton.allEq α₀ α₁
-
-instance [IsEmpty α] : Unique (FinEnum α) where
-  default := ⟨0, Equiv.equivOfIsEmpty α (Fin 0)⟩
-  uniq e := by
-    show FinEnum.mk e.1 e.2 = _
-    congr 1
-    · exact card_eq_zero_of_IsEmpty
-    · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
-      exact congrArg (α ≃ Fin ·) <| card_eq_zero_of_IsEmpty
-    · funext x
-      exact ‹IsEmpty α›.elim x
-
-instance [Unique α] : Unique (FinEnum α) where
-  default := ⟨1, Equiv.equivOfUnique α (Fin 1)⟩
-  uniq e := by
-    show FinEnum.mk e.1 e.2 = _
-    congr 1
-    · exact card_eq_one_of_Unique α
-    · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
-      exact congrArg (α ≃ Fin ·) <| card_eq_one_of_Unique α
-    · funext x y
-      cases decEq x y <;> cases decidableEq_of_subsingleton x y <;>
-      first | rfl | contradiction
-
 open Function
 
 @[simp]
@@ -134,19 +90,11 @@ theorem card_ulift [FinEnum (ULift α)] [FinEnum α] : card (ULift α) = card α
 theorem uliftId_equiv [FinEnum α] (i : Fin (card α)) :
     equiv.symm i = (uliftId.equiv.symm i).down := rfl
 
-/-- An empty type has a trivial enumeration. Not registered as an instance, to make sure that there
-aren't two definitionally differing instances around. -/
-def ofIsEmpty [IsEmpty α] : FinEnum α := default
-
 instance pempty : FinEnum PEmpty :=
   ofList [] fun x => PEmpty.elim x
 
 instance empty : FinEnum Empty :=
   ofList [] fun x => Empty.elim x
-
-/-- A type with unique inhabitant has a trivial enumeration. Not registered as an instance, to make
-sure that there aren't two definitionally differing instances around. -/
-def ofUnique [Unique α] : FinEnum α := default
 
 instance punit : FinEnum PUnit :=
   ofList [PUnit.unit] fun x => by cases x; simp
@@ -219,6 +167,71 @@ instance [DecidableEq α] (xs : List α) : FinEnum { x : α // x ∈ xs } := ofL
 instance (priority := 100) [FinEnum α] : Fintype α where
   elems := univ.map (equiv).symm.toEmbedding
   complete := by intros; simp
+
+/-- The enumeration merely adds an ordering, leaving the cardinality as is. -/
+theorem card_eq_fintype_card {α : Type u} [FinEnum α] [Fintype α] : card α = Fintype.card α :=
+  Fintype.truncEquivFin α |>.inductionOn (fun h ↦ Fin.equiv_iff_eq.mp ⟨equiv.symm.trans h⟩)
+
+/-- Any two enumerations of the same type have the same length. -/
+theorem card_unique {α : Type u} (e₁ e₂ : FinEnum α) : e₁.card = e₂.card :=
+  calc _
+  _ = _ := @card_eq_fintype_card _ e₁ inferInstance
+  _ = _ := Fintype.card_congr' rfl
+  _ = _ := @card_eq_fintype_card _ e₂ inferInstance |>.symm
+
+/-- A type indexable by `Fin 0` is empty and vice versa. -/
+theorem card_eq_zero_iff {α : Type u} [FinEnum α] : card α = 0 ↔ IsEmpty α :=
+  Eq.congr_left card_eq_fintype_card |>.trans Fintype.card_eq_zero_iff
+
+/-- Any enumeration of an empty type has length 0. -/
+theorem card_eq_zero {α : Type u} [FinEnum α] [IsEmpty α] : card α = 0 :=
+  card_eq_zero_iff.mpr ‹_›
+
+/-- A type indexable by `Fin n` with positive `n` is inhabited and vice versa. -/
+theorem card_pos_iff {α : Type u} [FinEnum α] : 0 < card α ↔ Nonempty α :=
+  card_eq_fintype_card (α := α) ▸ Fintype.card_pos_iff
+
+/-- Any non-empty enumeration has more than one element. -/
+lemma card_pos {α : Type*} [FinEnum α] [Nonempty α] : 0 < card α :=
+  card_pos_iff.mpr ‹_›
+
+/-- No non-empty enumeration has 0 elements. -/
+lemma card_ne_zero {α : Type*} [FinEnum α] [Nonempty α] : card α ≠ 0 := card_pos.ne'
+
+/-- Any enumeration of a type with unique inhabitant has length 1. -/
+theorem card_eq_one (α : Type u) [FinEnum α] [Unique α] : card α = 1 :=
+  card_eq_fintype_card.trans <| Fintype.card_eq_one_iff_nonempty_unique.mpr ⟨‹_›⟩
+
+instance [IsEmpty α] : Unique (FinEnum α) where
+  default := ⟨0, Equiv.equivOfIsEmpty α (Fin 0)⟩
+  uniq e := by
+    show FinEnum.mk e.1 e.2 = _
+    congr 1
+    · exact card_eq_zero
+    · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
+      exact congrArg (α ≃ Fin ·) <| card_eq_zero
+    · funext x
+      exact ‹IsEmpty α›.elim x
+
+/-- An empty type has a trivial enumeration. Not registered as an instance, to make sure that there
+aren't two definitionally differing instances around. -/
+def ofIsEmpty [IsEmpty α] : FinEnum α := default
+
+instance [Unique α] : Unique (FinEnum α) where
+  default := ⟨1, Equiv.equivOfUnique α (Fin 1)⟩
+  uniq e := by
+    show FinEnum.mk e.1 e.2 = _
+    congr 1
+    · exact card_eq_one α
+    · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
+      exact congrArg (α ≃ Fin ·) <| card_eq_one α
+    · funext x y
+      cases decEq x y <;> cases decidableEq_of_subsingleton x y <;>
+      first | rfl | contradiction
+
+/-- A type with unique inhabitant has a trivial enumeration. Not registered as an instance, to make
+sure that there aren't two definitionally differing instances around. -/
+def ofUnique [Unique α] : FinEnum α := default
 
 end FinEnum
 
