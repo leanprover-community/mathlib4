@@ -422,7 +422,7 @@ This lemma is tagged @[csimp] so that the code generated for `Nat.log` uses `Nat
 @[csimp] theorem log_eq_logC : log = logC := by
   ext b m
   rcases le_or_lt b 1 with hb | hb
-  case inl => rw [logC_small_base hb, Nat.log_of_left_le_one hb]
+  case inl => rw [logC_of_left_le_one hb, Nat.log_of_left_le_one hb]
   case inr =>
     rcases eq_or_ne m 0 with rfl | hm
     case inl => rw [Nat.log_zero_right, logC_zero]
