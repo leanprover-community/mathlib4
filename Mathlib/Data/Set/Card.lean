@@ -6,7 +6,6 @@ Authors: Peter Nelson
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Finite
 
-
 /-!
 # Noncomputable Set Cardinality
 
