@@ -196,9 +196,7 @@ instance normal_iInf {ι : Type*} [hι : Nonempty ι]
     rintro y hy - ⟨-, ⟨i, rfl⟩, rfl⟩
     exact hx i y hy
 
-/-
-[Stacks: Lemma 09HP](https://stacks.math.columbia.edu/tag/09HP)
--/
+@[stacks 09HP]
 instance normal_inf
     (E E' : IntermediateField F K) [Normal F E] [Normal F E'] :
     Normal F (E ⊓ E' : IntermediateField F K) :=
