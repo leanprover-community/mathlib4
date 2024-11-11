@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
-import Mathlib.Analysis.Convex.Complex
+import Mathlib.Analysis.Complex.Convex
 
 /-!
 # Gaussian integral
@@ -213,7 +213,7 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       conv_rhs => rw [← one_mul ((p.1 : ℂ) ^ 2), ← sin_sq_add_cos_sq (p.2 : ℂ)]
       ring
     _ = ↑π / b := by
-      have : 0 ≤ π + π := by linarith [Real.pi_pos]
+      have : 0 ≤ π + π := by positivity
       simp only [integral_const, Measure.restrict_apply', measurableSet_Ioo, univ_inter, volume_Ioo,
         sub_neg_eq_add, ENNReal.toReal_ofReal, this]
       rw [← two_mul, real_smul, mul_one, ofReal_mul, ofReal_ofNat, integral_mul_cexp_neg_mul_sq hb]

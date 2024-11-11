@@ -293,9 +293,12 @@ lemma Filter.EventuallyEq.mem_interior {x : α} {s t : Set α} (hst : s =ᶠ[�
   rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
   simpa [mem_interior_iff_mem_nhds, ← nhdsWithin_eq_nhds, hst] using h
 
-lemma EventuallyEq.mem_interior_iff {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t) :
+lemma Filter.EventuallyEq.mem_interior_iff {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t) :
     x ∈ interior s ↔ x ∈ interior t :=
   ⟨fun h ↦ hst.mem_interior h, fun h ↦ hst.symm.mem_interior h⟩
+
+@[deprecated (since := "2024-11-11")]
+alias EventuallyEq.mem_interior_iff := Filter.EventuallyEq.mem_interior_iff
 
 section Pi
 
@@ -445,6 +448,10 @@ theorem Filter.EventuallyEq.eq_of_nhdsWithin {s : Set α} {f g : α → β} {a :
 theorem eventually_nhdsWithin_of_eventually_nhds {α : Type*} [TopologicalSpace α] {s : Set α}
     {a : α} {p : α → Prop} (h : ∀ᶠ x in 𝓝 a, p x) : ∀ᶠ x in 𝓝[s] a, p x :=
   mem_nhdsWithin_of_mem_nhds h
+
+lemma Set.MapsTo.preimage_mem_nhdsWithin {f : α → β} {s : Set α} {t : Set β} {x : α}
+    (hst : MapsTo f s t) : f ⁻¹' t ∈ 𝓝[s] x :=
+  Filter.mem_of_superset self_mem_nhdsWithin hst
 
 /-!
 ### `nhdsWithin` and subtypes
