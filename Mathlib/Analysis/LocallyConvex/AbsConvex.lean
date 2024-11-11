@@ -184,12 +184,10 @@ theorem absConvexHull_subseteq_convexClosedHull {s : Set E} :
   absConvexHull_min subset_closedAbsConvexHull absConvex_convexClosedHull
 
 theorem closedAbsConvexHull_eq_closedAbsConvexHull_closure {s : Set E} :
-    closedAbsConvexHull 𝕜 s = closedAbsConvexHull 𝕜 (closure s) := subset_antisymm
-  (closedAbsConvexHull_min (subset_trans subset_closure subset_closedAbsConvexHull)
-    absConvex_convexClosedHull isClosed_closedAbsConvexHull)
-  (closedAbsConvexHull_min
-    (closure_minimal subset_closedAbsConvexHull isClosed_closedAbsConvexHull)
-    absConvex_convexClosedHull isClosed_closedAbsConvexHull)
+    closedAbsConvexHull 𝕜 s = closedAbsConvexHull 𝕜 (closure s) :=
+  subset_antisymm ((closedAbsConvexHull 𝕜).monotone subset_closure) <| by
+    simpa using ((closedAbsConvexHull 𝕜).monotone
+      (closure_subset_closedAbsConvexHull (𝕜 := 𝕜) (E := E)))
 
 end AbsolutelyConvex
 
