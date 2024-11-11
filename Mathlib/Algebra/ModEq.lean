@@ -279,5 +279,16 @@ variable [DivisionRing α] {a b c p : α}
 @[simp] lemma div_modEq_div (hc : c ≠ 0) : a / c ≡ b / c [PMOD p] ↔ a ≡ b [PMOD (p * c)] := by
   simp [ModEq, ← sub_div, div_eq_iff hc, mul_assoc]
 
+@[simp] lemma mul_modEq_mul_right (hc : c ≠ 0) : a * c ≡ b * c [PMOD p] ↔ a ≡ b [PMOD (p / c)] := by
+  rw [div_eq_mul_inv, ← div_modEq_div (inv_ne_zero hc), div_inv_eq_mul, div_inv_eq_mul]
+
 end DivisionRing
+
+section Field
+variable [Field α] {a b c p : α}
+
+@[simp] lemma mul_modEq_mul_left (hc : c ≠ 0) : c * a ≡ c * b [PMOD p] ↔ a ≡ b [PMOD (p / c)] := by
+  simp [mul_comm c, hc]
+
+end Field
 end AddCommGroup
