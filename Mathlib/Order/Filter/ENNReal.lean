@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Topology.Instances.ENNReal
-
 /-!
 # Order properties of extended non-negative reals
 
@@ -95,25 +94,10 @@ open ENNReal NNReal
   `filter.limsup (u * v) at_top ≤ filter.limsup u at_top * filter.limsup v at_top `.-/
 theorem limsup_mul_le {u v : ℕ → ℝ} (hu_bdd : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
     (hv_bdd : BddAbove (Set.range v)) (hv0 : 0 ≤ v) :
-    Filter.limsup (u * v) atTop ≤ Filter.limsup u atTop * Filter.limsup v atTop := by
-  have h_bdd : BddAbove (Set.range (u * v)) := bddAbove_range_mul hu_bdd hu0 hv_bdd hv0
-  rw [NNReal.coe_limsup (mul_nonneg hu0 hv0), NNReal.coe_limsup hu0, NNReal.coe_limsup hv0,
-    ← NNReal.coe_mul, NNReal.coe_le_coe, ← ENNReal.coe_le_coe, ENNReal.coe_mul,
-    ENNReal.coe_limsup (bddAbove' _ h_bdd), ENNReal.coe_limsup (bddAbove' hu0 hu_bdd),
-    ENNReal.coe_limsup (bddAbove' hv0 hv_bdd)]
-  obtain ⟨Bu, hBu⟩ := hu_bdd
-  obtain ⟨Bv, hBv⟩ := hv_bdd
-  simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-    at hBu hBv
-  have hBu' : ∀ n : ℕ, ⟨u n, hu0 n⟩ ≤ Real.toNNReal Bu := fun n ↦ by
-    rw [← NNReal.coe_le_coe, coe_mk, coe_toNNReal', le_max_iff]
-    exact Or.inl (hBu n)
-  have hBv' : ∀ n : ℕ, ⟨v n, hv0 n⟩ ≤ Real.toNNReal Bv := fun n ↦ by
-    rw [← NNReal.coe_le_coe, coe_mk, coe_toNNReal', le_max_iff]
-    exact Or.inl (hBv n)
-  simp_rw [← ENNReal.coe_le_coe] at hBu' hBv'
-  apply ENNReal.limsup_mul_le' (Or.inr (ne_top_of_le_ne_top coe_ne_top
-      (le_trans limsup_le_iSup (iSup_le hBv')))) (Or.inl (ne_top_of_le_ne_top coe_ne_top
-      (le_trans limsup_le_iSup (iSup_le hBu'))))
+    Filter.limsup (u * v) atTop ≤ Filter.limsup u atTop * Filter.limsup v atTop :=
+  _root_.limsup_mul_le (Eventually.of_forall hu0) (BddAbove.isBoundedUnder_of_range hu_bdd)
+    (Eventually.of_forall hv0)
+    (BddAbove.isBoundedUnder_of_range hv_bdd)
+
 
 end Real
