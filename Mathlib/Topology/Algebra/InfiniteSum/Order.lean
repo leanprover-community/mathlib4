@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Order.MonotoneConvergence
@@ -283,6 +284,21 @@ theorem Set.Finite.of_summable_const [LinearOrderedAddCommGroup α] [Topological
   finite_univ_iff.2 <| .of_summable_const hb hf
 
 end LinearOrder
+
+section LinearOrderedCommRing
+
+variable [LinearOrderedCommRing α] [TopologicalSpace α] [OrderTopology α] {f : ι → α} {x : α}
+
+nonrec theorem HasProd.abs (hfx : HasProd f x) : HasProd (|f ·|) |x| := by
+  simpa only [HasProd, ← abs_prod] using hfx.abs
+
+theorem Multipliable.abs (hf : Multipliable f) : Multipliable (|f ·|) :=
+  let ⟨x, hx⟩ := hf; ⟨|x|, hx.abs⟩
+
+theorem abs_tprod (hf : Multipliable f) : |∏' i, f i| = ∏' i, |f i| :=
+  hf.hasProd.abs.tprod_eq.symm
+
+end LinearOrderedCommRing
 
 theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace α] [OrderTopology α]
     {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop :=
