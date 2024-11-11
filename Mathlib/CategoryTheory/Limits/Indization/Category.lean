@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 
-
 /-!
 # The category of Ind-objects
 
