@@ -8,8 +8,6 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
@@ -500,27 +498,6 @@ theorem coeffs_ofSubring {p : T[X]} : (↑(p.ofSubring T).coeffs : Set R) ⊆ T 
 @[deprecated (since := "2024-05-17")] alias frange_ofSubring := coeffs_ofSubring
 
 end Ring
-
-section CommRing
-
-variable [CommRing R]
-
-section ModByMonic
-
-variable {q : R[X]}
-
-theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
-    p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
-  LinearMap.mem_ker.trans (modByMonic_eq_zero_iff_dvd hq)
-
-@[simp]
-theorem ker_modByMonicHom (hq : q.Monic) :
-    LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
-  Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
-
-end ModByMonic
-
-end CommRing
 
 end Polynomial
 
