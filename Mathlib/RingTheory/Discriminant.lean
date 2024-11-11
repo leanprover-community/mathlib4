@@ -60,12 +60,10 @@ variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
 section Discr
 
 /-- Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we define
-`discr A ι b` as the determinant of `traceMatrix A ι b`.
-
-This is a generalization of
-[Stacks: Definition 0BIM](https://stacks.math.columbia.edu/tag/0BIM). -/
+`discr A ι b` as the determinant of `traceMatrix A ι b`. -/
 -- Porting note: using `[DecidableEq ι]` instead of `by classical...` did not work in
 -- mathlib3.
+@[stacks 0BIM]
 noncomputable def discr (A : Type u) {B : Type v} [CommRing A] [CommRing B] [Algebra A B]
     [Fintype ι] (b : ι → B) := (traceMatrix A b).det
 

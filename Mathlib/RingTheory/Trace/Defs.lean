@@ -129,11 +129,8 @@ theorem trace_trace [Algebra S T] [IsScalarTower R S T]
   trace_trace_of_basis (Module.Free.chooseBasis R S) (Module.Free.chooseBasis S T) x
 
 /-- Let `T / S / R` be a tower of finite extensions of fields. Then
-$\text{Trace}_{T/R} = \text{Trace}_{S/R} \circ \text{Trace}_{T/S}$
-
-This is a generalization of
-[Stacks: Lemma 0BIJ, first part](https://stacks.math.columbia.edu/tag/0BIJ) -/
-@[simp]
+$\text{Trace}_{T/R} = \text{Trace}_{S/R} \circ \text{Trace}_{T/S}$.-/
+@[simp, stacks 0BIJ "Trace"]
 theorem trace_comp_trace [Algebra S T] [IsScalarTower R S T]
     [Module.Free R S] [Module.Finite R S] [Module.Free S T] [Module.Finite S T] :
     (trace R S).comp ((trace S T).restrictScalars R) = trace R T :=
@@ -158,10 +155,8 @@ section TraceForm
 variable (R S)
 
 /-- The `traceForm` maps `x y : S` to the trace of `x * y`.
-It is a symmetric bilinear form and is nondegenerate if the extension is separable.
-
-This is a generalization of
-[Stacks: Definition 0BIK](https://stacks.math.columbia.edu/tag/0BIK). -/
+It is a symmetric bilinear form and is nondegenerate if the extension is separable.-/
+@[stacks 0BIK "Trace pairing"]
 noncomputable def traceForm : BilinForm R S :=
   LinearMap.compr₂ (lmul R S).toLinearMap (trace R S)
 
