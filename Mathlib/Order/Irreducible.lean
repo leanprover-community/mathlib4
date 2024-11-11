@@ -278,10 +278,10 @@ theorem infPrime_iff_not_isMax : InfPrime a ↔ ¬IsMax a :=
 
 @[simp]
 theorem supIrred_iff_not_isMin : SupIrred a ↔ ¬IsMin a :=
-  and_iff_left fun _ _ => by simpa only [sup_eq_max, max_eq_iff] using Or.imp And.left And.left
+  and_iff_left fun _ _ => by simpa only [max_eq_iff] using Or.imp And.left And.left
 
 @[simp]
 theorem infIrred_iff_not_isMax : InfIrred a ↔ ¬IsMax a :=
-  and_iff_left fun _ _ => by simpa only [inf_eq_min, min_eq_iff] using Or.imp And.left And.left
+  and_iff_left fun _ _ => by simpa only [min_eq_iff] using Or.imp And.left And.left
 
 end LinearOrder

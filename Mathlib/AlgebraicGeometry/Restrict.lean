@@ -688,15 +688,15 @@ end MorphismRestrict
 noncomputable
 def Scheme.OpenCover.restrict {X : Scheme.{u}} (𝒰 : X.OpenCover) (U : Opens X) :
     U.toScheme.OpenCover := by
-  refine copy (𝒰.pullbackCover U.ι) 𝒰.J _ (𝒰.map · ∣_ U) (Equiv.refl _)
+  refine Cover.copy (𝒰.pullbackCover U.ι) 𝒰.J _ (𝒰.map · ∣_ U) (Equiv.refl _)
     (fun i ↦ IsOpenImmersion.isoOfRangeEq (Opens.ι _) (pullback.snd _ _) ?_) ?_
   · erw [IsOpenImmersion.range_pullback_snd_of_left U.ι (𝒰.map i)]
     rw [Opens.opensRange_ι]
     exact Subtype.range_val
   · intro i
     rw [← cancel_mono U.ι]
-    simp only [morphismRestrict_ι, pullbackCover_J, Equiv.refl_apply, pullbackCover_obj,
-      pullbackCover_map, Category.assoc, pullback.condition]
+    simp only [morphismRestrict_ι, Cover.pullbackCover_J, Equiv.refl_apply, Cover.pullbackCover_obj,
+      Cover.pullbackCover_map, Category.assoc, pullback.condition]
     rw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
 
 end AlgebraicGeometry
