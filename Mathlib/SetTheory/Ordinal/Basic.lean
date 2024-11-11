@@ -268,23 +268,21 @@ Note that most of the relevant results on initial and principal segments are pro
 instance partialOrder : PartialOrder Ordinal where
   le a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≼i s))
-      fun _ _ _ _ ⟨f⟩ ⟨g⟩ =>
-      propext
-        ⟨fun ⟨h⟩ => ⟨(InitialSeg.ofIso f.symm).trans <| h.trans (InitialSeg.ofIso g)⟩, fun ⟨h⟩ =>
-          ⟨(InitialSeg.ofIso f).trans <| h.trans (InitialSeg.ofIso g.symm)⟩⟩
+      fun _ _ _ _ ⟨f⟩ ⟨g⟩ => propext
+        ⟨fun ⟨h⟩ => ⟨f.symm.toInitialSeg.trans <| h.trans g.toInitialSeg⟩, fun ⟨h⟩ =>
+          ⟨f.toInitialSeg.trans <| h.trans g.symm.toInitialSeg⟩⟩
   lt a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≺i s))
-      fun _ _ _ _ ⟨f⟩ ⟨g⟩ =>
-      propext
-        ⟨fun ⟨h⟩ => ⟨PrincipalSeg.equivLT f.symm <| h.ltLe (InitialSeg.ofIso g)⟩, fun ⟨h⟩ =>
-          ⟨PrincipalSeg.equivLT f <| h.ltLe (InitialSeg.ofIso g.symm)⟩⟩
+      fun _ _ _ _ ⟨f⟩ ⟨g⟩ => propext
+        ⟨fun ⟨h⟩ => ⟨PrincipalSeg.equivLT f.symm <| h.ltLe g.toInitialSeg⟩, fun ⟨h⟩ =>
+          ⟨PrincipalSeg.equivLT f <| h.ltLe g.symm.toInitialSeg⟩⟩
   le_refl := Quot.ind fun ⟨_, _, _⟩ => ⟨InitialSeg.refl _⟩
   le_trans a b c :=
     Quotient.inductionOn₃ a b c fun _ _ _ ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
   lt_iff_le_not_le a b :=
     Quotient.inductionOn₂ a b fun _ _ =>
       ⟨fun ⟨f⟩ => ⟨⟨f⟩, fun ⟨g⟩ => (f.ltLe g).irrefl⟩, fun ⟨⟨f⟩, h⟩ =>
-        f.ltOrEq.recOn (fun g => ⟨g⟩) fun g => (h ⟨InitialSeg.ofIso g.symm⟩).elim⟩
+        f.ltOrEq.recOn (fun g => ⟨g⟩) fun g => (h ⟨g.symm.toInitialSeg⟩).elim⟩
   le_antisymm a b :=
     Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ =>
       Quot.sound ⟨InitialSeg.antisymm h₁ h₂⟩
@@ -661,34 +659,26 @@ theorem lift_uzero (a : Ordinal.{u}) : lift.{0} a = a :=
   lift_id' a
 
 theorem lift_type_le {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
-    lift.{max v w} (type r) ≤ lift.{max u w} (type s) ↔ Nonempty (r ≼i s) :=
-  ⟨fun ⟨f⟩ =>
-    ⟨(InitialSeg.ofIso (RelIso.preimage Equiv.ulift r).symm).trans <|
-        f.trans (InitialSeg.ofIso (RelIso.preimage Equiv.ulift s))⟩,
-    fun ⟨f⟩ =>
-    ⟨(InitialSeg.ofIso (RelIso.preimage Equiv.ulift r)).trans <|
-        f.trans (InitialSeg.ofIso (RelIso.preimage Equiv.ulift s).symm)⟩⟩
+    lift.{max v w} (type r) ≤ lift.{max u w} (type s) ↔ Nonempty (r ≼i s) := by
+  constructor <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
+  · exact (RelIso.preimage Equiv.ulift r).symm.toInitialSeg.trans
+      (f.trans (RelIso.preimage Equiv.ulift s).toInitialSeg)
+  · exact (RelIso.preimage Equiv.ulift r).toInitialSeg.trans
+      (f.trans (RelIso.preimage Equiv.ulift s).symm.toInitialSeg)
 
 theorem lift_type_eq {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
-    lift.{max v w} (type r) = lift.{max u w} (type s) ↔ Nonempty (r ≃r s) :=
-  Quotient.eq'.trans
-    ⟨fun ⟨f⟩ =>
-      ⟨(RelIso.preimage Equiv.ulift r).symm.trans <| f.trans (RelIso.preimage Equiv.ulift s)⟩,
-      fun ⟨f⟩ =>
-      ⟨(RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm⟩⟩
+    lift.{max v w} (type r) = lift.{max u w} (type s) ↔ Nonempty (r ≃r s) := by
+  refine Quotient.eq'.trans ⟨?_, ?_⟩ <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
+  · exact (RelIso.preimage Equiv.ulift r).symm.trans <| f.trans (RelIso.preimage Equiv.ulift s)
+  · exact (RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm
 
 theorem lift_type_lt {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
     lift.{max v w} (type r) < lift.{max u w} (type s) ↔ Nonempty (r ≺i s) := by
-  haveI := @RelEmbedding.isWellOrder _ _ (@Equiv.ulift.{max v w} α ⁻¹'o r) r
-    (RelIso.preimage Equiv.ulift.{max v w} r) _
-  haveI := @RelEmbedding.isWellOrder _ _ (@Equiv.ulift.{max u w} β ⁻¹'o s) s
-    (RelIso.preimage Equiv.ulift.{max u w} s) _
-  exact ⟨fun ⟨f⟩ =>
-    ⟨(f.equivLT (RelIso.preimage Equiv.ulift r).symm).ltLe
-        (InitialSeg.ofIso (RelIso.preimage Equiv.ulift s))⟩,
-    fun ⟨f⟩ =>
-    ⟨(f.equivLT (RelIso.preimage Equiv.ulift r)).ltLe
-        (InitialSeg.ofIso (RelIso.preimage Equiv.ulift s).symm)⟩⟩
+  constructor <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
+  · exact (f.equivLT (RelIso.preimage Equiv.ulift r).symm).ltLe
+      (RelIso.preimage Equiv.ulift s).toInitialSeg
+  · exact (f.equivLT (RelIso.preimage Equiv.ulift r)).ltLe
+      (RelIso.preimage Equiv.ulift s).symm.toInitialSeg
 
 @[simp]
 theorem lift_le {a b : Ordinal} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
