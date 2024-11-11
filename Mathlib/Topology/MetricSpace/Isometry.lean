@@ -17,6 +17,7 @@ Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start
 theory for `PseudoMetricSpace` and we specialize to `MetricSpace` when needed.
 -/
 
+open Topology
 
 noncomputable section
 
@@ -249,7 +250,7 @@ alias UniformEmbedding.to_isometry := IsUniformEmbedding.to_isometry
 
 /-- An embedding from a topological space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
-theorem IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
+theorem Topology.IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
     (h : IsEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
