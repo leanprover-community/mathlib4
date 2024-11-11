@@ -421,11 +421,7 @@ lemma mem_pmap_iff {P : α → Prop} (f : ∀ a, P a → β) (z : Sym2 α) (h : 
   induction' z with x y
   rw [pmap_pair f x y h]
   simp only [mem_iff]
-  constructor
-  · rintro (rfl | rfl)
-    · use x, Or.inl rfl
-    · use y, Or.inr rfl
-  · rintro ⟨a, (rfl | rfl), rfl⟩ <;> tauto
+  aesop
 
 lemma pmap_eq_map {P : α → Prop} (f : α → β) (z : Sym2 α) (h : ∀ a ∈ z, P a) :
     z.pmap (fun a _ => f a) h = z.map f := by
