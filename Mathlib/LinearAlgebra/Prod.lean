@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric W
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.Order.PartialSups
+import Mathlib.Algebra.Group.Graph
 
 /-! ### Products of modules
 
@@ -965,3 +966,48 @@ theorem graph_eq_range_prod : f.graph = range (LinearMap.id.prod f) := by
 end Graph
 
 end LinearMap
+
+section LineTest
+
+open Set Function
+
+variable {R S G H I : Type*}
+  [Semiring R] [Semiring S] {σ : R →+* S} [RingHomSurjective σ]
+  [AddCommMonoid G] [Module R G]
+  [AddCommMonoid H] [Module S H]
+  [AddCommMonoid I] [Module S I]
+
+/-- **Vertical line test** for module homomorphisms.
+
+Let `f : G → H × I` be a linear (or semilinear) map to a product. Assume that `f` is surjective on
+the first factor and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` at
+most once. Then the image of `f` is the graph of some linear map `f' : H → I`. -/
+lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surjective (Prod.fst ∘ f))
+    (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
+    ∃ f' : H →ₗ[S] I, LinearMap.range f = LinearMap.graph f' := by
+  obtain ⟨f', hf'⟩ := AddMonoidHom.exists_range_eq_graph (I := I) (f := f) hf₁ hf
+  simp only [Set.ext_iff, mem_graphOn, mem_univ, true_and, AddMonoidHom.coe_coe] at hf'
+  use
+  { toFun := f'.toFun
+    map_add' := f'.map_add'
+    map_smul' := by
+      intro s h
+      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, RingHom.id_apply]
+      refine (hf' (s • h, _)).mp ?_
+      rw [← Prod.smul_mk, ← LinearMap.range_coe, SetLike.mem_coe]
+      apply Submodule.smul_mem
+      rw [← SetLike.mem_coe, LinearMap.range_coe, hf'] }
+  ext x
+  simpa only [mem_range, Eq.comm, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mem_graph_iff,
+    coe_mk, AddHom.coe_mk, AddMonoidHom.coe_coe, Set.mem_range] using hf' x
+
+/-- **Vertical line test** for module homomorphisms.
+
+Let `G ≤ H × I` be a submodule of a product of modules. Assume that `G` maps bijectively to the
+first factor. Then `G` is the graph of some module homomorphism `f : H →ₗ[R] I`. -/
+lemma Submodule.exists_eq_graph {G : Submodule S (H × I)} (hf₁ : Bijective (Prod.fst ∘ G.subtype)) :
+    ∃ f : H →ₗ[S] I, G = LinearMap.graph f := by
+  simpa only [range_subtype] using LinearMap.exists_range_eq_graph hf₁.surjective
+      (fun a b h ↦ congr_arg (Prod.snd ∘ G.subtype) (hf₁.injective h))
+
+end LineTest
