@@ -427,10 +427,10 @@ theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (
   ⟨IsDiag.mem_range_diag, fun ⟨i, hi⟩ => hi ▸ diag_isDiag i⟩
 
 @[simp]
-lemma map_IsDiag_iff (f : α ↪ β) (s : Sym2 α) :
+lemma map_IsDiag_iff {f : α → β} (hf : f.Injective) {s : Sym2 α} :
     (s.map f).IsDiag ↔ s.IsDiag := by
   induction' s with x y
-  simp only [map_pair_eq, isDiag_iff_proj_eq, EmbeddingLike.apply_eq_iff_eq]
+  simp only [map_pair_eq, isDiag_iff_proj_eq, Injective.eq_iff hf]
 
 instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
@@ -585,19 +585,18 @@ theorem mem_equivSym_iff_mem {s : Sym2 α} {a : α} : a ∈ equivSym α s ↔ a 
   simp only [Multiset.insert_eq_cons, Sym.mem_mk, Multiset.mem_cons, Multiset.mem_singleton,
     mem_iff]
 
-private theorem mem_equivSym_symm_iff_mem_of_eq (m : Sym α 2) (s : Sym2 α) (a : α) :
-    s = (equivSym α).symm m → (a ∈ s ↔ a ∈ m) := by
+private theorem mem_equivSym_symm_iff_mem_of_eq {m : Sym α 2} {s : Sym2 α} {a : α}
+    (h : s = (equivSym α).symm m) : a ∈ s ↔ a ∈ m := by
   induction' s with x y
-  intro h
   rw [Equiv.eq_symm_apply] at h
   subst m
-  exact (mem_equivSym_iff_mem s(x, y) a).symm
+  exact mem_equivSym_iff_mem.symm
 
 @[simp]
-theorem mem_equivSym_symm_iff_mem (m : Sym α 2) (a : α) : a ∈ (equivSym α).symm m ↔ a ∈ m :=
-  mem_equivSym_symm_iff_mem_of_eq m _ _ rfl
+theorem mem_equivSym_symm_iff_mem {m : Sym α 2} {a : α} : a ∈ (equivSym α).symm m ↔ a ∈ m :=
+  mem_equivSym_symm_iff_mem_of_eq rfl
 
-theorem equivSym_map_comm (f : α → β) (s : Sym2 α) :
+theorem equivSym_map_comm {f : α → β} {s : Sym2 α} :
     (Sym2.equivSym β) (s.map f) = (Sym2.equivSym _ s).map f := by
   induction' s with x y
   rfl
@@ -607,7 +606,7 @@ theorem IsDiag.equivSym_symm_replicate (a : α) :
   simp only [replicate, Multiset.replicate_succ, Multiset.replicate_zero, Multiset.cons_zero,
     equivSym_symm_eq_pair, isDiag_iff_proj_eq]
 
-theorem equivSym_IsDiag_eq_replicate (s : Sym2 α) :
+theorem equivSym_IsDiag_eq_replicate {s : Sym2 α} :
     s.IsDiag ↔ ∃ a, equivSym α s = replicate 2 a := by
   induction' s with x y
   simp_rw [eq_replicate_iff]
