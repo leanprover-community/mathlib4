@@ -1026,95 +1026,95 @@ lemma snd_swapRight (κ : Kernel α (β × γ)) : snd (swapRight κ) = fst κ :=
 
 end FstSnd
 
-section domFstSnd
+section SectlSectr
 
 variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
 
 /-- Define a `Kernel α γ` from a `Kernel (α × β) γ` by taking the comap of `fun a ↦ (a, b)` for
 a given `b : β`. -/
-noncomputable def domFst (κ : Kernel (α × β) γ) (b : β) : Kernel α γ :=
+noncomputable def sectl (κ : Kernel (α × β) γ) (b : β) : Kernel α γ :=
   comap κ (fun a ↦ (a, b)) (measurable_id.prod_mk measurable_const)
 
-@[simp] theorem domFst_apply (κ : Kernel (α × β) γ) (b : β) (a : α) : domFst κ b a = κ (a, b) := rfl
+@[simp] theorem sectl_apply (κ : Kernel (α × β) γ) (b : β) (a : α) : sectl κ b a = κ (a, b) := rfl
 
-@[simp] lemma domFst_zero (b : β) : domFst (0 : Kernel (α × β) γ) b = 0 := by simp [domFst]
+@[simp] lemma sectl_zero (b : β) : sectl (0 : Kernel (α × β) γ) b = 0 := by simp [sectl]
 
-instance (κ : Kernel (α × β) γ) (b : β) [IsMarkovKernel κ] : IsMarkovKernel (domFst κ b) := by
-  rw [domFst]; infer_instance
+instance (κ : Kernel (α × β) γ) (b : β) [IsMarkovKernel κ] : IsMarkovKernel (sectl κ b) := by
+  rw [sectl]; infer_instance
 
-instance (κ : Kernel (α × β) γ) (b : β) [IsFiniteKernel κ] : IsFiniteKernel (domFst κ b) := by
-  rw [domFst]; infer_instance
+instance (κ : Kernel (α × β) γ) (b : β) [IsFiniteKernel κ] : IsFiniteKernel (sectl κ b) := by
+  rw [sectl]; infer_instance
 
-instance (κ : Kernel (α × β) γ) (b : β) [IsSFiniteKernel κ] : IsSFiniteKernel (domFst κ b) := by
-  rw [domFst]; infer_instance
+instance (κ : Kernel (α × β) γ) (b : β) [IsSFiniteKernel κ] : IsSFiniteKernel (sectl κ b) := by
+  rw [sectl]; infer_instance
 
-instance (κ : Kernel (α × β) γ) (a : α) (b : β) [NeZero (κ (a, b))] : NeZero ((domFst κ b) a) := by
-  rw [domFst_apply]; infer_instance
+instance (κ : Kernel (α × β) γ) (a : α) (b : β) [NeZero (κ (a, b))] : NeZero ((sectl κ b) a) := by
+  rw [sectl_apply]; infer_instance
 
-instance (priority := 100) {κ : Kernel (α × β) γ} [∀ b, IsMarkovKernel (domFst κ b)] :
+instance (priority := 100) {κ : Kernel (α × β) γ} [∀ b, IsMarkovKernel (sectl κ b)] :
     IsMarkovKernel κ := by
   refine ⟨fun _ ↦ ⟨?_⟩⟩
-  rw [← domFst_apply, measure_univ]
+  rw [← sectl_apply, measure_univ]
 
 --I'm not sure this lemma is actually useful
-lemma comap_domFst (κ : Kernel (α × β) γ) (b : β) {f : δ → α} (hf : Measurable f) :
-    comap (domFst κ b) f hf = comap κ (fun d ↦ (f d, b)) (hf.prod_mk measurable_const) := by
+lemma comap_sectl (κ : Kernel (α × β) γ) (b : β) {f : δ → α} (hf : Measurable f) :
+    comap (sectl κ b) f hf = comap κ (fun d ↦ (f d, b)) (hf.prod_mk measurable_const) := by
   ext d s
-  rw [comap_apply, domFst_apply, comap_apply]
+  rw [comap_apply, sectl_apply, comap_apply]
 
 @[simp]
-lemma domFst_prodMkLeft (α : Type*) [MeasurableSpace α] (κ : Kernel β γ) (a : α) {b : β} :
-    domFst (prodMkLeft α κ) b a = κ b := rfl
+lemma sectl_prodMkLeft (α : Type*) [MeasurableSpace α] (κ : Kernel β γ) (a : α) {b : β} :
+    sectl (prodMkLeft α κ) b a = κ b := rfl
 
 @[simp]
-lemma domFst_prodMkRight (β : Type*) [MeasurableSpace β] (κ : Kernel α γ) (b : β) :
-    domFst (prodMkRight β κ) b = κ := rfl
+lemma sectl_prodMkRight (β : Type*) [MeasurableSpace β] (κ : Kernel α γ) (b : β) :
+    sectl (prodMkRight β κ) b = κ := rfl
 
 /-- Define a `Kernel β γ` from a `Kernel (α × β) γ` by taking the comap of `fun b ↦ (a, b)` for
 a given `a : α`. -/
-noncomputable def domSnd (κ : Kernel (α × β) γ) (a : α) : Kernel β γ :=
+noncomputable def sectr (κ : Kernel (α × β) γ) (a : α) : Kernel β γ :=
   comap κ (fun b ↦ (a, b)) (measurable_const.prod_mk measurable_id)
 
-@[simp] theorem domSnd_apply (κ : Kernel (α × β) γ) (b : β) (a : α) : domSnd κ a b = κ (a, b) := rfl
+@[simp] theorem sectr_apply (κ : Kernel (α × β) γ) (b : β) (a : α) : sectr κ a b = κ (a, b) := rfl
 
-@[simp] lemma domSnd_zero (a : α) : domSnd (0 : Kernel (α × β) γ) a = 0 := by simp [domSnd]
+@[simp] lemma sectr_zero (a : α) : sectr (0 : Kernel (α × β) γ) a = 0 := by simp [sectr]
 
-instance (κ : Kernel (α × β) γ) (a : α) [IsMarkovKernel κ] : IsMarkovKernel (domSnd κ a) := by
-  rw [domSnd]; infer_instance
+instance (κ : Kernel (α × β) γ) (a : α) [IsMarkovKernel κ] : IsMarkovKernel (sectr κ a) := by
+  rw [sectr]; infer_instance
 
-instance (κ : Kernel (α × β) γ) (a : α) [IsFiniteKernel κ] : IsFiniteKernel (domSnd κ a) := by
-  rw [domSnd]; infer_instance
+instance (κ : Kernel (α × β) γ) (a : α) [IsFiniteKernel κ] : IsFiniteKernel (sectr κ a) := by
+  rw [sectr]; infer_instance
 
-instance (κ : Kernel (α × β) γ) (a : α) [IsSFiniteKernel κ] : IsSFiniteKernel (domSnd κ a) := by
-  rw [domSnd]; infer_instance
+instance (κ : Kernel (α × β) γ) (a : α) [IsSFiniteKernel κ] : IsSFiniteKernel (sectr κ a) := by
+  rw [sectr]; infer_instance
 
-instance (κ : Kernel (α × β) γ) (a : α) (b : β) [NeZero (κ (a, b))] : NeZero ((domSnd κ a) b) := by
-  rw [domSnd_apply]; infer_instance
+instance (κ : Kernel (α × β) γ) (a : α) (b : β) [NeZero (κ (a, b))] : NeZero ((sectr κ a) b) := by
+  rw [sectr_apply]; infer_instance
 
-instance (priority := 100) {κ : Kernel (α × β) γ} [∀ b, IsMarkovKernel (domSnd κ b)] :
+instance (priority := 100) {κ : Kernel (α × β) γ} [∀ b, IsMarkovKernel (sectr κ b)] :
     IsMarkovKernel κ := by
   refine ⟨fun _ ↦ ⟨?_⟩⟩
-  rw [← domSnd_apply, measure_univ]
+  rw [← sectr_apply, measure_univ]
 
 --I'm not sure this lemma is actually useful
-lemma comap_domSnd (κ : Kernel (α × β) γ) (a : α) {f : δ → β} (hf : Measurable f) :
-    comap (domSnd κ a) f hf = comap κ (fun d ↦ (a, f d)) (measurable_const.prod_mk hf) := by
+lemma comap_sectr (κ : Kernel (α × β) γ) (a : α) {f : δ → β} (hf : Measurable f) :
+    comap (sectr κ a) f hf = comap κ (fun d ↦ (a, f d)) (measurable_const.prod_mk hf) := by
   ext d s
-  rw [comap_apply, domSnd_apply, comap_apply]
+  rw [comap_apply, sectr_apply, comap_apply]
 
 @[simp]
-lemma domSnd_prodMkLeft (α : Type*) [MeasurableSpace α] (κ : Kernel β γ) (a : α) :
-    domSnd (prodMkLeft α κ) a = κ := rfl
+lemma sectr_prodMkLeft (α : Type*) [MeasurableSpace α] (κ : Kernel β γ) (a : α) :
+    sectr (prodMkLeft α κ) a = κ := rfl
 
 @[simp]
-lemma domSnd_prodMkRight (β : Type*) [MeasurableSpace β] (κ : Kernel α γ) (b : β) {a : α} :
-    domSnd (prodMkRight β κ) a b = κ a := rfl
+lemma sectr_prodMkRight (β : Type*) [MeasurableSpace β] (κ : Kernel α γ) (b : β) {a : α} :
+    sectr (prodMkRight β κ) a b = κ a := rfl
 
-@[simp] lemma domFst_swapRight (κ : Kernel (α × β) γ) : domFst (swapLeft κ) = domSnd κ := rfl
+@[simp] lemma sectl_swapRight (κ : Kernel (α × β) γ) : sectl (swapLeft κ) = sectr κ := rfl
 
-@[simp] lemma domSnd_swapRight (κ : Kernel (α × β) γ) : domSnd (swapLeft κ) = domFst κ := rfl
+@[simp] lemma sectr_swapRight (κ : Kernel (α × β) γ) : sectr (swapLeft κ) = sectl κ := rfl
 
-end domFstSnd
+end SectlSectr
 
 section Comp
 
