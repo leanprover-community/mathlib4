@@ -3,7 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Ahmad Alkhalawi
 -/
-import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.ConjTranspose
 import Mathlib.Tactic.Abel
 
 /-! # Extra lemmas about invertible matrices
@@ -48,12 +48,14 @@ protected theorem invOf_mul_cancel_right (A : Matrix m n α) (B : Matrix n n α)
 protected theorem mul_invOf_cancel_right (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
     A * B * ⅟ B = A := by rw [Matrix.mul_assoc, mul_invOf_self, Matrix.mul_one]
 
-@[deprecated (since := "2024-09-07")] alias invOf_mul_self_assoc := Matrix.invOf_mul_cancel_left
-@[deprecated (since := "2024-09-07")] alias mul_invOf_self_assoc := Matrix.mul_invOf_cancel_left
 @[deprecated (since := "2024-09-07")]
-alias mul_invOf_mul_self_cancel := Matrix.invOf_mul_cancel_right
+protected alias invOf_mul_self_assoc := Matrix.invOf_mul_cancel_left
 @[deprecated (since := "2024-09-07")]
-alias mul_mul_invOf_self_cancel := Matrix.mul_invOf_cancel_right
+protected alias mul_invOf_self_assoc := Matrix.mul_invOf_cancel_left
+@[deprecated (since := "2024-09-07")]
+protected alias mul_invOf_mul_self_cancel := Matrix.invOf_mul_cancel_right
+@[deprecated (since := "2024-09-07")]
+protected alias mul_mul_invOf_self_cancel := Matrix.mul_invOf_cancel_right
 
 section ConjTranspose
 variable [StarRing α] (A : Matrix n n α)

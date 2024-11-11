@@ -11,7 +11,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 # Lemmas regarding the prime spectrum of tensor products
 
 ## Main result
-- `PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks`:
+- `PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks`:
   If `R →+* T` is surjective on stalks (see Mathlib/RingTheory/SurjectiveOnStalks.lean),
   then `Spec(S ⊗[R] T) → Spec S × Spec T` is a topological embedding
   (where `Spec S × Spec T` is the cartesian product with the product topology).
@@ -34,7 +34,7 @@ lemma PrimeSpectrum.continuous_tensorProductTo : Continuous (tensorProductTo R S
 variable (hRT : (algebraMap R T).SurjectiveOnStalks)
 include hRT
 
-lemma PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks_aux
+lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks_aux
     (p₁ p₂ : PrimeSpectrum (S ⊗[R] T))
     (h : tensorProductTo R S T p₁ = tensorProductTo R S T p₂) :
     p₁ ≤ p₂ := by
@@ -55,11 +55,11 @@ lemma PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks_aux
     rwa [show p₁.asIdeal.comap (algebraMap S (S ⊗[R] T)) = p₂.asIdeal.comap _ from congr($h.1.1)]
   exact p₁.asIdeal.primeCompl.mul_mem h₄ h₃ h₁
 
-lemma PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks :
-    Embedding (tensorProductTo R S T) := by
+lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks :
+    IsEmbedding (tensorProductTo R S T) := by
   refine ⟨?_, fun p₁ p₂ e ↦
-    (embedding_tensorProductTo_of_surjectiveOnStalks_aux R S T hRT p₁ p₂ e).antisymm
-      (embedding_tensorProductTo_of_surjectiveOnStalks_aux R S T hRT p₂ p₁ e.symm)⟩
+    (isEmbedding_tensorProductTo_of_surjectiveOnStalks_aux R S T hRT p₁ p₂ e).antisymm
+      (isEmbedding_tensorProductTo_of_surjectiveOnStalks_aux R S T hRT p₂ p₁ e.symm)⟩
   let g : T →+* S ⊗[R] T := Algebra.TensorProduct.includeRight.toRingHom
   refine ⟨(continuous_tensorProductTo ..).le_induced.antisymm (isBasis_basic_opens.le_iff.mpr ?_)⟩
   rintro _ ⟨f, rfl⟩
@@ -77,3 +77,7 @@ lemma PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks :
       rw [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul, ← e]
       exact J.asIdeal.primeCompl.mul_mem ht hJ
     rwa [J.isPrime.mul_mem_iff_mem_or_mem.not, not_or] at this
+
+@[deprecated (since := "2024-10-26")]
+alias PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks :=
+  PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks

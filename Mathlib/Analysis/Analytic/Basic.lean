@@ -225,7 +225,7 @@ theorem lt_radius_of_isBigO (h₀ : r ≠ 0) {a : ℝ} (ha : a ∈ Ioo (-1 : ℝ
 theorem norm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
     (h : (r : ℝ≥0∞) < p.radius) : ∃ C > 0, ∀ n, ‖p n‖ * (r : ℝ) ^ n ≤ C :=
   let ⟨_, ha, C, hC, h⟩ := p.norm_mul_pow_le_mul_pow_of_lt_radius h
-  ⟨C, hC, fun n => (h n).trans <| mul_le_of_le_one_right hC.lt.le (pow_le_one _ ha.1.le ha.2.le)⟩
+  ⟨C, hC, fun n => (h n).trans <| mul_le_of_le_one_right hC.lt.le (pow_le_one₀ ha.1.le ha.2.le)⟩
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` is bounded. -/
 theorem norm_le_div_pow_of_pos_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
@@ -292,7 +292,7 @@ theorem radius_eq_top_iff_summable_norm (p : FormalMultilinearSeries 𝕜 E F) :
 
 /-- If the radius of `p` is positive, then `‖pₙ‖` grows at most geometrically. -/
 theorem le_mul_pow_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F) (h : 0 < p.radius) :
-    ∃ (C r : _) (hC : 0 < C) (_ : 0 < r), ∀ n, ‖p n‖ ≤ C * r ^ n := by
+    ∃ (C r : _) (_ : 0 < C) (_ : 0 < r), ∀ n, ‖p n‖ ≤ C * r ^ n := by
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨r, r0, rlt⟩
   have rpos : 0 < (r : ℝ) := by simp [ENNReal.coe_pos.1 r0]
   rcases norm_le_div_pow_of_pos_of_lt_radius p rpos rlt with ⟨C, Cpos, hCp⟩
@@ -300,6 +300,18 @@ theorem le_mul_pow_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F) (h : 0 <
   -- Porting note: was `convert`
   rw [inv_pow, ← div_eq_mul_inv]
   exact hCp n
+
+lemma radius_le_of_le {𝕜' E' F' : Type*}
+    [NontriviallyNormedField 𝕜'] [NormedAddCommGroup E'] [NormedSpace 𝕜' E']
+    [NormedAddCommGroup F'] [NormedSpace 𝕜' F']
+    {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜' E' F'}
+    (h : ∀ n, ‖p n‖ ≤ ‖q n‖) : q.radius ≤ p.radius := by
+  apply le_of_forall_nnreal_lt (fun r hr ↦ ?_)
+  rcases norm_mul_pow_le_of_lt_radius _ hr with ⟨C, -, hC⟩
+  apply le_radius_of_bound _ C (fun n ↦ ?_)
+  apply le_trans _ (hC n)
+  gcongr
+  exact h n
 
 /-- The radius of the sum of two formal series is at least the minimum of their two radii. -/
 theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
@@ -335,7 +347,7 @@ end FormalMultilinearSeries
 
 section
 
-variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {s t : Set E} {x : E} {r r' : ℝ≥0∞}
+variable {f g : E → F} {p pf : FormalMultilinearSeries 𝕜 E F} {s t : Set E} {x : E} {r r' : ℝ≥0∞}
 
 /-- Given a function `f : E → F` and a formal multilinear series `p`, we say that `f` has `p` as
 a power series on the ball of radius `r > 0` around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `‖y‖ < r`.
@@ -387,7 +399,7 @@ every point of `s`. -/
 def AnalyticOnNhd (f : E → F) (s : Set E) :=
   ∀ x, x ∈ s → AnalyticAt 𝕜 f x
 
-/-- `f` is analytic within `s` if it is analytic within `s` at each point of `t`.  Note that
+/-- `f` is analytic within `s` if it is analytic within `s` at each point of `s`.  Note that
 this is weaker than `AnalyticOnNhd 𝕜 f s`, as `f` is allowed to be arbitrary outside `s`. -/
 def AnalyticOn (f : E → F) (s : Set E) : Prop :=
   ∀ x ∈ s, AnalyticWithinAt 𝕜 f s x
@@ -477,6 +489,16 @@ lemma HasFPowerSeriesWithinOnBall.congr {f g : E → F} {p : FormalMultilinearSe
   · apply h'
     refine ⟨hy, ?_⟩
     simpa [edist_eq_coe_nnnorm_sub] using h'y
+
+/-- Variant of `HasFPowerSeriesWithinOnBall.congr` in which one requests equality on `insert x s`
+instead of separating `x` and `s`. -/
+lemma HasFPowerSeriesWithinOnBall.congr' {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F}
+    {s : Set E} {x : E} {r : ℝ≥0∞} (h : HasFPowerSeriesWithinOnBall f p s x r)
+    (h' : EqOn g f (insert x s ∩ EMetric.ball x r)) :
+    HasFPowerSeriesWithinOnBall g p s x r := by
+  refine ⟨h.r_le, h.r_pos, fun {y} hy h'y ↦ ?_⟩
+  convert h.hasSum hy h'y using 1
+  exact h' ⟨hy, by simpa [edist_eq_coe_nnnorm_sub] using h'y⟩
 
 lemma HasFPowerSeriesWithinAt.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E}
     {x : E} (h : HasFPowerSeriesWithinAt f p s x) (h' : g =ᶠ[𝓝[s] x] f) (h'' : g x = f x) :
@@ -581,11 +603,45 @@ lemma HasFPowerSeriesAt.hasFPowerSeriesWithinAt (hf : HasFPowerSeriesAt f p x) :
   rw [← hasFPowerSeriesWithinAt_univ] at hf
   apply hf.mono (subset_univ _)
 
+theorem HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin
+    (h : HasFPowerSeriesWithinAt f p s x) (hst : s ∈ 𝓝[t] x) :
+    HasFPowerSeriesWithinAt f p t x := by
+  rcases h with ⟨r, hr⟩
+  rcases EMetric.mem_nhdsWithin_iff.1 hst with ⟨r', r'_pos, hr'⟩
+  refine ⟨min r r', ?_⟩
+  have Z := hr.of_le (by simp [r'_pos, hr.r_pos]) (min_le_left r r')
+  refine ⟨Z.r_le, Z.r_pos, fun {y} hy h'y ↦ ?_⟩
+  apply Z.hasSum ?_ h'y
+  simp only [mem_insert_iff, add_right_eq_self] at hy
+  rcases hy with rfl | hy
+  · simp
+  apply mem_insert_of_mem _ (hr' ?_)
+  simp only [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, sub_zero, lt_min_iff, mem_inter_iff,
+    add_sub_cancel_left, hy, and_true] at h'y ⊢
+  exact h'y.2
+
+@[deprecated (since := "2024-10-31")]
+alias HasFPowerSeriesWithinAt.mono_of_mem := HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin
+
+@[simp] lemma hasFPowerSeriesWithinOnBall_insert_self :
+    HasFPowerSeriesWithinOnBall f p (insert x s) x r ↔ HasFPowerSeriesWithinOnBall f p s x r := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩  <;>
+  exact ⟨h.r_le, h.r_pos, fun {y} ↦ by simpa only [insert_idem] using h.hasSum (y := y)⟩
+
+@[simp] theorem hasFPowerSeriesWithinAt_insert {y : E} :
+    HasFPowerSeriesWithinAt f p (insert y s) x ↔ HasFPowerSeriesWithinAt f p s x := by
+  rcases eq_or_ne x y with rfl | hy
+  · simp [HasFPowerSeriesWithinAt]
+  · refine ⟨fun h ↦ h.mono (subset_insert _ _), fun h ↦ ?_⟩
+    apply HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin h
+    rw [nhdsWithin_insert_of_ne hy]
+    exact self_mem_nhdsWithin
+
 theorem HasFPowerSeriesWithinOnBall.coeff_zero (hf : HasFPowerSeriesWithinOnBall f pf s x r)
     (v : Fin 0 → E) : pf 0 v = f x := by
   have v_eq : v = fun i => 0 := Subsingleton.elim _ _
   have zero_mem : (0 : E) ∈ EMetric.ball (0 : E) r := by simp [hf.r_pos]
-  have : ∀ i, i ≠ 0 → (pf i fun j => 0) = 0 := by
+  have : ∀ i, i ≠ 0 → (pf i fun _ => 0) = 0 := by
     intro i hi
     have : 0 < i := pos_iff_ne_zero.2 hi
     exact ContinuousMultilinearMap.map_coord_zero _ (⟨0, this⟩ : Fin i) rfl
@@ -697,6 +753,14 @@ theorem analyticOnNhd_congr (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOnNhd �
 @[deprecated (since := "2024-09-26")]
 alias analyticOn_congr := analyticOnNhd_congr
 
+theorem AnalyticWithinAt.mono_of_mem_nhdsWithin
+    (h : AnalyticWithinAt 𝕜 f s x) (hst : s ∈ 𝓝[t] x) : AnalyticWithinAt 𝕜 f t x := by
+  rcases h with ⟨p, hp⟩
+  exact ⟨p, hp.mono_of_mem_nhdsWithin hst⟩
+
+@[deprecated (since := "2024-10-31")]
+alias AnalyticWithinAt.mono_of_mem := AnalyticWithinAt.mono_of_mem_nhdsWithin
+
 lemma AnalyticOn.mono {f : E → F} {s t : Set E} (h : AnalyticOn 𝕜 f t)
     (hs : s ⊆ t) : AnalyticOn 𝕜 f s :=
   fun _ m ↦ (h _ (hs m)).mono hs
@@ -704,21 +768,41 @@ lemma AnalyticOn.mono {f : E → F} {s t : Set E} (h : AnalyticOn 𝕜 f t)
 @[deprecated (since := "2024-09-26")]
 alias AnalyticWithinOn.mono := AnalyticOn.mono
 
+@[simp] theorem analyticWithinAt_insert {f : E → F} {s : Set E} {x y : E} :
+    AnalyticWithinAt 𝕜 f (insert y s) x ↔ AnalyticWithinAt 𝕜 f s x := by
+  simp [AnalyticWithinAt]
+
 /-!
 ### Composition with linear maps
 -/
+
+/-- If a function `f` has a power series `p` on a ball within a set and `g` is linear,
+then `g ∘ f` has the power series `g ∘ p` on the same ball. -/
+theorem ContinuousLinearMap.comp_hasFPowerSeriesWithinOnBall (g : F →L[𝕜] G)
+    (h : HasFPowerSeriesWithinOnBall f p s x r) :
+    HasFPowerSeriesWithinOnBall (g ∘ f) (g.compFormalMultilinearSeries p) s x r where
+  r_le := h.r_le.trans (p.radius_le_radius_continuousLinearMap_comp _)
+  r_pos := h.r_pos
+  hasSum hy h'y := by
+    simpa only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
+      ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply] using
+      g.hasSum (h.hasSum hy h'y)
 
 /-- If a function `f` has a power series `p` on a ball and `g` is linear, then `g ∘ f` has the
 power series `g ∘ p` on the same ball. -/
 theorem ContinuousLinearMap.comp_hasFPowerSeriesOnBall (g : F →L[𝕜] G)
     (h : HasFPowerSeriesOnBall f p x r) :
-    HasFPowerSeriesOnBall (g ∘ f) (g.compFormalMultilinearSeries p) x r :=
-  { r_le := h.r_le.trans (p.radius_le_radius_continuousLinearMap_comp _)
-    r_pos := h.r_pos
-    hasSum := fun hy => by
-      simpa only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
-        ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply] using
-        g.hasSum (h.hasSum hy) }
+    HasFPowerSeriesOnBall (g ∘ f) (g.compFormalMultilinearSeries p) x r := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at h ⊢
+  exact g.comp_hasFPowerSeriesWithinOnBall h
+
+/-- If a function `f` is analytic on a set `s` and `g` is linear, then `g ∘ f` is analytic
+on `s`. -/
+theorem ContinuousLinearMap.comp_analyticOn (g : F →L[𝕜] G) (h : AnalyticOn 𝕜 f s) :
+    AnalyticOn 𝕜 (g ∘ f) s := by
+  rintro x hx
+  rcases h x hx with ⟨p, r, hp⟩
+  exact ⟨g.compFormalMultilinearSeries p, r, g.comp_hasFPowerSeriesWithinOnBall hp⟩
 
 /-- If a function `f` is analytic on a set `s` and `g` is linear, then `g ∘ f` is analytic
 on `s`. -/
@@ -728,9 +812,6 @@ theorem ContinuousLinearMap.comp_analyticOnNhd
   rintro x hx
   rcases h x hx with ⟨p, r, hp⟩
   exact ⟨g.compFormalMultilinearSeries p, r, g.comp_hasFPowerSeriesOnBall hp⟩
-
-@[deprecated (since := "2024-09-26")]
-alias ContinuousLinearMap.comp_analyticOn := ContinuousLinearMap.comp_analyticOnNhd
 
 /-!
 ### Relation between analytic function and the partial sums of its power series
@@ -746,6 +827,13 @@ theorem HasFPowerSeriesOnBall.tendsto_partialSum
     (hf : HasFPowerSeriesOnBall f p x r) {y : E} (hy : y ∈ EMetric.ball (0 : E) r) :
     Tendsto (fun n => p.partialSum n y) atTop (𝓝 (f (x + y))) :=
   (hf.hasSum hy).tendsto_sum_nat
+
+theorem HasFPowerSeriesAt.tendsto_partialSum
+    (hf : HasFPowerSeriesAt f p x) :
+    ∀ᶠ y in 𝓝 0, Tendsto (fun n => p.partialSum n y) atTop (𝓝 (f (x + y))) := by
+  rcases hf with ⟨r, hr⟩
+  filter_upwards [EMetric.ball_mem_nhds (0 : E) hr.r_pos] with y hy
+  exact hr.tendsto_partialSum hy
 
 open Finset in
 /-- If a function admits a power series expansion within a ball, then the partial sums
@@ -808,7 +896,7 @@ theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
     simp only [FormalMultilinearSeries.partialSum]
     abel
   _ ≤ ‖p.partialSum k z - p.partialSum k y‖ + ‖∑ i ∈ Ico k n, p i (fun _ ↦ z)‖
-      + ‖- ∑ i ∈ Ico k n, p i (fun _ ↦ y)‖ := norm_add₃_le _ _ _
+      + ‖- ∑ i ∈ Ico k n, p i (fun _ ↦ y)‖ := norm_add₃_le
   _ ≤ ε / 4 + ε / 4 + ε / 4 := by
     gcongr
     · exact I _ h'z
@@ -843,7 +931,7 @@ theorem HasFPowerSeriesWithinOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     exact mod_cast yr'
   rw [norm_sub_rev, ← mul_div_right_comm]
   have ya : a * (‖y‖ / ↑r') ≤ a :=
-    mul_le_of_le_one_right ha.1.le (div_le_one_of_le yr'.le r'.coe_nonneg)
+    mul_le_of_le_one_right ha.1.le (div_le_one_of_le₀ yr'.le r'.coe_nonneg)
   suffices ‖p.partialSum n y - f (x + y)‖ ≤ C * (a * (‖y‖ / r')) ^ n / (1 - a * (‖y‖ / r')) by
     refine this.trans ?_
     have : 0 < a := ha.1
@@ -884,7 +972,7 @@ theorem HasFPowerSeriesWithinOnBall.uniform_geometric_approx {r' : ℝ≥0}
   have yr' : ‖y‖ < r' := by rwa [ball_zero_eq] at hy
   have := ha.1.le -- needed to discharge a side goal on the next line
   gcongr
-  exact mul_le_of_le_one_right ha.1.le (div_le_one_of_le yr'.le r'.coe_nonneg)
+  exact mul_le_of_le_one_right ha.1.le (div_le_one_of_le₀ yr'.le r'.coe_nonneg)
 
 /-- If a function admits a power series expansion, then it is exponentially close to the partial
 sums of this power series on strict subdisks of the disk of convergence. -/
@@ -949,8 +1037,8 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
         ((hf.hasSum_sub ⟨ys.1, hy.1⟩).sub (hf.hasSum_sub ⟨ys.2, hy.2⟩)) using 1
       rw [Finset.sum_range_succ, Finset.sum_range_one, hf.coeff_zero, hf.coeff_zero, sub_self,
         zero_add, ← Subsingleton.pi_single_eq (0 : Fin 1) (y.1 - x), Pi.single,
-        ← Subsingleton.pi_single_eq (0 : Fin 1) (y.2 - x), Pi.single, ← (p 1).map_sub, ← Pi.single,
-        Subsingleton.pi_single_eq, sub_sub_sub_cancel_right]
+        ← Subsingleton.pi_single_eq (0 : Fin 1) (y.2 - x), Pi.single, ← (p 1).map_update_sub,
+        ← Pi.single, Subsingleton.pi_single_eq, sub_sub_sub_cancel_right]
     rw [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, ENNReal.coe_lt_coe] at hy'
     set B : ℕ → ℝ := fun n => C * (a / r') ^ 2 * (‖y - (x, x)‖ * ‖y.1 - y.2‖) * ((n + 2) * a ^ n)
     have hAB : ∀ n, ‖A (n + 2)‖ ≤ B n := fun n =>
@@ -1162,7 +1250,7 @@ protected theorem HasFPowerSeriesOnBall.continuousOn (hf : HasFPowerSeriesOnBall
 protected theorem HasFPowerSeriesWithinOnBall.continuousWithinAt_insert
     (hf : HasFPowerSeriesWithinOnBall f p s x r) :
     ContinuousWithinAt f (insert x s) x := by
-  apply (hf.continuousOn.continuousWithinAt (x := x) (by simp [hf.r_pos])).mono_of_mem
+  apply (hf.continuousOn.continuousWithinAt (x := x) (by simp [hf.r_pos])).mono_of_mem_nhdsWithin
   exact inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds x hf.r_pos)
 
 protected theorem HasFPowerSeriesWithinOnBall.continuousWithinAt
@@ -1227,6 +1315,10 @@ protected theorem FormalMultilinearSeries.hasFPowerSeriesOnBall [CompleteSpace F
     hasSum := fun hy => by
       rw [zero_add]
       exact p.hasSum hy }
+
+theorem HasFPowerSeriesWithinOnBall.sum (h : HasFPowerSeriesWithinOnBall f p s x r) {y : E}
+    (h'y : x + y ∈ insert x s) (hy : y ∈ EMetric.ball (0 : E) r) : f (x + y) = p.sum y :=
+  (h.hasSum h'y hy).tsum_eq.symm
 
 theorem HasFPowerSeriesOnBall.sum (h : HasFPowerSeriesOnBall f p x r) {y : E}
     (hy : y ∈ EMetric.ball (0 : E) r) : f (x + y) = p.sum y :=

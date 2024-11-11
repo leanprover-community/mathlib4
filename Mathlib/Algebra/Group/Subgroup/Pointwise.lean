@@ -3,7 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Subgroup.MulOpposite
+import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
 import Mathlib.Algebra.Group.Submonoid.Pointwise
 import Mathlib.GroupTheory.GroupAction.ConjAct
 
@@ -41,6 +41,10 @@ lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (
     a • (s : Set G) = s := by
   ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_left, ha]
 
+@[norm_cast, to_additive]
+lemma coe_set_eq_one [Group G] {s : Subgroup G} : (s : Set G) = 1 ↔ s = ⊥ :=
+  (SetLike.ext'_iff.trans (by rfl)).symm
+
 @[to_additive (attr := simp)]
 lemma op_smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
     MulOpposite.op a • (s : Set G) = s := by
@@ -68,9 +72,9 @@ theorem closure_toSubmonoid (S : Set G) :
     (closure S).toSubmonoid = Submonoid.closure (S ∪ S⁻¹) := by
   refine le_antisymm (fun x hx => ?_) (Submonoid.closure_le.2 ?_)
   · refine
-      closure_induction hx
+      closure_induction
         (fun x hx => Submonoid.closure_mono subset_union_left (Submonoid.subset_closure hx))
-        (Submonoid.one_mem _) (fun x y hx hy => Submonoid.mul_mem _ hx hy) fun x hx => ?_
+        (Submonoid.one_mem _) (fun x y _ _ hx hy => Submonoid.mul_mem _ hx hy) (fun x _ hx => ?_) hx
     rwa [← Submonoid.mem_closure_inv, Set.union_inv, inv_inv, Set.union_comm]
   · simp only [true_and, coe_toSubmonoid, union_subset_iff, subset_closure, inv_subset_closure]
 
@@ -105,8 +109,8 @@ theorem closure_induction_right {p : (x : G) → x ∈ closure s → Prop} (one 
   closure_induction_left (s := MulOpposite.unop ⁻¹' s)
     (p := fun m hm => p m.unop <| by rwa [← op_closure] at hm)
     one
-    (fun _x hx _y hy => mul_right _ _ _ hx)
-    (fun _x hx _y hy => mul_inv_cancel _ _ _ hx)
+    (fun _x hx _y _ => mul_right _ _ _ hx)
+    (fun _x hx _y _ => mul_inv_cancel _ _ _ hx)
     (by rwa [← op_closure])
 
 @[to_additive (attr := simp)]
@@ -282,7 +286,7 @@ protected def pointwiseMulAction : MulAction α (Subgroup G) where
   one_smul S := by
     change S.map _ = S
     simpa only [map_one] using S.map_id
-  mul_smul a₁ a₂ S :=
+  mul_smul _ _ S :=
     (congr_arg (fun f : Monoid.End G => S.map f) (MonoidHom.map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
@@ -374,13 +378,11 @@ theorem smul_inf (a : α) (S T : Subgroup G) : a • (S ⊓ T) = a • S ⊓ a �
 def equivSMul (a : α) (H : Subgroup G) : H ≃* (a • H : Subgroup G) :=
   (MulDistribMulAction.toMulEquiv G a).subgroupMap H
 
-theorem subgroup_mul_singleton {H : Subgroup G} {h : G} (hh : h ∈ H) : (H : Set G) * {h} = H :=
-  suffices { x : G | x ∈ H } = ↑H by simpa [preimage, mul_mem_cancel_right (inv_mem hh)]
-  rfl
+theorem subgroup_mul_singleton {H : Subgroup G} {h : G} (hh : h ∈ H) : (H : Set G) * {h} = H := by
+  simp [preimage, mul_mem_cancel_right (inv_mem hh)]
 
-theorem singleton_mul_subgroup {H : Subgroup G} {h : G} (hh : h ∈ H) : {h} * (H : Set G) = H :=
-  suffices { x : G | x ∈ H } = ↑H by simpa [preimage, mul_mem_cancel_left (inv_mem hh)]
-  rfl
+theorem singleton_mul_subgroup {H : Subgroup G} {h : G} (hh : h ∈ H) : {h} * (H : Set G) = H := by
+  simp [preimage, mul_mem_cancel_left (inv_mem hh)]
 
 theorem Normal.conjAct {G : Type*} [Group G] {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) :
     g • H = H :=
@@ -391,6 +393,13 @@ theorem Normal.conjAct {G : Type*} [Group G] {H : Subgroup G} (hH : H.Normal) (g
 @[simp]
 theorem smul_normal (g : G) (H : Subgroup G) [h : Normal H] : MulAut.conj g • H = H :=
   h.conjAct g
+
+theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
+    H.normalCore = ⨅ (g : ConjAct G), g • H := by
+  ext g
+  simp only [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
+  refine ⟨fun h x ↦ h x⁻¹, fun h x ↦ ?_⟩
+  simpa only [ConjAct.toConjAct_inv, inv_inv] using h x⁻¹
 
 end Group
 
@@ -535,5 +544,25 @@ theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubgroup A} :
   subset_set_smul_iff₀ ha
 
 end GroupWithZero
+
+section Mul
+
+variable {R : Type*} [NonUnitalNonAssocRing R]
+
+/-- For additive subgroups `S` and `T` of a ring, the product of `S` and `T` as submonoids
+is automatically a subgroup, which we define as the product of `S` and `T` as subgroups. -/
+protected def mul : Mul (AddSubgroup R) where
+  mul M N :=
+  { __ := M.toAddSubmonoid * N.toAddSubmonoid
+    neg_mem' := fun h ↦ AddSubmonoid.mul_induction_on h
+      (fun m hm n hn ↦ by rw [← neg_mul]; exact AddSubmonoid.mul_mem_mul (M.neg_mem hm) hn)
+      fun r₁ r₂ h₁ h₂ ↦ by rw [neg_add]; exact (M.1 * N.1).add_mem h₁ h₂ }
+
+scoped[Pointwise] attribute [instance] AddSubgroup.mul
+
+theorem mul_toAddSubmonoid (M N : AddSubgroup R) :
+    (M * N).toAddSubmonoid = M.toAddSubmonoid * N.toAddSubmonoid := rfl
+
+end Mul
 
 end AddSubgroup

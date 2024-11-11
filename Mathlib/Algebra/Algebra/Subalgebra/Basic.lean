@@ -46,7 +46,6 @@ instance SubsemiringClass : SubsemiringClass (Subalgebra R A) A where
 theorem mem_toSubsemiring {S : Subalgebra R A} {x} : x ∈ S.toSubsemiring ↔ x ∈ S :=
   Iff.rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_carrier {s : Subalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -280,8 +279,8 @@ instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
         Algebra.algebraMap_eq_smul_one]
       exact algebraMap_mem S
           _ with
-    commutes' := fun c x => Subtype.eq <| Algebra.commutes _ _
-    smul_def' := fun c x => Subtype.eq <| Algebra.smul_def _ _ }
+    commutes' := fun _ _ => Subtype.eq <| Algebra.commutes _ _
+    smul_def' := fun _ _ => Subtype.eq <| Algebra.smul_def _ _ }
 
 instance algebra : Algebra R S := S.algebra'
 
@@ -614,6 +613,7 @@ variable (R : Type u) {A : Type v} {B : Type w}
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- The minimal subalgebra that includes `s`. -/
+@[simps toSubsemiring]
 def adjoin (s : Set A) : Subalgebra R A :=
   { Subsemiring.closure (Set.range (algebraMap R A) ∪ s) with
     algebraMap_mem' := fun r => Subsemiring.subset_closure <| Or.inl ⟨r, rfl⟩ }
@@ -636,6 +636,10 @@ instance : CompleteLattice (Subalgebra R A) where
   __ := GaloisInsertion.liftCompleteLattice Algebra.gi
   bot := (Algebra.ofId R A).range
   bot_le _S := fun _a ⟨_r, hr⟩ => hr ▸ algebraMap_mem _ _
+
+theorem sup_def (S T : Subalgebra R A) : S ⊔ T = adjoin R (S ∪ T : Set A) := rfl
+
+theorem sSup_def (S : Set (Subalgebra R A)) : sSup S = adjoin R (⋃₀ (SetLike.coe '' S)) := rfl
 
 @[simp]
 theorem coe_top : (↑(⊤ : Subalgebra R A) : Set A) = Set.univ := rfl
@@ -697,6 +701,16 @@ theorem inf_toSubsemiring (S T : Subalgebra R A) :
     (S ⊓ T).toSubsemiring = S.toSubsemiring ⊓ T.toSubsemiring :=
   rfl
 
+@[simp]
+theorem sup_toSubsemiring (S T : Subalgebra R A) :
+    (S ⊔ T).toSubsemiring = S.toSubsemiring ⊔ T.toSubsemiring := by
+  rw [← S.toSubsemiring.closure_eq, ← T.toSubsemiring.closure_eq, ← Subsemiring.closure_union]
+  simp_rw [sup_def, adjoin_toSubsemiring, Subalgebra.coe_toSubsemiring]
+  congr 1
+  rw [Set.union_eq_right]
+  rintro _ ⟨x, rfl⟩
+  exact Set.mem_union_left _ (algebraMap_mem S x)
+
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (Subalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
   sInf_image
@@ -713,6 +727,22 @@ theorem sInf_toSubmodule (S : Set (Subalgebra R A)) :
 theorem sInf_toSubsemiring (S : Set (Subalgebra R A)) :
     (sInf S).toSubsemiring = sInf (Subalgebra.toSubsemiring '' S) :=
   SetLike.coe_injective <| by simp
+
+open Subalgebra in
+@[simp]
+theorem sSup_toSubsemiring (S : Set (Subalgebra R A)) (hS : S.Nonempty) :
+    (sSup S).toSubsemiring = sSup (toSubsemiring '' S) := by
+  have h : toSubsemiring '' S = Subsemiring.closure '' (SetLike.coe '' S) := by
+    rw [Set.image_image]
+    congr! with x
+    exact x.toSubsemiring.closure_eq.symm
+  rw [h, sSup_image, ← Subsemiring.closure_sUnion, sSup_def, adjoin_toSubsemiring]
+  congr 1
+  rw [Set.union_eq_right]
+  rintro _ ⟨x, rfl⟩
+  obtain ⟨y, hy⟩ := hS
+  simp only [Set.mem_sUnion, Set.mem_image, exists_exists_and_eq_and, SetLike.mem_coe]
+  exact ⟨y, hy, algebraMap_mem y x⟩
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → Subalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
@@ -732,11 +762,23 @@ theorem iInf_toSubmodule {ι : Sort*} (S : ι → Subalgebra R A) :
     toSubmodule (⨅ i, S i) = ⨅ i, toSubmodule (S i) :=
   SetLike.coe_injective <| by simp
 
+@[simp]
+theorem iInf_toSubsemiring {ι : Sort*} (S : ι → Subalgebra R A) :
+    (iInf S).toSubsemiring = ⨅ i, (S i).toSubsemiring := by
+  simp only [iInf, sInf_toSubsemiring, ← Set.range_comp, Function.comp_def]
+
+@[simp]
+theorem iSup_toSubsemiring {ι : Sort*} [Nonempty ι] (S : ι → Subalgebra R A) :
+    (iSup S).toSubsemiring = ⨆ i, (S i).toSubsemiring := by
+  simp only [iSup, Set.range_nonempty, sSup_toSubsemiring, ← Set.range_comp, Function.comp_def]
+
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
 theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl
 
-theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 := rfl
+/-- TODO: change proof to `rfl` when fixing #18110. -/
+theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 :=
+  Submodule.one_eq_range.symm
 
 @[simp]
 theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
@@ -759,7 +801,8 @@ theorem map_top (f : A →ₐ[R] B) : (⊤ : Subalgebra R A).map f = f.range :=
 
 @[simp]
 theorem map_bot (f : A →ₐ[R] B) : (⊥ : Subalgebra R A).map f = ⊥ :=
-  Subalgebra.toSubmodule_injective <| Submodule.map_one _
+  Subalgebra.toSubmodule_injective <| by
+    simpa only [Subalgebra.map_toSubmodule, toSubmodule_bot] using Submodule.map_one _
 
 @[simp]
 theorem comap_top (f : A →ₐ[R] B) : (⊤ : Subalgebra R B).comap f = ⊤ :=

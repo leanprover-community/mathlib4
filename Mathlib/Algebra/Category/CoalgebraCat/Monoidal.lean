@@ -45,7 +45,7 @@ noncomputable instance instMonoidalCategoryStruct :
 @[simps]
 noncomputable def MonoidalCategory.inducingFunctorData :
     Monoidal.InducingFunctorData (forget₂ (CoalgebraCat R) (ModuleCat R)) where
-  μIso X Y := Iso.refl _
+  μIso _ _ := Iso.refl _
   whiskerLeft_eq X Y Z f := by ext; rfl
   whiskerRight_eq X f := by ext; rfl
   tensorHom_eq f g := by ext; rfl

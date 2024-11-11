@@ -33,9 +33,9 @@ variable {R K M : Type*} [CommRing R] [IsDomain R] [Field K] [AddCommGroup M]
 variable [Module R M] [Module.Finite R M] [Module.Free R M]
 variable [Module K M] [Module.Finite K M]
 
-open FiniteDimensional Module.Free Polynomial
+open Module Module.Free Polynomial
 
-lemma IsNilpotent.charpoly_eq_X_pow_finrank (φ : Module.End R M) (h : IsNilpotent φ) :
+lemma IsNilpotent.charpoly_eq_X_pow_finrank {φ : Module.End R M} (h : IsNilpotent φ) :
     φ.charpoly = X ^ finrank R M := by
   rw [← sub_eq_zero]
   apply IsNilpotent.eq_zero
@@ -45,6 +45,11 @@ lemma IsNilpotent.charpoly_eq_X_pow_finrank (φ : Module.End R M) (h : IsNilpote
 
 namespace LinearMap
 
+lemma isNilpotent_iff_charpoly (φ : End R M) :
+    IsNilpotent φ ↔ charpoly φ = X ^ finrank R M :=
+  ⟨IsNilpotent.charpoly_eq_X_pow_finrank,
+    fun h ↦ ⟨finrank R M, by rw [← @aeval_X_pow R, ← h, aeval_self_charpoly φ]⟩⟩
+
 open Module.Free in
 lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
     List.TFAE [
@@ -52,7 +57,7 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
       φ.charpoly = X ^ finrank R M,
       ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0,
       natTrailingDegree φ.charpoly = finrank R M ] := by
-  tfae_have 1 → 2 := IsNilpotent.charpoly_eq_X_pow_finrank _
+  tfae_have 1 → 2 := IsNilpotent.charpoly_eq_X_pow_finrank
   tfae_have 2 → 3
   | h, m => by
     use finrank R M
@@ -132,7 +137,7 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
     finrank K (φ.maxGenEigenspace 0) = natTrailingDegree (φ.charpoly) := by
   set V := φ.maxGenEigenspace 0
   have hV : V = ⨆ (n : ℕ), ker (φ ^ n) := by
-    simp [V, Module.End.maxGenEigenspace_def, Module.End.genEigenspace_def]
+    simp [V, ← Module.End.iSup_genEigenspace_eq, Module.End.genEigenspace_nat]
   let W := ⨅ (n : ℕ), LinearMap.range (φ ^ n)
   have hVW : IsCompl V W := by
     rw [hV]
@@ -160,7 +165,7 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
     apply b.ext
     simp only [Basis.prod_apply, coe_inl, coe_inr, prodMap_apply, LinearEquiv.conj_apply,
       LinearEquiv.symm_symm, Submodule.coe_prodEquivOfIsCompl, coe_comp, LinearEquiv.coe_coe,
-      Function.comp_apply, coprod_apply, Submodule.coeSubtype, map_add, Sum.forall, Sum.elim_inl,
+      Function.comp_apply, coprod_apply, Submodule.coe_subtype, map_add, Sum.forall, Sum.elim_inl,
       map_zero, ZeroMemClass.coe_zero, add_zero, LinearEquiv.eq_symm_apply, and_self,
       Submodule.coe_prodEquivOfIsCompl', restrict_coe_apply, implies_true, Sum.elim_inr, zero_add,
       e, V, W, ψ, F, G, b]

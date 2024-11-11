@@ -22,7 +22,7 @@ This file defines oriented angles in Euclidean affine spaces.
 
 noncomputable section
 
-open FiniteDimensional Complex
+open Module Complex
 
 open scoped Affine EuclideanGeometry Real RealInnerProductSpace ComplexConjugate
 
@@ -620,7 +620,7 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
         (continuous_fst.subtype_val.prod_mk (continuous_const.prod_mk
           (continuous_snd.vadd continuous_fst.subtype_val))).continuousOn
     have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) s := by
-      refine ContinuousAt.continuousOn fun p hp => continuousAt_oangle ?_ ?_
+      refine continuousOn_of_forall_continuousAt fun p hp => continuousAt_oangle ?_ ?_
       all_goals
         simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_univ, true_and, Prod.ext_iff] at hp
         obtain ⟨q₁, q₅, q₂⟩ := p
@@ -716,7 +716,7 @@ theorem _root_.AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P
   have hc : IsConnected sp := (isConnected_setOf_sSameSide hp₃p₄.2.1 hp₃p₄.nonempty).image _
     (continuous_const.prod_mk (Continuous.Prod.mk_left _)).continuousOn
   have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) sp := by
-    refine ContinuousAt.continuousOn fun p hp => continuousAt_oangle ?_ ?_
+    refine continuousOn_of_forall_continuousAt fun p hp => continuousAt_oangle ?_ ?_
     all_goals
       simp_rw [sp, Set.mem_image, Set.mem_setOf] at hp
       obtain ⟨p', hp', rfl⟩ := hp

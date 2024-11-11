@@ -37,7 +37,7 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
       refine (h_i ▸ Finset.le_sup' (fun i => ‖v i‖) (Finset.mem_univ j)).trans ?_
       exact norm_le_zero_iff.mpr h_nz
     have h_le : ∀ j, ‖v j * (v i)⁻¹‖ ≤ 1 := fun j => by
-      rw [norm_mul, norm_inv, mul_inv_le_iff' (norm_pos_iff.mpr h_nz), one_mul]
+      rw [norm_mul, norm_inv, mul_inv_le_iff₀ (norm_pos_iff.mpr h_nz), one_mul]
       exact h_i ▸ Finset.le_sup' (fun i => ‖v i‖) (Finset.mem_univ j)
     simp_rw [mem_closedBall_iff_norm']
     refine ⟨i, ?_⟩

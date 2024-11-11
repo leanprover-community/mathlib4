@@ -46,12 +46,12 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
   let D := limitConeInfi F
   -- The isomorphism between the cone point of `C` and the cone point of `D`.
   let E : C.pt ≅ D.pt := hC.conePointUniqueUpToIso (limitConeInfiIsLimit _)
-  have hE : Inducing E.hom := (TopCat.homeoOfIso E).inducing
+  have hE : IsInducing E.hom := (TopCat.homeoOfIso E).isInducing
   -- Reduce to the assertion of the theorem with `D` instead of `C`.
   suffices
     IsTopologicalBasis
       {U : Set D.pt | ∃ (j : _) (V : Set (F.obj j)), V ∈ T j ∧ U = D.π.app j ⁻¹' V} by
-    convert this.inducing hE
+    convert this.isInducing hE
     ext U0
     constructor
     · rintro ⟨j, V, hV, rfl⟩
@@ -104,7 +104,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 e
-      erw [Set.preimage_iInter]
+      rw [Set.preimage_iInter]
       apply congrArg
       ext1 he
       -- Porting note: needed more hand holding here
@@ -113,7 +113,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       rw [dif_pos he, ← Set.preimage_comp]
       apply congrFun
       apply congrArg
-      erw [← coe_comp, D.w] -- now `erw` after #13170
+      rw [← coe_comp, D.w]
       rfl
 
 end CofilteredLimit

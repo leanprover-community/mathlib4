@@ -36,7 +36,7 @@ instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield [LinearOr
     LinearOrderedSemifield α :=
   { LinearOrderedRing.toLinearOrderedSemiring, ‹LinearOrderedField α› with }
 
-variable [LinearOrderedSemifield α] {a b : α}
+variable [LinearOrderedSemifield α] {a b c : α}
 
 /-- Equality holds when `a ≠ 0`. See `mul_inv_cancel`. -/
 lemma mul_inv_le_one : a * a⁻¹ ≤ 1 := by obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
@@ -75,3 +75,27 @@ lemma inv_mul_right_le (ha : 0 ≤ a) : a * b⁻¹ * b ≤ a := by
 /-- Equality holds when `b ≠ 0`. See `inv_mul_cancel_right`. -/
 lemma le_inv_mul_right (ha : a ≤ 0) : a ≤ a * b⁻¹ * b := by
   obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
+
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_left`. -/
+lemma mul_div_mul_left_le (h : 0 ≤ a / b) : c * a / (c * b) ≤ a / b := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_left _ _ hc]
+
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_left`. -/
+lemma le_mul_div_mul_left (h : a / b ≤ 0) : a / b ≤ c * a / (c * b) := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_left _ _ hc]
+
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_right`. -/
+lemma mul_div_mul_right_le (h : 0 ≤ a / b) : a * c / (b * c) ≤ a / b := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_right _ _ hc]
+
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_right`. -/
+lemma le_mul_div_mul_right (h : a / b ≤ 0) : a / b ≤ a * c / (b * c) := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_right _ _ hc]

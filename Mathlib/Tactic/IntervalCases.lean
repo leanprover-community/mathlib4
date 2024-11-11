@@ -5,6 +5,7 @@ Authors: Kim Morrison, Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.FinCases
+import Mathlib.Control.Basic
 
 /-!
 # Case bash on variables in finite intervals

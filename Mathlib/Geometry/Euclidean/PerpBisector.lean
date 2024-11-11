@@ -29,7 +29,7 @@ noncomputable section
 
 namespace AffineSubspace
 
-variable {c c₁ c₂ p₁ p₂ : P}
+variable {c p₁ p₂ : P}
 
 /-- Perpendicular bisector of a segment in a Euclidean affine space. -/
 def perpBisector (p₁ p₂ : P) : AffineSubspace ℝ P :=

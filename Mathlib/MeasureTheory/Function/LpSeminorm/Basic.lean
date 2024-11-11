@@ -139,7 +139,7 @@ alias lintegral_rpow_nnnorm_eq_rpow_snorm' := lintegral_rpow_nnnorm_eq_rpow_eLpN
 lemma eLpNorm_nnreal_pow_eq_lintegral {f : α → F} {p : ℝ≥0} (hp : p ≠ 0) :
     eLpNorm f p μ ^ (p : ℝ) = ∫⁻ x, ‖f x‖₊ ^ (p : ℝ) ∂μ := by
   simp [eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top,
-    lintegral_rpow_nnnorm_eq_rpow_eLpNorm' (show 0 < (p : ℝ) from pos_iff_ne_zero.mpr hp)]
+    lintegral_rpow_nnnorm_eq_rpow_eLpNorm' ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp)]
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_nnreal_pow_eq_lintegral := eLpNorm_nnreal_pow_eq_lintegral
@@ -335,7 +335,7 @@ theorem eLpNorm_indicator_eq_restrict {f : α → E} {s : Set α} (hs : Measurab
       ← ENNReal.essSup_indicator_eq_essSup_restrict hs, ENNReal.coe_indicator,
       nnnorm_indicator_eq_indicator_nnnorm]
   · rcases eq_or_ne p 0 with rfl | hp₀; · simp
-    simp only [eLpNorm_eq_lintegral_rpow_nnnorm hp₀ hp, ← lintegral_indicator _ hs,
+    simp only [eLpNorm_eq_lintegral_rpow_nnnorm hp₀ hp, ← lintegral_indicator hs,
       ENNReal.coe_indicator, nnnorm_indicator_eq_indicator_nnnorm]
     congr with x
     by_cases hx : x ∈ s <;> simp [ENNReal.toReal_pos, *]
@@ -721,6 +721,13 @@ theorem Memℒp.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMea
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Memℒp f p μ :=
   (memℒp_const C).of_le hf (hfC.mono fun _x hx => le_trans hx (le_abs_self _))
 
+theorem memℒp_of_bounded [IsFiniteMeasure μ]
+    {a b : ℝ} {f : α → ℝ} (h : ∀ᵐ x ∂μ, f x ∈ Set.Icc a b)
+    (hX : AEStronglyMeasurable f μ) (p : ENNReal) : Memℒp f p μ :=
+  have ha : ∀ᵐ x ∂μ, a ≤ f x := h.mono fun ω h => h.1
+  have hb : ∀ᵐ x ∂μ, f x ≤ b := h.mono fun ω h => h.2
+  (memℒp_const (max |a| |b|)).mono' hX (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs)
+
 @[mono]
 theorem eLpNorm'_mono_measure (f : α → F) (hμν : ν ≤ μ) (hq : 0 ≤ q) :
     eLpNorm' f q ν ≤ eLpNorm' f q μ := by
@@ -794,10 +801,16 @@ theorem eLpNorm'_smul_measure {p : ℝ} (hp : 0 ≤ p) {f : α → F} (c : ℝ�
 @[deprecated (since := "2024-07-27")]
 alias snorm'_smul_measure := eLpNorm'_smul_measure
 
-theorem eLpNormEssSup_smul_measure {f : α → F} {c : ℝ≥0∞} (hc : c ≠ 0) :
+section SMul
+variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+  [NoZeroSMulDivisors R ℝ≥0∞] {c : R}
+
+@[simp] lemma eLpNormEssSup_smul_measure (hc : c ≠ 0) (f : α → F) :
     eLpNormEssSup f (c • μ) = eLpNormEssSup f μ := by
   simp_rw [eLpNormEssSup]
-  exact essSup_smul_measure hc
+  exact essSup_smul_measure hc _
+
+end SMul
 
 @[deprecated (since := "2024-07-27")]
 alias snormEssSup_smul_measure := eLpNormEssSup_smul_measure
@@ -1107,7 +1120,7 @@ theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : eLpNormEssSup f μ ≤ c • eLpNormEssSup g μ :=
   calc
     essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ ≤ essSup (fun x => (↑(c * ‖g x‖₊) : ℝ≥0∞)) μ :=
-      essSup_mono_ae <| h.mono fun x hx => ENNReal.coe_le_coe.mpr hx
+      essSup_mono_ae <| h.mono fun _ hx => ENNReal.coe_le_coe.mpr hx
     _ = essSup (fun x => (c * ‖g x‖₊ : ℝ≥0∞)) μ := by simp_rw [ENNReal.coe_mul]
     _ = c • essSup (fun x => (‖g x‖₊ : ℝ≥0∞)) μ := ENNReal.essSup_const_mul
 
@@ -1267,7 +1280,7 @@ theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (
     one_div, ENNReal.le_rpow_inv_iff (ENNReal.toReal_pos hp hp'),
     ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg, ← ENNReal.rpow_mul,
     inv_mul_cancel₀ (ENNReal.toReal_pos hp hp').ne.symm, ENNReal.rpow_one, ← setLIntegral_const,
-    ← lintegral_indicator _ hs]
+    ← lintegral_indicator hs]
   refine lintegral_mono_ae ?_
   filter_upwards [hf] with x hx
   by_cases hxs : x ∈ s
@@ -1319,7 +1332,7 @@ theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {p : ℝ≥0∞} {f : ℕ → α
   have hp : p ≠ 0 := fun h => by simp [h] at hp0
   have hp' : p ≠ ∞ := fun h => by simp [h] at hp0
   refine
-    ae_lt_top (measurable_liminf fun n => (hfmeas n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
+    ae_lt_top (.liminf fun n => (hfmeas n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
       (lt_of_le_of_lt
           (lintegral_liminf_le fun n => (hfmeas n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
           (lt_of_le_of_lt ?_
