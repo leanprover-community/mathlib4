@@ -538,8 +538,9 @@ variable (F L K : Type*) [CommRing F] [Ring K] [Algebra F K]
 variable {K} in
 /--
 An element `x` of an algebra `K` over a commutative ring `F` is said to be *separable*, if its
-minimal polynamial over `K` is separable. Note that the minimal polynomial of any element not
-integral over `F` is defined to be `0`, which is not a separable polynomial. -/
+minimal polynomial over `K` is separable. Note that the minimal polynomial of any element not
+integral over `F` is defined to be `0`, which is not a separable polynomial.
+-/
 @[stacks 09H1 "second part"]
 def IsSeparable (x : K) : Prop := Polynomial.Separable (minpoly F x)
 
