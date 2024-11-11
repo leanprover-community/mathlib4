@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
 import Mathlib.Geometry.Manifold.ContMDiffMap
+import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 /-!
 # Smooth monoid
@@ -131,6 +132,28 @@ theorem smooth_mul_left {a : G} : Smooth I I fun b : G => a * b :=
 @[to_additive]
 theorem smooth_mul_right {a : G} : Smooth I I fun b : G => b * a :=
   smooth_id.mul smooth_const
+
+theorem contMDiff_mul_left {a : G} : ContMDiff I I n (a * ·) := smooth_mul_left.contMDiff
+
+theorem contMDiffAt_mul_left {a b : G} : ContMDiffAt I I n (a * ·) b :=
+  contMDiff_mul_left.contMDiffAt
+
+theorem mdifferentiable_mul_left {a : G} : MDifferentiable I I (a * ·) :=
+  contMDiff_mul_left.mdifferentiable le_rfl
+
+theorem mdifferentiableAt_mul_left {a b : G} : MDifferentiableAt I I (a * ·) b :=
+  contMDiffAt_mul_left.mdifferentiableAt le_rfl
+
+theorem contMDiff_mul_right {a : G} : ContMDiff I I n (· * a) := smooth_mul_right.contMDiff
+
+theorem contMDiffAt_mul_right {a b : G} : ContMDiffAt I I n (· * a) b :=
+  contMDiff_mul_right.contMDiffAt
+
+theorem mdifferentiable_mul_right {a : G} : MDifferentiable I I (· * a) :=
+  contMDiff_mul_right.mdifferentiable le_rfl
+
+theorem mdifferentiableAt_mul_right {a b : G} : MDifferentiableAt I I (· * a) b :=
+  contMDiffAt_mul_right.mdifferentiableAt le_rfl
 
 end
 
