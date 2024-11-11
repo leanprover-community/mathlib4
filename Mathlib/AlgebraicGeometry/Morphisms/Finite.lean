@@ -38,7 +38,8 @@ class IsFinite {X Y : Scheme} (f : X ⟶ Y) extends IsAffineHom f : Prop where
 
 namespace IsFinite
 
-instance : HasAffineProperty @IsFinite (affineAnd RingHom.Finite) := by
+instance : HasAffineProperty @IsFinite (fun X _ f _ ↦ IsAffine X ∧ RingHom.Finite (f.app ⊤)) := by
+  show HasAffineProperty @IsFinite (affineAnd RingHom.Finite)
   rw [HasAffineProperty.affineAnd_iff _ RingHom.finite_respectsIso
     RingHom.finite_localizationPreserves RingHom.finite_ofLocalizationSpan]
   simp [isFinite_iff]
