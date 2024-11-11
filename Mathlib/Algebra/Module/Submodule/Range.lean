@@ -91,6 +91,8 @@ theorem range_eq_top [RingHomSurjective τ₁₂] {f : F} :
 theorem range_eq_top_of_surjective [RingHomSurjective τ₁₂] (f : F) (hf : Surjective f) :
     range f = ⊤ := range_eq_top.2 hf
 
+@[deprecated (since := "2024-11-11")] alias range_eq_top := range_eq_top_of_surjective
+
 theorem range_le_iff_comap [RingHomSurjective τ₁₂] {f : F} {p : Submodule R₂ M₂} :
     range f ≤ p ↔ comap f p = ⊤ := by rw [range_eq_map, map_le_iff_le_comap, eq_top_iff]
 

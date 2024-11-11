@@ -833,6 +833,8 @@ theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B
       Function.Surjective f :=
   NonUnitalStarAlgebra.eq_top_iff
 
+@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
+
 @[simp]
 theorem map_top [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] (f : F) :
     (⊤ : NonUnitalStarSubalgebra R A).map f = NonUnitalStarAlgHom.range f :=

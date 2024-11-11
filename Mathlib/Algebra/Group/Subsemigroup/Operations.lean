@@ -576,12 +576,17 @@ theorem srange_eq_top_iff_surjective {N} [Mul N] {f : M →ₙ* N} :
     f.srange = (⊤ : Subsemigroup N) ↔ Function.Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_srange, coe_top]) Set.range_eq_univ
 
+@[deprecated (since := "2024-11-11")]
+alias srange_top_iff_surjective := srange_eq_top_iff_surjective
+
 /-- The range of a surjective semigroup hom is the whole of the codomain. -/
 @[to_additive (attr := simp)
   "The range of a surjective `AddSemigroup` hom is the whole of the codomain."]
 theorem srange_eq_top_of_surjective {N} [Mul N] (f : M →ₙ* N) (hf : Function.Surjective f) :
     f.srange = (⊤ : Subsemigroup N) :=
   srange_eq_top_iff_surjective.2 hf
+
+@[deprecated (since := "2024-11-11")] alias srange_top_of_surjective := srange_eq_top_of_surjective
 
 @[to_additive]
 theorem mclosure_preimage_le (f : M →ₙ* N) (s : Set N) : closure (f ⁻¹' s) ≤ (closure s).comap f :=

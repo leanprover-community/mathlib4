@@ -596,6 +596,8 @@ theorem exists_subtype_range_iff {p : range f → Prop} :
 theorem range_eq_univ : range f = univ ↔ Surjective f :=
   eq_univ_iff_forall
 
+@[deprecated (since := "2024-11-11")] alias range_iff_surjective := range_eq_univ
+
 alias ⟨_, _root_.Function.Surjective.range_eq⟩ := range_eq_univ
 
 @[simp]

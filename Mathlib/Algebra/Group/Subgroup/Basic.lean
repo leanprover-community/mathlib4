@@ -1437,12 +1437,16 @@ theorem range_eq_top {N} [Group N] {f : G →* N} :
     f.range = (⊤ : Subgroup N) ↔ Function.Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_eq_univ
 
+@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
+
 /-- The range of a surjective monoid homomorphism is the whole of the codomain. -/
 @[to_additive (attr := simp)
   "The range of a surjective `AddMonoid` homomorphism is the whole of the codomain."]
 theorem range_eq_top_of_surjective {N} [Group N] (f : G →* N) (hf : Function.Surjective f) :
     f.range = (⊤ : Subgroup N) :=
   range_eq_top.2 hf
+
+@[deprecated (since := "2024-11-11")] alias range_top_of_surjective := range_eq_top_of_surjective
 
 @[to_additive (attr := simp)]
 theorem range_one : (1 : G →* N).range = ⊥ :=

@@ -643,12 +643,17 @@ theorem map_mrange (g : N →* P) (f : M →* N) : f.mrange.map g = mrange (comp
 theorem mrange_eq_top_iff_surjective {f : F} : mrange f = (⊤ : Submonoid N) ↔ Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_mrange, coe_top]) Set.range_eq_univ
 
+@[deprecated (since := "2024-11-11")]
+alias mrange_top_iff_surjective := mrange_eq_top_iff_surjective
+
 /-- The range of a surjective monoid hom is the whole of the codomain. -/
 @[to_additive (attr := simp)
   "The range of a surjective `AddMonoid` hom is the whole of the codomain."]
 theorem mrange_eq_top_of_surjective (f : F) (hf : Function.Surjective f) :
     mrange f = (⊤ : Submonoid N) :=
   mrange_eq_top_iff_surjective.2 hf
+
+@[deprecated (since := "2024-11-11")] alias mrange_top_of_surjective := mrange_eq_top_of_surjective
 
 @[to_additive]
 theorem mclosure_preimage_le (f : F) (s : Set N) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
