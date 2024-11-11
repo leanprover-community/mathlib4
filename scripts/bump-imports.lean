@@ -163,7 +163,7 @@ def readAdhocFile : IO (Array Migration) := do
       | [] | [_] | _ => let _ := 42 -- invalid input
   return migrations
 
-def automaticallyClassifiedMigrations : IO (Array Migration) := do
+def automaticallyClassifiedMigrations (known : Array Migration) : IO (Array Migration) := do
   let mut mig := #[]
   let lines ← IO.FS.lines "output.txt"
   let mut interesting := 0
@@ -205,9 +205,13 @@ def automaticallyClassifiedMigrations : IO (Array Migration) := do
       mig := mig.push <| Migration.mk hash <| MigrationKind.SplitFile
         (moduleNameToName (removed.get! 0)) (added.toArray.map moduleNameToName)
     | _ =>
-      dbg_trace "commit {hash} is interesting: need help classifying the diff"
-      dbg_trace interesting_lines
-      interesting := interesting + 1
+      -- If a given commit already has a migration recorded, we let things be.
+      if known.find? (fun mig ↦ mig.commit_sha1 == hash) |>.isSome then
+        dbg_trace s!"Migration for hash {hash} is interesting: can re-use existing entry"
+      else
+        dbg_trace "commit {hash} is interesting: need help classifying the diff"
+        dbg_trace interesting_lines
+        interesting := interesting + 1
   dbg_trace s!"Generated {mig.size} migrations automatically; {interesting} commits need intervention"
   return mig
 
@@ -373,9 +377,10 @@ def bumpImportsCli (args : Cli.Parsed) : IO UInt32 := do
   -- Read in additional migrations, already parsed as typed.
   let extraTypedMigrations ← readAdhocFile
   migrations := migrations.append extraTypedMigrations
-  IO.println s!"info: input data is well-formed, found {migrations.size} typed migration(s)"
 
-  let moreExtra ← automaticallyClassifiedMigrations
+  let moreExtra ← automaticallyClassifiedMigrations migrations
+  migrations := migrations.append moreExtra
+  IO.println s!"info: all input data is well-formed, found/parsed {migrations.size} typed migration(s)"
 
   -- Extract all mathlib commits between the specified commits.
   -- FUTURE: do this automatically? or add further look-up files? Un-hard-code `from` and `to`!
