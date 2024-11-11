@@ -434,8 +434,10 @@ theorem Submonoid.topologicalClosure_minimal (s : Submonoid M) {t : Submonoid M}
 
 /-- If a submonoid of a topological monoid is commutative, then so is its topological closure. -/
 @[to_additive "If a submonoid of an additive topological monoid is commutative, then so is its
-topological closure."]
-def Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
+topological closure.
+
+See note [reducible non-instances]."]
+abbrev Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
     (hs : ∀ x y : s, x * y = y * x) : CommMonoid s.topologicalClosure :=
   { s.topologicalClosure.toMonoid with
     mul_comm :=
