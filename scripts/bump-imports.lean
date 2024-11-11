@@ -166,6 +166,7 @@ def readAdhocFile : IO (Array Migration) := do
 def automaticallyClassifiedMigrations : IO (Array Migration) := do
   let mut mig := #[]
   let lines ← IO.FS.lines "output.txt"
+  let mut interesting := 0
   for line in lines do
     -- We only consider the lines describing the commit hash.
     if line.startsWith " Mathlib.lean | " then continue
@@ -179,14 +180,18 @@ def automaticallyClassifiedMigrations : IO (Array Migration) := do
       IO.println s!"error: git show {hash} Mathlib.lean returned an error"
       continue
     let interesting_lines := (diff.stdout.splitOn "\n").filter (fun line ↦
-      (line.startsWith "-" || line.startsWith "+") && !(line.containsSubstr "Mathlib.lean")
+      (line.startsWith "-import " || line.startsWith "+import ") && !(line.containsSubstr "Mathlib.lean")
     )
-    let added := interesting_lines.filter (·.startsWith "+") |>.drop ("+import ".length)
-    let removed := interesting_lines.filter (·.startsWith "-") |>.drop ("-import ".length)
+    let added := interesting_lines.filter (·.startsWith "+") |>.map (·.drop ("+import ".length))
+    let removed := interesting_lines.filter (·.startsWith "-") |>.map (·.drop ("-import ".length))
     match (removed.length, added.length) with
     | (0, 0) =>
       dbg_trace "error: parsing returned *no* additions or deletions; something is off!"
       dbg_trace hash
+      dbg_trace diff.stdout
+      dbg_trace interesting_lines
+      dbg_trace added
+      dbg_trace removed
     | (0, _) => continue -- just additions, not interesting
     | (_, 0) =>
       -- Just deletions, easy to parse.
@@ -199,7 +204,11 @@ def automaticallyClassifiedMigrations : IO (Array Migration) := do
     | (1, _) => -- one file is split
       mig := mig.push <| Migration.mk hash <| MigrationKind.SplitFile
         (moduleNameToName (removed.get! 0)) (added.toArray.map moduleNameToName)
-    | _ => dbg_trace hash -- interesting cases
+    | _ =>
+      dbg_trace "commit {hash} is interesting: need help classifying the diff"
+      dbg_trace interesting_lines
+      interesting := interesting + 1
+  dbg_trace s!"Generated {mig.size} migrations automatically; {interesting} commits need intervention"
   return mig
 
 -- Assumes `cycle` and `commit_sha1` very validated. Does not enforce this.
