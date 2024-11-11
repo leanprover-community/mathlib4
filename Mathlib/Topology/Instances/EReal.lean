@@ -259,17 +259,6 @@ lemma liminf_add_top_of_ne_bot (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) 
   apply top_le_iff.1 (le_trans _ le_liminf_add)
   rw [h, top_add_of_ne_bot h']
 
-lemma limsup_le_iff {b : EReal} : limsup u f ≤ b ↔ ∀ c : ℝ, b < c → ∀ᶠ a : α in f, u a ≤ c := by
-  rw [← le_of_forall_lt_iff_le]
-  refine ⟨?_, ?_⟩ <;> intro h c b_c
-  · rcases exists_between_coe_real b_c with ⟨d, b_d, d_c⟩
-    apply mem_of_superset (eventually_lt_of_limsup_lt ((h d b_d).trans_lt d_c))
-    rw [Set.setOf_subset_setOf]
-    exact fun _ h' ↦ h'.le
-  · rcases eq_or_neBot f with rfl | _
-    · simp only [limsup_bot, bot_le]
-    · exact (limsup_le_of_le) (h c b_c)
-
 end LimInfSup
 
 /-! ### Continuity of addition -/
