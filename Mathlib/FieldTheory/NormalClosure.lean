@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 
+import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.FieldTheory.Normal
 import Mathlib.Order.Closure
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
@@ -89,6 +90,8 @@ lemma isNormalClosure_iff : IsNormalClosure F K L ↔
     simpa only [normalClosure_eq_iSup_adjoin_of_splits splits] using h
 -- TODO: IntermediateField.isNormalClosure_iff similar to IntermediateField.isSplittingField_iff
 
+set_option maxSynthPendingDepth 2 in
+set_option maxHeartbeats 800000 in
 include splits in
 /-- `normalClosure F K L` is a valid normal closure if `K/F` is algebraic
   and all minimal polynomials of `K/F` splits in `L/F`. -/
@@ -98,7 +101,7 @@ lemma isNormalClosure_normalClosure : IsNormalClosure F K (normalClosure F K L) 
     exact fun x ↦ splits_of_splits (splits x) ((IntermediateField.subset_adjoin F _).trans <|
       SetLike.coe_subset_coe.mpr <| by apply le_iSup _ x)
   simp_rw [normalClosure, ← top_le_iff]
-  refine fun x _ ↦ (IntermediateField.val _).injective.mem_set_image.mp ?_
+  refine fun x _ ↦ ((⨆ f : K →ₐ[F] L, f.fieldRange).val).injective.mem_set_image |>.mp ?_
   rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_val, ← IntermediateField.coe_val,
     ← IntermediateField.coe_map, IntermediateField.map_iSup]
   refine (iSup_le fun f ↦ ?_ : normalClosure F K L ≤ _) x.2
