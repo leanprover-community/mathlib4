@@ -50,7 +50,7 @@ theorem IsCofinal.univ : IsCofinal (@Set.univ α) :=
   fun a ↦ ⟨a, ⟨⟩, le_rfl⟩
 
 instance : Inhabited {s : Set α // IsCofinal s} :=
-  ⟨_, IsCofinal.univ⟩
+  ⟨_, .univ⟩
 
 /-- A cofinal subset of a cofinal subset is cofinal. -/
 theorem IsCofinal.trans {s : Set α} {t : Set s} (hs : IsCofinal s) (ht : IsCofinal t) :
