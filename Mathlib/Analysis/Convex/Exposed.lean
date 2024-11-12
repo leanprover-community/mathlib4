@@ -109,7 +109,7 @@ theorem eq_inter_halfSpace' {A B : Set E} (hAB : IsExposed 𝕜 A B) (hB : B.Non
 @[deprecated (since := "2024-11-12")] alias eq_inter_halfspace' := eq_inter_halfSpace'
 
 /-- For nontrivial `𝕜`, if `B` is an exposed subset of `A`, then `B` is the intersection of `A` with
-some closed halfSpace. The converse is *not* true. It would require that the corresponding open
+some closed half-space. The converse is *not* true. It would require that the corresponding open
 half-space doesn't intersect `A`. -/
 theorem eq_inter_halfSpace [Nontrivial 𝕜] {A B : Set E} (hAB : IsExposed 𝕜 A B) :
     ∃ l : E →L[𝕜] 𝕜, ∃ a, B = { x ∈ A | a ≤ l x } := by
