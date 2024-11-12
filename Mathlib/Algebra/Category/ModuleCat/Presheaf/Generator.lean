@@ -24,7 +24,7 @@ functor `M ↦ M.obj (op X)`, see `freeYonedaEquiv`).
 
 We deduce that if `C : Type u` is a small category,
 and `R : Cᵒᵖ ⥤ RingCat.{u}`, then `PresheafOfModules.{u} R`
-is a well powered category.
+is a well-powered category.
 
 -/
 
