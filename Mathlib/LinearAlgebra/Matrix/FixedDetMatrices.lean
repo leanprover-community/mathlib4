@@ -229,7 +229,7 @@ lemma reduce_mem_reps (m : ℤ) (hm : m ≠ 0) : ∀ A : Δ m, reduce m A ∈ re
       vecTail, Function.comp_apply, Fin.succ_zero_eq_one, dotProduct_empty, add_zero, neg_add_rev,
       zero_mul, zero_add, empty_val', cons_val_fin_one, cons_val_one, neg_eq_zero, cons_val_zero,
       lt_add_neg_iff_add_lt, le_add_neg_iff_add_le, abs_neg]
-      refine ⟨abs_eq_zero.mp h, ?_, ?_,?_⟩
+      refine ⟨abs_eq_zero.mp h, ?_, ?_, ?_⟩
       · simp only [Fin.isValue, abs_eq_zero.mp h, mul_zero, neg_zero, Int.lt_iff_le_and_ne, ne_eq]
         refine ⟨not_lt.mp h1, A_a_ne_zero m A (by simpa using h) hm⟩
       · rw [le_neg]
