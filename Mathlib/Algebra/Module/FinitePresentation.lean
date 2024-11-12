@@ -3,11 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Noetherian
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.RingTheory.Noetherian.Defs
+
 /-!
 
 # Finitely Presented Modules
@@ -131,16 +131,20 @@ lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.
 
 -- Ideally this should be an instance but it makes mathlib much slower.
 variable (R M) in
-lemma Module.finitePresentation_of_free [Module.Free R M] [Module.Finite R M] :
-    Module.FinitePresentation R M :=
-  Module.finitePresentation_of_free_of_surjective LinearMap.id (⟨·, rfl⟩)
-    (by simpa using Submodule.fg_bot)
+lemma Module.finitePresentation_of_projective [Projective R M] [Module.Finite R M] :
+    FinitePresentation R M :=
+  have ⟨_n, _f, _g, surj, _, hfg⟩ := Finite.exists_comp_eq_id_of_projective R M
+  Module.finitePresentation_of_free_of_surjective _ surj
+    (Finite.iff_fg.mp <| LinearMap.ker_eq_range_of_comp_eq_id hfg ▸ inferInstance)
 
-variable {ι} [_root_.Finite ι]
+@[deprecated (since := "2024-11-06")]
+alias Module.finitePresentation_of_free := Module.finitePresentation_of_projective
 
-instance : Module.FinitePresentation R R := Module.finitePresentation_of_free _ _
-instance : Module.FinitePresentation R (ι →₀ R) := Module.finitePresentation_of_free _ _
-instance : Module.FinitePresentation R (ι → R) := Module.finitePresentation_of_free _ _
+variable {ι} [Finite ι]
+
+instance : Module.FinitePresentation R R := Module.finitePresentation_of_projective _ _
+instance : Module.FinitePresentation R (ι →₀ R) := Module.finitePresentation_of_projective _ _
+instance : Module.FinitePresentation R (ι → R) := Module.finitePresentation_of_projective _ _
 
 lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M] (l : M →ₗ[R] N)
     (hl : Function.Surjective l) (hl' : (LinearMap.ker l).FG) :
@@ -230,7 +234,7 @@ instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
     Module.FinitePresentation A (A ⊗[R] M) := by
   classical
   obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
-  have inst := Module.finitePresentation_of_free A (A ⊗[R] (Fin n → R))
+  have inst := Module.finitePresentation_of_projective A (A ⊗[R] (Fin n → R))
   apply Module.finitePresentation_of_surjective (f.baseChange A)
     (LinearMap.lTensor_surjective A hf)
   have : Function.Exact ((LinearMap.ker f).subtype.baseChange A) (f.baseChange A) :=

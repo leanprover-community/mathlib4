@@ -20,6 +20,9 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 - Stacks Project: Tag 0BMQ
 
 -/
+
+open Topology
+
 universe u₁ u₂ v₁ v₂ v w
 
 namespace CategoryTheory
