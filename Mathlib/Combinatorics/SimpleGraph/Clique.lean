@@ -158,7 +158,7 @@ variable {n : ℕ} {s : Finset α}
 
 /-- An `n`-clique in a graph is a set of `n` vertices which are pairwise connected. -/
 structure IsNClique (n : ℕ) (s : Finset α) : Prop where
-  IsClique : G.IsClique s
+  isClique : G.IsClique s
   card_eq : #s = n
 
 theorem isNClique_iff : G.IsNClique n s ↔ G.IsClique s ∧ #s = n :=
@@ -191,7 +191,7 @@ theorem isNClique_map_iff (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
   · rintro ⟨⟨s, hs, rfl⟩, rfl⟩
     simp [isNClique_iff, hs]
   rintro ⟨s, hs, rfl⟩
-  simp [hs.card_eq, hs.IsClique]
+  simp [hs.card_eq, hs.isClique]
 
 @[simp]
 theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧ #s = n := by
@@ -308,7 +308,7 @@ theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
 theorem CliqueFree.mono (h : m ≤ n) : G.CliqueFree m → G.CliqueFree n := by
   intro hG s hs
   obtain ⟨t, hts, ht⟩ := exists_subset_card_eq (h.trans hs.card_eq.ge)
-  exact hG _ ⟨hs.IsClique.subset hts, ht⟩
+  exact hG _ ⟨hs.isClique.subset hts, ht⟩
 
 theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
   forall_imp fun _ ↦ mt <| IsNClique.mono h
@@ -420,7 +420,7 @@ theorem CliqueFreeOn.subset (hs : s₁ ⊆ s₂) (h₂ : G.CliqueFreeOn s₂ n) 
 theorem CliqueFreeOn.mono (hmn : m ≤ n) (hG : G.CliqueFreeOn s m) : G.CliqueFreeOn s n := by
   rintro t hts ht
   obtain ⟨u, hut, hu⟩ := exists_subset_card_eq (hmn.trans ht.card_eq.ge)
-  exact hG ((coe_subset.2 hut).trans hts) ⟨ht.IsClique.subset hut, hu⟩
+  exact hG ((coe_subset.2 hut).trans hts) ⟨ht.isClique.subset hut, hu⟩
 
 theorem CliqueFreeOn.anti (hGH : G ≤ H) (hH : H.CliqueFreeOn s n) : G.CliqueFreeOn s n :=
   fun _t hts ht => hH hts <| ht.mono hGH
@@ -593,7 +593,7 @@ lemma maximumClique_card_eq_cliqueNum [Fintype α] (s : Finset α) (sm : G.IsMax
 
 lemma maximumClique_exists [Fintype α] : ∃ (s : Finset α), G.IsMaximumClique s := by
   obtain ⟨s, snc⟩ := G.exists_isNClique_cliqueNum
-  exact ⟨s, ⟨snc.IsClique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
+  exact ⟨s, ⟨snc.isClique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
 
 end CliqueNumber
 
@@ -602,32 +602,7 @@ end CliqueNumber
 
 section CliqueFinset
 
-variable [Fintype α]
-
-private lemma fintype_cliqueNum_bddAbove : BddAbove {n | ∃ s, G.IsNClique n s} := by
-  use Fintype.card α
-  rintro y ⟨s, syc⟩
-  rw [isNClique_iff] at syc
-  rw [← syc.right]
-  exact Finset.card_le_card (Finset.subset_univ s)
-
-lemma IsClique.card_le_cliqueNum {t : Finset α} {tc : G.IsClique t} : #t ≤ G.cliqueNum :=
-  le_csSup G.fintype_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
-
-lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s :=
-    Nat.sSup_mem ⟨0, by simp[isNClique_empty.mpr rfl]⟩ G.fintype_cliqueNum_bddAbove
-
-lemma maximumClique_card_eq_cliqueNum (s : Finset α) (sm : G.IsMaximumClique s) :
-    #s = G.cliqueNum := by
-  obtain ⟨sc, sm⟩ := sm
-  obtain ⟨t, tc, tcard⟩ := G.exists_isNClique_cliqueNum
-  exact eq_of_le_of_not_lt sc.card_le_cliqueNum (by simp [← tcard, sm t tc])
-
-lemma maximumClique_exists : ∃ (s : Finset α), G.IsMaximumClique s := by
-  obtain ⟨s, snc⟩ := G.exists_isNClique_cliqueNum
-  exact ⟨s, ⟨snc.clique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
-
-variable [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {a b c : α} {s : Finset α}
+variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α}
 
 /-- The `n`-cliques in a graph as a finset. -/
 def cliqueFinset (n : ℕ) : Finset (Finset α) := {s | G.IsNClique n s}
