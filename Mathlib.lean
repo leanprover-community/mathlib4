@@ -916,6 +916,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 import Mathlib.AlgebraicGeometry.Morphisms.Etale
+import Mathlib.AlgebraicGeometry.Morphisms.Finite
 import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.Morphisms.Immersion
