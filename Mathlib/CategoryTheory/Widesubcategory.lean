@@ -33,7 +33,7 @@ open MorphismProperty
 section Induced
 
 variable {C : Type u₁} (D : Type u₂) [Category.{v₁} D]
-variable (F : C → D) (P : MorphismProperty D) [IsMultiplicative P]
+variable (F : C → D) (P : MorphismProperty D) [P.IsMultiplicative]
 
 /-- `InducedWideCategory D F P`, where `F : C → D`, is a typeclass synonym for `C`,
 which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms

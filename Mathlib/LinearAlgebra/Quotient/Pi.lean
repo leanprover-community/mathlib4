@@ -92,8 +92,7 @@ def invFun : (∀ i, Ms i ⧸ p i) → (∀ i, Ms i) ⧸ pi Set.univ p :=
   piQuotientLift p (pi Set.univ p) _ fun _ => le_comap_single_pi p
 
 theorem left_inv : Function.LeftInverse (invFun p) (toFun p) := fun x =>
-  Quotient.inductionOn' x fun x' => by
-    rw [Quotient.mk''_eq_mk x']
+  Submodule.Quotient.induction_on _ x fun x' => by
     dsimp only [toFun, invFun]
     rw [quotientPiLift_mk p, funext fun i => (mkQ_apply (p i) (x' i)), piQuotientLift_mk p,
       lsum_single, id_apply]
@@ -101,8 +100,9 @@ theorem left_inv : Function.LeftInverse (invFun p) (toFun p) := fun x =>
 theorem right_inv : Function.RightInverse (invFun p) (toFun p) := by
   dsimp only [toFun, invFun]
   rw [Function.rightInverse_iff_comp, ← coe_comp, ← @id_coe R]
-  refine congr_arg _ (pi_ext fun i x => Quotient.inductionOn' x fun x' => funext fun j => ?_)
-  rw [comp_apply, piQuotientLift_single, Quotient.mk''_eq_mk, mapQ_apply,
+  refine congr_arg _ (pi_ext fun i x => Submodule.Quotient.induction_on _ x fun x' =>
+    funext fun j => ?_)
+  rw [comp_apply, piQuotientLift_single, mapQ_apply,
     quotientPiLift_mk, id_apply]
   by_cases hij : i = j <;> simp only [mkQ_apply, coe_single]
   · subst hij
