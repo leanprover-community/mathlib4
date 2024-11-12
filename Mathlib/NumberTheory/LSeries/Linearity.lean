@@ -75,8 +75,6 @@ lemma LSeries_neg (f : ℕ → ℂ) (s : ℂ) : LSeries (-f) s = -LSeries f s :=
 ### Subtraction
 -/
 
-open LSeries
-
 lemma LSeries.term_sub (f g : ℕ → ℂ) (s : ℂ) : term (f - g) s = term f s - term g s := by
   simp_rw [sub_eq_add_neg, term_add, term_neg]
 
@@ -132,3 +130,57 @@ lemma LSeriesSummable.smul_iff {f : ℕ → ℂ} {c s : ℂ} (hc : c ≠ 0) :
 @[simp]
 lemma LSeries_smul (f : ℕ → ℂ) (c s : ℂ) : LSeries (c • f) s = c * LSeries f s := by
   simp only [LSeries, term_smul_apply, tsum_mul_left]
+
+/-!
+### Sums
+-/
+
+section sum
+
+variable {ι : Type*} [DecidableEq ι] (f : ι → ℕ → ℂ) (S : Finset ι) (s : ℂ)
+
+lemma LSeries.term_sum_apply (n : ℕ) :
+    term (∑ i ∈ S, f i) s n  = ∑ i ∈ S, term (f i) s n := by
+  induction S using Finset.induction_on with
+  | empty =>
+    simp only [Finset.sum_empty, term, Pi.zero_apply, zero_div, ite_self]
+  | insert hi IH  =>
+    simp only [Finset.sum_insert hi, term_add_apply, IH]
+
+lemma LSeries.term_sum : term (∑ i ∈ S, f i) s  = ∑ i ∈ S, term (f i) s :=
+  funext fun _ ↦ by rw [Finset.sum_apply]; exact term_sum_apply f S s _
+
+variable {f S s}
+
+lemma LSeriesHasSum.sum {a : ι → ℂ} (hf : ∀ i ∈ S, LSeriesHasSum (f i) s (a i)) :
+    LSeriesHasSum (∑ i ∈ S, f i) s (∑ i ∈ S, a i) := by
+  simpa only [LSeriesHasSum, term_sum, Finset.sum_fn S fun i ↦ term (f i) s] using hasSum_sum hf
+
+lemma LSeriesSummable.sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
+    LSeriesSummable (∑ i ∈ S, f i) s := by
+  simpa only [LSeriesSummable, ← term_sum_apply] using summable_sum hf
+
+@[simp]
+lemma LSeries_sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
+    LSeries (∑ i ∈ S, f i) s = ∑ i ∈ S, LSeries (f i) s := by
+  simpa only [LSeries, term_sum, Finset.sum_apply] using tsum_sum hf
+
+variable [Fintype ι]
+
+/-- The version of `LSeriesHasSum.sum` for `Fintype.sum`. -/
+lemma LSeriesHasSum.sum' {a : ι → ℂ} (hf : ∀ i, LSeriesHasSum (f i) s (a i)) :
+    LSeriesHasSum (∑ i : ι, f i) s (∑ i : ι, a i) :=
+  sum fun i _ ↦ hf i
+
+/-- The version of `LSeriesSummable.sum` for `Fintype.sum`. -/
+lemma LSeriesSummable.sum' (hf : ∀ i, LSeriesSummable (f i) s) :
+    LSeriesSummable (∑ i : ι, f i) s :=
+  sum fun i _ ↦ hf i
+
+/-- The version of `LSeries_sum` for `Fintype.sum`. -/
+@[simp]
+lemma LSeries_sum' (hf : ∀ i, LSeriesSummable (f i) s) :
+    LSeries (∑ i : ι, f i) s = ∑ i : ι, LSeries (f i) s :=
+  LSeries_sum fun i _ ↦ hf i
+
+end sum
