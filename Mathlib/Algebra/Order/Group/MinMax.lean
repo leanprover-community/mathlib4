@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 
 section
 
-variable {α : Type*} [Group α] [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)]
+variable {α : Type*} [Group α] [LinearOrder α] [MulLeftMono α]
 
 -- TODO: This duplicates `oneLePart_div_leOnePart`
 @[to_additive (attr := simp)]
@@ -35,14 +35,12 @@ variable {α : Type*} [LinearOrderedCommGroup α]
 @[to_additive min_neg_neg]
 theorem min_inv_inv' (a b : α) : min a⁻¹ b⁻¹ = (max a b)⁻¹ :=
   Eq.symm <| (@Monotone.map_max α αᵒᵈ _ _ Inv.inv a b) fun _ _ =>
-  -- Porting note: Explicit `α` necessary to infer `CovariantClass` instance
-    (@inv_le_inv_iff α _ _ _).mpr
+    inv_le_inv_iff.mpr
 
 @[to_additive max_neg_neg]
 theorem max_inv_inv' (a b : α) : max a⁻¹ b⁻¹ = (min a b)⁻¹ :=
   Eq.symm <| (@Monotone.map_min α αᵒᵈ _ _ Inv.inv a b) fun _ _ =>
-  -- Porting note: Explicit `α` necessary to infer `CovariantClass` instance
-    (@inv_le_inv_iff α _ _ _).mpr
+    inv_le_inv_iff.mpr
 
 @[to_additive min_sub_sub_right]
 theorem min_div_div_right' (a b c : α) : min (a / c) (b / c) = min a b / c := by

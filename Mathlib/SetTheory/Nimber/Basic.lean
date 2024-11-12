@@ -86,8 +86,6 @@ theorem lt_wf : @WellFounded Nimber (· < ·) :=
 instance : WellFoundedLT Nimber :=
   Ordinal.wellFoundedLT
 
-instance : IsWellOrder Nimber (· < ·) where
-
 instance : ConditionallyCompleteLinearOrderBot Nimber :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 

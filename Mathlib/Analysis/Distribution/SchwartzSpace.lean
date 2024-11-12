@@ -819,9 +819,7 @@ section Comp
 variable (𝕜)
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-variable [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
 
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
 provided that the function is temperate and growths polynomially near infinity. -/

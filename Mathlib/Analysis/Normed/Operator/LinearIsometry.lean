@@ -26,8 +26,7 @@ Since a lot of elementary properties don't require `‖x‖ = 0 → x = 0` we st
 theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` when needed.
 -/
 
-
-open Function Set
+open Function Set Topology
 
 variable {R R₂ R₃ R₄ E E₂ E₃ E₄ F 𝓕 : Type*} [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄]
   {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R} {σ₁₃ : R →+* R₃} {σ₃₁ : R₃ →+* R} {σ₁₄ : R →+* R₄}
@@ -200,7 +199,10 @@ theorem nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ :=
 protected theorem isometry : Isometry f :=
   AddMonoidHomClass.isometry_of_norm f.toLinearMap (norm_map _)
 
-protected lemma embedding (f : F →ₛₗᵢ[σ₁₂] E₂) : Embedding f := f.isometry.embedding
+lemma isEmbedding (f : F →ₛₗᵢ[σ₁₂] E₂) : IsEmbedding f := f.isometry.isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding := isEmbedding
 
 -- Should be `@[simp]` but it doesn't fire due to `lean4#3107`.
 theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :

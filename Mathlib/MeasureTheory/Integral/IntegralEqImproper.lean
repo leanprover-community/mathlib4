@@ -76,9 +76,8 @@ Versions of these results are also given on the intervals `(-∞, a]` and `(-∞
 the corresponding versions of integration by parts.
 -/
 
-open MeasureTheory Filter Set TopologicalSpace
-
-open scoped ENNReal NNReal Topology
+open MeasureTheory Filter Set TopologicalSpace Topology
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
@@ -711,8 +710,8 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
     rcases mem_atTop_sets.1 hs with ⟨b, hb⟩
     rw [← top_le_iff, ← volume_Ici (a := b)]
     exact measure_mono hb
-  rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.isUniformEmbedding_coe E).embedding
+  rwa [B, ← IsEmbedding.tendsto_nhds_iff] at A
+  exact (Completion.isUniformEmbedding_coe E).isEmbedding
 
 variable [CompleteSpace E]
 
@@ -908,8 +907,8 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
     apply le_antisymm (le_top)
     rw [← volume_Iic (a := b)]
     exact measure_mono hb
-  rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.isUniformEmbedding_coe E).embedding
+  rwa [B, ← IsEmbedding.tendsto_nhds_iff] at A
+  exact (Completion.isUniformEmbedding_coe E).isEmbedding
 
 variable [CompleteSpace E]
 
@@ -975,7 +974,7 @@ lemma _root_.HasCompactSupport.ennnorm_le_lintegral_Ici_deriv
     exact ennnorm_integral_le_lintegral_ennnorm _
   convert this with y
   · simp [f', I, Completion.nnnorm_coe]
-  · rw [fderiv.comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
+  · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
     simp only [ContinuousLinearMap.fderiv]
     simp [I]
 
