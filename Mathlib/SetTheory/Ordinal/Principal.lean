@@ -334,8 +334,7 @@ theorem isLimit_of_principal_mul (ho₂ : 2 < o) (ho : Principal (· * ·) o) : 
 @[deprecated (since := "2024-10-16")]
 alias principal_mul_isLimit := isLimit_of_principal_mul
 
-theorem principal_mul_iff_mul_left_eq :
-    Principal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
+theorem principal_mul_iff_mul_left_eq : Principal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
   refine ⟨fun h a ha₀ hao => ?_, fun h a b hao hbo => ?_⟩
   · cases' le_or_gt o 2 with ho ho
     · convert one_mul o
