@@ -165,15 +165,8 @@ theorem principal_add_of_le_one {o : Ordinal} (ho : o ≤ 1) : Principal (· + �
   · exact principal_add_one
 
 theorem isLimit_of_principal_add {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· + ·) o) :
-    o.IsLimit := by
-  refine ⟨fun ho₀ => ?_, fun a hao => ?_⟩
-  · rw [ho₀] at ho₁
-    exact not_lt_of_gt zero_lt_one ho₁
-  · rcases eq_or_ne a 0 with ha | ha
-    · rw [ha, succ_zero]
-      exact ho₁
-    · refine lt_of_le_of_lt ?_ (ho hao hao)
-      rwa [← add_one_eq_succ, add_le_add_iff_left, one_le_iff_ne_zero]
+    o.IsLimit :=
+  ⟨ho₁.ne_bot, fun _ ha ↦ ho ha ho₁⟩
 
 @[deprecated (since := "2024-10-16")]
 alias principal_add_isLimit := isLimit_of_principal_add
@@ -203,8 +196,8 @@ theorem exists_lt_add_of_not_principal_add {a} (ha : ¬ Principal (· + ·) a) :
     ∃ b < a, ∃ c < a, b + c = a := by
   rw [not_principal_iff] at ha
   rcases ha with ⟨b, hb, c, hc, H⟩
-  refine
-    ⟨b, hb, _, lt_of_le_of_ne (sub_le_self a b) fun hab => ?_, Ordinal.add_sub_cancel_of_le hb.le⟩
+  refine ⟨b, hb, _, lt_of_le_of_ne (sub_le_self a b) fun hab => ?_,
+    Ordinal.add_sub_cancel_of_le hb.le⟩
   rw [← sub_le, hab] at H
   exact H.not_lt hc
 
@@ -234,8 +227,15 @@ theorem add_omega0 {a : Ordinal} : a < ω → a + ω = ω :=
 @[deprecated (since := "2024-09-30")]
 alias add_omega := add_omega0
 
+@[simp]
+theorem natCast_add_omega0 (n : ℕ) : n + ω = ω :=
+  add_omega0 (nat_lt_omega0 n)
+
 theorem add_of_le_omega0 {a b : Ordinal} : a < ω → ω ≤ b → a + b = b :=
   principal_add_omega0.add_absorp_of_le
+
+theorem natCast_add_of_le_omega0 (n : ℕ) {a : Ordinal} (h : ω ≤ a) : n + a = a :=
+  add_of_le_omega0 (nat_lt_omega0 n) h
 
 theorem principal_add_omega0_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
   obtain rfl | ha' := eq_or_ne x 0
@@ -267,11 +267,9 @@ theorem principal_add_iff_zero_or_omega0_opow {o : Ordinal} :
     Principal (· + ·) o ↔ o = 0 ∨ o ∈ Set.range (ω ^ · : Ordinal → Ordinal) := by
   constructor
   · rw [or_iff_not_imp_left]
-    intro H ho
-    refine ⟨log ω o, (opow_log_le_self ω ho).eq_of_not_lt ?_⟩
+    refine fun H ho ↦ ⟨log ω o, (opow_log_le_self ω ho).eq_of_not_lt ?_⟩
     obtain ⟨n, hn⟩ := lt_omega0_opow_succ.1 (lt_opow_succ_log_self one_lt_omega0 o)
-    intro h
-    apply hn.not_lt
+    refine fun h ↦ hn.not_lt ?_
     clear hn
     induction' n with n IH
     · rwa [Nat.cast_zero, mul_zero, Ordinal.pos_iff_ne_zero]
