@@ -175,7 +175,7 @@ protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
 
 theorem eq_relIso [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) : g a = f a :=
-  InitialSeg.eq (InitialSeg.ofIso g) f a
+  InitialSeg.eq g.toInitialSeg f a
 
 @[deprecated eq_relIso (since := "2024-10-20")]
 alias ltOrEq_apply_right := eq_relIso
@@ -429,7 +429,7 @@ theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
 
 /-- Composition of a principal segment with an order isomorphism, as a principal segment -/
 def transRelIso (f : r ≺i s) (g : s ≃r t) : r ≺i t :=
-  transInitial f (InitialSeg.ofIso g)
+  transInitial f g.toInitialSeg
 
 @[deprecated (since := "2024-10-20")]
 alias ltEquiv := transRelIso
