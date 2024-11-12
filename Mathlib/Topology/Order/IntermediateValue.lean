@@ -640,7 +640,7 @@ theorem Continuous.strictMonoOn_of_inj_rigidity {f : α → δ}
   have hsa : s ≤ a := min_le_left a x
   have hbt : b ≤ t := le_max_left b y
   have hf_mono_st : StrictMonoOn f (Icc s t) ∨ StrictAntiOn f (Icc s t) := by
-    letI : Fact (s ≤ t) := ⟨hsa.trans <| hbt.trans' hab.le⟩
+    have : Fact (s ≤ t) := ⟨hsa.trans <| hbt.trans' hab.le⟩
     have := Continuous.strictMono_of_inj_boundedOrder' (f := Set.restrict (Icc s t) f)
       hf_c.continuousOn.restrict hf_i.injOn.injective
     exact this.imp strictMono_restrict.mp strictAntiOn_iff_strictAnti.mpr
@@ -663,7 +663,7 @@ theorem ContinuousOn.strictMonoOn_of_injOn_Icc {a b : α} {f : α → δ}
     (hab : a ≤ b) (hfab : f a ≤ f b)
     (hf_c : ContinuousOn f (Icc a b)) (hf_i : InjOn f (Icc a b)) :
     StrictMonoOn f (Icc a b) := by
-  letI : Fact (a ≤ b) := ⟨hab⟩
+  have : Fact (a ≤ b) := ⟨hab⟩
   refine StrictMono.of_restrict ?_
   set g : Icc a b → δ := Set.restrict (Icc a b) f
   have hgab : g ⊥ ≤ g ⊤ := by aesop
