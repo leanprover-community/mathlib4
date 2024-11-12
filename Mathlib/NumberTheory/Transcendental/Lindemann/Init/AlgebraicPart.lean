@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
 import Mathlib.Algebra.Group.UniqueProds.VectorSpace
-import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.Minpoly.ConjRootClass
 
 /-!
@@ -503,9 +503,9 @@ theorem linearIndependent_exp_aux {S : Type*}
   set s := univ.image u ∪ univ.image v
   let poly : ℚ[X] := ∏ x ∈ s, minpoly ℚ x
   let K : IntermediateField ℚ S := IntermediateField.adjoin ℚ (poly.rootSet S)
-  let _ : IsSplittingField ℚ K poly :=
-    IntermediateField.adjoin_rootSet_isSplittingField (IsAlgClosed.splits_codomain poly)
   let _ : Algebra K S := K.val.toRingHom.toAlgebra
+  have _ : IsSplittingField ℚ K poly :=
+    IntermediateField.adjoin_rootSet_isSplittingField (IsAlgClosed.splits_codomain poly)
   have : FiniteDimensional ℚ K := Polynomial.IsSplittingField.finiteDimensional _ poly
   have : Normal ℚ K := .of_isSplittingField poly
   have : IsGalois ℚ K := ⟨⟩

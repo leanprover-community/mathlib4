@@ -28,9 +28,15 @@ private theorem linearIndependent_exp' (u : ι → ℂ) (hu : ∀ i, IsIntegral 
   have m0 : m ≠ 0 := by
     rintro rfl; rw [Fin.sum_univ_zero, add_zero, Int.cast_eq_zero] at h
     exact w0 h
-  haveI I : Nonempty (Fin m) := Fin.pos_iff_nonempty.mp (Nat.pos_of_ne_zero m0)
+  have I : Nonempty (Fin m) := Fin.pos_iff_nonempty.mp (Nat.pos_of_ne_zero m0)
   let P := ∏ i : Fin m, p i
-  let K := SplittingField (P.map (algebraMap ℤ ℚ))
+  obtain ⟨K, _, _, _, _, _⟩ : ∃ (K : Type) (_ : Field K) (_ : Algebra ℚ K) (_ : Algebra K ℂ)
+      (_ : IsScalarTower ℚ K ℂ), IsSplittingField ℚ K (P.map (algebraMap ℤ ℚ)) :=
+    ⟨IntermediateField.adjoin ℚ ((P.map (algebraMap ℤ ℚ)).rootSet ℂ),
+      inferInstance, inferInstance, inferInstance, inferInstance,
+      IntermediateField.adjoin_rootSet_isSplittingField (IsAlgClosed.splits_codomain _)⟩
+  have : CharZero K := algebraRat.charZero K
+
   have p0' : ∀ j, p j ≠ 0 := by intro j h; specialize p0 j; rw [h, eval_zero] at p0; exact p0 rfl
   have P0 : P.eval 0 ≠ 0 := by
     dsimp only [P]; rw [eval_prod, prod_ne_zero_iff]; exact fun j _hj => p0 j
