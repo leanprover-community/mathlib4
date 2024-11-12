@@ -82,7 +82,7 @@ theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
   rcases lt_trichotomy x 0 with hx | rfl | hx
   · rw [zero_of_nonpos hx.le, mul_zero]
     refine (hasDerivAt_const _ 0).congr_of_eventuallyEq ?_
-    filter_upwards [gt_mem_nhds hx] with y hy
+    filter_upwards [eventually_lt_nhds hx] with y hy
     rw [zero_of_nonpos hy.le, mul_zero]
   · rw [expNegInvGlue.zero, mul_zero, hasDerivAt_iff_tendsto_slope]
     refine ((tendsto_polynomial_inv_mul_zero (p * X)).mono_left inf_le_left).congr fun x ↦ ?_
@@ -91,7 +91,7 @@ theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
     convert this.congr_of_eventuallyEq _ using 1
     · simp [expNegInvGlue, hx.not_le]
       ring
-    · filter_upwards [lt_mem_nhds hx] with y hy
+    · filter_upwards [eventually_gt_nhds hx] with y hy
       simp [expNegInvGlue, hy.not_le]
 
 theorem differentiable_polynomial_eval_inv_mul (p : ℝ[X]) :

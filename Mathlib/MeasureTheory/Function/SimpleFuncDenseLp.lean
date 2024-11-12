@@ -204,7 +204,7 @@ theorem _root_.MeasureTheory.Memℒp.exists_simpleFunc_eLpNorm_sub_lt {E : Type*
   have : SeparableSpace (range f' ∪ {0} : Set E) :=
     StronglyMeasurable.separableSpace_range_union_singleton hf.1.stronglyMeasurable_mk
   rcases ((tendsto_approxOn_range_Lp_eLpNorm hp_ne_top f'meas hf'.2).eventually <|
-    gt_mem_nhds hε.bot_lt).exists with ⟨n, hn⟩
+    eventually_lt_nhds hε.bot_lt).exists with ⟨n, hn⟩
   rw [← eLpNorm_neg, neg_sub] at hn
   exact ⟨_, hn, memℒp_approxOn_range f'meas hf' _⟩
 

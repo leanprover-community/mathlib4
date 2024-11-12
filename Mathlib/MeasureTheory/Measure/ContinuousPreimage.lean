@@ -110,7 +110,7 @@ theorem isClosed_setOf_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f)
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro z hz
   replace hz : ∀ᶠ ε : ℝ≥0∞ in 𝓝 0, ε < μ ((f z ⁻¹' t) ∆ s) := by
-    apply gt_mem_nhds
+    apply eventually_lt_nhds
     rwa [pos_iff_ne_zero, ne_eq, measure_symmDiff_eq_zero_iff]
   filter_upwards [(tendsto_measure_symmDiff_preimage_nhds_zero (hf.tendsto z)
     (.of_forall hfm) (hfm z) htm ht).eventually hz] with w hw

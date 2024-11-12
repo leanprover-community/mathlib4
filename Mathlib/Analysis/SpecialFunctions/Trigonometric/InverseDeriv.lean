@@ -27,7 +27,7 @@ theorem deriv_arcsin_aux {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
   · have : 1 - x ^ 2 < 0 := by nlinarith [h₁]
     rw [sqrt_eq_zero'.2 this.le, div_zero]
     have : arcsin =ᶠ[𝓝 x] fun _ => -(π / 2) :=
-      (gt_mem_nhds h₁).mono fun y hy => arcsin_of_le_neg_one hy.le
+      (eventually_lt_nhds h₁).mono fun y hy => arcsin_of_le_neg_one hy.le
     exact ⟨(hasStrictDerivAt_const _ _).congr_of_eventuallyEq this.symm,
       contDiffAt_const.congr_of_eventuallyEq this⟩
   cases' h₂.lt_or_lt with h₂ h₂
@@ -38,7 +38,7 @@ theorem deriv_arcsin_aux {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
         contDiff_sin.contDiffAt⟩
   · have : 1 - x ^ 2 < 0 := by nlinarith [h₂]
     rw [sqrt_eq_zero'.2 this.le, div_zero]
-    have : arcsin =ᶠ[𝓝 x] fun _ => π / 2 := (lt_mem_nhds h₂).mono fun y hy => arcsin_of_one_le hy.le
+    have : arcsin =ᶠ[𝓝 x] fun _ => π / 2 := (eventually_gt_nhds h₂).mono fun y hy => arcsin_of_one_le hy.le
     exact ⟨(hasStrictDerivAt_const _ _).congr_of_eventuallyEq this.symm,
       contDiffAt_const.congr_of_eventuallyEq this⟩
 

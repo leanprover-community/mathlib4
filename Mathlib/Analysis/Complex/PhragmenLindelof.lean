@@ -174,7 +174,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
       mem_preimage, (· ∘ ·), Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)] at hA
     suffices
         Tendsto (fun R => expR (δ * expR (d * R) + B * expR (c * R) + Real.log A)) atTop (𝓝 0) by
-      filter_upwards [this.eventually (ge_mem_nhds hC₀), hA] with R hR Hle w hre him
+      filter_upwards [this.eventually (eventually_le_nhds hC₀), hA] with R hR Hle w hre him
       calc
         ‖g ε w • f w‖ ≤ expR (δ * expR (d * R) + B * expR (c * R) + Real.log A) := ?_
         _ ≤ C := hR
@@ -676,7 +676,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
       simpa only [exists_prop] using hfc.norm.exists_isMaxOn' isClosed_Ici hx₀ this
     rw [cocompact_eq_atBot_atTop, inf_sup_right, (disjoint_atBot_principal_Ici (0 : ℝ)).eq_bot,
       bot_sup_eq]
-    exact (hre.norm.eventually <| ge_mem_nhds hlt).filter_mono inf_le_left
+    exact (hre.norm.eventually <| eventually_le_nhds hlt).filter_mono inf_le_left
   rcases le_or_lt ‖f x₀‖ C with h | h
   ·-- If `‖f x₀‖ ≤ C`, then `hle` implies the required estimate
     simpa only [max_eq_left h] using hle _ hmax

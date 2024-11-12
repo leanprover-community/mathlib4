@@ -285,16 +285,16 @@ theorem tendsto_sub : ∀ {a b : ℝ≥0∞}, (a ≠ ∞ ∨ b ≠ ∞) →
   | ∞, ∞, h => by simp only [ne_eq, not_true_eq_false, or_self] at h
   | ∞, (b : ℝ≥0), _ => by
     rw [top_sub_coe, tendsto_nhds_top_iff_nnreal]
-    refine fun x => ((lt_mem_nhds <| @coe_lt_top (b + 1 + x)).prod_nhds
-      (ge_mem_nhds <| coe_lt_coe.2 <| lt_add_one b)).mono fun y hy => ?_
+    refine fun x => ((eventually_gt_nhds <| @coe_lt_top (b + 1 + x)).prod_nhds
+      (eventually_le_nhds <| coe_lt_coe.2 <| lt_add_one b)).mono fun y hy => ?_
     rw [lt_tsub_iff_left]
     calc y.2 + x ≤ ↑(b + 1) + x := add_le_add_right hy.2 _
     _ < y.1 := hy.1
   | (a : ℝ≥0), ∞, _ => by
     rw [sub_top]
     refine (tendsto_pure.2 ?_).mono_right (pure_le_nhds _)
-    exact ((gt_mem_nhds <| coe_lt_coe.2 <| lt_add_one a).prod_nhds
-      (lt_mem_nhds <| @coe_lt_top (a + 1))).mono fun x hx =>
+    exact ((eventually_lt_nhds <| coe_lt_coe.2 <| lt_add_one a).prod_nhds
+      (eventually_gt_nhds <| @coe_lt_top (a + 1))).mono fun x hx =>
         tsub_eq_zero_iff_le.2 (hx.1.trans hx.2).le
   | (a : ℝ≥0), (b : ℝ≥0), _ => by
     simp only [nhds_coe_coe, tendsto_map'_iff, ← ENNReal.coe_sub, Function.comp_def, tendsto_coe]
@@ -313,7 +313,7 @@ protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ∞) (hb : b ≠ 0 ∨ a �
     refine tendsto_nhds_top_iff_nnreal.2 fun n => ?_
     rcases lt_iff_exists_nnreal_btwn.1 (pos_iff_ne_zero.2 hb) with ⟨ε, hε, hεb⟩
     have : ∀ᶠ c : ℝ≥0∞ × ℝ≥0∞ in 𝓝 (∞, b), ↑n / ↑ε < c.1 ∧ ↑ε < c.2 :=
-      (lt_mem_nhds <| div_lt_top coe_ne_top hε.ne').prod_nhds (lt_mem_nhds hεb)
+      (eventually_gt_nhds <| div_lt_top coe_ne_top hε.ne').prod_nhds (eventually_gt_nhds hεb)
     refine this.mono fun c hc => ?_
     exact (ENNReal.div_mul_cancel hε.ne' coe_ne_top).symm.trans_lt (mul_lt_mul hc.1 hc.2)
   induction a with
@@ -1139,7 +1139,7 @@ theorem EMetric.cauchySeq_iff_le_tendsto_0 [Nonempty β] [SemilatticeSup β] {s 
       rintro _ ⟨k, hk, rfl⟩ _ ⟨l, hl, rfl⟩
       exact (hN _ (hn.trans hk) _ (hn.trans hl)).le
   · rintro ⟨b, ⟨b_bound, b_lim⟩⟩ ε εpos
-    have : ∀ᶠ n in atTop, b n < ε := b_lim.eventually (gt_mem_nhds εpos)
+    have : ∀ᶠ n in atTop, b n < ε := b_lim.eventually (eventually_lt_nhds εpos)
     rcases this.exists with ⟨N, hN⟩
     refine ⟨N, fun m hm n hn => ?_⟩
     calc edist (s m) (s n) ≤ b N := b_bound m n N hm hn

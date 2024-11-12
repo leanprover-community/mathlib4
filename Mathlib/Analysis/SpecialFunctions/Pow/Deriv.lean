@@ -260,7 +260,7 @@ theorem hasStrictFDerivAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.1) :
       ((p.2 * p.1 ^ (p.2 - 1)) • ContinuousLinearMap.fst ℝ ℝ ℝ +
         (p.1 ^ p.2 * log p.1) • ContinuousLinearMap.snd ℝ ℝ ℝ) p := by
   have : (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) :=
-    (continuousAt_fst.eventually (lt_mem_nhds hp)).mono fun p hp => rpow_def_of_pos hp _
+    (continuousAt_fst.eventually (eventually_gt_nhds hp)).mono fun p hp => rpow_def_of_pos hp _
   refine HasStrictFDerivAt.congr_of_eventuallyEq ?_ this.symm
   convert ((hasStrictFDerivAt_fst.log hp.ne').mul hasStrictFDerivAt_snd).exp using 1
   rw [rpow_sub_one hp.ne', ← rpow_def_of_pos hp, smul_add, smul_smul, mul_div_left_comm,
@@ -273,7 +273,7 @@ theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
         (p.1 ^ p.2 * log p.1 - exp (log p.1 * p.2) * sin (p.2 * π) * π) •
           ContinuousLinearMap.snd ℝ ℝ ℝ) p := by
   have : (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) * cos (x.2 * π) :=
-    (continuousAt_fst.eventually (gt_mem_nhds hp)).mono fun p hp => rpow_def_of_neg hp _
+    (continuousAt_fst.eventually (eventually_lt_nhds hp)).mono fun p hp => rpow_def_of_neg hp _
   refine HasStrictFDerivAt.congr_of_eventuallyEq ?_ this.symm
   convert ((hasStrictFDerivAt_fst.log hp.ne).mul hasStrictFDerivAt_snd).exp.mul
     (hasStrictFDerivAt_snd.mul_const π).cos using 1
@@ -288,9 +288,9 @@ theorem contDiffAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) {n : ℕ∞} :
   exacts
     [(((contDiffAt_fst.log hneg.ne).mul contDiffAt_snd).exp.mul
           (contDiffAt_snd.mul contDiffAt_const).cos).congr_of_eventuallyEq
-      ((continuousAt_fst.eventually (gt_mem_nhds hneg)).mono fun p hp => rpow_def_of_neg hp _),
+      ((continuousAt_fst.eventually (eventually_lt_nhds hneg)).mono fun p hp => rpow_def_of_neg hp _),
     ((contDiffAt_fst.log hpos.ne').mul contDiffAt_snd).exp.congr_of_eventuallyEq
-      ((continuousAt_fst.eventually (lt_mem_nhds hpos)).mono fun p hp => rpow_def_of_pos hp _)]
+      ((continuousAt_fst.eventually (eventually_gt_nhds hpos)).mono fun p hp => rpow_def_of_pos hp _)]
 
 theorem differentiableAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
     DifferentiableAt ℝ (fun p : ℝ × ℝ => p.1 ^ p.2) p :=

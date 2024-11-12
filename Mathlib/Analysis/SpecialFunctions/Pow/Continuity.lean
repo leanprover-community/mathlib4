@@ -209,7 +209,7 @@ theorem continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
     squeeze_zero_norm (fun p => abs_rpow_le_exp_log_mul p.1 p.2) A
   have C : Tendsto (fun p : ℝ × ℝ => p.1 ^ p.2) (𝓝[{0}] 0 ×ˢ 𝓝 y) (pure 0) := by
     rw [nhdsWithin_singleton, tendsto_pure, pure_prod, eventually_map]
-    exact (lt_mem_nhds hp).mono fun y hy => zero_rpow hy.ne'
+    exact (eventually_gt_nhds hp).mono fun y hy => zero_rpow hy.ne'
   simpa only [← sup_prod, ← nhdsWithin_union, compl_union_self, nhdsWithin_univ, nhds_prod_eq,
     ContinuousAt, zero_rpow hp.ne'] using B.sup (C.mono_right (pure_le_nhds _))
 
@@ -307,7 +307,7 @@ theorem continuousAt_cpow_zero_of_re_pos {z : ℂ} (hz : 0 < z.re) :
     rcases exists_gt |im z| with ⟨C, hC⟩
     refine ⟨Real.exp (π * C), eventually_map.2 ?_⟩
     refine
-      (((continuous_im.comp continuous_snd).abs.tendsto (_, z)).eventually (gt_mem_nhds hC)).mono
+      (((continuous_im.comp continuous_snd).abs.tendsto (_, z)).eventually (eventually_lt_nhds hC)).mono
         fun z hz => Real.exp_le_exp.2 <| (neg_le_abs _).trans ?_
     rw [_root_.abs_mul]
     exact

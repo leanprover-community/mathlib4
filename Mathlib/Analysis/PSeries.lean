@@ -279,7 +279,7 @@ theorem summable_nat_rpow_inv {p : ℝ} :
       simpa only [this, iff_false]
     intro h
     obtain ⟨k : ℕ, hk₁ : ((k : ℝ) ^ p)⁻¹ < 1, hk₀ : k ≠ 0⟩ :=
-      ((h.tendsto_cofinite_zero.eventually (gt_mem_nhds zero_lt_one)).and
+      ((h.tendsto_cofinite_zero.eventually (eventually_lt_nhds zero_lt_one)).and
           (eventually_cofinite_ne 0)).exists
     apply hk₀
     rw [← pos_iff_ne_zero, ← @Nat.cast_pos ℝ] at hk₀

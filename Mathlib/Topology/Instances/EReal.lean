@@ -285,8 +285,8 @@ theorem continuousAt_add_coe_coe (a b : ℝ) :
 theorem continuousAt_add_top_coe (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊤, a) := by
   simp only [ContinuousAt, tendsto_nhds_top_iff_real, top_add_coe]
-  refine fun r ↦ ((lt_mem_nhds (coe_lt_top (r - (a - 1)))).prod_nhds
-    (lt_mem_nhds <| EReal.coe_lt_coe_iff.2 <| sub_one_lt _)).mono fun _ h ↦ ?_
+  refine fun r ↦ ((eventually_gt_nhds (coe_lt_top (r - (a - 1)))).prod_nhds
+    (eventually_gt_nhds <| EReal.coe_lt_coe_iff.2 <| sub_one_lt _)).mono fun _ h ↦ ?_
   simpa only [← coe_add, sub_add_cancel] using add_lt_add h.1 h.2
 
 theorem continuousAt_add_coe_top (a : ℝ) :
@@ -296,15 +296,15 @@ theorem continuousAt_add_coe_top (a : ℝ) :
 
 theorem continuousAt_add_top_top : ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊤, ⊤) := by
   simp only [ContinuousAt, tendsto_nhds_top_iff_real, top_add_top]
-  refine fun r ↦ ((lt_mem_nhds (coe_lt_top 0)).prod_nhds
-    (lt_mem_nhds <| coe_lt_top r)).mono fun _ h ↦ ?_
+  refine fun r ↦ ((eventually_gt_nhds (coe_lt_top 0)).prod_nhds
+    (eventually_gt_nhds <| coe_lt_top r)).mono fun _ h ↦ ?_
   simpa only [coe_zero, zero_add] using add_lt_add h.1 h.2
 
 theorem continuousAt_add_bot_coe (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊥, a) := by
   simp only [ContinuousAt, tendsto_nhds_bot_iff_real, bot_add]
-  refine fun r ↦ ((gt_mem_nhds (bot_lt_coe (r - (a + 1)))).prod_nhds
-    (gt_mem_nhds <| EReal.coe_lt_coe_iff.2 <| lt_add_one _)).mono fun _ h ↦ ?_
+  refine fun r ↦ ((eventually_lt_nhds (bot_lt_coe (r - (a + 1)))).prod_nhds
+    (eventually_lt_nhds <| EReal.coe_lt_coe_iff.2 <| lt_add_one _)).mono fun _ h ↦ ?_
   simpa only [← coe_add, sub_add_cancel] using add_lt_add h.1 h.2
 
 theorem continuousAt_add_coe_bot (a : ℝ) :
@@ -314,8 +314,8 @@ theorem continuousAt_add_coe_bot (a : ℝ) :
 
 theorem continuousAt_add_bot_bot : ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊥, ⊥) := by
   simp only [ContinuousAt, tendsto_nhds_bot_iff_real, bot_add]
-  refine fun r ↦ ((gt_mem_nhds (bot_lt_coe 0)).prod_nhds
-    (gt_mem_nhds <| bot_lt_coe r)).mono fun _ h ↦ ?_
+  refine fun r ↦ ((eventually_lt_nhds (bot_lt_coe 0)).prod_nhds
+    (eventually_lt_nhds <| bot_lt_coe r)).mono fun _ h ↦ ?_
   simpa only [coe_zero, zero_add] using add_lt_add h.1 h.2
 
 /-- The addition on `EReal` is continuous except where it doesn't make sense (i.e., at `(⊥, ⊤)`

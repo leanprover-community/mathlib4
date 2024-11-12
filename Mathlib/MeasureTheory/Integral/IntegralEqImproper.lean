@@ -409,7 +409,7 @@ theorem AECover.integrable_of_lintegral_nnnorm_tendsto [l.NeBot] [l.IsCountablyG
     (htendsto : Tendsto (fun i => ∫⁻ x in φ i, ‖f x‖₊ ∂μ) l (𝓝 <| ENNReal.ofReal I)) :
     Integrable f μ := by
   refine hφ.integrable_of_lintegral_nnnorm_bounded (max 1 (I + 1)) hfm ?_
-  refine htendsto.eventually (ge_mem_nhds ?_)
+  refine htendsto.eventually (eventually_le_nhds ?_)
   refine (ENNReal.ofReal_lt_ofReal_iff (lt_max_of_lt_left zero_lt_one)).2 ?_
   exact lt_max_of_lt_right (lt_add_one I)
 

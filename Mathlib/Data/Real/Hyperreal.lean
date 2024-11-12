@@ -163,7 +163,7 @@ theorem epsilon_mul_omega : ε * ω = 1 :=
 
 theorem lt_of_tendsto_zero_of_pos {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)) :
     ∀ {r : ℝ}, 0 < r → ofSeq f < (r : ℝ*) := fun hr ↦
-  ofSeq_lt_ofSeq.2 <| (hf.eventually <| gt_mem_nhds hr).filter_mono Nat.hyperfilter_le_atTop
+  ofSeq_lt_ofSeq.2 <| (hf.eventually <| eventually_lt_nhds hr).filter_mono Nat.hyperfilter_le_atTop
 
 theorem neg_lt_of_tendsto_zero_of_pos {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)) :
     ∀ {r : ℝ}, 0 < r → (-r : ℝ*) < ofSeq f := fun hr =>

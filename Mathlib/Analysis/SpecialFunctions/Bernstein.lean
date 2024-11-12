@@ -219,7 +219,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
   intro ε h
   let δ := δ f ε h
   have nhds_zero := tendsto_const_div_atTop_nhds_zero_nat (2 * ‖f‖ * δ ^ (-2 : ℤ))
-  filter_upwards [nhds_zero.eventually (gt_mem_nhds (half_pos h)), eventually_gt_atTop 0] with n nh
+  filter_upwards [nhds_zero.eventually (eventually_lt_nhds (half_pos h)), eventually_gt_atTop 0] with n nh
     npos'
   have npos : 0 < (n : ℝ) := by positivity
   -- As `[0,1]` is compact, it suffices to check the inequality pointwise.

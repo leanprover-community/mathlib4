@@ -503,7 +503,7 @@ theorem mkMetric_le_liminf_tsum {β : Type*} {ι : β → Type*} [∀ n, Countab
   refine iSup₂_le fun ε hε => ?_
   refine le_of_forall_le_of_dense fun c hc => ?_
   rcases ((frequently_lt_of_liminf_lt (by isBoundedDefault) hc).and_eventually
-        ((hr.eventually (gt_mem_nhds hε)).and (ht.and hst))).exists with
+        ((hr.eventually (eventually_lt_nhds hε)).and (ht.and hst))).exists with
     ⟨n, hn, hrn, htn, hstn⟩
   set u : ℕ → Set X := fun j => ⋃ b ∈ decode₂ (ι n) j, t n b
   refine iInf₂_le_of_le u (by rwa [iUnion_decode₂]) ?_
@@ -697,7 +697,7 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
     refine iSup_le fun R => iSup_le fun hR => ?_
     have : Tendsto (fun d : ℝ≥0∞ => (C : ℝ≥0∞) * d ^ (r : ℝ)) (𝓝 0) (𝓝 0) :=
       ENNReal.tendsto_const_mul_rpow_nhds_zero_of_pos ENNReal.coe_ne_top hr
-    rcases ENNReal.nhds_zero_basis_Iic.eventually_iff.1 (this.eventually (gt_mem_nhds hR)) with
+    rcases ENNReal.nhds_zero_basis_Iic.eventually_iff.1 (this.eventually (eventually_lt_nhds hR)) with
       ⟨δ, δ0, H⟩
     refine le_iSup₂_of_le δ δ0 <| iInf₂_mono' fun t hst ↦
       ⟨fun n => f '' (t n ∩ s), ?_, iInf_mono' fun htδ ↦

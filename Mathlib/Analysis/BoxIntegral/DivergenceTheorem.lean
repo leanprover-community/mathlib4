@@ -189,7 +189,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
           _ = ε / 2 := add_halves _
       · have : ContinuousWithinAt (fun δ : ℝ => (2 * δ) ^ (n + 1) * ‖f' x (Pi.single i 1)‖)
             (Ioi 0) 0 := ((continuousWithinAt_id.const_mul _).pow _).mul_const _
-        refine this.eventually (ge_mem_nhds ?_)
+        refine this.eventually (eventually_le_nhds ?_)
         simpa using half_pos ε0
     rcases this.exists with ⟨δ, ⟨hδ0, hδ12⟩, hdfδ, hδ⟩
     refine ⟨δ, hδ0, fun J hJI hJδ _ _ => add_halves ε ▸ ?_⟩

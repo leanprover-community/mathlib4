@@ -294,7 +294,7 @@ instance instMetricSpace : MetricSpace (CompleteCopy s) := by
         rw [s.isOpen.isClosed_compl.closure_eq, mem_compl_iff, not_not]
         exact x.2
       simp only [dist_self, sub_self, abs_zero, zero_add] at this
-      exact mem_of_superset (this <| gt_mem_nhds ε0) hε
+      exact mem_of_superset (this <| eventually_lt_nhds ε0) hε
 
 -- Porting note: no longer needed because the topologies are defeq
 

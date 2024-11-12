@@ -97,7 +97,7 @@ theorem mem_posTangentConeAt_of_segment_subset (h : [x -[ℝ] x + y] ⊆ s) :
     y ∈ posTangentConeAt s x := by
   refine mem_posTangentConeAt_of_frequently_mem (Eventually.frequently ?_)
   rw [eventually_nhdsWithin_iff]
-  filter_upwards [ge_mem_nhds one_pos] with t ht₁ ht₀
+  filter_upwards [eventually_le_nhds one_pos] with t ht₁ ht₀
   apply h
   rw [segment_eq_image', add_sub_cancel_left]
   exact mem_image_of_mem _ ⟨le_of_lt ht₀, ht₁⟩
@@ -238,7 +238,7 @@ lemma one_mem_posTangentConeAt_iff_mem_closure :
       simpa only [add_zero] using tendsto_const_nhds.add
         (tangentConeAt.lim_zero _ (tendsto_abs_atTop_atTop.comp hc) hcd)
     apply mem_closure_of_tendsto this
-    filter_upwards [hc.eventually_gt_atTop 0, hcd.eventually (lt_mem_nhds one_pos), hs]
+    filter_upwards [hc.eventually_gt_atTop 0, hcd.eventually (eventually_gt_nhds one_pos), hs]
       with n hcn hcdn hdn
     simp_all
   · intro h

@@ -477,7 +477,7 @@ theorem exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt_of_nnnorm_lt (hs 
     ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t := by
   obtain ⟨ε, ε0, hε⟩ : ∃ ε > 0,
       ball x ε ∩ s ⊆ { y | HasFDerivWithinAt f (f' y) s y ∧ ‖f' y‖₊ < K } :=
-    mem_nhdsWithin_iff.1 (hder.and <| hcont.nnnorm.eventually (gt_mem_nhds hK))
+    mem_nhdsWithin_iff.1 (hder.and <| hcont.nnnorm.eventually (eventually_lt_nhds hK))
   rw [inter_comm] at hε
   refine ⟨s ∩ ball x ε, inter_mem_nhdsWithin _ (ball_mem_nhds _ ε0), ?_⟩
   exact

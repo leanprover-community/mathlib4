@@ -1147,7 +1147,7 @@ theorem HasFPowerSeriesWithinOnBall.tendstoUniformlyOn {r' : ℝ≥0}
   have L : Tendsto (fun n => (C : ℝ) * a ^ n) atTop (𝓝 ((C : ℝ) * 0)) :=
     tendsto_const_nhds.mul (tendsto_pow_atTop_nhds_zero_of_lt_one ha.1.le ha.2)
   rw [mul_zero] at L
-  refine (L.eventually (gt_mem_nhds εpos)).mono fun n hn y hy => ?_
+  refine (L.eventually (eventually_lt_nhds εpos)).mono fun n hn y hy => ?_
   rw [dist_eq_norm]
   exact (hp y hy.2 n hy.1).trans_lt hn
 

@@ -307,7 +307,7 @@ private theorem bound' : Tendsto (fun n : ℕ => ‖F.derivative.eval a‖ * T ^
 
 private theorem bound :
     ∀ {ε}, ε > 0 → ∃ N : ℕ, ∀ {n}, n ≥ N → ‖F.derivative.eval a‖ * T ^ 2 ^ n < ε := fun hε ↦
-  eventually_atTop.1 <| (bound' hnorm).eventually <| gt_mem_nhds hε
+  eventually_atTop.1 <| (bound' hnorm).eventually <| eventually_lt_nhds hε
 
 private theorem bound'_sq :
     Tendsto (fun n : ℕ => ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n) atTop (𝓝 0) := by

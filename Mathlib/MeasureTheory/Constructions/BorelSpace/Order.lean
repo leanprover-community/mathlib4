@@ -50,26 +50,19 @@ variable (α)
 variable [TopologicalSpace α] [SecondCountableTopology α] [LinearOrder α] [OrderTopology α]
 
 theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
-  refine le_antisymm ?_ (generateFrom_le ?_)
-  · rw [borel_eq_generateFrom_of_subbasis (@OrderTopology.topology_eq_generate_intervals α _ _ _)]
-    letI : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
-    have H : ∀ a : α, MeasurableSet (Iio a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
-    refine generateFrom_le ?_
-    rintro _ ⟨a, rfl | rfl⟩
-    · rcases em (∃ b, a ⋖ b) with ⟨b, hb⟩ | hcovBy
-      · rw [hb.Ioi_eq, ← compl_Iio]
-        exact (H _).compl
-      · rcases isOpen_biUnion_countable (Ioi a) Ioi fun _ _ ↦ isOpen_Ioi with ⟨t, hat, htc, htU⟩
-        have : Ioi a = ⋃ b ∈ t, Ici b := by
-          refine Subset.antisymm ?_ <| iUnion₂_subset fun b hb ↦ Ici_subset_Ioi.2 (hat hb)
-          refine Subset.trans ?_ <| iUnion₂_mono fun _ _ ↦ Ioi_subset_Ici_self
-          simpa [CovBy, htU, subset_def] using hcovBy
-        simp only [this, ← compl_Iio]
-        exact .biUnion htc <| fun _ _ ↦ (H _).compl
-    · apply H
-  · rw [forall_mem_range]
-    intro a
-    exact GenerateMeasurable.basic _ isOpen_Iio
+  rw [borel_eq_generateFrom_of_subbasis (OrderTopology.topology_eq_ofOrder (α := α)),
+    ← generateFrom_sup_generateFrom, sup_eq_right]
+  refine generateFrom_le <| forall_mem_range.mpr fun a ↦ ?_
+  rcases em (∃ b, a ⋖ b) with ⟨b, hb⟩ | hcovBy
+  · rw [hb.Ioi_eq, ← compl_Iio]
+    exact .compl <| .basic _ <| mem_range_self _
+  · rcases isOpen_biUnion_countable (Ioi a) Ioi fun _ _ ↦ isOpen_Ioi with ⟨t, hat, htc, htU⟩
+    have : Ioi a = ⋃ b ∈ t, Ici b := by
+      refine Subset.antisymm ?_ <| iUnion₂_subset fun b hb ↦ Ici_subset_Ioi.2 (hat hb)
+      refine Subset.trans ?_ <| iUnion₂_mono fun _ _ ↦ Ioi_subset_Ici_self
+      simpa [CovBy, htU, subset_def] using hcovBy
+    simp only [this, ← compl_Iio]
+    exact .biUnion htc <| fun _ _ ↦ .compl <| .basic _ <| mem_range_self _
 
 theorem borel_eq_generateFrom_Ioi : borel α = .generateFrom (range Ioi) :=
   @borel_eq_generateFrom_Iio αᵒᵈ _ (by infer_instance : SecondCountableTopology α) _ _
@@ -544,7 +537,7 @@ theorem Measurable.isLUB {ι} [Countable ι] {f : ι → δ → α} {g : δ → 
   apply measurable_generateFrom
   rintro _ ⟨a, rfl⟩
   simp_rw [Set.preimage, mem_Ioi, lt_isLUB_iff (hg _), exists_range_iff, setOf_exists]
-  exact MeasurableSet.iUnion fun i => hf i (isOpen_lt' _).measurableSet
+  exact MeasurableSet.iUnion fun i => hf i measurableSet_Ioi
 
 /-- If a function is the least upper bound of countably many measurable functions on a measurable
 set `s`, and coincides with a measurable function outside of `s`, then it is measurable. -/
