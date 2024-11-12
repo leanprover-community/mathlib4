@@ -788,7 +788,7 @@ theorem JoinedIn.map (h : JoinedIn F x y) {f : X → Y} (hf : Continuous f) :
     JoinedIn (f '' F) (f x) (f y) :=
   h.map_continuousOn hf.continuousOn
 
-theorem IsInducing.joinedIn_image {f : X → Y} (hf : IsInducing f) (hx : x ∈ F)
+theorem Topology.IsInducing.joinedIn_image {f : X → Y} (hf : IsInducing f) (hx : x ∈ F)
     (hy : y ∈ F) : JoinedIn (f '' F) (f x) (f y) ↔ JoinedIn F x y := by
   refine ⟨?_, (.map · hf.continuous)⟩
   rintro ⟨γ, hγ⟩
@@ -908,7 +908,7 @@ theorem IsPathConnected.image (hF : IsPathConnected F) {f : X → Y} (hf : Conti
   hF.image' hf.continuousOn
 
 /-- If `f : X → Y` is an inducing map, `f(F)` is path-connected iff `F` is. -/
-nonrec theorem IsInducing.isPathConnected_iff {f : X → Y} (hf : IsInducing f) :
+nonrec theorem Topology.IsInducing.isPathConnected_iff {f : X → Y} (hf : IsInducing f) :
     IsPathConnected F ↔ IsPathConnected (f '' F) := by
   simp only [IsPathConnected, forall_mem_image, exists_mem_image]
   refine exists_congr fun x ↦ and_congr_right fun hx ↦ forall₂_congr fun y hy ↦ ?_
@@ -1204,7 +1204,7 @@ theorem open_pathConnected_basis (x : X) :
   exact ⟨pathComponentIn x u, ⟨hu.pathComponentIn _, ⟨mem_pathComponentIn_self hxu,
     isPathConnected_pathComponentIn hxu⟩⟩, pathComponentIn_subset.trans hus⟩
 
-theorem IsOpenEmbedding.locPathConnectedSpace {e : Y → X} (he : IsOpenEmbedding e) :
+theorem Topology.IsOpenEmbedding.locPathConnectedSpace {e : Y → X} (he : IsOpenEmbedding e) :
     LocPathConnectedSpace Y :=
   have (y : Y) :
       (𝓝 y).HasBasis (fun s ↦ s ∈ 𝓝 (e y) ∧ IsPathConnected s ∧ s ⊆ range e) (e ⁻¹' ·) :=
@@ -1269,7 +1269,7 @@ lemma LocPathConnectedSpace.coinduced {Y : Type*} (f : X → Y) :
     (image_mono pathComponentIn_subset).trans <| u.image_preimage_subset f
 
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
-lemma IsQuotientMap.locPathConnectedSpace {f : X → Y} (h : IsQuotientMap f) :
+lemma Topology.IsQuotientMap.locPathConnectedSpace {f : X → Y} (h : IsQuotientMap f) :
     LocPathConnectedSpace Y :=
   h.2 ▸ LocPathConnectedSpace.coinduced f
 
