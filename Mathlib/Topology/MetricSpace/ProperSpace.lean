@@ -18,7 +18,7 @@ import Mathlib.Topology.MetricSpace.Pseudo.Pi
 * `isCompact_sphere`: any sphere in a proper space is compact.
 * `proper_of_compact`: compact spaces are proper.
 * `secondCountable_of_proper`: proper spaces are sigma-compact, hence second countable.
-* `locally_compact_of_proper`: proper spaces are locally compact.
+* `locallyCompact_of_proper`: proper spaces are locally compact.
 * `pi_properSpace`: finite products of proper spaces are proper.
 
 -/
@@ -88,7 +88,7 @@ instance (priority := 100) proper_of_compact [CompactSpace α] : ProperSpace α 
 
 -- see Note [lower instance priority]
 /-- A proper space is locally compact -/
-instance (priority := 100) locally_compact_of_proper [ProperSpace α] : LocallyCompactSpace α :=
+instance (priority := 100) locallyCompact_of_proper [ProperSpace α] : LocallyCompactSpace α :=
   .of_hasBasis (fun _ => nhds_basis_closedBall) fun _ _ _ =>
     isCompact_closedBall _ _
 
