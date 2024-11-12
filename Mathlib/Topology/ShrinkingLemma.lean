@@ -265,10 +265,10 @@ variable {u : ι → Set X} {s : Set X} [T2Space X] [LocallyCompactSpace X]
 /-- In a locally compact Hausdorff space `X`, if `s` is a compact set, `v` is a partial refinement,
 and `i` is an index such that `i ∉ v.carrier`, then there exists a partial refinement that is
 strictly greater than `v`. -/
-theorem exists_gt_t2space (v : PartialRefinement u s (fun X => IsCompact (closure X)))
-    (hs : IsCompact s) (i : ι)
-    (hi : i ∉ v.carrier) : ∃ v' : PartialRefinement u s (fun X => IsCompact (closure X)),
-    v < v' ∧ IsCompact (closure (v' i)) := by
+theorem exists_gt_t2space (v : PartialRefinement u s (fun w => IsCompact (closure w)))
+    (hs : IsCompact s) (i : ι) (hi : i ∉ v.carrier) :
+    ∃ v' : PartialRefinement u s (fun w => IsCompact (closure w)),
+      v < v' ∧ IsCompact (closure (v' i)) := by
   -- take `v i` such that `closure (v i)` is compact
   set si := s ∩ (⋃ j ≠ i, v j)ᶜ with hsi
   simp only [ne_eq, compl_iUnion] at hsi
@@ -289,7 +289,7 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun X => IsCompact (closur
       rw [Set.mem_iInter₂] at hsi'
       exact hsi' j hj
     obtain ⟨j, hj⟩ := Set.mem_iUnion.mp
-      (Set.mem_of_subset_of_mem v.subset_iUnion (Set.mem_of_mem_inter_left hx))
+      (v.subset_iUnion (Set.mem_of_mem_inter_left hx))
     obtain rfl : j = i := by
       by_contra! h
       exact this j h hj
@@ -325,7 +325,7 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun X => IsCompact (closur
         exact False.elim (h hji)
       · intro hjmemv
         rw [update_noteq h]
-        exact v.p_refined hjmemv
+        exact v.pred_of_mem hjmemv
   · intro j hj
     rw [mem_insert_iff, not_or] at hj
     rw [update_noteq hj.1, v.apply_eq hj.2]
@@ -341,17 +341,17 @@ is contained in the corresponding original open set. -/
 theorem exists_subset_iUnion_closure_subset_t2space (hs : IsCompact s) (uo : ∀ i, IsOpen (u i))
     (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsOpen (v i)) ∧ (∀ i, closure (v i) ⊆ u i)
-    ∧ (∀ i, IsCompact (closure (v i))) := by
-  haveI : Nonempty (PartialRefinement u s (fun X => IsCompact (closure X))) :=
+      ∧ (∀ i, IsCompact (closure (v i))) := by
+  haveI : Nonempty (PartialRefinement u s (fun w => IsCompact (closure w))) :=
     ⟨⟨u, ∅, uo, us, False.elim, False.elim, fun _ => rfl⟩⟩
-  have : ∀ c : Set (PartialRefinement u s (fun X => IsCompact (closure X))),
+  have : ∀ c : Set (PartialRefinement u s (fun w => IsCompact (closure w))),
       IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
     fun c hc ne => ⟨.chainSup c hc ne uf us, fun v hv => PartialRefinement.le_chainSup _ _ _ _ hv⟩
   rcases zorn_le_nonempty this with ⟨v, hv⟩
   suffices ∀ i, i ∈ v.carrier from
     ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i), ?_⟩
   · intro i
-    exact v.p_refined (this i)
+    exact v.pred_of_mem (this i)
   · intro i
     by_contra! hi
     rcases exists_gt_t2space v hs i hi with ⟨v', hlt, _⟩
@@ -364,7 +364,7 @@ original open set. See also `exists_subset_iUnion_closure_subset_t2space` for a 
 theorem exists_subset_iUnion_compact_subset_t2space (hs : IsCompact s) (uo : ∀ i, IsOpen (u i))
     (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsClosed (v i)) ∧ (∀ i, v i ⊆ u i)
-    ∧ ∀ i, IsCompact (v i) := by
+      ∧ ∀ i, IsCompact (v i) := by
   let ⟨v, hsv, _, hv⟩ := exists_subset_iUnion_closure_subset_t2space hs uo uf us
   use fun i => closure (v i)
   refine ⟨?_, ?_, ?_⟩
