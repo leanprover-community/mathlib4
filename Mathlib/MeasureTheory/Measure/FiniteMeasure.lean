@@ -81,8 +81,8 @@ weak convergence of measures, finite measure
 
 noncomputable section
 
-open MeasureTheory Set Filter BoundedContinuousFunction
-open scoped Topology ENNReal NNReal BoundedContinuousFunction
+open BoundedContinuousFunction Filter MeasureTheory Set Topology
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
