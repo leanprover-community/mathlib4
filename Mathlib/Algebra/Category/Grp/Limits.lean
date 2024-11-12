@@ -451,13 +451,8 @@ theorem kernelIsoKer_inv_comp_ι {G H : AddCommGrp.{u}} (f : G ⟶ H) :
 /-- The categorical kernel inclusion for `f : G ⟶ H`, as an object over `G`,
 agrees with the `AddSubgroup.subtype` map.
 -/
-@[simps! hom_left_apply_coe inv_left_apply]
 def kernelIsoKerOver {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     Over.mk (kernel.ι f) ≅ @Over.mk _ _ G (AddCommGrp.of f.ker) (AddSubgroup.subtype f.ker) :=
   Over.isoMk (kernelIsoKer f)
-
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] AddCommGrp.kernelIsoKerOver_inv_left_apply
-  AddCommGrp.kernelIsoKerOver_hom_left_apply_coe
 
 end AddCommGrp

@@ -62,8 +62,8 @@ instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 
--- We want to use this lemma earlier than the lemmas simp can prove it with
-@[simp, nolint simpNF] protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl
+-- We set the simp priority slightly lower than default; later more general lemmas will replace it.
+@[simp 900] protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl
 
 section Multiplicative
 
