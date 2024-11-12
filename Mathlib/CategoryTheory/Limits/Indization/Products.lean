@@ -14,7 +14,7 @@ universe v u
 
 namespace CategoryTheory.Limits
 
-variable {C : Type v} [SmallCategory C] {α : Type v}
+variable {C : Type u} [Category.{v} C] {α : Type v}
 
 theorem isIndObject_pi (h : ∀ (g : α → C), IsIndObject (∏ᶜ yoneda.obj ∘ g))
     (f : α → Cᵒᵖ ⥤ Type v) (hf : ∀ a, IsIndObject (f a)) : IsIndObject (∏ᶜ f) := by

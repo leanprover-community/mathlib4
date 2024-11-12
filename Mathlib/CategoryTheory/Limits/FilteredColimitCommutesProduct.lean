@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
 
 /-!
 # The IPC property
@@ -22,7 +23,7 @@ Our final goal is that for a small category `D` the presheaf category `Dᵒᵖ �
 IPC property, which is used in the calculation of products in the category of Ind-objects.
 -/
 
-universe w v v₁ u u₁
+universe w v v₁ v₂ u u₁ u₂
 
 namespace CategoryTheory.Limits
 
@@ -80,6 +81,16 @@ instance [∀ i, IsFiltered (I i)] : IsFiltered (∀ i, I i) where
 
 end FME157
 
+section
+
+variable (C : Type u) [Category.{v} C]
+
+class IsIPC [HasProducts.{w} C] [HasFilteredColimitsOfSize.{w} C] : Prop where
+  isIso : ∀ (α : Type w) (I : α → Type w) [∀ i, SmallCategory (I i)] [∀ i, IsFiltered (I i)]
+    (F : ∀ i, I i ⥤ C), IsIso (colimitPointwiseProductToProductColimit F)
+
+end
+
 section types
 
 variable {α : Type u} {I : α → Type u} [∀ i, SmallCategory (I i)] [∀ i, IsFiltered (I i)]
@@ -126,14 +137,95 @@ theorem isIso_colimitPointwiseProductToProductColimit_types (F : ∀ i, I i ⥤ 
     refine this.trans ?_
     simpa using hk _
 
+instance : IsIPC.{u} (Type u) where
+  isIso _ _ := isIso_colimitPointwiseProductToProductColimit_types
+
 end types
+
+section functorCategory
+
+variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D]
+  {α : Type w} [HasLimitsOfShape (Discrete α) C]
+
+noncomputable def piObjIso (f : α → D ⥤ C) (d : D) : (∏ᶜ f).obj d ≅ ∏ᶜ (fun s => (f s).obj d) :=
+  limitObjIsoLimitCompEvaluation (Discrete.functor f) d ≪≫
+    HasLimit.isoOfNatIso (Discrete.compNatIsoDiscrete _ _)
+
+@[reassoc (attr := simp)]
+theorem piObjIso_comp_π (f : α → D ⥤ C) (d : D) (s : α) :
+    (piObjIso f d).hom ≫ Pi.π (fun s => (f s).obj d) s = (Pi.π f s).app d := by
+  simp [piObjIso]
+
+end functorCategory
+
+section functorCategory
+
+variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D]
+  {α : Type w} {I : α → Type u₂} [∀ i, Category (I i)]
+  [HasLimitsOfShape (Discrete α) C]
+  (F : ∀ i, I i ⥤ D ⥤ C)
+
+@[simps!]
+noncomputable def pointwiseProductCompEvaluation (d : D) :
+    pointwiseProduct F ⋙ (evaluation D C).obj d ≅
+      pointwiseProduct (fun s => F s ⋙ (evaluation _ _).obj d) :=
+  NatIso.ofComponents (fun k => piObjIso _ _) (by
+    intro k k' f
+    simp
+    ext
+    simp
+    rw [← NatTrans.comp_app]
+    simp)
+
+variable [∀ i, HasColimitsOfShape (I i) C] [HasColimitsOfShape (∀ i, I i) C]
+
+theorem colimitPointwiseProductToProductColimit_app (d : D) :
+    (colimitPointwiseProductToProductColimit F).app d =
+      (colimitObjIsoColimitCompEvaluation _ _).hom ≫
+        (HasColimit.isoOfNatIso (pointwiseProductCompEvaluation F d)).hom ≫
+          (colimitPointwiseProductToProductColimit _) ≫
+            (Pi.mapIso fun _ => (colimitObjIsoColimitCompEvaluation _ _).symm).hom ≫
+            (piObjIso _ _).inv
+            := by
+  simp only [← Category.assoc]
+  rw [Iso.eq_comp_inv]
+  simp only [Category.assoc]
+  rw [← Iso.inv_comp_eq]
+  refine Pi.hom_ext _ _ (fun s => ?_)
+  refine colimit.hom_ext (fun k => ?_)
+  simp only [Functor.comp_obj, pointwiseProduct_obj, evaluation_obj_obj, Category.assoc,
+    piObjIso_comp_π, colimitObjIsoColimitCompEvaluation_ι_inv_assoc, Functor.mapIso_hom, lim_map,
+    limMap_π, Discrete.functor_obj_eq_as, Discrete.natIso_hom_app, Iso.symm_hom,
+    HasColimit.isoOfNatIso_ι_hom_assoc, pointwiseProductCompEvaluation_hom_app,
+    ι_colimitPointwiseProductToProductColimit_π_assoc, colimitObjIsoColimitCompEvaluation_ι_inv,
+    piObjIso_comp_π_assoc]
+  simp [← NatTrans.comp_app]
+
+end functorCategory
+
+section discrete
+
+variable {C : Type u} [Category.{v} C]
+
+instance [HasProducts.{w} C] [HasFilteredColimitsOfSize.{w, w} C] [IsIPC.{w} C] {D : Type u₁}
+    [Category.{v₁} D] : IsIPC.{w} (D ⥤ C) := by
+  refine ⟨fun β I _ _ F => ?_⟩
+  suffices ∀ (X : D), IsIso ((colimitPointwiseProductToProductColimit F).app X) from
+    NatIso.isIso_of_isIso_app _
+  rintro x
+  rw [colimitPointwiseProductToProductColimit_app]
+  have := IsIPC.isIso _ _ (fun s => F s ⋙ (evaluation D C).obj x)
+  exact inferInstance
+
+end discrete
 
 section final
 
-theorem isIso_colimitPointwiseProductToProductColimit {C : Type v} [SmallCategory C]
+theorem isIso_colimitPointwiseProductToProductColimit {C : Type u} [Category.{v} C]
     {α : Type v} {I : α → Type v} [∀ i, Category.{v} (I i)]
     [∀ i, IsFiltered (I i)] (F : ∀ i, I i ⥤ Cᵒᵖ ⥤ Type v) :
-  IsIso (colimitPointwiseProductToProductColimit F) := sorry
+    IsIso (colimitPointwiseProductToProductColimit F) :=
+  IsIPC.isIso _ _ F
 
 
 end final
