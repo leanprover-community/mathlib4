@@ -65,7 +65,7 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α]
 
-theorem IsCofinal.isMax_mem {s : Set α} {a : α} (ha : IsMax a) (hs : IsCofinal s) : a ∈ s := by
+theorem IsCofinal.mem_of_isMax {s : Set α} {a : α} (ha : IsMax a) (hs : IsCofinal s) : a ∈ s := by
   obtain ⟨b, hb, hb'⟩ := hs a
   rwa [ha.eq_of_ge hb'] at hb
 
