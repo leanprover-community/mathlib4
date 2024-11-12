@@ -298,10 +298,20 @@ unsafe def main (args : List String): IO UInt32 := do
   | #[label] =>
     match prNumber? with
     | some n =>
-      let _ ← IO.Process.run {
-        cmd := "gh",
-        args := #["pr", "edit", n, "--add-label", label] }
-      println s!"::notice::added label: {label}"
+      let labelsPresent ← IO.Process.run {
+        cmd := "gh"
+        args := #["pr", "view", n, "--json", "labels", "--jq", "'.labels .[] .name'"]}
+      let labels := labelsPresent.split (· == '\n')
+      let autoLabels := mathlibLabels.map (·.label)
+      let t_labels_already_present := labels.filter autoLabels.contains
+      if t_labels_already_present.isEmpty then
+        let _ ← IO.Process.run {
+          cmd := "gh",
+          args := #["pr", "edit", n, "--add-label", label] }
+        println s!"::notice::added label: {label}"
+      else
+        println s!"::notice::did not added label {label}, since {t_labels_already_present} \
+                  were already present"
     | none =>
       println s!"::warning::no PR-number provided, not adding labels. \
       (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
