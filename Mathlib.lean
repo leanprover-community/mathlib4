@@ -1074,6 +1074,7 @@ import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.RCLike
 import Mathlib.Analysis.Calculus.ContDiff.WithLp
+import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.Darboux
 import Mathlib.Analysis.Calculus.Deriv.Abs
 import Mathlib.Analysis.Calculus.Deriv.Add
@@ -1094,7 +1095,6 @@ import Mathlib.Analysis.Calculus.Deriv.Star
 import Mathlib.Analysis.Calculus.Deriv.Support
 import Mathlib.Analysis.Calculus.Deriv.ZPow
 import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Calculus.Dslope
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.FDeriv.Basic
