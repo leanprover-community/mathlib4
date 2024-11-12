@@ -2151,7 +2151,6 @@ import Mathlib.Combinatorics.SimpleGraph.Girth
 import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Combinatorics.SimpleGraph.IncMatrix
-import Mathlib.Combinatorics.SimpleGraph.IndependentSet
 import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Combinatorics.SimpleGraph.LapMatrix
 import Mathlib.Combinatorics.SimpleGraph.LineGraph
