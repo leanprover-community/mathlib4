@@ -1400,30 +1400,22 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
   nth_rewrite 1 [EReal.mul_comm]; nth_rewrite 2 [EReal.mul_comm]; nth_rewrite 3 [EReal.mul_comm]
   exact right_distrib_of_nonneg ha hb
 
-lemma coe_mul_add_of_nonneg {x : ℝ} (hx_nonneg : 0 ≤ x) (y z : EReal) :
+lemma left_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
+    (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     x * (y + z) = x * y + x * z := by
   by_cases hx0 : x = 0
   · simp [hx0]
   have hx_pos : 0 < x := hx_nonneg.lt_of_ne' hx0
-  induction y
-  · simp [EReal.coe_mul_bot_of_pos hx_pos]
-  · induction z
-    · simp [EReal.coe_mul_bot_of_pos hx_pos]
-    · norm_cast
-      rw [mul_add]
-    · simp only [coe_add_top, EReal.coe_mul_top_of_pos hx_pos]
-      rw [← EReal.coe_mul, EReal.coe_add_top]
-  · simp only [EReal.coe_mul_top_of_pos hx_pos]
-    induction z
-    · simp [EReal.coe_mul_bot_of_pos hx_pos]
-    · simp only [top_add_coe, EReal.coe_mul_top_of_pos hx_pos]
-      rw [← EReal.coe_mul, EReal.top_add_coe]
-    · simp [EReal.coe_mul_top_of_pos hx_pos]
+  lift x to ℝ using ⟨hx_ne_top, hx_pos.ne_bot⟩
+  induction y <;> induction z <;>
+    simp [mul_bot_of_pos hx_pos, mul_top_of_pos hx_pos, ← coe_mul];
+    try rw_mod_cast [mul_add]
 
-lemma add_mul_coe_of_nonneg {x : ℝ} (hx_nonneg : 0 ≤ x) (y z : EReal) :
+lemma right_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
+    (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     (y + z) * x = y * x + z * x := by
   simp_rw [EReal.mul_comm _ (x : EReal)]
-  exact EReal.coe_mul_add_of_nonneg hx_nonneg y z
+  exact left_distrib_of_nonneg_of_ne_top hx_nonneg hx_ne_top y z
 
 @[simp]
 lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
