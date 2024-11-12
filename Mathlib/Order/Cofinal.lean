@@ -26,7 +26,7 @@ variable {α : Type*}
 section LE
 variable [LE α]
 
-theorem isCofinal_of_isEmpty [IsEmpty α] (s : Set α) : IsCofinal s :=
+theorem IsCofinal.of_isEmpty [IsEmpty α] (s : Set α) : IsCofinal s :=
   fun a ↦ isEmptyElim a
 
 theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
