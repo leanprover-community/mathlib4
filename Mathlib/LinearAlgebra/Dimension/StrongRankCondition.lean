@@ -3,6 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 
@@ -64,7 +65,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
     cases nonempty_fintype ι'
     -- We clean up a little:
     rw [Cardinal.mk_fintype, Cardinal.mk_fintype]
-    simp only [Cardinal.lift_natCast, Cardinal.natCast_inj]
+    simp only [Cardinal.lift_natCast, Nat.cast_inj]
     -- Now we can use invariant basis number to show they have the same cardinality.
     apply card_eq_of_linearEquiv R
     exact
@@ -122,7 +123,7 @@ theorem basis_le_span' {ι : Type*} (b : Basis ι R M) {w : Set M} [Fintype w] (
   haveI := basis_finite_of_finite_spans w (toFinite _) s b
   cases nonempty_fintype ι
   rw [Cardinal.mk_fintype ι]
-  simp only [Cardinal.natCast_le]
+  simp only [Nat.cast_le]
   exact Basis.le_span'' b s
 
 -- Note that if `R` satisfies the strong rank condition,
@@ -207,7 +208,7 @@ theorem linearIndependent_le_span' {ι : Type*} (v : ι → M) (i : LinearIndepe
   haveI : Finite ι := i.finite_of_le_span_finite v w s
   letI := Fintype.ofFinite ι
   rw [Cardinal.mk_fintype]
-  simp only [Cardinal.natCast_le]
+  simp only [Nat.cast_le]
   exact linearIndependent_le_span_aux' v i w s
 
 /-- If `R` satisfies the strong rank condition,
@@ -289,7 +290,7 @@ theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank 
   apply le_antisymm
   · trans
     swap
-    · apply le_ciSup (Cardinal.bddAbove_range.{v, v} _)
+    · apply le_ciSup (Cardinal.bddAbove_range _)
       exact
         ⟨Set.range v, by
           convert v.reindexRange.linearIndependent

@@ -54,7 +54,7 @@ namespace Functor
 -- remember the rule of thumb that component indices of natural transformations
 -- "weigh more" than structural maps.
 -- (However by this argument `associativity` is currently stated backwards!)
-/-- A functor `F : C ⥤ D` between monoidal categoires is lax monoidal if it is
+/-- A functor `F : C ⥤ D` between monoidal categories is lax monoidal if it is
 equipped with morphisms `ε : 𝟙 _D ⟶ F.obj (𝟙_ C)` and `μ X Y : F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)`,
 satisfying the appropriate coherences. -/
 class LaxMonoidal where
@@ -430,11 +430,11 @@ lemma whiskerRight_η_ε (T : D) : η F ▷ T ≫ ε F ▷ T = 𝟙 _ := by
   rw [← MonoidalCategory.comp_whiskerRight, η_ε, id_whiskerRight]
 
 @[reassoc (attr := simp)]
-lemma whiskerRight_μ_δ (X Y : C) (T : D) : μ F X Y ▷ T ≫ δ F X Y▷ T = 𝟙 _ := by
+lemma whiskerRight_μ_δ (X Y : C) (T : D) : μ F X Y ▷ T ≫ δ F X Y ▷ T = 𝟙 _ := by
   rw [← MonoidalCategory.comp_whiskerRight, μ_δ, id_whiskerRight]
 
 @[reassoc (attr := simp)]
-lemma whiskerRight_δ_μ (X Y : C) (T : D) : δ F X Y ▷ T ≫ μ F X Y▷ T = 𝟙 _ := by
+lemma whiskerRight_δ_μ (X Y : C) (T : D) : δ F X Y ▷ T ≫ μ F X Y ▷ T = 𝟙 _ := by
   rw [← MonoidalCategory.comp_whiskerRight, δ_μ, id_whiskerRight]
 
 @[reassoc (attr := simp)]
@@ -1001,7 +1001,7 @@ noncomputable def inverseMonoidal [e.functor.Monoidal] : e.inverse.Monoidal := b
   apply Monoidal.ofLaxMonoidal
 
 /-- An equivalence of categories involving monoidal functors is monoidal if the underlying
-adjunction satisfies certain compatibilities with respect to the monoidal funtor data. -/
+adjunction satisfies certain compatibilities with respect to the monoidal functor data. -/
 abbrev IsMonoidal [e.functor.Monoidal] [e.inverse.Monoidal] : Prop := e.toAdjunction.IsMonoidal
 
 example [e.functor.Monoidal] : letI := e.inverseMonoidal; e.IsMonoidal := inferInstance
@@ -1033,12 +1033,6 @@ lemma functor_map_μ_inverse_comp_counitIso_hom_app_tensor (X Y : D) :
   e.toAdjunction.map_μ_comp_counit_app_tensor X Y
 
 @[reassoc]
-lemma unitIso_hom_app_tensor_comp_inverse_map_δ_functor__ (X Y : C) :
-    e.unitIso.hom.app (X ⊗ Y) ≫ e.inverse.map (δ e.functor X Y) =
-      (e.unitIso.hom.app X ⊗ e.unitIso.hom.app Y) ≫ μ e.inverse _ _ :=
-  e.toAdjunction.unit_app_tensor_comp_map_δ X Y
-
-@[reassoc]
 lemma counitIso_inv_app_comp_functor_map_η_inverse :
     e.counitIso.inv.app (𝟙_ D) ≫ e.functor.map (η e.inverse) = ε e.functor := by
   rw [← cancel_epi (η e.functor), Monoidal.η_ε, ← functor_map_ε_inverse_comp_counitIso_hom_app,
@@ -1062,7 +1056,8 @@ instance isMonoidal_refl : (Equivalence.refl (C := C)).IsMonoidal :=
   inferInstanceAs (Adjunction.id (C := C)).IsMonoidal
 
 /-- The inverse of a monoidal category equivalence is also a monoidal category equivalence. -/
-instance isMonoidal_symm : e.symm.IsMonoidal where
+instance isMonoidal_symm [e.inverse.Monoidal] [e.IsMonoidal] :
+    e.symm.IsMonoidal where
   leftAdjoint_ε := by
     simp only [toAdjunction, Adjunction.homEquiv_unit]
     dsimp [symm]

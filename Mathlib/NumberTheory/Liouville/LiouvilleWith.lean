@@ -64,7 +64,7 @@ theorem liouvilleWith_one (x : ℝ) : LiouvilleWith 1 x := by
 
 namespace LiouvilleWith
 
-variable {p q x y : ℝ} {r : ℚ} {m : ℤ} {n : ℕ}
+variable {p q x : ℝ} {r : ℚ} {m : ℤ} {n : ℕ}
 
 /-- The constant `C` provided by the definition of `LiouvilleWith` can be made positive.
 We also add `1 ≤ n` to the list of assumptions about the denominator. While it is equivalent to

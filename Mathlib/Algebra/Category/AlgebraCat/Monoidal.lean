@@ -60,7 +60,7 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R
     (forget₂ (AlgebraCat R) (ModuleCat R))
     { μIso := fun _ _ => Iso.refl _
       εIso := Iso.refl _
-      associator_eq := fun _ _ _ => TensorProduct.ext₃ (fun _ _ _ => rfl)
+      associator_eq := fun _ _ _ => TensorProduct.ext_threefold (fun _ _ _ => rfl)
       leftUnitor_eq := fun _ => TensorProduct.ext' (fun _ _ => rfl)
       rightUnitor_eq := fun _ => TensorProduct.ext' (fun _ _ => rfl) }
 

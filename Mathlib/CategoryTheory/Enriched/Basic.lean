@@ -30,7 +30,7 @@ We verify that when `V = Type v`, all these notion reduce to the usual ones.
 -/
 
 
-universe w v u₁ u₂ u₃
+universe w w' v v' u₁ u₂ u₃
 
 noncomputable section
 
@@ -94,7 +94,7 @@ theorem e_assoc' (W X Y Z : C) :
 
 section
 
-variable {V} {W : Type v} [Category.{w} W] [MonoidalCategory W]
+variable {V} {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
 
 -- Porting note: removed `@[nolint hasNonemptyInstance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
@@ -167,7 +167,7 @@ def enrichedCategoryTypeEquivCategory (C : Type u₁) :
 
 section
 
-variable {W : Type (v + 1)} [Category.{v} W] [MonoidalCategory W] [EnrichedCategory W C]
+variable {W : Type v} [Category.{w} W] [MonoidalCategory W] [EnrichedCategory W C]
 
 -- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
@@ -188,7 +188,7 @@ For `V = Algebra R`, the usual forgetful functor is coyoneda of `R[X]`, not of `
 (Perhaps we should have a typeclass for this situation: `ConcreteMonoidal`?)
 -/
 @[nolint unusedArguments]
-def ForgetEnrichment (W : Type (v + 1)) [Category.{v} W] [MonoidalCategory W] (C : Type u₁)
+def ForgetEnrichment (W : Type v) [Category.{w} W] [MonoidalCategory W] (C : Type u₁)
     [EnrichedCategory W C] :=
   C
 
@@ -212,7 +212,7 @@ theorem ForgetEnrichment.of_to (X : ForgetEnrichment W C) :
   rfl
 
 instance categoryForgetEnrichment : Category (ForgetEnrichment W C) :=
-  enrichedCategoryTypeEquivCategory C (inferInstanceAs (EnrichedCategory (Type v)
+  enrichedCategoryTypeEquivCategory C (inferInstanceAs (EnrichedCategory (Type w)
       (TransportEnrichment (coyoneda.obj (op (𝟙_ W))) C)))
 
 /-- We verify that the morphism types in `ForgetEnrichment W C` are `(𝟙_ W) ⟶ (X ⟶[W] Y)`.

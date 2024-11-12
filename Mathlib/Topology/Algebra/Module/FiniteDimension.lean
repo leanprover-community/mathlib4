@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Determinant
 import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Finite dimensional topological vector spaces over complete fields
@@ -42,12 +43,11 @@ result follows as `continuous_equivFun_basis`.
 
 -/
 
+open Filter Module Set TopologicalSpace Topology
 
 universe u v w x
 
 noncomputable section
-
-open Filter Module Set TopologicalSpace
 
 section Field
 
@@ -374,7 +374,6 @@ theorem toLinearEquiv_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) :
   ext x
   rfl
 
--- Porting note (#10618): @[simp] can prove this
 theorem toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.symm.toLinearEquiv = e.symm := by
   ext x
@@ -518,24 +517,30 @@ theorem Submodule.closed_of_finiteDimensional
   s.complete_of_finiteDimensional.isClosed
 
 /-- An injective linear map with finite-dimensional domain is a closed embedding. -/
-theorem LinearMap.closedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] {f : E →ₗ[𝕜] F}
-    (hf : LinearMap.ker f = ⊥) : ClosedEmbedding f :=
+theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] {f : E →ₗ[𝕜] F}
+    (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=
   let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
-  { embedding_subtype_val.comp g.toContinuousLinearEquiv.toHomeomorph.embedding with
+  { IsEmbedding.subtypeVal.comp g.toContinuousLinearEquiv.toHomeomorph.isEmbedding with
     isClosed_range := by
       haveI := f.finiteDimensional_range
       simpa [LinearMap.range_coe f] using f.range.closed_of_finiteDimensional }
 
-theorem closedEmbedding_smul_left [T2Space E] {c : E} (hc : c ≠ 0) :
-    ClosedEmbedding fun x : 𝕜 => x • c :=
-  LinearMap.closedEmbedding_of_injective (LinearMap.ker_toSpanSingleton 𝕜 E hc)
+@[deprecated (since := "2024-10-20")]
+alias LinearMap.closedEmbedding_of_injective := LinearMap.isClosedEmbedding_of_injective
+
+theorem isClosedEmbedding_smul_left [T2Space E] {c : E} (hc : c ≠ 0) :
+    IsClosedEmbedding fun x : 𝕜 => x • c :=
+  LinearMap.isClosedEmbedding_of_injective (LinearMap.ker_toSpanSingleton 𝕜 E hc)
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_smul_left := isClosedEmbedding_smul_left
 
 -- `smul` is a closed map in the first argument.
 theorem isClosedMap_smul_left [T2Space E] (c : E) : IsClosedMap fun x : 𝕜 => x • c := by
   by_cases hc : c = 0
   · simp_rw [hc, smul_zero]
     exact isClosedMap_const
-  · exact (closedEmbedding_smul_left hc).isClosedMap
+  · exact (isClosedEmbedding_smul_left hc).isClosedMap
 
 theorem ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensional 𝕜 F]
     (f : E →L[𝕜] F) (hf : LinearMap.range f = ⊤) :

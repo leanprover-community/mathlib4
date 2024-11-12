@@ -155,7 +155,7 @@ variable [CommSemiring R] [CommSemiring S₁] {p q : MvPolynomial σ R}
 
 /-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s`  -/
 def monomial (s : σ →₀ ℕ) : R →ₗ[R] MvPolynomial σ R :=
-  lsingle s
+  AddMonoidAlgebra.lsingle s
 
 theorem single_eq_monomial (s : σ →₀ ℕ) (a : R) : Finsupp.single s a = monomial s a :=
   rfl
@@ -191,10 +191,10 @@ theorem monomial_left_inj {s t : σ →₀ ℕ} {r : R} (hr : r ≠ 0) :
 theorem C_apply : (C a : MvPolynomial σ R) = monomial 0 a :=
   rfl
 
--- Porting note (#10618): `simp` can prove this
+@[simp]
 theorem C_0 : C 0 = (0 : MvPolynomial σ R) := map_zero _
 
--- Porting note (#10618): `simp` can prove this
+@[simp]
 theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
   rfl
 
@@ -203,15 +203,15 @@ theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
   show AddMonoidAlgebra.single _ _ * AddMonoidAlgebra.single _ _ = AddMonoidAlgebra.single _ _
   simp [C_apply, single_mul_single]
 
--- Porting note (#10618): `simp` can prove this
+@[simp]
 theorem C_add : (C (a + a') : MvPolynomial σ R) = C a + C a' :=
   Finsupp.single_add _ _ _
 
--- Porting note (#10618): `simp` can prove this
+@[simp]
 theorem C_mul : (C (a * a') : MvPolynomial σ R) = C a * C a' :=
   C_mul_monomial.symm
 
--- Porting note (#10618): `simp` can prove this
+@[simp]
 theorem C_pow (a : R) (n : ℕ) : (C (a ^ n) : MvPolynomial σ R) = C a ^ n :=
   map_pow _ _ _
 
@@ -303,7 +303,7 @@ theorem C_mul_X_pow_eq_monomial {s : σ} {a : R} {n : ℕ} :
 theorem C_mul_X_eq_monomial {s : σ} {a : R} : C a * X s = monomial (Finsupp.single s 1) a := by
   rw [← C_mul_X_pow_eq_monomial, pow_one]
 
--- Porting note (#10618): `simp` can prove this
+@[simp]
 theorem monomial_zero {s : σ →₀ ℕ} : monomial s (0 : R) = 0 :=
   Finsupp.single_zero _
 
@@ -612,7 +612,7 @@ theorem coeff_X (i : σ) : coeff (Finsupp.single i 1) (X i : MvPolynomial σ R) 
 theorem coeff_C_mul (m) (a : R) (p : MvPolynomial σ R) : coeff m (C a * p) = a * coeff m p := by
   classical
   rw [mul_def, sum_C]
-  · simp (config := { contextual := true }) [sum_def, coeff_sum]
+  · simp +contextual [sum_def, coeff_sum]
   simp
 
 theorem coeff_mul [DecidableEq σ] (p q : MvPolynomial σ R) (n : σ →₀ ℕ) :
@@ -689,7 +689,7 @@ theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
   · contrapose! h
     rw [← mem_support_iff] at h
     obtain ⟨j, -, rfl⟩ : ∃ j ∈ support p, j + s = m := by
-      simpa [Finset.add_singleton]
+      simpa [Finset.mem_add]
         using Finset.add_subset_add_left support_monomial_subset <| support_mul _ _ h
     exact le_add_left le_rfl
 
@@ -943,8 +943,8 @@ theorem eval₂_mul_C : (p * C a).eval₂ f g = p.eval₂ f g * f a :=
 theorem eval₂_mul : ∀ {p}, (p * q).eval₂ f g = p.eval₂ f g * q.eval₂ f g := by
   apply MvPolynomial.induction_on q
   · simp [eval₂_C, eval₂_mul_C]
-  · simp (config := { contextual := true }) [mul_add, eval₂_add]
-  · simp (config := { contextual := true }) [X, eval₂_monomial, eval₂_mul_monomial, ← mul_assoc]
+  · simp +contextual [mul_add, eval₂_add]
+  · simp +contextual [X, eval₂_monomial, eval₂_mul_monomial, ← mul_assoc]
 
 @[simp]
 theorem eval₂_pow {p : MvPolynomial σ R} : ∀ {n : ℕ}, (p ^ n).eval₂ f g = p.eval₂ f g ^ n
@@ -1003,14 +1003,14 @@ section
 theorem eval₂_comp_left {S₂} [CommSemiring S₂] (k : S₁ →+* S₂) (f : R →+* S₁) (g : σ → S₁) (p) :
     k (eval₂ f g p) = eval₂ (k.comp f) (k ∘ g) p := by
   apply MvPolynomial.induction_on p <;>
-    simp (config := { contextual := true }) [eval₂_add, k.map_add, eval₂_mul, k.map_mul]
+    simp +contextual [eval₂_add, k.map_add, eval₂_mul, k.map_mul]
 
 end
 
 @[simp]
 theorem eval₂_eta (p : MvPolynomial σ R) : eval₂ C X p = p := by
   apply MvPolynomial.induction_on p <;>
-    simp (config := { contextual := true }) [eval₂_add, eval₂_mul]
+    simp +contextual [eval₂_add, eval₂_mul]
 
 theorem eval₂_congr (g₁ g₂ : σ → S₁)
     (h : ∀ {i : σ} {c : σ →₀ ℕ}, i ∈ c.support → coeff c p ≠ 0 → g₁ i = g₂ i) :
@@ -1225,7 +1225,7 @@ theorem map_rightInverse {f : R →+* S₁} {g : S₁ →+* R} (hf : Function.Ri
 @[simp]
 theorem eval_map (f : R →+* S₁) (g : σ → S₁) (p : MvPolynomial σ R) :
     eval g (map f p) = eval₂ f g p := by
-  apply MvPolynomial.induction_on p <;> · simp (config := { contextual := true })
+  apply MvPolynomial.induction_on p <;> · simp +contextual
 
 @[simp]
 theorem eval₂_map [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₂) (φ : S₁ →+* S₂)
