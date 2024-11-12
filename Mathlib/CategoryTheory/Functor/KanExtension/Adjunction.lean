@@ -183,8 +183,8 @@ instance : HasColimit (CostructuredArrow.grothendieckProj L ⋙ G) :=
 
 variable [HasColimitsOfShape C H]
 
-/-- If `G : C ⥤ H` is a left Kan extension of a functor `L : C ⥤ D` and `H` has colimits of shape
-`C` and `D`, then the colimit of `G` is isomorphic to the colimit of a canonical functor
+/-- If `G : C ⥤ H` admits a left Kan extension along a functor `L : C ⥤ D` and `H` has colimits of
+shape `C` and `D`, then the colimit of `G` is isomorphic to the colimit of a canonical functor
 `Grothendieck (CostructuredArrow.functor L) ⥤ H` induced by `L` and `G`. -/
 noncomputable def colimitIsoColimitGrothendieck :
     colimit G ≅ colimit (CostructuredArrow.grothendieckProj L ⋙ G) := calc
