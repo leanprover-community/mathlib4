@@ -234,10 +234,14 @@ def punit {β : Sort*} (b : β) : PUnit ↪ β :=
 def sectL (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
   ⟨fun a => (a, b), fun _ _ h => congr_arg Prod.fst h⟩
 
+@[deprecated (since := "2024-11-12")] alias sectl := sectL
+
 /-- Fixing an element `a : α` gives an embedding `β ↪ α × β`. -/
 @[simps]
 def sectR {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
   ⟨fun b => (a, b), fun _ _ h => congr_arg Prod.snd h⟩
+
+@[deprecated (since := "2024-11-12")] alias sectr := sectR
 
 /-- If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
 def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=

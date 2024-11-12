@@ -115,11 +115,15 @@ def sectL (C : Type u₁) [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D
   obj X := (X, Z)
   map f := (f, 𝟙 Z)
 
+@[deprecated (since := "2024-11-12")] alias sectl := sectL
+
 /-- `sectR Z D` is the functor `D ⥤ C × D` given by `Y ↦ (Z, Y)` . -/
 @[simps]
 def sectR {C : Type u₁} [Category.{v₁} C] (Z : C) (D : Type u₂) [Category.{v₂} D] : D ⥤ C × D where
   obj X := (Z, X)
   map f := (𝟙 Z, f)
+
+@[deprecated (since := "2024-11-12")] alias sectr := sectR
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
