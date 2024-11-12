@@ -52,7 +52,7 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
 -/
 
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits
 
@@ -561,9 +561,9 @@ variable (f : X ⟶ Y.toPresheafedSpace) [H : IsOpenImmersion f]
 /-- If `X ⟶ Y` is an open immersion, and `Y` is a LocallyRingedSpace, then so is `X`. -/
 def toLocallyRingedSpace : LocallyRingedSpace where
   toSheafedSpace := toSheafedSpace Y.toSheafedSpace f
-  localRing x :=
-    haveI : LocalRing (Y.presheaf.stalk (f.base x)) := Y.localRing _
-    (asIso (f.stalkMap x)).commRingCatIsoToRingEquiv.localRing
+  isLocalRing x :=
+    haveI : IsLocalRing (Y.presheaf.stalk (f.base x)) := Y.isLocalRing _
+    (asIso (f.stalkMap x)).commRingCatIsoToRingEquiv.isLocalRing
 
 @[simp]
 theorem toLocallyRingedSpace_toSheafedSpace :
@@ -855,7 +855,7 @@ theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).base := by
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
   erw [TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_comp_isIso,
     TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_isIso_comp]
-  exact isOpenEmbedding_sigmaMk
+  exact .sigmaMk
 
 @[deprecated (since := "2024-10-18")]
 alias sigma_ι_openEmbedding := sigma_ι_isOpenEmbedding

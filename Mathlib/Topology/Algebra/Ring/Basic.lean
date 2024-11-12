@@ -110,8 +110,10 @@ theorem topologicalClosure_minimal (s : NonUnitalSubsemiring α) {t : NonUnitalS
   closure_minimal h ht
 
 /-- If a non-unital subsemiring of a non-unital topological semiring is commutative, then so is its
-topological closure. -/
-def nonUnitalCommSemiringTopologicalClosure [T2Space α] (s : NonUnitalSubsemiring α)
+topological closure.
+
+See note [reducible non-instances] -/
+abbrev nonUnitalCommSemiringTopologicalClosure [T2Space α] (s : NonUnitalSubsemiring α)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
   { NonUnitalSubsemiringClass.toNonUnitalSemiring s.topologicalClosure,
     s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
@@ -152,8 +154,10 @@ theorem Subsemiring.topologicalClosure_minimal (s : Subsemiring α) {t : Subsemi
   closure_minimal h ht
 
 /-- If a subsemiring of a topological semiring is commutative, then so is its
-topological closure. -/
-def Subsemiring.commSemiringTopologicalClosure [T2Space α] (s : Subsemiring α)
+topological closure.
+
+See note [reducible non-instances]. -/
+abbrev Subsemiring.commSemiringTopologicalClosure [T2Space α] (s : Subsemiring α)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
   { s.topologicalClosure.toSemiring, s.toSubmonoid.commMonoidTopologicalClosure hs with }
 
@@ -290,8 +294,10 @@ theorem topologicalClosure_minimal (s : NonUnitalSubring α) {t : NonUnitalSubri
   closure_minimal h ht
 
 /-- If a non-unital subring of a non-unital topological ring is commutative, then so is its
-topological closure. -/
-def nonUnitalCommRingTopologicalClosure [T2Space α] (s : NonUnitalSubring α)
+topological closure.
+
+See note [reducible non-instances] -/
+abbrev nonUnitalCommRingTopologicalClosure [T2Space α] (s : NonUnitalSubring α)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
   { s.topologicalClosure.toNonUnitalRing, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
 
@@ -318,9 +324,11 @@ theorem Subring.topologicalClosure_minimal (s : Subring α) {t : Subring α} (h 
     (ht : IsClosed (t : Set α)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
-/-- If a subring of a topological ring is commutative, then so is its topological closure. -/
-def Subring.commRingTopologicalClosure [T2Space α] (s : Subring α) (hs : ∀ x y : s, x * y = y * x) :
-    CommRing s.topologicalClosure :=
+/-- If a subring of a topological ring is commutative, then so is its topological closure.
+
+See note [reducible non-instances]. -/
+abbrev Subring.commRingTopologicalClosure [T2Space α] (s : Subring α)
+    (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
   { s.topologicalClosure.toRing, s.toSubmonoid.commMonoidTopologicalClosure hs with }
 
 end TopologicalSemiring

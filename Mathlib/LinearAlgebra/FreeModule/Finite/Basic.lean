@@ -17,7 +17,6 @@ We provide some instances for finite and free modules.
 * `Module.Finite.of_basis` : A free module with a basis indexed by a `Fintype` is finite.
 -/
 
-
 universe u v w
 
 /-- If a free module is finite, then the arbitrary basis is finite. -/

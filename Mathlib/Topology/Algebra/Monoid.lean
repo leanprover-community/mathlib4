@@ -20,7 +20,7 @@ the definitions.
 
 universe u v
 
-open Set Filter TopologicalSpace
+open Set Filter TopologicalSpace Topology
 open scoped Topology Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
@@ -376,7 +376,7 @@ end Monoid
 end PointwiseLimits
 
 @[to_additive]
-theorem IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
+theorem Topology.IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
     [MulHomClass F M N] [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F)
     (hf : IsInducing f) : ContinuousMul M :=
   ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).1⟩
@@ -463,10 +463,14 @@ theorem Subsemigroup.topologicalClosure_minimal (s : Subsemigroup M) {t : Subsem
     (h : s ≤ t) (ht : IsClosed (t : Set M)) : s.topologicalClosure ≤ t := closure_minimal h ht
 
 /-- If a subsemigroup of a topological semigroup is commutative, then so is its topological
-closure. -/
+closure.
+
+See note [reducible non-instances] -/
 @[to_additive "If a submonoid of an additive topological monoid is commutative, then so is its
-topological closure."]
-def Subsemigroup.commSemigroupTopologicalClosure [T2Space M] (s : Subsemigroup M)
+topological closure.
+
+See note [reducible non-instances]"]
+abbrev Subsemigroup.commSemigroupTopologicalClosure [T2Space M] (s : Subsemigroup M)
     (hs : ∀ x y : s, x * y = y * x) : CommSemigroup s.topologicalClosure :=
   { MulMemClass.toSemigroup s.topologicalClosure with
     mul_comm :=
@@ -524,16 +528,12 @@ theorem Submonoid.topologicalClosure_minimal (s : Submonoid M) {t : Submonoid M}
 
 /-- If a submonoid of a topological monoid is commutative, then so is its topological closure. -/
 @[to_additive "If a submonoid of an additive topological monoid is commutative, then so is its
-topological closure."]
-def Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
+topological closure.
+
+See note [reducible non-instances]."]
+abbrev Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
     (hs : ∀ x y : s, x * y = y * x) : CommMonoid s.topologicalClosure :=
-  { s.topologicalClosure.toMonoid with
-    mul_comm :=
-      have : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x := fun x hx y hy =>
-        congr_arg Subtype.val (hs ⟨x, hx⟩ ⟨y, hy⟩)
-      fun ⟨x, hx⟩ ⟨y, hy⟩ =>
-      Subtype.ext <|
-        eqOn_closure₂ this continuous_mul (continuous_snd.mul continuous_fst) x hx y hy }
+  { s.topologicalClosure.toMonoid, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
 
 @[to_additive exists_nhds_zero_quarter]
 theorem exists_nhds_one_split4 {u : Set M} (hu : u ∈ 𝓝 (1 : M)) :

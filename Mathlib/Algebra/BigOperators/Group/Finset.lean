@@ -6,8 +6,6 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Preimage
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Sym.Sym2.Order
 
 /-!
 # Big operators
@@ -928,9 +926,8 @@ theorem prod_eq_mul {s : Finset α} {f : α → β} (a b : α) (hn : a ≠ b)
           h₀ c hc ⟨ne_of_mem_of_not_mem hc h₁, ne_of_mem_of_not_mem hc h₂⟩)
         prod_const_one
 
--- Porting note: simpNF linter complains that LHS doesn't simplify, but it does
 /-- A product over `s.subtype p` equals one over `{x ∈ s | p x}`. -/
-@[to_additive (attr := simp, nolint simpNF)
+@[to_additive (attr := simp)
 "A sum over `s.subtype p` equals one over `{x ∈ s | p x}`."]
 theorem prod_subtype_eq_prod_filter (f : α → β) {p : α → Prop} [DecidablePred p] :
     ∏ x ∈ s.subtype p, f x = ∏ x ∈ s with p x, f x := by
@@ -2256,16 +2253,5 @@ theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
   rfl
 
 end AddCommMonoid
-
-theorem Finset.sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoid α]
-    (s : Finset ι) (p : Sym2 ι → α) :
-    ∑ i ∈ s.sym2 with ¬ i.IsDiag, p i = ∑ i ∈ s.offDiag with i.1 < i.2, p s(i.1, i.2) := by
-  rw [Finset.offDiag_filter_lt_eq_filter_le]
-  conv_rhs => rw [← Finset.sum_subtype_eq_sum_filter]
-  refine (Finset.sum_equiv Sym2.sortEquiv.symm ?_ ?_).symm
-  · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
-    simp [and_assoc]
-  · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
-    simp
 
 set_option linter.style.longFile 2400

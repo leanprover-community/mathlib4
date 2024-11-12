@@ -6,7 +6,19 @@ Authors: Jireh Loreaux
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Topology.Algebra.Module.Basic
 
-/-! # Non-unital topological (sub)algebras -/
+/-!
+# Non-unital topological (sub)algebras
+
+A non-unital topological algebra over a topological semiring `R` is a topological (non-unital)
+semiring with a compatible continuous scalar multiplication by elements of `R`. We reuse
+typeclass `ContinuousSMul` to express the latter condition.
+
+## Results
+
+Any non-unital subalgebra of a non-unital topological algebra is itself a non-unital
+topological algebra, and its closure is again a non-unital subalgebra.
+
+-/
 
 namespace NonUnitalSubalgebra
 
@@ -29,15 +41,17 @@ theorem le_topologicalClosure (s : NonUnitalSubalgebra R A) : s ≤ s.topologica
   subset_closure
 
 theorem isClosed_topologicalClosure (s : NonUnitalSubalgebra R A) :
-    IsClosed (s.topologicalClosure : Set A) := by convert @isClosed_closure A s _
+    IsClosed (s.topologicalClosure : Set A) := isClosed_closure
 
 theorem topologicalClosure_minimal (s : NonUnitalSubalgebra R A) {t : NonUnitalSubalgebra R A}
     (h : s ≤ t) (ht : IsClosed (t : Set A)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
 /-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
-topological closure. -/
-def nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
+topological closure.
+
+See note [reducible non-instances]. -/
+abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
   s.toNonUnitalSubsemiring.nonUnitalCommSemiringTopologicalClosure hs
 
@@ -46,8 +60,11 @@ end Semiring
 section Ring
 
 variable {R A : Type*} [CommRing R] [TopologicalSpace A]
-variable [NonUnitalRing A] [Module R A] [TopologicalSemiring A]
+variable [NonUnitalRing A] [Module R A] [TopologicalRing A]
 variable [ContinuousConstSMul R A]
+
+instance instTopologicalRing (s : NonUnitalSubalgebra R A) : TopologicalRing s :=
+  s.toNonUnitalSubring.instTopologicalRing
 
 /-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
 topological closure.

@@ -4,11 +4,23 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Topology.Algebra.NonUnitalAlgebra
 import Mathlib.Topology.Algebra.Star
 
-/-! # Non-unital topological star (sub)algebras -/
+/-!
+# Non-unital topological star (sub)algebras
+
+A non-unital topological star algebra over a topological semiring `R` is a topological
+(non-unital) semiring with a compatible continuous scalar multiplication by elements
+of `R` and a continuous `star` operation. We reuse typeclasses `ContinuousSMul` and
+`ContinuousStar` to express the latter two conditions.
+
+## Results
+
+Any non-unital star subalgebra of a non-unital topological star algebra is itself a
+non-unital topological star algebra, and its closure is again a non-unital star subalgebra.
+
+-/
 
 namespace NonUnitalStarSubalgebra
 
@@ -32,7 +44,7 @@ theorem le_topologicalClosure (s : NonUnitalStarSubalgebra R A) : s ≤ s.topolo
   subset_closure
 
 theorem isClosed_topologicalClosure (s : NonUnitalStarSubalgebra R A) :
-    IsClosed (s.topologicalClosure : Set A) := by convert @isClosed_closure A s _
+    IsClosed (s.topologicalClosure : Set A) := isClosed_closure
 
 theorem topologicalClosure_minimal (s : NonUnitalStarSubalgebra R A)
     {t : NonUnitalStarSubalgebra R A} (h : s ≤ t) (ht : IsClosed (t : Set A)) :
@@ -40,7 +52,9 @@ theorem topologicalClosure_minimal (s : NonUnitalStarSubalgebra R A)
   closure_minimal h ht
 
 /-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
-so is its topological closure. -/
+so is its topological closure.
+
+See note [reducible non-instances] -/
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
   s.toNonUnitalSubalgebra.nonUnitalCommSemiringTopologicalClosure hs
@@ -50,8 +64,11 @@ end Semiring
 section Ring
 
 variable {R A : Type*} [CommRing R] [TopologicalSpace A]
-variable [NonUnitalRing A] [Module R A] [Star A] [TopologicalSemiring A] [ContinuousStar A]
+variable [NonUnitalRing A] [Module R A] [Star A] [TopologicalRing A] [ContinuousStar A]
 variable [ContinuousConstSMul R A]
+
+instance instTopologicalRing (s : NonUnitalStarSubalgebra R A) : TopologicalRing s :=
+  s.toNonUnitalSubring.instTopologicalRing
 
 /-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
 so is its topological closure.
