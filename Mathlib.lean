@@ -916,6 +916,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 import Mathlib.AlgebraicGeometry.Morphisms.Etale
+import Mathlib.AlgebraicGeometry.Morphisms.Finite
 import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.Morphisms.Immersion
@@ -1746,6 +1747,7 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IndYoneda
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.Indization.IndObject
+import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
 import Mathlib.CategoryTheory.Limits.IsConnected
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Lattice
@@ -2316,6 +2318,7 @@ import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Fin.Tuple.Take
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.FinEnum
+import Mathlib.Data.FinEnum.Option
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Powerset
@@ -2468,6 +2471,7 @@ import Mathlib.Data.List.EditDistance.Defs
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.List.Enum
 import Mathlib.Data.List.FinRange
+import Mathlib.Data.List.Flatten
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.GetD
 import Mathlib.Data.List.Indexes
@@ -2476,7 +2480,6 @@ import Mathlib.Data.List.InsertIdx
 import Mathlib.Data.List.InsertNth
 import Mathlib.Data.List.Intervals
 import Mathlib.Data.List.Iterate
-import Mathlib.Data.List.Join
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Lex
@@ -2953,7 +2956,9 @@ import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
-import Mathlib.Geometry.Manifold.IntegralCurve
+import Mathlib.Geometry.Manifold.IntegralCurve.Basic
+import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
+import Mathlib.Geometry.Manifold.IntegralCurve.Transform
 import Mathlib.Geometry.Manifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.LocalDiffeomorph
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
