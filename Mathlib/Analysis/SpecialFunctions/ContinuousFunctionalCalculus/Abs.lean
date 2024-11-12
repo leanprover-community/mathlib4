@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon
 -/
 
-import Mathlib.Analysis.SpecialFunctions.Rpow
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
 
 /-!
 # Absolute value of an operator defined via the continuous functional calculus
 
 This file defines the absolute value via the (unital and nonunital) continuous functional calculus
-(CFC) and (CFCₙ), and includes the associated API.
+(CFC) and (CFCₙ), and includes the associated basic API.
 
 ## Main declarations
 
@@ -27,13 +27,17 @@ Not sure we will need this
 
 ## TODO
 
-+ Do we actually *need* the unital case here?
-
 -/
+
+open scoped NNReal
 
 namespace CFC
 
 section Nonunital
+
+variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A]
+  [Module ℝ≥0 A] [SMulCommClass ℝ≥0 A A] [IsScalarTower ℝ≥0 A A]
+  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
 section abs
 
@@ -44,8 +48,6 @@ noncomputable def abs (a : A) := sqrt (star a * a)
 theorem abs_nonneg {a : A} : 0 ≤ abs a := sqrt_nonneg
 
 variable [StarOrderedRing A] [UniqueNonUnitalContinuousFunctionalCalculus NNReal A]
-
---variable [NonUnitalCStarAlgebra A]
 
 theorem abs_mul_self_eq_star_mul_self (a : A) : (abs a) * (abs a) = star a * a := by
   refine sqrt_mul_sqrt_self _ <| star_mul_self_nonneg _
@@ -67,3 +69,5 @@ theorem abs_eq_zero_iff_eq_zero {a : A} : abs a = 0 ↔ a = 0 := by
 end abs
 
 end Nonunital
+
+end CFC
