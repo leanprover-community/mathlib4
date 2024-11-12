@@ -209,6 +209,7 @@ instance (f : K[X]) : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
 end SplittingFieldAux
 
 /-- A splitting field of a polynomial. -/
+@[stacks 09HV "The construction of the splitting field."]
 def SplittingField (f : K[X]) :=
   MvPolynomial (SplittingFieldAux f.natDegree f) K ⧸
     RingHom.ker (MvPolynomial.aeval (R := K) id).toRingHom
@@ -276,6 +277,7 @@ instance _root_.Polynomial.IsSplittingField.splittingField (f : K[X]) :
     IsSplittingField K (SplittingField f) f :=
   IsSplittingField.of_algEquiv _ f (algEquivSplittingFieldAux f).symm
 
+@[stacks 09HU "Splitting part"]
 protected theorem splits : Splits (algebraMap K (SplittingField f)) f :=
   IsSplittingField.splits f.SplittingField f
 

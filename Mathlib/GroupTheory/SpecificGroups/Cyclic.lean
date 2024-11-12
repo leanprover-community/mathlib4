@@ -475,7 +475,8 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
       sum_erase_lt_of_pos (mem_divisors.2 ⟨hd, hc0.ne'⟩) (totient_pos.2 (pos_of_dvd_of_pos hd hc0))
     _ = c := sum_totient _
 
-@[to_additive isAddCyclic_of_card_nsmul_eq_zero_le]
+@[to_additive isAddCyclic_of_card_nsmul_eq_zero_le, stacks 09HX "This theorem is stronger than \
+09HX. It removes the abelian condition, and requires only `≤` instead of `=`."]
 theorem isCyclic_of_card_pow_eq_one_le : IsCyclic α :=
   have : Finset.Nonempty {a : α | orderOf a = Fintype.card α} :=
     card_pos.1 <| by

@@ -289,6 +289,9 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
 variable {F} (L)
 
 -- TODO. Generalize this proof to rings
+/--Let $F / L / K$ be a tower of finite extensions of fields. Then
+$\text{Norm}_{F/K} = \text{Norm}_{L/K} \circ \text{Norm}_{F/L}$.-/
+@[stacks 0BIJ "This is a special case of 0BIJ norm, we require separability here. "]
 theorem norm_norm [Algebra L F] [IsScalarTower K L F] [Algebra.IsSeparable K F] (x : F) :
     norm K (norm L x) = norm K x := by
   by_cases hKF : FiniteDimensional K F

@@ -433,6 +433,9 @@ theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [DecidableEq ι] (b : Ba
 
 variable (K L)
 
+/-- Let $L/K$ be a finite extension of fields. If $L/K$ is separable,
+then `traceForm` is nondegenerate. -/
+@[stacks 0BIL "(1) => (3)"]
 theorem traceForm_nondegenerate [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     (traceForm K L).Nondegenerate :=
   BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
