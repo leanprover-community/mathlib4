@@ -77,6 +77,15 @@ instance [∀ i, IsFiltered (I i)] : IsFiltered (∀ i, I i) where
 
 end FME157
 
+section types
+
+variable {α : Type u} {I : α → Type u} [∀ i, SmallCategory (I i)] [∀ i, IsFiltered (I i)]
+
+theorem isIso_colimitPointwiseProductToProductColimit_types (F : ∀ i, I i ⥤ Type u) :
+    IsIso (colimitPointwiseProductToProductColimit F) := sorry
+
+end types
+
 section final
 
 theorem isIso_colimitPointwiseProductToProductColimit {C : Type v} [SmallCategory C]
