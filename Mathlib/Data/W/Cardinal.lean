@@ -34,11 +34,11 @@ namespace WType
 open Cardinal
 
 
-theorem cardinalMk_eq_sum' : #(WType β) = sum (fun a : α => #(WType β) ^ lift.{u} #(β a)) :=
+theorem cardinalMk_eq_sum_lift : #(WType β) = sum (fun a : α => #(WType β) ^ lift.{u} #(β a)) :=
   (mk_congr <| equivSigma β).trans <| by
     simp_rw [mk_sigma, mk_arrow]; rw [lift_id'.{v, u}, lift_umax.{v, u}]
 
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_eq_sum' := cardinalMk_eq_sum'
+@[deprecated (since := "2024-11-10")] alias cardinal_mk_eq_sum' := cardinalMk_eq_sum_lift
 
 /-- `#(WType β)` is the least cardinal `κ` such that `sum (fun a : α ↦ κ ^ #(β a)) ≤ κ` -/
 theorem cardinalMk_le_of_le' {κ : Cardinal.{max u v}}
@@ -89,7 +89,7 @@ alias cardinal_mk_le_max_aleph0_of_finite' := cardinalMk_le_max_aleph0_of_finite
 variable {β : α → Type u}
 
 theorem cardinalMk_eq_sum : #(WType β) = sum (fun a : α => #(WType β) ^ #(β a)) :=
-  cardinalMk_eq_sum'.trans <| by simp_rw [lift_id]
+  cardinalMk_eq_sum_lift.trans <| by simp_rw [lift_id]
 
 @[deprecated (since := "2024-11-10")] alias cardinal_mk_eq_sum := cardinalMk_eq_sum
 
