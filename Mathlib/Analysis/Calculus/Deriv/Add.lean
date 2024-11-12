@@ -31,9 +31,7 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {f g : 𝕜 → F}
 variable {f' g' : F}
-variable {x : 𝕜}
-variable {s : Set 𝕜}
-variable {L : Filter 𝕜}
+variable {x : 𝕜} {s : Set 𝕜} {L : Filter 𝕜}
 
 section Add
 
