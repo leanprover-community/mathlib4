@@ -10,6 +10,7 @@ import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.Tactic.RSuffices
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Artinian rings and modules
