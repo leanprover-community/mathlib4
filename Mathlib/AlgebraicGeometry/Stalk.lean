@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Fangming Li
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
 /-!
 # Stalks of a Scheme
@@ -74,19 +73,6 @@ instance (X : Scheme.{u}) (x : X) : (Spec (X.presheaf.stalk x)).CanonicallyOver 
 @[simp]
 theorem IsAffineOpen.fromSpecStalk_eq_fromSpecStalk {x : X} (hxU : x ∈ U) :
     hU.fromSpecStalk hxU = X.fromSpecStalk x := fromSpecStalk_eq ..
-
-instance IsAffineOpen.fromSpecStalk_isPreimmersion {X : Scheme.{u}} {U : Opens X}
-    (hU : IsAffineOpen U) (x : X) (hx : x ∈ U) : IsPreimmersion (hU.fromSpecStalk hx) := by
-  dsimp [IsAffineOpen.fromSpecStalk]
-  haveI : IsPreimmersion (Spec.map (X.presheaf.germ U x hx)) :=
-    letI : Algebra Γ(X, U) (X.presheaf.stalk x) := (X.presheaf.germ U x hx).toAlgebra
-    haveI := hU.isLocalization_stalk ⟨x, hx⟩
-    IsPreimmersion.of_isLocalization (R := Γ(X, U)) (S := X.presheaf.stalk x)
-      (hU.primeIdealOf ⟨x, hx⟩).asIdeal.primeCompl
-  apply IsPreimmersion.comp
-
-instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecStalk x) :=
-  IsAffineOpen.fromSpecStalk_isPreimmersion _ _ _
 
 lemma IsAffineOpen.fromSpecStalk_closedPoint {U : Opens X} (hU : IsAffineOpen U)
     {x : X} (hxU : x ∈ U) :

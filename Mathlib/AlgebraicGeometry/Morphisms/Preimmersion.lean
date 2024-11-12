@@ -3,9 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
-import Mathlib.RingTheory.RingHom.Surjective
-import Mathlib.RingTheory.SurjectiveOnStalks
+import Mathlib.AlgebraicGeometry.Morphisms.SurjectiveOnStalks
 
 /-!
 
@@ -33,19 +31,14 @@ namespace AlgebraicGeometry
 /-- A morphism of schemes `f : X ⟶ Y` is a preimmersion if the underlying map of
 topological spaces is an embedding and the induced morphisms of stalks are all surjective. -/
 @[mk_iff]
-class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
+class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) extends SurjectiveOnStalks f : Prop where
   base_embedding : IsEmbedding f.base
-  surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
 
 lemma Scheme.Hom.isEmbedding {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] : IsEmbedding f.base :=
   IsPreimmersion.base_embedding
 
 @[deprecated (since := "2024-10-26")]
 alias Scheme.Hom.embedding := Scheme.Hom.isEmbedding
-
-lemma Scheme.Hom.stalkMap_surjective {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] (x) :
-    Function.Surjective (f.stalkMap x) :=
-  IsPreimmersion.surj_on_stalks x
 
 lemma isPreimmersion_eq_inf :
     @IsPreimmersion = topologically IsEmbedding ⊓ stalkwise (Function.Surjective ·) := by
@@ -124,6 +117,32 @@ lemma of_isLocalization {R S : Type u} [CommRing R] (M : Submonoid R) [CommRing 
   IsPreimmersion.mk_Spec_map
     (PrimeSpectrum.localization_comap_isEmbedding (R := R) S M)
     (RingHom.surjectiveOnStalks_of_isLocalization (M := M) S)
+
+instance IsAffineOpen.fromSpecStalk_isPreimmersion {X : Scheme.{u}} {U : Opens X}
+    (hU : IsAffineOpen U) (x : X) (hx : x ∈ U) : IsPreimmersion (hU.fromSpecStalk hx) := by
+  dsimp [IsAffineOpen.fromSpecStalk]
+  haveI : IsPreimmersion (Spec.map (X.presheaf.germ U x hx)) :=
+    letI : Algebra Γ(X, U) (X.presheaf.stalk x) := (X.presheaf.germ U x hx).toAlgebra
+    haveI := hU.isLocalization_stalk ⟨x, hx⟩
+    IsPreimmersion.of_isLocalization (R := Γ(X, U)) (S := X.presheaf.stalk x)
+      (hU.primeIdealOf ⟨x, hx⟩).asIdeal.primeCompl
+  apply IsPreimmersion.comp
+
+instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecStalk x) :=
+  IsAffineOpen.fromSpecStalk_isPreimmersion _ _ _
+
+/-- See `AlgebraicGeometry.IsClosedImmersion.Spec_map_residue` for the stronger result that
+`Spec.map (X.residue x)` is a closed immersion. -/
+instance {X : Scheme.{u}} (x) : IsPreimmersion (Spec.map (X.residue x)) :=
+  IsPreimmersion.mk_Spec_map
+    (PrimeSpectrum.isClosedEmbedding_comap_of_surjective _ _
+      Ideal.Quotient.mk_surjective).isEmbedding
+    (RingHom.surjectiveOnStalks_of_surjective (Ideal.Quotient.mk_surjective))
+
+instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecResidueField x) := by
+  dsimp only [Scheme.fromSpecResidueField]
+  rw [IsPreimmersion.comp_iff]
+  infer_instance
 
 end IsPreimmersion
 

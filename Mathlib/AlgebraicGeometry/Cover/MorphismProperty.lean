@@ -73,6 +73,9 @@ theorem Cover.iUnion_range {X : Scheme.{u}} (𝒰 : X.Cover P) :
   rw [Set.mem_iUnion]
   exact ⟨𝒰.f x, 𝒰.covers x⟩
 
+lemma Cover.exists_eq (𝒰 : X.Cover P) (x : X) : ∃ i y, (𝒰.map i).base y = x :=
+  ⟨_, 𝒰.covers x⟩
+
 /-- Given a family of schemes with morphisms to `X` satisfying `P` that jointly
 cover `X`, this an associated `P`-cover of `X`. -/
 @[simps]
