@@ -808,8 +808,7 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by
     revert x
-    change (FreeGroup Unit →* FreeGroup ℤ)
-    apply map fun _ => (1 : ℤ))
+    exact ↑(map fun _ => (1 : ℤ)))
   invFun x := of () ^ x
   left_inv := by
     rintro ⟨L⟩

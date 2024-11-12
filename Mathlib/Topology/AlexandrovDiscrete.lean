@@ -36,8 +36,7 @@ Finite product of Alexandrov-discrete spaces is Alexandrov-discrete.
 Alexandroff, discrete, finitely generated, fg space
 -/
 
-open Filter Set TopologicalSpace
-open scoped Topology
+open Filter Set TopologicalSpace Topology
 
 /-- A topological space is **Alexandrov-discrete** or **finitely generated** if the intersection of
 a family of open sets is open. -/
@@ -114,7 +113,7 @@ lemma closure_sUnion (S : Set (Set α)) : closure (⋃₀ S) = ⋃ s ∈ S, clos
 
 end AlexandrovDiscrete
 
-lemma IsInducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β → α} (h : IsInducing f) :
+lemma Topology.IsInducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β → α} (h : IsInducing f) :
     AlexandrovDiscrete β where
   isOpen_sInter S hS := by
     simp_rw [h.isOpen_iff] at hS ⊢

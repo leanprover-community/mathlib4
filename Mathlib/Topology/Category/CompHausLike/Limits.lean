@@ -34,11 +34,11 @@ which may be useful due to their definitional properties.
   we provide an instance `FinitaryExtensive (CompHausLike P)`.
 -/
 
+open CategoryTheory Limits Topology
+
 namespace CompHausLike
 
 universe w u
-
-open CategoryTheory Limits
 
 attribute [local instance] ConcreteCategory.instFunLike
 

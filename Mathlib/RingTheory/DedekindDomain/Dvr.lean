@@ -115,7 +115,7 @@ theorem IsLocalization.AtPrime.not_isField {P : Ideal A} (hP : P ≠ ⊥) [pP : 
   letI := h.toField
   obtain ⟨x, x_mem, x_ne⟩ := P.ne_bot_iff.mp hP
   exact
-    (LocalRing.maximalIdeal.isMaximal _).ne_top
+    (IsLocalRing.maximalIdeal.isMaximal _).ne_top
       (Ideal.eq_top_of_isUnit_mem _
         ((IsLocalization.AtPrime.to_map_mem_maximal_iff Aₘ P _).mpr x_mem)
         (isUnit_iff_ne_zero.mpr
@@ -130,7 +130,7 @@ theorem IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain [IsDedek
   classical
   letI : IsNoetherianRing Aₘ :=
     IsLocalization.isNoetherianRing P.primeCompl _ IsDedekindRing.toIsNoetherian
-  letI : LocalRing Aₘ := IsLocalization.AtPrime.localRing Aₘ P
+  letI : IsLocalRing Aₘ := IsLocalization.AtPrime.isLocalRing Aₘ P
   have hnf := IsLocalization.AtPrime.not_isField A hP Aₘ
   exact
     ((DiscreteValuationRing.TFAE Aₘ hnf).out 0 2).mpr
