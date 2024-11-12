@@ -883,6 +883,14 @@ theorem card_opow_le_of_omega0_le_right (a : Ordinal) {b : Ordinal} (hb : ω ≤
     simp [hb]
   · exact card_opow_le_of_omega0_le_left ha b
 
+theorem card_opow_le (a b : Ordinal) : (a ^ b).card ≤ max ℵ₀ (max a.card b.card) := by
+  obtain ⟨n, rfl⟩ | ha := eq_nat_or_omega0_le a
+  · obtain ⟨m, rfl⟩ | hb := eq_nat_or_omega0_le b
+    · rw [← natCast_opow, card_nat]
+      exact le_max_of_le_left (nat_lt_aleph0 _).le
+    · exact (card_opow_le_of_omega0_le_right _ hb).trans (le_max_right _ _)
+  · exact (card_opow_le_of_omega0_le_left ha _).trans (le_max_right _ _)
+
 theorem card_opow_eq_of_omega0_le_left {a b : Ordinal} (ha : ω ≤ a) (hb : 0 < b) :
     (a ^ b).card = max a.card b.card := by
   apply (card_opow_le_of_omega0_le_left ha b).antisymm (max_le _ _) <;> apply card_le_card
@@ -900,6 +908,15 @@ theorem card_omega0_opow {a : Ordinal} (h : a ≠ 0) : card (ω ^ a) = max ℵ�
 
 theorem card_opow_omega0 {a : Ordinal} (h : 1 < a) : card (a ^ ω) = max ℵ₀ a.card := by
   rw [card_opow_eq_of_omega0_le_right h le_rfl, card_omega0, max_comm]
+
+theorem principal_opow_omega (o : Ordinal) : Principal (· ^ ·) (ω_ o) := by
+  obtain rfl | ho := Ordinal.eq_zero_or_pos o
+  · rw [omega_zero]
+    exact principal_opow_omega0
+  · intro a b ha hb
+    rw [lt_omega_iff_card_lt] at ha hb ⊢
+    apply (card_opow_le a b).trans_lt (max_lt _ (max_lt ha hb))
+    rwa [← aleph_zero, aleph_lt_aleph]
 
 end Ordinal
 
