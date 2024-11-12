@@ -60,7 +60,7 @@ def Ideal.IsHomogeneous : Prop := Submodule.IsHomogeneous I 𝒜
 
 theorem Ideal.IsHomogeneous.mem_iff {I} (hI : Ideal.IsHomogeneous 𝒜 I) {x} :
     x ∈ I ↔ ∀ i, (decompose 𝒜 x i : A) ∈ I :=
-  Submodule.IsHomogeneous.mem_iff 𝒜 hI
+  AddSubmonoidClass.IsHomogeneous.mem_iff 𝒜 hI
 
 /-- For any `Semiring A`, we collect the homogeneous ideals of `A` into a type. -/
 abbrev HomogeneousIdeal := HomogeneousSubmodule 𝒜 𝒜
@@ -71,7 +71,8 @@ variable {𝒜}
 abbrev HomogeneousIdeal.toIdeal (I : HomogeneousIdeal 𝒜) : Ideal A :=
   I.toSubmodule
 
-theorem HomogeneousIdeal.isHomogeneous (I : HomogeneousIdeal 𝒜) : I.toIdeal.IsHomogeneous 𝒜 :=
+theorem HomogeneousIdeal.isHomogeneous (I : HomogeneousIdeal 𝒜) :
+    I.toIdeal.IsHomogeneous 𝒜 :=
   I.is_homogeneous'
 
 theorem HomogeneousIdeal.toIdeal_injective :
