@@ -73,7 +73,7 @@ theorem IsCofinal.top_mem [OrderTop α] {s : Set α} (hs : IsCofinal s) : ⊤ �
   hs.isMax_mem isMax_top
 
 @[simp]
-theorem isCofinal_iff_of_orderTop [OrderTop α] {s : Set α} : IsCofinal s ↔ ⊤ ∈ s :=
+theorem isCofinal_iff_top_mem [OrderTop α] {s : Set α} : IsCofinal s ↔ ⊤ ∈ s :=
   ⟨IsCofinal.top_mem, fun hs _ ↦ ⟨⊤, hs, le_top⟩⟩
 
 end PartialOrder
