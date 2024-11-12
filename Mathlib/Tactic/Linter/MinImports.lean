@@ -29,15 +29,11 @@ The "minImports" linter tracks information about minimal imports over several co
 namespace Mathlib.Linter
 
 /--
-`ImportState` is the structure keeping track of the data that the `minImports` linter uses.
-* `transClosure` is the import graph of the current file.
+`ImportStateAt` is the structure keeping track of the import state at a given command.
 * `minImports` is the `NameSet` of minimal imports to build the file up to the current command.
 * `importSize` is the number of transitive imports to build the file up to the current command.
 -/
-structure ImportState where
-  /-- The transitive closure of the import graph of the current file.  The value is `none` only at
-  initialization time, as the linter immediately sets it to its value for the current file. -/
-  transClosure : Option (NameMap NameSet) := none
+structure ImportStateAt where
   /-- The minimal imports needed to build the file up to the current command. -/
   minImports   : NameSet := {}
   /-- The number of transitive imports needed to build the file up to the current command. -/
@@ -45,12 +41,56 @@ structure ImportState where
   deriving Inhabited
 
 /--
+`ImportState` is the structure keeping track of the data that the `minImports` linter uses.
+* `transClosure` is the import graph of the current file.
+* `perCommandState` keeps track of the state for each command, mapped by the position in the file.
+  Keeping track of these positions allows us to update the state with edits.
+  These updates crucially rely on the fact that changing a file at some point will cause
+  re-elaboration (and therefore re-linting) of the first command starting *before* that change.
+  So by keeping track of the *ending* position of commands, we can be sure no edits have happened
+  before this command.
+-/
+structure ImportState where
+  /-- The transitive closure of the import graph of the current file.  The value is `none` only at
+  initialization time, as the linter immediately sets it to its value for the current file. -/
+  transClosure : Option (NameMap NameSet) := none
+  /-- Map position to the state for the command with those start and end positions. -/
+  perCommandState : Array ((String.Pos × String.Pos) × ImportStateAt) := #[]
+  deriving Inhabited
+
+/-- Report the import state immediately before a given position. -/
+def ImportState.cut (impState : ImportState) (headPos : String.Pos) :
+    ImportState :=
+  { impState with
+    perCommandState :=
+      (impState.perCommandState
+        -- `takeWhile` is linear but we could instead do binary search for logarithmic speed;
+        -- on the other hand it's annoying to reimplement binary search manually
+        |>.takeWhile (fun ((_, tailPos), _) => tailPos < headPos)) }
+
+/-- Report the import state immediately before a given position. Modifies the state.
+-/
+def ImportState.getAt (impState : ImportState) (headPos : String.Pos) :
+    (ImportState × ImportStateAt) :=
+  let impState := impState.cut headPos
+  (impState, (impState.perCommandState.back?.getD default).2)
+
+/-- Report the import state immediately before a given position. -/
+def ImportState.setAt
+    (impState : ImportState) (headPos tailPos : String.Pos) (val : ImportStateAt) :
+    ImportState :=
+  let impState := impState.cut headPos
+  { impState with perCommandState :=
+      (impState.perCommandState.push ((headPos, tailPos), val)) }
+
+/--
 `minImportsRef` keeps track of cumulative imports across multiple commands, using `ImportState`.
 -/
 initialize minImportsRef : IO.Ref ImportState ← IO.mkRef {}
 
 /-- `#reset_min_imports` sets to empty the current list of cumulative imports. -/
-elab "#reset_min_imports" : command => minImportsRef.set {}
+elab "#reset_min_imports" : command => do
+  minImportsRef.modify (·.setAt (← getRefPos) ((← getRef).getTailPos?.getD default) {})
 
 /--
 The `minImports` linter incrementally computes the minimal imports needed for each file to build.
@@ -100,7 +140,29 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     if (← minImportsRef.get).transClosure.isNone then
       minImportsRef.modify ({· with transClosure := env.importGraph.transitiveClosure})
     let impState ← minImportsRef.get
-    let (importsSoFar, oldCumulImps) := (impState.minImports, impState.importSize)
+    let headPos ←
+      match stx.getPos? with
+        | some pos => pure pos
+        | none => do
+          -- TODO: is this possible?
+          dbg_trace f!"could not find position for syntax {stx}"
+          pure default
+    let tailPos ←
+      match stx.getTailPos? with
+        | some pos => pure pos
+        | none => do
+          -- TODO: is this possible?
+          dbg_trace f!"could not find tail position for syntax {stx}"
+          pure default
+    let ⟨impState, importsSoFar, oldCumulImps⟩ :=
+      -- `#reset_min_imports` resets the min_import state *at* the command
+      -- but the linter compares to the *previous* command.
+      if stx == (← `(command| #reset_min_imports))
+        then (impState, {})
+        else impState.getAt headPos
+    -- Update the state in case the file was edited.
+    minImportsRef.set impState
+
     -- when the linter reaches the end of the file or `#exit`, it gives a report
     if #[``Parser.Command.eoi, ``Lean.Parser.Command.exit].contains stx.getKind then
       let explicitImportsInFile : NameSet :=
@@ -134,7 +196,8 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
        currImpArray ≠ importsSoFar.toArray.qsort Name.lt then
       let newCumulImps := -- We should always be in the situation where `getD` finds something
         (importsBelow (impState.transClosure.getD env.importGraph.transitiveClosure) tot).size
-      minImportsRef.modify ({· with minImports := currImports, importSize := newCumulImps})
+      minImportsRef.modify (·.setAt headPos tailPos
+        {minImports := currImports, importSize := newCumulImps})
       let new := currImpArray.filter (!importsSoFar.contains ·)
       let redundant := importsSoFar.toArray.filter (!currImports.contains ·)
       -- to make `test` files more stable, we suppress the exact count of import changes if
