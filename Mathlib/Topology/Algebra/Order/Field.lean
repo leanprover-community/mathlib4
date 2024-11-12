@@ -135,6 +135,10 @@ theorem Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Ten
   simp only [div_eq_mul_inv]
   exact mul_zero a ▸ h.mul (tendsto_inv_atTop_zero.comp hg)
 
+lemma Filter.Tendsto.const_div_atTop (hg : Tendsto g l atTop) (r : 𝕜)  :
+    Tendsto (fun n ↦ r / g n) l (𝓝 0) :=
+  tendsto_const_nhds.div_atTop hg
+
 theorem Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻¹ l (𝓝 0) :=
   tendsto_inv_atTop_zero.comp h
 
