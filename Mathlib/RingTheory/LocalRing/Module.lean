@@ -210,7 +210,7 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
     simp only [LinearMap.lTensor_zero, LinearMap.zero_apply, map_zero]
 
 -- TODO: Generalise this to finite free modules.
-theorem free_of_flat_of_localRing [Module.FinitePresentation R P] [Module.Flat R P] :
+theorem free_of_flat_of_isLocalRing [Module.FinitePresentation R P] [Module.Flat R P] :
     Module.Free R P :=
   free_of_maximalIdeal_rTensor_injective
     (Module.Flat.rTensor_preserves_injective_linearMap _ Subtype.val_injective)

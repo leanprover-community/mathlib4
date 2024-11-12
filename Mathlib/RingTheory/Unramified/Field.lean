@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Unramified.Finite
 
 Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
-- `Algebra.FormallyUnramified.bijective_of_isAlgClosed_of_localRing`:
+- `Algebra.FormallyUnramified.bijective_of_isAlgClosed_of_isLocalRing`:
     If `A` is `K`-unramified and `K` is alg-closed, then `K = A`.
 - `Algebra.FormallyUnramified.isReduced_of_field`:
     If `A` is `K`-unramified then `A` is reduced.
@@ -56,7 +56,7 @@ theorem of_isSeparable [Algebra.IsSeparable K L] : FormallyUnramified K L := by
 variable [FormallyUnramified K A] [EssFiniteType K A]
 variable [FormallyUnramified K L] [EssFiniteType K L]
 
-theorem bijective_of_isAlgClosed_of_localRing
+theorem bijective_of_isAlgClosed_of_isLocalRing
     [IsAlgClosed K] [IsLocalRing A] :
     Function.Bijective (algebraMap K A) := by
   have := finite_of_free (R := K) (S := A)
@@ -108,11 +108,11 @@ theorem bijective_of_isAlgClosed_of_localRing
   simp only [Function.comp_apply, AlgEquiv.apply_symm_apply, algebraMap_eq_smul_one,
     map_smul, hf₄, smul_eq_mul, mul_one]
 
-theorem isField_of_isAlgClosed_of_localRing
+theorem isField_of_isAlgClosed_of_isLocalRing
     [IsAlgClosed K] [IsLocalRing A] : IsField A := by
   rw [IsLocalRing.isField_iff_maximalIdeal_eq, eq_bot_iff]
   intro x hx
-  obtain ⟨x, rfl⟩ := (bijective_of_isAlgClosed_of_localRing K A).surjective x
+  obtain ⟨x, rfl⟩ := (bijective_of_isAlgClosed_of_isLocalRing K A).surjective x
   show _ = 0
   rw [← (algebraMap K A).map_zero]
   by_contra hx'
@@ -147,7 +147,7 @@ theorem isReduced_of_field :
     (Localization.AtPrime M)
   have := comp (AlgebraicClosure K) (AlgebraicClosure K ⊗[K] A)
     (Localization.AtPrime M)
-  letI := (isField_of_isAlgClosed_of_localRing (AlgebraicClosure K)
+  letI := (isField_of_isAlgClosed_of_isLocalRing (AlgebraicClosure K)
     (A := Localization.AtPrime M)).toField
   exact hy.eq_zero
 
