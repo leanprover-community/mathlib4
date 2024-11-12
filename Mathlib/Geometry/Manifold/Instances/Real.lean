@@ -314,7 +314,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
 -/
-instance (x y : ℝ) [h : Fact (x < y)] :
+instance IccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
     ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
   atlas := {IccLeftChart x y, IccRightChart x y}
   chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
@@ -329,7 +329,7 @@ instance (x y : ℝ) [h : Fact (x < y)] :
 
 /-- The manifold structure on `[x, y]` is smooth.
 -/
-instance (x y : ℝ) [Fact (x < y)] :
+instance Icc_smoothManifoldWithCorners (x y : ℝ) [Fact (x < y)] :
     SmoothManifoldWithCorners (𝓡∂ 1) (Icc x y) := by
   have M : ContDiff ℝ ∞ (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
       from fun z i => -z i + (y - x)) :=
@@ -372,8 +372,10 @@ instance (x y : ℝ) [Fact (x < y)] :
 
 section
 
-instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
+instance IccZeroOneChartedSpace :
+  ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
-instance : SmoothManifoldWithCorners (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
+instance Icc_zero_one_smoothManifoldWithCorners :
+  SmoothManifoldWithCorners (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
 
 end
