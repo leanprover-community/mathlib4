@@ -203,36 +203,6 @@ lemma sqrt_eq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc
 
 end sqrt
 
-section abs
-
-/-- The absolute value of an operator, using the nonunital continuous functional calculus. -/
-noncomputable def abs (a : A) := sqrt (star a * a)
-
-theorem abs_zero_eq_zero : abs (0 : A) = 0 :=
-  by simp only [abs, star_zero, mul_zero, sqrt_zero]
-
-@[simp]
-theorem abs_nonneg {a : A} : 0 ≤ abs a := sqrt_nonneg
-
-variable [StarOrderedRing A] [UniqueNonUnitalContinuousFunctionalCalculus NNReal A]
-
-theorem abs_mul_self_eq_star_mul_self (a : A) : (abs a) * (abs a) = star a * a := by
-  refine sqrt_mul_sqrt_self _ <| star_mul_self_nonneg _
-
-theorem abs_sq_eq_star_mul_self (a : A) : (abs a) ^ (2 : NNReal) = star a * a := by
-  simp only [abs_nonneg, nnrpow_two]
-  apply abs_mul_self_eq_star_mul_self
-
-variable [CStarRing A]
-
-theorem eq_zero_of_abs_eq_zero {a : A} (ha : abs a = 0) : a = 0 := by
-  have := congrArg (fun x ↦ x ^ (2 : NNReal)) ha
-  simpa only [zero_nnrpow, abs_sq_eq_star_mul_self, CStarRing.star_mul_self_eq_zero_iff]
-
-end abs
-
-#exit
-
 end NonUnital
 
 section Unital
