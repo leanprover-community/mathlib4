@@ -123,7 +123,7 @@ noncomputable abbrev freeYonedaCoproduct : PresheafOfModules.{u} R :=
   ∐ (Elements.freeYoneda (M := M))
 
 /-- Given an element `m : M.Elements` of a presheaf of modules `M`, this is the
-canonical inclusion `e.freeYoneda ⟶ M.freeYonedaCoproduct`. -/
+canonical inclusion `m.freeYoneda ⟶ M.freeYonedaCoproduct`. -/
 noncomputable abbrev ιFreeYonedaCoproduct (m : M.Elements) :
     m.freeYoneda ⟶ M.freeYonedaCoproduct :=
   Sigma.ι _ m
