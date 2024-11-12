@@ -139,13 +139,6 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
   [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrp.{v}]
   [HasExt.{w} (Sheaf J AddCommGrp.{v})]
 
--- to be moved to `SheafCohomology.Basic`
-/-- Given an abelian sheaf `F` on `(C, J)`, `n : ℕ` and `X : C`, this is
-the degree-`n` sheaf cohomology of `X` with values in `F`. -/
-noncomputable abbrev Sheaf.H' (F : Sheaf J AddCommGrp.{v}) (n : ℕ) (X : C) :
-    AddCommGrp.{w} :=
-  (F.cohomologyPresheaf n).obj (op X)
-
 namespace GrothendieckTopology.MayerVietorisSquare
 
 variable (S : J.MayerVietorisSquare) (F : Sheaf J AddCommGrp.{v})
