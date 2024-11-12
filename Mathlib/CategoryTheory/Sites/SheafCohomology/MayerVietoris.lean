@@ -68,12 +68,6 @@ namespace Ext
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 
-instance (n : ℕ) : (extFunctor (C := C) n).Additive where
-
-instance (X : Cᵒᵖ) (n : ℕ) : ((extFunctor n).obj X).Additive where
-
-instance (Y : C) (n : ℕ) : ((extFunctor n).flip.obj Y).Additive where
-
 attribute [local instance] preservesBinaryBiproductsOfPreservesBiproducts
 
 /-- Commutation of `Ext`-groups with the binary biproduct on

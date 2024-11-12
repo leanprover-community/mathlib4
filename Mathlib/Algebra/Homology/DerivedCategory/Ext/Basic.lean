@@ -370,6 +370,12 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
     apply Ext.comp_assoc
     all_goals omega
 
+instance (n : ℕ) : (extFunctor (C := C) n).Additive where
+
+instance (X : Cᵒᵖ) (n : ℕ) : ((extFunctor n).obj X).Additive where
+
+instance (Y : C) (n : ℕ) : ((extFunctor n).flip.obj Y).Additive where
+
 end Abelian
 
 end CategoryTheory
