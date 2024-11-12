@@ -125,6 +125,8 @@ derivative will be `mfderiv I I' f`, instead of the more natural notations `Tang
 real and complex manifolds).
 -/
 
+open Topology
+
 noncomputable section
 
 universe u v w u' v' w'
@@ -753,8 +755,8 @@ theorem PartialHomeomorph.singleton_smoothManifoldWithCorners
   @SmoothManifoldWithCorners.mk' _ _ _ _ _ _ _ _ _ _ (id _) <|
     e.singleton_hasGroupoid h (contDiffGroupoid ∞ I)
 
-theorem IsOpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+theorem Topology.IsOpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 E H : Type*}
+    [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
     {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H}
     (h : IsOpenEmbedding f) :
     @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ h.singletonChartedSpace :=
