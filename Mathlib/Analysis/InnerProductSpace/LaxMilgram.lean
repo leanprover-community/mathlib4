@@ -64,7 +64,7 @@ theorem antilipschitz (coercive : IsCoercive B) : ∃ C : ℝ≥0, 0 < C ∧ Ant
   refine ⟨C⁻¹.toNNReal, Real.toNNReal_pos.mpr (inv_pos.mpr C_pos), ?_⟩
   refine ContinuousLinearMap.antilipschitz_of_bound B♯ ?_
   simp_rw [Real.coe_toNNReal', max_eq_left_of_lt (inv_pos.mpr C_pos), ←
-    inv_mul_le_iff (inv_pos.mpr C_pos)]
+    inv_mul_le_iff₀ (inv_pos.mpr C_pos)]
   simpa using below_bound
 
 theorem ker_eq_bot (coercive : IsCoercive B) : ker B♯ = ⊥ := by

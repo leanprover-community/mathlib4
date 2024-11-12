@@ -150,14 +150,14 @@ def prodToProdTop : πₓ A × πₓ B ⥤ πₓ (TopCat.of (A × B)) where
   obj g := ⟨g.fst.as, g.snd.as⟩
   map {x y} p :=
     match x, y, p with
-    | (x₀, x₁), (y₀, y₁), (p₀, p₁) => @Path.Homotopic.prod _ _ (_) (_) _ _ _ _ p₀ p₁
+    | (_, _), (_, _), (p₀, p₁) => @Path.Homotopic.prod _ _ (_) (_) _ _ _ _ p₀ p₁
   map_id := by
     rintro ⟨x₀, x₁⟩
     simp only [CategoryTheory.prod_id, FundamentalGroupoid.id_eq_path_refl]
     rfl
   map_comp {x y z} f g :=
     match x, y, z, f, g with
-    | (x₀, x₁), (y₀, y₁), (z₀, z₁), (f₀, f₁), (g₀, g₁) =>
+    | (_, _), (_, _), (_, _), (f₀, f₁), (g₀, g₁) =>
       (Path.Homotopic.comp_prod_eq_prod_comp f₀ f₁ g₀ g₁).symm
 
 theorem prodToProdTop_map {x₀ x₁ : πₓ A} {y₀ y₁ : πₓ B} (p₀ : x₀ ⟶ x₁) (p₁ : y₀ ⟶ y₁) :

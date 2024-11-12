@@ -93,7 +93,7 @@ instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ
 
 -- priority manually adjusted in #11980
 instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
-  { Complex.ofReal.comp (algebraMap R ℝ) with
+  { Complex.ofRealHom.comp (algebraMap R ℝ) with
     smul := (· • ·)
     smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
     commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes] }
@@ -313,7 +313,7 @@ def lift : { I' : A // I' * I' = -1 } ≃ (ℂ →ₐ[ℝ] A) where
   toFun I' := liftAux I' I'.prop
   invFun F := ⟨F I, by rw [← map_mul, I_mul_I, map_neg, map_one]⟩
   left_inv I' := Subtype.ext <| liftAux_apply_I (I' : A) I'.prop
-  right_inv F := algHom_ext <| liftAux_apply_I _ _
+  right_inv _ := algHom_ext <| liftAux_apply_I _ _
 
 -- When applied to `Complex.I` itself, `lift` is the identity.
 @[simp]
@@ -479,7 +479,7 @@ def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where
   toFun := fun z ↦ (z : ℂ).re
   invFun := fun x ↦ ⟨x, conj_ofReal x⟩
   left_inv := fun z ↦ Subtype.ext <| conj_eq_iff_re.mp z.property.star_eq
-  right_inv := fun x ↦ rfl
+  right_inv := fun _ ↦ rfl
   map_add' := by simp
   map_smul' := by simp
 

@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Ring
@@ -104,9 +104,9 @@ theorem A_fibre_over_contestant (c : C) :
     (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct) =
       ((A r).filter fun a : AgreedTriple C J => a.contestant = c).image Prod.snd := by
   ext p
-  simp only [A, Finset.mem_univ, Finset.mem_filter, Finset.mem_image, true_and_iff, exists_prop]
+  simp only [A, Finset.mem_univ, Finset.mem_filter, Finset.mem_image, exists_prop]
   constructor
-  · rintro ⟨h₁, h₂⟩; refine ⟨(c, p), ?_⟩; tauto
+  · rintro ⟨_, h₂⟩; refine ⟨(c, p), ?_⟩; tauto
   · intro h; aesop
 
 theorem A_fibre_over_contestant_card (c : C) :
@@ -179,9 +179,9 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
   have hs : 2 * z * z + 2 * z + 1 ≤ s.card := judge_pairs_card_lower_bound r hJ c
   have hst : s \ t = Finset.univ.diag := by
     ext p; constructor <;> intros hp
-    · unfold_let s t at hp
+    · unfold s t at hp
       aesop
-    · unfold_let s t
+    · unfold s t
       suffices p.judge₁ = p.judge₂ by simp [this]
       aesop
   have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diag_card, ← hJ]; rfl

@@ -36,7 +36,7 @@ Sesquilinear form, Sesquilinear map, matrix, basis
 -/
 
 
-variable {R R₁ S₁ R₂ S₂ M M₁ M₂ M₁' M₂' N₂ n m n' m' ι : Type*}
+variable {R R₁ S₁ R₂ S₂ M₁ M₂ M₁' M₂' N₂ n m n' m' ι : Type*}
 
 open Finset LinearMap Matrix
 
@@ -559,8 +559,7 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
   let v := Pᵀ.nonsingInvUnit (P.isUnit_det_transpose h')
   let x := A₁ᵀ * Pᵀ * J
   let y := J * P * A₂
-  -- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
-  suffices x * u.val = v.val * y ↔ (v⁻¹).val * x = y * (u⁻¹).val by
+  suffices x * u = v * y ↔ v⁻¹ * x = y * u⁻¹ by
     dsimp only [Matrix.IsAdjointPair]
     simp only [Matrix.transpose_mul]
     simp only [← mul_assoc, P.transpose_nonsing_inv]
@@ -638,8 +637,6 @@ theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinear
     (Matrix.toLinearMap₂' R₁ M).SeparatingLeft (R := R₁) ↔
       (Matrix.toLinearMap₂ b b M).SeparatingLeft :=
   (separatingLeft_congr_iff b.equivFun.symm b.equivFun.symm).symm
-
-variable (B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁)
 
 -- Lemmas transferring nondegeneracy between a matrix and its associated bilinear form
 theorem _root_.Matrix.Nondegenerate.toLinearMap₂' {M : Matrix ι ι R₁} (h : M.Nondegenerate) :

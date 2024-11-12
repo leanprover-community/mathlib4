@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.DFinsupp.Sigma
+import Mathlib.Data.DFinsupp.Submonoid
 
 /-!
 # Direct sum
@@ -272,7 +273,7 @@ protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι
       DirectSum.induction_on x (by rw [AddMonoidHom.map_zero, AddMonoidHom.map_zero])
         (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by
         rw [AddMonoidHom.map_add, AddMonoidHom.map_add, ihx, ihy]
-    right_inv := fun x => toAddMonoid_of _ _ _ }
+    right_inv := fun _ => toAddMonoid_of _ _ _ }
 
 section CongrLeft
 
@@ -391,3 +392,11 @@ theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
 end DirectSum
+
+/-- The canonical isomorphism of a finite direct sum of additive commutative monoids
+and the corresponding finite product. -/
+def DirectSum.addEquivProd {ι : Type*} [Fintype ι] (G : ι → Type*) [(i : ι) → AddCommMonoid (G i)] :
+    DirectSum ι G ≃+ ((i : ι) → G i) :=
+  ⟨DFinsupp.equivFunOnFintype, fun g h ↦ funext fun _ ↦ by
+    simp only [DFinsupp.equivFunOnFintype, Equiv.toFun_as_coe, Equiv.coe_fn_mk, add_apply,
+      Pi.add_apply]⟩
