@@ -769,13 +769,11 @@ variable {α : Type*} {G : SimpleGraph α}
 /-- The maximal number of vertices of an independent set in a graph `G`. -/
 noncomputable def indepNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNIndepSet n s}
 
-@[simp]
-lemma cliqueNum_compl : G.cliqueNum = Gᶜ.indepNum := by
+@[simp] lemma cliqueNum_compl : Gᶜ.cliqueNum = G.indepNum := by
   simp [indepNum, isNIndepSet_iff_isNClique_of_complement, cliqueNum]
 
-@[simp]
-lemma indepNum_compl : G.indepNum = Gᶜ.cliqueNum := by
-  simp [cliqueNum, ← isNIndepSet_iff_isNClique_of_complement, indepNum]
+@[simp] lemma indepNum_compl : Gᶜ.indepNum = G.cliqueNum := by
+  simp [indepNum, isNIndepSet_iff_isNClique_of_complement, cliqueNum]
 
 theorem IsIndepSet.card_le_indepNum
     [Fintype α] {t : Finset α} {tc : G.IsIndepSet t} : #t ≤ G.indepNum := by
