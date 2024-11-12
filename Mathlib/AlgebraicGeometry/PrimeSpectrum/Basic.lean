@@ -989,9 +989,8 @@ def RingHom.toLocalizationIsMaximalEquiv [DiscreteTopology (PrimeSpectrum R)] : 
        (basicOpen_isIdempotentElemEquivIsClopen_symm ⟨{I}, isClopen_discrete _⟩)]
     let equiv I := IsLocalization.algEquiv I.1.primeCompl (Localization.AtPrime I.1) (R ⧸ ideal I)
     have := (discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical.mp ‹_›).1
-    have := Ideal.pi_quotient_surjective ?_ fun I ↦ equiv (toSpec I) (x I)
-    · have ⟨r, hr⟩ := this
-      refine ⟨r, funext fun I ↦ (equiv <| toSpec I).injective ?_⟩
+    have ⟨r, hr⟩ := Ideal.pi_quotient_surjective ?_ fun I ↦ equiv (toSpec I) (x I)
+    · refine ⟨r, funext fun I ↦ (equiv <| toSpec I).injective ?_⟩
       rw [← hr]; exact (equiv _).commutes r
     refine fun I J ne ↦ Ideal.isCoprime_iff_exists.mpr ?_
     have := ((idem <| toSpec I).2.mul (idem <| toSpec J).2).eq_zero_of_isNilpotent <| by
