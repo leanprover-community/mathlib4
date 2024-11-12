@@ -128,10 +128,8 @@ namespace Ordinal
   `∀ a, ∃ b ∈ S, a ≤ b`. It is defined for all ordinals, but
   `cof 0 = 0` and `cof (succ o) = 1`, so it is only really
   interesting on limit ordinals (when it is an infinite cardinal). -/
-def cof (o : Ordinal.{u}) : Cardinal.{u} := by
-  refine o.liftOn (fun a => Order.cof (swap a.rᶜ)) ?_
-  rintro _ _ ⟨⟨f, hf⟩⟩
-  exact RelIso.cof_eq ⟨_, not_iff_not.2 hf⟩
+def cof (o : Ordinal.{u}) : Cardinal.{u} :=
+  o.liftOn _ fun _ _ ⟨f⟩ ↦ f.compl.swap.cof_eq
 
 theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = Order.cof (swap rᶜ) :=
   rfl
@@ -141,7 +139,7 @@ theorem cof_type_lt [LinearOrder α] [IsWellOrder α (· < ·)] :
   rw [cof_type, compl_lt, swap_ge]
 
 theorem cof_eq_cof_toType (o : Ordinal) : o.cof = @Order.cof o.toType (· ≤ ·) := by
-  conv_lhs => rw [← type_lt o, cof_type_lt]
+  conv_lhs => rw [← type_toType o, cof_type_lt]
 
 theorem le_cof_type [IsWellOrder α r] {c} : c ≤ cof (type r) ↔ ∀ S, Unbounded r S → c ≤ #S :=
   (le_csInf_iff'' (Order.cof_nonempty _)).trans
