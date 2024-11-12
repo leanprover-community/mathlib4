@@ -65,7 +65,7 @@ lemma exact₀ {Z : C} (I : InjectiveResolution Z) :
 def descFOne {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex.X 1 ⟶ I.cocomplex.X 1 :=
   J.exact₀.descToInjective (descFZero f I J ≫ I.cocomplex.d 0 1)
-    (by dsimp; simp [← assoc, assoc, descFZero])
+    (by dsimp; simp only [← assoc, descFZero]; simp [assoc])
 
 @[simp]
 theorem descFOne_zero_comm {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)

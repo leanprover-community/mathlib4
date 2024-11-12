@@ -3,14 +3,15 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
+import Mathlib.Algebra.Algebra.Subalgebra.Rank
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.LinearDisjoint
 import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 
@@ -69,6 +70,26 @@ See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
 
 - `Subalgebra.LinearDisjoint.sup_free_of_free`: the compositum of two linearly disjoint
   subalgebras is a free module, if two subalgebras are also free modules.
+
+- `Subalgebra.LinearDisjoint.rank_sup_of_free`,
+  `Subalgebra.LinearDisjoint.finrank_sup_of_free`:
+  if subalgebras `A` and `B` are linearly disjoint and they are
+  free modules, then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`.
+
+- `Subalgebra.LinearDisjoint.of_finrank_sup_of_free`:
+  conversely, if `A` and `B` are subalgebras which are free modules of finite rank,
+  such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
+  then `A` and `B` are linearly disjoint.
+
+- `Subalgebra.LinearDisjoint.adjoin_rank_eq_rank_left`:
+  `Subalgebra.LinearDisjoint.adjoin_rank_eq_rank_right`:
+  if `A` and `B` are linearly disjoint, if `A` is free and `B` is flat (resp. `B` is free and
+  `A` is flat), then `[B[A] : B] = [A : R]` (resp. `[A[B] : A] = [B : R]`).
+  See also `Subalgebra.adjoin_rank_le`.
+
+- `Subalgebra.LinearDisjoint.of_finrank_coprime_of_free`:
+  if the rank of `A` and `B` are coprime, and they satisfy some freeness condition,
+  then `A` and `B` are linearly disjoint.
 
 - `Subalgebra.LinearDisjoint.inf_eq_bot_of_commute`, `Subalgebra.LinearDisjoint.inf_eq_bot`:
   if `A` and `B` are linearly disjoint, under suitable technical conditions, they are disjoint.
@@ -328,7 +349,37 @@ theorem of_le_of_flat_left {A' B' : Subalgebra R S}
     (ha : A' ≤ A) (hb : B' ≤ B) [Module.Flat R A] [Module.Flat R B'] :
     A'.LinearDisjoint B' := (H.of_le_right_of_flat hb).of_le_left_of_flat ha
 
+theorem rank_inf_eq_one_of_commute_of_flat_of_inj (hf : Module.Flat R A ∨ Module.Flat R B)
+    (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.1 b.1)
+    (hinj : Function.Injective (algebraMap R S)) : Module.rank R ↥(A ⊓ B) = 1 := by
+  nontriviality R
+  refine le_antisymm (Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat H hf hc) ?_
+  have : Cardinal.lift.{u} (Module.rank R (⊥ : Subalgebra R S)) =
+      Cardinal.lift.{v} (Module.rank R R) :=
+    lift_rank_range_of_injective (Algebra.linearMap R S) hinj
+  rw [Module.rank_self, Cardinal.lift_one, Cardinal.lift_eq_one] at this
+  rw [← this]
+  change Module.rank R (toSubmodule (⊥ : Subalgebra R S)) ≤
+    Module.rank R (toSubmodule (A ⊓ B))
+  exact Submodule.rank_mono (bot_le : (⊥ : Subalgebra R S) ≤ A ⊓ B)
+
+theorem rank_inf_eq_one_of_commute_of_flat_left_of_inj [Module.Flat R A]
+    (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.1 b.1)
+    (hinj : Function.Injective (algebraMap R S)) : Module.rank R ↥(A ⊓ B) = 1 :=
+  H.rank_inf_eq_one_of_commute_of_flat_of_inj (Or.inl ‹_›) hc hinj
+
+theorem rank_inf_eq_one_of_commute_of_flat_right_of_inj [Module.Flat R B]
+    (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.1 b.1)
+    (hinj : Function.Injective (algebraMap R S)) : Module.rank R ↥(A ⊓ B) = 1 :=
+  H.rank_inf_eq_one_of_commute_of_flat_of_inj (Or.inr ‹_›) hc hinj
+
 end
+
+theorem rank_eq_one_of_commute_of_flat_of_self_of_inj (H : A.LinearDisjoint A) [Module.Flat R A]
+    (hc : ∀ (a b : A), Commute a.1 b.1)
+    (hinj : Function.Injective (algebraMap R S)) : Module.rank R A = 1 := by
+  rw [← inf_of_le_left (le_refl A)] at hc ⊢
+  exact H.rank_inf_eq_one_of_commute_of_flat_left_of_inj hc hinj
 
 end LinearDisjoint
 
@@ -355,6 +406,109 @@ then `A` and `B` are linearly disjoint. -/
 theorem of_basis_left {ι : Type*} (a : Basis ι R A)
     (H : LinearIndependent B (A.val ∘ a)) : A.LinearDisjoint B :=
   of_basis_left_of_commute A B a H fun _ _ ↦ mul_comm _ _
+
+variable {A B}
+
+variable (H : A.LinearDisjoint B)
+
+include H in
+theorem rank_inf_eq_one_of_flat_of_inj (hf : Module.Flat R A ∨ Module.Flat R B)
+    (hinj : Function.Injective (algebraMap R S)) : Module.rank R ↥(A ⊓ B) = 1 :=
+  H.rank_inf_eq_one_of_commute_of_flat_of_inj hf (fun _ _ ↦ mul_comm _ _) hinj
+
+include H in
+theorem rank_inf_eq_one_of_flat_left_of_inj [Module.Flat R A]
+    (hinj : Function.Injective (algebraMap R S)) : Module.rank R ↥(A ⊓ B) = 1 :=
+  H.rank_inf_eq_one_of_commute_of_flat_left_of_inj (fun _ _ ↦ mul_comm _ _) hinj
+
+include H in
+theorem rank_inf_eq_one_of_flat_right_of_inj [Module.Flat R B]
+    (hinj : Function.Injective (algebraMap R S)) : Module.rank R ↥(A ⊓ B) = 1 :=
+  H.rank_inf_eq_one_of_commute_of_flat_right_of_inj (fun _ _ ↦ mul_comm _ _) hinj
+
+theorem rank_eq_one_of_flat_of_self_of_inj (H : A.LinearDisjoint A) [Module.Flat R A]
+    (hinj : Function.Injective (algebraMap R S)) : Module.rank R A = 1 :=
+  H.rank_eq_one_of_commute_of_flat_of_self_of_inj (fun _ _ ↦ mul_comm _ _) hinj
+
+include H in
+/-- In a commutative ring, if subalgebras `A` and `B` are linearly disjoint and they are
+free modules, then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`. -/
+theorem rank_sup_of_free [Module.Free R A] [Module.Free R B] :
+    Module.rank R ↥(A ⊔ B) = Module.rank R A * Module.rank R B := by
+  nontriviality R
+  rw [← rank_tensorProduct', H.mulMap.toLinearEquiv.rank_eq]
+
+include H in
+/-- In a commutative ring, if subalgebras `A` and `B` are linearly disjoint and they are
+free modules, then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`. -/
+theorem finrank_sup_of_free [Module.Free R A] [Module.Free R B] :
+    Module.finrank R ↥(A ⊔ B) = Module.finrank R A * Module.finrank R B := by
+  simpa only [map_mul] using congr(Cardinal.toNat $(H.rank_sup_of_free))
+
+/-- In a commutative ring, if `A` and `B` are subalgebras which are free modules of finite rank,
+such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
+then `A` and `B` are linearly disjoint. -/
+theorem of_finrank_sup_of_free [Module.Free R A] [Module.Free R B]
+    [Module.Finite R A] [Module.Finite R B]
+    (H : Module.finrank R ↥(A ⊔ B) = Module.finrank R A * Module.finrank R B) :
+    A.LinearDisjoint B := by
+  nontriviality R
+  rw [← Module.finrank_tensorProduct] at H
+  obtain ⟨j, hj⟩ := exists_linearIndependent_of_le_finrank H.ge
+  rw [LinearIndependent] at hj
+  let j' := Finsupp.linearCombination R j ∘ₗ
+    (LinearEquiv.ofFinrankEq (A ⊗[R] B) _ (by simp)).toLinearMap
+  replace hj : Function.Injective j' := by simpa [j']
+  have hf : Function.Surjective (mulMap' A B).toLinearMap := mulMap'_surjective A B
+  haveI := Subalgebra.finite_sup A B
+  rw [linearDisjoint_iff, Submodule.linearDisjoint_iff]
+  exact Subtype.val_injective.comp (OrzechProperty.injective_of_surjective_of_injective j' _ hj hf)
+
+include H in
+/-- If `A` and `B` are linearly disjoint, if `A` is free and `B` is flat,
+then `[B[A] : B] = [A : R]`. See also `Subalgebra.adjoin_rank_le`. -/
+theorem adjoin_rank_eq_rank_left [Module.Free R A] [Module.Flat R B]
+    [Nontrivial R] [Nontrivial S] :
+    Module.rank B (Algebra.adjoin B (A : Set S)) = Module.rank R A := by
+  rw [← rank_toSubmodule, Module.Free.rank_eq_card_chooseBasisIndex R A,
+    A.adjoin_eq_span_basis B (Module.Free.chooseBasis R A)]
+  change Module.rank B (Submodule.span B (Set.range (A.val ∘ Module.Free.chooseBasis R A))) = _
+  have := H.linearIndependent_left_of_flat (Module.Free.chooseBasis R A).linearIndependent
+  rw [rank_span this, Cardinal.mk_range_eq _ this.injective]
+
+include H in
+/-- If `A` and `B` are linearly disjoint, if `B` is free and `A` is flat,
+then `[A[B] : A] = [B : R]`. See also `Subalgebra.adjoin_rank_le`. -/
+theorem adjoin_rank_eq_rank_right [Module.Free R B] [Module.Flat R A]
+    [Nontrivial R] [Nontrivial S] :
+    Module.rank A (Algebra.adjoin A (B : Set S)) = Module.rank R B :=
+  H.symm.adjoin_rank_eq_rank_left
+
+/-- If the rank of `A` and `B` are coprime, and they satisfy some freeness condition,
+then `A` and `B` are linearly disjoint. -/
+theorem of_finrank_coprime_of_free [Module.Free R A] [Module.Free R B]
+    [Module.Free A (Algebra.adjoin A (B : Set S))] [Module.Free B (Algebra.adjoin B (A : Set S))]
+    (H : (Module.finrank R A).Coprime (Module.finrank R B)) : A.LinearDisjoint B := by
+  nontriviality R
+  by_cases h1 : Module.finrank R A = 0
+  · rw [h1, Nat.coprime_zero_left] at H
+    rw [eq_bot_of_finrank_one H]
+    exact bot_right _
+  by_cases h2 : Module.finrank R B = 0
+  · rw [h2, Nat.coprime_zero_right] at H
+    rw [eq_bot_of_finrank_one H]
+    exact bot_left _
+  haveI := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h1)
+  haveI := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h2)
+  haveI := finite_sup A B
+  have : Module.finrank R A ≤ Module.finrank R ↥(A ⊔ B) :=
+    LinearMap.finrank_le_finrank_of_injective <|
+      Submodule.inclusion_injective (show toSubmodule A ≤ toSubmodule (A ⊔ B) by simp)
+  exact of_finrank_sup_of_free <| (finrank_sup_le_of_free A B).antisymm <|
+    Nat.le_of_dvd (lt_of_lt_of_le (Nat.pos_of_ne_zero h1) this) <| H.mul_dvd_of_dvd_of_dvd
+      (finrank_left_dvd_finrank_sup_of_free A B) (finrank_right_dvd_finrank_sup_of_free A B)
+
+variable (A B)
 
 /-- If `A/R` is integral, such that `A'` and `B` are linearly disjoint for all subalgebras `A'`
 of `A` which are finitely generated `R`-modules, then `A` and `B` are linearly disjoint. -/
