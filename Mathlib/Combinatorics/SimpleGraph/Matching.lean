@@ -133,7 +133,7 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
-lemma IsMatching.exists_of_disjoint_sets_of_card_eq {s t : Set V} (h : Disjoint s t)
+lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s t)
     (f : s ≃ t) (hadj : ∀ {v w : V}, v ∈ s → w ∈ t → G.Adj v w) :
     ∃ M : Subgraph G, M.verts = s ∪ t ∧ M.IsMatching := by
   haveI (v : V) : Decidable (v ∈ s) := Classical.dec _
