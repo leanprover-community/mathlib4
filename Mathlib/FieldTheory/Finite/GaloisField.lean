@@ -165,9 +165,15 @@ theorem _root_.FiniteField.splits_X_pow_card_sub_X :
     Splits (algebraMap (ZMod p) K) (X ^ Fintype.card K - X) :=
   (FiniteField.isSplittingField_sub K (ZMod p)).splits
 
+@[deprecated (since := "2024-11-12")]
+alias splits_X_pow_card_sub_X := FiniteField.splits_X_pow_card_sub_X
+
 theorem _root_.FiniteField.isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) :=
   h ▸ FiniteField.isSplittingField_sub K (ZMod p)
+
+@[deprecated (since := "2024-11-12")]
+alias isSplittingField_of_card_eq := FiniteField.isSplittingField_of_card_eq
 
 /-- Any finite field is (possibly non canonically) isomorphic to some Galois field. -/
 def algEquivGaloisFieldOfFintype (h : Fintype.card K = p ^ n) : K ≃ₐ[ZMod p] GaloisField p n :=
