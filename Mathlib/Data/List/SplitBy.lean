@@ -52,6 +52,14 @@ theorem flatten_splitBy (r : α → α → Bool) (l : List α) : (l.splitBy r).f
   | nil => rfl
   | cons _ _ => flatten_splitByLoop
 
+@[simp]
+theorem splitBy_eq_nil_iff {r : α → α → Bool} {l : List α} : l.splitBy r = [] ↔ l = [] := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · have := flatten_splitBy r l
+    rwa [h, flatten_nil, eq_comm] at this
+  · rintro rfl
+    rfl
+
 private theorem nil_not_mem_splitByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
     [] ∉ splitBy.loop r l a g [] := by
   induction l generalizing a g with
