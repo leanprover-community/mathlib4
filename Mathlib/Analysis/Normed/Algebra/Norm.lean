@@ -70,10 +70,6 @@ instance algebraNormClass : AlgebraNormClass (AlgebraNorm R S) R S where
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
   map_smul_eq_mul f := f.smul'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
-instance : CoeFun (AlgebraNorm R S) fun _ => S → ℝ :=
-  DFunLike.hasCoeToFun
-
 theorem toFun_eq_coe (p : AlgebraNorm R S) : p.toFun = p := rfl
 
 @[ext]
@@ -159,10 +155,6 @@ instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S wher
   map_neg_eq_map f  := f.neg'
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
   map_smul_eq_mul f := f.smul'
-
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
-instance : CoeFun (MulAlgebraNorm R S) fun _ => S → ℝ :=
-  DFunLike.hasCoeToFun
 
 theorem toFun_eq_coe (p : MulAlgebraNorm R S) : p.toFun = p := rfl
 

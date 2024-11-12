@@ -46,7 +46,7 @@ structure Scheme extends LocallyRingedSpace where
     ∀ x : toLocallyRingedSpace,
       ∃ (U : OpenNhds x) (R : CommRingCat),
         Nonempty
-          (toLocallyRingedSpace.restrict U.openEmbedding ≅ Spec.toLocallyRingedSpace.obj (op R))
+          (toLocallyRingedSpace.restrict U.isOpenEmbedding ≅ Spec.toLocallyRingedSpace.obj (op R))
 
 namespace Scheme
 
@@ -93,7 +93,7 @@ instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
 @[continuity, fun_prop]
-lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.base := f.base.2
+lemma Hom.continuous {X Y : Scheme} (f : X.Hom Y) : Continuous f.base := f.base.2
 
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
@@ -389,6 +389,9 @@ lemma Spec.map_app (U) :
 lemma Spec.map_appLE {U V} (e : U ≤ Spec.map f ⁻¹ᵁ V) :
     (Spec.map f).appLE V U e = StructureSheaf.comap f V U e := rfl
 
+instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
+  inferInstanceAs <| Nonempty (PrimeSpectrum A)
+
 end
 
 namespace Scheme
@@ -604,6 +607,14 @@ theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U
   refine (Scheme.congr_app this _).trans ?_
   simp [eqToHom_map]
 
+lemma germ_eq_zero_of_pow_mul_eq_zero {X : Scheme.{u}} {U : Opens X} (x : U) {f s : Γ(X, U)}
+    (hx : x.val ∈ X.basicOpen s) {n : ℕ} (hf : s ^ n * f = 0) : X.presheaf.germ U x x.2 f = 0 := by
+  rw [Scheme.mem_basicOpen] at hx
+  have hu : IsUnit (X.presheaf.germ _ x x.2 (s ^ n)) := by
+    rw [map_pow]
+    exact IsUnit.pow n hx
+  rw [← hu.mul_right_eq_zero, ← map_mul, hf, map_zero]
+
 @[reassoc (attr := simp)]
 lemma Scheme.iso_hom_base_inv_base {X Y : Scheme.{u}} (e : X ≅ Y) :
     e.hom.base ≫ e.inv.base = 𝟙 _ :=
@@ -631,6 +642,9 @@ section Stalks
 namespace Scheme
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
+
+instance (x) : IsLocalHom (f.stalkMap x) :=
+  f.prop x
 
 @[simp]
 lemma stalkMap_id (X : Scheme.{u}) (x : X) :
@@ -715,7 +729,7 @@ open LocalRing
 
 @[simp]
 lemma Spec_closedPoint {R S : CommRingCat} [LocalRing R] [LocalRing S]
-    {f : R ⟶ S} [IsLocalRingHom f] : (Spec.map f).base (closedPoint S) = closedPoint R :=
+    {f : R ⟶ S} [IsLocalHom f] : (Spec.map f).base (closedPoint S) = closedPoint R :=
   LocalRing.comap_closedPoint f
 
 end LocalRing

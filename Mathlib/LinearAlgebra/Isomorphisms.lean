@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Isomorphism theorems for modules.
@@ -117,12 +117,9 @@ theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : 
     rw [quotientInfEquivSupQuotient_apply_mk, inclusion_apply]
 
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M} {x : ↥(p ⊔ p')} :
     (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) = 0 ↔ (x : M) ∈ p' :=
-  (LinearEquiv.symm_apply_eq _).trans <| by
-    -- porting note (#10745): was `simp`.
-    rw [_root_.map_zero, Quotient.mk_eq_zero, mem_comap, Submodule.coe_subtype]
+  (LinearEquiv.symm_apply_eq _).trans <| by simp
 
 theorem quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x : ↥(p ⊔ p')}
     (hx : (x : M) ∈ p') : (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x)
@@ -152,7 +149,7 @@ theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk x) = mapQ S T LinearMap.id h x :=
   liftQ_apply _ _ _
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem quotientQuotientEquivQuotientAux_mk_mk (x : M) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := by simp
 
@@ -161,9 +158,11 @@ def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ 
   { quotientQuotientEquivQuotientAux S T h with
     toFun := quotientQuotientEquivQuotientAux S T h
     invFun := mapQ _ _ (mkQ S) (le_comap_map _ _)
-    left_inv := fun x => Quotient.inductionOn' x fun x => Quotient.inductionOn' x fun x =>
-      by simp [Quotient.mk''_eq_mk]
-    right_inv := fun x => Quotient.inductionOn' x fun x => by simp [Quotient.mk''_eq_mk] }
+    left_inv := fun x => Submodule.Quotient.induction_on _
+     x fun x => Submodule.Quotient.induction_on _ x fun x =>
+      by simp
+    right_inv := fun x => Submodule.Quotient.induction_on _ x
+      fun x => by simp }
 
 /-- Essentially the same equivalence as in the third isomorphism theorem,
 except restated in terms of suprema/addition of submodules instead of `≤`. -/

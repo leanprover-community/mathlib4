@@ -19,9 +19,9 @@ exp
 
 noncomputable section
 
-open Finset Filter Metric Asymptotics Set Function Bornology
+open Asymptotics Bornology Finset Filter Function Metric Set Topology
 
-open scoped Topology Nat
+open scoped Nat
 
 namespace Complex
 
@@ -369,16 +369,19 @@ theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto f l atBot := by
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]
 
-theorem openEmbedding_exp : OpenEmbedding exp :=
-  isOpen_Ioi.openEmbedding_subtype_val.comp expOrderIso.toHomeomorph.openEmbedding
+theorem isOpenEmbedding_exp : IsOpenEmbedding exp :=
+  isOpen_Ioi.isOpenEmbedding_subtypeVal.comp expOrderIso.toHomeomorph.isOpenEmbedding
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_exp := isOpenEmbedding_exp
 
 @[simp]
 theorem map_exp_nhds (x : ℝ) : map exp (𝓝 x) = 𝓝 (exp x) :=
-  openEmbedding_exp.map_nhds_eq x
+  isOpenEmbedding_exp.map_nhds_eq x
 
 @[simp]
 theorem comap_exp_nhds_exp (x : ℝ) : comap exp (𝓝 (exp x)) = 𝓝 x :=
-  (openEmbedding_exp.nhds_eq_comap x).symm
+  (isOpenEmbedding_exp.nhds_eq_comap x).symm
 
 theorem isLittleO_pow_exp_atTop {n : ℕ} : (fun x : ℝ => x ^ n) =o[atTop] Real.exp := by
   simpa [isLittleO_iff_tendsto fun x hx => ((exp_pos x).ne' hx).elim] using
@@ -403,8 +406,6 @@ theorem isLittleO_exp_comp_exp_comp {f g : α → ℝ} :
   simp only [isLittleO_iff_tendsto, exp_ne_zero, ← exp_sub, ← tendsto_neg_atTop_iff, false_imp_iff,
     imp_true_iff, tendsto_exp_comp_nhds_zero, neg_sub]
 
--- Porting note (#10618): @[simp] can prove:  by simp only [@Asymptotics.isLittleO_one_left_iff,
---   Real.norm_eq_abs, Real.abs_exp, @Real.tendsto_exp_comp_atTop]
 theorem isLittleO_one_exp_comp {f : α → ℝ} :
     ((fun _ => 1 : α → ℝ) =o[l] fun x => exp (f x)) ↔ Tendsto f l atTop := by
   simp only [← exp_zero, isLittleO_exp_comp_exp_comp, sub_zero]

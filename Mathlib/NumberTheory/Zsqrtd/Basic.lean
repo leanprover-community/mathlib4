@@ -931,8 +931,7 @@ def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
     ext
     simp
   right_inv f := by
-    -- Porting note: was `ext`
-    refine hom_ext _ _ ?_
+    ext
     simp
 
 /-- `lift r` is injective if `d` is non-square, and R has characteristic zero (that is, the map from

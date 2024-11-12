@@ -5,6 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.OreLocalization.Ring
+import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Ring
 
 /-!
@@ -528,6 +529,14 @@ theorem lift_injective_iff :
     Injective (lift hg : S → P) ↔ ∀ x y, algebraMap R S x = algebraMap R S y ↔ g x = g y :=
   (toLocalizationMap M S).lift_injective_iff hg
 
+variable (M) in
+include M in
+lemma injective_iff_map_algebraMap_eq {T} [CommRing T] (f : S →+* T) :
+    Function.Injective f ↔ ∀ x y,
+      algebraMap R S x = algebraMap R S y ↔ f (algebraMap R S x) = f (algebraMap R S y) := by
+  rw [← IsLocalization.lift_of_comp (M := M) f, IsLocalization.lift_injective_iff]
+  simp
+
 section Map
 
 variable {T : Submonoid P} {Q : Type*} [CommSemiring Q]
@@ -585,7 +594,7 @@ theorem map_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring
     map W l hl (map Q g hy x) = map W (l.comp g) (fun _ hx => hl (hy hx)) x := by
   rw [← map_comp_map (Q := Q) hy hl]; rfl
 
-theorem map_smul (x : S) (z : R) : map Q g hy (z • x : S) = g z • map Q g hy x := by
+protected theorem map_smul (x : S) (z : R) : map Q g hy (z • x : S) = g z • map Q g hy x := by
   rw [Algebra.smul_def, Algebra.smul_def, RingHom.map_mul, map_eq]
 
 end
@@ -631,7 +640,6 @@ theorem ringEquivOfRingEquiv_eq_map {j : R ≃+* P} (H : M.map j.toMonoidHom = T
       map Q (j : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) :=
   rfl
 
--- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem ringEquivOfRingEquiv_eq {j : R ≃+* P} (H : M.map j.toMonoidHom = T) (x) :
     ringEquivOfRingEquiv S Q j H ((algebraMap R S) x) = algebraMap P Q (j x) := by
   simp
@@ -827,6 +835,16 @@ end Localization
 namespace IsLocalization
 
 variable {K : Type*} [IsLocalization M S]
+
+include M in
+lemma injective_of_map_algebraMap_zero {T} [CommRing T] (f : S →+* T)
+    (h : ∀ x, f (algebraMap R S x) = 0 → algebraMap R S x = 0) :
+    Function.Injective f := by
+  rw [IsLocalization.injective_iff_map_algebraMap_eq M]
+  refine fun x y ↦ ⟨fun hz ↦ hz ▸ rfl, fun hz ↦ ?_⟩
+  rw [← sub_eq_zero, ← map_sub, ← map_sub] at hz
+  apply h at hz
+  rwa [map_sub, sub_eq_zero] at hz
 
 theorem to_map_eq_zero_iff {x : R} (hM : M ≤ nonZeroDivisors R) : algebraMap R S x = 0 ↔ x = 0 := by
   rw [← (algebraMap R S).map_zero]

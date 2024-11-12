@@ -114,7 +114,6 @@ def Aut (X : C) := X ≅ X
 
 namespace Aut
 
--- Porting note (#5229): added because `Iso.ext` is not triggered automatically
 @[ext]
 lemma ext {X : C} {φ₁ φ₂ : Aut X} (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Iso.ext h

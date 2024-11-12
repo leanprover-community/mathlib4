@@ -202,16 +202,16 @@ there is some `v : V` so every vector is a multiple of `v`.
 -/
 theorem finrank_le_one_iff [Module.Free K V] [Module.Finite K V] :
     finrank K V ≤ 1 ↔ ∃ v : V, ∀ w : V, ∃ c : K, c • v = w := by
-  rw [← rank_le_one_iff, ← finrank_eq_rank, ← natCast_le, Nat.cast_one]
+  rw [← rank_le_one_iff, ← finrank_eq_rank, Nat.cast_le_one]
 
 theorem Submodule.finrank_le_one_iff_isPrincipal
     (W : Submodule K V) [Module.Free K W] [Module.Finite K W] :
     finrank K W ≤ 1 ↔ W.IsPrincipal := by
-  rw [← W.rank_le_one_iff_isPrincipal, ← finrank_eq_rank, ← natCast_le, Nat.cast_one]
+  rw [← W.rank_le_one_iff_isPrincipal, ← finrank_eq_rank, Nat.cast_le_one]
 
 theorem Module.finrank_le_one_iff_top_isPrincipal [Module.Free K V] [Module.Finite K V] :
     finrank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by
-  rw [← Module.rank_le_one_iff_top_isPrincipal, ← finrank_eq_rank, ← natCast_le, Nat.cast_one]
+  rw [← Module.rank_le_one_iff_top_isPrincipal, ← finrank_eq_rank, Nat.cast_le_one]
 
 variable (K V) in
 theorem lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank [Module.Free K V]
@@ -271,7 +271,8 @@ theorem rank_eq_one_iff [Nontrivial E] [Module.Free F S] : Module.rank F S = 1 �
   obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := F) (M := (⊥ : Subalgebra F E))
   refine le_antisymm ?_ ?_
   · have := lift_rank_range_le (Algebra.linearMap F E)
-    rwa [← one_eq_range, rank_self, lift_one, lift_le_one_iff] at this
+    rwa [← one_eq_range, rank_self, lift_one, lift_le_one_iff,
+      ← Algebra.toSubmodule_bot, rank_toSubmodule] at this
   · by_contra H
     rw [not_le, lt_one_iff_zero] at H
     haveI := mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')

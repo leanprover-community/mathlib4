@@ -3,12 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.Topology.Sheaves.LocalPredicate
-import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.Topology.Sheaves.LocalPredicate
 
 /-!
 # The structure sheaf on `PrimeSpectrum R`.
@@ -542,14 +543,14 @@ def stalkIso (x : PrimeSpectrum.Top R) :
 instance (x : PrimeSpectrum R) : IsIso (stalkToFiberRingHom R x) :=
   (stalkIso R x).isIso_hom
 
-instance (x : PrimeSpectrum R) : IsLocalRingHom (stalkToFiberRingHom R x) :=
-  isLocalRingHom_of_isIso _
+instance (x : PrimeSpectrum R) : IsLocalHom (stalkToFiberRingHom R x) :=
+  isLocalHom_of_isIso _
 
 instance (x : PrimeSpectrum R) : IsIso (localizationToStalk R x) :=
   (stalkIso R x).isIso_inv
 
-instance (x : PrimeSpectrum R) : IsLocalRingHom (localizationToStalk R x) :=
-  isLocalRingHom_of_isIso _
+instance (x : PrimeSpectrum R) : IsLocalHom (localizationToStalk R x) :=
+  isLocalHom_of_isIso _
 
 @[simp, reassoc]
 theorem stalkToFiberRingHom_localizationToStalk (x : PrimeSpectrum.Top R) :

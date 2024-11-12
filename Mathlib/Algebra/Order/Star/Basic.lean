@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarRingHom
-import Mathlib.Algebra.Regular.Basic
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-! # Star ordered rings
@@ -111,7 +113,7 @@ lemma of_nonneg_iff [NonUnitalRing R] [PartialOrder R] [StarRing R]
     (h_nonneg_iff : ∀ x : R, 0 ≤ x ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s)) :
     StarOrderedRing R where
   le_iff x y := by
-    haveI : CovariantClass R R (· + ·) (· ≤ ·) := ⟨fun _ _ _ h => h_add h _⟩
+    have : AddLeftMono R := ⟨fun _ _ _ h => h_add h _⟩
     simpa only [← sub_eq_iff_eq_add', sub_nonneg, exists_eq_right'] using h_nonneg_iff (y - x)
 
 /-- When `R` is a non-unital ring, to construct a `StarOrderedRing` instance it suffices to
@@ -125,7 +127,7 @@ lemma of_nonneg_iff' [NonUnitalRing R] [PartialOrder R] [StarRing R]
     (h_add : ∀ {x y : R}, x ≤ y → ∀ z, z + x ≤ z + y)
     (h_nonneg_iff : ∀ x : R, 0 ≤ x ↔ ∃ s, x = star s * s) : StarOrderedRing R :=
   of_le_iff <| by
-    haveI : CovariantClass R R (· + ·) (· ≤ ·) := ⟨fun _ _ _ h => h_add h _⟩
+    have : AddLeftMono R := ⟨fun _ _ _ h => h_add h _⟩
     simpa [sub_eq_iff_eq_add', sub_nonneg] using fun x y => h_nonneg_iff (y - x)
 
 theorem nonneg_iff [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {x : R} :
@@ -150,6 +152,13 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
 @[aesop 10% apply]
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
   .mono hx <| .zero R
+
+/-- An alias of `IsSelfAdjoint.of_nonneg` for use with dot notation. -/
+alias LE.le.isSelfAdjoint := IsSelfAdjoint.of_nonneg
+
+/-- The combination `(IsSelfAdjoint.star_eq <| .of_nonneg ·)` for use with dot notation. -/
+lemma LE.le.star_eq {x : R} (hx : 0 ≤ x) : star x = x :=
+  hx.isSelfAdjoint.star_eq
 
 theorem star_mul_self_nonneg (r : R) : 0 ≤ star r * r :=
   StarOrderedRing.nonneg_iff.mpr <| AddSubmonoid.subset_closure ⟨r, rfl⟩

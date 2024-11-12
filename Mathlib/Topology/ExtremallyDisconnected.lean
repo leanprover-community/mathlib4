@@ -45,7 +45,7 @@ class ExtremallyDisconnected : Prop where
 theorem extremallyDisconnected_of_homeo {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     [ExtremallyDisconnected X] (e : X ≃ₜ Y) : ExtremallyDisconnected Y where
   open_closure U hU := by
-    rw [e.symm.inducing.closure_eq_preimage_closure_image, Homeomorph.isOpen_preimage]
+    rw [e.symm.isInducing.closure_eq_preimage_closure_image, Homeomorph.isOpen_preimage]
     exact ExtremallyDisconnected.open_closure _ (e.symm.isOpen_image.mpr hU)
 
 section TotallySeparated
