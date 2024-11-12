@@ -188,8 +188,7 @@ theorem _root_.FiniteField.splits_X_pow_nat_card_sub_X [Finite K] :
 
 theorem _root_.FiniteField.isSplittingField_of_nat_card_eq (h : Nat.card K = p ^ n) :
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) := by
-  haveI : NeZero (Nat.card K) := Eq.mpr (congrArg NeZero h) Nat.instNeZeroHPow
-  haveI : Finite K := Nat.finite_of_card_ne_zero (NeZero.ne _)
+  haveI : Finite K := (Nat.card_pos_iff.mp (h ▸ pow_pos h_prime.1.pos n)).2
   haveI : Fintype K := Fintype.ofFinite K
   rw [← h, Nat.card_eq_fintype_card]
   exact FiniteField.isSplittingField_sub K (ZMod p)
