@@ -563,7 +563,7 @@ theorem Minpoly.toAdjoin.apply_X :
 variable (R x)
 
 theorem Minpoly.toAdjoin.surjective : Function.Surjective (Minpoly.toAdjoin R x) := by
-  rw [← range_eq_top, _root_.eq_top_iff, ← adjoin_adjoin_coe_preimage]
+  rw [← AlgHom.range_eq_top, _root_.eq_top_iff, ← adjoin_adjoin_coe_preimage]
   exact adjoin_le fun ⟨y₁, y₂⟩ h ↦ ⟨mk (minpoly R x) X, by simpa [toAdjoin] using h.symm⟩
 
 end minpoly
