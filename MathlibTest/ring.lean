@@ -142,6 +142,27 @@ example (a b : ℤ) : a+b=0 ↔ b+a=0 := by
   have : 3 = 3 := rfl
   ring_nf -- reduced to `True` with mdata
 
+-- check that `ring1` performs beta-reduction
+example (y : ℤ) : (fun t ↦ t ^ 2) y - y ^ 2 = 0 := by ring1
+
+/--
+error: ring failed, ring expressions not equal
+x : ℤ
+a : ℤ := x + 1
+⊢ a = 1 + x
+---
+error: unsolved goals
+x : ℤ
+a : ℤ := x + 1
+this : a = 1 + x
+⊢ True
+-/
+-- check that `ring` does not unfold let-bindings
+#guard_msgs in
+example (x : ℤ) : True := by
+  let a := x + 1
+  have : a = 1 + x := by ring1
+
 -- Powers in the exponent get evaluated correctly
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
 
