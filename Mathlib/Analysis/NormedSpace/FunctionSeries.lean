@@ -69,7 +69,6 @@ theorem tendstoUniformlyOn_tsum_eventually {ι : Type*} {f : ι → β → F} {u
   apply tsum_le_tsum _ (A.subtype _) (hu.subtype _)
   exact fun i ↦ hN n (Finset.union_subset_left hn) x hx (↑i) i.property
 
-
 /-- An infinite sum of functions with eventually summable sup norm is the uniform limit of its
 partial sums. Version relative to a set, with index set `ℕ`. -/
 theorem tendstoUniformlyOn_tsum_nat_eventually {α F : Type*} [NormedAddCommGroup F]
