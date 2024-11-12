@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Noetherian.Orzech
 
 /-!
 # Lie submodules of a Lie algebra
@@ -368,7 +368,7 @@ theorem coeSubmodule_eq_top_iff : (N : Submodule R M) = ⊤ ↔ N = ⊤ := by
 theorem mem_top (x : M) : x ∈ (⊤ : LieSubmodule R L M) :=
   mem_univ x
 
-instance : Inf (LieSubmodule R L M) :=
+instance : Min (LieSubmodule R L M) :=
   ⟨fun N N' ↦
     { (N ⊓ N' : Submodule R M) with
       lie_mem := fun h ↦ mem_inter (N.lie_mem h.1) (N'.lie_mem h.2) }⟩
@@ -419,8 +419,8 @@ theorem iInf_coe {ι} (p : ι → LieSubmodule R L M) : (↑(⨅ i, p i) : Set M
 theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
   rw [← SetLike.mem_coe, iInf_coe, Set.mem_iInter]; rfl
 
-instance : Sup (LieSubmodule R L M) where
-  sup N N' :=
+instance : Max (LieSubmodule R L M) where
+  max N N' :=
     { toSubmodule := (N : Submodule R M) ⊔ (N' : Submodule R M)
       lie_mem := by
         rintro x m (hm : m ∈ (N : Submodule R M) ⊔ (N' : Submodule R M))
@@ -522,7 +522,7 @@ theorem iSup_eq_top_iff_coe_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R 
     ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
   rw [← iSup_coe_toSubmodule, ← top_coeSubmodule (L := L), coe_toSubmodule_eq_iff]
 
-instance : Add (LieSubmodule R L M) where add := Sup.sup
+instance : Add (LieSubmodule R L M) where add := max
 
 instance : Zero (LieSubmodule R L M) where zero := ⊥
 

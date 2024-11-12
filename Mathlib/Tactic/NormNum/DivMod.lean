@@ -46,6 +46,7 @@ lemma isInt_ediv_neg {a b q q' : ℤ} (h : IsInt (a / -b) q) (hq : -q = q') : Is
 lemma isNat_neg_of_isNegNat {a : ℤ} {b : ℕ} (h : IsInt a (.negOfNat b)) : IsNat (-a) b :=
   ⟨by simp [h.out]⟩
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `Int.ediv a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℤ) / _, Int.ediv _ _]
@@ -104,6 +105,7 @@ lemma isInt_emod {a b q m a' : ℤ} {b' r : ℕ}
 lemma isInt_emod_neg {a b : ℤ} {r : ℕ} (h : IsNat (a % -b) r) : IsNat (a % b) r :=
   ⟨by rw [← Int.emod_neg, h.out]⟩
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `Int.emod a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℤ) % _, Int.emod _ _]
@@ -158,6 +160,7 @@ theorem isInt_dvd_false : {a b : ℤ} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → Int.emod b' a' != 0 → ¬a ∣ b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, e => mt Int.emod_eq_zero_of_dvd (by simpa using e)
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `(a : ℤ) ∣ b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℤ) ∣ _] def evalIntDvd : NormNumExt where eval {u α} e := do

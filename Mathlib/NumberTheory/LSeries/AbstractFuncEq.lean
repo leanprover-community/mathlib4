@@ -261,7 +261,7 @@ lemma hf_modif_int :
     LocallyIntegrableOn P.f_modif (Ioi 0) := by
   have : LocallyIntegrableOn (fun x : ℝ ↦ (P.ε * ↑(x ^ (-P.k))) • P.g₀) (Ioi 0) := by
     refine ContinuousOn.locallyIntegrableOn ?_ measurableSet_Ioi
-    refine ContinuousAt.continuousOn (fun x (hx : 0 < x) ↦ ?_)
+    refine continuousOn_of_forall_continuousAt (fun x (hx : 0 < x) ↦ ?_)
     refine (continuousAt_const.mul ?_).smul continuousAt_const
     exact continuous_ofReal.continuousAt.comp (continuousAt_rpow_const _ _ (Or.inl hx.ne'))
   refine LocallyIntegrableOn.add (fun x hx ↦ ?_) (fun x hx ↦ ?_)

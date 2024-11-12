@@ -151,7 +151,7 @@ theorem not_step_singleton : ∀ {p : α × Bool}, ¬Step [p] L
 
 @[to_additive]
 theorem Step.cons_cons_iff : ∀ {p : α × Bool}, Step (p :: L₁) (p :: L₂) ↔ Step L₁ L₂ := by
-  simp (config := { contextual := true }) [Step.cons_left_iff, iff_def, or_imp]
+  simp +contextual [Step.cons_left_iff, iff_def, or_imp]
 
 @[to_additive]
 theorem Step.append_left_iff : ∀ L, Step (L ++ L₁) (L ++ L₂) ↔ Step L₁ L₂
@@ -529,10 +529,10 @@ instance : Group (FreeGroup α) where
           Eq.trans (Quot.sound <| by simp [invRev, one_eq_mk]) ih
 
 @[to_additive (attr := simp)]
-theorem pow_mk (n : ℕ) : mk L ^ n = mk (List.join <| List.replicate n L) :=
+theorem pow_mk (n : ℕ) : mk L ^ n = mk (List.flatten <| List.replicate n L) :=
   match n with
   | 0 => rfl
-  | n + 1 => by rw [pow_succ', pow_mk, mul_mk, List.replicate_succ, List.join_cons]
+  | n + 1 => by rw [pow_succ', pow_mk, mul_mk, List.replicate_succ, List.flatten_cons]
 
 /-- `of` is the canonical injection from the type to the free group over that type by sending each
 element to the equivalence class of the letter that is the element. -/
@@ -1085,7 +1085,7 @@ theorem toWord_one : (1 : FreeGroup α).toWord = [] :=
 
 @[to_additive (attr := simp)]
 theorem toWord_of_pow (a : α) (n : ℕ) : (of a ^ n).toWord = List.replicate n (a, true) := by
-  rw [of, pow_mk, List.join_replicate_singleton, toWord]
+  rw [of, pow_mk, List.flatten_replicate_singleton, toWord]
   exact reduce_replicate _ _
 
 @[to_additive (attr := simp)]

@@ -20,7 +20,7 @@ the purpose of this type.
 
 assert_not_exists StarOrderedRing
 
-open Set Function
+open Function Set Topology
 
 /-- The type of continuous maps which map zero to zero.
 
@@ -366,6 +366,9 @@ noncomputable instance [MetricSpace R] [Zero R]: MetricSpace C(α, R)₀ :=
 
 noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
   norm f := ‖(f : C(α, R))‖
+
+lemma norm_def [NormedAddCommGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
+  rfl
 
 noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ where
   dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
