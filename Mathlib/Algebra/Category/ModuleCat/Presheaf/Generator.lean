@@ -82,7 +82,8 @@ end freeYoneda
 instance wellPowered : WellPowered (PresheafOfModules.{u} R₀) :=
   wellPowered_of_isDetecting (freeYoneda.isDetecting R₀)
 
-/-- The type of elements of a presheaf of modules. -/
+/-- The type of elements of a presheaf of modules. A term of this type is a pair
+`⟨X, a⟩` with `X : Cᵒᵖ` and `a : M.obj X`. -/
 abbrev Elements {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ RingCat.{u}}
   (M : PresheafOfModules.{v} R) := ((toPresheaf R).obj M ⋙ forget Ab).Elements
 
