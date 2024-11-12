@@ -27,17 +27,6 @@ namespace CategoryTheory
 open Category Opposite Limits Abelian
 
 -- to be moved
-namespace Preadditive
-
-variable {C : Type u} [Category.{v} C] [Preadditive C]
-
-@[simp]
-lemma unop_sub {X Y : Cᵒᵖ} (f g : X ⟶ Y) :
-    (f - g).unop = f.unop - g.unop := rfl
-
-end Preadditive
-
--- to be moved
 namespace Limits
 
 variable {C : Type u} [Category.{v} C] [Preadditive C] (X Y : C)
