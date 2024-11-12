@@ -15,6 +15,49 @@ Documentation
 
 open ExteriorAlgebra BigOperators
 
+section matrix
+
+variable {m n α : Type*}
+
+theorem Matrix.of_eq (f g : m → n → α) : f = g →
+  Matrix.of (fun i j ↦ f i j) = Matrix.of (fun i j ↦ g i j) := by
+  intro h
+  rw [h]
+
+theorem Matrix.of_updateRow [DecidableEq m] (f : m → n → α) (x : α) (i' : m) :
+  Matrix.of (fun i j ↦ (Function.update f i' (fun _ ↦ x)) i j) =
+  (Matrix.of fun i j ↦ f i j).updateRow i' (fun _ ↦ x) := by
+  ext i j
+  simp only [of_apply, updateRow_apply]
+  rw [Function.update_apply, ite_apply]
+
+theorem Matrix.of_updateColumn [DecidableEq n] (f : m → n → α) (x : α) (j' : n) :
+  Matrix.of (fun i j ↦ (Function.update (f i) j' x) j) =
+  (Matrix.of fun i j ↦ f i j).updateColumn j' (fun _ ↦ x) := by
+  ext i j
+  simp only [of_apply, updateColumn_apply]
+  exact Function.update_apply (f i) j' x j
+
+variable {m' n' : Type*}
+
+theorem Matrix.of_update_right [DecidableEq n'] (f : m → n → α) (v : m' → m) (w : n' → n) (j' : n')
+  (x : n) :
+  Matrix.of (fun i j ↦ f (v i) (Function.update w j' x <| j)) =
+  (Matrix.of (fun i j ↦ f (v i) (w j))).updateColumn j' (fun i ↦ f (v i) x) := by
+  ext i j
+  simp only [of_apply, updateColumn_apply, Function.update_apply]
+  rw [apply_ite (f (v i))]
+
+theorem Matrix.det_of_updateColumn_right [Fintype n] [DecidableEq n] [CommRing α] (f : n → n → α)
+  (j' : n) (u v w : n → α) : w = u + v →
+  ((Matrix.of (fun i j ↦ f i j)).updateColumn j' w).det =
+  ((Matrix.of (fun i j ↦ f i j)).updateColumn j' u).det +
+  ((Matrix.of (fun i j ↦ f i j)).updateColumn j' v).det := by
+  intro h; rw [h]
+  rw [Matrix.det_updateColumn_add]
+
+end matrix
+
 namespace exteriorPower
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
@@ -23,12 +66,7 @@ variable {k : ℕ}
 
 section inducedForm
 
-theorem aux (v w : Fin k → M) (x y : M) (j': Fin k) :
-  (Matrix.of fun i j ↦ (B (v i)) (Function.update w j' (x + y) j)) =
-  (Matrix.of fun i j ↦ (B (v i)) (w j)).updateColumn j' (fun i ↦ B (v i) (x + y)) := by
-  ext i j
-  rw [Matrix.of_apply, Matrix.updateColumn_apply, Function.update_apply, apply_ite (B (v i))]
-  rfl
+#check Matrix.det_updateColumn_add
 
 private def BilinFormAux :
     M [⋀^Fin k]→ₗ[R] M [⋀^Fin k]→ₗ[R] R where
@@ -37,12 +75,9 @@ private def BilinFormAux :
       map_add' := by
         intro _ w j' x y
         dsimp
-        convert_to ((Matrix.of fun i j => (B (v i)) (w j)).updateColumn j'
-          fun i => (B (v i)) (x + y)).det = _
-        · congr 1
-          convert aux B v w x y j'
-        --rw [aux B v w x y j']
-        --rw [Matrix.det_updateColumn_add]
+        simp only [Matrix.of_update_right]
+        simp only [B.add_right]
+
         sorry
       map_smul' := sorry
       map_eq_zero_of_eq' := sorry }
