@@ -147,12 +147,7 @@ def chainSup (c : Set (PartialRefinement u s p)) (hc : IsChain (· ≤ ·) c) (n
       have : v j ≤ v i := (hc.total (hvc _ hxi) (hvc _ hj')).elim (fun h => (hmax j hj' h).ge) id
       simpa only [find_apply_of_mem hc ne (hvc _ hxi) (this.1 <| hiv _ hj')]
   closure_subset hi := (find c ne _).closure_subset ((mem_find_carrier_iff _).2 hi)
-  p_refined {i} hi := by
-    simp only
-    obtain ⟨v, hv⟩ := Set.mem_iUnion.mp hi
-    simp only [mem_iUnion, exists_prop] at hv
-    rw [find_apply_of_mem hc ne hv.1 hv.2]
-    exact v.p_refined hv.2
+  p_refined {i} hi := v.p_refined <| by aesop
   apply_eq hi := (find c ne _).apply_eq (mt (mem_find_carrier_iff _).1 hi)
 
 /-- `chainSup hu c hc ne hfin hU` is an upper bound of the chain `c`. -/
