@@ -210,11 +210,9 @@ variable {C₁ : Type u₁} [Category.{v₁} C₁] {W₁ : MorphismProperty C₁
   (Φ : LocalizerMorphism W₁ W₂) (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁]
   (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
 
-variable {W}
-
 section
 
-variable {X Y Z : C₁}
+variable {X Y : C₁}
 
 variable [HasSmallLocalizedHom.{w} W₁ X Y]
   [HasSmallLocalizedHom.{w'} W₂ (Φ.functor.obj X) (Φ.functor.obj Y)]
@@ -249,11 +247,7 @@ lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ �
   have hγ : ∀ (X : C₁), γ.hom.app (W₁.Q.obj X) =
       E₂.map (β.inv.app X) ≫ α₂.hom.app (Φ.functor.obj X) ≫
         e.hom.app X ≫ G.map (α₁.inv.app X) := fun X ↦ by
-    dsimp [γ]
-    rw [liftNatTrans_app]
-    dsimp
-    rw [id_comp, id_comp, comp_id]
-    erw [id_comp, comp_id]
+    simp [γ, id_comp, comp_id]
   simp only [Functor.map_comp, assoc]
   erw [← NatIso.naturality_1 γ]
   simp only [Functor.comp_map, ← cancel_epi (e.inv.app X), ← cancel_epi (G.map (α₁.hom.app X)),

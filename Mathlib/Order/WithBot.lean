@@ -97,6 +97,10 @@ theorem map_bot (f : α → β) : map f ⊥ = ⊥ :=
 theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
 
+@[simp]
+lemma map_eq_bot_iff {f : α → β} {a : WithBot α} :
+    map f a = ⊥ ↔ a = ⊥ := Option.map_eq_none'
+
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) :
     map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
@@ -293,8 +297,8 @@ instance preorder [Preorder α] : Preorder (WithBot α) where
   lt_iff_le_not_le := by
     intros a b
     cases a <;> cases b <;> simp [lt_iff_le_not_le]
-  le_refl o a ha := ⟨a, ha, le_rfl⟩
-  le_trans o₁ o₂ o₃ h₁ h₂ a ha :=
+  le_refl _ a ha := ⟨a, ha, le_rfl⟩
+  le_trans _ _ _ h₁ h₂ a ha :=
     let ⟨b, hb, ab⟩ := h₁ a ha
     let ⟨c, hc, bc⟩ := h₂ b hb
     ⟨c, hc, le_trans ab bc⟩
@@ -434,7 +438,7 @@ instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (WithBot α) (· ≤ ·)
-  | none, x => isTrue fun a h => Option.noConfusion h
+  | none, _ => isTrue fun _ h => Option.noConfusion h
   | Option.some x, Option.some y =>
       if h : x ≤ y then isTrue (coe_le_coe.2 h) else isFalse <| by simp [*]
   | Option.some x, none => isFalse fun h => by rcases h x rfl with ⟨y, ⟨_⟩, _⟩
@@ -469,7 +473,7 @@ instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot �
   have acc_bot := ⟨_, by simp [not_lt_bot]⟩
   .intro fun
     | ⊥ => acc_bot
-    | (a : α) => (wellFounded_lt.1 a).rec fun a _ ih =>
+    | (a : α) => (wellFounded_lt.1 a).rec fun _ _ ih =>
       .intro _ fun
         | ⊥, _ => acc_bot
         | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
@@ -653,6 +657,10 @@ theorem map_top (f : α → β) : map f ⊤ = ⊤ :=
 @[simp]
 theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
+
+@[simp]
+lemma map_eq_top_iff {f : α → β} {a : WithTop α} :
+    map f a = ⊤ ↔ a = ⊤ := Option.map_eq_none'
 
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) : map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
@@ -933,7 +941,7 @@ lemma ge_of_forall_gt_iff_ge [LinearOrder α] [DenselyOrdered α] [NoMinOrder α
 
 section LE
 
-variable [LE α] {a b : α}
+variable [LE α]
 
 theorem toDual_le_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
     WithBot.toDual a ≤ b ↔ WithTop.ofDual b ≤ a :=
@@ -963,7 +971,7 @@ end LE
 
 section LT
 
-variable [LT α] {a b : α}
+variable [LT α]
 
 theorem toDual_lt_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
     WithBot.toDual a < b ↔ WithTop.ofDual b < a :=
@@ -1088,7 +1096,7 @@ alias ⟨_, _root_.StrictMono.withTop_map⟩ := strictMono_map_iff
 theorem map_le_iff (f : α → β) (a b : WithTop α)
     (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
     a.map f ≤ b.map f ↔ a ≤ b := by
-  erw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
+  rw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
   simp [mono_iff]
 
 theorem coe_untop'_le (a : WithTop α) (b : α) : a.untop' b ≤ a :=

@@ -129,7 +129,7 @@ theorem comap_surjective (f : V ↪ W) : Function.Surjective (SimpleGraph.comap 
 
 theorem map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph W) :
     G.map f ≤ G' ↔ G ≤ G'.comap f :=
-  ⟨fun h u v ha => h ⟨_, _, ha, rfl, rfl⟩, by
+  ⟨fun h _ _ ha => h ⟨_, _, ha, rfl, rfl⟩, by
     rintro h _ _ ⟨u, v, ha, rfl, rfl⟩
     exact h ha⟩
 
@@ -470,6 +470,18 @@ theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.ed
 
 theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
   map_adj_iff f
+
+@[simp]
+theorem symm_toHom_comp_toHom : f.symm.toHom.comp f.toHom = Hom.id := by
+  ext v
+  simp only [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
+    RelIso.symm_apply_apply, RelHom.id_apply]
+
+@[simp]
+theorem toHom_comp_symm_toHom : f.toHom.comp f.symm.toHom = Hom.id := by
+  ext v
+  simp only [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
+    RelIso.apply_symm_apply, RelHom.id_apply]
 
 /-- An isomorphism of graphs induces an equivalence of edge sets. -/
 @[simps]

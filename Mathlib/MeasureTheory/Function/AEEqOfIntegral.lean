@@ -63,7 +63,7 @@ theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace �
   rw [Pi.zero_apply, ← @inner_self_eq_zero 𝕜]
   have h_closed : IsClosed {c : E | inner c (f x) = (0 : 𝕜)} :=
     isClosed_eq (continuous_id.inner continuous_const) continuous_const
-  exact @isClosed_property ℕ E _ s (fun c => inner c (f x) = (0 : 𝕜)) hs h_closed (fun n => hx n) _
+  exact @isClosed_property ℕ E _ s (fun c => inner c (f x) = (0 : 𝕜)) hs h_closed hx _
 
 local notation "⟪" x ", " y "⟫" => y x
 
@@ -113,7 +113,7 @@ variable {𝕜}
 
 end AeEqOfForall
 
-variable {α E : Type*} {m m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
+variable {α E : Type*} {m m0 : MeasurableSpace α} {μ : Measure α}
   [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {p : ℝ≥0∞}
 
 section AeEqOfForallSetIntegralEq
@@ -423,10 +423,10 @@ theorem ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite [SigmaFinite μ] {f :
     (hf_zero : ∀ s : Set α, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) : f =ᵐ[μ] 0 := by
   let S := spanningSets μ
   rw [← @Measure.restrict_univ _ _ μ, ← iUnion_spanningSets μ, EventuallyEq, ae_iff,
-    Measure.restrict_apply' (MeasurableSet.iUnion (measurable_spanningSets μ))]
+    Measure.restrict_apply' (MeasurableSet.iUnion (measurableSet_spanningSets μ))]
   rw [Set.inter_iUnion, measure_iUnion_null_iff]
   intro n
-  have h_meas_n : MeasurableSet (S n) := measurable_spanningSets μ n
+  have h_meas_n : MeasurableSet (S n) := measurableSet_spanningSets μ n
   have hμn : μ (S n) < ∞ := measure_spanningSets_lt_top μ n
   rw [← Measure.restrict_apply' h_meas_n]
   exact ae_eq_zero_restrict_of_forall_setIntegral_eq_zero hf_int_finite hf_zero h_meas_n hμn.ne
@@ -590,7 +590,7 @@ lemma ae_eq_zero_of_forall_setIntegral_isClosed_eq_zero {μ : Measure β} {f : �
   have A : ∀ (t : Set β), MeasurableSet t → ∫ (x : β) in t, f x ∂μ = 0
       → ∫ (x : β) in tᶜ, f x ∂μ = 0 := by
     intro t t_meas ht
-    have I : ∫ x, f x ∂μ = 0 := by rw [← integral_univ]; exact h'f _ isClosed_univ
+    have I : ∫ x, f x ∂μ = 0 := by rw [← setIntegral_univ]; exact h'f _ isClosed_univ
     simpa [ht, I] using integral_add_compl t_meas hf
   intro s hs
   refine MeasurableSet.induction_on_open (fun U hU ↦ ?_) A (fun g g_disj g_meas hg ↦ ?_) hs

@@ -7,6 +7,7 @@ import Mathlib.Data.Complex.Module
 import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Field
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
 
@@ -208,11 +209,14 @@ theorem antilipschitz_equivRealProd : AntilipschitzWith (NNReal.sqrt 2) equivRea
   AddMonoidHomClass.antilipschitz_of_bound equivRealProdLm fun z ↦ by
     simpa only [Real.coe_sqrt, NNReal.coe_ofNat] using abs_le_sqrt_two_mul_max z
 
-theorem uniformEmbedding_equivRealProd : UniformEmbedding equivRealProd :=
-  antilipschitz_equivRealProd.uniformEmbedding lipschitz_equivRealProd.uniformContinuous
+theorem isUniformEmbedding_equivRealProd : IsUniformEmbedding equivRealProd :=
+  antilipschitz_equivRealProd.isUniformEmbedding lipschitz_equivRealProd.uniformContinuous
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_equivRealProd := isUniformEmbedding_equivRealProd
 
 instance : CompleteSpace ℂ :=
-  (completeSpace_congr uniformEmbedding_equivRealProd).mpr inferInstance
+  (completeSpace_congr isUniformEmbedding_equivRealProd).mpr inferInstance
 
 instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpace
 
@@ -247,8 +251,10 @@ def reCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 
-lemma uniformlyContinous_re : UniformContinuous re :=
+lemma uniformlyContinuous_re : UniformContinuous re :=
   reCLM.uniformContinuous
+
+@[deprecated (since := "2024-11-04")] alias uniformlyContinous_re := uniformlyContinuous_re
 
 @[simp]
 theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
@@ -266,8 +272,10 @@ def imCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 
-lemma uniformlyContinous_im : UniformContinuous im :=
+lemma uniformlyContinuous_im : UniformContinuous im :=
   imCLM.uniformContinuous
+
+@[deprecated (since := "2024-11-04")] alias uniformlyContinous_im := uniformlyContinuous_im
 
 @[simp]
 theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
@@ -355,12 +363,19 @@ theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
 theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
   ofRealLI.continuous
 
+theorem isUniformEmbedding_ofReal : IsUniformEmbedding ((↑) : ℝ → ℂ) :=
+  ofRealLI.isometry.isUniformEmbedding
+
+theorem _root_.Filter.tendsto_ofReal_iff {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ} :
+    Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) ↔ Tendsto f l (𝓝 x) :=
+  isUniformEmbedding_ofReal.isClosedEmbedding.tendsto_nhds_iff.symm
+
 lemma _root_.Filter.Tendsto.ofReal {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ}
     (hf : Tendsto f l (𝓝 x)) : Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) :=
-  (continuous_ofReal.tendsto _).comp hf
+  tendsto_ofReal_iff.mpr hf
 
 /-- The only continuous ring homomorphism from `ℝ` to `ℂ` is the identity. -/
-theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = Complex.ofReal := by
+theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = ofRealHom := by
   convert congr_arg AlgHom.toRingHom <| Subsingleton.elim (AlgHom.mk' f <| map_real_smul f h)
     (Algebra.ofId ℝ ℂ)
 
@@ -553,6 +568,21 @@ end RCLike
 
 namespace Complex
 
+section tprod
+
+variable {α : Type*} {f : α → ℂ}
+
+theorem hasProd_abs {x : ℂ} (hfx : HasProd f x) : HasProd (fun i ↦ (f i).abs) x.abs :=
+  hfx.norm
+
+theorem multipliable_abs (hf : Multipliable f) : Multipliable (fun i ↦ (f i).abs) :=
+  hf.norm
+
+theorem abs_tprod (h : Multipliable f) : (∏' i, f i).abs = ∏' i, (f i).abs :=
+  norm_tprod h
+
+end tprod
+
 /-!
 We have to repeat the lemmas about `RCLike.re` and `RCLike.im` as they are not syntactic
 matches for `Complex.re` and `Complex.im`.
@@ -595,10 +625,10 @@ theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : ℂ) = ∑' a, ↑(f 
   RCLike.ofReal_tsum _ _
 
 theorem hasSum_re {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).re) x.re :=
-  RCLike.hasSum_re _ h
+  RCLike.hasSum_re ℂ h
 
 theorem hasSum_im {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).im) x.im :=
-  RCLike.hasSum_im _ h
+  RCLike.hasSum_im ℂ h
 
 theorem re_tsum {f : α → ℂ} (h : Summable f) : (∑' a, f a).re = ∑' a, (f a).re :=
   RCLike.re_tsum _ h

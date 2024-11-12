@@ -20,9 +20,6 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
-
 namespace IsFractionRing
 
 open IsLocalization
@@ -42,7 +39,7 @@ theorem exists_reduced_fraction (x : K) :
   refine ⟨a', ⟨b', b'_nonzero⟩, no_factor, ?_⟩
   refine mul_left_cancel₀ (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors b_nonzero) ?_
   simp only [Subtype.coe_mk, RingHom.map_mul, Algebra.smul_def] at *
-  erw [← hab, mul_assoc, mk'_spec' _ a' ⟨b', b'_nonzero⟩]
+  rw [← hab, mul_assoc, mk'_spec' _ a' ⟨b', b'_nonzero⟩]
 
 /-- `f.num x` is the numerator of `x : f.codomain` as a reduced fraction. -/
 noncomputable def num (x : K) : A :=
@@ -156,7 +153,5 @@ lemma associated_num_den_inv (x : K) (hx : x ≠ 0) : Associated (num A x : A) (
   exact this
 
 end NumDen
-
-variable (S)
 
 end IsFractionRing

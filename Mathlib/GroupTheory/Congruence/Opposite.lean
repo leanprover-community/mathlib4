@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 
-import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.Algebra.Opposites
+import Mathlib.GroupTheory.Congruence.Defs
 
 /-!
 # Congruences on the opposite of a group

@@ -438,9 +438,13 @@ theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α 
   integrable_const_iff.2 <| Or.inr <| measure_lt_top _ _
 
 @[simp]
-theorem Integrable.of_finite [Finite α] [MeasurableSpace α] [MeasurableSingletonClass α]
-    (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) : Integrable (fun a ↦ f a) μ :=
-  ⟨(StronglyMeasurable.of_finite f).aestronglyMeasurable, .of_finite⟩
+lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMeasure μ] {f : α → β} :
+    Integrable f μ := ⟨.of_finite, .of_finite⟩
+
+/-- This lemma is a special case of `Integrable.of_finite`. -/
+-- Eternal deprecation for discoverability, don't remove
+@[deprecated Integrable.of_finite, nolint deprecatedNoSince]
+lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
 @[deprecated (since := "2024-02-05")] alias integrable_of_fintype := Integrable.of_finite
 
@@ -1371,12 +1375,10 @@ theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrabl
     ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
   simp [edist_eq_coe_nnnorm_sub]
 
-@[simp]
 theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
     edist (hf.toL1 f) 0 = ∫⁻ a, edist (f a) 0 ∂μ := by
-  simp only [toL1, Lp.edist_toLp_zero, eLpNorm, one_ne_zero, eLpNorm', one_toReal, ENNReal.rpow_one,
-    ne_eq, not_false_eq_true, div_self, ite_false]
-  simp [edist_eq_coe_nnnorm]
+  simp only [edist_zero_right, Lp.nnnorm_coe_ennreal, toL1_eq_mk, eLpNorm_aeeqFun]
+  apply eLpNorm_one_eq_lintegral_nnnorm
 
 variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
 
@@ -1400,9 +1402,9 @@ lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
   convert lintegral_mono_set (μ := μ) (s := s) (t := univ) (f := fun x ↦ ↑‖f x‖₊) (subset_univ s)
   exact Measure.restrict_univ.symm
 
-lemma Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
-    Integrable f (μ.restrict s) :=
-  ⟨f_intble.aestronglyMeasurable.restrict, f_intble.hasFiniteIntegral.restrict⟩
+/-- One should usually use `MeasureTheory.Integrable.IntegrableOn` instead. -/
+lemma Integrable.restrict (hf : Integrable f μ) {s : Set α} : Integrable f (μ.restrict s) :=
+  hf.mono_measure Measure.restrict_le_self
 
 end restrict
 

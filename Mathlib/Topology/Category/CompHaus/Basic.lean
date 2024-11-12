@@ -93,7 +93,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
       continuous_toFun := continuous_stoneCechExtend f.2 }
   left_inv := by
     rintro ⟨f : StoneCech X ⟶ Y, hf : Continuous f⟩
-    -- Porting note: `ext` fails.
+    -- Porting note (#11041): `ext` fails.
     apply ContinuousMap.ext
     intro (x : StoneCech X)
     refine congr_fun ?_ x
@@ -103,7 +103,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
       apply continuous_stoneCechUnit
   right_inv := by
     rintro ⟨f : (X : Type _) ⟶ Y, hf : Continuous f⟩
-    -- Porting note: `ext` fails.
+    -- Porting note (#11041): `ext` fails.
     apply ContinuousMap.ext
     intro
     exact congr_fun (stoneCechExtend_extends hf) _
@@ -203,7 +203,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     have H : h = g := by
       rw [← cancel_epi f]
       ext x
-      -- Porting note: `ext` doesn't apply these two lemmas.
+      -- Porting note (#11041): `ext` doesn't apply these two lemmas.
       apply ULift.ext
       apply Subtype.ext
       dsimp

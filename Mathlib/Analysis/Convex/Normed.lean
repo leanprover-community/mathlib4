@@ -27,7 +27,7 @@ We prove the following facts:
 
 variable {ι : Type*} {E P : Type*}
 
-open AffineBasis FiniteDimensional Metric Set
+open AffineBasis Module Metric Set
 open scoped Convex Pointwise Topology
 
 section SeminormedAddCommGroup
@@ -112,7 +112,7 @@ instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpa
   TopologicalAddGroup.pathConnectedSpace
 
 instance (priority := 100) NormedSpace.instLocPathConnectedSpace : LocPathConnectedSpace E :=
-  locPathConnected_of_bases (fun x => Metric.nhds_basis_ball) fun x r r_pos =>
+  .of_bases (fun _ => Metric.nhds_basis_ball) fun x r r_pos =>
     (convex_ball x r).isPathConnected <| by simp [r_pos]
 
 theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
