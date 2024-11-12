@@ -502,8 +502,22 @@ theorem norm_le_mul_norm_add (u v : E) : ‖u‖ ≤ ‖u * v‖ + ‖v‖ :=
     ‖u‖ = ‖u * v / v‖ := by rw [mul_div_cancel_right]
     _ ≤ ‖u * v‖ + ‖v‖ := norm_div_le _ _
 
+/-- An analogue of `norm_le_mul_norm_add` for the multiplication from the left. -/
 @[to_additive]
-lemma norm_mul_eq_norm (x : E) {y : E} (h : ‖y‖ = 0) : ‖x * y‖ = ‖x‖ := by
+theorem norm_le_mul_norm_add' (u v : E) : ‖v‖ ≤ ‖u * v‖ + ‖u‖ :=
+  calc
+    ‖v‖ = ‖u⁻¹ * (u * v)‖ := by rw [← mul_assoc, inv_mul_cancel, one_mul]
+    _ ≤ ‖u⁻¹‖ + ‖u * v‖ := norm_mul_le' u⁻¹ (u * v)
+    _ = ‖u * v‖ + ‖u‖ := by rw [norm_inv', add_comm]
+
+@[to_additive]
+lemma norm_mul_left_eq_norm {x : E} (y : E) (h : ‖x‖ = 0) : ‖x * y‖ = ‖y‖ := by
+  apply le_antisymm ?_ ?_
+  · simpa [h] using norm_mul_le' x y
+  · simpa [h] using norm_le_mul_norm_add' x y
+
+@[to_additive]
+lemma norm_mul_right_eq_norm (x : E) {y : E} (h : ‖y‖ = 0) : ‖x * y‖ = ‖x‖ := by
   apply le_antisymm ?_ ?_
   · simpa [h] using norm_mul_le' x y
   · simpa [h] using norm_le_mul_norm_add x y
