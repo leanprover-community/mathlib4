@@ -18,8 +18,8 @@ import Mathlib.Topology.Metrizable.Uniformity
 
 noncomputable section
 
-open Set Filter Metric Function
-open scoped Finset Topology ENNReal NNReal
+open Filter Function Metric Set Topology
+open scoped Finset ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
@@ -1096,7 +1096,7 @@ theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : ball a r) : ed
   ne_of_lt <|
     calc
       edist x y ≤ edist a x + edist a y := edist_triangle_left x.1 y.1 a
-      _ < r + r := by rw [edist_comm a x, edist_comm a y]; exact add_lt_add x.2 y.2
+      _ < r + r := by rw [edist_comm a x, edist_comm a y]; exact ENNReal.add_lt_add x.2 y.2
       _ ≤ ∞ := le_top
 
 /-- Each ball in an extended metric space gives us a metric space, as the edist

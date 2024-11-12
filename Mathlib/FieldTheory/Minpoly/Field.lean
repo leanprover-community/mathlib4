@@ -77,7 +77,7 @@ lemma dvd_iff {p : A[X]} : minpoly A x ∣ p ↔ Polynomial.aeval x p = 0 :=
 theorem isRadical [IsReduced B] : IsRadical (minpoly A x) := fun n p dvd ↦ by
   rw [dvd_iff] at dvd ⊢; rw [map_pow] at dvd; exact IsReduced.eq_zero _ ⟨n, dvd⟩
 
-theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
+theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [Ring R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
     minpoly K x ∣ (minpoly A x).map (algebraMap A K) := by
   refine minpoly.dvd K x ?_
@@ -117,6 +117,15 @@ theorem eq_of_irreducible_of_monic [Nontrivial B] {p : A[X]} (hp1 : Irreducible 
   eq_of_monic_of_associated hp3 (monic ⟨p, ⟨hp3, hp2⟩⟩) <|
     mul_one (minpoly A x) ▸ hq.symm ▸ Associated.mul_left _
       (associated_one_iff_isUnit.2 <| (hp1.isUnit_or_isUnit hq).resolve_left <| not_isUnit A x)
+
+theorem eq_iff_aeval_eq_zero [Nontrivial B] {p : A[X]} (irr: Irreducible p) (monic: p.Monic) :
+    p = minpoly A x ↔ Polynomial.aeval x p = 0 :=
+  ⟨(· ▸ aeval A x), (eq_of_irreducible_of_monic irr · monic)⟩
+
+theorem eq_iff_aeval_minpoly_eq_zero [IsDomain B] {C} [Ring C] [Algebra A C] [Nontrivial C]
+    {b : B} (h : IsIntegral A b) {c : C} :
+    minpoly A b = minpoly A c ↔ Polynomial.aeval c (minpoly A b) = 0 :=
+  eq_iff_aeval_eq_zero (irreducible h) (monic h)
 
 theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
     (hp2 : Polynomial.aeval x p = 0) : p * C p.leadingCoeff⁻¹ = minpoly A x := by

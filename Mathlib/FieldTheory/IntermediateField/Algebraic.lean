@@ -15,7 +15,7 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 open Module
 
-variable {K : Type*} {L : Type*} [Field K] [Field L] [Algebra K L]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
   {S : IntermediateField K L}
 
 theorem IntermediateField.coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
@@ -32,11 +32,6 @@ def Subalgebra.IsAlgebraic.toIntermediateField {S : Subalgebra K L} (hS : S.IsAl
 /-- Turn an algebraic subalgebra into an intermediate field, `Algebra.IsAlgebraic` version. -/
 abbrev Algebra.IsAlgebraic.toIntermediateField (S : Subalgebra K L) [Algebra.IsAlgebraic K S] :
     IntermediateField K L := (S.isAlgebraic_iff.mpr ‹_›).toIntermediateField
-
-/-- The algebraic closure of a field `K` in an extension `L`, the subalgebra `integralClosure K L`
-upgraded to an intermediate field (when `K` and `L` are both fields). -/
-def algebraicClosure : IntermediateField K L :=
-  Algebra.IsAlgebraic.toIntermediateField (integralClosure K L)
 
 namespace IntermediateField
 

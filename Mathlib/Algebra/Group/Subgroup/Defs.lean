@@ -292,7 +292,9 @@ instance : SubgroupClass (Subgroup G) G where
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
 
-@[to_additive (attr := simp, nolint simpNF)] -- Porting note (#10675): dsimp can not prove this
+-- This is not a simp lemma,
+-- because the simp normal form left-hand side is given by `mem_toSubmonoid` below.
+@[to_additive]
 theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
