@@ -57,7 +57,7 @@ theorem mem_sections {s : Multiset (Multiset α)} :
   | cons _ _ ih => simp [ih, rel_cons_left, eq_comm]
 
 theorem card_sections {s : Multiset (Multiset α)} : card (Sections s) = prod (s.map card) :=
-  Multiset.induction_on s (by simp) (by simp (config := { contextual := true }))
+  Multiset.induction_on s (by simp) (by simp +contextual)
 
 end Sections
 

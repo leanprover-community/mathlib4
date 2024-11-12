@@ -61,7 +61,7 @@ theorem singleton_join (a) : join ({a} : Multiset (Multiset α)) = a :=
 @[simp]
 theorem mem_join {a S} : a ∈ @join α S ↔ ∃ s ∈ S, a ∈ s :=
   Multiset.induction_on S (by simp) <| by
-    simp (config := { contextual := true }) [or_and_right, exists_or]
+    simp +contextual [or_and_right, exists_or]
 
 @[simp]
 theorem card_join (S) : card (@join α S) = sum (map card S) :=
@@ -126,7 +126,7 @@ theorem bind_add : (s.bind fun a => f a + g a) = s.bind f + s.bind g := by simp 
 theorem bind_cons (f : α → β) (g : α → Multiset β) :
     (s.bind fun a => f a ::ₘ g a) = map f s + s.bind g :=
   Multiset.induction_on s (by simp)
-    (by simp (config := { contextual := true }) [add_comm, add_left_comm, add_assoc])
+    (by simp +contextual [add_comm, add_left_comm, add_assoc])
 
 @[simp]
 theorem bind_singleton (f : α → β) : (s.bind fun x => ({f x} : Multiset β)) = map f s :=
@@ -140,7 +140,7 @@ theorem mem_bind {b s} {f : α → Multiset β} : b ∈ bind s f ↔ ∃ a ∈ s
 theorem card_bind : card (s.bind f) = (s.map (card ∘ f)).sum := by simp [bind]
 
 theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
-    (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp (config := { contextual := true }) [bind]
+    (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp +contextual [bind]
 
 theorem bind_hcongr {β' : Type v} {m : Multiset α} {f : α → Multiset β} {f' : α → Multiset β'}
     (h : β = β') (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (bind m f) (bind m f') := by
@@ -153,19 +153,19 @@ theorem map_bind (m : Multiset α) (n : α → Multiset β) (f : β → γ) :
 
 theorem bind_map (m : Multiset α) (n : β → Multiset γ) (f : α → β) :
     bind (map f m) n = bind m fun a => n (f a) :=
-  Multiset.induction_on m (by simp) (by simp (config := { contextual := true }))
+  Multiset.induction_on m (by simp) (by simp +contextual)
 
 theorem bind_assoc {s : Multiset α} {f : α → Multiset β} {g : β → Multiset γ} :
     (s.bind f).bind g = s.bind fun a => (f a).bind g :=
-  Multiset.induction_on s (by simp) (by simp (config := { contextual := true }))
+  Multiset.induction_on s (by simp) (by simp +contextual)
 
 theorem bind_bind (m : Multiset α) (n : Multiset β) {f : α → β → Multiset γ} :
     ((bind m) fun a => (bind n) fun b => f a b) = (bind n) fun b => (bind m) fun a => f a b :=
-  Multiset.induction_on m (by simp) (by simp (config := { contextual := true }))
+  Multiset.induction_on m (by simp) (by simp +contextual)
 
 theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ} :
     ((bind m) fun a => n.map fun b => f a b) = (bind n) fun b => m.map fun a => f a b :=
-  Multiset.induction_on m (by simp) (by simp (config := { contextual := true }))
+  Multiset.induction_on m (by simp) (by simp +contextual)
 
 @[to_additive (attr := simp)]
 theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
