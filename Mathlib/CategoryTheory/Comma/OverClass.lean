@@ -108,7 +108,23 @@ instance [OverClass X S]
     [IsOverTower X S S'] [IsOverTower Y S S'] [HomIsOver f S] : HomIsOver f S' :=
   homIsOver_of_isOverTower f S S'
 
+variable (X) in
 /-- Bundle `X` with an `OverClass X S` instance into `Over S`. -/
 def OverClass.asOver [OverClass X S] : Over S := Over.mk (X ↘ S)
+
+@[simp]
+lemma OverClass.asOver_hom [OverClass X S] :
+    (OverClass.asOver X S).hom = X ↘ S :=
+  rfl
+
+/-- Bundle a morphism `f : X ⟶ Y` with `HomIsOver f S` into a morphism in `Over S`. -/
+def OverClass.asOverHom [OverClass X S] [OverClass Y S] (f : X ⟶ Y) [HomIsOver f S] :
+    OverClass.asOver X S ⟶ OverClass.asOver Y S :=
+  Over.homMk f (comp_over f S)
+
+@[simp]
+lemma OverClass.asOverHom_left [OverClass X S] [OverClass Y S] (f : X ⟶ Y) [HomIsOver f S] :
+    (OverClass.asOverHom S f).left = f :=
+  rfl
 
 end CategoryTheory

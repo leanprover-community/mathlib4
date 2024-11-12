@@ -134,7 +134,7 @@ instance [P.ContainsIdentities] : HasTerminal (P.Over ⊤ X) :=
 
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,
 `Over.forget P ⊤ X` creates pullbacks. -/
-noncomputable def createsLimitsOfShape_walkingCospan [HasPullbacks T]
+noncomputable instance (priority := 900) createsLimitsOfShapeWalkingCospan [HasPullbacks T]
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty] :
     CreatesLimitsOfShape WalkingCospan (Over.forget P ⊤ X) :=
   haveI : HasLimitsOfShape WalkingCospan (Comma (𝟭 T) (Functor.fromPUnit X)) :=

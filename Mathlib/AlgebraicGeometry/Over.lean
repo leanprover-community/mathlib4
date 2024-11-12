@@ -43,4 +43,11 @@ abbrev Hom.IsOver (f : X.Hom Y) (S : Scheme.{u}) [X.Over S] [Y.Over S] := HomIsO
 
 /-! Also note the existence of `CategoryTheory.IsOverTower X Y S`. -/
 
+/-- Given `X.Over S`, this is the bundled object of `Over S`. -/
+abbrev asOver (X S : Scheme.{u}) [X.Over S] := OverClass.asOver X S
+
+/-- Given a morphism `X ⟶ Y` with `f.IsOver S`, this is the bundled morphism in `Over S`. -/
+abbrev Hom.asOver (f : X.Hom Y) (S : Scheme.{u}) [X.Over S] [Y.Over S] [f.IsOver S] :=
+  OverClass.asOverHom S f
+
 end AlgebraicGeometry.Scheme
