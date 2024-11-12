@@ -17,7 +17,7 @@ We define bundled non-unital subsemirings and some standard constructions:
 
 universe u v w
 
-variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R] (M : Subsemigroup R)
+variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R]
 
 /-- `NonUnitalSubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both an additive submonoid and also a multiplicative subsemigroup. -/
@@ -156,10 +156,8 @@ end NonUnitalSubsemiring
 
 namespace NonUnitalSubsemiring
 
-variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
-variable {F G : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
-  [FunLike G S T] [NonUnitalRingHomClass G S T]
-  (s : NonUnitalSubsemiring R)
+variable [NonUnitalNonAssocSemiring S]
+variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S] (s : NonUnitalSubsemiring R)
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : s) : R) = (0 : R) :=
@@ -210,9 +208,9 @@ namespace NonUnitalRingHom
 
 open NonUnitalSubsemiring
 
-variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
-variable {F G : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
-variable [FunLike G S T] [NonUnitalRingHomClass G S T] (f : F) (g : G)
+variable [NonUnitalNonAssocSemiring S]
+variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
+variable (f : F)
 
 end NonUnitalRingHom
 
@@ -255,7 +253,7 @@ namespace NonUnitalRingHom
 
 variable {F : Type*} [FunLike F R S]
 
-variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
+variable [NonUnitalNonAssocSemiring S]
   [NonUnitalRingHomClass F R S]
   {S' : Type*} [SetLike S' S] [NonUnitalSubsemiringClass S' S]
   {s : NonUnitalSubsemiring R}
