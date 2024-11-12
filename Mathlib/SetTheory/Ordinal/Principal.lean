@@ -210,6 +210,10 @@ theorem add_omega0 {a : Ordinal} (h : a < ω) : a + ω = ω := by
 @[deprecated (since := "2024-09-30")]
 alias add_omega := add_omega0
 
+@[simp]
+theorem natCast_add_omega0 (n : ℕ) : n + ω = ω :=
+  add_omega0 (nat_lt_omega0 n)
+
 theorem principal_add_omega0 : Principal (· + ·) ω :=
   principal_add_iff_add_left_eq_self.2 fun _ => add_omega0
 
@@ -378,6 +382,9 @@ theorem mul_omega0 {a : Ordinal} (a0 : 0 < a) (ha : a < ω) : a * ω = ω :=
 @[deprecated (since := "2024-09-30")]
 alias mul_omega := mul_omega0
 
+theorem natCast_mul_omega0 {n : ℕ} (hn : 0 < n) : n * ω = ω :=
+  mul_omega0 (mod_cast hn) (nat_lt_omega0 n)
+
 theorem mul_lt_omega0_opow {a b c : Ordinal} (c0 : 0 < c) (ha : a < ω ^ c) (hb : b < ω) :
     a * b < ω ^ c := by
   rcases zero_or_succ_or_limit c with (rfl | ⟨c, rfl⟩ | l)
@@ -485,5 +492,8 @@ theorem opow_omega0 {a : Ordinal} (a1 : 1 < a) (h : a < ω) : a ^ ω = ω :=
 
 @[deprecated (since := "2024-09-30")]
 alias opow_omega := opow_omega0
+
+theorem natCast_opow_omega0 {n : ℕ} (hn : 1 < n) : n ^ ω = ω :=
+  opow_omega0 (mod_cast hn) (nat_lt_omega0 n)
 
 end Ordinal
