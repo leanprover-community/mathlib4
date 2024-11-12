@@ -376,7 +376,7 @@ def coprodOpenCover.{w} : (X ⨿ Y).OpenCover where
     obtain (x | x) := x
     · simp only [Sum.elim_inl, coprodMk_inl, exists_apply_eq_apply]
     · simp only [Sum.elim_inr, coprodMk_inr, exists_apply_eq_apply]
-  IsOpen x := x.rec (fun _ ↦ inferInstance) (fun _ ↦ inferInstance)
+  map_prop x := x.rec (fun _ ↦ inferInstance) (fun _ ↦ inferInstance)
 
 variable (R S : Type u) [CommRing R] [CommRing S]
 

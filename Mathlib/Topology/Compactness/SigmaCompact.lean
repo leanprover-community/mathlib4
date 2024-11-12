@@ -99,7 +99,7 @@ lemma IsSigmaCompact.image {f : X → Y} (hf : Continuous f) {s : Set X} (hs : I
 
 /-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is σ-compact
   if and only `s` is σ-compact. -/
-lemma IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
+lemma Topology.IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
     (hf : IsInducing f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
   constructor
   · exact fun h ↦ h.image hf.continuous
@@ -123,7 +123,7 @@ alias Inducing.isSigmaCompact_iff := IsInducing.isSigmaCompact_iff
 
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
   if and only `s` is σ-compact. -/
-lemma IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
+lemma Topology.IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
     (hf : IsEmbedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
   hf.isInducing.isSigmaCompact_iff
 
@@ -255,8 +255,8 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
       refine ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ ?_⟩
       exact compactCovering_subset _ (le_max_right _ _) hn
 
-protected theorem IsClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : IsClosedEmbedding e) :
-    SigmaCompactSpace Y :=
+protected lemma Topology.IsClosedEmbedding.sigmaCompactSpace {e : Y → X}
+    (he : IsClosedEmbedding e) : SigmaCompactSpace Y :=
   ⟨⟨fun n => e ⁻¹' compactCovering X n, fun _ =>
       he.isCompact_preimage (isCompact_compactCovering _ _), by
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
@@ -368,6 +368,10 @@ theorem iUnion_eq : ⋃ n, K n = univ :=
 theorem exists_mem (x : X) : ∃ n, x ∈ K n :=
   iUnion_eq_univ_iff.1 K.iUnion_eq x
 
+theorem exists_mem_nhds (x : X) : ∃ n, K n ∈ 𝓝 x := by
+  rcases K.exists_mem x with ⟨n, hn⟩
+  exact ⟨n + 1, mem_interior_iff_mem_nhds.mp <| K.subset_interior_succ n hn⟩
+
 /-- A compact exhaustion eventually covers any compact set. -/
 theorem exists_superset_of_isCompact {s : Set X} (hs : IsCompact s) : ∃ n, s ⊆ K n := by
   suffices ∃ n, s ⊆ interior (K n) from this.imp fun _ ↦ (Subset.trans · interior_subset)
@@ -422,7 +426,7 @@ noncomputable def choice (X : Type*) [TopologicalSpace X] [WeaklyLocallyCompactS
   · refine univ_subset_iff.1 (iUnion_compactCovering X ▸ ?_)
     exact iUnion_mono' fun n => ⟨n + 1, subset_union_right⟩
 
-noncomputable instance [SigmaCompactSpace X] [LocallyCompactSpace X] :
+noncomputable instance [SigmaCompactSpace X] [WeaklyLocallyCompactSpace X] :
     Inhabited (CompactExhaustion X) :=
   ⟨CompactExhaustion.choice X⟩
 

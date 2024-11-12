@@ -427,14 +427,14 @@ theorem _root_.IsFractional.inf_right {I : Submodule R P} :
       rcases mem_inf.mp hb with ⟨hbI, _⟩
       exact hI b hbI⟩
 
-instance : Inf (FractionalIdeal S P) :=
+instance : Min (FractionalIdeal S P) :=
   ⟨fun I J => ⟨I ⊓ J, I.isFractional.inf_right J⟩⟩
 
 @[simp, norm_cast]
 theorem coe_inf (I J : FractionalIdeal S P) : ↑(I ⊓ J) = (I ⊓ J : Submodule R P) :=
   rfl
 
-instance : Sup (FractionalIdeal S P) :=
+instance : Max (FractionalIdeal S P) :=
   ⟨fun I J => ⟨I ⊔ J, I.isFractional.sup J.isFractional⟩⟩
 
 @[norm_cast]
