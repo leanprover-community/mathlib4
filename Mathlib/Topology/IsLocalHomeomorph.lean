@@ -48,7 +48,7 @@ theorem isLocalHomeomorphOn_iff_isOpenEmbedding_restrict {f : X → Y} :
     have : IsOpenEmbedding ((interior U).restrict f) := by
       refine emb.comp ⟨.inclusion interior_subset, ?_⟩
       rw [Set.range_inclusion]; exact isOpen_induced isOpen_interior
-    obtain ⟨cont, inj, openMap⟩ := isOpenEmbedding_iff_continuous_injective_open.mp this
+    obtain ⟨cont, inj, openMap⟩ := isOpenEmbedding_iff_continuous_injective_isOpenMap.mp this
     haveI : Nonempty X := ⟨x⟩
     exact ⟨PartialHomeomorph.ofContinuousOpenRestrict
       (Set.injOn_iff_injective.mpr inj).toPartialEquiv
@@ -117,7 +117,7 @@ protected theorem continuousAt (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x �
   (hf.map_nhds_eq hx).le
 
 protected theorem continuousOn (hf : IsLocalHomeomorphOn f s) : ContinuousOn f s :=
-  ContinuousAt.continuousOn fun _x ↦ hf.continuousAt
+  continuousOn_of_forall_continuousAt fun _x ↦ hf.continuousAt
 
 protected theorem comp (hg : IsLocalHomeomorphOn g t) (hf : IsLocalHomeomorphOn f s)
     (h : Set.MapsTo f s t) : IsLocalHomeomorphOn (g ∘ f) s := by
@@ -153,7 +153,7 @@ theorem isLocalHomeomorph_iff_isOpenEmbedding_restrict {f : X → Y} :
 @[deprecated (since := "2024-10-18")]
 alias isLocalHomeomorph_iff_openEmbedding_restrict := isLocalHomeomorph_iff_isOpenEmbedding_restrict
 
-theorem IsOpenEmbedding.isLocalHomeomorph (hf : IsOpenEmbedding f) : IsLocalHomeomorph f :=
+theorem Topology.IsOpenEmbedding.isLocalHomeomorph (hf : IsOpenEmbedding f) : IsLocalHomeomorph f :=
   isLocalHomeomorph_iff_isOpenEmbedding_restrict.mpr fun _ ↦
     ⟨_, Filter.univ_mem, hf.comp (Homeomorph.Set.univ X).isOpenEmbedding⟩
 
@@ -206,13 +206,13 @@ protected theorem comp (hg : IsLocalHomeomorph g) (hf : IsLocalHomeomorph f) :
 /-- An injective local homeomorphism is an open embedding. -/
 theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injective) :
     IsOpenEmbedding f :=
-  isOpenEmbedding_of_continuous_injective_open hf.continuous hi hf.isOpenMap
+  .of_continuous_injective_isOpenMap hf.continuous hi hf.isOpenMap
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_of_injective := isOpenEmbedding_of_injective
 
 /-- A surjective embedding is a homeomorphism. -/
-noncomputable def _root_.IsEmbedding.toHomeomorph_of_surjective (hf : IsEmbedding f)
+noncomputable def _root_.Topology.IsEmbedding.toHomeomorph_of_surjective (hf : IsEmbedding f)
     (hsurj : Function.Surjective f) : X ≃ₜ Y :=
   Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f ⟨hf.inj, hsurj⟩)
     hf.continuous (hf.isOpenEmbedding_of_surjective hsurj).isOpenMap

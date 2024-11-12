@@ -275,12 +275,12 @@ theorem single_tsub : single i (a - b) = single i a - single i b := by
   · rw [tsub_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, tsub_self]
 
 theorem support_tsub {f1 f2 : ι →₀ α} : (f1 - f2).support ⊆ f1.support := by
-  simp (config := { contextual := true }) only [subset_iff, tsub_eq_zero_iff_le, mem_support_iff,
+  simp +contextual only [subset_iff, tsub_eq_zero_iff_le, mem_support_iff,
     Ne, coe_tsub, Pi.sub_apply, not_imp_not, zero_le, imp_true_iff]
 
 theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
     f1.support \ f2.support ⊆ (f1 - f2).support := by
-  simp (config := { contextual := true }) [subset_iff]
+  simp +contextual [subset_iff]
 
 end CanonicallyOrderedAddCommMonoid
 
@@ -293,7 +293,7 @@ theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = 
   ext
   simp only [inf_apply, mem_support_iff, Ne, Finset.mem_union, Finset.mem_filter,
     Finset.mem_inter]
-  simp only [inf_eq_min, ← nonpos_iff_eq_zero, min_le_iff, not_or]
+  simp only [← nonpos_iff_eq_zero, min_le_iff, not_or]
 
 @[simp]
 theorem support_sup [DecidableEq ι] (f g : ι →₀ α) : (f ⊔ g).support = f.support ∪ g.support := by

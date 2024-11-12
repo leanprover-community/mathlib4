@@ -78,7 +78,7 @@ strengthening of `Filter.IsBasis p s` with extra compatibility axioms ensuring t
 filter is the filter of neighborhoods of one for some group topology on `G`
 (`Filter.IsGroupBasis.topologicalGroup`). Conversely, *any* basis of neighborhoods of one
 in a topological group satisfies these conditions (`Filter.HasBasis.isGroupBasis`). -/
-class IsGroupBasis {G : Type*} {ι : Sort*} [Group G] (p : ι → Prop) (s : ι → Set G)
+structure IsGroupBasis {G : Type*} {ι : Sort*} [Group G] (p : ι → Prop) (s : ι → Set G)
     extends IsBasis p s : Prop where
   one : ∀ {i}, p i → (1 : G) ∈ s i
   mul : ∀ {i}, p i → ∃ j, p j ∧ s j * s j ⊆ s i
@@ -91,7 +91,7 @@ generated filter is the filter of neighborhoods of zero for some group topology 
 (`Filter.IsAddGroupBasis.topologicalAddGroup`). Conversely, *any* basis of neighborhoods of
 zero in an additive topological group satisfies these conditions
 (`Filter.HasBasis.isAddGroupBasis`). -/
-class IsAddGroupBasis {G : Type*} {ι : Sort*} [AddGroup G] (p : ι → Prop) (s : ι → Set G)
+structure IsAddGroupBasis {G : Type*} {ι : Sort*} [AddGroup G] (p : ι → Prop) (s : ι → Set G)
     extends IsBasis p s : Prop where
   zero : ∀ {i}, p i → (0 : G) ∈ s i
   add : ∀ {i}, p i → ∃ j, p j ∧ s j + s j ⊆ s i
@@ -264,7 +264,7 @@ strengthening of `Filter.IsBasis p s` with extra compatibility axioms ensuring t
 filter is the filter of neighborhoods of zero for some ring topology on `R`
 (`Filter.IsRingBasis.topologicalRing`). Conversely, *any* basis of neighborhoods of zero in a
 topological ring satisfies these conditions (`Filter.HasBasis.isRingBasis`). -/
-class IsRingBasis {R : Type*} {ι : Sort*} [Ring R] (p : ι → Prop) (s : ι → Set R)
+structure IsRingBasis {R : Type*} {ι : Sort*} [Ring R] (p : ι → Prop) (s : ι → Set R)
     extends IsAddGroupBasis p s : Prop where
   mul : ∀ {i}, p i → ∃ j, p j ∧ s j * s j ⊆ s i
   mul_left : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ * ·) (s j) (s i)

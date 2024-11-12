@@ -1440,8 +1440,8 @@ variable [TopologicalSpace α] [NormedLatticeAddCommGroup β]
 instance instPartialOrder : PartialOrder (α →ᵇ β) :=
   PartialOrder.lift (fun f => f.toFun) (by simp [Injective])
 
-instance instSup : Sup (α →ᵇ β) where
-  sup f g :=
+instance instSup : Max (α →ᵇ β) where
+  max f g :=
     { toFun := f ⊔ g
       continuous_toFun := f.continuous.sup g.continuous
       map_bounded' := by
@@ -1451,8 +1451,8 @@ instance instSup : Sup (α →ᵇ β) where
         simp_rw [NormedAddCommGroup.dist_eq] at hf hg ⊢
         exact (norm_sup_sub_sup_le_add_norm _ _ _ _).trans (add_le_add (hf _ _) (hg _ _)) }
 
-instance instInf : Inf (α →ᵇ β) where
-  inf f g :=
+instance instInf : Min (α →ᵇ β) where
+  min f g :=
     { toFun := f ⊓ g
       continuous_toFun := f.continuous.inf g.continuous
       map_bounded' := by
