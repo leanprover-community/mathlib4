@@ -341,12 +341,12 @@ theorem split_by_characteristic_domain [IsDomain R] (h_pos : ∀ p : ℕ, Nat.Pr
   exact h_pos p p_prime p_char
 
 /--
-In a `LocalRing R`, split any `Prop` over `R` into the three cases:
+In a local ring `R`, split any predicate over `R` into the three cases:
 - *prime power* characteristic.
 - equal characteristic zero.
 - mixed characteristic `(0, p)`.
 -/
-theorem split_by_characteristic_localRing [LocalRing R]
+theorem split_by_characteristic_localRing [IsLocalRing R]
     (h_pos : ∀ p : ℕ, IsPrimePow p → CharP R p → P) (h_equal : Algebra ℚ R → P)
     (h_mixed : ∀ p : ℕ, Nat.Prime p → MixedCharZero R p → P) : P := by
   refine split_by_characteristic R ?_ h_equal h_mixed
