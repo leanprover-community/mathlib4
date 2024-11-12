@@ -181,7 +181,7 @@ noncomputable abbrev freeYonedaCoproductsCokernelCofork :
   CokernelCofork.ofπ _ M.toFreeYonedaCoproduct_fromFreeYonedaCoproduct
 
 /-- If `M` is a presheaf of modules, the cokernel cofork
-`M.freeYonedaCoproductsCokernelCofork` is colimit, which means that
+`M.freeYonedaCoproductsCokernelCofork` is a colimit, which means that
 `M` can be expressed as a cokernel of the morphism `M.toFreeYonedaCoproduct`
 between coproducts of free presheaves of modules on Yoneda presheaves. -/
 noncomputable def isColimitFreeYonedaCoproductsCokernelCofork :
