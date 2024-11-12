@@ -63,7 +63,7 @@ theorem flatten_splitLengths (h : l.length ≤ sz.sum) : (sz.splitLengths l).fla
     rw [ih, take_append_drop]
     simpa [add_comm] using h
 
-theorem splitLengths_map_length (h : sz.sum ≤ l.length) :
+theorem map_splitLengths_length (h : sz.sum ≤ l.length) :
     (sz.splitLengths l).map length = sz := by
   induction sz generalizing l
   · simp
