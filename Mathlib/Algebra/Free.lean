@@ -230,6 +230,7 @@ theorem traverse_mul' :
 @[to_additive (attr := simp)]
 theorem traverse_eq (x) : FreeMagma.traverse F x = traverse F x := rfl
 
+-- This is not a simp lemma because the left-hand side is not in simp normal form.
 @[to_additive]
 theorem mul_map_seq (x y : FreeMagma α) :
     ((· * ·) <$> x <*> y : Id (FreeMagma α)) = (x * y : FreeMagma α) := rfl
