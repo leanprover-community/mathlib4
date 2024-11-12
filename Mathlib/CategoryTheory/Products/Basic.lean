@@ -110,7 +110,7 @@ end
 namespace Prod
 
 /-- `sectL C Z` is the functor `C ⥤ C × D` given by `X ↦ (X, Z)`. -/
-@[simps?]
+@[simps]
 def sectL (C : Type u₁) [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (Z : D) : C ⥤ C × D where
   obj X := (X, Z)
   map f := (f, 𝟙 Z)
