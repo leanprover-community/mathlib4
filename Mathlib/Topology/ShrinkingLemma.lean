@@ -158,7 +158,7 @@ theorem le_chainSup {c : Set (PartialRefinement u s p)} (hc : IsChain (· ≤ ·
 
 /-- If `s` is a closed set, `v` is a partial refinement, and `i` is an index such that
 `i ∉ v.carrier`, then there exists a partial refinement that is strictly greater than `v`. -/
-theorem exists_gt [NormalSpace X] (v : PartialRefinement u s (fun _ => True)) (hs : IsClosed s)
+theorem exists_gt [NormalSpace X] (v : PartialRefinement u s ⊤) (hs : IsClosed s)
     (i : ι) (hi : i ∉ v.carrier) :
     ∃ v' : PartialRefinement u s (fun _ => True), v < v' := by
   have I : (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) ⊆ v i := by
