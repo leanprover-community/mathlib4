@@ -274,7 +274,7 @@ def lintModules (moduleNames : Array Lean.Name) (style : ErrorFormat) (fix : Boo
   let mut allUnexpectedErrors := #[]
   for module in moduleNames do
     -- Convert the module name to a file name, then lint that file.
-    let path := mkFilePath (module.components.map fun n ↦ n.toString)|>.addExtension "lean"
+    let path := mkFilePath (module.components.map toString)|>.addExtension "lean"
 
     let (errors, changed) := ← lintFile path styleExceptions
     if let some c := changed then

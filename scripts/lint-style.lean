@@ -57,7 +57,7 @@ def checkInitImports : IO Bool := do
   let initImports := ← findImports ("Mathlib" / "Init.lean")
   let mismatch := importsHeaderLinter.filter (fun mod ↦
     ![`Mathlib, `Mathlib.Tactic, `Mathlib.Init].contains mod && !initImports.contains mod)
-    -- This file is transitively imported by Mathlib.Init.
+    -- This file is transitively imported by `Mathlib.Init`.
     |>.erase `Mathlib.Tactic.DeclarationNames
   if mismatch.size > 0 then
     IO.eprintln s!"error: the following {mismatch.size} module(s) import the `header` linter \
