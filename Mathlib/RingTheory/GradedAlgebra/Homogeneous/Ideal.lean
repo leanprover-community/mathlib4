@@ -72,12 +72,11 @@ abbrev HomogeneousIdeal.toIdeal (I : HomogeneousIdeal 𝒜) : Ideal A :=
   I.toSubmodule
 
 theorem HomogeneousIdeal.isHomogeneous (I : HomogeneousIdeal 𝒜) :
-    I.toIdeal.IsHomogeneous 𝒜 :=
-  I.is_homogeneous'
+    I.toIdeal.IsHomogeneous 𝒜 := I.is_homogeneous'
 
 theorem HomogeneousIdeal.toIdeal_injective :
     Function.Injective (HomogeneousIdeal.toIdeal : HomogeneousIdeal 𝒜 → Ideal A) :=
-  fun ⟨x, hx⟩ ⟨y, hy⟩ => fun (h : x = y) => by simp [h]
+  HomogeneousSubmodule.toSubmodule_injective 𝒜 𝒜
 
 instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A :=
   HomogeneousSubmodule.setLike 𝒜 𝒜

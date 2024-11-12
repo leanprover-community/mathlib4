@@ -41,9 +41,9 @@ variable [Semiring A] [AddCommMonoid M] [Module A M]
 
 section HomogeneousDef
 
-/-- An `p : Submodule A M` is homogeneous if for every `m ∈ p`, all homogeneous components
+/-- A substructure `p ⊆ M` is homogeneous if for every `m ∈ p`, all homogeneous components
   of `m` are in `p`. -/
-def AddSubmonoidClass.IsHomogeneous {P : Type*} [SetLike P M] [AddSubmonoidClass P M]
+def SetLike.IsHomogeneous {P : Type*} [SetLike P M]
     (p : P) (ℳ : ιM → σM)
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ] : Prop :=
   ∀ (i : ιM) ⦃m : M⦄, m ∈ p → (DirectSum.decompose ℳ m i : M) ∈ p
@@ -51,16 +51,20 @@ def AddSubmonoidClass.IsHomogeneous {P : Type*} [SetLike P M] [AddSubmonoidClass
 theorem AddSubmonoidClass.IsHomogeneous.mem_iff {P : Type*} [SetLike P M] [AddSubmonoidClass P M]
     (ℳ : ιM → σM) {p : P}
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ]
-    (hp : AddSubmonoidClass.IsHomogeneous p ℳ) {x} :
+    (hp : SetLike.IsHomogeneous p ℳ) {x} :
     x ∈ p ↔ ∀ i, (decompose ℳ x i : M) ∈ p := by
   classical
   refine ⟨fun hx i ↦ hp i hx, fun hx ↦ ?_⟩
   rw [← DirectSum.sum_support_decompose ℳ x]
   exact sum_mem (fun i _ ↦ hx i)
 
+/--
+An `A`-submodule `p ⊆ M` is homogeneous if for every `m ∈ p`, all homogeneous components of `m` are
+in `p`.
+-/
 def Submodule.IsHomogeneous (p : Submodule A M) (ℳ : ιM → σM)
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ] : Prop :=
-  AddSubmonoidClass.IsHomogeneous p ℳ
+  SetLike.IsHomogeneous p ℳ
 
 theorem Submodule.IsHomogeneous.mem_iff {p : Submodule A M}
     (ℳ : ιM → σM)
