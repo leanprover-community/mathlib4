@@ -917,7 +917,7 @@ theorem WithSeminorms.firstCountableTopology (hp : WithSeminorms p) :
   have : (uniformity E).IsCountablyGenerated := UniformAddGroup.uniformity_countably_generated
   exact UniformSpace.firstCountableTopology E
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated (since := "2024-11-12")] alias
 WithSeminorms.first_countable := WithSeminorms.firstCountableTopology
 
 end TopologicalProperties
