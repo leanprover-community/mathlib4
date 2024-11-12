@@ -21,6 +21,8 @@ to learn about it as well!
   It assumes that the only difference between master and the current status of the PR consists
   of renames. More precisely, any change on a line that contains a declaration name
   and is not a rename, will likely confuse the script.
+- `update_deprecations.lean` is used by `lake exe update_deprecations` to automatically rename
+  deprecated declarations to their non-deprecated replacement.
 
 **Analyzing Mathlib's import structure**
 - `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
