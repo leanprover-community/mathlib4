@@ -187,8 +187,7 @@ theorem splitBy_append {r : α → α → Bool} {l : List α} (hn : l ≠ [])
 theorem splitBy_append_cons {r : α → α → Bool} {l : List α} (hn : l ≠ []) {a : α} (m : List α)
     (h : l.Chain' fun x y ↦ r x y) (ha : r (l.getLast hn) a = false) :
     (l ++ a :: m).splitBy r = l :: (a :: m).splitBy r := by
-  apply splitBy_append hn h
-  intros
+  apply splitBy_append hn h fun _ ↦ ?_
   rwa [head_cons]
 
 theorem splitBy_join {r : α → α → Bool} {l : List (List α)} (hn : [] ∉ l)
@@ -209,7 +208,7 @@ theorem splitBy_join {r : α → α → Bool} {l : List (List α)} (hn : [] ∉ 
       rwa [head_flatten_of_head_ne_nil]
 
 /-- A characterization of `splitBy m r` as the unique list `l` such that:
-* `l.flatten = m`.
+* The lists of `l` join to `m`.
 * It does not contain the empty list.
 * Every list in `l` is `Chain'` of `r`.
 * The last element of each list in `l` is not related by `r` to the head of the next.
