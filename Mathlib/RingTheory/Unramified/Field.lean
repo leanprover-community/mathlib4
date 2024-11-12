@@ -119,6 +119,12 @@ theorem isField_of_isAlgClosed_of_isLocalRing
   exact hx ((isUnit_iff_ne_zero.mpr
     (fun e ↦ hx' ((algebraMap K A).congr_arg e))).map (algebraMap K A))
 
+@[deprecated (since := "2024-11-12")]
+alias bijective_of_isAlgClosed_of_localRing := bijective_of_isAlgClosed_of_isLocalRing
+
+@[deprecated (since := "2024-11-12")]
+alias isField_of_isAlgClosed_of_localRing := isField_of_isAlgClosed_of_isLocalRing
+
 include K in
 theorem isReduced_of_field :
     IsReduced A := by

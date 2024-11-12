@@ -215,6 +215,8 @@ theorem free_of_flat_of_isLocalRing [Module.FinitePresentation R P] [Module.Flat
   free_of_maximalIdeal_rTensor_injective
     (Module.Flat.rTensor_preserves_injective_linearMap _ Subtype.val_injective)
 
+@[deprecated (since := "2024-11-12")] alias free_of_flat_of_localRing := free_of_flat_of_isLocalRing
+
 /--
 If `M → N → P → 0` is a presentation of `P` over a local ring `(R, 𝔪, k)` with
 `M` finite and `N` finite free, then injectivity of `k ⊗ M → k ⊗ N` implies that `P` is free.

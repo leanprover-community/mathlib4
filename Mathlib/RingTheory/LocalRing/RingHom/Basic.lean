@@ -53,13 +53,15 @@ theorem isLocalHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalHom (g.comp f
 alias isLocalRingHom_of_comp := isLocalHom_of_comp
 
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
-theorem RingHom.domain_localRing {R S : Type*} [CommSemiring R] [CommSemiring S] [H : IsLocalRing S]
+theorem RingHom.domain_isLocalRing {R S : Type*} [CommSemiring R] [CommSemiring S] [IsLocalRing S]
     (f : R →+* S) [IsLocalHom f] : IsLocalRing R := by
   haveI : Nontrivial R := pullback_nonzero f f.map_zero f.map_one
   apply IsLocalRing.of_nonunits_add
   intro a b
   simp_rw [← map_mem_nonunits_iff f, f.map_add]
   exact IsLocalRing.nonunits_add
+
+@[deprecated (since := "2024-11-12")] alias RingHom.domain_localRing := RingHom.domain_isLocalRing
 
 end
 
@@ -132,6 +134,7 @@ instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
   map_nonunit r hr := by simpa only [isUnit_iff_ne_zero, ne_eq, map_eq_zero] using hr.ne_zero
 
 end IsLocalRing
+
 @[deprecated (since := "2024-11-11")] alias LocalRing.local_hom_TFAE := IsLocalRing.local_hom_TFAE
 @[deprecated (since := "2024-11-11")] alias LocalRing.of_surjective := IsLocalRing.of_surjective
 @[deprecated (since := "2024-11-11")]
