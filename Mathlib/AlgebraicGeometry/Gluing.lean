@@ -51,7 +51,7 @@ noncomputable section
 
 universe u
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits AlgebraicGeometry.PresheafedSpace
 
@@ -251,7 +251,7 @@ def openCover (D : Scheme.GlueData) : OpenCover D.glued where
 
 end GlueData
 
-namespace OpenCover
+namespace Cover
 
 variable {X : Scheme.{u}} (𝒰 : OpenCover.{u} X)
 
@@ -438,7 +438,7 @@ theorem hom_ext {Y : Scheme} (f₁ f₂ : X ⟶ Y) (h : ∀ x, 𝒰.map x ≫ f�
   erw [Multicoequalizer.π_desc_assoc]
   exact h x
 
-end OpenCover
+end Cover
 
 end Scheme
 

@@ -131,7 +131,7 @@ result of `onFinset` is the same as multiplying it over the original `Finset`. -
       result of `onFinset` is the same as summing it over the original `Finset`."]
 theorem onFinset_prod {s : Finset α} {f : α → M} {g : α → M → N} (hf : ∀ a, f a ≠ 0 → a ∈ s)
     (hg : ∀ a, g a 0 = 1) : (onFinset s f hf).prod g = ∏ a ∈ s, g a (f a) :=
-  Finset.prod_subset support_onFinset_subset <| by simp (config := { contextual := true }) [*]
+  Finset.prod_subset support_onFinset_subset <| by simp +contextual [*]
 
 /-- Taking a product over `f : α →₀ M` is the same as multiplying the value on a single element
 `y ∈ f.support` by the product over `erase y f`. -/
