@@ -5,13 +5,6 @@ Authors: Moritz Firsching
 -/
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 import Mathlib.NumberTheory.LucasPrimality
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.Linarith
 
 /-!
 # Fermat numbers
