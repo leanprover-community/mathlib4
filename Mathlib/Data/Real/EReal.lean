@@ -1535,86 +1535,22 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
   nth_rewrite 1 [EReal.mul_comm]; nth_rewrite 2 [EReal.mul_comm]; nth_rewrite 3 [EReal.mul_comm]
   exact right_distrib_of_nonneg ha hb
 
-lemma coe_mul_add_of_nonneg {x : ℝ} (hx_nonneg : 0 ≤ x) (y z : EReal) :
+lemma left_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
+    (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     x * (y + z) = x * y + x * z := by
   by_cases hx0 : x = 0
   · simp [hx0]
   have hx_pos : 0 < x := hx_nonneg.lt_of_ne' hx0
-  induction y
-  · simp [EReal.coe_mul_bot_of_pos hx_pos]
-  · induction z
-    · simp [EReal.coe_mul_bot_of_pos hx_pos]
-    · norm_cast
-      rw [mul_add]
-    · simp only [coe_add_top, EReal.coe_mul_top_of_pos hx_pos]
-      rw [← EReal.coe_mul, EReal.coe_add_top]
-  · simp only [EReal.coe_mul_top_of_pos hx_pos]
-    induction z
-    · simp [EReal.coe_mul_bot_of_pos hx_pos]
-    · simp only [top_add_coe, EReal.coe_mul_top_of_pos hx_pos]
-      rw [← EReal.coe_mul, EReal.top_add_coe]
-    · simp [EReal.coe_mul_top_of_pos hx_pos]
+  lift x to ℝ using ⟨hx_ne_top, hx_pos.ne_bot⟩
+  induction y <;> induction z <;>
+    simp [mul_bot_of_pos hx_pos, mul_top_of_pos hx_pos, ← coe_mul];
+    try rw_mod_cast [mul_add]
 
-lemma add_mul_coe_of_nonneg {x : ℝ} (hx_nonneg : 0 ≤ x) (y z : EReal) :
+lemma right_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
+    (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     (y + z) * x = y * x + z * x := by
   simp_rw [EReal.mul_comm _ (x : EReal)]
-  exact EReal.coe_mul_add_of_nonneg hx_nonneg y z
-
-lemma top_mul_add_of_nonneg {x y : EReal} (hx : 0 ≤ x) (hy : 0 ≤ y) :
-    ⊤ * (x + y) = ⊤ * x + ⊤ * y := by
-  induction x, y using EReal.induction₂_symm with
-  | symm h =>
-    rw [add_comm, add_comm (⊤ * _)]
-    exact h hy hx
-  | top_top => simp
-  | top_pos _ h =>
-    rw [top_add_coe, top_mul_top, top_mul_of_pos, top_add_top]
-    exact mod_cast h
-  | top_zero => simp
-  | top_neg _ h => exact absurd hy <| mod_cast h.not_le
-  | top_bot => simp
-  | pos_bot => simp
-  | coe_coe x y =>
-    by_cases hx0 : x = 0
-    · simp [hx0]
-    by_cases hy0 : y = 0
-    · simp [hy0]
-    have hx_pos : 0 < (x : EReal) := hx.lt_of_ne' <| mod_cast hx0
-    have hy_pos : 0 < (y : EReal) := hy.lt_of_ne' <| mod_cast hy0
-    rw [top_mul_of_pos hx_pos, top_mul_of_pos hy_pos, top_mul_of_pos (add_pos hx_pos hy_pos)]
-    exact rfl
-  | zero_bot => simp
-  | neg_bot => simp
-  | bot_bot => simp
-
-lemma add_mul_top_of_nonneg {x y : EReal} (hx : 0 ≤ x) (hy : 0 ≤ y) :
-    (x + y) * ⊤ = x * ⊤ + y * ⊤ := by
-  simp_rw [EReal.mul_comm _ ⊤, EReal.top_mul_add_of_nonneg hx hy]
-
-lemma bot_mul_add_of_nonneg {x y : EReal} (hx : 0 ≤ x) (hy : 0 ≤ y) :
-    ⊥ * (x + y) = ⊥ * x + ⊥ * y := by
-  simp_rw [← neg_top, neg_mul]
-  rw [top_mul_add_of_nonneg hx hy, neg_add, ← sub_eq_add_neg]
-  · rw [mul_ne_bot]
-    simp [hx, bot_lt_iff_ne_bot.mp <| bot_lt_zero.trans_le hx]
-  · rw [mul_ne_bot]
-    simp [hy, bot_lt_iff_ne_bot.mp <| bot_lt_zero.trans_le hy]
-
-lemma add_mul_bot_of_nonneg {x y : EReal} (hx : 0 ≤ x) (hy : 0 ≤ y) :
-    (x + y) * ⊥ = x * ⊥ + y * ⊥ := by
-  simp_rw [EReal.mul_comm _ ⊥, EReal.bot_mul_add_of_nonneg hx hy]
-
-lemma mul_add_coe_of_nonneg (x : EReal) {y z : ℝ} (hy : 0 ≤ y) (hz : 0 ≤ z) :
-    x * (y + z) = x * y + x * z := by
-  induction x
-  · exact bot_mul_add_of_nonneg (EReal.coe_nonneg.mpr hy) (EReal.coe_nonneg.mpr hz)
-  · exact mod_cast mul_add _ _ _
-  · exact top_mul_add_of_nonneg (mod_cast hy) (mod_cast hz)
-
-lemma coe_add_mul_of_nonneg (x : EReal) {y z : ℝ} (hy : 0 ≤ y) (hz : 0 ≤ z) :
-    (y + z) * x =  y * x + z * x := by
-  simp_rw [EReal.mul_comm _ x]
-  exact EReal.mul_add_coe_of_nonneg x hy hz
+  exact left_distrib_of_nonneg_of_ne_top hx_nonneg hx_ne_top y z
 
 @[simp]
 lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
@@ -1622,7 +1558,7 @@ lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
   | zero => rw [zero_smul, Nat.cast_zero, zero_mul]
   | succ n ih =>
     rw [succ_nsmul, ih, Nat.cast_succ]
-    convert (EReal.coe_add_mul_of_nonneg x _ _).symm <;> simp
+    convert (EReal.right_distrib_of_nonneg _ _).symm <;> simp
 
 /-! ### Absolute value -/
 
