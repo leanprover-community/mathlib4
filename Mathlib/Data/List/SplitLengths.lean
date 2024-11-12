@@ -27,9 +27,7 @@ def splitLengths : List ℕ → List α → List (List α)
 
 @[simp]
 theorem length_splitLengths : (sz.splitLengths l).length = sz.length := by
-  induction sz generalizing l
-  · simp [splitLengths]
-  · simp [splitLengths, ‹∀ (l : List α), _›]
+  induction sz generalizing l <;> simp [splitLengths, *]
 
 @[simp]
 lemma splitLengths_nil : [].splitLengths l = [] := rfl
@@ -45,8 +43,7 @@ theorem take_splitLength (i : ℕ) : (sz.splitLengths l).take i = (sz.take i).sp
   case succ i hi =>
     cases sz
     · simp
-    · simp only [splitLengths_cons, take_succ_cons, cons.injEq, true_and]
-      apply hi
+    · simp only [splitLengths_cons, take_succ_cons, cons.injEq, true_and, hi]
 
 theorem length_splitLengths_getElem_le {i : ℕ} {hi : i < (sz.splitLengths l).length} :
     (sz.splitLengths l)[i].length ≤ sz[i]'(by simpa using hi) := by
@@ -56,8 +53,7 @@ theorem length_splitLengths_getElem_le {i : ℕ} {hi : i < (sz.splitLengths l).l
     simp only [splitLengths_cons]
     cases i
     · simp
-    · simp only [getElem_cons_succ]
-      apply tail_ih
+    · simp only [getElem_cons_succ, tail_ih]
 
 theorem flatten_splitLengths (h : l.length ≤ sz.sum) : (sz.splitLengths l).flatten = l := by
   induction sz generalizing l
