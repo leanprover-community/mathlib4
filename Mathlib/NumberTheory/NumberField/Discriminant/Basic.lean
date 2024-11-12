@@ -353,11 +353,10 @@ theorem finite_of_discr_bdd_of_isReal :
       convert hx₁
       · simp only [IntermediateField.lift_top]
       · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
-  have := one_le_convexBodyLTFactor K
-  convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
-    (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
-  simp_rw [ENNReal.coe_one, one_mul]
-
+  calc
+    minkowskiBound K 1 < B := minkowskiBound_lt_boundOfDiscBdd hK₂
+    _ = 1 * B := by rw [one_mul]
+    _ ≤ convexBodyLTFactor K * B := by gcongr; exact mod_cast one_le_convexBodyLTFactor K
 
 theorem finite_of_discr_bdd_of_isComplex :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
@@ -402,10 +401,10 @@ theorem finite_of_discr_bdd_of_isComplex :
       convert hx₁
       · simp only [IntermediateField.lift_top]
       · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
-  have := one_le_convexBodyLT'Factor K
-  convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
-    (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
-  simp_rw [ENNReal.coe_one, one_mul]
+  calc
+    minkowskiBound K 1 < B := minkowskiBound_lt_boundOfDiscBdd hK₂
+    _ = 1 * B := by rw [one_mul]
+    _ ≤ convexBodyLT'Factor K * B := by gcongr; exact mod_cast one_le_convexBodyLT'Factor K
 
 /-- **Hermite Theorem**. Let `N` be an integer. There are only finitely many number fields
 (in some fixed extension of `ℚ`) of discriminant bounded by `N`. -/
