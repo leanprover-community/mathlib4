@@ -3,12 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Trace.Defs
-import Mathlib.LinearAlgebra.Determinant
 import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Vandermonde
-import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.RingTheory.Trace.Defs
 
 /-!
 # Trace for (finite) ring extensions.

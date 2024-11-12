@@ -59,7 +59,7 @@ a maximal element, then show that the maximal element must have `carrier = univ`
   /-- For each `i ∈ carrier`, the original set includes the closure of the refined set. -/
   closure_subset : ∀ {i}, i ∈ carrier → closure (toFun i) ⊆ u i
   /-- For each `i ∈ carrier`, the refined set satisfies `p`. -/
-  p_refined {i} (hi : i ∈ carrier) : p (toFun i)
+  pred_of_mem {i} (hi : i ∈ carrier) : p (toFun i)
   /-- Sets that correspond to `i ∉ carrier` are not modified. -/
   apply_eq : ∀ {i}, i ∉ carrier → toFun i = u i
 
@@ -147,12 +147,12 @@ def chainSup (c : Set (PartialRefinement u s p)) (hc : IsChain (· ≤ ·) c) (n
       have : v j ≤ v i := (hc.total (hvc _ hxi) (hvc _ hj')).elim (fun h => (hmax j hj' h).ge) id
       simpa only [find_apply_of_mem hc ne (hvc _ hxi) (this.1 <| hiv _ hj')]
   closure_subset hi := (find c ne _).closure_subset ((mem_find_carrier_iff _).2 hi)
-  p_refined {i} hi := by
-    simp only
+  pred_of_mem {i} hi := by
     obtain ⟨v, hv⟩ := Set.mem_iUnion.mp hi
     simp only [mem_iUnion, exists_prop] at hv
+    simp only
     rw [find_apply_of_mem hc ne hv.1 hv.2]
-    exact v.p_refined hv.2
+    exact v.pred_of_mem hv.2
   apply_eq hi := (find c ne _).apply_eq (mt (mem_find_carrier_iff _).1 hi)
 
 /-- `chainSup hu c hc ne hfin hU` is an upper bound of the chain `c`. -/
@@ -163,9 +163,9 @@ theorem le_chainSup {c : Set (PartialRefinement u s p)} (hc : IsChain (· ≤ ·
 
 /-- If `s` is a closed set, `v` is a partial refinement, and `i` is an index such that
 `i ∉ v.carrier`, then there exists a partial refinement that is strictly greater than `v`. -/
-theorem exists_gt [NormalSpace X] (v : PartialRefinement u s (fun _ => True)) (hs : IsClosed s)
+theorem exists_gt [NormalSpace X] (v : PartialRefinement u s ⊤) (hs : IsClosed s)
     (i : ι) (hi : i ∉ v.carrier) :
-    ∃ v' : PartialRefinement u s (fun _ => True), v < v' := by
+    ∃ v' : PartialRefinement u s ⊤, v < v' := by
   have I : (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) ⊆ v i := by
     simp only [subset_def, mem_inter_iff, mem_iInter, and_imp]
     intro x hxs H
@@ -214,9 +214,9 @@ corresponding original open set. -/
 theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpen (u i))
     (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsOpen (v i)) ∧ ∀ i, closure (v i) ⊆ u i := by
-  haveI : Nonempty (PartialRefinement u s (fun _ => True)) :=
+  haveI : Nonempty (PartialRefinement u s ⊤) :=
     ⟨⟨u, ∅, uo, us, False.elim, False.elim, fun _ => rfl⟩⟩
-  have : ∀ c : Set (PartialRefinement u s (fun _ => True)),
+  have : ∀ c : Set (PartialRefinement u s ⊤),
       IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
     fun c hc ne => ⟨.chainSup c hc ne uf us, fun v hv => PartialRefinement.le_chainSup _ _ _ _ hv⟩
   rcases zorn_le_nonempty this with ⟨v, hv⟩

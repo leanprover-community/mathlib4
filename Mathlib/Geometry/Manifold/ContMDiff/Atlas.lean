@@ -99,6 +99,17 @@ theorem contMDiffOn_extChartAt_symm (x : M) :
   convert contMDiffOn_extend_symm (chart_mem_maximalAtlas (I := I) x)
   rw [extChartAt_target, I.image_eq]
 
+theorem contMDiffWithinAt_extChartAt_symm_target
+    (x : M) {y : E} (hy : y ∈ (extChartAt I x).target) :
+    ContMDiffWithinAt 𝓘(𝕜, E) I n (extChartAt I x).symm (extChartAt I x).target y :=
+  contMDiffOn_extChartAt_symm x y hy
+
+theorem contMDiffWithinAt_extChartAt_symm_range
+    (x : M) {y : E} (hy : y ∈ (extChartAt I x).target) :
+    ContMDiffWithinAt 𝓘(𝕜, E) I n (extChartAt I x).symm (range I) y :=
+  (contMDiffWithinAt_extChartAt_symm_target x hy).mono_of_mem_nhdsWithin
+    (extChartAt_target_mem_nhdsWithin_of_mem hy)
+
 /-- An element of `contDiffGroupoid ⊤ I` is `C^n` for any `n`. -/
 theorem contMDiffOn_of_mem_contDiffGroupoid {e' : PartialHomeomorph H H}
     (h : e' ∈ contDiffGroupoid ⊤ I) : ContMDiffOn I I n e' e'.source :=

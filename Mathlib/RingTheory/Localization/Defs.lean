@@ -5,6 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.OreLocalization.Ring
+import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Ring
 
 /-!
@@ -593,7 +594,7 @@ theorem map_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring
     map W l hl (map Q g hy x) = map W (l.comp g) (fun _ hx => hl (hy hx)) x := by
   rw [← map_comp_map (Q := Q) hy hl]; rfl
 
-theorem map_smul (x : S) (z : R) : map Q g hy (z • x : S) = g z • map Q g hy x := by
+protected theorem map_smul (x : S) (z : R) : map Q g hy (z • x : S) = g z • map Q g hy x := by
   rw [Algebra.smul_def, Algebra.smul_def, RingHom.map_mul, map_eq]
 
 end
