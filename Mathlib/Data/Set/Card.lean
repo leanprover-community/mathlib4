@@ -1058,10 +1058,12 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
 
 theorem exists_union_disjoint_ncard_eq_of_even_finite [DecidableEq α] (he : Even s.ncard)
     (hs : s.Finite := by toFinite_tac) : ∃ (t u : Set α),
-    t ∪ u = s ∧ Disjoint t u ∧ t.ncard = u.ncard :=
-  let ⟨n, hn⟩ := he
-  let ⟨t, ht, ht'⟩ := exists_subset_card_eq (show n ≤ s.ncard by omega)
-  ⟨t, s \ t, by simp [disjoint_sdiff_self_right, Set.ncard_diff, *]⟩
+    t ∪ u = s ∧ Disjoint t u ∧ t.ncard = u.ncard := by
+  rw [ncard_eq_toFinset_card s hs] at he
+  obtain ⟨t, u, hutu, hdtu, hctu⟩ := Finset.exists_disjoint_union_of_even_card he
+  use t.toSet, u.toSet
+  simp only [← Finset.coe_union, Finite.coe_toFinset, Finset.disjoint_coe, ncard_coe_Finset,
+    and_self, hutu, hdtu, hctu]
 
 theorem exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite) : ∃ (t u : Set α),
     t ∪ u = s ∧ Disjoint t u ∧ Cardinal.mk t = Cardinal.mk u := by
