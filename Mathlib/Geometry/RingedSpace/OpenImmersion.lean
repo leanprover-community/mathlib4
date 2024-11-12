@@ -561,9 +561,9 @@ variable (f : X ⟶ Y.toPresheafedSpace) [H : IsOpenImmersion f]
 /-- If `X ⟶ Y` is an open immersion, and `Y` is a LocallyRingedSpace, then so is `X`. -/
 def toLocallyRingedSpace : LocallyRingedSpace where
   toSheafedSpace := toSheafedSpace Y.toSheafedSpace f
-  localRing x :=
-    haveI : LocalRing (Y.presheaf.stalk (f.base x)) := Y.localRing _
-    (asIso (f.stalkMap x)).commRingCatIsoToRingEquiv.localRing
+  isLocalRing x :=
+    haveI : IsLocalRing (Y.presheaf.stalk (f.base x)) := Y.isLocalRing _
+    (asIso (f.stalkMap x)).commRingCatIsoToRingEquiv.isLocalRing
 
 @[simp]
 theorem toLocallyRingedSpace_toSheafedSpace :

@@ -171,8 +171,8 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
 @[simps! toSheafedSpace presheaf]
 def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace :=
   { Spec.sheafedSpaceObj R with
-    localRing := fun x =>
-      RingEquiv.localRing (A := Localization.AtPrime x.asIdeal)
+    isLocalRing := fun x =>
+      RingEquiv.isLocalRing (A := Localization.AtPrime x.asIdeal)
         (Iso.commRingCatIsoToRingEquiv <| stalkIso R x).symm }
 
 lemma Spec.locallyRingedSpaceObj_sheaf (R : CommRingCat.{u}) :

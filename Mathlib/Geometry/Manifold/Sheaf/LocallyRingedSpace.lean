@@ -108,8 +108,8 @@ theorem smoothSheafCommRing.nonunits_stalk (x : M) :
 
 /-- The stalks of the structure sheaf of a smooth manifold-with-corners are local rings. -/
 instance smoothSheafCommRing.instLocalRing_stalk (x : M) :
-    LocalRing ((smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.stalk x) := by
-  apply LocalRing.of_nonunits_add
+    IsLocalRing ((smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.stalk x) := by
+  apply IsLocalRing.of_nonunits_add
   rw [smoothSheafCommRing.nonunits_stalk]
   intro f g
   exact Ideal.add_mem _
@@ -121,4 +121,4 @@ def SmoothManifoldWithCorners.locallyRingedSpace : LocallyRingedSpace where
   carrier := TopCat.of M
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).cond
-  localRing x := smoothSheafCommRing.instLocalRing_stalk IM x
+  isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x
