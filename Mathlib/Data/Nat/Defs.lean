@@ -415,9 +415,8 @@ lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
 @[deprecated le_div_iff_mul_le (since := "2024-11-06")]
 lemma le_div_iff_mul_le' (hb : 0 < b) : a ≤ c / b ↔ a * b ≤ c := le_div_iff_mul_le hb
 
-lemma le_div_iff_mul_le_comm (hb : 0 < b) : a ≤ c / b ↔ b * a ≤ c :=  by
-   rw [Nat.mul_comm]
-   exact le_div_iff_mul_le' hb
+lemma le_div_iff_mul_le_comm (hb : 0 < b) : a ≤ c / b ↔ b * a ≤ c :=
+  (Nat.mul_comm a b) ▸ (le_div_iff_mul_le hb)
 
 @[deprecated div_lt_iff_lt_mul (since := "2024-11-06")]
 lemma div_lt_iff_lt_mul' (hb : 0 < b) : a / b < c ↔ a < c * b := div_lt_iff_lt_mul hb
