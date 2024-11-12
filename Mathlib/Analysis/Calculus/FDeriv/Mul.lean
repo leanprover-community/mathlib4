@@ -42,7 +42,8 @@ section CLMCompApply
 variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G →L[𝕜] H}
   {c' : E →L[𝕜] G →L[𝕜] H} {d : E → F →L[𝕜] G} {d' : E →L[𝕜] F →L[𝕜] G} {u : E → G} {u' : E →L[𝕜] G}
 
-#adaptation_note /-- 2024-11-11 split proof term into steps to solve unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  split proof term into steps to solve unification issues. -/
 @[fun_prop]
 theorem HasStrictFDerivAt.clm_comp (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
     HasStrictFDerivAt (fun y => (c y).comp (d y))
@@ -51,7 +52,8 @@ theorem HasStrictFDerivAt.clm_comp (hc : HasStrictFDerivAt c c' x) (hd : HasStri
   have := this.comp x (hc.prod hd)
   exact this
 
-#adaptation_note /-- 2024-11-11 `by exact` to solve unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivWithinAt.clm_comp (hc : HasFDerivWithinAt c c' s x)
     (hd : HasFDerivWithinAt d d' s x) :
@@ -59,7 +61,8 @@ theorem HasFDerivWithinAt.clm_comp (hc : HasFDerivWithinAt c c' s x)
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') s x := by
   exact (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x) :).comp_hasFDerivWithinAt x <| hc.prod hd
 
-#adaptation_note /-- 2024-11-11 `by exact` to solve unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivAt.clm_comp (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
     HasFDerivAt (fun y => (c y).comp (d y))
@@ -104,14 +107,16 @@ theorem HasStrictFDerivAt.clm_apply (hc : HasStrictFDerivAt c c' x)
     HasStrictFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x :=
   (isBoundedBilinearMap_apply.hasStrictFDerivAt (c x, u x)).comp x (hc.prod hu)
 
-#adaptation_note /-- 2024-11-11 `by exact` to solve unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivWithinAt.clm_apply (hc : HasFDerivWithinAt c c' s x)
     (hu : HasFDerivWithinAt u u' s x) :
     HasFDerivWithinAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) s x := by
   exact (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x) :).comp_hasFDerivWithinAt x (hc.prod hu)
 
-#adaptation_note /-- 2024-11-11 `by exact` to solve unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivAt.clm_apply (hc : HasFDerivAt c c' x) (hu : HasFDerivAt u u' x) :
     HasFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x := by
@@ -239,14 +244,16 @@ theorem HasStrictFDerivAt.smul (hc : HasStrictFDerivAt c c' x) (hf : HasStrictFD
     HasStrictFDerivAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) x :=
   (isBoundedBilinearMap_smul.hasStrictFDerivAt (c x, f x)).comp x <| hc.prod hf
 
-#adaptation_note /-- 2024-11-11 `by exact` to solve unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivWithinAt.smul (hc : HasFDerivWithinAt c c' s x) (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) s x := by
   exact (isBoundedBilinearMap_smul.hasFDerivAt (𝕜 := 𝕜) (c x, f x) :).comp_hasFDerivWithinAt x <|
     hc.prod hf
 
-#adaptation_note /-- 2024-11-11 `by exact` to solve unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivAt.smul (hc : HasFDerivAt c c' x) (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) x := by
@@ -346,7 +353,8 @@ theorem HasStrictFDerivAt.mul (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDe
   ext z
   apply mul_comm
 
-#adaptation_note /-- 2024-11-11 `by exact` to solve unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivWithinAt.mul' (ha : HasFDerivWithinAt a a' s x) (hb : HasFDerivWithinAt b b' s x) :
     HasFDerivWithinAt (fun y => a y * b y) (a x • b' + a'.smulRight (b x)) s x := by
@@ -360,7 +368,8 @@ theorem HasFDerivWithinAt.mul (hc : HasFDerivWithinAt c c' s x) (hd : HasFDerivW
   ext z
   apply mul_comm
 
-#adaptation_note /-- 2024-11-11 `by exact` to solve unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivAt.mul' (ha : HasFDerivAt a a' x) (hb : HasFDerivAt b b' x) :
     HasFDerivAt (fun y => a y * b y) (a x • b' + a'.smulRight (b x)) x := by

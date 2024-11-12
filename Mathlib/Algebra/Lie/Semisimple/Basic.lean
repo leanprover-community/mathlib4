@@ -212,7 +212,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   set K := s'.sup id
   suffices I ≤ K by
     obtain ⟨t, hts', htI⟩ := finitelyAtomistic s' hs'S I this
-    exact ⟨t, Finset.Subset.trans hts' hs'.subset, htI⟩
+    exact ⟨t, hts'.trans hs'.subset, htI⟩
   -- Since `I` is contained in the supremum of `J` with the supremum of `s'`,
   -- any element `x` of `I` can be written as `y + z` for some `y ∈ J` and `z ∈ K`.
   intro x hx

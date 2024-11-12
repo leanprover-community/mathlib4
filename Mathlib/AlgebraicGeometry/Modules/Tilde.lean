@@ -359,7 +359,8 @@ theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.
   · exact homOfLE le_top
   · exact 𝟙 _
   refine Subtype.eq <| funext fun y => show LocalizedModule.mk f 1 = _ from ?_
-  #adaptation_note /-- 2024-11-11 added this refine hack to be able to add type hint in `change` -/
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+    added this refine hack to be able to add type hint in `change` -/
   refine (?_ : @Eq ?ty _ _)
   change LocalizedModule.mk f 1 = (s.1 • LocalizedModule.mk f _ : ?ty)
   rw [LocalizedModule.smul'_mk, LocalizedModule.mk_eq]

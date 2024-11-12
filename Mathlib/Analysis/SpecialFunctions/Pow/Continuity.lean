@@ -356,7 +356,8 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
       rwa [neg_re, ofReal_re, neg_pos]
     · exact (continuous_exp.comp (continuous_const.mul continuous_snd)).continuousAt
 
-#adaptation_note /-- 2024-11-11 need `by exact` to deal with tricky unification -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  need `by exact` to deal with tricky unification -/
 theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
     ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x := by
   exact ContinuousAt.comp (x := x) (continuousAt_ofReal_cpow x y h)

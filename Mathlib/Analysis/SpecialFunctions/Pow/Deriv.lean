@@ -395,7 +395,8 @@ section fderiv
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f g : E → ℝ} {f' g' : E →L[ℝ] ℝ}
   {x : E} {s : Set E} {c p : ℝ} {n : ℕ∞}
 
-#adaptation_note /-- 2024-11-11 added `by exact` to deal with unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  added `by exact` to deal with unification issues. -/
 theorem HasFDerivWithinAt.rpow (hf : HasFDerivWithinAt f f' s x) (hg : HasFDerivWithinAt g g' s x)
     (h : 0 < f x) : HasFDerivWithinAt (fun x => f x ^ g x)
       ((g x * f x ^ (g x - 1)) • f' + (f x ^ g x * Real.log (f x)) • g') s x := by
@@ -412,13 +413,15 @@ theorem HasStrictFDerivAt.rpow (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFD
       ((g x * f x ^ (g x - 1)) • f' + (f x ^ g x * Real.log (f x)) • g') x :=
   (hasStrictFDerivAt_rpow_of_pos (f x, g x) h).comp x (hf.prod hg)
 
-#adaptation_note /-- 2024-11-11 added `by exact` to deal with unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  added `by exact` to deal with unification issues. -/
 theorem DifferentiableWithinAt.rpow (hf : DifferentiableWithinAt ℝ f s x)
     (hg : DifferentiableWithinAt ℝ g s x) (h : f x ≠ 0) :
     DifferentiableWithinAt ℝ (fun x => f x ^ g x) s x := by
   exact (differentiableAt_rpow_of_ne (f x, g x) h).comp_differentiableWithinAt x (hf.prod hg)
 
-#adaptation_note /-- 2024-11-11 added `by exact` to deal with unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  added `by exact` to deal with unification issues. -/
 theorem DifferentiableAt.rpow (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
     (h : f x ≠ 0) : DifferentiableAt ℝ (fun x => f x ^ g x) x := by
   exact (differentiableAt_rpow_of_ne (f x, g x) h).comp x (hf.prod hg)
@@ -469,12 +472,14 @@ theorem HasStrictFDerivAt.const_rpow (hf : HasStrictFDerivAt f f' x) (hc : 0 < c
     HasStrictFDerivAt (fun x => c ^ f x) ((c ^ f x * Real.log c) • f') x :=
   (hasStrictDerivAt_const_rpow hc (f x)).comp_hasStrictFDerivAt x hf
 
-#adaptation_note /-- 2024-11-11 added `by exact` to deal with unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  added `by exact` to deal with unification issues. -/
 theorem ContDiffWithinAt.rpow (hf : ContDiffWithinAt ℝ n f s x) (hg : ContDiffWithinAt ℝ n g s x)
     (h : f x ≠ 0) : ContDiffWithinAt ℝ n (fun x => f x ^ g x) s x := by
   exact (contDiffAt_rpow_of_ne (f x, g x) h).comp_contDiffWithinAt x (hf.prod hg)
 
-#adaptation_note /-- 2024-11-11 added `by exact` to deal with unification issues. -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  added `by exact` to deal with unification issues. -/
 theorem ContDiffAt.rpow (hf : ContDiffAt ℝ n f x) (hg : ContDiffAt ℝ n g x) (h : f x ≠ 0) :
     ContDiffAt ℝ n (fun x => f x ^ g x) x := by
   exact (contDiffAt_rpow_of_ne (f x, g x) h).comp x (hf.prod hg)

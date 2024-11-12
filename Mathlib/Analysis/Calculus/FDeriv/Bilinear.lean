@@ -103,7 +103,8 @@ theorem IsBoundedBilinearMap.differentiableOn (h : IsBoundedBilinearMap 𝕜 b) 
 
 variable (B : E →L[𝕜] F →L[𝕜] G)
 
-#adaptation_note /-- 2024-11-11 need `by exact` to deal with tricky unification -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  need `by exact` to deal with tricky unification -/
 @[fun_prop]
 theorem ContinuousLinearMap.hasFDerivWithinAt_of_bilinear {f : G' → E} {g : G' → F}
     {f' : G' →L[𝕜] E} {g' : G' →L[𝕜] F} {x : G'} {s : Set G'} (hf : HasFDerivWithinAt f f' s x)
@@ -112,7 +113,8 @@ theorem ContinuousLinearMap.hasFDerivWithinAt_of_bilinear {f : G' → E} {g : G'
       (B.precompR G' (f x) g' + B.precompL G' f' (g x)) s x := by
   exact (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prod hg)
 
-#adaptation_note /-- 2024-11-11 need `by exact` to deal with tricky unification -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  need `by exact` to deal with tricky unification -/
 @[fun_prop]
 theorem ContinuousLinearMap.hasFDerivAt_of_bilinear {f : G' → E} {g : G' → F} {f' : G' →L[𝕜] E}
     {g' : G' →L[𝕜] F} {x : G'} (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
