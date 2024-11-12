@@ -1,6 +1,8 @@
 name: Autolabel PRs
 
 on:
+  issue_comment:
+    types: [created]
   pull_request:
     types: [opened]
   push:
