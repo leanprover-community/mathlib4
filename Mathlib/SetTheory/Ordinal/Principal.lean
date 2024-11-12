@@ -273,7 +273,7 @@ theorem principal_add_opow_of_principal_add {a} (ha : Principal (· + ·) a) (b 
 @[deprecated (since := "2024-10-16")]
 alias opow_principal_add_of_principal_add := principal_add_opow_of_principal_add
 
-theorem add_absorp {a b c : Ordinal} (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c = c := by
+theorem add_absorp (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c = c := by
   rw [← Ordinal.add_sub_cancel_of_le h₂, ← add_assoc, add_omega0_opow h₁]
 
 theorem principal_add_mul_of_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
