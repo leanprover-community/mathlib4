@@ -17,6 +17,10 @@ to learn about it as well!
 **Tool for manual maintenance**
 - `fix_unused.py`
   Bulk processing of unused variable warnings, replacing them with `_`.
+- `add_deprecations.sh` is a text-based script that automatically adds deprecation statements.
+  It assumes that the only difference between master and the current status of the PR consists
+  of renames. More precisely, any change on a line that contains a declaration name
+  and is not a rename, will likely confuse the script.
 
 **Analyzing Mathlib's import structure**
 - `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
@@ -93,3 +97,16 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   to the appropriate topic on zulip.
 - `count-trans-deps.py`, `import-graph-report.py` and `import_trans_difference.sh` produce various
   summaries of changes in transitive imports that the `PR_summary` message incorporates.
+- `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
+  the `linter.minImports` output, summarizing the data in a table.  See the module docs of
+  `late_importers.sh` for further details.
+- `maintainer_merge_message.sh` contains a shell script that produces the Zulip message for a
+  `maintainer merge`/`maintainer delegate` comment.
+
+**Docker images**
+- `docker_build.sh` builds the `lean4`, `gitpod4`, and `gitpod4-blueprint` Docker images.
+  These are used by some CI workflows, as well as places such as Gitpod.
+- `docker_push.sh` first runs `docker_build.sh`, and then pushes the images to Docker Hub,
+  appropriately tagged with the date on which the images were built.
+  This should be re-run after breaking changes to `elan`, so that CI and Gitpod have access to
+  updated versions of `elan`.

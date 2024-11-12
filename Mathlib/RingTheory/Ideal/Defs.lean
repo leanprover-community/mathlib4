@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Tactic.Abel
 
 /-!
@@ -58,10 +58,6 @@ variable {a}
 @[ext]
 theorem ext {I J : Ideal α} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
   Submodule.ext h
-
-theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
-    (∀ c ∈ t, f c ∈ I) → (∑ i ∈ t, f i) ∈ I :=
-  Submodule.sum_mem I
 
 @[simp]
 theorem unit_mul_mem_iff_mem {x y : α} (hy : IsUnit y) : y * x ∈ I ↔ x ∈ I := by
