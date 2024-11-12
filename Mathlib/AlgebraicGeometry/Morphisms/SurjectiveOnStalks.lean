@@ -1,10 +1,21 @@
+/-
+Copyright (c) 2024 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.TensorProduct
 import Mathlib.Topology.LocalAtTarget
 
 /-!
-foo
+# Morphisms surjective on stalks
 
+We define the classe of morphisms between schemes that are surjective on stalks.
+We show that this class is stable under composition and base change.
+
+We also show that (`AlgebraicGeometry.SurjectiveOnStalks.isEmbedding_pullback`)
+if `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a subset of
+`X × Y` (cartesian product as topological spaces) with the induced topology.
 -/
 
 open CategoryTheory CategoryTheory.Limits Topology
@@ -77,47 +88,6 @@ instance stableUnderBaseChange :
   intros R S T _ _ _ _ _ H
   exact H.baseChange
 
-lemma _root_.AlgebraicGeometry.Scheme.Cover.exists_eq {P} (𝒰 : X.Cover P) (x : X) : ∃ i y, (𝒰.map i).base y = x :=
-  ⟨_, 𝒰.covers x⟩
-
-open TopologicalSpace in
-theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
-    {X Y} [TopologicalSpace X] [TopologicalSpace Y]
-    (f : X → Y) (h : Continuous f) {ι : Type*}
-    (U : ι → Opens Y) (hU : Set.range f ⊆ (iSup U : _))
-    (V : ι → Type*) [∀ i, TopologicalSpace (V i)]
-    (iV : ∀ i, V i → X) (hiV : ∀ i, Continuous (iV i)) (hV : ∀ i, f ⁻¹' U i ⊆ Set.range (iV i))
-    (hV' : ∀ i, IsEmbedding (f ∘ iV i)) : IsEmbedding f := by
-  wlog hU' : iSup U = ⊤
-  · let f₀ : X → Set.range f := fun x ↦ ⟨f x, ⟨x, rfl⟩⟩
-    suffices IsEmbedding f₀ from IsEmbedding.subtypeVal.comp this
-    have hU'' : (⨆ i, (U i).comap ⟨Subtype.val, continuous_subtype_val⟩ :
-        Opens (Set.range f)) = ⊤ := by
-      rw [← top_le_iff]
-      simpa [Set.range_subset_iff, SetLike.le_def] using hU
-    refine this _ ?_ _ ?_ V iV hiV ?_ ?_ hU''
-    · fun_prop
-    · rw [hU'']; simp
-    · exact hV
-    · exact fun i ↦ IsEmbedding.of_comp (by fun_prop) continuous_subtype_val (hV' i)
-  rw [isEmbedding_iff_of_iSup_eq_top hU' h]
-  intro i
-  let f' := (Subtype.val ∘ (f ⁻¹' U i).restrictPreimage (iV i))
-  have : IsEmbedding f' :=
-    IsEmbedding.subtypeVal.comp ((IsEmbedding.of_comp (hiV i) h (hV' _)).restrictPreimage _)
-  have hf' : Set.range f' = f ⁻¹' U i := by
-    simpa [f', Set.range_comp, Set.range_restrictPreimage] using hV i
-  let e := (Homeomorph.ofIsEmbedding _ this).trans (Homeomorph.setCongr hf')
-  refine IsEmbedding.of_comp (by fun_prop) continuous_subtype_val ?_
-  convert ((hV' i).comp IsEmbedding.subtypeVal).comp e.symm.isEmbedding
-  ext x
-  obtain ⟨x, rfl⟩ := e.surjective x
-  simp
-  rfl
-
-lemma homeoOfIso_apply {X Y : Scheme} (e : X ≅ Y) (x : X) :
-    Scheme.homeoOfIso e x = e.hom.base x := rfl
-
 /-- If `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a subset of
 `X × Y` (cartesian product as topological spaces) with the induced topology. -/
 lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [SurjectiveOnStalks g] :
@@ -140,7 +110,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
       (Scheme.homeoOfIso (pullbackSpecIso R A B)).isEmbedding
     ext1 x
     obtain ⟨x, rfl⟩ := (Scheme.homeoOfIso (pullbackSpecIso R A B).symm).surjective x
-    simp only [homeoOfIso_apply, Function.comp_apply]
+    simp only [Scheme.homeoOfIso_apply, Function.comp_apply]
     ext
     · simp only [← Scheme.comp_base_apply, pullback.lift_fst, Iso.symm_hom, Iso.inv_hom_id]
       erw [← Scheme.comp_base_apply, pullbackSpecIso_inv_fst_assoc]

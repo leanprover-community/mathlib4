@@ -48,6 +48,14 @@ instance (x : X) : Field (X.residueField x) :=
 def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
   LocalRing.residue _
 
+/-- See `AlgebraicGeometry.IsClosedImmersion.Spec_map_residue` for the stronger result that
+`Spec.map (X.residue x)` is a closed immersion. -/
+instance {X : Scheme.{u}} (x) : IsPreimmersion (Spec.map (X.residue x)) :=
+  IsPreimmersion.mk_Spec_map
+    (PrimeSpectrum.isClosedEmbedding_comap_of_surjective _ _
+      Ideal.Quotient.mk_surjective).isEmbedding
+    (RingHom.surjectiveOnStalks_of_surjective (Ideal.Quotient.mk_surjective))
+
 @[simp]
 lemma Spec_map_residue_apply {X : Scheme.{u}} (x : X) (s : Spec (X.residueField x)) :
     (Spec.map (X.residue x)).base s = closedPoint (X.presheaf.stalk x) :=
@@ -58,9 +66,6 @@ lemma residue_surjective (X : Scheme.{u}) (x) : Function.Surjective (X.residue x
 
 instance (X : Scheme.{u}) (x) : Epi (X.residue x) :=
   ConcreteCategory.epi_of_surjective _ (X.residue_surjective x)
-
-instance (X : Scheme.{u}) (x) : IsLocalHom (X.residue x) :=
-  inferInstanceAs (IsLocalHom (LocalRing.residue _))
 
 /-- If `K` is a field and `f : 𝒪_{X, x} ⟶ K` is a ring map, then this is the induced
 map `κ(x) ⟶ K`. -/
@@ -208,6 +213,11 @@ def fromSpecResidueField (X : Scheme) (x : X) :
     Spec (X.residueField x) ⟶ X :=
   Spec.map (X.residue x) ≫ X.fromSpecStalk x
 
+instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecResidueField x) := by
+  dsimp only [Scheme.fromSpecResidueField]
+  rw [IsPreimmersion.comp_iff]
+  infer_instance
+
 @[simps] noncomputable
 instance (x : X) : (Spec (X.residueField x)).Over X := ⟨X.fromSpecResidueField x⟩
 
@@ -260,28 +270,6 @@ lemma descResidueField_stalkClosedPointTo_fromSpecResidueField
       X.fromSpecResidueField (f.base (closedPoint K)) = f := by
   erw [X.descResidueField_fromSpecResidueField]
   rw [Scheme.Spec_stalkClosedPointTo_fromSpecStalk]
-
-lemma fromSpecResidueField_stalkMap (x) (y) : (X.fromSpecResidueField x).stalkMap y =
-    (X.presheaf.stalkCongr (y := x) ((.of_eq (by simp)))).hom ≫ X.residue x ≫
-    (stalkClosedPointIso (X.residueField x)).inv ≫ ((Spec _).presheaf.stalkCongr
-      ((.of_eq (Subsingleton.elim (α := PrimeSpectrum _) _ _)))).hom := by
-  have : y = closedPoint (X.residueField x) := Subsingleton.elim (α := PrimeSpectrum _) _ _
-  subst this
-  simp only [TopCat.Presheaf.stalkCongr_hom, TopCat.Presheaf.stalkSpecializes_refl,
-    Category.comp_id, fromSpecResidueField, ← Category.assoc, Iso.eq_comp_inv]
-  simpa [SpecToEquivOfLocalRing_eq_iff] using
-    (SpecToEquivOfLocalRing _ _).apply_symm_apply ⟨_, X.residue x, inferInstance⟩
-
-instance (x) : Mono (X.fromSpecResidueField x) := by
-  refine (Scheme.forgetToLocallyRingedSpace ⋙
-    LocallyRingedSpace.forgetToSheafedSpace).mono_of_mono_map ?_
-  apply SheafedSpace.mono_of_base_injective_of_stalk_epi
-  · exact fun _ _ _ ↦ Subsingleton.elim (α := PrimeSpectrum _) _ _
-  · refine fun y ↦ ConcreteCategory.epi_of_surjective _ ?_
-    show Function.Surjective ((X.fromSpecResidueField x).stalkMap _)
-    rw [fromSpecResidueField_stalkMap, RingHom.surjective_respectsIso.cancel_left_isIso,
-      RingHom.surjective_respectsIso.cancel_right_isIso]
-    exact X.residue_surjective x
 
 end fromResidueField
 
