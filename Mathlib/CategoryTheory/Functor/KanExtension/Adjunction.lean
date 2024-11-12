@@ -51,12 +51,14 @@ instance (F : C ⥤ H) : (L.lan.obj F).IsLeftKanExtension (L.lanUnit.app F) := b
   dsimp [lan, lanUnit]
   infer_instance
 
+end
+
 /-- If there exists a pointwise left Kan extension of `F` along `L`,
 then `L.lan.obj G` is a pointwise left Kan extension of `F`. -/
 noncomputable def isPointwiseLeftKanExtensionLanUnit
     (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] :
-    (LeftExtension.mk _ (L.lanUnit.app F)).IsPointwiseLeftKanExtension :=
-  isPointwiseLeftKanExtensionOfIsLeftKanExtension (F := F) _ (L.lanUnit.app F)
+    (LeftExtension.mk _ (L.leftKanExtensionUnit F)).IsPointwiseLeftKanExtension :=
+  isPointwiseLeftKanExtensionOfIsLeftKanExtension (F := F) _ (leftKanExtensionUnit L F)
 
 section
 
@@ -66,49 +68,50 @@ variable (F : C ⥤ H) [HasPointwiseLeftKanExtension L F]
 
 /-- If a left Kan extension is pointwise, then evaluating it at an object is isomorphic to
 taking a colimit. -/
-noncomputable def lanObjObjIsoColimit (X : D) :
-    (L.lan.obj F).obj X ≅ Limits.colimit (proj L X ⋙ F) :=
+noncomputable def lanObjObjIsoColimit [HasLeftKanExtension L F] (X : D) :
+    (L.leftKanExtension F).obj X ≅ Limits.colimit (proj L X ⋙ F) :=
   LeftExtension.IsPointwiseLeftKanExtensionAt.isoColimit (F := F)
    (isPointwiseLeftKanExtensionLanUnit L F X)
 
 @[reassoc (attr := simp)]
-lemma ι_lanObjObjIsoColimit_inv (X : D) (f : CostructuredArrow L X) :
+lemma ι_lanObjObjIsoColimit_inv [HasLeftKanExtension L F] (X : D)
+    (f : CostructuredArrow L X) :
     Limits.colimit.ι _ f ≫ (L.lanObjObjIsoColimit F X).inv =
-    (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom := by
+    (L.leftKanExtensionUnit F).app f.left ≫ (L.leftKanExtension F).map f.hom := by
   simp [lanObjObjIsoColimit, lanUnit]
 
 @[reassoc (attr := simp)]
-lemma ι_lanObjObjIsoColimit_hom (X : D) (f : CostructuredArrow L X) :
+lemma ι_lanObjObjIsoColimit_hom [∀ (F : C ⥤ H), HasLeftKanExtension L F] (X : D)
+    (f : CostructuredArrow L X) :
     (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom ≫ (L.lanObjObjIsoColimit F X).hom =
     Limits.colimit.ι (proj L X ⋙ F) f :=
   LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
     (isPointwiseLeftKanExtensionLanUnit L F X) f
-
-omit [∀ (F : C ⥤ H), HasLeftKanExtension L F]
 
 @[instance]
 theorem hasColimit_map_comp_ι_comp_grotendieckProj {X Y : D} (f : X ⟶ Y) :
     HasColimit ((functor L).map f ⋙ Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ⋙ F) :=
   hasColimitOfIso (isoWhiskerRight (mapCompιCompGrothendieckProj L f) F)
 
-@[local instance]
-private theorem lanObjIsoFiberwiseColimit_inst₂ (X : D) :
-    HasColimit (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F) :=
-  hasColimitOfIso <| Iso.symm <| isoWhiskerRight (eqToIso ((functor L).map_id X)) _ ≪≫
-    Functor.leftUnitor (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F)
-
 /-- The left Kan extension of `F : C ⥤ H` along a functor `L : C ⥤ D` is isomorphic to the
 fiberwise colimit of the projection functor on the Grothendieck construction of the costructured
 arrow category composed with `F`. -/
 @[simps!]
-noncomputable def lanObjIsoFiberwiseColimit :
-    L.lan.obj F ≅ fiberwiseColimit (grothendieckProj L ⋙ F) :=
+noncomputable def leftKanExtensionIsoFiberwiseColimit [HasLeftKanExtension L F] :
+    leftKanExtension L F ≅ fiberwiseColimit (grothendieckProj L ⋙ F) :=
+  letI : ∀ X, HasColimit (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F) :=
+      fun X =>hasColimitOfIso <| Iso.symm <| isoWhiskerRight (eqToIso ((functor L).map_id X)) _ ≪≫
+      Functor.leftUnitor (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F)
   Iso.symm <| NatIso.ofComponents
     (fun X => HasColimit.isoOfNatIso (isoWhiskerRight (ιCompGrothendieckProj L X) F) ≪≫
       (lanObjObjIsoColimit L F X).symm)
     fun f => colimit.hom_ext (by simp)
 
 end
+
+section HasLeftKanExtension
+
+variable [∀ (F : C ⥤ H), HasLeftKanExtension L F]
 
 variable (H) in
 /-- The left Kan extension functor `L.Lan` is left adjoint to the precomposition by `L`. -/
@@ -167,48 +170,48 @@ noncomputable def lanCompColimIso [HasColimitsOfShape C H] [HasColimitsOfShape D
       congr 1
       exact congr_app (L.lanUnit.naturality f) i))
 
-variable [HasColimitsOfShape D H]
+end HasLeftKanExtension
+
+section HasPointwiseLeftKanExtension
 
 variable (G : C ⥤ H) [L.HasPointwiseLeftKanExtension G]
 
-omit [∀ (F : C ⥤ H), L.HasLeftKanExtension F]
+variable [HasColimitsOfShape D H]
 
-@[local instance]
-private theorem colimitIsoColimitGrothendieck_inst₁ :
-    HasColimit (CostructuredArrow.grothendieckProj L ⋙ G) :=
+instance : HasColimit (CostructuredArrow.grothendieckProj L ⋙ G) :=
   hasColimit_of_hasColimit_fiberwiseColimit_of_hasColimit _
 
 variable [HasColimitsOfShape C H]
 
 /-- If `G : C ⥤ H` is a left Kan extension of a functor `L : C ⥤ D` and `H` has colimits of shape
-`C`, `D`, and `CostructuredArrow L X` for all `X : D`, then the colimit of `G` is isomorphic to
-the colimit of a canonical functor `Grothendieck (CostructuredArrow.functor L) ⥤ H` induced by
-`L` and `G`. -/
-@[simps!]
+`C` and `D`, then the colimit of `G` is isomorphic to the colimit of a canonical functor
+`Grothendieck (CostructuredArrow.functor L) ⥤ H` induced by `L` and `G`. -/
 noncomputable def colimitIsoColimitGrothendieck :
-    colimit G ≅ colimit (CostructuredArrow.grothendieckProj L ⋙ G) :=
-  ((lanCompColimIso L).app G).symm ≪≫
-  HasColimit.isoOfNatIso (lanObjIsoFiberwiseColimit L G) ≪≫
-  colimitFiberwiseColimitIso _
+    colimit G ≅ colimit (CostructuredArrow.grothendieckProj L ⋙ G) := calc
+  colimit G
+    ≅ colimit (leftKanExtension L G) :=
+        (colimitIsoOfIsLeftKanExtension _ (L.leftKanExtensionUnit G)).symm
+  _ ≅ colimit (fiberwiseColimit (CostructuredArrow.grothendieckProj L ⋙ G)) :=
+        HasColimit.isoOfNatIso (leftKanExtensionIsoFiberwiseColimit L G)
+  _ ≅ colimit (CostructuredArrow.grothendieckProj L ⋙ G) :=
+        colimitFiberwiseColimitIso _
 
-variable [∀ (F : C ⥤ H), L.HasLeftKanExtension F]
-
+@[reassoc (attr := simp)]
 lemma ι_colimitIsoColimitGrothendieck_inv (X : Grothendieck (CostructuredArrow.functor L)) :
     colimit.ι (CostructuredArrow.grothendieckProj L ⋙ G) X ≫
       (colimitIsoColimitGrothendieck L G).inv =
     colimit.ι G ((CostructuredArrow.proj L X.base).obj X.fiber) := by
-  simp
+  simp [colimitIsoColimitGrothendieck]
 
+@[reassoc (attr := simp)]
 lemma ι_colimitIsoColimitGrothendieck_hom (X : C) :
     colimit.ι G X ≫ (colimitIsoColimitGrothendieck L G).hom =
     colimit.ι (CostructuredArrow.grothendieckProj L ⋙ G) ⟨L.obj X, .mk (𝟙 _)⟩ := by
   rw [← Iso.eq_comp_inv]
-  have := (ι_colimitIsoColimitGrothendieck_inv L G ⟨L.obj X, .mk (𝟙 _)⟩).symm
-  dsimp only [comp_obj, CostructuredArrow.grothendieckProj_obj, CostructuredArrow.mk_left,
-    CostructuredArrow.proj_obj] at this
-  exact this
+  exact (ι_colimitIsoColimitGrothendieck_inv L G ⟨L.obj X, .mk (𝟙 _)⟩).symm
 
-end
+end HasPointwiseLeftKanExtension
+
 
 section
 
