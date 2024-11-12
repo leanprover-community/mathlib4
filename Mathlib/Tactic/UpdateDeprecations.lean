@@ -139,7 +139,7 @@ the corresponding `System.FilePath`. -/
 def toFile : TSyntax `build → System.FilePath
   | `(build| ././././ $xs/*) =>
     let xs := xs.getElems
-    let last := match xs.back.getId.toString.splitOn ⟨[extSeparator]⟩ with
+    let last := match( xs.back?.getD default).getId.toString.splitOn ⟨[extSeparator]⟩ with
                       | [fil, "lean"] => addExtension fil "lean"
                       | [f] => f
                       | _ => default
