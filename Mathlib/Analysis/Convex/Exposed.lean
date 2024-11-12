@@ -121,7 +121,7 @@ theorem eq_inter_halfSpace [Nontrivial 𝕜] {A B : Set E} (hAB : IsExposed 𝕜
     have : ¬(1 : 𝕜) ≤ 0 := not_le_of_lt zero_lt_one
     contradiction
   exact hAB.eq_inter_halfSpace' hB
-@[deprecated (since := "2024-11-12")] alias eq_inter_halfspace' := eq_inter_halfSpace'
+@[deprecated (since := "2024-11-12")] alias eq_inter_halfspace := eq_inter_halfSpace
 
 protected theorem inter [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed 𝕜 A B)
     (hC : IsExposed 𝕜 A C) : IsExposed 𝕜 A (B ∩ C) := by
