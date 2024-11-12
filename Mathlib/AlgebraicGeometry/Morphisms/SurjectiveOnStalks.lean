@@ -26,6 +26,8 @@ universe u
 
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
+/-- The class of morphisms `f : X ⟶ Y` between schemes such that
+`𝒪_{Y, f x} ⟶ 𝒪_{X, x}` is surjective for all `x : X`. -/
 @[mk_iff]
 class SurjectiveOnStalks : Prop where
   surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
