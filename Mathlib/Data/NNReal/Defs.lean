@@ -53,7 +53,7 @@ open Function
 /-- Nonnegative real numbers. -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
-  SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
+  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
   CanonicallyOrderedCommSemiring, Inhabited
 
 namespace NNReal
@@ -128,12 +128,7 @@ noncomputable example : Inv ℝ≥0 := by infer_instance
 
 noncomputable example : Div ℝ≥0 := by infer_instance
 
-#adaptation_note
-/--
-On nightly-2024-11-12, we had to add `noncomputable` here.
-This is probably an undesired consequence of https://github.com/leanprover/lean4/pull/5920
-and should be investigated.-/
-noncomputable example : LE ℝ≥0 := by infer_instance
+example : LE ℝ≥0 := by infer_instance
 
 example : Bot ℝ≥0 := by infer_instance
 
@@ -335,7 +330,7 @@ noncomputable def gi : GaloisInsertion Real.toNNReal (↑) :=
 -- will be noncomputable, everything else should not be.
 example : OrderBot ℝ≥0 := by infer_instance
 
-noncomputable example : PartialOrder ℝ≥0 := by infer_instance
+example : PartialOrder ℝ≥0 := by infer_instance
 
 noncomputable example : CanonicallyLinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
