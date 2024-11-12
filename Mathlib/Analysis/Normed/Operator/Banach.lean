@@ -320,7 +320,7 @@ theorem continuous_symm (e : E ≃ₛₗ[σ] F) (h : Continuous e) : Continuous 
   intro s hs
   rw [← e.image_eq_preimage]
   rw [← e.coe_coe] at h ⊢
-  exact ContinuousLinearMap.isOpenMap (σ := σ) ⟨↑e, h⟩ e.surjective s hs
+  exact ContinuousLinearMap.isOpenMap (σ := σ) ⟨_, h⟩ e.surjective s hs
 
 /-- Associating to a linear equivalence between Banach spaces a continuous linear equivalence when
 the direct map is continuous, thanks to the Banach open mapping theorem that ensures that the

@@ -318,7 +318,7 @@ theorem orderOf_injective {H : Type*} [Monoid H] (f : G →* H) (hf : Function.I
 @[to_additive (attr := simp) "An additive equivalence preserves orders of elements."]
 lemma MulEquiv.orderOf_eq {H : Type*} [Monoid H] (e : G ≃* H) (x : G) :
     orderOf (e x) = orderOf x :=
-  orderOf_injective e e.injective x
+  orderOf_injective e.toMonoidHom e.injective x
 
 @[to_additive]
 theorem Function.Injective.isOfFinOrder_iff [Monoid H] {f : G →* H} (hf : Injective f) :

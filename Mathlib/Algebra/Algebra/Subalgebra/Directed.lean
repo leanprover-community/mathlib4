@@ -51,7 +51,7 @@ noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ
           dsimp
           rw [hf i k hik, hf j k hjk]
           rfl)
-        T (by rw [hT, coe_iSup_of_directed dir])
+        (T : Set A) (by rw [hT, coe_iSup_of_directed dir])
     map_one' := by apply Set.iUnionLift_const _ (fun _ => 1) <;> simp
     map_zero' := by dsimp; apply Set.iUnionLift_const _ (fun _ => 0) <;> simp
     map_mul' := by

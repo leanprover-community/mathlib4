@@ -997,7 +997,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
             simp only
             rw [hf i k hik, hf j k hjk]
             rfl)
-          (↑(iSup K)) (by rw [coe_iSup_of_directed dir])
+          _ (by rw [coe_iSup_of_directed dir])
       map_zero' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]

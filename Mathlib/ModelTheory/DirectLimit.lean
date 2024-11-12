@@ -263,7 +263,7 @@ theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → Di
   ext a
   rw [Quotient.eq_mk_iff_out, unify]
   generalize_proofs r
-  change _ ≈ .mk f i (f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd)
+  change _ ≈ Structure.Sigma.mk f i (f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd)
   have : (.mk f i (f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd) : Σˣ f).fst ≤ i :=
     le_rfl
   rw [equiv_iff G f (i := i) (hi _) this]

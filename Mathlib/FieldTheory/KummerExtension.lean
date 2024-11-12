@@ -438,7 +438,7 @@ lemma adjoinRootXPowSubCEquiv_symm_eq_root :
 include hζ H hα in
 lemma Algebra.adjoin_root_eq_top_of_isSplittingField :
     Algebra.adjoin K {α} = ⊤ := by
-  apply Subalgebra.map_injective (f := (adjoinRootXPowSubCEquiv hζ H hα).symm)
+  apply Subalgebra.map_injective (B := K[n√a]) (f := (adjoinRootXPowSubCEquiv hζ H hα).symm)
     (adjoinRootXPowSubCEquiv hζ H hα).symm.injective
   rw [Algebra.map_top, (Algebra.range_top_iff_surjective _).mpr
     (adjoinRootXPowSubCEquiv hζ H hα).symm.surjective, AlgHom.map_adjoin,

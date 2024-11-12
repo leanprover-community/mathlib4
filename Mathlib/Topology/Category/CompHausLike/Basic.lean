@@ -228,7 +228,7 @@ theorem isIso_of_bijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (bij : Funct
 
 instance forget_reflectsIsomorphisms :
     (forget (CompHausLike.{u} P)).ReflectsIsomorphisms :=
-  ⟨by intro A B f hf; exact isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
+  ⟨by intro A B f hf; rw [isIso_iff_bijective] at hf; exact isIso_of_bijective _ hf⟩
 
 /-- Any continuous bijection of compact Hausdorff spaces induces an isomorphism. -/
 noncomputable def isoOfBijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y)

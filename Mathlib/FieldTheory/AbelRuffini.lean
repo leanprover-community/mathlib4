@@ -258,8 +258,7 @@ theorem isIntegral (α : solvableByRad F E) : IsIntegral F α := by
   · exact fun _ => IsIntegral.neg
   · exact fun _ _ => IsIntegral.mul
   · intro α hα
-    exact Subalgebra.inv_mem_of_algebraic (integralClosure F (solvableByRad F E))
-      (show IsAlgebraic F ↑(⟨α, hα⟩ : integralClosure F (solvableByRad F E)) from hα.isAlgebraic)
+    exact IsIntegral.inv hα
   · intro α n hn hα
     obtain ⟨p, h1, h2⟩ := hα.isAlgebraic
     refine IsAlgebraic.isIntegral ⟨p.comp (X ^ n),

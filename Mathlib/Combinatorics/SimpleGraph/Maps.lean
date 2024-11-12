@@ -334,7 +334,7 @@ theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w
 @[simps]
 def mapEdgeSet : G.edgeSet ↪ G'.edgeSet where
   toFun := Hom.mapEdgeSet f
-  inj' := Hom.mapEdgeSet.injective f f.injective
+  inj' := Hom.mapEdgeSet.injective f.toRelHom f.injective
 
 /-- A graph embedding induces an embedding of neighbor sets. -/
 @[simps]

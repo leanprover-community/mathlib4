@@ -218,7 +218,7 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     Submodule.comap_mono (f := π) (bot_le (a := LinearMap.ker l))
   rw [← inf_eq_right.mpr this, ← Submodule.range_subtype (LinearMap.ker _),
     ← Submodule.map_comap_eq, ← LinearMap.ker_comp, e, LinearMap.ker_comp f,
-    LinearMap.ker_eq_bot.mpr (Submodule.injective_subtype _), Submodule.comap_bot]
+    LinearMap.ker_eq_bot.mpr (Submodule.injective_subtype (LinearMap.ker l)), Submodule.comap_bot]
   exact (Module.FinitePresentation.fg_ker f hf).map (Submodule.subtype _)
 
 end Ring
