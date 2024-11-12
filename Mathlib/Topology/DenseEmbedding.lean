@@ -209,12 +209,12 @@ end IsDenseInducing
 structure IsDenseEmbedding [TopologicalSpace α] [TopologicalSpace β] (e : α → β) extends
   IsDenseInducing e : Prop where
   /-- A dense embedding is injective. -/
-  inj : Function.Injective e
+  injective : Function.Injective e
 
 lemma IsDenseEmbedding.mk' [TopologicalSpace α] [TopologicalSpace β] (e : α → β) (c : Continuous e)
-    (dense : DenseRange e) (inj : Function.Injective e)
+    (dense : DenseRange e) (injective : Function.Injective e)
     (H : ∀ (a : α), ∀ s ∈ 𝓝 a, ∃ t ∈ 𝓝 (e a), ∀ b, e b ∈ t → b ∈ s) : IsDenseEmbedding e :=
-  { IsDenseInducing.mk' e c dense H with inj }
+  { IsDenseInducing.mk' e c dense H with injective }
 
 @[deprecated (since := "2024-09-30")]
 alias DenseEmbedding.mk' := IsDenseEmbedding.mk'

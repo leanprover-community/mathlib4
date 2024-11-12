@@ -171,7 +171,7 @@ theorem Step.diamond_aux :
   | (x3, b3) :: (x4, b4) :: tl, _, [], _, _, _, _, _, H => by
     injections; subst_vars; right; simpa using ⟨_, Red.Step.cons_not, Red.Step.not⟩
   | (x3, b3) :: tl, _, (x4, b4) :: tl2, _, _, _, _, _, H =>
-    let ⟨H1, H2⟩ := List.cons.injective H
+    let ⟨H1, H2⟩ := List.cons.inj H
     match Step.diamond_aux H2 with
     | Or.inl H3 => Or.inl <| by simp [H1, H3]
     | Or.inr ⟨L₅, H3, H4⟩ => Or.inr ⟨_, Step.cons H3, by simpa [H1] using Step.cons H4⟩
