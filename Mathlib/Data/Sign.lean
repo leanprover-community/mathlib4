@@ -392,7 +392,7 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α] {a b : α}
+variable [LinearOrderedRing α]
 
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>

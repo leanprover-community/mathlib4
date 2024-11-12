@@ -20,7 +20,7 @@ open Function Int
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
+variable [LinearOrderedSemifield α] {a b : α} {m n : ℤ}
 
 /-! ### Integer powers -/
 
@@ -91,7 +91,7 @@ end LinearOrderedSemifield
 
 section LinearOrderedField
 
-variable [LinearOrderedField α] {a b c d : α} {n : ℤ}
+variable [LinearOrderedField α] {a : α} {n : ℤ}
 
 protected theorem Even.zpow_nonneg (hn : Even n) (a : α) : 0 ≤ a ^ n := by
   obtain ⟨k, rfl⟩ := hn; rw [zpow_add' (by simp [em'])]; exact mul_self_nonneg _
