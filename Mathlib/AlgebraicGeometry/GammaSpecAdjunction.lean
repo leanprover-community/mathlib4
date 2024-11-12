@@ -63,11 +63,11 @@ variable (X : LocallyRingedSpace.{u})
 
 /-- The canonical map from the underlying set to the prime spectrum of `Γ(X)`. -/
 def toΓSpecFun : X → PrimeSpectrum (Γ.obj (op X)) := fun x =>
-  comap (X.presheaf.Γgerm x) (LocalRing.closedPoint (X.presheaf.stalk x))
+  comap (X.presheaf.Γgerm x) (IsLocalRing.closedPoint (X.presheaf.stalk x))
 
 theorem not_mem_prime_iff_unit_in_stalk (r : Γ.obj (op X)) (x : X) :
     r ∉ (X.toΓSpecFun x).asIdeal ↔ IsUnit (X.presheaf.Γgerm x r) := by
-  erw [LocalRing.mem_maximalIdeal, Classical.not_not]
+  erw [IsLocalRing.mem_maximalIdeal, Classical.not_not]
 
 /-- The preimage of a basic open in `Spec Γ(X)` under the unit is the basic
 open in `X` defined by the same element (they are equal as sets). -/
@@ -271,7 +271,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       dsimp
       show PrimeSpectrum.comap (f.c.app (op ⊤)) (X.toΓSpecFun x) = Y.toΓSpecFun (f.base x)
       dsimp [toΓSpecFun]
-      rw [← LocalRing.comap_closedPoint (f.stalkMap x), ←
+      rw [← IsLocalRing.comap_closedPoint (f.stalkMap x), ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]
       congr 2
       exact (PresheafedSpace.stalkMap_germ f.1 ⊤ x trivial).symm
@@ -411,7 +411,7 @@ end ΓSpec
 
 theorem Scheme.toSpecΓ_base (X : Scheme.{u}) (x) :
     (Scheme.toSpecΓ X).base x =
-      (Spec.map (X.presheaf.germ ⊤ x trivial)).base (LocalRing.closedPoint _) := rfl
+      (Spec.map (X.presheaf.germ ⊤ x trivial)).base (IsLocalRing.closedPoint _) := rfl
 
 @[reassoc (attr := simp)]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
