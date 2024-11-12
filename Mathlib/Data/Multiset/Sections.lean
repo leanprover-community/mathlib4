@@ -42,7 +42,7 @@ theorem coe_sections :
   | a :: l => by
     simp only [List.map_cons, List.sections]
     rw [← cons_coe, sections_cons, bind_map_comm, coe_sections l]
-    simp [List.sections, Function.comp_def, List.bind]
+    simp [List.sections, Function.comp_def, List.flatMap]
 
 @[simp]
 theorem sections_add (s t : Multiset (Multiset α)) :
@@ -57,7 +57,7 @@ theorem mem_sections {s : Multiset (Multiset α)} :
   | cons _ _ ih => simp [ih, rel_cons_left, eq_comm]
 
 theorem card_sections {s : Multiset (Multiset α)} : card (Sections s) = prod (s.map card) :=
-  Multiset.induction_on s (by simp) (by simp (config := { contextual := true }))
+  Multiset.induction_on s (by simp) (by simp +contextual)
 
 end Sections
 

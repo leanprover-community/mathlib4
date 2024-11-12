@@ -38,6 +38,8 @@ topological space, then specialize them to the case `X = s : Set Y`, `e = (↑)`
 Tietze extension theorem, Urysohn's lemma, normal topological space
 -/
 
+open Topology
+
 /-!  ### The `TietzeExtension` class -/
 
 section TietzeExtensionClass

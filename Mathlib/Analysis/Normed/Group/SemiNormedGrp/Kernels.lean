@@ -210,7 +210,7 @@ def explicitCokernelπ {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) : Y ⟶ explicitC
 
 theorem explicitCokernelπ_surjective {X Y : SemiNormedGrp.{u}} {f : X ⟶ Y} :
     Function.Surjective (explicitCokernelπ f) :=
-  surjective_quot_mk _
+  Quot.mk_surjective
 
 @[simp, reassoc]
 theorem comp_explicitCokernelπ {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :

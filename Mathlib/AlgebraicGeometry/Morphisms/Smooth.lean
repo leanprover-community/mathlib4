@@ -66,7 +66,7 @@ class IsSmooth : Prop where
 homomorphism property `Locally IsStandardSmooth.{0, 0}`. -/
 instance : HasRingHomProperty @IsSmooth (Locally IsStandardSmooth.{0, 0}) := by
   apply HasRingHomProperty.locally_of_iff
-  · exact isStandardSmooth_localizationPreserves
+  · exact isStandardSmooth_localizationPreserves.away
   · exact isStandardSmooth_stableUnderCompositionWithLocalizationAway
   · intro X Y f
     rw [isSmooth_iff]
@@ -83,9 +83,9 @@ instance isSmooth_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [IsSmooth f] [IsSmooth g] 
   MorphismProperty.comp_mem _ f g ‹IsSmooth f› ‹IsSmooth g›
 
 /-- Smooth of relative dimension `n` is stable under base change. -/
-lemma isSmooth_stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @IsSmooth :=
-  HasRingHomProperty.stableUnderBaseChange <| locally_stableUnderBaseChange
-    isStandardSmooth_respectsIso isStandardSmooth_stableUnderBaseChange
+lemma isSmooth_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsSmooth :=
+  HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
+    isStandardSmooth_respectsIso isStandardSmooth_isStableUnderBaseChange
 
 /--
 A morphism of schemes `f : X ⟶ Y` is smooth of relative dimension `n` if for each `x : X` there
@@ -110,17 +110,17 @@ homomorphism property `Locally (IsStandardSmoothOfRelativeDimension.{0, 0} n)`. 
 instance : HasRingHomProperty (@IsSmoothOfRelativeDimension n)
     (Locally (IsStandardSmoothOfRelativeDimension.{0, 0} n)) := by
   apply HasRingHomProperty.locally_of_iff
-  · exact isStandardSmoothOfRelativeDimension_localizationPreserves n
+  · exact (isStandardSmoothOfRelativeDimension_localizationPreserves n).away
   · exact isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n
   · intro X Y f
     rw [isSmoothOfRelativeDimension_iff]
 
 /-- Smooth of relative dimension `n` is stable under base change. -/
-lemma isSmoothOfRelativeDimension_stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange (@IsSmoothOfRelativeDimension n) :=
-  HasRingHomProperty.stableUnderBaseChange <| locally_stableUnderBaseChange
+lemma isSmoothOfRelativeDimension_isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange (@IsSmoothOfRelativeDimension n) :=
+  HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
     isStandardSmoothOfRelativeDimension_respectsIso
-    (isStandardSmoothOfRelativeDimension_stableUnderBaseChange n)
+    (isStandardSmoothOfRelativeDimension_isStableUnderBaseChange n)
 
 /-- Open immersions are smooth of relative dimension `0`. -/
 instance (priority := 900) [IsOpenImmersion f] : IsSmoothOfRelativeDimension 0 f :=
@@ -141,8 +141,8 @@ instance isSmoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
     obtain ⟨U₂, V₂, hfx₂, e₂, hf₂⟩ := hg.exists_isStandardSmoothOfRelativeDimension (f.base x)
     obtain ⟨U₁', V₁', hx₁', e₁', hf₁'⟩ := hf.exists_isStandardSmoothOfRelativeDimension x
     obtain ⟨r, s, hx₁, e₁, hf₁⟩ := exists_basicOpen_le_appLE_of_appLE_of_isAffine
-      (isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n)
-      (isStandardSmoothOfRelativeDimension_localizationPreserves n)
+      (isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n).right
+      (isStandardSmoothOfRelativeDimension_localizationPreserves n).away
       x V₂ U₁' V₁' V₁' hx₁' hx₁' e₁' hf₁' hfx₂
     have e : X.basicOpen s ≤ (f ≫ g) ⁻¹ᵁ U₂ :=
       le_trans e₁ <| f.preimage_le_preimage_of_le <| le_trans (Y.basicOpen_le r) e₂
@@ -152,7 +152,7 @@ instance isSmoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
     refine ⟨U₂, ⟨X.basicOpen s, V₁'.2.basicOpen s⟩, hx₁, e, heq ▸ ?_⟩
     apply IsStandardSmoothOfRelativeDimension.comp ?_ hf₂
     haveI : IsLocalization.Away r Γ(Y, Y.basicOpen r) := V₂.2.isLocalization_basicOpen r
-    exact (isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n).right
+    exact (isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n).left
       _ r _ hf₁
 
 instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsSmoothOfRelativeDimension 0 f]
@@ -160,8 +160,9 @@ instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsSmoothOfRelativeDimension 0 f]
     IsSmoothOfRelativeDimension 0 (f ≫ g) :=
   inferInstanceAs <| IsSmoothOfRelativeDimension (0 + 0) (f ≫ g)
 
-/-- Smooth of relative dimension `0` is stable under composition. -/
-instance : MorphismProperty.IsStableUnderComposition (@IsSmoothOfRelativeDimension 0) where
+/-- Smooth of relative dimension `0` is multiplicative. -/
+instance : MorphismProperty.IsMultiplicative (@IsSmoothOfRelativeDimension 0) where
+  id_mem _ := inferInstance
   comp_mem _ _ _ _ := inferInstance
 
 end AlgebraicGeometry
