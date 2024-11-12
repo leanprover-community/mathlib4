@@ -17,8 +17,8 @@ all polynomials must be constants.
 
 More generally, we can prove non-solvability of Fermat-Catalan equation: there are no
 non-constant polynomial solution of the equation `u * a ^ p + v * b ^ q + w * c ^ r = 0`, where
-`p, q, r ≥ 3` with `1/p + 1/q + 1/r ≤ 1` and not divisible by `char k` and `u, v, w` are
-nonzero elements in `k`.
+`p, q, r ≥ 3` with `p * q + q * r + r * p ≤ p * q * r` and not divisible by `char k`
+and `u, v, w` are nonzero elements in `k`.
 
 Proof uses Mason-Stothers theorem (Polynomial ABC theorem) and infinite descent
 (for characteristic p case).
@@ -92,6 +92,7 @@ theorem derivative_pow_eq_zero_iff {n : ℕ} (chn : ¬ringChar k ∣ n) {a : k[X
 theorem mul_eq_zero_left_iff
     {M₀ : Type*} [MulZeroClass M₀] [NoZeroDivisors M₀]
     {a : M₀} {b : M₀}  (ha : a ≠ 0) : a * b = 0 ↔ b = 0 := by
+  -- use `mul_eq_zero`, `or_iff_not_imp_left`, and `trans`
   rw [mul_eq_zero]
   tauto
 
@@ -330,16 +331,9 @@ theorem Polynomial.flt'
   apply Nat.mul_le_mul_right (n * n); exact hn
 
 theorem fermatLastTheoremPolynomial {n : ℕ} (hn : 3 ≤ n) (chn : ¬ringChar k ∣ n):
-    -- {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0)
-    -- (hab : IsCoprime a b) (heq : a ^ n + b ^ n = c ^ n) :
     FermatLastTheoremWith' k[X] n := by
   rw [FermatLastTheoremWith']
   intros a b c ha hb hc heq;
-
+  -- have flt := Polynomial.flt' hn chn ha hb hc _ heq
   sorry
-  -- have h := Polynomial.flt' hn chn ha hb hc hab heq
-  -- cases' h with h1 h2
-  -- cases' h2 with h2 h3
-  -- exact h1
-
 end
