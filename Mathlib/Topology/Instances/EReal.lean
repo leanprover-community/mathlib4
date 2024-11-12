@@ -201,7 +201,7 @@ lemma continuous_toENNReal : Continuous EReal.toENNReal := by
     filter_upwards [eventually_gt_nhds (coe_lt_top n)] with y hy
     exact toENNReal_coe (x := n) ▸ toENNReal_lt_toENNReal (coe_ennreal_nonneg _) hy
   refine ContinuousOn.continuousAt ?_ (compl_singleton_mem_nhds_iff.mpr h_top)
-  refine (ContinuousAt.continuousOn fun x hx ↦ ?_).congr (fun _ hx ↦ toENNReal_of_ne_top hx)
+  refine (continuousOn_of_forall_continuousAt fun x hx ↦ ?_).congr (fun _ h ↦ toENNReal_of_ne_top h)
   by_cases h_bot : x = ⊥
   · refine tendsto_nhds_of_eventually_eq ?_
     rw [h_bot, nhds_bot_basis.eventually_iff]
