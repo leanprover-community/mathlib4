@@ -87,7 +87,7 @@ instance : IsFractionRing (R ⧸ I) I.ResidueField where
   map_units' y := isUnit_iff_ne_zero.mpr
     (map_ne_zero_of_mem_nonZeroDivisors _ I.injective_algebraMap_quotient_residueField y.2)
   surj' x := by
-    obtain ⟨x, rfl⟩ := LocalRing.residue_surjective x
+    obtain ⟨x, rfl⟩ := IsLocalRing.residue_surjective x
     obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.mk'_surjective I.primeCompl x
     refine ⟨⟨Ideal.Quotient.mk _ x, ⟨Ideal.Quotient.mk _ s, ?_⟩⟩, ?_⟩
     · rwa [mem_nonZeroDivisors_iff_ne_zero, ne_eq, Ideal.Quotient.eq_zero_iff_mem]
@@ -96,8 +96,8 @@ instance : IsFractionRing (R ⧸ I) I.ResidueField where
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
     obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective y
     rw [← sub_eq_zero, ← map_sub, ← map_sub] at e
-    simp only [algebraMap_mk, LocalRing.ResidueField.algebraMap_eq, LocalRing.residue_eq_zero_iff,
-      IsScalarTower.algebraMap_apply R (Localization.AtPrime I) I.ResidueField,
+    simp only [IsLocalRing.ResidueField.algebraMap_eq, IsLocalRing.residue_eq_zero_iff,
+      IsScalarTower.algebraMap_apply R (Localization.AtPrime I) I.ResidueField, algebraMap_mk,
       IsLocalization.AtPrime.to_map_mem_maximal_iff _ I, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem] at e
     use 1
     simp [e]
