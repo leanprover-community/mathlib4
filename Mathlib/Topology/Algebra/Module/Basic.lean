@@ -1069,6 +1069,12 @@ theorem smulRight_one_eq_iff {f f' : M₂} :
     smulRight (1 : R₁ →L[R₁] R₁) f = smulRight (1 : R₁ →L[R₁] R₁) f' ↔ f = f' := by
   simp only [ContinuousLinearMap.ext_ring_iff, smulRight_apply, one_apply, one_smul]
 
+@[simp]
+theorem comp_smulRight [ContinuousSMul R₁ M₁] {f : M₁ →L[R₁] M₂} {x : M₁} :
+    f.comp (smulRight (1 : R₁ →L[R₁] R₁) x) = smulRight (1 : R₁ →L[R₁] R₁) (f x) := by
+  ext
+  simp only [coe_comp', comp_apply, smulRight_apply, one_apply, one_smul]
+
 theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
     (smulRight (1 : R₁ →L[R₁] R₁) x).comp (smulRight (1 : R₁ →L[R₁] R₁) c) =
       smulRight (1 : R₁ →L[R₁] R₁) (c • x) := by
