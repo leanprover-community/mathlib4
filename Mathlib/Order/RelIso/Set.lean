@@ -99,6 +99,38 @@ theorem RelIso.preimage_eq_image_symm (e : r ≃r s) (t : Set β) : e ⁻¹' t =
 
 end image
 
+/-- A relation is isomorphic to the lexicographic sum of elements less than `x` and elements not
+less than `x`. -/
+def sumLexLtLE (r : α → α → Prop) [IsTrans α r] [IsTrichotomous α r] [DecidableRel r] (x : α) :
+    r ≃r Sum.Lex (Subrel r {y | r y x}) (Subrel r {y | ¬ r y x}) where
+  toFun y := if h : r y x then Sum.inl ⟨y, h⟩ else Sum.inr ⟨y, h⟩
+  invFun y := y.elim Subtype.val Subtype.val
+  left_inv y := by dsimp; split_ifs <;> simp
+  right_inv y := by obtain (⟨y, h : r y x⟩ | ⟨y, h : ¬ r y x⟩) := y <;> simp [h]
+  map_rel_iff' {y z} := by
+    dsimp
+    split_ifs with h₁ h₂ h₂
+    · simp
+    · simpa using trans_trichotomous_right h₁ h₂
+    · simpa using fun h₃ ↦ h₁ <| _root_.trans h₃ h₂
+    · simp
+
+/-- A relation is isomorphic to the lexicographic sum of elements not greater than `x` and elements
+greater than `x`. -/
+def sumLexLeLT (r : α → α → Prop) [IsTrans α r] [IsTrichotomous α r] [DecidableRel r] (x : α) :
+    r ≃r Sum.Lex (Subrel r {y | ¬ r x y}) (Subrel r {y | r x y}) where
+  toFun y := if h : r x y then Sum.inr ⟨y, h⟩ else Sum.inl ⟨y, h⟩
+  invFun y := y.elim Subtype.val Subtype.val
+  left_inv y := by dsimp; split_ifs <;> simp
+  right_inv y := by obtain (⟨y, h : ¬ r x y⟩ | ⟨y, h : r x y⟩) := y <;> simp [h]
+  map_rel_iff' {y z} := by
+    dsimp
+    split_ifs with h₁ h₂ h₂
+    · simp
+    · simpa using fun h₃ ↦ h₂ <|_root_.trans h₁ h₃
+    · simpa using trans_trichotomous_left h₁ h₂
+    · simp
+
 theorem Acc.of_subrel {r : α → α → Prop} [IsTrans α r] {b : α} (a : { a // r a b })
     (h : Acc (Subrel r { a | r a b }) a) : Acc r a.1 :=
   h.recOn fun a _ IH ↦ ⟨_, fun _ hb ↦ IH ⟨_, _root_.trans hb a.2⟩ hb⟩

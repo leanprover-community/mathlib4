@@ -810,12 +810,8 @@ instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
   add := (· + ·)
   zero := 0
   one := 1
-  zero_add o :=
-    inductionOn o fun α _ _ =>
-      Eq.symm <| Quotient.sound ⟨⟨(emptySum PEmpty α).symm, Sum.lex_inr_inr⟩⟩
-  add_zero o :=
-    inductionOn o fun α _ _ =>
-      Eq.symm <| Quotient.sound ⟨⟨(sumEmpty α PEmpty).symm, Sum.lex_inl_inl⟩⟩
+  zero_add o := inductionOn o fun α _ _ => (emptySumLex _ α).ordinal_type_eq
+  add_zero o := inductionOn o fun α _ _ => (sumLexEmpty α _).ordinal_type_eq
   add_assoc o₁ o₂ o₃ :=
     Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
       Quot.sound

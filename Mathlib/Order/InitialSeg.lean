@@ -44,8 +44,9 @@ any `b' < b` also belongs to the range). The type of these embeddings from `r` t
 `InitialSeg r s`, and denoted by `r ≼i s`.
 -/
 
-variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
-  {t : γ → γ → Prop}
+universe u
+
+variable {α γ : Type*} {β : Type u} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
 
 open Function
 
@@ -567,6 +568,14 @@ set_option linter.deprecated false in
 theorem leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
     f.leLT g a = g (f a) :=
   transPrincipal_apply f g a
+
+theorem exists_relIso_sum [IsWellOrder β s] (f : r ≼i s) :
+    ∃ (γ : Type u) (t : γ → γ → Prop), Nonempty (Sum.Lex r t ≃r s) := by
+  classical
+  obtain f | f := f.principalSumRelIso
+  · exact ⟨_, _, ⟨(RelIso.sumLexCongr f.subrelIso.symm (RelIso.refl _)).trans
+      (sumLexLtLE _ f.top).symm⟩⟩
+  · exact ⟨PEmpty, nofun, ⟨(RelIso.sumLexEmpty r _).trans f⟩⟩
 
 end InitialSeg
 

@@ -719,6 +719,14 @@ def prodLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso �
 def relIsoOfIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] [IsEmpty β] : r ≃r s :=
   ⟨Equiv.equivOfIsEmpty α β, @fun a => isEmptyElim a⟩
 
+/-- The lexicographic sum of `r` plus an empty relation is isomorphic to `r`. -/
+def sumLexEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty β] : Sum.Lex r s ≃r r :=
+  ⟨Equiv.sumEmpty _ _, by simp⟩
+
+/-- The lexicographic sum of an empty relation plus `s` is isomorphic to `s`. -/
+def emptySumLex (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : Sum.Lex r s ≃r s :=
+  ⟨Equiv.emptySum _ _, by simp⟩
+
 /-- Two irreflexive relations on a unique type are isomorphic. -/
 def relIsoOfUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [IsIrrefl α r]
     [IsIrrefl β s] [Unique α] [Unique β] : r ≃r s :=
