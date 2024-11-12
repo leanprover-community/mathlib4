@@ -133,6 +133,53 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
+lemma IsMatching.exists_of_disjoint_sets_of_card_eq {s t : Set V} (h : Disjoint s t)
+    (f : s ≃ t) (hadj : ∀ {v w : V}, v ∈ s → w ∈ t → G.Adj v w) :
+    ∃ M : Subgraph G, M.verts = s ∪ t ∧ M.IsMatching := by
+  haveI (v : V) : Decidable (v ∈ s) := Classical.dec _
+  use {
+    verts := s ∪ t
+    Adj := fun v w ↦ (if h : v ∈ s then f ⟨v, h⟩ = w else False) ∨
+          (if h : w ∈ s then f ⟨w, h⟩ = v else False)
+    adj_sub := by
+      intro v w h
+      simp only [dite_else_false] at h
+      cases' h with hl hr
+      · rw [← hl.choose_spec]
+        exact hadj hl.choose (f _).coe_prop
+      · rw [← hr.choose_spec, G.adj_comm]
+        exact hadj hr.choose (f _).coe_prop
+    edge_vert := by
+      intro v w hvw
+      simp only [dite_else_false] at hvw
+      cases' hvw with hl hr
+      · exact Set.mem_union_left t hl.choose
+      · rw [← hr.choose_spec]
+        exact Set.mem_union_right s (f _).coe_prop
+  }
+
+  simp only [dite_else_false, true_and]
+  intro v hv
+  simp only [Set.mem_union] at hv
+  cases' hv with hl hr
+  · use f ⟨v, hl⟩
+    simp only [exists_prop', nonempty_prop, and_true]
+    refine ⟨by left; exact hl, ?_⟩
+    intro y hy
+    cases' hy with h1 h2
+    · obtain ⟨_, rfl⟩ := h1; rfl
+    · obtain ⟨hys, rfl⟩ := h2
+      exact (h.ne_of_mem hl (f ⟨y, hys⟩).coe_prop rfl).elim
+  · use f.symm ⟨v, hr⟩
+    simp only [Subtype.coe_eta, Equiv.apply_symm_apply, Subtype.coe_prop, exists_const, or_true,
+      true_and]
+    intro y hy
+    cases' hy with h1 h2
+    · obtain ⟨hvs, _⟩ := h1
+      exact (h.ne_of_mem hvs hr rfl).elim
+    · obtain ⟨_, rfl⟩ := h2
+      simp only [Subtype.coe_eta, Equiv.symm_apply_apply]
+
 protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g G')
     (hf : Injective f) (hM : M.IsMatching) : (M.map f).IsMatching := by
   rintro _ ⟨v, hv, rfl⟩
