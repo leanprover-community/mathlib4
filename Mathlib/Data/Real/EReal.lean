@@ -357,6 +357,13 @@ lemma toReal_eq_zero_iff {x : EReal} : x.toReal = 0 ↔ x = 0 ∨ x = ⊤ ∨ x 
 lemma toReal_ne_zero_iff {x : EReal} : x.toReal ≠ 0 ↔ x ≠ 0 ∧ x ≠ ⊤ ∧ x ≠ ⊥ := by
   induction x <;> norm_num
 
+lemma toReal_eq_toReal {x y : EReal} (hx_top : x ≠ ⊤) (hx_bot : x ≠ ⊥)
+    (hy_top : y ≠ ⊤) (hy_bot : y ≠ ⊥) :
+    x.toReal = y.toReal ↔ x = y := by
+  lift x to ℝ using ⟨hx_top, hx_bot⟩
+  lift y to ℝ using ⟨hy_top, hy_bot⟩
+  simp
+
 lemma toReal_nonneg {x : EReal} (hx : 0 ≤ x) : 0 ≤ x.toReal := by
   induction x
   · norm_num
