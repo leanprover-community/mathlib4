@@ -43,7 +43,7 @@ section HomogeneousDef
 
 /-- An `p : Submodule A M` is homogeneous if for every `m ∈ p`, all homogeneous components
   of `m` are in `p`. -/
-def Submodule.IsHomogeneous (p : Submodule A M) (ℳ : ιM → σM)
+def AddSubmonoidClass.IsHomogeneous (p : σM) (ℳ : ιM → σM)
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ] : Prop :=
   ∀ (i : ιM) ⦃m : M⦄, m ∈ p → (DirectSum.decompose ℳ m i : M) ∈ p
 
