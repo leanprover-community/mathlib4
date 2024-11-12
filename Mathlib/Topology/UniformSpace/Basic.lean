@@ -805,7 +805,7 @@ theorem nhdsSet_diagonal_le_uniformity : 𝓝ˢ (diagonal α) ≤ 𝓤 α :=
 theorem closure_eq_uniformity (s : Set <| α × α) :
     closure s = ⋂ V ∈ { V | V ∈ 𝓤 α ∧ SymmetricRel V }, V ○ s ○ V := by
   ext ⟨x, y⟩
-  simp (config := { contextual := true }) only
+  simp +contextual only
     [mem_closure_iff_nhds_basis (UniformSpace.hasBasis_nhds_prod x y), mem_iInter, mem_setOf_eq,
       and_imp, mem_comp_comp, exists_prop, ← mem_inter_iff, inter_comm, Set.Nonempty]
 
@@ -1044,7 +1044,7 @@ instance : Bot (UniformSpace α) :=
         let _ : TopologicalSpace α := ⊥; have := discreteTopology_bot α
         simp [idRel] }⟩
 
-instance : Inf (UniformSpace α) :=
+instance : Min (UniformSpace α) :=
   ⟨fun u₁ u₂ =>
     { uniformity := 𝓤[u₁] ⊓ 𝓤[u₂]
       symm := u₁.symm.inf u₂.symm

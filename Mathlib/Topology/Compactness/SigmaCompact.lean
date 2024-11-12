@@ -268,7 +268,7 @@ theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactS
   hs.isClosedEmbedding_subtypeVal.sigmaCompactSpace
 
 instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
-  ULift.isClosedEmbedding_down.sigmaCompactSpace
+  IsClosedEmbedding.uliftDown.sigmaCompactSpace
 
 /-- If `X` is a `σ`-compact space, then a locally finite family of nonempty sets of `X` can have
 only countably many elements, `Set.Countable` version. -/

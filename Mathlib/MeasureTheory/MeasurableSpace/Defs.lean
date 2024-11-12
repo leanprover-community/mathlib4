@@ -419,7 +419,7 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
   let b : MeasurableSpace α :=
     { MeasurableSet' := fun s => s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
-      measurableSet_compl := by simp (config := { contextual := true }) [or_imp]
+      measurableSet_compl := by simp +contextual [or_imp]
       measurableSet_iUnion := fun _ hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
   have : b = ⊥ :=
     bot_unique fun _ hs =>
