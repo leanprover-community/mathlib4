@@ -220,7 +220,6 @@ lemma tendsto_const_div_pow (r : ℝ) (k : ℕ) (hk : k ≠ 0) :
   simpa using Filter.Tendsto.const_div_atTop (tendsto_natCast_atTop_atTop (R := ℝ).comp
     (tendsto_pow_atTop hk) ) r
 
-
 /-- If `0 ≤ r < 1`, then `n ^ k r ^ n` tends to zero for any natural `k`.
 This is a specialized version of `tendsto_pow_const_mul_const_pow_of_abs_lt_one`, singled out
 for ease of application. -/
