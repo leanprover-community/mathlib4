@@ -373,6 +373,12 @@ theorem rank_closure_finite_le_nat_card (s : Set G) [Finite s] :
   rw [Nat.card_eq_fintype_card, ← s.toFinset_card, ← rank_congr (congr_arg _ s.coe_toFinset)]
   exact rank_closure_finset_le_card s.toFinset
 
+theorem nat_card_centralizer_nat_card_stabilizer (g : G) :
+    Nat.card (Subgroup.centralizer {g}) =
+      Nat.card (MulAction.stabilizer (ConjAct G) g) := by
+  rw [Subgroup.centralizer_eq_comap_stabilizer]
+  rfl
+
 end Subgroup
 
 section QuotientGroup

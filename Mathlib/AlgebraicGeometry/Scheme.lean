@@ -93,7 +93,7 @@ instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
 @[continuity, fun_prop]
-lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.base := f.base.2
+lemma Hom.continuous {X Y : Scheme} (f : X.Hom Y) : Continuous f.base := f.base.2
 
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
@@ -388,6 +388,9 @@ lemma Spec.map_app (U) :
 
 lemma Spec.map_appLE {U V} (e : U ≤ Spec.map f ⁻¹ᵁ V) :
     (Spec.map f).appLE V U e = StructureSheaf.comap f V U e := rfl
+
+instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
+  inferInstanceAs <| Nonempty (PrimeSpectrum A)
 
 end
 

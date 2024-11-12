@@ -288,6 +288,18 @@ theorem nhdsWithin_prod {α : Type*} [TopologicalSpace α] {β : Type*} [Topolog
   rw [nhdsWithin_prod_eq]
   exact prod_mem_prod hu hv
 
+lemma Filter.EventuallyEq.mem_interior {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t)
+    (h : x ∈ interior s) : x ∈ interior t := by
+  rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
+  simpa [mem_interior_iff_mem_nhds, ← nhdsWithin_eq_nhds, hst] using h
+
+lemma Filter.EventuallyEq.mem_interior_iff {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t) :
+    x ∈ interior s ↔ x ∈ interior t :=
+  ⟨fun h ↦ hst.mem_interior h, fun h ↦ hst.symm.mem_interior h⟩
+
+@[deprecated (since := "2024-11-11")]
+alias EventuallyEq.mem_interior_iff := Filter.EventuallyEq.mem_interior_iff
+
 section Pi
 
 variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
@@ -436,6 +448,10 @@ theorem Filter.EventuallyEq.eq_of_nhdsWithin {s : Set α} {f g : α → β} {a :
 theorem eventually_nhdsWithin_of_eventually_nhds {α : Type*} [TopologicalSpace α] {s : Set α}
     {a : α} {p : α → Prop} (h : ∀ᶠ x in 𝓝 a, p x) : ∀ᶠ x in 𝓝[s] a, p x :=
   mem_nhdsWithin_of_mem_nhds h
+
+lemma Set.MapsTo.preimage_mem_nhdsWithin {f : α → β} {s : Set α} {t : Set β} {x : α}
+    (hst : MapsTo f s t) : f ⁻¹' t ∈ 𝓝[s] x :=
+  Filter.mem_of_superset self_mem_nhdsWithin hst
 
 /-!
 ### `nhdsWithin` and subtypes
@@ -785,8 +801,11 @@ theorem ContinuousOn.continuousAt (h : ContinuousOn f s)
     (hx : s ∈ 𝓝 x) : ContinuousAt f x :=
   (h x (mem_of_mem_nhds hx)).continuousAt hx
 
-theorem ContinuousAt.continuousOn (hcont : ∀ x ∈ s, ContinuousAt f x) :
+theorem continuousOn_of_forall_continuousAt (hcont : ∀ x ∈ s, ContinuousAt f x) :
     ContinuousOn f s := fun x hx => (hcont x hx).continuousWithinAt
+
+@[deprecated (since := "2024-10-30")]
+alias ContinuousAt.continuousOn := continuousOn_of_forall_continuousAt
 
 @[fun_prop]
 theorem Continuous.continuousOn (h : Continuous f) : ContinuousOn f s := by
@@ -1444,6 +1463,6 @@ lemma ContinuousOn.union_continuousAt
     {s t : Set X} {f : X → Y} (s_op : IsOpen s)
     (hs : ContinuousOn f s) (ht : ∀ x ∈ t, ContinuousAt f x) :
     ContinuousOn f (s ∪ t) :=
-  ContinuousAt.continuousOn <| fun _ hx => hx.elim
+  continuousOn_of_forall_continuousAt <| fun _ hx => hx.elim
   (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
   (ht _)

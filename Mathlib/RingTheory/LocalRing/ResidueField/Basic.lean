@@ -33,11 +33,22 @@ lemma residue_eq_zero_iff (x : R) : residue R x = 0 ↔ x ∈ maximalIdeal R := 
 lemma residue_ne_zero_iff_isUnit (x : R) : residue R x ≠ 0 ↔ IsUnit x := by
   simp
 
+lemma residue_surjective :
+    Function.Surjective (LocalRing.residue R) :=
+  Ideal.Quotient.mk_surjective
+
 variable (R)
 
-instance ResidueField.algebra : Algebra R (ResidueField R) :=
+instance ResidueField.algebra {R₀} [CommRing R₀] [Algebra R₀ R] :
+    Algebra R₀ (ResidueField R) :=
   Ideal.Quotient.algebra _
 
+instance {R₁ R₂} [CommRing R₁] [CommRing R₂]
+    [Algebra R₁ R₂] [Algebra R₁ R] [Algebra R₂ R] [IsScalarTower R₁ R₂ R] :
+    IsScalarTower R₁ R₂ (LocalRing.ResidueField R) := by
+  delta LocalRing.ResidueField; infer_instance
+
+@[simp]
 theorem ResidueField.algebraMap_eq : algebraMap R (ResidueField R) = residue R :=
   rfl
 
