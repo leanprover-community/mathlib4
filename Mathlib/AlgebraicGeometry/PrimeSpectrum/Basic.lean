@@ -11,6 +11,7 @@ import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring
@@ -545,6 +546,86 @@ def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
         Set.compl_subset_compl] at h
       exact (IsLocalization.map_units (Localization.AtPrime x.asIdeal)
         ⟨a, show a ∈ x.asIdeal.primeCompl from h ha⟩ : _))
+
+section stableUnderSpecialization
+
+variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
+
+lemma isClosed_range_of_stableUnderSpecialization
+    (hf : StableUnderSpecialization (Set.range (comap f))) :
+    IsClosed (Set.range (comap f)) := by
+  refine (isClosed_iff_zeroLocus _).mpr ⟨RingHom.ker f, le_antisymm ?_ ?_⟩
+  · rintro _ ⟨q, rfl⟩
+    exact Ideal.comap_mono bot_le
+  · intro p hp
+    obtain ⟨q, hq, hqle⟩ := Ideal.exists_minimalPrimes_le hp
+    obtain ⟨q', hq', hq'c⟩ := Ideal.exists_minimalPrimes_comap_eq f q hq
+    exact hf ((le_iff_specializes ⟨q, hq.1.1⟩ p).mp hqle) ⟨⟨q', hq'.1.1⟩, PrimeSpectrum.ext hq'c⟩
+
+@[stacks 05JL]
+lemma isClosed_image_of_stableUnderSpecialization
+    (Z : Set (PrimeSpectrum S)) (hZ : IsClosed Z)
+    (hf : StableUnderSpecialization (comap f '' Z)) :
+    IsClosed (comap f '' Z) := by
+  obtain ⟨I, rfl⟩ := (PrimeSpectrum.isClosed_iff_zeroLocus_ideal Z).mp hZ
+  have : (comap f '' zeroLocus I) = Set.range (comap ((Ideal.Quotient.mk I).comp f)) := by
+    rw [comap_comp, ContinuousMap.coe_comp, Set.range_comp, range_comap_of_surjective, Ideal.mk_ker]
+    exact Ideal.Quotient.mk_surjective
+  rw [this] at hf ⊢
+  exact isClosed_range_of_stableUnderSpecialization _ hf
+
+variable {f} in
+@[stacks 05JL]
+lemma stableUnderSpecialization_range_iff :
+    StableUnderSpecialization (Set.range (comap f)) ↔ IsClosed (Set.range (comap f)) :=
+  ⟨isClosed_range_of_stableUnderSpecialization f, fun h ↦ h.stableUnderSpecialization⟩
+
+lemma stableUnderSpecialization_image_iff
+    (Z : Set (PrimeSpectrum S)) (hZ : IsClosed Z) :
+    StableUnderSpecialization (comap f '' Z) ↔ IsClosed (comap f '' Z) :=
+  ⟨isClosed_image_of_stableUnderSpecialization f Z hZ, fun h ↦ h.stableUnderSpecialization⟩
+
+end stableUnderSpecialization
+
+section denseRange
+
+variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
+
+lemma vanishingIdeal_range_comap :
+    vanishingIdeal (Set.range (comap f)) = (RingHom.ker f).radical := by
+  ext x
+  rw [RingHom.ker_eq_comap_bot, ← Ideal.comap_radical, Ideal.radical_eq_sInf]
+  simp only [mem_vanishingIdeal, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
+    comap_asIdeal, Ideal.mem_comap, bot_le, true_and, Submodule.mem_sInf, Set.mem_setOf_eq]
+  exact ⟨fun H I hI ↦ H ⟨I, hI⟩, fun H I ↦ H I.1 I.2⟩
+
+lemma closure_range_comap :
+    closure (Set.range (comap f)) = zeroLocus (RingHom.ker f) := by
+  rw [← zeroLocus_vanishingIdeal_eq_closure, vanishingIdeal_range_comap, zeroLocus_radical]
+
+lemma denseRange_comap_iff_ker_le_nilRadical :
+    DenseRange (comap f) ↔ RingHom.ker f ≤ nilradical R := by
+  rw [denseRange_iff_closure_range, closure_range_comap, ← Set.top_eq_univ, zeroLocus_eq_top_iff]
+  rfl
+
+@[stacks 00FL]
+lemma denseRange_comap_iff_minimalPrimes :
+    DenseRange (comap f) ↔ ∀ I (h : I ∈ minimalPrimes R), ⟨I, h.1.1⟩ ∈ Set.range (comap f) := by
+  constructor
+  · intro H I hI
+    have : I ∈ (RingHom.ker f).minimalPrimes := by
+      rw [denseRange_comap_iff_ker_le_nilRadical] at H
+      simp only [minimalPrimes, Ideal.minimalPrimes, Set.mem_setOf] at hI ⊢
+      convert hI using 2 with p
+      exact ⟨fun h ↦ ⟨h.1, bot_le⟩, fun h ↦ ⟨h.1, H.trans (h.1.radical_le_iff.mpr bot_le)⟩⟩
+    obtain ⟨p, hp, _, rfl⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f (I := ⊥) I this
+    exact ⟨⟨p, hp⟩, rfl⟩
+  · intro H p
+    obtain ⟨q, hq, hq'⟩ := Ideal.exists_minimalPrimes_le (J := p.asIdeal) bot_le
+    exact ((le_iff_specializes ⟨q, hq.1.1⟩ p).mp hq').mem_closed isClosed_closure
+      (subset_closure (H q hq))
+
+end denseRange
 
 variable (R) in
 /--
