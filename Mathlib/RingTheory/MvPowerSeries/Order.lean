@@ -154,7 +154,7 @@ theorem weightedOrder_eq_top_iff :
 
 /-- If the order of a formal power series `f` is finite,
 then some coefficient of weight equal to the order of `f` is nonzero.-/
-theorem exists_coeff_ne_zero_and_weightedOrder 
+theorem exists_coeff_ne_zero_and_weightedOrder
     (h : (toNat (f.weightedOrder w) : ℕ∞) = f.weightedOrder w) :
     ∃ d, coeff R d f ≠ 0 ∧ weight w d = f.weightedOrder w := by
   classical
