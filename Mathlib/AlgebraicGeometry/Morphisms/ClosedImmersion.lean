@@ -132,7 +132,7 @@ theorem of_comp_isClosedImmersion {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [
   base_closed := by
     have h := (f ≫ g).isClosedEmbedding
     simp only [Scheme.comp_coeBase, TopCat.coe_comp] at h
-    refine .of_continuous_injective_isClosedMap (Scheme.Hom.continuous f) h.inj.of_comp ?_
+    refine .of_continuous_injective_isClosedMap (Scheme.Hom.continuous f) h.injective.of_comp ?_
     intro Z hZ
     rw [IsClosedEmbedding.isClosed_iff_image_isClosed g.isClosedEmbedding,
       ← Set.image_comp]

@@ -229,7 +229,7 @@ variable {e : α → β}
 lemma isDenseInducing (de : IsDenseEmbedding e) : IsDenseInducing e := de.toIsDenseInducing
 
 theorem inj_iff (de : IsDenseEmbedding e) {x y} : e x = e y ↔ x = y :=
-  de.inj.eq_iff
+  de.injective.eq_iff
 
 theorem isEmbedding (de : IsDenseEmbedding e) : IsEmbedding e where __ := de
 
@@ -242,9 +242,9 @@ protected theorem separableSpace [SeparableSpace α] (de : IsDenseEmbedding e) :
 
 /-- The product of two dense embeddings is a dense embedding. -/
 protected theorem prodMap {e₁ : α → β} {e₂ : γ → δ} (de₁ : IsDenseEmbedding e₁)
-    (de₂ : IsDenseEmbedding e₂) : IsDenseEmbedding fun p : α × γ => (e₁ p.1, e₂ p.2) :=
-  { de₁.isDenseInducing.prodMap de₂.isDenseInducing with
-    inj := de₁.inj.prodMap de₂.inj }
+    (de₂ : IsDenseEmbedding e₂) : IsDenseEmbedding fun p : α × γ => (e₁ p.1, e₂ p.2) where
+  toIsDenseInducing := de₁.isDenseInducing.prodMap de₂.isDenseInducing
+  injective := de₁.injective.prodMap de₂.injective
 
 @[deprecated (since := "2024-10-06")] protected alias prod := IsDenseEmbedding.prodMap
 
@@ -261,7 +261,7 @@ protected theorem subtype (de : IsDenseEmbedding e) (p : α → Prop) :
       ext ⟨x, hx⟩
       rw [image_eq_range] at hx
       simpa [closure_subtype, ← range_comp, (· ∘ ·)]
-  inj := (de.inj.comp Subtype.coe_injective).codRestrict _
+  injective := (de.injective.comp Subtype.coe_injective).codRestrict _
   eq_induced :=
     (induced_iff_nhds_eq _).2 fun ⟨x, hx⟩ => by
       simp [subtypeEmb, nhds_subtype_eq_comap, de.isInducing.nhds_eq_comap, comap_comap,
