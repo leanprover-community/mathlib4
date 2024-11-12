@@ -53,7 +53,7 @@ def nullSubgroup : AddSubgroup M where
   zero_mem' := norm_zero
   neg_mem' {x} (hx : ‖x‖ = 0) := by simpa only [mem_setOf_eq, norm_neg] using hx
 
-lemma isClosed_nullSubgroup : IsClosed (@nullSubgroup M _ : Set M) :=
+lemma isClosed_nullSubgroup : IsClosed (nullSubgroup M : Set M) :=
   isClosed_singleton.preimage continuous_norm
 
 @[simp]
