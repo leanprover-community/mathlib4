@@ -21,7 +21,6 @@ namespace ModuleCat
 
 variable {R : Type u} [CommRing R]
 
--- Porting note: removed @[simps] as the simpNF linter complains
 /-- Auxiliary definition for the `MonoidalClosed` instance on `Module R`.
 (This is only a separate definition in order to speed up typechecking. )
 -/

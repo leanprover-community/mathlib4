@@ -127,7 +127,6 @@ theorem fourier_zero {x : AddCircle T} : fourier 0 x = 1 := by
   simp only [fourier_coe_apply]
   norm_num
 
-@[simp]
 theorem fourier_zero' {x : AddCircle T} : @toCircle T 0 = (1 : ℂ) := by
   have : fourier 0 x = @toCircle T 0 := by rw [fourier_apply, zero_smul]
   rw [← this]; exact fourier_zero
