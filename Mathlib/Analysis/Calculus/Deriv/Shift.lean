@@ -61,3 +61,33 @@ lemma deriv_comp_const_sub : deriv (fun x ↦ f (a - x)) x = -deriv f (a - x) :=
 
 lemma deriv_comp_sub_const : deriv (fun x ↦ f (x - a)) x = deriv f (x - a) := by
   simp_rw [sub_eq_add_neg, deriv_comp_add_const]
+
+section BigO
+
+open Topology Asymptotics Filter
+
+lemma ContinuousAt.isBigO {𝕜 𝕜' : Type*} [NormedRing 𝕜] [NormedRing 𝕜'] [NormOneClass 𝕜']
+    {f : 𝕜 → 𝕜'} {z : 𝕜} (hf : ContinuousAt f z) :
+    (fun w ↦ f (w + z)) =O[𝓝 0] (fun _ ↦ (1 : 𝕜')) := by
+  rw [isBigO_iff']
+  replace hf : ContinuousAt (fun w ↦ f (w + z)) 0 := by
+    convert (Homeomorph.comp_continuousAt_iff' (Homeomorph.addLeft (-z)) _ z).mp ?_
+    · simp only [Homeomorph.coe_addLeft, neg_add_cancel]
+    · simp only [Homeomorph.coe_addLeft, Function.comp_def, neg_add_cancel_comm, hf]
+  simp_rw [Metric.continuousAt_iff', dist_eq_norm_sub, zero_add] at hf
+  specialize hf 1 zero_lt_one
+  refine ⟨‖f z‖ + 1, by positivity, ?_⟩
+  refine Eventually.mp hf <| Eventually.of_forall fun w hw ↦ le_of_lt ?_
+  calc ‖f (w + z)‖
+    _ ≤ ‖f z‖ + ‖f (w + z) - f z‖ := norm_le_insert' ..
+    _ < ‖f z‖ + 1 := add_lt_add_left hw _
+    _ = _ := by simp only [norm_one, mul_one]
+
+lemma DifferentiableAt.isBigO_of_eq_zero {f : 𝕜 → F} {z : 𝕜} (hf : DifferentiableAt 𝕜 f z)
+    (hz : f z = 0) :
+    (fun w ↦ f (w + z)) =O[𝓝 0] id := by
+  rw [← zero_add z] at hf
+  simpa only [zero_add, hz, sub_zero]
+    using (hf.hasDerivAt.comp_add_const 0 z).differentiableAt.isBigO_sub
+
+end BigO
