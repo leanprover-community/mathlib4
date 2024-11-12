@@ -61,6 +61,7 @@ def carrier (c : ConjRootClass K L) : Set L :=
 theorem mem_carrier {x : L} {c : ConjRootClass K L} : x ∈ c.carrier ↔ mk K x = c :=
   Iff.rfl
 
+@[simp]
 theorem carrier_zero : (0 : ConjRootClass K L).carrier = {0} := by
   ext; rw [mem_carrier, mk_eq_zero_iff, Set.mem_singleton_iff]
 

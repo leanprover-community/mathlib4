@@ -659,6 +659,14 @@ lemma mapRangeAlgHom_comp {k R S T G} [CommSemiring k] [Semiring R] [Algebra k R
       (mapRangeAlgHom (G := G) g).comp (mapRangeAlgHom (G := G) f) := by
   ext; simp
 
+theorem lift_mapRangeAlgHom_algebraMap {R S G A}
+    [CommSemiring R] [CommSemiring S]
+    [AddMonoid G] [Semiring A] [Algebra R A] [Algebra S A] [Algebra R S] [IsScalarTower R S A]
+    (f : Multiplicative G →* A) (x : R[G]) :
+    lift _ _ _ f (mapRangeAlgHom (algebraMap R S).toNatAlgHom x) = lift _ _ _ f x := by
+  rw [lift_apply, AddMonoidAlgebra.mapRangeAlgHom_apply, Finsupp.sum_mapRange_index (by simp)]
+  simp [lift_apply]
+
 /-- If `f : R ≃ₐ[k] S` is an algebra equivalence between two `k`-algebras, then
 `Finsupp.mapRange f` is an algebra equivalence between their additive monoid algebras. -/
 @[simps!]
