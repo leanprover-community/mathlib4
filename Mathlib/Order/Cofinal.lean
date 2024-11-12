@@ -89,7 +89,7 @@ theorem BddAbove.of_not_isCofinal {s : Set α} (h : ¬ IsCofinal s) : BddAbove s
   obtain ⟨x, h⟩ := h
   exact ⟨x, fun y hy ↦ (h y hy).le⟩
 
-theorem isCofinal_of_not_bddAbove {s : Set α} (h : ¬ BddAbove s) : IsCofinal s := by
+theorem IsCofinal.of_not_bddAbove {s : Set α} (h : ¬ BddAbove s) : IsCofinal s := by
   contrapose! h
   exact bddAbove_of_not_isCofinal h
 
