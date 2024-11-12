@@ -166,7 +166,6 @@ theorem exists_coeff_ne_zero_and_weightedOrder
 then the weighted order of the power series is less than or equal to `weight d w`.-/
 theorem weightedOrder_le {d : σ →₀ ℕ} (h : coeff R d f ≠ 0) :
     f.weightedOrder w ≤ weight w d := by
-  classical
   rw [weightedOrder, dif_neg]
   · simp only [ne_eq, Nat.cast_le, Nat.find_le_iff]
     exact ⟨weight w d, le_rfl, d, h, rfl⟩
@@ -213,7 +212,7 @@ theorem weightedOrder_eq_nat {f : MvPowerSeries σ R} {n : ℕ} :
     exact le_antisymm (hd.symm ▸ f.weightedOrder_le w hd') (nat_le_weightedOrder w h)
 
 /-- The weighted_order of the monomial `a*X^d` is infinite if `a = 0` and `weight w d` otherwise.-/
-theorem weightedOrder_monomial (d : σ →₀ ℕ) (a : R) [Decidable (a = 0)] :
+theorem weightedOrder_monomial (d : σ →₀ ℕ) {a : R} [Decidable (a = 0)] :
     weightedOrder w (monomial R d a) = if a = 0 then (⊤ : ℕ∞) else weight w d := by
   classical
   split_ifs with h
@@ -457,7 +456,6 @@ def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowe
     where
   toFun f d := if weight w d = p then coeff R d f else 0
   map_add' f g := by
-    classical
     ext d
     simp only [map_add, coeff_apply, Pi.add_apply]
     split_ifs with h

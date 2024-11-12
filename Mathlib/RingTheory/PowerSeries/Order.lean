@@ -150,7 +150,7 @@ theorem min_order_le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) �
   refine le_order _ _ ?_
   simp (config := { contextual := true }) [coeff_of_lt_order]
 
-@[deprecated (since := "2024-09-17")] alias le_order_add := min_order_le_order_add
+@[deprecated (since := "2024-11-12")] alias le_order_add := min_order_le_order_add
 
 private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ order ψ)
     (H : order φ < order ψ) : order (φ + ψ) ≤ order φ ⊓ order ψ := by
