@@ -37,7 +37,7 @@ The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` ins
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory.Limits
 
@@ -174,5 +174,9 @@ theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) : IsIndObject A ↔
     (IsFiltered (CostructuredArrow yoneda A) ∧ FinallySmall.{v} (CostructuredArrow yoneda A)) :=
   ⟨fun h => ⟨h.isFiltered, h.finallySmall⟩,
    fun ⟨_, _⟩ => isIndObject_of_isFiltered_of_finallySmall A⟩
+
+theorem isIndObject_limit_of_hasLimit {J : Type u'} [Category.{v'} J] (F : J ⥤ C) [HasLimit F] :
+    IsIndObject (limit (F ⋙ yoneda)) :=
+  IsIndObject.map (preservesLimitIso yoneda F).hom (isIndObject_yoneda (limit F))
 
 end CategoryTheory.Limits

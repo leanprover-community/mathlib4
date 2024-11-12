@@ -5,6 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # The IPC property
@@ -25,7 +26,7 @@ namespace CategoryTheory.Limits
 
 section
 
-variable {C : Type u} [Category.{v} C] {α : Type w} {I : α → Type u₁} [∀ i, Category (I i)]
+variable {C : Type u} [Category.{v} C] {α : Type w} {I : α → Type u₁} [∀ i, Category.{v₁} (I i)]
   [HasLimitsOfShape (Discrete α) C] (F : ∀ i, I i ⥤ C) [∀ i, HasColimitsOfShape (I i) C]
   [HasColimitsOfShape (∀ i, I i) C]
 
@@ -58,5 +59,32 @@ theorem ι_colimitPointwiseProductToProductColimit_π (k : ∀ i, I i) (s : α) 
   simp [colimitPointwiseProductToProductColimit]
 
 end
+
+section FME157
+
+variable {α : Type w} {I : α → Type u₁} [∀ i, Category.{v₁} (I i)]
+
+instance [∀ i, IsFilteredOrEmpty (I i)] : IsFilteredOrEmpty (∀ i, I i) where
+  cocone_objs k l := ⟨fun s => IsFiltered.max (k s) (l s),
+    fun s => IsFiltered.leftToMax (k s) (l s), fun s => IsFiltered.rightToMax (k s) (l s), trivial⟩
+  cocone_maps k l f g := ⟨fun s => IsFiltered.coeq (f s) (g s),
+    fun s => IsFiltered.coeqHom (f s) (g s),
+    funext fun s => by simp [IsFiltered.coeq_condition (f s) (g s)]⟩
+
+attribute [local instance] IsFiltered.nonempty
+
+instance [∀ i, IsFiltered (I i)] : IsFiltered (∀ i, I i) where
+
+end FME157
+
+section final
+
+theorem isIso_colimitPointwiseProductToProductColimit {C : Type v} [SmallCategory C]
+    {α : Type v} {I : α → Type v} [∀ i, Category.{v} (I i)]
+    [∀ i, IsFiltered (I i)] (F : ∀ i, I i ⥤ Cᵒᵖ ⥤ Type v) :
+  IsIso (colimitPointwiseProductToProductColimit F) := sorry
+
+
+end final
 
 end CategoryTheory.Limits
