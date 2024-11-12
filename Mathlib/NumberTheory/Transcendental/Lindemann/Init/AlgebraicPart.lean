@@ -474,31 +474,13 @@ theorem linearIndependent_exp_aux2_2
   simp_rw [ConjRootClass.carrier_zero, Set.toFinset_singleton, sum_singleton, map_zero, exp_zero,
     Rat.smul_one_eq_cast]
 
-theorem linearIndependent_exp_aux2 (s : Finset ℂ) (x : ℚ[K s]) (x0 : x ≠ 0)
-    (x_ker : x ∈ RingHom.ker (Eval s ℚ)) :
-    ∃ (w : ℚ) (_w0 : w ≠ 0) (w' : ConjRootClass ℚ (K s) →₀ ℚ) (_hw' : w' 0 = 0),
-      (w + w'.sum fun c wc ↦ wc • ∑ x in c.carrier, exp (algebraMap (K s) ℂ x)) = 0 := by
-  obtain ⟨y, y0, hy⟩ := linearIndependent_exp_aux2_1 _ x x0 x_ker
-  exact linearIndependent_exp_aux2_2 s y y0 hy
-
-theorem linearIndependent_exp_aux1 (s : Finset ℂ) (x : (K s)[K s]) (x0 : x ≠ 0)
-    (x_ker : x ∈ RingHom.ker (Eval s (K s))) :
-    ∃ (w : ℚ) (_w0 : w ≠ 0) (w' : ConjRootClass ℚ (K s) →₀ ℚ) (_hw' : w' 0 = 0),
-      (w + w'.sum fun c wc ↦ wc • ∑ x in c.carrier, exp (algebraMap (K s) ℂ x)) = 0 := by
-  obtain ⟨y, y0, hfy⟩ := linearIndependent_range_aux ℚ _ x x0 x_ker
-  rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Eval_mapRange] at hfy
-  exact linearIndependent_exp_aux2 s y y0 hfy
-
 end
 
 open Complex
 
 variable {ι : Type*} [Fintype ι]
 
-abbrev range (u : ι → ℂ) (v : ι → ℂ) : Finset ℂ :=
-  univ.image u ∪ univ.image v
-
-theorem linearIndependent_exp_aux_rat_2
+theorem linearIndependent_exp_aux_rat
     (s : Finset ℂ)
     (u' : ι → K s) (u'_inj : Function.Injective u')
     (v' : ι → K s) (v0 : v' ≠ 0)
@@ -526,50 +508,7 @@ theorem linearIndependent_exp_aux_rat_2
     rw [dif_pos, u'_inj.right_inv_of_invOfMemRange]; · rfl
     exact mem_image_of_mem _ (mem_univ _)
 
-theorem linearIndependent_exp_aux_rat_1 (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
-    (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
-    (h : ∑ i, v i * exp (u i) = 0) :
-    ∃ (f : (K (range u v))[K (range u v)]), f ≠ 0 ∧ Eval (range u v) (K (range u v)) f = 0 := by
-  set s := range u v
-  have hs : ∀ x ∈ s, IsIntegral ℚ x := by
-    intro x hx
-    cases' mem_union.mp hx with hxu hxv
-    · obtain ⟨i, _, rfl⟩ := mem_image.mp hxu
-      exact hu i
-    · obtain ⟨i, _, rfl⟩ := mem_image.mp hxv
-      exact hv i
-  have u_mem : ∀ i, u i ∈ K' s := by
-    intro i
-    apply IntermediateField.subset_adjoin
-    rw [mem_rootSet, map_prod, prod_eq_zero_iff]
-    exact
-      ⟨poly_ne_zero s hs, u i, mem_union_left _ (mem_image.mpr ⟨i, mem_univ _, rfl⟩),
-        minpoly.aeval _ _⟩
-  have v_mem : ∀ i, v i ∈ K' s := by
-    intro i
-    apply IntermediateField.subset_adjoin
-    rw [mem_rootSet, map_prod, prod_eq_zero_iff]
-    exact
-      ⟨poly_ne_zero s hs, v i, mem_union_right _ (mem_image.mpr ⟨i, mem_univ _, rfl⟩),
-        minpoly.aeval _ _⟩
-  let u' : ι → K s := fun i : ι => Lift s ⟨u i, u_mem i⟩
-  let v' : ι → K s := fun i : ι => Lift s ⟨v i, v_mem i⟩
-  refine linearIndependent_exp_aux_rat_2 s u' ?_ v' ?_ ?_
-  · exact fun i j hij ↦ u_inj (Subtype.mk.inj ((Lift s).injective hij))
-  · simp_rw [Ne, funext_iff, Pi.zero_apply] at v0 ⊢; push_neg at v0 ⊢
-    refine v0.imp fun i hvi ↦ ?_
-    rwa [Ne, map_eq_zero_iff _ (AlgEquiv.injective _), ← ZeroMemClass.coe_eq_zero]
-  · simp_rw [algebraMap_K_apply, u', v', AlgEquiv.symm_apply_apply, h]
-
-theorem linearIndependent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
-    (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
-    (h : ∑ i, v i * exp (u i) = 0) :
-    ∃ (w : ℚ) (_w0 : w ≠ 0) (w' : ConjRootClass ℚ (K (range u v)) →₀ ℚ) (_hw' : w' 0 = 0),
-      (w + w'.sum fun c wc ↦ wc • ∑ x in c.carrier, exp (algebraMap (K (range u v)) ℂ x)) = 0 := by
-  obtain ⟨f, f0, hf⟩ := linearIndependent_exp_aux_rat_1 u hu u_inj v hv v0 h
-  exact linearIndependent_exp_aux1 (range u v) f f0 hf
-
-theorem linearIndependent_exp_aux_int_1
+theorem linearIndependent_exp_aux_int
     (s : Finset ℂ)
     (w : ℚ) (w0 : w ≠ 0) (w' : ConjRootClass ℚ (K s) →₀ ℚ) (hw' : w' 0 = 0)
     (h : (w + w'.sum fun c wc ↦ wc • ∑ x in c.carrier, exp (algebraMap (K s) ℂ x) : ℂ) = 0) :
@@ -597,25 +536,17 @@ theorem linearIndependent_exp_aux_int_1
     ← nsmul_eq_mul, smul_eq_zero_iff_right N0]
   exact h
 
-theorem linearIndependent_exp_aux_int (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
-    (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
-    (h : ∑ i, v i * exp (u i) = 0) :
-    ∃ (w : ℤ) (_w0 : w ≠ 0) (w' : ConjRootClass ℚ (K (range u v)) →₀ ℤ) (_hw' : w' 0 = 0),
-      (w + w'.sum fun c wc ↦ wc • ∑ x in c.carrier, exp (algebraMap (K (range u v)) ℂ x)) = 0 := by
-  obtain ⟨w, w0, w', hw', h⟩ := linearIndependent_exp_aux_rat u hu u_inj v hv v0 h
-  exact linearIndependent_exp_aux_int_1 (range u v) w w0 w' hw' h
-
-theorem linearIndependent_exp_aux_aroots_rat_1
+theorem linearIndependent_exp_aux_aroots_rat
     (s : Finset ℂ)
-    (w : ℤ) (w0 : w ≠ 0) (w' : ConjRootClass ℚ (K s) →₀ ℤ) (hw' : w' 0 = 0)
+    (w : ℤ) (w' : ConjRootClass ℚ (K s) →₀ ℤ) (hw' : w' 0 = 0)
     (h : (w + w'.sum fun c wc ↦ wc • ∑ x ∈ c.carrier, cexp (algebraMap (K s) ℂ x)) = 0) :
-    ∃ (w : ℤ) (_w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℚ[X]) (_hp : ∀ j, (p j).eval 0 ≠ 0)
+    ∃ (n : ℕ) (p : Fin n → ℚ[X]) (_hp : ∀ j, (p j).eval 0 ≠ 0)
       (w' : Fin n → ℤ),
         (w + ∑ j, w' j • (((p j).aroots ℂ).map fun x => exp x).sum : ℂ) = 0 := by
   let q := w'.support
   let c : Fin q.card → ConjRootClass ℚ (K s) := fun j => q.equivFin.symm j
   have hc : ∀ j, c j ∈ q := fun j => Finset.coe_mem _
-  refine ⟨w, w0, q.card, fun j => (c j).minpoly, ?_, fun j => w' (c j), ?_⟩
+  refine ⟨q.card, fun j => (c j).minpoly, ?_, fun j => w' (c j), ?_⟩
   · intro j; specialize hc j
     suffices ((c j).minpoly.map (algebraMap ℚ (K s))).eval
         (algebraMap ℚ (K s) 0) ≠ 0 by
@@ -640,24 +571,15 @@ theorem linearIndependent_exp_aux_aroots_rat_1
     rw [splits_map_iff, RingHom.id_comp]; exact c.splits_minpoly
   rw [this, c.aroots_minpoly_eq_carrier_val, Multiset.map_map]; rfl
 
-theorem linearIndependent_exp_aux_aroots_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
-    (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
-    (h : ∑ i, v i * exp (u i) = 0) :
-    ∃ (w : ℤ) (_w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℚ[X]) (_hp : ∀ j, (p j).eval 0 ≠ 0)
-      (w' : Fin n → ℤ),
-        w + ∑ j, w' j • (((p j).aroots ℂ).map fun x => exp x).sum = 0 := by
-  obtain ⟨w, w0, w', hw', h⟩ := linearIndependent_exp_aux_int u hu u_inj v hv v0 h
-  exact linearIndependent_exp_aux_aroots_rat_1 (range u v) w w0 w' hw' h
-
-theorem linearIndependent_exp_aux_aroots_int_1
-    (w : ℤ) (w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℚ[X]) (hp : ∀ j, (p j).eval 0 ≠ 0)
+theorem linearIndependent_exp_aux_aroots_int
+    (w : ℤ) (n : ℕ) (p : Fin n → ℚ[X]) (hp : ∀ j, (p j).eval 0 ≠ 0)
     (w' : Fin n → ℤ) (h : w + ∑ j, w' j • (((p j).aroots ℂ).map fun x => exp x).sum = 0) :
-    ∃ (w : ℤ) (_w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℤ[X]) (_hp : ∀ j, (p j).eval 0 ≠ 0)
+    ∃ (p : Fin n → ℤ[X]) (_hp : ∀ j, (p j).eval 0 ≠ 0)
       (w' : Fin n → ℤ), w + ∑ j, w' j • (((p j).aroots ℂ).map fun x => exp x).sum = 0 := by
   choose b hb using
     fun j ↦ IsLocalization.integerNormalization_map_to_map (nonZeroDivisors ℤ) (p j)
   refine
-    ⟨w, w0, n, fun i => IsLocalization.integerNormalization (nonZeroDivisors ℤ) (p i), ?_, w', ?_⟩
+    ⟨fun i => IsLocalization.integerNormalization (nonZeroDivisors ℤ) (p i), ?_, w', ?_⟩
   · intro j
     suffices
       aeval (algebraMap ℤ ℚ 0) (IsLocalization.integerNormalization (nonZeroDivisors ℤ) (p j)) ≠ 0
@@ -672,11 +594,47 @@ theorem linearIndependent_exp_aux_aroots_int_1
   rw [map_ne_zero_iff _ (algebraMap ℚ ℂ).injective, Int.cast_ne_zero]
   exact nonZeroDivisors.coe_ne_zero _
 
-theorem linearIndependent_exp_aux_aroots_int (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
+theorem linearIndependent_exp_aux (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
     (h : ∑ i, v i * exp (u i) = 0) :
     ∃ (w : ℤ) (_w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℤ[X]) (_p0 : ∀ j, (p j).eval 0 ≠ 0)
       (w' : Fin n → ℤ),
         (w + ∑ j, w' j • (((p j).aroots ℂ).map fun x => exp x).sum : ℂ) = 0 := by
-  obtain ⟨w, w0, n, p, hp, w', h⟩ := linearIndependent_exp_aux_aroots_rat u hu u_inj v hv v0 h
-  exact linearIndependent_exp_aux_aroots_int_1 w w0 n p hp w' h
+  set s := univ.image u ∪ univ.image v
+  have hs : ∀ x ∈ s, IsIntegral ℚ x := by
+    intro x hx
+    cases' mem_union.mp hx with hxu hxv
+    · obtain ⟨i, _, rfl⟩ := mem_image.mp hxu
+      exact hu i
+    · obtain ⟨i, _, rfl⟩ := mem_image.mp hxv
+      exact hv i
+  have u_mem : ∀ i, u i ∈ K' s := by
+    intro i
+    apply IntermediateField.subset_adjoin
+    rw [mem_rootSet, map_prod, prod_eq_zero_iff]
+    exact
+      ⟨poly_ne_zero s hs, u i, mem_union_left _ (mem_image.mpr ⟨i, mem_univ _, rfl⟩),
+        minpoly.aeval _ _⟩
+  have v_mem : ∀ i, v i ∈ K' s := by
+    intro i
+    apply IntermediateField.subset_adjoin
+    rw [mem_rootSet, map_prod, prod_eq_zero_iff]
+    exact
+      ⟨poly_ne_zero s hs, v i, mem_union_right _ (mem_image.mpr ⟨i, mem_univ _, rfl⟩),
+        minpoly.aeval _ _⟩
+  let u' : ι → K s := fun i : ι => Lift s ⟨u i, u_mem i⟩
+  let v' : ι → K s := fun i : ι => Lift s ⟨v i, v_mem i⟩
+  obtain ⟨f, f0, hf⟩ : ∃ (f : (K s)[K s]), f ≠ 0 ∧ Eval s (K s) f = 0 := by
+    refine linearIndependent_exp_aux_rat s u' ?_ v' ?_ ?_
+    · exact fun i j hij ↦ u_inj (Subtype.mk.inj ((Lift s).injective hij))
+    · simp_rw [Ne, funext_iff, Pi.zero_apply] at v0 ⊢; push_neg at v0 ⊢
+      refine v0.imp fun i hvi ↦ ?_
+      rwa [Ne, map_eq_zero_iff _ (AlgEquiv.injective _), ← ZeroMemClass.coe_eq_zero]
+    · simp_rw [algebraMap_K_apply, u', v', AlgEquiv.symm_apply_apply, h]
+  obtain ⟨f, f0, hf⟩ := linearIndependent_range_aux ℚ _ f f0 hf
+  rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Eval_mapRange] at hf
+  obtain ⟨f, f0, hf⟩ := linearIndependent_exp_aux2_1 _ f f0 hf
+  obtain ⟨w, w0, w', hw', h⟩ :=  linearIndependent_exp_aux2_2 s f f0 hf
+  obtain ⟨w, w0, w', hw', h⟩ := linearIndependent_exp_aux_int s w w0 w' hw' h
+  obtain ⟨n, p, hp, w', h⟩ := linearIndependent_exp_aux_aroots_rat s w w' hw' h
+  exact ⟨w, w0, n, linearIndependent_exp_aux_aroots_int w n p hp w' h⟩

@@ -24,7 +24,7 @@ private theorem linearIndependent_exp' (u : ι → ℂ) (hu : ∀ i, IsIntegral 
     (h : ∑ i, v i * exp (u i) = 0) : ∀ i, v i = 0 := by
   rw [funext_iff.symm, ← Pi.zero_def]
   by_contra! v0
-  obtain ⟨w, w0, m, p, p0, w', h⟩ := linearIndependent_exp_aux_aroots_int u hu u_inj v hv v0 h
+  obtain ⟨w, w0, m, p, p0, w', h⟩ := linearIndependent_exp_aux u hu u_inj v hv v0 h
   have m0 : m ≠ 0 := by
     rintro rfl; rw [Fin.sum_univ_zero, add_zero, Int.cast_eq_zero] at h
     exact w0 h
