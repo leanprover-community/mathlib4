@@ -84,7 +84,7 @@ variable [LinearOrder α]
 theorem not_isCofinal_iff {s : Set α} : ¬ IsCofinal s ↔ ∃ x, ∀ y ∈ s, y < x := by
   simp [IsCofinal]
 
-theorem bddAbove_of_not_isCofinal {s : Set α} (h : ¬ IsCofinal s) : BddAbove s := by
+theorem BddAbove.of_not_isCofinal {s : Set α} (h : ¬ IsCofinal s) : BddAbove s := by
   rw [not_isCofinal_iff] at h
   obtain ⟨x, h⟩ := h
   exact ⟨x, fun y hy ↦ (h y hy).le⟩
