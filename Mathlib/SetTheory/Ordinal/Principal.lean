@@ -198,7 +198,7 @@ theorem Principal.add_absorp {a o : Ordinal} (ho : Principal (· + ·) o) (ha : 
     a + o = o :=
   principal_add_iff_add_left_eq_self.1 ho a ha
 
-theorem Principal.add_absorp_of_ge {a b c : Ordinal} (hb : Principal (· + ·) b)
+theorem Principal.add_absorp_of_le {a b c : Ordinal} (hb : Principal (· + ·) b)
     (hab : a < b) (hbc : b ≤ c) : a + c = c := by
   rw [← Ordinal.add_sub_cancel_of_le hbc, ← add_assoc, hb.add_absorp hab,
     Ordinal.add_sub_cancel_of_le hbc]
@@ -222,28 +222,27 @@ theorem principal_add_iff_add_lt_ne_self {a} :
 theorem principal_add_iff_add_self_lt {a} : Principal (· + ·) a ↔ ∀ b < a, b + b < a :=
   principal_mono_iff (fun x _ _ h => add_le_add_left h x) (fun x _ _ h => add_le_add_right h x)
 
-theorem principal_add_omega : Principal (· + ·) ω := fun a b ha hb =>
-  match a, b, lt_omega.1 ha, lt_omega.1 hb with
+theorem principal_add_omega0 : Principal (· + ·) ω := fun a b ha hb =>
+  match a, b, lt_omega0.1 ha, lt_omega0.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
     dsimp only; rw [← Nat.cast_add]
-    apply nat_lt_omega
+    apply nat_lt_omega0
 
-theorem add_omega {a : Ordinal} : a < ω → a + ω = ω :=
-  principal_add_omega.add_absorp
+theorem add_omega0 {a : Ordinal} : a < ω → a + ω = ω :=
+  principal_add_omega0.add_absorp
 
-theorem principal_add_omega_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
+theorem principal_add_omega0_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
   obtain rfl | ha' := eq_or_ne x 0
   · rw [opow_zero, principal_one_iff, add_zero]
   · rw [principal_add_iff_add_self_lt]
     intro a ha
-    obtain ⟨c, hc, m, hm⟩ := lt_omega_opow ha ha'
+    obtain ⟨c, hc, m, hm⟩ := (lt_omega0_opow ha').1 ha
     apply (add_lt_add_of_le_of_lt hm.le hm).trans_le
     rw [← mul_add, ← Nat.cast_add]
-    apply (omega_opow_mul_nat_lt _ _).le.trans
-    rwa [opow_le_opow_iff_right one_lt_omega, succ_le_iff]
+    exact (omega0_opow_mul_nat_lt hc _).le
 
-theorem add_omega_opow {a b : Ordinal} : a < ω ^ b → a + ω ^ b = ω ^ b :=
-  (principal_add_omega_opow b).add_absorp
+theorem add_omega0_opow {a b : Ordinal} : a < ω ^ b → a + ω ^ b = ω ^ b :=
+  (principal_add_omega0_opow b).add_absorp
 
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem principal_add_iff_zero_or_omega0_opow {o : Ordinal} :
@@ -252,7 +251,7 @@ theorem principal_add_iff_zero_or_omega0_opow {o : Ordinal} :
   · rw [or_iff_not_imp_left]
     intro H ho
     refine ⟨log ω o, (opow_log_le_self ω ho).eq_of_not_lt ?_⟩
-    obtain ⟨n, hn⟩ := lt_omega_opow_succ (lt_opow_succ_log_self one_lt_omega o)
+    obtain ⟨n, hn⟩ := lt_omega0_opow_succ.1 (lt_opow_succ_log_self one_lt_omega0 o)
     intro h
     apply hn.not_lt
     clear hn
@@ -262,7 +261,7 @@ theorem principal_add_iff_zero_or_omega0_opow {o : Ordinal} :
       exact H IH h
   · rintro (rfl | ⟨a, rfl⟩)
     · exact principal_zero
-    · exact principal_add_omega_opow a
+    · exact principal_add_omega0_opow a
 
 @[deprecated (since := "2024-09-30")]
 alias principal_add_iff_zero_or_omega_opow := principal_add_iff_zero_or_omega0_opow
@@ -282,9 +281,9 @@ alias opow_principal_add_of_principal_add := principal_add_opow_of_principal_add
 
 alias Principal.opow := opow_principal_add_of_principal_add
 
-@[deprecated Principal.add_absorp_of_ge (since := "2024-08-19")]
+@[deprecated Principal.add_absorp_of_le (since := "2024-08-19")]
 theorem add_absorp {a b c : Ordinal} : a < ω ^ b → ω ^ b ≤ c → a + c = c :=
-  (principal_add_omega_opow b).add_absorp_of_ge
+  (principal_add_omega0_opow b).add_absorp_of_le
 
 theorem add_div_of_lt_of_principal_add {a b c : Ordinal} (hc : Principal (· + ·) c) (hbc : b < c) :
     (a + b) / c = a / c := by
@@ -301,7 +300,7 @@ theorem add_div_of_ge_of_principal_add {a b c : Ordinal} (hc : Principal (· + �
   · iterate 3 rw [div_zero]
     rw [add_zero]
   · conv_lhs => rw [← div_add_mod a c]
-    rw [add_assoc, mul_add_div _ hc₀, add_left_cancel, hc.add_absorp_of_ge (mod_lt a hc₀) hcb]
+    rw [add_assoc, mul_add_div _ hc₀, add_left_cancel, hc.add_absorp_of_le (mod_lt a hc₀) hcb]
 
 theorem add_mod_of_lt_of_principal_add {a b c : Ordinal} (hc : Principal (· + ·) c)
     (hbc : b < c) : (a + b) % c = a % c + b := by
