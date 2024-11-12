@@ -133,8 +133,8 @@ uniform convergence
 
 noncomputable section
 
-open scoped Topology Uniformity
-open Set Filter
+open Filter Set Topology
+open scoped Uniformity
 
 section TypeAlias
 
