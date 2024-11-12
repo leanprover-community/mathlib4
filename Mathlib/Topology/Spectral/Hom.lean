@@ -34,7 +34,7 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {f : 
 
 /-- A function between topological spaces is spectral if it is continuous and the preimage of every
 compact open set is compact open. -/
-@[stacks 005A]
+@[stacks 005A, stacks 08YG]
 structure IsSpectralMap (f : α → β) extends Continuous f : Prop where
   /-- A function between topological spaces is spectral if it is continuous and the preimage of
    every compact open set is compact open. -/
