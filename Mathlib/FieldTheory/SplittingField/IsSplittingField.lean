@@ -38,6 +38,7 @@ namespace Polynomial
 variable [Field K] [Field L] [Field F] [Algebra K L]
 
 /-- Typeclass characterising splitting fields. -/
+@[stacks 09HV "Predicate version"]
 class IsSplittingField (f : K[X]) : Prop where
   splits' : Splits (algebraMap K L) f
   adjoin_rootSet' : Algebra.adjoin K (f.rootSet L : Set L) = ⊤
