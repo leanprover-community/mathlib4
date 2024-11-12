@@ -791,7 +791,7 @@ theorem _root_.AlgHom.range_eq_top (f : A →ₐ[R] B) :
     f.range = (⊤ : Subalgebra R B) ↔ Function.Surjective f :=
   Algebra.eq_top_iff
 
-@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
+@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := AlgHom.range_eq_top
 
 @[simp]
 theorem range_id : (AlgHom.id R A).range = ⊤ :=
