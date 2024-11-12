@@ -1748,7 +1748,7 @@ def propagateProjectionConstructor (p c : Expr) : CCM Unit := do
       unless ← pureIsDefEq (← inferType (pArgs[mkidx]'h)) (← inferType c) do return
       /- Create new projection application using c (e.g., `(x, y).fst`), and internalize it.
         The internalizer will add the new equality. -/
-      let pArgs := pArgs.set ⟨mkidx, h⟩ c
+      let pArgs := pArgs.set mkidx c
       let newP := mkAppN pFn pArgs
       internalizeCore newP none
     else
