@@ -53,26 +53,9 @@ theorem abs_sq_eq_star_mul_self (a : A) : (abs a) ^ (2 : NNReal) = star a * a :=
   simp only [abs_nonneg, nnrpow_two]
   apply abs_mul_self_eq_star_mul_self
 
-/-
-theorem abs_eq_zero_iff_eq_zero {a : A} : abs a = 0 ↔ a = 0 := by
-  constructor
-  · intro ha
-    have := congrArg (fun x ↦ x ^ (2 : NNReal)) ha
-    simpa only [zero_nnrpow, abs_sq_eq_star_mul_self, CStarRing.star_mul_self_eq_zero_iff]
-  · intro h
-    simp only [h, abs, star_zero, mul_zero, sqrt_zero]
--/
-
--- Try to write a short proof using sqrt_eq_zero_iff
-example {a : A} : abs a = 0 ↔ a = 0 := by
-  constructor
-  · intro h
-    rw [abs, sqrt_eq_zero_iff (ha := star_mul_self_nonneg _)] at h
-    exact (CStarRing.star_mul_self_eq_zero_iff a).mp h
-  · intro h
-    simp only [h, abs, star_zero, mul_zero, sqrt_zero]
-
---Can this be made even shorter?
+theorem abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
+  nth_rw 2 [ ← CStarRing.star_mul_self_eq_zero_iff]
+  simp only [abs, sqrt_eq_zero_iff (ha := star_mul_self_nonneg _)]
 
 end abs
 
