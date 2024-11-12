@@ -179,12 +179,11 @@ theorem principal_add_iff_add_left_eq_self : Principal (· + ·) o ↔ ∀ a < o
   · rw [← h a hao]
     exact (isNormal_add_right a).strictMono hbo
 
-theorem Principal.add_absorp {a o : Ordinal} (ho : Principal (· + ·) o) (ha : a < o) :
-    a + o = o :=
+theorem Principal.add_absorp (ho : Principal (· + ·) o) (ha : a < o) : a + o = o :=
   principal_add_iff_add_left_eq_self.1 ho a ha
 
-theorem Principal.add_absorp_of_le {a b c : Ordinal} (hb : Principal (· + ·) b)
-    (hab : a < b) (hbc : b ≤ c) : a + c = c := by
+theorem Principal.add_absorp_of_le (hb : Principal (· + ·) b) (hab : a < b) (hbc : b ≤ c) :
+    a + c = c := by
   rw [← Ordinal.add_sub_cancel_of_le hbc, ← add_assoc, hb.add_absorp hab,
     Ordinal.add_sub_cancel_of_le hbc]
 
@@ -291,7 +290,7 @@ theorem principal_add_opow_of_principal_add {a} (ha : Principal (· + ·) a) (b 
 @[deprecated (since := "2024-10-16")]
 alias opow_principal_add_of_principal_add := principal_add_opow_of_principal_add
 
-theorem add_absorp {a b c : Ordinal} (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c = c := by
+theorem add_absorp (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c = c := by
   rw [← Ordinal.add_sub_cancel_of_le h₂, ← add_assoc, add_omega0_opow h₁]
 
 theorem principal_add_mul_of_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
