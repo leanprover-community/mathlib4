@@ -325,7 +325,7 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun w => IsCompact (closur
         exact False.elim (h hji)
       · intro hjmemv
         rw [update_noteq h]
-        exact v.p_refined hjmemv
+        exact v.pred_of_mem hjmemv
   · intro j hj
     rw [mem_insert_iff, not_or] at hj
     rw [update_noteq hj.1, v.apply_eq hj.2]
@@ -351,7 +351,7 @@ theorem exists_subset_iUnion_closure_subset_t2space (hs : IsCompact s) (uo : ∀
   suffices ∀ i, i ∈ v.carrier from
     ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i), ?_⟩
   · intro i
-    exact v.p_refined (this i)
+    exact v.pred_of_mem (this i)
   · intro i
     by_contra! hi
     rcases exists_gt_t2space v hs i hi with ⟨v', hlt, _⟩
