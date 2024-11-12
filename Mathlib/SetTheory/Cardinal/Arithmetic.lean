@@ -918,6 +918,15 @@ theorem principal_opow_omega (o : Ordinal) : Principal (· ^ ·) (ω_ o) := by
     apply (card_opow_le a b).trans_lt (max_lt _ (max_lt ha hb))
     rwa [← aleph_zero, aleph_lt_aleph]
 
+theorem IsInitial.principal_opow {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) :
+    Principal (· ^ ·) o := by
+  obtain ⟨a, rfl⟩ := mem_range_omega_iff.2 ⟨ho, h⟩
+  exact principal_opow_omega a
+
+theorem principal_opow_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· ^ ·) c.ord := by
+  apply (isInitial_ord c).principal_opow
+  rwa [omega0_le_ord]
+
 end Ordinal
 
 /-!
