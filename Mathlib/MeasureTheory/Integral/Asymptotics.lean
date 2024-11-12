@@ -29,7 +29,7 @@ We establish integrability of `f` from `f = O(g)`.
 
 open Asymptotics MeasureTheory Set Filter
 
-variable {α E F : Type*} [NormedAddCommGroup E] {f : α → E} {g : α → F} {a b : α} {l : Filter α}
+variable {α E F : Type*} [NormedAddCommGroup E] {f : α → E} {g : α → F} {a : α} {l : Filter α}
 
 namespace Asymptotics
 

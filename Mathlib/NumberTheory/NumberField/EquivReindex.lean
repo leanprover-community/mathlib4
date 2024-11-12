@@ -11,8 +11,9 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 This file introduces an equivalence between the set of embeddings of `K` into `ℂ` and the
 index set of the chosen basis of the ring of integers of `K`.
 
-## Tagshouse
-number field, algebraic number
+## Tags
+
+house, number field, algebraic number
 -/
 
 variable (K : Type*) [Field K] [NumberField K]

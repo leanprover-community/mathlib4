@@ -947,7 +947,6 @@ theorem span_singleton_eq_range (x : M) : (R ∙ x) = range (toSpanSingleton R M
     refine Iff.trans ?_ LinearMap.mem_range.symm
     exact mem_span_singleton
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem toSpanSingleton_one (x : M) : toSpanSingleton R M x 1 = x :=
   one_smul _ _
 
