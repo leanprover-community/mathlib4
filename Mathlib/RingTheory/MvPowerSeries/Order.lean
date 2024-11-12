@@ -384,7 +384,7 @@ theorem nat_le_order {n : ℕ} (h : ∀ d, degree d < n → coeff R d f = 0) :
 
 /-- The order of a formal power series is at least `n` if
 the `d`th coefficient is `0` for all `d` such that `degree d < n`.-/
-theorem le_order {n : ℕ∞} (h : ∀ d : σ →₀ ℕ, degree d < n → coeff R d f = 0) : 
+theorem le_order {n : ℕ∞} (h : ∀ d : σ →₀ ℕ, degree d < n → coeff R d f = 0) :
     n ≤ f.order := by
   simp_rw [degree_eq_weight_one] at h
   exact le_weightedOrder _ h
