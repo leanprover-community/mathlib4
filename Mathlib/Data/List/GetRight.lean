@@ -20,15 +20,15 @@ namespace List
 /-- Get element `t` of `l` from the right.
 For example `[0,1].rget 0 = 1`.-/
 def rget (l : List α) (t : Fin l.length) :=
-  l.get ⟨l.length - (t+1),
-    (Nat.sub_lt_self (Nat.zero_lt_succ ↑t) (by rw [Nat.succ_le]; exact t.isLt))⟩
+  l.get t.rev
 
 @[simp]
 theorem rget_cons_eq_self {l : List α} {x : α} {t : Fin l.length} :
     (x :: l).rget ⟨t.val, (lt_trans t.isLt (Nat.lt_succ_self _))⟩ = l.rget t := by
   unfold rget
   have : t + 1 ≤ l.length := by rw [Nat.succ_le]; exact t.isLt
-  simp_rw [length_cons, Nat.succ_sub this]
+  dsimp
+  simp_rw [Nat.succ_sub this]
   rfl
 
 @[simp]
@@ -38,6 +38,7 @@ theorem rget_cons_length {l : List α} {x : α} :
   dsimp
   simp_rw [Nat.sub_self]
   apply get_cons_zero
+
 
 @[simp]
 lemma rget_singleton {x : α} {n : Fin 1} : [x].rget n = x := by
@@ -59,9 +60,7 @@ lemma rget_suffix {α : Type _} {l L : List α} (m : l <:+ L) (n : Fin l.length)
   convert this
   exact m.symm
 
-
 /-! ### rtake -/
-
 
 lemma rget_cons_rtake {l : List α} {t : Fin l.length} :
     l.rtake (t+1) = (l.rget t) :: (l.rtake t) := by
@@ -70,7 +69,8 @@ lemma rget_cons_rtake {l : List α} {t : Fin l.length} :
   · have := t.isLt
     contradiction
   · have : t ≤ l.length := by rw [← Nat.lt_succ]; apply t.isLt
-    simp_rw [List.length_cons, Nat.succ_sub_succ, Nat.succ_sub this]
+    dsimp
+    simp_rw [Nat.succ_sub_succ, Nat.succ_sub this]
     apply drop_eq_getElem_cons
 
 
