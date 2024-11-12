@@ -152,12 +152,12 @@ lemma freeLocus_eq_univ_iff [Module.FinitePresentation R M] :
     freeLocus R M = Set.univ ↔ Module.Projective R M := by
   simp_rw [Set.eq_univ_iff_forall, mem_freeLocus]
   exact ⟨fun H ↦ Module.projective_of_localization_maximal fun I hI ↦
-    have := H ⟨I, hI.isPrime⟩; .of_free, fun H x ↦ Module.free_of_flat_of_localRing⟩
+    have := H ⟨I, hI.isPrime⟩; .of_free, fun H x ↦ Module.free_of_flat_of_isLocalRing⟩
 
 lemma freeLocus_eq_univ [Module.FinitePresentation R M] [Module.Flat R M] :
     freeLocus R M = Set.univ := by
   simp_rw [Set.eq_univ_iff_forall, mem_freeLocus]
-  exact fun x ↦ Module.free_of_flat_of_localRing
+  exact fun x ↦ Module.free_of_flat_of_isLocalRing
 
 lemma basicOpen_subset_freeLocus_iff [Module.FinitePresentation R M] {f : R} :
     (basicOpen f : Set (PrimeSpectrum R)) ⊆ freeLocus R M ↔
