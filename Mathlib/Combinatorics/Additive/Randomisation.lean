@@ -12,9 +12,9 @@ import Mathlib.Combinatorics.Additive.Dissociation
 This file proves that a function from a finite abelian group can be randomised by a function of
 dissociated support.
 
-Precisely, for `G` a finite abelian group and two functions `c : Dual G → ℝ` and `d : Dual G → ℝ`
-such that `{ψ | d ψ ≠ 0} is dissociated`, the product of the `c ψ` over `ψ` is the same as the
-average over `a` of the product of the `c ψ + Re (d ψ * ψ a)`.
+Precisely, for `G` a finite abelian group and two functions `c : AddChar G ℂ → ℝ` and
+`d : AddChar G ℂ → ℝ` such that `{ψ | d ψ ≠ 0}` is dissociated, the product of the `c ψ` over `ψ` is
+the same as the average over `a` of the product of the `c ψ + Re (d ψ * ψ a)`.
 -/
 
 open Finset
@@ -33,7 +33,7 @@ lemma AddDissociated.randomisation (c : AddChar G ℂ → ℝ) (d : AddChar G �
           Complex.re_eq_add_conj]
     _ = (𝔼 a, ∏ ψ ∈ ∅, ((d ψ * ψ a) + conj (d ψ * ψ a)) / 2) * ∏ ψ ∈ ∅ᶜ, (c ψ : ℂ) :=
         Fintype.sum_eq_single ∅ fun t ht ↦ mul_eq_zero_of_left ?_ _
-    _ = _ := by simp
+    _ = ∏ ψ, (c ψ : ℂ) := by simp
   simp only [map_mul, prod_div_distrib, prod_add, prod_const, ← expect_div, expect_sum_comm,
     div_eq_zero_iff, pow_eq_zero_iff', OfNat.ofNat_ne_zero, ne_eq, card_eq_zero, compl_eq_empty_iff,
     false_and, or_false]
