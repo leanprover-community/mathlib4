@@ -190,7 +190,7 @@ theorem splitBy_append_cons {r : α → α → Bool} {l : List α} (hn : l ≠ [
   apply splitBy_append hn h fun _ ↦ ?_
   rwa [head_cons]
 
-theorem splitBy_join {r : α → α → Bool} {l : List (List α)} (hn : [] ∉ l)
+theorem splitBy_flatten {r : α → α → Bool} {l : List (List α)} (hn : [] ∉ l)
     (hc : ∀ m ∈ l, m.Chain' fun x y ↦ r x y)
     (hc' : l.Chain' fun a b ↦ ∃ ha hb, r (a.getLast ha) (b.head hb) = false) :
     l.flatten.splitBy r = l := by
@@ -221,7 +221,7 @@ theorem splitBy_eq_iff {r : α → α → Bool} {l : List (List α)} :
     exact ⟨flatten_splitBy r m, nil_not_mem_splitBy r m, fun _ ↦ chain'_of_mem_splitBy,
       chain'_getLast_head_splitBy r m⟩
   · rintro ⟨rfl, hn, hc, hc'⟩
-    exact splitBy_join hn hc hc'
+    exact splitBy_flatten hn hc hc'
 
 @[deprecated (since := "2024-10-30")] alias groupBy_nil := splitBy_nil
 @[deprecated (since := "2024-10-30")] alias flatten_groupBy := flatten_splitBy
