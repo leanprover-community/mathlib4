@@ -46,7 +46,7 @@ end LE
 section Preorder
 variable [Preorder α]
 
-theorem isCofinal_univ : IsCofinal (@Set.univ α) :=
+theorem IsCofinal.univ : IsCofinal (@Set.univ α) :=
   fun a ↦ ⟨a, ⟨⟩, le_rfl⟩
 
 instance : Inhabited {s : Set α // IsCofinal s} :=
