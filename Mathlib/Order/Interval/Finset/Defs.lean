@@ -683,6 +683,18 @@ instance OrderDual.instLocallyFiniteOrder : LocallyFiniteOrder αᵒᵈ where
   finset_mem_Ioc _ _ _ := (mem_Ico (α := α)).trans and_comm
   finset_mem_Ioo _ _ _ := (mem_Ioo (α := α)).trans and_comm
 
+lemma Icc_orderDual_def (a b : αᵒᵈ) :
+    Icc a b = (Icc (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
+
+lemma Ico_orderDual_def (a b : αᵒᵈ) :
+    Ico a b = (Ioc (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
+
+lemma Ioc_orderDual_def (a b : αᵒᵈ) :
+    Ioc a b = (Ico (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
+
+lemma Ioo_orderDual_def (a b : αᵒᵈ) :
+    Ioo a b = (Ioo (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
+
 lemma Finset.Icc_toDual : Icc (toDual a) (toDual b) = (Icc b a).map toDual.toEmbedding :=
   map_refl.symm
 
@@ -725,6 +737,9 @@ instance OrderDual.instLocallyFiniteOrderBot : LocallyFiniteOrderBot αᵒᵈ wh
   finset_mem_Iic _ _ := mem_Ici (α := α)
   finset_mem_Iio _ _ := mem_Ioi (α := α)
 
+lemma Iic_orderDual_def (a : αᵒᵈ) : Iic a = (Ici (ofDual a)).map toDual.toEmbedding := map_refl.symm
+lemma Iio_orderDual_def (a : αᵒᵈ) : Iio a = (Ioi (ofDual a)).map toDual.toEmbedding := map_refl.symm
+
 lemma Finset.Iic_toDual (a : α) : Iic (toDual a) = (Ici a).map toDual.toEmbedding :=
   map_refl.symm
 
@@ -754,6 +769,9 @@ instance OrderDual.instLocallyFiniteOrderTop : LocallyFiniteOrderTop αᵒᵈ wh
   finsetIoi a := @Iio α _ _ (ofDual a)
   finset_mem_Ici _ _ := mem_Iic (α := α)
   finset_mem_Ioi _ _ := mem_Iio (α := α)
+
+lemma Ici_orderDual_def (a : αᵒᵈ) : Ici a = (Iic (ofDual a)).map toDual.toEmbedding := map_refl.symm
+lemma Ioi_orderDual_def (a : αᵒᵈ) : Ioi a = (Iio (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
 lemma Finset.Ici_toDual (a : α) : Ici (toDual a) = (Iic a).map toDual.toEmbedding :=
   map_refl.symm

@@ -25,7 +25,7 @@ fiber bundle, fibre bundle, fiberwise product, pullback
 
 -/
 
-open TopologicalSpace Filter Set Bundle
+open Bundle Filter Set TopologicalSpace Topology
 
 /-! ### The trivial bundle -/
 

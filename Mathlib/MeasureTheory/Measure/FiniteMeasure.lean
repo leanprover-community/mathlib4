@@ -81,8 +81,8 @@ weak convergence of measures, finite measure
 
 noncomputable section
 
-open MeasureTheory Set Filter BoundedContinuousFunction
-open scoped Topology ENNReal NNReal BoundedContinuousFunction
+open BoundedContinuousFunction Filter MeasureTheory Set Topology
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
@@ -645,7 +645,7 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : 
   simp_rw [aux, BoundedContinuousFunction.toReal_lintegral_coe_eq_integral] at tends_pos tends_neg
   exact Tendsto.sub tends_pos tends_neg
 
-lemma continuous_integral_boundedContinousFunction
+lemma continuous_integral_boundedContinuousFunction
     {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] (f : α →ᵇ ℝ) :
     Continuous fun μ : FiniteMeasure α ↦ ∫ x, f x ∂μ := by
   rw [continuous_iff_continuousAt]
