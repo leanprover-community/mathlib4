@@ -30,7 +30,7 @@ theorem IsCofinal.of_isEmpty [IsEmpty α] (s : Set α) : IsCofinal s :=
   fun a ↦ isEmptyElim a
 
 theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
-  refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ isCofinal_of_isEmpty _⟩
+  refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ IsCofinal.of_isEmpty _⟩
   simpa using h a
 
 theorem IsCofinal.singleton_top [OrderTop α] : IsCofinal {(⊤ : α)} :=
@@ -50,7 +50,7 @@ theorem IsCofinal.univ : IsCofinal (@Set.univ α) :=
   fun a ↦ ⟨a, ⟨⟩, le_rfl⟩
 
 instance : Inhabited {s : Set α // IsCofinal s} :=
-  ⟨_, isCofinal_univ⟩
+  ⟨_, IsCofinal.univ⟩
 
 /-- A cofinal subset of a cofinal subset is cofinal. -/
 theorem IsCofinal.trans {s : Set α} {t : Set s} (hs : IsCofinal s) (ht : IsCofinal t) :
@@ -70,7 +70,7 @@ theorem IsCofinal.mem_of_isMax {s : Set α} {a : α} (ha : IsMax a) (hs : IsCofi
   rwa [ha.eq_of_ge hb'] at hb
 
 theorem IsCofinal.top_mem [OrderTop α] {s : Set α} (hs : IsCofinal s) : ⊤ ∈ s :=
-  hs.isMax_mem isMax_top
+  hs.mem_of_isMax isMax_top
 
 @[simp]
 theorem isCofinal_iff_top_mem [OrderTop α] {s : Set α} : IsCofinal s ↔ ⊤ ∈ s :=
@@ -91,11 +91,11 @@ theorem BddAbove.of_not_isCofinal {s : Set α} (h : ¬ IsCofinal s) : BddAbove s
 
 theorem IsCofinal.of_not_bddAbove {s : Set α} (h : ¬ BddAbove s) : IsCofinal s := by
   contrapose! h
-  exact bddAbove_of_not_isCofinal h
+  exact BddAbove.of_not_isCofinal h
 
 /-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
 theorem not_isCofinal_iff_bddAbove [NoMaxOrder α] {s : Set α} : ¬ IsCofinal s ↔ BddAbove s := by
-  use bddAbove_of_not_isCofinal
+  use BddAbove.of_not_isCofinal
   rw [not_isCofinal_iff]
   rintro ⟨x, h⟩
   obtain ⟨z, hz⟩ := exists_gt x
