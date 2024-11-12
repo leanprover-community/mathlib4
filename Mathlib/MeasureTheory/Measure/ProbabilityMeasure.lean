@@ -74,8 +74,8 @@ convergence in distribution, convergence in law, weak convergence of measures, p
 
 noncomputable section
 
-open MeasureTheory Set Filter BoundedContinuousFunction
-open scoped Topology ENNReal NNReal BoundedContinuousFunction
+open Set Filter BoundedContinuousFunction Topology
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
@@ -288,6 +288,14 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ}
   rw [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds]
   rw [FiniteMeasure.tendsto_iff_forall_integral_tendsto]
   rfl
+
+lemma continuous_integral_boundedContinuousFunction
+    {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] (f : α →ᵇ ℝ) :
+    Continuous fun μ : ProbabilityMeasure α ↦ ∫ x, f x ∂μ := by
+  rw [continuous_iff_continuousAt]
+  intro μ
+  exact continuousAt_of_tendsto_nhds
+    (ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp tendsto_id f)
 
 end convergence_in_distribution -- section
 
