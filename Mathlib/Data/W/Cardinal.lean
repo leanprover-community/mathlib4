@@ -34,7 +34,7 @@ namespace WType
 open Cardinal
 
 
-theorem cardinalMk_eq_sum_lift : #(WType β) = sum (fun a : α => #(WType β) ^ lift.{u} #(β a)) :=
+theorem cardinalMk_eq_sum_lift : #(WType β) = sum fun a ↦ #(WType β) ^ lift.{u} #(β a) :=
   (mk_congr <| equivSigma β).trans <| by
     simp_rw [mk_sigma, mk_arrow]; rw [lift_id'.{v, u}, lift_umax.{v, u}]
 
