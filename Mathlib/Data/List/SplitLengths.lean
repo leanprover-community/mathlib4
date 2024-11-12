@@ -87,7 +87,7 @@ theorem length_splitLengths_getElem_eq {i : ℕ} (hi : i < sz.length)
 theorem splitLengths_length_getElem {α : Type*} (l : List α) (sz : List ℕ)
     (h : sz.sum ≤ l.length) (i : ℕ) (hi : i < (sz.splitLengths l).length) :
     (sz.splitLengths l)[i].length = sz[i]'(by simpa using hi) := by
-  have := splitLengths_map_length l sz h
+  have := map_splitLengths_length l sz h
   rw [← List.getElem_map List.length]
   · simp [this]
   · simpa using hi
