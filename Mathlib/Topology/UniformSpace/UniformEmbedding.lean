@@ -201,7 +201,7 @@ injective. If `α` is a separated space, then the latter assumption follows from
 @[mk_iff]
 structure IsUniformEmbedding (f : α → β) extends IsUniformInducing f : Prop where
   /-- A uniform embedding is injective. -/
-  inj : Function.Injective f
+  injective : Function.Injective f
 
 lemma IsUniformEmbedding.isUniformInducing (hf : IsUniformEmbedding f) : IsUniformInducing f :=
   hf.toIsUniformInducing

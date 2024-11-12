@@ -577,7 +577,7 @@ theorem app_eq_invApp_app_of_comp_eq_aux {X Y U : Scheme.{u}} (f : Y ⟶ U) (g :
   rw [Scheme.comp_base, Opens.map_comp_obj]
   congr 1
   ext1
-  exact (Set.preimage_image_eq _ h.base_open.inj).symm
+  exact (Set.preimage_image_eq _ h.base_open.injective).symm
 
 /-- The `fg` argument is to avoid nasty stuff about dependent types. -/
 theorem app_eq_appIso_inv_app_of_comp_eq {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
