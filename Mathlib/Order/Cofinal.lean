@@ -91,11 +91,11 @@ theorem BddAbove.of_not_isCofinal {s : Set α} (h : ¬ IsCofinal s) : BddAbove s
 
 theorem IsCofinal.of_not_bddAbove {s : Set α} (h : ¬ BddAbove s) : IsCofinal s := by
   contrapose! h
-  exact BddAbove.of_not_isCofinal h
+  exact .of_not_isCofinal h
 
 /-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
 theorem not_isCofinal_iff_bddAbove [NoMaxOrder α] {s : Set α} : ¬ IsCofinal s ↔ BddAbove s := by
-  use BddAbove.of_not_isCofinal
+  use .of_not_isCofinal
   rw [not_isCofinal_iff]
   rintro ⟨x, h⟩
   obtain ⟨z, hz⟩ := exists_gt x
