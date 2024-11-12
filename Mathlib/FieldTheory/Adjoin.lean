@@ -731,8 +731,9 @@ instance finiteDimensional_sup [FiniteDimensional K E1] [FiniteDimensional K E2]
   rw [Algebra.TensorProduct.productMap_range, E1.range_val, E2.range_val, sup_toSubalgebra_of_left]
 
 /-- If `E1` and `E2` are intermediate fields, and at least one them are algebraic, then the rank of
-`E1 ⊔ E2` is less than or equal to the product of that of `E1` and `E2`. Note that this result is
-also true without algebraic assumption, but the proof becomes very complicated. -/
+the compositum of `E1` and `E2` is less than or equal to the product of that of `E1` and `E2`.
+Note that this result is also true without algebraic assumption,
+but the proof becomes very complicated. -/
 theorem rank_sup_le_of_isAlgebraic
     (halg : Algebra.IsAlgebraic K E1 ∨ Algebra.IsAlgebraic K E2) :
     Module.rank K ↥(E1 ⊔ E2) ≤ Module.rank K E1 * Module.rank K E2 := by
@@ -740,7 +741,7 @@ theorem rank_sup_le_of_isAlgebraic
   rwa [← sup_toSubalgebra_of_isAlgebraic E1 E2 halg] at this
 
 /-- If `E1` and `E2` are intermediate fields, then the `Module.finrank` of
-`E1 ⊔ E2` is less than or equal to the product of that of `E1` and `E2`. -/
+the compositum of `E1` and `E2` is less than or equal to the product of that of `E1` and `E2`. -/
 theorem finrank_sup_le :
     finrank K ↥(E1 ⊔ E2) ≤ finrank K E1 * finrank K E2 := by
   by_cases h : FiniteDimensional K E1
