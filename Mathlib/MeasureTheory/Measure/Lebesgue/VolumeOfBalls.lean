@@ -206,7 +206,7 @@ theorem MeasureTheory.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) 
       ext x
       refine ⟨fun hx => ?_, fun hx => hx.elim⟩
       exact not_le.mpr (lt_of_lt_of_le (Set.mem_setOf.mp hx) hr) (h₂ x)
-    rw [this, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow Fin.size_pos'.ne', zero_mul]
+    rw [this, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow Fin.pos'.ne', zero_mul]
   · rw [← volume_sum_rpow_lt_one _ hp, ← ofReal_pow (le_of_lt hr), ← finrank_pi ℝ]
     convert addHaar_smul_of_nonneg volume (le_of_lt hr) {x : ι → ℝ | ∑ i, |x i| ^ p < 1} using 2
     simp_rw [← Set.preimage_smul_inv₀ (ne_of_gt hr), Set.preimage_setOf_eq, Pi.smul_apply,
@@ -279,7 +279,7 @@ theorem Complex.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
       ext x
       refine ⟨fun hx => ?_, fun hx => hx.elim⟩
       exact not_le.mpr (lt_of_lt_of_le (Set.mem_setOf.mp hx) hr) (h₂ x)
-    rw [this, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow Fin.size_pos'.ne', zero_mul]
+    rw [this, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow Fin.pos'.ne', zero_mul]
   · rw [← Complex.volume_sum_rpow_lt_one _ hp, ← ENNReal.ofReal_pow (le_of_lt hr)]
     convert addHaar_smul_of_nonneg volume (le_of_lt hr) {x : ι → ℂ |  ∑ i, ‖x i‖ ^ p < 1} using 2
     · simp_rw [← Set.preimage_smul_inv₀ (ne_of_gt hr), Set.preimage_setOf_eq, Pi.smul_apply,
