@@ -55,7 +55,7 @@ end
 
 /-- If there exists a pointwise left Kan extension of `F` along `L`,
 then `L.lan.obj G` is a pointwise left Kan extension of `F`. -/
-noncomputable def isPointwiseLeftKanExtensionLanUnit
+noncomputable def isPointwiseLeftKanExtensionLeftKanExtensionUnit
     (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] :
     (LeftExtension.mk _ (L.leftKanExtensionUnit F)).IsPointwiseLeftKanExtension :=
   isPointwiseLeftKanExtensionOfIsLeftKanExtension (F := F) _ (leftKanExtensionUnit L F)
@@ -68,25 +68,26 @@ variable (F : C ⥤ H) [HasPointwiseLeftKanExtension L F]
 
 /-- If a left Kan extension is pointwise, then evaluating it at an object is isomorphic to
 taking a colimit. -/
-noncomputable def lanObjObjIsoColimit [HasLeftKanExtension L F] (X : D) :
+noncomputable def leftKanExtensionObjIsoColimit [HasLeftKanExtension L F] (X : D) :
     (L.leftKanExtension F).obj X ≅ Limits.colimit (proj L X ⋙ F) :=
   LeftExtension.IsPointwiseLeftKanExtensionAt.isoColimit (F := F)
-   (isPointwiseLeftKanExtensionLanUnit L F X)
+   (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X)
 
 @[reassoc (attr := simp)]
-lemma ι_lanObjObjIsoColimit_inv [HasLeftKanExtension L F] (X : D)
+lemma ι_leftKanExtensionObjIsoColimit_inv [HasLeftKanExtension L F] (X : D)
     (f : CostructuredArrow L X) :
-    Limits.colimit.ι _ f ≫ (L.lanObjObjIsoColimit F X).inv =
+    Limits.colimit.ι _ f ≫ (L.leftKanExtensionObjIsoColimit F X).inv =
     (L.leftKanExtensionUnit F).app f.left ≫ (L.leftKanExtension F).map f.hom := by
-  simp [lanObjObjIsoColimit, lanUnit]
+  simp [leftKanExtensionObjIsoColimit, lanUnit]
 
 @[reassoc (attr := simp)]
-lemma ι_lanObjObjIsoColimit_hom [∀ (F : C ⥤ H), HasLeftKanExtension L F] (X : D)
+lemma ι_leftKanExtensionObjIsoColimit_hom [∀ (F : C ⥤ H), HasLeftKanExtension L F] (X : D)
     (f : CostructuredArrow L X) :
-    (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom ≫ (L.lanObjObjIsoColimit F X).hom =
+    (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom ≫
+      (L.leftKanExtensionObjIsoColimit F X).hom =
     Limits.colimit.ι (proj L X ⋙ F) f :=
   LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
-    (isPointwiseLeftKanExtensionLanUnit L F X) f
+    (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X) f
 
 @[instance]
 theorem hasColimit_map_comp_ι_comp_grotendieckProj {X Y : D} (f : X ⟶ Y) :
@@ -104,7 +105,7 @@ noncomputable def leftKanExtensionIsoFiberwiseColimit [HasLeftKanExtension L F] 
       Functor.leftUnitor (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F)
   Iso.symm <| NatIso.ofComponents
     (fun X => HasColimit.isoOfNatIso (isoWhiskerRight (ιCompGrothendieckProj L X) F) ≪≫
-      (lanObjObjIsoColimit L F X).symm)
+      (leftKanExtensionObjIsoColimit L F X).symm)
     fun f => colimit.hom_ext (by simp)
 
 end
@@ -220,7 +221,7 @@ variable [Full L] [Faithful L]
 instance (F : C ⥤ H) (X : C) [HasPointwiseLeftKanExtension L F]
     [∀ (F : C ⥤ H), HasLeftKanExtension L F] :
     IsIso ((L.lanUnit.app F).app X) :=
-  (isPointwiseLeftKanExtensionLanUnit L F (L.obj X)).isIso_hom_app
+  (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F (L.obj X)).isIso_hom_app
 
 instance (F : C ⥤ H) [HasPointwiseLeftKanExtension L F]
     [∀ (F : C ⥤ H), HasLeftKanExtension L F] :
