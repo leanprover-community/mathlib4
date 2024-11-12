@@ -9,16 +9,22 @@ import Mathlib.Analysis.Normed.MulAction
 /-!
 # The null subgroup in a seminormed commutative group
 
-For any `SeminormedAddCommGroup M`, a `NormedAddCommGroup` instance has been defined in
-`Mathlib.Analysis.Normed.Group.Uniform`.
+For any `SeminormedAddCommGroup M`, the quotient `SeparationQuotient M` by the null subgroup is
+defined as a `NormedAddCommGroup` instance in `Mathlib.Analysis.Normed.Group.Uniform`. Here we
+define the null space as a subgroup.
 
 ## Main definitions
 
 We use `M` to denote seminormed groups.
-All the following definitions are in the `NullSubgroup` namespace. Hence we can access
-`NullSubgroup.normedMk` as `normedMk`.
+All the following definitions are in the `SeparationQuotient` namespace. Hence we can access
+`SeparationQuotient.normedMk` as `normedMk`.
 
 * `nullSubgroup` : the subgroup of elements `x` with `‖x‖ = 0`.
+
+If `E` is a vector space over `𝕜` with an appropriate continuous action, we also define the null
+subspace as a submodule of `E`.
+
+* `nullSubmodule` : the subspace of elements `x` with `‖x‖ = 0`.
 
 ## Implementation details
 
@@ -49,27 +55,19 @@ def nullSubgroup : AddSubgroup M where
     simp only [mem_setOf_eq, norm_neg]
     exact hx
 
-@[simp]
-lemma mem_nullSubgroup_iff {x : M} : x ∈ nullSubgroup M ↔ ‖x‖ = 0 := Iff.rfl
-
 lemma isClosed_nullSubgroup : IsClosed (@nullSubgroup M _ : Set M) :=
   isClosed_singleton.preimage continuous_norm
 
-instance : Nonempty (@nullSubgroup M _) := ⟨0⟩
+@[simp]
+lemma mem_nullSubgroup_iff {x : M} : x ∈ nullSubgroup M ↔ ‖x‖ = 0 := Iff.rfl
 
 variable (x : SeparationQuotient M)
 
 variable (z : M)
 
-/-- The norm of the image of `m : M` in the quotient by the null space is zero if and only if `m`
-belongs to the null space. -/
-theorem quotient_norm_eq_zero_iff (m : M) :
-    ‖mk m‖ = 0 ↔ ‖m‖ = 0 := by
-  rw [norm_mk]
-
 /-- If for `(m : M)` it holds that `mk m = 0`, then `m  ∈ nullSubgroup`. -/
 theorem mk_eq_zero_iff (m : M) : mk m = 0 ↔ ‖m‖ = 0 := by
-  rw [← quotient_norm_eq_zero_iff]
+  rw [← norm_mk]
   exact Iff.symm norm_eq_zero
 
 variable (𝕜 E : Type*)
