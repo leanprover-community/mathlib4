@@ -219,7 +219,7 @@ instance : Nonempty (iter₁ ⟶ iter₂) := by
   induction i using SuccOrder.limitRecOn with
   | hm i hi =>
     obtain rfl : i = ⊥ := by simpa using hi
-    refine fun hi' ↦ ⟨Hom.mkOfBot _ _⟩
+    exact fun hi' ↦ ⟨Hom.mkOfBot _ _⟩
   | hs i hi hi' =>
     exact fun hi'' ↦ ⟨Hom.mkOfSucc _ _ hi (hi' ((Order.le_succ i).trans hi'')).some⟩
   | hl i hi hi' =>
