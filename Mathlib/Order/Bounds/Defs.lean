@@ -17,7 +17,7 @@ In this file we define:
   for a partial order, it is unique if exists;
 * `IsLUB s a`, `IsGLB s a` : `a` is a least upper bound (resp., a greatest lower bound)
   of `s`; for a partial order, it is unique if exists.
-* `Cofinal s`: for every `a`, there exists a member of `s` greater or equal to it.
+* `IsCofinal s`: for every `a`, there exists a member of `s` greater or equal to it.
 -/
 
 variable {α : Type*} [LE α]
