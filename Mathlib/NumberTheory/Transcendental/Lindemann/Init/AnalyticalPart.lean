@@ -39,7 +39,7 @@ theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
   funext x
   rw [deriv.neg, deriv_mul, deriv_cexp, deriv.neg]
   any_goals simp_rw [h]; clear h
-  rw [deriv_smul_const, deriv_id'', deriv.comp, Polynomial.deriv, deriv_smul_const, deriv_id'']
+  rw [deriv_smul_const, deriv_id'', deriv_comp, Polynomial.deriv, deriv_smul_const, deriv_id'']
   simp_rw [one_smul, mul_assoc, ← mul_add]
   have h :
     s * p.sumIDeriv.eval (x • s) -
@@ -174,12 +174,11 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
   use c
   intro q q_gt prime_q
   have q0 : 0 < q := Nat.Prime.pos prime_q
-  obtain ⟨gp', -, h'⟩ := aeval_sumIDeriv_of_pos ℤ (X ^ (q - 1) * p ^ q) q0
-  simp? [- nsmul_eq_mul] at h' says
-    simp only [Algebra.id.map_eq_id, Polynomial.map_mul, Polynomial.map_pow, map_X,
-      map_id, eq_intCast, coe_aeval_eq_eval] at h'
-  specialize h' Function.injective_id 0 (by rw [Int.cast_zero, sub_zero])
-  rw [eval_pow] at h'
+  obtain ⟨gp', -, h'⟩ := aeval_sumIDeriv_of_pos ℤ (X ^ (q - 1) * p ^ q) q0 Function.injective_id
+  simp? [-nsmul_eq_mul] at h' says
+    simp only [Algebra.id.map_eq_id, Polynomial.map_mul, Polynomial.map_pow, map_X, map_id,
+      eq_intCast, coe_aeval_eq_eval] at h'
+  specialize h' 0 (by rw [Int.cast_zero, sub_zero])
   use p.eval 0 ^ q + q • aeval (0 : ℤ) gp'
   rw [exists_prop]
   constructor
@@ -214,7 +213,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     mul_comm, mul_sub, ← nsmul_eq_mul, ← nsmul_eq_mul, smul_smul, mul_comm,
     Nat.mul_factorial_pred q0, ← h]
   rw [nsmul_eq_mul, ← Int.cast_natCast, ← zsmul_eq_mul, smul_smul, mul_add, ← nsmul_eq_mul, ←
-    nsmul_eq_mul, smul_smul, mul_comm, Nat.mul_factorial_pred q0, coe_aeval_eq_eval, ← h',
-    zsmul_eq_mul, mul_comm, ← eq_intCast (algebraMap ℤ ℂ), eval, hom_eval₂, RingHom.comp_id,
+    nsmul_eq_mul, smul_smul, mul_comm, Nat.mul_factorial_pred q0, coe_aeval_eq_eval, ← eval_pow,
+    ← h', zsmul_eq_mul, mul_comm, ← eq_intCast (algebraMap ℤ ℂ), eval, hom_eval₂, RingHom.comp_id,
     map_zero, aeval_def, eval₂_eq_eval_map, eval₂_eq_eval_map, ← sumIDeriv_map, ← P]
   exact (Pp'_le r q (Nat.one_le_of_lt q0)).trans (pow_le_pow_left (c'0 r) (hc r hr) _)
