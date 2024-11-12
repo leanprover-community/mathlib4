@@ -98,7 +98,7 @@ def reduce_rec {C : Δ m → Sort*} (h0 : ∀ A : Δ m, |(A.1 1 0)| = 0 → C A)
 def reduce : Δ m → Δ m := fun A => by
   if |(A.1 1 0)| = 0 then
     if  0 < A.1 0 0 then exact (T ^ (-(A.1 0 1/A.1 1 1))) • A else exact
-      (T ^ (-(-A.1 0 1/ -A.1 1 1))) • ( S • ( S • A))
+      (T ^ (-(-A.1 0 1/ -A.1 1 1))) • ( S • ( S • A)) --the -/- don't cancel with ℤ divs.
   else
     exact reduce (reduce_step m A)
   termination_by b => Int.natAbs (b.1 1 0)
@@ -135,7 +135,7 @@ private lemma A_d_ne_zero (A : Δ m) (ha : A.1 1 0 = 0) (hm : m ≠ 0) : A.1 1 1
 
 private lemma A_a_ne_zero (A : Δ m) (ha : A.1 1 0 = 0) (hm : m ≠ 0) : A.1 0 0 ≠ 0 := by
   have := A.2
-  rw [@det_fin_two, ha] at this
+  rw [det_fin_two, ha] at this
   aesop
 
 private lemma A_c_eq_zero (A : Δ m) (ha : A.1 1 0 = 0) : A.1 0 0 * A.1 1 1 = m := by
@@ -198,7 +198,7 @@ noncomputable instance reps_fintype (k : ℤ) : Fintype (reps k) := by
     ext i j
     rw [Prod.ext_iff] at h
     simp only [Fin.isValue, Subtype.mk.injEq, Prod.mk.injEq] at h
-    fin_cases i <;> fin_cases j
+    fin_cases i <;> fin_cases j --is there an easy way to golf this?
     · exact h.1
     · exact h.2.1
     · exact h.2.2.1
@@ -217,7 +217,7 @@ lemma reduce_mem_reps (m : ℤ) (hm : m ≠ 0) : ∀ A : Δ m, reduce m A ∈ re
       cons_dotProduct, vecHead, one_mul, vecTail, Function.comp_apply, Fin.succ_zero_eq_one,
       neg_mul, dotProduct_empty, add_zero, zero_mul, zero_add, empty_val', cons_val_fin_one,
       cons_val_one, cons_val_zero, lt_add_neg_iff_add_lt, le_add_neg_iff_add_le]
-      refine ⟨ abs_eq_zero.mp h, ?_, ?_, ?_⟩
+      refine ⟨abs_eq_zero.mp h, ?_, ?_, ?_⟩
       · rw [abs_eq_zero.mp h]; simp only [Fin.isValue, mul_zero, h1]
       · apply Int.ediv_mul_le; apply A_d_ne_zero m A (by simpa only [abs_eq_zero] using h) hm
       · rw [mul_comm, ← @Int.sub_eq_add_neg, (Int.emod_def (A.1 0 1) (A.1 1 1)).symm]
