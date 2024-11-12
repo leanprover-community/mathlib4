@@ -67,6 +67,11 @@ theorem principal_iff_of_monotone
   · exact (h₂ b hab).trans_lt <| H b hb
   · exact (h₁ a hba.le).trans_lt <| H a ha
 
+theorem not_principal_iff_of_monotone
+    (h₁ : ∀ a, Monotone (op a)) (h₂ : ∀ a, Monotone (Function.swap op a)) :
+    ¬ Principal op o ↔ ∃ a < o, o ≤ op a a := by
+  simp [principal_iff_of_monotone h₁ h₂]
+
 theorem principal_zero : Principal op 0 := fun a _ h =>
   (Ordinal.not_lt_zero a h).elim
 
