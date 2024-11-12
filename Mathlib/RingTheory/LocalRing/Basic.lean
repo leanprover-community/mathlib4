@@ -16,11 +16,11 @@ We prove basic properties of local rings.
 
 variable {R S : Type*}
 
-section CommSemiring
-
-variable [CommSemiring R]
-
 namespace LocalRing
+
+section Semiring
+
+variable [Semiring R]
 
 theorem of_isUnit_or_isUnit_of_isUnit_add [Nontrivial R]
     (h : ∀ a b : R, IsUnit (a + b) → IsUnit a ∨ IsUnit b) : LocalRing R :=
@@ -30,6 +30,13 @@ theorem of_isUnit_or_isUnit_of_isUnit_add [Nontrivial R]
 theorem of_nonunits_add [Nontrivial R]
     (h : ∀ a b : R, a ∈ nonunits R → b ∈ nonunits R → a + b ∈ nonunits R) : LocalRing R :=
   ⟨fun {a b} hab => or_iff_not_and_not.2 fun H => h a b H.1 H.2 <| hab.symm ▸ isUnit_one⟩
+
+
+end Semiring
+
+section CommSemiring
+
+variable [CommSemiring R]
 
 /-- A semiring is local if it has a unique maximal ideal. -/
 theorem of_unique_max_ideal (h : ∃! I : Ideal R, I.IsMaximal) : LocalRing R :=
@@ -65,19 +72,21 @@ theorem isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a
 theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
   fun H => not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
 
-end LocalRing
-
 end CommSemiring
 
-namespace LocalRing
+section Ring
 
-variable [CommRing R]
+variable [Ring R]
 
 theorem of_isUnit_or_isUnit_one_sub_self [Nontrivial R] (h : ∀ a : R, IsUnit a ∨ IsUnit (1 - a)) :
     LocalRing R :=
   ⟨fun {a b} hab => add_sub_cancel_left a b ▸ hab.symm ▸ h a⟩
 
-variable [LocalRing R]
+end Ring
+
+section CommRing
+
+variable [CommRing R] [LocalRing R]
 
 theorem isUnit_or_isUnit_one_sub_self (a : R) : IsUnit a ∨ IsUnit (1 - a) :=
   isUnit_or_isUnit_of_isUnit_add <| (add_sub_cancel a 1).symm ▸ isUnit_one
@@ -88,7 +97,7 @@ theorem isUnit_of_mem_nonunits_one_sub_self (a : R) (h : 1 - a ∈ nonunits R) :
 theorem isUnit_one_sub_self_of_mem_nonunits (a : R) (h : a ∈ nonunits R) : IsUnit (1 - a) :=
   or_iff_not_imp_left.1 (isUnit_or_isUnit_one_sub_self a) h
 
-theorem of_surjective' [CommRing S] [Nontrivial S] (f : R →+* S) (hf : Function.Surjective f) :
+theorem of_surjective' [Ring S] [Nontrivial S] (f : R →+* S) (hf : Function.Surjective f) :
     LocalRing S :=
   of_isUnit_or_isUnit_one_sub_self (by
     intro b
@@ -96,6 +105,8 @@ theorem of_surjective' [CommRing S] [Nontrivial S] (f : R →+* S) (hf : Functio
     apply (isUnit_or_isUnit_one_sub_self a).imp <| RingHom.isUnit_map _
     rw [← f.map_one, ← f.map_sub]
     apply f.isUnit_map)
+
+end CommRing
 
 end LocalRing
 
