@@ -46,7 +46,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
   have := I.locallyCompactSpace
   have := ChartedSpace.locallyCompactSpace H M
   have := I.secondCountableTopology
-  have := ChartedSpace.secondCountable_of_sigma_compact H M
+  have := ChartedSpace.secondCountable_of_sigmaCompact H M
   have := ManifoldWithCorners.metrizableSpace I M
   let _ : MetricSpace M := TopologicalSpace.metrizableSpaceMetric M
   -- it suffices to show that the integral of the function vanishes on any compact set `s`
@@ -152,7 +152,7 @@ theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOp
   haveI := ChartedSpace.locallyCompactSpace H M
   haveI := hU.locallyCompactSpace
   haveI := I.secondCountableTopology
-  haveI := ChartedSpace.secondCountable_of_sigma_compact H M
+  haveI := ChartedSpace.secondCountable_of_sigmaCompact H M
   hU.ae_eq_zero_of_integral_smooth_smul_eq_zero' _
     (isSigmaCompact_iff_sigmaCompactSpace.mpr inferInstance) hf h
 
