@@ -2025,6 +2025,17 @@ theorem mk_preimage_of_injective_of_subset_range (f : α → β) (s : Set β) (h
     (h2 : s ⊆ range f) : #(f ⁻¹' s) = #s := by
   convert mk_preimage_of_injective_of_subset_range_lift.{u, u} f s h h2 using 1 <;> rw [lift_id]
 
+@[simp]
+theorem mk_preimage_equiv_lift {β : Type v} (f : α ≃ β) (s : Set β) :
+    lift.{v} #(f ⁻¹' s) = lift.{u} #s := by
+  apply mk_preimage_of_injective_of_subset_range_lift _ _ f.injective
+  rw [f.range_eq_univ]
+  exact fun _ _ ↦ ⟨⟩
+
+@[simp]
+theorem mk_preimage_equiv (f : α ≃ β) (s : Set β) : #(f ⁻¹' s) = #s := by
+  simpa using mk_preimage_equiv_lift f s
+
 theorem mk_preimage_of_injective (f : α → β) (s : Set β) (h : Injective f) :
     #(f ⁻¹' s) ≤ #s := by
   rw [← lift_id #(↑(f ⁻¹' s)), ← lift_id #(↑s)]
@@ -2053,6 +2064,14 @@ theorem le_mk_iff_exists_subset {c : Cardinal} {α : Type u} {s : Set α} :
     c ≤ #s ↔ ∃ p : Set α, p ⊆ s ∧ #p = c := by
   rw [le_mk_iff_exists_set, ← Subtype.exists_set_subtype]
   apply exists_congr; intro t; rw [mk_image_eq]; apply Subtype.val_injective
+
+@[simp]
+theorem mk_range_inl : #(range (@Sum.inl α β)) = #α :=
+  (Equiv.Set.rangeInl α β).cardinal_eq
+
+@[simp]
+theorem mk_range_inr : #(range (@Sum.inr α β)) = #β :=
+  (Equiv.Set.rangeInr α β).cardinal_eq
 
 theorem two_le_iff : (2 : Cardinal) ≤ #α ↔ ∃ x y : α, x ≠ y := by
   rw [← Nat.cast_two, nat_succ, succ_le_iff, Nat.cast_one, one_lt_iff_nontrivial, nontrivial_iff]
