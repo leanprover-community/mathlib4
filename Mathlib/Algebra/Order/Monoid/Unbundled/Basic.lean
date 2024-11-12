@@ -296,6 +296,14 @@ lemma mul_max [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
 lemma max_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
     max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
 
+@[to_additive]
+lemma mul_min [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+    a * min b c = min (a * b) (a * c) := mul_left_mono.map_min
+
+@[to_additive]
+lemma min_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
+    min a b * c = min (a * c) (b * c) := mul_right_mono.map_min
+
 @[to_additive] lemma min_lt_max_of_mul_lt_mul
     [MulLeftMono α] [MulRightMono α]
     (h : a * b < c * d) : min a b < max c d := by
