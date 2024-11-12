@@ -8,8 +8,8 @@ import Mathlib.Data.List.Basic
 /-!
 # Join of a list of lists
 
-This file proves basic properties of `List.join`, which concatenates a list of lists. It is defined
-in `Init.Data.List.Basic`.
+This file proves basic properties of `List.flatten`, which concatenates a list of lists. It is
+defined in `Init.Data.List.Basic`.
 -/
 
 -- Make sure we don't import algebra
