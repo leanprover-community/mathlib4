@@ -56,8 +56,7 @@ theorem tendstoUniformlyOn_tsum_eventually {ι : Type*} {f : ι → β → F} {u
   simp only [gt_iff_lt, eventually_atTop, ge_iff_le, Finset.le_eq_subset] at *
   obtain ⟨t, ht⟩ := this
   obtain ⟨N, hN⟩ := hfu
-  use N ∪ t
-  intro n hn x hx
+  refine ⟨N ∪ t, fun  n hn x hx => ?_⟩
   have A : Summable fun n => ‖f n x‖ := by
     apply Summable.add_compl (s := N) Summable.of_finite
     apply Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) _ (hu.subtype _)
@@ -79,8 +78,7 @@ theorem tendstoUniformlyOn_tsum_nat_eventually {α F : Type*} [NormedAddCommGrou
   apply tendsto_finset_range.eventually (tendstoUniformlyOn_tsum_eventually hu ?_ v hv)
   simp only [eventually_atTop, ge_iff_le] at hfu
   obtain ⟨N, hN⟩ := hfu
-  use Finset.range N
-  intro b hb x hx n hn
+  refine ⟨Finset.range N, fun b hb x hx n hn => ?_⟩
   apply hN n _ x hx
   by_contra! h
   rw [← Finset.mem_range] at h
