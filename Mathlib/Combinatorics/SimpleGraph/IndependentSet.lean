@@ -3,8 +3,6 @@ Copyright (c) 2024 Olivia Röhrig, Christoph Spiegel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Olivia Röhrig, Christoph Spiegel
 -/
-
-import Mathlib.Data.Finset.Pairwise
 import Mathlib.Combinatorics.SimpleGraph.Clique
 
 /-!
@@ -73,7 +71,7 @@ variable {n : ℕ} {s : Finset α}
 
 /-- An `n`-IndependentSet in a graph is a set of `n` vertices which are pairwise nonadjacent. -/
 structure IsNIndependentSet (n : ℕ) (s : Finset α) : Prop where
-  IndependentSet : G.IsIndependentSet s
+  isIndependentSet : G.IsIndependentSet s
   card_eq : s.card = n
 
 theorem isNIndependentSet_iff : G.IsNIndependentSet n s ↔ G.IsIndependentSet s ∧ s.card = n :=
@@ -145,41 +143,59 @@ noncomputable def cocliqueNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.I
 lemma cocliqueNum_eq_compl_cliqueNum : G.cocliqueNum = Gᶜ.cliqueNum := by
   simp [cliqueNum, ← isNIndependentSet_iff_isNClique_of_complement, cocliqueNum]
 
-/-- An independent set in a graph `G` such that there is no independent set with more vertices. -/
-structure IsMaximumIndependentSet (G : SimpleGraph α) (s : Finset α) : Prop where
-  (independentSet : G.IsIndependentSet s)
-  (maximum : ∀ t : Finset α, G.IsIndependentSet t → #t ≤ #s)
+theorem IsIndependentSet.card_le_cocliqueNum
+    [Fintype α] {t : Finset α} {tc : G.IsIndependentSet t} : #t ≤ G.cocliqueNum := by
+  simp [isIndependentSet_iff_isClique_of_complement, cocliqueNum,
+  isNIndependentSet_iff_isNClique_of_complement] at *
+  exact tc.card_le_cliqueNum
 
-theorem isMaximumIndependentSet_iff {s : Finset α} :
+lemma exists_isNIndependentSet_cocliqueNum [Fintype α] :
+    ∃ s, G.IsNIndependentSet G.cocliqueNum s := by
+  simp [isIndependentSet_iff_isClique_of_complement, cocliqueNum,
+  isNIndependentSet_iff_isNClique_of_complement]
+  exact exists_isNClique_cliqueNum
+
+/-- An independent set in a graph `G` such that there is no independent set with more vertices. -/
+structure IsMaximumIndependentSet [Fintype α] (G : SimpleGraph α) (s : Finset α) : Prop where
+  isIndependentSet : G.IsIndependentSet s
+  maximum : ∀ t : Finset α, G.IsIndependentSet t → #t ≤ #s
+
+theorem isMaximumIndependentSet_iff [Fintype α] {s : Finset α} :
     G.IsMaximumIndependentSet s ↔
     G.IsIndependentSet s ∧ ∀ t : Finset α, G.IsIndependentSet t → #t ≤ #s :=
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
-lemma isMaximumIndependentSet_iff_compl_isMaximumClique (s : Finset α)  :
+lemma isMaximumIndependentSet_iff_compl_isMaximumClique [Fintype α] (s : Finset α)  :
     G.IsMaximumIndependentSet s ↔ Gᶜ.IsMaximumClique s := by
   simp [isMaximumIndependentSet_iff, isIndependentSet_iff_isClique_of_complement,
   isMaximumClique_iff]
 
 /-- An independent set in a graph `G` that cannot be extended by adding more vertices. -/
-structure IsMaximalIndependentSet (G : SimpleGraph α) (s : Finset α) : Prop where
-  (independentSet : G.IsIndependentSet s)
-  (maximal : ∀ t : Finset α, G.IsIndependentSet t → s ⊆ t → t = s)
-
-theorem isMaximalIndependentSet_iff {s : Finset α} :
-    G.IsMaximalIndependentSet s ↔
-    G.IsIndependentSet s ∧ ∀ t : Finset α, G.IsIndependentSet t → s ⊆ t → t = s :=
-  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
+theorem isMaximalIndependentSet_iff {s : Set α} :
+    Maximal G.IsIndependentSet s ↔
+    G.IsIndependentSet s ∧ ∀ t : Set α, G.IsIndependentSet t → s ⊆ t → t ⊆ s :=
+  Iff.rfl
 
 lemma isMaximalIndependentSet_iff_compl_isMaximalClique (s : Finset α)  :
-    G.IsMaximalIndependentSet s ↔ Gᶜ.IsMaximalClique s := by
+    Maximal G.IsIndependentSet s ↔ Maximal Gᶜ.IsClique s := by
   simp [isMaximalIndependentSet_iff, isIndependentSet_iff_isClique_of_complement,
   isMaximalClique_iff]
 
-lemma maximal_of_maximum_independentSet (s : Finset α) (M : G.IsMaximumIndependentSet s) :
-    G.IsMaximalIndependentSet s := by
+lemma IsMaximumIndependentSet.isMaximalIndependentSet
+    [Fintype α] (s : Finset α) (M : G.IsMaximumIndependentSet s) : Maximal G.IsIndependentSet s :=
+  by
   rw [isMaximalIndependentSet_iff_compl_isMaximalClique]
   rw [isMaximumIndependentSet_iff_compl_isMaximumClique] at M
-  exact maximal_of_maximum s M
+  exact IsMaximumClique.isMaximalClique s M
+
+theorem maximumIndependentSet_card_eq_cocliqueNum
+    [Fintype α] (t : Finset α) (tmc : G.IsMaximumIndependentSet t) : #t = G.cocliqueNum := by
+  simp [isMaximumIndependentSet_iff, isIndependentSet_iff_isClique_of_complement, cocliqueNum,
+  isNIndependentSet_iff_isNClique_of_complement, ← isMaximumClique_iff] at *
+  exact Gᶜ.maximumClique_card_eq_cliqueNum t tmc
+
+lemma maximumIndependentSet_exists [Fintype α] : ∃ (s : Finset α), G.IsMaximumIndependentSet s := by
+  simp [isMaximumIndependentSet_iff_compl_isMaximumClique, maximumClique_exists]
 
 end CocliqueNumber
 
@@ -188,29 +204,7 @@ end CocliqueNumber
 
 section IndependentSetFinset
 
-variable [fin : Fintype α]
-
-theorem IsIndependentSet.card_le_cocliqueNum {t : Finset α} {tc : G.IsIndependentSet t} :
-    #t ≤ G.cocliqueNum := by
-  simp [isIndependentSet_iff_isClique_of_complement, cocliqueNum,
-  isNIndependentSet_iff_isNClique_of_complement] at *
-  exact tc.card_le_cliqueNum
-
-lemma exists_isNIndependentSet_cocliqueNum : ∃ s, G.IsNIndependentSet G.cocliqueNum s := by
-  simp [isIndependentSet_iff_isClique_of_complement, cocliqueNum,
-  isNIndependentSet_iff_isNClique_of_complement]
-  exact exists_isNClique_cliqueNum Gᶜ
-
-theorem maximumIndependentSet_card_eq_cocliqueNum
-    (t : Finset α) (tmc : G.IsMaximumIndependentSet t) : #t = G.cocliqueNum := by
-  simp [isMaximumIndependentSet_iff, isIndependentSet_iff_isClique_of_complement, cocliqueNum,
-  isNIndependentSet_iff_isNClique_of_complement, ← isMaximumClique_iff] at *
-  exact Gᶜ.maximumClique_card_eq_cliqueNum t tmc
-
-lemma maximumIndependentSet_exists : ∃ (s : Finset α), G.IsMaximumIndependentSet s := by
-  simp [isMaximumIndependentSet_iff_compl_isMaximumClique, maximumClique_exists]
-
-variable [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α}
+variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α}
 
 /-- The `n`-independentSets in a graph as a finset. -/
 def independentSetFinset (n : ℕ) : Finset (Finset α) := {s | G.IsNIndependentSet n s}
