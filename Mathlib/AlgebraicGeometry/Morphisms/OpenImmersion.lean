@@ -20,7 +20,7 @@ remaining theorems analogous to other lemmas in `AlgebraicGeometry/Morphisms/*`.
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
+open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace Topology
 
 universe u
 
@@ -41,16 +41,6 @@ theorem isOpenImmersion_eq_inf :
   exact isOpenImmersion_iff_stalk.trans
     (and_congr Iff.rfl (forall_congr' fun x ↦ ConcreteCategory.isIso_iff_bijective _))
 
-instance isOpenImmersion_isStableUnderComposition :
-    MorphismProperty.IsStableUnderComposition @IsOpenImmersion where
-  comp_mem f g _ _ := LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
-
-instance isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersion := by
-  apply MorphismProperty.respectsIso_of_isStableUnderComposition
-  intro _ _ f (hf : IsIso f)
-  have : IsIso f := hf
-  infer_instance
-
 instance : IsLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) := by
   apply stalkwiseIsLocalAtTarget_of_respectsIso
   rw [RingHom.toMorphismProperty_respectsIso_iff]
@@ -61,10 +51,5 @@ instance : IsLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) := by
 
 instance isOpenImmersion_isLocalAtTarget : IsLocalAtTarget @IsOpenImmersion :=
   isOpenImmersion_eq_inf ▸ inferInstance
-
-instance isOpenImmersion_isStableUnderBaseChange :
-    MorphismProperty.IsStableUnderBaseChange @IsOpenImmersion :=
-  MorphismProperty.IsStableUnderBaseChange.mk' <| by
-    intro X Y Z f g H; infer_instance
 
 end AlgebraicGeometry

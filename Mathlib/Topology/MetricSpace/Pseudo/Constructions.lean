@@ -14,8 +14,8 @@ This file constructs the supremum distance on binary products of pseudometric sp
 instances for type synonyms.
 -/
 
-open Bornology Filter Metric Set
-open scoped NNReal Topology
+open Bornology Filter Metric Set Topology
+open scoped NNReal
 
 variable {α β : Type*} [PseudoMetricSpace α]
 
@@ -37,8 +37,8 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `TopologicalSpace`
 structure. -/
-def IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace α] [m : PseudoMetricSpace β]
-    {f : α → β} (hf : IsInducing f) : PseudoMetricSpace α :=
+def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace α]
+    [m : PseudoMetricSpace β] {f : α → β} (hf : IsInducing f) : PseudoMetricSpace α :=
   .replaceTopology (.induced f m) hf.eq_induced
 
 @[deprecated (since := "2024-10-28")]
