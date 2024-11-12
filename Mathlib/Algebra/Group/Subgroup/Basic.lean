@@ -250,7 +250,7 @@ lemma ne_bot_iff_exists_ne_one {H : Subgroup G} : H ≠ ⊥ ↔ ∃ a : ↥H, a 
 
 /-- The inf of two subgroups is their intersection. -/
 @[to_additive "The inf of two `AddSubgroup`s is their intersection."]
-instance : Inf (Subgroup G) :=
+instance : Min (Subgroup G) :=
   ⟨fun H₁ H₂ =>
     { H₁.toSubmonoid ⊓ H₂.toSubmonoid with
       inv_mem' := fun ⟨hx, hx'⟩ => ⟨H₁.inv_mem hx, H₂.inv_mem hx'⟩ }⟩
@@ -2041,7 +2041,7 @@ namespace Subgroup
 -- Here `H.Normal` is an explicit argument so we can use dot notation with `comap`.
 @[to_additive]
 theorem Normal.comap {H : Subgroup N} (hH : H.Normal) (f : G →* N) : (H.comap f).Normal :=
-  ⟨fun _ => by simp (config := { contextual := true }) [Subgroup.mem_comap, hH.conj_mem]⟩
+  ⟨fun _ => by simp +contextual [Subgroup.mem_comap, hH.conj_mem]⟩
 
 @[to_additive]
 instance (priority := 100) normal_comap {H : Subgroup N} [nH : H.Normal] (f : G →* N) :

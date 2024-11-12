@@ -6,9 +6,10 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.PowerBasis
 import Mathlib.FieldTheory.IntermediateField.Basic
+import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.RingTheory.PowerBasis
 
 /-!
 

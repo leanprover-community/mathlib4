@@ -438,12 +438,6 @@ theorem pi_hyperplane (i : ι) [NoAtoms (μ i)] (x : α i) :
 theorem ae_eval_ne (i : ι) [NoAtoms (μ i)] (x : α i) : ∀ᵐ y : ∀ i, α i ∂Measure.pi μ, y i ≠ x :=
   compl_mem_ae_iff.2 (pi_hyperplane μ i x)
 
-theorem restrict_pi_pi (s : (i : ι) → Set (α i)) :
-    (Measure.pi μ).restrict (Set.univ.pi fun i ↦ s i) = .pi (fun i ↦ (μ i).restrict (s i)) := by
-  refine (pi_eq fun _ h ↦ ?_).symm
-  simp_rw [restrict_apply (MeasurableSet.univ_pi h), restrict_apply (h _),
-    ← Set.pi_inter_distrib, pi_pi]
-
 variable {μ}
 
 theorem tendsto_eval_ae_ae {i : ι} : Tendsto (eval i) (ae (Measure.pi μ)) (ae (μ i)) := fun _ hs =>
@@ -940,23 +934,24 @@ theorem volume_preserving_pi {α' β' : ι → Type*} [∀ i, MeasureSpace (α' 
     MeasurePreserving (fun (a : (i : ι) → α' i) (i : ι) ↦ (f i) (a i)) :=
   measurePreserving_pi _ _ hf
 
-/-- Docstring. -/
+/-- The measurable equiv `(α₁ → β₁) ≃ᵐ (α₂ → β₂)` induced by `α₁ ≃ α₂` and `β₁ ≃ᵐ β₂` is
+measure preserving. -/
 theorem measurePreserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype α₁] [Fintype α₂]
     [MeasurableSpace β₁] [MeasurableSpace β₂] (μ : α₁ → Measure β₁) (ν : α₂ → Measure β₂)
-    [∀ i, SigmaFinite (ν i)] (hα : α₁ ≃ α₂) (hβ : β₁ ≃ᵐ β₂)
-    (hm : ∀ i, MeasurePreserving hβ (μ i) (ν (hα i))) :
-    MeasurePreserving (MeasurableEquiv.arrowCongr' hα hβ) (Measure.pi fun i ↦ μ i)
+    [∀ i, SigmaFinite (ν i)] (eα : α₁ ≃ α₂) (eβ : β₁ ≃ᵐ β₂)
+    (hm : ∀ i, MeasurePreserving eβ (μ i) (ν (eα i))) :
+    MeasurePreserving (MeasurableEquiv.arrowCongr' eα eβ) (Measure.pi fun i ↦ μ i)
       (Measure.pi fun i ↦ ν i) := by
   classical
-  convert (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) hα).comp
-    (measurePreserving_pi μ (fun i : α₁ ↦ ν (hα i)) hm)
+  convert (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) eα).comp
+    (measurePreserving_pi μ (fun i : α₁ ↦ ν (eα i)) hm)
   simp only [MeasurableEquiv.arrowCongr', Equiv.arrowCongr', Equiv.arrowCongr, EquivLike.coe_coe,
-    MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.piCongrLeft, Equiv.piCongrLeft,
-    Equiv.symm_symm_apply, Equiv.piCongrLeft'_symm, Equiv.symm_symm]
-  rfl
+    comp_def, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.piCongrLeft,
+    Equiv.piCongrLeft, Equiv.symm_symm, Equiv.piCongrLeft', eq_rec_constant, Equiv.coe_fn_symm_mk]
 
-/-- Docstring. -/
-theorem volume_preserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype α₁] [Fintype α₂]
+/-- The measurable equiv `(α₁ → β₁) ≃ᵐ (α₂ → β₂)` induced by `α₁ ≃ α₂` and `β₁ ≃ᵐ β₂` is
+volume preserving. -/
+ theorem volume_preserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype α₁] [Fintype α₂]
     [MeasureSpace β₁] [MeasureSpace β₂] [SigmaFinite (volume : Measure β₂)]
     (hα : α₁ ≃ α₂) (hβ : β₁ ≃ᵐ β₂) (hm : MeasurePreserving hβ) :
     MeasurePreserving (MeasurableEquiv.arrowCongr' hα hβ) :=

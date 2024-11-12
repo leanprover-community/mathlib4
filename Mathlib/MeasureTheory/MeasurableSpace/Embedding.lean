@@ -501,8 +501,7 @@ lemma piCongrLeft_apply_apply {ι ι' : Type*} (e : ι ≃ ι') {β : ι' → Ty
   rw [piCongrLeft, coe_mk, Equiv.piCongrLeft_apply_apply]
 
 /-- The isomorphism `(γ → α × β) ≃ (γ → α) × (γ → β)` as a measurable equivalence. -/
-def arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α]
-    [MeasurableSpace β] :
+def arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α] [MeasurableSpace β] :
     (γ → α × β) ≃ᵐ (γ → α) × (γ → β) where
   __ := Equiv.arrowProdEquivProdArrow α β γ
   measurable_toFun _ h := by

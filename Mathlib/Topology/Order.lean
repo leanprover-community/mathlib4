@@ -185,7 +185,7 @@ def gciGenerateFrom (α : Type*) :
   topology whose open sets are those sets open in every member of the collection. -/
 instance : CompleteLattice (TopologicalSpace α) := (gciGenerateFrom α).liftCompleteLattice
 
-@[mono]
+@[mono, gcongr]
 theorem generateFrom_anti {α} {g₁ g₂ : Set (Set α)} (h : g₁ ⊆ g₂) :
     generateFrom g₂ ≤ generateFrom g₁ :=
   (gc_generateFrom _).monotone_u h
@@ -313,7 +313,9 @@ theorem discreteTopology_iff_singleton_mem_nhds [TopologicalSpace α] :
 neighbourhoods. -/
 theorem discreteTopology_iff_nhds [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, 𝓝 x = pure x := by
-  simp only [discreteTopology_iff_singleton_mem_nhds, ← nhds_neBot.le_pure_iff, le_pure_iff]
+  simp [discreteTopology_iff_singleton_mem_nhds, le_pure_iff]
+  apply forall_congr' (fun x ↦ ?_)
+  simp [le_antisymm_iff, pure_le_nhds x]
 
 theorem discreteTopology_iff_nhds_ne [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, 𝓝[≠] x = ⊥ := by

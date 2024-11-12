@@ -118,7 +118,7 @@ lemma nmem_nonZeroDivisors_iff {r : M} : r ∉ M⁰ ↔ {s | s * r = 0 ∧ s ≠
   simpa [mem_nonZeroDivisors_iff] using Set.nonempty_def.symm
 
 theorem mul_right_mem_nonZeroDivisors_eq_zero_iff {x r : M} (hr : r ∈ M⁰) : x * r = 0 ↔ x = 0 :=
-  ⟨hr _, by simp (config := { contextual := true })⟩
+  ⟨hr _, by simp +contextual⟩
 @[simp]
 theorem mul_right_coe_nonZeroDivisors_eq_zero_iff {x : M} {c : M⁰} : x * c = 0 ↔ x = 0 :=
   mul_right_mem_nonZeroDivisors_eq_zero_iff c.prop
