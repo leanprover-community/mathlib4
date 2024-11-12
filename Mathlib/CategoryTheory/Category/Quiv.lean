@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.PathCategory
+import Mathlib.CategoryTheory.PathCategory.Basic
 
 /-!
 # The category of quivers

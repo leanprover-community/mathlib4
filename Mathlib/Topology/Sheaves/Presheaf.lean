@@ -242,9 +242,7 @@ theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf
     (toPushforwardOfIso H₁ H₂).app U =
       ℱ.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) ≫
         H₂.app (op ((Opens.map H₁.inv).obj (unop U))) := by
-  delta toPushforwardOfIso
-  simp [-Functor.map_comp, ← Functor.map_comp_assoc]
-  rfl
+  simp [toPushforwardOfIso, Adjunction.homEquiv_unit]
 
 /-- If `H : X ≅ Y` is a homeomorphism,
 then given an `H _* ℱ ⟶ 𝒢`, we may obtain an `ℱ ⟶ H ⁻¹ _* 𝒢`.
@@ -259,7 +257,7 @@ theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
         𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) := by
-  simp [pushforwardToOfIso, Equivalence.toAdjunction]
+  simp [pushforwardToOfIso, Equivalence.toAdjunction, Adjunction.homEquiv_counit]
 
 end Iso
 

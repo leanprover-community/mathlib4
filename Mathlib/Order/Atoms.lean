@@ -8,6 +8,7 @@ import Mathlib.Order.ModularLattice
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.Nontriviality
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Atoms, Coatoms, and Simple Lattices

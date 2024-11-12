@@ -44,12 +44,12 @@ theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
 
 instance : SmoothManifoldWithCorners 𝓘(𝕜, R) Rˣ :=
-  isOpenEmbedding_val.singleton_smoothManifoldWithCorners 𝓘(𝕜, R)
+  isOpenEmbedding_val.singleton_smoothManifoldWithCorners
 
 /-- For a complete normed ring `R`, the embedding of the units `Rˣ` into `R` is a smooth map between
 manifolds. -/
 lemma contMDiff_val {m : ℕ∞} : ContMDiff 𝓘(𝕜, R) 𝓘(𝕜, R) m (val : Rˣ → R) :=
-  contMDiff_isOpenEmbedding 𝓘(𝕜, R) Units.isOpenEmbedding_val
+  contMDiff_isOpenEmbedding Units.isOpenEmbedding_val
 
 /-- The units of a complete normed ring form a Lie group. -/
 instance : LieGroup 𝓘(𝕜, R) Rˣ where

@@ -185,6 +185,13 @@ theorem comap_le_comap_iff {f : F} (hf : range f = ⊤) {p p'} : comap f p ≤ c
 theorem comap_injective {f : F} (hf : range f = ⊤) : Injective (comap f) := fun _ _ h =>
   le_antisymm ((comap_le_comap_iff hf).1 (le_of_eq h)) ((comap_le_comap_iff hf).1 (ge_of_eq h))
 
+-- TODO (?): generalize to semilinear maps with `f ∘ₗ g` bijective.
+theorem ker_eq_range_of_comp_eq_id {M P} [AddCommGroup M] [Module R M]
+    [AddCommGroup P] [Module R P] {f : M →ₗ[R] P} {g : P →ₗ[R] M} (h : f ∘ₗ g = .id) :
+    ker f = range (LinearMap.id - g ∘ₗ f) :=
+  le_antisymm (fun x hx ↦ ⟨x, show x - g (f x) = x by rw [hx, map_zero, sub_zero]⟩) <|
+    range_le_ker_iff.mpr <| by rw [comp_sub, comp_id, ← comp_assoc, h, id_comp, sub_self]
+
 end
 
 end AddCommMonoid
@@ -266,7 +273,6 @@ theorem map_subtype_le (p' : Submodule R p) : map p.subtype p' ≤ p := by
 
 /-- Under the canonical linear map from a submodule `p` to the ambient space `M`, the image of the
 maximal submodule of `p` is just `p`. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_subtype_top : map p.subtype (⊤ : Submodule R p) = p := by simp
 
 @[simp]
@@ -276,6 +282,12 @@ theorem comap_subtype_eq_top {p p' : Submodule R M} : comap p.subtype p' = ⊤ �
 @[simp]
 theorem comap_subtype_self : comap p.subtype p = ⊤ :=
   comap_subtype_eq_top.2 le_rfl
+
+@[simp]
+lemma comap_subtype_le_iff {p q r : Submodule R M} :
+    q.comap p.subtype ≤ r.comap p.subtype ↔ p ⊓ q ≤ p ⊓ r :=
+  ⟨fun h ↦ by simpa using map_mono (f := p.subtype) h,
+   fun h ↦ by simpa using comap_mono (f := p.subtype) h⟩
 
 theorem range_inclusion (p q : Submodule R M) (h : p ≤ q) :
     range (inclusion h) = comap q.subtype p := by
@@ -389,6 +401,9 @@ theorem surjective_rangeRestrict : Surjective f.rangeRestrict := by
   rw [← range_eq_top, range_rangeRestrict]
 
 @[simp] theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
+
+@[simp] theorem injective_rangeRestrict_iff : Injective f.rangeRestrict ↔ Injective f :=
+  Set.injective_codRestrict _
 
 end rangeRestrict
 

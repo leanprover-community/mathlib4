@@ -799,7 +799,7 @@ lemma KaehlerDifferential.exact_mapBaseChange_map :
 
 end
 
-/-- The map `I → B ⊗[A] B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
+/-- The map `I → B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
 @[simps]
 noncomputable
 def KaehlerDifferential.kerToTensor :
@@ -811,16 +811,18 @@ def KaehlerDifferential.kerToTensor :
     algebraMap_eq_smul_one, RingHom.mem_ker.mp x.prop, TensorProduct.zero_tmul, add_zero,
     RingHom.id_apply]
 
-/-- The map `I/I² → B ⊗[A] B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
+/-- The map `I/I² → B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
 noncomputable
 def KaehlerDifferential.kerCotangentToTensor :
     (RingHom.ker (algebraMap A B)).Cotangent →ₗ[A] B ⊗[A] Ω[A⁄R] :=
-  Submodule.liftQ _ (kerToTensor R A B) (iSup_le_iff.mpr (by
+  Submodule.liftQ _ (kerToTensor R A B) <| by
+    rw [Submodule.smul_eq_map₂]
+    apply iSup_le_iff.mpr
     simp only [Submodule.map_le_iff_le_comap, Subtype.forall]
     rintro x hx y -
     simp only [Submodule.mem_comap, LinearMap.lsmul_apply, LinearMap.mem_ker, map_smul,
       kerToTensor_apply, TensorProduct.smul_tmul', ← algebraMap_eq_smul_one,
-      RingHom.mem_ker.mp hx, TensorProduct.zero_tmul]))
+      RingHom.mem_ker.mp hx, TensorProduct.zero_tmul]
 
 @[simp]
 lemma KaehlerDifferential.kerCotangentToTensor_toCotangent (x) :

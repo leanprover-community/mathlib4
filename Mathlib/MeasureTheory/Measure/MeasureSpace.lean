@@ -233,7 +233,7 @@ theorem measure_eq_top_iff_of_symmDiff (hμst : μ (s ∆ t) ≠ ∞) : μ s = �
   apply hμuv
   rw [Set.symmDiff_def, eq_top_iff]
   calc
-    ∞ = μ u - μ v := (WithTop.sub_eq_top_iff.2 ⟨hμu, hμv⟩).symm
+    ∞ = μ u - μ v := by rw [ENNReal.sub_eq_top_iff.2 ⟨hμu, hμv⟩]
     _ ≤ μ (u \ v) := le_measure_diff
     _ ≤ μ (u \ v ∪ v \ u) := measure_mono subset_union_left
 
@@ -464,18 +464,12 @@ so it works for a family indexed by a countable type, as well as `ℝ`.  -/
 theorem _root_.Monotone.measure_iUnion [Preorder ι] [IsDirected ι (· ≤ ·)]
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Monotone s) :
     μ (⋃ i, s i) = ⨆ i, μ (s i) := by
-  refine le_antisymm ?_ (iSup_le fun i ↦ measure_mono <| subset_iUnion _ _)
   cases isEmpty_or_nonempty ι with
   | inl _ => simp
   | inr _ =>
     rcases exists_seq_monotone_tendsto_atTop_atTop ι with ⟨x, hxm, hx⟩
-    calc
-      μ (⋃ i, s i) ≤ μ (⋃ n, s (x n)) := by
-        refine measure_mono <| iUnion_mono' fun i ↦ ?_
-        rcases (hx.eventually_ge_atTop i).exists with ⟨n, hn⟩
-        exact ⟨n, hs hn⟩
-      _ = ⨆ n, μ (s (x n)) := (hs.comp hxm).directed_le.measure_iUnion
-      _ ≤ ⨆ i, μ (s i) := iSup_comp_le (μ ∘ s) x
+    rw [← hs.iUnion_comp_tendsto_atTop hx, ← Monotone.iSup_comp_tendsto_atTop _ hx]
+    exacts [(hs.comp hxm).directed_le.measure_iUnion, fun _ _ h ↦ measure_mono (hs h)]
 
 theorem _root_.Antitone.measure_iUnion [Preorder ι] [IsDirected ι (· ≥ ·)]
     [(atBot : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Antitone s) :
@@ -924,8 +918,7 @@ theorem lt_iff : μ < ν ↔ μ ≤ ν ∧ ∃ s, MeasurableSet s ∧ μ s < ν 
 theorem lt_iff' : μ < ν ↔ μ ≤ ν ∧ ∃ s, μ s < ν s :=
   lt_iff_le_not_le.trans <| and_congr Iff.rfl <| by simp only [le_iff', not_forall, not_le]
 
-instance covariantAddLE {_ : MeasurableSpace α} :
-    CovariantClass (Measure α) (Measure α) (· + ·) (· ≤ ·) :=
+instance instAddLeftMono {_ : MeasurableSpace α} : AddLeftMono (Measure α) :=
   ⟨fun _ν _μ₁ _μ₂ hμ s => add_le_add_left (hμ s) _⟩
 
 protected theorem le_add_left (h : μ ≤ ν) : μ ≤ ν' + ν := fun s => le_add_left (h s)
@@ -1190,6 +1183,8 @@ theorem map_id : map id μ = μ :=
 theorem map_id' : map (fun x => x) μ = μ :=
   map_id
 
+/-- Mapping a measure twice is the same as mapping the measure with the composition. This version is
+for measurable functions. See `map_map_of_aemeasurable` when they are just ae measurable. -/
 theorem map_map {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     (μ.map f).map g = μ.map (g ∘ f) :=
   ext fun s hs => by simp [hf, hg, hs, hg hs, hg.comp hf, ← preimage_comp]
@@ -1375,7 +1370,7 @@ theorem sum_apply_eq_zero' {μ : ι → Measure α} {s : Set α} (hs : Measurabl
     sum μ s = 0 ↔ ∀ i, μ i s = 0 := by simp [hs]
 
 @[simp] lemma sum_eq_zero : sum f = 0 ↔ ∀ i, f i = 0 := by
-  simp (config := { contextual := true }) [Measure.ext_iff, forall_swap (α := ι)]
+  simp +contextual [Measure.ext_iff, forall_swap (α := ι)]
 
 @[simp]
 lemma sum_zero : Measure.sum (fun (_ : ι) ↦ (0 : Measure α)) = 0 := by
@@ -1975,6 +1970,13 @@ theorem quasiMeasurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
 
 end MeasurableEquiv
 
+namespace MeasureTheory.Measure
+variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+
+lemma comap_swap (μ : Measure (α × β)) : μ.comap Prod.swap = μ.map Prod.swap :=
+  (MeasurableEquiv.prodComm ..).comap_symm
+
+end MeasureTheory.Measure
 end
 
 set_option linter.style.longFile 2000

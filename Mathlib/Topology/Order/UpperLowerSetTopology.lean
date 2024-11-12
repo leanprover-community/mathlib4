@@ -95,7 +95,7 @@ protected def rec {β : WithUpperSet α → Sort*} (h : ∀ a, β (toUpperSet a)
 instance [Nonempty α] : Nonempty (WithUpperSet α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithUpperSet α) := ‹Inhabited α›
 
-variable [Preorder α] [Preorder β] [Preorder γ]
+variable [Preorder α] [Preorder β]
 
 instance : Preorder (WithUpperSet α) := ‹Preorder α›
 instance : TopologicalSpace (WithUpperSet α) := upperSet α
@@ -220,7 +220,7 @@ instance _root_.OrderDual.instIsLowerSet [Preorder α] [TopologicalSpace α] [To
 /-- If `α` is equipped with the upper set topology, then it is homeomorphic to
 `WithUpperSet α`. -/
 def WithUpperSetHomeomorph : WithUpperSet α ≃ₜ α :=
-  WithUpperSet.ofUpperSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithUpperSet.ofUpperSet.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 lemma isOpen_iff_isUpperSet : IsOpen s ↔ IsUpperSet s := by
   rw [topology_eq α]
@@ -302,7 +302,7 @@ instance _root_.OrderDual.instIsUpperSet [Preorder α] [TopologicalSpace α] [To
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to `WithLowerSet α`. -/
 def WithLowerSetHomeomorph : WithLowerSet α ≃ₜ α :=
-  WithLowerSet.ofLowerSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithLowerSet.ofLowerSet.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 lemma isOpen_iff_isLowerSet : IsOpen s ↔ IsLowerSet s := by rw [topology_eq α]; rfl
 

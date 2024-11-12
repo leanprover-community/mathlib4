@@ -41,11 +41,11 @@ def bitIndices (n : ℕ) : List ℕ :=
 
 theorem bitIndices_bit_true (n : ℕ) :
     bitIndices (bit true n) = 0 :: ((bitIndices n).map (· + 1)) :=
-  binaryRec_eq rfl _ _
+  binaryRec_eq _ _ (.inl rfl)
 
 theorem bitIndices_bit_false (n : ℕ) :
     bitIndices (bit false n) = (bitIndices n).map (· + 1) :=
-  binaryRec_eq rfl _ _
+  binaryRec_eq _ _ (.inl rfl)
 
 @[simp] theorem bitIndices_two_mul_add_one (n : ℕ) :
     bitIndices (2 * n + 1) = 0 :: (bitIndices n).map (· + 1) := by

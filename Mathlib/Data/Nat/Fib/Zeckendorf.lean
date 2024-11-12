@@ -67,7 +67,7 @@ lemma IsZeckendorfRep.sum_fib_lt : ∀ {n l}, IsZeckendorfRep l → (∀ a ∈ (
 end List
 
 namespace Nat
-variable {l : List ℕ} {a m n : ℕ}
+variable {m n : ℕ}
 
 /-- The greatest index of a Fibonacci number less than or equal to `n`. -/
 def greatestFib (n : ℕ) : ℕ := (n + 1).findGreatest (fun k ↦ fib k ≤ n)

@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.ModEq
 import Mathlib.NumberTheory.Zsqrtd.Basic
@@ -129,10 +128,8 @@ theorem xn_succ (n : ℕ) : xn a1 (n + 1) = xn a1 n * a + d a1 * yn a1 n :=
 theorem yn_succ (n : ℕ) : yn a1 (n + 1) = xn a1 n + yn a1 n * a :=
   rfl
 
---@[simp] Porting note (#10618): `simp` can prove it
 theorem xn_one : xn a1 1 = a := by simp
 
---@[simp] Porting note (#10618): `simp` can prove it
 theorem yn_one : yn a1 1 = 1 := by simp
 
 /-- The Pell `x` sequence, considered as an integer sequence. -/
