@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.ENat.Basic
+import Mathlib.Algebra.Group.Action.Defs
 
 /-!
 # Extended natural numbers form a complete linear order
@@ -190,11 +191,11 @@ lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· �
     (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
   iSup_add_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
 
--- proof_wanted smul_iSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (f : ι → ℕ∞) (c : R) :
---     c • ⨆ i, f i = ⨆ i, c • f i
+proof_wanted smul_iSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (f : ι → ℕ∞) (c : R) :
+    c • ⨆ i, f i = ⨆ i, c • f i
 
--- proof_wanted smul_sSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (s : Set ℕ∞) (c : R) :
---     c • sSup s = ⨆ a ∈ s, c • a
+proof_wanted smul_sSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (s : Set ℕ∞) (c : R) :
+    c • sSup s = ⨆ a ∈ s, c • a
 
 lemma sub_iSup [Nonempty ι] (ha : a ≠ ⊤) : a - ⨆ i, f i = ⨅ i, a - f i := by
   obtain ⟨i, hi⟩ | h := em (∃ i, a < f i)
