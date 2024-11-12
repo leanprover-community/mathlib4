@@ -7,8 +7,9 @@ import Mathlib.Algebra.Algebra.Subalgebra.Directed
 import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.Adjoin.Dimension
 
 /-!
 # Adjoining Elements to Fields
@@ -728,6 +729,30 @@ instance finiteDimensional_sup [FiniteDimensional K E1] [FiniteDimensional K E2]
       g.toLinearMap.finiteDimensional_range
     rwa [this] at h
   rw [Algebra.TensorProduct.productMap_range, E1.range_val, E2.range_val, sup_toSubalgebra_of_left]
+
+/-- If `E1` and `E2` are intermediate fields, and at least one them are algebraic, then the rank of
+`E1 ⊔ E2` is less than or equal to the product of that of `E1` and `E2`. Note that this result is
+also true without algebraic assumption, but the proof becomes very complicated. -/
+theorem rank_sup_le_of_isAlgebraic
+    (halg : Algebra.IsAlgebraic K E1 ∨ Algebra.IsAlgebraic K E2) :
+    Module.rank K ↥(E1 ⊔ E2) ≤ Module.rank K E1 * Module.rank K E2 := by
+  have := E1.toSubalgebra.rank_sup_le_of_free E2.toSubalgebra
+  rwa [← sup_toSubalgebra_of_isAlgebraic E1 E2 halg] at this
+
+/-- If `E1` and `E2` are intermediate fields, then the `Module.finrank` of
+`E1 ⊔ E2` is less than or equal to the product of that of `E1` and `E2`. -/
+theorem finrank_sup_le :
+    finrank K ↥(E1 ⊔ E2) ≤ finrank K E1 * finrank K E2 := by
+  by_cases h : FiniteDimensional K E1
+  · have := E1.toSubalgebra.finrank_sup_le_of_free E2.toSubalgebra
+    change _ ≤ finrank K E1 * finrank K E2 at this
+    rwa [← sup_toSubalgebra_of_left] at this
+  rw [FiniteDimensional, ← rank_lt_aleph0_iff, not_lt] at h
+  have := LinearMap.rank_le_of_injective _ <| Submodule.inclusion_injective <|
+    show Subalgebra.toSubmodule E1.toSubalgebra ≤ Subalgebra.toSubmodule (E1 ⊔ E2).toSubalgebra by
+      simp
+  rw [show finrank K E1 = 0 from Cardinal.toNat_apply_of_aleph0_le h,
+    show finrank K ↥(E1 ⊔ E2) = 0 from Cardinal.toNat_apply_of_aleph0_le (h.trans this), zero_mul]
 
 variable {ι : Type*} {t : ι → IntermediateField K L}
 

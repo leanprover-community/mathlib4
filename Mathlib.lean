@@ -3337,7 +3337,6 @@ import Mathlib.LinearAlgebra.TensorPower
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
-import Mathlib.LinearAlgebra.TensorProduct.Field
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
@@ -4066,6 +4065,7 @@ import Mathlib.RingTheory.AdicCompletion.Basic
 import Mathlib.RingTheory.AdicCompletion.Exactness
 import Mathlib.RingTheory.AdicCompletion.Functoriality
 import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.Adjoin.Field
 import Mathlib.RingTheory.Adjoin.PowerBasis
