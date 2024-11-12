@@ -119,7 +119,7 @@ theorem tendstoUniformly_tsum_eventually {ι : Type*} {f : ι → β → F} {u :
 
 /-- An infinite sum of functions with eventually summable sup norm is the uniform limit of its
 partial sums. Version with index set `ℕ`. -/
-theorem tendstoUniformly_tsum_net_eventually {f : ℕ → α → F} {u : ℕ → ℝ}
+theorem tendstoUniformly_tsum_nat_eventually {f : ℕ → α → F} {u : ℕ → ℝ}
     (hu : Summable u) (hfu : ∀ᶠ n in atTop, ∀ x, ‖f n x‖ ≤ u n) :
     TendstoUniformly (fun N x => ∑ n ∈ Finset.range N, f n x) (fun x => ∑' n, f n x) atTop := by
   rw [← tendstoUniformlyOn_univ]
