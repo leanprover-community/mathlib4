@@ -111,6 +111,8 @@ theorem coprime_fermatNumber_fermatNumber {k n : ℕ} (h : k ≠ n) :
   refine ((dvd_prime prime_two).mp h_m).elim id (fun h_two ↦ ?_)
   exact ((odd_fermatNumber _).not_two_dvd_nat (h_two ▸ h_n)).elim
 
+open ZMod
+
 /-- Prime `a ^ n + 1` implies `n` is a power of two (**Fermat primes**). -/
 theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : n ≠ 0) (hP : (a ^ n + 1).Prime) :
     ∃ m : ℕ, n = 2 ^ m := by
