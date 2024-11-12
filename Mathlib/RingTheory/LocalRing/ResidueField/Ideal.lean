@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # The residue field of a prime ideal
@@ -25,13 +26,13 @@ The residue field at a prime ideal, defined to be the residue field of the local
 We also provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.
 -/
 abbrev Ideal.ResidueField : Type _ :=
-  LocalRing.ResidueField (Localization.AtPrime I)
+  IsLocalRing.ResidueField (Localization.AtPrime I)
 
 /-- If `I = f⁻¹(J)`, then there is an canonical embedding `κ(I) ↪ κ(J)`. -/
 noncomputable
 abbrev Ideal.ResidueField.map (I : Ideal R) [I.IsPrime] (J : Ideal A) [J.IsPrime]
     (f : R →+* A) (hf : I = J.comap f) : I.ResidueField →+* J.ResidueField :=
-  LocalRing.ResidueField.map (Localization.localRingHom I J f hf)
+  IsLocalRing.ResidueField.map (Localization.localRingHom I J f hf)
 
 /-- If `I = f⁻¹(J)`, then there is an canonical embedding `κ(I) ↪ κ(J)`. -/
 noncomputable
@@ -40,9 +41,9 @@ def Ideal.ResidueField.mapₐ (I : Ideal R) [I.IsPrime] (J : Ideal A) [J.IsPrime
   __ := Ideal.ResidueField.map I J (algebraMap R A) hf
   commutes' r := by
     rw [IsScalarTower.algebraMap_apply R (Localization.AtPrime I),
-      LocalRing.ResidueField.algebraMap_eq]
+      IsLocalRing.ResidueField.algebraMap_eq]
     simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe, LocalRing.ResidueField.map_residue, Localization.localRingHom_to_map]
+      MonoidHom.coe_coe, IsLocalRing.ResidueField.map_residue, Localization.localRingHom_to_map]
     rfl
 
 @[simp] lemma Ideal.ResidueField.mapₐ_apply (I : Ideal R) [I.IsPrime] (J : Ideal A) [J.IsPrime]
@@ -54,7 +55,7 @@ variable {I} in
 lemma Ideal.algebraMap_residueField_eq_zero {x} :
     algebraMap R I.ResidueField x = 0 ↔ x ∈ I := by
   rw [IsScalarTower.algebraMap_apply R (Localization.AtPrime I),
-    LocalRing.ResidueField.algebraMap_eq, LocalRing.residue_eq_zero_iff]
+    IsLocalRing.ResidueField.algebraMap_eq, IsLocalRing.residue_eq_zero_iff]
   exact IsLocalization.AtPrime.to_map_mem_maximal_iff _ _ _
 
 @[simp]
@@ -62,7 +63,7 @@ lemma Ideal.ker_algebraMap_residueField :
     RingHom.ker (algebraMap R I.ResidueField) = I :=
   Ideal.ext fun _ ↦ Ideal.algebraMap_residueField_eq_zero
 
-attribute [-instance] LocalRing.ResidueField.field in
+attribute [-instance] IsLocalRing.ResidueField.field in
 instance : Algebra (R ⧸ I) I.ResidueField :=
   (Ideal.Quotient.liftₐ I (Algebra.ofId _ _)
     fun _ ↦ Ideal.algebraMap_residueField_eq_zero.mpr).toRingHom.toAlgebra
