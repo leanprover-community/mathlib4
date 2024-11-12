@@ -253,6 +253,8 @@ namespace RingHom
 
 variable (R)
 
+/-- The canonical ring homomorphism from a commutative semiring to the product of its
+localizations at all maximal ideals. It is always injective. -/
 def toLocalizationIsMaximal : R →+*
     ∀ I : {I : Ideal R | I.IsMaximal}, haveI : I.1.IsMaximal := I.2; Localization.AtPrime I.1 :=
   Pi.ringHom fun _ ↦ algebraMap R _
