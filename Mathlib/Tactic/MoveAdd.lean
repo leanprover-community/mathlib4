@@ -149,8 +149,6 @@ def uniquify : List α → List (α × ℕ)
     let lms := uniquify ms
     (m, 0) :: (lms.map fun (x, n) => if x == m then (x, n + 1) else (x, n))
 
-variable [Inhabited α]
-
 /-- Return a sorting key so that all `(a, true)`s are in the list's order
 and sorted before all `(a, false)`s, which are also in the list's order.
 Although `weight` does not require this, we use `weight` in the case where the list obtained

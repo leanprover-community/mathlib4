@@ -185,8 +185,6 @@ variable [Ring R] [AddCommGroup M] [Module R M] (r : R) (x : M)
 theorem neg_smul : -r • x = -(r • x) :=
   eq_neg_of_add_eq_zero_left <| by rw [← add_smul, neg_add_cancel, zero_smul]
 
--- Porting note (#10618): simp can prove this
---@[simp]
 theorem neg_smul_neg : -r • -x = r • x := by rw [neg_smul, smul_neg, neg_neg]
 
 @[simp]
@@ -241,6 +239,9 @@ instance (priority := 910) Semiring.toModule [Semiring R] : Module R R where
   add_smul := add_mul
   zero_smul := zero_mul
   smul_zero := mul_zero
+
+instance [NonUnitalNonAssocSemiring R] : DistribSMul R R where
+  smul_add := left_distrib
 
 /-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`. -/
 def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
@@ -317,13 +318,9 @@ theorem map_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [Fun
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
   simp only [Nat.cast_smul_eq_nsmul, AddMonoidHom.map_nsmul, map_nsmul]
 
--- Porting note (#10618): simp can prove this
---@[simp]
 theorem Nat.smul_one_eq_cast {R : Type*} [NonAssocSemiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]
 
--- Porting note (#10618): simp can prove this
---@[simp]
 theorem Int.smul_one_eq_cast {R : Type*} [NonAssocRing R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
 

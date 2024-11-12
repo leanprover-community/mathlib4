@@ -92,7 +92,7 @@ variable [LE P]
 
 section
 
-variable {I J s t : Ideal P} {x y : P}
+variable {I s t : Ideal P} {x : P}
 
 theorem toLowerSet_injective : Injective (toLowerSet : Ideal P → LowerSet P) := fun s t _ ↦ by
   cases s
@@ -247,7 +247,7 @@ variable [Preorder P]
 
 section
 
-variable {I J : Ideal P} {x y : P}
+variable {I : Ideal P} {x y : P}
 
 /-- The smallest ideal containing a given element. -/
 @[simps]
@@ -316,10 +316,10 @@ end SemilatticeSup
 
 section SemilatticeSupDirected
 
-variable [SemilatticeSup P] [IsDirected P (· ≥ ·)] {x : P} {I J K s t : Ideal P}
+variable [SemilatticeSup P] [IsDirected P (· ≥ ·)] {x : P} {I J s t : Ideal P}
 
 /-- The infimum of two ideals of a co-directed order is their intersection. -/
-instance : Inf (Ideal P) :=
+instance : Min (Ideal P) :=
   ⟨fun I J ↦
     { toLowerSet := I.toLowerSet ⊓ J.toLowerSet
       nonempty' := inter_nonempty I J
@@ -327,7 +327,7 @@ instance : Inf (Ideal P) :=
 
 /-- The supremum of two ideals of a co-directed order is the union of the down sets of the pointwise
 supremum of `I` and `J`. -/
-instance : Sup (Ideal P) :=
+instance : Max (Ideal P) :=
   ⟨fun I J ↦
     { carrier := { x | ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j }
       nonempty' := by
@@ -385,7 +385,7 @@ end SemilatticeSupDirected
 
 section SemilatticeSupOrderBot
 
-variable [SemilatticeSup P] [OrderBot P] {x : P} {I J K : Ideal P}
+variable [SemilatticeSup P] [OrderBot P] {x : P}
 
 instance : InfSet (Ideal P) :=
   ⟨fun S ↦

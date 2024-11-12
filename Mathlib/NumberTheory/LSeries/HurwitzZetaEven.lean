@@ -119,7 +119,7 @@ lemma continuousOn_evenKernel (a : UnitAddCircle) : ContinuousOn (evenKernel a) 
   induction' a using QuotientAddGroup.induction_on with a'
   apply continuous_re.comp_continuousOn (f := fun x ↦ (evenKernel a' x : ℂ))
   simp only [evenKernel_def a']
-  refine ContinuousAt.continuousOn (fun x hx ↦ ((Continuous.continuousAt ?_).mul ?_))
+  refine continuousOn_of_forall_continuousAt (fun x hx ↦ ((Continuous.continuousAt ?_).mul ?_))
   · exact Complex.continuous_exp.comp (continuous_const.mul continuous_ofReal)
   · have h := continuousAt_jacobiTheta₂ (a' * I * x) (?_ : 0 < im (I * x))
     · exact h.comp (f := fun u : ℝ ↦ (a' * I * u, I * u)) (by fun_prop)
@@ -129,7 +129,7 @@ lemma continuousOn_cosKernel (a : UnitAddCircle) : ContinuousOn (cosKernel a) (I
   induction' a using QuotientAddGroup.induction_on with a'
   apply continuous_re.comp_continuousOn (f := fun x ↦ (cosKernel a' x : ℂ))
   simp only [cosKernel_def]
-  refine ContinuousAt.continuousOn (fun x hx ↦ ?_)
+  refine continuousOn_of_forall_continuousAt (fun x hx ↦ ?_)
   have : 0 < im (I * x) := by rwa [mul_im, I_re, I_im, zero_mul, one_mul, zero_add, ofReal_re]
   exact (continuousAt_jacobiTheta₂ a' this).comp (f := fun u : ℝ ↦ (_, I * u)) (by fun_prop)
 

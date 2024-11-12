@@ -81,6 +81,8 @@ namespace Ring
 
 open Mathlib.Meta Qq NormNum Lean.Meta AtomM
 
+attribute [local instance] monadLiftOptionMetaM
+
 open Lean (MetaM Expr mkRawNatLit)
 
 /-- A shortcut instance for `CommSemiring ℕ` used by ring. -/

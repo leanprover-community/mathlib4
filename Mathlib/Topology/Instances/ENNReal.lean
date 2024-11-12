@@ -18,8 +18,8 @@ import Mathlib.Topology.Metrizable.Uniformity
 
 noncomputable section
 
-open Set Filter Metric Function
-open scoped Finset Topology ENNReal NNReal
+open Filter Function Metric Set Topology
+open scoped Finset ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
@@ -45,13 +45,16 @@ instance : T5Space ℝ≥0∞ := inferInstance
 instance : T4Space ℝ≥0∞ := inferInstance
 
 instance : SecondCountableTopology ℝ≥0∞ :=
-  orderIsoUnitIntervalBirational.toHomeomorph.embedding.secondCountableTopology
+  orderIsoUnitIntervalBirational.toHomeomorph.isEmbedding.secondCountableTopology
 
 instance : MetrizableSpace ENNReal :=
-  orderIsoUnitIntervalBirational.toHomeomorph.embedding.metrizableSpace
+  orderIsoUnitIntervalBirational.toHomeomorph.isEmbedding.metrizableSpace
 
-theorem embedding_coe : Embedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
-  coe_strictMono.embedding_of_ordConnected <| by rw [range_coe']; exact ordConnected_Iio
+theorem isEmbedding_coe : IsEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
+  coe_strictMono.isEmbedding_of_ordConnected <| by rw [range_coe']; exact ordConnected_Iio
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_coe := isEmbedding_coe
 
 theorem isOpen_ne_top : IsOpen { a : ℝ≥0∞ | a ≠ ∞ } := isOpen_ne
 
@@ -60,7 +63,7 @@ theorem isOpen_Ico_zero : IsOpen (Ico 0 b) := by
   exact isOpen_Iio
 
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
-  ⟨embedding_coe, by rw [range_coe']; exact isOpen_Iio⟩
+  ⟨isEmbedding_coe, by rw [range_coe']; exact isOpen_Iio⟩
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_coe := isOpenEmbedding_coe
@@ -71,15 +74,15 @@ theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r 
 @[norm_cast]
 theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {a : ℝ≥0} :
     Tendsto (fun a => (m a : ℝ≥0∞)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
-  embedding_coe.tendsto_nhds_iff.symm
+  isEmbedding_coe.tendsto_nhds_iff.symm
 
 @[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
-  embedding_coe.continuous
+  isEmbedding_coe.continuous
 
 theorem continuous_coe_iff {α} [TopologicalSpace α] {f : α → ℝ≥0} :
     (Continuous fun a => (f a : ℝ≥0∞)) ↔ Continuous f :=
-  embedding_coe.continuous_iff.symm
+  isEmbedding_coe.continuous_iff.symm
 
 theorem nhds_coe {r : ℝ≥0} : 𝓝 (r : ℝ≥0∞) = (𝓝 r).map (↑) :=
   (isOpenEmbedding_coe.map_nhds_eq r).symm
@@ -1093,7 +1096,7 @@ theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : ball a r) : ed
   ne_of_lt <|
     calc
       edist x y ≤ edist a x + edist a y := edist_triangle_left x.1 y.1 a
-      _ < r + r := by rw [edist_comm a x, edist_comm a y]; exact add_lt_add x.2 y.2
+      _ < r + r := by rw [edist_comm a x, edist_comm a y]; exact ENNReal.add_lt_add x.2 y.2
       _ ≤ ∞ := le_top
 
 /-- Each ball in an extended metric space gives us a metric space, as the edist

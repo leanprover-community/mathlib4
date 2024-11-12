@@ -5,9 +5,11 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Perm.Subperm
 import Mathlib.Data.Set.List
 import Mathlib.Order.Hom.Basic
+import Mathlib.Data.List.Perm.Lattice
+import Mathlib.Data.List.Perm.Basic
 
 /-!
 # Multisets
@@ -538,6 +540,9 @@ theorem cons_le_of_not_mem (hs : a ∉ s) : a ::ₘ s ≤ t ↔ a ∈ t ∧ s �
 @[simp]
 theorem singleton_ne_zero (a : α) : ({a} : Multiset α) ≠ 0 :=
   ne_of_gt (lt_cons_self _ _)
+
+@[simp]
+theorem zero_ne_singleton (a : α) : 0 ≠ ({a} : Multiset α) := singleton_ne_zero _ |>.symm
 
 @[simp]
 theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
@@ -2489,7 +2494,7 @@ theorem rel_add_right {as bs₀ bs₁} :
 
 theorem rel_map_left {s : Multiset γ} {f : γ → α} :
     ∀ {t}, Rel r (s.map f) t ↔ Rel (fun a b => r (f a) b) s t :=
-  @(Multiset.induction_on s (by simp) (by simp (config := { contextual := true }) [rel_cons_left]))
+  @(Multiset.induction_on s (by simp) (by simp +contextual [rel_cons_left]))
 
 theorem rel_map_right {s : Multiset α} {t : Multiset γ} {f : γ → β} :
     Rel r s (t.map f) ↔ Rel (fun a b => r a (f b)) s t := by
@@ -2604,61 +2609,59 @@ end Quot
 
 
 /-- `Disjoint s t` means that `s` and `t` have no elements in common. -/
-def Disjoint (s t : Multiset α) : Prop :=
+@[deprecated _root_.Disjoint (since := "2024-11-01")]
+protected def Disjoint (s t : Multiset α) : Prop :=
   ∀ ⦃a⦄, a ∈ s → a ∈ t → False
 
-@[simp]
-theorem coe_disjoint (l₁ l₂ : List α) : @Disjoint α l₁ l₂ ↔ l₁.Disjoint l₂ :=
-  Iff.rfl
+theorem disjoint_left {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ s → a ∉ t := by
+  refine ⟨fun h a hs ht ↦ ?_, fun h u hs ht ↦ ?_⟩
+  · simpa using h (singleton_le.mpr hs) (singleton_le.mpr ht)
+  · rw [le_bot_iff, bot_eq_zero, eq_zero_iff_forall_not_mem]
+    exact fun a ha ↦ h (subset_of_le hs ha) (subset_of_le ht ha)
 
-@[symm]
-theorem Disjoint.symm {s t : Multiset α} (d : Disjoint s t) : Disjoint t s
-  | _a, i₂, i₁ => d i₁ i₂
+@[simp, norm_cast]
+theorem coe_disjoint (l₁ l₂ : List α) : Disjoint (l₁ : Multiset α) l₂ ↔ l₁.Disjoint l₂ :=
+  disjoint_left
 
-theorem disjoint_comm {s t : Multiset α} : Disjoint s t ↔ Disjoint t s :=
-  ⟨Disjoint.symm, Disjoint.symm⟩
-
-theorem disjoint_left {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ s → a ∉ t :=
-  Iff.rfl
+@[deprecated (since := "2024-11-01")] protected alias Disjoint.symm := _root_.Disjoint.symm
+@[deprecated (since := "2024-11-01")] protected alias disjoint_comm := _root_.disjoint_comm
 
 theorem disjoint_right {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ t → a ∉ s :=
-  disjoint_comm
+  disjoint_comm.trans disjoint_left
 
 theorem disjoint_iff_ne {s t : Multiset α} : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
   simp [disjoint_left, imp_not_comm]
 
-theorem disjoint_of_subset_left {s t u : Multiset α} (h : s ⊆ u) (d : Disjoint u t) : Disjoint s t
-  | _x, m₁ => d (h m₁)
+theorem disjoint_of_subset_left {s t u : Multiset α} (h : s ⊆ u) (d : Disjoint u t) :
+    Disjoint s t :=
+  disjoint_left.mpr fun ha ↦ disjoint_left.mp d <| h ha
 
-theorem disjoint_of_subset_right {s t u : Multiset α} (h : t ⊆ u) (d : Disjoint s u) : Disjoint s t
-  | _x, m, m₁ => d m (h m₁)
+theorem disjoint_of_subset_right {s t u : Multiset α} (h : t ⊆ u) (d : Disjoint s u) :
+    Disjoint s t :=
+  (disjoint_of_subset_left h d.symm).symm
 
-theorem disjoint_of_le_left {s t u : Multiset α} (h : s ≤ u) : Disjoint u t → Disjoint s t :=
-  disjoint_of_subset_left (subset_of_le h)
-
-theorem disjoint_of_le_right {s t u : Multiset α} (h : t ≤ u) : Disjoint s u → Disjoint s t :=
-  disjoint_of_subset_right (subset_of_le h)
+@[deprecated (since := "2024-11-01")] protected alias disjoint_of_le_left := Disjoint.mono_left
+@[deprecated (since := "2024-11-01")] protected alias disjoint_of_le_right := Disjoint.mono_right
 
 @[simp]
-theorem zero_disjoint (l : Multiset α) : Disjoint 0 l
-  | a => (not_mem_nil a).elim
+theorem zero_disjoint (l : Multiset α) : Disjoint 0 l := disjoint_bot_left
 
 @[simp]
 theorem singleton_disjoint {l : Multiset α} {a : α} : Disjoint {a} l ↔ a ∉ l := by
-  simp [Disjoint]
+  simp [disjoint_left]
 
 @[simp]
 theorem disjoint_singleton {l : Multiset α} {a : α} : Disjoint l {a} ↔ a ∉ l := by
-  rw [disjoint_comm, singleton_disjoint]
+  rw [_root_.disjoint_comm, singleton_disjoint]
 
 @[simp]
 theorem disjoint_add_left {s t u : Multiset α} :
-    Disjoint (s + t) u ↔ Disjoint s u ∧ Disjoint t u := by simp [Disjoint, or_imp, forall_and]
+    Disjoint (s + t) u ↔ Disjoint s u ∧ Disjoint t u := by simp [disjoint_left, or_imp, forall_and]
 
 @[simp]
 theorem disjoint_add_right {s t u : Multiset α} :
     Disjoint s (t + u) ↔ Disjoint s t ∧ Disjoint s u := by
-  rw [disjoint_comm, disjoint_add_left]; tauto
+  rw [_root_.disjoint_comm, disjoint_add_left]; tauto
 
 @[simp]
 theorem disjoint_cons_left {a : α} {s t : Multiset α} :
@@ -2668,18 +2671,18 @@ theorem disjoint_cons_left {a : α} {s t : Multiset α} :
 @[simp]
 theorem disjoint_cons_right {a : α} {s t : Multiset α} :
     Disjoint s (a ::ₘ t) ↔ a ∉ s ∧ Disjoint s t := by
-  rw [disjoint_comm, disjoint_cons_left]; tauto
+  rw [_root_.disjoint_comm, disjoint_cons_left]; tauto
 
 theorem inter_eq_zero_iff_disjoint [DecidableEq α] {s t : Multiset α} :
-    s ∩ t = 0 ↔ Disjoint s t := by rw [← subset_zero]; simp [subset_iff, Disjoint]
+    s ∩ t = 0 ↔ Disjoint s t := by rw [← subset_zero]; simp [subset_iff, disjoint_left]
 
 @[simp]
 theorem disjoint_union_left [DecidableEq α] {s t u : Multiset α} :
-    Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u := by simp [Disjoint, or_imp, forall_and]
+    Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u :=  disjoint_sup_left
 
 @[simp]
 theorem disjoint_union_right [DecidableEq α] {s t u : Multiset α} :
-    Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u := by simp [Disjoint, or_imp, forall_and]
+    Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u := disjoint_sup_right
 
 theorem add_eq_union_iff_disjoint [DecidableEq α] {s t : Multiset α} :
     s + t = s ∪ t ↔ Disjoint s t := by
@@ -2687,7 +2690,7 @@ theorem add_eq_union_iff_disjoint [DecidableEq α] {s t : Multiset α} :
     Nat.min_eq_zero_iff, Nat.add_eq_max_iff]
 
 lemma add_eq_union_left_of_le [DecidableEq α] {s t u : Multiset α} (h : t ≤ s) :
-    u + s = u ∪ t ↔ u.Disjoint s ∧ s = t := by
+    u + s = u ∪ t ↔ Disjoint u s ∧ s = t := by
   rw [← add_eq_union_iff_disjoint]
   refine ⟨fun h0 ↦ ?_, ?_⟩
   · rw [and_iff_right_of_imp]
@@ -2698,12 +2701,12 @@ lemma add_eq_union_left_of_le [DecidableEq α] {s t u : Multiset α} (h : t ≤ 
     exact h0
 
 lemma add_eq_union_right_of_le [DecidableEq α] {x y z : Multiset α} (h : z ≤ y) :
-    x + y = x ∪ z ↔ y = z ∧ x.Disjoint y := by
+    x + y = x ∪ z ↔ y = z ∧ Disjoint x y := by
   simpa only [and_comm] using add_eq_union_left_of_le h
 
 theorem disjoint_map_map {f : α → γ} {g : β → γ} {s : Multiset α} {t : Multiset β} :
     Disjoint (s.map f) (t.map g) ↔ ∀ a ∈ s, ∀ b ∈ t, f a ≠ g b := by
-  simp [Disjoint, @eq_comm _ (f _) (g _)]
+  simp [disjoint_iff_ne]
 
 /-- `Pairwise r m` states that there exists a list of the elements s.t. `r` holds pairwise on this
 list. -/
