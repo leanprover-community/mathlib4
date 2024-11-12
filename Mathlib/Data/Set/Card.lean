@@ -1112,7 +1112,6 @@ theorem exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite) : ∃ (t 
     · simp only [image_univ, Subtype.val_injective, Cardinal.mk_image_eq, f.injective,
         Sum.inl_injective, Cardinal.mk_range_eq, Sum.inr_injective]
 
-
 theorem exists_union_disjoint_cardinal_eq_iff [DecidableEq α] (s : Set α) :
     Even (s.ncard) ↔ ∃ (t u : Set α), t ∪ u = s ∧ Disjoint t u ∧ Cardinal.mk t = Cardinal.mk u := by
   constructor <;> intro h
