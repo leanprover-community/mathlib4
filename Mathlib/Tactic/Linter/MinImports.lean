@@ -90,7 +90,9 @@ initialize minImportsRef : IO.Ref ImportState ← IO.mkRef {}
 
 /-- `#reset_min_imports` sets to empty the current list of cumulative imports. -/
 elab "#reset_min_imports" : command => do
-  minImportsRef.modify (·.setAt (← getRefPos) ((← getRef).getTailPos?.getD default) {})
+  let headPos ← getRefPos
+  let tailPos := (← getRef).getTailPos?.getD default
+  minImportsRef.modify (·.setAt headPos tailPos {})
 
 /--
 The `minImports` linter incrementally computes the minimal imports needed for each file to build.
@@ -129,17 +131,6 @@ def importsBelow (tc : NameMap NameSet) (ms : NameSet) : NameSet :=
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
 def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.minImports (← getOptions) do
-      return
-    if (← get).messages.hasErrors then
-      return
-    if stx == (← `(command| set_option $(mkIdent `linter.minImports) true)) then return
-    let env ← getEnv
-    -- the first time `minImportsRef` is read, it has `transClosure = none`;
-    -- in this case, we set it to be the `transClosure` for the file.
-    if (← minImportsRef.get).transClosure.isNone then
-      minImportsRef.modify ({· with transClosure := env.importGraph.transitiveClosure})
-    let impState ← minImportsRef.get
     let headPos ←
       match stx.getPos? with
         | some pos => pure pos
@@ -154,6 +145,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
           -- TODO: is this possible?
           dbg_trace f!"could not find tail position for syntax {stx}"
           pure default
+    let impState ← minImportsRef.get
     let ⟨impState, importsSoFar, oldCumulImps⟩ :=
       -- `#reset_min_imports` resets the min_import state *at* the command
       -- but the linter compares to the *previous* command.
@@ -162,6 +154,21 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
         else impState.getAt headPos
     -- Update the state in case the file was edited.
     minImportsRef.set impState
+
+    -- It's important that we only exit the linter after we update the state for edits,
+    -- in case an edit happens that changes the border between unlinted and linted decls.
+    unless Linter.getLinterValue linter.minImports (← getOptions) do
+      return
+
+
+    if (← get).messages.hasErrors then
+      return
+    if stx == (← `(command| set_option $(mkIdent `linter.minImports) true)) then return
+    let env ← getEnv
+    -- the first time `minImportsRef` is read, it has `transClosure = none`;
+    -- in this case, we set it to be the `transClosure` for the file.
+    if (← minImportsRef.get).transClosure.isNone then
+      minImportsRef.modify ({· with transClosure := env.importGraph.transitiveClosure})
 
     -- when the linter reaches the end of the file or `#exit`, it gives a report
     if #[``Parser.Command.eoi, ``Lean.Parser.Command.exit].contains stx.getKind then
