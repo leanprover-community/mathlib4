@@ -938,13 +938,13 @@ theorem volume_preserving_pi {α' β' : ι → Type*} [∀ i, MeasureSpace (α' 
 measure preserving. -/
 theorem measurePreserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype α₁] [Fintype α₂]
     [MeasurableSpace β₁] [MeasurableSpace β₂] (μ : α₁ → Measure β₁) (ν : α₂ → Measure β₂)
-    [∀ i, SigmaFinite (ν i)] (hα : α₁ ≃ α₂) (hβ : β₁ ≃ᵐ β₂)
-    (hm : ∀ i, MeasurePreserving hβ (μ i) (ν (hα i))) :
-    MeasurePreserving (MeasurableEquiv.arrowCongr' hα hβ) (Measure.pi fun i ↦ μ i)
+    [∀ i, SigmaFinite (ν i)] (eα : α₁ ≃ α₂) (eβ : β₁ ≃ᵐ β₂)
+    (hm : ∀ i, MeasurePreserving eβ (μ i) (ν (eα i))) :
+    MeasurePreserving (MeasurableEquiv.arrowCongr' eα eβ) (Measure.pi fun i ↦ μ i)
       (Measure.pi fun i ↦ ν i) := by
   classical
-  convert (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) hα).comp
-    (measurePreserving_pi μ (fun i : α₁ ↦ ν (hα i)) hm)
+  convert (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) eα).comp
+    (measurePreserving_pi μ (fun i : α₁ ↦ ν (eα i)) hm)
   simp only [MeasurableEquiv.arrowCongr', Equiv.arrowCongr', Equiv.arrowCongr, EquivLike.coe_coe,
     comp_def, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.piCongrLeft,
     Equiv.piCongrLeft, Equiv.symm_symm, Equiv.piCongrLeft', eq_rec_constant, Equiv.coe_fn_symm_mk]
