@@ -26,8 +26,7 @@ def splitLengths : List ℕ → List α → List (List α)
     x0 :: ns.splitLengths x1
 
 @[simp]
-theorem length_splitLengths :
-    (sz.splitLengths l).length = sz.length := by
+theorem length_splitLengths : (sz.splitLengths l).length = sz.length := by
   induction sz generalizing l
   · simp [splitLengths]
   · simp [splitLengths, ‹∀ (l : List α), _›]
