@@ -231,12 +231,12 @@ def punit {β : Sort*} (b : β) : PUnit ↪ β :=
 
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]
-def sectl (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
+def sectL (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
   ⟨fun a => (a, b), fun _ _ h => congr_arg Prod.fst h⟩
 
 /-- Fixing an element `a : α` gives an embedding `β ↪ α × β`. -/
 @[simps]
-def sectr {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
+def sectR {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
   ⟨fun b => (a, b), fun _ _ h => congr_arg Prod.snd h⟩
 
 /-- If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
