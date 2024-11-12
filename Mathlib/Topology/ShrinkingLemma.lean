@@ -59,7 +59,7 @@ a maximal element, then show that the maximal element must have `carrier = univ`
   /-- For each `i ∈ carrier`, the original set includes the closure of the refined set. -/
   closure_subset : ∀ {i}, i ∈ carrier → closure (toFun i) ⊆ u i
   /-- For each `i ∈ carrier`, the refined set satisfies `p`. -/
-  p_refined {i} (hi : i ∈ carrier) : p (toFun i)
+  pred_of_mem {i} (hi : i ∈ carrier) : p (toFun i)
   /-- Sets that correspond to `i ∉ carrier` are not modified. -/
   apply_eq : ∀ {i}, i ∉ carrier → toFun i = u i
 
