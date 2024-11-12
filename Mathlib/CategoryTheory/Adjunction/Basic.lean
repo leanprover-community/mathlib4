@@ -161,7 +161,9 @@ def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
     rw [F.map_comp, assoc, ← Functor.comp_map, adj.counit.naturality, ← assoc]
     simp
   right_inv := fun g => by
-    simp [← assoc, ← Functor.comp_map, ← adj.unit.naturality, assoc]
+    simp only [Functor.comp_obj, Functor.map_comp]
+    rw [← assoc, ← Functor.comp_map, ← adj.unit.naturality]
+    simp
 
 alias homEquiv_unit := homEquiv_apply
 alias homEquiv_counit := homEquiv_symm_apply
@@ -277,6 +279,20 @@ theorem eq_homEquiv_apply {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B
     g = adj.homEquiv A B f ↔ (adj.homEquiv A B).symm g = f :=
   eq_unit_comp_map_iff adj f g
 
+/--  If `adj : F ⊣ G`, and `X : C`, then `F.obj X` corepresents `Y ↦ (X ⟶ G.obj Y)`-/
+@[simps]
+def corepresentableBy (X : C) :
+    (G ⋙ coyoneda.obj (Opposite.op X)).CorepresentableBy (F.obj X) where
+  homEquiv := adj.homEquiv _ _
+  homEquiv_comp := by aesop_cat
+
+/--  If `adj : F ⊣ G`, and `Y : D`, then `G.obj Y` represents `X ↦ (F.obj X ⟶ Y)`-/
+@[simps]
+def representableBy (Y : D) :
+    (F.op ⋙ yoneda.obj Y).RepresentableBy (G.obj Y) where
+  homEquiv := (adj.homEquiv _ _).symm
+  homEquiv_comp := by aesop_cat
+
 end
 
 end Adjunction
@@ -379,14 +395,15 @@ def mk' (adj : CoreHomEquivUnitCounit F G) : F ⊣ G where
   unit := adj.unit
   counit := adj.counit
   left_triangle_components X := by
-    rw [← adj.homEquiv_counit, (adj.homEquiv _ _).symm_apply_eq]
+    rw [← adj.homEquiv_counit, (adj.homEquiv _ _).symm_apply_eq, adj.homEquiv_unit]
     simp
   right_triangle_components Y := by
-    rw [← adj.homEquiv_unit, ← (adj.homEquiv _ _).eq_symm_apply]
+    rw [← adj.homEquiv_unit, ← (adj.homEquiv _ _).eq_symm_apply, adj.homEquiv_counit]
     simp
 
 lemma mk'_homEquiv (adj : CoreHomEquivUnitCounit F G) : (mk' adj).homEquiv = adj.homEquiv := by
-  ext; simp
+  ext
+  rw [homEquiv_unit, adj.homEquiv_unit, mk'_unit]
 
 /-- Construct an adjunction between `F` and `G` out of a natural bijection between each
 `F.obj X ⟶ Y` and `X ⟶ G.obj Y`. -/

@@ -60,7 +60,7 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 
 @[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
-open AddMonoidAlgebra
+open AddMonoidAlgebra Finset
 open Finsupp hiding single
 open Function hiding Commute
 
@@ -361,7 +361,7 @@ theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
 @[simp] lemma support_nonempty : p.support.Nonempty ↔ p ≠ 0 :=
   Finset.nonempty_iff_ne_empty.trans support_eq_empty.not
 
-theorem card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
+theorem card_support_eq_zero : #p.support = 0 ↔ p = 0 := by simp
 
 /-- `monomial s a` is the monomial `a * X^s` -/
 def monomial (n : ℕ) : R →ₗ[R] R[X] where
@@ -379,7 +379,7 @@ theorem toFinsupp_monomial (n : ℕ) (r : R) : (monomial n r).toFinsupp = Finsup
 theorem ofFinsupp_single (n : ℕ) (r : R) : (⟨Finsupp.single n r⟩ : R[X]) = monomial n r := by
   simp [monomial]
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 :=
   (monomial n).map_zero
 
@@ -455,7 +455,6 @@ theorem smul_C {S} [SMulZeroClass S R] (s : S) (r : R) : s • C r = C (s • r)
 theorem C_pow : C (a ^ n) = C a ^ n :=
   C.map_pow a n
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem C_eq_natCast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
 
@@ -1028,7 +1027,7 @@ theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q
   -- Porting note: The last rule should be `apply`ed.
   rw [← ofFinsupp_sub, coeff, coeff, coeff]; apply Finsupp.sub_apply
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
   rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_cancel, monomial_zero_right]
 

@@ -3,6 +3,7 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
+import Mathlib.Order.Filter.AtTopBot
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
@@ -285,7 +286,7 @@ abbrev mk (y : HomogeneousLocalization.NumDenSameDeg 𝒜 x) : HomogeneousLocali
   Quotient.mk'' y
 
 lemma mk_surjective : Function.Surjective (mk (𝒜 := 𝒜) (x := x)) :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.mk''_surjective
 
 /-- View an element of `HomogeneousLocalization 𝒜 x` as an element of `Aₓ` by forgetting that the
 numerator and denominator are of the same grading.
