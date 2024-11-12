@@ -179,6 +179,15 @@ theorem principal_add_iff_add_left_eq_self : Principal (· + ·) o ↔ ∀ a < o
   · rw [← h a hao]
     exact (isNormal_add_right a).strictMono hbo
 
+theorem Principal.add_absorp {a o : Ordinal} (ho : Principal (· + ·) o) (ha : a < o) :
+    a + o = o :=
+  principal_add_iff_add_left_eq_self.1 ho a ha
+
+theorem Principal.add_absorp_of_le {a b c : Ordinal} (hb : Principal (· + ·) b)
+    (hab : a < b) (hbc : b ≤ c) : a + c = c := by
+  rw [← Ordinal.add_sub_cancel_of_le hbc, ← add_assoc, hb.add_absorp hab,
+    Ordinal.add_sub_cancel_of_le hbc]
+
 theorem exists_lt_add_of_not_principal_add (ha : ¬ Principal (· + ·) a) :
     ∃ b < a, ∃ c < a, b + c = a := by
   rw [not_principal_iff] at ha
@@ -203,6 +212,10 @@ theorem add_omega0 (h : a < ω) : a + ω = ω := by
 
 @[deprecated (since := "2024-09-30")]
 alias add_omega := add_omega0
+
+@[simp]
+theorem natCast_add_omega0 (n : ℕ) : n + ω = ω :=
+  add_omega0 (nat_lt_omega0 n)
 
 theorem principal_add_omega0 : Principal (· + ·) ω :=
   principal_add_iff_add_left_eq_self.2 fun _ => add_omega0
