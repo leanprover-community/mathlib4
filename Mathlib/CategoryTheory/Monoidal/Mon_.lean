@@ -276,15 +276,6 @@ def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
       mul_hom := by
         rw [Category.assoc, μ_natural_assoc, ← F.map_comp, ← F.map_comp,
           f.mul_hom] }
-  -- added proofs in order to avoid timeouts
-  map_id A := by
-    ext
-    dsimp only [Mon_.id_hom']
-    rw [F.map_id]
-  map_comp _ _ := by
-    ext
-    dsimp only [Mon_.comp_hom']
-    rw [F.map_comp]
 
 variable (C D)
 
