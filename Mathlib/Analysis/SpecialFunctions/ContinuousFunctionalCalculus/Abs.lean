@@ -5,6 +5,7 @@ Authors: Jon Bannon
 -/
 
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
 /-!
 # Absolute value of an operator defined via the continuous functional calculus
@@ -35,9 +36,7 @@ namespace CFC
 
 section Nonunital
 
-variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A]
-  [Module ℝ≥0 A] [SMulCommClass ℝ≥0 A A] [IsScalarTower ℝ≥0 A A]
-  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 section abs
 
@@ -47,8 +46,6 @@ noncomputable def abs (a : A) := sqrt (star a * a)
 @[simp]
 theorem abs_nonneg {a : A} : 0 ≤ abs a := sqrt_nonneg
 
-variable [StarOrderedRing A] [UniqueNonUnitalContinuousFunctionalCalculus NNReal A]
-
 theorem abs_mul_self_eq_star_mul_self (a : A) : (abs a) * (abs a) = star a * a := by
   refine sqrt_mul_sqrt_self _ <| star_mul_self_nonneg _
 
@@ -56,8 +53,7 @@ theorem abs_sq_eq_star_mul_self (a : A) : (abs a) ^ (2 : NNReal) = star a * a :=
   simp only [abs_nonneg, nnrpow_two]
   apply abs_mul_self_eq_star_mul_self
 
-variable [CStarRing A]
-
+/-
 theorem abs_eq_zero_iff_eq_zero {a : A} : abs a = 0 ↔ a = 0 := by
   constructor
   · intro ha
@@ -65,6 +61,18 @@ theorem abs_eq_zero_iff_eq_zero {a : A} : abs a = 0 ↔ a = 0 := by
     simpa only [zero_nnrpow, abs_sq_eq_star_mul_self, CStarRing.star_mul_self_eq_zero_iff]
   · intro h
     simp only [h, abs, star_zero, mul_zero, sqrt_zero]
+-/
+
+-- Try to write a short proof using sqrt_eq_zero_iff
+example {a : A} : abs a = 0 ↔ a = 0 := by
+  constructor
+  · intro h
+    rw [abs, sqrt_eq_zero_iff (ha := star_mul_self_nonneg _)] at h
+    exact (CStarRing.star_mul_self_eq_zero_iff a).mp h
+  · intro h
+    simp only [h, abs, star_zero, mul_zero, sqrt_zero]
+
+--Can this be made even shorter?
 
 end abs
 
