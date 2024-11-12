@@ -1056,69 +1056,20 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
   · rwa [ENat.coe_toNat] at h; rintro h'; simp [h'] at h
   simp [h]
 
-theorem exists_union_disjoint_cardinal_eq_of_even_finite [DecidableEq α] (s : Set α)
-    (he : Even s.ncard) (hs : s.Finite := by toFinite_tac) : ∃ (t u : Set α),
-    t ∪ u = s ∧ Disjoint t u ∧ t.ncard = u.ncard := by
-  obtain rfl | h := s.eq_empty_or_nonempty
-  · use ∅, ∅
-    simp only [union_self, disjoint_self, bot_eq_empty, and_self]
-  · obtain ⟨x, y, hxy⟩ := (one_lt_ncard_iff hs).mp (one_lt_ncard_of_nonempty_of_even hs h he)
-    have hsi : insert x (insert y (s \ {x, y})) = s := by
-      ext v
-      simp only [mem_insert_iff, mem_diff, mem_singleton_iff, not_or]
-      constructor <;> intro h
-      · cases' h with hl hr
-        · rw [hl]; exact hxy.1
-        · cases' hr with h1 h2
-          · rw [h1]; exact hxy.2.1
-          · exact h2.1
-      · by_cases hc : v = x ∨ v = y
-        · rw [← or_assoc]
-          left
-          exact hc
-        · right; right
-          push_neg at hc
-          exact ⟨h, hc⟩
-    have hu'e : Even ((s \ {x, y}).ncard):= by
-      rw [← odd_card_insert_iff (by
-        simp only [mem_diff, mem_insert_iff, mem_singleton_iff, or_true, not_true_eq_false,
-          and_false, not_false_eq_true] : y ∉ s \ {x, y}) (hs.diff _)]
-      rw [← even_card_insert_iff (by simp only [mem_insert_iff, hxy.2.2,
-        mem_diff, mem_singleton_iff, or_false, not_true_eq_false, and_false, or_self,
-        not_false_eq_true] : x ∉ insert y (s \ {x, y}) ) ((hs.diff _).insert _)]
-      rw [hsi]
-      exact he
-    obtain ⟨t, u, hst⟩ := exists_union_disjoint_cardinal_eq_of_even_finite _ hu'e (hs.diff _)
-    use insert x t, insert y u
-    refine ⟨by simp only [union_insert, insert_union, hst.1, insert_comm, hsi], ?_⟩
-    have hynt : y ∉ t := fun hys ↦ by simpa [hst.1] using (subset_union_left hys : y ∈ t ∪ u)
-    have hxnu : x ∉ u := fun hxt ↦ by simpa [hst.1] using (subset_union_right hxt : x ∈ t ∪ u)
-    have hynu : y ∉ u := fun hys ↦ by simpa [hst.1] using (subset_union_right hys : y ∈ t ∪ u)
-    have hxnt : x ∉ t := fun hxs ↦ by simpa [hst.1] using (subset_union_left hxs : x ∈ t ∪ u)
-    have htuf : (t ∪ u).Finite := by
-      rw [hst.1]
-      exact Finite.diff hs {x, y}
-    constructor <;> simp [hxnu, hynt, hst.2.1, hxy.2.2.symm,
-      ncard_insert_of_not_mem hxnt (finite_union.mp htuf).1,
-      ncard_insert_of_not_mem hynu (finite_union.mp htuf).2, hst.2.2]
-termination_by s.ncard
-decreasing_by
-· simp_wf
-  refine ncard_lt_ncard ?_ hs
-  exact ⟨diff_subset, by
-    rw [not_subset_iff_exists_mem_not_mem]
-    use x
-    exact ⟨hxy.1, by simp only [mem_diff, mem_insert_iff, mem_singleton_iff, true_or,
-      not_true_eq_false, and_false, not_false_eq_true]⟩⟩
+theorem exists_union_disjoint_ncard_eq_of_even_finite [DecidableEq α] (he : Even s.ncard)
+    (hs : s.Finite := by toFinite_tac) : ∃ (t u : Set α),
+    t ∪ u = s ∧ Disjoint t u ∧ t.ncard = u.ncard :=
+  let ⟨n, hn⟩ := he
+  let ⟨t, ht, ht'⟩ := exists_subset_card_eq (show n ≤ s.ncard by omega)
+  ⟨t, s \ t, by simp [disjoint_sdiff_self_right, Set.ncard_diff, *]⟩
 
-theorem exists_union_disjoint_cardinal_eq_of_infinite [DecidableEq α] (s : Set α)
-    (h : s.Infinite) : ∃ (t u : Set α),
+theorem exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite) : ∃ (t u : Set α),
     t ∪ u = s ∧ Disjoint t u ∧ Cardinal.mk t = Cardinal.mk u := by
   have f : s ⊕ s ≃ s := by
       have : Inhabited (s ⊕ s ≃ s) := by
         apply Classical.inhabited_of_nonempty
         rw [← Cardinal.eq, Cardinal.mk_sum, Cardinal.add_eq_max (by
-          rw [@Cardinal.aleph0_le_lift]
+          rw [Cardinal.aleph0_le_lift]
           exact Cardinal.infinite_iff.mp (infinite_coe_iff.mpr h)
           )]
         simp only [Cardinal.lift_id, max_self]
@@ -1164,14 +1115,14 @@ theorem exists_union_disjoint_cardinal_eq_iff [DecidableEq α] (s : Set α) :
     Even (s.ncard) ↔ ∃ (t u : Set α), t ∪ u = s ∧ Disjoint t u ∧ Cardinal.mk t = Cardinal.mk u := by
   constructor <;> intro h
   · obtain hfin | hnfin := s.finite_or_infinite
-    · obtain ⟨t, u, rfl, htu2, htu3⟩ := exists_union_disjoint_cardinal_eq_of_even_finite _ h hfin
+    · obtain ⟨t, u, rfl, htu2, htu3⟩ := exists_union_disjoint_ncard_eq_of_even_finite h hfin
       use t, u
       refine ⟨rfl, htu2, ?_⟩
       simp only [← @card_coe_set_eq, Nat.card.eq_1] at htu3
       rw [finite_union] at hfin
       exact Cardinal.toNat_injOn (mem_Iio.mpr (Finite.lt_aleph0 hfin.1))
         (mem_Iio.mpr (Finite.lt_aleph0 hfin.2)) htu3
-    · exact exists_union_disjoint_cardinal_eq_of_infinite s hnfin
+    · exact exists_union_disjoint_cardinal_eq_of_infinite hnfin
   · obtain ⟨t, u, rfl, htu2, htu3⟩ := h
     obtain hfin | hnfin := (t ∪ u).finite_or_infinite
     · rw [finite_union] at hfin
