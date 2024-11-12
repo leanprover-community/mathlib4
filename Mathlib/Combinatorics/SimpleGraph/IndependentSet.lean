@@ -182,8 +182,8 @@ lemma isMaximalIndependentSet_iff_compl_isMaximalClique (s : Finset α)  :
   isMaximalClique_iff]
 
 lemma IsMaximumIndependentSet.isMaximalIndependentSet
-    [Fintype α] (s : Finset α) (M : G.IsMaximumIndependentSet s) : Maximal G.IsIndependentSet s :=
-  by
+    [Fintype α] (s : Finset α) (M : G.IsMaximumIndependentSet s) :
+    Maximal G.IsIndependentSet s := by
   rw [isMaximalIndependentSet_iff_compl_isMaximalClique]
   rw [isMaximumIndependentSet_iff_compl_isMaximumClique] at M
   exact IsMaximumClique.isMaximalClique s M
