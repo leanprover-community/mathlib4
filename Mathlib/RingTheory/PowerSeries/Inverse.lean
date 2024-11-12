@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 
+import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.MvPowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Basic

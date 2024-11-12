@@ -694,8 +694,12 @@ theorem Icc_mem_nhds {a b x : α} (ha : a < x) (hb : x < b) : Icc a b ∈ 𝓝 x
   mem_of_superset (Ioo_mem_nhds ha hb) Ioo_subset_Icc_self
 
 /-- The only order closed topology on a linear order which is a `PredOrder` and a `SuccOrder`
-is the discrete topology. -/
-instance (priority := 100) DiscreteTopology.of_predOrder_succOrder [PredOrder α] [SuccOrder α] :
+is the discrete topology.
+
+This theorem is not an instance,
+because it causes searches for `PredOrder` and `SuccOrder` with their `Preorder` arguments
+and very rarely matches. -/
+theorem DiscreteTopology.of_predOrder_succOrder [PredOrder α] [SuccOrder α] :
     DiscreteTopology α := by
   refine discreteTopology_iff_nhds.mpr fun a ↦ ?_
   rw [← nhdsWithin_univ, ← Iic_union_Ioi, nhdsWithin_union, PredOrder.nhdsWithin_Iic,

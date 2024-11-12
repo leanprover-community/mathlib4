@@ -43,6 +43,8 @@ spans can be proved directly.
 - [scholze2019condensed], Theorem 5.4.
 -/
 
+open CategoryTheory ContinuousMap Limits Opposite Profinite Submodule Topology
+
 universe u
 
 namespace Profinite
@@ -50,8 +52,6 @@ namespace Profinite
 namespace NobelingProof
 
 variable {I : Type u} (C : Set (I → Bool))
-
-open Profinite ContinuousMap CategoryTheory Limits Opposite Submodule
 
 section Projections
 /-!
@@ -155,7 +155,7 @@ theorem surjective_projRestricts (h : ∀ i, J i → K i) : Function.Surjective 
 variable (J) in
 theorem projRestricts_eq_id : ProjRestricts C (fun i (h : J i) ↦ h) = id := by
   ext ⟨x, y, hy, rfl⟩ i
-  simp (config := { contextual := true }) only [π, Proj, ProjRestricts_coe, id_eq, if_true]
+  simp +contextual only [π, Proj, ProjRestricts_coe, id_eq, if_true]
 
 theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
     ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by
@@ -312,10 +312,10 @@ instance : LinearOrder (Products I) :=
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (·<·) l.val m.val := by
   cases l; cases m; rw [Subtype.mk_lt_mk]; exact Iff.rfl
 
-instance [IsWellOrder I (· < ·)] : IsWellFounded (Products I) (·<·) := by
+instance [WellFoundedLT I] : WellFoundedLT (Products I) := by
   have : (· < · : Products I → _ → _) = (fun l m ↦ List.Lex (·<·) l.val m.val) := by
     ext; exact lt_iff_lex_lt _ _
-  rw [this]
+  rw [WellFoundedLT, this]
   dsimp [Products]
   rw [(by rfl : (·>· : I → _) = flip (·<·))]
   infer_instance
@@ -429,7 +429,7 @@ theorem prop_of_isGood {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)
 end Products
 
 /-- The good products span `LocallyConstant C ℤ` if and only all the products do. -/
-theorem GoodProducts.span_iff_products [IsWellOrder I (· < ·)] :
+theorem GoodProducts.span_iff_products [WellFoundedLT I] :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) ↔
       ⊤ ≤ Submodule.span ℤ (Set.range (Products.eval C)) := by
   refine ⟨fun h ↦ le_trans h (span_mono (fun a ⟨b, hb⟩ ↦ ⟨b.val, hb⟩)), fun h ↦ le_trans h ?_⟩
@@ -602,7 +602,7 @@ theorem GoodProducts.finsupp_sum_mem_span_eval {a : I} {as : List I}
   simp only [Products.eval, List.map, List.prod_cons]
 
 /-- If `s` is a finite subset of `I`, then the good products span. -/
-theorem GoodProducts.spanFin [IsWellOrder I (· < ·)] :
+theorem GoodProducts.spanFin [WellFoundedLT I] :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (· ∈ s)))) := by
   rw [span_iff_products]
   refine le_trans (spanFinBasis.span C s) ?_
@@ -668,7 +668,7 @@ theorem fin_comap_jointlySurjective
   exact ⟨(Opposite.unop J), g, h⟩
 
 /-- The good products span all of `LocallyConstant C ℤ` if `C` is closed. -/
-theorem GoodProducts.span [IsWellOrder I (· < ·)] (hC : IsClosed C) :
+theorem GoodProducts.span [WellFoundedLT I] (hC : IsClosed C) :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) := by
   rw [span_iff_products]
   intro f _
@@ -680,7 +680,7 @@ theorem GoodProducts.span [IsWellOrder I (· < ·)] (hC : IsClosed C) :
 
 end Span
 
-variable [IsWellOrder I (· < ·)]
+variable [WellFoundedLT I]
 
 section Ordinal
 /-!
@@ -1835,9 +1835,8 @@ open Profinite NobelingProof
 
 /-- Nöbeling's theorem: the `ℤ`-module `LocallyConstant S ℤ` is free for every `S : Profinite` -/
 instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
-    Module.Free ℤ (LocallyConstant S ℤ) :=
-  @Nobeling_aux {C : Set S // IsClopen C}
-    (IsWellOrder.linearOrder WellOrderingRel) WellOrderingRel.isWellOrder
-    S (Nobeling.ι S) (Nobeling.isClosedEmbedding S)
+    Module.Free ℤ (LocallyConstant S ℤ) := by
+  obtain ⟨_, _⟩ := exists_wellOrder {C : Set S // IsClopen C}
+  exact @Nobeling_aux {C : Set S // IsClopen C} _ _ S (Nobeling.ι S) (Nobeling.isClosedEmbedding S)
 
 set_option linter.style.longFile 2000
