@@ -171,7 +171,7 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     simp [hs'.closure_eq, ht'.closure_eq]
     rfl
 
-theorem IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) [QuasiSober β] :
+lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) [QuasiSober β] :
     QuasiSober α where
   sober hS hS' := by
     have hS'' := hS.image f hf.continuous.continuousOn
@@ -182,9 +182,9 @@ theorem IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) 
     rw [← hx.def, ← hf.closure_image_eq, image_singleton]
 
 @[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.quasiSober := IsClosedEmbedding.quasiSober
+alias ClosedEmbedding.quasiSober := Topology.IsClosedEmbedding.quasiSober
 
-theorem IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbedding f) [QuasiSober β] :
+theorem Topology.IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbedding f) [QuasiSober β] :
     QuasiSober α where
   sober hS hS' := by
     have hS'' := hS.image f hf.continuous.continuousOn
@@ -208,7 +208,7 @@ theorem IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbedding f) [Qua
       fun h => subset_closure ⟨h, hy⟩⟩
 
 @[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.quasiSober := IsOpenEmbedding.quasiSober
+alias OpenEmbedding.quasiSober := Topology.IsOpenEmbedding.quasiSober
 
 /-- A space is quasi sober if it can be covered by open quasi sober subsets. -/
 theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s : Set α))
