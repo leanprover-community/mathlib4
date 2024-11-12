@@ -26,7 +26,6 @@ namespace FixedDetMatrix
 
 open ModularGroup Matrix SpecialLinearGroup MatrixGroups
 
-
 /--Extensionality theorem for `FixedDetMatrix` with respect to the underlying matrix, not
 entriwise. -/
 lemma ext' {m : R} {A B : FixedDetMatrix n R m} (h : A.1 = B.1) : A = B := by
