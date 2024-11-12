@@ -76,7 +76,7 @@ instance finite_prod [Finite (Clopens X)] [Finite (Clopens Y)] :
   cases nonempty_fintype (Clopens Y)
   exact .of_surjective _ surjective_finset_sup_prod
 
-lemma countable_iff_second_countable [T2Space X]
+lemma countable_iff_secondCountable [T2Space X]
     [TotallyDisconnectedSpace X] : Countable (Clopens X) ↔ SecondCountableTopology X := by
   refine ⟨fun h ↦ ⟨{s : Set X | IsClopen s}, ?_, ?_⟩, fun h ↦ ?_⟩
   · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.1, s.2⟩
@@ -92,5 +92,8 @@ lemma countable_iff_second_countable [T2Space X]
       ext1; change s.carrier = t.carrier
       rw [(this s).choose_spec, (this t).choose_spec, h]
     exact hf.countable
+
+@[deprecated (since := "2024-11-12")]
+alias countable_iff_second_countable := countable_iff_secondCountable
 
 end TopologicalSpace.Clopens

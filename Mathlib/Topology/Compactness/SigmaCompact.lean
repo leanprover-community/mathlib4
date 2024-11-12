@@ -183,7 +183,7 @@ theorem SigmaCompactSpace.of_countable (S : Set (Set X)) (Hc : S.Countable)
   ⟨(exists_seq_cover_iff_countable ⟨_, isCompact_empty⟩).2 ⟨S, Hc, Hcomp, HU⟩⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) sigmaCompactSpace_of_locally_compact_second_countable
+instance (priority := 100) sigmaCompactSpace_of_locallyCompact_secondCountable
     [LocallyCompactSpace X] [SecondCountableTopology X] : SigmaCompactSpace X := by
   choose K hKc hxK using fun x : X => exists_compact_mem_nhds x
   rcases countable_cover_nhds hxK with ⟨s, hsc, hsU⟩
