@@ -52,7 +52,7 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
 -/
 
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits
 

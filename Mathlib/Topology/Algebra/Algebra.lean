@@ -27,7 +27,7 @@ TODO: add continuous algebra isomorphisms.
 
 -/
 
-open Set TopologicalSpace Algebra
+open Algebra Set TopologicalSpace Topology
 
 universe u v w
 
@@ -555,8 +555,10 @@ theorem Subalgebra.topologicalClosure_minimal (s : Subalgebra R A) {t : Subalgeb
     (ht : IsClosed (t : Set A)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
-/-- If a subalgebra of a topological algebra is commutative, then so is its topological closure. -/
-def Subalgebra.commSemiringTopologicalClosure [T2Space A] (s : Subalgebra R A)
+/-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
+
+See note [reducible non-instances]. -/
+abbrev Subalgebra.commSemiringTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
   { s.topologicalClosure.toSemiring, s.toSubmonoid.commMonoidTopologicalClosure hs with }
 

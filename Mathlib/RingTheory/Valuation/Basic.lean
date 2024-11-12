@@ -244,6 +244,10 @@ def map (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (v : Valuation R Γ₀) : V
         _ = max (f (v r)) (f (v s)) := hf.map_max
          }
 
+@[simp]
+lemma map_apply (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (v : Valuation R Γ₀) (r : R) :
+    v.map f hf r = f (v r) := rfl
+
 /-- Two valuations on `R` are defined to be equivalent if they induce the same preorder on `R`. -/
 def IsEquiv (v₁ : Valuation R Γ₀) (v₂ : Valuation R Γ'₀) : Prop :=
   ∀ r s, v₁ r ≤ v₁ s ↔ v₂ r ≤ v₂ s
@@ -729,6 +733,10 @@ def map (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddVal
       map_mul' := f.map_add
       map_one' := f.map_zero
       map_zero' := ht } (fun _ _ h => hf h) v
+
+@[simp]
+lemma map_apply (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddValuation R Γ₀) (r : R) :
+    v.map f ht hf r = f (v r) := rfl
 
 /-- Two additive valuations on `R` are defined to be equivalent if they induce the same
   preorder on `R`. -/
