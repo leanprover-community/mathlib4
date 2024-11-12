@@ -29,7 +29,7 @@ cofinalities, see `Ordinal.IsFundamentalSequence`.
 
 - Define fundamental sequences
 - Define the slow and fast-growing hierarchies
-- Replace the definitions in `SetTheory/Ordinal/Notation/Cantor.lean` by the ones in this file.
+- Replace the definitions in `Mathlib.SetTheory.Ordinal.Notation.Cantor` by the ones in this file.
 -/
 
 universe u
