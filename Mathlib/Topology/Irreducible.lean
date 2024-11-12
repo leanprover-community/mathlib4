@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Order.Minimal
+import Mathlib.Order.Zorn
 /-!
 # Irreducibility in topological spaces
 
@@ -27,7 +28,7 @@ https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_def
 
 -/
 
-open Set
+open Set Topology
 
 variable {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
