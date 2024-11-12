@@ -64,8 +64,8 @@ open scoped Cardinal InitialSeg
 
 universe u v w
 
-variable {α : Type u} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
-  {t : γ → γ → Prop}
+variable {α : Type u} {β : Type v} {γ : Type w}
+  {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
 
 /-! ### Definition of ordinals -/
 
@@ -235,11 +235,6 @@ protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
 instance nontrivial : Nontrivial Ordinal.{u} :=
   ⟨⟨1, 0, Ordinal.one_ne_zero⟩⟩
 
-@[simp]
-theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
-    type (f ⁻¹'o r) = type r :=
-  (RelIso.preimage f r).ordinal_type_eq
-
 @[elab_as_elim]
 theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r], C (type r)) : C o :=
@@ -273,23 +268,21 @@ Note that most of the relevant results on initial and principal segments are pro
 instance partialOrder : PartialOrder Ordinal where
   le a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≼i s))
-      fun _ _ _ _ ⟨f⟩ ⟨g⟩ =>
-      propext
-        ⟨fun ⟨h⟩ => ⟨(InitialSeg.ofIso f.symm).trans <| h.trans (InitialSeg.ofIso g)⟩, fun ⟨h⟩ =>
-          ⟨(InitialSeg.ofIso f).trans <| h.trans (InitialSeg.ofIso g.symm)⟩⟩
+      fun _ _ _ _ ⟨f⟩ ⟨g⟩ => propext
+        ⟨fun ⟨h⟩ => ⟨f.symm.toInitialSeg.trans <| h.trans g.toInitialSeg⟩, fun ⟨h⟩ =>
+          ⟨f.toInitialSeg.trans <| h.trans g.symm.toInitialSeg⟩⟩
   lt a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≺i s))
-      fun _ _ _ _ ⟨f⟩ ⟨g⟩ =>
-      propext
-        ⟨fun ⟨h⟩ => ⟨PrincipalSeg.equivLT f.symm <| h.ltLe (InitialSeg.ofIso g)⟩, fun ⟨h⟩ =>
-          ⟨PrincipalSeg.equivLT f <| h.ltLe (InitialSeg.ofIso g.symm)⟩⟩
+      fun _ _ _ _ ⟨f⟩ ⟨g⟩ => propext
+        ⟨fun ⟨h⟩ => ⟨PrincipalSeg.equivLT f.symm <| h.ltLe g.toInitialSeg⟩, fun ⟨h⟩ =>
+          ⟨PrincipalSeg.equivLT f <| h.ltLe g.symm.toInitialSeg⟩⟩
   le_refl := Quot.ind fun ⟨_, _, _⟩ => ⟨InitialSeg.refl _⟩
   le_trans a b c :=
     Quotient.inductionOn₃ a b c fun _ _ _ ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
   lt_iff_le_not_le a b :=
     Quotient.inductionOn₂ a b fun _ _ =>
       ⟨fun ⟨f⟩ => ⟨⟨f⟩, fun ⟨g⟩ => (f.ltLe g).irrefl⟩, fun ⟨⟨f⟩, h⟩ =>
-        f.ltOrEq.recOn (fun g => ⟨g⟩) fun g => (h ⟨InitialSeg.ofIso g.symm⟩).elim⟩
+        f.ltOrEq.recOn (fun g => ⟨g⟩) fun g => (h ⟨g.symm.toInitialSeg⟩).elim⟩
   le_antisymm a b :=
     Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ =>
       Quot.sound ⟨InitialSeg.antisymm h₁ h₂⟩
@@ -611,26 +604,29 @@ def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
 
 @[simp]
 theorem type_uLift (r : α → α → Prop) [IsWellOrder α r] :
-    type (ULift.down ⁻¹'o r) = lift.{v} (type r) := by
-  simp (config := { unfoldPartialApp := true })
+    type (ULift.down ⁻¹'o r) = lift.{v} (type r) :=
   rfl
 
-theorem _root_.RelIso.ordinal_lift_type_eq {α : Type u} {β : Type v} {r : α → α → Prop}
-    {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s] (f : r ≃r s) :
-    lift.{v} (type r) = lift.{u} (type s) :=
+theorem _root_.RelIso.ordinal_lift_type_eq {r : α → α → Prop} {s : β → β → Prop}
+    [IsWellOrder α r] [IsWellOrder β s] (f : r ≃r s) : lift.{v} (type r) = lift.{u} (type s) :=
   ((RelIso.preimage Equiv.ulift r).trans <|
       f.trans (RelIso.preimage Equiv.ulift s).symm).ordinal_type_eq
 
--- @[simp]
-theorem type_lift_preimage {α : Type u} {β : Type v} (r : α → α → Prop) [IsWellOrder α r]
+@[simp]
+theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
+    type (f ⁻¹'o r) = type r :=
+  (RelIso.preimage f r).ordinal_type_eq
+
+@[simp]
+theorem type_lift_preimage (r : α → α → Prop) [IsWellOrder α r]
     (f : β ≃ α) : lift.{u} (type (f ⁻¹'o r)) = lift.{v} (type r) :=
   (RelIso.preimage f r).ordinal_lift_type_eq
 
-@[simp, nolint simpNF]
-theorem type_lift_preimage_aux {α : Type u} {β : Type v} (r : α → α → Prop) [IsWellOrder α r]
-    (f : β ≃ α) : lift.{u} (@type _ (fun x y => r (f x) (f y))
+@[deprecated type_lift_preimage_aux (since := "2024-10-22")]
+theorem type_lift_preimage_aux (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
+    lift.{u} (@type _ (fun x y => r (f x) (f y))
       (inferInstanceAs (IsWellOrder β (f ⁻¹'o r)))) = lift.{v} (type r) :=
-  (RelIso.preimage f r).ordinal_lift_type_eq
+  type_lift_preimage r f
 
 /-- `lift.{max u v, u}` equals `lift.{v, u}`.
 
@@ -663,34 +659,26 @@ theorem lift_uzero (a : Ordinal.{u}) : lift.{0} a = a :=
   lift_id' a
 
 theorem lift_type_le {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
-    lift.{max v w} (type r) ≤ lift.{max u w} (type s) ↔ Nonempty (r ≼i s) :=
-  ⟨fun ⟨f⟩ =>
-    ⟨(InitialSeg.ofIso (RelIso.preimage Equiv.ulift r).symm).trans <|
-        f.trans (InitialSeg.ofIso (RelIso.preimage Equiv.ulift s))⟩,
-    fun ⟨f⟩ =>
-    ⟨(InitialSeg.ofIso (RelIso.preimage Equiv.ulift r)).trans <|
-        f.trans (InitialSeg.ofIso (RelIso.preimage Equiv.ulift s).symm)⟩⟩
+    lift.{max v w} (type r) ≤ lift.{max u w} (type s) ↔ Nonempty (r ≼i s) := by
+  constructor <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
+  · exact (RelIso.preimage Equiv.ulift r).symm.toInitialSeg.trans
+      (f.trans (RelIso.preimage Equiv.ulift s).toInitialSeg)
+  · exact (RelIso.preimage Equiv.ulift r).toInitialSeg.trans
+      (f.trans (RelIso.preimage Equiv.ulift s).symm.toInitialSeg)
 
 theorem lift_type_eq {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
-    lift.{max v w} (type r) = lift.{max u w} (type s) ↔ Nonempty (r ≃r s) :=
-  Quotient.eq'.trans
-    ⟨fun ⟨f⟩ =>
-      ⟨(RelIso.preimage Equiv.ulift r).symm.trans <| f.trans (RelIso.preimage Equiv.ulift s)⟩,
-      fun ⟨f⟩ =>
-      ⟨(RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm⟩⟩
+    lift.{max v w} (type r) = lift.{max u w} (type s) ↔ Nonempty (r ≃r s) := by
+  refine Quotient.eq'.trans ⟨?_, ?_⟩ <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
+  · exact (RelIso.preimage Equiv.ulift r).symm.trans <| f.trans (RelIso.preimage Equiv.ulift s)
+  · exact (RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm
 
 theorem lift_type_lt {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
     lift.{max v w} (type r) < lift.{max u w} (type s) ↔ Nonempty (r ≺i s) := by
-  haveI := @RelEmbedding.isWellOrder _ _ (@Equiv.ulift.{max v w} α ⁻¹'o r) r
-    (RelIso.preimage Equiv.ulift.{max v w} r) _
-  haveI := @RelEmbedding.isWellOrder _ _ (@Equiv.ulift.{max u w} β ⁻¹'o s) s
-    (RelIso.preimage Equiv.ulift.{max u w} s) _
-  exact ⟨fun ⟨f⟩ =>
-    ⟨(f.equivLT (RelIso.preimage Equiv.ulift r).symm).ltLe
-        (InitialSeg.ofIso (RelIso.preimage Equiv.ulift s))⟩,
-    fun ⟨f⟩ =>
-    ⟨(f.equivLT (RelIso.preimage Equiv.ulift r)).ltLe
-        (InitialSeg.ofIso (RelIso.preimage Equiv.ulift s).symm)⟩⟩
+  constructor <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
+  · exact (f.equivLT (RelIso.preimage Equiv.ulift r).symm).ltLe
+      (RelIso.preimage Equiv.ulift s).toInitialSeg
+  · exact (f.equivLT (RelIso.preimage Equiv.ulift r)).ltLe
+      (RelIso.preimage Equiv.ulift s).symm.toInitialSeg
 
 @[simp]
 theorem lift_le {a b : Ordinal} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
