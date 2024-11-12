@@ -125,13 +125,10 @@ theorem lift_relrank_comap (f : L →+* E) (B : Subfield L) :
     lift.{v} (relrank (A.comap f) B) = lift.{w} (relrank A (B.map f)) := by
   let j := f.comp (A.comap f ⊓ B).subtype
   have hj : j.fieldRange = A ⊓ B.map f := by
-    ext x
-    simp_rw [RingHom.mem_fieldRange, Subtype.exists, mem_inf]
-    constructor
-    · rintro ⟨a, ⟨h1, h2⟩, rfl⟩
-      exact ⟨mem_comap.1 h1, a, h2, rfl⟩
-    · rintro ⟨h1, a, h2, rfl⟩
-      exact ⟨a, ⟨mem_comap.2 h1, h2⟩, rfl⟩
+    simp_rw [j]
+    apply ext
+    erw [← Set.ext_iff, RingHom.coe_fieldRange, RingHom.coe_comp, Set.range_comp, Subtype.range_coe]
+    exact Set.image_preimage_inter f B A
   let j' : ↥(A.comap f ⊓ B) ≃+* j.fieldRange :=
     RingEquiv.ofLeftInverse (Function.leftInverse_invFun j.injective)
   let f' : B ≃+* (f.comp B.subtype).fieldRange :=
