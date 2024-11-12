@@ -179,14 +179,6 @@ theorem principal_add_iff_add_left_eq_self : Principal (· + ·) o ↔ ∀ a < o
   · rw [← h a hao]
     exact (isNormal_add_right a).strictMono hbo
 
-theorem Principal.add_absorp (ho : Principal (· + ·) o) (ha : a < o) : a + o = o :=
-  principal_add_iff_add_left_eq_self.1 ho a ha
-
-theorem Principal.add_absorp_of_le (hb : Principal (· + ·) b) (hab : a < b) (hbc : b ≤ c) :
-    a + c = c := by
-  rw [← Ordinal.add_sub_cancel_of_le hbc, ← add_assoc, hb.add_absorp hab,
-    Ordinal.add_sub_cancel_of_le hbc]
-
 theorem exists_lt_add_of_not_principal_add (ha : ¬ Principal (· + ·) a) :
     ∃ b < a, ∃ c < a, b + c = a := by
   rw [not_principal_iff] at ha
@@ -196,8 +188,7 @@ theorem exists_lt_add_of_not_principal_add (ha : ¬ Principal (· + ·) a) :
   rw [← sub_le, hab] at H
   exact H.not_lt hc
 
-theorem principal_add_iff_add_lt_ne_self :
-    Principal (· + ·) a ↔ ∀ b < a, ∀ c < a, b + c ≠ a :=
+theorem principal_add_iff_add_lt_ne_self : Principal (· + ·) a ↔ ∀ b < a, ∀ c < a, b + c ≠ a :=
   ⟨fun ha _ hb _ hc => (ha hb hc).ne, fun H => by
     by_contra! ha
     rcases exists_lt_add_of_not_principal_add ha with ⟨b, hb, c, hc, rfl⟩
@@ -352,8 +343,7 @@ theorem isLimit_of_principal_mul (ho₂ : 2 < o) (ho : Principal (· * ·) o) : 
 @[deprecated (since := "2024-10-16")]
 alias principal_mul_isLimit := isLimit_of_principal_mul
 
-theorem principal_mul_iff_mul_left_eq :
-    Principal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
+theorem principal_mul_iff_mul_left_eq : Principal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
   refine ⟨fun h a ha₀ hao => ?_, fun h a b hao hbo => ?_⟩
   · cases' le_or_gt o 2 with ho ho
     · convert one_mul o
