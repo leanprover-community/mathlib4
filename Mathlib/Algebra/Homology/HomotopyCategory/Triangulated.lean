@@ -179,7 +179,6 @@ lemma mappingConeCompTriangleh_distinguished :
   congr 2
   exact (mappingConeCompHomotopyEquiv_comm₂ f g).symm
 
-set_option maxHeartbeats 400000 in
 noncomputable instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) :=
   IsTriangulated.mk' (by
     rintro ⟨X₁ : CochainComplex C ℤ⟩ ⟨X₂ : CochainComplex C ℤ⟩ ⟨X₃ : CochainComplex C ℤ⟩ u₁₂' u₂₃'
