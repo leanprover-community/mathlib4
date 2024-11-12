@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Data.Set.Subsingleton
@@ -10,12 +10,12 @@ import Mathlib.Data.Set.Subsingleton
 # The category of open neighborhoods of a point
 
 Given an object `X` of the category `TopCat` of topological spaces and a point `x : X`, this file
-builds the type `OpenNhds x` of open neighborhoods of `x` in `X` and endows it with the partial
+builds the type `OpenNhds x` of open neighborhoods of `x` in `X` and endows it with the partial
 order given by inclusion and the corresponding category structure (as a full subcategory of the
 poset category `Set X`). This is used in `Topology.Sheaves.Stalks` to build the stalk of a sheaf
 at `x` as a limit over `OpenNhds x`.
 
-## Main declarations
+## Main declarations
 
 Besides `OpenNhds`, the main constructions here are:
 
@@ -26,7 +26,7 @@ Besides `OpenNhds`, the main constructions here are:
 -/
 
 
-open CategoryTheory TopologicalSpace Opposite
+open CategoryTheory TopologicalSpace Opposite Topology
 
 universe u
 
@@ -86,8 +86,11 @@ def inclusion (x : X) : OpenNhds x ⥤ Opens X :=
 theorem inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=
   rfl
 
-theorem openEmbedding {x : X} (U : OpenNhds x) : OpenEmbedding U.1.inclusion :=
-  U.1.openEmbedding
+theorem isOpenEmbedding {x : X} (U : OpenNhds x) : IsOpenEmbedding U.1.inclusion' :=
+  U.1.isOpenEmbedding
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding := isOpenEmbedding
 
 /-- The preimage functor from neighborhoods of `f x` to neighborhoods of `x`. -/
 def map (x : X) : OpenNhds (f x) ⥤ OpenNhds x where
@@ -144,9 +147,8 @@ def functorNhds (h : IsOpenMap f) (x : X) : OpenNhds x ⥤ OpenNhds (f x) where
   map i := h.functor.map i
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`. -/
-def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ OpenNhds.map f x :=
-  Adjunction.mkOfUnitCounit
-    { unit := { app := fun U => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
-      counit := { app := fun V => homOfLE fun y ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV } }
+def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ OpenNhds.map f x where
+  unit := { app := fun _ => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
+  counit := { app := fun _ => homOfLE fun _ ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
 
 end IsOpenMap

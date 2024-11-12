@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Tactic.NthRewrite

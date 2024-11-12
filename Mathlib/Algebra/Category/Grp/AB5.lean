@@ -9,6 +9,7 @@ import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.Algebra.Category.Grp.FilteredColimits
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms
 
 /-!
 # The category of abelian groups satisfies Grothendieck's axiom AB5
@@ -45,3 +46,9 @@ noncomputable instance :
 noncomputable instance :
     PreservesFiniteLimits <| colim (J := J) (C := AddCommGrp.{u}) := by
   apply Functor.preservesFiniteLimitsOfPreservesHomology
+
+instance : HasFilteredColimits (AddCommGrp.{u}) where
+  HasColimitsOfShape := inferInstance
+
+noncomputable instance : AB5 (AddCommGrp.{u}) where
+  preservesFiniteLimits := fun _ => inferInstance

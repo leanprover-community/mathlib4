@@ -7,7 +7,7 @@ import Mathlib.Topology.Sequences
 import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
-# Sequencial compacts in metric spaces
+# Sequential compacts in metric spaces
 
 In this file we prove 2 versions of Bolzano-Weierstrass theorem for proper metric spaces.
 -/

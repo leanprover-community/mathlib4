@@ -17,7 +17,7 @@ import Mathlib.Data.Nat.Cast.Order.Ring
 variable {α : Type*}
 
 section LinearOrderedAddCommGroup
-variable [LinearOrderedCommGroup α] {a b : α}
+variable [LinearOrderedCommGroup α]
 
 @[to_additive] lemma mabs_zpow (n : ℤ) (a : α) : |a ^ n|ₘ = |a|ₘ ^ |n| := by
   obtain n0 | n0 := le_total 0 n
@@ -34,7 +34,7 @@ lemma odd_abs [LinearOrder α] [Ring α] {a : α} : Odd (abs a) ↔ Odd a := by
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α] {n : ℕ} {a b c : α}
+variable [LinearOrderedRing α] {n : ℕ} {a b : α}
 
 @[simp] lemma abs_one : |(1 : α)| = 1 := abs_of_pos zero_lt_one
 
@@ -43,7 +43,7 @@ lemma abs_two : |(2 : α)| = 2 := abs_of_pos zero_lt_two
 lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by
   rw [abs_eq (mul_nonneg (abs_nonneg a) (abs_nonneg b))]
   rcases le_total a 0 with ha | ha <;> rcases le_total b 0 with hb | hb <;>
-    simp only [abs_of_nonpos, abs_of_nonneg, true_or_iff, or_true_iff, eq_self_iff_true, neg_mul,
+    simp only [abs_of_nonpos, abs_of_nonneg, true_or, or_true, eq_self_iff_true, neg_mul,
       mul_neg, neg_neg, *]
 
 /-- `abs` as a `MonoidWithZeroHom`. -/
@@ -116,6 +116,9 @@ lemma abs_lt_of_sq_lt_sq' (h : a ^ 2 < b ^ 2) (hb : 0 ≤ b) : -b < a ∧ a < b 
 lemma abs_le_of_sq_le_sq (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : |a| ≤ b := by
   rwa [← abs_of_nonneg hb, ← sq_le_sq]
 
+theorem le_of_sq_le_sq (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : a ≤ b :=
+  le_abs_self a |>.trans <| abs_le_of_sq_le_sq h hb
+
 lemma abs_le_of_sq_le_sq' (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : -b ≤ a ∧ a ≤ b :=
   abs_le.1 <| abs_le_of_sq_le_sq h hb
 
@@ -141,7 +144,7 @@ end LinearOrderedRing
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing α] {a b c d : α}
+variable [LinearOrderedCommRing α]
 
 theorem abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a * b := by
   rw [abs_mul_abs_self]
@@ -152,7 +155,7 @@ end LinearOrderedCommRing
 
 section
 
-variable [Ring α] [LinearOrder α] {a b : α}
+variable [Ring α] [LinearOrder α]
 
 @[simp]
 theorem abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by
@@ -196,7 +199,7 @@ lemma pow_eq_one_iff_cases : a ^ n = 1 ↔ n = 0 ∨ a = 1 ∨ a = -1 ∧ Even n
 lemma pow_eq_neg_pow_iff (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd n :=
   match n.even_or_odd with
   | .inl he =>
-    suffices a ^ n > -b ^ n by simpa [he] using this.ne'
+    suffices a ^ n > -b ^ n by simpa [he, not_odd_iff_even.2 he] using this.ne'
     lt_of_lt_of_le (by simp [he.pow_pos hb]) (he.pow_nonneg _)
   | .inr ho => by
     simp only [ho, and_true, ← ho.neg_pow, (ho.strictMono_pow (R := R)).injective.eq_iff]
@@ -226,7 +229,7 @@ lemma Even.mod_even (hn : Even n) (ha : Even a) : Even (n % a) :=
   (Even.mod_even_iff ha).mpr hn
 
 lemma Odd.of_dvd_nat (hn : Odd n) (hm : m ∣ n) : Odd m :=
-  odd_iff_not_even.2 <| mt hm.even (odd_iff_not_even.1 hn)
+  not_even_iff_odd.1 <| mt hm.even (not_even_iff_odd.2 hn)
 
 /-- `2` is not a factor of an odd natural number. -/
 lemma Odd.ne_two_of_dvd_nat {m n : ℕ} (hn : Odd n) (hm : m ∣ n) : m ≠ 2 := by

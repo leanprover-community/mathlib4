@@ -47,7 +47,7 @@ theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := b
 theorem hasDerivAt_log (hx : x ≠ 0) : HasDerivAt log x⁻¹ x :=
   (hasStrictDerivAt_log hx).hasDerivAt
 
-theorem differentiableAt_log (hx : x ≠ 0) : DifferentiableAt ℝ log x :=
+@[fun_prop] theorem differentiableAt_log (hx : x ≠ 0) : DifferentiableAt ℝ log x :=
   (hasDerivAt_log hx).differentiableAt
 
 theorem differentiableOn_log : DifferentiableOn ℝ log {0}ᶜ := fun _x hx =>
@@ -160,10 +160,11 @@ theorem ContDiff.log {n} (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) :
     ContDiff ℝ n fun x => log (f x) :=
   contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.log (h x)
 
+@[fun_prop]
 theorem DifferentiableOn.log (hf : DifferentiableOn ℝ f s) (hx : ∀ x ∈ s, f x ≠ 0) :
     DifferentiableOn ℝ (fun x => log (f x)) s := fun x h => (hf x h).log (hx x h)
 
-@[simp]
+@[simp, fun_prop]
 theorem Differentiable.log (hf : Differentiable ℝ f) (hx : ∀ x, f x ≠ 0) :
     Differentiable ℝ fun x => log (f x) := fun x => (hf x).log (hx x)
 
@@ -191,7 +192,7 @@ theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
       (((hasDerivAt_id (0 : ℝ)).const_mul t).const_add 1).log (by simp)
   have h₂ : Tendsto (fun x : ℝ => x⁻¹) atTop (𝓝[≠] 0) :=
     tendsto_inv_atTop_zero'.mono_right (nhdsWithin_mono _ fun x hx => (Set.mem_Ioi.mp hx).ne')
-  simpa only [(· ∘ ·), inv_inv] using h₁.comp h₂
+  simpa only [Function.comp_def, inv_inv] using h₁.comp h₂
 
 /-- A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,
 where the main point of the bound is that it tends to `0`. The goal is to deduce the series

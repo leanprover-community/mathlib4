@@ -3,15 +3,15 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Monoid.Basic
-import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Ordered instances on submonoids
 -/
+
+assert_not_exists MonoidWithZero
 
 namespace SubmonoidClass
 variable {M S : Type*} [SetLike S M]
@@ -89,7 +89,7 @@ instance toLinearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid M] (S : 
 
 section Preorder
 variable (M)
-variable [Monoid M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)] {a : M}
+variable [Monoid M] [Preorder M] [MulLeftMono M] {a : M}
 
 /-- The submonoid of elements greater than `1`. -/
 @[to_additive (attr := simps) nonneg "The submonoid of nonnegative elements."]
@@ -103,21 +103,4 @@ variable {M}
 @[to_additive (attr := simp) mem_nonneg] lemma mem_oneLE : a ∈ oneLE M ↔ 1 ≤ a := Iff.rfl
 
 end Preorder
-
-section MulZeroClass
-variable (α) [MulZeroOneClass α] [PartialOrder α] [PosMulStrictMono α] [ZeroLEOneClass α]
-  [NeZero (1 : α)] {a : α}
-
-/-- The submonoid of positive elements. -/
-@[simps] def pos : Submonoid α where
-  carrier := Set.Ioi 0
-  one_mem' := zero_lt_one
-  mul_mem' := mul_pos
-
-variable {α}
-
-@[simp] lemma mem_pos : a ∈ pos α ↔ 0 < a := Iff.rfl
-
-end MulZeroClass
-
 end Submonoid

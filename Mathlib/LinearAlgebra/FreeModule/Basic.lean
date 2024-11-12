@@ -13,7 +13,8 @@ import Mathlib.LinearAlgebra.TensorProduct.Basis
 We introduce a class `Module.Free R M`, for `R` a `Semiring` and `M` an `R`-module and we provide
 several basic instances for this class.
 
-Use `Finsupp.total_id_surjective` to prove that any module is the quotient of a free module.
+Use `Finsupp.linearCombination_id_surjective` to prove that any module is the quotient of a free
+module.
 
 ## Main definition
 

@@ -55,13 +55,13 @@ lemma compProd_of_not_isSFiniteKernel (μ : Measure α) (κ : Kernel α β) (h :
 
 lemma compProd_apply [SFinite μ] [IsSFiniteKernel κ] {s : Set (α × β)} (hs : MeasurableSet s) :
     (μ ⊗ₘ κ) s = ∫⁻ a, κ a (Prod.mk a ⁻¹' s) ∂μ := by
-  simp_rw [compProd, Kernel.compProd_apply _ _ _ hs, Kernel.const_apply, Kernel.prodMkLeft_apply']
+  simp_rw [compProd, Kernel.compProd_apply hs, Kernel.const_apply, Kernel.prodMkLeft_apply']
   rfl
 
 lemma compProd_apply_prod [SFinite μ] [IsSFiniteKernel κ]
     {s : Set α} {t : Set β} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     (μ ⊗ₘ κ) (s ×ˢ t) = ∫⁻ a in s, κ a t ∂μ := by
-  rw [compProd_apply (hs.prod ht), ← lintegral_indicator _ hs]
+  rw [compProd_apply (hs.prod ht), ← lintegral_indicator hs]
   congr with a
   classical
   rw [Set.indicator_apply]
@@ -94,16 +94,14 @@ lemma ae_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
 lemma compProd_add_left (μ ν : Measure α) [SFinite μ] [SFinite ν] (κ : Kernel α β) :
     (μ + ν) ⊗ₘ κ = μ ⊗ₘ κ + ν ⊗ₘ κ := by
   by_cases hκ : IsSFiniteKernel κ
-  · rw [Measure.compProd, Kernel.const_add, Kernel.compProd_add_left]
-    rfl
+  · simp_rw [Measure.compProd, Kernel.const_add, Kernel.compProd_add_left, Kernel.add_apply]
   · simp [compProd_of_not_isSFiniteKernel _ _ hκ]
 
 lemma compProd_add_right (μ : Measure α) (κ η : Kernel α β)
     [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     μ ⊗ₘ (κ + η) = μ ⊗ₘ κ + μ ⊗ₘ η := by
   by_cases hμ : SFinite μ
-  · rw [Measure.compProd, Kernel.prodMkLeft_add, Kernel.compProd_add_right]
-    rfl
+  · simp_rw [Measure.compProd, Kernel.prodMkLeft_add, Kernel.compProd_add_right, Kernel.add_apply]
   · simp [compProd_of_not_sfinite _ _ hμ]
 
 section Integral
@@ -129,8 +127,8 @@ lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [Nor
     Integrable f (μ ⊗ₘ κ) ↔
       (∀ᵐ x ∂μ, Integrable (fun y => f (x, y)) (κ x)) ∧
         Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂(κ x)) μ := by
-  rw [Measure.compProd, ProbabilityTheory.integrable_compProd_iff hf]
-  rfl
+  simp_rw [Measure.compProd, ProbabilityTheory.integrable_compProd_iff hf, Kernel.prodMkLeft_apply,
+    Kernel.const_apply]
 
 lemma integral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]

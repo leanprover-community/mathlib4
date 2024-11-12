@@ -72,7 +72,7 @@ theorem coeSort_finsetBasisIndex [IsNoetherian K V] :
 /-- In a noetherian module over a division ring, there exists a finite basis.
 This is indexed by the `Finset` `IsNoetherian.finsetBasisIndex`.
 This is in contrast to the result `finite_basis_index (Basis.ofVectorSpace K V)`,
-which provides a set and a `Set.finite`.
+which provides a set and a `Set.Finite`.
 -/
 noncomputable def finsetBasis [IsNoetherian K V] : Basis (finsetBasisIndex K V) K V :=
   (Basis.ofVectorSpace K V).reindex (by rw [coeSort_finsetBasisIndex])

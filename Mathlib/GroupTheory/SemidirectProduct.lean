@@ -171,7 +171,7 @@ theorem rightHom_surjective : Function.Surjective (rightHom : N ⋊[φ] G → G)
   Function.surjective_iff_hasRightInverse.2 ⟨inr, rightHom_inr⟩
 
 theorem range_inl_eq_ker_rightHom : (inl : N →* N ⋊[φ] G).range = rightHom.ker :=
-  le_antisymm (fun _ ↦ by simp (config := { contextual := true }) [MonoidHom.mem_ker, eq_comm])
+  le_antisymm (fun _ ↦ by simp +contextual [MonoidHom.mem_ker, eq_comm])
     fun x hx ↦ ⟨x.left, by ext <;> simp_all [MonoidHom.mem_ker]⟩
 
 section lift
@@ -222,7 +222,7 @@ section Map
 variable {N₁ : Type*} {G₁ : Type*} [Group N₁] [Group G₁] {φ₁ : G₁ →* MulAut N₁}
 
 /-- Define a map from `N ⋊[φ] G` to `N₁ ⋊[φ₁] G₁` given maps `N →* N₁` and `G →* G₁` that
-  satisfy a commutativity condition `∀ n g, f₁ (φ g n) = φ₁ (f₂ g) (f₁ n)`.  -/
+  satisfy a commutativity condition `∀ n g, f₁ (φ g n) = φ₁ (f₂ g) (f₁ n)`. -/
 def map (f₁ : N →* N₁) (f₂ : G →* G₁)
     (h : ∀ g : G, f₁.comp (φ g).toMonoidHom = (φ₁ (f₂ g)).toMonoidHom.comp f₁) :
     N ⋊[φ] G →* N₁ ⋊[φ₁] G₁ where

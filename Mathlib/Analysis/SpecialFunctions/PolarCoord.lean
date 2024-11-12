@@ -39,12 +39,12 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · simpa using hr
     · right
       simp at hr
-      simpa only [ne_of_gt hr, Ne, mem_setOf_eq, mul_eq_zero, false_or_iff,
+      simpa only [ne_of_gt hr, Ne, mem_setOf_eq, mul_eq_zero, false_or,
         sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2] using h'θ
   map_source' := by
     rintro ⟨x, y⟩ hxy
     simp only [prod_mk_mem_set_prod_eq, mem_Ioi, sqrt_pos, mem_Ioo, Complex.neg_pi_lt_arg,
-      true_and_iff, Complex.arg_lt_pi_iff]
+      true_and, Complex.arg_lt_pi_iff]
     constructor
     · cases' hxy with hxy hxy
       · dsimp at hxy; linarith [sq_pos_of_ne_zero hxy.ne', sq_nonneg y]
@@ -135,13 +135,13 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
   symm
   calc
     ∫ p, f p = ∫ p in polarCoord.source, f p := by
-      rw [← integral_univ]
-      apply setIntegral_congr_set_ae
+      rw [← setIntegral_univ]
+      apply setIntegral_congr_set
       exact polarCoord_source_ae_eq_univ.symm
     _ = ∫ p in polarCoord.target, abs (B p).det • f (polarCoord.symm p) := by
       apply integral_target_eq_integral_abs_det_fderiv_smul volume A
     _ = ∫ p in polarCoord.target, p.1 • f (polarCoord.symm p) := by
-      apply setIntegral_congr polarCoord.open_target.measurableSet fun x hx => ?_
+      apply setIntegral_congr_fun polarCoord.open_target.measurableSet fun x hx => ?_
       rw [B_det, abs_of_pos]
       exact hx.1
 

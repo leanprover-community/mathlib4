@@ -26,8 +26,8 @@ open Set Metric TopologicalSpace Function Asymptotics Filter
 
 open scoped Topology NNReal
 
-variable {α β 𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
+variable {α β 𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
 /-! ### Differentiability -/
 
@@ -77,7 +77,7 @@ theorem hasFDerivAt_tsum_of_isPreconnected (hu : Summable u) (hs : IsOpen s)
       apply Summable.hasSum
       exact summable_of_summable_hasFDerivAt_of_isPreconnected hu hs h's hf hf' hx₀ hf0 hy
     refine hasFDerivAt_of_tendstoUniformlyOn hs (tendstoUniformlyOn_tsum hu hf')
-      (fun t y hy => ?_) A _ hx
+      (fun t y hy => ?_) A hx
     exact HasFDerivAt.sum fun n _ => hf n y hy
 
 /-- Consider a series of functions `∑' n, f n x` on a preconnected open set. If the series converges
@@ -100,6 +100,7 @@ then the series converges everywhere. -/
 theorem summable_of_summable_hasFDerivAt (hu : Summable u)
     (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x) (hf' : ∀ n x, ‖f' n x‖ ≤ u n)
     (hf0 : Summable fun n => f n x₀) (x : E) : Summable fun n => f n x := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   exact summable_of_summable_hasFDerivAt_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n x _ => hf n x) (fun n x _ => hf' n x) (mem_univ _) hf0 (mem_univ _)
@@ -119,6 +120,7 @@ then the series is differentiable and its derivative is the sum of the derivativ
 theorem hasFDerivAt_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, ‖f' n x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) (x : E) :
     HasFDerivAt (fun y => ∑' n, f n y) (∑' n, f' n x) x := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let A : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   exact hasFDerivAt_tsum_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n x _ => hf n x) (fun n x _ => hf' n x) (mem_univ _) hf0 (mem_univ _)
@@ -199,7 +201,7 @@ theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
     rw [fderiv_tsum (hv _ hk) (fun n => (hf n).differentiable_iteratedFDeriv h'k) _ A]
     · ext1 x
       exact (continuousMultilinearCurryLeftEquiv 𝕜
-        (fun _ : Fin (k + 1) => E) F).toContinuousLinearEquiv.map_tsum
+        (fun _ : Fin (k + 1) => E) F).symm.toContinuousLinearEquiv.map_tsum
     · intro n x
       simpa only [iteratedFDeriv_succ_eq_comp_left, LinearIsometryEquiv.norm_map, comp_apply]
         using h'f k.succ n x hk
@@ -230,7 +232,7 @@ theorem contDiff_tsum (hf : ∀ i, ContDiff 𝕜 N (f i)) (hv : ∀ k : ℕ, (k 
       exact h'f _ _ _ hm
   · intro m hm
     have h'm : ((m + 1 : ℕ) : ℕ∞) ≤ N := by
-      simpa only [ENat.coe_add, ENat.coe_one] using ENat.add_one_le_of_lt hm
+      simpa only [ENat.coe_add, ENat.coe_one] using Order.add_one_le_of_lt hm
     rw [iteratedFDeriv_tsum hf hv h'f hm.le]
     have A :
       ∀ n x, HasFDerivAt (iteratedFDeriv 𝕜 m (f n)) (fderiv 𝕜 (iteratedFDeriv 𝕜 m (f n)) x) x :=

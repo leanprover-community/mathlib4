@@ -6,15 +6,15 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Ring.Rat
-import Mathlib.Init.Data.Int.Order
+import Mathlib.Data.Int.Order.Basic
 
 /-!
 # The rational numbers possess a linear order
 
 This file constructs the order on `ℚ` and proves various facts relating the order to
-ring structure on `ℚ`. This only used unbundled type classes relating the order structure
-and algebra structure on `ℚ`. For the bundled `LinearOrderedCommRing` instance on `Q`,
-see `Algebra.Order.Ring.Rat`.
+ring structure on `ℚ`. This only uses unbundled type classes, eg `CovariantClass`,
+relating the order structure and algebra structure on `ℚ`.
+For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ring.Rat`.
 
 ## Tags
 
@@ -29,7 +29,7 @@ assert_not_exists GaloisConnection
 
 namespace Rat
 
-variable {a b c p q : ℚ}
+variable {a b p q : ℚ}
 
 @[simp] lemma divInt_nonneg_iff_of_pos_right {a b : ℤ} (hb : 0 < b) : 0 ≤ a /. b ↔ 0 ≤ a := by
   cases' hab : a /. b with n d hd hnd
@@ -95,7 +95,7 @@ protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
         decide_eq_false_iff_not, not_lt, ite_eq_left_iff, not_and, not_le, ← num_nonneg]
       split_ifs with h h'
       · rw [Rat.sub_def]
-        simp only [false_iff, not_le]
+        simp only [false_iff, not_le, reduceCtorEq]
         simp only [normalize_eq]
         apply Int.ediv_neg'
         · rw [sub_neg]
@@ -167,8 +167,8 @@ instance instDistribLattice : DistribLattice ℚ := inferInstance
 instance instLattice        : Lattice ℚ        := inferInstance
 instance instSemilatticeInf : SemilatticeInf ℚ := inferInstance
 instance instSemilatticeSup : SemilatticeSup ℚ := inferInstance
-instance instInf            : Inf ℚ            := inferInstance
-instance instSup            : Sup ℚ            := inferInstance
+instance instInf            : Min ℚ            := inferInstance
+instance instSup            : Max ℚ            := inferInstance
 instance instPartialOrder   : PartialOrder ℚ   := inferInstance
 instance instPreorder       : Preorder ℚ       := inferInstance
 
@@ -191,7 +191,7 @@ protected lemma lt_def : p < q ↔ p.num * q.den < q.num * p.den := by
 protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b := by
   rw [Rat.le_iff_sub_nonneg, add_sub_add_left_eq_sub, ← Rat.le_iff_sub_nonneg]
 
-instance : CovariantClass ℚ ℚ (· + ·) (· ≤ ·) where
+instance : AddLeftMono ℚ where
   elim := fun _ _ _ h => Rat.add_le_add_left.2 h
 
 @[simp] lemma num_nonpos {a : ℚ} : a.num ≤ 0 ↔ a ≤ 0 := by

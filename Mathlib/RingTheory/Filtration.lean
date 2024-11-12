@@ -5,12 +5,12 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Ring.Idempotents
-import Mathlib.RingTheory.Noetherian
-import Mathlib.RingTheory.ReesAlgebra
-import Mathlib.RingTheory.Finiteness
 import Mathlib.Order.Basic
 import Mathlib.Order.Hom.Lattice
+import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.Noetherian.Orzech
+import Mathlib.RingTheory.ReesAlgebra
 
 /-!
 
@@ -82,7 +82,7 @@ def _root_.Ideal.trivialFiltration (I : Ideal R) (N : Submodule R M) : I.Filtrat
   smul_le _ := Submodule.smul_le_right
 
 /-- The `sup` of two `I.Filtration`s is an `I.Filtration`. -/
-instance : Sup (I.Filtration M) :=
+instance : Max (I.Filtration M) :=
   ⟨fun F F' =>
     ⟨F.N ⊔ F'.N, fun i => sup_le_sup (F.mono i) (F'.mono i), fun i =>
       (Submodule.smul_sup _ _ _).trans_le <| sup_le_sup (F.smul_le i) (F'.smul_le i)⟩⟩
@@ -102,7 +102,7 @@ instance : SupSet (I.Filtration M) :=
         exact F.smul_le i }⟩
 
 /-- The `inf` of two `I.Filtration`s is an `I.Filtration`. -/
-instance : Inf (I.Filtration M) :=
+instance : Min (I.Filtration M) :=
   ⟨fun F F' =>
     ⟨F.N ⊓ F'.N, fun i => inf_le_inf (F.mono i) (F'.mono i), fun i =>
       (smul_inf_le _ _ _).trans <| inf_le_inf (F.smul_le i) (F'.smul_le i)⟩⟩
@@ -238,7 +238,7 @@ variable (F F')
 protected def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
   carrier := { f | ∀ i, f i ∈ F.N i }
   add_mem' hf hg i := Submodule.add_mem _ (hf i) (hg i)
-  zero_mem' i := Submodule.zero_mem _
+  zero_mem' _ := Submodule.zero_mem _
   smul_mem' r f hf i := by
     rw [Subalgebra.smul_def, PolynomialModule.smul_apply]
     apply Submodule.sum_mem
@@ -294,11 +294,11 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
   · intro H n hn
     refine (F.smul_le n).antisymm ?_
     intro x hx
-    obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_total _ _ _).mp (H _ ⟨x, hx, rfl⟩)
+    obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp (H _ ⟨x, hx, rfl⟩)
     replace hl := congr_arg (fun f : ℕ →₀ M => f (n + 1)) hl
     dsimp only at hl
     erw [Finsupp.single_eq_same] at hl
-    rw [← hl, Finsupp.total_apply, Finsupp.sum_apply]
+    rw [← hl, Finsupp.linearCombination_apply, Finsupp.sum_apply]
     apply Submodule.sum_mem _ _
     rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
     dsimp only [Subtype.coe_mk]

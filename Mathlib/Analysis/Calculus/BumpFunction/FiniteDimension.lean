@@ -25,7 +25,7 @@ the indicator function of `closedBall 0 1` with a function as above with `s = ba
 
 noncomputable section
 
-open Set Metric TopologicalSpace Function Asymptotics MeasureTheory FiniteDimensional
+open Set Metric TopologicalSpace Function Asymptotics MeasureTheory Module
   ContinuousLinearMap Filter MeasureTheory.Measure Bornology
 
 open scoped Pointwise Topology NNReal Convolution
@@ -407,12 +407,12 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
       intro y hy
       simp only [support_mul, w_support E Dpos]
       simp only [φ, mem_inter_iff, mem_support, Ne, indicator_apply_eq_zero,
-        mem_closedBall_zero_iff, one_ne_zero, not_forall, not_false_iff, exists_prop, and_true_iff]
+        mem_closedBall_zero_iff, one_ne_zero, not_forall, not_false_iff, exists_prop, and_true]
       constructor
       · apply ball_subset_ball' _ hy
         simp only [hz, norm_smul, abs_of_nonneg Dpos.le, abs_of_nonneg B.le, dist_zero_right,
           Real.norm_eq_abs, abs_div]
-        simp only [div_le_iff B, field_simps]
+        simp only [div_le_iff₀ B, field_simps]
         ring_nf
         rfl
       · have ID : ‖D / (1 + D) - 1‖ = 1 / (1 + D) := by
@@ -425,7 +425,7 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
         rw [← mem_closedBall_iff_norm']
         apply closedBall_subset_closedBall' _ (ball_subset_closedBall hy)
         rw [← one_smul ℝ x, dist_eq_norm, hz, ← sub_smul, one_smul, norm_smul, ID]
-        simp only [B.ne', div_le_iff B, field_simps]
+        simp only [B.ne', div_le_iff₀ B, field_simps]
         nlinarith only [hx, D_lt_one]
     apply lt_of_lt_of_le _ (measure_mono C)
     apply measure_ball_pos
@@ -512,7 +512,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         · rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
           have A : 0 < (R - 1) / (R + 1) := by apply div_pos <;> linarith
           have B : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
-          simp only [mem_preimage, prod_mk_mem_set_prod_eq, mem_Ioo, mem_univ, and_true_iff, A, B]
+          simp only [mem_preimage, prod_mk_mem_set_prod_eq, mem_Ioo, mem_univ, and_true, A, B]
       eq_one := fun R hR x hx => by
         have A : 0 < R + 1 := by linarith
         simp only [hR, if_true]

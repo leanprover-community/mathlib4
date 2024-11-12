@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Antoine Labe
 -/
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 # Trace of a linear map
@@ -25,7 +26,7 @@ universe u v w
 namespace LinearMap
 
 open scoped Matrix
-open FiniteDimensional TensorProduct
+open Module TensorProduct
 
 section
 
@@ -85,11 +86,11 @@ theorem trace_eq_matrix_trace (f : M →ₗ[R] M) :
 
 theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g * f) := by
   classical
-  exact if H : ∃ s : Finset M, Nonempty (Basis s R M) then by
-    let ⟨s, ⟨b⟩⟩ := H
+  by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
+  · let ⟨s, ⟨b⟩⟩ := H
     simp_rw [trace_eq_matrix_trace R b, LinearMap.toMatrix_mul]
     apply Matrix.trace_mul_comm
-  else by rw [trace, dif_neg H, LinearMap.zero_apply, LinearMap.zero_apply]
+  · rw [trace, dif_neg H, LinearMap.zero_apply, LinearMap.zero_apply]
 
 lemma trace_mul_cycle (f g h : M →ₗ[R] M) :
     trace R M (f * g * h) = trace R M (h * f * g) := by
@@ -310,6 +311,7 @@ lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.En
   have : f ∘ₗ algebraMap R _ μ = μ • f := by ext; simp -- TODO Surely exists?
   rw [hμ, comp_add, map_add, hg, add_zero, this, LinearMap.map_smul, smul_eq_mul]
 
+-- This result requires `Mathlib.RingTheory.TensorProduct.Free`. Maybe it should move elsewhere?
 @[simp]
 lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
     (f : M →ₗ[R] M) (A : Type*) [CommRing A] [Algebra R A] :

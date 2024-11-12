@@ -80,11 +80,11 @@ theorem dist_pos {x y : γ} : 0 < dist x y ↔ x ≠ y := by
 theorem eq_of_forall_dist_le {x y : γ} (h : ∀ ε > 0, dist x y ≤ ε) : x = y :=
   eq_of_dist_eq_zero (eq_of_le_of_forall_le_of_dense dist_nonneg h)
 
-/-- Deduce the equality of points from the vanishing of the nonnegative distance-/
+/-- Deduce the equality of points from the vanishing of the nonnegative distance -/
 theorem eq_of_nndist_eq_zero {x y : γ} : nndist x y = 0 → x = y := by
   simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
 
-/-- Characterize the equality of points as the vanishing of the nonnegative distance-/
+/-- Characterize the equality of points as the vanishing of the nonnegative distance -/
 @[simp]
 theorem nndist_eq_zero {x y : γ} : nndist x y = 0 ↔ x = y := by
   simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
@@ -175,7 +175,7 @@ instance : MetricSpace PUnit.{u + 1} where
   dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
   toUniformSpace := inferInstance
   uniformity_dist := by
-    simp (config := { contextual := true }) [principal_univ, eq_top_of_neBot (𝓤 PUnit)]
+    simp +contextual [principal_univ, eq_top_of_neBot (𝓤 PUnit)]
 
 /-!
 ### `Additive`, `Multiplicative`

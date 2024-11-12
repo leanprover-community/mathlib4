@@ -187,7 +187,7 @@ protected theorem summable_of_lp (f : lp G 2) :
 
 /-- A mutually orthogonal family of subspaces of `E` induce a linear isometry from `lp 2` of the
 subspaces into `E`. -/
-protected def linearIsometry : lp G 2 →ₗᵢ[𝕜] E where
+protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ[𝕜] E where
   toFun f := ∑' i, V i (f i)
   map_add' f g := by
     simp only [tsum_add (hV.summable_of_lp f) (hV.summable_of_lp g), lp.coeFn_add, Pi.add_apply,
@@ -249,7 +249,7 @@ protected theorem range_linearIsometry [∀ i, CompleteSpace (G i)] :
       rintro i x ⟨x, rfl⟩
       use lp.single 2 i x
       exact hV.linearIsometry_apply_single x
-    exact hV.linearIsometry.isometry.uniformInducing.isComplete_range.isClosed
+    exact hV.linearIsometry.isometry.isUniformInducing.isComplete_range.isClosed
 
 end OrthogonalFamily
 
@@ -340,7 +340,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]
   rw [LinearIsometryEquiv.apply_symm_apply]
   ext i
-  simp (config := { contextual := true }) [DFinsupp.sum, lp.single_apply]
+  simp +contextual [DFinsupp.sum, lp.single_apply]
 
 /-- Given a total orthonormal family `v : ι → E`, `E` is a Hilbert sum of `fun i : ι => 𝕜`
 relative to the family of linear isometries `fun i k => k • v i`. -/

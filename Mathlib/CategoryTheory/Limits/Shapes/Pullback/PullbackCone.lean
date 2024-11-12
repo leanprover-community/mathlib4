@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl, Calle Sönne
+Authors: Kim Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl, Calle Sönne
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
 
@@ -23,7 +23,7 @@ t.pt ---t.snd---> Y
   v               v
   X -----f------> Z
 ```
-The type `PullbackCone f g` is implemented as an abbrevation for `Cone (cospan f g)`, so general
+The type `PullbackCone f g` is implemented as an abbreviation for `Cone (cospan f g)`, so general
 results about cones are also available for `PullbackCone f g`.
 
 * `PushoutCone f g`: Given morphisms `f : X ⟶ Y` and `g : X ⟶ Z`, a term `t : PushoutCone f g`
