@@ -303,8 +303,8 @@ variable {K}
 instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
   finiteDimensional f.SplittingField f
 
-instance [Fintype K] (f : K[X]) : Fintype f.SplittingField :=
-  FiniteDimensional.fintypeOfFintype K _
+instance [Finite K] (f : K[X]) : Finite f.SplittingField :=
+  Module.finite_of_finite K
 
 instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField :=
   inferInstance
