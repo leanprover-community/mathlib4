@@ -207,7 +207,7 @@ noncomputable def equivSigma : ((i : Fin c.length) × Fin (c.partSize i)) ≃ Fi
 lemma length_pos (h : 0 < n) : 0 < c.length := Nat.zero_lt_of_lt (c.index ⟨0, h⟩).2
 
 lemma neZero_length [NeZero n] (c : OrderedFinpartition n) : NeZero c.length :=
-  ⟨(c.length_pos size_pos').ne'⟩
+  ⟨(c.length_pos pos').ne'⟩
 
 lemma neZero_partSize (c : OrderedFinpartition n) (i : Fin c.length) : NeZero (c.partSize i) :=
   .of_pos (c.partSize_pos i)

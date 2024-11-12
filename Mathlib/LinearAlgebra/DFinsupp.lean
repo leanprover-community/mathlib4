@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
+import Mathlib.Data.DFinsupp.Submonoid
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.LinearIndependent
@@ -11,7 +12,7 @@ import Mathlib.LinearAlgebra.LinearIndependent
 # Properties of the module `Π₀ i, M i`
 
 Given an indexed collection of `R`-modules `M i`, the `R`-module structure on `Π₀ i, M i`
-is defined in `Mathlib.Data.DFinsupp.Basic`.
+is defined in `Mathlib.Data.DFinsupp.Module`.
 
 In this file we define `LinearMap` versions of various maps:
 

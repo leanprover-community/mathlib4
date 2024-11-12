@@ -8,6 +8,7 @@ import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.NormalClosure
 import Mathlib.RingTheory.Polynomial.SeparableDegree
+import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 
@@ -747,7 +748,7 @@ theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
     have halg := IsAlgebraic.of_finite F x
     refine (finSepDegree_adjoin_simple_eq_finrank_iff F E x halg).1 <| le_antisymm
       (finSepDegree_adjoin_simple_le_finrank F E x halg) <| le_of_not_lt fun h ↦ ?_
-    have := Nat.mul_lt_mul_of_lt_of_le' h (finSepDegree_le_finrank F⟮x⟯ E) Fin.size_pos'
+    have := Nat.mul_lt_mul_of_lt_of_le' h (finSepDegree_le_finrank F⟮x⟯ E) Fin.pos'
     rw [finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E,
       Module.finrank_mul_finrank F F⟮x⟯ E] at this
     linarith only [heq, this]⟩, fun _ ↦ finSepDegree_eq_finrank_of_isSeparable F E⟩
