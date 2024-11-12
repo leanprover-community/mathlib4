@@ -1474,6 +1474,8 @@ lemma mul_ne_bot (a b : EReal) :
   set_option push_neg.use_distrib true in push_neg
   rfl
 
+/-- `EReal.toENNReal` is multiplicative. For the version with the nonnegativity
+hypothesis on the second variable, see `EReal.toENNReal_mul'`. -/
 lemma toENNReal_mul {x y : EReal} (hx : 0 ≤ x) :
     (x * y).toENNReal = x.toENNReal * y.toENNReal := by
   induction x <;> induction y
@@ -1487,6 +1489,8 @@ lemma toENNReal_mul {x y : EReal} (hx : 0 ≤ x) :
     · simp [ha]
     · simp_all [top_mul_of_pos (EReal.coe_pos.mpr ha)]
 
+/-- `EReal.toENNReal` is multiplicative. For the version with the nonnegativity
+hypothesis on the first variable, see `EReal.toENNReal_mul`. -/
 lemma toENNReal_mul' {x y : EReal} (hy : 0 ≤ y) :
     (x * y).toENNReal = x.toENNReal * y.toENNReal := by
   rw [EReal.mul_comm, toENNReal_mul hy, mul_comm]
