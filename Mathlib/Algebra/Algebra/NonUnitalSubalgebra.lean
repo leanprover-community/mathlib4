@@ -976,7 +976,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
               simp only
               rw [hf i k hik, hf j k hjk]
               rfl)
-            (↑(iSup K)) (by rw [coe_iSup_of_directed dir])
+            _ (by rw [coe_iSup_of_directed dir])
         map_zero' := by
           dsimp
           exact Set.iUnionLift_const _ (fun i : ι => (0 : K i)) (fun _ => rfl) _ (by simp)
