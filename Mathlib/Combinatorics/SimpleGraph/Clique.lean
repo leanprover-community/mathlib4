@@ -561,7 +561,7 @@ lemma IsClique.card_le_cliqueNum [Fintype α] {t : Finset α} {tc : G.IsClique t
   le_csSup G.fintype_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
 
 lemma exists_isNClique_cliqueNum [Fintype α] : ∃ s, G.IsNClique G.cliqueNum s :=
-    Nat.sSup_mem ⟨0, by simp[isNClique_empty.mpr rfl]⟩ G.fintype_cliqueNum_bddAbove
+  Nat.sSup_mem ⟨0, by simp [isNClique_empty.mpr rfl]⟩ G.fintype_cliqueNum_bddAbove
 
 /-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
 structure IsMaximumClique [Fintype α] (G : SimpleGraph α) (s : Finset α) : Prop where
@@ -575,7 +575,7 @@ theorem isMaximumClique_iff [Fintype α] {s : Finset α} :
 /-- A maximal clique in a graph `G` is a clique that cannot be extended by adding more vertices. -/
 theorem isMaximalClique_iff {s : Set α} :
     Maximal G.IsClique s ↔ G.IsClique s ∧ ∀ t : Set α, G.IsClique t → s ⊆ t → t ⊆ s :=
-  Eq.to_iff rfl
+  Iff.rfl
 
 lemma IsMaximumClique.isMaximalClique [Fintype α] (s : Finset α) (M : G.IsMaximumClique s) :
     Maximal G.IsClique s :=
@@ -587,8 +587,7 @@ lemma IsMaximumClique.isMaximalClique [Fintype α] (s : Finset α) (M : G.IsMaxi
       have hle : #t.toFinset ≤ #s := M.maximum t.toFinset (by simp [Set.coe_toFinset, ht])
       have hlt : #s < #t.toFinset :=
         card_lt_card (ssubset_of_ne_of_subset ne (Set.subset_toFinset.mpr hsub))
-      exact lt_irrefl _ (lt_of_lt_of_le hlt hle)
-  ⟩
+      exact lt_irrefl _ (lt_of_lt_of_le hlt hle) ⟩
 
 lemma maximumClique_card_eq_cliqueNum [Fintype α] (s : Finset α) (sm : G.IsMaximumClique s) :
     #s = G.cliqueNum := by
@@ -607,7 +606,7 @@ end CliqueNumber
 
 section CliqueFinset
 
-variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {a b c : α} {s : Finset α}
+variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α}
 
 /-- The `n`-cliques in a graph as a finset. -/
 def cliqueFinset (n : ℕ) : Finset (Finset α) := {s | G.IsNClique n s}
