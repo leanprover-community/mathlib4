@@ -142,21 +142,21 @@ noncomputable def freeYonedaCoproductMk (m : M.Elements) :
   (M.ιFreeYonedaCoproduct m).app _ (ModuleCat.freeMk (𝟙 _))
 
 @[reassoc (attr := simp)]
-lemma ι_fromFreeYonedaCoproduct (e : M.Elements) :
-    M.ιFreeYonedaCoproduct e ≫ M.fromFreeYonedaCoproduct = e.fromFreeYoneda := by
+lemma ι_fromFreeYonedaCoproduct (m : M.Elements) :
+    M.ιFreeYonedaCoproduct m ≫ M.fromFreeYonedaCoproduct = m.fromFreeYoneda := by
   apply Sigma.ι_desc
 
-lemma ι_fromFreeYonedaCoproduct_apply (e : M.Elements) (X : Cᵒᵖ) (x : e.freeYoneda.obj X) :
-    M.fromFreeYonedaCoproduct.app X ((M.ιFreeYonedaCoproduct e).app X x) =
-      e.fromFreeYoneda.app X x :=
-  congr_fun ((evaluation R X ⋙ forget _).congr_map (M.ι_fromFreeYonedaCoproduct e)) x
+lemma ι_fromFreeYonedaCoproduct_apply (m : M.Elements) (X : Cᵒᵖ) (x : m.freeYoneda.obj X) :
+    M.fromFreeYonedaCoproduct.app X ((M.ιFreeYonedaCoproduct m).app X x) =
+      m.fromFreeYoneda.app X x :=
+  congr_fun ((evaluation R X ⋙ forget _).congr_map (M.ι_fromFreeYonedaCoproduct m)) x
 
 @[simp]
-lemma fromFreeYonedaCoproduct_app_mk (e : M.Elements) :
-    M.fromFreeYonedaCoproduct.app _ (M.freeYonedaCoproductMk e) = e.2 := by
+lemma fromFreeYonedaCoproduct_app_mk (m : M.Elements) :
+    M.fromFreeYonedaCoproduct.app _ (M.freeYonedaCoproductMk m) = m.2 := by
   dsimp [freeYonedaCoproductMk]
-  erw [M.ι_fromFreeYonedaCoproduct_apply e]
-  rw [e.fromFreeYoneda_app_apply]
+  erw [M.ι_fromFreeYonedaCoproduct_apply m]
+  rw [m.fromFreeYoneda_app_apply]
 
 instance : Epi M.fromFreeYonedaCoproduct :=
   epi_of_surjective (fun X m ↦ ⟨M.freeYonedaCoproductMk (M.elementsMk X m),
