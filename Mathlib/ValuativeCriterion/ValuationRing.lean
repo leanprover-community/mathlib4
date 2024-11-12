@@ -1,4 +1,7 @@
-import Mathlib
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.Order.CompletePartialOrder
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.RingTheory.Valuation.ValuationSubring
 
 open LocalRing
 open Set
@@ -36,13 +39,20 @@ structure LocalSubring where
 
 namespace LocalSubring
 
-instance (S : LocalSubring R) : LocalRing S.1 := S.2
+instance (S : LocalSubring R) : LocalRing S.toSubring := S.localRing
+
+/-- Copy of a local subring with a new `carrier` equal to the old one. Useful to fix definitional
+equalities. -/
+protected def copy (S : LocalSubring R) (s : Set R) (hs : s = ↑S.toSubring) : LocalSubring R :=
+  LocalSubring.mk (S.toSubring.copy s hs) (localRing := by sorry)
 
 @[simps! toSubring]
-def map [Nontrivial S] (f : R →+* S) (s : LocalSubring R) : LocalSubring S := mk (s.1.map f)
+def map [Nontrivial S] (f : R →+* S) (s : LocalSubring R) : LocalSubring S :=
+  mk (s.1.map f)
 
 @[simps! toSubring]
-def range [LocalRing R] [Nontrivial S] (f : R →+* S) : LocalSubring S := map f (mk ⊤)
+def range [LocalRing R] [Nontrivial S] (f : R →+* S) : LocalSubring S :=
+  map f (mk ⊤)
 
 @[stacks 00I9]
 instance : PartialOrder (LocalSubring R) where
@@ -84,6 +94,7 @@ lemma ValuationSubring.toLocalSubring_injective :
 def maximalLocalSubrings (K : Type*) [Field K] : Set (LocalSubring K) :=
   { R | IsMax R }
 
+
 lemma map_maximalIdeal_eq_top_of_mem_maximalLocalSubrings {R : LocalSubring K}
     (hR : R ∈ maximalLocalSubrings K) {S : Subring K} (hS : R.toSubring < S) :
     (maximalIdeal R.toSubring).map (Subring.inclusion hS.le) = ⊤ := by
@@ -92,33 +103,36 @@ lemma map_maximalIdeal_eq_top_of_mem_maximalLocalSubrings {R : LocalSubring K}
   obtain ⟨M, h_is_max, h_incl⟩ := Ideal.exists_le_maximal _ h_is_not_top
   let Sₘ := Localization.AtPrime M
   let funStoK : S →+* K := S.subtype
-  let funStoSₘ := algebraMap S Sₘ
   have h_funStoK_invertible_goto_units : ∀ (y : M.primeCompl), IsUnit (funStoK y) := by aesop
   let funSₘtoK : Sₘ →+* K := IsLocalization.lift h_funStoK_invertible_goto_units
   let fSₘ: LocalSubring K := LocalSubring.range funSₘtoK
-  let funSₘtofSₘ : Sₘ →+* fSₘ.toSubring := funSₘtoK.codRestrict fSₘ.toSubring (by aesop)
-  let funRtofSₘ := funSₘtofSₘ.comp (funStoSₘ.comp (Subring.inclusion hS.le))
-  let funRtoSₘ := funStoSₘ.comp (Subring.inclusion hS.le)
+  let funSₘtofSₘ : Sₘ →+* fSₘ.toSubring := funSₘtoK.rangeRestrict
   have SlefSₘ : S ≤ fSₘ.toSubring := by
     intro x hx
     simp [fSₘ]
     use (algebraMap S Sₘ) ⟨x, hx⟩
     rw [IsLocalization.lift_eq h_funStoK_invertible_goto_units _]
     rfl
-  have h_RleSₘ_subring : R.toSubring ≤ fSₘ.toSubring := fun x hx => SlefSₘ (hS.le hx)
+  have RlefSₘ : R.toSubring ≤ fSₘ.toSubring := fun x hx => SlefSₘ (hS.le hx)
+  have fStoSₘ_eq: (Subring.inclusion SlefSₘ).comp (Subring.inclusion hS.le) =
+    (Subring.inclusion RlefSₘ) := by aesop
+  have fRtoSₘ_eq : funSₘtofSₘ.comp ((algebraMap S Sₘ).comp (Subring.inclusion hS.le)) =
+       (Subring.inclusion RlefSₘ) := by
+    ext
+    simp [funSₘtofSₘ]
+    aesop
   have h_RleSₘ : R ≤ fSₘ := by
-    refine ⟨h_RleSₘ_subring, ?_⟩
-    have h_fRtoSₘ_eq : funSₘtofSₘ.comp (funStoSₘ.comp (Subring.inclusion hS.le)) = (
-      Subring.inclusion h_RleSₘ_subring) := by
-      sorry
-    rw [← h_fRtoSₘ_eq]
+    refine ⟨RlefSₘ, ?_⟩
+    rw [← fRtoSₘ_eq]
     refine ⟨?_⟩
     rintro ⟨a, h_a_inR⟩ h_fa_isUnit
     rw [RingHom.comp_apply, RingHom.comp_apply] at h_fa_isUnit
     have h_inS : a ∈ S := hS.le h_a_inR
-    have h_funSₘtofSₘ_units: ∀ x : Sₘ, IsUnit (funSₘtofSₘ x) ↔ IsUnit x := by
-      sorry
-    apply (h_funSₘtofSₘ_units _).mp at h_fa_isUnit
+    have SₘtofSₘ_bij : Function.Bijective funSₘtofSₘ := by exact?
+    have h_funSₘtofSₘ_units: ∀ x : Sₘ, IsUnit (funSₘtofSₘ x) → IsUnit x := by
+      let SₘeqfSₘ := (RingEquiv.ofBijective funSₘtofSₘ SₘtofSₘ_bij)
+      exact IsUnit.of_map SₘeqfSₘ
+    apply h_funSₘtofSₘ_units at h_fa_isUnit
     apply (IsLocalization.AtPrime.isUnit_to_map_iff Sₘ M _).mp at h_fa_isUnit
     change _ ∉ M at h_fa_isUnit
     have a_notIn_mR : (Subring.inclusion hS.le) ⟨a, h_a_inR⟩ ∉ mR :=
@@ -132,9 +146,6 @@ lemma map_maximalIdeal_eq_top_of_mem_maximalLocalSubrings {R : LocalSubring K}
     exact hxR (SlefSₘ hxS)
   have h_RltSₘ : R < fSₘ := lt_of_le_of_ne h_RleSₘ h_RneSₘ
   exact ne_of_lt (lt_of_le_of_lt (hR h_RltSₘ.le) h_RltSₘ) rfl
-
-#exit
-
 open scoped Polynomial
 
 /--
@@ -179,3 +190,5 @@ Reduce to `R ⊆ K` by `LocalRing.of_surjective'`. -/
 lemma exists_factor_valuationRing {R : Type*} [CommRing R] [LocalRing R] {K : Type*} [Field K]
     (f : R →+* K) :
     ∃ (A : ValuationSubring K) (h : _), IsLocalHom (f.codRestrict A.toSubring h) := by sorry
+
+#min_imports

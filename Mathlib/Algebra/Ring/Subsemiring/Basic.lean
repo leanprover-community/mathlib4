@@ -675,6 +675,11 @@ def restrict (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f x ∈ s) 
   (f.domRestrict s').codRestrict s fun x => h x x.2
 
 @[simp]
+theorem coe_codRestrict_apply (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) (x : R) :
+    (f.codRestrict s h x : S) = f x :=
+  rfl
+
+@[simp]
 theorem coe_restrict_apply (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f x ∈ s) (x : s') :
     (f.restrict s' s h x : S) = f x :=
   rfl
