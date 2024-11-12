@@ -248,7 +248,7 @@ lemma mem_Icc_algebraMap_iff_nnnorm_le {x : A} {r : ℝ≥0} :
 
 lemma mem_Icc_iff_norm_le_one {x : A} :
     x ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖ ≤ 1 := by
-  simpa only [map_one] using mem_Icc_algebraMap_iff_norm_le zero_le_one
+  simpa only [map_one] using mem_Icc_algebraMap_iff_norm_le zero_le_one (A := A)
 
 lemma mem_Icc_iff_nnnorm_le_one {x : A} :
     x ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖₊ ≤ 1 :=
