@@ -43,8 +43,7 @@ instance IsLiouville.rfl : IsLiouville F F where
     ⟨ι, _, c, hc, u, v, h⟩
 
 lemma IsLiouville.trans {A : Type*} [Field A] [Algebra K A] [Algebra F A]
-    [Differential A] [DifferentialAlgebra F A]
-    [IsScalarTower F K A] [Differential.ContainConstants F K]
+    [Differential A] [IsScalarTower F K A] [Differential.ContainConstants F K]
     (inst1 : IsLiouville F K) (inst2 : IsLiouville K A) : IsLiouville F A where
   is_liouville (a : F) (ι : Type) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
       (u : ι → A) (v : A) (h : a = ∑ x, c x * logDeriv (u x) + v′) := by
@@ -70,7 +69,7 @@ The case of Liouville's theorem for algebraic extension.
 
 variable {F K} [CharZero F]
 
-instance [FiniteDimensional F K] (B : IntermediateField F K)
+instance (B : IntermediateField F K)
     [FiniteDimensional F B] [inst : IsLiouville F K] :
     IsLiouville F B where
   is_liouville (a : F) (ι : Type) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
