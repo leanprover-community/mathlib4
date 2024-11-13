@@ -230,7 +230,7 @@ lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
     _ = ‖x‖ ^ 2 * ‖y‖ ^ 2 := by
                 simp only [norm_eq_sqrt_norm_inner_self, norm_nonneg, Real.sq_sqrt]
     _ = (‖x‖ * ‖y‖) ^ 2 := by simp only [mul_pow]
-  refine (pow_le_pow_iff_left₀ (R := ℝ) (norm_nonneg ⟪x, y⟫_A) ?_ (by norm_num)).mp this
+  refine (pow_le_pow_iff_left₀ (norm_nonneg ⟪x, y⟫_A) ?_ (by norm_num)).mp this
   exact mul_nonneg CStarModule.norm_nonneg CStarModule.norm_nonneg
 
 include A in
