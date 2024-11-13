@@ -251,11 +251,8 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
   let ext ← match ext? with
   | some ext => pure ext
   | none => throwError "internal error: reduce_mod_char not registered as simp extension"
-  let ctx : Simp.Context := {
-    config := config,
-    congrTheorems := congrTheorems,
-    simpTheorems := #[← ext.getTheorems]
-  }
+  let ctx ← Simp.mkContext config (congrTheorems := congrTheorems)
+    (simpTheorems := #[← ext.getTheorems])
   let discharge := Mathlib.Meta.NormNum.discharge ctx
   let r : Simp.Result := {expr := e}
   let pre := Simp.preDefault #[] >> fun e =>
