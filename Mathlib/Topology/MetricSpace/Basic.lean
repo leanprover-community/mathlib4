@@ -146,8 +146,8 @@ instance [MetricSpace β] : MetricSpace (ULift β) :=
 
 section Prod
 
-noncomputable instance Prod.metricSpaceMax [MetricSpace β] :
-  MetricSpace (γ × β) := .ofT0PseudoMetricSpace _
+instance Prod.metricSpaceMax [MetricSpace β] : MetricSpace (γ × β) :=
+  .ofT0PseudoMetricSpace _
 
 end Prod
 

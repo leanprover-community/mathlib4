@@ -75,7 +75,7 @@ class SemilatticeSup (α : Type u) extends PartialOrder α where
   /-- The supremum is the *least* upper bound -/
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → sup a b ≤ c
 
-instance [SemilatticeSup α] : Max α where max a b := SemilatticeSup.sup a b
+instance SemilatticeSup.toMax [SemilatticeSup α] : Max α where max a b := SemilatticeSup.sup a b
 
 /--
 A type with a commutative, associative and idempotent binary `sup` operation has the structure of a
@@ -285,7 +285,7 @@ class SemilatticeInf (α : Type u) extends PartialOrder α where
   /-- The infimum is the *greatest* lower bound -/
   protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ inf b c
 
-instance [SemilatticeInf α] : Min α where min a b := SemilatticeInf.inf a b
+instance SemilatticeInf.toMin [SemilatticeInf α] : Min α where min a b := SemilatticeInf.inf a b
 
 instance OrderDual.instSemilatticeSup (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
