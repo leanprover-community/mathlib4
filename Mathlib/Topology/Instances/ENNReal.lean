@@ -18,8 +18,8 @@ import Mathlib.Topology.Metrizable.Uniformity
 
 noncomputable section
 
-open Set Filter Metric Function
-open scoped Finset Topology ENNReal NNReal
+open Filter Function Metric Set Topology
+open scoped Finset ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
