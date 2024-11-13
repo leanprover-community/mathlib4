@@ -358,13 +358,13 @@ theorem map_comp (g : β → γ) (f : α → β) : map (g ∘ f) = (map g).comp 
 @[to_additive (attr := simp)]
 theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦ rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_invFun_map_toFun_eq {x : FreeMonoid α} (e : α ≃ β) :
-    (map e.invFun) (map e.toFun x) = x := by simp [map_map]
+    (map ⇑e.symm) ((map ⇑e) x) = x := by simp [map_map]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_toFun_map_invFun_eq {x : FreeMonoid β} (e : α ≃ β) :
-    (map e.toFun) (map e.invFun x) = x := by simp [map_map]
+    (map ⇑e) ((map ⇑e.symm) x) = x := by simp [map_map]
 
 /-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
 @[to_additive]
