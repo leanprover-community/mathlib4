@@ -139,6 +139,29 @@ theorem isUnit_of_one' (hv : Integers v O) {x : O} (hvx : v (algebraMap O F x) =
   refine isUnit_of_one hv (IsUnit.mk0 _ ?_) hvx
   simp only [← v.ne_zero_iff, hvx, ne_eq, one_ne_zero, not_false_eq_true]
 
+lemma isUnit_iff_valuation_eq_one (hv : Integers v O) {x : O} :
+    IsUnit x ↔ v (algebraMap O F x) = 1 :=
+  ⟨hv.one_of_isUnit, hv.isUnit_of_one'⟩
+
+lemma valuation_pos_iff_ne_zero (hv : Integers v O) {x : O} :
+    0 < v (algebraMap O F x) ↔ x ≠ 0 := by
+  rw [← not_le]
+  refine not_congr ?_
+  simp [map_eq_zero_iff _ hv.hom_inj]
+
+theorem dvdNotUnit_iff_lt (hv : Integers v O) {x y : O} :
+    DvdNotUnit x y ↔ v (algebraMap O F y) < v (algebraMap O F x) := by
+  rw [lt_iff_le_not_le, hv.le_iff_dvd, hv.le_iff_dvd]
+  refine ⟨?_, And.elim dvdNotUnit_of_dvd_of_not_dvd⟩
+  rintro ⟨hx0, d, hdu, rfl⟩
+  refine ⟨⟨d, rfl⟩, ?_⟩
+  rw [hv.isUnit_iff_valuation_eq_one, ← ne_eq, ne_iff_lt_iff_le.mpr (hv.map_le_one d)] at hdu
+  rw [dvd_iff_le hv]
+  simp only [_root_.map_mul, not_le]
+  contrapose! hdu
+  refine one_le_of_le_mul_left₀ ?_ hdu
+  simp [hv.valuation_pos_iff_ne_zero, hx0]
+
 theorem eq_algebraMap_or_inv_eq_algebraMap (hv : Integers v O) (x : F) :
     ∃ a : O, x = algebraMap O F a ∨ x⁻¹ = algebraMap O F a := by
   rcases val_le_one_or_val_inv_le_one v x with h | h <;>
@@ -161,6 +184,22 @@ lemma isPrincipal_iff_exists_isGreatest (hv : Integers v O) {I : Ideal O} :
     ext b
     simp only [Ideal.submodule_span_eq, Ideal.mem_span_singleton]
     exact ⟨fun hb ↦ dvd_of_le hv (hx.2 <| mem_image_of_mem _ hb), fun hb ↦ I.mem_of_dvd hb ha⟩
+
+lemma isPrincipal_iff_exists_eq_setOf_valuation_le (hv : Integers v O) {I : Ideal O} :
+    I.IsPrincipal ↔ ∃ x, (I : Set O) = {y | v (algebraMap O F y) ≤ v (algebraMap O F x)} := by
+  rw [isPrincipal_iff_exists_isGreatest hv]
+  constructor <;> rintro ⟨x, hx⟩
+  · obtain ⟨a, ha, rfl⟩ : ∃ a ∈ I, (v ∘ algebraMap O F) a = x := by simpa using hx.left
+    refine ⟨a, ?_⟩
+    ext b
+    simp only [SetLike.mem_coe, mem_setOf_eq]
+    constructor <;> intro h
+    · exact hx.right (Set.mem_image_of_mem _ h)
+    · rw [le_iff_dvd hv] at h
+      exact Ideal.mem_of_dvd I h ha
+  · refine ⟨v (algebraMap O F x), Set.mem_image_of_mem _ ?_, ?_⟩
+    · simp [hx]
+    · simp [hx, mem_upperBounds]
 
 lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : Integers v O) :
     ¬ DenselyOrdered (range v) := by

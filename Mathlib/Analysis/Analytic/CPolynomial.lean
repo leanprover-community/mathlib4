@@ -390,8 +390,6 @@ section
 /-! We study what happens when we change the origin of a finite formal multilinear series `p`. The
 main point is that the new series `p.changeOrigin x` is still finite, with the same bound. -/
 
-variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
-
 /-- If `p` is a formal multilinear series such that `p m = 0` for `n ≤ m`, then
 `p.changeOriginSeriesTerm k l = 0` for `n ≤ k + l`. -/
 lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}

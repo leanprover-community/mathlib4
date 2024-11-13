@@ -13,7 +13,7 @@ import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.ULift
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Characteristic of semirings
@@ -170,6 +170,8 @@ end CharZero
 
 namespace Fin
 
+/-- The characteristic of `F_p` is `p`. -/
+@[stacks 09FS "First part. We don't require `p` to be a prime in mathlib."]
 instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff' _ := natCast_eq_zero
 
 end Fin

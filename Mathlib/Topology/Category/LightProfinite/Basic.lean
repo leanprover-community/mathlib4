@@ -196,7 +196,8 @@ noncomputable def isoOfBijective (bij : Function.Bijective f) : X ≅ Y :=
 instance forget_reflectsIsomorphisms : (forget LightProfinite).ReflectsIsomorphisms := by
   constructor
   intro A B f hf
-  exact LightProfinite.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)
+  rw [isIso_iff_bijective] at hf
+  exact LightProfinite.isIso_of_bijective _ hf
 
 theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
