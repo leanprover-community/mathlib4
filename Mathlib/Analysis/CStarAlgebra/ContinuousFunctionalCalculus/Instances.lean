@@ -31,6 +31,8 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 continuous functional calculus, normal, selfadjoint
 -/
 
+open Topology
+
 noncomputable section
 
 local notation "σₙ" => quasispectrum
@@ -156,7 +158,7 @@ instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [CStarAlgebra
   predicate_zero := isStarNormal_zero
   spectrum_nonempty a _ := spectrum.nonempty a
   exists_cfc_of_predicate a ha := by
-    refine ⟨(elementalStarAlgebra ℂ a).subtype.comp <| continuousFunctionalCalculus a,
+    refine ⟨(StarAlgebra.elemental ℂ a).subtype.comp <| continuousFunctionalCalculus a,
       ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
     case hom_closedEmbedding =>
       exact Isometry.isClosedEmbedding <|
@@ -165,13 +167,33 @@ instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [CStarAlgebra
     case hom_map_spectrum =>
       intro f
       simp only [StarAlgHom.comp_apply, StarAlgHom.coe_coe, StarSubalgebra.coe_subtype]
-      rw [← StarSubalgebra.spectrum_eq (hS := elementalStarAlgebra.isClosed ℂ a),
+      rw [← StarSubalgebra.spectrum_eq (hS := StarAlgebra.elemental.isClosed ℂ a),
         AlgEquiv.spectrum_eq (continuousFunctionalCalculus a), ContinuousMap.spectrum_eq_range]
     case predicate_hom => exact fun f ↦ ⟨by rw [← map_star]; exact Commute.all (star f) f |>.map _⟩
+
+lemma cfcHom_eq_of_isStarNormal {A : Type*} [CStarAlgebra A] (a : A) [ha : IsStarNormal a] :
+    cfcHom ha = (StarAlgebra.elemental ℂ a).subtype.comp (continuousFunctionalCalculus a) := by
+  refine cfcHom_eq_of_continuous_of_map_id ha _ ?_ ?_
+  · exact continuous_subtype_val.comp <|
+      (StarAlgEquiv.isometry (continuousFunctionalCalculus a)).continuous
+  · simp [continuousFunctionalCalculus_map_id a]
 
 instance IsStarNormal.instNonUnitalContinuousFunctionalCalculus {A : Type*}
     [NonUnitalCStarAlgebra A] : NonUnitalContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) :=
   RCLike.nonUnitalContinuousFunctionalCalculus Unitization.isStarNormal_inr
+
+open Unitization CStarAlgebra in
+lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalCStarAlgebra A] (a : A)
+    [ha : IsStarNormal a] : (inrNonUnitalStarAlgHom ℂ A).comp (cfcₙHom ha) =
+      cfcₙAux (isStarNormal_inr (R := ℂ) (A := A)) a ha := by
+  have h (a : A) := isStarNormal_inr (R := ℂ) (A := A) (a := a)
+  refine @UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id
+    _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ rfl _ _ ?_ ?_ ?_
+  · show Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
+  · exact isClosedEmbedding_cfcₙAux @(h) a ha |>.continuous
+  · trans (a : A⁺¹)
+    · congrm(inr $(cfcₙHom_id ha))
+    · exact cfcₙAux_id @(h) a ha |>.symm
 
 end Normal
 
@@ -566,12 +588,13 @@ section NonnegSpectrumClass
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
+open scoped CStarAlgebra in
 instance CStarAlgebra.instNonnegSpectrumClass' : NonnegSpectrumClass ℝ A where
   quasispectrum_nonneg_of_nonneg a ha := by
     rw [Unitization.quasispectrum_eq_spectrum_inr' _ ℂ]
     -- should this actually be an instance on the `Unitization`? (probably scoped)
-    let _ := CStarAlgebra.spectralOrder (Unitization ℂ A)
-    have := CStarAlgebra.spectralOrderedRing (Unitization ℂ A)
+    let _ := CStarAlgebra.spectralOrder A⁺¹
+    have := CStarAlgebra.spectralOrderedRing A⁺¹
     apply spectrum_nonneg_of_nonneg
     rw [StarOrderedRing.nonneg_iff] at ha ⊢
     have := AddSubmonoid.mem_map_of_mem (Unitization.inrNonUnitalStarAlgHom ℂ A) ha
@@ -592,7 +615,9 @@ variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
   [UniqueContinuousFunctionalCalculus ℝ A]
 
 lemma cfcHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
-    cfcHom ha = ha.spectrumRestricts.starAlgHom (cfcHom ha.isStarNormal) (f := Complex.reCLM) :=
+    cfcHom ha =
+      ha.spectrumRestricts.starAlgHom (R := ℝ) (S := ℂ)
+        (cfcHom ha.isStarNormal) (f := Complex.reCLM) :=
   ha.spectrumRestricts.cfcHom_eq_restrict _ Complex.isometry_ofReal.isUniformEmbedding
     ha ha.isStarNormal
 
@@ -613,7 +638,7 @@ variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [Module
 
 lemma cfcₙHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
     cfcₙHom ha = (ha.quasispectrumRestricts.2).nonUnitalStarAlgHom (cfcₙHom ha.isStarNormal)
-      (f := Complex.reCLM) :=
+      (R := ℝ) (S := ℂ) (f := Complex.reCLM) :=
   ha.quasispectrumRestricts.2.cfcₙHom_eq_restrict _ Complex.isometry_ofReal.isUniformEmbedding
     ha ha.isStarNormal
 
@@ -672,5 +697,44 @@ lemma cfcₙ_nnreal_eq_real {a : A} (f : ℝ≥0 → ℝ≥0) (ha : 0 ≤ a := b
     isUniformEmbedding_subtype_val ha (.of_nonneg ha)
 
 end NNRealEqRealNonUnital
+
+section cfc_inr
+
+open CStarAlgebra
+
+variable {A : Type*} [NonUnitalCStarAlgebra A]
+
+open scoped NonUnitalContinuousFunctionalCalculus in
+/-- This lemma requires a lot from type class synthesis, and so one should instead favor the bespoke
+versions for `ℝ≥0`, `ℝ`, and `ℂ`. -/
+lemma Unitization.cfcₙ_eq_cfc_inr {R : Type*} [Semifield R] [StarRing R] [MetricSpace R]
+    [TopologicalSemiring R] [ContinuousStar R] [Module R A] [IsScalarTower R A A]
+    [SMulCommClass R A A] [CompleteSpace R] [Algebra R ℂ] [IsScalarTower R ℂ A]
+    {p : A → Prop} {p' : A⁺¹ → Prop} [NonUnitalContinuousFunctionalCalculus R p]
+    [ContinuousFunctionalCalculus R p']
+    [UniqueNonUnitalContinuousFunctionalCalculus R (Unitization ℂ A)]
+    (hp : ∀ {a : A}, p' (a : A⁺¹) ↔ p a) (a : A) (f : R → R) (hf₀ : f 0 = 0 := by cfc_zero_tac) :
+    cfcₙ f a = cfc f (a : A⁺¹) := by
+  by_cases h : ContinuousOn f (σₙ R a) ∧ p a
+  · obtain ⟨hf, ha⟩ := h
+    rw [← cfcₙ_eq_cfc (quasispectrum_inr_eq R ℂ a ▸ hf)]
+    exact (inrNonUnitalStarAlgHom ℂ A).map_cfcₙ f a
+  · obtain (hf | ha) := not_and_or.mp h
+    · rw [cfcₙ_apply_of_not_continuousOn a hf, inr_zero,
+        cfc_apply_of_not_continuousOn _ (quasispectrum_eq_spectrum_inr' R ℂ a ▸ hf)]
+    · rw [cfcₙ_apply_of_not_predicate a ha, inr_zero,
+        cfc_apply_of_not_predicate _ (not_iff_not.mpr hp |>.mpr ha)]
+
+lemma Unitization.complex_cfcₙ_eq_cfc_inr (a : A) (f : ℂ → ℂ) (hf₀ : f 0 = 0 := by cfc_zero_tac) :
+    cfcₙ f a = cfc f (a : A⁺¹) :=
+  Unitization.cfcₙ_eq_cfc_inr isStarNormal_inr ..
+
+/-- note: the version for `ℝ≥0`, `Unization.nnreal_cfcₙ_eq_cfc_inr`, can be found in
+`Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order` -/
+lemma Unitization.real_cfcₙ_eq_cfc_inr (a : A) (f : ℝ → ℝ) (hf₀ : f 0 = 0 := by cfc_zero_tac) :
+    cfcₙ f a = cfc f (a : A⁺¹) :=
+  Unitization.cfcₙ_eq_cfc_inr isSelfAdjoint_inr ..
+
+end cfc_inr
 
 end

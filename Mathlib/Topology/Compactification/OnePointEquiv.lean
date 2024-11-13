@@ -35,24 +35,23 @@ variable (K : Type*) [DivisionRing K] [DecidableEq K]
  the projectivivization `ℙ K (K × K)`. -/
 def equivProjectivization :
     OnePoint K ≃ ℙ K (K × K) where
-  toFun p := Option.elim p (mk K (1, 0) (by simp)) (fun t ↦ mk K (t, 1) (by simp))
+  toFun p := p.elim (mk K (1, 0) (by simp)) (fun t ↦ mk K (t, 1) (by simp))
   invFun p := by
     refine Projectivization.lift
-      (fun u : {v : K × K // v ≠ 0} ↦ if u.1.2 ≠ 0 then ((u.1.2)⁻¹ * u.1.1) else ∞) ?_ p
+      (fun u : {v : K × K // v ≠ 0} ↦ if u.1.2 = 0 then ∞ else ((u.1.2)⁻¹ * u.1.1)) ?_ p
     rintro ⟨-, hv⟩ ⟨⟨x, y⟩, hw⟩ t rfl
     have ht : t ≠ 0 := by rintro rfl; simp at hv
     by_cases h₀ : y = 0 <;> simp [h₀, ht, mul_assoc]
-  left_inv p := by cases p <;> simp [OnePoint.infty, OnePoint.some]
+  left_inv p := by cases p <;> simp
   right_inv p := by
     induction' p using ind with p hp
     obtain ⟨x, y⟩ := p
-    by_cases h₀ : y = 0 <;>
-    simp only [Option.elim, ne_eq, ite_not, h₀, Projectivization.lift_mk, reduceIte]
-    · have h₀' : x ≠ 0 := by aesop
-      simp only [mk_eq_mk_iff, Prod.smul_mk, smul_zero, Prod.mk.injEq, and_true]
-      exact ⟨Units.mk0 _ (inv_ne_zero h₀'), by simp [h₀']⟩
-    · simp only [mk_eq_mk_iff, Prod.smul_mk, Prod.mk.injEq]
-      exact ⟨Units.mk0 _ (inv_ne_zero h₀), by simp [h₀]⟩
+    by_cases h₀ : y = 0 <;> simp only [mk_eq_mk_iff', h₀, Projectivization.lift_mk, if_true,
+      if_false, OnePoint.elim_infty, OnePoint.elim_some, Prod.smul_mk, Prod.mk.injEq, smul_eq_mul,
+      mul_zero, and_true]
+    · use x⁻¹
+      simp_all
+    · exact ⟨y⁻¹, rfl, inv_mul_cancel₀ h₀⟩
 
 @[simp]
 lemma equivProjectivization_apply_infinity :
