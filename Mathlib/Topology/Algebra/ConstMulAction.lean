@@ -8,7 +8,7 @@ import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Bases
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Basic
 import Mathlib.Topology.Support
 
 /-!
