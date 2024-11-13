@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.Fin.Basic
+import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Successors and predecessors of naturals

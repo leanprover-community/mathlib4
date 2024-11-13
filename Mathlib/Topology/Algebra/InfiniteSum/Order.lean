@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Order.MonotoneConvergence
@@ -40,7 +41,7 @@ variable [OrderedCommMonoid α] [TopologicalSpace α] [OrderClosedTopology α] {
 theorem hasProd_le (h : ∀ i, f i ≤ g i) (hf : HasProd f a₁) (hg : HasProd g a₂) : a₁ ≤ a₂ :=
   le_of_tendsto_of_tendsto' hf hg fun _ ↦ prod_le_prod' fun i _ ↦ h i
 
-@[to_additive (attr := mono)]
+@[to_additive]
 theorem hasProd_mono (hf : HasProd f a₁) (hg : HasProd g a₂) (h : f ≤ g) : a₁ ≤ a₂ :=
   hasProd_le h hf hg
 
@@ -269,10 +270,10 @@ alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff
 theorem Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α] [Archimedean α]
     [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun _ : ι ↦ b) :
     Finite ι := by
-  have H : ∀ s : Finset ι, s.card • b ≤ ∑' _ : ι, b := fun s ↦ by
+  have H : ∀ s : Finset ι, #s • b ≤ ∑' _ : ι, b := fun s ↦ by
     simpa using sum_le_hasSum s (fun a _ ↦ hb.le) hf.hasSum
   obtain ⟨n, hn⟩ := Archimedean.arch (∑' _ : ι, b) hb
-  have : ∀ s : Finset ι, s.card ≤ n := fun s ↦ by
+  have : ∀ s : Finset ι, #s ≤ n := fun s ↦ by
     simpa [nsmul_le_nsmul_iff_left hb] using (H s).trans hn
   have : Fintype ι := fintypeOfFinsetCardLe n this
   infer_instance
@@ -283,6 +284,21 @@ theorem Set.Finite.of_summable_const [LinearOrderedAddCommGroup α] [Topological
   finite_univ_iff.2 <| .of_summable_const hb hf
 
 end LinearOrder
+
+section LinearOrderedCommRing
+
+variable [LinearOrderedCommRing α] [TopologicalSpace α] [OrderTopology α] {f : ι → α} {x : α}
+
+nonrec theorem HasProd.abs (hfx : HasProd f x) : HasProd (|f ·|) |x| := by
+  simpa only [HasProd, ← abs_prod] using hfx.abs
+
+theorem Multipliable.abs (hf : Multipliable f) : Multipliable (|f ·|) :=
+  let ⟨x, hx⟩ := hf; ⟨|x|, hx.abs⟩
+
+theorem abs_tprod (hf : Multipliable f) : |∏' i, f i| = ∏' i, |f i| :=
+  hf.hasProd.abs.tprod_eq.symm
+
+end LinearOrderedCommRing
 
 theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace α] [OrderTopology α]
     {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop :=

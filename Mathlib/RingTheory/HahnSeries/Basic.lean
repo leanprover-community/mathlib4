@@ -25,6 +25,8 @@ in the file `RingTheory/LaurentSeries`.
   coefficient if `x ≠ 0`, and is `⊤` when `x = 0`.
 * `order x` is a minimal element of `Γ` where `x` has a nonzero coefficient if `x ≠ 0`, and is zero
   when `x = 0`.
+* `map` takes each coefficient of a Hahn series to its target under a zero-preserving map.
+* `embDomain` preserves coefficients, but embeds the index set `Γ` in a larger poset.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -43,7 +45,7 @@ structure HahnSeries (Γ : Type*) (R : Type*) [PartialOrder Γ] [Zero R] where
   coeff : Γ → R
   isPWO_support' : (Function.support coeff).IsPWO
 
-variable {Γ : Type*} {R : Type*}
+variable {Γ Γ' R S : Type*}
 
 namespace HahnSeries
 
@@ -108,8 +110,20 @@ nonrec theorem support_nonempty_iff {x : HahnSeries Γ R} : x.support.Nonempty �
 theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :=
   Function.support_eq_empty_iff.trans coeff_fun_eq_zero_iff
 
+/-- The map of Hahn series induced by applying a zero-preserving map to each coefficient. -/
+@[simps]
+def map [Zero S] (x : HahnSeries Γ R) {F : Type*} [FunLike F R S] [ZeroHomClass F R S] (f : F) :
+    HahnSeries Γ S where
+  coeff g := f (x.coeff g)
+  isPWO_support' := x.isPWO_support.mono <| Function.support_comp_subset (ZeroHomClass.map_zero f) _
+
+@[simp]
+protected lemma map_zero [Zero S] (f : ZeroHom R S) :
+    (0 : HahnSeries Γ R).map f = 0 := by
+  ext; simp
+
 /-- Change a HahnSeries with coefficients in HahnSeries to a HahnSeries on the Lex product. -/
-def ofIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
+def ofIterate [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
     HahnSeries (Γ ×ₗ Γ') R where
   coeff := fun g => coeff (coeff x g.1) g.2
   isPWO_support' := by
@@ -125,7 +139,7 @@ lemma mk_eq_zero (f : Γ → R) (h) : HahnSeries.mk f h = 0 ↔ f = 0 := by
   rfl
 
 /-- Change a Hahn series on a lex product to a Hahn series with coefficients in a Hahn series. -/
-def toIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
+def toIterate [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
     HahnSeries Γ (HahnSeries Γ' R) where
   coeff := fun g => {
     coeff := fun g' => coeff x (g, g')
@@ -141,7 +155,7 @@ def toIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R)
 
 /-- The equivalence between iterated Hahn series and Hahn series on the lex product. -/
 @[simps]
-def iterateEquiv {Γ' : Type*} [PartialOrder Γ'] :
+def iterateEquiv [PartialOrder Γ'] :
     HahnSeries Γ (HahnSeries Γ' R) ≃ HahnSeries (Γ ×ₗ Γ') R where
   toFun := ofIterate
   invFun := toIterate
@@ -180,7 +194,6 @@ theorem support_single_subset : support (single a r) ⊆ {a} := by
 theorem eq_of_mem_support_single {b : Γ} (h : b ∈ support (single a r)) : b = a :=
   support_single_subset h
 
---@[simp] Porting note (#10618): simp can prove it
 theorem single_eq_zero : single a (0 : R) = 0 :=
   (single a).map_zero
 
@@ -193,6 +206,11 @@ theorem single_ne_zero (h : r ≠ 0) : single a r ≠ 0 := fun con =>
 @[simp]
 theorem single_eq_zero_iff {a : Γ} {r : R} : single a r = 0 ↔ r = 0 :=
   map_eq_zero_iff _ <| single_injective a
+
+@[simp]
+protected lemma map_single [Zero S] (f : ZeroHom R S) : (single a r).map f = single a (f r) := by
+  ext g
+  by_cases h : g = a <;> simp [h]
 
 instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
   ⟨by
@@ -364,7 +382,7 @@ end Order
 
 section Domain
 
-variable {Γ' : Type*} [PartialOrder Γ']
+variable [PartialOrder Γ']
 
 open Classical in
 /-- Extends the domain of a `HahnSeries` by an `OrderEmbedding`. -/
@@ -427,7 +445,7 @@ theorem embDomain_single {f : Γ ↪o Γ'} {g : Γ} {r : R} :
 theorem embDomain_injective {f : Γ ↪o Γ'} :
     Function.Injective (embDomain f : HahnSeries Γ R → HahnSeries Γ' R) := fun x y xy => by
   ext g
-  rw [HahnSeries.ext_iff, Function.funext_iff] at xy
+  rw [HahnSeries.ext_iff, funext_iff] at xy
   have xyg := xy (f g)
   rwa [embDomain_coeff, embDomain_coeff] at xyg
 

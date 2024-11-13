@@ -58,7 +58,7 @@ namespace Matrix
 theorem det_eq_prod_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id R)) :
     A.det = (Matrix.charpoly A).roots.prod := by
   rw [det_eq_sign_charpoly_coeff, ← charpoly_natDegree_eq_dim A,
-    Polynomial.prod_roots_eq_coeff_zero_of_monic_of_split A.charpoly_monic hAps, ← mul_assoc,
+    Polynomial.prod_roots_eq_coeff_zero_of_monic_of_splits A.charpoly_monic hAps, ← mul_assoc,
     ← pow_two, pow_right_comm, neg_one_sq, one_pow, one_mul]
 
 theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id R)) :

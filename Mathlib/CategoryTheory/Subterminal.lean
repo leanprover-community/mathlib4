@@ -142,16 +142,16 @@ def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoO
   functor :=
     { obj := fun X => ⟨Over.mk (terminal.from X.1), X.2.mono_terminal_from⟩
       map := fun f => MonoOver.homMk f (by ext1 ⟨⟨⟩⟩)
-      map_id := fun X => rfl
-      map_comp := fun f g => rfl }
+      map_id := fun _ => rfl
+      map_comp := fun _ _ => rfl }
   inverse :=
     { obj := fun X =>
         ⟨X.obj.left, fun Z f g => by
           rw [← cancel_mono X.arrow]
           subsingleton⟩
       map := fun f => f.1
-      map_id := fun X => rfl
-      map_comp := fun f g => rfl }
+      map_id := fun _ => rfl
+      map_comp := fun _ _ => rfl }
   -- Porting note: the original definition was triggering a timeout, using `NatIso.ofComponents`
   -- in the definition of the natural isomorphisms makes the situation slightly better
   unitIso := NatIso.ofComponents (fun X => Iso.refl X) (by subsingleton)
