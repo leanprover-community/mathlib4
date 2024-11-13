@@ -37,8 +37,10 @@ theorem finite_respectsIso : RespectsIso @Finite := by
   intros
   exact Finite.of_surjective _ (RingEquiv.toEquiv _).surjective
 
-theorem finite_stableUnderBaseChange : StableUnderBaseChange @Finite := by
-  refine StableUnderBaseChange.mk _ finite_respectsIso ?_
+lemma finite_containsIdentities : ContainsIdentities @Finite := Finite.id
+
+theorem finite_isStableUnderBaseChange : IsStableUnderBaseChange @Finite := by
+  refine IsStableUnderBaseChange.mk _ finite_respectsIso ?_
   classical
   introv h
   replace h : Module.Finite R T := by
@@ -109,7 +111,7 @@ theorem RingHom.finite_localizationPreserves : RingHom.LocalizationPreserves @Ri
 
 theorem RingHom.localization_away_map_finite (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.Finite) : (IsLocalization.Away.map R' S' f r).Finite :=
-  finite_localizationPreserves.away r hf
+  finite_localizationPreserves.away f r _ _ hf
 
 /-- Let `S` be an `R`-algebra, `M` a submonoid of `R`, and `S' = M⁻¹S`.
 If the image of some `x : S` falls in the span of some finite `s ⊆ S'` over `R`,

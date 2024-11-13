@@ -9,6 +9,7 @@ import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Index of a Subgroup
@@ -242,7 +243,7 @@ theorem index_map (f : G →* G') :
 @[to_additive]
 theorem index_map_dvd {f : G →* G'} (hf : Function.Surjective f) :
     (H.map f).index ∣ H.index := by
-  rw [index_map, f.range_top_of_surjective hf, index_top, mul_one]
+  rw [index_map, f.range_eq_top_of_surjective hf, index_top, mul_one]
   exact index_dvd_of_le le_sup_left
 
 @[to_additive]

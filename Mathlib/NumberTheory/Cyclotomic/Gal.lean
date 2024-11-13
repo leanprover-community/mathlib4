@@ -54,7 +54,7 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   intro f g hfg
   apply_fun Units.val at hfg
   simp only [IsPrimitiveRoot.coe_autToPow_apply] at hfg
-  generalize_proofs hf' hg' at hfg
+  generalize_proofs hn₀ hf' hg' at hfg
   have hf := hf'.choose_spec
   have hg := hg'.choose_spec
   generalize_proofs hζ at hf hg
@@ -68,9 +68,8 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   congr 2
   rw [pow_eq_pow_iff_modEq]
   convert hfg
-  rw [hμ.eq_orderOf]
-  -- Porting note: was `{occs := occurrences.pos [2]}`
-  conv_rhs => rw [← hμ.val_toRootsOfUnity_coe]
+  -- Porting note: was `{occs := occurrences.pos [2]}` (for the second rewrite)
+  conv => enter [2]; rw [hμ.eq_orderOf, ← hμ.val_toRootsOfUnity_coe]
   rw [orderOf_units, Subgroup.orderOf_coe]
 
 end IsPrimitiveRoot
@@ -113,7 +112,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : (L ≃ₐ[K] 
       simp only [IsPrimitiveRoot.powerBasis_gen, IsPrimitiveRoot.autToPow_spec]
     right_inv := fun x => by
       simp only [MonoidHom.toFun_eq_coe]
-      generalize_proofs _ h
+      generalize_proofs _ _ h
       have key := hζ.autToPow_spec K ((hζ.powerBasis K).equivOfMinpoly ((hμ x).powerBasis K) h)
       have := (hζ.powerBasis K).equivOfMinpoly_gen ((hμ x).powerBasis K) h
       rw [hζ.powerBasis_gen K] at this
@@ -135,7 +134,7 @@ variable (h : Irreducible (cyclotomic n K)) {L}
 
 /-- Maps `μ` to the `AlgEquiv` that sends `IsCyclotomicExtension.zeta` to `μ`. -/
 noncomputable def fromZetaAut : L ≃ₐ[K] L :=
-  let hζ := (zeta_spec n K L).eq_pow_of_pow_eq_one hμ.pow_eq_one n.pos
+  let hζ := (zeta_spec n K L).eq_pow_of_pow_eq_one hμ.pow_eq_one
   (autEquivPow L h).symm <|
     ZMod.unitOfCoprime hζ.choose <|
       ((zeta_spec n K L).pow_iff_coprime n.pos hζ.choose).mp <| hζ.choose_spec.2.symm ▸ hμ

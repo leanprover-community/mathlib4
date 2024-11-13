@@ -131,7 +131,7 @@ variable [CStarRing 𝕜]
 instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
   norm_mul_self_le x := by
     -- rewrite both sides as a `⊔`
-    simp only [Unitization.norm_def, Prod.norm_def, ← sup_eq_max]
+    simp only [Unitization.norm_def, Prod.norm_def]
     -- Show that `(Unitization.splitMul 𝕜 E x).snd` satisfies the C⋆-property, in two stages:
     have h₁ : ∀ x : Unitization 𝕜 E,
         ‖(Unitization.splitMul 𝕜 E x).snd‖ ≤ ‖(Unitization.splitMul 𝕜 E (star x)).snd‖ := by

@@ -3,9 +3,9 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Deprecated.Subgroup
+import Mathlib.Algebra.Ring.Subring.Defs
 import Mathlib.Deprecated.Group
-import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Deprecated.Subgroup
 
 /-!
 # Unbundled subrings (deprecated)

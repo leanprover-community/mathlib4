@@ -857,7 +857,7 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
     rw [fund_dom_s.measure_eq_tsum (A n)]
     exact measure_iUnion_le _
   · rw [← image_iUnion, hA']
-    refine image_univ_of_surjective (by convert surjective_quotient_mk' α)
+    refine image_univ_of_surjective (by convert Quotient.mk'_surjective)
 
 /-- A measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` and having finite
 covolume is a finite measure. -/

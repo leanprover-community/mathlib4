@@ -138,7 +138,7 @@ structure PreInnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [Ad
   conj_symm : ∀ x y, conj (inner y x) = inner x y
   /-- The inner product is positive (semi)definite. -/
   nonneg_re : ∀ x, 0 ≤ re (inner x x)
-  /-- The inner product is positive definite. -/
+  /-- The inner product is additive in the first coordinate. -/
   add_left : ∀ x y z, inner (x + y) z = inner x z + inner y z
   /-- The inner product is conjugate linear in the first coordinate. -/
   smul_left : ∀ x y r, inner (r • x) y = conj r * inner x y
@@ -629,12 +629,12 @@ protected theorem Finsupp.inner_sum {ι : Type*} (l : ι →₀ 𝕜) (v : ι �
 protected theorem DFinsupp.sum_inner {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪l.sum f, x⟫ = l.sum fun i a => ⟪f i a, x⟫ := by
-  simp (config := { contextual := true }) only [DFinsupp.sum, sum_inner, smul_eq_mul]
+  simp +contextual only [DFinsupp.sum, sum_inner, smul_eq_mul]
 
 protected theorem DFinsupp.inner_sum {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪x, l.sum f⟫ = l.sum fun i a => ⟪x, f i a⟫ := by
-  simp (config := { contextual := true }) only [DFinsupp.sum, inner_sum, smul_eq_mul]
+  simp +contextual only [DFinsupp.sum, inner_sum, smul_eq_mul]
 
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by
