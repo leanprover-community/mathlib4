@@ -150,25 +150,25 @@ error: ring failed, ring expressions not equal
 x : ℤ
 a : ℤ := x + 1
 ⊢ a = 1 + x
----
-error: unsolved goals
-x : ℤ
-a : ℤ := x + 1
-this : a = 1 + x
-⊢ True
 -/
 -- check that `ring` does not unfold let-bindings
 #guard_msgs in
 example (x : ℤ) : True := by
   let a := x + 1
   have : a = 1 + x := by ring1
-
--- FIXME this ought to fail!
--- check that `ring` does not unfold let-bindings
-example (x : ℤ) : True := by
-  let a := x + 1
-  have : a = 1 + x := by ring_nf
   trivial
+
+/--
+error: unsolved goals
+x : ℤ
+a : ℤ := x + 1
+⊢ a = 2 + x
+-/
+-- check that `ring_nf` does not unfold let-bindings
+#guard_msgs in
+example (x : ℤ) : x + 1 = 2 + x := by
+  set a := x + 1
+  ring_nf
 
 -- Powers in the exponent get evaluated correctly
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
