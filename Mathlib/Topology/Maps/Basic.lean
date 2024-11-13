@@ -676,7 +676,7 @@ protected lemma comp (hg : IsOpenEmbedding g)
 
 theorem isOpenMap_iff (hg : IsOpenEmbedding g) :
     IsOpenMap f ↔ IsOpenMap (g ∘ f) := by
-  simp_rw [isOpenMap_iff_nhds_le, ← map_map, comp, ← hg.map_nhds_eq, Filter.map_le_map_iff hg.injective]
+  simp_rw [isOpenMap_iff_nhds_le, ← map_map, comp, ← hg.map_nhds_eq, map_le_map_iff hg.injective]
 
 theorem of_comp_iff (f : X → Y) (hg : IsOpenEmbedding g) :
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding f := by

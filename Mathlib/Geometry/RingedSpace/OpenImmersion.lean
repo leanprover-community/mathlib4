@@ -189,8 +189,8 @@ theorem inv_invApp (U : Opens X) :
 
 @[simp, reassoc, elementwise]
 theorem invApp_app (U : Opens X) :
-    invApp f U ≫ f.c.app (op (opensFunctor f |>.obj U)) =
-      X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.injective])) := by
+    invApp f U ≫ f.c.app (op (opensFunctor f |>.obj U)) = X.presheaf.map
+      (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.injective])) := by
   rw [invApp, Category.assoc, IsIso.inv_hom_id, Category.comp_id]
 
 @[simp, reassoc]
@@ -229,7 +229,7 @@ instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
     dsimp
     have : (Opens.map f).obj (hf.isOpenMap.functor.obj U) = U := by
       ext1
-      exact Set.preimage_image_eq _ hf.inj
+      exact Set.preimage_image_eq _ hf.injective
     convert_to IsIso (Y.presheaf.map (𝟙 _))
     · congr
     · -- Porting note: was `apply Subsingleton.helim; rw [this]`
@@ -377,7 +377,7 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
                   dsimp [s']
                   rw [Function.comp_def, ← Set.preimage_preimage]
                 rw [Set.preimage_image_eq _
-                    (TopCat.snd_isOpenEmbedding_of_left hf.base_open g.base).inj]
+                    (TopCat.snd_isOpenEmbedding_of_left hf.base_open g.base).injective]
                 rfl))
       naturality := fun U V i => by
         erw [s.snd.c.naturality_assoc]
@@ -780,14 +780,14 @@ instance (U : Opens X) : IsIso (H.invApp _ U) := by delta invApp; infer_instance
 
 theorem inv_invApp (U : Opens X) :
     inv (H.invApp _ U) =
-      f.c.app (op (opensFunctor f |>.obj U)) ≫
-        X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.injective])) :=
+      f.c.app (op (opensFunctor f |>.obj U)) ≫ X.presheaf.map
+        (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.injective])) :=
   PresheafedSpace.IsOpenImmersion.inv_invApp f U
 
 @[reassoc (attr := simp)]
 theorem invApp_app (U : Opens X) :
-    H.invApp _ U ≫ f.c.app (op (opensFunctor f |>.obj U)) =
-      X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.injective])) :=
+    H.invApp _ U ≫ f.c.app (op (opensFunctor f |>.obj U)) = X.presheaf.map
+      (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.injective])) :=
   PresheafedSpace.IsOpenImmersion.invApp_app f U
 
 attribute [elementwise] invApp_app
