@@ -98,7 +98,7 @@ lemma sin_sq_lt_sq (hx : x ≠ 0) : sin x ^ 2 < x ^ 2 := by
     simpa using this (neg_ne_zero.2 hx) <| neg_pos_of_neg <| hx.lt_of_le <| le_of_not_lt hx₀
   rcases le_or_lt x 1 with hxπ | hxπ
   case inl =>
-    exact pow_lt_pow_left (sin_lt hx₀)
+    exact pow_lt_pow_left₀ (sin_lt hx₀)
       (sin_nonneg_of_nonneg_of_le_pi hx₀.le (by linarith [two_le_pi])) (by simp)
   case inr =>
     exact (sin_sq_le_one _).trans_lt (by rwa [one_lt_sq_iff₀ hx₀.le])

@@ -637,7 +637,7 @@ lemma exists_subgroup_card_pow_prime_of_le_card {n p : ℕ} (hp : p.Prime) (h : 
   obtain ⟨m, hm⟩ := h.exists_card_eq
   refine exists_subgroup_card_pow_prime _ ?_
   rw [hm] at hn ⊢
-  exact pow_dvd_pow _ <| (pow_le_pow_iff_right hp.one_lt).1 hn
+  exact pow_dvd_pow _ <| (Nat.pow_le_pow_iff_right hp.one_lt).1 hn
 
 /-- A special case of **Sylow's first theorem**. If `G` is a `p`-group and `H` a subgroup of size at
 least `p ^ n` then there is a subgroup of `H` of cardinality `p ^ n`. -/
