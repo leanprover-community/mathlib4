@@ -102,8 +102,8 @@ theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
     TopologicalSemiring (MvPowerSeries σ R) where
     continuous_add := continuous_pi fun d => continuous_add.comp
       (((continuous_coeff R d).fst').prod_mk (continuous_coeff R d).snd')
-    continuous_mul := continuous_pi fun _ => 
-      continuous_finset_sum _ fun i _ => continuous_mul.comp 
+    continuous_mul := continuous_pi fun _ =>
+      continuous_finset_sum _ fun i _ => continuous_mul.comp
         ((continuous_coeff R i.fst).fst'.prod_mk (continuous_coeff R i.snd).snd')
 
 /-- The ring topology on MvPowerSeries of a topological ring -/
@@ -136,7 +136,7 @@ theorem variables_tendsto_zero [Semiring R] :
   · obtain ⟨i, hi⟩ := h
     filter_upwards [eventually_cofinite_ne i] with j hj
     simp only [hi, Finsupp.single_eq_single_iff, and_false, or_false, and_true, hj.symm, if_false]
-  · simpa only [ite_eq_right_iff] using 
+  · simpa only [ite_eq_right_iff] using
       eventually_of_forall fun x h' ↦ (not_exists.mp h x h').elim
 
 theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
