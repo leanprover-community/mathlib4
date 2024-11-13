@@ -27,9 +27,7 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
 -/
 
-open Set Filter Function
-
-open Topology
+open Filter Function Set Topology
 
 variable {X Y W Z : Type*}
 

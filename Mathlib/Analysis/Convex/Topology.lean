@@ -16,6 +16,8 @@ We prove the following facts:
 
 * `Convex.interior` : interior of a convex set is convex;
 * `Convex.closure` : closure of a convex set is convex;
+* `closedConvexHull_closure_eq_closedConvexHull` : the closed convex hull of the closure of a set is
+  equal to the closed convex hull of the set;
 * `Set.Finite.isCompact_convexHull` : convex hull of a finite set is compact;
 * `Set.Finite.isClosed_convexHull` : convex hull of a finite set is closed.
 -/
@@ -312,6 +314,66 @@ protected theorem Convex.strictConvex {s : Set E} (hs : Convex 𝕜 s)
   rintro ⟨_, ⟨⟨c, hc, rfl⟩, hcs⟩⟩
   refine ⟨c, hs.segment_subset hx.1 hy.1 ?_, hcs⟩
   exact (segment_eq_image_lineMap 𝕜 x y).symm ▸ mem_image_of_mem _ hc
+
+end ContinuousConstSMul
+
+section TopologicalSpace
+
+variable [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+
+theorem convex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s ∧ IsClosed s) :
+    Convex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
+  ⟨fun _ hx => starConvex_sInter fun _ hs => (h _ hs).1 <| hx _ hs,
+    isClosed_sInter fun _ hs => (h _ hs).2⟩
+
+variable (𝕜)
+
+/-- The convex closed hull of a set `s` is the minimal convex closed set that includes `s`. -/
+@[simps! isClosed]
+def closedConvexHull : ClosureOperator (Set E) := .ofCompletePred (fun s => Convex 𝕜 s ∧ IsClosed s)
+  fun _ ↦ convex_closed_sInter
+
+variable {𝕜}
+
+theorem convex_closedConvexHull {s : Set E} :
+    Convex 𝕜 (closedConvexHull 𝕜 s) := ((closedConvexHull 𝕜).isClosed_closure s).1
+
+theorem isClosed_closedConvexHull {s : Set E} :
+    IsClosed (closedConvexHull 𝕜 s) := ((closedConvexHull 𝕜).isClosed_closure s).2
+
+theorem subset_closedConvexHull {s : Set E} : s ⊆ closedConvexHull 𝕜 s :=
+  (closedConvexHull 𝕜).le_closure s
+
+theorem closure_subset_closedConvexHull {s : Set E} : closure s ⊆ closedConvexHull 𝕜 s :=
+  closure_minimal subset_closedConvexHull isClosed_closedConvexHull
+
+theorem closedConvexHull_min {s t : Set E} (hst : s ⊆ t) (h_conv : Convex 𝕜 t)
+    (h_closed : IsClosed t) : closedConvexHull 𝕜 s ⊆ t :=
+  (closedConvexHull 𝕜).closure_min hst ⟨h_conv, h_closed⟩
+
+theorem convexHull_subset_closedConvexHull {s : Set E} :
+    (convexHull 𝕜) s ⊆ (closedConvexHull 𝕜) s :=
+  convexHull_min subset_closedConvexHull convex_closedConvexHull
+
+@[simp]
+theorem closedConvexHull_closure_eq_closedConvexHull {s : Set E} :
+    closedConvexHull 𝕜 (closure s) = closedConvexHull 𝕜 s :=
+  subset_antisymm (by
+    simpa using ((closedConvexHull 𝕜).monotone (closure_subset_closedConvexHull (𝕜 := 𝕜) (E := E))))
+    ((closedConvexHull 𝕜).monotone subset_closure)
+
+end TopologicalSpace
+
+section ContinuousConstSMul
+
+variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+
+theorem closedConvexHull_eq_closure_convexHull {s : Set E} :
+    closedConvexHull 𝕜 s = closure (convexHull 𝕜 s) := subset_antisymm
+  (closedConvexHull_min (subset_trans (subset_convexHull 𝕜 s) subset_closure)
+    (Convex.closure (convex_convexHull 𝕜 s)) isClosed_closure)
+  (closure_minimal convexHull_subset_closedConvexHull isClosed_closedConvexHull)
 
 end ContinuousConstSMul
 
