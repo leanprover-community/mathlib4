@@ -24,51 +24,33 @@ variable {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K]
 
 open NNReal
 
-namespace Valued.integer
-
 open scoped NormedField
+
+@[simp]
+lemma NormedField.v_eq_valuation (x : K) : Valued.v x = NormedField.valuation x := rfl
+
+namespace Valued.integer
 
 -- should we do this all in the Valuation namespace instead?
 
-@[simp]
-lemma v_eq_valuation (x : K) : Valued.v x = NormedField.valuation x := rfl
-
 /-- An element is in the valuation ring if the norm is bounded by 1. This is a variant of
 `Valuation.mem_integer_iff`, phrased using norms instead of the valuation. -/
-lemma mem_integer_iff' {x : K} : x ∈ 𝒪[K] ↔ ‖x‖ ≤ 1 := by
-  simp [Valuation.mem_integer_iff, v_eq_valuation, NormedField.valuation_apply, ← NNReal.coe_le_coe]
+lemma mem_iff {x : K} : x ∈ 𝒪[K] ↔ ‖x‖ ≤ 1 := by
+  simp [Valuation.mem_integer_iff, ← NNReal.coe_le_coe]
 
-lemma norm_le_one (x : 𝒪[K]) : ‖x‖ ≤ 1 := mem_integer_iff'.mp x.prop
-
-lemma norm_unit (u : 𝒪[K]ˣ) : ‖(u : 𝒪[K])‖ = 1 := by
-  rcases (norm_le_one u.val).eq_or_lt with hu|hu
-  · exact hu
-  suffices ‖(u⁻¹).val‖ > 1 from absurd this (norm_le_one _).not_lt
-  rw [← norm_one (α := K), ← OneMemClass.coe_one (𝒪[K]), ← u.mul_inv, Subring.coe_mul]
-  simpa using hu
+lemma norm_le_one (x : 𝒪[K]) : ‖x‖ ≤ 1 := mem_iff.mp x.prop
 
 @[simp]
-lemma norm_coe_unit (u : 𝒪[K]ˣ) : ‖((u : 𝒪[K]) : K)‖ = 1 :=
-  norm_unit _
+lemma norm_coe_unit (u : 𝒪[K]ˣ) : ‖((u : 𝒪[K]) : K)‖ = 1 := by
+  simpa [← NNReal.coe_inj] using
+    (Valuation.integer.integers (NormedField.valuation (K := K))).valuation_unit u
+
+lemma norm_unit (u : 𝒪[K]ˣ) : ‖(u : 𝒪[K])‖ = 1 := by
+  simp
 
 lemma isUnit_iff_norm_eq_one {u : 𝒪[K]} : IsUnit u ↔ ‖u‖ = 1 := by
-  constructor
-  · rintro ⟨_, rfl⟩
-    exact norm_unit _
-  · intro h
-    rw [isUnit_iff_exists_inv]
-    have hu : u ≠ 0 := by
-      contrapose! h
-      simp [h]
-    refine ⟨⟨u⁻¹, ?_⟩, ?_⟩
-    · rw [← norm_one (α := K)] at h
-      rw [Valuation.mem_integer_iff, map_inv₀, inv_le_one₀]
-      · simpa [← NNReal.coe_le_coe] using h.ge
-      · simp [hu]
-    · ext
-      simp only [Subring.coe_mul, Subsemiring.coe_toSubmonoid, Subring.coe_toSubsemiring,
-        OneMemClass.coe_one]
-      rw [mul_inv_eq_one₀ (by exact_mod_cast hu)]
+  simpa [← NNReal.coe_inj] using
+    (Valuation.integer.integers (NormedField.valuation (K := K))).isUnit_iff_valuation_eq_one
 
 lemma norm_irreducible_lt_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) : ‖ϖ‖ < 1 :=
   lt_of_le_of_ne (norm_le_one ϖ) (mt isUnit_iff_norm_eq_one.mpr h.not_unit)
