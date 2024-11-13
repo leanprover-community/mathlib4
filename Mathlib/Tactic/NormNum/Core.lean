@@ -239,7 +239,7 @@ def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
   for fvarId in fvarIdsToSimp do
     let localDecl ← fvarId.getDecl
     let type ← instantiateMVars localDecl.type
-    let ctx := { ctx with simpTheorems := ctx.simpTheorems.eraseTheorem (.fvar localDecl.fvarId) }
+    let ctx := ctx.setSimpTheorems (ctx.simpTheorems.eraseTheorem (.fvar localDecl.fvarId))
     let r ← deriveSimp ctx useSimp type
     match r.proof? with
     | some _ =>
@@ -275,13 +275,14 @@ def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Contex
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
   let mut { ctx, simprocs := _, starArg } ←
     elabSimpArgs args[0] (eraseLocal := false) (kind := .simp) (simprocs := {})
-      { config, simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
+      (← Simp.mkContext config (simpTheorems := #[simpTheorems])
+        (congrTheorems := ← getSimpCongrTheorems))
   unless starArg do return ctx
   let mut simpTheorems := ctx.simpTheorems
   for h in ← getPropHyps do
     unless simpTheorems.isErased (.fvar h) do
       simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
-  pure { ctx with simpTheorems }
+  return ctx.setSimpTheorems simpTheorems
 
 open Elab.Tactic in
 /--
