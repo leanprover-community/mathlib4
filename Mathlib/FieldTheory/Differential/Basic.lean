@@ -148,8 +148,8 @@ noncomputable def differentialOfAdjoinEqTop [FiniteDimensional F K]
 lemma differentialAlgebraOfAdjoinEqTop [FiniteDimensional F K] (k : K) (h : F⟮k⟯ = ⊤) :
     letI := differentialOfAdjoinEqTop k h
     DifferentialAlgebra F K := by
-  have : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
-  have : Fact (Irreducible (minpoly F k)) :=
+  haveI : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
+  haveI : Fact (Irreducible (minpoly F k)) :=
     ⟨minpoly.irreducible (IsAlgebraic.of_finite ..).isIntegral⟩
   apply DifferentialAlgebra.equiv
 
