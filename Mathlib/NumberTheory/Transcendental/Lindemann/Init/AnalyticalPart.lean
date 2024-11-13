@@ -4,7 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
 import Mathlib.Algebra.Polynomial.SumIteratedDerivative
-import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.MeasureTheory.Integral.FundThmCalculus
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # The Lindemann-Weierstrass theorem
@@ -127,7 +130,7 @@ theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
 
 open Polynomial
 
-theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
+theorem exp_polynomial_approx (p : ℤ[X]) (hp : p.eval 0 ≠ 0) :
     ∃ c,
       ∀ q > (eval 0 p).natAbs, q.Prime →
         ∃ (n : ℤ) (_ : n % q ≠ 0) (gp : ℤ[X]) (_ : gp.natDegree ≤ q * p.natDegree - 1),
@@ -186,7 +189,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
       ← Int.dvd_iff_emod_eq_zero]
     intro h
     replace h := Int.Prime.dvd_pow' prime_q h; rw [Int.natCast_dvd] at h
-    replace h := Nat.le_of_dvd (Int.natAbs_pos.mpr p0) h
+    replace h := Nat.le_of_dvd (Int.natAbs_pos.mpr hp) h
     revert h; rwa [imp_false, not_le]
   obtain ⟨gp, gp'_le, h⟩ := aeval_sumIDeriv ℂ (X ^ (q - 1) * p ^ q) q
   refine ⟨gp, ?_, ?_⟩
@@ -195,20 +198,10 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
       tsub_right_comm]
     apply tsub_le_tsub_right; rw [add_tsub_cancel_left]
   intro r hr
-  have :
-    (X ^ (q - 1) * p ^ q).map (algebraMap ℤ ℂ) =
-      (X - C r) ^ q *
-        (X ^ (q - 1) *
-          (C (map (algebraMap ℤ ℂ) p).leadingCoeff *
-              (((p.aroots ℂ).erase r).map fun a : ℂ => X - C a).prod) ^
-            q) := by
-    rw [mul_left_comm, ← mul_pow, mul_left_comm (_ - _),
-      Multiset.prod_map_erase (f := fun a => X - C a) hr]
-    have : Multiset.card (p.aroots ℂ) = (p.map (algebraMap ℤ ℂ)).natDegree :=
-      splits_iff_card_roots.mp (IsAlgClosed.splits _)
-    rw [C_leadingCoeff_mul_prod_multiset_X_sub_C this, Polynomial.map_mul, Polynomial.map_pow,
-      Polynomial.map_pow, map_X]
-  specialize h r this; clear this
+  specialize h r _
+  · rw [mem_roots'] at hr
+    rw [Polynomial.map_mul, p.map_pow]
+    exact dvd_mul_of_dvd_right (pow_dvd_pow_of_dvd (dvd_iff_isRoot.mpr hr.2) _) _
   rw [le_div_iff₀ (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← abs_natCast, ← map_mul,
     mul_comm, mul_sub, ← nsmul_eq_mul, ← nsmul_eq_mul, smul_smul, mul_comm,
     Nat.mul_factorial_pred q0, ← h]

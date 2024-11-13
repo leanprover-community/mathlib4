@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
 import Mathlib.Analysis.Complex.IsIntegral
+import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AlgebraicPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.SumAEvalARoots
