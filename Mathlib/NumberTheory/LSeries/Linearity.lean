@@ -137,15 +137,13 @@ lemma LSeries_smul (f : ℕ → ℂ) (c s : ℂ) : LSeries (c • f) s = c * LSe
 
 section sum
 
-variable {ι : Type*} [DecidableEq ι] (f : ι → ℕ → ℂ) (S : Finset ι) (s : ℂ)
+variable {ι : Type*} (f : ι → ℕ → ℂ) (S : Finset ι) (s : ℂ)
 
 lemma LSeries.term_sum_apply (n : ℕ) :
     term (∑ i ∈ S, f i) s n  = ∑ i ∈ S, term (f i) s n := by
-  induction S using Finset.induction_on with
-  | empty =>
-    simp only [Finset.sum_empty, term, Pi.zero_apply, zero_div, ite_self]
-  | insert hi IH  =>
-    simp only [Finset.sum_insert hi, term_add_apply, IH]
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp only [term_zero, Finset.sum_const_zero]
+  · simp only [ne_eq, hn, not_false_eq_true, term_of_ne_zero, Finset.sum_apply, Finset.sum_div]
 
 lemma LSeries.term_sum : term (∑ i ∈ S, f i) s  = ∑ i ∈ S, term (f i) s :=
   funext fun _ ↦ by rw [Finset.sum_apply]; exact term_sum_apply f S s _
@@ -167,17 +165,17 @@ lemma LSeries_sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
 
 variable [Fintype ι]
 
-/-- The version of `LSeriesHasSum.sum` for `Fintype.sum`. -/
+/-- The version of `LSeriesHasSum.sum` for sums over a `Fintype`. -/
 lemma LSeriesHasSum.sum' {a : ι → ℂ} (hf : ∀ i, LSeriesHasSum (f i) s (a i)) :
     LSeriesHasSum (∑ i : ι, f i) s (∑ i : ι, a i) :=
   sum fun i _ ↦ hf i
 
-/-- The version of `LSeriesSummable.sum` for `Fintype.sum`. -/
+/-- The version of `LSeriesSummable.sum` for sums over a `Fintype`. -/
 lemma LSeriesSummable.sum' (hf : ∀ i, LSeriesSummable (f i) s) :
     LSeriesSummable (∑ i : ι, f i) s :=
   sum fun i _ ↦ hf i
 
-/-- The version of `LSeries_sum` for `Fintype.sum`. -/
+/-- The version of `LSeries_sum` for sums over a `Fintype`. -/
 @[simp]
 lemma LSeries_sum' (hf : ∀ i, LSeriesSummable (f i) s) :
     LSeries (∑ i : ι, f i) s = ∑ i : ι, LSeries (f i) s :=
