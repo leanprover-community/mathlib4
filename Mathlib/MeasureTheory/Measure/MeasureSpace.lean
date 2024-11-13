@@ -1107,8 +1107,10 @@ theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Meas
     simp [map_of_not_aemeasurable, hf, hg]
 
 @[simp]
-protected theorem map_smul (c : ℝ≥0∞) (μ : Measure α) (f : α → β) :
-    (c • μ).map f = c • μ.map f := by
+protected theorem map_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (c : R) (μ : Measure α) (f : α → β) : (c • μ).map f = c • μ.map f := by
+  suffices ∀ c : ℝ≥0∞, (c • μ).map f = c • μ.map f by simpa using this (c • 1)
+  clear c; intro c
   rcases eq_or_ne c 0 with (rfl | hc); · simp
   by_cases hf : AEMeasurable f μ
   · have hfc : AEMeasurable f (c • μ) :=
@@ -1123,10 +1125,11 @@ protected theorem map_smul (c : ℝ≥0∞) (μ : Measure α) (f : α → β) :
       exact hf ⟨hfc.mk f, hfc.measurable_mk, (ae_smul_measure_iff hc).1 hfc.ae_eq_mk⟩
     simp [map_of_not_aemeasurable hf, map_of_not_aemeasurable hfc]
 
-@[simp]
+
+@[deprecated Measure.map_smul (since := "2024-11-13")]
 protected theorem map_smul_nnreal (c : ℝ≥0) (μ : Measure α) (f : α → β) :
     (c • μ).map f = c • μ.map f :=
-  μ.map_smul (c : ℝ≥0∞) f
+  μ.map_smul c f
 
 variable {f : α → β}
 
