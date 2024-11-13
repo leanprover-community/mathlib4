@@ -75,7 +75,7 @@ noncomputable instance {J : Type v} [SmallCategory J] [IsFiltered J] :
     CreatesColimitsOfShape J (Ind.inclusion C) :=
   letI _ : CreatesColimitsOfShape J (fullSubcategoryInclusion (IsIndObject (C := C))) :=
     createsColimitsOfShapeFullSubcategoryInclusion (closedUnderColimitsOfShape_of_colimit
-      (fun e => IsIndObject.map e.hom) (isIndObject_colimit _ _))
+      (isIndObject_colimit _ _))
   inferInstanceAs <|
     CreatesColimitsOfShape J ((Ind.equivalence C).functor ⋙ fullSubcategoryInclusion _)
 
