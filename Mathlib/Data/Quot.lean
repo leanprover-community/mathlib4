@@ -451,67 +451,177 @@ Note that in later files the preferred spelling is `⊤ : Setoid α`. -/
 def trueSetoid : Setoid α :=
   ⟨_, true_equivalence⟩
 
+namespace Squash
+
+variable {α β : Type*}
+
+instance [Inhabited α] : Inhabited (Squash α) :=
+  ⟨.mk default⟩
+
+/-- Any constant function lifts to a function out of the truncation -/
+def lift' (f : α → β) (c : ∀ a b : α, f a = f b) : Squash α → β :=
+  Quot.lift f fun a b _ ↦ c a b
+
+protected theorem lift'_mk (f : α → β) (c) (a : α) : Squash.lift' f c (mk a) = f a :=
+  rfl
+
+/-- Lift a constant function on `q : Squash α`. -/
+-- Porting note: removed `@[elab_as_elim]` because it gave "unexpected eliminator resulting type"
+-- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
+protected def lift'On (q : Squash α) (f : α → β) (c : ∀ a b : α, f a = f b) : β :=
+  Squash.lift' f c q
+
+@[elab_as_elim]
+protected theorem induction_on {β : Squash α → Prop} (q : Squash α) (h : ∀ a, β (mk a)) : β q :=
+  ind h q
+
+theorem exists_rep (q : Squash α) : ∃ a : α, mk a = q :=
+  Quot.exists_rep q
+
+@[elab_as_elim]
+protected theorem induction_on₂ {C : Squash α → Squash β → Prop} (q₁ : Squash α) (q₂ : Squash β)
+    (h : ∀ a b, C (mk a) (mk b)) : C q₁ q₂ :=
+  Squash.induction_on q₁ fun a₁ ↦ Squash.induction_on q₂ (h a₁)
+
+protected theorem eq (a b : Squash α) : a = b := Subsingleton.elim a b
+
+/-- The `bind` operator for the `Squash` monad. -/
+def bind (q : Squash α) (f : α → Squash β) : Squash β :=
+  Squash.lift'On q f fun _ _ ↦ Squash.eq _ _
+
+/-- A function `f : α → β` defines a function `map f : Squash α → Squash β`. -/
+def map (f : α → β) (q : Squash α) : Squash β :=
+  bind q (Squash.mk ∘ f)
+
+instance : Monad Squash where
+  pure := @Squash.mk
+  bind := @Squash.bind
+
+instance : LawfulMonad Squash where
+  id_map _ := Squash.eq _ _
+  pure_bind _ _ := rfl
+  bind_assoc _ _ _ := Squash.eq _ _
+  -- Porting note: the fields below are new in Lean 4
+  map_const := rfl
+  seqLeft_eq _ _ := Squash.eq _ _
+  seqRight_eq _ _ := Squash.eq _ _
+  pure_seq _ _ := rfl
+  bind_pure_comp _ _ := rfl
+  bind_map _ _ := rfl
+
+variable {C : Squash α → Sort*}
+
+/-- Recursion/induction principle for `Squash`. -/
+-- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
+@[elab_as_elim]
+protected def rec (f : ∀ a, C (mk a))
+    (h : ∀ a b : α, (Eq.ndrec (f a) (Squash.eq (mk a) (mk b)) : C (mk b)) = f b)
+    (q : Squash α) : C q :=
+  Quot.rec f (fun a b _ ↦ h a b) q
+
+/-- A version of `Squash.rec` taking `q : Squash α` as the first argument. -/
+-- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
+@[elab_as_elim]
+protected def recOn (q : Squash α) (f : ∀ a, C (mk a))
+    (h : ∀ a b : α, (Eq.ndrec (f a) (Squash.eq (mk a) (mk b)) : C (mk b)) = f b) : C q :=
+  Squash.rec f h q
+
+/-- A version of `Squash.recOn` assuming the codomain is a `Subsingleton`. -/
+-- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
+@[elab_as_elim]
+protected def recOnSubsingleton [∀ a, Subsingleton (C (mk a))] (q : Squash α) (f : ∀ a, C (mk a)) :
+    C q :=
+  Squash.rec f (fun _ b ↦ Subsingleton.elim _ (f b)) q
+
+/-- Noncomputably extract a representative of `Squash α` (using the axiom of choice). -/
+noncomputable def out : Squash α → α :=
+  Quot.out
+
+@[simp]
+theorem out_eq (q : Squash α) : mk q.out = q :=
+  Squash.eq _ _
+
+protected theorem nonempty (q : Squash α) : Nonempty α :=
+  nonempty_of_exists q.exists_rep
+
+end Squash
+
 /-- `Trunc α` is the quotient of `α` by the always-true relation. This
   is related to the propositional truncation in HoTT, and is similar
   in effect to `Nonempty α`, but unlike `Nonempty α`, `Trunc α` is data,
   so the VM representation is the same as `α`, and so this can be used to
   maintain computability. -/
+@[deprecated Squash (since := "2024-11-13")]
 def Trunc.{u} (α : Sort u) : Sort u :=
   @Quotient α trueSetoid
 
 namespace Trunc
+set_option linter.deprecated false
 
 /-- Constructor for `Trunc α` -/
+@[deprecated Squash.mk (since := "2024-11-13")]
 def mk (a : α) : Trunc α :=
   Quot.mk _ a
 
+@[deprecated Squash.instInhabited_mathlib (since := "2024-11-13")]
 instance [Inhabited α] : Inhabited (Trunc α) :=
   ⟨mk default⟩
 
 /-- Any constant function lifts to a function out of the truncation -/
+@[deprecated Squash.lift' (since := "2024-11-13")]
 def lift (f : α → β) (c : ∀ a b : α, f a = f b) : Trunc α → β :=
   Quot.lift f fun a b _ ↦ c a b
 
+@[deprecated Squash.ind (since := "2024-11-13")]
 theorem ind {β : Trunc α → Prop} : (∀ a : α, β (mk a)) → ∀ q : Trunc α, β q :=
   Quot.ind
 
+@[deprecated Squash.lift'_mk (since := "2024-11-13")]
 protected theorem lift_mk (f : α → β) (c) (a : α) : lift f c (mk a) = f a :=
   rfl
 
 /-- Lift a constant function on `q : Trunc α`. -/
+@[deprecated Squash.lift'On (since := "2024-11-13")]
 protected def liftOn (q : Trunc α) (f : α → β) (c : ∀ a b : α, f a = f b) : β :=
   lift f c q
 
-@[elab_as_elim]
+@[elab_as_elim, deprecated Squash.induction_on (since := "2024-11-13")]
 protected theorem induction_on {β : Trunc α → Prop} (q : Trunc α) (h : ∀ a, β (mk a)) : β q :=
   ind h q
 
+@[deprecated Squash.exists_rep (since := "2024-11-13")]
 theorem exists_rep (q : Trunc α) : ∃ a : α, mk a = q :=
   Quot.exists_rep q
 
-@[elab_as_elim]
+@[elab_as_elim, deprecated Squash.induction_on₂ (since := "2024-11-13")]
 protected theorem induction_on₂ {C : Trunc α → Trunc β → Prop} (q₁ : Trunc α) (q₂ : Trunc β)
     (h : ∀ a b, C (mk a) (mk b)) : C q₁ q₂ :=
   Trunc.induction_on q₁ fun a₁ ↦ Trunc.induction_on q₂ (h a₁)
 
+@[deprecated Squash.eq (since := "2024-11-13")]
 protected theorem eq (a b : Trunc α) : a = b :=
   Trunc.induction_on₂ a b fun _ _ ↦ Quot.sound trivial
 
+@[deprecated instSubsingletonSquash (since := "2024-11-13")]
 instance instSubsingletonTrunc : Subsingleton (Trunc α) :=
   ⟨Trunc.eq⟩
 
 /-- The `bind` operator for the `Trunc` monad. -/
+@[deprecated Squash.bind (since := "2024-11-13")]
 def bind (q : Trunc α) (f : α → Trunc β) : Trunc β :=
   Trunc.liftOn q f fun _ _ ↦ Trunc.eq _ _
 
 /-- A function `f : α → β` defines a function `map f : Trunc α → Trunc β`. -/
+@[deprecated Squash.map (since := "2024-11-13")]
 def map (f : α → β) (q : Trunc α) : Trunc β :=
   bind q (Trunc.mk ∘ f)
 
+@[deprecated Squash.instMonad_mathlib (since := "2024-11-13")]
 instance : Monad Trunc where
   pure := @Trunc.mk
   bind := @Trunc.bind
 
+@[deprecated Squash.instLawfulMonad_mathlib (since := "2024-11-13")]
 instance : LawfulMonad Trunc where
   id_map _ := Trunc.eq _ _
   pure_bind _ _ := rfl
@@ -527,35 +637,39 @@ instance : LawfulMonad Trunc where
 variable {C : Trunc α → Sort*}
 
 /-- Recursion/induction principle for `Trunc`. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Squash.rec (since := "2024-11-13")]
 protected def rec (f : ∀ a, C (mk a))
     (h : ∀ a b : α, (Eq.ndrec (f a) (Trunc.eq (mk a) (mk b)) : C (mk b)) = f b)
     (q : Trunc α) : C q :=
   Quot.rec f (fun a b _ ↦ h a b) q
 
 /-- A version of `Trunc.rec` taking `q : Trunc α` as the first argument. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Squash.recOn (since := "2024-11-13")]
 protected def recOn (q : Trunc α) (f : ∀ a, C (mk a))
     (h : ∀ a b : α, (Eq.ndrec (f a) (Trunc.eq (mk a) (mk b)) : C (mk b)) = f b) : C q :=
   Trunc.rec f h q
 
 /-- A version of `Trunc.recOn` assuming the codomain is a `Subsingleton`. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Squash.recOnSubsingleton (since := "2024-11-13")]
 protected def recOnSubsingleton [∀ a, Subsingleton (C (mk a))] (q : Trunc α) (f : ∀ a, C (mk a)) :
     C q :=
   Trunc.rec f (fun _ b ↦ Subsingleton.elim _ (f b)) q
 
 /-- Noncomputably extract a representative of `Trunc α` (using the axiom of choice). -/
+@[deprecated Squash.out (since := "2024-11-13")]
 noncomputable def out : Trunc α → α :=
   Quot.out
 
-@[simp]
+@[simp, deprecated Squash.out_eq (since := "2024-11-13")]
 theorem out_eq (q : Trunc α) : mk q.out = q :=
   Trunc.eq _ _
 
+@[deprecated Squash.nonempty (since := "2024-11-13")]
 protected theorem nonempty (q : Trunc α) : Nonempty α :=
   nonempty_of_exists q.exists_rep
 
+
+set_option linter.deprecated true
 end Trunc
 
 /-! ### `Quotient` with implicit `Setoid` -/
