@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
-import Mathlib.Analysis.Convex.Complex
+import Mathlib.Analysis.Complex.Convex
 
 /-!
 # Gaussian integral
@@ -213,7 +213,7 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       conv_rhs => rw [← one_mul ((p.1 : ℂ) ^ 2), ← sin_sq_add_cos_sq (p.2 : ℂ)]
       ring
     _ = ↑π / b := by
-      have : 0 ≤ π + π := by linarith [Real.pi_pos]
+      have : 0 ≤ π + π := by positivity
       simp only [integral_const, Measure.restrict_apply', measurableSet_Ioo, univ_inter, volume_Ioo,
         sub_neg_eq_add, ENNReal.toReal_ofReal, this]
       rw [← two_mul, real_smul, mul_one, ofReal_mul, ofReal_ofNat, integral_mul_cexp_neg_mul_sq hb]
@@ -256,13 +256,13 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     ∫ x : ℝ, cexp (-b * (x : ℂ) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
   have nv : ∀ {b : ℂ}, 0 < re b → b ≠ 0 := by intro b hb; contrapose! hb; rw [hb]; simp
   apply
-    (convex_halfspace_re_gt 0).isPreconnected.eq_of_sq_eq ?_ ?_ (fun c hc => ?_) (fun {c} hc => ?_)
+    (convex_halfSpace_re_gt 0).isPreconnected.eq_of_sq_eq ?_ ?_ (fun c hc => ?_) (fun {c} hc => ?_)
       (by simp : 0 < re (1 : ℂ)) ?_ hb
   · -- integral is continuous
-    exact ContinuousAt.continuousOn continuousAt_gaussian_integral
+    exact continuousOn_of_forall_continuousAt continuousAt_gaussian_integral
   · -- `(π / b) ^ (1 / 2 : ℂ)` is continuous
     refine
-      ContinuousAt.continuousOn fun b hb =>
+      continuousOn_of_forall_continuousAt fun b hb =>
         (continuousAt_cpow_const (Or.inl ?_)).comp (continuousAt_const.div continuousAt_id (nv hb))
     rw [div_re, ofReal_im, ofReal_re, zero_mul, zero_div, add_zero]
     exact div_pos (mul_pos pi_pos hb) (normSq_pos.mpr (nv hb))

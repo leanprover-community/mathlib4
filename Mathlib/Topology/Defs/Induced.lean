@@ -22,7 +22,7 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
   `s : Set Y` is open if the preimage of `s` is open.
   This is the finest topology that makes `f` continuous.
 
-* `Inducing`: a map `f : X → Y` is called *inducing*,
+* `IsInducing`: a map `f : X → Y` is called *inducing*,
   if the topology on the domain is equal to the induced topology.
 
 * `Embedding`: a map `f : X → Y` is an *embedding*,
@@ -80,6 +80,7 @@ def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
 
 end TopologicalSpace
 
+namespace Topology
 variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
 
 /-- We say that restrictions of the topology on `X` to sets from a family `S`
@@ -98,14 +99,16 @@ structure RestrictGenTopology (S : Set (Set X)) : Prop where
 by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage
 under `f` of some open set `t : Set Y`. -/
 @[mk_iff]
-structure Inducing (f : X → Y) : Prop where
+structure IsInducing (f : X → Y) : Prop where
   /-- The topology on the domain is equal to the induced topology. -/
-  induced : tX = tY.induced f
+  eq_induced : tX = tY.induced f
+
+@[deprecated (since := "2024-10-28")] alias Inducing := IsInducing
 
 /-- A function between topological spaces is an embedding if it is injective,
   and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
 @[mk_iff]
-structure IsEmbedding (f : X → Y) extends Inducing f : Prop where
+structure IsEmbedding (f : X → Y) extends IsInducing f : Prop where
   /-- A topological embedding is injective. -/
   inj : Function.Injective f
 
@@ -140,3 +143,5 @@ structure IsQuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : 
 
 @[deprecated (since := "2024-10-22")]
 alias QuotientMap := IsQuotientMap
+
+end Topology

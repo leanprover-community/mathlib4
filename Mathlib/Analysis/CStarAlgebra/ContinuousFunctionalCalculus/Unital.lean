@@ -7,8 +7,9 @@ import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Topology.ContinuousMap.Ordered
 
 /-!
 # The continuous functional calculus
@@ -137,6 +138,8 @@ the predicate `p`, it should be noted that these will only ever be of the form `
 `IsSelfAdjoint a` or `0 ≤ a`. For the moment we provide a rudimentary tactic to deal with these
 goals, but it can be modified to become more sophisticated as the need arises.
 -/
+
+open Topology
 
 section Basic
 

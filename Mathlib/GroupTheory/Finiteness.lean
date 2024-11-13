@@ -3,8 +3,9 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Data.Set.Pointwise.Finite
-import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
@@ -147,7 +148,7 @@ theorem Monoid.fg_of_surjective {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M �
     obtain ⟨s, hs⟩ := Monoid.fg_def.mp ‹_›
     use s.image f
     rwa [Finset.coe_image, ← MonoidHom.map_mclosure, hs, ← MonoidHom.mrange_eq_map,
-      MonoidHom.mrange_top_iff_surjective]
+      MonoidHom.mrange_eq_top_iff_surjective]
 
 @[to_additive]
 instance Monoid.fg_range {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M →* M') :

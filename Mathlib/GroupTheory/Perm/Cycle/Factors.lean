@@ -525,7 +525,7 @@ theorem mem_support_iff_mem_support_of_mem_cycleFactorsFinset {g : Equiv.Perm α
   · intro h
     use g.cycleOf x, cycleOf_mem_cycleFactorsFinset_iff.mpr h
     rw [mem_support_cycleOf_iff]
-    refine ⟨SameCycle.refl g x, h⟩
+    exact ⟨SameCycle.refl g x, h⟩
   · rintro ⟨c, hc, hx⟩
     exact mem_cycleFactorsFinset_support_le hc hx
 

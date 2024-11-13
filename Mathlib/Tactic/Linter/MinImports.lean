@@ -67,6 +67,15 @@ register_option linter.minImports : Bool := {
   descr := "enable the minImports linter"
 }
 
+/-- The `linter.minImports.increases` regulates whether the `minImports` linter reports the
+change in number of imports, when it reports import changes.
+Setting this option to `false` helps with test stability.
+-/
+register_option linter.minImports.increases : Bool := {
+  defValue := true
+  descr := "enable reporting increase-size change in the minImports linter"
+}
+
 namespace MinImports
 
 open Mathlib.Command.MinImports
@@ -128,8 +137,14 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
       minImportsRef.modify ({· with minImports := currImports, importSize := newCumulImps})
       let new := currImpArray.filter (!importsSoFar.contains ·)
       let redundant := importsSoFar.toArray.filter (!currImports.contains ·)
+      -- to make `test` files more stable, we suppress the exact count of import changes if
+      -- the `linter.minImports.increases` option is `false`
+      let byCount :=  if Linter.getLinterValue linter.minImports.increases (← getOptions) then
+                      m!"by {newCumulImps - oldCumulImps} "
+                    else
+                      m!""
       Linter.logLint linter.minImports stx <|
-        m!"Imports increased by {newCumulImps - oldCumulImps} to\n{currImpArray}\n\n\
+        m!"Imports increased {byCount}to\n{currImpArray}\n\n\
           New imports: {new}\n" ++
             if redundant.isEmpty then m!"" else m!"\nNow redundant: {redundant}\n"
 
