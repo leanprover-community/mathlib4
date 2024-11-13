@@ -16,7 +16,7 @@ Euler product for `f`.
 
 open Complex
 
-attribute [fun_prop] DifferentiableAt.clog
+attribute [local fun_prop] DifferentiableAt.clog
 
 open Topology in
 /-- If `f : α → ℂ` is summable, then so is `n ↦ log (1 - f n)`. -/
