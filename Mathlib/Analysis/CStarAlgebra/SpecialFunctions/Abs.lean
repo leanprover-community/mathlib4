@@ -34,11 +34,9 @@ open scoped NNReal
 
 namespace CFC
 
-section Nonunital
+section NonUnital
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-
-section abs
 
 lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
   rw [abs, sqrt_eq_zero_iff _ (ha := star_mul_self_nonneg _), CStarRing.star_mul_self_eq_zero_iff]
@@ -59,8 +57,21 @@ lemma abs_sub_self (a : A) (ha : IsSelfAdjoint a) : abs a - a = 2 • a⁻ := so
 
 lemma abs_add_self (a : A) (ha : IsSelfAdjoint a) : abs a + a = 2 • a⁺ := sorry
 
-end abs
+-- `r` of the appropriate kinds, so this is actually multiple lemmas
+lemma abs_smul : abs (r • a) = |r| • abs a := sorry
 
-end Nonunital
+end NonUnital
+
+section Unital
+
+variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+
+-- for these you need the algebra to be unital
+lemma abs_algebraMap_complex (z : ℂ) : abs (algebraMap ℂ A z) = algebraMap ℝ A |z| := sorry
+lemma abs_algebraMap_real (x : ℝ) : abs (algebraMap ℝ A x) = algebraMap ℝ A |x| := sorry
+lemma abs_algebraMap_nnreal (x : ℝ≥0) : abs (algebraMap ℝ≥0 A x) = algebraMap ℝ≥0 A x := sorry
+lemma abs_natCast (n : ℕ) : abs (n : A) = n := sorry
+
+end Unital
 
 end CFC
