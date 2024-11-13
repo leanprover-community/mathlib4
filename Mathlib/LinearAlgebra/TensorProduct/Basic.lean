@@ -1058,20 +1058,6 @@ theorem tensorTensorTensorAssoc_symm_tmul (m : M) (n : N) (p : P) (q : Q) :
     (tensorTensorTensorAssoc R M N P Q).symm (m ⊗ₜ (n ⊗ₜ p) ⊗ₜ q) = m ⊗ₜ n ⊗ₜ (p ⊗ₜ q) :=
   rfl
 
-variable (M) in
-/-- For fixed `m`, this is the map `N →ₗ[R] N ⊗[R] M` given by `n ↦ n ⊗ₜ m`. -/
-@[simps] def includeLeft (m : M) : N →ₗ[R] N ⊗[R] M where
-  toFun n := n ⊗ₜ m
-  map_add' x y := by simp [add_tmul]
-  map_smul' x y := rfl
-
-variable (M) in
-/-- For fixed `n`, this is the map `M →ₗ[R] N ⊗[R] M` given by `m ↦ n ⊗ₜ m`. -/
-@[simps] def includeRight (n : N) : M →ₗ[R] N ⊗[R] M where
-  toFun m := n ⊗ₜ m
-  map_add' x y := by simp [tmul_add]
-  map_smul' x y := by simp
-
 end TensorProduct
 
 open scoped TensorProduct

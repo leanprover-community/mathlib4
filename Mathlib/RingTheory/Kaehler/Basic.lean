@@ -183,8 +183,7 @@ def KaehlerDifferential.fromIdeal : KaehlerDifferential.ideal R S →ₗ[S ⊗[R
 /-- (Implementation) The underlying linear map of the derivation into `Ω[S⁄R]`. -/
 def KaehlerDifferential.DLinearMap : S →ₗ[R] Ω[S⁄R] :=
   ((KaehlerDifferential.fromIdeal R S).restrictScalars R).comp
-    ((Algebra.TensorProduct.includeRight.toLinearMap -
-        Algebra.TensorProduct.includeLeft.toLinearMap :
+    ((TensorProduct.includeRight.toLinearMap - TensorProduct.includeLeft.toLinearMap :
             S →ₗ[R] S ⊗[R] S).codRestrict
         ((KaehlerDifferential.ideal R S).restrictScalars R)
         (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R) :
@@ -334,8 +333,7 @@ def KaehlerDifferential.linearMapEquivDerivation : (Ω[S⁄R] →ₗ[S] M) ≃�
 def KaehlerDifferential.quotientCotangentIdealRingEquiv :
     (S ⊗ S ⧸ KaehlerDifferential.ideal R S ^ 2) ⧸ (KaehlerDifferential.ideal R S).cotangentIdeal ≃+*
       S := by
-  have : Function.RightInverse
-      (Algebra.TensorProduct.includeLeft (R := R) (S := R) (A := S) (B := S))
+  have : Function.RightInverse (TensorProduct.includeLeft (R := R) (S := R) (A := S) (B := S))
       (↑(TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S) : S ⊗[R] S →+* S) := by
     intro x; rw [AlgHom.coe_toRingHom, ← AlgHom.comp_apply, TensorProduct.lmul'_comp_includeLeft]
     rfl
@@ -451,10 +449,8 @@ theorem KaehlerDifferential.ideal_fg [EssFiniteType R S] :
     let I : Ideal (S ⊗[R] S) := Ideal.span
       ((EssFiniteType.finset R S).image (fun s ↦ (1 : S) ⊗ₜ[R] s - s ⊗ₜ[R] (1 : S)))
     show _ - _ ∈ I
-    have : (IsScalarTower.toAlgHom R (S ⊗[R] S) (S ⊗[R] S ⧸ I)).comp
-            Algebra.TensorProduct.includeRight =
-        (IsScalarTower.toAlgHom R (S ⊗[R] S) (S ⊗[R] S ⧸ I)).comp
-            Algebra.TensorProduct.includeLeft := by
+    have : (IsScalarTower.toAlgHom R (S ⊗[R] S) (S ⊗[R] S ⧸ I)).comp TensorProduct.includeRight =
+        (IsScalarTower.toAlgHom R (S ⊗[R] S) (S ⊗[R] S ⧸ I)).comp TensorProduct.includeLeft := by
       apply EssFiniteType.algHom_ext
       intro a ha
       simp only [AlgHom.coe_comp, IsScalarTower.coe_toAlgHom', Ideal.Quotient.algebraMap_eq,

@@ -40,7 +40,7 @@ section
 variable {ι} (M : ι → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 private noncomputable def piRightHomBil : N →ₗ[S] (∀ i, M i) →ₗ[R] ∀ i, N ⊗[R] M i where
-  toFun n := LinearMap.pi (fun i ↦ includeRight R (M i) n ∘ₗ LinearMap.proj i)
+  toFun n := LinearMap.pi (fun i ↦ mk R N (M i) n ∘ₗ LinearMap.proj i)
   map_add' _ _ := by
     ext
     simp [add_tmul]
