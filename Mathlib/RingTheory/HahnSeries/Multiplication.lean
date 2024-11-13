@@ -69,10 +69,8 @@ open Classical in
 theorem orderTop_one_ite [Zero R] [One R] :
     orderTop (1 : HahnSeries Γ R) = if (0 : R) = 1 then ⊤ else 0 := by
   by_cases h : (0 : R) = 1
-  · simp only [orderTop, ← single_zero_one, ← h, map_zero, ↓reduceDIte, ↓reduceIte]
-  · haveI : Nontrivial R := by exact nontrivial_of_ne 0 1 h
-    rw [← single_zero_one, orderTop_single (fun a ↦ h a.symm)]
-    simp [h]
+  · simp [orderTop, ← single_zero_one, ← h]
+  · simp [h, ← single_zero_one, orderTop_single (fun a ↦ h a.symm)]
 
 @[simp]
 theorem orderTop_one [MulZeroOneClass R] [Nontrivial R] : orderTop (1 : HahnSeries Γ R) = 0 := by
@@ -617,10 +615,8 @@ theorem orderTop_nsmul_le_orderTop_pow {Γ} [LinearOrderedCancelAddCommMonoid Γ
   | zero =>
     simp only [zero_smul, pow_zero]
     by_cases h : (0 : R) = 1
-    · rw [orderTop, dif_pos ?_]
-      · exact OrderTop.le_top 0
-      refine leadingCoeff_eq_iff.mp ?_
-      rw [leadingCoeff_one, h]
+    · have : Subsingleton R := subsingleton_iff_zero_eq_one.mp h
+      simp
     · haveI : Nontrivial R := nontrivial_of_ne 0 1 h
       rw [orderTop_one]
   | succ n ih =>

@@ -333,6 +333,7 @@ protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :
     ((x - y).map f : HahnSeries Γ S) = x.map f - y.map f := by
   ext; simp
 
+@[simp]
 theorem orderTop_neg {x : HahnSeries Γ R} : (-x).orderTop = x.orderTop := by
   simp only [orderTop, support_neg, neg_eq_zero]
 
@@ -401,6 +402,10 @@ theorem orderTop_smul_not_lt (r : R) (x : HahnSeries Γ V) : ¬ (r • x).orderT
   · simp only [orderTop_of_ne hrx, orderTop_of_ne <| right_ne_zero_of_smul hrx, WithTop.coe_lt_coe]
     exact Set.IsWF.min_of_subset_not_lt_min
       (Function.support_smul_subset_right (fun _ => r) x.coeff)
+
+theorem orderTop_le_orderTop_smul {Γ} [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) :
+    x.orderTop ≤ (r • x).orderTop :=
+  le_of_not_lt <| orderTop_smul_not_lt r x
 
 theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     ¬ (r • x).order < x.order := by

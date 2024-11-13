@@ -110,6 +110,10 @@ nonrec theorem support_nonempty_iff {x : HahnSeries Γ R} : x.support.Nonempty �
 theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :=
   Function.support_eq_empty_iff.trans coeff_fun_eq_zero_iff
 
+@[simp]
+theorem support_of_Subsingleton [Subsingleton R] {x : HahnSeries Γ R} : x.support = ∅ := by
+  simp [Subsingleton.eq_zero x]
+
 /-- The map of Hahn series induced by applying a zero-preserving map to each coefficient. -/
 @[simps]
 def map [Zero S] (x : HahnSeries Γ R) {F : Type*} [FunLike F R S] [ZeroHomClass F R S] (f : F) :
@@ -231,6 +235,10 @@ def orderTop (x : HahnSeries Γ R) : WithTop Γ :=
 theorem orderTop_zero : orderTop (0 : HahnSeries Γ R) = ⊤ :=
   dif_pos rfl
 
+@[simp]
+theorem orderTop_of_Subsingleton [Subsingleton R] {x : HahnSeries Γ R} : x.orderTop = ⊤ :=
+  (Subsingleton.eq_zero x) ▸ orderTop_zero
+
 theorem orderTop_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
     orderTop x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
   dif_neg hx
@@ -243,6 +251,11 @@ theorem ne_zero_iff_orderTop {x : HahnSeries Γ R} : x ≠ 0 ↔ orderTop x ≠ 
 
 theorem orderTop_eq_zero_iff {x : HahnSeries Γ R} : orderTop x = ⊤ ↔ x = 0 :=
   ⟨Mathlib.Tactic.Contrapose.mtr ne_zero_iff_orderTop.mp, fun h => h ▸ orderTop_zero⟩
+
+theorem orderTop_eq_of_le {x : HahnSeries Γ R} {g : Γ} (hg : g ∈ x.support)
+    (hx : ∀ g' ∈ x.support, g ≤ g') : orderTop x = g := by
+  rw [orderTop_of_ne <| support_nonempty_iff.mp <| Set.nonempty_of_mem hg,
+    Set.IsWF.min_eq_of_le x.isWF_support hg hx]
 
 theorem untop_orderTop_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :
     WithTop.untop x.orderTop (ne_zero_iff_orderTop.mp hx) =

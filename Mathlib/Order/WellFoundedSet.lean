@@ -596,6 +596,15 @@ theorem isWF_min_singleton (a) {hs : IsWF ({a} : Set α)} {hn : ({a} : Set α).N
 
 end Preorder
 
+section PartialOrder
+
+theorem IsWF.min_eq_of_le [PartialOrder α] {s : Set α} {a : α} (hs : s.IsWF)
+    (ha : a ∈ s) (hle : ∀ b ∈ s, a ≤ b) : hs.min (nonempty_of_mem ha) = a :=
+  Eq.symm <| eq_of_le_of_not_lt (hle (hs.min (nonempty_of_mem ha))
+    (min_mem hs (nonempty_of_mem ha))) (not_lt_min hs (nonempty_of_mem ha) ha)
+
+end PartialOrder
+
 section LinearOrder
 
 variable [LinearOrder α] {s t : Set α} {a : α}

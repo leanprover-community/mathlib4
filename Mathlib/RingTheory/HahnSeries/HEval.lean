@@ -14,9 +14,8 @@ In the single variable case, we use this homomorphism to characterize invertible
 coefficients are in a commutative domain.
 
 ## Main Definitions
-  * `powers` : A summable family made of natural number powers of a positive order Hahn series.
-  * `PowerSeriesFamily` : A variant of `powers` where powers are multiplied by coefficients of a
-  formal power series.
+  * `PowerSeriesFamily` : A summable family of Hahn series where powers of a fixed positive-order
+  series are multiplied by coefficients of a formal power series.
   * `mvPowerSeriesFamily` : A summable family made of monomials with natural number exponents, where
   the variables are taken from finite set of positive order Hahn series.
   * `PowerSeries.heval` : An `R`-algebra homomorphism from `PowerSeries R` to `HahnSeries Γ R` given
