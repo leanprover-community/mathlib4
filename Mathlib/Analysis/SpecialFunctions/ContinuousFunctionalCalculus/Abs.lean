@@ -5,7 +5,7 @@ Authors: Jon Bannon
 -/
 
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart
+--import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
 /-!
