@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Data.Set.Functor
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Chebyshev
