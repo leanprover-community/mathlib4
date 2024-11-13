@@ -88,7 +88,7 @@ the subcategory of `Over X` defined by `P` is closed under pullbacks.
 Without the cancellation property, this does not in general. Consider for example
 `P = Function.Surjective` on `Type`. -/
 lemma Over.closedUnderLimitsOfShape_pullback [HasPullbacks T]
-    [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty] :
+    [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
     ClosedUnderLimitsOfShape WalkingCospan (fun f : Over X ↦ P f.hom) := by
   intro D c hc hf
   have h : IsPullback (c.π.app .left).left (c.π.app .right).left (D.map WalkingCospan.Hom.inl).left
@@ -135,7 +135,7 @@ instance [P.ContainsIdentities] : HasTerminal (P.Over ⊤ X) :=
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,
 `Over.forget P ⊤ X` creates pullbacks. -/
 noncomputable def createsLimitsOfShape_walkingCospan [HasPullbacks T]
-    [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty] :
+    [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
     CreatesLimitsOfShape WalkingCospan (Over.forget P ⊤ X) :=
   haveI : HasLimitsOfShape WalkingCospan (Comma (𝟭 T) (Functor.fromPUnit X)) :=
     inferInstanceAs <| HasLimitsOfShape WalkingCospan (Over X)
@@ -145,7 +145,7 @@ noncomputable def createsLimitsOfShape_walkingCospan [HasPullbacks T]
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,
 `P.Over ⊤ X` has pullbacks -/
 instance (priority := 900) hasPullbacks [HasPullbacks T] [P.IsStableUnderComposition]
-    [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty] : HasPullbacks (P.Over ⊤ X) :=
+    [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] : HasPullbacks (P.Over ⊤ X) :=
   haveI : HasLimitsOfShape WalkingCospan (Comma (𝟭 T) (Functor.fromPUnit X)) :=
     inferInstanceAs <| HasLimitsOfShape WalkingCospan (Over X)
   hasLimitsOfShape_of_closedUnderLimitsOfShape P
