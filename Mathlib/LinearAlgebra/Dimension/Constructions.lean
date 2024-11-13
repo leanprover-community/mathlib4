@@ -29,9 +29,9 @@ We have finrank variants for most lemmas as well.
 
 noncomputable section
 
-universe u v v' u₁' w w'
+universe u u' v v' u₁' w w'
 
-variable {R S : Type u} {M : Type v} {M' : Type v'} {M₁ : Type v}
+variable {R : Type u} {S : Type u'} {M : Type v} {M' : Type v'} {M₁ : Type v}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
 open Basis Cardinal DirectSum Function Module Set Submodule
@@ -340,10 +340,15 @@ theorem rank_tensorProduct :
 theorem rank_tensorProduct' :
     Module.rank R (M ⊗[S] M₁) = Module.rank R M * Module.rank S M₁ := by simp
 
+theorem Module.rank_baseChange :
+    Module.rank R (R ⊗[S] M') = Cardinal.lift.{u} (Module.rank S M') := by simp
+
 /-- The `S`-finrank of `M ⊗[R] M'` is `(finrank S M) * (finrank R M')`. -/
 @[simp]
 theorem Module.finrank_tensorProduct :
     finrank R (M ⊗[S] M') = finrank R M * finrank S M' := by simp [finrank]
+
+theorem Module.finrank_baseChange : finrank R (R ⊗[S] M') = finrank S M' := by simp
 
 end TensorProduct
 
