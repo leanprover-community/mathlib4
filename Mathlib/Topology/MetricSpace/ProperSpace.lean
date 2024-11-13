@@ -69,9 +69,6 @@ theorem ProperSpace.of_isCompact_closedBall_of_le (R : ℝ)
   ⟨fun x r => IsCompact.of_isClosed_subset (h x (max r R) (le_max_right _ _)) isClosed_ball
     (closedBall_subset_closedBall <| le_max_left _ _)⟩
 
-@[deprecated (since := "2024-01-31")]
-alias properSpace_of_compact_closedBall_of_le := ProperSpace.of_isCompact_closedBall_of_le
-
 /-- If there exists a sequence of compact closed balls with the same center
 such that the radii tend to infinity, then the space is proper. -/
 theorem ProperSpace.of_seq_closedBall {β : Type*} {l : Filter β} [NeBot l] {x : α} {r : β → ℝ}

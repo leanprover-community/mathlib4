@@ -140,8 +140,6 @@ end InvMemClass
 
 namespace SubgroupClass
 
-@[to_additive (attr := deprecated (since := "2024-01-15"))] alias coe_inv := InvMemClass.coe_inv
-
 -- Here we assume H, K, and L are subgroups, but in fact any one of them
 -- could be allowed to be a subsemigroup.
 -- Counterexample where K and L are submonoids: H = ℤ, K = ℕ, L = -ℕ

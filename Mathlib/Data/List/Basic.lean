@@ -196,10 +196,6 @@ theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
 theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ :=
   rfl
 
-@[deprecated (since := "2024-01-18")] alias append_left_cancel := append_cancel_left
-
-@[deprecated (since := "2024-01-18")] alias append_right_cancel := append_cancel_right
-
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
   fun _ _ ↦ append_cancel_left
 
