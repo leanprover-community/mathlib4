@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Subtype
 import Mathlib.Order.Defs
+import Mathlib.Order.RelClasses
 import Mathlib.Order.Notation
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Spread
@@ -550,6 +551,16 @@ infixl:80 " ⁻¹'o " => Order.Preimage
 instance Order.Preimage.decidable (f : α → β) (s : β → β → Prop) [H : DecidableRel s] :
     DecidableRel (f ⁻¹'o s) := fun _ _ ↦ H _ _
 
+namespace Order.Preimage
+
+instance instIsRefl {r : α → α → Prop} [IsRefl α r] {f : β → α} : IsRefl β (f ⁻¹'o r) :=
+  ⟨fun a => refl_of r (f a)⟩
+
+instance instIsTrans {r : α → α → Prop} [IsTrans α r] {f : β → α} : IsTrans β (f ⁻¹'o r) :=
+  ⟨fun _ _ _ => trans_of r⟩
+
+end Order.Preimage
+
 section ltByCases
 
 variable [LinearOrder α] {P : Sort*} {x y : α}
@@ -727,7 +738,24 @@ theorem instLinearOrder.dual_dual (α : Type*) [H : LinearOrder α] :
     OrderDual.instLinearOrder αᵒᵈ = H :=
   LinearOrder.ext fun _ _ ↦ Iff.rfl
 
+instance isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
+  @IsTotal.swap α _ h
+
 end OrderDual
+
+-- See note [lower instance priority]
+instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=
+  h
+
+-- See note [lower instance priority]
+instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedGT α] : WellFoundedLT αᵒᵈ :=
+  h
+
+theorem wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
+  ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
+
+theorem wellFoundedLT_dual_iff (α : Type*) [LT α] : WellFoundedLT αᵒᵈ ↔ WellFoundedGT α :=
+  ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 
 /-! ### `HasCompl` -/
 
@@ -1183,6 +1211,18 @@ instance instPartialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] :
     PartialOrder (α × β) where
   __ := inferInstanceAs (Preorder (α × β))
   le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ ↦ Prod.ext (hac.antisymm hca) (hbd.antisymm hdb)
+
+/-- See `Prod.wellFoundedLT` for a version that only requires `Preorder α`. -/
+theorem wellFoundedLT' [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
+    WellFoundedLT (α × β) :=
+  Subrelation.isWellFounded (Prod.Lex (· < ·) (· < ·))
+    fun {x y} h ↦ (Prod.lt_iff.mp h).elim (fun h ↦ .left _ _ h.1)
+    fun h ↦ h.1.lt_or_eq.elim (.left _ _) <| by cases x; cases y; rintro rfl; exact .right _ h.2
+
+/-- See `Prod.wellFoundedGT` for a version that only requires `Preorder α`. -/
+theorem wellFoundedGT' [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
+    WellFoundedGT (α × β) :=
+  @Prod.wellFoundedLT' αᵒᵈ βᵒᵈ _ _ _ _
 
 end Prod
 

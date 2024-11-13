@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Logic.IsEmpty
-import Mathlib.Order.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.Spread
 import Batteries.WF
 
 /-!
@@ -319,20 +319,6 @@ abbrev WellFoundedGT (α : Type*) [LT α] : Prop :=
 lemma wellFounded_lt [LT α] [WellFoundedLT α] : @WellFounded α (· < ·) := IsWellFounded.wf
 lemma wellFounded_gt [LT α] [WellFoundedGT α] : @WellFounded α (· > ·) := IsWellFounded.wf
 
--- See note [lower instance priority]
-instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=
-  h
-
--- See note [lower instance priority]
-instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedGT α] : WellFoundedLT αᵒᵈ :=
-  h
-
-theorem wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
-  ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
-
-theorem wellFoundedLT_dual_iff (α : Type*) [LT α] : WellFoundedLT αᵒᵈ ↔ WellFoundedGT α :=
-  ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
-
 /-- A well order is a well-founded linear order. -/
 class IsWellOrder (α : Type u) (r : α → α → Prop) extends
   IsTrichotomous α r, IsTrans α r, IsWellFounded α r : Prop
@@ -467,18 +453,6 @@ theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] 
     (h : Subrelation s r) : IsWellFounded α s :=
   ⟨h.wf IsWellFounded.wf⟩
 
-/-- See `Prod.wellFoundedLT` for a version that only requires `Preorder α`. -/
-theorem Prod.wellFoundedLT' [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
-    WellFoundedLT (α × β) :=
-  Subrelation.isWellFounded (Prod.Lex (· < ·) (· < ·))
-    fun {x y} h ↦ (Prod.lt_iff.mp h).elim (fun h ↦ .left _ _ h.1)
-    fun h ↦ h.1.lt_or_eq.elim (.left _ _) <| by cases x; cases y; rintro rfl; exact .right _ h.2
-
-/-- See `Prod.wellFoundedGT` for a version that only requires `Preorder α`. -/
-theorem Prod.wellFoundedGT' [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
-    WellFoundedGT (α × β) :=
-  @Prod.wellFoundedLT' αᵒᵈ βᵒᵈ _ _ _ _
-
 namespace Set
 
 /-- An unbounded or cofinal set. -/
@@ -501,16 +475,6 @@ theorem unbounded_of_isEmpty [IsEmpty α] {r : α → α → Prop} (s : Set α) 
   isEmptyElim
 
 end Set
-
-namespace Order.Preimage
-
-instance instIsRefl {r : α → α → Prop} [IsRefl α r] {f : β → α} : IsRefl β (f ⁻¹'o r) :=
-  ⟨fun a => refl_of r (f a)⟩
-
-instance instIsTrans {r : α → α → Prop} [IsTrans α r] {f : β → α} : IsTrans β (f ⁻¹'o r) :=
-  ⟨fun _ _ _ => trans_of r⟩
-
-end Order.Preimage
 
 /-! ### Strict-non strict relations -/
 
@@ -796,9 +760,6 @@ theorem transitive_ge [Preorder α] : Transitive (@GE.ge α _) :=
 
 theorem transitive_gt [Preorder α] : Transitive (@GT.gt α _) :=
   transitive_of_trans _
-
-instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
-  @IsTotal.swap α _ h
 
 instance : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩

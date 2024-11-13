@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Embedding.Basic
-import Mathlib.Order.RelClasses
+import Mathlib.Order.Basic
 
 /-!
 # Relation homomorphisms, embeddings, isomorphisms
