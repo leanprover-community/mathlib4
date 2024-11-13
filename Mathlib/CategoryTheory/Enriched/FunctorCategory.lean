@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Enriched.Ordinary
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Limits.Shapes.End
@@ -340,5 +341,68 @@ noncomputable def isLimitConeFunctorEnrichedHom :
     exact this
 
 end
+
+@[simps]
+noncomputable def functorEnrichedId [HasFunctorEnrichedHom V F₁ F₁] :
+    𝟙_ (J ⥤ V) ⟶ functorEnrichedHom V F₁ F₁ where
+  app j := enrichedId V _
+  naturality j j' f := by
+    dsimp
+    ext k
+    dsimp
+    rw [assoc, assoc, id_comp, enrichedId_π]
+    erw [precompEnrichedHom_π]
+    rw [enrichedId_π]
+    dsimp
+
+@[simps]
+noncomputable def functorEnrichedComp [HasFunctorEnrichedHom V F₁ F₂]
+    [HasFunctorEnrichedHom V F₂ F₃] [HasFunctorEnrichedHom V F₁ F₃] :
+    functorEnrichedHom V F₁ F₂ ⊗ functorEnrichedHom V F₂ F₃ ⟶ functorEnrichedHom V F₁ F₃ where
+  app j := enrichedComp V _ _ _
+  naturality j j' f := by
+    dsimp
+    ext k
+    dsimp
+    rw [assoc, assoc, enrichedComp_π]
+    dsimp
+    rw [← tensor_comp_assoc]
+    erw [precompEnrichedHom_π, precompEnrichedHom_π, precompEnrichedHom_π]
+    rw [enrichedComp_π]
+    dsimp
+
+@[reassoc (attr := simp)]
+lemma functorEnriched_id_comp [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₁ F₁] :
+    (λ_ (functorEnrichedHom V F₁ F₂)).inv ≫
+      functorEnrichedId V F₁ ▷ functorEnrichedHom V F₁ F₂ ≫
+        functorEnrichedComp V F₁ F₁ F₂ = 𝟙 (functorEnrichedHom V F₁ F₂) := by aesop_cat
+
+@[reassoc (attr := simp)]
+lemma functorEnriched_comp_id [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₂ F₂] :
+    (ρ_ (functorEnrichedHom V F₁ F₂)).inv ≫
+      functorEnrichedHom V F₁ F₂ ◁ functorEnrichedId V F₂ ≫
+        functorEnrichedComp V F₁ F₂ F₂ = 𝟙 (functorEnrichedHom V F₁ F₂) := by aesop_cat
+
+@[reassoc (attr := simp)]
+lemma functorEnriched_assoc [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₂ F₃]
+    [HasFunctorEnrichedHom V F₃ F₄] [HasFunctorEnrichedHom V F₁ F₃]
+    [HasFunctorEnrichedHom V F₂ F₄] [HasFunctorEnrichedHom V F₁ F₄] :
+    (α_ _ _ _).inv ≫ functorEnrichedComp V F₁ F₂ F₃ ▷ functorEnrichedHom V F₃ F₄ ≫
+      functorEnrichedComp V F₁ F₃ F₄ =
+        functorEnrichedHom V F₁ F₂ ◁ functorEnrichedComp V F₂ F₃ F₄ ≫
+          functorEnrichedComp V F₁ F₂ F₄ := by
+  ext j
+  dsimp
+  rw [enriched_assoc]
+
+noncomputable def functorEnrichedOrdinaryCategory
+    [∀ (F₁ F₂ : J ⥤ C), HasFunctorEnrichedHom V F₁ F₂] :
+    EnrichedOrdinaryCategory (J ⥤ V) (J ⥤ C) where
+  Hom F₁ F₂ := functorEnrichedHom V F₁ F₂
+  id F := functorEnrichedId V F
+  comp F₁ F₂ F₃ := functorEnrichedComp V F₁ F₂ F₃
+  homEquiv := sorry
+  homEquiv_id := sorry
+  homEquiv_comp := sorry
 
 end CategoryTheory.Enriched.FunctorCategory
