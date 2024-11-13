@@ -118,8 +118,8 @@ lemma toAddSubgroup_index_eq {ι R M : Type*} {n : ℕ} [Fintype ι] [Infinite R
     · simp
     · have he : ∃ j, f j = fe.toEmbedding i := ⟨i, rfl⟩
       rw [dif_pos he]
-      convert rfl
-      exact f.injective he.choose_spec
+      congr
+      exact (f.injective he.choose_spec).symm
   · simp only [Finset.prod_eq_zero_iff, Finset.mem_univ, true_and]
     have hlt : Fintype.card (Fin n) < Fintype.card ι :=
       Ne.lt_of_le (by simpa using h) (Fintype.card_le_of_embedding f)
