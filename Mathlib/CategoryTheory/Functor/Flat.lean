@@ -289,15 +289,17 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
     F.lan ⋙ (evaluation D E).obj X ≅
       (whiskeringLeft _ _ E).obj (CostructuredArrow.proj F X) ⋙ colim :=
   NatIso.ofComponents (fun G =>
-    IsColimit.coconePointUniqueUpToIso (Functor.isPointwiseLeftKanExtensionLanUnit F G X)
+    IsColimit.coconePointUniqueUpToIso
+    (Functor.isPointwiseLeftKanExtensionLeftKanExtensionUnit F G X)
     (colimit.isColimit _)) (fun {G₁ G₂} φ => by
-      apply (Functor.isPointwiseLeftKanExtensionLanUnit F G₁ X).hom_ext
+      apply (Functor.isPointwiseLeftKanExtensionLeftKanExtensionUnit F G₁ X).hom_ext
       intro T
       have h₁ := fun (G : C ⥤ E) => IsColimit.comp_coconePointUniqueUpToIso_hom
-        (Functor.isPointwiseLeftKanExtensionLanUnit F G X) (colimit.isColimit _) T
+        (Functor.isPointwiseLeftKanExtensionLeftKanExtensionUnit F G X) (colimit.isColimit _) T
       have h₂ := congr_app (F.lanUnit.naturality φ) T.left
       dsimp at h₁ h₂ ⊢
       simp only [Category.assoc] at h₁ ⊢
+      simp only [Functor.lan, Functor.lanUnit] at h₂ ⊢
       rw [reassoc_of% h₁, NatTrans.naturality_assoc, ← reassoc_of% h₂, h₁,
         ι_colimMap, whiskerLeft_app]
       rfl)
