@@ -187,7 +187,7 @@ lemma IsDominant.of_comp_of_isOpenImmersion
   rw [isDominant_iff, DenseRange] at H ⊢
   simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp] at H
   convert H.preimage g.isOpenEmbedding.isOpenMap using 1
-  rw [Set.preimage_image_eq _ g.isOpenEmbedding.inj]
+  rw [Set.preimage_image_eq _ g.isOpenEmbedding.injective]
 
 end IsDominant
 

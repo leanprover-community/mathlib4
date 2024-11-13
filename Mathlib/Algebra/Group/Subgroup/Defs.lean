@@ -312,8 +312,8 @@ theorem mk_le_mk {s t : Set G} (h_one) (h_mul) (h_inv) (h_one') (h_mul') (h_inv'
     mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv ≤ mk ⟨⟨t, h_one'⟩, h_mul'⟩ h_inv' ↔ s ⊆ t :=
   Iff.rfl
 
-initialize_simps_projections Subgroup (carrier → coe)
-initialize_simps_projections AddSubgroup (carrier → coe)
+initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
+initialize_simps_projections AddSubgroup (carrier → coe, as_prefix coe)
 
 @[to_additive (attr := simp)]
 theorem coe_toSubmonoid (K : Subgroup G) : (K.toSubmonoid : Set G) = K :=

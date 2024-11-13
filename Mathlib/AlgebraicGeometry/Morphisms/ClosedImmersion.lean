@@ -132,7 +132,7 @@ theorem of_comp_isClosedImmersion {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [
   base_closed := by
     have h := (f ≫ g).isClosedEmbedding
     simp only [Scheme.comp_coeBase, TopCat.coe_comp] at h
-    refine .of_continuous_injective_isClosedMap (Scheme.Hom.continuous f) h.inj.of_comp ?_
+    refine .of_continuous_injective_isClosedMap (Scheme.Hom.continuous f) h.injective.of_comp ?_
     intro Z hZ
     rw [IsClosedEmbedding.isClosed_iff_image_isClosed g.isClosedEmbedding,
       ← Set.image_comp]
@@ -232,12 +232,12 @@ theorem isIso_of_injective_of_isAffine [IsClosedImmersion f]
     (hf : Function.Injective (f.app ⊤)) : IsIso f := (isIso_iff_stalk_iso f).mpr <|
   have : CompactSpace X := f.isClosedEmbedding.compactSpace
   have hiso : IsIso f.base := TopCat.isIso_of_bijective_of_isClosedMap _
-    ⟨f.isClosedEmbedding.inj,
+    ⟨f.isClosedEmbedding.injective,
      surjective_of_isClosed_range_of_injective f.isClosedEmbedding.isClosed_range hf⟩
     (f.isClosedEmbedding.isClosedMap)
   ⟨hiso, fun x ↦ (ConcreteCategory.isIso_iff_bijective _).mpr
     ⟨stalkMap_injective_of_isOpenMap_of_injective ((TopCat.homeoOfIso (asIso f.base)).isOpenMap)
-    f.isClosedEmbedding.inj hf _, f.stalkMap_surjective x⟩⟩
+    f.isClosedEmbedding.injective hf _, f.stalkMap_surjective x⟩⟩
 
 variable (f)
 
