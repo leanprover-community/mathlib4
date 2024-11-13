@@ -118,7 +118,7 @@ lemma nmem_nonZeroDivisors_iff {r : M} : r ∉ M⁰ ↔ {s | s * r = 0 ∧ s ≠
   simpa [mem_nonZeroDivisors_iff] using Set.nonempty_def.symm
 
 theorem mul_right_mem_nonZeroDivisors_eq_zero_iff {x r : M} (hr : r ∈ M⁰) : x * r = 0 ↔ x = 0 :=
-  ⟨hr _, by simp (config := { contextual := true })⟩
+  ⟨hr _, by simp +contextual⟩
 @[simp]
 theorem mul_right_coe_nonZeroDivisors_eq_zero_iff {x : M} {c : M⁰} : x * c = 0 ↔ x = 0 :=
   mul_right_mem_nonZeroDivisors_eq_zero_iff c.prop
@@ -182,8 +182,8 @@ theorem mul_mem_nonZeroDivisors {a b : M₁} : a * b ∈ M₁⁰ ↔ a ∈ M₁�
 
 theorem isUnit_of_mem_nonZeroDivisors {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
     (hx : x ∈ nonZeroDivisors G₀) : IsUnit x :=
-  ⟨⟨x, x⁻¹, mul_inv_cancel (nonZeroDivisors.ne_zero hx),
-    inv_mul_cancel (nonZeroDivisors.ne_zero hx)⟩, rfl⟩
+  ⟨⟨x, x⁻¹, mul_inv_cancel₀ (nonZeroDivisors.ne_zero hx),
+    inv_mul_cancel₀ (nonZeroDivisors.ne_zero hx)⟩, rfl⟩
 
 lemma IsUnit.mem_nonZeroDivisors {a : M} (ha : IsUnit a) : a ∈ M⁰ :=
   fun _ h ↦ ha.mul_left_eq_zero.mp h
@@ -214,7 +214,7 @@ theorem map_mem_nonZeroDivisors [Nontrivial M] [NoZeroDivisors M'] [ZeroHomClass
 
 theorem le_nonZeroDivisors_of_noZeroDivisors [NoZeroDivisors M] {S : Submonoid M}
     (hS : (0 : M) ∉ S) : S ≤ M⁰ := fun _ hx _ hy ↦
-  Or.recOn (eq_zero_or_eq_zero_of_mul_eq_zero hy) (fun h ↦ h) fun h ↦
+  Or.recOn (eq_zero_or_eq_zero_of_mul_eq_zero hy) id fun h ↦
     absurd (h ▸ hx : (0 : M) ∈ S) hS
 
 theorem powers_le_nonZeroDivisors_of_noZeroDivisors [NoZeroDivisors M] {a : M} (ha : a ≠ 0) :
@@ -283,7 +283,7 @@ def unitsNonZeroDivisorsEquiv : M₀⁰ˣ ≃* M₀ˣ where
   right_inv _ := rfl
 
 @[simp, norm_cast] lemma nonZeroDivisors.associated_coe : Associated (a : M₀) b ↔ Associated a b :=
-  unitsNonZeroDivisorsEquiv.symm.exists_congr_left.trans $ by simp [Associated]; norm_cast
+  unitsNonZeroDivisorsEquiv.symm.exists_congr_left.trans <| by simp [Associated]; norm_cast
 
 end MonoidWithZero
 
@@ -304,7 +304,7 @@ theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀
 /-- The non-zero divisors of associates of a monoid with zero `M₀` are isomorphic to the associates
 of the non-zero divisors of `M₀` under the map `⟨⟦a⟧, _⟩ ↦ ⟦⟨a, _⟩⟧`. -/
 def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀⁰ where
-  toEquiv := .subtypeQuotientEquivQuotientSubtype (s₂ := Associated.setoid _)
+  toEquiv := .subtypeQuotientEquivQuotientSubtype _ (s₂ := Associated.setoid _)
     (· ∈ nonZeroDivisors _)
     (by simp [mem_nonZeroDivisors_iff, Quotient.forall, Associates.mk_mul_mk])
     (by simp [Associated.setoid])

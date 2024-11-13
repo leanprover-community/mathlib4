@@ -8,6 +8,7 @@ import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+import Mathlib.Topology.ContinuousMap.Periodic
 
 /-!
 # Poisson's summation formula
@@ -58,7 +59,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   -- block, but I think it's more legible this way. We start with preliminaries about the integrand.
   let e : C(ℝ, ℂ) := (fourier (-m)).comp ⟨((↑) : ℝ → UnitAddCircle), continuous_quotient_mk'⟩
   have neK : ∀ (K : Compacts ℝ) (g : C(ℝ, ℂ)), ‖(e * g).restrict K‖ = ‖g.restrict K‖ := by
-    have (x : ℝ) : ‖e x‖ = 1 := abs_coe_circle (AddCircle.toCircle (-m • x))
+    have (x : ℝ) : ‖e x‖ = 1 := (AddCircle.toCircle (-m • x)).abs_coe
     intro K g
     simp_rw [norm_eq_iSup_norm, restrict_apply, mul_apply, norm_mul, this, one_mul]
   have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
+Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
@@ -87,15 +87,15 @@ theorem braiding_inv_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
     ((β_ M N).inv : N ⊗ M ⟶ M ⊗ N) (n ⊗ₜ m) = m ⊗ₜ n :=
   rfl
 
-theorem tensor_μ_eq_tensorTensorTensorComm {A B C D : ModuleCat R} :
-    tensor_μ _ (A, B) (C, D) = (TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap :=
+theorem tensorμ_eq_tensorTensorTensorComm {A B C D : ModuleCat R} :
+    tensorμ A B C D = (TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap :=
   TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun _ _ =>
     TensorProduct.ext <| LinearMap.ext₂ fun _ _ => rfl
 
 @[simp]
-theorem tensor_μ_apply
+theorem tensorμ_apply
     {A B C D : ModuleCat R} (x : A) (y : B) (z : C) (w : D) :
-    tensor_μ _ (A, B) (C, D) ((x ⊗ₜ y) ⊗ₜ (z ⊗ₜ w)) = (x ⊗ₜ z) ⊗ₜ (y ⊗ₜ w) := rfl
+    tensorμ A B C D ((x ⊗ₜ y) ⊗ₜ (z ⊗ₜ w)) = (x ⊗ₜ z) ⊗ₜ (y ⊗ₜ w) := rfl
 
 end MonoidalCategory
 

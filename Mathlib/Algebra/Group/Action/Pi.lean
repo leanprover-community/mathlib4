@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Data.Set.Function
 
 /-!
@@ -21,12 +21,16 @@ This file defines instances for `MulAction` and related structures on `Pi` types
 
 assert_not_exists MonoidWithZero
 
-variable {ι M N : Type*} {α β γ : ι → Type*} (x y : ∀ i, α i) (i : ι)
+variable {ι M N : Type*} {α β γ : ι → Type*} (i : ι)
 
 namespace Pi
 
 @[to_additive]
 instance smul' [∀ i, SMul (α i) (β i)] : SMul (∀ i, α i) (∀ i, β i) where smul s x i := s i • x i
+
+@[to_additive]
+lemma smul_def' [∀ i, SMul (α i) (β i)] (s : ∀ i, α i) (x : ∀ i, β i) : s • x = fun i ↦ s i • x i :=
+  rfl
 
 @[to_additive (attr := simp)]
 lemma smul_apply' [∀ i, SMul (α i) (β i)] (s : ∀ i, α i) (x : ∀ i, β i) : (s • x) i = s i • x i :=

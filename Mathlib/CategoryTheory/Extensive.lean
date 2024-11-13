@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.VanKampen
 
@@ -45,8 +45,7 @@ Show that the following are finitary extensive:
 
 -/
 
-
-open CategoryTheory.Limits
+open CategoryTheory.Limits Topology
 
 namespace CategoryTheory
 
@@ -79,7 +78,7 @@ and binary coproducts are universal. -/
 class FinitaryPreExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
   [hasPullbacksOfInclusions : HasPullbacksOfInclusions C]
-  /-- In a finitary extensive category, all coproducts are van Kampen-/
+  /-- In a finitary extensive category, all coproducts are van Kampen -/
   universal' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsUniversalColimit c
 
 attribute [instance] FinitaryPreExtensive.hasFiniteCoproducts
@@ -90,7 +89,7 @@ and binary coproducts are van Kampen. -/
 class FinitaryExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
   [hasPullbacksOfInclusions : HasPullbacksOfInclusions C]
-  /-- In a finitary extensive category, all coproducts are van Kampen-/
+  /-- In a finitary extensive category, all coproducts are van Kampen -/
   van_kampen' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsVanKampenColimit c
 
 attribute [instance] FinitaryExtensive.hasFiniteCoproducts
@@ -294,9 +293,9 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
     · rintro _ ⟨x, rfl⟩; exact ⟨PUnit.unit, x.2.symm⟩
     · rintro x ⟨⟨⟩, hx⟩; refine ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
   refine ((TopCat.binaryCofan_isColimit_iff _).mpr ⟨?_, ?_, ?_⟩).some
-  · refine ⟨(Homeomorph.prodPUnit Z).embedding.comp embedding_subtype_val, ?_⟩
+  · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩
     convert f.2.1 _ isOpen_range_inl
-  · refine ⟨(Homeomorph.prodPUnit Z).embedding.comp embedding_subtype_val, ?_⟩
+  · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩
     convert f.2.1 _ isOpen_range_inr
   · convert Set.isCompl_range_inl_range_inr.preimage f
 
@@ -321,7 +320,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
       refine ⟨⟨l, ?_⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ => ContinuousMap.ext fun x =>
           hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
-      apply (embedding_inl (X := X') (Y := Y')).toInducing.continuous_iff.mpr
+      apply (IsEmbedding.inl (X := X') (Y := Y')).isInducing.continuous_iff.mpr
       convert s.fst.2 using 1
       exact (funext hl).symm
     · refine ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
@@ -338,7 +337,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
       refine ⟨⟨l, ?_⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ =>
           ContinuousMap.ext fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
-      apply (embedding_inr (X := X') (Y := Y')).toInducing.continuous_iff.mpr
+      apply (IsEmbedding.inr (X := X') (Y := Y')).isInducing.continuous_iff.mpr
       convert s.fst.2 using 1
       exact (funext hl).symm
   · intro Z f
@@ -426,15 +425,12 @@ theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin [FinitaryPreExtens
     Functor.hext (fun _ ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp [f])
   clear_value f
   subst this
-  induction' n with n IH
-  · exact (isVanKampenColimit_of_isEmpty _ hc).isUniversal
-  · apply IsUniversalColimit.of_iso _
+  induction n with
+  | zero => exact (isVanKampenColimit_of_isEmpty _ hc).isUniversal
+  | succ n IH =>
+    refine IsUniversalColimit.of_iso (@isUniversalColimit_extendCofan _ _ _ _ _ _
+      (IH _ (coproductIsCoproduct _)) (FinitaryPreExtensive.universal' _ (coprodIsCoprod _ _)) ?_)
       ((extendCofanIsColimit f (coproductIsCoproduct _) (coprodIsCoprod _ _)).uniqueUpToIso hc)
-    apply @isUniversalColimit_extendCofan _ _ _ _ _ _ _ _ ?_
-    · apply IH
-      exact coproductIsCoproduct _
-    · apply FinitaryPreExtensive.universal'
-      exact coprodIsCoprod _ _
     · dsimp
       infer_instance
 
@@ -530,7 +526,7 @@ instance FinitaryPreExtensive.hasPullbacks_of_inclusions [FinitaryPreExtensive C
     {α : Type*} (f : X ⟶ Z) {Y : (a : α) → C} (i : (a : α) → Y a ⟶ Z) [Finite α]
     [hi : IsIso (Sigma.desc i)] (a : α) : HasPullback f (i a) := by
   apply FinitaryPreExtensive.hasPullbacks_of_is_coproduct (c := Cofan.mk Z i)
-  exact @IsColimit.ofPointIso (t := Cofan.mk Z i) (P := _) hi
+  exact @IsColimit.ofPointIso (t := Cofan.mk Z i) (P := _) (i := hi)
 
 lemma FinitaryPreExtensive.sigma_desc_iso [FinitaryPreExtensive C] {α : Type} [Finite α] {X : C}
     {Z : α → C} (π : (a : α) → Z a ⟶ X) {Y : C} (f : Y ⟶ X) (hπ : IsIso (Sigma.desc π)) :
@@ -539,7 +535,7 @@ lemma FinitaryPreExtensive.sigma_desc_iso [FinitaryPreExtensive C] {α : Type} [
     change IsIso (this.coconePointUniqueUpToIso (getColimitCocone _).2).inv
     infer_instance
   let this : IsColimit (Cofan.mk X π) := by
-    refine @IsColimit.ofPointIso (t := Cofan.mk X π) (P := coproductIsCoproduct Z) ?_
+    refine @IsColimit.ofPointIso (t := Cofan.mk X π) (P := coproductIsCoproduct Z) (i := ?_)
     convert hπ
     simp [coproductIsCoproduct]
   refine (FinitaryPreExtensive.isUniversal_finiteCoproducts this

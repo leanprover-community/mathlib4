@@ -43,11 +43,11 @@ variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀}
 
 -- Porting note: used `simpa` to prove `False` in lean3
 theorem inv_ne_zero (h : a ≠ 0) : a⁻¹ ≠ 0 := fun a_eq_0 => by
-  have := mul_inv_cancel h
+  have := mul_inv_cancel₀ h
   simp only [a_eq_0, mul_zero, zero_ne_one] at this
 
 @[simp]
-theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
+theorem inv_mul_cancel₀ (h : a ≠ 0) : a⁻¹ * a = 1 :=
   calc
     a⁻¹ * a = a⁻¹ * a * a⁻¹ * a⁻¹⁻¹ := by simp [inv_ne_zero h]
     _ = a⁻¹ * a⁻¹⁻¹ := by simp [h]

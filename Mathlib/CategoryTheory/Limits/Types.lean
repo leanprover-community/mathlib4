@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Reid Barton
+Authors: Kim Morrison, Reid Barton
 -/
 import Mathlib.Data.TypeMax
 import Mathlib.Logic.UnivLE
@@ -330,7 +330,7 @@ def Quot (F : J ⥤ Type u) : Type (max v u) :=
   _root_.Quot (Quot.Rel F)
 
 instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} (Quot F) :=
-  small_of_surjective (surjective_quot_mk _)
+  small_of_surjective Quot.mk_surjective
 
 /-- Inclusion into the quotient type implementing the colimit. -/
 def Quot.ι (F : J ⥤ Type u) (j : J) : F.obj j → Quot F :=
@@ -548,7 +548,7 @@ theorem colimit_sound' {j j' : J} {x : F.obj j} {x' : F.obj j'} {j'' : J}
 variable {F} in
 theorem colimit_eq {j j' : J} {x : F.obj j} {x' : F.obj j'}
     (w : colimit.ι F j x = colimit.ι F j' x') :
-      EqvGen (Quot.Rel F) ⟨j, x⟩ ⟨j', x'⟩ := by
+      Relation.EqvGen (Quot.Rel F) ⟨j, x⟩ ⟨j', x'⟩ := by
   apply Quot.eq.1
   simpa using congr_arg (colimitEquivQuot F) w
 
@@ -632,9 +632,9 @@ instance : HasImageMaps (Type u) where
         have p := st.w
         replace p := congr_fun p (Classical.choose x.2)
         simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p
-        erw [p, Classical.choose_spec x.2]⟩⟩) rfl
+        rw [p, Classical.choose_spec x.2]⟩⟩) rfl
 
-variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F} (hc : IsLimit c)
+variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
   (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op))
 
 private noncomputable def limitOfSurjectionsSurjective.preimage
@@ -642,6 +642,7 @@ private noncomputable def limitOfSurjectionsSurjective.preimage
     | 0 => a
     | n+1 => (hF n (preimage a n)).choose
 
+include hF in
 open limitOfSurjectionsSurjective in
 /-- Auxiliary lemma. Use `limit_of_surjections_surjective` instead. -/
 lemma surjective_π_app_zero_of_surjective_map_aux :

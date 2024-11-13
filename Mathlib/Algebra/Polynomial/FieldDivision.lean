@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.Roots
@@ -93,10 +93,12 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors'
     n < p.rootMultiplicity t := by
   apply lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors h hroot
   clear hroot
-  induction' n with n ih
-  · simp only [Nat.zero_eq, Nat.factorial_zero, Nat.cast_one]
+  induction n with
+  | zero =>
+    simp only [Nat.factorial_zero, Nat.cast_one]
     exact Submonoid.one_mem _
-  · rw [Nat.factorial_succ, Nat.cast_mul, mul_mem_nonZeroDivisors]
+  | succ n ih =>
+    rw [Nat.factorial_succ, Nat.cast_mul, mul_mem_nonZeroDivisors]
     exact ⟨hnzd _ le_rfl n.succ_ne_zero, ih fun m h ↦ hnzd m (h.trans n.le_succ)⟩
 
 theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative_of_mem_nonZeroDivisors
@@ -193,12 +195,16 @@ instance instNormalizationMonoid : NormalizationMonoid R[X] where
 theorem coe_normUnit {p : R[X]} : (normUnit p : R[X]) = C ↑(normUnit p.leadingCoeff) := by
   simp [normUnit]
 
+@[simp]
 theorem leadingCoeff_normalize (p : R[X]) :
-    leadingCoeff (normalize p) = normalize (leadingCoeff p) := by simp
+    leadingCoeff (normalize p) = normalize (leadingCoeff p) := by simp [normalize_apply]
 
 theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := by
   simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
     Units.val_one, Polynomial.C.map_one, mul_one]
+
+@[deprecated Polynomial.Monic.normalize_eq_self (since := "2024-10-21")]
+alias normalize_monic := Monic.normalize_eq_self
 
 theorem roots_normalize {p : R[X]} : (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
@@ -265,7 +271,7 @@ theorem isUnit_iff_degree_eq_zero : IsUnit p ↔ degree p = 0 :=
     isUnit_iff_dvd_one.2
       ⟨C (coeff p 0)⁻¹, by
         conv in p => rw [eq_C_of_degree_le_zero this]
-        rw [← C_mul, _root_.mul_inv_cancel hc, C_1]⟩⟩
+        rw [← C_mul, mul_inv_cancel₀ hc, C_1]⟩⟩
 
 /-- Division of polynomials. See `Polynomial.divByMonic` for more details. -/
 def div (p q : R[X]) :=
@@ -321,8 +327,8 @@ instance instEuclideanDomain : EuclideanDomain R[X] :=
     r := _
     r_wellFounded := degree_lt_wf
     quotient_mul_add_remainder_eq := quotient_mul_add_remainder_eq_aux
-    remainder_lt := fun p q hq => remainder_lt_aux _ hq
-    mul_left_not_lt := fun p q hq => not_lt_of_ge (degree_le_mul_left _ hq) }
+    remainder_lt := fun _ _ hq => remainder_lt_aux _ hq
+    mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
@@ -332,7 +338,7 @@ theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
     rw [mod_def, modByMonic, dif_pos (monic_mul_leadingCoeff_inv hq0)]
     unfold divModByMonicAux
     dsimp
-    simp only [this, false_and_iff, if_false]⟩
+    simp only [this, false_and, if_false]⟩
 
 theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
@@ -379,6 +385,21 @@ theorem map_mod [Field k] (f : R →+* k) : (p % q).map f = p.map f % q.map f :=
   · simp [hq0]
   · rw [mod_def, mod_def, leadingCoeff_map f, ← map_inv₀ f, ← map_C f, ← Polynomial.map_mul f,
       map_modByMonic f (monic_mul_leadingCoeff_inv hq0)]
+
+lemma natDegree_mod_lt [Field k] (p : k[X]) {q : k[X]} (hq : q.natDegree ≠ 0) :
+    (p % q).natDegree < q.natDegree := by
+  have hq' : q.leadingCoeff ≠ 0 := by
+    rw [leadingCoeff_ne_zero]
+    contrapose! hq
+    simp [hq]
+  rw [mod_def]
+  refine (natDegree_modByMonic_lt p ?_ ?_).trans_le ?_
+  · refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
+    rw [mul_inv_eq_one₀ hq']
+  · contrapose! hq
+    rw [← natDegree_mul_C_eq_of_mul_eq_one ((inv_mul_eq_one₀ hq').mpr rfl)]
+    simp [hq]
+  · exact natDegree_mul_C_le q q.leadingCoeff⁻¹
 
 section
 
@@ -464,7 +485,7 @@ theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = 
     coeff_C, coeff_C, inv_eq_one_div]
   split_ifs
   · rw [div_eq_iff_mul_eq (coeff_coe_units_zero_ne_zero u), coeff_zero_eq_eval_zero,
-        coeff_zero_eq_eval_zero, ← eval_mul, ← Units.val_mul, inv_mul_self]
+        coeff_zero_eq_eval_zero, ← eval_mul, ← Units.val_mul, inv_mul_cancel]
     simp
   · simp
 
@@ -487,18 +508,18 @@ theorem div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
   · simp [ha]
   simp only [div_def, leadingCoeff_mul, mul_inv, leadingCoeff_C, C.map_mul, mul_assoc]
   congr 3
-  rw [mul_left_comm q, ← mul_assoc, ← C.map_mul, mul_inv_cancel ha, C.map_one, one_mul]
+  rw [mul_left_comm q, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one, one_mul]
 
 theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
   ⟨fun h => dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>
     ⟨C a⁻¹ * r, by
-      rw [mul_assoc, mul_left_comm p, ← mul_assoc, ← C.map_mul, _root_.mul_inv_cancel ha, C.map_one,
+      rw [mul_assoc, mul_left_comm p, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one,
         one_mul, hr]⟩⟩
 
 theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
   ⟨fun ⟨r, hr⟩ =>
     ⟨C a⁻¹ * r, by
-      rw [mul_left_comm p, ← hr, ← mul_assoc, ← C.map_mul, _root_.inv_mul_cancel ha, C.map_one,
+      rw [mul_left_comm p, ← hr, ← mul_assoc, ← C.map_mul, inv_mul_cancel₀ ha, C.map_one,
         one_mul]⟩,
     fun h => dvd_trans h (dvd_mul_left _ _)⟩
 
@@ -506,8 +527,6 @@ theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
     (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
   simp [CommGroupWithZero.coe_normUnit _ this]
-
-theorem normalize_monic [DecidableEq R] (h : Monic p) : normalize p = p := by simp [h]
 
 theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
   by_cases H : x = 0
@@ -518,7 +537,9 @@ theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map 
       leadingCoeff_map, ← map_inv₀ f, ← map_C, ← Polynomial.map_mul,
       map_dvd_map _ f.injective (monic_mul_leadingCoeff_inv H)]
 
-theorem degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by simp
+@[simp]
+theorem degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by
+  simp [normalize_apply]
 
 theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical

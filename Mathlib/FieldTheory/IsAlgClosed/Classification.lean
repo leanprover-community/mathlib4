@@ -3,9 +3,9 @@ Copyright (c) 2022 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Polynomial.Cardinal
+import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.Data.ZMod.Algebra
+import Mathlib.Algebra.Polynomial.Cardinal
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.AlgebraicIndependent
 
@@ -48,16 +48,17 @@ theorem cardinal_mk_le_sigma_polynomial :
             Polynomial.degree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective R L),
             Polynomial.degree_eq_bot]
           exact p.2.1
-        erw [Polynomial.mem_roots h, Polynomial.IsRoot, Polynomial.eval_map, ← Polynomial.aeval_def,
+        rw [Polynomial.mem_roots h, Polynomial.IsRoot, Polynomial.eval_map, ← Polynomial.aeval_def,
           p.2.2]⟩)
     fun x y => by
       intro h
       simp? at h says simp only [Set.coe_setOf, ne_eq, Set.mem_setOf_eq, Sigma.mk.inj_iff] at h
       refine (Subtype.heq_iff_coe_eq ?_).1 h.2
-      simp only [h.1, iff_self_iff, forall_true_iff]
+      simp only [h.1, forall_true_iff]
 
 /-- The cardinality of an algebraic extension is at most the maximum of the cardinality
-of the base ring or `ℵ₀` -/
+of the base ring or `ℵ₀`. -/
+@[stacks 09GK]
 theorem cardinal_mk_le_max : #L ≤ max #R ℵ₀ :=
   calc
     #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
@@ -65,7 +66,7 @@ theorem cardinal_mk_le_max : #L ≤ max #R ℵ₀ :=
     _ = Cardinal.sum fun p : R[X] => #{x : L | x ∈ p.aroots L} := by
       rw [← mk_sigma]; rfl
     _ ≤ Cardinal.sum.{u, u} fun _ : R[X] => ℵ₀ :=
-      (sum_le_sum _ _ fun p => (Multiset.finite_toSet _).lt_aleph0.le)
+      (sum_le_sum _ _ fun _ => (Multiset.finite_toSet _).lt_aleph0.le)
     _ = #(R[X]) * ℵ₀ := sum_const' _ _
     _ ≤ max (max #(R[X]) ℵ₀) ℵ₀ := mul_le_max _ _
     _ ≤ max (max (max #R ℵ₀) ℵ₀) ℵ₀ :=
@@ -92,8 +93,8 @@ variable (hv : AlgebraicIndependent R v)
 theorem isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenceBasis R v) :
     IsAlgClosure (Algebra.adjoin R (Set.range v)) K :=
   letI := RingHom.domain_nontrivial (algebraMap R K)
-  { alg_closed := by infer_instance
-    algebraic := hv.isAlgebraic }
+  { isAlgClosed := by infer_instance
+    isAlgebraic := hv.isAlgebraic }
 
 variable (hw : AlgebraicIndependent R w)
 
@@ -119,10 +120,8 @@ end Classification
 
 section Cardinal
 
-variable {R L K : Type u} [CommRing R]
-variable [Field K] [Algebra R K] [IsAlgClosed K]
+variable {R K : Type u} [CommRing R] [Field K] [Algebra R K] [IsAlgClosed K]
 variable {ι : Type u} (v : ι → K)
-variable (hv : IsTranscendenceBasis R v)
 
 theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     #K ≤ max (max #R #ι) ℵ₀ :=

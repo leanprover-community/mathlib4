@@ -1,11 +1,11 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.SingleObj
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Conj
@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Conj
 The prototypical example is `V = ModuleCat R`,
 where `Action (ModuleCat R) G` is the category of `R`-linear representations of `G`.
 
-We check `Action V G ≌ (singleObj G ⥤ V)`,
+We check `Action V G ≌ (CategoryTheory.singleObj G ⥤ V)`,
 and construct the restriction functors `res {G H : MonCat} (f : G ⟶ H) : Action V H ⥤ Action V G`.
 -/
 
@@ -51,8 +51,8 @@ def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) wh
   toFun g :=
     { hom := A.ρ g
       inv := A.ρ (g⁻¹ : G)
-      hom_inv_id := (A.ρ.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_self, ρ_one])
-      inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_self, ρ_one]) }
+      hom_inv_id := (A.ρ.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_cancel, ρ_one])
+      inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_cancel, ρ_one]) }
   map_one' := Aut.ext A.ρ.map_one
   map_mul' x y := Aut.ext (A.ρ.map_mul x y)
 
@@ -111,7 +111,6 @@ instance : Category (Action V G) where
   id M := Hom.id M
   comp f g := Hom.comp f g
 
--- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Hom.ext h
@@ -124,6 +123,16 @@ theorem id_hom (M : Action V G) : (𝟙 M : Hom M M).hom = 𝟙 M.V :=
 theorem comp_hom {M N K : Action V G} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
   rfl
+
+@[simp]
+theorem hom_inv_hom {M N : Action V G} (f : M ≅ N) :
+    f.hom.hom ≫ f.inv.hom = 𝟙 M.V := by
+  rw [← comp_hom, Iso.hom_inv_id, id_hom]
+
+@[simp]
+theorem inv_hom_hom {M N : Action V G} (f : M ≅ N) :
+    f.inv.hom ≫ f.hom.hom = 𝟙 N.V := by
+  rw [← comp_hom, Iso.inv_hom_id, id_hom]
 
 /-- Construct an isomorphism of `G` actions/representations
 from an isomorphism of the underlying objects,
@@ -144,6 +153,12 @@ instance (priority := 100) isIso_of_hom_isIso {M N : Action V G} (f : M ⟶ N) [
 instance isIso_hom_mk {M N : Action V G} (f : M.V ⟶ N.V) [IsIso f] (w) :
     @IsIso _ _ M N (Hom.mk f w) :=
   (mkIso (asIso f) w).isIso_hom
+
+instance {M N : Action V G} (f : M ≅ N) : IsIso f.hom.hom where
+  out := ⟨f.inv.hom, by simp⟩
+
+instance {M N : Action V G} (f : M ≅ N) : IsIso f.inv.hom where
+  out := ⟨f.hom.hom, by simp⟩
 
 namespace FunctorCategoryEquivalence
 
@@ -180,7 +195,7 @@ def unitIso : 𝟭 (Action V G) ≅ functor ⋙ inverse :=
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (SingleObj G ⥤ V) :=
-  NatIso.ofComponents fun M => NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun M => NatIso.ofComponents fun _ => Iso.refl _
 
 end FunctorCategoryEquivalence
 
@@ -199,6 +214,12 @@ def functorCategoryEquivalence : Action V G ≌ SingleObj G ⥤ V where
   inverse := inverse
   unitIso := unitIso
   counitIso := counitIso
+
+instance : (FunctorCategoryEquivalence.functor (V := V) (G := G)).IsEquivalence :=
+  (functorCategoryEquivalence V G).isEquivalence_functor
+
+instance : (FunctorCategoryEquivalence.inverse (V := V) (G := G)).IsEquivalence :=
+  (functorCategoryEquivalence V G).isEquivalence_inverse
 
 /-
 porting note: these two lemmas are redundant with the projections created by the @[simps]
@@ -268,7 +289,7 @@ def actionPunitEquivalence : Action V (MonCat.of PUnit) ≌ V where
       simp only [MonCat.oneHom_apply, MonCat.one_of, End.one_def, id_eq, Functor.comp_obj,
         forget_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
-  counitIso := NatIso.ofComponents fun X => Iso.refl _
+  counitIso := NatIso.ofComponents fun _ => Iso.refl _
 
 variable (V)
 

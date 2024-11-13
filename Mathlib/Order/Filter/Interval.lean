@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Filter.SmallSets
@@ -18,7 +18,7 @@ from the left or from the right, or it could also be infinity, and "around this 
 to these directed neighborhoods. Therefore, the above theorem has many variants. Instead of stating
 all these variants, one can look for the common abstraction and have a single version. One has to
 be careful: if one considers convergence along a sequence, then the function may tend to infinity
-but have a derivative which is small along the sequence (with big jumps inbetween), so in the end
+but have a derivative which is small along the sequence (with big jumps in between), so in the end
 the derivative may be integrable on a neighborhood of the sequence. What really matters for such
 calculus issues in terms of derivatives is that whole intervals are included in the sets we
 consider.
@@ -110,7 +110,7 @@ theorem tendstoIxxClass_inf {l₁ l₁' l₂ l₂' : Filter α} {Ixx} [h : Tends
 
 theorem tendstoIxxClass_of_subset {l₁ l₂ : Filter α} {Ixx Ixx' : α → α → Set α}
     (h : ∀ a b, Ixx a b ⊆ Ixx' a b) [h' : TendstoIxxClass Ixx' l₁ l₂] : TendstoIxxClass Ixx l₁ l₂ :=
-  ⟨h'.1.smallSets_mono <| eventually_of_forall <| Prod.forall.2 h⟩
+  ⟨h'.1.smallSets_mono <| Eventually.of_forall <| Prod.forall.2 h⟩
 
 theorem HasBasis.tendstoIxxClass {ι : Type*} {p : ι → Prop} {s} {l : Filter α}
     (hl : l.HasBasis p s) {Ixx : α → α → Set α}

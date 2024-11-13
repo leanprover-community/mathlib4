@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Int.Sqrt
 
 /-!
@@ -38,7 +39,7 @@ instance instAddCommGroup : AddCommGroup ℤ where
   add_assoc := Int.add_assoc
   add_zero := Int.add_zero
   zero_add := Int.zero_add
-  add_left_neg := Int.add_left_neg
+  neg_add_cancel := Int.add_left_neg
   nsmul := (·*·)
   nsmul_zero := Int.zero_mul
   nsmul_succ n x :=
@@ -47,7 +48,7 @@ instance instAddCommGroup : AddCommGroup ℤ where
   zsmul := (·*·)
   zsmul_zero' := Int.zero_mul
   zsmul_succ' m n := by
-    simp only [ofNat_eq_coe, ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+    simp only [ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   zsmul_neg' m n := by simp only [negSucc_coe, ofNat_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
 
@@ -145,13 +146,10 @@ lemma ofNat_isUnit {n : ℕ} : IsUnit (n : ℤ) ↔ IsUnit n := by simp [isUnit_
 lemma isUnit_mul_self (hu : IsUnit u) : u * u = 1 :=
   (isUnit_eq_one_or hu).elim (fun h ↦ h.symm ▸ rfl) fun h ↦ h.symm ▸ rfl
 
--- Porting note: this was proven in mathlib3 with `tidy` which hasn't been ported yet
 lemma isUnit_add_isUnit_eq_isUnit_add_isUnit {a b c d : ℤ} (ha : IsUnit a) (hb : IsUnit b)
     (hc : IsUnit c) (hd : IsUnit d) : a + b = c + d ↔ a = c ∧ b = d ∨ a = d ∧ b = c := by
   rw [isUnit_iff] at ha hb hc hd
-  cases ha <;> cases hb <;> cases hc <;> cases hd <;>
-      subst a <;> subst b <;> subst c <;> subst d <;>
-    simp (config := {decide := true})
+  aesop
 
 lemma eq_one_or_neg_one_of_mul_eq_neg_one (h : u * v = -1) : u = 1 ∨ u = -1 :=
   Or.elim (eq_one_or_neg_one_of_mul_eq_neg_one' h) (fun H => Or.inl H.1) fun H => Or.inr H.1
@@ -207,7 +205,7 @@ lemma even_sub : Even (m - n) ↔ (Even m ↔ Even n) := by simp [sub_eq_add_neg
   simp [even_iff, h₁, h₂, Int.mul_emod]
 
 @[parity_simps] lemma even_pow {n : ℕ} : Even (m ^ n) ↔ Even m ∧ n ≠ 0 := by
-  induction' n with n ih <;> simp [*, even_mul, pow_succ]; tauto
+  induction n <;> simp [*, even_mul, pow_succ]; tauto
 
 lemma even_pow' {n : ℕ} (h : n ≠ 0) : Even (m ^ n) ↔ Even m := even_pow.trans <| and_iff_left h
 
@@ -222,7 +220,7 @@ lemma ediv_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
 
 -- Here are examples of how `parity_simps` can be used with `Int`.
 example (m n : ℤ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
-  simp (config := {decide := true}) [*, (by decide : ¬2 = 0), parity_simps]
+  simp +decide [*, (by decide : ¬2 = 0), parity_simps]
 
 example : ¬Even (25394535 : ℤ) := by decide
 

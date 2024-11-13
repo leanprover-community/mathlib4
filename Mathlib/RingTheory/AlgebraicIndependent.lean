@@ -3,12 +3,9 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.MvPolynomial.Supported
-import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
 # Algebraic Independence
@@ -47,11 +44,9 @@ open scoped Classical
 universe x u v w
 
 variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
-variable {A : Type*} {A' A'' : Type*} {V : Type u} {V' : Type*}
+variable {A : Type*} {A' : Type*}
 variable (x : ι → A)
-variable [CommRing R] [CommRing A] [CommRing A'] [CommRing A'']
-variable [Algebra R A] [Algebra R A'] [Algebra R A'']
-variable {a b : R}
+variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 
 /-- `AlgebraicIndependent R x` states the family of elements `x`
   is algebraically independent over `R`, meaning that the canonical
@@ -82,30 +77,51 @@ theorem algebraicIndependent_iff_injective_aeval :
 @[simp]
 theorem algebraicIndependent_empty_type_iff [IsEmpty ι] :
     AlgebraicIndependent R x ↔ Injective (algebraMap R A) := by
-  have : aeval x = (Algebra.ofId R A).comp (@isEmptyAlgEquiv R ι _ _).toAlgHom := by
-    ext i
-    exact IsEmpty.elim' ‹IsEmpty ι› i
-  rw [AlgebraicIndependent, this, ← Injective.of_comp_iff' _ (@isEmptyAlgEquiv R ι _ _).bijective]
-  rfl
+  rw [algebraicIndependent_iff_injective_aeval, MvPolynomial.aeval_injective_iff_of_isEmpty]
+
+/-- A one-element family `x` is algebraically independent if and only if
+its element is transcendental. -/
+@[simp]
+theorem algebraicIndependent_unique_type_iff [Unique ι] :
+    AlgebraicIndependent R x ↔ Transcendental R (x default) := by
+  rw [transcendental_iff_injective, algebraicIndependent_iff_injective_aeval]
+  let i := (renameEquiv R (Equiv.equivPUnit.{_, 1} ι)).trans (pUnitAlgEquiv R)
+  have key : aeval (R := R) x = (Polynomial.aeval (R := R) (x default)).comp i := by
+    ext y
+    simp [i, Subsingleton.elim y default]
+  simp [key]
+
+/-- The one-element family `![x]` is algebraically independent if and only if
+`x` is transcendental. -/
+theorem algebraicIndependent_iff_transcendental {x : A} :
+    AlgebraicIndependent R ![x] ↔ Transcendental R x := by
+  simp
 
 namespace AlgebraicIndependent
 
+theorem of_comp (f : A →ₐ[R] A') (hfv : AlgebraicIndependent R (f ∘ x)) :
+    AlgebraicIndependent R x := by
+  have : aeval (f ∘ x) = f.comp (aeval x) := by ext; simp
+  rw [AlgebraicIndependent, this, AlgHom.coe_comp] at hfv
+  exact hfv.of_comp
+
 variable (hx : AlgebraicIndependent R x)
+include hx
 
 theorem algebraMap_injective : Injective (algebraMap R A) := by
-  simpa [Function.comp] using
+  simpa [Function.comp_def] using
     (Injective.of_comp_iff (algebraicIndependent_iff_injective_aeval.1 hx) MvPolynomial.C).2
       (MvPolynomial.C_injective _ _)
 
 theorem linearIndependent : LinearIndependent R x := by
-  rw [linearIndependent_iff_injective_total]
-  have : Finsupp.total ι A R x =
-      (MvPolynomial.aeval x).toLinearMap.comp (Finsupp.total ι _ R X) := by
+  rw [linearIndependent_iff_injective_linearCombination]
+  have : Finsupp.linearCombination R x =
+      (MvPolynomial.aeval x).toLinearMap.comp (Finsupp.linearCombination R X) := by
     ext
     simp
   rw [this]
   refine hx.comp ?_
-  rw [← linearIndependent_iff_injective_total]
+  rw [← linearIndependent_iff_injective_linearCombination]
   exact linearIndependent_X _ _
 
 protected theorem injective [Nontrivial R] : Injective x :=
@@ -128,7 +144,7 @@ theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
     intro p
     rw [AlgHom.mem_range]
     refine ⟨MvPolynomial.rename (codRestrict x (range x) mem_range_self) p, ?_⟩
-    simp [Function.comp, aeval_rename]
+    simp [Function.comp_def, aeval_rename]
   intro x y hxy
   rw [this] at hxy
   rw [adjoin_eq_range] at hf_inj
@@ -137,13 +153,23 @@ theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
 theorem map' {f : A →ₐ[R] A'} (hf_inj : Injective f) : AlgebraicIndependent R (f ∘ x) :=
   hx.map hf_inj.injOn
 
-theorem of_comp (f : A →ₐ[R] A') (hfv : AlgebraicIndependent R (f ∘ x)) :
-    AlgebraicIndependent R x := by
-  have : aeval (f ∘ x) = f.comp (aeval x) := by ext; simp
-  rw [AlgebraicIndependent, this, AlgHom.coe_comp] at hfv
-  exact hfv.of_comp
+/-- If a family `x` is algebraically independent, then any of its element is transcendental. -/
+theorem transcendental (i : ι) : Transcendental R (x i) := by
+  have := hx.comp ![i] (Function.injective_of_subsingleton _)
+  have : AlgebraicIndependent R ![x i] := by rwa [← FinVec.map_eq] at this
+  rwa [← algebraicIndependent_iff_transcendental]
 
 end AlgebraicIndependent
+
+namespace MvPolynomial
+
+variable (σ R : Type*) [CommRing R]
+
+theorem algebraicIndependent_X : AlgebraicIndependent R (X (R := R) (σ := σ)) := by
+  rw [AlgebraicIndependent, aeval_X_left]
+  exact injective_id
+
+end MvPolynomial
 
 open AlgebraicIndependent
 
@@ -368,22 +394,24 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply
         (aeval (fun o : Option ι => o.elim Polynomial.X fun s : ι => Polynomial.C (X s)) y) :=
   rfl
 
---@[simp] Porting note: removing simp because the linter complains about deterministic timeout
+/-- `simp`-normal form of `mvPolynomialOptionEquivPolynomialAdjoin_C` -/
+@[simp]
+theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C'
+    (hx : AlgebraicIndependent R x) (r) :
+    Polynomial.C (hx.aevalEquiv (C r)) = Polynomial.C (algebraMap _ _ r) := by
+  simp [aevalEquiv]
+
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C
     (hx : AlgebraicIndependent R x) (r) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (C r) = Polynomial.C (algebraMap _ _ r) := by
-  rw [AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply, aeval_C,
-    IsScalarTower.algebraMap_apply R (MvPolynomial ι R), ← Polynomial.C_eq_algebraMap,
-    Polynomial.map_C, RingHom.coe_coe, AlgEquiv.commutes]
+  simp
 
---@[simp] Porting note (#10618): simp can prove it
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_none
     (hx : AlgebraicIndependent R x) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (X none) = Polynomial.X := by
   rw [AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply, aeval_X, Option.elim,
     Polynomial.map_X]
 
---@[simp] Porting note (#10618): simp can prove it
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
     (hx : AlgebraicIndependent R x) (i) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (X (some i)) =
@@ -412,12 +440,66 @@ theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
 
 theorem AlgebraicIndependent.option_iff (hx : AlgebraicIndependent R x) (a : A) :
     (AlgebraicIndependent R fun o : Option ι => o.elim a x) ↔
-      ¬IsAlgebraic (adjoin R (Set.range x)) a := by
-  rw [algebraicIndependent_iff_injective_aeval, isAlgebraic_iff_not_injective, Classical.not_not, ←
-    AlgHom.coe_toRingHom, ← hx.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin,
+      Transcendental (adjoin R (Set.range x)) a := by
+  rw [algebraicIndependent_iff_injective_aeval, transcendental_iff_injective,
+    ← AlgHom.coe_toRingHom, ← hx.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin,
     RingHom.coe_comp]
   exact Injective.of_comp_iff' (Polynomial.aeval a)
     (mvPolynomialOptionEquivPolynomialAdjoin hx).bijective
+
+/-- Variant of `algebraicIndependent_of_finite` using `Transcendental`. -/
+theorem algebraicIndependent_of_finite' (s : Set A)
+    (hinj : Injective (algebraMap R A))
+    (H : ∀ t ⊆ s, t.Finite → ∀ a ∈ s, a ∉ t → Transcendental (adjoin R t) a) :
+    AlgebraicIndependent R ((↑) : s → A) := by
+  classical
+  refine algebraicIndependent_of_finite s fun t hts hfin ↦ hfin.induction_on'
+    ((algebraicIndependent_empty_iff R A).2 hinj) fun {a} {u} ha hu ha' h ↦ ?_
+  convert ((Subtype.range_coe ▸ h.option_iff a).2 <| H u (hu.trans hts) (hfin.subset hu)
+    a (hts ha) ha').comp _ (Set.subtypeInsertEquivOption ha').injective
+  ext x
+  by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
+
+/-- `Type` version of `algebraicIndependent_of_finite'`. -/
+theorem algebraicIndependent_of_finite_type'
+    (hinj : Injective (algebraMap R A))
+    (H : ∀ t : Set ι, t.Finite → ∀ i : ι, i ∉ t → Transcendental (adjoin R (x '' t)) (x i)) :
+    AlgebraicIndependent R x := by
+  nontriviality R
+  haveI := hinj.nontrivial
+  have hx : Injective x := by
+    simp_rw [Transcendental] at H
+    contrapose! H
+    obtain ⟨i, j, h1, h2⟩ := not_injective_iff.1 H
+    refine ⟨{j}, by simp, i, by simp [h2], ?_⟩
+    rw [h1, Set.image_singleton]
+    exact isAlgebraic_algebraMap (⟨x j, Algebra.self_mem_adjoin_singleton R _⟩ : adjoin R {x j})
+  rw [← Set.coe_comp_rangeFactorization x]
+  refine .comp (algebraicIndependent_of_finite' _ hinj fun t ht hfin a ha ha' ↦ ?_) _
+    (Set.rightInverse_rangeSplitting hx).injective
+  change Finite t at hfin
+  have := H (x ⁻¹' t) (Finite.of_injective _ (hx.restrictPreimage t))
+    ((Equiv.ofInjective _ hx).symm ⟨_, ha⟩)
+    (by rwa [Set.mem_preimage, Equiv.apply_ofInjective_symm hx])
+  rwa [Set.image_preimage_eq_inter_range, Set.inter_eq_self_of_subset_left ht,
+    Equiv.apply_ofInjective_symm hx] at this
+
+namespace MvPolynomial
+
+theorem algebraicIndependent_polynomial_aeval_X
+    (f : ι → Polynomial R) (hf : ∀ i, Transcendental R (f i)) :
+    AlgebraicIndependent R fun i ↦ Polynomial.aeval (X i : MvPolynomial ι R) (f i) := by
+  set x := fun i ↦ Polynomial.aeval (X i : MvPolynomial ι R) (f i)
+  refine algebraicIndependent_of_finite_type' (C_injective _ _) fun t _ i hi ↦ ?_
+  have hle : adjoin R (x '' t) ≤ supported R t := by
+    rw [Algebra.adjoin_le_iff, Set.image_subset_iff]
+    intro _ h
+    rw [Set.mem_preimage]
+    refine Algebra.adjoin_mono ?_ (Polynomial.aeval_mem_adjoin_singleton R _)
+    simp_rw [singleton_subset_iff, Set.mem_image_of_mem _ h]
+  exact (transcendental_supported_polynomial_aeval_X R hi (hf i)).of_tower_top_of_subalgebra_le hle
+
+end MvPolynomial
 
 variable (R)
 
@@ -435,6 +517,13 @@ theorem exists_isTranscendenceBasis (h : Injective (algebraMap R A)) :
   simp only [Subtype.range_coe_subtype, setOf_mem_eq] at *
   exact hs.2.eq_of_le ⟨ht, subset_univ _⟩ hst
 
+/-- `Type` version of `exists_isTranscendenceBasis`. -/
+theorem exists_isTranscendenceBasis' (R : Type u) {A : Type v} [CommRing R] [CommRing A]
+    [Algebra R A] (h : Injective (algebraMap R A)) :
+    ∃ (ι : Type v) (x : ι → A), IsTranscendenceBasis R x := by
+  obtain ⟨s, h⟩ := exists_isTranscendenceBasis R h
+  exact ⟨s, Subtype.val, h⟩
+
 variable {R}
 
 theorem AlgebraicIndependent.isTranscendenceBasis_iff {ι : Type w} {R : Type u} [CommRing R]
@@ -447,7 +536,7 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff {ι : Type w} {R : Type u}
   · rintro p κ w i' j rfl
     have p := p.2 (range w) i'.coe_range (range_comp_subset_range _ _)
     rw [range_comp, ← @image_univ _ _ w] at p
-    exact range_iff_surjective.mp (image_injective.mpr i'.injective p)
+    exact range_eq_univ.mp (image_injective.mpr i'.injective p)
   · intro p
     use i
     intro w i' h

@@ -3,8 +3,8 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.IntermediateField
 import Mathlib.RingTheory.Adjoin.Field
+import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 # Splitting fields
@@ -38,6 +38,7 @@ namespace Polynomial
 variable [Field K] [Field L] [Field F] [Algebra K L]
 
 /-- Typeclass characterising splitting fields. -/
+@[stacks 09HV "Predicate version"]
 class IsSplittingField (f : K[X]) : Prop where
   splits' : Splits (algebraMap K L) f
   adjoin_rootSet' : Algebra.adjoin K (f.rootSet L : Set L) = ⊤
@@ -129,7 +130,7 @@ theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingFie
   constructor
   · rw [← f.toAlgHom.comp_algebraMap]
     exact splits_comp_of_splits _ _ (splits F p)
-  · rw [← (Algebra.range_top_iff_surjective f.toAlgHom).mpr f.surjective,
+  · rw [← (AlgHom.range_eq_top f.toAlgHom).mpr f.surjective,
       adjoin_rootSet_eq_range (splits F p), adjoin_rootSet F p]
 
 theorem adjoin_rootSet_eq_range [Algebra K F] (f : K[X]) [IsSplittingField K L f] (i : L →ₐ[K] F) :
@@ -149,6 +150,13 @@ theorem IntermediateField.splits_of_splits (h : p.Splits (algebraMap K L))
   classical
   simp_rw [← F.fieldRange_val, rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
   exact splits_of_comp _ F.val.toRingHom h hF
+
+theorem IntermediateField.splits_iff_mem (h : p.Splits (algebraMap K L)) :
+    p.Splits (algebraMap K F) ↔ ∀ x ∈ p.rootSet L, x ∈ F := by
+  refine ⟨?_, IntermediateField.splits_of_splits h⟩
+  intro hF
+  rw [← Polynomial.image_rootSet hF F.val, Set.forall_mem_image]
+  exact fun x _ ↦ x.2
 
 theorem IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsIntegral K x)
     {F : IntermediateField K L} (h : Splits (algebraMap K F) (minpoly K x)) : x ∈ F := by

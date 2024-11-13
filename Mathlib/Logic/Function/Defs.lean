@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.TypeStar
 import Batteries.Logic
@@ -20,8 +20,6 @@ namespace Function
 
 -- Porting note: fix the universe of `ζ`, it used to be `u₁`
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
-
-attribute [eqns comp_def] comp
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
@@ -88,12 +86,9 @@ theorem comp_id (f : α → β) : f ∘ id = f := rfl
 @[deprecated (since := "2024-01-14")] alias right_id := comp_id
 @[deprecated (since := "2024-01-14")] alias comp.right_id := comp_id
 
-theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
+theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
   rfl
-
-@[simp] theorem const_comp {γ : Sort*} (f : α → β) (c : γ) : const β c ∘ f = const α c := rfl
-
-@[simp] theorem comp_const (f : β → φ) (b : β) : f ∘ const α b = const α (f b) := rfl
+@[deprecated (since := "2024-09-24")] alias comp.assoc := comp_assoc
 
 @[deprecated (since := "2024-01-14")] alias comp_const_right := comp_const
 
@@ -178,23 +173,7 @@ end Function
 
 namespace Function
 
-variable {α : Type u₁} {β : Type u₂} {φ : Type u₃}
-
-/-- Interpret a function on `α × β` as a function with two arguments. -/
-@[inline]
-def curry : (α × β → φ) → α → β → φ := fun f a b => f (a, b)
-
-/-- Interpret a function with two arguments as a function on `α × β` -/
-@[inline]
-def uncurry : (α → β → φ) → α × β → φ := fun f a => f a.1 a.2
-
-@[simp]
-theorem curry_uncurry (f : α → β → φ) : curry (uncurry f) = f :=
-  rfl
-
-@[simp]
-theorem uncurry_curry (f : α × β → φ) : uncurry (curry f) = f :=
-  funext fun ⟨_a, _b⟩ => rfl
+variable {α : Type u₁} {β : Type u₂}
 
 protected theorem LeftInverse.id {g : β → α} {f : α → β} (h : LeftInverse g f) : g ∘ f = id :=
   funext h
@@ -206,3 +185,16 @@ protected theorem RightInverse.id {g : β → α} {f : α → β} (h : RightInve
 def IsFixedPt (f : α → α) (x : α) := f x = x
 
 end Function
+
+namespace Pi
+
+variable {ι : Sort*} {α β : ι → Sort*}
+
+/-- Sends a dependent function `a : ∀ i, α i` to a dependent function `Pi.map f a : ∀ i, β i`
+by applying `f i` to `i`-th component. -/
+protected def map (f : ∀ i, α i → β i) : (∀ i, α i) → (∀ i, β i) := fun a i ↦ f i (a i)
+
+@[simp]
+lemma map_apply (f : ∀ i, α i → β i) (a : ∀ i, α i) (i : ι) : Pi.map f a i = f i (a i) := rfl
+
+end Pi

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
@@ -101,7 +101,7 @@ theorem dNext_nat (C D : ChainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶ D
   dsimp [dNext]
   cases i
   · simp only [shape, ChainComplex.next_nat_zero, ComplexShape.down_Rel, Nat.one_ne_zero,
-      not_false_iff, zero_comp]
+      not_false_iff, zero_comp, reduceCtorEq]
   · congr <;> simp
 
 theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶ D.X j) :
@@ -109,7 +109,7 @@ theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶
   dsimp [prevD]
   cases i
   · simp only [shape, CochainComplex.prev_nat_zero, ComplexShape.up_Rel, Nat.one_ne_zero,
-      not_false_iff, comp_zero]
+      not_false_iff, comp_zero, reduceCtorEq]
   · congr <;> simp
 
 -- Porting note(#5171): removed @[has_nonempty_instance]
@@ -131,11 +131,11 @@ namespace Homotopy
 def equivSubZero : Homotopy f g ≃ Homotopy (f - g) 0 where
   toFun h :=
     { hom := fun i j => h.hom i j
-      zero := fun i j w => h.zero _ _ w
+      zero := fun _ _ w => h.zero _ _ w
       comm := fun i => by simp [h.comm] }
   invFun h :=
     { hom := fun i j => h.hom i j
-      zero := fun i j w => h.zero _ _ w
+      zero := fun _ _ w => h.zero _ _ w
       comm := fun i => by simpa [sub_eq_iff_eq_add] using h.comm i }
   left_inv := by aesop_cat
   right_inv := by aesop_cat
@@ -157,7 +157,7 @@ def symm {f g : C ⟶ D} (h : Homotopy f g) : Homotopy g f where
   hom := -h.hom
   zero i j w := by rw [Pi.neg_apply, Pi.neg_apply, h.zero i j w, neg_zero]
   comm i := by
-    rw [AddMonoidHom.map_neg, AddMonoidHom.map_neg, h.comm, ← neg_add, ← add_assoc, neg_add_self,
+    rw [AddMonoidHom.map_neg, AddMonoidHom.map_neg, h.comm, ← neg_add, ← add_assoc, neg_add_cancel,
       zero_add]
 
 /-- homotopy is a transitive relation. -/

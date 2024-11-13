@@ -10,10 +10,6 @@ import Mathlib.GroupTheory.Submonoid.Centralizer
 # Centralizers of subgroups
 -/
 
-
-open Function
-open Int
-
 variable {G : Type*} [Group G]
 
 namespace Subgroup
@@ -36,6 +32,12 @@ theorem mem_centralizer_iff {g : G} {s : Set G} : g ∈ centralizer s ↔ ∀ h 
 theorem mem_centralizer_iff_commutator_eq_one {g : G} {s : Set G} :
     g ∈ centralizer s ↔ ∀ h ∈ s, h * g * h⁻¹ * g⁻¹ = 1 := by
   simp only [mem_centralizer_iff, mul_inv_eq_iff_eq_mul, one_mul]
+
+@[to_additive]
+lemma mem_centralizer_singleton_iff {g k : G} :
+    k ∈ Subgroup.centralizer {g} ↔ k * g = g * k := by
+  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
+  exact eq_comm
 
 @[to_additive]
 theorem centralizer_univ : centralizer Set.univ = center G :=

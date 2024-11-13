@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Alistair Tucker, Wen Yang
+Authors: Yury Kudryashov, Alistair Tucker, Wen Yang
 -/
 import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.CompleteLatticeIntervals
@@ -45,7 +45,7 @@ intermediate value theorem, connected space, connected set
 open Filter OrderDual TopologicalSpace Function Set
 open scoped Topology Filter Interval
 
-universe u v w
+universe u v
 
 /-!
 ### Intermediate value theorem on a (pre)connected space
@@ -216,9 +216,7 @@ theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s)
 
 end
 
-variable {α : Type u} {β : Type v} {γ : Type w} [ConditionallyCompleteLinearOrder α]
-  [TopologicalSpace α] [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
-  [OrderTopology β] [Nonempty γ]
+variable {α : Type u} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
 
 /-- A bounded connected subset of a conditionally complete linear order includes the open interval
 `(Inf s, Sup s)`. -/
@@ -443,7 +441,7 @@ theorem setOf_isPreconnected_eq_of_ordered :
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
   refine Subset.antisymm setOf_isPreconnected_subset_of_ordered ?_
   simp only [subset_def, forall_mem_range, uncurry, or_imp, forall_and, mem_union,
-    mem_setOf_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true_iff,
+    mem_setOf_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true,
     isPreconnected_Icc, isPreconnected_Ico, isPreconnected_Ioc, isPreconnected_Ioo,
     isPreconnected_Ioi, isPreconnected_Iio, isPreconnected_Ici, isPreconnected_Iic,
     isPreconnected_univ, isPreconnected_empty]
@@ -641,7 +639,7 @@ theorem Continuous.strictMonoOn_of_inj_rigidity {f : α → δ}
   let t := max b y
   have hsa : s ≤ a := min_le_left a x
   have hbt : b ≤ t := le_max_left b y
-  have hst : s ≤ t := hsa.trans $ hbt.trans' hab.le
+  have hst : s ≤ t := hsa.trans <| hbt.trans' hab.le
   have hf_mono_st : StrictMonoOn f (Icc s t) ∨ StrictAntiOn f (Icc s t) := by
     letI := Icc.completeLinearOrder hst
     have := Continuous.strictMono_of_inj_boundedOrder' (f := Set.restrict (Icc s t) f)

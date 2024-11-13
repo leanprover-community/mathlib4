@@ -182,6 +182,8 @@ variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shift
 variable [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
   (hT' : T' ∈ distTriang C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
+section
+include hT
 @[reassoc]
 lemma comp_homologySequenceδ :
     (F.shift n₀).map T.mor₂ ≫ F.homologySequenceδ T n₀ n₁ h = 0 := by
@@ -206,7 +208,8 @@ lemma homologySequence_exact₂ :
   refine ShortComplex.exact_of_iso ?_ (F.map_distinguished_exact _
     (Triangle.shift_distinguished _ hT n₀))
   exact ShortComplex.isoMk ((F.isoShift n₀).app _)
-    (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) (by simp) (by simp)
+    (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _)
+    (by dsimp; simp) (by dsimp; simp)
 
 lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by
@@ -221,7 +224,7 @@ lemma homologySequence_exact₁ :
     (Iso.refl _) (Iso.refl _) ?_ (by simp)
   dsimp
   simp only [homologySequenceδ, neg_comp, map_neg, comp_id,
-    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_self 1) n₀ n₁ (by omega)]
+    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_cancel 1) n₀ n₁ (by omega)]
 
 lemma homologySequence_epi_shift_map_mor₁_iff :
     Epi ((F.shift n₀).map T.mor₁) ↔ (F.shift n₀).map T.mor₂ = 0 :=
@@ -238,6 +241,7 @@ lemma homologySequence_epi_shift_map_mor₂_iff :
 lemma homologySequence_mono_shift_map_mor₂_iff :
     Mono ((F.shift n₀).map T.mor₂) ↔ (F.shift n₀).map T.mor₁ = 0 :=
   (F.homologySequence_exact₂ T hT n₀).mono_g_iff
+end
 
 lemma mem_homologicalKernel_W_iff {X Y : C} (f : X ⟶ Y) :
     F.homologicalKernel.W f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
@@ -265,6 +269,7 @@ open ComposableArrows
   mk₅ ((F.shift n₀).map T.mor₁) ((F.shift n₀).map T.mor₂)
     (F.homologySequenceδ T n₀ n₁ h) ((F.shift n₁).map T.mor₁) ((F.shift n₁).map T.mor₂)
 
+include hT in
 lemma homologySequenceComposableArrows₅_exact :
     (F.homologySequenceComposableArrows₅ T n₀ n₁ h).Exact :=
   exact_of_δ₀ (F.homologySequence_exact₂ T hT n₀).exact_toComposableArrows

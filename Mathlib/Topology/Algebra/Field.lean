@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison
+Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Basic
@@ -23,13 +23,13 @@ variable {K : Type*} [DivisionRing K] [TopologicalSpace K]
 inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_left₀ [ContinuousMul K] {a : K} (ha : a ≠ 0) :
     Filter.Tendsto (fun x : K => a * x) (Filter.cocompact K) (Filter.cocompact K) :=
-  Filter.tendsto_cocompact_mul_left (inv_mul_cancel ha)
+  Filter.tendsto_cocompact_mul_left (inv_mul_cancel₀ ha)
 
 /-- Right-multiplication by a nonzero element of a topological division ring is proper, i.e.,
 inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_right₀ [ContinuousMul K] {a : K} (ha : a ≠ 0) :
     Filter.Tendsto (fun x : K => x * a) (Filter.cocompact K) (Filter.cocompact K) :=
-  Filter.tendsto_cocompact_mul_right (mul_inv_cancel ha)
+  Filter.tendsto_cocompact_mul_right (mul_inv_cancel₀ ha)
 
 variable (K)
 
@@ -101,7 +101,7 @@ open Topology
 
 theorem IsLocalMin.inv {f : α → β} {a : α} (h1 : IsLocalMin f a) (h2 : ∀ᶠ z in 𝓝 a, 0 < f z) :
     IsLocalMax f⁻¹ a := by
-  filter_upwards [h1, h2] with z h3 h4 using(inv_le_inv h4 h2.self_of_nhds).mpr h3
+  filter_upwards [h1, h2] with z h3 h4 using(inv_le_inv₀ h4 h2.self_of_nhds).mpr h3
 
 end LocalExtr
 
@@ -132,7 +132,7 @@ theorem IsPreconnected.eq_or_eq_neg_of_sq_eq [Field 𝕜] [HasContinuousInv₀ �
     (hsq : EqOn (f ^ 2) (g ^ 2) S) (hg_ne : ∀ {x : α}, x ∈ S → g x ≠ 0) :
     EqOn f g S ∨ EqOn f (-g) S := by
   have hsq : EqOn ((f / g) ^ 2) 1 S := fun x hx => by
-    simpa [div_eq_one_iff_eq (pow_ne_zero _ (hg_ne hx))] using hsq hx
+    simpa [div_eq_one_iff_eq (pow_ne_zero _ (hg_ne hx)), div_pow] using hsq hx
   simpa (config := { contextual := true }) [EqOn, div_eq_iff (hg_ne _)]
     using hS.eq_one_or_eq_neg_one_of_sq_eq (hf.div hg fun z => hg_ne) hsq
 
@@ -146,6 +146,6 @@ theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [Cont
   rcases hS.eq_or_eq_neg_of_sq_eq hf hg @hsq @hg_ne with (h | h)
   · exact h hx
   · rw [h _, Pi.neg_apply, neg_eq_iff_add_eq_zero, ← two_mul, mul_eq_zero,
-      iff_false_iff.2 (hg_ne _)] at hy' ⊢ <;> assumption
+      (iff_of_eq (iff_false _)).2 (hg_ne _)] at hy' ⊢ <;> assumption
 
 end Preconnected

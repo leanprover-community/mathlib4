@@ -122,7 +122,7 @@ theorem segment_same (x : E) : [x -[𝕜] x] = {x} :=
 theorem insert_endpoints_openSegment (x y : E) :
     insert x (insert y (openSegment 𝕜 x y)) = [x -[𝕜] y] := by
   simp only [subset_antisymm_iff, insert_subset_iff, left_mem_segment, right_mem_segment,
-    openSegment_subset_segment, true_and_iff]
+    openSegment_subset_segment, true_and]
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
   refine hb.eq_or_gt.imp ?_ fun hb' => ha.eq_or_gt.imp ?_ fun ha' => ?_
   · rintro rfl
@@ -140,7 +140,7 @@ theorem mem_openSegment_of_ne_left_right (hx : x ≠ z) (hy : y ≠ z) (hz : z �
 
 theorem openSegment_subset_iff_segment_subset (hx : x ∈ s) (hy : y ∈ s) :
     openSegment 𝕜 x y ⊆ s ↔ [x -[𝕜] y] ⊆ s := by
-  simp only [← insert_endpoints_openSegment, insert_subset_iff, *, true_and_iff]
+  simp only [← insert_endpoints_openSegment, insert_subset_iff, *, true_and]
 
 end Module
 
@@ -171,14 +171,14 @@ end DenselyOrdered
 
 theorem segment_eq_image (x y : E) :
     [x -[𝕜] y] = (fun θ : 𝕜 => (1 - θ) • x + θ • y) '' Icc (0 : 𝕜) 1 :=
-  Set.ext fun z =>
+  Set.ext fun _ =>
     ⟨fun ⟨a, b, ha, hb, hab, hz⟩ =>
       ⟨b, ⟨hb, hab ▸ le_add_of_nonneg_left ha⟩, hab ▸ hz ▸ by simp only [add_sub_cancel_right]⟩,
       fun ⟨θ, ⟨hθ₀, hθ₁⟩, hz⟩ => ⟨1 - θ, θ, sub_nonneg.2 hθ₁, hθ₀, sub_add_cancel _ _, hz⟩⟩
 
 theorem openSegment_eq_image (x y : E) :
     openSegment 𝕜 x y = (fun θ : 𝕜 => (1 - θ) • x + θ • y) '' Ioo (0 : 𝕜) 1 :=
-  Set.ext fun z =>
+  Set.ext fun _ =>
     ⟨fun ⟨a, b, ha, hb, hab, hz⟩ =>
       ⟨b, ⟨hb, hab ▸ lt_add_of_pos_left _ ha⟩, hab ▸ hz ▸ by simp only [add_sub_cancel_right]⟩,
       fun ⟨θ, ⟨hθ₀, hθ₁⟩, hz⟩ => ⟨1 - θ, θ, sub_pos.2 hθ₁, hθ₀, sub_add_cancel _ _, hz⟩⟩
@@ -360,9 +360,9 @@ theorem mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (
   refine ⟨sameRay_of_mem_segment, fun h => ?_⟩
   rcases h.exists_eq_smul_add with ⟨a, b, ha, hb, hab, hxy, hzx⟩
   rw [add_comm, sub_add_sub_cancel] at hxy hzx
-  rw [← mem_segment_translate _ (-x), neg_add_self]
+  rw [← mem_segment_translate _ (-x), neg_add_cancel]
   refine ⟨b, a, hb, ha, add_comm a b ▸ hab, ?_⟩
-  rw [← sub_eq_neg_add, ← neg_sub, hxy, ← sub_eq_neg_add, hzx, smul_neg, smul_comm, neg_add_self]
+  rw [← sub_eq_neg_add, ← neg_sub, hxy, ← sub_eq_neg_add, hzx, smul_neg, smul_comm, neg_add_cancel]
 
 open AffineMap
 

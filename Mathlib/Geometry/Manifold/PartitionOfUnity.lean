@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Geometry.Manifold.Algebra.Structures
 import Mathlib.Geometry.Manifold.BumpFunction
@@ -55,12 +55,10 @@ function from local functions.
 smooth bump function, partition of unity
 -/
 
-
 universe uι uE uH uM uF
 
-open Function Filter FiniteDimensional Set
-
-open scoped Topology Manifold Classical Filter
+open Function Filter Module Set
+open scoped Topology Manifold
 
 noncomputable section
 
@@ -175,9 +173,6 @@ theorem finsum_smul_mem_convex {g : ι → M → F} {t : Set F} {x : M} (hx : x 
     (hg : ∀ i, f i x ≠ 0 → g i x ∈ t) (ht : Convex ℝ t) : ∑ᶠ i, f i x • g i x ∈ t :=
   ht.finsum_mem (fun _ => f.nonneg _ _) (f.sum_eq_one hx) hg
 
-section SmoothManifoldWithCorners
-variable [SmoothManifoldWithCorners I M]
-
 theorem contMDiff_smul {g : M → F} {i} (hg : ∀ x ∈ tsupport (f i), ContMDiffAt I 𝓘(ℝ, F) n g x) :
     ContMDiff I 𝓘(ℝ, F) n fun x => f i x • g x :=
   contMDiff_of_tsupport fun x hx =>
@@ -218,8 +213,6 @@ theorem contDiffAt_finsum {s : Set E} (f : SmoothPartitionOfUnity ι 𝓘(ℝ, E
     ContDiffAt ℝ n (fun x ↦ ∑ᶠ i, f i x • g i x) x₀ := by
   simp only [← contMDiffAt_iff_contDiffAt] at *
   exact f.contMDiffAt_finsum hφ
-
-end SmoothManifoldWithCorners
 
 section finsupport
 
@@ -292,8 +285,6 @@ theorem isSubordinate_toPartitionOfUnity :
   Iff.rfl
 
 alias ⟨_, IsSubordinate.toPartitionOfUnity⟩ := isSubordinate_toPartitionOfUnity
-
-variable [SmoothManifoldWithCorners I M]
 
 /-- If `f` is a smooth partition of unity on a set `s : Set M` subordinate to a family of open sets
 `U : ι → Set M` and `g : ι → M → F` is a family of functions such that `g i` is $C^n$ smooth on
@@ -380,7 +371,6 @@ theorem IsSubordinate.support_subset {fs : SmoothBumpCovering ι I M s} {U : M �
   Subset.trans subset_closure (h i)
 
 variable (I) in
-variable [SmoothManifoldWithCorners I M] in
 /-- Let `M` be a smooth manifold with corners modelled on a finite dimensional real vector space.
 Suppose also that `M` is a Hausdorff `σ`-compact topological space. Let `s` be a closed set
 in `M` and `U : M → Set M` be a collection of sets such that `U x ∈ 𝓝 x` for every `x ∈ s`.
@@ -392,7 +382,7 @@ theorem exists_isSubordinate [T2Space M] [SigmaCompactSpace M] (hs : IsClosed s)
   haveI : LocallyCompactSpace H := I.locallyCompactSpace
   haveI : LocallyCompactSpace M := ChartedSpace.locallyCompactSpace H M
   -- Next we choose a covering by supports of smooth bump functions
-  have hB := fun x hx => SmoothBumpFunction.nhds_basis_support I (hU x hx)
+  have hB := fun x hx => SmoothBumpFunction.nhds_basis_support (I := I) (hU x hx)
   rcases refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set hs hB with
     ⟨ι, c, f, hf, hsub', hfin⟩
   choose hcs hfU using hf
@@ -426,8 +416,6 @@ theorem apply_ind (x : M) (hx : x ∈ s) : fs (fs.ind x hx) x = 1 :=
 theorem mem_support_ind (x : M) (hx : x ∈ s) : x ∈ support (fs <| fs.ind x hx) := by
   simp [fs.apply_ind x hx]
 
-variable [SmoothManifoldWithCorners I M]
-
 theorem mem_chartAt_source_of_eq_one {i : ι} {x : M} (h : fs i x = 1) :
     x ∈ (chartAt H (fs.c i)).source :=
   (fs i).support_subset_source <| by simp [h]
@@ -448,6 +436,7 @@ protected def fintype [CompactSpace M] : Fintype ι :=
   fs.locallyFinite.fintypeOfCompact fun i => (fs i).nonempty_support
 
 variable [T2Space M]
+variable [SmoothManifoldWithCorners I M]
 
 /-- Reinterpret a `SmoothBumpCovering` as a continuous `BumpCovering`. Note that not every
 `f : BumpCovering ι M s` with smooth functions `f i` is a `SmoothBumpCovering`. -/
@@ -474,12 +463,14 @@ theorem toSmoothPartitionOfUnity_apply (i : ι) (x : M) :
     fs.toSmoothPartitionOfUnity i x = fs i x * ∏ᶠ (j) (_ : WellOrderingRel j i), (1 - fs j x) :=
   rfl
 
+open Classical in
 theorem toSmoothPartitionOfUnity_eq_mul_prod (i : ι) (x : M) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → fs j x ≠ 0 → j ∈ t) :
     fs.toSmoothPartitionOfUnity i x =
       fs i x * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - fs j x) :=
   fs.toBumpCovering.toPartitionOfUnity_eq_mul_prod i x t ht
 
+open Classical in
 theorem exists_finset_toSmoothPartitionOfUnity_eventuallyEq (i : ι) (x : M) :
     ∃ t : Finset ι,
       fs.toSmoothPartitionOfUnity i =ᶠ[𝓝 x]
@@ -561,6 +552,7 @@ namespace SmoothPartitionOfUnity
 defined as an example for `Inhabited` instance. -/
 def single (i : ι) (s : Set M) : SmoothPartitionOfUnity ι I M s :=
   (BumpCovering.single i s).toSmoothPartitionOfUnity fun j => by
+    classical
     rcases eq_or_ne j i with (rfl | h)
     · simp only [smooth_one, ContinuousMap.coe_one, BumpCovering.coe_single, Pi.single_eq_same]
     · simp only [smooth_zero, BumpCovering.coe_single, Pi.single_eq_of_ne h, ContinuousMap.coe_zero]
@@ -725,7 +717,7 @@ theorem IsOpen.exists_msmooth_support_eq {s : Set M} (hs : IsOpen s) :
   · apply SmoothPartitionOfUnity.smooth_finsum_smul
     intro c x hx
     apply (g_diff c (chartAt H c x)).comp
-    exact contMDiffAt_of_mem_maximalAtlas (SmoothManifoldWithCorners.chart_mem_maximalAtlas I _)
+    exact contMDiffAt_of_mem_maximalAtlas (SmoothManifoldWithCorners.chart_mem_maximalAtlas _)
       (hf c hx)
   · intro x
     apply finsum_nonneg (fun c ↦ h''g c x)
@@ -747,6 +739,7 @@ theorem exists_msmooth_support_eq_eq_one_iff
     · have : 0 < f x := lt_of_le_of_ne (f_pos x) (Ne.symm xs)
       linarith [g_pos x]
     · have : 0 < g x := by
+        classical
         apply lt_of_le_of_ne (g_pos x) (Ne.symm ?_)
         rw [← mem_support, g_supp]
         contrapose! xs
@@ -758,7 +751,7 @@ theorem exists_msmooth_support_eq_eq_one_iff
   · exact f_diff.div₀ (f_diff.add g_diff) (fun x ↦ ne_of_gt (A x))
   -- show that the range is included in `[0, 1]`
   · refine range_subset_iff.2 (fun x ↦ ⟨div_nonneg (f_pos x) (A x).le, ?_⟩)
-    apply div_le_one_of_le _ (A x).le
+    apply div_le_one_of_le₀ _ (A x).le
     simpa only [le_add_iff_nonneg_right] using g_pos x
   -- show that the support is `s`
   · have B : support (fun x ↦ f x + g x) = univ := eq_univ_of_forall (fun x ↦ (A x).ne')

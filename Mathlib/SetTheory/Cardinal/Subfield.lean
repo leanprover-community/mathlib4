@@ -3,7 +3,7 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Data.W.Cardinal
 import Mathlib.Tactic.FinCases
 
@@ -61,7 +61,7 @@ private lemma rangeOfWType_eq_top : rangeOfWType s = ⊤ := top_le_iff.mp fun a 
   exact ⟨⟨a, subset_closure ha⟩, ⟨WType.mk (.inr ⟨a, ha⟩) Empty.rec, rfl⟩, rfl⟩
 
 private lemma surjective_ofWType : Function.Surjective (WType.elim _ <| operate s) := by
-  rw [← Set.range_iff_surjective]
+  rw [← Set.range_eq_univ]
   exact SetLike.coe_set_eq.mpr (rangeOfWType_eq_top s)
 
 open Cardinal

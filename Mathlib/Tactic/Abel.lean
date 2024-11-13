@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Scott Morrison
+Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.TryThis
@@ -340,7 +340,7 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     let (e₁, p₁) ← eval e
     let (e₂, p₂) ← evalNeg e₁
     return (e₂, ← iapp `Mathlib.Tactic.Abel.subst_into_neg #[e, e₁, e₂, p₁, p₂])
-  | (`AddMonoid.nsmul, #[_, _, e₁, e₂]) => do
+  | (``AddMonoid.nsmul, #[_, _, e₁, e₂]) => do
     let n ← if (← read).isGroup then mkAppM ``Int.ofNat #[e₁] else pure e₁
     let (e', p) ← eval <| ← iapp ``smul #[n, e₂]
     return (e', ← iapp ``unfold_smul #[e₁, e₂, e', p])
@@ -512,7 +512,7 @@ which rewrites all group expressions into a normal form.
 * `abel_nf` works as both a tactic and a conv tactic.
   In tactic mode, `abel_nf at h` can be used to rewrite in a hypothesis.
 -/
-elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic => do
+elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
   let mut cfg ← elabAbelNFConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
@@ -520,20 +520,20 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic 
   withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
     fun _ ↦ throwError "abel_nf made no progress"
 
-@[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? loc:(location)? : tactic =>
-  `(tactic| abel_nf ! $(cfg)? $(loc)?)
+@[inherit_doc abelNF] macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| abel_nf ! $cfg:optConfig $(loc)?)
 
-@[inherit_doc abelNF] syntax (name := abelNFConv) "abel_nf" "!"? (config)? : conv
+@[inherit_doc abelNF] syntax (name := abelNFConv) "abel_nf" "!"? optConfig : conv
 
 /-- Elaborator for the `abel_nf` tactic. -/
 @[tactic abelNFConv] def elabAbelNFConv : Tactic := fun stx ↦ match stx with
-  | `(conv| abel_nf $[!%$tk]? $(_cfg)?) => withMainContext do
-    let mut cfg ← elabAbelNFConfig stx[2]
+  | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
+    let mut cfg ← elabAbelNFConfig cfg
     if tk.isSome then cfg := { cfg with red := .default }
     Conv.applySimpResult (← abelNFCore (← IO.mkRef {}) cfg (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
-@[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? : conv => `(conv| abel_nf ! $(cfg)?)
+@[inherit_doc abelNF] macro "abel_nf!" cfg:optConfig : conv => `(conv| abel_nf ! $cfg:optConfig)
 
 /--
 Tactic for evaluating expressions in abelian groups.
@@ -563,8 +563,4 @@ macro (name := abelConv) "abel" : conv =>
 @[inherit_doc abelConv] macro "abel!" : conv =>
   `(conv| first | discharge => abel1! | try_this abel_nf!)
 
-end Abel
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.Abel

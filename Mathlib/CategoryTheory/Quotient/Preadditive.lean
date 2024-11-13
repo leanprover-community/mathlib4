@@ -67,7 +67,7 @@ def preadditive
       zero_add := by rintro ⟨_⟩; exact congr_arg (functor r).map (zero_add _)
       add_zero := by rintro ⟨_⟩; exact congr_arg (functor r).map (add_zero _)
       add_comm := by rintro ⟨_⟩ ⟨_⟩; exact congr_arg (functor r).map (add_comm _ _)
-      add_left_neg := by rintro ⟨_⟩; exact congr_arg (functor r).map (add_left_neg _)
+      neg_add_cancel := by rintro ⟨_⟩; exact congr_arg (functor r).map (neg_add_cancel _)
       -- todo: use a better defeq
       nsmul := nsmulRec
       zsmul := zsmulRec }

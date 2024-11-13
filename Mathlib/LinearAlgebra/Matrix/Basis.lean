@@ -129,8 +129,7 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
   toFun := e.toMatrix
   map_add' v w := by
     ext i j
-    change _ = _ + _
-    rw [e.toMatrix_apply, Pi.add_apply, LinearEquiv.map_add]
+    rw [Matrix.add_apply, e.toMatrix_apply, Pi.add_apply, LinearEquiv.map_add]
     rfl
   map_smul' := by
     intro c v
@@ -220,7 +219,7 @@ theorem basis_toMatrix_basisFun_mul (b : Basis ι R (ι → R)) (A : Matrix ι �
   simp only [basis_toMatrix_mul _ _ (Pi.basisFun R ι), Matrix.toLin_eq_toLin']
   ext i j
   rw [LinearMap.toMatrix_apply, Matrix.toLin'_apply, Pi.basisFun_apply,
-    Matrix.mulVec_stdBasis_apply, Matrix.of_apply]
+    Matrix.mulVec_single_one, Matrix.of_apply]
 
 /-- See also `Basis.toMatrix_reindex` which gives the `simp` normal form of this result. -/
 theorem Basis.toMatrix_reindex' [DecidableEq ι] [DecidableEq ι'] (b : Basis ι R M) (v : ι' → M)

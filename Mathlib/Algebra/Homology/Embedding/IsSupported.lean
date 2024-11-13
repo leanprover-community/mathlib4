@@ -45,6 +45,7 @@ lemma isZero_X_of_isStrictlySupported [K.IsStrictlySupported e]
     IsZero (K.X i') :=
   IsStrictlySupported.isZero i' hi'
 
+include e' in
 variable {K L} in
 lemma isStrictlySupported_of_iso [K.IsStrictlySupported e] : L.IsStrictlySupported e where
   isZero i' hi' := (K.isZero_X_of_isStrictlySupported e i' hi').of_iso
@@ -60,9 +61,11 @@ lemma exactAt_of_isSupported [K.IsSupported e] (i' : ι') (hi' : ∀ i, e.f i �
     K.ExactAt i' :=
   IsSupported.exactAt i' hi'
 
+include e' in
 variable {K L} in
 lemma isSupported_of_iso [K.IsSupported e] : L.IsSupported e where
-  exactAt i' hi' := (K.exactAt_of_isSupported e i' hi').of_iso e'
+  exactAt i' hi' :=
+    (K.exactAt_of_isSupported e i' hi').of_iso e'
 
 instance [K.IsStrictlySupported e] : K.IsSupported e where
   exactAt i' hi' := by

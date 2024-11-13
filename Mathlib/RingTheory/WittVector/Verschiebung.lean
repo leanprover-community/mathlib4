@@ -112,8 +112,7 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
   map_add' := by
     dsimp
     ghost_calc _ _
-    rintro ⟨⟩ <;> -- Uses the dumb induction principle, hence adding `Nat.zero_eq` to ghost_simps.
-      ghost_simp
+    rintro ⟨⟩ <;> ghost_simp
 
 /-- `WittVector.verschiebung` is a polynomial function. -/
 @[is_poly]

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Zhouhang Zhou
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.Order.Filter.Germ.Basic
-import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
@@ -67,6 +67,9 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 -/
 
+-- Guard against import creep
+assert_not_exists InnerProductSpace
+
 noncomputable section
 
 open Topology Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
@@ -90,7 +93,7 @@ variable (α)
 
 /-- The space of equivalence classes of almost everywhere strongly measurable functions, where two
     strongly measurable functions are equivalent if they agree almost everywhere, i.e.,
-    they differ on a set of measure `0`.  -/
+    they differ on a set of measure `0`. -/
 def AEEqFun (μ : Measure α) : Type _ :=
   Quotient (μ.aeEqSetoid β)
 
@@ -232,7 +235,7 @@ variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure 
 /-- Composition of an almost everywhere equal function and a quasi measure preserving function.
 
 This is an important special case of `AEEqFun.compQuasiMeasurePreserving`. We use a separate
-definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas.  -/
+definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas. -/
 def compMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : MeasurePreserving f μ ν) : α →ₘ[μ] γ :=
   g.compQuasiMeasurePreserving f hf.quasiMeasurePreserving
 
@@ -490,7 +493,7 @@ section Sup
 
 variable [SemilatticeSup β] [ContinuousSup β]
 
-instance instSup : Sup (α →ₘ[μ] β) where sup f g := AEEqFun.comp₂ (· ⊔ ·) continuous_sup f g
+instance instSup : Max (α →ₘ[μ] β) where max f g := AEEqFun.comp₂ (· ⊔ ·) continuous_sup f g
 
 theorem coeFn_sup (f g : α →ₘ[μ] β) : ⇑(f ⊔ g) =ᵐ[μ] fun x => f x ⊔ g x :=
   coeFn_comp₂ _ _ _ _
@@ -519,7 +522,7 @@ section Inf
 
 variable [SemilatticeInf β] [ContinuousInf β]
 
-instance instInf : Inf (α →ₘ[μ] β) where inf f g := AEEqFun.comp₂ (· ⊓ ·) continuous_inf f g
+instance instInf : Min (α →ₘ[μ] β) where min f g := AEEqFun.comp₂ (· ⊓ ·) continuous_inf f g
 
 theorem coeFn_inf (f g : α →ₘ[μ] β) : ⇑(f ⊓ g) =ᵐ[μ] fun x => f x ⊓ g x :=
   coeFn_comp₂ _ _ _ _
@@ -546,11 +549,11 @@ end Inf
 
 instance instLattice [Lattice β] [TopologicalLattice β] : Lattice (α →ₘ[μ] β) :=
   { AEEqFun.instPartialOrder with
-    sup := Sup.sup
+    sup := max
     le_sup_left := AEEqFun.le_sup_left
     le_sup_right := AEEqFun.le_sup_right
     sup_le := AEEqFun.sup_le
-    inf := Inf.inf
+    inf := min
     inf_le_left := AEEqFun.inf_le_left
     inf_le_right := AEEqFun.inf_le_right
     le_inf := AEEqFun.le_inf }
@@ -573,7 +576,7 @@ theorem coeFn_const (b : β) : (const α b : α →ₘ[μ] β) =ᵐ[μ] Function
 @[simp]
 theorem coeFn_const_eq [NeZero μ] (b : β) (x : α) : (const α b : α →ₘ[μ] β) x = b := by
   simp only [cast]
-  split_ifs with h; swap; exact h.elim ⟨b, rfl⟩
+  split_ifs with h; swap; · exact h.elim ⟨b, rfl⟩
   have := Classical.choose_spec h
   set b' := Classical.choose h
   simp_rw [const, mk_eq_mk, EventuallyEq, ← const_def, eventually_const] at this
@@ -902,6 +905,3 @@ def toAEEqFunLinearMap : C(α, γ) →ₗ[𝕜] α →ₘ[μ] γ :=
     map_smul' := fun c f => AEEqFun.smul_mk c f f.continuous.aestronglyMeasurable }
 
 end ContinuousMap
-
--- Guard against import creep
-assert_not_exists InnerProductSpace

@@ -13,7 +13,7 @@ Defines the notion of a sheaf of types (usually called a sheaf of sets by mathem
 on a category equipped with a Grothendieck topology, as well as a range of equivalent
 conditions useful in different situations.
 
-In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
+In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
 sheaf *for* a particular sieve. Given a Grothendieck topology `J`, `P` is a sheaf if it is a sheaf
 for every sieve in the topology. See `IsSheaf`.
 
@@ -190,7 +190,7 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
         exact fun _ f hf => HFs ⟨Over.mk f, hf⟩ }
   · intro H W x hx
     replace H := Classical.choice H
-    let s := compatibleYonedaFamily_toCocone S W x hx
+    let s := compatibleYonedaFamily_toCocone S.arrows W x hx
     use H.desc s
     constructor
     · exact fun _ f hf => (H.fac s) ⟨Over.mk f, hf⟩

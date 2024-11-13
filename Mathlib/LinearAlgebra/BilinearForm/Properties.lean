@@ -40,8 +40,7 @@ universe u v w
 variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
-variable {M' M'' : Type*}
-variable [AddCommMonoid M'] [AddCommMonoid M''] [Module R M'] [Module R M'']
+variable {M' : Type*} [AddCommMonoid M'] [Module R M']
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace LinearMap
@@ -116,7 +115,6 @@ theorem isSymm_zero : (0 : BilinForm R M).IsSymm := fun _ _ => rfl
 theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
   ⟨fun h => neg_neg B ▸ h.neg, IsSymm.neg⟩
 
-variable (R₂) in
 theorem isSymm_iff_flip : B.IsSymm ↔ flipHom B = B :=
   (forall₂_congr fun _ _ => by exact eq_comm).trans BilinForm.ext_iff.symm
 
@@ -201,7 +199,7 @@ theorem IsAdjointPair.sub (h : IsAdjointPair B₁ B₁' f₁ g₁) (h' : IsAdjoi
     IsAdjointPair B₁ B₁' (f₁ - f₁') (g₁ - g₁') := fun x y => by
   rw [LinearMap.sub_apply, LinearMap.sub_apply, sub_left, sub_right, h, h']
 
-variable {B₂' : BilinForm R M'} {f₂ f₂' : M →ₗ[R] M'} {g₂ g₂' : M' →ₗ[R] M}
+variable {B₂' : BilinForm R M'} {f₂ : M →ₗ[R] M'} {g₂ : M' →ₗ[R] M}
 
 theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B₂' f₂ g₂) :
     IsAdjointPair B B₂' (c • f₂) (c • g₂) := fun x y => by
@@ -411,9 +409,11 @@ noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basi
 theorem dualBasis_repr_apply
     (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
     (B.dualBasis hB b).repr x i = B x (b i) := by
+  #adaptation_note
+  /-- Before leanprover/lean4#4814, we did not need the `@` in front of `toDual_def` in the `rw`.
+  I'm confused! -/
   rw [dualBasis, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
-    Basis.dualBasis_repr]
-  rfl
+    Basis.dualBasis_repr, @toDual_def]
 
 theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
     B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 := by
@@ -462,7 +462,7 @@ noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B�
 theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
     (b₂ : B₂.Nondegenerate) (v : V) :
     B₂ (B₁.symmCompOfNondegenerate B₂ b₂ v) = B₁ v := by
-  erw [symmCompOfNondegenerate]
+  rw [symmCompOfNondegenerate]
   simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, DFunLike.coe_fn_eq]
   erw [LinearEquiv.apply_symm_apply (B₂.toDual b₂)]
 

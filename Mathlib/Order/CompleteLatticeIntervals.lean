@@ -20,6 +20,8 @@ Add appropriate instances for all `Set.Ixx`. This requires a refactor that will 
 default values for `sSup` and `sInf`.
 -/
 
+assert_not_exists Multiset
+
 open Set
 
 variable {ι : Sort*} {α : Type*} (s : Set α)
@@ -50,7 +52,7 @@ theorem subset_sSup_def [Inhabited s] :
   rfl
 
 theorem subset_sSup_of_within [Inhabited s] {t : Set s}
-    (h' : t.Nonempty) (h'' : BddAbove t)  (h : sSup ((↑) '' t : Set α) ∈ s) :
+    (h' : t.Nonempty) (h'' : BddAbove t) (h : sSup ((↑) '' t : Set α) ∈ s) :
     sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [dif_pos, h, h', h'']
 
 theorem subset_sSup_emptyset [Inhabited s] :
@@ -177,7 +179,7 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
   __ := Set.Icc.boundedOrder h
   sSup S := if hS : S = ∅ then ⟨a, le_rfl, h⟩ else ⟨sSup ((↑) '' S), by
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
-    refine ⟨?_, csSup_le (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
+    refine ⟨?_, csSup_le (hS.image Subtype.val) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
     obtain ⟨c, hc⟩ := hS
     exact c.2.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩)⟩
   le_sSup S c hc := by
@@ -187,11 +189,11 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
   sSup_le S c hc := by
     by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
     · exact c.2.1
-    · exact csSup_le ((Set.nonempty_iff_ne_empty.mpr hS).image (↑))
+    · exact csSup_le ((Set.nonempty_iff_ne_empty.mpr hS).image Subtype.val)
         (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
   sInf S := if hS : S = ∅ then ⟨b, h, le_rfl⟩ else ⟨sInf ((↑) '' S), by
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
-    refine ⟨le_csInf (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.1), ?_⟩
+    refine ⟨le_csInf (hS.image Subtype.val) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.1), ?_⟩
     obtain ⟨c, hc⟩ := hS
     exact le_trans (csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩) c.2.2⟩
   sInf_le S c hc := by
@@ -201,7 +203,7 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
   le_sInf S c hc := by
     by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
     · exact c.2.2
-    · exact le_csInf ((Set.nonempty_iff_ne_empty.mpr hS).image (↑))
+    · exact le_csInf ((Set.nonempty_iff_ne_empty.mpr hS).image Subtype.val)
         (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
 
 /-- Complete linear order structure on `Set.Icc` -/
@@ -239,10 +241,10 @@ variable [CompleteLattice α] {a : α}
 instance instCompleteLattice : CompleteLattice (Iic a) where
   sSup S := ⟨sSup ((↑) '' S), by simpa using fun b hb _ ↦ hb⟩
   sInf S := ⟨a ⊓ sInf ((↑) '' S), by simp⟩
-  le_sSup S b hb := le_sSup <| mem_image_of_mem Subtype.val hb
-  sSup_le S b hb := sSup_le <| fun c' ⟨c, hc, hc'⟩ ↦ hc' ▸ hb c hc
-  sInf_le S b hb := inf_le_of_right_le <| sInf_le <| mem_image_of_mem Subtype.val hb
-  le_sInf S b hb := le_inf_iff.mpr ⟨b.property, le_sInf fun d' ⟨d, hd, hd'⟩  ↦ hd' ▸ hb d hd⟩
+  le_sSup _ _ hb := le_sSup <| mem_image_of_mem Subtype.val hb
+  sSup_le _ _ hb := sSup_le <| fun _ ⟨c, hc, hc'⟩ ↦ hc' ▸ hb c hc
+  sInf_le _ _ hb := inf_le_of_right_le <| sInf_le <| mem_image_of_mem Subtype.val hb
+  le_sInf _ b hb := le_inf_iff.mpr ⟨b.property, le_sInf fun _ ⟨d, hd, hd'⟩  ↦ hd' ▸ hb d hd⟩
   le_top := by simp
   bot_le := by simp
 
@@ -267,5 +269,3 @@ theorem coe_biInf : (↑(⨅ i, ⨅ (_ : p i), f i) : α) = a ⊓ ⨅ i, ⨅ (_ 
 
 
 end Set.Iic
-
-assert_not_exists Multiset

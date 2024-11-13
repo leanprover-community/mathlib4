@@ -82,13 +82,12 @@ end exteriorPower
 variable {R}
 
 /-- As well as being linear, `ι m` squares to zero. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem ι_sq_zero (m : M) : ι R m * ι R m = 0 :=
   (CliffordAlgebra.ι_sq_scalar _ m).trans <| map_zero _
 
+section
 variable {A : Type*} [Semiring A] [Algebra R A]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem comp_ι_sq_zero (g : ExteriorAlgebra R M →ₐ[R] A) (m : M) : g (ι R m) * g (ι R m) = 0 := by
   rw [← map_mul, ι_sq_zero, map_zero]
 
@@ -131,7 +130,7 @@ theorem hom_ext {f g : ExteriorAlgebra R M →ₐ[R] A}
   CliffordAlgebra.hom_ext h
 
 /-- If `C` holds for the `algebraMap` of `r : R` into `ExteriorAlgebra R M`, the `ι` of `x : M`,
-and is preserved under addition and muliplication, then it holds for all of `ExteriorAlgebra R M`.
+and is preserved under addition and multiplication, then it holds for all of `ExteriorAlgebra R M`.
 -/
 @[elab_as_elim]
 theorem induction {C : ExteriorAlgebra R M → Prop}
@@ -162,6 +161,13 @@ theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 
 @[simp]
 theorem algebraMap_eq_one_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
+
+@[instance]
+theorem isLocalHom_algebraMap : IsLocalHom (algebraMap R (ExteriorAlgebra R M)) :=
+  isLocalHom_of_leftInverse _ (algebraMap_leftInverse M)
+
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_algebraMap := isLocalHom_algebraMap
 
 theorem isUnit_algebraMap (r : R) : IsUnit (algebraMap R (ExteriorAlgebra R M) r) ↔ IsUnit r :=
   isUnit_map_of_leftInverse _ (algebraMap_leftInverse M)
@@ -233,7 +239,8 @@ theorem ι_range_disjoint_one :
     Disjoint (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M))
       (1 : Submodule R (ExteriorAlgebra R M)) := by
   rw [Submodule.disjoint_def]
-  rintro _ ⟨x, hx⟩ ⟨r, rfl : algebraMap R (ExteriorAlgebra R M) r = _⟩
+  rintro _ ⟨x, hx⟩ h
+  obtain ⟨r, rfl : algebraMap R (ExteriorAlgebra R M) r = _⟩ := Submodule.mem_one.mp h
   rw [ι_eq_algebraMap_iff x] at hx
   rw [hx.2, RingHom.map_zero]
 
@@ -243,9 +250,10 @@ theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
 
 theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
     (ι R <| f i) * (List.ofFn fun i => ι R <| f i).prod = 0 := by
-  induction' n with n hn
-  · exact i.elim0
-  · rw [List.ofFn_succ, List.prod_cons, ← mul_assoc]
+  induction n with
+  | zero => exact i.elim0
+  | succ n hn =>
+    rw [List.ofFn_succ, List.prod_cons, ← mul_assoc]
     by_cases h : i = 0
     · rw [h, ι_sq_zero, zero_mul]
     · replace hn :=
@@ -254,6 +262,8 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
       rw [Fin.succ_pred, ← mul_assoc, mul_zero] at hn
       refine (eq_zero_iff_eq_zero_of_add_eq_zero ?_).mp hn
       rw [← add_mul, ι_add_mul_swap, zero_mul]
+
+end
 
 variable (R)
 
@@ -268,7 +278,7 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
       dsimp [F]
       clear F
       wlog h : x < y
-      · exact this R (A := A) n f y x hfxy.symm hxy.symm (hxy.lt_or_lt.resolve_left h)
+      · exact this R n f y x hfxy.symm hxy.symm (hxy.lt_or_lt.resolve_left h)
       clear hxy
       induction' n with n hn
       · exact x.elim0
@@ -295,8 +305,8 @@ theorem ιMulti_apply {n : ℕ} (v : Fin n → M) : ιMulti R n v = (List.ofFn f
   rfl
 
 @[simp]
-theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 :=
-  rfl
+theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 := by
+  simp [ιMulti]
 
 @[simp]
 theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :
@@ -368,7 +378,7 @@ theorem map_apply_ι (f : M →ₗ[R] N) (m : M) : map f (ι R m) = ι R (f m) :
 theorem map_apply_ιMulti {n : ℕ} (f : M →ₗ[R] N) (m : Fin n → M) :
     map f (ιMulti R n m) = ιMulti R n (f ∘ m) := by
   rw [ιMulti_apply, ιMulti_apply, map_list_prod]
-  simp only [List.map_ofFn, Function.comp, map_apply_ι]
+  simp only [List.map_ofFn, Function.comp_def, map_apply_ι]
 
 @[simp]
 theorem map_comp_ιMulti {n : ℕ} (f : M →ₗ[R] N) :

@@ -40,13 +40,13 @@ instance [CanonicallyOrderedCommMonoid α] [CanonicallyOrderedCommMonoid β] :
     CanonicallyOrderedCommMonoid (α × β) :=
   { (inferInstance : OrderedCommMonoid _), (inferInstance : OrderBot _),
     (inferInstance : ExistsMulOfLE _) with
-      le_self_mul := fun _ _ ↦ ⟨le_self_mul, le_self_mul⟩ }
+      le_self_mul := fun _ _ ↦ le_def.mpr ⟨le_self_mul, le_self_mul⟩ }
 
 namespace Lex
 
 @[to_additive]
 instance orderedCommMonoid [OrderedCommMonoid α]
-    [CovariantClass α α (· * ·) (· < ·)] [OrderedCommMonoid β] :
+    [MulLeftStrictMono α] [OrderedCommMonoid β] :
     OrderedCommMonoid (α ×ₗ β) where
   mul_le_mul_left _ _ hxy z := ((le_iff _ _).1 hxy).elim
     (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
