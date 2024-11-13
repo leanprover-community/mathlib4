@@ -2766,7 +2766,14 @@ import Mathlib.Data.Set.Defs
 import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Equitable
 import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Data.Set.Finite.List
+import Mathlib.Data.Set.Finite.Monad
+import Mathlib.Data.Set.Finite.Pi
+import Mathlib.Data.Set.Finite.Powerset
+import Mathlib.Data.Set.Finite.Prod
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
