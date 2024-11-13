@@ -42,7 +42,8 @@ theorem exp_tsum_primes_log_eq_tsum {f : ℕ →*₀ ℂ} (hsum : Summable (‖f
   conv at H => enter [1, 1, p]; rw [exp_neg, exp_log (hp p)]
   exact H.symm.trans <| eulerProduct_completely_multiplicative_tprod hsum
 
-/-- A variant of the Euler Product formula in terms of the exponential of a sum of logarithms. -/
+/-- A variant of the Euler Product formula in terms of the exponential of a sum of logarithms,
+with the function unbundled. -/
 theorem exp_tsum_primes_log_eq_tsum' {f : ℕ → ℂ} (h₀ : f 0 = 0) (h₁ : f 1 = 1)
     (hf : ∀ m n, f (m * n) = f m * f n) (hsum : Summable (‖f ·‖)) :
     exp (∑' p : Nat.Primes, -log (1 - f p)) = ∑' n : ℕ, f n :=
