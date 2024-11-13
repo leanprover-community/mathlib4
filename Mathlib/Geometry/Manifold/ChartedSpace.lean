@@ -1097,7 +1097,7 @@ theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H
 
 end PartialHomeomorph
 
-namespace IsOpenEmbedding
+namespace Topology.IsOpenEmbedding
 
 variable [Nonempty α]
 
@@ -1114,7 +1114,7 @@ theorem singleton_hasGroupoid {f : α → H} (h : IsOpenEmbedding f) (G : Struct
     [ClosedUnderRestriction G] : @HasGroupoid _ _ _ _ h.singletonChartedSpace G :=
   (h.toPartialHomeomorph f).singleton_hasGroupoid (toPartialHomeomorph_source _ _) G
 
-end IsOpenEmbedding
+end Topology.IsOpenEmbedding
 
 end Singleton
 

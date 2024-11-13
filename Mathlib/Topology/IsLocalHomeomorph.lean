@@ -153,7 +153,7 @@ theorem isLocalHomeomorph_iff_isOpenEmbedding_restrict {f : X → Y} :
 @[deprecated (since := "2024-10-18")]
 alias isLocalHomeomorph_iff_openEmbedding_restrict := isLocalHomeomorph_iff_isOpenEmbedding_restrict
 
-theorem IsOpenEmbedding.isLocalHomeomorph (hf : IsOpenEmbedding f) : IsLocalHomeomorph f :=
+theorem Topology.IsOpenEmbedding.isLocalHomeomorph (hf : IsOpenEmbedding f) : IsLocalHomeomorph f :=
   isLocalHomeomorph_iff_isOpenEmbedding_restrict.mpr fun _ ↦
     ⟨_, Filter.univ_mem, hf.comp (Homeomorph.Set.univ X).isOpenEmbedding⟩
 
@@ -212,7 +212,7 @@ theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injectiv
 alias openEmbedding_of_injective := isOpenEmbedding_of_injective
 
 /-- A surjective embedding is a homeomorphism. -/
-noncomputable def _root_.IsEmbedding.toHomeomorph_of_surjective (hf : IsEmbedding f)
+noncomputable def _root_.Topology.IsEmbedding.toHomeomorph_of_surjective (hf : IsEmbedding f)
     (hsurj : Function.Surjective f) : X ≃ₜ Y :=
   Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f ⟨hf.inj, hsurj⟩)
     hf.continuous (hf.isOpenEmbedding_of_surjective hsurj).isOpenMap

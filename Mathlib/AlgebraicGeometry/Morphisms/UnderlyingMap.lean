@@ -24,7 +24,7 @@ of the underlying map of topological spaces, including
 
 -/
 
-open CategoryTheory
+open CategoryTheory Topology
 
 namespace AlgebraicGeometry
 
@@ -179,7 +179,7 @@ instance IsDominant.isLocalAtTarget : IsLocalAtTarget @IsDominant :=
 lemma surjective_of_isDominant_of_isClosed_range (f : X ⟶ Y) [IsDominant f]
     (hf : IsClosed (Set.range f.base)) :
     Surjective f :=
-  ⟨by rw [← Set.range_iff_surjective, ← hf.closure_eq, f.denseRange.closure_range]⟩
+  ⟨by rw [← Set.range_eq_univ, ← hf.closure_eq, f.denseRange.closure_range]⟩
 
 lemma IsDominant.of_comp_of_isOpenImmersion
     (f : X ⟶ Y) (g : Y ⟶ Z) [H : IsDominant (f ≫ g)] [IsOpenImmersion g] :
