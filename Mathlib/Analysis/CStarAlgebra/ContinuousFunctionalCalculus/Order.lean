@@ -104,7 +104,7 @@ lemma inr_nonneg_iff {a : A} : 0 ≤ (a : A⁺¹) ↔ 0 ≤ a := by
 
 lemma nnreal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) : cfcₙ f a = cfc f (a : A⁺¹) :=
-  cfcₙ_eq_cfc_inr inr_nonneg_iff ..
+  cfcₙ_eq_cfc_inr inr_nonneg_iff a f
 
 end Unitization
 
