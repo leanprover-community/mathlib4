@@ -185,8 +185,8 @@ lemma height_le_height_apply_of_strictMono (f : α → β) (hf : StrictMono f) (
 @[simp]
 lemma height_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
   apply le_antisymm
-  · simpa using height_le_height_apply_of_strictmono _ f.symm.strictMono (f x)
-  · exact height_le_height_apply_of_strictmono _ f.strictMono x
+  · simpa using height_le_height_apply_of_strictMono _ f.symm.strictMono (f x)
+  · exact height_le_height_apply_of_strictMono _ f.strictMono x
 
 end height
 
