@@ -70,7 +70,7 @@ theorem one_sub_gold : 1 - ψ = φ := by
   linarith [gold_add_goldConj]
 
 @[simp]
-theorem gold_sub_goldConj : φ - ψ = √5 := by ring
+theorem gold_sub_goldConj : φ - ψ = √5 := by unfold goldenRatio goldenConj; ring
 
 theorem gold_pow_sub_gold_pow (n : ℕ) : φ ^ (n + 2) - φ ^ (n + 1) = φ ^ n := by
   rw [goldenRatio]; ring_nf; norm_num; ring
@@ -206,7 +206,7 @@ theorem Real.coe_fib_eq : ∀ n, (Nat.fib n : ℝ) = (φ ^ n - ψ ^ n) / √5 :=
 /-- Relationship between the Fibonacci Sequence, Golden Ratio and its conjugate's exponents --/
 theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ n := by
   repeat rw [coe_fib_eq]
-  rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ']
+  rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ', goldenRatio, goldenConj]
   ring_nf
   have nz : sqrt 5 ≠ 0 := by norm_num
   rw [← (mul_inv_cancel₀ nz).symm, one_mul]
