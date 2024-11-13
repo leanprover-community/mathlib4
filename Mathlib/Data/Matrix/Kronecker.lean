@@ -530,7 +530,7 @@ theorem det_kroneckerTMul [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n
   simp (config := { eta := false }) only [mk_apply, ← includeLeft_apply (S := R),
     ← includeRight_apply]
   simp only [← AlgHom.mapMatrix_apply, ← AlgHom.map_det]
-  simp only [Algebra.TensorProduct.includeLeft_apply, includeRight_apply, tmul_pow, tmul_mul_tmul, one_pow,
+  simp only [includeLeft_apply, includeRight_apply, tmul_pow, tmul_mul_tmul, one_pow,
     _root_.mul_one, _root_.one_mul]
 
 end CommRing
