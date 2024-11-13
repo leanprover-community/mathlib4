@@ -134,7 +134,7 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
 lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s t)
-    (f : s ≃ t) (hadj : ∀ {v w : V}, v ∈ s → w ∈ t → G.Adj v w) :
+    (f : s ≃ t) (hadj : ∀ {v}, (h : v ∈ s) → G.Adj v (f ⟨v, h⟩)) :
     ∃ M : Subgraph G, M.verts = s ∪ t ∧ M.IsMatching := by
   haveI (v : V) : Decidable (v ∈ s) := Classical.dec _
   use {
@@ -146,9 +146,9 @@ lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s 
       simp only [dite_else_false] at h
       cases' h with hl hr
       · rw [← hl.choose_spec]
-        exact hadj hl.choose (f _).coe_prop
+        exact hadj hl.choose
       · rw [← hr.choose_spec, G.adj_comm]
-        exact hadj hr.choose (f _).coe_prop
+        exact hadj hr.choose
     edge_vert := by
       intro v w hvw
       simp only [dite_else_false] at hvw
@@ -167,7 +167,7 @@ lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s 
     refine ⟨by left; exact hl, ?_⟩
     intro y hy
     cases' hy with h1 h2
-    · obtain ⟨_, rfl⟩ := h1; rfl
+    · simp_all only [exists_true_left]
     · obtain ⟨hys, rfl⟩ := h2
       exact (h.ne_of_mem hl (f ⟨y, hys⟩).coe_prop rfl).elim
   · use f.symm ⟨v, hr⟩
