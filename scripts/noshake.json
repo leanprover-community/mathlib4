@@ -323,8 +323,8 @@
   ["Mathlib.Algebra.MvPolynomial.CommRing", "Mathlib.Algebra.Polynomial.Basic"],
   "Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs":
   ["Mathlib.Tactic.Algebraize"],
-  "Mathlib.RingTheory.Finiteness":
-  ["Mathlib.Algebra.Algebra.RestrictScalars", "Mathlib.Tactic.Algebraize"],
+  "Mathlib.RingTheory.Finiteness.Defs":
+  ["Mathlib.Tactic.Algebraize"],
   "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
   "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.RepresentationTheory.FdRep":
