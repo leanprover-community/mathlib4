@@ -91,8 +91,9 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
   simp only [LinearEquiv.coe_toEquiv, Finsupp.LinearEquiv.finsuppUnique_apply,
     PUnit.default_eq_unit, coeff]
   apply iff_of_eq
-  congr; ext i; congr;
-  all_goals { ext; simp }
+  congr
+  · ext _; congr; ext; simp
+  · ext; simp
 
 /-- The semiring topology on PowerSeries of a topological semiring -/
 @[scoped instance]
@@ -118,7 +119,7 @@ variable [UniformSpace R]
 
 /-- The componentwise uniformity on PowerSeries -/
 scoped instance : UniformSpace (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instUniformSpace Unit R
+  MvPowerSeries.WithPiTopology.instUniformSpace
 
 /-- Coefficients are uniformly continuous -/
 theorem uniformContinuous_coeff [Semiring R] (d : ℕ) :
@@ -129,13 +130,13 @@ theorem uniformContinuous_coeff [Semiring R] (d : ℕ) :
 @[scoped instance]
 theorem instCompleteSpace [CompleteSpace R] :
     CompleteSpace (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instCompleteSpace Unit R
+  MvPowerSeries.WithPiTopology.instCompleteSpace
 
 /-- The uniform_add_group structure on PowerSeries of a uniform_add_group -/
 @[scoped instance]
 theorem instUniformAddGroup [AddGroup R] [UniformAddGroup R] :
     UniformAddGroup (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instUniformAddGroup Unit R
+  MvPowerSeries.WithPiTopology.instUniformAddGroup
 
 end WithPiTopology
 
