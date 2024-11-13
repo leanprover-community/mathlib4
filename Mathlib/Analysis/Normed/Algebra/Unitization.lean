@@ -211,7 +211,7 @@ instance instBornology : Bornology (Unitization 𝕜 A) :=
 theorem isUniformEmbedding_addEquiv {𝕜} [NontriviallyNormedField 𝕜] :
     IsUniformEmbedding (addEquiv 𝕜 A) where
   comap_uniformity := rfl
-  inj := (addEquiv 𝕜 A).injective
+  injective := (addEquiv 𝕜 A).injective
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_addEquiv := isUniformEmbedding_addEquiv

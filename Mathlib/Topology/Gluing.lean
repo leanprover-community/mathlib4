@@ -85,7 +85,7 @@ conditions are stated in a less categorical way.
 -- porting note (#5171): removed @[nolint has_nonempty_instance]
 structure GlueData extends GlueData TopCat where
   f_open : ∀ i j, IsOpenEmbedding (f i j)
-  f_mono i j := (TopCat.mono_iff_injective _).mpr (f_open i j).isEmbedding.inj
+  f_mono i j := (TopCat.mono_iff_injective _).mpr (f_open i j).isEmbedding.injective
 
 namespace GlueData
 

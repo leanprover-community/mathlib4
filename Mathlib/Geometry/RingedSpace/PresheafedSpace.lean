@@ -313,7 +313,7 @@ def ofRestrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
 
 instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
     (hf : IsOpenEmbedding f) : Mono (X.ofRestrict hf) := by
-  haveI : Mono f := (TopCat.mono_iff_injective _).mpr hf.inj
+  haveI : Mono f := (TopCat.mono_iff_injective _).mpr hf.injective
   constructor
   intro Z g₁ g₂ eq
   ext1
@@ -324,7 +324,7 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
   · ext V
     have hV : (Opens.map (X.ofRestrict hf).base).obj (hf.isOpenMap.functor.obj V) = V := by
       ext1
-      exact Set.preimage_image_eq _ hf.inj
+      exact Set.preimage_image_eq _ hf.injective
     haveI :
       IsIso (hf.isOpenMap.adjunction.counit.app (unop (op (hf.isOpenMap.functor.obj V)))) :=
         NatIso.isIso_app_of_isIso

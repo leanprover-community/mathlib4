@@ -105,7 +105,7 @@ abbrev MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (
 `MetricSpace.induced` useful in case if the domain already has a `UniformSpace` structure. -/
 abbrev IsUniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : MetricSpace β] (f : α → β)
     (h : IsUniformEmbedding f) : MetricSpace α :=
-  .replaceUniformity (.induced f h.inj m) h.comap_uniformity.symm
+  .replaceUniformity (.induced f h.injective m) h.comap_uniformity.symm
 
 @[deprecated (since := "2024-10-03")]
 alias UniformEmbedding.comapMetricSpace := IsUniformEmbedding.comapMetricSpace
@@ -114,7 +114,7 @@ alias UniformEmbedding.comapMetricSpace := IsUniformEmbedding.comapMetricSpace
 `MetricSpace.induced` useful in case if the domain already has a `TopologicalSpace` structure. -/
 abbrev Topology.IsEmbedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β]
     (f : α → β) (h : IsEmbedding f) : MetricSpace α :=
-  .replaceTopology (.induced f h.inj m) h.eq_induced
+  .replaceTopology (.induced f h.injective m) h.eq_induced
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.comapMetricSpace := IsEmbedding.comapMetricSpace
