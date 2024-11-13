@@ -41,7 +41,7 @@ abbrev Hom.asOverProp {X Y : Scheme.{u}} (f : X.Hom Y) (S : Scheme.{u}) [X.Over 
 
 /-- A `P`-cover of a scheme `X` over `S` is a cover, where the components are over `S` and the
 component maps commute with the structure morphisms. -/
-protected class Cover.Over {P : MorphismProperty Scheme.{u}} {X : Scheme.{u}} [X.Over S] 
+protected class Cover.Over {P : MorphismProperty Scheme.{u}} {X : Scheme.{u}} [X.Over S]
     (𝒰 : X.Cover P) where
   over (j : 𝒰.J) : (𝒰.obj j).Over S := by infer_instance
   isOver_map (j : 𝒰.J) : (𝒰.map j).IsOver S := by infer_instance
