@@ -446,6 +446,37 @@ theorem not_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) [P.Fin
 @[deprecated (since := "2024-11-03")]
 alias _root_.not_dvd_index_sylow' := not_dvd_index
 
+section mapSurjective
+
+variable [Finite G] {G' : Type*} [Group G'] {f : G →* G'} (hf : Function.Surjective f)
+
+/-- Surjective group homomorphisms map Sylow subgroups to Sylow subgroups. -/
+def mapSurjective [Fact p.Prime] (P : Sylow p G) : Sylow p G' :=
+  { P.1.map f with
+    isPGroup' := P.2.map f
+    is_maximal' := fun hQ hPQ ↦ ((P.2.map f).toSylow
+      (fun h ↦ P.not_dvd_index (h.trans (P.index_map_dvd hf)))).3 hQ hPQ }
+
+@[simp] theorem coe_mapSurjective [Fact p.Prime] (P : Sylow p G) : P.mapSurjective hf = P.map f :=
+  rfl
+
+theorem mapSurjective_surjective (p : ℕ) [Fact p.Prime] :
+    Function.Surjective (Sylow.mapSurjective hf : Sylow p G → Sylow p G') := by
+  have : Finite G' := Finite.of_surjective f hf
+  intro P
+  let Q₀ : Sylow p (P.comap f) := Sylow.nonempty.some
+  let Q : Subgroup G := Q₀.map (P.comap f).subtype
+  have hPQ : Q.map f ≤ P := Subgroup.map_le_iff_le_comap.mpr (Subgroup.map_subtype_le Q₀.1)
+  have hpQ : IsPGroup p Q := Q₀.2.map (P.comap f).subtype
+  have hQ : ¬ p ∣ Q.index := by
+    rw [Subgroup.index_map_subtype Q₀.1, P.index_comap_of_surjective hf]
+    exact Nat.Prime.not_dvd_mul Fact.out Q₀.not_dvd_index P.not_dvd_index
+  use hpQ.toSylow hQ
+  rw [Sylow.ext_iff, Sylow.coe_mapSurjective, eq_comm]
+  exact ((hpQ.map f).toSylow (fun h ↦ hQ (h.trans (Q.index_map_dvd hf)))).3 P.2 hPQ
+
+end mapSurjective
+
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
   of `N`, then `N_G(P) ⊔ N = G`. -/
 theorem normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
