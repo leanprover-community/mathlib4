@@ -163,22 +163,4 @@ lemma LSeries_sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
     LSeries (∑ i ∈ S, f i) s = ∑ i ∈ S, LSeries (f i) s := by
   simpa only [LSeries, term_sum, Finset.sum_apply] using tsum_sum hf
 
-variable [Fintype ι]
-
-/-- The version of `LSeriesHasSum.sum` for sums over a `Fintype`. -/
-lemma LSeriesHasSum.sum' {a : ι → ℂ} (hf : ∀ i, LSeriesHasSum (f i) s (a i)) :
-    LSeriesHasSum (∑ i : ι, f i) s (∑ i : ι, a i) :=
-  sum fun i _ ↦ hf i
-
-/-- The version of `LSeriesSummable.sum` for sums over a `Fintype`. -/
-lemma LSeriesSummable.sum' (hf : ∀ i, LSeriesSummable (f i) s) :
-    LSeriesSummable (∑ i : ι, f i) s :=
-  sum fun i _ ↦ hf i
-
-/-- The version of `LSeries_sum` for sums over a `Fintype`. -/
-@[simp]
-lemma LSeries_sum' (hf : ∀ i, LSeriesSummable (f i) s) :
-    LSeries (∑ i : ι, f i) s = ∑ i : ι, LSeries (f i) s :=
-  LSeries_sum fun i _ ↦ hf i
-
 end sum
