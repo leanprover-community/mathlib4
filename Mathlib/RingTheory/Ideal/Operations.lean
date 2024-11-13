@@ -836,7 +836,7 @@ def radicalInfTopHom : InfTopHom (Ideal R) (Ideal R) where
   map_top' := radical_top _
 
 @[simp]
-lemma radicalInfTopHom_apply (I : Ideal R) : radicalInfTopHom I = radical I := rfl
+lemma radicalInfTopHom_apply (I : Ideal R) : radicalInfTopHom (R := R) I = radical I := rfl
 
 open Finset in
 lemma radical_finset_inf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (hi : i ∈ s)
