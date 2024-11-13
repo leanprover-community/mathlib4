@@ -232,12 +232,12 @@ theorem isIso_of_injective_of_isAffine [IsClosedImmersion f]
     (hf : Function.Injective (f.app ⊤)) : IsIso f := (isIso_iff_stalk_iso f).mpr <|
   have : CompactSpace X := f.isClosedEmbedding.compactSpace
   have hiso : IsIso f.base := TopCat.isIso_of_bijective_of_isClosedMap _
-    ⟨f.isClosedEmbedding.inj,
+    ⟨f.isClosedEmbedding.injective,
      surjective_of_isClosed_range_of_injective f.isClosedEmbedding.isClosed_range hf⟩
     (f.isClosedEmbedding.isClosedMap)
   ⟨hiso, fun x ↦ (ConcreteCategory.isIso_iff_bijective _).mpr
     ⟨stalkMap_injective_of_isOpenMap_of_injective ((TopCat.homeoOfIso (asIso f.base)).isOpenMap)
-    f.isClosedEmbedding.inj hf _, f.stalkMap_surjective x⟩⟩
+    f.isClosedEmbedding.injective hf _, f.stalkMap_surjective x⟩⟩
 
 variable (f)
 
