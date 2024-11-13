@@ -113,7 +113,7 @@ printf '%s|%s\n\n' "$(printf '%s\n' "${deprecatedFiles}" | grep total | sed 's= 
 
 report () {
 
-# collect the technical debts and the line counts of the deprecated file from the current mathlib
+# Collect the technical debt metrics and the line counts of all deprecated files from current mathlib.
 git checkout -q "${currCommit}"
 new="$(tdc)"
 newDeprecatedFiles="$(git ls-files '**/Deprecated/*.lean' | xargs wc -l | sed 's=^ *==')"
@@ -147,9 +147,9 @@ then
   rep="$(report | awk -F'|' 'BEGIN{backTicks=0} /^```/{backTicks++} ((!/^```/) && (backTicks % 2 == 0) && !($3 == "0")) {print $0}')"
   if [ "$(wc -l <<<"${rep}")" -le 5 ]
   then
-    printf '<details><summary>No changes to technical debts.</summary>\n'
+    printf '<details><summary>No changes to technical debt.</summary>\n'
   else
-    printf '<details><summary>Changes to technical debts</summary>\n\n%s\n' "${rep}"
+    printf '<details><summary>Changes to technical debt</summary>\n\n%s\n' "${rep}"
   fi
   printf '\nYou can run this locally as\n```\n./scripts/technical-debt-metrics.sh pr_summary\n```\n</details>\n'
 else
