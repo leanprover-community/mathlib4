@@ -42,6 +42,8 @@ and we return a list of the first goals which appeared.
 This is useful for hypotheses of the form `h : a ∈ [l₁, l₂, ...]`,
 which will be transformed into a sequence of goals with hypotheses `h : a = l₁`, `h : a = l₂`,
 and so on.
+Cases are named according to the order in which they are generated as tracked by `counter`
+and prefixed with `userNamePre`.
 -/
 partial def unfoldCases (g : MVarId) (h : FVarId)
     (userNamePre : Name := .anonymous) (counter := 0) : MetaM (List MVarId) := do
@@ -121,9 +123,6 @@ produces three goals with hypotheses
 -/
 
 /- TODO: In mathlib3 we ran `norm_num` when there is no `with` clause. Is this still useful? -/
-/- TODO: can we name the cases generated according to their values,
-   rather than `tail.tail.tail.head`?
-   Update: now generates more helpful case names such as `0.2.1` -/
 
 @[tactic finCases] elab_rules : tactic
   | `(tactic| fin_cases $[$hyps:ident],*) => withMainContext <| focus do
