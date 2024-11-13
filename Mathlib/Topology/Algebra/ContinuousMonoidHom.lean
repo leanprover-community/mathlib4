@@ -20,6 +20,8 @@ This file defines the space of continuous homomorphisms between two topological 
 * `ContinuousAddMonoidHom A B`: The continuous additive homomorphisms `A →+ B`.
 -/
 
+section
+
 open Function Topology
 open scoped Pointwise
 
