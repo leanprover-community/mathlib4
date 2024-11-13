@@ -83,6 +83,7 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
   · have h : ∀ x ≠ (0 : ℝ), 1 + x⁻¹ = (x + 1) / x := fun x hx ↦ by field_simp [hx]
     simp (disch := positivity) only [log_stirlingSeq_formula, log_div, log_mul, log_exp,
       factorial_succ, cast_mul, cast_succ, cast_zero, range_one, sum_singleton, h]
+    unfold f
     ring
 
 /-- The sequence `log ∘ stirlingSeq ∘ succ` is monotone decreasing -/
