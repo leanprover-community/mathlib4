@@ -287,7 +287,9 @@ theorem eval_map (f : M →ₗ[R] M') (q : PolynomialModule R M) (r : R) :
     simp_rw [map_add, e₁, e₂]
   · intro i m
     simp only [map_single, eval_single, f.map_smul]
-    module
+    match_scalars
+    unfold Algebra.cast -- FIXME some issue with the `push_cast` in `match_scalars`
+    ring
 
 @[simp]
 theorem eval_map' (f : M →ₗ[R] M) (q : PolynomialModule R M) (r : R) :

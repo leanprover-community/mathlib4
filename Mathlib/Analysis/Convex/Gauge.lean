@@ -187,7 +187,7 @@ theorem gauge_add_le (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (x y : E) :
     gauge s (a • x + b • y) ≤ a + b := gauge_le_of_mem (by positivity) <| by
       rw [hs.add_smul ha.le hb.le]
       exact add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hy)
-    _ < gauge s (a • x) + gauge s (b • y) + ε := by linarith
+    _ < gauge s (a • x) + gauge s (b • y) + ε := by dsimp only at ha' hb'; linarith
 
 theorem self_subset_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } := fun _ => gauge_le_one_of_mem
 

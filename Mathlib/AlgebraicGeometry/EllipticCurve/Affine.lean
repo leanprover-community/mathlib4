@@ -194,6 +194,7 @@ lemma equation_iff_variableChange (x y : R) :
     W.Equation x y ↔ (W.variableChange ⟨1, x, 0, y⟩).toAffine.Equation 0 0 := by
   rw [equation_iff', ← neg_eq_zero, equation_zero, variableChange_a₆, inv_one, Units.val_one]
   congr! 1
+  dsimp only
   ring1
 
 end Equation
