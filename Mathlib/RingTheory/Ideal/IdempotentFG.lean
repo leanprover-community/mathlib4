@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Kevin Buzzard
 -/
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Order.Basic
-import Mathlib.RingTheory.Finiteness.Lemmas
+import Mathlib.RingTheory.Finiteness.Nakayama
 
 /-!
 ## Lemmas on idempotent finitely generated ideals

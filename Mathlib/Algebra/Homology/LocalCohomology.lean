@@ -7,7 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.RingTheory.Finiteness.Lemmas
+import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Noetherian.Defs
 

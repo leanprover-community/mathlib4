@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.Matrix.StdBasis
-import Mathlib.RingTheory.Finiteness.Lemmas
+import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
 # Finite and free modules

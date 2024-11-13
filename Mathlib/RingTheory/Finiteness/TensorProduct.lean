@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Module.Submodule.Pointwise
+import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.RingTheory.Finiteness.Bilinear
 import Mathlib.RingTheory.Ideal.Quotient.Basic

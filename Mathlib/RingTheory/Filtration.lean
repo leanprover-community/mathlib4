@@ -7,7 +7,7 @@ import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Order.Basic
 import Mathlib.Order.Hom.Lattice
-import Mathlib.RingTheory.Finiteness.Lemmas
+import Mathlib.RingTheory.Finiteness.Nakayama
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Noetherian.Orzech
 import Mathlib.RingTheory.ReesAlgebra
