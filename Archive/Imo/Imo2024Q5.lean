@@ -693,7 +693,7 @@ is at the right edge. -/
 def path1OfEdgeN (hN : 2 ≤ N) : Path N := (path1OfEdge0 hN).reflect
 
 /-- The third attempt in a winning strategy, as a function, if the monster in the second row
-is at the left edge and the second (zigazg) attempt encountered a monster: on the row before
+is at the left edge and the second (zigzag) attempt encountered a monster: on the row before
 the monster was encountered, move to the following row one place earlier, proceed to the left
 edge and then along that column. -/
 def fn2OfEdge0 {r : Fin (N + 2)} (hr : (r : ℕ) ≤ N) : Fin (N + 2 * r - 1) → Cell N :=
@@ -708,7 +708,7 @@ lemma fn2OfEdge0_apply_eq_fn1OfEdge0_apply_of_lt {r : Fin (N + 2)} (hr : (r : �
   split_ifs with h₁ h₂ <;> simp [Fin.ext_iff, Prod.ext_iff] at * <;> omega
 
 /-- The third attempt in a winning strategy, as a `Path`, if the monster in the second row
-is at the left edge and the second (zigazg) attempt encountered a monster. -/
+is at the left edge and the second (zigzag) attempt encountered a monster. -/
 def path2OfEdge0 (hN : 2 ≤ N) {r : Fin (N + 2)} (hr2 : 2 ≤ (r : ℕ)) (hrN : (r : ℕ) ≤ N) : Path N :=
   Path.ofFn (fn2OfEdge0 hrN) (by omega)
     (by simp only [fn2OfEdge0, Fin.ext_iff]; split_ifs <;> simp <;> omega)
@@ -719,7 +719,7 @@ def path2OfEdge0 (hN : 2 ≤ N) {r : Fin (N + 2)} (hr2 : 2 ≤ (r : ℕ)) (hrN :
       split_ifs <;> simp [Adjacent, Nat.dist, Fin.ext_iff] at * <;> omega)
 
 /-- The third attempt in a winning strategy, as a `Path`, if the monster in the second row
-is at the left edge and the second (zigazg) attempt encountered a monster, version that works
+is at the left edge and the second (zigzag) attempt encountered a monster, version that works
 with junk values of `r` for convenience in defining the strategy before needing to prove things
 about exactly where it can encounter monsters. -/
 def path2OfEdge0Def (hN : 2 ≤ N) (r : Fin (N + 2)) : Path N :=
@@ -727,7 +727,7 @@ def path2OfEdge0Def (hN : 2 ≤ N) (r : Fin (N + 2)) : Path N :=
     path2OfEdge0 hN (r := ⟨2, by omega⟩) (le_refl _) hN
 
 /-- The third attempt in a winning strategy, as a `Path`, if the monster in the second row
-is at the right edge and the second (zigazg) attempt encountered a monster. -/
+is at the right edge and the second (zigzag) attempt encountered a monster. -/
 def path2OfEdgeNDef (hN : 2 ≤ N) (r : Fin (N + 2)) : Path N :=
   (path2OfEdge0Def hN r).reflect
 
