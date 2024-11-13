@@ -342,7 +342,7 @@ theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
 
 lemma isClosedEmbedding_comap_of_surjective (hf : Surjective f) : IsClosedEmbedding (comap f) where
   toIsInducing := comap_isInducing_of_surjective S f hf
-  inj := comap_injective_of_surjective f hf
+  injective := comap_injective_of_surjective f hf
   isClosed_range := isClosed_range_comap_of_surjective S f hf
 
 @[deprecated (since := "2024-10-20")]
