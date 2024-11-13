@@ -6,9 +6,10 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.PowerBasis
 import Mathlib.FieldTheory.IntermediateField.Basic
+import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.RingTheory.PowerBasis
 
 /-!
 
@@ -39,6 +40,7 @@ section CommSemiring
 variable {R : Type u} [CommSemiring R] {S : Type v} [CommSemiring S]
 
 /-- A polynomial is separable iff it is coprime with its derivative. -/
+@[stacks 09H1 "first part"]
 def Separable (f : R[X]) : Prop :=
   IsCoprime f (derivative f)
 
@@ -433,7 +435,7 @@ theorem separable_X_pow_sub_C' (p n : ℕ) (a : F) [CharP F p] (hn : ¬p ∣ n) 
 -- bi-implication, but it is nontrivial!
 /-- In a field `F`, `X ^ n - 1` is separable iff `↑n ≠ 0`. -/
 theorem X_pow_sub_one_separable_iff {n : ℕ} : (X ^ n - 1 : F[X]).Separable ↔ (n : F) ≠ 0 := by
-  refine ⟨?_, fun h => separable_X_pow_sub_C_unit 1 (IsUnit.mk0 (↑n) h)⟩
+  refine ⟨?_, fun h => separable_X_pow_sub_C_unit 1 (IsUnit.mk0 _ h)⟩
   rw [separable_def', derivative_sub, derivative_X_pow, derivative_one, sub_zero]
   -- Suppose `(n : F) = 0`, then the derivative is `0`, so `X ^ n - 1` is a unit, contradiction.
   rintro (h : IsCoprime _ _) hn'
@@ -462,6 +464,7 @@ theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingH
 
 /-- If a non-zero polynomial over `F` splits in `K`, then it has no repeated roots on `K`
 if and only if it is separable. -/
+@[stacks 09H3 "Here we only require `f` splits instead of `K` is algebraically closed."]
 theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
     (h : f.Splits (algebraMap F K)) : (f.aroots K).Nodup ↔ f.Separable := by
   rw [← (algebraMap F K).id_comp, ← splits_map_iff] at h
@@ -539,6 +542,7 @@ An element `x` of an algebra `K` over a commutative ring `F` is said to be *sepa
 minimal polynomial over `K` is separable. Note that the minimal polynomial of any element not
 integral over `F` is defined to be `0`, which is not a separable polynomial.
 -/
+@[stacks 09H1 "second part"]
 def IsSeparable (x : K) : Prop := Polynomial.Separable (minpoly F x)
 
 /-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
@@ -547,9 +551,9 @@ extension, because the minimal polynomial of a non-integral element is `0`, whic
 separable.
 
 We define this for general (commutative) rings and only assume `F` and `K` are fields if this
-is needed for a proof.
--/
-@[mk_iff isSeparable_def] protected class Algebra.IsSeparable : Prop where
+is needed for a proof. -/
+@[mk_iff isSeparable_def, stacks 09H1 "third part"]
+protected class Algebra.IsSeparable : Prop where
   isSeparable' : ∀ x : K, IsSeparable F x
 
 variable {K}
@@ -611,11 +615,15 @@ variable [Field L] [Ring E] [Algebra F L]
 
 /-- If `E / L / F` is a scalar tower and `x : E` is separable over `F`, then it's also separable
 over `L`. -/
+@[stacks 09H2 "first part"]
 theorem IsSeparable.tower_top
     {x : E} (h : IsSeparable F x) : IsSeparable L x :=
   h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
 
 variable (F E) in
+/-- If `E / K / F` is an extension tower, `E` is separable over `F`, then it's also separable
+over `K`. -/
+@[stacks 09H2 "second part"]
 theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
     Algebra.IsSeparable L E :=
   ⟨fun x ↦ IsSeparable.tower_top _ (Algebra.IsSeparable.isSeparable F x)⟩
@@ -663,7 +671,6 @@ variable [Field K] [Ring E] [Algebra F K] [Algebra F E] [Algebra K E]
 
 variable {F} in
 /-- If `E / K / F` is a scalar tower and `algebraMap K E x` is separable over `F`, then `x` is
-``
 also separable over `F`. -/
 theorem IsSeparable.tower_bot {x : K} (h : IsSeparable F (algebraMap K E x)) : IsSeparable F x :=
     have ⟨_q, hq⟩ :=

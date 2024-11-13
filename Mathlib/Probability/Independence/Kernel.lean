@@ -1172,8 +1172,8 @@ theorem iIndepFun.indepFun_finset_prod_of_not_mem (hf_Indep : iIndepFun (fun _ �
   have h_right : f i =
     (fun p : ({i} : Finset ι) → β => p ⟨i, Finset.mem_singleton_self i⟩) ∘
     fun a (j : ({i} : Finset ι)) => f j a := rfl
-  have h_meas_right : Measurable fun p : ({i} : Finset ι) → β
-    => p ⟨i, Finset.mem_singleton_self i⟩ := measurable_pi_apply ⟨i, Finset.mem_singleton_self i⟩
+  have h_meas_right : Measurable fun p : ({i} : Finset ι) → β =>
+      p ⟨i, Finset.mem_singleton_self i⟩ := measurable_pi_apply _
   have h_left : ∏ j ∈ s, f j = (fun p : s → β => ∏ j, p j) ∘ fun a (j : s) => f j a := by
     ext1 a
     simp only [Function.comp_apply]
