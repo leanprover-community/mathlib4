@@ -283,7 +283,7 @@ lemma coheight_le_coheight_apply_of_astrictMono (f : α → β) (hf : StrictMono
   exact fun _ _ h ↦ hf h
 
 @[simp]
-lemma height_eq_of_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
+lemma height_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
   apply le_antisymm
   · simpa using height_le_height_apply_of_strictMono _ f.symm.strictMono (f x)
   · exact height_le_height_apply_of_strictMono _ f.strictMono x

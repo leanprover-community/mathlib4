@@ -161,9 +161,6 @@ theorem isLeftRegular_of_le_isCancelMulZero (f : LocalizationWithZeroMap S N)
     leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
   exact IsLeftCancelMulZero.to_isCancelMulZero
 
-@[deprecated isLeftRegular_of_le_isCancelMulZero (since := "2024-01-16")]
-alias isLeftRegular_of_le_IsCancelMulZero := isLeftRegular_of_le_isCancelMulZero
-
 end LocalizationWithZeroMap
 
 end Submonoid

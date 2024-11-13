@@ -51,10 +51,12 @@ lemma of_isPullback {P : MorphismProperty C} [P.IsStableUnderBaseChange]
   IsStableUnderBaseChange.of_isPullback sq hg
 
 /-- Alternative constructor for `IsStableUnderBaseChange`. -/
-theorem IsStableUnderBaseChange.mk' {P : MorphismProperty C} [HasPullbacks C] [RespectsIso P]
-    (hP₂ : ∀ (X Y S : C) (f : X ⟶ S) (g : Y ⟶ S) (_ : P g), P (pullback.fst f g)) :
+theorem IsStableUnderBaseChange.mk' {P : MorphismProperty C} [RespectsIso P]
+    (hP₂ : ∀ (X Y S : C) (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] (_ : P g),
+      P (pullback.fst f g)) :
     IsStableUnderBaseChange P where
   of_isPullback {X Y Y' S f g f' g'} sq hg := by
+    haveI : HasPullback f g := sq.flip.hasPullback
     let e := sq.flip.isoPullback
     rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
     exact hP₂ _ _ _ f g hg
@@ -139,10 +141,12 @@ lemma of_isPushout {P : MorphismProperty C} [P.IsStableUnderCobaseChange]
   IsStableUnderCobaseChange.of_isPushout sq hf
 
 /-- An alternative constructor for `IsStableUnderCobaseChange`. -/
-theorem IsStableUnderCobaseChange.mk' {P : MorphismProperty C} [HasPushouts C] [RespectsIso P]
-    (hP₂ : ∀ (A B A' : C) (f : A ⟶ A') (g : A ⟶ B) (_ : P f), P (pushout.inr f g)) :
+theorem IsStableUnderCobaseChange.mk' {P : MorphismProperty C} [RespectsIso P]
+    (hP₂ : ∀ (A B A' : C) (f : A ⟶ A') (g : A ⟶ B) [HasPushout f g] (_ : P f),
+      P (pushout.inr f g)) :
     IsStableUnderCobaseChange P where
   of_isPushout {A A' B B' f g f' g'} sq hf := by
+    haveI : HasPushout f g := sq.flip.hasPushout
     let e := sq.flip.isoPushout
     rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
     exact hP₂ _ _ _ f g hf
@@ -329,6 +333,13 @@ instance IsStableUnderComposition.universally [HasPullbacks C] (P : MorphismProp
 theorem universally_le (P : MorphismProperty C) : P.universally ≤ P := by
   intro X Y f hf
   exact hf (𝟙 _) (𝟙 _) _ (IsPullback.of_vert_isIso ⟨by rw [Category.comp_id, Category.id_comp]⟩)
+
+theorem universally_inf (P Q : MorphismProperty C) :
+    (P ⊓ Q).universally = P.universally ⊓ Q.universally := by
+  ext X Y f
+  show _ ↔ _ ∧ _
+  simp_rw [universally, ← forall_and]
+  rfl
 
 theorem universally_eq_iff {P : MorphismProperty C} :
     P.universally = P ↔ P.IsStableUnderBaseChange :=

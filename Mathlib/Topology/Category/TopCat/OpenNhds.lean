@@ -26,7 +26,7 @@ Besides `OpenNhds`, the main constructions here are:
 -/
 
 
-open CategoryTheory TopologicalSpace Opposite
+open CategoryTheory TopologicalSpace Opposite Topology
 
 universe u
 
