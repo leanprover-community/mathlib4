@@ -16,8 +16,8 @@ We prove the following facts:
 
 * `Convex.interior` : interior of a convex set is convex;
 * `Convex.closure` : closure of a convex set is convex;
-* `closedConvexHull_eq_closedConvexHull_closure` : the closed convex hull of a set is equal to the
-  closed convex hull of the closure;
+* `closedConvexHull_closure_eq_closedConvexHull` : the closed convex hull of the closure of a set is
+  equal to the closed convex hull of the set;
 * `Set.Finite.isCompact_convexHull` : convex hull of a finite set is compact;
 * `Set.Finite.isClosed_convexHull` : convex hull of a finite set is closed.
 -/
@@ -306,10 +306,12 @@ theorem convexHull_subset_closedConvexHull {s : Set E} :
     (convexHull 𝕜) s ⊆ (closedConvexHull 𝕜) s :=
   convexHull_min subset_closedConvexHull convex_closedConvexHull
 
-theorem closedConvexHull_eq_closedConvexHull_closure {s : Set E} :
-    closedConvexHull 𝕜 s = closedConvexHull 𝕜 (closure s) :=
-  subset_antisymm ((closedConvexHull 𝕜).monotone subset_closure) <| by
-    simpa using ((closedConvexHull 𝕜).monotone (closure_subset_closedConvexHull (𝕜 := 𝕜) (E := E)))
+@[simp]
+theorem closedConvexHull_closure_eq_closedConvexHull {s : Set E} :
+    closedConvexHull 𝕜 (closure s) = closedConvexHull 𝕜 s :=
+  subset_antisymm (by
+    simpa using ((closedConvexHull 𝕜).monotone (closure_subset_closedConvexHull (𝕜 := 𝕜) (E := E))))
+    ((closedConvexHull 𝕜).monotone subset_closure)
 
 end TopologicalSpace
 
