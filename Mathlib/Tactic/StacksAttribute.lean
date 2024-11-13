@@ -191,7 +191,7 @@ def traceStacksTags (db : Database) (verbose : Bool := false) :
     let cmt := parL ++ d.comment ++ parR
     msgs := msgs.push
       m!"[Stacks Tag {d.tag}]({databaseURL db ++ d.tag}) \
-        corresponds to declaration '{dname}'.{cmt}"
+        corresponds to declaration '{.ofConstName dname}'.{cmt}"
     if verbose then
       let dType := ((env.find? dname).getD default).type
       msgs := (msgs.push m!"{dType}").push ""
