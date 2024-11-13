@@ -63,14 +63,14 @@ lemma logb_self_eq_one_iff : logb b b = 1 ↔ b ≠ 0 ∧ b ≠ 1 ∧ b ≠ -1 :
   Iff.trans ⟨fun h h' => by simp [logb, h'] at h, div_self⟩ log_ne_zero
 
 @[simp]
-theorem logb_abs_left (b x : ℝ) : logb |b| x = logb b x := by rw [logb, logb, log_abs]
+theorem logb_abs_base (b x : ℝ) : logb |b| x = logb b x := by rw [logb, logb, log_abs]
 
 @[simp]
 theorem logb_abs (b x : ℝ) : logb b |x| = logb b x := by rw [logb, logb, log_abs]
 
 @[simp]
-theorem logb_neg_left_eq_logb (b x : ℝ) : logb (-b) x = logb b x := by
-  rw [← logb_abs_left b x, ← logb_abs_left (-b) x, abs_neg]
+theorem logb_neg_base_eq_logb (b x : ℝ) : logb (-b) x = logb b x := by
+  rw [← logb_abs_base b x, ← logb_abs_base (-b) x, abs_neg]
 
 @[simp]
 theorem logb_neg_eq_logb (b x : ℝ) : logb b (-x) = logb b x := by
@@ -86,7 +86,7 @@ theorem logb_div (hx : x ≠ 0) (hy : y ≠ 0) : logb b (x / y) = logb b x - log
 theorem logb_inv (b x : ℝ) : logb b x⁻¹ = -logb b x := by simp [logb, neg_div]
 
 @[simp]
-theorem logb_inv_left (b x : ℝ) : logb b⁻¹ x = -logb b x := by simp [logb, div_neg]
+theorem logb_inv_base (b x : ℝ) : logb b⁻¹ x = -logb b x := by simp [logb, div_neg]
 
 theorem inv_logb (a b : ℝ) : (logb a b)⁻¹ = logb b a := by simp_rw [logb, inv_div]
 
@@ -521,7 +521,7 @@ variable {b : ℝ}
 
 theorem Filter.Tendsto.logb {f : α → ℝ} {l : Filter α} {x : ℝ}
     (h : Tendsto f l (𝓝 x)) (hx : x ≠ 0) :
-    Tendsto (fun x => logb b (f x)) l (𝓝 (logb b x)) :=
+    Tendsto (fun y => logb b (f y)) l (𝓝 (logb b x)) :=
   (continuousAt_logb hx).tendsto.comp h
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {a : α}
