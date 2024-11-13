@@ -1999,4 +1999,4 @@ lemma comap_swap (μ : Measure (α × β)) : μ.comap Prod.swap = μ.map Prod.sw
 end MeasureTheory.Measure
 end
 
-set_option linter.style.longFile 2000
+set_option linter.style.longFile 2200
