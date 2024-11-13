@@ -30,8 +30,8 @@ topological vector space has a basis consisting of absolutely convex sets.
   absolutely convex hull of a set `s` equals the convex hull of the balanced hull of `s`;
 * `convexHull_union_neg_eq_absConvexHull`: the convex hull of `s ∪ -s` is the absolutely convex hull
   of `s`;
-* `closedAbsConvexHull_eq_closedAbsConvexHull_closure` : the closed absolutely convex hull of `s`
-  equals the closed absolutely convex hull of the closure of `s`;
+* `closedAbsConvexHull_closure_eq_closedAbsConvexHull` : the closed absolutely convex hull of the
+  closure of `s` equals the closed absolutely convex hull of `s`;
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
   `gaugeSeminormFamily`.
 
@@ -187,11 +187,12 @@ theorem absConvexHull_subset_closedAbsConvexHull {s : Set E} :
     (absConvexHull 𝕜) s ⊆ (closedAbsConvexHull 𝕜) s :=
   absConvexHull_min subset_closedAbsConvexHull absConvex_convexClosedHull
 
-theorem closedAbsConvexHull_eq_closedAbsConvexHull_closure {s : Set E} :
-    closedAbsConvexHull 𝕜 s = closedAbsConvexHull 𝕜 (closure s) :=
-  subset_antisymm ((closedAbsConvexHull 𝕜).monotone subset_closure) <| by
-    simpa using ((closedAbsConvexHull 𝕜).monotone
-      (closure_subset_closedAbsConvexHull (𝕜 := 𝕜) (E := E)))
+@[simp]
+theorem closedAbsConvexHull_closure_eq_closedAbsConvexHull {s : Set E} :
+    closedAbsConvexHull 𝕜 (closure s) = closedAbsConvexHull 𝕜 s :=
+  subset_antisymm (by simpa using ((closedAbsConvexHull 𝕜).monotone
+      (closure_subset_closedAbsConvexHull (𝕜 := 𝕜) (E := E))))
+    ((closedAbsConvexHull 𝕜).monotone subset_closure)
 
 end AbsolutelyConvex
 
