@@ -52,7 +52,7 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
 -/
 
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits
 
@@ -268,7 +268,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
   let t : X ≃ₜ Y := (Homeomorph.ofIsEmbedding _ H.base_open.isEmbedding).trans
     { toFun := Subtype.val
       invFun := fun x =>
-        ⟨x, by rw [Set.range_iff_surjective.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩
+        ⟨x, by rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩
       left_inv := fun ⟨_, _⟩ => rfl
       right_inv := fun _ => rfl }
   exact (TopCat.isoOfHomeo t).isIso_hom
@@ -561,9 +561,9 @@ variable (f : X ⟶ Y.toPresheafedSpace) [H : IsOpenImmersion f]
 /-- If `X ⟶ Y` is an open immersion, and `Y` is a LocallyRingedSpace, then so is `X`. -/
 def toLocallyRingedSpace : LocallyRingedSpace where
   toSheafedSpace := toSheafedSpace Y.toSheafedSpace f
-  localRing x :=
-    haveI : LocalRing (Y.presheaf.stalk (f.base x)) := Y.localRing _
-    (asIso (f.stalkMap x)).commRingCatIsoToRingEquiv.localRing
+  isLocalRing x :=
+    haveI : IsLocalRing (Y.presheaf.stalk (f.base x)) := Y.isLocalRing _
+    (asIso (f.stalkMap x)).commRingCatIsoToRingEquiv.isLocalRing
 
 @[simp]
 theorem toLocallyRingedSpace_toSheafedSpace :
@@ -1124,7 +1124,7 @@ theorem lift_range (H' : Set.range g.base ⊆ Set.range f.base) :
     PreservesPullback.iso_hom_fst
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) f g
   rw [LocallyRingedSpace.comp_base, ← this, ← Category.assoc, coe_comp, Set.range_comp,
-      Set.range_iff_surjective.mpr, Set.image_univ]
+      Set.range_eq_univ.mpr, Set.image_univ]
   -- Porting note (#11224): change `rw` to `erw` on this lemma
   · erw [TopCat.pullback_fst_range]
     ext
