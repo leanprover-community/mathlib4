@@ -211,9 +211,6 @@ def eqLocus (f g : E →ₗ.[R] F) : Submodule R E where
       ⟨smul_mem _ c hfx, smul_mem _ c hgx,
         by erw [f.map_smul c ⟨x, hfx⟩, g.map_smul c ⟨x, hgx⟩, hx]⟩
 
-instance inf : Inf (E →ₗ.[R] F) :=
-  ⟨fun f g => ⟨f.eqLocus g, f.toFun.comp <| inclusion fun _x hx => hx.fst⟩⟩
-
 instance bot : Bot (E →ₗ.[R] F) :=
   ⟨⟨⊥, 0⟩⟩
 
@@ -228,10 +225,9 @@ instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
       have hxy : (x : E) = inclusion fg_le x := rfl
       (fg_eq hxy).trans (gh_eq <| hxy.symm.trans hxz)⟩
   le_antisymm _ _ fg gf := eq_of_le_of_domain_eq fg (le_antisymm fg.1 gf.1)
-  inf := (· ⊓ ·)
-  -- Porting note: `by rintro` is required, or error of a metavariable happens.
+  inf f g := ⟨f.eqLocus g, f.toFun.comp <| inclusion fun _x hx => hx.fst⟩
   le_inf := by
-    rintro f g h ⟨fg_le, fg_eq⟩ ⟨fh_le, fh_eq⟩
+    intro f g h ⟨fg_le, fg_eq⟩ ⟨fh_le, fh_eq⟩
     exact ⟨fun x hx =>
       ⟨fg_le hx, fh_le hx, by
         -- Porting note: `[exact ⟨x, hx⟩, rfl, rfl]` → `[skip, exact ⟨x, hx⟩, skip] <;> rfl`

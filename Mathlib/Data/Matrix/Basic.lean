@@ -1216,7 +1216,8 @@ def entryAddHom (i : m) (j : n) : AddHom (Matrix m n α) α where
 -- for unification to succeed
 lemma entryAddHom_eq_comp {i : m} {j : n} :
     entryAddHom α i j =
-      ((Pi.evalAddHom _ j).comp (Pi.evalAddHom _ i)).comp (AddHomClass.toAddHom ofAddEquiv.symm) :=
+      ((Pi.evalAddHom (fun _ => α) j).comp (Pi.evalAddHom _ i)).comp
+        (AddHomClass.toAddHom ofAddEquiv.symm) :=
   rfl
 
 end AddHom
@@ -1240,7 +1241,7 @@ def entryAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
 -- for unification to succeed
 lemma entryAddMonoidHom_eq_comp {i : m} {j : n} :
     entryAddMonoidHom α i j =
-      ((Pi.evalAddMonoidHom _ j).comp (Pi.evalAddMonoidHom _ i)).comp
+      ((Pi.evalAddMonoidHom (fun _ => α) j).comp (Pi.evalAddMonoidHom _ i)).comp
         (AddMonoidHomClass.toAddMonoidHom ofAddEquiv.symm) := by
   rfl
 
@@ -1496,6 +1497,19 @@ theorem mapMatrix_symm (f : α ≃+* β) : f.mapMatrix.symm = (f.symm.mapMatrix 
 theorem mapMatrix_trans (f : α ≃+* β) (g : β ≃+* γ) :
     f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m m α ≃+* _) :=
   rfl
+
+open MulOpposite in
+/--
+For any ring `R`, we have ring isomorphism `Matₙₓₙ(Rᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose.
+-/
+@[simps apply symm_apply]
+def mopMatrix : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
+  toFun M := op (M.transpose.map unop)
+  invFun M := M.unop.transpose.map op
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+  map_mul' _ _ := unop_injective <| by ext; simp [transpose, mul_apply]
+  map_add' _ _ := by aesop
 
 end RingEquiv
 

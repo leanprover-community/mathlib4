@@ -252,7 +252,7 @@ theorem mem_bot {x : R} : x ∈ (⊥ : NonUnitalSubring R) ↔ x = 0 :=
 /-! ## inf -/
 
 /-- The inf of two `NonUnitalSubring`s is their intersection. -/
-instance : Inf (NonUnitalSubring R) :=
+instance : Min (NonUnitalSubring R) :=
   ⟨fun s t =>
     { s.toSubsemigroup ⊓ t.toSubsemigroup, s.toAddSubgroup ⊓ t.toAddSubgroup with
       carrier := s ∩ t }⟩
@@ -670,15 +670,19 @@ theorem rangeRestrict_surjective (f : R →ₙ+* S) : Function.Surjective f.rang
   let ⟨x, hx⟩ := mem_range.mp hy
   ⟨x, Subtype.ext hx⟩
 
-theorem range_top_iff_surjective {f : R →ₙ+* S} :
+theorem range_eq_top {f : R →ₙ+* S} :
     f.range = (⊤ : NonUnitalSubring S) ↔ Function.Surjective f :=
-  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_iff_surjective
+  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_eq_univ
+
+@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
 @[simp]
-theorem range_top_of_surjective (f : R →ₙ+* S) (hf : Function.Surjective f) :
+theorem range_eq_top_of_surjective (f : R →ₙ+* S) (hf : Function.Surjective f) :
     f.range = (⊤ : NonUnitalSubring S) :=
-  range_top_iff_surjective.2 hf
+  range_eq_top.2 hf
+
+@[deprecated (since := "2024-11-11")] alias range_top_of_surjective := range_eq_top_of_surjective
 
 /-- The `NonUnitalSubring` of elements `x : R` such that `f x = g x`, i.e.,
   the equalizer of f and g as a `NonUnitalSubring` of R -/
