@@ -344,8 +344,9 @@ variable [Algebra R A] [Algebra R M]
 variable {F : Type*} [FunLike F A M] [AlgHomClass F R A M]
 
 /--
-Lift a derivation via an algebra homomorphism `f` with a right inverse. This gives the derivation
-`f ∘ d ∘ f⁻¹`.
+Lift a derivation via an algebra homomorphism `f` with a right inverse such that
+`f(x) = 0 → f(d(x)) = 0`. This gives the derivation `f ∘ d ∘ f⁻¹`.
+This is needed for an argument in [Rosenlicht, M. Integration in finite terms][Rosenlicht_1972].
 -/
 def liftOfRightInverse {f : F} {f_inv : M → A} (hf : Function.RightInverse f_inv f)
     ⦃d : Derivation R A A⦄ (hd : ∀ x, f x = 0 → f (d x) = 0) : Derivation R M M where
