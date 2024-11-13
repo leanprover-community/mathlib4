@@ -94,25 +94,31 @@ open ENNReal in
 @[simp]
 theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a < y i } := by
-  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
-  simpa [interior_Ici] using f.interior_preimage (Function.surjective_eval _) (Ici a)
-@[deprecated (since := "2024-11-11")] alias interior_halfspace := interior_halfSpace
+  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change interior (f ⁻¹' Ici a) = f ⁻¹' Ioi a
+  rw [f.interior_preimage, interior_Ici]
+  apply Function.surjective_eval
+@[deprecated (since := "2024-11-12")] alias interior_halfspace := interior_halfSpace
 
 open ENNReal in
 @[simp]
 theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
-  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
-  simpa [closure_Ici] using f.closure_preimage (Function.surjective_eval _) (Ici a)
-@[deprecated (since := "2024-11-11")] alias closure_halfspace := closure_halfSpace
+  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change closure (f ⁻¹' Ici a) = f ⁻¹' Ici a
+  rw [f.closure_preimage, closure_Ici]
+  apply Function.surjective_eval
+@[deprecated (since := "2024-11-12")] alias closure_halfspace := closure_halfSpace
 
 open ENNReal in
 @[simp]
-theorem closure_openHalfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
+theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a < y i } = { y | a ≤ y i } := by
-  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
-  simpa [closure_Ioi] using f.closure_preimage (Function.surjective_eval _) (Ioi a)
-@[deprecated (since := "2024-11-11")] alias closure_open_halfspace := closure_openHalfSpace
+  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change closure (f ⁻¹' Ioi a) = f ⁻¹' Ici a
+  rw [f.closure_preimage, closure_Ioi]
+  apply Function.surjective_eval
+@[deprecated (since := "2024-11-12")] alias closure_open_halfspace := closure_open_halfSpace
 
 open ENNReal in
 @[simp]
@@ -121,7 +127,7 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
   rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
   simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
-@[deprecated (since := "2024-11-11")] alias frontier_halfspace := frontier_halfSpace
+@[deprecated (since := "2024-11-12")] alias frontier_halfspace := frontier_halfSpace
 
 theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
