@@ -161,7 +161,7 @@ noncomputable abbrev toGame (o : Ordinal) : Game := ⟦o.toPGame⟧
 @[simps]
 noncomputable def toGameEmbedding : Ordinal.{u} ↪o Game.{u} where
   toFun := Ordinal.toGame
-  inj' a b := by simp
+  inj' a b := by simpa [AntisymmRel] using le_antisymm
   map_rel_iff' := toPGame_le_iff
 
 @[simp]
