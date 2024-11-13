@@ -122,6 +122,9 @@ instance (priority := 100) toContinuousSemilinearMapClass
     [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] : ContinuousSemilinearMapClass 𝓕 σ₁₂ E E₂ where
   map_continuous := SemilinearIsometryClass.continuous
 
+set_synth_order SemilinearIsometryClass.toContinuousSemilinearMapClass
+  #[12, 13, 5, 6, 9, 10, 11]
+
 end SemilinearIsometryClass
 
 namespace LinearIsometry
@@ -450,6 +453,9 @@ variable (𝓕)
 instance (priority := 100) toSemilinearIsometryClass [EquivLike 𝓕 E E₂]
     [s : SemilinearIsometryEquivClass 𝓕 σ₁₂ E E₂] : SemilinearIsometryClass 𝓕 σ₁₂ E E₂ :=
   { s with }
+
+set_synth_order SemilinearIsometryEquivClass.toSemilinearIsometryClass
+  #[15, 16, 5, 6, 9, 10, 11, 12, 13, 14]
 
 end SemilinearIsometryEquivClass
 

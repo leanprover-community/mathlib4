@@ -660,17 +660,22 @@ class StarAlgEquivClass (F : Type*) (R A B : outParam Type*)
 namespace StarAlgEquivClass
 
 -- See note [lower instance priority]
-instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
+instance (priority := 50) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
     [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [EquivLike F A B]
     [NonUnitalAlgEquivClass F R A B] :
     NonUnitalAlgHomClass F R A B :=
   { }
+
+set_synth_order StarAlgEquivClass.instNonUnitalAlgHomClassOfNonUnitalAlgEquivClass
+  #[9, 10, 4, 5, 6, 7, 8]
 
 -- See note [lower instance priority]
 instance (priority := 100) instAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
   { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
+
+set_synth_order StarAlgEquivClass.instAlgHomClass #[9, 10, 4, 5, 6, 7, 8]
 
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
 an actual `StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/

@@ -52,10 +52,14 @@ instance (priority := 100) toAlgHomClass (F R A B : Type*) [CommSemiring R] [Sem
     AlgHomClass F R A B :=
   { h with }
 
+set_synth_order AlgEquivClass.toAlgHomClass #[9, 10, 4, 5, 6, 7, 8]
+
 instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [EquivLike F A B] [h : AlgEquivClass F R A B] : LinearEquivClass F R A B :=
   { h with map_smulₛₗ := fun f => map_smulₛₗ f }
+
+set_synth_order AlgEquivClass.toLinearEquivClass #[9, 10, 4, 5, 6, 7, 8]
 
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
 This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/

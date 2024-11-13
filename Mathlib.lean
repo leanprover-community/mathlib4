@@ -5186,6 +5186,7 @@ import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Notation3
 import Mathlib.Util.Qq
+import Mathlib.Util.SetSynthOrder
 import Mathlib.Util.SleepHeartbeats
 import Mathlib.Util.Superscript
 import Mathlib.Util.SynthesizeUsing

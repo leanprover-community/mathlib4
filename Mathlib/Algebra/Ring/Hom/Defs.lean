@@ -327,6 +327,8 @@ class RingHomClass (F : Type*) (α β : outParam Type*)
     [NonAssocSemiring α] [NonAssocSemiring β] [FunLike F α β]
   extends MonoidHomClass F α β, AddMonoidHomClass F α β, MonoidWithZeroHomClass F α β : Prop
 
+set_synth_order RingHomClass.toMonoidWithZeroHomClass #[5, 6, 3, 4]
+
 variable [FunLike F α β]
 
 -- See note [implicit instance arguments].

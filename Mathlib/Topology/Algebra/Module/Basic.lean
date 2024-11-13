@@ -309,6 +309,9 @@ instance (priority := 100) continuousSemilinearMapClass [EquivLike F M M₂]
     [s : ContinuousSemilinearEquivClass F σ M M₂] : ContinuousSemilinearMapClass F σ M M₂ :=
   { s with }
 
+set_synth_order ContinuousSemilinearEquivClass.continuousSemilinearMapClass
+  #[17, 18, 3, 4, 7, 8, 10, 11, 13, 14, 15, 16]
+
 end ContinuousSemilinearEquivClass
 
 section PointwiseLimits

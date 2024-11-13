@@ -108,6 +108,8 @@ class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiri
     [Module R M] [Module S M₂] [FunLike F M M₂]
     extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂ : Prop
 
+attribute [instance 50] SemilinearMapClass.toAddHomClass
+
 end
 
 -- `map_smulₛₗ` should be `@[simp]` but doesn't fire due to `lean4#3701`.
@@ -143,11 +145,15 @@ instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearM
         rw [← zero_smul R (0 : M), map_smulₛₗ]
         simp }
 
+set_synth_order SemilinearMapClass.instAddMonoidHomClass #[12, 13, 5, 6, 7, 8, 9, 10]
+
 instance (priority := 100) distribMulActionSemiHomClass
     [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     DistribMulActionSemiHomClass F σ M M₃ :=
   { SemilinearMapClass.toAddHomClass with
     map_smulₛₗ := fun f c x ↦ by rw [map_smulₛₗ] }
+
+set_synth_order SemilinearMapClass.distribMulActionSemiHomClass #[12, 13, 5, 6, 7, 8, 9, 10]
 
 variable {F} (f : F) [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
 

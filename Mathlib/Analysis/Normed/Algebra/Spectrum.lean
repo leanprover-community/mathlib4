@@ -518,6 +518,8 @@ instance (priority := 100) [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] :
       AddMonoidHomClass.continuous_of_bound φ ‖(1 : A)‖ fun a =>
         mul_comm ‖a‖ ‖(1 : A)‖ ▸ spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum φ _) }
 
+set_synth_order AlgHom.instContinuousLinearMapClassOfAlgHomClass #[7, 8, 3, 4, 5, 6]
+
 /-- An algebra homomorphism into the base field, as a continuous linear map (since it is
 automatically bounded). -/
 def toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : A →L[𝕜] 𝕜 :=

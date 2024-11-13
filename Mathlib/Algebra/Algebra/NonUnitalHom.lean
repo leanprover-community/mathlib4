@@ -106,6 +106,8 @@ instance (priority := 100) {F : Type*} [FunLike F A B] [Module R B] [NonUnitalAl
     LinearMapClass F R A B :=
   { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := map_smulₛₗ }
 
+set_synth_order NonUnitalAlgHomClass.instLinearMapClass #[8, 10, 1, 4, 5, 6, 9]
+
 /-- Turn an element of a type `F` satisfying `NonUnitalAlgSemiHomClass F φ A B` into an actual
 `NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[φ] B`. -/
 @[coe]
@@ -435,6 +437,8 @@ variable {A B : Type*} [Semiring A] [Semiring B] [Algebra R A]
 -- see Note [lower instance priority]
 instance (priority := 100) [FunLike F A B] [AlgHomClass F R A B] : NonUnitalAlgHomClass F R A B :=
   { ‹AlgHomClass F R A B› with map_smulₛₗ := map_smul }
+
+set_synth_order AlgHom.instNonUnitalAlgHomClassOfAlgHomClass #[9, 10, 2, 5, 6, 7, 8]
 
 /-- A unital morphism of algebras is a `NonUnitalAlgHom`. -/
 @[coe]

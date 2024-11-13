@@ -588,6 +588,8 @@ class MulSemiringActionSemiHomClass (F : Type*)
     [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S]
     extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S : Prop
 
+set_synth_order MulSemiringActionSemiHomClass.toRingHomClass #[12, 13, 3, 4, 8, 9, 10, 11]
+
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to a `DistribMulAction`of `M` on `R` and `S` .
  -/
