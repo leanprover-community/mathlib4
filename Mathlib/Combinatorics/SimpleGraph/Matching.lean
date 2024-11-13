@@ -134,7 +134,7 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
 lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s t)
-    (f : s ≃ t) (hadj : ∀ {v}, (h : v ∈ s) → G.Adj v (f ⟨v, h⟩)) :
+    (f : s ≃ t) (hadj : ∀ v : s, G.Adj v (f v)) :
     ∃ M : Subgraph G, M.verts = s ∪ t ∧ M.IsMatching := by
   haveI (v : V) : Decidable (v ∈ s) := Classical.dec _
   use {
