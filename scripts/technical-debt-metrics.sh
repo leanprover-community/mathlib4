@@ -28,7 +28,7 @@ IFS=$'\n\t'
 # If `$1` is supplied and is not `pr_summary`, then we use it; otherwise, we fall back to
 # `$(git rev-parse HEAD)`.
 # Similarly for the second argument: if `$1` (note the 1, not 2!) is `pr_summary`, then we use
-# the closest version of master that we can to the current commit. Otherwise we use the second
+# the closest version of master that we can find to the current commit. Otherwise we use the second
 # input, falling back to a commit from last week if `$2` is not provided.
 case "${1:-}" in
   pr_summary)
@@ -42,10 +42,6 @@ case "${1:-}" in
     >&2 printf '***  NO pr_summary passed  ***\n'
     ;;
 esac
-
-###currCommit="${1:-"$(git rev-parse HEAD)"}"
-#### Similarly for the second argument.
-###refCommit="${2:-"$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"}"
 
 ## `computeDiff input` assumes that input consists of lines of the form `value|description`
 ## where `value` is a number and `description` is the statistic that `value` reports.
