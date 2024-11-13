@@ -103,12 +103,9 @@ def topEquiv : (⊤ : Subsemiring R) ≃+* R where
   map_add' := (⊤ : Subsemiring R).coe_add
 
 /-- The preimage of a subsemiring along a ring homomorphism is a subsemiring. -/
+@[simps coe toSubmonoid]
 def comap (f : R →+* S) (s : Subsemiring S) : Subsemiring R :=
   { s.toSubmonoid.comap (f : R →* S), s.toAddSubmonoid.comap (f : R →+ S) with carrier := f ⁻¹' s }
-
-@[simp]
-theorem coe_comap (s : Subsemiring S) (f : R →+* S) : (s.comap f : Set R) = f ⁻¹' s :=
-  rfl
 
 @[simp]
 theorem mem_comap {s : Subsemiring S} {f : R →+* S} {x : R} : x ∈ s.comap f ↔ f x ∈ s :=
@@ -119,12 +116,9 @@ theorem comap_comap (s : Subsemiring T) (g : S →+* T) (f : R →+* S) :
   rfl
 
 /-- The image of a subsemiring along a ring homomorphism is a subsemiring. -/
+@[simps coe toSubmonoid]
 def map (f : R →+* S) (s : Subsemiring R) : Subsemiring S :=
   { s.toSubmonoid.map (f : R →* S), s.toAddSubmonoid.map (f : R →+ S) with carrier := f '' s }
-
-@[simp]
-theorem coe_map (f : R →+* S) (s : Subsemiring R) : (s.map f : Set S) = f '' s :=
-  rfl
 
 @[simp]
 lemma mem_map {f : R →+* S} {s : Subsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := Iff.rfl
@@ -161,12 +155,9 @@ namespace RingHom
 variable (g : S →+* T) (f : R →+* S)
 
 /-- The range of a ring homomorphism is a subsemiring. See Note [range copy pattern]. -/
+@[simps! coe toSubmonoid]
 def rangeS : Subsemiring S :=
   ((⊤ : Subsemiring R).map f).copy (Set.range f) Set.image_univ.symm
-
-@[simp]
-theorem coe_rangeS : (f.rangeS : Set S) = Set.range f :=
-  rfl
 
 @[simp]
 theorem mem_rangeS {f : R →+* S} {y : S} : y ∈ f.rangeS ↔ ∃ x, f x = y :=
@@ -260,16 +251,10 @@ variable (R)
 
 /-- The center of a non-associative semiring `R` is the set of elements that commute and associate
 with everything in `R` -/
+@[simps coe toSubmonoid]
 def center : Subsemiring R :=
   { NonUnitalSubsemiring.center R with
     one_mem' := Set.one_mem_center }
-
-theorem coe_center : ↑(center R) = Set.center R :=
-  rfl
-
-@[simp]
-theorem center_toSubmonoid : (center R).toSubmonoid = Submonoid.center R :=
-  rfl
 
 /-- The center is commutative and associative.
 
@@ -701,7 +686,7 @@ theorem rangeSRestrict_surjective (f : R →+* S) : Function.Surjective f.rangeS
 
 theorem rangeS_top_iff_surjective {f : R →+* S} :
     f.rangeS = (⊤ : Subsemiring S) ↔ Function.Surjective f :=
-  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_rangeS, coe_top]) Set.range_iff_surjective
+  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_rangeS, coe_top]) Set.range_eq_univ
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
 @[simp]

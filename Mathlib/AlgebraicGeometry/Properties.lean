@@ -23,7 +23,7 @@ We provide some basic properties of schemes
 
 universe u
 
-open TopologicalSpace Opposite CategoryTheory CategoryTheory.Limits TopCat
+open TopologicalSpace Opposite CategoryTheory CategoryTheory.Limits TopCat Topology
 
 namespace AlgebraicGeometry
 
@@ -76,7 +76,7 @@ theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImm
   constructor
   intro U
   have : U = f ⁻¹ᵁ f ''ᵁ U := by
-    ext1; exact (Set.preimage_image_eq _ H.base_open.inj).symm
+    ext1; exact (Set.preimage_image_eq _ H.base_open.injective).symm
   rw [this]
   exact isReduced_of_injective (inv <| f.app (f ''ᵁ U))
     (asIso <| f.app (f ''ᵁ U) : Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.injective
@@ -252,7 +252,7 @@ theorem isIntegral_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenIm
     [IsIntegral Y] [Nonempty X] : IsIntegral X := by
   constructor; · infer_instance
   intro U hU
-  have : U = f ⁻¹ᵁ f ''ᵁ U := by ext1; exact (Set.preimage_image_eq _ H.base_open.inj).symm
+  have : U = f ⁻¹ᵁ f ''ᵁ U := by ext1; exact (Set.preimage_image_eq _ H.base_open.injective).symm
   rw [this]
   have : IsDomain Γ(Y, f ''ᵁ U) := by
     apply (config := { allowSynthFailures := true }) IsIntegral.component_integral

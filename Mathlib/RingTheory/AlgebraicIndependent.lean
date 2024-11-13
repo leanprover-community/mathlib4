@@ -669,7 +669,7 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff {ι : Type w} {R : Type u}
   · rintro p κ w i' j rfl
     have p := p.2 (range w) i'.coe_range (range_comp_subset_range _ _)
     rw [range_comp, ← @image_univ _ _ w] at p
-    exact range_iff_surjective.mp (image_injective.mpr i'.injective p)
+    exact range_eq_univ.mp (image_injective.mpr i'.injective p)
   · intro p
     use i
     intro w i' h
