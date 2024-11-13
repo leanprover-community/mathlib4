@@ -5,17 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Data.Set.Finite.List
-import Mathlib.Data.Set.Finite.Pi
-import Mathlib.Data.Set.Finite.Prod
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Finite.Powerset
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Finite.Sigma
-import Mathlib.Data.Finite.Vector
 import Mathlib.Logic.Embedding.Set
 
 /-!

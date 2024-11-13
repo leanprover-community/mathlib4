@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.Data.Fintype.Sigma
 
 /-!
 

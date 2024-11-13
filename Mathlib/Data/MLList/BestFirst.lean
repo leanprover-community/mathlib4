@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 import Batteries.Data.MLList.Basic
 import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Order.Estimator
 
 /-!
