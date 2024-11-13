@@ -76,9 +76,8 @@ Versions of these results are also given on the intervals `(-∞, a]` and `(-∞
 the corresponding versions of integration by parts.
 -/
 
-open MeasureTheory Filter Set TopologicalSpace
-
-open scoped ENNReal NNReal Topology
+open MeasureTheory Filter Set TopologicalSpace Topology
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
