@@ -712,12 +712,7 @@ theorem IsTranscendenceBasis.isEmpty_iff_isAlgebraic [Nontrivial R]
   refine ⟨fun _ ↦ ?_, fun _ ↦ hx.1.isEmpty_of_isAlgebraic⟩
   have := hx.isAlgebraic
   rw [Set.range_eq_empty x, adjoin_empty] at this
-  refine Algebra.IsAlgebraic.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R A))
-    (RingHom.id A) (fun r ↦ ?_) Function.injective_id (by ext; rfl)
-  obtain ⟨y, hy⟩ := Algebra.mem_bot.1 r.2
-  use y
-  apply_fun algebraMap _ A using Subtype.val_injective
-  rw [← IsScalarTower.algebraMap_apply, hy]; rfl
+  exact Subalgebra.algebra_isAlgebraic_of_algebra_isAlgebraic_bot R A
 
 /-- If `x` is a transcendence basis of `A/R`, then it is not empty if and only if
 `A/R` is transcendental. -/

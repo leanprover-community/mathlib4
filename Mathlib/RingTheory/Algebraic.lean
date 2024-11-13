@@ -379,6 +379,45 @@ theorem transcendental_algebraMap_iff {a : S} (h : Function.Injective (algebraMa
     Transcendental R (algebraMap S A a) ↔ Transcendental R a := by
   simp_rw [Transcendental, isAlgebraic_algebraMap_iff h]
 
+namespace Subalgebra
+
+theorem isAlgebraic_iff_isAlgebraic_val {S : Subalgebra R A} {x : S} :
+    _root_.IsAlgebraic R x ↔ _root_.IsAlgebraic R x.1 :=
+  (isAlgebraic_algHom_iff S.val Subtype.val_injective).symm
+
+theorem isAlgebraic_of_isAlgebraic_bot {x : S} (halg : _root_.IsAlgebraic (⊥ : Subalgebra R S) x) :
+    _root_.IsAlgebraic R x :=
+  halg.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R S))
+    (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id (by ext; rfl)
+
+theorem isAlgebraic_bot_iff (h : Function.Injective (algebraMap R S)) {x : S} :
+    _root_.IsAlgebraic (⊥ : Subalgebra R S) x ↔ _root_.IsAlgebraic R x := by
+  refine (isAlgebraic_ringHom_iff_of_comp_eq (Algebra.botEquivOfInjective h) (RingHom.id S)
+    Function.injective_id ?_).symm
+  ext x
+  obtain ⟨y, rfl⟩ := (Algebra.botEquivOfInjective h).symm.surjective x
+  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgEquiv.apply_symm_apply]
+  rfl
+
+variable (R S) in
+theorem algebra_isAlgebraic_of_algebra_isAlgebraic_bot
+    [Algebra.IsAlgebraic (⊥ : Subalgebra R S) S] : Algebra.IsAlgebraic R S :=
+  Algebra.IsAlgebraic.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R S))
+    (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id (by ext; rfl)
+
+theorem algebra_isAlgebraic_bot_iff (h : Function.Injective (algebraMap R S)) :
+    Algebra.IsAlgebraic (⊥ : Subalgebra R S) S ↔ Algebra.IsAlgebraic R S := by
+  simp_rw [Algebra.isAlgebraic_def, isAlgebraic_bot_iff h]
+
+instance algebra_isAlgebraic_bot [Nontrivial R] : Algebra.IsAlgebraic R (⊥ : Subalgebra R S) := by
+  rw [Algebra.isAlgebraic_def]
+  intro x
+  rw [isAlgebraic_iff_isAlgebraic_val]
+  obtain ⟨y, hy⟩ := Algebra.mem_bot.1 x.2
+  exact hy ▸ isAlgebraic_algebraMap y
+
+end Subalgebra
+
 theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
     IsAlgebraic R r := by
   obtain ⟨p, p_nonzero, hp⟩ := ht
