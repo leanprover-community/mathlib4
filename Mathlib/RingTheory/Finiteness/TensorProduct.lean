@@ -13,6 +13,9 @@ import Mathlib.RingTheory.Ideal.Quotient.Basic
 /-!
 # Finiteness of the tensor product of (sub)modules
 
+TODO: this file can probably be merged with `RingTheory.TensorProduct.Finite`,
+although the two files are currently incomparable in the import graph:
+we will need further cleanup of the lemmas involved before we can do this.
 -/
 
 open Function (Surjective)
