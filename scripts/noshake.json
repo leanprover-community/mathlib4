@@ -201,7 +201,6 @@
   ["Mathlib.Algebra.Category.Ring.Limits"],
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
-  "Mathlib.Topology.JacobsonSpace": ["Mathlib.Tactic.StacksAttribute"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
@@ -246,7 +245,7 @@
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
   "Mathlib.Tactic.Linter.UnusedTactic": ["Batteries.Tactic.Unreachable"],
   "Mathlib.Tactic.LinearCombination":
-  ["Mathlib.Tactic.Ring", "Mathlib.Tactic.LinearCombination.Lemmas"],
+  ["Mathlib.Tactic.LinearCombination.Lemmas"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
   "Mathlib.Tactic.ITauto": ["Batteries.Tactic.Init", "Mathlib.Logic.Basic"],
@@ -315,7 +314,6 @@
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.Tactic.Algebraize": ["Mathlib.Algebra.Algebra.Tower"],
-  "Mathlib.RingTheory.Smooth.Kaehler": ["Mathlib.Tactic.StacksAttribute"],
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
@@ -389,7 +387,8 @@
   "Mathlib.Data.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.Bool.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
-  "Mathlib.Control.Monad.Cont": ["Batteries.Tactic.Congr"],
+  "Mathlib.Control.Monad.Cont":
+  ["Batteries.Lean.Except", "Batteries.Tactic.Congr"],
   "Mathlib.Control.Basic": ["Mathlib.Logic.Function.Defs"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
