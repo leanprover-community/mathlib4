@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
-import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+import Mathlib.AlgebraicGeometry.Morphisms.Separated
 
 /-!
 
@@ -18,11 +18,6 @@ if and only if it can be factored into a closed immersion followed by an open im
 - `isImmersion_iff_exists`:
   A morphism is a (locally-closed) immersion if and only if it can be factored into
   a closed immersion followed by a (dominant) open immersion.
-
-
-## TODO
-
-* Show that diagonal morphisms are immersions
 
 -/
 
@@ -99,13 +94,13 @@ instance : IsLocalAtTarget @IsImmersion := by
       replace hi : IsIso i := hi
       show IsLocallyClosed _
       simpa only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp,
-        Set.range_iff_surjective.mpr i.surjective, Set.image_univ]
+        Set.range_eq_univ.mpr i.surjective, Set.image_univ]
     · intro X Y Z i hi f hf
       replace hi : IsIso i := hi
       show IsLocallyClosed _
       simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp]
       refine hf.image i.homeomorph.isInducing ?_
-      rw [Set.range_iff_surjective.mpr i.surjective]
+      rw [Set.range_eq_univ.mpr i.surjective]
       exact isOpen_univ.isLocallyClosed
   · simp_rw [Set.range_restrictPreimage]
     exact fun _ _ _ e _ ↦ isLocallyClosed_iff_coe_preimage_of_iSup_eq_top e _
@@ -149,18 +144,33 @@ theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
     IsImmersion (f ≫ g) ↔ IsImmersion f :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
-lemma stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @IsImmersion := by
-  intros X Y Y' S f g f' g' H hg
-  let Z := Limits.pullback f g.coborderRange.ι
-  let e : Y' ⟶ Z := Limits.pullback.lift g' (f' ≫ g.liftCoborder) (by simpa using H.w.symm)
-  have : IsClosedImmersion e := by
-    have := (IsPullback.paste_horiz_iff (.of_hasPullback f g.coborderRange.ι)
-      (show e ≫ Limits.pullback.snd _ _ = _ from Limits.pullback.lift_snd _ _ _)).mp ?_
-    · exact IsClosedImmersion.stableUnderBaseChange this.flip inferInstance
-    · simpa [e] using H.flip
-  rw [← Limits.pullback.lift_fst (f := f) (g := g.coborderRange.ι) g' (f' ≫ g.liftCoborder)
-    (by simpa using H.w.symm)]
-  infer_instance
+instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsImmersion where
+  of_isPullback := by
+    intros X Y Y' S f g f' g' H hg
+    let Z := Limits.pullback f g.coborderRange.ι
+    let e : Y' ⟶ Z := Limits.pullback.lift g' (f' ≫ g.liftCoborder) (by simpa using H.w.symm)
+    have : IsClosedImmersion e := by
+      have := (IsPullback.paste_horiz_iff (.of_hasPullback f g.coborderRange.ι)
+        (show e ≫ Limits.pullback.snd _ _ = _ from Limits.pullback.lift_snd _ _ _)).mp ?_
+      · exact MorphismProperty.of_isPullback this.flip inferInstance
+      · simpa [e] using H.flip
+    rw [← Limits.pullback.lift_fst (f := f) (g := g.coborderRange.ι) g' (f' ≫ g.liftCoborder)
+      (by simpa using H.w.symm)]
+    infer_instance
+
+open Limits Scheme.Pullback in
+/-- The diagonal morphism is always an immersion. -/
+@[stacks 01KJ]
+instance : IsImmersion (pullback.diagonal f) := by
+  let 𝒰 := Y.affineCover
+  let 𝒱 (i) := (pullback f (𝒰.map i)).affineCover
+  have H : pullback.diagonal f ⁻¹ᵁ diagonalCoverDiagonalRange f 𝒰 𝒱 = ⊤ :=
+    top_le_iff.mp fun _ _ ↦ range_diagonal_subset_diagonalCoverDiagonalRange _ _ _ ⟨_, rfl⟩
+  have := isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange f 𝒰 𝒱
+  have : IsImmersion ((pullback.diagonal f ∣_
+    diagonalCoverDiagonalRange f 𝒰 𝒱) ≫ Scheme.Opens.ι _) := inferInstance
+  rwa [morphismRestrict_ι, H, ← Scheme.topIso_hom,
+    MorphismProperty.cancel_left_of_respectsIso (P := @IsImmersion)] at this
 
 end IsImmersion
 
