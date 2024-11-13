@@ -425,28 +425,28 @@ end Reverse
 
 section IsomorphicTypes
 
-variable {α β : Type*} (e : α ≃ β)
+variable {α β : Type*}
 
 /-- free monoids over isomorphic types are isomorphic -/
 @[to_additive "if two types are isomorphic, the additive free monoids over those types are
 isomorphic"]
-def congrEquiv : FreeMonoid α ≃* FreeMonoid β :=
+def congrEquiv (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β :=
   MulEquiv.mk' ⟨FreeMonoid.map e.toFun, FreeMonoid.map e.invFun, fun _ => map_invFun_map_toFun_eq e,
     fun _ => map_toFun_map_invFun_eq e⟩ (by simp [map_mul])
 
-/-- given an isomorphism between α and β, convert a relation predicate on FreeMonoid α to
+/-- given a function from β to α, convert a relation predicate on FreeMonoid α to
 have an underlying type of β -/
-@[to_additive "given an isomorphism between α and β, convert a relation predicate to
+@[to_additive "given a function from β to α, convert a relation predicate to
 have an underlying type of β"]
-def mapRel (rel : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid β → FreeMonoid β  → Prop :=
-  fun a b ↦ rel (.congrEquiv e.symm a) (.congrEquiv e.symm b)
+def mapRel (f : β → α)(rel : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid β → FreeMonoid β  →
+    Prop := fun a b ↦ rel (.map f a) (.map f b)
 
-/-- given an isomorphism between α and β, pull back a relation predicate with underlying type β to
+/-- given a function from α to β, convert a relation predicate with underlying type β to
 one with underlying type α -/
-@[to_additive "given an isomorphism between α and β, pull back a relation predicate with underlying
+@[to_additive "given afunction from α to β, convert a relation predicate with underlying
 type β to one with underlying type α "]
-def comapRel (rel : FreeMonoid β → FreeMonoid β → Prop) : FreeMonoid α → FreeMonoid α → Prop :=
-  fun a b ↦ rel (.congrEquiv e a) (.congrEquiv e b)
+def comapRel (f : α → β) (rel : FreeMonoid β → FreeMonoid β → Prop) : FreeMonoid α → FreeMonoid α →
+    Prop := fun a b ↦ rel (.map f a) (.map f b)
 
 end IsomorphicTypes
 
