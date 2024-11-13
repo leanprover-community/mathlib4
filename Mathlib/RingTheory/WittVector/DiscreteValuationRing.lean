@@ -67,6 +67,7 @@ def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
     have ha_inv : (↑a⁻¹ : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1))⁻¹ := by norm_cast
     simp only [nthRemainder_spec, inverseCoeff, succNthValUnits, hA,
       one_coeff_eq_of_pos, Nat.succ_pos', ha_inv, ha, inv_pow]
+    unfold H_coeff
     ring!)
 
 @[simp]
