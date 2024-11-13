@@ -302,6 +302,14 @@ lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b :=
   WithBot.coe_le_iff
 
+@[simp] lemma unzero_le_unzero {a b : WithZero α} (ha hb) :
+    unzero (x := a) ha ≤ unzero (x := b) hb ↔ a ≤ b := by
+  -- TODO: Fix `lift` so that it doesn't try to clear the hypotheses I give it when it is
+  -- impossible to do so
+  lift a to α using id ha
+  lift b to α using id hb
+  simp
+
 instance mulLeftMono [Mul α] [MulLeftMono α] :
     MulLeftMono (WithZero α) := by
   refine ⟨fun a b c hbc => ?_⟩
