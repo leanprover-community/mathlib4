@@ -158,7 +158,7 @@ theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
   have hr₀' : 0 ≤ w.im * Real.sinh r := by positivity
   have hzw₀ : 0 < 2 * z.im * w.im := by positivity
   simp only [← cosh_strictMonoOn.cmp_map_eq dist_nonneg hr₀, ←
-    (pow_left_strictMonoOn two_ne_zero).cmp_map_eq dist_nonneg hr₀', dist_coe_center_sq]
+    (pow_left_strictMonoOn₀ two_ne_zero).cmp_map_eq dist_nonneg hr₀', dist_coe_center_sq]
   rw [← cmp_mul_pos_left hzw₀, ← cmp_sub_zero, ← mul_sub, ← cmp_add_right, zero_add]
 
 theorem dist_eq_iff_dist_coe_center_eq :
