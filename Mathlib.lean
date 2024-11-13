@@ -2626,7 +2626,6 @@ import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Data.Nat.New
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Nat.Nth
 import Mathlib.Data.Nat.Order.Lemmas
@@ -4627,6 +4626,7 @@ import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.Monotonicity.Basic
 import Mathlib.Tactic.Monotonicity.Lemmas
 import Mathlib.Tactic.MoveAdd
+import Mathlib.Tactic.New
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Nontriviality.Core
