@@ -32,6 +32,8 @@ namespace Ideal
 
 variable [Semiring α] (I : Ideal α) {a b : α}
 
+instance : CompleteLattice (Ideal α) := inferInstance
+
 theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :=
   eq_top_iff.2 fun z _ =>
     calc
@@ -100,7 +102,7 @@ theorem eq_bot_or_top : I = ⊥ ∨ I = ⊤ := by
   change _ ≠ _ → _
   rw [Ideal.ne_top_iff_one]
   intro h1
-  rw [eq_bot_iff (a := I)]
+  rw [eq_bot_iff]
   intro r hr
   by_cases H : r = 0; · simpa
   simpa [H, h1] using I.mul_mem_left r⁻¹ hr
