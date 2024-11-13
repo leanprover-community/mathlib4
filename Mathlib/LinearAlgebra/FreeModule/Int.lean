@@ -17,17 +17,19 @@ index.
 
 namespace Basis.SmithNormalForm
 
-lemma toAddSubgroup_index_ne_zero_iff {M : Type*} {m n : ℕ} [AddCommGroup M] {N : Submodule ℤ M}
-    (snf : Basis.SmithNormalForm N (Fin m) n) : N.toAddSubgroup.index ≠ 0 ↔ n = m := by
+lemma toAddSubgroup_index_ne_zero_iff {ι M : Type*} {n : ℕ} [Fintype ι] [AddCommGroup M]
+    {N : Submodule ℤ M} (snf : Basis.SmithNormalForm N ι n) :
+    N.toAddSubgroup.index ≠ 0 ↔ n = Fintype.card ι := by
+  classical
   rcases snf with ⟨bM, bN, f, a, snf⟩
   have ha : ∀ i, a i ≠ 0 := by
     intro i hi
     apply Basis.ne_zero bN i
     specialize snf i
     simpa [hi] using snf
-  let N' : Submodule ℤ (Fin m → ℤ) := N.map bM.equivFun
+  let N' : Submodule ℤ (ι → ℤ) := N.map bM.equivFun
   let bN' : Basis (Fin n) ℤ N' := bN.map (bM.equivFun.submoduleMap N)
-  have snf' : ∀ i, (bN' i : Fin m → ℤ) = Pi.single (f i) (a i) := by
+  have snf' : ∀ i, (bN' i : ι → ℤ) = Pi.single (f i) (a i) := by
     intro i
     simp only [map_apply, bN']
     erw [LinearEquiv.submoduleMap_apply]
@@ -35,10 +37,10 @@ lemma toAddSubgroup_index_ne_zero_iff {M : Type*} {m n : ℕ} [AddCommGroup M] {
                Finsupp.single_eq_pi_single]
     ext j
     simp [Pi.single_apply]
-  suffices N'.toAddSubgroup.index ≠ 0 ↔ n = m by
+  suffices N'.toAddSubgroup.index ≠ 0 ↔ n = Fintype.card ι by
     convert this
-    let e : (Fin m → ℤ) ≃+ M := bM.equivFun.symm
-    let e' : (Fin m → ℤ) →+ M := e
+    let e : (ι → ℤ) ≃+ M := bM.equivFun.symm
+    let e' : (ι → ℤ) →+ M := e
     have he' : Function.Surjective e' := e.surjective
     simp only [N']
     erw [Submodule.map_toAddSubgroup]
@@ -110,13 +112,14 @@ lemma toAddSubgroup_index_ne_zero_iff {M : Type*} {m n : ℕ} [AddCommGroup M] {
              dite_eq_right_iff, forall_exists_index, not_forall]
   refine ⟨fun h ↦ le_antisymm ?_ ?_, fun h ↦ ?_⟩
   · simpa using Function.Embedding.nonempty_iff_card_le.1 ⟨f⟩
-  · suffices Fintype.card (Fin m) ≤ Fintype.card (Fin n) by simpa using this
+  · suffices Fintype.card ι ≤ Fintype.card (Fin n) by simpa using this
     apply Fintype.card_le_of_surjective f
     intro j
     obtain ⟨i, hi, -⟩ := h j
     exact ⟨i, hi⟩
   · subst h
-    have hb : Function.Bijective f := (Nat.bijective_iff_injective_and_card _).2 ⟨f.injective, rfl⟩
+    have hb : Function.Bijective f :=
+      (Nat.bijective_iff_injective_and_card _).2 ⟨f.injective, by simp⟩
     intro i
     refine ⟨(Equiv.ofBijective f hb).symm i, Equiv.ofBijective_apply_symm_apply _ _ _, ?_⟩
     exact ha _
@@ -125,27 +128,28 @@ end Basis.SmithNormalForm
 
 namespace Int
 
-lemma submodule_toAddSubgroup_index_ne_zero_iff {m : ℕ} {N : Submodule ℤ (Fin m → ℤ)} :
-    N.toAddSubgroup.index ≠ 0 ↔ Nonempty (N ≃ₗ[ℤ] (Fin m → ℤ)) := by
+lemma submodule_toAddSubgroup_index_ne_zero_iff {ι : Type*} [Finite ι] {N : Submodule ℤ (ι → ℤ)} :
+    N.toAddSubgroup.index ≠ 0 ↔ Nonempty (N ≃ₗ[ℤ] (ι → ℤ)) := by
   obtain ⟨n, snf⟩ := N.smithNormalForm <| Basis.ofEquivFun <| LinearEquiv.refl _ _
+  have := Fintype.ofFinite ι
   rw [snf.toAddSubgroup_index_ne_zero_iff]
   rcases snf with ⟨-, bN, -, -, -⟩
   refine ⟨fun h ↦ ?_, fun ⟨e⟩ ↦ ?_⟩
   · subst h
-    exact ⟨bN.equivFun⟩
+    exact ⟨(bN.reindex (Fintype.equivFin _).symm).equivFun⟩
   · have hc := card_eq_of_linearEquiv ℤ <| bN.equivFun.symm.trans e
     simpa using hc
 
-lemma addSubgroup_index_ne_zero_iff {m : ℕ} {H : AddSubgroup (Fin m → ℤ)} :
-    H.index ≠ 0 ↔ Nonempty (H ≃+ (Fin m → ℤ)) := by
+lemma addSubgroup_index_ne_zero_iff {ι : Type*} [Finite ι] {H : AddSubgroup (ι → ℤ)} :
+    H.index ≠ 0 ↔ Nonempty (H ≃+ (ι → ℤ)) := by
   convert submodule_toAddSubgroup_index_ne_zero_iff (N := AddSubgroup.toIntSubmodule H) using 1
   exact ⟨fun ⟨e⟩ ↦ ⟨e.toIntLinearEquiv⟩, fun ⟨e⟩ ↦ ⟨e.toAddEquiv⟩⟩
 
-lemma subgroup_index_ne_zero_iff {m : ℕ} {H : Subgroup (Fin m → Multiplicative ℤ)} :
-    H.index ≠ 0 ↔ Nonempty (H ≃* (Fin m → Multiplicative ℤ)) := by
-  let em : Multiplicative (Fin m → ℤ) ≃* (Fin m → Multiplicative ℤ) :=
+lemma subgroup_index_ne_zero_iff {ι : Type*} [Finite ι] {H : Subgroup (ι → Multiplicative ℤ)} :
+    H.index ≠ 0 ↔ Nonempty (H ≃* (ι → Multiplicative ℤ)) := by
+  let em : Multiplicative (ι → ℤ) ≃* (ι → Multiplicative ℤ) :=
     MulEquiv.funMultiplicative _ _
-  let H' : Subgroup (Multiplicative (Fin m → ℤ)) := H.comap em
+  let H' : Subgroup (Multiplicative (ι → ℤ)) := H.comap em
   let eH' : H' ≃* H := (MulEquiv.subgroupCongr <| Subgroup.comap_equiv_eq_map_symm em H).trans
     (MulEquiv.subgroupMap em.symm _).symm
   have h : H'.index = H.index := Subgroup.index_comap_of_surjective _ em.surjective
