@@ -33,7 +33,7 @@ lemma toAddSubgroup_index_eq {ι R M : Type*} {n : ℕ} [Fintype ι] [Infinite R
   classical
   rcases snf with ⟨bM, bN, f, a, snf⟩
   dsimp only
-  let N' : Submodule R (ι → R) := N.map bM.equivFun
+  set N' : Submodule R (ι → R) := N.map bM.equivFun with hN'
   let bN' : Basis (Fin n) R N' := bN.map (bM.equivFun.submoduleMap N)
   have snf' : ∀ i, (bN' i : ι → R) = Pi.single (f i) (a i) := by
     intro i
