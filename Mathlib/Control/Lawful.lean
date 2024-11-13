@@ -50,11 +50,6 @@ namespace ExceptT
 
 variable {α ε : Type u} {m : Type u → Type v} (x : ExceptT ε m α)
 
--- Porting note: This is proven by proj reduction in Lean 3.
-@[simp]
-theorem run_mk (x : m (Except ε α)) : ExceptT.run (ExceptT.mk x) = x :=
-  rfl
-
 attribute [simp] run_bind
 
 @[simp]
