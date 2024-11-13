@@ -87,7 +87,9 @@ theorem toMul_lt {a b : Additive α} : toMul a < toMul b ↔ a < b :=
   Iff.rfl
 
 @[gcongr] alias ⟨_, toMul_mono⟩ := toMul_le
+@[gcongr] alias ⟨_, ofMul_mono⟩ := ofMul_le
 @[gcongr] alias ⟨_, toMul_strictMono⟩ := toMul_lt
+@[gcongr] alias ⟨_, foMul_strictMono⟩ := ofMul_lt
 
 end Additive
 
@@ -111,7 +113,9 @@ theorem toAdd_le {a b : Multiplicative α} : toAdd a ≤ toAdd b ↔ a ≤ b :=
 theorem toAdd_lt {a b : Multiplicative α} : toAdd a < toAdd b ↔ a < b :=
   Iff.rfl
 
+@[gcongr] alias ⟨_, toAdd_mono⟩ := toAdd_le
 @[gcongr] alias ⟨_, ofAdd_mono⟩ := ofAdd_le
+@[gcongr] alias ⟨_, toAdd_strictMono⟩ := toAdd_lt
 @[gcongr] alias ⟨_, ofAdd_strictMono⟩ := ofAdd_lt
 
 end Multiplicative
