@@ -923,15 +923,15 @@ def negOrderIso : EReal ≃o ERealᵒᵈ :=
     invFun := fun x => -OrderDual.ofDual x
     map_rel_iff' := neg_le_neg_iff }
 
-theorem neg_lt_iff_neg_lt {a b : EReal} : -a < b ↔ -b < a := by
+theorem neg_lt_comm {a b : EReal} : -a < b ↔ -b < a := by
   rw [← neg_lt_neg_iff, neg_neg]
 
-theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_iff_neg_lt.1 h
+theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_comm.1 h
 
-theorem lt_neg_iff_lt_neg {a b : EReal} : a < -b ↔ b < -a := by
+theorem lt_neg_comm {a b : EReal} : a < -b ↔ b < -a := by
   rw [← neg_lt_neg_iff, neg_neg]
 
-theorem lt_neg_of_lt_neg {a b : EReal} (h : a < -b) : b < -a := lt_neg_iff_lt_neg.1 h
+theorem lt_neg_of_lt_neg {a b : EReal} (h : a < -b) : b < -a := lt_neg_comm.1 h
 
 lemma neg_add {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊤) (h2 : x ≠ ⊤ ∨ y ≠ ⊥) :
     - (x + y) = - x - y := by
@@ -1079,7 +1079,7 @@ lemma add_le_of_forall_lt {a b c : EReal} (h : ∀ a' < a, ∀ b' < b, a' + b' �
   obtain ⟨b', hb', hd⟩ := exists_lt_add_right hd
   exact hd.le.trans (h _ ha' _ hb')
 
-lemma le_add_of_forall_lt {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ b ≠ ⊥)
+lemma le_add_of_forall_gt {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ b ≠ ⊥)
     (h : ∀ a' > a, ∀ b' > b, c ≤ a' + b') : c ≤ a + b := by
   rw [← neg_le_neg_iff, neg_add h₁ h₂]
   exact add_le_of_forall_lt fun a' ha' b' hb' ↦ le_neg_of_le_neg
@@ -1087,7 +1087,7 @@ lemma le_add_of_forall_lt {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂
     (neg_add (.inr hb'.ne_top) (.inl ha'.ne_top)).symm
 
 @[deprecated (since := "2024-11-11")] alias add_le_of_forall_add_le := add_le_of_forall_lt
-@[deprecated (since := "2024-11-11")] alias le_add_of_forall_le_add := le_add_of_forall_lt
+@[deprecated (since := "2024-11-11")] alias le_add_of_forall_le_add := le_add_of_forall_gt
 
 /-! ### Multiplication -/
 
