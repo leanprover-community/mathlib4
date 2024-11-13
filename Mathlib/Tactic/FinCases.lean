@@ -50,7 +50,7 @@ partial def unfoldCases (g : MVarId) (h : FVarId)
   let gs ← g.cases h
   try
     let #[g₁, g₂] := gs | throwError "unexpected number of cases"
-    modifyMCtx <| fun m => m.setMVarUserName g₁.mvarId <| .num userNamePre counter
+    g₁.mvarId.setUserName (.num userNamePre counter)
     let gs ← unfoldCases g₂.mvarId g₂.fields[2]!.fvarId! userNamePre (counter+1)
     return g₁.mvarId :: gs
   catch _ => return []
