@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Hanting Zhang
+Authors: Kim Morrison, Hanting Zhang
 -/
 import Mathlib.Tactic.Core
 import Mathlib.Lean.Expr.Basic

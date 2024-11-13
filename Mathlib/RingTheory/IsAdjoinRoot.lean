@@ -121,10 +121,10 @@ theorem subsingleton (h : IsAdjoinRoot S f) [Subsingleton R] : Subsingleton S :=
 theorem algebraMap_apply (h : IsAdjoinRoot S f) (x : R) :
     algebraMap R S x = h.map (Polynomial.C x) := by rw [h.algebraMap_eq, RingHom.comp_apply]
 
-@[simp]
 theorem mem_ker_map (h : IsAdjoinRoot S f) {p} : p ∈ RingHom.ker h.map ↔ f ∣ p := by
   rw [h.ker_map, Ideal.mem_span_singleton]
 
+@[simp]
 theorem map_eq_zero_iff (h : IsAdjoinRoot S f) {p} : h.map p = 0 ↔ f ∣ p := by
   rw [← h.mem_ker_map, RingHom.mem_ker]
 
@@ -141,7 +141,6 @@ theorem aeval_eq (h : IsAdjoinRoot S f) (p : R[X]) : aeval h.root p = h.map p :=
     rw [map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, ← h.algebraMap_apply,
       RingHom.map_pow, map_X]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem aeval_root (h : IsAdjoinRoot S f) : aeval h.root f = 0 := by rw [aeval_eq, map_self]
 
 /-- Choose an arbitrary representative so that `h.map (h.repr x) = x`.

@@ -19,8 +19,8 @@ is the theorem `char_orthonormal`
 
 ## Implementation notes
 
-Irreducible representations are implemented categorically, using the `Simple` class defined in
-`Mathlib.CategoryTheory.Simple`
+Irreducible representations are implemented categorically, using the `CategoryTheory.Simple` class
+defined in `Mathlib.CategoryTheory.Simple`
 
 ## TODO
 * Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid
@@ -32,7 +32,7 @@ noncomputable section
 
 universe u
 
-open CategoryTheory LinearMap CategoryTheory.MonoidalCategory Representation FiniteDimensional
+open CategoryTheory LinearMap CategoryTheory.MonoidalCategory Representation Module
 
 variable {k : Type u} [Field k]
 
@@ -51,7 +51,7 @@ theorem char_mul_comm (V : FDRep k G) (g : G) (h : G) :
     V.character (h * g) = V.character (g * h) := by simp only [trace_mul_comm, character, map_mul]
 
 @[simp]
-theorem char_one (V : FDRep k G) : V.character 1 = FiniteDimensional.finrank k V := by
+theorem char_one (V : FDRep k G) : V.character 1 = Module.finrank k V := by
   simp only [character, map_one, trace_one]
 
 /-- The character is multiplicative under the tensor product. -/
@@ -89,7 +89,7 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 theorem average_char_eq_finrank_invariants (V : FDRep k G) :
     ⅟ (Fintype.card G : k) • ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
-  erw [← (isProj_averageMap V.ρ).trace] -- Porting note: Changed `rw` to `erw`
+  rw [← (isProj_averageMap V.ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
 
 end Group

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
+Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.Lean.Meta
@@ -252,13 +252,13 @@ open Lean.Parser.Tactic
 /--
 Simp lemmas for rewriting a hom in monoical categories into a normal form.
 -/
-syntax (name := monoidal_simps) "monoidal_simps" (config)? : tactic
+syntax (name := monoidal_simps) "monoidal_simps" optConfig : tactic
 
 @[inherit_doc monoidal_simps]
 elab_rules : tactic
-| `(tactic| monoidal_simps $[$cfg]?) => do
+| `(tactic| monoidal_simps $cfg:optConfig) => do
   evalTactic (← `(tactic|
-    simp $[$cfg]? only [
+    simp $cfg only [
       Category.assoc, MonoidalCategory.tensor_whiskerLeft, MonoidalCategory.id_whiskerLeft,
       MonoidalCategory.whiskerRight_tensor, MonoidalCategory.whiskerRight_id,
       MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_id,

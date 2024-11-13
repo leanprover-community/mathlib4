@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.Action.End
 
 /-!
 # Prod instances for multiplicative actions with zero
@@ -26,7 +26,7 @@ namespace Prod
 
 section
 
-variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (x : α × β)
+variable [SMul M α] [SMul M β]
 
 theorem smul_zero_mk {α : Type*} [Monoid M] [AddMonoid α] [DistribMulAction M α] (a : M) (c : β) :
     a • ((0 : α), c) = (0, a • c) := by rw [Prod.smul_mk, smul_zero]

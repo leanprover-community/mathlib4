@@ -198,7 +198,7 @@ variable {α}
 /-- If `α` is equipped with the lower topology, then it is homeomorphic to `WithLower α`.
 -/
 def withLowerHomeomorph : WithLower α ≃ₜ α :=
-  WithLower.ofLower.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithLower.ofLower.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
@@ -262,10 +262,6 @@ lemma continuous_iff_Ici [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ ∀ a, IsClosed (f ⁻¹' (Ici a)) := by
   obtain rfl := IsLower.topology_eq α
   simp [continuous_generateFrom_iff]
-
-/-- A function `f : β → α` with lower topology in the codomain is continuous provided that the
-preimage of every interval `Set.Ici a` is a closed set. -/
-@[deprecated (since := "2023-12-24")] alias ⟨_, continuous_of_Ici⟩ := continuous_iff_Ici
 
 end Preorder
 
@@ -358,7 +354,7 @@ variable {α}
 /-- If `α` is equipped with the upper topology, then it is homeomorphic to `WithUpper α`.
 -/
 def withUpperHomeomorph : WithUpper α ≃ₜ α :=
-  WithUpper.ofUpper.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithUpper.ofUpper.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
@@ -398,13 +394,6 @@ if and only if the preimage of every interval `Set.Iic a` is a closed set. -/
 lemma continuous_iff_Iic [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ ∀ a, IsClosed (f ⁻¹' (Iic a)) :=
   IsLower.continuous_iff_Ici (α := αᵒᵈ)
-
-/-- A function `f : β → α` with upper topology in the codomain is continuous
-provided that the preimage of every interval `Set.Iic a` is a closed set. -/
-@[deprecated (since := "2023-12-24")]
-lemma continuous_of_Iic [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Iic a))) :
-    Continuous f :=
-  continuous_iff_Iic.2 h
 
 end Preorder
 

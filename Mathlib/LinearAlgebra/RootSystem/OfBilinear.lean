@@ -25,7 +25,7 @@ open Set Function Module
 
 noncomputable section
 
-variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace LinearMap
 
@@ -33,7 +33,7 @@ namespace LinearMap
 injective, and for any vector `y`, the norm of `x` divides twice the inner product of `x` and `y`.
 These conditions are what we need when describing reflection as a map taking `y` to
 `y - 2 • (B x y) / (B x x) • x`. -/
-structure IsReflective (B : M →ₗ[R] M →ₗ[R] R) (x : M) : Prop :=
+structure IsReflective (B : M →ₗ[R] M →ₗ[R] R) (x : M) : Prop where
   regular : IsRegular (B x x)
   dvd_two_mul : ∀ y, B x x ∣ 2 * B x y
 

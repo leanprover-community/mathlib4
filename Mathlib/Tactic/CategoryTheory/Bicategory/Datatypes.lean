@@ -103,7 +103,7 @@ instance : MonadMor₁ BicategoryM where
 section
 
 universe w v u
-variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
+variable {B : Type u} [Bicategory.{w, v} B] {a b c : B}
 
 theorem structuralIso_inv {f g : a ⟶ b} (η : f ≅ g) :
     η.symm.hom = η.inv := by

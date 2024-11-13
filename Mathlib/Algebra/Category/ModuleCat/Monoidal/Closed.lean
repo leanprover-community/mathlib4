@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
+Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Linear.Yoneda
@@ -21,7 +21,6 @@ namespace ModuleCat
 
 variable {R : Type u} [CommRing R]
 
--- Porting note: removed @[simps] as the simpNF linter complains
 /-- Auxiliary definition for the `MonoidalClosed` instance on `Module R`.
 (This is only a separate definition in order to speed up typechecking. )
 -/
@@ -38,7 +37,7 @@ def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     rw [Function.comp_apply]
     -- This used to be `rw` and was longer (?), but we need `erw` after leanprover/lean4#2644
     erw [MonoidalCategory.braiding_hom_apply, TensorProduct.lift.tmul]
-  right_inv f := rfl
+  right_inv _ := rfl
 
 instance : MonoidalClosed (ModuleCat.{u} R) where
   closed M :=

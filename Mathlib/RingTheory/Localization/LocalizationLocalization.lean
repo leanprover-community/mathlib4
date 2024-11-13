@@ -231,7 +231,7 @@ theorem isLocalization_of_is_exists_mul_mem (M N : Submonoid R) [IsLocalization 
   { map_units' := fun y => by
       obtain ⟨m, hm⟩ := h' y
       have := IsLocalization.map_units S ⟨_, hm⟩
-      erw [map_mul] at this
+      rw [map_mul] at this
       exact (IsUnit.mul_iff.mp this).2
     surj' := fun z => by
       obtain ⟨⟨y, s⟩, e⟩ := IsLocalization.surj M z

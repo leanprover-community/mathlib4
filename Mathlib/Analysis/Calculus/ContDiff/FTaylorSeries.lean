@@ -18,7 +18,7 @@ arbitrary choice in the definition.
 
 We also define a predicate `HasFTaylorSeriesUpTo` (and its localized version
 `HasFTaylorSeriesUpToOn`), saying that a sequence of multilinear maps is *a* sequence of
-derivatives of `f`. Contrary to `iteratedFDerivWithin`, it accomodates well the
+derivatives of `f`. Contrary to `iteratedFDerivWithin`, it accommodates well the
 non-uniqueness of derivatives.
 
 ## Main definitions and results
@@ -315,7 +315,7 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ} :
           rw [Nat.cast_lt] at hm ⊢
           exact Nat.lt_of_succ_lt_succ hm
         have :
-          HasFDerivWithinAt (continuousMultilinearCurryRightEquiv' 𝕜 m E F ∘ (p · m.succ))
+          HasFDerivWithinAt (𝕜 := 𝕜) (continuousMultilinearCurryRightEquiv' 𝕜 m E F ∘ (p · m.succ))
             ((p x).shift m.succ).curryLeft s x := Htaylor.fderivWithin _ A x hx
         rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
         convert this

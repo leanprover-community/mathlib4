@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Set.Function
+import Mathlib.Order.Bounds.Defs
 
 /-!
 # Well-founded relations
@@ -188,6 +189,16 @@ theorem WellFounded.self_le_of_strictMono (h : WellFounded ((· < ·) : β → �
   have h₂ := h.min_mem _ h₁
   exact h.not_lt_min _ h₁ (hf h₂) h₂
 
+theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β] [NoMaxOrder β]
+    (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
+  rintro ⟨a, ha⟩
+  obtain ⟨b, hb⟩ := exists_gt a
+  exact ((hf.le_apply.trans_lt (hf hb)).trans_le <| ha (Set.mem_range_self _)).false
+
+theorem StrictMono.not_bddBelow_range_of_wellFoundedGT {f : β → β} [WellFoundedGT β] [NoMinOrder β]
+    (hf : StrictMono f) : ¬ BddBelow (Set.range f) :=
+  hf.dual.not_bddAbove_range_of_wellFoundedLT
+
 end LinearOrder
 
 namespace Function
@@ -285,30 +296,6 @@ theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFound
   hwf.induction_bot' ih
 
 end Induction
-
-section WellFoundedLT
-
-variable [Preorder α] [Preorder β] {f : α → β}
-
-theorem StrictMono.wellFoundedLT [WellFoundedLT β] (hf : StrictMono f) : WellFoundedLT α where
-  wf := WellFounded.wellFounded_iff_has_min.2 fun s hne ↦ by
-    have hs' : (f '' s).Nonempty := ⟨f hne.some, _, hne.some_mem, rfl⟩
-    obtain ⟨x, hx, hex⟩ := WellFounded.min_mem wellFounded_lt (f '' s) hs'
-    refine ⟨x, hx, fun y hy hlt ↦ ?_⟩
-    apply WellFounded.not_lt_min wellFounded_lt (s.image f) hs' (Set.mem_image_of_mem _ hy)
-    rw [← hex]
-    exact hf hlt
-
-theorem StrictAnti.wellFoundedLT [WellFoundedGT β] (hf : StrictAnti f) : WellFoundedLT α :=
-  StrictMono.wellFoundedLT (β := βᵒᵈ) hf
-
-theorem StrictMono.wellFoundedGT [WellFoundedGT β] (hf : StrictMono f) : WellFoundedGT α :=
-  StrictMono.wellFoundedLT (α := αᵒᵈ) (β := βᵒᵈ) (fun _ _ h ↦ hf h)
-
-theorem StrictAnti.wellFoundedGT [WellFoundedLT β] (hf : StrictAnti f) : WellFoundedGT α :=
-  StrictMono.wellFoundedLT (α := αᵒᵈ) (fun _ _ h ↦ hf h)
-
-end WellFoundedLT
 
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
 noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :

@@ -3,8 +3,9 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.SeparableClosure
+import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.CharP.IntermediateField
+import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 
@@ -127,7 +128,7 @@ separable degree, degree, separable closure, purely inseparable
 
 -/
 
-open FiniteDimensional Polynomial IntermediateField Field Finsupp
+open Module Polynomial IntermediateField Field Finsupp
 
 noncomputable section
 
@@ -166,7 +167,7 @@ variable {F K}
 
 theorem isPurelyInseparable_iff : IsPurelyInseparable F E ↔ ∀ x : E,
     IsIntegral F x ∧ (IsSeparable F x → x ∈ (algebraMap F E).range) :=
-  ⟨fun h x ↦ ⟨h.isIntegral' x, h.inseparable' x⟩, fun h ↦ ⟨⟨fun x ↦ (h x).1⟩, fun x ↦ (h x).2⟩⟩
+  ⟨fun h x ↦ ⟨h.isIntegral' _ x, h.inseparable' x⟩, fun h ↦ ⟨⟨fun x ↦ (h x).1⟩, fun x ↦ (h x).2⟩⟩
 
 /-- Transfer `IsPurelyInseparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.isPurelyInseparable (e : K ≃ₐ[F] E) [IsPurelyInseparable F K] :
@@ -245,6 +246,7 @@ variable (q : ℕ) [ExpChar F q] (x : E)
 /-- A field extension `E / F` of exponential characteristic `q` is purely inseparable
 if and only if for every element `x` of `E`, there exists a natural number `n` such that
 `x ^ (q ^ n)` is contained in `F`. -/
+@[stacks 09HE]
 theorem isPurelyInseparable_iff_pow_mem :
     IsPurelyInseparable F E ↔ ∀ x : E, ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   rw [isPurelyInseparable_iff]
@@ -275,6 +277,7 @@ section perfectClosure
 exists a natural number `n` such that `x ^ (ringExpChar F) ^ n` is contained in `F`, where
 `ringExpChar F` is the exponential characteristic of `F`. It is also the maximal purely inseparable
 subextension of `E / F` (`le_perfectClosure_iff`). -/
+@[stacks 09HH]
 def perfectClosure : IntermediateField F E where
   carrier := {x : E | ∃ n : ℕ, x ^ (ringExpChar F) ^ n ∈ (algebraMap F E).range}
   add_mem' := by
@@ -444,6 +447,7 @@ theorem IsPurelyInseparable.tower_top [Algebra E K] [IsScalarTower F E K]
 
 /-- If `E / F` and `K / E` are both purely inseparable extensions, then `K / F` is also
 purely inseparable. -/
+@[stacks 02JJ "See also 00GM"]
 theorem IsPurelyInseparable.trans [Algebra E K] [IsScalarTower F E K]
     [h1 : IsPurelyInseparable F E] [h2 : IsPurelyInseparable E K] : IsPurelyInseparable F K := by
   obtain ⟨q, _⟩ := ExpChar.exists F
@@ -454,6 +458,18 @@ theorem IsPurelyInseparable.trans [Algebra E K] [IsScalarTower F E K]
   obtain ⟨m, z, h1⟩ := h1 y
   refine ⟨n + m, z, ?_⟩
   rw [IsScalarTower.algebraMap_apply F E K, h1, map_pow, h2, ← pow_mul, ← pow_add]
+
+namespace IntermediateField
+
+variable (M : IntermediateField F K)
+
+instance isPurelyInseparable_tower_bot [IsPurelyInseparable F K] : IsPurelyInseparable F M :=
+  IsPurelyInseparable.tower_bot F M K
+
+instance isPurelyInseparable_tower_top [IsPurelyInseparable F K] : IsPurelyInseparable M K :=
+  IsPurelyInseparable.tower_top F M K
+
+end IntermediateField
 
 variable {E}
 
@@ -589,6 +605,7 @@ instance IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E where
 
 /-- If `E / F` is algebraic, then `E` is purely inseparable over the
 separable closure of `F` in `E`. -/
+@[stacks 030K "$E/E_{sep}$ is purely inseparable."]
 theorem separableClosure.isPurelyInseparable [Algebra.IsAlgebraic F E] :
     IsPurelyInseparable (separableClosure F E) E := isPurelyInseparable_iff.2 fun x ↦ by
   set L := separableClosure F E
@@ -667,7 +684,7 @@ if and only if for any `x ∈ S`, `x ^ (q ^ n)` is contained in `F` for some `n 
 theorem isPurelyInseparable_adjoin_iff_pow_mem (q : ℕ) [hF : ExpChar F q] {S : Set E} :
     IsPurelyInseparable F (adjoin F S) ↔ ∀ x ∈ S, ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   simp_rw [← le_perfectClosure_iff, adjoin_le_iff, ← mem_perfectClosure_iff_pow_mem q,
-    Set.le_iff_subset, Set.subset_def, SetLike.mem_coe]
+    Set.subset_def, SetLike.mem_coe]
 
 /-- A compositum of two purely inseparable extensions is purely inseparable. -/
 instance isPurelyInseparable_sup (L1 L2 : IntermediateField F E)
@@ -756,7 +773,7 @@ private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
   have h' := h.coe_range
   let ι' := h'.extend (Set.range v).subset_univ
   let b : Basis ι' F E := Basis.extend h'
-  letI : Fintype ι' := fintypeBasisIndex b
+  letI : Fintype ι' := FiniteDimensional.fintypeBasisIndex b
   have H := linearIndependent_of_top_le_span_of_card_eq_finrank
     (span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
     (finrank_eq_card_basis b).symm
@@ -811,8 +828,8 @@ end
 purely inseparable. -/
 theorem isSepClosed_iff_isPurelyInseparable_algebraicClosure [IsAlgClosure F E] :
     IsSepClosed F ↔ IsPurelyInseparable F E :=
-  ⟨fun _ ↦ IsAlgClosure.algebraic.isPurelyInseparable_of_isSepClosed, fun H ↦ by
-    haveI := IsAlgClosure.alg_closed F (K := E)
+  ⟨fun _ ↦ IsAlgClosure.isAlgebraic.isPurelyInseparable_of_isSepClosed, fun H ↦ by
+    haveI := IsAlgClosure.isAlgClosed F (K := E)
     rwa [← separableClosure.eq_bot_iff, IsSepClosed.separableClosure_eq_bot_iff] at H⟩
 
 variable {F E} in
@@ -845,7 +862,7 @@ theorem perfectField_of_isSeparable_of_perfectField_top [Algebra.IsSeparable F E
 separable. -/
 theorem perfectField_iff_isSeparable_algebraicClosure [IsAlgClosure F E] :
     PerfectField F ↔ Algebra.IsSeparable F E :=
-  ⟨fun _ ↦ IsSepClosure.separable, fun _ ↦ haveI : IsAlgClosed E := IsAlgClosure.alg_closed F
+  ⟨fun _ ↦ IsSepClosure.separable, fun _ ↦ haveI : IsAlgClosed E := IsAlgClosure.isAlgClosed F
     perfectField_of_isSeparable_of_perfectField_top F E⟩
 
 namespace Field
@@ -854,6 +871,7 @@ namespace Field
 as a natural number. This means that the cardinality of `Field.Emb F E` and the degree of
 `(separableClosure F E) / F` are both finite or infinite, and when they are finite, they
 coincide. -/
+@[stacks 09HJ "`sepDegree` is defined as the right hand side of 09HJ"]
 theorem finSepDegree_eq [Algebra.IsAlgebraic F E] :
     finSepDegree F E = Cardinal.toNat (sepDegree F E) := by
   have : Algebra.IsAlgebraic (separableClosure F E) E := Algebra.IsAlgebraic.tower_top (K := F) _
@@ -1007,6 +1025,7 @@ theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic [Algebra.IsAlgebraic F 
   rwa [sepDegree_eq_of_isPurelyInseparable (separableClosure F E) E K] at h
 
 /-- The same-universe version of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`. -/
+@[stacks 09HK "Part 1"]
 theorem sepDegree_mul_sepDegree_of_isAlgebraic (K : Type v) [Field K] [Algebra F K]
     [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgebraic F E] :
     sepDegree F E * sepDegree E K = sepDegree F K := by

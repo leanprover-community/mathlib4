@@ -228,7 +228,7 @@ theorem coeff_eq_zero_of_lt_natTrailingDegree {p : R[X]} {n : ℕ} (h : n < p.na
 theorem coeff_natTrailingDegree_pred_eq_zero {p : R[X]} {hp : (0 : ℕ∞) < natTrailingDegree p} :
     p.coeff (p.natTrailingDegree - 1) = 0 :=
   coeff_eq_zero_of_lt_natTrailingDegree <|
-    Nat.sub_lt ((WithTop.zero_lt_coe (natTrailingDegree p)).mp hp) Nat.one_pos
+    Nat.sub_lt (WithTop.coe_pos.mp hp) Nat.one_pos
 
 theorem le_trailingDegree_X_pow (n : ℕ) : (n : ℕ∞) ≤ trailingDegree (X ^ n : R[X]) := by
   simpa only [C_1, one_mul] using le_trailingDegree_C_mul_X_pow n (1 : R)

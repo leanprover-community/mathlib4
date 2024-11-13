@@ -165,7 +165,7 @@ protected theorem splits (n : ℕ) :
       ∀ (f : K[X]) (_hfn : f.natDegree = n), Splits (algebraMap K <| SplittingFieldAux n f) f :=
   Nat.recOn (motive := fun n => ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n), Splits (algebraMap K <| SplittingFieldAux n f) f) n
-    (fun {K} _ _ hf =>
+    (fun {_} _ _ hf =>
       splits_of_degree_le_one _
         (le_trans degree_le_natDegree <| hf.symm ▸ WithBot.coe_le_coe.2 zero_le_one))
     fun n ih {K} _ f hf => by
@@ -181,7 +181,7 @@ theorem adjoin_rootSet (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n),
         Algebra.adjoin K (f.rootSet (SplittingFieldAux n f)) = ⊤)
-    n (fun {K} _ f _hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
+    n (fun {_} _ _ _hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
     fun n ih {K} _ f hfn => by
     have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn; cases hfn
     have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf; exact hndf rfl
@@ -209,6 +209,7 @@ instance (f : K[X]) : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
 end SplittingFieldAux
 
 /-- A splitting field of a polynomial. -/
+@[stacks 09HV "The construction of the splitting field."]
 def SplittingField (f : K[X]) :=
   MvPolynomial (SplittingFieldAux f.natDegree f) K ⧸
     RingHom.ker (MvPolynomial.aeval (R := K) id).toRingHom
@@ -276,6 +277,7 @@ instance _root_.Polynomial.IsSplittingField.splittingField (f : K[X]) :
     IsSplittingField K (SplittingField f) f :=
   IsSplittingField.of_algEquiv _ f (algEquivSplittingFieldAux f).symm
 
+@[stacks 09HU "Splitting part"]
 protected theorem splits : Splits (algebraMap K (SplittingField f)) f :=
   IsSplittingField.splits f.SplittingField f
 
@@ -301,8 +303,8 @@ variable {K}
 instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
   finiteDimensional f.SplittingField f
 
-instance [Fintype K] (f : K[X]) : Fintype f.SplittingField :=
-  FiniteDimensional.fintypeOfFintype K _
+instance [Finite K] (f : K[X]) : Finite f.SplittingField :=
+  Module.finite_of_finite K
 
 instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField :=
   inferInstance
