@@ -11,7 +11,7 @@ import Mathlib.Algebra.Homology.Additive
 
 Given an embedding `e : Embedding c c'` of complex shapes,
 and `K : HomologicalComplex C c`, we define `K.extend e : HomologicalComplex C c'`, and this
-leads to a functor `e.extendFunctor C :HomologicalComplex C c ⥤ HomologicalComplex C c'`.
+leads to a functor `e.extendFunctor C : HomologicalComplex C c ⥤ HomologicalComplex C c'`.
 
 This construction first appeared in the Liquid Tensor Experiment.
 
