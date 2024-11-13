@@ -15,11 +15,6 @@ index.
 -/
 
 
-@[simp] lemma Ideal.span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
-   (Ideal.span {a}).toAddSubgroup = AddSubgroup.zmultiples a := by
-  ext i
-  simp [Ideal.mem_span_singleton', AddSubgroup.mem_zmultiples_iff]
-
 variable {ι R M : Type*} {n : ℕ} [CommRing R] [AddCommGroup M]
 
 namespace Basis.SmithNormalForm
