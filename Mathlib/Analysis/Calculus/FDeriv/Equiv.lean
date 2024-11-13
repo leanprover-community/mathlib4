@@ -454,7 +454,7 @@ theorem HasFDerivWithinAt.mapsTo_tangent_cone {x : E} (h : HasFDerivWithinAt f f
   rintro v ⟨c, d, dtop, clim, cdlim⟩
   refine
     ⟨c, fun n => f (x + d n) - f x, mem_of_superset dtop ?_, clim, h.lim atTop dtop clim cdlim⟩
-  simp (config := { contextual := true }) [-mem_image, mem_image_of_mem]
+  simp +contextual [-mem_image, mem_image_of_mem]
 
 /-- If a set has the unique differentiability property at a point x, then the image of this set
 under a map with onto derivative has also the unique differentiability property at the image point.

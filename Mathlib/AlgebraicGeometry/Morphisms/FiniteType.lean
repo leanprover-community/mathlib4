@@ -63,8 +63,8 @@ instance : MorphismProperty.IsMultiplicative @LocallyOfFiniteType where
   id_mem _ := inferInstance
 
 open scoped TensorProduct in
-lemma locallyOfFiniteType_stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange @LocallyOfFiniteType :=
-  HasRingHomProperty.stableUnderBaseChange RingHom.finiteType_stableUnderBaseChange
+instance locallyOfFiniteType_isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange @LocallyOfFiniteType :=
+  HasRingHomProperty.isStableUnderBaseChange RingHom.finiteType_isStableUnderBaseChange
 
 end AlgebraicGeometry
