@@ -3,11 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.LinearAlgebra.Basis.Cardinality
-import Mathlib.LinearAlgebra.Quotient.Defs
+import Mathlib.RingTheory.Ideal.Quotient.Basic
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Nilpotent.Defs
@@ -447,8 +447,8 @@ section Mul
 variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 variable {M N : Submodule R A}
 
-theorem FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG :=
-  hm.map₂ _ hn
+theorem FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG := by
+  rw [mul_eq_map₂]; exact hm.map₂ _ hn
 
 theorem FG.pow (h : M.FG) (n : ℕ) : (M ^ n).FG :=
   Nat.recOn n ⟨{1}, by simp [one_eq_span]⟩ fun n ih => by simpa [pow_succ] using ih.mul h
@@ -890,3 +890,53 @@ end AlgHom
 
 instance Subalgebra.finite_bot {F E : Type*} [CommSemiring F] [Semiring E] [Algebra F E] :
     Module.Finite F (⊥ : Subalgebra F E) := Module.Finite.range (Algebra.linearMap F E)
+
+section NontrivialTensorProduct
+
+variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M] [Nontrivial M]
+
+lemma Module.exists_isPrincipal_quotient_of_finite  :
+    ∃ N : Submodule R M, N ≠ ⊤ ∧ Submodule.IsPrincipal (⊤ : Submodule R (M ⧸ N)) := by
+  obtain ⟨n, f, hf⟩ := @Module.Finite.exists_fin R M _ _ _ _
+  let s := { m : ℕ | Submodule.span R (f '' (Fin.val ⁻¹' (Set.Iio m))) ≠ ⊤ }
+  have hns : ∀ x ∈ s, x < n := by
+    refine fun x hx ↦ lt_iff_not_le.mpr fun e ↦ ?_
+    have : (Fin.val ⁻¹' Set.Iio x : Set (Fin n)) = Set.univ := by ext y; simpa using y.2.trans_le e
+    simp [s, this, hf] at hx
+  have hs₁ : s.Nonempty := ⟨0, by simp [s, show Set.Iio 0 = ∅ by ext; simp]⟩
+  have hs₂ : BddAbove s := ⟨n, fun x hx ↦ (hns x hx).le⟩
+  have hs := Nat.sSup_mem hs₁ hs₂
+  refine ⟨_, hs, ⟨⟨Submodule.mkQ _ (f ⟨_, hns _ hs⟩), ?_⟩⟩⟩
+  have := not_not.mp (not_mem_of_csSup_lt (Order.lt_succ _) hs₂)
+  rw [← Set.image_singleton, ← Submodule.map_span,
+    ← (Submodule.comap_injective_of_surjective (Submodule.mkQ_surjective _)).eq_iff,
+    Submodule.comap_map_eq, Submodule.ker_mkQ, Submodule.comap_top, ← this, ← Submodule.span_union,
+    Order.Iio_succ_eq_insert (sSup s), ← Set.union_singleton, Set.preimage_union, Set.image_union,
+    ← @Set.image_singleton _ _ f, Set.union_comm]
+  congr!
+  ext
+  simp [Fin.ext_iff]
+
+lemma Module.exists_surjective_quotient_of_finite :
+    ∃ (I : Ideal R) (f : M →ₗ[R] R ⧸ I), I ≠ ⊤ ∧ Function.Surjective f := by
+  obtain ⟨N, hN, ⟨x, hx⟩⟩ := Module.exists_isPrincipal_quotient_of_finite R M
+  let f := (LinearMap.toSpanSingleton R _ x).quotKerEquivOfSurjective
+    (by rw [← LinearMap.range_eq_top, ← LinearMap.span_singleton_eq_range, hx])
+  refine ⟨_, f.symm.toLinearMap.comp N.mkQ, fun e ↦ ?_, f.symm.surjective.comp N.mkQ_surjective⟩
+  obtain rfl : x = 0 := by simpa using LinearMap.congr_fun (LinearMap.ker_eq_top.mp e) 1
+  rw [ne_eq, ← Submodule.subsingleton_quotient_iff_eq_top, ← not_nontrivial_iff_subsingleton,
+    not_not] at hN
+  simp at hx
+
+open TensorProduct
+instance : Nontrivial (M ⊗[R] M) := by
+  obtain ⟨I, ϕ, hI, hϕ⟩ := Module.exists_surjective_quotient_of_finite R M
+  let ψ : M ⊗[R] M →ₗ[R] R ⧸ I :=
+    (LinearMap.mul' R (R ⧸ I)).comp (TensorProduct.map ϕ ϕ)
+  have : Nontrivial (R ⧸ I) := by
+    rwa [← not_subsingleton_iff_nontrivial, Submodule.subsingleton_quotient_iff_eq_top]
+  have : Function.Surjective ψ := by
+    intro x; obtain ⟨x, rfl⟩ := hϕ x; obtain ⟨y, hy⟩ := hϕ 1; exact ⟨x ⊗ₜ y, by simp [ψ, hy]⟩
+  exact this.nontrivial
+
+end NontrivialTensorProduct

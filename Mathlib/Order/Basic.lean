@@ -3,15 +3,13 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Order.Defs
 import Mathlib.Order.Notation
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.SimpRw
-import Batteries.Data.Sum.Lemmas
-import Batteries.Tactic.Classical
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -776,7 +774,7 @@ instance Pi.preorder [∀ i, Preorder (π i)] : Preorder (∀ i, π i) where
 
 theorem Pi.lt_def [∀ i, Preorder (π i)] {x y : ∀ i, π i} :
     x < y ↔ x ≤ y ∧ ∃ i, x i < y i := by
-  simp (config := { contextual := true }) [lt_iff_le_not_le, Pi.le_def]
+  simp +contextual [lt_iff_le_not_le, Pi.le_def]
 
 instance Pi.partialOrder [∀ i, PartialOrder (π i)] : PartialOrder (∀ i, π i) where
   __ := Pi.preorder
@@ -846,7 +844,7 @@ theorem update_le_iff : Function.update x i a ≤ y ↔ a ≤ y i ∧ ∀ (j) (_
 
 theorem update_le_update_iff :
     Function.update x i a ≤ Function.update y i b ↔ a ≤ b ∧ ∀ (j) (_ : j ≠ i), x j ≤ y j := by
-  simp (config := { contextual := true }) [update_le_iff]
+  simp +contextual [update_le_iff]
 
 @[simp]
 theorem update_le_update_iff' : update x i a ≤ update x i b ↔ a ≤ b := by
@@ -954,11 +952,11 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
     contradiction
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
-function `f : α → β`. This version takes `[Sup α]` and `[Inf α]` as arguments, then uses
+function `f : α → β`. This version takes `[Max α]` and `[Min α]` as arguments, then uses
 them for `max` and `min` fields. See `LinearOrder.lift'` for a version that autogenerates `min` and
 `max` fields, and `LinearOrder.liftWithOrd` for one that does not auto-generate `compare`
 fields. See note [reducible non-instances]. -/
-abbrev LinearOrder.lift [LinearOrder β] [Sup α] [Inf α] (f : α → β) (inj : Injective f)
+abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj : Injective f)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
   letI instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
@@ -987,7 +985,7 @@ abbrev LinearOrder.lift [LinearOrder β] [Sup α] [Inf α] (f : α → β) (inj 
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version autogenerates `min` and `max` fields. See `LinearOrder.lift`
-for a version that takes `[Sup α]` and `[Inf α]`, then uses them as `max` and `min`. See
+for a version that takes `[Max α]` and `[Min α]`, then uses them as `max` and `min`. See
 `LinearOrder.liftWithOrd'` for a version which does not auto-generate `compare` fields.
 See note [reducible non-instances]. -/
 abbrev LinearOrder.lift' [LinearOrder β] (f : α → β) (inj : Injective f) : LinearOrder α :=
@@ -997,12 +995,12 @@ abbrev LinearOrder.lift' [LinearOrder β] (f : α → β) (inj : Injective f) : 
     (apply_ite f _ _ _).trans (min_def _ _).symm
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
-function `f : α → β`. This version takes `[Sup α]` and `[Inf α]` as arguments, then uses
+function `f : α → β`. This version takes `[Max α]` and `[Min α]` as arguments, then uses
 them for `max` and `min` fields. It also takes `[Ord α]` as an argument and uses them for `compare`
 fields. See `LinearOrder.lift` for a version that autogenerates `compare` fields, and
 `LinearOrder.liftWithOrd'` for one that auto-generates `min` and `max` fields.
 fields. See note [reducible non-instances]. -/
-abbrev LinearOrder.liftWithOrd [LinearOrder β] [Sup α] [Inf α] [Ord α] (f : α → β)
+abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : α → β)
     (inj : Injective f) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
     (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
     (compare_f : ∀ a b : α, compare a b = compare (f a) (f b)) : LinearOrder α :=

@@ -174,7 +174,7 @@ theorem BalancedSz.symm {l r : ℕ} : BalancedSz l r → BalancedSz r l :=
   Or.imp (by rw [add_comm]; exact id) And.symm
 
 theorem balancedSz_zero {l : ℕ} : BalancedSz l 0 ↔ l ≤ 1 := by
-  simp (config := { contextual := true }) [BalancedSz]
+  simp +contextual [BalancedSz]
 
 theorem balancedSz_up {l r₁ r₂ : ℕ} (h₁ : r₁ ≤ r₂) (h₂ : l + r₂ ≤ 1 ∨ r₂ ≤ delta * l)
     (H : BalancedSz l r₁) : BalancedSz l r₂ := by

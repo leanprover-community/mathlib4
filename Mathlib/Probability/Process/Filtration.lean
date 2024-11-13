@@ -89,7 +89,7 @@ instance : Bot (Filtration ι m) :=
 instance : Top (Filtration ι m) :=
   ⟨const ι m le_rfl⟩
 
-instance : Sup (Filtration ι m) :=
+instance : Max (Filtration ι m) :=
   ⟨fun f g =>
     { seq := fun i => f i ⊔ g i
       mono' := fun _ _ hij =>
@@ -100,7 +100,7 @@ instance : Sup (Filtration ι m) :=
 theorem coeFn_sup {f g : Filtration ι m} : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 
-instance : Inf (Filtration ι m) :=
+instance : Min (Filtration ι m) :=
   ⟨fun f g =>
     { seq := fun i => f i ⊓ g i
       mono' := fun _ _ hij =>

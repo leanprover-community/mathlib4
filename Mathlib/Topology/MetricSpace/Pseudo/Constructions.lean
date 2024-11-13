@@ -147,11 +147,11 @@ section Prod
 variable [PseudoMetricSpace β]
 
 -- Porting note: added `let`, otherwise `simp` failed
-instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
+noncomputable instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
     (fun _ _ => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by
-      simp only [sup_eq_max, dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),
+      simp only [dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),
         Prod.edist_eq]
   i.replaceBornology fun s => by
     simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, forall_mem_image, ←
