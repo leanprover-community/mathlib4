@@ -184,26 +184,6 @@ open NumberField.InfinitePlace Module Finset
 abbrev mixedSpace :=
   ({w : InfinitePlace K // IsReal w} → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℂ)
 
-section Measure
-
-open MeasureTheory.Measure MeasureTheory
-
-variable [NumberField K]
-
-open Classical in
-instance : IsAddHaarMeasure (volume : Measure (mixedSpace K)) :=
-  prod.instIsAddHaarMeasure volume volume
-
-open Classical in
-instance : NoAtoms (volume : Measure (mixedSpace K)) := by
-  obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
-  by_cases hw : IsReal w
-  · exact @prod.instNoAtoms_fst _ _ _ _ volume volume _ (pi_noAtoms ⟨w, hw⟩)
-  · exact @prod.instNoAtoms_snd _ _ _ _ volume volume _
-      (pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩)
-
-end Measure
-
 /-- The mixed embedding of a number field `K` into the mixed space of `K`. -/
 noncomputable def _root_.NumberField.mixedEmbedding : K →+* (mixedSpace K) :=
   RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
@@ -1101,88 +1081,5 @@ theorem volume_eq_two_pow_mul_volume_plusPart (hm : MeasurableSet A) :
     Nat.cast_pow, Nat.cast_ofNat, nrRealPlaces]
 
 end plusPart
-
-noncomputable section
-
-namespace euclidean
-
-open MeasureTheory NumberField Submodule
-
-/-- The mixed space `ℝ^r₁ × ℂ^r₂`, with `(r₁, r₂)` the signature of `K`, as an Euclidean space. -/
-protected abbrev mixedSpace :=
-    (WithLp 2 ((EuclideanSpace ℝ {w : InfinitePlace K // IsReal w}) ×
-      (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w})))
-
-instance : Ring (euclidean.mixedSpace K) := by
-  have : Ring (EuclideanSpace ℝ {w : InfinitePlace K // IsReal w}) := Pi.ring
-  have : Ring (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w}) := Pi.ring
-  exact Prod.instRing
-
-instance : MeasurableSpace (euclidean.mixedSpace K) := borel _
-
-instance : BorelSpace (euclidean.mixedSpace K)  :=  ⟨rfl⟩
-
-variable [NumberField K]
-
-open Classical in
-instance : T2Space (euclidean.mixedSpace K) := Prod.t2Space
-
-open Classical in
-/-- The continuous linear equivalence between the euclidean mixed space and the mixed space. -/
-def toMixed : (euclidean.mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
-  (WithLp.linearEquiv _ _ _).toContinuousLinearEquiv
-
-instance : Nontrivial (euclidean.mixedSpace K) := (toMixed K).toEquiv.nontrivial
-
-protected theorem finrank :
-    finrank ℝ (euclidean.mixedSpace K) = finrank ℚ K := by
-  rw [LinearEquiv.finrank_eq (toMixed K).toLinearEquiv, mixedEmbedding.finrank]
-
-open Classical in
-/-- An orthonormal basis of the euclidean mixed space. -/
-def stdOrthonormalBasis : OrthonormalBasis (index K) ℝ (euclidean.mixedSpace K) :=
-  OrthonormalBasis.prod (EuclideanSpace.basisFun _ ℝ)
-    ((Pi.orthonormalBasis fun _ ↦ Complex.orthonormalBasisOneI).reindex (Equiv.sigmaEquivProd _ _))
-
-open Classical in
-theorem stdOrthonormalBasis_map_eq :
-    (euclidean.stdOrthonormalBasis K).toBasis.map (toMixed K).toLinearEquiv =
-      mixedEmbedding.stdBasis K := by
-  ext _ _ <;> rfl
-
-open Classical in
-theorem volumePreserving_toMixed :
-    MeasurePreserving (toMixed K) where
-  measurable := (toMixed K).continuous.measurable
-  map_eq := by
-    rw [← (OrthonormalBasis.addHaar_eq_volume (euclidean.stdOrthonormalBasis K)), Basis.map_addHaar,
-      stdOrthonormalBasis_map_eq, Basis.addHaar_eq_iff, Basis.coe_parallelepiped,
-      ← measure_congr (ZSpan.fundamentalDomain_ae_parallelepiped (stdBasis K) volume),
-      volume_fundamentalDomain_stdBasis K]
-
-open Classical in
-theorem volumePreserving_toMixed_symm :
-    MeasurePreserving (toMixed K).symm := by
-  have : MeasurePreserving (toMixed K).toHomeomorph.toMeasurableEquiv := volumePreserving_toMixed K
-  exact this.symm
-
-open Classical in
-/-- The image of ring of integers `𝓞 K` in the euclidean mixed space. -/
-protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
-  ZLattice.comap ℝ (mixedEmbedding.integerLattice K) (toMixed K).toLinearMap
-
-instance : DiscreteTopology (euclidean.integerLattice K) := by
-  classical
-  rw [euclidean.integerLattice]
-  infer_instance
-
-open Classical in
-instance : IsZLattice ℝ (euclidean.integerLattice K) := by
-  simp_rw [euclidean.integerLattice]
-  infer_instance
-
-end euclidean
-
-end
 
 end NumberField.mixedEmbedding
