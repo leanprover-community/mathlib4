@@ -521,6 +521,7 @@ import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Presentation.Basic
+import Mathlib.Algebra.Module.Presentation.Cokernel
 import Mathlib.Algebra.Module.Presentation.DirectSum
 import Mathlib.Algebra.Module.Presentation.Finite
 import Mathlib.Algebra.Module.Presentation.Free
@@ -528,6 +529,7 @@ import Mathlib.Algebra.Module.Presentation.Tautological
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.Module.SnakeLemma
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Submodule.Defs
@@ -3098,6 +3100,7 @@ import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.SpecificGroups.KleinFour
 import Mathlib.GroupTheory.SpecificGroups.Quaternion
+import Mathlib.GroupTheory.SpecificGroups.ZGroup
 import Mathlib.GroupTheory.Subgroup.Center
 import Mathlib.GroupTheory.Subgroup.Centralizer
 import Mathlib.GroupTheory.Subgroup.Saturated
