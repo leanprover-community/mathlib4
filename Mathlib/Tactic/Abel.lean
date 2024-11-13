@@ -435,7 +435,8 @@ The core of `abel_nf`, which rewrites the expression `e` into `abel` normal form
 * `e`: the expression to rewrite
 -/
 partial def abelNFCore
-    (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := do
+    (s : IO.Ref AtomM.State) (s' : IO.Ref Canonicalizer.State) (cfg : AbelNF.Config) (e : Expr) :
+    MetaM Simp.Result := do
   let ctx := {
     simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}]
     congrTheorems := ← getSimpCongrTheorems }
@@ -460,7 +461,7 @@ partial def abelNFCore
           guard <| root || parent != e -- recursion guard
           let e ← withReducible <| whnf e
           guard e.isApp -- all interesting group expressions are applications
-          let (a, pa) ← eval e (← mkContext e) { red := cfg.red, evalAtom } s
+          let (a, pa) ← eval e (← mkContext e) { evalAtom } s cfg.red s'
           guard !a.isAtom
           let r ← simp { expr := a, proof? := pa }
           if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
@@ -475,10 +476,11 @@ partial def abelNFCore
 
 open Elab.Tactic Parser.Tactic
 /-- Use `abel_nf` to rewrite the main goal. -/
-def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
+def abelNFTarget (s : IO.Ref AtomM.State) (s' : IO.Ref Canonicalizer.State) (cfg : AbelNF.Config) :
+    TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← withReducible goal.getType'
-  let r ← abelNFCore s cfg tgt
+  let r ← abelNFCore s s' cfg tgt
   if r.expr.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
@@ -487,11 +489,12 @@ def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit :
     replaceMainGoal [← applySimpResultToTarget goal tgt r]
 
 /-- Use `abel_nf` to rewrite hypothesis `h`. -/
-def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVarId) :
+def abelNFLocalDecl (s : IO.Ref AtomM.State) (s' : IO.Ref Canonicalizer.State)
+    (cfg : AbelNF.Config) (fvarId : FVarId) :
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
-  let myres ← abelNFCore s cfg tgt
+  let myres ← abelNFCore s s' cfg tgt
   if myres.expr == tgt then throwError "abel_nf made no progress"
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
@@ -517,7 +520,8 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
+  let s' ← IO.mkRef {}
+  withLocation loc (abelNFLocalDecl s s' cfg) (abelNFTarget s s' cfg)
     fun _ ↦ throwError "abel_nf made no progress"
 
 @[inherit_doc abelNF] macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>
@@ -530,7 +534,8 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
     let mut cfg ← elabAbelNFConfig cfg
     if tk.isSome then cfg := { cfg with red := .default }
-    Conv.applySimpResult (← abelNFCore (← IO.mkRef {}) cfg (← instantiateMVars (← Conv.getLhs)))
+    Conv.applySimpResult
+      (← abelNFCore (← IO.mkRef {}) (← IO.mkRef {}) cfg (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc abelNF] macro "abel_nf!" cfg:optConfig : conv => `(conv| abel_nf ! $cfg:optConfig)

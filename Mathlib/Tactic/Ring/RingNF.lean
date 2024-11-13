@@ -88,7 +88,7 @@ A tactic in the `RingNF.M` monad which will simplify expression `parent` to a no
   `RingNF.M.run` sets this to `false` in recursive mode.
 -/
 def rewrite (parent : Expr) (root := true) : M Simp.Result :=
-  fun nctx rctx s ↦ do
+  fun nctx rctx s red s' ↦ do
     let pre : Simp.Simproc := fun e =>
       try
         guard <| root || parent != e -- recursion guard
@@ -97,8 +97,9 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         let ⟨u, α, e⟩ ← inferTypeQ' e
         let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
         let c ← mkCache sα
-        let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable sα c e rctx s with
-        | none => eval sα c e rctx s -- `none` indicates that `eval` will find something algebraic.
+        let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable sα c e rctx s red s' with
+        | none => eval sα c e rctx s red s'
+          -- `none` indicates that `eval` will find something algebraic.
         | some none => failure -- No point rewriting atoms
         | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
         let r ← nctx.simp { expr := a, proof? := pa }
@@ -131,8 +132,8 @@ Runs a tactic in the `RingNF.M` monad, given initial data:
 * `cfg`: the configuration options
 * `x`: the tactic to run
 -/
-partial def M.run
-    {α : Type} (s : IO.Ref AtomM.State) (cfg : RingNF.Config) (x : M α) : MetaM α := do
+partial def M.run {α : Type} (s : IO.Ref AtomM.State) (s' : IO.Ref Canonicalizer.State)
+    (cfg : RingNF.Config) (x : M α) : MetaM α := do
   let ctx := {
     simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}]
     congrTheorems := ← getSimpCongrTheorems
@@ -151,26 +152,27 @@ partial def M.run
   let nctx := { ctx, simp }
   let rec
     /-- The recursive context. -/
-    rctx := { red := cfg.red, evalAtom },
+    rctx := { evalAtom },
     /-- The atom evaluator calls either `RingNF.rewrite` recursively,
     or nothing depending on `cfg.recursive`. -/
     evalAtom := if cfg.recursive
-      then fun e ↦ rewrite e false nctx rctx s
+      then fun e ↦ rewrite e false nctx rctx s cfg.red s'
       else fun e ↦ pure { expr := e }
-  x nctx rctx s
+  x nctx rctx s cfg.red s'
 
 /-- Overrides the default error message in `ring1` to use a prettified version of the goal. -/
 initialize ringCleanupRef.set fun e => do
-  M.run (← IO.mkRef {}) { recursive := false } fun nctx _ _ =>
+  M.run (← IO.mkRef {}) (← IO.mkRef {}) { recursive := false } fun nctx _ _ =>
     return (← nctx.simp { expr := e } ({} : Lean.Meta.Simp.Methods).toMethodsRef nctx.ctx
       |>.run {}).1.expr
 
 open Elab.Tactic Parser.Tactic
 /-- Use `ring_nf` to rewrite the main goal. -/
-def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withMainContext do
+def ringNFTarget (s : IO.Ref AtomM.State) (s' : IO.Ref Canonicalizer.State) (cfg : Config) :
+    TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
-  let r ← M.run s cfg <| rewrite tgt
+  let r ← M.run s s' cfg <| rewrite tgt
   if r.expr.consumeMData.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
@@ -178,11 +180,11 @@ def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withM
     replaceMainGoal [← applySimpResultToTarget goal tgt r]
 
 /-- Use `ring_nf` to rewrite hypothesis `h`. -/
-def ringNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
-    TacticM Unit := withMainContext do
+def ringNFLocalDecl (s : IO.Ref AtomM.State) (s' : IO.Ref Canonicalizer.State) (cfg : Config)
+    (fvarId : FVarId) : TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
-  let myres ← M.run s cfg <| rewrite tgt
+  let myres ← M.run s s' cfg <| rewrite tgt
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
@@ -207,7 +209,8 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  withLocation loc (ringNFLocalDecl s cfg) (ringNFTarget s cfg)
+  let s' ← IO.mkRef {}
+  withLocation loc (ringNFLocalDecl s s' cfg) (ringNFTarget s s' cfg)
     fun _ ↦ throwError "ring_nf failed"
 
 @[inherit_doc ringNF] macro "ring_nf!" cfg:optConfig loc:(location)? : tactic =>
@@ -226,7 +229,8 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:optConfig : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let s ← IO.mkRef {}
-  liftMetaMAtMain fun g ↦ M.run s cfg <| proveEq g
+  let s' ← IO.mkRef {}
+  liftMetaMAtMain fun g ↦ M.run s s' cfg <| proveEq g
 
 @[inherit_doc ring1NF] macro "ring1_nf!" cfg:optConfig : tactic =>
   `(tactic| ring1_nf ! $cfg:optConfig)
@@ -237,7 +241,8 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:optConfig : tactic => do
     let mut cfg ← elabConfig cfg
     if tk.isSome then cfg := { cfg with red := .default }
     let s ← IO.mkRef {}
-    Conv.applySimpResult (← M.run s cfg <| rewrite (← instantiateMVars (← Conv.getLhs)))
+    let s' ← IO.mkRef {}
+    Conv.applySimpResult (← M.run s s' cfg <| rewrite (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc ringNF] macro "ring_nf!" cfg:optConfig : conv =>
