@@ -45,13 +45,11 @@ def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
   left_inv f := by ext; rfl
   right_inv f := by ext; rfl
 
--- Porting note: add manually because `simps` used `inv` and `simpNF` complained
 @[to_additive (attr := simp)]
 lemma unitsLift_apply_inv_apply (f : C(X, Mˣ)) (x : X) :
     (↑(ContinuousMap.unitsLift f)⁻¹ : C(X, M)) x = (f x)⁻¹ :=
   rfl
 
--- Porting note: add manually because `simps` used `inv` and `simpNF` complained
 @[to_additive (attr := simp)]
 lemma unitsLift_symm_apply_apply_inv' (f : C(X, M)ˣ) (x : X) :
     (ContinuousMap.unitsLift.symm f x)⁻¹ = (↑f⁻¹ : C(X, M)) x := by

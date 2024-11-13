@@ -1094,13 +1094,15 @@ theorem bfamilyOfFamily_typein {ι} (f : ι → α) (i) :
     bfamilyOfFamily f (typein _ i) (typein_lt_type _ i) = f i :=
   bfamilyOfFamily'_typein _ f i
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
+-- See https://github.com/leanprover-community/batteries/issues/365 for the `nolint simpNF`.
+@[simp, nolint simpNF]
 theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily' r ho f (enum r ⟨i, by rwa [ho]⟩) = f i hi := by
   simp only [familyOfBFamily', typein_enum]
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
+-- See https://github.com/leanprover-community/batteries/issues/365 for the `nolint simpNF`.
+@[simp, nolint simpNF]
 theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily o f (enum (α := o.toType) (· < ·) ⟨i, hi.trans_eq (type_toType _).symm⟩)
     = f i hi :=
@@ -1487,7 +1489,8 @@ theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrde
     (f : ∀ a < o, Ordinal.{max u v}) : sup.{_, v} (familyOfBFamily' r ho f) = bsup.{_, v} o f :=
   sup_eq_sup r _ ho _ f
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
+-- See https://github.com/leanprover-community/batteries/issues/365 for the `nolint simpNF`.
+@[simp, nolint simpNF]
 theorem sSup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     sSup (brange o f) = bsup.{_, v} o f := by
   congr

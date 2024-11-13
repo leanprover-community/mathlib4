@@ -328,7 +328,7 @@ theorem linearIsometryBoundedOfCompact_toIsometryEquiv :
     (linearIsometryBoundedOfCompact α E 𝕜).toIsometryEquiv = isometryEquivBoundedOfCompact α E :=
   rfl
 
-@[simp] -- Porting note: adjusted LHS because `simpNF` complained it simplified.
+@[simp]
 theorem linearIsometryBoundedOfCompact_toAddEquiv :
     ((linearIsometryBoundedOfCompact α E 𝕜).toLinearEquiv : C(α, E) ≃+ (α →ᵇ E)) =
       addEquivBoundedOfCompact α E :=
