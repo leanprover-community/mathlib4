@@ -403,11 +403,11 @@ end SetLike.GradeZero
 section HomogeneousElement
 
 theorem SetLike.homogeneous_zero_submodule [Zero ι] [Semiring S] [AddCommMonoid R] [Module S R]
-    (A : ι → Submodule S R) : SetLike.Homogeneous A (0 : R) :=
+    (A : ι → Submodule S R) : SetLike.IsHomogeneousElem A (0 : R) :=
   ⟨0, Submodule.zero_mem _⟩
 
 theorem SetLike.Homogeneous.smul [CommSemiring S] [Semiring R] [Algebra S R] {A : ι → Submodule S R}
-    {s : S} {r : R} (hr : SetLike.Homogeneous A r) : SetLike.Homogeneous A (s • r) :=
+    {s : S} {r : R} (hr : SetLike.IsHomogeneousElem A r) : SetLike.IsHomogeneousElem A (s • r) :=
   let ⟨i, hi⟩ := hr
   ⟨i, Submodule.smul_mem _ _ hi⟩
 
