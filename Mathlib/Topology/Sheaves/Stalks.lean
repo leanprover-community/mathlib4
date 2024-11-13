@@ -217,7 +217,7 @@ theorem stalkPushforward_iso_of_isOpenEmbedding {f : X ⟶ Y} (hf : IsOpenEmbedd
     · intro U
       refine F.mapIso (eqToIso ?_)
       dsimp only [Functor.op]
-      exact congr_arg op (Opens.ext <| Set.preimage_image_eq (unop U).1.1 hf.inj)
+      exact congr_arg op (Opens.ext <| Set.preimage_image_eq (unop U).1.1 hf.injective)
     · intro U V i; erw [← F.map_comp, ← F.map_comp]; congr 1
   · change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
     ext U

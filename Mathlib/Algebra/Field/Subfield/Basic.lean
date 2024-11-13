@@ -199,7 +199,7 @@ theorem mem_fieldRange_self (x : K) : f x ∈ f.fieldRange :=
 
 theorem fieldRange_eq_top_iff {f : K →+* L} :
     f.fieldRange = ⊤ ↔ Function.Surjective f :=
-  SetLike.ext'_iff.trans Set.range_iff_surjective
+  SetLike.ext'_iff.trans Set.range_eq_univ
 
 /-- The range of a morphism of fields is a fintype, if the domain is a fintype.
 

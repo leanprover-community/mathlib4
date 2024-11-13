@@ -408,7 +408,7 @@ theorem t0Space_of_injective_of_continuous [TopologicalSpace Y] {f : X → Y}
 
 protected theorem Topology.IsEmbedding.t0Space [TopologicalSpace Y] [T0Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T0Space X :=
-  t0Space_of_injective_of_continuous hf.inj hf.continuous
+  t0Space_of_injective_of_continuous hf.injective hf.continuous
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t0Space := IsEmbedding.t0Space
@@ -697,7 +697,7 @@ theorem t1Space_of_injective_of_continuous [TopologicalSpace Y] {f : X → Y}
 
 protected theorem Topology.IsEmbedding.t1Space [TopologicalSpace Y] [T1Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T1Space X :=
-  t1Space_of_injective_of_continuous hf.inj hf.continuous
+  t1Space_of_injective_of_continuous hf.injective hf.continuous
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t1Space := IsEmbedding.t1Space
@@ -1584,7 +1584,7 @@ theorem separated_by_isOpenEmbedding [TopologicalSpace Y] [T2Space X]
     ∃ u v : Set Y, IsOpen u ∧ IsOpen v ∧ f x ∈ u ∧ f y ∈ v ∧ Disjoint u v :=
   let ⟨u, v, uo, vo, xu, yv, uv⟩ := t2_separation h
   ⟨f '' u, f '' v, hf.isOpenMap _ uo, hf.isOpenMap _ vo, mem_image_of_mem _ xu,
-    mem_image_of_mem _ yv, disjoint_image_of_injective hf.inj uv⟩
+    mem_image_of_mem _ yv, disjoint_image_of_injective hf.injective uv⟩
 
 @[deprecated (since := "2024-10-18")]
 alias separated_by_openEmbedding := separated_by_isOpenEmbedding
@@ -1604,7 +1604,7 @@ theorem T2Space.of_injective_continuous [TopologicalSpace Y] [T2Space Y] {f : X 
 See also `T2Space.of_continuous_injective`. -/
 theorem Topology.IsEmbedding.t2Space [TopologicalSpace Y] [T2Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T2Space X :=
-  .of_injective_continuous hf.inj hf.continuous
+  .of_injective_continuous hf.injective hf.continuous
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t2Space := IsEmbedding.t2Space
@@ -2203,7 +2203,7 @@ theorem T25Space.of_injective_continuous [TopologicalSpace Y] [T25Space Y] {f : 
 
 theorem Topology.IsEmbedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T25Space X :=
-  .of_injective_continuous hf.inj hf.continuous
+  .of_injective_continuous hf.injective hf.continuous
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t25Space := IsEmbedding.t25Space
@@ -2305,7 +2305,7 @@ protected theorem Topology.IsClosedEmbedding.normalSpace [TopologicalSpace Y] [N
   normal s t hs ht hst := by
     have H : SeparatedNhds (f '' s) (f '' t) :=
       NormalSpace.normal (f '' s) (f '' t) (hf.isClosedMap s hs) (hf.isClosedMap t ht)
-        (disjoint_image_of_injective hf.inj hst)
+        (disjoint_image_of_injective hf.injective hst)
     exact (H.preimage hf.continuous).mono (subset_preimage_image _ _) (subset_preimage_image _ _)
 
 @[deprecated (since := "2024-10-20")]
