@@ -28,7 +28,7 @@ assert_not_exists Nat.instLocallyFiniteOrder
 assert_not_exists IsUniformEmbedding
 assert_not_exists TendstoUniformlyOnFilter
 
-open Set Filter
+open Filter Set Topology
 
 universe u v w
 
