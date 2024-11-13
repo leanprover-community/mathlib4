@@ -3,10 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Induction
-import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Prime.Defs
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
