@@ -43,7 +43,8 @@ variable {x : M}
 
 section
 
-variable [RingHomSurjective σ₁₂] {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+variable [RingHomSurjective σ₁₂] {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂]
+  [MulActionSemiHomClass F σ₁₂ M M₂]
 
 /-- The pushforward of a submodule `p ⊆ M` by `f : M → M₂` -/
 def map (f : F) (p : Submodule R M) : Submodule R₂ M₂ :=
@@ -134,7 +135,7 @@ end
 section SemilinearMap
 
 variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂] [MulActionSemiHomClass F σ₁₂ M M₂]
 
 /-- The pushforward of a submodule by an injective linear map is
 linearly equivalent to the original submodule. See also `LinearEquiv.submoduleMap` for a
@@ -164,7 +165,8 @@ theorem map_equivMapOfInjective_symm_apply (f : F) (i : Injective f) (p : Submod
     i.eq_iff, LinearEquiv.apply_symm_apply]
 
 /-- The pullback of a submodule `p ⊆ M₂` along `f : M → M₂` -/
-def comap [SemilinearMapClass F σ₁₂ M M₂] (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
+def comap [AddMonoidHomClass F M M₂] [MulActionSemiHomClass F σ₁₂ M M₂]
+    (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
   { p.toAddSubmonoid.comap f with
     carrier := f ⁻¹' p
     -- Note: #8386 added `map_smulₛₗ _`
@@ -356,7 +358,8 @@ variable [RingHomSurjective σ₁₂] {F : Type*}
 
 /-- A linear isomorphism induces an order isomorphism of submodules. -/
 @[simps symm_apply apply]
-def orderIsoMapComapOfBijective [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+def orderIsoMapComapOfBijective [FunLike F M M₂] [AddMonoidHomClass F M M₂]
+    [MulActionSemiHomClass F σ₁₂ M M₂]
     (f : F) (hf : Bijective f) : Submodule R M ≃o Submodule R₂ M₂ where
   toFun := map f
   invFun := comap f
@@ -366,18 +369,20 @@ def orderIsoMapComapOfBijective [FunLike F M M₂] [SemilinearMapClass F σ₁�
 
 /-- A linear isomorphism induces an order isomorphism of submodules. -/
 @[simps! apply]
-def orderIsoMapComap [EquivLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂] (f : F) :
+def orderIsoMapComap [EquivLike F M M₂] [AddMonoidHomClass F M M₂]
+    [MulActionSemiHomClass F σ₁₂ M M₂] (f : F) :
     Submodule R M ≃o Submodule R₂ M₂ := orderIsoMapComapOfBijective f (EquivLike.bijective f)
 
 @[simp]
-lemma orderIsoMapComap_symm_apply [EquivLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+lemma orderIsoMapComap_symm_apply [EquivLike F M M₂] [AddMonoidHomClass F M M₂]
+    [MulActionSemiHomClass F σ₁₂ M M₂]
     (f : F) (p : Submodule R₂ M₂) :
     (orderIsoMapComap f).symm p = comap f p :=
   rfl
 
 end OrderIso
 
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂] [MulActionSemiHomClass F σ₁₂ M M₂]
 
 --TODO(Mario): is there a way to prove this from order properties?
 theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : F} {p : Submodule R M}

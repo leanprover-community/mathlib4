@@ -49,7 +49,8 @@ lemma balance_apply (f : ι → G) (x : ι) : balance f x = f x - 𝔼 y, f y :=
 @[simp] lemma balance_idem (f : ι → G) : balance (balance f) = balance f := by
   cases isEmpty_or_nonempty ι <;> ext x <;> simp [balance, expect_sub_distrib, univ_nonempty]
 
-@[simp] lemma map_balance [FunLike F G H] [LinearMapClass F ℚ≥0 G H] (g : F) (f : ι → G) (a : ι) :
+@[simp] lemma map_balance [FunLike F G H] [AddMonoidHomClass F G H] [MulActionHomClass F ℚ≥0 G H]
+    (g : F) (f : ι → G) (a : ι) :
     g (balance f a) = balance (g ∘ f) a := by simp [balance, map_expect]
 
 end AddCommGroup

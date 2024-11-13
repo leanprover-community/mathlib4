@@ -99,8 +99,11 @@ instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
 instance {M N : ModuleCat.{v} R} : FunLike (M ⟶ N) M N :=
   LinearMap.instFunLike
 
-instance {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N :=
-  LinearMap.semilinearMapClass
+instance {M N : ModuleCat.{v} R} : AddMonoidHomClass (M ⟶ N) M N :=
+  LinearMap.addMonoidHomClass
+
+instance {M N : ModuleCat.{v} R} : MulActionHomClass (M ⟶ N) R M N :=
+  LinearMap.mulActionSemiHomClass
 
 instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
   forget :=
@@ -441,8 +444,8 @@ end ModuleCat
     {R} [Ring R] {G : ModuleCat.{u} R} {H : Type u} [AddCommGroup H] [Module R H] (f : G →ₗ[R] H) :
     f.comp (𝟙 G) = f :=
   Category.id_comp (ModuleCat.asHom f)
+
 @[simp] theorem LinearMap.id_moduleCat_comp
     {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H) f = f :=
   Category.comp_id (ModuleCat.asHom f)
-

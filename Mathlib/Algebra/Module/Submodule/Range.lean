@@ -47,7 +47,7 @@ variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
 
 section
 
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂] [MulActionSemiHomClass F τ₁₂ M M₂]
 
 /-- The range of a linear map `f : M → M₂` is a submodule of `M₂`.
 See Note [range copy pattern]. -/
@@ -149,7 +149,7 @@ instance fintypeRange [Fintype M] [DecidableEq M₂] [RingHomSurjective τ₁₂
     Fintype (range f) :=
   Set.fintypeRange f
 
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂] [MulActionSemiHomClass F τ₁₂ M M₂]
 
 theorem range_codRestrict {τ₂₁ : R₂ →+* R} [RingHomSurjective τ₂₁] (p : Submodule R M)
     (f : M₂ →ₛₗ[τ₂₁] M) (hf) :
@@ -206,7 +206,7 @@ variable [Ring R] [Ring R₂]
 variable [AddCommGroup M] [AddCommGroup M₂]
 variable [Module R M] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂}
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂] [MulActionSemiHomClass F τ₁₂ M M₂]
 variable {f : F}
 
 open Submodule
@@ -262,7 +262,7 @@ variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R₂ M₂]
 variable (p : Submodule R M)
 variable {τ₁₂ : R →+* R₂}
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂] [MulActionSemiHomClass F τ₁₂ M M₂]
 
 open LinearMap
 

@@ -88,7 +88,7 @@ instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstS
 
 theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*} [FunLike F α β]
     [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
-    [TopologicalSpace R] [LinearMapClass F R α β] [tβ : TopologicalSpace β] [ContinuousSMul R β]
+    [TopologicalSpace R] [MulActionHomClass F R α β] [tβ : TopologicalSpace β] [ContinuousSMul R β]
     (f : F) : @ContinuousSMul R α _ _ (tβ.induced f) := by
   let tα := tβ.induced f
   refine ⟨continuous_induced_rng.2 ?_⟩

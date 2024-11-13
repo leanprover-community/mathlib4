@@ -173,7 +173,7 @@ theorem irreducible_mul_iff {a b : M} :
     · rwa [irreducible_mul_isUnit hb]
     · rwa [irreducible_isUnit_mul ha]
 
-variable [Monoid N] {F : Type*} [EquivLike F M N] [MulEquivClass F M N] (f : F)
+variable [Monoid N] {F : Type*} [EquivLike F M N] [MulHomClass F M N] (f : F)
 
 open MulEquiv
 
@@ -186,7 +186,7 @@ Then `x = (1, 0)` is irreducible in `M`, but `f x = 2 = 1 + 1` is not irreducibl
 -/
 theorem Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
   ⟨fun g ↦ h.not_unit g.of_map, fun a b g ↦
-    let f := MulEquivClass.toMulEquiv f
+    let f := MulHomClass.toMulEquiv f
     (h.isUnit_or_isUnit (symm_apply_apply f x ▸ map_mul f.symm a b ▸ congrArg f.symm g)).imp
       (·.of_map) (·.of_map)⟩
 

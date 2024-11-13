@@ -45,7 +45,7 @@ theorem isInteger_add {x y : M'} (hx : IsInteger f x) (hy : IsInteger f y) : IsI
 theorem isInteger_smul {a : R} {x : M'} (hx : IsInteger f x) : IsInteger f (a • x) := by
   rcases hx with ⟨x', hx⟩
   use a • x'
-  rw [← hx, LinearMapClass.map_smul]
+  rw [← hx, map_smul]
 
 variable (S)
 variable [IsLocalizedModule S f]

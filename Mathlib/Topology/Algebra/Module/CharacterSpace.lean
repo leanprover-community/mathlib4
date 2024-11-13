@@ -56,10 +56,13 @@ instance instFunLike : FunLike (characterSpace 𝕜 A) A 𝕜 where
   coe φ := ((φ : WeakDual 𝕜 A) : A → 𝕜)
   coe_injective' φ ψ h := by ext1; apply DFunLike.ext; exact congr_fun h
 
-/-- Elements of the character space are continuous linear maps. -/
-instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace 𝕜 A) 𝕜 A 𝕜 where
+/-- Elements of the character space are linear maps. -/
+instance instLinearMapClass : LinearMapClass (characterSpace 𝕜 A) 𝕜 A 𝕜 where
   map_smulₛₗ φ := (φ : WeakDual 𝕜 A).map_smul
   map_add φ := (φ : WeakDual 𝕜 A).map_add
+
+/-- Elements of the character space are continuous maps. -/
+instance instContinuousMapClass : ContinuousMapClass (characterSpace 𝕜 A) A 𝕜 where
   map_continuous φ := (φ : WeakDual 𝕜 A).cont
 
 -- Porting note: moved because Lean 4 doesn't see the `DFunLike` instance on `characterSpace 𝕜 A`
@@ -82,7 +85,7 @@ theorem coe_toCLM (φ : characterSpace 𝕜 A) : ⇑(toCLM φ) = φ :=
 
 /-- Elements of the character space are non-unital algebra homomorphisms. -/
 instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
-  { CharacterSpace.instContinuousLinearMapClass with
+  { CharacterSpace.instLinearMapClass with
     map_smulₛₗ := fun φ => map_smul φ
     map_zero := fun φ => map_zero φ
     map_mul := fun φ => φ.prop.2 }
