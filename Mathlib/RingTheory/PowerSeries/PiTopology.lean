@@ -59,7 +59,7 @@ variable [TopologicalSpace R]
 namespace WithPiTopology
 
 /-- The pointwise topology on PowerSeries -/
-scoped instance : TopologicalSpace (PowerSeries R) := 
+scoped instance : TopologicalSpace (PowerSeries R) :=
   Pi.topologicalSpace
 
 /-- Separation of the uniform structure on PowerSeries -/
