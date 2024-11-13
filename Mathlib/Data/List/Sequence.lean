@@ -41,8 +41,7 @@ def tail : ℕ → A := (a ∘ (· + 1))
 @[simp] lemma cons_tail : cons (a 0) (tail a) = a := by ext n; cases n <;> rfl
 
 variable {x a n} in
-lemma eval_append_left (h : n < x.length) :
-  (x ++ a) n = x[n] := by
+lemma eval_append_left (h : n < x.length) : (x ++ a) n = x[n] := by
   induction' x with b x ih generalizing n
   · simp at h
   · rcases n with (_ | n)
@@ -76,13 +75,13 @@ lemma take_succ : a.take (n + 1) = a 0 :: (tail a).take n := rfl
 @[simp] lemma take_append : a.take n ++ tail^[n] a = a := by
   induction' n with n ih generalizing a <;> simp [take_succ, *]
 lemma append_take (x : List A) (a : ℕ →  A) (n : ℕ) :
-  x ++ (a.take n) = (x ++ a).take (x.length + n) := by
+    x ++ (a.take n) = (x ++ a).take (x.length + n) := by
   induction' x <;> simp [Function.take, add_comm, *]
 @[simp] lemma take_eval {a : ℕ → A} n m (h : m < (a.take n).length) : (a.take n)[m] = a m := by
   nth_rw 2 [← take_append a n]; rw [eval_append_left]
 
 lemma take_append_of_le_length (x : List A) (a : ℕ → A) {n : ℕ} (h : n ≤ x.length) :
-  (x ++ a).take n = x.take n := by
+    (x ++ a).take n = x.take n := by
   apply List.ext_getElem (by simp [h])
   intros
   simp_rw [take_eval, List.getElem_take]; rw [eval_append_left]
@@ -105,7 +104,7 @@ lemma map_take : (a.take n).map f = (f ∘ a).take n := by
 lemma take_drop : (tail^[m] a).take n = (a.take (m + n)).drop m := by
   apply List.ext_getElem <;> simp
 lemma drop_append_of_le_length (x : List A) (a : ℕ → A) {n : ℕ} (h : n ≤ x.length) :
-  tail^[n] (x ++ a) = x.drop n ++ a := by
+    tail^[n] (x ++ a) = x.drop n ++ a := by
   obtain ⟨m, hm⟩ := le_iff_exists_add.mp h
   ext k; rcases lt_or_ge k m with _ | hk
   · rw [eval_drop, eval_append_left, eval_append_left, List.getElem_drop]; simpa [hm]
