@@ -45,7 +45,7 @@ theorem isTheta_ofReal_right {f : α → E} {g : α → ℝ} : f =Θ[l] (g · : 
 
 open Topology
 
-lemma isBigO_comp_ofReal {f g : ℂ → ℂ} {x : ℝ} (h : f =O[𝓝 (x : ℂ)] g) :
+lemma isBigO_comp_ofReal_nhds {f g : ℂ → ℂ} {x : ℝ} (h : f =O[𝓝 (x : ℂ)] g) :
     (fun y : ℝ ↦ f y) =O[𝓝 x] (fun y : ℝ ↦ g y) :=
   h.comp_tendsto <| continuous_ofReal.tendsto x
 
