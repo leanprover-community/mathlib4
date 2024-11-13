@@ -403,9 +403,9 @@ lemma coprodSpec_coprodMk (x) :
   obtain (x | x) := x <;>
     simp only [coprodMk_inl, coprodMk_inr, ← Scheme.comp_base_apply,
       coprodSpec, coprod.inl_desc, coprod.inr_desc]
-  · show Ideal.comap _ _ = x.asIdeal.prod ⊤
+  · show Ideal.comap _ _ = x.asIdeal.prod (⊤ : Ideal S)
     ext; simp [Ideal.prod, CommRingCat.ofHom]
-  · show Ideal.comap _ _ = Ideal.prod ⊤ x.asIdeal
+  · show Ideal.comap _ _ = Ideal.prod (⊤ : Ideal R) x.asIdeal
     ext; simp [Ideal.prod, CommRingCat.ofHom]
 
 lemma coprodSpec_apply (x) :

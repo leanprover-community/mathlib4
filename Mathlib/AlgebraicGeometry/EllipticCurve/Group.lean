@@ -267,7 +267,7 @@ lemma XYIdeal_add_eq (x₁ x₂ y₁ L : R) : XYIdeal W (W.addX x₁ x₂ L) (C 
 evaluation at $y(X)$ and at $x$ provided that $W(x, y(x)) = 0$. -/
 noncomputable def quotientXYIdealEquiv {x : R} {y : R[X]} (h : (W.polynomial.eval y).eval x = 0) :
     (W.CoordinateRing ⧸ XYIdeal W x y) ≃ₐ[R] R :=
-  ((quotientEquivAlgOfEq R <| by
+  ((quotientEquivAlgOfEq R (A := W.CoordinateRing) <| by
       simp only [XYIdeal, XClass, YClass, ← Set.image_pair, ← map_span]; rfl).trans <|
         DoubleQuot.quotQuotEquivQuotOfLEₐ R <| (span_singleton_le_iff_mem _).mpr <|
           mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero.mpr h).trans
