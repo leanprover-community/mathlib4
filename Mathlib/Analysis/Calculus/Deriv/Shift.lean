@@ -68,20 +68,8 @@ open Topology Asymptotics Filter
 
 lemma ContinuousAt.isBigO {𝕜 𝕜' : Type*} [NormedRing 𝕜] [NormedRing 𝕜'] [NormOneClass 𝕜']
     {f : 𝕜 → 𝕜'} {z : 𝕜} (hf : ContinuousAt f z) :
-    (fun w ↦ f (w + z)) =O[𝓝 0] (fun _ ↦ (1 : 𝕜')) := by
-  rw [isBigO_iff']
-  replace hf : ContinuousAt (fun w ↦ f (w + z)) 0 := by
-    convert (Homeomorph.comp_continuousAt_iff' (Homeomorph.addLeft (-z)) _ z).mp ?_
-    · simp only [Homeomorph.coe_addLeft, neg_add_cancel]
-    · simp only [Homeomorph.coe_addLeft, Function.comp_def, neg_add_cancel_comm, hf]
-  simp_rw [Metric.continuousAt_iff', dist_eq_norm_sub, zero_add] at hf
-  specialize hf 1 zero_lt_one
-  refine ⟨‖f z‖ + 1, by positivity, ?_⟩
-  refine Eventually.mp hf <| Eventually.of_forall fun w hw ↦ le_of_lt ?_
-  calc ‖f (w + z)‖
-    _ ≤ ‖f z‖ + ‖f (w + z) - f z‖ := norm_le_insert' ..
-    _ < ‖f z‖ + 1 := add_lt_add_left hw _
-    _ = _ := by simp only [norm_one, mul_one]
+    (fun w ↦ f (w + z)) =O[𝓝 0] (fun _ ↦ (1 : 𝕜')) :=
+  (ContinuousAt.comp ((zero_add z).symm ▸ hf) (by fun_prop)).tendsto.isBigO_one 𝕜'
 
 lemma DifferentiableAt.isBigO_of_eq_zero {f : 𝕜 → F} {z : 𝕜} (hf : DifferentiableAt 𝕜 f z)
     (hz : f z = 0) :
