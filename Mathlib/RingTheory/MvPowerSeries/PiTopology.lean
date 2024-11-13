@@ -136,7 +136,7 @@ theorem variables_tendsto_zero [Semiring R] :
   · obtain ⟨i, hi⟩ := h
     filter_upwards [eventually_cofinite_ne i] with j hj
     simp [hi, Finsupp.single_eq_single_iff, hj.symm]
-  · simpa only [ite_eq_right_iff] using 
+  · simpa only [ite_eq_right_iff] using
       Eventually.of_forall fun x h' ↦ (not_exists.mp h x h').elim
 
 theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
