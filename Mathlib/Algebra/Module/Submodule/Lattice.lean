@@ -75,7 +75,7 @@ instance uniqueBot : Unique (⊥ : Submodule R M) :=
 
 instance : OrderBot (Submodule R M) where
   bot := ⊥
-  bot_le p x := by simp (config := { contextual := true }) [zero_mem]
+  bot_le p x := by simp +contextual [zero_mem]
 
 protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = (0 : M) :=
   ⟨fun h ↦ h.symm ▸ fun _ hx ↦ (mem_bot R).mp hx,
@@ -173,8 +173,8 @@ instance : InfSet (Submodule R M) :=
   ⟨fun S ↦
     { carrier := ⋂ s ∈ S, (s : Set M)
       zero_mem' := by simp [zero_mem]
-      add_mem' := by simp (config := { contextual := true }) [add_mem]
-      smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
+      add_mem' := by simp +contextual [add_mem]
+      smul_mem' := by simp +contextual [smul_mem] }⟩
 
 private theorem sInf_le' {S : Set (Submodule R M)} {p} : p ∈ S → sInf S ≤ p :=
   Set.biInter_subset_of_mem
@@ -182,12 +182,12 @@ private theorem sInf_le' {S : Set (Submodule R M)} {p} : p ∈ S → sInf S ≤ 
 private theorem le_sInf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ sInf S :=
   Set.subset_iInter₂
 
-instance : Inf (Submodule R M) :=
+instance : Min (Submodule R M) :=
   ⟨fun p q ↦
     { carrier := p ∩ q
       zero_mem' := by simp [zero_mem]
-      add_mem' := by simp (config := { contextual := true }) [add_mem]
-      smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
+      add_mem' := by simp +contextual [add_mem]
+      smul_mem' := by simp +contextual [smul_mem] }⟩
 
 instance completeLattice : CompleteLattice (Submodule R M) :=
   { (inferInstance : OrderTop (Submodule R M)),

@@ -122,6 +122,7 @@ protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv
 
 /-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is a field.
 See note [reducible non-instances]. -/
+@[stacks 09FJ]
 noncomputable abbrev toField : Field K where
   __ := IsFractionRing.isDomain A
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
@@ -299,6 +300,14 @@ noncomputable def fieldEquivOfAlgEquivHom : (B ≃ₐ[A] B) →* (L ≃ₐ[K] L)
 lemma fieldEquivOfAlgEquivHom_apply (f : B ≃ₐ[A] B) :
     fieldEquivOfAlgEquivHom K L f = fieldEquivOfAlgEquiv K L L f :=
   rfl
+
+variable (A B)
+
+lemma fieldEquivOfAlgEquivHom_injective :
+    Function.Injective (fieldEquivOfAlgEquivHom K L : (B ≃ₐ[A] B) →* (L ≃ₐ[K] L)) := by
+  intro f g h
+  ext b
+  simpa using AlgEquiv.ext_iff.mp h (algebraMap B L b)
 
 end fieldEquivOfAlgEquivHom
 

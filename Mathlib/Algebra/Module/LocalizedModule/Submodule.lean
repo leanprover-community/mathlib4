@@ -12,9 +12,10 @@ import Mathlib.RingTheory.Localization.Module
 
 Results about localizations of submodules and quotient modules are provided in this file.
 
-## Main result
+## Main results
 - `Submodule.localized`:
   The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`.
+  A direct consequence of this is that `Rₚ` is flat over `R, see `IsLocalization.flat`.
 - `Submodule.toLocalized`:
   The localization map of a submodule `M' →ₗ[R] M'.localized p`.
 - `Submodule.toLocalizedQuotient`:
@@ -22,7 +23,6 @@ Results about localizations of submodules and quotient modules are provided in t
 
 ## TODO
 - Statements regarding the exactness of localization.
-- Connection with flatness.
 
 -/
 
@@ -34,7 +34,6 @@ variable {R : Type u} (S : Type u') {M : Type v} {N : Type v'}
 variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N]
 variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
 variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
-variable (hp : p ≤ R⁰)
 variable (M' : Submodule R M)
 
 /-- Let `S` be the localization of `R` at `p` and `N` be the localization of `M` at `p`.

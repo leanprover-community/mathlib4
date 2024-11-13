@@ -967,7 +967,7 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
   have : c ^ 2 = 1 ^ 2 :=
     (ENNReal.mul_eq_mul_right (measure_pos_of_nonempty_interior _ K.interior_nonempty).ne'
           K.isCompact.measure_lt_top.ne).1 this
-  have : c = 1 := (ENNReal.pow_strictMono two_ne_zero).injective this
+  have : c = 1 := (ENNReal.pow_right_strictMono two_ne_zero).injective this
   rw [hc, this, one_smul]
 
 /-- Any inner regular Haar measure is invariant under inversion in an abelian group. -/
@@ -992,13 +992,13 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
   have : c ^ 2 = 1 ^ 2 :=
     (ENNReal.mul_eq_mul_right (measure_pos_of_nonempty_interior _ K.interior_nonempty).ne'
           K.isCompact.measure_lt_top.ne).1 this
-  have : c = 1 := (ENNReal.pow_strictMono two_ne_zero).injective this
+  have : c = 1 := (ENNReal.pow_right_strictMono two_ne_zero).injective this
   rw [hc, this, one_smul]
 
 @[to_additive]
 theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn : n ≠ 0) :
     MeasurePreserving (fun g : G => g ^ n) μ μ :=
-  (zpowGroupHom n).measurePreserving (continuous_zpow n)
+  (zpowGroupHom n).measurePreserving (μ := μ) (continuous_zpow n)
     (RootableBy.surjective_pow G ℤ hn) rfl
 
 @[to_additive]

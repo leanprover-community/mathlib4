@@ -247,15 +247,17 @@ theorem convex_Ici (r : β) : Convex 𝕜 (Ici r) :=
 theorem convex_Icc (r s : β) : Convex 𝕜 (Icc r s) :=
   Ici_inter_Iic.subst ((convex_Ici r).inter <| convex_Iic s)
 
-theorem convex_halfspace_le {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w ≤ r } :=
+theorem convex_halfSpace_le {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w ≤ r } :=
   (convex_Iic r).is_linear_preimage h
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_le := convex_halfSpace_le
 
-theorem convex_halfspace_ge {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | r ≤ f w } :=
+theorem convex_halfSpace_ge {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | r ≤ f w } :=
   (convex_Ici r).is_linear_preimage h
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_ge := convex_halfSpace_ge
 
 theorem convex_hyperplane {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w = r } := by
   simp_rw [le_antisymm_iff]
-  exact (convex_halfspace_le h r).inter (convex_halfspace_ge h r)
+  exact (convex_halfSpace_le h r).inter (convex_halfSpace_ge h r)
 
 end OrderedAddCommMonoid
 
@@ -286,11 +288,13 @@ theorem convex_Ico (r s : β) : Convex 𝕜 (Ico r s) :=
 theorem convex_Ioc (r s : β) : Convex 𝕜 (Ioc r s) :=
   Ioi_inter_Iic.subst ((convex_Ioi r).inter <| convex_Iic s)
 
-theorem convex_halfspace_lt {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w < r } :=
+theorem convex_halfSpace_lt {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w < r } :=
   (convex_Iio r).is_linear_preimage h
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_lt := convex_halfSpace_lt
 
-theorem convex_halfspace_gt {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | r < f w } :=
+theorem convex_halfSpace_gt {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | r < f w } :=
   (convex_Ioi r).is_linear_preimage h
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_gt := convex_halfSpace_gt
 
 end OrderedCancelAddCommMonoid
 
