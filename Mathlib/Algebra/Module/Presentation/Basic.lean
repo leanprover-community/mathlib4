@@ -145,6 +145,10 @@ noncomputable def π : (relations.G →₀ A) →ₗ[A] M := Finsupp.linearCombi
 lemma π_single (g : relations.G) :
     solution.π (Finsupp.single g 1) = solution.var g := by simp [π]
 
+/-- Variant of `π_single` when the coefficient is any `a : A`. -/
+lemma π_single' (g : relations.G) (a : A) :
+    solution.π (Finsupp.single g a) = a • solution.var g := by simp [π]
+
 @[simp]
 lemma π_relation (r : relations.R) : solution.π (relations.relation r) = 0 :=
   solution.linearCombination_var_relation r
@@ -313,6 +317,10 @@ lemma exact : Function.Exact relations.map solution.π := by
   rw [LinearMap.exact_iff, range_map, ← solution.injective_fromQuotient_iff_ker_π_eq_span]
   exact h.bijective.1
 
+lemma span_var_eq_top : Submodule.span A (Set.range solution.var) = ⊤ := by
+  rw [← range_π, LinearMap.range_eq_top]
+  exact h.surjective_π
+
 variable {N : Type v'} [AddCommGroup N] [Module A N]
 
 /-- If `M` admits a presentation by generators and relations, and we have a solution of the
@@ -325,6 +333,14 @@ lemma desc_var (s : relations.Solution N) (g : relations.G) :
     h.desc s (solution.var g) = s.var g := by
   dsimp [desc]
   simp only [linearEquiv_symm_var, fromQuotient_toQuotient, π_single]
+
+@[simp]
+lemma desc_comp_π (s : relations.Solution N) : (h.desc s).comp solution.π = s.π := by aesop
+
+@[simp]
+lemma π_desc_apply (s : relations.Solution N) (x : relations.G →₀ A) :
+    h.desc s (solution.π x) = s.π x :=
+  DFunLike.congr_fun (h.desc_comp_π s) x
 
 @[simp]
 lemma postcomp_desc (s : relations.Solution N) :

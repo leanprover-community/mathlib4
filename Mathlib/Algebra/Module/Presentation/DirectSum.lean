@@ -136,6 +136,12 @@ lemma finsupp_var (i : ι) (g : pres.G) :
   rw [directSum_var, finsuppLequivDFinsupp_apply_apply, Finsupp.toDFinsupp_single]
   rfl
 
+@[simp]
+lemma finsupp_π (i : ι) (g : pres.G) :
+    DFunLike.coe (F := ((_ : ι) × pres.G →₀ A) →ₗ[A] ι →₀ N)
+      (finsupp pres ι).π (Finsupp.single ⟨i,g⟩ 1) =  Finsupp.single i (pres.var g) := by
+  erw [Relations.Solution.π_single, finsupp_var]
+
 end
 
 end Presentation

@@ -1238,6 +1238,15 @@ theorem mapRange_neg' [AddGroup G] [SubtractionMonoid H] [FunLike β G H] [AddMo
     mapRange f (map_zero f) (-v) = -mapRange f (map_zero f) v :=
   mapRange_neg (map_neg f) v
 
+@[simp]
+theorem embDomain_neg [NegZeroClass G](f : α ↪ β) (v : α →₀ G) :
+    embDomain f (-v) = -embDomain f v := by
+  ext x
+  by_cases h : x ∈ Set.range f
+  · obtain ⟨y, rfl⟩ := h
+    simp only [embDomain_apply, coe_neg, Pi.neg_apply]
+  · simp only [embDomain_notin_range _ _ _ h, coe_neg, Pi.neg_apply, neg_zero]
+
 instance instSub [SubNegZeroMonoid G] : Sub (α →₀ G) :=
   ⟨zipWith Sub.sub (sub_zero _)⟩
 
@@ -1303,5 +1312,10 @@ theorem erase_eq_sub_single [AddGroup G] (f : α →₀ G) (a : α) : f.erase a 
 theorem update_eq_sub_add_single [AddGroup G] (f : α →₀ G) (a : α) (b : G) :
     f.update a b = f - single a (f a) + single a b := by
   rw [update_eq_erase_add_single, erase_eq_sub_single]
+
+@[simp]
+theorem embDomain_sub [AddGroup G] (f : α ↪ β) (v w : α →₀ G) :
+    embDomain f (v - w) = embDomain f v - embDomain f w := by
+  rw [sub_eq_add_neg, embDomain_add, embDomain_neg, sub_eq_add_neg]
 
 end Finsupp
