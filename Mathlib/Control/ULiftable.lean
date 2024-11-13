@@ -9,7 +9,6 @@ import Mathlib.Control.Monad.Writer
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.Control.Lawful
-import Batteries.Lean.LawfulMonad
 
 /-!
 # Universe lifting for type families
