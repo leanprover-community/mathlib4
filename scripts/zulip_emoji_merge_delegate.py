@@ -6,6 +6,7 @@ import re
 
 # Usage:
 # python scripts/zulip_emoji_merge_delegate.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $GITHUB_TOKEN
+# See .github/workflows/zulip_emoji_merge_delegate.yaml for the meaning of these variables
 
 ZULIP_API_KEY = sys.argv[1]
 ZULIP_EMAIL = sys.argv[2]
@@ -52,11 +53,26 @@ for message in messages:
                 "emoji_name": "peace_sign"
             })
         elif 'ready-to-merge' in labels:
+            if has_peace_sign:
+                client.remove_reaction({
+                    "message_id": message['id'],
+                    "emoji_name": "peace_sign"
+                })
             client.add_reaction({
                 "message_id": message['id'],
                 "emoji_name": "bors"
             })
         elif pr_data['title'].startswith("[Merged by Bors]"):
+            if has_peace_sign:
+                client.remove_reaction({
+                    "message_id": message['id'],
+                    "emoji_name": "peace_sign"
+                })
+            if has_bors:
+                client.remove_reaction({
+                    "message_id": message['id'],
+                    "emoji_name": "bors"
+                })
             client.add_reaction({
                 "message_id": message['id'],
                 "emoji_name": "merge"
