@@ -5,12 +5,12 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
   Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Opposite
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Projection
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.Algebra.Group.Quotient
+import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Theory of topological modules and continuous linear maps.
