@@ -65,9 +65,6 @@ theorem Module.rank_linearMap_self :
 theorem Module.finrank_linearMap_self : finrank S (M →ₗ[R] S) = finrank R M := by
   rw [finrank_linearMap, finrank_self, mul_one]
 
-@[deprecated (since := "2024-01-12")]
-alias Module.finrank_linear_map' := Module.finrank_linearMap_self
-
 end Ring
 
 section AlgHom

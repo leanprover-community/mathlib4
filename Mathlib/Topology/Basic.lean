@@ -1115,9 +1115,6 @@ theorem mem_closure_iff_clusterPt : x ∈ closure s ↔ ClusterPt x (𝓟 s) :=
 theorem mem_closure_iff_nhds_ne_bot : x ∈ closure s ↔ 𝓝 x ⊓ 𝓟 s ≠ ⊥ :=
   mem_closure_iff_clusterPt.trans neBot_iff
 
-@[deprecated (since := "2024-01-28")]
-alias mem_closure_iff_nhds_neBot := mem_closure_iff_nhds_ne_bot
-
 theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x) :=
   mem_closure_iff_clusterPt
 
@@ -1403,14 +1400,6 @@ lemma not_continuousAt_of_tendsto {f : X → Y} {l₁ : Filter X} {l₂ : Filter
     (hf : Tendsto f l₁ l₂) [l₁.NeBot] (hl₁ : l₁ ≤ 𝓝 x) (hl₂ : Disjoint (𝓝 (f x)) l₂) :
     ¬ ContinuousAt f x := fun cont ↦
   (cont.mono_left hl₁).not_tendsto hl₂ hf
-
-/-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
-@[deprecated (since := "2024-01-15")]
-theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {f : X → M₀} :
-    f =ᶠ[𝓝 x] 0 ↔ x ∉ closure (Function.support f) := by
-  rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds, Function.compl_support,
-    EventuallyEq, eventually_iff]
-  simp only [Pi.zero_apply]
 
 theorem ClusterPt.map {lx : Filter X} {ly : Filter Y} (H : ClusterPt x lx)
     (hfc : ContinuousAt f x) (hf : Tendsto f lx ly) : ClusterPt (f x) ly :=

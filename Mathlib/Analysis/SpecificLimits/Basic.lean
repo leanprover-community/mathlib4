@@ -31,32 +31,22 @@ variable {α : Type*} {β : Type*} {ι : Type*}
 
 theorem tendsto_inverse_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹) atTop (𝓝 0) :=
   tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop
-@[deprecated (since := "2024-01-31")]
-alias tendsto_inverse_atTop_nhds_0_nat := tendsto_inverse_atTop_nhds_zero_nat
 
 theorem tendsto_const_div_atTop_nhds_zero_nat (C : ℝ) :
     Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
   simpa only [mul_zero] using tendsto_const_nhds.mul tendsto_inverse_atTop_nhds_zero_nat
-@[deprecated (since := "2024-01-31")]
-alias tendsto_const_div_atTop_nhds_0_nat := tendsto_const_div_atTop_nhds_zero_nat
 
 theorem tendsto_one_div_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ 1/(n : ℝ)) atTop (𝓝 0) :=
   tendsto_const_div_atTop_nhds_zero_nat 1
-@[deprecated (since := "2024-01-31")]
-alias tendsto_one_div_atTop_nhds_0_nat := tendsto_one_div_atTop_nhds_zero_nat
 
 theorem NNReal.tendsto_inverse_atTop_nhds_zero_nat :
     Tendsto (fun n : ℕ ↦ (n : ℝ≥0)⁻¹) atTop (𝓝 0) := by
   rw [← NNReal.tendsto_coe]
   exact _root_.tendsto_inverse_atTop_nhds_zero_nat
-@[deprecated (since := "2024-01-31")]
-alias NNReal.tendsto_inverse_atTop_nhds_0_nat := NNReal.tendsto_inverse_atTop_nhds_zero_nat
 
 theorem NNReal.tendsto_const_div_atTop_nhds_zero_nat (C : ℝ≥0) :
     Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
   simpa using tendsto_const_nhds.mul NNReal.tendsto_inverse_atTop_nhds_zero_nat
-@[deprecated (since := "2024-01-31")]
-alias NNReal.tendsto_const_div_atTop_nhds_0_nat := NNReal.tendsto_const_div_atTop_nhds_zero_nat
 
 theorem EReal.tendsto_const_div_atTop_nhds_zero_nat {C : EReal} (h : C ≠ ⊥) (h' : C ≠ ⊤) :
     Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
@@ -70,8 +60,6 @@ theorem tendsto_one_div_add_atTop_nhds_zero_nat :
     Tendsto (fun n : ℕ ↦ 1 / ((n : ℝ) + 1)) atTop (𝓝 0) :=
   suffices Tendsto (fun n : ℕ ↦ 1 / (↑(n + 1) : ℝ)) atTop (𝓝 0) by simpa
   (tendsto_add_atTop_iff_nat 1).2 (_root_.tendsto_const_div_atTop_nhds_zero_nat 1)
-@[deprecated (since := "2024-01-31")]
-alias tendsto_one_div_add_atTop_nhds_0_nat := tendsto_one_div_add_atTop_nhds_zero_nat
 
 theorem NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜]
     [Algebra ℝ≥0 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℝ≥0 𝕜] :
@@ -79,17 +67,11 @@ theorem NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Se
   convert (continuous_algebraMap ℝ≥0 𝕜).continuousAt.tendsto.comp
     tendsto_inverse_atTop_nhds_zero_nat
   rw [map_zero]
-@[deprecated (since := "2024-01-31")]
-alias NNReal.tendsto_algebraMap_inverse_atTop_nhds_0_nat :=
-  NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat
 
 theorem tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜] [Algebra ℝ 𝕜]
     [TopologicalSpace 𝕜] [ContinuousSMul ℝ 𝕜] :
     Tendsto (algebraMap ℝ 𝕜 ∘ fun n : ℕ ↦ (n : ℝ)⁻¹) atTop (𝓝 0) :=
   NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat 𝕜
-@[deprecated (since := "2024-01-31")]
-alias tendsto_algebraMap_inverse_atTop_nhds_0_nat :=
-  _root_.tendsto_algebraMap_inverse_atTop_nhds_zero_nat
 
 /-- The limit of `n / (n + x)` is 1, for any constant `x` (valid in `ℝ` or any topological division
 algebra over `ℝ`, e.g., `ℂ`).
@@ -186,8 +168,6 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField
     (fun hr ↦
       have := (one_lt_inv₀ hr).2 h₂ |> tendsto_pow_atTop_atTop_of_one_lt
       (tendsto_inv_atTop_zero.comp this).congr fun n ↦ by simp)
-@[deprecated (since := "2024-01-31")]
-alias tendsto_pow_atTop_nhds_0_of_lt_1 := tendsto_pow_atTop_nhds_zero_of_lt_one
 
 @[simp] theorem tendsto_pow_atTop_nhds_zero_iff {𝕜 : Type*} [LinearOrderedField 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} :
@@ -206,9 +186,6 @@ alias tendsto_pow_atTop_nhds_0_of_lt_1 := tendsto_pow_atTop_nhds_zero_of_lt_one
       · simpa only [← abs_pow]
   · simpa only [← abs_pow] using (tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg r)) h
 
-@[deprecated (since := "2024-01-31")]
-alias tendsto_pow_atTop_nhds_0_iff := tendsto_pow_atTop_nhds_zero_iff
-
 theorem tendsto_pow_atTop_nhdsWithin_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField 𝕜]
     [Archimedean 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 < r) (h₂ : r < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝[>] 0) :=
@@ -216,16 +193,11 @@ theorem tendsto_pow_atTop_nhdsWithin_zero_of_lt_one {𝕜 : Type*} [LinearOrdere
     ⟨tendsto_pow_atTop_nhds_zero_of_lt_one h₁.le h₂,
       tendsto_principal.2 <| Eventually.of_forall fun _ ↦ pow_pos h₁ _⟩
 
-@[deprecated (since := "2024-01-31")]
-alias tendsto_pow_atTop_nhdsWithin_0_of_lt_1 := tendsto_pow_atTop_nhdsWithin_zero_of_lt_one
-
 theorem uniformity_basis_dist_pow_of_lt_one {α : Type*} [PseudoMetricSpace α] {r : ℝ} (h₀ : 0 < r)
     (h₁ : r < 1) :
     (uniformity α).HasBasis (fun _ : ℕ ↦ True) fun k ↦ { p : α × α | dist p.1 p.2 < r ^ k } :=
   Metric.mk_uniformity_basis (fun _ _ ↦ pow_pos h₀ _) fun _ ε0 ↦
     (exists_pow_lt_of_lt_one ε0 h₁).imp fun _ hk ↦ ⟨trivial, hk.le⟩
-@[deprecated (since := "2024-01-31")]
-alias uniformity_basis_dist_pow_of_lt_1 := uniformity_basis_dist_pow_of_lt_one
 
 theorem geom_lt {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n)
     (h : ∀ k < n, c * u k < u (k + 1)) : c ^ n * u 0 < u n := by
@@ -261,8 +233,6 @@ theorem NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0} (hr : r < 1) 
   NNReal.tendsto_coe.1 <| by
     simp only [NNReal.coe_pow, NNReal.coe_zero,
       _root_.tendsto_pow_atTop_nhds_zero_of_lt_one r.coe_nonneg hr]
-@[deprecated (since := "2024-01-31")]
-alias NNReal.tendsto_pow_atTop_nhds_0_of_lt_1 := NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
 
 @[simp]
 protected theorem NNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0} :
@@ -276,8 +246,6 @@ theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r <
   rw [← ENNReal.coe_zero]
   norm_cast at *
   apply NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one hr
-@[deprecated (since := "2024-01-31")]
-alias ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 := ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
 
 @[simp]
 protected theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
@@ -317,18 +285,15 @@ theorem hasSum_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) :
     ((tendsto_pow_atTop_nhds_zero_of_lt_one h₁ h₂).sub tendsto_const_nhds).mul tendsto_const_nhds
   (hasSum_iff_tendsto_nat_of_nonneg (pow_nonneg h₁) _).mpr <| by
     simp_all [neg_inv, geom_sum_eq, div_eq_mul_inv]
-@[deprecated (since := "2024-01-31")] alias hasSum_geometric_of_lt_1 := hasSum_geometric_of_lt_one
 
 theorem summable_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) :
     Summable fun n : ℕ ↦ r ^ n :=
   ⟨_, hasSum_geometric_of_lt_one h₁ h₂⟩
 
-@[deprecated (since := "2024-01-31")]
 alias summable_geometric_of_lt_1 := summable_geometric_of_lt_one
 
 theorem tsum_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   (hasSum_geometric_of_lt_one h₁ h₂).tsum_eq
-@[deprecated (since := "2024-01-31")] alias tsum_geometric_of_lt_1 := tsum_geometric_of_lt_one
 
 theorem hasSum_geometric_two : HasSum (fun n : ℕ ↦ ((1 : ℝ) / 2) ^ n) 2 := by
   convert hasSum_geometric_of_lt_one _ _ <;> norm_num
