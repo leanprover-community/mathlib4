@@ -270,6 +270,16 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
         ⟨fun h => by simp at *; tauto, fun h => by rw [Subgroup.mem_bot.1 h]; exact H.one_mem⟩
     subst this; infer_instance
 
+@[to_additive]
+lemma Subgroup.isCyclic_of_le {G : Type*} [Group G] {H H' : Subgroup G} (h : H ≤ H')
+    [IsCyclic H'] :
+    IsCyclic H := by
+  let e := Subgroup.subgroupOfEquivOfLe h
+  obtain ⟨g, hg⟩ := Subgroup.isCyclic <| H.subgroupOf H'
+  refine ⟨e g, fun x ↦ ?_⟩
+  obtain ⟨n, hn⟩ := hg (e.symm x)
+  exact ⟨n, by simp only at hn ⊢; rw [← map_zpow, hn, MulEquiv.apply_symm_apply]⟩
+
 open Finset Nat
 
 section Classical
@@ -278,11 +288,11 @@ open scoped Classical
 
 @[to_additive IsAddCyclic.card_nsmul_eq_zero_le]
 theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] {n : ℕ} (hn0 : 0 < n) :
-    (univ.filter fun a : α => a ^ n = 1).card ≤ n :=
+    #{a : α | a ^ n = 1} ≤ n :=
   let ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   calc
-    (univ.filter fun a : α => a ^ n = 1).card ≤
-        (zpowers (g ^ (Fintype.card α / Nat.gcd n (Fintype.card α))) : Set α).toFinset.card :=
+    #{a : α | a ^ n = 1} ≤
+        #(zpowers (g ^ (Fintype.card α / Nat.gcd n (Fintype.card α))) : Set α).toFinset :=
       card_le_card fun x hx =>
         let ⟨m, hm⟩ := show x ∈ Submonoid.powers g from mem_powers_iff_mem_zpowers.2 <| hg x
         Set.mem_toFinset.2
@@ -382,21 +392,19 @@ end
 
 section Totient
 
-variable [DecidableEq α] [Fintype α]
-  (hn : ∀ n : ℕ, 0 < n → (univ.filter fun a : α => a ^ n = 1).card ≤ n)
+variable [DecidableEq α] [Fintype α] (hn : ∀ n : ℕ, 0 < n → #{a : α | a ^ n = 1} ≤ n)
 include hn
 
 @[to_additive]
-private theorem card_pow_eq_one_eq_orderOf_aux (a : α) :
-    (Finset.univ.filter fun b : α => b ^ orderOf a = 1).card = orderOf a :=
+private theorem card_pow_eq_one_eq_orderOf_aux (a : α) : #{b : α | b ^ orderOf a = 1} = orderOf a :=
   le_antisymm (hn _ (orderOf_pos a))
     (calc
       orderOf a = @Fintype.card (zpowers a) (id _) := Fintype.card_zpowers.symm
       _ ≤
-          @Fintype.card (↑(univ.filter fun b : α => b ^ orderOf a = 1) : Set α)
+          @Fintype.card (({b : α | b ^ orderOf a = 1} : Finset _) : Set α)
             (Fintype.ofFinset _ fun _ => Iff.rfl) :=
         (@Fintype.card_le_of_injective (zpowers a)
-          (↑(univ.filter fun b : α => b ^ orderOf a = 1) : Set α) (id _) (id _)
+          (({b : α | b ^ orderOf a = 1} : Finset _) : Set α) (id _) (id _)
           (fun b =>
             ⟨b.1,
               mem_filter.2
@@ -405,25 +413,21 @@ private theorem card_pow_eq_one_eq_orderOf_aux (a : α) :
                   rw [← hi, ← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast,
                     pow_orderOf_eq_one, one_zpow]⟩⟩)
           fun _ _ h => Subtype.eq (Subtype.mk.inj h))
-      _ = (univ.filter fun b : α => b ^ orderOf a = 1).card := Fintype.card_ofFinset _ _
+      _ = #{b : α | b ^ orderOf a = 1} := Fintype.card_ofFinset _ _
       )
 
 -- Use φ for `Nat.totient`
 open Nat
 @[to_additive]
-private theorem card_orderOf_eq_totient_aux₁ :
-    ∀ {d : ℕ},
-      d ∣ Fintype.card α →
-        0 < (univ.filter fun a : α => orderOf a = d).card →
-          (univ.filter fun a : α => orderOf a = d).card = φ d := by
-  intro d hd hpos
+private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.card α)
+    (hpos : 0 < #{a : α | orderOf a = d}) : #{a : α | orderOf a = d} = φ d := by
   induction' d using Nat.strongRec' with d IH
   rcases Decidable.eq_or_ne d 0 with (rfl | hd0)
   · cases Fintype.card_ne_zero (eq_zero_of_zero_dvd hd)
-  rcases card_pos.1 hpos with ⟨a, ha'⟩
+  rcases Finset.card_pos.1 hpos with ⟨a, ha'⟩
   have ha : orderOf a = d := (mem_filter.1 ha').2
   have h1 :
-    (∑ m ∈ d.properDivisors, (univ.filter fun a : α => orderOf a = m).card) =
+    (∑ m ∈ d.properDivisors, #{a : α | orderOf a = m}) =
       ∑ m ∈ d.properDivisors, φ m := by
     refine Finset.sum_congr rfl fun m hm => ?_
     simp only [mem_filter, mem_range, mem_properDivisors] at hm
@@ -431,7 +435,7 @@ private theorem card_orderOf_eq_totient_aux₁ :
     simp only [mem_filter, mem_univ, orderOf_pow a, ha, true_and,
       Nat.gcd_eq_right (div_dvd_of_dvd hm.1), Nat.div_div_self hm.1 hd0]
   have h2 :
-    (∑ m ∈ d.divisors, (univ.filter fun a : α => orderOf a = m).card) =
+    (∑ m ∈ d.divisors, #{a : α | orderOf a = m}) =
       ∑ m ∈ d.divisors, φ m := by
     rw [← filter_dvd_eq_divisors hd0, sum_card_orderOf_eq_card_pow_eq_one hd0,
       filter_dvd_eq_divisors hd0, sum_totient, ← ha, card_pow_eq_one_eq_orderOf_aux hn a]
@@ -439,7 +443,7 @@ private theorem card_orderOf_eq_totient_aux₁ :
 
 @[to_additive]
 theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
-    (univ.filter fun a : α => orderOf a = d).card = φ d := by
+    #{a : α | orderOf a = d} = φ d := by
   let c := Fintype.card α
   have hc0 : 0 < c := Fintype.card_pos_iff.2 ⟨1⟩
   apply card_orderOf_eq_totient_aux₁ hn hd
@@ -448,11 +452,11 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   simp_rw [not_lt, Nat.le_zero, Finset.card_eq_zero] at h0
   apply lt_irrefl c
   calc
-    c = ∑ m ∈ c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
+    c = ∑ m ∈ c.divisors, #{a : α | orderOf a = m} := by
       simp only [← filter_dvd_eq_divisors hc0.ne', sum_card_orderOf_eq_card_pow_eq_one hc0.ne']
       apply congr_arg card
       simp [c]
-    _ = ∑ m ∈ c.divisors.erase d, (univ.filter fun a : α => orderOf a = m).card := by
+    _ = ∑ m ∈ c.divisors.erase d, #{a : α | orderOf a = m} := by
       rw [eq_comm]
       refine sum_subset (erase_subset _ _) fun m hm₁ hm₂ => ?_
       have : m = d := by
@@ -464,16 +468,17 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
       have hmc : m ∣ c := by
         simp only [mem_erase, mem_divisors] at hm
         tauto
-      rcases (filter (fun a : α => orderOf a = m) univ).card.eq_zero_or_pos with (h1 | h1)
+      obtain h1 | h1 := (#{a : α | orderOf a = m}).eq_zero_or_pos
       · simp [h1]
       · simp [card_orderOf_eq_totient_aux₁ hn hmc h1]
     _ < ∑ m ∈ c.divisors, φ m :=
       sum_erase_lt_of_pos (mem_divisors.2 ⟨hd, hc0.ne'⟩) (totient_pos.2 (pos_of_dvd_of_pos hd hc0))
     _ = c := sum_totient _
 
-@[to_additive isAddCyclic_of_card_nsmul_eq_zero_le]
+@[to_additive isAddCyclic_of_card_nsmul_eq_zero_le, stacks 09HX "This theorem is stronger than \
+09HX. It removes the abelian condition, and requires only `≤` instead of `=`."]
 theorem isCyclic_of_card_pow_eq_one_le : IsCyclic α :=
-  have : (univ.filter fun a : α => orderOf a = Fintype.card α).Nonempty :=
+  have : Finset.Nonempty {a : α | orderOf a = Fintype.card α} :=
     card_pos.1 <| by
       rw [card_orderOf_eq_totient_aux₂ hn dvd_rfl, totient_pos]
       apply Fintype.card_pos
@@ -486,8 +491,8 @@ alias isAddCyclic_of_card_pow_eq_one_le := isAddCyclic_of_card_nsmul_eq_zero_le
 end Totient
 
 @[to_additive]
-theorem IsCyclic.card_orderOf_eq_totient [IsCyclic α] [Fintype α] {d : ℕ}
-    (hd : d ∣ Fintype.card α) : (univ.filter fun a : α => orderOf a = d).card = totient d := by
+lemma IsCyclic.card_orderOf_eq_totient [IsCyclic α] [Fintype α] {d : ℕ} (hd : d ∣ Fintype.card α) :
+    #{a : α | orderOf a = d} = totient d := by
   classical apply card_orderOf_eq_totient_aux₂ (fun n => IsCyclic.card_pow_eq_one_le) hd
 
 @[deprecated (since := "2024-02-21")]

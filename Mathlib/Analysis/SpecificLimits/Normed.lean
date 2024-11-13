@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Sébastien Gouëzel, Yury Kudryashov, Dylan MacKenzie
 -/
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
@@ -26,61 +27,9 @@ noncomputable section
 
 open Set Function Filter Finset Metric Asymptotics Topology Nat NNReal ENNReal
 
-variable {α β ι : Type*}
-
-theorem tendsto_norm_atTop_atTop : Tendsto (norm : ℝ → ℝ) atTop atTop :=
-  tendsto_abs_atTop_atTop
-
-theorem summable_of_absolute_convergence_real {f : ℕ → ℝ} :
-    (∃ r, Tendsto (fun n ↦ ∑ i ∈ range n, |f i|) atTop (𝓝 r)) → Summable f
-  | ⟨r, hr⟩ => by
-    refine .of_norm ⟨r, (hasSum_iff_tendsto_nat_of_nonneg ?_ _).2 ?_⟩
-    · exact fun i ↦ norm_nonneg _
-    · simpa only using hr
+variable {α : Type*}
 
 /-! ### Powers -/
-
-
-theorem tendsto_norm_zero' {𝕜 : Type*} [NormedAddCommGroup 𝕜] :
-    Tendsto (norm : 𝕜 → ℝ) (𝓝[≠] 0) (𝓝[>] 0) :=
-  tendsto_norm_zero.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff.2 hx
-
-namespace NormedField
-
-theorem tendsto_norm_inverse_nhdsWithin_0_atTop {𝕜 : Type*} [NormedDivisionRing 𝕜] :
-    Tendsto (fun x : 𝕜 ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
-  (tendsto_inv_zero_atTop.comp tendsto_norm_zero').congr fun x ↦ (norm_inv x).symm
-
-theorem tendsto_norm_zpow_nhdsWithin_0_atTop {𝕜 : Type*} [NormedDivisionRing 𝕜] {m : ℤ}
-    (hm : m < 0) :
-    Tendsto (fun x : 𝕜 ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
-  rcases neg_surjective m with ⟨m, rfl⟩
-  rw [neg_lt_zero] at hm; lift m to ℕ using hm.le; rw [Int.natCast_pos] at hm
-  simp only [norm_pow, zpow_neg, zpow_natCast, ← inv_pow]
-  exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop
-
-/-- The (scalar) product of a sequence that tends to zero with a bounded one also tends to zero. -/
-theorem tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 𝔸 : Type*} [NormedDivisionRing 𝕜]
-    [NormedAddCommGroup 𝔸] [Module 𝕜 𝔸] [BoundedSMul 𝕜 𝔸] {l : Filter ι} {ε : ι → 𝕜} {f : ι → 𝔸}
-    (hε : Tendsto ε l (𝓝 0)) (hf : Filter.IsBoundedUnder (· ≤ ·) l (norm ∘ f)) :
-    Tendsto (ε • f) l (𝓝 0) := by
-  rw [← isLittleO_one_iff 𝕜] at hε ⊢
-  simpa using IsLittleO.smul_isBigO hε (hf.isBigO_const (one_ne_zero : (1 : 𝕜) ≠ 0))
-
-@[simp]
-theorem continuousAt_zpow {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m : ℤ} {x : 𝕜} :
-    ContinuousAt (fun x ↦ x ^ m) x ↔ x ≠ 0 ∨ 0 ≤ m := by
-  refine ⟨?_, continuousAt_zpow₀ _ _⟩
-  contrapose!; rintro ⟨rfl, hm⟩ hc
-  exact not_tendsto_atTop_of_tendsto_nhds (hc.tendsto.mono_left nhdsWithin_le_nhds).norm
-    (tendsto_norm_zpow_nhdsWithin_0_atTop hm)
-
-@[simp]
-theorem continuousAt_inv {𝕜 : Type*} [NontriviallyNormedField 𝕜] {x : 𝕜} :
-    ContinuousAt Inv.inv x ↔ x ≠ 0 := by
-  simpa [(zero_lt_one' ℤ).not_le] using @continuousAt_zpow _ _ (-1) x
-
-end NormedField
 
 theorem isLittleO_pow_pow_of_lt_left {r₁ r₂ : ℝ} (h₁ : 0 ≤ r₁) (h₂ : r₁ < r₂) :
     (fun n : ℕ ↦ r₁ ^ n) =o[atTop] fun n ↦ r₂ ^ n :=
@@ -213,6 +162,12 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
   have hr' : 1 < |r|⁻¹ := (one_lt_inv₀ (abs_pos.2 h0)).2 hr
   rw [tendsto_zero_iff_norm_tendsto_zero]
   simpa [div_eq_mul_inv] using tendsto_pow_const_div_const_pow_of_one_lt k hr'
+
+/--For `k ≠ 0` and a constant `r` the function `r / n ^ k` tends to zero. -/
+lemma tendsto_const_div_pow (r : ℝ) (k : ℕ) (hk : k ≠ 0) :
+    Tendsto (fun n : ℕ => r / n ^ k) atTop (𝓝 0) := by
+  simpa using Filter.Tendsto.const_div_atTop (tendsto_natCast_atTop_atTop (R := ℝ).comp
+    (tendsto_pow_atTop hk) ) r
 
 /-- If `0 ≤ r < 1`, then `n ^ k r ^ n` tends to zero for any natural `k`.
 This is a specialized version of `tendsto_pow_const_mul_const_pow_of_abs_lt_one`, singled out

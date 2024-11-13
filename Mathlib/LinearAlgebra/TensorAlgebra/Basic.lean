@@ -288,7 +288,7 @@ theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
 theorem ι_range_disjoint_one :
     Disjoint (LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M))
       (1 : Submodule R (TensorAlgebra R M)) := by
-  rw [Submodule.disjoint_def]
+  rw [Submodule.disjoint_def, Submodule.one_eq_range]
   rintro _ ⟨x, hx⟩ ⟨r, rfl⟩
   rw [Algebra.linearMap_apply, ι_eq_algebraMap_iff] at hx
   rw [hx.2, map_zero]

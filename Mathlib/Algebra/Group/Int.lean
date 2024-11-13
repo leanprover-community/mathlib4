@@ -146,13 +146,10 @@ lemma ofNat_isUnit {n : ℕ} : IsUnit (n : ℤ) ↔ IsUnit n := by simp [isUnit_
 lemma isUnit_mul_self (hu : IsUnit u) : u * u = 1 :=
   (isUnit_eq_one_or hu).elim (fun h ↦ h.symm ▸ rfl) fun h ↦ h.symm ▸ rfl
 
--- Porting note: this was proven in mathlib3 with `tidy` which hasn't been ported yet
 lemma isUnit_add_isUnit_eq_isUnit_add_isUnit {a b c d : ℤ} (ha : IsUnit a) (hb : IsUnit b)
     (hc : IsUnit c) (hd : IsUnit d) : a + b = c + d ↔ a = c ∧ b = d ∨ a = d ∧ b = c := by
   rw [isUnit_iff] at ha hb hc hd
-  cases ha <;> cases hb <;> cases hc <;> cases hd <;>
-      subst a <;> subst b <;> subst c <;> subst d <;>
-    simp (config := {decide := true})
+  aesop
 
 lemma eq_one_or_neg_one_of_mul_eq_neg_one (h : u * v = -1) : u = 1 ∨ u = -1 :=
   Or.elim (eq_one_or_neg_one_of_mul_eq_neg_one' h) (fun H => Or.inl H.1) fun H => Or.inr H.1
@@ -223,7 +220,7 @@ lemma ediv_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
 
 -- Here are examples of how `parity_simps` can be used with `Int`.
 example (m n : ℤ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
-  simp (config := {decide := true}) [*, (by decide : ¬2 = 0), parity_simps]
+  simp +decide [*, (by decide : ¬2 = 0), parity_simps]
 
 example : ¬Even (25394535 : ℤ) := by decide
 
