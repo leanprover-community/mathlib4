@@ -94,22 +94,28 @@ open ENNReal in
 @[simp]
 theorem interior_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a < y i } := by
-  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
-  simpa [interior_Ici] using f.interior_preimage (Function.surjective_eval _) (Ici a)
+  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change interior (f ⁻¹' Ici a) = f ⁻¹' Ioi a
+  rw [f.interior_preimage, interior_Ici]
+  apply Function.surjective_eval
 
 open ENNReal in
 @[simp]
 theorem closure_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
-  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
-  simpa [closure_Ici] using f.closure_preimage (Function.surjective_eval _) (Ici a)
+  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change closure (f ⁻¹' Ici a) = f ⁻¹' Ici a
+  rw [f.closure_preimage, closure_Ici]
+  apply Function.surjective_eval
 
 open ENNReal in
 @[simp]
 theorem closure_open_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a < y i } = { y | a ≤ y i } := by
-  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
-  simpa [closure_Ioi] using f.closure_preimage (Function.surjective_eval _) (Ioi a)
+  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change closure (f ⁻¹' Ioi a) = f ⁻¹' Ici a
+  rw [f.closure_preimage, closure_Ioi]
+  apply Function.surjective_eval
 
 open ENNReal in
 @[simp]

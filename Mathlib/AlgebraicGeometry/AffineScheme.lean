@@ -301,7 +301,7 @@ def isoSpec :
 lemma isoSpec_hom {X : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) :
     hU.isoSpec.hom = U.toSpecΓ := rfl
 
-open LocalRing in
+open IsLocalRing in
 lemma isoSpec_hom_base_apply (x : U) :
     hU.isoSpec.hom.base x = (Spec.map (X.presheaf.germ U x x.2)).base (closedPoint _) := by
   dsimp [IsAffineOpen.isoSpec_hom, Scheme.isoSpec_hom, Scheme.toSpecΓ_base, Scheme.Opens.toSpecΓ]
@@ -309,7 +309,7 @@ lemma isoSpec_hom_base_apply (x : U) :
     (Iso.eq_comp_inv _).mpr (Scheme.Opens.germ_stalkIso_hom U (V := ⊤) x trivial),
     X.presheaf.germ_res_assoc, Spec.map_comp, Scheme.comp_base_apply]
   congr 1
-  exact LocalRing.comap_closedPoint (U.stalkIso x).inv
+  exact IsLocalRing.comap_closedPoint (U.stalkIso x).inv
 
 lemma isoSpec_inv_app_top :
     hU.isoSpec.inv.app ⊤ = U.topIso.hom ≫ (Scheme.ΓSpecIso Γ(X, U)).inv := by
@@ -344,7 +344,7 @@ lemma isoSpec_inv_ι : hU.isoSpec.inv ≫ U.ι = hU.fromSpec := rfl
 theorem range_fromSpec :
     Set.range hU.fromSpec.base = (U : Set X) := by
   delta IsAffineOpen.fromSpec; dsimp [IsAffineOpen.isoSpec_inv]
-  rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
+  rw [Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
   · exact Subtype.range_coe
   rw [← coe_comp, ← TopCat.epi_iff_surjective]
   infer_instance
@@ -682,7 +682,7 @@ theorem fromSpec_primeIdealOf (x : U) :
   rw [← Scheme.comp_base_apply, Iso.hom_inv_id_assoc]
   rfl
 
-open LocalRing in
+open IsLocalRing in
 theorem primeIdealOf_eq_map_closedPoint (x : U) :
     hU.primeIdealOf x = (Spec.map (X.presheaf.germ _ x x.2)).base (closedPoint _) :=
   hU.isoSpec_hom_base_apply _

@@ -318,8 +318,7 @@ section Hom
 
 namespace NonUnitalSubring
 
-variable {R : Type u} {S : Type v}
-  [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
+variable {R : Type u} [NonUnitalNonAssocRing R]
 
 open NonUnitalRingHom
 

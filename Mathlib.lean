@@ -916,6 +916,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 import Mathlib.AlgebraicGeometry.Morphisms.Etale
+import Mathlib.AlgebraicGeometry.Morphisms.Finite
 import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.Morphisms.Immersion
@@ -1039,7 +1040,6 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.PosPart
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
@@ -1074,6 +1074,7 @@ import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.RCLike
 import Mathlib.Analysis.Calculus.ContDiff.WithLp
+import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.Darboux
 import Mathlib.Analysis.Calculus.Deriv.Abs
 import Mathlib.Analysis.Calculus.Deriv.Add
@@ -1094,7 +1095,6 @@ import Mathlib.Analysis.Calculus.Deriv.Star
 import Mathlib.Analysis.Calculus.Deriv.Support
 import Mathlib.Analysis.Calculus.Deriv.ZPow
 import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Calculus.Dslope
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.FDeriv.Basic
@@ -1426,6 +1426,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
@@ -1746,6 +1747,7 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IndYoneda
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.Indization.IndObject
+import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
 import Mathlib.CategoryTheory.Limits.IsConnected
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Lattice
@@ -2316,6 +2318,7 @@ import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Fin.Tuple.Take
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.FinEnum
+import Mathlib.Data.FinEnum.Option
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Powerset
@@ -2468,6 +2471,7 @@ import Mathlib.Data.List.EditDistance.Defs
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.List.Enum
 import Mathlib.Data.List.FinRange
+import Mathlib.Data.List.Flatten
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.GetD
 import Mathlib.Data.List.Indexes
@@ -2476,7 +2480,6 @@ import Mathlib.Data.List.InsertIdx
 import Mathlib.Data.List.InsertNth
 import Mathlib.Data.List.Intervals
 import Mathlib.Data.List.Iterate
-import Mathlib.Data.List.Join
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Lex
@@ -2953,7 +2956,9 @@ import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
-import Mathlib.Geometry.Manifold.IntegralCurve
+import Mathlib.Geometry.Manifold.IntegralCurve.Basic
+import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
+import Mathlib.Geometry.Manifold.IntegralCurve.Transform
 import Mathlib.Geometry.Manifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.LocalDiffeomorph
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
@@ -4261,6 +4266,7 @@ import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.Inverse
 import Mathlib.RingTheory.MvPowerSeries.LexOrder
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+import Mathlib.RingTheory.MvPowerSeries.Order
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.Nilpotent.Basic
@@ -4778,6 +4784,8 @@ import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.MvPolynomial
+import Mathlib.Topology.Algebra.NonUnitalAlgebra
+import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
