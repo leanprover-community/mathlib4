@@ -38,8 +38,6 @@ map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in th
 bilinear, tensor, tensor product
 -/
 
-set_option linter.style.longFile 1600
-
 suppress_compilation
 
 section Semiring
