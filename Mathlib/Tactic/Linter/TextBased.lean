@@ -265,7 +265,7 @@ Return the number of files which had new style errors.
 `moduleNames` are all the modules to lint,
 `mode` specifies what kind of output this script should produce,
 `fix` configures whether fixable errors should be corrected in-place. -/
-def lintModules (moduleNames : Array String) (style : ErrorFormat) (fix : Bool) : IO UInt32 := do
+def lintModules (moduleNames : Array Lean.Name) (style : ErrorFormat) (fix : Bool) : IO UInt32 := do
   -- Read the `nolints` file, with manual exceptions for the linter.
   let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
   let styleExceptions := parseStyleExceptions nolints
@@ -274,7 +274,7 @@ def lintModules (moduleNames : Array String) (style : ErrorFormat) (fix : Bool) 
   let mut allUnexpectedErrors := #[]
   for module in moduleNames do
     -- Convert the module name to a file name, then lint that file.
-    let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
+    let path := mkFilePath (module.components.map toString)|>.addExtension "lean"
 
     let (errors, changed) := ← lintFile path styleExceptions
     if let some c := changed then
