@@ -310,6 +310,10 @@ theorem surjective_count_of_infinite_setOf (h : {n | p n}.Infinite) :
 theorem count_nth_succ {n : ℕ} (hn : ∀ hf : (setOf p).Finite, n < #hf.toFinset) :
     count p (nth p n + 1) = n + 1 := by rw [count_succ, count_nth hn, if_pos (nth_mem _ hn)]
 
+lemma count_nth_succ_of_infinite (hp : (setOf p).Infinite) (n : ℕ) :
+    count p (nth p n + 1) = n + 1 := by
+  rw [count_succ, count_nth_of_infinite hp, if_pos (nth_mem_of_infinite hp _)]
+
 @[simp]
 theorem nth_count {n : ℕ} (hpn : p n) : nth p (count p n) = n :=
   have : ∀ hf : (setOf p).Finite, count p n < #hf.toFinset := fun hf => count_lt_card hf hpn

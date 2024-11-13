@@ -5,7 +5,7 @@ import Mathlib.Data.Finsupp.Notation
 import Mathlib.Testing.Plausible.Functions
 import Mathlib.Tactic.Have
 import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.DFinsupp.Defs
 
 private axiom test_sorry : ∀ {α}, α
 
