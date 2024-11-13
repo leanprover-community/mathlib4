@@ -74,7 +74,7 @@ variable [IsDomain k] [CharP k p] [PerfectRing k p]
 
 /-- The Frobenius automorphism of `k` induces an automorphism of `K`. -/
 def FractionRing.frobenius : K(p, k) ≃+* K(p, k) :=
-  IsFractionRing.fieldEquivOfRingEquiv (frobeniusEquiv p k)
+  IsFractionRing.ringEquivOfRingEquiv (frobeniusEquiv p k)
 
 /-- The Frobenius automorphism of `k` induces an endomorphism of `K`. For notation purposes. -/
 def FractionRing.frobeniusRingHom : K(p, k) →+* K(p, k) :=
@@ -116,7 +116,7 @@ variable {V}
 Project the Frobenius automorphism from an isocrystal. Denoted by `Φ(p, k)` when V can be inferred.
 -/
 def Isocrystal.frobenius : V ≃ᶠˡ[p, k] V :=
-  @Isocrystal.frob p _ k _ _ _ _ _ _ _
+  Isocrystal.frob (p := p) (k := k) (V := V)
 
 variable (V)
 
