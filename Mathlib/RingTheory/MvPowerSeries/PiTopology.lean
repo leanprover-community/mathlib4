@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.UniformGroup.Basic
 import Mathlib.Topology.UniformSpace.Pi
 
 /-! # Product topology on multivariate power series
@@ -130,14 +130,14 @@ theorem continuous_C [Semiring R] :
 theorem variables_tendsto_zero [Semiring R] :
     Tendsto (X · : σ → MvPowerSeries σ R) cofinite (nhds 0) := by
   classical
-  simp only [tendsto_iff_coeff_tendsto, MvPowerSeries.apply_eq_coeff, coeff_X, coeff_zero]
+  simp only [tendsto_iff_coeff_tendsto, ← coeff_apply, coeff_X, coeff_zero]
   refine fun d ↦ tendsto_nhds_of_eventually_eq ?_
   by_cases h : ∃ i, d = Finsupp.single i 1
   · obtain ⟨i, hi⟩ := h
     filter_upwards [eventually_cofinite_ne i] with j hj
-    simp only [hi, Finsupp.single_eq_single_iff, and_false, or_false, and_true, hj.symm, if_false]
-  · simpa only [ite_eq_right_iff] using
-      eventually_of_forall fun x h' ↦ (not_exists.mp h x h').elim
+    simp [hi, Finsupp.single_eq_single_iff, hj.symm]
+  · simpa only [ite_eq_right_iff] using 
+      Eventually.of_forall fun x h' ↦ (not_exists.mp h x h').elim
 
 theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
     {f} (hf : IsNilpotent (constantCoeff σ R f)) :
@@ -200,31 +200,25 @@ section Uniformity
 
 variable [UniformSpace R]
 
-variable (σ R) in
 /-- The componentwise uniformity on MvPowerSeries -/
 scoped instance : UniformSpace (MvPowerSeries σ R) :=
   Pi.uniformSpace fun _ : σ →₀ ℕ => R
 
-variable (R)
-
+variable (R) in
 /-- Coefficients are uniformly continuous -/
 theorem uniformContinuous_coeff [Semiring R] (d : σ →₀ ℕ) :
     UniformContinuous fun f : MvPowerSeries σ R => coeff R d f :=
   uniformContinuous_pi.mp uniformContinuous_id d
 
-variable [Ring R]
-
-variable (σ)
-
-/-- The `UniformAddGroup` structure on `MvPowerSeries` of a `UniformAddGroup` -/
-@[scoped instance]
-theorem instUniformAddGroup [UniformAddGroup R] :
-    UniformAddGroup (MvPowerSeries σ R) := Pi.instUniformAddGroup
-
 /-- Completeness of the uniform structure on MvPowerSeries -/
 @[scoped instance]
 theorem instCompleteSpace [CompleteSpace R] :
     CompleteSpace (MvPowerSeries σ R) := Pi.complete _
+
+/-- The `UniformAddGroup` structure on `MvPowerSeries` of a `UniformAddGroup` -/
+@[scoped instance]
+theorem instUniformAddGroup [AddGroup R] [UniformAddGroup R] :
+    UniformAddGroup (MvPowerSeries σ R) := Pi.instUniformAddGroup
 
 end Uniformity
 
