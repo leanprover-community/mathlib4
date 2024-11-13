@@ -15,35 +15,36 @@ index.
 -/
 
 
+@[simp] lemma Ideal.span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
+   (Ideal.span {a}).toAddSubgroup = AddSubgroup.zmultiples a := by
+  ext i
+  simp [Ideal.mem_span_singleton', AddSubgroup.mem_zmultiples_iff]
+
 namespace Basis.SmithNormalForm
 
-/-- Given a submodule `N` in Smith normal form of a Free ℤ-module, it has finite index as an
-additive subgroup (i.e., `N.toAddSubgroup.index ≠ 0`) if and only if the submodule basis has as
-many vectors as the basis for the module. -/
-lemma toAddSubgroup_index_ne_zero_iff {ι M : Type*} {n : ℕ} [Fintype ι] [AddCommGroup M]
-    {N : Submodule ℤ M} (snf : Basis.SmithNormalForm N ι n) :
-    N.toAddSubgroup.index ≠ 0 ↔ n = Fintype.card ι := by
+/-- Given a submodule `N` in Smith normal form of a free `R`-module, its finite index as an
+additive subgroup is infinite (represented as zero) if the submodule basis has fewer vectors than
+the basis for the module, and otherwise equals the product of the indexes of the ideals generated
+by each basis vector. -/
+lemma toAddSubgroup_index_eq {ι R M : Type*} {n : ℕ} [Fintype ι] [Infinite R] [CommRing R]
+    [AddCommGroup M] [Module R M] {N : Submodule R M} (snf : Basis.SmithNormalForm N ι n) :
+    N.toAddSubgroup.index = (if n = Fintype.card ι then
+      ∏ i : Fin n, (Ideal.span {snf.a i}).toAddSubgroup.index else 0) := by
   classical
   rcases snf with ⟨bM, bN, f, a, snf⟩
-  have ha : ∀ i, a i ≠ 0 := by
-    intro i hi
-    apply Basis.ne_zero bN i
-    specialize snf i
-    simpa [hi] using snf
-  let N' : Submodule ℤ (ι → ℤ) := N.map bM.equivFun
-  let bN' : Basis (Fin n) ℤ N' := bN.map (bM.equivFun.submoduleMap N)
-  have snf' : ∀ i, (bN' i : ι → ℤ) = Pi.single (f i) (a i) := by
+  dsimp only
+  let N' : Submodule R (ι → R) := N.map bM.equivFun
+  let bN' : Basis (Fin n) R N' := bN.map (bM.equivFun.submoduleMap N)
+  have snf' : ∀ i, (bN' i : ι → R) = Pi.single (f i) (a i) := by
     intro i
     simp only [map_apply, bN']
     erw [LinearEquiv.submoduleMap_apply]
-    simp only [equivFun_apply, snf, map_smul, repr_self, Finsupp.smul_single, smul_eq_mul, mul_one,
-               Finsupp.single_eq_pi_single]
+    simp only [equivFun_apply, snf, map_smul, repr_self, Finsupp.single_eq_pi_single]
     ext j
     simp [Pi.single_apply]
-  suffices N'.toAddSubgroup.index ≠ 0 ↔ n = Fintype.card ι by
-    convert this
-    let e : (ι → ℤ) ≃+ M := bM.equivFun.symm
-    let e' : (ι → ℤ) →+ M := e
+  have hNN' : N.toAddSubgroup.index = N'.toAddSubgroup.index := by
+    let e : (ι → R) ≃+ M := bM.equivFun.symm
+    let e' : (ι → R) →+ M := e
     have he' : Function.Surjective e' := e.surjective
     simp only [N']
     erw [Submodule.map_toAddSubgroup]
@@ -51,16 +52,16 @@ lemma toAddSubgroup_index_ne_zero_iff {ι M : Type*} {n : ℕ} [Fintype ι] [Add
     simp only [e']
     rw [AddSubgroup.comap_equiv_eq_map_symm]
     rfl
+  rw [hNN']
   have hN' : N'.toAddSubgroup = AddSubgroup.pi Set.univ
-      (fun i ↦ AddSubgroup.zmultiples (if h : ∃ j, f j = i then a h.choose else 0)) := by
+      (fun i ↦ (Ideal.span {if h : ∃ j, f j = i then a h.choose else 0}).toAddSubgroup) := by
     ext g
-    simp only [Submodule.mem_toAddSubgroup, AddSubgroup.mem_pi, Set.mem_univ, true_implies,
-               Int.mem_zmultiples_iff, bN'.mem_submodule_iff', snf']
+    simp only [Submodule.mem_toAddSubgroup, bN'.mem_submodule_iff', snf', AddSubgroup.mem_pi,
+      Set.mem_univ, true_implies, Ideal.mem_span_singleton]
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · rcases h with ⟨c, rfl⟩
       intro i
-      simp only [zsmul_eq_mul, Pi.intCast_def, Int.cast_id, Finset.sum_apply, Pi.mul_apply,
-                 Pi.single_apply]
+      simp only [Finset.sum_apply, Pi.smul_apply, Pi.single_apply]
       split_ifs with h
       · convert dvd_mul_left (a h.choose) (c h.choose)
         calc ∑ x : Fin n, _ = c h.choose * if i = f h.choose then a h.choose else 0 := by
@@ -70,7 +71,7 @@ lemma toAddSubgroup_index_ne_zero_iff {ι M : Type*} {n : ℕ} [Fintype ι] [Add
               rw [h.choose_spec] at hinj
               simp [hinj.symm]
           _ = c h.choose * a h.choose := by simp [h.choose_spec]
-      · convert dvd_refl (0 : ℤ)
+      · convert dvd_refl (0 : R)
         convert Finset.sum_const_zero with j
         rw [not_exists] at h
         specialize h j
@@ -79,13 +80,12 @@ lemma toAddSubgroup_index_ne_zero_iff {ι M : Type*} {n : ℕ} [Fintype ι] [Add
     · refine ⟨fun j ↦ (h (f j)).choose, ?_⟩
       ext i
       simp only [EmbeddingLike.apply_eq_iff_eq, exists_eq, ↓reduceDIte, Classical.choose_eq,
-                 zsmul_eq_mul, Pi.intCast_def, Int.cast_id, Finset.sum_apply, Pi.mul_apply,
-                 Pi.single_apply, mul_ite, mul_zero]
+        Finset.sum_apply, Pi.smul_apply, Pi.single_apply, smul_ite, smul_zero]
       rw [eq_comm]
       by_cases hj : ∃ j, f j = i
       · calc ∑ x : Fin n, _ =
             if i = f hj.choose then (h (f hj.choose)).choose * a hj.choose else 0 := by
-              convert Finset.sum_eq_single (β := ℤ) hj.choose ?_ ?_
+              convert Finset.sum_eq_single (β := R) hj.choose ?_ ?_
               · simp [hj]
               · rintro j - h
                 have hinj := f.injective.ne h
@@ -97,9 +97,8 @@ lemma toAddSubgroup_index_ne_zero_iff {ι M : Type*} {n : ℕ} [Fintype ι] [Add
               rw [mul_comm]
               conv_rhs =>
                 rw [← hj.choose_spec, (h (f hj.choose)).choose_spec]
-              simp only [EmbeddingLike.apply_eq_iff_eq, exists_eq, ↓reduceDIte,
-                         Classical.choose_eq, mul_eq_mul_left_iff]
-              convert Or.inl rfl
+              simp only [EmbeddingLike.apply_eq_iff_eq, exists_eq, ↓reduceDIte, Classical.choose_eq]
+              convert rfl
               · exact hj.choose_spec
               · simp [hj]
       · convert Finset.sum_const_zero with x
@@ -110,22 +109,50 @@ lemma toAddSubgroup_index_ne_zero_iff {ι M : Type*} {n : ℕ} [Fintype ι] [Add
         · rw [← zero_dvd_iff]
           convert h i
           simp [hj]
-  rw [hN', AddSubgroup.index_pi, Finset.prod_ne_zero_iff]
-  simp only [Finset.mem_univ, ne_eq, true_implies, Int.index_zmultiples, Int.natAbs_eq_zero,
-             dite_eq_right_iff, forall_exists_index, not_forall]
-  refine ⟨fun h ↦ le_antisymm ?_ ?_, fun h ↦ ?_⟩
-  · simpa using Function.Embedding.nonempty_iff_card_le.1 ⟨f⟩
-  · suffices Fintype.card ι ≤ Fintype.card (Fin n) by simpa using this
-    apply Fintype.card_le_of_surjective f
-    intro j
-    obtain ⟨i, hi, -⟩ := h j
-    exact ⟨i, hi⟩
-  · subst h
-    have hb : Function.Bijective f :=
-      (Nat.bijective_iff_injective_and_card _).2 ⟨f.injective, by simp⟩
-    intro i
-    refine ⟨(Equiv.ofBijective f hb).symm i, Equiv.ofBijective_apply_symm_apply _ _ _, ?_⟩
-    exact ha _
+  rw [hN', AddSubgroup.index_pi]
+  split_ifs with h
+  · have hb : Function.Bijective f :=
+      (Nat.bijective_iff_injective_and_card _).2 ⟨f.injective, by simp [h]⟩
+    let fe : Fin n ≃ ι := Equiv.ofBijective f hb
+    convert Finset.prod_map _ fe.toEmbedding _ with - - i -
+    · simp
+    · have he : ∃ j, f j = fe.toEmbedding i := ⟨i, rfl⟩
+      rw [dif_pos he]
+      convert rfl
+      exact f.injective he.choose_spec
+  · simp only [Finset.prod_eq_zero_iff, Finset.mem_univ, true_and]
+    have hlt : Fintype.card (Fin n) < Fintype.card ι :=
+      Ne.lt_of_le (by simpa using h) (Fintype.card_le_of_embedding f)
+    have hi : (Finset.image f Finset.univ).card < Fintype.card ι :=
+      Finset.card_image_le.trans_lt (by simpa using hlt)
+    have hu : ¬(Finset.image f Finset.univ) = Finset.univ := by
+      rw [← Finset.card_eq_iff_eq_univ]
+      exact hi.ne
+    simp only [Finset.eq_univ_iff_forall, Finset.mem_image, Finset.mem_univ, true_and, not_forall,
+      not_exists] at hu
+    rcases hu with ⟨i, hi⟩
+    rw [← not_exists] at hi
+    refine ⟨i, ?_⟩
+    simp only [hi, ↓reduceDIte, Set.singleton_zero, Ideal.span_zero, Submodule.bot_toAddSubgroup,
+      AddSubgroup.index_bot, Nat.card_eq_zero_of_infinite]
+
+/-- Given a submodule `N` in Smith normal form of a free ℤ-module, it has finite index as an
+additive subgroup (i.e., `N.toAddSubgroup.index ≠ 0`) if and only if the submodule basis has as
+many vectors as the basis for the module. -/
+lemma toAddSubgroup_index_ne_zero_iff {ι M : Type*} {n : ℕ} [Fintype ι] [AddCommGroup M]
+    {N : Submodule ℤ M} (snf : Basis.SmithNormalForm N ι n) :
+    N.toAddSubgroup.index ≠ 0 ↔ n = Fintype.card ι := by
+  rw [snf.toAddSubgroup_index_eq]
+  rcases snf with ⟨bM, bN, f, a, snf⟩
+  simp only [ne_eq, ite_eq_right_iff, Classical.not_imp, and_iff_left_iff_imp]
+  have ha : ∀ i, a i ≠ 0 := by
+    intro i hi
+    apply Basis.ne_zero bN i
+    specialize snf i
+    simpa [hi] using snf
+  intro h
+  simpa [Ideal.span_singleton_toAddSubgroup_eq_zmultiples, Int.index_zmultiples,
+    Finset.prod_eq_zero_iff] using ha
 
 end Basis.SmithNormalForm
 
