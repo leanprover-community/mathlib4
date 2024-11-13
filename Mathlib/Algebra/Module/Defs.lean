@@ -241,12 +241,17 @@ protected theorem Module.nontrivial (R M : Type*) [Semiring R] [Nontrivial M] [A
     [Module R M] : Nontrivial R :=
   MulActionWithZero.nontrivial R M
 
--- see Note [lower instance priority]
-instance (priority := 910) Semiring.toModule [Semiring R] : Module R R where
+instance (priority := 910) [NonUnitalSemiring R] : NonUnitalModule R R where
   smul_add := mul_add
   add_smul := add_mul
   zero_smul := zero_mul
   smul_zero := mul_zero
+  mul_smul := mul_assoc
+
+-- see Note [lower instance priority]
+instance (priority := 910) Semiring.toModule [Semiring R] : Module R R where
+  __ : NonUnitalModule R R := inferInstance
+  one_smul := one_mul
 
 instance [NonUnitalNonAssocSemiring R] : DistribSMul R R where
   smul_add := left_distrib
