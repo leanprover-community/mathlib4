@@ -190,19 +190,14 @@ lemma Path.exists_mem_fst_eq (p : Path N) (r : Fin (N + 2)) : ∃ c ∈ p.cells,
   · omega
   · exact h
   · rcases Nat.eq_zero_or_pos i with hi | hi
-    · have h0 : p.cells[0].1 = 0 := by rw [List.getElem_zero, p.head_first_row]
-      have h0' : p.cells[i].1 = 0 := by convert h0
-      simp [h0'] at h
-    · suffices decide (r ≤ p.cells[i - 1].1) = true by
+    · simp only [hi, List.getElem_zero, p.head_first_row, Fin.not_lt_zero] at h
+    · suffices r ≤ p.cells[i - 1].1 by
         exfalso
         have hi' : i - 1 < i := by omega
-        rw [List.not_of_lt_findIdx hi'] at this
-        simp at this
-      rw [decide_eq_true]
+        exact of_decide_eq_false (List.not_of_lt_findIdx hi') this
       have ha : Adjacent p.cells[i - 1] p.cells[i] := by
         convert List.chain'_iff_get.1 p.valid_move_seq (i - 1) ?_
-        · have hi' : i - 1 + 1 = i := by omega
-          simp [hi']
+        · simp [Nat.sub_add_cancel hi]
         · omega
       exact ha.le_of_lt h
 
