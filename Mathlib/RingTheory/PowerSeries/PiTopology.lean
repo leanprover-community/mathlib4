@@ -22,7 +22,7 @@ This topology can be included by writing `open scoped PowerSeries.WithPiTopology
 When the type of coefficients has the discrete topology,
 it corresponds to the topology defined by [bourbaki1981], chapter 4, §4, n°2.
 
-It is *not* the adic topology in general.
+It corresponds with the adic topology but this is not proved here.
 
 - `PowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_nilpotent`,
 `PowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero`: if the constant coefficient
