@@ -7,10 +7,10 @@ import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.Topology.LocalAtTarget
 
 /-!
-# Universally closed morphism
+# Universally injective morphism
 
-A morphism of schemes `f : X ⟶ Y` is universally closed if `X ×[Y] Y' ⟶ Y'` is injective
-for all base change `Y' ⟶ Y`. This is equivalent to the diagonal morphism being surjective
+A morphism of schemes `f : X ⟶ Y` is universally injective if `X ×[Y] Y' ⟶ Y'` is injective
+for all base changes `Y' ⟶ Y`. This is equivalent to the diagonal morphism being surjective
 (`AlgebraicGeometry.UniversallyInjective.iff_diagonal`).
 
 We show that being universally injective is local at the target, and is stable under
@@ -41,7 +41,11 @@ along any morphism `Y' ⟶ Y` is injective (on points).
 -/
 @[mk_iff]
 class UniversallyInjective (f : X ⟶ Y) : Prop where
-  out : universally (topologically (Injective ·)) f
+  universally_injective : universally (topologically (Injective ·)) f
+
+theorem Scheme.Hom.injective (f : X.Hom Y) [UniversallyInjective f] :
+    Function.Injective f.base :=
+  UniversallyInjective.universally_injective _ _ _ .of_id_snd
 
 theorem universallyInjective_eq :
     @UniversallyInjective = universally (topologically (Injective ·)) := by
@@ -71,16 +75,12 @@ instance (priority := 900) [Mono f] : UniversallyInjective f :=
   have := (pullback.isIso_diagonal_iff f).mpr inferInstance
   (UniversallyInjective.iff_diagonal f).mpr inferInstance
 
-theorem universallyInjective_respectsIso : RespectsIso @UniversallyInjective :=
+theorem UniversallyInjective.respectsIso : RespectsIso @UniversallyInjective :=
   universallyInjective_eq_diagonal.symm ▸ inferInstance
 
-instance universallyInjective_isStableUnderBaseChange :
+instance UniversallyInjective.isStableUnderBaseChange :
     IsStableUnderBaseChange @UniversallyInjective :=
   universallyInjective_eq_diagonal.symm ▸ inferInstance
-
-instance isInjectiveMap_isStableUnderComposition :
-    IsStableUnderComposition (topologically (Injective ·)) where
-  comp_mem _ _ hf hg := hg.comp hf
 
 instance universallyInjective_isStableUnderComposition :
     IsStableUnderComposition @UniversallyInjective :=
