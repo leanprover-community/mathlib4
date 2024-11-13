@@ -170,21 +170,3 @@ theorem conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj {f : ℂ 
   simp [fderiv_comp _ h_diff conjCLE.differentiableAt, this, conj_conj]
 
 end Conformality
-
-section BigO
-
-namespace Complex
-
-open Topology
-
-lemma isBigO_comp_ofReal {f g : ℂ → ℂ} {x : ℝ} (h : f =O[𝓝 (x : ℂ)] g) :
-    (fun y : ℝ ↦ f y) =O[𝓝 x] (fun y : ℝ ↦ g y) :=
-  h.comp_tendsto <| continuous_ofReal.tendsto x
-
-lemma isBigO_comp_ofReal_nhds_ne {f g : ℂ → ℂ} {x : ℝ} (h : f =O[𝓝[≠] (x : ℂ)] g) :
-    (fun y : ℝ ↦ f y) =O[𝓝[≠] x] (fun y : ℝ ↦ g y) :=
-  h.comp_tendsto <| continuous_ofReal.continuousWithinAt.tendsto_nhdsWithin fun _ _ ↦ by simp_all
-
-end Complex
-
-end BigO
