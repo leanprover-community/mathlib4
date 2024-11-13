@@ -44,7 +44,7 @@ def checkInitImports : IO Bool := do
   let mut importsHeaderLinter := #[]
   for module in allModuleNames do
     let path := System.mkFilePath (module.components.map fun n ↦ n.toString)|>.addExtension "lean"
-    let imports := ← findImports path
+    let imports ← findImports path
     let hasNoMathlibImport := imports.all fun name ↦ name.getRoot != `Mathlib
     if hasNoMathlibImport then
       modulesWithoutMathlibImports := modulesWithoutMathlibImports.push module
@@ -54,7 +54,7 @@ def checkInitImports : IO Bool := do
   -- Every file importing the `header` linter should be imported in `Mathlib/Init.lean` itself.
   -- (Downstream files should import `Mathlib.Init` and not the header linter.)
   -- The only exception are auto-generated import-only files.
-  let initImports := ← findImports ("Mathlib" / "Init.lean")
+  let initImports ← findImports ("Mathlib" / "Init.lean")
   let mismatch := importsHeaderLinter.filter (fun mod ↦
     ![`Mathlib, `Mathlib.Tactic, `Mathlib.Init].contains mod && !initImports.contains mod)
     -- This file is transitively imported by `Mathlib.Init`.
