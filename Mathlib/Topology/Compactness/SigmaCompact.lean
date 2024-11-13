@@ -177,7 +177,9 @@ lemma isSigmaCompact_iff_sigmaCompactSpace {s : Set X} :
 -- see Note [lower instance priority]
 instance (priority := 200) CompactSpace.sigmaCompact [CompactSpace X] : SigmaCompactSpace X :=
   ⟨⟨fun _ => univ, fun _ => isCompact_univ, iUnion_const _⟩⟩
-@[deprecated (since := "2024-11-13")] alias
+
+-- The `alias` command creates a definition, triggering the defLemma linter.
+@[nolint defLemma, deprecated (since := "2024-11-13")] alias
 CompactSpace.sigma_compact := CompactSpace.sigmaCompact
 
 theorem SigmaCompactSpace.of_countable (S : Set (Set X)) (Hc : S.Countable)
@@ -192,7 +194,9 @@ instance (priority := 100) sigmaCompactSpace_of_locallyCompact_secondCountable
   refine SigmaCompactSpace.of_countable _ (hsc.image K) (forall_mem_image.2 fun x _ => hKc x) ?_
   rwa [sUnion_image]
 
-@[deprecated (since := "2024-11-13")] alias sigmaCompactSpace_of_locally_compact_second_countable :=
+-- The `alias` command creates a definition, triggering the defLemma linter.
+@[nolint defLemma, deprecated (since := "2024-11-13")]
+alias sigmaCompactSpace_of_locally_compact_second_countable :=
   sigmaCompactSpace_of_locallyCompact_secondCountable
 
 section

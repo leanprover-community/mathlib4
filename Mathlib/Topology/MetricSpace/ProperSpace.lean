@@ -91,7 +91,10 @@ instance (priority := 100) proper_of_compact [CompactSpace α] : ProperSpace α 
 instance (priority := 100) locallyCompact_of_proper [ProperSpace α] : LocallyCompactSpace α :=
   .of_hasBasis (fun _ => nhds_basis_closedBall) fun _ _ _ =>
     isCompact_closedBall _ _
-@[deprecated (since := "2024-11-13")] alias locally_compact_of_proper := locallyCompact_of_proper
+
+-- The `alias` command creates a definition, triggering the defLemma linter.
+@[nolint defLemma, deprecated (since := "2024-11-13")]
+alias locally_compact_of_proper := locallyCompact_of_proper
 
 -- see Note [lower instance priority]
 /-- A proper space is complete -/

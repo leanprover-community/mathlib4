@@ -127,7 +127,9 @@ same topology. -/
 instance (priority := 90) metrizableSpace_of_t3_secondCountable : MetrizableSpace X :=
   let ⟨_, hf⟩ := exists_embedding_l_infty X
   hf.metrizableSpace
-@[deprecated (since := "2024-11-13")] alias
+
+-- The `alias` command creates a definition, triggering the defLemma linter.
+@[nolint defLemma, deprecated (since := "2024-11-13")] alias
 metrizableSpace_of_t3_second_countable := metrizableSpace_of_t3_secondCountable
 
 end TopologicalSpace
