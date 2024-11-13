@@ -25,10 +25,27 @@ IFS=$'\n\t'
 # the script takes two optional arguments `<optCurrCommit> <optReferenceCommit>`
 # and tallies the same technical debts on `<optCurrCommit>` using `<optReferenceCommit>`
 # as a reference.
-# If $1 is supplied, we use it; otherwise, we fall back to $(git rev-parse HEAD).
-currCommit="${1:-"$(git rev-parse HEAD)"}"
-# Similarly for the second argument.
-refCommit="${2:-"$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"}"
+# If `$1` is supplied and is not `pr_summary`, then we use it; otherwise, we fall back to
+# `$(git rev-parse HEAD)`.
+# Similarly for the second argument: if `$1` (note the 1, not 2!) is `pr_summary`, then we use
+# the closest version of master that we can to the current commit. Otherwise we use the second
+# input, falling back to a commit from last week if `$2` is not provided.
+case "${1:-}" in
+  pr_summary)
+    currCommit="$(git rev-parse HEAD)"
+    refCommit="$(git merge-base origin/master HEAD)"
+    >&2 printf '***  pr_summary passed  ***\n'
+    ;;
+  *)
+    currCommit="${1:-"$(git rev-parse HEAD)"}"
+    refCommit="${2:-"$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"}"
+    >&2 printf '***  NO pr_summary passed  ***\n'
+    ;;
+esac
+
+###currCommit="${1:-"$(git rev-parse HEAD)"}"
+#### Similarly for the second argument.
+###refCommit="${2:-"$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"}"
 
 ## `computeDiff input` assumes that input consists of lines of the form `value|description`
 ## where `value` is a number and `description` is the statistic that `value` reports.
@@ -98,6 +115,8 @@ printf '%s|%s\n' "$(printf '%s' "${deprecatedFiles}" | wc -l)" "\`Deprecated\` f
 printf '%s|%s\n\n' "$(printf '%s\n' "${deprecatedFiles}" | grep total | sed 's= total==')"  'total LoC in `Deprecated` files'
 }
 
+report () {
+
 # collect the technical debts and the line counts of the deprecated file from the current mathlib
 git checkout -q "${currCommit}"
 new="$(tdc)"
@@ -125,6 +144,21 @@ printf $'```spoiler Changed \'Deprecated\' lines by file\n%s\n```\n' "$(
 baseURL='https://github.com/leanprover-community/mathlib4/commit'
 printf '\nCurrent commit [%s](%s)\n' "${currCommit:0:10}" "${baseURL}/${currCommit}"
 printf 'Reference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
+}
+
+if [ "${1:-}" == "pr_summary" ]
+then
+  rep="$(report | awk -F'|' 'BEGIN{backTicks=0} /^```/{backTicks++} ((!/^```/) && (backTicks % 2 == 0) && !($3 == "0")) {print $0}')"
+  if [ "$(wc -l <<<"${rep}")" -le 5 ]
+  then
+    printf '<details><summary>No changes to technical debts.</summary>\n'
+  else
+    printf '<details><summary>Changes to technical debts</summary>\n\n%s\n' "${rep}"
+  fi
+  printf '\nYou can run this locally as\n```\n./scripts/technical-debt-metrics.sh pr_summary\n```\n</details>\n'
+else
+  report
+fi
 
 # These last two lines are needed to make the script robust against changes on disk
 # that might have happened during the script execution, e.g. from switching branches
