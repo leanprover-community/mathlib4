@@ -3,16 +3,14 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Group.Subsemigroup.Membership
 import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.GroupWithZero.Center
 import Mathlib.Algebra.Ring.Center
 import Mathlib.Algebra.Ring.Centralizer
-import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Group.Hom.End
-import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
 import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 
@@ -621,15 +619,20 @@ theorem srangeRestrict_surjective (f : F) :
   let ⟨x, hx⟩ := mem_srange.mp hy
   ⟨x, Subtype.ext hx⟩
 
-theorem srange_top_iff_surjective {f : F} :
+theorem srange_eq_top_iff_surjective {f : F} :
     srange f = (⊤ : NonUnitalSubsemiring S) ↔ Function.Surjective (f : R → S) :=
-  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_srange, coe_top]) Set.range_iff_surjective
+  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_srange, coe_top]) Set.range_eq_univ
+
+@[deprecated (since := "2024-11-11")]
+alias srange_top_iff_surjective := srange_eq_top_iff_surjective
 
 /-- The range of a surjective non-unital ring homomorphism is the whole of the codomain. -/
 @[simp]
-theorem srange_top_of_surjective (f : F) (hf : Function.Surjective (f : R → S)) :
+theorem srange_eq_top_of_surjective (f : F) (hf : Function.Surjective (f : R → S)) :
     srange f = (⊤ : NonUnitalSubsemiring S) :=
-  srange_top_iff_surjective.2 hf
+  srange_eq_top_iff_surjective.2 hf
+
+@[deprecated (since := "2024-11-11")] alias srange_top_of_surjective := srange_eq_top_of_surjective
 
 /-- If two non-unital ring homomorphisms are equal on a set, then they are equal on its
 non-unital subsemiring closure. -/
@@ -667,11 +670,11 @@ variable [NonUnitalNonAssocSemiring S]
 
 @[simp]
 theorem range_fst : NonUnitalRingHom.srange (fst R S) = ⊤ :=
-  NonUnitalRingHom.srange_top_of_surjective (fst R S) Prod.fst_surjective
+  NonUnitalRingHom.srange_eq_top_of_surjective (fst R S) Prod.fst_surjective
 
 @[simp]
 theorem range_snd : NonUnitalRingHom.srange (snd R S) = ⊤ :=
-  NonUnitalRingHom.srange_top_of_surjective (snd R S) <| Prod.snd_surjective
+  NonUnitalRingHom.srange_eq_top_of_surjective (snd R S) <| Prod.snd_surjective
 
 end NonUnitalSubsemiring
 

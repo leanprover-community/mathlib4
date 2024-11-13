@@ -320,7 +320,7 @@ theorem isPreconnected_closed_iff {s : Set α} :
       rw [← compl_union] at this
       exact this.ne_empty huv.disjoint_compl_right.inter_eq⟩
 
-theorem IsInducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α → β}
+theorem Topology.IsInducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α → β}
     (hf : IsInducing f) : IsPreconnected (f '' s) ↔ IsPreconnected s := by
   refine ⟨fun h => ?_, fun h => h.image _ hf.continuous.continuousOn⟩
   rintro u v hu' hv' huv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩

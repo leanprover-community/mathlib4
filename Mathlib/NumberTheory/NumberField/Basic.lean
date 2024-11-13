@@ -34,6 +34,7 @@ number field, ring of integers
 
 /-- A number field is a field which has characteristic zero and is finite
 dimensional over ℚ. -/
+@[stacks 09GA]
 class NumberField (K : Type*) [Field K] : Prop where
   [to_charZero : CharZero K]
   [to_finiteDimensional : FiniteDimensional ℚ K]
