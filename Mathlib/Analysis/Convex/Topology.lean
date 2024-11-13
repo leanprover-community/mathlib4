@@ -322,7 +322,7 @@ theorem closedConvexHull_eq_closure_convexHull {s : Set E} :
     closedConvexHull 𝕜 s = closure (convexHull 𝕜 s) := subset_antisymm
   (closedConvexHull_min (subset_trans (subset_convexHull 𝕜 s) subset_closure)
     (Convex.closure (convex_convexHull 𝕜 s)) isClosed_closure)
-  (closure_minimal convexHull_subseteq_closedConvexHull isClosed_closedConvexHull)
+  (closure_minimal convexHull_subset_closedConvexHull isClosed_closedConvexHull)
 
 end ContinuousConstSMul
 
