@@ -3,7 +3,7 @@ Copyright (c) 2024 Sven Manthe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sven Manthe
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Tactic.Common
 import Mathlib.Algebra.Order.Group.Nat
 
 /-!
