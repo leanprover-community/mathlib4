@@ -98,8 +98,8 @@ lemma toAddSubgroup_index_eq {ι R M : Type*} {n : ℕ} [Fintype ι] [Infinite R
               conv_rhs =>
                 rw [← hj.choose_spec, (h (f hj.choose)).choose_spec]
               simp only [EmbeddingLike.apply_eq_iff_eq, exists_eq, ↓reduceDIte, Classical.choose_eq]
-              convert rfl
-              · exact hj.choose_spec
+              congr!
+              · exact hj.choose_spec.symm
               · simp [hj]
       · convert Finset.sum_const_zero with x
         · rw [not_exists] at hj
